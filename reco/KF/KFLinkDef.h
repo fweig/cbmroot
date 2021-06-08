@@ -1,7 +1,6 @@
-/** @file KFLinkDef.h
-  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [committer], Maxim Zyzak, Volodymyr Vovchenko, Florian Uhlig **/
+/* Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Denis Bertini [committer], Maxim Zyzak, Volodymyr Vovchenko, Florian Uhlig */
 
 #ifdef __CINT__
 

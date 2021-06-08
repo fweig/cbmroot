@@ -1,7 +1,6 @@
-/** @file pl_deb_pla.C
-  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [committer] **/
+/* Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Christian Simon [committer] */
 
 {
   //  TCanvas *can = new TCanvas("can22","can22");

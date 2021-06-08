@@ -1,7 +1,6 @@
-/** @file CbmTrdRawToDigiR.h
-  * @copyright Copyright (C) 2020 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Etienne Bechtel [committer] **/
+/* Copyright (C) 2020 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Etienne Bechtel [committer] */
 
 #ifndef CBMTRDRAWTODIGI_H
 #define CBMTRDRAWTODIGI_H

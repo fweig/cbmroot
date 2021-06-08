@@ -1,7 +1,6 @@
-/** @file eventDisplay.C
-  * @copyright Copyright (C) 2019-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors David Emschermann [committer], Florian Uhlig **/
+/* Copyright (C) 2019-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: David Emschermann [committer], Florian Uhlig */
 
 void eventDisplay(TString cSys = "lam", TString cEbeam = "2.5gev", TString cCentr = "-", Int_t iRun = 0,
                   const char* setup = "sis18_mcbm")

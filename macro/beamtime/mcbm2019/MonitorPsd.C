@@ -1,7 +1,6 @@
-/** @file MonitorPsd.C
-  * @copyright Copyright (C) 2019-2020 Institute for Nuclear Research, Moscow
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Nikolay Karpushkin [committer] **/
+/* Copyright (C) 2019-2020 Institute for Nuclear Research, Moscow
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Nikolay Karpushkin [committer] */
 
 /** @file MCBM PSD DATA monitoring
  ** @author Nikolay Karpushkin <karpushkin@inr.ru>

@@ -1,7 +1,6 @@
-/** @file run_reco.C
-  * @copyright Copyright (C) 2016-2017 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Gregor Pitsch, Semen Lebedev [committer] **/
+/* Copyright (C) 2016-2017 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Gregor Pitsch, Semen Lebedev [committer] */
 
 using namespace std;
 

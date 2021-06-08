@@ -1,7 +1,6 @@
-/** @file create_psdgeo_52modules.C
-  * @copyright Copyright (C) 2017-2018 National Research Nuclear University MEPhI (Moscow Engineering Physics Institute), Moscow
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese, Evgeny Kashirin [committer] **/
+/* Copyright (C) 2017-2018 National Research Nuclear University MEPhI (Moscow Engineering Physics Institute), Moscow
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese, Evgeny Kashirin [committer] */
 
 /** @file create_psdgeo_with_hole.C
  ** @author Volker Friese <v.friese@gsi.de>

@@ -1,7 +1,6 @@
-/** @file ana_digi_deb.C
-  * @copyright Copyright (C) 2015 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2015 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 void ana_digi_deb(Int_t nEvents = 100000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSmType = 2, Int_t RefSel = 1,
                   char* cFileId = "MbsTrbThu1715", Int_t iSet = 0, Bool_t bOut = 0, Int_t iSel2 = 0)

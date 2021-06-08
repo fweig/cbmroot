@@ -1,7 +1,6 @@
-/** @file readTsa_file_stsxyter.C
-  * @copyright Copyright (C) 2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Iuri Sorokin [committer] **/
+/* Copyright (C) 2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Iuri Sorokin [committer] */
 
 void readTsa_file_stsxyter(TString inFile = "stsxdata.tsa")
 {

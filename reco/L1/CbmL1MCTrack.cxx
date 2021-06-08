@@ -1,7 +1,6 @@
-/** @file CbmL1MCTrack.cxx
-  * @copyright Copyright (C) 2010-2020 Frankfurt Institute for Advanced Studies, Goethe-Universitaet Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors I.Kisel,  S.Gorbunov, Igor Kulakov [committer], Maxim Zyzak **/
+/* Copyright (C) 2010-2020 Frankfurt Institute for Advanced Studies, Goethe-Universitaet Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: I.Kisel,  S.Gorbunov, Igor Kulakov [committer], Maxim Zyzak */
 
 /*
  *====================================================================

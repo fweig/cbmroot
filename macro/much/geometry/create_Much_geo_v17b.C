@@ -1,7 +1,6 @@
-/** @file create_Much_geo_v17b.C
-  * @copyright Copyright (C) 2017 Variable Energy Cyclotron Centre, Kolkata
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Vikas Singhal [committer] **/
+/* Copyright (C) 2017 Variable Energy Cyclotron Centre, Kolkata
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Vikas Singhal [committer] */
 
 //
 /// File create_MUCH_geometry_v17b.C

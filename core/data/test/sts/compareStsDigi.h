@@ -1,7 +1,6 @@
-/** @file compareStsDigi.h
-  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer] **/
+/* Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer] */
 
 #ifndef COMPARESTSDIGI_H
 #define COMPARESTSDIGI_H 1

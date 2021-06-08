@@ -1,7 +1,6 @@
-/** @file L1Fit.h
-  * @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Sergey Gorbunov [committer] **/
+/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Sergey Gorbunov [committer] */
 
 /// \file   L1Fit.h
 /// \brief  Definition of the L1Fit class

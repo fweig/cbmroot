@@ -1,7 +1,6 @@
-/** @file CbmTrdParSetGeo.h
-  * @copyright Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer], Alexandru Bercuci **/
+/* Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer], Alexandru Bercuci */
 
 #ifndef CBMTRDPARSETGEO_H
 #define CBMTRDPARSETGEO_H

@@ -1,7 +1,6 @@
-/** @file run_analysis2.C
-  * @copyright Copyright (C) 2014-2020 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [committer], Egor Ovcharenko **/
+/* Copyright (C) 2014-2020 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev [committer], Egor Ovcharenko */
 
 enum enu_calibMode
 {

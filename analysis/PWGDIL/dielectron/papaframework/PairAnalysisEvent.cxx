@@ -1,7 +1,6 @@
-/** @file PairAnalysisEvent.cxx
-  * @copyright Copyright (C) 2015-2020 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Julian Book [committer], Florian Uhlig **/
+/* Copyright (C) 2015-2020 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Julian Book [committer], Florian Uhlig */
 /*
   Event that holds all information needed for the of analysis (including fast simulations). 
   Init() the PairAnalysisTrack array fTracks and provides easy access to:

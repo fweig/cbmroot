@@ -1,7 +1,6 @@
-/** @file CbmPVFinderKF.h
-  * @copyright Copyright (C) 2006-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors S.Gorbunov, Denis Bertini [committer], Volker Friese **/
+/* Copyright (C) 2006-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: S.Gorbunov, Denis Bertini [committer], Volker Friese */
 
 /** CbmPVFinderKF
  *@author S.Gorbunov

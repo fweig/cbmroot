@@ -1,7 +1,6 @@
-/** @file CbmKFStsHit.h
-  * @copyright Copyright (C) 2006-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese [committer], Igor Kulakov **/
+/* Copyright (C) 2006-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese [committer], Igor Kulakov */
 
 #ifndef CbmKFStsHit_H
 #define CbmKFStsHit_H 1

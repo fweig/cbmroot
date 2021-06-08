@@ -1,7 +1,6 @@
-/** @file CbmMuchPadRectangular.cxx
-  * @copyright Copyright (C) 2007-2020 Petersburg Nuclear Physics Institute named by B.P.Konstantinov of National Research Centre "Kurchatov Institute", Gatchina
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Evgeny Kryshen [committer] **/
+/* Copyright (C) 2007-2020 Petersburg Nuclear Physics Institute named by B.P.Konstantinov of National Research Centre "Kurchatov Institute", Gatchina
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Evgeny Kryshen [committer] */
 
 // -------------------------------------------------------------------------
 // -----          CbmMuchPadRectangular source file                    -----

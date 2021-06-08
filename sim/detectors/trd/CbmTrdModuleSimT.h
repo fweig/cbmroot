@@ -1,7 +1,6 @@
-/** @file CbmTrdModuleSimT.h
-  * @copyright Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Alex Bercuci, Florian Uhlig [committer], Alexandru Bercuci **/
+/* Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Alex Bercuci, Florian Uhlig [committer], Alexandru Bercuci */
 
 #ifndef CBMTRDMODULESIMT_H
 #define CBMTRDMODULESIMT_H

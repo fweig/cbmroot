@@ -1,7 +1,6 @@
-/** @file create_stsgeo_v18b.C
-  * @copyright Copyright (C) 2012-2018 CBM Collaboration, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese, Evgeny Lavrik **/
+/* Copyright (C) 2012-2018 CBM Collaboration, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese, Evgeny Lavrik */
 
 /******************************************************************************
  ** Creation of STS geometry in ROOT format (TGeo).

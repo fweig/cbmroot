@@ -1,7 +1,6 @@
-/** @file CbmMuchModuleGemRectangular.cxx
-  * @copyright Copyright (C) 2012-2020 Petersburg Nuclear Physics Institute named by B.P.Konstantinov of National Research Centre "Kurchatov Institute", Gatchina
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors M.Ryzhinskiy, Evgeny Kryshen [committer] **/
+/* Copyright (C) 2012-2020 Petersburg Nuclear Physics Institute named by B.P.Konstantinov of National Research Centre "Kurchatov Institute", Gatchina
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: M.Ryzhinskiy, Evgeny Kryshen [committer] */
 
 /** CbmMuchModuleGemRectangular.cxx
  *@author  M.Ryzhinskiy <m.ryzhinskiy@gsi.de>

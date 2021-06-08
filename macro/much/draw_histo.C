@@ -1,7 +1,6 @@
-/** @file draw_histo.C
-  * @copyright Copyright (C) 2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Anna Senger [committer] **/
+/* Copyright (C) 2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Anna Senger [committer] */
 
 void draw_histo(TString input = "sis100_muon_lmvm/8gev/centr_010_sup_histo.root")
 {

@@ -1,7 +1,6 @@
-/** @file CbmKFVertexInterface.h
-  * @copyright Copyright (C) 2006 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors S.Gorbunov, Denis Bertini [committer] **/
+/* Copyright (C) 2006 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: S.Gorbunov, Denis Bertini [committer] */
 
 /** Abstract base class for vertex is being used by the CbmKF Kalman Filter 
  *

@@ -1,7 +1,6 @@
-/** @file Config_dilepton_testing.C
-  * @copyright Copyright (C) 2019 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Julian Book, Etienne Bechtel [committer] **/
+/* Copyright (C) 2019 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Julian Book, Etienne Bechtel [committer] */
 
 /// \file Config_jbook_AA.C
 // \brief A template task configuration macro with example and explanations

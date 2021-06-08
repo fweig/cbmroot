@@ -1,7 +1,6 @@
-/** @file CbmRichTrainAnnElectrons.h
-  * @copyright Copyright (C) 2009-2017 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev, Semen Lebedev [committer] **/
+/* Copyright (C) 2009-2017 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev, Semen Lebedev [committer] */
 
 /**
  * \file CbmRichTrainAnnElectrons.h

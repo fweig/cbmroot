@@ -1,7 +1,6 @@
-/** @file setup_14mrad_X_5_3.C
-  * @copyright Copyright (C) 2016-2019 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese, Jordan Bendarouach [committer] **/
+/* Copyright (C) 2016-2019 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese, Jordan Bendarouach [committer] */
 
 /** ROOT macro to define the CBM setup sis_100_electron
  **

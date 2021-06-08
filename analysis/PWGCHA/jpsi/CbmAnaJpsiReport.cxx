@@ -1,7 +1,6 @@
-/** @file CbmAnaJpsiReport.cxx
-  * @copyright Copyright (C) 2015-2019 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [committer], Adrian Amatus Weber **/
+/* Copyright (C) 2015-2019 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev [committer], Adrian Amatus Weber */
 
 #include "CbmAnaJpsiReport.h"
 

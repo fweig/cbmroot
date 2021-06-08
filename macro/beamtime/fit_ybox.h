@@ -1,7 +1,6 @@
-/** @file fit_ybox.h
-  * @copyright Copyright (C) 2016-2020 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2016-2020 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 // box with polynomial filling
 Double_t f1_xboxe(double* x, double* par)

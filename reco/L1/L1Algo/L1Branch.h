@@ -1,7 +1,6 @@
-/** @file L1Branch.h
-  * @copyright Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors I.Kisel, S.Gorbunov, Maxim Zyzak, Sergey Gorbunov [committer], Valentina Akishina **/
+/* Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: I.Kisel, S.Gorbunov, Maxim Zyzak, Sergey Gorbunov [committer], Valentina Akishina */
 
 /*
  *====================================================================

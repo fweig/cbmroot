@@ -1,7 +1,6 @@
-/** @file test_hodogeo_transport.C
-  * @copyright Copyright (C) 2018-2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese, Pierre-Alain Loizeau [committer] **/
+/* Copyright (C) 2018-2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese, Pierre-Alain Loizeau [committer] */
 
 // --------------------------------------------------------------------------
 //

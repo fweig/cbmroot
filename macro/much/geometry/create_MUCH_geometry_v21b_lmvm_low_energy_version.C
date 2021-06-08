@@ -1,7 +1,6 @@
-/** @file create_MUCH_geometry_v21b_lmvm_low_energy_version.C
-  * @copyright Copyright (C) 2021 Department of Physics, Aligarh Muslim University, Aligarh
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Omveer Singh [committer] **/
+/* Copyright (C) 2021 Department of Physics, Aligarh Muslim University, Aligarh
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Omveer Singh [committer] */
 
 //
 // \file create_MUCH_geometry_v21a

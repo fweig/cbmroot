@@ -1,7 +1,6 @@
-/** @file CbmMuchGeoScheme.cxx
-  * @copyright Copyright (C) 2008-2021 St. Petersburg Polytechnic University, St. Petersburg
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Vikas Singhal, Mikhail Ryzhinskiy [committer], Florian Uhlig, Evgeny Kryshen **/
+/* Copyright (C) 2008-2021 St. Petersburg Polytechnic University, St. Petersburg
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Vikas Singhal, Mikhail Ryzhinskiy [committer], Florian Uhlig, Evgeny Kryshen */
 // -------------------------------------------------------------------------
 // -----                  CbmMuchGeoScheme source file               -----
 //------                  Modilfied 21/06/2019 by Ekata Nandy(Detector type for GEM & RPC included)         -----

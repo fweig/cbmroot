@@ -1,7 +1,6 @@
-/** @file CbmGeoPassivePar.cxx
-  * @copyright Copyright (C) 2005-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [committer], Florian Uhlig, Mohammad Al-Turany **/
+/* Copyright (C) 2005-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Denis Bertini [committer], Florian Uhlig, Mohammad Al-Turany */
 
 #include "CbmGeoPassivePar.h"
 

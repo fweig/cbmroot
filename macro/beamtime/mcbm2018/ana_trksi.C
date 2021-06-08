@@ -1,7 +1,6 @@
-/** @file ana_trksi.C
-  * @copyright Copyright (C) 2020 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2020 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 void ana_trksi(Int_t nEvents = 10000, Int_t iSel = 1, Int_t iGenCor = 1, TString cFileId = "48.50.7.1",
                TString cSet = "000010020", Int_t iSel2 = 20, Int_t iTrackingSetup = 2, Double_t dScalFac = 1.,

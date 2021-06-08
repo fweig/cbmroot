@@ -1,7 +1,6 @@
-/** @file matbudget_ana.C
-  * @copyright Copyright (C) 2015-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig, Volker Friese [committer], David Emschermann **/
+/* Copyright (C) 2015-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig, Volker Friese [committer], David Emschermann */
 
 #if !defined(__CINT__) || defined(__MAKECINT__)
 #include "FairRadLenPoint.h"

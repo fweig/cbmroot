@@ -1,7 +1,6 @@
-/** @file CbmBsField.cxx
-  * @copyright Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors E.I.Litvinenko, Denis Bertini [committer], Florian Uhlig **/
+/* Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: E.I.Litvinenko, Denis Bertini [committer], Florian Uhlig */
 
 // -------------------------------------------------------------------------
 // -----                      CbmBsField  source file                  -----

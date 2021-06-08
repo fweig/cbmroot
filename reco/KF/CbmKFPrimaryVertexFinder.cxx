@@ -1,7 +1,6 @@
-/** @file CbmKFPrimaryVertexFinder.cxx
-  * @copyright Copyright (C) 2006-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors S.Gorbunov, I.Kisel, Denis Bertini [committer] **/
+/* Copyright (C) 2006-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: S.Gorbunov, I.Kisel, Denis Bertini [committer] */
 
 /** Implementation of the CbmKFPrimaryVertexFinder class
  *

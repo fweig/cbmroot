@@ -1,7 +1,6 @@
-/** @file qa_study_report.C
-  * @copyright Copyright (C) 2011-2014 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [committer] **/
+/* Copyright (C) 2011-2014 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev [committer] */
 
 /**
  * \file qa_study_report.C

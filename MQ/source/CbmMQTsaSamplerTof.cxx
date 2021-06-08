@@ -1,7 +1,6 @@
-/** @file CbmMQTsaSamplerTof.cxx
-  * @copyright Copyright (C) 2018-2019 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer], Florian Uhlig **/
+/* Copyright (C) 2018-2019 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer], Florian Uhlig */
 
 /**
  *  CbmMQTsaSamplerTof.cpp

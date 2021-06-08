@@ -1,7 +1,6 @@
-/** @file readTsaTimeOnline.C
-  * @copyright Copyright (C) 2014-2016 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig, Cyrano Bergmann [committer] **/
+/* Copyright (C) 2014-2016 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig, Cyrano Bergmann [committer] */
 
 /** @file readTsa.C
  ** @author Florian Uhlig <f.uhlig@gsi.de>

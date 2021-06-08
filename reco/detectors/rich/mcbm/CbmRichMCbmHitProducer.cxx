@@ -1,7 +1,6 @@
-/** @file CbmRichMCbmHitProducer.cxx
-  * @copyright Copyright (C) 2019-2020 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Adrian Amatus Weber, Semen Lebedev [committer] **/
+/* Copyright (C) 2019-2020 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Adrian Amatus Weber, Semen Lebedev [committer] */
 
 #include "CbmRichMCbmHitProducer.h"
 

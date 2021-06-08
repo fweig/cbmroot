@@ -1,7 +1,6 @@
-/** @file run_much_sim.C
-  * @copyright Copyright (C) 2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors M.Ryzhinskiy m.ryzhinskiy@gsi.de, David Emschermann [committer] **/
+/* Copyright (C) 2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: M.Ryzhinskiy m.ryzhinskiy@gsi.de, David Emschermann [committer] */
 
 // 20130605 - checked by DE
 /**

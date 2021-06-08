@@ -1,7 +1,6 @@
-/** @file create_psdgeo_with_hole.C
-  * @copyright Copyright (C) 2017-2020 Physikalisches Institut, Eberhard Karls Universitaet Tuebingen, Tübingen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese, Viktor Klochkov [committer] **/
+/* Copyright (C) 2017-2020 Physikalisches Institut, Eberhard Karls Universitaet Tuebingen, Tübingen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese, Viktor Klochkov [committer] */
 
 /** @file create_psdgeo_with_hole.C
  ** @author Volker Friese <v.friese@gsi.de>

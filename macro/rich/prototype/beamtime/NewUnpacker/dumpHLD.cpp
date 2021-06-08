@@ -1,7 +1,6 @@
-/** @file dumpHLD.cpp
-  * @copyright Copyright (C) - 
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors  **/
+/* Copyright (C) - 
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors:  */
 
 #include <iostream>
 

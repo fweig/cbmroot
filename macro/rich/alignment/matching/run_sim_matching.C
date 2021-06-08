@@ -1,7 +1,6 @@
-/** @file run_sim_matching.C
-  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Jordan Bendarouach [committer] **/
+/* Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Jordan Bendarouach [committer] */
 
 static TString fieldMap;
 static Double_t fieldZ;

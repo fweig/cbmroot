@@ -1,7 +1,6 @@
-/** @file CbmTrdTrianglePRF.h
-  * @copyright Copyright (C) 2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer] **/
+/* Copyright (C) 2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer] */
 
 #ifndef CBMTRDTRIANGLEPRF_H
 #define CBMTRDTRIANGLEPRF_H 1

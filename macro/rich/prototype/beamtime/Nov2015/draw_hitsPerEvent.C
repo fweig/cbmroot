@@ -1,7 +1,6 @@
-/** @file draw_hitsPerEvent.C
-  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Egor Ovcharenko [committer] **/
+/* Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Egor Ovcharenko [committer] */
 
 void draw_hitsPerEvent(TString filename                = "output_fine_2/output_file_list.txt",
                        TString picturesFolder          = "pictures_fine_2",

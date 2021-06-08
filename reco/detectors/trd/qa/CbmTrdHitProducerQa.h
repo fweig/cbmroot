@@ -1,7 +1,6 @@
-/** @file CbmTrdHitProducerQa.h
-  * @copyright Copyright (C) 2006-2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors M.Kalisky, Denis Bertini [committer], Florian Uhlig **/
+/* Copyright (C) 2006-2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: M.Kalisky, Denis Bertini [committer], Florian Uhlig */
 
 // -----------------------------------------------------------------------
 // -----                     CbmTrdHitProducerQa                     -----

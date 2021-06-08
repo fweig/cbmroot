@@ -1,7 +1,6 @@
-/** @file pl_over_MatD4sel.C
-  * @copyright Copyright (C) 2016-2018 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2016-2018 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 void pl_over_MatD4sel(TString sysinfo = "")
 {

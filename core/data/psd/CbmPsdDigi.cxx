@@ -1,7 +1,6 @@
-/** @file CbmPsdDigi.cxx
-  * @copyright Copyright (C) 2012-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Nikolay Karpushkin, Volker Friese [committer], Florian Uhlig **/
+/* Copyright (C) 2012-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Nikolay Karpushkin, Volker Friese [committer], Florian Uhlig */
 
 /** @file CbmPsdDigi.cxx
  ** @author Nikolay Karpushkin <karpushkin@inr.ru>

@@ -1,7 +1,6 @@
-/** @file readTsa1.C
-  * @copyright Copyright (C) 2014-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer], Cyrano Bergmann **/
+/* Copyright (C) 2014-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer], Cyrano Bergmann */
 
 /** @file readTsa.C
  ** @author Florian Uhlig <f.uhlig@gsi.de>

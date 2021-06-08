@@ -1,7 +1,6 @@
-/** @file CbmRichDigi.cxx
-  * @copyright Copyright (C) 2015-2019 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors slebedev, Andrey Lebedev [committer], Volker Friese **/
+/* Copyright (C) 2015-2019 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: slebedev, Andrey Lebedev [committer], Volker Friese */
 
 /*
  * CbmRichDigi.cxx

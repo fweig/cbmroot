@@ -1,7 +1,6 @@
-/** @file much_seg_sector_mcbm.C
-  * @copyright Copyright (C) 2020 Variable Energy Cyclotron Centre, Kolkata
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors M.Ryzhinskiy m.ryzhinskiy@gsi.de, Vikas Singhal [committer] **/
+/* Copyright (C) 2020 Variable Energy Cyclotron Centre, Kolkata
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: M.Ryzhinskiy m.ryzhinskiy@gsi.de, Vikas Singhal [committer] */
 
 /**
  * Performs segmentation of Much stations based on

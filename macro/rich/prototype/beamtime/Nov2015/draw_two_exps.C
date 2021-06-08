@@ -1,7 +1,6 @@
-/** @file draw_two_exps.C
-  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Egor Ovcharenko [committer] **/
+/* Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Egor Ovcharenko [committer] */
 
 void draw_two_exps(TString filename1, TString filename2, TString histoName1 = "ExponentaBudetTut",
                    TString histoName2 = "ExponentaBudetTut", TString outFolder = "pictures")

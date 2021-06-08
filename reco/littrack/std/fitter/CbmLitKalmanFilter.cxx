@@ -1,7 +1,6 @@
-/** @file CbmLitKalmanFilter.cxx
-  * @copyright Copyright (C) 2007-2017 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [committer], Timur Ablyazimov **/
+/* Copyright (C) 2007-2017 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev [committer], Timur Ablyazimov */
 
 /** CbmLitKalmanFilter.cxx
  *@author A.Lebedev <alebedev@jinr.ru>

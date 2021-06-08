@@ -1,7 +1,6 @@
-/** @file gDpbMessv100.h
-  * @copyright Copyright (C) 2018-2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau [committer] **/
+/* Copyright (C) 2018-2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau [committer] */
 
 #ifndef GDPB_MESS_V1_00_DEF_H
 #define GDPB_MESS_V1_00_DEF_H

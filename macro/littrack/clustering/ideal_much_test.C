@@ -1,7 +1,6 @@
-/** @file ideal_much_test.C
-  * @copyright Copyright (C) 2012 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors kozlov, Andrey Lebedev [committer] **/
+/* Copyright (C) 2012 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: kozlov, Andrey Lebedev [committer] */
 
 /*
  * ideal_much_test.C

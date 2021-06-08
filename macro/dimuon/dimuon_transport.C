@@ -1,7 +1,6 @@
-/** @file dimuon_transport.C
-  * @copyright Copyright (C) 2018-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese, Florian Uhlig [committer], Anna Senger **/
+/* Copyright (C) 2018-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese, Florian Uhlig [committer], Anna Senger */
 
 // --------------------------------------------------------------------------
 //

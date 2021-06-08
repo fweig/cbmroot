@@ -1,7 +1,6 @@
-/** @file CbmRichProjectionProducerTGeo.cxx
-  * @copyright Copyright (C) 2005-2021 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors P.Stolpovsky, Andrey Lebedev [committer], Semen Lebedev **/
+/* Copyright (C) 2005-2021 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: P.Stolpovsky, Andrey Lebedev [committer], Semen Lebedev */
 
 /**
  * \file CbmRichProjectionProducer.cxx

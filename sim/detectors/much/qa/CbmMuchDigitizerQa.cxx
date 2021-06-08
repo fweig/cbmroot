@@ -1,7 +1,6 @@
-/** @file CbmMuchDigitizerQa.cxx
-  * @copyright Copyright (C) 2020-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Dominik Smith [committer], Sergey Gorbunov **/
+/* Copyright (C) 2020-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Dominik Smith [committer], Sergey Gorbunov */
 
 /// \file   CbmMuchDigitizerQa.cxx
 /// \brief  Implementation of the CbmMuchDigitizerQa class

@@ -1,7 +1,6 @@
-/** @file CbmL1MuchTrack.cxx
-  * @copyright Copyright (C) 2007 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Sergey Gorbunov [committer] **/
+/* Copyright (C) 2007 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Sergey Gorbunov [committer] */
 
 #include "CbmL1MuchTrack.h"
 

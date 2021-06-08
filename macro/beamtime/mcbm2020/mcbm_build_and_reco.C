@@ -1,7 +1,6 @@
-/** @file mcbm_build_and_reco.C
-  * @copyright Copyright (C) 2020-2021 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau **/
+/* Copyright (C) 2020-2021 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau */
 
 // --------------------------------------------------------------------------
 //

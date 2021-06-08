@@ -1,7 +1,6 @@
-/** @file CbmLmvmHist.h
-  * @copyright Copyright (C) 2012-2016 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [committer], Elena Lebedeva, Florian Uhlig **/
+/* Copyright (C) 2012-2016 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev [committer], Elena Lebedeva, Florian Uhlig */
 
 #ifndef CBM_LMVM_HIST_H
 #define CBM_LMVM_HIST_H

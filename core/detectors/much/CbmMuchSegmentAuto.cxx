@@ -1,7 +1,6 @@
-/** @file CbmMuchSegmentAuto.cxx
-  * @copyright Copyright (C) 2007-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Mikhail Ryzhinskiy, Florian Uhlig **/
+/* Copyright (C) 2007-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Mikhail Ryzhinskiy, Florian Uhlig */
 
 /** CbmMuchSegmentAuto.cxx
  *@author Mikhail Ryzhinskiy <m.ryzhinskiy@gsi.de>

@@ -1,7 +1,6 @@
-/** @file CbmMuchFindTracks.h
-  * @copyright Copyright (C) 2007-2012 St. Petersburg Polytechnic University, St. Petersburg
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev, Mikhail Ryzhinskiy [committer] **/
+/* Copyright (C) 2007-2012 St. Petersburg Polytechnic University, St. Petersburg
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev, Mikhail Ryzhinskiy [committer] */
 
 /** CbmMuchFindTracks.h
  *@author A.Lebedev <Andrey.Lebedev@gsi.de>

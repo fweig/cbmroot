@@ -1,7 +1,6 @@
-/** @file CbmEvBuildSource.h
-  * @copyright Copyright (C) 2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese [orginator], Florian Uhlig **/
+/* Copyright (C) 2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese [orginator], Florian Uhlig */
 
 // FairSource which reads a time slice and creates events using a simple approach
 // Use the same approach as CbmBuildEventSimple

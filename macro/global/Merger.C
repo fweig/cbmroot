@@ -1,7 +1,6 @@
-/** @file Merger.C
-  * @copyright Copyright (C) 2006-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [committer] **/
+/* Copyright (C) 2006-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Denis Bertini [committer] */
 
 // Macro for merging of STS and TRD tracks and TOF hits
 

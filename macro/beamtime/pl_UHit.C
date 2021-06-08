@@ -1,7 +1,6 @@
-/** @file pl_UHit.C
-  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer] **/
+/* Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer] */
 
 void pl_UHit(Int_t iNSt = 10, Int_t iOpt = 0, Int_t i2D = 0, Int_t i1D = 0, Double_t dXmax = 0., Double_t dXmin = 0.)
 {

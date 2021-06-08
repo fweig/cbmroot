@@ -1,7 +1,6 @@
-/** @file CbmTofHit.h
-  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors E. Cordier, Andrey Lebedev, Florian Uhlig, Denis Bertini [committer], Pierre-Alain Loizeau **/
+/* Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: E. Cordier, Andrey Lebedev, Florian Uhlig, Denis Bertini [committer], Pierre-Alain Loizeau */
 
 /**
  * \file CbmTofHit.h

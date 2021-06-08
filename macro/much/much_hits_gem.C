@@ -1,7 +1,6 @@
-/** @file much_hits_gem.C
-  * @copyright Copyright (C) 2020 Variable Energy Cyclotron Centre, Kolkata
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Vikas Singhal [committer] **/
+/* Copyright (C) 2020 Variable Energy Cyclotron Centre, Kolkata
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Vikas Singhal [committer] */
 
 // flag =0 for sis100 flag =1 for mini cbm geometry
 void much_hits_gem(Int_t flag = 1)

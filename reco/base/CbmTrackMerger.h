@@ -1,7 +1,6 @@
-/** @file CbmTrackMerger.h
-  * @copyright Copyright (C) 2006-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors v.friese@gsi.de, Denis Bertini [committer] **/
+/* Copyright (C) 2006-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: v.friese@gsi.de, Denis Bertini [committer] */
 
 // -------------------------------------------------------------------------
 // -----                     CbmTrackMerger header file                -----

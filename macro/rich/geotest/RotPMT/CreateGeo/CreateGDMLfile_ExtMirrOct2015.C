@@ -1,7 +1,6 @@
-/** @file CreateGDMLfile_ExtMirrOct2015.C
-  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Tariq Mahmoud [committer] **/
+/* Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Tariq Mahmoud [committer] */
 
 #include <fstream>
 #include <iostream>

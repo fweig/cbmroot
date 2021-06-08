@@ -1,7 +1,6 @@
-/** @file global_sim.C
-  * @copyright Copyright (C) 2010-2017 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev, Florian Uhlig **/
+/* Copyright (C) 2010-2017 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev, Florian Uhlig */
 
 /**
  * \file global_sim.C

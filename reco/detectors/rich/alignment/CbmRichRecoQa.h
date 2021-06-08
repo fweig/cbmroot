@@ -1,7 +1,6 @@
-/** @file CbmRichRecoQa.h
-  * @copyright Copyright (C) 2017 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Jordan Bendarouach [committer] **/
+/* Copyright (C) 2017 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Jordan Bendarouach [committer] */
 
 #ifndef CBM_RICH_RECO_QA
 #define CBM_RICH_RECO_QA

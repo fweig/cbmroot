@@ -1,7 +1,6 @@
-/** @file checkGeometryMapping.C
-  * @copyright Copyright (C) 2019-2021 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Adrian Weber, Adrian Amatus Weber [committer] **/
+/* Copyright (C) 2019-2021 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Adrian Weber, Adrian Amatus Weber [committer] */
 
 /** @file RICH Geometry and Mapping checker
  ** @author Adrian Weber <a.weber@gsi.de>

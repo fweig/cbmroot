@@ -1,7 +1,6 @@
-/** @file LxUtils.h
-  * @copyright Copyright (C) 2014 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Timur Ablyazimov [committer] **/
+/* Copyright (C) 2014 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Timur Ablyazimov [committer] */
 
 #ifndef LXUTILS_INCLUDED
 #define LXUTILS_INCLUDED

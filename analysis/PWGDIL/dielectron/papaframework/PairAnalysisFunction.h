@@ -1,7 +1,6 @@
-/** @file PairAnalysisFunction.h
-  * @copyright Copyright (C) 2015-2016 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Julian Book [committer] **/
+/* Copyright (C) 2015-2016 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Julian Book [committer] */
 
 #ifndef PAIRANALYSISFUNCTION_H
 #define PAIRANALYSISFUNCTION_H

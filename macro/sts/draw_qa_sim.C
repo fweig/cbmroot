@@ -1,7 +1,6 @@
-/** @file draw_qa_sim.C
-  * @copyright Copyright (C) 2007 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Radoslaw Karabowicz [committer] **/
+/* Copyright (C) 2007 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Radoslaw Karabowicz [committer] */
 
 void draw_qa_sim(TString inFileName = "sim.qa.root")
 {

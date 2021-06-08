@@ -1,7 +1,6 @@
-/** @file CbmMcbm2018UnpackerUtilRich.h
-  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Egor Ovcharenko [committer] **/
+/* Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Egor Ovcharenko [committer] */
 
 #ifndef CbmMcbm2018UnpackerUtilRich_H
 #define CbmMcbm2018UnpackerUtilRich_H

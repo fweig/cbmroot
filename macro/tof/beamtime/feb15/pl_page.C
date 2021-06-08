@@ -1,7 +1,6 @@
-/** @file pl_page.C
-  * @copyright Copyright (C) 2015 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2015 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 void pl_page(Int_t iSel = 0, Int_t SmT = 0, Int_t iSm = 0)
 {

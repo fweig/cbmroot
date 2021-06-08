@@ -1,7 +1,6 @@
-/** @file CbmBuildEventsSimple.h
-  * @copyright Copyright (C) 2014-2017 Institute for Theoretical and Experimental Physics named by A.I. Alikhanov of National Research Centre "Kurchatov Institute" (ITEP) in Moscow, Russia, Moscow
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors //Dr.Sys, Volker Friese, Mikhail Prokudin [committer] **/
+/* Copyright (C) 2014-2017 Institute for Theoretical and Experimental Physics named by A.I. Alikhanov of National Research Centre "Kurchatov Institute" (ITEP) in Moscow, Russia, Moscow
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: //Dr.Sys, Volker Friese, Mikhail Prokudin [committer] */
 
 /** @file CbmBuildEventsSimple.h
  ** @author //Dr.Sys <Mikhail.Prokudin@cern.ch>

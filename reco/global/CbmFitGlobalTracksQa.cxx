@@ -1,7 +1,6 @@
-/** @file CbmFitGlobalTracksQa.cxx
-  * @copyright Copyright (C) 2006-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors D. Kresan, Denis Bertini [committer], Florian Uhlig **/
+/* Copyright (C) 2006-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: D. Kresan, Denis Bertini [committer], Florian Uhlig */
 
 //-------------------------------------------------------------------------
 //-----                     CbmFitGlobalTracksQa                      -----

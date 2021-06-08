@@ -1,7 +1,6 @@
-/** @file much_histo_style.C
-  * @copyright Copyright (C) 2008-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Evgeny Kryshen, Volker Friese [committer] **/
+/* Copyright (C) 2008-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Evgeny Kryshen, Volker Friese [committer] */
 
 #include "TStyle.h"
 

@@ -1,7 +1,6 @@
-/** @file runHitBuilderTof.cxx
-  * @copyright Copyright (C) 2018-2019 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+/* Copyright (C) 2018-2019 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [orginator] */
 
 #include "CbmDeviceHitBuilderTof.h"
 

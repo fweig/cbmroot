@@ -1,7 +1,6 @@
-/** @file Create_TRD_Geometry_v15b_3e.C
-  * @copyright Copyright (C) 2015-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors David Emschermann [committer] **/
+/* Copyright (C) 2015-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: David Emschermann [committer] */
 
 ///
 /// \file Create_TRD_Geometry_v15a.C

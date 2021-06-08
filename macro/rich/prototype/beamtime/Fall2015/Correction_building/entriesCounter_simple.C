@@ -1,7 +1,6 @@
-/** @file entriesCounter_simple.C
-  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Egor Ovcharenko [orginator] **/
+/* Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Egor Ovcharenko [orginator] */
 
 void entriesCounter_simple(TString filename = "alphas.root", TString picturesFolder = "pictures")
 {

@@ -1,7 +1,6 @@
-/** @file CbmMuchSegmentSector.h
-  * @copyright Copyright (C) 2012-2020 Petersburg Nuclear Physics Institute named by B.P.Konstantinov of National Research Centre "Kurchatov Institute", Gatchina
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Vikas Singhal, Evgeny Kryshen [committer], Florian Uhlig **/
+/* Copyright (C) 2012-2020 Petersburg Nuclear Physics Institute named by B.P.Konstantinov of National Research Centre "Kurchatov Institute", Gatchina
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Vikas Singhal, Evgeny Kryshen [committer], Florian Uhlig */
 
 /** CbmMuchSegmentSector.h
  *@author Vikas Singhal <vikas@vecc.gov.in>

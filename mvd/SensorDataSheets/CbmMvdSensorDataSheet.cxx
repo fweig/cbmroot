@@ -1,7 +1,6 @@
-/** @file CbmMvdSensorDataSheet.cxx
-  * @copyright Copyright (C) 2011-2016 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors M. Deveaux, Philipp Sitzmann [committer], Florian Uhlig **/
+/* Copyright (C) 2011-2016 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: M. Deveaux, Philipp Sitzmann [committer], Florian Uhlig */
 
 // -------------------------------------------------------------------------
 // -----                     CbmMvdSensorDataSheet source file                  -----

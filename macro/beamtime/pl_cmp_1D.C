@@ -1,7 +1,6 @@
-/** @file pl_cmp_1D.C
-  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer] **/
+/* Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer] */
 
 void pl_cmp_1D(Int_t iOpt      = 1,
                TString fNameMC = "/home/nh/KRONOS/mc/mcbm/"

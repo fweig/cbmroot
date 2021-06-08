@@ -1,7 +1,6 @@
-/** @file CbmTofCosmicClusterizer.h
-  * @copyright Copyright (C) 2017-2020 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors nh adopted from CbmTofTestBeamClusterizer.h, Norbert Herrmann [committer] **/
+/* Copyright (C) 2017-2020 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: nh adopted from CbmTofTestBeamClusterizer.h, Norbert Herrmann [committer] */
 
 /** @file CbmTofCosmicClusterizer.h
  ** @author nh adopted from CbmTofTestBeamClusterizer.h

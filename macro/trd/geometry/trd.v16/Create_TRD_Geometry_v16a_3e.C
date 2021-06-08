@@ -1,7 +1,6 @@
-/** @file Create_TRD_Geometry_v16a_3e.C
-  * @copyright Copyright (C) 2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer] **/
+/* Copyright (C) 2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer] */
 
 ///
 /// \file Create_TRD_Geometry_v16a.C

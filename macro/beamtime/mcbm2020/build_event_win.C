@@ -1,7 +1,6 @@
-/** @file build_event_win.C
-  * @copyright Copyright (C) 2020-2021 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau **/
+/* Copyright (C) 2020-2021 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau */
 
 /// FIXME: Disable clang formatting to keep easy parameters overview
 /* clang-format off */

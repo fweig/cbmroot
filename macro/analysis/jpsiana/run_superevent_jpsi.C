@@ -1,7 +1,6 @@
-/** @file run_superevent_jpsi.C
-  * @copyright Copyright (C) 2015 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Adrian Amatus Weber, Semen Lebedev [committer] **/
+/* Copyright (C) 2015 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Adrian Amatus Weber, Semen Lebedev [committer] */
 
 #include "Riostream.h"
 

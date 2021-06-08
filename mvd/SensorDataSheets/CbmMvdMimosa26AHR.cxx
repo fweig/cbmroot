@@ -1,7 +1,6 @@
-/** @file CbmMvdMimosa26AHR.cxx
-  * @copyright Copyright (C) 2014-2015 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Sitzmann [committer] **/
+/* Copyright (C) 2014-2015 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Philipp Sitzmann [committer] */
 
 // -------------------------------------------------------------------------
 // -----                     CbmMvdMimosa26AHR source file             -----

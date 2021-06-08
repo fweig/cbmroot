@@ -1,7 +1,6 @@
-/** @file CbmRichDigitizer.cxx
-  * @copyright Copyright (C) 2015-2020 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [committer], Volker Friese, Florian Uhlig, Semen Lebedev **/
+/* Copyright (C) 2015-2020 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev [committer], Volker Friese, Florian Uhlig, Semen Lebedev */
 
 /**
 * \file CbmRichDigitizer.cxx

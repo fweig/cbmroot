@@ -1,7 +1,6 @@
-/** @file CbmL1Performance.cxx
-  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors I.Kisel,  S.Gorbunov, Igor Kulakov, Valentina Akishina, Grigory Kozlov **/
+/* Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: I.Kisel,  S.Gorbunov, Igor Kulakov, Valentina Akishina, Grigory Kozlov */
 
 /*
  *====================================================================

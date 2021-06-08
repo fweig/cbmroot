@@ -1,7 +1,6 @@
-/** @file CbmPsdModulesConverter.h
-  * @copyright Copyright (C) 2020-2021 Physikalisches Institut, Eberhard Karls Universitaet Tuebingen, Tuebingen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Viktor Klochkov [committer] **/
+/* Copyright (C) 2020-2021 Physikalisches Institut, Eberhard Karls Universitaet Tuebingen, Tuebingen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Viktor Klochkov [committer] */
 
 #ifndef ANALYSIS_TREE_PSDMODULESCONVERTER_H_
 #define ANALYSIS_TREE_PSDMODULESCONVERTER_H_

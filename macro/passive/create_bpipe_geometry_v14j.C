@@ -1,7 +1,6 @@
-/** @file create_bpipe_geometry_v14j.C
-  * @copyright Copyright (C) 2014-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Chernogorov, David Emschermann [committer] **/
+/* Copyright (C) 2014-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Chernogorov, David Emschermann [committer] */
 
 /******************************************************************************
  ** Creation of beam pipe geometry in ROOT format (TGeo).

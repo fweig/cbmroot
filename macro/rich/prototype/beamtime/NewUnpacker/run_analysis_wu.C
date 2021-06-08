@@ -1,7 +1,6 @@
-/** @file run_analysis_wu.C
-  * @copyright Copyright (C) 2015-2020 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Egor Ovcharenko [committer] **/
+/* Copyright (C) 2015-2020 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Egor Ovcharenko [committer] */
 
 enum enu_calibMode
 {

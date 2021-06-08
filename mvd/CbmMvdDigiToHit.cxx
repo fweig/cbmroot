@@ -1,7 +1,6 @@
-/** @file CbmMvdDigiToHit.cxx
-  * @copyright Copyright (C) 2019 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig **/
+/* Copyright (C) 2019 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig */
 
 // -------------------------------------------------------------------------
 // -----                    CbmMvdDigiToHit source file                -----

@@ -1,7 +1,6 @@
-/** @file run_reco_analysis.C
-  * @copyright Copyright (C) 2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Tim Fauerbach, Florian Uhlig [committer] **/
+/* Copyright (C) 2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Tim Fauerbach, Florian Uhlig [committer] */
 
 /** @file run_reco_analysis.C
  ** @author Tim Fauerbach

@@ -1,7 +1,6 @@
-/** @file Run_Ana_GeoOpt_Batch.C
-  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Tariq Mahmoud [committer] **/
+/* Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Tariq Mahmoud [committer] */
 
 void Run_Ana_GeoOpt_Batch(Int_t nEvents = 10)
 {

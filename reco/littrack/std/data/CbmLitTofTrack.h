@@ -1,7 +1,6 @@
-/** @file CbmLitTofTrack.h
-  * @copyright Copyright (C) 2013-2017 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors andrey, Andrey Lebedev [committer] **/
+/* Copyright (C) 2013-2017 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: andrey, Andrey Lebedev [committer] */
 
 /*
  * CbmLitTofTrack.h

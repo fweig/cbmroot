@@ -1,7 +1,6 @@
-/** @file CalculateEfficincy.C
-  * @copyright Copyright (C) 2014-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Maxim Zyzak [committer] **/
+/* Copyright (C) 2014-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Maxim Zyzak [committer] */
 
 // #include "$VMCWORKDIR/KF/KFParticleParformance/KFPartEfficiencies.h"
 

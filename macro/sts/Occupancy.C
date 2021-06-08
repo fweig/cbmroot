@@ -1,7 +1,6 @@
-/** @file Occupancy.C
-  * @copyright Copyright (C) 2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Anna Kotynia [committer] **/
+/* Copyright (C) 2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Anna Kotynia [committer] */
 
 // example.C
 #include <TCanvas.h>

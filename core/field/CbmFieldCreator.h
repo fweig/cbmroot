@@ -1,7 +1,6 @@
-/** @file CbmFieldCreator.h
-  * @copyright Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig, Mohammad Al-Turany [committer] **/
+/* Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig, Mohammad Al-Turany [committer] */
 
 // -------------------------------------------------------------------------
 // -----                    CbmFieldCreator header file                  -----

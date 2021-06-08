@@ -1,7 +1,6 @@
-/** @file pl_ana_DTXY.C
-  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer] **/
+/* Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer] */
 
 void pl_ana_DTXY(Int_t iDut = 901, Int_t NewNbinsX = 3, Int_t NewNbinsY = 3, Int_t iOpt = 0)
 {

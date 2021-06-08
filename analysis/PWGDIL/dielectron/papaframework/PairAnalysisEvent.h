@@ -1,7 +1,6 @@
-/** @file PairAnalysisEvent.h
-  * @copyright Copyright (C) 2015-2017 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Julian Book [committer] **/
+/* Copyright (C) 2015-2017 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Julian Book [committer] */
 
 #ifndef PAIRANALYSISEVENT_H
 #define PAIRANALYSISEVENT_H

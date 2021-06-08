@@ -1,7 +1,6 @@
-/** @file CbmTrdPads.h
-  * @copyright Copyright (C) 2010-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Alexandru Bercuci, David Emschermann [committer] **/
+/* Copyright (C) 2010-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Alexandru Bercuci, David Emschermann [committer] */
 
 //
 //   TRD pad layout for geometry v17n

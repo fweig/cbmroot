@@ -1,7 +1,6 @@
-/** @file mvd_transDelta.C
-  * @copyright Copyright (C) 2015-2016 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Sitzmann [committer] **/
+/* Copyright (C) 2015-2016 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Philipp Sitzmann [committer] */
 
 // --------------------------------------------------------------
 //

@@ -1,7 +1,6 @@
-/** @file radlength_ana.C
-  * @copyright Copyright (C) 2013-2021 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig, Andrey Lebedev [committer] **/
+/* Copyright (C) 2013-2021 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig, Andrey Lebedev [committer] */
 
 /**
  * \file radlength_ana.C

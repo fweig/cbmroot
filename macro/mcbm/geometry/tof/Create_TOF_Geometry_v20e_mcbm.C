@@ -1,7 +1,6 @@
-/** @file Create_TOF_Geometry_v20e_mcbm.C
-  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors David Emschermann [committer] **/
+/* Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: David Emschermann [committer] */
 
 ///
 /// \file Create_TOF_Geometry_v20e_mcbm.C

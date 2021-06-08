@@ -1,7 +1,6 @@
-/** @file CbmRichMatchRings.cxx
-  * @copyright Copyright (C) 2006-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Supriya Das, Semen Lebedev, Denis Bertini [committer] **/
+/* Copyright (C) 2006-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Supriya Das, Semen Lebedev, Denis Bertini [committer] */
 
 /**
 * \file CbmRichMatchRings.cxx

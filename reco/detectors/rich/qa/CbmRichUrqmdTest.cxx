@@ -1,7 +1,6 @@
-/** @file CbmRichUrqmdTest.cxx
-  * @copyright Copyright (C) 2012-2020 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [committer], Andrey Lebedev **/
+/* Copyright (C) 2012-2020 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev [committer], Andrey Lebedev */
 
 /**
  * \file CbmRichUrqmdTest.cxx

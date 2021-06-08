@@ -1,7 +1,6 @@
-/** @file CbmRichHitProducer.cxx
-  * @copyright Copyright (C) 2004-2021 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors B. Polichtchouk, Andrey Lebedev [committer], Volker Friese **/
+/* Copyright (C) 2004-2021 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: B. Polichtchouk, Andrey Lebedev [committer], Volker Friese */
 
 /**
  * \file CbmRichHitProducer.cxx

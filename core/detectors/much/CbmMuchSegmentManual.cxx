@@ -1,7 +1,6 @@
-/** @file CbmMuchSegmentManual.cxx
-  * @copyright Copyright (C) 2009-2021 St. Petersburg Polytechnic University, St. Petersburg
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Mikhail Ryzhinskiy [committer] **/
+/* Copyright (C) 2009-2021 St. Petersburg Polytechnic University, St. Petersburg
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Mikhail Ryzhinskiy [committer] */
 
 /** CbmMuchSegmentManual.cxx
  *@author Mikhail Ryzhinskiy <m.ryzhinskiy@gsi.de>

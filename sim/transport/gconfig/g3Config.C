@@ -1,7 +1,6 @@
-/** @file g3Config.C
-  * @copyright Copyright (C) 2005-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [committer], Mohammad Al-Turany, Florian Uhlig **/
+/* Copyright (C) 2005-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Denis Bertini [committer], Mohammad Al-Turany, Florian Uhlig */
 
 // Configuration macro for Geant3 VirtualMC
 

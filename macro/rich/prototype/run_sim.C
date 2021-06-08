@@ -1,7 +1,6 @@
-/** @file run_sim.C
-  * @copyright Copyright (C) 2011-2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev, Dmytro Kresan [committer] **/
+/* Copyright (C) 2011-2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev, Dmytro Kresan [committer] */
 
 void run_sim(Int_t nEvents = 100000)
 {

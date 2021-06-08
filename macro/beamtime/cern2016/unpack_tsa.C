@@ -1,7 +1,6 @@
-/** @file unpack_tsa.C
-  * @copyright Copyright (C) 2016 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig, Norbert Herrmann [committer] **/
+/* Copyright (C) 2016 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig, Norbert Herrmann [committer] */
 
 /** @file FHodoLabSetup
  ** @author Florian Uhlig <f.uhlig@gsi.de>

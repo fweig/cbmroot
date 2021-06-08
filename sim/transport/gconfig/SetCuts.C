@@ -1,7 +1,6 @@
-/** @file SetCuts.C
-  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer] **/
+/* Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer] */
 
 /** Configuration macro for setting common cuts and processes for both G3 and G4 (M. Al-Turany 14.11.2007)
    specific cuts and processes to g3 or g4 should be set in the g3Config.C or g4Config.C

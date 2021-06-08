@@ -1,7 +1,6 @@
-/** @file generate_DrellYan_8GeV.C
-  * @copyright Copyright (C) 2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese [committer] **/
+/* Copyright (C) 2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese [committer] */
 
 /*
 MC code for generation of Drell-Yan dimuons and their decay into single muons

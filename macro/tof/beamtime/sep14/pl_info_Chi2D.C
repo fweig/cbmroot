@@ -1,7 +1,6 @@
-/** @file pl_info_Chi2D.C
-  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [committer] **/
+/* Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Christian Simon [committer] */
 
 void pl_info_Chi2D(char* cHist = "hChiDT04D4best", Int_t iDBin = 1)
 {

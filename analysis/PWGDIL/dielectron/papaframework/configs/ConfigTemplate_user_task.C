@@ -1,7 +1,6 @@
-/** @file ConfigTemplate_user_task.C
-  * @copyright Copyright (C) 2015-2016 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Julian Book [committer] **/
+/* Copyright (C) 2015-2016 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Julian Book [committer] */
 
 // \brief A template task configuration macro with example and explanations
 // This macro should represent a starting point for the usage of the

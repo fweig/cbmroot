@@ -1,7 +1,6 @@
-/** @file create_hodogeo_v19a.C
-  * @copyright Copyright (C) 2014-2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau [committer] **/
+/* Copyright (C) 2014-2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau [committer] */
 
 /******************************************************************************
  ** Creation of Hodoscopes geometry in ROOT format (TGeo).

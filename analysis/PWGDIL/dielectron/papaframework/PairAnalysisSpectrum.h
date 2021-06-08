@@ -1,7 +1,6 @@
-/** @file PairAnalysisSpectrum.h
-  * @copyright Copyright (C) 2016-2019 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Julian Book [committer] **/
+/* Copyright (C) 2016-2019 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Julian Book [committer] */
 
 #ifndef PAIRANALYSISSPECTRUM_H
 #define PAIRANALYSISSPECTRUM_H

@@ -1,7 +1,6 @@
-/** @file create_MUCH_geometry_v17b_jpsi.C
-  * @copyright Copyright (C) 2017-2018 Variable Energy Cyclotron Centre, Kolkata
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Partha Pratim Bhaduri [committer] **/
+/* Copyright (C) 2017-2018 Variable Energy Cyclotron Centre, Kolkata
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Partha Pratim Bhaduri [committer] */
 
 //
 /// \file create_MUCH_geometry_v17b.C

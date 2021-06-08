@@ -1,7 +1,6 @@
-/** @file L1Track.h
-  * @copyright Copyright (C) 2010-2017 Frankfurt Institute for Advanced Studies, Goethe-Universitaet Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors I.Kisel,  S.Gorbunov, Maxim Zyzak, Igor Kulakov [committer] **/
+/* Copyright (C) 2010-2017 Frankfurt Institute for Advanced Studies, Goethe-Universitaet Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: I.Kisel,  S.Gorbunov, Maxim Zyzak, Igor Kulakov [committer] */
 
 /*
  *====================================================================

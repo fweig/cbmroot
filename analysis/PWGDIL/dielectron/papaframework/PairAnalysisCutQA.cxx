@@ -1,7 +1,6 @@
-/** @file PairAnalysisCutQA.cxx
-  * @copyright Copyright (C) 2015-2020 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Julian Book [committer] **/
+/* Copyright (C) 2015-2020 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Julian Book [committer] */
 
 /*   Allow to monitor how many tracks, pairs, events pass the selection criterion 
    in any of the cuts added to the corresponding filters. Further it automatically

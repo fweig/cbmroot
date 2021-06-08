@@ -1,7 +1,6 @@
-/** @file CbmRichRingSelectAnn.h
-  * @copyright Copyright (C) 2006-2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev, Denis Bertini [committer] **/
+/* Copyright (C) 2006-2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev, Denis Bertini [committer] */
 
 /**
 * \file CbmRichRingSelectAnn.h

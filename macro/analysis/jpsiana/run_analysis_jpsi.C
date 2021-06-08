@@ -1,7 +1,6 @@
-/** @file run_analysis_jpsi.C
-  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Elena Lebedeva [committer], Semen Lebedev **/
+/* Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Elena Lebedeva [committer], Semen Lebedev */
 
 void run_analysis_jpsi(Int_t nEvents = 1000)
 {

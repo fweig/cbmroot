@@ -1,7 +1,6 @@
-/** @file PParticle.h
-  * @copyright Copyright (C) 1998-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Marios A. Kagarlis, Florian Uhlig [committer] **/
+/* Copyright (C) 1998-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Marios A. Kagarlis, Florian Uhlig [committer] */
 
 // Author: Marios A. Kagarlis
 // Written: 15.11.98

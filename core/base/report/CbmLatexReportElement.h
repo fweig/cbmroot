@@ -1,7 +1,6 @@
-/** @file CbmLatexReportElement.h
-  * @copyright Copyright (C) 2011-2020 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev, Andrey Lebedev [committer], Florian Uhlig **/
+/* Copyright (C) 2011-2020 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev, Andrey Lebedev [committer], Florian Uhlig */
 
 /**
  * \file CbmLatexReportElement.h

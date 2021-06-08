@@ -1,7 +1,6 @@
-/** @file create_platform_v18d.C
-  * @copyright Copyright (C) 2013-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese, Florian Uhlig [committer] **/
+/* Copyright (C) 2013-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese, Florian Uhlig [committer] */
 
 /******************************************************************************
  ** Creation of beam pipe geometry in ROOT format (TGeo).

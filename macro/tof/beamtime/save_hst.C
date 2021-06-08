@@ -1,7 +1,6 @@
-/** @file save_hst.C
-  * @copyright Copyright (C) 2016-2017 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer], Christian Simon **/
+/* Copyright (C) 2016-2017 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer], Christian Simon */
 
 void save_hst(TString cstr = "hst/default.hst.root")
 {

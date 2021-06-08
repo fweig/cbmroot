@@ -1,7 +1,6 @@
-/** @file CbmRichRingFinderIdeal.h
-  * @copyright Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Supriya Das, Andrey Lebedev, Semen Lebedev, Denis Bertini [committer] **/
+/* Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Supriya Das, Andrey Lebedev, Semen Lebedev, Denis Bertini [committer] */
 
 /**
  * \file CbmRichRingFinderIdeal.h

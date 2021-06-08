@@ -1,7 +1,6 @@
-/** @file L1AlgoPulls.h
-  * @copyright Copyright (C) 2010-2017 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Igor Kulakov [committer] **/
+/* Copyright (C) 2010-2017 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Igor Kulakov [committer] */
 
 #ifndef L1AlgoPulls_h
 #define L1AlgoPulls_h

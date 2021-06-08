@@ -1,7 +1,6 @@
-/** @file CbmTrdAddress.cxx
-  * @copyright Copyright (C) 2013 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors F. Uhlig, Andrey Lebedev [committer] **/
+/* Copyright (C) 2013 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: F. Uhlig, Andrey Lebedev [committer] */
 
 /**
  * \file CbmTrdAddress.cxx

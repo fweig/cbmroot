@@ -1,7 +1,6 @@
-/** @file CbmRichRingFinderHough.h
-  * @copyright Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev, Semen Lebedev **/
+/* Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev, Semen Lebedev */
 
 /**
 * \file CbmRichRingFinderHough.h

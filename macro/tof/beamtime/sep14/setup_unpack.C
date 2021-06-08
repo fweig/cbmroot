@@ -1,7 +1,6 @@
-/** @file setup_unpack.C
-  * @copyright Copyright (C) 2014-2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors N. Herrmann, Christian Simon [committer] **/
+/* Copyright (C) 2014-2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: N. Herrmann, Christian Simon [committer] */
 
 // -----------------------------------------------------------------------------
 // ----- setup_analysis FairRoot macro                                     -----

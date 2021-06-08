@@ -1,7 +1,6 @@
-/** @file PStdData.h
-  * @copyright Copyright (C) 1999-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors M.A. Kagarlis, Florian Uhlig [committer] **/
+/* Copyright (C) 1999-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: M.A. Kagarlis, Florian Uhlig [committer] */
 
 // Author: M.A. Kagarlis
 // Written: 31.01.99

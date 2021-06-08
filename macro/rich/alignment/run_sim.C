@@ -1,7 +1,6 @@
-/** @file run_sim.C
-  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Jordan Bendarouach [committer] **/
+/* Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Jordan Bendarouach [committer] */
 
 void run_sim(Int_t nEvents = 5000, TString Rot = "5")
 // !!! DEFINE NEW ROTATION ANGLE IN THE GEO FILE AND RUN IMPORT_EXPORT_GEO MACRO BEFORE RUNNING RUN_SIM !!!

@@ -1,7 +1,6 @@
-/** @file run_digi.C
-  * @copyright Copyright (C) 2020 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [committer] **/
+/* Copyright (C) 2020 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev [committer] */
 
 void run_digi(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/mc.2.root",
               const string& parFile  = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/param.2.root",

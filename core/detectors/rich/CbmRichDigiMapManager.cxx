@@ -1,7 +1,6 @@
-/** @file CbmRichDigiMapManager.cxx
-  * @copyright Copyright (C) 2015-2020 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors slebedev, Adrian Amatus Weber, Semen Lebedev, Andrey Lebedev [committer], Florian Uhlig **/
+/* Copyright (C) 2015-2020 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: slebedev, Adrian Amatus Weber, Semen Lebedev, Andrey Lebedev [committer], Florian Uhlig */
 
 /*
  * CbmRichDigiMapManager.cxx

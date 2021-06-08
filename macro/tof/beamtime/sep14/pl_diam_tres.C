@@ -1,7 +1,6 @@
-/** @file pl_diam_tres.C
-  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [committer] **/
+/* Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Christian Simon [committer] */
 
 void pl_diam_tres(UInt_t uTdcNumber1 = 32, UInt_t uTdcNumber2 = 33)
 {

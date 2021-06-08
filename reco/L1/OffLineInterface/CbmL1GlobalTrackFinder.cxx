@@ -1,7 +1,6 @@
-/** @file CbmL1GlobalTrackFinder.cxx
-  * @copyright Copyright (C) 2019-2020 IKF-UFra, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Valentina Akishina [committer] **/
+/* Copyright (C) 2019-2020 IKF-UFra, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Valentina Akishina [committer] */
 
 /*
  *====================================================================

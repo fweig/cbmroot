@@ -1,7 +1,6 @@
-/** @file run_rich_sim_tb.C
-  * @copyright Copyright (C) 2017-2018 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [committer] **/
+/* Copyright (C) 2017-2018 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev [committer] */
 
 #include <stdio.h>
 

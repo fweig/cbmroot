@@ -1,7 +1,6 @@
-/** @file PlotLongRangeDate.C
-  * @copyright Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau [committer] **/
+/* Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau [committer] */
 
 Bool_t PlotLongRangeDate(UInt_t uGdpbSel = 0, UInt_t uFeetSel = 0, Int_t dateIn = 20170510, Int_t timeIn = 1648,
                          TString sInFileName = "data/test.root", Int_t iBinSizeMin = 1, UInt_t uNbGdpb = 4,

@@ -1,7 +1,6 @@
-/** @file ana_hits.C
-  * @copyright Copyright (C) 2016-2017 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2016-2017 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 void ana_hits(Int_t nEvents = 10, Int_t iSel = 1, Int_t iGenCor = 1, TString cFileId = "Cern", TString cSet = "345",
               Int_t iSel2 = 0, Int_t iTrackingSetup = 0, Double_t dScalFac = 1.)

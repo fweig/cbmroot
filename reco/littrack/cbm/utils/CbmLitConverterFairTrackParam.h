@@ -1,7 +1,6 @@
-/** @file CbmLitConverterFairTrackParam.h
-  * @copyright Copyright (C) 2016-2017 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [committer], Timur Ablyazimov **/
+/* Copyright (C) 2016-2017 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev [committer], Timur Ablyazimov */
 
 #ifndef CBMLITCONVERTERFAIRTRACKPARAM_H_
 #define CBMLITCONVERTERFAIRTRACKPARAM_H_

@@ -1,7 +1,6 @@
-/** @file global_phys.C
-  * @copyright Copyright (C) 2013 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2013 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 void global_phys(Int_t nEvents = 10, Int_t seed = 555)
 {

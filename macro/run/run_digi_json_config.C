@@ -1,7 +1,6 @@
-/** @file run_digi_json_config.C
-  * @copyright Copyright (C) 2020-2021 National Research Nuclear University MEPhI (Moscow Engineering Physics Institute), Moscow
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Oleg Golosov [committer] **/
+/* Copyright (C) 2020-2021 National Research Nuclear University MEPhI (Moscow Engineering Physics Institute), Moscow
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Oleg Golosov [committer] */
 
 /** @file run_digi_json_config.C
  ** @author Oleg Golosov <oleg.golosov@gmail.com>

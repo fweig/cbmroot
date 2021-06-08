@@ -1,7 +1,6 @@
-/** @file CbmRichMCbmQa.h
-  * @copyright Copyright (C) 2017-2020 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev, Gregor Pitsch [committer] **/
+/* Copyright (C) 2017-2020 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev, Gregor Pitsch [committer] */
 
 #ifndef MCBM_RICH_QA
 #define MCBM_RICH_QA

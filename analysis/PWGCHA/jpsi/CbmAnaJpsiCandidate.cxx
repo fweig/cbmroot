@@ -1,7 +1,6 @@
-/** @file CbmAnaJpsiCandidate.cxx
-  * @copyright Copyright (C) 2015 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors slebedev, Semen Lebedev [committer] **/
+/* Copyright (C) 2015 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: slebedev, Semen Lebedev [committer] */
 
 /*
  * CbmAnaJpsiCandidate.cxx

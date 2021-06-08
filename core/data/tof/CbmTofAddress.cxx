@@ -1,7 +1,6 @@
-/** @file CbmTofAddress.cxx
-  * @copyright Copyright (C) 2013-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau, Florian Uhlig [committer], Norbert Herrmann **/
+/* Copyright (C) 2013-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau, Florian Uhlig [committer], Norbert Herrmann */
 
 /** @file CbmTofAddress.cxx
  ** @author Pierre-Alain Loizeau <loizeau@physi.uni-heidelberg.de>

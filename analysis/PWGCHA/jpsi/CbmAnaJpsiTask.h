@@ -1,7 +1,6 @@
-/** @file CbmAnaJpsiTask.h
-  * @copyright Copyright (C) 2015-2017 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev, Adrian Amatus Weber, Elena Lebedeva [committer] **/
+/* Copyright (C) 2015-2017 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev, Adrian Amatus Weber, Elena Lebedeva [committer] */
 
 #ifndef CBMJPSIANATASK
 #define CBMJPSIANATASK

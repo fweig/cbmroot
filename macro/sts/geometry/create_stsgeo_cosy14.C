@@ -1,7 +1,6 @@
-/** @file create_stsgeo_cosy14.C
-  * @copyright Copyright (C) 2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese [committer] **/
+/* Copyright (C) 2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese [committer] */
 
 /******************************************************************************
  ** Creation of STS geometry in ROOT format (TGeo).

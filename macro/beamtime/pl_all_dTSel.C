@@ -1,7 +1,6 @@
-/** @file pl_all_dTSel.C
-  * @copyright Copyright (C) 2016-2017 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2016-2017 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 void pl_all_dTSel(Int_t iNSel = 2)
 {

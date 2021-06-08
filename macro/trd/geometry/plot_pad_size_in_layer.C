@@ -1,7 +1,6 @@
-/** @file plot_pad_size_in_layer.C
-  * @copyright Copyright (C) 2012-2015 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors David Emschermann, Cyrano Bergmann [committer] **/
+/* Copyright (C) 2012-2015 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: David Emschermann, Cyrano Bergmann [committer] */
 
 //
 //  plot pad size of layers in cm2 in png files

@@ -1,7 +1,6 @@
-/** @file CbmGeoCave.h
-  * @copyright Copyright (C) 2006-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [committer], Florian Uhlig **/
+/* Copyright (C) 2006-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Denis Bertini [committer], Florian Uhlig */
 
 #ifndef CBMGEOCAVE_H
 #define CBMGEOCAVE_H

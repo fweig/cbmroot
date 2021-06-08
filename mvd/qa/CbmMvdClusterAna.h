@@ -1,7 +1,6 @@
-/** @file CbmMvdClusterAna.h
-  * @copyright Copyright (C) 2015-2017 IKF-UFrac
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Samir Amar-Youcef [committer] **/
+/* Copyright (C) 2015-2017 IKF-UFrac
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Samir Amar-Youcef [committer] */
 
 // -------------------------------------------------------------------------
 // -----              CbmMvdClusterAna  header file                    -----

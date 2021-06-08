@@ -1,7 +1,6 @@
-/** @file CbmRichTestSim.C
-  * @copyright Copyright (C) 2006-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [committer] **/
+/* Copyright (C) 2006-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Denis Bertini [committer] */
 
 /***************************************************************
 * $Id: CbmRichTestSim.C,v 1.5 2006/09/15 12:50:53 turany Exp $

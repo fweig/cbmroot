@@ -1,7 +1,6 @@
-/** @file CbmStack.h
-  * @copyright Copyright (C) 2009-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors D.Bertini, Florian Uhlig [committer], Volker Friese **/
+/* Copyright (C) 2009-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: D.Bertini, Florian Uhlig [committer], Volker Friese */
 
 // -------------------------------------------------------------------------
 // -----                       CbmStack header file                    -----

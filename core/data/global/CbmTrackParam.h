@@ -1,7 +1,6 @@
-/** @file CbmTrackParam.h
-  * @copyright Copyright (C) 2019-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors T.Ablyazimov, Florian Uhlig [committer] **/
+/* Copyright (C) 2019-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: T.Ablyazimov, Florian Uhlig [committer] */
 
 // -------------------------------------------------------------------------
 // -----                    CbmTrackParam header file                 -----

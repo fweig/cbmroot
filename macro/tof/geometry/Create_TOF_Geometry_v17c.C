@@ -1,7 +1,6 @@
-/** @file Create_TOF_Geometry_v17c.C
-  * @copyright Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau [committer] **/
+/* Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau [committer] */
 
 ///
 /// \file Create_TOF_Geometry_v13_4x.C

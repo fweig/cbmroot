@@ -1,7 +1,6 @@
-/** @file pl_all_DigiMul.C
-  * @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer] **/
+/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer] */
 
 void pl_all_DigiMul(Int_t iNDet = 4, Double_t dDTthr = 2., Int_t iOpt = 0)
 {

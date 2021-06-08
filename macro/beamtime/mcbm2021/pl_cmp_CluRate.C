@@ -1,7 +1,6 @@
-/** @file pl_cmp_CluRate.C
-  * @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer] **/
+/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer] */
 
 void pl_cmp_CluRate(Int_t iNSt = 3, Long_t iSet = 900032500, Int_t iOpt = 0, Double_t Tstart = 0., Double_t Tend = 10.,
                     Int_t iMode = 1)

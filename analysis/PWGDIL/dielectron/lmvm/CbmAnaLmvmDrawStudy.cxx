@@ -1,7 +1,6 @@
-/** @file CbmAnaLmvmDrawStudy.cxx
-  * @copyright Copyright (C) 2011-2021 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Elena Lebedeva [committer] **/
+/* Copyright (C) 2011-2021 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Elena Lebedeva [committer] */
 
 /** CbmAnaLmvmDrawStudy.cxx
  * @author Elena Lebedeva <e.lebedeva@gsi.de>

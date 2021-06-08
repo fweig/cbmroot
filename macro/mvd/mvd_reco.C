@@ -1,7 +1,6 @@
-/** @file mvd_reco.C
-  * @copyright Copyright (C) 2007-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Sitzmann, Volker Friese [committer] **/
+/* Copyright (C) 2007-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Philipp Sitzmann, Volker Friese [committer] */
 
 // --------------------------------------------------------------------------
 //

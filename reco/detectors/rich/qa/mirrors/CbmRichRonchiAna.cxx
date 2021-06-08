@@ -1,7 +1,6 @@
-/** @file CbmRichRonchiAna.cxx
-  * @copyright Copyright (C) 2018-2019 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev **/
+/* Copyright (C) 2018-2019 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev */
 
 #include "CbmRichRonchiAna.h"
 

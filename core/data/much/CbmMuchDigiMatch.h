@@ -1,7 +1,6 @@
-/** @file CbmMuchDigiMatch.h
-  * @copyright Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Vikas Singhal, Volker Friese [committer], Florian Uhlig, Mikhail Ryzhinskiy **/
+/* Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Vikas Singhal, Volker Friese [committer], Florian Uhlig, Mikhail Ryzhinskiy */
 
 /** @file CbmMuchDigiMatch.h
  ** @author Vikas Singhal <vikas@vecc.gov.in>

@@ -1,7 +1,6 @@
-/** @file CbmTofTBClusterizer.h
-  * @copyright Copyright (C) 2016-2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Timur Ablyazimov, Pierre-Alain Loizeau [committer], Volker Friese **/
+/* Copyright (C) 2016-2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Timur Ablyazimov, Pierre-Alain Loizeau [committer], Volker Friese */
 
 #ifndef CBMTOFTBCLUSTERIZER_H
 #define CBMTOFTBCLUSTERIZER_H

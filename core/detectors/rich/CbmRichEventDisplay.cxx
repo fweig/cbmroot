@@ -1,7 +1,6 @@
-/** @file CbmRichEventDisplay.cxx
-  * @copyright Copyright (C) 2006-2020 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Supriya Das, Semen Lebedev [committer], Florian Uhlig **/
+/* Copyright (C) 2006-2020 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Supriya Das, Semen Lebedev [committer], Florian Uhlig */
 
 /**
 * \file CbmRichEventDisplay.cxx

@@ -1,7 +1,6 @@
-/** @file CbmEcalTrackExtrapolationKF.h
-  * @copyright Copyright (C) 2008-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Claudia Hoehne, Sergey Gorbunov [committer] **/
+/* Copyright (C) 2008-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Claudia Hoehne, Sergey Gorbunov [committer] */
 
 /******************************************************************************
 * $Id: CbmEcalTrackExtrapolationKF.h,v 1.1 2006/02/17 23:13:37 sgorboun Exp $

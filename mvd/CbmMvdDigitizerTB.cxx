@@ -1,7 +1,6 @@
-/** @file CbmMvdDigitizerTB.cxx
-  * @copyright Copyright (C) 2017-2019 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Sitzmann [committer] **/
+/* Copyright (C) 2017-2019 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Philipp Sitzmann [committer] */
 
 // -------------------------------------------------------------------------
 // -----                    CbmMvdDigitizerTB source file                -----

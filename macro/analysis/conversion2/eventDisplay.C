@@ -1,7 +1,6 @@
-/** @file eventDisplay.C
-  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer] **/
+/* Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer] */
 
 ///// macro for visualization of simulated events. One can use it directly after simulation stage (reonctruction and digi are nor needed)
 ///// here one can see Monte Carlo hits in each detector.

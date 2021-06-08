@@ -1,7 +1,6 @@
-/** @file CbmPsdMC.h
-  * @copyright Copyright (C) 2017-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Yuri Kharlov, Volker Friese [committer] **/
+/* Copyright (C) 2017-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Yuri Kharlov, Volker Friese [committer] */
 
 /** @file CbmPsdMC.h
  ** @author Yuri Kharlov <yuri.kharlov@ihep.ru>

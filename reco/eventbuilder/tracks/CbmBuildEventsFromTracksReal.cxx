@@ -1,7 +1,6 @@
-/** @file CbmBuildEventsFromTracksReal.cxx
-  * @copyright Copyright (C) 2017-2020 IKF-UFra, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Valentina Akishina , Maksym Zyzak, Valentina Akishina [committer] **/
+/* Copyright (C) 2017-2020 IKF-UFra, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Valentina Akishina , Maksym Zyzak, Valentina Akishina [committer] */
 
 /** @file CbmBuildEventsFromTracksReal.cxx
  ** @author Valentina Akishina <v.akishina@gsi.de>, Maksym Zyzak <m.zyzak@gsi.de>

@@ -1,7 +1,6 @@
-/** @file CbmL1Counters.h
-  * @copyright Copyright (C) 2010-2017 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Igor Kulakov [committer], Maxim Zyzak **/
+/* Copyright (C) 2010-2017 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Igor Kulakov [committer], Maxim Zyzak */
 
 #ifndef CbmL1Counters_H
 #define CbmL1Counters_H

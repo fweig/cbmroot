@@ -1,7 +1,6 @@
-/** @file L1TrackParFit.h
-  * @copyright Copyright (C) 2017-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Maxim Zyzak [committer], Sergey Gorbunov **/
+/* Copyright (C) 2017-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Maxim Zyzak [committer], Sergey Gorbunov */
 
 #ifndef L1TrackParFit_h
 #define L1TrackParFit_h

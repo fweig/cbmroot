@@ -1,7 +1,6 @@
-/** @file pl_tdc_ref_res.C
-  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [committer] **/
+/* Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Christian Simon [committer] */
 
 void pl_tdc_ref_res(Int_t fNumberOfTDC = 34)
 {

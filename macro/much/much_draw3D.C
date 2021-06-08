@@ -1,7 +1,6 @@
-/** @file much_draw3D.C
-  * @copyright Copyright (C) 2020 Variable Energy Cyclotron Centre, Kolkata
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Vikas Singhal [committer] **/
+/* Copyright (C) 2020 Variable Energy Cyclotron Centre, Kolkata
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Vikas Singhal [committer] */
 
 void much_draw3D(TString geofile = "geofile.root")
 {

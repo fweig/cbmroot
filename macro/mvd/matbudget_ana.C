@@ -1,7 +1,6 @@
-/** @file matbudget_ana.C
-  * @copyright Copyright (C) 2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Klaus [committer] **/
+/* Copyright (C) 2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Philipp Klaus [committer] */
 
 // Philipp Klaus, 30.04.2020
 //

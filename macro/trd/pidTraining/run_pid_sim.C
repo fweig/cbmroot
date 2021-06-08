@@ -1,7 +1,6 @@
-/** @file run_pid_sim.C
-  * @copyright Copyright (C) 2013 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Cyrano Bergmann [committer] **/
+/* Copyright (C) 2013 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Cyrano Bergmann [committer] */
 
 // --------------------------------------------------------------------------
 //

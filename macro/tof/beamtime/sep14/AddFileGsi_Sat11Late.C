@@ -1,7 +1,6 @@
-/** @file AddFileGsi_Sat11Late.C
-  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [committer] **/
+/* Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Christian Simon [committer] */
 
 source->AddFile("/hera/cbm/users/tofGsiApr14/sep14/MbsTrbSat1630_0000.lmd");
 source->AddFile("/hera/cbm/users/tofGsiApr14/sep14/MbsTrbSat1630_0001.lmd");

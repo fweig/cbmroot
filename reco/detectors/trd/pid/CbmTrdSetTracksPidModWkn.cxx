@@ -1,7 +1,6 @@
-/** @file CbmTrdSetTracksPidModWkn.cxx
-  * @copyright Copyright (C) 2014-2016 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Olga Derenovskaya [committer], Florian Uhlig **/
+/* Copyright (C) 2014-2016 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Olga Derenovskaya [committer], Florian Uhlig */
 
 // -------------------------------------------------------------------------
 // -----                    CbmTrdSetTracksPidModWkn source file          -----

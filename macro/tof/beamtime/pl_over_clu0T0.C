@@ -1,7 +1,6 @@
-/** @file pl_over_clu0T0.C
-  * @copyright Copyright (C) 2016 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2016 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 {
   //  TCanvas *can = new TCanvas("can22","can22");

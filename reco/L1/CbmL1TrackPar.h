@@ -1,7 +1,6 @@
-/** @file CbmL1TrackPar.h
-  * @copyright Copyright (C) 2006-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [committer] **/
+/* Copyright (C) 2006-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Denis Bertini [committer] */
 
 #ifndef CbmL1TrackPar_H
 #define CbmL1TrackPar_H

@@ -1,7 +1,6 @@
-/** @file CbmDetectorID.h
-  * @copyright Copyright (C) 2018-2021 Faculty of Physics, Warsaw University of Technology, Warsaw
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Daniel Wielanek [committer], Daniel Wielanek [committer] **/
+/* Copyright (C) 2018-2021 Faculty of Physics, Warsaw University of Technology, Warsaw
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Daniel Wielanek [committer], Daniel Wielanek [committer] */
 
 /*
  * CbmDetectorID.h

@@ -1,7 +1,6 @@
-/** @file pl_TdcChannelCoincidencesNoCalib.C
-  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Weidenkaff [committer] **/
+/* Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Philipp Weidenkaff [committer] */
 
 
 void pl_TdcChannelCoincidencesNoCalib(

@@ -1,7 +1,6 @@
-/** @file CbmAnaDielectronTaskDrawAll.cxx
-  * @copyright Copyright (C) 2011-2021 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Elena Lebedeva, Andrey Lebedev, Semen Lebedev [committer] **/
+/* Copyright (C) 2011-2021 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Elena Lebedeva, Andrey Lebedev, Semen Lebedev [committer] */
 
 /** CbmAnaDielectronTaskDrawAll.cxx
  * @author Elena Lebedeva <e.lebedeva@gsi.de>

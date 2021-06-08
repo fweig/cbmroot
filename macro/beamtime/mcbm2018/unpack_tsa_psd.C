@@ -1,7 +1,6 @@
-/** @file unpack_tsa_psd.C
-  * @copyright Copyright (C) 2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Nikolay Karpushkin, David Emschermann [committer] **/
+/* Copyright (C) 2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Nikolay Karpushkin, David Emschermann [committer] */
 
 /** @file MCBM PSD DATA unpacking
  ** @author Nikolay Karpushkin <karpushkin@inr.ru>

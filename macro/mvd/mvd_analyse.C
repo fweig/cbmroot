@@ -1,7 +1,6 @@
-/** @file mvd_analyse.C
-  * @copyright Copyright (C) 2015 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Sitzmann [committer] **/
+/* Copyright (C) 2015 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Philipp Sitzmann [committer] */
 
 
 void mvd_analyse(TString input = "auau.25gev", TString system = "centr", Int_t nEvents = 100, Int_t iVerbose = 0,

@@ -1,7 +1,6 @@
-/** @file CbmTofTrackFinder.cxx
-  * @copyright Copyright (C) 2005-2015 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors D. Kresan, Norbert Herrmann [committer] **/
+/* Copyright (C) 2005-2015 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: D. Kresan, Norbert Herrmann [committer] */
 
 // -------------------------------------------------------------------------
 // -----                   CbmTrdTrackFinder source file               -----

@@ -1,7 +1,6 @@
-/** @file LxTBTieTracks.h
-  * @copyright Copyright (C) 2016-2017 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Timur Ablyazimov [committer] **/
+/* Copyright (C) 2016-2017 Laboratory of Information Technologies, Joint Institute for Nuclear Research, Dubna
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Timur Ablyazimov [committer] */
 
 #ifndef LXTBTIETRACKS_H
 #define LXTBTIETRACKS_H

@@ -1,7 +1,6 @@
-/** @file CbmMatchRecoToMC.cxx
-  * @copyright Copyright (C) 2013-2021 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors andrey, Andrey Lebedev [committer], Florian Uhlig, Volker Friese, Pierre-Alain Loizeau **/
+/* Copyright (C) 2013-2021 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: andrey, Andrey Lebedev [committer], Florian Uhlig, Volker Friese, Pierre-Alain Loizeau */
 
 /*
  * CbmMatchRecoToMC.cxx

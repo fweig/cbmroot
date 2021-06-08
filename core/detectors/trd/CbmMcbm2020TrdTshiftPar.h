@@ -1,7 +1,6 @@
-/** @file CbmMcbm2020TrdTshiftPar.h
-  * @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pascal Raisig **/
+/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pascal Raisig */
 
 #ifndef CbmMcbm2020TrdTshiftPar_H
 #define CbmMcbm2020TrdTshiftPar_H

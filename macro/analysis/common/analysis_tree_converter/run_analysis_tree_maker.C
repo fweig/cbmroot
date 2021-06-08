@@ -1,7 +1,6 @@
-/** @file run_analysis_tree_maker.C
-  * @copyright Copyright (C) name="CpuLoad" CBM Collaboration, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Viktor Klochkov, Viktor Klochkov **/
+/* Copyright (C) name="CpuLoad" CBM Collaboration, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Viktor Klochkov, Viktor Klochkov */
 
 void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setupName = "sis100_electron",
                              TString unigenFile = "")

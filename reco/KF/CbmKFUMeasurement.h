@@ -1,7 +1,6 @@
-/** @file CbmKFUMeasurement.h
-  * @copyright Copyright (C) 2006-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors S.Gorbunov, Denis Bertini [committer], Igor Kulakov **/
+/* Copyright (C) 2006-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: S.Gorbunov, Denis Bertini [committer], Igor Kulakov */
 
 /** Class for 1-D measurement calculations for CbmKFHit hits 
  *

@@ -1,7 +1,6 @@
-/** @file create_stsdigipar_v13.C
-  * @copyright Copyright (C) 2012-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese [committer], David Emschermann **/
+/* Copyright (C) 2012-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese [committer], David Emschermann */
 
 /******************************************************************************
  ** Creation of STS digitisation parameter file in ASCII format.

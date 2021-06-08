@@ -1,7 +1,6 @@
-/** @file CbmMuchLayer.h
-  * @copyright Copyright (C) 2008-2020 St. Petersburg Polytechnic University, St. Petersburg
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Mikhail Ryzhinskiy [committer], Evgeny Kryshen, Andrey Lebedev **/
+/* Copyright (C) 2008-2020 St. Petersburg Polytechnic University, St. Petersburg
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Mikhail Ryzhinskiy [committer], Evgeny Kryshen, Andrey Lebedev */
 
 /** CbmMuchLayer.h
  *@author  M.Ryzhinskiy <m.ryzhinskiy@gsi.de>

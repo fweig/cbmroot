@@ -1,7 +1,6 @@
-/** @file CbmKFPartEfficiencies.h
-  * @copyright Copyright (C) 2012-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Maxim Zyzak [committer] **/
+/* Copyright (C) 2012-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Maxim Zyzak [committer] */
 
 #ifndef CbmKFPartEfficiencies_H
 #define CbmKFPartEfficiencies_H

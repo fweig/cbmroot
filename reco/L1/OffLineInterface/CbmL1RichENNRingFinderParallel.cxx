@@ -1,7 +1,6 @@
-/** @file CbmL1RichENNRingFinderParallel.cxx
-  * @copyright Copyright (C) 2010-2021 Frankfurt Institute for Advanced Studies, Goethe-Universitaet Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors I.Kisel, S.Gorbunov, Igor Kulakov [committer] **/
+/* Copyright (C) 2010-2021 Frankfurt Institute for Advanced Studies, Goethe-Universitaet Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: I.Kisel, S.Gorbunov, Igor Kulakov [committer] */
 
 /*
  *====================================================================

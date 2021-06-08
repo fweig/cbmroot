@@ -1,7 +1,6 @@
-/** @file ngDpbMonitor.C
-  * @copyright Copyright (C) 2016 Facility for Antiproton and Ion Research in Europe, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig, Pierre-Alain Loizeau [committer], Vikas Singhal **/
+/* Copyright (C) 2016 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig, Pierre-Alain Loizeau [committer], Vikas Singhal */
 
 /** @file FHodoLabSetup
  ** @author Florian Uhlig <f.uhlig@gsi.de>

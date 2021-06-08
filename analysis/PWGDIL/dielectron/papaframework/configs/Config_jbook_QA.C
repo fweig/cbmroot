@@ -1,7 +1,6 @@
-/** @file Config_jbook_QA.C
-  * @copyright Copyright (C) 2015-2016 Goethe-University Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Julian Book [committer] **/
+/* Copyright (C) 2015-2016 Goethe-University Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Julian Book [committer] */
 
 /// \file Config_jbook_Mee.C
 /// \brief A template task configuration macro with example and explanations

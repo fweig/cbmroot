@@ -1,7 +1,6 @@
-/** @file CbmFieldMapSym1.h
-  * @copyright Copyright (C) 2008-2020 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors E. Litvinenko, Elena Lebdeva [committer] **/
+/* Copyright (C) 2008-2020 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: E. Litvinenko, Elena Lebdeva [committer] */
 
 // -------------------------------------------------------------------------
 // -----                    CbmFieldMapSym1 header file                -----

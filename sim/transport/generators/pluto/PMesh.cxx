@@ -1,7 +1,6 @@
-/** @file PMesh.cxx
-  * @copyright Copyright (C) 2007-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors I. Froehlich, Florian Uhlig [committer] **/
+/* Copyright (C) 2007-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: I. Froehlich, Florian Uhlig [committer] */
 
 //  Small linear mesh to substitute the array from PData
 //  The mesh is inherited from TF1, and allow to use

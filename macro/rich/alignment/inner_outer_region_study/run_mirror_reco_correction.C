@@ -1,7 +1,6 @@
-/** @file run_mirror_reco_correction.C
-  * @copyright Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Jordan Bendarouach [committer] **/
+/* Copyright (C) 2019 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Jordan Bendarouach [committer] */
 
 void run_mirror_reco_correction(Int_t nEvents = 2000)
 {

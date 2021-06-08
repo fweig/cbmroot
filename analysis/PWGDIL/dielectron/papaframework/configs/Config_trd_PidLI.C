@@ -1,7 +1,6 @@
-/** @file Config_trd_PidLI.C
-  * @copyright Copyright (C) 2016 Goethe-University Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Etienne Bechtel, Julian Book [committer] **/
+/* Copyright (C) 2016 Goethe-University Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Etienne Bechtel, Julian Book [committer] */
 
 /** @brief configuration for TRD Likelihood input **/
 PairAnalysis* Config_Analysis(Int_t cutDefinition);

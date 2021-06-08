@@ -1,7 +1,6 @@
-/** @file LitTrackFinderNN.h
-  * @copyright Copyright (C) 2013-2014 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [committer] **/
+/* Copyright (C) 2013-2014 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev [committer] */
 
 /**
  * \file LitTrackFinderNN.h

@@ -1,7 +1,6 @@
-/** @file spectra.urqmd.C
-  * @copyright Copyright (C) 2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Dmytro Kresan [committer] **/
+/* Copyright (C) 2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Dmytro Kresan [committer] */
 
 void spectra_urqmd(Float_t beamMomentum, Float_t timeResolution, Float_t purity)
 {

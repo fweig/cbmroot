@@ -1,7 +1,6 @@
-/** @file CbmRichPmt.cxx
-  * @copyright Copyright (C) 2015-2020 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors slebedev, Semen Lebedev, Andrey Lebedev [committer] **/
+/* Copyright (C) 2015-2020 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: slebedev, Semen Lebedev, Andrey Lebedev [committer] */
 
 /*
  * CbmRichPmt.cxx

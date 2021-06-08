@@ -1,7 +1,6 @@
-/** @file GDML_to_ROOT_Trans.C
-  * @copyright Copyright (C) 2015-2021 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig, Tariq Mahmoud [committer] **/
+/* Copyright (C) 2015-2021 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig, Tariq Mahmoud [committer] */
 
 void GDML_to_ROOT_Trans(float pmt_pos_y_addend = 0, float pmt_pos_z_addend = 0, int RotMir = -10, float PMTrotX = 5,
                         float PMTrotY = 5)

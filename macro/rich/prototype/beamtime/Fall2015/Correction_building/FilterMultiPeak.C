@@ -1,7 +1,6 @@
-/** @file FilterMultiPeak.C
-  * @copyright Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Egor Ovcharenko [orginator] **/
+/* Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Egor Ovcharenko [orginator] */
 
 #define THRESHOLD 45.  // Check the (un)commented code at the end of the macro
 #define KOEF 5         // Rebinning koef

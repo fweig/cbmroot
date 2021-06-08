@@ -1,7 +1,6 @@
-/** @file CbmAnaConversion.cxx
-  * @copyright Copyright (C) 2014-2019 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Sascha Reinecke, Florian Uhlig, Andrey Lebedev [committer] **/
+/* Copyright (C) 2014-2019 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Sascha Reinecke, Florian Uhlig, Andrey Lebedev [committer] */
 
 /**
  * \file CbmAnaConversion.cxx

@@ -1,7 +1,6 @@
-/** @file pl_TIS.C
-  * @copyright Copyright (C) 2017-2018 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2017-2018 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 void pl_TIS(TString sysinfo = "", Double_t dFracMax = 0.1)
 {

@@ -1,7 +1,6 @@
-/** @file CbmRichTrackExtrapolation.h
-  * @copyright Copyright (C) 2006-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Claudia Hoehne, Denis Bertini [committer] **/
+/* Copyright (C) 2006-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Claudia Hoehne, Denis Bertini [committer] */
 
 /******************************************************************************
 *  $Id: CbmRichTrackExtrapolation.h,v 1.4 2006/01/30 10:59:59 hoehne Exp $

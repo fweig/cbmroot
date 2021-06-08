@@ -1,7 +1,6 @@
-/** @file CbmGlobalTrackFitterIdeal.h
-  * @copyright Copyright (C) 2006-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors D.Kresan, Denis Bertini [committer] **/
+/* Copyright (C) 2006-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: D.Kresan, Denis Bertini [committer] */
 
 // ------------------------------------------------------------------
 // -----                  CbmGlobalTrackFitterIdeal             -----

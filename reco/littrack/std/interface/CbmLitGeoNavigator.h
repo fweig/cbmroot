@@ -1,7 +1,6 @@
-/** @file CbmLitGeoNavigator.h
-  * @copyright Copyright (C) 2008-2012 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [committer] **/
+/* Copyright (C) 2008-2012 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev [committer] */
 
 /**
  * \file CbmLitGeoNavigator.h

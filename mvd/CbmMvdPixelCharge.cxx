@@ -1,7 +1,6 @@
-/** @file CbmMvdPixelCharge.cxx
-  * @copyright Copyright (C) 2008-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christina Dritsa [committer], Samir Amar-Youcef, Florian Uhlig, Philipp Sitzmann **/
+/* Copyright (C) 2008-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Christina Dritsa [committer], Samir Amar-Youcef, Florian Uhlig, Philipp Sitzmann */
 
 // -----------------------------------------------------------------------
 // -----               CbmMvdDigi source file                        -----

@@ -1,7 +1,6 @@
-/** @file run_sim.C
-  * @copyright Copyright (C) 2012-2015 Institute for Theoretical and Experimental Physics named by A.I. Alikhanov of National Research Centre "Kurchatov Institute" (ITEP) in Moscow, Russia, Moscow
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Mikhail Prokudin [committer], Florian Uhlig **/
+/* Copyright (C) 2012-2015 Institute for Theoretical and Experimental Physics named by A.I. Alikhanov of National Research Centre "Kurchatov Institute" (ITEP) in Moscow, Russia, Moscow
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Mikhail Prokudin [committer], Florian Uhlig */
 
 // --------------------------------------------------------------------------
 //

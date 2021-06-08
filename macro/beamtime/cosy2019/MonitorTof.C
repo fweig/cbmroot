@@ -1,7 +1,6 @@
-/** @file MonitorTof.C
-  * @copyright Copyright (C) 2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig, Pierre-Alain Loizeau [committer] **/
+/* Copyright (C) 2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig, Pierre-Alain Loizeau [committer] */
 
 /** @file MonitorTof.C
  ** @author Florian Uhlig <f.uhlig@gsi.de>

@@ -1,7 +1,6 @@
-/** @file CbmTofTrackFitter.cxx
-  * @copyright Copyright (C) 2005-2015 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors V. Friese, Norbert Herrmann [committer] **/
+/* Copyright (C) 2005-2015 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: V. Friese, Norbert Herrmann [committer] */
 
 // -------------------------------------------------------------------------
 // -----                   CbmTofTrackFitter source file               -----

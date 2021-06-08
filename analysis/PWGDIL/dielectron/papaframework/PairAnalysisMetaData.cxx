@@ -1,7 +1,6 @@
-/** @file PairAnalysisMetaData.cxx
-  * @copyright Copyright (C) 2015-2021 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Julian Book [committer] **/
+/* Copyright (C) 2015-2021 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Julian Book [committer] */
 
 /*
   Meta data container that stores basic information on the setup, system,

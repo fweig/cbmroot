@@ -1,7 +1,6 @@
-/** @file run_reco_mcbm_real_wToF_mar20.C
-  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer] **/
+/* Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer] */
 
 void run_reco_mcbm_real_wToF_mar20(const string srcfolder = "/lustre/cbm/users/adrian/mcbmbeamtime/cbmsource/"
                                                             "macro/beamtime/mcbm2020/data",

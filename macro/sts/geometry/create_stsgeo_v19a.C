@@ -1,7 +1,6 @@
-/** @file create_stsgeo_v19a.C
-  * @copyright Copyright (C) 2012-2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese, Evgeny Lavrik [committer] **/
+/* Copyright (C) 2012-2019 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese, Evgeny Lavrik [committer] */
 
 /******************************************************************************
  ** Creation of STS geometry in ROOT format (TGeo).

@@ -1,7 +1,6 @@
-/** @file run_radius_correction.C
-  * @copyright Copyright (C) 2007-2021 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Simeon Lebedev, Semen Lebedev, Claudia Höhne [committer] **/
+/* Copyright (C) 2007-2021 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Simeon Lebedev, Semen Lebedev, Claudia Höhne [committer] */
 
 /*  Description: This macro calculate MAP for radius correction
     To use this macro, first run CbmRichRingQa task.

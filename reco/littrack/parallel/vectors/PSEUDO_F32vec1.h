@@ -1,7 +1,6 @@
-/** @file PSEUDO_F32vec1.h
-  * @copyright Copyright (C) 2010-2013 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [committer] **/
+/* Copyright (C) 2010-2013 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev [committer] */
 
 #ifndef LIT_F32VEC1_H
 #define LIT_F32VEC1_H

@@ -1,7 +1,6 @@
-/** @file Create_TRD_Geometry_v20b.C
-  * @copyright Copyright (C) 2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pascal Raisig [committer] **/
+/* Copyright (C) 2020 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pascal Raisig [committer] */
 
 ///
 /// \file Create_TRD_Geometry_v20b.C

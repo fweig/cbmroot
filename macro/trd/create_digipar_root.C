@@ -1,7 +1,6 @@
-/** @file create_digipar_root.C
-  * @copyright Copyright (C) 2012-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig, David Emschermann [committer], Andrey Lebedev, Alexandru Bercuci **/
+/* Copyright (C) 2012-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig, David Emschermann [committer], Andrey Lebedev, Alexandru Bercuci */
 
 // --------------------------------------------------------------------------
 //

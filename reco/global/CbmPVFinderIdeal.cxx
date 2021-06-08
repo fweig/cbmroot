@@ -1,7 +1,6 @@
-/** @file CbmPVFinderIdeal.cxx
-  * @copyright Copyright (C) 2005-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [committer], Florian Uhlig, Volker Friese **/
+/* Copyright (C) 2005-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Denis Bertini [committer], Florian Uhlig, Volker Friese */
 
 // -------------------------------------------------------------------------
 // -----                   CbmPVFinderIdeal source file                -----

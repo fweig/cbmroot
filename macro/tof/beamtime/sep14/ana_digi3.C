@@ -1,7 +1,6 @@
-/** @file ana_digi3.C
-  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [committer] **/
+/* Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Christian Simon [committer] */
 
 void ana_digi3(Int_t nEvents = 1000000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSmType = 2, Int_t RefSel = 1,
                char* cFileId = "MbsTrbThu1715", Int_t iSet = 0)

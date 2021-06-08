@@ -1,7 +1,6 @@
-/** @file create_MUCH_geometry_v19b_lmvm.C
-  * @copyright Copyright (C) 2019 Variable Energy Cyclotron Centre, Kolkata
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Ekata Nandy [committer] **/
+/* Copyright (C) 2019 Variable Energy Cyclotron Centre, Kolkata
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Ekata Nandy [committer] */
 
 //  MUCH geometry includes RPC geometry in 3rd and 4th station. @author Ekata Nandy since 21/06/19
 /// \file create_MUCH_geometry_v17b.C

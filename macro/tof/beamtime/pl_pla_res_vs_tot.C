@@ -1,7 +1,6 @@
-/** @file pl_pla_res_vs_tot.C
-  * @copyright Copyright (C) 2016 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2016 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 void pl_pla_res_vs_tot(UInt_t uTdcNumber1, UInt_t uChNumber1, UInt_t uTdcNumber2, UInt_t uChNumber2, UInt_t uTdcNumber3,
                        UInt_t uChNumber3, UInt_t uTdcNumber4, UInt_t uChNumber4)

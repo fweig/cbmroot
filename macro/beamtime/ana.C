@@ -1,7 +1,6 @@
-/** @file ana.C
-  * @copyright Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Anna Senger, Florian Uhlig [committer] **/
+/* Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Anna Senger, Florian Uhlig [committer] */
 
 /** @file ana.C
  ** @author Anna Senger <a.senger@gsi.de>

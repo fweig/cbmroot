@@ -1,7 +1,6 @@
-/** @file CbmLmvmCuts.h
-  * @copyright Copyright (C) 2015-2018 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Elena Lebedeva [committer], Gregor Pitsch **/
+/* Copyright (C) 2015-2018 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Elena Lebedeva [committer], Gregor Pitsch */
 
 /**
  * @author Elena Lebedeva <e.lebedeva@gsi.de>

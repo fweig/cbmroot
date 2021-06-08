@@ -1,7 +1,6 @@
-/** @file create_MUCH_geometry_v20b_lmvm_start.C
-  * @copyright Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer], Omveer Singh **/
+/* Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer], Omveer Singh */
 
 //
 // \file create_MUCH_geometry_v20b

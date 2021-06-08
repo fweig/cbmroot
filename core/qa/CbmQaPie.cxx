@@ -1,7 +1,6 @@
-/** @file CbmQaPie.cxx
-  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Sergey Gorbunov [committer] **/
+/* Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Sergey Gorbunov [committer] */
 
 /// \file   CbmQaPie.cxx
 /// \brief  Implementation of the CbmQaPie class

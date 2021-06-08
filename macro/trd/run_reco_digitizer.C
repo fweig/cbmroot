@@ -1,7 +1,6 @@
-/** @file run_reco_digitizer.C
-  * @copyright Copyright (C) 2012-2014 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Cyrano Bergmann [committer], David Emschermann **/
+/* Copyright (C) 2012-2014 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Cyrano Bergmann [committer], David Emschermann */
 
 // --------------------------------------------------------------------------
 //

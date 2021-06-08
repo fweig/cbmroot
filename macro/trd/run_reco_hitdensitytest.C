@@ -1,7 +1,6 @@
-/** @file run_reco_hitdensitytest.C
-  * @copyright Copyright (C) 2011-2016 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Philipp Munkes, Cyrano Bergmann [committer] **/
+/* Copyright (C) 2011-2016 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Philipp Munkes, Cyrano Bergmann [committer] */
 
 // --------------------------------------------------------------------------
 //

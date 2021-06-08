@@ -1,7 +1,6 @@
-/** @file geom_sts.C
-  * @copyright Copyright (C) 2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Matevz Tadel, David Emschermann [committer] **/
+/* Copyright (C) 2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Matevz Tadel, David Emschermann [committer] */
 
 // @(#)root/eve:$Id$
 // Author: Matevz Tadel

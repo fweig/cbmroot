@@ -1,7 +1,6 @@
-/** @file eff_draw.C
-  * @copyright Copyright (C) 2010 Petersburg Nuclear Physics Institute named by B.P.Konstantinov of National Research Centre "Kurchatov Institute", Gatchina
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Evgeny Kryshen [committer] **/
+/* Copyright (C) 2010 Petersburg Nuclear Physics Institute named by B.P.Konstantinov of National Research Centre "Kurchatov Institute", Gatchina
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Evgeny Kryshen [committer] */
 
 void eff_draw(char* fileName = "la.ef.root")
 {

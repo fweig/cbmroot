@@ -1,7 +1,6 @@
-/** @file CbmMuchPixelHit.h
-  * @copyright Copyright (C) 2009-2020 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [committer], Mikhail Ryzhinskiy **/
+/* Copyright (C) 2009-2020 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev [committer], Mikhail Ryzhinskiy */
 
 /**
  * \file CbmMuchPixelHit.h

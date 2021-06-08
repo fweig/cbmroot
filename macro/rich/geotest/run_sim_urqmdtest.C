@@ -1,7 +1,6 @@
-/** @file run_sim_urqmdtest.C
-  * @copyright Copyright (C) 2013-2020 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [committer], Andrey Lebedev **/
+/* Copyright (C) 2013-2020 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev [committer], Andrey Lebedev */
 
 void run_sim_urqmdtest(
   const string& urqmdFile = "/Users/slebedev/Development/cbm/data/urqmd/auau/"

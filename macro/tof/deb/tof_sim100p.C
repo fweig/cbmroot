@@ -1,7 +1,6 @@
-/** @file tof_sim100p.C
-  * @copyright Copyright (C) 2013 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2013 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 // --------------------------------------------------------------------------
 //

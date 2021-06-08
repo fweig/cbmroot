@@ -1,7 +1,6 @@
-/** @file CbmTrdUtils.cxx
-  * @copyright Copyright (C) 2013-2020 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Cyrano Bergmann [committer], Florian Uhlig **/
+/* Copyright (C) 2013-2020 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Cyrano Bergmann [committer], Florian Uhlig */
 
 /**
  * \file CbmTrdUtils.cxx

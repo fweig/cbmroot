@@ -1,7 +1,6 @@
-/** @file L1HitPoint.h
-  * @copyright Copyright (C) 2010-2020 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Valentina Akishina, Igor Kulakov [committer], Maxim Zyzak **/
+/* Copyright (C) 2010-2020 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Valentina Akishina, Igor Kulakov [committer], Maxim Zyzak */
 
 #ifndef _L1HitPoint_h_
 #define _L1HitPoint_h_

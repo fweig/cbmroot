@@ -1,7 +1,6 @@
-/** @file CbmLitHit.h
-  * @copyright Copyright (C) 2008-2017 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [committer], Semen Lebedev **/
+/* Copyright (C) 2008-2017 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev [committer], Semen Lebedev */
 
 /**
  * \file CbmLitHit.h

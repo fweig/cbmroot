@@ -1,7 +1,6 @@
-/** @file readTsaTimeOffline.C
-  * @copyright Copyright (C) 2016 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Cyrano Bergmann [committer] **/
+/* Copyright (C) 2016 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Cyrano Bergmann [committer] */
 
 void readTsaTimeOffline(TString inFile =
                           //"data/98_ba2015.tsa"

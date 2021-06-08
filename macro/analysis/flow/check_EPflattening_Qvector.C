@@ -1,7 +1,6 @@
-/** @file check_EPflattening_Qvector.C
-  * @copyright Copyright (C) 2014-2021 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Selim Seddiki [committer] **/
+/* Copyright (C) 2014-2021 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Selim Seddiki [committer] */
 
 // -------------------------------------------------------------------------
 // ----- This task draws the average X-component of the Q-vector versus detector multiplicity - here for the PSD: <Qx> vs Energy

@@ -1,7 +1,6 @@
-/** @file CbmL1TrdTracklet4.cxx
-  * @copyright Copyright (C) 2006-2010 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Igor Kulakov, Denis Bertini [committer], Florian Uhlig **/
+/* Copyright (C) 2006-2010 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Igor Kulakov, Denis Bertini [committer], Florian Uhlig */
 
 #include "CbmL1TrdTracklet4.h"
 

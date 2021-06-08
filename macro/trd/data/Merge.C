@@ -1,7 +1,6 @@
-/** @file Merge.C
-  * @copyright Copyright (C) 2001-2016 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Cyrano Bergmann [committer] **/
+/* Copyright (C) 2001-2016 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Cyrano Bergmann [committer] */
 
 //macro to add histogram files
 //NOTE: This macro is kept for back compatibility only.

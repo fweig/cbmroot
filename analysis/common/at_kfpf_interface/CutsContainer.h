@@ -1,7 +1,6 @@
-/** @file CutsContainer.h
-  * @copyright Copyright (C) 2020-2021 GSI, IKF-UFra
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Oleksii Lubynets [committer] Viktor Klochkov, Ilya Selyuzhenkov **/
+/* Copyright (C) 2020-2021 GSI, IKF-UFra
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Oleksii Lubynets [committer] Viktor Klochkov, Ilya Selyuzhenkov */
 
 //
 // @class CutsContainer

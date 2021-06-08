@@ -1,7 +1,6 @@
-/** @file run_rich_event_display.C
-  * @copyright Copyright (C) 2012-2019 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev, Jordan Bendarouach [committer] **/
+/* Copyright (C) 2012-2019 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev, Jordan Bendarouach [committer] */
 
 /** run_rich_event_display.C
  * @author Semen Lebedev <s.lebedev@gsi.de>

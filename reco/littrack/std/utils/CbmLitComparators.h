@@ -1,7 +1,6 @@
-/** @file CbmLitComparators.h
-  * @copyright Copyright (C) 2008-2013 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [committer], Semen Lebedev **/
+/* Copyright (C) 2008-2013 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev [committer], Semen Lebedev */
 
 #ifndef CBMLITCOMPARATORS_H_
 #define CBMLITCOMPARATORS_H_

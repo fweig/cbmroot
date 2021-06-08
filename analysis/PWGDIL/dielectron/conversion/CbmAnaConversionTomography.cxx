@@ -1,7 +1,6 @@
-/** @file CbmAnaConversionTomography.cxx
-  * @copyright Copyright (C) 2014-2020 Fakultaet fuer Mathematik und Naturwissenschaften, Bergische Universitaet Wuppertal, Wuppertal
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Sascha Reinecke, Florian Uhlig **/
+/* Copyright (C) 2014-2020 Fakultaet fuer Mathematik und Naturwissenschaften, Bergische Universitaet Wuppertal, Wuppertal
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Sascha Reinecke, Florian Uhlig */
 
 /**
  * \file CbmAnaConversionTomography.cxx

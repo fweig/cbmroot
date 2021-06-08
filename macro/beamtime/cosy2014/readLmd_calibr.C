@@ -1,7 +1,6 @@
-/** @file readLmd_calibr.C
-  * @copyright Copyright (C) 2013-2015 Facility for Antiproton and Ion Research in Europe, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese, Pierre-Alain Loizeau [committer] **/
+/* Copyright (C) 2013-2015 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese, Pierre-Alain Loizeau [committer] */
 
 /** @file readLmd_calibr.C
  ** @author Volker Friese <v.friese@gsi.de>

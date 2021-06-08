@@ -1,7 +1,6 @@
-/** @file dis_digi.C
-  * @copyright Copyright (C) 2017 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2017 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 void dis_digi(Int_t nEvents = 100000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSm = 300, Int_t RefSel = 1,
               TString cFileId = "MbsTrbThu1715", Int_t iCalSet = 0, Bool_t bOut = 0, Int_t iSel2 = 0,

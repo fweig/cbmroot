@@ -1,7 +1,6 @@
-/** @file sts_digi.C
-  * @copyright Copyright (C) 2006-2011 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Anna Kotynia, Denis Bertini [committer], Volker Friese **/
+/* Copyright (C) 2006-2011 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Anna Kotynia, Denis Bertini [committer], Volker Friese */
 
 // --------------------------------------------------------------------------
 //

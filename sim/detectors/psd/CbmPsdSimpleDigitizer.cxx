@@ -1,7 +1,6 @@
-/** @file CbmPsdSimpleDigitizer.cxx
-  * @copyright Copyright (C) 2012-2020 Institute for Nuclear Research, Moscow
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Alla & SELIM & FLORIAN, Sergey Morozov [committer], Volker Friese, Evgeny Kashirin **/
+/* Copyright (C) 2012-2020 Institute for Nuclear Research, Moscow
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Alla & SELIM & FLORIAN, Sergey Morozov [committer], Volker Friese, Evgeny Kashirin */
 
 // -------------------------------------------------------------------------
 // -----                CbmPsdSimpleDigitizer source file              -----

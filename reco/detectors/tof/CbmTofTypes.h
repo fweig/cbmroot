@@ -1,7 +1,6 @@
-/** @file CbmTofTypes.h
-  * @copyright Copyright (C) 2008-2016 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors A.Lebedev, Norbert Herrmann [committer], Florian Uhlig **/
+/* Copyright (C) 2008-2016 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: A.Lebedev, Norbert Herrmann [committer], Florian Uhlig */
 
 /**
  * \file CbmTOFTypes.h

@@ -1,7 +1,6 @@
-/** @file invert_matrix.C
-  * @copyright Copyright (C) 2016 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2016 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 void invert_matrix(Int_t NSt = 3, char* var = "X", Int_t iFit = 0)
 {

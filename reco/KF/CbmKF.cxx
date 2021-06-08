@@ -1,7 +1,6 @@
-/** @file CbmKF.cxx
-  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig, Sergey Gorbunov, Denis Bertini [committer] **/
+/* Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig, Sergey Gorbunov, Denis Bertini [committer] */
 
 #include "CbmKF.h"
 

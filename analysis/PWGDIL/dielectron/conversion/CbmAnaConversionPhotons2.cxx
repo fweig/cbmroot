@@ -1,7 +1,6 @@
-/** @file CbmAnaConversionPhotons2.cxx
-  * @copyright Copyright (C) 2015-2019 Fakultaet fuer Mathematik und Naturwissenschaften, Bergische Universitaet Wuppertal, Wuppertal
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Sascha Reinecke, Florian Uhlig, Andrey Lebedev **/
+/* Copyright (C) 2015-2019 Fakultaet fuer Mathematik und Naturwissenschaften, Bergische Universitaet Wuppertal, Wuppertal
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Sascha Reinecke, Florian Uhlig, Andrey Lebedev */
 
 /**
  * \file CbmAnaConversionPhotons2.cxx

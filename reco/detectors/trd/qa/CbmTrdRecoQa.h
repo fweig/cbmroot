@@ -1,7 +1,6 @@
-/** @file CbmTrdRecoQa.h
-  * @copyright Copyright (C) 2013-2018 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors F.Uhlig, Cyrano Bergmann [committer] **/
+/* Copyright (C) 2013-2018 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: F.Uhlig, Cyrano Bergmann [committer] */
 
 // -----------------------------------------------------------------------
 // -----                     CbmTrdRecoQa                       -----

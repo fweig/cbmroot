@@ -1,7 +1,6 @@
-/** @file CbmKFParticle.h
-  * @copyright Copyright (C) 2008-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors S.Gorbunov, I.Kisel, Maxim Zyzak, Mohammad Al-Turany [committer], Igor Kulakov **/
+/* Copyright (C) 2008-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: S.Gorbunov, I.Kisel, Maxim Zyzak, Mohammad Al-Turany [committer], Igor Kulakov */
 
 /** The CbmKFParticle class
  *

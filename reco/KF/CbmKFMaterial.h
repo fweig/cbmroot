@@ -1,7 +1,6 @@
-/** @file CbmKFMaterial.h
-  * @copyright Copyright (C) 2006-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [committer], Sergey Gorbunov **/
+/* Copyright (C) 2006-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Denis Bertini [committer], Sergey Gorbunov */
 
 /** Base class for material is being used by the CbmKF Kalman Filter 
  *

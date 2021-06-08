@@ -1,7 +1,6 @@
-/** @file run_qa_to_html.C
-  * @copyright Copyright (C) 2021 Faculty of Physics, Warsaw University of Technology, Warsaw
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Daniel Wielanek [committer] **/
+/* Copyright (C) 2021 Faculty of Physics, Warsaw University of Technology, Warsaw
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Daniel Wielanek [committer] */
 
 /*
  * run_qa_to_html.C

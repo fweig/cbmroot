@@ -1,7 +1,6 @@
-/** @file CbmBeamtimeCosy2019LinkDef.h
-  * @copyright Copyright (C) 2021 GSI, IKF-UFra
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig **/
+/* Copyright (C) 2021 GSI, IKF-UFra
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig */
 
 #ifdef __CINT__
 

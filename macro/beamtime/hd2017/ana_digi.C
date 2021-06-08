@@ -1,7 +1,6 @@
-/** @file ana_digi.C
-  * @copyright Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau [committer] **/
+/* Copyright (C) 2017 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau [committer] */
 
 void ana_digi(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel = -1, Int_t calSm = 900, Int_t RefSel = 1,
               TString cFileId = "sps2016111302_1930", Int_t iCalSet = 921601600, Bool_t bOut = 0, Int_t iSel2 = 0,

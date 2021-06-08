@@ -1,7 +1,6 @@
-/** @file CbmMuchFindHitsGem.cxx
-  * @copyright Copyright (C) 2008-2021 St. Petersburg Polytechnic University, St. Petersburg
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Vikas Singhal, Ajit Kumar, Ekata Nandy, Evgeny Kryshen, Ajay Kumar, Florian Uhlig **/
+/* Copyright (C) 2008-2021 St. Petersburg Polytechnic University, St. Petersburg
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Vikas Singhal, Ajit Kumar, Ekata Nandy, Evgeny Kryshen, Ajay Kumar, Florian Uhlig */
 
 /*
  * CbmMuchFindHitsGem.cxx

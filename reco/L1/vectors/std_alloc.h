@@ -1,7 +1,6 @@
-/** @file std_alloc.h
-  * @copyright Copyright (C) 2010 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Igor Kulakov [committer] **/
+/* Copyright (C) 2010 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Igor Kulakov [committer] */
 
 #ifndef STD_ALLOC_H
 #define STD_ALLOC_H

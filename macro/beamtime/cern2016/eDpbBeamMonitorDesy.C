@@ -1,7 +1,6 @@
-/** @file eDpbBeamMonitorDesy.C
-  * @copyright Copyright (C) 2017 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig, Philipp Munkes [committer] **/
+/* Copyright (C) 2017 Institut fuer Kernphysik, Westfaelische Wilhelms-Universitaet Muenster, Muenster
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig, Philipp Munkes [committer] */
 
 /** @file FHodoLabSetup
  ** @author Florian Uhlig <f.uhlig@gsi.de>

@@ -1,7 +1,6 @@
-/** @file MonitorRich.C
-  * @copyright Copyright (C) 2019 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [committer] **/
+/* Copyright (C) 2019 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev [committer] */
 
 /** @file MCBM RICH DATA monitoring
  ** Based on MonitorT0 by P.-A. Loizeau

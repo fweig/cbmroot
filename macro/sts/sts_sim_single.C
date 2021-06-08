@@ -1,7 +1,6 @@
-/** @file sts_sim_single.C
-  * @copyright Copyright (C) 2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese [committer] **/
+/* Copyright (C) 2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese [committer] */
 
 // --------------------------------------------------------------------------
 //

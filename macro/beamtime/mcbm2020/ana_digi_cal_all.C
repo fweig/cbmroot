@@ -1,7 +1,6 @@
-/** @file ana_digi_cal_all.C
-  * @copyright Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Florian Uhlig [committer] **/
+/* Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Florian Uhlig [committer] */
 
 void ana_digi_cal_all(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel = 0, Int_t calSm = 900,
                       Int_t RefSel = 1, TString cFileId = "Test", Int_t iCalSet = 910601600, Bool_t bOut = 0,

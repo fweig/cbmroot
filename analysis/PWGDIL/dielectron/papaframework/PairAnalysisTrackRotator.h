@@ -1,7 +1,6 @@
-/** @file PairAnalysisTrackRotator.h
-  * @copyright Copyright (C) 2015-2020 Justus-Liebig-Universitaet Giessen, Giessen
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Julian Book [committer] **/
+/* Copyright (C) 2015-2020 Justus-Liebig-Universitaet Giessen, Giessen
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Julian Book [committer] */
 
 #ifndef DILEPTONTRACKROTATOR_H
 #define DILEPTONTRACKROTATOR_H

@@ -1,7 +1,6 @@
-/** @file ana_digi_ini.C
-  * @copyright Copyright (C) 2015-2016 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [committer] **/
+/* Copyright (C) 2015-2016 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Norbert Herrmann [committer] */
 
 void ana_digi_ini(Int_t nEvents = 10000, Int_t calMode = 0, Int_t calSel = -1, Int_t calSm = 200, Int_t RefSel = 1,
                   char* cFileId = "CernSps05Mar0041", Int_t iSet = 0, Int_t iBRef = 500)

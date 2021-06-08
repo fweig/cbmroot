@@ -1,7 +1,6 @@
-/** @file CbmRichMirrorsLinkDef.h
-  * @copyright Copyright (C) 2019 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [committer] **/
+/* Copyright (C) 2019 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev [committer] */
 
 #ifdef __CINT__
 

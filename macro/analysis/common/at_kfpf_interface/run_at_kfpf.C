@@ -1,7 +1,6 @@
-/** @file run_at_kfpf.C
-  * @copyright Copyright (C) 2020 GSI, IKF-UFra
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Oleksii Lubynets [committer] **/
+/* Copyright (C) 2020 GSI, IKF-UFra
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Oleksii Lubynets [committer] */
 
 void run_at_kfpf(int nEntries = -1, const std::string& dataset = "test", const std::string& ATTree = "rTree")
 {

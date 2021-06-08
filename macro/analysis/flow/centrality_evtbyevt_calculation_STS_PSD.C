@@ -1,7 +1,6 @@
-/** @file centrality_evtbyevt_calculation_STS_PSD.C
-  * @copyright Copyright (C) 2014-2021 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Selim Seddiki [committer] **/
+/* Copyright (C) 2014-2021 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Selim Seddiki [committer] */
 
 // -------------------------------------------------------------------------
 // ----- This task calculate the collision centrality for each event, based on STS and PSD information

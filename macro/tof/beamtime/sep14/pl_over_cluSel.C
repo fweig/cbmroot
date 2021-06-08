@@ -1,7 +1,6 @@
-/** @file pl_over_cluSel.C
-  * @copyright Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Christian Simon [committer] **/
+/* Copyright (C) 2015 Physikalisches Institut, Universitaet Heidelberg, Heidelberg
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Christian Simon [committer] */
 
 void pl_over_cluSel(Int_t iSel = 0, Int_t iSmT = 0, Int_t iSm = 0, Int_t iRpc = 0)
 {

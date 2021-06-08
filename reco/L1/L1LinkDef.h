@@ -1,7 +1,6 @@
-/** @file L1LinkDef.h
-  * @copyright Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Denis Bertini [committer], Florian Uhlig **/
+/* Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Denis Bertini [committer], Florian Uhlig */
 
 // $Id: L1LinkDef.h,v 1.10 2006/05/18 11:36:47 friese Exp $
 

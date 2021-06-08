@@ -1,7 +1,6 @@
-/** @file CbmTbDaqBuffer.cxx
-  * @copyright Copyright (C) 2013-2020 PI-UHd, GSI
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Volker Friese, Norbert Herrmann [committer] **/
+/* Copyright (C) 2013-2020 PI-UHd, GSI
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese, Norbert Herrmann [committer] */
 
 /** @file CbmTbDaqBuffer.cxx
  ** @author Volker Friese <v.friese@gsi.de>

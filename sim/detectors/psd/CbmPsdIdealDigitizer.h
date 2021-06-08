@@ -1,7 +1,6 @@
-/** @file CbmPsdIdealDigitizer.h
-  * @copyright Copyright (C) 2012-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Alla Maevskaya, Volker Friese [committer] **/
+/* Copyright (C) 2012-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Alla Maevskaya, Volker Friese [committer] */
 
 // -------------------------------------------------------------------------
 // -----                 CbmPsdHitProducerIdel header file             -----

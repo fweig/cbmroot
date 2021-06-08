@@ -1,7 +1,6 @@
-/** @file LitTrackFitterMuon.h
-  * @copyright Copyright (C) 2009-2011 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Andrey Lebedev [committer] **/
+/* Copyright (C) 2009-2011 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Andrey Lebedev [committer] */
 
 /** LitTrackFitterMuon.h
  * @author Andrey Lebedev <andrey.lebedev@gsi.de>

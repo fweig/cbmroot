@@ -1,7 +1,6 @@
-/** @file CbmRichMCbmQaReal.h
-  * @copyright Copyright (C) 2019-2020 UGiessen, JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Semen Lebedev [committer], Adrian Amatus Weber, Florian Uhlig **/
+/* Copyright (C) 2019-2020 UGiessen, JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Semen Lebedev [committer], Adrian Amatus Weber, Florian Uhlig */
 
 #ifndef MCBM_RICH_QA_REAL
 #define MCBM_RICH_QA_REAL

@@ -1,7 +1,6 @@
-/** @file CbmLitPolarizedGenerator.h
-  * @copyright Copyright (C) 2011-2015 GSI/JINR-LIT
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Evgeny Kryshen, Andrey Lebedev [committer] **/
+/* Copyright (C) 2011-2015 GSI/JINR-LIT
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Evgeny Kryshen, Andrey Lebedev [committer] */
 
 // -------------------------------------------------------------------------
 // -----             CbmLitPolarizedGenerator header file                 -----
