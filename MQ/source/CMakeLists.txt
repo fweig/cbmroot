@@ -97,6 +97,24 @@ set(DEPENDENCIES
 )
 GENERATE_EXECUTABLE()
 
+set(EXE_NAME RepReqTsSampler)
+set(SRCS CbmMQTsSamplerRepReq.cxx runTsSamplerRepReq.cxx)
+set(DEPENDENCIES
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  fles_ipc
+  CbmMQBase
+  CbmFlibFlesTools
+  Core
+  Gpad
+  Hist
+  Net
+  RHTTP
+  RIO
+)
+GENERATE_EXECUTABLE()
+
 
 set(EXE_NAME TsaSamplerTof)
 set(SRCS CbmMQTsaSamplerTof.cxx runTsaSamplerTof.cxx)
@@ -152,5 +170,23 @@ set(DEPENDENCIES
   CbmBase
   Core
   CbmMQBase
+)
+GENERATE_EXECUTABLE()
+
+set(EXE_NAME TsConsumerReqExample)
+set(SRCS CbmTsConsumerReqDevExample.cxx runTsConsumerReqExample.cxx)
+set(DEPENDENCIES
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  fles_ipc
+  CbmMQBase
+  CbmFlibFlesTools
+  Core
+  Gpad
+  Hist
+  Net
+  RHTTP
+  RIO
 )
 GENERATE_EXECUTABLE()

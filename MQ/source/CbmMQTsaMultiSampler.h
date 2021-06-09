@@ -72,7 +72,6 @@ private:
   bool InitHistograms();
   bool CheckTimeslice(const fles::Timeslice& ts);
   void PrintMicroSliceDescriptor(const fles::MicrosliceDescriptor& mdsc);
-  bool SendData(const fles::StorableTimeslice& component);
   void CalcRuntime();
   bool IsChannelNameAllowed(std::string);
   bool CreateAndSendComponent(const fles::Timeslice&, int);

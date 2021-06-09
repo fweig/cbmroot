@@ -70,11 +70,13 @@ If(FAIRLOGGER_FOUND)
      )
 EndIf()
 
+set(BASE_DEPENDENCIES ${DEPENDENCIES})
+
 set(EXE_NAME T0MonitorMcbm2018)
 set(SRCS CbmDeviceMonitorT0.cxx runMonitorT0.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
+  ${BASE_DEPENDENCIES}
   ${FAIR_LIBS}
   ${BOOST_LIBS}
   fles_ipc
@@ -95,7 +97,49 @@ set(EXE_NAME TofMonitorMcbm2018)
 set(SRCS CbmDeviceMonitorTof.cxx runMonitorTof.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
+  ${BASE_DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  fles_ipc
+  CbmFlibMcbm2018
+  CbmFlibFlesTools
+  CbmBase
+  CbmData
+  Core
+  RIO
+  Net
+  Hist
+  RHTTP
+)
+#GENERATE_LIBRARY()
+GENERATE_EXECUTABLE()
+
+set(EXE_NAME T0MonitorReqMcbm)
+set(SRCS CbmDeviceMonitorReqT0.cxx runMonitorReqT0.cxx)
+
+set(DEPENDENCIES
+  ${BASE_DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  fles_ipc
+  CbmFlibMcbm2018
+  CbmFlibFlesTools
+  CbmBase
+  CbmData
+  Core
+  RIO
+  Net
+  Hist
+  RHTTP
+)
+#GENERATE_LIBRARY()
+GENERATE_EXECUTABLE()
+
+set(EXE_NAME TofMonitorReqMcbm)
+set(SRCS CbmDeviceMonitorReqTof.cxx runMonitorReqTof.cxx)
+
+set(DEPENDENCIES
+  ${BASE_DEPENDENCIES}
   ${FAIR_LIBS}
   ${BOOST_LIBS}
   fles_ipc
