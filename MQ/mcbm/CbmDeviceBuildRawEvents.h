@@ -1,6 +1,6 @@
 /* Copyright (C) 2020-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: P.-A. Loizeau, Dominik Smith [committer] */
+   Authors: Pierre-Alain Loizeau, Dominik Smith [committer] */
 
 /**
  * CbmDeviceBuildRawEvents.h

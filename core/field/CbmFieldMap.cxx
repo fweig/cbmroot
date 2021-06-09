@@ -1,6 +1,6 @@
 /* Copyright (C) 2004-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: M. Al/Turany (CbmField.cxx), Denis Bertini [committer], Florian Uhlig, Volker Friese */
+   Authors: Mohammad Al-Turany, Denis Bertini [committer], Florian Uhlig, Volker Friese */
 
 // -------------------------------------------------------------------------
 // -----                      CbmFieldMap source file                  -----

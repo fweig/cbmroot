@@ -1,6 +1,6 @@
 /* Copyright (C) 2007-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: E. Kryshen, Dominik Smith [committer], Sergey Gorbunov */
+   Authors: Evgeny Kryshen, Dominik Smith [committer], Sergey Gorbunov */
 
 // -------------------------------------------------------------------------
 // -----                   CbmMuchHitProducerQa source file             -----

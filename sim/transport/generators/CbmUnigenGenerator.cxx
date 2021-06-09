@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: D. Kresan, Volker Friese, Florian Uhlig [committer] */
+   Authors: Dmytro Kresan, Volker Friese, Florian Uhlig [committer] */
 
 /** @file CbmUnigenGenerator.h
  ** @author D. Kresan <d.kresan@gsi.de>

@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: M.Kalisky, Denis Bertini [committer], Florian Uhlig */
+   Authors: Matus Kalisky, Denis Bertini [committer], Florian Uhlig */
 
 // -----------------------------------------------------------------------
 // -----                     CbmTrdHitProducerQa                     -----

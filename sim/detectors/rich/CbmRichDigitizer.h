@@ -1,6 +1,6 @@
 /* Copyright (C) 2015-2020 GSI/JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: S.Lebedev, Andrey Lebedev [committer] */
+   Authors: Semen Lebedev, Andrey Lebedev [committer] */
 
 /**
 * \file CbmRichDigitizer.h

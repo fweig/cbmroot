@@ -1,6 +1,6 @@
 /* Copyright (C) 2010-2020 Frankfurt Institute for Advanced Studies, Goethe-Universitaet Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: I.Kisel, S.Gorbunov, I.Kulakov, Valentina Akishina, Igor Kulakov [committer], Maxim Zyzak */
+   Authors: Ivan Kisel, Sergey Gorbunov, Igor Kulakov [committer], Valentina Akishina, Maksym Zyzak */
 
 #include <iostream>
 #include <vector>

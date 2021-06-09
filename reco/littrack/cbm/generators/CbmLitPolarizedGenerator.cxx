@@ -1,6 +1,6 @@
 /* Copyright (C) 2009-2011 GSI/JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: E. Kryshen, Andrey Lebedev [committer] */
+   Authors: Evgeny Kryshen, Andrey Lebedev [committer] */
 
 // -------------------------------------------------------------------------
 // -----         CbmLitPolarizedGenerator source file                     -----

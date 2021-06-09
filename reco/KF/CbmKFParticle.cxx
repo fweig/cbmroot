@@ -1,6 +1,6 @@
 /* Copyright (C) 2008-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: S.Gorbunov, I.Kisel, Mohammad Al-Turany [committer], Maxim Zyzak */
+   Authors: Sergey Gorbunov, Ivan Kisel, Mohammad Al-Turany [committer], Maksym Zyzak */
 
 //3456789012345678901234567890123456789012345678901234567890123456789012
 /** Implementation of the CbmKFParticle class

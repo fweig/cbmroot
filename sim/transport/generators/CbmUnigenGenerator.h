@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: D. Kresan, Volker Friese */
+   Authors: Dmytro Kresan, Volker Friese */
 
 /** @file CbmUnigenGenerator.h
  ** @author D. Kresan <d.kresan@gsi.de>

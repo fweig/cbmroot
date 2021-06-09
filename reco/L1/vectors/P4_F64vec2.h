@@ -1,6 +1,6 @@
 /* Copyright (C) 2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Maxim Zyzak [committer] */
+   Authors: Maksym Zyzak [committer] */
 
 #ifndef L1Algo_F64vec2P4_H
 #define L1Algo_F64vec2P4_H

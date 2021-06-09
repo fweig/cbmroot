@@ -1,6 +1,6 @@
 /* Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Viktor Klochkov, Viktor Klochkov */
+   Authors: Viktor Klochkov */
 
 #include "CbmStsTracksConverter.h"
 

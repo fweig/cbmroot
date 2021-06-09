@@ -1,6 +1,6 @@
 /* Copyright (C) 2012-2020 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Maxim Zyzak, Igor Kulakov [committer] */
+   Authors: Maksym Zyzak, Igor Kulakov [committer] */
 
 #ifndef L1HitArea_H
 #define L1HitArea_H

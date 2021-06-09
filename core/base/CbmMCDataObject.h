@@ -1,6 +1,6 @@
 /* Copyright (C) 2017-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: //Dr.Sys, Volker Friese [committer] */
+   Authors: Mikhail Prokudin, Volker Friese [committer] */
 
 /** @file  CbmMCDataObject.h
  ** @author //Dr.Sys <mikhail.prokudin@cern.ch>

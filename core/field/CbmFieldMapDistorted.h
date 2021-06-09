@@ -1,6 +1,6 @@
 /* Copyright (C) 2008-2020 Justus-Liebig-Universitaet Giessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Elena Lebdeva [committer], Florian Uhlig */
+   Authors: Elena Lebedeva [committer], Florian Uhlig */
 
 // -------------------------------------------------------------------------
 // -----               CbmFieldMapSym3Distorted header              -----

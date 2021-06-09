@@ -1,6 +1,6 @@
 /* Copyright (C) 2015-2020 GSI/JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: slebedev, Volker Friese, Andrey Lebedev [committer], Florian Uhlig */
+   Authors: Semen Lebedev, Volker Friese, Andrey Lebedev [committer], Florian Uhlig */
 
 /*
  * CbmRichDigi.h

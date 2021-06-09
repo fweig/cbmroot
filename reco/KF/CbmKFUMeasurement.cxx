@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2010 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Denis Bertini [committer], Sergey Gorbunov, Maxim Zyzak */
+   Authors: Denis Bertini [committer], Sergey Gorbunov, Maksym Zyzak */
 
 #include "CbmKFUMeasurement.h"
 

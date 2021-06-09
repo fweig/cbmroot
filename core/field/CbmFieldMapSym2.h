@@ -1,6 +1,6 @@
 /* Copyright (C) 2005-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: E. Litvinenko, Denis Bertini [committer] */
+   Authors: Elena Litvinenko, Denis Bertini [committer] */
 
 // -------------------------------------------------------------------------
 // -----                    CbmFieldMapSym2 header file                -----

@@ -1,6 +1,6 @@
 /* Copyright (C) 2015-2020 PI-UHd, GSI
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: D.Kresan, Norbert Herrmann [committer], Florian Uhlig */
+   Authors: Dmytro Kresan, Norbert Herrmann [committer], Florian Uhlig */
 
 // -------------------------------------------------------------------------
 // -----                   CbmTofTrackFinder header file               -----

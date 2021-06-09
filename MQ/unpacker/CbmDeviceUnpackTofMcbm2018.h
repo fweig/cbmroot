@@ -1,6 +1,6 @@
 /* Copyright (C) 2018-2020 PI-UHd, GSI
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: F. Uhlig, Norbert Herrmann [committer] */
+   Authors: Florian Uhlig, Norbert Herrmann [committer] */
 
 /**
  * CbmDeviceUnpackTofMcbm2018.h

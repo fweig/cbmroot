@@ -1,6 +1,6 @@
 /* Copyright (C) 2014-2019 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: M.Deveaux, Philipp Sitzmann [committer] */
+   Authors: Michael Deveaux, Philipp Sitzmann [committer] */
 
 // -------------------------------------------------------------------------
 // -----                      CbmMvdSensor header file                -----

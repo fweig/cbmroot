@@ -1,6 +1,6 @@
 /* Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: F. Uhlig, Norbert Herrmann, Norbert Herrmann */
+   Authors: Florian Uhlig, Norbert Herrmann [committer] */
 
 // -------------------------------------------------------------------------
 // -----               CbmTofDetectorId_v12b header file               -----

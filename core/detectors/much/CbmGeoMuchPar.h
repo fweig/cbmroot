@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: E.Kryshen, Denis Bertini [committer], Florian Uhlig, Mikhail Ryzhinskiy, Mohammad Al-Turany */
+   Authors: Evgeny Kryshen, Denis Bertini [committer], Florian Uhlig, Mikhail Ryzhinskiy, Mohammad Al-Turany */
 
 /** CbmGeoMuchPar class
  * @author  E.Kryshen <e.kryshen@gsi.de>

@@ -1,6 +1,6 @@
 /* Copyright (C) 2015-2020 Justus-Liebig-Universitaet Giessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: slebedev, Adrian Amatus Weber [committer], Florian Uhlig */
+   Authors: Semen Lebedev, Adrian Amatus Weber [committer], Florian Uhlig */
 
 /*
  * CbmRichDigiMap.h

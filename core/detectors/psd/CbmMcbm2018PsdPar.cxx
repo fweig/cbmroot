@@ -1,6 +1,6 @@
 /* Copyright (C) 2019-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: N.Karpushkin, Florian Uhlig [committer] */
+   Authors: Nikolay Karpushkin, Florian Uhlig [committer] */
 
 // -------------------------------------------------------------------------
 // -----                 CbmMcbm2018PsdPar header file                 -----

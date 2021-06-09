@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: I.Kisel,  S.Gorbunov, I. Rostovtseva (2016), Valentina Akishina, Maxim Zyzak */
+   Authors: Ivan Kisel,  Sergey Gorbunov, Irina Rostovtseva, Valentina Akishina, Maksym Zyzak */
 
 /*
  *====================================================================

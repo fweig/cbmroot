@@ -1,6 +1,6 @@
 /* Copyright (C) 2012-2021 UGiessen, JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Semen Lebedev [committer], Andrey Lebedev, Semen Lebedev [committer] */
+   Authors: Semen Lebedev [committer], Andrey Lebedev */
 
 /**
  * \file CbmRichReconstruction.cxx

@@ -1,6 +1,6 @@
 /* Copyright (C) 2004-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: A. Soloviev, Florian Uhlig, Denis Bertini [committer], Semen Lebedev */
+   Authors: Florian Uhlig, Denis Bertini [committer], Semen Lebedev */
 
 #ifndef CBM_RICH_RING_H
 #define CBM_RICH_RING_H

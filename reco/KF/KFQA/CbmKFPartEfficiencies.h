@@ -1,6 +1,6 @@
 /* Copyright (C) 2012-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Maxim Zyzak [committer] */
+   Authors: Maksym Zyzak [committer] */
 
 #ifndef CbmKFPartEfficiencies_H
 #define CbmKFPartEfficiencies_H

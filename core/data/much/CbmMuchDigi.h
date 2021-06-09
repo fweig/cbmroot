@@ -1,6 +1,6 @@
 /* Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: M.Ryzhinskiy, Florian Uhlig, Volker Friese [committer], Pierre-Alain Loizeau */
+   Authors: Mikhail Ryzhinskiy, Florian Uhlig, Volker Friese [committer], Pierre-Alain Loizeau */
 
 /** CbmMuchDigi.h
  **@author M.Ryzhinskiy <m.ryzhinskiy@gsi.de>

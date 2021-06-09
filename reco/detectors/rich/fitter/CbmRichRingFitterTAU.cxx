@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Alexander Ayriyan, Gennadi Ososkov, Claudia Hoehne, Semen Lebedev, Semen Lebedev, Denis Bertini [committer] */
+   Authors: Alexander Ayriyan, Gennadi Ososkov, Claudia Hoehne, Semen Lebedev, Denis Bertini [committer] */
 
 /**
 * \file CbmRichRingFitterTAU.cxx

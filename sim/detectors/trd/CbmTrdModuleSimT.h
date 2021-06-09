@@ -1,6 +1,6 @@
 /* Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Alex Bercuci, Florian Uhlig [committer], Alexandru Bercuci */
+   Authors: Alexandru Bercuci, Florian Uhlig [committer] */
 
 #ifndef CBMTRDMODULESIMT_H
 #define CBMTRDMODULESIMT_H

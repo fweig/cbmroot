@@ -1,6 +1,6 @@
 /* Copyright (C) 2018-2020 Variable Energy Cyclotron Centre, Kolkata
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: P.-A. Loizeau, Vikas Singhal [committer] */
+   Authors: Pierre-Alain Loizeau, Vikas Singhal [committer] */
 
 // -----------------------------------------------------------------------------
 // -----                                                                   -----

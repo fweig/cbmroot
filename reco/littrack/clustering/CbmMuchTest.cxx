@@ -1,6 +1,6 @@
 /* Copyright (C) 2012-2019 GSI/JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: kozlov, Andrey Lebedev [committer] */
+   Authors: Grigory Kozlov, Andrey Lebedev [committer] */
 
 /*
  * CbmMuchTest.cxx

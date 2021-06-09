@@ -1,6 +1,6 @@
 /* Copyright (C) 2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Olga Derenovskaia, Volker Friese [committer] */
+   Authors: Olga Derenovskaya, Volker Friese [committer] */
 
 /**
  * \file CbmStsWkn.h

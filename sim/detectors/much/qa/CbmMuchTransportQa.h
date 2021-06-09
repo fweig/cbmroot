@@ -1,6 +1,6 @@
 /* Copyright (C) 2020-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Sergey Gorbunov, Eugeny Kryshen, Vikas Singhal, Ekata Nandy, Dominik Smith [committer] */
+   Authors: Sergey Gorbunov, Evgeny Kryshen, Vikas Singhal, Ekata Nandy, Dominik Smith [committer] */
 
 /** @file   CbmMuchTransportQa.h
   * @brief  Definition of the CbmMuchTransportQa class

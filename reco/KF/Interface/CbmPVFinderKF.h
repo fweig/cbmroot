@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: S.Gorbunov, Denis Bertini [committer], Volker Friese */
+   Authors: Sergey Gorbunov, Denis Bertini [committer], Volker Friese */
 
 /** CbmPVFinderKF
  *@author S.Gorbunov

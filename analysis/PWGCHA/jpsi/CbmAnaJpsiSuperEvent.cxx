@@ -1,6 +1,6 @@
 /* Copyright (C) 2015-2021 UGiessen, JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: slebedev, Adrian Amatus Weber, Semen Lebedev [committer] */
+   Authors: Semen Lebedev [committer], Adrian Amatus Weber */
 
 /*
  * CbmAnaJpsiSuperEvent.cxx

@@ -1,6 +1,6 @@
 /* Copyright (C) 2007-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Simeon Lebedev, Andrey Lebedev, Florian Uhlig [committer], Semen Lebedev */
+   Authors: Semen Lebedev, Andrey Lebedev, Florian Uhlig [committer] */
 
 // -------------------------------------------------------------------------
 // -----                    CbmTrdSetTracksPidANN source file          -----

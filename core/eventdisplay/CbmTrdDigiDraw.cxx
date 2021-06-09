@@ -1,6 +1,6 @@
 /* Copyright (C) 2008-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: M. Al-Turany, Florian Uhlig [committer] */
+   Authors: Mohammad Al-Turany, Florian Uhlig [committer] */
 
 // -------------------------------------------------------------------------
 // -----                        CbmTrdDigiDraw source file                  -----

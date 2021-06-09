@@ -1,6 +1,6 @@
 /* Copyright (C) 2013 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: M.Zyzak, Maxim Zyzak [committer], Florian Uhlig */
+   Authors: Maksym Zyzak [committer], Florian Uhlig */
 
 /*
  *====================================================================

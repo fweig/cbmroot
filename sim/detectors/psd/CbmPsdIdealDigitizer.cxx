@@ -1,6 +1,6 @@
 /* Copyright (C) 2012-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Alla & SELIM & FLORIAN, Volker Friese [committer], Evgeny Kashirin */
+   Authors: Alla Maevskaya, Selim Seddiki, Volker Friese [committer], Evgeny Kashirin */
 
 // -------------------------------------------------------------------------
 // -----                CbmPsdIdealDigitizer source file             -----

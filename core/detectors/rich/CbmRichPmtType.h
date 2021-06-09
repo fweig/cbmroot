@@ -1,6 +1,6 @@
 /* Copyright (C) 2017 UGiessen, JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: slebedev, Semen Lebedev [committer] */
+   Authors: Semen Lebedev */
 
 /*
  * CbmRichPmtType.h

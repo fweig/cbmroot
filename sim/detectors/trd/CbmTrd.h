@@ -1,6 +1,6 @@
 /* Copyright (C) 2004-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: V.Friese, Andrey Lebedev, Denis Bertini [committer], Florian Uhlig */
+   Authors: Volker Friese, Andrey Lebedev, Denis Bertini [committer], Florian Uhlig */
 
 /**
  * \file CbmTrd.h

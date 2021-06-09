@@ -1,6 +1,6 @@
 /* Copyright (C) 2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: P.-A Loizeau, Pierre-Alain Loizeau [committer] */
+   Authors: Pierre-Alain Loizeau */
 
 /**
  * CbmDeviceMonitorTof.h

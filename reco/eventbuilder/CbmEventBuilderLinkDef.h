@@ -1,6 +1,6 @@
 /* Copyright (C) 2017-2021 IKF-UFra, GSI
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Valentina Akishina [orginator], Volker Friese, Dominik Smith */
+   Authors: Valentina Akishina [committer], Volker Friese, Dominik Smith */
 
 #ifdef __CINT__
 

@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: V.Friese ,v.friese@gsi.de>, Denis Bertini [committer], Volker Friese */
+   Authors: Volker Friese, Denis Bertini [committer] */
 
 // -------------------------------------------------------------------------
 // -----                CbmPrimaryVertexFinder header file             -----

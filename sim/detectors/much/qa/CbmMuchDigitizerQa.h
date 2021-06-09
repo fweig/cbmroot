@@ -1,6 +1,6 @@
 /* Copyright (C) 2020-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Eugeny Kryshen, Dominik Smith [committer], Sergey Gorbunov, Vikas Singhal, Ekata Nandy */
+   Authors: Evgeny Kryshen, Dominik Smith [committer], Sergey Gorbunov, Vikas Singhal, Ekata Nandy */
 
 /*** \brief  Definition of the CbmMuchDigitizerQa class
   * \date   25.09.2020 **/

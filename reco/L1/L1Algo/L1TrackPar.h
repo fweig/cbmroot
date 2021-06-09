@@ -1,6 +1,6 @@
 /* Copyright (C) 2007-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Igor Kulakov, Maxim Zyzak */
+   Authors: Igor Kulakov, Maksym Zyzak */
 
 #ifndef L1TrackPar_h
 #define L1TrackPar_h 1

@@ -1,6 +1,6 @@
 /* Copyright (C) 2008-2020 Justus-Liebig-Universitaet Giessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: E.Litvinenko, Elena Lebdeva [committer] */
+   Authors: Elena Litvinenko, Elena Lebedeva [committer] */
 
 // -------------------------------------------------------------------------
 // -----                  CbmFieldMapSym1 source file                  -----

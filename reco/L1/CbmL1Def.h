@@ -1,6 +1,6 @@
 /* Copyright (C) 2010-2021 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Maxim Zyzak, Igor Kulakov [committer], Sergey Gorbunov */
+   Authors: Maksym Zyzak, Igor Kulakov [committer], Sergey Gorbunov */
 
 #ifndef CbmL1Def_h
 #define CbmL1Def_h 1

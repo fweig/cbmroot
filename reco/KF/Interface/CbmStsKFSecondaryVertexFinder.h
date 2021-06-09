@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2015 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: S.Gorbunov, I.Kisel, Denis Bertini [committer] */
+   Authors: Sergey Gorbunov, Ivan Kisel, Denis Bertini [committer] */
 
 /** The CbmStsKFSecondaryVertexFinder class
  *

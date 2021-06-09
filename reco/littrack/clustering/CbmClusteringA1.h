@@ -1,6 +1,6 @@
 /* Copyright (C) 2012-2016 GSI/JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: kozlov, Andrey Lebedev [committer], Grigory Kozlov, Florian Uhlig */
+   Authors: Grigory Kozlov, Andrey Lebedev [committer], Florian Uhlig */
 
 /*
  * CbmClusteringA1.h

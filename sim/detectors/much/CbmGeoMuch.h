@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2009 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: A.Kiseleva, Denis Bertini [committer] */
+   Authors: Anna Senger, Denis Bertini [committer] */
 
 /** CbmGeoMuch class
  *

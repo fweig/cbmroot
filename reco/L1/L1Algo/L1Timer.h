@@ -1,6 +1,6 @@
 /* Copyright (C) 2012-2019 Frankfurt Institute for Advanced Studies, Goethe-Universitaet Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Igor Kulakov [committer], Maxim Zyzak */
+   Authors: Igor Kulakov [committer], Maksym Zyzak */
 
 #ifndef _L1Timer_H
 #define _L1Timer_H

@@ -1,6 +1,6 @@
 /* Copyright (C) 2010-2021 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Igor Kulakov [committer], Maxim Zyzak, Valentina Akishina */
+   Authors: Igor Kulakov [committer], Maksym Zyzak, Valentina Akishina */
 
 #include "L1Algo.h"
 

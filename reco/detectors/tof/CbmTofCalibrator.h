@@ -1,6 +1,6 @@
 /* Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: nh, Florian Uhlig [committer] */
+   Authors: Norbert Herrmann, Florian Uhlig [committer] */
 
 /** @file CbmTofCalibrator.h
  ** @author nh <N.Herrmann@gsi.de>

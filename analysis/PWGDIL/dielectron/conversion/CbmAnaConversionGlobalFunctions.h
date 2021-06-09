@@ -1,6 +1,6 @@
 /* Copyright (C) 2016-2017 Fakultaet fuer Mathematik und Naturwissenschaften, Bergische Universitaet Wuppertal, Wuppertal
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: S. Reinecke, Andrey Lebedev */
+   Authors: Sascha Reinecke, Andrey Lebedev */
 
 /**
  * @author S. Reinecke <reinecke@uni-wuppertal.de>

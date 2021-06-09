@@ -1,6 +1,6 @@
 /* Copyright (C) 2005-2019 PI-UHd, GSI
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: D. Kresan, Norbert Herrmann [committer] */
+   Authors: Dmytro Kresan, Norbert Herrmann [committer] */
 
 // -----------------------------------------------------------------------
 // -----                  CbmTofTrackFitterKF                        -----

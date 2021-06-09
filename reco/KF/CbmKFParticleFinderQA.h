@@ -1,6 +1,6 @@
 /* Copyright (C) 2014-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Volker Friese [committer], Maxim Zyzak */
+   Authors: Volker Friese [committer], Maksym Zyzak */
 
 //-----------------------------------------------------------
 //-----------------------------------------------------------

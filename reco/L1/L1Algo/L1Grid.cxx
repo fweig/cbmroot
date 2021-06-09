@@ -1,6 +1,6 @@
 /* Copyright (C) 2017-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Maxim Zyzak [committer], Valentina Akishina */
+   Authors: Maksym Zyzak [committer], Valentina Akishina */
 
 #include "L1Grid.h"
 

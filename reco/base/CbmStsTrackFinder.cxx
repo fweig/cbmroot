@@ -1,6 +1,6 @@
 /* Copyright (C) 2005-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: V. Friese, Evgeny Lavrik, Florian Uhlig */
+   Authors: Volker Friese, Evgeny Lavrik, Florian Uhlig */
 
 // -------------------------------------------------------------------------
 // -----                   CbmStsTrackFinder source file               -----

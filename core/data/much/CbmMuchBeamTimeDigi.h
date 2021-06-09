@@ -1,6 +1,6 @@
 /* Copyright (C) 2014-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: M.Ryzhinskiy, Florian Uhlig [committer], Volker Friese, Pierre-Alain Loizeau, David Emschermann */
+   Authors: Mikhail Ryzhinskiy, Florian Uhlig [committer], Volker Friese, Pierre-Alain Loizeau, David Emschermann */
 
 // TODO comment to be changed
 /** CbmMuchBeamTimeDigi.h

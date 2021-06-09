@@ -1,6 +1,6 @@
 /* Copyright (C) 2019-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: N.Karpushkin, David Emschermann [committer] */
+   Authors: Nikolay Karpushkin, David Emschermann [committer] */
 
 // -----------------------------------------------------------------------------
 // -----                                                                   -----

@@ -1,6 +1,6 @@
 /* Copyright (C) 2012-2020 Institute for Nuclear Research, Moscow
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Alla & SELIM & FLORIAN, Sergey Morozov [committer], Volker Friese, Evgeny Kashirin */
+   Authors: Alla Maevskaya, Selim Seddiki, Sergey Morozov [committer], Volker Friese, Evgeny Kashirin */
 
 // -------------------------------------------------------------------------
 // -----                CbmPsdSimpleDigitizer source file              -----

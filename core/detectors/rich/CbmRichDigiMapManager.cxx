@@ -1,6 +1,6 @@
 /* Copyright (C) 2015-2020 GSI/JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: slebedev, Adrian Amatus Weber, Semen Lebedev, Andrey Lebedev [committer], Florian Uhlig */
+   Authors: Semen Lebedev, Adrian Amatus Weber, Andrey Lebedev [committer], Florian Uhlig */
 
 /*
  * CbmRichDigiMapManager.cxx

@@ -1,6 +1,6 @@
 /* Copyright (C) 2017-2021 Faculty of Physics, Warsaw University of Technology, Warsaw
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Daniel Wielanek [committer], Daniel Wielanek [committer] */
+   Authors: Daniel Wielanek */
 
 /*
  * NicaUnigenSource.h

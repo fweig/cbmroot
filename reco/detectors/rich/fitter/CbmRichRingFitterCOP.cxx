@@ -1,6 +1,6 @@
 /* Copyright (C) 2005-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Alexander Ayriyan, Gennadi Ososkov, Semen Lebedev, Semen Lebedev, Denis Bertini [committer] */
+   Authors: Alexander Ayriyan, Gennadi Ososkov, Semen Lebedev, Denis Bertini [committer] */
 
 /**
 * \file CbmRichRingFitterCOP.cxx

@@ -1,6 +1,6 @@
 /* Copyright (C) 2017-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Maxim Zyzak [committer], Sergey Gorbunov */
+   Authors: Maksym Zyzak [committer], Sergey Gorbunov */
 
 #ifndef L1TrackParFit_h
 #define L1TrackParFit_h

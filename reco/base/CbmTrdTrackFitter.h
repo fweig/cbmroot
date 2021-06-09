@@ -1,6 +1,6 @@
 /* Copyright (C) 2006 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: D.Kresan, Denis Bertini [committer] */
+   Authors: Dmytro Kresan, Denis Bertini [committer] */
 
 // -------------------------------------------------------------------------
 // -----                   CbmTrdTrackFitter header file               -----

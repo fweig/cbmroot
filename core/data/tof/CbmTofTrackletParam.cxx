@@ -1,6 +1,6 @@
 /* Copyright (C) 2005-2020 PI-UHd, GSI
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: V. Friese, Norbert Herrmann [committer], Florian Uhlig */
+   Authors: Volker Friese, Norbert Herrmann [committer], Florian Uhlig */
 
 // -------------------------------------------------------------------------
 // -----                     FairTrackParam source file                 -----

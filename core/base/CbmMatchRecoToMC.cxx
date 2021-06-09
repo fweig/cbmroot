@@ -1,6 +1,6 @@
 /* Copyright (C) 2013-2021 GSI/JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: andrey, Andrey Lebedev [committer], Florian Uhlig, Volker Friese, Pierre-Alain Loizeau */
+   Authors: Andrey Lebedev [committer], Florian Uhlig, Volker Friese, Pierre-Alain Loizeau */
 
 /*
  * CbmMatchRecoToMC.cxx

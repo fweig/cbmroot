@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: M.Ryzhinskiy, Volker Friese, Florian Uhlig, Denis Bertini [committer] */
+   Authors: Mikhail Ryzhinskiy, Volker Friese, Florian Uhlig, Denis Bertini [committer] */
 
 /** CbmMuchPoint.cxx
  *

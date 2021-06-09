@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: V.Friese, Denis Bertini [committer], Christian Simon */
+   Authors: Volker Friese, Denis Bertini [committer], Christian Simon */
 
 // -------------------------------------------------------------------------
 // -----                         CbmTof header file                    -----

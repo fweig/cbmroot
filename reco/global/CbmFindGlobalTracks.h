@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2012 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: V.Friese, Denis Bertini [committer] */
+   Authors: Volker Friese, Denis Bertini [committer] */
 
 // -------------------------------------------------------------------------
 // -----                  CbmFindGlobalTracks header file              -----

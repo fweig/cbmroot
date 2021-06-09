@@ -1,6 +1,6 @@
 /* Copyright (C) 2007-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: E. Kryshen, Sergey Gorbunov [committer] */
+   Authors: Evgeny Kryshen, Sergey Gorbunov [committer] */
 
 // -------------------------------------------------------------------------
 // -----                   CbmMuchPointInfo header file                -----

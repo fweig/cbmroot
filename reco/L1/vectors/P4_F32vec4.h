@@ -1,6 +1,6 @@
 /* Copyright (C) 2010-2014 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Igor Kulakov [committer], Maxim Zyzak */
+   Authors: Igor Kulakov [committer], Maksym Zyzak */
 
 #ifndef L1Algo_F32vec4P4_H
 #define L1Algo_F32vec4P4_H

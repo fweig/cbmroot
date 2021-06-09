@@ -1,6 +1,6 @@
 /* Copyright (C) 2012-2015 PI-UHd, GSI
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: F. Uhlig, Norbert Herrmann [committer], Pierre-Alain Loizeau */
+   Authors: Florian Uhlig, Norbert Herrmann [committer], Pierre-Alain Loizeau */
 
 // -------------------------------------------------------------------------
 // -----                   CbmTofDetectorId source file                -----
