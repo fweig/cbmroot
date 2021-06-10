@@ -1,6 +1,6 @@
 /* Copyright (C) 2013-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Pierre-Alain Loizeau, Pierre-Alain Loizeau [committer], Florian Uhlig */
+   Authors: Pierre-Alain Loizeau [committer], Florian Uhlig */
 
 // ------------------------------------------------------------------
 // -----                     CbmTofTests                        -----

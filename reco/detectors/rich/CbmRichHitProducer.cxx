@@ -1,6 +1,6 @@
 /* Copyright (C) 2004-2021 GSI/JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: B. Polichtchouk, Andrey Lebedev [committer], Volker Friese */
+   Authors: Boris Polichtchouk, Andrey Lebedev [committer], Volker Friese */
 
 /**
  * \file CbmRichHitProducer.cxx

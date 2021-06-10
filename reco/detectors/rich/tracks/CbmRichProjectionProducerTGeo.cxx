@@ -1,6 +1,6 @@
 /* Copyright (C) 2005-2021 GSI/JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: P.Stolpovsky, Andrey Lebedev [committer], Semen Lebedev */
+   Authors: Petr Stolpovsky, Andrey Lebedev [committer], Semen Lebedev */
 
 /**
  * \file CbmRichProjectionProducer.cxx

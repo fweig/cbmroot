@@ -1,6 +1,6 @@
 /* Copyright (C) 2016-2021 GSI/JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Semen Lebedev (initial version by P.Stolpovsky (2005)), Andrey Lebedev [committer] */
+   Authors: Petr Stolpovsky, Semen Lebedev, Andrey Lebedev [committer] */
 
 /**
  * \file CbmRichProjectionProducerAnalytical.cxx
