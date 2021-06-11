@@ -41,6 +41,7 @@ Install(FILES C2F/.rootrc C2F/c2f_transport.C C2F/sis100_electron.tree.list
               ${CBMROOT_SOURCE_DIR}/macro/analysis/common/analysis_tree_converter/run_analysis_tree_maker.C
               ${CBMROOT_SOURCE_DIR}/macro/analysis/common/at_kfpf_interface/run_at_kfpf.C
               ${CBMROOT_SOURCE_DIR}/macro/analysis/common/qa/run_analysistree_qa.C
+              ${CBMROOT_SOURCE_DIR}/macro/analysis/common/cuts/cbm_cuts.h
         DESTINATION share/cbmroot/macro/c2f
        )
 Install(CODE "FILE(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/share/cbmroot/macro/c2f/data)")
