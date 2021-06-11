@@ -145,6 +145,9 @@ FileEndCheck:
     - echo $CI_MERGE_REQUEST_ID
     - echo $CI_MERGE_REQUEST_IID
   script:
+    - if [[ -n $CONFIGFILE ]]; then
+    -   source $CONFIGFILE $FAIRSOFT_VERSION
+    - fi
     - echo "export LINUX_FLAVOUR=$OS" >> Dart.cfg
     - echo "export SIMPATH=$SIMPATH" >> Dart.cfg
     - echo "export FAIRROOTPATH=$FAIRROOTPATH" >> Dart.cfg
@@ -206,6 +209,7 @@ FileEndCheck:
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft-${FAIRSOFT_VERSION}"
     EXTRA_PATH: $SIMPATH/bin
+    CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
 
 .linux_tag: &linux_tag
   stage: build
