@@ -135,19 +135,12 @@ FileEndCheck:
 #
 .build_and_test: &build_and_test
   before_script:
-    - echo $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH
-    - echo $CI_MERGE_REQUEST_PROJECT_PATH
     - if [ "$CI_MERGE_REQUEST_PROJECT_PATH" != "computing/cbmroot" ]; then
     -   echo "Should not come here"
+    -   env
     -   exit 1
     - fi
-    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-    - echo $CI_MERGE_REQUEST_ID
-    - echo $CI_MERGE_REQUEST_IID
   script:
-    - if [[ -n $CONFIGFILE ]]; then
-    -   source $CONFIGFILE $FAIRSOFT_VERSION
-    - fi
     - echo "export LINUX_FLAVOUR=$OS" >> Dart.cfg
     - echo "export SIMPATH=$SIMPATH" >> Dart.cfg
     - echo "export FAIRROOTPATH=$FAIRROOTPATH" >> Dart.cfg
@@ -159,12 +152,14 @@ FileEndCheck:
     - if [[ -n $EXTRA_PATH ]]; then
     -   echo "export PATH=$EXTRA_PATH:$PATH" >> Dart.cfg
     - fi
-    - cat Dart.cfg
+    - if [[ -n $EXTRA_FLAGS ]]; then
+    -   echo "export EXTRA_FLAGS=$EXTRA_FLAGS" >> Dart.cfg
+    - fi
+    - if [[ -n $CONFIGFILE ]]; then
+    -   source $CONFIGFILE $FAIRSOFT_VERSION
+    - fi
     - $PWD/Dart.sh $BUILD_TYPE Dart.cfg
   after_script:
-    - ls
-    - pwd
-    - cat Dart.cfg
     - rm -rf build
 
 #
@@ -190,7 +185,7 @@ FileEndCheck:
   stage: build
   tags:
     - CbmRoot_singularity
-    
+
 .singularity_debian10_variables: &singularity_debian10_variables
     OS: debian10
     NCPU: 14
@@ -200,7 +195,7 @@ FileEndCheck:
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
 
-.singularity_debian8_variables: &singularity_debian8_variables
+.singularity_debian8_variables_jun19: &singularity_debian8_variables_jun19
     OS: debian8
     NCPU: 14
     FAIRSOFT_VERSION: jun19p2
@@ -208,7 +203,26 @@ FileEndCheck:
     BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS"
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft-${FAIRSOFT_VERSION}"
-    EXTRA_PATH: $SIMPATH/bin
+    CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
+
+.singularity_debian8_variables_nov20: &singularity_debian8_variables_nov20
+    OS: debian8
+    NCPU: 14
+    FAIRSOFT_VERSION: nov20
+    FAIRROOT_VERSION: v18.4.2
+    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft-${FAIRSOFT_VERSION}"
+    CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
+
+.singularity_debian8_variables_apr21: &singularity_debian8_variables_apr21
+    OS: debian8
+    NCPU: 14
+    FAIRSOFT_VERSION: apr21
+    FAIRROOT_VERSION: v18.6.3
+    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft_${FAIRSOFT_VERSION}"
     CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
 
 .linux_tag: &linux_tag
@@ -242,10 +256,10 @@ FileEndCheck:
 
 .mergeVariables: &mergeVariables
     BUILD_TYPE: "Continuous"
-    
+
 .mergeRequestVariables: &mergeRequestVariables
     BUILD_TYPE: "MergeRequest"
-    
+
 .check_merge_request: &check_merge_request
   only:
     refs:
@@ -273,10 +287,20 @@ CbmRoot_Merge_Singularity_debian10:
   variables:
     <<: [*mergeRequestVariables, *singularity_debian10_variables]
 
-CbmRoot_Merge_Singularity_debian8:
+CbmRoot_Merge_Singularity_debian8_jun19:
   <<: [*singularity_tag, *check_merge_request, *build_and_test]
   variables:
-    <<: [*mergeRequestVariables, *singularity_debian8_variables]
+    <<: [*mergeRequestVariables, *singularity_debian8_variables_jun19]
+
+CbmRoot_Merge_Singularity_debian8_nov20:
+  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *singularity_debian8_variables_nov20]
+
+CbmRoot_Merge_Singularity_debian8_apr21:
+  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *singularity_debian8_variables_apr21]
 
 CbmRoot_Merge:
   <<: [*linux_tag, *check_merge_request, *build_and_test]
