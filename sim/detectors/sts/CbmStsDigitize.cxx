@@ -189,7 +189,7 @@ void CbmStsDigitize::Exec(Option_t* /*opt*/)
   // --- Generate noise from previous to current event time
   if (fParSim->Noise()) {
     Int_t nNoise         = 0;
-    Double_t tNoiseStart = fNofEvents ? eventTimePrevious : 0.;
+    Double_t tNoiseStart = fNofEvents ? eventTimePrevious : 1000.;
     Double_t tNoiseEnd   = fCurrentEventTime;
     for (auto& entry : fModules)
       nNoise += entry.second->GenerateNoise(tNoiseStart, tNoiseEnd);

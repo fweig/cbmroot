@@ -280,7 +280,7 @@ Int_t CbmDigitizationSource::ReadEvent(UInt_t event)
   }
 
   // In the event-by-event mode, get the respective event from the first
-  // input; the event time is zero.
+  // input; the event time is fStartTime.
   if (fEventMode) return ReadEventByEvent(event);
 
   // If the last used input set was exhausted, switch to a the next one
@@ -347,7 +347,7 @@ Int_t CbmDigitizationSource::ReadEventByEvent(UInt_t event)
     fCurrentEntryId = input->GetNextEntry();
 
   // Set entry properties
-  fCurrentTime = 0.;
+  fCurrentTime = fTimeStart;
   LOG(info) << "DigitizationSource: Event " << event << " at t = " << fCurrentTime << " ns"
             << " from input " << fCurrentInputId << " (entry " << fCurrentEntryId << ")";
 
