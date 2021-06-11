@@ -211,7 +211,8 @@ void CbmTrdDigitizer::Exec(Option_t*)
     //printf("  Digits[%d] %d\n", imod->first, digis->size());
     for (std::map<Int_t, pair<CbmTrdDigi*, CbmMatch*>>::iterator it = digis->begin(); it != digis->end(); it++) {
       assert(it->second.second);
-      SendData(it->second.first, it->second.second);
+      CbmTrdDigi* digi = it->second.first;
+      SendData(digi->GetTime(), digi, it->second.second);
       nDigis++;
     }  //# modules
     digis->clear();
@@ -248,7 +249,8 @@ void CbmTrdDigitizer::FlushBuffers()
     std::map<Int_t, std::pair<CbmTrdDigi*, CbmMatch*>>* digis = imod->second->GetDigiMap();
     for (std::map<Int_t, pair<CbmTrdDigi*, CbmMatch*>>::iterator it = digis->begin(); it != digis->end(); it++) {
       assert(it->second.second);
-      SendData(it->second.first, it->second.second);
+      CbmTrdDigi* digi = it->second.first;
+      SendData(digi->GetTime(), digi, it->second.second);
       nDigis++;
     }  //# modules
     digis->clear();
@@ -278,7 +280,7 @@ CbmTrdModuleSim* CbmTrdDigitizer::AddModule(Int_t detId)
  * The trd layer is again only a container for all volumes of this layer.
  * Loop over all nodes below the top node (cave). If one of
  * the nodes contains a string trd it must be TRD detector.
- * Now loop over the layers and 
+ * Now loop over the layers and
  * then over all modules of the layer to extract in the end
  * all active regions (gas) of the complete TRD. For each
  * of the gas volumes get the information about size and

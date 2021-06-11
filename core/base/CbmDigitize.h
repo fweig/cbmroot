@@ -210,21 +210,27 @@ public:
 
   // --------------------------------------------------------------------------
   /** @brief Send a digi and the corresponding match object to the DAQ
+     ** @param time  Global time of the digi
      ** @param digi  Pointer to digi object (template parameter)
      ** @param match Pointer to match object
+     **
+     ** Time is passed as a seperate parameter because the global time might
+     ** be too large for some digi classes to store internally. So digis are not
+     ** required to have a valid timestamp at this point. Later on when the
+     ** time slices are known, the timestamp is overwritten with the relative time
+     ** to the beginning of the time slice.
      **
      ** TODO: The interface should be unique pointers, meaning
      ** that the digitisers have to create objects by unique pointers
      ** from the start.
      **/
-  void SendData(Digi* digi, CbmMatch* match = nullptr)
+  void SendData(Double_t time, Digi* digi, CbmMatch* match = nullptr)
   {
     std::unique_ptr<Digi> tmpDigi(digi);
     std::unique_ptr<CbmMatch> tmpMatch(match);
-    fDaqBuffer.insert(make_pair(digi->GetTime(), std::make_pair(std::move(tmpDigi), std::move(tmpMatch))));
+    fDaqBuffer.insert(make_pair(time, std::make_pair(std::move(tmpDigi), std::move(tmpMatch))));
   }
   // --------------------------------------------------------------------------
-
 
 private:
   TString fBranchName             = "";       ///< Output branch name
@@ -268,6 +274,7 @@ private:
       checkMinTime = kFALSE;
       checkMaxTime = checkLimit;
       tMax         = fillTime;
+      tMin         = 0;  // Do not make digi time relative for these types of time slices.
     }
     else {
       LOG(fatal) << GetName() << ": Unknown time-slice type!";
@@ -294,8 +301,11 @@ private:
       // manual removal from the source vector. There might be a more
       // elegant way.
       assert(fDigis);
-      assert(it->second.first);
-      fDigis->push_back(*(it->second.first));
+      Double_t globalTime      = it->first;
+      std::unique_ptr<Digi>& d = it->second.first;
+      assert(d);
+      d->SetTime(globalTime - tMin);
+      fDigis->push_back(*d);
       if (fCreateMatches) {
         assert(fMatches);
         assert(it->second.second);

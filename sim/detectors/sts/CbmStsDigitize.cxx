@@ -150,19 +150,21 @@ string CbmStsDigitize::BufferStatus() const
 // -----   Create a digi object   ------------------------------------------
 void CbmStsDigitize::CreateDigi(Int_t address, UShort_t channel, Long64_t time, UShort_t adc, const CbmMatch& match)
 {
+  assert(time >= 0);
 
   // Update times of first and last digi
   fTimeDigiFirst = fNofDigis ? TMath::Min(fTimeDigiFirst, Double_t(time)) : time;
   fTimeDigiLast  = TMath::Max(fTimeDigiLast, Double_t(time));
 
   // Create digi and (if required) match and send them to DAQ
-  CbmStsDigi* digi = new CbmStsDigi(address, channel, time, adc);
+  // Digi time is set later, when creating the timestamp
+  CbmStsDigi* digi = new CbmStsDigi(address, channel, 0, adc);
   if (fCreateMatches) {
     CbmMatch* digiMatch = new CbmMatch(match);
-    SendData(digi, digiMatch);
+    SendData(time, digi, digiMatch);
   }
   else
-    SendData(digi);
+    SendData(time, digi);
   fNofDigis++;
 }
 // -------------------------------------------------------------------------

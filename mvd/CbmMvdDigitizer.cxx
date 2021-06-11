@@ -151,7 +151,7 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
       fMatchVect.push_back(match1);
 
       //digi1->SetMatch(match1);
-      SendData(digi1, match1);
+      SendData(digi1->GetTime(), digi1, match1);
       nDigis++;
     }
 
@@ -159,13 +159,13 @@ void CbmMvdDigitizer::Exec(Option_t* /*opt*/)
     /*
    for (Int_t index = 0; index < fTmpDigi->GetEntriesFast(); index++) {
 
-     LOG(info) << "Size: " << fTmpDigi->GetEntriesFast() << ", " 
+     LOG(info) << "Size: " << fTmpDigi->GetEntriesFast() << ", "
                << fTmpDigi->GetEntries();
- 
+
      CbmMvdDigi* digi = dynamic_cast<CbmMvdDigi*>(fTmpDigi->Remove(fTmpDigi->At(index)));
      digi->Print();
      fDigiVect.push_back(digi);
-        
+
      CbmMatch* match = dynamic_cast<CbmMatch*>(fTmpMatch->Remove(fTmpMatch->At(index)));
      match->Print();
      fMatchVect.push_back(match);

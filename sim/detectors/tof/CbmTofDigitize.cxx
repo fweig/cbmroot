@@ -1043,7 +1043,7 @@ Bool_t CbmTofDigitize::MergeSameChanDigis()
     const Double_t dHitTot = 2.;
     CbmTofDigi* tDigi      = new CbmTofDigi(uChanUId, dHitTime, dHitTot);
     CbmMatch* tMatch       = new CbmMatch();
-    SendData(tDigi, tMatch);  // Send digi to DAQ
+    SendData(tDigi->GetTime(), tDigi, tMatch);  // Send digi to DAQ
     fiNbDigis++;
     LOG(debug) << Form("Add fake diamond digis 0x%08x mode with t = %7.3f", uChanUId, dHitTime);
     //delete tDigi;
@@ -1137,7 +1137,7 @@ Bool_t CbmTofDigitize::MergeSameChanDigis()
                       new CbmMatch(*(fStorDigi[iSmType][iSm * iNbRpc + iRpc][iNbSides * iCh + iSide][iDigi0].second));
 
                     digi->SetTime(digi->GetTime() * fdDigiTimeConvFactor + fCurrentEventTime);  // ns->ps
-                    SendData(digi, match);                                                      // Send digi to DAQ
+                    SendData(digi->GetTime(), digi, match);                                     // Send digi to DAQ
                     fiNbDigis++;
 
                     // TOF QA
@@ -1176,7 +1176,7 @@ Bool_t CbmTofDigitize::MergeSameChanDigis()
               CbmMatch* match =
                 new CbmMatch(*(fStorDigi[iSmType][iSm * iNbRpc + iRpc][iNbSides * iCh + iSide][iDigi0].second));
               digi->SetTime(digi->GetTime() * fdDigiTimeConvFactor + fCurrentEventTime);  // ns->ps
-              SendData(digi, match);                                                      // Send digi to DAQ
+              SendData(digi->GetTime(), digi, match);                                     // Send digi to DAQ
               fiNbDigis++;
 
               if (fbMonitorHistos) {

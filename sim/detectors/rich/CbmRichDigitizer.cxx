@@ -292,9 +292,9 @@ Int_t CbmRichDigitizer::AddDigisToOutputArray()
     CbmMatch* digiMatch = new CbmMatch(*dm.second.second);
     digi->SetTime(dm.second.first->GetTime());
     //SendDigi(digi, digiMatch);
-    if (fCreateMatches) SendData(digi, digiMatch);
+    if (fCreateMatches) SendData(digi->GetTime(), digi, digiMatch);
     else
-      SendData(digi);
+      SendData(digi->GetTime(), digi);
     nofDigis++;
   }  //# digis in map
 

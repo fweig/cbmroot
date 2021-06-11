@@ -62,8 +62,8 @@ CbmTrdModuleSimT::~CbmTrdModuleSimT()
 //_________________________________________________________________________________
 Bool_t CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
 {
-  /**  
-  Steering routine for building digits out of the TRD hit for the triangular pad geometry. 
+  /**
+  Steering routine for building digits out of the TRD hit for the triangular pad geometry.
   1. Scan the amplification cells span by the track\n
   2. Build digits for each cell proportional with the projected energy on the cell\n
     2.1 Continuous distribution for ionisation\n
@@ -281,14 +281,14 @@ Bool_t CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
 //_________________________________________________________________________________
 Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point, Double_t DX, Double_t ELoss, Double_t toff)
 {
-  /**  
+  /**
   The hit is expressed in local chamber coordinates, localized as follows:
     - Along the wire in the middle of the track projection on the closest wire
     - Across the wire on the closest anode.
-    
+
   The physical uncertainty along wires is given by the projection span (dx) and the energy from ionisation is proportional to the track projection length in the local chamber x-y plane. For the TR energy the proportionality to the total TR is given by the integral over the amplification cell span of a decay law with decay constant ...
-  
-  The class CbmTrdTrianglePRF is used to navigate the pad plane outward from the hit position until a threshold wrt to center is reached. The pad-row cross clusters are considered. Finally all digits are registered via AddDigi() function. 
+
+  The class CbmTrdTrianglePRF is used to navigate the pad plane outward from the hit position until a threshold wrt to center is reached. The pad-row cross clusters are considered. Finally all digits are registered via AddDigi() function.
 */
   if (VERBOSE)
     printf("        WirePlane : xy[%7.4f %7.4f] D[%7.4f] S[fC]=%7.4f "
@@ -563,7 +563,7 @@ void CbmTrdModuleSimT::AddDigi(Int_t address, Double_t* charge, Double_t time /*
 Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time)
 {
   /** Flush time sorted digi buffer until requested moment in time. If time limit not specified flush all digits.
- *  Calculate timely interaction between digits which are produced either on different anode wires for the same particle or 
+ *  Calculate timely interaction between digits which are produced either on different anode wires for the same particle or
  * are produced by 2 particle close by. Also take into account FASP dead time and mark such digits correspondingly
  */
 
@@ -694,7 +694,7 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time)
 
       if (VERBOSE) cout << "\t" << digi->ToString();
       digiMatch = iv->second;
-      fDigitizer->SendData(digi, digiMatch);
+      fDigitizer->SendData(digi->GetTime(), digi, digiMatch);
       n++;
       iv = fBuffer[localAddress].erase(iv);  // remove from saved buffer
     }

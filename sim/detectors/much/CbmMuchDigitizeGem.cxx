@@ -648,7 +648,7 @@ void CbmMuchDigitizeGem::ReadAndRegister(Long_t eventTime)
       LOG(debug2) << GetName() << ": New digi: sector = " << CbmMuchAddress::GetSectorIndex(digi->GetAddress())
                   << " channel= " << CbmMuchAddress::GetChannelIndex(digi->GetAddress());
 
-      SendData(digi, digiMatch);
+      SendData(digi->GetTime(), digi, digiMatch);
       fNofDigis++;
     }
   }

@@ -20,6 +20,7 @@
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 
+#include <cassert>
 #include <string>  // for string
 
 /** @class CbmStsDigi
@@ -111,7 +112,12 @@ public:
   /** Update Time of measurement
    ** @param New Time [ns]
    **/
-  void SetTime(Double_t dNewTime) { fTime = dNewTime; }
+  void SetTime(Double_t dNewTime)
+  {
+    // Future versions of StsDigi won't be able to store negative timestamps.
+    assert(dNewTime >= 0);
+    fTime = dNewTime;
+  }
 
 
   /** String output **/

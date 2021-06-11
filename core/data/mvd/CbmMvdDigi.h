@@ -80,6 +80,7 @@ public:
   void SetFlag(Int_t flag) { fDigiFlag = flag; }
   void SetFrameNr(Int_t frame) { fFrameNumber = frame; };
   void SetRefId(Int_t refId) { fRefId = refId; }
+  void SetTime(Double_t time) { fDigiTime = time; }
 
 private:
   Float_t fCharge;
