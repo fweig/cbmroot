@@ -928,8 +928,14 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   if (fVerbose >= 10) { cout << "ReadEvent: strips are read." << endl; }
 
   // -- save hits --
-  int nEffHits = 0;
-  SortedIndex.resize(max(nEntSts, nHits));
+  int nEffHits    = 0;
+  int maxHitIndex = 0;
+  if (fTofHits) maxHitIndex = fTofHits->GetEntriesFast() + nMvdHits + nStsHits + nMuchHits + nTrdHits;
+  else
+    maxHitIndex = nMvdHits + nStsHits + nMuchHits + nTrdHits;
+
+  SortedIndex.resize(max(nEntSts, maxHitIndex));
+
 
   vector<float> vStsZPos_temp;  // temp array for unsorted z positions of detectors segments
   for (int i = 0; i < nHits; i++) {
