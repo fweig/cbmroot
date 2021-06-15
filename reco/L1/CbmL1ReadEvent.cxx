@@ -521,14 +521,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         else
           th.id = j + nMvdHits;
 
-
         if ((th.time > (TsStart + TsLength)) && ((nEntSts - hitIndex) > 300))
           break;                                   /// stop if reco TS ends or few hits left
         if (hitIndex == (nEntSts - 1)) newTS = 0;  ///stop while if all hits are processed
-
-
-        th.iStripF += nMvdHits;
-        th.iStripB += nMvdHits;
 
         TVector3 pos, err;
         mh->Position(pos);
