@@ -359,6 +359,14 @@ InitStatus CbmL1::Init()
     cout << endl << endl;
   }
 
+  if (fVerbose > 1) {
+#ifdef _OPENMP
+    LOG(info) << "L1 is running with OpenMP" << endl;
+#else
+    LOG(info) << "L1 is running without OpenMP" << endl;
+#endif
+  }
+
   FairRootManager* fManger = FairRootManager::Instance();
 
   FairRunAna* Run = FairRunAna::Instance();
@@ -1299,7 +1307,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     if (!fTimesliceMode) {
 
-      fData->vSFlag.clear();
+      fData->fStripFlag.clear();
 
       newTS      = 0;
       TsStart    = 0;
@@ -1334,18 +1342,18 @@ void CbmL1::Reconstruct(CbmEvent* event)
 #ifdef USE_EVENT_NUMBER
         h.n = mcp.event;
 #endif
-        const int ista       = (*algo->vSFlag)[h.f] / 4;
+        const int ista       = (*algo->fStripFlag)[h.f] / 4;
         const L1Station& sta = algo->vStations[ista];
         if (std::find(strips.begin(), strips.end(), h.f) != strips.end()) {  // separate strips
 
-          const_cast<vector<unsigned char>*>(algo->vSFlag)->push_back((*algo->vSFlag)[h.f]);
+          (*algo->fStripFlag).push_back((*algo->fStripFlag)[h.f]);
 
           h.f = algo->NStsStrips;
           algo->NStsStrips++;
         }
         strips.push_back(h.f);
         if (std::find(strips.begin(), strips.end(), h.b) != strips.end()) {
-          const_cast<vector<unsigned char>*>(algo->vSFlag)->push_back((*algo->vSFlag)[h.b]);
+          (*algo->fStripFlag).push_back((*algo->fStripFlag)[h.b]);
           h.b = algo->NStsStrips;
           algo->NStsStrips++;
         }
@@ -1468,8 +1476,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     float TsStart_new = TsStart + TsLength - TsOverlap;
 
-    for (vector<L1Track>::iterator it = algo->vTracks.begin(); it != (algo->vTracks.begin() + algo->NTracksIsecAll);
-         it++) {
+    for (L1Vector<L1Track>::iterator it = algo->fTracks.begin(); it != algo->fTracks.end(); it++) {
 
       CbmL1Track t;
       for (int i = 0; i < 7; i++)
@@ -1494,13 +1501,13 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
       for (int i = 0; i < it->NHits; i++) {
         int start_hit1 = start_hit;
-        if (algo->vRecoHits[start_hit1] > vStsHits.size() - 1) start_hit++;
+        if (algo->fRecoHits[start_hit1] > vStsHits.size() - 1) start_hit++;
         else if (fTimesliceMode)
-          t.StsHits.push_back(((*algo->vStsHits)[algo->vRecoHits[start_hit]]).ID);
+          t.StsHits.push_back(((*algo->vStsHits)[algo->fRecoHits[start_hit]]).ID);
         else
-          t.StsHits.push_back(algo->vRecoHits[start_hit]);
+          t.StsHits.push_back(algo->fRecoHits[start_hit]);
 
-        StsHitsLocal.push_back(algo->vRecoHits[start_hit++]);
+        StsHitsLocal.push_back(algo->fRecoHits[start_hit++]);
       }
 
       t.mass        = algo->fDefaultMass;  // pion mass
@@ -1542,8 +1549,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
         /// set strips as unused
         for (int i = 0; i < StsHitsLocal.size(); i++) {
-          algo->SetFUnUsed(const_cast<unsigned char&>((*algo->vSFlag)[vStsHits[StsHitsLocal[i]].f]));
-          algo->SetFUnUsed(const_cast<unsigned char&>((*algo->vSFlag)[vStsHits[StsHitsLocal[i]].b]));
+          algo->SetFUnUsed(const_cast<unsigned char&>((*algo->fStripFlag)[vStsHits[StsHitsLocal[i]].f]));
+          algo->SetFUnUsed(const_cast<unsigned char&>((*algo->fStripFlag)[vStsHits[StsHitsLocal[i]].b]));
         }
       }
       vRTracksCur.push_back(t);
@@ -1702,8 +1709,8 @@ void CbmL1::writedir2current(TObject* obj)
 
 void CbmL1::IdealTrackFinder()
 {
-  algo->vTracks.clear();
-  algo->vRecoHits.clear();
+  algo->fTracks.clear();
+  algo->fRecoHits.clear();
 
   for (vector<CbmL1MCTrack>::iterator i = vMCTracks.begin(); i != vMCTracks.end(); ++i) {
     CbmL1MCTrack& MC = *i;
@@ -1732,7 +1739,7 @@ void CbmL1::IdealTrackFinder()
       const int hitI = hitIndices[iH];
       if (hitI < 0) continue;
 
-      // algo->vRecoHits.push_back(hitI);
+      // algo->fRecoHits.push_back(hitI);
       algoTr.NHits++;
     }
 
@@ -1742,7 +1749,7 @@ void CbmL1::IdealTrackFinder()
     for (int iH = 0; iH < algo->NStations; iH++) {
       const int hitI = hitIndices[iH];
       if (hitI < 0) continue;
-      algo->vRecoHits.push_back(hitI);
+      algo->fRecoHits.push_back(hitI);
     }
 
 
@@ -1754,10 +1761,9 @@ void CbmL1::IdealTrackFinder()
     algoTr.TFirst[4] = MC.q / MC.p;
     algoTr.TFirst[5] = MC.z;
 
-    algo->vTracks.push_back(algoTr);
+    algo->fTracks.push_back(algoTr);
   }
-  algo->NTracksIsecAll = algo->vTracks.size();
-};  // void CbmL1::IdealTrackFinder()
+}  // void CbmL1::IdealTrackFinder()
 
 
 /// -----   STandAlone Package service-functions  -----------------------------
@@ -1812,20 +1818,20 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
       cout << "vStsZPos[" << n << "]"
            << " have been written." << endl;
     }
-    // write vSFlag
-    n = (*algo->vSFlag).size();
+    // write fStripFlag
+    n = (*algo->fStripFlag).size();
     fadata << n << endl;
     unsigned char element;
     for (int i = 0; i < n; i++) {
-      element = (*algo->vSFlag)[i];
+      element = (*algo->fStripFlag)[i];
       fadata << static_cast<int>(element) << endl;
     };
     if (fVerbose >= 4) {
-      cout << "vSFlag[" << n << "]"
+      cout << "fStripFlag[" << n << "]"
            << " have been written." << endl;
     }
     if (fVerbose >= 4) {
-      cout << "vSFlagB[" << n << "]"
+      cout << "fStripFlagB[" << n << "]"
            << " have been written." << endl;
     }
     // write vStsHits
@@ -2062,7 +2068,7 @@ void CbmL1::ReadSTAPAlgoData()
     if (algo->vStsHits) const_cast<std::vector<L1StsHit>*>(algo->vStsHits)->clear();
     algo->NStsStrips = 0;
     if (algo->vStsZPos) const_cast<std::vector<float>*>(algo->vStsZPos)->clear();
-    if (algo->vSFlag) const_cast<vector<unsigned char>*>(algo->vSFlag)->clear();
+    if (algo->fStripFlag) algo->fStripFlag->clear();
 
     // check correct position in file
     char s[] = "Event:  ";
@@ -2091,15 +2097,15 @@ void CbmL1::ReadSTAPAlgoData()
       cout << "vStsZPos[" << n << "]"
            << " have been read." << endl;
     }
-    // read algo->vSFlag
+    // read algo->fStripFlag
     fadata >> n;
     for (int i = 0; i < n; i++) {
       int element;
       fadata >> element;
-      const_cast<vector<unsigned char>*>(algo->vSFlag)->push_back(static_cast<unsigned char>(element));
+      algo->fStripFlag->push_back(static_cast<unsigned char>(element));
     }
     if (fVerbose >= 4) {
-      cout << "vSFlag[" << n << "]"
+      cout << "fStripFlag[" << n << "]"
            << " have been read." << endl;
     }
     // read algo->vStsHits

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "L1StsHit.h"
+#include "L1Vector.h"
 
 using std::istream;
 using std::vector;
@@ -19,7 +20,7 @@ using std::vector;
 class L1AlgoInputData {
 
 public:
-  L1AlgoInputData() : vStsHits(), NStsStrips(0), vStsZPos(), vSFlag()
+  L1AlgoInputData() : vStsHits(), NStsStrips(0), vStsZPos(), fStripFlag("L1AlgoInputData::fStripFlag")
   //  MaxNStations(12)
 
   {
@@ -30,10 +31,10 @@ public:
   }
   ~L1AlgoInputData() {};
 
-  const vector<L1StsHit>& GetStsHits() const { return vStsHits; }
+  vector<L1StsHit>& GetStsHits() { return vStsHits; }
   int GetNStsStrips() const { return NStsStrips; }
   const vector<fscal>& GetStsZPos() const { return vStsZPos; }
-  const L1Vector<unsigned char>& GetSFlag() const { return vSFlag; }
+  L1Vector<unsigned char>& GetSFlag() { return fStripFlag; }
   const THitI* GetStsHitsStartIndex() const { return StsHitsStartIndex; }
   const THitI* GetStsHitsStopIndex() const { return StsHitsStopIndex; }
 
@@ -59,7 +60,7 @@ public:
     vStsHits.clear();
     NStsStrips = 0;
     vStsZPos.clear();
-    //vSFlag.clear();
+    fStripFlag.clear();
 
     {
       for (int i = 0; i < MaxNStations + 1; ++i)
@@ -83,7 +84,7 @@ public:
   int NStsStrips;             // Number of strips in sts
   vector<fscal> vStsZPos;     // all possible z-positions of hits
 
-  L1Vector<unsigned char> vSFlag;  // information of hits station & using hits in tracks;
+  L1Vector<unsigned char> fStripFlag;  // information of hits station & using hits in tracks;
 
   THitI StsHitsStartIndex[MaxNStations + 1],
     StsHitsStopIndex[MaxNStations + 1];  // station-bounders in vStsHits array

@@ -202,51 +202,55 @@ void L1Algo::FilterTracks(fvec const r[5], fvec const C[15], fvec const m[5], fv
 
 void L1Algo::CAMergeClones()
 {
-  //   vector<unsigned short> FirstHit;
-  //   vector<unsigned short> LastHit;
-  //   vector<THitI> FirstHitIndex;
-  //   vector<THitI> LastHitIndex;
-  //    vector<unsigned short> Neighbour;
-  //    vector<float> TrackChi2;
-  vector<bool> IsNext;
-  vector<bool> IsUsed;
+
+  L1Vector<unsigned short>& firstStation = fMergerTrackFirstStation;
+  L1Vector<unsigned short>& lastStation  = fMergerTrackLastStation;
+  L1Vector<THitI>& firstHit              = fMergerTrackFirstHit;
+  L1Vector<THitI>& lastHit               = fMergerTrackLastHit;
+  L1Vector<unsigned short>& neighbour    = fMergerTrackNeighbour;
+  L1Vector<float>& trackChi2             = fMergerTrackChi2;
+  L1Vector<char>& isStored               = fMergerTrackIsStored;
+  L1Vector<char>& isDownstreamNeighbour  = fMergerTrackIsDownstreamNeighbour;
+
+  int nTracks = fTracks.size();
+
+  assert(nTracks < std::numeric_limits<unsigned short>::max());
+
+  constexpr unsigned short kNoNeighbour = std::numeric_limits<unsigned short>::max();
 
   //  vector< L1Track > vTracksNew;
-  vTracksNew.clear();
-  vTracksNew.reserve(NTracksIsecAll);
-  //  vector< THitI > vRecoHitsNew;
-  vRecoHitsNew.clear();
-  vRecoHitsNew.reserve(vRecoHits.size());
+  fMergerTracksNew.clear();
+  fMergerTracksNew.reserve(nTracks);
+  //  vector< THitI > fRecoHitsNew;
+  fMergerRecoHitsNew.clear();
+  fMergerRecoHitsNew.reserve(fRecoHits.size());
 
-  FirstHit.resize(NTracksIsecAll);
-  LastHit.resize(NTracksIsecAll);
-  FirstHitIndex.resize(NTracksIsecAll);
-  LastHitIndex.resize(NTracksIsecAll);
-  IsUsed.resize(NTracksIsecAll);
-  TrackChi2.resize(NTracksIsecAll);
-  Neighbour.resize(NTracksIsecAll);
-  IsNext.resize(NTracksIsecAll);
+  firstStation.resize(nTracks);
+  lastStation.resize(nTracks);
+  firstHit.resize(nTracks);
+  lastHit.resize(nTracks);
+  isStored.resize(nTracks);
+  trackChi2.resize(nTracks);
+  neighbour.resize(nTracks);
+  isDownstreamNeighbour.resize(nTracks);
 
   THitI start_hit     = 0;
-  unsigned short ista = 0;
 #ifdef OMP
 #pragma omp parallel for
 #endif
 
-  for (unsigned short iTr = 0; iTr < NTracksIsecAll; iTr++) {
-    FirstHitIndex[iTr] = start_hit;
-    ista               = (*vSFlag)[(*vStsHits)[vRecoHits[start_hit]].f] / 4;
-    FirstHit[iTr]      = ista;
-    start_hit += vTracks[iTr].NHits - 1;
-    LastHitIndex[iTr] = start_hit;
-    ista              = (*vSFlag)[(*vStsHits)[vRecoHits[start_hit]].f] / 4;
-    LastHit[iTr]      = ista;
+  for (int iTr = 0; iTr < nTracks; iTr++) {
+    firstHit[iTr]     = start_hit;
+    firstStation[iTr] = (*fStripFlag)[(*vStsHits)[fRecoHits[start_hit]].f] / 4;
+    start_hit += fTracks[iTr].NHits - 1;
+    lastHit[iTr]     = start_hit;
+    lastStation[iTr] = (*fStripFlag)[(*vStsHits)[fRecoHits[start_hit]].f] / 4;
     start_hit++;
 
-    IsUsed[iTr]    = 0;
-    Neighbour[iTr] = 50000;
-    TrackChi2[iTr] = 100000;
-    IsNext[iTr]    = 0;
+    isStored[iTr]              = false;
+    neighbour[iTr]             = kNoNeighbour;
+    trackChi2[iTr]             = 100000;
+    isDownstreamNeighbour[iTr] = false;
   }
 
   L1KFTrackFitter();
@@ -256,130 +260,74 @@ void L1Algo::CAMergeClones()
   L1TrackPar Tf;
   L1FieldValue fBm, fBb, fBf _fvecalignment;
   L1FieldRegion fld _fvecalignment;
+
+  unsigned char maxLengthForMerge = static_cast<unsigned char>(NStations - 3);  // max length for merge
+
 #ifdef OMP
 #pragma omp parallel for
 #endif
-  for (int iTr = 0; iTr < static_cast<unsigned short>(NTracksIsecAll); iTr++) {
-    if (static_cast<int>(vTracks[iTr].NHits) > (NStations - 3)) continue;
-    for (int jTr = 0; jTr < static_cast<unsigned short>(NTracksIsecAll); jTr++) {
-      if (static_cast<int>(vTracks[jTr].NHits) > (NStations - 3)) continue;
-
+  for (int iTr = 0; iTr < nTracks; iTr++) {
+    if (fTracks[iTr].NHits > maxLengthForMerge) continue;
+    for (int jTr = 0; jTr < nTracks; jTr++) {
+      if (fTracks[jTr].NHits > maxLengthForMerge) continue;
       if (iTr == jTr) continue;
+      if (firstStation[iTr] <= lastStation[jTr]) continue;
+
       //  if(vTracks[iTr].n != vTracks[jTr].n) continue;
-
-
       //  if (fabs(vTracks[iTr].fTrackTime - vTracks[jTr].fTrackTime) > 3) continue;
 
-      unsigned short dist = 0;
-      unsigned short stab = 0, staf = 0;
-      bool IsNextTemp = 0;
       //if((vTracks[iTr].TFirst[4] - vTracks[jTr].TFirst[4])*(vTracks[iTr].TFirst[4] - vTracks[jTr].TFirst[4])
       // > 9*(vTracks[iTr].CFirst[14]+vTracks[jTr].CFirst[14]) ) continue;
-      if (FirstHit[iTr] > LastHit[jTr]) {
-        dist = FirstHit[iTr] - LastHit[jTr];
 
-        stab       = FirstHit[iTr];
-        staf       = LastHit[jTr];
-        IsNextTemp = 1;
+      unsigned short stab = firstStation[iTr];
 
-        Tb.x   = vTracks[iTr].TFirst[0];
-        Tb.y   = vTracks[iTr].TFirst[1];
-        Tb.tx  = vTracks[iTr].TFirst[2];
-        Tb.ty  = vTracks[iTr].TFirst[3];
-        Tb.qp  = vTracks[iTr].TFirst[4];
-        Tb.z   = vTracks[iTr].TFirst[5];
-        Tb.C00 = vTracks[iTr].CFirst[0];
-        Tb.C10 = vTracks[iTr].CFirst[1];
-        Tb.C11 = vTracks[iTr].CFirst[2];
-        Tb.C20 = vTracks[iTr].CFirst[3];
-        Tb.C21 = vTracks[iTr].CFirst[4];
-        Tb.C22 = vTracks[iTr].CFirst[5];
-        Tb.C30 = vTracks[iTr].CFirst[6];
-        Tb.C31 = vTracks[iTr].CFirst[7];
-        Tb.C32 = vTracks[iTr].CFirst[8];
-        Tb.C33 = vTracks[iTr].CFirst[9];
-        Tb.C40 = vTracks[iTr].CFirst[10];
-        Tb.C41 = vTracks[iTr].CFirst[11];
-        Tb.C42 = vTracks[iTr].CFirst[12];
-        Tb.C43 = vTracks[iTr].CFirst[13];
-        Tb.C44 = vTracks[iTr].CFirst[14];
+      Tb.x   = fTracks[iTr].TFirst[0];
+      Tb.y   = fTracks[iTr].TFirst[1];
+      Tb.tx  = fTracks[iTr].TFirst[2];
+      Tb.ty  = fTracks[iTr].TFirst[3];
+      Tb.qp  = fTracks[iTr].TFirst[4];
+      Tb.z   = fTracks[iTr].TFirst[5];
+      Tb.C00 = fTracks[iTr].CFirst[0];
+      Tb.C10 = fTracks[iTr].CFirst[1];
+      Tb.C11 = fTracks[iTr].CFirst[2];
+      Tb.C20 = fTracks[iTr].CFirst[3];
+      Tb.C21 = fTracks[iTr].CFirst[4];
+      Tb.C22 = fTracks[iTr].CFirst[5];
+      Tb.C30 = fTracks[iTr].CFirst[6];
+      Tb.C31 = fTracks[iTr].CFirst[7];
+      Tb.C32 = fTracks[iTr].CFirst[8];
+      Tb.C33 = fTracks[iTr].CFirst[9];
+      Tb.C40 = fTracks[iTr].CFirst[10];
+      Tb.C41 = fTracks[iTr].CFirst[11];
+      Tb.C42 = fTracks[iTr].CFirst[12];
+      Tb.C43 = fTracks[iTr].CFirst[13];
+      Tb.C44 = fTracks[iTr].CFirst[14];
 
-        Tf.x   = vTracks[jTr].TLast[0];
-        Tf.y   = vTracks[jTr].TLast[1];
-        Tf.tx  = vTracks[jTr].TLast[2];
-        Tf.ty  = vTracks[jTr].TLast[3];
-        Tf.qp  = vTracks[jTr].TLast[4];
-        Tf.z   = vTracks[jTr].TLast[5];
-        Tf.C00 = vTracks[jTr].CLast[0];
-        Tf.C10 = vTracks[jTr].CLast[1];
-        Tf.C11 = vTracks[jTr].CLast[2];
-        Tf.C20 = vTracks[jTr].CLast[3];
-        Tf.C21 = vTracks[jTr].CLast[4];
-        Tf.C22 = vTracks[jTr].CLast[5];
-        Tf.C30 = vTracks[jTr].CLast[6];
-        Tf.C31 = vTracks[jTr].CLast[7];
-        Tf.C32 = vTracks[jTr].CLast[8];
-        Tf.C33 = vTracks[jTr].CLast[9];
-        Tf.C40 = vTracks[jTr].CLast[10];
-        Tf.C41 = vTracks[jTr].CLast[11];
-        Tf.C42 = vTracks[jTr].CLast[12];
-        Tf.C43 = vTracks[jTr].CLast[13];
-        Tf.C44 = vTracks[jTr].CLast[14];
-        //std::cout << "!!!!!!! Chi2 !!!!!!      "<<vTracks[iTr].TFirst[0]<<"  "<<vTracks[jTr].TLast[0]<<std::endl;
-      }
-      //       if(FirstHit[jTr] > LastHit[iTr])
-      //       {
-      //         dist = FirstHit[jTr] - LastHit[iTr];
-      //
-      //         stab = FirstHit[jTr];
-      //         staf = LastHit[iTr];
-      //
-      //         Tb.x  = vTracks[jTr].TFirst[0];
-      //         Tb.y  = vTracks[jTr].TFirst[1];
-      //         Tb.tx = vTracks[jTr].TFirst[2];
-      //         Tb.ty = vTracks[jTr].TFirst[3];
-      //         Tb.qp = vTracks[jTr].TFirst[4];
-      //         Tb.z  = vTracks[jTr].TFirst[5];
-      //         Tb.C00 = vTracks[jTr].CFirst[0];
-      //         Tb.C10 = vTracks[jTr].CFirst[1];
-      //         Tb.C11 = vTracks[jTr].CFirst[2];
-      //         Tb.C20 = vTracks[jTr].CFirst[3];
-      //         Tb.C21 = vTracks[jTr].CFirst[4];
-      //         Tb.C22 = vTracks[jTr].CFirst[5];
-      //         Tb.C30 = vTracks[jTr].CFirst[6];
-      //         Tb.C31 = vTracks[jTr].CFirst[7];
-      //         Tb.C32 = vTracks[jTr].CFirst[8];
-      //         Tb.C33 = vTracks[jTr].CFirst[9];
-      //         Tb.C40 = vTracks[jTr].CFirst[10];
-      //         Tb.C41 = vTracks[jTr].CFirst[11];
-      //         Tb.C42 = vTracks[jTr].CFirst[12];
-      //         Tb.C43 = vTracks[jTr].CFirst[13];
-      //         Tb.C44 = vTracks[jTr].CFirst[14];
-      //
-      //         Tf.x  = vTracks[iTr].TLast[0];
-      //         Tf.y  = vTracks[iTr].TLast[1];
-      //         Tf.tx = vTracks[iTr].TLast[2];
-      //         Tf.ty = vTracks[iTr].TLast[3];
-      //         Tf.qp = vTracks[iTr].TLast[4];
-      //         Tf.z  = vTracks[iTr].TLast[5];
-      //         Tf.C00 = vTracks[iTr].CLast[0];
-      //         Tf.C10 = vTracks[iTr].CLast[1];
-      //         Tf.C11 = vTracks[iTr].CLast[2];
-      //         Tf.C20 = vTracks[iTr].CLast[3];
-      //         Tf.C21 = vTracks[iTr].CLast[4];
-      //         Tf.C22 = vTracks[iTr].CLast[5];
-      //         Tf.C30 = vTracks[iTr].CLast[6];
-      //         Tf.C31 = vTracks[iTr].CLast[7];
-      //         Tf.C32 = vTracks[iTr].CLast[8];
-      //         Tf.C33 = vTracks[iTr].CLast[9];
-      //         Tf.C40 = vTracks[iTr].CLast[10];
-      //         Tf.C41 = vTracks[iTr].CLast[11];
-      //         Tf.C42 = vTracks[iTr].CLast[12];
-      //         Tf.C43 = vTracks[iTr].CLast[13];
-      //         Tf.C44 = vTracks[iTr].CLast[14];
-      //       }
+      unsigned short staf = lastStation[jTr];
 
-      if (dist == 0) continue;
+      Tf.x   = fTracks[jTr].TLast[0];
+      Tf.y   = fTracks[jTr].TLast[1];
+      Tf.tx  = fTracks[jTr].TLast[2];
+      Tf.ty  = fTracks[jTr].TLast[3];
+      Tf.qp  = fTracks[jTr].TLast[4];
+      Tf.z   = fTracks[jTr].TLast[5];
+      Tf.C00 = fTracks[jTr].CLast[0];
+      Tf.C10 = fTracks[jTr].CLast[1];
+      Tf.C11 = fTracks[jTr].CLast[2];
+      Tf.C20 = fTracks[jTr].CLast[3];
+      Tf.C21 = fTracks[jTr].CLast[4];
+      Tf.C22 = fTracks[jTr].CLast[5];
+      Tf.C30 = fTracks[jTr].CLast[6];
+      Tf.C31 = fTracks[jTr].CLast[7];
+      Tf.C32 = fTracks[jTr].CLast[8];
+      Tf.C33 = fTracks[jTr].CLast[9];
+      Tf.C40 = fTracks[jTr].CLast[10];
+      Tf.C41 = fTracks[jTr].CLast[11];
+      Tf.C42 = fTracks[jTr].CLast[12];
+      Tf.C43 = fTracks[jTr].CLast[13];
+      Tf.C44 = fTracks[jTr].CLast[14];
+      //std::cout << "!!!!!!! Chi2 !!!!!!      "<<fTracks[iTr].TFirst[0]<<"  "<<fTracks[jTr].TLast[0]<<std::endl;
+
       //if(((Tf.qp - Tb.qp)*(Tf.qp - Tb.qp)/(Tb.C44+Tf.C44))[0] > 25*10*7) continue;
       if (fabs(Tf.t[0] - Tb.t[0]) > 3 * sqrt(Tf.C55[0] + Tb.C55[0])) continue;
       // if (fabs (Tf.time[0] - Tb.time[0]) > 500000) continue;
@@ -387,9 +335,13 @@ void L1Algo::CAMergeClones()
 
       vStations[staf].fieldSlice.GetFieldValue(Tf.x, Tf.y, fBf);
       vStations[stab].fieldSlice.GetFieldValue(Tb.x, Tb.y, fBb);
+
+      unsigned short dist = firstStation[iTr] - lastStation[jTr];
+
       if (dist > 1) stam = staf + 1;
       else
         stam = staf - 1;
+
       fvec zm = vStations[stam].z;
       fvec xm = 0.5 * (Tf.x + Tf.tx * (zm - Tf.z) + Tb.x + Tb.tx * (zm - Tb.z));
       fvec ym = 0.5 * (Tb.y + Tb.ty * (zm - Tb.z) + Tb.y + Tb.ty * (zm - Tb.z));
@@ -404,56 +356,64 @@ void L1Algo::CAMergeClones()
       fvec Chi2Tracks = 0.f;
       FilterTracks(&(Tf.x), &(Tf.C00), &(Tb.x), &(Tb.C00), 0, 0, &Chi2Tracks);
       if (Chi2Tracks[0] > 50) continue;
-      if (Chi2Tracks[0] < TrackChi2[iTr] || Chi2Tracks[0] < TrackChi2[jTr]) {
-        if (Neighbour[iTr] < static_cast<unsigned short>(50000)) {
-          Neighbour[Neighbour[iTr]] = 50000;
-          TrackChi2[Neighbour[iTr]] = 100000;
-          IsNext[Neighbour[iTr]]    = 0;
+
+      if (Chi2Tracks[0] < trackChi2[iTr] || Chi2Tracks[0] < trackChi2[jTr]) {
+        if (neighbour[iTr] < kNoNeighbour) {
+          neighbour[neighbour[iTr]]             = kNoNeighbour;
+          trackChi2[neighbour[iTr]]             = 100000;
+          isDownstreamNeighbour[neighbour[iTr]] = false;
         }
-        if (Neighbour[jTr] < static_cast<unsigned short>(50000)) {
-          Neighbour[Neighbour[jTr]] = 50000;
-          TrackChi2[Neighbour[jTr]] = 100000;
-          IsNext[Neighbour[jTr]]    = 0;
+        if (neighbour[jTr] < kNoNeighbour) {
+          neighbour[neighbour[jTr]]             = kNoNeighbour;
+          trackChi2[neighbour[jTr]]             = 100000;
+          isDownstreamNeighbour[neighbour[jTr]] = false;
         }
-        Neighbour[iTr] = jTr;
-        Neighbour[jTr] = iTr;
-        TrackChi2[iTr] = Chi2Tracks[0];
-        TrackChi2[jTr] = Chi2Tracks[0];
-        IsNext[iTr]    = IsNextTemp;
-        IsNext[jTr]    = (!IsNextTemp);
+        neighbour[iTr]             = jTr;
+        neighbour[jTr]             = iTr;
+        trackChi2[iTr]             = Chi2Tracks[0];
+        trackChi2[jTr]             = Chi2Tracks[0];
+        isDownstreamNeighbour[iTr] = true;
+        isDownstreamNeighbour[jTr] = false;
       }
     }
   }
-  for (int iTr = 0; iTr < static_cast<unsigned short>(NTracksIsecAll); iTr++) {
-    if (IsUsed[iTr]) continue;
 
-    vTracksNew.push_back(vTracks[iTr]);
-    if (!IsNext[iTr])
-      for (THitI HI = FirstHitIndex[iTr]; HI <= LastHitIndex[iTr]; HI++)
-        vRecoHitsNew.push_back(vRecoHits[HI]);
+  for (int iTr = 0; iTr < nTracks; iTr++) {
+    if (isStored[iTr]) continue;
 
-    if (Neighbour[iTr] < 50000) {
-      IsUsed[Neighbour[iTr]] = 1;
-      vTracksNew.back().NHits += vTracks[Neighbour[iTr]].NHits;
-      for (THitI HI = FirstHitIndex[Neighbour[iTr]]; HI <= LastHitIndex[Neighbour[iTr]]; HI++)
-        vRecoHitsNew.push_back(vRecoHits[HI]);
+    fMergerTracksNew.push_back(fTracks[iTr]);
+    if (!isDownstreamNeighbour[iTr]) {
+      for (THitI HI = firstHit[iTr]; HI <= lastHit[iTr]; HI++) {
+        fMergerRecoHitsNew.push_back(fRecoHits[HI]);
+      }
     }
 
-    if (IsNext[iTr])
-      for (THitI HI = FirstHitIndex[iTr]; HI <= LastHitIndex[iTr]; HI++)
-        vRecoHitsNew.push_back(vRecoHits[HI]);
+    if (neighbour[iTr] < kNoNeighbour) {
+      isStored[neighbour[iTr]] = true;
+      fMergerTracksNew.back().NHits += fTracks[neighbour[iTr]].NHits;
+      for (THitI HI = firstHit[neighbour[iTr]]; HI <= lastHit[neighbour[iTr]]; HI++)
+        fMergerRecoHitsNew.push_back(fRecoHits[HI]);
+    }
+
+    if (isDownstreamNeighbour[iTr]) {
+      for (THitI HI = firstHit[iTr]; HI <= lastHit[iTr]; HI++) {
+        fMergerRecoHitsNew.push_back(fRecoHits[HI]);
+      }
+    }
   }
-  //vTracks.resize(vTracksNew.size());
-  for (unsigned short iTr = 0; iTr < vTracksNew.size(); iTr++)
-    vTracks[iTr] = vTracksNew[iTr];
-  // vRecoHits.resize(vRecoHitsNew.size());
-  for (THitI iHi = 0; iHi < vRecoHitsNew.size(); iHi++)
-    vRecoHits[iHi] = vRecoHitsNew[iHi];
 
+  fTracks.resize(fMergerTracksNew.size());
+  for (unsigned int iTr = 0; iTr < fMergerTracksNew.size(); iTr++) {
+    fTracks[iTr] = fMergerTracksNew[iTr];
+  }
 
-  NHitsIsecAll   = vRecoHitsNew.size();
-  NTracksIsecAll = vTracksNew.size();
+  assert(fRecoHits.size() == fMergerRecoHitsNew.size());
+  fRecoHits.resize(fMergerRecoHitsNew.size());
+  for (THitI iHi = 0; iHi < fMergerRecoHitsNew.size(); iHi++) {
+    fRecoHits[iHi] = fMergerRecoHitsNew[iHi];
+  }
 
+  NHitsIsecAll = fMergerRecoHitsNew.size();
 
   //std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!   new "<<vTracksNew.size()<<"  old "<< vTracks.size()<<std::endl;
 }

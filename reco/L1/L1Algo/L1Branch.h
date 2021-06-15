@@ -18,17 +18,15 @@
  *====================================================================
  */
 
-#ifndef L1Branch_H
-#define L1Branch_H
+#ifndef L1Branch_h
+#define L1Branch_h
 
-#include "../CbmL1Def.h"
+#include "CbmL1Def.h"
 
 #include <vector>
 
 #include "L1StsHit.h"
-
-class L1Triplet;
-
+#include "L1Vector.h"
 
 struct L1Branch {
   L1Branch()
@@ -38,10 +36,10 @@ struct L1Branch {
     , NHits(0)
     , chi2(0)
     , CandIndex(0)
-    , StsHits("L1Branch::StsHits")
+    , fStsHits("L1Branch::fStsHits")
   {
     //  L1Branch():Momentum(0),chi2(0),NHits(0),Lengtha(0),ista(0) , StsHits(){
-    StsHits.resize(12);
+    fStsHits.reserve(25);
   }
 
   // unsigned short int Quality;
@@ -52,9 +50,7 @@ struct L1Branch {
   // char Lengtha;
   fscal chi2;
   int CandIndex;
-
-
-  L1Vector<THitI> StsHits;
+  L1Vector<THitI> fStsHits;
 
   //     static bool compareCand(const L1Branch *a, const L1Branch *b){
   //

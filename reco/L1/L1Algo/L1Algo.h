@@ -3,7 +3,7 @@
    Authors: Maksym Zyzak, Valentina Akishina, Igor Kulakov */
 
 #ifndef L1Algo_h
-#define L1Algo_h 1
+#define L1Algo_h
 
 // #define TBB // TODO: Doesn't work now. Renew
 
@@ -54,6 +54,7 @@ class L1AlgoDraw;
 #include "L1TrackPar.h"
 #include "L1TrackParFit.h"
 #include "L1Triplet.h"
+#include "L1Vector.h"
 
 #ifdef _OPENMP
 #include "omp.h"
@@ -80,170 +81,7 @@ typedef int Tindex;
 class L1Algo {
 public:
   //  L1Algo(int nThreads=7):
-  L1Algo(int nThreads = 1, int TypicalSize = 200000)
-    : n_g1("L1Algo::n_g1")
-    , FirstHit("L1Algo::FirstHit")
-    , LastHit("L1Algo::LastHit")
-    , FirstHitIndex("L1Algo::FirstHitIndex")
-    , LastHitIndex("L1Algo::LastHitIndex")
-    , Neighbour("L1Algo::Neighbour")
-    , TrackChi2("L1Algo::TrackChi2")
-    , vRecoHitsNew("L1Algo::vRecoHitsNew")
-    , vTracksNew("L1Algo::vTracksNew")
-    , NStations(0)
-    ,  // number of all detector stations
-    NMvdStations(0)
-    ,  // number of mvd stations
-    NStsStations(0)
-    , NFStations(0)
-    , fRadThick()
-    , NStsStrips(0)  // strips positions created from hits
-    , vStsZPos(0)
-    ,            // all possible z-positions of hits
-    vStsHits(0)  // hits as a combination of front-, backstrips and z-position
-    , vSFlag(0)  // information of hits station & using hits in tracks(),
-    , CATime(0)
-    ,  // time of trackfinding
-    vTracks("L1Algo::vTracks", 40000)
-    ,  // reconstructed tracks
-    vRecoHits("L1Algo::vRecoHits", 400000)
-    ,  // packed hits of reconstructed tracks
-    StsHitsStartIndex(nullptr)
-    , StsHitsStopIndex(nullptr)
-    , NHitsIsecAll(0)
-    , NTracksIsecAll(0)
-    , vStsDontUsedHits_A(TypicalSize)
-    , vStsDontUsedHits_B(TypicalSize)
-    , vStsDontUsedHits_Buf(TypicalSize)
-    , vStsDontUsedHitsxy_A(TypicalSize)
-    , vStsDontUsedHitsxy_buf(TypicalSize)
-    , vStsDontUsedHitsxy_B(TypicalSize)
-    , RealIHit_v(TypicalSize)
-    , RealIHit_v_buf(TypicalSize)
-    , RealIHit_v_buf2(TypicalSize)
-    ,
-
-#ifdef _OPENMP
-    hitToBestTrackF("L1Algo::hitToBestTrackF", TypicalSize * 2)
-    , hitToBestTrackB("L1Algo::hitToBestTrackB", TypicalSize * 2)
-    ,
-#endif
-    vStripToTrack("L1Algo::vStripToTrack", TypicalSize * 4)
-    , vStripToTrackB("L1Algo::vStripToTrackB", TypicalSize * 4)
-    ,
-    //sh (),
-    fNThreads(nThreads)
-    , fUseHitErrors(0)
-    , fmCBMmode(0)
-    , fGlobal(0)
-    , isec(0)
-    , vStsHitsUnused()
-    , RealIHitP()
-    , RealIHitPBuf()
-    , vStsHitPointsUnused()
-    , RealIHit(nullptr)
-    , FIRSTCASTATION()
-    , threadNumberToCpuMap()
-    , TRACK_CHI2_CUT(10.)
-    , TRIPLET_CHI2_CUT(5.)
-    , DOUBLET_CHI2_CUT(5.)
-    , TIME_CUT1(0.)
-    , TIME_CUT2(0.)
-    , MaxDZ(0.)
-    ,
-#ifdef DRAW
-    draw(0)
-    ,
-#endif
-    Pick_gather(0)
-    , PickNeighbour(0)
-    ,  // (PickNeighbour < dp/dp_error)  =>  triplets are neighbours
-    MaxInvMom(0)
-    ,  // max considered q/p for tracks
-    MaxSlope(0)
-    , targX(0)
-    , targY(0)
-    , targZ(0)
-    ,  // target coor
-    targB()
-    ,  // field in the target point
-    TargetXYInfo()
-    ,  // target constraint  [cm]
-    vtxFieldRegion()
-    ,  // really doesn't used
-    vtxFieldValue()
-    ,  // field at teh vertex position.
-    //vTripletsP(), // container for triplets got in finding
-    fTrackingLevel(0)
-    , fGhostSuppression(0)
-    ,                   // really doesn't used
-    fMomentumCutOff(0)  // really doesn't used
-  {
-
-    n_g1.resize(100000);
-
-    for (int i = 0; i < fNThreads; i++) {
-
-      vTracks_local[i].resize(100000);
-      vRecoHits_local[i].resize(400000);
-
-
-      numberCandidateThread[i] = 0;
-      SavedCand[i]             = 0;
-      SavedHits[i]             = 0;
-
-      TripForHit[0].resize(TypicalSize);
-      TripForHit[1].resize(TypicalSize);
-      CandidatesTrack[i].resize(10000);
-
-      fT_3[i].reserve(MaxPortionTriplets / fvecLen);
-      fhitsl_3[i].reserve(MaxPortionTriplets);
-      fhitsm_3[i].reserve(MaxPortionTriplets);
-      fhitsr_3[i].reserve(MaxPortionTriplets);
-      fu_front3[i].reserve(MaxPortionTriplets / fvecLen);
-      fu_back3[i].reserve(MaxPortionTriplets / fvecLen);
-      fz_pos3[i].reserve(MaxPortionTriplets / fvecLen);
-      fTimeR[i].reserve(MaxPortionTriplets / fvecLen);
-      fTimeER[i].reserve(MaxPortionTriplets / fvecLen);
-      dx[i].reserve(MaxPortionTriplets / fvecLen);
-      dy[i].reserve(MaxPortionTriplets / fvecLen);
-      du[i].reserve(MaxPortionTriplets / fvecLen);
-      dv[i].reserve(MaxPortionTriplets / fvecLen);
-
-      for (int j = 0; j < MaxNStations; j++)
-        TripletsLocal1[j][i].resize(400000);
-    }
-
-    for (int i = 0; i < MaxNStations; i++)
-      vGridTime[i].AllocateMemory(fNThreads);
-
-#ifdef _OPENMP
-
-    for (unsigned int j = 0; j < hitToBestTrackB.size(); j++) {
-      omp_init_lock(&hitToBestTrackB[j]);
-      omp_init_lock(&hitToBestTrackF[j]);
-    }
-
-#endif
-
-
-    for (int i = 0; i < nThreads; i++)
-      for (int k = 0; k < MaxNStations; k++)
-        nTripletsThread[k][i] = 0;
-
-    NTracksIsecAll = 20000;
-    NHitsIsecAll   = TypicalSize;
-
-
-    FirstHit.resize(NTracksIsecAll);
-    LastHit.resize(NTracksIsecAll);
-    FirstHitIndex.resize(NTracksIsecAll);
-    LastHitIndex.resize(NTracksIsecAll);
-    //     IsUsed.resize(NTracksIsecAll);
-    TrackChi2.resize(NTracksIsecAll);
-    Neighbour.resize(NTracksIsecAll);
-    //     IsNext.resize(NTracksIsecAll);
-  }
+  L1Algo(int nThreads = 1, int ExpectedHits = 200000);
 
   L1Algo(const L1Algo&) = delete;
   L1Algo operator=(const L1Algo&) = delete;
@@ -264,31 +102,30 @@ public:
 
   float fDefaultMass = 0.10565800;  // muon mass
 
-  L1Vector<L1Triplet> TripletsLocal1[nSta][nTh];
-  L1Vector<L1Branch> CandidatesTrack[nTh];
+  L1Vector<L1Triplet> fTriplets[nSta][nTh];  // created triplets at station + thread
 
-  Tindex portionStopIndex[nSta];
-  L1Vector<Tindex> n_g1;
+  // Track candidates created out of adjacent triplets before the final track selection.
+  // The candidates may share any amount of hits.
+  L1Vector<L1Branch> fTrackCandidates[nTh];
 
+  Tindex fDupletPortionStopIndex[nSta];  // end of the duplet portions for the station
+  L1Vector<Tindex> fDupletPortionSize;   // N duplets in a portion
 
-  int SavedCand[nTh];
-  int SavedHits[nTh];
-
-  int numberCandidateThread[nTh];
-
-  int nTripletsThread[nSta][nTh];
-
-  //for merger
-  L1Vector<unsigned short> FirstHit;
-  L1Vector<unsigned short> LastHit;
-  L1Vector<THitI> FirstHitIndex;
-  L1Vector<THitI> LastHitIndex;
-  L1Vector<unsigned short> Neighbour;
-  L1Vector<float> TrackChi2;
-  //   L1Vector<bool> IsNext;
-  //   L1Vector<bool> IsUsed;
-  L1Vector<THitI> vRecoHitsNew;
-  L1Vector<L1Track> vTracksNew;
+  //
+  // Temporary vectors used by the clone merger
+  //
+  // vectors that are parallel to fTracks
+  L1Vector<unsigned short> fMergerTrackFirstStation;  // first station of a track
+  L1Vector<unsigned short> fMergerTrackLastStation;   // last station of a track
+  L1Vector<THitI> fMergerTrackFirstHit;               // index of the first tracks hit
+  L1Vector<THitI> fMergerTrackLastHit;                // index of the last tracks hit
+  L1Vector<unsigned short> fMergerTrackNeighbour;     // track that can be merged with the given track
+  L1Vector<float> fMergerTrackChi2;                   // chi2 of the merge
+  L1Vector<char> fMergerTrackIsStored;                // is the track already stored to the output
+  L1Vector<char> fMergerTrackIsDownstreamNeighbour;   // is the track a downstream neighbor of another track
+  // other vectors
+  L1Vector<L1Track> fMergerTracksNew;  // vector of tracks after the merge
+  L1Vector<THitI> fMergerRecoHitsNew;  // vector of track hits after the merge
 
 
 #ifdef DRAW
@@ -299,8 +136,8 @@ public:
 
   void Init(const vector<fscal>& geo, const bool UseHitErrors, const bool mCBMmode);
 
-  void SetData(const vector<L1StsHit>& StsHits_, int nStsStrips_, const vector<fscal>& StsZPos_,
-               const vector<unsigned char>& SFlag_, const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_,
+  void SetData(vector<L1StsHit>& StsHits_, int nStsStrips_, const vector<fscal>& StsZPos_,
+               L1Vector<unsigned char>& SFlag_, const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_,
                const int NhitsGlobal
 
   );
@@ -333,16 +170,16 @@ public:
 
   int NStsStrips;                    // number of strips
   const vector<fscal>* vStsZPos;     // all possible z-positions of hits
-  const vector<L1StsHit>* vStsHits;  // hits as a combination of front-, backstrips and z-position
+  vector<L1StsHit>* vStsHits;        // hits as a combination of front-, backstrips and z-position
   L1Grid vGrid[MaxNStations];        // hits as a combination of front-, backstrips and z-position
   L1Grid vGridTime[MaxNStations];
 
-  const vector<unsigned char>* vSFlag;  // information of hits station & using hits in tracks;
+  L1Vector<unsigned char>* fStripFlag;  // information of hits station & using hits in tracks;
 
   double CATime;  // time of trackfinding
 
-  L1Vector<L1Track> vTracks;
-  L1Vector<THitI> vRecoHits;
+  L1Vector<L1Track> fTracks;
+  L1Vector<THitI> fRecoHits;
 
   const THitI *StsHitsStartIndex,
     *StsHitsStopIndex;  // station-bounders in vStsHits array
@@ -350,7 +187,6 @@ public:
 
   //  L1Branch* pointer;
   unsigned int NHitsIsecAll;
-  unsigned int NTracksIsecAll;
 
   vector<L1StsHit> vStsDontUsedHits_A;
   vector<L1StsHit> vStsDontUsedHits_B;
@@ -358,22 +194,20 @@ public:
   vector<L1HitPoint> vStsDontUsedHitsxy_A;
   vector<L1HitPoint> vStsDontUsedHitsxy_buf;
   vector<L1HitPoint> vStsDontUsedHitsxy_B;
-  L1Vector<L1Track> vTracks_local[nTh];
-  L1Vector<THitI> vRecoHits_local[nTh];
+  L1Vector<L1Track> fTracks_local[nTh];
+  L1Vector<THitI> fRecoHits_local[nTh];
 
   vector<THitI> RealIHit_v;
   vector<THitI> RealIHit_v_buf;
   vector<THitI> RealIHit_v_buf2;
 
 #ifdef _OPENMP
-
-  L1Vector<omp_lock_t> hitToBestTrackF;
-  L1Vector<omp_lock_t> hitToBestTrackB;
-
+  L1Vector<omp_lock_t> fHitToBestTrackF;
+  L1Vector<omp_lock_t> fHitToBestTrackB;
 #endif
 
-  L1Vector<int> vStripToTrack;
-  L1Vector<int> vStripToTrackB;
+  L1Vector<int> fStripToTrack;   // front strip to track pointers
+  L1Vector<int> fStripToTrackB;  // back strip to track pointers
 
   int fNThreads;
   bool fUseHitErrors;
@@ -624,7 +458,7 @@ private:
 
   /// Find doublets on station
   void DupletsStaPort(  // input
-    int istal, int istam, Tindex ip, vector<Tindex>& n_g, Tindex* portionStopIndex_,
+    int istal, int istam, Tindex ip, L1Vector<Tindex>& n_g, Tindex* portionStopIndex_,
 
     // output
     L1TrackPar* T_1, L1FieldRegion* fld_1, THitI* hitsl_1,
@@ -754,12 +588,6 @@ private:
 
   L1FieldRegion vtxFieldRegion _fvecalignment;  // really doesn't used
   L1FieldValue vtxFieldValue _fvecalignment;    // field at teh vertex position.
-
-  // vector <L1Triplet> vTriplets; // container for triplets got in finding
-  // vector<L1Triplet*> vTripletsP;
-  int numPortions[12];
-  vector<L1Triplet*>* TripletsLocal[MaxNStations - 2];
-
 
   //  int TripNumThread;
 

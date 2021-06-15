@@ -37,8 +37,8 @@ void L1AlgoInputData::SetData( const vector< L1StsHit >      & StsHits_,
   vStsStrips.resize(StsStrips_.size());
   vStsStripsB.resize(StsStripsB_.size());
   vStsZPos.resize(StsZPos_.size());
-  vSFlag.resize(SFlag_.size());
-  vSFlagB.resize(SFlagB_.size());
+  fStripFlag.resize(SFlag_.size());
+  fStripFlagB.resize(SFlagB_.size());
   
   for(unsigned int i=0; i<StsHits_.size(); ++i ) {vStsHits[i] = StsHits_[i];
 
@@ -46,8 +46,8 @@ void L1AlgoInputData::SetData( const vector< L1StsHit >      & StsHits_,
   for(unsigned int i=0; i<StsStrips_.size(); ++i ) vStsStrips[i] = StsStrips_[i];
   for(unsigned int i=0; i<StsStripsB_.size(); ++i ) vStsStripsB[i] = StsStripsB_[i];
   for(unsigned int i=0; i<StsZPos_.size(); ++i ) vStsZPos[i] = StsZPos_[i];
-  for(unsigned int i=0; i<SFlag_.size(); ++i ) vSFlag[i] = SFlag_[i];
-  for(unsigned int i=0; i<SFlagB_.size(); ++i ) vSFlagB[i] = SFlagB_[i];
+  for(unsigned int i=0; i<SFlag_.size(); ++i ) fStripFlag[i] = SFlag_[i];
+  for(unsigned int i=0; i<SFlagB_.size(); ++i ) fStripFlagB[i] = SFlagB_[i];
 
   for(unsigned int i=0; i<MaxNStations+1; ++i) StsHitsStartIndex[i] = StsHitsStartIndex_[i];
  
@@ -87,7 +87,7 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
     NStsStrips = 0;
 
     vStsZPos.clear();
-    vSFlag.clear();
+    fStripFlag.clear();
 
     // check correct position in file
     char s[] = "Event:  ";
@@ -120,16 +120,17 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
       cout << "vStsZPos[" << n << "]"
            << " have been read." << endl;
     }
-    // read algo->vSFlag
+    // read algo->fStripFlag
     fadata >> n;
-    //  cout << n<<  " vSFlagB"<<endl;
+    //  cout << n<<  " fStripFlagB"<<endl;
+    fStripFlag.reserve(n);
     for (int i = 0; i < n; i++) {
       int element;
       fadata >> element;
-      vSFlag.push_back(static_cast<unsigned char>(element));
+      fStripFlag.push_back(static_cast<unsigned char>(element));
     }
     if (iVerbose >= 4) {
-      cout << "vSFlag[" << n << "]"
+      cout << "fStripFlag[" << n << "]"
            << " have been read." << endl;
     }
     // read algo->vStsHits
@@ -205,16 +206,16 @@ void L1AlgoInputData::PrintHits()
     std::cout << vStsZPos[i] << std::endl;
   }
 
-  n = vSFlag.size();
+  n = fStripFlag.size();
   std::cout << n << std::endl;
   for (int i = 0; i < n; i++){
-    std::cout << static_cast<int>(vSFlag[i]) << std::endl;
+    std::cout << static_cast<int>(fStripFlag[i]) << std::endl;
   }
 
-  n = vSFlagB.size();
+  n = fStripFlagB.size();
   std::cout << n << std::endl;
   for (int i = 0; i < n; i++){
-    std::cout << static_cast<int>(vSFlagB[i]) << std::endl;
+    std::cout << static_cast<int>(fStripFlagB[i]) << std::endl;
   }
 
   n = vStsHits.size();

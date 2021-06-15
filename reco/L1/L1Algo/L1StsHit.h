@@ -2,8 +2,8 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Valentina Akishina, Igor Kulakov, Sergey Gorbunov [committer], Maksym Zyzak */
 
-#ifndef _L1StsHit_h_
-#define _L1StsHit_h_
+#ifndef L1StsHit_h
+#define L1StsHit_h
 
 //struct L1Branch;
 typedef unsigned /*short*/ int THitI;    // strip index type

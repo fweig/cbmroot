@@ -34,8 +34,8 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   fit.SetParticleMass(GetDefaultParticleMass());
 
   // get hits of current track
-  const std::vector<THitI>& hits = t.StsHits;  // array of indeses of hits of current track
-  const int nHits                = t.NHits;
+  const L1Vector<THitI>& hits = t.fStsHits;  // array of indeses of hits of current track
+  const int nHits             = t.NHits;
 
   const signed short int step = -2 * static_cast<int>(dir) + 1;  // increment for station index
   const int iFirstHit         = (dir) ? nHits - 1 : 0;
@@ -45,9 +45,9 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   const L1StsHit& hit1 = (*vStsHits)[hits[iFirstHit + step]];
   const L1StsHit& hit2 = (*vStsHits)[hits[iFirstHit + 2 * step]];
 
-  int ista0 = GetFStation((*vSFlag)[hit0.f]);
-  int ista1 = GetFStation((*vSFlag)[hit1.f]);
-  int ista2 = GetFStation((*vSFlag)[hit2.f]);
+  int ista0 = GetFStation((*fStripFlag)[hit0.f]);
+  int ista1 = GetFStation((*fStripFlag)[hit1.f]);
+  int ista2 = GetFStation((*fStripFlag)[hit2.f]);
 
   L1Station& sta0 = vStations[ista0];
   L1Station& sta1 = vStations[ista1];
@@ -125,7 +125,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   for (int i = iFirstHit + step; step * i <= step * iLastHit; i += step) {
     const L1StsHit& hit = (*vStsHits)[hits[i]];
     ista_prev           = ista;
-    ista                = GetFStation((*vSFlag)[hit.f]);
+    ista                = GetFStation((*fStripFlag)[hit.f]);
 
     L1Station& sta = vStations[ista];
 
@@ -205,15 +205,15 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
   const signed short int step = -2 * static_cast<int>(dir) + 1;  // increment for station index
   const int iFirstHit         = (dir) ? 2 : t.NHits - 3;
-  //  int ista = GetFStation((*vSFlag)[(*vStsHits)[t.StsHits[iFirstHit]].f]) + 2*step; // current station. set to the end of track
+  //  int ista = GetFStation((*fStripFlag)[(*vStsHits)[t.StsHits[iFirstHit]].f]) + 2*step; // current station. set to the end of track
 
-  const L1StsHit& hit0 = (*vStsHits)[t.StsHits[iFirstHit]];  // optimize
-  const L1StsHit& hit1 = (*vStsHits)[t.StsHits[iFirstHit + step]];
-  const L1StsHit& hit2 = (*vStsHits)[t.StsHits[iFirstHit + 2 * step]];
+  const L1StsHit& hit0 = (*vStsHits)[t.fStsHits[iFirstHit]];  // optimize
+  const L1StsHit& hit1 = (*vStsHits)[t.fStsHits[iFirstHit + step]];
+  const L1StsHit& hit2 = (*vStsHits)[t.fStsHits[iFirstHit + 2 * step]];
 
-  const int ista0 = GetFStation((*vSFlag)[hit0.f]);
-  const int ista1 = GetFStation((*vSFlag)[hit1.f]);
-  const int ista2 = GetFStation((*vSFlag)[hit2.f]);
+  const int ista0 = GetFStation((*fStripFlag)[hit0.f]);
+  const int ista1 = GetFStation((*fStripFlag)[hit1.f]);
+  const int ista2 = GetFStation((*fStripFlag)[hit2.f]);
 
   const L1Station& sta0 = vStations[ista0];
   const L1Station& sta1 = vStations[ista1];
@@ -284,7 +284,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
       const L1StsHit& hit = (*vStsHitsUnused)[ih];
       if (fabs(hit.t_reco - T.t[0]) > sqrt(T.C55[0] + hit.t_er) * 5) continue;
 
-      if (GetFUsed((*vSFlag)[hit.f] | (*vSFlag)[hit.b])) continue;  // if used
+      if (GetFUsed((*fStripFlag)[hit.f] | (*fStripFlag)[hit.b])) continue;  // if used
 
       fscal xh, yh, zh;
       GetHitCoor(hit, xh, yh, zh, sta);  // faster
@@ -354,23 +354,22 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
   }
 
   // save hits
+  const unsigned int NOldHits = t.NHits;
+  const unsigned int NNewHits = newHits.size();
+  t.fStsHits.resize(NNewHits + NOldHits);
+  t.NHits = (NNewHits + NOldHits);
+
   if (dir) {  // backward
-    const unsigned int NOldHits = t.NHits;
-    const unsigned int NNewHits = newHits.size();
-    //  t.StsHits.resize(NNewHits + NOldHits);
-    t.NHits = (NNewHits + NOldHits);
     for (int i = NOldHits - 1; i >= 0; i--) {
-      t.StsHits[NNewHits + i] = t.StsHits[i];
+      t.fStsHits[NNewHits + i] = t.fStsHits[i];
     }
     for (unsigned int i = 0, ii = NNewHits - 1; i < NNewHits; i++, ii--) {
-      t.StsHits[i] = newHits[ii];
+      t.fStsHits[i] = newHits[ii];
     }
   }
   else {  // forward
-    const unsigned int NOldHits = t.NHits;
-    t.NHits                     = (newHits.size() + NOldHits);
     for (unsigned int i = 0; i < newHits.size(); i++) {
-      t.StsHits[NOldHits + i] = (newHits[i]);
+      t.fStsHits[NOldHits + i] = (newHits[i]);
     }
   }
 

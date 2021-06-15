@@ -30,17 +30,16 @@ using namespace NS_L1TrackFitter;
 void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
 {
   //  cout << " Start KF Track Fitter " << endl;
-  int start_hit = 0;  // for interation in vRecoHits[]
-
-  for (unsigned int itrack = 0; itrack < NTracksIsecAll; itrack++) {
-    L1Track& t = vTracks[itrack];  // current track
+  int start_hit = 0;  // for interation in fRecoHits[]
+  for (unsigned int itrack = 0; itrack < fTracks.size(); itrack++) {
+    L1Track& t = fTracks[itrack];  // current track
 
     // get hits of current track
     std::vector<unsigned short int> hits;  // array of indeses of hits of current track
     hits.clear();
     int nHits = t.NHits;
     for (int i = 0; i < nHits; i++) {
-      hits.push_back(vRecoHits[start_hit++]);
+      hits.push_back(fRecoHits[start_hit++]);
     }
 
     L1TrackPar T;  // fitting parametr coresponding to current track
@@ -57,9 +56,9 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         const L1StsHit& hit1 = (*vStsHits)[hits[nHits - 2]];
         const L1StsHit& hit2 = (*vStsHits)[hits[nHits - 3]];
 
-        int ista0 = (*vSFlag)[hit0.f] / 4;
-        int ista1 = (*vSFlag)[hit1.f] / 4;
-        int ista2 = (*vSFlag)[hit2.f] / 4;
+        int ista0 = (*fStripFlag)[hit0.f] / 4;
+        int ista1 = (*fStripFlag)[hit1.f] / 4;
+        int ista2 = (*fStripFlag)[hit2.f] / 4;
 
         //cout<<"back: ista012="<<ista0<<" "<<ista1<<" "<<ista2<<endl;
         L1Station& sta0 = vStations[ista0];
@@ -128,7 +127,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         for (int i = nHits - 2; i >= 0; i--) {
           //  if( fabs(T.qp[0])>2. ) break;  // iklm. Don't know it need for
           const L1StsHit& hit = (*vStsHits)[hits[i]];
-          ista                = (*vSFlag)[hit.f] / 4;
+          ista                = (*fStripFlag)[hit.f] / 4;
 
           L1Station& sta = vStations[ista];
 
@@ -198,9 +197,9 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         const L1StsHit& hit1 = (*vStsHits)[hits[1]];
         const L1StsHit& hit2 = (*vStsHits)[hits[2]];
 
-        int ista0 = GetFStation((*vSFlag)[hit0.f]);
-        int ista1 = GetFStation((*vSFlag)[hit1.f]);
-        int ista2 = GetFStation((*vSFlag)[hit2.f]);
+        int ista0 = GetFStation((*fStripFlag)[hit0.f]);
+        int ista1 = GetFStation((*fStripFlag)[hit1.f]);
+        int ista2 = GetFStation((*fStripFlag)[hit2.f]);
 
         L1Station& sta0 = vStations[ista0];
         L1Station& sta1 = vStations[ista1];
@@ -264,7 +263,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
 
         for (int i = 1; i < nHits; i++) {
           const L1StsHit& hit = (*vStsHits)[hits[i]];
-          ista                = (*vSFlag)[hit.f] / 4;
+          ista                = (*fStripFlag)[hit.f] / 4;
           L1Station& sta      = vStations[ista];
           fvec u              = hit.u;
           fvec v              = hit.v;
@@ -328,7 +327,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
 void L1Algo::L1KFTrackFitter()
 {
   //  cout << " Start L1 Track Fitter " << endl;
-  int start_hit = 0;  // for interation in vRecoHits[]
+  int start_hit = 0;  // for interation in fRecoHits[]
 
   //  static L1FieldValue fB0, fB1, fB2 _fvecalignment;
   //  static L1FieldRegion fld _fvecalignment;
@@ -369,13 +368,13 @@ void L1Algo::L1KFTrackFitter()
     ZSta[iHit] = sta[iHit].z;
   }
 
-  unsigned short N_vTracks = NTracksIsecAll;
+  unsigned short N_vTracks = fTracks.size();
 
   for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvecLen) {
     if (N_vTracks - itrack < static_cast<unsigned short>(fvecLen)) nTracks_SIMD = N_vTracks - itrack;
 
     for (i = 0; i < nTracks_SIMD; i++)
-      t[i] = &vTracks[itrack + i];  // current track
+      t[i] = &fTracks[itrack + i];  // current track
 
     // get hits of current track
     for (i = 0; i < nHits; i++) {
@@ -388,8 +387,8 @@ void L1Algo::L1KFTrackFitter()
       int nHitsTrack = t[iVec]->NHits;
       int iSta[MaxNStations];
       for (i = 0; i < nHitsTrack; i++) {
-        const L1StsHit& hit = (*vStsHits)[vRecoHits[start_hit++]];
-        const int ista      = (*vSFlag)[hit.f] / 4;
+        const L1StsHit& hit = (*vStsHits)[fRecoHits[start_hit++]];
+        const int ista      = (*fStripFlag)[hit.f] / 4;
         iSta[i]             = ista;
         w[ista][iVec]       = 1.;
         if (ista > NMvdStations) w_time[ista][iVec] = 1.;
@@ -750,7 +749,7 @@ void L1Algo::L1KFTrackFitter()
 void L1Algo::L1KFTrackFitterMuch()
 {
   //  cout << " Start L1 Track Fitter " << endl;
-  int start_hit = 0;  // for interation in vRecoHits[]
+  int start_hit = 0;  // for interation in fRecoHits[]
 
   //  static L1FieldValue fB0, fB1, fB2 _fvecalignment;
   //  static L1FieldRegion fld _fvecalignment;
@@ -792,13 +791,13 @@ void L1Algo::L1KFTrackFitterMuch()
     ZSta[iHit] = sta[iHit].z;
   }
 
-  unsigned short N_vTracks = NTracksIsecAll;
+  unsigned short N_vTracks = fTracks.size();
 
   for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvecLen) {
     if (N_vTracks - itrack < static_cast<unsigned short>(fvecLen)) nTracks_SIMD = N_vTracks - itrack;
 
     for (i = 0; i < nTracks_SIMD; i++)
-      t[i] = &vTracks[itrack + i];  // current track
+      t[i] = &fTracks[itrack + i];  // current track
 
     // get hits of current track
     for (i = 0; i < nHits; i++) {
@@ -808,7 +807,6 @@ void L1Algo::L1KFTrackFitterMuch()
 
     for (iVec = 0; iVec < nTracks_SIMD; iVec++) {
       for (i = 0; i < NStations; i++) {
-
         d_x[i][iVec] = 0;
         d_y[i][iVec] = 0;
       }
@@ -818,8 +816,8 @@ void L1Algo::L1KFTrackFitterMuch()
       int nHitsTrack    = t[iVec]->NHits;
       int nHitsTrackSts = 0;
       for (i = 0; i < nHitsTrack; i++) {
-        const L1StsHit& hit = (*vStsHits)[vRecoHits[start_hit++]];
-        const int ista      = (*vSFlag)[hit.f] / 4;
+        const L1StsHit& hit = (*vStsHits)[fRecoHits[start_hit++]];
+        const int ista      = (*fStripFlag)[hit.f] / 4;
         if (ista < 8) nHitsTrackSts++;
         iSta[i]       = ista;
         w[ista][iVec] = 1.;

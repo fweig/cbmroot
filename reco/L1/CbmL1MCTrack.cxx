@@ -148,7 +148,7 @@ void CbmL1MCTrack::CalculateHitCont()
     for (int ih = 0; ih < nhits; ih++) {
       int jh            = StsHits[ih];
       const L1StsHit& h = (*algo->vStsHits)[jh];
-      int ista          = (*algo->vSFlag)[h.f] / 4;
+      int ista          = (*algo->fStripFlag)[h.f] / 4;
 
       if (ista - istaold == 1) ncont++;
       else if (ista - istaold > 1) {

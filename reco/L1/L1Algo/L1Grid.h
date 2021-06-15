@@ -22,6 +22,7 @@
 #endif
 #include "L1HitPoint.h"
 #include "L1StsHit.h"
+#include "L1Vector.h"
 
 using namespace std;
 
@@ -84,9 +85,6 @@ public:
   //    }
   //  }
 
-  void CreatePar(L1HitPoint* points, THitI nhits, L1Vector<L1HitPoint>* pointsBuf, L1Vector<L1StsHit>* hitsBuf,
-                 const L1StsHit* hits, L1Vector<THitI>* indices, L1Vector<THitI>* indicesBuf, char iS, L1Algo& Algo,
-                 THitI n);
   void StoreHits(THitI nhits, const L1StsHit* hits, char iS, L1Algo& Algo, THitI n, L1StsHit* hitsBuf1,
                  const L1StsHit* hits1, THitI* indices1);
 
@@ -146,7 +144,7 @@ public:
 
   void UpdateIterGrid(unsigned int Nelements, L1StsHit* hits, vector<THitI>* indicesBuf, THitI* indices,
                       vector<L1StsHit>* hits2, vector<L1HitPoint>* pointsBuf, L1HitPoint* points, int& NHitsOnStation,
-                      char iS, L1Algo& Algo, const vector<unsigned char>* vSFlag);
+                      char iS, L1Algo& Algo, const L1Vector<unsigned char>* vSFlag);
 
 
 private:

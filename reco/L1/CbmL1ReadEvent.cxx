@@ -910,12 +910,14 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
   // save strips in L1Algo
   fData_->NStsStrips = NStrips;
-  fData_->vSFlag.resize(NStrips, 0);
+  fData_->fStripFlag.clear();
+  fData_->fStripFlag.reserve(NStrips);
+  fData_->fStripFlag.assign(NStrips, 0);
   for (int ih = 0; ih < nHits; ih++) {
     TmpHit& th                 = tmpHits[ih];
     char flag                  = th.iStation * 4;
-    fData_->vSFlag[th.iStripF] = flag;
-    fData_->vSFlag[th.iStripB] = flag;
+    fData_->fStripFlag[th.iStripF] = flag;
+    fData_->fStripFlag[th.iStripB] = flag;
   }  // ih
 
   if (fVerbose >= 10) { cout << "ReadEvent: strips are read." << endl; }

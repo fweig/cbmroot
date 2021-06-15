@@ -7,6 +7,179 @@
 #include "L1Grid.h"
 #include "L1HitPoint.h"
 
+L1Algo::L1Algo(int nThreads, int ExpectedHits)
+  : fDupletPortionSize("L1Algo::fDupletPortionSize")
+  , fMergerTrackFirstStation("L1Algo::fMergerTrackFirstStation")
+  , fMergerTrackLastStation("L1Algo::fMergerTrackLastStation")
+  , fMergerTrackFirstHit("L1Algo::fMergerTrackFirstHit")
+  , fMergerTrackLastHit("L1Algo::fMergerTrackLastHit")
+  , fMergerTrackNeighbour("L1Algo::fMergerTrackNeighbour")
+  , fMergerTrackChi2("L1Algo::fMergerTrackChi2")
+  , fMergerTrackIsStored("L1Algo::fMergerTrackIsStored")
+  , fMergerTrackIsDownstreamNeighbour("L1Algo::fMergerTrackIsDownstreamNeighbour")
+  , fMergerTracksNew("L1Algo::fMergerTracksNew")
+  , fMergerRecoHitsNew("L1Algo::fMergerRecoHitsNew")
+  , NStations(0)
+  ,  // number of all detector stations
+  NMvdStations(0)
+  ,  // number of mvd stations
+  NStsStations(0)
+  , NFStations(0)
+  , fRadThick()
+  , NStsStrips(0)  // strips positions created from hits
+  , vStsZPos(0)
+  ,                // all possible z-positions of hits
+  vStsHits(0)      // hits as a combination of front-, backstrips and z-position
+  , fStripFlag(0)  // information of hits station & using hits in tracks(),
+  , CATime(0)
+  ,  // time of trackfinding
+  fTracks("L1Algo::fTracks")
+  ,  // reconstructed tracks
+  fRecoHits("L1Algo::fRecoHits")
+  ,  // packed hits of reconstructed tracks
+  StsHitsStartIndex(nullptr)
+  , StsHitsStopIndex(nullptr)
+  , NHitsIsecAll(0)
+  , vStsDontUsedHits_A(ExpectedHits)
+  , vStsDontUsedHits_B(ExpectedHits)
+  , vStsDontUsedHits_Buf(ExpectedHits)
+  , vStsDontUsedHitsxy_A(ExpectedHits)
+  , vStsDontUsedHitsxy_buf(ExpectedHits)
+  , vStsDontUsedHitsxy_B(ExpectedHits)
+  , RealIHit_v(ExpectedHits)
+  , RealIHit_v_buf(ExpectedHits)
+  , RealIHit_v_buf2(ExpectedHits)
+  ,
+
+#ifdef _OPENMP
+  fHitToBestTrackF("L1Algo::fHitToBestTrackF")
+  , fHitToBestTrackB("L1Algo::fHitToBestTrackB")
+  ,
+#endif
+  fStripToTrack("L1Algo::fStripToTrack")
+  , fStripToTrackB("L1Algo::fStripToTrackB")
+  ,
+  //sh (),
+  fNThreads(nThreads)
+  , fUseHitErrors(0)
+  , fmCBMmode(0)
+  , fGlobal(0)
+  , isec(0)
+  , vStsHitsUnused()
+  , RealIHitP()
+  , RealIHitPBuf()
+  , vStsHitPointsUnused()
+  , RealIHit(nullptr)
+  , FIRSTCASTATION()
+  , threadNumberToCpuMap()
+  , TRACK_CHI2_CUT(10.)
+  , TRIPLET_CHI2_CUT(5.)
+  , DOUBLET_CHI2_CUT(5.)
+  , TIME_CUT1(0.)
+  , TIME_CUT2(0.)
+  , MaxDZ(0.)
+  ,
+#ifdef DRAW
+  draw(0)
+  ,
+#endif
+  Pick_gather(0)
+  , PickNeighbour(0)
+  ,  // (PickNeighbour < dp/dp_error)  =>  triplets are neighbours
+  MaxInvMom(0)
+  ,  // max considered q/p for tracks
+  MaxSlope(0)
+  , targX(0)
+  , targY(0)
+  , targZ(0)
+  ,  // target coor
+  targB()
+  ,  // field in the target point
+  TargetXYInfo()
+  ,  // target constraint  [cm]
+  vtxFieldRegion()
+  ,  // really doesn't used
+  vtxFieldValue()
+  ,  // field at teh vertex position.
+  //vTripletsP(), // container for triplets got in finding
+  fTrackingLevel(0)
+  , fGhostSuppression(0)
+  ,                   // really doesn't used
+  fMomentumCutOff(0)  // really doesn't used
+{
+
+  fDupletPortionSize.reserve(100000);
+  fTracks.reserve(40000);
+  fRecoHits.reserve(400000);
+
+  fStripToTrack.reserve(ExpectedHits * 4);
+  fStripToTrackB.reserve(ExpectedHits * 4);
+
+  for (int i = 0; i < fNThreads; i++) {
+
+    fTracks_local[i].SetName(std::stringstream() << "L1Algo::fTracks_local[" << i << "]");
+    fTracks_local[i].clear();
+    fTracks_local[i].reserve(100000);
+
+    fRecoHits_local[i].SetName(std::stringstream() << "L1Algo::fRecoHits_local[" << i << "]");
+    fRecoHits_local[i].clear();
+    fRecoHits_local[i].reserve(400000);
+
+    TripForHit[0].resize(ExpectedHits);
+    TripForHit[1].resize(ExpectedHits);
+
+    fTrackCandidates[i].SetName(std::stringstream() << "L1Algo::fTrackCandidates[" << i << "]");
+    fTrackCandidates[i].clear();
+    fTrackCandidates[i].reserve(10000);
+
+    fT_3[i].reserve(MaxPortionTriplets / fvecLen);
+    fhitsl_3[i].reserve(MaxPortionTriplets);
+    fhitsm_3[i].reserve(MaxPortionTriplets);
+    fhitsr_3[i].reserve(MaxPortionTriplets);
+    fu_front3[i].reserve(MaxPortionTriplets / fvecLen);
+    fu_back3[i].reserve(MaxPortionTriplets / fvecLen);
+    fz_pos3[i].reserve(MaxPortionTriplets / fvecLen);
+    fTimeR[i].reserve(MaxPortionTriplets / fvecLen);
+    fTimeER[i].reserve(MaxPortionTriplets / fvecLen);
+    dx[i].reserve(MaxPortionTriplets / fvecLen);
+    dy[i].reserve(MaxPortionTriplets / fvecLen);
+    du[i].reserve(MaxPortionTriplets / fvecLen);
+    dv[i].reserve(MaxPortionTriplets / fvecLen);
+
+    for (int j = 0; j < MaxNStations; j++) {
+      fTriplets[j][i].SetName(std::stringstream() << "L1Algo::fTriplets[" << i << "][" << j << "]");
+      fTriplets[j][i].reserve(ExpectedHits);
+      fTriplets[j][i].clear();
+    }
+  }
+
+  for (int i = 0; i < MaxNStations; i++) {
+    vGridTime[i].AllocateMemory(fNThreads);
+  }
+
+#ifdef _OPENMP
+  fHitToBestTrackF.reserve(ExpectedHits * 2);
+  fHitToBestTrackB.reserve(ExpectedHits * 2);
+#endif
+
+  NHitsIsecAll              = ExpectedHits;
+  const int kExpectedTracks = ExpectedHits / 8;
+
+  fMergerTrackFirstStation.reserve(kExpectedTracks);
+  fMergerTrackLastStation.reserve(kExpectedTracks);
+  fMergerTrackFirstHit.reserve(kExpectedTracks);
+  fMergerTrackLastHit.reserve(kExpectedTracks);
+  fMergerTrackNeighbour.reserve(kExpectedTracks);
+  fMergerTrackChi2.reserve(kExpectedTracks);
+  fMergerTrackIsStored.reserve(kExpectedTracks);
+  fMergerTrackIsDownstreamNeighbour.reserve(kExpectedTracks);
+  fMergerTracksNew.reserve(kExpectedTracks);
+  fMergerRecoHitsNew.reserve(ExpectedHits);
+
+  //     IsNext.resize(kExpectedTracks);
+}
+
+
 void L1Algo::Init(const vector<fscal>& geo, const bool UseHitErrors, const bool mCBMmode)
 {
 
@@ -172,15 +345,15 @@ void L1Algo::Init(const vector<fscal>& geo, const bool UseHitErrors, const bool 
 }
 
 
-void L1Algo::SetData(const vector<L1StsHit>& StsHits_, int nStsStrips_, const vector<fscal>& StsZPos_,
-                     const vector<unsigned char>& SFlag_, const THitI* StsHitsStartIndex_,
-                     const THitI* StsHitsStopIndex_, const int NhitsGlobal)
+void L1Algo::SetData(vector<L1StsHit>& StsHits_, int nStsStrips_, const vector<fscal>& StsZPos_,
+                     L1Vector<unsigned char>& SFlag_, const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_,
+                     const int NhitsGlobal)
 {
 
   vStsHits   = &StsHits_;
   NStsStrips = nStsStrips_;
   vStsZPos   = &StsZPos_;
-  vSFlag     = &SFlag_;
+  fStripFlag = &SFlag_;
 
   StsHitsStartIndex = StsHitsStartIndex_;
   StsHitsStopIndex  = StsHitsStopIndex_;
@@ -200,23 +373,34 @@ void L1Algo::SetData(const vector<L1StsHit>& StsHits_, int nStsStrips_, const ve
   RealIHit_v_buf2.resize(nHits);
 
 #ifdef _OPENMP
-  hitToBestTrackF.resize(NhitsGlobal * 2);
-  hitToBestTrackB.resize(NhitsGlobal * 2);
+  fHitToBestTrackF.resize(NhitsGlobal * 2);
+  fHitToBestTrackB.resize(NhitsGlobal * 2);
+  for (unsigned int j = 0; j < fHitToBestTrackB.size(); j++) {
+    omp_init_lock(&fHitToBestTrackB[j]);
+    omp_init_lock(&fHitToBestTrackF[j]);
+  }
 #endif
-  vStripToTrack.resize(NStsStrips);
-  vStripToTrackB.resize(NStsStrips);
+
+  fStripToTrack.reserve(NStsStrips);
+  fStripToTrackB.reserve(NStsStrips);
 
   TripForHit[0].resize(nHits);
   TripForHit[1].resize(nHits);
   NHitsIsecAll = nHits;
-  n_g1.resize(2 * nHits);
+  fDupletPortionSize.clear();
+  fDupletPortionSize.reserve(2 * nHits);
 
   for (int i = 0; i < fNThreads; i++) {
-    vTracks_local[i].resize(nHits / 10);
-    vRecoHits_local[i].resize(nHits);
-    CandidatesTrack[i].resize(nHits / 10);
-    for (int j = 0; j < MaxNStations; j++)
-      TripletsLocal1[j][i].resize(2 * nHits);
+    fTracks_local[i].clear();
+    fTracks_local[i].reserve(nHits / 10);
+    fRecoHits_local[i].clear();
+    fRecoHits_local[i].reserve(nHits);
+    fTrackCandidates[i].clear();
+    fTrackCandidates[i].reserve(nHits / 10);
+    for (int j = 0; j < MaxNStations; j++) {
+      fTriplets[j][i].clear();
+      fTriplets[j][i].reserve(2 * nHits);
+    }
   }
 
   /*    
@@ -224,15 +408,15 @@ void L1Algo::SetData(const vector<L1StsHit>& StsHits_, int nStsStrips_, const ve
  vStsStrips.resize(StsStrips_.size());
  vStsStripsB.resize(StsStripsB_.size());
   vStsZPos.resize(StsZPos_.size());
-  vSFlag.resize(SFlag_.size());
-  vSFlagB.resize(SFlagB_.size());
+  fStripFlag.resize(SFlag_.size());
+  fStripFlagB.resize(SFlagB_.size());
   
   for(Tindex i=0; i< static_cast<Tindex>(StsHits_.size()); ++i ) vStsHits[i] = StsHits_[i];
   for(Tindex i=0; i< static_cast<Tindex>(StsStrips_.size()); ++i ) vStsStrips[i] = StsStrips_[i];
   for(Tindex i=0; i< static_cast<Tindex>(StsStripsB_.size()); ++i ) vStsStripsB[i] = StsStripsB_[i];
   for(Tindex i=0; i< static_cast<Tindex>(StsZPos_.size()); ++i ) vStsZPos[i] = StsZPos_[i];
-  for(Tindex i=0; i< static_cast<Tindex>(SFlag_.size()); ++i ) vSFlag[i] = SFlag_[i];
-  for(Tindex i=0; i< static_cast<Tindex>(SFlagB_.size()); ++i ) vSFlagB[i] = SFlagB_[i];
+  for(Tindex i=0; i< static_cast<Tindex>(SFlag_.size()); ++i ) fStripFlag[i] = SFlag_[i];
+  for(Tindex i=0; i< static_cast<Tindex>(SFlagB_.size()); ++i ) fStripFlagB[i] = SFlagB_[i];
 
   for(Tindex i=0; i<MaxNStations+1; ++i) StsHitsStartIndex[i] = StsHitsStartIndex_[i];
   for(Tindex i=0; i<MaxNStations+1; ++i) StsHitsStopIndex[i]  = StsHitsStopIndex_[i];*/
