@@ -387,13 +387,11 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       {
         CbmMvdHit* mh = L1_DYNAMIC_CAST<CbmMvdHit*>(listMvdHits->At(j));
         th.ExtIndex   = -(1 + j);
-        th.id         = j;
+        th.id         = tmpHits.size();
         th.iStation   = mh->GetStationNr();
-        //   th.iSector  = 0;
-        int iStripF = j;
-        th.iStripF  = firstDetStrip + iStripF;
+        th.iStripF    = firstDetStrip + j;
         th.iStripB  = th.iStripF;
-        if (NStrips <= iStripF) { NStrips = iStripF + 1; }
+        if (NStrips <= th.iStripF) { NStrips = th.iStripF + 1; }
 
         TVector3 pos, err;
         mh->Position(pos);
@@ -519,7 +517,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
         if (fTimesliceMode) th.id = hitIndex;
         else
-          th.id = j + nMvdHits;
+          th.id = tmpHits.size();
 
         if ((th.time > (TsStart + TsLength)) && ((nEntSts - hitIndex) > 300))
           break;                                   /// stop if reco TS ends or few hits left
@@ -615,7 +613,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
         th.ExtIndex = j;
         th.Det      = 2;
-        th.id       = j + nMvdHits + nStsHits;
+        th.id       = tmpHits.size();
 
 
         Int_t stationNumber = CbmMuchGeoScheme::GetStationIndex(mh->GetAddress());
@@ -720,7 +718,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       th.ExtIndex   = j;
       th.Det        = 3;
 
-      th.id = j + nMvdHits + nStsHits + nMuchHits;
+      th.id = tmpHits.size();
 
       th.iStation = NMvdStations + mh->GetPlaneId() + NStsStations + NMuchStations;
 
@@ -815,7 +813,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       th.ExtIndex = j;
       th.Det      = 4;
 
-      th.id = j + nMvdHits + nStsHits + nMuchHits + nTrdHits;
+      th.id = tmpHits.size();
 
       if (0x00202806 == mh->GetAddress() || 0x00002806 == mh->GetAddress()) continue;
 
