@@ -249,7 +249,7 @@ CbmRoot_Merge_Singularity:
     - echo "export FAIRROOTPATH=/cvmfs/fairsoft.gsi.de/debian10/fairroot/\${FAIRROOT_VERSION}_fs_\${FAIRSOFT_VERSION}" >> Dart.cfg
     - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
     - echo "export SOURCEDIR=$PWD" >> Dart.cfg
-    - echo "export NCPU=4" >> Dart.cfg
+    - echo "export NCPU=8" >> Dart.cfg
     - ls
     - pwd
     - cat Dart.cfg
@@ -264,7 +264,15 @@ CbmRoot_Merge_realData:
       - merge_requests
     variables:
       - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
-  script:
+  variables:
+    OS: Debian10
+    FAIRSOFT_VERSION: jun19p2_root6
+    FAIRROOT_VERSION: v18.2.1
+    EXTRA_PATH: /opt/cmake/3.20.1/bin
+    NCPU: 16
+    BASE_PATH: "/opt/cbmsoft/"
+    RAW_DATA_PATH: "/opt/cbmsoft/beamtime-test-data/reduced/"
+  before_script:
     - echo $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH
     - echo $CI_MERGE_REQUEST_PROJECT_PATH
     - if [ "$CI_MERGE_REQUEST_PROJECT_PATH" != "computing/cbmroot" ]; then
@@ -274,20 +282,25 @@ CbmRoot_Merge_realData:
     - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
     - echo $CI_MERGE_REQUEST_ID
     - echo $CI_MERGE_REQUEST_IID
-    - echo "export LINUX_FLAVOUR=Debian10" >> Dart.cfg
-    - echo "export FAIRSOFT_VERSION=jun19p2" >> Dart.cfg
-    - echo "export FAIRROOT_VERSION=v18.2.1" >> Dart.cfg
-    - echo "export SIMPATH=/opt/cbmsoft/fairsoft_\${FAIRSOFT_VERSION}_root6/installation" >> Dart.cfg
-    - echo "export FAIRROOTPATH=/opt/cbmsoft/fairroot_\${FAIRROOT_VERSION}-fairsoft_\${FAIRSOFT_VERSION}_root6" >> Dart.cfg
-    - echo "export RAW_DATA_PATH=/opt/cbmsoft/beamtime-test-data/reduced/" >> Dart.cfg
+  script:
+    - echo "export LINUX_FLAVOUR=$OS" >> Dart.cfg
+    - echo "export FAIRSOFT_VERSION=$FAIRSOFT_VERSION" >> Dart.cfg
+    - echo "export FAIRROOT_VERSION=$FAIRROOT_VERSION" >> Dart.cfg
+    - echo "export SIMPATH=$BASE_PATH/fairsoft_$FAIRSOFT_VERSION/installation" >> Dart.cfg
+    - echo "export FAIRROOTPATH=$BASE_PATH/fairroot_$FAIRROOT_VERSION-fairsoft_$FAIRSOFT_VERSION" >> Dart.cfg
+    - if [[ -n $RAW_DATA_PATH ]]; then
+    - echo "export RAW_DATA_PATH=$RAW_DATA_PATH" >> Dart.cfg
+    - fi
     - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
     - echo "export SOURCEDIR=$PWD" >> Dart.cfg
-    - echo "export NCPU=16" >> Dart.cfg
-    - echo "export PATH=/opt/cmake/3.20.1/bin:$PATH" >> Dart.cfg
+    - echo "export NCPU=$NCPU" >> Dart.cfg
+    - echo "export PATH=$EXTRA_PATH:$PATH" >> Dart.cfg
+    - cat Dart.cfg
+    - $PWD/Dart.sh MergeRequest Dart.cfg
+  after_script:
     - ls
     - pwd
     - cat Dart.cfg
-    - $PWD/Dart.sh MergeRequest Dart.cfg
 
 InformCodeOwners:
   stage: finalise
