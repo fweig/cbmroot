@@ -190,12 +190,22 @@ FileEndCheck:
     
 .singularity_debian10_variables: &singularity_debian10_variables
     OS: debian10
-    NCPU: 16
+    NCPU: 14
     FAIRSOFT_VERSION: jun19p2
     FAIRROOT_VERSION: v18.2.1
     BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS"
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
+
+.singularity_debian8_variables: &singularity_debian8_variables
+    OS: debian8
+    NCPU: 14
+    FAIRSOFT_VERSION: jun19p2
+    FAIRROOT_VERSION: v18.2.1
+    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft-${FAIRSOFT_VERSION}"
+    EXTRA_PATH: $SIMPATH/bin
 
 .linux_tag: &linux_tag
   stage: build
@@ -254,10 +264,15 @@ CbmRoot_Merge_realData:
   variables:
     <<: [*mergeRequestVariables, *realData_variables]
 
-CbmRoot_Merge_Singularity:
+CbmRoot_Merge_Singularity_debian10:
   <<: [*singularity_tag, *check_merge_request, *build_and_test]
   variables:
     <<: [*mergeRequestVariables, *singularity_debian10_variables]
+
+CbmRoot_Merge_Singularity_debian8:
+  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *singularity_debian8_variables]
 
 CbmRoot_Merge:
   <<: [*linux_tag, *check_merge_request, *build_and_test]
