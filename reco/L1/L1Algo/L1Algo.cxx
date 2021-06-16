@@ -373,8 +373,8 @@ void L1Algo::SetData(vector<L1StsHit>& StsHits_, int nStsStrips_, const vector<f
   RealIHit_v_buf2.resize(nHits);
 
 #ifdef _OPENMP
-  fHitToBestTrackF.resize(NhitsGlobal * 2);
-  fHitToBestTrackB.resize(NhitsGlobal * 2);
+  fHitToBestTrackF.resize(NStsStrips);
+  fHitToBestTrackB.resize(NStsStrips);
   for (unsigned int j = 0; j < fHitToBestTrackB.size(); j++) {
     omp_init_lock(&fHitToBestTrackB[j]);
     omp_init_lock(&fHitToBestTrackF[j]);
