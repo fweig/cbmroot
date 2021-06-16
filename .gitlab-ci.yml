@@ -223,37 +223,37 @@ CbmRoot_Merge_macosx:
     - cat Dart.cfg
     - $PWD/Dart.sh MergeRequest Dart.cfg
 
-CbmRoot_Merge_Singularity:
-  stage: build
-  tags:
-    - CbmRoot_singularity
-  only:
-    refs:
-      - merge_requests
-    variables:
-      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
-  script:
-    - echo $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH
-    - echo $CI_MERGE_REQUEST_PROJECT_PATH
-    - if [ "$CI_MERGE_REQUEST_PROJECT_PATH" != "computing/cbmroot" ]; then
-    -   echo "Should not come here"
-    -   exit 1
-    - fi
-    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-    - echo $CI_MERGE_REQUEST_ID
-    - echo $CI_MERGE_REQUEST_IID
-    - echo "export LINUX_FLAVOUR=Debian10" >> Dart.cfg
-    - echo "export FAIRSOFT_VERSION=apr21" >> Dart.cfg
-    - echo "export FAIRROOT_VERSION=v18.6.3" >> Dart.cfg
-    - echo "export SIMPATH=/cvmfs/fairsoft.gsi.de/debian10/fairsoft/\${FAIRSOFT_VERSION}" >> Dart.cfg
-    - echo "export FAIRROOTPATH=/cvmfs/fairsoft.gsi.de/debian10/fairroot/\${FAIRROOT_VERSION}_fs_\${FAIRSOFT_VERSION}" >> Dart.cfg
-    - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
-    - echo "export SOURCEDIR=$PWD" >> Dart.cfg
-    - echo "export NCPU=8" >> Dart.cfg
-    - ls
-    - pwd
-    - cat Dart.cfg
-    - $PWD/Dart.sh MergeRequest Dart.cfg
+#CbmRoot_Merge_Singularity:
+#  stage: build
+#  tags:
+#    - CbmRoot_singularity
+#  only:
+#    refs:
+#      - merge_requests
+#    variables:
+#      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
+#  script:
+#    - echo $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH
+#    - echo $CI_MERGE_REQUEST_PROJECT_PATH
+#    - if [ "$CI_MERGE_REQUEST_PROJECT_PATH" != "computing/cbmroot" ]; then
+#    -   echo "Should not come here"
+#    -   exit 1
+#    - fi
+#    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+#    - echo $CI_MERGE_REQUEST_ID
+#    - echo $CI_MERGE_REQUEST_IID
+#    - echo "export LINUX_FLAVOUR=Debian10" >> Dart.cfg
+#    - echo "export FAIRSOFT_VERSION=apr21" >> Dart.cfg
+#    - echo "export FAIRROOT_VERSION=v18.6.3" >> Dart.cfg
+#    - echo "export SIMPATH=/cvmfs/fairsoft.gsi.de/debian10/fairsoft/\${FAIRSOFT_VERSION}" >> Dart.cfg
+#    - echo "export FAIRROOTPATH=/cvmfs/fairsoft.gsi.de/debian10/fairroot/\${FAIRROOT_VERSION}_fs_\${FAIRSOFT_VERSION}" >> Dart.cfg
+#    - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
+#    - echo "export SOURCEDIR=$PWD" >> Dart.cfg
+#    - echo "export NCPU=8" >> Dart.cfg
+#    - ls
+#    - pwd
+#    - cat Dart.cfg
+#    - $PWD/Dart.sh MergeRequest Dart.cfg
 
 
 #
@@ -272,21 +272,19 @@ CbmRoot_Merge_Singularity:
     - echo $CI_MERGE_REQUEST_IID
   script:
     - echo "export LINUX_FLAVOUR=$OS" >> Dart.cfg
-    - echo "export FAIRSOFT_VERSION=$FAIRSOFT_VERSION" >> Dart.cfg
-    - echo "export FAIRROOT_VERSION=$FAIRROOT_VERSION" >> Dart.cfg
-    - echo "export SIMPATH=$BASE_PATH/fairsoft_$FAIRSOFT_VERSION/installation" >> Dart.cfg
-    - echo "export FAIRROOTPATH=$BASE_PATH/fairroot_$FAIRROOT_VERSION-fairsoft_$FAIRSOFT_VERSION" >> Dart.cfg
+    - echo "export SIMPATH=$SIMPATH" >> Dart.cfg
+    - echo "export FAIRROOTPATH=$FAIRROOTPATH" >> Dart.cfg
     - if [[ -n $RAW_DATA_PATH ]]; then
     -   echo "export RAW_DATA_PATH=$RAW_DATA_PATH" >> Dart.cfg
     - fi
     - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
     - echo "export SOURCEDIR=$PWD" >> Dart.cfg
-    - echo "export NCPU=$NCPU" >> Dart.cfg
     - if [[ -n $EXTRA_PATH ]]; then
     -   echo "export PATH=$EXTRA_PATH:$PATH" >> Dart.cfg
     - fi
     - cat Dart.cfg
-    - $PWD/Dart.sh MergeRequest Dart.cfg
+    - env
+    - $PWD/Dart.sh $BUILD_TYPE Dart.cfg
   after_script:
     - ls
     - pwd
@@ -301,13 +299,30 @@ CbmRoot_Merge_Singularity:
   tags:
     - CbmRoot_realData
   variables:
-    OS: Debian10
-    FAIRSOFT_VERSION: jun19p2_root6
-    FAIRROOT_VERSION: v18.2.1
+    BUILD_TYPE: "MergeRequest"
+    OS: "Debian10"
     EXTRA_PATH: /opt/cmake/3.20.1/bin
     NCPU: 16
-    BASE_PATH: "/opt/cbmsoft/"
     RAW_DATA_PATH: "/opt/cbmsoft/beamtime-test-data/reduced/"
+    FAIRSOFT_VERSION: "jun19p2_root6"
+    FAIRROOT_VERSION: "v18.2.1"
+    BASE_PATH: "/opt/cbmsoft/"
+    SIMPATH: "$BASE_PATH/fairsoft_$FAIRSOFT_VERSION/installation"
+    FAIRROOTPATH: "$BASE_PATH/fairroot_${FAIRROOT_VERSION}-fairsoft_${FAIRSOFT_VERSION}"
+
+.singularity_tag: &singularity_tag
+  stage: build
+  tags:
+    - CbmRoot_singularity
+  variables:
+    BUILD_TYPE: "MergeRequest"
+    OS: debian10
+    NCPU: 16
+    FAIRSOFT_VERSION: apr21
+    FAIRROOT_VERSION: v18.6.3
+    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS/"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
 
 .on_merge_request: &on_merge_request
   only:
@@ -322,6 +337,8 @@ CbmRoot_Merge_Singularity:
 CbmRoot_Merge_realData:
   <<: [*realData_tag, *on_merge_request, *build_and_test]
 
+CbmRoot_Merge_Singularity:
+  <<: [*singularity_tag, *on_merge_request, *build_and_test]
 
 InformCodeOwners:
   stage: finalise
