@@ -255,23 +255,11 @@ CbmRoot_Merge_Singularity:
     - cat Dart.cfg
     - $PWD/Dart.sh MergeRequest Dart.cfg
 
-CbmRoot_Merge_realData:
-  stage: build
-  tags:
-    - CbmRoot_realData
-  only:
-    refs:
-      - merge_requests
-    variables:
-      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
-  variables:
-    OS: Debian10
-    FAIRSOFT_VERSION: jun19p2_root6
-    FAIRROOT_VERSION: v18.2.1
-    EXTRA_PATH: /opt/cmake/3.20.1/bin
-    NCPU: 16
-    BASE_PATH: "/opt/cbmsoft/"
-    RAW_DATA_PATH: "/opt/cbmsoft/beamtime-test-data/reduced/"
+
+#
+# job template
+#
+.build_and_test: &build_and_test
   before_script:
     - echo $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH
     - echo $CI_MERGE_REQUEST_PROJECT_PATH
@@ -289,18 +277,51 @@ CbmRoot_Merge_realData:
     - echo "export SIMPATH=$BASE_PATH/fairsoft_$FAIRSOFT_VERSION/installation" >> Dart.cfg
     - echo "export FAIRROOTPATH=$BASE_PATH/fairroot_$FAIRROOT_VERSION-fairsoft_$FAIRSOFT_VERSION" >> Dart.cfg
     - if [[ -n $RAW_DATA_PATH ]]; then
-    - echo "export RAW_DATA_PATH=$RAW_DATA_PATH" >> Dart.cfg
+    -   echo "export RAW_DATA_PATH=$RAW_DATA_PATH" >> Dart.cfg
     - fi
     - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
     - echo "export SOURCEDIR=$PWD" >> Dart.cfg
     - echo "export NCPU=$NCPU" >> Dart.cfg
-    - echo "export PATH=$EXTRA_PATH:$PATH" >> Dart.cfg
+    - if [[ -n $EXTRA_PATH ]]; then
+    -   echo "export PATH=$EXTRA_PATH:$PATH" >> Dart.cfg
+    - fi
     - cat Dart.cfg
     - $PWD/Dart.sh MergeRequest Dart.cfg
   after_script:
     - ls
     - pwd
     - cat Dart.cfg
+    - rm -rf build
+
+#
+# job element definitions
+#
+.realData_tag: &realData_tag
+  stage: build
+  tags:
+    - CbmRoot_realData
+  variables:
+    OS: Debian10
+    FAIRSOFT_VERSION: jun19p2_root6
+    FAIRROOT_VERSION: v18.2.1
+    EXTRA_PATH: /opt/cmake/3.20.1/bin
+    NCPU: 16
+    BASE_PATH: "/opt/cbmsoft/"
+    RAW_DATA_PATH: "/opt/cbmsoft/beamtime-test-data/reduced/"
+
+.on_merge_request: &on_merge_request
+  only:
+    refs:
+      - merge_requests
+    variables:
+      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
+
+#
+# job matrix
+#
+CbmRoot_Merge_realData:
+  <<: [*realData_tag, *on_merge_request, *build_and_test]
+
 
 InformCodeOwners:
   stage: finalise
