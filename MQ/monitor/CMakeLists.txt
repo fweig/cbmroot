@@ -3,6 +3,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerT0Monitor2020.sh.in ${C
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerTofMonitor2020.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQSamplerTofMonitor2020.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerT0Monitor2021.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQSamplerT0Monitor2021.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerTofMonitor2021.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQSamplerTofMonitor2021.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerPsdMonitor2021.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQSamplerPsdMonitor2021.sh)
+
 
 set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -14,8 +16,11 @@ set(INCLUDE_DIRECTORIES
     ${CBMROOT_SOURCE_DIR}/fles/flestools
     ${CBMDATA_DIR}
     ${CBMDATA_DIR}/tof
+    ${CBMDATA_DIR}/psd
     ${CBMDATA_DIR}/raw
     ${CBMBASE_DIR}
+
+    ${CBMDETECTORBASE_DIR}/psd
 )
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
@@ -88,6 +93,27 @@ GENERATE_EXECUTABLE()
 
 set(EXE_NAME TofMonitorMcbm2018)
 set(SRCS CbmDeviceMonitorTof.cxx runMonitorTof.cxx)
+
+set(DEPENDENCIES
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  fles_ipc
+  CbmFlibMcbm2018
+  CbmFlibFlesTools
+  CbmBase
+  CbmData
+  Core
+  RIO
+  Net
+  Hist
+  RHTTP
+)
+#GENERATE_LIBRARY()
+GENERATE_EXECUTABLE()
+
+set(EXE_NAME PsdMonitorMcbm2018)
+set(SRCS CbmDeviceMonitorPsd.cxx runMonitorPsd.cxx)
 
 set(DEPENDENCIES
   ${DEPENDENCIES}
