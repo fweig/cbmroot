@@ -130,132 +130,6 @@ FileEndCheck:
     - git fetch upstream
     - scripts/check-file-ending.sh upstream
 
-CbmRoot_Continuous:
-  stage: build
-  tags:
-    - CbmRoot
-  only:
-    refs:
-      - master
-    variables:
-      - $CI_PROJECT_PATH == "computing/cbmroot"
-  script:
-    - set -xv
-    - mkdir -p build
-    - cd build
-    - cd ..
-    - echo "export LINUX_FLAVOUR=Debian8.11" >> Dart.cfg
-    - echo "export FAIRSOFT_VERSION=jun19p1" >> Dart.cfg
-    - echo "export FAIRROOT_VERSION=v18.2.0" >> Dart.cfg
-    - echo "export SIMPATH=/cvmfs/fairroot.gsi.de/fairsoft/\${FAIRSOFT_VERSION}" >> Dart.cfg
-    - echo "export FAIRROOTPATH=/cvmfs/fairroot.gsi.de/fairroot/\${FAIRROOT_VERSION}_fairsoft-\${FAIRSOFT_VERSION}" >> Dart.cfg
-    - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
-    - echo "export SOURCEDIR=$PWD" >> Dart.cfg
-    - echo "export NCPU=5" >> Dart.cfg
-    - echo "export PATH=/cvmfs/it.gsi.de/cmake/3.19.1/bin:$PATH" >> Dart.cfg
-    - ls
-    - pwd
-    - cat Dart.cfg
-    - $PWD/Dart.sh Continuous Dart.cfg
-
-CbmRoot_Merge:
-  stage: build
-  tags:
-    - CbmRoot
-  only:
-    refs:
-      - merge_requests
-    variables:
-      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
-  script:
-    - echo $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH
-    - echo $CI_MERGE_REQUEST_PROJECT_PATH
-    - if [ "$CI_MERGE_REQUEST_PROJECT_PATH" != "computing/cbmroot" ]; then
-    -   echo "Should not come here"
-    -   exit 1
-    - fi
-    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-    - echo $CI_MERGE_REQUEST_ID
-    - echo $CI_MERGE_REQUEST_IID
-    - echo "export LINUX_FLAVOUR=Debian8.11" >> Dart.cfg
-    - echo "export FAIRSOFT_VERSION=jun19p1" >> Dart.cfg
-    - echo "export FAIRROOT_VERSION=v18.2.0" >> Dart.cfg
-    - echo "export SIMPATH=/cvmfs/fairroot.gsi.de/fairsoft/\${FAIRSOFT_VERSION}" >> Dart.cfg
-    - echo "export FAIRROOTPATH=/cvmfs/fairroot.gsi.de/fairroot/\${FAIRROOT_VERSION}_fairsoft-\${FAIRSOFT_VERSION}" >> Dart.cfg
-    - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
-    - echo "export SOURCEDIR=$PWD" >> Dart.cfg
-    - echo "export NCPU=5" >> Dart.cfg
-    - echo "export PATH=/cvmfs/it.gsi.de/cmake/3.19.1/bin:$PATH" >> Dart.cfg
-    - ls
-    - pwd
-    - cat Dart.cfg
-    - $PWD/Dart.sh MergeRequest Dart.cfg
-
-CbmRoot_Merge_macosx:
-  stage: build
-  tags:
-    - CbmRoot_macosx
-  only:
-    refs:
-      - merge_requests
-    variables:
-      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
-  script:
-    - echo $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH
-    - echo $CI_MERGE_REQUEST_PROJECT_PATH
-    - if [ "$CI_MERGE_REQUEST_PROJECT_PATH" != "computing/cbmroot" ]; then
-    -   echo "Should not come here"
-    -   exit 1
-    - fi
-    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-    - echo $CI_MERGE_REQUEST_ID
-    - echo $CI_MERGE_REQUEST_IID
-    - echo "export LINUX_FLAVOUR=macosx" >> Dart.cfg
-    - echo "export FAIRSOFT_VERSION=jun19p1" >> Dart.cfg
-    - echo "export FAIRROOT_VERSION=v18.2.1" >> Dart.cfg
-    - echo "export SIMPATH=/opt/fairsoft/\${FAIRSOFT_VERSION}" >> Dart.cfg
-    - echo "export FAIRROOTPATH=/opt/fairroot/\${FAIRROOT_VERSION}_fairsoft-\${FAIRSOFT_VERSION}" >> Dart.cfg
-    - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
-    - echo "export SOURCEDIR=$PWD" >> Dart.cfg
-    - echo "export NCPU=4" >> Dart.cfg
-    - ls
-    - pwd
-    - cat Dart.cfg
-    - $PWD/Dart.sh MergeRequest Dart.cfg
-
-#CbmRoot_Merge_Singularity:
-#  stage: build
-#  tags:
-#    - CbmRoot_singularity
-#  only:
-#    refs:
-#      - merge_requests
-#    variables:
-#      - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
-#  script:
-#    - echo $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH
-#    - echo $CI_MERGE_REQUEST_PROJECT_PATH
-#    - if [ "$CI_MERGE_REQUEST_PROJECT_PATH" != "computing/cbmroot" ]; then
-#    -   echo "Should not come here"
-#    -   exit 1
-#    - fi
-#    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-#    - echo $CI_MERGE_REQUEST_ID
-#    - echo $CI_MERGE_REQUEST_IID
-#    - echo "export LINUX_FLAVOUR=Debian10" >> Dart.cfg
-#    - echo "export FAIRSOFT_VERSION=apr21" >> Dart.cfg
-#    - echo "export FAIRROOT_VERSION=v18.6.3" >> Dart.cfg
-#    - echo "export SIMPATH=/cvmfs/fairsoft.gsi.de/debian10/fairsoft/\${FAIRSOFT_VERSION}" >> Dart.cfg
-#    - echo "export FAIRROOTPATH=/cvmfs/fairsoft.gsi.de/debian10/fairroot/\${FAIRROOT_VERSION}_fs_\${FAIRSOFT_VERSION}" >> Dart.cfg
-#    - echo "export BUILDDIR=$PWD/build" >> Dart.cfg
-#    - echo "export SOURCEDIR=$PWD" >> Dart.cfg
-#    - echo "export NCPU=8" >> Dart.cfg
-#    - ls
-#    - pwd
-#    - cat Dart.cfg
-#    - $PWD/Dart.sh MergeRequest Dart.cfg
-
-
 #
 # job template
 #
@@ -283,7 +157,6 @@ CbmRoot_Merge_macosx:
     -   echo "export PATH=$EXTRA_PATH:$PATH" >> Dart.cfg
     - fi
     - cat Dart.cfg
-    - env
     - $PWD/Dart.sh $BUILD_TYPE Dart.cfg
   after_script:
     - ls
@@ -298,15 +171,15 @@ CbmRoot_Merge_macosx:
   stage: build
   tags:
     - CbmRoot_realData
-  variables:
-    BUILD_TYPE: "MergeRequest"
+
+.realData_variables: &realData_variables
     OS: "Debian10"
     EXTRA_PATH: /opt/cmake/3.20.1/bin
     NCPU: 16
     RAW_DATA_PATH: "/opt/cbmsoft/beamtime-test-data/reduced/"
     FAIRSOFT_VERSION: "jun19p2_root6"
     FAIRROOT_VERSION: "v18.2.1"
-    BASE_PATH: "/opt/cbmsoft/"
+    BASE_PATH: "/opt/cbmsoft"
     SIMPATH: "$BASE_PATH/fairsoft_$FAIRSOFT_VERSION/installation"
     FAIRROOTPATH: "$BASE_PATH/fairroot_${FAIRROOT_VERSION}-fairsoft_${FAIRSOFT_VERSION}"
 
@@ -314,31 +187,92 @@ CbmRoot_Merge_macosx:
   stage: build
   tags:
     - CbmRoot_singularity
-  variables:
-    BUILD_TYPE: "MergeRequest"
+    
+.singularity_debian10_variables: &singularity_debian10_variables
     OS: debian10
     NCPU: 16
-    FAIRSOFT_VERSION: apr21
-    FAIRROOT_VERSION: v18.6.3
-    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS/"
+    FAIRSOFT_VERSION: jun19p2
+    FAIRROOT_VERSION: v18.2.1
+    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS"
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
 
-.on_merge_request: &on_merge_request
+.linux_tag: &linux_tag
+  stage: build
+  tags:
+    - CbmRoot
+
+.linux_variables: &linux_variables
+    OS: "Debian8.11"
+    EXTRA_PATH: /cvmfs/it.gsi.de/cmake/3.19.1/bin
+    NCPU: 5
+    FAIRSOFT_VERSION: "jun19p1"
+    FAIRROOT_VERSION: "v18.2.0"
+    BASE_PATH: "/cvmfs/fairroot.gsi.de"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft-${FAIRSOFT_VERSION}"
+
+.macosx_tag: &macosx_tag
+  stage: build
+  tags:
+    - CbmRoot_macosx
+
+.macosx_variables: &macosx_variables
+    OS: "macOS_10.13"
+    NCPU: 4
+    FAIRSOFT_VERSION: "jun19p1"
+    FAIRROOT_VERSION: "v18.2.0"
+    BASE_PATH: "/opt"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft-${FAIRSOFT_VERSION}"
+
+.mergeVariables: &mergeVariables
+    BUILD_TYPE: "Continuous"
+    
+.mergeRequestVariables: &mergeRequestVariables
+    BUILD_TYPE: "MergeRequest"
+    
+.check_merge_request: &check_merge_request
   only:
     refs:
       - merge_requests
     variables:
       - $CI_MERGE_REQUEST_PROJECT_PATH == "computing/cbmroot" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
 
+.check_merge: &check_merge
+  only:
+    refs:
+      - master
+    variables:
+      - $CI_PROJECT_PATH == "computing/cbmroot"
+
 #
-# job matrix
+# job matrix for build jobs
 #
 CbmRoot_Merge_realData:
-  <<: [*realData_tag, *on_merge_request, *build_and_test]
+  <<: [*realData_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *realData_variables]
 
 CbmRoot_Merge_Singularity:
-  <<: [*singularity_tag, *on_merge_request, *build_and_test]
+  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *singularity_debian10_variables]
+
+CbmRoot_Merge:
+  <<: [*linux_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *linux_variables]
+
+CbmRoot_Merge_macosx:
+  <<: [*macosx_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *macosx_variables]
+
+CbmRoot_Continuous:
+  <<: [*linux_tag, *check_merge, *build_and_test]
+  variables:
+    <<: [*mergeVariables, *linux_variables]
 
 InformCodeOwners:
   stage: finalise
