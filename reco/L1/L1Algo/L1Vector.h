@@ -154,10 +154,10 @@ public:
   using Tbase::capacity;
   using Tbase::clear;
   using Tbase::end;
-  using Tbase::iterator;
   using Tbase::pop_back;
   using Tbase::reserve;
   using Tbase::size;
+  using typename Tbase::iterator;
 
 private:
   std::string fName;
