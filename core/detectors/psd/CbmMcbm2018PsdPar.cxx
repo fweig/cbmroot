@@ -20,6 +20,7 @@
 // -----   Standard constructor   ------------------------------------------
 CbmMcbm2018PsdPar::CbmMcbm2018PsdPar(const char* name, const char* title, const char* context)
   : FairParGenericSet(name, title, context)
+  , fiDataVersion(-1)
   , fiMonitorMode(-1)
   , fiDebugMonitorMode(-1)
   , fiNrOfGdpb(-1)
@@ -29,6 +30,8 @@ CbmMcbm2018PsdPar::CbmMcbm2018PsdPar(const char* name, const char* title, const 
   , fiNrOfGbtx(-1)
   , fiNrOfModules(-1)
   , fiModuleId()
+  , fiNrOfSections(-1)
+  , fdMipCalibration()
   , fiNbMsTot(0)
   , fiNbMsOverlap(0)
   , fdSizeMsInNs(0.0)
@@ -57,12 +60,15 @@ void CbmMcbm2018PsdPar::clear()
 void CbmMcbm2018PsdPar::putParams(FairParamList* l)
 {
   if (!l) return;
+  l->add("DataVersion", fiDataVersion);
   l->add("NrOfGdpbs", fiNrOfGdpb);
   l->add("GdpbIdArray", fiGdpbIdArray);
   l->add("NrOfFeesPerGdpb", fiNrOfFeesPerGdpb);
   l->add("NrOfChannelsPerFee", fiNrOfChannelsPerFee);
   l->add("NrOfGbtx", fiNrOfGbtx);
   l->add("NrOfModules", fiNrOfModules);
+  l->add("NrOfSections", fiNrOfSections);
+  l->add("MipCalibration", fdMipCalibration);
   l->add("ModuleId", fiModuleId);
   l->add("NbMsTot", fiNbMsTot);
   l->add("NbMsOverlap", fiNbMsOverlap);
@@ -77,6 +83,8 @@ Bool_t CbmMcbm2018PsdPar::getParams(FairParamList* l)
 
   if (!l) return kFALSE;
 
+  if (!l->fill("DataVersion", &fiDataVersion)) return kFALSE;
+
   if (!l->fill("NrOfGdpbs", &fiNrOfGdpb)) return kFALSE;
 
   fiGdpbIdArray.Set(fiNrOfGdpb);
@@ -89,6 +97,11 @@ Bool_t CbmMcbm2018PsdPar::getParams(FairParamList* l)
   if (!l->fill("NrOfGbtx", &fiNrOfGbtx)) return kFALSE;
 
   if (!l->fill("NrOfModules", &fiNrOfModules)) return kFALSE;
+
+  if (!l->fill("NrOfSections", &fiNrOfSections)) return kFALSE;
+
+  fdMipCalibration.Set(fiNrOfSections);
+  if (!l->fill("MipCalibration", &fdMipCalibration)) return kFALSE;
 
   fiModuleId.Set(fiNrOfGbtx);
   if (!l->fill("ModuleId", &fiModuleId)) return kFALSE;

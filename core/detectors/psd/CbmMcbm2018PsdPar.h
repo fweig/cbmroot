@@ -48,6 +48,8 @@ public:
 
   Int_t FeeChanToGbtChan(UInt_t uChannelInFee);
 
+  inline Int_t GetDataVersion() { return fiDataVersion; }
+
   inline Bool_t GetMonitorMode() { return (1 == fiMonitorMode ? kTRUE : kFALSE); }
   inline Bool_t GetDebugMonitorMode() { return (1 == fiDebugMonitorMode ? kTRUE : kFALSE); }
 
@@ -59,6 +61,9 @@ public:
   inline Int_t GetNrOfGbtx() { return fiNrOfGbtx; }
   inline Int_t GetNrOfModules() { return fiNrOfModules; }
   Int_t GetModuleId(UInt_t uGbtx);
+
+  inline Int_t GetNrOfSections() { return fiNrOfSections; }
+  inline Double_t GetMipCalibration(UInt_t i) { return fdMipCalibration[i]; }
 
   inline Int_t GetNbMsTot() { return fiNbMsTot; }
   inline Int_t GetNbMsOverlap() { return fiNbMsOverlap; }
@@ -81,6 +86,7 @@ private:
   /// Mapping
   const UInt_t kuFeeToGbt[kuNbChannelsPerFee] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};  //! Map from Psd channel to Gbt channel
 
+  Int_t fiDataVersion;  // Data Version
   Int_t fiMonitorMode;  // Enable histograms in event builder processes and algo, 0 = OFF / 1 = ON
   Int_t
     fiDebugMonitorMode;  // Enable extra debuging histos in bth event builder and monitor processes and algo, 0 = OFF / 1 = ON
@@ -93,6 +99,9 @@ private:
   Int_t fiNrOfGbtx;     // Total number of Gbtx links
   Int_t fiNrOfModules;  // Total number of Modules
   TArrayI fiModuleId;   // Module Identifier connected to Gbtx link, has to match geometry
+
+  Int_t fiNrOfSections; // Nr of sections
+  TArrayD fdMipCalibration;   // Calibration array
 
   Int_t fiNbMsTot;        // Total number of MS per link in TS
   Int_t fiNbMsOverlap;    // Number of overlap MS per TS
