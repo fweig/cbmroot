@@ -31,13 +31,13 @@ exec &> >(tee -a .autoinstall_framework.log) # So the user can check up a comple
 export ROOTVER=6
 
 # put your desired variants here:
-export FSOFTDEV=jun19p2
+export FSOFTDEV=jun19p3
 export FROOTDEV=v18.4.0
 
-export FSOFTPRO=jun19p2
+export FSOFTPRO=jun19p3
 export FROOTPRO=v18.2.1
 
-export FSOFTOLD=jun19p1
+export FSOFTOLD=jun19p3
 export FROOTOLD=v18.2.0
 
 # set default version to pro
