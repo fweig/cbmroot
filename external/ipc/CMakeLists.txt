@@ -5,7 +5,7 @@
 
 download_project_if_needed(PROJECT         fles_ipc
                            GIT_REPOSITORY  "https://github.com/cbm-fles/flesnet"
-                           GIT_TAG         "92ff50ead204d0acb4fccd9cbb9876817d077528"
+                           GIT_TAG         "f3053e064df61f434a4af4b353178f881dd8a5d0"
                            GIT_STASH       TRUE
                            SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/ipc
                            PATCH_COMMAND   "patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/TimesliceMultiSubscriber_init.patch"
