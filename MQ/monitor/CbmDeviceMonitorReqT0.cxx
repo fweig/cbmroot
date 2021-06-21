@@ -76,7 +76,7 @@ try {
 
   if ("" == fsTsBlockName) {
     //
-    LOG(info) << "Requesting TS using the SysId: 0x" << std::hex << kusSysId << std::dec;
+    LOG(info) << "Requesting TS using the SysId: 0x" << std::hex << static_cast<int>(kusSysId) << std::dec;
   }
   else {
     //
