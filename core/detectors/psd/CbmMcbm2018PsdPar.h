@@ -49,10 +49,6 @@ public:
   Int_t FeeChanToGbtChan(UInt_t uChannelInFee);
 
   inline Int_t GetDataVersion() { return fiDataVersion; }
-
-  inline Bool_t GetMonitorMode() { return (1 == fiMonitorMode ? kTRUE : kFALSE); }
-  inline Bool_t GetDebugMonitorMode() { return (1 == fiDebugMonitorMode ? kTRUE : kFALSE); }
-
   inline Int_t GetNrOfGdpbs() { return fiNrOfGdpb; }
   inline Int_t GetGdpbId(Int_t i) { return fiGdpbIdArray[i]; }
   inline Int_t GetNrOfFeesPerGdpb() { return fiNrOfFeesPerGdpb; }
@@ -87,9 +83,6 @@ private:
   const UInt_t kuFeeToGbt[kuNbChannelsPerFee] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};  //! Map from Psd channel to Gbt channel
 
   Int_t fiDataVersion;  // Data Version
-  Int_t fiMonitorMode;  // Enable histograms in event builder processes and algo, 0 = OFF / 1 = ON
-  Int_t
-    fiDebugMonitorMode;  // Enable extra debuging histos in bth event builder and monitor processes and algo, 0 = OFF / 1 = ON
   Int_t fiNrOfGdpb;       // Total number of GDPBs
   TArrayI fiGdpbIdArray;  // Array to hold the unique IDs for all Psd GDPBs
 

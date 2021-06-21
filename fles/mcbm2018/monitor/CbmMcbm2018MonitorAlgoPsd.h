@@ -19,7 +19,7 @@
 #include "CbmPsdDigi.h"
 
 #include "PronyFitter.h"
-#include "PsdGbtReader.h"
+#include "PsdGbtReader-v0.00.h"
 
 // CbmRoot
 

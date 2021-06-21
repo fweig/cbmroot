@@ -21,8 +21,6 @@
 CbmMcbm2018PsdPar::CbmMcbm2018PsdPar(const char* name, const char* title, const char* context)
   : FairParGenericSet(name, title, context)
   , fiDataVersion(-1)
-  , fiMonitorMode(-1)
-  , fiDebugMonitorMode(-1)
   , fiNrOfGdpb(-1)
   , fiGdpbIdArray()
   , fiNrOfFeesPerGdpb(-1)

@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <string.h>
 
-namespace PsdData
+namespace PsdDataV000
 {
 
   struct PsdEventHeaderAB {
@@ -145,7 +145,7 @@ namespace PsdData
     PsdHitData() { clear(); }
   };
 
-}  // namespace PsdData
+}  // namespace PsdDataV000
 
 
 #endif /* PSD_GBT_DATA_FORMAT_H_ */

@@ -1,6 +1,6 @@
 [CbmMcbm2018PsdPar]
 //----------------------------------------------------------------------------
-DataVersion Int_t 0
+DataVersion: Int_t 0
 NrOfGdpbs: Int_t 1
 GdpbIdArray: Int_t \
 0x193d
@@ -11,8 +11,8 @@ NrOfModules: Int_t 1
 ModuleId: Int_t \
   1  
 NrOfSections: Int_t 10
-MipCalibration: Double_t \
-  11.16  11.25  11.37  11.62  11.45  11.27  10.58  10.29  11.50  10.84 
+MipCalibration: Double_t \ #adc per MeV
+  36.83  37.12  37.52  38.35  37.78  37.19  34.91  33.96  37.95  35.77
 NbMsTot: Int_t 100
 NbMsOverlap: Int_t 1
 SizeMsInNs: Double_t 102400.0

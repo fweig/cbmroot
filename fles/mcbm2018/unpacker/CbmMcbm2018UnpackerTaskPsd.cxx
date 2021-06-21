@@ -47,6 +47,7 @@ CbmMcbm2018UnpackerTaskPsd::CbmMcbm2018UnpackerTaskPsd(UInt_t /*uNbGdpb*/)
   , fulTsCounter(0)
   , fUnpackerAlgo(nullptr)
 {
+  LOG(info) << "CbmMcbm2018UnpackerTaskPsd::Allocate";
   fUnpackerAlgo = new CbmMcbm2018UnpackerAlgoPsd();
 }
 
@@ -102,45 +103,8 @@ Bool_t CbmMcbm2018UnpackerTaskPsd::InitContainers()
     LOG(error) << "Failed to obtain parameter container CbmMcbm2018PsdPar";
     return kFALSE;
   }  // if( nullptr == pUnpackPar )
-     /*
-   fbMonitorMode = pUnpackPar->GetMonitorMode();
-   LOG(info) << "Monitor mode:       "
-             << ( fbMonitorMode ? "ON" : "OFF" );
 
-   fbDebugMonitorMode = pUnpackPar->GetDebugMonitorMode();
-   LOG(info) << "Debug Monitor mode: "
-             << ( fbDebugMonitorMode ? "ON" : "OFF" );
-*/
   Bool_t initOK = fUnpackerAlgo->InitContainers();
-
-  /// If monitor mode enabled, trigger histos creation, obtain pointer on them and add them to the HTTP server
-  if (kTRUE == fbMonitorMode) {
-    /// Trigger histo creation on all associated algos
-    initOK &= fUnpackerAlgo->CreateHistograms();
-
-    fhArraySize = new TH1I("fhArraySize", "Size of the Array VS TS index; TS index; Size [bytes]", 10000, 0., 10000.);
-    fhArrayCapacity =
-      new TH1I("fhArrayCapacity", "Size of the Array VS TS index; TS index; Size [bytes]", 10000, 0., 10000.);
-
-    /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-    std::vector<std::pair<TNamed*, std::string>> vHistos = fUnpackerAlgo->GetHistoVector();
-
-    /// Register the histos in the HTTP server
-    THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
-    if (nullptr != server) {
-      for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
-        server->Register(Form("/%s", vHistos[uHisto].second.data()), vHistos[uHisto].first);
-      }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
-
-      server->RegisterCommand("/Reset_UnpPsd_Hist", "bMcbm2018UnpackerTaskPsdResetHistos=kTRUE");
-      server->Restrict("/Reset_UnpPsd_Hist", "allow=admin");
-
-      server->Register("/Array", fhArraySize);
-      server->Register("/Array", fhArrayCapacity);
-    }  // if( nullptr != server )
-  }    // if( kTRUE == fbMonitorMode )
-
-  fUnpackerAlgo->SetMonitorMode(fbMonitorMode);
 
   return initOK;
 }
@@ -183,8 +147,6 @@ Bool_t CbmMcbm2018UnpackerTaskPsd::DoUnpack(const fles::Timeslice& ts, size_t /*
 */
 
   /*
-   fhArraySize->Fill( fulTsCounter, fPsdDigiCloneArray->GetEntries()  );
-   fhArrayCapacity->Fill( fulTsCounter, fPsdDigiCloneArray->Capacity()  );
 */
   if (0 == fulTsCounter % 10000) LOG(info) << "Processed " << fulTsCounter << "TS";
   fulTsCounter++;
@@ -197,48 +159,9 @@ void CbmMcbm2018UnpackerTaskPsd::Reset() { fUnpackerAlgo->ClearVector(); }
 
 void CbmMcbm2018UnpackerTaskPsd::Finish()
 {
-  /// If monitor mode enabled, trigger histos creation, obtain pointer on them and add them to the HTTP server
-  if (kTRUE == fbMonitorMode) {
-    /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-    std::vector<std::pair<TNamed*, std::string>> vHistos = fUnpackerAlgo->GetHistoVector();
-
-    /// Save old global file and folder pointer to avoid messing with FairRoot
-    TFile* oldFile     = gFile;
-    TDirectory* oldDir = gDirectory;
-
-    TFile* histoFile = nullptr;
-
-    // open separate histo file in recreate mode
-    histoFile = new TFile("data/HistosUnpackerPsd.root", "RECREATE");
-    histoFile->cd();
-
-    /// Register the histos in the HTTP server
-    for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
-      /// Make sure we end up in chosen folder
-      TString sFolder = vHistos[uHisto].second.data();
-      if (nullptr == gDirectory->Get(sFolder)) gDirectory->mkdir(sFolder);
-      gDirectory->cd(sFolder);
-
-      /// Write plot
-      vHistos[uHisto].first->Write();
-
-      histoFile->cd();
-    }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
-
-    fhArraySize->Write();
-    fhArrayCapacity->Write();
-
-    /// Restore old global file and folder pointer to avoid messing with FairRoot
-    gFile      = oldFile;
-    gDirectory = oldDir;
-
-    histoFile->Close();
-  }  // if( kTRUE == fbMonitorMode )
 }
 
 void CbmMcbm2018UnpackerTaskPsd::SetIgnoreOverlapMs(Bool_t bFlagIn) { fUnpackerAlgo->SetIgnoreOverlapMs(bFlagIn); }
-
 void CbmMcbm2018UnpackerTaskPsd::SetTimeOffsetNs(Double_t dOffsetIn) { fUnpackerAlgo->SetTimeOffsetNs(dOffsetIn); }
-void CbmMcbm2018UnpackerTaskPsd::SetDiamondDpbIdx(UInt_t uIdx) { fUnpackerAlgo->SetDiamondDpbIdx(uIdx); }
 
 ClassImp(CbmMcbm2018UnpackerTaskPsd)

@@ -359,7 +359,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
     }
   }
 
-  PsdData::PsdGbtReader PsdReader(pInBuff);
+  PsdDataV000::PsdGbtReader PsdReader(pInBuff);
   if (fair::Logger::Logging(fair::Severity::debug)) PsdReader.SetPrintOutMode(true);
   if (uSize > 0) {
     while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {

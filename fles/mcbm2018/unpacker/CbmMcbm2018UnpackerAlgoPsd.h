@@ -19,7 +19,7 @@
 #include "CbmPsdDigi.h"
 
 #include "PronyFitter.h"
-#include "PsdGbtReader.h"
+#include "PsdGbtReader-v0.00.h"
 
 // CbmRoot
 
@@ -70,6 +70,7 @@ private:
 
   /// Settings from parameter file
   CbmMcbm2018PsdPar* fUnpackPar;             //!
+  UInt_t fuRawDataVersion;                   //! Raw data versioning
                                              /// Readout chain dimensions and mapping
   UInt_t fuNrOfGdpbs;                        //! Total number of GDPBs in the system
   std::map<UInt_t, UInt_t> fGdpbIdIndexMap;  //! gDPB ID to index map

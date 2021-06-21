@@ -41,6 +41,7 @@ CbmMcbm2018UnpackerAlgoPsd::CbmMcbm2018UnpackerAlgoPsd()
   , fbDebugMonitorMode(kFALSE)
   , fvbMaskedComponents()
   , fUnpackPar(nullptr)
+  , fuRawDataVersion(0)
   , fuNrOfGdpbs(0)
   , fGdpbIdIndexMap()
   , fuNrOfFeePerGdpb(0)
@@ -114,6 +115,9 @@ TList* CbmMcbm2018UnpackerAlgoPsd::GetParList()
 }
 Bool_t CbmMcbm2018UnpackerAlgoPsd::InitParameters()
 {
+  fuRawDataVersion = fUnpackPar->GetDataVersion();
+  LOG(info) << "Data Version: " << fuRawDataVersion;
+
   fuNrOfGdpbs = fUnpackPar->GetNrOfGdpbs();
   LOG(info) << "Nr. of Tof GDPBs: " << fuNrOfGdpbs;
 
@@ -290,89 +294,108 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
   // Prepare variables for the loop on contents
   const uint64_t* pInBuff = reinterpret_cast<const uint64_t*>(msContent);
 
-  PsdData::PsdGbtReader PsdReader(pInBuff);
-  //PsdReader.SetPrintOutMode(true);
-  if (uSize != 0) {
-    while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {
-      int ReadResult = PsdReader.ReadEventFles();
-      if (PsdReader.EvHdrAb.uHitsNumber > fviPsdChUId.size()) {
-        LOG(error) << "too many triggered channels! In header: " << PsdReader.EvHdrAb.uHitsNumber
-                   << " in PSD: " << fviPsdChUId.size();
-        break;
-      }
 
-      if (ReadResult == 0) {
-        //hit loop
-        for (int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++) {
-          UInt_t uHitChannel         = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
-          UInt_t uSignalCharge       = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
-          UInt_t uZeroLevel          = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
-          std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
+  switch (fuRawDataVersion)
+  {
+    case '0':{
 
-          if (uHitChannel >= fviPsdChUId.size()) {
-            LOG(error) << "hit channel number out of range! channel index: " << uHitChannel
-                       << " max: " << fviPsdChUId.size();
-            break;
-          }
+	  PsdDataV000::PsdGbtReader PsdReader(pInBuff);
+	  //PsdReader.SetPrintOutMode(true);
+	  if (uSize != 0) {
+	    while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {
+	      int ReadResult = PsdReader.ReadEventFles();
+	      if (PsdReader.EvHdrAb.uHitsNumber > fviPsdChUId.size()) {
+		LOG(error) << "too many triggered channels! In header: " << PsdReader.EvHdrAb.uHitsNumber
+		           << " in PSD: " << fviPsdChUId.size();
+		break;
+	      }
 
-          UInt_t uChId    = uHitChannel;
-          UInt_t uRpdChId = uChId;                  //Should be map(uChId) TODO
-          UInt_t uChanUId = fviPsdChUId[uRpdChId];  //unique ID
+	      if (ReadResult == 0) {
+		//hit loop
+		for (int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++) {
+		  UInt_t uHitChannel         = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
+		  UInt_t uSignalCharge       = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
+		  UInt_t uZeroLevel          = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
+		  std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
 
-          UInt_t uHitAmlpitude = 0;
-          UInt_t uHitChargeWfm = 0;
-          for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++) {
-            if (uWfm.at(wfm_iter) > uHitAmlpitude) uHitAmlpitude = uWfm.at(wfm_iter);
-            uHitChargeWfm += uWfm.at(wfm_iter) - uZeroLevel;
-          }
-          uHitAmlpitude -= uZeroLevel;
+		  if (uHitChannel >= fviPsdChUId.size()) {
+		    LOG(error) << "hit channel number out of range! channel index: " << uHitChannel
+		               << " max: " << fviPsdChUId.size();
+		    break;
+		  }
 
-          //printf("0x%08x %u %u %u %f %f\n", uChanUId, uChId, CbmPsdAddress::GetModuleId(uChanUId), CbmPsdAddress::GetSectionId(uChanUId), (double)PsdReader.VectHitHdr.at(hit_iter).uSignalCharge, (double)PsdReader.EvHdrAc.uAdcTime );
+		  UInt_t uChId    = uHitChannel;
+		  UInt_t uRpdChId = uChId;                  //Should be map(uChId) TODO
+		  UInt_t uChanUId = fviPsdChUId[uRpdChId];  //unique ID
 
-          Double_t dAdcTime =
-            (double) PsdReader.EvHdrAb.ulMicroSlice + (double) PsdReader.EvHdrAc.uAdcTime * 12.5 - fdTimeOffsetNs;
+		  UInt_t uHitAmlpitude = 0;
+		  UInt_t uHitChargeWfm = 0;
+		  for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++) {
+		    if (uWfm.at(wfm_iter) > uHitAmlpitude) uHitAmlpitude = uWfm.at(wfm_iter);
+		    uHitChargeWfm += uWfm.at(wfm_iter) - uZeroLevel;
+		  }
+		  uHitAmlpitude -= uZeroLevel;
 
-          LOG(debug) << Form("Insert 0x%08x digi with charge ", uChanUId) << uSignalCharge
-                     << Form(", at %u,", PsdReader.EvHdrAc.uAdcTime) << " epoch: " << PsdReader.EvHdrAb.ulMicroSlice;
+		  //printf("0x%08x %u %u %u %f %f\n", uChanUId, uChId, CbmPsdAddress::GetModuleId(uChanUId), CbmPsdAddress::GetSectionId(uChanUId), (double)PsdReader.VectHitHdr.at(hit_iter).uSignalCharge, (double)PsdReader.EvHdrAc.uAdcTime );
 
-          fDigiVect.emplace_back(uChanUId, (double) uSignalCharge, dAdcTime);
+		  Double_t dAdcTime =
+		    (double) PsdReader.EvHdrAb.ulMicroSlice + (double) PsdReader.EvHdrAc.uAdcTime * 12.5 - fdTimeOffsetNs;
 
-          fDigiVect.back().SetAmpl(uHitAmlpitude);
-          fDigiVect.back().SetEdepWfm(uHitChargeWfm);
-          fDigiVect.back().SetZL(uZeroLevel);
+		  LOG(debug) << Form("Insert 0x%08x digi with charge ", uChanUId) << uSignalCharge
+		             << Form(", at %u,", PsdReader.EvHdrAc.uAdcTime) << " epoch: " << PsdReader.EvHdrAb.ulMicroSlice;
 
-        }  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
-      }
-      else if (ReadResult == 1) {
-        LOG(error) << "no event headers in message!";
-        break;
-      }
-      else if (ReadResult == 2) {
-        LOG(error) << "check number of waveform points! In header: " << PsdReader.HitHdr.uWfmPoints
-                   << " should be: " << 8;
-        break;
-      }
-      else if (ReadResult == 3) {
-        LOG(error) << "wrong amount of hits read! In header: " << PsdReader.EvHdrAb.uHitsNumber
-                   << " in hit vector: " << PsdReader.VectHitHdr.size();
-        break;
-      }
-      else {
-        LOG(error) << "PsdGbtReader.ReadEventFles() didn't return expected values";
-        break;
-      }
+		  fDigiVect.emplace_back(uChanUId, (double) uSignalCharge, dAdcTime);
 
-    }  // while(PsdReader.GetTotalGbtWordsRead()<uNbMessages)
+		  fDigiVect.back().SetAmpl(uHitAmlpitude);
+		  fDigiVect.back().SetEdepWfm(uHitChargeWfm);
+		  fDigiVect.back().SetZL(uZeroLevel);
 
-    if (uNbMessages != PsdReader.GetTotalGbtWordsRead())
-      LOG(error) << "Wrong amount of messages read!"
-                 << " in microslice " << uNbMessages << " by PsdReader " << PsdReader.GetTotalGbtWordsRead() << "\n";
+		}  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
+	      }
+	      else if (ReadResult == 1) {
+		LOG(error) << "no event headers in message!";
+		break;
+	      }
+	      else if (ReadResult == 2) {
+		LOG(error) << "check number of waveform points! In header: " << PsdReader.HitHdr.uWfmPoints
+		           << " should be: " << 8;
+		break;
+	      }
+	      else if (ReadResult == 3) {
+		LOG(error) << "wrong amount of hits read! In header: " << PsdReader.EvHdrAb.uHitsNumber
+		           << " in hit vector: " << PsdReader.VectHitHdr.size();
+		break;
+	      }
+	      else {
+		LOG(error) << "PsdGbtReader.ReadEventFles() didn't return expected values";
+		break;
+	      }
 
-    if (fulCurrentMsIdx != PsdReader.EvHdrAb.ulMicroSlice)
-      LOG(error) << "Wrong MS index!"
-                 << " in microslice " << fulCurrentMsIdx << " by PsdReader " << PsdReader.EvHdrAb.ulMicroSlice << "\n";
+	    }  // while(PsdReader.GetTotalGbtWordsRead()<uNbMessages)
 
-  }  //if(uSize != 0)
+	    if (uNbMessages != PsdReader.GetTotalGbtWordsRead())
+	      LOG(error) << "Wrong amount of messages read!"
+		         << " in microslice " << uNbMessages << " by PsdReader " << PsdReader.GetTotalGbtWordsRead() << "\n";
+
+	    if (fulCurrentMsIdx != PsdReader.EvHdrAb.ulMicroSlice)
+	      LOG(error) << "Wrong MS index!"
+		         << " in microslice " << fulCurrentMsIdx << " by PsdReader " << PsdReader.EvHdrAb.ulMicroSlice << "\n";
+
+	  }  //if(uSize != 0)
+
+
+
+    }
+    case '1': {
+
+
+
+    }
+
+  }
+
+
+
 
   return kTRUE;
 }

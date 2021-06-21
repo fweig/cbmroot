@@ -13,12 +13,11 @@
 #define PSD_GBT_READER_H_
 
 #include <vector>  // for vector
-
 #include <stdint.h>  // for uint64_t, uint32_t
 
-#include "PsdGbtDataFormat.h"  // for PsdHitData, PsdHitHeader, PsdEventHead...
+#include "PsdGbtDataFormat-v0.00.h"  // for PsdHitData, PsdHitHeader, PsdEventHead...
 
-namespace PsdData
+namespace PsdDataV000
 {
   class PsdGbtReader {
 
@@ -62,6 +61,6 @@ namespace PsdData
     uint32_t gbt_word_index = 0;
     int buffer_shift        = 0;
   };
-}  // namespace PsdData
+}  // namespace PsdDataV000
 
 #endif  // PSD_GBT_READER_H_

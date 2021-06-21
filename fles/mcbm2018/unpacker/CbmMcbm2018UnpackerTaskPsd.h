@@ -48,10 +48,10 @@ public:
   void SetNbMsInTs(size_t /*uCoreMsNb*/, size_t /*uOverlapMsNb*/) {};
 
   /// Algo settings setters
+
   inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) { fbMonitorMode = bFlagIn; }
   void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
   void SetTimeOffsetNs(Double_t dOffsetIn = 0.0);
-  void SetDiamondDpbIdx(UInt_t uIdx = 2);
 
   /// Task settings
   void SetWriteOutputFlag(Bool_t bFlagIn) { fbWriteOutput = bFlagIn; }
@@ -70,10 +70,6 @@ private:
 
   /// Output vectors
   std::vector<CbmPsdDigi>* fpvDigiPsd = nullptr;
-
-  /// Histogrrams
-  TH1* fhArraySize     = nullptr;
-  TH1* fhArrayCapacity = nullptr;
 
   /// Processing algo
   CbmMcbm2018UnpackerAlgoPsd* fUnpackerAlgo;

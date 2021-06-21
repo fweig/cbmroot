@@ -9,11 +9,11 @@
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-#include "PsdGbtReader.h"
+#include "PsdGbtReader-v0.00.h"
 
 #include <cstdint>  // for uint16_t, uint64_t, uint32_t
 
-namespace PsdData
+namespace PsdDataV000
 {
 
   PsdGbtReader::~PsdGbtReader()
@@ -126,4 +126,4 @@ namespace PsdData
 
     return 0;
   }
-}  // namespace PsdData
+}  // namespace PsdDataV000
