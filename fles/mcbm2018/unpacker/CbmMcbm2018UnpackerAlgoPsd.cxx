@@ -317,7 +317,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
   if (uSize > 8) {  //more than one 64 bit word
 
     switch (fuRawDataVersion) {
-      case 0: {
+      case 000: {
 
         PsdDataV000::PsdGbtReader PsdReader(pInBuff);
         //PsdReader.SetPrintOutMode(true);
@@ -404,10 +404,11 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
           LOG(error) << "Wrong MS index!"
                      << " in microslice " << fulCurrentMsIdx << " by PsdReader " << PsdReader.EvHdrAb.ulMicroSlice
                      << "\n";
-
         break;
       }
-      case 1: {
+
+      case 100: {
+
         PsdDataV100::PsdGbtReader PsdReader(pInBuff);
         //PsdReader.SetPrintOutMode(true);
 

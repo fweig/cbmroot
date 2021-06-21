@@ -362,9 +362,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
     }
   }
 
-
   switch (fuRawDataVersion) {
-    case 0: {
+    case 000: {
 
       PsdDataV000::PsdGbtReader PsdReader(pInBuff);
       if (fair::Logger::Logging(fair::Severity::debug)) PsdReader.SetPrintOutMode(true);
@@ -388,6 +387,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
               UInt_t uSignalCharge       = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
               UInt_t uZeroLevel          = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
               std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
+              uSignalCharge /= kfAdc_to_mV;  // ->now in mV
 
               if (uHitChannel >= kuNbChanPsd)  //uHitChannel numerated from 0
               {
@@ -407,18 +407,22 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                 fvhHitZeroLevelChan[uHitChannel]->Fill(uZeroLevel);
 
                 //Hit data
-                uint16_t uHitAmlpitude = 0;
-                UInt_t uHitChargeWfm   = 0;
+                int32_t iHitAmlpitude = 0;
+                int32_t iHitChargeWfm = 0;
                 if (fbMonitorWfmMode) fvhHitWfmChan[uHitChannel]->Reset();
                 if (fbMonitorFitMode) fvhHitFitWfmChan[uHitChannel]->Reset();
-                for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++) {
-                  if (uWfm.at(wfm_iter) > uHitAmlpitude) uHitAmlpitude = uWfm.at(wfm_iter);
-                  uHitChargeWfm += uWfm.at(wfm_iter) - uZeroLevel;
-                  if (fbMonitorWfmMode) fvhHitWfmChan[uHitChannel]->Fill(wfm_iter, uWfm.at(wfm_iter));
-                }
-                uHitAmlpitude -= uZeroLevel;
-                fvhHitAmplChan[uHitChannel]->Fill(uHitAmlpitude);
-                fvhHitChargeByWfmChan[uHitChannel]->Fill(uHitChargeWfm);
+
+                iHitChargeWfm = std::accumulate(uWfm.begin(), uWfm.end(), 0);
+                iHitChargeWfm -= uZeroLevel * uWfm.size();
+                auto const max_iter = std::max_element(uWfm.begin(), uWfm.end());
+                assert(max_iter != uWfm.end());
+                if (max_iter == uWfm.end()) break;
+                uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
+                iHitAmlpitude        = *max_iter - uZeroLevel;
+                iHitAmlpitude /= kfAdc_to_mV;
+                iHitChargeWfm /= kfAdc_to_mV;
+                fvhHitAmplChan[uHitChannel]->Fill(iHitAmlpitude);
+                fvhHitChargeByWfmChan[uHitChannel]->Fill(iHitChargeWfm);
 
                 if (fbMonitorWfmMode) {
                   fvhHitWfmChan[uHitChannel]->SetTitle(
@@ -449,7 +453,6 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                   }    // for (uint8_t i=0; i<kuNbWfmRanges; ++i)
                 }      //if (fbMonitorWfmMode)
 
-
                 if (fbMonitorFitMode) {
                   int gate_beg = 0;
                   int gate_end = uWfm.size() - 1;
@@ -464,7 +467,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                   Pfitter.CalculateFitHarmonics();
                   Pfitter.CalculateFitAmplitudes();
 
-                  Float_t fit_integral = Pfitter.GetIntegral(gate_beg, gate_end);
+                  Float_t fit_integral = Pfitter.GetIntegral(gate_beg, gate_end) / kfAdc_to_mV;
                   Float_t fit_R2       = Pfitter.GetRSquare(gate_beg, gate_end);
 
                   std::complex<float>* harmonics = Pfitter.GetHarmonics();
@@ -549,17 +552,14 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
     }  // case 0
 
 
-    case 1: {
-
+    case 100: {
 
       PsdDataV100::PsdGbtReader PsdReader(pInBuff);
       if (fair::Logger::Logging(fair::Severity::debug)) PsdReader.SetPrintOutMode(true);
       // every 80bit gbt word is decomposed into two 64bit words
       if (uNbMessages > 1) {
         while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {
-
           int ReadResult = PsdReader.ReadMs();
-
           if (ReadResult == 0) {
             fuCountsLastSecond++;
             fuReadEvtCntInMs++;
@@ -573,13 +573,14 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                 break;
               }
 
-              uint8_t uHitChannel    = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
+              uint16_t uHitChannel   = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
               uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
               uint32_t uSignalCharge = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
               uint16_t uZeroLevel    = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
               double dHitTime = (double) fulCurrentMsIdx + PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5;  //in ns
               //double dHitTime = PsdReader.MsHdr.ulMicroSlice*1000. + PsdReader.VectPackHdr.at(hit_iter).uAdcTime*12.5; //in ns
               std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
+              uSignalCharge /= kfAdc_to_mV;  // ->now in mV
 
               fhAdcTime->Fill(PsdReader.VectPackHdr.at(hit_iter).uAdcTime);
 
@@ -590,43 +591,30 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                 break;
               }
 
-
               //Pack header
               fhHitChargeMap->Fill(uHitChannel, uSignalCharge);
               fhChanHitMapEvo->Fill(uHitChannel, fdMsTime - fdStartTime);  //should be placed map(channel)
-
               if (fbMonitorChanMode) {
-
                 fvhHitChargeChan[uHitChannel]->Fill(uSignalCharge);
                 fvhHitZeroLevelChan[uHitChannel]->Fill(uZeroLevel);
 
-
                 //Hit data
-
                 int32_t iHitAmlpitude = 0;
                 int32_t iHitChargeWfm = 0;
                 if (fbMonitorWfmMode) fvhHitWfmChan[uHitChannel]->Reset();
                 if (fbMonitorFitMode) fvhHitFitWfmChan[uHitChannel]->Reset();
 
-
-                if (!uWfm.empty()) {
-                  iHitChargeWfm = std::accumulate(uWfm.begin(), uWfm.end(), 0);
-                  iHitChargeWfm -= uZeroLevel * uWfm.size();
-
-                  auto const max_iter = std::max_element(uWfm.begin(), uWfm.end());
-                  assert(max_iter != uWfm.end());
-                  if (max_iter == uWfm.end()) break;
-
-                  uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
-                  iHitAmlpitude        = *max_iter - uZeroLevel;
-
-                  for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
-                    if (fbMonitorWfmMode) fvhHitWfmChan[uHitChannel]->Fill(wfm_iter, uWfm.at(wfm_iter));
-                }
-
+                iHitChargeWfm = std::accumulate(uWfm.begin(), uWfm.end(), 0);
+                iHitChargeWfm -= uZeroLevel * uWfm.size();
+                auto const max_iter = std::max_element(uWfm.begin(), uWfm.end());
+                assert(max_iter != uWfm.end());
+                if (max_iter == uWfm.end()) break;
+                uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
+                iHitAmlpitude        = *max_iter - uZeroLevel;
+                iHitAmlpitude /= kfAdc_to_mV;
+                iHitChargeWfm /= kfAdc_to_mV;
                 fvhHitAmplChan[uHitChannel]->Fill(iHitAmlpitude);
                 fvhHitChargeByWfmChan[uHitChannel]->Fill(iHitChargeWfm);
-
 
                 if (fbMonitorWfmMode) {
                   fvhHitWfmChan[uHitChannel]->SetTitle(
@@ -671,7 +659,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                   Pfitter.CalculateFitHarmonics();
                   Pfitter.CalculateFitAmplitudes();
 
-                  Float_t fit_integral = Pfitter.GetIntegral(gate_beg, gate_end);
+                  Float_t fit_integral = Pfitter.GetIntegral(gate_beg, gate_end) / kfAdc_to_mV;
                   Float_t fit_R2       = Pfitter.GetRSquare(gate_beg, gate_end);
 
                   std::complex<float>* harmonics = Pfitter.GetHarmonics();
@@ -732,11 +720,9 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
           }
         }
 
-
         fuMsgsCntInMs += uNbMessages;
         fuReadMsgsCntInMs += PsdReader.GetTotalGbtWordsRead();
         fuLostMsgsCntInMs += uNbMessages - PsdReader.GetTotalGbtWordsRead();
-
       }  //if (uNbMessages > 1)
 
       if (fdPrevMsTime < 0.) fdPrevMsTime = fdMsTime;
@@ -751,8 +737,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
       break;
 
     }  // case 1
-
-  }  // switch
+  }    // switch
 
   return kTRUE;
 }
@@ -769,9 +754,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
   std::vector<double> dBinsLogVector = GenerateLogBinArray(2, 3, 1, iNbBinsLog);
   double* dBinsLog                   = dBinsLogVector.data();
 
-  fhHitChargeMap =
-    new TH2I("hHitChargeMap", "Map of hits charges in PSD detector; Chan; Charge [adc counts]", kuNbChanPsd, 0.,
-             kuNbChanPsd, fviHistoChargeArgs.at(0), fviHistoChargeArgs.at(1), fviHistoChargeArgs.at(2));
+  fhHitChargeMap  = new TH2I("hHitChargeMap", "Map of hits charges in PSD detector; Chan; Charge [mV]", kuNbChanPsd, 0.,
+                            kuNbChanPsd, fviHistoChargeArgs.at(0), fviHistoChargeArgs.at(1), fviHistoChargeArgs.at(2));
   fhHitMapEvo     = new TH2I("hHitMapEvo",
                          "Map of hits in PSD detector electronics vs time in "
                          "run; Chan; Time in run [s]; Hits Count []",
@@ -825,7 +809,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
 
     for (UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan) {
       fvhHitChargeChan[uChan] = new TH1I(Form("hHitChargeChan%03u", uChan),
-                                         Form("Hits charge distribution for channel %03u; Charge [adc counts]", uChan),
+                                         Form("Hits charge distribution for channel %03u; Charge [mV]", uChan),
                                          fviHistoChargeArgs.at(0), fviHistoChargeArgs.at(1), fviHistoChargeArgs.at(2));
 
       fvhHitZeroLevelChan[uChan] =
@@ -833,15 +817,14 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
                  Form("Hits zero level distribution for channel %03u; ZeroLevel [adc counts]", uChan),
                  fviHistoZLArgs.at(0), fviHistoZLArgs.at(1), fviHistoZLArgs.at(2));
 
-      fvhHitAmplChan[uChan] =
-        new TH1I(Form("hHitAmplChan%03u", uChan),
-                 Form("Hits amplitude distribution for channel %03u; Amplitude [adc counts]", uChan),
-                 fviHistoAmplArgs.at(0), fviHistoAmplArgs.at(1), fviHistoAmplArgs.at(2));
+      fvhHitAmplChan[uChan] = new TH1I(Form("hHitAmplChan%03u", uChan),
+                                       Form("Hits amplitude distribution for channel %03u; Amplitude [mV]", uChan),
+                                       fviHistoAmplArgs.at(0), fviHistoAmplArgs.at(1), fviHistoAmplArgs.at(2));
 
       fvhHitChargeByWfmChan[uChan] =
         new TH1I(Form("hHitChargeByWfmChan%03u", uChan),
                  Form("Hits charge by waveform distribution for channel %03u; "
-                      "Charge [adc counts]",
+                      "Charge [mV]",
                       uChan),
                  fviHistoChargeArgs.at(0), fviHistoChargeArgs.at(1), fviHistoChargeArgs.at(2));
 

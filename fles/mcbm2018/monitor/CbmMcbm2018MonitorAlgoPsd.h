@@ -103,7 +103,8 @@ private:
   /// Constants
   static const Int_t kiMaxNbFlibLinks   = 32;
   static const UInt_t kuBytesPerMessage = 8;
-  static const UInt_t kuNbChanPsd       = 10;
+  static const UInt_t kuNbChanPsd       = 12;
+  const float kfAdc_to_mV               = 1;
 
   static constexpr UInt_t GetNbChanPsd() { return kuNbChanPsd; }
   /// Running indices

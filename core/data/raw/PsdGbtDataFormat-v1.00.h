@@ -135,7 +135,7 @@ namespace PsdDataV100
     {
       printf("waveform: ");
       for (uint8_t iter = 0; iter < uWfm.size(); iter++)
-        printf("%u\n ", uWfm.at(iter));
+        printf("%u ", uWfm.at(iter));
       printf("\n");
     }
 
