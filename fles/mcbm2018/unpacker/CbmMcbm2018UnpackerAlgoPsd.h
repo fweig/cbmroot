@@ -20,11 +20,13 @@
 
 #include "PronyFitter.h"
 #include "PsdGbtReader-v0.00.h"
+#include "PsdGbtReader-v1.00.h"
 
 // CbmRoot
 
 // C++11
 #include <chrono>
+#include <numeric>
 
 // C/C++
 #include <map>

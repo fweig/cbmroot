@@ -20,7 +20,7 @@
 
 #include "PronyFitter.h"
 #include "PsdGbtReader-v0.00.h"
-
+#include "PsdGbtReader-v1.00.h"
 // CbmRoot
 
 // C++11
@@ -28,6 +28,7 @@
 
 // C/C++
 #include <map>
+#include <numeric>
 #include <vector>
 
 class CbmMcbm2018PsdPar;
@@ -91,6 +92,7 @@ private:
 
   /// Settings from parameter file
   CbmMcbm2018PsdPar* fUnpackPar;             //!
+  UInt_t fuRawDataVersion;                   //! Raw data versioning
                                              /// Readout chain dimensions and mapping
   UInt_t fuNrOfGdpbs;                        //! Total number of GDPBs in the system
   std::map<UInt_t, UInt_t> fGdpbIdIndexMap;  //! gDPB ID to index map

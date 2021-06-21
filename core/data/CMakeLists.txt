@@ -118,6 +118,7 @@ set(SRCS
   raw/gDpbMessv100.cxx
   raw/TimesliceMetaData.cxx
   raw/PsdGbtReader-v0.00.cxx
+  raw/PsdGbtReader-v1.00.cxx
 )
 
 Set(NO_DICT_SRCS

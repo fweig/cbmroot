@@ -82,7 +82,7 @@ private:
   /// Mapping
   const UInt_t kuFeeToGbt[kuNbChannelsPerFee] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};  //! Map from Psd channel to Gbt channel
 
-  Int_t fiDataVersion;  // Data Version
+  Int_t fiDataVersion;    // Data Version
   Int_t fiNrOfGdpb;       // Total number of GDPBs
   TArrayI fiGdpbIdArray;  // Array to hold the unique IDs for all Psd GDPBs
 
@@ -93,8 +93,8 @@ private:
   Int_t fiNrOfModules;  // Total number of Modules
   TArrayI fiModuleId;   // Module Identifier connected to Gbtx link, has to match geometry
 
-  Int_t fiNrOfSections; // Nr of sections
-  TArrayD fdMipCalibration;   // Calibration array
+  Int_t fiNrOfSections;      // Nr of sections
+  TArrayD fdMipCalibration;  // Calibration array
 
   Int_t fiNbMsTot;        // Total number of MS per link in TS
   Int_t fiNbMsOverlap;    // Number of overlap MS per TS

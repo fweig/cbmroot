@@ -9,10 +9,11 @@
 // -----                                                                   -----
 // -----------------------------------------------------------------------------
 
-#ifndef PSD_GBT_READER_H_
-#define PSD_GBT_READER_H_
+#ifndef PSD_GBT_READER_V000_H
+#define PSD_GBT_READER_V000_H
 
 #include <vector>  // for vector
+
 #include <stdint.h>  // for uint64_t, uint32_t
 
 #include "PsdGbtDataFormat-v0.00.h"  // for PsdHitData, PsdHitHeader, PsdEventHead...
@@ -63,4 +64,4 @@ namespace PsdDataV000
   };
 }  // namespace PsdDataV000
 
-#endif  // PSD_GBT_READER_H_
+#endif  // PSD_GBT_READER_V000_H

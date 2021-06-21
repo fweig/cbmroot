@@ -165,6 +165,9 @@ TList* CbmMcbm2018MonitorAlgoPsd::GetParList()
 }
 Bool_t CbmMcbm2018MonitorAlgoPsd::InitParameters()
 {
+  fuRawDataVersion = fUnpackPar->GetDataVersion();
+  LOG(info) << "Data Version: " << fuRawDataVersion;
+
   fuNrOfGdpbs = fUnpackPar->GetNrOfGdpbs();
   LOG(info) << "Nr. of Tof GDPBs: " << fuNrOfGdpbs;
 
@@ -359,181 +362,397 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
     }
   }
 
-  PsdDataV000::PsdGbtReader PsdReader(pInBuff);
-  if (fair::Logger::Logging(fair::Severity::debug)) PsdReader.SetPrintOutMode(true);
-  if (uSize > 0) {
-    while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {
-      int ReadResult = PsdReader.ReadEventFles();
-      if (PsdReader.EvHdrAb.uHitsNumber > kuNbChanPsd) {
-        LOG(error) << "too many triggered channels! In header: " << PsdReader.EvHdrAb.uHitsNumber
-                   << " in PSD: " << GetNbChanPsd();
-        break;
-      }
 
-      if (ReadResult == 0) {
-        fuCountsLastSecond++;
-        fhAdcTime->Fill(PsdReader.EvHdrAc.uAdcTime);
-        fuReadEvtCntInMs++;
+  switch (fuRawDataVersion) {
+    case 0: {
 
-        //hit loop
-        for (int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++) {
-          UInt_t uHitChannel         = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
-          UInt_t uSignalCharge       = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
-          UInt_t uZeroLevel          = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
-          std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
-
-          if (uHitChannel >= kuNbChanPsd)  //uHitChannel numerated from 0
-          {
-            LOG(error) << "hit channel number out of range! channel index: " << uHitChannel
-                       << " max: " << GetNbChanPsd();
+      PsdDataV000::PsdGbtReader PsdReader(pInBuff);
+      if (fair::Logger::Logging(fair::Severity::debug)) PsdReader.SetPrintOutMode(true);
+      if (uNbMessages > 1) {
+        while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {
+          int ReadResult = PsdReader.ReadEventFles();
+          if (PsdReader.EvHdrAb.uHitsNumber > kuNbChanPsd) {
+            LOG(error) << "too many triggered channels! In header: " << PsdReader.EvHdrAb.uHitsNumber
+                       << " in PSD: " << GetNbChanPsd();
             break;
           }
-          //Hit header
-          fhHitChargeMap->Fill(uHitChannel, uSignalCharge);
-          fhHitMapEvo->Fill(uHitChannel, fdMsTime - fdStartTime);
-          fhChanHitMapEvo->Fill(uHitChannel,
-                                fdMsTime - fdStartTime);  //should be placed map(channel)
 
-          if (fbMonitorChanMode) {
+          if (ReadResult == 0) {
+            fuCountsLastSecond++;
+            fhAdcTime->Fill(PsdReader.EvHdrAc.uAdcTime);
+            fuReadEvtCntInMs++;
 
-            fvhHitChargeChan[uHitChannel]->Fill(uSignalCharge);
-            fvhHitZeroLevelChan[uHitChannel]->Fill(uZeroLevel);
+            //hit loop
+            for (int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++) {
+              UInt_t uHitChannel         = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
+              UInt_t uSignalCharge       = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
+              UInt_t uZeroLevel          = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
+              std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
 
-            //Hit data
-            uint16_t uHitAmlpitude = 0;
-            UInt_t uHitChargeWfm   = 0;
-            if (fbMonitorWfmMode) fvhHitWfmChan[uHitChannel]->Reset();
-            if (fbMonitorFitMode) fvhHitFitWfmChan[uHitChannel]->Reset();
-            for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++) {
-              if (uWfm.at(wfm_iter) > uHitAmlpitude) uHitAmlpitude = uWfm.at(wfm_iter);
-              uHitChargeWfm += uWfm.at(wfm_iter) - uZeroLevel;
-              if (fbMonitorWfmMode) fvhHitWfmChan[uHitChannel]->Fill(wfm_iter, uWfm.at(wfm_iter));
-            }
-            uHitAmlpitude -= uZeroLevel;
-            fvhHitAmplChan[uHitChannel]->Fill(uHitAmlpitude);
-            fvhHitChargeByWfmChan[uHitChannel]->Fill(uHitChargeWfm);
+              if (uHitChannel >= kuNbChanPsd)  //uHitChannel numerated from 0
+              {
+                LOG(error) << "hit channel number out of range! channel index: " << uHitChannel
+                           << " max: " << GetNbChanPsd();
+                break;
+              }
+              //Hit header
+              fhHitChargeMap->Fill(uHitChannel, uSignalCharge);
+              fhHitMapEvo->Fill(uHitChannel, fdMsTime - fdStartTime);
+              fhChanHitMapEvo->Fill(uHitChannel,
+                                    fdMsTime - fdStartTime);  //should be placed map(channel)
 
-            if (fbMonitorWfmMode) {
-              fvhHitWfmChan[uHitChannel]->SetTitle(Form("Waveform channel %03u charge %0u zero level %0u; Time [adc "
-                                                        "counts]; Amplitude [adc counts]",
-                                                        uHitChannel, uSignalCharge, uZeroLevel));
-              for (uint8_t i = 0; i < kuNbWfmRanges; ++i) {
-                if (uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i + 1)) {
-                  UInt_t uFlatIndexOfChange = i * kuNbChanPsd + uHitChannel;
+              if (fbMonitorChanMode) {
 
-                  UInt_t uWfmExampleIter = kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange);
-                  UInt_t uFlatIndexHisto =
-                    uWfmExampleIter * kuNbWfmRanges * kuNbChanPsd + i * kuNbChanPsd + uHitChannel;
-                  fv3hHitWfmFlattenedChan[uFlatIndexHisto]->Reset();
+                fvhHitChargeChan[uHitChannel]->Fill(uSignalCharge);
+                fvhHitZeroLevelChan[uHitChannel]->Fill(uZeroLevel);
 
-                  for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
-                    fv3hHitWfmFlattenedChan[uFlatIndexHisto]->Fill(wfm_iter, uWfm.at(wfm_iter));
-                  fv3hHitWfmFlattenedChan[uFlatIndexHisto]->SetTitle(
-                    Form("Waveform channel %03u charge %0u zero level %0u; Time "
-                         "[adc counts]; Amplitude [adc counts]",
+                //Hit data
+                uint16_t uHitAmlpitude = 0;
+                UInt_t uHitChargeWfm   = 0;
+                if (fbMonitorWfmMode) fvhHitWfmChan[uHitChannel]->Reset();
+                if (fbMonitorFitMode) fvhHitFitWfmChan[uHitChannel]->Reset();
+                for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++) {
+                  if (uWfm.at(wfm_iter) > uHitAmlpitude) uHitAmlpitude = uWfm.at(wfm_iter);
+                  uHitChargeWfm += uWfm.at(wfm_iter) - uZeroLevel;
+                  if (fbMonitorWfmMode) fvhHitWfmChan[uHitChannel]->Fill(wfm_iter, uWfm.at(wfm_iter));
+                }
+                uHitAmlpitude -= uZeroLevel;
+                fvhHitAmplChan[uHitChannel]->Fill(uHitAmlpitude);
+                fvhHitChargeByWfmChan[uHitChannel]->Fill(uHitChargeWfm);
+
+                if (fbMonitorWfmMode) {
+                  fvhHitWfmChan[uHitChannel]->SetTitle(
+                    Form("Waveform channel %03u charge %0u zero level %0u; Time [adc "
+                         "counts]; Amplitude [adc counts]",
                          uHitChannel, uSignalCharge, uZeroLevel));
+                  for (uint8_t i = 0; i < kuNbWfmRanges; ++i) {
+                    if (uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i + 1)) {
+                      UInt_t uFlatIndexOfChange = i * kuNbChanPsd + uHitChannel;
 
-                  kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange)++;
-                  if (kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange) == kuNbWfmExamples)
-                    kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange) = 0;
+                      UInt_t uWfmExampleIter = kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange);
+                      UInt_t uFlatIndexHisto =
+                        uWfmExampleIter * kuNbWfmRanges * kuNbChanPsd + i * kuNbChanPsd + uHitChannel;
+                      fv3hHitWfmFlattenedChan[uFlatIndexHisto]->Reset();
 
-                }  // if( uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i+1) )
-              }    // for (uint8_t i=0; i<kuNbWfmRanges; ++i)
-            }      //if (fbMonitorWfmMode)
+                      for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
+                        fv3hHitWfmFlattenedChan[uFlatIndexHisto]->Fill(wfm_iter, uWfm.at(wfm_iter));
+                      fv3hHitWfmFlattenedChan[uFlatIndexHisto]->SetTitle(
+                        Form("Waveform channel %03u charge %0u zero level %0u; Time "
+                             "[adc counts]; Amplitude [adc counts]",
+                             uHitChannel, uSignalCharge, uZeroLevel));
+
+                      kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange)++;
+                      if (kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange) == kuNbWfmExamples)
+                        kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange) = 0;
+
+                    }  // if( uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i+1) )
+                  }    // for (uint8_t i=0; i<kuNbWfmRanges; ++i)
+                }      //if (fbMonitorWfmMode)
 
 
-            if (fbMonitorFitMode) {
-              int gate_beg = 0;
-              int gate_end = 7;
-              PsdSignalFitting::PronyFitter Pfitter(2, 2, gate_beg, gate_end);
+                if (fbMonitorFitMode) {
+                  int gate_beg = 0;
+                  int gate_end = uWfm.size() - 1;
+                  PsdSignalFitting::PronyFitter Pfitter(2, 2, gate_beg, gate_end);
 
-              Pfitter.SetDebugMode(0);
-              Pfitter.SetWaveform(uWfm, uZeroLevel);
-              int SignalBeg           = 2;
-              Int_t best_signal_begin = Pfitter.ChooseBestSignalBeginHarmonics(SignalBeg - 1, SignalBeg + 1);
+                  Pfitter.SetDebugMode(0);
+                  Pfitter.SetWaveform(uWfm, uZeroLevel);
+                  int SignalBeg           = 2;
+                  Int_t best_signal_begin = Pfitter.ChooseBestSignalBeginHarmonics(SignalBeg - 1, SignalBeg + 1);
 
-              Pfitter.SetSignalBegin(best_signal_begin);
-              Pfitter.CalculateFitHarmonics();
-              Pfitter.CalculateFitAmplitudes();
+                  Pfitter.SetSignalBegin(best_signal_begin);
+                  Pfitter.CalculateFitHarmonics();
+                  Pfitter.CalculateFitAmplitudes();
 
-              Float_t fit_integral = Pfitter.GetIntegral(gate_beg, gate_end);
-              Float_t fit_R2       = Pfitter.GetRSquare(gate_beg, gate_end);
+                  Float_t fit_integral = Pfitter.GetIntegral(gate_beg, gate_end);
+                  Float_t fit_R2       = Pfitter.GetRSquare(gate_beg, gate_end);
 
-              std::complex<float>* harmonics = Pfitter.GetHarmonics();
-              std::vector<uint16_t> uFitWfm  = Pfitter.GetFitWfm();
-              for (UInt_t wfm_iter = 0; wfm_iter < uFitWfm.size(); wfm_iter++) {
-                fvhHitFitWfmChan[uHitChannel]->Fill(wfm_iter, uFitWfm.at(wfm_iter));
-                fvhHitWfmChan[uHitChannel]->SetTitle(Form("Waveform channel %03u charge %0u zero level %0u R2 %.5f; "
-                                                          "Time [adc counts]; Amplitude [adc counts]",
-                                                          uHitChannel, uSignalCharge, uZeroLevel, fit_R2));
+                  std::complex<float>* harmonics = Pfitter.GetHarmonics();
+                  std::vector<uint16_t> uFitWfm  = Pfitter.GetFitWfm();
+                  for (UInt_t wfm_iter = 0; wfm_iter < uFitWfm.size(); wfm_iter++) {
+                    fvhHitFitWfmChan[uHitChannel]->Fill(wfm_iter, uFitWfm.at(wfm_iter));
+                    fvhHitWfmChan[uHitChannel]->SetTitle(
+                      Form("Waveform channel %03u charge %0u zero level %0u R2 %.5f; "
+                           "Time [adc counts]; Amplitude [adc counts]",
+                           uHitChannel, uSignalCharge, uZeroLevel, fit_R2));
+                  }
+
+                  fvhFitQaChan[uHitChannel]->Fill(fit_integral, fit_R2);
+
+                  if (fit_R2 > 0.02) continue;
+                  fvhFitHarmonic1Chan[uHitChannel]->Fill(std::real(harmonics[1]), std::imag(harmonics[1]));
+                  fvhFitHarmonic2Chan[uHitChannel]->Fill(std::real(harmonics[2]), std::imag(harmonics[2]));
+                }  //if (fbMonitorFitMode)
+              }    //if (fbMonitorChanMode)
+
+            }  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
+          }
+          else if (ReadResult == 1) {
+            LOG(error) << "no event headers in message!";
+            break;
+          }
+          else if (ReadResult == 2) {
+            LOG(error) << "check number of waveform points! In header: " << PsdReader.HitHdr.uWfmPoints
+                       << " should be: " << 8;
+            break;
+          }
+          else if (ReadResult == 3) {
+            LOG(error) << "wrong amount of hits read! In header: " << PsdReader.EvHdrAb.uHitsNumber
+                       << " in hit vector: " << PsdReader.VectHitHdr.size();
+            break;
+          }
+          else {
+            LOG(error) << "PsdGbtReader.ReadEventFles() didn't return expected values";
+            break;
+          }
+
+        }  // while(PsdReader.GetTotalGbtWordsRead()<uNbMessages)
+
+        if (uNbMessages != PsdReader.GetTotalGbtWordsRead()) {
+          fbPsdMissedData = kTRUE;
+          LOG(error) << "Wrong amount of messages read!"
+                     << " in microslice " << uNbMessages << " by PsdReader " << PsdReader.GetTotalGbtWordsRead();
+
+          if (fbFirstPackageError) {
+            std::ofstream error_log(Form("%llu_errorlog.txt", fulCurrentMsIdx), std::ofstream::out);
+            for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx++) {
+              uint64_t ulData = static_cast<uint64_t>(pInBuff[uIdx]);
+              error_log << Form("%016llx\n", (long long int) ulData);
+            }
+            error_log.close();
+            fbFirstPackageError = kFALSE;
+            printf("Written file %llu_errorlog.txt\n", fulCurrentMsIdx);
+          }
+        }
+
+        if (fulCurrentMsIdx != PsdReader.EvHdrAb.ulMicroSlice)
+          LOG(error) << "Wrong MS index!"
+                     << " in microslice " << fulCurrentMsIdx << " by PsdReader " << PsdReader.EvHdrAb.ulMicroSlice
+                     << "\n";
+
+        fuMsgsCntInMs += uNbMessages;
+        fuReadMsgsCntInMs += PsdReader.GetTotalGbtWordsRead();
+        fuLostMsgsCntInMs += uNbMessages - PsdReader.GetTotalGbtWordsRead();
+
+      }  //if(uNbMessages > 1)
+
+      if (fdPrevMsTime < 0.) fdPrevMsTime = fdMsTime;
+      else {
+        fhMsLengthEvo->Fill(fdMsTime - fdStartTime, 1e9 * (fdMsTime - fdPrevMsTime));
+        fdPrevMsTime = fdMsTime;
+      }
+
+      /// Fill histograms
+      FillHistograms();
+
+      break;
+    }  // case 0
+
+
+    case 1: {
+
+
+      PsdDataV100::PsdGbtReader PsdReader(pInBuff);
+      if (fair::Logger::Logging(fair::Severity::debug)) PsdReader.SetPrintOutMode(true);
+      // every 80bit gbt word is decomposed into two 64bit words
+      if (uNbMessages > 1) {
+        while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {
+
+          int ReadResult = PsdReader.ReadMs();
+
+          if (ReadResult == 0) {
+            fuCountsLastSecond++;
+            fuReadEvtCntInMs++;
+
+            //hit loop
+            for (uint64_t hit_iter = 0; hit_iter < PsdReader.VectHitHdr.size(); hit_iter++) {
+              if (PsdReader.VectPackHdr.size() != PsdReader.VectHitHdr.size()) {
+                LOG(error) << "Different vector headers sizes!"
+                           << " in VectPackHdr " << PsdReader.VectPackHdr.size() << " in VectHitHdr "
+                           << PsdReader.VectHitHdr.size() << "\n";
+                break;
               }
 
-              fvhFitQaChan[uHitChannel]->Fill(fit_integral, fit_R2);
+              uint8_t uHitChannel    = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
+              uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
+              uint32_t uSignalCharge = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
+              uint16_t uZeroLevel    = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
+              double dHitTime = (double) fulCurrentMsIdx + PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5;  //in ns
+              //double dHitTime = PsdReader.MsHdr.ulMicroSlice*1000. + PsdReader.VectPackHdr.at(hit_iter).uAdcTime*12.5; //in ns
+              std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
 
-              if (fit_R2 > 0.02) continue;
-              fvhFitHarmonic1Chan[uHitChannel]->Fill(std::real(harmonics[1]), std::imag(harmonics[1]));
-              fvhFitHarmonic2Chan[uHitChannel]->Fill(std::real(harmonics[2]), std::imag(harmonics[2]));
-            }  //if (fbMonitorFitMode)
-          }    //if (fbMonitorChanMode)
+              fhAdcTime->Fill(PsdReader.VectPackHdr.at(hit_iter).uAdcTime);
 
-        }  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
-      }
-      else if (ReadResult == 1) {
-        LOG(error) << "no event headers in message!";
-        break;
-      }
-      else if (ReadResult == 2) {
-        LOG(error) << "check number of waveform points! In header: " << PsdReader.HitHdr.uWfmPoints
-                   << " should be: " << 8;
-        break;
-      }
-      else if (ReadResult == 3) {
-        LOG(error) << "wrong amount of hits read! In header: " << PsdReader.EvHdrAb.uHitsNumber
-                   << " in hit vector: " << PsdReader.VectHitHdr.size();
-        break;
-      }
-      else {
-        LOG(error) << "PsdGbtReader.ReadEventFles() didn't return expected values";
-        break;
-      }
+              //uHitChannel numerated from 0
+              if (uHitChannel >= kuNbChanPsd) {
+                LOG(error) << "hit channel number out of range! channel index: " << uHitChannel
+                           << " max: " << GetNbChanPsd();
+                break;
+              }
 
-    }  // while(PsdReader.GetTotalGbtWordsRead()<uNbMessages)
 
-    if (uNbMessages != PsdReader.GetTotalGbtWordsRead()) {
-      fbPsdMissedData = kTRUE;
-      LOG(error) << "Wrong amount of messages read!"
-                 << " in microslice " << uNbMessages << " by PsdReader " << PsdReader.GetTotalGbtWordsRead();
+              //Pack header
+              fhHitChargeMap->Fill(uHitChannel, uSignalCharge);
+              fhChanHitMapEvo->Fill(uHitChannel, fdMsTime - fdStartTime);  //should be placed map(channel)
 
-      if (fbFirstPackageError) {
-        std::ofstream error_log(Form("%llu_errorlog.txt", fulCurrentMsIdx), std::ofstream::out);
-        for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx++) {
-          uint64_t ulData = static_cast<uint64_t>(pInBuff[uIdx]);
-          error_log << Form("%016llx\n", (long long int) ulData);
+              if (fbMonitorChanMode) {
+
+                fvhHitChargeChan[uHitChannel]->Fill(uSignalCharge);
+                fvhHitZeroLevelChan[uHitChannel]->Fill(uZeroLevel);
+
+
+                //Hit data
+
+                int32_t iHitAmlpitude = 0;
+                int32_t iHitChargeWfm = 0;
+                if (fbMonitorWfmMode) fvhHitWfmChan[uHitChannel]->Reset();
+                if (fbMonitorFitMode) fvhHitFitWfmChan[uHitChannel]->Reset();
+
+
+                if (!uWfm.empty()) {
+                  iHitChargeWfm = std::accumulate(uWfm.begin(), uWfm.end(), 0);
+                  iHitChargeWfm -= uZeroLevel * uWfm.size();
+
+                  auto const max_iter = std::max_element(uWfm.begin(), uWfm.end());
+                  assert(max_iter != uWfm.end());
+                  if (max_iter == uWfm.end()) break;
+
+                  uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
+                  iHitAmlpitude        = *max_iter - uZeroLevel;
+
+                  for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
+                    if (fbMonitorWfmMode) fvhHitWfmChan[uHitChannel]->Fill(wfm_iter, uWfm.at(wfm_iter));
+                }
+
+                fvhHitAmplChan[uHitChannel]->Fill(iHitAmlpitude);
+                fvhHitChargeByWfmChan[uHitChannel]->Fill(iHitChargeWfm);
+
+
+                if (fbMonitorWfmMode) {
+                  fvhHitWfmChan[uHitChannel]->SetTitle(
+                    Form("Waveform channel %03u charge %0u zero level %0u; Time [adc "
+                         "counts]; Amplitude [adc counts]",
+                         uHitChannel, uSignalCharge, uZeroLevel));
+                  for (uint8_t i = 0; i < kuNbWfmRanges; ++i) {
+                    if (uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i + 1)) {
+                      UInt_t uFlatIndexOfChange = i * kuNbChanPsd + uHitChannel;
+
+                      UInt_t uWfmExampleIter = kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange);
+                      UInt_t uFlatIndexHisto =
+                        uWfmExampleIter * kuNbWfmRanges * kuNbChanPsd + i * kuNbChanPsd + uHitChannel;
+                      fv3hHitWfmFlattenedChan[uFlatIndexHisto]->Reset();
+
+                      for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
+                        fv3hHitWfmFlattenedChan[uFlatIndexHisto]->Fill(wfm_iter, uWfm.at(wfm_iter));
+                      fv3hHitWfmFlattenedChan[uFlatIndexHisto]->SetTitle(
+                        Form("Waveform channel %03u charge %0u zero level %0u; Time "
+                             "[adc counts]; Amplitude [adc counts]",
+                             uHitChannel, uSignalCharge, uZeroLevel));
+
+                      kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange)++;
+                      if (kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange) == kuNbWfmExamples)
+                        kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange) = 0;
+
+                    }  // if( uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i+1) )
+                  }    // for (uint8_t i=0; i<kuNbWfmRanges; ++i)
+                }      //if (fbMonitorWfmMode)
+
+                if (fbMonitorFitMode) {
+                  int gate_beg = 0;
+                  int gate_end = uWfm.size() - 1;
+                  PsdSignalFitting::PronyFitter Pfitter(2, 2, gate_beg, gate_end);
+
+                  Pfitter.SetDebugMode(0);
+                  Pfitter.SetWaveform(uWfm, uZeroLevel);
+                  int SignalBeg           = 2;
+                  Int_t best_signal_begin = Pfitter.ChooseBestSignalBeginHarmonics(SignalBeg - 1, SignalBeg + 1);
+
+                  Pfitter.SetSignalBegin(best_signal_begin);
+                  Pfitter.CalculateFitHarmonics();
+                  Pfitter.CalculateFitAmplitudes();
+
+                  Float_t fit_integral = Pfitter.GetIntegral(gate_beg, gate_end);
+                  Float_t fit_R2       = Pfitter.GetRSquare(gate_beg, gate_end);
+
+                  std::complex<float>* harmonics = Pfitter.GetHarmonics();
+                  std::vector<uint16_t> uFitWfm  = Pfitter.GetFitWfm();
+                  for (UInt_t wfm_iter = 0; wfm_iter < uFitWfm.size(); wfm_iter++) {
+                    fvhHitFitWfmChan[uHitChannel]->Fill(wfm_iter, uFitWfm.at(wfm_iter));
+                    fvhHitWfmChan[uHitChannel]->SetTitle(
+                      Form("Waveform channel %03u charge %0u zero level %0u R2 %.5f; "
+                           "Time [adc counts]; Amplitude [adc counts]",
+                           uHitChannel, uSignalCharge, uZeroLevel, fit_R2));
+                  }
+
+                  fvhFitQaChan[uHitChannel]->Fill(fit_integral, fit_R2);
+
+                  if (fit_R2 > 0.02) continue;
+                  fvhFitHarmonic1Chan[uHitChannel]->Fill(std::real(harmonics[1]), std::imag(harmonics[1]));
+                  fvhFitHarmonic2Chan[uHitChannel]->Fill(std::real(harmonics[2]), std::imag(harmonics[2]));
+                }  //if (fbMonitorFitMode)
+              }    //if (fbMonitorChanMode)
+
+
+            }  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
+          }
+          else if (ReadResult == 1) {
+            LOG(error) << "no pack headers in message!";
+            break;
+          }
+          else if (ReadResult == 2) {
+            LOG(error) << "wrong channel! In header: " << PsdReader.HitHdr.uHitChannel;
+            break;
+          }
+          else if (ReadResult == 3) {
+            LOG(error) << "check number of waveform points! In header: " << PsdReader.HitHdr.uWfmWords - 1;
+            break;
+          }
+          else {
+            LOG(error) << "PsdGbtReader.ReadEventFles() didn't return expected values";
+            break;
+          }
+
+        }  // while(PsdReader.GetTotalGbtWordsRead()<uNbMessages)
+
+
+        if (uNbMessages != PsdReader.GetTotalGbtWordsRead()) {
+          fbPsdMissedData = kTRUE;
+          LOG(error) << "Wrong amount of messages read!"
+                     << " in microslice " << uNbMessages << " by PsdReader " << PsdReader.GetTotalGbtWordsRead();
+
+          if (fbFirstPackageError) {
+            std::ofstream error_log(Form("%llu_errorlog.txt", fulCurrentMsIdx), std::ofstream::out);
+            for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx++) {
+              uint64_t ulData = static_cast<uint64_t>(pInBuff[uIdx]);
+              error_log << Form("%016llx\n", (long long int) ulData);
+            }
+            error_log.close();
+            fbFirstPackageError = kFALSE;
+            printf("Written file %llu_errorlog.txt\n", fulCurrentMsIdx);
+          }
         }
-        error_log.close();
-        fbFirstPackageError = kFALSE;
-        printf("Written file %llu_errorlog.txt\n", fulCurrentMsIdx);
+
+
+        fuMsgsCntInMs += uNbMessages;
+        fuReadMsgsCntInMs += PsdReader.GetTotalGbtWordsRead();
+        fuLostMsgsCntInMs += uNbMessages - PsdReader.GetTotalGbtWordsRead();
+
+      }  //if (uNbMessages > 1)
+
+      if (fdPrevMsTime < 0.) fdPrevMsTime = fdMsTime;
+      else {
+        fhMsLengthEvo->Fill(fdMsTime - fdStartTime, 1e9 * (fdMsTime - fdPrevMsTime));
+        fdPrevMsTime = fdMsTime;
       }
-    }
 
-    if (fulCurrentMsIdx != PsdReader.EvHdrAb.ulMicroSlice)
-      LOG(error) << "Wrong MS index!"
-                 << " in microslice " << fulCurrentMsIdx << " by PsdReader " << PsdReader.EvHdrAb.ulMicroSlice << "\n";
+      /// Fill histograms
+      FillHistograms();
 
-    fuMsgsCntInMs += uNbMessages;
-    fuReadMsgsCntInMs += PsdReader.GetTotalGbtWordsRead();
-    fuLostMsgsCntInMs += uNbMessages - PsdReader.GetTotalGbtWordsRead();
+      break;
 
-  }  //if(uSize != 0)
+    }  // case 1
 
-  if (fdPrevMsTime < 0.) fdPrevMsTime = fdMsTime;
-  else {
-    fhMsLengthEvo->Fill(fdMsTime - fdStartTime, 1e9 * (fdMsTime - fdPrevMsTime));
-    fdPrevMsTime = fdMsTime;
-  }
-
-  /// Fill histograms
-  FillHistograms();
+  }  // switch
 
   return kTRUE;
 }

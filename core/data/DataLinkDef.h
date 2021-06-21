@@ -94,7 +94,8 @@
 #pragma link C++ class gdpbv100::Message;
 #pragma link C++ class gdpbv100::FullMessage;
 #pragma link C++ class TimesliceMetaData;
-#pragma link C++ class PsdData::PsdGbtReader;
+#pragma link C++ class PsdDataV000::PsdGbtReader;
+#pragma link C++ class PsdDataV100::PsdGbtReader;
 
 #pragma link C++ class std::vector < stsxyter::Message>;
 #pragma link C++ class std::vector < gdpbv100::Message>;
