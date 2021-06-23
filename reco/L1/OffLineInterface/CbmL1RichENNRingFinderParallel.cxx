@@ -45,7 +45,7 @@ using std::ios;
 using std::sqrt;
 using std::vector;
 
-CbmL1RichENNRingFinderParallel::CbmL1RichENNRingFinderParallel(Int_t verbose) : fRecoTime(0), fNEvents(0)
+CbmL1RichENNRingFinderParallel::CbmL1RichENNRingFinderParallel(Int_t /*verbose*/) : fRecoTime(0), fNEvents(0)
 {
 #ifdef PRINT_TIMING
   TString name_tmp[NTimers] = {

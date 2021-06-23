@@ -79,7 +79,7 @@ inline void L1Algo::f10(  // input
   // output
   fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, THitI* hitsl, fvec* HitTime_l, fvec* HitTimeEr,
   // comment unused parameters, FU, 18.01.21
-  fvec* Event_l, fvec* /*d_x*/, fvec* /*d_y*/, fvec* /*d_xy*/, fvec* d_u, fvec* d_v)
+  fvec* /*Event_l*/, fvec* /*d_x*/, fvec* /*d_y*/, fvec* /*d_xy*/, fvec* d_u, fvec* d_v)
 {
   const Tindex& end_lh = start_lh + n1_l;
 

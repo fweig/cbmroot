@@ -271,7 +271,7 @@ void CbmL1GlobalTrackFinder::CbmL1TrackToCbmTrdTrack(CbmL1Track l1track, CbmTrdT
 // -------------------------------------------------------------------------
 
 // -----   Public method CbmL1TrackToCbmTofTrack   ------------------------------------------
-void CbmL1GlobalTrackFinder::CbmL1TrackToCbmTofTrack(CbmL1Track l1track, CbmTofTrack* track, int systemIdT)
+void CbmL1GlobalTrackFinder::CbmL1TrackToCbmTofTrack(CbmL1Track l1track, CbmTofTrack* /*track*/, int systemIdT)
 {
   Int_t ndf = 0;
 
