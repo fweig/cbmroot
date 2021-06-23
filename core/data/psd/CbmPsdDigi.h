@@ -139,34 +139,33 @@ public:
   std::string ToString() const;
 
 
-  UInt_t   fuAddress = 0;        /// Unique channel address
-  Double_t fdTime = -1.;         /// Time of measurement [ns]
-  Double_t fdEdep = 0.;          /// Energy deposition from FPGA [MeV]
-  UInt_t   fuZL = 0;             /// ZeroLevel from waveform [adc counts] 
-  Double_t fdAccum = 0;          /// FPGA FEE Accumulator  
-  Double_t fdAdcTime = -1.;      /// Adc time of measurement 
+  UInt_t fuAddress   = 0;    /// Unique channel address
+  Double_t fdTime    = -1.;  /// Time of measurement [ns]
+  Double_t fdEdep    = 0.;   /// Energy deposition from FPGA [MeV]
+  UInt_t fuZL        = 0;    /// ZeroLevel from waveform [adc counts]
+  Double_t fdAccum   = 0;    /// FPGA FEE Accumulator
+  Double_t fdAdcTime = -1.;  /// Adc time of measurement
 
-  Double_t fdEdepWfm = 0.;       /// Energy deposition from waveform [MeV]
-  Double_t fdAmpl = 0.;          /// Amplitude from waveform [mV]
-  UInt_t   fuTimeMax = 0;       /// Time of maximum in waveform [adc samples] 
+  Double_t fdEdepWfm = 0.;  /// Energy deposition from waveform [MeV]
+  Double_t fdAmpl    = 0.;  /// Amplitude from waveform [mV]
+  UInt_t fuTimeMax   = 0;   /// Time of maximum in waveform [adc samples]
 
-  Double_t fdFitAmpl = 0.;       /// Amplitude from fit of waveform [mV]
-  Double_t fdFitZL = 0.;         /// ZeroLevel from fit of waveform [adc counts] 
-  Double_t fdFitEdep = 0.;       /// Energy deposition from fit of waveform [MeV]
-  Double_t fdFitR2 = 999.;       /// Quality of waveform fit [] -- good near 0
-  Double_t fdFitTimeMax = -1.;   /// Time of maximum in fit of waveform [adc samples] 
+  Double_t fdFitAmpl    = 0.;    /// Amplitude from fit of waveform [mV]
+  Double_t fdFitZL      = 0.;    /// ZeroLevel from fit of waveform [adc counts]
+  Double_t fdFitEdep    = 0.;    /// Energy deposition from fit of waveform [MeV]
+  Double_t fdFitR2      = 999.;  /// Quality of waveform fit [] -- good near 0
+  Double_t fdFitTimeMax = -1.;   /// Time of maximum in fit of waveform [adc samples]
 
 
   //LEGACY
   Float_t ffFitHarmonic1 = 0.;
   Float_t ffFitHarmonic2 = 0.;
-  Float_t ffFitR2 = 999.;
-  Float_t ffFitEdep = 0.;
-  UInt_t  fuAmpl = 0;
+  Float_t ffFitR2        = 999.;
+  Float_t ffFitEdep      = 0.;
+  UInt_t fuAmpl          = 0;
 
 
 private:
-
   /// BOOST serialization interface
   friend class boost::serialization::access;
   template<class Archive>
@@ -176,7 +175,7 @@ private:
     ar& fdTime;
     ar& fdEdep;
     ar& fuZL;
-    ar& fdAccum; 
+    ar& fdAccum;
     ar& fdAdcTime;
 
     ar& fdEdepWfm;

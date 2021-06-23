@@ -22,7 +22,7 @@ CbmPsdDigi::CbmPsdDigi() {}
 
 
 // --- Constructor with assignment
-CbmPsdDigi::CbmPsdDigi(UInt_t address, Double_t time, Double_t edep) : fuAddress(address), fdTime(time), fdEdep(edep){}
+CbmPsdDigi::CbmPsdDigi(UInt_t address, Double_t time, Double_t edep) : fuAddress(address), fdTime(time), fdEdep(edep) {}
 
 
 // --- Constructor with module and section number
@@ -98,10 +98,10 @@ CbmPsdDigi& CbmPsdDigi::operator=(const CbmPsdDigi& other)
     fdAmpl    = other.fdAmpl;
     fuTimeMax = other.fuTimeMax;
 
-    fdFitAmpl = other.fdFitAmpl;
-    fdFitZL   = other.fdFitZL;
-    fdFitEdep = other.fdFitEdep;
-    fdFitR2   = other.fdFitR2;
+    fdFitAmpl    = other.fdFitAmpl;
+    fdFitZL      = other.fdFitZL;
+    fdFitEdep    = other.fdFitEdep;
+    fdFitR2      = other.fdFitR2;
     fdFitTimeMax = other.fdFitTimeMax;
   }
   return *this;
@@ -123,10 +123,10 @@ CbmPsdDigi& CbmPsdDigi::operator=(CbmPsdDigi&& other)
     fdAmpl    = other.fdAmpl;
     fuTimeMax = other.fuTimeMax;
 
-    fdFitAmpl = other.fdFitAmpl;
-    fdFitZL   = other.fdFitZL;
-    fdFitEdep = other.fdFitEdep;
-    fdFitR2   = other.fdFitR2;
+    fdFitAmpl    = other.fdFitAmpl;
+    fdFitZL      = other.fdFitZL;
+    fdFitEdep    = other.fdFitEdep;
+    fdFitR2      = other.fdFitR2;
     fdFitTimeMax = other.fdFitTimeMax;
   }
   return *this;
@@ -182,7 +182,7 @@ void CbmPsdDigi::Streamer(TBuffer& R__b)
       R__b >> fdTime;
       R__b >> fdEdep;
       R__b >> fuZL;
-      R__b >> fdAccum; 
+      R__b >> fdAccum;
       R__b >> fdAdcTime;
 
       R__b >> fdEdepWfm;
@@ -233,7 +233,7 @@ void CbmPsdDigi::Streamer(TBuffer& R__b)
       R__b << fdTime;
       R__b << fdEdep;
       R__b << fuZL;
-      R__b << fdAccum; 
+      R__b << fdAccum;
       R__b << fdAdcTime;
 
       R__b << fdEdepWfm;

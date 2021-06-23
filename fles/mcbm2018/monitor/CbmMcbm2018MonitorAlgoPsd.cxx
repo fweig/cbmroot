@@ -366,7 +366,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
   }
 
   switch (fuRawDataVersion) {
-// --------------------------------------------------------------------------------------------------
+      // --------------------------------------------------------------------------------------------------
     case 100: {
 
       PsdDataV100::PsdGbtReader PsdReader(pInBuff);
@@ -388,7 +388,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                 break;
               }
 
-              uint16_t uHitChannel   = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
+              uint16_t uHitChannel = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
               //uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
               uint32_t uSignalCharge = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
               uint16_t uZeroLevel    = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
@@ -413,8 +413,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
               if (fbMonitorChanMode) {
                 fvhHitChargeChan[uHitChannel]->Fill(uSignalCharge);
                 fvhHitZeroLevelChan[uHitChannel]->Fill(uZeroLevel);
-		fvhHitZLChanEvo[uHitChannel]->Fill(fdMsTime - fdStartTime, uZeroLevel);
-		fvhHitFAChanEvo[uHitChannel]->Fill(fdMsTime - fdStartTime, uAccum);
+                fvhHitZLChanEvo[uHitChannel]->Fill(fdMsTime - fdStartTime, uZeroLevel);
+                fvhHitFAChanEvo[uHitChannel]->Fill(fdMsTime - fdStartTime, uAccum);
 
                 //Hit data
                 int32_t iHitAmlpitude = 0;
@@ -435,7 +435,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                 fvhHitChargeByWfmChan[uHitChannel]->Fill(iHitChargeWfm);
 
                 if (fbMonitorWfmMode) {
-		fvhHitLPChanEvo[uHitChannel]->Fill(fdMsTime - fdStartTime, uWfm.back());
+                  fvhHitLPChanEvo[uHitChannel]->Fill(fdMsTime - fdStartTime, uWfm.back());
                   for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
                     fvhHitWfmChan[uHitChannel]->Fill(wfm_iter, uWfm.at(wfm_iter));
                   fvhHitWfmChan[uHitChannel]->SetTitle(
@@ -487,10 +487,9 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                   std::vector<uint16_t> uFitWfm  = Pfitter.GetFitWfm();
                   for (UInt_t wfm_iter = 0; wfm_iter < uFitWfm.size(); wfm_iter++)
                     fvhHitFitWfmChan[uHitChannel]->Fill(wfm_iter, uFitWfm.at(wfm_iter));
-                  fvhHitWfmChan[uHitChannel]->SetTitle(
-                    Form("Waveform channel %03u charge %0u zero level %0u R2 %.5f; "
-                         "Time [adc counts]; Amplitude [adc counts]",
-                         uHitChannel, uSignalCharge, uZeroLevel, fit_R2));
+                  fvhHitWfmChan[uHitChannel]->SetTitle(Form("Waveform channel %03u charge %0u zero level %0u R2 %.5f; "
+                                                            "Time [adc counts]; Amplitude [adc counts]",
+                                                            uHitChannel, uSignalCharge, uZeroLevel, fit_R2));
 
                   fvhFitQaChan[uHitChannel]->Fill(fit_integral, fit_R2);
 
@@ -557,8 +556,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
       break;
 
     }  // case 1
-// --------------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------------
+       // --------------------------------------------------------------------------------------------------
+       // --------------------------------------------------------------------------------------------------
     case 000: {
 
       PsdDataV000::PsdGbtReader PsdReader(pInBuff);
@@ -672,10 +671,9 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                   std::vector<uint16_t> uFitWfm  = Pfitter.GetFitWfm();
                   for (UInt_t wfm_iter = 0; wfm_iter < uFitWfm.size(); wfm_iter++)
                     fvhHitFitWfmChan[uHitChannel]->Fill(wfm_iter, uFitWfm.at(wfm_iter));
-                  fvhHitWfmChan[uHitChannel]->SetTitle(
-                    Form("Waveform channel %03u charge %0u zero level %0u R2 %.5f; "
-                         "Time [adc counts]; Amplitude [adc counts]",
-                         uHitChannel, uSignalCharge, uZeroLevel, fit_R2));
+                  fvhHitWfmChan[uHitChannel]->SetTitle(Form("Waveform channel %03u charge %0u zero level %0u R2 %.5f; "
+                                                            "Time [adc counts]; Amplitude [adc counts]",
+                                                            uHitChannel, uSignalCharge, uZeroLevel, fit_R2));
 
                   fvhFitQaChan[uHitChannel]->Fill(fit_integral, fit_R2);
 
@@ -747,7 +745,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
 
       break;
     }  // case 0
-// --------------------------------------------------------------------------------------------------
+       // --------------------------------------------------------------------------------------------------
 
   }    // switch
 
@@ -821,17 +819,20 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
 
     for (UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan) {
 
-      fvhHitZLChanEvo[uChan] = new TH2I(Form("hHitZLChanEvo%03u", uChan),
-                                         Form("Hits ZeroLevel evolution for channel %03u; ZeroLevel [adc counts]", uChan),
-                                         fuHistoryHistoSize, 0, fuHistoryHistoSize, fviHistoZLArgs.at(0), fviHistoZLArgs.at(1), fviHistoZLArgs.at(2));
+      fvhHitZLChanEvo[uChan] =
+        new TH2I(Form("hHitZLChanEvo%03u", uChan),
+                 Form("Hits ZeroLevel evolution for channel %03u; ZeroLevel [adc counts]", uChan), fuHistoryHistoSize,
+                 0, fuHistoryHistoSize, fviHistoZLArgs.at(0), fviHistoZLArgs.at(1), fviHistoZLArgs.at(2));
       fvhHitZLChanEvo[uChan]->SetMarkerColor(kRed);
-      fvhHitLPChanEvo[uChan] = new TH2I(Form("hHitLPChanEvo%03u", uChan),
-                                         Form("Hits LastPoint evolution for channel %03u; ZeroLevel [adc counts]", uChan),
-                                         fuHistoryHistoSize, 0, fuHistoryHistoSize, fviHistoZLArgs.at(0), fviHistoZLArgs.at(1), fviHistoZLArgs.at(2));
+      fvhHitLPChanEvo[uChan] =
+        new TH2I(Form("hHitLPChanEvo%03u", uChan),
+                 Form("Hits LastPoint evolution for channel %03u; ZeroLevel [adc counts]", uChan), fuHistoryHistoSize,
+                 0, fuHistoryHistoSize, fviHistoZLArgs.at(0), fviHistoZLArgs.at(1), fviHistoZLArgs.at(2));
       fvhHitLPChanEvo[uChan]->SetMarkerColor(kBlue);
-      fvhHitFAChanEvo[uChan] = new TH2I(Form("hHitFAChanEvo%03u", uChan),
-                                         Form("Hits FeeAccumulator evolution for channel %03u; ZeroLevel [adc counts]", uChan),
-                                         fuHistoryHistoSize, 0, fuHistoryHistoSize, fviHistoZLArgs.at(0), fviHistoZLArgs.at(1), fviHistoZLArgs.at(2));
+      fvhHitFAChanEvo[uChan] = new TH2I(
+        Form("hHitFAChanEvo%03u", uChan),
+        Form("Hits FeeAccumulator evolution for channel %03u; ZeroLevel [adc counts]", uChan), fuHistoryHistoSize, 0,
+        fuHistoryHistoSize, fviHistoZLArgs.at(0), fviHistoZLArgs.at(1), fviHistoZLArgs.at(2));
       fvhHitFAChanEvo[uChan]->SetMarkerColor(kOrange);
 
 
@@ -1008,7 +1009,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
 
     /*******************************************************************/
     /// ZL evo all channels
-    fcZLevo= new TCanvas("cZLevo", "ZeroLevel evolaution in all channels", w, h);
+    fcZLevo = new TCanvas("cZLevo", "ZeroLevel evolaution in all channels", w, h);
     fcZLevo->DivideSquare(kuNbChanPsd);
 
     for (UInt_t uChan = 0; uChan < kuNbChanPsd; uChan++) {

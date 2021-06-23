@@ -9,10 +9,10 @@
 #define PSD_GBT_READER_V100_H
 
 #include <cstdint>  // for uint16_t, uint64_t, uint32_t
+#include <iomanip>  // for setw, setfill
+#include <sstream>  // for sstream
 #include <string>   // for string
 #include <vector>   // for vector
-#include <sstream>  // for sstream
-#include <iomanip>  // for setw, setfill
 
 #include <stdint.h>  // for uint64_t, uint32_t
 

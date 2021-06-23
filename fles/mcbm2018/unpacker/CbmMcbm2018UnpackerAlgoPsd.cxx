@@ -220,13 +220,13 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessTs(const fles::Timeslice& ts)
   }      // for( fuMsIndex = 0; fuMsIndex < uNbMsLoop; fuMsIndex ++ )
 
 
-for (auto &elem : fDigiVect)
-{
-	
-          if ( elem.GetSectionID() <10 && elem.fuZL < 100) { printf("NOWW %s %u %f %f\n", elem.ToString().c_str(), elem.fuZL, elem.fdAmpl, elem.ffFitEdep ); /*PsdReader.PrintSaveBuff();*/ }
+  for (auto& elem : fDigiVect) {
 
-
-}
+    if (elem.GetSectionID() < 10 && elem.fuZL < 100) {
+      printf("NOWW %s %u %f %f\n", elem.ToString().c_str(), elem.fuZL, elem.fdAmpl,
+             elem.ffFitEdep); /*PsdReader.PrintSaveBuff();*/
+    }
+  }
 
 
   /// Sort the buffers of hits due to the time offsets applied
@@ -304,7 +304,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
   // Prepare variables for the loop on contents
   const uint64_t* pInBuff = reinterpret_cast<const uint64_t*>(msContent);
 
-/*
+  /*
   if (uSize != 0) {
     printf("%u = %u 64bit messages\n", uSize, uNbMessages);
     for(uint32_t line_iter = 0; line_iter<uNbMessages; line_iter++){
@@ -313,21 +313,22 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
   }
 */
 
-  if ((fair::Logger::Logging(fair::Severity::debug)) && (uNbMessages > 1)){
+  if ((fair::Logger::Logging(fair::Severity::debug)) && (uNbMessages > 1)) {
     printf("%u = %u 64bit messages\n", uSize, uNbMessages);
-    for(uint32_t line_iter = 0; line_iter<uNbMessages-2; line_iter+=2){
-      printf("%010lx", (pInBuff[line_iter]  &0xffffffffff)); 
-      printf("%010lx", (pInBuff[line_iter+1]&0xffffffffff)); 
-      printf("   %u - %u", line_iter+1, line_iter+2); printf("\n");   
+    for (uint32_t line_iter = 0; line_iter < uNbMessages - 2; line_iter += 2) {
+      printf("%010lx", (pInBuff[line_iter] & 0xffffffffff));
+      printf("%010lx", (pInBuff[line_iter + 1] & 0xffffffffff));
+      printf("   %u - %u", line_iter + 1, line_iter + 2);
+      printf("\n");
     }
-    printf("%020lx   %u\n", pInBuff[uNbMessages-1], uNbMessages);
+    printf("%020lx   %u\n", pInBuff[uNbMessages - 1], uNbMessages);
   }
 
   // every 80bit gbt word is decomposed into two 64bit words
   if (uNbMessages > 1) {  //more than one 64 bit word
 
     switch (fuRawDataVersion) {
-// --------------------------------------------------------------------------------------------------
+        // --------------------------------------------------------------------------------------------------
       case 100: {
 
         PsdDataV100::PsdGbtReader PsdReader(pInBuff);
@@ -335,10 +336,13 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
         while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {
           int ReadResult = PsdReader.ReadMs();
-          if (fair::Logger::Logging(fair::Severity::debug)) { printf("\n"); PsdReader.PrintOut(); /*PsdReader.PrintSaveBuff();*/ }
+          if (fair::Logger::Logging(fair::Severity::debug)) {
+            printf("\n");
+            PsdReader.PrintOut(); /*PsdReader.PrintSaveBuff();*/
+          }
           if (ReadResult == 0) {
 
-	    double prev_hit_time = (double) fulCurrentMsIdx + PsdReader.VectPackHdr.at(0).uAdcTime * 12.5;  //in ns
+            double prev_hit_time = (double) fulCurrentMsIdx + PsdReader.VectPackHdr.at(0).uAdcTime * 12.5;  //in ns
             //hit loop
             for (uint64_t hit_iter = 0; hit_iter < PsdReader.VectHitHdr.size(); hit_iter++) {
               if (PsdReader.VectPackHdr.size() != PsdReader.VectHitHdr.size()) {
@@ -348,7 +352,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
                 break;
               }
 
-              uint8_t uHitChannel    = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
+              uint8_t uHitChannel = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
               //uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
               uint32_t uSignalCharge = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
               uint16_t uZeroLevel    = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
@@ -358,7 +362,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
               int32_t iHitAmlpitude = 0;
               int32_t iHitChargeWfm = 0;
-              uint8_t uHitTimeMax = 0; 
+              uint8_t uHitTimeMax   = 0;
               if (!uWfm.empty()) {
                 iHitChargeWfm = std::accumulate(uWfm.begin(), uWfm.end(), 0);
                 iHitChargeWfm -= uZeroLevel * uWfm.size();
@@ -367,7 +371,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
                 assert(max_iter != uWfm.end());
                 if (max_iter == uWfm.end()) break;
 
-                uHitTimeMax = std::distance(uWfm.begin(), max_iter);
+                uHitTimeMax   = std::distance(uWfm.begin(), max_iter);
                 iHitAmlpitude = *max_iter - uZeroLevel;
               }
 
@@ -383,17 +387,17 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
               double dEdep    = (double) uSignalCharge / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
               double dEdepWfm = (double) iHitChargeWfm / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
-              double dAmpl    = (double) iHitAmlpitude / 16.5; // -> now in mV
+              double dAmpl    = (double) iHitAmlpitude / 16.5;                                        // -> now in mV
 
               CbmPsdDigi digi;
               digi.fuAddress = uChanUId;
-              digi.fdTime = dHitTime;
-              digi.fdEdep = dEdep;
-              digi.fuZL = uZeroLevel;
-              digi.fdAccum = (double) PsdReader.VectHitHdr.at(hit_iter).uFeeAccum;
+              digi.fdTime    = dHitTime;
+              digi.fdEdep    = dEdep;
+              digi.fuZL      = uZeroLevel;
+              digi.fdAccum   = (double) PsdReader.VectHitHdr.at(hit_iter).uFeeAccum;
               digi.fdAdcTime = (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime;
               digi.fdEdepWfm = dEdepWfm;
-              digi.fdAmpl = dAmpl;
+              digi.fdAmpl    = dAmpl;
               digi.fuTimeMax = uHitTimeMax;
               digi.fdFitEdep = uWfm.back();
 
@@ -401,10 +405,10 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
 
               //DEBUG
-              if( dHitTime < prev_hit_time ) printf("negative time!\n");
+              if (dHitTime < prev_hit_time) printf("negative time!\n");
               //DEBUG END
               prev_hit_time = dHitTime;
-	      //DEBUG 
+              //DEBUG
 
             }  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
           }
@@ -434,9 +438,9 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
                      << "\n";
 
         break;
-      } // case 100
-// --------------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------------
+      }  // case 100
+         // --------------------------------------------------------------------------------------------------
+         // --------------------------------------------------------------------------------------------------
       case 000: {
 
         PsdDataV000::PsdGbtReader PsdReader(pInBuff);
@@ -487,11 +491,11 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
               CbmPsdDigi digi;
               digi.fuAddress = uChanUId;
-              digi.fdTime = dAdcTime;
-              digi.fdEdep = (double) uSignalCharge;
-              digi.fuAmpl = uHitAmlpitude;
+              digi.fdTime    = dAdcTime;
+              digi.fdEdep    = (double) uSignalCharge;
+              digi.fuAmpl    = uHitAmlpitude;
               digi.fdEdepWfm = (double) uHitChargeWfm;
-              digi.fuZL = uZeroLevel;
+              digi.fuZL      = uZeroLevel;
 
               fDigiVect.emplace_back(digi);
 
@@ -528,13 +532,12 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
                      << " in microslice " << fulCurrentMsIdx << " by PsdReader " << PsdReader.EvHdrAb.ulMicroSlice
                      << "\n";
         break;
-      }//case 000
-// --------------------------------------------------------------------------------------------------
+      }  //case 000
+         // --------------------------------------------------------------------------------------------------
 
-    } // switch
+    }  // switch
 
   }  //if(uNbMessages > 1)
-
 
 
   return kTRUE;
