@@ -11,10 +11,9 @@
  ** \brief Data class for PSD digital information
  ** \version 1.0
  **
- ** The information is encoded into 3*4 bytes (2 Double_t + 1 UInt_t).
  ** Unique Address:        32 bits following CbmPsdAddress
- ** Energy deposition:     32 bits double
- ** Time:                  32 bits double
+ ** Time:                  64 bits double
+ ** Energy deposition:     64 bits double
  **/
 
 #ifndef CBMPSDDIGI_H
@@ -45,7 +44,7 @@ public:
        ** @param edep    Energy deposition
        ** @param time    Time [ns]
        **/
-  CbmPsdDigi(UInt_t address, Double_t edep, Double_t time);
+  CbmPsdDigi(UInt_t address, Double_t time, Double_t edep);
 
 
   /** @brief Constructor with detailed assignment.
@@ -54,7 +53,7 @@ public:
        ** @param edep          Energy deposition
        ** @param time          Time [ns]
        **/
-  CbmPsdDigi(UInt_t moduleId, UInt_t sectionId, Double_t edep, Double_t time);
+  CbmPsdDigi(UInt_t moduleId, UInt_t sectionId, Double_t time, Double_t edep);
 
 
   /**  Copy constructor **/
@@ -77,10 +76,22 @@ public:
   ~CbmPsdDigi();
 
 
+  /** @brief Class name (static)
+       ** @return CbmPsdDigi
+       **/
+  static const char* GetClassName() { return "CbmPsdDigi"; }
+
+
   /** @brief Address
        ** @return Unique channel address (see CbmPsdAddress)
        **/
-  Int_t GetAddress() const { return fuAddress; };
+  UInt_t GetAddress() const { return fuAddress; };
+
+
+  /** @brief Time
+       ** @return Time [ns]
+       **/
+  Double_t GetTime() const { return fdTime; };
 
 
   /** @brief Charge
@@ -89,12 +100,6 @@ public:
        ** Alias for GetEdep(), for compatibility with template methods
        */
   Double_t GetCharge() const { return fdEdep; };
-
-
-  /** @brief Class name (static)
-       ** @return CbmPsdDigi
-       **/
-  static const char* GetClassName() { return "CbmPsdDigi"; }
 
 
   /** @brief Energy deposit
@@ -121,17 +126,11 @@ public:
   static ECbmModuleId GetSystem() { return ECbmModuleId::kPsd; }
 
 
-  /** @brief Time
-       ** @return Time [ns]
-       **/
-  Double_t GetTime() const { return fdTime; };
-
-
   /** Modifiers **/
-  void SetAddress(Int_t address) { fuAddress = address; };
+  void SetAddress(UInt_t address) { fuAddress = address; };
   void SetAddress(UInt_t moduleId, UInt_t sectionId);
-  void SetEdep(Double_t edep) { fdEdep = edep; }
   void SetTime(Double_t time) { fdTime = time; }
+  void SetEdep(Double_t edep) { fdEdep = edep; }
 
 
   /** @brief String output
@@ -139,47 +138,59 @@ public:
        **/
   std::string ToString() const;
 
-  //additional
-  UInt_t GetAmpl() const { return fuAmpl; };
-  UInt_t GetZL() const { return fuZL; };
-  Double_t GetEdepWfm() const { return fdEdepWfm; };
-  void SetAmpl(UInt_t ampl) { fuAmpl = ampl; }
-  void SetZL(UInt_t zl) { fuZL = zl; }
-  void SetEdepWfm(Double_t edep) { fdEdepWfm = edep; }
 
+  UInt_t   fuAddress = 0;        /// Unique channel address
+  Double_t fdTime = -1.;         /// Time of measurement [ns]
+  Double_t fdEdep = 0.;          /// Energy deposition from FPGA [MeV]
+  UInt_t   fuZL = 0;             /// ZeroLevel from waveform [adc counts] 
+  Double_t fdAccum = 0;          /// FPGA FEE Accumulator  
+  Double_t fdAdcTime = -1.;      /// Adc time of measurement 
+
+  Double_t fdEdepWfm = 0.;       /// Energy deposition from waveform [MeV]
+  Double_t fdAmpl = 0.;          /// Amplitude from waveform [mV]
+  UInt_t   fuTimeMax = 0;       /// Time of maximum in waveform [adc samples] 
+
+  Double_t fdFitAmpl = 0.;       /// Amplitude from fit of waveform [mV]
+  Double_t fdFitZL = 0.;         /// ZeroLevel from fit of waveform [adc counts] 
+  Double_t fdFitEdep = 0.;       /// Energy deposition from fit of waveform [MeV]
+  Double_t fdFitR2 = 999.;       /// Quality of waveform fit [] -- good near 0
+  Double_t fdFitTimeMax = -1.;   /// Time of maximum in fit of waveform [adc samples] 
+
+
+  //LEGACY
   Float_t ffFitHarmonic1 = 0.;
   Float_t ffFitHarmonic2 = 0.;
-  Float_t ffFitR2        = 999.;
-  Float_t ffFitEdep      = 0.;
+  Float_t ffFitR2 = 999.;
+  Float_t ffFitEdep = 0.;
+  UInt_t  fuAmpl = 0;
+
 
 private:
-  Double_t fdEdep  = 0.;   /// Energy deposition
-  Double_t fdTime  = -1.;  /// Time of measurement
-  UInt_t fuAddress = 0;    /// Unique channel address
-
-  //additional
-  UInt_t fuAmpl      = 0;
-  UInt_t fuZL        = 0;
-  Double_t fdEdepWfm = 0.;
 
   /// BOOST serialization interface
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive& ar, const unsigned int /*version*/)
   {
-    ar& ffFitHarmonic1;
-    ar& ffFitHarmonic2;
-    ar& ffFitR2;
-    ar& ffFitEdep;
-    ar& fdEdep;
-    ar& fdTime;
     ar& fuAddress;
-    ar& fuAmpl;
+    ar& fdTime;
+    ar& fdEdep;
     ar& fuZL;
+    ar& fdAccum; 
+    ar& fdAdcTime;
+
     ar& fdEdepWfm;
+    ar& fdAmpl;
+    ar& fuTimeMax;
+
+    ar& fdFitAmpl;
+    ar& fdFitZL;
+    ar& fdFitEdep;
+    ar& fdFitR2;
+    ar& fdFitTimeMax;
   }
 
-  ClassDefNV(CbmPsdDigi, 4);
+  ClassDefNV(CbmPsdDigi, 5);
 };
 
 #endif  // CBMPSDDIGI_H

@@ -11,6 +11,8 @@
 #include <cstdint>  // for uint16_t, uint64_t, uint32_t
 #include <string>   // for string
 #include <vector>   // for vector
+#include <sstream>  // for sstream
+#include <iomanip>  // for setw, setfill
 
 #include <stdint.h>  // for uint64_t, uint32_t
 
@@ -32,7 +34,7 @@ namespace PsdDataV100
       buffer     = input;
       word_index = 0;
     }
-    std::vector<std::string> save_buffer;
+    std::stringstream save_buffer;
 
     struct PsdMsHeader MsHdr;
     struct PsdPackHeader PackHdr;

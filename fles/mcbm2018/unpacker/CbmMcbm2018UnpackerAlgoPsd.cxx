@@ -206,6 +206,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessTs(const fles::Timeslice& ts)
   fdTsStopTimeCore = fdTsStartTime + fdTsCoreSizeInNs;
   //      LOG(info) << Form( "TS %5d Start %12f Stop %12f", fulCurrentTsIdx, fdTsStartTime, fdTsStopTimeCore );
 
+  fDigiVect.clear();
   /// Loop over core microslices (and overlap ones if chosen)
   for (fuMsIndex = 0; fuMsIndex < fuNbMsLoop; fuMsIndex++) {
     /// Loop over registered components
@@ -217,6 +218,16 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessTs(const fles::Timeslice& ts)
       }  // if( kFALSE == ProcessMs( ts, uMsCompIdx, fuMsIndex ) )
     }    // for( UInt_t uMsCompIdx = 0; uMsCompIdx < fvMsComponentsList.size(); ++uMsCompIdx )
   }      // for( fuMsIndex = 0; fuMsIndex < uNbMsLoop; fuMsIndex ++ )
+
+
+for (auto &elem : fDigiVect)
+{
+	
+          if ( elem.GetSectionID() <10 && elem.fuZL < 100) { printf("NOWW %s %u %f %f\n", elem.ToString().c_str(), elem.fuZL, elem.fdAmpl, elem.ffFitEdep ); /*PsdReader.PrintSaveBuff();*/ }
+
+
+}
+
 
   /// Sort the buffers of hits due to the time offsets applied
   std::sort(fDigiVect.begin(), fDigiVect.end(),
@@ -293,7 +304,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
   // Prepare variables for the loop on contents
   const uint64_t* pInBuff = reinterpret_cast<const uint64_t*>(msContent);
 
-  /*
+/*
   if (uSize != 0) {
     printf("%u = %u 64bit messages\n", uSize, uNbMessages);
     for(uint32_t line_iter = 0; line_iter<uNbMessages; line_iter++){
@@ -302,21 +313,130 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
   }
 */
 
-  /*
-  if (uSize != 0) {
+  if ((fair::Logger::Logging(fair::Severity::debug)) && (uNbMessages > 1)){
     printf("%u = %u 64bit messages\n", uSize, uNbMessages);
-    for(uint32_t line_iter = 0; line_iter<uNbMessages-1; line_iter+=2){
+    for(uint32_t line_iter = 0; line_iter<uNbMessages-2; line_iter+=2){
       printf("%010lx", (pInBuff[line_iter]  &0xffffffffff)); 
       printf("%010lx", (pInBuff[line_iter+1]&0xffffffffff)); 
       printf("   %u - %u", line_iter+1, line_iter+2); printf("\n");   
     }
-    printf("%020lx   %u\n", pInBuff[uNbMessages], uNbMessages);
+    printf("%020lx   %u\n", pInBuff[uNbMessages-1], uNbMessages);
   }
-*/
 
-  if (uSize > 8) {  //more than one 64 bit word
+  // every 80bit gbt word is decomposed into two 64bit words
+  if (uNbMessages > 1) {  //more than one 64 bit word
 
     switch (fuRawDataVersion) {
+// --------------------------------------------------------------------------------------------------
+      case 100: {
+
+        PsdDataV100::PsdGbtReader PsdReader(pInBuff);
+        //if (fair::Logger::Logging(fair::Severity::debug)) PsdReader.SetPrintOutMode(true);
+
+        while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {
+          int ReadResult = PsdReader.ReadMs();
+          if (fair::Logger::Logging(fair::Severity::debug)) { printf("\n"); PsdReader.PrintOut(); /*PsdReader.PrintSaveBuff();*/ }
+          if (ReadResult == 0) {
+
+	    double prev_hit_time = (double) fulCurrentMsIdx + PsdReader.VectPackHdr.at(0).uAdcTime * 12.5;  //in ns
+            //hit loop
+            for (uint64_t hit_iter = 0; hit_iter < PsdReader.VectHitHdr.size(); hit_iter++) {
+              if (PsdReader.VectPackHdr.size() != PsdReader.VectHitHdr.size()) {
+                LOG(error) << "Different vector headers sizes!"
+                           << " in VectPackHdr " << PsdReader.VectPackHdr.size() << " in VectHitHdr "
+                           << PsdReader.VectHitHdr.size() << "\n";
+                break;
+              }
+
+              uint8_t uHitChannel    = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
+              uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
+              uint32_t uSignalCharge = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
+              uint16_t uZeroLevel    = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
+              double dHitTime = (double) fulCurrentMsIdx + PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5;  //in ns
+              //double dHitTime = PsdReader.MsHdr.ulMicroSlice*1000. + PsdReader.VectPackHdr.at(hit_iter).uAdcTime*12.5; //in ns
+              std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
+
+              int32_t iHitAmlpitude = 0;
+              int32_t iHitChargeWfm = 0;
+              uint8_t uHitTimeMax = 0; 
+              if (!uWfm.empty()) {
+                iHitChargeWfm = std::accumulate(uWfm.begin(), uWfm.end(), 0);
+                iHitChargeWfm -= uZeroLevel * uWfm.size();
+
+                auto const max_iter = std::max_element(uWfm.begin(), uWfm.end());
+                assert(max_iter != uWfm.end());
+                if (max_iter == uWfm.end()) break;
+
+                uHitTimeMax = std::distance(uWfm.begin(), max_iter);
+                iHitAmlpitude = *max_iter - uZeroLevel;
+              }
+
+              if (uHitChannel >= fviPsdChUId.size()) {
+                LOG(error) << "hit channel number out of range! channel index: " << uHitChannel
+                           << " max: " << fviPsdChUId.size();
+                break;
+              }
+
+              UInt_t uChId    = uHitChannel;
+              UInt_t uRpdChId = uChId;                  //Should be map(uChId) TODO
+              UInt_t uChanUId = fviPsdChUId[uRpdChId];  //unique ID
+
+              double dEdep    = (double) uSignalCharge / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
+              double dEdepWfm = (double) iHitChargeWfm / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
+              double dAmpl    = (double) iHitAmlpitude / 16.5; // -> now in mV
+
+              CbmPsdDigi digi;
+              digi.fuAddress = uChanUId;
+              digi.fdTime = dHitTime;
+              digi.fdEdep = dEdep;
+              digi.fuZL = uZeroLevel;
+              digi.fdAccum = (double) PsdReader.VectHitHdr.at(hit_iter).uFeeAccum;
+              digi.fdAdcTime = (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime;
+              digi.fdEdepWfm = dEdepWfm;
+              digi.fdAmpl = dAmpl;
+              digi.fuTimeMax = uHitTimeMax;
+              digi.ffFitEdep = uWfm.back();
+
+              fDigiVect.emplace_back(digi);
+
+
+              //DEBUG
+              if( dHitTime < prev_hit_time ) printf("negative time!\n");
+              //DEBUG END
+              prev_hit_time = dHitTime;
+	      //DEBUG 
+
+            }  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
+          }
+          else if (ReadResult == 1) {
+            LOG(error) << "no pack headers in message!";
+            break;
+          }
+          else if (ReadResult == 2) {
+            LOG(error) << "wrong channel! In header: " << PsdReader.HitHdr.uHitChannel;
+            break;
+          }
+          else if (ReadResult == 3) {
+            LOG(error) << "check number of waveform points! In header: " << PsdReader.HitHdr.uWfmWords - 1;
+            break;
+          }
+          else {
+            LOG(error) << "PsdGbtReader.ReadEventFles() didn't return expected values";
+            break;
+          }
+
+
+        }  // while(PsdReader.GetTotalGbtWordsRead()<uNbMessages)
+
+        if (uNbMessages != PsdReader.GetTotalGbtWordsRead())
+          LOG(error) << "Wrong amount of messages read!"
+                     << " in microslice " << uNbMessages << " by PsdReader " << PsdReader.GetTotalGbtWordsRead()
+                     << "\n";
+
+        break;
+      } // case 100
+// --------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------
       case 000: {
 
         PsdDataV000::PsdGbtReader PsdReader(pInBuff);
@@ -365,12 +485,15 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
                          << Form(", at %u,", PsdReader.EvHdrAc.uAdcTime)
                          << " epoch: " << PsdReader.EvHdrAb.ulMicroSlice;
 
-              //fDigiVect.emplace_back(uChanUId, (double) uSignalCharge, dAdcTime);
-              fDigiVect.emplace_back(uHitChannel, (double) uSignalCharge, dAdcTime);
+              CbmPsdDigi digi;
+              digi.fuAddress = uChanUId;
+              digi.fdTime = dAdcTime;
+              digi.fdEdep = (double) uSignalCharge;
+              digi.fuAmpl = uHitAmlpitude;
+              digi.fdEdepWfm = (double) uHitChargeWfm;
+              digi.fuZL = uZeroLevel;
 
-              fDigiVect.back().SetAmpl(uHitAmlpitude);
-              fDigiVect.back().SetEdepWfm(uHitChargeWfm);
-              fDigiVect.back().SetZL(uZeroLevel);
+              fDigiVect.emplace_back(digi);
 
             }  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
           }
@@ -405,108 +528,13 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
                      << " in microslice " << fulCurrentMsIdx << " by PsdReader " << PsdReader.EvHdrAb.ulMicroSlice
                      << "\n";
         break;
-      }
+      }//case 000
+// --------------------------------------------------------------------------------------------------
 
-      case 100: {
+    } // switch
 
-        PsdDataV100::PsdGbtReader PsdReader(pInBuff);
-        //PsdReader.SetPrintOutMode(true);
+  }  //if(uNbMessages > 1)
 
-        //printf("\n");
-        //PsdReader.PrintOut();
-        //PsdReader.PrintSaveBuff();
-
-        //if (fair::Logger::Logging(fair::Severity::debug)) PsdReader.SetPrintOutMode(true);
-        // every 80bit gbt word is decomposed into two 64bit words
-
-        while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {
-          int ReadResult = PsdReader.ReadMs();
-
-          if (ReadResult == 0) {
-            //hit loop
-            for (uint64_t hit_iter = 0; hit_iter < PsdReader.VectHitHdr.size(); hit_iter++) {
-              if (PsdReader.VectPackHdr.size() != PsdReader.VectHitHdr.size()) {
-                LOG(error) << "Different vector headers sizes!"
-                           << " in VectPackHdr " << PsdReader.VectPackHdr.size() << " in VectHitHdr "
-                           << PsdReader.VectHitHdr.size() << "\n";
-                break;
-              }
-
-              uint8_t uHitChannel = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
-              //              uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
-              uint32_t uSignalCharge = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
-              uint16_t uZeroLevel    = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
-              double dHitTime = (double) fulCurrentMsIdx + PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5;  //in ns
-              //double dHitTime = PsdReader.MsHdr.ulMicroSlice*1000. + PsdReader.VectPackHdr.at(hit_iter).uAdcTime*12.5; //in ns
-              std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
-
-              int32_t iHitAmlpitude = 0;
-              int32_t iHitChargeWfm = 0;
-              if (!uWfm.empty()) {
-                iHitChargeWfm = std::accumulate(uWfm.begin(), uWfm.end(), 0);
-                iHitChargeWfm -= uZeroLevel * uWfm.size();
-
-                auto const max_iter = std::max_element(uWfm.begin(), uWfm.end());
-                assert(max_iter != uWfm.end());
-                if (max_iter == uWfm.end()) break;
-
-                //                uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
-                iHitAmlpitude = *max_iter - uZeroLevel;
-              }
-
-              if (uHitChannel >= fviPsdChUId.size()) {
-                LOG(error) << "hit channel number out of range! channel index: " << uHitChannel
-                           << " max: " << fviPsdChUId.size();
-                break;
-              }
-
-              UInt_t uChId    = uHitChannel;
-              UInt_t uRpdChId = uChId;                  //Should be map(uChId) TODO
-              UInt_t uChanUId = fviPsdChUId[uRpdChId];  //unique ID
-
-              double dEdep    = (double) uSignalCharge / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
-              double dEdepWfm = (double) iHitChargeWfm / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
-              //double dAmpl = (double) iHitAmlpitude / 16.5; // -> now in mV
-              double dAmpl = uWfm.back();
-
-              fDigiVect.emplace_back(uChanUId, dEdep, dHitTime);
-
-              fDigiVect.back().SetAmpl(dAmpl);
-              fDigiVect.back().SetEdepWfm(dEdepWfm);
-              fDigiVect.back().SetZL(uZeroLevel);
-
-            }  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
-          }
-          else if (ReadResult == 1) {
-            LOG(error) << "no pack headers in message!";
-            break;
-          }
-          else if (ReadResult == 2) {
-            LOG(error) << "wrong channel! In header: " << PsdReader.HitHdr.uHitChannel;
-            break;
-          }
-          else if (ReadResult == 3) {
-            LOG(error) << "check number of waveform points! In header: " << PsdReader.HitHdr.uWfmWords - 1;
-            break;
-          }
-          else {
-            LOG(error) << "PsdGbtReader.ReadEventFles() didn't return expected values";
-            break;
-          }
-
-
-        }  // while(PsdReader.GetTotalGbtWordsRead()<uNbMessages)
-
-        if (uNbMessages != PsdReader.GetTotalGbtWordsRead())
-          LOG(error) << "Wrong amount of messages read!"
-                     << " in microslice " << uNbMessages << " by PsdReader " << PsdReader.GetTotalGbtWordsRead()
-                     << "\n";
-
-        break;
-      }
-    }
-
-  }  //if(uSize > 8)
 
 
   return kTRUE;

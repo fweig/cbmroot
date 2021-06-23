@@ -22,30 +22,61 @@ CbmPsdDigi::CbmPsdDigi() {}
 
 
 // --- Constructor with assignment
-CbmPsdDigi::CbmPsdDigi(UInt_t address, Double_t edep, Double_t time) : fdEdep(edep), fdTime(time), fuAddress(address) {}
+CbmPsdDigi::CbmPsdDigi(UInt_t address, Double_t time, Double_t edep) : fuAddress(address), fdTime(time), fdEdep(edep){}
 
 
 // --- Constructor with module and section number
 CbmPsdDigi::CbmPsdDigi(UInt_t moduleId, UInt_t sectionId, Double_t edep, Double_t time)
-  : fdEdep(edep)
+  : fuAddress(0)
   , fdTime(time)
-  , fuAddress(0)
+  , fdEdep(edep)
 {
   fuAddress = CbmPsdAddress::GetAddress(moduleId, sectionId);
 }
 
 
 // --- Copy constructor
-CbmPsdDigi::CbmPsdDigi(const CbmPsdDigi& digiIn)
-  : fdEdep(digiIn.fdEdep)
-  , fdTime(digiIn.fdTime)
-  , fuAddress(digiIn.fuAddress)
+CbmPsdDigi::CbmPsdDigi(const CbmPsdDigi& other)
+  : fuAddress(other.fuAddress)
+  , fdTime(other.fdTime)
+  , fdEdep(other.fdEdep)
+  , fuZL(other.fuZL)
+  , fdAccum(other.fdAccum)
+  , fdAdcTime(other.fdAdcTime)
+
+  , fdEdepWfm(other.fdEdepWfm)
+  , fdAmpl(other.fdAmpl)
+  , fuTimeMax(other.fuTimeMax)
+
+  , fdFitAmpl(other.fdFitAmpl)
+  , fdFitZL(other.fdFitZL)
+  , fdFitEdep(other.fdFitEdep)
+  , fdFitR2(other.fdFitR2)
+  , fdFitTimeMax(other.fdFitTimeMax)
 {
 }
 
 
 // --- Move constructor
-CbmPsdDigi::CbmPsdDigi(CbmPsdDigi&& other) : fdEdep(other.fdEdep), fdTime(other.fdTime), fuAddress(other.fuAddress) {}
+CbmPsdDigi::CbmPsdDigi(CbmPsdDigi&& other)
+  : fuAddress(other.fuAddress)
+  , fdTime(other.fdTime)
+  , fdEdep(other.fdEdep)
+  , fuZL(other.fuZL)
+  , fdAccum(other.fdAccum)
+  , fdAdcTime(other.fdAdcTime)
+
+  , fdEdepWfm(other.fdEdepWfm)
+  , fdAmpl(other.fdAmpl)
+  , fuTimeMax(other.fuTimeMax)
+
+  , fdFitAmpl(other.fdFitAmpl)
+  , fdFitZL(other.fdFitZL)
+  , fdFitEdep(other.fdFitEdep)
+  , fdFitR2(other.fdFitR2)
+  , fdFitTimeMax(other.fdFitTimeMax)
+{
+}
 
 
 // --- Destructor
@@ -53,12 +84,25 @@ CbmPsdDigi::~CbmPsdDigi() {}
 
 
 // --- Assignment operator
-CbmPsdDigi& CbmPsdDigi::operator=(const CbmPsdDigi& rhs)
+CbmPsdDigi& CbmPsdDigi::operator=(const CbmPsdDigi& other)
 {
-  if (this != &rhs) {
-    fdEdep    = rhs.fdEdep;
-    fdTime    = rhs.fdTime;
-    fuAddress = rhs.fuAddress;
+  if (this != &other) {
+    fuAddress = other.fuAddress;
+    fdTime    = other.fdTime;
+    fdEdep    = other.fdEdep;
+    fuZL      = other.fuZL;
+    fdAccum   = other.fdAccum;
+    fdAdcTime = other.fdAdcTime;
+
+    fdEdepWfm = other.fdEdepWfm;
+    fdAmpl    = other.fdAmpl;
+    fuTimeMax = other.fuTimeMax;
+
+    fdFitAmpl = other.fdFitAmpl;
+    fdFitZL   = other.fdFitZL;
+    fdFitEdep = other.fdFitEdep;
+    fdFitR2   = other.fdFitR2;
+    fdFitTimeMax = other.fdFitTimeMax;
   }
   return *this;
 }
@@ -68,9 +112,22 @@ CbmPsdDigi& CbmPsdDigi::operator=(const CbmPsdDigi& rhs)
 CbmPsdDigi& CbmPsdDigi::operator=(CbmPsdDigi&& other)
 {
   if (this != &other) {
-    fdEdep    = other.fdEdep;
-    fdTime    = other.fdTime;
     fuAddress = other.fuAddress;
+    fdTime    = other.fdTime;
+    fdEdep    = other.fdEdep;
+    fuZL      = other.fuZL;
+    fdAccum   = other.fdAccum;
+    fdAdcTime = other.fdAdcTime;
+
+    fdEdepWfm = other.fdEdepWfm;
+    fdAmpl    = other.fdAmpl;
+    fuTimeMax = other.fuTimeMax;
+
+    fdFitAmpl = other.fdFitAmpl;
+    fdFitZL   = other.fdFitZL;
+    fdFitEdep = other.fdFitEdep;
+    fdFitR2   = other.fdFitR2;
+    fdFitTimeMax = other.fdFitTimeMax;
   }
   return *this;
 }
@@ -86,9 +143,10 @@ void CbmPsdDigi::SetAddress(UInt_t moduleId, UInt_t sectionId)
 // --- Info to string
 std::string CbmPsdDigi::ToString() const
 {
-  TString string = Form("CbmPsdDigi: address = 0x%08X Charge = %f Time = %f", fuAddress, fdEdep, fdTime);
+  TString string = Form("CbmPsdDigi: address = 0x%08X Charge = %.2f Time = %.2f", fuAddress, fdEdep, fdTime);
   return string.Data();
 }
+
 
 // --- Custom Streamer
 void CbmPsdDigi::Streamer(TBuffer& R__b)
@@ -117,6 +175,26 @@ void CbmPsdDigi::Streamer(TBuffer& R__b)
       R__b >> fuAmpl;
       R__b >> fuZL;
       R__b >> fdEdepWfm;
+      R__b.CheckByteCount(R__s, R__c, CbmPsdDigi::IsA());
+    }
+    else if (5 == R__v) {
+      R__b >> fuAddress;
+      R__b >> fdTime;
+      R__b >> fdEdep;
+      R__b >> fuZL;
+      R__b >> fdAccum; 
+      R__b >> fdAdcTime;
+
+      R__b >> fdEdepWfm;
+      R__b >> fdAmpl;
+      R__b >> fuTimeMax;
+
+      R__b >> fdFitAmpl;
+      R__b >> fdFitZL;
+      R__b >> fdFitEdep;
+      R__b >> fdFitR2;
+      R__b >> fdFitTimeMax;
+
       R__b.CheckByteCount(R__s, R__c, CbmPsdDigi::IsA());
     }
   }
@@ -150,7 +228,28 @@ void CbmPsdDigi::Streamer(TBuffer& R__b)
       R__b << fdEdepWfm;
       R__b.SetByteCount(R__c, kTRUE);
     }
+    if (5 == version) {
+      R__b << fuAddress;
+      R__b << fdTime;
+      R__b << fdEdep;
+      R__b << fuZL;
+      R__b << fdAccum; 
+      R__b << fdAdcTime;
+
+      R__b << fdEdepWfm;
+      R__b << fdAmpl;
+      R__b << fuTimeMax;
+
+      R__b << fdFitAmpl;
+      R__b << fdFitZL;
+      R__b << fdFitEdep;
+      R__b << fdFitR2;
+      R__b << fdFitTimeMax;
+
+      R__b.SetByteCount(R__c, kTRUE);
+    }
   }
 }
+
 
 ClassImp(CbmPsdDigi)

@@ -136,7 +136,6 @@ void CbmPsdMCbmHitProducer::ProcessDigi(CbmEvent* event, Int_t digiIndex)
 {
   const CbmPsdDigi* digi = fDigiMan->Get<CbmPsdDigi>(digiIndex);
   if (digi == nullptr) return;
-  if (digi->GetAddress() < 0) return;
   if (isInEnRange(digi->GetEdep())) {
     AddHit(event, digi->GetTime(), digi->GetEdep(), digi->GetModuleID(), digi->GetSectionID(), digiIndex);
   }

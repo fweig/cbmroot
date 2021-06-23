@@ -24,8 +24,9 @@ namespace PsdDataV100
   void PsdGbtReader::ReadMsHeader()
   {
     MsHdr.clear();
-    save_buffer.push_back(std::to_string(buffer[word_index]));
-    save_buffer.push_back(std::to_string(buffer[word_index + 1]));
+    save_buffer<<std::hex
+               <<std::setfill('0')<<std::setw(16)<<buffer[word_index]<<std::endl
+               <<std::setfill('0')<<std::setw(16)<<buffer[word_index+1]<<std::endl;
 
     MsHdr.uMagicWord   = (buffer[word_index] >> 32) & 0xff;
     MsHdr.ulMicroSlice = ((buffer[word_index] & 0xffffff) << 40) | (buffer[word_index + 1] & 0xffffffffff);
@@ -37,8 +38,9 @@ namespace PsdDataV100
   void PsdGbtReader::ReadPackHeader()
   {
     PackHdr.clear();
-    save_buffer.push_back(std::to_string(buffer[word_index]));
-    save_buffer.push_back(std::to_string(buffer[word_index + 1]));
+    save_buffer<<std::hex
+               <<std::setfill('0')<<std::setw(16)<<buffer[word_index]<<std::endl
+               <<std::setfill('0')<<std::setw(16)<<buffer[word_index+1]<<std::endl;
 
     buffer_shift        = 0;
     PackHdr.uHitsNumber = (buffer[word_index] >> buffer_shift) & (((static_cast<uint16_t>(1)) << PackHdr.HNs) - 1);
@@ -61,8 +63,9 @@ namespace PsdDataV100
   void PsdGbtReader::ReadHitHeader()
   {
     HitHdr.clear();
-    save_buffer.push_back(std::to_string(buffer[word_index]));
-    save_buffer.push_back(std::to_string(buffer[word_index + 1]));
+    save_buffer<<std::hex
+               <<std::setfill('0')<<std::setw(16)<<buffer[word_index]<<std::endl
+               <<std::setfill('0')<<std::setw(16)<<buffer[word_index+1]<<std::endl;
 
     buffer_shift     = 8;
     HitHdr.uFeeAccum = (buffer[word_index] >> buffer_shift) & (((static_cast<uint32_t>(1)) << HitHdr.FAs) - 1);
@@ -83,8 +86,9 @@ namespace PsdDataV100
 
   void PsdGbtReader::ReadHitData()
   {
-    save_buffer.push_back(std::to_string(buffer[word_index]));
-    save_buffer.push_back(std::to_string(buffer[word_index + 1]));
+    save_buffer<<std::hex
+               <<std::setfill('0')<<std::setw(16)<<buffer[word_index]<<std::endl
+               <<std::setfill('0')<<std::setw(16)<<buffer[word_index+1]<<std::endl;
 
     uint16_t wfm_point = 0;
     wfm_point          = ((buffer[word_index] >> 8) & 0xffff);
@@ -102,7 +106,8 @@ namespace PsdDataV100
 
   void PsdGbtReader::ReadMsTrailer()
   {
-    save_buffer.push_back(std::to_string(buffer[word_index]));
+    save_buffer<<std::hex
+               <<std::setfill('0')<<std::setw(16)<<buffer[word_index]<<std::endl;
 
     MsTrlr.uEmpty0 = buffer[word_index];
     word_index++;
@@ -112,9 +117,7 @@ namespace PsdDataV100
 
   int PsdGbtReader::ReadMs()
   {
-
-
-    save_buffer.clear();
+    std::stringstream().swap(save_buffer);
 
     //bool word_is_Ms_header = false;
     //ReadMsHeader();
@@ -135,7 +138,6 @@ namespace PsdDataV100
         word_is_Pack_header = false;
         if (print) printf("End of microslice\n");
         word_index -= 2;
-        save_buffer.pop_back();
         break;  //return 1;
       }
       else {
@@ -169,8 +171,7 @@ namespace PsdDataV100
 
   void PsdGbtReader::PrintSaveBuff()
   {
-    for (auto& elem : save_buffer)
-      printf("%s\n", elem.c_str());
+      printf("%s\n", save_buffer.str().c_str());
   }
 
   void PsdGbtReader::PrintOut()
