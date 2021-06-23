@@ -354,7 +354,7 @@ void CbmStsCoincHodo::Exec(Option_t* /*option*/)
     CbmStsHit* pHit = dynamic_cast<CbmStsHit*>(arrayHits->UncheckedAt(iHit));
     Double_t dX     = pHit->GetX();
     Double_t dY     = pHit->GetY();
-    Double_t dZ     = pHit->GetZ();
+    //    Double_t dZ     = pHit->GetZ();
     //std::cout << "TS: " << fNbTs << " " << pHit->GetAddress() << std::endl;
     /// Check if the hit is in Hodo A or B or in STS
     //         if( dZ < dMidStsHodoA )
