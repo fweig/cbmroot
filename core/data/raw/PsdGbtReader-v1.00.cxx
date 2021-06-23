@@ -112,7 +112,8 @@ namespace PsdDataV100
 
   int PsdGbtReader::ReadMs()
   {
-    std::stringstream().swap(save_buffer);
+    save_buffer.str("");
+    save_buffer.clear();
 
     //bool word_is_Ms_header = false;
     //ReadMsHeader();

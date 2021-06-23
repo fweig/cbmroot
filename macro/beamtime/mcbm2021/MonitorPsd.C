@@ -60,16 +60,16 @@ void MonitorPsd(TString inFile = "", TString sHostname = "localhost", Int_t iSer
   monitor_psd->SetHistoryHistoSize(60);
   monitor_psd->SetHistoFilename(outFileNameHistos);
 
-  std::vector<Int_t> fviHistoChargeArgs {500, 0, 5000};
-  std::vector<Int_t> fviHistoAmplArgs {100, 0, 500};
-  std::vector<Int_t> fviHistoZLArgs {9000, 0, 9000};
+  std::vector<Int_t> fviHistoChargeArgs {100, 0, 100};
+  std::vector<Int_t> fviHistoAmplArgs {20, 0, 10};
+  std::vector<Int_t> fviHistoZLArgs {500, 0, 2000};
   monitor_psd->SetChargeHistoArgs(fviHistoChargeArgs);
   monitor_psd->SetAmplHistoArgs(fviHistoAmplArgs);
   monitor_psd->SetZLHistoArgs(fviHistoZLArgs);
 
   monitor_psd->SetMonitorChanMode(kTRUE);
   monitor_psd->SetMonitorWfmMode(kTRUE);
-  //monitor_psd->SetMonitorFitMode(kTRUE);
+  monitor_psd->SetMonitorFitMode(kTRUE);
 
   // --- Source task
   CbmMcbm2018Source* source = new CbmMcbm2018Source();
