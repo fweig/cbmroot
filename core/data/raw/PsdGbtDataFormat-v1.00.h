@@ -29,7 +29,10 @@ namespace PsdDataV100
     uint8_t uEmpty0 : E0s;        //! Empty bits
     uint64_t ulMicroSlice : MSs;  //! Epoch
 
-    void printout() { printf("MS magic word: %x; microslice: %lu\n", uMagicWord, ulMicroSlice); }
+    void printout()
+    {
+      printf("MS magic word: %x; microslice: %llu\n", uMagicWord, static_cast<long long unsigned int>(ulMicroSlice));
+    }
 
     void clear()
     {
@@ -158,7 +161,7 @@ namespace PsdDataV100
 
     uint64_t uEmpty0 : E0s;  //! Empty bits
 
-    void printout() { printf("trailer: %lu\n", uEmpty0); }
+    void printout() { printf("trailer: %llu\n", static_cast<long long unsigned int>(uEmpty0)); }
 
     void clear() { uEmpty0 = 0; }
 

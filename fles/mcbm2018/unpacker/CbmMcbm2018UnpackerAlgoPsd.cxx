@@ -432,8 +432,8 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
                 break;
               }
 
-              uint8_t uHitChannel    = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
-              uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
+              uint8_t uHitChannel = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
+              //              uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
               uint32_t uSignalCharge = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
               uint16_t uZeroLevel    = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
               double dHitTime = (double) fulCurrentMsIdx + PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5;  //in ns
@@ -450,8 +450,8 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
                 assert(max_iter != uWfm.end());
                 if (max_iter == uWfm.end()) break;
 
-                uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
-                iHitAmlpitude        = *max_iter - uZeroLevel;
+                //                uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
+                iHitAmlpitude = *max_iter - uZeroLevel;
               }
 
               if (uHitChannel >= fviPsdChUId.size()) {

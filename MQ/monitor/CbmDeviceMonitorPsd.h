@@ -39,12 +39,12 @@ private:
   Bool_t fbComponentsAddedToList = kFALSE;
 
   /// Control flags
-  Bool_t fbMonitorMode;       //! Switch ON the filling of a minimal set of histograms
-  Bool_t fbIgnoreOverlapMs;   //! Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice
-  Bool_t fbMonitorChanMode;   //! Switch ON the filling channelwise histograms
-  Bool_t fbMonitorWfmMode;    //! Switch ON the filling waveforms histograms
-  Bool_t fbMonitorFitMode;    //! Switch ON the filling waveform fitting histograms
-  Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
+  Bool_t fbMonitorMode;      //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbIgnoreOverlapMs;  //! Ignore Overlap Ms: all fuOverlapMsNb MS at the end of timeslice
+  Bool_t fbMonitorChanMode;  //! Switch ON the filling channelwise histograms
+  Bool_t fbMonitorWfmMode;   //! Switch ON the filling waveforms histograms
+  Bool_t fbMonitorFitMode;   //! Switch ON the filling waveform fitting histograms
+                             //  Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
 
   /// User settings parameters
   std::string fsChannelNameDataInput;

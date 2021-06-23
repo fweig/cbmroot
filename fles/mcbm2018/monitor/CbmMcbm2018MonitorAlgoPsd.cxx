@@ -417,8 +417,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                 auto const max_iter = std::max_element(uWfm.begin(), uWfm.end());
                 assert(max_iter != uWfm.end());
                 if (max_iter == uWfm.end()) break;
-                uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
-                iHitAmlpitude        = *max_iter - uZeroLevel;
+                //                uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
+                iHitAmlpitude = *max_iter - uZeroLevel;
                 iHitAmlpitude /= kfAdc_to_mV;
                 iHitChargeWfm /= kfAdc_to_mV;
                 fvhHitAmplChan[uHitChannel]->Fill(iHitAmlpitude);
@@ -573,11 +573,11 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                 break;
               }
 
-              uint16_t uHitChannel   = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
-              uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
+              uint16_t uHitChannel = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
+              //              uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
               uint32_t uSignalCharge = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
               uint16_t uZeroLevel    = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
-              double dHitTime = (double) fulCurrentMsIdx + PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5;  //in ns
+              //              double dHitTime = (double) fulCurrentMsIdx + PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5;  //in ns
               //double dHitTime = PsdReader.MsHdr.ulMicroSlice*1000. + PsdReader.VectPackHdr.at(hit_iter).uAdcTime*12.5; //in ns
               std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
               uSignalCharge /= kfAdc_to_mV;  // ->now in mV
@@ -609,8 +609,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                 auto const max_iter = std::max_element(uWfm.begin(), uWfm.end());
                 assert(max_iter != uWfm.end());
                 if (max_iter == uWfm.end()) break;
-                uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
-                iHitAmlpitude        = *max_iter - uZeroLevel;
+                //                uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
+                iHitAmlpitude = *max_iter - uZeroLevel;
                 iHitAmlpitude /= kfAdc_to_mV;
                 iHitChargeWfm /= kfAdc_to_mV;
                 fvhHitAmplChan[uHitChannel]->Fill(iHitAmlpitude);
