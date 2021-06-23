@@ -396,7 +396,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
               //double dHitTime = (double) fulCurrentMsIdx + PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5;  //in ns
               //double dHitTime = PsdReader.MsHdr.ulMicroSlice*1000. + PsdReader.VectPackHdr.at(hit_iter).uAdcTime*12.5; //in ns
               std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
-              uSignalCharge /= (int)kfAdc_to_mV;  // ->now in mV
+              uSignalCharge /= (int) kfAdc_to_mV;  // ->now in mV
 
               fhAdcTime->Fill(PsdReader.VectPackHdr.at(hit_iter).uAdcTime);
 
@@ -428,11 +428,11 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                 assert(max_iter != uWfm.end());
                 if (max_iter == uWfm.end()) break;
                 //uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
-                iHitAmlpitude = *max_iter - uZeroLevel;
-                iHitAmlpitude /= kfAdc_to_mV;
-                iHitChargeWfm /= kfAdc_to_mV;
-                fvhHitAmplChan[uHitChannel]->Fill(iHitAmlpitude);
-                fvhHitChargeByWfmChan[uHitChannel]->Fill(iHitChargeWfm);
+                dHitAmlpitude = *max_iter - uZeroLevel;
+                dHitAmlpitude /= kfAdc_to_mV;
+                dHitChargeWfm /= kfAdc_to_mV;
+                fvhHitAmplChan[uHitChannel]->Fill(dHitAmlpitude);
+                fvhHitChargeByWfmChan[uHitChannel]->Fill(dHitChargeWfm);
 
                 if (fbMonitorWfmMode) {
                   fvhHitLPChanEvo[uHitChannel]->Fill(fdMsTime - fdStartTime, uWfm.back());
@@ -582,7 +582,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
               UInt_t uSignalCharge       = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
               UInt_t uZeroLevel          = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
               std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
-              uSignalCharge /= (int)kfAdc_to_mV;  // ->now in mV
+              uSignalCharge /= (int) kfAdc_to_mV;  // ->now in mV
 
               if (uHitChannel >= kuNbChanPsd)  //uHitChannel numerated from 0
               {
@@ -593,7 +593,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
               //Hit header
               fhHitChargeMap->Fill(uHitChannel, uSignalCharge);
               fhHitMapEvo->Fill(uHitChannel, fdMsTime - fdStartTime);
-              fhChanHitMapEvo->Fill(uHitChannel, fdMsTime - fdStartTime);//should be placed map(ch)
+              fhChanHitMapEvo->Fill(uHitChannel, fdMsTime - fdStartTime);  //should be placed map(ch)
 
               if (fbMonitorChanMode) {
 
@@ -612,11 +612,11 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                 assert(max_iter != uWfm.end());
                 if (max_iter == uWfm.end()) break;
                 //uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
-                iHitAmlpitude = *max_iter - uZeroLevel;
-                iHitAmlpitude /= kfAdc_to_mV;
-                iHitChargeWfm /= kfAdc_to_mV;
-                fvhHitAmplChan[uHitChannel]->Fill(iHitAmlpitude);
-                fvhHitChargeByWfmChan[uHitChannel]->Fill(iHitChargeWfm);
+                dHitAmlpitude = *max_iter - uZeroLevel;
+                dHitAmlpitude /= kfAdc_to_mV;
+                dHitChargeWfm /= kfAdc_to_mV;
+                fvhHitAmplChan[uHitChannel]->Fill(dHitAmlpitude);
+                fvhHitChargeByWfmChan[uHitChannel]->Fill(dHitChargeWfm);
 
                 if (fbMonitorWfmMode) {
                   for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
@@ -818,20 +818,20 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::CreateHistograms()
 
     for (UInt_t uChan = 0; uChan < kuNbChanPsd; ++uChan) {
 
-      fvhHitZLChanEvo[uChan] =
-        new TH2I(Form("hHitZLChanEvo%03u", uChan),
-                 Form("Hits ZeroLevel evolution for channel %03u; Time in run [s]; ZeroLevel [adc counts]", uChan), fuHistoryHistoSize,
-                 0, fuHistoryHistoSize, fviHistoZLArgs.at(0), fviHistoZLArgs.at(1), fviHistoZLArgs.at(2));
+      fvhHitZLChanEvo[uChan] = new TH2I(
+        Form("hHitZLChanEvo%03u", uChan),
+        Form("Hits ZeroLevel evolution for channel %03u; Time in run [s]; ZeroLevel [adc counts]", uChan),
+        fuHistoryHistoSize, 0, fuHistoryHistoSize, fviHistoZLArgs.at(0), fviHistoZLArgs.at(1), fviHistoZLArgs.at(2));
       fvhHitZLChanEvo[uChan]->SetMarkerColor(kRed);
-      fvhHitLPChanEvo[uChan] =
-        new TH2I(Form("hHitLPChanEvo%03u", uChan),
-                 Form("Hits LastPoint evolution for channel %03u; Time in run [s]; ZeroLevel [adc counts]", uChan), fuHistoryHistoSize,
-                 0, fuHistoryHistoSize, fviHistoZLArgs.at(0), fviHistoZLArgs.at(1), fviHistoZLArgs.at(2));
+      fvhHitLPChanEvo[uChan] = new TH2I(
+        Form("hHitLPChanEvo%03u", uChan),
+        Form("Hits LastPoint evolution for channel %03u; Time in run [s]; ZeroLevel [adc counts]", uChan),
+        fuHistoryHistoSize, 0, fuHistoryHistoSize, fviHistoZLArgs.at(0), fviHistoZLArgs.at(1), fviHistoZLArgs.at(2));
       fvhHitLPChanEvo[uChan]->SetMarkerColor(kBlue);
       fvhHitFAChanEvo[uChan] = new TH2I(
         Form("hHitFAChanEvo%03u", uChan),
-        Form("Hits FeeAccumulator evolution for channel %03u; Time in run [s]; ZeroLevel [adc counts]", uChan), fuHistoryHistoSize, 0,
-        fuHistoryHistoSize, fviHistoZLArgs.at(0), fviHistoZLArgs.at(1), fviHistoZLArgs.at(2));
+        Form("Hits FeeAccumulator evolution for channel %03u; Time in run [s]; ZeroLevel [adc counts]", uChan),
+        fuHistoryHistoSize, 0, fuHistoryHistoSize, fviHistoZLArgs.at(0), fviHistoZLArgs.at(1), fviHistoZLArgs.at(2));
       fvhHitFAChanEvo[uChan]->SetMarkerColor(kOrange);
 
 
