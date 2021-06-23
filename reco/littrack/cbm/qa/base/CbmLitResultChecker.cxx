@@ -9,6 +9,9 @@
  */
 #include "CbmLitResultChecker.h"
 
+// Add the define statement teporarily to silence the compiler
+// warnings till the problem is fixed in boost
+#define BOOST_BIND_GLOBAL_PLACEHOLDERS 1
 #include <boost/property_tree/json_parser.hpp>
 
 #include <iostream>
