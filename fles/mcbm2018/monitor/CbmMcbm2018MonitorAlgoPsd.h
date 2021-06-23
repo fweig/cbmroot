@@ -140,6 +140,9 @@ private:
 
   /// Channel rate plots
   std::vector<UInt_t> fvuHitCntChanMs;
+  std::vector<TH2*> fvhHitZLChanEvo;
+  std::vector<TH2*> fvhHitLPChanEvo;
+  std::vector<TH2*> fvhHitFAChanEvo;
   std::vector<TH1*> fvhHitChargeChan;
   std::vector<TH1*> fvhHitZeroLevelChan;
   std::vector<TH1*> fvhHitAmplChan;
@@ -186,6 +189,7 @@ private:
   /// Canvases
   TCanvas* fcSummary;
   TCanvas* fcHitMaps;
+  TCanvas* fcZLevo;
   TCanvas* fcChargesFPGA;
   TCanvas* fcChargesWfm;
   TCanvas* fcAmplitudes;

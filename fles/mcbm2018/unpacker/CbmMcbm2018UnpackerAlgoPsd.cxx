@@ -349,7 +349,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
               }
 
               uint8_t uHitChannel    = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
-              uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
+              //uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
               uint32_t uSignalCharge = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
               uint16_t uZeroLevel    = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
               double dHitTime = (double) fulCurrentMsIdx + PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5;  //in ns
@@ -395,7 +395,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
               digi.fdEdepWfm = dEdepWfm;
               digi.fdAmpl = dAmpl;
               digi.fuTimeMax = uHitTimeMax;
-              digi.ffFitEdep = uWfm.back();
+              digi.fdFitEdep = uWfm.back();
 
               fDigiVect.emplace_back(digi);
 
