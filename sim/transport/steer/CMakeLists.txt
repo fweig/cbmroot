@@ -54,6 +54,14 @@ ${Vc_LIB_DIR}
 ${KFParticle_LIB_DIR}
 ${SIMPATH}/lib
 )
+
+# Work around linker problems on macosx 11 (Big Sur)
+# Somehow libfreetype isn't properly found in /usr/local/lib
+cmake_host_system_information(RESULT _OS_RELEASE QUERY OS_RELEASE)
+if(APPLE AND ${_OS_RELEASE} VERSION_GREATER 11)
+  Message(STATUS "Fixing linker issue on macosx ${_OS_RELEASE}")
+  list(APPEND LINK_DIRECTORIES /usr/local/lib)
+endif()
 # ---------------------------------------------------------
 
 
