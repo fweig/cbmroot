@@ -136,9 +136,11 @@ FileEndCheck:
 .build_and_test: &build_and_test
   before_script:
     - if [ "$CI_MERGE_REQUEST_PROJECT_PATH" != "computing/cbmroot" ]; then
-    -   echo "Should not come here"
-    -   env
-    -   exit 1
+    -   if [ "$CI_PROJECT_PATH" != "computing/cbmroot" ]; then
+    -     echo "Should not come here"
+    -     env
+    -     exit 1
+    -   fi
     - fi
   script:
     - echo "export LINUX_FLAVOUR=$OS" >> Dart.cfg
