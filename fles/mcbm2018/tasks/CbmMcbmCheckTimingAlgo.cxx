@@ -20,6 +20,7 @@
 #include "FairRunOnline.h"
 #include <Logger.h>
 
+#include "TF1.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "THttpServer.h"
@@ -245,7 +246,7 @@ void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset()
   }  // for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
   for (UInt_t uDigi = 0; uDigi < uNbRefDigis; ++uDigi) {
-    LOG(debug) << Form("Checking seed %6u / %6u", uDigi, uNbRefDigis);
+    //LOG(debug) << Form("Checking seed %6u / %6u", uDigi, uNbRefDigis);
 
     Double_t dRefTime   = 0;
     Double_t dRefCharge = 0;
@@ -411,14 +412,119 @@ void CbmMcbmCheckTimingAlgo::WriteHistos()
   TFile* outfile = TFile::Open(fOutFileName, "RECREATE");
 
   for (UInt_t uDetIdx = 0; uDetIdx < fvDets.size(); ++uDetIdx) {
-    LOG(info) << "Saving histos for " << fvDets[uDetIdx].sName;
+    LOG(debug) << "Saving histos for " << fvDets[uDetIdx].sName;
     fvhDetSelfDiff[uDetIdx]->Write();
-    fvhDetToRefDiff[uDetIdx]->Write();
+    
     fvhDetToRefDiffRefCharge[uDetIdx]->Write();
     fvhDetToRefDiffDetCharge[uDetIdx]->Write();
     fvhDetToRefDiffEvo[uDetIdx]->Write();
     fvhDetToRefDiffEvoLong[uDetIdx]->Write();
+    LOG(debug) << "WriteHistos, uDetIdx, Det, entries = " << uDetIdx << "  " << fvDets[uDetIdx].sName << "   " <<fvhDetToRefDiff[uDetIdx]->GetEntries();
     LOG(info) << "Saved histos for " << fvDets[uDetIdx].sName;
+    
+    DetPeakPosSingle = fvhDetToRefDiff[uDetIdx]->GetMaximumBin() * fvhDetToRefDiff[uDetIdx]->GetBinWidth(1) + fvhDetToRefDiff[uDetIdx]->GetXaxis()->GetXmin();
+        DetAverageSingle = (fvhDetToRefDiff[uDetIdx]->Integral()) / (fvhDetToRefDiff[uDetIdx]->GetNbinsX());
+
+      switch (fvDets[uDetIdx].detId) {
+        case ECbmModuleId::kSts: {
+          if (DetAverageSingle > 0) {
+            TF1* gs_sts = new TF1("gs_sts", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fStsPeakWidthNs, DetPeakPosSingle + 2 * fStsPeakWidthNs);
+            gs_sts->SetParameters(DetAverageSingle, DetPeakPosSingle, fStsPeakWidthNs, DetAverageSingle);
+            fvhDetToRefDiff[uDetIdx]->Fit("gs_sts", "R");
+            TF1* fitresult_sts = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_sts");
+            LOG(debug)<< fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_sts->GetParameter(0) << ",  "
+                      << fitresult_sts->GetParameter(1) << ",  " << fitresult_sts->GetParameter(2);
+          }
+          break;
+        }
+              
+              case ECbmModuleId::kMuch: {
+                    if (DetAverageSingle > 0) {
+                      TF1* gs_much =
+                      new TF1("gs_much", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fMuchPeakWidthNs, DetPeakPosSingle + 2 * fMuchPeakWidthNs);
+                      gs_much->SetParameters(DetAverageSingle, DetPeakPosSingle, fMuchPeakWidthNs, DetAverageSingle);
+                      fvhDetToRefDiff[uDetIdx]->Fit("gs_much", "R");
+                      TF1* fitresult_much = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_much");
+                      LOG(debug)<< fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_much->GetParameter(0) << ",  "
+                          << fitresult_much->GetParameter(1) << ",  " << fitresult_much->GetParameter(2);
+                      }
+                  break;
+                  }
+            
+              case ECbmModuleId::kTrd: {
+                if (DetAverageSingle > 0) {
+                  TF1* gs_trd =
+                  new TF1("gs_trd", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fTrdPeakWidthNs, DetPeakPosSingle + 2 * fTrdPeakWidthNs);
+                  gs_trd->SetParameters(0.7 * DetAverageSingle, DetPeakPosSingle, fTrdPeakWidthNs, DetAverageSingle);
+                  fvhDetToRefDiff[uDetIdx]->Fit("gs_trd", "R");
+                  TF1* fitresult_trd = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_trd");
+                  LOG(debug)<< fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_trd->GetParameter(0) << ",  "
+                      << fitresult_trd->GetParameter(1) << ",  " << fitresult_trd->GetParameter(2);
+                  }
+              break;
+              }
+              
+              case ECbmModuleId::kT0: {
+                if (DetAverageSingle > 0) {
+                  TF1* gs_tof =
+                  new TF1("gs_tof", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fTofPeakWidthNs, DetPeakPosSingle + 2 * fTofPeakWidthNs);
+                  gs_tof->SetParameters(DetAverageSingle, DetPeakPosSingle, fTofPeakWidthNs, DetAverageSingle);
+                  fvhDetToRefDiff[uDetIdx]->Fit("gs_tof", "R");
+                  TF1* fitresult_tof = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_tof");
+                  LOG(debug)<< fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_tof->GetParameter(0) << ",  "
+                      << fitresult_tof->GetParameter(1) << ",  " << fitresult_tof->GetParameter(2);
+                  }
+              break;
+              }
+              
+            case ECbmModuleId::kTof: {
+                  if (DetAverageSingle > 0) {
+                    TF1* gs_tof =
+                    new TF1("gs_tof", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fTofPeakWidthNs, DetPeakPosSingle + 2 * fTofPeakWidthNs);
+                    gs_tof->SetParameters(DetAverageSingle, DetPeakPosSingle, fTofPeakWidthNs, DetAverageSingle);
+                    fvhDetToRefDiff[uDetIdx]->Fit("gs_tof", "R");
+                    TF1* fitresult_tof = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_tof");
+                    LOG(debug)<< fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_tof->GetParameter(0) << ",  "
+                        << fitresult_tof->GetParameter(1) << ",  " << fitresult_tof->GetParameter(2);
+                    }
+                break;
+                }
+              
+            case ECbmModuleId::kRich: {
+                if (DetAverageSingle > 0) {
+                  TF1* gs_rich =
+                  new TF1("gs_rich", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fRichPeakWidthNs, DetPeakPosSingle + 2 * fRichPeakWidthNs);
+                  gs_rich->SetParameters(0.5 * DetAverageSingle, DetPeakPosSingle, fRichPeakWidthNs, DetAverageSingle);
+                  fvhDetToRefDiff[uDetIdx]->Fit("gs_rich", "R");
+                  TF1* fitresult_rich = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_rich");
+                  LOG(debug)<< fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_rich->GetParameter(0) << ",  "
+                      << fitresult_rich->GetParameter(1) << ",  " << fitresult_rich->GetParameter(2);
+                  }
+              break;
+              }
+              
+          case ECbmModuleId::kPsd: {
+              if (DetAverageSingle > 0) {
+                TF1* gs_psd =
+                new TF1("gs_psd", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fPsdPeakWidthNs, DetPeakPosSingle + 2 * fPsdPeakWidthNs);
+                gs_psd->SetParameters(DetAverageSingle, DetPeakPosSingle, fPsdPeakWidthNs, DetAverageSingle);
+                fvhDetToRefDiff[uDetIdx]->Fit("gs_psd", "R");
+                TF1* fitresult_psd = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_psd");
+                LOG(debug)<< fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_psd->GetParameter(0) << ",  "
+                    << fitresult_psd->GetParameter(1) << ",  " << fitresult_psd->GetParameter(2);
+                }
+          break;
+          }
+              
+          default: {
+              LOG(info)<< "Detector ID for fitting is not valid.";
+              break;
+          }
+              
+              
+      }
+      
+    fvhDetToRefDiff[uDetIdx]->Write();  //At the end in order to include fitting results in histos
   }  // for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
   /// Register the histo for reference detector digi to digi time difference

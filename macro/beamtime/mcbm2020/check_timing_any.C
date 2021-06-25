@@ -23,7 +23,7 @@ void check_timing_any(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TS
   // -----  Analysis run   --------------------------------------------------
   FairRunOnline* fRun = new FairRunOnline();
   fRun->ActivateHttpServer(100, 8080);  // refresh each 100 events
-
+  fRun->SetSink(new FairRootFileSink("SinkFile.root"));
   FairFileSource* inputSource = new FairFileSource(fileName);
   fRun->SetSource(inputSource);
 

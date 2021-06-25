@@ -86,6 +86,14 @@ public:
                         UInt_t uChargeCutMaxIn = 0);
   void RemoveCheckDetector(ECbmModuleId detIn);
 
+  void SetTrdPeakWidthNs(Double_t val = 120.) { fTrdPeakWidthNs = val; }
+  void SetStsPeakWidthNs(Double_t val = 30.) { fStsPeakWidthNs = val; }
+  void SetMuchPeakWidthNs(Double_t val = 100.) { fMuchPeakWidthNs = val; }
+  void SetTofPeakWidthNs(Double_t val = 20.) { fTofPeakWidthNs = val; }
+  void SetRichPeakWidthNs(Double_t val = 40.) { fRichPeakWidthNs = val; }
+  void SetPsdPeakWidthNs(Double_t val = 20.) { fPsdPeakWidthNs = val; }
+
+    
 private:
   void CheckDataPresence(CheckTimingDetector detToCheck);
   void CreateHistos();
@@ -121,7 +129,17 @@ private:
 
   /** Name of the histogram output file **/
   TString fOutFileName = "data/HistosCheckTiming.root";
-
+  
+  Double_t DetPeakPosSingle;
+  Double_t DetAverageSingle;
+  
+  Double_t fTrdPeakWidthNs  = 120.;
+  Double_t fStsPeakWidthNs  = 30.;
+  Double_t fMuchPeakWidthNs = 100.;
+  Double_t fTofPeakWidthNs  = 20.;
+  Double_t fRichPeakWidthNs = 40.;
+  Double_t fPsdPeakWidthNs  = 20.;
+    
   ClassDefNV(CbmMcbmCheckTimingAlgo, 1);
 };
 
