@@ -26,7 +26,7 @@ CbmPsdDigi::CbmPsdDigi(UInt_t address, Double_t time, Double_t edep) : fuAddress
 
 
 // --- Constructor with module and section number
-CbmPsdDigi::CbmPsdDigi(UInt_t moduleId, UInt_t sectionId, Double_t edep, Double_t time)
+CbmPsdDigi::CbmPsdDigi(UInt_t moduleId, UInt_t sectionId, Double_t time, Double_t edep)
   : fuAddress(0)
   , fdTime(time)
   , fdEdep(edep)
