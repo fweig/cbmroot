@@ -23,11 +23,11 @@ TEST(_GTestCbmPsdDigi, CheckDefaultConstructor)
 TEST(_GTestCbmPsdDigi, CheckStandardConstructor)
 {
   // Create object
-  CbmPsdDigi test(111, 987654321., 23.);
+  CbmPsdDigi test(111, 23., 987654321.);
 
   comparePsdDigiDataMembers(test, 111, ECbmModuleId::kPsd, 23., 987654321.);
 
-  CbmPsdDigi* test1 = new CbmPsdDigi(111, 987654321., 23.);
+  CbmPsdDigi* test1 = new CbmPsdDigi(111, 23., 987654321.);
 
   comparePsdDigiDataMembers(*test1, 111, ECbmModuleId::kPsd, 23., 987654321.);
 }
@@ -35,11 +35,11 @@ TEST(_GTestCbmPsdDigi, CheckStandardConstructor)
 TEST(_GTestCbmPsdDigi, CheckConstructorWithDetailedAssignment)
 {
   // Create object
-  CbmPsdDigi test(1, 5, 987654321., 23.);
+  CbmPsdDigi test(1, 5, 23., 987654321.);
 
   comparePsdDigiDataMembers(test, 5144, ECbmModuleId::kPsd, 23., 987654321.);
 
-  CbmPsdDigi* test1 = new CbmPsdDigi(5, 5, 987654321., 23.);
+  CbmPsdDigi* test1 = new CbmPsdDigi(5, 5, 23., 987654321.);
 
   comparePsdDigiDataMembers(*test1, 5208, ECbmModuleId::kPsd, 23., 987654321.);
 }
@@ -47,7 +47,7 @@ TEST(_GTestCbmPsdDigi, CheckConstructorWithDetailedAssignment)
 TEST(_GTestCbmPsdDigi, CheckCopyConstructor)
 {
   // Create object
-  CbmPsdDigi test(111, 987654321., 23.);
+  CbmPsdDigi test(111, 23., 987654321.);
 
   comparePsdDigiDataMembers(test, 111, ECbmModuleId::kPsd, 23., 987654321.);
 
@@ -66,7 +66,7 @@ TEST(_GTestCbmPsdDigi, CheckAssignmentOperator)
 {
 
   // Create object
-  CbmPsdDigi test(111, 987654321., 23.);
+  CbmPsdDigi test(111, 23., 987654321.);
 
   comparePsdDigiDataMembers(test, 111, ECbmModuleId::kPsd, 23., 987654321.);
 
@@ -85,7 +85,7 @@ TEST(_GTestCbmPsdDigi, CheckAssignmentOperator)
 TEST(_GTestCbmPsdDigi, CheckMoveConstructor)
 {
   // Create object
-  CbmPsdDigi test(111, 987654321., 23.);
+  CbmPsdDigi test(111, 23., 987654321.);
 
   comparePsdDigiDataMembers(test, 111, ECbmModuleId::kPsd, 23., 987654321.);
 
@@ -102,7 +102,7 @@ TEST(_GTestCbmPsdDigi, CheckMoveConstructor)
 TEST(_GTestCbmPsdDigi, CheckAssignmentMoveConstructor)
 {
   // Create object
-  CbmPsdDigi test(111, 987654321., 23.);
+  CbmPsdDigi test(111, 23., 987654321.);
 
   comparePsdDigiDataMembers(test, 111, ECbmModuleId::kPsd, 23., 987654321.);
 
@@ -122,7 +122,7 @@ TEST(_GTestCbmPsdDigi, CheckAssignmentMoveConstructor)
 TEST(_GTestCbmPsdDigi, CheckToString)
 {
   // Create object
-  CbmPsdDigi test(12341234, 987654321., 23.);
+  CbmPsdDigi test(12341234, 23., 987654321.);
 
   comparePsdDigiDataMembers(test, 12341234, ECbmModuleId::kPsd, 23., 987654321.);
 
@@ -134,7 +134,7 @@ TEST(_GTestCbmPsdDigi, CheckToString)
 TEST(_GTestCbmPsdDigi, CheckGetClassName)
 {
   // Create object
-  CbmPsdDigi test(111, 987654321., 23.);
+  CbmPsdDigi test(111, 23., 987654321.);
 
   comparePsdDigiDataMembers(test, 111, ECbmModuleId::kPsd, 23., 987654321.);
 
@@ -144,7 +144,7 @@ TEST(_GTestCbmPsdDigi, CheckGetClassName)
 TEST(_GTestCbmPsdDigi, CheckSetTime)
 {
   // Create object
-  CbmPsdDigi test(111, 987654321., 23.);
+  CbmPsdDigi test(111, 23., 987654321.);
 
   comparePsdDigiDataMembers(test, 111, ECbmModuleId::kPsd, 23., 987654321.);
 
@@ -156,7 +156,7 @@ TEST(_GTestCbmPsdDigi, CheckSetTime)
 TEST(_GTestCbmPsdDigi, CheckSetAddress)
 {
   // Create object
-  CbmPsdDigi test(111, 987654321., 23.);
+  CbmPsdDigi test(111, 23., 987654321.);
 
   comparePsdDigiDataMembers(test, 111, ECbmModuleId::kPsd, 23., 987654321.);
 
@@ -168,7 +168,7 @@ TEST(_GTestCbmPsdDigi, CheckSetAddress)
 TEST(_GTestCbmPsdDigi, CheckSetAddressWithModuleAndSection)
 {
   // Create object
-  CbmPsdDigi test(111, 987654321., 23.);
+  CbmPsdDigi test(111, 23., 987654321.);
 
   comparePsdDigiDataMembers(test, 111, ECbmModuleId::kPsd, 23., 987654321.);
 
@@ -180,7 +180,7 @@ TEST(_GTestCbmPsdDigi, CheckSetAddressWithModuleAndSection)
 TEST(_GTestCbmPsdDigi, CheckSetEdep)
 {
   // Create object
-  CbmPsdDigi test(111, 987654321., 23.);
+  CbmPsdDigi test(111, 23., 987654321.);
 
   comparePsdDigiDataMembers(test, 111, ECbmModuleId::kPsd, 23., 987654321.);
 
