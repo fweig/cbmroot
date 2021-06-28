@@ -143,7 +143,7 @@ void CbmPsdDigi::SetAddress(UInt_t moduleId, UInt_t sectionId)
 // --- Info to string
 std::string CbmPsdDigi::ToString() const
 {
-  TString string = Form("CbmPsdDigi: address = 0x%08X Charge = %.2f Time = %.2f", fuAddress, fdEdep, fdTime);
+  TString string = Form("CbmPsdDigi: address = 0x%08X Charge = %f Time = %f", fuAddress, fdEdep, fdTime);
   return string.Data();
 }
 
