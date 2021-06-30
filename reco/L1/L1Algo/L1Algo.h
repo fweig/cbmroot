@@ -108,24 +108,26 @@ public:
   // The candidates may share any amount of hits.
   L1Vector<L1Branch> fTrackCandidates[nTh];
 
-  Tindex fDupletPortionStopIndex[nSta];  // end of the duplet portions for the station
-  L1Vector<Tindex> fDupletPortionSize;   // N duplets in a portion
+  Tindex fDupletPortionStopIndex[nSta];                                // end of the duplet portions for the station
+  L1Vector<Tindex> fDupletPortionSize {"L1Algo::fDupletPortionSize"};  // N duplets in a portion
 
   //
   // Temporary vectors used by the clone merger
   //
   // vectors that are parallel to fTracks
-  L1Vector<unsigned short> fMergerTrackFirstStation;  // first station of a track
-  L1Vector<unsigned short> fMergerTrackLastStation;   // last station of a track
-  L1Vector<THitI> fMergerTrackFirstHit;               // index of the first tracks hit
-  L1Vector<THitI> fMergerTrackLastHit;                // index of the last tracks hit
-  L1Vector<unsigned short> fMergerTrackNeighbour;     // track that can be merged with the given track
-  L1Vector<float> fMergerTrackChi2;                   // chi2 of the merge
-  L1Vector<char> fMergerTrackIsStored;                // is the track already stored to the output
-  L1Vector<char> fMergerTrackIsDownstreamNeighbour;   // is the track a downstream neighbor of another track
+  L1Vector<unsigned short> fMergerTrackFirstStation {"L1Algo::fMergerTrackFirstStation"};  // first station of a track
+  L1Vector<unsigned short> fMergerTrackLastStation {"L1Algo::fMergerTrackLastStation"};    // last station of a track
+  L1Vector<THitI> fMergerTrackFirstHit {"L1Algo::fMergerTrackFirstHit"};  // index of the first tracks hit
+  L1Vector<THitI> fMergerTrackLastHit {"L1Algo::fMergerTrackLastHit"};    // index of the last tracks hit
+  L1Vector<unsigned short> fMergerTrackNeighbour {
+    "L1Algo::fMergerTrackNeighbour"};                             // track that can be merged with the given track
+  L1Vector<float> fMergerTrackChi2 {"L1Algo::fMergerTrackChi2"};  // chi2 of the merge
+  L1Vector<char> fMergerTrackIsStored {"L1Algo::fMergerTrackIsStored"};  // is the track already stored to the output
+  L1Vector<char> fMergerTrackIsDownstreamNeighbour {
+    "L1Algo::fMergerTrackIsDownstreamNeighbour"};  // is the track a downstream neighbor of another track
   // other vectors
-  L1Vector<L1Track> fMergerTracksNew;  // vector of tracks after the merge
-  L1Vector<THitI> fMergerRecoHitsNew;  // vector of track hits after the merge
+  L1Vector<L1Track> fMergerTracksNew {"L1Algo::fMergerTracksNew"};    // vector of tracks after the merge
+  L1Vector<THitI> fMergerRecoHitsNew {"L1Algo::fMergerRecoHitsNew"};  // vector of track hits after the merge
 
 
 #ifdef DRAW
@@ -137,10 +139,8 @@ public:
   void Init(const vector<fscal>& geo, const bool UseHitErrors, const bool mCBMmode);
 
   void SetData(vector<L1StsHit>& StsHits_, int nStsStrips_, const vector<fscal>& StsZPos_,
-               L1Vector<unsigned char>& SFlag_, const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_,
-               const int NhitsGlobal
+               L1Vector<unsigned char>& SFlag_, const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_);
 
-  );
   void PrintHits();
 
   /// The main procedure - find tracks.
@@ -178,8 +178,8 @@ public:
 
   double CATime;  // time of trackfinding
 
-  L1Vector<L1Track> fTracks;
-  L1Vector<THitI> fRecoHits;
+  L1Vector<L1Track> fTracks {"L1Algo::fTracks"};    // reconstructed tracks
+  L1Vector<THitI> fRecoHits {"L1Algo::fRecoHits"};  // packed hits of reconstructed tracks
 
   const THitI *StsHitsStartIndex,
     *StsHitsStopIndex;  // station-bounders in vStsHits array
@@ -202,12 +202,12 @@ public:
   vector<THitI> RealIHit_v_buf2;
 
 #ifdef _OPENMP
-  L1Vector<omp_lock_t> fHitToBestTrackF;
-  L1Vector<omp_lock_t> fHitToBestTrackB;
+  L1Vector<omp_lock_t> fHitToBestTrackF {"L1Algo::fHitToBestTrackF"};
+  L1Vector<omp_lock_t> fHitToBestTrackB {"L1Algo::fHitToBestTrackB"};
 #endif
 
-  L1Vector<int> fStripToTrack;   // front strip to track pointers
-  L1Vector<int> fStripToTrackB;  // back strip to track pointers
+  L1Vector<int> fStripToTrack {"L1Algo::fStripToTrack"};    // front strip to track pointers
+  L1Vector<int> fStripToTrackB {"L1Algo::fStripToTrackB"};  // back strip to track pointers
 
   int fNThreads;
   bool fUseHitErrors;

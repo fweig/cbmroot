@@ -430,7 +430,8 @@ inline void L1Algo::f20(  // input
     while (true) {
       if (fGlobal || fmCBMmode) {
         irm1++;
-        if (irm1 >= (StsHitsUnusedStopIndex[&stam - vStations] - StsHitsUnusedStartIndex[&stam - vStations])) break;
+        if ((THitI) irm1 >= (StsHitsUnusedStopIndex[&stam - vStations] - StsHitsUnusedStartIndex[&stam - vStations]))
+          break;
         imh = irm1;
       }
       else {
@@ -720,7 +721,7 @@ inline void L1Algo::f30(  // input
         while (true) {
           if (fGlobal || fmCBMmode) {
             irh1++;
-            if (irh1 >= (StsHitsUnusedStopIndex[istar] - StsHitsUnusedStartIndex[istar])) break;
+            if ((THitI) irh1 >= (StsHitsUnusedStopIndex[istar] - StsHitsUnusedStartIndex[istar])) break;
             irh = irh1;
           }
           else {
@@ -1170,7 +1171,7 @@ inline void L1Algo::f4(  // input
     uint neighTriplet;
     L1Triplet::UnpackTripletID(neighLocation, neighStation, neighThread, neighTriplet);
 
-    if (nNeighbours > 0) { assert(neighStation == istal + 1 || neighStation == istal + 2); }
+    if (nNeighbours > 0) { assert((int) neighStation == istal + 1 || (int) neighStation == istal + 2); }
     unsigned char level = 0;
 
     for (unsigned int iN = 0; iN < nNeighbours; ++iN, ++neighTriplet, ++neighLocation) {
@@ -1222,7 +1223,7 @@ inline void L1Algo::f5(  // input
         }
 
         for (Tindex iThread = 0; iThread < fNThreads; ++iThread) {
-          for (Tindex itrip = 0; itrip < fTriplets[istal][iThread].size(); ++itrip) {
+          for (Tindex itrip = 0; itrip < (Tindex) fTriplets[istal][iThread].size(); ++itrip) {
             L1Triplet& trip = fTriplets[istal][iThread][itrip];
             if (istam != trip.GetMSta()) continue;
             if (istar != trip.GetRSta()) continue;
@@ -2088,7 +2089,7 @@ void L1Algo::CATrackFinder()
                                       ndf)  // schedule(dynamic, 10)
 #endif
         for (Tindex iThread = 0; iThread < fNThreads; ++iThread) {
-          for (Tindex itrip = 0; itrip < fTriplets[istaF][iThread].size(); ++itrip) {
+          for (Tindex itrip = 0; itrip < (Tindex) fTriplets[istaF][iThread].size(); ++itrip) {
 
 #ifdef _OPENMP
             int thread_num = omp_get_thread_num();
@@ -2249,7 +2250,7 @@ void L1Algo::CATrackFinder()
 #ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic, 10) firstprivate(t)
 #endif
-        for (Tindex iCandidate = 0; iCandidate < fTrackCandidates[i].size(); ++iCandidate) {
+        for (Tindex iCandidate = 0; iCandidate < (Tindex) fTrackCandidates[i].size(); ++iCandidate) {
           L1Branch& tr = fTrackCandidates[i][iCandidate];
 
           bool check = 1;
@@ -2349,10 +2350,10 @@ void L1Algo::CATrackFinder()
 #pragma omp parallel for
 #endif
       for (int i = 0; i < nTh; ++i) {
-        for (Tindex iC = 0; iC < fTracks_local[i].size(); ++iC) {
+        for (Tindex iC = 0; iC < (Tindex) fTracks_local[i].size(); ++iC) {
           fTracks[offset_tracks[i] + iC] = fTracks_local[i][iC];
         }
-        for (Tindex iH = 0; iH < fRecoHits_local[i].size(); ++iH) {
+        for (Tindex iH = 0; iH < (Tindex) fRecoHits_local[i].size(); ++iH) {
           fRecoHits[offset_hits[i] + iH] = fRecoHits_local[i][iH];
         }
       }

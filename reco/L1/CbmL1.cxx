@@ -1320,7 +1320,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
       fData->ReadHitsFromFile(fSTAPDataDir.Data(), 1, fVerbose);
 
       algo->SetData(fData->GetStsHits(), fData->GetNStsStrips(), fData->GetStsZPos(), fData->GetSFlag(),
-                    fData->GetStsHitsStartIndex(), fData->GetStsHitsStopIndex(), listStsHits->GetEntriesFast());
+                    fData->GetStsHitsStartIndex(), fData->GetStsHitsStopIndex());
     }
     else
       ReadEvent(fData, TsStart, TsLength, TsOverlap, FstHitinTs, newTS, event);

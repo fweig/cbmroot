@@ -2,55 +2,30 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Ivan Kisel, Sergey Gorbunov [committer], Maksym Zyzak, Valentina Akishina */
 
-/*
- *====================================================================
- *
- *  CBM Level 1 Reconstruction 
- *  
- *  Authors: I.Kisel,  S.Gorbunov
- *
- *  e-mail : ikisel@kip.uni-heidelberg.de 
- *
- *====================================================================
- *
- *  L1 branch class
- *
- *====================================================================
- */
+/// @file L1Branch.h
+/// @author Sergey Gorbunov
 
 #ifndef L1Branch_h
 #define L1Branch_h
 
 #include "CbmL1Def.h"
 
-#include <vector>
-
 #include "L1StsHit.h"
 #include "L1Vector.h"
 
+///
+/// L1Branch class describes a search branch of the CA tracker
+///
 struct L1Branch {
-  L1Branch()
-    :  //Quality(0),
-    ista(0)
-    , Momentum(0)
-    , NHits(0)
-    , chi2(0)
-    , CandIndex(0)
-    , fStsHits("L1Branch::fStsHits")
-  {
-    //  L1Branch():Momentum(0),chi2(0),NHits(0),Lengtha(0),ista(0) , StsHits(){
-    fStsHits.reserve(25);
-  }
+  /// default constructor
+  L1Branch() { fStsHits.reserve(25); }
 
-  // unsigned short int Quality;
-  unsigned char ista;
-  //   fscal Quality;
-  // unsigned char      iN; // iStation(3b) + nHits(5b)
-  char Momentum, NHits;
-  // char Lengtha;
-  fscal chi2;
-  int CandIndex;
-  L1Vector<THitI> fStsHits;
+  unsigned char ista {0};
+  char Momentum {0};
+  char NHits {0};
+  fscal chi2 {0.};
+  int CandIndex {0};
+  L1Vector<THitI> fStsHits {"L1Branch::fStsHits"};
 
   //     static bool compareCand(const L1Branch *a, const L1Branch *b){
   //

@@ -5,9 +5,9 @@
 #ifndef L1Vector_H
 #define L1Vector_H
 
-// @file L1Vector.h
-// @author Sergey Gorbunov
-// @date 2021-06-16
+/// @file L1Vector.h
+/// @author Sergey Gorbunov
+/// @date 2021-06-16
 
 
 #include "CbmL1Def.h"

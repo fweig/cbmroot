@@ -20,7 +20,7 @@ using std::vector;
 class L1AlgoInputData {
 
 public:
-  L1AlgoInputData() : vStsHits(), NStsStrips(0), vStsZPos(), fStripFlag("L1AlgoInputData::fStripFlag")
+  L1AlgoInputData() : vStsHits(), NStsStrips(0), vStsZPos()
   //  MaxNStations(12)
 
   {
@@ -84,7 +84,8 @@ public:
   int NStsStrips;             // Number of strips in sts
   vector<fscal> vStsZPos;     // all possible z-positions of hits
 
-  L1Vector<unsigned char> fStripFlag;  // information of hits station & using hits in tracks;
+  L1Vector<unsigned char> fStripFlag {
+    "L1AlgoInputData::fStripFlag"};  // information of hits station & using hits in tracks;
 
   THitI StsHitsStartIndex[MaxNStations + 1],
     StsHitsStopIndex[MaxNStations + 1];  // station-bounders in vStsHits array

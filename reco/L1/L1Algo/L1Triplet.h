@@ -1,6 +1,6 @@
 /* Copyright (C) 2019-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Florian Uhlig [committer], Valentina Akishina, Sergey Gorbunov */
+   Authors: Valentina Akishina, Sergey Gorbunov[committer] */
 
 #ifndef L1Triplet_h
 #define L1Triplet_h

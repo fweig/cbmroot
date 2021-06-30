@@ -1121,7 +1121,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   if (fVerbose >= 10) cout << "ReadEvent: z-pos are saved." << endl;
 
   algo->SetData(fData_->GetStsHits(), fData_->GetNStsStrips(), fData_->GetStsZPos(), fData_->GetSFlag(),
-                fData_->GetStsHitsStartIndex(), fData_->GetStsHitsStopIndex(), max(nEntSts, nHits));
+                fData_->GetStsHitsStartIndex(), fData_->GetStsHitsStopIndex());
 
   if (fPerformance) {
 

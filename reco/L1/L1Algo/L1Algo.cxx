@@ -8,36 +8,18 @@
 #include "L1HitPoint.h"
 
 L1Algo::L1Algo(int nThreads, int ExpectedHits)
-  : fDupletPortionSize("L1Algo::fDupletPortionSize")
-  , fMergerTrackFirstStation("L1Algo::fMergerTrackFirstStation")
-  , fMergerTrackLastStation("L1Algo::fMergerTrackLastStation")
-  , fMergerTrackFirstHit("L1Algo::fMergerTrackFirstHit")
-  , fMergerTrackLastHit("L1Algo::fMergerTrackLastHit")
-  , fMergerTrackNeighbour("L1Algo::fMergerTrackNeighbour")
-  , fMergerTrackChi2("L1Algo::fMergerTrackChi2")
-  , fMergerTrackIsStored("L1Algo::fMergerTrackIsStored")
-  , fMergerTrackIsDownstreamNeighbour("L1Algo::fMergerTrackIsDownstreamNeighbour")
-  , fMergerTracksNew("L1Algo::fMergerTracksNew")
-  , fMergerRecoHitsNew("L1Algo::fMergerRecoHitsNew")
-  , NStations(0)
-  ,  // number of all detector stations
-  NMvdStations(0)
-  ,  // number of mvd stations
-  NStsStations(0)
+  : NStations(0)     // number of all detector stations
+  , NMvdStations(0)  // number of mvd stations
+  , NStsStations(0)
   , NFStations(0)
   , fRadThick()
   , NStsStrips(0)  // strips positions created from hits
   , vStsZPos(0)
-  ,                // all possible z-positions of hits
-  vStsHits(0)      // hits as a combination of front-, backstrips and z-position
-  , fStripFlag(0)  // information of hits station & using hits in tracks(),
-  , CATime(0)
-  ,  // time of trackfinding
-  fTracks("L1Algo::fTracks")
-  ,  // reconstructed tracks
-  fRecoHits("L1Algo::fRecoHits")
-  ,  // packed hits of reconstructed tracks
-  StsHitsStartIndex(nullptr)
+  ,                      // all possible z-positions of hits
+  vStsHits(nullptr)      // hits as a combination of front-, backstrips and z-position
+  , fStripFlag(nullptr)  // information of hits station & using hits in tracks(),
+  , CATime(0)            // time of trackfinding
+  , StsHitsStartIndex(nullptr)
   , StsHitsStopIndex(nullptr)
   , NHitsIsecAll(0)
   , vStsDontUsedHits_A(ExpectedHits)
@@ -49,18 +31,7 @@ L1Algo::L1Algo(int nThreads, int ExpectedHits)
   , RealIHit_v(ExpectedHits)
   , RealIHit_v_buf(ExpectedHits)
   , RealIHit_v_buf2(ExpectedHits)
-  ,
-
-#ifdef _OPENMP
-  fHitToBestTrackF("L1Algo::fHitToBestTrackF")
-  , fHitToBestTrackB("L1Algo::fHitToBestTrackB")
-  ,
-#endif
-  fStripToTrack("L1Algo::fStripToTrack")
-  , fStripToTrackB("L1Algo::fStripToTrackB")
-  ,
-  //sh (),
-  fNThreads(nThreads)
+  , fNThreads(nThreads)
   , fUseHitErrors(0)
   , fmCBMmode(0)
   , fGlobal(0)
@@ -346,8 +317,7 @@ void L1Algo::Init(const vector<fscal>& geo, const bool UseHitErrors, const bool 
 
 
 void L1Algo::SetData(vector<L1StsHit>& StsHits_, int nStsStrips_, const vector<fscal>& StsZPos_,
-                     L1Vector<unsigned char>& SFlag_, const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_,
-                     const int NhitsGlobal)
+                     L1Vector<unsigned char>& SFlag_, const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_)
 {
 
   vStsHits   = &StsHits_;
