@@ -1,6 +1,6 @@
-/* Copyright (C) 2019-2020 Justus-Liebig-Universitaet Giessen, Giessen
+/* Copyright (C) 2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Adrian Amatus Weber [committer] */
+   Authors: Pierre-Alain Loizeau [committer] */
 
 /** @file MCBM RICH DATA monitoring
  ** Based on MonitorT0 by P.-A. Loizeau
@@ -11,9 +11,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void MonitorRich(TString inFile    = "/Users/slebedev/Development/cbm/data/mcbm18/159_pn02_0000.tsa",
+void MonitorRich(TString inFile    = "/Users/slebedev/Development/cbm/data/mcbm18/2021179204256_0.tsa",
                  TString sHostname = "localhost", Int_t iServerHttpPort = 8080, Int_t iServerRefreshRate = 100,
-                 UInt_t uRunId = 0, UInt_t nrEvents = 0)
+                 UInt_t uRunId = 0, UInt_t nrEvents = 1000000)
 {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
@@ -22,27 +22,25 @@ void MonitorRich(TString inFile    = "/Users/slebedev/Development/cbm/data/mcbm1
   Int_t nEvents = -1;
   // --- Specify output file name (this is just an example)
   TString parFile = TString::Format("data/moni_rich_params_%u.root", uRunId);
-  TString runId   = TString::Format("%u", uRunId);
-  TString outFile = "data/moni_rich__" + runId + ".root";
 
   // --- Set log output levels
   FairLogger::GetLogger();
-  gLogger->SetLogScreenLevel("INFO");
+  gLogger->SetLogScreenLevel("DEBUG4");
   //gLogger->SetLogScreenLevel("DEBUG");
   gLogger->SetLogVerbosityLevel("MEDIUM");
 
   // --- Define parameter files
   TList* parFileList = new TList();
-  TString paramDir   = srcDir + "/macro/beamtime/mcbm2019/";
+  TString paramDir   = srcDir + "/macro/beamtime/mcbm2020/";
 
-  TString paramFileRich       = paramDir + "mRichPar.par";
+  TString paramFileRich       = paramDir + "mRichPar_70.par";
   TObjString* parRichFileName = new TObjString(paramFileRich);
   parFileList->Add(parRichFileName);
 
   // --- Set debug level
   gDebug = 0;
 
-  CbmMcbm2018UnpackerTaskRich2020* unpacker_rich = new CbmMcbm2018UnpackerTaskRich2020();
+  CbmMcbm2018UnpackerTaskRich* unpacker_rich = new CbmMcbm2018UnpackerTaskRich();
   unpacker_rich->SetIgnoreOverlapMs();
   unpacker_rich->SetMonitorMode();
   unpacker_rich->DoTotCorr(kFALSE);
@@ -68,8 +66,6 @@ void MonitorRich(TString inFile    = "/Users/slebedev/Development/cbm/data/mcbm1
   run->GetHttpServer()->GetSniffer()->SetScanGlobalDir(kFALSE);
   run->SetAutoFinish(kFALSE);
 
-  FairRootFileSink* sink = new FairRootFileSink(outFile);
-  run->SetSink(sink);
 
   // -----   Runtime database   ---------------------------------------------
   FairRuntimeDb* rtdb       = run->GetRuntimeDb();

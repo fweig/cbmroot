@@ -123,12 +123,12 @@ Bool_t unpack_tsa_mcbm(TString inFile       = "",
   std::cout << std::endl;
   std::cout << ">>> unpack_tsa: Initialising..." << std::endl;
 
-  CbmMcbm2018UnpackerTaskSts* unpacker_sts   = new CbmMcbm2018UnpackerTaskSts();
-  CbmMcbm2018UnpackerTaskMuch* unpacker_much = new CbmMcbm2018UnpackerTaskMuch();
-  CbmMcbm2018UnpackerTaskTrdR* unpacker_trdR = new CbmMcbm2018UnpackerTaskTrdR();
-  CbmMcbm2018UnpackerTaskTof* unpacker_tof   = new CbmMcbm2018UnpackerTaskTof();
-  CbmMcbm2018UnpackerTaskRich* unpacker_rich = new CbmMcbm2018UnpackerTaskRich();
-  CbmMcbm2018UnpackerTaskPsd* unpacker_psd   = new CbmMcbm2018UnpackerTaskPsd();
+  CbmMcbm2018UnpackerTaskSts* unpacker_sts       = new CbmMcbm2018UnpackerTaskSts();
+  CbmMcbm2018UnpackerTaskMuch* unpacker_much     = new CbmMcbm2018UnpackerTaskMuch();
+  CbmMcbm2018UnpackerTaskTrdR* unpacker_trdR     = new CbmMcbm2018UnpackerTaskTrdR();
+  CbmMcbm2018UnpackerTaskTof* unpacker_tof       = new CbmMcbm2018UnpackerTaskTof();
+  CbmMcbm2018UnpackerTaskRich2020* unpacker_rich = new CbmMcbm2018UnpackerTaskRich2020();
+  CbmMcbm2018UnpackerTaskPsd* unpacker_psd       = new CbmMcbm2018UnpackerTaskPsd();
 
   /*
  * Do not generate plots by default

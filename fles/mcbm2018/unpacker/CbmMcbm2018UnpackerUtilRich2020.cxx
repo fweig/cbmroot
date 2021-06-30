@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Egor Ovcharenko [committer] */
 
-#include "CbmMcbm2018UnpackerUtilRich.h"
+#include "CbmMcbm2018UnpackerUtilRich2020.h"
 
 #include <iostream>
 

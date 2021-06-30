@@ -11,9 +11,9 @@
 // In order to call later Finish, we make this global
 FairRunOnline* run = NULL;
 
-void MonitorRich(TString inFile    = "/Users/slebedev/Development/cbm/data/mcbm18/159_pn02_0000.tsa",
+void MonitorRich(TString inFile    = "/Users/slebedev/Development/cbm/data/mcbm18/2021179204256_0.tsa",
                  TString sHostname = "localhost", Int_t iServerHttpPort = 8080, Int_t iServerRefreshRate = 100,
-                 UInt_t uRunId = 0, UInt_t nrEvents = 0)
+                 UInt_t uRunId = 0, UInt_t nrEvents = 1000000)
 {
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
@@ -25,7 +25,7 @@ void MonitorRich(TString inFile    = "/Users/slebedev/Development/cbm/data/mcbm1
 
   // --- Set log output levels
   FairLogger::GetLogger();
-  gLogger->SetLogScreenLevel("INFO");
+  gLogger->SetLogScreenLevel("DEBUG4");
   //gLogger->SetLogScreenLevel("DEBUG");
   gLogger->SetLogVerbosityLevel("MEDIUM");
 
@@ -33,14 +33,14 @@ void MonitorRich(TString inFile    = "/Users/slebedev/Development/cbm/data/mcbm1
   TList* parFileList = new TList();
   TString paramDir   = srcDir + "/macro/beamtime/mcbm2020/";
 
-  TString paramFileRich       = paramDir + "mRichPar.par";
+  TString paramFileRich       = paramDir + "mRichPar_70.par";
   TObjString* parRichFileName = new TObjString(paramFileRich);
   parFileList->Add(parRichFileName);
 
   // --- Set debug level
   gDebug = 0;
 
-  CbmMcbm2018UnpackerTaskRich* unpacker_rich = new CbmMcbm2018UnpackerTaskRich();
+  CbmMcbm2018UnpackerTaskRich2020* unpacker_rich = new CbmMcbm2018UnpackerTaskRich2020();
   unpacker_rich->SetIgnoreOverlapMs();
   unpacker_rich->SetMonitorMode();
   unpacker_rich->DoTotCorr(kFALSE);

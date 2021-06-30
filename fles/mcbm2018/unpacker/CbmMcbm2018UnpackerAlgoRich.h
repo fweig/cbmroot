@@ -5,6 +5,7 @@
 /**
  * CbmMcbm2018UnpackerAlgoRich
  * E. Ovcharenko, Mar 2019
+ * S. Lebedev, June 2021
  * based on other detectors' classes by P.-A. Loizeau
  */
 
@@ -14,38 +15,25 @@
 #include "CbmStar2019Algo.h"  // mother class
 
 // STD
+#include <bitset>
+#include <iomanip>
 #include <map>
 #include <vector>
 
 // ROOT
+#include <Logger.h>
+
 #include <TArrayD.h>
 #include <TH2D.h>
 
 // CbmRoot
-#include "CbmMcbm2018UnpackerUtilRich.h"
 #include "CbmRichDigi.h"
 
 ////class TList; // not really needed, already declared in the mother class
 class CbmMcbm2018RichPar;
 
-#define RISINGEDGEID 1
-#define FALLINGEDGEID 0
 
-#define TOTMIN -20.
-#define TOTMAX 100.
-
-enum class TrbNetState
-{
-  IDLE,
-  HEADER,
-  EPOCH,
-  TDC,
-  TRAILER,
-  CTS,
-  DEBUG
-};
-
-enum class RichErrorType
+enum class CbmMcbm2018RichErrorType
 {
   mtsError,
   tdcHeader,
@@ -53,6 +41,153 @@ enum class RichErrorType
   ctsHeader,
   ctsTrailer,
   subEventError
+};
+
+enum class CbmMcbm2018RichTdcWordType
+{
+  TimeData,
+  Header,
+  Epoch,
+  Trailer,
+  Debug,
+  Error
+};
+
+class CbmMcbm2018RichTdcTimeData {
+public:
+  uint32_t fCoarse  = 0;  // 11 bits
+  uint32_t fEdge    = 0;  // 1 bit
+  uint32_t fFine    = 0;  // 10 bits
+  uint32_t fChannel = 0;  // 7 bits
+
+  std::string ToString()
+  {
+    std::stringstream stream;
+    stream << "channel:" << fChannel << " coarse:" << fCoarse << " fine:" << fFine
+           << " edge:" << ((fEdge == 1) ? "R" : "F");
+    return stream.str();
+  }
+
+  bool IsRisingEdge() { return (fEdge == 1); }
+};
+
+class CbmMcbm2018RichTdcWordReader {
+public:
+  static CbmMcbm2018RichTdcWordType GetTdcWordType(uint32_t tdcWord)
+  {
+    uint32_t tdcTimeDataMarker = (tdcWord >> 31) & 0x1;  // 1 bit
+    uint32_t tdcMarker         = (tdcWord >> 29) & 0x7;  // 3 bits
+
+    if (tdcTimeDataMarker == 0x1) {
+      // TODO: I also include tdcMarker == 0x5, some tdc time data words have this marker. Is it correct?
+      if (tdcMarker == 0x4 || tdcMarker == 0x5) { return CbmMcbm2018RichTdcWordType::TimeData; }
+      else {
+        return CbmMcbm2018RichTdcWordType::Error;
+      }
+    }
+
+    if (tdcMarker == 0x0) return CbmMcbm2018RichTdcWordType::Trailer;
+    if (tdcMarker == 0x1) return CbmMcbm2018RichTdcWordType::Header;
+    if (tdcMarker == 0x2) return CbmMcbm2018RichTdcWordType::Debug;
+    if (tdcMarker == 0x3) return CbmMcbm2018RichTdcWordType::Epoch;
+
+    return CbmMcbm2018RichTdcWordType::Error;
+  }
+
+  static void ProcessTimeData(uint32_t tdcWord, CbmMcbm2018RichTdcTimeData& outData)
+  {
+    outData.fCoarse  = static_cast<uint32_t>(tdcWord & 0x7ff);          // 11 bits
+    outData.fEdge    = static_cast<uint32_t>((tdcWord >> 11) & 0x1);    // 1 bit
+    outData.fFine    = static_cast<uint32_t>((tdcWord >> 12) & 0x3ff);  // 10 bits
+    outData.fChannel = static_cast<uint32_t>((tdcWord >> 22) & 0x7f);   // 7 bits
+  }
+
+  static uint32_t ProcessEpoch(uint32_t tdcWord) { return static_cast<uint32_t>(tdcWord & 0xfffffff); }
+
+  static uint16_t ProcessHeader(uint32_t tdcWord)
+  {
+    // for the moment just extract error bits
+    return static_cast<uint16_t>(tdcWord & 0xff);  //8 bits
+  }
+
+  static uint16_t ProcessTrailer(uint32_t tdcWord)
+  {
+    // for the moment just extract error bits
+    return static_cast<uint16_t>(tdcWord & 0xffff);
+  }
+
+  static void ProcessDebug(uint32_t tdcWord)
+  {
+    LOG(debug4) << "ProcessDebug is not implemented. tdcWord:0x" << std::hex << tdcWord << std::dec;
+    // for the moment do nothing
+  }
+};
+
+class CbmMcbm2018RichMicrosliceReader {
+private:
+  const uint8_t* fData = nullptr;
+  size_t fSize         = 0;
+  size_t fOffset       = 0;  // offset in bytes
+  size_t fWordCounter  = 0;
+  uint32_t fCurWord;
+
+public:
+  void SetData(const uint8_t* data, size_t size)
+  {
+    fData        = data;
+    fSize        = size;
+    fOffset      = 0;
+    fWordCounter = 0;
+    fCurWord     = 0;
+  }
+
+  const uint8_t* GetData() { return fData; }
+
+  size_t GetSize() { return fSize; }
+
+  size_t GetOffset() { return fOffset; }
+
+  size_t GetWordCounter() { return fWordCounter; }
+
+  uint32_t GetCurWord() { return fCurWord; }
+
+  std::string GetWordAsHexString(uint32_t word)
+  {
+    std::stringstream stream;
+    stream << "0x" << std::setfill('0') << std::setw(sizeof(uint32_t) * 2) << std::hex << word;
+    return stream.str();
+  }
+
+  uint32_t NextWord()
+  {
+    //mRichSupport::SwapBytes(4, fData + fOffset);
+    //Int_t* dataPtr = (Int_t*) (fData + fOffset);
+    uint32_t i = ((uint32_t*) (fData + fOffset))[0];
+    //swap bytes
+    i = (i >> 24) | ((i << 8) & 0x00FF0000) | ((i >> 8) & 0x0000FF00) | (i << 24);
+    //i = ((i&0xFF)<<24) | (((i>>8)&0xFF)<<16) |   (((i>>16)&0xFF)<<8) | (((i>>24)&0xFF)<<0);
+
+    fOffset += 4;
+    fWordCounter++;
+    fCurWord = i;
+    //return (Int_t)(dataPtr[0]);
+    return i;
+  }
+
+  bool IsNextPadding()
+  {
+    uint32_t nextWord = ((uint32_t*) (fData + fOffset))[0];
+    if (nextWord == 0xffffffff) return true;
+    return false;
+  }
+
+  bool IsLastSubSubEvent(uint32_t subSubEventSize)
+  {
+    uint32_t i = ((uint32_t*) (fData + fOffset + 4 * subSubEventSize))[0];
+    i          = (i >> 24) | ((i << 8) & 0x00ff0000) | ((i >> 8) & 0x0000ff00) | (i << 24);
+    if (i == 0x00015555) return true;
+    return false;
+  }
 };
 
 class CbmMcbm2018UnpackerAlgoRich : public CbmStar2019Algo<CbmRichDigi> {
@@ -106,43 +241,26 @@ private:
 	 */
   void InitStorage();
 
+  std::string GetLogHeader(CbmMcbm2018RichMicrosliceReader& reader);
+
   void ProcessMicroslice(size_t const size, uint8_t const* const ptr);
 
-  /**
-	 * Including header
-	 */
-  Int_t ProcessTRBevent(size_t const size, uint8_t const* const ptr);
+  void ProcessTrbPacket(CbmMcbm2018RichMicrosliceReader& reader);
 
-  /**
-	 *
-	 */
-  Int_t ProcessTRBeventHeader(size_t const size, uint8_t const* const ptr);
+  void ProcessMbs(CbmMcbm2018RichMicrosliceReader& reader, bool isPrev);
 
-  /**
-	 * Including header - ?
-	 * Return number of processed bytes
-	 */
-  Int_t ProcessSKIPsubevent(size_t const size, uint8_t const* const ptr);
+  void ProcessHubBlock(CbmMcbm2018RichMicrosliceReader& reader);
 
-  Int_t ProcessCTSsubevent(size_t const size, uint8_t const* const ptr);
+  void ProcessCtsSubSubEvent(CbmMcbm2018RichMicrosliceReader& reader, uint32_t subSubEventSize, uint32_t subSubEventId);
 
-  Int_t ProcessTRBsubevent(size_t const size, uint8_t const* const ptr);
+  void ProcessSubSubEvent(CbmMcbm2018RichMicrosliceReader& reader, int nofTimeWords, uint32_t subSubEventId);
 
-  /**
-	 * Including TDC header, but not including TRB subsubevent header
-	 * Return number of processed bytes
-	 */
-  Int_t ProcessTRBsubsubevent(size_t const size, uint8_t const* const ptr, Int_t const hubOffset, size_t const hubSize);
+  double CalculateTime(uint32_t epoch, uint32_t coarse, uint32_t fine);
 
-  /**
-	 * Process a word written out by the TDC - TIMESTEMP, HEADER, TRAILER, DEBUG, EPOCH, ...
-	 */
-  Int_t ProcessTDCword(uint8_t const* const ptr, Int_t const word, size_t const size);
+  bool IsLog();
 
-  /**
-	 * Process specifically a TIMESTAMP type of word
-	 */
-  void ProcessTimestampWord(Int_t tdcData);
+  void ProcessTimeDataWord(CbmMcbm2018RichMicrosliceReader& reader, int iTdc, uint32_t epoch, uint32_t tdcWord,
+                           uint32_t subSubEventId, std::vector<double>& raisingTime);
 
   /**
 	 * Write a gidi object into the output collection
@@ -157,7 +275,7 @@ private:
   /**
      * Write Errors to Histograms
      */
-  void ErrorMsg(uint16_t errbits, RichErrorType type, uint16_t tdcAddr = 0);
+  void ErrorMsg(uint16_t errbits, CbmMcbm2018RichErrorType type, uint16_t tdcId = 0);
 
   Int_t GetPixelUID(Int_t fpgaID, Int_t ch) const
   {
@@ -166,150 +284,41 @@ private:
     return ((fpgaID << 16) | (ch & 0x00FF));
   }
 
-  void findTDCAlignmentError(uint8_t const* const ptr, size_t const size);
+private:
+  double fToTMin = -20.;
+  double fToTMax = 100.;
 
-private:  // data members
   /// Control flags
-  Bool_t fbMonitorMode;  //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbMonitorMode      = false;  // Switch ON the filling of a minimal set of histograms
+  Bool_t fbDebugMonitorMode = false;  // Switch ON the filling of a additional set of histograms
+  Bool_t fRawDataMode       = false;
 
-  Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
+  uint64_t fTsCounter = 0;  //Counter of processed timeslices
+  uint32_t fMsInd     = 0;  // Current microslice index
 
-  Bool_t fRawDataMode;
+  double fMbsPrevTimeCh0 = 0.;
+  double fMbsPrevTimeCh1 = 0.;
 
-  Bool_t fError;  //! flag for an error in the datastream
+  std::map<uint32_t, double> fLastCh0ReTime;      //key:TDC ID, value:Full time of last rising edge from ch 0
+  std::map<uint32_t, double> fPrevLastCh0ReTime;  // key:TDC ID, value:Full time of previous last rising edge from ch 0
 
-  TrbNetState fTrbState;  // State of TrbNet (HEADER,TRAILER,...)
+  Bool_t fbDoToTCorr = true;  // kTRUE activates ToT correction from Parameterfile
 
-  uint32_t fErrorCorr;  // Offset to correct a error in datastream
-
-  /// User setting: kTRUE activates ToT correction from Parameterfile
-  Bool_t fbDoToTCorr;
-
-  Bool_t fSkipMs;
-  /// User settings: Data correction parameters
-  Double_t fdTimeOffsetNs;
-
-  size_t fDataSize = 0;
-
+  Double_t fdTimeOffsetNs = 0.;  // User settings: Data correction parameters
 
   /**
 	 * Bug fix / shortcut, which helps to run correct ProcessTs method.
 	 * Works only if there is one componentID assigned to the detector.
 	 */
-  Int_t fRICHcompIdx;
+  Int_t fRICHcompIdx = 6;
 
-  /**
-	 * Unpacker parameters object
-	 */
-  CbmMcbm2018RichPar* fUnpackPar;  //!
-
-  /**
-	 * Counter of processed timeslices
-	 */
-  uint64_t fTScounter;
-
-  /**
-	 * Current microslice ID
-	 */
-  Int_t fCurMSid;  //!
+  CbmMcbm2018RichPar* fUnpackPar = nullptr;  //!
 
   /**
 	 * Current microslice index from the microslice descriptor
 	 * CBM reference time //TODO clearify
 	 */
   uint64_t fCurMSidx;  //!
-
-  /**
-	 * Global word counter within current microslice
-	 */
-  Int_t fGwordCnt;  //!
-
-  /**
-	 * Flag indicating that we are in the subsubevent
-	 */
-  Bool_t fInSubSubEvent;  //!
-
-  /**
-	 * Current epoch value
-	 */
-  UInt_t fCurEpochCounter;  //!
-
-  /**
-	 * Current subsubevent ID
-	 */
-  Int_t fSubSubEvId;  //!
-
-  /**
-	 * Flag to mark the last DiRICH on a Hub
-	 */
-  Bool_t fLastFeeOnHub = false;
-
-  std::vector<Int_t> fTDCAlignmentErrorPositions;
-
-  Int_t fTdcWordCorrectionCnt = 0;
-
-  Int_t fTdcWordCorrectionGlobalCnt = 0;
-
-  Int_t fSkipCnt = 0;
-
-private:  // Stored timestamps
-  /**
-	 * Full time of the last rising edge from ch 0 of CTS
-	 */
-  Double_t fLastCTSch0_re_time;  //!
-
-  /**
-	 * Full time of the last rising edge from ch 2 of CTS
-	 */
-  Double_t fLastCTSch2_re_time;  //!
-
-  /**
-	 * Full time of the last falling edge from ch 2 of CTS
-	 */
-  Double_t fLastCTSch2_fe_time;  //!
-
-  /**
-	 * Full time of the last rising edge from ch 0 of CTS from the previous microslice
-	 */
-  Double_t fPrevLastCTSch0_re_time;  //!
-
-  /**
-	 * Full time of the last rising edge from ch 2 of CTS from the previous microslice
-	 */
-  Double_t fPrevLastCTSch2_re_time;  //!
-
-  /**
-	 * Full time of the last falling edge from ch 2 of CTS from the previous microslice
-	 */
-  Double_t fPrevLastCTSch2_fe_time;  //!
-
-  /**
-	 * Full time of the last rising edge from ch 0 of each TDC
-	 */
-  TArrayD fLastCh0_re_time;  //!
-
-  /**
-	 * Full time of the previous last rising edge from ch 0 of each TDC (from the previous microslice)
-	 */
-  TArrayD fPrevLastCh0_re_time;  //!
-
-private:  // digi building
-  void ProcessRisingEdge(Int_t subSubEvId, Int_t channel, Double_t time);
-
-  void ProcessFallingEdge(Int_t subSubEvId, Int_t channel, Double_t time);
-
-  /**
-	 * Buffer for rising edges. It is filled during unpacking whenever
-	 * the rising edge is encountered. Afterwards, when a falling edge
-	 * is encountered, corresponding rising edge is searched here and
-	 * removed if found.
-	 */
-  std::vector<CbmMcbmRichEdge> fRisingEdgesBuf;  //! Exclude from ROOT dictionnary due to missing empty constructor!!
-
-  /**
-	 * Buffer of falling edges for which corresponding rising edges were not found
-	 */
-  std::vector<CbmMcbmRichEdge> fFallingEdgesBuf;  //! Exclude from ROOT dictionnary due to missing empty constructor!!
 
 public:  // histograms
   /**
@@ -320,63 +329,24 @@ public:  // histograms
   /**
 	 *
 	 */
-  //	Bool_t FillHistograms();
-
-  /**
-	 *
-	 */
   Bool_t ResetHistograms();
 
-  TH1D* GetTotH1(Int_t fpgaID, Int_t channel);
-  TH2D* GetTotH2(Int_t fpgaID);
-  /*
-	TH2D* fhTDCch0re_minusCTSch0re; //!
-	TH2D* fhTDCch0re_minusCTSch2re; //!
-	TH2D* fhTDCch0re_minusCTSch2fe; //!
-	TH2D* fhTDCch0re_minusPrevCTSch0re; //!
-	TH2D* fhTDCch0re_minusPrevCTSch2re; //!
-	TH2D* fhTDCch0re_minusPrevCTSch2fe; //!
+  TH1D* GetTotH1(uint32_t fpgaID, uint32_t channel);
+  TH2D* GetTotH2(uint32_t fpgaID);
 
-	std::vector<TH2D*> fhTDCre_minusTDCch0re; //!
+  std::vector<TCanvas*> fcTot2d;
 
-	std::vector<TH2D*> fhTDCre_minusPrevTDCch0re; //!
-*/
-  std::vector<TH2D*> fhTDCre_corrected1;  //!
-
-  std::vector<TH2D*> fhTDCre_corrected2;  //!
-
-  std::vector<TCanvas*> fcTot2d;  //!
-
-  TH1* fhVectorSize     = nullptr;
-  TH1* fhVectorCapacity = nullptr;
-
-  //TH2* fhDigisInChnl       = nullptr;
-  //TH2* fhDigisInDiRICH     = nullptr;
-
-  TH2D* fhTdcErrors   = nullptr;
-  TH2D* fhEventErrors = nullptr;
-
-  TH2D* fhDiRICHWords = nullptr;
-  TH2D* fhChnlWords   = nullptr;
+  TH2D* fhTdcErrors = nullptr;
 
   TH1* fhEventSize       = nullptr;
   TH2* fhSubEventSize    = nullptr;
   TH2* fhSubSubEventSize = nullptr;
   TH2* fhChnlSize        = nullptr;
 
-  std::array<unsigned int, 33> fChnlMsgCnt;
-
-  bool fDebugPrint = 0;
   std::map<uint16_t, uint16_t> fMapFEE;
 
-  std::map<Int_t, std::map<Int_t, TH1D*>> fhTotMap;
-
-  std::map<Int_t, TH2D*> fhTot2dMap;
-
-  size_t fuTsMaxVectorSize     = 0;
-  Double_t fdCapacityIncFactor = 1.1;
-
-  inline void SetVectCapInc(Double_t dIncFact) { fdCapacityIncFactor = dIncFact; }
+  std::map<uint32_t, std::map<Int_t, TH1D*>> fhTotMap;
+  std::map<uint32_t, TH2D*> fhTot2dMap;
 
   ClassDef(CbmMcbm2018UnpackerAlgoRich, 1);
 };

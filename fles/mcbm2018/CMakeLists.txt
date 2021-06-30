@@ -73,7 +73,9 @@ Set(SRCS
    unpacker/CbmMcbm2018UnpackerTaskTof.cxx
    unpacker/CbmMcbm2018UnpackerAlgoRich.cxx
    unpacker/CbmMcbm2018UnpackerTaskRich.cxx
-   unpacker/CbmMcbm2018UnpackerUtilRich.cxx
+   unpacker/CbmMcbm2018UnpackerTaskRich2020.cxx
+   unpacker/CbmMcbm2018UnpackerAlgoRich2020.cxx
+   unpacker/CbmMcbm2018UnpackerUtilRich2020.cxx
    unpacker/CbmMcbm2018UnpackerAlgoPsd.cxx
    unpacker/CbmMcbm2018UnpackerTaskPsd.cxx
    unpacker/CbmMcbm2018UnpackerAlgoTrdR.cxx

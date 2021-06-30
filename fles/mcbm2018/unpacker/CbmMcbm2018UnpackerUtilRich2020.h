@@ -2,8 +2,8 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Egor Ovcharenko [committer] */
 
-#ifndef CbmMcbm2018UnpackerUtilRich_H
-#define CbmMcbm2018UnpackerUtilRich_H
+#ifndef CbmMcbm2018UnpackerUtilRich2020_H
+#define CbmMcbm2018UnpackerUtilRich2020_H
 
 // STD
 #include <string>
@@ -40,4 +40,4 @@ namespace mRichSupport
 
 };  // namespace mRichSupport
 
-#endif  // CbmMcbm2018UnpackerUtilRich_H
+#endif  // CbmMcbm2018UnpackerUtilRich2020_H

@@ -22,7 +22,9 @@
 #pragma link C++ class CbmMcbm2018UnpackerAlgoTof;
 #pragma link C++ class CbmMcbm2018UnpackerTaskTof + ;
 #pragma link C++ class CbmMcbm2018UnpackerAlgoRich;
+#pragma link C++ class CbmMcbm2018UnpackerAlgoRich2020;
 #pragma link C++ class CbmMcbm2018UnpackerTaskRich + ;
+#pragma link C++ class CbmMcbm2018UnpackerTaskRich2020 + ;
 #pragma link C++ class CbmMcbm2018UnpackerAlgoPsd;
 #pragma link C++ class CbmMcbm2018UnpackerTaskPsd + ;
 #pragma link C++ class CbmMcbm2018UnpackerAlgoTrdR + ;
