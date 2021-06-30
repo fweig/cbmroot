@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2010 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Arkadiusz Bubak, M. Krauze, Sergey Gorbunov, Denis Bertini [committer], Florian Uhlig */
+   Authors: Arkadiusz Bubak, M. Krauze, Sergey Gorbunov, Denis Bertini [committer] */
 
 // -----------------------------------------------------------------------
 // -----                    CbmL1CATrdTrackFinderSA                  -----

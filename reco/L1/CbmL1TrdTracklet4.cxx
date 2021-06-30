@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2010 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Igor Kulakov, Denis Bertini [committer], Florian Uhlig */
+   Authors: Igor Kulakov, Denis Bertini [committer] */
 
 #include "CbmL1TrdTracklet4.h"
 

@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Sergey Gorbunov, Denis Bertini [committer], Florian Uhlig */
+   Authors: Sergey Gorbunov, Denis Bertini [committer] */
 
 #include "CbmL1MuchFinder.h"
 
