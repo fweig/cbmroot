@@ -80,12 +80,6 @@ void CbmAnaDielectronTaskDrawAll::DrawHistosFromFile(const string& fileNameInmed
   fh_mean_combPairsPM_mixedEvents_minv.resize(CbmLmvmHist::fNofAnaSteps);
   fh_mean_combPairsPP_mixedEvents_minv.resize(CbmLmvmHist::fNofAnaSteps);
   fh_mean_combPairsMM_mixedEvents_minv.resize(CbmLmvmHist::fNofAnaSteps);
-  fh_mean_combPairsPM_sameEvent_minv_raw.resize(CbmLmvmHist::fNofAnaSteps);
-  fh_mean_combPairsPP_sameEvent_minv_raw.resize(CbmLmvmHist::fNofAnaSteps);
-  fh_mean_combPairsMM_sameEvent_minv_raw.resize(CbmLmvmHist::fNofAnaSteps);
-  fh_mean_combPairsPM_mixedEvents_minv_raw.resize(CbmLmvmHist::fNofAnaSteps);
-  fh_mean_combPairsPP_mixedEvents_minv_raw.resize(CbmLmvmHist::fNofAnaSteps);
-  fh_mean_combPairsMM_mixedEvents_minv_raw.resize(CbmLmvmHist::fNofAnaSteps);
   fh_mean_combBg_minv.resize(CbmLmvmHist::fNofAnaSteps);
   fh_mean_combBg_raw_minv.resize(CbmLmvmHist::fNofAnaSteps);
   fh_mean_combBg_assemb_minv.resize(CbmLmvmHist::fNofAnaSteps);
@@ -94,7 +88,6 @@ void CbmAnaDielectronTaskDrawAll::DrawHistosFromFile(const string& fileNameInmed
   fh_mean_combBg_k_minv.resize(CbmLmvmHist::fNofAnaSteps);
   fh_mean_combSignalNpm_minv.resize(CbmLmvmHist::fNofAnaSteps);
   fh_mean_combSignalNpm_assemb_minv.resize(CbmLmvmHist::fNofAnaSteps);
-  //fh_mean_combSignalBCoc_minv.resize(CbmLmvmHist::fNofAnaSteps);	// needed?
   fh_mean_combSignalBCoc_assemb_minv.resize(CbmLmvmHist::fNofAnaSteps);
   fh_mean_combBg_errProp_minv.resize(CbmLmvmHist::fNofAnaSteps);
   fh_mean_combSignal_errProp_minv.resize(CbmLmvmHist::fNofAnaSteps);
@@ -104,7 +97,7 @@ void CbmAnaDielectronTaskDrawAll::DrawHistosFromFile(const string& fileNameInmed
   fh_mean_nof_urqmdElectrons.resize(CbmLmvmHist::fNofAnaSteps);
   fh_mean_nof_urqmdPositrons.resize(CbmLmvmHist::fNofAnaSteps);
 
-  FillMeanHist();
+  FillMeanHist();  // TODO: Add method RebinHist() after this to rebin all histograms there to have better overview??
   FillSumSignalsHist();
   CalcCutEffRange(0.0, 0.2);
   CalcCutEffRange(0.2, 0.6);
@@ -388,25 +381,27 @@ void CbmAnaDielectronTaskDrawAll::DrawMinv(CbmLmvmAnalysisSteps step)
 
 void CbmAnaDielectronTaskDrawAll::DrawMinvCombSignalAndBg()
 {
-  /******************************************************************************
- * MIND: 																	  *
- * 'B' (capital) stands for same event, 'b' (not-capital) for mixed events!   *
- *																			  *
- * Order of draw functions:													  *
- * 1) Yields of single e- and e+ per event					  *
- * 2) e+e- | e+e+ | e-e- pairs from same and mixed events					  *
- * 3) geometric mean (conv. and assembled)									  *
- * 4) B_comb with MC BG and B+-												  *
- * 5) k factor																  *
- * 6) comb. signal															  *
- ******************************************************************************/
+  /*******************************************************************************
+ * MIND: 																	    *
+ * 'B' (capital) stands for same event, 'b' (not-capital) for mixed events!    	*
+ *																			  	*
+ * Order of draw functions:													  	*
+ * 1) Yields of single e- and e+ per event					  				  	*
+ * 2) e+e- | e+e+ | e-e- pairs from same and mixed events					  	*
+ * 3) geometric mean (conv. and assembled)									  	*
+ * 4) B_comb with MC BG and B+-												  	*
+ * 5) k factor																  	*
+ * 6) comb. signal															  	*
+ *******************************************************************************/
 
   double yMin   = 1e-7;
   double yMax   = 5e-2;
   string yTitle = "dN/dM_{ee} [GeV/c^{2}]^{-1}";
   string xTitle = "M_{ee} [GeV/c^2]";
 
-  bool setMinMax = false;
+  bool setMinMax = true;
+
+  // Rebin factor for single particle and CB histograms. Their nBin in Task.cxx differ from each other
 
   /* 1) draw number of e+ and e- per event */
   // vs. momentum
@@ -434,57 +429,6 @@ void CbmAnaDielectronTaskDrawAll::DrawMinvCombSignalAndBg()
   TH1D* nUrqmdPosTt   = (TH1D*) fh_mean_nof_urqmdPositrons[kTtCut]->Clone();
   TH1D* nUrqmdElPt    = (TH1D*) fh_mean_nof_urqmdElectrons[kPtCut]->Clone();
   TH1D* nUrqmdPosPt   = (TH1D*) fh_mean_nof_urqmdPositrons[kPtCut]->Clone();
-
-  int n = 2;
-  nPlutoElMc->Rebin(n * nRebin);
-  nPlutoElMc->Scale(1. / (n * nRebin));
-  nPlutoPosMc->Rebin(n * nRebin);
-  nPlutoPosMc->Scale(1. / (n * nRebin));
-  nPlutoElAcc->Rebin(n * nRebin);
-  nPlutoElAcc->Scale(1. / (n * nRebin));
-  nPlutoPosAcc->Rebin(n * nRebin);
-  nPlutoPosAcc->Scale(1. / (n * nRebin));
-  nPlutoElReco->Rebin(n * nRebin);
-  nPlutoElReco->Scale(1. / (n * nRebin));
-  nPlutoPosReco->Rebin(n * nRebin);
-  nPlutoPosReco->Scale(1. / (n * nRebin));
-  nPlutoElElid->Rebin(n * nRebin);
-  nPlutoElElid->Scale(1. / (n * nRebin));
-  nPlutoPosElid->Rebin(n * nRebin);
-  nPlutoPosElid->Scale(1. / (n * nRebin));
-  nPlutoElTt->Rebin(n * nRebin);
-  nPlutoElTt->Scale(1. / (n * nRebin));
-  nPlutoPosTt->Rebin(n * nRebin);
-  nPlutoPosTt->Scale(1. / (n * nRebin));
-  nPlutoElPt->Rebin(n * nRebin);
-  nPlutoElPt->Scale(1. / (n * nRebin));
-  nPlutoPosPt->Rebin(n * nRebin);
-  nPlutoPosPt->Scale(1. / (n * nRebin));
-
-  nUrqmdElMc->Rebin(n * nRebin);
-  nUrqmdElMc->Scale(1. / (n * nRebin));
-  nUrqmdPosMc->Rebin(n * nRebin);
-  nUrqmdPosMc->Scale(1. / (n * nRebin));
-  nUrqmdElAcc->Rebin(n * nRebin);
-  nUrqmdElAcc->Scale(1. / (n * nRebin));
-  nUrqmdPosAcc->Rebin(n * nRebin);
-  nUrqmdPosAcc->Scale(1. / (n * nRebin));
-  nUrqmdElReco->Rebin(n * nRebin);
-  nUrqmdElReco->Scale(1. / (n * nRebin));
-  nUrqmdPosReco->Rebin(n * nRebin);
-  nUrqmdPosReco->Scale(1. / (n * nRebin));
-  nUrqmdElElid->Rebin(n * nRebin);
-  nUrqmdElElid->Scale(1. / (n * nRebin));
-  nUrqmdPosElid->Rebin(n * nRebin);
-  nUrqmdPosElid->Scale(1. / (n * nRebin));
-  nUrqmdElTt->Rebin(n * nRebin);
-  nUrqmdElTt->Scale(1. / (n * nRebin));
-  nUrqmdPosTt->Rebin(n * nRebin);
-  nUrqmdPosTt->Scale(1. / (n * nRebin));
-  nUrqmdElPt->Rebin(n * nRebin);
-  nUrqmdElPt->Scale(1. / (n * nRebin));
-  nUrqmdPosPt->Rebin(n * nRebin);
-  nUrqmdPosPt->Scale(1. / (n * nRebin));
 
   double min1 = 1e-9;
   double max1 = 10;
@@ -620,12 +564,29 @@ void CbmAnaDielectronTaskDrawAll::DrawMinvCombSignalAndBg()
   cout << "Ratio e-e-/e+e+ (pairs, Pt cut) = " << ratioEmEpPt << endl;
 
   // draw raw pairs
-  TH1D* h21PMElidRaw = (TH1D*) fh_mean_combPairsPM_sameEvent_minv_raw[kElId]->Clone();
-  TH1D* h21PPElidRaw = (TH1D*) fh_mean_combPairsPP_sameEvent_minv_raw[kElId]->Clone();
-  TH1D* h21MMElidRaw = (TH1D*) fh_mean_combPairsMM_sameEvent_minv_raw[kElId]->Clone();
-  TH1D* h21pmElidRaw = (TH1D*) fh_mean_combPairsPM_mixedEvents_minv_raw[kElId]->Clone();
-  TH1D* h21ppElidRaw = (TH1D*) fh_mean_combPairsPP_mixedEvents_minv_raw[kElId]->Clone();
-  TH1D* h21mmElidRaw = (TH1D*) fh_mean_combPairsMM_mixedEvents_minv_raw[kElId]->Clone();
+  TH1D* h21PMElidRaw = (TH1D*) fh_mean_combPairsPM_sameEvent_minv[kElId]->Clone();
+  TH1D* h21PPElidRaw = (TH1D*) fh_mean_combPairsPP_sameEvent_minv[kElId]->Clone();
+  TH1D* h21MMElidRaw = (TH1D*) fh_mean_combPairsMM_sameEvent_minv[kElId]->Clone();
+  TH1D* h21pmElidRaw = (TH1D*) fh_mean_combPairsPM_mixedEvents_minv[kElId]->Clone();
+  TH1D* h21ppElidRaw = (TH1D*) fh_mean_combPairsPP_mixedEvents_minv[kElId]->Clone();
+  TH1D* h21mmElidRaw = (TH1D*) fh_mean_combPairsMM_mixedEvents_minv[kElId]->Clone();
+
+  double bW = h21PMElidRaw->GetBinWidth(1);  // MIND: 'bW' is used throughout this draw method!
+  cout << "DrawMinvCombSignalAndBg(): bW = " << bW << endl;
+
+  Int_t nofEvents = 0;
+  for (int i = 0; i < fNofSignals; i++) {
+    if (!fDrawQgp && i == kQgp) continue;
+    nofEvents += (int) H1(i, "fh_event_number")->GetEntries();
+    cout << "DrawMinvCombSignalAndBg: nofEvents = " << nofEvents << endl;
+  }
+
+  h21PMElidRaw->Scale(bW * nofEvents);
+  h21PPElidRaw->Scale(bW * nofEvents);
+  h21MMElidRaw->Scale(bW * nofEvents);
+  h21pmElidRaw->Scale(bW * nofEvents);
+  h21ppElidRaw->Scale(bW * nofEvents);
+  h21mmElidRaw->Scale(bW * nofEvents);
 
   h21PMElidRaw->GetXaxis()->SetTitle(xTitle.c_str());
   h21PMElidRaw->GetYaxis()->SetTitle("absolute number");
@@ -659,8 +620,6 @@ void CbmAnaDielectronTaskDrawAll::DrawMinvCombSignalAndBg()
   TH1D* Bpp = (TH1D*) fh_mean_combPairsPP_sameEvent_minv[kElId]->Clone();
   TH1D* Bmm = (TH1D*) fh_mean_combPairsMM_sameEvent_minv[kElId]->Clone();
 
-  double bW = Bpm->GetBinWidth(1);  // MIND: 'bW' is used throughout this draw method!
-  cout << "DrawMinvCombSignalAndBg(): bW = " << bW << endl;
 
   Bpm->GetXaxis()->SetRangeUser(0, 2.);
   Bpm->GetXaxis()->SetTitle(xTitle.c_str());
@@ -817,9 +776,10 @@ void CbmAnaDielectronTaskDrawAll::DrawMinvCombSignalAndBg()
   cocBg1Pt->Add(fh_mean_bg_minv[kPtCut]);
 
   cocBg1Elid->Rebin(nRebin);
-  cocBg1Elid->Scale(1. / bW);
+  double bWCoc = cocBg1Elid->GetBinWidth(1);
+  cocBg1Elid->Scale(1. / bWCoc);
   cocBg1Pt->Rebin(nRebin);
-  cocBg1Pt->Scale(1. / bW);
+  cocBg1Pt->Scale(1. / bWCoc);
 
   Bpm1Elid->GetXaxis()->SetRangeUser(0, 2.);
   Bpm1Elid->GetXaxis()->SetTitle(xTitle.c_str());
@@ -1203,31 +1163,35 @@ void CbmAnaDielectronTaskDrawAll::DrawMinvCombSignalAndBg()
   TH1D* h63SigNpmTt    = (TH1D*) fh_mean_combSignalNpm_assemb_minv[kTtCut]->Clone();
   TH1D* h63SigNpmPt    = (TH1D*) fh_mean_combSignalNpm_assemb_minv[kPtCut]->Clone();
 
+  TH1D* h63SigNpmPt2 = (TH1D*) fh_mean_combSignalNpm_assemb_minv[kPtCut]->Clone();
+
   if (setMinMax) {
-    h63SigNpmElid->SetMinimum(yMin / 10.);  // setting min/max somehow makes the histos empty
+    h63SigNpmElid->SetMinimum(yMin);  // setting min/max somehow makes the histos empty
     h63SigNpmElid->SetMaximum(yMax);
-    h63SigNpmGamma->SetMinimum(yMin / 10.);
+    h63SigNpmGamma->SetMinimum(yMin);
     h63SigNpmGamma->SetMaximum(yMax);
-    h63SigNpmMvd1->SetMinimum(yMin / 10.);
+    h63SigNpmMvd1->SetMinimum(yMin);
     h63SigNpmMvd1->SetMaximum(yMax);
-    h63SigNpmSt->SetMinimum(yMin / 10.);
+    h63SigNpmSt->SetMinimum(yMin);
     h63SigNpmSt->SetMaximum(yMax);
-    h63SigNpmRt->SetMinimum(yMin / 10.);
+    h63SigNpmRt->SetMinimum(yMin);
     h63SigNpmRt->SetMaximum(yMax);
-    h63SigNpmTt->SetMinimum(yMin / 10.);
+    h63SigNpmTt->SetMinimum(yMin);
     h63SigNpmTt->SetMaximum(yMax);
-    h63SigNpmPt->SetMinimum(yMin / 10.);
+    h63SigNpmPt->SetMinimum(yMin);
     h63SigNpmPt->SetMaximum(yMax);
+    h63SigNpmPt2->SetMinimum(yMin);
+    h63SigNpmPt2->SetMaximum(yMax);
   }
 
   h63SigNpmElid->GetXaxis()->SetRangeUser(0, 2.);
   h63SigNpmElid->GetXaxis()->SetTitle(xTitle.c_str());
   h63SigNpmElid->GetYaxis()->SetTitle(yTitle.c_str());
   h63SigNpmElid->SetTitle("Signal");
-  /*h63SigNpmPt->GetXaxis()->SetRangeUser(0, 2.);
-  h63SigNpmPt->GetXaxis()->SetTitle(xTitle.c_str());
-  h63SigNpmPt->GetYaxis()->SetTitle(yTitle.c_str());
-  h63SigNpmPt->SetTitle("Signal");*/
+  h63SigNpmPt2->GetXaxis()->SetRangeUser(0, 2.);
+  h63SigNpmPt2->GetXaxis()->SetTitle(xTitle.c_str());
+  h63SigNpmPt2->GetYaxis()->SetTitle(yTitle.c_str());
+  h63SigNpmPt2->SetTitle("Signal");
 
   fHM[0]->CreateCanvas("minv_CB_6_signal_Npm_steps", "minv_CB_6_signal_Npm_steps", 800, 800);
   DrawH1({h63SigNpmElid, h63SigNpmGamma, h63SigNpmMvd1, h63SigNpmSt, h63SigNpmRt, h63SigNpmTt, h63SigNpmPt},
@@ -1267,13 +1231,14 @@ void CbmAnaDielectronTaskDrawAll::DrawMinvCombSignalAndBg()
   legend63e3->AddEntry(h63SigNpmElid, "elid");
   legend63e3->Draw();
 
-  /*fHM[0]->CreateCanvas("minv_CB_6_signal_Npm_steps4", "minv_CB_6_signal_Npm_steps4", 800, 800);	Wenn aktiviert, sind Elid- und Pt-Kurven oben beide gleichfarbig
-  DrawH1({h63SigNpmPt}, {""}, kLinear, kLog, false, 0.8, 0.8, 0.99, 0.99, "hist pe1");
+  fHM[0]->CreateCanvas("minv_CB_6_signal_Npm_steps4", "minv_CB_6_signal_Npm_steps4", 800,
+                       800);  // Wenn aktiviert, sind Elid- und Pt-Kurven oben beide gleichfarbig
+  DrawH1({h63SigNpmPt2}, {""}, kLinear, kLog, false, 0.8, 0.8, 0.99, 0.99, "hist pe1");
 
   TLegend* legend63e4 = new TLegend(0.7, 0.8, 0.92, 0.9);
   legend63e4->SetFillColor(kWhite);
-  legend63e4->AddEntry(h63SigNpmPt, "P_{t} cut");
-  legend63e4->Draw();*/
+  legend63e4->AddEntry(h63SigNpmPt2, "P_{t} cut");
+  legend63e4->Draw();
 
   // from 'Cocktail + BG'
   // elid
@@ -1303,23 +1268,26 @@ void CbmAnaDielectronTaskDrawAll::DrawMinvCombSignalAndBg()
 
   fHM[0]->CreateCanvas("minv_CB_6_signal_bgCoc_elid", "minv_CB_6_signal_bgCoc_elid", 800, 800);
   DrawH1({h65cocBgElid, h65cbAssElid, h65SigCocBgElid, h65coc1Elid}, {"", "", "", ""}, kLinear, kLog, false, 0.8, 0.8,
-         0.99, 0.99, "hist p");
+         0.99, 0.99, "");
+
+  /*h65coc1Elid->SetFillColor(kMagenta - 3);
+  h65coc1Elid->SetLineColor(kMagenta - 2);
+  h65coc1Elid->SetLineStyle(1);
+  h65coc1Elid->SetLineWidth(3);
+  h65coc1Elid->SetFillStyle(3344);*/
+
+  h65cocBgElid->SetLineStyle(0);
+  h65cbAssElid->SetLineStyle(2);
+  h65SigCocBgElid->SetLineStyle(3);
+  h65coc1Elid->SetLineStyle(1);
 
   TLegend* legend65 = new TLegend(0.55, 0.75, 0.98, 0.9);
-  legend65->SetFillColor(kWhite);
+  //legend65->SetFillColor(kWhite);
   legend65->AddEntry(h65cocBgElid, "Cocktail + BG (Elid)");
   legend65->AddEntry(h65cbAssElid, "B_{c} (assembled, Elid)");
   legend65->AddEntry(h65SigCocBgElid, "Signal (Coc + BG - B_{c}, Elid)");
   legend65->AddEntry(h65coc1Elid, "Cocktail (Elid)");
   legend65->Draw();
-
-  /*fHM[0]->CreateCanvas("minv_CB_6_signal_bgCoc_elid2", "minv_CB_6_signal_bgCoc_elid2", 800, 800);
-  DrawH1({h65SigCocBgElid}, {""}, kLinear, kLog, false, 0.8, 0.8, 0.99, 0.99, "same pe1");
-
-  TLegend* legend65b = new TLegend(0.55, 0.75, 0.98, 0.9);
-  legend65b->SetFillColor(kWhite);
-  legend65b->AddEntry(h65SigCocBgElid, "Signal (Coc + BG - B_{c}, Elid)");
-  legend65b->Draw();*/
 
   // Pt cut
   TH1D* h66SigCocBgPt = (TH1D*) fh_mean_combSignalBCoc_assemb_minv[kPtCut]->Clone();
@@ -1350,8 +1318,7 @@ void CbmAnaDielectronTaskDrawAll::DrawMinvCombSignalAndBg()
   legend66->Draw();
 
   /* 7) Error */
-
-  TH1D* h71NpmElid = (TH1D*) fh_mean_combPairsPM_sameEvent_minv_raw[kElId]->Clone();
+  TH1D* h71NpmElid = (TH1D*) fh_mean_combPairsPM_sameEvent_minv[kElId]->Clone();
   TH1D* h71sigElid = (TH1D*) fh_mean_combSignal_errProp_minv[kElId]->Clone();
 
   h71NpmElid->GetXaxis()->SetRangeUser(0, 2.);
@@ -1517,13 +1484,6 @@ void CbmAnaDielectronTaskDrawAll::FillMeanHist()
       }
     }
 
-    fh_mean_combPairsPM_sameEvent_minv_raw[step]   = (TH1D*) fh_mean_combPairsPM_sameEvent_minv[step]->Clone();
-    fh_mean_combPairsPP_sameEvent_minv_raw[step]   = (TH1D*) fh_mean_combPairsPP_sameEvent_minv[step]->Clone();
-    fh_mean_combPairsMM_sameEvent_minv_raw[step]   = (TH1D*) fh_mean_combPairsMM_sameEvent_minv[step]->Clone();
-    fh_mean_combPairsPM_mixedEvents_minv_raw[step] = (TH1D*) fh_mean_combPairsPM_mixedEvents_minv[step]->Clone();
-    fh_mean_combPairsPP_mixedEvents_minv_raw[step] = (TH1D*) fh_mean_combPairsPP_mixedEvents_minv[step]->Clone();
-    fh_mean_combPairsMM_mixedEvents_minv_raw[step] = (TH1D*) fh_mean_combPairsMM_mixedEvents_minv[step]->Clone();
-
     Int_t nofEvents = 0;
     for (int i = 0; i < fNofSignals; i++) {
       if (!fDrawQgp && i == kQgp) continue;
@@ -1621,8 +1581,7 @@ void CbmAnaDielectronTaskDrawAll::CalcCutEffRange(Double_t minMinv, Double_t max
 
 void CbmAnaDielectronTaskDrawAll::CalcCombBGHistos()
 {
-
-  int nofBinsRaw;
+  int nofBins;
   double bW       = 0;
   Int_t nofEvents = 0;
   for (int i = 0; i < fNofSignals; i++) {
@@ -1648,22 +1607,22 @@ void CbmAnaDielectronTaskDrawAll::CalcCombBGHistos()
     fh_mean_combPairsPP_mixedEvents_minv[step]->Rebin(nRebin);
     fh_mean_combPairsMM_mixedEvents_minv[step]->Rebin(nRebin);
 
-    fh_mean_combPairsPM_sameEvent_minv_raw[step]->Rebin(nRebin);
+    /*fh_mean_combPairsPM_sameEvent_minv_raw[step]->Rebin(nRebin);
     fh_mean_combPairsPP_sameEvent_minv_raw[step]->Rebin(nRebin);
     fh_mean_combPairsMM_sameEvent_minv_raw[step]->Rebin(nRebin);
     fh_mean_combPairsPM_mixedEvents_minv_raw[step]->Rebin(nRebin);
     fh_mean_combPairsPP_mixedEvents_minv_raw[step]->Rebin(nRebin);
-    fh_mean_combPairsMM_mixedEvents_minv_raw[step]->Rebin(nRebin);
+    fh_mean_combPairsMM_mixedEvents_minv_raw[step]->Rebin(nRebin);*/
 
-    nofBinsRaw = fh_mean_combPairsPM_sameEvent_minv_raw[step]->GetNbinsX();
+    //int nofBins = hBpp->GetNbinsX();  	TODO: test; delete
+    //nofBinsRaw = fh_mean_combPairsPM_sameEvent_minv_raw[step]->GetNbinsX(); _RAW_
+    nofBins = fh_mean_combPairsPM_sameEvent_minv[step]->GetNbinsX();  // MIND: 'nofBins' is used throughout this method!
 
     // calculate geom. mean of same events
     TH1D* hBpp = (TH1D*) fh_mean_combPairsPP_sameEvent_minv[step]->Clone();
     TH1D* hBmm = (TH1D*) fh_mean_combPairsMM_sameEvent_minv[step]->Clone();
 
     fh_mean_combBg_GeomMeanSame_minv[step] = (TH1D*) hBpp->Clone();
-
-    int nofBins = hBpp->GetNbinsX();  // MIND: 'nofBins' is used throughout this method!
 
     for (int iBin = 1; iBin <= nofBins; iBin++) {
       double m1      = hBpp->GetBinContent(iBin);
@@ -1714,9 +1673,9 @@ void CbmAnaDielectronTaskDrawAll::CalcCombBGHistos()
     fh_mean_combBg_assemb_minv[step] = (TH1D*) fh_mean_combBg_minv[step]->Clone();
 
     for (int iBin = binFrom + 1; iBin <= nofBins; iBin++) {  // from > 300 MeV on normalized data from mixed event
-      double m1      = fh_mean_combBg_k_minv[step]->GetBinContent(iBin);
-      double m2      = fh_mean_combBg_GeomMeanMixed_minv[step]->GetBinContent(iBin);
-      double content = 2 * m1 * m2 * normGM;
+      double k2      = fh_mean_combBg_k_minv[step]->GetBinContent(iBin);
+      double gm2     = fh_mean_combBg_GeomMeanMixed_minv[step]->GetBinContent(iBin);
+      double content = 2 * k2 * gm2 * normGM;
       fh_mean_combBg_assemb_minv[step]->SetBinContent(iBin, content);
     }
 
@@ -1725,9 +1684,9 @@ void CbmAnaDielectronTaskDrawAll::CalcCombBGHistos()
     fh_mean_combSignalNpm_minv[step] = (TH1D*) fh_mean_combPairsPM_sameEvent_minv[step]->Clone();
     fh_mean_combSignalNpm_minv[step]->Add(fh_mean_combBg_minv[step], -1.);
 
-    TH1D* cock;
 
     // from 'Cocktail + BG'
+    TH1D* cock;
     if (step == kMc) cock = (TH1D*) GetCoctailMinv(kMc);
     else if (step == kAcc)
       cock = (TH1D*) GetCoctailMinv(kAcc);
@@ -1771,18 +1730,18 @@ void CbmAnaDielectronTaskDrawAll::CalcCombBGHistos()
     fh_mean_combSignalBCoc_assemb_minv[step]->Add(cbAss, -1.);
 
     // error calculation
-    TH1D* err = (TH1D*) fh_mean_combPairsPM_sameEvent_minv_raw[step]->Clone();
+    TH1D* err = (TH1D*) fh_mean_combPairsPM_sameEvent_minv[step]->Clone();
     err->Reset("ice");
     fh_mean_combBg_errProp_minv[step]     = (TH1D*) err->Clone();
     fh_mean_combSignal_errProp_minv[step] = (TH1D*) err->Clone();
 
-    for (int iBin = 1; iBin <= nofBinsRaw; iBin++) {  // calculate error propagation
-      double Npm = fh_mean_combPairsPM_sameEvent_minv_raw[step]->GetBinContent(iBin);
-      double Bpp = fh_mean_combPairsPP_sameEvent_minv_raw[step]->GetBinContent(iBin);
-      double Bmm = fh_mean_combPairsMM_sameEvent_minv_raw[step]->GetBinContent(iBin);
-      double bpm = fh_mean_combPairsPM_mixedEvents_minv_raw[step]->GetBinContent(iBin);
-      double bpp = fh_mean_combPairsPP_mixedEvents_minv_raw[step]->GetBinContent(iBin);
-      double bmm = fh_mean_combPairsMM_mixedEvents_minv_raw[step]->GetBinContent(iBin);
+    for (int iBin = 1; iBin <= nofBins; iBin++) {  // calculate error propagation
+      double Npm = fh_mean_combPairsPM_sameEvent_minv[step]->GetBinContent(iBin);
+      double Bpp = fh_mean_combPairsPP_sameEvent_minv[step]->GetBinContent(iBin);
+      double Bmm = fh_mean_combPairsMM_sameEvent_minv[step]->GetBinContent(iBin);
+      double bpm = fh_mean_combPairsPM_mixedEvents_minv[step]->GetBinContent(iBin);
+      double bpp = fh_mean_combPairsPP_mixedEvents_minv[step]->GetBinContent(iBin);
+      double bmm = fh_mean_combPairsMM_mixedEvents_minv[step]->GetBinContent(iBin);
 
       // calculation of error propagation
       double DNpm = TMath::Sqrt(Npm);  // Δ<B+->
@@ -1829,15 +1788,15 @@ void CbmAnaDielectronTaskDrawAll::CalcCombBGHistos()
       if (iBin <= binFrom) fh_mean_combSignalNpm_assemb_minv[step]->SetBinError(iBin, errorSig);
       if (iBin > binFrom) fh_mean_combSignalNpm_assemb_minv[step]->SetBinError(iBin, errorSig2);
 
-      if (iBin % (500 / nRebin) == 0 && iBin <= (2000 / nRebin)) {
+      if (iBin == 3 || iBin == 4 || ((iBin % (500 / nRebin) == 0 && iBin <= (2000 / nRebin)))) {
         cout << "step    = " << step << endl;
+        cout << "iBin    = " << iBin << endl;
         cout << "Npm     = " << Npm << endl;
         cout << "bpm     = " << bpm << endl;
         cout << "bp      = " << bpp << endl;
         cout << "bm      = " << bmm << endl;
         cout << "Bp      = " << Bpp << endl;
         cout << "Bm      = " << Bmm << endl;
-        //cout << "k       = " << k << endl;
         cout << "Dbpm    = " << Dbpm << endl;
         cout << "Dbp     = " << Dbpp << endl;
         cout << "Dbm     = " << Dbmm << endl;
@@ -1859,12 +1818,13 @@ void CbmAnaDielectronTaskDrawAll::CalcCombBGHistos()
         cout << "errorSig2  = " << errorSig2 << endl;
         cout << "Bin error CB     = " << fh_mean_combBg_errProp_minv[step]->GetBinContent(iBin) << endl;
         cout << "Bin error Signal = " << fh_mean_combSignal_errProp_minv[step]->GetBinContent(iBin) << endl;
-        cout << "Bin error Npm    = " << fh_mean_combPairsPM_sameEvent_minv_raw[step]->GetBinError(iBin) << endl;
+        cout << "Bin error Npm    = " << fh_mean_combPairsPM_sameEvent_minv[step]->GetBinError(iBin) << endl;
       }
     }  // error propagation
 
     // scale histograms
     bW = fh_mean_combPairsPM_sameEvent_minv[step]->GetBinWidth(1);
+    cout << "bW = " << bW << endl;
     fh_mean_combPairsPM_sameEvent_minv[step]->Scale(1. / (nofEvents * bW));
     fh_mean_combPairsPP_sameEvent_minv[step]->Scale(1. / (nofEvents * bW));
     fh_mean_combPairsMM_sameEvent_minv[step]->Scale(1. / (nofEvents * bW));
@@ -1877,9 +1837,23 @@ void CbmAnaDielectronTaskDrawAll::CalcCombBGHistos()
     fh_mean_combBg_GeomMeanMixed_minv[step]->Scale(1. / (nofEvents * bW));
     fh_mean_combSignalNpm_minv[step]->Scale(1. / (nofEvents * bW));
     fh_mean_combSignalNpm_assemb_minv[step]->Scale(1. / (nofEvents * bW));
-    //fh_mean_combSignalBCoc_minv[step]->Scale(1. / (nofEvents * bW));	// is this histo needed?
     fh_mean_combSignalBCoc_assemb_minv[step]->Scale(1. / (bW));  // had been normalized earlier due to Cocktail
-  }                                                              // steps
+
+    for (int iBin = 1; iBin <= nofBins; iBin++) {  // TODO: only to check error value after sacling
+      if (iBin == 3 || iBin == 4 || (iBin % (500 / nRebin) == 0 && iBin <= (2000 / nRebin))) {
+        double Npm = fh_mean_combPairsPM_sameEvent_minv[step]->GetBinContent(iBin);
+        double Bm  = fh_mean_combPairsMM_sameEvent_minv[step]->GetBinContent(iBin);
+        cout << "CHECK: step    = " << step << endl;
+        cout << "CHECK: iBin    = " << iBin << endl;
+        cout << "CHECK: Npm = " << Npm * nofEvents * bW << endl;
+        cout << "CHECK: Bm  = " << Bm * nofEvents * bW << endl;
+        cout << "CHECK: Bin error Npm              = " << fh_mean_combPairsPM_sameEvent_minv[step]->GetBinError(iBin)
+             << endl;
+        cout << "CHECK: Bin error Sig_ass (Npm)    = " << fh_mean_combSignalNpm_assemb_minv[step]->GetBinError(iBin)
+             << endl;
+      }
+    }
+  }  // steps
 }
 
 /*void CbmAnaDielectronTaskDrawAll::CompareSTSversions()
@@ -1991,7 +1965,7 @@ void CbmAnaDielectronTaskDrawAll::DrawSBgSignals()
       if (!fUseMvd && (step == kMvd1Cut || step == kMvd2Cut)) { continue; }
 
       TH1D* s         = (TH1D*) H1(iF, "fh_signal_minv_" + CbmLmvmHist::fAnaSteps[step])->Clone();
-      TH1D* bg        = (TH1D*) fh_mean_bg_minv[step]->Clone();
+      TH1D* bg = (TH1D*) fh_mean_bg_minv[step]->Clone();  // TODO: not better to take BG of PP intead of mean BG??
       Int_t nofEvents = (int) H1(iF, "fh_event_number")->GetEntries();
       s->Scale(1. / nofEvents);
       cFit->cd();

@@ -323,10 +323,23 @@ private:
   std::vector<TH1D*> fh_combPairsPM_minv_mixedEvents;  // Invariant mass for comb. Pairs of e+/e-
   std::vector<TH1D*> fh_combPairsPP_minv_mixedEvents;  // Invariant mass for comb. Pairs of e+/e+
   std::vector<TH1D*> fh_combPairsMM_minv_mixedEvents;  // Invariant mass for comb. Pairs of e-/e-
-  std::vector<TH1D*> fh_nof_plutoElectrons;            // nof electrons / positrons vs. momentum
-  std::vector<TH1D*> fh_nof_plutoPositrons;            // nof electrons / positrons vs. momentum
-  std::vector<TH1D*> fh_nof_urqmdElectrons;            // nof electrons / positrons vs. momentum
-  std::vector<TH1D*> fh_nof_urqmdPositrons;            // nof electrons / positrons vs. momentum
+
+  std::vector<TH1D*> fh_nof_plutoElectrons;       // nof electrons / positrons vs. momentum
+  std::vector<TH1D*> fh_nof_plutoPositrons;       // nof electrons / positrons vs. momentum
+  std::vector<TH1D*> fh_nof_urqmdElectrons;       // nof electrons / positrons vs. momentum
+  std::vector<TH1D*> fh_nof_urqmdPositrons;       // nof electrons / positrons vs. momentum
+  std::vector<TH2D*> fh_nof_plutoElectrons_p_pt;  // nof electrons / positrons vs. momentum and Pt
+  std::vector<TH2D*> fh_nof_plutoPositrons_p_pt;  // nof electrons / positrons vs. momentum and Pt
+  std::vector<TH2D*> fh_nof_urqmdElectrons_p_pt;  // nof electrons / positrons vs. momentum and Pt
+  std::vector<TH2D*> fh_nof_urqmdPositrons_p_pt;  // nof electrons / positrons vs. momentum and Pt
+
+  std::vector<TH1D*>
+    fh_nof_particles_acc;  // To compare accepted with created PLUTO and UrQMD particles for various detector combinations
+
+  // Number of points the electrons and positrons left in various detectors
+  //[0]=Pluto-El STS, [1]=Pluto-Pos STS, [2]=Pluto-El RICH,  [3]=Pluto-Pos RICH,  [4]=Pluto-El TRD,  [5]=Pluto-Pos TRD,  [6]=Pluto-El ToF,  [7]=Pluto-Pos ToF
+  //[8]=UrQMD-El STS, [9]=UrQMD-Pos STS, [10]=UrQMD-El RICH, [11]=UrQMD-Pos RICH, [12]=UrQMD-El TRD, [13]=UrQMD-Pos TRD, [14]=UrQMD-El ToF, [15]=UrQMD-Pos ToF
+  std::vector<TH1D*> fh_nof_points;
 
   std::vector<TH1D*> fh_pi0_minv;        // Invariant mass for Pi0
   std::vector<TH1D*> fh_eta_minv;        // Invariant mass for Eta
@@ -336,7 +349,6 @@ private:
   std::vector<TH2D*> fh_signal_minv_pt;  // Invariant mass vs. MC Pt
   std::vector<TH2D*> fh_eta_minv_pt;     // Invariant mass vs. MC Pt
   std::vector<TH2D*> fh_pi0_minv_pt;     // Invariant mass vs. MC Pt
-
 
   std::vector<TH1D*> fh_bg_truematch_minv;        // Invariant mass for truly matched tracks
   std::vector<TH1D*> fh_bg_truematch_el_minv;     // Invariant mass for truly matched electron tracks

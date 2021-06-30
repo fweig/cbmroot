@@ -120,6 +120,7 @@ void CbmAnaDielectronTaskDraw::DrawMomLikeHist()
 
 void CbmAnaDielectronTaskDraw::DrawSingleParticleYield()
 {
+  // Draw 1D Histos: Yield vs. Momentum
   TCanvas* c2 = fHM->CreateCanvas("fh_mom_ElPos_pluto", "fh_mom_ElPos_pluto", 1000, 500);
   c2->Divide(2, 1);
   c2->cd(1);
@@ -238,24 +239,306 @@ void CbmAnaDielectronTaskDraw::DrawSingleParticleYield()
   legendNofUP->AddEntry(nUrqmdElReco, "electrons kReco");
   legendNofUP->AddEntry(nUrqmdPosReco, "positrons kReco");
   legendNofUP->Draw();
+
+  // Acc. of single particle yield vs. momentum for various detector combinations
+  TH1D* nPlutoElMc2   = (TH1D*) H1("fh_nof_particles_acc_pEl_mc")->Clone();
+  TH1D* nPlutoPosMc2  = (TH1D*) H1("fh_nof_particles_acc_pPos_mc")->Clone();
+  TH1D* nPlutoElSts   = (TH1D*) H1("fh_nof_particles_acc_pEl_sts")->Clone();
+  TH1D* nPlutoPosSts  = (TH1D*) H1("fh_nof_particles_acc_pPos_sts")->Clone();
+  TH1D* nPlutoElRich  = (TH1D*) H1("fh_nof_particles_acc_pEl_rich")->Clone();
+  TH1D* nPlutoPosRich = (TH1D*) H1("fh_nof_particles_acc_pPos_rich")->Clone();
+  TH1D* nPlutoElTrd   = (TH1D*) H1("fh_nof_particles_acc_pEl_trd")->Clone();
+  TH1D* nPlutoPosTrd  = (TH1D*) H1("fh_nof_particles_acc_pPos_trd")->Clone();
+  TH1D* nPlutoElTof   = (TH1D*) H1("fh_nof_particles_acc_pEl_tof")->Clone();
+  TH1D* nPlutoPosTof  = (TH1D*) H1("fh_nof_particles_acc_pPos_tof")->Clone();
+  TH1D* nUrqmdElMc2   = (TH1D*) H1("fh_nof_particles_acc_uEl_mc")->Clone();
+  TH1D* nUrqmdPosMc2  = (TH1D*) H1("fh_nof_particles_acc_uPos_mc")->Clone();
+  TH1D* nUrqmdElSts   = (TH1D*) H1("fh_nof_particles_acc_uEl_sts")->Clone();
+  TH1D* nUrqmdPosSts  = (TH1D*) H1("fh_nof_particles_acc_uPos_sts")->Clone();
+  TH1D* nUrqmdElRich  = (TH1D*) H1("fh_nof_particles_acc_uEl_rich")->Clone();
+  TH1D* nUrqmdPosRich = (TH1D*) H1("fh_nof_particles_acc_uPos_rich")->Clone();
+  TH1D* nUrqmdElTrd   = (TH1D*) H1("fh_nof_particles_acc_uEl_trd")->Clone();
+  TH1D* nUrqmdPosTrd  = (TH1D*) H1("fh_nof_particles_acc_uPos_trd")->Clone();
+  TH1D* nUrqmdElTof   = (TH1D*) H1("fh_nof_particles_acc_uEl_tof")->Clone();
+  TH1D* nUrqmdPosTof  = (TH1D*) H1("fh_nof_particles_acc_uPos_tof")->Clone();
+
+  int n         = 1;
+  int nRebinAcc = 4;
+  nPlutoElMc2->Rebin(n * nRebinAcc);
+  nPlutoElMc2->Scale(1. / (n * nRebinAcc));
+  nPlutoPosMc2->Rebin(n * nRebinAcc);
+  nPlutoPosMc2->Scale(1. / (n * nRebinAcc));
+  nPlutoElSts->Rebin(n * nRebinAcc);
+  nPlutoElSts->Scale(1. / (n * nRebinAcc));
+  nPlutoPosSts->Rebin(n * nRebinAcc);
+  nPlutoPosSts->Scale(1. / (n * nRebinAcc));
+  nPlutoElRich->Rebin(n * nRebinAcc);
+  nPlutoElRich->Scale(1. / (n * nRebinAcc));
+  nPlutoPosRich->Rebin(n * nRebinAcc);
+  nPlutoPosRich->Scale(1. / (n * nRebinAcc));
+  nPlutoElTrd->Rebin(n * nRebinAcc);
+  nPlutoElTrd->Scale(1. / (n * nRebinAcc));
+  nPlutoPosTrd->Rebin(n * nRebinAcc);
+  nPlutoPosTrd->Scale(1. / (n * nRebinAcc));
+  nPlutoElTof->Rebin(n * nRebinAcc);
+  nPlutoElTof->Scale(1. / (n * nRebinAcc));
+  nPlutoPosTof->Rebin(n * nRebinAcc);
+  nPlutoPosTof->Scale(1. / (n * nRebinAcc));
+
+  nUrqmdElMc2->Rebin(n * nRebinAcc);
+  nUrqmdElMc2->Scale(1. / (n * nRebinAcc));
+  nUrqmdPosMc2->Rebin(n * nRebinAcc);
+  nUrqmdPosMc2->Scale(1. / (n * nRebinAcc));
+  nUrqmdElSts->Rebin(n * nRebinAcc);
+  nUrqmdElSts->Scale(1. / (n * nRebinAcc));
+  nUrqmdPosSts->Rebin(n * nRebinAcc);
+  nUrqmdPosSts->Scale(1. / (n * nRebinAcc));
+  nUrqmdElRich->Rebin(n * nRebinAcc);
+  nUrqmdElRich->Scale(1. / (n * nRebinAcc));
+  nUrqmdPosRich->Rebin(n * nRebinAcc);
+  nUrqmdPosRich->Scale(1. / (n * nRebinAcc));
+  nUrqmdElTrd->Rebin(n * nRebinAcc);
+  nUrqmdElTrd->Scale(1. / (n * nRebinAcc));
+  nUrqmdPosTrd->Rebin(n * nRebinAcc);
+  nUrqmdPosTrd->Scale(1. / (n * nRebinAcc));
+  nUrqmdElTof->Rebin(n * nRebinAcc);
+  nUrqmdElTof->Scale(1. / (n * nRebinAcc));
+  nUrqmdPosTof->Rebin(n * nRebinAcc);
+  nUrqmdPosTof->Scale(1. / (n * nRebinAcc));
+
+  nPlutoElMc2->SetMinimum(min1);
+  nPlutoElMc2->SetMaximum(max1);
+  nPlutoPosMc2->SetMinimum(min1);
+  nPlutoPosMc2->SetMaximum(max1);
+  nPlutoElSts->SetMinimum(min1);
+  nPlutoElSts->SetMaximum(max1);
+  nPlutoPosSts->SetMinimum(min1);
+  nPlutoPosSts->SetMaximum(max1);
+  nPlutoElRich->SetMinimum(min1);
+  nPlutoElRich->SetMaximum(max1);
+  nPlutoPosRich->SetMinimum(min1);
+  nPlutoPosRich->SetMaximum(max1);
+  nPlutoElTrd->SetMinimum(min1);
+  nPlutoElTrd->SetMaximum(max1);
+  nPlutoPosTrd->SetMinimum(min1);
+  nPlutoPosTrd->SetMaximum(max1);
+  nPlutoElTof->SetMinimum(min1);
+  nPlutoElTof->SetMaximum(max1);
+  nPlutoPosTof->SetMinimum(min1);
+  nPlutoPosTof->SetMaximum(max1);
+
+  nUrqmdElMc2->SetMinimum(min1);
+  nUrqmdElMc2->SetMaximum(max1);
+  nUrqmdPosMc2->SetMinimum(min1);
+  nUrqmdPosMc2->SetMaximum(max1);
+  nUrqmdElSts->SetMinimum(min1);
+  nUrqmdElSts->SetMaximum(max1);
+  nUrqmdPosSts->SetMinimum(min1);
+  nUrqmdPosSts->SetMaximum(max1);
+  nUrqmdElRich->SetMinimum(min1);
+  nUrqmdElRich->SetMaximum(max1);
+  nUrqmdPosRich->SetMinimum(min1);
+  nUrqmdPosRich->SetMaximum(max1);
+  nUrqmdElTrd->SetMinimum(min1);
+  nUrqmdElTrd->SetMaximum(max1);
+  nUrqmdPosTrd->SetMinimum(min1);
+  nUrqmdPosTrd->SetMaximum(max1);
+  nUrqmdElTof->SetMinimum(min1);
+  nUrqmdElTof->SetMaximum(max1);
+  nUrqmdPosTof->SetMinimum(min1);
+  nUrqmdPosTof->SetMaximum(max1);
+
+  nPlutoElMc2->GetYaxis()->SetTitle("Yield");
+  nPlutoElMc2->SetTitle("Acceptance PLUTO particles");
+  nUrqmdElMc2->GetYaxis()->SetTitle("Yield");
+  nUrqmdElMc2->SetTitle("Acceptance UrQMD particles");
+
+  fHM->CreateCanvas("fh_nof_pluto_det", "fh_nof_pluto_det", 800, 800);
+  DrawH1({nPlutoElMc2, nPlutoPosMc2, nPlutoElSts, nPlutoPosSts, nPlutoElRich, nPlutoPosRich, nPlutoElTrd, nPlutoPosTrd,
+          nPlutoElTof, nPlutoPosTof},
+         {"", "", "", "", "", "", "", "", "", ""}, kLinear, kLog, false, 0.9, 0.8, 0.99, 0.99, "hist p");
+
+  TLegend* legendNofPP2 = new TLegend(0.45, 0.6, 0.88, 0.93);
+  legendNofPP2->SetFillColor(kWhite);
+  legendNofPP2->AddEntry(nPlutoElMc2, "electrons kMc");
+  legendNofPP2->AddEntry(nPlutoPosMc2, "positrons kMc");
+  legendNofPP2->AddEntry(nPlutoElSts, "electrons kAcc STS");
+  legendNofPP2->AddEntry(nPlutoPosSts, "positrons kAcc STS");
+  legendNofPP2->AddEntry(nPlutoElRich, "electrons kAcc STS + RICH");
+  legendNofPP2->AddEntry(nPlutoPosRich, "positrons kAcc STS + RICH");
+  legendNofPP2->AddEntry(nPlutoElTrd, "electrons kAcc STS + RICH + TRD");
+  legendNofPP2->AddEntry(nPlutoPosTrd, "positrons kAcc STS + RICH + TRD");
+  legendNofPP2->AddEntry(nPlutoElTof, "electrons kAcc STS + RICH + TRD + ToF");
+  legendNofPP2->AddEntry(nPlutoPosTof, "positrons kAcc STS + RICH + TRD + ToF");
+  legendNofPP2->Draw();
+
+  fHM->CreateCanvas("fh_nof_urqmd_det", "fh_nof_urqmd_det", 800, 800);
+  DrawH1({nUrqmdElMc2, nUrqmdPosMc2, nUrqmdElSts, nUrqmdPosSts, nUrqmdElRich, nUrqmdPosRich, nUrqmdElTrd, nUrqmdPosTrd,
+          nUrqmdElTof, nUrqmdPosTof},
+         {"", "", "", "", "", "", "", "", "", ""}, kLinear, kLog, false, 0.9, 0.8, 0.99, 0.99, "hist p");
+
+  TLegend* legendNofUP2 = new TLegend(0.45, 0.6, 0.88, 0.93);
+  legendNofUP2->SetFillColor(kWhite);
+  legendNofUP2->AddEntry(nUrqmdElMc2, "electrons kMc");
+  legendNofUP2->AddEntry(nUrqmdPosMc2, "positrons kMc");
+  legendNofUP2->AddEntry(nUrqmdElSts, "electrons kAcc STS");
+  legendNofUP2->AddEntry(nUrqmdPosSts, "positrons kAcc STS");
+  legendNofUP2->AddEntry(nUrqmdElRich, "electrons kAcc STS + RICH");
+  legendNofUP2->AddEntry(nUrqmdPosRich, "positrons kAcc STS + RICH");
+  legendNofUP2->AddEntry(nUrqmdElTrd, "electrons kAcc STS + RICH + TRD");
+  legendNofUP2->AddEntry(nUrqmdPosTrd, "positrons kAcc STS + RICH + TRD");
+  legendNofUP2->AddEntry(nUrqmdElTof, "electrons kAcc STS + RICH + TRD + ToF");
+  legendNofUP2->AddEntry(nUrqmdPosTof, "positrons kAcc STS + RICH + TRD + ToF");
+  legendNofUP2->Draw();
+
+  // Draw nofPoints of electrons and positrons in various detectors
+  TH1D* pElSts   = (TH1D*) H1("fh_nof_points_pEl_sts")->Clone();
+  TH1D* pPosSts  = (TH1D*) H1("fh_nof_points_pPos_sts")->Clone();
+  TH1D* pElRich  = (TH1D*) H1("fh_nof_points_pEl_rich")->Clone();
+  TH1D* pPosRich = (TH1D*) H1("fh_nof_points_pPos_rich")->Clone();
+  TH1D* pElTrd   = (TH1D*) H1("fh_nof_points_pEl_trd")->Clone();
+  TH1D* pPosTrd  = (TH1D*) H1("fh_nof_points_pPos_trd")->Clone();
+  TH1D* pElTof   = (TH1D*) H1("fh_nof_points_pEl_tof")->Clone();
+  TH1D* pPosTof  = (TH1D*) H1("fh_nof_points_pPos_tof")->Clone();
+  TH1D* uElSts   = (TH1D*) H1("fh_nof_points_uEl_sts")->Clone();
+  TH1D* uPosSts  = (TH1D*) H1("fh_nof_points_uPos_sts")->Clone();
+  TH1D* uElRich  = (TH1D*) H1("fh_nof_points_uEl_rich")->Clone();
+  TH1D* uPosRich = (TH1D*) H1("fh_nof_points_uPos_rich")->Clone();
+  TH1D* uElTrd   = (TH1D*) H1("fh_nof_points_uEl_trd")->Clone();
+  TH1D* uPosTrd  = (TH1D*) H1("fh_nof_points_uPos_trd")->Clone();
+  TH1D* uElTof   = (TH1D*) H1("fh_nof_points_uEl_tof")->Clone();
+  TH1D* uPosTof  = (TH1D*) H1("fh_nof_points_uPos_tof")->Clone();
+
+  pElSts->SetTitle("STS");
+  pElRich->SetTitle("RICH");
+  pElTrd->SetTitle("TRD");
+  pElTrd->GetXaxis()->SetRangeUser(0., 15.);
+  pElTof->SetTitle("ToF");
+  pElTof->GetXaxis()->SetRangeUser(0., 20.);
+
+  fHM->CreateCanvas("fh_nof_points_sts", "fh_nof_points_sts", 800, 800);
+  DrawH1({pElSts, pPosSts, uElSts, uPosSts}, {"", "", "", ""}, kLinear, kLog, false, 0.9, 0.8, 0.99, 0.99, "hist p");
+
+  TLegend* legendNofPSts = new TLegend(0.45, 0.7, 0.88, 0.93);
+  legendNofPSts->SetFillColor(kWhite);
+  legendNofPSts->AddEntry(pElSts, "PLUTO electrons");
+  legendNofPSts->AddEntry(pPosSts, "PLUTO positrons");
+  legendNofPSts->AddEntry(uElSts, "UrQMD electrons");
+  legendNofPSts->AddEntry(uPosSts, "UrQMD positrons");
+  legendNofPSts->Draw();
+
+  fHM->CreateCanvas("fh_nof_points_rich", "fh_nof_points_rich", 800, 800);
+  DrawH1({pElRich, pPosRich, uElRich, uPosRich}, {"", "", "", ""}, kLinear, kLog, false, 0.9, 0.8, 0.99, 0.99,
+         "hist p");
+
+  TLegend* legendNofPRich = new TLegend(0.45, 0.7, 0.88, 0.93);
+  legendNofPRich->SetFillColor(kWhite);
+  legendNofPRich->AddEntry(pElRich, "PLUTO electrons");
+  legendNofPRich->AddEntry(pPosRich, "PLUTO positrons");
+  legendNofPRich->AddEntry(uElRich, "UrQMD electrons");
+  legendNofPRich->AddEntry(uPosRich, "UrQMD positrons");
+  legendNofPRich->Draw();
+
+  fHM->CreateCanvas("fh_nof_points_trd", "fh_nof_points_trd", 800, 800);
+  DrawH1({pElTrd, pPosTrd, uElTrd, uPosTrd}, {"", "", "", ""}, kLinear, kLog, false, 0.9, 0.8, 0.99, 0.99, "hist p");
+
+  TLegend* legendNofPTrd = new TLegend(0.45, 0.7, 0.88, 0.93);
+  legendNofPTrd->SetFillColor(kWhite);
+  legendNofPTrd->AddEntry(pElTrd, "PLUTO electrons");
+  legendNofPTrd->AddEntry(pPosTrd, "PLUTO positrons");
+  legendNofPTrd->AddEntry(uElTrd, "UrQMD electrons");
+  legendNofPTrd->AddEntry(uPosTrd, "UrQMD positrons");
+  legendNofPTrd->Draw();
+
+  fHM->CreateCanvas("fh_nof_points_tof", "fh_nof_points_tof", 800, 800);
+  DrawH1({pElTof, pPosTof, uElTof, uPosTof}, {"", "", "", ""}, kLinear, kLog, false, 0.9, 0.8, 0.99, 0.99, "hist p");
+
+  TLegend* legendNofPTof = new TLegend(0.45, 0.7, 0.88, 0.93);
+  legendNofPTof->SetFillColor(kWhite);
+  legendNofPTof->AddEntry(pElTof, "PLUTO electrons");
+  legendNofPTof->AddEntry(pPosTof, "PLUTO positrons");
+  legendNofPTof->AddEntry(uElTof, "UrQMD electrons");
+  legendNofPTof->AddEntry(uPosTof, "UrQMD positrons");
+  legendNofPTof->Draw();
+
+  //Draw 2D Histos: Yield vs. Momentum and Pt
+  TH2D* pElMc   = H2("fh_nof_plutoElectrons_p_pt_mc");
+  TH2D* pPosMc  = H2("fh_nof_plutoPositrons_p_pt_mc");
+  TH2D* pElAcc  = H2("fh_nof_plutoElectrons_p_pt_acc");
+  TH2D* pPosAcc = H2("fh_nof_plutoPositrons_p_pt_acc");
+
+  TH2D* uElMc   = H2("fh_nof_urqmdElectrons_p_pt_mc");
+  TH2D* uPosMc  = H2("fh_nof_urqmdPositrons_p_pt_mc");
+  TH2D* uElAcc  = H2("fh_nof_urqmdElectrons_p_pt_acc");
+  TH2D* uPosAcc = H2("fh_nof_urqmdPositrons_p_pt_acc");
+
+  TCanvas* cPMc = fHM->CreateCanvas("fh_nof_plutoParticles_p_pt_mc", "fh_nof_plutoParticles_p_pt_mc", 1000, 500);
+  cPMc->Divide(2, 1);
+  cPMc->cd(1);
+  DrawH2(pElMc);
+  pElMc->SetMinimum(1e-6);
+  pElMc->SetMaximum(1e-1);
+  gPad->SetLogz(true);
+  cPMc->cd(2);
+  DrawH2(pPosMc);
+  pPosMc->SetMinimum(1e-6);
+  pPosMc->SetMaximum(1e-1);
+  gPad->SetLogz(true);
+
+  TCanvas* cPAcc = fHM->CreateCanvas("fh_nof_plutoParticles_p_pt_acc", "fh_nof_plutoParticles_p_pt_acc", 1000, 500);
+  cPAcc->Divide(2, 1);
+  cPAcc->cd(1);
+  DrawH2(pElAcc);
+  pElAcc->SetMinimum(1e-6);
+  pElAcc->SetMaximum(5e-2);
+  gPad->SetLogz(true);
+  cPAcc->cd(2);
+  DrawH2(pPosAcc);
+  pPosAcc->SetMinimum(1e-6);
+  pPosAcc->SetMaximum(5e-2);
+  gPad->SetLogz(true);
+
+  TCanvas* cUMc = fHM->CreateCanvas("fh_nof_urqmdParticles_p_pt_mc", "fh_nof_urqmdParticles_p_pt_mc", 1000, 500);
+  cUMc->Divide(2, 1);
+  cUMc->cd(1);
+  DrawH2(uElMc);
+  uElMc->SetMinimum(1e-6);
+  uElMc->SetMaximum(250);
+  gPad->SetLogz(true);
+  cUMc->cd(2);
+  DrawH2(uPosMc);
+  uPosMc->SetMinimum(1e-6);
+  uPosMc->SetMaximum(250);
+  gPad->SetLogz(true);
+
+  TCanvas* cUAcc = fHM->CreateCanvas("fh_nof_urqmdParticles_p_pt_acc", "fh_nof_urqmdParticles_p_pt_acc", 1000, 500);
+  cUAcc->Divide(2, 1);
+  cUAcc->cd(1);
+  DrawH2(uElAcc);
+  uElAcc->SetMinimum(1e-6);
+  uElAcc->SetMaximum(1e-1);
+  gPad->SetLogz(true);
+  cUAcc->cd(2);
+  DrawH2(uPosAcc);
+  uPosAcc->SetMinimum(1e-6);
+  uPosAcc->SetMaximum(1e-1);
+  gPad->SetLogz(true);
 }
 
 void CbmAnaDielectronTaskDraw::RebinMinvHist()
 {
-  int nRebin = 20;
+  int nRebin = 20;  // general rebin
+  int nRebCB = 10;  // rebin for CB histos
+  int nRebSP = 4;   // rebin for single particle histos
   for (int i = 0; i < CbmLmvmHist::fNofAnaSteps; i++) {
     H1("fh_signal_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
     H1("fh_bg_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
-    H1("fh_combPairsPM_minv_sameEvent_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
-    H1("fh_combPairsPP_minv_sameEvent_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
-    H1("fh_combPairsMM_minv_sameEvent_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
-    H1("fh_combPairsPM_minv_mixedEvents_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
-    H1("fh_combPairsPP_minv_mixedEvents_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
-    H1("fh_combPairsMM_minv_mixedEvents_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
-    H1("fh_nof_plutoElectrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
-    H1("fh_nof_plutoPositrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
-    H1("fh_nof_urqmdElectrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
-    H1("fh_nof_urqmdPositrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
+    H1("fh_combPairsPM_minv_sameEvent_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebCB);
+    H1("fh_combPairsPP_minv_sameEvent_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebCB);
+    H1("fh_combPairsMM_minv_sameEvent_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebCB);
+    H1("fh_combPairsPM_minv_mixedEvents_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebCB);
+    H1("fh_combPairsPP_minv_mixedEvents_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebCB);
+    H1("fh_combPairsMM_minv_mixedEvents_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebCB);
     H1("fh_pi0_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
     H1("fh_eta_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
     H1("fh_bg_truematch_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(2 * nRebin);
@@ -263,14 +546,14 @@ void CbmAnaDielectronTaskDraw::RebinMinvHist()
     H1("fh_bg_truematch_el_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(2 * nRebin);
     H1("fh_bg_truematch_notel_minv_" + CbmLmvmHist::fAnaSteps[i])->Rebin(2 * nRebin);
 
-    H1("fh_nof_plutoElectrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
-    H1("fh_nof_plutoPositrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
-    H1("fh_nof_urqmdElectrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
-    H1("fh_nof_urqmdPositrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebin);
-    H1("fh_nof_plutoElectrons_" + CbmLmvmHist::fAnaSteps[i])->Scale(1. / nRebin);
-    H1("fh_nof_plutoPositrons_" + CbmLmvmHist::fAnaSteps[i])->Scale(1. / nRebin);
-    H1("fh_nof_urqmdElectrons_" + CbmLmvmHist::fAnaSteps[i])->Scale(1. / nRebin);
-    H1("fh_nof_urqmdPositrons_" + CbmLmvmHist::fAnaSteps[i])->Scale(1. / nRebin);
+    H1("fh_nof_plutoElectrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebSP);
+    H1("fh_nof_plutoPositrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebSP);
+    H1("fh_nof_urqmdElectrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebSP);
+    H1("fh_nof_urqmdPositrons_" + CbmLmvmHist::fAnaSteps[i])->Rebin(nRebSP);
+    H1("fh_nof_plutoElectrons_" + CbmLmvmHist::fAnaSteps[i])->Scale(1. / nRebSP);
+    H1("fh_nof_plutoPositrons_" + CbmLmvmHist::fAnaSteps[i])->Scale(1. / nRebSP);
+    H1("fh_nof_urqmdElectrons_" + CbmLmvmHist::fAnaSteps[i])->Scale(1. / nRebSP);
+    H1("fh_nof_urqmdPositrons_" + CbmLmvmHist::fAnaSteps[i])->Scale(1. / nRebSP);
 
     for (int iP = 0; iP < CbmLmvmHist::fNofBgPairSources; iP++) {
       stringstream ss;
@@ -390,8 +673,8 @@ void CbmAnaDielectronTaskDraw::SOverBg(CbmLmvmAnalysisSteps step)
 {
   TH1D* s  = H1("fh_signal_minv_" + CbmLmvmHist::fAnaSteps[step]);
   TH1D* bg = H1("fh_bg_minv_" + CbmLmvmHist::fAnaSteps[step]);
-  H2("fh_signal_pty_" + CbmLmvmHist::fAnaSteps[step]);
-  H2("fh_signal_pty_" + CbmLmvmHist::fAnaSteps[0]);
+  //H2("fh_signal_pty_" + CbmLmvmHist::fAnaSteps[step]);	// TODO: commented these lines, what do they do??
+  //H2("fh_signal_pty_" + CbmLmvmHist::fAnaSteps[0]);
 
   if (s->GetEntries() < 1) return;
 

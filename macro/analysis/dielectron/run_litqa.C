@@ -112,7 +112,7 @@ void run_litqa(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-  parIo1->open(parFile.c_str(), "UPDATE");
+  parIo1->open(parFile.c_str(), "READ");
   rtdb->setFirstInput(parIo1);
   if (!parFileList->IsEmpty()) {
     parIo2->open(parFileList, "in");

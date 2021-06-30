@@ -69,85 +69,6 @@
 
 #include "L1Field.h"
 
-
-/*-------------------------------------------------------	clang 11.0.0 version (crashed)
-=======
->>>>>>> Update combinatorial BG procedure
-
-#include "CbmAnaDielectronTask.h"
-#include "CbmGlobalTrack.h"
-#include "CbmKF.h"
-
-<<<<<<< HEAD
-#include "CbmL1PFFitter.h"
-
-=======
->>>>>>> Update combinatorial BG procedure
-#include "CbmLmvmCandidate.h"
-#include "CbmLmvmUtils.h"
-#include "CbmMCTrack.h"
-#include "CbmMatch.h"
-#include "CbmMvdHit.h"
-#include "CbmRichHit.h"
-#include "CbmRichPoint.h"
-#include "CbmRichRing.h"
-<<<<<<< HEAD
-
-#include "CbmL1PFFitter.h"
-#include "CbmStsHit.h"
-
-=======
-#include "CbmL1PFFitter.h"
-#include "CbmStsHit.h"
->>>>>>> Update combinatorial BG procedure
-#include "CbmStsKFTrackFitter.h"
-#include "CbmStsTrack.h"
-#include "CbmTofHit.h"
-#include "CbmTofPoint.h"
-#include "CbmTrackMatchNew.h"
-#include "CbmTrdHit.h"
-#include "CbmTrdTrack.h"
-#include "CbmVertex.h"
-#include "cbm/elid/CbmLitGlobalElectronId.h"
-
-#include "FairBaseParSet.h"
-#include "FairEventHeader.h"
-#include "FairGeoMedium.h"
-#include "FairGeoNode.h"
-#include "FairGeoTransform.h"
-#include "FairGeoVector.h"
-#include "FairGeoVolume.h"
-#include "FairMCPoint.h"
-#include "FairRootManager.h"
-#include "FairRunAna.h"
-#include "FairRuntimeDb.h"
-#include "FairTask.h"
-#include "FairTrackParam.h"
-
-#include "TClonesArray.h"
-#include "TDatabasePDG.h"
-#include "TF1.h"
-#include "TGraph.h"
-#include "TH1D.h"
-#include "TH2D.h"
-#include "TLorentzVector.h"
-#include "TMath.h"
-#include "TObjArray.h"
-#include "TObject.h"
-#include "TProfile.h"
-#include "TRandom3.h"
-#include "TStopwatch.h"
-#include "TString.h"
-#include "TSystem.h"
-#include "TVector3.h"
-#include <TFile.h>
-
-#include <sstream>
-#include <vector>
-
-#include "L1Field.h"
------------------------------------------------------*/
-
 using namespace std;
 
 ClassImp(CbmAnaDielectronTask);
@@ -279,6 +200,12 @@ CbmAnaDielectronTask::CbmAnaDielectronTask()
   , fh_nof_plutoPositrons()
   , fh_nof_urqmdElectrons()
   , fh_nof_urqmdPositrons()
+  , fh_nof_plutoElectrons_p_pt()
+  , fh_nof_plutoPositrons_p_pt()
+  , fh_nof_urqmdElectrons_p_pt()
+  , fh_nof_urqmdPositrons_p_pt()
+  , fh_nof_particles_acc()
+  , fh_nof_points()
   , fh_pi0_minv()
   , fh_eta_minv()
   , fh_gamma_minv()
@@ -547,14 +474,24 @@ void CbmAnaDielectronTask::InitHists()
   CreateAnalysisStepsH1(fh_combPairsMM_minv_mixedEvents, "fh_combPairsMM_minv_mixedEvents", "M_{e-e-} [GeV/c^{2}]",
                         "Yield", 4000, 0., 4.);
 
-  CreateAnalysisStepsH1(fh_nof_plutoElectrons, "fh_nof_plutoElectrons", "P [Gev/c]", "number pluto electrons", 10000, 0,
+  // 1D Histograms for single particle yield vs. momentum
+  CreateAnalysisStepsH1(fh_nof_plutoElectrons, "fh_nof_plutoElectrons", "P [Gev/c]", "yield pluto electrons", 100, 0,
                         10.);
-  CreateAnalysisStepsH1(fh_nof_plutoPositrons, "fh_nof_plutoPositrons", "P [Gev/c]", "number pluto positrons", 10000, 0,
+  CreateAnalysisStepsH1(fh_nof_plutoPositrons, "fh_nof_plutoPositrons", "P [Gev/c]", "yield pluto positrons", 100, 0,
                         10.);
-  CreateAnalysisStepsH1(fh_nof_urqmdElectrons, "fh_nof_urqmdElectrons", "P [Gev/c]", "number urqmd electrons", 10000, 0,
+  CreateAnalysisStepsH1(fh_nof_urqmdElectrons, "fh_nof_urqmdElectrons", "P [Gev/c]", "yield urqmd electrons", 100, 0,
                         10.);
-  CreateAnalysisStepsH1(fh_nof_urqmdPositrons, "fh_nof_urqmdPositrons", "P [Gev/c]", "number urqmd positrons", 10000, 0,
+  CreateAnalysisStepsH1(fh_nof_urqmdPositrons, "fh_nof_urqmdPositrons", "P [Gev/c]", "yield urqmd positrons", 100, 0,
                         10.);
+  // 2D Histograms for single particle yield vs. momentum and Pt
+  CreateAnalysisStepsH2(fh_nof_plutoElectrons_p_pt, "fh_nof_plutoElectrons_p_pt", "P [GeV/c]", "P_{t} [Gev/c]",
+                        "yield pluto electrons", 100, 0, 10., 40, 0., 4.);
+  CreateAnalysisStepsH2(fh_nof_plutoPositrons_p_pt, "fh_nof_plutoPositrons_p_pt", "P [GeV/c]", "P_{t} [Gev/c]",
+                        "yield pluto positrons", 100, 0, 10., 40, 0., 4.);
+  CreateAnalysisStepsH2(fh_nof_urqmdElectrons_p_pt, "fh_nof_urqmdElectrons_p_pt", "P [GeV/c]", "P_{t} [Gev/c]",
+                        "yield urqmd electrons", 100, 0, 10., 40, 0., 4.);
+  CreateAnalysisStepsH2(fh_nof_urqmdPositrons_p_pt, "fh_nof_urqmdPositrons_p_pt", "P [GeV/c]", "P_{t} [Gev/c]",
+                        "yield urqmd positrons", 100, 0, 10., 40, 0., 4.);
 
   // minv for true matched and mismatched tracks
   CreateAnalysisStepsH1(fh_bg_truematch_minv, "fh_bg_truematch_minv", "M_{ee} [GeV/c^{2}]", "Yield", 4000, 0., 4.);
@@ -685,6 +622,63 @@ void CbmAnaDielectronTask::InitHists()
 
   fHistoList.push_back(fh_mom_likelihood_El);
   fHistoList.push_back(fh_mom_likelihood_Pi);
+
+  // Acceptance of single particles vs. momentum for various detector combinations
+  fh_nof_particles_acc.resize(20);
+  fh_nof_particles_acc[0] = new TH1D("fh_nof_particles_acc_pEl_mc", "fh_nof_particles_acc_pEl_mc", 100., 0., 10.);
+  fh_nof_particles_acc[1] = new TH1D("fh_nof_particles_acc_pPos_mc", "fh_nof_particles_acc_pPos_mc", 100., 0., 10.);
+  fh_nof_particles_acc[2] = new TH1D("fh_nof_particles_acc_pEl_sts", "fh_nof_particles_acc_pEl_sts", 100., 0., 10.);
+  fh_nof_particles_acc[3] = new TH1D("fh_nof_particles_acc_pPos_sts", "fh_nof_particles_acc_pPos_sts", 100., 0., 10.);
+  fh_nof_particles_acc[4] = new TH1D("fh_nof_particles_acc_pEl_rich", "fh_nof_particles_acc_pEl_rich", 100., 0., 10.);
+  fh_nof_particles_acc[5] = new TH1D("fh_nof_particles_acc_pPos_rich", "fh_nof_particles_acc_pPos_rich", 100., 0., 10.);
+  fh_nof_particles_acc[6] = new TH1D("fh_nof_particles_acc_pEl_trd", "fh_nof_particles_acc_pEl_trd", 100., 0., 10.);
+  fh_nof_particles_acc[7] = new TH1D("fh_nof_particles_acc_pPos_trd", "fh_nof_particles_acc_pPos_trd", 100., 0., 10.);
+  fh_nof_particles_acc[8] = new TH1D("fh_nof_particles_acc_pEl_tof", "fh_nof_particles_acc_pEl_tof", 100., 0., 10.);
+  fh_nof_particles_acc[9] = new TH1D("fh_nof_particles_acc_pPos_tof", "fh_nof_particles_acc_pPos_tof", 100., 0., 10.);
+  fh_nof_particles_acc[10] = new TH1D("fh_nof_particles_acc_uEl_mc", "fh_nof_particles_acc_uEl_mc", 100., 0., 10.);
+  fh_nof_particles_acc[11] = new TH1D("fh_nof_particles_acc_uPos_mc", "fh_nof_particles_acc_uPos_mc", 100., 0., 10.);
+  fh_nof_particles_acc[12] = new TH1D("fh_nof_particles_acc_uEl_sts", "fh_nof_particles_acc_uEl_sts", 100., 0., 10.);
+  fh_nof_particles_acc[13] = new TH1D("fh_nof_particles_acc_uPos_sts", "fh_nof_particles_acc_uPos_sts", 100., 0., 10.);
+  fh_nof_particles_acc[14] = new TH1D("fh_nof_particles_acc_uEl_rich", "fh_nof_particles_acc_uEl_rich", 100., 0., 10.);
+  fh_nof_particles_acc[15] =
+    new TH1D("fh_nof_particles_acc_uPos_rich", "fh_nof_particles_acc_uPos_rich", 100., 0., 10.);
+  fh_nof_particles_acc[16] = new TH1D("fh_nof_particles_acc_uEl_trd", "fh_nof_particles_acc_uEl_trd", 100., 0., 10.);
+  fh_nof_particles_acc[17] = new TH1D("fh_nof_particles_acc_uPos_trd", "fh_nof_particles_acc_uPos_trd", 100., 0., 10.);
+  fh_nof_particles_acc[18] = new TH1D("fh_nof_particles_acc_uEl_tof", "fh_nof_particles_acc_uEl_tof", 100., 0., 10.);
+  fh_nof_particles_acc[19] = new TH1D("fh_nof_particles_acc_uPos_tof", "fh_nof_particles_acc_uPos_tof", 100., 0., 10.);
+
+  int nHist = fh_nof_particles_acc.size();
+  for (Int_t i = 0; i < nHist; i++) {
+    fh_nof_particles_acc[i]->GetXaxis()->SetTitle("P [GeV/c]");
+    fh_nof_particles_acc[i]->GetYaxis()->SetTitle("Yield");
+    fHistoList.push_back(fh_nof_particles_acc[i]);
+  }
+
+  // Number of points the electrons and positrons left in various detectors
+  fh_nof_points.resize(16);
+  fh_nof_points[0]  = new TH1D("fh_nof_points_pEl_sts", "fh_nof_points_pEl_sts", 50., 0., 50.);
+  fh_nof_points[1]  = new TH1D("fh_nof_points_pPos_sts", "fh_nof_points_pPos_sts", 50., 0., 50.);
+  fh_nof_points[2]  = new TH1D("fh_nof_points_pEl_rich", "fh_nof_points_pEl_rich", 50., 0., 50.);
+  fh_nof_points[3]  = new TH1D("fh_nof_points_pPos_rich", "fh_nof_points_pPos_rich", 50., 0., 50.);
+  fh_nof_points[4]  = new TH1D("fh_nof_points_pEl_trd", "fh_nof_points_pEl_trd", 50., 0., 50.);
+  fh_nof_points[5]  = new TH1D("fh_nof_points_pPos_trd", "fh_nof_points_pPos_trd", 50., 0., 50.);
+  fh_nof_points[6]  = new TH1D("fh_nof_points_pEl_tof", "fh_nof_points_pEl_tof", 50., 0., 50.);
+  fh_nof_points[7]  = new TH1D("fh_nof_points_pPos_tof", "fh_nof_points_pPos_tof", 50., 0., 50.);
+  fh_nof_points[8]  = new TH1D("fh_nof_points_uEl_sts", "fh_nof_points_uEl_sts", 50., 0., 50.);
+  fh_nof_points[9]  = new TH1D("fh_nof_points_uPos_sts", "fh_nof_points_uPos_sts", 50., 0., 50.);
+  fh_nof_points[10] = new TH1D("fh_nof_points_uEl_rich", "fh_nof_points_uEl_rich", 50., 0., 50.);
+  fh_nof_points[11] = new TH1D("fh_nof_points_uPos_rich", "fh_nof_points_uPos_rich", 50., 0., 50.);
+  fh_nof_points[12] = new TH1D("fh_nof_points_uEl_trd", "fh_nof_points_uEl_trd", 50., 0., 50.);
+  fh_nof_points[13] = new TH1D("fh_nof_points_uPos_trd", "fh_nof_points_uPos_trd", 50., 0., 50.);
+  fh_nof_points[14] = new TH1D("fh_nof_points_uEl_tof", "fh_nof_points_uEl_tof", 50., 0., 50.);
+  fh_nof_points[15] = new TH1D("fh_nof_points_uPos_tof", "fh_nof_points_uPos_tof", 50., 0., 50.);
+
+  int nHistPoints = fh_nof_points.size();
+  for (Int_t i = 0; i < nHistPoints; i++) {
+    fh_nof_points[i]->GetXaxis()->SetTitle("nofPoints");
+    fh_nof_points[i]->GetYaxis()->SetTitle("Entries");
+    fHistoList.push_back(fh_nof_points[i]);
+  }
 }
 
 InitStatus CbmAnaDielectronTask::Init()
@@ -805,9 +799,8 @@ void CbmAnaDielectronTask::Exec(Option_t*)
   else {
     Fatal("CbmAnaDielectronTask::Exec", "No PrimaryVertex array!");
   }
-  //    cout << "I'm here" << endl;
   // CbmLitMCTrackCreator::Instance()->CreateReco();
-  //
+
   if (useMbias || (!useMbias && isCentralCollision)) {
     FillRichRingNofHits();
     MCPairs();
@@ -985,52 +978,153 @@ void CbmAnaDielectronTask::FillNofChargedParticles()
   cout << "FillNofChargedParticles: nofMcTracks = " << nofMcTracks << endl;
   cout << "FillNofChargedParticles: nCand = " << nCand << endl;
 
+  int nChargeMC   = 0;
+  int nChargeCand = 0;
+
   for (Int_t i = 0; i < nofMcTracks; i++) {
     CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->At(i);
     Int_t motherId      = mcTrack->GetMotherId();
     Int_t pdg           = TMath::Abs(mcTrack->GetPdgCode());
     bool isMcElectron   = (pdg == 11) ? true : false;
     double mom          = mcTrack->GetP();
+    double momT         = mcTrack->GetPt();
     double charge =
       mcTrack
         ->GetCharge();  // FIXME: TODO: uncomment when bug is fixed; issue https://lxcbmredmine01.gsi.de/issues/1826; gives charge = +/- 3!
     Bool_t isMcTrackCharged   = (charge == 0) ? false : true;
     Bool_t isMcSignalElectron = CbmLmvmUtils::IsMcSignalElectron(mcTrack);
-    Bool_t isMcTrAcc =
-      IsMcTrackAccepted(i);  // before: = (mcTrack->GetNPoints(ECbmModuleId::kSts) >= 4) ? true : false;
+    Bool_t isUrqmdElectron    = (!isMcSignalElectron && isMcElectron) ? true : false;
+    Bool_t isMcTrAcc          = IsMcTrackAccepted(i);
     Bool_t isPrimary = (motherId == -1) ? true : false;
 
-    if (charge != 0) cout << "charge = " << charge << endl;
+    CbmMCTrack* tr    = (CbmMCTrack*) fMCTracks->At(i);
+    Int_t nRichPoints = fNofHitsInRingMap[i];
+    int nStsPoints    = tr->GetNPoints(ECbmModuleId::kSts);
+    int nTrdPoints    = tr->GetNPoints(ECbmModuleId::kTrd);
+    int nTofPoints    = tr->GetNPoints(ECbmModuleId::kTof);
+
+    bool isStsAcc = (tr->GetNPoints(ECbmModuleId::kMvd) + tr->GetNPoints(ECbmModuleId::kSts) >= 4) ? true : false;
+    bool isRichAcc =
+      (tr->GetNPoints(ECbmModuleId::kMvd) + tr->GetNPoints(ECbmModuleId::kSts) >= 4 && nRichPoints >= 7) ? true : false;
+    bool isTrdAcc = (tr->GetNPoints(ECbmModuleId::kMvd) + tr->GetNPoints(ECbmModuleId::kSts) >= 4 && nRichPoints >= 7
+                     && tr->GetNPoints(ECbmModuleId::kTrd) >= 2)
+                      ? true
+                      : false;
+    bool isTofAcc = (tr->GetNPoints(ECbmModuleId::kMvd) + tr->GetNPoints(ECbmModuleId::kSts) >= 4 && nRichPoints >= 7
+                     && tr->GetNPoints(ECbmModuleId::kTrd) >= 2 && tr->GetNPoints(ECbmModuleId::kTof) > 1)
+                      ? true
+                      : false;  // Mind: kTof was '0' before! changed on 2.7.21; same in IsMcTrackAccepted(int)
+
+    if (charge != 0) {
+      cout << "charge (from GetCharge()) = " << charge << endl;
+      nChargeMC++;
+    }
 
     if (!isMcSignalElectron && isMcTrackCharged && isPrimary) nofChargedUrqmdParticles++;
     if (!isMcSignalElectron && isMcTrackCharged && isMcTrAcc && isPrimary) nofChargedUrqmdParticlesAcc++;
 
+    // 1D Histos: Yield vs. Momentum
     if (isMcSignalElectron && charge < 0)
       fh_nof_plutoElectrons[kMc]->Fill(mom);  // 'isMcEl' was redundant here and in next lines with cond. 'isMcSignalEl'
     if (isMcSignalElectron && charge > 0) fh_nof_plutoPositrons[kMc]->Fill(mom);
     if (isMcSignalElectron && isMcTrAcc && charge < 0) fh_nof_plutoElectrons[kAcc]->Fill(mom);
     if (isMcSignalElectron && isMcTrAcc && charge > 0) fh_nof_plutoPositrons[kAcc]->Fill(mom);
-    if (!isMcSignalElectron && isMcElectron && charge < 0) fh_nof_urqmdElectrons[kMc]->Fill(mom);
-    if (!isMcSignalElectron && isMcElectron && charge > 0) fh_nof_urqmdPositrons[kMc]->Fill(mom);
-    if (!isMcSignalElectron && isMcElectron && isMcTrAcc && charge < 0) fh_nof_urqmdElectrons[kAcc]->Fill(mom);
-    if (!isMcSignalElectron && isMcElectron && isMcTrAcc && charge > 0) fh_nof_urqmdPositrons[kAcc]->Fill(mom);
+    if (isUrqmdElectron && charge < 0) fh_nof_urqmdElectrons[kMc]->Fill(mom);
+    if (isUrqmdElectron && charge > 0) fh_nof_urqmdPositrons[kMc]->Fill(mom);
+    if (isUrqmdElectron && isMcTrAcc && charge < 0) fh_nof_urqmdElectrons[kAcc]->Fill(mom);
+    if (isUrqmdElectron && isMcTrAcc && charge > 0) fh_nof_urqmdPositrons[kAcc]->Fill(mom);
+
+    // 2D Histos: Yield vs. Momentum and Pt
+    if (isMcSignalElectron && charge < 0) fh_nof_plutoElectrons_p_pt[kMc]->Fill(mom, momT);
+    if (isMcSignalElectron && charge > 0) fh_nof_plutoPositrons_p_pt[kMc]->Fill(mom, momT);
+    if (isMcSignalElectron && isMcTrAcc && charge < 0) fh_nof_plutoElectrons_p_pt[kAcc]->Fill(mom, momT);
+    if (isMcSignalElectron && isMcTrAcc && charge > 0) fh_nof_plutoPositrons_p_pt[kAcc]->Fill(mom, momT);
+    if (isUrqmdElectron && charge < 0) fh_nof_urqmdElectrons_p_pt[kMc]->Fill(mom, momT);
+    if (isUrqmdElectron && charge > 0) fh_nof_urqmdPositrons_p_pt[kMc]->Fill(mom, momT);
+    if (isUrqmdElectron && isMcTrAcc && charge < 0) fh_nof_urqmdElectrons_p_pt[kAcc]->Fill(mom, momT);
+    if (isUrqmdElectron && isMcTrAcc && charge > 0) fh_nof_urqmdPositrons_p_pt[kAcc]->Fill(mom, momT);
+
+    // Checking Acceptance of diff. Detectors
+    if (isMcSignalElectron && charge < 0) fh_nof_particles_acc[0]->Fill(mom);              // PLUTO electron
+    if (isMcSignalElectron && charge > 0) fh_nof_particles_acc[1]->Fill(mom);              // PLUTO positron
+    if (isMcSignalElectron && isStsAcc && charge < 0) fh_nof_particles_acc[2]->Fill(mom);  // PLUTO electron
+    if (isMcSignalElectron && isStsAcc && charge > 0) fh_nof_particles_acc[3]->Fill(mom);  // PLUTO positron
+    if (isMcSignalElectron && isStsAcc && isRichAcc && charge < 0)
+      fh_nof_particles_acc[4]->Fill(mom);  // PLUTO electron
+    if (isMcSignalElectron && isStsAcc && isRichAcc && charge > 0)
+      fh_nof_particles_acc[5]->Fill(mom);  // PLUTO positron
+    if (isMcSignalElectron && isStsAcc && isRichAcc && isTrdAcc && charge < 0)
+      fh_nof_particles_acc[6]->Fill(mom);  // PLUTO electron
+    if (isMcSignalElectron && isStsAcc && isRichAcc && isTrdAcc && charge > 0)
+      fh_nof_particles_acc[7]->Fill(mom);  // PLUTO positron
+    if (isMcSignalElectron && isStsAcc && isRichAcc && isTrdAcc && isTofAcc && charge < 0)
+      fh_nof_particles_acc[8]->Fill(mom);  // PLUTO electron
+    if (isMcSignalElectron && isStsAcc && isRichAcc && isTrdAcc && isTofAcc && charge > 0)
+      fh_nof_particles_acc[9]->Fill(mom);                                                             // PLUTO positron
+    if (isUrqmdElectron && charge < 0) fh_nof_particles_acc[10]->Fill(mom);                           // UrQMD electron
+    if (isUrqmdElectron && charge > 0) fh_nof_particles_acc[11]->Fill(mom);                           // UrQMD positron
+    if (isUrqmdElectron && isStsAcc && charge < 0) fh_nof_particles_acc[12]->Fill(mom);               // UrQMD electron
+    if (isUrqmdElectron && isStsAcc && charge > 0) fh_nof_particles_acc[13]->Fill(mom);               // UrQMD positron
+    if (isUrqmdElectron && isStsAcc && isRichAcc && charge < 0) fh_nof_particles_acc[14]->Fill(mom);  // UrQMD electron
+    if (isUrqmdElectron && isStsAcc && isRichAcc && charge > 0) fh_nof_particles_acc[15]->Fill(mom);  // UrQMD positron
+    if (isUrqmdElectron && isStsAcc && isRichAcc && isTrdAcc && charge < 0)
+      fh_nof_particles_acc[16]->Fill(mom);  // UrQMD electron
+    if (isUrqmdElectron && isStsAcc && isRichAcc && isTrdAcc && charge > 0)
+      fh_nof_particles_acc[17]->Fill(mom);  // UrQMD positron
+    if (isUrqmdElectron && isStsAcc && isRichAcc && isTrdAcc && isTofAcc && charge < 0)
+      fh_nof_particles_acc[18]->Fill(mom);  // UrQMD electron
+    if (isUrqmdElectron && isStsAcc && isRichAcc && isTrdAcc && isTofAcc && charge > 0)
+      fh_nof_particles_acc[19]->Fill(mom);  // UrQMD positron
+
+    // Fill histos with number of points
+    if (isMcSignalElectron && charge < 0) {
+      fh_nof_points[0]->Fill(nStsPoints);
+      fh_nof_points[2]->Fill(nRichPoints);
+      fh_nof_points[4]->Fill(nTrdPoints);
+      fh_nof_points[6]->Fill(nTofPoints);
+    }
+    if (isMcSignalElectron && charge > 0) {
+      fh_nof_points[1]->Fill(nStsPoints);
+      fh_nof_points[3]->Fill(nRichPoints);
+      fh_nof_points[5]->Fill(nTrdPoints);
+      fh_nof_points[7]->Fill(nTofPoints);
+    }
+    if (isUrqmdElectron && charge < 0) {
+      fh_nof_points[8]->Fill(nStsPoints);
+      fh_nof_points[10]->Fill(nRichPoints);
+      fh_nof_points[12]->Fill(nTrdPoints);
+      fh_nof_points[14]->Fill(nTofPoints);
+    }
+    if (isUrqmdElectron && charge > 0) {
+      fh_nof_points[9]->Fill(nStsPoints);
+      fh_nof_points[11]->Fill(nRichPoints);
+      fh_nof_points[13]->Fill(nTrdPoints);
+      fh_nof_points[15]->Fill(nTofPoints);
+    }
   }
   fh_nof_charged_particles->Fill(nofChargedUrqmdParticles);
   fh_nof_charged_particles_acc->Fill(nofChargedUrqmdParticlesAcc);
 
   for (Int_t i = 0; i < nCand; i++) {
-    int charge                = fCandidates[i].fCharge;
+    int charge = fCandidates[i].fCharge;
+    if (charge != 0) {
+      cout << "fCandidates[i].fCharge = " << charge << endl;
+      nChargeCand++;
+    }
     Bool_t isMcSignalElectron = fCandidates[i].fIsMcSignalElectron;
-
-    Bool_t isChiPrimary = fCandidatesTotal[i].fChi2Prim < fCuts.fChiPrimCut;
-    Bool_t isElectron   = fCandidatesTotal[i].fIsElectron;
-    Bool_t isGammaCut   = !fCandidatesTotal[i].fIsGamma;
-    //Bool_t isMvd1Cut	= fCandidatesTotal[i].fIsMvd1CutElectron;
-    //Bool_t isMvd2Cut	= fCandidatesTotal[i].fIsMvd2CutElectron;
-    Bool_t isStCut = fCandidatesTotal[i].fIsStCutElectron;
-    Bool_t isRtCut = fCandidatesTotal[i].fIsRtCutElectron;
-    Bool_t isTtCut = fCandidatesTotal[i].fIsTtCutElectron;
-    Bool_t isPtCut = fCandidatesTotal[i].fMomentum.Perp() > fCuts.fPtCut;
+    Bool_t isMcElectron =
+      (fCandidates[i].fIsMcPi0Electron || fCandidates[i].fIsMcEtaElectron || fCandidates[i].fIsMcGammaElectron) ? true
+                                                                                                                : false;
+    Bool_t isUrqmdElectron = (!isMcSignalElectron && isMcElectron) ? true : false;
+    Bool_t isChiPrimary    = fCandidates[i].fChi2Prim < fCuts.fChiPrimCut;
+    Bool_t isElectron      = fCandidates[i].fIsElectron;
+    Bool_t isGammaCut      = !fCandidates[i].fIsGamma;
+    //Bool_t isMvd1Cut	= fCandidates[i].fIsMvd1CutElectron;
+    //Bool_t isMvd2Cut	= fCandidates[i].fIsMvd2CutElectron;
+    Bool_t isStCut = fCandidates[i].fIsStCutElectron;
+    Bool_t isRtCut = fCandidates[i].fIsRtCutElectron;
+    Bool_t isTtCut = fCandidates[i].fIsTtCutElectron;
+    Bool_t isPtCut = fCandidates[i].fMomentum.Perp() > fCuts.fPtCut;
 
     if (isMcSignalElectron && charge < 0) fh_nof_plutoElectrons[kReco]->Fill(fCandidates[i].fMomentum.Mag());
     if (isMcSignalElectron && charge > 0) fh_nof_plutoPositrons[kReco]->Fill(fCandidates[i].fMomentum.Mag());
@@ -1038,6 +1132,13 @@ void CbmAnaDielectronTask::FillNofChargedParticles()
       fh_nof_plutoElectrons[kElId]->Fill(fCandidates[i].fMomentum.Mag());
     if (isMcSignalElectron && isChiPrimary && isElectron && charge > 0)
       fh_nof_plutoPositrons[kElId]->Fill(fCandidates[i].fMomentum.Mag());
+    if (isChiPrimary && isElectron && charge < 0)
+      fh_nof_plutoElectrons[kChi2Prim]->Fill(
+        fCandidates[i]
+          .fMomentum.Mag());  // !!!TODO: is NOT kChi2Prim step but El-ID wo. MC info; to show difference between with
+    if (isChiPrimary && isElectron && charge > 0)
+      fh_nof_plutoPositrons[kChi2Prim]->Fill(
+        fCandidates[i].fMomentum.Mag());  // ... and wo MC info!! Remove afterwards !!
     if (isMcSignalElectron && isChiPrimary && isElectron && isGammaCut && isStCut && isRtCut && isTtCut && charge < 0)
       fh_nof_plutoElectrons[kTtCut]->Fill(fCandidates[i].fMomentum.Mag());
     if (isMcSignalElectron && isChiPrimary && isElectron && isGammaCut && isStCut && isRtCut && isTtCut && charge > 0)
@@ -1049,23 +1150,31 @@ void CbmAnaDielectronTask::FillNofChargedParticles()
         && charge > 0)
       fh_nof_plutoPositrons[kPtCut]->Fill(fCandidates[i].fMomentum.Mag());
 
-    if (!isMcSignalElectron && charge < 0) fh_nof_urqmdElectrons[kReco]->Fill(fCandidates[i].fMomentum.Mag());
-    if (!isMcSignalElectron && charge > 0) fh_nof_urqmdPositrons[kReco]->Fill(fCandidates[i].fMomentum.Mag());
-    if (!isMcSignalElectron && isChiPrimary && isElectron && charge < 0)
+    if (isUrqmdElectron && charge < 0) fh_nof_urqmdElectrons[kReco]->Fill(fCandidates[i].fMomentum.Mag());
+    if (isUrqmdElectron && charge > 0) fh_nof_urqmdPositrons[kReco]->Fill(fCandidates[i].fMomentum.Mag());
+    if (isUrqmdElectron && isChiPrimary && isElectron && charge < 0)
       fh_nof_urqmdElectrons[kElId]->Fill(fCandidates[i].fMomentum.Mag());
-    if (!isMcSignalElectron && isChiPrimary && isElectron && charge > 0)
+    if (isUrqmdElectron && isChiPrimary && isElectron && charge > 0)
       fh_nof_urqmdPositrons[kElId]->Fill(fCandidates[i].fMomentum.Mag());
-    if (!isMcSignalElectron && isChiPrimary && isElectron && isGammaCut && isStCut && isRtCut && isTtCut && charge < 0)
+    if (isChiPrimary && isElectron && charge < 0)
+      fh_nof_urqmdElectrons[kChi2Prim]->Fill(
+        fCandidates[i]
+          .fMomentum.Mag());  // !!!TODO: is NOT kChi2Prim step but El-ID wo. MC info; to show difference between with
+    if (isChiPrimary && isElectron && charge > 0)
+      fh_nof_urqmdPositrons[kChi2Prim]->Fill(
+        fCandidates[i].fMomentum.Mag());  // ... and wo MC info!! Remove afterwards !!
+    if (isUrqmdElectron && isChiPrimary && isElectron && isGammaCut && isStCut && isRtCut && isTtCut && charge < 0)
       fh_nof_urqmdElectrons[kTtCut]->Fill(fCandidates[i].fMomentum.Mag());
-    if (!isMcSignalElectron && isChiPrimary && isElectron && isGammaCut && isStCut && isRtCut && isTtCut && charge > 0)
+    if (isUrqmdElectron && isChiPrimary && isElectron && isGammaCut && isStCut && isRtCut && isTtCut && charge > 0)
       fh_nof_urqmdPositrons[kTtCut]->Fill(fCandidates[i].fMomentum.Mag());
-    if (!isMcSignalElectron && isChiPrimary && isElectron && isGammaCut && isStCut && isRtCut && isTtCut && isPtCut
+    if (isUrqmdElectron && isChiPrimary && isElectron && isGammaCut && isStCut && isRtCut && isTtCut && isPtCut
         && charge < 0)
       fh_nof_urqmdElectrons[kPtCut]->Fill(fCandidates[i].fMomentum.Mag());
-    if (!isMcSignalElectron && isChiPrimary && isElectron && isGammaCut && isStCut && isRtCut && isTtCut && isPtCut
+    if (isUrqmdElectron && isChiPrimary && isElectron && isGammaCut && isStCut && isRtCut && isTtCut && isPtCut
         && charge > 0)
       fh_nof_urqmdPositrons[kPtCut]->Fill(fCandidates[i].fMomentum.Mag());
   }
+  cout << "nChargeMC = " << nChargeMC << ", nChargeCand = " << nChargeCand << endl;
 }
 
 Bool_t CbmAnaDielectronTask::IsMcTrackAccepted(Int_t mcTrackInd)
@@ -1074,7 +1183,7 @@ Bool_t CbmAnaDielectronTask::IsMcTrackAccepted(Int_t mcTrackInd)
   if (tr == NULL) return false;
   Int_t nRichPoints = fNofHitsInRingMap[mcTrackInd];
   return (tr->GetNPoints(ECbmModuleId::kMvd) + tr->GetNPoints(ECbmModuleId::kSts) >= 4 && nRichPoints >= 7
-          && tr->GetNPoints(ECbmModuleId::kTrd) >= 2 && tr->GetNPoints(ECbmModuleId::kTof) > 0);
+          && tr->GetNPoints(ECbmModuleId::kTrd) >= 2 && tr->GetNPoints(ECbmModuleId::kTof) > 1);
 }
 
 void CbmAnaDielectronTask::SingleParticleAcceptance()
@@ -1424,8 +1533,7 @@ void CbmAnaDielectronTask::CombinatorialPairs()
       if (isSignal2) nSigCand2++;
       if (isSignal1 xor isSignal2)
         continue;  // since in FillPairHists() this case is not considered as well; to have same behaviour here as there
-      double weight = (isSignal1 || isSignal2) ? fWeight : 1.;
-      //double weight = 1;
+      double weight = (isSignal1 && isSignal2) ? fWeight : 1.;
 
       CbmLmvmKinematicParams pRec =
         CbmLmvmKinematicParams::KinematicParamsWithCandidates(&fCandidatesTotal[iCand1], &fCandidatesTotal[iCand2]);
@@ -2557,6 +2665,14 @@ void CbmAnaDielectronTask::Finish()
 
 void CbmAnaDielectronTask::SetEnergyAndPlutoParticle(const string& energy, const string& particle)
 {
+  // names of particles in common production differ from our names
+  if (particle == "rho0") particle == "inmed";  // or "inmed_had_epem"??
+  else if (particle == "wdalitz")
+    particle == "omegadalitz";
+  else if (particle == "w")
+    particle == "omegaepem";
+  else if (particle == "qgp_epem")
+    particle == "qgp";
 
   // Au+Au centr old scaling factors
   /* if (energy == "8gev" || energy == "10gev") {
@@ -2575,7 +2691,9 @@ void CbmAnaDielectronTask::SetEnergyAndPlutoParticle(const string& energy, const
                                                                                                       //either old or new!!!
     // Au+Au centr new scaling factors
     }*/
-  if (energy == "8gev") {
+  if (energy == "8gev"
+      || energy
+           == "12gev") {  // TODO: 12 GeV was added only to check common production; must add weights for this energy
     // weight omega = Multiplicity * Branching Ratio = 19 * 7.28e-5 for 8 AGeV beam energy
     if (particle == "omegaepem") this->SetWeight(2.5 * 7.28e-5);
     // weight omega = Multiplicity * Branching Ratio = 19 * 7.7e-4 for 8 AGeV beam energy
