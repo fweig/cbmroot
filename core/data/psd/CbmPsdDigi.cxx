@@ -46,6 +46,7 @@ CbmPsdDigi::CbmPsdDigi(const CbmPsdDigi& other)
 
   , fdEdepWfm(other.fdEdepWfm)
   , fdAmpl(other.fdAmpl)
+  , fuMinimum(other.fuMinimum)
   , fuTimeMax(other.fuTimeMax)
 
   , fdFitAmpl(other.fdFitAmpl)
@@ -68,6 +69,7 @@ CbmPsdDigi::CbmPsdDigi(CbmPsdDigi&& other)
 
   , fdEdepWfm(other.fdEdepWfm)
   , fdAmpl(other.fdAmpl)
+  , fuMinimum(other.fuMinimum)
   , fuTimeMax(other.fuTimeMax)
 
   , fdFitAmpl(other.fdFitAmpl)
@@ -96,6 +98,7 @@ CbmPsdDigi& CbmPsdDigi::operator=(const CbmPsdDigi& other)
 
     fdEdepWfm = other.fdEdepWfm;
     fdAmpl    = other.fdAmpl;
+    fuMinimum = other.fuMinimum;
     fuTimeMax = other.fuTimeMax;
 
     fdFitAmpl    = other.fdFitAmpl;
@@ -121,6 +124,7 @@ CbmPsdDigi& CbmPsdDigi::operator=(CbmPsdDigi&& other)
 
     fdEdepWfm = other.fdEdepWfm;
     fdAmpl    = other.fdAmpl;
+    fuMinimum = other.fuMinimum;
     fuTimeMax = other.fuTimeMax;
 
     fdFitAmpl    = other.fdFitAmpl;
@@ -187,6 +191,7 @@ void CbmPsdDigi::Streamer(TBuffer& R__b)
 
       R__b >> fdEdepWfm;
       R__b >> fdAmpl;
+      R__b >> fuMinimum;
       R__b >> fuTimeMax;
 
       R__b >> fdFitAmpl;
@@ -238,6 +243,7 @@ void CbmPsdDigi::Streamer(TBuffer& R__b)
 
       R__b << fdEdepWfm;
       R__b << fdAmpl;
+      R__b << fuMinimum;
       R__b << fuTimeMax;
 
       R__b << fdFitAmpl;

@@ -148,6 +148,7 @@ public:
 
   Double_t fdEdepWfm = 0.;  /// Energy deposition from waveform [MeV]
   Double_t fdAmpl    = 0.;  /// Amplitude from waveform [mV]
+  UInt_t fuMinimum   = 0;   /// Minimum of waveform [adc samples]
   UInt_t fuTimeMax   = 0;   /// Time of maximum in waveform [adc samples]
 
   Double_t fdFitAmpl    = 0.;    /// Amplitude from fit of waveform [mV]
@@ -180,6 +181,7 @@ private:
 
     ar& fdEdepWfm;
     ar& fdAmpl;
+    ar& fuMinimum;
     ar& fuTimeMax;
 
     ar& fdFitAmpl;

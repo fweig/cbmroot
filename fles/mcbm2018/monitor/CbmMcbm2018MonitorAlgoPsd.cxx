@@ -422,66 +422,74 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                 if (fbMonitorWfmMode) fvhHitWfmChan[uHitChannel]->Reset();
                 if (fbMonitorFitMode) fvhHitFitWfmChan[uHitChannel]->Reset();
 
-                dHitChargeWfm = std::accumulate(uWfm.begin(), uWfm.end(), 0);
-                dHitChargeWfm -= uZeroLevel * uWfm.size();
-                auto const max_iter = std::max_element(uWfm.begin(), uWfm.end());
-                assert(max_iter != uWfm.end());
-                if (max_iter == uWfm.end()) break;
-                //uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
-                dHitAmlpitude = *max_iter - uZeroLevel;
-                dHitAmlpitude /= kfAdc_to_mV;
-                dHitChargeWfm /= kfAdc_to_mV;
-                fvhHitAmplChan[uHitChannel]->Fill(dHitAmlpitude);
-                fvhHitChargeByWfmChan[uHitChannel]->Fill(dHitChargeWfm);
+                if (!uWfm.empty()){
+                  dHitChargeWfm = std::accumulate(uWfm.begin(), uWfm.end(), 0);
+                  dHitChargeWfm -= uZeroLevel * uWfm.size();
+                  auto const max_iter = std::max_element(uWfm.begin(), uWfm.end());
+                  assert(max_iter != uWfm.end());
+                  if (max_iter == uWfm.end()) break;
+                  //uint8_t hit_time_max = std::distance(uWfm.begin(), max_iter);
+                  dHitAmlpitude = *max_iter - uZeroLevel;
+                  dHitAmlpitude /= kfAdc_to_mV;
+                  dHitChargeWfm /= kfAdc_to_mV;
+                  fvhHitAmplChan[uHitChannel]->Fill(dHitAmlpitude);
+                  fvhHitChargeByWfmChan[uHitChannel]->Fill(dHitChargeWfm);
 
-                if (fbMonitorWfmMode) {
-                  fvhHitLPChanEvo[uHitChannel]->Fill(fdMsTime - fdStartTime, uWfm.back());
-                  for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
-                    fvhHitWfmChan[uHitChannel]->Fill(wfm_iter, uWfm.at(wfm_iter));
-                  fvhHitWfmChan[uHitChannel]->SetTitle(
-                    Form("Waveform channel %03u charge %0u zero level %0u; Time [adc "
-                         "counts]; Amplitude [adc counts]",
-                         uHitChannel, uSignalCharge, uZeroLevel));
-                  for (uint8_t i = 0; i < kuNbWfmRanges; ++i) {
-                    if (uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i + 1)) {
-                      UInt_t uFlatIndexOfChange = i * kuNbChanPsd + uHitChannel;
+                  if (fbMonitorWfmMode) {
+                    fvhHitLPChanEvo[uHitChannel]->Fill(fdMsTime - fdStartTime, uWfm.back());
+                    for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
+                      fvhHitWfmChan[uHitChannel]->Fill(wfm_iter, uWfm.at(wfm_iter));
+                    fvhHitWfmChan[uHitChannel]->SetTitle(
+                      Form("Waveform channel %03u charge %0u zero level %0u; Time [adc "
+                           "counts]; Amplitude [adc counts]",
+                           uHitChannel, uSignalCharge, uZeroLevel));
+                    for (uint8_t i = 0; i < kuNbWfmRanges; ++i) {
+                      if (uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i + 1)) {
+                        UInt_t uFlatIndexOfChange = i * kuNbChanPsd + uHitChannel;
 
-                      UInt_t uWfmExampleIter = kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange);
-                      UInt_t uFlatIndexHisto =
-                        uWfmExampleIter * kuNbWfmRanges * kuNbChanPsd + i * kuNbChanPsd + uHitChannel;
-                      fv3hHitWfmFlattenedChan[uFlatIndexHisto]->Reset();
+                        UInt_t uWfmExampleIter = kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange);
+                        UInt_t uFlatIndexHisto =
+                          uWfmExampleIter * kuNbWfmRanges * kuNbChanPsd + i * kuNbChanPsd + uHitChannel;
+                        fv3hHitWfmFlattenedChan[uFlatIndexHisto]->Reset();
 
-                      for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
-                        fv3hHitWfmFlattenedChan[uFlatIndexHisto]->Fill(wfm_iter, uWfm.at(wfm_iter));
-                      fv3hHitWfmFlattenedChan[uFlatIndexHisto]->SetTitle(
-                        Form("Waveform channel %03u charge %0u zero level %0u; Time "
-                             "[adc counts]; Amplitude [adc counts]",
-                             uHitChannel, uSignalCharge, uZeroLevel));
+                        for (UInt_t wfm_iter = 0; wfm_iter < uWfm.size(); wfm_iter++)
+                          fv3hHitWfmFlattenedChan[uFlatIndexHisto]->Fill(wfm_iter, uWfm.at(wfm_iter));
+                        fv3hHitWfmFlattenedChan[uFlatIndexHisto]->SetTitle(
+                          Form("Waveform channel %03u charge %0u zero level %0u; Time "
+                               "[adc counts]; Amplitude [adc counts]",
+                               uHitChannel, uSignalCharge, uZeroLevel));
 
-                      kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange)++;
-                      if (kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange) == kuNbWfmExamples)
-                        kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange) = 0;
+                        kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange)++;
+                        if (kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange) == kuNbWfmExamples)
+                          kvuWfmInRangeToChangeChan.at(uFlatIndexOfChange) = 0;
 
-                    }  // if( uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i+1) )
-                  }    // for (uint8_t i=0; i<kuNbWfmRanges; ++i)
-                }      //if (fbMonitorWfmMode)
+                      }  // if( uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i+1) )
+                    }    // for (uint8_t i=0; i<kuNbWfmRanges; ++i)
+                  }      //if (fbMonitorWfmMode)
+                }    //if (!uWfm.empty())
 
-                if (fbMonitorFitMode) {
+
+                if (fbMonitorFitMode && !uWfm.empty()) {
                   int gate_beg = 0;
-                  int gate_end = uWfm.size() - 1;
+                  int gate_end = 10;//uWfm.size() - 1;
                   PsdSignalFitting::PronyFitter Pfitter(2, 2, gate_beg, gate_end);
 
                   Pfitter.SetDebugMode(0);
                   Pfitter.SetWaveform(uWfm, uZeroLevel);
-                  int SignalBeg           = 2;
-                  Int_t best_signal_begin = Pfitter.ChooseBestSignalBeginHarmonics(SignalBeg - 1, SignalBeg + 1);
+                  int SignalBeg           = 4;
+					std::complex<float> first_fit_harmonic  = {0.72,  0.0};
+					std::complex<float> second_fit_harmonic = {0.38, -0.0};
+					Pfitter.SetExternalHarmonics(first_fit_harmonic, second_fit_harmonic);
+					Int_t best_signal_begin = Pfitter.ChooseBestSignalBegin(SignalBeg-1, SignalBeg+1);
+					Pfitter.SetSignalBegin(best_signal_begin);
+					Pfitter.CalculateFitAmplitudes();
 
                   Pfitter.SetSignalBegin(best_signal_begin);
                   Pfitter.CalculateFitHarmonics();
                   Pfitter.CalculateFitAmplitudes();
 
-                  Float_t fit_integral = Pfitter.GetIntegral(gate_beg, gate_end) / kfAdc_to_mV;
-                  Float_t fit_R2       = Pfitter.GetRSquare(gate_beg, gate_end);
+                  Float_t fit_integral = Pfitter.GetIntegral(gate_beg, uWfm.size() - 1) / kfAdc_to_mV;
+                  Float_t fit_R2       = Pfitter.GetRSquare(gate_beg, uWfm.size() - 1);
 
                   std::complex<float>* harmonics = Pfitter.GetHarmonics();
                   std::vector<uint16_t> uFitWfm  = Pfitter.GetFitWfm();
@@ -496,10 +504,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                   if (fit_R2 > 0.02) continue;
                   fvhFitHarmonic1Chan[uHitChannel]->Fill(std::real(harmonics[1]), std::imag(harmonics[1]));
                   fvhFitHarmonic2Chan[uHitChannel]->Fill(std::real(harmonics[2]), std::imag(harmonics[2]));
-                }  //if (fbMonitorFitMode)
-              }    //if (fbMonitorChanMode)
-
-
+                }  //if (fbMonitorFitMode && !uWfm.empty())
+              }//if (fbMonitorChanMode)
             }  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
           }
           else if (ReadResult == 1) {

@@ -37,8 +37,7 @@ namespace PsdDataV100
   void PsdGbtReader::ReadPackHeader()
   {
     PackHdr.clear();
-    save_buffer << std::hex << std::setfill('0') << std::setw(16) << buffer[word_index] << std::endl
-                << std::setfill('0') << std::setw(16) << buffer[word_index + 1] << std::endl;
+    save_buffer << std::hex << std::setfill('0') << std::setw(16) << buffer[word_index] << std::endl;
 
     buffer_shift        = 0;
     PackHdr.uHitsNumber = (buffer[word_index] >> buffer_shift) & (((static_cast<uint16_t>(1)) << PackHdr.HNs) - 1);
@@ -48,8 +47,13 @@ namespace PsdDataV100
     PackHdr.uMagicWord = (buffer[word_index] >> buffer_shift) & (((static_cast<uint16_t>(1)) << PackHdr.MWs) - 1);
     word_index++;
 
-    buffer_shift = 0;
+    if(PackHdr.uMagicWord != 0xb) { 
+      if (print) PackHdr.printout();
+      return;
+    }
 
+    save_buffer << std::hex << std::setfill('0') << std::setw(16) << buffer[word_index] << std::endl;
+    buffer_shift     = 0;
     PackHdr.uAdcTime = (buffer[word_index] >> buffer_shift) & (((static_cast<uint64_t>(1)) << PackHdr.TMs) - 1);
     buffer_shift += PackHdr.TMs;
     PackHdr.uTotalWords = (buffer[word_index] >> buffer_shift) & (((static_cast<uint32_t>(1)) << PackHdr.TWs) - 1);
@@ -83,8 +87,7 @@ namespace PsdDataV100
 
   void PsdGbtReader::ReadHitData()
   {
-    save_buffer << std::hex << std::setfill('0') << std::setw(16) << buffer[word_index] << std::endl
-                << std::setfill('0') << std::setw(16) << buffer[word_index + 1] << std::endl;
+    save_buffer << std::hex << std::setfill('0') << std::setw(16) << buffer[word_index] << std::endl;
 
     uint16_t wfm_point = 0;
     wfm_point          = ((buffer[word_index] >> 8) & 0xffff);
@@ -93,6 +96,7 @@ namespace PsdDataV100
     HitData.uWfm.push_back(wfm_point);
     word_index++;
 
+    save_buffer << std::hex << std::setfill('0') << std::setw(16) << buffer[word_index] << std::endl;
     wfm_point = ((buffer[word_index] >> 16) & 0xffff);
     HitData.uWfm.push_back(wfm_point);
     wfm_point = (buffer[word_index] & 0xffff);
@@ -133,7 +137,7 @@ namespace PsdDataV100
       if (PackHdr.uMagicWord != 0xb) {
         word_is_Pack_header = false;
         if (print) printf("End of microslice\n");
-        word_index -= 2;
+        word_index -= 1;
         break;  //return 1;
       }
       else {

@@ -506,7 +506,7 @@ parameters
     fuFitZeroLevel                         = (uint16_t) std::real(fh[0]);
     for (int sample_curr = 0; sample_curr < fSampleTotal; sample_curr++) {
       fit_ampl_in_sample = {0., 0.};
-      if ((sample_curr >= fSignalBegin) && (sample_curr <= fGateEnd)) {
+      if ((sample_curr >= fSignalBegin)) {//&& (sample_curr <= fGateEnd)) {
         for (int i = 0; i < fExpNumber + 1; i++) {
           fit_ampl_in_sample += fh[i] * z_power[i];
           z_power[i] *= fz[i];
