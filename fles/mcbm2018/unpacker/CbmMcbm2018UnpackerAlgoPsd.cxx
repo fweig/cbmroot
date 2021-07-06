@@ -332,7 +332,8 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
           }
           if (ReadResult == 0) {
 
-            double prev_hit_time = (double) fulCurrentMsIdx*25. + PsdReader.VectPackHdr.at(0).uAdcTime * 12.5;  //in ns
+            double prev_hit_time =
+              (double) fulCurrentMsIdx * 25. + PsdReader.VectPackHdr.at(0).uAdcTime * 12.5;  //in ns
             //hit loop
             for (uint64_t hit_iter = 0; hit_iter < PsdReader.VectHitHdr.size(); hit_iter++) {
               if (PsdReader.VectPackHdr.size() != PsdReader.VectHitHdr.size()) {
@@ -346,7 +347,8 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
               //uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
               uint32_t uSignalCharge = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
               uint16_t uZeroLevel    = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
-              double dHitTime = (double) fulCurrentMsIdx*25. + PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5;  //in ns
+              double dHitTime =
+                (double) fulCurrentMsIdx * 25. + PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5;  //in ns
               std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
               double dEdep = (double) uSignalCharge / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
 
@@ -368,56 +370,54 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
               digi.fdAccum   = (double) PsdReader.VectHitHdr.at(hit_iter).uFeeAccum;
               digi.fdAdcTime = (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime;
 
-              if(!uWfm.empty()){
+              if (!uWfm.empty()) {
 
                 int32_t iHitAmlpitude = 0;
                 int32_t iHitChargeWfm = 0;
                 uint8_t uHitTimeMax   = 0;
-                uint32_t uHitMinimum   = 0;
+                uint32_t uHitMinimum  = 0;
                 if (!uWfm.empty()) {
                   iHitChargeWfm = std::accumulate(uWfm.begin(), uWfm.end(), 0);
                   iHitChargeWfm -= uZeroLevel * uWfm.size();
 
-		        auto const max_iter = std::max_element(uWfm.begin(), uWfm.end());
-		        assert(max_iter != uWfm.end());
-		        if (max_iter == uWfm.end()) break;
-		        uHitTimeMax   = std::distance(uWfm.begin(), max_iter);
-		        iHitAmlpitude = *max_iter - uZeroLevel;
+                  auto const max_iter = std::max_element(uWfm.begin(), uWfm.end());
+                  assert(max_iter != uWfm.end());
+                  if (max_iter == uWfm.end()) break;
+                  uHitTimeMax   = std::distance(uWfm.begin(), max_iter);
+                  iHitAmlpitude = *max_iter - uZeroLevel;
 
-		        auto const min_iter = std::min_element(uWfm.begin(), uWfm.end());
-		        uHitMinimum = *min_iter;
+                  auto const min_iter = std::min_element(uWfm.begin(), uWfm.end());
+                  uHitMinimum         = *min_iter;
                 }
 
                 digi.fdEdepWfm = (double) iHitChargeWfm / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
                 digi.fdAmpl    = (double) iHitAmlpitude / 16.5;                                        // -> now in mV
                 digi.fuTimeMax = uHitTimeMax;
-                digi.fuMinimum = uHitMinimum; // FIXME
+                digi.fuMinimum = uHitMinimum;  // FIXME
 
 
+                int gate_beg = 0;
+                int gate_end = (int) uWfm.size() - 1;
+                PsdSignalFitting::PronyFitter Pfitter(2, 2, gate_beg, gate_end);
+                Pfitter.SetDebugMode(0);
+                //std::vector<int> iWfm(uWfm.begin(), uWfm.end());
+                Pfitter.SetWaveform(uWfm, uZeroLevel);
+                int SignalBeg = 4;
+                //0.6, 0.2 // 0.72 0.38
+                std::complex<float> first_fit_harmonic  = {0.72, 0.0};
+                std::complex<float> second_fit_harmonic = {0.38, -0.0};
+                Pfitter.SetExternalHarmonics(first_fit_harmonic, second_fit_harmonic);
+                Int_t best_signal_begin = Pfitter.ChooseBestSignalBegin(SignalBeg - 1, SignalBeg + 1);
+                Pfitter.SetSignalBegin(best_signal_begin);
+                Pfitter.CalculateFitAmplitudes();
 
-					int gate_beg = 0;
-					int gate_end = (int)uWfm.size()-1;
-					PsdSignalFitting::PronyFitter Pfitter(2, 2, gate_beg, gate_end);
-					Pfitter.SetDebugMode(0);
-					//std::vector<int> iWfm(uWfm.begin(), uWfm.end());
-					Pfitter.SetWaveform(uWfm, uZeroLevel);
-					int SignalBeg           = 4;
-					//0.6, 0.2 // 0.72 0.38
-					std::complex<float> first_fit_harmonic  = {0.72,  0.0};
-					std::complex<float> second_fit_harmonic = {0.38, -0.0};
-					Pfitter.SetExternalHarmonics(first_fit_harmonic, second_fit_harmonic);
-					Int_t best_signal_begin = Pfitter.ChooseBestSignalBegin(SignalBeg-1, SignalBeg+1);
-					Pfitter.SetSignalBegin(best_signal_begin);
-					Pfitter.CalculateFitAmplitudes();
-
-					digi.fdFitEdep = Pfitter.GetIntegral(gate_beg, gate_end) / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
-					digi.fdFitAmpl = (Pfitter.GetMaxAmplitude() - Pfitter.GetZeroLevel()) / 16.5;                           // ->now in mV
-					digi.fdFitR2 = Pfitter.GetRSquare(gate_beg, gate_end);
-					digi.fdFitZL = Pfitter.GetZeroLevel();
-					digi.fdFitTimeMax= Pfitter.GetSignalMaxTime();
-
-
-		}
+                digi.fdFitEdep =
+                  Pfitter.GetIntegral(gate_beg, gate_end) / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
+                digi.fdFitAmpl    = (Pfitter.GetMaxAmplitude() - Pfitter.GetZeroLevel()) / 16.5;         // ->now in mV
+                digi.fdFitR2      = Pfitter.GetRSquare(gate_beg, gate_end);
+                digi.fdFitZL      = Pfitter.GetZeroLevel();
+                digi.fdFitTimeMax = Pfitter.GetSignalMaxTime();
+              }
 
 
               fDigiVect.emplace_back(digi);

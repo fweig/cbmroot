@@ -422,7 +422,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                 if (fbMonitorWfmMode) fvhHitWfmChan[uHitChannel]->Reset();
                 if (fbMonitorFitMode) fvhHitFitWfmChan[uHitChannel]->Reset();
 
-                if (!uWfm.empty()){
+                if (!uWfm.empty()) {
                   dHitChargeWfm = std::accumulate(uWfm.begin(), uWfm.end(), 0);
                   dHitChargeWfm -= uZeroLevel * uWfm.size();
                   auto const max_iter = std::max_element(uWfm.begin(), uWfm.end());
@@ -466,23 +466,23 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                       }  // if( uSignalCharge > kvuWfmRanges.at(i) && uSignalCharge < kvuWfmRanges.at(i+1) )
                     }    // for (uint8_t i=0; i<kuNbWfmRanges; ++i)
                   }      //if (fbMonitorWfmMode)
-                }    //if (!uWfm.empty())
+                }        //if (!uWfm.empty())
 
 
                 if (fbMonitorFitMode && !uWfm.empty()) {
                   int gate_beg = 0;
-                  int gate_end = 10;//uWfm.size() - 1;
+                  int gate_end = 10;  //uWfm.size() - 1;
                   PsdSignalFitting::PronyFitter Pfitter(2, 2, gate_beg, gate_end);
 
                   Pfitter.SetDebugMode(0);
                   Pfitter.SetWaveform(uWfm, uZeroLevel);
-                  int SignalBeg           = 4;
-					std::complex<float> first_fit_harmonic  = {0.72,  0.0};
-					std::complex<float> second_fit_harmonic = {0.38, -0.0};
-					Pfitter.SetExternalHarmonics(first_fit_harmonic, second_fit_harmonic);
-					Int_t best_signal_begin = Pfitter.ChooseBestSignalBegin(SignalBeg-1, SignalBeg+1);
-					Pfitter.SetSignalBegin(best_signal_begin);
-					Pfitter.CalculateFitAmplitudes();
+                  int SignalBeg                           = 4;
+                  std::complex<float> first_fit_harmonic  = {0.72, 0.0};
+                  std::complex<float> second_fit_harmonic = {0.38, -0.0};
+                  Pfitter.SetExternalHarmonics(first_fit_harmonic, second_fit_harmonic);
+                  Int_t best_signal_begin = Pfitter.ChooseBestSignalBegin(SignalBeg - 1, SignalBeg + 1);
+                  Pfitter.SetSignalBegin(best_signal_begin);
+                  Pfitter.CalculateFitAmplitudes();
 
                   Pfitter.SetSignalBegin(best_signal_begin);
                   Pfitter.CalculateFitHarmonics();
@@ -505,8 +505,8 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
                   fvhFitHarmonic1Chan[uHitChannel]->Fill(std::real(harmonics[1]), std::imag(harmonics[1]));
                   fvhFitHarmonic2Chan[uHitChannel]->Fill(std::real(harmonics[2]), std::imag(harmonics[2]));
                 }  //if (fbMonitorFitMode && !uWfm.empty())
-              }//if (fbMonitorChanMode)
-            }  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
+              }    //if (fbMonitorChanMode)
+            }      // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
           }
           else if (ReadResult == 1) {
             LOG(error) << "no pack headers in message!";

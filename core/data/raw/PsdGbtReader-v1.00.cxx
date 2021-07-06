@@ -47,7 +47,7 @@ namespace PsdDataV100
     PackHdr.uMagicWord = (buffer[word_index] >> buffer_shift) & (((static_cast<uint16_t>(1)) << PackHdr.MWs) - 1);
     word_index++;
 
-    if(PackHdr.uMagicWord != 0xb) { 
+    if (PackHdr.uMagicWord != 0xb) {
       if (print) PackHdr.printout();
       return;
     }
