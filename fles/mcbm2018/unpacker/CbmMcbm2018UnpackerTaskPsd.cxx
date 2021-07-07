@@ -43,8 +43,10 @@ CbmMcbm2018UnpackerTaskPsd::CbmMcbm2018UnpackerTaskPsd(UInt_t /*uNbGdpb*/)
   , fbMonitorMode(kFALSE)
   , fbDebugMonitorMode(kFALSE)
   , fbWriteOutput(kTRUE)
-  , fuDigiMaskId(0x0001FFFF)
+  , fbDebugWriteOutput(kFALSE)
   , fulTsCounter(0)
+  , fPsdDigiVector(nullptr)
+  , fPsdDspVector(nullptr)
   , fUnpackerAlgo(nullptr)
 {
   LOG(info) << "CbmMcbm2018UnpackerTaskPsd::Allocate";
@@ -57,15 +59,34 @@ Bool_t CbmMcbm2018UnpackerTaskPsd::Init()
 {
   LOG(info) << "CbmMcbm2018UnpackerTaskPsd::Init";
   LOG(info) << "Initializing mCBM PSD 2018 Unpacker";
+  Bool_t initOK = kTRUE;
 
   FairRootManager* ioman = FairRootManager::Instance();
   if (NULL == ioman) { LOG(fatal) << "No FairRootManager instance"; }
 
-  /// Get address of vector from algo
-  fpvDigiPsd = &(fUnpackerAlgo->GetVector());
-  ioman->RegisterAny("PsdDigi", fpvDigiPsd, fbWriteOutput);
+  /// Register Digi output vector.
+  fPsdDigiVector = new std::vector<CbmPsdDigi>();
+  if (fPsdDigiVector) {
+    ioman->RegisterAny("PsdDigi", fPsdDigiVector, fbWriteOutput);
+    initOK &= fUnpackerAlgo->SetDigiOutputPointer(fPsdDigiVector);
+  }
+  else {
+    LOG(fatal) << "fPsdDigiVector could not be registered at FairRootManager";
+  }
 
-  return kTRUE;
+  /// Register RawMessage output vector, if DebugWrite is enabled.
+  if (fbDebugWriteOutput) {
+    fPsdDspVector = new std::vector<CbmPsdDsp>();
+    if (fPsdDspVector) {
+      ioman->RegisterAny("PsdDsp", fPsdDspVector, fbDebugWriteOutput);
+      initOK &= fUnpackerAlgo->SetDspOutputPointer(fPsdDspVector);
+    }
+    else {
+      LOG(fatal) << "fPsdDspVector could not be registered at FairRootManager";
+    }
+  }
+
+  return initOK;
 }
 
 void CbmMcbm2018UnpackerTaskPsd::SetParContainers()
@@ -139,7 +160,7 @@ Bool_t CbmMcbm2018UnpackerTaskPsd::DoUnpack(const fles::Timeslice& ts, size_t /*
   /*
    /// Sort the buffers of hits due to the time offsets applied
    => Done in the algo!!!
-   sort(fpvDigiPsd->begin(), fpvDigiPsd->end(),
+   sort(fPsdDigiVector->begin(), fPsdDigiVector->end(),
         [](const CbmPsdDigi & a, const CbmPsdDigi & b) -> bool
         {
           return a.GetTime() < b.GetTime();
@@ -154,13 +175,20 @@ Bool_t CbmMcbm2018UnpackerTaskPsd::DoUnpack(const fles::Timeslice& ts, size_t /*
   return kTRUE;
 }
 
-void CbmMcbm2018UnpackerTaskPsd::Reset() { fUnpackerAlgo->ClearVector(); }
+void CbmMcbm2018UnpackerTaskPsd::Reset() 
+{
+  if (fPsdDigiVector) fPsdDigiVector->clear();
+  if (fPsdDspVector) fPsdDspVector->clear();
+}
 
 
 void CbmMcbm2018UnpackerTaskPsd::Finish()
 {
+  LOG(info) << "Finish of CbmMcbm2018UnpackerTaskPsd";
+  fUnpackerAlgo->Finish();
 }
 
+void CbmMcbm2018UnpackerTaskPsd::SetDspWriteMode(Bool_t bFlagIn) { fbDebugWriteOutput = bFlagIn; fUnpackerAlgo->SetDspWriteMode(bFlagIn); }
 void CbmMcbm2018UnpackerTaskPsd::SetIgnoreOverlapMs(Bool_t bFlagIn) { fUnpackerAlgo->SetIgnoreOverlapMs(bFlagIn); }
 void CbmMcbm2018UnpackerTaskPsd::SetTimeOffsetNs(Double_t dOffsetIn) { fUnpackerAlgo->SetTimeOffsetNs(dOffsetIn); }
 

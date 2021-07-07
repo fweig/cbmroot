@@ -17,6 +17,7 @@
 
 // Data
 #include "CbmPsdDigi.h"
+#include "CbmPsdDsp.h"
 
 #include "PronyFitter.h"
 #include "PsdGbtReader-v0.00.h"
@@ -39,6 +40,11 @@ public:
   CbmMcbm2018UnpackerAlgoPsd();
   ~CbmMcbm2018UnpackerAlgoPsd();
 
+  /** \brief Copy constructor - not implemented **/
+  CbmMcbm2018UnpackerAlgoPsd(const CbmMcbm2018UnpackerAlgoPsd&) = delete;
+  /** \brief Copy assignment operator - not implemented **/
+  CbmMcbm2018UnpackerAlgoPsd& operator=(const CbmMcbm2018UnpackerAlgoPsd&) = delete;
+
   virtual Bool_t Init();
   virtual void Reset();
   virtual void Finish();
@@ -55,11 +61,16 @@ public:
 
   void AddMsComponentToList(size_t component, UShort_t usDetectorId);
 
+  Bool_t SetDigiOutputPointer(std::vector<CbmPsdDigi>* const pVector);
+  Bool_t SetDspOutputPointer(std::vector<CbmPsdDsp>* const pVector);
+  std::shared_ptr<CbmPsdDigi> MakeDigi(CbmPsdDsp dsp);
+
   Bool_t CreateHistograms();
   Bool_t FillHistograms();
   Bool_t ResetHistograms();
 
   inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) { fbMonitorMode = bFlagIn; }
+  inline void SetDspWriteMode(Bool_t bFlagIn = kTRUE) { fbDebugWriteOutput = bFlagIn; }
   inline void SetTimeOffsetNs(Double_t dOffsetIn = 0.0) { fdTimeOffsetNs = dOffsetIn; }
   inline void SetDiamondDpbIdx(UInt_t uIdx = 2) { fuDiamondDpbIdx = uIdx; }
 
@@ -68,6 +79,12 @@ private:
   /// Control flags
   Bool_t fbMonitorMode;       //! Switch ON the filling of a minimal set of histograms
   Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
+  Bool_t fbDebugWriteOutput;  //! If ON the output vector of dsp debug information is written to disk
+
+  /// Output vectors
+  std::vector<CbmPsdDigi>* fPsdDigiVector;   //! Output Digi vector /* TODO CHECK The exclamation mark signals the transientness */
+  std::vector<CbmPsdDsp>* fPsdDspVector;     //! Output Dsp vector  /* TODO CHECK The exclamation mark signals the transientness */
+
   std::vector<Bool_t> fvbMaskedComponents;
 
   /// Settings from parameter file
@@ -126,10 +143,7 @@ private:
   std::chrono::steady_clock::time_point
     ftStartTimeUnix; /** Time of run Start from UNIX system, used as reference for long evolution plots against reception time **/
 
-  CbmMcbm2018UnpackerAlgoPsd(const CbmMcbm2018UnpackerAlgoPsd&);
-  CbmMcbm2018UnpackerAlgoPsd operator=(const CbmMcbm2018UnpackerAlgoPsd&);
-
-  ClassDef(CbmMcbm2018UnpackerAlgoPsd, 1)
+  ClassDef(CbmMcbm2018UnpackerAlgoPsd, 2)
 };
 
 #endif

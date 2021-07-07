@@ -80,7 +80,8 @@
 #pragma link C++ class CbmTofTracklet + ;
 #pragma link C++ class CbmTofTrackletParam + ;
 
-#pragma link C++ class CbmPsdDigi-;
+#pragma link C++ class CbmPsdDigi + ;
+#pragma link C++ class CbmPsdDsp + ;
 #pragma link C++ class CbmPsdHit;
 #pragma link C++ class CbmPsdPoint + ;
 #pragma link C++ class CbmPsdAddress;
@@ -113,6 +114,7 @@
 #pragma link C++ class vector < CbmTrdDigi> + ;
 #pragma link C++ class vector < CbmTofDigi> + ;
 #pragma link C++ class vector < CbmPsdDigi> + ;
+#pragma link C++ class vector < CbmPsdDsp> + ;
 #pragma link C++ class vector < CbmMatch> + ;
 #pragma link C++ class CbmDigiVector < CbmMvdDigi> + ;
 #pragma link C++ class CbmDigiVector < CbmStsDigi> + ;
@@ -122,6 +124,7 @@
 #pragma link C++ class CbmDigiVector < CbmTrdDigi> + ;
 #pragma link C++ class CbmDigiVector < CbmTofDigi> + ;
 #pragma link C++ class CbmDigiVector < CbmPsdDigi> + ;
+#pragma link C++ class CbmDigiVector < CbmPsdDsp> + ;
 #pragma link C++ class vector < CbmEventStore> + ;
 
 #pragma read sourceClass="CbmTofDigi" version="[1-2]" targetClass="CbmTofDigi" \

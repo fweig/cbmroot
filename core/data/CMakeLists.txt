@@ -104,6 +104,7 @@ set(SRCS
   tof/CbmTofTrackletParam.cxx
 
   psd/CbmPsdDigi.cxx
+  psd/CbmPsdDsp.cxx
   psd/CbmPsdHit.cxx
   psd/CbmPsdPoint.cxx
   psd/CbmPsdAddress.cxx

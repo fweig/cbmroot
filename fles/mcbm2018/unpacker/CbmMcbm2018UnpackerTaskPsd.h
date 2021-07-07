@@ -15,6 +15,7 @@
 
 #include "CbmMcbmUnpack.h"
 #include "CbmPsdDigi.h"
+#include "CbmPsdDsp.h"
 
 #include "Timeslice.hpp"
 
@@ -26,8 +27,10 @@ class CbmMcbm2018UnpackerTaskPsd : public CbmMcbmUnpack {
 public:
   CbmMcbm2018UnpackerTaskPsd(UInt_t uNbSdpb = 1);
 
-  CbmMcbm2018UnpackerTaskPsd(const CbmMcbm2018UnpackerTaskPsd&) = delete;
-  CbmMcbm2018UnpackerTaskPsd operator=(const CbmMcbm2018UnpackerTaskPsd&) = delete;
+  /** Copy Constructor */
+  CbmMcbm2018UnpackerTaskPsd(const CbmMcbm2018UnpackerTaskPsd&);
+  /** Assignment Operator */
+  CbmMcbm2018UnpackerTaskPsd operator=(const CbmMcbm2018UnpackerTaskPsd&);
 
   virtual ~CbmMcbm2018UnpackerTaskPsd();
 
@@ -50,6 +53,7 @@ public:
   /// Algo settings setters
 
   inline void SetMonitorMode(Bool_t bFlagIn = kTRUE) { fbMonitorMode = bFlagIn; }
+  void SetDspWriteMode(Bool_t bFlagIn = kTRUE);
   void SetIgnoreOverlapMs(Bool_t bFlagIn = kTRUE);
   void SetTimeOffsetNs(Double_t dOffsetIn = 0.0);
 
@@ -60,21 +64,25 @@ private:
   /// Control flags
   Bool_t fbMonitorMode;       //! Switch ON the filling of a minimal set of histograms
   Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
-  Bool_t fbWriteOutput;       //! If ON the output TClonesArray of digi is written to disk
+  Bool_t fbWriteOutput;       //! If ON the output vector of digi is written to disk
+  Bool_t fbDebugWriteOutput;  //! If ON the output vector of dsp debug information is written to disk
 
   /// Parameters
-  UInt_t fuDigiMaskId;
+
 
   /// Statistics & first TS rejection
   uint64_t fulTsCounter;
 
-  /// Output vectors
-  std::vector<CbmPsdDigi>* fpvDigiPsd = nullptr;
+  /// Output Digi vector
+  std::vector<CbmPsdDigi>* fPsdDigiVector;
+
+  /// Output Dsp vector -- preprocessed info for debugging
+  std::vector<CbmPsdDsp>* fPsdDspVector;
 
   /// Processing algo
   CbmMcbm2018UnpackerAlgoPsd* fUnpackerAlgo;
 
-  ClassDef(CbmMcbm2018UnpackerTaskPsd, 2)
+  ClassDef(CbmMcbm2018UnpackerTaskPsd, 3)
 };
 
 #endif
