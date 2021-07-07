@@ -84,7 +84,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::Init()
 
   return kTRUE;
 }
-void CbmMcbm2018UnpackerAlgoPsd::Reset() 
+void CbmMcbm2018UnpackerAlgoPsd::Reset()
 {
   if (fPsdDigiVector) fPsdDigiVector->clear();
   if (fPsdDspVector) fPsdDspVector->clear();
@@ -227,7 +227,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessTs(const fles::Timeslice& ts)
 
   /// Sort the buffers of hits due to the time offsets applied
   //std::sort(fDigiVect.begin(), fDigiVect.end(),
-           // [](const CbmPsdDigi& a, const CbmPsdDigi& b) -> bool { return a.GetTime() < b.GetTime(); });
+  // [](const CbmPsdDigi& a, const CbmPsdDigi& b) -> bool { return a.GetTime() < b.GetTime(); });
 
   std::sort(fPsdDigiVector->begin(), fPsdDigiVector->end(),
             [](const CbmPsdDigi& a, const CbmPsdDigi& b) -> bool { return a.GetTime() < b.GetTime(); });
@@ -355,10 +355,11 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
               uint8_t uHitChannel = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
               //uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
-              double dEdep = (double) PsdReader.VectHitHdr.at(hit_iter).uSignalCharge / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
-              uint16_t uZeroLevel    = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
-              double dHitTime =
-                (double) fulCurrentMsIdx * 25. + (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5 - fdTimeOffsetNs;  //in ns
+              double dEdep = (double) PsdReader.VectHitHdr.at(hit_iter).uSignalCharge
+                             / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
+              uint16_t uZeroLevel = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
+              double dHitTime     = (double) fulCurrentMsIdx * 25.
+                                + (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5 - fdTimeOffsetNs;  //in ns
               std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
 
 
@@ -371,16 +372,16 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
 
               UInt_t fuAddress   = uChanUId;    /// Unique channel address
-              Double_t fdTime    = dHitTime;  /// Time of measurement [ns]
-              Double_t fdEdep    = dEdep;   /// Energy deposition from FPGA [MeV]
-              UInt_t fuZL        = uZeroLevel;    /// ZeroLevel from waveform [adc counts]
-              Double_t fdAccum   = (double) PsdReader.VectHitHdr.at(hit_iter).uFeeAccum;    /// FPGA FEE Accumulator
+              Double_t fdTime    = dHitTime;    /// Time of measurement [ns]
+              Double_t fdEdep    = dEdep;       /// Energy deposition from FPGA [MeV]
+              UInt_t fuZL        = uZeroLevel;  /// ZeroLevel from waveform [adc counts]
+              Double_t fdAccum   = (double) PsdReader.VectHitHdr.at(hit_iter).uFeeAccum;  /// FPGA FEE Accumulator
               Double_t fdAdcTime = (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime;  /// Adc time of measurement
 
-              Double_t fdEdepWfm = 0.;  /// Energy deposition from waveform [MeV]
-              Double_t fdAmpl    = 0.;  /// Amplitude from waveform [mV]
-              UInt_t fuMinimum   = 0;   /// Minimum of waveform [adc samples]
-              UInt_t fuTimeMax   = 0;   /// Time of maximum in waveform [adc samples]
+              Double_t fdEdepWfm          = 0.;  /// Energy deposition from waveform [MeV]
+              Double_t fdAmpl             = 0.;  /// Amplitude from waveform [mV]
+              UInt_t fuMinimum            = 0;   /// Minimum of waveform [adc samples]
+              UInt_t fuTimeMax            = 0;   /// Time of maximum in waveform [adc samples]
               std::vector<uint16_t> fuWfm = uWfm;
 
               Double_t fdFitAmpl    = 0.;    /// Amplitude from fit of waveform [mV]
@@ -392,14 +393,14 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
               if (!uWfm.empty()) {
 
-                 int32_t iHitChargeWfm = std::accumulate(uWfm.begin(), uWfm.end(), -uZeroLevel*uWfm.size());
-                  auto const max_iter = std::max_element(uWfm.begin(), uWfm.end());
-                  assert(max_iter != uWfm.end());
-                  if (max_iter == uWfm.end()) break;
-                  uint8_t uHitTimeMax   = std::distance(uWfm.begin(), max_iter);
-                  int32_t iHitAmlpitude = *max_iter - uZeroLevel;
-                  auto const min_iter = std::min_element(uWfm.begin(), uWfm.end());
-                  uint32_t uHitMinimum         = *min_iter;
+                int32_t iHitChargeWfm = std::accumulate(uWfm.begin(), uWfm.end(), -uZeroLevel * uWfm.size());
+                auto const max_iter   = std::max_element(uWfm.begin(), uWfm.end());
+                assert(max_iter != uWfm.end());
+                if (max_iter == uWfm.end()) break;
+                uint8_t uHitTimeMax   = std::distance(uWfm.begin(), max_iter);
+                int32_t iHitAmlpitude = *max_iter - uZeroLevel;
+                auto const min_iter   = std::min_element(uWfm.begin(), uWfm.end());
+                uint32_t uHitMinimum  = *min_iter;
 
                 fdEdepWfm = (double) iHitChargeWfm / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
                 fdAmpl    = (double) iHitAmlpitude / 16.5;                                        // -> now in mV
@@ -423,34 +424,19 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
                 fdFitEdep =
                   Pfitter.GetIntegral(gate_beg, gate_end) / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
-                fdFitAmpl    = (Pfitter.GetMaxAmplitude() - Pfitter.GetZeroLevel()) / 16.5;         // ->now in mV
+                fdFitAmpl    = (Pfitter.GetMaxAmplitude() - Pfitter.GetZeroLevel()) / 16.5;              // ->now in mV
                 fdFitR2      = Pfitter.GetRSquare(gate_beg, gate_end);
                 fdFitZL      = Pfitter.GetZeroLevel();
                 fdFitTimeMax = Pfitter.GetSignalMaxTime();
-                fuFitWfm = Pfitter.GetFitWfm();
+                fuFitWfm     = Pfitter.GetFitWfm();
               }
 
-              CbmPsdDsp dsp = CbmPsdDsp(
-                fuAddress,                
-                fdTime,
-                fdEdep,
-                fuZL,
-                fdAccum,
-                fdAdcTime,
-                
-                fdEdepWfm,
-                fdAmpl,
-                fuMinimum,
-                fuTimeMax,
-                fuWfm,
-                
-                fdFitAmpl,
-                fdFitZL,
-                fdFitEdep,
-                fdFitR2,
-                fdFitTimeMax,
-                fuFitWfm );
-                
+              CbmPsdDsp dsp = CbmPsdDsp(fuAddress, fdTime, fdEdep, fuZL, fdAccum, fdAdcTime,
+
+                                        fdEdepWfm, fdAmpl, fuMinimum, fuTimeMax, fuWfm,
+
+                                        fdFitAmpl, fdFitZL, fdFitEdep, fdFitR2, fdFitTimeMax, fuFitWfm);
+
               std::shared_ptr<CbmPsdDigi> digi = MakeDigi(dsp);
               if (digi) fPsdDigiVector->emplace_back(*digi);
 
@@ -509,8 +495,8 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
           if (ReadResult == 0) {
             //hit loop
             for (int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++) {
-              UInt_t uHitChannel         = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
-              UInt_t uSignalCharge       = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
+              UInt_t uHitChannel   = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
+              UInt_t uSignalCharge = PsdReader.VectHitHdr.at(hit_iter).uSignalCharge;
               //UInt_t uZeroLevel          = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
               Double_t dHitTime =
                 (double) PsdReader.EvHdrAb.ulMicroSlice + (double) PsdReader.EvHdrAc.uAdcTime * 12.5 - fdTimeOffsetNs;
@@ -526,7 +512,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
                          << Form(", at %u,", PsdReader.EvHdrAc.uAdcTime)
                          << " epoch: " << PsdReader.EvHdrAb.ulMicroSlice;
 
-              fPsdDigiVector->emplace_back(uChanUId, dHitTime, (double)uSignalCharge);
+              fPsdDigiVector->emplace_back(uChanUId, dHitTime, (double) uSignalCharge);
 
             }  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
           }
@@ -596,8 +582,8 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::SetDspOutputPointer(std::vector<CbmPsdDsp>* c
 
 std::shared_ptr<CbmPsdDigi> CbmMcbm2018UnpackerAlgoPsd::MakeDigi(CbmPsdDsp dsp)
 {
-  std::shared_ptr<CbmPsdDigi> digi = std::make_shared<CbmPsdDigi>(
-    CbmPsdDigi(dsp.GetAddress(), dsp.GetTime(), dsp.GetEdep()));
+  std::shared_ptr<CbmPsdDigi> digi =
+    std::make_shared<CbmPsdDigi>(CbmPsdDigi(dsp.GetAddress(), dsp.GetTime(), dsp.GetEdep()));
 
   return digi;
 }

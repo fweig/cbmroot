@@ -82,8 +82,10 @@ private:
   Bool_t fbDebugWriteOutput;  //! If ON the output vector of dsp debug information is written to disk
 
   /// Output vectors
-  std::vector<CbmPsdDigi>* fPsdDigiVector;   //! Output Digi vector /* TODO CHECK The exclamation mark signals the transientness */
-  std::vector<CbmPsdDsp>* fPsdDspVector;     //! Output Dsp vector  /* TODO CHECK The exclamation mark signals the transientness */
+  std::vector<CbmPsdDigi>*
+    fPsdDigiVector;  //! Output Digi vector /* TODO CHECK The exclamation mark signals the transientness */
+  std::vector<CbmPsdDsp>*
+    fPsdDspVector;  //! Output Dsp vector  /* TODO CHECK The exclamation mark signals the transientness */
 
   std::vector<Bool_t> fvbMaskedComponents;
 

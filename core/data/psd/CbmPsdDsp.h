@@ -38,8 +38,9 @@ public:
   /** @brief Constructor with detailed assignment.
        **/
   CbmPsdDsp(UInt_t address, Double_t time, Double_t edep, UInt_t zl, Double_t accum, Double_t adc_time,
-                     Double_t edep_wfm, Double_t ampl, UInt_t minimum, UInt_t time_max, std::vector<std::uint16_t> wfm,
-                     Double_t fit_ampl, Double_t fit_zl, Double_t fit_edep, Double_t fit_r2, Double_t fit_time_max, std::vector<std::uint16_t> fit_wfm);
+            Double_t edep_wfm, Double_t ampl, UInt_t minimum, UInt_t time_max, std::vector<std::uint16_t> wfm,
+            Double_t fit_ampl, Double_t fit_zl, Double_t fit_edep, Double_t fit_r2, Double_t fit_time_max,
+            std::vector<std::uint16_t> fit_wfm);
 
 
   /**  Copy constructor **/

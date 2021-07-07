@@ -175,7 +175,7 @@ Bool_t CbmMcbm2018UnpackerTaskPsd::DoUnpack(const fles::Timeslice& ts, size_t /*
   return kTRUE;
 }
 
-void CbmMcbm2018UnpackerTaskPsd::Reset() 
+void CbmMcbm2018UnpackerTaskPsd::Reset()
 {
   if (fPsdDigiVector) fPsdDigiVector->clear();
   if (fPsdDspVector) fPsdDspVector->clear();
@@ -188,7 +188,11 @@ void CbmMcbm2018UnpackerTaskPsd::Finish()
   fUnpackerAlgo->Finish();
 }
 
-void CbmMcbm2018UnpackerTaskPsd::SetDspWriteMode(Bool_t bFlagIn) { fbDebugWriteOutput = bFlagIn; fUnpackerAlgo->SetDspWriteMode(bFlagIn); }
+void CbmMcbm2018UnpackerTaskPsd::SetDspWriteMode(Bool_t bFlagIn)
+{
+  fbDebugWriteOutput = bFlagIn;
+  fUnpackerAlgo->SetDspWriteMode(bFlagIn);
+}
 void CbmMcbm2018UnpackerTaskPsd::SetIgnoreOverlapMs(Bool_t bFlagIn) { fUnpackerAlgo->SetIgnoreOverlapMs(bFlagIn); }
 void CbmMcbm2018UnpackerTaskPsd::SetTimeOffsetNs(Double_t dOffsetIn) { fUnpackerAlgo->SetTimeOffsetNs(dOffsetIn); }
 

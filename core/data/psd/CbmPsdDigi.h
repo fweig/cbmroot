@@ -139,10 +139,9 @@ public:
   std::string ToString() const;
 
 
-  UInt_t fuAddress   = 0;    /// Unique channel address
-  Double_t fdTime    = -1.;  /// Time of measurement [ns]
-  Double_t fdEdep    = 0.;   /// Energy deposition from FPGA [MeV]
-
+  UInt_t fuAddress = 0;    /// Unique channel address
+  Double_t fdTime  = -1.;  /// Time of measurement [ns]
+  Double_t fdEdep  = 0.;   /// Energy deposition from FPGA [MeV]
 
 
 private:

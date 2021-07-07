@@ -18,7 +18,7 @@
 #include <string>  // for basic_string
 
 // --- Default constructor
-CbmPsdDsp::CbmPsdDsp() 
+CbmPsdDsp::CbmPsdDsp()
   : fuAddress()
   , fdTime()
   , fdEdep()
@@ -194,7 +194,6 @@ CbmPsdDsp& CbmPsdDsp::operator=(CbmPsdDsp&& other)
   }
   return *this;
 }
-
 
 
 ClassImp(CbmPsdDsp)

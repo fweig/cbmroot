@@ -36,21 +36,13 @@ CbmPsdDigi::CbmPsdDigi(UInt_t moduleId, UInt_t sectionId, Double_t time, Double_
 
 
 // --- Copy constructor
-CbmPsdDigi::CbmPsdDigi(const CbmPsdDigi& other)
-  : fuAddress(other.fuAddress)
-  , fdTime(other.fdTime)
-  , fdEdep(other.fdEdep)
+CbmPsdDigi::CbmPsdDigi(const CbmPsdDigi& other) : fuAddress(other.fuAddress), fdTime(other.fdTime), fdEdep(other.fdEdep)
 {
 }
 
 
 // --- Move constructor
-CbmPsdDigi::CbmPsdDigi(CbmPsdDigi&& other)
-  : fuAddress(other.fuAddress)
-  , fdTime(other.fdTime)
-  , fdEdep(other.fdEdep)
-{
-}
+CbmPsdDigi::CbmPsdDigi(CbmPsdDigi&& other) : fuAddress(other.fuAddress), fdTime(other.fdTime), fdEdep(other.fdEdep) {}
 
 
 // --- Destructor
@@ -94,7 +86,6 @@ std::string CbmPsdDigi::ToString() const
   TString string = Form("CbmPsdDigi: address = 0x%08X Charge = %f Time = %f", fuAddress, fdEdep, fdTime);
   return string.Data();
 }
-
 
 
 ClassImp(CbmPsdDigi)
