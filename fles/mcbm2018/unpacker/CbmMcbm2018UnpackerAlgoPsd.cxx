@@ -40,8 +40,14 @@ CbmMcbm2018UnpackerAlgoPsd::CbmMcbm2018UnpackerAlgoPsd()
 
 CbmMcbm2018UnpackerAlgoPsd::~CbmMcbm2018UnpackerAlgoPsd()
 {
-  if (nullptr != fPsdDigiVector) { fPsdDigiVector->clear(); delete fPsdDigiVector; }
-  if (nullptr != fPsdDspVector) { fPsdDspVector->clear(); delete fPsdDspVector; }
+  if (nullptr != fPsdDigiVector) {
+    fPsdDigiVector->clear();
+    delete fPsdDigiVector;
+  }
+  if (nullptr != fPsdDspVector) {
+    fPsdDspVector->clear();
+    delete fPsdDspVector;
+  }
 }
 
 // -------------------------------------------------------------------------
@@ -195,8 +201,8 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessTs(const fles::Timeslice& ts)
             [](const CbmPsdDigi& a, const CbmPsdDigi& b) -> bool { return a.GetTime() < b.GetTime(); });
 
   if (fbDebugWriteOutput && (fPsdDspVector != nullptr)) {
-     std::sort(fPsdDspVector->begin(), fPsdDspVector->end(),
-               [](const CbmPsdDsp& a, const CbmPsdDsp& b) -> bool { return a.GetTime() < b.GetTime(); });
+    std::sort(fPsdDspVector->begin(), fPsdDspVector->end(),
+              [](const CbmPsdDsp& a, const CbmPsdDsp& b) -> bool { return a.GetTime() < b.GetTime(); });
   }
 
   return kTRUE;

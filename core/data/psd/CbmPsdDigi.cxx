@@ -27,7 +27,6 @@ CbmPsdDigi::CbmPsdDigi(const CbmPsdDigi& other) : fuAddress(other.fuAddress), fd
 CbmPsdDigi::CbmPsdDigi(CbmPsdDigi&& other) : fuAddress(other.fuAddress), fdTime(other.fdTime), fdEdep(other.fdEdep) {}
 
 
-
 // --- Set address from module and section number
 void CbmPsdDigi::SetAddress(UInt_t moduleId, UInt_t sectionId)
 {

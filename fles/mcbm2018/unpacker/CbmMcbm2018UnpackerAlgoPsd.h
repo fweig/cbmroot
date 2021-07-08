@@ -76,32 +76,32 @@ public:
 
 private:
   /// Control flags
-  Bool_t fbMonitorMode = kFALSE;       //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbMonitorMode      = kFALSE;  //! Switch ON the filling of a minimal set of histograms
   Bool_t fbDebugMonitorMode = kFALSE;  //! Switch ON the filling of a additional set of histograms
   Bool_t fbDebugWriteOutput = kFALSE;  //! If ON the output vector of dsp debug information is written to disk
 
   /// Output vectors
-  std::vector<CbmPsdDigi>*
-    fPsdDigiVector = nullptr;  //! Output Digi vector /* TODO CHECK The exclamation mark signals the transientness */
-  std::vector<CbmPsdDsp>*
-    fPsdDspVector = nullptr;  //! Output Dsp vector  /* TODO CHECK The exclamation mark signals the transientness */
+  std::vector<CbmPsdDigi>* fPsdDigiVector =
+    nullptr;  //! Output Digi vector /* TODO CHECK The exclamation mark signals the transientness */
+  std::vector<CbmPsdDsp>* fPsdDspVector =
+    nullptr;  //! Output Dsp vector  /* TODO CHECK The exclamation mark signals the transientness */
 
   std::vector<Bool_t> fvbMaskedComponents = {};
 
   /// Settings from parameter file
-  CbmMcbm2018PsdPar* fUnpackPar = nullptr;             //!
-  UInt_t fuRawDataVersion = 0;                   //! Raw data versioning
-                                             /// Readout chain dimensions and mapping
-  UInt_t fuNrOfGdpbs = 0;                        //! Total number of GDPBs in the system
+  CbmMcbm2018PsdPar* fUnpackPar = nullptr;        //!
+  UInt_t fuRawDataVersion       = 0;              //! Raw data versioning
+                                                  /// Readout chain dimensions and mapping
+  UInt_t fuNrOfGdpbs                       = 0;   //! Total number of GDPBs in the system
   std::map<UInt_t, UInt_t> fGdpbIdIndexMap = {};  //! gDPB ID to index map
-  UInt_t fuNrOfFeePerGdpb = 0;                   //! Number of FEBs per GDPB
-  UInt_t fuNrOfChannelsPerFee = 0;               //! Number of channels in each FEE
-  UInt_t fuNrOfChannelsPerGdpb = 0;              //! Number of channels per GDPB
+  UInt_t fuNrOfFeePerGdpb                  = 0;   //! Number of FEBs per GDPB
+  UInt_t fuNrOfChannelsPerFee              = 0;   //! Number of channels in each FEE
+  UInt_t fuNrOfChannelsPerGdpb             = 0;   //! Number of channels per GDPB
 
   /// Detector Mapping
-  UInt_t fuNrOfGbtx = 0;
-  UInt_t fuNrOfModules = 0;
-  std::vector<Int_t> fviPsdChUId= {};
+  UInt_t fuNrOfGbtx              = 0;
+  UInt_t fuNrOfModules           = 0;
+  std::vector<Int_t> fviPsdChUId = {};
 
   /// User settings: Data correction parameters
   Double_t fdTimeOffsetNs = 0.0;
@@ -113,25 +113,26 @@ private:
 
   /// Running indices
   /// TS/MS info
-  ULong64_t fulCurrentTsIdx = 0;  //! Idx of the current TS
-  ULong64_t fulCurrentMsIdx = 0;  //! Idx of the current MS in TS (0 to fuTotalMsNb)
-  size_t fuCurrentMsSysId = 0;    //! SysId of the current MS in TS (0 to fuTotalMsNb)
-  Double_t fdTsStartTime = -1.0;     //! Time in ns of current TS from the index of the first MS first component
-  Double_t fdTsStopTimeCore = -1.0;  //! End Time in ns of current TS Core from the index of the first MS first component
-  Double_t fdMsTime = -1.0;          //! Start Time in ns of current MS from its index field in header
-  UInt_t fuMsIndex = 0;           //! Index of current MS within the TS
+  ULong64_t fulCurrentTsIdx = 0;     //! Idx of the current TS
+  ULong64_t fulCurrentMsIdx = 0;     //! Idx of the current MS in TS (0 to fuTotalMsNb)
+  size_t fuCurrentMsSysId   = 0;     //! SysId of the current MS in TS (0 to fuTotalMsNb)
+  Double_t fdTsStartTime    = -1.0;  //! Time in ns of current TS from the index of the first MS first component
+  Double_t fdTsStopTimeCore =
+    -1.0;                    //! End Time in ns of current TS Core from the index of the first MS first component
+  Double_t fdMsTime = -1.0;  //! Start Time in ns of current MS from its index field in header
+  UInt_t fuMsIndex  = 0;     //! Index of current MS within the TS
 
   /// Current data properties
   UInt_t fuCurrentEquipmentId = 0;  //! Current equipment ID, tells from which DPB the current MS is originating
-  UInt_t fuCurrDpbId = 0;           //! Temp holder until Current equipment ID is properly filled in MS
-  UInt_t fuCurrDpbIdx = 0;          //! Index of the DPB from which the MS currently unpacked is coming
+  UInt_t fuCurrDpbId          = 0;  //! Temp holder until Current equipment ID is properly filled in MS
+  UInt_t fuCurrDpbIdx         = 0;  //! Index of the DPB from which the MS currently unpacked is coming
 
 
   /// Starting state book-keeping
-  Double_t fdStartTime = -1.0;     /** Time of first valid hit (TS_MSB available), used as reference for evolution plots**/
+  Double_t fdStartTime = -1.0; /** Time of first valid hit (TS_MSB available), used as reference for evolution plots**/
   Double_t fdStartTimeMsSz = 0.0; /** Time of first microslice, used as reference for evolution plots**/
-  std::chrono::steady_clock::time_point
-    ftStartTimeUnix = std::chrono::steady_clock::now(); /** Time of run Start from UNIX system, used as reference for long evolution plots against reception time **/
+  std::chrono::steady_clock::time_point ftStartTimeUnix = std::chrono::steady_clock::
+    now(); /** Time of run Start from UNIX system, used as reference for long evolution plots against reception time **/
 
   ClassDef(CbmMcbm2018UnpackerAlgoPsd, 2)
 };

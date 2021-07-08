@@ -44,12 +44,7 @@ public:
        ** @param time    Time [ns]
        ** @param edep    Energy deposition
        **/
-  CbmPsdDigi(UInt_t address, Double_t time, Double_t edep) 
-    : fuAddress(address)
-    , fdTime(time)
-    , fdEdep(edep)
-  {
-  }
+  CbmPsdDigi(UInt_t address, Double_t time, Double_t edep) : fuAddress(address), fdTime(time), fdEdep(edep) {}
 
 
   /** @brief Constructor with detailed assignment.
@@ -58,10 +53,7 @@ public:
        ** @param time          Time [ns]
        ** @param edep          Energy deposition
        **/
-  CbmPsdDigi(UInt_t moduleId, UInt_t sectionId, Double_t time, Double_t edep)
-    : fuAddress(0)
-    , fdTime(time)
-    , fdEdep(edep)
+  CbmPsdDigi(UInt_t moduleId, UInt_t sectionId, Double_t time, Double_t edep) : fuAddress(0), fdTime(time), fdEdep(edep)
   {
     fuAddress = CbmPsdAddress::GetAddress(moduleId, sectionId);
   }
