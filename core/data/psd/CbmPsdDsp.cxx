@@ -137,7 +137,11 @@ CbmPsdDsp::CbmPsdDsp(CbmPsdDsp&& other)
 
 
 // --- Destructor
-CbmPsdDsp::~CbmPsdDsp() {}
+CbmPsdDsp::~CbmPsdDsp() 
+{
+  std::vector<uint16_t>().swap(fuWfm);
+  std::vector<uint16_t>().swap(fuFitWfm);
+}
 
 
 // --- Assignment operator

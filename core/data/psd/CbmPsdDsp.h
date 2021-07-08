@@ -126,14 +126,14 @@ private:
   Double_t fdAmpl    = 0.;  /// Amplitude from waveform [mV]
   UInt_t fuMinimum   = 0;   /// Minimum of waveform [adc samples]
   UInt_t fuTimeMax   = 0;   /// Time of maximum in waveform [adc samples]
-  std::vector<uint16_t> fuWfm;
+  std::vector<uint16_t> fuWfm = std::vector<uint16_t>(32, 0);
 
   Double_t fdFitAmpl    = 0.;    /// Amplitude from fit of waveform [mV]
   Double_t fdFitZL      = 0.;    /// ZeroLevel from fit of waveform [adc counts]
   Double_t fdFitEdep    = 0.;    /// Energy deposition from fit of waveform [MeV]
   Double_t fdFitR2      = 999.;  /// Quality of waveform fit [] -- good near 0
   Double_t fdFitTimeMax = -1.;   /// Time of maximum in fit of waveform [adc samples]
-  std::vector<uint16_t> fuFitWfm;
+  std::vector<uint16_t> fuFitWfm = std::vector<uint16_t>(32, 0);
 
   template<class Archive>
   void serialize(Archive& ar, const unsigned int /*version*/)

@@ -35,46 +35,13 @@
 // -------------------------------------------------------------------------
 CbmMcbm2018UnpackerAlgoPsd::CbmMcbm2018UnpackerAlgoPsd()
   : CbmStar2019Algo()
-  , fbMonitorMode(kFALSE)
-  , fbDebugMonitorMode(kFALSE)
-  , fbDebugWriteOutput(kFALSE)
-  , fPsdDigiVector(nullptr)
-  , fPsdDspVector(nullptr)
-  , fvbMaskedComponents()
-  , fUnpackPar(nullptr)
-  , fuRawDataVersion(0)
-  , fuNrOfGdpbs(0)
-  , fGdpbIdIndexMap()
-  , fuNrOfFeePerGdpb(0)
-  , fuNrOfChannelsPerFee(0)
-  , fuNrOfChannelsPerGdpb(0)
-  , fuNrOfGbtx(0)
-  , fuNrOfModules(0)
-  , fdTimeOffsetNs(0.0)
-  , fulCurrentTsIdx(0)
-  , fulCurrentMsIdx(0)
-  , fuCurrentMsSysId(0)
-  , fdTsStartTime(-1.0)
-  , fdTsStopTimeCore(-1.0)
-  , fdMsTime(-1.0)
-  , fuMsIndex(0)
-  , fuCurrentEquipmentId(0)
-  , fuCurrDpbId(0)
-  , fuCurrDpbIdx(0)
-  , fiRunStartDateTimeSec(-1)
-  , fiBinSizeDatePlots(-1)
-  , fvulCurrentEpoch()
-  , fvulCurrentEpochCycle()
-  , fvulCurrentEpochFull()
-  , fdStartTime(-1.0)
-  , fdStartTimeMsSz(0.0)
-  , ftStartTimeUnix(std::chrono::steady_clock::now())
 {
 }
+
 CbmMcbm2018UnpackerAlgoPsd::~CbmMcbm2018UnpackerAlgoPsd()
 {
-  if (nullptr != fPsdDigiVector) delete fPsdDigiVector;
-  if (nullptr != fPsdDspVector) delete fPsdDspVector;
+  if (nullptr != fPsdDigiVector) { fPsdDigiVector->clear(); delete fPsdDigiVector; }
+  if (nullptr != fPsdDspVector) { fPsdDspVector->clear(); delete fPsdDspVector; }
 }
 
 // -------------------------------------------------------------------------
@@ -160,11 +127,6 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::InitParameters()
     }
   }
 
-  /// Internal status initialization
-  fvulCurrentEpoch.resize(fuNrOfGdpbs, 0);
-  fvulCurrentEpochCycle.resize(fuNrOfGdpbs, 0);
-  fvulCurrentEpochFull.resize(fuNrOfGdpbs, 0);
-
   return kTRUE;
 }
 // -------------------------------------------------------------------------
@@ -231,6 +193,11 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessTs(const fles::Timeslice& ts)
 
   std::sort(fPsdDigiVector->begin(), fPsdDigiVector->end(),
             [](const CbmPsdDigi& a, const CbmPsdDigi& b) -> bool { return a.GetTime() < b.GetTime(); });
+
+  if (fbDebugWriteOutput && (fPsdDspVector != nullptr)) {
+     std::sort(fPsdDspVector->begin(), fPsdDspVector->end(),
+               [](const CbmPsdDsp& a, const CbmPsdDsp& b) -> bool { return a.GetTime() < b.GetTime(); });
+  }
 
   return kTRUE;
 }
@@ -437,7 +404,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
                                         fdFitAmpl, fdFitZL, fdFitEdep, fdFitR2, fdFitTimeMax, fuFitWfm);
 
-              std::shared_ptr<CbmPsdDigi> digi = MakeDigi(dsp);
+              std::unique_ptr<CbmPsdDigi> digi = MakeDigi(dsp);
               if (digi) fPsdDigiVector->emplace_back(*digi);
 
               if (fbDebugWriteOutput && (fPsdDspVector != nullptr)) { fPsdDspVector->emplace_back(dsp); }
@@ -580,10 +547,9 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::SetDspOutputPointer(std::vector<CbmPsdDsp>* c
   }
 }
 
-std::shared_ptr<CbmPsdDigi> CbmMcbm2018UnpackerAlgoPsd::MakeDigi(CbmPsdDsp dsp)
+std::unique_ptr<CbmPsdDigi> CbmMcbm2018UnpackerAlgoPsd::MakeDigi(CbmPsdDsp dsp)
 {
-  std::shared_ptr<CbmPsdDigi> digi =
-    std::make_shared<CbmPsdDigi>(CbmPsdDigi(dsp.GetAddress(), dsp.GetTime(), dsp.GetEdep()));
+  std::unique_ptr<CbmPsdDigi> digi(new CbmPsdDigi(dsp.GetAddress(), dsp.GetTime(), dsp.GetEdep()));
 
   return digi;
 }
