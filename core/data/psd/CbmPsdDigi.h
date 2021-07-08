@@ -36,24 +36,35 @@ class CbmPsdDigi {
 public:
   /**@brief Default constructor.
        **/
-  CbmPsdDigi();
+  CbmPsdDigi() {}
 
 
   /** @brief Constructor with assignment
        ** @param address Unique channel address
-       ** @param edep    Energy deposition
        ** @param time    Time [ns]
+       ** @param edep    Energy deposition
        **/
-  CbmPsdDigi(UInt_t address, Double_t time, Double_t edep);
+  CbmPsdDigi(UInt_t address, Double_t time, Double_t edep) 
+    : fuAddress(address)
+    , fdTime(time)
+    , fdEdep(edep)
+  {
+  }
 
 
   /** @brief Constructor with detailed assignment.
        ** @param moduleID      Module Identifier
        ** @param sectionID     Section Identifier
-       ** @param edep          Energy deposition
        ** @param time          Time [ns]
+       ** @param edep          Energy deposition
        **/
-  CbmPsdDigi(UInt_t moduleId, UInt_t sectionId, Double_t time, Double_t edep);
+  CbmPsdDigi(UInt_t moduleId, UInt_t sectionId, Double_t time, Double_t edep)
+    : fuAddress(0)
+    , fdTime(time)
+    , fdEdep(edep)
+  {
+    fuAddress = CbmPsdAddress::GetAddress(moduleId, sectionId);
+  }
 
 
   /**  Copy constructor **/
@@ -65,15 +76,15 @@ public:
 
 
   /** Assignment operator  **/
-  CbmPsdDigi& operator=(const CbmPsdDigi&);
+  CbmPsdDigi& operator=(const CbmPsdDigi&) = default;
 
 
   /** Move Assignment operator  **/
-  CbmPsdDigi& operator=(CbmPsdDigi&&);
+  CbmPsdDigi& operator=(CbmPsdDigi&&) = default;
 
 
   /** Destructor **/
-  ~CbmPsdDigi();
+  ~CbmPsdDigi() {}
 
 
   /** @brief Class name (static)
@@ -139,12 +150,11 @@ public:
   std::string ToString() const;
 
 
+private:
   UInt_t fuAddress = 0;    /// Unique channel address
   Double_t fdTime  = -1.;  /// Time of measurement [ns]
   Double_t fdEdep  = 0.;   /// Energy deposition from FPGA [MeV]
 
-
-private:
   /// BOOST serialization interface
   friend class boost::serialization::access;
   template<class Archive>
@@ -155,7 +165,7 @@ private:
     ar& fdEdep;
   }
 
-  ClassDefNV(CbmPsdDigi, 6);
+  ClassDefNV(CbmPsdDigi, 5);
 };
 
 #endif  // CBMPSDDIGI_H

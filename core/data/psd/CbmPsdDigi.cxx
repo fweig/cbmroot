@@ -17,24 +17,6 @@
 
 #include <string>  // for basic_string
 
-// --- Default constructor
-CbmPsdDigi::CbmPsdDigi() {}
-
-
-// --- Constructor with assignment
-CbmPsdDigi::CbmPsdDigi(UInt_t address, Double_t time, Double_t edep) : fuAddress(address), fdTime(time), fdEdep(edep) {}
-
-
-// --- Constructor with module and section number
-CbmPsdDigi::CbmPsdDigi(UInt_t moduleId, UInt_t sectionId, Double_t time, Double_t edep)
-  : fuAddress(0)
-  , fdTime(time)
-  , fdEdep(edep)
-{
-  fuAddress = CbmPsdAddress::GetAddress(moduleId, sectionId);
-}
-
-
 // --- Copy constructor
 CbmPsdDigi::CbmPsdDigi(const CbmPsdDigi& other) : fuAddress(other.fuAddress), fdTime(other.fdTime), fdEdep(other.fdEdep)
 {
@@ -44,33 +26,6 @@ CbmPsdDigi::CbmPsdDigi(const CbmPsdDigi& other) : fuAddress(other.fuAddress), fd
 // --- Move constructor
 CbmPsdDigi::CbmPsdDigi(CbmPsdDigi&& other) : fuAddress(other.fuAddress), fdTime(other.fdTime), fdEdep(other.fdEdep) {}
 
-
-// --- Destructor
-CbmPsdDigi::~CbmPsdDigi() {}
-
-
-// --- Assignment operator
-CbmPsdDigi& CbmPsdDigi::operator=(const CbmPsdDigi& other)
-{
-  if (this != &other) {
-    fuAddress = other.fuAddress;
-    fdTime    = other.fdTime;
-    fdEdep    = other.fdEdep;
-  }
-  return *this;
-}
-
-
-// --- Move assignment operator
-CbmPsdDigi& CbmPsdDigi::operator=(CbmPsdDigi&& other)
-{
-  if (this != &other) {
-    fuAddress = other.fuAddress;
-    fdTime    = other.fdTime;
-    fdEdep    = other.fdEdep;
-  }
-  return *this;
-}
 
 
 // --- Set address from module and section number
