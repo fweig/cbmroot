@@ -28,7 +28,7 @@
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1Extrapolation.h"
 #include "L1Algo/L1Filtration.h"
-#include "L1Algo/L1StsHit.h"
+#include "L1Algo/L1Hit.h"
 #include "L1Algo/L1TrackPar.h"
 
 void CbmL1::TrackFitter(vector<CbmL1Track>& Tracks, CbmL1Vtx* V)
@@ -42,7 +42,7 @@ void CbmL1::TrackFitter(vector<CbmL1Track>& Tracks, CbmL1Vtx* V)
       CbmL1Track &T = *i;
       
       int stmin = 1000, stmax = -1000;
-      for ( vector<L1StsHit*>::iterator j = T.StsHits.begin(); j != T.StsHits.end(); ++j)
+      for ( vector<L1Hit*>::iterator j = T.StsHits.begin(); j != T.StsHits.end(); ++j)
 	{      
 	  if ((*j)->iStation < stmin ) stmin = (*j)->iStation;
 	  if ((*j)->iStation > stmax ) stmax = (*j)->iStation;
@@ -56,7 +56,7 @@ void CbmL1::TrackFitter(vector<CbmL1Track>& Tracks, CbmL1Vtx* V)
       
       static L1FieldRegion fld[20];
       {
-	vector<L1StsHit*>::iterator ih2 = T.StsHits.begin(), ih1, ih0;
+	vector<L1Hit*>::iterator ih2 = T.StsHits.begin(), ih1, ih0;
 	ih1 = ih2;
 	ih1++;
 	ih0 = ih1; 
@@ -96,7 +96,7 @@ void CbmL1::TrackFitter(vector<CbmL1Track>& Tracks, CbmL1Vtx* V)
 	fvec qp0  = tp.qp;
 	tp.NDF  = 2;
 	tp.chi2 = 0;
-	vector<L1StsHit*>::iterator ih = T.StsHits.begin();
+	vector<L1Hit*>::iterator ih = T.StsHits.begin();
 	int ist = (*ih)->iStation;
 	L1Station *st = &(algo->vStations[ist]);	
 	tp.x  = (*ih)->x;
@@ -124,7 +124,7 @@ void CbmL1::TrackFitter(vector<CbmL1Track>& Tracks, CbmL1Vtx* V)
 	fvec qp0  = tp.qp;
 	tp.NDF  = 2;
 	tp.chi2 = 0;
-	vector<L1StsHit*>::reverse_iterator ih = T.StsHits.rbegin();
+	vector<L1Hit*>::reverse_iterator ih = T.StsHits.rbegin();
 	int ist = (*ih)->iStation;
 	L1Station *st = &(algo->vStations[ist]);	
 	tp.x  = (*ih)->x;

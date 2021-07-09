@@ -65,7 +65,7 @@
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1Branch.h"
 #include "L1Algo/L1Field.h"
-#include "L1Algo/L1StsHit.h"
+#include "L1Algo/L1Hit.h"
 #include "L1AlgoInputData.h"
 #include "L1Event.h"
 
@@ -1331,7 +1331,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
       strips.clear();
       zP.clear();
       for (unsigned int iH = 0; iH < (*algo->vStsHits).size(); ++iH) {
-        L1StsHit& h = const_cast<L1StsHit&>((*algo->vStsHits)[iH]);
+        L1Hit& h = const_cast<L1Hit&>((*algo->vStsHits)[iH]);
 #ifdef USE_EVENT_NUMBER
         h.n = -1;
 #endif
@@ -1406,7 +1406,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     for (unsigned int iH = 0; iH < (*algo->vStsHits).size(); ++iH) {
 #ifdef USE_EVENT_NUMBER
-      L1StsHit& h = const_cast<L1StsHit&>((*algo->vStsHits)[iH]);
+      L1Hit& h    = const_cast<L1Hit&>((*algo->vStsHits)[iH]);
       h.n         = -1;
 #endif
       if (vStsHits[iH].mcPointIds.size() == 0) continue;
@@ -1427,7 +1427,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
       for (unsigned int iH = 0; iH < MC.StsHits.size(); iH++) {
         const int hitI   = MC.StsHits[iH];
-        CbmL1StsHit& hit = const_cast<CbmL1StsHit&>(vStsHits[hitI]);
+        CbmL1Hit& hit    = const_cast<CbmL1Hit&>(vStsHits[hitI]);
 
         hit.event = MC.iEvent;
 
@@ -1613,7 +1613,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
   for (unsigned int iH = 0; iH < (*algo->vStsHits).size(); ++iH) {
 #ifdef USE_EVENT_NUMBER
-    L1StsHit& h = const_cast<L1StsHit&>((*algo->vStsHits)[iH]);
+    L1Hit& h    = const_cast<L1Hit&>((*algo->vStsHits)[iH]);
     h.n         = -1;
 #endif
     if (vStsHits[iH].mcPointIds.size() == 0) continue;
@@ -1634,7 +1634,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     for (unsigned int iH = 0; iH < MC.StsHits.size(); iH++) {
       const int hitI   = MC.StsHits[iH];
-      CbmL1StsHit& hit = const_cast<CbmL1StsHit&>(vStsHits[hitI]);
+      CbmL1Hit& hit    = const_cast<CbmL1Hit&>(vStsHits[hitI]);
 
       hit.event = MC.iEvent;
     }
@@ -1727,7 +1727,7 @@ void CbmL1::IdealTrackFinder()
 
     for (unsigned int iH = 0; iH < MC.StsHits.size(); iH++) {
       const int hitI         = MC.StsHits[iH];
-      const CbmL1StsHit& hit = vStsHits[hitI];
+      const CbmL1Hit& hit    = vStsHits[hitI];
 
       const int iStation = vMCPoints[hit.mcPointIds[0]].iStation;
 
@@ -1838,7 +1838,7 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
     n = (*algo->vStsHits).size();
     fadata << n << endl;
     for (int i = 0; i < n; i++) {
-      const L1StsHit& h = (*algo->vStsHits)[i];
+      const L1Hit& h = (*algo->vStsHits)[i];
       fadata << static_cast<int>(h.f) << " ";
       fadata << static_cast<int>(h.b) << " ";
 #ifdef USE_EVENT_NUMBER
@@ -1848,7 +1848,7 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
       fadata << h.u << " ";
       fadata << h.v << " ";
       // fadata  << (*algo->vStsHits)[i].time << endl;
-      fadata << h.t_reco << endl;
+      fadata << h.t << endl;
     };
     if (fVerbose >= 4) {
       cout << "vStsHits[" << n << "]"
@@ -2065,7 +2065,7 @@ void CbmL1::ReadSTAPAlgoData()
   if (1) {
     if (nEvent == 1) fadata.open(fadata_name, fstream::in);
 
-    if (algo->vStsHits) const_cast<std::vector<L1StsHit>*>(algo->vStsHits)->clear();
+    if (algo->vStsHits) const_cast<std::vector<L1Hit>*>(algo->vStsHits)->clear();
     algo->NStsStrips = 0;
     if (algo->vStsZPos) const_cast<std::vector<float>*>(algo->vStsZPos)->clear();
     if (algo->fStripFlag) algo->fStripFlag->clear();
@@ -2115,12 +2115,12 @@ void CbmL1::ReadSTAPAlgoData()
     int element_n;
     int element_iz;
     for (int i = 0; i < n; i++) {
-      L1StsHit element;
-      fadata >> element_f >> element_b >> element_n >> element_iz >> element.u >> element.v >> element.t_reco;
+      L1Hit element;
+      fadata >> element_f >> element_b >> element_n >> element_iz >> element.u >> element.v >> element.t;
       element.f  = static_cast<THitI>(element_f);
       element.b  = static_cast<THitI>(element_b);
       element.iz = static_cast<TZPosI>(element_iz);
-      const_cast<std::vector<L1StsHit>*>(algo->vStsHits)->push_back(element);
+      const_cast<std::vector<L1Hit>*>(algo->vStsHits)->push_back(element);
     }
     if (fVerbose >= 4) {
       cout << "vStsHits[" << n << "]"
@@ -2291,7 +2291,7 @@ void CbmL1::ReadSTAPPerfData()
     // vStsHits
     fpdata >> n;
     for (int i = 0; i < n; i++) {
-      CbmL1StsHit element;
+      CbmL1Hit element;
       fpdata >> element.hitId;
       fpdata >> element.extIndex;
 

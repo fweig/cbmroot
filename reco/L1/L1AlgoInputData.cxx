@@ -24,7 +24,7 @@ const L1AlgoInputData& L1AlgoInputData::operator=( const L1AlgoInputData& a)
 }
 
 
-void L1AlgoInputData::SetData( const vector< L1StsHit >      & StsHits_,
+void L1AlgoInputData::SetData( const vector< L1Hit >      & StsHits_,
                                    const vector< L1Strip >       & StsStrips_,
                                    const vector< L1Strip >       & StsStripsB_,
                                    const vector< fscal >         & StsZPos_,
@@ -141,8 +141,8 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
     int element_n;
     int element_iz;
     for (int i = 0; i < n; i++) {
-      L1StsHit element;
-      fadata >> element_f >> element_b >> element_n >> element_iz >> element.u >> element.v >> element.t_reco;
+      L1Hit element;
+      fadata >> element_f >> element_b >> element_n >> element_iz >> element.u >> element.v >> element.t;
       element.f = static_cast<THitI>(element_f);
       element.b = static_cast<THitI>(element_b);
 #ifdef USE_EVENT_NUMBER

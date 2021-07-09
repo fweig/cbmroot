@@ -41,9 +41,9 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   const int iFirstHit         = (dir) ? nHits - 1 : 0;
   const int iLastHit          = (dir) ? 0 : nHits - 1;
 
-  const L1StsHit& hit0 = (*vStsHits)[hits[iFirstHit]];
-  const L1StsHit& hit1 = (*vStsHits)[hits[iFirstHit + step]];
-  const L1StsHit& hit2 = (*vStsHits)[hits[iFirstHit + 2 * step]];
+  const L1Hit& hit0 = (*vStsHits)[hits[iFirstHit]];
+  const L1Hit& hit1 = (*vStsHits)[hits[iFirstHit + step]];
+  const L1Hit& hit2 = (*vStsHits)[hits[iFirstHit + 2 * step]];
 
   int ista0 = GetFStation((*fStripFlag)[hit0.f]);
   int ista1 = GetFStation((*fStripFlag)[hit1.f]);
@@ -83,9 +83,9 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   }
 
   T.z = z0;
-  T.t = hit0.t_reco;
+  T.t = hit0.t;
 
-  // T.t[0]=(hit0.t_reco+hit1.t_reco+hit2.t_reco)/3;
+  // T.t[0]=(hit0.t+hit1.t+hit2.t)/3;
   T.chi2 = 0.;
   T.NDF  = 2.;
   T.C00  = sta0.XYInfo.C00;
@@ -104,7 +104,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   T.C50 = T.C51 = T.C52 = T.C53 = T.C54 = 0;
   T.C22 = T.C33 = vINF;
   T.C44         = 1.;
-  T.C55         = hit0.t_er * hit0.t_er;
+  T.C55         = hit0.dt * hit0.dt;
 
   L1FieldValue fB0, fB1, fB2 _fvecalignment;
   L1FieldRegion fld _fvecalignment;
@@ -123,7 +123,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   int ista      = ista2;
 
   for (int i = iFirstHit + step; step * i <= step * iLastHit; i += step) {
-    const L1StsHit& hit = (*vStsHits)[hits[i]];
+    const L1Hit& hit    = (*vStsHits)[hits[i]];
     ista_prev           = ista;
     ista                = GetFStation((*fStripFlag)[hit.f]);
 
@@ -162,7 +162,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
 #endif
     L1Filter(T, info, v);
 
-    FilterTime(T, hit.t_reco, hit.t_er);
+    FilterTime(T, hit.t, hit.dt);
 
     fB0 = fB1;
     fB1 = fB2;
@@ -207,9 +207,9 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
   const int iFirstHit         = (dir) ? 2 : t.NHits - 3;
   //  int ista = GetFStation((*fStripFlag)[(*vStsHits)[t.StsHits[iFirstHit]].f]) + 2*step; // current station. set to the end of track
 
-  const L1StsHit& hit0 = (*vStsHits)[t.fStsHits[iFirstHit]];  // optimize
-  const L1StsHit& hit1 = (*vStsHits)[t.fStsHits[iFirstHit + step]];
-  const L1StsHit& hit2 = (*vStsHits)[t.fStsHits[iFirstHit + 2 * step]];
+  const L1Hit& hit0 = (*vStsHits)[t.fStsHits[iFirstHit]];  // optimize
+  const L1Hit& hit1 = (*vStsHits)[t.fStsHits[iFirstHit + step]];
+  const L1Hit& hit2 = (*vStsHits)[t.fStsHits[iFirstHit + 2 * step]];
 
   const int ista0 = GetFStation((*fStripFlag)[hit0.f]);
   const int ista1 = GetFStation((*fStripFlag)[hit1.f]);
@@ -281,8 +281,9 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
     while (area.GetNext(ih)) {
 
       ih += StsHitsUnusedStartIndex[ista];
-      const L1StsHit& hit = (*vStsHitsUnused)[ih];
-      if (fabs(hit.t_reco - T.t[0]) > sqrt(T.C55[0] + hit.t_er) * 5) continue;
+      const L1Hit& hit = (*vStsHitsUnused)[ih];
+      //TODO: bug, it should be hit.dt*hit.dt
+      if (fabs(hit.t - T.t[0]) > sqrt(T.C55[0] + hit.dt) * 5) continue;
 
       if (GetFUsed((*fStripFlag)[hit.f] | (*fStripFlag)[hit.b])) continue;  // if used
 
@@ -314,7 +315,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
     newHits.push_back((*RealIHitP)[iHit_best]);
 
-    const L1StsHit& hit = (*vStsHitsUnused)[iHit_best];
+    const L1Hit& hit    = (*vStsHitsUnused)[iHit_best];
     fvec u              = hit.u;
     fvec v              = hit.v;
     fvec x, y, z;
@@ -342,7 +343,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 #endif
     L1Filter(T, info, v);
 
-    FilterTime(T, hit.t_reco, hit.t_er);
+    FilterTime(T, hit.t, hit.dt);
 
     fB0 = fB1;
     fB1 = fB2;

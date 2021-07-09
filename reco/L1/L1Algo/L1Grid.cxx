@@ -11,6 +11,8 @@
 
 #include <assert.h>
 #include <string.h>
+
+#include "L1Hit.h"
 #ifdef _OPENMP
 #include "omp.h"
 #endif
@@ -37,8 +39,8 @@ inline void memset(T* dest, T i, size_t num)
 }
 
 
-void L1Grid::UpdateIterGrid(unsigned int Nelements, L1StsHit* hits, vector<THitI>* indicesBuf, THitI* indices,
-                            vector<L1StsHit>* hits2, vector<L1HitPoint>* pointsBuf, L1HitPoint* points,
+void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, vector<THitI>* indicesBuf, THitI* indices,
+                            vector<L1Hit>* hits2, vector<L1HitPoint>* pointsBuf, L1HitPoint* points,
                             int& NHitsOnStation, char iS, L1Algo& Algo, const L1Vector<unsigned char>* vSFlag)
 {
 
@@ -52,12 +54,12 @@ void L1Grid::UpdateIterGrid(unsigned int Nelements, L1StsHit* hits, vector<THitI
 #endif
   for (THitI x = 0; x < Nelements; x++) {
 
-    const L1StsHit& hit = hits[x];
+    const L1Hit& hit = hits[x];
 
     if (!L1Algo::GetFUsed((*vSFlag)[hit.f] | (*vSFlag)[hit.b])) {
       Algo.GetHitCoor(hit, xs, ys, iS);
 
-      const THitI& bin = GetBinBounded(xs, ys, hit.t_reco);
+      const THitI& bin = GetBinBounded(xs, ys, hit.t);
 
       fHitsInBin[x] = fFirstHitInBin[bin + 1];
 #ifdef _OPENMP
@@ -95,12 +97,12 @@ void L1Grid::UpdateIterGrid(unsigned int Nelements, L1StsHit* hits, vector<THitI
 #endif
   for (THitI x = 0; x < Nelements; x++) {
 
-    const L1StsHit& hit = hits[x];
+    const L1Hit& hit = hits[x];
     if (!L1Algo::GetFUsed((*vSFlag)[hit.f] | (*vSFlag)[hit.b])) {
       Algo.GetHitCoor(hit, xs, ys, iS);
 
 
-      const THitI& bin = GetBinBounded(xs, ys, hit.t_reco);
+      const THitI& bin = GetBinBounded(xs, ys, hit.t);
 
       {
 
@@ -165,8 +167,8 @@ void L1Grid::BuildBins(float yMin, float yMax, float zMin, float zMax, float tMi
 }
 
 
-void L1Grid::StoreHits(THitI nhits, const L1StsHit* hits, char iS, L1Algo& Algo, THitI n, L1StsHit* hitsBuf1,
-                       const L1StsHit* hits1, THitI* indices1)
+void L1Grid::StoreHits(THitI nhits, const L1Hit* hits, char iS, L1Algo& Algo, THitI n, L1Hit* hitsBuf1,
+                       const L1Hit* hits1, THitI* indices1)
 {
 
   fscal xs = 0;
@@ -181,11 +183,11 @@ void L1Grid::StoreHits(THitI nhits, const L1StsHit* hits, char iS, L1Algo& Algo,
     Algo.GetHitCoor((hits)[x], xs, ys, iS);
 
 
-    fHitsInBin[x] = fFirstHitInBin[GetBinBounded(xs, ys, (hits)[x].t_reco) + 1];
+    fHitsInBin[x] = fFirstHitInBin[GetBinBounded(xs, ys, (hits)[x].t) + 1];
 #ifdef _OPENMP
 #pragma omp atomic
 #endif
-    fFirstHitInBin[GetBinBounded(xs, ys, (hits)[x].t_reco) + 1]++;
+    fFirstHitInBin[GetBinBounded(xs, ys, (hits)[x].t) + 1]++;
   }
 
 
@@ -219,7 +221,7 @@ void L1Grid::StoreHits(THitI nhits, const L1StsHit* hits, char iS, L1Algo& Algo,
     Algo.GetHitCoor((hits1)[x], xs, ys, iS);
 
 
-    const THitI& bin = GetBinBounded(xs, ys, (hits1)[x].t_reco);
+    const THitI& bin = GetBinBounded(xs, ys, (hits1)[x].t);
 
     {
 

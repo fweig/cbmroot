@@ -71,7 +71,7 @@ struct TmpHit {  // used for sort Hits before writing in the normal arrays
   double dx, dy, dxy;
   double du, dv;
   int iMC;  // index of MCPoint in the vMCPoints array
-  double time, t_er, z;
+  double time, dt, z;
   int Det;
   int id;
   int track;
@@ -513,7 +513,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
         //Get time
         th.time = mh->GetTime();
-        th.t_er = mh->GetTimeError();
+        th.dt   = mh->GetTimeError();
 
         if (fTimesliceMode) th.id = hitIndex;
         else
@@ -625,7 +625,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.iStation = DetId + NMvdStations + NStsStations;
         //Get time
         th.time = mh->GetTime() - 14.5;
-        th.t_er = mh->GetTimeError();
+        th.dt   = mh->GetTimeError();
 
 
         //   th.iSector  = 0;
@@ -689,7 +689,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
               //                              th.x = pt->GetX( th.z );// + gRandom->Gaus(0,th.dx);
               //
               //                              th.y = pt->GetY(th.z);// + gRandom->Gaus(0,th.dy);
-              //                   th.time = pt->GetTime();  //+ gRandom->Gaus(0,th.t_er);
+              //                   th.time = pt->GetTime();  //+ gRandom->Gaus(0,th.dt);
               //
               //                            L1Station& st = algo->vStations[th.iStation];
               //                            th.u_front =
@@ -724,7 +724,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
 
       th.time = mh->GetTime();
-      th.t_er = mh->GetTimeError();
+      th.dt   = mh->GetTimeError();
 
       //   th.iSector  = 0;
       th.iStripF = firstDetStrip + j;
@@ -830,7 +830,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       th.time = mh->GetTime();
 
-      th.t_er = mh->GetTimeError();
+      th.dt = mh->GetTimeError();
 
       th.dx  = mh->GetDx();
       th.dy  = mh->GetDy();
@@ -885,7 +885,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         //                 th.x = pt->GetX() + gRandom->Gaus(0,th.dx);
         //
         //         th.y = pt->GetY()+ gRandom->Gaus(0,th.dy);
-        //         th.time =  pt->GetTime()+ gRandom->Gaus(0,th.t_er);
+        //         th.time =  pt->GetTime()+ gRandom->Gaus(0,th.dt);
         //
         //                 L1Station &st = algo->vStations[th.iStation];
         //         th.u_front = th.x*st.frontInfo.cos_phi[0] + th.y*st.frontInfo.sin_phi[0];
@@ -952,14 +952,14 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     assert(th.iStripF >= 0 || th.iStripF < NStrips);
     assert(th.iStripB >= 0 || th.iStripB < NStrips);
 
-    L1StsHit h;
+    L1Hit h;
     h.f = th.iStripF;
     h.b = th.iStripB;
 
     h.ID = th.id;
 
-    h.t_reco = th.time;
-    h.t_er   = th.t_er;
+    h.t  = th.time;
+    h.dt = th.dt;
     //  h.track = th.track;
     //    h.dx  = th.dx;
     //    h.dy  = th.dy;
@@ -1040,7 +1040,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     }
 
     // save hit
-    vStsHits.push_back(CbmL1StsHit(fData->vStsHits.size(), th.ExtIndex, th.Det));
+    vStsHits.push_back(CbmL1Hit(fData->vStsHits.size(), th.ExtIndex, th.Det));
 
     vStsHits[vStsHits.size() - 1].x = th.x;
     vStsHits[vStsHits.size() - 1].y = th.y;
@@ -1359,13 +1359,13 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
 bool CbmL1::ReadMCPoint(CbmL1MCPoint* /*MC*/, int /*iPoint*/, int /*MVD*/) { return 0; }
 
 /// Procedure for match hits and MCPoints.
-/// Read information about correspondence between hits and mcpoints and fill CbmL1MCPoint::hitIds and CbmL1StsHit::mcPointIds arrays
+/// Read information about correspondence between hits and mcpoints and fill CbmL1MCPoint::hitIds and CbmL1Hit::mcPointIds arrays
 /// should be called after fill of algo
 void CbmL1::HitMatch()
 {
   const int NHits = vStsHits.size();
   for (int iH = 0; iH < NHits; iH++) {
-    CbmL1StsHit& hit = vStsHits[iH];
+    CbmL1Hit& hit = vStsHits[iH];
 
     if (hit.Det == 1) {
       CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(vStsHits[iH].extIndex));

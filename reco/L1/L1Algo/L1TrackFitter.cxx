@@ -52,9 +52,9 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
     for (int iter = 0; iter < 3; iter++) {
       //cout<<" Back 1"<<endl;
       {  // fit backward
-        const L1StsHit& hit0 = (*vStsHits)[hits[nHits - 1]];
-        const L1StsHit& hit1 = (*vStsHits)[hits[nHits - 2]];
-        const L1StsHit& hit2 = (*vStsHits)[hits[nHits - 3]];
+        const L1Hit& hit0 = (*vStsHits)[hits[nHits - 1]];
+        const L1Hit& hit1 = (*vStsHits)[hits[nHits - 2]];
+        const L1Hit& hit2 = (*vStsHits)[hits[nHits - 3]];
 
         int ista0 = (*fStripFlag)[hit0.f] / 4;
         int ista1 = (*fStripFlag)[hit1.f] / 4;
@@ -126,7 +126,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         //cout<<"\nfit, iter=:"<<iter<<endl;
         for (int i = nHits - 2; i >= 0; i--) {
           //  if( fabs(T.qp[0])>2. ) break;  // iklm. Don't know it need for
-          const L1StsHit& hit = (*vStsHits)[hits[i]];
+          const L1Hit& hit    = (*vStsHits)[hits[i]];
           ista                = (*fStripFlag)[hit.f] / 4;
 
           L1Station& sta = vStations[ista];
@@ -193,9 +193,9 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
       {
         //T.qp = first_trip->GetQpOrig(MaxInvMom);
 
-        const L1StsHit& hit0 = (*vStsHits)[hits[0]];
-        const L1StsHit& hit1 = (*vStsHits)[hits[1]];
-        const L1StsHit& hit2 = (*vStsHits)[hits[2]];
+        const L1Hit& hit0 = (*vStsHits)[hits[0]];
+        const L1Hit& hit1 = (*vStsHits)[hits[1]];
+        const L1Hit& hit2 = (*vStsHits)[hits[2]];
 
         int ista0 = GetFStation((*fStripFlag)[hit0.f]);
         int ista1 = GetFStation((*fStripFlag)[hit1.f]);
@@ -262,7 +262,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         int ista = ista2;
 
         for (int i = 1; i < nHits; i++) {
-          const L1StsHit& hit = (*vStsHits)[hits[i]];
+          const L1Hit& hit    = (*vStsHits)[hits[i]];
           ista                = (*fStripFlag)[hit.f] / 4;
           L1Station& sta      = vStations[ista];
           fvec u              = hit.u;
@@ -387,7 +387,7 @@ void L1Algo::L1KFTrackFitter()
       int nHitsTrack = t[iVec]->NHits;
       int iSta[MaxNStations];
       for (i = 0; i < nHitsTrack; i++) {
-        const L1StsHit& hit = (*vStsHits)[fRecoHits[start_hit++]];
+        const L1Hit& hit    = (*vStsHits)[fRecoHits[start_hit++]];
         const int ista      = (*fStripFlag)[hit.f] / 4;
         iSta[i]             = ista;
         w[ista][iVec]       = 1.;
@@ -400,8 +400,8 @@ void L1Algo::L1KFTrackFitter()
         StripsToCoor(u[ista], v[ista], x_temp, y_temp, sta[ista]);
         x[ista][iVec]      = x_temp[iVec];
         y[ista][iVec]      = y_temp[iVec];
-        time[ista][iVec]   = hit.t_reco;
-        timeEr[ista][iVec] = hit.t_er;
+        time[ista][iVec]   = hit.t;
+        timeEr[ista][iVec] = hit.dt;
         z[ista][iVec]      = (*vStsZPos)[hit.iz];
         sta[ista].fieldSlice.GetFieldValue(x[ista], y[ista], fB_temp);
         dUdV_to_dX(d_u[ista], d_v[ista], d_x[ista], sta[ista]);
@@ -816,7 +816,7 @@ void L1Algo::L1KFTrackFitterMuch()
       int nHitsTrack    = t[iVec]->NHits;
       int nHitsTrackSts = 0;
       for (i = 0; i < nHitsTrack; i++) {
-        const L1StsHit& hit = (*vStsHits)[fRecoHits[start_hit++]];
+        const L1Hit& hit    = (*vStsHits)[fRecoHits[start_hit++]];
         const int ista      = (*fStripFlag)[hit.f] / 4;
         if (ista < 8) nHitsTrackSts++;
         iSta[i]       = ista;
@@ -830,8 +830,8 @@ void L1Algo::L1KFTrackFitterMuch()
         StripsToCoor(u[ista], v[ista], x_temp, y_temp, sta[ista]);
         x[ista][iVec]      = x_temp[iVec];
         y[ista][iVec]      = y_temp[iVec];
-        time[ista][iVec]   = hit.t_reco;
-        timeEr[ista][iVec] = hit.t_er;
+        time[ista][iVec]   = hit.t;
+        timeEr[ista][iVec] = hit.dt;
         d_u[ista][iVec]    = hit.du;
         d_v[ista][iVec]    = hit.dv;
         dUdV_to_dX(d_u[ista], d_v[ista], d_x[ista], sta[ista]);
@@ -1548,7 +1548,7 @@ void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, L1Stat
   track.NDF  = -3.0;
   track.chi2 = ZERO;
 }
-void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& t_er, L1Station& st, fvec& /*d_x*/,
+void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& dt, L1Station& st, fvec& /*d_x*/,
                          fvec& /*d_y*/, fvec& /*d_xy*/)
 {
   // initialize covariance matrix
@@ -1576,7 +1576,7 @@ void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& 
   track.C52 = ZERO;
   track.C53 = ZERO;
   track.C54 = ZERO;
-  track.C55 = t_er * t_er;
+  track.C55 = dt * dt;
 
   track.fx   = x;
   track.fy   = y;
@@ -1585,7 +1585,7 @@ void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& 
   track.chi2 = ZERO;
 }
 
-void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& /*t*/, fvec& t_er, L1Station& st)
+void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& /*t*/, fvec& dt, L1Station& st)
 {
   // initialize covariance matrix
   //   track.C00= d_x*d_x;
@@ -1611,7 +1611,7 @@ void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& /*t*/, fv
   track.C52 = ZERO;
   track.C53 = ZERO;
   track.C54 = ZERO;
-  track.C55 = t_er * t_er;
+  track.C55 = dt * dt;
 
   track.fx   = x;
   track.fy   = y;
@@ -1620,7 +1620,7 @@ void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& /*t*/, fv
 }
 
 
-void L1Algo::FilterFirstL(L1TrackParFit& track, fvec& x, fvec& y, fvec& /*t*/, fvec& t_er, L1Station& /*st*/, fvec& d_x,
+void L1Algo::FilterFirstL(L1TrackParFit& track, fvec& x, fvec& y, fvec& /*t*/, fvec& dt, L1Station& /*st*/, fvec& d_x,
                           fvec& d_y, fvec& d_xy)
 {
   // initialize covariance matrix
@@ -1646,7 +1646,7 @@ void L1Algo::FilterFirstL(L1TrackParFit& track, fvec& x, fvec& y, fvec& /*t*/, f
   track.C52 = ZERO;
   track.C53 = ZERO;
   track.C54 = ZERO;
-  track.C55 = t_er * t_er;
+  track.C55 = dt * dt;
 
   track.fx = x;
   track.fy = y;

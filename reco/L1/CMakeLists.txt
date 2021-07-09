@@ -129,6 +129,8 @@ L1Algo/L1MCEvent.cxx
 L1Algo/L1Fit.cxx
 CbmL1MCTrack.cxx
 
+L1Algo/utils/L1AlgoDraw.cxx
+
 ParticleFinder/CbmL1PFFitter.cxx
 ParticleFinder/CbmL1PFMCParticle.cxx
 )
@@ -138,7 +140,7 @@ CbmL1CATrdTrackFinderSA.h
 CbmL1.h
 CbmL1MCTrack.h
 CbmL1MCPoint.h
-CbmL1StsHit.h
+CbmL1Hit.h
 CbmL1TofMerger.h
 CbmL1Track.h
 CbmL1TrackMerger.h

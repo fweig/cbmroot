@@ -11,7 +11,7 @@
 // #define PULLS            // triplets pulls
 // #define TRIP_PERFORMANCE // triplets efficiencies
 // #define DOUB_PERFORMANCE // doublets efficiencies
-//#define DRAW             // event display
+// #define DRAW             // event display
 #ifdef DRAW
 class L1AlgoDraw;
 #include "CbmL1Track.h"
@@ -45,11 +45,11 @@ class L1AlgoDraw;
 #include "L1Branch.h"
 #include "L1Field.h"
 #include "L1Grid.h"
+#include "L1Hit.h"
 #include "L1HitPoint.h"
 #include "L1HitsSortHelper.h"
 #include "L1Portion.h"
 #include "L1Station.h"
-#include "L1StsHit.h"
 #include "L1Track.h"
 #include "L1TrackPar.h"
 #include "L1TrackParFit.h"
@@ -131,15 +131,15 @@ public:
 
 
 #ifdef DRAW
-  L1AlgoDraw* draw;
+  L1AlgoDraw* draw {nullptr};
   void DrawRecoTracksTime(const vector<CbmL1Track>& tracks);
 #endif
 
 
   void Init(const vector<fscal>& geo, const bool UseHitErrors, const bool mCBMmode);
 
-  void SetData(vector<L1StsHit>& StsHits_, int nStsStrips_, const vector<fscal>& StsZPos_,
-               L1Vector<unsigned char>& SFlag_, const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_);
+  void SetData(vector<L1Hit>& StsHits_, int nStsStrips_, const vector<fscal>& StsZPos_, L1Vector<unsigned char>& SFlag_,
+               const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_);
 
   void PrintHits();
 
@@ -170,7 +170,7 @@ public:
 
   int NStsStrips;                    // number of strips
   const vector<fscal>* vStsZPos;     // all possible z-positions of hits
-  vector<L1StsHit>* vStsHits;        // hits as a combination of front-, backstrips and z-position
+  vector<L1Hit>* vStsHits;           // hits as a combination of front-, backstrips and z-position
   L1Grid vGrid[MaxNStations];        // hits as a combination of front-, backstrips and z-position
   L1Grid vGridTime[MaxNStations];
 
@@ -188,9 +188,9 @@ public:
   //  L1Branch* pointer;
   unsigned int NHitsIsecAll;
 
-  vector<L1StsHit> vStsDontUsedHits_A;
-  vector<L1StsHit> vStsDontUsedHits_B;
-  vector<L1StsHit> vStsDontUsedHits_Buf;
+  vector<L1Hit> vStsDontUsedHits_A;
+  vector<L1Hit> vStsDontUsedHits_B;
+  vector<L1Hit> vStsDontUsedHits_Buf;
   vector<L1HitPoint> vStsDontUsedHitsxy_A;
   vector<L1HitPoint> vStsDontUsedHitsxy_buf;
   vector<L1HitPoint> vStsDontUsedHitsxy_B;
@@ -241,7 +241,7 @@ public:
   /// --- data used during finding iterations
 
   int isec;  // iteration
-  vector<L1StsHit>* vStsHitsUnused;
+  vector<L1Hit>* vStsHitsUnused;
   vector<THitI>* RealIHitP;
   vector<THitI>* RealIHitPBuf;
   vector<L1HitPoint>* vStsHitPointsUnused;
@@ -275,7 +275,7 @@ public:
   const L1FieldRegion& GetVtxFieldRegion() const { return vtxFieldRegion; }
   /// ----- Hit-point-strips conversion routines ------
 
-  void GetHitCoor(const L1StsHit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta);
+  void GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta);
 
   void dUdV_to_dY(const fvec& u, const fvec& v, fvec& _y, const L1Station& sta);
 
@@ -283,16 +283,16 @@ public:
 
   void dUdV_to_dXdY(const fvec& u, const fvec& v, fvec& _xy, const L1Station& sta);
 
-  void GetHitCoor(const L1StsHit& _h, fscal& _x, fscal& _y, char iS);
+  void GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, char iS);
   void StripsToCoor(const fscal& u, const fscal& v, fscal& x, fscal& y,
                     const L1Station& sta) const;  // convert strip positions to coordinates
   void StripsToCoor(const fscal& u, const fscal& v, fvec& x, fvec& y,
                     const L1Station& sta) const;  // convert strip positions to coordinates
   void StripsToCoor(const fvec& u, const fvec& v, fvec& x, fvec& y, const L1Station& sta) const;
-  L1HitPoint CreateHitPoint(const L1StsHit& hit,
+  L1HitPoint CreateHitPoint(const L1Hit& hit,
                             char ista);  // full the hit point by hit information.
 
-  void CreateHitPoint(const L1StsHit& hit, char ista, L1HitPoint& point);
+  void CreateHitPoint(const L1Hit& hit, char ista, L1HitPoint& point);
   inline int PackIndex(const int& a, const int& b, const int& c);
 
   inline int UnPackIndex(const int& i, int& a, int& b, int& c);

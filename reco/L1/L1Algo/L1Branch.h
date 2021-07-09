@@ -10,7 +10,7 @@
 
 #include "CbmL1Def.h"
 
-#include "L1StsHit.h"
+#include "L1Hit.h"
 #include "L1Vector.h"
 
 ///

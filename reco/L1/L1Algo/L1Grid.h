@@ -20,8 +20,8 @@
 #ifdef _OPENMP
 #include "omp.h"
 #endif
+#include "L1Hit.h"
 #include "L1HitPoint.h"
-#include "L1StsHit.h"
 #include "L1Vector.h"
 
 using namespace std;
@@ -85,13 +85,13 @@ public:
   //    }
   //  }
 
-  void StoreHits(THitI nhits, const L1StsHit* hits, char iS, L1Algo& Algo, THitI n, L1StsHit* hitsBuf1,
-                 const L1StsHit* hits1, THitI* indices1);
+  void StoreHits(THitI nhits, const L1Hit* hits, char iS, L1Algo& Algo, THitI n, L1Hit* hitsBuf1, const L1Hit* hits1,
+                 THitI* indices1);
 
   void CreatePar0(float yMin, float yMax, float zMin, float zMax, float sy, float sz);
   void BuildBins(float yMin, float yMax, float zMin, float zMax, float tMin, float tMax, float sy, float sz, float st);
 
-  void HitsSort(L1HitPoint* pointsBuf, L1StsHit* hitsBuf, const L1StsHit* hits, THitI* indices, THitI* indicesBuf,
+  void HitsSort(L1HitPoint* pointsBuf, L1Hit* hitsBuf, const L1Hit* hits, THitI* indices, THitI* indicesBuf,
                 L1HitPoint* points, THitI n, THitI nhits, char iS, L1Algo& Algo);
 
   void Initial1(int NThreads);
@@ -142,8 +142,8 @@ public:
   //     };
 
 
-  void UpdateIterGrid(unsigned int Nelements, L1StsHit* hits, vector<THitI>* indicesBuf, THitI* indices,
-                      vector<L1StsHit>* hits2, vector<L1HitPoint>* pointsBuf, L1HitPoint* points, int& NHitsOnStation,
+  void UpdateIterGrid(unsigned int Nelements, L1Hit* hits, vector<THitI>* indicesBuf, THitI* indices,
+                      vector<L1Hit>* hits2, vector<L1HitPoint>* pointsBuf, L1HitPoint* points, int& NHitsOnStation,
                       char iS, L1Algo& Algo, const L1Vector<unsigned char>* vSFlag);
 
 

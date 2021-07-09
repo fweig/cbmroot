@@ -8,12 +8,12 @@
 #include <vector>
 
 #include "L1Grid.h"
+#include "L1Hit.h"
 #include "L1HitPoint.h"
-#include "L1StsHit.h"
 
 using std::vector;
 
-L1HitsSortHelper::L1HitsSortHelper(vector<L1StsHit>& hits, vector<L1HitPoint>& points, vector<THitI>& indices,
+L1HitsSortHelper::L1HitsSortHelper(vector<L1Hit>& hits, vector<L1HitPoint>& points, vector<THitI>& indices,
                                    const L1Grid* grid, THitI* iStart, THitI* iStop, int nStations, int nDontUsedHits)
   : fD()
   , fHits(hits)
@@ -46,7 +46,7 @@ void L1HitsSortHelper::Sort()
               L1HitsSortHelperData::compare);
   }
 
-  vector<L1StsHit> hits     = fHits;
+  vector<L1Hit> hits        = fHits;
   vector<L1HitPoint> points = fPoints;
   const int NHits           = fD.size();
   for (int i = 0; i < NHits; i++) {

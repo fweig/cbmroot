@@ -1813,7 +1813,7 @@ void CbmL1::InputPerformance()
 
   if (listStsHits && listStsHitMatch) {
     for (unsigned int iH = 0; iH < vStsHits.size(); iH++) {
-      const CbmL1StsHit& h = vStsHits[iH];
+      const CbmL1Hit& h = vStsHits[iH];
 
       if (h.Det != 1) continue;  // mvd hit
       const CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(h.extIndex));
@@ -1957,7 +1957,7 @@ void CbmL1::InputPerformance()
 
   if (fMuchPixelHits && listMuchHitMatches) {
     for (unsigned int iH = 0; iH < vStsHits.size(); iH++) {
-      const CbmL1StsHit& h = vStsHits[iH];
+      const CbmL1Hit& h = vStsHits[iH];
 
       if (h.Det != 2) continue;  // mvd hit
 
@@ -2027,7 +2027,7 @@ void CbmL1::InputPerformance()
 
   if (listTrdHits && fTrdHitMatches) {
     for (unsigned int iH = 0; iH < vStsHits.size(); iH++) {
-      const CbmL1StsHit& h = vStsHits[iH];
+      const CbmL1Hit& h = vStsHits[iH];
 
       if (h.Det != 3) continue;  // mvd hit
       const CbmTrdHit* sh = L1_DYNAMIC_CAST<CbmTrdHit*>(listTrdHits->At(h.extIndex));
@@ -2091,7 +2091,7 @@ void CbmL1::InputPerformance()
 
   if (fTofHits && fTofHitDigiMatches) {
     for (unsigned int iH = 0; iH < vStsHits.size(); iH++) {
-      const CbmL1StsHit& h = vStsHits[iH];
+      const CbmL1Hit& h = vStsHits[iH];
 
       if (h.Det != 4) continue;  // mvd hit
 

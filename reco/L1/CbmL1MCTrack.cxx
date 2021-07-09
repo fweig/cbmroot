@@ -24,7 +24,7 @@
 #include "CbmL1Constants.h"
 
 #include "L1Algo/L1Algo.h"
-#include "L1Algo/L1StsHit.h"
+#include "L1Algo/L1Hit.h"
 
 CbmL1MCTrack::CbmL1MCTrack(double mass_, double q_, TVector3 vr, TLorentzVector vp, int _ID, int _mother_ID, int _pdg)
   : mass(mass_)
@@ -147,7 +147,7 @@ void CbmL1MCTrack::CalculateHitCont()
   {
     for (int ih = 0; ih < nhits; ih++) {
       int jh            = StsHits[ih];
-      const L1StsHit& h = (*algo->vStsHits)[jh];
+      const L1Hit& h    = (*algo->vStsHits)[jh];
       int ista          = (*algo->fStripFlag)[h.f] / 4;
 
       if (ista - istaold == 1) ncont++;

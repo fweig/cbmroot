@@ -11,7 +11,7 @@
 #include <iostream>
 #include <vector>
 
-#include "L1StsHit.h"
+#include "L1Hit.h"
 #include "L1Vector.h"
 
 using std::istream;
@@ -31,7 +31,7 @@ public:
   }
   ~L1AlgoInputData() {};
 
-  vector<L1StsHit>& GetStsHits() { return vStsHits; }
+  vector<L1Hit>& GetStsHits() { return vStsHits; }
   int GetNStsStrips() const { return NStsStrips; }
   const vector<fscal>& GetStsZPos() const { return vStsZPos; }
   L1Vector<unsigned char>& GetSFlag() { return fStripFlag; }
@@ -80,7 +80,7 @@ public:
   {
     MaxNStations = 25
   };
-  vector<L1StsHit> vStsHits;  // hits as a combination of front-, backstrips and z-position
+  vector<L1Hit> vStsHits;     // hits as a combination of front-, backstrips and z-position
   int NStsStrips;             // Number of strips in sts
   vector<fscal> vStsZPos;     // all possible z-positions of hits
 

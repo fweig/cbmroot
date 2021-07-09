@@ -9,13 +9,13 @@
 #include <vector>
 
 #include "L1Grid.h"
+#include "L1Hit.h"
 #include "L1HitPoint.h"
-#include "L1StsHit.h"
 
 using std::vector;
 
 struct L1HitsSortHelperData {
-  L1StsHit* h;
+  L1Hit* h;
   L1HitPoint* p;
   unsigned int bin;
   THitI i;
@@ -28,14 +28,14 @@ struct L1HitsSortHelperData {
 
 class L1HitsSortHelper {
 public:
-  L1HitsSortHelper(vector<L1StsHit>& hits, vector<L1HitPoint>& points, vector<THitI>& indices, const L1Grid* grid,
+  L1HitsSortHelper(vector<L1Hit>& hits, vector<L1HitPoint>& points, vector<THitI>& indices, const L1Grid* grid,
                    THitI* iStart, THitI* iStop, int nStations, int nDontUsedHits);
 
   void Sort();
 
 private:
   vector<L1HitsSortHelperData> fD;
-  vector<L1StsHit>& fHits;
+  vector<L1Hit>& fHits;
   vector<L1HitPoint>& fPoints;
   vector<THitI>& fIndices;
   const L1Grid* fGrid;

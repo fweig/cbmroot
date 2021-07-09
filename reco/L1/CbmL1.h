@@ -31,9 +31,9 @@
 
 //#include "L1Algo/L1Algo.h"
 #include "CbmEvent.h"
+#include "CbmL1Hit.h"
 #include "CbmL1MCPoint.h"
 #include "CbmL1MCTrack.h"
-#include "CbmL1StsHit.h"
 #include "CbmMCTrack.h"
 #include "CbmMvdHit.h"
 #include "CbmMvdPoint.h"
@@ -317,7 +317,7 @@ private:
 
   //CbmMCEventHeader* fEvent;
   /// Used data = Repacked input data
-  vector<CbmL1StsHit> vStsHits;  // hits with hit-mcpoint match information
+  vector<CbmL1Hit> vStsHits;  // hits with hit-mcpoint match information
   //   vector<CbmL1MCPoint> vMCPoints;
   vector<int> SortedIndex;
   vector<int> StsIndex;

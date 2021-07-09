@@ -50,10 +50,6 @@ L1Algo::L1Algo(int nThreads, int ExpectedHits)
   , TIME_CUT2(0.)
   , MaxDZ(0.)
   ,
-#ifdef DRAW
-  draw(0)
-  ,
-#endif
   Pick_gather(0)
   , PickNeighbour(0)
   ,  // (PickNeighbour < dp/dp_error)  =>  triplets are neighbours
@@ -316,7 +312,7 @@ void L1Algo::Init(const vector<fscal>& geo, const bool UseHitErrors, const bool 
 }
 
 
-void L1Algo::SetData(vector<L1StsHit>& StsHits_, int nStsStrips_, const vector<fscal>& StsZPos_,
+void L1Algo::SetData(vector<L1Hit>& StsHits_, int nStsStrips_, const vector<fscal>& StsZPos_,
                      L1Vector<unsigned char>& SFlag_, const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_)
 {
 
@@ -393,7 +389,7 @@ void L1Algo::SetData(vector<L1StsHit>& StsHits_, int nStsStrips_, const vector<f
 }
 
 
-void L1Algo::GetHitCoor(const L1StsHit& _h, fscal& _x, fscal& _y, char iS)
+void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, char iS)
 {
   L1Station& sta = vStations[int(iS)];
   fscal u        = _h.u;
@@ -404,7 +400,7 @@ void L1Algo::GetHitCoor(const L1StsHit& _h, fscal& _x, fscal& _y, char iS)
   _y = (sta.yInfo.cos_phi[0] * u + sta.yInfo.sin_phi[0] * v) / (*vStsZPos)[_h.iz];
 }
 
-void L1Algo::GetHitCoor(const L1StsHit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta)
+void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta)
 {
   fscal u = _h.u;
   fscal v = _h.v;
@@ -466,25 +462,25 @@ void L1Algo::StripsToCoor(
 }
 
 /// full the hit point by hit information: takes hit as input (2 strips) and creates hit_point with all coordinates (x,y,z,u,v, n - event number);
-L1HitPoint L1Algo::CreateHitPoint(const L1StsHit& hit, char /*ista*/)
+L1HitPoint L1Algo::CreateHitPoint(const L1Hit& hit, char /*ista*/)
 /// hit and station number
 {
   // L1Station& sta   = vStations[int(ista)];
   const float& z    = (*vStsZPos)[hit.iz];
-  const float& time = hit.t_reco;
-  return L1HitPoint(z, hit.u, hit.v, hit.du, hit.dv, time, hit.t_er);
+  const float& time = hit.t;
+  return L1HitPoint(z, hit.u, hit.v, hit.du, hit.dv, time, hit.dt);
 }
 
-void L1Algo::CreateHitPoint(const L1StsHit& hit, char /*ista*/, L1HitPoint& point)
+void L1Algo::CreateHitPoint(const L1Hit& hit, char /*ista*/, L1HitPoint& point)
 /// hit and station number
 {
   // L1Station& sta   = vStations[int(ista)];
   const float& z    = (*vStsZPos)[hit.iz];
-  const float& time = hit.t_reco;
+  const float& time = hit.t;
   const float& du_  = hit.du;
   const float& dv_  = hit.dv;
 
-  point.Set(z, hit.u, hit.v, du_, dv_, time, hit.t_er);
+  point.Set(z, hit.u, hit.v, du_, dv_, time, hit.dt);
   //   point.Set(x,y,z,v.f,u.f, time, n1, hit.time1, 2.9 ); // TODO put correct time error from the hit
 }
 

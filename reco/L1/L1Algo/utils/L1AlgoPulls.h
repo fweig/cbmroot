@@ -24,9 +24,8 @@ const int NStations = 0;
 #include <iostream>
 #include <vector>
 
-#include "L1Algo/L1Algo.h"
-#include "L1Algo/L1StsHit.h"
-#include "L1Algo/L1TrackPar.h"
+#include "L1Algo.h"
+#include "L1TrackPar.h"
 
 using std::cout;
 using std::endl;

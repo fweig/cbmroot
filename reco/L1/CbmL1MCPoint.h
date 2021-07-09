@@ -78,7 +78,7 @@ struct CbmL1MCPoint {
     return (a->ID < b->ID) || ((a->ID == b->ID) && (a->z < b->z));
   }
 
-  vector<int> hitIds;  // indices of CbmL1StsHits in L1->vStsHits array
+  vector<int> hitIds;  // indices of CbmL1Hits in L1->vStsHits array
 };
 
 #endif

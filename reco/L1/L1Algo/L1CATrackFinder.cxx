@@ -403,9 +403,9 @@ inline void L1Algo::f20(  // input
   n2 = 0;                             // number of doublet
   for (Tindex i1 = 0; i1 < n1; ++i1)  // for each singlet
   {
-    const Tindex i1_V  = i1 / fvecLen;
-    const Tindex i1_4  = i1 % fvecLen;
-    L1TrackPar& T1     = T_1[i1_V];
+    const Tindex i1_V = i1 / fvecLen;
+    const Tindex i1_4 = i1 % fvecLen;
+    L1TrackPar& T1    = T_1[i1_V];
 
     const int n2Saved = n2;
 
@@ -952,9 +952,9 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
 
     fscal u[NHits], v[NHits], x[NHits], y[NHits], z[NHits];
     for (int ih = 0; ih < NHits; ++ih) {
-      const L1StsHit& hit = (*vStsHits)[ihit[ih]];
-      u[ih]               = hit.u;
-      v[ih]               = hit.v;
+      const L1Hit& hit = (*vStsHits)[ihit[ih]];
+      u[ih]            = hit.u;
+      v[ih]            = hit.v;
       StripsToCoor(u[ih], v[ih], x[ih], y[ih], sta[ih]);
       z[ih] = (*vStsZPos)[hit.iz];
     };
@@ -1135,10 +1135,10 @@ inline void L1Algo::f4(  // input
     fscal MaxInvMomS = MaxInvMom[0];
     fscal scale      = 255 / (MaxInvMomS * 2);
 
-    fscal qp         = MaxInvMomS + T3.qp[i3_4];
+    fscal qp = MaxInvMomS + T3.qp[i3_4];
     if (qp < 0) qp = 0;
     if (qp > MaxInvMomS * 2) qp = MaxInvMomS * 2;
-    qp  = (static_cast<unsigned int>(qp * scale)) % 256;
+    qp = (static_cast<unsigned int>(qp * scale)) % 256;
     qp = static_cast<unsigned char>(qp);
 
     fscal Cqp = 5. * sqrt(fabs(T3.C44[i3_4]));
@@ -1616,15 +1616,15 @@ void L1Algo::CATrackFinder()
   static Tindex stat_nTrCandidates[fNFindIterations]             = {0};
 #endif
 
-  RealIHitP                            = &RealIHit_v;
-  RealIHitPBuf                         = &RealIHit_v_buf;
-  vStsHitsUnused                       = &vStsDontUsedHits_B;  /// array of hits used on current iteration
-  vector<L1StsHit>* vStsHitsUnused_buf = &vStsDontUsedHits_A;  /// buffer for copy
+  RealIHitP                         = &RealIHit_v;
+  RealIHitPBuf                      = &RealIHit_v_buf;
+  vStsHitsUnused                    = &vStsDontUsedHits_B;  /// array of hits used on current iteration
+  vector<L1Hit>* vStsHitsUnused_buf = &vStsDontUsedHits_A;  /// buffer for copy
 
   vStsHitPointsUnused = &vStsDontUsedHitsxy_B;  /// array of info for hits used on current iteration
   vector<L1HitPoint>* vStsHitPointsUnused_buf = &vStsDontUsedHitsxy_A;
 
-  NHitsIsecAll   = 0;
+  NHitsIsecAll = 0;
   fTracks.clear();
   fRecoHits.clear();
 
@@ -1644,14 +1644,14 @@ void L1Algo::CATrackFinder()
   for (int ist = 0; ist < NStations; ++ist)
     for (THitI ih = StsHitsStartIndex[ist]; ih < StsHitsStopIndex[ist]; ++ih) {
 
-      const float& time = (*vStsHits)[ih].t_reco;
+      const float& time = (*vStsHits)[ih].t;
       if ((lasttime < time) && (!isinf(time))) lasttime = time;
       if ((starttime > time) && (time > 0)) starttime = time;
 
       if (ist < NMvdStations) {
-        L1StsHit& h = (*vStsHits)[ih];
-        h.t_reco    = 0;
-        h.t_er      = 100;
+        L1Hit& h = (*vStsHits)[ih];
+        h.t      = 0;
+        h.dt     = 100;
       }
     }
 
@@ -1694,7 +1694,7 @@ void L1Algo::CATrackFinder()
 
   for (int ist = 0; ist < NStations; ++ist)
     for (THitI ih = StsHitsStartIndex[ist]; ih < StsHitsStopIndex[ist]; ++ih) {
-      L1StsHit& h = (*vStsHits)[ih];
+      L1Hit& h = (*vStsHits)[ih];
       SetFUnUsed((*fStripFlag)[h.f]);
       SetFUnUsed((*fStripFlag)[h.b]);
     }
@@ -1735,7 +1735,7 @@ void L1Algo::CATrackFinder()
         fTriplets[j][n].clear();
       }
     }
-        /// isec - number of current iterations, fNFindIterations - number of all iterations
+    /// isec - number of current iterations, fNFindIterations - number of all iterations
 #ifdef COUNTERS
     Tindex nSinglets = 0;
 #endif
@@ -1745,9 +1745,9 @@ void L1Algo::CATrackFinder()
       RealIHitP                   = RealIHitPBuf;
       RealIHitPBuf                = RealIHitPTmp;
 
-      vector<L1StsHit>* vStsHitsUnused_temp = vStsHitsUnused;
-      vStsHitsUnused                        = vStsHitsUnused_buf;
-      vStsHitsUnused_buf                    = vStsHitsUnused_temp;
+      vector<L1Hit>* vStsHitsUnused_temp = vStsHitsUnused;
+      vStsHitsUnused                     = vStsHitsUnused_buf;
+      vStsHitsUnused_buf                 = vStsHitsUnused_temp;
 
       vector<L1HitPoint>* vStsHitsUnused_temp2 = vStsHitPointsUnused;
       vStsHitPointsUnused                      = vStsHitPointsUnused_buf;
@@ -1868,7 +1868,7 @@ void L1Algo::CATrackFinder()
       fDupletPortionStopIndex[NStations - 1] = 0;
       fDupletPortionSize.clear();
       for (int istal = NStations - 2; istal >= FIRSTCASTATION; istal--) {  //start downstream chambers
-        int NHits_l = StsHitsUnusedStopIndex[istal] - StsHitsUnusedStartIndex[istal];
+        int NHits_l   = StsHitsUnusedStopIndex[istal] - StsHitsUnusedStartIndex[istal];
         int nPortions = NHits_l / Portion;
         int rest      = NHits_l - nPortions * Portion;
         for (int ipp = 0; ipp < nPortions; ipp++) {
@@ -2176,7 +2176,7 @@ void L1Algo::CATrackFinder()
 
             for (L1Vector<THitI>::iterator phitIt = tr.fStsHits.begin();  /// used strips are marked
                  phitIt != tr.fStsHits.end(); ++phitIt) {
-              const L1StsHit& h = (*vStsHits)[*phitIt];
+              const L1Hit& h = (*vStsHits)[*phitIt];
 #ifdef _OPENMP
               omp_set_lock(&fHitToBestTrackB[h.b]);
 #endif
@@ -2188,7 +2188,7 @@ void L1Algo::CATrackFinder()
 
                 if (L1Branch::compareCand(tr, fTrackCandidates[thread][num])) {
                   fTrackCandidates[thread][num].CandIndex = -1;
-                  strip1                                 = tr.CandIndex;
+                  strip1                                  = tr.CandIndex;
                 }
                 else {
                   check = 0;
@@ -2215,7 +2215,7 @@ void L1Algo::CATrackFinder()
 
                   if (L1Branch::compareCand(tr, fTrackCandidates[thread][num])) {
                     fTrackCandidates[thread][num].CandIndex = -1;
-                    strip2                                 = tr.CandIndex;
+                    strip2                                  = tr.CandIndex;
                   }
                   else {
                     check = 0;
@@ -2258,7 +2258,7 @@ void L1Algo::CATrackFinder()
           if (fTrackCandidates[i][iCandidate].CandIndex != -1) {
             for (L1Vector<THitI>::iterator phIt = tr.fStsHits.begin();  /// used strips are marked
                  phIt != tr.fStsHits.end(); ++phIt) {
-              const L1StsHit& h = (((*vStsHits))[*phIt]);
+              const L1Hit& h = (((*vStsHits))[*phIt]);
               if (((fStripToTrackB)[h.b] != tr.CandIndex) || ((fStripToTrack)[h.f] != tr.CandIndex)) {
                 check = 0;
                 break;
@@ -2290,7 +2290,7 @@ void L1Algo::CATrackFinder()
 
               for (L1Vector<THitI>::iterator phIt = tr.fStsHits.begin();  /// used strips are marked
                    phIt != tr.fStsHits.end(); ++phIt) {
-                L1StsHit& h = (*vStsHits)[*phIt];
+                L1Hit& h = (*vStsHits)[*phIt];
 
 
                 SetFUsed((*fStripFlag)[h.f]);
@@ -2298,7 +2298,7 @@ void L1Algo::CATrackFinder()
 
                 fRecoHits_local[num_thread].push_back(*phIt);
 
-                const L1StsHit& hit = (*vStsHits)[*phIt];
+                const L1Hit& hit = (*vStsHits)[*phIt];
 
 
                 L1HitPoint tempPoint = CreateHitPoint(hit, 0);  //TODO take number of station from hit
@@ -2309,7 +2309,7 @@ void L1Algo::CATrackFinder()
                 float zcoor = tempPoint.Z();
 
                 float timeFlight = sqrt(xcoor * xcoor + ycoor * ycoor + zcoor * zcoor) / 30.f;  // c = 30[cm/ns]
-                sumTime += (hit.t_reco - timeFlight);
+                sumTime += (hit.t - timeFlight);
               }
 
               t.NHits = tr.NHits;
@@ -2463,7 +2463,7 @@ void L1Algo::CATrackFinder()
         
         NTimes++;
         NHits += vStsHitsUnused->size();
-        HitSize += vStsHitsUnused->size()*sizeof(L1StsHit);
+        HitSize += vStsHitsUnused->size()*sizeof(L1Hit);
         NStrips+= vStsStrips.size();
         StripSize += vStsStrips.size()*sizeof(fscal) + (*fStripFlag).size()*sizeof(unsigned char);
         NStripsB+= (*fStripFlagB).size();
@@ -2625,16 +2625,16 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
         if (dqp > PickNeighbour * Cqp)
           continue;  // bad neighbour // CHECKME why do we need recheck it?? (it really change result)
 
-      fscal tx1        = curr_trip->GetTx();
-      fscal tx2        = new_trip.GetTx();
-      fscal dtx        = fabs(tx1 - tx2);
-      fscal Ctx        = curr_trip->GetCtx();
+      fscal tx1 = curr_trip->GetTx();
+      fscal tx2 = new_trip.GetTx();
+      fscal dtx = fabs(tx1 - tx2);
+      fscal Ctx = curr_trip->GetCtx();
       Ctx += new_trip.GetCtx();
 
-      fscal ty1        = curr_trip->GetTy();
-      fscal ty2        = new_trip.GetTy();
-      fscal dty        = fabs(ty1 - ty2);
-      fscal Cty        = curr_trip->GetCty();
+      fscal ty1 = curr_trip->GetTy();
+      fscal ty2 = new_trip.GetTy();
+      fscal dty = fabs(ty1 - ty2);
+      fscal Cty = curr_trip->GetCty();
       Cty += new_trip.GetCty();
 
       if (fGlobal || fmCBMmode) {
@@ -2692,7 +2692,8 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
 #ifdef DRAW
 void L1Algo::DrawRecoTracksTime(const vector<CbmL1Track>& tracks)
 {
-  draw->DrawRecoTracksTime(tracks);
+  // TODO: find where the DrawRecoTracksTime is. It is missing in the git repository.
+  //draw->DrawRecoTracksTime(tracks);
   draw->SaveCanvas(" ");
 }
 #endif
