@@ -266,8 +266,8 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
   // If MS time is less than start time print error and return
   if (fdMsTime - fdStartTime < 0) {
-    LOG(error) << "negative time! ";
-    return kFALSE;
+    LOG(error) << "CbmMcbm2018UnpackerAlgoPsd:: Negative time! MS time = " << fdMsTime << "; Start time = " << fdStartTime;
+    //return kFALSE;
   }
 
   // Compute the number of complete messages in the input microslice buffer
@@ -315,7 +315,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
           if (ReadResult == 0) {
 
             double prev_hit_time =
-              (double) fulCurrentMsIdx * 25. + PsdReader.VectPackHdr.at(0).uAdcTime * 12.5 - fdTimeOffsetNs;  //in ns
+              (double) fulCurrentMsIdx /* * 25.*/ + PsdReader.VectPackHdr.at(0).uAdcTime * 12.5 - fdTimeOffsetNs;  //in ns
 
             //hit loop
             for (uint64_t hit_iter = 0; hit_iter < PsdReader.VectHitHdr.size(); hit_iter++) {
@@ -328,14 +328,6 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
               uint8_t uHitChannel = PsdReader.VectHitHdr.at(hit_iter).uHitChannel;
               //uint8_t uLinkIndex     = PsdReader.VectPackHdr.at(hit_iter).uLinkIndex;
-              double dEdep = (double) PsdReader.VectHitHdr.at(hit_iter).uSignalCharge
-                             / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
-              uint16_t uZeroLevel = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;
-              double dHitTime     = (double) fulCurrentMsIdx * 25.
-                                + (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5 - fdTimeOffsetNs;  //in ns
-              std::vector<uint16_t> uWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
-
-
               if (uHitChannel >= fviPsdChUId.size()) {
                 LOG(error) << "hit channel number out of range! channel index: " << uHitChannel
                            << " max: " << fviPsdChUId.size();
@@ -343,11 +335,11 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
               }
               UInt_t uChanUId = fviPsdChUId[uHitChannel];  //unique ID
 
-
               UInt_t fuAddress   = uChanUId;    /// Unique channel address
-              Double_t fdTime    = dHitTime;    /// Time of measurement [ns]
-              Double_t fdEdep    = dEdep;       /// Energy deposition from FPGA [MeV]
-              UInt_t fuZL        = uZeroLevel;  /// ZeroLevel from waveform [adc counts]
+              Double_t fdTime    = (double) fulCurrentMsIdx /* * 25.*/
+                                + (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5 - fdTimeOffsetNs;    /// Time of measurement [ns]
+              Double_t fdEdep    = (double) PsdReader.VectHitHdr.at(hit_iter).uSignalCharge / fUnpackPar->GetMipCalibration(uHitChannel); /// Energy deposition from FPGA [MeV]
+              UInt_t fuZL        = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;  /// ZeroLevel from waveform [adc counts]
               Double_t fdAccum   = (double) PsdReader.VectHitHdr.at(hit_iter).uFeeAccum;  /// FPGA FEE Accumulator
               Double_t fdAdcTime = (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime;  /// Adc time of measurement
 
@@ -355,7 +347,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
               Double_t fdAmpl             = 0.;  /// Amplitude from waveform [mV]
               UInt_t fuMinimum            = 0;   /// Minimum of waveform [adc samples]
               UInt_t fuTimeMax            = 0;   /// Time of maximum in waveform [adc samples]
-              std::vector<uint16_t> fuWfm = uWfm;
+              std::vector<uint16_t> fuWfm = PsdReader.VectHitData.at(hit_iter).uWfm;
 
               Double_t fdFitAmpl    = 0.;    /// Amplitude from fit of waveform [mV]
               Double_t fdFitZL      = 0.;    /// ZeroLevel from fit of waveform [adc counts]
@@ -364,15 +356,15 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
               Double_t fdFitTimeMax = -1.;   /// Time of maximum in fit of waveform [adc samples]
               std::vector<uint16_t> fuFitWfm;
 
-              if (!uWfm.empty()) {
+              if (!fuWfm.empty()) {
 
-                int32_t iHitChargeWfm = std::accumulate(uWfm.begin(), uWfm.end(), -uZeroLevel * uWfm.size());
-                auto const max_iter   = std::max_element(uWfm.begin(), uWfm.end());
-                assert(max_iter != uWfm.end());
-                if (max_iter == uWfm.end()) break;
-                uint8_t uHitTimeMax   = std::distance(uWfm.begin(), max_iter);
-                int32_t iHitAmlpitude = *max_iter - uZeroLevel;
-                auto const min_iter   = std::min_element(uWfm.begin(), uWfm.end());
+                int32_t iHitChargeWfm = std::accumulate(fuWfm.begin(), fuWfm.end(), -fuZL * fuWfm.size());
+                auto const max_iter   = std::max_element(fuWfm.begin(), fuWfm.end());
+                assert(max_iter != fuWfm.end());
+                if (max_iter == fuWfm.end()) break;
+                uint8_t uHitTimeMax   = std::distance(fuWfm.begin(), max_iter);
+                int32_t iHitAmlpitude = *max_iter - fuZL;
+                auto const min_iter   = std::min_element(fuWfm.begin(), fuWfm.end());
                 uint32_t uHitMinimum  = *min_iter;
 
                 fdEdepWfm = (double) iHitChargeWfm / fUnpackPar->GetMipCalibration(uHitChannel);  // ->now in MeV
@@ -381,11 +373,11 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
                 fuMinimum = uHitMinimum;
 
                 int gate_beg = 0;
-                int gate_end = (int) uWfm.size() - 1;
+                int gate_end = (int) fuWfm.size() - 1;
                 PsdSignalFitting::PronyFitter Pfitter(2, 2, gate_beg, gate_end);
                 Pfitter.SetDebugMode(0);
-                //std::vector<int> iWfm(uWfm.begin(), uWfm.end());
-                Pfitter.SetWaveform(uWfm, uZeroLevel);
+                //std::vector<int> iWfm(fuWfm.begin(), fuWfm.end());
+                Pfitter.SetWaveform(fuWfm, fuZL);
                 int SignalBeg = 4;
                 //0.6, 0.2 // 0.72 0.38
                 std::complex<float> first_fit_harmonic  = {0.72, 0.0};
@@ -416,12 +408,12 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
               if (fbDebugWriteOutput && (fPsdDspVector != nullptr)) { fPsdDspVector->emplace_back(dsp); }
 
               //DEBUG
-              if (dHitTime < prev_hit_time) printf("negative time!\n");
+              if (fdTime < prev_hit_time) printf("negative time btw hits! %f after %f \n", fdTime, prev_hit_time);
               //DEBUG END
-              prev_hit_time = dHitTime;
+              prev_hit_time = fdTime;
               //DEBUG
 
-            }  // for(int hit_iter = 0; hit_iter < PsdReader.EvHdrAb.uHitsNumber; hit_iter++)
+            }  // for (uint64_t hit_iter = 0; hit_iter < PsdReader.VectHitHdr.size(); hit_iter++) {
           }
           else if (ReadResult == 1) {
             LOG(error) << "no pack headers in message!";

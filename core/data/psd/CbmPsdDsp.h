@@ -111,10 +111,6 @@ public:
   void SetTime(Double_t time) { fdTime = time; }
   void SetEdep(Double_t edep) { fdEdep = edep; }
 
-private:
-  /// BOOST serialization interface
-  friend class boost::serialization::access;
-
   UInt_t fuAddress   = 0;    /// Unique channel address
   Double_t fdTime    = -1.;  /// Time of measurement [ns]
   Double_t fdEdep    = 0.;   /// Energy deposition from FPGA [MeV]
@@ -158,6 +154,12 @@ private:
     ar& fdFitTimeMax;
     ar& fuFitWfm;
   }
+
+private:
+  /// BOOST serialization interface
+  friend class boost::serialization::access;
+
+ 
 
   ClassDefNV(CbmPsdDsp, 1);
 };
