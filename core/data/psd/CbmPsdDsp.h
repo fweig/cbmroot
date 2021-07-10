@@ -159,7 +159,6 @@ private:
   /// BOOST serialization interface
   friend class boost::serialization::access;
 
- 
 
   ClassDefNV(CbmPsdDsp, 1);
 };

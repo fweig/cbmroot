@@ -266,7 +266,8 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
   // If MS time is less than start time print error and return
   if (fdMsTime - fdStartTime < 0) {
-    LOG(error) << "CbmMcbm2018UnpackerAlgoPsd:: Negative time! MS time = " << fdMsTime << "; Start time = " << fdStartTime;
+    LOG(error) << "CbmMcbm2018UnpackerAlgoPsd:: Negative time! MS time = " << fdMsTime
+               << "; Start time = " << fdStartTime;
     //return kFALSE;
   }
 
@@ -314,8 +315,8 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
           }
           if (ReadResult == 0) {
 
-            double prev_hit_time =
-              (double) fulCurrentMsIdx /* * 25.*/ + PsdReader.VectPackHdr.at(0).uAdcTime * 12.5 - fdTimeOffsetNs;  //in ns
+            double prev_hit_time = (double) fulCurrentMsIdx /* * 25.*/ + PsdReader.VectPackHdr.at(0).uAdcTime * 12.5
+                                   - fdTimeOffsetNs;  //in ns
 
             //hit loop
             for (uint64_t hit_iter = 0; hit_iter < PsdReader.VectHitHdr.size(); hit_iter++) {
@@ -335,12 +336,14 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
               }
               UInt_t uChanUId = fviPsdChUId[uHitChannel];  //unique ID
 
-              UInt_t fuAddress   = uChanUId;    /// Unique channel address
-              Double_t fdTime    = (double) fulCurrentMsIdx /* * 25.*/
-                                + (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5 - fdTimeOffsetNs;    /// Time of measurement [ns]
-              Double_t fdEdep    = (double) PsdReader.VectHitHdr.at(hit_iter).uSignalCharge / fUnpackPar->GetMipCalibration(uHitChannel); /// Energy deposition from FPGA [MeV]
-              UInt_t fuZL        = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;  /// ZeroLevel from waveform [adc counts]
-              Double_t fdAccum   = (double) PsdReader.VectHitHdr.at(hit_iter).uFeeAccum;  /// FPGA FEE Accumulator
+              UInt_t fuAddress = uChanUId;                /// Unique channel address
+              Double_t fdTime  = (double) fulCurrentMsIdx /* * 25.*/
+                                + (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5
+                                - fdTimeOffsetNs;  /// Time of measurement [ns]
+              Double_t fdEdep = (double) PsdReader.VectHitHdr.at(hit_iter).uSignalCharge
+                                / fUnpackPar->GetMipCalibration(uHitChannel);   /// Energy deposition from FPGA [MeV]
+              UInt_t fuZL      = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;  /// ZeroLevel from waveform [adc counts]
+              Double_t fdAccum = (double) PsdReader.VectHitHdr.at(hit_iter).uFeeAccum;    /// FPGA FEE Accumulator
               Double_t fdAdcTime = (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime;  /// Adc time of measurement
 
               Double_t fdEdepWfm          = 0.;  /// Energy deposition from waveform [MeV]
