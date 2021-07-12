@@ -8,7 +8,7 @@ stages:
 RebaseCheck:
   stage: checkRepository
   variables:
-    GIT_DEPTH: 100
+    GIT_DEPTH: 200
   image: alpine
   tags:
     - docker
@@ -41,7 +41,7 @@ RebaseCheck:
 LinearHistCheck:
   stage: checkRepository
   variables:
-    GIT_DEPTH: 100
+    GIT_DEPTH: 200
   image: alpine
   tags:
     - docker
