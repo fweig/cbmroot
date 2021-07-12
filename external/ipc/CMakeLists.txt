@@ -1,7 +1,7 @@
-# Build the fles_ipc library which is tacken from
-# github as defined in the svn:externals definition
-# This library provides the interface to the FLIB board or to files in tca
-# format written by the FLIB
+# Build the fles_ipc library which is maintained in the flesnet repository on github
+#
+# This library provides the interface to the experiment data in timeslices
+# both online as delivered by flesnet and to timeslice archive (.tsa) files.
 
 download_project_if_needed(PROJECT         fles_ipc
                            GIT_REPOSITORY  "https://github.com/cbm-fles/flesnet"
