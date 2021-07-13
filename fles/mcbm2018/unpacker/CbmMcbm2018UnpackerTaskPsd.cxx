@@ -143,7 +143,7 @@ void CbmMcbm2018UnpackerTaskPsd::AddMsComponentToList(size_t component, UShort_t
   fUnpackerAlgo->AddMsComponentToList(component, usDetectorId);
 }
 
-Bool_t CbmMcbm2018UnpackerTaskPsd::DoUnpack(const fles::Timeslice& ts, size_t /*component*/)
+Bool_t CbmMcbm2018UnpackerTaskPsd::DoUnpack(const fles::Timeslice& ts, size_t component)
 {
 
   if (fbMonitorMode && bMcbm2018UnpackerTaskPsdResetHistos) {
@@ -152,11 +152,13 @@ Bool_t CbmMcbm2018UnpackerTaskPsd::DoUnpack(const fles::Timeslice& ts, size_t /*
     bMcbm2018UnpackerTaskPsdResetHistos = kFALSE;
   }  // if( fbMonitorMode && bMcbm2018UnpackerTaskPsdResetHistos )
 
+  fUnpackerAlgo->unpack(&ts, component);
+/*
   if (kFALSE == fUnpackerAlgo->ProcessTs(ts)) {
     LOG(error) << "Failed processing TS " << ts.index() << " in unpacker algorithm class";
     return kTRUE;
   }  // if( kFALSE == fUnpackerAlgo->ProcessTs( ts ) )
-
+*/
   /*
    /// Sort the buffers of hits due to the time offsets applied
    => Done in the algo!!!

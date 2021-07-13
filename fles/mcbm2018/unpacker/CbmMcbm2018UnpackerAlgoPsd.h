@@ -73,6 +73,7 @@ public:
   inline void SetDspWriteMode(Bool_t bFlagIn = kTRUE) { fbDebugWriteOutput = bFlagIn; }
   inline void SetTimeOffsetNs(Double_t dOffsetIn = 0.0) { fdTimeOffsetNs = dOffsetIn; }
 
+  std::pair<std::vector<CbmPsdDigi>*, std::vector<CbmPsdDsp>*> unpack(const fles::Timeslice* ts, std::uint16_t icomp);
 
 private:
   /// Control flags

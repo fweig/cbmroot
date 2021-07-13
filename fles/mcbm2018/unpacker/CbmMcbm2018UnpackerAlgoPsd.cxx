@@ -155,7 +155,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessTs(const fles::Timeslice& ts)
 {
 
   fulCurrentTsIdx = ts.index();
-  fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);
+  fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx); // FIXME ts.start_time();
 
   /// Ignore First TS as first MS is typically corrupt
   if (0 == fulCurrentTsIdx) { return kTRUE; }  // if( 0 == fulCurrentTsIdx )
@@ -305,7 +305,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
       case 100: {
 
         PsdDataV100::PsdGbtReader PsdReader(pInBuff);
-        //if (fair::Logger::Logging(fair::Severity::debug)) PsdReader.SetPrintOutMode(true);
+        if (fair::Logger::Logging(fair::Severity::debug)) PsdReader.SetPrintOutMode(true);
 
         while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {
           int ReadResult = PsdReader.ReadMs();
@@ -315,7 +315,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
           }
           if (ReadResult == 0) {
 
-            double prev_hit_time = (double) fulCurrentMsIdx /* * 25.*/ + PsdReader.VectPackHdr.at(0).uAdcTime * 12.5
+            double prev_hit_time = fdTsStartTime + (double) PsdReader.VectPackHdr.at(0).uAdcTime * 12.5
                                    - fdTimeOffsetNs;  //in ns
 
             //hit loop
@@ -337,7 +337,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
               UInt_t uChanUId = fviPsdChUId[uHitChannel];  //unique ID
 
               UInt_t fuAddress = uChanUId;                /// Unique channel address
-              Double_t fdTime  = (double) fulCurrentMsIdx /* * 25.*/
+              Double_t fdTime  = fdTsStartTime
                                 + (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5
                                 - fdTimeOffsetNs;  /// Time of measurement [ns]
               Double_t fdEdep = (double) PsdReader.VectHitHdr.at(hit_iter).uSignalCharge
@@ -524,6 +524,15 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
 
   return kTRUE;
+}
+
+std::pair<std::vector<CbmPsdDigi>*, std::vector<CbmPsdDsp>*> CbmMcbm2018UnpackerAlgoPsd::unpack(const fles::Timeslice* ts, std::uint16_t icomp)
+{
+  AddMsComponentToList(icomp, 0x80);
+  Reset();
+  ProcessTs(*ts);
+
+  return std::make_pair(fPsdDigiVector, fPsdDspVector);
 }
 
 Bool_t CbmMcbm2018UnpackerAlgoPsd::SetDigiOutputPointer(std::vector<CbmPsdDigi>* const pVector)

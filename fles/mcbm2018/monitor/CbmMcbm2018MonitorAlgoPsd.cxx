@@ -476,12 +476,6 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
         fuLostMsgsCntInMs += uNbMessages - PsdReader.GetTotalGbtWordsRead();
       }  //if (uNbMessages > 1)
 
-      if (fdPrevMsTime < 0.) fdPrevMsTime = fdMsTime;
-      else {
-        fhMsLengthEvo->Fill(fdMsTime - fdStartTime, 1e9 * (fdMsTime - fdPrevMsTime));
-        fdPrevMsTime = fdMsTime;
-      }
-
       /// Fill histograms
       FillHistograms();
 
@@ -665,11 +659,7 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
 
       }  //if(uNbMessages > 1)
 
-      if (fdPrevMsTime < 0.) fdPrevMsTime = fdMsTime;
-      else {
-        fhMsLengthEvo->Fill(fdMsTime - fdStartTime, 1e9 * (fdMsTime - fdPrevMsTime));
-        fdPrevMsTime = fdMsTime;
-      }
+
 
       /// Fill histograms
       FillHistograms();
@@ -679,6 +669,12 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
        // --------------------------------------------------------------------------------------------------
 
   }    // switch
+
+  if (fdPrevMsTime < 0.) fdPrevMsTime = fdMsTime;
+  else {
+    fhMsLengthEvo->Fill(fdMsTime - fdStartTime, 1e9 * (fdMsTime - fdPrevMsTime));
+    fdPrevMsTime = fdMsTime;
+  }
 
   return kTRUE;
 }
