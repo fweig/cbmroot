@@ -250,13 +250,20 @@ void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset()
 
     Double_t dRefTime   = 0;
     Double_t dRefCharge = 0;
+    UInt_t uRefAddress = 0;
     if (ECbmModuleId::kT0 == fRefDet.detId) {
       dRefTime   = fpT0DigiVec->at(uDigi).GetTime();
       dRefCharge = fpT0DigiVec->at(uDigi).GetCharge();
     }  // if( ECbmModuleId::kT0 == fRefDet.detId )
+    if (ECbmModuleId::kPsd == fRefDet.detId) {
+      dRefTime   = fDigiMan->Get<DigiRef>(uDigi)->GetTime();
+      dRefCharge = fDigiMan->Get<DigiRef>(uDigi)->GetCharge();
+      uRefAddress = fDigiMan->Get<DigiRef>(uDigi)->GetAddress();
+    }  // if( ECbmModuleId::kT0 == fRefDet.detId )
     else {
       dRefTime   = fDigiMan->Get<DigiRef>(uDigi)->GetTime();
       dRefCharge = fDigiMan->Get<DigiRef>(uDigi)->GetCharge();
+      uRefAddress = fDigiMan->Get<DigiRef>(uDigi)->GetAddress();
     }  // else of if( ECbmModuleId::kT0 == fRefDet.detId )
 
     /// Fill self time difference histo
@@ -276,6 +283,8 @@ void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset()
         if (fRefDet.uChargeCutMin < dRefCharge || dRefCharge < fRefDet.uChargeCutMax) {
           continue;
         }  // if( fRefDet.uChargeCutMin < dRefCharge || dRefCharge < fRefDet.uChargeCutMax )
+        /// Psd Pulser selection
+        if (ECbmModuleId::kPsd == fRefDet.detId && CbmPsdAddress::GetSectionId(uRefAddress) != 10) continue;         
       }    // else of if( fRefDet.uChargeCutMin < fRefDet.uChargeCutMax )
     }      // if( fRefDet.uChargeCutMin =! fRefDet.uChargeCutMax )
 
@@ -346,6 +355,7 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime, const
   for (UInt_t uDigiIdx = fvDets[uDetIdx].iPrevRefFirstDigi; uDigiIdx < uNbDigis; ++uDigiIdx) {
     Double_t dTime   = 0;
     Double_t dCharge = 0;
+    UInt_t uAddress = 0;
     if (ECbmModuleId::kT0 == fvDets[uDetIdx].detId) {
       dTime   = fpT0DigiVec->at(uDigiIdx).GetTime();
       dCharge = fpT0DigiVec->at(uDigiIdx).GetCharge();
@@ -353,6 +363,7 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime, const
     else {
       dTime   = fDigiMan->Get<Digi>(uDigiIdx)->GetTime();
       dCharge = fDigiMan->Get<Digi>(uDigiIdx)->GetCharge();
+      uAddress = fDigiMan->Get<Digi>(uDigiIdx)->GetAddress();
     }  // else of if( ECbmModuleId::kT0 == fRefDet.detId )
 
     /// Fill self correlation histo while avoiding double counting due to
@@ -386,6 +397,8 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime, const
         if (fvDets[uDetIdx].uChargeCutMin < dCharge || dCharge < fvDets[uDetIdx].uChargeCutMax) {
           continue;
         }  // if( fvDets[ uDetIdx ].uChargeCutMin < dCharge || dCharge < fvDets[ uDetIdx ].uChargeCutMax )
+        /// Psd Pulser selection
+        if (ECbmModuleId::kPsd == fvDets[uDetIdx].detId && CbmPsdAddress::GetSectionId(uAddress) != 10) continue;               
       }    // else of if( fvDets[ uDetIdx ].uChargeCutMin < fvDets[ uDetIdx ].uChargeCutMax )
     }      // if( fvDets[ uDetIdx ].uChargeCutMin != fvDets[ uDetIdx ].uChargeCutMax )
 

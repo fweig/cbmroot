@@ -81,7 +81,7 @@ void MonitorPsd(TString inFile = "", TString sHostname = "localhost", Int_t iSer
 
 
   //  source->AddUnpacker(monitor_psd, 0x80, ECbmModuleId::kPsd);
-  source->AddUnpacker(monitor_psd, 0x00, ECbmModuleId::kPsd);  //FIXME
+  source->AddUnpacker(monitor_psd, 0x80, ECbmModuleId::kPsd);
   source->SetSubscriberHwm(1000);
 
   // --- Run

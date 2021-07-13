@@ -218,7 +218,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
   uint32_t uSize  = msDescriptor.size;
   fulCurrentMsIdx = msDescriptor.idx;
 
-  fdMsTime = static_cast<double>(fulCurrentMsIdx);
+  fdMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
 
   LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
              << " has size: " << uSize;
