@@ -40,7 +40,7 @@
 #include <vector>
 
 
-template<class TOutput, class TOptOutA = std::nullptr_t, class TOptOutB = std::nullptr_t>
+template<typename TOutput, typename TOptOutA = std::nullptr_t, typename TOptOutB = std::nullptr_t>
 class CbmRecoUnpackAlgo {
 
 public:
@@ -203,7 +203,7 @@ protected:
    * @return true 
    * @return false 
   */
-  virtual bool setDerivedTsParameters(size_t itimeslice) = 0;
+  virtual bool setDerivedTsParameters(size_t /*itimeslice*/) { return true; }
 
 
   /**
@@ -303,7 +303,10 @@ public:
    * @return fParContVec
   */
   virtual std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
-  GetParContainerRequest(std::string geoTag, std::uint32_t runId) = 0;
+    GetParContainerRequest(std::string /*geoTag*/, std::uint32_t /*runId*/)
+  {
+    return {};
+  }
 
   /**
    * @brief Intialisation at begin of run.

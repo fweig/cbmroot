@@ -168,17 +168,6 @@ protected:
   */
   Bool_t initParSet(CbmMcbm2020TrdTshiftPar* parset);
 
-  /**
-   * @brief Pointer to the RawMsg vector connected to the framework, setted from the task/device
-   * @remark This could be templated if we want to use this class as reference for all systems
-  */
-  std::vector<CbmTrdRawMessageSpadic>* fOutRawSpadicVec = nullptr;
-
-  /**
-   * @brief Pointer to the Spadic info message vector connected to the framework, setted from the task/device
-   * @remark This could be templated if we want to use this class as reference for all systems
-  */
-  std::vector<std::pair<size_t, size_t>>* fOutInfoSpadicVec = nullptr;
 
   // Monitoring
   /** @brief Potential (online) monitor for the unpacking process */

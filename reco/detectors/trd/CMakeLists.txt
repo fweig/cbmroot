@@ -59,6 +59,9 @@ unpack/CbmTrdUnpackAlgoR.cxx
 unpack/CbmTrdUnpackAlgoLegacy2020R.cxx
 unpack/CbmTrdUnpackMonitor.cxx
 
+unpack/CbmTrdUnpackAlgo2D.cxx
+unpack/CbmTrdUnpackConfig2D.cxx
+
 qa/CbmTrdClusterizerFastQa.cxx
 qa/CbmTrdHitDensityQa.cxx
 qa/CbmTrdHitProducerClusterQa.cxx
