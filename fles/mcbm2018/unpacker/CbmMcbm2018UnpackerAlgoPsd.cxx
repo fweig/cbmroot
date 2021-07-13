@@ -155,7 +155,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessTs(const fles::Timeslice& ts)
 {
 
   fulCurrentTsIdx = ts.index();
-  fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);  // FIXME ts.start_time();
+  fdTsStartTime   = static_cast<Double_t>(ts.start_time());
 
   /// Ignore First TS as first MS is typically corrupt
   if (0 == fulCurrentTsIdx) { return kTRUE; }  // if( 0 == fulCurrentTsIdx )
