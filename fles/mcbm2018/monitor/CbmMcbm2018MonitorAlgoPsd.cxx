@@ -660,7 +660,6 @@ Bool_t CbmMcbm2018MonitorAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t uM
       }  //if(uNbMessages > 1)
 
 
-
       /// Fill histograms
       FillHistograms();
 
