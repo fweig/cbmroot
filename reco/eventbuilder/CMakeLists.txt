@@ -67,6 +67,8 @@ link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
 
+digis/CbmEvbuildRawAlgo.cxx
+digis/CbmEvbuildRawTask.cxx
 digis/CbmAlgoBuildRawEvents.cxx
 digis/CbmTaskBuildRawEvents.cxx
 digis/CbmBuildEventsIdeal.cxx

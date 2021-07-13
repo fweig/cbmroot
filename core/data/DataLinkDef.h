@@ -26,6 +26,7 @@
 #pragma link C++ class CbmLink + ;
 #pragma link C++ class CbmModuleList;
 #pragma link C++ class CbmErrorMessage + ;
+#pragma link C++ class CbmRawEvent + ;
 
 // ---In base
 #pragma link C++ class CbmDigiBranchBase + ;
@@ -127,10 +128,9 @@
 #pragma link C++ class CbmDigiVector < CbmPsdDsp> + ;
 #pragma link C++ class vector < CbmEventStore> + ;
 
-#pragma read sourceClass="CbmTofDigi" version="[1-2]" targetClass="CbmTofDigi" \
-   source="UInt_t fuAddress" target="fuAddress" \
-   include="Logger.h" \
-   code="{ UInt_t system = (onfile.fuAddress >> 0) & ((1 << 4) - 1); \
+#pragma read sourceClass = "CbmTofDigi" version = "[1-2]" targetClass = "CbmTofDigi" source =                          \
+  "UInt_t fuAddress" target = "fuAddress" include = "Logger.h" code =                                                  \
+    "{ UInt_t system = (onfile.fuAddress >> 0) & ((1 << 4) - 1); \
            UInt_t smId = (onfile.fuAddress >> 4) & ((1 << 8) - 1); \
            UInt_t smType = (onfile.fuAddress >> 12) & ((1 << 4) - 1); \
            UInt_t rpcId = (onfile.fuAddress >> 16) & ((1 << 7) - 1); \
@@ -152,10 +152,8 @@
                      + ((rpcType & ((1 << 4) - 1)) << 28); \
          }"
 
-#pragma read sourceClass="CbmTofHit" version="[1-4]" targetClass="CbmTofHit" \
-   source="" target="" \
-   include="Logger.h" \
-   code="{ \
+#pragma read sourceClass = "CbmTofHit" version = "[1-4]" targetClass = "CbmTofHit" source = "" target = "" include =   \
+  "Logger.h" code                                                                                     = "{ \
            LOG(error); \
            LOG(error) << \"You are trying to read an outdated version of CbmTofHit\"; \
            LOG(error) << \"where the unique tof address can't be converted\"; \
@@ -164,10 +162,8 @@
            LOG(fatal) << \"Stop execution.\"; \
          }"
 
-#pragma read sourceClass="CbmTofPoint" version="[1-3]" targetClass="CbmTofPoint" \
-   source="" target="" \
-   include="Logger.h" \
-   code="{ \
+#pragma read sourceClass = "CbmTofPoint" version = "[1-3]" targetClass = "CbmTofPoint" source = "" target =            \
+  "" include = "Logger.h" code = "{ \
            LOG(error); \
            LOG(error) << \"You are trying to read an outdated version of CbmTofPoint\"; \
            LOG(error) << \"where the unique tof address can't be converted\"; \

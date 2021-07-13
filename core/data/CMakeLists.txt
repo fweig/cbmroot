@@ -42,6 +42,7 @@ set(SRCS
   CbmCluster.cxx
   CbmModuleList.cxx
   CbmErrorMessage.cxx
+  CbmRawEvent.cxx
 
   CbmMCTrack.cxx
   CbmMCEventInfo.cxx

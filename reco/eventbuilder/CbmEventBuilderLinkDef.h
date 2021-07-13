@@ -8,6 +8,8 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
+#pragma link C++ class CbmEvbuildRawAlgo + ;
+#pragma link C++ class CbmEvbuildRawTask + ;
 #pragma link C++ class CbmAlgoBuildRawEvents + ;
 #pragma link C++ class CbmTaskBuildRawEvents + ;
 #pragma link C++ class CbmBuildEventsFromTracksIdeal + ;
