@@ -1,6 +1,6 @@
 set(NICAFEMTO_VERSION 0350ba6a6c4548d5a5b880d8698c25446525723c)
 
-set(NICAFEMTO_SRC_URL "https://git.jinr.ru/nica/nicafemto.git")
+set(NICAFEMTO_SRC_URL "https://git.cbm.gsi.de/f.uhlig/nicafemto.git")
 set(NICAFEMTO_DESTDIR "${CMAKE_BINARY_DIR}/external/NICAFEMTO-prefix")
 set(JSROOT_SRC_URL "https://github.com/root-project/jsroot.git")
 set(JSROOT_VERSION "5.7.1")
