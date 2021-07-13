@@ -71,42 +71,14 @@ void CbmTrdModuleRecR::Clear(Option_t* opt)
 Int_t CbmTrdModuleRecR::FindClusters()
 {
 
-  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator
-    mainit;  // subiterator for the deques in each module; searches for
-             // main-trigger to then add the neighbors
-  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator FNit;   // last
-                                                                             // iterator to
-                                                                             // find the FN
-                                                                             // digis which
-                                                                             // correspond
-                                                                             // to the main
-                                                                             // trigger or
-                                                                             // the
-                                                                             // adjacent
-                                                                             // main
-                                                                             // triggers
-  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator start;  // marker to
-                                                                             // erase
-                                                                             // already
-                                                                             // processed
-                                                                             // entries
-                                                                             // from the
-                                                                             // map to
-                                                                             // reduce the
-                                                                             // complexity
-                                                                             // of the
-                                                                             // algorithm
-  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator stop;   // marker to
-                                                                             // erase
-                                                                             // already
-                                                                             // processed
-                                                                             // entries
-                                                                             // from the
-                                                                             // map to
-                                                                             // reduce the
-                                                                             // complexity
-                                                                             // of the
-                                                                             // algorithm
+  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator mainit;
+  // subiterator for the deques in each module; searches for main-trigger to then add the neighbors
+  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator FNit;
+  // last iterator to find the FN digis which correspond to the main trigger or the adjacent main triggers
+  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator start;
+  // marker to erase already processed entries from the map to reduce the complexity of the algorithm
+  std::deque<std::tuple<Int_t, Bool_t, const CbmTrdDigi*>>::iterator stop;
+  // marker to erase already processed entries from the map to reduce the complexity of the algorithm
 
   // reset time information; used to erase processed digis from the map
   Double_t time     = 0;
@@ -114,7 +86,7 @@ Int_t CbmTrdModuleRecR::FindClusters()
   Double_t timediff = -1000;
 
   Int_t Clustercount = 0;
-  Double_t interval  = CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC);
+  Double_t interval  = CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC);
   Bool_t print       = false;
 
   // iterator for the main trigger; searches for an unprocessed main triggered
@@ -159,9 +131,10 @@ Int_t CbmTrdModuleRecR::FindClusters()
     }
     if (timediff < interval) stop = mainit;
 
-    Int_t triggerId = digi->GetTriggerType();
-    Bool_t marked   = std::get<1>(*mainit);
-    if (triggerId != CbmTrdDigi::kSelf || marked) continue;
+    Int_t triggerId                      = digi->GetTriggerType();
+    CbmTrdDigi::eTriggerType triggertype = static_cast<CbmTrdDigi::eTriggerType>(triggerId);
+    Bool_t marked                        = std::get<1>(*mainit);
+    if (triggertype != CbmTrdDigi::eTriggerType::kSelf || marked) continue;
 
     // variety of neccessary address information; uses the "combiId" for the
     // comparison of digi positions
@@ -254,12 +227,14 @@ Int_t CbmTrdModuleRecR::FindClusters()
         Int_t ch      = d->GetAddressChannel();
         Int_t col     = ch % ncols;
         Int_t trigger = d->GetTriggerType();
+        triggertype   = static_cast<CbmTrdDigi::eTriggerType>(trigger);
 
         if (mergerow) {
           // multiple row processing
           // first buffering
 
-          if (ch == channel - ncols && !rowchange && trigger == CbmTrdDigi::kSelf && !std::get<1>(*FNit)) {
+          if (ch == channel - ncols && !rowchange && triggertype == CbmTrdDigi::eTriggerType::kSelf
+              && !std::get<1>(*FNit)) {
             rowchange    = true;
             bufferbot[0] = charge;
             counterbot++;
@@ -275,7 +250,8 @@ Int_t CbmTrdModuleRecR::FindClusters()
             counterbot++;
             std::get<2>(botdigi) = d;
           }
-          if (ch == channel + ncols && !rowchange && trigger == CbmTrdDigi::kSelf && !std::get<1>(*FNit)) {
+          if (ch == channel + ncols && !rowchange && triggertype == CbmTrdDigi::eTriggerType::kSelf
+              && !std::get<1>(*FNit)) {
             rowchange    = true;
             buffertop[0] = charge;
             countertop++;
@@ -318,7 +294,7 @@ Int_t CbmTrdModuleRecR::FindClusters()
 
         // logical implementation of the trigger logic in the same row as the
         // main trigger
-        if (ch == lowcol - 1 && trigger == CbmTrdDigi::kSelf && !std::get<1>(*FNit)) {
+        if (ch == lowcol - 1 && triggertype == CbmTrdDigi::eTriggerType::kSelf && !std::get<1>(*FNit)) {
           cluster.push_back(std::make_pair(digiid, d));
           lowcol = ch;
           dmain++;
@@ -327,7 +303,7 @@ Int_t CbmTrdModuleRecR::FindClusters()
             std::cout << " time: " << newtime << " charge: " << charge << "   col: " << col << "   row: " << ch / ncols
                       << "   trigger: " << trigger << std::endl;
         }
-        if (ch == highcol + 1 && trigger == CbmTrdDigi::kSelf && !std::get<1>(*FNit)) {
+        if (ch == highcol + 1 && triggertype == CbmTrdDigi::eTriggerType::kSelf && !std::get<1>(*FNit)) {
           cluster.push_back(std::make_pair(digiid, d));
           highcol = ch;
           dmain++;
@@ -336,7 +312,8 @@ Int_t CbmTrdModuleRecR::FindClusters()
             std::cout << " time: " << newtime << " charge: " << charge << "   col: " << col << "   row: " << ch / ncols
                       << "   trigger: " << trigger << std::endl;
         }
-        if (ch == highcol + 1 && trigger == CbmTrdDigi::kNeighbor && !std::get<1>(*FNit) && !sealtopcol) {
+        if (ch == highcol + 1 && triggertype == CbmTrdDigi::eTriggerType::kNeighbor && !std::get<1>(*FNit)
+            && !sealtopcol) {
           cluster.push_back(std::make_pair(digiid, d));
           sealtopcol = true;
           dmain++;
@@ -345,7 +322,8 @@ Int_t CbmTrdModuleRecR::FindClusters()
             std::cout << " time: " << newtime << " charge: " << charge << "   col: " << col << "   row: " << ch / ncols
                       << "   trigger: " << trigger << std::endl;
         }
-        if (ch == lowcol - 1 && trigger == CbmTrdDigi::kNeighbor && !std::get<1>(*FNit) && !sealbotcol) {
+        if (ch == lowcol - 1 && triggertype == CbmTrdDigi::eTriggerType::kNeighbor && !std::get<1>(*FNit)
+            && !sealbotcol) {
           cluster.push_back(std::make_pair(digiid, d));
           sealbotcol = true;
           dmain++;
@@ -373,28 +351,28 @@ Int_t CbmTrdModuleRecR::FindClusters()
             dmain++;
             std::get<1>(*FNit) = true;
           }
-          if (rowchange && ch == lowrow - 1 && lowrow != channel && trigger == CbmTrdDigi::kSelf
+          if (rowchange && ch == lowrow - 1 && lowrow != channel && triggertype == CbmTrdDigi::eTriggerType::kSelf
               && !std::get<1>(*FNit)) {
             cluster.push_back(std::make_pair(digiid, d));
             lowrow = ch;
             dmain++;
             std::get<1>(*FNit) = true;
           }
-          if (rowchange && ch == highrow + 1 && highrow != channel && trigger == CbmTrdDigi::kSelf
+          if (rowchange && ch == highrow + 1 && highrow != channel && triggertype == CbmTrdDigi::eTriggerType::kSelf
               && !std::get<1>(*FNit)) {
             cluster.push_back(std::make_pair(digiid, d));
             highrow = ch;
             dmain++;
             std::get<1>(*FNit) = true;
           }
-          if (rowchange && ch == highrow + 1 && highrow != channel && trigger == CbmTrdDigi::kNeighbor
+          if (rowchange && ch == highrow + 1 && highrow != channel && triggertype == CbmTrdDigi::eTriggerType::kNeighbor
               && !std::get<1>(*FNit) && !sealtoprow) {
             cluster.push_back(std::make_pair(digiid, d));
             sealtoprow = true;
             dmain++;
             std::get<1>(*FNit) = true;
           }
-          if (rowchange && ch == lowrow - 1 && lowrow != channel && trigger == CbmTrdDigi::kNeighbor
+          if (rowchange && ch == lowrow - 1 && lowrow != channel && triggertype == CbmTrdDigi::eTriggerType::kNeighbor
               && !std::get<1>(*FNit) && !sealbotrow) {
             cluster.push_back(std::make_pair(digiid, d));
             sealbotrow = true;
@@ -567,7 +545,7 @@ CbmTrdHit* CbmTrdModuleRecR::MakeHit(Int_t clusterId, const CbmTrdCluster* /*clu
 
   //  return new ((*fHits)[nofHits]) CbmTrdHit(fModAddress, global,
   //  cluster_pad_dposV, 0, clusterId,0, 0,
-  //  totalCharge/1e6,time,Double_t(CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)));
+  //  totalCharge/1e6,time,Double_t(CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC)));
   return new ((*fHits)[nofHits])
     CbmTrdHit(fModAddress, global, cluster_pad_dposV, 0, clusterId, totalCharge / 1e6, time,
               Double_t(8.5));  // TODO: move to parameter file

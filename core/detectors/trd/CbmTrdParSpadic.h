@@ -15,7 +15,7 @@
 #include <map>     // fMapAsicChannelToElink
 #include <vector>  // fVecSpadicChannels
 
-#include <stdint.h>  // for uint64_t, uint8_t, uint16_t
+#include <stdint.h>  // for size_t, uint8_t, uint16_t
 
 class FairParamList;
 
@@ -23,7 +23,7 @@ class FairParamList;
 class CbmTrdParSpadic : public CbmTrdParAsic {
 public:
   CbmTrdParSpadic(Int_t address = 0, Int_t FebGrouping = -1, Double_t x = 0, Double_t y = 0, Double_t z = 0,
-                  std::uint64_t compId = 0);
+                  size_t compId = 0);
   virtual ~CbmTrdParSpadic() { ; }
 
   virtual void LoadParams(
@@ -36,7 +36,7 @@ public:
   virtual Double_t GetSizeY() const { return fgSizeY; }
   virtual Double_t GetSizeZ() const { return fgSizeZ; }
 
-  static std::uint64_t CreateComponentId(
+  static size_t CreateComponentId(
     Int_t criId, Int_t crobId, Int_t nThCrobOnModule,
     Int_t
       eLinkId);  ///< Create the componentId from a given criId, crobId, eLinkId and the nThCrobOnModule count, according to the scheme, defined by ECbmTrdComponentIdDecoding.
@@ -49,13 +49,13 @@ public:
   static Int_t GetNasicsPerCrob(
     Int_t moduleType);  ///< Returns the number of asics per Crob on a given moduleType defined in eCbmTrdModuleTypes
   static std::uint16_t GetCriId(
-    std::uint64_t
+    size_t
       componentId);  ///< Extracts the CriId from a given componentId - Remark when the par files are created from geometries the CriId is set to the unique module number
-  static std::uint8_t GetCrobId(std::uint64_t componentId);  ///< Extracts the CrobId from a given componentId
-  static std::uint8_t GetCrobNumber(
-    std::uint64_t componentId);  ///< Extracts the CrobNumber (nTh Crob on the module) from a given componentId
+  static std::uint8_t GetCrobId(size_t componentId);  ///< Extracts the CrobId from a given componentId
+  static std::uint8_t
+  GetCrobNumber(size_t componentId);  ///< Extracts the CrobNumber (nTh Crob on the module) from a given componentId
   static std::uint8_t GetElinkId(
-    std::uint64_t componentId,
+    size_t componentId,
     Int_t
       channelId);  ///< eLinkId for the given asicAddress and channelId (in the asic coordinates, i.e. 00..31). Remark: no check of a correct componentId is performed
 

@@ -19,8 +19,7 @@ Double_t CbmTrdParSpadic::fgSizeY = 3.0;
 Double_t CbmTrdParSpadic::fgSizeZ = 0.5;
 
 //___________________________________________________________________
-CbmTrdParSpadic::CbmTrdParSpadic(Int_t address, Int_t FebGrouping, Double_t x, Double_t y, Double_t z,
-                                 std::uint64_t compId)
+CbmTrdParSpadic::CbmTrdParSpadic(Int_t address, Int_t FebGrouping, Double_t x, Double_t y, Double_t z, size_t compId)
   : CbmTrdParAsic(address, FebGrouping, x, y, z, compId)
 {
   fChannelAddresses.resize(NSPADICCH);
@@ -65,11 +64,11 @@ void CbmTrdParSpadic::LoadParams(FairParamList* inList)
 }
 
 // ---- CreateComponentId ---------------------------------------------
-std::uint64_t CbmTrdParSpadic::CreateComponentId(Int_t criId, Int_t crobId, Int_t nThCrobOnModule, Int_t eLinkId)
+size_t CbmTrdParSpadic::CreateComponentId(Int_t criId, Int_t crobId, Int_t nThCrobOnModule, Int_t eLinkId)
 {
-  std::uint64_t compId = criId * ECbmTrdComponentIdDecoding::kCriIdPosition
-                         + crobId * ECbmTrdComponentIdDecoding::kCrobIdPosition
-                         + nThCrobOnModule * ECbmTrdComponentIdDecoding::kCrobNrPosition + eLinkId;
+  size_t compId = criId * ECbmTrdComponentIdDecoding::kCriIdPosition
+                  + crobId * ECbmTrdComponentIdDecoding::kCrobIdPosition
+                  + nThCrobOnModule * ECbmTrdComponentIdDecoding::kCrobNrPosition + eLinkId;
   return compId;
 }
 
@@ -77,7 +76,7 @@ std::uint64_t CbmTrdParSpadic::CreateComponentId(Int_t criId, Int_t crobId, Int_
 std::uint16_t CbmTrdParSpadic::GetCriId() { return GetCriId(fComponentId); }
 
 // ---- GetCriId ----------------------------------------------------
-std::uint16_t CbmTrdParSpadic::GetCriId(std::uint64_t componentId)
+std::uint16_t CbmTrdParSpadic::GetCriId(size_t componentId)
 {
   uint16_t returnId = (componentId / (ECbmTrdComponentIdDecoding::kCriIdPosition));
   return returnId;
@@ -87,7 +86,7 @@ std::uint16_t CbmTrdParSpadic::GetCriId(std::uint64_t componentId)
 std::uint8_t CbmTrdParSpadic::GetCrobId() { return GetCrobId(fComponentId); }
 
 // ---- GetCrobId ----------------------------------------------------
-std::uint8_t CbmTrdParSpadic::GetCrobId(std::uint64_t componentId)
+std::uint8_t CbmTrdParSpadic::GetCrobId(size_t componentId)
 {
   std::uint8_t returnId(-1);
   returnId = ((componentId % ECbmTrdComponentIdDecoding::kCriIdPosition) / ECbmTrdComponentIdDecoding::kCrobIdPosition);
@@ -98,7 +97,7 @@ std::uint8_t CbmTrdParSpadic::GetCrobId(std::uint64_t componentId)
 std::uint8_t CbmTrdParSpadic::GetCrobNumber() { return GetCrobNumber(fComponentId); }
 
 // ---- GetCrobNumber ----------------------------------------------------
-std::uint8_t CbmTrdParSpadic::GetCrobNumber(std::uint64_t componentId)
+std::uint8_t CbmTrdParSpadic::GetCrobNumber(size_t componentId)
 {
   std::uint8_t returnId(-1);
   returnId = (componentId % ECbmTrdComponentIdDecoding::kCrobIdPosition / ECbmTrdComponentIdDecoding::kCrobNrPosition);
@@ -109,7 +108,7 @@ std::uint8_t CbmTrdParSpadic::GetCrobNumber(std::uint64_t componentId)
 std::uint8_t CbmTrdParSpadic::GetElinkId(Int_t channelId) { return GetElinkId(fComponentId, channelId); }
 
 // ---- GetElinkId ----------------------------------------------------
-std::uint8_t CbmTrdParSpadic::GetElinkId(std::uint64_t componentId, Int_t channelId)
+std::uint8_t CbmTrdParSpadic::GetElinkId(size_t componentId, Int_t channelId)
 {
   std::uint8_t eLinkId(-1);
 

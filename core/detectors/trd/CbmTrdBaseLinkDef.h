@@ -12,7 +12,7 @@
 
 #pragma link C++ class CbmTrdGas + ;
 #pragma link C++ class CbmTrdContFact + ;
-#pragma link C++ class CbmMcbm2020TrdTshiftPar +;
+#pragma link C++ class CbmMcbm2020TrdTshiftPar + ;
 #pragma link C++ class CbmTrdModuleAbstract + ;
 
 #pragma link C++ class CbmTrdParManager + ;
@@ -25,7 +25,7 @@
 #pragma link C++ class CbmTrdParMod + ;
 #pragma link C++ class CbmTrdParAsic + ;
 #pragma link C++ class CbmTrdParSpadic + ;
-#pragma link C++ class CbmTrdSPADIC + ;
+#pragma link C++ class CbmTrdSpadic + ;
 #pragma link C++ class CbmTrdFASP + ;
 #pragma link C++ class CbmTrdParFasp + ;
 #pragma link C++ class CbmTrdParFaspChannel + ;
@@ -35,6 +35,7 @@
 #pragma link C++ class CbmTrdParModDigi + ;
 //tools
 #pragma link C++ class CbmTrdGeoHandler + ;
+#pragma link C++ class CbmTrddEdxUtils + ;
 #pragma link C++ class CbmTrdUtils + ;
 #pragma link C++ class CbmTrdHardwareSetupR + ;
 #pragma link C++ class CbmTrdRadiator + ;

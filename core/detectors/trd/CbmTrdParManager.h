@@ -27,6 +27,8 @@
 #include <RtypesCore.h>  // for Bool_t, kFALSE, Int_t, Option_t, kTRUE
 #include <TString.h>     // for TString
 
+#include <memory>
+
 class CbmTrdGeoHandler;
 class CbmTrdParSetAsic;
 class CbmTrdParSetDigi;
@@ -96,7 +98,7 @@ public:
    **/
   bool CreateParFilesFromGeometry(bool createRootFileOutput, TString outDir = "");
 
-  static void GetParSetList(std::vector<CbmTrdParSet*>* parSetList);
+  static void GetParSetList(std::vector<std::shared_ptr<CbmTrdParSet>>* parSetList);
   static void GetParFileExtensions(std::vector<std::string>* vec);
 
 private:

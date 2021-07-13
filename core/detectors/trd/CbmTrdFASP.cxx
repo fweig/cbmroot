@@ -5,7 +5,7 @@
 #include "CbmTrdFASP.h"
 
 #include "CbmMatch.h"    // for CbmMatch
-#include "CbmTrdDigi.h"  // for CbmTrdDigi, CbmTrdDigi::kFASP
+#include "CbmTrdDigi.h"  // for CbmTrdDigi, CbmTrdDigi::eCbmTrdAsicType::kFASP
 
 #include <Logger.h>  // for Logger, LOG
 
@@ -313,9 +313,9 @@ void CbmTrdFASP::Print(Option_t* opt) const
 
   printf("FASP Simulator : Col[%2d] NeighbourTrigger[%c]\n", fCol, fgNeighbour ? 'y' : 'n');
   printf("  Main CH      : Trigger[V]=%4.2f Flat-Top[ns]=%5.1f\n", fgShaperThr,
-         fgkNclkFT * CbmTrdDigi::Clk(CbmTrdDigi::kFASP));
+         fgkNclkFT * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP));
   printf("  Neighbour CH : Trigger[V]=%4.2f Linear-gate[ns]=%5.1f\n", fgNeighbourThr,
-         fgNclkLG * CbmTrdDigi::Clk(CbmTrdDigi::kFASP));
+         fgNclkLG * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP));
 
   if (strcmp(opt, "all") != 0) return;
   Int_t time                         = 0;
@@ -396,7 +396,7 @@ Int_t CbmTrdFASP::ProcessShaper(Char_t typ)
     if (fTimeLG < 0) {  // check if linear-gate is closed
       if ((fgNeighbour && (htf_prev || htf || htf_next)) || (!fgNeighbour && htf)) {
         lg_cmd  = 1;
-        fTimeLG = i + 0.2 * fgNclkLG * CbmTrdDigi::Clk(CbmTrdDigi::kFASP);
+        fTimeLG = i + 0.2 * fgNclkLG * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP);
         if (VERBOSE) printf("      %4lu : LG_CMD 1 -> MinGateEnd[ns]=%d\n", i * 5, fTimeLG * 5);
       }
     }
@@ -425,7 +425,7 @@ Int_t CbmTrdFASP::ProcessShaper(Char_t typ)
         if (VERBOSE) printf("      %4lu : MAX[V]=%5.2f\n", i * 5, max);
       }
       if (out < max - 0.05) {
-        fTimeFT = i + 0.2 * fgkNclkFT * CbmTrdDigi::Clk(CbmTrdDigi::kFASP);
+        fTimeFT = i + 0.2 * fgkNclkFT * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP);
         fTimeDY = -1;
         fFT     = max + 0.01;
         // save data for digi update
@@ -821,9 +821,10 @@ void CbmTrdFASP::WriteDigi()
           printf("        [R] ht[ns]=%4d CS[ns]=%4d FT[ADC]=%4u Trg[%s]\n", hTime, csTime, get<2>(*jt),
                  (get<3>(*jt) ? "S" : "N"));
         if (dtime) {
-          if (csTime > dtime) ddt = TMath::Ceil(Int_t(csTime - dtime) / CbmTrdDigi::Clk(CbmTrdDigi::kFASP));
+          if (csTime > dtime)
+            ddt = TMath::Ceil(Int_t(csTime - dtime) / CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP));
           else
-            ddt = TMath::Floor(Int_t(csTime - dtime) / CbmTrdDigi::Clk(CbmTrdDigi::kFASP));
+            ddt = TMath::Floor(Int_t(csTime - dtime) / CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP));
         }
         else
           dtime = csTime;

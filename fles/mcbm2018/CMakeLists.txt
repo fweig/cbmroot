@@ -25,7 +25,6 @@ Set(INCLUDE_DIRECTORIES
   ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/unpacker
   ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/monitor
   ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/tasks
-
   ${CBMDETECTORBASE_DIR}/trd # required for parameter handling of the trd
   ${CBMDETECTORBASE_DIR}/psd
   ${CBMDETECTORBASE_DIR}/sts

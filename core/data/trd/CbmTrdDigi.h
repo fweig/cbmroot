@@ -17,13 +17,13 @@
 
 class CbmTrdDigi {
 public:
-  enum CbmTrdAsicType
+  enum class eCbmTrdAsicType : size_t
   {
     kSPADIC = 0,
     kFASP,
     kNTypes
   };
-  enum ECbmTrdTriggerType
+  enum class eTriggerType : Int_t
   {
     kBeginTriggerTypes = 0,
     kSelf              = kBeginTriggerTypes,
@@ -57,12 +57,13 @@ public:
   /**
    * \brief Constructor for the SPADIC type.
    * \param[in] padChNr Unique channel address in the module.
+   * \param[in] uniqueModuleId Unique Id of the module.
    * \param[in] charge Charge.
    * \param[in] time   Absolute time [ns].
    * \param[in] triggerType SPADIC trigger type see CbmTrdTriggerType.
    * \param[in] errClass SPADIC signal error parametrization based on message type.
    */
-  CbmTrdDigi(Int_t padChNr, Int_t uniqueModuleId, Float_t charge, ULong64_t time, Int_t triggerType,
+  CbmTrdDigi(Int_t padChNr, Int_t uniqueModuleId, Float_t charge, ULong64_t time, eTriggerType triggerType,
              Int_t errClass /*nrSamples*/);
 
   /**
@@ -78,6 +79,13 @@ public:
     ;
   }
 
+  /**
+   * @brief Copy Construct a new Cbm Trd Digi
+   * 
+   */
+  CbmTrdDigi(const CbmTrdDigi&);
+
+
   /** \brief Charge addition in case of pile-up (FASP simulation only)
    * \param[in] sd previous digi absorbed by current
    * \param[in] f scaling factor
@@ -89,7 +97,7 @@ public:
    */
   void AddCharge(Double_t c, Double_t f = 1);
   /** \brief DAQ clock accessor for each ASIC*/
-  static Float_t Clk(CbmTrdAsicType ty) { return (ty == kNTypes ? 0 : fgClk[ty]); }
+  static Float_t Clk(eCbmTrdAsicType ty) { return fgClk[static_cast<size_t>(ty)]; }
   /** \brief Address getter for module in the format defined by CbmTrdDigi (format of CbmTrdAddress can be accessed via CbmTrdParModDigi)
    */
   Int_t GetAddress() const { return (fInfo >> fgkRoOffset) & 0x7fffff; }
@@ -125,20 +133,34 @@ public:
    **/
   static const char* GetClassName() { return "CbmTrdDigi"; }
 
+  /** @brief Get the desired name of the branch for this obj in the cbm output tree  (static)
+   ** @return TrdDigi
+   **/
+  static const char* GetBranchName() { return "TrdDigi"; }
+
 
   /** \brief Getter for physical time [ns]. Accounts for clock representation of each ASIC. In SPADIC case physical time is already stored in fTime. */
-  Double_t GetTime() const { return (GetType() == kFASP) ? fTime * fgClk[GetType()] : fTime; }
+  Double_t GetTime() const
+  {
+    return (GetType() == eCbmTrdAsicType::kFASP) ? fTime * fgClk[static_cast<size_t>(GetType())] : fTime;
+  }
   /** \brief Getter for global DAQ time [clk]. Differs for each ASIC. In FASP case DAQ time is already stored in fTime.*/
-  ULong64_t GetTimeDAQ() const { return (GetType() == kFASP) ? fTime : fTime / fgClk[GetType()]; }
+  ULong64_t GetTimeDAQ() const
+  {
+    return (GetType() == eCbmTrdAsicType::kFASP) ? fTime : fTime / fgClk[static_cast<size_t>(GetType())];
+  }
   /** \brief Channel trigger type. SPADIC specific see CbmTrdTriggerType*/
   Int_t GetTriggerType() const { return (fInfo >> fgkTrgOffset) & 0x3; }
   /** \brief Channel FEE SPADIC/FASP according to CbmTrdAsicType*/
-  CbmTrdAsicType GetType() const { return ((fInfo >> fgkTypOffset) & 0x1) ? kFASP : kSPADIC; }
+  eCbmTrdAsicType GetType() const
+  {
+    return ((fInfo >> fgkTypOffset) & 0x1) ? eCbmTrdAsicType::kFASP : eCbmTrdAsicType::kSPADIC;
+  }
 
   /** \brief Query digi mask (FASP only)*/
-  Bool_t IsMasked() const { return (GetType() == kFASP) && IsFlagged(kFlag3); }
+  Bool_t IsMasked() const { return (GetType() == eCbmTrdAsicType::kFASP) && IsFlagged(kFlag3); }
   /** \brief Query digi pile-up (FASP only)*/
-  Bool_t IsPileUp() const { return (GetType() == kFASP) && IsFlagged(kFlag2); }
+  Bool_t IsPileUp() const { return (GetType() == eCbmTrdAsicType::kFASP) && IsFlagged(kFlag2); }
   /** \brief Query flag status (generic)*/
   Bool_t IsFlagged(const Int_t iflag) const;
   Int_t Layer() const { return (fInfo >> fgkLyOffset) & 0xf; }
@@ -151,7 +173,7 @@ public:
   /** \brief Alias for SetAddress() */
   void SetAddressModule(const Int_t a) { SetAddress(a); }
 
-  void SetAsic(CbmTrdAsicType ty = kSPADIC);
+  void SetAsic(eCbmTrdAsicType ty = eCbmTrdAsicType::kSPADIC);
   /** \brief Charge setter for SPADIC ASIC
    * \param[in] c charge on read-out pad
    */
@@ -167,12 +189,12 @@ public:
   /** \brief Set digi mask (FASP only)*/
   void SetMasked(Bool_t set = kTRUE)
   {
-    if (GetType() == kFASP) SetFlag(kFlag3, set);
+    if (GetType() == eCbmTrdAsicType::kFASP) SetFlag(kFlag3, set);
   }
   /** \brief Set digi pile-up (FASP only)*/
   void SetPileUp(Bool_t set = kTRUE)
   {
-    if (GetType() == kFASP) SetFlag(kFlag2, set);
+    if (GetType() == eCbmTrdAsicType::kFASP) SetFlag(kFlag2, set);
   }
   /** \brief Set global digi time (ns)*/
   void SetTime(Double_t t);
@@ -180,8 +202,10 @@ public:
   void SetTimeDAQ(ULong64_t t) { fTime = t; }
   /** \brief Set time offset of rectangular to tilt pads for FASP (clk)*/
   void SetTimeOffset(Char_t t);
-  /** \brief Set digi trigger type (SPADIC only)*/
-  void SetTriggerType(const Int_t ttype);
+  /** \brief Set digi trigger type */
+  void SetTriggerType(const eTriggerType triggerType);
+  /** \brief Set digi trigger type */
+  void SetTriggerType(const Int_t triggerValue);
   /** \brief Set digi error class (SPADIC only)*/
   void SetErrorClass(const Int_t n)
   {
@@ -219,13 +243,23 @@ protected:
     fInfo |= ((a & 0x7f) << fgkModOffset);
   }
 
-  UInt_t fInfo;    //< pad address and extra information
-  UInt_t fCharge;  //< measured charge. For SPADIC is Int_t(charge*1eN) where N is the precission while
+  UInt_t fInfo   = 0;  //< pad address and extra information
+  UInt_t fCharge = 0;  //< measured charge. For SPADIC is Int_t(charge*1eN) where N is the precission while
   //< for FASP it contains the R and T charges each on 12bits and the time difference between R and T pads in CLK (8 bits).
-  ULong64_t fTime;  //< global time of the digi: For SPADIC in ns, for FASP in ASIC clock
+  ULong64_t fTime = 0;  //< global time of the digi: For SPADIC in ns, for FASP in ASIC clock
 
-  static Double_t fgClk[kNTypes];        //< clock length in ns for acquisition
-  static Float_t fgPrecission[kNTypes];  //< no. of digits stored for ASIC
+  /**
+   * @brief clock length in ns for acquisition
+   * 
+   */
+  static const Double_t fgClk[static_cast<size_t>(eCbmTrdAsicType::kNTypes) + 1];
+
+  /**
+  * @brief Nr. of digits stored for ASIC
+  * 
+  */
+  static const Float_t fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kNTypes) + 1];
+
 
 private:
   static const Int_t fgkRoOffset  = 0;
@@ -246,7 +280,7 @@ private:
     ar& fTime;
   }
 
-  ClassDefNV(CbmTrdDigi, 3);  // Production ready TRD digit
+  ClassDefNV(CbmTrdDigi, 4);  // Production ready TRD digit
 };
 
 #endif

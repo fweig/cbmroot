@@ -148,7 +148,7 @@ CbmTrdModuleRec* CbmTrdClusterFinder::AddModule(const CbmTrdDigi* digi)
 {
   Int_t address = digi->GetAddressModule();
   CbmTrdModuleRec* module(NULL);
-  if (digi->GetType() == CbmTrdDigi::kFASP) module = fModules[address] = new CbmTrdModuleRecT(address);
+  if (digi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kFASP) module = fModules[address] = new CbmTrdModuleRecT(address);
   else
     module = fModules[address] = new CbmTrdModuleRecR(address);
 
@@ -186,7 +186,7 @@ CbmTrdModuleRec* CbmTrdClusterFinder::AddModule(const CbmTrdDigi* digi)
     module->SetChmbPar(pChmb);
 
   // try to load Gain parameters for module
-  if (digi->GetType() == CbmTrdDigi::kFASP) {
+  if (digi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kFASP) {
     const CbmTrdParModGain* pGain(NULL);
     if (!fGainPar || !(pGain = (const CbmTrdParModGain*) fGainPar->GetModulePar(address))) {
       //LOG(warn) << GetName() << "::AddModule : No Gain params for modAddress "<< address <<". Using default.";

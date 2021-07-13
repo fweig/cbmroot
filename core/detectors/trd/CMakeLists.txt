@@ -42,7 +42,7 @@ CbmTrdParSetDigi.cxx
 CbmTrdParMod.cxx
 CbmTrdParAsic.cxx
 CbmTrdParSpadic.cxx
-CbmTrdSPADIC.cxx
+CbmTrdSpadic.cxx
 CbmTrdFASP.cxx
 CbmTrdParFasp.cxx
 CbmTrdParModDigi.cxx
@@ -52,6 +52,7 @@ CbmTrdParModGeo.cxx
 #tools
 CbmTrdGeoHandler.cxx
 CbmTrdUtils.cxx
+CbmTrddEdxUtils.cxx
 CbmTrdHardwareSetupR.cxx
 CbmTrdRadiator.cxx
 )

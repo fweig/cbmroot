@@ -27,10 +27,25 @@
 #pragma link C++ class CbmTrdRecoQa + ;
 #pragma link C++ class CbmTrdTracksPidQa + ;
 
+#pragma link C++ class CbmRecoUnpackAlgo < CbmTrdDigi, CbmTrdRawMessageSpadic, std::pair < size_t, size_t>> + ;
+#pragma link C++ class CbmRecoUnpackConfig < CbmTrdUnpackAlgoBaseR, CbmTrdDigi, CbmTrdRawMessageSpadic,                \
+  std::pair < size_t, size_t>> + ;
+
+#pragma link C++ class CbmTrdUnpackAlgoBaseR + ;
+#pragma link C++ class CbmTrdUnpackAlgoR + ;
+#pragma link C++ class CbmTrdUnpackAlgoLegacy2020R + ;
+#pragma link C++ class CbmTrdUnpackConfig + ;
+#pragma link C++ class CbmTrdUnpackMonitor + ;
+
 #pragma link C++ class CbmTrdElectronsTrainAnn + ;
 #pragma link C++ class CbmTrdSetTracksPidWkn + ;
 #pragma link C++ class CbmTrdSetTracksPidModWkn + ;
 #pragma link C++ class CbmTrdSetTracksPidLike + ;
 #pragma link C++ class CbmTrdSetTracksPidANN + ;
+
+#pragma link C++ class CbmTrdRawToDigiBaseR + ;
+#pragma link C++ class CbmTrdRawToDigiMaxAdcR + ;
+#pragma link C++ class CbmTrdRawToDigiFitR + ;
+#pragma link C++ class CbmTrdRawToDigiLookUpCorrR + ;
 
 #endif

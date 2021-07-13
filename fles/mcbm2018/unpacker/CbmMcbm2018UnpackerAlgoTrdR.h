@@ -24,9 +24,6 @@
 #include "TObjArray.h"
 #include "TProfile.h"
 #include "TString.h"
-//#include "CbmTrdRawToDigiR.h"
-/// TODO: include the relevant functions of CbmTrdRawToDigiR into the unpacker-algo.
-///       as first step one can copy CbmTrdRawToDigiR.h and CbmTrdRawToDigiR.cxx to the same folder as this file.
 
 /**
   *  @class CbmMcbm2018UnpackerAlgoTrdR
@@ -144,7 +141,7 @@ public:
    *  @return kTRUE if fTrdRawMessageVector was nullptr before. kFALSE else.
    **/
   Bool_t SetRawOutputPointer(std::vector<CbmTrdRawMessageSpadic>* const pVector,
-                             std::vector<std::pair<std::uint64_t, std::uint64_t>>* const qVector = nullptr);
+                             std::vector<std::pair<size_t, size_t>>* const qVector = nullptr);
 
   void SetRefGeoTag(TString geoTag) { fRefGeoTag = geoTag; }
   void SetFirstChannelsElinkEven(bool isEven) { fIsFirstChannelsElinkEven = isEven; }
@@ -191,14 +188,14 @@ private:
   std::vector<CbmTrdRawMessageSpadic>* fTrdRawMessageVector;
 
   /// vector< pair< fulltime, word > >
-  std::vector<std::pair<std::uint64_t, std::uint64_t>>* fSpadicInfoMsgVector;
+  std::vector<std::pair<size_t, size_t>>* fSpadicInfoMsgVector;
 
   //std::map< TString, std::shared_ptr<TH1> > fHistoMap ;
 
   /// Stores all Histograms.
   std::vector<bool> fIsActiveHistoVec;
   TObjArray fHistoArray;
-  std::vector<std::uint64_t> fLastDigiTimeVec;
+  std::vector<size_t> fLastDigiTimeVec;
 
   /**
    *  @brief Instance of RawToDigi class.
@@ -234,7 +231,7 @@ private:
   CbmTrdParSetGas* fGasPar;    ///< CbmTrdParameter container
   CbmTrdParSetGain* fGainPar;  ///< CbmTrdParameter container
 
-  std::map<std::uint64_t, Int_t> fSpadicMap;
+  std::map<size_t, Int_t> fSpadicMap;
   ///< Map to retrieve asic address from CriId/CrobId/ElinkId (see CbmTrdHardwareSetupR)
 
   std::map<Int_t, std::vector<Int_t>> fAsicChannelMap;

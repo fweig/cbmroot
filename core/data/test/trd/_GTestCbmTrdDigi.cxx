@@ -28,13 +28,13 @@ TEST(_GTestCbmTrdDigi, CheckStandardConstructor)
   Double_t charge      = 42.42;
   ULong64_t digiTime   = 42001;
   Int_t errClass       = 0;
-  CbmTrdDigi test(padChNr, uniqueModuleId, charge, digiTime, ((Int_t) CbmTrdDigi::kSelf), errClass);
-  compareTrdDigiDataMembers(test, padChNr, ECbmModuleId::kTrd, digiTime, charge);
+  CbmTrdDigi test(padChNr, uniqueModuleId, charge, digiTime, CbmTrdDigi::eTriggerType::kSelf, errClass);
+  compareTrdDigiDataMembers(test, padChNr, ECbmModuleId::kTrd, digiTime, CbmTrdDigi::eTriggerType::kSelf, charge);
 
-  CbmTrdDigi* test1 = new CbmTrdDigi(padChNr, uniqueModuleId, charge, digiTime, ((Int_t) CbmTrdDigi::kSelf), errClass);
+  CbmTrdDigi* test1 =
+    new CbmTrdDigi(padChNr, uniqueModuleId, charge, digiTime, CbmTrdDigi::eTriggerType::kSelf, errClass);
 
-  compareTrdDigiDataMembers(*test1, padChNr, ECbmModuleId::kTrd, digiTime, charge);
-  ;
+  compareTrdDigiDataMembers(*test1, padChNr, ECbmModuleId::kTrd, digiTime, CbmTrdDigi::eTriggerType::kSelf, charge);
 }
 
 

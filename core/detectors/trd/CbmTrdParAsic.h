@@ -12,7 +12,7 @@
 
 #include <vector>  // for vector
 
-#include <stdint.h>  // for uint64_t
+#include <stdint.h>  // for size_t
 
 class FairParamList;
 
@@ -20,7 +20,7 @@ class FairParamList;
 class CbmTrdParAsic : public CbmTrdParMod {
 public:
   CbmTrdParAsic(Int_t address = 0, Int_t FebGrouping = -1, Double_t x = 0, Double_t y = 0, Double_t z = 0,
-                std::uint64_t compId = 0);
+                size_t compId = 0);
   virtual ~CbmTrdParAsic() { ; }
 
   /** \brief Enum for decodation of spadic componentId (Hardware to software mapping)
@@ -41,7 +41,7 @@ public:
   virtual Double_t GetZ() const { return fZ; }
 
   virtual Int_t GetAddress() const { return fAddress; }
-  virtual std::uint64_t GetComponentId() const { return fComponentId; }
+  virtual size_t GetComponentId() const { return fComponentId; }
   virtual Int_t GetNchannels() const = 0;
   virtual Int_t GetFebGrouping() const { return fFebGrouping; }
   virtual Int_t GetChannelAddress(Int_t ich) const
@@ -65,7 +65,7 @@ public:
     fY = y;
     fZ = z;
   }
-  virtual void SetComponentId(std::uint64_t id) { fComponentId = id; }
+  virtual void SetComponentId(size_t id) { fComponentId = id; }
 
 protected:
   Int_t fAddress;      ///< unique ASIC ID
@@ -73,9 +73,15 @@ protected:
   Double_t fY;         ///< center of asic in global c.s. [cm]
   Double_t fZ;         ///< center of asic in global c.s. [cm]
   Int_t fFebGrouping;  ///< no of ASIC in ROB
-  std::uint64_t
-    fComponentId;  ///< For the digit decoding see ECbmTrdComponentIdDecoding. nTh cRob on the module counted from top to bottom a long the sensitive side. This Id is needed to connect the microslice to a given channel, has to be set "by hand", i.e. is not given in the geometry macros. ComponentIdMaps for the Spadic are stored in CbmTrdHardwareSetupR. A macro to write those Ids to the parameter files can be found at https://git.cbm.gsi.de/trd/macros/mcbm2020/blob/master/writeSpadicHwAddresses.C
-  std::vector<Int_t> fChannelAddresses;  ///< addresses of individual output channels
+
+  /** 
+   * @brief Hardware component Id used for addressing 
+   * For the digit decoding see ECbmTrdComponentIdDecoding. nTh cRob on the module counted from top to bottom along the sensitive side. This Id is needed to connect the microslice to a given channel, has to be set "by hand", i.e. is not given in the geometry macros. ComponentIdMaps for the Spadic are stored in CbmTrdHardwareSetupR. A macro to write those Ids to the parameter files can be found at https://git.cbm.gsi.de/trd/macros/mcbm2020/blob/master/writeSpadicHwAddresses.C
+  */
+  size_t fComponentId;
+
+  /** @brief addresses of individual output channels */
+  std::vector<Int_t> fChannelAddresses;
 
   ClassDef(CbmTrdParAsic, 1)  // Definition of common ASIC parameters
 };

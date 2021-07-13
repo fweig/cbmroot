@@ -94,7 +94,7 @@ void CbmTrdRawToDigiR::SetPars(Int_t mode, Double_t cal, Double_t tau, std::vect
     fTau         = tau;
     Double_t sum = 0;
     for (UInt_t i = 0; i < mask.size(); i++)
-      sum += fCalibration * CalcResponse(mask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+      sum += fCalibration * CalcResponse(mask[i] * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
     fEReco = sum;
     FillLookUps();
   }
@@ -106,7 +106,7 @@ void CbmTrdRawToDigiR::SetPars(Int_t mode, Double_t cal, Double_t tau, std::vect
     fLookUp      = 0;
     Double_t sum = 0;
     for (UInt_t i = 0; i < fSampleMask.size(); i++)
-      sum += fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+      sum += fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
     fEReco     = sum;
     auto start = high_resolution_clock::now();
     FillLookUps();
@@ -123,7 +123,7 @@ void CbmTrdRawToDigiR::SetPars(Int_t mode, Double_t cal, Double_t tau, std::vect
   if (mode == 2) {
     Double_t sum = 0;
     for (UInt_t i = 0; i < fSampleMask.size(); i++)
-      sum += fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+      sum += fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
     fEReco     = sum;
     auto start = high_resolution_clock::now();
     FillLookUps();
@@ -145,7 +145,7 @@ void CbmTrdRawToDigiR::Init()
   //default
   Double_t sum = 0;
   for (UInt_t i = 0; i < fSampleMask.size(); i++)
-    sum += fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+    sum += fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
   fEReco     = sum;
   auto start = high_resolution_clock::now();
   if (fReadFile == "") FillLookUps(fWriteFile);
@@ -170,17 +170,21 @@ void CbmTrdRawToDigiR::FillLookUps(std::string write)
 {
 
   if (fLookUp == 1) {
-    for (Int_t shift = 0.; shift < CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC); shift++) {
+    for (Int_t shift = 0.; shift < CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC); shift++) {
       Double_t sum = 0;
       for (Int_t i = fMinBin; i <= fMaxBin; i++)
-        sum += fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
-      fEReco       = sum;
-      Float_t temp = fCalibration * CalcResponse(fMaxBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
+        sum +=
+          fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + shift);
+      fEReco = sum;
+      Float_t temp =
+        fCalibration * CalcResponse(fMaxBin * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + shift);
 
       for (Int_t max = 0; max < fDynamicRange; max++) {
         Float_t energy = max * 1.0 / temp;
-        Int_t a        = energy * fCalibration * CalcResponse(fMinBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
-        Int_t b        = energy * fCalibration * CalcResponse((fHighBin) *CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
+        Int_t a =
+          energy * fCalibration * CalcResponse(fMinBin * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + shift);
+        Int_t b = energy * fCalibration
+                  * CalcResponse((fHighBin) *CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + shift);
 
         Int_t mina = a - fExtrapolate * a;
         Int_t maxa = a + fExtrapolate * a;
@@ -245,17 +249,21 @@ void CbmTrdRawToDigiR::FillLookUps(std::string write)
     if (write != "") WriteMaps(write);
   }
   if (fLookUp == 2) {
-    for (Int_t shift = 0.; shift < CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC); shift++) {
+    for (Int_t shift = 0.; shift < CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC); shift++) {
       Double_t sum = 0;
       for (Int_t i = fMinBin; i <= fMaxBin; i++)
-        sum += fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
-      fEReco            = sum;
-      Float_t temp      = fCalibration * CalcResponse(fMaxBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
+        sum +=
+          fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + shift);
+      fEReco = sum;
+      Float_t temp =
+        fCalibration * CalcResponse(fMaxBin * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + shift);
       Int_t extrapolate = 0;
       for (Int_t max = 0; max < fDynamicRange; max++) {
         Float_t energy = max * 1.0 / temp;
-        Int_t a        = energy * fCalibration * CalcResponse(fMinBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
-        Int_t b        = energy * fCalibration * CalcResponse((fHighBin) *CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
+        Int_t a =
+          energy * fCalibration * CalcResponse(fMinBin * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + shift);
+        Int_t b = energy * fCalibration
+                  * CalcResponse((fHighBin) *CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + shift);
 
         Int_t mina = a - fExtrapolate * a;
         Int_t maxa = a + fExtrapolate * a;
@@ -264,7 +272,8 @@ void CbmTrdRawToDigiR::FillLookUps(std::string write)
         if (!(fElookupAsym[max][a][b] > 0)) fElookupAsym[max][a][b] = shift;
         sum = 0.;
         for (UInt_t i = 0; i < fSampleMask.size(); i++)
-          sum += energy * fCalibration * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift);
+          sum += energy * fCalibration
+                 * CalcResponse(fSampleMask[i] * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + shift);
 
         fElookupSmall[shift][sum] = energy;
         if (fDebug) fQA->CreateHist("Asym", 512, -12.0, 500.0, 512, -12.0, 500.0);
@@ -325,8 +334,9 @@ void CbmTrdRawToDigiR::FillLookUps(std::string write)
   }
   if (fLookUp == 4) {
     for (Int_t max = 0; max < fDynamicRange; max++) {
-      Float_t energy = max / (fCalibration * CalcResponse(fMaxBin * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)));
-      fElookup[max]  = energy;
+      Float_t energy =
+        max / (fCalibration * CalcResponse(fMaxBin * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC)));
+      fElookup[max] = energy;
     }
   }
   else {
@@ -419,8 +429,8 @@ CbmTrdDigi* CbmTrdRawToDigiR::MakeDigi(std::vector<Int_t> samples, Int_t channel
     }
     if (fLookUp == 4 && FN) { digicharge = fElookup[samples[fMaxBin]]; }
   }
-
-  CbmTrdDigi* digi = new CbmTrdDigi(channel, uniqueModuleId, digicharge, time, 0, 0);
+  // The triggertype is set later by the class (moduleSimR) using this function
+  CbmTrdDigi* digi = new CbmTrdDigi(channel, uniqueModuleId, digicharge, time, CbmTrdDigi::eTriggerType::kNTrg, 0);
 
   return digi;
 }

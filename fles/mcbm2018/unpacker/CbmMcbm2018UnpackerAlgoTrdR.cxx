@@ -423,8 +423,9 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::CreateHistogram(ECbmTrdUnpackerHistograms iH
         break;
       case kRawHitType:
         histName += "RawHitTypes";
-        newHisto = new TH1I(histName.Data(), histName.Data(), ((Int_t) Spadic::TriggerType::kSandN + 1),
-                            ((Int_t) Spadic::TriggerType::kGlobal - 0.5), ((Int_t) Spadic::TriggerType::kSandN) + 0.5);
+        newHisto =
+          new TH1I(histName.Data(), histName.Data(), ((Int_t) Spadic::eTriggerType::kSandN + 1),
+                   ((Int_t) Spadic::eTriggerType::kGlobal - 0.5), ((Int_t) Spadic::eTriggerType::kSandN) + 0.5);
         break;
       case kRawPulserDeltaT:
         histName += "RawPulserDeltaT";
@@ -453,9 +454,9 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::CreateHistogram(ECbmTrdUnpackerHistograms iH
         histName += "DigiDeltaT";
         newHisto = new TH1I(histName.Data(), histName.Data(), 6000, -10, ((6e7) - 10));
         // FIXME this should be more flexibel and made available for all modules of a given geometry
-        fLastDigiTimeVec = std::vector<std::uint64_t>(((CbmTrdParModDigi*) fDigiPar->GetModulePar(5))->GetNofColumns()
-                                                        * ((CbmTrdParModDigi*) fDigiPar->GetModulePar(5))->GetNofRows(),
-                                                      0);
+        fLastDigiTimeVec = std::vector<size_t>(((CbmTrdParModDigi*) fDigiPar->GetModulePar(5))->GetNofColumns()
+                                                 * ((CbmTrdParModDigi*) fDigiPar->GetModulePar(5))->GetNofRows(),
+                                               0);
         newHisto->SetXTitle("#Delta t [ns]");
         newHisto->SetYTitle("Counts");
         break;
@@ -465,9 +466,9 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::CreateHistogram(ECbmTrdUnpackerHistograms iH
           new TProfile(histName.Data(), histName.Data(), parDigiModule->GetNofColumns() * parDigiModule->GetNofRows(),
                        -0.5, parDigiModule->GetNofColumns() * parDigiModule->GetNofRows() - 0.5);
         // FIXME this should be more flexibel and made available for all modules of a given geometry
-        fLastDigiTimeVec = std::vector<std::uint64_t>(((CbmTrdParModDigi*) fDigiPar->GetModulePar(5))->GetNofColumns()
-                                                        * ((CbmTrdParModDigi*) fDigiPar->GetModulePar(5))->GetNofRows(),
-                                                      0);
+        fLastDigiTimeVec = std::vector<size_t>(((CbmTrdParModDigi*) fDigiPar->GetModulePar(5))->GetNofColumns()
+                                                 * ((CbmTrdParModDigi*) fDigiPar->GetModulePar(5))->GetNofRows(),
+                                               0);
         newHisto->SetXTitle("Pad-Channel");
         newHisto->SetYTitle("Hit frequency [kHz]");
         break;
@@ -522,7 +523,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::CreateHistogram(ECbmTrdUnpackerHistograms iH
         break;
       case kDigiTriggerType:
         histName += "DigiTriggerType";
-        newHisto = new TH1I(histName.Data(), histName.Data(), CbmTrdDigi::kNTrg, -0.5, (CbmTrdDigi::kNTrg - 0.5));
+        newHisto = new TH1I(histName.Data(), histName.Data(), static_cast<Int_t>(CbmTrdDigi::eTriggerType::kNTrg), -0.5,
+                            (static_cast<Int_t>(CbmTrdDigi::eTriggerType::kNTrg) - 0.5));
         break;
       case kDigiHitFrequency:
         histName += "DigiHitFrequency";
@@ -565,6 +567,10 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::FillHistograms(CbmTrdDigi const& digi)
   Bool_t isOkFill      = kTRUE;
   Int_t channelAddress = digi.GetAddressChannel();
   Int_t histoBaseId    = digi.GetAddressModule() << (Int_t(std::log2(std::double_t(kEndDefinedHistos))) + 1);
+
+  // Get the digi triggertype
+  auto triggertype = static_cast<CbmTrdDigi::eTriggerType>(digi.GetTriggerType());
+
   //Digi position monitoring
   if (fIsActiveHistoVec[kDigiDistributionMap] || fIsActiveHistoVec[kDigiDistributionMapSt]
       || fIsActiveHistoVec[kDigiDistributionMapNt]) {
@@ -580,18 +586,18 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::FillHistograms(CbmTrdDigi const& digi)
       ((TH2I*) fHistoArray.At(histoBaseId + kDigiDistributionMap))->Fill(column, row);
     }
     if (fIsActiveHistoVec[kDigiDistributionMapSt]) {
-      if (digi.GetAddressModule() == 5 && digi.GetTriggerType() == CbmTrdDigi::kSelf)
+      if (digi.GetAddressModule() == 5 && triggertype == CbmTrdDigi::eTriggerType::kSelf)
         ((TH2I*) fHistoArray.At(histoBaseId + kDigiDistributionMapSt))->Fill(column, row);
     }
     if (fIsActiveHistoVec[kDigiDistributionMapNt]) {
-      if (digi.GetAddressModule() == 5 && digi.GetTriggerType() == CbmTrdDigi::kNeighbor)
+      if (digi.GetAddressModule() == 5 && triggertype == CbmTrdDigi::eTriggerType::kNeighbor)
         ((TH2I*) fHistoArray.At(histoBaseId + kDigiDistributionMapNt))->Fill(column, row);
     }
   }
   // "DigiRelativeTinTimeslice"
   if (fIsActiveHistoVec[kDigiRelativeTimeMicroslice]) {
-    std::uint64_t digiTime = digi.GetTime();
-    std::uint64_t deltaT   = digiTime - (fSpadicEpoch * fdMsSizeInCC * 62.5);  // in clockcycles
+    size_t digiTime = digi.GetTime();
+    size_t deltaT   = digiTime - (fSpadicEpoch * fdMsSizeInCC * 62.5);  // in clockcycles
     ((TH1D*) fHistoArray.At(histoBaseId + kDigiRelativeTimeMicroslice))->Fill(deltaT);
   }
   // "kDigiChargeSpectrum"
@@ -600,12 +606,12 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::FillHistograms(CbmTrdDigi const& digi)
   }
   // "kDigiChargeSpectrumSt"
   if (fIsActiveHistoVec[kDigiChargeSpectrumSt]) {
-    if (digi.GetTriggerType() == CbmTrdDigi::kSelf)
+    if (triggertype == CbmTrdDigi::eTriggerType::kSelf)
       ((TH1I*) fHistoArray.At(histoBaseId + kDigiChargeSpectrumSt))->Fill(digi.GetCharge());
   }
   // "kDigiChargeSpectrumNt"
   if (fIsActiveHistoVec[kDigiChargeSpectrumNt]) {
-    if (digi.GetTriggerType() == CbmTrdDigi::kNeighbor)
+    if (triggertype == CbmTrdDigi::eTriggerType::kNeighbor)
       ((TH1I*) fHistoArray.At(histoBaseId + kDigiChargeSpectrumNt))->Fill(digi.GetCharge());
   }
   // "kDigiChargeSpectrumNt"
@@ -617,7 +623,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::FillHistograms(CbmTrdDigi const& digi)
   // "kDigiDeltaT" // DigiPulserDeltaT // "kDigiMeanHitFrequency" // FIXME this works currently with only one module
   if (fIsActiveHistoVec[kDigiDeltaT] || fIsActiveHistoVec[kDigiMeanHitFrequency]
       || fIsActiveHistoVec[kDigiPulserDeltaT]) {
-    std::uint64_t dt = ((std::uint64_t) digi.GetTime() - fLastDigiTimeVec.at(channelAddress));
+    size_t dt = ((size_t) digi.GetTime() - fLastDigiTimeVec.at(channelAddress));
     if (dt > 0) {
       // "kDigiDeltaT"
       if (fIsActiveHistoVec[kDigiDeltaT]) { ((TH1I*) fHistoArray.At(histoBaseId + kDigiDeltaT))->Fill(dt); }
@@ -636,7 +642,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::FillHistograms(CbmTrdDigi const& digi)
         Int_t pulserChannelAddress(663);  // status 03/27/2020
         Int_t pulserModule(5);            // status 03/27/2020
         if (channelAddress == pulserChannelAddress && digi.GetAddressModule() == pulserModule
-            && digi.GetTriggerType() == CbmTrdDigi::kSelf) {
+            && triggertype == CbmTrdDigi::eTriggerType::kSelf) {
           ((TH1I*) fHistoArray.At(histoBaseId + kDigiPulserDeltaT))->Fill(dt);
         }
       }
@@ -652,7 +658,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::FillHistograms(CbmTrdDigi const& digi)
           if (tsCounter == 0) ((TProfile*) fHistoArray.At(histoBaseId + kDigiHitFrequency))->Reset();
         }
       }
-      fLastDigiTimeVec.at(channelAddress) = (std::uint64_t) digi.GetTime();
+      fLastDigiTimeVec.at(channelAddress) = (size_t) digi.GetTime();
     }
   }
   return isOkFill;
@@ -665,31 +671,31 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::FillHistograms(CbmTrdRawMessageSpadic const&
   // "RawMessage_Signalshape_filtered"
   if (fIsActiveHistoVec[kRawMessage_Signalshape_filtered]) {
     if (raw.GetHitType() < 2 && !raw.GetMultiHit()) {
-      for (unsigned int i = 0; i < raw.GetSamples().size(); i++) {
-        ((TH2I*) fHistoArray.At(kRawMessage_Signalshape_filtered))->Fill(i, raw.GetSamples()[i]);
+      for (unsigned int i = 0; i < raw.GetSamples()->size(); i++) {
+        ((TH2I*) fHistoArray.At(kRawMessage_Signalshape_filtered))->Fill(i, raw.GetSamples()->at(i));
       }
     }
   }
   // "RawMessage_Signalshape_all"
   if (fIsActiveHistoVec[kRawMessage_Signalshape_all]) {
-    for (unsigned int i = 0; i < raw.GetSamples().size(); i++) {
-      //fHistoMap.at(HistName.Data())->Fill(i, raw.GetSamples()[i]);
-      ((TH2I*) fHistoArray.At(kRawMessage_Signalshape_all))->Fill(i, raw.GetSamples()[i]);
+    for (unsigned int i = 0; i < raw.GetSamples()->size(); i++) {
+      //fHistoMap.at(HistName.Data())->Fill(i, raw.GetSamples()->at(i));
+      ((TH2I*) fHistoArray.At(kRawMessage_Signalshape_all))->Fill(i, raw.GetSamples()->at(i));
     }
   }
   // "kRawMessage_Signalshape_St"
   if (fIsActiveHistoVec[kRawMessage_Signalshape_St]) {
-    for (unsigned int i = 0; i < raw.GetSamples().size(); i++) {
-      if (raw.GetHitType() == (Int_t) Spadic::TriggerType::kSelf
-          || raw.GetHitType() == (Int_t) Spadic::TriggerType::kSandN)
-        ((TH2I*) fHistoArray.At(kRawMessage_Signalshape_St))->Fill(i, raw.GetSamples()[i]);
+    for (unsigned int i = 0; i < raw.GetSamples()->size(); i++) {
+      if (raw.GetHitType() == (Int_t) Spadic::eTriggerType::kSelf
+          || raw.GetHitType() == (Int_t) Spadic::eTriggerType::kSandN)
+        ((TH2I*) fHistoArray.At(kRawMessage_Signalshape_St))->Fill(i, raw.GetSamples()->at(i));
     }
   }
   // "kRawMessage_Signalshape_Nt"
   if (fIsActiveHistoVec[kRawMessage_Signalshape_Nt]) {
-    for (unsigned int i = 0; i < raw.GetSamples().size(); i++) {
-      if (raw.GetHitType() == (Int_t) Spadic::TriggerType::kNeigh)
-        ((TH2I*) fHistoArray.At(kRawMessage_Signalshape_Nt))->Fill(i, raw.GetSamples()[i]);
+    for (unsigned int i = 0; i < raw.GetSamples()->size(); i++) {
+      if (raw.GetHitType() == (Int_t) Spadic::eTriggerType::kNeigh)
+        ((TH2I*) fHistoArray.At(kRawMessage_Signalshape_Nt))->Fill(i, raw.GetSamples()->at(i));
     }
   }
   // "RawDistributionMapModule5"
@@ -711,7 +717,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::FillHistograms(CbmTrdRawMessageSpadic const&
   return isOkFill;
 }
 
-
+// ---- CbmMcbm2018UnpackerAlgoTrdR::ResetHistograms() ----
 Bool_t CbmMcbm2018UnpackerAlgoTrdR::ResetHistograms()
 {
   /*
@@ -738,9 +744,8 @@ Bool_t CbmMcbm2018UnpackerAlgoTrdR::SetDigiOutputPointer(std::vector<CbmTrdDigi>
   }
 }
 
-Bool_t
-CbmMcbm2018UnpackerAlgoTrdR::SetRawOutputPointer(std::vector<CbmTrdRawMessageSpadic>* const pVector,
-                                                 std::vector<std::pair<std::uint64_t, std::uint64_t>>* const qVector)
+Bool_t CbmMcbm2018UnpackerAlgoTrdR::SetRawOutputPointer(std::vector<CbmTrdRawMessageSpadic>* const pVector,
+                                                        std::vector<std::pair<size_t, size_t>>* const qVector)
 {
   Bool_t ret = 1;
   if (nullptr == fTrdRawMessageVector) { fTrdRawMessageVector = pVector; }
@@ -764,15 +769,17 @@ std::shared_ptr<CbmTrdDigi> CbmMcbm2018UnpackerAlgoTrdR::MakeDigi(CbmTrdRawMessa
     (Float_t) raw.GetMaxAdc()
     + 256;  // REMARK raw.GetMaxADC returns a the value in the range of -256 til 255. However, the digiCharge is stored as unsigned.  // TODO make Settable
 
-  // Int_t digiTriggerType = raw.GetHitType() ; // Spadic::TriggerType this does not work 03/27/2020 - PR digiTriggerType is not Spadic::TriggerType!
-  Int_t digiTriggerType = raw.GetHitType();
-  if (digiTriggerType == 1) digiTriggerType = 0;  // Shift self trigger to digi selftrigger
-  if (digiTriggerType == 2) digiTriggerType = 1;  // Shift neighbour trigger to digi neighbour
-  if (digiTriggerType == 3) digiTriggerType = 0;  // Hide spadic kSandN in Self
+  // Int_t digiTriggerType = raw.GetHitType() ; // Spadic::eTriggerType this does not work 03/27/2020 - PR digiTriggerType is not Spadic::eTriggerType!
+  Int_t rawTriggerType = raw.GetHitType();
+  auto digiTriggerType = CbmTrdDigi::eTriggerType::kNTrg;
+  if (rawTriggerType == 1) digiTriggerType = CbmTrdDigi::eTriggerType::kSelf;  // Shift self trigger to digi selftrigger
+  if (rawTriggerType == 2)
+    digiTriggerType = CbmTrdDigi::eTriggerType::kNeighbor;  // Shift neighbour trigger to digi neighbour
+  if (rawTriggerType == 3) digiTriggerType = CbmTrdDigi::eTriggerType::kSelf;  // Hide spadic kSandN in Self
 
   Int_t digiErrClass = 0;
 
-  std::uint64_t spadicHwAddress(0);
+  size_t spadicHwAddress(0);
   spadicHwAddress = (raw.GetElinkId()) + (CbmTrdParAsic::kCriIdPosition * raw.GetCriId())
                     + (CbmTrdParAsic::kCrobIdPosition * raw.GetCrobId());
   Int_t asicAddress(0);

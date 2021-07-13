@@ -144,7 +144,11 @@ void CbmTrdModuleSimR::AddDigi(Int_t address, Double_t charge, Double_t /*charge
     digiMatch->AddLink(CbmLink(weighting, fPointId, fEventId, fInputId));
     AddNoise(charge);
 
-    CbmTrdDigi* digi = new CbmTrdDigi(channel, fModAddress, charge * 1e6, ULong64_t(time), 0, 0);
+    CbmTrdDigi::eTriggerType triggertype = CbmTrdDigi::eTriggerType::kNTrg;
+    if (trigger == 1) triggertype = CbmTrdDigi::eTriggerType::kSelf;
+    if (trigger == 2) triggertype = CbmTrdDigi::eTriggerType::kNeighbor;
+
+    CbmTrdDigi* digi = new CbmTrdDigi(channel, fModAddress, charge * 1e6, ULong64_t(time), triggertype, 0);
 
     digi->SetFlag(0, true);
     if (fDigiPar->GetPadSizeY(sec) == 1.5) digi->SetErrorClass(1);
@@ -156,8 +160,6 @@ void CbmTrdModuleSimR::AddDigi(Int_t address, Double_t charge, Double_t /*charge
 
     it = fDigiMap.find(address);
     // it->second.first->SetAddressModule(fModAddress);//module); <- now handled in the digi contructor
-    if (trigger == 1) it->second.first->SetTriggerType(CbmTrdDigi::kSelf);
-    if (trigger == 2) it->second.first->SetTriggerType(CbmTrdDigi::kNeighbor);
   }
   else {
     it->second.first->AddCharge(charge * 1e6);
@@ -240,10 +242,8 @@ void CbmTrdModuleSimR::ProcessPulseBuffer(Int_t address, Bool_t FNcall, Bool_t M
 
   Float_t shift = fMessageConverter->GetTimeShift(temp);
   Float_t corr  = fMinDrift;  //correction of average sampling to clock difference and systematic average drift time
-  if (!CbmTrdDigitizer::IsTimeBased())
-    corr = CbmTrdDigi::Clk(
-      CbmTrdDigi::
-        kSPADIC);  //correction for EB case is done later, due to the event time 0 and the unsigned data member for the time in the digi
+  if (!CbmTrdDigitizer::IsTimeBased()) corr = CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC);
+  //correction for EB case is done later, due to the event time 0 and the unsigned data member for the time in the digi
 
   if (fTimeSlice) {
     if (fTimeBuffer[address] + corr - shift < fTimeSlice->GetStartTime()) {
@@ -268,7 +268,7 @@ void CbmTrdModuleSimR::ProcessPulseBuffer(Int_t address, Bool_t FNcall, Bool_t M
   if (!CbmTrdDigitizer::IsTimeBased()) digi->SetFlag(1, true);
 
   Int_t shiftcut    = fShiftQA[address] * 10;
-  Float_t timeshift = shiftcut / 10;
+  Float_t timeshift = shiftcut / 10.0;
   if (temp[fMinBin] == fClipLevel - 1 && temp[fMaxBin] == fClipLevel - 1) digi->SetCharge(35.);
 
   std::vector<CbmLink> links = fPulseBuffer[address].second->GetLinks();
@@ -375,9 +375,9 @@ void CbmTrdModuleSimR::ProcessPulseBuffer(Int_t address, Bool_t FNcall, Bool_t M
 
   // digi->SetAddressModule(fModAddress); Not required anymore, now handled in the digi c'tor
 
-  if (trigger == 1) { digi->SetTriggerType(CbmTrdDigi::kSelf); }
-  if (trigger == 0 && FNcall) { digi->SetTriggerType(CbmTrdDigi::kNeighbor); }
-  if (trigger == 1 && MultiCall) { digi->SetTriggerType(CbmTrdDigi::kMulti); }
+  if (trigger == 1) { digi->SetTriggerType(CbmTrdDigi::eTriggerType::kSelf); }
+  if (trigger == 0 && FNcall) { digi->SetTriggerType(CbmTrdDigi::eTriggerType::kNeighbor); }
+  if (trigger == 1 && MultiCall) { digi->SetTriggerType(CbmTrdDigi::eTriggerType::kMulti); }
 
   //digi->SetMatch(digiMatch);
   if (fDebug) {
@@ -407,7 +407,7 @@ void CbmTrdModuleSimR::ProcessPulseBuffer(Int_t address, Bool_t FNcall, Bool_t M
         FNaddress = CbmTrdAddress::GetAddress(CbmTrdAddress::GetLayerId(address),
                                               CbmTrdAddress::GetModuleId(fModAddress), sec, row, col - 1);
       Double_t timediff = TMath::Abs(fTimeBuffer[address] - fTimeBuffer[FNaddress]);
-      if (FNaddress != 0 && timediff < CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC))
+      if (FNaddress != 0 && timediff < CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC))
         ProcessPulseBuffer(FNaddress, true, false, true, false);
     }
 
@@ -417,7 +417,7 @@ void CbmTrdModuleSimR::ProcessPulseBuffer(Int_t address, Bool_t FNcall, Bool_t M
         FNaddress = CbmTrdAddress::GetAddress(CbmTrdAddress::GetLayerId(address), CbmTrdAddress::GetModuleId(address),
                                               sec, row, col + 1);
       Double_t timediff = TMath::Abs(fTimeBuffer[address] - fTimeBuffer[FNaddress]);
-      if (FNaddress != 0 && timediff < CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC))
+      if (FNaddress != 0 && timediff < CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC))
         ProcessPulseBuffer(FNaddress, true, false, false, true);
     }
   }
@@ -479,12 +479,15 @@ void CbmTrdModuleSimR::AddDigitoBuffer(Int_t address, Double_t charge, Double_t 
     channel += ncols * fDigiPar->GetNofRowsInSector(isec);
   channel += ncols * row + col;
 
-  //  std::cout<<charge*1e6<<"   "<<fTimeBuffer[address]/CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)<<std::endl;
+  auto triggertype = CbmTrdDigi::eTriggerType::kNTrg;
+  if (trigger == 1) triggertype = CbmTrdDigi::eTriggerType::kSelf;
+  if (trigger == 2) triggertype = CbmTrdDigi::eTriggerType::kNeighbor;
+  //  std::cout<<charge*1e6<<"   "<<fTimeBuffer[address]/CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC)<<std::endl;
   CbmTrdDigi* digi =
-    new CbmTrdDigi(channel, fModAddress, charge * 1e6, ULong64_t(time / CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)), 0, 0);
+    new CbmTrdDigi(channel, fModAddress, charge * 1e6,
+                   ULong64_t(time / CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC)), triggertype, 0);
 
-  if (trigger == 1) digi->SetTriggerType(CbmTrdDigi::kSelf);
-  if (trigger == 2) digi->SetTriggerType(CbmTrdDigi::kNeighbor);
+
   //digi->SetMatch(digiMatch);
   //  printf("CbmTrdModuleSimR::AddDigitoBuffer(%10d)=%3d [%d] col[%3d] row[%d] sec[%d]\n", address, channel, fModAddress, col, row, sec);
 
@@ -583,8 +586,9 @@ std::vector<Double_t> CbmTrdModuleSimR::MakePulse(Double_t charge, std::vector<D
   Double_t sample[32];
   for (Int_t i = 0; i < 32; i++)
     sample[i] = 0;
-  //  Double_t timeshift = gRandom->Uniform(0.,CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
-  Double_t timeshift = ((Int_t)(fCurrentTime * 10) % (Int_t)(CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) * 10)) / 10;
+  //  Double_t timeshift = gRandom->Uniform(0.,CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
+  Double_t timeshift =
+    ((Int_t)(fCurrentTime * 10) % (Int_t)(CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) * 10)) / 10.0;
   if (fDebug) fQA->Fill("Shift", timeshift);
   //  Int_t shift=timeshift;
   //fShiftQA[address]=shift;
@@ -596,9 +600,10 @@ std::vector<Double_t> CbmTrdModuleSimR::MakePulse(Double_t charge, std::vector<D
     }
     if (fTimeShift)
       sample[i] = fCalibration * charge * 1e6
-                  * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + timeshift);
+                  * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + timeshift);
     if (!fTimeShift)
-      sample[i] = fCalibration * charge * 1e6 * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+      sample[i] = fCalibration * charge * 1e6
+                  * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
     if (sample[i] > fClipLevel && fClipping) sample[i] = fClipLevel - 1;  //clipping
   }
 
@@ -619,9 +624,10 @@ void CbmTrdModuleSimR::AddToPulse(Int_t address, Double_t charge, Double_t reldr
   std::vector<Double_t> temppulse;
   for (Int_t i = 0; i < 32; i++)
     temppulse.push_back(pulse[i]);
-  Double_t dt        = fCurrentTime - fTimeBuffer[address];
-  Int_t startbin     = (dt + reldrift) / CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC);
-  Double_t timeshift = ((Int_t)((dt + reldrift) * 10) % (Int_t)(CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) * 10)) / 10;
+  Double_t dt    = fCurrentTime - fTimeBuffer[address];
+  Int_t startbin = (dt + reldrift) / CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC);
+  Double_t timeshift =
+    ((Int_t)((dt + reldrift) * 10) % (Int_t)(CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) * 10)) / 10.0;
   if (startbin > 31 || dt < 0.) return;
   if (fDebug) fMCQA[address] += charge * 1e6;
 
@@ -631,7 +637,8 @@ void CbmTrdModuleSimR::AddToPulse(Int_t address, Double_t charge, Double_t reldr
       continue;
     }
     Int_t addtime = i - startbin - fPresamples;
-    pulse[i] += fCalibration * charge * 1e6 * CalcResponse(addtime * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + timeshift);
+    pulse[i] += fCalibration * charge * 1e6
+                * CalcResponse(addtime * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + timeshift);
     if (pulse[i] > fClipLevel && fClipping) pulse[i] = fClipLevel - 1;  //clipping
   }
 
@@ -639,12 +646,12 @@ void CbmTrdModuleSimR::AddToPulse(Int_t address, Double_t charge, Double_t reldr
   // for(Int_t i=0;i<32;i++){
   //   if(i < fPresamples) continue;
   //   if(fTimeShift){
-  //     Int_t sample = fCalibration*charge*1e6*CalcResponse((i-fPresamples)*CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)+timeshift);
+  //     Int_t sample = fCalibration*charge*1e6*CalcResponse((i-fPresamples)*CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC)+timeshift);
   //     if(sample > fClipLevel && fClipping) sample=fClipLevel-1;  //clipping
   //     newpulse.push_back(sample);
   //   }
   //   if(!fTimeShift){
-  //     Int_t sample = fCalibration*charge*1e6*CalcResponse((i-fPresamples)*CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+  //     Int_t sample = fCalibration*charge*1e6*CalcResponse((i-fPresamples)*CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
   //     if(sample > fClipLevel && fClipping) sample=fClipLevel-1;  //clipping
   //     newpulse.push_back(sample);
   //   }
@@ -665,20 +672,22 @@ void CbmTrdModuleSimR::AddToPulse(Int_t address, Double_t charge, Double_t reldr
       Int_t shift   = startbin + i;
       if (fTimeShift) {
         if (shift < 32)
-          pulse[i] =
-            temppulse[shift]
-            + fCalibration * charge * 1e6 * CalcResponse(addtime * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + timeshift);
+          pulse[i] = temppulse[shift]
+                     + fCalibration * charge * 1e6
+                         * CalcResponse(addtime * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + timeshift);
         else
-          pulse[i] =
-            fCalibration * charge * 1e6 * CalcResponse(addtime * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + timeshift);
+          pulse[i] = fCalibration * charge * 1e6
+                     * CalcResponse(addtime * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + timeshift);
         if (pulse[i] > fClipLevel && fClipping) pulse[i] = fClipLevel - 1;  //clipping
       }
       if (!fTimeShift) {
         if (shift < 32)
           pulse[i] = temppulse[shift]
-                     + fCalibration * charge * 1e6 * CalcResponse(addtime * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+                     + fCalibration * charge * 1e6
+                         * CalcResponse(addtime * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
         else
-          pulse[i] = fCalibration * charge * 1e6 * CalcResponse(addtime * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+          pulse[i] =
+            fCalibration * charge * 1e6 * CalcResponse(addtime * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
         if (pulse[i] > fClipLevel && fClipping) pulse[i] = fClipLevel - 1;  //clipping
       }
     }
@@ -702,9 +711,10 @@ Bool_t CbmTrdModuleSimR::CheckMulti(Int_t address, std::vector<Double_t> pulse)
     Int_t sec     = CbmTrdAddress::GetSectorId(address);
     Int_t shift   = GetMultiBin(pulse);
     Int_t ncols   = fDigiPar->GetNofColumns();
-    //    Double_t timeshift = gRandom->Uniform(0.,CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+    //    Double_t timeshift = gRandom->Uniform(0.,CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
     Double_t timeshift =
-      ((Int_t)(fMultiBuffer[address].second * 10) % (Int_t)(CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) * 10)) / 10;
+      ((Int_t)(fMultiBuffer[address].second * 10) % (Int_t)(CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) * 10))
+      / 10.0;
 
     std::vector<Double_t> temppulse;
     std::map<Int_t, std::vector<Double_t>> templow;
@@ -740,7 +750,8 @@ Bool_t CbmTrdModuleSimR::CheckMulti(Int_t address, std::vector<Double_t> pulse)
       col--;
       FNpulse            = fPulseBuffer[FNaddress].first;
       templow[FNaddress] = FNpulse;
-      FNshift = (fTimeBuffer[address] - fTimeBuffer[FNaddress]) / CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift;
+      FNshift =
+        (fTimeBuffer[address] - fTimeBuffer[FNaddress]) / CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + shift;
       for (Int_t i = 0; i < 32; i++) {
         if (i >= FNshift) FNpulse[i] = 0.;
       }
@@ -767,7 +778,8 @@ Bool_t CbmTrdModuleSimR::CheckMulti(Int_t address, std::vector<Double_t> pulse)
       col++;
       FNpulse             = fPulseBuffer[FNaddress].first;
       temphigh[FNaddress] = FNpulse;
-      FNshift = (fTimeBuffer[address] - fTimeBuffer[FNaddress]) / CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + shift;
+      FNshift =
+        (fTimeBuffer[address] - fTimeBuffer[FNaddress]) / CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + shift;
       for (Int_t i = 0; i < 32; i++) {
         if (i >= FNshift) FNpulse[i] = 0.;
       }
@@ -784,30 +796,32 @@ Bool_t CbmTrdModuleSimR::CheckMulti(Int_t address, std::vector<Double_t> pulse)
       }
       if (shift + i - fPresamples < 32) {
         if (fTimeShift)
-          pulse[i] = temppulse[shift + i - fPresamples]
-                     + fCalibration * fMultiBuffer[address].first * 1e6
-                         * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + timeshift);
+          pulse[i] =
+            temppulse[shift + i - fPresamples]
+            + fCalibration * fMultiBuffer[address].first * 1e6
+                * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + timeshift);
         if (!fTimeShift)
           pulse[i] = temppulse[shift + i - fPresamples]
                      + fCalibration * fMultiBuffer[address].first * 1e6
-                         * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+                         * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
       }
       else {
         if (fTimeShift)
-          pulse[i] = fCalibration * fMultiBuffer[address].first * 1e6
-                     * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + timeshift);
+          pulse[i] =
+            fCalibration * fMultiBuffer[address].first * 1e6
+            * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + timeshift);
         if (!fTimeShift)
           pulse[i] = fCalibration * fMultiBuffer[address].first * 1e6
-                     * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+                     * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
       }
 
       // if(shift+i < 32){
-      // 	if(fTimeShift)    pulse[i]=temppulse[shift+i]+fCalibration*fMultiBuffer[address].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)+timeshift);
-      // 	if(!fTimeShift)   pulse[i]=temppulse[shift+i]+fCalibration*fMultiBuffer[address].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+      // 	if(fTimeShift)    pulse[i]=temppulse[shift+i]+fCalibration*fMultiBuffer[address].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC)+timeshift);
+      // 	if(!fTimeShift)   pulse[i]=temppulse[shift+i]+fCalibration*fMultiBuffer[address].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
       // }
       // else{
-      // 	if(fTimeShift)    pulse[i]=fCalibration*fMultiBuffer[address].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)+timeshift);
-      // 	if(!fTimeShift)   pulse[i]=fCalibration*fMultiBuffer[address].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+      // 	if(fTimeShift)    pulse[i]=fCalibration*fMultiBuffer[address].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC)+timeshift);
+      // 	if(!fTimeShift)   pulse[i]=fCalibration*fMultiBuffer[address].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
       // }
     }
     for (Int_t i = 0; i < 32; i++) {
@@ -838,33 +852,35 @@ Bool_t CbmTrdModuleSimR::CheckMulti(Int_t address, std::vector<Double_t> pulse)
         }
         if (fTimeShift) {
           if ((size_t) shift + i - fPresamples < temphigh[FNaddress].size())
-            FNpulse[i] = temphigh[FNaddress][shift + i - fPresamples]
-                         + fCalibration * fMultiBuffer[FNaddress].first * 1e6
-                             * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + timeshift);
+            FNpulse[i] =
+              temphigh[FNaddress][shift + i - fPresamples]
+              + fCalibration * fMultiBuffer[FNaddress].first * 1e6
+                  * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + timeshift);
           else
-            FNpulse[i] = fCalibration * fMultiBuffer[FNaddress].first * 1e6
-                         * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + timeshift);
+            FNpulse[i] =
+              fCalibration * fMultiBuffer[FNaddress].first * 1e6
+              * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + timeshift);
           if (FNpulse[i] > fClipLevel && fClipping) FNpulse[i] = fClipLevel - 1;  //clipping
         }
         if (!fTimeShift) {
           if ((size_t) shift + i - fPresamples < temphigh[FNaddress].size())
             FNpulse[i] = temphigh[FNaddress][shift + i - fPresamples]
                          + fCalibration * fMultiBuffer[FNaddress].first * 1e6
-                             * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+                             * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
           else
             FNpulse[i] = fCalibration * fMultiBuffer[FNaddress].first * 1e6
-                         * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+                         * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
           if (FNpulse[i] > fClipLevel && fClipping) FNpulse[i] = fClipLevel - 1;  //clipping
         }
 
         // if(fTimeShift){
-        //   if(shift+i<32 &&  temphigh[FNaddress].size()>0)             FNpulse[i]=temphigh[FNaddress][shift+i]+fCalibration*fMultiBuffer[FNaddress].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)+timeshift);
-        //   else                                                        FNpulse[i]=fCalibration*fMultiBuffer[FNaddress].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC)+timeshift);
+        //   if(shift+i<32 &&  temphigh[FNaddress].size()>0)             FNpulse[i]=temphigh[FNaddress][shift+i]+fCalibration*fMultiBuffer[FNaddress].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC)+timeshift);
+        //   else                                                        FNpulse[i]=fCalibration*fMultiBuffer[FNaddress].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC)+timeshift);
         //   if(FNpulse[i] > fClipLevel && fClipping) FNpulse[i]=fClipLevel-1;  //clipping
         // }
         // if(!fTimeShift){
-        //   if(shift+i<32 &&  temphigh[FNaddress].size()>0)             FNpulse[i]=temphigh[FNaddress][shift+i]+fCalibration*fMultiBuffer[FNaddress].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
-        //   else                                                        FNpulse[i]=fCalibration*fMultiBuffer[FNaddress].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+        //   if(shift+i<32 &&  temphigh[FNaddress].size()>0)             FNpulse[i]=temphigh[FNaddress][shift+i]+fCalibration*fMultiBuffer[FNaddress].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
+        //   else                                                        FNpulse[i]=fCalibration*fMultiBuffer[FNaddress].first*1e6*CalcResponse(i*CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
         //   if(FNpulse[i] > fClipLevel && fClipping) FNpulse[i]=fClipLevel-1;  //clipping
         // }
       }
@@ -914,22 +930,24 @@ Bool_t CbmTrdModuleSimR::CheckMulti(Int_t address, std::vector<Double_t> pulse)
         }
         if (fTimeShift) {
           if ((size_t) shift + i - fPresamples < templow[FNaddress].size())
-            FNpulse[i] = templow[FNaddress][shift + i - fPresamples]
-                         + fCalibration * fMultiBuffer[FNaddress].first * 1e6
-                             * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + timeshift);
+            FNpulse[i] =
+              templow[FNaddress][shift + i - fPresamples]
+              + fCalibration * fMultiBuffer[FNaddress].first * 1e6
+                  * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + timeshift);
           else
-            FNpulse[i] = fCalibration * fMultiBuffer[FNaddress].first * 1e6
-                         * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC) + timeshift);
+            FNpulse[i] =
+              fCalibration * fMultiBuffer[FNaddress].first * 1e6
+              * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC) + timeshift);
           if (FNpulse[i] > fClipLevel && fClipping) FNpulse[i] = fClipLevel - 1;  //clipping
         }
         if (!fTimeShift) {
           if ((size_t) shift + i - fPresamples < templow[FNaddress].size())
             FNpulse[i] = templow[FNaddress][shift + i - fPresamples]
                          + fCalibration * fMultiBuffer[FNaddress].first * 1e6
-                             * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+                             * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
           else
             FNpulse[i] = fCalibration * fMultiBuffer[FNaddress].first * 1e6
-                         * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+                         * CalcResponse((i - fPresamples) * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
           if (FNpulse[i] > fClipLevel && fClipping) FNpulse[i] = fClipLevel - 1;  //clipping
         }
       }
@@ -1698,7 +1716,7 @@ void CbmTrdModuleSimR::SetSpadicResponse(Double_t calibration, Double_t tau)
   fTau         = tau;
   Double_t sum = 0;
   for (auto i = frecostart; i <= frecostop; i++)
-    sum += fCalibration * CalcResponse(i * CbmTrdDigi::Clk(CbmTrdDigi::kSPADIC));
+    sum += fCalibration * CalcResponse(i * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kSPADIC));
   fEReco = sum;
 }
 

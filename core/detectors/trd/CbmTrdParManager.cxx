@@ -38,6 +38,7 @@
 #include <TObject.h>      // for TObject
 #include <TRandom.h>      // for TRandom, gRandom
 
+#include <memory>
 #include <vector>  // for vector
 
 #include <stdio.h>   // for printf
@@ -406,16 +407,16 @@ bool CbmTrdParManager::CreateParFilesFromGeometry(TString outDir)
 }
 
 // ---- GetParSetList ----
-void CbmTrdParManager::GetParSetList(std::vector<CbmTrdParSet*>* parSetList)
+void CbmTrdParManager::GetParSetList(std::vector<std::shared_ptr<CbmTrdParSet>>* parSetList)
 {
   // std::vector<CbmTrdParSet*> parSetList;
-  CbmTrdParSet* parSet = nullptr;
+  std::shared_ptr<CbmTrdParSet> parSet = nullptr;
   for (Int_t iParSetType = (Int_t) ECbmTrdParSets::kBegin; iParSetType <= (Int_t) ECbmTrdParSets::kEnd; iParSetType++) {
     switch (iParSetType) {
-      case (Int_t) ECbmTrdParSets::kCbmTrdParSetAsic: parSet = new CbmTrdParSetAsic(); break;
-      case (Int_t) ECbmTrdParSets::kCbmTrdParSetDigi: parSet = new CbmTrdParSetDigi(); break;
-      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGain: parSet = new CbmTrdParSetGain(); break;
-      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGas: parSet = new CbmTrdParSetGas(); break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetAsic: parSet = std::make_shared<CbmTrdParSetAsic>(); break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetDigi: parSet = std::make_shared<CbmTrdParSetDigi>(); break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGain: parSet = std::make_shared<CbmTrdParSetGain>(); break;
+      case (Int_t) ECbmTrdParSets::kCbmTrdParSetGas: parSet = std::make_shared<CbmTrdParSetGas>(); break;
     }
     parSetList->emplace_back(parSet);
   }

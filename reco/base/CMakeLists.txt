@@ -78,6 +78,15 @@ set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
 # ---------------------------------------------------------
 
 
+# -----  Install files without source file   --------------
+Install(FILES 
+    CbmRecoUnpackConfig.tmpl
+    CbmRecoUnpackAlgo.tmpl
+    DESTINATION include
+)
+# ---------------------------------------------------------
+
+
 # -----  Let cmake do the job   ---------------------------
 include_directories( ${INCLUDE_DIRECTORIES})
 include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})

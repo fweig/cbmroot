@@ -173,6 +173,22 @@ public:
   }
   // -----------------------------------------------------------------------
 
+  // -----------------------------------------------------------------------
+  /** @brief Get branch pointer
+		 ** @return Pointer to the connected data container
+		 ** A std::vector is first looked for; if not found, a TClonesArray
+		 ** is looked for.
+		 ** Returns a null pointer if the branch is not present.
+		 **/
+  virtual boost::any GetBranchContainer() const
+  {
+    if (fDigiVector) return fDigiVector;
+    else if (fDigiArray)
+      return fDigiArray;
+    return nullptr;
+  }
+  // -----------------------------------------------------------------------
+
 
 private:
   const std::vector<Digi>* fDigiVector;       //! Vector of Digi objects

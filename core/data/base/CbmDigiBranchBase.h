@@ -79,6 +79,8 @@ public:
   /** @brief String output **/
   virtual std::string ToString() const { return ""; }
 
+  /** @brief Get branch pointer **/
+  virtual boost::any GetBranchContainer() const { return nullptr; }
 
 protected:
   TString fName;  ///< Branch name

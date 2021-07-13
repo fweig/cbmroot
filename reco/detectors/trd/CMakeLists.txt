@@ -1,7 +1,13 @@
+# Create a library called "libTrdReco" which includes the source files given in
+# the array .
+# The extension is already found.  Any number of sources could be listed here.
+
 Set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/qa
   ${CMAKE_CURRENT_SOURCE_DIR}/pid
+  ${CMAKE_CURRENT_SOURCE_DIR}/rawToDigiMethods
+  ${CMAKE_CURRENT_SOURCE_DIR}/unpack
 
   ${CBMDETECTORBASE_DIR}/trd
 
@@ -9,15 +15,14 @@ Set(INCLUDE_DIRECTORIES
   ${CBMBASE_DIR}/draw
 
   ${CBMROOT_SOURCE_DIR}/reco/base
-
+  
   ${CBMDATA_DIR}
   ${CBMDATA_DIR}/base
   ${CBMDATA_DIR}/trd 
   ${CBMDATA_DIR}/global
 
-${CBMROOT_SOURCE_DIR}/rich/reco
-
   ${CBMROOT_SOURCE_DIR}/reco/L1/vectors
+
 )
 
 Include_Directories( ${INCLUDE_DIRECTORIES})
@@ -25,6 +30,7 @@ Include_Directories( ${INCLUDE_DIRECTORIES})
 Set(SYSTEM_INCLUDE_DIRECTORIES
   ${BASE_INCLUDE_DIRECTORIES} 
   ${Boost_INCLUDE_DIR}
+  ${IPC_INCLUDE_DIRECTORY} # for fles infos for unpacker
 )
 
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
@@ -38,6 +44,7 @@ set(LINK_DIRECTORIES
 link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
+
 CbmTrdTrackFinderIdeal.cxx 
 CbmTrdTrackFitterIdeal.cxx 
 CbmTrdClusterFinder.cxx 
@@ -45,6 +52,12 @@ CbmTrdHitProducer.cxx
 CbmTrdModuleRec.cxx 
 CbmTrdModuleRecR.cxx 
 CbmTrdModuleRecT.cxx 
+
+unpack/CbmTrdUnpackConfig.cxx
+unpack/CbmTrdUnpackAlgoBaseR.cxx
+unpack/CbmTrdUnpackAlgoR.cxx
+unpack/CbmTrdUnpackAlgoLegacy2020R.cxx
+unpack/CbmTrdUnpackMonitor.cxx
 
 qa/CbmTrdClusterizerFastQa.cxx
 qa/CbmTrdHitDensityQa.cxx
@@ -59,7 +72,12 @@ pid/CbmTrdElectronsTrainAnn.cxx
 pid/CbmTrdSetTracksPidWkn.cxx   
 pid/CbmTrdSetTracksPidModWkn.cxx  
 pid/CbmTrdSetTracksPidLike.cxx     
-pid/CbmTrdSetTracksPidANN.cxx       
+pid/CbmTrdSetTracksPidANN.cxx
+
+rawToDigiMethods/CbmTrdRawToDigiBaseR.cxx
+rawToDigiMethods/CbmTrdRawToDigiMaxAdcR.cxx
+rawToDigiMethods/CbmTrdRawToDigiFitR.cxx
+rawToDigiMethods/CbmTrdRawToDigiLookUpCorrR.cxx
 )
 
 IF (SSE_FOUND)
@@ -76,7 +94,13 @@ ENDIF (SSE_FOUND)
 set(LINKDEF CbmTrdRecoLinkDef.h)
 Set(LIBRARY_NAME CbmTrdReco)
 Set(DEPENDENCIES
-    CbmRecoBase CbmBase CbmData Base CbmTrdBase TMVA
+    CbmRecoBase
+    CbmBase
+    CbmData
+    Base
+    CbmTrdBase
+    TMVA
+    fles_ipc # for unpacker
 )
 
 GENERATE_LIBRARY()

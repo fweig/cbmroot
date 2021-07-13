@@ -550,7 +550,8 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic, const CbmTrdCluster* cl, std::vec
 
   // process time profile
   for (Int_t idx(1); idx <= n0; idx++) {
-    Double_t dtFEE = fgDT[0] * (vs[idx] - fgDT[1]) * (vs[idx] - fgDT[1]) / CbmTrdDigi::Clk(CbmTrdDigi::kFASP);
+    Double_t dtFEE =
+      fgDT[0] * (vs[idx] - fgDT[1]) * (vs[idx] - fgDT[1]) / CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP);
     if (vxe[idx] > 0) vx[idx] += dy / fDigiPar->GetPadSizeY(0);
     fgT->SetPoint(idx - 1, vx[idx], vt[idx] - dtFEE);
   }
@@ -595,13 +596,13 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic, const CbmTrdCluster* cl, std::vec
     cvs->SaveAs(Form("cl_%02d_A%d.gif", ic, ia));
   }
 
-  Int_t nofHits = fHits->GetEntriesFast();
-  CbmTrdHit* hit =
-    new ((*fHits)[nofHits]) CbmTrdHit(fModAddress, global, globalErr,
-                                      0.,  // sxy chi,
-                                      ic,
-                                      e,  // energy
-                                      CbmTrdDigi::Clk(CbmTrdDigi::kFASP) * (t0 + time) - tdrift + 30.29, edt);
+  Int_t nofHits  = fHits->GetEntriesFast();
+  CbmTrdHit* hit = new ((*fHits)[nofHits])
+    CbmTrdHit(fModAddress, global, globalErr,
+              0.,  // sxy chi,
+              ic,
+              e,  // energy
+              CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP) * (t0 + time) - tdrift + 30.29, edt);
   hit->SetClassType();
   hit->SetMaxType(tM);
   if (ovf) hit->SetOverFlow();

@@ -21,7 +21,7 @@
 #include <TArrayI.h>  // for TArrayI
 #include <TString.h>  // for Form, TString
 
-#include <cstdint>  // for uint64_t
+#include <cstdint>  // for size_t
 #include <map>      // for map, __map_iterator
 #include <utility>  // for pair
 #include <vector>   // for vector
@@ -33,16 +33,16 @@ CbmTrdHardwareSetupR::CbmTrdHardwareSetupR(/* args */) : fComponentIdMap(), fPar
 CbmTrdHardwareSetupR::~CbmTrdHardwareSetupR() {}
 
 // ---- GetComponentId ----------------------------------------------------
-std::uint64_t CbmTrdHardwareSetupR::GetComponentId(Int_t asicAddress, ECbmTrdHardwareSetupVersion hwSetup)
+size_t CbmTrdHardwareSetupR::GetComponentId(Int_t asicAddress, ECbmTrdHardwareSetupVersion hwSetup)
 {
   SelectComponentIdMap(hwSetup);
   return GetComponentId(asicAddress);
 }
 
 // ---- GetComponentId ---------- -----------------------------------------
-std::uint64_t CbmTrdHardwareSetupR::GetComponentId(Int_t asicAddress)
+size_t CbmTrdHardwareSetupR::GetComponentId(Int_t asicAddress)
 {
-  std::uint64_t componentId(-1);
+  size_t componentId(-1);
   if (fComponentIdMap.empty()) {
     LOG(error) << Form("Seems like the component map is empty. If you selected a hardware "
                        "setup, check that there is a correct map for this setup. Else select a "
@@ -53,8 +53,8 @@ std::uint64_t CbmTrdHardwareSetupR::GetComponentId(Int_t asicAddress)
   return componentId;
 }
 
-// ---- CreateHwToSwAsicAddressTranslatorMap --------------------------------------
-std::map<std::uint64_t, Int_t> CbmTrdHardwareSetupR::CreateHwToSwAsicAddressTranslatorMap(bool isLoadedParameters)
+// ---- CreateHwToSwAsicAddressTranslatorMap ----
+std::map<size_t, Int_t> CbmTrdHardwareSetupR::CreateHwToSwAsicAddressTranslatorMap(bool isLoadedParameters)
 {
   FairRuntimeDb* rtdb = FairRuntimeDb::instance();
   CbmTrdParSetAsic* moduleAsicParSets =
@@ -68,11 +68,18 @@ std::map<std::uint64_t, Int_t> CbmTrdHardwareSetupR::CreateHwToSwAsicAddressTran
     parInAsic.close();
   }
 
+  return CreateHwToSwAsicAddressTranslatorMap(moduleAsicParSets);
+}
+
+// ---- CreateHwToSwAsicAddressTranslatorMap ----
+std::map<size_t, Int_t> CbmTrdHardwareSetupR::CreateHwToSwAsicAddressTranslatorMap(CbmTrdParSetAsic* moduleparsets)
+{
+
   Int_t nModuleAsicParSets(0);
-  nModuleAsicParSets = moduleAsicParSets->GetNrOfModules();
+  nModuleAsicParSets = moduleparsets->GetNrOfModules();
 
   FairParamList moduleAsicParSetsList;
-  moduleAsicParSets->putParams(&moduleAsicParSetsList);
+  moduleparsets->putParams(&moduleAsicParSetsList);
   TArrayI uniqueModuleIds(nModuleAsicParSets);
   moduleAsicParSetsList.fill("ModuleId", &uniqueModuleIds);
 
@@ -80,14 +87,14 @@ std::map<std::uint64_t, Int_t> CbmTrdHardwareSetupR::CreateHwToSwAsicAddressTran
   CbmTrdParSpadic* currentSpadicPar   = nullptr;
 
   Int_t currentUniqueModuleId(-1);
-  std::uint64_t currentSpadicCompId(100098);
+  size_t currentSpadicCompId(100098);
 
-  std::map<std::uint64_t, Int_t>
+  std::map<size_t, Int_t>
     spadicHwMap;  // keyA = CriId+CrobId+ElinkId decoded with CbmTrdParAsic::ECbmTrdComponentIdDecoding, keyB = uniqueAsicAddress
 
   for (Int_t iModule = 0; iModule < nModuleAsicParSets; iModule++) {
     currentUniqueModuleId = uniqueModuleIds[iModule];
-    moduleAsicsParSet     = (CbmTrdParSetAsic*) moduleAsicParSets->GetModuleSet(currentUniqueModuleId);
+    moduleAsicsParSet     = (CbmTrdParSetAsic*) moduleparsets->GetModuleSet(currentUniqueModuleId);
     std::vector<Int_t> asicAddresses;
     moduleAsicsParSet->GetAsicAddresses(&asicAddresses);
     for (auto iAsicIt : asicAddresses) {
@@ -113,12 +120,12 @@ std::map<std::uint64_t, Int_t> CbmTrdHardwareSetupR::CreateHwToSwAsicAddressTran
   return spadicHwMap;
 }
 
-// ---- CreateAsicChannelMap --------------------------------------
+// ---- CreateAsicChannelMap ----
 std::map<Int_t, std::vector<Int_t>> CbmTrdHardwareSetupR::CreateAsicChannelMap(bool isLoadedParameters)
 {
-  FairRuntimeDb* rtdb = FairRuntimeDb::instance();
-  CbmTrdParSetAsic* moduleAsicParSets =
-    (CbmTrdParSetAsic*) rtdb->getContainer("CbmTrdParSetAsic");  // Container for all ParSets of Module AsicParSets;
+  FairRuntimeDb* rtdb                 = FairRuntimeDb::instance();
+  CbmTrdParSetAsic* moduleAsicParSets = (CbmTrdParSetAsic*) rtdb->getContainer("CbmTrdParSetAsic");
+  // Container for all ParSets of Module AsicParSets;
 
   if (!isLoadedParameters) {
     FairParAsciiFileIo parInAsic;
@@ -127,12 +134,18 @@ std::map<Int_t, std::vector<Int_t>> CbmTrdHardwareSetupR::CreateAsicChannelMap(b
     rtdb->initContainers(0);  // no run defined for the time being
     parInAsic.close();
   }
+  return CreateAsicChannelMap(moduleAsicParSets);
+}
+
+// ---- CreateAsicChannelMap ----
+std::map<Int_t, std::vector<Int_t>> CbmTrdHardwareSetupR::CreateAsicChannelMap(CbmTrdParSetAsic* moduleparsets)
+{
 
   Int_t nModuleAsicParSets(0);
-  nModuleAsicParSets = moduleAsicParSets->GetNrOfModules();
+  nModuleAsicParSets = moduleparsets->GetNrOfModules();
 
   FairParamList moduleAsicParSetsList;
-  moduleAsicParSets->putParams(&moduleAsicParSetsList);
+  moduleparsets->putParams(&moduleAsicParSetsList);
   TArrayI uniqueModuleIds(nModuleAsicParSets);
   moduleAsicParSetsList.fill("ModuleId", &uniqueModuleIds);
 
@@ -146,7 +159,7 @@ std::map<Int_t, std::vector<Int_t>> CbmTrdHardwareSetupR::CreateAsicChannelMap(b
   std::vector<Int_t> channelAddressVec;
   for (Int_t iModule = 0; iModule < nModuleAsicParSets; iModule++) {
     currentUniqueModuleId = uniqueModuleIds[iModule];
-    moduleAsicsParSet     = (CbmTrdParSetAsic*) moduleAsicParSets->GetModuleSet(currentUniqueModuleId);
+    moduleAsicsParSet     = (CbmTrdParSetAsic*) moduleparsets->GetModuleSet(currentUniqueModuleId);
     std::vector<Int_t> asicAddresses;
     moduleAsicsParSet->GetAsicAddresses(&asicAddresses);
     for (auto iAsicIt : asicAddresses) {

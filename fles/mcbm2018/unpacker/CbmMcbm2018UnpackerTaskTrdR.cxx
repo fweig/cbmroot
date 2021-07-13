@@ -60,7 +60,7 @@ Bool_t CbmMcbm2018UnpackerTaskTrdR::Init()
   /// Register RawMessage output vector, if DebugWrite is enabled.
   if (fbDebugWriteOutput) {
     fTrdRawMessageVector = new std::vector<CbmTrdRawMessageSpadic>();
-    fSpadicInfoMsgVector = new std::vector<std::pair<std::uint64_t, std::uint64_t>>();
+    fSpadicInfoMsgVector = new std::vector<std::pair<size_t, size_t>>();
     if (fTrdRawMessageVector && fSpadicInfoMsgVector) {
       ioman->RegisterAny("CbmTrdSpadicRawMessages", fTrdRawMessageVector, kTRUE);
       ioman->RegisterAny("CbmTrdSpadicInfoMessages", fSpadicInfoMsgVector, kTRUE);

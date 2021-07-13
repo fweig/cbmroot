@@ -9,7 +9,7 @@
 #include <stdio.h>  // for printf
 
 //___________________________________________________________________
-CbmTrdParAsic::CbmTrdParAsic(Int_t address, Int_t FebGrouping, Double_t x, Double_t y, Double_t z, std::uint64_t compId)
+CbmTrdParAsic::CbmTrdParAsic(Int_t address, Int_t FebGrouping, Double_t x, Double_t y, Double_t z, size_t compId)
   : CbmTrdParMod("CbmTrdParAsic", "TRD ASIC definition")
   , fAddress(address)
   , fX(x)

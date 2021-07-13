@@ -28,15 +28,13 @@ using std::stringstream;
  * M - module id in the layer
  * p - pad address within the module
  */
-Double_t CbmTrdDigi::fgClk[]       = {62.5, 12.5};
-Float_t CbmTrdDigi::fgPrecission[] = {1.e3, 1.};
-//__________________________________________________________________________________________
+
+const Double_t CbmTrdDigi::fgClk[]       = {62.5, 12.5, 0.0};
+const Float_t CbmTrdDigi::fgPrecission[] = {1.e3, 1., 0.0};
+//_________________________________________________________________________________
 CbmTrdDigi::CbmTrdDigi() : fInfo(0), fCharge(0), fTime(0) {}
-//__________________________________________________________________________________________
-CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Float_t chargeT, Float_t chargeR, ULong64_t time)
-  : fInfo(0)
-  , fCharge(0.)
-  , fTime(time)
+//_________________________________________________________________________________
+CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Float_t chargeT, Float_t chargeR, ULong64_t time) : fTime(time)
 {
   /** Fill data structure according to FASP representation  
  * A - Asic type according to CbmTrdAsicType
@@ -48,17 +46,15 @@ CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Float_t chargeT, Float_t chargeR, ULong64_
  * t - tilt paired charge
  * r - rectangle paired charge
  */
-  SetAsic(kFASP);
+  SetAsic(eCbmTrdAsicType::kFASP);
   SetChannel(padChNr);
   SetCharge(chargeT, chargeR);
 }
 
-//__________________________________________________________________________________________
-CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Int_t uniqueModuleId, Float_t charge, ULong64_t time, Int_t triggerType,
+//_________________________________________________________________________________
+CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Int_t uniqueModuleId, Float_t charge, ULong64_t time, eTriggerType triggerType,
                        Int_t errClass)
-  : fInfo(0)
-  , fCharge(0.)
-  , fTime(time)
+  : fTime(time)
 {
   /**
  * Fill data structure according to SPADIC representation  
@@ -70,7 +66,7 @@ CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Int_t uniqueModuleId, Float_t charge, ULon
  * p - pad address within the module
  * fCharge definition UInt_t(charge*fgPrecission)
 */
-  SetAsic(kSPADIC);
+  SetAsic(eCbmTrdAsicType::kSPADIC);
   SetChannel(padChNr);
   SetAddress(uniqueModuleId);
   SetCharge(charge);
@@ -78,10 +74,18 @@ CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Int_t uniqueModuleId, Float_t charge, ULon
   SetErrorClass(errClass);
 }
 
-//__________________________________________________________________________________________
+// ---- Copy c'tor ----
+CbmTrdDigi::CbmTrdDigi(const CbmTrdDigi& digi)
+{
+  fInfo   = digi.fInfo;
+  fCharge = digi.fCharge;
+  fTime   = digi.fTime;
+}
+
+//_________________________________________________________________________________
 void CbmTrdDigi::AddCharge(CbmTrdDigi* sd, Double_t f)
 {
-  if (GetType() != kFASP) {
+  if (GetType() != eCbmTrdAsicType::kFASP) {
     LOG(warn) << "CbmTrdDigi::AddCharge(CbmTrdDigi*, Double_t) : Only available for "
                  "FASP. Use AddCharge(Double_t, Double_t) instead.";
     return;
@@ -90,9 +94,10 @@ void CbmTrdDigi::AddCharge(CbmTrdDigi* sd, Double_t f)
   UInt_t t = ((fCharge & 0xfff000) >> 12), r = (fCharge & 0xfff), ts = ((sd->fCharge & 0xfff000) >> 12),
          rs = (sd->fCharge & 0xfff);
   // apply correction factor to charge
-  Float_t tsf = f * ts / fgPrecission[kFASP], rsf = f * rs / fgPrecission[kFASP];
-  ts = tsf * fgPrecission[kFASP];
-  rs = rsf * fgPrecission[kFASP];
+  Float_t tsf = f * ts / fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kFASP)],
+          rsf = f * rs / fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kFASP)];
+  ts          = tsf * fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kFASP)];
+  rs          = rsf * fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kFASP)];
 
   if (t + ts < 0xfff) t += ts;
   else
@@ -105,10 +110,10 @@ void CbmTrdDigi::AddCharge(CbmTrdDigi* sd, Double_t f)
   fCharge |= dt << 24;
 }
 
-//__________________________________________________________________________________________
+//_________________________________________________________________________________
 void CbmTrdDigi::AddCharge(Double_t c, Double_t f)
 {
-  if (GetType() != kSPADIC) {
+  if (GetType() != eCbmTrdAsicType::kSPADIC) {
     LOG(warn) << "CbmTrdDigi::AddCharge(Double_t, Double_t) : Only available "
                  "for SPADIC. Use AddCharge(CbmTrdDigi*, Double_t) instead.";
     return;
@@ -116,7 +121,7 @@ void CbmTrdDigi::AddCharge(Double_t c, Double_t f)
   SetCharge(GetCharge() + f * c);
 }
 
-//__________________________________________________________________________________________
+//_________________________________________________________________________________
 Int_t CbmTrdDigi::GetAddressChannel() const
 {
   /**  Returns index of the read-out unit in the module in the format row x ncol + col
@@ -124,7 +129,7 @@ Int_t CbmTrdDigi::GetAddressChannel() const
   return (fInfo >> fgkRoOffset) & 0xfff;
 }
 
-//__________________________________________________________________________________________
+//_________________________________________________________________________________
 Int_t CbmTrdDigi::GetAddressModule() const
 {
   /**  Convert internal representation of module address to CBM address as defined in CbmTrdAddress
@@ -132,18 +137,18 @@ Int_t CbmTrdDigi::GetAddressModule() const
   return CbmTrdAddress::GetAddress(Layer(), Module(), 0, 0, 0);
 }
 
-//__________________________________________________________________________________________
+//_________________________________________________________________________________
 Double_t CbmTrdDigi::GetCharge() const
 {
-  if (GetType() != kSPADIC) {
+  if (GetType() != eCbmTrdAsicType::kSPADIC) {
     LOG(warn) << "CbmTrdDigi::GetCharge() : Use Double_t GetCharge(Double_t "
                  "&tilt) instead.";
     return 0;
   }
-  return fCharge / fgPrecission[kSPADIC];
+  return fCharge / fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kSPADIC)];
 }
 
-//__________________________________________________________________________________________
+//_________________________________________________________________________________
 Double_t CbmTrdDigi::GetCharge(Double_t& tilt, Int_t& dt) const
 {
   /** Retrieve signal information for FASP.
@@ -152,43 +157,43 @@ Double_t CbmTrdDigi::GetCharge(Double_t& tilt, Int_t& dt) const
  *    T : tilt pads signal
  *    R : Rectangular pads signal
  */
-  if (GetType() != kFASP) {
+  if (GetType() != eCbmTrdAsicType::kFASP) {
     LOG(warn) << "CbmTrdDigi::GetCharge(Double_t &) : Use Double_t GetCharge() "
                  "instead.";
     return 0;
   }
   Char_t toff = fCharge >> 24;
   dt          = toff;
-  tilt        = ((fCharge & 0xfff000) >> 12) / fgPrecission[kFASP];
-  return (fCharge & 0xfff) / fgPrecission[kFASP];
+  tilt        = ((fCharge & 0xfff000) >> 12) / fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kFASP)];
+  return (fCharge & 0xfff) / fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kFASP)];
 }
 
-//__________________________________________________________________________________________
+//_________________________________________________________________________________
 Double_t CbmTrdDigi::GetChargeError() const { return 0; }
 
-//__________________________________________________________________________________________
+//_________________________________________________________________________________
 Bool_t CbmTrdDigi::IsFlagged(const Int_t iflag) const
 {
   if (iflag < 0 || iflag >= kNflags) return kFALSE;
   return (fInfo >> (fgkFlgOffset + iflag)) & 0x1;
 }
 
-//__________________________________________________________________________________________
+//_________________________________________________________________________________
 void CbmTrdDigi::SetAddress(Int_t address)
 {
   SetLayer(CbmTrdAddress::GetLayerId(address));
   SetModule(CbmTrdAddress::GetModuleId(address));
 }
 
-//__________________________________________________________________________________________
-void CbmTrdDigi::SetAsic(CbmTrdAsicType ty)
+//_________________________________________________________________________________
+void CbmTrdDigi::SetAsic(eCbmTrdAsicType ty)
 {
-  if (ty == kSPADIC) CLRBIT(fInfo, fgkTypOffset);
+  if (ty == eCbmTrdAsicType::kSPADIC) CLRBIT(fInfo, fgkTypOffset);
   else
     SETBIT(fInfo, fgkTypOffset);
 }
 
-//__________________________________________________________________________________________
+//_________________________________________________________________________________
 void CbmTrdDigi::SetCharge(Float_t cT, Float_t cR, Int_t dt)
 {
   /** Load signal information for FASP.
@@ -197,7 +202,8 @@ void CbmTrdDigi::SetCharge(Float_t cT, Float_t cR, Int_t dt)
  *    T : tilt pads signal (12 bits)
  *    R : Rectangular pads signal (12 bits)
  */
-  UInt_t r = UInt_t(cR * fgPrecission[kFASP]), t = UInt_t(cT * fgPrecission[kFASP]);
+  UInt_t r    = UInt_t(cR * fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kFASP)]),
+         t    = UInt_t(cT * fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kFASP)]);
   Char_t toff = dt;
   if (dt > 127) toff = 127;
   else if (dt < -127)
@@ -208,17 +214,14 @@ void CbmTrdDigi::SetCharge(Float_t cT, Float_t cR, Int_t dt)
   fCharge |= toff << 24;
 }
 
-//__________________________________________________________________________________________
+//_________________________________________________________________________________
 void CbmTrdDigi::SetCharge(Float_t c)
 {
 
-  //  printf("SetCharge :: prec[%f] c[%f] uint[%d] \n", fgPrecission[kSPADIC],c,UInt_t(c*fgPrecission[kSPADIC]));
-  //  std::cout<<" setcharge: "<< UInt_t(c*fgPrecission[kSPADIC])<<std::endl;
-  fCharge = UInt_t(c * fgPrecission[kSPADIC]);
-  //  fCharge = UInt_t(c*1e9);
+  fCharge = UInt_t(c * fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kSPADIC)]);
 }
 
-//__________________________________________________________________________________________
+//_________________________________________________________________________________
 void CbmTrdDigi::SetFlag(const Int_t iflag, Bool_t set)
 {
   if (iflag < 0 || iflag >= kNflags) return;
@@ -227,33 +230,43 @@ void CbmTrdDigi::SetFlag(const Int_t iflag, Bool_t set)
     CLRBIT(fInfo, fgkFlgOffset + iflag);
 }
 
-//__________________________________________________________________________________________
-void CbmTrdDigi::SetTime(Double_t t) { fTime = ULong64_t(TMath::Ceil(t / fgClk[GetType()])); }
+//_________________________________________________________________________________
+void CbmTrdDigi::SetTime(Double_t t) { fTime = ULong64_t(TMath::Ceil(t / Clk(GetType()))); }
 
-//__________________________________________________________________________________________
+//_________________________________________________________________________________
 void CbmTrdDigi::SetTimeOffset(Char_t t)
 {
-  if (GetType() != kFASP) return;
+  if (GetType() != eCbmTrdAsicType::kFASP) return;
   fCharge <<= 8;
   fCharge >>= 8;
   fCharge |= t << 24;
 }
 
-//__________________________________________________________________________________________
-void CbmTrdDigi::SetTriggerType(const Int_t ttype)
+//_________________________________________________________________________________
+void CbmTrdDigi::SetTriggerType(const eTriggerType triggerType)
 {
-  if (ttype < kBeginTriggerTypes || ttype >= kNTrg) return;
+  if (triggerType < eTriggerType::kBeginTriggerTypes || triggerType >= eTriggerType::kNTrg) return;
+  const Int_t ttype = static_cast<Int_t>(triggerType);
   fInfo |= (ttype << fgkTrgOffset);
 }
 
-//__________________________________________________________________________________________
+//_________________________________________________________________________________
+void CbmTrdDigi::SetTriggerType(const Int_t ttype)
+{
+  if (ttype < static_cast<Int_t>(eTriggerType::kBeginTriggerTypes) || ttype >= static_cast<Int_t>(eTriggerType::kNTrg))
+    return;
+  fInfo |= (ttype << fgkTrgOffset);
+}
+
+
+//_________________________________________________________________________________
 string CbmTrdDigi::ToString() const
 {
   stringstream ss;
-  ss << "CbmTrdDigi(" << (GetType() == kFASP ? "T)" : "R)") << " | moduleAddress=" << GetAddressModule()
-     << " | layer=" << Layer() << " | moduleId=" << Module() << " | pad=" << GetAddressChannel()
-     << " | time[ns]=" << std::fixed << std::setprecision(1) << GetTime();
-  if (GetType() == kFASP) {
+  ss << "CbmTrdDigi(" << (GetType() == eCbmTrdAsicType::kFASP ? "T)" : "R)")
+     << " | moduleAddress=" << GetAddressModule() << " | layer=" << Layer() << " | moduleId=" << Module()
+     << " | pad=" << GetAddressChannel() << " | time[ns]=" << std::fixed << std::setprecision(1) << GetTime();
+  if (GetType() == eCbmTrdAsicType::kFASP) {
     Int_t trg(GetTriggerType()), dt;
     Double_t t, r = GetCharge(t, dt);
     Bool_t ttrg(trg & 1), rtrg((trg & 2) >> 1);

@@ -168,7 +168,7 @@ private:
   CbmTrdRawToDigiR* fMessageConverter = NULL;
   TH2D* fDriftTime                    = NULL;
   CbmTrdCheckUtil* fQA                = NULL;
-  Bool_t fDebug                       = false;
+  Bool_t fDebug                       = true;
 
   ClassDef(CbmTrdModuleSimR,
            1)  // Simulation module implementation for rectangular pad geometry

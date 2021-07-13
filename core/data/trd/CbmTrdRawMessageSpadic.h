@@ -25,23 +25,21 @@ namespace Spadic
 {
   /** Spadic Message Types that can occur inside a Microslice.
 	 *
-	 *  A message is a 64bit word, its most significant bits (MSB) define the type.
+	 *  Definition of the message types. Selection happens in the unpacker algorithms.
 	**/
   enum class MsMessageType : uint8_t
   {
-    kEPO = 0x40,  ///< Epoch Marker.              MSB: 01.. ....   uTS-MSB (bits 61-32) in clockcycles.
-    kSOM =
-      0x20,  ///< Start of Message.          MSB: 001. ....   timestamp (bits 50-35) in clockcycles. Currently (Feb 2020) only 11 LSB in use.
-    kRDA =
-      0x80,  ///< Raw Data. Preceded by SOM. MSB: 1... ....   always 64bits, bits after last transmitted sample are filled with 0.
-    kINF =
-      0x10,  ///< Info  Message.             MSB: 0001 ....   The 20 LSBs of the 64bit word contain the 20 LSBs of a raw spadic InfoType frame e.g. BOM.
-    kNUL = 0x00,  ///< Microslice End.        0x0000000000000000   Last Word in a Microslice is 64 zeros.
+    kSOM = 0x20,  ///< Start of Message
+    kEOM = 0x30,  ///< End of Message.
+    kEPO = 0x40,  ///< Epoch Marker or TS_MSB depending on the hitmessage version
+    kRDA = 0x80,  ///< Raw Data
+    kINF = 0x10,  ///< Info  Message
+    kNUL = 0x00,  ///< Microslice End
     kUNK = 0x01   ///< Unkown Word.
   };
 
   /** Hit Type of CbmTrdRawMessageSpadic, explains why a message was generated. */
-  enum class TriggerType : uint8_t
+  enum class eTriggerType : uint8_t
   {
     kGlobal = 0,  ///< global trigger.
     kSelf   = 1,  ///< Self trigger.
@@ -57,11 +55,15 @@ namespace Spadic
 	 **/
   enum class MsInfoType : uint8_t
   {
-    kBOM,  ///< Buffer overflow count.  11nn nnnn nnnn nnnn cccc
-    kMSB,  ///< Message build error.    010. .... .... .... cccc
-    kBUF,  ///< Buffer full.            011b b... .... .... cccc
-    kUNU,  ///< Unused request.         100. .... .... .... cccc
-    kMIS   ///< Missing request.        101. .... .... .... ....
+    kBOM = 0,      ///< Buffer overflow count.  11nn nnnn nnnn nnnn cccc
+    kMSB,          ///< Message build error.    010. .... .... .... cccc
+    kBUF,          ///< Buffer full.            011b b... .... .... cccc
+    kUNU,          ///< Unused request.         100. .... .... .... cccc
+    kMIS,          ///< Missing request.        101. .... .... .... ....
+    kChannelBuf,   ///< Channel buffer full from kEPO msg
+    kOrdFifoBuf,   ///< Multi-hit but ordering buffer full from kEPO msg
+    kChannelBufM,  ///< Channel buffer full and multihit from kEPO msg
+    kNInfMsgs      ///< Number of different info messages
   };
 }  // namespace Spadic
 
@@ -82,7 +84,7 @@ private:
   std::uint8_t fHitType;
   std::uint8_t fNrSamples;
   bool fMultiHit;
-  std::uint64_t fFullTime;            /**< Fulltime in units of Clockcycles. */
+  size_t fFullTime;                   /**< Fulltime in units of Clockcycles. */
   std::vector<std::int16_t> fSamples; /**< Holds up to 32 Samples from a Spadic Message. Valid values [-256,255] */
 
 public:
@@ -91,7 +93,7 @@ public:
 
   /** Constructor **/
   CbmTrdRawMessageSpadic(std::uint8_t channelId, std::uint8_t elinkId, std::uint8_t crobId, std::uint16_t criId,
-                         std::uint8_t hitType, std::uint8_t nrSamples, bool multiHi, std::uint64_t fullTime,
+                         std::uint8_t hitType, std::uint8_t nrSamples, bool multiHi, size_t fullTime,
                          std::vector<std::int16_t> samples);
 
   /** Copy Constructor **/
@@ -105,6 +107,7 @@ public:
   CbmTrdRawMessageSpadic& operator=(const CbmTrdRawMessageSpadic&) = default;
 
   // -----------------  Getters   -----------------------------
+  static const char* GetBranchName() { return "CbmTrdRawMessageSpadic"; }
 
   std::uint8_t GetChannelId() const { return fChannelID; }
   std::uint8_t GetElinkId() const { return fElinkID; }
@@ -113,14 +116,17 @@ public:
   std::uint8_t GetHitType() const { return fHitType; }
   std::uint8_t GetNrSamples() const { return fNrSamples; }
   bool GetMultiHit() const { return fMultiHit; }
-  std::uint64_t GetFullTime() const { return fFullTime; }
-  const std::vector<std::int16_t> GetSamples() const { return fSamples; }
+  size_t GetFullTime() const { return fFullTime; }
+  const std::vector<std::int16_t>* GetSamples() const { return &fSamples; }
 
   /** Returns the full time in nanoseconds */
   Double_t GetTime() const { return fFullTime * 62.5; }
 
+  /** @brief increase the number of samples stored in this raw message by one */
+  void IncNrSamples() { fNrSamples++; }
+
   /** Set the full time in nanoseconds */
-  void SetTime(Double_t setvalue) { fFullTime = (std::uint64_t)(setvalue / 62.5); }
+  void SetTime(Double_t setvalue) { fFullTime = (size_t)(setvalue / 62.5); }
 
   /** Returns the value of the sample with the highest value. */
   int16_t GetMaxAdc();

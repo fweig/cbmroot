@@ -9,6 +9,7 @@ add_subdirectory(global)
 add_subdirectory(KF)
 add_subdirectory(L1)
 add_subdirectory(littrack)
+add_subdirectory(steer)
 add_subdirectory(tracking)
 add_subdirectory(qa)
 

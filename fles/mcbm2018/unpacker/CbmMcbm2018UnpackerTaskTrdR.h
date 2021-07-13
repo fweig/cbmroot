@@ -126,7 +126,7 @@ private:
   std::vector<CbmTrdRawMessageSpadic>* fTrdRawMessageVector;
 
   /// vector< pair< fulltime, word > >
-  std::vector<std::pair<std::uint64_t, std::uint64_t>>* fSpadicInfoMsgVector;
+  std::vector<std::pair<size_t, size_t>>* fSpadicInfoMsgVector;
 
   /// Processing algo
   CbmMcbm2018UnpackerAlgoTrdR* fUnpackerAlgo;

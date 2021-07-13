@@ -191,7 +191,7 @@ void CbmTrdHitProducer::processCluster(const Int_t clusterIdx)
   for (Int_t iDigi = 0; iDigi < cluster->GetNofDigis(); iDigi++) {
     const CbmTrdDigi* digi = CbmDigiManager::Instance()->Get<CbmTrdDigi>(cluster->GetDigi(iDigi));
 
-    if (digi->GetType() == CbmTrdDigi::kSPADIC && digi->GetCharge() <= 0) continue;
+    if (digi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kSPADIC && digi->GetCharge() <= 0) continue;
     digivec.emplace_back(digi);
   }
 

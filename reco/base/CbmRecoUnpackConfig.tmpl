@@ -1,0 +1,252 @@
+/* Copyright (C) 2010 - 2021 Goethe-University Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pascal Raisig */
+
+/**
+ * @file CbmRecoUnpackConfig.tmpl
+ * @author Pascal Raisig (praisig@ikf.uni-frankfurt.de)
+ * @brief Configuration class for an unpacker algorithm
+ * @version 0.1
+ * @date 2021-04-21
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ * This is the common steering task to run unpacking processes in a FairRun for the 
+ * CbmTrd.
+ * 
+ * 
+ * 
+ * 
+*/
+
+#ifndef CbmRecoUnpackConfig_tmpl
+#define CbmRecoUnpackConfig_tmpl
+
+#include "CbmRecoUnpackAlgo.tmpl"
+
+#include <FairLogger.h>
+#include <FairParAsciiFileIo.h>
+#include <FairRootManager.h>
+#include <Logger.h>
+
+#include <Rtypes.h>
+#include <RtypesCore.h>
+
+#include <cstdint>
+#include <memory>
+#include <vector>
+
+template<class TAlgo, class TOutput, class TOptOutA = std::nullptr_t, class TOptOutB = std::nullptr_t>
+class CbmRecoUnpackConfig {
+
+public:
+  /**
+   * @brief Create a Cbm Reco Unpack Config object
+  */
+  CbmRecoUnpackConfig(std::string name) : fName(name) {};
+
+  /**
+   * @brief Destroy the Cbm Trd Unpack Task object
+   * 
+  */
+  virtual ~CbmRecoUnpackConfig() {};
+
+  /** @brief Copy constructor - not implemented **/
+  CbmRecoUnpackConfig(const CbmRecoUnpackConfig&) = delete;
+
+  /** @brief Assignment operator - not implemented **/
+  CbmRecoUnpackConfig& operator=(const CbmRecoUnpackConfig&) = delete;
+
+protected:
+  // Output vectors
+  /** @brief Pointer to the output vectors connected to the framework. */
+  std::vector<TOutput>* fOutputVec = nullptr;
+
+  /** @brief Name for the branch of the output, set together with the write output flag. */
+  std::string fOutputBranchName = "";
+
+  /** @brief Pointer to the opt output vectors connected to the framework. */
+  std::vector<TOptOutA>* fOptOutAVec = nullptr;
+
+  /** @brief Name for the branch of the output, set together with the write output flag. */
+  std::string fOptoutABranchName = "";
+
+  /** @brief Pointer to the opt output vectors connected to the framework. */
+  std::vector<TOptOutB>* fOptOutBVec = nullptr;
+
+  /** @brief Name for the branch of the output, set together with the write output flag. */
+  std::string fOptoutBBranchName = "";
+
+  /** @brief Pointer to the algorithm to be used for data connected to this config */
+  std::shared_ptr<TAlgo> fAlgo = nullptr;
+
+  // Runtime parameters
+  std::string fParFilesBasePath = "";
+
+  /** @brief Name of the (derived) class for debugging statements */
+  std::string fName = "";
+
+  /** @brief Do debug printouts. Call SetDebugState() to activate*/
+  bool fDoLog = false;
+
+  /** @brief Decision if the output is supposed to be stored to a branch. */
+  bool fDoWriteOutput = false;
+
+  /** @brief Decision if the opt output A is supposed to be stored to a branch. */
+  bool fDoWriteOptOutA = false;
+
+  /** @brief Decision if the opt output B is supposed to be stored to a branch. */
+  bool fDoWriteOptOutB = false;
+
+  /** @brief Decision if the info msgs are supposed to be stored to a branch. */
+  bool fIsMC = false;
+
+
+  /** @brief Use this function to implement additional actions to be called once per TS, e.g. needed if more than the default output vector is used. */
+  virtual void reset() { return; };
+
+
+public:
+  // Getters
+  /** @brief Get the name of the given derived config */
+  std::string GetName() { return fName; }
+
+  /**
+   * @brief Get a given output vector connected to the tree, if called after calling InitUnpacker().
+   * 
+   * @return std::vector<TOutput>* 
+  */
+  std::vector<TOutput>* GetOutputVec() { return fOutputVec; }
+
+  /**
+   * @brief Get a given output vector connected to the tree, if called after calling InitUnpacker().
+   * 
+   * @return std::vector<TOptOutA>* 
+  */
+  std::vector<TOptOutA>* GetOptOutAVec() { return fOptOutAVec; }
+
+  /**
+   * @brief Get a given output vector connected to the tree, if called after calling InitUnpacker().
+   * 
+   * @return std::vector<TOptOutA>* 
+  */
+  std::vector<TOptOutB>* GetOptOutBVec() { return fOptOutBVec; }
+
+  /**
+   * @brief Get the ready to run Unpacker. To be defined in the derived classes.
+   * In this function also all initialization steps of the unpacker algorithms have to happen.
+   * @return std::shared_ptr<CbmRecoUnpackAlgo> 
+  */
+  std::shared_ptr<CbmRecoUnpackAlgo<TOutput, TOptOutA, TOptOutB>> GetUnpacker() { return fAlgo; };
+
+  void Init(FairRootManager* ioman)
+  {
+    if (fDoWriteOutput) {
+      fOutputVec = new std::vector<TOutput>();
+      ioman->RegisterAny(TOutput::GetBranchName(), fOutputVec, kTRUE);
+      LOG(info) << fName << "::registerBranchToTree(" << TOutput::GetBranchName() << ")";
+    }
+
+    if (fDoWriteOptOutA) {
+      fOptOutAVec = new std::vector<TOptOutA>();
+      ioman->RegisterAny(fOptoutABranchName.data(), fOptOutAVec, kTRUE);
+      LOG(info) << fName << "::registerBranchToTree(" << fOptoutABranchName.data() << ")";
+    }
+
+    if (fDoWriteOptOutB) {
+      fOptOutBVec = new std::vector<TOptOutB>();
+      ioman->RegisterAny(fOptoutBBranchName.data(), fOptOutBVec, kTRUE);
+      LOG(info) << fName << "::registerBranchToTree(" << fOptoutBBranchName.data() << ")";
+    }
+  }
+
+  /** @brief Prepare the Unpacker algorithm for the run, to be implemented in the derived classes. */
+  virtual void InitUnpacker() = 0;
+
+  /** @brief Reset called once per ReadEvent() */
+  void Reset()
+  {
+    // Clear the default vector
+    if (fOutputVec) fOutputVec->clear();
+    if (fOptOutAVec) fOptOutAVec->clear();
+    if (fOptOutBVec) fOptOutBVec->clear();
+    // Use this function if you need to do more things in your derived config.
+    reset();
+  };
+
+  // Setters
+  /**
+   * @brief Set the Do Write Digis flag, without activation the digis are not written to the sink
+   * @param value
+   */
+  void SetDoWriteOutput(bool value = true) { fDoWriteOutput = value; }
+
+  /**
+   * @brief Set the Do Write OptOutput A flag, without activation the opt out is not written to the sink
+   * @param branchname name of the branch in the output tree 
+   * @param value bool 
+   */
+  void SetDoWriteOptOutA(std::string branchname, bool value = true)
+  {
+    fOptoutABranchName = branchname;
+    fDoWriteOptOutA    = value;
+  }
+
+  /**
+   * @brief Set the Do Write OptOutput B flag, without activation the opt out is not written to the sink
+   * @param branchname name of the branch in the output tree 
+   * @param value bool 
+   */
+  void SetDoWriteOptOutB(std::string branchname, bool value = true)
+  {
+    fOptoutBBranchName = branchname;
+    fDoWriteOptOutB    = value;
+  }
+
+  /**
+   * @brief Set the Debug State, influences the log messages.
+   * 
+   * @param value 
+  */
+  void SetDebugState(bool value = true) { fDoLog = value; }
+
+  /**
+   * @brief Set the is MC flag. Activates the Match branch.
+   * 
+   * @param value
+  */
+  void SetIsMC(bool value = true) { fIsMC = value; }
+
+  /**
+   * @brief Set the Par Files Base Path (absolute directory path were the files are stored)
+   * 
+   * @param value 
+  */
+  void SetParFilesBasePath(std::string value) { fParFilesBasePath = value; }
+
+protected:
+  /**
+   * @brief Initialise the parameter containers requested by the algorithm
+   * 
+   * @return Bool_t initOk 
+  */
+  virtual Bool_t initParContainers(std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>* reqparvec)
+  {
+    if (fDoLog) LOG(info) << GetName() << "::Init - initParContainers";
+
+    // Now get the actual ascii files and init the containers with the asciiIo
+    for (auto& pair : *reqparvec) {
+      auto filepath = pair.first;
+      auto parset   = pair.second;
+      FairParAsciiFileIo asciiInput;
+      if (asciiInput.open(filepath.data())) { parset->init(&asciiInput); }
+    }
+    return kTRUE;
+  }
+
+public:
+  ClassDef(CbmRecoUnpackConfig, 2)
+};
+
+
+#endif  // CbmRecoUnpackConfig_tmpl

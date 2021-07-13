@@ -18,7 +18,7 @@
 
 #include <utility>  // for pair
 
-#include <stdint.h>  // for uint64_t
+#include <stdint.h>  // for size_t
 #include <stdio.h>   // for printf
 #include <string.h>  // for strcmp
 
@@ -137,7 +137,7 @@ void CbmTrdParSetAsic::putParams(FairParamList* l)
       TArrayI asicInfo(fullSize);
       iAsicNr = 0;
       for (auto iModuleIt : mod->fModuleMap) {
-        std::uint64_t asicComponentId(100098);  // 100098 = undefined
+        size_t asicComponentId(100098);  // 100098 = undefined
         currentAsicAddress   = iModuleIt.first;
         asicComponentId      = ((CbmTrdParSpadic*) iModuleIt.second)->GetComponentId();
         int offset           = iAsicNr * sizePerSpadic;
