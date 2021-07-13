@@ -123,9 +123,9 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   int ista      = ista2;
 
   for (int i = iFirstHit + step; step * i <= step * iLastHit; i += step) {
-    const L1Hit& hit    = (*vStsHits)[hits[i]];
-    ista_prev           = ista;
-    ista                = GetFStation((*fStripFlag)[hit.f]);
+    const L1Hit& hit = (*vStsHits)[hits[i]];
+    ista_prev        = ista;
+    ista             = GetFStation((*fStripFlag)[hit.f]);
 
     L1Station& sta = vStations[ista];
 
@@ -283,7 +283,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
       ih += StsHitsUnusedStartIndex[ista];
       const L1Hit& hit = (*vStsHitsUnused)[ih];
       //TODO: bug, it should be hit.dt*hit.dt
-      if (fabs(hit.t - T.t[0]) > sqrt(T.C55[0] + hit.dt) * 5) continue;
+      if (fabs(hit.t - T.t[0]) > sqrt(T.C55[0] + hit.dt * hit.dt) * 5) continue;
 
       if (GetFUsed((*fStripFlag)[hit.f] | (*fStripFlag)[hit.b])) continue;  // if used
 
@@ -315,9 +315,9 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
     newHits.push_back((*RealIHitP)[iHit_best]);
 
-    const L1Hit& hit    = (*vStsHitsUnused)[iHit_best];
-    fvec u              = hit.u;
-    fvec v              = hit.v;
+    const L1Hit& hit = (*vStsHitsUnused)[iHit_best];
+    fvec u           = hit.u;
+    fvec v           = hit.v;
     fvec x, y, z;
     StripsToCoor(u, v, x, y, sta);
     z = (*vStsZPos)[hit.iz];

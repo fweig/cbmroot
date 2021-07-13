@@ -234,7 +234,7 @@ void L1Algo::CAMergeClones()
   neighbour.resize(nTracks);
   isDownstreamNeighbour.resize(nTracks);
 
-  THitI start_hit     = 0;
+  THitI start_hit = 0;
 #ifdef OMP
 #pragma omp parallel for
 #endif
@@ -287,6 +287,7 @@ void L1Algo::CAMergeClones()
       Tb.ty  = fTracks[iTr].TFirst[3];
       Tb.qp  = fTracks[iTr].TFirst[4];
       Tb.z   = fTracks[iTr].TFirst[5];
+      Tb.t   = fTracks[iTr].TFirst[6];
       Tb.C00 = fTracks[iTr].CFirst[0];
       Tb.C10 = fTracks[iTr].CFirst[1];
       Tb.C11 = fTracks[iTr].CFirst[2];
@@ -302,6 +303,12 @@ void L1Algo::CAMergeClones()
       Tb.C42 = fTracks[iTr].CFirst[12];
       Tb.C43 = fTracks[iTr].CFirst[13];
       Tb.C44 = fTracks[iTr].CFirst[14];
+      Tb.C50 = fTracks[iTr].CFirst[15];
+      Tb.C51 = fTracks[iTr].CFirst[16];
+      Tb.C52 = fTracks[iTr].CFirst[17];
+      Tb.C53 = fTracks[iTr].CFirst[18];
+      Tb.C54 = fTracks[iTr].CFirst[19];
+      Tb.C55 = fTracks[iTr].CFirst[20];
 
       unsigned short staf = lastStation[jTr];
 
@@ -311,6 +318,7 @@ void L1Algo::CAMergeClones()
       Tf.ty  = fTracks[jTr].TLast[3];
       Tf.qp  = fTracks[jTr].TLast[4];
       Tf.z   = fTracks[jTr].TLast[5];
+      Tf.t   = fTracks[jTr].TLast[6];
       Tf.C00 = fTracks[jTr].CLast[0];
       Tf.C10 = fTracks[jTr].CLast[1];
       Tf.C11 = fTracks[jTr].CLast[2];
@@ -326,6 +334,13 @@ void L1Algo::CAMergeClones()
       Tf.C42 = fTracks[jTr].CLast[12];
       Tf.C43 = fTracks[jTr].CLast[13];
       Tf.C44 = fTracks[jTr].CLast[14];
+      Tf.C50 = fTracks[jTr].CLast[15];
+      Tf.C51 = fTracks[jTr].CLast[16];
+      Tf.C52 = fTracks[jTr].CLast[17];
+      Tf.C53 = fTracks[jTr].CLast[18];
+      Tf.C54 = fTracks[jTr].CLast[19];
+      Tf.C55 = fTracks[jTr].CLast[20];
+
       //std::cout << "!!!!!!! Chi2 !!!!!!      "<<fTracks[iTr].TFirst[0]<<"  "<<fTracks[jTr].TLast[0]<<std::endl;
 
       //if(((Tf.qp - Tb.qp)*(Tf.qp - Tb.qp)/(Tb.C44+Tf.C44))[0] > 25*10*7) continue;
@@ -344,7 +359,7 @@ void L1Algo::CAMergeClones()
 
       fvec zm = vStations[stam].z;
       fvec xm = 0.5 * (Tf.x + Tf.tx * (zm - Tf.z) + Tb.x + Tb.tx * (zm - Tb.z));
-      fvec ym = 0.5 * (Tb.y + Tb.ty * (zm - Tb.z) + Tb.y + Tb.ty * (zm - Tb.z));
+      fvec ym = 0.5 * (Tf.y + Tf.ty * (zm - Tf.z) + Tb.y + Tb.ty * (zm - Tb.z));
       vStations[stam].fieldSlice.GetFieldValue(xm, ym, fBm);
       fld.Set(fBb, Tb.z, fBm, zm, fBf, Tf.z);
 

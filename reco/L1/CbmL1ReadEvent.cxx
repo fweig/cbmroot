@@ -87,6 +87,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 {
   if (fVerbose >= 10) cout << "ReadEvent: start." << endl;
 
+  fData_->Clear();
+
   // clear arrays for next event
   vMCPoints.clear();
   vMCPoints_in_Time_Slice.clear();
@@ -390,7 +392,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.id         = tmpHits.size();
         th.iStation   = mh->GetStationNr();
         th.iStripF    = firstDetStrip + j;
-        th.iStripB  = th.iStripF;
+        th.iStripB    = th.iStripF;
         if (NStrips <= th.iStripF) { NStrips = th.iStripF + 1; }
 
         TVector3 pos, err;
@@ -914,8 +916,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   fData_->fStripFlag.reserve(NStrips);
   fData_->fStripFlag.assign(NStrips, 0);
   for (int ih = 0; ih < nHits; ih++) {
-    TmpHit& th                 = tmpHits[ih];
-    char flag                  = th.iStation * 4;
+    TmpHit& th                     = tmpHits[ih];
+    char flag                      = th.iStation * 4;
     fData_->fStripFlag[th.iStripF] = flag;
     fData_->fStripFlag[th.iStripB] = flag;
   }  // ih
