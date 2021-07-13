@@ -5,12 +5,12 @@
 #ifndef _L1Timer_H
 #define _L1Timer_H
 
-#include "../CbmL1Def.h"
-
 #include <iomanip>
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include "L1Def.h"
 
 using std::cout;
 using std::endl;

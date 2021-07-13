@@ -8,8 +8,7 @@
 #ifndef L1Branch_h
 #define L1Branch_h
 
-#include "CbmL1Def.h"
-
+#include "L1Def.h"
 #include "L1Hit.h"
 #include "L1Vector.h"
 

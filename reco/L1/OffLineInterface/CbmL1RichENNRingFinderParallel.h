@@ -22,8 +22,9 @@
 #define _CBM_L1_RICH_ENN_RING_FINDER2_H_
 
 
-#include "CbmL1Def.h"
 #include "CbmRichRingFinder.h"
+
+#include "L1Def.h"
 //#include "../vectors/PSEUDO_F32vec4.h" // for check
 //#include "../vectors/PSEUDO_F32vec1.h" // for check
 

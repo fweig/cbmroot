@@ -10,7 +10,7 @@
 // @author Valentina Akishina
 // @date 2021-05-18
 
-#include "CbmL1Def.h"
+#include "L1Def.h"
 
 /// L1Triplet class represents a short 3-hit track segment called a "triplet".
 ///

@@ -17,7 +17,6 @@
 // using namespace std;
 using std::cout;
 using std::endl;
-using std::vector;
 
 
 /// Fit track
@@ -197,9 +196,8 @@ void L1Algo::BranchFitter(const L1Branch& t, L1TrackPar& T, const bool dir, cons
 void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
                           const fvec qp0)  // TODO take into account pipe
 {
-  std::vector<THitI> newHits;
-  newHits.clear();
-  newHits.reserve(5);
+  L1Vector<THitI> newHits {"L1TrackExtender::newHits"};
+  newHits.reserve(NStations);
   L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
 
@@ -357,7 +355,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
   // save hits
   const unsigned int NOldHits = t.NHits;
   const unsigned int NNewHits = newHits.size();
-  t.fStsHits.resize(NNewHits + NOldHits);
+  t.fStsHits.enlarge(NNewHits + NOldHits);
   t.NHits = (NNewHits + NOldHits);
 
   if (dir) {  // backward

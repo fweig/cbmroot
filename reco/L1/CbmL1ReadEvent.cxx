@@ -43,12 +43,10 @@
 #include "TRandom.h"
 
 #include <iostream>
-#include <vector>
 
 using std::cout;
 using std::endl;
 using std::find;
-using std::vector;
 
 //#define MVDIDEALHITS
 //#define STSIDEALHITS
@@ -99,9 +97,28 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   vHitStore.clear();
   dFEI2vMCPoints.clear();
   dFEI2vMCTracks.clear();
+
   if (fVerbose >= 10) cout << "ReadEvent: clear is done." << endl;
 
-  vector<TmpHit> tmpHits;
+  L1Vector<TmpHit> tmpHits("CbmL1ReadEvent::tmpHits");
+
+  {  // reserve enough space for hits
+    int nHitsTotal = 0;
+    if (listMvdHits) nHitsTotal += listMvdHits->GetEntriesFast();
+    Int_t nEntSts = 0;
+    if (listStsHits) {
+      if (!fTimesliceMode && event) { nEntSts = event->GetNofData(ECbmDataType::kStsHit); }
+      else {
+        nEntSts = listStsHits->GetEntriesFast();
+      }
+      if (nEntSts < 0) nEntSts = 0;  // GetNofData() can return -1;
+    }
+    nHitsTotal += nEntSts;
+    if (fMuchPixelHits) nHitsTotal += fMuchPixelHits->GetEntriesFast();
+    if (listTrdHits) nHitsTotal += listTrdHits->GetEntriesFast();
+    if (fTofHits) nHitsTotal += fTofHits->GetEntriesFast();
+    tmpHits.reserve(nHitsTotal);
+  }
 
   // -- produce Sts hits from space points --
 
@@ -126,10 +143,14 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   nMuchPoints    = 0;
   int nTofPoints = 0;
 
-  vector<CbmLink*> ToFPointsMatch;
+  L1Vector<CbmLink*> ToFPointsMatch("CbmL1ReadEvent::ToFPointsMatch");
 
   if (fPerformance) {
     Fill_vMCTracks();
+    vMCPoints.clear();
+    vMCPoints.reserve(5 * vMCTracks.size() * NStation);
+    vMCPoints_in_Time_Slice.clear();
+    vMCPoints_in_Time_Slice.reserve(vMCPoints.capacity());
 
     for (DFSET::iterator set_it = vFileEvent.begin(); set_it != vFileEvent.end(); ++set_it) {
       Int_t iFile  = set_it->first;
@@ -261,7 +282,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           }
         }
 
-      ToFPointsMatch.resize(0);
+      ToFPointsMatch.clear();
 
       if (fTofPoints) {
         for (int j = 0; j < fTofHits->GetEntriesFast(); j++) {
@@ -369,7 +390,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
   }  //fPerformance
 
-
   int NStrips = 0;
 
   // get MVD hits
@@ -475,7 +495,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     }  // for j
   }    // if listMvdHits
   if (fVerbose >= 10) cout << "ReadEvent: mvd hits are gotten." << endl;
-
 
   Int_t nEntSts = 0;
   if (listStsHits) {
@@ -599,7 +618,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
     }  // for j
   }    // if listStsHits
-
 
   if (fMuchPixelHits) {
 
@@ -802,6 +820,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     }  // for j
   }    // if listTrdHits
 
+
   if (fTofHits) {
 
     int firstDetStrip = NStrips;
@@ -912,9 +931,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
   // save strips in L1Algo
   fData_->NStsStrips = NStrips;
-  fData_->fStripFlag.clear();
-  fData_->fStripFlag.reserve(NStrips);
-  fData_->fStripFlag.assign(NStrips, 0);
+  fData_->fStripFlag.reset(NStrips, 0);
   for (int ih = 0; ih < nHits; ih++) {
     TmpHit& th                     = tmpHits[ih];
     char flag                      = th.iStation * 4;
@@ -926,15 +943,21 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
   // -- save hits --
   int nEffHits    = 0;
-  int maxHitIndex = 0;
-  if (fTofHits) maxHitIndex = fTofHits->GetEntriesFast() + nMvdHits + nStsHits + nMuchHits + nTrdHits;
-  else
-    maxHitIndex = nMvdHits + nStsHits + nMuchHits + nTrdHits;
+  int maxHitIndex = nMvdHits + nStsHits + nMuchHits + nTrdHits;
+  if (fTofHits) maxHitIndex += fTofHits->GetEntriesFast();
 
-  SortedIndex.resize(max(nEntSts, maxHitIndex));
+  SortedIndex.reset(max(nEntSts, maxHitIndex));
 
+  L1Vector<float> vStsZPos_temp(
+    "CbmL1ReadEvent::vStsZPos_temp");  // temp array for unsorted z positions of detectors segments
+  vStsZPos_temp.reserve(100 * NStation);
 
-  vector<float> vStsZPos_temp;  // temp array for unsorted z positions of detectors segments
+  vStsHits.reserve(nHits);
+  fData_->vStsHits.reserve(nHits);
+
+  vHitStore.reserve(nHits);
+  vHitMCRef.reserve(nHits);
+
   for (int i = 0; i < nHits; i++) {
     TmpHit& th = tmpHits[i];
 
@@ -1076,19 +1099,19 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
   if (fVerbose >= 10) cout << "ReadEvent: mvd and sts are saved." << endl;
 
-
   // sort z-pos
   if (vStsZPos_temp.size() != 0) {
-    vector<float> vStsZPos_temp2;
-    vStsZPos_temp2.clear();
+    L1Vector<float> vStsZPos_temp2("CbmL1ReadEvent::vStsZPos_temp2");
+    vStsZPos_temp2.reserve(vStsZPos_temp.size());
     vStsZPos_temp2.push_back(vStsZPos_temp[0]);
-    vector<int> newToOldIndex;
-    newToOldIndex.clear();
+
+    L1Vector<int> newToOldIndex("CbmL1ReadEvent::newToOldIndex");
+    newToOldIndex.reserve(vStsZPos_temp.size());
     newToOldIndex.push_back(0);
 
     for (unsigned int k = 1; k < vStsZPos_temp.size(); k++) {
-      vector<float>::iterator itpos = vStsZPos_temp2.begin() + 1;
-      vector<int>::iterator iti     = newToOldIndex.begin() + 1;
+      L1Vector<float>::iterator itpos = vStsZPos_temp2.begin() + 1;
+      L1Vector<int>::iterator iti     = newToOldIndex.begin() + 1;
       for (; itpos < vStsZPos_temp2.end(); itpos++, iti++) {
         if (vStsZPos_temp[k] < *itpos) {
           vStsZPos_temp2.insert(itpos, vStsZPos_temp[k]);
@@ -1102,22 +1125,22 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       }
     }  // k
 
-
     if (fVerbose >= 10) cout << "ReadEvent: z-pos are sorted." << endl;
 
-    for (unsigned int k = 0; k < vStsZPos_temp2.size(); k++)
+    fData_->vStsZPos.reserve(vStsZPos_temp2.size());
+    for (unsigned int k = 0; k < vStsZPos_temp2.size(); k++) {
       fData_->vStsZPos.push_back(vStsZPos_temp2[k]);
+    }
 
     int size_nto_tmp = newToOldIndex.size();
-    vector<int> oldToNewIndex;
-    oldToNewIndex.clear();
-    oldToNewIndex.resize(size_nto_tmp);
-    for (int k = 0; k < size_nto_tmp; k++)
+    L1Vector<int> oldToNewIndex("CbmL1ReadEvent::oldToNewIndex", size_nto_tmp);
+    for (int k = 0; k < size_nto_tmp; k++) {
       oldToNewIndex[newToOldIndex[k]] = k;
-
+    }
     int size_hs_tmp = vHitStore.size();
-    for (int k = 0; k < size_hs_tmp; k++)
+    for (int k = 0; k < size_hs_tmp; k++) {
       fData_->vStsHits[k].iz = oldToNewIndex[fData_->vStsHits[k].iz];
+    }
   }
 
   if (fVerbose >= 10) cout << "ReadEvent: z-pos are saved." << endl;
@@ -1145,14 +1168,21 @@ void CbmL1::Fill_vMCTracks()
     int nvtracks = 0, nvtrackscurr = 0;
 
     vMCTracks.clear();
+    {
+      Int_t nMCTracks = 0;
+      for (DFSET::iterator set_it = vFileEvent.begin(); set_it != vFileEvent.end(); ++set_it) {
+        Int_t iFile  = set_it->first;
+        Int_t iEvent = set_it->second;
+        nMCTracks += fMCTracks->Size(iFile, iEvent);
+      }
+      vMCTracks.reserve(nMCTracks);
+    }
 
     for (DFSET::iterator set_it = vFileEvent.begin(); set_it != vFileEvent.end(); ++set_it) {
       Int_t iFile  = set_it->first;
       Int_t iEvent = set_it->second;
 
-
       Int_t nMCTrack = fMCTracks->Size(iFile, iEvent);
-
 
       for (Int_t iMCTrack = 0; iMCTrack < nMCTrack; iMCTrack++) {
         CbmMCTrack* MCTrack = L1_DYNAMIC_CAST<CbmMCTrack*>(fMCTracks->Get(iFile, iEvent, iMCTrack));
@@ -1374,9 +1404,6 @@ void CbmL1::HitMatch()
 
       int iP = -1;
 
-      vector<int> iEvent1;
-
-
       if (listStsClusterMatch) {
 
         const CbmMatch* frontClusterMatch =
@@ -1423,9 +1450,6 @@ void CbmL1::HitMatch()
           Int_t iEvent = stsHitMatch.GetLink(iLink).GetEntry();
           Int_t iIndex = stsHitMatch.GetLink(iLink).GetIndex();
 
-          iEvent1.push_back(iEvent);
-
-
           if (!fTimesliceMode) {
             iFile  = vFileEvent.begin()->first;
             iEvent = vFileEvent.begin()->second;
@@ -1450,10 +1474,6 @@ void CbmL1::HitMatch()
 
 
       if (iP >= 0) {
-        for (unsigned int i = 0; i < iEvent1.size(); i++) {
-          hit.event = iEvent1[i];
-        }
-
         hit.event = vMCPoints[iP].event;
         hit.mcPointIds.push_back(iP);
         vMCPoints[iP].hitIds.push_back(iH);

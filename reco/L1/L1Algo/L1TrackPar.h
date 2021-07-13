@@ -5,7 +5,7 @@
 #ifndef L1TrackPar_h
 #define L1TrackPar_h 1
 
-#include "../CbmL1Def.h"
+#include "L1Def.h"
 
 class L1TrackPar {
 

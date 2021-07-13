@@ -25,7 +25,6 @@
 // using namespace std;
 using std::cout;
 using std::endl;
-using std::vector;
 
 void L1Algo::InvertCholetsky(fvec a[15])
 {
@@ -225,20 +224,20 @@ void L1Algo::CAMergeClones()
   fMergerRecoHitsNew.clear();
   fMergerRecoHitsNew.reserve(fRecoHits.size());
 
-  firstStation.resize(nTracks);
-  lastStation.resize(nTracks);
-  firstHit.resize(nTracks);
-  lastHit.resize(nTracks);
-  isStored.resize(nTracks);
-  trackChi2.resize(nTracks);
-  neighbour.resize(nTracks);
-  isDownstreamNeighbour.resize(nTracks);
+  firstStation.reset(nTracks);
+  lastStation.reset(nTracks);
+  firstHit.reset(nTracks);
+  lastHit.reset(nTracks);
+  isStored.reset(nTracks);
+  trackChi2.reset(nTracks);
+  neighbour.reset(nTracks);
+  isDownstreamNeighbour.reset(nTracks);
 
   THitI start_hit = 0;
+
 #ifdef OMP
 #pragma omp parallel for
 #endif
-
   for (int iTr = 0; iTr < nTracks; iTr++) {
     firstHit[iTr]     = start_hit;
     firstStation[iTr] = (*fStripFlag)[(*vStsHits)[fRecoHits[start_hit]].f] / 4;
@@ -417,13 +416,13 @@ void L1Algo::CAMergeClones()
     }
   }
 
-  fTracks.resize(fMergerTracksNew.size());
+  fTracks.reset(fMergerTracksNew.size());
   for (unsigned int iTr = 0; iTr < fMergerTracksNew.size(); iTr++) {
     fTracks[iTr] = fMergerTracksNew[iTr];
   }
 
   assert(fRecoHits.size() == fMergerRecoHitsNew.size());
-  fRecoHits.resize(fMergerRecoHitsNew.size());
+  fRecoHits.reset(fMergerRecoHitsNew.size());
   for (THitI iHi = 0; iHi < fMergerRecoHitsNew.size(); iHi++) {
     fRecoHits[iHi] = fMergerRecoHitsNew[iHi];
   }

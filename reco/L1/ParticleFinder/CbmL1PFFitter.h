@@ -20,9 +20,9 @@
 #ifndef _CbmL1PFFitter_h_
 #define _CbmL1PFFitter_h_
 
-#include "CbmL1Def.h"
-
 #include <vector>
+
+#include "L1Def.h"
 
 class CbmL1Track;
 class CbmStsTrack;

@@ -10,8 +10,7 @@
 #ifndef L1Fit_H
 #define L1Fit_H
 
-#include "CbmL1Def.h"
-
+#include "L1Def.h"
 #include "L1MaterialInfo.h"
 #include "L1TrackPar.h"
 

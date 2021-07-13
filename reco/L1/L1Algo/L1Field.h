@@ -5,9 +5,9 @@
 #ifndef L1Field_h
 #define L1Field_h 1
 
-#include "CbmL1Def.h"
-
 #include <iostream>
+
+#include "L1Def.h"
 using std::cout;
 using std::endl;
 using std::ostream;

@@ -10,13 +10,13 @@
 #ifndef L1GRID_H
 #define L1GRID_H
 
-#include "CbmL1Def.h"
-
 #include <algorithm>
 #include <cstdio>
 
 #include <assert.h>
 #include <string.h>
+
+#include "L1Def.h"
 #ifdef _OPENMP
 #include "omp.h"
 #endif
@@ -40,50 +40,11 @@ class L1Algo;
  */
 class L1Grid {
 public:
-  L1Grid()
-    : fN(0)
-    , fNy(0)
-    , fNz(0)
-    , fNt(0)
-    , fYMinOverStep(0.)
-    , fZMinOverStep(0.)
-    , fTMinOverStep(0.)
-    , fStepYInv(0.)
-    , fStepZInv(0.)
-    , fStepTInv(0.)
-    , fBinInGrid(0)
-    , fFirstHitInBin()
-    , fHitsInBin()
-    , fNThreads(0)
-  {
-  }
+  L1Grid() = default;
 
-  L1Grid(const L1Grid& grid)
-    : fN(grid.N())
-    , fNy(grid.Ny())
-    , fNz(grid.Nz())
-    , fNt(grid.Nt())
-    , fYMinOverStep(0.)
-    , fZMinOverStep(0.)
-    , fTMinOverStep(0.)
-    , fStepYInv(0.)
-    , fStepZInv(0.)
-    , fStepTInv(0.)
-    , fBinInGrid(0)
-    , fFirstHitInBin()
-    , fHitsInBin()
-    , fNThreads(0)
-  {
-  }
-  //  ~L1Grid(){ //if ( fFirstHitInBin ) delete[] fFirstHitInBin;
-  //
-  //
-  //
-  //    for( int i = 0; i < fNThreads; i++ ) {
-  //     // if  (fFirstHitInBinArray[i]) delete[] fFirstHitInBinArray[i];
-  //      if  (fFirstHitInBin[i]) delete[] fFirstHitInBin[i];
-  //    }
-  //  }
+  L1Grid(const L1Grid& grid) : fN(grid.N()), fNy(grid.Ny()), fNz(grid.Nz()), fNt(grid.Nt()) {}
+
+  ~L1Grid() = default;
 
   void StoreHits(THitI nhits, const L1Hit* hits, char iS, L1Algo& Algo, THitI n, L1Hit* hitsBuf1, const L1Hit* hits1,
                  THitI* indices1);
@@ -142,32 +103,27 @@ public:
   //     };
 
 
-  void UpdateIterGrid(unsigned int Nelements, L1Hit* hits, vector<THitI>* indicesBuf, THitI* indices,
-                      vector<L1Hit>* hits2, vector<L1HitPoint>* pointsBuf, L1HitPoint* points, int& NHitsOnStation,
+  void UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<THitI>* indicesBuf, THitI* indices,
+                      L1Vector<L1Hit>* hits2, L1Vector<L1HitPoint>* pointsBuf, L1HitPoint* points, int& NHitsOnStation,
                       char iS, L1Algo& Algo, const L1Vector<unsigned char>* vSFlag);
 
 
 private:
-  unsigned int fN;      //* total N bins
-  unsigned short fNy;   //* N bins in Y
-  unsigned short fNz;   //* N bins in Z
-  unsigned short fNt;   //* N bins in Z
-  float fYMinOverStep;  //* minimal Y value * fStepYInv
-  float fZMinOverStep;  //* minimal Z value * fStepZInv
-  float fTMinOverStep;  //* minimal Z value * fStepZInv
-  float fStepYInv;      //* inverse bin size in Y
-  float fStepZInv;      //* inverse bin size in Z
-  float fStepTInv;      //* inverse bin size in Z
-  int fBinInGrid;
+  unsigned int fN {0};        //* total N bins
+  unsigned short fNy {0};     //* N bins in Y
+  unsigned short fNz {0};     //* N bins in Z
+  unsigned short fNt {0};     //* N bins in Z
+  float fYMinOverStep {0.f};  //* minimal Y value * fStepYInv
+  float fZMinOverStep {0.f};  //* minimal Z value * fStepZInv
+  float fTMinOverStep {0.f};  //* minimal Z value * fStepZInv
+  float fStepYInv {0.f};      //* inverse bin size in Y
+  float fStepZInv {0.f};      //* inverse bin size in Z
+  float fStepTInv {0.f};      //* inverse bin size in Z
+  int fBinInGrid {0};
+  unsigned short fNThreads {0};
 
-  vector<THitI> fFirstHitInBin;
-  vector<THitI> fHitsInBin;
-  // vector <THitI*> fFirstHitInBinArray;
-  //   vector <THitI> fOffsets;
-  // vector <THitI> fNumberHitsInBin;
-
-
-  unsigned short fNThreads;
+  L1Vector<THitI> fFirstHitInBin {"L1Grid::fFirstHitInBin"};
+  L1Vector<THitI> fHitsInBin {"L1Grid::fHitsInBin"};
 
   // vector <omp_lock_t> lock;
 };

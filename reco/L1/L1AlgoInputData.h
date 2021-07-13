@@ -5,35 +5,24 @@
 #ifndef _L1AlgoInputData_h
 #define _L1AlgoInputData_h
 
-#include "CbmL1Def.h"
-
 #include <fstream>
 #include <iostream>
-#include <vector>
 
+#include "L1Def.h"
 #include "L1Hit.h"
 #include "L1Vector.h"
 
 using std::istream;
-using std::vector;
 
 class L1AlgoInputData {
 
 public:
-  L1AlgoInputData() : vStsHits(), NStsStrips(0), vStsZPos()
-  //  MaxNStations(12)
+  L1AlgoInputData()  = default;
+  ~L1AlgoInputData() = default;
 
-  {
-    for (int i = 0; i < MaxNStations + 1; ++i)
-      StsHitsStartIndex[i] = 0;
-    for (int i = 0; i < MaxNStations + 1; ++i)
-      StsHitsStopIndex[i] = 0;
-  }
-  ~L1AlgoInputData() {};
-
-  vector<L1Hit>& GetStsHits() { return vStsHits; }
+  L1Vector<L1Hit>& GetStsHits() { return vStsHits; }
   int GetNStsStrips() const { return NStsStrips; }
-  const vector<fscal>& GetStsZPos() const { return vStsZPos; }
+  L1Vector<fscal>& GetStsZPos() { return vStsZPos; }
   L1Vector<unsigned char>& GetSFlag() { return fStripFlag; }
   const THitI* GetStsHitsStartIndex() const { return StsHitsStartIndex; }
   const THitI* GetStsHitsStopIndex() const { return StsHitsStopIndex; }
@@ -80,15 +69,15 @@ public:
   {
     MaxNStations = 25
   };
-  vector<L1Hit> vStsHits;     // hits as a combination of front-, backstrips and z-position
-  int NStsStrips;             // Number of strips in sts
-  vector<fscal> vStsZPos;     // all possible z-positions of hits
+  L1Vector<L1Hit> vStsHits {"L1AlgoInputData::vStsHits"};  // hits as a combination of front-, backstrips and z-position
+  int NStsStrips {0};                                      // Number of strips in sts
+  L1Vector<fscal> vStsZPos {"L1AlgoInputData::vStsZPos"};  // all possible z-positions of hits
 
   L1Vector<unsigned char> fStripFlag {
     "L1AlgoInputData::fStripFlag"};  // information of hits station & using hits in tracks;
 
-  THitI StsHitsStartIndex[MaxNStations + 1],
-    StsHitsStopIndex[MaxNStations + 1];  // station-bounders in vStsHits array
+  THitI StsHitsStartIndex[MaxNStations + 1] {0};  // station-bounders in vStsHits array
+  THitI StsHitsStopIndex[MaxNStations + 1] {0};   // station-bounders in vStsHits array
 
 } _fvecalignment;
 

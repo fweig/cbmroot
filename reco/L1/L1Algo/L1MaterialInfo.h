@@ -5,9 +5,9 @@
 #ifndef L1MaterialInfo_h
 #define L1MaterialInfo_h
 
-#include "../CbmL1Def.h"
-
 #include <vector>
+
+#include "L1Def.h"
 
 class L1MaterialInfo {
 public:

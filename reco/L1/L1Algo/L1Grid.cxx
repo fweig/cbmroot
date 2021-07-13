@@ -4,15 +4,13 @@
 
 #include "L1Grid.h"
 
-#include "CbmL1Def.h"
-
 #include <algorithm>
 #include <cstdio>
 
 #include <assert.h>
 #include <string.h>
 
-#include "L1Hit.h"
+#include "L1Def.h"
 #ifdef _OPENMP
 #include "omp.h"
 #endif
@@ -39,12 +37,12 @@ inline void memset(T* dest, T i, size_t num)
 }
 
 
-void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, vector<THitI>* indicesBuf, THitI* indices,
-                            vector<L1Hit>* hits2, vector<L1HitPoint>* pointsBuf, L1HitPoint* points,
+void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<THitI>* indicesBuf, THitI* indices,
+                            L1Vector<L1Hit>* hits2, L1Vector<L1HitPoint>* pointsBuf, L1HitPoint* points,
                             int& NHitsOnStation, char iS, L1Algo& Algo, const L1Vector<unsigned char>* vSFlag)
 {
 
-  fFirstHitInBin.assign(fN + 2, 0);
+  fFirstHitInBin.reset(fN + 2, 0);
 
   fscal xs = 0;
   fscal ys = 0;
@@ -129,8 +127,8 @@ void L1Grid::AllocateMemory(int NThreads)
 
   int binsGrid = 600000;
 
-  fFirstHitInBin.resize(binsGrid, 0);
-  fHitsInBin.resize(binsGrid, 0);
+  fFirstHitInBin.reset(binsGrid, 0);
+  fHitsInBin.reset(binsGrid, 0);
 
   //  for( int i = 0; i < fNThreads; i++ )
   //  {
@@ -174,7 +172,7 @@ void L1Grid::StoreHits(THitI nhits, const L1Hit* hits, char iS, L1Algo& Algo, TH
   fscal xs = 0;
   fscal ys = 0;
 
-  fFirstHitInBin.assign(fN + 2, 0);
+  fFirstHitInBin.reset(fN + 2, 0);
 
 #ifdef _OPENMP
 #pragma omp parallel for firstprivate(xs, ys)

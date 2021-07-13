@@ -5,8 +5,7 @@
 #ifndef L1Filtration_h
 #define L1Filtration_h
 
-#include "CbmL1Def.h"
-
+#include "L1Def.h"
 #include "L1TrackPar.h"
 #include "L1UMeasurementInfo.h"
 #include "L1XYMeasurementInfo.h"

@@ -2,26 +2,24 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Maksym Zyzak, Igor Kulakov [committer], Sergey Gorbunov */
 
-#ifndef CbmL1Def_h
-#define CbmL1Def_h
+#ifndef L1Def_h
+#define L1Def_h
 
 // #define FAST_CODE // FAST_CODE = more unsafe
-
 
 #include "TStopwatch.h"
 
 #include <iostream>
-#include <vector>
 
 #include <assert.h>
-#ifdef HAVE_SSE
-#include "vectors/P4_F32vec4.h"
-#else
-#include "vectors/PSEUDO_F32vec4.h"
-#error NoSseFound
-#endif  // HAVE_SSE
 
-//#include "vectors/PSEUDO_F64vec1.h"
+//#if defined(HAVE_SSE) || SSE_FOUND
+#include "vectors/P4_F32vec4.h"
+//#else
+//#include "vectors/PSEUDO_F32vec4.h"
+//#error NoSseFound
+//#endif  // HAVE_SSE
+
 
 template<typename T>
 T finite(T x)
@@ -67,4 +65,4 @@ using namespace std;
 
 typedef int index_type;
 
-#endif  // CbmL1Def_h
+#endif

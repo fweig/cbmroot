@@ -10,7 +10,7 @@
 /// @date 2021-06-16
 
 
-#include "CbmL1Def.h"
+#include "L1Def.h"
 #ifndef FAST_CODE
 #include <FairLogger.h>
 #endif
@@ -33,13 +33,23 @@ class L1Vector : private std::vector<T> {
 public:
   typedef std::vector<T> Tbase;
 
-  L1Vector(const char* name = "no name") : Tbase(), fName(name) {};
+  template<typename... Tinput>
+  L1Vector(Tinput... value) : Tbase(value...)
+  {
+  }
+
+  template<typename... Tinput>
+  L1Vector(const char* name, Tinput... value) : Tbase(value...)
+                                              , fName(name)
+  {
+  }
 
   L1Vector(const L1Vector& v) : Tbase(), fName(v.fName)
   {
     Tbase::reserve(v.capacity());
     Tbase::assign(v.begin(), v.end());
   }
+
 
   void SetName(const std::string& s) { fName = s; }
 
@@ -58,16 +68,41 @@ public:
   }
 
   template<typename... Tinput>
-  void resize(std::size_t count, Tinput... value)
+  void reset(std::size_t count, Tinput... value)
   {
-#ifndef FAST_CODE
-    if (!Tbase::empty() && (count > Tbase::capacity())) {
-      LOG(WARNING) << "L1Vector \"" << fName << "\"::resize(" << count << "): allocated capacity of "
-                   << Tbase::capacity() << " is reached, re-allocate and copy." << std::endl;
-    }
-#endif
+    // does the same as Tbase::assign(), but works with the default T constructor too
+    // (no second parameter)
+    Tbase::clear();
     Tbase::resize(count, value...);
   }
+
+  template<typename... Tinput>
+  void enlarge(std::size_t count, Tinput... value)
+  {
+    if (count < Tbase::size()) {
+      LOG(FATAL) << "L1Vector \"" << fName << "\"::enlarge(" << count
+                 << "): the new size is smaller than the current one " << Tbase::size() << ", something goes wrong."
+                 << std::endl;
+      assert(count >= Tbase::size());
+    }
+    if ((!Tbase::empty()) && (count > Tbase::capacity())) {
+      LOG(WARNING) << "L1Vector \"" << fName << "\"::enlarge(" << count << "): allocated capacity of "
+                   << Tbase::capacity() << " is reached, the vector of size " << Tbase::size()
+                   << " will be copied to the new place." << std::endl;
+    }
+    Tbase::resize(count, value...);
+  }
+
+  void reserve(std::size_t count)
+  {
+    if (!Tbase::empty()) {
+      LOG(FATAL) << "L1Vector \"" << fName << "\"::reserve(" << count << "): the vector is not empty; "
+                 << " it will be copied to the new place." << std::endl;
+      assert(Tbase::empty());
+    }
+    Tbase::reserve(count);
+  }
+
 
   template<typename Tinput>
   void push_back(Tinput value)
@@ -97,9 +132,9 @@ public:
   {
 #ifndef FAST_CODE
     if (pos >= Tbase::size()) {
-      LOG(ERROR) << "L1Vector \"" << fName << "\": trying to access element " << pos
+      LOG(FATAL) << "L1Vector \"" << fName << "\": trying to access element " << pos
                  << " outside of the vector of the size of " << Tbase::size() << std::endl;
-      exit(0);
+      assert(pos < Tbase::size());
     }
 #endif
     return Tbase::operator[](pos);
@@ -109,9 +144,9 @@ public:
   {
 #ifndef FAST_CODE
     if (pos >= Tbase::size()) {
-      LOG(ERROR) << "L1Vector \"" << fName << "\": trying to access element " << pos
+      LOG(FATAL) << "L1Vector \"" << fName << "\": trying to access element " << pos
                  << " outside of the vector of the size of " << Tbase::size() << std::endl;
-      exit(0);
+      assert(pos < Tbase::size());
     }
 #endif
     return Tbase::operator[](pos);
@@ -121,8 +156,8 @@ public:
   {
 #ifndef FAST_CODE
     if (Tbase::size() == 0) {
-      LOG(ERROR) << "L1Vector \"" << fName << "\": trying to access element of an empty vector" << std::endl;
-      exit(0);
+      LOG(FATAL) << "L1Vector \"" << fName << "\": trying to access element of an empty vector" << std::endl;
+      assert(Tbase::size() > 0);
     }
 #endif
     return Tbase::back();
@@ -132,36 +167,28 @@ public:
   {
 #ifndef FAST_CODE
     if (Tbase::size() == 0) {
-      LOG(ERROR) << "L1Vector \"" << fName << "\": trying to access element of an empty vector" << std::endl;
-      exit(0);
+      LOG(FATAL) << "L1Vector \"" << fName << "\": trying to access element of an empty vector" << std::endl;
+      assert(Tbase::size() > 0);
     }
 #endif
     return Tbase::back();
-  }
-
-  void assign(std::size_t count, const T& value)
-  {
-#ifndef FAST_CODE
-    if (!Tbase::empty() && (count > Tbase::capacity())) {
-      LOG(WARNING) << "L1Vector \"" << fName << "\"::assign(" << count << "): allocated capacity of "
-                   << Tbase::capacity() << " is reached, re-allocate and copy." << std::endl;
-    }
-#endif
-    Tbase::assign(count, value);
   }
 
   using Tbase::begin;
   using Tbase::capacity;
   using Tbase::clear;
   using Tbase::end;
+  using Tbase::insert;  //TODO:: make it private
   using Tbase::pop_back;
   using Tbase::reserve;
   using Tbase::size;
   using typename Tbase::iterator;
 
 private:
-  std::string fName;
+  std::string fName {"no name"};
+  using Tbase::assign;  // use reset() instead
   using Tbase::at;
+  using Tbase::resize;
 };
 
 ///

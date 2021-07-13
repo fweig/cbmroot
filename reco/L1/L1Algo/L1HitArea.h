@@ -5,8 +5,7 @@
 #ifndef L1HitArea_H
 #define L1HitArea_H
 
-#include "CbmL1Def.h"
-
+#include "L1Def.h"
 #include "L1Grid.h"
 
 class L1Row;

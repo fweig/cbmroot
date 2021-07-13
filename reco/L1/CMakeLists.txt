@@ -8,6 +8,14 @@ Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wshadow -Weffc++ -Wno-unu
 #Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything -Wno-padded -Wno-global-constructors")
 #Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast")
 
+IF (SSE_FOUND)
+  ADD_DEFINITIONS(-DHAVE_SSE)
+  Message(STATUS "L1 will be compiled with SSE support")
+ELSE (SSE_FOUND)
+  Message(FATAL_ERROR "L1 can not be compiled without SSE support")
+ENDIF (SSE_FOUND)
+
+
 Set(INCLUDE_DIRECTORIES
 ${CBMROOT_SOURCE_DIR}/reco/base
 ${CBMROOT_SOURCE_DIR}/reco/detectors/sts
@@ -162,7 +170,7 @@ OffLineInterface/CbmL1GlobalFindTracksEvents.h
 #OffLineInterface / CbmL1SttHit.h
 #OffLineInterface / CbmL1SttTrackFinder.h
 #OffLineInterface / CbmL1SttTrack.h
-#L1Algo / L1Algo.h
+L1Algo/L1Def.h
 )
 
 

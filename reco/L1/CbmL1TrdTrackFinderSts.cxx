@@ -11,7 +11,6 @@
 
 #include "CbmKFTrack.h"
 #include "CbmKFTrdHit.h"
-#include "CbmL1Def.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatch.h"
 #include "CbmTrdHit.h"
@@ -36,6 +35,8 @@
 #include <iostream>
 #include <map>
 #include <vector>
+
+#include "L1Def.h"
 
 using std::cout;
 using std::endl;

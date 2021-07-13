@@ -29,6 +29,8 @@
 #include "CbmL1Track.h"
 #include "CbmL1Vtx.h"
 
+#include "L1Algo/L1Vector.h"
+
 //#include "L1Algo/L1Algo.h"
 #include "CbmEvent.h"
 #include "CbmL1Hit.h"
@@ -73,11 +75,8 @@
 #include <map>
 #include <set>
 #include <utility>
-#include <vector>
 
 #include "L1EventEfficiencies.h"
-
-using std::vector;
 
 class L1AlgoInputData;
 class L1Algo;
@@ -118,16 +117,17 @@ private:
   CbmL1 operator=(const CbmL1&);
 
 public:
-  L1Algo* algo;  // for access to L1 Algorithm from L1::Instance
-
-  TString fDigiFile;  // Digitization file
-  bool fUseHitErrors;
-  bool fmCBMmode;
-  bool fGlobalMode;
-  vector<CbmL1Track> vRTracks;  // reconstructed tracks
   typedef std::set<std::pair<int, int>> DFSET;
-  DFSET vFileEvent;
-  // set<pair<int, int> > vFileEvent;
+
+  friend class L1AlgoDraw;
+  friend class L1AlgoPulls;
+
+  template<int NHits>
+  friend class L1AlgoEfficiencyPerformance;
+
+  friend class CbmL1MCTrack;
+  friend class CbmL1PFFitter;
+
   static CbmL1* Instance() { return fInstance; }
 
   void SetParContainers();
@@ -154,7 +154,7 @@ public:
   void SetTofMaterialBudgetFileName(TString fileName) { fTofMatBudgetFileName = fileName; }
   void SetExtrapolateToTheEndOfSTS(bool b) { fExtrapolateToTheEndOfSTS = b; }
   void SetDataMode(int TimesliceMode) { fTimesliceMode = TimesliceMode; }
-  void SetMuchPar(TString fileName) { fDigiFile = fileName; }
+  void SetMuchPar(TString fileName) { fMuchDigiFile = fileName; }
   void SetUseHitErrors(bool value) { fUseHitErrors = value; }
   void SetmCBMmode(bool value) { fmCBMmode = value; }
 
@@ -165,16 +165,8 @@ public:
   //   void SetGhostSuppression( Bool_t b ){ fGhostSuppression= b; }
   //   void SetDetectorEfficiency( Double_t eff ){ fDetectorEfficiency = eff; }
 
-  vector<CbmL1HitStore> vHitStore;  // diff hit information
-
   void Reconstruct(CbmEvent* event = NULL);
 
-  friend class L1AlgoDraw;
-  friend class L1AlgoPulls;
-  template<int NHits>
-  friend class L1AlgoEfficiencyPerformance;
-  friend class CbmL1MCTrack;
-  friend class CbmL1PFFitter;
   //  bool ReadMCDataFromFile(const char work_dir[100], const int maxNEvent, const int iVerbose);
   //   vector<CbmL1MCPoint> vMCPoints;
 
@@ -182,9 +174,14 @@ public:
   inline double Get_Z_vMCPoint(int a) const { return vMCPoints[a].z; }
 
 private:
-  vector<CbmL1MCPoint> vMCPoints;
-  int nMvdPoints;
-  vector<int> vMCPoints_in_Time_Slice;
+  typedef std::map<Double_t, Int_t> DFEI2I;
+
+  struct TH1FParameters {
+    TString name, title;
+    int nbins;
+    float xMin, xMax;
+  };
+
   void IdealTrackFinder();  // just copy all reconstructable MCTracks into RecoTracks.
 
   /// Read information about hits, mcPoints and mcTracks into L1 classes
@@ -211,11 +208,11 @@ private:
   void HistoPerformance();         // fill some histograms and calculate efficiencies
 
   /// STandAlone Package service-functions
-  void WriteSTAPGeoData(const vector<float>& geo);  // create geo_algo.dat
-  void WriteSTAPAlgoData();                         // create data_algo.dat
-  void WriteSTAPPerfData();                         // create data_perfo.dat
-  //void ReadSTAPGeoData(vector<float> geo, int &size);
-  void ReadSTAPGeoData(vector<float>& geo, int& size);
+  void WriteSTAPGeoData(const L1Vector<float>& geo);  // create geo_algo.dat
+  void WriteSTAPAlgoData();                           // create data_algo.dat
+  void WriteSTAPPerfData();                           // create data_perfo.dat
+  //void ReadSTAPGeoData(L1Vector<float> geo, int &size);
+  void ReadSTAPGeoData(L1Vector<float>& geo, int& size);
   void ReadSTAPAlgoData();
   void ReadSTAPPerfData();
   /// SIMD KF Banchmark service-functions
@@ -226,135 +223,144 @@ private:
   static std::istream& eatwhite(std::istream& is);  // skip spaces
   static void writedir2current(TObject* obj);       // help procedure
 
-  int NStation, NMvdStations, NStsStations, NMuchStations, NTrdStations,
-    NTOFStation;       // number of detector stations (all\sts\mvd)
-  Int_t fPerformance;  // 0 - w\o perf. 1 - L1-Efficiency definition. 2 - QA-Eff.definition
-  int
-    fSTAPDataMode;  // way to work with file for standalone package. 0 (off) , 1 (write), 2 (read data and work only with it), 3 (debug - write and read)
-  TString fSTAPDataDir;
 
-  Int_t fTrackingLevel;                        // really doesn't used
-  Double_t fMomentumCutOff;                    // really doesn't used
-  Bool_t fGhostSuppression;                    // really doesn't used
-  Bool_t fUseMVD, fUseMUCH, fUseTRD, fUseTOF;  //
-  //   Double_t fDetectorEfficiency;  // really doesn't used
+  inline Double_t dFEI(int file, int event, int idx) { return (1000 * idx) + file + (0.0001 * event); }
 
-  CbmL1Vtx PrimVtx;
-  //    L1FieldSlice *targetFieldSlice  _fvecalignment;
+public:
+  L1Algo* algo {nullptr};  // for access to L1 Algorithm from L1::Instance
+
+  TString fMuchDigiFile {};  // Much digitization file name
+  bool fUseHitErrors {false};
+  bool fmCBMmode {false};
+  bool fGlobalMode {false};
+  L1Vector<CbmL1Track> vRTracks {"CbmL1::vRTracks"};  // reconstructed tracks
+  DFSET vFileEvent {};
+
+  L1Vector<CbmL1HitStore> vHitStore {"CbmL1::vHitStore"};  // diff hit information
+
+private:
+  static CbmL1* fInstance;
+
+  L1AlgoInputData* fData {nullptr};
+
+  L1Vector<CbmL1MCPoint> vMCPoints {"CbmL1::vMCPoints"};
+  int nMvdPoints {0};
+  L1Vector<int> vMCPoints_in_Time_Slice {"CbmL1::vMCPoints_in_Time_Slice"};
+
+  int NStation {0};       // number of all detector stations
+  int NMvdStations {0};   // number of mvd stations
+  int NStsStations {0};   // number of sts stations
+  int NMuchStations {0};  // number of much stations
+  int NTrdStations {0};   // number of trd stations
+  int NTOFStation {0};    // number of tof stations
+
+  Int_t fPerformance {0};  // 0 - w\o perf. 1 - L1-Efficiency definition. 2 - QA-Eff.definition
+
+  int fSTAPDataMode {0};  // way to work with file for standalone package.
+                          // 0 (off) , 1 (write), 2 (read data and work only with it), 3 (debug - write and read)
+
+  TString fSTAPDataDir {};
+
+  Int_t fTrackingLevel {2};         // currently not used
+  Double_t fMomentumCutOff {0.1};   // currently not used
+  Bool_t fGhostSuppression {true};  // currently not used
+
+  Bool_t fUseMVD {false};   // if Mvd data should be processed
+  Bool_t fUseMUCH {false};  // if Much data should be processed
+  Bool_t fUseTRD {false};   // if Trd data should be processed
+  Bool_t fUseTOF {false};   // if Tof data should be processed
+
+  CbmL1Vtx PrimVtx {};
 
   /// Input data
-  CbmTimeSlice* fTimeSlice;
-  CbmMCEventList* fEventList;  //!  MC event list (all)
-  //vector<CbmStsDigi> *listStsDigi;
-  vector<CbmStsDigi> listStsDigi;
-  CbmMCDataArray* fStsPoints;
-  CbmMCDataArray* fMCTracks;
-  CbmMCDataArray* fMvdPoints;
+  CbmTimeSlice* fTimeSlice {nullptr};
+  CbmMCEventList* fEventList {nullptr};  //!  MC event list (all)
 
+  L1Vector<CbmStsDigi> listStsDigi {"CbmL1::listStsDigi"};
+  CbmMCDataArray* fStsPoints {nullptr};
+  CbmMCDataArray* fMvdPoints {nullptr};
+  CbmMCDataArray* fMCTracks {nullptr};
 
-  //TClonesArray *listMCTracks ;
-  TClonesArray* listStsPts;  // Sts MC points
-  //TClonesArray *listStsDigi;
-  TClonesArray* listStsDigiMatch;
-  TClonesArray* listStsClusters;
-  TClonesArray* listStsHits;
-  TClonesArray* listStsHitMatch;
-  TClonesArray* listStsClusterMatch;
+  TClonesArray* listStsPts {nullptr};  // Sts MC points
+  TClonesArray* listStsDigiMatch {nullptr};
+  TClonesArray* listStsClusters {nullptr};
+  TClonesArray* listStsHits {nullptr};
+  TClonesArray* listStsHitMatch {nullptr};
+  TClonesArray* listStsClusterMatch {nullptr};
 
-  // Pointers to data arrays
-  //   CbmEvBasedArray* fMCTracks;
-  // STS
-  //   CbmEvBasedArray* fStsPts; // CbmStsPoint array
-  // MVD
-  //    CbmEvBasedArray* fMvdPts; //CbmMvdPoint array
-
-  TClonesArray* listMvdPts;  // Mvd MC points
-  TClonesArray* listMvdHits;
-  TClonesArray* listMvdDigiMatches;
-  TClonesArray* listMvdHitMatches;
+  TClonesArray* listMvdPts {nullptr};  // Mvd MC points
+  TClonesArray* listMvdHits {nullptr};
+  TClonesArray* listMvdDigiMatches {nullptr};
+  TClonesArray* listMvdHitMatches {nullptr};
 
   //MuCh
-  int nMuchPoints;
-  CbmMCDataArray* fMuchPoints;
-  TClonesArray* listMuchHitMatches;  // Output CbmMatch array
-  TClonesArray* fDigiMatchesMuch;
-  TClonesArray* fClustersMuch;
-
-  TClonesArray* fMuchPixelHits;  // CbmMuchPixelHit array
-  TClonesArray* fDigisMuch;
+  int nMuchPoints {0};
+  CbmMCDataArray* fMuchPoints {nullptr};
+  TClonesArray* listMuchHitMatches {nullptr};  // Output CbmMatch array
+  TClonesArray* fDigiMatchesMuch {nullptr};
+  TClonesArray* fClustersMuch {nullptr};
+  TClonesArray* fMuchPixelHits {nullptr};  // CbmMuchPixelHit array
+  TClonesArray* fDigisMuch {nullptr};
 
   //TRD
 
-  CbmTrdParSetDigi* fTrdDigiPar;     //!
-  CbmTrdParModDigi* fTrdModuleInfo;  //!
+  CbmTrdParSetDigi* fTrdDigiPar {nullptr};     //!
+  CbmTrdParModDigi* fTrdModuleInfo {nullptr};  //!
 
-  CbmMCDataArray* fTrdPoints;
-  TClonesArray* listTrdHits;
-  TClonesArray* fTrdHitMatches;
+  CbmMCDataArray* fTrdPoints {nullptr};
+  TClonesArray* listTrdHits {nullptr};
+  TClonesArray* fTrdHitMatches {nullptr};
 
   //ToF
-  CbmMCDataArray* fTofPoints;
-  TClonesArray* fTofHitDigiMatches;  // CbmMatches array
-  TClonesArray* fTofHits;            // CbmMatches array
-  CbmTofDigiPar* fDigiPar;
-  CbmTofDigiBdfPar* fTofDigiBdfPar;
+  CbmMCDataArray* fTofPoints {nullptr};
+  TClonesArray* fTofHitDigiMatches {nullptr};  // CbmMatches array
+  TClonesArray* fTofHits {nullptr};            // CbmMatches array
+  CbmTofDigiPar* fDigiPar {nullptr};
+  CbmTofDigiBdfPar* fTofDigiBdfPar {nullptr};
 
-
-  struct TH1FParameters {
-    TString name, title;
-    int nbins;
-    float xMin, xMax;
-  };
-
-  TFile* fPerfFile;
-  TDirectory* fHistoDir;
+  TFile* fPerfFile {nullptr};
+  TDirectory* fHistoDir {nullptr};
 
   static const int fNTimeHistos = 22;
-  TH1F* fTimeHisto[fNTimeHistos];
+  TH1F* fTimeHisto[fNTimeHistos] {nullptr};
 
   static const int fNGhostHistos = 9;
-  TH1F* fGhostHisto[fNGhostHistos];
+  TH1F* fGhostHisto[fNGhostHistos] {nullptr};
 
-  //CbmMCEventHeader* fEvent;
   /// Used data = Repacked input data
-  vector<CbmL1Hit> vStsHits;  // hits with hit-mcpoint match information
-  //   vector<CbmL1MCPoint> vMCPoints;
-  vector<int> SortedIndex;
-  vector<int> StsIndex;
-  vector<CbmL1MCTrack> vMCTracks;
-  vector<int>
-    vHitMCRef;  // indices of MCPoints in vMCPoints, indexed by index of hit in algo->vStsHits array. According to StsMatch. Used for IdealResponce
-                //    vector<int>          vHitMCRef1;
-                //   CbmMatch stsHitMatch;
-  //std::map<Double_t, Int_t> FEI2vMCPoints;
-  typedef std::map<Double_t, Int_t> DFEI2I;
-  DFEI2I dFEI2vMCPoints;
-  DFEI2I dFEI2vMCTracks;
-  inline Double_t dFEI(int file, int event, int idx) { return (1000 * idx) + file + (0.0001 * event); }
-  // DFEI2I::iterator map_it;
-  L1AlgoInputData* fData;
+  L1Vector<CbmL1Hit> vStsHits {"CbmL1::vStsHits"};  // hits with hit-mcpoint match information
+  L1Vector<int> SortedIndex {"CbmL1::SortedIndex"};
+  L1Vector<int> StsIndex {"CbmL1::StsIndex"};
+  L1Vector<CbmL1MCTrack> vMCTracks {"CbmL1::vMCTracks"};
+  L1Vector<int> vHitMCRef {
+    "CbmL1::vHitMCRef"};  // indices of MCPoints in vMCPoints, indexed by index of hit in algo->vStsHits array. According to StsMatch. Used for IdealResponce
+                          //    L1Vector<int>          vHitMCRef1;
+                          //   CbmMatch stsHitMatch;
 
-  static CbmL1* fInstance;
+  DFEI2I dFEI2vMCPoints {};
+  DFEI2I dFEI2vMCTracks {};
 
-private:
-  int fFindParticlesMode;
+  int fFindParticlesMode {0};  // 0 - don't run FindParticles
+                               // 1 - run, all MC particle is reco-able
+                               // 2 - run, MC particle is reco-able if created from reco-able tracks
+                               // 3 - run, MC particle is reco-able if created from reconstructed tracks
 
-  TString fStsMatBudgetFileName;
-  TString fMvdMatBudgetFileName;
-  TString fMuchMatBudgetFileName;
-  TString fTrdMatBudgetFileName;
-  TString fTofMatBudgetFileName;
-  bool fExtrapolateToTheEndOfSTS;
-  int fTimesliceMode;
+  TString fStsMatBudgetFileName {};
+  TString fMvdMatBudgetFileName {};
+  TString fMuchMatBudgetFileName {};
+  TString fTrdMatBudgetFileName {};
+  TString fTofMatBudgetFileName {};
+  bool fExtrapolateToTheEndOfSTS {false};
+  int fTimesliceMode {0};
 
-  KFTopoPerformance* fTopoPerformance;
-  L1EventEfficiencies fEventEfficiency;  // average efficiencies
+  KFTopoPerformance* fTopoPerformance {nullptr};
+  L1EventEfficiencies fEventEfficiency {};  // average efficiencies
 
   CbmStsParSetSensor* fStsParSetSensor {nullptr};
   CbmStsParSetSensorCond* fStsParSetSensorCond {nullptr};
   CbmStsParSetModule* fStsParSetModule {nullptr};
 
-  ClassDef(CbmL1, 1);
+  ClassDef(CbmL1, 0);
 };
 
 #endif  //_CbmL1_h_

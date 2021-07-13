@@ -4,7 +4,6 @@
 
 #include "CbmL1RichRingQa.h"
 
-#include "CbmL1Def.h"
 #include "CbmMCTrack.h"
 #include "CbmRichHit.h"
 #include "CbmRichPoint.h"
@@ -38,6 +37,8 @@
 #include <cmath>
 #include <ctype.h>
 #include <stdio.h>
+
+#include "L1Def.h"
 
 using namespace std;
 

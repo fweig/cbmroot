@@ -5,8 +5,7 @@
 #ifndef L1TrackParFit_h
 #define L1TrackParFit_h
 
-#include "../CbmL1Def.h"
-
+#include "L1Def.h"
 #include "L1Field.h"
 #include "L1MaterialInfo.h"
 #include "L1TrackPar.h"

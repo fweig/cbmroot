@@ -10,7 +10,6 @@
 
 #include "CbmGlobalTrack.h"
 #include "CbmKFTrack.h"
-#include "CbmL1Def.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatch.h"
 #include "CbmTrdTrack.h"
@@ -23,6 +22,8 @@
 
 #include <iostream>
 #include <map>
+
+#include "L1Def.h"
 
 using std::cout;
 using std::endl;

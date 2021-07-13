@@ -60,7 +60,6 @@
 #include <iomanip>
 #include <iostream>
 #include <list>
-#include <vector>
 
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1Branch.h"
@@ -72,7 +71,6 @@
 using std::cout;
 using std::endl;
 using std::ios;
-using std::vector;
 
 #include "KFTopoPerformance.h"
 
@@ -85,109 +83,7 @@ ClassImp(CbmL1)
 CbmL1* CbmL1::fInstance = 0;
 
 
-CbmL1::CbmL1()
-  : FairTask("L1")
-  , algo(0)
-  ,  // for access to L1 Algorithm from L1::Instance
-  fDigiFile()
-  , fUseHitErrors(0)
-  , fmCBMmode(0)
-  , fGlobalMode(0)
-  , vRTracks()
-  ,  // reconstructed tracks
-  vFileEvent()
-  , vHitStore()
-  , vMCPoints()
-  , nMvdPoints(0)
-  , vMCPoints_in_Time_Slice()
-  , NStation(0)
-  , NMvdStations(0)
-  , NStsStations(0)
-  , NMuchStations(0)
-  , NTrdStations(0)
-  , NTOFStation(0)
-  ,  // number of detector stations (all\sts\mvd)
-  fPerformance(0)
-  , fSTAPDataMode(0)
-  , fSTAPDataDir("")
-  ,
-
-  fTrackingLevel(2)
-  ,  // really doesn't used
-  fMomentumCutOff(0.1)
-  ,  // really doesn't used
-  fGhostSuppression(1)
-  ,  // really doesn't used
-  fUseMVD(0)
-  ,  // really doesn't used
-  fUseMUCH(0)
-  , fUseTRD(0)
-  , fUseTOF(0)
-  ,
-
-  PrimVtx()
-  , fTimeSlice(nullptr)
-  , fEventList(nullptr)
-  , listStsDigi()
-  , fStsPoints(0)
-  , fMCTracks(0)
-  , fMvdPoints(0)
-  ,
-  //listMCTracks (0),
-  //listStsDigi(0),
-  listStsPts(0)
-  , listStsDigiMatch(0)
-  , listStsClusters(0)
-  , listStsHits(0)
-  , listStsHitMatch(0)
-  , listStsClusterMatch(0)
-  ,
-
-  listMvdPts(0)
-  , listMvdHits(0)
-  , listMvdDigiMatches(0)
-  , listMvdHitMatches(0)
-  ,
-
-  nMuchPoints(0)
-  , fMuchPoints(nullptr)
-  , listMuchHitMatches(nullptr)
-  , fDigiMatchesMuch(nullptr)
-  , fClustersMuch(nullptr)
-  , fMuchPixelHits(nullptr)
-  , fDigisMuch(nullptr)
-  , fTrdDigiPar(nullptr)
-  , fTrdModuleInfo(nullptr)
-  , fTrdPoints(nullptr)
-  , listTrdHits(nullptr)
-  , fTrdHitMatches(nullptr)
-  , fTofPoints(nullptr)
-  , fTofHitDigiMatches(nullptr)
-  , fTofHits(nullptr)
-  , fDigiPar(nullptr)
-  , fTofDigiBdfPar(nullptr)
-  ,
-
-  fPerfFile(nullptr)
-  , fHistoDir(nullptr)
-  , vStsHits()
-  , SortedIndex(0)
-  , StsIndex(0)
-  , vMCTracks()
-  , vHitMCRef()
-  , dFEI2vMCPoints()
-  , dFEI2vMCTracks()
-  , fData(nullptr)
-  , fFindParticlesMode()
-  , fStsMatBudgetFileName("")
-  , fMvdMatBudgetFileName("")
-  , fMuchMatBudgetFileName("")
-  , fTrdMatBudgetFileName("")
-  , fTofMatBudgetFileName("")
-  , fExtrapolateToTheEndOfSTS(false)
-  , fTimesliceMode(0)
-  , fTopoPerformance(nullptr)
-  , fEventEfficiency()
+CbmL1::CbmL1() : FairTask("L1")
 {
   if (!fInstance) fInstance = this;
 }
@@ -195,113 +91,17 @@ CbmL1::CbmL1()
 CbmL1::CbmL1(const char* name, Int_t iVerbose, Int_t _fPerformance, int fSTAPDataMode_, TString fSTAPDataDir_,
              int findParticleMode_)
   : FairTask(name, iVerbose)
-  , algo(0)
-  ,  // for access to L1 Algorithm from L1::Instance
-  fDigiFile()
-  , fUseHitErrors(0)
-  , fmCBMmode(0)
-  , fGlobalMode(0)
-  , vRTracks()
-  ,  // reconstructed tracks
-  vFileEvent()
-  , vHitStore()
-  , vMCPoints()
-  , nMvdPoints(0)
-  , vMCPoints_in_Time_Slice()
-  , NStation(0)
-  , NMvdStations(0)
-  , NStsStations(0)
-  , NMuchStations(0)
-  , NTrdStations(0)
-  , NTOFStation(0)
-  ,  // number of detector stations (all\sts\mvd)
-  fPerformance(_fPerformance)
+  , fPerformance(_fPerformance)
   , fSTAPDataMode(fSTAPDataMode_)
   , fSTAPDataDir(fSTAPDataDir_)
-  , fTrackingLevel(2)
-  ,  // really doesn't used
-  fMomentumCutOff(0.1)
-  ,  // really doesn't used
-  fGhostSuppression(1)
-  ,  // really doesn't used
-  fUseMVD(0)
-  ,  // really doesn't used
-  fUseMUCH(0)
-  , fUseTRD(0)
-  , fUseTOF(0)
-  ,
-
-
-  PrimVtx()
-  , fTimeSlice(nullptr)
-  , fEventList(nullptr)
-  , listStsDigi(0)
-  , fStsPoints(0)
-  , fMCTracks(0)
-  , fMvdPoints(NULL)
-  ,
-  //listMCTracks (0),
-
-  listStsPts(0)
-  , listStsDigiMatch(0)
-  , listStsClusters(0)
-  , listStsHits(0)
-  , listStsHitMatch(0)
-  , listStsClusterMatch(0)
-  ,
-
-  listMvdPts(0)
-  , listMvdHits(0)
-  , listMvdDigiMatches(0)
-  , listMvdHitMatches(0)
-  ,
-
-  nMuchPoints(0)
-  , fMuchPoints(nullptr)
-  , listMuchHitMatches(nullptr)
-  , fDigiMatchesMuch(nullptr)
-  , fClustersMuch(nullptr)
-  , fMuchPixelHits(nullptr)
-  , fDigisMuch(nullptr)
-  , fTrdDigiPar(nullptr)
-  , fTrdModuleInfo(nullptr)
-  , fTrdPoints(nullptr)
-  , listTrdHits(nullptr)
-  , fTrdHitMatches(nullptr)
-  , fTofPoints(nullptr)
-  , fTofHitDigiMatches(nullptr)
-  , fTofHits(nullptr)
-  , fDigiPar(nullptr)
-  , fTofDigiBdfPar(nullptr)
-  ,
-
-  fPerfFile(nullptr)
-  , fHistoDir(nullptr)
-  , vStsHits()
-  , SortedIndex(0)
-  , StsIndex(0)
-  , vMCTracks()
-  , vHitMCRef()
-  , dFEI2vMCPoints()
-  , dFEI2vMCTracks()
-  , fData(nullptr)
   , fFindParticlesMode(findParticleMode_)
-  , fStsMatBudgetFileName("")
-  , fMvdMatBudgetFileName("")
-  , fMuchMatBudgetFileName("")
-  , fTrdMatBudgetFileName("")
-  , fTofMatBudgetFileName("")
-  , fExtrapolateToTheEndOfSTS(false)
-  , fTimesliceMode(0)
-  , fTopoPerformance(nullptr)
-  , fEventEfficiency()
 {
   if (!fInstance) fInstance = this;
 }
 
 CbmL1::~CbmL1()
 {
-  if (fInstance == this) fInstance = 0;
+  if (fInstance == this) fInstance = nullptr;
 }
 
 
@@ -556,8 +356,8 @@ InitStatus CbmL1::Init()
 
   algo = &algo_static;
 
-  vector<fscal> geo;
-  geo.clear();
+  L1Vector<fscal> geo("geo");
+  geo.reserve(1000);
 
   for (int i = 0; i < 3; i++) {
     Double_t point[3] = {0, 0, 2.5 * i};
@@ -577,7 +377,7 @@ InitStatus CbmL1::Init()
     TFile* oldFile     = gFile;
     TDirectory* oldDir = gDirectory;
 
-    TFile* file         = new TFile(fDigiFile);
+    TFile* file         = new TFile(fMuchDigiFile, "READ");
     TObjArray* stations = (TObjArray*) file->Get("stations");
     fGeoScheme->Init(stations, 0);
     for (int iStation = 0; iStation < fGeoScheme->GetNStations(); iStation++) {
@@ -610,38 +410,34 @@ InitStatus CbmL1::Init()
 
   // count ToF parameters
 
-  int maxTofStation = 0;
-  int St            = 0;
+  // if (fUseTOF) {
+  //   int maxTofStation = 0;
 
-  vector<int> NHits;
-  vector<float> Z_pos;
+  //   L1Vector<int> NHits("NHits", 10, 0);
+  //   L1Vector<float> Z_pos("Z_pos", 10, 0.f);
 
-  NHits.resize(10, 0);
-  Z_pos.resize(10, 0);
+  //   if (fTofHits) {
+  //     for (int j = 0; j < fTofHits->GetEntriesFast(); j++) {
 
+  //       CbmTofHit* mh = L1_DYNAMIC_CAST<CbmTofHit*>(fTofHits->At(j));
+  //       int St        = fTofDigiBdfPar->GetNbTrackingStations();
 
-  if (fUseTOF) {
+  //       if (maxTofStation < St) maxTofStation = St;
 
-    if (fTofHits) {
-      for (int j = 0; j < fTofHits->GetEntriesFast(); j++) {
+  //       TVector3 pos;
+  //       mh->Position(pos);
+  //       Z_pos[St] += pos.Z();
+  //       NHits[St]++;
+  //     }
+  //   }
 
-        CbmTofHit* mh = L1_DYNAMIC_CAST<CbmTofHit*>(fTofHits->At(j));
-        St            = fTofDigiBdfPar->GetNbTrackingStations();
+  //   for (int i = 0; i < (maxTofStation + 1); i++) {
+  //     Z_pos[i] = Z_pos[i] / NHits[i];
+  //   }
+  // }
 
-        if (maxTofStation < St) maxTofStation = St;
-
-        TVector3 pos;
-        mh->Position(pos);
-        Z_pos[St] += pos.Z();
-        NHits[St]++;
-      }
-    }
-
-    if (fUseTOF) NTOFStation = 3;  //fTofDigiBdfPar->GetNbTrackingStations();
-
-    for (int i = 0; i < (maxTofStation + 1); i++)
-      Z_pos[i] = Z_pos[i] / NHits[i];
-  }
+  // TODO: Read N TOF stations from geometry
+  if (fUseTOF) NTOFStation = 3;  //fTofDigiBdfPar->GetNbTrackingStations();
 
   CbmStsSetup* stsSetup = CbmStsSetup::Instance();
   if (!stsSetup->IsInit()) { stsSetup->Init(nullptr); }
@@ -951,8 +747,7 @@ InitStatus CbmL1::Init()
   algo->Init(geo, fUseHitErrors, fmCBMmode);
   geo.clear();
 
-
-  algo->fRadThick.resize(algo->NStations);
+  algo->fRadThick.reset(algo->NStations);
 
   // Read STS  MVD TRD MuCh ToF Radiation Thickness table
   TString stationName = "Radiation Thickness [%], Station";
@@ -1001,7 +796,6 @@ InitStatus CbmL1::Init()
       LOG(warn) << "No MVD material budget file is found. Homogenious budget "
                    "will be used";
       for (int iSta = 0; iSta < algo->NMvdStations; iSta++) {
-        cout << iSta << endl;
         algo->fRadThick[iSta].SetBins(1,
                                       100);  // mvd should be in +-100 cm square
         algo->fRadThick[iSta].table.resize(1);
@@ -1242,10 +1036,12 @@ void CbmL1::Exec(Option_t* /*option*/) {}
 
 void CbmL1::Reconstruct(CbmEvent* event)
 {
+
   static int nevent = 0;
   vFileEvent.clear();
 
-  std::vector<std::pair<double, int>> SortStsHits;
+  L1Vector<std::pair<double, int>> SortStsHits("CbmL1::SortStsHits");
+  SortStsHits.reserve(listStsHits->GetEntriesFast());
 
   float start_t = 10000000000;
 
@@ -1267,13 +1063,12 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
 
   std::sort(SortStsHits.begin(), SortStsHits.end());
-  StsIndex.resize(0);
-
+  StsIndex.clear();
+  StsIndex.reserve(SortStsHits.size());
   for (unsigned int i = 0; i < SortStsHits.size(); i++) {
     int j = SortStsHits[i].second;
     StsIndex.push_back(j);
   };
-
 
   if (fTimesliceMode && fPerformance) {
 
@@ -1291,15 +1086,27 @@ void CbmL1::Reconstruct(CbmEvent* event)
     vFileEvent.insert(DFSET::value_type(iFile, iEvent));
   }
 
-
   if (fVerbose > 1) { cout << endl << "CbmL1::Exec event " << ++nevent << " ..." << endl << endl; }
 #ifdef _OPENMP
   omp_set_num_threads(1);
 #endif
   // repack data
 
-  vector<CbmL1Track> vRTracksCur;  // reconstructed tracks
+  L1Vector<CbmL1Track> vRTracksCur("CbmL1::vRTracksCur");  // reconstructed tracks
 
+  {
+    int nHits = 0;
+    int nSta  = 1;
+    if (listMvdHits) {
+      nHits += listMvdHits->GetEntriesFast();
+      nSta += NMvdStations;
+    }
+    if (listStsHits) {
+      nHits += listStsHits->GetEntriesFast();
+      nSta += NStsStations;
+    }
+    vRTracksCur.reserve(10 + (2 * nHits) / nSta);
+  }
 
   while (newTS) {
 
@@ -1322,14 +1129,13 @@ void CbmL1::Reconstruct(CbmEvent* event)
       algo->SetData(fData->GetStsHits(), fData->GetNStsStrips(), fData->GetStsZPos(), fData->GetSFlag(),
                     fData->GetStsHitsStartIndex(), fData->GetStsHitsStopIndex());
     }
-    else
+    else {
       ReadEvent(fData, TsStart, TsLength, TsOverlap, FstHitinTs, newTS, event);
+    }
 
     if (0) {  // correct hits on MC // dbg
       TRandom3 random;
-      vector<int> strips, zP;
-      strips.clear();
-      zP.clear();
+      L1Vector<int> strips("CbmL1::strips"), zP("CbmL1::zP");
       for (unsigned int iH = 0; iH < (*algo->vStsHits).size(); ++iH) {
         L1Hit& h = const_cast<L1Hit&>((*algo->vStsHits)[iH]);
 #ifdef USE_EVENT_NUMBER
@@ -1359,8 +1165,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
         }
         strips.push_back(h.b);
         if (std::find(zP.begin(), zP.end(), h.iz) != zP.end()) {  // TODO why do we need it??gives prob=0
-          h.iz = (*algo->vStsZPos).size();
-          const_cast<std::vector<float>*>(algo->vStsZPos)->push_back(0);
+          h.iz = algo->vStsZPos->size();
+          algo->vStsZPos->push_back(0.f);
         }
         zP.push_back(h.iz);
 
@@ -1385,7 +1191,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
       HitMatch();
       // calculate the max number of Hits\mcPoints on continuous(consecutive) stations
 
-      for (vector<CbmL1MCTrack>::iterator it = vMCTracks.begin(); it != vMCTracks.end(); ++it)
+      for (L1Vector<CbmL1MCTrack>::iterator it = vMCTracks.begin(); it != vMCTracks.end(); ++it)
         it->Init();
     }
 
@@ -1406,8 +1212,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     for (unsigned int iH = 0; iH < (*algo->vStsHits).size(); ++iH) {
 #ifdef USE_EVENT_NUMBER
-      L1Hit& h    = const_cast<L1Hit&>((*algo->vStsHits)[iH]);
-      h.n         = -1;
+      L1Hit& h = const_cast<L1Hit&>((*algo->vStsHits)[iH]);
+      h.n      = -1;
 #endif
       if (vStsHits[iH].mcPointIds.size() == 0) continue;
 #ifdef USE_EVENT_NUMBER
@@ -1416,18 +1222,18 @@ void CbmL1::Reconstruct(CbmEvent* event)
 #endif
     }
 
-    for (vector<CbmL1MCTrack>::iterator i = vMCTracks.begin(); i != vMCTracks.end(); ++i) {
+    for (L1Vector<CbmL1MCTrack>::iterator i = vMCTracks.begin(); i != vMCTracks.end(); ++i) {
       CbmL1MCTrack& MC = *i;
 
       if (!MC.IsReconstructable()) continue;
       if (!(MC.ID >= 0)) continue;
 
       if (MC.StsHits.size() < 4) continue;
-      vector<int> hitIndices(algo->NStations, -1);
+      L1Vector<int> hitIndices("hitIndices", algo->NStations, -1);
 
       for (unsigned int iH = 0; iH < MC.StsHits.size(); iH++) {
-        const int hitI   = MC.StsHits[iH];
-        CbmL1Hit& hit    = const_cast<CbmL1Hit&>(vStsHits[hitI]);
+        const int hitI = MC.StsHits[iH];
+        CbmL1Hit& hit  = const_cast<CbmL1Hit&>(vStsHits[hitI]);
 
         hit.event = MC.iEvent;
 
@@ -1497,16 +1303,18 @@ void CbmL1::Reconstruct(CbmEvent* event)
       t.StsHits.clear();
       t.fTrackTime = it->fTrackTime;
 
-      vector<int> StsHitsLocal;
+      L1Vector<int> StsHitsLocal("CbmL1::StsHitsLocal");
+      StsHitsLocal.reserve(it->NHits);
 
       for (int i = 0; i < it->NHits; i++) {
         int start_hit1 = start_hit;
         if (algo->fRecoHits[start_hit1] > vStsHits.size() - 1) start_hit++;
-        else if (fTimesliceMode)
+        else if (fTimesliceMode) {
           t.StsHits.push_back(((*algo->vStsHits)[algo->fRecoHits[start_hit]]).ID);
-        else
+        }
+        else {
           t.StsHits.push_back(algo->fRecoHits[start_hit]);
-
+        }
         StsHitsLocal.push_back(algo->fRecoHits[start_hit++]);
       }
 
@@ -1585,7 +1393,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
     HitMatch();
     // calculate the max number of Hits\mcPoints on continuous(consecutive) stations
 
-    for (vector<CbmL1MCTrack>::iterator it = vMCTracks.begin(); it != vMCTracks.end(); ++it)
+    for (L1Vector<CbmL1MCTrack>::iterator it = vMCTracks.begin(); it != vMCTracks.end(); ++it)
       it->Init();
   }
   //
@@ -1599,6 +1407,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
   //     ReadSTAPPerfData();
   //   };
 
+  vRTracks.clear();
+  vRTracks.reserve(vRTracksCur.size());
   for (unsigned int iTrack = 0; iTrack < vRTracksCur.size(); iTrack++) {
 
     for (unsigned int iHit = 0; iHit < vRTracksCur[iTrack].StsHits.size(); iHit++)
@@ -1613,8 +1423,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
   for (unsigned int iH = 0; iH < (*algo->vStsHits).size(); ++iH) {
 #ifdef USE_EVENT_NUMBER
-    L1Hit& h    = const_cast<L1Hit&>((*algo->vStsHits)[iH]);
-    h.n         = -1;
+    L1Hit& h = const_cast<L1Hit&>((*algo->vStsHits)[iH]);
+    h.n      = -1;
 #endif
     if (vStsHits[iH].mcPointIds.size() == 0) continue;
 #ifdef USE_EVENT_NUMBER
@@ -1623,18 +1433,18 @@ void CbmL1::Reconstruct(CbmEvent* event)
 #endif
   }
 
-  for (vector<CbmL1MCTrack>::iterator i = vMCTracks.begin(); i != vMCTracks.end(); ++i) {
+  for (L1Vector<CbmL1MCTrack>::iterator i = vMCTracks.begin(); i != vMCTracks.end(); ++i) {
     CbmL1MCTrack& MC = *i;
 
     if (!MC.IsReconstructable()) continue;
     if (!(MC.ID >= 0)) continue;
 
     if (MC.StsHits.size() < 4) continue;
-    vector<int> hitIndices(algo->NStations, -1);
+    L1Vector<int> hitIndices("CbmL1::hitIndices", algo->NStations, -1);
 
     for (unsigned int iH = 0; iH < MC.StsHits.size(); iH++) {
-      const int hitI   = MC.StsHits[iH];
-      CbmL1Hit& hit    = const_cast<CbmL1Hit&>(vStsHits[hitI]);
+      const int hitI = MC.StsHits[iH];
+      CbmL1Hit& hit  = const_cast<CbmL1Hit&>(vStsHits[hitI]);
 
       hit.event = MC.iEvent;
     }
@@ -1712,7 +1522,7 @@ void CbmL1::IdealTrackFinder()
   algo->fTracks.clear();
   algo->fRecoHits.clear();
 
-  for (vector<CbmL1MCTrack>::iterator i = vMCTracks.begin(); i != vMCTracks.end(); ++i) {
+  for (L1Vector<CbmL1MCTrack>::iterator i = vMCTracks.begin(); i != vMCTracks.end(); ++i) {
     CbmL1MCTrack& MC = *i;
 
     if (!MC.IsReconstructable()) continue;
@@ -1723,11 +1533,11 @@ void CbmL1::IdealTrackFinder()
     L1Track algoTr;
     algoTr.NHits = 0;
 
-    vector<int> hitIndices(algo->NStations, -1);
+    L1Vector<int> hitIndices("CbmL1::hitIndices", algo->NStations, -1);
 
     for (unsigned int iH = 0; iH < MC.StsHits.size(); iH++) {
-      const int hitI         = MC.StsHits[iH];
-      const CbmL1Hit& hit    = vStsHits[hitI];
+      const int hitI      = MC.StsHits[iH];
+      const CbmL1Hit& hit = vStsHits[hitI];
 
       const int iStation = vMCPoints[hit.mcPointIds[0]].iStation;
 
@@ -1768,7 +1578,7 @@ void CbmL1::IdealTrackFinder()
 
 /// -----   STandAlone Package service-functions  -----------------------------
 
-void CbmL1::WriteSTAPGeoData(const vector<float>& geo_)
+void CbmL1::WriteSTAPGeoData(const L1Vector<float>& geo_)
 {
   // write geo in file
   TString fgeo_name = fSTAPDataDir + "geo_algo.txt";
@@ -2037,9 +1847,9 @@ istream& CbmL1::eatwhite(istream& is)  // skip spaces
   return is;
 }
 
-//void CbmL1::ReadSTAPGeoData(vector<float> geo_, int &size)
-//void CbmL1::ReadSTAPGeoData(vector<fscal> geo_, int &size)
-void CbmL1::ReadSTAPGeoData(vector<fscal>& geo_, int& size)
+//void CbmL1::ReadSTAPGeoData(L1Vector<float> geo_, int &size)
+//void CbmL1::ReadSTAPGeoData(L1Vector<fscal> geo_, int &size)
+void CbmL1::ReadSTAPGeoData(L1Vector<fscal>& geo_, int& size)
 {
   TString fgeo_name = fSTAPDataDir + "geo_algo.txt";
   ifstream fgeo(fgeo_name);
@@ -2065,9 +1875,9 @@ void CbmL1::ReadSTAPAlgoData()
   if (1) {
     if (nEvent == 1) fadata.open(fadata_name, fstream::in);
 
-    if (algo->vStsHits) const_cast<std::vector<L1Hit>*>(algo->vStsHits)->clear();
+    if (algo->vStsHits) algo->vStsHits->clear();
     algo->NStsStrips = 0;
-    if (algo->vStsZPos) const_cast<std::vector<float>*>(algo->vStsZPos)->clear();
+    if (algo->vStsZPos) algo->vStsZPos->clear();
     if (algo->fStripFlag) algo->fStripFlag->clear();
 
     // check correct position in file
@@ -2091,7 +1901,7 @@ void CbmL1::ReadSTAPAlgoData()
     for (int i = 0; i < n; i++) {
       fscal element;
       fadata >> element;
-      const_cast<std::vector<float>*>(algo->vStsZPos)->push_back(element);
+      algo->vStsZPos->push_back(element);
     }
     if (fVerbose >= 4) {
       cout << "vStsZPos[" << n << "]"
@@ -2120,7 +1930,7 @@ void CbmL1::ReadSTAPAlgoData()
       element.f  = static_cast<THitI>(element_f);
       element.b  = static_cast<THitI>(element_b);
       element.iz = static_cast<TZPosI>(element_iz);
-      const_cast<std::vector<L1Hit>*>(algo->vStsHits)->push_back(element);
+      algo->vStsHits->push_back(element);
     }
     if (fVerbose >= 4) {
       cout << "vStsHits[" << n << "]"
@@ -2264,6 +2074,7 @@ void CbmL1::ReadSTAPPerfData()
     }
     // vHitMCRef
     fpdata >> n;
+    vHitMCRef.reserve(n);
     for (int i = 0; i < n; i++) {
       int element;
       fpdata >> element;
@@ -2275,6 +2086,7 @@ void CbmL1::ReadSTAPPerfData()
     }
     // vHitStore
     fpdata >> n;
+    vHitStore.reserve(n);
     for (int i = 0; i < n; i++) {
       CbmL1HitStore element;
       fpdata >> element.ExtIndex;
@@ -2507,7 +2319,7 @@ void CbmL1::WriteSIMDKFData()
     McTracksOut.open("mctracksout.dat", fstream::out | fstream::app);
   }
 
-  for (vector<CbmL1Track>::iterator RecTrack = vRTracks.begin(); RecTrack != vRTracks.end(); ++RecTrack) {
+  for (L1Vector<CbmL1Track>::iterator RecTrack = vRTracks.begin(); RecTrack != vRTracks.end(); ++RecTrack) {
     if (RecTrack->IsGhost()) continue;
 
     CbmL1MCTrack* MCTrack = RecTrack->GetMCTrack();

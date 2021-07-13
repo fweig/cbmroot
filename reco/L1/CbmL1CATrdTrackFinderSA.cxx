@@ -14,7 +14,6 @@
 #include "CbmKFTrack.h"
 #include "CbmKFTrdHit.h"
 #include "CbmL1.h"
-#include "CbmL1Def.h"
 #include "CbmL1TrdTracklet.h"
 #include "CbmL1TrdTracklet4.h"
 #include "CbmMCTrack.h"
@@ -44,6 +43,8 @@
 #include <vector>
 
 #include <cmath>
+
+#include "L1Def.h"
 
 using std::cout;
 using std::endl;

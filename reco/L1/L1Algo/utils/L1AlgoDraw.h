@@ -5,11 +5,10 @@
 #ifndef L1AlgoDraw_h
 #define L1AlgoDraw_h 1
 
-#include "CbmL1Def.h"
-
 #include <map>
 #include <vector>
 
+#include "L1Def.h"
 #include "L1Hit.h"
 #include "L1Station.h"
 #include "L1Triplet.h"
