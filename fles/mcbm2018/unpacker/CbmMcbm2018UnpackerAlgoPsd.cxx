@@ -218,7 +218,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
   uint32_t uSize  = msDescriptor.size;
   fulCurrentMsIdx = msDescriptor.idx;
 
-  fdMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
+  fdMsTime = static_cast<double>(fulCurrentMsIdx);
 
   LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
              << " has size: " << uSize;
@@ -263,6 +263,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
   /// Save start time of first valid MS )
   if (fdStartTime < 0) fdStartTime = fdMsTime;
+  Double_t dMsRelativeTime = fdMsTime - fdStartTime;
 
   // If MS time is less than start time print error and return
   if (fdMsTime - fdStartTime < 0) {
@@ -316,7 +317,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
           if (ReadResult == 0) {
 
             double prev_hit_time =
-              fdTsStartTime + (double) PsdReader.VectPackHdr.at(0).uAdcTime * 12.5 - fdTimeOffsetNs;  //in ns
+              dMsRelativeTime + (double) PsdReader.VectPackHdr.at(0).uAdcTime * 12.5 - fdTimeOffsetNs;  //in ns
 
             //hit loop
             for (uint64_t hit_iter = 0; hit_iter < PsdReader.VectHitHdr.size(); hit_iter++) {
@@ -337,7 +338,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
               UInt_t uChanUId = fviPsdChUId[uHitChannel];  //unique ID
 
               UInt_t fuAddress = uChanUId;                /// Unique channel address
-              Double_t fdTime  = fdTsStartTime + (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5
+              Double_t fdTime  = dMsRelativeTime + (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5
                                 - fdTimeOffsetNs;  /// Time of measurement [ns]
               Double_t fdEdep = (double) PsdReader.VectHitHdr.at(hit_iter).uSignalCharge
                                 / fUnpackPar->GetMipCalibration(uHitChannel);   /// Energy deposition from FPGA [MeV]
