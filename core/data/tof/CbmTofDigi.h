@@ -96,6 +96,12 @@ public:
   Int_t GetAddress() const { return fuAddress; };
 
 
+  /** @brief Get the desired name of the branch for this obj in the cbm output tree  (static)
+   ** @return "TofDigi"
+   **/
+  static const char* GetBranchName() { return "TofDigi"; }
+
+
   /** @brief Class name (static)
        ** @return  string CbmTofDigi
        **/

@@ -40,6 +40,11 @@ public:
 	 */
   Int_t GetAddress() const { return fAddress; }
 
+  /** @brief Get the desired name of the branch for this obj in the cbm output tree  (static)
+   ** @return "RichDigi"
+   **/
+  static const char* GetBranchName() { return "RichDigi"; }
+
   /** @brief Charge
 	 ** @return Returns TOT as charge
 	 **

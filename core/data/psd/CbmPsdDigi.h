@@ -91,6 +91,12 @@ public:
   UInt_t GetAddress() const { return fuAddress; };
 
 
+  /** @brief Get the desired name of the branch for this obj in the cbm output tree  (static)
+   ** @return "PsdDigi"
+   **/
+  static const char* GetBranchName() { return "PsdDigi"; }
+
+
   /** @brief Time
        ** @return Time [ns]
        **/

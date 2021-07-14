@@ -62,6 +62,12 @@ public:
   Int_t GetAddress() const { return fAddress; }
 
 
+  /** @brief Get the desired name of the branch for this obj in the cbm output tree  (static)
+   ** @return "StsDigi"
+   **/
+  static const char* GetBranchName() { return "StsDigi"; }
+
+
   /** @brief Channel number in module
    ** @value Channel number
    **/
