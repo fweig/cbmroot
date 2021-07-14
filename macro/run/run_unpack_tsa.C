@@ -27,42 +27,6 @@
 std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename);
 std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline = false);
 
-
-/** @brief Macro for CBM reconstruction
- ** @author Volker Friese <v.friese@gsi.de>
- ** @since  14 November 2020
- ** @param input          Name of input file (w/o extension .raw.root)
- ** @param nTimeSlices    Number of time-slices to process
- ** @param firstTimeSlice First time-slice (entry) to be processed
- ** @param output         Name of output file (w/o extension .rec.root)
- ** @param sEvBuildRaw    Option for raw event building
- ** @param setup          Name of predefined geometry setup
- ** @param paramFile      Parameter ROOT file (w/o extension .par.root)
- ** @param useMC          Option to provide the trackfinder with MC information
- **
- ** This macro performs from the digis in a time-slice. It can be used
- ** for simulated data (result of run_digi.C) or real data after unpacking.
- **
- ** The macro covers both time-based reconstruction and event-based
- ** reconstruction using raw events build from digis. This can be selected
- ** by the forth argument. If left empty, no raw event builder will be
- ** employed and reconstruction will be time-based. The option "Ideal"
- ** selects the ideal raw event builder, which associates digis to events
- ** based on the MC truth. The option "Real" selects a real raw event builder
- ** (latest version, for older versions use "Real2018" or "Real2019").
- ** 
- **
- ** The file names must be specified without extensions. The convention is
- ** that the raw (input) file is [input].raw.root. The output file
- ** will be [input].rec.root if not specified by the user. The parameter file
- ** has the extension .par.root. It is assumed to be [input].par.root if
- ** not specified by the user.
- **
- ** If no argument is specified, the input will be set to "test". This allows
- ** to execute the macro chain (run_tra_file.C, run_digi.C and run_reco.C)
- ** from the ROOT prompt without user intervention.
- **
- **/
 void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const char* setupName = "mcbm_beam_2021_03",
                     std::int32_t nevents = -1, std::string outpath = "")
 {
@@ -124,7 +88,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   auto trdconfig = std::make_shared<CbmTrdUnpackConfig>(trdsetuptag.Data(), 3);
   // trdconfig->SetDebugState();
   trdconfig->SetDoWriteOutput();
-  trdconfig->SetDoWriteOptOutA(CbmTrdRawMessageSpadic::GetBranchName());
+  // trdconfig->SetDoWriteOptOutA(CbmTrdRawMessageSpadic::GetBranchName());
   // trdconfig->SetDoWriteOptOutB("SpadicInfoMessages"); // SpadicInfoMessages
 
   std::string parfilesbasepathTrd = Form("%s/parameters/trd", srcDir.Data());

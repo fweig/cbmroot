@@ -10,6 +10,7 @@
 #include <RtypesCore.h>
 
 #include <cstddef>
+#include <cstdint>
 
 class CbmTsEventHeader : public FairEventHeader {
 
@@ -21,7 +22,7 @@ public:
   virtual ~CbmTsEventHeader() {};
 
   /** Get the Start time of the this Timeslice linked to this event header*/
-  ULong64_t GetTsStartTime() { return fTsStartTime; }
+  uint64_t GetTsStartTime() { return fTsStartTime; }
 
   /** @brief Get the number of digis in this Ts */
   ULong64_t GetNDigisPsd(ULong64_t) { return fNDigisPsd; }
@@ -35,7 +36,7 @@ public:
   ULong64_t GetNDigisTrd2D(ULong64_t) { return fNDigisTrd2D; }
 
   /** @brief Set the Ts Start Time @param value Start time of the TS */
-  void SetTsStartTime(ULong64_t value) { fTsStartTime = value; }
+  void SetTsStartTime(uint64_t value) { fTsStartTime = value; }
 
   /** @brief Set the number of digis in this Ts */
   void SetNDigisPsd(ULong64_t value) { fNDigisPsd = value; }
@@ -50,8 +51,8 @@ public:
 
 
 protected:
-  /** Run Id */
-  ULong64_t fTsStartTime = 0;
+  /** Timeslice start time */
+  uint64_t fTsStartTime = 0;
 
   ULong64_t fNDigisPsd   = 0;
   ULong64_t fNDigisRich  = 0;
