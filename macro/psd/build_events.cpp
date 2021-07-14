@@ -81,7 +81,7 @@ int build_events(TString inFileName, TString outFileName, int dsps_to_read = -1)
 			for (Int_t iDsp = 0; iDsp < nPsdDsps; iDsp++) {
 				dsp = (*fPsdDspVect)[iDsp];
 
-				hit_time = dsp.fdTime;
+				hit_time = dsp.fdTime + dsp.fdTsTime;
 				int hit_channel = dsp.GetSectionID();
 				if(hit_channel>9) continue;
 				h1_time_btw_hits->Fill(hit_time-prev_hit_time);
@@ -108,7 +108,7 @@ int build_events(TString inFileName, TString outFileName, int dsps_to_read = -1)
     for (Int_t iDsp = 0; iDsp < nPsdDsps; iDsp++) {
       dsp = (*fPsdDspVect)[iDsp];
       if (dsp.GetSectionID() > 9) continue;
-      hit_time = dsp.fdTime;
+      hit_time = dsp.fdTime + dsp.fdTsTime;
 
       if (hit_time < ev_start_time) cout << "negative time " << hit_time << " " << ev_start_time << endl;
       if (hit_time < prev_hit_time) cout << "negative time" << endl;
@@ -117,7 +117,7 @@ int build_events(TString inFileName, TString outFileName, int dsps_to_read = -1)
       //if( (hit_time-prev_hit_time) < gate_length )
       {
         event_dsp_vect.push_back(dsp);
-        prev_hit_time = dsp.fdTime;
+        prev_hit_time = dsp.fdTime + dsp.fdTsTime;
       }
       else {
         Nhits     = event_dsp_vect.size();
@@ -143,9 +143,9 @@ int build_events(TString inFileName, TString outFileName, int dsps_to_read = -1)
             int counter = 0;
             cout.precision(32);
             for (auto& PsdDsp : event_dsp_vect) {
-              cout << "# " << counter << " dsp_time-event_begin_time " << PsdDsp.fdTime - ev_start_time << endl;
+              cout << "# " << counter << " dsp_time-event_begin_time " << PsdDsp.fdTime  + dsp.fdTsTime - ev_start_time << endl;
               cout << " prev_timestump " << prev_timestump << " timestamp " << timestump << endl;
-              cout << PsdDsp.GetSectionID() << " " << PsdDsp.fdEdep << " " << PsdDsp.fdTime << endl;
+              cout << PsdDsp.GetSectionID() << " " << PsdDsp.fdEdep << " " << PsdDsp.fdTime + dsp.fdTsTime<< endl;
               counter++;
             }
 
@@ -163,7 +163,7 @@ int build_events(TString inFileName, TString outFileName, int dsps_to_read = -1)
           result_event.Ampl        = PsdDsp.fdAmpl;
           result_event.Minimum     = PsdDsp.fuMinimum;
           result_event.ZL          = PsdDsp.fuZL;
-          result_event.Time        = PsdDsp.fdTime;
+          result_event.Time        = PsdDsp.fdTime + PsdDsp.fdTsTime;
           result_event.TimeMax     = PsdDsp.fuTimeMax;
           result_event.TimeInEvent = PsdDsp.fdTime - ev_start_time;
 
