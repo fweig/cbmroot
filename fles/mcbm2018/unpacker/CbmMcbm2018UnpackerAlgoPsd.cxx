@@ -218,7 +218,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
   uint32_t uSize  = msDescriptor.size;
   fulCurrentMsIdx = msDescriptor.idx;
 
-  fdMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
+  fdMsTime = static_cast<double>(fulCurrentMsIdx);
 
   LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
              << " has size: " << uSize;
@@ -263,7 +263,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
 
   /// Save start time of first valid MS )
   if (fdStartTime < 0) fdStartTime = fdMsTime;
-  Double_t dMsRelativeTime = fdMsTime - fdStartTime;
+  Double_t dMsRelativeTime = fdMsTime - fdTsStartTime;
 
   // If MS time is less than start time print error and return
   if (fdMsTime - fdStartTime < 0) {
@@ -316,7 +316,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
           }
           if (ReadResult == 0) {
 
-            double prev_hit_time =
+            double prev_hit_time = 
               dMsRelativeTime + (double) PsdReader.VectPackHdr.at(0).uAdcTime * 12.5 - fdTimeOffsetNs;  //in ns
 
             //hit loop
@@ -338,8 +338,8 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
               UInt_t uChanUId = fviPsdChUId[uHitChannel];  //unique ID
 
               UInt_t fuAddress = uChanUId;                /// Unique channel address
-              Double_t fdTime  = dMsRelativeTime + (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5
-                                - fdTimeOffsetNs;  /// Time of measurement [ns]
+              Double_t fdTime  = dMsRelativeTime + (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5 - fdTimeOffsetNs;  /// Time of measurement relative to TS [ns]
+              Double_t fdTsTime = fdTsStartTime - fdStartTime;  /// Time of TimeSlice of measurement. Relative to first TS [ns]
               Double_t fdEdep = (double) PsdReader.VectHitHdr.at(hit_iter).uSignalCharge
                                 / fUnpackPar->GetMipCalibration(uHitChannel);   /// Energy deposition from FPGA [MeV]
               UInt_t fuZL      = PsdReader.VectHitHdr.at(hit_iter).uZeroLevel;  /// ZeroLevel from waveform [adc counts]
@@ -399,7 +399,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
                 fuFitWfm     = Pfitter.GetFitWfm();
               }
 
-              CbmPsdDsp dsp = CbmPsdDsp(fuAddress, fdTime, fdEdep, fuZL, fdAccum, fdAdcTime,
+              CbmPsdDsp dsp = CbmPsdDsp(fuAddress, fdTime, fdTsTime, fdEdep, fuZL, fdAccum, fdAdcTime,
 
                                         fdEdepWfm, fdAmpl, fuMinimum, fuTimeMax, fuWfm,
 
@@ -560,7 +560,7 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::SetDspOutputPointer(std::vector<CbmPsdDsp>* c
 
 std::unique_ptr<CbmPsdDigi> CbmMcbm2018UnpackerAlgoPsd::MakeDigi(CbmPsdDsp dsp)
 {
-  std::unique_ptr<CbmPsdDigi> digi(new CbmPsdDigi(dsp.GetAddress(), dsp.GetTime(), dsp.GetEdep()));
+  std::unique_ptr<CbmPsdDigi> digi(new CbmPsdDigi( dsp.GetAddress(), dsp.GetTime(), dsp.fdFitEdep ));
 
   return digi;
 }

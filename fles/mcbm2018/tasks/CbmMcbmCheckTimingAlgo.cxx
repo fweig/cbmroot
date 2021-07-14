@@ -255,11 +255,6 @@ void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset()
       dRefTime   = fpT0DigiVec->at(uDigi).GetTime();
       dRefCharge = fpT0DigiVec->at(uDigi).GetCharge();
     }  // if( ECbmModuleId::kT0 == fRefDet.detId )
-    if (ECbmModuleId::kPsd == fRefDet.detId) {
-      dRefTime    = fDigiMan->Get<DigiRef>(uDigi)->GetTime();
-      dRefCharge  = fDigiMan->Get<DigiRef>(uDigi)->GetCharge();
-      uRefAddress = fDigiMan->Get<DigiRef>(uDigi)->GetAddress();
-    }  // if( ECbmModuleId::kT0 == fRefDet.detId )
     else {
       dRefTime   = fDigiMan->Get<DigiRef>(uDigi)->GetTime();
       dRefCharge = fDigiMan->Get<DigiRef>(uDigi)->GetCharge();

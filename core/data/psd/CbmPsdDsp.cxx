@@ -21,6 +21,7 @@
 CbmPsdDsp::CbmPsdDsp()
   : fuAddress()
   , fdTime()
+  , fdTsTime()
   , fdEdep()
   , fuZL()
   , fdAccum()
@@ -45,6 +46,7 @@ CbmPsdDsp::CbmPsdDsp()
 // --- Constructor with assignment
 CbmPsdDsp::CbmPsdDsp(UInt_t address,
                      Double_t time, 
+                     Double_t ts_time, 
                      Double_t edep, 
                      UInt_t zl, 
                      Double_t accum, 
@@ -65,6 +67,7 @@ CbmPsdDsp::CbmPsdDsp(UInt_t address,
 
   : fuAddress(address)
   , fdTime(time)
+  , fdTsTime(ts_time)
   , fdEdep(edep)
   , fuZL(zl)
   , fdAccum(accum)
@@ -90,6 +93,7 @@ CbmPsdDsp::CbmPsdDsp(UInt_t address,
 CbmPsdDsp::CbmPsdDsp(const CbmPsdDsp& other)
   : fuAddress(other.fuAddress)
   , fdTime(other.fdTime)
+  , fdTsTime(other.fdTsTime)
   , fdEdep(other.fdEdep)
   , fuZL(other.fuZL)
   , fdAccum(other.fdAccum)
@@ -115,6 +119,7 @@ CbmPsdDsp::CbmPsdDsp(const CbmPsdDsp& other)
 CbmPsdDsp::CbmPsdDsp(CbmPsdDsp&& other)
   : fuAddress(other.fuAddress)
   , fdTime(other.fdTime)
+  , fdTsTime(other.fdTsTime)
   , fdEdep(other.fdEdep)
   , fuZL(other.fuZL)
   , fdAccum(other.fdAccum)
@@ -150,6 +155,7 @@ CbmPsdDsp& CbmPsdDsp::operator=(const CbmPsdDsp& other)
   if (this != &other) {
     fuAddress = other.fuAddress;
     fdTime    = other.fdTime;
+    fdTsTime  = other.fdTsTime;
     fdEdep    = other.fdEdep;
     fuZL      = other.fuZL;
     fdAccum   = other.fdAccum;
@@ -178,6 +184,7 @@ CbmPsdDsp& CbmPsdDsp::operator=(CbmPsdDsp&& other)
   if (this != &other) {
     fuAddress = other.fuAddress;
     fdTime    = other.fdTime;
+    fdTsTime  = other.fdTsTime;
     fdEdep    = other.fdEdep;
     fuZL      = other.fuZL;
     fdAccum   = other.fdAccum;

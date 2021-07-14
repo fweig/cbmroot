@@ -37,7 +37,7 @@ public:
 
   /** @brief Constructor with detailed assignment.
        **/
-  CbmPsdDsp(UInt_t address, Double_t time, Double_t edep, UInt_t zl, Double_t accum, Double_t adc_time,
+  CbmPsdDsp(UInt_t address, Double_t time, Double_t ts_time, Double_t edep, UInt_t zl, Double_t accum, Double_t adc_time,
             Double_t edep_wfm, Double_t ampl, UInt_t minimum, UInt_t time_max, std::vector<std::uint16_t> wfm,
             Double_t fit_ampl, Double_t fit_zl, Double_t fit_edep, Double_t fit_r2, Double_t fit_time_max,
             std::vector<std::uint16_t> fit_wfm);
@@ -81,6 +81,12 @@ public:
   Double_t GetTime() const { return fdTime; };
 
 
+  /** @brief TsTime
+       ** @return TsTime [ns]
+       **/
+  Double_t GetTsTime() const { return fdTsTime; };
+
+
   /** @brief Energy deposit
        ** @return Energy deposit
        **/
@@ -112,7 +118,8 @@ public:
   void SetEdep(Double_t edep) { fdEdep = edep; }
 
   UInt_t fuAddress   = 0;    /// Unique channel address
-  Double_t fdTime    = -1.;  /// Time of measurement [ns]
+  Double_t fdTime    = -1.;  /// Time of measurement relative to TS [ns]
+  Double_t fdTsTime  = -1.;  /// Time of TimeSlice of measurement. Relative to first TS [ns]
   Double_t fdEdep    = 0.;   /// Energy deposition from FPGA [MeV]
   UInt_t fuZL        = 0;    /// ZeroLevel from waveform [adc counts]
   Double_t fdAccum   = 0;    /// FPGA FEE Accumulator
@@ -136,6 +143,7 @@ public:
   {
     ar& fuAddress;
     ar& fdTime;
+    ar& fdTsTime;
     ar& fdEdep;
     ar& fuZL;
     ar& fdAccum;
