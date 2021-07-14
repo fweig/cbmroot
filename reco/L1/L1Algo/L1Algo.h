@@ -149,6 +149,8 @@ public:
 
   void L1KFTrackFitterMuch();
 
+  float GetMaxInvMom() const { return MaxInvMom[0]; }
+
   /// ----- Input data -----
   // filled in CbmL1::ReadEvent();
 

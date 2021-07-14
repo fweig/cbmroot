@@ -134,6 +134,8 @@ L1Algo/L1Fit.cxx
 CbmL1MCTrack.cxx
 
 L1Algo/utils/L1AlgoDraw.cxx
+L1Algo/utils/L1AlgoEfficiencyPerformance.cxx
+L1Algo/utils/L1AlgoPulls.cxx
 
 ParticleFinder/CbmL1PFFitter.cxx
 ParticleFinder/CbmL1PFMCParticle.cxx

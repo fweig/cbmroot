@@ -14,23 +14,22 @@
 
 #include "CbmL1.h"
 #include "CbmL1Counters.h"
-#include "CbmL1Def.h"
 
 #include <iostream>
 #include <vector>
 
 #include "L1Algo.h"
+#include "L1Def.h"
 
 using std::cout;
 using std::endl;
 using std::vector;
 
-const int MaxNStations = 10;
 
 template<int NHits>
 class L1Tracklet {
 public:
-  L1Tracklet() : mcTrackId(-1), iStation(-1) {};
+  L1Tracklet() = default;
 
   static bool compare(const L1Tracklet<NHits>& a, const L1Tracklet<NHits>& b)
   {
@@ -41,15 +40,15 @@ public:
   bool operator!=(const L1Tracklet<NHits>& a) { return !operator==(a); }
   bool operator<(const L1Tracklet<NHits>& a) { return compare(*this, a); }
 
-  int mcTrackId;
-  int iStation;
+  int mcTrackId {-1};
+  int iStation {-1};
 };
 
 // reconstructed Tracklet
 template<int NHits>
 class L1RTracklet : public L1Tracklet<NHits> {
 public:
-  L1RTracklet() {}
+  L1RTracklet() = default;
   L1RTracklet(THitI* ih_) : L1Tracklet<NHits>()
   {
     for (int iih = 0; iih < NHits; iih++) {
@@ -72,14 +71,14 @@ public:
   }
   bool operator!=(const L1RTracklet<NHits>& a) { return !operator==(a); }
 
-  THitI i[NHits];  // indices of left, middle and right hits
+  THitI i[NHits] {0};  // indices of left, middle and right hits
 };
 
 // MC Tracklet
 template<int NHits>
 class L1MTracklet : public L1Tracklet<NHits> {
 public:
-  L1MTracklet() : isReconstructable(false) {}
+  L1MTracklet() = default;
 
   void AddReconstructed(int recoId) { recoIds.push_back(recoId); };
   void SetAsReconstructable() { isReconstructable = true; };
@@ -89,13 +88,13 @@ public:
   bool IsReconstructable() { return isReconstructable; };                      // is it possible to reconstruct
   bool IsPrimary() { return mcMotherTrackId < 0; };                            // is it primary or secondary
 
-  int mcMotherTrackId;
-  float p;              // momentum
-  vector<int> recoIds;  // indices of reco tracklets in sorted recoArray
+  int mcMotherTrackId {-1};
+  float p {0.f};           // momentum
+  vector<int> recoIds {};  // indices of reco tracklets in sorted recoArray
 
-  vector<int> hitIds[NHits];  // indices of hits in L1::vStsHits. Separated by stations
+  vector<int> hitIds[NHits] {};  // indices of hits in L1::vStsHits. Separated by stations
 private:
-  bool isReconstructable;  // is it reconstructed
+  bool isReconstructable {false};  // is it reconstructed
 };
 
 // tracklets categories
@@ -118,7 +117,7 @@ class L1AlgoEfficiencyPerformance {
 public:
   typedef L1RTracklet<NHits> L1RecoTracklet;
   typedef L1MTracklet<NHits> L1MCTracklet;
-  L1AlgoEfficiencyPerformance() {};
+  L1AlgoEfficiencyPerformance() = default;
   void Init();
 
   bool AddOne(THitI* ih_);  // add one recoTracklets. Return is it reconstructed or not
@@ -127,20 +126,25 @@ public:
   void Print(TString title = "Triplets performance statistic",
              bool station  = 0);  // Print efficiencies
 
+  static constexpr int MaxNStations = 10;
+
 private:
+  L1AlgoEfficiencyPerformance<NHits>(const L1AlgoEfficiencyPerformance<NHits>&);
+  L1AlgoEfficiencyPerformance<NHits>& operator=(const L1AlgoEfficiencyPerformance<NHits>&);
+
   void FillMC();  // collect mcTracklets from mcTracks
   void MatchTracks();
 
-  CbmL1* fL1;
+  CbmL1* fL1 {nullptr};
 
-  vector<L1RecoTracklet> recoTracklets;
-  vector<L1MCTracklet> mcTracklets;
+  vector<L1RecoTracklet> recoTracklets {};
+  vector<L1MCTracklet> mcTracklets {};
 
-  TL1AlgoEfficiencies ntra;  // current event efficiencies
-  TL1AlgoEfficiencies NTRA;  // efficiencies statistic
+  TL1AlgoEfficiencies ntra {};  // current event efficiencies
+  TL1AlgoEfficiencies NTRA {};  // efficiencies statistic
 
-  TL1AlgoEfficiencies ntra_sta[MaxNStations];  // for each station separately
-  TL1AlgoEfficiencies NTRA_STA[MaxNStations];
+  TL1AlgoEfficiencies ntra_sta[MaxNStations] {};  // for each station separately
+  TL1AlgoEfficiencies NTRA_STA[MaxNStations] {};
 };
 
 // ===================================================================================
@@ -202,7 +206,7 @@ void L1AlgoEfficiencyPerformance<NHits>::FillMC()
       trlet.mcTrackId       = mtra.ID;
       trlet.mcMotherTrackId = mtra.mother_ID;
       trlet.p               = mtra.p;
-      if (mtra.p > fL1->MinRecoMom) trlet.SetAsReconstructable();
+      if (mtra.p > 1. / fL1->algo->GetMaxInvMom()) trlet.SetAsReconstructable();
 
       mcTracklets.push_back(trlet);
     }  // for Iter = stations
@@ -324,7 +328,7 @@ void L1AlgoEfficiencyPerformance<NHits>::CalculateEff()
     // count tracklets
     ntra_sta[iSta].Inc(reco, "total");
 
-    if (mtra.p > fL1->MinRefMom) {  // reference tracks
+    if (mtra.p > 1.) {  // reference tracks
       ntra_sta[iSta].Inc(reco, "fast");
       if (mtra.IsPrimary()) {  // reference primary
         ntra_sta[iSta].Inc(reco, "fast_prim");
