@@ -13,6 +13,7 @@
 #include <iomanip>  // for operator<<, setprecision, setw
 #include <sstream>  // for operator<<, basic_ostream, stringstream
 #include <string>   // for char_traits
+#include <utility>
 
 using std::endl;
 using std::string;
@@ -170,6 +171,18 @@ Double_t CbmTrdDigi::GetCharge(Double_t& tilt, Int_t& dt) const
 
 //_________________________________________________________________________________
 Double_t CbmTrdDigi::GetChargeError() const { return 0; }
+
+//_________________________________________________________________________________
+std::pair<CbmTrdDigi::eTriggerType, bool> CbmTrdDigi::GetTriggerPair(const Int_t triggerValue)
+{
+  // First get the trigger type kSelf or kNeighbor it is written to the first bit of the trigger bits.
+  eTriggerType type = static_cast<eTriggerType>(triggerValue & 1);
+
+  // Now extract if we had a multihit or not the info is written two the next bit
+  bool isMultihit = static_cast<bool>((triggerValue >> 1) & 1);
+
+  return std::make_pair(type, isMultihit);
+}
 
 //_________________________________________________________________________________
 Bool_t CbmTrdDigi::IsFlagged(const Int_t iflag) const

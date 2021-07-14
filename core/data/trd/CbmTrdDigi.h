@@ -151,6 +151,14 @@ public:
   }
   /** \brief Channel trigger type. SPADIC specific see CbmTrdTriggerType*/
   Int_t GetTriggerType() const { return (fInfo >> fgkTrgOffset) & 0x3; }
+
+  /**
+   * @brief Get the trigger combination, i.e. St or Nt and is multihit or not (true/false)
+   * @param[in] Int_t trigger value of a digi as stored in fInfo
+   * @return std::pair<eTriggerType, bool> <St or Nt, multihit or not>
+  */
+  static std::pair<eTriggerType, bool> GetTriggerPair(const Int_t triggerValue);
+
   /** \brief Channel FEE SPADIC/FASP according to CbmTrdAsicType*/
   eCbmTrdAsicType GetType() const
   {
