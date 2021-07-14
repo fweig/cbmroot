@@ -513,15 +513,14 @@ void CbmMcbm2018UnpackerAlgoRich::WriteOutputDigi(Int_t fpgaID, Int_t channel, D
   Int_t pixelUID   = this->GetPixelUID(fpgaID, channel);
   //check ordering
   uint64_t msRefTS = 0;
-  if (MSidx >= fdTsStartTime) {
-    msRefTS  = MSidx - fdTsStartTime;
-  } else {
-    std::cout<<"MS before TS Start: "<<MSidx<<"  "<<fdTsStartTime<<std::endl;
+  if (MSidx >= fdTsStartTime) { msRefTS = MSidx - fdTsStartTime; }
+  else {
+    std::cout << "MS before TS Start: " << MSidx << "  " << fdTsStartTime << std::endl;
   }
 
   Double_t finalTime = time + (Double_t) msRefTS - fdTimeOffsetNs;
   // Double_t finalTime = time + (Double_t) MSidx - fdTimeOffsetNs;
-  
+
   if (msRefTS == 0) return;  // Problems in data in current version. time is too large
 
   Double_t lastTime = 0.;
@@ -531,7 +530,8 @@ void CbmMcbm2018UnpackerAlgoRich::WriteOutputDigi(Int_t fpgaID, Int_t channel, D
     lastTime = fDigiVect[fDigiVect.size() - 1].GetTime();
     if (fDigiVect[0].GetTime() > finalTime) {
       fDigiVect.emplace(fDigiVect.begin(), pixelUID, finalTime, tot - ToTcorr);
-    } else if (lastTime > finalTime) {
+    }
+    else if (lastTime > finalTime) {
       for (int i = fDigiVect.size() - 1; i >= 0; i--) {
         lastTime = fDigiVect[i].GetTime();
         if (lastTime <= finalTime) {
