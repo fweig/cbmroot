@@ -27,6 +27,7 @@
 #pragma link C++ class CbmModuleList;
 #pragma link C++ class CbmErrorMessage + ;
 #pragma link C++ class CbmRawEvent + ;
+#pragma link C++ class CbmTsEventHeader + ;
 
 // ---In base
 #pragma link C++ class CbmDigiBranchBase + ;

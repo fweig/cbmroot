@@ -108,6 +108,15 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
 
   // -----   UnpackerConfigs   ----------------------------------------------
 
+  // ---- PSD ----
+  auto psdconfig = std::make_shared<CbmPsdUnpackConfig>("", runid);
+  // psdconfig->SetDebugState();
+  psdconfig->SetDoWriteOutput();
+  // psdconfig->SetDoWriteOptOutA("CbmPsdDsp");
+  std::string parfilesbasepath = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+  psdconfig->SetParFilesBasePath("");
+  // -------------
+
   // ---- TRD ----
   TString trdsetuptag = "";
   cbmsetup->GetGeoTag(ECbmModuleId::kTrd, trdsetuptag);
@@ -141,6 +150,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   auto source = new CbmSourceTsArchive(infile.data());
   auto unpack = source->GetRecoUnpack();
   unpack->SetUnpackConfig(trdconfig);
+  unpack->SetUnpackConfig(psdconfig);
   // ------------------------------------------------------------------------
 
 
@@ -188,7 +198,6 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
 */
 std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename)
 {
-
   // -----   Output filename and path   -------------------------------------
   std::string outpath  = "";
   std::string filename = "";
@@ -218,6 +227,8 @@ std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename)
     CbmTrdUnpackMonitor::eDigiHistos::kMap,         CbmTrdUnpackMonitor::eDigiHistos::kMap_St,
     CbmTrdUnpackMonitor::eDigiHistos::kMap_Nt,      CbmTrdUnpackMonitor::eDigiHistos::kCharge,
     CbmTrdUnpackMonitor::eDigiHistos::kCharge_St,   CbmTrdUnpackMonitor::eDigiHistos::kCharge_Nt,
+    CbmTrdUnpackMonitor::eDigiHistos::kChannel,
+    CbmTrdUnpackMonitor::eDigiHistos::kChannel_St,   CbmTrdUnpackMonitor::eDigiHistos::kChannel_Nt,
     CbmTrdUnpackMonitor::eDigiHistos::kTriggerType, CbmTrdUnpackMonitor::eDigiHistos::kDigiDeltaT};
 
   std::vector<CbmTrdUnpackMonitor::eRawHistos> rawhistovec = {

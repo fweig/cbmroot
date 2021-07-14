@@ -10,6 +10,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/utils
 ${CMAKE_CURRENT_SOURCE_DIR}/qa
 ${CMAKE_CURRENT_SOURCE_DIR}/alignment
 ${CMAKE_CURRENT_SOURCE_DIR}/mcbm
+${CMAKE_CURRENT_SOURCE_DIR}/unpack
 
 ${CBMDETECTORBASE_DIR}/rich
 
@@ -47,6 +48,7 @@ Include_Directories( ${INCLUDE_DIRECTORIES})
 Set(SYSTEM_INCLUDE_DIRECTORIES
   ${BASE_INCLUDE_DIRECTORIES}
   ${Boost_INCLUDE_DIR}
+  ${IPC_INCLUDE_DIRECTORY} # for fles for unpacker
 )
 
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
@@ -82,6 +84,9 @@ qa/CbmRichGeoTest.cxx
 qa/CbmRichUrqmdTest.cxx
 qa/CbmRichGeoTestOpt.cxx
 qa/CbmRichRecoQa.cxx
+
+unpack/CbmRichUnpackAlgo.cxx
+unpack/CbmRichUnpackConfig.cxx
 )
 
 set(NO_DICT_SRCS
@@ -126,7 +131,9 @@ set(LINKDEF  CbmRichRecoLinkDef.h)
 
 Set(LIBRARY_NAME CbmRichReco)
 Set(DEPENDENCIES
-    KF L1 CbmRichBase CbmRecoBase CbmBase CbmData Base MLP boost_regex Gdml)
+    KF L1 CbmRichBase CbmRecoBase CbmBase CbmData Base MLP boost_regex Gdml 
+    fles_ipc # for unpacker
+    )
 
 GENERATE_LIBRARY()
 

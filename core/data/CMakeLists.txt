@@ -52,6 +52,8 @@ set(SRCS
   CbmMatch.cxx
   CbmTrackMatchNew.cxx
 
+  CbmTsEventHeader.cxx
+
   base/CbmDigiBranchBase.cxx
   base/CbmDigiContainer.cxx
 

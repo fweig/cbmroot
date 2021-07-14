@@ -19,4 +19,7 @@
 #pragma link C++ class CbmStsRecoModule + ;
 #pragma link C++ class CbmStsTrackFinderIdeal + ;
 
+#pragma link C++ class CbmStsUnpackAlgo + ;
+#pragma link C++ class CbmStsUnpackConfig + ;
+
 #endif /* __CINT__ */

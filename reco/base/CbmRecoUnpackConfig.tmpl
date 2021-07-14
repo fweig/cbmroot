@@ -239,7 +239,9 @@ protected:
       auto filepath = pair.first;
       auto parset   = pair.second;
       FairParAsciiFileIo asciiInput;
-      if (asciiInput.open(filepath.data())) { parset->init(&asciiInput); }
+      if (!filepath.empty()) {
+        if (asciiInput.open(filepath.data())) { parset->init(&asciiInput); }
+      }
     }
     return kTRUE;
   }

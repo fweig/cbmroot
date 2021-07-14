@@ -290,7 +290,13 @@ void CbmTrdUnpackAlgoR::makeDigi(CbmTrdRawMessageSpadic raw)
   ULong64_t time = raw.GetTime();
   time -= fSystemTimeoffset;
 
+  // Set the time relative to the TS start
+  time -= fTsStartTime;
+
   auto digi = fRTDMethod->MakeDigi(raw.GetSamples(), padChNr, uniqueModuleId, time, triggerType, errClass);
+
+  // If the raw message was flagged as multi hit, forward this info to the digi
+  if (raw.GetMultiHit()) digi->SetTriggerType(CbmTrdDigi::eTriggerType::kMulti);
 
   // Digest the output, i.e. write to return vector and optional pass to the monitor
   digestOutput(std::move(digi), raw);

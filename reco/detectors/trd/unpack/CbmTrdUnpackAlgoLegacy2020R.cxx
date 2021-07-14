@@ -295,6 +295,9 @@ void CbmTrdUnpackAlgoLegacy2020R::makeDigi(CbmTrdRawMessageSpadic raw)
   }
   time -= fSystemTimeoffset;
 
+  // Set the time relative to the TS start
+  time -= fTsStartTime;
+
   auto digi = fRTDMethod->MakeDigi(raw.GetSamples(), padChNr, uniqueModuleId, time, triggerType, errClass);
 
   // Digest the output, i.e. write to return vector and optional pass to the monitor

@@ -92,32 +92,10 @@ void CbmTrdUnpackMonitor::Finish()
     // std::unique_ptr<TFile> histofile(new TFile(fOutfilename.data(), "RECREATE"));
     TFile histofile(fOutfilename.data(), "RECREATE");
 
-    // Move into the histofile
-    // histofile->cd();
-    histofile.cd();
-    /// Write all the histograms to the file.
-    for (auto histopair : fHistoVec) {
-      // Make sure we end up in chosen folder
-      if (nullptr == gDirectory->Get(histopair.first.data())) gDirectory->mkdir(histopair.first.data());
-      gDirectory->cd(histopair.first.data());
+    nhistos += writeHistosToFile(&fDigiHistoMap, &histofile);
+    nhistos += writeHistosToFile(&fRawHistoMap, &histofile);
+    nhistos += writeHistosToFile(&fOtherHistoMap, &histofile);
 
-      // Now lets extract whether we have a digi, raw or other histo and move (create) to the subdirectory
-      auto histotype = getHistoType(histopair.second);
-      // (Create and) Move to the directory of the type
-      if (nullptr == gDirectory->Get(histotype.data())) gDirectory->mkdir(histotype.data());
-      gDirectory->cd(histotype.data());
-
-
-      // Write histogram
-      LOG(debug) << Class_Name() << "::Finish() Write histo " << histopair.second->GetName() << " to file "
-                 << histofile.GetName() << " in folder " << histopair.first.data() << "/" << histotype.data();
-      histopair.second->Write();
-      // Move back to root directory of the output file
-      // histofile->cd();
-      histofile.cd();
-
-      nhistos++;
-    }
     /// Restore old global file and folder pointer to avoid messing with FairRoot
     gFile      = oldFile;
     gDirectory = oldDir;
@@ -170,7 +148,9 @@ void CbmTrdUnpackMonitor::createHisto(eDigiHistos kHisto)
     auto rotation  = fModuleOrientation.find(moduleid)->second;
 
     histoname = "ModuleId_" + std::to_string(moduleid) + "-";
+    histoname += getTypeName(kHisto) + "_";
     histoname += getHistoName(kHisto);
+
     switch (kHisto) {
       case eDigiHistos::kMap:
       case eDigiHistos::kMap_St:
@@ -210,13 +190,20 @@ void CbmTrdUnpackMonitor::createHisto(eDigiHistos kHisto)
         newhisto->GetXaxis()->SetBinLabel((static_cast<int>(CbmTrdDigi::eTriggerType::kMulti) + 1), "Multihit");
 
         break;
+      case eDigiHistos::kChannel:
+      case eDigiHistos::kChannel_St:
+      case eDigiHistos::kChannel_Nt:
+        newhisto = std::make_shared<TH1I>(histoname.data(), histoname.data(), nchannels, -0.5, (nchannels - 0.5));
+        newhisto->SetXTitle("ChannelId");
+        newhisto->SetYTitle("Counts");
+        break;
       case eDigiHistos::kDigiDeltaT:
         newhisto = std::make_shared<TH2I>(histoname.data(), histoname.data(), nchannels, -0.5, (nchannels - 0.5), 3500,
                                           -2e6, 5e6);
         newhisto->SetXTitle("ChannelId");
         newhisto->SetYTitle("#DeltaT(Digi(n)-Digi(n-1)) [ns]");
         break;
-      default: return; break;
+        // default: return; break;
     }
     LOG(debug) << Class_Name() << "::CreateHisto() HistoDigi " << static_cast<size_t>(kHisto) << " Module " << moduleid
                << " initialized as " << histoname.data();
@@ -236,6 +223,7 @@ void CbmTrdUnpackMonitor::createHisto(eRawHistos kHisto)
     auto nchannels = nrows * ncols;
 
     histoname = "ModuleId_" + std::to_string(moduleid) + "-";
+    histoname += getTypeName(kHisto) + "_";
     histoname += getHistoName(kHisto);
     switch (kHisto) {
       case eRawHistos::kSignalshape:
@@ -292,6 +280,7 @@ void CbmTrdUnpackMonitor::createHisto(eOtherHistos kHisto)
 
   for (auto moduleid : fModuleIdsVec) {
     histoname = "ModuleId_" + std::to_string(moduleid) + "-";
+    histoname += getTypeName(kHisto) + "_";
     histoname += getHistoName(kHisto);
     switch (kHisto) {
       case eOtherHistos::kSpadic_Info_Types: {
@@ -348,7 +337,9 @@ void CbmTrdUnpackMonitor::createHistos()
 void CbmTrdUnpackMonitor::fillHisto(CbmTrdDigi* digi, eDigiHistos kHisto, std::uint32_t moduleid,
                                     std::shared_ptr<TH1> histo)
 {
-  auto triggertype = static_cast<CbmTrdDigi::eTriggerType>(digi->GetTriggerType());
+  auto triggerpair = digi->GetTriggerPair(digi->GetTriggerType());
+  auto triggertype = triggerpair.first;
+  auto isMultihit  = triggerpair.second;
   switch (kHisto) {
     case eDigiHistos::kMap_St: {
       if (triggertype != CbmTrdDigi::eTriggerType::kSelf) { return; }
@@ -382,7 +373,21 @@ void CbmTrdUnpackMonitor::fillHisto(CbmTrdDigi* digi, eDigiHistos kHisto, std::u
       histo->Fill(digi->GetCharge());
       break;
 
-    case eDigiHistos::kTriggerType: histo->Fill(digi->GetTriggerType()); break;
+    case eDigiHistos::kChannel: histo->Fill(digi->GetAddressChannel()); break;
+    case eDigiHistos::kChannel_St:
+      if (triggertype != CbmTrdDigi::eTriggerType::kSelf) { return; }
+      histo->Fill(digi->GetAddressChannel());
+      break;
+    case eDigiHistos::kChannel_Nt:
+      if (triggertype != CbmTrdDigi::eTriggerType::kNeighbor) { return; }
+      histo->Fill(digi->GetAddressChannel());
+      break;
+
+    case eDigiHistos::kTriggerType: {
+      if (isMultihit) histo->Fill(static_cast<int>(CbmTrdDigi::eTriggerType::kMulti));
+      histo->Fill(static_cast<int>(triggertype));
+      break;
+    }
     case eDigiHistos::kDigiDeltaT: histo->Fill(digi->GetAddressChannel(), getDeltaT(digi)); break;
 
     default: return; break;
@@ -420,7 +425,7 @@ void CbmTrdUnpackMonitor::fillHisto(CbmTrdRawMessageSpadic* raw, eRawHistos kHis
       histo->Fill(digi->GetAddressChannel(), raw->GetSamples()->at(0));
       break;
     }
-    case eRawHistos::kHitType: histo->Fill(raw->GetHitType()); break;
+    case eRawHistos::kHitType: histo->Fill(static_cast<int>(raw->GetHitType())); break;
     default: return; break;
   }
 }
@@ -459,7 +464,7 @@ std::double_t CbmTrdUnpackMonitor::getDeltaT(CbmTrdDigi* digi)
 // ---- getHistoName ----
 std::string CbmTrdUnpackMonitor::getHistoName(eDigiHistos kHisto)
 {
-  std::string histoname = "Digi_";
+  std::string histoname = "";
 
   switch (kHisto) {
     case eDigiHistos::kMap: histoname += "Map"; break;
@@ -468,10 +473,11 @@ std::string CbmTrdUnpackMonitor::getHistoName(eDigiHistos kHisto)
     case eDigiHistos::kCharge: histoname += "Charge"; break;
     case eDigiHistos::kCharge_St: histoname += "Charge_St"; break;
     case eDigiHistos::kCharge_Nt: histoname += "Charge_Nt"; break;
+    case eDigiHistos::kChannel: histoname += "Channel"; break;
+    case eDigiHistos::kChannel_St: histoname += "Channel_St"; break;
+    case eDigiHistos::kChannel_Nt: histoname += "Channel_Nt"; break;
     case eDigiHistos::kTriggerType: histoname += "TriggerType"; break;
     case eDigiHistos::kDigiDeltaT: histoname += "DigiDeltaT"; break;
-
-    default: return ""; break;
   }
   return histoname;
 }
@@ -479,7 +485,7 @@ std::string CbmTrdUnpackMonitor::getHistoName(eDigiHistos kHisto)
 // ---- getHistoName ----
 std::string CbmTrdUnpackMonitor::getHistoName(eRawHistos kHisto)
 {
-  std::string histoname = "Raw_";
+  std::string histoname = "";
 
   switch (kHisto) {
     case eRawHistos::kSignalshape: histoname += "Signalshape"; break;
@@ -492,7 +498,6 @@ std::string CbmTrdUnpackMonitor::getHistoName(eRawHistos kHisto)
     case eRawHistos::kSampleDistStdDev: histoname += "SampleDistStdDev"; break;
     case eRawHistos::kSample0perChannel: histoname += "Sample0perChannel"; break;
     case eRawHistos::kHitType: histoname += "HitType"; break;
-    default: return ""; break;
   }
   return histoname;
 }
@@ -500,12 +505,11 @@ std::string CbmTrdUnpackMonitor::getHistoName(eRawHistos kHisto)
 // ---- getHistoName ----
 std::string CbmTrdUnpackMonitor::getHistoName(eOtherHistos kHisto)
 {
-  std::string histoname = "Other_";
+  std::string histoname = "";
 
   switch (kHisto) {
     case eOtherHistos::kSpadic_Info_Types: histoname += "Spadic_Info_Types"; break;
     case eOtherHistos::kMs_Flags: histoname += "Ms_Flags"; break;
-    default: return ""; break;
   }
   return histoname;
 }

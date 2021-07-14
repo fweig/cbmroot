@@ -11,4 +11,7 @@
 #pragma link C++ class CbmPsdHitProducer + ;
 #pragma link C++ class CbmPsdMCbmHitProducer + ;
 
+#pragma link C++ class CbmPsdUnpackAlgo + ;
+#pragma link C++ class CbmPsdUnpackConfig + ;
+
 #endif

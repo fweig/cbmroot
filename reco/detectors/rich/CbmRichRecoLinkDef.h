@@ -32,4 +32,9 @@
 #pragma link C++ class CbmRichRecoQa + ;
 #pragma link C++ class CbmRichRecoTbQa + ;
 
+//unpack
+#pragma link C++ class CbmRichUnpackAlgo + ;
+#pragma link C++ class CbmRichUnpackConfig + ;
+
+
 #endif

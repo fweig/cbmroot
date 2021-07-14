@@ -31,6 +31,7 @@
 
 #include <FairRunOnline.h>
 #include <FairTask.h>
+#include <Logger.h>
 
 #include <Rtypes.h>  // for types
 #include <RtypesCore.h>
@@ -40,6 +41,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <cmath>
@@ -52,13 +54,14 @@ public:
     kMap = 0,
     kMap_St,
     kMap_Nt,
+    kChannel,
+    kChannel_St,
+    kChannel_Nt,
     kCharge,
     kCharge_St,
     kCharge_Nt,
     kTriggerType,
-    kDigiDeltaT,
-    // kDigiMeanHitFrequency,  // Heavy histogram add with care
-    // kDigiHitFrequency,
+    kDigiDeltaT
   };
 
   /** @brief Enum for the predefined raw histograms. */
@@ -145,11 +148,8 @@ protected:
                      std::map<histotype, std::map<std::uint32_t, std::shared_ptr<TH1>>>* histomap,
                      std::uint32_t moduleid, histotype kHisto)
   {
-    // Store the histo pointer in the global histos vec
-    {
-      auto histopair = std::make_pair(std::to_string(moduleid), histo);
-      fHistoVec.emplace_back(histopair);
-    }
+    // If the histogram already exists we stop here
+    if (checkIfHistoExists(kHisto, histomap, moduleid)) return;
 
     // Create a histo module pair
     auto histopair = std::make_pair(moduleid, histo);
@@ -177,6 +177,24 @@ protected:
     }
   }
 
+  template<typename THistotype>
+  bool checkIfHistoExists(THistotype etype,
+                          std::map<THistotype, std::map<std::uint32_t, std::shared_ptr<TH1>>>* histomap,
+                          std::uint32_t moduleid)
+  {
+    // First check if the map knows about the type, if not the histo does not exist yet.
+    auto histotypemapIt = histomap->find(etype);
+    if (histotypemapIt == histomap->end()) return false;
+
+    // Check if at the moduleId position we find something
+    auto histopair = histotypemapIt->second.find(moduleid);
+    if (histopair == histotypemapIt->second.end()) return false;
+
+    // Check if there is a pointer to the histo which not null
+    if (histopair->second != nullptr) return true;
+
+    return false;
+  }
 
   /** @brief Create the actual TH1 shared_ptrs */
   void createHistos();
@@ -229,6 +247,27 @@ protected:
   /** @brief Get the Histo Name for the given histo @param kHisto eOtherHistos @return std::string */
   std::string getHistoName(eOtherHistos kHisto);
 
+  /** @brief Get the Type Name for the given histo @param kHisto eDigiHistos @return std::string */
+  static std::string getTypeName(eDigiHistos kHisto)
+  {
+    (void) kHisto;
+    return "Digi";
+  };
+
+  /** @brief Get the Type Name for the given histo @param kHisto eRawHistos @return std::string */
+  static std::string getTypeName(eRawHistos kHisto)
+  {
+    (void) kHisto;
+    return "Raw";
+  };
+
+  /** @brief Get the Type Name for the given histo @param kHisto eOtherHistos @return std::string */
+  static std::string getTypeName(eOtherHistos kHisto)
+  {
+    (void) kHisto;
+    return "Other";
+  };
+
   /** @brief Get the Histo Type, i.e. "Digi/Raw/Other", deduced from the histo name. @param histo @return std::string */
   std::string getHistoType(std::shared_ptr<TH1> histo);
 
@@ -244,9 +283,41 @@ protected:
   /** @brief Extract the std deviation of all samples in the message */
   std::float_t getSamplesStdDev(CbmTrdRawMessageSpadic* raw);
 
-  /** @brief histogram pointers (all) stored in a vector to be accessible for THttpServer */
-  std::vector<std::pair<std::string, std::shared_ptr<TH1>>> fHistoVec = {};
+  template<class histotype>
+  size_t writeHistosToFile(std::map<histotype, std::map<std::uint32_t, std::shared_ptr<TH1>>>* histomap, TFile* file)
+  {
+    // Counter of written histos
+    size_t nhistos = 0;
 
+    // Make sure we are in the file to which we want to write our histos
+    file->cd();
+    for (auto typemappair : *histomap) {
+      for (auto histopair : typemappair.second) {
+
+        // Make sure we end up in chosen folder
+        std::string moduleidname = std::to_string(histopair.first);
+        if (nullptr == gDirectory->Get(moduleidname.data())) gDirectory->mkdir(moduleidname.data());
+        gDirectory->cd(moduleidname.data());
+
+        // Now move(create) to the histotype folder (digi, raw or other histo)
+        std::string histotypename = getTypeName(typemappair.first);
+        // (Create and) Move to the directory of the type
+        if (nullptr == gDirectory->Get(histotypename.data())) gDirectory->mkdir(histotypename.data());
+        gDirectory->cd(histotypename.data());
+
+        // Write histogram
+        LOG(debug) << Class_Name() << "::Finish() Write histo " << histopair.second->GetName() << " to file "
+                   << file->GetName() << " in folder " << moduleidname.data() << "/" << histotypename.data();
+        histopair.second->Write();
+        nhistos++;
+        // Move back to root directory of the output file
+        file->cd();
+      }
+    }
+    return nhistos;
+  }
+
+  // Member variables
   /** @brief Digi histogram pointers stored in a map together with the module id */
   std::map<eDigiHistos, std::map<std::uint32_t, std::shared_ptr<TH1>>> fDigiHistoMap = {};
 

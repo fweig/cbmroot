@@ -19,6 +19,9 @@ CbmStsFindTracksEvents.cxx
 CbmStsFindTracksQa.cxx
 CbmStsRecoModule.cxx
 CbmStsTrackFinderIdeal.cxx
+
+unpack/CbmStsUnpackAlgo.cxx
+unpack/CbmStsUnpackConfig.cxx
 )
 # -----  End of sources   ---------------------------------
 
@@ -29,6 +32,7 @@ set(INCLUDE_DIRECTORIES
 
 # This directory
 ${CBMROOT_SOURCE_DIR}/reco/detectors/sts
+${CBMROOT_SOURCE_DIR}/reco/detectors/sts/unpack
 
 # Reco
 ${CBMROOT_SOURCE_DIR}/reco/base
@@ -52,6 +56,7 @@ ${CBMDETECTORBASE_DIR}/sts
 
 set(SYSTEM_INCLUDE_DIRECTORIES
 ${BASE_INCLUDE_DIRECTORIES}
+${IPC_INCLUDE_DIRECTORY} # for fles infos for unpacker
 )
 # ----  End of include directories ------------------------
 
@@ -68,6 +73,7 @@ ${Boost_LIBRARY_DIRS}
 # -----   Specify library dependences   -------------------
 Set(DEPENDENCIES
     CbmBase CbmData CbmRecoBase CbmStsBase
+    fles_ipc # for unpacker
 )
 # ---------------------------------------------------------
 

@@ -21,8 +21,8 @@
 #ifndef CbmRecoUnpackAlgo_TMPL
 #define CbmRecoUnpackAlgo_TMPL
 
-#include "Timeslice.hpp"  // timeslice
 #include <MicrosliceDescriptor.hpp>
+#include <Timeslice.hpp>  // timeslice
 
 #include <FairParGenericSet.h>  // for par container vector
 #include <FairTask.h>           // for Bool_t
@@ -133,6 +133,9 @@ protected:
 
   /** @brief Time of the last succesful digest hit message */
   size_t fLastFulltime = 0;
+
+  /** @brief Start time of the current TS [ns] */
+  size_t fTsStartTime = 0;
 
   /** @brief Additional explicit finish function of the derived algo implementations. */
   virtual void finish() = 0;
@@ -348,6 +351,9 @@ public:
    * @param value 
   */
   void SetParFilesBasePath(std::string value) { fParFilesBasePath = value; }
+
+  /** @brief Set the start time of the current TS */
+  void SetTsStartTime(size_t value) { fTsStartTime = value; }
 
   /**
    * @brief Actual unpacking function
