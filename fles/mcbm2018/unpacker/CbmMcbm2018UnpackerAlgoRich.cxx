@@ -103,6 +103,10 @@ Bool_t CbmMcbm2018UnpackerAlgoRich::ProcessTs(const fles::Timeslice& /*ts*/)
 
 Bool_t CbmMcbm2018UnpackerAlgoRich::ProcessTs(const fles::Timeslice& ts, size_t component)
 {
+
+  // Get reference TS time
+  fdTsStartTime = ts.start_time();
+
   /// Ignore First TS as first MS is typically corrupt
   if (0 == ts.index()) { return kTRUE; }
 
@@ -508,14 +512,26 @@ void CbmMcbm2018UnpackerAlgoRich::WriteOutputDigi(Int_t fpgaID, Int_t channel, D
   Double_t ToTcorr = fbDoToTCorr ? fUnpackPar->GetToTshift(fpgaID, channel) : 0.;
   Int_t pixelUID   = this->GetPixelUID(fpgaID, channel);
   //check ordering
-  Double_t finalTime = time + (Double_t) MSidx - fdTimeOffsetNs;
+  uint64_t msRefTS = 0;
+  if (MSidx >= fdTsStartTime) {
+    msRefTS  = MSidx - fdTsStartTime;
+  } else {
+    std::cout<<"MS before TS Start: "<<MSidx<<"  "<<fdTsStartTime<<std::endl;
+  }
+
+  Double_t finalTime = time + (Double_t) msRefTS - fdTimeOffsetNs;
+  // Double_t finalTime = time + (Double_t) MSidx - fdTimeOffsetNs;
+  
+  if (msRefTS == 0) return;  // Problems in data in current version. time is too large
 
   Double_t lastTime = 0.;
 
   if (fDigiVect.size() < 1) { fDigiVect.emplace_back(pixelUID, finalTime, tot - ToTcorr); }
   else {
     lastTime = fDigiVect[fDigiVect.size() - 1].GetTime();
-    if (lastTime > finalTime) {
+    if (fDigiVect[0].GetTime() > finalTime) {
+      fDigiVect.emplace(fDigiVect.begin(), pixelUID, finalTime, tot - ToTcorr);
+    } else if (lastTime > finalTime) {
       for (int i = fDigiVect.size() - 1; i >= 0; i--) {
         lastTime = fDigiVect[i].GetTime();
         if (lastTime <= finalTime) {

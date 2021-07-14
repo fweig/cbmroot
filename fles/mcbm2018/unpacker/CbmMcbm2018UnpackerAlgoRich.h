@@ -348,6 +348,8 @@ public:  // histograms
   std::map<uint32_t, std::map<Int_t, TH1D*>> fhTotMap;
   std::map<uint32_t, TH2D*> fhTot2dMap;
 
+  uint64_t fdTsStartTime = 0;
+
   ClassDef(CbmMcbm2018UnpackerAlgoRich, 1);
 };
 
