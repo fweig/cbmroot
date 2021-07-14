@@ -30,8 +30,6 @@ using std::unique_ptr;
 CbmRecoUnpack::CbmRecoUnpack() {}
 // ----------------------------------------------------------------------------
 
-// ----------------------------------------------------------------------------
-
 
 // -----   Initialisation   ---------------------------------------------------
 void CbmRecoUnpack::Finish()
@@ -93,17 +91,17 @@ void CbmRecoUnpack::Reset()
   // Reset the unpackers for a new timeslice, e.g. clear the output vectors
 
   // ---- Psd ----
-  if (fPsdConfig) fPsdConfig->GetUnpacker()->Finish();
+  if (fPsdConfig) fPsdConfig->Reset();
   // ---- Rich ----
-  if (fRichConfig) fRichConfig->GetUnpacker()->Finish();
+  if (fRichConfig) fRichConfig->Reset();
   // ---- Sts ----
-  if (fStsConfig) fStsConfig->GetUnpacker()->Finish();
+  if (fStsConfig) fStsConfig->Reset();
   // ---- Tof ----
-  // if (fTofConfig) fTofConfig->GetUnpacker()->Finish();
+  // if (fTofConfig) fTofConfig->Reset();
   // ---- Trd ----
-  if (fTrdConfig) fTrdConfig->GetUnpacker()->Finish();
+  if (fTrdConfig) fTrdConfig->Reset();
   // ---- Trd2D ----
-  if (fTrdConfig2D) fTrdConfig2D->GetUnpacker()->Finish();
+  if (fTrdConfig2D) fTrdConfig2D->Reset();
 }
 
 // ----------------------------------------------------------------------------
@@ -117,7 +115,8 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
   fCbmTsEventHeader->SetTsStartTime(ts->start_time());
 
   uint64_t nComponents = ts->num_components();
-  if (fDoDebugPrints) LOG(info) << "Unpack: TS index " << ts->index() << " components " << nComponents;
+  // if (fDoDebugPrints) LOG(info) << "Unpack: TS index " << ts->index() << " components " << nComponents;
+  LOG(info) << "Unpack: TS index " << ts->index() << " components " << nComponents;
 
   for (uint64_t component = 0; component < nComponents; component++) {
 
@@ -126,7 +125,7 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
     switch (systemId) {
       case fkFlesPsd: {
         if (fPsdConfig)
-          fCbmTsEventHeader->SetNDigisTrd(
+          fCbmTsEventHeader->SetNDigisPsd(
             unpack(&timeslice, component, fPsdConfig, fPsdConfig->GetOptOutAVec(), fPsdConfig->GetOptOutBVec()));
         break;
       }

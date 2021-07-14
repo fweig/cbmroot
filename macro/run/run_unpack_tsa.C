@@ -113,8 +113,8 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   // psdconfig->SetDebugState();
   psdconfig->SetDoWriteOutput();
   // psdconfig->SetDoWriteOptOutA("CbmPsdDsp");
-  std::string parfilesbasepath = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
-  psdconfig->SetParFilesBasePath("");
+  std::string parfilesbasepathPsd = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+  psdconfig->SetParFilesBasePath(parfilesbasepathPsd);
   // -------------
 
   // ---- TRD ----
@@ -127,8 +127,8 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   trdconfig->SetDoWriteOptOutA(CbmTrdRawMessageSpadic::GetBranchName());
   // trdconfig->SetDoWriteOptOutB("SpadicInfoMessages"); // SpadicInfoMessages
 
-  std::string parfilesbasepath = Form("%s/parameters/trd", srcDir.Data());
-  trdconfig->SetParFilesBasePath(parfilesbasepath);
+  std::string parfilesbasepathTrd = Form("%s/parameters/trd", srcDir.Data());
+  trdconfig->SetParFilesBasePath(parfilesbasepathTrd);
   trdconfig->SetMonitor(GetTrdMonitor(outfilename));
   // Get the spadic configuration true = avg baseline active / false plain sample 0
   trdconfig->SetSpadicObject(GetTrdSpadic(true));

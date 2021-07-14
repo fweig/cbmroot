@@ -17,7 +17,6 @@
 #include "raw/PsdGbtReader-v0.00.h"
 #include "raw/PsdGbtReader-v1.00.h"
 
-
 CbmPsdUnpackAlgo::CbmPsdUnpackAlgo() : CbmRecoUnpackAlgo(fgkFlesSubsystemIdTrdR, "CbmPsdUnpackAlgo") {}
 
 // ----- Channel address
@@ -73,34 +72,34 @@ Bool_t CbmPsdUnpackAlgo::initParSet(CbmMcbm2018PsdPar* parset)
   LOG(debug) << fName << "::initParSetAsic - ";
 
   fuRawDataVersion = parset->GetDataVersion();
-  LOG(info) << "Data Version: " << fuRawDataVersion;
+  LOG(debug) << "Data Version: " << fuRawDataVersion;
 
   UInt_t uNrOfGdpbs = parset->GetNrOfGdpbs();
-  LOG(info) << "Nr. of Tof GDPBs: " << uNrOfGdpbs;
+  LOG(debug) << "Nr. of Tof GDPBs: " << uNrOfGdpbs;
 
   UInt_t uNrOfFeePerGdpb = parset->GetNrOfFeesPerGdpb();
-  LOG(info) << "Nr. of FEEs per Psd GDPB: " << uNrOfFeePerGdpb;
+  LOG(debug) << "Nr. of FEEs per Psd GDPB: " << uNrOfFeePerGdpb;
 
   UInt_t uNrOfChannelsPerFee = parset->GetNrOfChannelsPerFee();
-  LOG(info) << "Nr. of channels per FEE: " << uNrOfChannelsPerFee;
+  LOG(debug) << "Nr. of channels per FEE: " << uNrOfChannelsPerFee;
 
   auto uNrOfChannelsPerGdpb = uNrOfChannelsPerFee * uNrOfFeePerGdpb;
-  LOG(info) << "Nr. of channels per GDPB: " << uNrOfChannelsPerGdpb;
+  LOG(debug) << "Nr. of channels per GDPB: " << uNrOfChannelsPerGdpb;
 
   fGdpbIdIndexMap.clear();
   for (UInt_t i = 0; i < uNrOfGdpbs; ++i) {
     fGdpbIdIndexMap[parset->GetGdpbId(i)] = i;
-    LOG(info) << "GDPB Id of PSD  " << i << " : " << std::hex << parset->GetGdpbId(i) << std::dec;
+    LOG(debug) << "GDPB Id of PSD  " << i << " : " << std::hex << parset->GetGdpbId(i) << std::dec;
   }  // for( UInt_t i = 0; i < fuNrOfGdpbs; ++i )
 
   fuNrOfGbtx = parset->GetNrOfGbtx();
-  LOG(info) << "Nr. of GBTx: " << fuNrOfGbtx;
+  LOG(debug) << "Nr. of GBTx: " << fuNrOfGbtx;
 
   //Temporary until creation of full psd map
-  UInt_t uNrOfModules  = 1;
-  UInt_t uNrOfSections = 32;
+  UInt_t uNrOfModules  = parset->GetNrOfModules();
+  UInt_t uNrOfSections = parset->GetNrOfSections();
   UInt_t uNrOfChannels = uNrOfModules * uNrOfSections;
-  LOG(info) << "Nr. of possible Psd channels: " << uNrOfChannels;
+  LOG(debug) << "Nr. of possible Psd channels: " << uNrOfChannels;
   fviPsdChUId.resize(uNrOfChannels);
 
   UInt_t iCh = 0;
@@ -147,7 +146,7 @@ bool CbmPsdUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
   auto msidx     = msDescriptor.idx;
 
   auto mstime = static_cast<double>(msidx);
-  LOG(debug) << "Microslice: " << msidx << " from EqId " << std::hex << eqid << std::dec << " has size: " << uSize;
+  LOG(debug4) << "Microslice: " << msidx << " from EqId " << std::hex << eqid << std::dec << " has size: " << uSize;
 
   if (0 == fvbMaskedComponents.size()) fvbMaskedComponents.resize(ts->num_components(), kFALSE);
 
@@ -298,11 +297,10 @@ bool CbmPsdUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
 
                                   dFitAmpl, dFitZL, dFitEdep, dFitR2, dFitTimeMax, uFitWfm);
 
-        //DEBUG
-        //if (fdTime < prev_hit_time) printf("negative time btw hits! %f after %f \n", fdTime, prev_hit_time);
-        //DEBUG END
+        // Create the actual digi and move it to the output vector
+        makeDigi(dsp);
+
         prev_hit_time = dTime;
-        //DEBUG
 
       }  // for (uint64_t hit_iter = 0; hit_iter < PsdReader.VectHitHdr.size(); hit_iter++) {
     }
