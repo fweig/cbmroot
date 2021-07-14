@@ -143,9 +143,10 @@ int build_events(TString inFileName, TString outFileName, int dsps_to_read = -1)
             int counter = 0;
             cout.precision(32);
             for (auto& PsdDsp : event_dsp_vect) {
-              cout << "# " << counter << " dsp_time-event_begin_time " << PsdDsp.fdTime  + dsp.fdTsTime - ev_start_time << endl;
+              cout << "# " << counter << " dsp_time-event_begin_time " << PsdDsp.fdTime + dsp.fdTsTime - ev_start_time
+                   << endl;
               cout << " prev_timestump " << prev_timestump << " timestamp " << timestump << endl;
-              cout << PsdDsp.GetSectionID() << " " << PsdDsp.fdEdep << " " << PsdDsp.fdTime + dsp.fdTsTime<< endl;
+              cout << PsdDsp.GetSectionID() << " " << PsdDsp.fdEdep << " " << PsdDsp.fdTime + dsp.fdTsTime << endl;
               counter++;
             }
 
