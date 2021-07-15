@@ -36,165 +36,165 @@
 #include <memory>
 #include <utility>
 
+enum class CbmRichUnpackAlgoErrorType
+{
+  mtsError,
+  tdcHeader,
+  tdcTrailer,
+  ctsHeader,
+  ctsTrailer,
+  subEventError
+};
+
+enum class CbmRichUnpackAlgoTdcWordType
+{
+  TimeData,
+  Header,
+  Epoch,
+  Trailer,
+  Debug,
+  Error
+};
+
+class CbmRichUnpackAlgoTdcTimeData {
+public:
+  uint32_t fCoarse  = 0;  // 11 bits
+  uint32_t fEdge    = 0;  // 1 bit
+  uint32_t fFine    = 0;  // 10 bits
+  uint32_t fChannel = 0;  // 7 bits
+
+  std::string ToString()
+  {
+    std::stringstream stream;
+    stream << "channel:" << fChannel << " coarse:" << fCoarse << " fine:" << fFine
+           << " edge:" << ((fEdge == 1) ? "R" : "F");
+    return stream.str();
+  }
+
+  bool IsRisingEdge() { return (fEdge == 1); }
+};
+
+class CbmRichUnpackAlgoTdcWordReader {
+public:
+  static CbmRichUnpackAlgoTdcWordType GetTdcWordType(uint32_t tdcWord)
+  {
+    uint32_t tdcTimeDataMarker = (tdcWord >> 31) & 0x1;  // 1 bit
+    uint32_t tdcMarker         = (tdcWord >> 29) & 0x7;  // 3 bits
+
+    if (tdcTimeDataMarker == 0x1) {
+      // TODO: I also include tdcMarker == 0x5, some tdc time data words have this marker. Is it correct?
+      if (tdcMarker == 0x4 || tdcMarker == 0x5) { return CbmRichUnpackAlgoTdcWordType::TimeData; }
+      else {
+        return CbmRichUnpackAlgoTdcWordType::Error;
+      }
+    }
+
+    if (tdcMarker == 0x0) return CbmRichUnpackAlgoTdcWordType::Trailer;
+    if (tdcMarker == 0x1) return CbmRichUnpackAlgoTdcWordType::Header;
+    if (tdcMarker == 0x2) return CbmRichUnpackAlgoTdcWordType::Debug;
+    if (tdcMarker == 0x3) return CbmRichUnpackAlgoTdcWordType::Epoch;
+
+    return CbmRichUnpackAlgoTdcWordType::Error;
+  }
+
+  static void ProcessTimeData(uint32_t tdcWord, CbmRichUnpackAlgoTdcTimeData& outData)
+  {
+    outData.fCoarse  = static_cast<uint32_t>(tdcWord & 0x7ff);          // 11 bits
+    outData.fEdge    = static_cast<uint32_t>((tdcWord >> 11) & 0x1);    // 1 bit
+    outData.fFine    = static_cast<uint32_t>((tdcWord >> 12) & 0x3ff);  // 10 bits
+    outData.fChannel = static_cast<uint32_t>((tdcWord >> 22) & 0x7f);   // 7 bits
+  }
+
+  static uint32_t ProcessEpoch(uint32_t tdcWord) { return static_cast<uint32_t>(tdcWord & 0xfffffff); }
+
+  static uint16_t ProcessHeader(uint32_t tdcWord)
+  {
+    // for the moment just extract error bits
+    return static_cast<uint16_t>(tdcWord & 0xff);  //8 bits
+  }
+
+  static uint16_t ProcessTrailer(uint32_t tdcWord)
+  {
+    // for the moment just extract error bits
+    return static_cast<uint16_t>(tdcWord & 0xffff);
+  }
+
+  static void ProcessDebug(uint32_t tdcWord)
+  {
+    LOG(debug4) << "ProcessDebug is not implemented. tdcWord:0x" << std::hex << tdcWord << std::dec;
+    // for the moment do nothing
+  }
+};
+
+class CbmRichUnpackAlgoMicrosliceReader {
+private:
+  const uint8_t* fData = nullptr;
+  size_t fSize         = 0;
+  size_t fOffset       = 0;  // offset in bytes
+  size_t fWordCounter  = 0;
+  uint32_t fCurWord;
+
+public:
+  void SetData(const uint8_t* data, size_t size)
+  {
+    fData        = data;
+    fSize        = size;
+    fOffset      = 0;
+    fWordCounter = 0;
+    fCurWord     = 0;
+  }
+
+  const uint8_t* GetData() { return fData; }
+
+  size_t GetSize() { return fSize; }
+
+  size_t GetOffset() { return fOffset; }
+
+  size_t GetWordCounter() { return fWordCounter; }
+
+  uint32_t GetCurWord() { return fCurWord; }
+
+  std::string GetWordAsHexString(uint32_t word)
+  {
+    std::stringstream stream;
+    stream << "0x" << std::setfill('0') << std::setw(sizeof(uint32_t) * 2) << std::hex << word;
+    return stream.str();
+  }
+
+  uint32_t NextWord()
+  {
+    //mRichSupport::SwapBytes(4, fData + fOffset);
+    //Int_t* dataPtr = (Int_t*) (fData + fOffset);
+    uint32_t i = ((uint32_t*) (fData + fOffset))[0];
+    //swap bytes
+    i = (i >> 24) | ((i << 8) & 0x00FF0000) | ((i >> 8) & 0x0000FF00) | (i << 24);
+    //i = ((i&0xFF)<<24) | (((i>>8)&0xFF)<<16) |   (((i>>16)&0xFF)<<8) | (((i>>24)&0xFF)<<0);
+
+    fOffset += 4;
+    fWordCounter++;
+    fCurWord = i;
+    //return (Int_t)(dataPtr[0]);
+    return i;
+  }
+
+  bool IsNextPadding()
+  {
+    uint32_t nextWord = ((uint32_t*) (fData + fOffset))[0];
+    if (nextWord == 0xffffffff) return true;
+    return false;
+  }
+
+  bool IsLastSubSubEvent(uint32_t subSubEventSize)
+  {
+    uint32_t i = ((uint32_t*) (fData + fOffset + 4 * subSubEventSize))[0];
+    i          = (i >> 24) | ((i << 8) & 0x00ff0000) | ((i >> 8) & 0x0000ff00) | (i << 24);
+    if (i == 0x00015555) return true;
+    return false;
+  }
+};
 
 class CbmRichUnpackAlgo : public CbmRecoUnpackAlgo<CbmRichDigi> {
 public:
-  enum class CbmMcbm2018RichErrorType
-  {
-    mtsError,
-    tdcHeader,
-    tdcTrailer,
-    ctsHeader,
-    ctsTrailer,
-    subEventError
-  };
-
-  enum class CbmMcbm2018RichTdcWordType
-  {
-    TimeData,
-    Header,
-    Epoch,
-    Trailer,
-    Debug,
-    Error
-  };
-
-  class CbmMcbm2018RichTdcTimeData {
-  public:
-    uint32_t fCoarse  = 0;  // 11 bits
-    uint32_t fEdge    = 0;  // 1 bit
-    uint32_t fFine    = 0;  // 10 bits
-    uint32_t fChannel = 0;  // 7 bits
-
-    std::string ToString()
-    {
-      std::stringstream stream;
-      stream << "channel:" << fChannel << " coarse:" << fCoarse << " fine:" << fFine
-             << " edge:" << ((fEdge == 1) ? "R" : "F");
-      return stream.str();
-    }
-
-    bool IsRisingEdge() { return (fEdge == 1); }
-  };
-
-  class CbmMcbm2018RichTdcWordReader {
-  public:
-    static CbmMcbm2018RichTdcWordType GetTdcWordType(uint32_t tdcWord)
-    {
-      uint32_t tdcTimeDataMarker = (tdcWord >> 31) & 0x1;  // 1 bit
-      uint32_t tdcMarker         = (tdcWord >> 29) & 0x7;  // 3 bits
-
-      if (tdcTimeDataMarker == 0x1) {
-        // TODO: I also include tdcMarker == 0x5, some tdc time data words have this marker. Is it correct?
-        if (tdcMarker == 0x4 || tdcMarker == 0x5) { return CbmMcbm2018RichTdcWordType::TimeData; }
-        else {
-          return CbmMcbm2018RichTdcWordType::Error;
-        }
-      }
-
-      if (tdcMarker == 0x0) return CbmMcbm2018RichTdcWordType::Trailer;
-      if (tdcMarker == 0x1) return CbmMcbm2018RichTdcWordType::Header;
-      if (tdcMarker == 0x2) return CbmMcbm2018RichTdcWordType::Debug;
-      if (tdcMarker == 0x3) return CbmMcbm2018RichTdcWordType::Epoch;
-
-      return CbmMcbm2018RichTdcWordType::Error;
-    }
-
-    static void ProcessTimeData(uint32_t tdcWord, CbmMcbm2018RichTdcTimeData& outData)
-    {
-      outData.fCoarse  = static_cast<uint32_t>(tdcWord & 0x7ff);          // 11 bits
-      outData.fEdge    = static_cast<uint32_t>((tdcWord >> 11) & 0x1);    // 1 bit
-      outData.fFine    = static_cast<uint32_t>((tdcWord >> 12) & 0x3ff);  // 10 bits
-      outData.fChannel = static_cast<uint32_t>((tdcWord >> 22) & 0x7f);   // 7 bits
-    }
-
-    static uint32_t ProcessEpoch(uint32_t tdcWord) { return static_cast<uint32_t>(tdcWord & 0xfffffff); }
-
-    static uint16_t ProcessHeader(uint32_t tdcWord)
-    {
-      // for the moment just extract error bits
-      return static_cast<uint16_t>(tdcWord & 0xff);  //8 bits
-    }
-
-    static uint16_t ProcessTrailer(uint32_t tdcWord)
-    {
-      // for the moment just extract error bits
-      return static_cast<uint16_t>(tdcWord & 0xffff);
-    }
-
-    static void ProcessDebug(uint32_t tdcWord)
-    {
-      LOG(debug4) << "ProcessDebug is not implemented. tdcWord:0x" << std::hex << tdcWord << std::dec;
-      // for the moment do nothing
-    }
-  };
-
-  class CbmMcbm2018RichMicrosliceReader {
-  private:
-    const uint8_t* fData = nullptr;
-    size_t fSize         = 0;
-    size_t fOffset       = 0;  // offset in bytes
-    size_t fWordCounter  = 0;
-    uint32_t fCurWord;
-
-  public:
-    void SetData(const uint8_t* data, size_t size)
-    {
-      fData        = data;
-      fSize        = size;
-      fOffset      = 0;
-      fWordCounter = 0;
-      fCurWord     = 0;
-    }
-
-    const uint8_t* GetData() { return fData; }
-
-    size_t GetSize() { return fSize; }
-
-    size_t GetOffset() { return fOffset; }
-
-    size_t GetWordCounter() { return fWordCounter; }
-
-    uint32_t GetCurWord() { return fCurWord; }
-
-    std::string GetWordAsHexString(uint32_t word)
-    {
-      std::stringstream stream;
-      stream << "0x" << std::setfill('0') << std::setw(sizeof(uint32_t) * 2) << std::hex << word;
-      return stream.str();
-    }
-
-    uint32_t NextWord()
-    {
-      //mRichSupport::SwapBytes(4, fData + fOffset);
-      //Int_t* dataPtr = (Int_t*) (fData + fOffset);
-      uint32_t i = ((uint32_t*) (fData + fOffset))[0];
-      //swap bytes
-      i = (i >> 24) | ((i << 8) & 0x00FF0000) | ((i >> 8) & 0x0000FF00) | (i << 24);
-      //i = ((i&0xFF)<<24) | (((i>>8)&0xFF)<<16) |   (((i>>16)&0xFF)<<8) | (((i>>24)&0xFF)<<0);
-
-      fOffset += 4;
-      fWordCounter++;
-      fCurWord = i;
-      //return (Int_t)(dataPtr[0]);
-      return i;
-    }
-
-    bool IsNextPadding()
-    {
-      uint32_t nextWord = ((uint32_t*) (fData + fOffset))[0];
-      if (nextWord == 0xffffffff) return true;
-      return false;
-    }
-
-    bool IsLastSubSubEvent(uint32_t subSubEventSize)
-    {
-      uint32_t i = ((uint32_t*) (fData + fOffset + 4 * subSubEventSize))[0];
-      i          = (i >> 24) | ((i << 8) & 0x00ff0000) | ((i >> 8) & 0x0000ff00) | (i << 24);
-      if (i == 0x00015555) return true;
-      return false;
-    }
-  };
   /** @brief Create the Cbm Trd Unpack AlgoBase object */
   CbmRichUnpackAlgo();
 
@@ -233,7 +233,7 @@ protected:
   /** @brief Function that allows special calls during Finish in the derived algos */
   virtual void finishDerived() { return; }
 
-  std::string getLogHeader(CbmMcbm2018RichMicrosliceReader& reader);
+  std::string getLogHeader(CbmRichUnpackAlgoMicrosliceReader& reader);
 
   Int_t getPixelUID(Int_t fpgaID, Int_t ch) const
   {
@@ -267,17 +267,18 @@ protected:
 
   bool isLog();
 
-  void processTrbPacket(CbmMcbm2018RichMicrosliceReader& reader);
+  void processTrbPacket(CbmRichUnpackAlgoMicrosliceReader& reader);
 
-  void processMbs(CbmMcbm2018RichMicrosliceReader& reader, bool isPrev);
+  void processMbs(CbmRichUnpackAlgoMicrosliceReader& reader, bool isPrev);
 
-  void processHubBlock(CbmMcbm2018RichMicrosliceReader& reader);
+  void processHubBlock(CbmRichUnpackAlgoMicrosliceReader& reader);
 
-  void processCtsSubSubEvent(CbmMcbm2018RichMicrosliceReader& reader, uint32_t subSubEventSize, uint32_t subSubEventId);
+  void processCtsSubSubEvent(CbmRichUnpackAlgoMicrosliceReader& reader, uint32_t subSubEventSize,
+                             uint32_t subSubEventId);
 
-  void processSubSubEvent(CbmMcbm2018RichMicrosliceReader& reader, int nofTimeWords, uint32_t subSubEventId);
+  void processSubSubEvent(CbmRichUnpackAlgoMicrosliceReader& reader, int nofTimeWords, uint32_t subSubEventId);
 
-  void processTimeDataWord(CbmMcbm2018RichMicrosliceReader& reader, int iTdc, uint32_t epoch, uint32_t tdcWord,
+  void processTimeDataWord(CbmRichUnpackAlgoMicrosliceReader& reader, int iTdc, uint32_t epoch, uint32_t tdcWord,
                            uint32_t subSubEventId, std::vector<double>& raisingTime);
 
   /**
