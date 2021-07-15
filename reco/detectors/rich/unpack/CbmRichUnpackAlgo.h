@@ -319,6 +319,8 @@ protected:
   double fMbsPrevTimeCh0 = 0.;
   double fMbsPrevTimeCh1 = 0.;
 
+  size_t fMsRefTime = 0;
+
   double fToTMin = -20.;
   double fToTMax = 100.;
 

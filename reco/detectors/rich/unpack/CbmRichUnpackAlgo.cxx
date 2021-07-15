@@ -11,6 +11,8 @@
 #include <Rtypes.h>
 #include <RtypesCore.h>
 
+#include <cstdint>
+
 
 CbmRichUnpackAlgo::CbmRichUnpackAlgo() : CbmRecoUnpackAlgo(fgkFlesSubsystemIdTrdR, "CbmRichUnpackAlgo") {}
 
@@ -89,6 +91,9 @@ bool CbmRichUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
 
   CbmRichUnpackAlgoMicrosliceReader reader;
   reader.SetData(mv.content(), msDesc.size);
+
+  auto mstime = msDesc.idx;
+  fMsRefTime  = mstime - fTsStartTime;
 
   // There are a lot of MS  with 8 bytes size
   // Does one need these MS?
@@ -394,8 +399,8 @@ void CbmRichUnpackAlgo::writeOutputDigi(Int_t fpgaID, Int_t channel, Double_t ti
   Double_t ToTcorr = fbDoToTCorr ? fUnpackPar.GetToTshift(fpgaID, channel) : 0.;
   Int_t pixelUID   = this->getPixelUID(fpgaID, channel);
   //check ordering
-  //   Double_t finalTime = time + (Double_t) msRefTS - fSystemTimeoffset;
-  Double_t finalTime = time - fSystemTimeoffset - fTsStartTime;
+  Double_t finalTime = time + (Double_t) fMsRefTime - fSystemTimeoffset;
+  //   Double_t finalTime = time - fSystemTimeoffset - fTsStartTime;
 
   Double_t lastTime = 0.;
 

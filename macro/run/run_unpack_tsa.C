@@ -83,9 +83,8 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
 
   // ---- RICH ----
   auto richconfig = std::make_shared<CbmRichUnpackConfig>("", runid);
-  // psdconfig->SetDebugState();
+  // richconfig->SetDebugState();
   richconfig->SetDoWriteOutput();
-  // psdconfig->SetDoWriteOptOutA("CbmPsdDsp");
   std::string parfilesbasepathRich = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
   richconfig->SetParFilesBasePath(parfilesbasepathRich);
   // -------------
