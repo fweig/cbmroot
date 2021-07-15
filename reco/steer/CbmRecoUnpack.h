@@ -12,7 +12,7 @@
 #include "CbmRichUnpackConfig.h"
 #include "CbmStsUnpackConfig.h"
 #include "CbmTrdUnpackConfig.h"
-#include "CbmTrdUnpackConfig2D.h"
+#include "CbmTrdUnpackConfigFasp2D.h"
 #include "CbmTsEventHeader.h"
 
 #include <MicrosliceDescriptor.hpp>
@@ -86,7 +86,7 @@ public:
   void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackConfig> config) { fTrdConfig = config; }
 
   /** @brief Set the Trd2D Unpack Config @param config */
-  void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackConfig2D> config) { fTrdConfig2D = config; }
+  void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackConfigFasp2D> config) { fTrdConfig2D = config; }
 
   /** @brief Trigger the unpacking procedure **/
   void Unpack(std::unique_ptr<fles::Timeslice> ts);
@@ -211,7 +211,7 @@ private:
   std::shared_ptr<CbmTrdUnpackConfig> fTrdConfig = nullptr;  //!
 
   /** @brief Configuration of the Trd unpacker. Provides the configured algorithm */
-  std::shared_ptr<CbmTrdUnpackConfig2D> fTrdConfig2D = nullptr;  //!
+  std::shared_ptr<CbmTrdUnpackConfigFasp2D> fTrdConfig2D = nullptr;  //!
 
   /** @brief Pointer to the Timeslice start time used to write it to the output tree @remark since we hand this to the FairRootManager it also wants to delete it and we do not have to take care of deletion */
   CbmTsEventHeader* fCbmTsEventHeader = nullptr;

@@ -22,8 +22,7 @@
 #include "CbmTrdRawMessageSpadic.h"
 #include "CbmTrdUnpackAlgoBaseR.h"
 
-#include <MicrosliceDescriptor.hpp>  // fles subsystemId
-#include <Timeslice.hpp>             // timeslice
+#include <Timeslice.hpp>  // timeslice
 
 #include <FairTask.h>  // for InitStatus
 

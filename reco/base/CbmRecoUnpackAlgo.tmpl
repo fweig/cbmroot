@@ -45,7 +45,7 @@ class CbmRecoUnpackAlgo {
 
 public:
   /** @brief Create the Cbm Trd Unpack AlgoBase object */
-  CbmRecoUnpackAlgo(std::uint8_t flesSubsystemId, std::string name) : fFlesSubsystemId(flesSubsystemId), fName(name) {};
+  CbmRecoUnpackAlgo(std::string name) : fName(name) {};
 
   /** @brief Destroy the Cbm Trd Unpack Task object */
   virtual ~CbmRecoUnpackAlgo() {};
@@ -68,8 +68,6 @@ protected:
   std::vector<TOptOutB>* fOptOutBVec = {};
 
   // Parameter storage members
-  /** @brief SubsystemId as defined by fles and encoded in the timeslices. To be set in the derived classes. Ensures, that only data of the asics connected to the given unpacker are passed to it by the Task/Device. */
-  std::uint8_t fFlesSubsystemId;
 
   /** @brief Vector with the parameter containers and the paths to the connected ascii files of the TRD */
   std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>> fParContVec = {};
@@ -81,7 +79,7 @@ protected:
    * @brief Time offset for the system
    * @todo This should be module and channel dependent and included into the asic parameters
   */
-  std::int32_t fSystemTimeoffset = 0;
+  std::int32_t fSystemTimeOffset = 0;
 
   /** @brief Check if we are looking at the first timeslice and if so extract the required TS parameters */
   bool fIsFirstTs = true;
@@ -268,13 +266,6 @@ public:
   }
 
   /**
-   * @brief Get the Fles Subsystem Id stored in fFlesSubsystemId
-   * 
-   * @return std::uint8_t 
-  */
-  std::uint8_t GetFlesSubsystemId() { return fFlesSubsystemId; }
-
-  /**
    * @brief Get the Name of the (derived) object
    * 
    * @return std::string 
@@ -351,6 +342,9 @@ public:
    * @param value 
   */
   void SetParFilesBasePath(std::string value) { fParFilesBasePath = value; }
+
+  /** @brief Set the global system time offset @remark in princible this should go to parameters */
+  void SetSystemTimeOffset(size_t value) { fSystemTimeOffset = value; }
 
   /** @brief Set the start time of the current TS */
   void SetTsStartTime(size_t value) { fTsStartTime = value; }

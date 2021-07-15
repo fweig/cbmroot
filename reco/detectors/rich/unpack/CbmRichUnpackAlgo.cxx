@@ -14,7 +14,7 @@
 #include <cstdint>
 
 
-CbmRichUnpackAlgo::CbmRichUnpackAlgo() : CbmRecoUnpackAlgo(fgkFlesSubsystemIdTrdR, "CbmRichUnpackAlgo") {}
+CbmRichUnpackAlgo::CbmRichUnpackAlgo() : CbmRecoUnpackAlgo("CbmRichUnpackAlgo") {}
 
 CbmRichUnpackAlgo::~CbmRichUnpackAlgo() {}
 
@@ -399,8 +399,8 @@ void CbmRichUnpackAlgo::writeOutputDigi(Int_t fpgaID, Int_t channel, Double_t ti
   Double_t ToTcorr = fbDoToTCorr ? fUnpackPar.GetToTshift(fpgaID, channel) : 0.;
   Int_t pixelUID   = this->getPixelUID(fpgaID, channel);
   //check ordering
-  Double_t finalTime = time + (Double_t) fMsRefTime - fSystemTimeoffset;
-  //   Double_t finalTime = time - fSystemTimeoffset - fTsStartTime;
+  Double_t finalTime = time + (Double_t) fMsRefTime - fSystemTimeOffset;
+  //   Double_t finalTime = time - fSystemTimeOffset - fTsStartTime;
 
   Double_t lastTime = 0.;
 

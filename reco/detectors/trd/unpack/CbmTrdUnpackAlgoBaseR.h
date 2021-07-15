@@ -211,9 +211,6 @@ protected:
   /** @brief length of one ts_msb in [cc] */
   size_t fTsMsbLengthCC = fTsMsbLength / CbmTrdSpadic::GetClockCycle();
 
-  /** @brief Fles Subsystem Identifier for the TRD R data */
-  static constexpr int fgkFlesSubsystemIdTrdR = static_cast<int>(fles::SubsystemIdentifier::TRD);
-
 private:
   ClassDef(CbmTrdUnpackAlgoBaseR, 2)
 };

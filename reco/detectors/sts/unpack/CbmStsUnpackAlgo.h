@@ -114,9 +114,6 @@ protected:
   */
   bool unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice) { return true; }
 
-  /** @brief Fles Subsystem Identifier for the TRD R data */
-  static constexpr int fgkFlesSubsystemIdTrdR = static_cast<int>(fles::SubsystemIdentifier::STS);
-
 private:
   ClassDef(CbmStsUnpackAlgo, 2)
 };

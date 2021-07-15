@@ -59,8 +59,8 @@ unpack/CbmTrdUnpackAlgoR.cxx
 unpack/CbmTrdUnpackAlgoLegacy2020R.cxx
 unpack/CbmTrdUnpackMonitor.cxx
 
-unpack/CbmTrdUnpackAlgo2D.cxx
-unpack/CbmTrdUnpackConfig2D.cxx
+unpack/CbmTrdUnpackAlgoFasp2D.cxx
+unpack/CbmTrdUnpackConfigFasp2D.cxx
 
 qa/CbmTrdClusterizerFastQa.cxx
 qa/CbmTrdHitDensityQa.cxx
@@ -103,7 +103,6 @@ Set(DEPENDENCIES
     Base
     CbmTrdBase
     TMVA
-    fles_ipc # for unpacker
 )
 
 GENERATE_LIBRARY()

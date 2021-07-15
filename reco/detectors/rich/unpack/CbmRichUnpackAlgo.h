@@ -310,9 +310,6 @@ protected:
   */
   bool unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice);
 
-  /** @brief Fles Subsystem Identifier for the TRD R data */
-  static constexpr int fgkFlesSubsystemIdTrdR = static_cast<int>(fles::SubsystemIdentifier::RICH);
-
   /** @brief Parameters for the unpacking */
   CbmMcbm2018RichPar fUnpackPar;
 

@@ -106,6 +106,15 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   trdconfig->SetSpadicObject(GetTrdSpadic(true));
   // -------------
 
+  // ---- TRDFASP2D ----
+  auto trdfasp2dconfig = std::make_shared<CbmTrdUnpackConfigFasp2D>("", runid);
+  // trdfasp2dconfig->SetDebugState();
+  trdfasp2dconfig->SetDoWriteOutput();
+  trdfasp2dconfig->SetOutputBranchName("FaspTrdDigi");
+  std::string parfilesbasepathTrdfasp2d = Form("%s/parameters/trd", srcDir.Data());
+  trdfasp2dconfig->SetParFilesBasePath(parfilesbasepathTrdfasp2d);
+  // -------------
+
   // ------------------------------------------------------------------------
 
   // In general, the following parts need not be touched
@@ -124,6 +133,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   unpack->SetUnpackConfig(psdconfig);
   unpack->SetUnpackConfig(richconfig);
   unpack->SetUnpackConfig(trdconfig);
+  unpack->SetUnpackConfig(trdfasp2dconfig);
   // ------------------------------------------------------------------------
 
 

@@ -293,7 +293,7 @@ void CbmTrdUnpackAlgoLegacy2020R::makeDigi(CbmTrdRawMessageSpadic raw)
     time = time - fTimeshiftsParVec->at(padChNr);
     raw.SetTime(time);
   }
-  time -= fSystemTimeoffset;
+  time -= fSystemTimeOffset;
 
   // Set the time relative to the TS start
   time -= fTsStartTime;

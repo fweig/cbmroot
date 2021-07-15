@@ -288,7 +288,7 @@ void CbmTrdUnpackAlgoR::makeDigi(CbmTrdRawMessageSpadic raw)
 
   // Get the time information and apply the necessary correction
   ULong64_t time = raw.GetTime();
-  time -= fSystemTimeoffset;
+  time -= fSystemTimeOffset;
 
   // Set the time relative to the TS start
   time -= fTsStartTime;

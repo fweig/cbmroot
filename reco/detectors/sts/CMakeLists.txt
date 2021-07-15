@@ -73,7 +73,6 @@ ${Boost_LIBRARY_DIRS}
 # -----   Specify library dependences   -------------------
 Set(DEPENDENCIES
     CbmBase CbmData CbmRecoBase CbmStsBase
-    fles_ipc # for unpacker
 )
 # ---------------------------------------------------------
 

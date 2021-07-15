@@ -47,7 +47,6 @@ set(DEPENDENCIES
     CbmBase 
     Base 
     CbmRecoBase 
-    fles_ipc # for unpacker
 )
 
 GENERATE_LIBRARY()

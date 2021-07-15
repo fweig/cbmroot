@@ -24,8 +24,7 @@
 #include "CbmTrdSpadic.h"
 #include "CbmTrdUnpackAlgoBaseR.h"
 
-#include "Timeslice.hpp"             // timeslice
-#include <MicrosliceDescriptor.hpp>  // fles subsystemId
+#include "Timeslice.hpp"  // timeslice
 
 #include <FairTask.h>  // for InitStatus
 

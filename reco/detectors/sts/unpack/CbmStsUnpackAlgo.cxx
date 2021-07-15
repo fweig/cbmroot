@@ -12,7 +12,7 @@
 #include <RtypesCore.h>
 
 
-CbmStsUnpackAlgo::CbmStsUnpackAlgo() : CbmRecoUnpackAlgo(fgkFlesSubsystemIdTrdR, "CbmStsUnpackAlgo") {}
+CbmStsUnpackAlgo::CbmStsUnpackAlgo() : CbmRecoUnpackAlgo("CbmStsUnpackAlgo") {}
 
 CbmStsUnpackAlgo::~CbmStsUnpackAlgo() {}
 

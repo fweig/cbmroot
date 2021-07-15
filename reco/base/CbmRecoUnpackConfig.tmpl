@@ -62,7 +62,7 @@ protected:
   /** @brief Pointer to the output vectors connected to the framework. */
   std::vector<TOutput>* fOutputVec = nullptr;
 
-  /** @brief Name for the branch of the output, set together with the write output flag. */
+  /** @brief Name for the branch of the output, set if a non-default name is to be used. */
   std::string fOutputBranchName = "";
 
   /** @brief Pointer to the opt output vectors connected to the framework. */
@@ -101,6 +101,7 @@ protected:
   /** @brief Decision if the info msgs are supposed to be stored to a branch. */
   bool fIsMC = false;
 
+  size_t fSystemTimeOffset = 0;
 
   /** @brief Use this function to implement additional actions to be called once per TS, e.g. needed if more than the default output vector is used. */
   virtual void reset() { return; };
@@ -108,6 +109,13 @@ protected:
 
 public:
   // Getters
+  /**
+   * @brief Get the Output Branch Name
+   * 
+   * @return std::string 
+  */
+  std::string GetOutputBranchName() { return fOutputBranchName.empty() ? TOutput::GetBranchName() : fOutputBranchName; }
+
   /** @brief Get the name of the given derived config */
   std::string GetName() { return fName; }
 
@@ -139,18 +147,34 @@ public:
   */
   std::shared_ptr<CbmRecoUnpackAlgo<TOutput, TOptOutA, TOptOutB>> GetUnpacker() { return fAlgo; };
 
-  void Init(FairRootManager* ioman)
+  /**
+   * @brief Init function of the configs to be called by CbmRecoUnpack()
+   * Initializes the output branches and calls InitUnpacker()
+   * @param ioman Pointer to the FairRootManager instance
+   * @param branchname by default TOutput::GetBranchName() is used for the first output. If branchname is not empty that branchname is used.
+  */
+  void Init(FairRootManager* ioman, std::string branchname = "")
   {
     if (fDoWriteOutput) {
-      fOutputVec = new std::vector<TOutput>();
-      ioman->RegisterAny(TOutput::GetBranchName(), fOutputVec, kTRUE);
-      LOG(info) << fName << "::registerBranchToTree(" << TOutput::GetBranchName() << ")";
+      if (branchname.empty()) {
+        fOutputVec = new std::vector<TOutput>();
+        ioman->RegisterAny(TOutput::GetBranchName(), fOutputVec, kTRUE);
+        LOG(info) << fName << "::registerBranchToTree(" << TOutput::GetBranchName() << ")";
+      }
+      else {
+        fOutputVec = new std::vector<TOutput>();
+        ioman->RegisterAny(branchname.data(), fOutputVec, kTRUE);
+        LOG(info) << fName << "::registerBranchToTree(" << branchname.data() << ")";
+      }
     }
 
+    /** @todo for the optional outputs it is more complicated to check if they exist. Needs exceptions for the std::nullptr_t. Should be added at some point in time. */
     if (fDoWriteOptOutA) {
-      fOptOutAVec = new std::vector<TOptOutA>();
-      ioman->RegisterAny(fOptoutABranchName.data(), fOptOutAVec, kTRUE);
-      LOG(info) << fName << "::registerBranchToTree(" << fOptoutABranchName.data() << ")";
+      if (!fOptOutAVec) {
+        fOptOutAVec = new std::vector<TOptOutA>();
+        ioman->RegisterAny(fOptoutABranchName.data(), fOptOutAVec, kTRUE);
+        LOG(info) << fName << "::registerBranchToTree(" << fOptoutABranchName.data() << ")";
+      }
     }
 
     if (fDoWriteOptOutB) {
@@ -158,10 +182,16 @@ public:
       ioman->RegisterAny(fOptoutBBranchName.data(), fOptOutBVec, kTRUE);
       LOG(info) << fName << "::registerBranchToTree(" << fOptoutBBranchName.data() << ")";
     }
+
+    // Init the unpacker
+    InitUnpacker();
+
+    // Set the global system time offset
+    if (fAlgo) fAlgo->SetSystemTimeOffset(fSystemTimeOffset);
   }
 
   /** @brief Prepare the Unpacker algorithm for the run, to be implemented in the derived classes. */
-  virtual void InitUnpacker() = 0;
+  virtual void InitUnpacker() {};
 
   /** @brief Reset called once per ReadEvent() */
   void Reset()
@@ -180,6 +210,14 @@ public:
    * @param value
    */
   void SetDoWriteOutput(bool value = true) { fDoWriteOutput = value; }
+
+  /**
+   * @brief Set the Output Branch Name
+   * By default TOutput::GetBranchName() is used. Set this if you want to use a 
+   * different output name
+   * @param value 
+  */
+  void SetOutputBranchName(std::string value) { fOutputBranchName = value; }
 
   /**
    * @brief Set the Do Write OptOutput A flag, without activation the opt out is not written to the sink
@@ -218,11 +256,22 @@ public:
   void SetIsMC(bool value = true) { fIsMC = value; }
 
   /**
+   * @brief Set the Output Vec
+   * 
+   * @tparam Output 
+   * @param value 
+  */
+  void SetOutputVec(std::vector<TOutput>* value) { fOutputVec = value; }
+
+  /**
    * @brief Set the Par Files Base Path (absolute directory path were the files are stored)
    * 
    * @param value 
   */
   void SetParFilesBasePath(std::string value) { fParFilesBasePath = value; }
+
+  /** @brief Set the global system time offset @remark in princible this should go to parameters */
+  void SetSystemTimeOffset(size_t value) { fSystemTimeOffset = value; }
 
 protected:
   /**
@@ -233,6 +282,10 @@ protected:
   virtual Bool_t initParContainers(std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>* reqparvec)
   {
     if (fDoLog) LOG(info) << GetName() << "::Init - initParContainers";
+    if (!reqparvec) {
+      LOG(info) << GetName() << "::Init - initParContainers - empty requirements vector no parameters initialized.";
+      return kTRUE;
+    }
 
     // Now get the actual ascii files and init the containers with the asciiIo
     for (auto& pair : *reqparvec) {

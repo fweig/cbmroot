@@ -17,7 +17,7 @@
 #include <RtypesCore.h>
 
 
-CbmTrdUnpackAlgoBaseR::CbmTrdUnpackAlgoBaseR(std::string name) : CbmRecoUnpackAlgo(fgkFlesSubsystemIdTrdR, name) {}
+CbmTrdUnpackAlgoBaseR::CbmTrdUnpackAlgoBaseR(std::string name) : CbmRecoUnpackAlgo(name) {}
 
 CbmTrdUnpackAlgoBaseR::~CbmTrdUnpackAlgoBaseR() {}
 

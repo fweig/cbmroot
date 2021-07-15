@@ -18,7 +18,7 @@
 #include "PsdGbtReader-v0.00.h"
 #include "PsdGbtReader-v1.00.h"
 
-CbmPsdUnpackAlgo::CbmPsdUnpackAlgo() : CbmRecoUnpackAlgo(fgkFlesSubsystemIdTrdR, "CbmPsdUnpackAlgo") {}
+CbmPsdUnpackAlgo::CbmPsdUnpackAlgo() : CbmRecoUnpackAlgo("CbmPsdUnpackAlgo") {}
 
 // ----- Channel address
 Int_t CbmPsdUnpackAlgo::getAddress(size_t channel)

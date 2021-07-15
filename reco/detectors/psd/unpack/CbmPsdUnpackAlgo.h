@@ -139,9 +139,6 @@ protected:
   */
   bool unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice);
 
-  /** @brief Fles Subsystem Identifier for the TRD R data */
-  static constexpr int fgkFlesSubsystemIdTrdR = static_cast<int>(fles::SubsystemIdentifier::PSD);
-
   // Settings from parameters
   UInt_t fuRawDataVersion = 0;                    //! Raw data versioning
                                                   /// Readout chain dimensions and mapping

@@ -7,6 +7,7 @@
 
 #include "CbmRecoUnpack.h"
 
+#include "CbmTrdDigi.h"
 #include "CbmTsEventHeader.h"
 
 #include "MicrosliceDescriptor.hpp"
@@ -61,24 +62,23 @@ Bool_t CbmRecoUnpack::Init()
 
   // --- Psd
   if (fPsdConfig) fPsdConfig->Init(ioman);
-  if (fPsdConfig) fPsdConfig->InitUnpacker();
   // --- Rich
   if (fRichConfig) fRichConfig->Init(ioman);
-  if (fRichConfig) fRichConfig->InitUnpacker();
   // --- Sts
   if (fStsConfig) fStsConfig->Init(ioman);
-  if (fStsConfig) fStsConfig->InitUnpacker();
   // --- Tof
   // if (fTofConfig) fTofConfig->Init(ioman);
-  // if (fTofConfig) fTofConfig->InitUnpacker();
-
   // --- Trd
   if (fTrdConfig) fTrdConfig->Init(ioman);
-  if (fTrdConfig) fTrdConfig->InitUnpacker();
-
   // --- TRD2D
-  if (fTrdConfig2D) fTrdConfig2D->Init(ioman);
-  if (fTrdConfig2D) fTrdConfig2D->InitUnpacker();
+  if (fTrdConfig2D->GetOutputBranchName() == CbmTrdDigi::GetBranchName()) {
+    fTrdConfig2D->SetOutputVec(fTrdConfig->GetOutputVec());
+    if (fTrdConfig2D) fTrdConfig2D->InitUnpacker();
+  }
+  else {
+    if (fTrdConfig2D) fTrdConfig2D->Init(ioman, fTrdConfig2D->GetOutputBranchName());
+  }
+  // This is an ugly work around, because the TRD and TRD2D want to access the same vector and there is no function to retrieve a writeable vector<obj> from the FairRootManager, especially before the branches are created, as far as I am aware. The second option workaround is in in Init() to look for the fasp config and create a separate branch for fasp created CbmTrdDigis PR 072021
 
   return kTRUE;
 }
