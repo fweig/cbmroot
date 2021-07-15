@@ -197,12 +197,12 @@ std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename)
   // ------------------------------------------------------------------------
 
   std::vector<CbmTrdUnpackMonitor::eDigiHistos> digihistovec = {
-    CbmTrdUnpackMonitor::eDigiHistos::kMap,         CbmTrdUnpackMonitor::eDigiHistos::kMap_St,
-    CbmTrdUnpackMonitor::eDigiHistos::kMap_Nt,      CbmTrdUnpackMonitor::eDigiHistos::kCharge,
-    CbmTrdUnpackMonitor::eDigiHistos::kCharge_St,   CbmTrdUnpackMonitor::eDigiHistos::kCharge_Nt,
-    CbmTrdUnpackMonitor::eDigiHistos::kChannel,
-    CbmTrdUnpackMonitor::eDigiHistos::kChannel_St,   CbmTrdUnpackMonitor::eDigiHistos::kChannel_Nt,
-    CbmTrdUnpackMonitor::eDigiHistos::kTriggerType, CbmTrdUnpackMonitor::eDigiHistos::kDigiDeltaT};
+    CbmTrdUnpackMonitor::eDigiHistos::kMap,        CbmTrdUnpackMonitor::eDigiHistos::kMap_St,
+    CbmTrdUnpackMonitor::eDigiHistos::kMap_Nt,     CbmTrdUnpackMonitor::eDigiHistos::kCharge,
+    CbmTrdUnpackMonitor::eDigiHistos::kCharge_St,  CbmTrdUnpackMonitor::eDigiHistos::kCharge_Nt,
+    CbmTrdUnpackMonitor::eDigiHistos::kChannel,    CbmTrdUnpackMonitor::eDigiHistos::kChannel_St,
+    CbmTrdUnpackMonitor::eDigiHistos::kChannel_Nt, CbmTrdUnpackMonitor::eDigiHistos::kTriggerType,
+    CbmTrdUnpackMonitor::eDigiHistos::kDigiDeltaT};
 
   std::vector<CbmTrdUnpackMonitor::eRawHistos> rawhistovec = {
     CbmTrdUnpackMonitor::eRawHistos::kSignalshape,      CbmTrdUnpackMonitor::eRawHistos::kSignalshape_St,
