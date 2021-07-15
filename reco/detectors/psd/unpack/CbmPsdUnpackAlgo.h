@@ -21,7 +21,7 @@
 #ifndef CbmPsdUnpackAlgo_H
 #define CbmPsdUnpackAlgo_H
 
-#include "../../core/detectors/psd/CbmMcbm2018PsdPar.h"
+#include "CbmMcbm2018PsdPar.h"
 #include "CbmPsdDigi.h"
 #include "CbmPsdDsp.h"
 #include "CbmRecoUnpackAlgo.tmpl"

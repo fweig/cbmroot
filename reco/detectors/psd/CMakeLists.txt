@@ -1,6 +1,8 @@
 set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/unpack
+  
+  ${CMAKE_SOURCE_DIR}/core/detectors/psd
 
   ${CBMDATA_DIR}
   ${CBMDATA_DIR}/global
@@ -8,7 +10,7 @@ set(INCLUDE_DIRECTORIES
   ${CBMDATA_DIR}/psd
   ${CBMDATA_DIR}/raw
   ${CBMBASE_DIR}
-  ${CBMDETECTORBASE_DIR}/psd
+  
 
   ${CBMROOT_SOURCE_DIR}/reco/base
 )

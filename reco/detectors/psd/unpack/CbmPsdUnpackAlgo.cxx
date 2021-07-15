@@ -14,9 +14,9 @@
 #include <cstdint>
 #include <numeric>
 
-#include "../../core/detectors/psd/PronyFitter.h"
-#include "raw/PsdGbtReader-v0.00.h"
-#include "raw/PsdGbtReader-v1.00.h"
+#include "PronyFitter.h"
+#include "PsdGbtReader-v0.00.h"
+#include "PsdGbtReader-v1.00.h"
 
 CbmPsdUnpackAlgo::CbmPsdUnpackAlgo() : CbmRecoUnpackAlgo(fgkFlesSubsystemIdTrdR, "CbmPsdUnpackAlgo") {}
 

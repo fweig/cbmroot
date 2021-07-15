@@ -21,8 +21,7 @@
 #ifndef CbmRichUnpackAlgo_H
 #define CbmRichUnpackAlgo_H
 
-// #include "CbmMcbm2018RichPar.h"
-#include "../../core/detectors/rich/CbmMcbm2018RichPar.h"
+#include "CbmMcbm2018RichPar.h"
 #include "CbmRecoUnpackAlgo.tmpl"
 #include "CbmRichDigi.h"
 
@@ -33,6 +32,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <iomanip>
 #include <memory>
 #include <utility>
 
