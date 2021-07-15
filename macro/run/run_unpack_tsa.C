@@ -81,6 +81,15 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   psdconfig->SetParFilesBasePath(parfilesbasepathPsd);
   // -------------
 
+  // ---- RICH ----
+  auto richconfig = std::make_shared<CbmRichUnpackConfig>("", runid);
+  // psdconfig->SetDebugState();
+  richconfig->SetDoWriteOutput();
+  // psdconfig->SetDoWriteOptOutA("CbmPsdDsp");
+  std::string parfilesbasepathRich = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+  richconfig->SetParFilesBasePath(parfilesbasepathRich);
+  // -------------
+
   // ---- TRD ----
   TString trdsetuptag = "";
   cbmsetup->GetGeoTag(ECbmModuleId::kTrd, trdsetuptag);
@@ -113,8 +122,9 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   // -----   CbmSourceTsArchive   -------------------------------------------
   auto source = new CbmSourceTsArchive(infile.data());
   auto unpack = source->GetRecoUnpack();
-  unpack->SetUnpackConfig(trdconfig);
   unpack->SetUnpackConfig(psdconfig);
+  unpack->SetUnpackConfig(richconfig);
+  unpack->SetUnpackConfig(trdconfig);
   // ------------------------------------------------------------------------
 
 

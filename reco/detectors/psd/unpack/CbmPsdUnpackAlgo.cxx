@@ -11,6 +11,7 @@
 #include <Rtypes.h>
 #include <RtypesCore.h>
 
+#include <cstdint>
 #include <numeric>
 
 #include "../../core/detectors/psd/PronyFitter.h"
@@ -143,10 +144,9 @@ bool CbmPsdUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
   const uint8_t* msContent = reinterpret_cast<const uint8_t*>(ts->content(icomp, imslice));
 
   uint32_t uSize = msDescriptor.size;
-  auto msidx     = msDescriptor.idx;
+  auto mstime    = msDescriptor.idx;
 
-  auto mstime = static_cast<double>(msidx);
-  LOG(debug4) << "Microslice: " << msidx << " from EqId " << std::hex << eqid << std::dec << " has size: " << uSize;
+  LOG(debug4) << "Microslice: " << mstime << " from EqId " << std::hex << eqid << std::dec << " has size: " << uSize;
 
   if (0 == fvbMaskedComponents.size()) fvbMaskedComponents.resize(ts->num_components(), kFALSE);
 
@@ -203,7 +203,7 @@ bool CbmPsdUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
   while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {
     int ReadResult = PsdReader.ReadMs();
     if (fair::Logger::Logging(fair::Severity::debug)) {
-      printf("\nMicroslice idx: %lu\n", msidx);
+      printf("\nMicroslice idx: %lu\n", mstime);
       PsdReader.PrintOut(); /*PsdReader.PrintSaveBuff();*/
     }
     if (ReadResult == 0) {
@@ -228,10 +228,8 @@ bool CbmPsdUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
         }
         UInt_t uChanUId = fviPsdChUId[uHitChannel];  //unique ID
 
-        auto dTime = static_cast<double>(PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5);
-        dTime -= fdTimeOffsetNs;  // Subtract system-side offset
-        dTime += msidx;           // Add the microslice start time
-        dTime -= fTsStartTime;    // Get the time relative to the TS start time
+        auto dTime = dMsRelativeTime + (double) PsdReader.VectPackHdr.at(hit_iter).uAdcTime * 12.5 - fdTimeOffsetNs;
+
 
         Double_t dEdep = (double) PsdReader.VectHitHdr.at(hit_iter).uSignalCharge / getMipCalibration(uHitChannel);
         /// Energy deposition from FPGA [MeV]
@@ -291,7 +289,7 @@ bool CbmPsdUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
           uFitWfm     = Pfitter.GetFitWfm();
         }
 
-        CbmPsdDsp dsp = CbmPsdDsp(uChanUId, dTime, dEdep, uZL, dAccum, dAdcTime,
+        CbmPsdDsp dsp = CbmPsdDsp(uChanUId, dTime, fTsStartTime, dEdep, uZL, dAccum, dAdcTime,
 
                                   dEdepWfm, dAmpl, uMinimum, uTimeMax, uWfm,
 
@@ -299,6 +297,8 @@ bool CbmPsdUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
 
         // Create the actual digi and move it to the output vector
         makeDigi(dsp);
+
+        if (dTime < prev_hit_time) printf("negative time btw hits! %f after %f \n", dTime, prev_hit_time);
 
         prev_hit_time = dTime;
 

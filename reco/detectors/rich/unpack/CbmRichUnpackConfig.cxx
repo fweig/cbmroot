@@ -33,6 +33,9 @@ void CbmRichUnpackConfig::InitUnpacker()
   // First choose the derived unpacking algorithm to be used and pass the raw to digi method
   auto algo = chooseAlgo();
 
+  if (fDoLog) LOG(info) << fName << "::Init - SetParFilesBasePath";
+  algo->SetParFilesBasePath(fParFilesBasePath);
+
   // Initialise the parameter containers required by the unpacker algo. Includes loading the corresponding ascii files
   auto reqparvec = algo->GetParContainerRequest(fGeoSetupTag, fRunId);
   initOk &= initParContainers(reqparvec);
