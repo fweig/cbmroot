@@ -65,11 +65,11 @@ struct TmpHit {  // used for sort Hits before writing in the normal arrays
   int iStation;
   int ExtIndex;            // index of hit in the TClonesArray array ( negative for MVD )
   double u_front, u_back;  // positions of strips
-  double x, y;             // position of hit
+  double x, y, z;          // position of hit
   double dx, dy, dxy;
   double du, dv;
   int iMC;  // index of MCPoint in the vMCPoints array
-  double time, dt, z;
+  double time, dt;
   int Det;
   int id;
   int track;
@@ -167,8 +167,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 1)) {
             MC.iStation    = -1;
             L1Station* sta = algo->vStations;
-            for (Int_t iSt = 0; iSt < NStsStations; iSt++)
+            for (Int_t iSt = 0; iSt < NStsStations; iSt++) {
               MC.iStation = (MC.z > sta[iSt].z[0] - 1) ? iSt : MC.iStation;
+            }
 
             Double_t dtrck          = dFEI(iFile, iEvent, MC.ID);
             DFEI2I::iterator trk_it = dFEI2vMCTracks.find(dtrck);
@@ -428,6 +429,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
         th.x = pos.X();
         th.y = pos.Y();
+        th.z = pos.Z();
 
         L1Station& st = algo->vStations[th.iStation];
         th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
@@ -436,56 +438,19 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       th.Det  = 0;
       th.iMC  = -1;
       int iMC = -1;
-      //   int iMCTr = -1;
-      //   if( listMvdHitMatches ){
-      //     CbmMvdHitMatch *match = (CbmMvdHitMatch*) listMvdHitMatches->At(j);
-      //     if( match){
-      //       iMC = match->GetPointId();
-      //       iMCTr = match->GetTrackId();
-      //     }
-      //   }
       if (fPerformance) {
         if (listMvdHitMatches) {
           CbmMatch* mvdHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(listMvdHitMatches->At(j));
-
-
           if (mvdHitMatch->GetNofLinks() > 0)
             if (mvdHitMatch->GetLink(0).GetIndex() < nMvdPoints) {
               iMC    = mvdHitMatch->GetLink(0).GetIndex();
               th.iMC = iMC;
               //    th.track = iMC;
+#ifdef MVDIDEALHITS
+//TODO
+#endif
             }
         }
-        //       if( listMvdPts && iMC>=0 ){ // TODO1: don't need this with FairLinks
-        //         CbmL1MCPoint MC;
-        //         if( ! ReadMCPoint( &MC, iMC, 1 ) ){
-        //           MC.iStation = th.iStation;
-        //       //    isUsedMvdPoint[iMC] = 1;
-        //
-        // //       MC.ID = iMCTr; // because atch->GetPointId() == 0 !!! and ReadMCPoint don't work
-        // //       MC.z = th.iStation; // for sort in right order
-        //
-        //           vMCPoints.push_back( MC );
-        //           nMvdPoints++;
-        //           vMCPoints_in_Time_Slice.push_back(0);
-        //           th.iMC = vMCPoints.size()-1;
-        //         }
-        //         Int_t iFile =-1;
-        //         Int_t iEvent=-1;
-        //
-        //
-        //                if ( !fTimesliceMode )
-        //         {
-        //           iFile  = vFileEvent.begin()->first;
-        //           iEvent = vFileEvent.begin()->second;
-        //         }
-        //
-        //       Double_t dtrck =dFEI(iFile, iEvent, iMC);
-        //       DFEI2I::iterator trk_it = dFEI2vMCPoints.find(dtrck);
-        //       if (trk_it==dFEI2vMCPoints.end()) continue;
-        //       iMC = trk_it->second;
-        //
-        //       } // if listStsPts
       }
       //if(  h.MC_Point >=0 ) // DEBUG !!!!
       {
@@ -550,6 +515,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
         th.x = pos.X();
         th.y = pos.Y();
+        th.z = pos.Z();
 
         th.dx  = mh->GetDx();
         th.dy  = mh->GetDy();
@@ -603,10 +569,16 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
               }
             }
           }
+#ifdef STSIDEALHITS
+          // TODO
+          // CbmStsPoint* point = L1_DYNAMIC_CAST<CbmStsPoint*>(listStsPts->At(s.ExtIndex));
+          // h.z = 0.5 * (point->GetZOut() + point->GetZIn());
+#endif
         }
-        else
+        else {
           iMC = sh->GetRefId();  // TODO1: don't need this with FairLinks
-      }                          //fPerformance
+        }
+      }  //fPerformance
 
       if (iMC > -1) {
         th.iMC = iMC;
@@ -948,10 +920,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
   SortedIndex.reset(max(nEntSts, maxHitIndex));
 
-  L1Vector<float> vStsZPos_temp(
-    "CbmL1ReadEvent::vStsZPos_temp");  // temp array for unsorted z positions of detectors segments
-  vStsZPos_temp.reserve(100 * NStation);
-
   vStsHits.reserve(nHits);
   fData_->vStsHits.reserve(nHits);
 
@@ -997,72 +965,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     //     h.q = th.q;
     // h.ista = th.iStation;
 
-    // find and save z positions
-    float z_tmp = -111.;
-    int ist     = th.iStation;
-    if (ist < NMvdStations) {
-#ifdef MVDIDEALHITS
-      CbmMvdPoint* point = L1_DYNAMIC_CAST<CbmMvdPoint*>(listMvdPts->At(-s.ExtIndex - 1));
-      z_tmp              = 0.5 * (point->GetZOut() + point->GetZ());
-#else
-      CbmMvdHit* mh_m = L1_DYNAMIC_CAST<CbmMvdHit*>(listMvdHits->At(-s.ExtIndex - 1));
-      z_tmp           = mh_m->GetZ();
-#endif
-    }
+    h.z = th.z;
 
-    if ((ist >= NMvdStations) && (ist < (NStsStations + NMvdStations))) {
-#ifdef STSIDEALHITS
-      CbmStsPoint* point = L1_DYNAMIC_CAST<CbmStsPoint*>(listStsPts->At(s.ExtIndex));
-      z_tmp              = 0.5 * (point->GetZOut() + point->GetZIn());
-#else
-      CbmStsHit* mh_m = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(s.ExtIndex));
-      z_tmp           = mh_m->GetZ();
-#endif
-    }
-
-    if ((ist >= NStsStations + NMvdStations) && (ist < (NStsStations + NMvdStations + NMuchStations))) {
-      //#ifdef STSIDEALHITS
-      //  CbmStsPoint* point = L1_DYNAMIC_CAST<CbmStsPoint*>(listStsPts->At(s.ExtIndex));
-      //   z_tmp = 0.5 * ( point->GetZOut() + point->GetZIn() );
-      //#else
-      CbmMuchPixelHit* mh = static_cast<CbmMuchPixelHit*>(fMuchPixelHits->At(s.ExtIndex));
-      z_tmp               = mh->GetZ();
-      //#endif
-    }
-
-    if ((ist >= NStsStations + NMvdStations + NMuchStations)
-        && (ist < (NStsStations + NMvdStations + NMuchStations + NTrdStations))) {
-      //#ifdef STSIDEALHITS
-      //  CbmStsPoint* point = L1_DYNAMIC_CAST<CbmStsPoint*>(listStsPts->At(s.ExtIndex));
-      //   z_tmp = 0.5 * ( point->GetZOut() + point->GetZIn() );
-      //#else
-      CbmTrdHit* mh = static_cast<CbmTrdHit*>(listTrdHits->At(s.ExtIndex));
-      z_tmp         = mh->GetZ();
-      //#endif
-    }
-
-    if ((ist >= NStsStations + NMvdStations + NMuchStations + NTrdStations)
-        && (ist < (NStsStations + NMvdStations + NMuchStations + NTrdStations + NTOFStation))) {
-      //#ifdef STSIDEALHITS
-      //  CbmStsPoint* point = L1_DYNAMIC_CAST<CbmStsPoint*>(listStsPts->At(s.ExtIndex));
-      //   z_tmp = 0.5 * ( point->GetZOut() + point->GetZIn() );
-      //#else
-      CbmTofHit* mh = static_cast<CbmTofHit*>(fTofHits->At(s.ExtIndex));
-      z_tmp         = mh->GetZ();
-      //#endif
-    }
-
-    unsigned int k;
-    for (k = 0; k < vStsZPos_temp.size(); k++) {
-      if (vStsZPos_temp[k] == z_tmp) {
-        h.iz = k;
-        break;
-      }
-    }
-    if (k == vStsZPos_temp.size()) {
-      h.iz = vStsZPos_temp.size();
-      vStsZPos_temp.push_back(z_tmp);
-    }
 
     // save hit
     vStsHits.push_back(CbmL1Hit(fData->vStsHits.size(), th.ExtIndex, th.Det));
@@ -1096,57 +1000,10 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       fData_->StsHitsStartIndex[i] = fData_->StsHitsStopIndex[i];
   }
 
-
   if (fVerbose >= 10) cout << "ReadEvent: mvd and sts are saved." << endl;
 
-  // sort z-pos
-  if (vStsZPos_temp.size() != 0) {
-    L1Vector<float> vStsZPos_temp2("CbmL1ReadEvent::vStsZPos_temp2");
-    vStsZPos_temp2.reserve(vStsZPos_temp.size());
-    vStsZPos_temp2.push_back(vStsZPos_temp[0]);
-
-    L1Vector<int> newToOldIndex("CbmL1ReadEvent::newToOldIndex");
-    newToOldIndex.reserve(vStsZPos_temp.size());
-    newToOldIndex.push_back(0);
-
-    for (unsigned int k = 1; k < vStsZPos_temp.size(); k++) {
-      L1Vector<float>::iterator itpos = vStsZPos_temp2.begin() + 1;
-      L1Vector<int>::iterator iti     = newToOldIndex.begin() + 1;
-      for (; itpos < vStsZPos_temp2.end(); itpos++, iti++) {
-        if (vStsZPos_temp[k] < *itpos) {
-          vStsZPos_temp2.insert(itpos, vStsZPos_temp[k]);
-          newToOldIndex.insert(iti, k);
-          break;
-        }
-      }
-      if (itpos == vStsZPos_temp2.end()) {
-        vStsZPos_temp2.push_back(vStsZPos_temp[k]);
-        newToOldIndex.push_back(k);
-      }
-    }  // k
-
-    if (fVerbose >= 10) cout << "ReadEvent: z-pos are sorted." << endl;
-
-    fData_->vStsZPos.reserve(vStsZPos_temp2.size());
-    for (unsigned int k = 0; k < vStsZPos_temp2.size(); k++) {
-      fData_->vStsZPos.push_back(vStsZPos_temp2[k]);
-    }
-
-    int size_nto_tmp = newToOldIndex.size();
-    L1Vector<int> oldToNewIndex("CbmL1ReadEvent::oldToNewIndex", size_nto_tmp);
-    for (int k = 0; k < size_nto_tmp; k++) {
-      oldToNewIndex[newToOldIndex[k]] = k;
-    }
-    int size_hs_tmp = vHitStore.size();
-    for (int k = 0; k < size_hs_tmp; k++) {
-      fData_->vStsHits[k].iz = oldToNewIndex[fData_->vStsHits[k].iz];
-    }
-  }
-
-  if (fVerbose >= 10) cout << "ReadEvent: z-pos are saved." << endl;
-
-  algo->SetData(fData_->GetStsHits(), fData_->GetNStsStrips(), fData_->GetStsZPos(), fData_->GetSFlag(),
-                fData_->GetStsHitsStartIndex(), fData_->GetStsHitsStopIndex());
+  algo->SetData(fData_->GetStsHits(), fData_->GetNStsStrips(), fData_->GetSFlag(), fData_->GetStsHitsStartIndex(),
+                fData_->GetStsHitsStopIndex());
 
   if (fPerformance) {
 

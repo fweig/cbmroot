@@ -13,7 +13,6 @@
 #define L1Hit_h
 
 typedef unsigned /*short*/ int THitI;    // hit index type
-typedef unsigned short int TZPosI;       // strip z-coor index type
 typedef unsigned /*short*/ int TStripI;  // strip index type
 
 ///
@@ -24,12 +23,12 @@ struct L1Hit {
   TStripI b = 0;    // back strip index
   float u   = 0.f;  // measured U coordinate
   float v   = 0.f;  // measured V coordinate
+  float t   = 0.f;  // measured time
+  float z   = 0.f;  // fixed Z coordinate
   float du  = 0.f;  // mean squared error of u
   float dv  = 0.f;  // mean squared error of v
-  float t   = 0.f;  // measured time
   float dt  = 0.f;  // mean squared error of t
   int ID    = 0;    // TODO: check if this ID is redundant
-  TZPosI iz = 0;    // index of z coordinate in L1Algo::vStsZPos
 };
 
 #endif

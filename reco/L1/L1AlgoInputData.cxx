@@ -11,14 +11,14 @@ using std::ios;
 /*
 L1AlgoInputData::L1AlgoInputData( const L1AlgoInputData& a)
 {
-  SetData( a.GetStsHits(), a.GetStsStrips(), a.GetStsStripsB(), a.GetStsZPos(),
+  SetData( a.GetStsHits(), a.GetStsStrips(), a.GetStsStripsB(),
            a.GetSFlag(), a.GetSFlagB(), a.GetStsHitsStartIndex(), a.GetStsHitsStopIndex());
 }
 
 
 const L1AlgoInputData& L1AlgoInputData::operator=( const L1AlgoInputData& a)
 {
-  SetData( a.GetStsHits(), a.GetStsStrips(), a.GetStsStripsB(), a.GetStsZPos(),
+  SetData( a.GetStsHits(), a.GetStsStrips(), a.GetStsStripsB(),
            a.GetSFlag(), a.GetSFlagB(), a.GetStsHitsStartIndex(), a.GetStsHitsStopIndex());
   return a;
 }
@@ -27,7 +27,6 @@ const L1AlgoInputData& L1AlgoInputData::operator=( const L1AlgoInputData& a)
 void L1AlgoInputData::SetData( const vector< L1Hit >      & StsHits_,
                                    const vector< L1Strip >       & StsStrips_,
                                    const vector< L1Strip >       & StsStripsB_,
-                                   const vector< fscal >         & StsZPos_,
                                    const vector< unsigned char > & SFlag_,
                                    const vector< unsigned char > & SFlagB_,
                                    const THitI* StsHitsStartIndex_,
@@ -36,7 +35,6 @@ void L1AlgoInputData::SetData( const vector< L1Hit >      & StsHits_,
   vStsHits.resize(StsHits_.size());
   vStsStrips.resize(StsStrips_.size());
   vStsStripsB.resize(StsStripsB_.size());
-  vStsZPos.resize(StsZPos_.size());
   fStripFlag.resize(SFlag_.size());
   fStripFlagB.resize(SFlagB_.size());
   
@@ -44,8 +42,7 @@ void L1AlgoInputData::SetData( const vector< L1Hit >      & StsHits_,
 
 }
   for(unsigned int i=0; i<StsStrips_.size(); ++i ) vStsStrips[i] = StsStrips_[i];
-  for(unsigned int i=0; i<StsStripsB_.size(); ++i ) vStsStripsB[i] = StsStripsB_[i];
-  for(unsigned int i=0; i<StsZPos_.size(); ++i ) vStsZPos[i] = StsZPos_[i];
+  for(unsigned int i=0; i<StsStripsB_.size(); ++i ) vStsStripsB[i] = StsStripsB_[i];  
   for(unsigned int i=0; i<SFlag_.size(); ++i ) fStripFlag[i] = SFlag_[i];
   for(unsigned int i=0; i<SFlagB_.size(); ++i ) fStripFlagB[i] = SFlagB_[i];
 
@@ -86,7 +83,6 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
     vStsHits.clear();
     NStsStrips = 0;
 
-    vStsZPos.clear();
     fStripFlag.clear();
 
     // check correct position in file
@@ -108,18 +104,6 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
       cout << "vStsStrips[" << n << "]"
            << " have been read." << endl;
     }
-    // read algo->vStsZPos
-    fadata >> n;
-    //   cout << n<<  " vStsZPos"<<endl;
-    for (int i = 0; i < n; i++) {
-      fscal element;
-      fadata >> element;
-      vStsZPos.push_back(element);
-    }
-    if (iVerbose >= 4) {
-      cout << "vStsZPos[" << n << "]"
-           << " have been read." << endl;
-    }
     // read algo->fStripFlag
     fadata >> n;
     //  cout << n<<  " fStripFlagB"<<endl;
@@ -139,16 +123,14 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
     int element_f;  // for convert
     int element_b;
     int element_n;
-    int element_iz;
     for (int i = 0; i < n; i++) {
       L1Hit element;
-      fadata >> element_f >> element_b >> element_n >> element_iz >> element.u >> element.v >> element.t;
+      fadata >> element_f >> element_b >> element_n >> element.z >> element.u >> element.v >> element.t;
       element.f = static_cast<THitI>(element_f);
       element.b = static_cast<THitI>(element_b);
 #ifdef USE_EVENT_NUMBER
       element.n = static_cast<unsigned short int>(element_n);
 #endif
-      element.iz = static_cast<TZPosI>(element_iz);
       vStsHits.push_back(element);
     }
     if (iVerbose >= 4) {
@@ -200,11 +182,6 @@ void L1AlgoInputData::PrintHits()
     std::cout << vStsStripsB[i] << std::endl;
   }
 
-  n = vStsZPos.size();
-  std::cout << n << std::endl;
-  for (int i = 0; i < n; i++){
-    std::cout << vStsZPos[i] << std::endl;
-  }
 
   n = fStripFlag.size();
   std::cout << n << std::endl;
@@ -223,7 +200,7 @@ void L1AlgoInputData::PrintHits()
   for (int i = 0; i < n; i++){
     std::cout << static_cast<int>(vStsHits[i].f) << " ";
     std::cout << static_cast<int>(vStsHits[i].b) << " ";
-    std::cout << static_cast<int>(vStsHits[i].iz) << std::endl;
+    std::cout << (vStsHits[i].z) << std::endl;
   }
 
   n = 20;

@@ -56,19 +56,19 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   fvec v0 = hit0.v;
   fvec x0, y0;
   StripsToCoor(u0, v0, x0, y0, sta0);
-  fvec z0 = (*vStsZPos)[hit0.iz];
+  fvec z0 = hit0.z;
 
   fvec u1 = hit1.u;
   fvec v1 = hit1.v;
   fvec x1, y1;
   StripsToCoor(u1, v1, x1, y1, sta1);
-  fvec z1 = (*vStsZPos)[hit1.iz];
+  fvec z1 = hit1.z;
 
   fvec u2 = hit2.u;
   fvec v2 = hit2.v;
   fvec x2, y2;
   StripsToCoor(u2, v2, x2, y2, sta2);
-  //  fvec z2 = (*vStsZPos)[hit2.iz];
+  //  fvec z2 = hit2.z;
 
   fvec dzi = 1. / (z1 - z0);
 
@@ -128,14 +128,14 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
 
     L1Station& sta = vStations[ista];
 
-    float z_sta = (*vStsZPos)[hit.iz];
+    float z_sta = hit.z;
 
     fvec dz = z_sta - T.z;
 
 #if defined(mCBM) || defined(GLOBAL)
-    L1ExtrapolateLine(T, (*vStsZPos)[hit.iz]);
+    L1ExtrapolateLine(T, hit.z);
 #else
-    L1Extrapolate(T, (*vStsZPos)[hit.iz], qp0, fld);
+    L1Extrapolate(T, hit.z, qp0, fld);
 #endif
     L1ExtrapolateTime(T, dz);
 
@@ -318,7 +318,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
     fvec v           = hit.v;
     fvec x, y, z;
     StripsToCoor(u, v, x, y, sta);
-    z = (*vStsZPos)[hit.iz];
+    z = hit.z;
 
     fvec dz1 = z - T.z;
 

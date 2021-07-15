@@ -135,7 +135,7 @@ public:
 
   void Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const bool mCBMmode);
 
-  void SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<fscal>& StsZPos_, L1Vector<unsigned char>& SFlag_,
+  void SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<unsigned char>& SFlag_,
                const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_);
 
   void PrintHits();
@@ -170,7 +170,6 @@ public:
   L1Vector<L1Material> fRadThick {"fRadThick"};      // material for each station
 
   int NStsStrips {0};                   // number of strips
-  L1Vector<fscal>* vStsZPos {nullptr};  // all possible z-positions of hits
   L1Vector<L1Hit>* vStsHits {nullptr};  // hits as a combination of front-, backstrips and z-position
   L1Grid vGrid[MaxNStations];           // hits as a combination of front-, backstrips and z-position
   L1Grid vGridTime[MaxNStations];
@@ -302,10 +301,9 @@ public:
   void StripsToCoor(const fscal& u, const fscal& v, fvec& x, fvec& y,
                     const L1Station& sta) const;  // convert strip positions to coordinates
   void StripsToCoor(const fvec& u, const fvec& v, fvec& x, fvec& y, const L1Station& sta) const;
-  L1HitPoint CreateHitPoint(const L1Hit& hit,
-                            char ista);  // full the hit point by hit information.
+  L1HitPoint CreateHitPoint(const L1Hit& hit);  // full the hit point by hit information.
 
-  void CreateHitPoint(const L1Hit& hit, char ista, L1HitPoint& point);
+  void CreateHitPoint(const L1Hit& hit, L1HitPoint& point);
   inline int PackIndex(const int& a, const int& b, const int& c);
 
   inline int UnPackIndex(const int& i, int& a, int& b, int& c);

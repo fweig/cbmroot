@@ -69,19 +69,19 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         fvec v0 = hit0.v;
         fvec x0, y0;
         StripsToCoor(u0, v0, x0, y0, sta0);
-        fvec z0 = (*vStsZPos)[hit0.iz];
+        fvec z0 = hit0.z;
 
         fvec u1 = hit1.u;
         fvec v1 = hit1.v;
         fvec x1, y1;
         StripsToCoor(u1, v1, x1, y1, sta1);
-        fvec z1 = (*vStsZPos)[hit1.iz];
+        fvec z1 = hit1.z;
 
         fvec u2 = hit2.u;
         fvec v2 = hit2.v;
         fvec x2, y2;
         StripsToCoor(u2, v2, x2, y2, sta2);
-        // fvec z2 = (*vStsZPos)[hit2.iz];
+        // fvec z2 = hit2.z;
 
         fvec dzi = 1. / (z1 - z0);
 
@@ -126,13 +126,13 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         //cout<<"\nfit, iter=:"<<iter<<endl;
         for (int i = nHits - 2; i >= 0; i--) {
           //  if( fabs(T.qp[0])>2. ) break;  // iklm. Don't know it need for
-          const L1Hit& hit    = (*vStsHits)[hits[i]];
-          ista                = (*fStripFlag)[hit.f] / 4;
+          const L1Hit& hit = (*vStsHits)[hits[i]];
+          ista             = (*fStripFlag)[hit.f] / 4;
 
           L1Station& sta = vStations[ista];
 
-          //    L1Extrapolate( T, (*vStsZPos)[hit.iz], qp0, fld );
-          L1ExtrapolateLine(T, (*vStsZPos)[hit.iz]);
+          //    L1Extrapolate( T, hit.z, qp0, fld );
+          L1ExtrapolateLine(T, hit.z);
 //           T.L1Extrapolate( sta.z, qp0, fld );
 //         L1Extrapolate( T, hit.z, qp0, fld );
 #ifdef USE_RL_TABLE
@@ -209,19 +209,18 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         fvec v0 = hit0.v;
         fvec x0, y0;
         StripsToCoor(u0, v0, x0, y0, sta0);
-        fvec z0 = (*vStsZPos)[hit0.iz];
-
+        fvec z0 = hit0.z;
         fvec u1 = hit1.u;
         fvec v1 = hit1.v;
         fvec x1, y1;
         StripsToCoor(u1, v1, x1, y1, sta1);
-        // fvec z1 = (*vStsZPos)[hit1.iz];
+        // fvec z1 = hit1.z;
 
         fvec u2 = hit2.u;
         fvec v2 = hit2.v;
         fvec x2, y2;
         StripsToCoor(u2, v2, x2, y2, sta2);
-        //  fvec z2 = (*vStsZPos)[hit2.iz];
+        //  fvec z2 = hit2.z;
 
         //   fvec dzi = 1./(z1-z0);
 
@@ -262,16 +261,16 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         int ista = ista2;
 
         for (int i = 1; i < nHits; i++) {
-          const L1Hit& hit    = (*vStsHits)[hits[i]];
-          ista                = (*fStripFlag)[hit.f] / 4;
-          L1Station& sta      = vStations[ista];
-          fvec u              = hit.u;
-          fvec v              = hit.v;
+          const L1Hit& hit = (*vStsHits)[hits[i]];
+          ista             = (*fStripFlag)[hit.f] / 4;
+          L1Station& sta   = vStations[ista];
+          fvec u           = hit.u;
+          fvec v           = hit.v;
           fvec x, y;
           StripsToCoor(u, v, x, y, sta);
 
-          //   L1Extrapolate( T, (*vStsZPos)[hit.iz], qp0, fld );
-          L1ExtrapolateLine(T, (*vStsZPos)[hit.iz]);
+          //   L1Extrapolate( T, hit.z, qp0, fld );
+          L1ExtrapolateLine(T, hit.z);
 //           T.L1Extrapolate( sta.z, qp0, fld );
 //           L1Extrapolate( T, hit.z, qp0, fld );
 #ifdef USE_RL_TABLE
@@ -387,10 +386,10 @@ void L1Algo::L1KFTrackFitter()
       int nHitsTrack = t[iVec]->NHits;
       int iSta[MaxNStations];
       for (i = 0; i < nHitsTrack; i++) {
-        const L1Hit& hit    = (*vStsHits)[fRecoHits[start_hit++]];
-        const int ista      = (*fStripFlag)[hit.f] / 4;
-        iSta[i]             = ista;
-        w[ista][iVec]       = 1.;
+        const L1Hit& hit = (*vStsHits)[fRecoHits[start_hit++]];
+        const int ista   = (*fStripFlag)[hit.f] / 4;
+        iSta[i]          = ista;
+        w[ista][iVec]    = 1.;
         if (ista > NMvdStations) w_time[ista][iVec] = 1.;
 
         u[ista][iVec]   = hit.u;
@@ -402,7 +401,7 @@ void L1Algo::L1KFTrackFitter()
         y[ista][iVec]      = y_temp[iVec];
         time[ista][iVec]   = hit.t;
         timeEr[ista][iVec] = hit.dt;
-        z[ista][iVec]      = (*vStsZPos)[hit.iz];
+        z[ista][iVec]      = hit.z;
         sta[ista].fieldSlice.GetFieldValue(x[ista], y[ista], fB_temp);
         dUdV_to_dX(d_u[ista], d_v[ista], d_x[ista], sta[ista]);
         dUdV_to_dY(d_u[ista], d_v[ista], d_y[ista], sta[ista]);
@@ -816,8 +815,8 @@ void L1Algo::L1KFTrackFitterMuch()
       int nHitsTrack    = t[iVec]->NHits;
       int nHitsTrackSts = 0;
       for (i = 0; i < nHitsTrack; i++) {
-        const L1Hit& hit    = (*vStsHits)[fRecoHits[start_hit++]];
-        const int ista      = (*fStripFlag)[hit.f] / 4;
+        const L1Hit& hit = (*vStsHits)[fRecoHits[start_hit++]];
+        const int ista   = (*fStripFlag)[hit.f] / 4;
         if (ista < 8) nHitsTrackSts++;
         iSta[i]       = ista;
         w[ista][iVec] = 1.;
@@ -838,7 +837,7 @@ void L1Algo::L1KFTrackFitterMuch()
         dUdV_to_dY(d_u[ista], d_v[ista], d_y[ista], sta[ista]);
         dUdV_to_dXdY(d_u[ista], d_v[ista], d_xy[ista], sta[ista]);
         //  mom[ista][iVec] = hit.p;
-        z[ista][iVec] = (*vStsZPos)[hit.iz];
+        z[ista][iVec] = hit.z;
         sta[ista].fieldSlice.GetFieldValue(x[ista], y[ista], fB_temp);
         fB[ista].x[iVec] = fB_temp.x[iVec];
         fB[ista].y[iVec] = fB_temp.y[iVec];

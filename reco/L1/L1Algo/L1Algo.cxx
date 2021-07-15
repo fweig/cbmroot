@@ -223,13 +223,12 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const boo
 }
 
 
-void L1Algo::SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<fscal>& StsZPos_,
-                     L1Vector<unsigned char>& SFlag_, const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_)
+void L1Algo::SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<unsigned char>& SFlag_,
+                     const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_)
 {
 
   vStsHits   = &StsHits_;
   NStsStrips = nStsStrips_;
-  vStsZPos   = &StsZPos_;
   fStripFlag = &SFlag_;
 
   StsHitsStartIndex = StsHitsStartIndex_;
@@ -292,10 +291,8 @@ void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, char iS)
   L1Station& sta = vStations[int(iS)];
   fscal u        = _h.u;
   fscal v        = _h.v;
-  // const fscal &z = (*vStsZPos)[_h.iz];
-  // fscal x, y;
-  _x = (sta.xInfo.sin_phi[0] * u + sta.xInfo.cos_phi[0] * v) / (*vStsZPos)[_h.iz];
-  _y = (sta.yInfo.cos_phi[0] * u + sta.yInfo.sin_phi[0] * v) / (*vStsZPos)[_h.iz];
+  _x             = (sta.xInfo.sin_phi[0] * u + sta.xInfo.cos_phi[0] * v) / _h.z;
+  _y             = (sta.yInfo.cos_phi[0] * u + sta.yInfo.sin_phi[0] * v) / _h.z;
 }
 
 void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta)
@@ -306,7 +303,7 @@ void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, fscal& _z, const 
   StripsToCoor(u, v, x, y, sta);
   _x = x;
   _y = y;
-  _z = (*vStsZPos)[_h.iz];
+  _z = _h.z;
 }
 
 void L1Algo::StripsToCoor(
@@ -359,27 +356,16 @@ void L1Algo::StripsToCoor(
   y = sta.yInfo.cos_phi * u + sta.yInfo.sin_phi * v;
 }
 
-/// full the hit point by hit information: takes hit as input (2 strips) and creates hit_point with all coordinates (x,y,z,u,v, n - event number);
-L1HitPoint L1Algo::CreateHitPoint(const L1Hit& hit, char /*ista*/)
-/// hit and station number
+L1HitPoint L1Algo::CreateHitPoint(const L1Hit& hit)
 {
-  // L1Station& sta   = vStations[int(ista)];
-  const float& z    = (*vStsZPos)[hit.iz];
-  const float& time = hit.t;
-  return L1HitPoint(z, hit.u, hit.v, hit.du, hit.dv, time, hit.dt);
+  /// full the hit point by hit information: takes hit as input (2 strips)
+  /// and creates hit_point with all coordinates (x,y,z,u,v,t);
+  return L1HitPoint(hit.z, hit.u, hit.v, hit.du, hit.dv, hit.t, hit.dt);
 }
 
-void L1Algo::CreateHitPoint(const L1Hit& hit, char /*ista*/, L1HitPoint& point)
-/// hit and station number
+void L1Algo::CreateHitPoint(const L1Hit& hit, L1HitPoint& point)
 {
-  // L1Station& sta   = vStations[int(ista)];
-  const float& z    = (*vStsZPos)[hit.iz];
-  const float& time = hit.t;
-  const float& du_  = hit.du;
-  const float& dv_  = hit.dv;
-
-  point.Set(z, hit.u, hit.v, du_, dv_, time, hit.dt);
-  //   point.Set(x,y,z,v.f,u.f, time, n1, hit.time1, 2.9 ); // TODO put correct time error from the hit
+  point.Set(hit.z, hit.u, hit.v, hit.du, hit.dv, hit.t, hit.dt);
 }
 
 //   bool L1Algo::SortTrip(TripSort const& a, TripSort const& b) {

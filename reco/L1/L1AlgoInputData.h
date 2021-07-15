@@ -22,7 +22,6 @@ public:
 
   L1Vector<L1Hit>& GetStsHits() { return vStsHits; }
   int GetNStsStrips() const { return NStsStrips; }
-  L1Vector<fscal>& GetStsZPos() { return vStsZPos; }
   L1Vector<unsigned char>& GetSFlag() { return fStripFlag; }
   const THitI* GetStsHitsStartIndex() const { return StsHitsStartIndex; }
   const THitI* GetStsHitsStopIndex() const { return StsHitsStopIndex; }
@@ -48,7 +47,6 @@ public:
 
     vStsHits.clear();
     NStsStrips = 0;
-    vStsZPos.clear();
     fStripFlag.clear();
 
     {
@@ -71,7 +69,6 @@ public:
   };
   L1Vector<L1Hit> vStsHits {"L1AlgoInputData::vStsHits"};  // hits as a combination of front-, backstrips and z-position
   int NStsStrips {0};                                      // Number of strips in sts
-  L1Vector<fscal> vStsZPos {"L1AlgoInputData::vStsZPos"};  // all possible z-positions of hits
 
   L1Vector<unsigned char> fStripFlag {
     "L1AlgoInputData::fStripFlag"};  // information of hits station & using hits in tracks;

@@ -1126,8 +1126,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
     if (fSTAPDataMode >= 2) {  // 2,3
       fData->ReadHitsFromFile(fSTAPDataDir.Data(), 1, fVerbose);
 
-      algo->SetData(fData->GetStsHits(), fData->GetNStsStrips(), fData->GetStsZPos(), fData->GetSFlag(),
-                    fData->GetStsHitsStartIndex(), fData->GetStsHitsStopIndex());
+      algo->SetData(fData->GetStsHits(), fData->GetNStsStrips(), fData->GetSFlag(), fData->GetStsHitsStartIndex(),
+                    fData->GetStsHitsStopIndex());
     }
     else {
       ReadEvent(fData, TsStart, TsLength, TsOverlap, FstHitinTs, newTS, event);
@@ -1135,7 +1135,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     if (0) {  // correct hits on MC // dbg
       TRandom3 random;
-      L1Vector<int> strips("CbmL1::strips"), zP("CbmL1::zP");
+      L1Vector<int> strips("CbmL1::strips");
       for (unsigned int iH = 0; iH < (*algo->vStsHits).size(); ++iH) {
         L1Hit& h = const_cast<L1Hit&>((*algo->vStsHits)[iH]);
 #ifdef USE_EVENT_NUMBER
@@ -1164,11 +1164,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
           algo->NStsStrips++;
         }
         strips.push_back(h.b);
-        if (std::find(zP.begin(), zP.end(), h.iz) != zP.end()) {  // TODO why do we need it??gives prob=0
-          h.iz = algo->vStsZPos->size();
-          algo->vStsZPos->push_back(0.f);
-        }
-        zP.push_back(h.iz);
 
         double u = mcp.x * sta.frontInfo.cos_phi[0] + mcp.y * sta.frontInfo.sin_phi[0];
         double v = mcp.x * sta.backInfo.cos_phi[0] + mcp.y * sta.backInfo.sin_phi[0];
@@ -1182,7 +1177,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 #endif
         h.u                                         = u;
         h.v                                         = v;
-        const_cast<float&>((*algo->vStsZPos)[h.iz]) = mcp.z;
+        h.z                                         = mcp.z;
       }
     }
 
@@ -1618,16 +1613,6 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
       cout << "vStsStrips[" << n << "]"
            << " have been written." << endl;
     }
-    // write vStsZPos
-    n = (*algo->vStsZPos).size();
-    fadata << n << endl;
-    for (int i = 0; i < n; i++) {
-      fadata << (*algo->vStsZPos)[i] << endl;
-    };
-    if (fVerbose >= 4) {
-      cout << "vStsZPos[" << n << "]"
-           << " have been written." << endl;
-    }
     // write fStripFlag
     n = (*algo->fStripFlag).size();
     fadata << n << endl;
@@ -1654,7 +1639,7 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
 #ifdef USE_EVENT_NUMBER
       fadata << static_cast<unsigned short int>(h.n) << " ";
 #endif
-      fadata << static_cast<int>(h.iz) << " ";
+      fadata << h.z << " ";
       fadata << h.u << " ";
       fadata << h.v << " ";
       // fadata  << (*algo->vStsHits)[i].time << endl;
@@ -1877,7 +1862,6 @@ void CbmL1::ReadSTAPAlgoData()
 
     if (algo->vStsHits) algo->vStsHits->clear();
     algo->NStsStrips = 0;
-    if (algo->vStsZPos) algo->vStsZPos->clear();
     if (algo->fStripFlag) algo->fStripFlag->clear();
 
     // check correct position in file
@@ -1896,17 +1880,6 @@ void CbmL1::ReadSTAPAlgoData()
       cout << "vStsStrips[" << n << "]"
            << " have been read." << endl;
     }
-    // read algo->vStsZPos
-    fadata >> n;
-    for (int i = 0; i < n; i++) {
-      fscal element;
-      fadata >> element;
-      algo->vStsZPos->push_back(element);
-    }
-    if (fVerbose >= 4) {
-      cout << "vStsZPos[" << n << "]"
-           << " have been read." << endl;
-    }
     // read algo->fStripFlag
     fadata >> n;
     for (int i = 0; i < n; i++) {
@@ -1923,13 +1896,11 @@ void CbmL1::ReadSTAPAlgoData()
     int element_f;  // for convert
     int element_b;
     int element_n;
-    int element_iz;
     for (int i = 0; i < n; i++) {
       L1Hit element;
-      fadata >> element_f >> element_b >> element_n >> element_iz >> element.u >> element.v >> element.t;
+      fadata >> element_f >> element_b >> element_n >> element.z >> element.u >> element.v >> element.t;
       element.f  = static_cast<THitI>(element_f);
       element.b  = static_cast<THitI>(element_b);
-      element.iz = static_cast<TZPosI>(element_iz);
       algo->vStsHits->push_back(element);
     }
     if (fVerbose >= 4) {

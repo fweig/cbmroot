@@ -950,7 +950,7 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
       u[ih]            = hit.u;
       v[ih]            = hit.v;
       StripsToCoor(u[ih], v[ih], x[ih], y[ih], sta[ih]);
-      z[ih] = (*vStsZPos)[hit.iz];
+      z[ih] = hit.z;
     };
 
     // initialize parameters
@@ -1722,7 +1722,7 @@ void L1Algo::CATrackFinder()
 #pragma omp parallel for schedule(dynamic, 5)
 #endif
     for (THitI ih = StsHitsStartIndex[ista]; ih < StsHitsStopIndex[ista]; ++ih) {
-      CreateHitPoint(vStsDontUsedHits_Buf[ih], ista, vStsDontUsedHitsxy_B[ih]);
+      CreateHitPoint(vStsDontUsedHits_Buf[ih], vStsDontUsedHitsxy_B[ih]);
     }
   }
 
@@ -2322,7 +2322,7 @@ void L1Algo::CATrackFinder()
                 const L1Hit& hit = (*vStsHits)[*phIt];
 
 
-                L1HitPoint tempPoint = CreateHitPoint(hit, 0);  //TODO take number of station from hit
+                L1HitPoint tempPoint = CreateHitPoint(hit);  //TODO take number of station from hit
 
                 float xcoor, ycoor = 0;
                 L1Station stah = vStations[0];
