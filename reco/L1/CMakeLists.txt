@@ -24,6 +24,7 @@ ${CBMROOT_SOURCE_DIR}/reco/detectors/rich/fitter
 ${CBMBASE_DIR} 
 
 ${CBMDATA_DIR}
+${CBMDATA_DIR}/raw
 ${CBMDATA_DIR}/sts
 ${CBMDATA_DIR}/much
 ${CBMDATA_DIR}/mvd
@@ -31,6 +32,8 @@ ${CBMDATA_DIR}/trd
 ${CBMDATA_DIR}/tof
 ${CBMDATA_DIR}/rich
 ${CBMDATA_DIR}/global
+
+${CBMROOT_SOURCE_DIR}/core/qa
 
 ${CBMROOT_SOURCE_DIR}/rich/reco/fitter
 

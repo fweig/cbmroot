@@ -1,8 +1,6 @@
 #include "CbmStsUnpackMonitor.h"
 
-// FIXME
-// #include "CbmQaCanvas.h"
-#include "../qa/CbmQaCanvas.h"
+#include "CbmQaCanvas.h"
 
 #include <FairRun.h>
 #include <FairRunOnline.h>
@@ -312,6 +310,7 @@ Bool_t CbmStsUnpackMonitor::ResetMsComponentSizeHistos(UInt_t component)
     fvhMsSize[component]->Reset();
     fvhMsSizeTime[component]->Reset();
   }
+  return kTRUE;
 }
 
 Bool_t CbmStsUnpackMonitor::ResetHistograms()

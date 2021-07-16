@@ -39,7 +39,6 @@ ${CBMROOT_SOURCE_DIR}/reco/detectors/sts/unpack
 ${CBMROOT_SOURCE_DIR}/reco/base
 
 #QA
-${CBMROOT_SOURCE_DIR}/qa
 ${CBMROOT_SOURCE_DIR}/core/qa
 
 # Base

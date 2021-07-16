@@ -13,9 +13,7 @@
 #include <cstdint>
 #include <iomanip>
 
-// FIXME
-// #include "StsXyterFinalHit.h"
-#include "raw/StsXyterFinalHit.h"
+#include "StsXyterFinalHit.h"
 
 
 CbmStsUnpackAlgo::CbmStsUnpackAlgo() : CbmRecoUnpackAlgo("CbmStsUnpackAlgo") {}
