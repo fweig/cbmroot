@@ -1,17 +1,17 @@
 set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/unpack
-  
+
   ${CMAKE_SOURCE_DIR}/core/detectors/psd
 
   ${CBMBASE_DIR}
-  
+
   ${CBMDATA_DIR}
   ${CBMDATA_DIR}/base
   ${CBMDATA_DIR}/global
   ${CBMDATA_DIR}/psd
   ${CBMDATA_DIR}/raw
-  
+
 
   ${CBMROOT_SOURCE_DIR}/reco/base
 )
@@ -19,7 +19,7 @@ set(INCLUDE_DIRECTORIES
 include_directories(${INCLUDE_DIRECTORIES})
 
 set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES} 
+  ${BASE_INCLUDE_DIRECTORIES}
   ${IPC_INCLUDE_DIRECTORY} # for fles infos for unpacker
 )
 
@@ -30,7 +30,7 @@ set(LINK_DIRECTORIES
   ${FAIRROOT_LIBRARY_DIR}
   ${Boost_LIBRARY_DIRS}
 )
- 
+
 link_directories(${LINK_DIRECTORIES})
 
 set(SRCS
@@ -38,16 +38,17 @@ set(SRCS
   CbmPsdMCbmHitProducer.cxx
 
   unpack/CbmPsdUnpackAlgo.cxx
-  unpack/CbmPsdUnpackConfig.cxx  
+  unpack/CbmPsdUnpackConfig.cxx
 )
 
 set(LINKDEF CbmPsdRecoLinkDef.h)
 set(LIBRARY_NAME CbmPsdReco)
 set(DEPENDENCIES
-    CbmData 
-    CbmBase 
-    Base 
-    CbmRecoBase 
+    CbmPsdBase
+    CbmData
+    CbmBase
+    Base
+    CbmRecoBase
 )
 
 GENERATE_LIBRARY()
