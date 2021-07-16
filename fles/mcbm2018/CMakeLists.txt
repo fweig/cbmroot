@@ -63,6 +63,7 @@ Set(SRCS
 
    unpacker/CbmMcbm2018RawConverterSdpb.cxx
    unpacker/CbmMcbm2018RawConverterGdpb.cxx
+   unpacker/CbmCriGet4RawPrint.cxx
 
    unpacker/CbmMcbm2018UnpackerAlgoSts.cxx
    unpacker/CbmMcbm2018UnpackerTaskSts.cxx

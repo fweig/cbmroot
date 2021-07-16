@@ -120,6 +120,7 @@ set(SRCS
 
   raw/StsXyterMessage.cxx
   raw/gDpbMessv100.cxx
+  raw/CriGet4Mess001.cxx
   raw/TimesliceMetaData.cxx
   raw/PsdGbtReader-v0.00.cxx
   raw/PsdGbtReader-v1.00.cxx

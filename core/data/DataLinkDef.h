@@ -96,6 +96,8 @@
 #pragma link C++ class stsxyter::Message;
 #pragma link C++ class gdpbv100::Message;
 #pragma link C++ class gdpbv100::FullMessage;
+#pragma link C++ class critof001::Message;
+#pragma link C++ class critof001::FullMessage;
 #pragma link C++ class TimesliceMetaData;
 #pragma link C++ class PsdDataV000::PsdGbtReader;
 #pragma link C++ class PsdDataV100::PsdGbtReader;

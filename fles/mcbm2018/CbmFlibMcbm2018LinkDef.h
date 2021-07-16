@@ -14,6 +14,7 @@
 
 #pragma link C++ class CbmMcbm2018RawConverterSdpb;
 #pragma link C++ class CbmMcbm2018RawConverterGdpb;
+#pragma link C++ class CbmCriGet4RawPrint;
 
 #pragma link C++ class CbmMcbm2018UnpackerAlgoSts;
 #pragma link C++ class CbmMcbm2018UnpackerTaskSts + ;
