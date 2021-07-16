@@ -290,13 +290,13 @@ void CbmStsUnpackMonitor::DrawCanvases()
 Bool_t CbmStsUnpackMonitor::CreateMsComponentSizeHistos(UInt_t component)
 {
   if (nullptr == fvhMsSize[component]) {
-    TString sMsSizeName  = Form("MsSize_link_%02lu", component);
-    TString sMsSizeTitle = Form("Size of MS for nDPB of link %02lu; Ms Size [bytes]", component);
+    TString sMsSizeName  = Form("MsSize_link_%02u", component);
+    TString sMsSizeTitle = Form("Size of MS for nDPB of link %02u; Ms Size [bytes]", component);
     fvhMsSize[component] = new TH1F(sMsSizeName.Data(), sMsSizeTitle.Data(), 30000, 0., 30000.);
     fvhMsSize[component]->SetCanExtend(TH2::kAllAxes);
 
-    sMsSizeName              = Form("MsSizeTime_link_%02lu", component);
-    sMsSizeTitle             = Form("Size of MS vs time for gDPB of link %02lu; Time[s] ; Ms Size [bytes]", component);
+    sMsSizeName              = Form("MsSizeTime_link_%02u", component);
+    sMsSizeTitle             = Form("Size of MS vs time for gDPB of link %02u; Time[s] ; Ms Size [bytes]", component);
     fvhMsSizeTime[component] = new TProfile(sMsSizeName.Data(), sMsSizeTitle.Data(), 15000, 0., 300.);
     fvhMsSizeTime[component]->SetCanExtend(TH2::kAllAxes);
 

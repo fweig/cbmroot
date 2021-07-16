@@ -89,7 +89,6 @@ void CbmTrdUnpackMonitor::Finish()
     TDirectory* oldDir = gDirectory;
 
     /// (Re-)Create ROOT file to store the histos
-    // std::unique_ptr<TFile> histofile(new TFile(fOutfilename.data(), "RECREATE"));
     TFile histofile(fOutfilename.data(), "RECREATE");
 
     nhistos += writeHistosToFile(&fDigiHistoMap, &histofile);

@@ -11,6 +11,7 @@
 #include <RtypesCore.h>
 
 #include <cstdint>
+#include <iomanip>
 
 // FIXME
 // #include "StsXyterFinalHit.h"
@@ -27,7 +28,7 @@ uint32_t CbmStsUnpackAlgo::getAsicIndex(uint32_t dpbidx, uint32_t crobidx, uint1
 
   uint32_t asicidx      = 0;
   const int32_t uFebIdx = fElinkIdxToFebIdxVec.at(elinkidx);
-  uint32_t febtype      = fviFebType[fuCurrDpbIdx][crobidx][uFebIdx];
+  uint32_t febtype      = fviFebType[dpbidx][crobidx][uFebIdx];
   // Feb type a
   if (febtype == 0) asicidx = fElinkIdxToAsicIdxVec.at(elinkidx).first;
   //   Feb type b
@@ -35,7 +36,7 @@ uint32_t CbmStsUnpackAlgo::getAsicIndex(uint32_t dpbidx, uint32_t crobidx, uint1
   // else would be inactive feb, this was not handled in the previous implementation, this I expect it should not happen
 
 
-  uint32_t uAsicIdx = (fuCurrDpbIdx * fNrCrobPerDpb + crobidx) * fNrAsicsPerCrob + asicidx;
+  uint32_t uAsicIdx = (dpbidx * fNrCrobPerDpb + crobidx) * fNrAsicsPerCrob + asicidx;
   return uAsicIdx;
 }
 
@@ -693,7 +694,7 @@ bool CbmStsUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
       LOG(info) << "---------------------------------------------------------------";
       // Had to remove this line otherwise we would get circle dependencies in the current stage of cbmroot, since we still have Unpackers in the fles folders, which require the reco folders
       // LOG(info) << FormatMsHeaderPrintout(msDescriptor);
-      LOG(warning) << fName << "unpack(...)::Could not find the sDPB index for AFCK id 0x" << std::hex << uCurrDpbId
+      LOG(warning) << fName << "::unpack(...)::Could not find the sDPB index for AFCK id 0x" << std::hex << uCurrDpbId
                    << std::dec << " in timeslice " << fNrProcessedTs << " in microslice " << imslice << " component "
                    << icomp << "\n"
                    << "If valid this index has to be added in the STS "

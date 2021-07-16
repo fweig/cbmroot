@@ -35,6 +35,7 @@
 
 #include <Rtypes.h>  // for types
 #include <RtypesCore.h>
+#include <TFile.h>
 #include <TH1.h>
 #include <THttpServer.h>  // for histogram server
 
