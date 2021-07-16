@@ -135,6 +135,9 @@ protected:
   /** @brief Start time of the current TS [ns] */
   size_t fTsStartTime = 0;
 
+  /** @brief Index of the current TS */
+  size_t fTsIndex = 0;
+
   /** @brief Additional explicit finish function of the derived algo implementations. */
   virtual void finish() = 0;
 
@@ -259,7 +262,7 @@ public:
 
     LOG(info) << fName << "::Finish. \n Number of CrcValidFlags " << fNrCrcValidFlags
               << " \n Number of OverflowFlimFlags " << fNrOverflowFlimFlags << " \n Number of OverflowUserFlags "
-              << fNrOverflowUserFlags << " \n Number of DataErrorFlags " << fNrDataErrorFlags;
+              << fNrOverflowUserFlags << " \n Number of DataErrorFlags " << fNrDataErrorFlags << "\n";
 
     // Additional explicit finish of the derived class used during runtime.
     finish();
@@ -367,9 +370,10 @@ public:
     if (fIsFirstTs) getTimesliceParams(ts);
 
     // Get the index of the current timeslice
-    auto currTsIdx = ts->index();
+    fTsIndex = ts->index();
+
     // Get the number of the current timeslice (the index increases currently via nthTimeslice* fNrCoreMsPerTs)
-    size_t itimeslice = currTsIdx / fNrCoreMsPerTs;
+    size_t itimeslice = fTsIndex / fNrCoreMsPerTs;
 
     // Set further parameters required by the explicit algorithm
     setDerivedTsParameters(itimeslice);
@@ -385,8 +389,8 @@ public:
       }
     }
 
+    fNrCreatedDigis += fOutputVec.size();
 
-    // Sort the optional output vectors according to the time. (Digi vector is handled by CbmRecoUnpack)
     ++fNrProcessedTs;
     return fOutputVec;
   }

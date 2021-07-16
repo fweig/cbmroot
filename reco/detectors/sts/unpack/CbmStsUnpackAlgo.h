@@ -21,8 +21,11 @@
 #ifndef CbmStsUnpackAlgo_H
 #define CbmStsUnpackAlgo_H
 
+#include "CbmErrorMessage.h"  // REMARK see remark in CbmStsUnpackConfig
+#include "CbmMcbm2018StsPar.h"
 #include "CbmRecoUnpackAlgo.tmpl"
 #include "CbmStsDigi.h"
+#include "CbmStsUnpackMonitor.h"
 
 #include "Timeslice.hpp"  // timeslice
 
@@ -34,7 +37,7 @@
 #include <memory>
 #include <utility>
 
-class CbmStsUnpackAlgo : public CbmRecoUnpackAlgo<CbmStsDigi> {
+class CbmStsUnpackAlgo : public CbmRecoUnpackAlgo<CbmStsDigi, CbmErrorMessage> {
 public:
   /** @brief Create the Cbm Trd Unpack AlgoBase object */
   CbmStsUnpackAlgo();
@@ -58,29 +61,67 @@ public:
    * @return fParContVec
   */
   virtual std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
-  GetParContainerRequest(std::string geoTag, std::uint32_t runId)
-  {
-    return {};
-  };
+  GetParContainerRequest(std::string geoTag, std::uint32_t runId);
+
+  /**
+   * @brief Mask a Noisy Channel
+   * 
+   * @param uFeb 
+   * @param uChan 
+   * @param bMasked 
+  */
+  void MaskNoisyChannel(const uint32_t uFeb, const uint32_t uChan, const bool bMasked = true);
+
+  /** @brief Set the minimum adc cut value @param[in] value */
+  void SetMinAdcCut(uint32_t value) { fdAdcCut = value; }
+
+  /** @brief Set the minimum adc cut value @param[in] value */
+  void SetAsicTimeOffsetVec(std::vector<double> value) { fvdTimeOffsetNsAsics.swap(value); }
+
+  /** @brief Set a predefined monitor @param monitor predefined unpacking monitor */
+  void SetMonitor(std::shared_ptr<CbmStsUnpackMonitor> monitor) { fMonitor = monitor; }
 
 protected:
+  // /** @brief Add the sts-xyter-hits to the output buffer as Digis */
+  // void AddHitsToDigiVect(std::vector<stsxyter::FinalHit>* vmHitsIn, std::vector<CbmStsDigi>* vDigiVectOut);
+
+
   /** @brief Finish function for this algorithm base clase */
   void finish()
   {
-    finishDerived();
-    // Finish the monitor if we have one
     // if (fMonitor) fMonitor->Finish();
+    return;
   }
 
-  /** @brief Function that allows special calls during Finish in the derived algos */
-  virtual void finishDerived() { return; }
+  /**
+   * @brief Get the Asic Index
+   * 
+   * @param dpbidx 
+   * @param crobidx 
+   * @param elinkidx 
+  */
+  uint32_t getAsicIndex(uint32_t dpbidx, uint32_t crobidx, uint16_t elinkidx);
+
+  /**
+   * @brief Get the Full Time Stamp from raw time stamp 
+   * 
+   * @param usRawTs 
+   * @return uint64_t 
+  */
+  uint64_t getFullTimeStamp(const uint16_t usRawTs);
 
   /**
    * @brief Intialisation at begin of run. Special inits of the derived algos.
    * 
    * @retval Bool_t initOk
   */
-  Bool_t init() { return kTRUE; }
+  Bool_t init();
+
+  /** @brief Initialize the DpbIdIndexMap with the information from the parset @param[in] parset parameter set for the Sts unpacker */
+  void initDpbIdIndexMap(CbmMcbm2018StsPar* parset);
+
+  /** @brief experts please add description here */
+  void initInternalStatus(CbmMcbm2018StsPar* parset);
 
   /**
    * @brief Handles the distribution of the hidden derived classes to their explicit functions.
@@ -88,7 +129,60 @@ protected:
    * @param parset 
    * @return Bool_t initOk 
   */
-  Bool_t initParSet(FairParGenericSet* parset) { return kTRUE; }
+  Bool_t initParSet(FairParGenericSet* parset);
+
+  /**
+   * @brief Initialize the parameters from CbmMcbm2018StsPar.
+   * 
+   * @param parset 
+   * @return Bool_t initOk 
+  */
+  Bool_t initParSet(CbmMcbm2018StsPar* parset);
+
+  /** @brief Initialize and transfer the informations to the parameters storage vectors */
+  void initTempVectors(CbmMcbm2018StsPar* parset, std::vector<int32_t>* viModuleType,
+                       std::vector<int32_t>* viModAddress,
+                       std::vector<std::vector<std::vector<int32_t>>>* viFebModuleIdx,
+                       std::vector<std::vector<bool>>* vbCrobActiveFlag,
+                       std::vector<std::vector<std::vector<int32_t>>>* viFebModuleSide);
+  /**
+   * @brief Main loop over the sts xyter messages in the µSlices
+   * 
+   * @param msContent 
+   * @param uSize 
+   * @param uMsIdx 
+   * @param bError 
+   * @param sMessPatt 
+   * @param vNbMessType 
+  */
+  void loopMsMessages(const uint8_t* msContent, const uint32_t uSize, const size_t uMsIdx, bool& bError,
+                      std::string& sMessPatt, std::vector<uint32_t>& vNbMessType);
+
+
+  /** @brief experts please add description */
+  void printActiveCrobs(CbmMcbm2018StsPar* parset, const std::vector<std::vector<bool>>& vbCrobActiveFlag);
+
+  /** @brief experts please add description */
+  void printAddressMaps(CbmMcbm2018StsPar* parset, const std::vector<std::vector<std::vector<int32_t>>>& viFebModuleIdx,
+                        const std::vector<std::vector<std::vector<int32_t>>>& viFebModuleSide);
+
+  /** @brief experts please add description marked as not used currently*/
+  void processEpochInfo(const stsxyter::Message& /*mess*/) { return; };
+
+  /** @brief experts please add description */
+  void processErrorInfo(const stsxyter::Message& mess);
+
+  /** @brief Process the information of the hit message and create a StsDigi from it */
+  void processHitInfo(const stsxyter::Message& mess);
+
+  /** @brief experts please add description */
+  void processStatusInfo(const stsxyter::Message& mess, uint32_t uIdx);
+
+  /** @brief experts please add description */
+  void processTsMsbInfo(const stsxyter::Message& mess, uint32_t uMessIdx, uint32_t uMsIdx);
+
+  /** @brief experts please add description here */
+  void refreshTsMsbFields(const uint32_t imslice, const size_t mstime);
 
   /**
    * @brief Set the Derived Ts Parameters
@@ -99,7 +193,7 @@ protected:
    * @return true 
    * @return false 
   */
-  bool setDerivedTsParameters(size_t itimeslice) { return true; }
+  bool setDerivedTsParameters(size_t /*itimeslice*/) { return true; }
 
   /**
    * @brief Unpack a given microslice. To be implemented in the derived unpacker algos.
@@ -112,7 +206,99 @@ protected:
    * 
    * @remark The content of the µslice can only be accessed via the timeslice. Hence, we need to pass the pointer to the full timeslice
   */
-  bool unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice) { return true; }
+  bool unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice);
+
+  // Monitoring
+  /** @brief Potential (online) monitor for the unpacking process */
+  std::shared_ptr<CbmStsUnpackMonitor> fMonitor = nullptr;
+
+  /** @brief Current µSlice time */
+  uint64_t fMsStartTime = 0;
+
+  // Parameter members
+  /** @brief Map of DPB Identifier to DPB index */
+  std::map<uint32_t, uint32_t> fDpbIdIndexMap = {};  //!
+
+  /** @brief Current dpb id */
+  uint32_t fuCurrDpbIdx = 0;
+
+  /** @brief Masked components to print out missing component only once */
+  std::vector<bool> fvbMaskedComponents;
+
+  /** @brief Number of FEBs with StsXyter ASICs */
+  uint32_t fuNbFebs = 0;  //!
+
+  /** @brief Number of eLinks per CROB */
+  uint32_t fNrElinksPerCrob = 0;  //!
+
+  /** @brief Number of ASICs per CROB */
+  uint32_t fNrAsicsPerCrob = 0;  //!
+
+  /** @brief Number of ASICs per FEB */
+  uint32_t fNrAsicsPerFeb = 0;  //!
+
+  /** @brief Number of Channels per Asic */
+  uint32_t fNrChsPerAsic = 0;  //!
+
+  /** @brief Number of Channels per FEB */
+  uint32_t fNrChsPerFeb = 0;  //!
+
+  /** @brief Number of CROBs per DPB */
+  uint32_t fNrCrobPerDpb = 0;  //!
+
+  /** @brief Vector used for the translation between eLink index and FEB index*/
+  std::vector<int> fElinkIdxToFebIdxVec = {};
+
+  /** @brief Vector used for the translation between eLink index and Asic index first is feb type A second is feb type b*/
+  std::vector<std::pair<uint32_t, uint32_t>> fElinkIdxToAsicIdxVec = {};
+
+  /** @brief Minimum adc cut to store a hit */
+  uint32_t fdAdcCut = 0;
+
+  /** @brief Time offsets per Asic??? @todo expert confirmation required */
+  std::vector<double> fvdTimeOffsetNsAsics = {};
+
+  /** @brief flag if channel mask is to be used or not. Set automatically via MaskNoisyChannels */
+  bool fbUseChannelMask = false;
+
+  /** @brief Vector of channel masks, [ NbFeb ][ NbCHanInFeb ], used only if fbUseChannelMask is true */
+  std::vector<std::vector<bool>> fvvbMaskedChannels = {};  //!
+
+
+  /** @brief  FEB type, [ NbDpb ][ NbCrobPerDpb ][ NbFebsPerCrob ], 0 = A, 1 = B, -1 if inactive */
+  std::vector<std::vector<std::vector<int32_t>>> fviFebType = {};  //!
+
+  /** @brief STS address for each FEB, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ] */
+  std::vector<int32_t> fviFebAddress;  //!
+  /** @brief Module side for each FEB, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ] */
+  std::vector<int32_t> fviFebSide;  //!
+  /** @brief ADC gain in e-/b, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ] */
+  std::vector<double> fvdFebAdcGain;  //!
+  /** @brief ADC offset in e-, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ] */
+  std::vector<double> fvdFebAdcOffs;  //!
+
+  /** @brief Current TS MSB for each DPB */
+  std::vector<uint64_t> fvulCurrentTsMsb = {};  //!
+  /** @brief Current TS MSB cycle for DPB */
+  std::vector<uint32_t> fvuCurrentTsMsbCycle = {};  //!
+
+
+  /// Duplicate hits suppression
+  static const uint32_t kuMaxTsMsbDiffDuplicates = 8;
+  /** @brief TS of last hit message for each channel, [ AsicIdx ][ Chan ] */
+  std::vector<std::vector<uint16_t>> fvvusLastTsChan = {};  //!
+  /** @brief ADC of last hit message for each channel, [ AsicIdx ][ Chan ] */
+  std::vector<std::vector<uint16_t>> fvvusLastAdcChan = {};  //!
+  /** @brief TS MSB of last hit message for each channel, [ AsicIdx ][ Chan ] */
+  std::vector<std::vector<uint16_t>> fvvusLastTsMsbChan = {};  //!
+  /** @brief TS MSB cycle of last hit message for each channel, [ AsicIdx ][ Chan ] */
+  std::vector<std::vector<uint16_t>> fvvusLastTsMsbCycleChan = {};  //!
+
+  /** @brief Time of first valid hit (TS_MSB available), used as reference for evolution plots @todo move this to the monitor the algo does not need it!*/
+  double fdStartTime = 0;
+
+  /** @brief Time of first microslice, used as reference for evolution plots @todo move this to the monitor the algo does not need it!*/
+  double fdStartTimeMsSz = 0;
 
 private:
   ClassDef(CbmStsUnpackAlgo, 2)

@@ -67,7 +67,7 @@ Bool_t CbmPsdUnpackAlgo::initParSet(FairParGenericSet* parset)
   return kFALSE;
 }
 
-// ---- initParSet(CbmTrdParSetAsic* parset) ----
+// ---- initParSet(CbmMcbm2018PsdPar* parset) ----
 Bool_t CbmPsdUnpackAlgo::initParSet(CbmMcbm2018PsdPar* parset)
 {
   LOG(debug) << fName << "::initParSetAsic - ";
@@ -114,12 +114,6 @@ Bool_t CbmPsdUnpackAlgo::initParSet(CbmMcbm2018PsdPar* parset)
   for (size_t ichannel = 0; ichannel < fviPsdChUId.size(); ++ichannel) {
     fMipCalibration.emplace_back(parset->GetMipCalibration(ichannel));
   }
-
-  return kTRUE;
-
-
-  LOG(info) << fName << "::initParSetPsdMcbm2018 - Successfully initialized Spadic hardware address map";
-
   return kTRUE;
 }
 

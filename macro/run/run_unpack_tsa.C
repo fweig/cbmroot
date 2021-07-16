@@ -89,6 +89,14 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   richconfig->SetParFilesBasePath(parfilesbasepathRich);
   // -------------
 
+  // ---- STS ----
+  auto stsconfig = std::make_shared<CbmStsUnpackConfig>("", runid);
+  // stsconfig->SetDebugState();
+  stsconfig->SetDoWriteOutput();
+  std::string parfilesbasepathSts = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+  stsconfig->SetParFilesBasePath(parfilesbasepathRich);
+  // -------------
+
   // ---- TRD ----
   TString trdsetuptag = "";
   cbmsetup->GetGeoTag(ECbmModuleId::kTrd, trdsetuptag);
@@ -96,6 +104,8 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   auto trdconfig = std::make_shared<CbmTrdUnpackConfig>(trdsetuptag.Data(), 3);
   // trdconfig->SetDebugState();
   trdconfig->SetDoWriteOutput();
+  // Activate the line below to write Trd1D digis to a separate "TrdSpadicDigi" branch. Can be used to separate between Fasp and Spadic digis
+  // trdconfig->SetOutputBranchName("TrdSpadicDigi");
   // trdconfig->SetDoWriteOptOutA(CbmTrdRawMessageSpadic::GetBranchName());
   // trdconfig->SetDoWriteOptOutB("SpadicInfoMessages"); // SpadicInfoMessages
 
@@ -110,7 +120,8 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   auto trdfasp2dconfig = std::make_shared<CbmTrdUnpackConfigFasp2D>("", runid);
   // trdfasp2dconfig->SetDebugState();
   trdfasp2dconfig->SetDoWriteOutput();
-  trdfasp2dconfig->SetOutputBranchName("FaspTrdDigi");
+  // Activate the line below to write Trd1D digis to a separate "TrdFaspDigi" branch. Can be used to separate between Fasp and Spadic digis
+  // trdfasp2dconfig->SetOutputBranchName("TrdFaspDigi");
   std::string parfilesbasepathTrdfasp2d = Form("%s/parameters/trd", srcDir.Data());
   trdfasp2dconfig->SetParFilesBasePath(parfilesbasepathTrdfasp2d);
   // -------------
@@ -131,7 +142,8 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   auto source = new CbmSourceTsArchive(infile.data());
   auto unpack = source->GetRecoUnpack();
   unpack->SetUnpackConfig(psdconfig);
-  unpack->SetUnpackConfig(richconfig);
+  // unpack->SetUnpackConfig(richconfig); // Problematic in 1588
+  unpack->SetUnpackConfig(stsconfig);
   unpack->SetUnpackConfig(trdconfig);
   unpack->SetUnpackConfig(trdfasp2dconfig);
   // ------------------------------------------------------------------------

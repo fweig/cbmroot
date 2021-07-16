@@ -33,12 +33,28 @@ void CbmStsUnpackConfig::InitUnpacker()
   // First choose the derived unpacking algorithm to be used and pass the raw to digi method
   auto algo = chooseAlgo();
 
+  if (fDoLog) LOG(info) << fName << "::Init - SetParFilesBasePath";
+  algo->SetParFilesBasePath(fParFilesBasePath);
+
   // Initialise the parameter containers required by the unpacker algo. Includes loading the corresponding ascii files
   auto reqparvec = algo->GetParContainerRequest(fGeoSetupTag, fRunId);
   initOk &= initParContainers(reqparvec);
 
+  // Set the minimum adc cut
+  algo->SetMinAdcCut(fdAdcCut);
+
+  // Set the single asics time offsets
+  algo->SetAsicTimeOffsetVec(fvdTimeOffsetNsAsics);
+
+  // Mask the noisy channels set by the user
+  for (auto chmask : fvChanMasks)
+    algo->MaskNoisyChannel(chmask.uFeb, chmask.uChan, chmask.bMasked);
+
+
   // Now we have all information required to initialise the algorithm
   algo->Init();
+
+  if (fMonitor) algo->SetMonitor(fMonitor);
 
   // Pass the algo to its member in the base class
   fAlgo = algo;

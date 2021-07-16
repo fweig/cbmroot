@@ -24,6 +24,7 @@ ${CBMROOT_SOURCE_DIR}/reco/base
 ${CBMROOT_SOURCE_DIR}/reco/detectors/psd
 ${CBMROOT_SOURCE_DIR}/reco/detectors/psd/unpack
 ${CBMROOT_SOURCE_DIR}/reco/detectors/rich/unpack
+${CBMROOT_SOURCE_DIR}/reco/detectors/sts/
 ${CBMROOT_SOURCE_DIR}/reco/detectors/sts/unpack
 ${CBMROOT_SOURCE_DIR}/reco/detectors/tof/unpack
 ${CBMROOT_SOURCE_DIR}/reco/detectors/trd
@@ -32,6 +33,7 @@ ${CBMROOT_SOURCE_DIR}/reco/detectors/trd/unpack
 
 ${CBMROOT_SOURCE_DIR}/core/base
 ${CBMROOT_SOURCE_DIR}/core/data
+${CBMROOT_SOURCE_DIR}/core/qa
 ${CBMROOT_SOURCE_DIR}/core/data/raw
 ${CBMROOT_SOURCE_DIR}/core/data/base
 ${CBMROOT_SOURCE_DIR}/core/data/psd

@@ -18,9 +18,11 @@
 #ifndef CbmStsUnpackConfig_H
 #define CbmStsUnpackConfig_H
 
+#include "CbmErrorMessage.h"  // REMARK this should become a Sts specific container I Would propose PR
 #include "CbmRecoUnpackConfig.tmpl"
 #include "CbmStsDigi.h"
 #include "CbmStsUnpackAlgo.h"
+#include "CbmStsUnpackMonitor.h"
 
 #include <FairLogger.h>
 #include <Logger.h>
@@ -33,7 +35,7 @@
 #include <memory>
 #include <vector>
 
-class CbmStsUnpackConfig : public CbmRecoUnpackConfig<CbmStsUnpackAlgo, CbmStsDigi> {
+class CbmStsUnpackConfig : public CbmRecoUnpackConfig<CbmStsUnpackAlgo, CbmStsDigi, CbmErrorMessage> {
 
 public:
   /**
@@ -57,8 +59,15 @@ public:
   /** @brief Assignment operator - not implemented **/
   CbmStsUnpackConfig& operator=(const CbmStsUnpackConfig&) = delete;
 
-  // Getters
+  struct FebChanMaskReco {
+    UInt_t uFeb;
+    UInt_t uChan;
+    Bool_t bMasked;
+  };
 
+  // Getters
+  /** @brief Get the potentially added monitor. */
+  std::shared_ptr<CbmStsUnpackMonitor> GetMonitor() { return fMonitor; }
 
   /**
    * @brief Prepare the unpacker to be ready to run.
@@ -66,7 +75,31 @@ public:
   */
   void InitUnpacker();
 
+  void MaskNoisyChannel(UInt_t uFeb, UInt_t uChan, Bool_t bMasked = kTRUE)
+  {
+    fvChanMasks.emplace_back(FebChanMaskReco {uFeb, uChan, bMasked});
+  }
+
+
   // Setters
+  /**
+   * @brief Set the Asic Time Offset
+   * 
+   * @param asicid Idx of the ASIC with the given time offset
+   * @param value time offset
+  */
+  void SetAsicTimeOffset(size_t asicid, double value)
+  {
+    if (fvdTimeOffsetNsAsics.size() < (asicid + 1)) fvdTimeOffsetNsAsics.resize(asicid + 1);
+    fvdTimeOffsetNsAsics.at(asicid) = value;
+  }
+
+  /** @brief Set the minimum adc cut value @param[in] value */
+  void SetMinAdcCut(uint32_t value) { fdAdcCut = value; }
+
+  /** @brief Add a monitor to the unpacker. @param value CbmStsUnpackMonitor */
+  void SetMonitor(std::shared_ptr<CbmStsUnpackMonitor> value) { fMonitor = value; }
+
 
 protected:
   /**
@@ -75,6 +108,19 @@ protected:
    * @return Bool_t initOk 
   */
   virtual std::shared_ptr<CbmStsUnpackAlgo> chooseAlgo();
+
+  /** @brief pointer to the monitor object */
+  std::shared_ptr<CbmStsUnpackMonitor> fMonitor = nullptr;
+
+  /** @brief Minimum adc cut to store a hit */
+  uint32_t fdAdcCut = 0;
+
+  /** @brief Vector with the Asic time offsets */
+  std::vector<double> fvdTimeOffsetNsAsics = {};
+
+  /// Temporary storage of user parameters
+  std::vector<FebChanMaskReco> fvChanMasks = {};
+
 
   /** @brief Geometry setup tag for the given detector as used by CbmSetup objects */
   std::string fGeoSetupTag = "";

@@ -21,5 +21,6 @@
 
 #pragma link C++ class CbmStsUnpackAlgo + ;
 #pragma link C++ class CbmStsUnpackConfig + ;
+#pragma link C++ class CbmStsUnpackMonitor + ;
 
 #endif /* __CINT__ */

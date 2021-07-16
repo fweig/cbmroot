@@ -119,14 +119,7 @@ protected:
    * 
    * @return Bool_t initOk 
   */
-  virtual Bool_t init() { return initR(); }
-
-  /**
-   * @brief Additional initialisation function for all BaseR derived algorithms.
-   * 
-   * @return Bool_t initOk 
-  */
-  virtual Bool_t initR();
+  virtual Bool_t init();
 
   // Initialise par set, the base function handles the casting to distribute the pointers to their explicit functions
 

@@ -22,6 +22,7 @@ CbmStsTrackFinderIdeal.cxx
 
 unpack/CbmStsUnpackAlgo.cxx
 unpack/CbmStsUnpackConfig.cxx
+unpack/CbmStsUnpackMonitor.cxx
 )
 # -----  End of sources   ---------------------------------
 
@@ -37,6 +38,10 @@ ${CBMROOT_SOURCE_DIR}/reco/detectors/sts/unpack
 # Reco
 ${CBMROOT_SOURCE_DIR}/reco/base
 
+#QA
+${CBMROOT_SOURCE_DIR}/qa
+${CBMROOT_SOURCE_DIR}/core/qa
+
 # Base
 ${CBMBASE_DIR}
 
@@ -45,6 +50,7 @@ ${CBMDATA_DIR}
 ${CBMDATA_DIR}/base
 ${CBMDATA_DIR}/global
 ${CBMDATA_DIR}/sts
+${CBMDATA_DIR}/raw
 ${CBMDATA_DIR}/mvd
 
 # MVD
@@ -72,7 +78,7 @@ ${Boost_LIBRARY_DIRS}
 
 # -----   Specify library dependences   -------------------
 Set(DEPENDENCIES
-    CbmBase CbmData CbmRecoBase CbmStsBase
+    CbmBase CbmData CbmQaBase CbmRecoBase CbmStsBase 
 )
 # ---------------------------------------------------------
 

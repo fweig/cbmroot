@@ -24,8 +24,6 @@ CbmTrdUnpackAlgoBaseR::~CbmTrdUnpackAlgoBaseR() {}
 // ---- digestOutput ----
 void CbmTrdUnpackAlgoBaseR::digestOutput(std::unique_ptr<CbmTrdDigi> digi, CbmTrdRawMessageSpadic raw)
 {
-  ++fNrCreatedDigis;
-
   // If requested lets monitor something
   if (fMonitor) { fMonitor->FillHistos(digi.get(), &raw); }
 
@@ -134,7 +132,7 @@ Bool_t CbmTrdUnpackAlgoBaseR::initParSet(CbmMcbm2020TrdTshiftPar* parset)
 }
 
 // ---- initR ----
-Bool_t CbmTrdUnpackAlgoBaseR::initR()
+Bool_t CbmTrdUnpackAlgoBaseR::init()
 {
   auto initOk = kTRUE;
   // Check if we have already a Spadic object. If not check if we have a raw to digi object, it has by default a Spadic object. If we do not have a rtd object we create a default spadic object on our own.

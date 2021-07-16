@@ -135,6 +135,12 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
             unpack(&timeslice, component, fRichConfig, fRichConfig->GetOptOutAVec(), fRichConfig->GetOptOutBVec()));
         break;
       }
+      case fkFlesSts: {
+        if (fStsConfig)
+          fCbmTsEventHeader->SetNDigisSts(
+            unpack(&timeslice, component, fStsConfig, fStsConfig->GetOptOutAVec(), fStsConfig->GetOptOutBVec()));
+        break;
+      }
       case fkFlesTrd: {
         if (fTrdConfig)
           fCbmTsEventHeader->SetNDigisTrd(
