@@ -116,17 +116,6 @@ protected:
   Bool_t initParSet(CbmMcbm2018PsdPar* parset);
 
   /**
-   * @brief Set the Derived Ts Parameters
-   * 
-   * In this function parameters required by the explicit algo connected to the timeslice can be set.
-   * 
-   * @param itimeslice 
-   * @return true 
-   * @return false 
-  */
-  bool setDerivedTsParameters(size_t itimeslice) { return true; }
-
-  /**
    * @brief Unpack a given microslice. To be implemented in the derived unpacker algos.
    * 
    * @param ts timeslice pointer
