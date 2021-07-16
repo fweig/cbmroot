@@ -150,8 +150,7 @@ bool CbmPsdUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
 
   if (0 == fvbMaskedComponents.size()) fvbMaskedComponents.resize(ts->num_components(), kFALSE);
 
-  auto dpbid    = static_cast<uint16_t>(eqid & 0xFFFF);
-  UInt_t dpbidx = 0;
+  auto dpbid = static_cast<uint16_t>(eqid & 0xFFFF);
 
   /// Check if this sDPB ID was declared in parameter file and stop there if not
   auto it = fGdpbIdIndexMap.find(dpbid);
@@ -173,8 +172,6 @@ bool CbmPsdUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
     return kFALSE;
 
   }  // if( it == fGdpbIdIndexMap.end() )
-  else
-    dpbidx = fGdpbIdIndexMap[dpbid];
 
 
   //   assert(dpbid == 0);  // mCBM201: only one GPDB
