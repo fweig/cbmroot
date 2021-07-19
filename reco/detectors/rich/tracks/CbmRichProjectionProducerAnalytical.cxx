@@ -87,6 +87,9 @@ void CbmRichProjectionProducerAnalytical::DoProjection(CbmEvent* event, TClonesA
     if (trPar->GetX() == 0 && trPar->GetY() == 0 && trPar->GetZ() == 0 && trPar->GetTx() == 0 && trPar->GetTy() == 0)
       continue;
     if (trPar->GetQp() == 0) continue;
+    if (TMath::IsNaN(trPar->GetX()) || TMath::IsNaN(trPar->GetY()) || TMath::IsNaN(trPar->GetZ())
+        || TMath::IsNaN(trPar->GetTx()) || TMath::IsNaN(trPar->GetTy()) || TMath::IsNaN(trPar->GetQp()))
+      continue;
 
     Double_t rho1 = 0.;
     TVector3 startP, momP, crossP, centerP;
@@ -95,7 +98,7 @@ void CbmRichProjectionProducerAnalytical::DoProjection(CbmEvent* event, TClonesA
     Double_t p = 1. / TMath::Abs(trPar->GetQp());
     Double_t pz;
     Double_t pz2 = 1 + trPar->GetTx() * trPar->GetTx() + trPar->GetTy() * trPar->GetTy();
-    if (pz2 > 0.) pz = p / TMath::Sqrt(pz2);
+    if (pz2 > 0.) { pz = p / TMath::Sqrt(pz2); }
     else {
       LOG(error) << "CbmRichProjectionProducerAnalytical::DoProjection(): strange value for calculating pz: " << pz2;
       pz = 0.;
