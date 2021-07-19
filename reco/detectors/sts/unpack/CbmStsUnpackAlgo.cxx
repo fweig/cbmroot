@@ -76,8 +76,8 @@ void CbmStsUnpackAlgo::initDpbIdIndexMap(CbmMcbm2018StsPar* parset)
   fDpbIdIndexMap.clear();
   for (uint32_t uDpb = 0; uDpb < parset->GetNrOfDpbs(); ++uDpb) {
     fDpbIdIndexMap[parset->GetDpbId(uDpb)] = uDpb;
-    LOG(info) << "Eq. ID for DPB #" << std::setw(2) << uDpb << " = 0x" << std::setw(4) << std::hex
-              << parset->GetDpbId(uDpb) << std::dec << " => " << fDpbIdIndexMap[parset->GetDpbId(uDpb)];
+    LOG(debug) << "Eq. ID for DPB #" << std::setw(2) << uDpb << " = 0x" << std::setw(4) << std::hex
+               << parset->GetDpbId(uDpb) << std::dec << " => " << fDpbIdIndexMap[parset->GetDpbId(uDpb)];
   }
 }
 
@@ -121,11 +121,11 @@ Bool_t CbmStsUnpackAlgo::initParSet(CbmMcbm2018StsPar* parset)
 
   // Total number of STS DPBs in system
   const uint32_t uNbOfDpbs = parset->GetNrOfDpbs();
-  LOG(info) << "Nr. of STS DPBs:       " << uNbOfDpbs;
+  LOG(debug) << "Nr. of STS DPBs:       " << uNbOfDpbs;
 
   // Get Nr of Febs
   fuNbFebs = parset->GetNrOfFebs();
-  LOG(info) << "Nr. of FEBs:           " << fuNbFebs;
+  LOG(debug) << "Nr. of FEBs:           " << fuNbFebs;
 
   // Get Nr of eLinks per CROB
   fNrElinksPerCrob = parset->GetNbElinkPerCrob();
@@ -153,7 +153,7 @@ Bool_t CbmStsUnpackAlgo::initParSet(CbmMcbm2018StsPar* parset)
 
   // Get Nr of Asics
   const uint32_t uNbStsXyters = parset->GetNrOfAsics();
-  LOG(info) << "Nr. of StsXyter ASICs: " << uNbStsXyters;
+  LOG(debug) << "Nr. of StsXyter ASICs: " << uNbStsXyters;
 
   //Initialize temporary "per Feb" fields
   initTempVectors(parset, &viModuleType, &viModAddress, &viFebModuleIdx, &vbCrobActiveFlag, &viFebModuleSide);
@@ -257,8 +257,8 @@ void CbmStsUnpackAlgo::initTempVectors(CbmMcbm2018StsPar* parset, std::vector<in
   for (uint32_t uModIdx = 0; uModIdx < uNbModules; ++uModIdx) {
     (*viModuleType)[uModIdx] = parset->GetModuleType(uModIdx);
     (*viModAddress)[uModIdx] = parset->GetModuleAddress(uModIdx);
-    LOG(info) << "Module #" << std::setw(2) << uModIdx << " Type " << std::setw(4) << (*viModuleType)[uModIdx]
-              << " Address 0x" << std::setw(8) << std::hex << (*viModAddress)[uModIdx] << std::dec;
+    LOG(debug) << "Module #" << std::setw(2) << uModIdx << " Type " << std::setw(4) << (*viModuleType)[uModIdx]
+               << " Address 0x" << std::setw(8) << std::hex << (*viModAddress)[uModIdx] << std::dec;
   }
   vbCrobActiveFlag->resize(uNbOfDpbs);
   viFebModuleIdx->resize(uNbOfDpbs);
@@ -339,8 +339,8 @@ void CbmStsUnpackAlgo::loopMsMessages(const uint8_t* msContent, const uint32_t u
       case stsxyter::MessType::Epoch: {
         processEpochInfo(pMess[uIdx]);
         if (0 < uIdx) {
-          LOG(info) << "CbmAlgoUnpackSts::DoUnpack => "
-                    << "EPOCH message at unexpected position in MS: message " << uIdx << " VS message 0 expected!";
+          LOG(warning) << "CbmAlgoUnpackSts::loopMsMessages => "
+                       << "EPOCH message at unexpected position in MS: message " << uIdx << " VS message 0 expected!";
         }
         break;
       }
@@ -407,16 +407,16 @@ void CbmStsUnpackAlgo::printAddressMaps(CbmMcbm2018StsPar* parset,
   uint32_t uGlobalFebIdx = 0;
   for (uint32_t uDpb = 0; uDpb < parset->GetNrOfDpbs(); ++uDpb) {
     for (uint32_t uCrobIdx = 0; uCrobIdx < fNrCrobPerDpb; ++uCrobIdx) {
-      LOG(info) << Form("DPB #%02u CROB #%u:       ", uDpb, uCrobIdx);
+      LOG(debug) << Form("DPB #%02u CROB #%u:       ", uDpb, uCrobIdx);
       for (uint32_t uFebIdx = 0; uFebIdx < parset->GetNbFebsPerCrob(); ++uFebIdx) {
         if (0 <= viFebModuleIdx[uDpb][uCrobIdx][uFebIdx])
-          LOG(info) << Form("      FEB #%02u (%02u): Mod. Idx = %03d Side %c (%2d) Type %c "
-                            "(%2d) (Addr. 0x%08x) ADC gain %4.0f e- ADC Offs %5.0f e-",
-                            uFebIdx, uGlobalFebIdx, viFebModuleIdx[uDpb][uCrobIdx][uFebIdx],
-                            1 == viFebModuleSide[uDpb][uCrobIdx][uFebIdx] ? 'N' : 'P',
-                            viFebModuleSide[uDpb][uCrobIdx][uFebIdx],
-                            1 == fviFebType[uDpb][uCrobIdx][uFebIdx] ? 'B' : 'A', fviFebType[uDpb][uCrobIdx][uFebIdx],
-                            fviFebAddress[uGlobalFebIdx], fvdFebAdcGain[uGlobalFebIdx], fvdFebAdcOffs[uGlobalFebIdx]);
+          LOG(debug) << Form("      FEB #%02u (%02u): Mod. Idx = %03d Side %c (%2d) Type %c "
+                             "(%2d) (Addr. 0x%08x) ADC gain %4.0f e- ADC Offs %5.0f e-",
+                             uFebIdx, uGlobalFebIdx, viFebModuleIdx[uDpb][uCrobIdx][uFebIdx],
+                             1 == viFebModuleSide[uDpb][uCrobIdx][uFebIdx] ? 'N' : 'P',
+                             viFebModuleSide[uDpb][uCrobIdx][uFebIdx],
+                             1 == fviFebType[uDpb][uCrobIdx][uFebIdx] ? 'B' : 'A', fviFebType[uDpb][uCrobIdx][uFebIdx],
+                             fviFebAddress[uGlobalFebIdx], fvdFebAdcGain[uGlobalFebIdx], fvdFebAdcOffs[uGlobalFebIdx]);
         else
           LOG(debug) << Form("Disabled FEB #%02u (%02u): Mod. Idx = %03d Side %c (%2d) Type %c "
                              "(%2d) (Addr. 0x%08x) ADC gain %4.0f e- ADC Offs %5.0f e-",
@@ -497,7 +497,9 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
                      + fNrChsPerFeb;                // Offset for P (back) side
 
       // Get the time relative to the Timeslice time, I hope that the cast here works as expected. Otherwise Sts will also get into trouble with the size of UTC here
-      auto tsreltime   = static_cast<uint64_t>(ulHitTime * stsxyter::kdClockCycleNs) - fTsStartTime;
+      auto tsreltime =
+        static_cast<uint64_t>((ulHitTime - (fTsStartTime / stsxyter::kdClockCycleNs)) * stsxyter::kdClockCycleNs);
+      -fTsStartTime;
       double dTimeInNs = tsreltime - fSystemTimeOffset;
       if (uAsicIdx < fvdTimeOffsetNsAsics.size()) dTimeInNs -= fvdTimeOffsetNsAsics[uAsicIdx];
 
@@ -510,7 +512,7 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
       }
 
 
-      CbmStsDigi(fviFebAddress[uFebIdx], uChanInMod, ulTimeInNs, dCalAdc);
+      fOutputVec.emplace_back(CbmStsDigi(fviFebAddress[uFebIdx], uChanInMod, ulTimeInNs, dCalAdc));
       // REMARK This seems to be double looping, I do not see any reason here, to first store the stsxyter hits in a vector over which we loop afterwards again. May be I miss something @sts-experts?
       //   fvmHitsInMs.push_back(stsxyter::FinalHit(ulHitTime, usRawAdc, uAsicIdx, usChan, fuCurrDpbIdx, uCrobIdx));
     }
@@ -582,10 +584,10 @@ void CbmStsUnpackAlgo::processTsMsbInfo(const stsxyter::Message& mess, uint32_t 
   // Update Status counters
   if (uVal < fvulCurrentTsMsb[fuCurrDpbIdx]) {
 
-    LOG(info) << " TS " << std::setw(12) << fTsIndex << uMsIdx << " MS Idx " << std::setw(4) << uMsIdx << " Msg Idx "
-              << std::setw(5) << uMessIdx << " DPB " << std::setw(2) << fuCurrDpbIdx << " Old TsMsb " << std::setw(5)
-              << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy " << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx]
-              << " new TsMsb " << std::setw(5) << uVal;
+    LOG(debug) << " TS " << std::setw(12) << fTsIndex << uMsIdx << " MS Idx " << std::setw(4) << uMsIdx << " Msg Idx "
+               << std::setw(5) << uMessIdx << " DPB " << std::setw(2) << fuCurrDpbIdx << " Old TsMsb " << std::setw(5)
+               << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy " << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx]
+               << " new TsMsb " << std::setw(5) << uVal;
 
     fvuCurrentTsMsbCycle[fuCurrDpbIdx]++;
   }
@@ -599,10 +601,10 @@ void CbmStsUnpackAlgo::processTsMsbInfo(const stsxyter::Message& mess, uint32_t 
     uVal < fvulCurrentTsMsb
         [fuCurrDpbIdx]  /// New FW introduced TS_MSB suppression + large TS_MSB => warning only if value not increasing
   ) {
-    LOG(info) << "TS MSb Jump in "
-              << " TS " << std::setw(12) << fTsIndex << " MS Idx " << std::setw(4) << uMsIdx << " Msg Idx "
-              << std::setw(5) << uMessIdx << " DPB " << std::setw(2) << fuCurrDpbIdx << " => Old TsMsb " << std::setw(5)
-              << fvulCurrentTsMsb[fuCurrDpbIdx] << " new TsMsb " << std::setw(5) << uVal;
+    LOG(debug) << "TS MSb Jump in "
+               << " TS " << std::setw(12) << fTsIndex << " MS Idx " << std::setw(4) << uMsIdx << " Msg Idx "
+               << std::setw(5) << uMessIdx << " DPB " << std::setw(2) << fuCurrDpbIdx << " => Old TsMsb "
+               << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " new TsMsb " << std::setw(5) << uVal;
   }
 
   /// Catch case where previous MS ended up on a TS MSB cycle as it is then
@@ -632,19 +634,19 @@ void CbmStsUnpackAlgo::refreshTsMsbFields(const uint32_t imslice, const size_t m
 
   if (0 == imslice) {
     if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle[fuCurrDpbIdx])
-      LOG(info) << " TS " << std::setw(12) << fTsIndex << " MS " << std::setw(12) << mstime << " MS Idx "
-                << std::setw(4) << imslice << " Msg Idx " << std::setw(5) << 0 << " DPB " << std::setw(2)
-                << fuCurrDpbIdx << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy "
-                << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " New MsbCy " << uTsMsbCycleHeader;
+      LOG(debug) << " TS " << std::setw(12) << fTsIndex << " MS " << std::setw(12) << mstime << " MS Idx "
+                 << std::setw(4) << imslice << " Msg Idx " << std::setw(5) << 0 << " DPB " << std::setw(2)
+                 << fuCurrDpbIdx << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy "
+                 << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " New MsbCy " << uTsMsbCycleHeader;
     fvuCurrentTsMsbCycle[fuCurrDpbIdx] = uTsMsbCycleHeader;
     fvulCurrentTsMsb[fuCurrDpbIdx]     = 0;
   }
   else if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle[fuCurrDpbIdx]) {
     if (4194303 == fvulCurrentTsMsb[fuCurrDpbIdx]) {
-      LOG(info) << " TS " << std::setw(12) << fTsIndex << " MS " << std::setw(12) << mstime << " MS Idx "
-                << std::setw(4) << imslice << " Msg Idx " << std::setw(5) << 0 << " DPB " << std::setw(2)
-                << fuCurrDpbIdx << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy "
-                << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " New MsbCy " << uTsMsbCycleHeader;
+      LOG(debug) << " TS " << std::setw(12) << fTsIndex << " MS " << std::setw(12) << mstime << " MS Idx "
+                 << std::setw(4) << imslice << " Msg Idx " << std::setw(5) << 0 << " DPB " << std::setw(2)
+                 << fuCurrDpbIdx << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy "
+                 << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " New MsbCy " << uTsMsbCycleHeader;
     }
     else {
       LOG(warning) << "TS MSB cycle from MS header does not match current cycle from data "
@@ -689,9 +691,9 @@ bool CbmStsUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
   auto it = fDpbIdIndexMap.find(uCurrDpbId);
   if (it == fDpbIdIndexMap.end()) {
     if (false == fvbMaskedComponents[icomp]) {
-      LOG(info) << "---------------------------------------------------------------";
+      // LOG(debug) << "---------------------------------------------------------------";
       // Had to remove this line otherwise we would get circle dependencies in the current stage of cbmroot, since we still have Unpackers in the fles folders, which require the reco folders
-      // LOG(info) << FormatMsHeaderPrintout(msDescriptor);
+      // LOG(debug) << FormatMsHeaderPrintout(msDescriptor);
       LOG(warning) << fName << "::unpack(...)::Could not find the sDPB index for AFCK id 0x" << std::hex << uCurrDpbId
                    << std::dec << " in timeslice " << fNrProcessedTs << " in microslice " << imslice << " component "
                    << icomp << "\n"
@@ -729,16 +731,17 @@ bool CbmStsUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
   /** @todo @experts this is printout debugging which depends on monitor settings. Not sure whether this is a good way. Please check and decide. (It was this way already before to be clear) */
   if (fMonitor)
     if (fMonitor->GetDebugMode()) {
-      if (18967040000 == fMsStartTime || 18968320000 == fMsStartTime) { LOG(info) << sMessPatt; }
+      if (18967040000 == fMsStartTime || 18968320000 == fMsStartTime) { LOG(debug) << sMessPatt; }
       if (static_cast<uint16_t>(fles::MicrosliceFlags::CrcValid) != msDescriptor.flags) {
-        LOG(info) << "STS unp "
-                  << " TS " << std::setw(12) << fNrProcessedTs << " MS " << std::setw(12) << fMsStartTime
-                  << " MS flags 0x" << std::setw(4) << std::hex << msDescriptor.flags << std::dec << " Size "
-                  << std::setw(8) << uSize << " bytes "
-                  << " H " << std::setw(5) << vNbMessType[0] << " T " << std::setw(5) << vNbMessType[1] << " E "
-                  << std::setw(5) << vNbMessType[2] << " S " << std::setw(5) << vNbMessType[3] << " Em " << std::setw(5)
-                  << vNbMessType[4] << " En " << std::setw(5) << vNbMessType[5] << " D " << std::setw(5)
-                  << vNbMessType[6] << " Err " << bError << " Undet. bad " << (!bError && 400 != vNbMessType[1]);
+        LOG(debug) << "STS unp "
+                   << " TS " << std::setw(12) << fNrProcessedTs << " MS " << std::setw(12) << fMsStartTime
+                   << " MS flags 0x" << std::setw(4) << std::hex << msDescriptor.flags << std::dec << " Size "
+                   << std::setw(8) << uSize << " bytes "
+                   << " H " << std::setw(5) << vNbMessType[0] << " T " << std::setw(5) << vNbMessType[1] << " E "
+                   << std::setw(5) << vNbMessType[2] << " S " << std::setw(5) << vNbMessType[3] << " Em "
+                   << std::setw(5) << vNbMessType[4] << " En " << std::setw(5) << vNbMessType[5] << " D "
+                   << std::setw(5) << vNbMessType[6] << " Err " << bError << " Undet. bad "
+                   << (!bError && 400 != vNbMessType[1]);
       }
     }
   return true;
