@@ -1087,9 +1087,9 @@ inline void L1Algo::f4(  // input
   /// Select good triplets and save them into fTriplets. Find neighbouring triplets at the next station.
 
 #ifdef _OPENMP
-  uint Thread = omp_get_thread_num();
+  unsigned int Thread = omp_get_thread_num();
 #else
-  uint Thread = 0;
+  unsigned int Thread = 0;
 #endif
 
   THitI ihitl_priv = 0;
@@ -1110,7 +1110,7 @@ inline void L1Algo::f4(  // input
     L1_ASSERT(ihitm < StsHitsUnusedStopIndex[istam], ihitm << " < " << StsHitsUnusedStopIndex[istam]);
     L1_ASSERT(ihitr < StsHitsUnusedStopIndex[istar], ihitr << " < " << StsHitsUnusedStopIndex[istar]);
 
-    uint Location = L1Triplet::PackTripletID(istal, Thread, fTriplets[istal][Thread].size());
+    unsigned int Location = L1Triplet::PackTripletID(istal, Thread, fTriplets[istal][Thread].size());
 
     if (ihitl_priv == 0 || ihitl_priv != hitsl_3[i3]) {
       TripForHit[0][ihitl] = Location;
@@ -1159,10 +1159,10 @@ inline void L1Algo::f4(  // input
 
     unsigned int nNeighbours = TripForHit[1][ihitm] - TripForHit[0][ihitm];
 
-    uint neighLocation = TripForHit[0][ihitm];
-    uint neighStation;
-    uint neighThread;
-    uint neighTriplet;
+    unsigned int neighLocation = TripForHit[0][ihitm];
+    unsigned int neighStation;
+    unsigned int neighThread;
+    unsigned int neighTriplet;
     L1Triplet::UnpackTripletID(neighLocation, neighStation, neighThread, neighTriplet);
 
     if (nNeighbours > 0) { assert((int) neighStation == istal + 1 || (int) neighStation == istal + 2); }
@@ -1237,10 +1237,10 @@ inline void L1Algo::f5(  // input
 
             unsigned int nNeighbours = TripForHit[1][ihitm] - TripForHit[0][ihitm];
 
-            uint neighLocation = TripForHit[0][ihitm];
-            uint neighStation;
-            uint neighThread;
-            uint neighTriplet;
+            unsigned int neighLocation = TripForHit[0][ihitm];
+            unsigned int neighStation;
+            unsigned int neighThread;
+            unsigned int neighTriplet;
             L1Triplet::UnpackTripletID(neighLocation, neighStation, neighThread, neighTriplet);
 
             for (unsigned int iN = 0; iN < nNeighbours; ++iN, ++neighTriplet, ++neighLocation) {

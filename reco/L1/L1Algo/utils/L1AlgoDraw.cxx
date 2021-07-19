@@ -69,7 +69,7 @@ void L1AlgoDraw::InitL1Draw(L1Algo* algo_)
   algo = algo_;
 
   vStsHits.reserve(algo->vStsHits->size());
-  for (int i = 0; i < algo->vStsHits->size(); i++) {
+  for (unsigned int i = 0; i < algo->vStsHits->size(); i++) {
     vStsHits.push_back((*algo->vStsHits)[i]);
   }
   NStations = algo->NStations;
@@ -130,7 +130,7 @@ void L1AlgoDraw::DrawMCTracks()
 
     if (fVerbose >= 4) {
       cout << "hits = ";
-      for (int ih = 0; ih < T.StsHits.size(); ih++)
+      for (unsigned int ih = 0; ih < T.StsHits.size(); ih++)
         cout << T.StsHits[ih] << " ";
       cout << endl;
     }
@@ -297,7 +297,7 @@ void L1AlgoDraw::DrawRecoTracks()
 void L1AlgoDraw::DrawTriplets(vector<L1Triplet>& triplets, const THitI* realIHit)
 {
   //   vector <L1Triplet> triplets = algo->vTriplets;
-  for (int iTrip = 0; iTrip < triplets.size(); iTrip++) {
+  for (unsigned int iTrip = 0; iTrip < triplets.size(); iTrip++) {
     L1Triplet& trip = triplets[iTrip];
 
     unsigned int iLHit = trip.GetLHit();
@@ -358,7 +358,7 @@ void L1AlgoDraw::DrawTriplet(int il, int im, int ir)
   marker.DrawMarker(lx[nHits - 1], ly[nHits - 1]);
 }
 
-void L1AlgoDraw::DrawDoublets(vector<THitI>* Duplets_hits, map<THitI, THitI>* Duplets_start, const int MaxArrSize,
+void L1AlgoDraw::DrawDoublets(vector<THitI>* Duplets_hits, map<THitI, THitI>* Duplets_start, const int /*MaxArrSize*/,
                               THitI* StsRestHitsStartIndex, unsigned int* realIHit)
 {
   for (int iSta = 0; iSta < NStations - 1; iSta++) {
@@ -681,7 +681,7 @@ void L1AlgoDraw::DrawRestHits(THitI* StsRestHitsStartIndex, THitI* StsRestHitsSt
     L1Station& st     = vStations[ista];
     Int_t n_poly      = 0;
     Int_t n_poly_fake = 0;
-    for (int iRestHit = StsRestHitsStartIndex[ista]; iRestHit < StsRestHitsStopIndex[ista]; iRestHit++) {
+    for (THitI iRestHit = StsRestHitsStartIndex[ista]; iRestHit < StsRestHitsStopIndex[ista]; iRestHit++) {
       int ih   = realIHit[iRestHit];
       L1Hit& h = vStsHits[ih];
       int iMC  = CbmL1::Instance()->vHitMCRef[ih];

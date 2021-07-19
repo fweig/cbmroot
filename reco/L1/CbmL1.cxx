@@ -1351,7 +1351,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
         continue;  ///Discard tracks from overlap region
 
         /// set strips as unused
-        for (int i = 0; i < StsHitsLocal.size(); i++) {
+        for (unsigned int i = 0; i < StsHitsLocal.size(); i++) {
           algo->SetFUnUsed(const_cast<unsigned char&>((*algo->fStripFlag)[vStsHits[StsHitsLocal[i]].f]));
           algo->SetFUnUsed(const_cast<unsigned char&>((*algo->fStripFlag)[vStsHits[StsHitsLocal[i]].b]));
         }

@@ -150,7 +150,7 @@ void L1AlgoPulls::Print()
   cout << "All pulls:     " << fNAllPulls << endl;
   cout << "Correct pulls: " << fGPulls.size() << endl;
   cout << "x     y    tx    ty    qp" << endl;
-  for (int i = 0; i < fGPulls.size(); i++) {
+  for (unsigned int i = 0; i < fGPulls.size(); i++) {
     TL1TrackParameters& pull = fGPulls[i];
     pull.Print();
   }
@@ -160,7 +160,7 @@ void L1AlgoPulls::Build(bool draw)
 {
   // --- fill histograms ---
   // global pulls
-  for (int i = 0; i < fGPulls.size(); i++) {
+  for (unsigned int i = 0; i < fGPulls.size(); i++) {
     TL1TrackParameters& pull = fGPulls[i];
     for (int ih = 0; ih < TL1TrackParameters::NParameters; ih++) {
       if (TailCut > fabs(pull[ih])) histoPull[ih]->Fill(pull[ih]);
@@ -180,7 +180,7 @@ void L1AlgoPulls::Build(bool draw)
 #endif  // BUILD_HISTO_FOR_EACH_STANTION
 
   // global residuals
-  for (int i = 0; i < fGRes.size(); i++) {
+  for (unsigned int i = 0; i < fGRes.size(); i++) {
     TL1TrackParameters& res = fGRes[i];
     for (int ih = 0; ih < TL1TrackParameters::NParameters; ih++) {
       if (TailCut > fabs(res[ih])) histoRes[ih]->Fill(res[ih]);
