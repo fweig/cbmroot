@@ -57,7 +57,7 @@ Bool_t CbmRecoUnpack::Init()
   // --- Register the branch for the Timeslice start time
   fCbmTsEventHeader = new CbmTsEventHeader();
   ioman->RegisterAny("TsEventHeader", fCbmTsEventHeader, kTRUE);
-  LOG(info) << "CbmRecoUnpack::Init() registered CbmTsEventHeader to output tree!";
+  LOG(info) << "CbmRecoUnpack::Init() registered CbmTsEventHeader to output tree!\n";
 
 
   // --- Psd
@@ -71,12 +71,12 @@ Bool_t CbmRecoUnpack::Init()
   // --- Trd
   if (fTrdConfig) fTrdConfig->Init(ioman);
   // --- TRD2D
-  if (fTrdConfig2D->GetOutputBranchName() == CbmTrdDigi::GetBranchName()) {
+  if (fTrdConfig2D->GetOutputBranchName() == fTrdConfig->GetOutputBranchName()) {
     fTrdConfig2D->SetOutputVec(fTrdConfig->GetOutputVec());
     if (fTrdConfig2D) fTrdConfig2D->InitUnpacker();
   }
   else {
-    if (fTrdConfig2D) fTrdConfig2D->Init(ioman, fTrdConfig2D->GetOutputBranchName());
+    if (fTrdConfig2D) fTrdConfig2D->Init(ioman);
   }
   // This is an ugly work around, because the TRD and TRD2D want to access the same vector and there is no function to retrieve a writeable vector<obj> from the FairRootManager, especially before the branches are created, as far as I am aware. The second option workaround is in in Init() to look for the fasp config and create a separate branch for fasp created CbmTrdDigis PR 072021
 

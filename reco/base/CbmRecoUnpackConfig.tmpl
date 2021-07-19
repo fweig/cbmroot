@@ -153,19 +153,15 @@ public:
    * @param ioman Pointer to the FairRootManager instance
    * @param branchname by default TOutput::GetBranchName() is used for the first output. If branchname is not empty that branchname is used.
   */
-  void Init(FairRootManager* ioman, std::string branchname = "")
+  void Init(FairRootManager* ioman)
   {
+    LOG(info) << fName << "::Init() ---------------------------------";
+    
     if (fDoWriteOutput) {
-      if (branchname.empty()) {
-        fOutputVec = new std::vector<TOutput>();
-        ioman->RegisterAny(TOutput::GetBranchName(), fOutputVec, kTRUE);
-        LOG(info) << fName << "::registerBranchToTree(" << TOutput::GetBranchName() << ")";
-      }
-      else {
-        fOutputVec = new std::vector<TOutput>();
-        ioman->RegisterAny(branchname.data(), fOutputVec, kTRUE);
-        LOG(info) << fName << "::registerBranchToTree(" << branchname.data() << ")";
-      }
+
+      fOutputVec = new std::vector<TOutput>();
+      ioman->RegisterAny(GetOutputBranchName().data(), fOutputVec, kTRUE);
+      LOG(info) << fName << "::registerBranchToTree(" << GetOutputBranchName().data() << ")";
     }
 
     /** @todo for the optional outputs it is more complicated to check if they exist. Needs exceptions for the std::nullptr_t. Should be added at some point in time. */
@@ -188,6 +184,8 @@ public:
 
     // Set the global system time offset
     if (fAlgo) fAlgo->SetSystemTimeOffset(fSystemTimeOffset);
+
+    LOG(info) << fName << " succesful initialized -----------------\n";
   }
 
   /** @brief Prepare the Unpacker algorithm for the run, to be implemented in the derived classes. */

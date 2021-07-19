@@ -256,16 +256,16 @@ public:
   */
   void Finish()
   {
-    LOG(info) << fName << "::Finish. Unpacked \n " << fNrProcessedTs << " Timeslices with \n " << fNrCreatedRawMsgs
-              << " Raw Messages,\n " << fNrCreatedDigis << " Digis,\n " << fNrEpochMsgs << " Epoch Messages,\n "
-              << fNrCreatedInfoMsgs << " Info Messages.\n ";
-
-    LOG(info) << fName << "::Finish. \n Number of CrcValidFlags " << fNrCrcValidFlags
-              << " \n Number of OverflowFlimFlags " << fNrOverflowFlimFlags << " \n Number of OverflowUserFlags "
-              << fNrOverflowUserFlags << " \n Number of DataErrorFlags " << fNrDataErrorFlags << "\n";
+    LOG(info) << fName << "::Finish.-------------------------\n Unpack process : \n " << fNrProcessedTs
+              << " Timeslices with \n " << fNrCreatedRawMsgs << " Raw Messages,\n " << fNrCreatedDigis << " Digis,\n "
+              << fNrEpochMsgs << " Epoch Messages,\n " << fNrCreatedInfoMsgs << " Info Messages.\n " << fNrCrcValidFlags
+              << " CrcValidFlags \n " << fNrOverflowFlimFlags << " OverflowFlimFlags \n " << fNrOverflowUserFlags
+              << " OverflowUserFlags \n " << fNrDataErrorFlags << " DataErrorFlags \n ";
 
     // Additional explicit finish of the derived class used during runtime.
     finish();
+
+    LOG(info) << fName << "::Finish. Done! ------------------\n";
   }
 
   /**
