@@ -61,17 +61,13 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
   ${KFParticle_INCLUDE_DIR}
 )
 
-#For the time being don't use OpenMP on APPLE
-#There are runtime problems with L1(Redmine #2028)
-if(NOT APPLE)
-  if (OPENMP_FOUND)
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set(SYSTEM_INCLUDE_DIRECTORIES
-      ${SYSTEM_INCLUDE_DIRECTORIES}
-      ${OpenMP_CXX_INCLUDE_DIRS}
-    )
-  endif()
+if (OPENMP_FOUND)
+  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+  set(SYSTEM_INCLUDE_DIRECTORIES
+    ${SYSTEM_INCLUDE_DIRECTORIES}
+    ${OpenMP_CXX_INCLUDE_DIRS}
+  )
 endif()
 
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
@@ -215,9 +211,7 @@ set(LINKDEF L1LinkDef.h)
 Set(LIBRARY_NAME L1)
 if (OPENMP_FOUND AND APPLE)
   Set(DEPENDENCIES
-    KF CbmMuchBase CbmTrdBase CbmStsBase CbmRecoBase CbmBase CbmData CbmRecoSts Base boost_regex ${
-  OpenMP_CXX_LIBRARIES}
-#KF CbmMuchBase CbmTrdBase CbmStsBase CbmRecoBase CbmBase CbmData CbmRecoSts Base boost_regex omp
+    KF CbmMuchBase CbmTrdBase CbmStsBase CbmRecoBase CbmBase CbmData CbmRecoSts Base boost_regex ${OpenMP_CXX_LIBRARIES}
   )
 else()
   Set(DEPENDENCIES
@@ -231,12 +225,3 @@ Install(FILES CbmL1Counters.h
               L1Algo/L1EventEfficiencies.h
         DESTINATION include
        )
-
-#Test to check if OpenMP is working on APPLE
-#set(EXE_NAME test_openmp)
-#set(SRCS test.cxx)
-#set(DEPENDENCIES
-#${DEPENDENCIES }
-#omp
-#)
-#GENERATE_EXECUTABLE()

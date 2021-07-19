@@ -311,11 +311,7 @@ else(CBMROOT_MINIMAL)
     endif()
   endif()
 
-  # For the time being don't use OpenMP on APPLE
-  # There are runtime problems with L1 (Redmine #2028)
-  if(NOT APPLE)
-    find_package(OpenMP)
-  endif()
+  find_package(OpenMP)
 
 endif(CBMROOT_MINIMAL)
 
