@@ -73,57 +73,81 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   // -----   UnpackerConfigs   ----------------------------------------------
 
   // ---- PSD ----
-  auto psdconfig = std::make_shared<CbmPsdUnpackConfig>("", runid);
-  // psdconfig->SetDebugState();
-  psdconfig->SetDoWriteOutput();
-  // psdconfig->SetDoWriteOptOutA("CbmPsdDsp");
-  std::string parfilesbasepathPsd = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
-  psdconfig->SetParFilesBasePath(parfilesbasepathPsd);
+  std::shared_ptr<CbmPsdUnpackConfig> psdconfig = nullptr;
+
+  psdconfig = std::make_shared<CbmPsdUnpackConfig>("", runid);
+  if (psdconfig) {
+    // psdconfig->SetDebugState();
+    psdconfig->SetDoWriteOutput();
+    // psdconfig->SetDoWriteOptOutA("CbmPsdDsp");
+    std::string parfilesbasepathPsd = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+    psdconfig->SetParFilesBasePath(parfilesbasepathPsd);
+    psdconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+  }
   // -------------
 
   // ---- RICH ----
-  auto richconfig = std::make_shared<CbmRichUnpackConfig>("", runid);
-  // richconfig->SetDebugState();
-  richconfig->SetDoWriteOutput();
-  std::string parfilesbasepathRich = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
-  richconfig->SetParFilesBasePath(parfilesbasepathRich);
+  std::shared_ptr<CbmRichUnpackConfig> richconfig = nullptr;
+
+  richconfig = std::make_shared<CbmRichUnpackConfig>("", runid);
+  if (richconfig) {
+    richconfig->SetDebugState();
+    richconfig->SetDoWriteOutput();
+    std::string parfilesbasepathRich = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+    richconfig->SetParFilesBasePath(parfilesbasepathRich);
+    richconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+  }
   // -------------
 
   // ---- STS ----
-  auto stsconfig = std::make_shared<CbmStsUnpackConfig>("", runid);
-  // stsconfig->SetDebugState();
-  stsconfig->SetDoWriteOutput();
-  std::string parfilesbasepathSts = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
-  stsconfig->SetParFilesBasePath(parfilesbasepathRich);
+  std::shared_ptr<CbmStsUnpackConfig> stsconfig = nullptr;
+
+  stsconfig = std::make_shared<CbmStsUnpackConfig>("", runid);
+  if (stsconfig) {
+    // stsconfig->SetDebugState();
+    stsconfig->SetDoWriteOutput();
+    std::string parfilesbasepathSts = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+    stsconfig->SetParFilesBasePath(parfilesbasepathSts);
+    stsconfig->SetSystemTimeOffset(2221);  // [ns] value to be updated
+  }
   // -------------
 
   // ---- TRD ----
+  std::shared_ptr<CbmTrdUnpackConfig> trd1Dconfig = nullptr;
+
   TString trdsetuptag = "";
   cbmsetup->GetGeoTag(ECbmModuleId::kTrd, trdsetuptag);
-  // auto trdconfig = std::make_shared<CbmTrdUnpackConfig>(trdsetuptag.Data(), runid);
-  auto trdconfig = std::make_shared<CbmTrdUnpackConfig>(trdsetuptag.Data(), 3);
-  // trdconfig->SetDebugState();
-  trdconfig->SetDoWriteOutput();
-  // Activate the line below to write Trd1D digis to a separate "TrdSpadicDigi" branch. Can be used to separate between Fasp and Spadic digis
-  // trdconfig->SetOutputBranchName("TrdSpadicDigi");
-  // trdconfig->SetDoWriteOptOutA(CbmTrdRawMessageSpadic::GetBranchName());
-  // trdconfig->SetDoWriteOptOutB("SpadicInfoMessages"); // SpadicInfoMessages
+  // trd1Dconfig = std::make_shared<CbmTrdUnpackConfig>(trdsetuptag.Data(), runid);
+  trd1Dconfig = std::make_shared<CbmTrdUnpackConfig>(trdsetuptag.Data(), 3);
+  if (trd1Dconfig) {
+    trd1Dconfig->SetDoWriteOutput();
+    // Activate the line below to write Trd1D digis to a separate "TrdSpadicDigi" branch. Can be used to separate between Fasp and Spadic digis
+    // trd1Dconfig->SetOutputBranchName("TrdSpadicDigi");
+    // trd1Dconfig->SetDoWriteOptOutA(CbmTrdRawMessageSpadic::GetBranchName());
+    // trd1Dconfig->SetDoWriteOptOutB("SpadicInfoMessages"); // SpadicInfoMessages
 
-  std::string parfilesbasepathTrd = Form("%s/parameters/trd", srcDir.Data());
-  trdconfig->SetParFilesBasePath(parfilesbasepathTrd);
-  trdconfig->SetMonitor(GetTrdMonitor(outfilename));
-  // Get the spadic configuration true = avg baseline active / false plain sample 0
-  trdconfig->SetSpadicObject(GetTrdSpadic(true));
+    std::string parfilesbasepathTrd = Form("%s/parameters/trd", srcDir.Data());
+    trd1Dconfig->SetParFilesBasePath(parfilesbasepathTrd);
+    trd1Dconfig->SetMonitor(GetTrdMonitor(outfilename));
+    // Get the spadic configuration true = avg baseline active / false plain sample 0
+    trd1Dconfig->SetSpadicObject(GetTrdSpadic(true));
+    trd1Dconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+  }
   // -------------
 
   // ---- TRDFASP2D ----
-  auto trdfasp2dconfig = std::make_shared<CbmTrdUnpackConfigFasp2D>("", runid);
-  // trdfasp2dconfig->SetDebugState();
-  trdfasp2dconfig->SetDoWriteOutput();
-  // Activate the line below to write Trd1D digis to a separate "TrdFaspDigi" branch. Can be used to separate between Fasp and Spadic digis
-  // trdfasp2dconfig->SetOutputBranchName("TrdFaspDigi");
-  std::string parfilesbasepathTrdfasp2d = Form("%s/parameters/trd", srcDir.Data());
-  trdfasp2dconfig->SetParFilesBasePath(parfilesbasepathTrdfasp2d);
+  std::shared_ptr<CbmTrdUnpackConfigFasp2D> trdfasp2dconfig = nullptr;
+
+  trdfasp2dconfig = std::make_shared<CbmTrdUnpackConfigFasp2D>("", runid);
+  if (trdfasp2dconfig) {
+    // trdfasp2dconfig->SetDebugState();
+    trdfasp2dconfig->SetDoWriteOutput();
+    // Activate the line below to write Trd1D digis to a separate "TrdFaspDigi" branch. Can be used to separate between Fasp and Spadic digis
+    trdfasp2dconfig->SetOutputBranchName("TrdFaspDigi");
+    std::string parfilesbasepathTrdfasp2d = Form("%s/parameters/trd", srcDir.Data());
+    trdfasp2dconfig->SetParFilesBasePath(parfilesbasepathTrdfasp2d);
+    trdfasp2dconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+  }
   // -------------
 
   // ------------------------------------------------------------------------
@@ -141,11 +165,11 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   // -----   CbmSourceTsArchive   -------------------------------------------
   auto source = new CbmSourceTsArchive(infile.data());
   auto unpack = source->GetRecoUnpack();
-  unpack->SetUnpackConfig(psdconfig);
-  // unpack->SetUnpackConfig(richconfig); // Problematic in 1588
-  unpack->SetUnpackConfig(stsconfig);
-  unpack->SetUnpackConfig(trdconfig);
-  unpack->SetUnpackConfig(trdfasp2dconfig);
+  if (psdconfig) unpack->SetUnpackConfig(psdconfig);
+  if (richconfig) unpack->SetUnpackConfig(richconfig);
+  if (stsconfig) unpack->SetUnpackConfig(stsconfig);
+  if (trd1Dconfig) unpack->SetUnpackConfig(trd1Dconfig);
+  if (trdfasp2dconfig) unpack->SetUnpackConfig(trdfasp2dconfig);
   // ------------------------------------------------------------------------
 
 
