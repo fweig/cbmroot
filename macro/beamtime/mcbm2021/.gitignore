@@ -1,3 +1,4 @@
 .root_hist
 .rootrc
 rootlogon.C
+*.root

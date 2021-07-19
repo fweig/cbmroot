@@ -499,7 +499,6 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
       // Get the time relative to the Timeslice time, I hope that the cast here works as expected. Otherwise Sts will also get into trouble with the size of UTC here
       auto tsreltime =
         static_cast<uint64_t>((ulHitTime - (fTsStartTime / stsxyter::kdClockCycleNs)) * stsxyter::kdClockCycleNs);
-      -fTsStartTime;
       double dTimeInNs = tsreltime - fSystemTimeOffset;
       if (uAsicIdx < fvdTimeOffsetNsAsics.size()) dTimeInNs -= fvdTimeOffsetNsAsics[uAsicIdx];
 

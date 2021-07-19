@@ -40,7 +40,7 @@ void CbmRecoUnpack::Finish()
   if (fPsdConfig) fPsdConfig->GetUnpacker()->Finish();
   if (fRichConfig) fRichConfig->GetUnpacker()->Finish();
   if (fStsConfig) fStsConfig->GetUnpacker()->Finish();
-  // if (fTofConfig) fTofConfig->GetUnpacker()->Finish();
+  if (fTofConfig) fTofConfig->GetUnpacker()->Finish();
   if (fTrdConfig) fTrdConfig->GetUnpacker()->Finish();
   if (fTrdConfig2D) fTrdConfig2D->GetUnpacker()->Finish();
 }
@@ -79,6 +79,8 @@ Bool_t CbmRecoUnpack::Init()
     if (fTrdConfig2D) fTrdConfig2D->Init(ioman);
   }
   // This is an ugly work around, because the TRD and TRD2D want to access the same vector and there is no function to retrieve a writeable vector<obj> from the FairRootManager, especially before the branches are created, as far as I am aware. The second option workaround is in in Init() to look for the fasp config and create a separate branch for fasp created CbmTrdDigis PR 072021
+  // --- Tof
+  if (fTofConfig) fTofConfig->Init(ioman);
 
   return kTRUE;
 }
@@ -102,6 +104,8 @@ void CbmRecoUnpack::Reset()
   if (fTrdConfig) fTrdConfig->Reset();
   // ---- Trd2D ----
   if (fTrdConfig2D) fTrdConfig2D->Reset();
+  // ---- Tof ----
+  if (fTofConfig) fTofConfig->Reset();
 }
 
 // ----------------------------------------------------------------------------
@@ -151,6 +155,12 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
         if (fTrdConfig2D)
           fCbmTsEventHeader->SetNDigisTrd2D(
             unpack(&timeslice, component, fTrdConfig2D, fTrdConfig2D->GetOptOutAVec(), fTrdConfig2D->GetOptOutBVec()));
+        break;
+      }
+      case fkFlesTof: {
+        if (fTofConfig)
+          fCbmTsEventHeader->SetNDigisTof(
+            unpack(&timeslice, component, fTofConfig, fTofConfig->GetOptOutAVec(), fTofConfig->GetOptOutBVec()));
         break;
       }
 

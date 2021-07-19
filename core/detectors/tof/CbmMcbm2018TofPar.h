@@ -72,7 +72,7 @@ public:
   inline Int_t GetRpcType(Int_t i) { return fiRpcType[i]; }
   inline Int_t GetRpcSide(Int_t i) { return fiRpcSide[i]; }
   inline Int_t GetModuleId(Int_t i) { return fiModuleId[i]; }
-  inline std::vector< Int_t > GetRpcChUidMap() { return fviRpcChUId; }
+  inline std::vector<Int_t> GetRpcChUidMap() { return fviRpcChUId; }
 
   inline Int_t GetNbMsTot() { return fiNbMsTot; }
   inline Int_t GetNbMsOverlap() { return fiNbMsOverlap; }
@@ -85,13 +85,13 @@ public:
 
 private:
   void BuildChannelsUidMap();
-  void BuildChannelsUidMapCbm(UInt_t & uCh, UInt_t uGbtx);
-  void BuildChannelsUidMapStar(UInt_t & uCh, UInt_t uGbtx);
-  void BuildChannelsUidMapT0(UInt_t & uCh, UInt_t uGbtx);
-  void BuildChannelsUidMapCern(UInt_t & uCh, UInt_t uGbtx);
-  void BuildChannelsUidMapCera(UInt_t & uCh, UInt_t uGbtx);
-  void BuildChannelsUidMapStar2(UInt_t & uCh, UInt_t uGbtx);
-  void BuildChannelsUidMapBuc(UInt_t & uCh, UInt_t uGbtx);
+  void BuildChannelsUidMapCbm(UInt_t& uCh, UInt_t uGbtx);
+  void BuildChannelsUidMapStar(UInt_t& uCh, UInt_t uGbtx);
+  void BuildChannelsUidMapT0(UInt_t& uCh, UInt_t uGbtx);
+  void BuildChannelsUidMapCern(UInt_t& uCh, UInt_t uGbtx);
+  void BuildChannelsUidMapCera(UInt_t& uCh, UInt_t uGbtx);
+  void BuildChannelsUidMapStar2(UInt_t& uCh, UInt_t uGbtx);
+  void BuildChannelsUidMapBuc(UInt_t& uCh, UInt_t uGbtx);
 
   /// Constants
   /// Data format
@@ -146,12 +146,12 @@ private:
   Int_t fiNrOfGet4PerFee;       // Number of GET4 chips which are connected to one FEB
   Int_t fiNrOfChannelsPerGet4;  // Number of channels per GET4
 
-  Int_t fiNrOfGbtx;    // Total number of Gbtx links
-  Int_t fiNrOfModule;  // Total number of Modules
-  TArrayI fiNrOfRpc;   // number of Rpcs connected to Gbtx link, i.e. 3 or 5
-  TArrayI fiRpcType;   // type of Rpcs connected to Gbtx link
-  TArrayI fiRpcSide;   // side of Rpcs connected to Gbtx link, i.e. 0 or 1
-  TArrayI fiModuleId;  // Module Identifier connected to Gbtx link, has to match geometry
+  Int_t fiNrOfGbtx;                     // Total number of Gbtx links
+  Int_t fiNrOfModule;                   // Total number of Modules
+  TArrayI fiNrOfRpc;                    // number of Rpcs connected to Gbtx link, i.e. 3 or 5
+  TArrayI fiRpcType;                    // type of Rpcs connected to Gbtx link
+  TArrayI fiRpcSide;                    // side of Rpcs connected to Gbtx link, i.e. 0 or 1
+  TArrayI fiModuleId;                   // Module Identifier connected to Gbtx link, has to match geometry
   std::vector<Int_t> fviRpcChUId = {};  // UID/address for each channel, build from type, side and module
 
   Int_t fiNbMsTot;        // Total number of MS per link in TS

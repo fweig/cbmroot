@@ -11,6 +11,7 @@
 #include "CbmPsdUnpackConfig.h"
 #include "CbmRichUnpackConfig.h"
 #include "CbmStsUnpackConfig.h"
+#include "CbmTofUnpackConfig.h"
 #include "CbmTrdUnpackConfig.h"
 #include "CbmTrdUnpackConfigFasp2D.h"
 #include "CbmTsEventHeader.h"
@@ -65,8 +66,8 @@ public:
 
   /**
    * @brief Set the Debug Printout Flag
-   * 
-   * @param value 
+   *
+   * @param value
   */
   void SetDebugPrintout(bool value = true) { fDoDebugPrints = value; }
 
@@ -87,6 +88,9 @@ public:
 
   /** @brief Set the Trd2D Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackConfigFasp2D> config) { fTrdConfig2D = config; }
+
+  /** @brief Set the Tof Unpack Config @param config */
+  void SetUnpackConfig(std::shared_ptr<CbmTofUnpackConfig> config) { fTofConfig = config; }
 
   /** @brief Trigger the unpacking procedure **/
   void Unpack(std::unique_ptr<fles::Timeslice> ts);
@@ -134,7 +138,7 @@ private:
 
   /**
    * @brief Template for the unpacking call of a given algorithm.
-   * 
+   *
    * @tparam TAlgo Algorithm to be called
    * @tparam TOutput Output element types
    * @tparam TOptoutputs Optional output element types
@@ -195,17 +199,17 @@ private:
   }
   // ----------------------------------------------------------------------------
 
-  /** @brief Configuration of the Trd unpacker. Provides the configured algorithm */
+  /** @brief Configuration of the Psd unpacker. Provides the configured algorithm */
   std::shared_ptr<CbmPsdUnpackConfig> fPsdConfig = nullptr;  //!
 
-  /** @brief Configuration of the Trd unpacker. Provides the configured algorithm */
+  /** @brief Configuration of the Rich unpacker. Provides the configured algorithm */
   std::shared_ptr<CbmRichUnpackConfig> fRichConfig = nullptr;  //!
 
-  /** @brief Configuration of the Trd unpacker. Provides the configured algorithm */
+  /** @brief Configuration of the Sts unpacker. Provides the configured algorithm */
   std::shared_ptr<CbmStsUnpackConfig> fStsConfig = nullptr;  //!
 
-  // /** @brief Configuration of the Trd unpacker. Provides the configured algorithm */
-  // std::shared_ptr<CbmTofUnpackConfig> fTofConfig = nullptr;  //!
+  /** @brief Configuration of the Tof unpacker. Provides the configured algorithm */
+  std::shared_ptr<CbmTofUnpackConfig> fTofConfig = nullptr;  //!
 
   /** @brief Configuration of the Trd unpacker. Provides the configured algorithm */
   std::shared_ptr<CbmTrdUnpackConfig> fTrdConfig = nullptr;  //!

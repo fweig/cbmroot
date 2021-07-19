@@ -34,6 +34,8 @@ public:
   ULong64_t GetNDigisTrd(ULong64_t) { return fNDigisTrd; }
   /** @brief Get the number of digis in this Ts */
   ULong64_t GetNDigisTrd2D(ULong64_t) { return fNDigisTrd2D; }
+  /** @brief Get the number of digis in this Ts */
+  ULong64_t GetNDigisTof(ULong64_t) { return fNDigisTof; }
 
   /** @brief Set the Ts Start Time @param value Start time of the TS */
   void SetTsStartTime(uint64_t value) { fTsStartTime = value; }
@@ -48,6 +50,8 @@ public:
   void SetNDigisTrd(ULong64_t value) { fNDigisTrd = value; }
   /** @brief Set the number of digis in this Ts */
   void SetNDigisTrd2D(ULong64_t value) { fNDigisTrd2D = value; }
+  /** @brief Set the number of digis in this Ts */
+  void SetNDigisTof(ULong64_t value) { fNDigisTof = value; }
 
 
 protected:
@@ -59,6 +63,7 @@ protected:
   ULong64_t fNDigisSts   = 0;
   ULong64_t fNDigisTrd   = 0;
   ULong64_t fNDigisTrd2D = 0;
+  ULong64_t fNDigisTof   = 0;
 
 
   ClassDef(CbmTsEventHeader, 3)

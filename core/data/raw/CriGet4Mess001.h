@@ -39,7 +39,7 @@ namespace critof001
   // alternatively: (kiCoarseTime>>kiCtShift + 1)*kdClockCycleSize
   const double kdEpochInPs = static_cast<double>(kuCoarseCounterSize) * kdClockCycleSize;
   const double kdEpochInNs = kdEpochInPs / 1000.0;
-  const double kuEpochInNs = static_cast<uint64_t>(kdEpochInNs); /// Works as epoch integer in ns!
+  const double kuEpochInNs = static_cast<uint64_t>(kdEpochInNs);  /// Works as epoch integer in ns!
 
   // Epoch counter size in epoch
   const uint32_t kuEpochCounterSz = 0xFFFFFF;
@@ -65,10 +65,10 @@ namespace critof001
 
   enum MessageTypes
   {
-    MSG_HIT        = 0,
-    MSG_EPOCH      = 1,
-    MSG_SLOWC      = 2,
-    MSG_SYST       = 3
+    MSG_HIT   = 0,
+    MSG_EPOCH = 1,
+    MSG_SLOWC = 2,
+    MSG_SYST  = 3
   };
 
   enum SysMessageTypes

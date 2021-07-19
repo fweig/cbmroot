@@ -44,10 +44,7 @@ Bool_t CbmCriGet4RawPrint::Init()
   return kTRUE;
 }
 
-void CbmCriGet4RawPrint::SetParContainers()
-{
-  LOG(info) << "Setting parameter containers for " << GetName();
-}
+void CbmCriGet4RawPrint::SetParContainers() { LOG(info) << "Setting parameter containers for " << GetName(); }
 
 Bool_t CbmCriGet4RawPrint::InitContainers()
 {
@@ -80,7 +77,7 @@ Bool_t CbmCriGet4RawPrint::DoUnpack(const fles::Timeslice& ts, size_t /*componen
 {
 
   static const uint8_t NGET4 = 80;
-  static const uint8_t NERROR = 0x16;
+  //   static const uint8_t NERROR = 0x16;
 
   char buf[256];
 
@@ -88,11 +85,11 @@ Bool_t CbmCriGet4RawPrint::DoUnpack(const fles::Timeslice& ts, size_t /*componen
   uint32_t nGet4, epoch, msgType, errorCode;
   static int32_t pEpochDiff[NGET4];
   int32_t epochDiff;
-  static uint32_t pErrorCnt[NGET4]={ 0 };
-  static uint32_t pHitsCnt[NGET4]={ 0 };
-  static uint32_t pTotCnt[NGET4]={ 0 };
+  //   static uint32_t pErrorCnt[NGET4] = {0};
+  //   static uint32_t pHitsCnt[NGET4]  = {0};
+  //   static uint32_t pTotCnt[NGET4]   = {0};
 
-  static uint32_t pErrorCntMatrix[NGET4][NERROR];
+  //   static uint32_t pErrorCntMatrix[NGET4][NERROR];
 
   static uint32_t procEpochUntilError = 0;
 
@@ -162,74 +159,66 @@ Bool_t CbmCriGet4RawPrint::DoUnpack(const fles::Timeslice& ts, size_t /*componen
         //mess.printDataCout( critof001::msg_print_Hex | critof001::msg_print_Prefix | critof001::msg_print_Data );
 
         msgType = ulData & 0xF;
-        nGet4 = (ulData>>40) & 0xFF;
-        epoch = (ulData>>8) & 0xFFFFFF;
-		epoch &= 0xFFFFFF;
-		errorCode = (ulData>>4) & 0x7F;
-		/*snprintf(buf, sizeof(buf),
+        nGet4   = (ulData >> 40) & 0xFF;
+        epoch   = (ulData >> 8) & 0xFFFFFF;
+        epoch &= 0xFFFFFF;
+        errorCode = (ulData >> 4) & 0x7F;
+        /*snprintf(buf, sizeof(buf),
                  "Data: 0x%016lx - %d - 0x06%X ",
                  ulData, nGet4, epoch);
 
 				std::cout << buf << std::endl;
 		*/
 
-		//if (fuCurrentEquipmentId == 0xabc0)
-		{
-			//------------------- TLAST ----------------------------//
-			if ((ulData & 0xFFFFFFFFFFFF)==0xdeadbeeeeeef)
-			{
-			}
-			//------------------- EPOCH ----------------------------//
-			else if (msgType == 0x01)
-			{
-				if (nGet4 == 0xFF) {
+        //if (fuCurrentEquipmentId == 0xabc0)
+        {
+          //------------------- TLAST ----------------------------//
+          if ((ulData & 0xFFFFFFFFFFFF) == 0xdeadbeeeeeef) {}
+          //------------------- EPOCH ----------------------------//
+          else if (msgType == 0x01) {
+            if (nGet4 == 0xFF) {
 
-					procEpochUntilError++;
-					if (lastGlobalEpoch!=0xFFFFFF){
-						if ((lastGlobalEpoch + 1) != epoch){
-							snprintf(buf, sizeof(buf),
-							 "Error global epoch, last epoch, current epoch, diff  0x%06x 0x%06x %d 0x%016lx %d",
-							 lastGlobalEpoch, epoch, lastGlobalEpoch - epoch, ulData, procEpochUntilError);
+              procEpochUntilError++;
+              if (lastGlobalEpoch != 0xFFFFFF) {
+                if ((lastGlobalEpoch + 1) != epoch) {
+                  snprintf(buf, sizeof(buf),
+                           "Error global epoch, last epoch, current epoch, diff  0x%06x 0x%06x %d 0x%016lx %d",
+                           lastGlobalEpoch, epoch, lastGlobalEpoch - epoch, ulData, procEpochUntilError);
 
-							 std::cout << buf << std::endl;
-							 procEpochUntilError=0;
-						}
-					}
-					else{
-						snprintf(buf, sizeof(buf),
-							 "Global epoch overflow, last epoch, current epoch  0x%06x 0x%06x",
-							 lastGlobalEpoch, epoch);
+                  std::cout << buf << std::endl;
+                  procEpochUntilError = 0;
+                }
+              }
+              else {
+                snprintf(buf, sizeof(buf), "Global epoch overflow, last epoch, current epoch  0x%06x 0x%06x",
+                         lastGlobalEpoch, epoch);
 
-							 std::cout << buf << std::endl;
-					}
+                std::cout << buf << std::endl;
+              }
 
 
-					lastGlobalEpoch = epoch;
-					snprintf(buf, sizeof(buf),"Global epoch %d",epoch);
-					std::cout << Form("%5d/%5d ", uIdx, uNbMessages) <<  buf << std::endl;
+              lastGlobalEpoch = epoch;
+              snprintf(buf, sizeof(buf), "Global epoch %d", epoch);
+              std::cout << Form("%5d/%5d ", uIdx, uNbMessages) << buf << std::endl;
+            }
+            else if (nGet4 <= 120) {
 
+              if (lastGlobalEpoch > epoch) epochDiff = lastGlobalEpoch - epoch;
+              else
+                epochDiff = 0xFFFFFF + lastGlobalEpoch - epoch;
 
-				}
-				else if (nGet4 <= 120){
-
-					if (lastGlobalEpoch > epoch)
-						epochDiff = lastGlobalEpoch - epoch;
-					else
-						epochDiff = 0xFFFFFF + lastGlobalEpoch - epoch;
-
-					if (epochDiff != pEpochDiff[nGet4]){
-						snprintf(buf, sizeof(buf),
-						 "eTime %d - Error epoch drift Get4 %3d , last epoch diff, current epoch  diff  0x%06x 0x%06x %d",
-						 lastGlobalEpoch, nGet4, pEpochDiff[nGet4], epochDiff, pEpochDiff[nGet4]-epochDiff);
-						 std::cout << buf << std::endl;
-						 mess.printDataCout( critof001::msg_print_Hex | critof001::msg_print_Prefix | critof001::msg_print_Data );
-
-					}
-					pEpochDiff[nGet4] = epochDiff;
-
-				}
-			}
-			/*
+              if (epochDiff != pEpochDiff[nGet4]) {
+                snprintf(
+                  buf, sizeof(buf),
+                  "eTime %d - Error epoch drift Get4 %3d , last epoch diff, current epoch  diff  0x%06x 0x%06x %d",
+                  lastGlobalEpoch, nGet4, pEpochDiff[nGet4], epochDiff, pEpochDiff[nGet4] - epochDiff);
+                std::cout << buf << std::endl;
+                mess.printDataCout(critof001::msg_print_Hex | critof001::msg_print_Prefix | critof001::msg_print_Data);
+              }
+              pEpochDiff[nGet4] = epochDiff;
+            }
+          }
+          /*
 			//------------------- CTRL ----------------------------//
 			else if (msgType == 0x02)
 			{
@@ -269,12 +258,12 @@ Bool_t CbmCriGet4RawPrint::DoUnpack(const fles::Timeslice& ts, size_t /*componen
 					pHitsCnt[nGet4]=pHitsCnt[nGet4]+1;
 			}
 			 */
-			/*snprintf(buf, sizeof(buf),
+          /*snprintf(buf, sizeof(buf),
 					 "Data: 0x%016lx",
 					 ulData);
 
 			std::cout << buf << std::endl;*/
-		}
+        }
 
       }  // for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx ++)
     }    // for( fuMsIndex = 0; fuMsIndex < uNbMsLoop; fuMsIndex ++ )
@@ -282,7 +271,7 @@ Bool_t CbmCriGet4RawPrint::DoUnpack(const fles::Timeslice& ts, size_t /*componen
 
   if (0 == fulCurrentTsIdx % 10000) LOG(info) << "Processed TS " << fulCurrentTsIdx;
 
-	/*
+  /*
 	uint32_t nPulses = 4*10000;
 	float effi;
 	for(uint32_t i =0; i < NGET4 ; i++)
@@ -307,9 +296,7 @@ Bool_t CbmCriGet4RawPrint::DoUnpack(const fles::Timeslice& ts, size_t /*componen
   return kTRUE;
 }
 
-void CbmCriGet4RawPrint::Reset()
-{
-}
+void CbmCriGet4RawPrint::Reset() {}
 
 void CbmCriGet4RawPrint::Finish() {}
 

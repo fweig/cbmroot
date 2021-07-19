@@ -1,25 +1,30 @@
 set(INCLUDE_DIRECTORIES
 
   ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/unpack
 
   ${CBMDETECTORBASE_DIR}/tof
 
   ${CBMDATA_DIR}
   ${CBMDATA_DIR}/base
   ${CBMDATA_DIR}/tof
+  ${CBMDATA_DIR}/raw
   ${CBMDATA_DIR}/global
 
-  ${CBMBASE_DIR} 
+  ${CBMBASE_DIR}
 
   ${CBMROOT_SOURCE_DIR}/reco/base
 
   ${CBMROOT_SOURCE_DIR}/core/eventdisplay
+
+  ${CBMROOT_SOURCE_DIR}/fles/flestools # for Timeslice/Microslice printout formatting tools
 )
 
 include_directories(${INCLUDE_DIRECTORIES})
 
 set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES} 
+  ${BASE_INCLUDE_DIRECTORIES}
+  ${IPC_INCLUDE_DIRECTORY} # for fles infos for unpacker
 )
 
 include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
@@ -37,14 +42,17 @@ set(SRCS
   CbmTofHitMaker.cxx
   CbmTofCosmicClusterizer.cxx
   CbmTofEventClusterizer.cxx
-  CbmTofFindTracks.cxx 
-  CbmTofExtendTracks.cxx 
-  CbmTofSimpClusterizer.cxx 
-  CbmTofTrackFinderNN.cxx 
-  CbmTofTestBeamClusterizer.cxx 
-  CbmTofTrackletTools.cxx 
-  CbmTofCalibrator.cxx 
-  LKFMinuit.cxx 
+  CbmTofFindTracks.cxx
+  CbmTofExtendTracks.cxx
+  CbmTofSimpClusterizer.cxx
+  CbmTofTrackFinderNN.cxx
+  CbmTofTestBeamClusterizer.cxx
+  CbmTofTrackletTools.cxx
+  CbmTofCalibrator.cxx
+  LKFMinuit.cxx
+
+  unpack/CbmTofUnpackAlgo.cxx
+  unpack/CbmTofUnpackConfig.cxx
 )
 
 set(LINKDEF CbmTofRecoLinkDef.h)

@@ -39,13 +39,13 @@ ${CBMROOT_SOURCE_DIR}/core/data/base
 ${CBMROOT_SOURCE_DIR}/core/data/psd
 ${CBMROOT_SOURCE_DIR}/core/data/rich
 ${CBMROOT_SOURCE_DIR}/core/data/sts
-# ${CBMROOT_SOURCE_DIR}/core/data/tof
+${CBMROOT_SOURCE_DIR}/core/data/tof
 ${CBMROOT_SOURCE_DIR}/core/data/trd
 
 ${CBMROOT_SOURCE_DIR}/core/detectors/psd
 ${CBMROOT_SOURCE_DIR}/core/detectors/rich
 ${CBMROOT_SOURCE_DIR}/core/detectors/sts
-# ${CBMROOT_SOURCE_DIR}/core/detectors/tof
+${CBMROOT_SOURCE_DIR}/core/detectors/tof
 ${CBMROOT_SOURCE_DIR}/core/detectors/trd
 
 

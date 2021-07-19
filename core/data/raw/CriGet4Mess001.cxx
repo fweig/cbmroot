@@ -166,7 +166,10 @@ void critof001::Message::printDataCout(unsigned kind, uint32_t epoch) const { pr
  * documentation.
  */
 
-void critof001::Message::printDataLog(unsigned kind, uint32_t epoch) const { printData(msg_print_FairLog, kind, epoch); }
+void critof001::Message::printDataLog(unsigned kind, uint32_t epoch) const
+{
+  printData(msg_print_FairLog, kind, epoch);
+}
 
 //----------------------------------------------------------------------------
 //! Print message in binary or human readable format to a stream.
@@ -207,9 +210,8 @@ void critof001::Message::printData(unsigned outType, unsigned kind, uint32_t epo
              arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], arr[7], arr[6], arr[5], arr[4], arr[3],
              arr[2], arr[1], arr[0]);
     */
-    snprintf(buf, sizeof(buf),
-             "LE= %02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X ",
-             arr[7], arr[6], arr[5], arr[4], arr[3], arr[2], arr[1], arr[0]);
+    snprintf(buf, sizeof(buf), "LE= %02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X ", arr[7], arr[6], arr[5], arr[4], arr[3],
+             arr[2], arr[1], arr[0]);
 
 
     if (msg_print_Cout == outType) std::cout << buf;
@@ -234,8 +236,8 @@ void critof001::Message::printData(unsigned outType, unsigned kind, uint32_t epo
         snprintf(buf, sizeof(buf),
                  "EPOCH @%17.11f Get4:%2d Epoche2:%10u 0x%08x Sync:%x "
                  "Dataloss:%x Epochloss:%x Epochmissmatch:%x",
-                 timeInSec, getGet4Idx(), getGdpbEpEpochNb(), getGdpbEpEpochNb(), getGdpbEpSync(),
-                 getGdpbEpDataLoss(), getGdpbEpEpochLoss(), getGdpbEpMissmatch());
+                 timeInSec, getGet4Idx(), getGdpbEpEpochNb(), getGdpbEpEpochNb(), getGdpbEpSync(), getGdpbEpDataLoss(),
+                 getGdpbEpEpochLoss(), getGdpbEpMissmatch());
 
         if (msg_print_Cout == outType) std::cout << buf << std::endl;
         else if (msg_print_File == outType)
@@ -275,7 +277,7 @@ void critof001::Message::printData(unsigned outType, unsigned kind, uint32_t epo
   if (kind & msg_print_Data) {
     //      const uint8_t* arr = reinterpret_cast<const uint8_t*> ( &data );
     switch (getMessageType()) {
-/*
+        /*
       case MSG_HIT: {
         snprintf(buf, sizeof(buf),
                  "Get4 32 bits, Get4:%3d Channel %1d Ts:0x%03x Ft:0x%02x "

@@ -21,4 +21,7 @@
 #pragma link C++ class CbmTofCalibrator + ;
 #pragma link C++ class LKFMinuit + ;
 
+#pragma link C++ class CbmTofUnpackAlgo + ;
+#pragma link C++ class CbmTofUnpackConfig + ;
+
 #endif

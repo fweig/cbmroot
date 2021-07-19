@@ -9,6 +9,9 @@
 
 #include "CbmMcbm2018TofPar.h"
 
+#include "CbmTofAddress.h"
+#include "CbmTofDetectorId_v14a.h"  // in cbmdata/tof
+
 #include "FairDetParIo.h"
 #include "FairParIo.h"
 #include "FairParamList.h"
@@ -17,8 +20,6 @@
 #include "TString.h"
 
 #include "gDpbMessv100.h"
-#include "CbmTofAddress.h"
-#include "CbmTofDetectorId_v14a.h"  // in cbmdata/tof
 
 // -----   Standard constructor   ------------------------------------------
 CbmMcbm2018TofPar::CbmMcbm2018TofPar(const char* name, const char* title, const char* context)
@@ -205,8 +206,8 @@ Double_t CbmMcbm2018TofPar::GetPadiThresholdVal(UInt_t uCode)
 // -------------------------------------------------------------------------
 void CbmMcbm2018TofPar::BuildChannelsUidMap()
 {
-  UInt_t uNrOfGbtx = fiNrOfGbtx;
-  UInt_t uNrOfGet4 = fiNrOfGdpb * fiNrOfFeesPerGdpb * fiNrOfGet4PerFee;
+  UInt_t uNrOfGbtx     = fiNrOfGbtx;
+  UInt_t uNrOfGet4     = fiNrOfGdpb * fiNrOfFeesPerGdpb * fiNrOfGet4PerFee;
   UInt_t uNrOfChannels = uNrOfGet4 * fiNrOfChannelsPerGet4;
   fviRpcChUId.resize(uNrOfChannels);
 
@@ -258,18 +259,17 @@ void CbmMcbm2018TofPar::BuildChannelsUidMap()
       default: {
         LOG(error) << "Invalid Tof Type  specifier ";
       }
-    } // switch (fiRpcType[uGbtx])
-  } // for (UInt_t uGbtx = 0; uGbtx < uNrOfGbtx; ++uGbtx)
-
+    }  // switch (fiRpcType[uGbtx])
+  }    // for (UInt_t uGbtx = 0; uGbtx < uNrOfGbtx; ++uGbtx)
 }
 // -------------------------------------------------------------------------
-void CbmMcbm2018TofPar::BuildChannelsUidMapCbm(UInt_t & uCh, UInt_t uGbtx)
+void CbmMcbm2018TofPar::BuildChannelsUidMapCbm(UInt_t& uCh, UInt_t uGbtx)
 {
   if (fiRpcSide[uGbtx] < 2) {  // mTof modules
     LOG(info) << " Map mTof box " << fiModuleId[uGbtx] << " at GBTX  -  uCh = " << uCh;
     const Int_t RpcMap[5] = {4, 2, 0, 3, 1};
     for (Int_t iRpc = 0; iRpc < fiNrOfRpc[uGbtx]; iRpc++) {
-      Int_t iStrMax = 32;
+      Int_t iStrMax  = 32;
       UInt_t uChNext = 1;
 
       for (Int_t iStr = 0; iStr < iStrMax; iStr++) {
@@ -278,18 +278,18 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapCbm(UInt_t & uCh, UInt_t uGbtx)
 
         if (fiRpcSide[uGbtx] == 0) iStrMap = 31 - iStr;
         if (fiModuleId[uGbtx] > -1)
-          fviRpcChUId[uCh] = CbmTofAddress::GetUniqueAddress(fiModuleId[uGbtx], iRpcMap, iStrMap,
-                                                             fiRpcSide[uGbtx], fiRpcType[uGbtx]);
+          fviRpcChUId[uCh] =
+            CbmTofAddress::GetUniqueAddress(fiModuleId[uGbtx], iRpcMap, iStrMap, fiRpcSide[uGbtx], fiRpcType[uGbtx]);
         else
           fviRpcChUId[uCh] = 0;
         //  LOG(debug)<<Form("Map Ch %d to Address 0x%08x",uCh,fviRpcChUId[uCh]);
         uCh += uChNext;
-      } // for (Int_t iStr = 0; iStr < iStrMax; iStr++)
-    } // for (Int_t iRpc = 0; iRpc < fiNrOfRpc[uGbtx]; iRpc++)
-  } // if (fiRpcSide[uGbtx] < 2)
+      }  // for (Int_t iStr = 0; iStr < iStrMax; iStr++)
+    }    // for (Int_t iRpc = 0; iRpc < fiNrOfRpc[uGbtx]; iRpc++)
+  }      // if (fiRpcSide[uGbtx] < 2)
 }
 // -------------------------------------------------------------------------
-void CbmMcbm2018TofPar::BuildChannelsUidMapStar(UInt_t & uCh, UInt_t uGbtx)
+void CbmMcbm2018TofPar::BuildChannelsUidMapStar(UInt_t& uCh, UInt_t uGbtx)
 {
   if (fiRpcSide[uGbtx] < 2) {
     // mTof modules
@@ -305,8 +305,8 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapStar(UInt_t & uCh, UInt_t uGbtx)
 
         if (fiRpcSide[uGbtx] == 0) iStrMap = 31 - iStr;
         if (fiModuleId[uGbtx] > -1)
-          fviRpcChUId[uCh] = CbmTofAddress::GetUniqueAddress(fiModuleId[uGbtx], iRpcMap, iStrMap,
-                                                             fiRpcSide[uGbtx], fiRpcType[uGbtx]);
+          fviRpcChUId[uCh] =
+            CbmTofAddress::GetUniqueAddress(fiModuleId[uGbtx], iRpcMap, iStrMap, fiRpcSide[uGbtx], fiRpcType[uGbtx]);
         else
           fviRpcChUId[uCh] = 0;
         //  LOG(DEBUG)<<Form("Map Ch %d to Address 0x%08x",uCh,fviRpcChUId[uCh]);
@@ -317,7 +317,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapStar(UInt_t & uCh, UInt_t uGbtx)
   uCh += 64;
 }
 // -------------------------------------------------------------------------
-void CbmMcbm2018TofPar::BuildChannelsUidMapT0(UInt_t & uCh, UInt_t uGbtx)
+void CbmMcbm2018TofPar::BuildChannelsUidMapT0(UInt_t& uCh, UInt_t uGbtx)
 {
   LOG(info) << " Map diamond  at GBTX  -  uCh = " << uCh;
   for (UInt_t uFee = 0; uFee < kuNbFeePerGbtx; ++uFee) {
@@ -333,8 +333,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapT0(UInt_t & uCh, UInt_t uGbtx)
             /// => 1 T0 channel per GET4
             /// => 1-2 eLinks per GET4 => GET4 ID = GET4 * 2 (+ 1)
             UInt_t uChannelT0 = uFeeCh / 8 + 4 * fiRpcSide[uGbtx];
-            fviRpcChUId[uCh] =
-              CbmTofAddress::GetUniqueAddress(fiModuleId[uGbtx], 0, uChannelT0, 0, fiRpcType[uGbtx]);
+            fviRpcChUId[uCh]  = CbmTofAddress::GetUniqueAddress(fiModuleId[uGbtx], 0, uChannelT0, 0, fiRpcType[uGbtx]);
             LOG(info) << Form("T0 channel: %u from GBTx %2u Fee %2u "
                               "Channel %2u, indx %d address %08x",
                               uChannelT0, uGbtx, uFeeCh, uCh, uCh, fviRpcChUId[uCh]);
@@ -351,7 +350,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapT0(UInt_t & uCh, UInt_t uGbtx)
   }    // for( UInt_t uFee = 0; uFee < kuNbChannelsPerFee; ++uFee )
 }
 // -------------------------------------------------------------------------
-void CbmMcbm2018TofPar::BuildChannelsUidMapCern(UInt_t & uCh, UInt_t /*uGbtx*/)
+void CbmMcbm2018TofPar::BuildChannelsUidMapCern(UInt_t& uCh, UInt_t /*uGbtx*/)
 {
   LOG(info) << " Map CERN 20 gap  at GBTX  -  uCh = " << uCh;
   // clang-format off
@@ -376,7 +375,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapCern(UInt_t & uCh, UInt_t /*uGbtx*/)
   LOG(info) << " Map end CERN 20 gap  at GBTX  -  uCh = " << uCh;
 }
 // -------------------------------------------------------------------------
-void CbmMcbm2018TofPar::BuildChannelsUidMapCera(UInt_t & uCh, UInt_t /*uGbtx*/)
+void CbmMcbm2018TofPar::BuildChannelsUidMapCera(UInt_t& uCh, UInt_t /*uGbtx*/)
 {
   Int_t iModuleId   = 0;
   Int_t iModuleType = 8;
@@ -388,7 +387,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapCera(UInt_t & uCh, UInt_t /*uGbtx*/)
   LOG(info) << " Map end ceramics  box  at GBTX  -  uCh = " << uCh;
 }
 // -------------------------------------------------------------------------
-void CbmMcbm2018TofPar::BuildChannelsUidMapStar2(UInt_t & uCh, UInt_t uGbtx)
+void CbmMcbm2018TofPar::BuildChannelsUidMapStar2(UInt_t& uCh, UInt_t uGbtx)
 {
   LOG(info) << " Map Star2 box " << fiModuleId[uGbtx] << " at GBTX  -  uCh = " << uCh;
   const Int_t iRpc[5]  = {1, -1, 1, 0, 0};
@@ -429,11 +428,11 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapStar2(UInt_t & uCh, UInt_t uGbtx)
   }
 }
 // -------------------------------------------------------------------------
-void CbmMcbm2018TofPar::BuildChannelsUidMapBuc(UInt_t & uCh, UInt_t uGbtx)
+void CbmMcbm2018TofPar::BuildChannelsUidMapBuc(UInt_t& uCh, UInt_t uGbtx)
 {
   LOG(info) << " Map Buc box  at GBTX  -  uCh = " << uCh;
 
-  Int_t iModuleIdMap = fiModuleId[uGbtx];
+  Int_t iModuleIdMap   = fiModuleId[uGbtx];
   const Int_t iRpc[5]  = {0, -1, 0, 1, 1};
   const Int_t iSide[5] = {1, -1, 0, 1, 0};
   for (Int_t iFeet = 0; iFeet < 5; iFeet++) {
@@ -517,20 +516,19 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapBuc(UInt_t & uCh, UInt_t uGbtx)
           }
           iModuleIdMap = fiModuleId[uGbtx];
           LOG(info) << "Buc of GBTX " << uGbtx << " Ch " << uCh
-                    << Form(", Feet %1d, Str %2d, Ind %3d, i %3d, FeetInd %1d, Rpc %1d, Side %1d, Str %2d ",
-                            iFeet, iStr, iInd, i, iFeetInd, iRpcMap, iSideMap, iStrMap);
+                    << Form(", Feet %1d, Str %2d, Ind %3d, i %3d, FeetInd %1d, Rpc %1d, Side %1d, Str %2d ", iFeet,
+                            iStr, iInd, i, iFeetInd, iRpcMap, iSideMap, iStrMap);
         } break;
         default:;
-      } // switch (fiRpcSide[uGbtx])
+      }  // switch (fiRpcSide[uGbtx])
       if (iSideMap > -1)
-        fviRpcChUId[uCh] =
-          CbmTofAddress::GetUniqueAddress(iModuleIdMap, iRpcMap, iStrMap, iSideMap, fiRpcType[uGbtx]);
+        fviRpcChUId[uCh] = CbmTofAddress::GetUniqueAddress(iModuleIdMap, iRpcMap, iStrMap, iSideMap, fiRpcType[uGbtx]);
       else
         fviRpcChUId[uCh] = 0;
 
       uCh++;
-    } // for (Int_t iStr = 0; iStr < 32; iStr++)
-  } // for (Int_t iFeet = 0; iFeet < 5; iFeet++)
+    }  // for (Int_t iStr = 0; iStr < 32; iStr++)
+  }    // for (Int_t iFeet = 0; iFeet < 5; iFeet++)
 }
 // -------------------------------------------------------------------------
 

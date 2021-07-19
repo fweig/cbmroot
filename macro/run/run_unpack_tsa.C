@@ -62,6 +62,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   if (outpath.empty()) { outpath = infile.substr(0, filenamepos); }
   outfilename = outpath + filename;
   outfilename.replace(outfilename.find(".tsa"), 4, ".digi.root");
+  std::cout << "-I- " << myName << ": Output file will be " << outfilename << std::endl;
   // ------------------------------------------------------------------------
 
 
@@ -150,6 +151,17 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   }
   // -------------
 
+  // ---- TOF ----
+  auto tofconfig = std::make_shared<CbmTofUnpackConfig>("", runid);
+  // tofconfig->SetDebugState();
+  tofconfig->SetDoWriteOutput();
+  // tofconfig->SetDoWriteOptOutA("CbmTofErrors");
+  std::string parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+  tofconfig->SetParFilesBasePath(parfilesbasepathTof);
+  //tofconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
+  // -------------
+
+
   // ------------------------------------------------------------------------
 
   // In general, the following parts need not be touched
@@ -170,6 +182,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   if (stsconfig) unpack->SetUnpackConfig(stsconfig);
   if (trd1Dconfig) unpack->SetUnpackConfig(trd1Dconfig);
   if (trdfasp2dconfig) unpack->SetUnpackConfig(trdfasp2dconfig);
+  if (tofconfig) unpack->SetUnpackConfig(tofconfig);
   // ------------------------------------------------------------------------
 
 
@@ -213,7 +226,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
 
 /**
  * @brief Get the Trd Monitor. Extra function to keep default macro part more silent.
- * @return std::shared_ptr<CbmTrdUnpackMonitor> 
+ * @return std::shared_ptr<CbmTrdUnpackMonitor>
 */
 std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename)
 {
@@ -270,7 +283,7 @@ std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename)
 
 /**
  * @brief Get the Trd Spadic
- * @return std::shared_ptr<CbmTrdSpadic> 
+ * @return std::shared_ptr<CbmTrdSpadic>
 */
 std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline)
 {
