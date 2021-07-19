@@ -99,21 +99,14 @@ double critof001::Message::getMsgFullTimeD(uint64_t epoch) const
 {
   switch (getMessageType()) {
     case MSG_HIT: {
-      if (getGdpbHitIs24b())
-        return (static_cast<double_t>(FullTimeStamp(epoch, (getGdpbHitCoarse() << 7)))
-                + (static_cast<double_t>(getGdpbHitFineTs() - 8.) * critof001::kdFtSize / critof001::kdFtBinsNb))
-               * (critof001::kdClockCycleSizeNs / critof001::kdFtSize);
-      else
-        return (critof001::kdEpochInNs * static_cast<double_t>(epoch)
-                + static_cast<double_t>(getGdpbHitFullTs()) * critof001::kdClockCycleSizeNs / critof001::kdFtBinsNb);
+      return (critof001::kdEpochInNs * static_cast<double_t>(epoch)
+              + static_cast<double_t>(getGdpbHitFullTs()) * critof001::kdClockCycleSizeNs / critof001::kdFtBinsNb);
     }  // case MSG_HIT:
-    case MSG_EPOCH: return critof001::kdEpochInNs * static_cast<double_t>(getGdpbEpEpochNb());
+    case MSG_EPOCH: {
+      return critof001::kdEpochInNs * static_cast<double_t>(getGdpbEpEpochNb());
+    }
     case MSG_SLOWC:
     case MSG_SYST:
-    case MSG_STAR_TRI_A:
-    case MSG_STAR_TRI_B:
-    case MSG_STAR_TRI_C:
-    case MSG_STAR_TRI_D: return critof001::kdEpochInNs * static_cast<double_t>(epoch);
     default: return 0.0;
   }  // switch( getMessageType() )
 
@@ -217,7 +210,7 @@ void critof001::Message::printData(unsigned outType, unsigned kind, uint32_t epo
     snprintf(buf, sizeof(buf),
              "LE= %02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X ",
              arr[7], arr[6], arr[5], arr[4], arr[3], arr[2], arr[1], arr[0]);
-             
+
 
     if (msg_print_Cout == outType) std::cout << buf;
     else if (msg_print_File == outType)
@@ -241,7 +234,7 @@ void critof001::Message::printData(unsigned outType, unsigned kind, uint32_t epo
         snprintf(buf, sizeof(buf),
                  "EPOCH @%17.11f Get4:%2d Epoche2:%10u 0x%08x Sync:%x "
                  "Dataloss:%x Epochloss:%x Epochmissmatch:%x",
-                 timeInSec, getGdpbGenChipId(), getGdpbEpEpochNb(), getGdpbEpEpochNb(), getGdpbEpSync(),
+                 timeInSec, getGet4Idx(), getGdpbEpEpochNb(), getGdpbEpEpochNb(), getGdpbEpSync(),
                  getGdpbEpDataLoss(), getGdpbEpEpochLoss(), getGdpbEpMissmatch());
 
         if (msg_print_Cout == outType) std::cout << buf << std::endl;
@@ -255,14 +248,8 @@ void critof001::Message::printData(unsigned outType, unsigned kind, uint32_t epo
         else if (msg_print_File == outType)
           os << buf;
 
-        if (getGdpbHitIs24b()) {
-          snprintf(buf, sizeof(buf), "Get4 24b @%17.11f Get4:%2d Chn:%3d Edge:%1d Ts:%7d", timeInSec,
-                   getGdpbGenChipId(), getGdpbHitChanId(), getGdpbHit24Edge(), getGdpbHitFullTs());
-        }  // if( getGdpbHitIs24b() )
-        else {
-          snprintf(buf, sizeof(buf), "Get4 24b @%17.11f Get4:%2d Chn:%3d Dll:%1d Ts:%7d", timeInSec, getGdpbGenChipId(),
-                   getGdpbHitChanId(), getGdpbHit32DllLck(), getGdpbHitFullTs());
-        }  // else of if( getGdpbHitIs24b() )
+        snprintf(buf, sizeof(buf), "Get4 24b @%17.11f Get4:%2d Chn:%3d Dll:%1d Ts:%7d", timeInSec, getGet4Idx(),
+                 getGdpbHitChanId(), getGdpbHit32DllLck(), getGdpbHitFullTs());
 
         if (msg_print_Cout == outType) std::cout << buf << std::endl;
         else if (msg_print_File == outType)
@@ -288,31 +275,20 @@ void critof001::Message::printData(unsigned outType, unsigned kind, uint32_t epo
   if (kind & msg_print_Data) {
     //      const uint8_t* arr = reinterpret_cast<const uint8_t*> ( &data );
     switch (getMessageType()) {
+/*
       case MSG_HIT: {
-        if (getGdpbHitIs24b()) {
-          snprintf(buf, sizeof(buf), "Get4 24 bits, Get4:%3d Chn:%1x Edge:%1x Ts:0x%03x", getGdpbGenChipId(),
-                   getGdpbHitChanId(), getGdpbHit24Edge(), getGdpbHitFullTs());
-        }  // if( getGdpbHitIs24b() )
-        else {
-          snprintf(buf, sizeof(buf),
-                   "Get4 32 bits, Get4:%3d Channel %1d Ts:0x%03x Ft:0x%02x "
-                   "Tot:0x%02x  Dll %1d",
-                   getGdpbGenChipId(), getGdpbHitChanId(), getGdpbHitCoarse(), getGdpbHitFineTs(), getGdpbHit32Tot(),
-                   getGdpbHit32DllLck());
-        }  // else of if( getGdpbHitIs24b() )
+        snprintf(buf, sizeof(buf),
+                 "Get4 32 bits, Get4:%3d Channel %1d Ts:0x%03x Ft:0x%02x "
+                 "Tot:0x%02x  Dll %1d",
+                 getGet4Idx(), getGdpbHitChanId(), getGdpbHitCoarse(), getGdpbHitFineTs(), getGdpbHit32Tot(),
+                 getGdpbHit32DllLck());
         break;
       }  // case MSG_HIT:
       case MSG_EPOCH: {
-        /*snprintf(buf, sizeof(buf),
-                 "Get4:%3d Link: %1u Epoch:0x%08x Sync:%x Dataloss:%x "
-                 "Epochloss:%x Epochmissmatch:%x",
-                 getGdpbGenChipId(), getGdpbEpLinkId(), getGdpbEpEpochNb(), getGdpbEpSync(), getGdpbEpDataLoss(),
-                 getGdpbEpEpochLoss(), getGdpbEpMissmatch());
-        */
         snprintf(buf, sizeof(buf),
                  "Get4:%3d Link: %1u Epoch:0x%08x Sync:%x",
-                 getGdpbGenChipId(), getGdpbEpLinkId(), getGdpbEpEpochNb(), getGdpbEpSync());
-                 
+                 getGet4Idx(), getGdpbEpLinkId(), getGdpbEpEpochNb(), getGdpbEpSync());
+
         break;
       }  // case MSG_EPOCH:
       case MSG_SLOWC: {
@@ -320,92 +296,14 @@ void critof001::Message::printData(unsigned outType, unsigned kind, uint32_t epo
         snprintf(buf, sizeof(buf),
                  "Get4 Slow control, Get4:%3d => Chan:%01d Edge:%01d "
                  "Type:%01x Data:0x%06x",
-                 getGdpbGenChipId(), 0x0, 0x0, 0x0, getGdpbSlcData());
+                 getGet4Idx(), 0x0, 0x0, 0x0, getGdpbSlcData());
         break;
       }  // case MSG_SLOWC:
-      case MSG_SYST: {
-        // GET4 system message, new "true" ROC support
-        char sysbuf[256];
-
-        switch (getGdpbSysSubType()) {
-          case SYS_GET4_ERROR: {
-            snprintf(sysbuf, sizeof(sysbuf),
-                     "Get4:%3d Ch:0x%01x Edge:%01x Unused:%06x "
-                     "ErrCode:0x%02x - GET4 V1 Error Event",
-                     getGdpbGenChipId(), getGdpbSysErrChanId(), getGdpbSysErrEdge(), getGdpbSysErrUnused(),
-                     getGdpbSysErrData());
-            break;
-          }  //
-          case SYS_GDPB_UNKWN:
-            snprintf(sysbuf, sizeof(sysbuf), "Unknown GET4 message, data: 0x%08x", getGdpbSysUnkwData());
-            break;
-          case SYS_GET4_SYNC_MISS:
-            if (getGdpbSysFwErrResync())
-              snprintf(sysbuf, sizeof(sysbuf), "GET4 Resynchronization: Get4:0x%04x", getGdpbGenChipId());
-            else
-              snprintf(sysbuf, sizeof(sysbuf), "GET4 SYNC synchronization error");
-            break;
-          case SYS_PATTERN:
-            snprintf(sysbuf, sizeof(sysbuf), "Pattern message => Type %d, Index %2d, Pattern 0x%08X",
-                     getGdpbSysPattType(), getGdpbSysPattIndex(), getGdpbSysPattPattern());
-            break;
-          default: snprintf(sysbuf, sizeof(sysbuf), "unknown system message type %u", getGdpbSysSubType());
-        }  // switch( getGdpbSysSubType() )
-        snprintf(buf, sizeof(buf), "%s", sysbuf);
-
+      case MSG_ERROR: {
+        // GET4 Error message, new "true" ROC support
         break;
       }  // case MSG_SYST:
-      case MSG_STAR_TRI_A:
-      case MSG_STAR_TRI_B:
-      case MSG_STAR_TRI_C:
-      case MSG_STAR_TRI_D: {
-        // STAR trigger token, spread over 4 messages
-        switch (getStarTrigMsgIndex()) {
-          case 0: {
-            snprintf(buf, sizeof(buf),
-                     //                    "STAR token A, gDPB TS MSB bits: 0x%010llx000000",
-                     //                    getGdpbTsMsbStarA() );
-                     "STAR token A, gDPB TS MSB bits: 0x%s000000",
-                     FormatHexPrintout(getGdpbTsMsbStarA(), 10, '0').c_str());
-            break;
-          }  // case 1st message:
-          case 1: {
-            snprintf(
-              buf, sizeof(buf),
-              //                    "STAR token B, gDPB TS LSB bits: 0x0000000000%06llx, STAR TS MSB bits: 0x%04llx000000000000",
-              //                    getGdpbTsLsbStarB(), getStarTsMsbStarB() );
-              "STAR token B, gDPB TS LSB bits: 0x0000000000%s, STAR TS MSB "
-              "bits: 0x%s000000000000",
-              FormatHexPrintout(getGdpbTsLsbStarB(), 6, '0').c_str(),
-              FormatHexPrintout(getStarTsMsbStarB(), 4, '0').c_str());
-            break;
-          }  // case 2nd message:
-          case 2: {
-            snprintf(
-              buf, sizeof(buf),
-              //                    "STAR token C,                                     , STAR TS Mid bits: 0x0000%010llx00",
-              //                    getStarTsMidStarC() );
-              "STAR token C,                                     , STAR TS Mid "
-              "bits: 0x0000%s00",
-              FormatHexPrintout(getStarTsMidStarC(), 10, '0').c_str());
-            break;
-          }  // case 3rd message:
-          case 3: {
-            snprintf(
-              buf, sizeof(buf),
-              //                    "STAR token D,                                     , STAR TS LSB bits: 0x00000000000000%02llx"
-              "STAR token D,                                     , STAR TS LSB "
-              "bits: 0x00000000000000%s"
-              ", Token: %03x, DAQ: %1x; TRG:%1x",
-              //                    getStarTsLsbStarD(),
-              FormatHexPrintout(getStarTsLsbStarD(), 2, '0').c_str(), getStarTokenStarD(), getStarDaqCmdStarD(),
-              getStarTrigCmdStarD());
-            break;
-          }  // case 4th message:
-        }    // switch( getStarTrigMsgIndex() )
-
-        break;
-      }  // case MSG_STAR_TRI_A || MSG_STAR_TRI_B || MSG_STAR_TRI_C || MSG_STAR_TRI_D:
+*/
       default:
         snprintf(buf, sizeof(buf), "Error - unexpected MessageType: %1x, full data %08X::%08X", getMessageType(),
                  getField(32, 32), getField(0, 32));
