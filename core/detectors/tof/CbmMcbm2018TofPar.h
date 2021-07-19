@@ -72,6 +72,7 @@ public:
   inline Int_t GetRpcType(Int_t i) { return fiRpcType[i]; }
   inline Int_t GetRpcSide(Int_t i) { return fiRpcSide[i]; }
   inline Int_t GetModuleId(Int_t i) { return fiModuleId[i]; }
+  inline std::vector< Int_t > GetRpcChUidMap() { return fviRpcChUId; }
 
   inline Int_t GetNbMsTot() { return fiNbMsTot; }
   inline Int_t GetNbMsOverlap() { return fiNbMsOverlap; }
@@ -83,6 +84,15 @@ public:
   inline Double_t GetTsDeadtimePeriod() { return fdTsDeadtimePeriod; }
 
 private:
+  void BuildChannelsUidMap();
+  void BuildChannelsUidMapCbm(UInt_t & uCh, UInt_t uGbtx);
+  void BuildChannelsUidMapStar(UInt_t & uCh, UInt_t uGbtx);
+  void BuildChannelsUidMapT0(UInt_t & uCh, UInt_t uGbtx);
+  void BuildChannelsUidMapCern(UInt_t & uCh, UInt_t uGbtx);
+  void BuildChannelsUidMapCera(UInt_t & uCh, UInt_t uGbtx);
+  void BuildChannelsUidMapStar2(UInt_t & uCh, UInt_t uGbtx);
+  void BuildChannelsUidMapBuc(UInt_t & uCh, UInt_t uGbtx);
+
   /// Constants
   /// Data format
   static const uint32_t kuBytesPerMessage = 8;
@@ -142,6 +152,7 @@ private:
   TArrayI fiRpcType;   // type of Rpcs connected to Gbtx link
   TArrayI fiRpcSide;   // side of Rpcs connected to Gbtx link, i.e. 0 or 1
   TArrayI fiModuleId;  // Module Identifier connected to Gbtx link, has to match geometry
+  std::vector<Int_t> fviRpcChUId = {};  // UID/address for each channel, build from type, side and module
 
   Int_t fiNbMsTot;        // Total number of MS per link in TS
   Int_t fiNbMsOverlap;    // Number of overlap MS per TS
