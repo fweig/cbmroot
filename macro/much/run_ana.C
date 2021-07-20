@@ -101,5 +101,5 @@ void run_ana(Int_t nEvents = 1000, TString dataSet = "muons", TString setup = "s
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
 
-  //   RemoveGeoManager();
+  RemoveGeoManager();
 }

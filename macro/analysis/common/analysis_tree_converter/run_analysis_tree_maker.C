@@ -179,5 +179,5 @@ void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setu
   //   Generate_CTest_Dependency_File(depFile);
   // ------------------------------------------------------------------------
 
-  //  RemoveGeoManager();
+  RemoveGeoManager();
 }

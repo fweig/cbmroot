@@ -227,4 +227,6 @@ void run_tof_disim(Int_t nEvents = 2, const char* setup = "sis100_electron")
 
   cout << " Test passed" << endl;
   cout << " All ok " << endl;
+
+  RemoveGeoManager();
 }
