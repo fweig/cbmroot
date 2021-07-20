@@ -441,12 +441,6 @@ Bool_t CbmStsUnpackMonitor::CreateDebugHistograms(CbmMcbm2018StsPar* pUnpackPar)
   fhStsDpbRawTsMsbDpb->SetCanExtend(TH2::kAllAxes);
   AddHistoToVector(fhStsDpbRawTsMsbDpb, "");
 
-  sHistName      = "fhStsAsicTsMsb";
-  title          = "MSB messages for each Asic; TsMsb; Asic; Count []";
-  fhStsAsicTsMsb = new TH2I(sHistName, title, 10, 0, 10, uNbAsics, 0, uNbAsics);
-  fhStsAsicTsMsb->SetCanExtend(TH2::kAllAxes);
-  AddHistoToVector(fhStsAsicTsMsb, "");
-
   /// Asic plots
   /// All histos per Asic: with channels or ASIC as axis!!
   for (UInt_t uAsicIdx = 0; uAsicIdx < uNbAsics; ++uAsicIdx) {
@@ -502,7 +496,6 @@ Bool_t CbmStsUnpackMonitor::ResetDebugHistograms()
   fhStsDpbRawTsMsb->Reset();
   fhStsDpbRawTsMsbSx->Reset();
   fhStsDpbRawTsMsbDpb->Reset();
-  fhStsAsicTsMsb->Reset();
 
   for (UInt_t uAsicIdx = 0; uAsicIdx < fvhStsChanCntRaw.size(); ++uAsicIdx) {
     fvhStsChanCntRaw[uAsicIdx]->Reset();

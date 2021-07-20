@@ -457,7 +457,6 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
   // Get the asix index
   uint32_t uAsicIdx = getAsicIndex(fuCurrDpbIdx, uCrobIdx, usElinkIdx);
 
-
   const uint16_t usChan     = mess.GetHitChannel();
   const uint16_t usRawAdc   = mess.GetHitAdc();
   const uint16_t usRawTs    = mess.GetHitTimeBinning();
@@ -509,7 +508,6 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
         LOG(error) << Form("Digi on disabled FEB %02u has address 0x%08x and side %d", uFebIdx, fviFebAddress[uFebIdx],
                            fviFebSide[uFebIdx]);
       }
-
 
       fOutputVec.emplace_back(CbmStsDigi(fviFebAddress[uFebIdx], uChanInMod, ulTimeInNs, dCalAdc));
       // REMARK This seems to be double looping, I do not see any reason here, to first store the stsxyter hits in a vector over which we loop afterwards again. May be I miss something @sts-experts?
@@ -617,11 +615,6 @@ void CbmStsUnpackAlgo::processTsMsbInfo(const stsxyter::Message& mess, uint32_t 
       fMonitor->FillStsDpbRawTsMsb(fuCurrDpbIdx, fvulCurrentTsMsb[fuCurrDpbIdx]);
       fMonitor->FillStsDpbRawTsMsbSx(fuCurrDpbIdx, fvulCurrentTsMsb[fuCurrDpbIdx]);
       fMonitor->FillStsDpbRawTsMsbDpb(fuCurrDpbIdx, fvulCurrentTsMsb[fuCurrDpbIdx]);
-      const uint16_t usElinkIdx = mess.GetStatusLink();
-      const uint32_t uCrobIdx   = usElinkIdx / fNrElinksPerCrob;
-      const uint32_t uAsicIdx   = getAsicIndex(fuCurrDpbIdx, uCrobIdx, usElinkIdx);
-
-      fMonitor->FillStsAsicTsMsb(fvulCurrentTsMsb[fuCurrDpbIdx], uAsicIdx);
     }
 }
 

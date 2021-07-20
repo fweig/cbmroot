@@ -164,7 +164,6 @@ public:
   {
     fhStsDpbRawTsMsbDpb->Fill(uCurrDpbIdx, (ulCurrentTsMsb >> 5));
   }
-  void FillStsAsicTsMsb(ULong_t ulCurrentTsMsb, UInt_t uAsicIdx) { fhStsAsicTsMsb->Fill(ulCurrentTsMsb, uAsicIdx); }
 
   ///Fill debugging "per Asic" histogram vectors
   void FillStsChanCntRaw(UInt_t uAsicIdx, UShort_t usChan) { fvhStsChanCntRaw[uAsicIdx]->Fill(usChan); }
@@ -260,7 +259,6 @@ private:
   TH2* fhStsDpbRawTsMsb      = nullptr;
   TH2* fhStsDpbRawTsMsbSx    = nullptr;
   TH2* fhStsDpbRawTsMsbDpb   = nullptr;
-  TH2* fhStsAsicTsMsb        = nullptr;
 
   static const UInt_t kiMaxNbFlibLinks = 32;
   TH1* fvhMsSize[kiMaxNbFlibLinks];
