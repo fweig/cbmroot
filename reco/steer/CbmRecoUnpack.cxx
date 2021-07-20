@@ -35,7 +35,7 @@ CbmRecoUnpack::CbmRecoUnpack() {}
 // -----   Initialisation   ---------------------------------------------------
 void CbmRecoUnpack::Finish()
 {
-  LOG(info) << "CbmRecoUnpack::Finish() I do let the unpackers talk first : ";
+  LOG(info) << "CbmRecoUnpack::Finish() I do let the unpackers talk first :\n";
 
   if (fPsdConfig) fPsdConfig->GetUnpacker()->Finish();
   if (fRichConfig) fRichConfig->GetUnpacker()->Finish();

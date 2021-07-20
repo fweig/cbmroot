@@ -266,7 +266,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMap()
 void CbmMcbm2018TofPar::BuildChannelsUidMapCbm(UInt_t& uCh, UInt_t uGbtx)
 {
   if (fiRpcSide[uGbtx] < 2) {  // mTof modules
-    LOG(info) << " Map mTof box " << fiModuleId[uGbtx] << " at GBTX  -  uCh = " << uCh;
+    LOG(debug) << " Map mTof box " << fiModuleId[uGbtx] << " at GBTX  -  uCh = " << uCh;
     const Int_t RpcMap[5] = {4, 2, 0, 3, 1};
     for (Int_t iRpc = 0; iRpc < fiNrOfRpc[uGbtx]; iRpc++) {
       Int_t iStrMax  = 32;

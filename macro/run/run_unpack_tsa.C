@@ -90,7 +90,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   // ---- RICH ----
   std::shared_ptr<CbmRichUnpackConfig> richconfig = nullptr;
 
-  richconfig = std::make_shared<CbmRichUnpackConfig>("", runid);
+  // richconfig = std::make_shared<CbmRichUnpackConfig>("", runid);
   if (richconfig) {
     richconfig->SetDebugState();
     richconfig->SetDoWriteOutput();
@@ -109,7 +109,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
     stsconfig->SetDoWriteOutput();
     std::string parfilesbasepathSts = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
     stsconfig->SetParFilesBasePath(parfilesbasepathSts);
-    stsconfig->SetSystemTimeOffset(2221);  // [ns] value to be updated
+    stsconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
   }
   // -------------
 

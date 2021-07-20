@@ -43,11 +43,12 @@ uint64_t CbmStsUnpackAlgo::getFullTimeStamp(const uint16_t usRawTs)
 {
   // Use TS w/o overlap bits as they will anyway come from the TS_MSB
   const uint64_t ulTime =
-    usRawTs
+    usRawTs + fulTsMsbIndexInTs[fuCurrDpbIdx] * static_cast<uint64_t>(stsxyter::kuHitNbTsBinsBinning);
+  /*
     + static_cast<uint64_t>(stsxyter::kuHitNbTsBinsBinning) * static_cast<uint64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
     + static_cast<uint64_t>(stsxyter::kulTsCycleNbBinsBinning)
         * static_cast<uint64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
-
+*/
   return ulTime;
 }
 
@@ -288,9 +289,11 @@ void CbmStsUnpackAlgo::initInternalStatus(CbmMcbm2018StsPar* parset)
 
   fvulCurrentTsMsb.resize(uNbOfDpbs);
   fvuCurrentTsMsbCycle.resize(uNbOfDpbs);
+  fulTsMsbIndexInTs.resize(uNbOfDpbs);
   for (uint32_t uDpb = 0; uDpb < uNbOfDpbs; ++uDpb) {
     fvulCurrentTsMsb[uDpb]     = 0;
     fvuCurrentTsMsbCycle[uDpb] = 0;
+    fulTsMsbIndexInTs[uDpb]    = 0;
   }
 
   fvvusLastTsChan.resize(uNbStsXyters);
@@ -495,10 +498,13 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
         uChanInMod = fNrChsPerFeb - uChanInMod - 1  // Invert channel order
                      + fNrChsPerFeb;                // Offset for P (back) side
 
+      /*
       // Get the time relative to the Timeslice time, I hope that the cast here works as expected. Otherwise Sts will also get into trouble with the size of UTC here
       auto tsreltime =
         static_cast<uint64_t>((ulHitTime - (fTsStartTime / stsxyter::kdClockCycleNs)) * stsxyter::kdClockCycleNs);
-      double dTimeInNs = tsreltime - fSystemTimeOffset;
+*/
+      double_t tsreltime = ulHitTime * stsxyter::kdClockCycleNs;
+      double dTimeInNs   = tsreltime - fSystemTimeOffset;
       if (uAsicIdx < fvdTimeOffsetNsAsics.size()) dTimeInNs -= fvdTimeOffsetNsAsics[uAsicIdx];
 
       const uint64_t ulTimeInNs = static_cast<uint64_t>(dTimeInNs);
@@ -610,6 +616,11 @@ void CbmStsUnpackAlgo::processTsMsbInfo(const stsxyter::Message& mess, uint32_t 
   else
     fvulCurrentTsMsb[fuCurrDpbIdx] = uVal;
 
+  fulTsMsbIndexInTs[fuCurrDpbIdx] =
+    fvulCurrentTsMsb[fuCurrDpbIdx]
+    + (fvuCurrentTsMsbCycle[fuCurrDpbIdx] * static_cast<uint64_t>(1 << stsxyter::kusLenTsMsbValBinning))
+    - fulTsStartInTsMsb;
+
   if (fMonitor)
     if (fMonitor->GetDebugMode()) {  //also if( 1 < uMessIdx )?
       fMonitor->FillStsDpbRawTsMsb(fuCurrDpbIdx, fvulCurrentTsMsb[fuCurrDpbIdx]);
@@ -648,6 +659,10 @@ void CbmStsUnpackAlgo::refreshTsMsbFields(const uint32_t imslice, const size_t m
     }
     fvuCurrentTsMsbCycle[fuCurrDpbIdx] = uTsMsbCycleHeader;
   }
+  fulTsMsbIndexInTs[fuCurrDpbIdx] =
+    fvulCurrentTsMsb[fuCurrDpbIdx]
+    + (fvuCurrentTsMsbCycle[fuCurrDpbIdx] * static_cast<uint64_t>(1 << stsxyter::kusLenTsMsbValBinning))
+    - fulTsStartInTsMsb;
 }
 
 // ---- unpack ----
@@ -707,6 +722,12 @@ bool CbmStsUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
     fuCurrDpbIdx = fDpbIdIndexMap[uCurrDpbId];
 
   if (fMonitor) fMonitor->FillMsCntEvo(fMsStartTime);
+
+  if (0 == imslice) {
+    /// Extract the time base only on MS 0, assuming that we get all TS of a component in order
+    fulTsStartInTsMsb =
+      static_cast<uint64_t>(fTsStartTime / (stsxyter::kuHitNbTsBinsBinning * stsxyter::kdClockCycleNs));
+  }
 
   // Check the current TS_MSb cycle and correct it if wrong
   refreshTsMsbFields(imslice, fMsStartTime);
