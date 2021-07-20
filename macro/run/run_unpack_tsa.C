@@ -158,7 +158,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   // tofconfig->SetDoWriteOptOutA("CbmTofErrors");
   std::string parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
   tofconfig->SetParFilesBasePath(parfilesbasepathTof);
-  //tofconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
+  tofconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
   // -------------
 
 

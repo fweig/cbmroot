@@ -385,7 +385,7 @@ void CbmTofUnpackAlgo::ProcessHit(const critof001::Message& mess)
   /// Apply offset to T0 only to TOF digis
   if (0x90 != fuCurrentMsSysId) {
     /// Tricking clang to avoid one liner
-    dHitTime -= fdTimeOffsetNs;
+    dHitTime -= fSystemTimeOffset;
   }
 
   /// FIXME: seems there is an offset of +4 Epoch between data and header

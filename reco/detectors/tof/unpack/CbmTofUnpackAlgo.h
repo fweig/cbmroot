@@ -159,9 +159,6 @@ private:
   std::vector<Int_t> fviModuleId = {};
   std::vector<Int_t> fviRpcChUId = {};
 
-  /// User settings: Data correction parameters
-  Double_t fdTimeOffsetNs;
-
   /// Running indices
   UInt_t fuMapWarnToPrint     = 100;
   ULong64_t fulCurrentTsIdx   = 0;  //! Idx of the current TS
