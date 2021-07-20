@@ -223,6 +223,24 @@ FileEndCheck:
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft_${FAIRSOFT_VERSION}"
     CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
 
+.singularity_debian10_variables_apr21: &singularity_debian10_variables_apr21
+    OS: debian10
+    FAIRSOFT_VERSION: apr21
+    FAIRROOT_VERSION: v18.6.3
+    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
+    CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
+
+.singularity_centos7_variables_apr21: &singularity_centos7_variables_apr21
+    OS: centos7
+    FAIRSOFT_VERSION: apr21
+    FAIRROOT_VERSION: v18.6.3
+    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS/gcc8"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
+    CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment_test.sh"
+
 .linux_tag: &linux_tag
   stage: build
   tags:
@@ -301,6 +319,7 @@ FileEndCheck:
 #
 # job matrix for build jobs
 #
+
 CbmRoot_Merge_realData:
   <<: [*realData_tag, *check_merge_request, *build_and_test]
   variables:
@@ -321,10 +340,20 @@ CbmRoot_Merge_Singularity_debian8_nov20:
   variables:
     <<: [*mergeRequestVariables, *singularity_debian8_variables_nov20]
 
-##CbmRoot_Merge_Singularity_debian8_apr21:
-##  <<: [*singularity_tag, *check_merge_request, *build_and_test]
-##  variables:
-##    <<: [*mergeRequestVariables, *singularity_debian8_variables_apr21]
+CbmRoot_Merge_Singularity_debian8_apr21:
+  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *singularity_debian8_variables_apr21]
+
+CbmRoot_Merge_Singularity_debian10_apr21:
+  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *singularity_debian10_variables_apr21]
+
+CbmRoot_Merge_Singularity_centos7_apr21:
+  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *singularity_centos7_variables_apr21]
 
 CbmRoot_Merge:
   <<: [*linux_tag, *check_merge_request, *build_and_test]
