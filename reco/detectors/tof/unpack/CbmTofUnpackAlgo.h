@@ -108,7 +108,7 @@ protected:
    * @return true
    * @return false
   */
-  bool setDerivedTsParameters(size_t itimeslice) { return true; }
+  bool setDerivedTsParameters(size_t /*itimeslice*/) { return true; }
 
   /**
    * @brief Unpack a given microslice. To be implemented in the derived unpacker algos.

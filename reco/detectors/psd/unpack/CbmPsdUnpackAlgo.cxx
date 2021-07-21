@@ -11,6 +11,7 @@
 #include <Rtypes.h>
 #include <RtypesCore.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <numeric>
 
