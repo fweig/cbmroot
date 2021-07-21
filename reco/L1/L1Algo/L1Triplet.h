@@ -18,7 +18,7 @@ class L1Triplet {
 
 public:
   /// default constructor
-  L1Triplet() {}
+  L1Triplet() = default;
 
   /// constructor
   L1Triplet(unsigned int iHitL, unsigned int iHitM, unsigned int iHitR, unsigned int iStaL, unsigned int iStaM,
@@ -60,8 +60,6 @@ public:
   fscal GetChi2() const { return fChi2; }
   fscal GetTime() const { return -111.; }
 
-  fscal GetQpOrig() const { return fQp; }  //TODO: SG: return unscaled qp!!
-
   int GetLSta() const { return fSta >> 4; }
   int GetMSta() const { return ((fSta % 16) >> 2) + GetLSta() + 1; }
   int GetRSta() const { return (fSta % 4) + GetLSta() + 2; }
@@ -91,12 +89,12 @@ public:
 
 private:
   fscal fChi2 = 0.f;  // chi^2
-  fscal fQp   = 0.f;  // q/p packed
-  fscal fCqp  = 0.f;  // covariance of q/p, packed
+  fscal fQp   = 0.f;  // q/p
+  fscal fCqp  = 0.f;  // 5 * RMS of q/p
   fscal fTx   = 0.f;  // tx at the left hit
-  fscal fCtx  = 0.f;  // covariance of tx
+  fscal fCtx  = 0.f;  // RMS of tx
   fscal fTy   = 0.f;  // ty at the left hit
-  fscal fCty  = 0.f;  // covariance of ty
+  fscal fCty  = 0.f;  // RMS of ty
 
   unsigned int fFirstNeighbour = 0;  // ID of the first neighbouring triplet
   THitI fHitL                  = 0;  // left hit index (16b) in vStsHits array

@@ -1124,26 +1124,30 @@ inline void L1Algo::f4(  // input
 #endif
       if (!finite(chi2) || chi2 < 0 || chi2 > TRIPLET_CHI2_CUT) continue;
 
-    // TODO: SG: simplify calculations for qp & Cqp below
-    // prepare data
-    fscal MaxInvMomS = MaxInvMom[0];
-    fscal scale      = 255 / (MaxInvMomS * 2);
 
-    fscal qp = MaxInvMomS + T3.qp[i3_4];
-    if (qp < 0) qp = 0;
-    if (qp > MaxInvMomS * 2) qp = MaxInvMomS * 2;
-    qp = (static_cast<unsigned int>(qp * scale)) % 256;
-    qp = static_cast<unsigned char>(qp);
+    fscal qp = T3.qp[i3_4];
+
+    //TODO: SG: why multiplying by 5? To simplify the triplet comparison?
+    //TODO: why sqrt's? Wouldn't it be faster to skip sqrt() here and
+    //TODO: compare the squared differences dqr*dqp later?
 
     fscal Cqp = 5. * sqrt(fabs(T3.C44[i3_4]));
-    Cqp       = (static_cast<unsigned int>(Cqp * scale)) % 256;
-    Cqp += 1.f;
 
-    if (Cqp < 0.f) Cqp = 0.f;
-    if (Cqp > 20.f) Cqp = 20.f;
+    {  // legacy
 
-    //fscal& time = T3.t[i3_4];
-    // int n = T3.n[i3_4];
+      // TODO: SG: The magic cuts below are the rest from an old conversion of the momentum to char.
+      // TODO: They came from the truncation to the 0-255 range and had no other meaning.
+      // TODO: But for some reason, the efficiency degrades without them.
+      // TODO: It needs to be investigated. If the cuts are necessary, they need to be adjusted.
+
+      fscal Cmax = 0.2 * MaxInvMom[0];  // minimal momentum: 0.05 - 0.1
+                                        //if ( isec == kAllPrimJumpIter ) {
+      if (Cqp > Cmax) {
+        //cout << "isec " << isec << " Cqp " << Cqp << " max " << Cmax << " add " << 0.05 * Cmax << endl;
+        Cqp = Cmax;
+      }
+      Cqp += 0.05 * Cmax;  // TODO: without this line the ghost ratio increases, why?
+    }
 
     fTriplets[istal][Thread].emplace_back(ihitl, ihitm, ihitr, istal, istam, istar, 0, 0, 0, chi2, qp, Cqp,
                                           sqrt(fabs(T3.tx[i3_4])),  // TODO: SG: why sqrt(tx)???
@@ -2187,7 +2191,7 @@ void L1Algo::CATrackFinder()
               }
             }
 #endif
-            best_tr.Set(istaF, best_L, best_chi2, first_trip.GetQpOrig());
+            best_tr.Set(istaF, best_L, best_chi2, first_trip.GetQp());
             fTrackCandidates[thread_num].push_back(best_tr);
 
             L1Branch& tr = fTrackCandidates[thread_num].back();
@@ -2652,9 +2656,11 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       fscal Cqp       = curr_trip->GetCqp();
       Cqp += new_trip.GetCqp();
 
-      if (!fmCBMmode)
-        if (dqp > PickNeighbour * Cqp)
+      if (!fmCBMmode) {
+        if (dqp > PickNeighbour * Cqp) {
           continue;  // bad neighbour // CHECKME why do we need recheck it?? (it really change result)
+        }
+      }
 
       fscal tx1 = curr_trip->GetTx();
       fscal tx2 = new_trip.GetTx();
@@ -2697,7 +2703,9 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
         new_tr[ista].fStsHits.push_back((*RealIHitP)[new_trip.GetLHit()]);
         new_tr[ista].NHits++;
         new_L += 1;
-        dqp = dqp / Cqp * 5.;  // CHECKME: understand 5, why no sqrt(5)?
+        // CHECKME: understand 5, why no sqrt(5)?
+        // SG: because Cqp is stored as 5*sqrt( cov<qp> )
+        dqp = dqp / Cqp * 5.;
 
         dtx = dtx / Ctx;
         dty = dty / Cty;
