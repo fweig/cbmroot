@@ -1711,7 +1711,7 @@ void CbmAnaDielectronTaskDrawAll::CalcCombBGHistos()
     else if (step == kPtCut)
       cock = (TH1D*) GetCoctailMinv(kPtCut);
 
-    cock->Rebin(nRebin);
+    if (cock != NULL) cock->Rebin(nRebin);
     fh_mean_combSignalNpm_minv[step] = (TH1D*) fh_mean_bg_minv[step]->Clone();
     fh_mean_combSignalNpm_minv[step]->Add(cock);
     fh_mean_combSignalNpm_minv[step]->Add(fh_mean_combBg_minv[step], -1.);

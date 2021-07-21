@@ -2666,13 +2666,22 @@ void CbmAnaDielectronTask::Finish()
 void CbmAnaDielectronTask::SetEnergyAndPlutoParticle(const string& energy, const string& particle)
 {
   // names of particles in common production differ from our names
-  if (particle == "rho0") particle == "inmed";  // or "inmed_had_epem"??
-  else if (particle == "wdalitz")
-    particle == "omegadalitz";
-  else if (particle == "w")
-    particle == "omegaepem";
-  else if (particle == "qgp_epem")
-    particle == "qgp";
+  if (particle == "rho0") {
+	  this->SetEnergyAndPlutoParticle(energy, "inmed");
+	  return;
+  }
+  else if (particle == "wdalitz") {
+	  this->SetEnergyAndPlutoParticle(energy, "omegadalitz");
+	  return;
+  }
+  else if (particle == "w") {
+	  this->SetEnergyAndPlutoParticle(energy, "omegaepem");
+	  return;
+  }
+  else if (particle == "qgp_epem") {
+	  this->SetEnergyAndPlutoParticle(energy, "qgp");
+	  return;
+  }
 
   // Au+Au centr old scaling factors
   /* if (energy == "8gev" || energy == "10gev") {
