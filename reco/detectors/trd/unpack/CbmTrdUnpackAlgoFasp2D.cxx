@@ -147,6 +147,8 @@ bool CbmTrdUnpackAlgoFasp2D::unpack(const fles::Timeslice* ts, std::uint16_t ico
 
   auto msdesc = ts->descriptor(icomp, imslice);
   if (VERBOSE) printf("time start %lu\n", msdesc.idx);
+  // define time wrt start of time slice in TRD/FASP clks [80 MHz]
+  fTime[0] = ULong64_t((msdesc.idx - fTsStartTime) / 12.5);
 
   // Get the µslice size in bytes to calculate the number of completed words
   auto mssize = msdesc.size;
