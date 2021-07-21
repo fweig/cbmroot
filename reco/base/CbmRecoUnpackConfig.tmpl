@@ -101,7 +101,11 @@ protected:
   /** @brief Decision if the info msgs are supposed to be stored to a branch. */
   bool fIsMC = false;
 
-  size_t fSystemTimeOffset = 0;
+  /**
+   * @brief Time offset for the system
+   * @todo This should be module and channel dependent and included into the asic parameters
+  */
+  int32_t fSystemTimeOffset = 0;
 
   /** @brief Use this function to implement additional actions to be called once per TS, e.g. needed if more than the default output vector is used. */
   virtual void reset() { return; };
@@ -156,7 +160,7 @@ public:
   void Init(FairRootManager* ioman)
   {
     LOG(info) << fName << "::Init() ---------------------------------";
-    
+
     if (fDoWriteOutput) {
 
       fOutputVec = new std::vector<TOutput>();
@@ -269,7 +273,7 @@ public:
   void SetParFilesBasePath(std::string value) { fParFilesBasePath = value; }
 
   /** @brief Set the global system time offset @remark in princible this should go to parameters */
-  void SetSystemTimeOffset(size_t value) { fSystemTimeOffset = value; }
+  void SetSystemTimeOffset(int32_t value) { fSystemTimeOffset = value; }
 
 protected:
   /**
