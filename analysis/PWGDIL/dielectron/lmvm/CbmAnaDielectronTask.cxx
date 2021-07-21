@@ -2667,20 +2667,20 @@ void CbmAnaDielectronTask::SetEnergyAndPlutoParticle(const string& energy, const
 {
   // names of particles in common production differ from our names
   if (particle == "rho0") {
-	  this->SetEnergyAndPlutoParticle(energy, "inmed");
-	  return;
+    this->SetEnergyAndPlutoParticle(energy, "inmed");
+    return;
   }
   else if (particle == "wdalitz") {
-	  this->SetEnergyAndPlutoParticle(energy, "omegadalitz");
-	  return;
+    this->SetEnergyAndPlutoParticle(energy, "omegadalitz");
+    return;
   }
   else if (particle == "w") {
-	  this->SetEnergyAndPlutoParticle(energy, "omegaepem");
-	  return;
+    this->SetEnergyAndPlutoParticle(energy, "omegaepem");
+    return;
   }
   else if (particle == "qgp_epem") {
-	  this->SetEnergyAndPlutoParticle(energy, "qgp");
-	  return;
+    this->SetEnergyAndPlutoParticle(energy, "qgp");
+    return;
   }
 
   // Au+Au centr old scaling factors
