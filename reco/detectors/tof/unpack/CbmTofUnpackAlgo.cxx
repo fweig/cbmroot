@@ -299,11 +299,12 @@ void CbmTofUnpackAlgo::ProcessEpoch(const critof001::Message& mess, uint32_t uMe
     }
 
     if (ulEpochNr != ulMsStartInEpoch) {
+      // size_t required to silence a warning on macos (there a uint64_t is a llu)
       LOG(error) << fName << "::ProcessEpoch => Error first global epoch, "
                  << Form(
                       "from MS index 0x%06lx, current 0x%06llx, diff %lld, raw 0x%016lx, NoErr %d, current 0x%06lx  %f",
                       ulMsStartInEpoch, ulEpochNr, ulEpochNr - ulMsStartInEpoch, mess.getData(), fuProcEpochUntilError,
-                      static_cast<uint64_t>(fulCurrentMsIdx / critof001::kuEpochInNs),
+                      static_cast<size_t>(fulCurrentMsIdx / critof001::kuEpochInNs),
                       fulCurrentMsIdx / critof001::kuEpochInNs);
       LOG(error) << fName << "::ProcessEpoch => Ignoring data until next valid epoch";
 
@@ -317,9 +318,10 @@ void CbmTofUnpackAlgo::ProcessEpoch(const critof001::Message& mess, uint32_t uMe
     }  // else of if( ulEpochNr != ulMsStartInEpoch )
   }    // if( 0 < uMesgIdx )
   else if (((fulCurrentEpoch + 1) % critof001::kulEpochCycleEp) != ulEpochNr) {
+    // Cast required to silence a warning on macos (there a uint64_t is a llu)
     LOG(error) << fName << "::ProcessEpoch => Error global epoch, "
                << Form("last 0x%06llx, current 0x%06llx, diff %lld, raw 0x%016lx, NoErr %d", fulCurrentEpoch, ulEpochNr,
-                       ulEpochNr - fulCurrentEpoch, mess.getData(), fuProcEpochUntilError);
+                       ulEpochNr - fulCurrentEpoch, static_cast<size_t>(mess.getData()), fuProcEpochUntilError);
     LOG(error) << fName << "::ProcessEpoch => Ignoring data until next valid epoch";
 
     ulEpochNr             = (fulCurrentEpoch + 1) % critof001::kulEpochCycleEp;
@@ -337,10 +339,12 @@ void CbmTofUnpackAlgo::ProcessEpoch(const critof001::Message& mess, uint32_t uMe
     fulEpochIndexInTs = ulEpochNr + critof001::kulEpochCycleEp - fulTsStartInEpoch;
   }
   if (10e9 < critof001::kuEpochInNs * fulEpochIndexInTs)
+    // Cast required to silence a warning on macos (there a uint64_t is a llu)
     LOG(debug) << fName << "::ProcessEpoch => "
                << Form("Raw Epoch: 0x%06llx, Epoch offset 0x%06lx, Epoch in Ts: 0x%07lx, time %f ns (%f * %lu)",
-                       ulEpochNr, fulTsStartInEpoch, fulEpochIndexInTs, critof001::kuEpochInNs * fulEpochIndexInTs,
-                       critof001::kuEpochInNs, fulEpochIndexInTs);
+                       ulEpochNr, fulTsStartInEpoch, static_cast<size_t>(fulEpochIndexInTs),
+                       critof001::kuEpochInNs * fulEpochIndexInTs, critof001::kuEpochInNs,
+                       static_cast<size_t>(fulEpochIndexInTs));
 }
 
 void CbmTofUnpackAlgo::ProcessHit(const critof001::Message& mess)

@@ -181,9 +181,11 @@ Bool_t CbmCriGet4RawPrint::DoUnpack(const fles::Timeslice& ts, size_t /*componen
               procEpochUntilError++;
               if (lastGlobalEpoch != 0xFFFFFF) {
                 if ((lastGlobalEpoch + 1) != epoch) {
+                  // Cast required to silence a warning on macos (there a uint64_t is a llu)
                   snprintf(buf, sizeof(buf),
                            "Error global epoch, last epoch, current epoch, diff  0x%06x 0x%06x %d 0x%016lx %d",
-                           lastGlobalEpoch, epoch, lastGlobalEpoch - epoch, ulData, procEpochUntilError);
+                           lastGlobalEpoch, epoch, lastGlobalEpoch - epoch, static_cast<size_t>(ulData),
+                           procEpochUntilError);
 
                   std::cout << buf << std::endl;
                   procEpochUntilError = 0;

@@ -195,7 +195,8 @@ bool CbmPsdUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
   while (PsdReader.GetTotalGbtWordsRead() < uNbMessages) {
     int ReadResult = PsdReader.ReadMs();
     if (fair::Logger::Logging(fair::Severity::debug)) {
-      printf("\nMicroslice idx: %lu\n", mstime);
+      // Cast requires to silence a warning on macos, there a uint64_t is a long long unsigned
+      printf("\nMicroslice idx: %lu\n", static_cast<size_t>(mstime));
       PsdReader.PrintOut(); /*PsdReader.PrintSaveBuff();*/
     }
     if (ReadResult == 0) {
