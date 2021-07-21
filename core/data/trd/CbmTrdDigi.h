@@ -85,6 +85,13 @@ public:
    */
   CbmTrdDigi(const CbmTrdDigi&);
 
+  /**
+   * @brief Assignment operator
+   * 
+   * @return CbmTrdDigi& 
+  */
+  CbmTrdDigi& operator=(const CbmTrdDigi&) = default;
+
 
   /** \brief Charge addition in case of pile-up (FASP simulation only)
    * \param[in] sd previous digi absorbed by current
