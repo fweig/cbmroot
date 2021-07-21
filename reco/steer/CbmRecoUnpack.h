@@ -39,9 +39,7 @@ class CbmRecoUnpack : public TObject {
 
 public:
   /** @brief Constructor
-   ** @param fileName  Name of (single) input file.
-   **
-   ** More input files can be added by the method AddInputFile.
+   ** 
    */
   CbmRecoUnpack();
 

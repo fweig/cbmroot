@@ -190,6 +190,9 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   auto run  = new FairRunOnline(source);
   auto sink = new FairRootFileSink(outfilename.data());
   run->SetSink(sink);
+  auto eventheader = new CbmTsEventHeader();
+  run->SetRunId(runid);
+  run->SetEventHeader(eventheader);
   // ------------------------------------------------------------------------
 
 

@@ -54,10 +54,13 @@ Bool_t CbmRecoUnpack::Init()
   FairRootManager* ioman = FairRootManager::Instance();
   assert(ioman);
 
-  // --- Register the branch for the Timeslice start time
-  fCbmTsEventHeader = new CbmTsEventHeader();
-  ioman->RegisterAny("TsEventHeader", fCbmTsEventHeader, kTRUE);
-  LOG(info) << "CbmRecoUnpack::Init() registered CbmTsEventHeader to output tree!\n";
+
+  auto eh = FairRun::Instance()->GetEventHeader();
+  if (eh->IsA() == CbmTsEventHeader::Class()) fCbmTsEventHeader = static_cast<CbmTsEventHeader*>(eh);
+  else
+    LOG(fatal)
+      << "CbmRecoUnpack::Init() no CbmTsEventHeader was added to the run. Without it, we can not store the UTC of the "
+         "Timeslices correctly. Hence, this causes a fatal. Please add it in the steering macro to the Run.";
 
 
   // --- Psd
