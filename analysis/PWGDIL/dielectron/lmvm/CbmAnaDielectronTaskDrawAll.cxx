@@ -1686,7 +1686,7 @@ void CbmAnaDielectronTaskDrawAll::CalcCombBGHistos()
 
 
     // from 'Cocktail + BG'
-    TH1D* cock;
+    TH1D* cock = NULL;
     if (step == kMc) cock = (TH1D*) GetCoctailMinv(kMc);
     else if (step == kAcc)
       cock = (TH1D*) GetCoctailMinv(kAcc);
