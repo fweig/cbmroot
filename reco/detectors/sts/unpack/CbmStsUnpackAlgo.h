@@ -89,7 +89,7 @@ protected:
   /** @brief Finish function for this algorithm base clase */
   void finish()
   {
-    // if (fMonitor) fMonitor->Finish();
+    if (fMonitor) fMonitor->Finish();
     return;
   }
 
@@ -266,7 +266,6 @@ protected:
 
   /** @brief Vector of channel masks, [ NbFeb ][ NbCHanInFeb ], used only if fbUseChannelMask is true */
   std::vector<std::vector<bool>> fvvbMaskedChannels = {};  //!
-
 
   /** @brief  FEB type, [ NbDpb ][ NbCrobPerDpb ][ NbFebsPerCrob ], 0 = A, 1 = B, -1 if inactive */
   std::vector<std::vector<std::vector<int32_t>>> fviFebType = {};  //!

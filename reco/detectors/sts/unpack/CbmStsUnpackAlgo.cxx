@@ -242,7 +242,6 @@ Bool_t CbmStsUnpackAlgo::initParSet(CbmMcbm2018StsPar* parset)
   LOG(debug) << "Unpacking data in bin sorter FW mode";
   initInternalStatus(parset);
 
-
   return kTRUE;
 }
 
@@ -696,6 +695,7 @@ bool CbmStsUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
       const double dMsTime = (1e-9) * static_cast<double>(fMsStartTime);
       if (icomp < fMonitor->GetMaxNbFlibLinks()) {
         if (fdStartTimeMsSz < 0) fdStartTimeMsSz = dMsTime;
+        fMonitor->CreateMsComponentSizeHistos(icomp);
         fMonitor->FillMsSize(icomp, uSize);
         fMonitor->FillMsSizeTime(icomp, dMsTime - fdStartTimeMsSz, uSize);
       }
@@ -749,7 +749,7 @@ bool CbmStsUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
 
   //Output debugging info
   /** @todo @experts this is printout debugging which depends on monitor settings. Not sure whether this is a good way. Please check and decide. (It was this way already before to be clear) */
-  if (fMonitor)
+  if (fMonitor) {
     if (fMonitor->GetDebugMode()) {
       if (18967040000 == fMsStartTime || 18968320000 == fMsStartTime) { LOG(debug) << sMessPatt; }
       if (static_cast<uint16_t>(fles::MicrosliceFlags::CrcValid) != msDescriptor.flags) {
@@ -764,8 +764,13 @@ bool CbmStsUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
                    << (!bError && 400 != vNbMessType[1]);
       }
     }
+    for (auto itHit = fOutputVec.begin(); itHit != fOutputVec.end(); ++itHit) {
+      fMonitor->FillDigisTimeInRun(itHit->GetTime());
+    }
+    fMonitor->FillVectorSize(ts->index(), fOutputVec.size());
+    //fMonitor->DrawCanvases();
+  }
   return true;
 }
-
 
 ClassImp(CbmStsUnpackAlgo)

@@ -292,13 +292,13 @@ Bool_t CbmStsUnpackMonitor::CreateMsComponentSizeHistos(UInt_t component)
     TString sMsSizeTitle = Form("Size of MS for nDPB of link %02u; Ms Size [bytes]", component);
     fvhMsSize[component] = new TH1F(sMsSizeName.Data(), sMsSizeTitle.Data(), 30000, 0., 30000.);
     fvhMsSize[component]->SetCanExtend(TH2::kAllAxes);
-
-    sMsSizeName              = Form("MsSizeTime_link_%02u", component);
-    sMsSizeTitle             = Form("Size of MS vs time for gDPB of link %02u; Time[s] ; Ms Size [bytes]", component);
+    AddHistoToVector(fvhMsSize[component], "perComponent");
+  }
+  if (nullptr == fvhMsSizeTime[component]) {
+    TString sMsSizeName      = Form("MsSizeTime_link_%02u", component);
+    TString sMsSizeTitle     = Form("Size of MS vs time for gDPB of link %02u; Time[s] ; Ms Size [bytes]", component);
     fvhMsSizeTime[component] = new TProfile(sMsSizeName.Data(), sMsSizeTitle.Data(), 15000, 0., 300.);
     fvhMsSizeTime[component]->SetCanExtend(TH2::kAllAxes);
-
-    AddHistoToVector(fvhMsSize[component], "perComponent");
     AddHistoToVector(fvhMsSizeTime[component], "perComponent");
   }
   return kTRUE;
@@ -306,10 +306,8 @@ Bool_t CbmStsUnpackMonitor::CreateMsComponentSizeHistos(UInt_t component)
 
 Bool_t CbmStsUnpackMonitor::ResetMsComponentSizeHistos(UInt_t component)
 {
-  if (nullptr == fvhMsSize[component]) {
-    fvhMsSize[component]->Reset();
-    fvhMsSizeTime[component]->Reset();
-  }
+  if (nullptr != fvhMsSize[component]) { fvhMsSize[component]->Reset(); }
+  if (nullptr != fvhMsSizeTime[component]) { fvhMsSizeTime[component]->Reset(); }
   return kTRUE;
 }
 
@@ -676,6 +674,59 @@ Bool_t CbmStsUnpackMonitor::Init(CbmMcbm2018StsPar* parset)
   }
 
   return kTRUE;
+}
+
+// ---- Finish ----
+void CbmStsUnpackMonitor::Finish()
+{
+  DrawCanvases();
+
+  /// Obtain vector of pointers on each histo (+ optionally desired folder)
+  std::vector<std::pair<TNamed*, std::string>> vHistos = GetHistoVector();
+
+  /// Obtain vector of pointers on each canvas (+ optionally desired folder)
+  std::vector<std::pair<CbmQaCanvas*, std::string>> vCanvases = GetCanvasVector();
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+  TFile* histoFile   = nullptr;
+
+  // open separate histo file in recreate mode
+  histoFile = new TFile(fHistoFileName, "RECREATE");
+  histoFile->cd();
+
+  /// Write histos to output file
+  for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
+    /// Make sure we end up in chosen folder
+    TString sFolder = vHistos[uHisto].second.data();
+    if (nullptr == gDirectory->Get(sFolder)) gDirectory->mkdir(sFolder);
+    gDirectory->cd(sFolder);
+
+    /// Write plot
+    vHistos[uHisto].first->Write();
+
+    histoFile->cd();
+  }
+
+  /// Write canvases to output file
+  for (UInt_t uCanvas = 0; uCanvas < vCanvases.size(); ++uCanvas) {
+    /// Make sure we end up in chosen folder
+    TString sFolder = vCanvases[uCanvas].second.data();
+    if (nullptr == gDirectory->Get(sFolder)) gDirectory->mkdir(sFolder);
+    gDirectory->cd(sFolder);
+
+    /// Write canvas
+    vCanvases[uCanvas].first->Write();
+
+    histoFile->cd();
+  }
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
+  histoFile->Close();
 }
 
 

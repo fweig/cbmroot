@@ -41,6 +41,12 @@ public:
   Bool_t CreateMsComponentSizeHistos(UInt_t component);
   Bool_t ResetMsComponentSizeHistos(UInt_t component);
 
+  /** @brief Write all histograms and canvases to file */
+  void Finish();
+
+  void SetHistoFileName(TString nameIn) { fHistoFileName = "data/" + nameIn + ".root"; }
+  void SetHistoFileNameFull(TString nameIn) { fHistoFileName = nameIn; }
+
   void DrawCanvases();
 
   void AddHistoToVector(TNamed* pointer, std::string sFolder = "")
@@ -209,6 +215,8 @@ public:
   void SetDebugMode(bool value) { fDebugMode = value; }
 
 private:
+  TString fHistoFileName = "data/HistosUnpackerSts.root";
+
   /// Rate evolution histos
   //Bool_t fbLongHistoEnable;
   UInt_t fuLongHistoNbSeconds  = 3600;

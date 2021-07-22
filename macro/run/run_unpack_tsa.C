@@ -26,6 +26,7 @@
 
 std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename);
 std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline = false);
+std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename);
 
 void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const char* setupName = "mcbm_beam_2021_03",
                     std::int32_t nevents = -1, std::string outpath = "")
@@ -119,6 +120,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
     stsconfig->SetDoWriteOutput();
     std::string parfilesbasepathSts = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
     stsconfig->SetParFilesBasePath(parfilesbasepathSts);
+    stsconfig->SetMonitor(GetStsMonitor(outfilename));
     stsconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
   }
   // -------------
@@ -301,6 +303,7 @@ std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename)
   return monitor;
 }
 
+
 /**
  * @brief Get the Trd Spadic
  * @return std::shared_ptr<CbmTrdSpadic>
@@ -312,4 +315,41 @@ std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline)
   spadic->SetMaxAdcToEnergyCal(1.0);
 
   return spadic;
+}
+
+/**
+ * @brief Get the Sts Monitor. Extra function to keep default macro part more silent.
+ * @return std::shared_ptr<CbmStsUnpackMonitor>
+*/
+std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename)
+{
+  // -----   Output filename and path   -------------------------------------
+  std::string outpath  = "";
+  std::string filename = "";
+  auto filenamepos     = treefilename.find_last_of("/");
+  if (filenamepos != treefilename.npos) {
+    outpath  = treefilename.substr(0, filenamepos);
+    filename = treefilename.substr(filenamepos++);
+  }
+  if (outpath.empty()) outpath = gSystem->GetWorkingDirectory();
+  std::string mydir = "/qa";
+  outpath += mydir;
+
+  auto currentdir = gSystem->GetWorkingDirectory();
+
+  if (!gSystem->cd(outpath.data())) gSystem->MakeDirectory(outpath.data());
+  else
+    gSystem->cd(currentdir.data());
+
+  std::string outfilename = outpath + filename;
+  auto filetypepos        = outfilename.find(".digi.root");
+  if (filetypepos != outfilename.npos) outfilename.replace(filetypepos, 10, ".mon.sts.root");
+  else
+    outfilename += ".mon.sts.root";
+  // ------------------------------------------------------------------------
+
+  auto monitor = std::make_shared<CbmStsUnpackMonitor>();
+  monitor->SetHistoFileNameFull(outfilename);
+  //monitor->SetDebugMode(true);
+  return monitor;
 }

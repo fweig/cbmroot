@@ -54,7 +54,10 @@ void CbmStsUnpackConfig::InitUnpacker()
   // Now we have all information required to initialise the algorithm
   algo->Init();
 
-  if (fMonitor) algo->SetMonitor(fMonitor);
+  if (fMonitor) {
+    fMonitor->Init(static_cast<CbmMcbm2018StsPar*>(reqparvec->at(0).second.get()));
+    algo->SetMonitor(fMonitor);
+  }
 
   // Pass the algo to its member in the base class
   fAlgo = algo;
