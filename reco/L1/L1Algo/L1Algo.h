@@ -176,7 +176,7 @@ public:
 
   L1Vector<unsigned char>* fStripFlag {nullptr};  // information of hits station & using hits in tracks;
 
-  double CATime {0.};  // time of trackfinding
+  double fCATime {0.};  // time of track finding
 
   L1Vector<L1Track> fTracks {"L1Algo::fTracks"};    // reconstructed tracks
   L1Vector<THitI> fRecoHits {"L1Algo::fRecoHits"};  // packed hits of reconstructed tracks

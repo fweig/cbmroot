@@ -1108,6 +1108,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
     vRTracksCur.reserve(10 + (2 * nHits) / nSta);
   }
 
+  fTrackingTime = 0;
+
   while (newTS) {
 
     fData->Clear();
@@ -1241,7 +1243,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
     if (fVerbose > 1) { cout << "L1 Track finder..." << endl; }
     algo->CATrackFinder();
     // IdealTrackFinder();
-
+    fTrackingTime += algo->fCATime;
 
     if (fVerbose > 1) { cout << "L1 Track finder ok" << endl; }
     //  algo->L1KFTrackFitter( fExtrapolateToTheEndOfSTS );
@@ -1373,7 +1375,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     if (fTimesliceMode) TsStart = TsStart_new;  ///Set new TS strat to earliest discarted track
 
-    if (fTimesliceMode) cout << "CA Track Finder: " << algo->CATime << " s/sub-ts" << endl << endl;
+    if (fTimesliceMode) cout << "CA Track Finder: " << algo->fCATime << " s/sub-ts" << endl << endl;
   }
 
 

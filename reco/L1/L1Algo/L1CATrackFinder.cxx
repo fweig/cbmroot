@@ -2469,7 +2469,7 @@ void L1Algo::CATrackFinder()
 
   //   cout << "End TrackFinder" << endl;
   //  CATime = (double(c_time.CpuTime()));
-  CATime = (double(c_time.RealTime()));
+  fCATime = (double(c_time.RealTime()));
 
 #ifdef XXX
 

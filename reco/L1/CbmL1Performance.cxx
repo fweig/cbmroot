@@ -420,7 +420,7 @@ void CbmL1::EfficienciesPerformance()
 
   }  // for mcTracks
 
-  L1_CATIME += algo->CATime;
+  L1_CATIME += fTrackingTime;
   L1_NEVENTS++;
   ntra.IncNEvents();
   L1_NTRA += ntra;
@@ -444,7 +444,8 @@ void CbmL1::EfficienciesPerformance()
     cout << "MC tracks/event found  : "
          << int(double(L1_NTRA.reco.counters[L1_NTRA.indices["total"]]) / double(L1_NEVENTS)) << endl;
     cout << endl;
-    cout << "CA Track Finder: " << L1_CATIME / L1_NEVENTS << " s/ev" << endl << endl;
+    cout << "CA Track Finder: " << L1_CATIME / L1_NEVENTS << (fTimesliceMode ? " s/time slice" : " s/ev") << endl
+         << endl;
   }
 }  // void CbmL1::Performance()
 
@@ -991,9 +992,9 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     if (iMC < 0) NFakes++;
   }
 
-  h_reco_time->Fill(algo->CATime);
-  h_reco_timeNtr->Fill(mc_total, algo->CATime);
-  h_reco_timeNhit->Fill(algo->vStsHits->size(), algo->CATime);
+  h_reco_time->Fill(fTrackingTime);
+  h_reco_timeNtr->Fill(mc_total, fTrackingTime);
+  h_reco_timeNhit->Fill(algo->vStsHits->size(), fTrackingTime);
 
   h_reco_fakeNtr->Fill(mc_total, NFakes);
   h_reco_fakeNhit->Fill(algo->vStsHits->size() - NFakes, NFakes);
