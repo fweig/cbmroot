@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-## #changed on Feb 8th; first check if works or not ###
-
 import os
 import shutil
 

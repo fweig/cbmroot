@@ -65,7 +65,7 @@ void run_litqa(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/
   // RICH reco QA
   CbmRichRecoQa* richRecoQa = new CbmRichRecoQa();
   richRecoQa->SetOutputDir("");
-  // run->AddTask(richRecoQa);
+  //run->AddTask(richRecoQa);
 
   // Reconstruction Qa
   CbmLitTrackingQa* trackingQa = new CbmLitTrackingQa();
@@ -112,7 +112,7 @@ void run_litqa(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
-  parIo1->open(parFile.c_str(), "READ");
+  parIo1->open(parFile.c_str(), "UPDATE");
   rtdb->setFirstInput(parIo1);
   if (!parFileList->IsEmpty()) {
     parIo2->open(parFileList, "in");

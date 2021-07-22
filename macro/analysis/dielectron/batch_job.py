@@ -41,11 +41,11 @@ def main():
   litQaFile = dataDir + "/litqa." + taskId + ".root"
   analysisFile = dataDir + "/analysis." + taskId + ".root"
   geoSimFile = dataDir + "/geosim." + taskId + ".root"
-  print("Here: in batchJobPy")
+  sEvBuildRaw = "Ideal"
   #os.system(('root -l -b -q {}/run_sim.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, urqmdFile, plutoFile, mcFile, parFile, geoSimFile, geoSetup, nofEvents))
   #os.system(('root -l -b -q {}/run_digi.C\(\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, mcFile, parFile, digiFile, nofEvents))
-  #os.system(('root -l -b -q {}/run_reco.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, mcFile, parFile, digiFile, recoFile, geoSetup, nofEvents))
-  #os.system(('root -l -b -q {}/run_litqa.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, mcFile, parFile, digiFile, recoFile, litQaFile, geoSetup, nofEvents))
+  os.system(('root -l -b -q {}/run_reco.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, mcFile, parFile, digiFile, recoFile, geoSetup, sEvBuildRaw, nofEvents))
+  os.system(('root -l -b -q {}/run_litqa.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, mcFile, parFile, digiFile, recoFile, litQaFile, geoSetup, nofEvents))
   os.system(('root -l -b -q {}/run_analysis.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, mcFile, parFile, digiFile, recoFile, analysisFile, plutoParticle, colSystem, colEnergy, geoSetup, nofEvents))
 
 def getPlutoPath(colSystem, colEnergy, plutoParticle, taskId):
