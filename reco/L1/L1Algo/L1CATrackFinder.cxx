@@ -1124,14 +1124,12 @@ inline void L1Algo::f4(  // input
 #endif
       if (!finite(chi2) || chi2 < 0 || chi2 > TRIPLET_CHI2_CUT) continue;
 
-
     fscal qp = T3.qp[i3_4];
 
-    //TODO: SG: why multiplying by 5? To simplify the triplet comparison?
     //TODO: why sqrt's? Wouldn't it be faster to skip sqrt() here and
     //TODO: compare the squared differences dqr*dqp later?
 
-    fscal Cqp = 5. * sqrt(fabs(T3.C44[i3_4]));
+    fscal Cqp = sqrt(fabs(T3.C44[i3_4]));
 
     {  // legacy
 
@@ -1140,8 +1138,8 @@ inline void L1Algo::f4(  // input
       // TODO: But for some reason, the efficiency degrades without them.
       // TODO: It needs to be investigated. If the cuts are necessary, they need to be adjusted.
 
-      fscal Cmax = 0.2 * MaxInvMom[0];  // minimal momentum: 0.05 - 0.1
-                                        //if ( isec == kAllPrimJumpIter ) {
+      fscal Cmax = 0.04 * MaxInvMom[0];  // minimal momentum: 0.05 - 0.1
+                                         //if ( isec == kAllPrimJumpIter ) {
       if (Cqp > Cmax) {
         //cout << "isec " << isec << " Cqp " << Cqp << " max " << Cmax << " add " << 0.05 * Cmax << endl;
         Cqp = Cmax;
@@ -1820,9 +1818,9 @@ void L1Algo::CATrackFinder()
             || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
           Pick_gather = 4.0;
 
-        PickNeighbour = 1.0;  // (PickNeighbour < dp/dp_error)  =>  triplets are neighbours
+        PickNeighbour = 5.0;  // (PickNeighbour < dp/dp_error)  =>  triplets are neighbours
         // if ( (isec == kFastPrimIter) )
-        //   PickNeighbour = 0.5; // TODO understand why works with 0.2
+        //   PickNeighbour = 5.0*0.5; // TODO understand why works with 0.2
 
         MaxInvMom = 1.0 / 0.5;  // max considered q/p
 
@@ -2692,9 +2690,7 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       }
       else {  // if hits are used add new triplet to the current track
 
-
         new_tr[ista] = curr_tr;
-
 
         unsigned char new_L = curr_L;
         fscal new_chi2      = curr_chi2;
@@ -2703,9 +2699,8 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
         new_tr[ista].fStsHits.push_back((*RealIHitP)[new_trip.GetLHit()]);
         new_tr[ista].NHits++;
         new_L += 1;
-        // CHECKME: understand 5, why no sqrt(5)?
-        // SG: because Cqp is stored as 5*sqrt( cov<qp> )
-        dqp = dqp / Cqp * 5.;
+
+        dqp = dqp / Cqp;
 
         dtx = dtx / Ctx;
         dty = dty / Cty;
@@ -2714,11 +2709,11 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
           new_chi2 += dtx * dtx;
           new_chi2 += dty * dty;
         }
-        else
+        else {
           new_chi2 += dqp * dqp;
+        }
 
         if (new_chi2 > TRACK_CHI2_CUT * new_L) continue;
-
 
         const int new_ista = ista + new_trip.GetMSta() - new_trip.GetLSta();
 

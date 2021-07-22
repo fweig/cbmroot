@@ -90,7 +90,7 @@ public:
 private:
   fscal fChi2 = 0.f;  // chi^2
   fscal fQp   = 0.f;  // q/p
-  fscal fCqp  = 0.f;  // 5 * RMS of q/p
+  fscal fCqp  = 0.f;  // RMS of q/p
   fscal fTx   = 0.f;  // tx at the left hit
   fscal fCtx  = 0.f;  // RMS of tx
   fscal fTy   = 0.f;  // ty at the left hit
