@@ -41,8 +41,8 @@ void CbmRecoUnpack::Finish()
   if (fRichConfig) fRichConfig->GetUnpacker()->Finish();
   if (fStsConfig) fStsConfig->GetUnpacker()->Finish();
   if (fTofConfig) fTofConfig->GetUnpacker()->Finish();
-  if (fTrdConfig) fTrdConfig->GetUnpacker()->Finish();
-  if (fTrdConfig2D) fTrdConfig2D->GetUnpacker()->Finish();
+  if (fTrd1DConfig) fTrd1DConfig->GetUnpacker()->Finish();
+  if (fTrd2DConfig) fTrd2DConfig->GetUnpacker()->Finish();
 }
 
 // ----------------------------------------------------------------------------
@@ -70,20 +70,27 @@ Bool_t CbmRecoUnpack::Init()
   // --- Sts
   if (fStsConfig) fStsConfig->Init(ioman);
   // --- Tof
-  // if (fTofConfig) fTofConfig->Init(ioman);
+  if (fTofConfig) fTofConfig->Init(ioman);
   // --- Trd
-  if (fTrdConfig) fTrdConfig->Init(ioman);
+  if (fTrd1DConfig) fTrd1DConfig->Init(ioman);
   // --- TRD2D
-  if (fTrdConfig2D->GetOutputBranchName() == fTrdConfig->GetOutputBranchName()) {
-    fTrdConfig2D->SetOutputVec(fTrdConfig->GetOutputVec());
-    if (fTrdConfig2D) fTrdConfig2D->InitUnpacker();
-  }
-  else {
-    if (fTrdConfig2D) fTrdConfig2D->Init(ioman);
+  if (fTrd2DConfig) {
+    if (fTrd1DConfig) {
+      if (fTrd2DConfig->GetOutputBranchName() == fTrd1DConfig->GetOutputBranchName()) {
+        LOG(info) << fTrd2DConfig->GetName() << "::Init() ---------------------------------";
+        fTrd2DConfig->SetOutputVec(fTrd1DConfig->GetOutputVec());
+        fTrd2DConfig->InitUnpacker();
+        LOG(info) << fTrd2DConfig->GetName() << " succesful initialized -----------------\n";
+      }
+      else {
+        fTrd2DConfig->Init(ioman);
+      }
+    }
+    else {
+      fTrd2DConfig->Init(ioman);
+    }
   }
   // This is an ugly work around, because the TRD and TRD2D want to access the same vector and there is no function to retrieve a writeable vector<obj> from the FairRootManager, especially before the branches are created, as far as I am aware. The second option workaround is in in Init() to look for the fasp config and create a separate branch for fasp created CbmTrdDigis PR 072021
-  // --- Tof
-  if (fTofConfig) fTofConfig->Init(ioman);
 
   return kTRUE;
 }
@@ -102,13 +109,11 @@ void CbmRecoUnpack::Reset()
   // ---- Sts ----
   if (fStsConfig) fStsConfig->Reset();
   // ---- Tof ----
-  // if (fTofConfig) fTofConfig->Reset();
-  // ---- Trd ----
-  if (fTrdConfig) fTrdConfig->Reset();
-  // ---- Trd2D ----
-  if (fTrdConfig2D) fTrdConfig2D->Reset();
-  // ---- Tof ----
   if (fTofConfig) fTofConfig->Reset();
+  // ---- Trd ----
+  if (fTrd1DConfig) fTrd1DConfig->Reset();
+  // ---- Trd2D ----
+  if (fTrd2DConfig) fTrd2DConfig->Reset();
 }
 
 // ----------------------------------------------------------------------------
@@ -148,25 +153,24 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
             unpack(&timeslice, component, fStsConfig, fStsConfig->GetOptOutAVec(), fStsConfig->GetOptOutBVec()));
         break;
       }
-      case fkFlesTrd: {
-        if (fTrdConfig)
-          fCbmTsEventHeader->SetNDigisTrd(
-            unpack(&timeslice, component, fTrdConfig, fTrdConfig->GetOptOutAVec(), fTrdConfig->GetOptOutBVec()));
-        break;
-      }
-      case fkFlesTrd2D: {
-        if (fTrdConfig2D)
-          fCbmTsEventHeader->SetNDigisTrd2D(
-            unpack(&timeslice, component, fTrdConfig2D, fTrdConfig2D->GetOptOutAVec(), fTrdConfig2D->GetOptOutBVec()));
-        break;
-      }
       case fkFlesTof: {
         if (fTofConfig)
           fCbmTsEventHeader->SetNDigisTof(
             unpack(&timeslice, component, fTofConfig, fTofConfig->GetOptOutAVec(), fTofConfig->GetOptOutBVec()));
         break;
       }
-
+      case fkFlesTrd: {
+        if (fTrd1DConfig)
+          fCbmTsEventHeader->SetNDigisTrd(
+            unpack(&timeslice, component, fTrd1DConfig, fTrd1DConfig->GetOptOutAVec(), fTrd1DConfig->GetOptOutBVec()));
+        break;
+      }
+      case fkFlesTrd2D: {
+        if (fTrd2DConfig)
+          fCbmTsEventHeader->SetNDigisTrd2D(
+            unpack(&timeslice, component, fTrd2DConfig, fTrd2DConfig->GetOptOutAVec(), fTrd2DConfig->GetOptOutBVec()));
+        break;
+      }
       default: {
         if (fDoDebugPrints) LOG(error) << "Unpack: Unknown system ID " << systemId << " for component " << component;
         break;

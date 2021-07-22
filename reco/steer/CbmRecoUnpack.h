@@ -82,10 +82,10 @@ public:
   // void SetUnpackConfig(std::shared_ptr<CbmTofUnpackConfig> config) { fTofConfig = config; }
 
   /** @brief Set the Trd Unpack Config @param config */
-  void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackConfig> config) { fTrdConfig = config; }
+  void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackConfig> config) { fTrd1DConfig = config; }
 
   /** @brief Set the Trd2D Unpack Config @param config */
-  void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackConfigFasp2D> config) { fTrdConfig2D = config; }
+  void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackConfigFasp2D> config) { fTrd2DConfig = config; }
 
   /** @brief Set the Tof Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmTofUnpackConfig> config) { fTofConfig = config; }
@@ -210,10 +210,10 @@ private:
   std::shared_ptr<CbmTofUnpackConfig> fTofConfig = nullptr;  //!
 
   /** @brief Configuration of the Trd unpacker. Provides the configured algorithm */
-  std::shared_ptr<CbmTrdUnpackConfig> fTrdConfig = nullptr;  //!
+  std::shared_ptr<CbmTrdUnpackConfig> fTrd1DConfig = nullptr;  //!
 
   /** @brief Configuration of the Trd unpacker. Provides the configured algorithm */
-  std::shared_ptr<CbmTrdUnpackConfigFasp2D> fTrdConfig2D = nullptr;  //!
+  std::shared_ptr<CbmTrdUnpackConfigFasp2D> fTrd2DConfig = nullptr;  //!
 
   /** @brief Pointer to the Timeslice start time used to write it to the output tree @remark since we hand this to the FairRootManager it also wants to delete it and we do not have to take care of deletion */
   CbmTsEventHeader* fCbmTsEventHeader = nullptr;
