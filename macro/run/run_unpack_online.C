@@ -118,7 +118,7 @@ void run_unpack_online(std::string publisher = "localhost", Int_t serverHttpPort
 
   // -----   CbmSourceTsArchive   -------------------------------------------
   auto source = new CbmSourceTsArchive(publisher.data());
-  source->SetSourceType(Source_Type::kONLINE);
+  source->SetCbmSourceType(CbmSourceTsArchive::eCbmSourceType::kOnline);
   auto unpack = source->GetRecoUnpack();
   unpack->SetUnpackConfig(trdconfig);
   // ------------------------------------------------------------------------

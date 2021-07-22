@@ -47,8 +47,10 @@ void CbmSourceTsArchive::Close()
 Bool_t CbmSourceTsArchive::Init()
 {
 
-  switch (fSourceType) {
-    case Source_Type::kONLINE: {
+  switch (fCbmSourceType) {
+    // Use again when kFILE does not skipp the first TS by default anymore
+    // case Source_Type::kONLINE: {
+    case eCbmSourceType::kOnline: {
       // Create a ";" separated string with all host/port combinations
       // Build a semicolon-separated list of file names for TimesliceMultiInputArchive
       string fileList;
@@ -70,7 +72,9 @@ Bool_t CbmSourceTsArchive::Init()
       }
       break;
     }
-    case Source_Type::kFILE: {
+    // Se above
+    // case Source_Type::kFILE: {
+    case eCbmSourceType::kOffline: {
       // Return error for empty file list and an offline run
       if (fFileNames.empty()) return kFALSE;
 
