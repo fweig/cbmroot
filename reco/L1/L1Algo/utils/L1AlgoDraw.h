@@ -31,8 +31,8 @@ public:
   void DrawMCTracks();
   void DrawRecoTracks();
 
-  void DrawTriplets(vector<L1Triplet>& triplets, const THitI* realIHit);
-  void DrawDoublets(vector<THitI>* Duplets_hits, map<THitI, THitI>* Duplets_start, const int MaxArrSize,
+  void DrawTriplets(std::vector<L1Triplet>& triplets, const THitI* realIHit);
+  void DrawDoublets(std::vector<THitI>* Duplets_hits, std::map<THitI, THitI>* Duplets_start, const int MaxArrSize,
                     THitI* StsHitsStartIndex, unsigned int* realIHit);
   void DrawDoubletsOnSta(int iSta, THitI* Duplets_hits, THitI* Duplets_start, const int MaxArrSize,
                          THitI* StsRestHitsStartIndex, unsigned int* realIHit);
@@ -58,7 +58,7 @@ private:
 
   L1Algo* algo {nullptr};
 
-  vector<L1Hit> vStsHits {};
+  std::vector<L1Hit> vStsHits {};
   int StsHitsStartIndex[20] {0};
   int StsHitsStopIndex[20] {0};
 

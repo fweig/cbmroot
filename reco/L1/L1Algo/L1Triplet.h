@@ -70,20 +70,6 @@ public:
   fscal GetTy() const { return fTy; }
   fscal GetCty() const { return fCty; }
 
-  /// pack station, thread and triplet indices to an unique triplet ID
-  static unsigned int PackTripletID(unsigned int Station, unsigned int Thread, unsigned int Triplet)
-  {
-    return Station * 100000000 + Thread * 1000000 + Triplet;
-  }
-
-  /// unpack the triplet ID to its station, thread, triplet index
-  static void UnpackTripletID(unsigned int ID, unsigned int& Station, unsigned int& Thread, unsigned int& Triplet)
-  {
-    Station = ID / 100000000;
-    Thread  = (ID - Station * 100000000) / 1000000;
-    Triplet = (ID - Station * 100000000 - Thread * 1000000);
-  }
-
   /// print the tracklet parameters
   void Print();
 

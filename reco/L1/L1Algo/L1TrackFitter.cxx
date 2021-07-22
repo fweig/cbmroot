@@ -352,17 +352,17 @@ void L1Algo::L1KFTrackFitter()
 
   L1Station* sta = vStations;
   L1Station staFirst, staLast;
-  fvec x[MaxNStations], u[MaxNStations], v[MaxNStations], y[MaxNStations], time[MaxNStations], timeEr[MaxNStations],
-    z[MaxNStations];
-  fvec d_x[MaxNStations], d_y[MaxNStations], d_xy[MaxNStations], d_u[MaxNStations], d_v[MaxNStations];
+  fvec x[fkMaxNstations], u[fkMaxNstations], v[fkMaxNstations], y[fkMaxNstations], time[fkMaxNstations],
+    timeEr[fkMaxNstations], z[fkMaxNstations];
+  fvec d_x[fkMaxNstations], d_y[fkMaxNstations], d_xy[fkMaxNstations], d_u[fkMaxNstations], d_v[fkMaxNstations];
   fvec x_first, y_first, time_first, x_last, y_last, time_last, time_er_first, time_er_last, d_x_fst, d_y_fst, d_xy_fst,
     time_er_lst, d_x_lst, d_y_lst, d_xy_lst;
-  fvec Sy[MaxNStations], w[MaxNStations], w_time[MaxNStations];
+  fvec Sy[fkMaxNstations], w[fkMaxNstations], w_time[fkMaxNstations];
   fvec y_temp, x_temp;
   fvec fz0, fz1, fz2, z_start, z_end;
-  L1FieldValue fB[MaxNStations], fB_temp _fvecalignment;
+  L1FieldValue fB[fkMaxNstations], fB_temp _fvecalignment;
 
-  fvec ZSta[MaxNStations];
+  fvec ZSta[fkMaxNstations];
   for (int iHit = 0; iHit < nHits; iHit++) {
     ZSta[iHit] = sta[iHit].z;
   }
@@ -384,7 +384,7 @@ void L1Algo::L1KFTrackFitter()
 
     for (iVec = 0; iVec < nTracks_SIMD; iVec++) {
       int nHitsTrack = t[iVec]->NHits;
-      int iSta[MaxNStations];
+      int iSta[fkMaxNstations];
       for (i = 0; i < nHitsTrack; i++) {
         const L1Hit& hit = (*vStsHits)[fRecoHits[start_hit++]];
         const int ista   = (*fStripFlag)[hit.f] / 4;
@@ -774,18 +774,18 @@ void L1Algo::L1KFTrackFitterMuch()
 
   L1Station* sta = vStations;
   L1Station staFirst, staLast;
-  fvec x[MaxNStations], u[MaxNStations], v[MaxNStations], y[MaxNStations], time[MaxNStations], timeEr[MaxNStations],
-    z[MaxNStations];
-  fvec d_x[MaxNStations], d_y[MaxNStations], d_xy[MaxNStations], d_u[MaxNStations], d_v[MaxNStations];
+  fvec x[fkMaxNstations], u[fkMaxNstations], v[fkMaxNstations], y[fkMaxNstations], time[fkMaxNstations],
+    timeEr[fkMaxNstations], z[fkMaxNstations];
+  fvec d_x[fkMaxNstations], d_y[fkMaxNstations], d_xy[fkMaxNstations], d_u[fkMaxNstations], d_v[fkMaxNstations];
   fvec x_first, y_first, time_first, x_last, y_last, time_last, time_er_fst, d_x_fst, d_y_fst, d_xy_fst, time_er_lst,
     d_x_lst, d_y_lst, d_xy_lst, dz;
-  int iSta[MaxNStations];
-  fvec Sy[MaxNStations], w[MaxNStations];
+  int iSta[fkMaxNstations];
+  fvec Sy[fkMaxNstations], w[fkMaxNstations];
   fvec y_temp, x_temp;
   fvec fz0, fz1, fz2, z_start, z_end;
-  L1FieldValue fB[MaxNStations], fB_temp _fvecalignment;
+  L1FieldValue fB[fkMaxNstations], fB_temp _fvecalignment;
 
-  fvec ZSta[MaxNStations];
+  fvec ZSta[fkMaxNstations];
   for (int iHit = 0; iHit < nHits; iHit++) {
     ZSta[iHit] = sta[iHit].z;
   }

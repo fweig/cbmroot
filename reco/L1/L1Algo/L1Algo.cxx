@@ -7,18 +7,18 @@
 #include "L1Grid.h"
 #include "L1HitPoint.h"
 
-L1Algo::L1Algo(int nThreads)
+L1Algo::L1Algo(unsigned int nThreads)
 {
   SetNThreads(nThreads);
-  for (int i = 0; i < MaxNStations; i++) {
+  for (unsigned int i = 0; i < fkMaxNstations; i++) {
     vGridTime[i].AllocateMemory(fNThreads);
   }
 }
 
-void L1Algo::SetNThreads(int n)
+void L1Algo::SetNThreads(unsigned int n)
 {
-  if (n > kMaxNthreads) {
-    LOG(FATAL) << "L1Algo: n threads " << n << " is greater than the maximum " << kMaxNthreads << std::endl;
+  if (n > fkMaxNthreads) {
+    LOG(FATAL) << "L1Algo: n threads " << n << " is greater than the maximum " << fkMaxNthreads << std::endl;
   }
   fNThreads = n;
 
@@ -51,7 +51,7 @@ void L1Algo::SetNThreads(int n)
     du[i].reserve(MaxPortionTriplets / fvecLen);
     dv[i].reserve(MaxPortionTriplets / fvecLen);
 
-    for (int j = 0; j < MaxNStations; j++) {
+    for (unsigned int j = 0; j < fkMaxNstations; j++) {
       fTriplets[j][i].SetName(std::stringstream() << "L1Algo::fTriplets[" << i << "][" << j << "]");
     }
   }
@@ -278,7 +278,7 @@ void L1Algo::SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<unsign
     fRecoHits_local[i].reserve(nHits);
     fTrackCandidates[i].clear();
     fTrackCandidates[i].reserve(nHits / 10);
-    for (int j = 0; j < MaxNStations; j++) {
+    for (unsigned int j = 0; j < fkMaxNstations; j++) {
       fTriplets[j][i].clear();
       fTriplets[j][i].reserve(2 * nHits);
     }

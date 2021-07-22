@@ -1110,7 +1110,7 @@ inline void L1Algo::f4(  // input
     L1_ASSERT(ihitm < StsHitsUnusedStopIndex[istam], ihitm << " < " << StsHitsUnusedStopIndex[istam]);
     L1_ASSERT(ihitr < StsHitsUnusedStopIndex[istar], ihitr << " < " << StsHitsUnusedStopIndex[istar]);
 
-    unsigned int Location = L1Triplet::PackTripletID(istal, Thread, fTriplets[istal][Thread].size());
+    unsigned int Location = PackTripletId(istal, Thread, fTriplets[istal][Thread].size());
 
     if (ihitl_priv == 0 || ihitl_priv != hitsl_3[i3]) {
       TripForHit[0][ihitl] = Location;
@@ -1162,10 +1162,9 @@ inline void L1Algo::f4(  // input
     unsigned int nNeighbours = TripForHit[1][ihitm] - TripForHit[0][ihitm];
 
     unsigned int neighLocation = TripForHit[0][ihitm];
-    unsigned int neighStation;
-    unsigned int neighThread;
-    unsigned int neighTriplet;
-    L1Triplet::UnpackTripletID(neighLocation, neighStation, neighThread, neighTriplet);
+    unsigned int neighStation  = TripletId2Station(neighLocation);
+    unsigned int neighThread   = TripletId2Thread(neighLocation);
+    unsigned int neighTriplet  = TripletId2Triplet(neighLocation);
 
     if (nNeighbours > 0) { assert((int) neighStation == istal + 1 || (int) neighStation == istal + 2); }
     unsigned char level = 0;
@@ -1240,10 +1239,9 @@ inline void L1Algo::f5(  // input
             unsigned int nNeighbours = TripForHit[1][ihitm] - TripForHit[0][ihitm];
 
             unsigned int neighLocation = TripForHit[0][ihitm];
-            unsigned int neighStation;
-            unsigned int neighThread;
-            unsigned int neighTriplet;
-            L1Triplet::UnpackTripletID(neighLocation, neighStation, neighThread, neighTriplet);
+            unsigned int neighStation  = TripletId2Station(neighLocation);
+            unsigned int neighThread   = TripletId2Thread(neighLocation);
+            unsigned int neighTriplet  = TripletId2Triplet(neighLocation);
 
             for (unsigned int iN = 0; iN < nNeighbours; ++iN, ++neighTriplet, ++neighLocation) {
               //    for (iN = first_triplet; iN <= last_triplet; ++iN){
@@ -1260,19 +1258,15 @@ inline void L1Algo::f5(  // input
               if (level == jlevel + 1) neighCands.push_back(neighLocation);
             }
 
-            //  trip->neighbours.resize(0);
-
-            //           for (unsigned int in = 0; in < neighCands.size(); in++)
-            //           {
-            //             int Location = neighCands[in];
-            //
-            //             int Station = Location/100000000;
-            //             int Thread = (Location -Station*100000000)/1000000;
-            //             int Triplet = (Location- Station*100000000-Thread*1000000);
-
-            //  const int nLevel = fTriplets[Station][Thread][Triplet].GetLevel();
+            // trip->neighbours.resize(0);
+            // for (unsigned int in = 0; in < neighCands.size(); in++) {
+            //   int ID           = neighCands[in];
+            //   unsigned int Station     = TripletId2Station(ID);
+            //   unsigned int Thread      = TripletId2Thread(ID);
+            //   unsigned int Triplet     = TripletId2Triplet(ID);
+            //   const int nLevel = fTriplets[Station][Thread][Triplet].GetLevel();
             //   if (level == nLevel + 1) trip->neighbours.push_back(Location);
-            //           }
+            // }
             nlevel[level]++;
           }  // vTriplets
         }
@@ -1622,7 +1616,7 @@ void L1Algo::CATrackFinder()
   //  static Tindex stat_nDoublets[fNFindIterations] = {0};
   static Tindex stat_nTriplets[fNFindIterations] = {0};
 
-  static Tindex stat_nLevels[MaxNStations - 2][fNFindIterations] = {{0}};
+  static Tindex stat_nLevels[fkMaxNstations - 2][fNFindIterations] = {{0}};
   static Tindex stat_nCalls[fNFindIterations]                    = {0};  // n calls of CAFindTrack
   static Tindex stat_nTrCandidates[fNFindIterations]             = {0};
 #endif
@@ -1867,7 +1861,7 @@ void L1Algo::CATrackFinder()
             || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
           MaxDZ = 0.1;
 
-        if (NStations > MaxNStations) cout << " CATrackFinder: Error: Too many Stations" << endl;
+        if (NStations > (int) fkMaxNstations) cout << " CATrackFinder: Error: Too many Stations" << endl;
       }
 
 #ifndef L1_NO_ASSERT
@@ -1951,9 +1945,9 @@ void L1Algo::CATrackFinder()
     L1Vector<THitI> hitsmG_2("L1CATrackFinder::hitsmG_2");  /// middle hits indexed by number of doublets in portion(i2)
     L1Vector<THitI> i1G_2(
       "L1CATrackFinder::i1G_2");  /// index in portion of singlets(i1) indexed by index in portion of doublets(i2)
-    L1Vector<char> lmDuplets[MaxNStations] {
+    L1Vector<char> lmDuplets[fkMaxNstations] {
       "L1CATrackFinder::lmDuplets"};  // is exist a doublet started from indexed by left hit
-    L1Vector<char> lmDupletsG[MaxNStations] {
+    L1Vector<char> lmDupletsG[fkMaxNstations] {
       "L1CATrackFinder::lmDupletsG"};  // is exist a doublet started from indexed by left hit
 
     for (int i = 0; i < NStations; i++) {
@@ -2035,7 +2029,7 @@ void L1Algo::CATrackFinder()
       }  //
     }
 
-    //     int nlevels[MaxNStations];  // number of triplets with some number of neighbours.
+    //     int nlevels[fkMaxNstations];  // number of triplets with some number of neighbours.
     //     for (int il = 0; il < NStations; ++il) nlevels[il] = 0;
     //
     //      f5(   // input
@@ -2076,7 +2070,7 @@ void L1Algo::CATrackFinder()
 
 
     L1Branch curr_tr;
-    L1Branch new_tr[MaxNStations];
+    L1Branch new_tr[fkMaxNstations];
     L1Branch best_tr;
     fscal curr_chi2 = 0;
 
@@ -2625,24 +2619,20 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
   }
   else  //MEANS level ! = 0
   {
-    unsigned int Station  = 0;
-    unsigned int Thread   = 0;
-    unsigned int Triplet  = 0;
-    unsigned int Location = 0;
-    int N_neighbour       = (curr_trip->GetNNeighbours());
-
+    int N_neighbour = (curr_trip->GetNNeighbours());
 
     for (Tindex in = 0; in < N_neighbour; in++) {
-      Location = curr_trip->GetFNeighbour() + in;
 
-      //    Location = curr_trip->neighbours[in];
+      unsigned int ID = curr_trip->GetFNeighbour() + in;
+
+      //    ID = curr_trip->neighbours[in];
       //    const fscal &qp2 = curr_trip->GetQp();
       //    fscal &Cqp2 = curr_trip->Cqp;
       //    if (( fabs(qp - qp2) > PickNeighbour * (Cqp + Cqp2) ) )  continue;
 
-      Station = Location / 100000000;
-      Thread  = (Location - Station * 100000000) / 1000000;
-      Triplet = (Location - Station * 100000000 - Thread * 1000000);
+      unsigned int Station = TripletId2Station(ID);
+      unsigned int Thread  = TripletId2Thread(ID);
+      unsigned int Triplet = TripletId2Triplet(ID);
 
       const L1Triplet& new_trip = fTriplets[Station][Thread][Triplet];
       if ((new_trip.GetMHit() != curr_trip->GetRHit())) continue;
