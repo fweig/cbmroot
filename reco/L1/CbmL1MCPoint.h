@@ -21,53 +21,12 @@
 #ifndef CbmL1MCPoint_H
 #define CbmL1MCPoint_H
 
-#include <vector>
-using std::vector;
+#include "L1Vector.h"
 
 struct CbmL1MCPoint {
-  CbmL1MCPoint()
-    : x(0)
-    , y(0)
-    , z(0)
-    , px(0)
-    , py(0)
-    , pz(0)
-    , xIn(0)
-    , yIn(0)
-    , zIn(0)
-    , pxIn(0)
-    , pyIn(0)
-    , pzIn(0)
-    , xOut(0)
-    , yOut(0)
-    , zOut(0)
-    , pxOut(0)
-    , pyOut(0)
-    , pzOut(0)
-    , p(0)
-    , q(0)
-    , mass(0)
-    , time(0)
-    , pdg(0)
-    , ID(0)
-    , mother_ID(0)
-    , iStation(0)
-    , pointId(-1)
-    , file(-1)
-    , event(-1)
-    , hitIds()
-  {
-  }
 
-  double x, y, z, px, py, pz;
-  double xIn, yIn, zIn, pxIn, pyIn, pzIn;
-  double xOut, yOut, zOut, pxOut, pyOut, pzOut;
-  double p, q, mass, time;
-  int pdg, ID, mother_ID;
-  int iStation;
-  int pointId;
-  int file;
-  int event;
+  CbmL1MCPoint() = default;
+
   static bool compareIDz(const CbmL1MCPoint& a, const CbmL1MCPoint& b)
   {
     return (a.ID < b.ID) || ((a.ID == b.ID) && (a.z < b.z));
@@ -78,7 +37,36 @@ struct CbmL1MCPoint {
     return (a->ID < b->ID) || ((a->ID == b->ID) && (a->z < b->z));
   }
 
-  vector<int> hitIds;  // indices of CbmL1Hits in L1->vStsHits array
+  double x      = 0.;
+  double y      = 0.;
+  double z      = 0.;
+  double px     = 0.;
+  double py     = 0.;
+  double pz     = 0.;
+  double xIn    = 0.;
+  double yIn    = 0.;
+  double zIn    = 0.;
+  double pxIn   = 0.;
+  double pyIn   = 0.;
+  double pzIn   = 0.;
+  double xOut   = 0.;
+  double yOut   = 0.;
+  double zOut   = 0.;
+  double pxOut  = 0.;
+  double pyOut  = 0.;
+  double pzOut  = 0.;
+  double p      = 0.;
+  double q      = 0.;
+  double mass   = 0.;
+  double time   = 0.;
+  int pdg       = 0;
+  int ID        = 0;
+  int mother_ID = 0;
+  int iStation  = 0;
+  int pointId   = -1;
+  int file      = -1;
+  int event     = -1;
+  L1Vector<int> hitIds {"CbmL1MCPoint::hitIds"};  // indices of CbmL1Hits in L1->vStsHits array
 };
 
 #endif

@@ -1579,7 +1579,7 @@ void CbmL1::WriteSTAPGeoData(const L1Vector<float>& geo_)
 {
   // write geo in file
   TString fgeo_name = fSTAPDataDir + "geo_algo.txt";
-  ofstream fgeo(fgeo_name);
+  std::ofstream fgeo(fgeo_name);
   fgeo.setf(ios::scientific, ios::floatfield);
   fgeo.precision(20);
   int size = geo_.size();
@@ -1595,15 +1595,15 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
 {
   // write algo data in file
   static int vNEvent = 1;
-  fstream fadata;
+  std::fstream fadata;
 
   TString fadata_name = fSTAPDataDir + "data_algo.txt";
   //    if ( vNEvent <= maxNEvent ) {
   if (1) {
 
-    if (vNEvent == 1) fadata.open(fadata_name, fstream::out);  // begin new file
+    if (vNEvent == 1) fadata.open(fadata_name, std::fstream::out);  // begin new file
     else
-      fadata.open(fadata_name, fstream::out | fstream::app);
+      fadata.open(fadata_name, std::fstream::out | std::fstream::app);
 
     fadata << "Event:"
            << " ";
@@ -1675,8 +1675,8 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
 
 void CbmL1::WriteSTAPPerfData()  // must be called after ReadEvent
 {
-  fstream fpdata;
-  fpdata << setprecision(8);
+  std::fstream fpdata;
+  fpdata << std::setprecision(8);
 
   static int vNEvent = 1;
 
@@ -1685,9 +1685,9 @@ void CbmL1::WriteSTAPPerfData()  // must be called after ReadEvent
   //   if ( vNEvent <= maxNEvent )  {
   if (1) {
 
-    if (vNEvent == 1) fpdata.open(fpdata_name, fstream::out);  // begin new file
+    if (vNEvent == 1) fpdata.open(fpdata_name, std::fstream::out);  // begin new file
     else
-      fpdata.open(fpdata_name, fstream::out | fstream::app);
+      fpdata.open(fpdata_name, std::fstream::out | std::fstream::app);
 
     fpdata << "Event: ";
     fpdata << vNEvent << endl;
@@ -1822,7 +1822,7 @@ void CbmL1::WriteSTAPPerfData()  // must be called after ReadEvent
   vNEvent++;
 }  // void CbmL1::WriteSTAPPerfData()
 
-istream& CbmL1::eatwhite(istream& is)  // skip spaces
+std::istream& CbmL1::eatwhite(std::istream& is)  // skip spaces
 {
   char c;
   while (is.get(c)) {
@@ -1839,7 +1839,7 @@ istream& CbmL1::eatwhite(istream& is)  // skip spaces
 void CbmL1::ReadSTAPGeoData(L1Vector<fscal>& geo_, int& size)
 {
   TString fgeo_name = fSTAPDataDir + "geo_algo.txt";
-  ifstream fgeo(fgeo_name);
+  std::ifstream fgeo(fgeo_name);
 
   cout << "-I- CbmL1: Read geometry from file " << fgeo_name << endl;
   int i;
@@ -1856,11 +1856,11 @@ void CbmL1::ReadSTAPGeoData(L1Vector<fscal>& geo_, int& size)
 void CbmL1::ReadSTAPAlgoData()
 {
   static int nEvent = 1;
-  static fstream fadata;
+  static std::fstream fadata;
   TString fadata_name = fSTAPDataDir + "data_algo.txt";
   //  if (nEvent <= maxNEvent){
   if (1) {
-    if (nEvent == 1) fadata.open(fadata_name, fstream::in);
+    if (nEvent == 1) fadata.open(fadata_name, std::fstream::in);
 
     if (algo->vStsHits) algo->vStsHits->clear();
     algo->NStsStrips = 0;
@@ -1931,11 +1931,11 @@ void CbmL1::ReadSTAPAlgoData()
 void CbmL1::ReadSTAPPerfData()
 {
   static int nEvent = 1;
-  static fstream fpdata;
+  static std::fstream fpdata;
   TString fpdata_name = fSTAPDataDir + "data_perfo.txt";
   //  if (nEvent <= maxNEvent){
   if (1) {
-    if (nEvent == 1) { fpdata.open(fpdata_name, fstream::in); };
+    if (nEvent == 1) { fpdata.open(fpdata_name, std::fstream::in); };
 
     vMCPoints.clear();
     vMCTracks.clear();
@@ -2113,10 +2113,10 @@ void CbmL1::WriteSIMDKFData()
   if (first) {
     FairField* dMF = CbmKF::Instance()->GetMagneticField();
 
-    fstream FileGeo;
+    std::fstream FileGeo;
     FileGeo.open("geo.dat", ios::out);
 
-    fstream FieldCheck;
+    std::fstream FieldCheck;
     FieldCheck.open("field.dat", ios::out);
 
     Double_t bfg[3], rfg[3];
@@ -2277,19 +2277,19 @@ void CbmL1::WriteSIMDKFData()
   ///Write Tracks and MC Tracks
 
   static int TrNumber = 0;
-  fstream Tracks, McTracksCentr, McTracksIn, McTracksOut;
+  std::fstream Tracks, McTracksCentr, McTracksIn, McTracksOut;
   if (first) {
-    Tracks.open("tracks.dat", fstream::out);
-    McTracksCentr.open("mctrackscentr.dat", fstream::out);
-    McTracksIn.open("mctracksin.dat", fstream::out);
-    McTracksOut.open("mctracksout.dat", fstream::out);
+    Tracks.open("tracks.dat", std::fstream::out);
+    McTracksCentr.open("mctrackscentr.dat", std::fstream::out);
+    McTracksIn.open("mctracksin.dat", std::fstream::out);
+    McTracksOut.open("mctracksout.dat", std::fstream::out);
     first = 0;
   }
   else {
-    Tracks.open("tracks.dat", fstream::out | fstream::app);
-    McTracksCentr.open("mctrackscentr.dat", fstream::out | fstream::app);
-    McTracksIn.open("mctracksin.dat", fstream::out | fstream::app);
-    McTracksOut.open("mctracksout.dat", fstream::out | fstream::app);
+    Tracks.open("tracks.dat", std::fstream::out | std::fstream::app);
+    McTracksCentr.open("mctrackscentr.dat", std::fstream::out | std::fstream::app);
+    McTracksIn.open("mctracksin.dat", std::fstream::out | std::fstream::app);
+    McTracksOut.open("mctracksout.dat", std::fstream::out | std::fstream::app);
   }
 
   for (L1Vector<CbmL1Track>::iterator RecTrack = vRTracks.begin(); RecTrack != vRTracks.end(); ++RecTrack) {

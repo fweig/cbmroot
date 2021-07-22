@@ -175,7 +175,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             DFEI2I::iterator trk_it = dFEI2vMCTracks.find(dtrck);
             if (trk_it == dFEI2vMCTracks.end()) continue;
             Int_t IND_Track = trk_it->second;
-            vMCTracks[IND_Track].Points.push_back(vMCPoints.size());
+            vMCTracks[IND_Track].Points.push_back_no_warning(vMCPoints.size());
 
             MC.ID = trk_it->second;
 
@@ -207,7 +207,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           DFEI2I::iterator trk_it = dFEI2vMCTracks.find(dtrck);
           if (trk_it == dFEI2vMCTracks.end()) continue;
           Int_t IND_Track = trk_it->second;
-          vMCTracks[IND_Track].Points.push_back(vMCPoints.size());
+          vMCTracks[IND_Track].Points.push_back_no_warning(vMCPoints.size());
 
           MC.ID = trk_it->second;
           vMCPoints.push_back(MC);
@@ -236,7 +236,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             if (trk_it == dFEI2vMCTracks.end()) continue;
             Int_t IND_Track = trk_it->second;
 
-            vMCTracks[IND_Track].Points.push_back(vMCPoints.size());
+            vMCTracks[IND_Track].Points.push_back_no_warning(vMCPoints.size());
 
             MC.ID = trk_it->second;
             vMCPoints.push_back(MC);
@@ -271,7 +271,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             if (trk_it == dFEI2vMCTracks.end()) continue;
             Int_t IND_Track = trk_it->second;
 
-            vMCTracks[IND_Track].Points.push_back(vMCPoints.size());
+            vMCTracks[IND_Track].Points.push_back_no_warning(vMCPoints.size());
 
             MC.ID = trk_it->second;
             vMCPoints.push_back(MC);
@@ -357,7 +357,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
             Int_t IND_Track = trk_it->second;
 
-            vMCTracks[IND_Track].Points.push_back(vMCPoints.size());
+            vMCTracks[IND_Track].Points.push_back_no_warning(vMCPoints.size());
 
             MC.ID = trk_it->second;
 
@@ -918,7 +918,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   int maxHitIndex = nMvdHits + nStsHits + nMuchHits + nTrdHits;
   if (fTofHits) maxHitIndex += fTofHits->GetEntriesFast();
 
-  SortedIndex.reset(max(nEntSts, maxHitIndex));
+  SortedIndex.reset(std::max(nEntSts, maxHitIndex));
 
   vStsHits.reserve(nHits);
   fData_->vStsHits.reserve(nHits);
@@ -1329,63 +1329,28 @@ void CbmL1::HitMatch()
         }
       }  //mach cluster
 
-
       if (iP >= 0) {
         hit.event = vMCPoints[iP].event;
-        hit.mcPointIds.push_back(iP);
-        vMCPoints[iP].hitIds.push_back(iH);
+        hit.mcPointIds.push_back_no_warning(iP);
+        vMCPoints[iP].hitIds.push_back_no_warning(iH);
       }
       else {
         hit.event   = -1;
         int idPoint = vHitMCRef[iH];
         if (idPoint >= 0) {
-          hit.mcPointIds.push_back(idPoint);
-          vMCPoints[idPoint].hitIds.push_back(iH);
+          hit.mcPointIds.push_back_no_warning(idPoint);
+          vMCPoints[idPoint].hitIds.push_back_no_warning(iH);
         }
       }  // if no clusters
     }
 
-
-    if (hit.Det == 0) {  // if no use Links or this is mvd hit
-
+    if (hit.Det != 1) {  // the hit is not from STS
       int iP = vHitMCRef[iH];
       if (iP >= 0) {
-        hit.mcPointIds.push_back(iP);
-        vMCPoints[iP].hitIds.push_back(iH);
+        hit.mcPointIds.push_back_no_warning(iP);
+        vMCPoints[iP].hitIds.push_back_no_warning(iH);
       }
     }
-
-    if (hit.Det == 2) {  // if no use Links or this is mvd hit
-
-      int iP = vHitMCRef[iH];
-
-      if (iP >= 0) {
-        hit.mcPointIds.push_back(iP);
-        vMCPoints[iP].hitIds.push_back(iH);
-      }
-    }
-
-    if (hit.Det == 3) {  // if no use Links or this is mvd hit
-
-
-      int iP = vHitMCRef[iH];
-      if (iP >= 0) {
-        hit.mcPointIds.push_back(iP);
-        vMCPoints[iP].hitIds.push_back(iH);
-      }
-    }
-
-    if (hit.Det == 4) {  // if no use Links or this is mvd hit
-
-
-      int iP = vHitMCRef[iH];
-
-      if (iP >= 0) {
-        hit.mcPointIds.push_back(iP);
-        vMCPoints[iP].hitIds.push_back(iH);
-      }
-    }
-
 
   }  // for hits
 }

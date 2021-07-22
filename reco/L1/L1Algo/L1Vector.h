@@ -16,8 +16,6 @@
 #endif
 #include <sstream>
 
-using namespace std;
-
 /// L1Vector class is a wrapper around std::vector.
 /// It does the following:
 /// 1. gives names to vectors for better debugging
@@ -116,6 +114,12 @@ public:
     Tbase::push_back(value);
   }
 
+  template<typename Tinput>
+  void push_back_no_warning(Tinput value)
+  {
+    Tbase::push_back(value);
+  }
+
   template<typename... Tinput>
   void emplace_back(Tinput&&... value)
   {
@@ -180,6 +184,7 @@ public:
   using Tbase::end;
   using Tbase::insert;  //TODO:: make it private
   using Tbase::pop_back;
+  using Tbase::rbegin;
   using Tbase::reserve;
   using Tbase::size;
   using typename Tbase::iterator;

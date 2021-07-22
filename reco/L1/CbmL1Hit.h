@@ -5,22 +5,20 @@
 #ifndef _CbmL1Hit_h_
 #define _CbmL1Hit_h_
 
-#include <vector>
-using std::vector;
+#include "L1Vector.h"
 
 ///
 /// hits with hit-mcpoint match information
 ///
-class CbmL1Hit {
-public:
-  CbmL1Hit() {};
+struct CbmL1Hit {
+
+  CbmL1Hit() = default;
 
   CbmL1Hit(int hitId_, int extIndex_, int Det_) : hitId(hitId_), extIndex(extIndex_), Det(Det_) {};
 
   int hitId    = 0;  // index of L1Hit in algo->vStsHits array. Should be equal to index of this in L1->vStsHits
   int extIndex = 0;  // index of hit in the TClonesArray array
   int Det      = 0;  // station index
-  vector<int> mcPointIds {};  // indices of CbmL1MCPoint in L1->vMCPoints array
   float x   = 0.f;            // measured X coordinate
   float y   = 0.f;            // measured Y coordinate
   float t   = 0.f;            // measured time
@@ -29,6 +27,7 @@ public:
   int ID    = 0;              // TODO: check if this ID is redundant
   int file  = 0;              // TODO: ??
   int event = 0;              // TODO: ??
+  L1Vector<int> mcPointIds {"CbmL1Hit::mcPointIds"};  // indices of CbmL1MCPoint in L1->vMCPoints array
 };
 
 #endif

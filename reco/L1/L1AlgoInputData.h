@@ -12,8 +12,6 @@
 #include "L1Hit.h"
 #include "L1Vector.h"
 
-using std::istream;
-
 class L1AlgoInputData {
 
 public:
@@ -60,8 +58,8 @@ public:
 
   // private:
   // functionality
-  static istream& eatwhite(istream& is);  // skip spaces
-                                          /// read data from data_algo.txt
+  static std::istream& eatwhite(std::istream& is);  // skip spaces
+                                                    /// read data from data_algo.txt
   // data
   enum
   {
@@ -71,7 +69,7 @@ public:
   int NStsStrips {0};                                      // Number of strips in sts
 
   L1Vector<unsigned char> fStripFlag {
-    "L1AlgoInputData::fStripFlag"};  // information of hits station & using hits in tracks;
+    "L1AlgoInputData::fStripFlag"};  // information of hits station & used hits in tracks;
 
   THitI StsHitsStartIndex[MaxNStations + 1] {0};  // station-bounders in vStsHits array
   THitI StsHitsStopIndex[MaxNStations + 1] {0};   // station-bounders in vStsHits array

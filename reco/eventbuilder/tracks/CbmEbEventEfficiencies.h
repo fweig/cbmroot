@@ -11,8 +11,7 @@
 
 #include <cstring>
 #include <iostream>
-
-using std::string;
+#include <vector>
 
 class CbmEbEventEfficiencies {
 public:
@@ -34,7 +33,7 @@ public:
 
   ~CbmEbEventEfficiencies() {};
 
-  void AddCounter(string shortname, string name)
+  void AddCounter(std::string shortname, std::string name)
   {
     indices[shortname] = names.size();
     names.push_back(name);
@@ -67,7 +66,7 @@ public:
   }
 
 
-  void Inc(bool isReco, int _nclones, string name)
+  void Inc(bool isReco, int _nclones, std::string name)
   {
     const int index = indices[name];
     mc.counters[index]++;
@@ -82,8 +81,8 @@ public:
   void PrintEff()
   {
 
-    std::cout.setf(ios::fixed);
-    std::cout.setf(ios::showpoint);
+    std::cout.setf(std::ios::fixed);
+    std::cout.setf(std::ios::showpoint);
     std::cout.precision(3);
     std::cout << "Event category normalised to: "
               << " Eff  "
@@ -94,19 +93,19 @@ public:
               << " | "
               << "All MC" << std::endl;
 
-    int NCounters = mc.NCounters;
+    int NCounters = mc.GetNcounters();
     for (int iC = 0; iC < NCounters; iC++) {
       std::cout << names[iC] << "   : " << ratio_reco.counters[iC] << "  / "
                 << ratio_clone.counters[iC]  // nCloneTracks/nMCTracks
-                << "  / " << setw(8) << reco.counters[iC] / double(nEvents) << " | " << setw(8)
+                << "  / " << std::setw(8) << reco.counters[iC] / double(nEvents) << " | " << std::setw(8)
                 << mc.counters[iC] / double(nEvents) << std::endl;
     }
     std::cout << "Ghost     probability       : " << ratio_ghosts << " | " << ghosts << std::endl;
   }
 
 private:
-  vector<string> names;      // names counters indexed by index of counter
-  map<string, int> indices;  // indices of counters indexed by a counter shortname
+  std::vector<std::string> names;      // names counters indexed by index of counter
+  std::map<std::string, int> indices;  // indices of counters indexed by a counter shortname
 
   TL1TracksCatCounters<double> ratio_reco;
   double ratio_ghosts;

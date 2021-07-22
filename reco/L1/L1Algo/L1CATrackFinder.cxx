@@ -1653,7 +1653,7 @@ void L1Algo::CATrackFinder()
     for (THitI ih = StsHitsStartIndex[ist]; ih < StsHitsStopIndex[ist]; ++ih) {
 
       const float& time = (*vStsHits)[ih].t;
-      if ((lasttime < time) && (!isinf(time))) lasttime = time;
+      if ((lasttime < time) && (!std::isinf(time))) lasttime = time;
       if ((starttime > time) && (time > 0)) starttime = time;
 
       if (ist < NMvdStations) {

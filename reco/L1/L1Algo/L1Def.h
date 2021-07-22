@@ -61,8 +61,6 @@ T finite(T x)
 #endif
 
 
-using namespace std;
-
 typedef int index_type;
 
 #endif

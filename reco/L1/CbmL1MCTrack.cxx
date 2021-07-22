@@ -29,41 +29,18 @@
 CbmL1MCTrack::CbmL1MCTrack(double mass_, double q_, TVector3 vr, TLorentzVector vp, int _ID, int _mother_ID, int _pdg)
   : mass(mass_)
   , q(q_)
-  , p(0)
-  , x(0)
-  , y(0)
-  , z(0)
-  , px(0)
-  , py(0)
-  , pz(0)
-  , time(0)
+  , p(vp.P())
+  , x(vr.X())
+  , y(vr.Y())
+  , z(vr.Z())
+  , px(vp.Px())
+  , py(vp.Py())
+  , pz(vp.Pz())
   , ID(_ID)
-  , iFile(0)
-  , iEvent(0)
   , mother_ID(_mother_ID)
   , pdg(_pdg)
-  , Points()
-  , StsHits()
-  , nMCContStations(0)
-  , nHitContStations(0)
-  , maxNStaMC(0)
-  , maxNSensorMC(0)
-  , maxNStaHits(0)
-  , nStations(0)
-  , nMCStations(0)
-  , isReconstructable(0)
-  , isAdditional()
-  , rTracks()
-  , tTracks()
 {
-  x  = vr.X();
-  y  = vr.Y();
-  z  = vr.Z();
-  px = vp.Px();
-  py = vp.Py();
-  pz = vp.Pz();
-  p  = sqrt(fabs(px * px + py * py + pz * pz));
-};
+}
 
 // CbmL1MCTrack::CbmL1MCTrack(TmpMCPoints &mcPoint, TVector3 vr, TLorentzVector vp, int ID, int mother_ID):
 //      ID(_ID), mother_ID(_mother_ID)
@@ -90,7 +67,7 @@ void CbmL1MCTrack::Init()
     CbmL1MCPoint* point = &(L1->vMCPoints[Points[iP]]);
     for (unsigned int iH = 0; iH < point->hitIds.size(); iH++) {
       const int iih = point->hitIds[iH];
-      if (std::find(StsHits.begin(), StsHits.end(), iih) == StsHits.end()) StsHits.push_back(iih);
+      if (std::find(StsHits.begin(), StsHits.end(), iih) == StsHits.end()) StsHits.push_back_no_warning(iih);
     }
   }
 
@@ -146,9 +123,9 @@ void CbmL1MCTrack::CalculateHitCont()
   int istaold = -1, ncont = 0;
   {
     for (int ih = 0; ih < nhits; ih++) {
-      int jh            = StsHits[ih];
-      const L1Hit& h    = (*algo->vStsHits)[jh];
-      int ista          = (*algo->fStripFlag)[h.f] / 4;
+      int jh         = StsHits[ih];
+      const L1Hit& h = (*algo->vStsHits)[jh];
+      int ista       = (*algo->fStripFlag)[h.f] / 4;
 
       if (ista - istaold == 1) ncont++;
       else if (ista - istaold > 1) {

@@ -24,8 +24,6 @@
 #include "L1HitPoint.h"
 #include "L1Vector.h"
 
-using namespace std;
-
 class L1Algo;
 //class L1HitPoint;
 
@@ -242,8 +240,8 @@ inline void L1Grid::GetBinBounded(const float& Y, const float& Z, unsigned short
   const short& yBin = (Y * fStepYInv - fYMinOverStep);
   const short& zBin = (Z * fStepZInv - fZMinOverStep);
 
-  bY = max(short(0), min(short(fNy - 1), yBin));
-  bZ = max(short(0), min(short(fNz - 1), zBin));
+  bY = std::max(short(0), std::min(short(fNy - 1), yBin));
+  bZ = std::max(short(0), std::min(short(fNz - 1), zBin));
 }
 
 inline void L1Grid::GetBinBounded(const float& Y, const float& Z, const float& T, unsigned short& bY,
@@ -256,9 +254,9 @@ inline void L1Grid::GetBinBounded(const float& Y, const float& Z, const float& T
 
   // cout<<fStepTInv<<" fStepTInv "<<fTMinOverStep<<" fTMinOverStep "<<T<<" T "<<endl;
 
-  bY = max(short(0), min(short(fNy - 1), yBin));
-  bZ = max(short(0), min(short(fNz - 1), zBin));
-  bT = max(short(0), min(short(fNt - 1), tBin));
+  bY = std::max(short(0), std::min(short(fNy - 1), yBin));
+  bZ = std::max(short(0), std::min(short(fNz - 1), zBin));
+  bT = std::max(short(0), std::min(short(fNt - 1), tBin));
 
   // cout<<(fNt - 1)<<" (fNt - 1) "<<tBin<<" tBin "<<bT<<" bT "<<endl;
 }

@@ -94,10 +94,10 @@ void CbmStsTracksConverter::Init()
 // TODO misleading name, move field filling somewhere else?
 float CbmStsTracksConverter::ExtrapolateToVertex(CbmStsTrack* sts_track, AnalysisTree::Track& track, int pdg)
 {
-  vector<CbmStsTrack> tracks = {*sts_track};
+  std::vector<CbmStsTrack> tracks = {*sts_track};
   CbmL1PFFitter fitter;
-  vector<float> chi2_to_vtx;
-  vector<L1FieldRegion> field;
+  std::vector<float> chi2_to_vtx;
+  std::vector<L1FieldRegion> field;
   CbmKFVertex kfVertex = CbmKFVertex(*cbm_prim_vertex_);
   if (is_reproduce_cbmkfpf_) {
     std::vector<int> pdgVector = {pdg};
@@ -210,15 +210,15 @@ bool CbmStsTracksConverter::IsGoodCovMatrix(const CbmStsTrack* sts_track) const
   }
   // Cuts, coded in MZ's CbmKFParticleFinder.cxx
   bool ok = true;
-  ok      = ok && isfinite(sts_track->GetParamFirst()->GetX());
-  ok      = ok && isfinite(sts_track->GetParamFirst()->GetY());
-  ok      = ok && isfinite(sts_track->GetParamFirst()->GetZ());
-  ok      = ok && isfinite(sts_track->GetParamFirst()->GetTx());
-  ok      = ok && isfinite(sts_track->GetParamFirst()->GetTy());
-  ok      = ok && isfinite(sts_track->GetParamFirst()->GetQp());
+  ok      = ok && std::isfinite(sts_track->GetParamFirst()->GetX());
+  ok      = ok && std::isfinite(sts_track->GetParamFirst()->GetY());
+  ok      = ok && std::isfinite(sts_track->GetParamFirst()->GetZ());
+  ok      = ok && std::isfinite(sts_track->GetParamFirst()->GetTx());
+  ok      = ok && std::isfinite(sts_track->GetParamFirst()->GetTy());
+  ok      = ok && std::isfinite(sts_track->GetParamFirst()->GetQp());
 
   for (auto element : cov_matrix) {
-    ok = ok && isfinite(element);
+    ok = ok && std::isfinite(element);
   }
   ok = ok && (cov_matrix[0] < 1. && cov_matrix[0] > 0.) && (cov_matrix[2] < 1. && cov_matrix[2] > 0.)
        && (cov_matrix[5] < 1. && cov_matrix[5] > 0.) && (cov_matrix[9] < 1. && cov_matrix[9] > 0.)

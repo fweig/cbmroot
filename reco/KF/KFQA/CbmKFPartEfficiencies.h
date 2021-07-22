@@ -523,7 +523,7 @@ public:
               << " | "
               << "  N MC " << std::endl;
 
-    int NCounters = mc.NCounters;
+    int NCounters = mc.GetNcounters();
     for (int iC = 0; iC < NCounters; iC++) {
       std::cout << names[iC] << "  : " << std::setw(6) << ratio_reco.counters[iC] << "  / " << std::setw(6)
                 << ratio_ghost.counters[iC]                         // particles w\o MCParticle

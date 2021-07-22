@@ -106,17 +106,14 @@ void CbmL1::TrackMatch()
       if (double(posIt->second) > max_percent * double(hitsum)) max_percent = double(posIt->second) / double(hitsum);
 
       // set relation to the mcTrack
-      if (double(posIt->second) >= CbmL1Constants::MinPurity * double(hitsum)) {  // found correspondent MCTrack
-        if (pMCTrackMap.find(posIt->first) == pMCTrackMap.end()) continue;
-        CbmL1MCTrack* pmtra = pMCTrackMap[posIt->first];
+      if (pMCTrackMap.find(posIt->first) == pMCTrackMap.end()) continue;
+      CbmL1MCTrack* pmtra = pMCTrackMap[posIt->first];
 
+      if (double(posIt->second) >= CbmL1Constants::MinPurity * double(hitsum)) {  // found correspondent MCTrack
         pmtra->AddRecoTrack(prtra);
         prtra->AddMCTrack(pmtra);
       }
       else {
-        if (pMCTrackMap.find(posIt->first) == pMCTrackMap.end()) continue;
-        CbmL1MCTrack* pmtra = pMCTrackMap[posIt->first];
-
         pmtra->AddTouchTrack(prtra);
       }
     }  // for hitmap
@@ -244,7 +241,7 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
          << " / "
          << "MCl(MCps)" << endl;
 
-    int NCounters = mc.NCounters;
+    int NCounters = mc.GetNcounters();
     for (int iC = 0; iC < NCounters; iC++) {
       if ((names[iC] != "D0        efficiency") || (mc.counters[iC] != 0))
         cout << names[iC] << "   : " << ratio_reco.counters[iC] << "  / "
@@ -314,10 +311,10 @@ void CbmL1::EfficienciesPerformance()
     // is track killed. At least one hit of it belong to some recoTrack
     const bool killed = !reco && mtra.IsDisturbed();
     // ration length for current mcTrack
-    vector<CbmL1Track*>& rTracks = mtra.GetRecoTracks();  // for length calculations
-    double ratio_length          = 0;
-    double ratio_fakes           = 0;
-    double mc_length_hits        = mtra.NStations();
+    L1Vector<CbmL1Track*>& rTracks = mtra.GetRecoTracks();  // for length calculations
+    double ratio_length            = 0;
+    double ratio_fakes             = 0;
+    double mc_length_hits          = mtra.NStations();
 
 
     int mc_length = mtra.NMCStations();
