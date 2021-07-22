@@ -68,6 +68,8 @@ public:
 
   // Setters
 
+  void MaskDiRICH(Int_t DiRICH) { fMaskedDiRICHes.push_back(DiRICH); }
+
 protected:
   /**
    * @brief Choose the derived unpacker algorithm to be used for the DAQ output to Digi translation. If algo was already set manually by the user this algorithm is used.
@@ -81,6 +83,8 @@ protected:
 
   /** @brief RunId of the current run, if not known 0 is a valid runtime case. Used runId based parameter loading. */
   UInt_t fRunId = 0;
+
+  std::vector<Int_t> fMaskedDiRICHes;
 
 private:
   ClassDef(CbmRichUnpackConfig, 2)

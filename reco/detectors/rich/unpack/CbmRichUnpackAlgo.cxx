@@ -27,7 +27,7 @@ std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
   std::string temppath = "";
 
   // // Get parameter container
-  temppath = basepath + "mRichPar.par";
+  temppath = basepath + "mRichPar_70.par";
 
   fParContVec.emplace_back(std::make_pair(temppath, std::make_shared<CbmMcbm2018RichPar>()));
 
@@ -227,13 +227,19 @@ void CbmRichUnpackAlgo::processSubSubEvent(CbmRichUnpackAlgoMicrosliceReader& re
   // this array is used to match raising and falling edges
   std::vector<double> raisingTime(33, -1.);
 
+  // check if DiRICH (SubSubEvId) is masked
+  bool DiRICH_masked = false;
+  if (checkMaskedDiRICH(subSubEventId)) { DiRICH_masked = true; }
+
   for (int i = 0; i < nofTimeWords; i++) {
-    uint32_t word                     = reader.NextWord();
+    uint32_t word = reader.NextWord();
+    if (DiRICH_masked) continue;
     CbmRichUnpackAlgoTdcWordType type = CbmRichUnpackAlgoTdcWordReader::GetTdcWordType(word);
 
     if (type == CbmRichUnpackAlgoTdcWordType::TimeData) {
       if (!wasHeader || !wasEpoch || wasTrailer) {
-        LOG(error) << getLogHeader(reader) << "illegal position of TDC Time (before header/epoch or after trailer)";
+        LOG(error) << getLogHeader(reader) << "DiRICH 0x" << std::hex << subSubEventId << std::dec
+                   << ": illegal position of TDC Time (before header/epoch or after trailer)";
         errorInData = true;
         continue;
       }
@@ -242,7 +248,8 @@ void CbmRichUnpackAlgo::processSubSubEvent(CbmRichUnpackAlgoMicrosliceReader& re
     }
     else if (type == CbmRichUnpackAlgoTdcWordType::Epoch) {
       if (!wasHeader || wasTrailer) {
-        LOG(error) << getLogHeader(reader) << "illegal position of TDC Epoch (before header or after trailer)";
+        LOG(error) << getLogHeader(reader) << "DiRICH 0x" << std::hex << subSubEventId << std::dec
+                   << ": illegal position of TDC Epoch (before header or after trailer)";
         errorInData = true;
         continue;
       }
@@ -252,7 +259,8 @@ void CbmRichUnpackAlgo::processSubSubEvent(CbmRichUnpackAlgoMicrosliceReader& re
     }
     else if (type == CbmRichUnpackAlgoTdcWordType::Header) {
       if (wasEpoch || wasTime || wasTrailer) {
-        LOG(error) << getLogHeader(reader) << "illegal position of TDC Header (after time/epoch/trailer)";
+        LOG(error) << getLogHeader(reader) << "DiRICH 0x" << std::hex << subSubEventId << std::dec
+                   << ": illegal position of TDC Header (after time/epoch/trailer)";
         errorInData = true;
         continue;
       }
@@ -263,7 +271,8 @@ void CbmRichUnpackAlgo::processSubSubEvent(CbmRichUnpackAlgoMicrosliceReader& re
     }
     else if (type == CbmRichUnpackAlgoTdcWordType::Trailer) {
       if (!wasEpoch || !wasTime || !wasHeader) {
-        LOG(error) << getLogHeader(reader) << "illegal position of TDC Trailer (before time/epoch/header)";
+        LOG(error) << getLogHeader(reader) << "DiRICH 0x" << std::hex << subSubEventId << std::dec
+                   << ": illegal position of TDC Trailer (before time/epoch/header)";
         errorInData = true;
         continue;
       }
@@ -423,6 +432,15 @@ void CbmRichUnpackAlgo::writeOutputDigi(Int_t fpgaID, Int_t channel, Double_t ti
       fOutputVec.emplace_back(pixelUID, finalTime, tot - ToTcorr);
     }
   }
+}
+
+bool CbmRichUnpackAlgo::checkMaskedDiRICH(Int_t subSubEventId)
+{
+  for (unsigned int i = 0; i < fMaskedDiRICHes->size(); ++i) {
+    if (fMaskedDiRICHes->at(i) == subSubEventId) return true;
+  }
+
+  return false;
 }
 
 ClassImp(CbmRichUnpackAlgo)

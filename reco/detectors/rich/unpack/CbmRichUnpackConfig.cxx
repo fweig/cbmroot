@@ -36,6 +36,9 @@ void CbmRichUnpackConfig::InitUnpacker()
   if (fDoLog) LOG(info) << fName << "::Init - SetParFilesBasePath";
   algo->SetParFilesBasePath(fParFilesBasePath);
 
+  if (fDoLog) LOG(info) << fName << "::Init - SetMaskedDiRICHes";
+  algo->SetMaskedDiRICHes(&fMaskedDiRICHes);
+
   // Initialise the parameter containers required by the unpacker algo. Includes loading the corresponding ascii files
   auto reqparvec = algo->GetParContainerRequest(fGeoSetupTag, fRunId);
   initOk &= initParContainers(reqparvec);

@@ -219,6 +219,8 @@ public:
   virtual std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
   GetParContainerRequest(std::string geoTag, std::uint32_t runId);
 
+  void SetMaskedDiRICHes(std::vector<Int_t>* maskedDiRICHes) { fMaskedDiRICHes = maskedDiRICHes; }
+
 protected:
   double calculateTime(uint32_t epoch, uint32_t coarse, uint32_t fine);
 
@@ -310,8 +312,12 @@ protected:
   */
   bool unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice);
 
+  bool checkMaskedDiRICH(Int_t subSubEventId);
+
   /** @brief Parameters for the unpacking */
   CbmMcbm2018RichPar fUnpackPar;
+
+  std::vector<Int_t>* fMaskedDiRICHes = nullptr;
 
   double fMbsPrevTimeCh0 = 0.;
   double fMbsPrevTimeCh1 = 0.;
