@@ -120,7 +120,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
     stsconfig->SetDoWriteOutput();
     std::string parfilesbasepathSts = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
     stsconfig->SetParFilesBasePath(parfilesbasepathSts);
-    stsconfig->SetMonitor(GetStsMonitor(outfilename));
+    //stsconfig->SetMonitor(GetStsMonitor(outfilename));
     stsconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
   }
   // -------------
@@ -349,7 +349,7 @@ std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename)
   // ------------------------------------------------------------------------
 
   auto monitor = std::make_shared<CbmStsUnpackMonitor>();
-  monitor->SetHistoFileNameFull(outfilename);
+  monitor->SetHistoFileName(outfilename);
   //monitor->SetDebugMode(true);
   return monitor;
 }

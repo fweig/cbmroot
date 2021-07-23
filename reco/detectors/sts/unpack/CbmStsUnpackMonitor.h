@@ -42,8 +42,7 @@ public:
   /** @brief Write all histograms and canvases to file */
   void Finish();
 
-  void SetHistoFileName(TString nameIn) { fHistoFileName = "data/" + nameIn + ".root"; }
-  void SetHistoFileNameFull(TString nameIn) { fHistoFileName = nameIn; }
+  void SetHistoFileName(TString nameIn) { fHistoFileName = nameIn; }
 
   void DrawCanvases();
 
@@ -213,7 +212,7 @@ public:
   void SetDebugMode(bool value) { fDebugMode = value; }
 
 private:
-  TString fHistoFileName = "data/HistosUnpackerSts.root";
+  TString fHistoFileName = "HistosUnpackerSts.root";
 
   /// Rate evolution histos
   //Bool_t fbLongHistoEnable;
