@@ -33,7 +33,6 @@ uint32_t CbmStsUnpackAlgo::getAsicIndex(uint32_t dpbidx, uint32_t crobidx, uint1
   if (febtype == 1) asicidx = fElinkIdxToAsicIdxVec.at(elinkidx).second;
   // else would be inactive feb, this was not handled in the previous implementation, this I expect it should not happen
 
-
   uint32_t uAsicIdx = (dpbidx * fNrCrobPerDpb + crobidx) * fNrAsicsPerCrob + asicidx;
   return uAsicIdx;
 }
@@ -81,7 +80,6 @@ void CbmStsUnpackAlgo::initDpbIdIndexMap(CbmMcbm2018StsPar* parset)
                << parset->GetDpbId(uDpb) << std::dec << " => " << fDpbIdIndexMap[parset->GetDpbId(uDpb)];
   }
 }
-
 
 // ---- initParSet(FairParGenericSet* parset) ----
 Bool_t CbmStsUnpackAlgo::initParSet(FairParGenericSet* parset)
@@ -509,8 +507,8 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
       auto tsreltime =
         static_cast<uint64_t>((ulHitTime - (fTsStartTime / stsxyter::kdClockCycleNs)) * stsxyter::kdClockCycleNs);
 */
-      double_t tsreltime = ulHitTime * stsxyter::kdClockCycleNs;
-      double dTimeInNs   = tsreltime - fSystemTimeOffset;
+      const double_t tsreltime = ulHitTime * stsxyter::kdClockCycleNs;
+      double dTimeInNs         = tsreltime - fSystemTimeOffset;
       if (uAsicIdx < fvdTimeOffsetNsAsics.size()) dTimeInNs -= fvdTimeOffsetNsAsics[uAsicIdx];
 
       const uint64_t ulTimeInNs = static_cast<uint64_t>(dTimeInNs);
@@ -520,10 +518,7 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
         LOG(error) << Form("Digi on disabled FEB %02u has address 0x%08x and side %d", uFebIdx, fviFebAddress[uFebIdx],
                            fviFebSide[uFebIdx]);
       }
-
       fOutputVec.emplace_back(CbmStsDigi(fviFebAddress[uFebIdx], uChanInMod, ulTimeInNs, dCalAdc));
-      // REMARK This seems to be double looping, I do not see any reason here, to first store the stsxyter hits in a vector over which we loop afterwards again. May be I miss something @sts-experts?
-      //   fvmHitsInMs.push_back(stsxyter::FinalHit(ulHitTime, usRawAdc, uAsicIdx, usChan, fuCurrDpbIdx, uCrobIdx));
     }
   }
 

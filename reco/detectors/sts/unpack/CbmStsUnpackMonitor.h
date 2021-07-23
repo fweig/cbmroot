@@ -19,8 +19,6 @@
 
 #include "StsXyterMessage.h"
 
-/** @remark On pointers to histograms: Why not use shared pointers here, than you do not need to take care of deleting them. Right now I think you have a massive memory leak. PR */
-
 class CbmQaCanvas;
 
 class CbmStsUnpackMonitor {

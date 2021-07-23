@@ -30,7 +30,17 @@ CbmStsUnpackMonitor::CbmStsUnpackMonitor(/* args */) : fvpAllHistoPointers()
   }
 }
 
-CbmStsUnpackMonitor::~CbmStsUnpackMonitor() {}
+CbmStsUnpackMonitor::~CbmStsUnpackMonitor()
+{
+  for (auto iter = fvpAllHistoPointers.begin(); iter != fvpAllHistoPointers.end();) {
+    if (iter->first != nullptr) { delete iter->first; }
+    iter = fvpAllHistoPointers.erase(iter);
+  }
+  for (auto iter = fvpAllCanvasPointers.begin(); iter != fvpAllCanvasPointers.end();) {
+    if (iter->first != nullptr) { delete iter->first; }
+    iter = fvpAllCanvasPointers.erase(iter);
+  }
+}
 
 Bool_t CbmStsUnpackMonitor::CreateHistograms(CbmMcbm2018StsPar* pUnpackPar)
 {
@@ -42,11 +52,12 @@ Bool_t CbmStsUnpackMonitor::CreateHistograms(CbmMcbm2018StsPar* pUnpackPar)
   const UInt_t uNbChanPerFeb  = pUnpackPar->GetNbChanPerFeb();
 
   /// Create general unpacking histograms
-  fhDigisTimeInRun =
-    new TH1I("hStsDigisTimeInRun", "Digis Nb vs Time in Run; Time in run [s]; Digis Nb []", 36000, 0, 3600);
+  fhDigisTimeInRun = new TH1I("hStsDigisTimeInRun", "Digis Nb vs Time in Run; Time in run [s]; Digis Nb []", 10, 0, 1);
+  fhDigisTimeInRun->SetCanExtend(TH1::kAllAxes);
   AddHistoToVector(fhDigisTimeInRun, "");
 
-  fhVectorSize = new TH1I("fhVectorSize", "Size of the vector VS TS index; TS index; Size [bytes]", 10000, 0., 10000.);
+  fhVectorSize = new TH1I("fhVectorSize", "Size of the vector VS TS index; TS index; Size [bytes]", 10, 0, 10);
+  fhVectorSize->SetCanExtend(TH1::kAllAxes);
   AddHistoToVector(fhVectorSize, "");
 
   fhVectorCapacity =
@@ -62,13 +73,15 @@ Bool_t CbmStsUnpackMonitor::CreateHistograms(CbmMcbm2018StsPar* pUnpackPar)
   /// Hit rates evo per FEB in system
   sHistName              = "hStsAllFebsHitRateEvo";
   title                  = "Hits per second & FEB; Time [s]; FEB []; Hits []";
-  fhStsAllFebsHitRateEvo = new TH2I(sHistName, title, 1800, 0, 1800, uNbFebs, -0.5, uNbFebs - 0.5);
+  fhStsAllFebsHitRateEvo = new TH2I(sHistName, title, 5, 0, 5, uNbFebs, -0.5, uNbFebs - 0.5);
+  fhStsAllFebsHitRateEvo->SetCanExtend(TH1::kAllAxes);
   AddHistoToVector(fhStsAllFebsHitRateEvo, "");
 
   /// Hit rates evo per ASIC in system
   sHistName               = "hStsAllAsicsHitRateEvo";
   title                   = "Hits per second & ASIC; Time [s]; ASIC []; Hits []";
-  fhStsAllAsicsHitRateEvo = new TH2I(sHistName, title, 1800, 0, 1800, uNbAsics, -0.5, uNbAsics - 0.5);
+  fhStsAllAsicsHitRateEvo = new TH2I(sHistName, title, 5, 0, 5, uNbAsics, -0.5, uNbAsics - 0.5);
+  fhStsAllAsicsHitRateEvo->SetCanExtend(TH1::kAllAxes);
   AddHistoToVector(fhStsAllAsicsHitRateEvo, "");
 
   /// Hit counts map in system
@@ -141,40 +154,42 @@ Bool_t CbmStsUnpackMonitor::CreateHistograms(CbmMcbm2018StsPar* pUnpackPar)
     title     = Form("Missed Evt flags per second & channel in FEB #%03u; Time "
                  "[s]; Channel []; Missed Evt flags []",
                  uFebIdx);
-    fvhStsFebChanMissEvtEvo.push_back(
-      new TH2I(sHistName, title, 1800, 0, 1800, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+    fvhStsFebChanMissEvtEvo.push_back(new TH2I(sHistName, title, 5, 0, 5, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+    fvhStsFebChanMissEvtEvo.back()->SetCanExtend(TH1::kAllAxes);
 
     /// Missed event flag counts evolution
     sHistName = Form("hStsFebAsicMissEvtEvo_%03u", uFebIdx);
     title     = Form("Missed Evt flags per second & StsXyter in FEB #%03u; Time "
                  "[s]; Asic []; Missed Evt flags []",
                  uFebIdx);
-    fvhStsFebAsicMissEvtEvo.push_back(
-      new TH2I(sHistName, title, 1800, 0, 1800, uNbAsicsPerFeb, -0.5, uNbAsicsPerFeb - 0.5));
+    fvhStsFebAsicMissEvtEvo.push_back(new TH2I(sHistName, title, 5, 0, 5, uNbAsicsPerFeb, -0.5, uNbAsicsPerFeb - 0.5));
+    fvhStsFebAsicMissEvtEvo.back()->SetCanExtend(TH1::kAllAxes);
 
     /// Missed event flag counts evolution
     sHistName = Form("hStsFebMissEvtEvo_%03u", uFebIdx);
     title     = Form("Missed Evt flags per second & channel in FEB #%03u; Time "
                  "[s]; Missed Evt flags []",
                  uFebIdx);
-    fvhStsFebMissEvtEvo.push_back(new TH1I(sHistName, title, 1800, 0, 1800));
+    fvhStsFebMissEvtEvo.push_back(new TH1I(sHistName, title, 5, 0, 5));
+    fvhStsFebMissEvtEvo.back()->SetCanExtend(TH1::kAllAxes);
 
     /// Hit rates evo per channel
     sHistName = Form("hStsFebChanRateEvo_%03u", uFebIdx);
     title     = Form("Hits per second & channel in FEB #%03u; Time [s]; Channel []; Hits []", uFebIdx);
-    fvhStsFebChanHitRateEvo.push_back(
-      new TH2I(sHistName, title, 1800, 0, 1800, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+    fvhStsFebChanHitRateEvo.push_back(new TH2I(sHistName, title, 5, 0, 5, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+    fvhStsFebChanHitRateEvo.back()->SetCanExtend(TH1::kAllAxes);
 
     /// Hit rates evo per StsXyter
     sHistName = Form("hStsFebAsicRateEvo_%03u", uFebIdx);
     title     = Form("Hits per second & StsXyter in FEB #%03u; Time [s]; Asic []; Hits []", uFebIdx);
-    fvhStsFebAsicHitRateEvo.push_back(
-      new TH2I(sHistName, title, 1800, 0, 1800, uNbAsicsPerFeb, -0.5, uNbAsicsPerFeb - 0.5));
+    fvhStsFebAsicHitRateEvo.push_back(new TH2I(sHistName, title, 5, 0, 5, uNbAsicsPerFeb, -0.5, uNbAsicsPerFeb - 0.5));
+    fvhStsFebAsicHitRateEvo.back()->SetCanExtend(TH1::kAllAxes);
 
     /// Hit rates evo per FEB
     sHistName = Form("hStsFebRateEvo_%03u", uFebIdx);
     title     = Form("Hits per second in FEB #%03u; Time [s]; Hits []", uFebIdx);
-    fvhStsFebHitRateEvo.push_back(new TH1I(sHistName, title, 1800, 0, 1800));
+    fvhStsFebHitRateEvo.push_back(new TH1I(sHistName, title, 5, 0, 5));
+    fvhStsFebHitRateEvo.back()->SetCanExtend(TH1::kAllAxes);
 
     /// Hit rates evo per channel, 1 minute bins, 24h
     sHistName = Form("hStsFebChanRateEvoLong_%03u", uFebIdx);
