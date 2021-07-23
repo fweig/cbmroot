@@ -383,7 +383,7 @@ CbmRoot_Continuous:
 InformCodeOwners:
   stage: finalise
   tags:
-    - CbmRoot_macosx
+    - Code_Owners
   only:
     refs:
       - merge_requests
