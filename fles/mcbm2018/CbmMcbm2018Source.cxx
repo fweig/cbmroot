@@ -130,16 +130,16 @@ Bool_t CbmMcbm2018Source::Init()
     switch (fuFlagSpillStart) {
       case 0: {
         /// 0 = Break begin
-        if (fvuSpillBreakBegTs.size() - 1 <= fiUnpSpillIdxStop) {
+        if (fvuSpillBreakBegTs.size() - 1 <= static_cast<UInt_t>(fiUnpSpillIdxStop)) {
           LOG(warning) << "Chosen last spill index larger than spills contained in chosen spill start vector: "
                        << fiUnpSpillIdxStop << " VS " << fvuSpillBreakBegTs.size() - 1;
-          if (fiUnpSpillIdxStart < fvuSpillBreakBegTs.size() - 1) {
+          if (static_cast<UInt_t>(fiUnpSpillIdxStart) < fvuSpillBreakBegTs.size() - 1) {
             fiUnpSpillIdxStop = fvuSpillBreakBegTs.size() - 2;
             LOG(warning) << "Using last possible spill instead as final one";
-          }  // if( fiUnpSpillIdxStart < fvuSpillBreakBegTs.size() - 1 )
+          }  // if( static_cast< UInt_t >(fiUnpSpillIdxStart) < fvuSpillBreakBegTs.size() - 1 )
           else
             LOG(fatal) << "Start index also too large, exiting";
-        }  // if( fvuSpillBreakBegTs.size() - 1 <= fiUnpSpillIdxStop )
+        }  // if( fvuSpillBreakBegTs.size() - 1 <= static_cast< UInt_t >(fiUnpSpillIdxStop) )
 
         fuSpillBegTs = fvuSpillBreakBegTs[fiUnpSpillIdxStart];     //!
         fuSpillEndTs = fvuSpillBreakBegTs[fiUnpSpillIdxStop + 1];  //!
@@ -147,16 +147,16 @@ Bool_t CbmMcbm2018Source::Init()
       }
       case 1: {
         /// 1 = Break middle
-        if (fvuSpillBreakMidTs.size() - 1 <= fiUnpSpillIdxStop) {
+        if (fvuSpillBreakMidTs.size() - 1 <= static_cast<UInt_t>(fiUnpSpillIdxStop)) {
           LOG(warning) << "Chosen last spill index larger than spills contained in chosen spill start vector: "
                        << fiUnpSpillIdxStop << " VS " << fvuSpillBreakMidTs.size() - 1;
-          if (fiUnpSpillIdxStart < fvuSpillBreakMidTs.size() - 1) {
+          if (static_cast<UInt_t>(fiUnpSpillIdxStart) < fvuSpillBreakMidTs.size() - 1) {
             fiUnpSpillIdxStop = fvuSpillBreakMidTs.size() - 2;
             LOG(warning) << "Using last possible spill instead as final one";
-          }  // if( fiUnpSpillIdxStart < fvuSpillBreakMidTs.size() - 1 )
+          }  // if( static_cast< UInt_t >(fiUnpSpillIdxStart) < fvuSpillBreakMidTs.size() - 1 )
           else
             LOG(fatal) << "Start index also too large, exiting";
-        }  // if( fvuSpillBreakMidTs.size() - 1 <= fiUnpSpillIdxStop )
+        }  // if( fvuSpillBreakMidTs.size() - 1 <= static_cast< UInt_t >(fiUnpSpillIdxStop) )
 
         fuSpillBegTs = fvuSpillBreakMidTs[fiUnpSpillIdxStart];     //!
         fuSpillEndTs = fvuSpillBreakMidTs[fiUnpSpillIdxStop + 1];  //!
@@ -164,16 +164,16 @@ Bool_t CbmMcbm2018Source::Init()
       }
       case 2: {
         /// 2 = Break end
-        if (fvuSpillBreakEndTs.size() - 1 <= fiUnpSpillIdxStop) {
+        if (fvuSpillBreakEndTs.size() - 1 <= static_cast<UInt_t>(fiUnpSpillIdxStop)) {
           LOG(warning) << "Chosen last spill index larger than spills contained in chosen spill start vector: "
                        << fiUnpSpillIdxStop << " VS " << fvuSpillBreakEndTs.size() - 1;
-          if (fiUnpSpillIdxStart < fvuSpillBreakEndTs.size() - 1) {
+          if (static_cast<UInt_t>(fiUnpSpillIdxStart) < fvuSpillBreakEndTs.size() - 1) {
             fiUnpSpillIdxStop = fvuSpillBreakEndTs.size() - 2;
             LOG(warning) << "Using last possible spill instead as final one";
-          }  // if( fiUnpSpillIdxStart < fvuSpillBreakEndTs.size() - 1 )
+          }  // if( static_cast< UInt_t >(fiUnpSpillIdxStart) < fvuSpillBreakEndTs.size() - 1 )
           else
             LOG(fatal) << "Start index also too large, exiting";
-        }  // if( fvuSpillBreakEndTs.size() - 1 <= fiUnpSpillIdxStop )
+        }  // if( fvuSpillBreakEndTs.size() - 1 <= static_cast< UInt_t >(fiUnpSpillIdxStop) )
 
         fuSpillBegTs = fvuSpillBreakEndTs[fiUnpSpillIdxStart];     //!
         fuSpillEndTs = fvuSpillBreakEndTs[fiUnpSpillIdxStop + 1];  //!

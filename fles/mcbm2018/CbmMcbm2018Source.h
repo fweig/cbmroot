@@ -80,17 +80,17 @@ public:
 
   void SetDataReductionMuch(UInt_t uTsReduction = 15) { fuTsReduction = uTsReduction; }
 
-  void UnpackSingleSpill(Int_t uSpillIdx, UInt_t uSpillStart = 1)
+  void UnpackSingleSpill(Int_t iSpillIdx, UInt_t uSpillStart = 1)
   {
-    fiUnpSpillIdxStart = uSpillIdx;
-    fiUnpSpillIdxStop  = uSpillIdx;
+    fiUnpSpillIdxStart = iSpillIdx;
+    fiUnpSpillIdxStop  = iSpillIdx;
     fuFlagSpillStart   = uSpillStart;
   }
 
-  void UnpackSelectSpills(Int_t uSpillIdxStart, Int_t uSpillIdxStop, UInt_t uSpillStart = 1)
+  void UnpackSelectSpills(Int_t iSpillIdxStart, Int_t iSpillIdxStop, UInt_t uSpillStart = 1)
   {
-    fiUnpSpillIdxStart = uSpillIdxStart;
-    fiUnpSpillIdxStop  = uSpillIdxStop;
+    fiUnpSpillIdxStart = iSpillIdxStart;
+    fiUnpSpillIdxStop  = iSpillIdxStop;
     fuFlagSpillStart   = uSpillStart;
   }
 

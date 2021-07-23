@@ -39,7 +39,7 @@ class CbmRecoUnpack : public TObject {
 
 public:
   /** @brief Constructor
-   ** 
+   **
    */
   CbmRecoUnpack();
 
@@ -191,9 +191,9 @@ private:
 
     // Check some numbers from this timeslice
     size_t nDigis = digivec.size();
-    return nDigis;
     LOG(debug) << "Component " << icomp << " connected to config " << config->GetName() << "   n-Digis " << nDigis
                << " processed in this timeslice.";
+    return nDigis;
   }
   // ----------------------------------------------------------------------------
 

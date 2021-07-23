@@ -241,7 +241,7 @@ bool CbmMqHistoServer::ReceiveConfigAndData(FairMQParts& parts, int /*index*/)
   LOG(info) << "CbmMqHistoServer::ReceiveConfigAndData => Received configuration for " << pairHeader.first
             << " histos and " << pairHeader.second << " canvases";
 
-  if (parts.Size() != 1 + pairHeader.first + pairHeader.second + 1) {
+  if (static_cast<size_t>(parts.Size()) != 1 + pairHeader.first + pairHeader.second + 1) {
     LOG(fatal) << "CbmMqHistoServer::ReceiveConfigAndData => Number of parts not matching header: " << parts.Size()
                << " instead of " << 1 + pairHeader.first + pairHeader.second + 1;
   }  // if( parts.Size() != 1 + pairHeader.first + pairHeader.second )

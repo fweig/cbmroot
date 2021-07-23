@@ -82,7 +82,7 @@ Bool_t CbmCriGet4RawPrint::DoUnpack(const fles::Timeslice& ts, size_t /*componen
   char buf[256];
 
   static uint32_t lastGlobalEpoch = 0;
-  uint32_t nGet4, epoch, msgType, errorCode;
+  uint32_t nGet4, epoch, msgType;
   static int32_t pEpochDiff[NGET4];
   int32_t epochDiff;
   //   static uint32_t pErrorCnt[NGET4] = {0};
@@ -162,13 +162,12 @@ Bool_t CbmCriGet4RawPrint::DoUnpack(const fles::Timeslice& ts, size_t /*componen
         nGet4   = (ulData >> 40) & 0xFF;
         epoch   = (ulData >> 8) & 0xFFFFFF;
         epoch &= 0xFFFFFF;
-        errorCode = (ulData >> 4) & 0x7F;
         /*snprintf(buf, sizeof(buf),
                  "Data: 0x%016lx - %d - 0x06%X ",
                  ulData, nGet4, epoch);
 
-				std::cout << buf << std::endl;
-		*/
+            std::cout << buf << std::endl;
+        */
 
         //if (fuCurrentEquipmentId == 0xabc0)
         {
@@ -221,50 +220,51 @@ Bool_t CbmCriGet4RawPrint::DoUnpack(const fles::Timeslice& ts, size_t /*componen
             }
           }
           /*
-			//------------------- CTRL ----------------------------//
-			else if (msgType == 0x02)
-			{
-				snprintf(buf, sizeof(buf),
-				 "eTime %d - Ctrl Msg: 0x%016lx, Get4 %3d" ,
-				 lastGlobalEpoch, ulData, nGet4);
-				std::cout << buf << std::endl;
-				mess.printDataCout( critof001::msg_print_Hex | critof001::msg_print_Prefix | critof001::msg_print_Data );
-			}
-			//------------------- ERROR ----------------------------//
-			else if (msgType == 0x03)
-			{
-				snprintf(buf, sizeof(buf),
-				 "eTime %d - Error Msg: 0x%016lx, Get4 %3d, Error code 0x%02x",
-				 lastGlobalEpoch, ulData, nGet4, errorCode);
-				std::cout << buf << std::endl;
-				mess.printDataCout( critof001::msg_print_Hex | critof001::msg_print_Prefix | critof001::msg_print_Data );
+          //------------------- CTRL ----------------------------//
+          else if (msgType == 0x02)
+          {
+            snprintf(buf, sizeof(buf),
+             "eTime %d - Ctrl Msg: 0x%016lx, Get4 %3d" ,
+             lastGlobalEpoch, ulData, nGet4);
+            std::cout << buf << std::endl;
+            mess.printDataCout( critof001::msg_print_Hex | critof001::msg_print_Prefix | critof001::msg_print_Data );
+          }
+          //------------------- ERROR ----------------------------//
+          else if (msgType == 0x03)
+          {
+            uint32_t errorCode = (ulData >> 4) & 0x7F;
+            snprintf(buf, sizeof(buf),
+             "eTime %d - Error Msg: 0x%016lx, Get4 %3d, Error code 0x%02x",
+             lastGlobalEpoch, ulData, nGet4, errorCode);
+            std::cout << buf << std::endl;
+            mess.printDataCout( critof001::msg_print_Hex | critof001::msg_print_Prefix | critof001::msg_print_Data );
 
-				if (nGet4 < NGET4)
-					pErrorCnt[nGet4] = pErrorCnt[nGet4] +1;
-				if (errorCode ==  0x12)
-					if (nGet4 < NGET4)
-						pTotCnt[nGet4]=pTotCnt[nGet4]+1;
-				if ( (nGet4 < NGET4) && (errorCode<NERROR) )
-					pErrorCntMatrix[nGet4][errorCode]=pErrorCntMatrix[nGet4][errorCode]+1;
+            if (nGet4 < NGET4)
+               pErrorCnt[nGet4] = pErrorCnt[nGet4] +1;
+            if (errorCode ==  0x12)
+               if (nGet4 < NGET4)
+                  pTotCnt[nGet4]=pTotCnt[nGet4]+1;
+            if ( (nGet4 < NGET4) && (errorCode<NERROR) )
+               pErrorCntMatrix[nGet4][errorCode]=pErrorCntMatrix[nGet4][errorCode]+1;
 
-			}
-			//------------------- HITS ----------------------------//
-			else if (msgType == 0x0)
-			{
-				snprintf(buf, sizeof(buf),
-				 "eTime %d - Hit Msg: 0x%016lx, Get4 %3d",
-				 lastGlobalEpoch, ulData, nGet4);
-				std::cout << buf << std::endl;
-				mess.printDataCout( critof001::msg_print_Hex | critof001::msg_print_Prefix | critof001::msg_print_Data );
-				if (nGet4 < NGET4)
-					pHitsCnt[nGet4]=pHitsCnt[nGet4]+1;
-			}
-			 */
+          }
+          //------------------- HITS ----------------------------//
+          else if (msgType == 0x0)
+          {
+            snprintf(buf, sizeof(buf),
+             "eTime %d - Hit Msg: 0x%016lx, Get4 %3d",
+             lastGlobalEpoch, ulData, nGet4);
+            std::cout << buf << std::endl;
+            mess.printDataCout( critof001::msg_print_Hex | critof001::msg_print_Prefix | critof001::msg_print_Data );
+            if (nGet4 < NGET4)
+               pHitsCnt[nGet4]=pHitsCnt[nGet4]+1;
+          }
+          */
           /*snprintf(buf, sizeof(buf),
-					 "Data: 0x%016lx",
-					 ulData);
+                "Data: 0x%016lx",
+                ulData);
 
-			std::cout << buf << std::endl;*/
+          std::cout << buf << std::endl;*/
         }
 
       }  // for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx ++)
@@ -274,25 +274,25 @@ Bool_t CbmCriGet4RawPrint::DoUnpack(const fles::Timeslice& ts, size_t /*componen
   if (0 == fulCurrentTsIdx % 10000) LOG(info) << "Processed TS " << fulCurrentTsIdx;
 
   /*
-	uint32_t nPulses = 4*10000;
-	float effi;
-	for(uint32_t i =0; i < NGET4 ; i++)
-	{
-		effi = float(pHitsCnt[i])/float(nPulses) * 100.0;
-		snprintf(buf, sizeof(buf),
-			 "Hit counter %d: Hits: %d Errors: %d ErrTot: %d Effi: %f",
-			 i, pHitsCnt[i], pErrorCnt[i], pTotCnt[i], effi);
-			std::cout << buf << std::endl;
-		for(uint32_t j = 0; j<NERROR ; j++){
-			if (pErrorCntMatrix[i][j] != 0){
-				snprintf(buf, sizeof(buf),
-					"Error counter %d: error code: 0x%02x, times: %d",
-				 i, j, pErrorCntMatrix[i][j]);
-				std::cout << buf << std::endl;
-			}
-		}
-	 }
-	 */
+  uint32_t nPulses = 4*10000;
+  float effi;
+  for(uint32_t i =0; i < NGET4 ; i++)
+  {
+    effi = float(pHitsCnt[i])/float(nPulses) * 100.0;
+    snprintf(buf, sizeof(buf),
+       "Hit counter %d: Hits: %d Errors: %d ErrTot: %d Effi: %f",
+        i, pHitsCnt[i], pErrorCnt[i], pTotCnt[i], effi);
+    std::cout << buf << std::endl;
+    for(uint32_t j = 0; j<NERROR ; j++){
+      if (pErrorCntMatrix[i][j] != 0){
+         snprintf(buf, sizeof(buf),
+               "Error counter %d: error code: 0x%02x, times: %d",
+               i, j, pErrorCntMatrix[i][j]);
+         std::cout << buf << std::endl;
+      }
+    }
+  }
+  */
 
 
   return kTRUE;
