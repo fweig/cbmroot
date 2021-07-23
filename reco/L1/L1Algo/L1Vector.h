@@ -42,12 +42,15 @@ public:
   {
   }
 
-  L1Vector(const L1Vector& v) : Tbase(), fName(v.fName)
-  {
-    Tbase::reserve(v.capacity());
-    Tbase::assign(v.begin(), v.end());
-  }
+  L1Vector(const L1Vector& v) : Tbase() { *this = v; }
 
+  L1Vector& operator=(const L1Vector& v)
+  {
+    fName = v.fName;
+    Tbase::reserve(v.capacity());  // make sure that the capacity is transmitted
+    Tbase::assign(v.begin(), v.end());
+    return *this;
+  }
 
   void SetName(const std::string& s) { fName = s; }
 
