@@ -22,6 +22,7 @@
 #include <Logger.h>
 
 #include "TClonesArray.h"
+#include "TMatrixFSym.h"
 
 #include <iostream>
 
@@ -56,11 +57,17 @@ void CbmRichTrackExtrapolationLittrack::DoExtrapolation(CbmEvent* event, TClones
     return;
   }
 
+  TMatrixFSym covMat(5);
+  for (Int_t i = 0; i < 5; i++)
+    for (Int_t j = 0; j <= i; j++)
+      covMat(i, j) = 0;
+  covMat(0, 0) = covMat(1, 1) = covMat(2, 2) = covMat(3, 3) = covMat(4, 4) = 1.e-4;
+
   Int_t nofGlobalTracks = event ? event->GetNofData(ECbmDataType::kGlobalTrack) : globalTracks->GetEntriesFast();
   for (Int_t iT0 = 0; iT0 < nofGlobalTracks; iT0++) {
     Int_t iT               = event ? event->GetIndex(ECbmDataType::kGlobalTrack, iT0) : iT0;
     CbmGlobalTrack* gTrack = static_cast<CbmGlobalTrack*>(globalTracks->At(iT));
-    new ((*extrapolatedTrackParams)[iT]) FairTrackParam();
+    new ((*extrapolatedTrackParams)[iT]) FairTrackParam(0., 0., 0., 0., 0., 0., covMat);
     if (event != nullptr) event->AddData(ECbmDataType::kRichTrackParamZ, iT);
 
     Int_t stsInd = gTrack->GetStsTrackIndex();
@@ -75,7 +82,7 @@ void CbmRichTrackExtrapolationLittrack::DoExtrapolation(CbmEvent* event, TClones
 
     fLitPropagator->Propagate(&litInParam, &litOutParam, z, 11, &F, &length);
 
-    FairTrackParam outParam;
+    FairTrackParam outParam(0., 0., 0., 0., 0., 0., covMat);
     CbmLitConverterFairTrackParam::CbmLitTrackParamToFairTrackParam(&litOutParam, &outParam);
 
     *(FairTrackParam*) (extrapolatedTrackParams->At(iT)) = outParam;
