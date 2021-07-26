@@ -27,6 +27,15 @@ public:
 
   virtual ~CbmStsUnpackMonitor();
 
+  //Variables for debugging info
+  std::vector<uint32_t> vNbMessType;
+  std::string sMessPatt = "";
+  bool bError           = false;
+
+  void ResetDebugInfo();
+  void PrintDebugInfo(const uint64_t MsStartTime, const size_t NrProcessedTs, const uint16_t msDescriptorFlags,
+                      const uint32_t uSize);
+
   /** @brief Init all required parameter informations and histograms */
   Bool_t Init(CbmMcbm2018StsPar* digiParSet);
 
@@ -205,8 +214,7 @@ public:
   /** @brief Activate the debug mode */
   bool GetDebugMode() { return fDebugMode; }
 
-  bool ProcessDebugInfo(const stsxyter::Message& Mess, std::string& sMessPatt, std::vector<uint32_t>& vNbMessType,
-                        const UInt_t& uCurrDpbIdx);
+  void ProcessDebugInfo(const stsxyter::Message& Mess, const UInt_t& uCurrDpbIdx);
 
   /** @brief Activate the debug mode */
   void SetDebugMode(bool value) { fDebugMode = value; }

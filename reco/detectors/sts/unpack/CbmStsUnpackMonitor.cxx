@@ -2,6 +2,8 @@
 
 #include "CbmQaCanvas.h"
 
+#include "MicrosliceDescriptor.hpp"
+
 #include <FairRun.h>
 #include <FairRunOnline.h>
 #include <Logger.h>
@@ -14,6 +16,7 @@
 #include <TProfile.h>
 
 #include <cstdint>
+#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -21,7 +24,7 @@
 
 #include <cmath>
 
-CbmStsUnpackMonitor::CbmStsUnpackMonitor(/* args */) : fvpAllHistoPointers()
+CbmStsUnpackMonitor::CbmStsUnpackMonitor(/* args */) : vNbMessType(7, 0), fvpAllHistoPointers()
 {
   // Miscroslice component properties histos
   for (UInt_t component = 0; component < kiMaxNbFlibLinks; component++) {
@@ -594,12 +597,17 @@ void CbmStsUnpackMonitor::FillHitEvoMonitoringHistos(const UInt_t& uFebIdx, cons
 */
 }
 
+// -------------------------------------------------------------------------
+void CbmStsUnpackMonitor::ResetDebugInfo()
+{
+  std::fill(vNbMessType.begin(), vNbMessType.end(), 0);
+  sMessPatt = "";
+  bError    = false;
+}
 
 // -------------------------------------------------------------------------
-bool CbmStsUnpackMonitor::ProcessDebugInfo(const stsxyter::Message& Mess, std::string& sMessPatt,
-                                           std::vector<uint32_t>& vNbMessType, const UInt_t& uCurrDpbIdx)
+void CbmStsUnpackMonitor::ProcessDebugInfo(const stsxyter::Message& Mess, const UInt_t& uCurrDpbIdx)
 {
-  bool bError                       = false;
   const stsxyter::MessType typeMess = Mess.GetMessType();
 
   FillStsMessType(static_cast<uint16_t>(typeMess));
@@ -655,9 +663,24 @@ bool CbmStsUnpackMonitor::ProcessDebugInfo(const stsxyter::Message& Mess, std::s
     default: {
     }
   }
-  return bError;
 }
 
+// -------------------------------------------------------------------------
+void CbmStsUnpackMonitor::PrintDebugInfo(const uint64_t MsStartTime, const size_t NrProcessedTs,
+                                         const uint16_t msDescriptorFlags, const uint32_t uSize)
+{
+  if (18967040000 == MsStartTime || 18968320000 == MsStartTime) { LOG(debug) << sMessPatt; }
+  if (static_cast<uint16_t>(fles::MicrosliceFlags::CrcValid) != msDescriptorFlags) {
+    LOG(debug) << "STS unp "
+               << " TS " << std::setw(12) << NrProcessedTs << " MS " << std::setw(12) << MsStartTime << " MS flags 0x"
+               << std::setw(4) << std::hex << msDescriptorFlags << std::dec << " Size " << std::setw(8) << uSize
+               << " bytes "
+               << " H " << std::setw(5) << vNbMessType[0] << " T " << std::setw(5) << vNbMessType[1] << " E "
+               << std::setw(5) << vNbMessType[2] << " S " << std::setw(5) << vNbMessType[3] << " Em " << std::setw(5)
+               << vNbMessType[4] << " En " << std::setw(5) << vNbMessType[5] << " D " << std::setw(5) << vNbMessType[6]
+               << " Err " << bError << " Undet. bad " << (!bError && 400 != vNbMessType[1]);
+  }
+}
 
 // ---- Init ----
 Bool_t CbmStsUnpackMonitor::Init(CbmMcbm2018StsPar* parset)
@@ -742,6 +765,7 @@ void CbmStsUnpackMonitor::Finish()
   gDirectory = oldDir;
 
   histoFile->Close();
+  delete histoFile;
 }
 
 

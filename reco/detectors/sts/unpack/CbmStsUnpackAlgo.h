@@ -155,9 +155,7 @@ protected:
    * @param sMessPatt
    * @param vNbMessType
   */
-  void loopMsMessages(const uint8_t* msContent, const uint32_t uSize, const size_t uMsIdx, bool& bError,
-                      std::string& sMessPatt, std::vector<uint32_t>& vNbMessType);
-
+  void loopMsMessages(const uint8_t* msContent, const uint32_t uSize, const size_t uMsIdx);
 
   /** @brief experts please add description */
   void printActiveCrobs(CbmMcbm2018StsPar* parset, const std::vector<std::vector<bool>>& vbCrobActiveFlag);

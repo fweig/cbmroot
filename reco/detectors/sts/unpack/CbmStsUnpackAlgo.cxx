@@ -13,9 +13,6 @@
 #include <cstdint>
 #include <iomanip>
 
-#include "StsXyterFinalHit.h"
-
-
 CbmStsUnpackAlgo::CbmStsUnpackAlgo() : CbmRecoUnpackAlgo("CbmStsUnpackAlgo") {}
 
 CbmStsUnpackAlgo::~CbmStsUnpackAlgo() {}
@@ -24,16 +21,16 @@ CbmStsUnpackAlgo::~CbmStsUnpackAlgo() {}
 uint32_t CbmStsUnpackAlgo::getAsicIndex(uint32_t dpbidx, uint32_t crobidx, uint16_t elinkidx)
 {
 
-  uint32_t asicidx      = 0;
-  const int32_t uFebIdx = fElinkIdxToFebIdxVec.at(elinkidx);
-  uint32_t febtype      = fviFebType[dpbidx][crobidx][uFebIdx];
+  uint32_t asicidx       = 0;
+  const int32_t uFebIdx  = fElinkIdxToFebIdxVec.at(elinkidx);
+  const uint32_t febtype = fviFebType[dpbidx][crobidx][uFebIdx];
   // Feb type a
   if (febtype == 0) asicidx = fElinkIdxToAsicIdxVec.at(elinkidx).first;
   //   Feb type b
   if (febtype == 1) asicidx = fElinkIdxToAsicIdxVec.at(elinkidx).second;
   // else would be inactive feb, this was not handled in the previous implementation, this I expect it should not happen
 
-  uint32_t uAsicIdx = (dpbidx * fNrCrobPerDpb + crobidx) * fNrAsicsPerCrob + asicidx;
+  const uint32_t uAsicIdx = (dpbidx * fNrCrobPerDpb + crobidx) * fNrAsicsPerCrob + asicidx;
   return uAsicIdx;
 }
 
@@ -309,8 +306,7 @@ void CbmStsUnpackAlgo::initInternalStatus(CbmMcbm2018StsPar* parset)
 }
 
 // ---- loopMsMessages ----
-void CbmStsUnpackAlgo::loopMsMessages(const uint8_t* msContent, const uint32_t uSize, const size_t uMsIdx, bool& bError,
-                                      std::string& sMessPatt, std::vector<uint32_t>& vNbMessType)
+void CbmStsUnpackAlgo::loopMsMessages(const uint8_t* msContent, const uint32_t uSize, const size_t uMsIdx)
 {
   // If not integer number of message in input buffer, print warning/error
   if (0 != (uSize % sizeof(stsxyter::Message))) {
@@ -327,9 +323,7 @@ void CbmStsUnpackAlgo::loopMsMessages(const uint8_t* msContent, const uint32_t u
     /// Get message type
     const stsxyter::MessType typeMess = pMess[uIdx].GetMessType();
     if (fMonitor)
-      if (fMonitor->GetDebugMode()) {
-        bError = fMonitor->ProcessDebugInfo(pMess[uIdx], sMessPatt, vNbMessType, fuCurrDpbIdx);
-      }
+      if (fMonitor->GetDebugMode()) { fMonitor->ProcessDebugInfo(pMess[uIdx], fuCurrDpbIdx); }
     switch (typeMess) {
       case stsxyter::MessType::Hit: {
         processHitInfo(pMess[uIdx]);
@@ -734,31 +728,17 @@ bool CbmStsUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
   // Check the current TS_MSb cycle and correct it if wrong
   refreshTsMsbFields(imslice, fMsStartTime);
 
-  //Variables for debugging info
-  std::vector<uint32_t> vNbMessType(7, 0);
-  std::string sMessPatt = "";
-  bool bError           = false;
+  //Reset internal monitor variables for debugging info
+  if (fMonitor) {
+    if (fMonitor->GetDebugMode()) { fMonitor->ResetDebugInfo(); }
+  }
 
   //Main processing of MS content
-  loopMsMessages(msContent, uSize, imslice, bError, sMessPatt, vNbMessType);
+  loopMsMessages(msContent, uSize, imslice);
 
   //Output debugging info
-  /** @todo @experts this is printout debugging which depends on monitor settings. Not sure whether this is a good way. Please check and decide. (It was this way already before to be clear) */
   if (fMonitor) {
-    if (fMonitor->GetDebugMode()) {
-      if (18967040000 == fMsStartTime || 18968320000 == fMsStartTime) { LOG(debug) << sMessPatt; }
-      if (static_cast<uint16_t>(fles::MicrosliceFlags::CrcValid) != msDescriptor.flags) {
-        LOG(debug) << "STS unp "
-                   << " TS " << std::setw(12) << fNrProcessedTs << " MS " << std::setw(12) << fMsStartTime
-                   << " MS flags 0x" << std::setw(4) << std::hex << msDescriptor.flags << std::dec << " Size "
-                   << std::setw(8) << uSize << " bytes "
-                   << " H " << std::setw(5) << vNbMessType[0] << " T " << std::setw(5) << vNbMessType[1] << " E "
-                   << std::setw(5) << vNbMessType[2] << " S " << std::setw(5) << vNbMessType[3] << " Em "
-                   << std::setw(5) << vNbMessType[4] << " En " << std::setw(5) << vNbMessType[5] << " D "
-                   << std::setw(5) << vNbMessType[6] << " Err " << bError << " Undet. bad "
-                   << (!bError && 400 != vNbMessType[1]);
-      }
-    }
+    if (fMonitor->GetDebugMode()) { fMonitor->PrintDebugInfo(fMsStartTime, fNrProcessedTs, msDescriptor.flags, uSize); }
     for (auto itHit = fOutputVec.begin(); itHit != fOutputVec.end(); ++itHit) {
       fMonitor->FillDigisTimeInRun(itHit->GetTime());
     }
