@@ -186,8 +186,8 @@ private:
 
   /// Read information about hits, mcPoints and mcTracks into L1 classes
 
-  void ReadEvent(L1AlgoInputData* fData_, float& fTsStart, float& fTsLength, float& fTsOverlap, int& fFstHitinTs,
-                 bool& fnewTS, CbmEvent* event = NULL);
+  void ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, float& TsOverlap, int& FstHitinTs,
+                 bool& areDataLeft, CbmEvent* event = NULL);
 
   bool ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int MVD);  // help procedure
   bool ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int MVD);
@@ -254,7 +254,7 @@ private:
   int NTrdStations {0};   // number of trd stations
   int NTOFStation {0};    // number of tof stations
 
-  Int_t fPerformance {0};  // 0 - w\o perf. 1 - L1-Efficiency definition. 2 - QA-Eff.definition
+  Int_t fPerformance {0};     // 0 - w\o perf. 1 - L1-Efficiency definition. 2 - QA-Eff.definition
   double fTrackingTime {0.};  // time of track finding
 
   int fSTAPDataMode {0};  // way to work with file for standalone package.

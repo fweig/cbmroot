@@ -1045,11 +1045,11 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
   float start_t = 10000000000;
 
-  bool newTS      = 1;      // whole TS processed?
-  float TsStart   = 0;      // starting time of sub-TS
-  float TsLength  = 10000;  // length of sub-TS
-  float TsOverlap = 15;     // min length of overlap region
-  int FstHitinTs  = 0;      // 1st hit index in TS
+  bool areDataLeft = true;   // whole TS processed?
+  float TsStart    = 0;      // starting time of sub-TS
+  float TsLength   = 10000;  // length of sub-TS
+  float TsOverlap  = 15;     // min length of overlap region
+  int FstHitinTs   = 0;      // 1st hit index in TS
 
   /// sort input hits by time
   for (Int_t j = 0; j < listStsHits->GetEntriesFast(); j++) {
@@ -1110,7 +1110,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
   fTrackingTime = 0;
 
-  while (newTS) {
+  while (areDataLeft) {
 
     fData->Clear();
 
@@ -1118,11 +1118,11 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
       fData->fStripFlag.clear();
 
-      newTS      = 0;
-      TsStart    = 0;
-      TsLength   = 2000000000;
-      TsOverlap  = 0;
-      FstHitinTs = 0;
+      areDataLeft = false;
+      TsStart     = 0;
+      TsLength    = 2000000000;
+      TsOverlap   = 0;
+      FstHitinTs  = 0;
     }
 
     if (fSTAPDataMode >= 2) {  // 2,3
@@ -1132,7 +1132,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
                     fData->GetStsHitsStopIndex());
     }
     else {
-      ReadEvent(fData, TsStart, TsLength, TsOverlap, FstHitinTs, newTS, event);
+      ReadEvent(fData, TsStart, TsLength, TsOverlap, FstHitinTs, areDataLeft, event);
     }
 
     if (0) {  // correct hits on MC // dbg
@@ -1177,9 +1177,9 @@ void CbmL1::Reconstruct(CbmEvent* event)
         u += 3.5 * sqrt(sta.frontInfo.sigma2)[0] * random.Uniform(-1, 1);
         v += 3.5 * sqrt(sta.backInfo.sigma2)[0] * random.Uniform(-1, 1);
 #endif
-        h.u                                         = u;
-        h.v                                         = v;
-        h.z                                         = mcp.z;
+        h.u = u;
+        h.v = v;
+        h.z = mcp.z;
       }
     }
 
@@ -1901,8 +1901,8 @@ void CbmL1::ReadSTAPAlgoData()
     for (int i = 0; i < n; i++) {
       L1Hit element;
       fadata >> element_f >> element_b >> element_n >> element.z >> element.u >> element.v >> element.t;
-      element.f  = static_cast<THitI>(element_f);
-      element.b  = static_cast<THitI>(element_b);
+      element.f = static_cast<THitI>(element_f);
+      element.b = static_cast<THitI>(element_b);
       algo->vStsHits->push_back(element);
     }
     if (fVerbose >= 4) {

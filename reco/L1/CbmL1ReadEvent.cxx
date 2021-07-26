@@ -81,9 +81,11 @@ struct TmpHit {  // used for sort Hits before writing in the normal arrays
 
 /// Repack data from Clones Arrays to L1 arrays
 void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, float& /*TsOverlap*/, int& FstHitinTs,
-                      bool& newTS, CbmEvent* event)
+                      bool& areDataLeft, CbmEvent* event)
 {
   if (fVerbose >= 10) cout << "ReadEvent: start." << endl;
+
+  areDataLeft = false;  // no data left after reading the sub-timeslice
 
   fData_->Clear();
 
@@ -505,9 +507,11 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         else
           th.id = tmpHits.size();
 
-        if ((th.time > (TsStart + TsLength)) && ((nEntSts - hitIndex) > 300))
-          break;                                   /// stop if reco TS ends or few hits left
-        if (hitIndex == (nEntSts - 1)) newTS = 0;  ///stop while if all hits are processed
+        /// stop if reco TS ends and many hits left
+        if ((th.time > (TsStart + TsLength)) && ((nEntSts - hitIndex) > 300)) {
+          areDataLeft = true;  // there are unprocessed data left in the time slice
+          break;
+        }
 
         TVector3 pos, err;
         mh->Position(pos);
