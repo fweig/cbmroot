@@ -1147,9 +1147,8 @@ inline void L1Algo::f4(  // input
       Cqp += 0.05 * Cmax;  // TODO: without this line the ghost ratio increases, why?
     }
 
-    fTriplets[istal][Thread].emplace_back(ihitl, ihitm, ihitr, istal, istam, istar, 0, 0, 0, chi2, qp, Cqp,
-                                          sqrt(fabs(T3.tx[i3_4])),  // TODO: SG: why sqrt(tx)???
-                                          sqrt(fabs(T3.C22[i3_4])), sqrt(fabs(T3.ty[i3_4])), sqrt(fabs(T3.C33[i3_4])));
+    fTriplets[istal][Thread].emplace_back(ihitl, ihitm, ihitr, istal, istam, istar, 0, 0, 0, chi2, qp, Cqp, T3.tx[i3_4],
+                                          sqrt(fabs(T3.C22[i3_4])), T3.ty[i3_4], sqrt(fabs(T3.C33[i3_4])));
 
     L1Triplet& tr1 = fTriplets[istal][Thread].back();
 
@@ -1617,8 +1616,8 @@ void L1Algo::CATrackFinder()
   static Tindex stat_nTriplets[fNFindIterations] = {0};
 
   static Tindex stat_nLevels[fkMaxNstations - 2][fNFindIterations] = {{0}};
-  static Tindex stat_nCalls[fNFindIterations]                    = {0};  // n calls of CAFindTrack
-  static Tindex stat_nTrCandidates[fNFindIterations]             = {0};
+  static Tindex stat_nCalls[fNFindIterations]                      = {0};  // n calls of CAFindTrack
+  static Tindex stat_nTrCandidates[fNFindIterations]               = {0};
 #endif
 
   RealIHitP                           = &RealIHit_v;
