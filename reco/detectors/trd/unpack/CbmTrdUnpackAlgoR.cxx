@@ -163,8 +163,9 @@ void CbmTrdUnpackAlgoR::finishDerived()
 {
   LOG(info) << fName << " \n " << fNrWildRda << " unexpected RDA frames,\n " << fNrWildNul
             << " unexpected NUL frames, \n " << fNrWildEom << " unexpected EOM frames, \n " << fNrMissingEom
-            << " missing EOM frames, \n " << fNrElinkMis << " SOM to RDA/EOM eLink mismatches, \n " << fNrNonMajorTsMsb
-            << " non-major ts_msbs and \n " << fNrUnknownWords << " unknown frames." << std::endl;
+            << " missing EOM frames, \n " << fNrCorruptEom << " corrupt EOM frames, \n " << fNrElinkMis
+            << " SOM to RDA/EOM eLink mismatches, \n " << fNrNonMajorTsMsb << " non-major ts_msbs and \n "
+            << fNrUnknownWords << " unknown frames." << std::endl;
 }
 
 // ---- getInfoType ----
@@ -456,18 +457,24 @@ bool CbmTrdUnpackAlgoR::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
               nn = nreqsamples % 4;
             }
 
-            // Now extract from the above values the number of required adc bits from the eom
-            std::int8_t nrequiredbits = (nreqsamples - isample) * 9 - nadcbits;
-            adcbuffer <<= nrequiredbits;
+            // There is a chance that the nsamplesindicator bits are corrupted, here we check that we do not try to extract more adcbits than actually are streamed
+            if (nreqsamples >= isample) {
+              // Now extract from the above values the number of required adc bits from the eom
+              std::int8_t nrequiredbits = (nreqsamples - isample) * 9 - nadcbits;
+              adcbuffer <<= nrequiredbits;
 
-            // The eom carries at maximum 18 adcbits
-            adcbuffer |= static_cast<size_t>((frame & 0x3ffff) >> (18 - nrequiredbits));
-            nadcbits += nrequiredbits;
+              // The eom carries at maximum 18 adcbits
+              adcbuffer |= static_cast<size_t>((frame & 0x3ffff) >> (18 - nrequiredbits));
+              nadcbits += nrequiredbits;
 
-            while (nadcbits >= 9) {
-              raw.IncNrSamples();
-              raw.SetSample(extractSample(&adcbuffer, &nadcbits), isample);
-              isample++;
+              while (nadcbits >= 9) {
+                raw.IncNrSamples();
+                raw.SetSample(extractSample(&adcbuffer, &nadcbits), isample);
+                isample++;
+              }
+            }
+            else {
+              ++fNrCorruptEom;
             }
             ++fNrCreatedRawMsgs;
             // the message is done and the raw message container should contain everything we need. So now we can call makeDigi()

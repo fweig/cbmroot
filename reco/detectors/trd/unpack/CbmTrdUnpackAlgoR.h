@@ -182,6 +182,9 @@ protected:
   /** @brief Number of SOM to RDA/EOM mismatches */
   size_t fNrElinkMis = 0;
 
+  /** @brief Number of corrupted EOM frames */
+  size_t fNrCorruptEom = 0;
+
   /** @brief Start time of the current µSlice in Spadic CC */
   size_t fMsStartTimeCC = 0;
 

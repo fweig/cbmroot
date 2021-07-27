@@ -162,13 +162,17 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   // -------------
 
   // ---- TOF ----
-  auto tofconfig = std::make_shared<CbmTofUnpackConfig>("", runid);
-  // tofconfig->SetDebugState();
-  tofconfig->SetDoWriteOutput();
-  // tofconfig->SetDoWriteOptOutA("CbmTofErrors");
-  std::string parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
-  tofconfig->SetParFilesBasePath(parfilesbasepathTof);
-  tofconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+  std::shared_ptr<CbmTofUnpackConfig> tofconfig = nullptr;
+
+  tofconfig = std::make_shared<CbmTofUnpackConfig>("", runid);
+  if (tofconfig) {
+    // tofconfig->SetDebugState();
+    tofconfig->SetDoWriteOutput();
+    // tofconfig->SetDoWriteOptOutA("CbmTofErrors");
+    std::string parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+    tofconfig->SetParFilesBasePath(parfilesbasepathTof);
+    tofconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+  }
   // -------------
 
 
