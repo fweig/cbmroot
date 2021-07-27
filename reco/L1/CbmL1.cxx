@@ -273,8 +273,8 @@ InitStatus CbmL1::Init()
     if (NULL == mcManager) LOG(fatal) << GetName() << ": No CbmMCDataManager!";
 
     fStsPoints = mcManager->InitBranch("StsPoint");
-    if (!fTimesliceMode) fMvdPoints = mcManager->InitBranch("MvdPoint");
-    fMCTracks = mcManager->InitBranch("MCTrack");
+    fMvdPoints = mcManager->InitBranch("MvdPoint");
+    fMCTracks  = mcManager->InitBranch("MCTrack");
     if (NULL == fStsPoints) LOG(fatal) << GetName() << ": No StsPoint data!";
     if (NULL == fMCTracks) LOG(fatal) << GetName() << ": No MCTrack data!";
 

@@ -503,7 +503,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.time = mh->GetTime();
         th.dt   = mh->GetTimeError();
 
-        if (fTimesliceMode) th.id = hitIndex;
+        if (fTimesliceMode) th.id = nMvdHits + hitIndex;
         else
           th.id = tmpHits.size();
 
@@ -1315,12 +1315,8 @@ void CbmL1::HitMatch()
             iFile  = vFileEvent.begin()->first;
             iEvent = vFileEvent.begin()->second;
           }
-          int nMvdPoints_ = 0;
 
-          if (!fTimesliceMode)
-            if (listMvdPts) nMvdPoints_ = listMvdPts->GetEntriesFast();
-
-          Double_t dtrck          = dFEI(iFile, iEvent, iIndex + nMvdPoints_);
+          Double_t dtrck          = dFEI(iFile, iEvent, nMvdPoints + iIndex);
           DFEI2I::iterator trk_it = dFEI2vMCPoints.find(dtrck);
 
           if (trk_it == dFEI2vMCPoints.end()) continue;
