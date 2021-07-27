@@ -31,14 +31,11 @@ public:
   /** @brief Get the number of digis in this Ts */
   ULong64_t GetNDigisSts(ULong64_t) { return fNDigisSts; }
   /** @brief Get the number of digis in this Ts */
-  ULong64_t GetNDigisTrd(ULong64_t) { return fNDigisTrd; }
+  ULong64_t GetNDigisTof(ULong64_t) { return fNDigisTof; }
+  /** @brief Get the number of digis in this Ts */
+  ULong64_t GetNDigisTrd1D(ULong64_t) { return fNDigisTrd; }
   /** @brief Get the number of digis in this Ts */
   ULong64_t GetNDigisTrd2D(ULong64_t) { return fNDigisTrd2D; }
-  /** @brief Get the number of digis in this Ts */
-  ULong64_t GetNDigisTof(ULong64_t) { return fNDigisTof; }
-
-  /** @brief Set the Ts Start Time @param value Start time of the TS */
-  void SetTsStartTime(uint64_t value) { fTsStartTime = value; }
 
   /** @brief Set the number of digis in this Ts */
   void SetNDigisPsd(ULong64_t value) { fNDigisPsd = value; }
@@ -47,24 +44,31 @@ public:
   /** @brief Set the number of digis in this Ts */
   void SetNDigisSts(ULong64_t value) { fNDigisSts = value; }
   /** @brief Set the number of digis in this Ts */
-  void SetNDigisTrd(ULong64_t value) { fNDigisTrd = value; }
+  void SetNDigisTof(ULong64_t value) { fNDigisTof = value; }
+  /** @brief Set the number of digis in this Ts */
+  void SetNDigisTrd1D(ULong64_t value) { fNDigisTrd = value; }
   /** @brief Set the number of digis in this Ts */
   void SetNDigisTrd2D(ULong64_t value) { fNDigisTrd2D = value; }
-  /** @brief Set the number of digis in this Ts */
-  void SetNDigisTof(ULong64_t value) { fNDigisTof = value; }
 
+  /** @brief Set the Ts Start Time @param value Start time of the TS */
+  void SetTsStartTime(uint64_t value) { fTsStartTime = value; }
 
 protected:
   /** Timeslice start time */
   uint64_t fTsStartTime = 0;
 
-  ULong64_t fNDigisPsd   = 0;
-  ULong64_t fNDigisRich  = 0;
-  ULong64_t fNDigisSts   = 0;
-  ULong64_t fNDigisTrd   = 0;
+  /** @brief nDigis in "this" timeslice measured by the PSD */
+  ULong64_t fNDigisPsd = 0;
+  /** @brief nDigis in "this" timeslice measured by the RICH */
+  ULong64_t fNDigisRich = 0;
+  /** @brief nDigis in "this" timeslice measured by the STS */
+  ULong64_t fNDigisSts = 0;
+  /** @brief nDigis in "this" timeslice measured by the TRD1D @remark the member is not renamed to fNDigisTrd1D for easier backwards compatibility */
+  ULong64_t fNDigisTrd = 0;
+  /** @brief nDigis in "this" timeslice measured by the TRD2D */
   ULong64_t fNDigisTrd2D = 0;
-  ULong64_t fNDigisTof   = 0;
-
+  /** @brief nDigis in "this" timeslice measured by the TOF */
+  ULong64_t fNDigisTof = 0;
 
   ClassDef(CbmTsEventHeader, 3)
 };

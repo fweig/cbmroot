@@ -162,9 +162,9 @@ std::int16_t CbmTrdUnpackAlgoR::extractSample(size_t* adcbuffer, size_t* nadcbit
 void CbmTrdUnpackAlgoR::finishDerived()
 {
   LOG(info) << fName << " \n " << fNrWildRda << " unexpected RDA frames,\n " << fNrWildNul
-            << " unexpected NUL frames, \n " << fNrWildEom << " unexpected EOM frames, \n " << fNrElinkMis
-            << " SOM to RDA/EOM eLink mismatches, \n " << fNrNonMajorTsMsb << " non-major ts_msbs and \n "
-            << fNrUnknownWords << " unknown frames.";
+            << " unexpected NUL frames, \n " << fNrWildEom << " unexpected EOM frames, \n " << fNrMissingEom
+            << " missing EOM frames, \n " << fNrElinkMis << " SOM to RDA/EOM eLink mismatches, \n " << fNrNonMajorTsMsb
+            << " non-major ts_msbs and \n " << fNrUnknownWords << " unknown frames." << std::endl;
 }
 
 // ---- getInfoType ----
@@ -476,6 +476,7 @@ bool CbmTrdUnpackAlgoR::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
           else {
             // We move the word counter backwards by one, such that the unexpected message can correctly be digested
             iword--;
+            ++fNrMissingEom;
             LOG(debug)
               << fName
               << "::unpack() We had a SOM message and hence, desparately need an EOM message but none came. This "

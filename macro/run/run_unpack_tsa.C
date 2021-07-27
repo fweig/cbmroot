@@ -66,6 +66,15 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   // ------------------------------------------------------------------------
 
 
+  // -----   Performance profiling   ----------------------------------------
+  // Set to true if you want some minimal performance profiling output
+  bool doPerfProfiling = true;
+  // Define if you want a special path and name for the performance profiling output file
+  std::string perfProfFileName = outpath + filename;
+  perfProfFileName.replace(perfProfFileName.find(".tsa"), 4, ".perf.root");
+  // ------------------------------------------------------------------------
+
+
   // -----   CbmSetup   -----------------------------------------------------
   auto cbmsetup = CbmSetup::Instance();
   cbmsetup->LoadSetup(setupName);
@@ -130,7 +139,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
 
     std::string parfilesbasepathTrd = Form("%s/parameters/trd", srcDir.Data());
     trd1Dconfig->SetParFilesBasePath(parfilesbasepathTrd);
-    trd1Dconfig->SetMonitor(GetTrdMonitor(outfilename));
+    // trd1Dconfig->SetMonitor(GetTrdMonitor(outfilename));
     // Get the spadic configuration true = avg baseline active / false plain sample 0
     trd1Dconfig->SetSpadicObject(GetTrdSpadic(true));
     trd1Dconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
@@ -179,6 +188,8 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   auto source = new CbmSourceTsArchive(infile.data());
   source->SetCbmSourceType(CbmSourceTsArchive::eCbmSourceType::kOffline);
   auto unpack = source->GetRecoUnpack();
+  unpack->SetDoPerfProfiling(doPerfProfiling);
+  unpack->SetOutputFilename(perfProfFileName);
   if (psdconfig) unpack->SetUnpackConfig(psdconfig);
   if (richconfig) unpack->SetUnpackConfig(richconfig);
   if (stsconfig) unpack->SetUnpackConfig(stsconfig);

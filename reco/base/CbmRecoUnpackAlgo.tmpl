@@ -36,8 +36,11 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>  // for types
+#include <iomanip>
 #include <memory>
 #include <vector>
+
+#include <cmath>
 
 
 template<typename TOutput, typename TOptOutA = std::nullptr_t, typename TOptOutB = std::nullptr_t>
@@ -119,6 +122,18 @@ protected:
 
   /** @brief counter of created raw messages */
   size_t fNrEpochMsgs = 0;
+
+  /** @brief Sum counter for used cpu time by this algo [µs].*/
+  double fSumCpuTime = 0;
+
+  /** @brief Sum counter for used wall time by this algo [µs].*/
+  double fSumWallTime = 0;
+
+  /** @brief Sum counter for size of the input data of this algo.*/
+  double fSumInDataSize = 0;
+
+  /** @brief Sum counter for size of the output data of this algo.*/
+  double fSumOutDataSize = 0;
 
   /** @brief counter for inf/error flags from the µSlices */
   size_t fNrCrcValidFlags = 0;
@@ -241,6 +256,9 @@ protected:
 public:
   // Runtime functions
 
+  /** @brief Add used cpu time, used in CbmRecoUnpack for performance profiling. @param value cpu time of last timeslice processing */
+  void AddCpuTime(double value) { fSumCpuTime += value; }
+
   /**
    * @brief Add a parameter container and the path to its ascii input. Note that all containers have to be derived from FairParGenericSet.
    * @param pair 
@@ -250,6 +268,9 @@ public:
     fParContVec.emplace_back(pair);
   }
 
+  /** @brief Add used wall time, used in CbmRecoUnpack for performance profiling. @param value wall time of last timeslice processing */
+  void AddWallTime(double value) { fSumWallTime += value; }
+
   /**
    * @brief Action at end of run.
    * 
@@ -257,10 +278,21 @@ public:
   void Finish()
   {
     LOG(info) << fName << "::Finish.-------------------------\n Unpack process : \n " << fNrProcessedTs
-              << " Timeslices with \n " << fNrCreatedRawMsgs << " Raw Messages,\n " << fNrCreatedDigis << " Digis,\n "
-              << fNrEpochMsgs << " Epoch Messages,\n " << fNrCreatedInfoMsgs << " Info Messages.\n " << fNrCrcValidFlags
-              << " CrcValidFlags \n " << fNrOverflowFlimFlags << " OverflowFlimFlags \n " << fNrOverflowUserFlags
-              << " OverflowUserFlags \n " << fNrDataErrorFlags << " DataErrorFlags \n ";
+              << " Timeslices with \n " << fNrCreatedRawMsgs << " Raw Messages,\n " << fNrCreatedDigis
+              << " Digis \n ...processed in walltime(cputime) " << std::setprecision(4) << fSumWallTime << "("
+              << std::setprecision(4) << fSumCpuTime << ") µs \n "
+              << "-->" << std::setprecision(4) << fNrCreatedDigis / fSumWallTime << "(" << std::setprecision(4)
+              << fNrCreatedDigis / fSumCpuTime << ") Digis/µs <--> " << std::setprecision(4)
+              << fSumWallTime / fNrCreatedDigis << "(" << std::setprecision(4) << fSumCpuTime / fNrCreatedDigis
+              << ") µs/Digi.\n "
+              << "Processed amount of input data " << std::setprecision(4) << fSumInDataSize << " MB digested to "
+              << fSumOutDataSize << " MB output data <--> " << std::setprecision(4) << fSumInDataSize / fSumWallTime
+              << " MB/µs digested. \n";
+
+
+    LOG(debug) << fNrEpochMsgs << " Epoch Messages,\n " << fNrCreatedInfoMsgs << " Info Messages.\n "
+               << fNrCrcValidFlags << " CrcValidFlags \n " << fNrOverflowFlimFlags << " OverflowFlimFlags \n "
+               << fNrOverflowUserFlags << " OverflowUserFlags \n " << fNrDataErrorFlags << " DataErrorFlags \n ";
 
     // Additional explicit finish of the derived class used during runtime.
     finish();
@@ -289,6 +321,13 @@ public:
    * @return std::vector<TOptOutA>* 
   */
   std::vector<TOptOutA>* GetOptOutBVec() { return fOptOutBVec; }
+
+  /**
+   * @brief Get the Output Obj Size
+   * 
+   * @return size_t 
+  */
+  static size_t GetOutputObjSize() { return sizeof(TOutput); }
 
   /**
    * @brief Get the requested parameter containers. To be defined in the derived classes!
@@ -389,7 +428,12 @@ public:
       }
     }
 
-    fNrCreatedDigis += fOutputVec.size();
+    auto ndigis = fOutputVec.size();
+    fNrCreatedDigis += ndigis;
+
+    // Get the input(output) data sizes
+    fSumInDataSize += ts->size_component(icomp) / 1.0e6;
+    fSumOutDataSize += ndigis * GetOutputObjSize() / 1.0e6;
 
     ++fNrProcessedTs;
     return fOutputVec;

@@ -118,6 +118,9 @@ public:
   /** @brief Set the Cbm Source Type @param type @remark temporary fix see enum */
   void SetCbmSourceType(eCbmSourceType type) { fCbmSourceType = type; }
 
+  /** @brief Provide dummy implementation of this virtual function as not relevant in our case **/
+  Bool_t SpecifyRunId() { return kTRUE; }
+
 private:
   /** List of input file names **/
   std::vector<std::string> fFileNames = {};

@@ -7,6 +7,7 @@
 
 #include "CbmRecoUnpack.h"
 
+#include "CbmRecoUnpackConfig.tmpl"
 #include "CbmTrdDigi.h"
 #include "CbmTsEventHeader.h"
 
@@ -16,8 +17,10 @@
 #include <Logger.h>
 
 #include <RtypesCore.h>
+#include <TH1.h>
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -32,7 +35,7 @@ CbmRecoUnpack::CbmRecoUnpack() {}
 // ----------------------------------------------------------------------------
 
 
-// -----   Initialisation   ---------------------------------------------------
+// -----   Finish   -----------------------------------------------------------
 void CbmRecoUnpack::Finish()
 {
   LOG(info) << "CbmRecoUnpack::Finish() I do let the unpackers talk first :\n";
@@ -43,6 +46,9 @@ void CbmRecoUnpack::Finish()
   if (fTofConfig) fTofConfig->GetUnpacker()->Finish();
   if (fTrd1DConfig) fTrd1DConfig->GetUnpacker()->Finish();
   if (fTrd2DConfig) fTrd2DConfig->GetUnpacker()->Finish();
+
+  // Create some default performance profiling histograms and write them to a file
+  if (fDoPerfProf) performanceProfiling();
 }
 
 // ----------------------------------------------------------------------------
@@ -54,7 +60,6 @@ Bool_t CbmRecoUnpack::Init()
   FairRootManager* ioman = FairRootManager::Instance();
   assert(ioman);
 
-
   auto eh = FairRun::Instance()->GetEventHeader();
   if (eh->IsA() == CbmTsEventHeader::Class()) fCbmTsEventHeader = static_cast<CbmTsEventHeader*>(eh);
   else
@@ -62,17 +67,32 @@ Bool_t CbmRecoUnpack::Init()
       << "CbmRecoUnpack::Init() no CbmTsEventHeader was added to the run. Without it, we can not store the UTC of the "
          "Timeslices correctly. Hence, this causes a fatal. Please add it in the steering macro to the Run.";
 
-
   // --- Psd
-  if (fPsdConfig) fPsdConfig->Init(ioman);
+  if (fPsdConfig) {
+    fPsdConfig->Init(ioman);
+    initPerformanceMaps(fkFlesPsd, "PSD");
+  }
   // --- Rich
-  if (fRichConfig) fRichConfig->Init(ioman);
+  if (fRichConfig) {
+    fRichConfig->Init(ioman);
+    initPerformanceMaps(fkFlesRich, "RICH");
+  }
+
   // --- Sts
-  if (fStsConfig) fStsConfig->Init(ioman);
+  if (fStsConfig) {
+    fStsConfig->Init(ioman);
+    initPerformanceMaps(fkFlesSts, "STS");
+  }
   // --- Tof
-  if (fTofConfig) fTofConfig->Init(ioman);
+  if (fTofConfig) {
+    fTofConfig->Init(ioman);
+    initPerformanceMaps(fkFlesTof, "TOF");
+  }
   // --- Trd
-  if (fTrd1DConfig) fTrd1DConfig->Init(ioman);
+  if (fTrd1DConfig) {
+    fTrd1DConfig->Init(ioman);
+    initPerformanceMaps(fkFlesTrd, "TRD1D");
+  }
   // --- TRD2D
   if (fTrd2DConfig) {
     if (fTrd1DConfig) {
@@ -89,6 +109,7 @@ Bool_t CbmRecoUnpack::Init()
     else {
       fTrd2DConfig->Init(ioman);
     }
+    initPerformanceMaps(fkFlesTrd2D, "TRD2D");
   }
   // This is an ugly work around, because the TRD and TRD2D want to access the same vector and there is no function to retrieve a writeable vector<obj> from the FairRootManager, especially before the branches are created, as far as I am aware. The second option workaround is in in Init() to look for the fasp config and create a separate branch for fasp created CbmTrdDigis PR 072021
 
@@ -96,6 +117,99 @@ Bool_t CbmRecoUnpack::Init()
 }
 // ----------------------------------------------------------------------------
 
+
+// -----   initPerformanceMaps   ----------------------------------------------
+void CbmRecoUnpack::initPerformanceMaps(std::uint16_t subsysid, std::string name)
+{
+  if (fDoPerfProf) {
+    fNameMap.emplace(std::make_pair(subsysid, std::make_pair(name, 0)));
+    fTimeMap.emplace(std::make_pair(subsysid, std::make_pair(0, 0)));
+    fDataSizeMap.emplace(std::make_pair(subsysid, std::make_pair(0, 0)));
+  }
+}
+// ----------------------------------------------------------------------------
+
+
+// -----   performanceProfiling   ---------------------------------------------
+void CbmRecoUnpack::performanceProfiling()
+{
+  std::unique_ptr<TH1D> hProducedDigis =
+    std::unique_ptr<TH1D>(new TH1D("ProducedDigis", "ProducedDigis", fNameMap.size(), -0.5, fNameMap.size() - 0.5));
+  hProducedDigis->SetXTitle("Subsystem");
+  hProducedDigis->SetYTitle("N-Digis");
+  std::unique_ptr<TH1D> hSpeedPerf = std::unique_ptr<TH1D>(
+    new TH1D("SpeedPerformance", "SpeedPerformance", fNameMap.size() * 2, -0.5, fNameMap.size() * 2 - 0.5));
+  hSpeedPerf->SetXTitle("Subsystem");
+  hSpeedPerf->SetYTitle("Unpacking performance [#mus/Digi]");
+  std::unique_ptr<TH1D> hDataPerf = std::unique_ptr<TH1D>(
+    new TH1D("DataPerformance", "DataPerformance", fNameMap.size() * 2, -0.5, fNameMap.size() * 2 - 0.5));
+  hDataPerf->SetXTitle("Subsystem");
+  hDataPerf->SetYTitle("Data [MB]");
+  size_t iunpackerbin = 1;
+  for (auto namepair : fNameMap) {
+
+    // Speed performance
+    auto timeit = fTimeMap.find(namepair.first);
+    double cpu  = timeit->second.first / namepair.second.second;
+    double wall = timeit->second.second / namepair.second.second;
+
+    // Data performance
+    auto datait    = fDataSizeMap.find(namepair.first);
+    double indata  = datait->second.first;
+    double outdata = datait->second.second;
+
+
+    // N-Digis
+    std::string label = namepair.second.first;
+    hProducedDigis->GetXaxis()->SetBinLabel(iunpackerbin, label.data());
+    hProducedDigis->SetBinContent(iunpackerbin, namepair.second.second);
+
+    // Cpu time
+    label = namepair.second.first;
+    label += " cpu";
+    hSpeedPerf->GetXaxis()->SetBinLabel(iunpackerbin * 2 - 1, label.data());
+    hSpeedPerf->SetBinContent(iunpackerbin * 2 - 1, cpu);
+    // Wall time
+    label = namepair.second.first;
+    label += " wall";
+    hSpeedPerf->GetXaxis()->SetBinLabel(iunpackerbin * 2, label.data());
+    hSpeedPerf->SetBinContent(iunpackerbin * 2, wall);
+
+    // In data
+    label = namepair.second.first;
+    label += " in";
+    hDataPerf->GetXaxis()->SetBinLabel(iunpackerbin * 2 - 1, label.data());
+    hDataPerf->SetBinContent(iunpackerbin * 2 - 1, indata);
+
+    // Out data
+    label = namepair.second.first;
+    label += " out";
+    hDataPerf->GetXaxis()->SetBinLabel(iunpackerbin * 2, label.data());
+    hDataPerf->SetBinContent(iunpackerbin * 2, outdata);
+
+    ++iunpackerbin;
+  }
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+
+  /// (Re-)Create ROOT file to store the histos
+  TFile histofile(fOutfilename.data(), "RECREATE");
+
+  histofile.cd();
+  hProducedDigis->Write();
+  hSpeedPerf->Write();
+  hDataPerf->Write();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
+
+  // histofile->Close();
+  histofile.Close();
+}
+// ----------------------------------------------------------------------------
 
 // -----   Reset   ------------------------------------------------------------
 void CbmRecoUnpack::Reset()
@@ -136,39 +250,47 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
 
     switch (systemId) {
       case fkFlesPsd: {
-        if (fPsdConfig)
-          fCbmTsEventHeader->SetNDigisPsd(
-            unpack(&timeslice, component, fPsdConfig, fPsdConfig->GetOptOutAVec(), fPsdConfig->GetOptOutBVec()));
+        if (fPsdConfig) {
+          fCbmTsEventHeader->SetNDigisPsd(unpack(systemId, &timeslice, component, fPsdConfig,
+                                                 fPsdConfig->GetOptOutAVec(), fPsdConfig->GetOptOutBVec()));
+        }
+
         break;
       }
       case fkFlesRich: {
-        if (fRichConfig)
-          fCbmTsEventHeader->SetNDigisRich(
-            unpack(&timeslice, component, fRichConfig, fRichConfig->GetOptOutAVec(), fRichConfig->GetOptOutBVec()));
+        if (fRichConfig) {
+          fCbmTsEventHeader->SetNDigisRich(unpack(systemId, &timeslice, component, fRichConfig,
+                                                  fRichConfig->GetOptOutAVec(), fRichConfig->GetOptOutBVec()));
+        }
         break;
       }
       case fkFlesSts: {
-        if (fStsConfig)
-          fCbmTsEventHeader->SetNDigisSts(
-            unpack(&timeslice, component, fStsConfig, fStsConfig->GetOptOutAVec(), fStsConfig->GetOptOutBVec()));
+        if (fStsConfig) {
+          fCbmTsEventHeader->SetNDigisSts(unpack(systemId, &timeslice, component, fStsConfig,
+                                                 fStsConfig->GetOptOutAVec(), fStsConfig->GetOptOutBVec()));
+        }
         break;
       }
       case fkFlesTof: {
-        if (fTofConfig)
-          fCbmTsEventHeader->SetNDigisTof(
-            unpack(&timeslice, component, fTofConfig, fTofConfig->GetOptOutAVec(), fTofConfig->GetOptOutBVec()));
+        if (fTofConfig) {
+          fCbmTsEventHeader->SetNDigisTof(unpack(systemId, &timeslice, component, fTofConfig,
+                                                 fTofConfig->GetOptOutAVec(), fTofConfig->GetOptOutBVec()));
+        }
         break;
       }
       case fkFlesTrd: {
-        if (fTrd1DConfig)
-          fCbmTsEventHeader->SetNDigisTrd(
-            unpack(&timeslice, component, fTrd1DConfig, fTrd1DConfig->GetOptOutAVec(), fTrd1DConfig->GetOptOutBVec()));
+        if (fTrd1DConfig) {
+          fCbmTsEventHeader->SetNDigisTrd1D(unpack(systemId, &timeslice, component, fTrd1DConfig,
+                                                   fTrd1DConfig->GetOptOutAVec(), fTrd1DConfig->GetOptOutBVec()));
+        }
         break;
       }
       case fkFlesTrd2D: {
         if (fTrd2DConfig)
-          fCbmTsEventHeader->SetNDigisTrd2D(
-            unpack(&timeslice, component, fTrd2DConfig, fTrd2DConfig->GetOptOutAVec(), fTrd2DConfig->GetOptOutBVec()));
+          if (fTrd2DConfig) {
+            fCbmTsEventHeader->SetNDigisTrd2D(unpack(systemId, &timeslice, component, fTrd2DConfig,
+                                                     fTrd2DConfig->GetOptOutAVec(), fTrd2DConfig->GetOptOutBVec()));
+          }
         break;
       }
       default: {

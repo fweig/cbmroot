@@ -192,6 +192,9 @@ protected:
   /** @brief Number of eom frames outside of a SOM frame range */
   size_t fNrWildEom = 0;
 
+  /** @brief Number of missing EOM frames to finish a SOM frame */
+  size_t fNrMissingEom = 0;
+
   /** @brief Number of wild null words, should only appear at the end of a µSlice */
   size_t fNrWildNul = 0;
 

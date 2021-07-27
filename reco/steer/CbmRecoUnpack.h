@@ -20,11 +20,16 @@
 #include <Timeslice.hpp>
 
 #include <RtypesCore.h>
+#include <THnSparse.h>
 #include <TObject.h>
 #include <type_traits>  // this is std::lib used for template is_member_function_pointer
 
+#include <chrono>
 #include <cstddef>
+#include <cstdint>
+#include <ctime>
 #include <memory>
+#include <utility>
 #include <vector>
 
 
@@ -69,6 +74,23 @@ public:
   */
   void SetDebugPrintout(bool value = true) { fDoDebugPrints = value; }
 
+  /**
+   * @brief (De)Activate the performance profiling based on histograms
+   * 
+   * @param value 
+  */
+  void SetDoPerfProfiling(bool value = true) { fDoPerfProf = value; }
+
+  /**
+   * @brief Set the performance profiling Output Filename
+   * 
+   * @param value 
+  */
+  void SetOutputFilename(std::string value)
+  {
+    if (!value.empty()) fOutfilename = value;
+  }
+
   /** @brief Set the Psd Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmPsdUnpackConfig> config) { fPsdConfig = config; }
 
@@ -79,16 +101,13 @@ public:
   void SetUnpackConfig(std::shared_ptr<CbmStsUnpackConfig> config) { fStsConfig = config; }
 
   // /** @brief Set the Tof Unpack Config @param config */
-  // void SetUnpackConfig(std::shared_ptr<CbmTofUnpackConfig> config) { fTofConfig = config; }
+  void SetUnpackConfig(std::shared_ptr<CbmTofUnpackConfig> config) { fTofConfig = config; }
 
   /** @brief Set the Trd Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackConfig> config) { fTrd1DConfig = config; }
 
   /** @brief Set the Trd2D Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackConfigFasp2D> config) { fTrd2DConfig = config; }
-
-  /** @brief Set the Tof Unpack Config @param config */
-  void SetUnpackConfig(std::shared_ptr<CbmTofUnpackConfig> config) { fTofConfig = config; }
 
   /** @brief Trigger the unpacking procedure **/
   void Unpack(std::unique_ptr<fles::Timeslice> ts);
@@ -97,14 +116,37 @@ private:
   static constexpr std::uint16_t fkFlesMvd   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::MVD);
   static constexpr std::uint16_t fkFlesSts   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::STS);
   static constexpr std::uint16_t fkFlesRich  = static_cast<std::uint16_t>(fles::SubsystemIdentifier::RICH);
+  static constexpr std::uint16_t fkFlesPsd   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::PSD);
   static constexpr std::uint16_t fkFlesMuch  = static_cast<std::uint16_t>(fles::SubsystemIdentifier::MUCH);
   static constexpr std::uint16_t fkFlesTrd   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::TRD);
   static constexpr std::uint16_t fkFlesTrd2D = static_cast<std::uint16_t>(fles::SubsystemIdentifier::TRD2D);
   static constexpr std::uint16_t fkFlesTof   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::RPC);
-  static constexpr std::uint16_t fkFlesPsd   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::PSD);
 
   /** @brief Flag if extended debug output is to be printed or not*/
-  bool fDoDebugPrints = false;
+  bool fDoDebugPrints = false;  //!
+
+  /** @brief Flag if performance profiling should be activated or not.*/
+  bool fDoPerfProf = false;  //!
+
+  /** @brief Map to store a name for the unpackers and the processed amount of digis, key = fkFlesId*/
+  std::map<std::uint16_t, std::pair<std::string, size_t>> fNameMap = {};  //!
+
+  /** @brief Map to store the cpu and wall time, key = fkFlesId*/
+  std::map<std::uint16_t, std::pair<double, double>> fTimeMap = {};  //!
+
+  /** @brief Map to store the in and out data amount, key = fkFlesId*/
+  std::map<std::uint16_t, std::pair<double, double>> fDataSizeMap = {};  //!
+
+  /** @brief Run the performance profiling based on the fTimeMap and fDataSizeMap members. */
+  void performanceProfiling();
+
+  /**
+   * @brief Init the performance profiling maps for a given unpacker
+   * 
+   * @param subsysid Subsystem Identifier casted to std::uint16_t 
+   * @param name Name of the unpacker 
+  */
+  void initPerformanceMaps(std::uint16_t subsysid, std::string name);
 
   /** @brief Sort a vector timewise vector type has to provide GetTime() */
   template<typename TVecobj>
@@ -145,11 +187,16 @@ private:
    * @param algo Algorithm to be used for this component
    * @param outtargetvec Target vector for the output elements
    * @param optoutputvecs Target vectors for optional outputs
+   * @return std::pair<ndigis, std::pair<cputime, walltime>>
   */
   template<class TConfig, class TOptOutA = std::nullptr_t, class TOptOutB = std::nullptr_t>
-  size_t unpack(const fles::Timeslice* ts, std::uint16_t icomp, TConfig config,
+  size_t unpack(const std::uint16_t subsysid, const fles::Timeslice* ts, std::uint16_t icomp, TConfig config,
                 std::vector<TOptOutA>* optouttargetvecA = nullptr, std::vector<TOptOutB>* optouttargetvecB = nullptr)
   {
+
+    auto wallstarttime        = std::chrono::high_resolution_clock::now();
+    std::clock_t cpustarttime = std::clock();
+
     auto algo                        = config->GetUnpacker();
     std::vector<TOptOutA> optoutAvec = {};
     std::vector<TOptOutB> optoutBvec = {};
@@ -188,11 +235,35 @@ private:
         optouttargetvecB->emplace_back(optoutB);
     }
 
+    std::clock_t cpuendtime = std::clock();
+    auto wallendtime        = std::chrono::high_resolution_clock::now();
+
+    // Cpu time in [µs]
+    auto cputime = 1e6 * (cpuendtime - cpustarttime) / CLOCKS_PER_SEC;
+    algo->AddCpuTime(cputime);
+    // Real time in [µs]
+    auto walltime = std::chrono::duration<double, std::micro>(wallendtime - wallstarttime).count();
+    algo->AddWallTime(walltime);
+
 
     // Check some numbers from this timeslice
     size_t nDigis = digivec.size();
     LOG(debug) << "Component " << icomp << " connected to config " << config->GetName() << "   n-Digis " << nDigis
-               << " processed in this timeslice.";
+               << " processed in walltime(cputime) = " << walltime << "(" << cputime << cputime << ") µs"
+               << "this timeslice.";
+
+    if (fDoPerfProf) {
+      auto timeit = fTimeMap.find(subsysid);
+      timeit->second.first += cputime;
+      timeit->second.second += walltime;
+
+      auto datait = fDataSizeMap.find(subsysid);
+      datait->second.first += ts->size_component(icomp) / 1.0e6;
+      datait->second.second += nDigis * algo->GetOutputObjSize() / 1.0e6;
+
+      fNameMap.find(subsysid)->second.second += nDigis;
+    }
+
     return nDigis;
   }
   // ----------------------------------------------------------------------------
@@ -217,6 +288,9 @@ private:
 
   /** @brief Pointer to the Timeslice start time used to write it to the output tree @remark since we hand this to the FairRootManager it also wants to delete it and we do not have to take care of deletion */
   CbmTsEventHeader* fCbmTsEventHeader = nullptr;
+
+  /** @brief Name of the performance profiling output file */
+  std::string fOutfilename = "CbmRecoUnpack.perf.root";
 
 
   ClassDef(CbmRecoUnpack, 1);
