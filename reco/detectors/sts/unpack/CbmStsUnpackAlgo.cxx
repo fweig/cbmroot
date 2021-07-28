@@ -146,6 +146,9 @@ Bool_t CbmStsUnpackAlgo::initParSet(CbmMcbm2018StsPar* parset)
   // Get Number of Channels per FEB
   fNrChsPerFeb = parset->GetNbChanPerFeb();
 
+  // Get Number of FEBs per CROB
+  fNrFebsPerCrob = parset->GetNbFebsPerCrob();
+
   for (size_t ielink = 0; ielink < fNrElinksPerCrob; ++ielink) {
     fElinkIdxToFebIdxVec.emplace_back(parset->ElinkIdxToFebIdx(ielink));
     fElinkIdxToAsicIdxVec.emplace_back(
@@ -451,13 +454,16 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
 {
   const uint16_t usElinkIdx = mess.GetLinkIndexHitBinning();
   const uint32_t uCrobIdx   = usElinkIdx / fNrElinksPerCrob;
-  const int32_t uFebIdx     = fElinkIdxToFebIdxVec.at(usElinkIdx);
+  int32_t uFebIdx           = fElinkIdxToFebIdxVec.at(usElinkIdx);
   if (-1 == uFebIdx) {
     LOG(warning) << "CbmAlgoUnpackSts::DoUnpack => "
                  << "Wrong elink Idx! Elink raw " << Form("%d remap %d", usElinkIdx, uFebIdx);
     return;
   }
-  // Get the asix index
+  //uFebIdx +=  ( fuCurrDpbIdx * fNrCrobPerDpb + ____CrobIndexCalculationIfNeeded___() ) * fuNbFebsPerCrob;
+  uFebIdx += (fuCurrDpbIdx * fNrCrobPerDpb) * fNrFebsPerCrob;  //no Crob index calculation for now
+
+  // Get the asic index
   uint32_t uAsicIdx = getAsicIndex(fuCurrDpbIdx, uCrobIdx, usElinkIdx);
 
   const uint16_t usChan     = mess.GetHitChannel();
@@ -477,6 +483,7 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
   fvvusLastAdcChan[uAsicIdx][usChan]        = usRawAdc;
   fvvusLastTsMsbChan[uAsicIdx][usChan]      = fvulCurrentTsMsb[fuCurrDpbIdx];
   fvvusLastTsMsbCycleChan[uAsicIdx][usChan] = fvuCurrentTsMsbCycle[fuCurrDpbIdx];
+
 
   // Compute the Full time stamp
   const int64_t ulHitTime = getFullTimeStamp(usRawTs);

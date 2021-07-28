@@ -246,6 +246,9 @@ protected:
   /** @brief Number of CROBs per DPB */
   uint32_t fNrCrobPerDpb = 0;  //!
 
+  /** @brief Number of FEBs per CROB */
+  uint32_t fNrFebsPerCrob = 0;  //!
+
   /** @brief Vector used for the translation between eLink index and FEB index*/
   std::vector<int> fElinkIdxToFebIdxVec = {};
 
