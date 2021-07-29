@@ -798,6 +798,7 @@ void CbmAlgoBuildRawEvents::SetReferenceDetector(RawEventBuilderDetector refDetI
                       "Please also remember to update the selection windows to store "
                       "clusters!";
       RemoveDetector(refDetIn);
+      break;
     }
   }
 

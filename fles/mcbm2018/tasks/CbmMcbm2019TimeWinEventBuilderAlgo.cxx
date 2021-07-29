@@ -721,6 +721,7 @@ void CbmMcbm2019TimeWinEventBuilderAlgo::SetReferenceDetector(EventBuilderDetect
                       "Please also remember to update the selection windows to store "
                       "clusters!";
       RemoveDetector(refDetIn);
+      break;
     }  // if( (*det)  == refDetIn )
   }    // for( std::vector< EventBuilderDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
