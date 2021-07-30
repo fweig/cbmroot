@@ -163,6 +163,7 @@ public:
     ** @value        kTRUE if volume is sensitive, else kFALSE
     **/
   virtual Bool_t CheckIfSensitive(std::string name);
+  virtual Bool_t IsSensitive(const std::string& name);
 
   /*
     * \brief set fRegisterPhotonsOnSensitivePlane parameter

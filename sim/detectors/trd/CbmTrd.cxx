@@ -321,7 +321,7 @@ void CbmTrd::ConstructRootGeometry(TGeoMatrix*)
 }
 
 // -----   CheckIfSensitive   -------------------------------------------------
-Bool_t CbmTrd::CheckIfSensitive(std::string name)
+Bool_t CbmTrd::IsSensitive(const std::string& name)
 {
   TString tsname = name;
   if (tsname.EqualTo("gas")) {
@@ -331,5 +331,7 @@ Bool_t CbmTrd::CheckIfSensitive(std::string name)
   return kFALSE;
 }
 // ----------------------------------------------------------------------------
+
+Bool_t CbmTrd::CheckIfSensitive(std::string name) { return IsSensitive(name); }
 
 ClassImp(CbmTrd)

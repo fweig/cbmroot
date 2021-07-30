@@ -266,7 +266,7 @@ CbmMvdPoint* CbmMvd::AddHit(Int_t trackID, Int_t pdg, Int_t sensorNr, TVector3 p
 }
 // ----------------------------------------------------------------------------
 
-Bool_t CbmMvd::CheckIfSensitive(std::string name)
+Bool_t CbmMvd::IsSensitive(const std::string& name)
 {
   TString tsname = name;
   if (tsname.Contains("sensorActive") || tsname.Contains("MimosaActive")
@@ -282,8 +282,8 @@ Bool_t CbmMvd::CheckIfSensitive(std::string name)
   }
   return kFALSE;
 }
-// ----------------------------------------------------------------------------
 
+Bool_t CbmMvd::CheckIfSensitive(std::string name) { return IsSensitive(name); }
 // ----------------------------------------------------------------------------
 
 

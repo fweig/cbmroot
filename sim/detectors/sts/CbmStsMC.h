@@ -59,7 +59,8 @@ public:
 		 ** The decision is based on the volume name (has to contain "Sensor").
 		 ** Virtual from FairModule.
 		 **/
-  virtual Bool_t CheckIfSensitive(std::string name) { return (TString(name).Contains("Sensor") ? kTRUE : kFALSE); }
+  virtual Bool_t IsSensitive(const std::string& name) { return (TString(name).Contains("Sensor") ? kTRUE : kFALSE); }
+  virtual Bool_t CheckIfSensitive(std::string name) { return IsSensitive(name); }
 
 
   /** @brief Construct the STS geometry in the TGeoManager.

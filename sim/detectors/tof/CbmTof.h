@@ -145,6 +145,9 @@ public:
      **/
   void SetCounterInBeam(Int_t iModuleType, Int_t iModuleIndex, Int_t iCounterIndex);
 
+  Bool_t CheckIfSensitive(std::string name);
+  virtual Bool_t IsSensitive(const std::string& name);
+
 private:
   /** Track information to be stored until the track leaves the
       active volume. **/
@@ -199,7 +202,6 @@ private:
    **/
   void ResetParameters();
 
-  Bool_t CheckIfSensitive(std::string name);
 
   virtual void ConstructRootGeometry(TGeoMatrix* shift = NULL);
 

@@ -65,11 +65,13 @@ void CbmMagnet::ConstructGeometry()
   }
 }
 
-Bool_t CbmMagnet::CheckIfSensitive(std::string)
+Bool_t CbmMagnet::IsSensitive(const std::string&)
 {
   // There are no sensitive volumes in the magnet
   return kFALSE;
 }
+
+Bool_t CbmMagnet::CheckIfSensitive(std::string name) { return IsSensitive(name); }
 
 
 ClassImp(CbmMagnet)

@@ -60,6 +60,13 @@ utils/CbmMediaList.cxx
 utils/CbmFileUtils.cxx
 )
 
+
+If(${FairRoot_VERSION} VERSION_LESS 18.4.0)
+  set_source_files_properties(utils/CbmGeometryUtils.cxx
+                              PROPERTIES COMPILE_DEFINITIONS OLD_MODULE_VERSION
+                             )
+EndIf()
+
 Set(LINKDEF CbmBaseLinkDef.h)
 Set(LIBRARY_NAME CbmBase)
 Set(DEPENDENCIES

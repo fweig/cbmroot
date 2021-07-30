@@ -543,7 +543,7 @@ void CbmTof::CreateInBeamNodes()
 // -------------------------------------------------------------------------
 
 // -----   Private method CheckIfSensitive   -------------------------------
-Bool_t CbmTof::CheckIfSensitive(std::string name)
+Bool_t CbmTof::IsSensitive(const std::string& name)
 {
   // If the current Cell volume belongs to a counter declared inactive w.r.t.
   // Monte Carlo point creation, it is not declared sensitive
@@ -561,6 +561,9 @@ Bool_t CbmTof::CheckIfSensitive(std::string name)
   }
   return kFALSE;
 }
+
+Bool_t CbmTof::CheckIfSensitive(std::string name) { return IsSensitive(name); }
+
 // -------------------------------------------------------------------------
 
 

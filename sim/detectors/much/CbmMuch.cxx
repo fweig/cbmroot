@@ -387,7 +387,7 @@ void CbmMuch::ConstructRootGeometry(TGeoMatrix*)
 
 
 // -----   CheckIfSensitive   -------------------------------------------------
-Bool_t CbmMuch::CheckIfSensitive(std::string name)
+Bool_t CbmMuch::IsSensitive(const std::string& name)
 {
   TString tsname = name;
 
@@ -398,3 +398,5 @@ Bool_t CbmMuch::CheckIfSensitive(std::string name)
   }
   return kFALSE;
 }
+
+Bool_t CbmMuch::CheckIfSensitive(std::string name) { return IsSensitive(name); }

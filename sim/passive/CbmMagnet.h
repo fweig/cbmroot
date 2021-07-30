@@ -18,6 +18,7 @@ public:
   virtual ~CbmMagnet();
   virtual void ConstructGeometry();
 
+  virtual Bool_t IsSensitive(const std::string& name);
   Bool_t CheckIfSensitive(std::string name);
 
 private:

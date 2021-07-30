@@ -112,6 +112,7 @@ public:
   virtual void ConstructGeometry();
   virtual void ConstructRootGeometry(TGeoMatrix* shift = NULL);
   Bool_t CheckIfSensitive(std::string name);
+  virtual Bool_t IsSensitive(const std::string& name);
 
 private:
   /** Track information to be stored until the track leaves the

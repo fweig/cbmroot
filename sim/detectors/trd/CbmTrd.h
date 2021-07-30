@@ -99,6 +99,7 @@ public:
   virtual void ConstructGeometry();
 
   Bool_t CheckIfSensitive(std::string name);
+  virtual Bool_t IsSensitive(const std::string& name);
 
   void UseGlobalPhysicsProcesses(Bool_t use) { fUseGlobalPhysicsProcesses = use; }
 

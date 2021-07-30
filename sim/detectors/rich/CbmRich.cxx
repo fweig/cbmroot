@@ -88,7 +88,7 @@ CbmRich::~CbmRich()
 
 void CbmRich::Initialize() { FairDetector::Initialize(); }
 
-Bool_t CbmRich::CheckIfSensitive(std::string name)
+Bool_t CbmRich::IsSensitive(const std::string& name)
 {
   //return true;
   TString volName = name;
@@ -97,6 +97,8 @@ Bool_t CbmRich::CheckIfSensitive(std::string name)
   if (volName.Contains("mirror_tile_type")) return kTRUE;
   return kFALSE;
 }
+
+Bool_t CbmRich::CheckIfSensitive(std::string name) { return IsSensitive(name); }
 
 
 Bool_t CbmRich::ProcessHits(FairVolume* vol)
