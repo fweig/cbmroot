@@ -65,7 +65,7 @@ ipc/lib/fles_ipc/TimesliceMultiSubscriber.cpp
 )
 
 
-Set_Source_Files_Properties(${SRCS} COMPILE_FLAGS "-std=c++11 -O3 -ggdb -msse4.2 -Wall -Wpedantic -Wextra -Winit-self -Wundef -Wold-style-cast -Woverloaded-virtual -Wwrite-strings -Wnon-virtual-dtor -fno-omit-frame-pointer")
+Set_Source_Files_Properties(${SRCS} COMPILE_FLAGS "-std=c++${CMAKE_CXX_STANDARD} -O3 -ggdb -msse4.2 -Wall -Wpedantic -Wextra -Winit-self -Wundef -Wold-style-cast -Woverloaded-virtual -Wwrite-strings -Wnon-virtual-dtor -fno-omit-frame-pointer")
 
 Set(LIBRARY_NAME fles_ipc)
 If(UNIX AND NOT APPLE)

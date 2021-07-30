@@ -290,12 +290,12 @@ Bool_t CbmMcbm2018UnpackerAlgoPsd::ProcessMs(const fles::Timeslice& ts, size_t u
   if ((fair::Logger::Logging(fair::Severity::debug)) && (uNbMessages > 1)) {
     printf("%u = %u 64bit messages\n", uSize, uNbMessages);
     for (uint32_t line_iter = 0; line_iter < uNbMessages - 2; line_iter += 2) {
-      printf("%010lx", (pInBuff[line_iter] & 0xffffffffff));
-      printf("%010lx", (pInBuff[line_iter + 1] & 0xffffffffff));
+      printf("%010llx", static_cast<unsigned long long int>(pInBuff[line_iter] & 0xffffffffff));
+      printf("%010llx", static_cast<unsigned long long int>(pInBuff[line_iter + 1] & 0xffffffffff));
       printf("   %u - %u", line_iter + 1, line_iter + 2);
       printf("\n");
     }
-    printf("%020lx   %u\n", pInBuff[uNbMessages - 1], uNbMessages);
+    printf("%020llx   %u\n", static_cast<unsigned long long int>(pInBuff[uNbMessages - 1]), uNbMessages);
   }
 
   // every 80bit gbt word is decomposed into two 64bit words

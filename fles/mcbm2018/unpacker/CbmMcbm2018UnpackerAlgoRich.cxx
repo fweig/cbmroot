@@ -653,7 +653,7 @@ Bool_t CbmMcbm2018UnpackerAlgoRich::DebugMs(const fles::Timeslice& ts, size_t uM
   return kTRUE;
 }
 
-Int_t CbmMcbm2018UnpackerAlgoRich::Debug(const uint8_t* ptr, const size_t size) { return 0; }
+Int_t CbmMcbm2018UnpackerAlgoRich::Debug(const uint8_t* /*ptr*/, const size_t /*size*/) { return 0; }
 
 
 void CbmMcbm2018UnpackerAlgoRich::ErrorMsg(uint16_t errbits, CbmMcbm2018RichErrorType type, uint16_t tdcId)

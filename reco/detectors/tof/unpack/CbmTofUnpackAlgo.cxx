@@ -204,7 +204,7 @@ bool CbmTofUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
         LOG(warning) << fName << "::unpack => "
                      << "In timeslice " << fulCurrentTsIdx << " in microslice " << imslice << " component " << icomp
                      << " last message is not an EndOfMs: type " << messageType
-                     << Form(" dump: 0x%16lX", pMess[uIdx].getData());
+                     << Form(" dump: 0x%16llX", static_cast<unsigned long long int>(pMess[uIdx].getData()));
       }  // else of if( pMess[uIdx].isEndOfMs() )
     }    // if( uNbMessages - 1 == uIdx )
          /*
@@ -226,7 +226,7 @@ bool CbmTofUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
       LOG(warning) << fName << "::unpack => "
                    << "In timeslice " << fulCurrentTsIdx << " in microslice " << imslice << " component " << icomp
                    << " first message is not an epoch: type " << messageType
-                   << Form(" dump: 0x%16lX", pMess[uIdx].getData());
+                   << Form(" dump: 0x%16llX", static_cast<unsigned long long int>(pMess[uIdx].getData()));
       LOG(warning) << fName << "::unpack => "
                    << "Ignoring this microslice.";
       return false;
@@ -300,12 +300,13 @@ void CbmTofUnpackAlgo::ProcessEpoch(const critof001::Message& mess, uint32_t uMe
 
     if (ulEpochNr != ulMsStartInEpoch) {
       // size_t required to silence a warning on macos (there a uint64_t is a llu)
-      LOG(error) << fName << "::ProcessEpoch => Error first global epoch, "
-                 << Form(
-                      "from MS index 0x%06lx, current 0x%06llx, diff %lld, raw 0x%016lx, NoErr %d, current 0x%06lx  %f",
-                      ulMsStartInEpoch, ulEpochNr, ulEpochNr - ulMsStartInEpoch, mess.getData(), fuProcEpochUntilError,
-                      static_cast<size_t>(fulCurrentMsIdx / critof001::kuEpochInNs),
-                      fulCurrentMsIdx / critof001::kuEpochInNs);
+      LOG(error)
+        << fName << "::ProcessEpoch => Error first global epoch, "
+        << Form("from MS index 0x%06llx, current 0x%06llx, diff %lld, raw 0x%016llx, NoErr %d, current 0x%06lx  %f",
+                static_cast<unsigned long long int>(ulMsStartInEpoch), ulEpochNr, ulEpochNr - ulMsStartInEpoch,
+                static_cast<unsigned long long int>(mess.getData()), fuProcEpochUntilError,
+                static_cast<size_t>(fulCurrentMsIdx / critof001::kuEpochInNs),
+                fulCurrentMsIdx / critof001::kuEpochInNs);
       LOG(error) << fName << "::ProcessEpoch => Ignoring data until next valid epoch";
 
       fbLastEpochGood       = false;
@@ -341,10 +342,10 @@ void CbmTofUnpackAlgo::ProcessEpoch(const critof001::Message& mess, uint32_t uMe
   if (10e9 < critof001::kuEpochInNs * fulEpochIndexInTs)
     // Cast required to silence a warning on macos (there a uint64_t is a llu)
     LOG(debug) << fName << "::ProcessEpoch => "
-               << Form("Raw Epoch: 0x%06llx, Epoch offset 0x%06lx, Epoch in Ts: 0x%07lx, time %f ns (%f * %lu)",
-                       ulEpochNr, fulTsStartInEpoch, static_cast<size_t>(fulEpochIndexInTs),
-                       critof001::kuEpochInNs * fulEpochIndexInTs, critof001::kuEpochInNs,
-                       static_cast<size_t>(fulEpochIndexInTs));
+               << Form("Raw Epoch: 0x%06llx, Epoch offset 0x%06llx, Epoch in Ts: 0x%07lx, time %f ns (%f * %lu)",
+                       ulEpochNr, static_cast<long long unsigned int>(fulTsStartInEpoch),
+                       static_cast<size_t>(fulEpochIndexInTs), critof001::kuEpochInNs * fulEpochIndexInTs,
+                       critof001::kuEpochInNs, static_cast<size_t>(fulEpochIndexInTs));
 }
 
 void CbmTofUnpackAlgo::ProcessHit(const critof001::Message& mess)
