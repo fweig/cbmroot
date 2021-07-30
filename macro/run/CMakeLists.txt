@@ -176,7 +176,7 @@ foreach(setup IN LISTS cbm_setup)
 	FIXTURES_REQUIRED fixt_reco_ev_${setup}
  	RESOURCE_LOCK collParDb_${setup}
   )
-  
+
   # --- Test run_reco_ev_real
   # --- Event-by-event reconstruction from event-based simulation
   # --- Real raw event builder
@@ -204,7 +204,7 @@ foreach(setup IN LISTS cbm_setup)
 	FIXTURES_REQUIRED fixt_reco_ts_${setup}
  	RESOURCE_LOCK collParDb_${setup}
   )
-  
+
   # --- Test run_reco_ts_eb_real
   # --- Event-by-event reconstruction from time-based simulation
   # --- Real raw event builder
@@ -235,8 +235,40 @@ foreach(setup IN LISTS cbm_setup)
 endforeach(setup IN LISTS cbm_setup)
 # ============================================================================
 
+# =====   mCBM 2021 tests   ==================================================
+# ====> only if test TSA files for "typical runs" present
+If(DEFINED ENV{RAW_DATA_PATH} )
+  SET( RAW_DATA_PATH $ENV{RAW_DATA_PATH} )
+
+  Message( STATUS "Raw data path provided => Performing mCBM 2021 tests using tsa files in ${RAW_DATA_PATH}" )
+
+  ## Generate scripts
+  GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_unpack_tsa.C )  # Unpackers
+  ## Run only if raw data files present
+  ForEach(RUN 1588 )
+    Message( STATUS "Checking if raw data file exists: ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa" )
+    If(EXISTS ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa)
+      Message( STATUS "Raw data file found, tests will be performed for mCBM run ${RUN}" )
+
+      ## Define tests + dependencies
+      ### Raw data analysis tests
+      Set(testname mcbm_unpack_2021_${RUN})
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_unpack_tsa.sh \"${RAW_DATA_PATH}/${RUN}_first20Ts.tsa\" ${RUN} \"mcbm_beam_2021_03\" -1 \"data/\")
+      Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
+      Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Macro finished successfully")
+      set_tests_properties(${testname} PROPERTIES DEPENDS run_cleanup)
+      set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED run_cleanup)
+      Set(fixture_unpacked_${RUN} fixture_done_${testname})
+      set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_unpacked_${RUN}})
+      EndIf() # If(EXISTS ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa))
+  EndForEach() # ForEach(RUN 1588 )
+EndIf() # If(DEFINED ENV{RAW_DATA_PATH} )
+#####################
+# ============================================================================
+
 Install(FILES .rootrc run_tra_file.C run_tra_beam.C run_transport_json_config.C run_digi_json_config.C config.json
               run_digi.C run_reco.C run_tests.sh
+              run_unpack_online.C run_unpack_tsa.C
         DESTINATION share/cbmroot/macro/run
        )
 Install(CODE "FILE(MAKE_DIRECTORY \${CMAKE_INSTALL_PREFIX}/share/cbmroot/macro/run/data)")

@@ -239,8 +239,8 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
 
   // -----   Finish   -------------------------------------------------------
   timer.Stop();
-  std::cout << "Macro finished successfully after CpuTime = " << timer.CpuTime() << " s RealTime = " << timer.RealTime()
-            << " s." << std::endl;
+  std::cout << "Macro finished successfully." << std::endl;
+  std::cout << "After CpuTime = " << timer.CpuTime() << " s RealTime = " << timer.RealTime() << " s." << std::endl;
   // ------------------------------------------------------------------------
 
 }  // End of main macro function

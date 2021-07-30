@@ -19,6 +19,8 @@
 
 #include "TString.h"
 
+#include <iomanip>
+
 #include "gDpbMessv100.h"
 
 // -----   Standard constructor   ------------------------------------------
@@ -257,7 +259,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMap()
         break;
       }
       default: {
-        LOG(error) << "Invalid Tof Type  specifier ";
+        LOG(error) << "Invalid Tof Type specifier for GBTx " << std::setw(2) << uGbtx << ": " << fiRpcType[uGbtx];
       }
     }  // switch (fiRpcType[uGbtx])
   }    // for (UInt_t uGbtx = 0; uGbtx < uNrOfGbtx; ++uGbtx)
