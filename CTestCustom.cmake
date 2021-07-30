@@ -43,6 +43,7 @@ set(CTEST_CUSTOM_WARNING_EXCEPTION
         # -- warnings from our external packages
         "external/flib_dpb"
         "external/ipc" 
+        "maybe_unused"
         "include/AnalysisTree"
 
         # -- remove intended fall through warnings
@@ -53,6 +54,15 @@ set(CTEST_CUSTOM_WARNING_EXCEPTION
         "CbmDeviceUnpackTofMcbm2018.cxx.*warning: attributes at the beginning of statement are ignored"
         "CbmDeviceUnpackTofMcbm2018.cxx.*warning: this statement may fall through"
         "CbmDeviceUnpackTofMcbm2018.cxx.*note: here"
+        "CbmMcbm2018TofPar.cxx.*warning: attributes at the beginning of statement are ignored"
+        "CbmMcbm2018TofPar.cxx.*warning: this statement may fall through"
+        "CbmMcbm2018TofPar.cxx.*note: here"
+
+        # -- warnings from a feature we want and which is okay
+        "CbmCheckEvents.cxx:86:52"
+
+        # -- warnings about to long function for debugging
+        "variable tracking size limit exceeded"
 
         # -- warnings from structures for HADAQ memory casting
         "struct hadaq::HadTu"
@@ -63,8 +73,9 @@ set(CTEST_CUSTOM_WARNING_EXCEPTION
         # -- warnings from structures for MBS/LMD memory casting
         "struct mbs::Header"
 
-        # -- warnings from my test machine demac006
-        "warning: text-based stub file"
+        # -- warnings from macosx test machines
+        "ld: warning: dylib.*was built for newer macOS version.*than being linked"
+        ".*^.*"
 
         # -- don't show pragma message warnings
         "Compiling CBM Configuration"
