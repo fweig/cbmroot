@@ -282,20 +282,18 @@ private:
   CbmMCDataArray* fMvdPoints {nullptr};
   CbmMCDataArray* fMCTracks {nullptr};
 
-  TClonesArray* listStsPts {nullptr};  // Sts MC points
   TClonesArray* listStsDigiMatch {nullptr};
   TClonesArray* listStsClusters {nullptr};
   TClonesArray* listStsHits {nullptr};
   TClonesArray* listStsHitMatch {nullptr};
   TClonesArray* listStsClusterMatch {nullptr};
 
-  TClonesArray* listMvdPts {nullptr};  // Mvd MC points
   TClonesArray* listMvdHits {nullptr};
   TClonesArray* listMvdDigiMatches {nullptr};
   TClonesArray* listMvdHitMatches {nullptr};
 
   //MuCh
-  int nMuchPoints {0};
+
   CbmMCDataArray* fMuchPoints {nullptr};
   TClonesArray* listMuchHitMatches {nullptr};  // Output CbmMatch array
   TClonesArray* fDigiMatchesMuch {nullptr};

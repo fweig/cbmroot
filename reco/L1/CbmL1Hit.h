@@ -25,8 +25,6 @@ struct CbmL1Hit {
   int f     = 0;              // front strip index
   int b     = 0;              // back strip index
   int ID    = 0;              // TODO: check if this ID is redundant
-  int file  = 0;              // TODO: ??
-  int event = 0;              // TODO: ??
   L1Vector<int> mcPointIds {"CbmL1Hit::mcPointIds"};  // indices of CbmL1MCPoint in L1->vMCPoints array
 };
 

@@ -29,6 +29,8 @@
 #include "CbmMuchStation.h"
 #include "CbmMvdDetector.h"
 #include "CbmMvdStationPar.h"
+// TODO: include of CbmSetup.h creates problems on Mac
+// #include "CbmSetup.h"
 #include "CbmStsFindTracks.h"
 #include "CbmStsParSetModule.h"
 #include "CbmStsParSetSensor.h"
@@ -174,6 +176,10 @@ InitStatus CbmL1::Init()
     fUseMVD                    = 1;
     CbmStsFindTracks* FindTask = L1_DYNAMIC_CAST<CbmStsFindTracks*>(Run->GetTask("STSFindTracks"));
     if (FindTask) fUseMVD = FindTask->MvdUsage();
+    // TODO: include of CbmSetup.h creates problems on Mac
+    // if (!CbmSetup::Instance()->IsActive(ECbmModuleId::kMvd)) { fUseMVD = false; }
+    // N Mvd stations is read from the KF material
+    if (CbmKF::Instance()->vMvdMaterial.size() == 0) { fUseMVD = false; }
   }
 
   fHistoDir = gROOT->mkdir("L1");
@@ -206,6 +212,11 @@ InitStatus CbmL1::Init()
   fTofPoints  = 0;
   fMCTracks   = 0;
 
+
+  listMvdHitMatches  = 0;
+  fTrdHitMatches     = 0;
+  listMuchHitMatches = 0;
+  fTofHitDigiMatches = 0;
 
   listStsClusters = 0;
   listStsDigi.clear();
@@ -263,8 +274,6 @@ InitStatus CbmL1::Init()
     fTofHits           = 0;
   }
   else {
-
-
     fTofHits = (TClonesArray*) fManger->GetObject("TofHit");
   }
 
@@ -273,29 +282,21 @@ InitStatus CbmL1::Init()
     if (NULL == mcManager) LOG(fatal) << GetName() << ": No CbmMCDataManager!";
 
     fStsPoints = mcManager->InitBranch("StsPoint");
-    fMvdPoints = mcManager->InitBranch("MvdPoint");
-    fMCTracks  = mcManager->InitBranch("MCTrack");
+
+    fMCTracks = mcManager->InitBranch("MCTrack");
     if (NULL == fStsPoints) LOG(fatal) << GetName() << ": No StsPoint data!";
     if (NULL == fMCTracks) LOG(fatal) << GetName() << ": No MCTrack data!";
-
-    listStsPts = L1_DYNAMIC_CAST<TClonesArray*>(fManger->GetObject("StsPoint"));
 
     if (fTimesliceMode) {
       fEventList = (CbmMCEventList*) fManger->GetObject("MCEventList.");
       if (NULL == fEventList) LOG(fatal) << GetName() << ": No MCEventList data!";
     }
 
-    if (!fUseMVD) {
-      listMvdPts        = 0;
-      listMvdHitMatches = 0;
-    }
-    else {
-      listMvdPts         = L1_DYNAMIC_CAST<TClonesArray*>(fManger->GetObject("MvdPoint"));
+    if (fUseMVD) {
+      fMvdPoints         = mcManager->InitBranch("MvdPoint");
       listMvdDigiMatches = L1_DYNAMIC_CAST<TClonesArray*>(fManger->GetObject("MvdDigiMatch"));
       listMvdHitMatches  = L1_DYNAMIC_CAST<TClonesArray*>(fManger->GetObject("MvdHitMatch"));
-
-      if (!listMvdHitMatches && listMvdPts)
-        LOG(error) << "No listMvdHitMatches provided, performance is not done correctly";
+      if (!listMvdHitMatches) { LOG(error) << "No listMvdHitMatches provided, performance is not done correctly"; }
     }
 
     if (!fUseTRD) {
@@ -331,15 +332,6 @@ InitStatus CbmL1::Init()
     }
   }
   else {
-    listMvdPts         = 0;
-    listMvdHitMatches  = 0;
-    fTrdPoints         = 0;
-    fTrdHitMatches     = 0;
-    fTrdPoints         = 0;
-    fMuchPoints        = 0;
-    listMuchHitMatches = 0;
-    fTofPoints         = 0;
-    fTofHitDigiMatches = 0;
   }
   if (!fUseMVD) { listMvdHits = 0; }
   else {
@@ -1219,27 +1211,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
 #endif
     }
 
-    for (L1Vector<CbmL1MCTrack>::iterator i = vMCTracks.begin(); i != vMCTracks.end(); ++i) {
-      CbmL1MCTrack& MC = *i;
-
-      if (!MC.IsReconstructable()) continue;
-      if (!(MC.ID >= 0)) continue;
-
-      if (MC.StsHits.size() < 4) continue;
-      L1Vector<int> hitIndices("hitIndices", algo->NStations, -1);
-
-      for (unsigned int iH = 0; iH < MC.StsHits.size(); iH++) {
-        const int hitI = MC.StsHits[iH];
-        CbmL1Hit& hit  = const_cast<CbmL1Hit&>(vStsHits[hitI]);
-
-        hit.event = MC.iEvent;
-
-        // const int iStation = vMCPoints[hit.mcPointIds[0]].iStation;
-        // hitIndices[iStation] = hitI;
-      }
-    }
-
-
     if (fVerbose > 1) { cout << "L1 Track finder..." << endl; }
     algo->CATrackFinder();
     // IdealTrackFinder();
@@ -1429,24 +1400,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
     h.n                     = mcp.event;
 #endif
   }
-
-  for (L1Vector<CbmL1MCTrack>::iterator i = vMCTracks.begin(); i != vMCTracks.end(); ++i) {
-    CbmL1MCTrack& MC = *i;
-
-    if (!MC.IsReconstructable()) continue;
-    if (!(MC.ID >= 0)) continue;
-
-    if (MC.StsHits.size() < 4) continue;
-    L1Vector<int> hitIndices("CbmL1::hitIndices", algo->NStations, -1);
-
-    for (unsigned int iH = 0; iH < MC.StsHits.size(); iH++) {
-      const int hitI = MC.StsHits[iH];
-      CbmL1Hit& hit  = const_cast<CbmL1Hit&>(vStsHits[hitI]);
-
-      hit.event = MC.iEvent;
-    }
-  }
-
 
   // output performance
   if (fPerformance) {

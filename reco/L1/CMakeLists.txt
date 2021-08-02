@@ -46,7 +46,11 @@ ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/KFQA
 ${CBMROOT_SOURCE_DIR}/reco/KF/Interface
 ${CBMROOT_SOURCE_DIR}/run
+${CBMROOT_SOURCE_DIR}/sim/transport/steer
+${CBMROOT_SOURCE_DIR}/sim/transport/geosetup
+
 ${CBMDATA_DIR}
+${CBMDATA_DIR}/base
 
   ${CBMDETECTORBASE_DIR}/sts
 
@@ -212,15 +216,27 @@ ELSE (SSE_FOUND)
   "-O3")
 ENDIF (SSE_FOUND)
 
-set(LINKDEF L1LinkDef.h)
+Set(LINKDEF L1LinkDef.h)
+
 Set(LIBRARY_NAME L1)
+
+Set(DEPENDENCIES
+    KF
+    Base
+    CbmBase
+    CbmData
+#    CbmSimSteer
+#    CbmGeoSetup
+    CbmMuchBase
+    CbmTrdBase
+    CbmStsBase
+    CbmRecoBase
+    CbmRecoSts
+    boost_regex
+   )
+
 if (OPENMP_FOUND AND APPLE)
-  Set(DEPENDENCIES
-    KF CbmMuchBase CbmTrdBase CbmStsBase CbmRecoBase CbmBase CbmData CbmRecoSts Base boost_regex ${OpenMP_CXX_LIBRARIES}
-  )
-else()
-  Set(DEPENDENCIES
-    KF CbmMuchBase CbmTrdBase CbmStsBase CbmRecoBase CbmBase CbmData CbmRecoSts Base boost_regex
+  Set(DEPENDENCIES ${DEPENDENCIES} ${OpenMP_CXX_LIBRARIES}
   )
 endif()
 

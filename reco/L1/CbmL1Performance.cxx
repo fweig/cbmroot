@@ -1806,8 +1806,6 @@ void CbmL1::InputPerformance()
   //  std::map<unsigned int, unsigned int> stripFToNMCMap,stripBToNMCMap;
 
   map<unsigned int, unsigned int>::iterator it;
-  Int_t nMC = -1;
-  if (listStsPts) { nMC = listStsPts->GetEntriesFast(); }
 
   if (listStsHits && listStsHitMatch) {
     for (unsigned int iH = 0; iH < vStsHits.size(); iH++) {
@@ -1904,36 +1902,23 @@ void CbmL1::InputPerformance()
       CbmMvdHit* sh = L1_DYNAMIC_CAST<CbmMvdHit*>(listMvdHits->At(j));
       CbmMatch* hm  = L1_DYNAMIC_CAST<CbmMatch*>(listMvdHitMatches->At(j));
 
-      int iMC = -1;
-      //       float mcWeight = -1.f;
-      //       for(int iDigiLink=0; iDigiLink<hm->GetNofLinks(); iDigiLink++)
-      //       {
-      //         if( hm->GetLink(iDigiLink).GetWeight() > mcWeight)
-      //         {
-      //           mcWeight = hm->GetLink(iDigiLink).GetWeight();
-      //           iMC = hm->GetLink(iDigiLink).GetIndex();
-      //         }
-      //       }
-      if (hm->GetNofLinks() > 0) iMC = hm->GetLink(0).GetIndex();
+      CbmMvdPoint* pt = nullptr;
+      {
+        float mcWeight = -1.f;
+        for (int iLink = 0; iLink < hm->GetNofLinks(); iLink++) {
+          const CbmLink& link = hm->GetLink(iLink);
+          if (link.GetWeight() < mcWeight) continue;
+          mcWeight = link.GetWeight();
+          pt       = dynamic_cast<CbmMvdPoint*>(fMvdPoints->Get(&link));
+        }
+      }
+      if (!pt) continue;
 
-
-      if (iMC < 0) continue;
       // hit pulls and residuals
-
 
       TVector3 hitPos, mcPos, hitErr;
       sh->Position(hitPos);
       sh->PositionError(hitErr);
-
-      CbmMvdPoint* pt = 0;
-      nMC             = listMvdPts->GetEntriesFast();
-
-      if (iMC >= 0 && iMC < nMC) pt = L1_DYNAMIC_CAST<CbmMvdPoint*>(listMvdPts->At(iMC));
-
-      if (!pt) {
-        //         cout << " No MC points! " << "iMC=" << iMC << endl;
-        continue;
-      }
 
       mcPos.SetX((pt->GetX() + pt->GetXOut()) / 2.);
       mcPos.SetY((pt->GetY() + pt->GetYOut()) / 2.);
