@@ -10,6 +10,7 @@
 
 #include "CbmModuleList.h"
 #include "CbmTofDigi.h"
+#include "CbmTrdDigi.h"
 
 #include "TString.h"
 
@@ -87,6 +88,7 @@ public:
   void RemoveCheckDetector(ECbmModuleId detIn);
 
   void SetTrdPeakWidthNs(Double_t val = 120.) { fTrdPeakWidthNs = val; }
+  void SetTrd2dPeakWidthNs(Double_t val = 120.) { fTrd2dPeakWidthNs = val; }
   void SetStsPeakWidthNs(Double_t val = 30.) { fStsPeakWidthNs = val; }
   void SetMuchPeakWidthNs(Double_t val = 100.) { fMuchPeakWidthNs = val; }
   void SetTofPeakWidthNs(Double_t val = 20.) { fTofPeakWidthNs = val; }
@@ -108,6 +110,8 @@ private:
 
   /** T0 is not included in CbmDigiManager, so add it explicitly here **/
   const std::vector<CbmTofDigi>* fpT0DigiVec = nullptr;  //!
+  /** TRD-2D is not included in CbmDigiManager, so add it explicitly here **/
+  const std::vector<CbmTrdDigi>* fpTrd2dDigiVec = nullptr;  //!
 
   //
   UInt_t fuNbTs = 0;
@@ -130,12 +134,13 @@ private:
   TString fOutFileName = "data/HistosCheckTiming.root";
   Double_t DetPeakPosSingle;
   Double_t DetAverageSingle;
-  Double_t fTrdPeakWidthNs  = 120.;
-  Double_t fStsPeakWidthNs  = 30.;
-  Double_t fMuchPeakWidthNs = 100.;
-  Double_t fTofPeakWidthNs  = 20.;
-  Double_t fRichPeakWidthNs = 40.;
-  Double_t fPsdPeakWidthNs  = 20.;
+  Double_t fTrdPeakWidthNs   = 120.;
+  Double_t fTrd2dPeakWidthNs = 120.;
+  Double_t fStsPeakWidthNs   = 30.;
+  Double_t fMuchPeakWidthNs  = 100.;
+  Double_t fTofPeakWidthNs   = 20.;
+  Double_t fRichPeakWidthNs  = 40.;
+  Double_t fPsdPeakWidthNs   = 20.;
 
   ClassDefNV(CbmMcbmCheckTimingAlgo, 1);
 };

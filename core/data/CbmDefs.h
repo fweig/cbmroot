@@ -47,8 +47,9 @@ enum class ECbmModuleId
   kPsd        = 8,   ///< Projectile spectator detector
   kHodo       = 9,   ///< Hodoscope (for test beam times)
   kDummyDet   = 10,  ///< Dummy for tutorials or tests
-  kT0         = 11,  ///< ToF start Detector
-  kNofSystems = 12,  ///< For loops over active systems
+  kT0         = 11,  ///< ToF start Detector (FIXME)
+  kTrd2d      = 12,  ///< TRD-FASP Detector  (FIXME)
+  kNofSystems = 13,  ///< For loops over active systems
   kMagnet     = 17,  ///< Magnet
   kTarget     = 18,  ///< Target
   kPipe       = 19,  ///< Beam pipe

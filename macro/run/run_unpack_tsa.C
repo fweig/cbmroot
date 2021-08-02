@@ -159,7 +159,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
     trdfasp2dconfig->SetOutputBranchName("TrdFaspDigi");
     std::string parfilesbasepathTrdfasp2d = Form("%s/parameters/trd", srcDir.Data());
     trdfasp2dconfig->SetParFilesBasePath(parfilesbasepathTrdfasp2d);
-    trdfasp2dconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+    trdfasp2dconfig->SetSystemTimeOffset(-1800);  // [ns] value to be updated
   }
   // -------------
 

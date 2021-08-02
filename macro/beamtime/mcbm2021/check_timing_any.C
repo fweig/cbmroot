@@ -48,7 +48,6 @@ void check_timing_any(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TS
                                      190, 182 );
 */
   /// Here swapping with TOF
-
   timeChecker->SetReferenceDetector(ECbmModuleId::kPsd, "Psd", -300000, 300000, 320 * 300);
   timeChecker->RemoveCheckDetector(ECbmModuleId::kPsd);
   //timeChecker->AddCheckDetector(ECbmModuleId::kT0, "T0");
@@ -58,17 +57,14 @@ void check_timing_any(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TS
   timeChecker->SetReferenceDetector(ECbmModuleId::kMuch, "Much");
   timeChecker->RemoveCheckDetector(ECbmModuleId::kMuch);
   timeChecker->AddCheckDetector(ECbmModuleId::kT0, "T0");
-*/
+  */
 
   /// Remove detectors not present in 2021
   timeChecker->RemoveCheckDetector(ECbmModuleId::kT0);
   timeChecker->RemoveCheckDetector(ECbmModuleId::kMuch);
 
-  /// Remove detectors not yet in common unpacker
-  timeChecker->RemoveCheckDetector(ECbmModuleId::kSts);
-  timeChecker->RemoveCheckDetector(ECbmModuleId::kRich);
-
   /// Add detectors with wider range
+  /*
   timeChecker->RemoveCheckDetector(ECbmModuleId::kSts);
   timeChecker->AddCheckDetector(ECbmModuleId::kSts, "Sts");
   timeChecker->RemoveCheckDetector(ECbmModuleId::kTrd);
@@ -76,6 +72,10 @@ void check_timing_any(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TS
   timeChecker->RemoveCheckDetector(ECbmModuleId::kTof);
   //timeChecker->AddCheckDetector(ECbmModuleId::kTof, "Tof", -150000, 150000, 320*150);
   timeChecker->AddCheckDetector(ECbmModuleId::kTof, "Tof", -2000, 2000, 320 * 2);
+  */
+
+  /// Add detectors not in default list
+  timeChecker->AddCheckDetector(ECbmModuleId::kTrd2d, "Trd2d", -3000, 3000, 160 * 3);
 
   if (0 < uRunId) timeChecker->SetOutFilename(Form("%s/HistosTimeCheck_%03u.root", outDir.Data(), uRunId));
   fRun->AddTask(timeChecker);
