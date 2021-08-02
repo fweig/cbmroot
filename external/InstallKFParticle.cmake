@@ -6,7 +6,7 @@ set(KFPARTICLE_DESTDIR "${CMAKE_BINARY_DIR}/external/KFPARTICLE-prefix")
 # GIT_TAG is a hash for KFParticle tag cbm/v1.1-1 
 download_project_if_needed(PROJECT         kfparticle_source
                            GIT_REPOSITORY  ${KFPARTICLE_SRC_URL}
-                           GIT_TAG         "d4e22c8222cc6da877eefa453ade73d31d85e2e9"
+                           GIT_TAG         "1eddb796b01d91ac7faf020e3b616556c28da4d0"
                            SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/KFParticle
                            TEST_FILE       CMakeLists.txt
                           )
