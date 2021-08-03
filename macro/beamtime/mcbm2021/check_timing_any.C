@@ -110,7 +110,7 @@ void check_timing_any(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TS
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
   cout << endl << endl;
-  cout << "Macro finished succesfully." << endl;
+  cout << "Macro finished successfully." << endl;
   cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
   cout << endl;
   // ------------------------------------------------------------------------
