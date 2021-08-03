@@ -22,6 +22,8 @@ public:
   virtual ~CbmTsEventHeader() {};
 
   /** Get the Start time of the this Timeslice linked to this event header*/
+  uint64_t GetTsIndex() { return fTsIndex; }
+  /** Get the Start time of the this Timeslice linked to this event header*/
   uint64_t GetTsStartTime() { return fTsStartTime; }
 
   /** @brief Get the number of digis in this Ts */
@@ -51,9 +53,13 @@ public:
   void SetNDigisTrd2D(ULong64_t value) { fNDigisTrd2D = value; }
 
   /** @brief Set the Ts Start Time @param value Start time of the TS */
+  void SetTsIndex(uint32_t value) { fTsIndex = value; }
+  /** @brief Set the Ts Start Time @param value Start time of the TS */
   void SetTsStartTime(uint64_t value) { fTsStartTime = value; }
 
 protected:
+  /** Timeslice index */
+  uint64_t fTsIndex = 0;
   /** Timeslice start time */
   uint64_t fTsStartTime = 0;
 
@@ -70,6 +76,6 @@ protected:
   /** @brief nDigis in "this" timeslice measured by the TOF */
   ULong64_t fNDigisTof = 0;
 
-  ClassDef(CbmTsEventHeader, 3)
+  ClassDef(CbmTsEventHeader, 4)
 };
 #endif

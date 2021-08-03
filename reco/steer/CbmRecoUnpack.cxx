@@ -238,6 +238,7 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
   // Prepare timeslice
   const fles::Timeslice& timeslice = *ts;
 
+  fCbmTsEventHeader->SetTsIndex(ts->index());
   fCbmTsEventHeader->SetTsStartTime(ts->start_time());
 
   uint64_t nComponents = ts->num_components();
