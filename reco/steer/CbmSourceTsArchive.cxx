@@ -7,8 +7,7 @@
 
 #include "CbmSourceTsArchive.h"
 
-#include <TimesliceMultiInputArchive.hpp>
-#include <TimesliceMultiSubscriber.hpp>
+#include <TimesliceAutoSource.hpp>
 
 #include <FairSource.h>
 #include <Logger.h>
@@ -46,56 +45,8 @@ void CbmSourceTsArchive::Close()
 // -----   Initialisation   ---------------------------------------------------
 Bool_t CbmSourceTsArchive::Init()
 {
+  fTsSource = new fles::TimesliceAutoSource(fFileNames);
 
-  switch (fCbmSourceType) {
-    // Use again when kFILE does not skipp the first TS by default anymore
-    // case Source_Type::kONLINE: {
-    case eCbmSourceType::kOnline: {
-      // Create a ";" separated string with all host/port combinations
-      // Build a semicolon-separated list of file names for TimesliceMultiInputArchive
-      string fileList;
-      for (const auto& fileName : fFileNames) {
-        fileList += fileName;
-        fileList += ";";
-      }
-      fileList.pop_back();  // Remove last semicolon after last file name
-
-      fTsSource = new fles::TimesliceMultiSubscriber(fileList, fHighWaterMark);
-
-      /// Initialize the Multisubscriber
-      /// (This restores the original behavior after modifications needed to make the MQ version
-      dynamic_cast<fles::TimesliceMultiSubscriber*>(fTsSource)->InitTimesliceSubscriber();
-
-      if (!fTsSource) {
-        LOG(fatal) << "Could not connect to the TS publisher.";
-        return kFALSE;
-      }
-      break;
-    }
-    // Se above
-    // case Source_Type::kFILE: {
-    case eCbmSourceType::kOffline: {
-      // Return error for empty file list and an offline run
-      if (fFileNames.empty()) return kFALSE;
-
-
-      // Build a semicolon-separated list of file names for TimesliceMultiInputArchive
-      string fileList;
-      for (const auto& fileName : fFileNames) {
-        fileList += fileName;
-        fileList += ";";
-      }
-      fileList.pop_back();  // Remove last semicolon after last file name
-
-      // Create the proper TS source
-      fTsSource = new fles::TimesliceMultiInputArchive(fileList);
-      if (!fTsSource) {
-        LOG(error) << "SourceTsArchive: Failed to create TSMultiInputArchive!";
-        return kFALSE;
-      }
-      break;
-    }
-  }
   // Initialise unpacker
   fUnpack.Init();
   LOG(info) << "Source: Init done";

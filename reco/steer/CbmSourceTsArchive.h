@@ -24,7 +24,7 @@
  ** @since 2 June 2021
  **
  ** This class allows to read time-slice data from file(s) and hands them to
- ** the unpacking stage. It interfaces fles::TimesliceMultiInputArchive to cbmroot.
+ ** the unpacking stage. It interfaces fles::TimesliceAutoSource to cbmroot.
  **/
 class CbmSourceTsArchive : public FairSource {
 
@@ -106,9 +106,6 @@ public:
   /** @brief Reset clear the output vectors as preparation for the next timeslice. Forwarded to CbmRecoUnpack **/
   virtual void Reset() { fUnpack.Reset(); }
 
-  /** @brief Set the high water mark (limit of buffered timeslice by the publisher) */
-  void SetHighWaterMark(std::uint32_t value) { fHighWaterMark = value; }
-
   /** @brief Set unpacker parameters (forced by base class) **/
   virtual void SetParUnpackers() {}
 
@@ -124,9 +121,6 @@ public:
 private:
   /** List of input file names **/
   std::vector<std::string> fFileNames = {};
-
-  /** @brief Amount of Timeslices buffered before the publisher starts dropping new ones, if the old are not digested yet.*/
-  std::uint32_t fHighWaterMark = 1;
 
   /** @brief type of source that is currently used @remark currently we use kONLINE as default, since, kFILE skipps the first TS probably due to obsolete reasons (to be checked PR072021) */
   Source_Type fSourceType = Source_Type::kONLINE;
