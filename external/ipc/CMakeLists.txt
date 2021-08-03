@@ -5,10 +5,9 @@
 
 download_project_if_needed(PROJECT         fles_ipc
                            GIT_REPOSITORY  "https://github.com/cbm-fles/flesnet"
-                           GIT_TAG         "7329aa41f7a63cca1ddb775d3952ae4307681e0d"
+                           GIT_TAG         "5e01c9818b0b8d9268fb118eaae8d920544e2bab"
                            GIT_STASH       TRUE
                            SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/ipc
-                           PATCH_COMMAND   "patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/TimesliceMultiSubscriber_init.patch"
                            TEST_FILE       CMakeLists.txt
                            )
 
@@ -18,6 +17,7 @@ add_library(fles_logging SHARED ipc/lib/logging/log.cpp ipc/lib/logging/log.hpp)
 target_compile_definitions(fles_logging
   PUBLIC BOOST_LOG_DYN_LINK
   PUBLIC BOOST_LOG_USE_NATIVE_SYSLOG
+  PUBLIC BOOST_ERROR_CODE_HEADER_ONLY
 )
 
 target_include_directories(fles_logging PUBLIC ipc/lib/logging/)
@@ -62,10 +62,11 @@ ipc/lib/fles_ipc/TimesliceSubscriber.cpp
 ipc/lib/fles_ipc/TimesliceView.cpp
 ipc/lib/fles_ipc/TimesliceMultiInputArchive.cpp
 ipc/lib/fles_ipc/TimesliceMultiSubscriber.cpp
+ipc/lib/fles_ipc/TimesliceAutoSource.cpp
 )
 
 
-Set_Source_Files_Properties(${SRCS} COMPILE_FLAGS "-std=c++${CMAKE_CXX_STANDARD} -O3 -ggdb -msse4.2 -Wall -Wpedantic -Wextra -Winit-self -Wundef -Wold-style-cast -Woverloaded-virtual -Wwrite-strings -Wnon-virtual-dtor -fno-omit-frame-pointer")
+Set_Source_Files_Properties(${SRCS} COMPILE_FLAGS "-std=c++17 -O3 -ggdb -msse4.2 -Wall -Wpedantic -Wextra -Winit-self -Wundef -Wold-style-cast -Woverloaded-virtual -Wwrite-strings -Wnon-virtual-dtor -fno-omit-frame-pointer")
 
 Set(LIBRARY_NAME fles_ipc)
 If(UNIX AND NOT APPLE)
