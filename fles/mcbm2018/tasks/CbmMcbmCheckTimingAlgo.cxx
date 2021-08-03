@@ -62,6 +62,15 @@ Bool_t CbmMcbmCheckTimingAlgo::Init()
     CheckDataPresence(*det);
   }  // for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
+  /// Try to get the 2021 Event header which is containing the Timeslice info
+  /// If not present, we have "old" data and will simply catch it with the nullptr value
+  auto eh = FairRun::Instance()->GetEventHeader();
+  LOG(info) << "CbmMcbmCheckTimingAlgo => EventHeader ptr: " << eh << " " << eh->IsA();
+  fCbmTsEventHeader = dynamic_cast<CbmTsEventHeader*>(eh);
+  if (nullptr != fCbmTsEventHeader) {
+    LOG(info) << "CbmMcbmCheckTimingAlgo => Using the index from the TS Event header for Evo plots";
+  }
+
   CreateHistos();
 
   return kTRUE;
@@ -85,7 +94,7 @@ void CbmMcbmCheckTimingAlgo::CheckDataPresence(CheckTimingDetector detToCheck)
     }  // if ( ! fpT0DigiVec )
   }    // if( ECbmModuleId::kT0 == detToCheck.detId )
   /// Handle special case for TRD-2D as not yet supported in DigiManager
-  if (ECbmModuleId::kTrd2d == detToCheck.detId) {
+  else if (ECbmModuleId::kTrd2d == detToCheck.detId) {
     // Get a pointer to the previous already existing data level
     fpTrd2dDigiVec = ioman->InitObjectAs<std::vector<CbmTrdDigi> const*>("TrdFaspDigi");
     if (!fpTrd2dDigiVec) {
@@ -436,8 +445,14 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime, const
     fvhDetToRefDiff[uDetIdx]->Fill(dDiffTime);
     fvhDetToRefDiffRefCharge[uDetIdx]->Fill(dDiffTime, dRefCharge);
     fvhDetToRefDiffDetCharge[uDetIdx]->Fill(dDiffTime, dCharge);
-    fvhDetToRefDiffEvo[uDetIdx]->Fill(fuNbTs, dDiffTime);
-    fvhDetToRefDiffEvoLong[uDetIdx]->Fill(fuNbTs, dDiffTime);
+    if (nullptr == fCbmTsEventHeader) {
+      fvhDetToRefDiffEvo[uDetIdx]->Fill(fuNbTs, dDiffTime);
+      fvhDetToRefDiffEvoLong[uDetIdx]->Fill(fuNbTs, dDiffTime);
+    }
+    else {
+      fvhDetToRefDiffEvo[uDetIdx]->Fill(fCbmTsEventHeader->GetTsIndex(), dDiffTime);
+      fvhDetToRefDiffEvoLong[uDetIdx]->Fill(fCbmTsEventHeader->GetTsIndex(), dDiffTime);
+    }
   }  // for( UInt_t uDigiIdx = fvDets[ uDetIdx ].iPrevRefFirstDigi; uDigiIdx < uNbDigis; ++uDigiIdx )
 
   /// Store earliest possible starting index for next reference digi (time sorted!)

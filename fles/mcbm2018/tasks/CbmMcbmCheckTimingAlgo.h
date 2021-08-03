@@ -11,6 +11,7 @@
 #include "CbmModuleList.h"
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
+#include "CbmTsEventHeader.h"
 
 #include "TString.h"
 
@@ -112,6 +113,11 @@ private:
   const std::vector<CbmTofDigi>* fpT0DigiVec = nullptr;  //!
   /** TRD-2D is not included in CbmDigiManager, so add it explicitly here **/
   const std::vector<CbmTrdDigi>* fpTrd2dDigiVec = nullptr;  //!
+
+  /** @brief Pointer to the Timeslice start time used to write it to the output tree
+      @remark since we hand this to the FairRootManager it also wants to delete it and we do not have to take care of deletion
+   **/
+  CbmTsEventHeader* fCbmTsEventHeader = nullptr;
 
   //
   UInt_t fuNbTs = 0;
