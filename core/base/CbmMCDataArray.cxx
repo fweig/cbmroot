@@ -125,6 +125,9 @@ TObject* CbmMCDataArray::Get(Int_t fileNumber, Int_t eventNumber, Int_t index)
   // --- If not, copy the array from the chain into the cache
   TChain* ch = fChains[fileNumber];
   ch->GetEntry(eventNumber);
+
+  if (!fTArr[fileNumber]) return nullptr;
+
   arr[eventNumber] = (TClonesArray*) (fTArr[fileNumber]->Clone());
 
   return arr[eventNumber]->At(index);
@@ -147,7 +150,7 @@ Int_t CbmMCDataArray::Size(Int_t fileNumber, Int_t eventNumber)
   TChain* ch = fChains[fileNumber];
   ch->GetEntry(eventNumber);
 
-  return fTArr[fileNumber]->GetEntriesFast();
+  return (fTArr[fileNumber]) ? fTArr[fileNumber]->GetEntriesFast() : -1111;
 }
 
 
