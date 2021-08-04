@@ -29,16 +29,6 @@
 class CbmSourceTsArchive : public FairSource {
 
 public:
-  /**
-   * @brief Enum for switch of source type
-   * @remark This is a temporary fix as long as in the original FairSource::Source_Type kFILE leads to skipping the first Timeslice
-  */
-  enum class eCbmSourceType : uint16_t
-  {
-    kOnline = 0,  // Use when running with an online source (published data)
-    kOffline      // Use when running with tsa files as source
-  };
-
   /** @brief Constructor
    ** @param fileName  Name of (single) input file.
    **
@@ -74,11 +64,6 @@ public:
    **/
   virtual Source_Type GetSourceType() { return fSourceType; }
 
-  /** @brief Get the Cbm Source type
-   ** @return eCbmSourceType
-   **/
-  eCbmSourceType GetCbmSourceType() { return fCbmSourceType; }
-
   /**
    * @brief Get the Reco Unpack
    * Access the CbmRecoUnpack class to add unpacker configs
@@ -112,9 +97,6 @@ public:
   /** @brief Set the Source Type @param type */
   void SetSourceType(Source_Type type) { fSourceType = type; }
 
-  /** @brief Set the Cbm Source Type @param type @remark temporary fix see enum */
-  void SetCbmSourceType(eCbmSourceType type) { fCbmSourceType = type; }
-
   /** @brief Provide dummy implementation of this virtual function as not relevant in our case **/
   Bool_t SpecifyRunId() { return kTRUE; }
 
@@ -124,9 +106,6 @@ private:
 
   /** @brief type of source that is currently used @remark currently we use kONLINE as default, since, kFILE skipps the first TS probably due to obsolete reasons (to be checked PR072021) */
   Source_Type fSourceType = Source_Type::kONLINE;
-
-  /** @brief type of source that is currently used in the CBM definition @remark temprorary fix for the issue described in the comments of the enum */
-  eCbmSourceType fCbmSourceType = eCbmSourceType::kOffline;
 
   /** Time-slice source interface **/
   fles::TimesliceSource* fTsSource = nullptr;  //!

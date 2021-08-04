@@ -192,7 +192,6 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
 
   // -----   CbmSourceTsArchive   -------------------------------------------
   auto source = new CbmSourceTsArchive(infile.data());
-  source->SetCbmSourceType(CbmSourceTsArchive::eCbmSourceType::kOffline);
   auto unpack = source->GetRecoUnpack();
   unpack->SetDoPerfProfiling(doPerfProfiling);
   unpack->SetOutputFilename(perfProfFileName);
