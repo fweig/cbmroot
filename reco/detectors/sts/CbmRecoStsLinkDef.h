@@ -20,6 +20,7 @@
 #pragma link C++ class CbmStsTrackFinderIdeal + ;
 
 #pragma link C++ class CbmStsUnpackAlgo + ;
+#pragma link C++ class CbmStsUnpackAlgoLegacy + ;
 #pragma link C++ class CbmStsUnpackConfig + ;
 #pragma link C++ class CbmStsUnpackMonitor + ;
 
