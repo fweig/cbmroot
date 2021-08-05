@@ -7,3 +7,18 @@
 // -----   Constructor   ------------------------------------------------------
 CbmTsEventHeader::CbmTsEventHeader() {}
 // ----------------------------------------------------------------------------
+
+
+// ---- Reset ----
+void CbmTsEventHeader::Reset()
+{
+  // Reset the digi counters
+  fNDigisPsd   = 0;
+  fNDigisRich  = 0;
+  fNDigisSts   = 0;
+  fNDigisTof   = 0;
+  fNDigisTrd1D = 0;
+  fNDigisTrd2D = 0;
+}
+
+ClassImp(CbmTsEventHeader)

@@ -11,8 +11,6 @@
 #include "CbmTrdDigi.h"
 #include "CbmTsEventHeader.h"
 
-#include "MicrosliceDescriptor.hpp"
-
 #include <FairRootManager.h>
 #include <Logger.h>
 
@@ -214,6 +212,9 @@ void CbmRecoUnpack::performanceProfiling()
 // -----   Reset   ------------------------------------------------------------
 void CbmRecoUnpack::Reset()
 {
+  // Reset the event header for a new timeslice
+  fCbmTsEventHeader->Reset();
+
   // Reset the unpackers for a new timeslice, e.g. clear the output vectors
 
   // ---- Psd ----
@@ -252,7 +253,7 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
     switch (systemId) {
       case fkFlesPsd: {
         if (fPsdConfig) {
-          fCbmTsEventHeader->SetNDigisPsd(unpack(systemId, &timeslice, component, fPsdConfig,
+          fCbmTsEventHeader->AddNDigisPsd(unpack(systemId, &timeslice, component, fPsdConfig,
                                                  fPsdConfig->GetOptOutAVec(), fPsdConfig->GetOptOutBVec()));
         }
 
@@ -260,28 +261,28 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
       }
       case fkFlesRich: {
         if (fRichConfig) {
-          fCbmTsEventHeader->SetNDigisRich(unpack(systemId, &timeslice, component, fRichConfig,
+          fCbmTsEventHeader->AddNDigisRich(unpack(systemId, &timeslice, component, fRichConfig,
                                                   fRichConfig->GetOptOutAVec(), fRichConfig->GetOptOutBVec()));
         }
         break;
       }
       case fkFlesSts: {
         if (fStsConfig) {
-          fCbmTsEventHeader->SetNDigisSts(unpack(systemId, &timeslice, component, fStsConfig,
+          fCbmTsEventHeader->AddNDigisSts(unpack(systemId, &timeslice, component, fStsConfig,
                                                  fStsConfig->GetOptOutAVec(), fStsConfig->GetOptOutBVec()));
         }
         break;
       }
       case fkFlesTof: {
         if (fTofConfig) {
-          fCbmTsEventHeader->SetNDigisTof(unpack(systemId, &timeslice, component, fTofConfig,
+          fCbmTsEventHeader->AddNDigisTof(unpack(systemId, &timeslice, component, fTofConfig,
                                                  fTofConfig->GetOptOutAVec(), fTofConfig->GetOptOutBVec()));
         }
         break;
       }
       case fkFlesTrd: {
         if (fTrd1DConfig) {
-          fCbmTsEventHeader->SetNDigisTrd1D(unpack(systemId, &timeslice, component, fTrd1DConfig,
+          fCbmTsEventHeader->AddNDigisTrd1D(unpack(systemId, &timeslice, component, fTrd1DConfig,
                                                    fTrd1DConfig->GetOptOutAVec(), fTrd1DConfig->GetOptOutBVec()));
         }
         break;
@@ -289,7 +290,7 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
       case fkFlesTrd2D: {
         if (fTrd2DConfig)
           if (fTrd2DConfig) {
-            fCbmTsEventHeader->SetNDigisTrd2D(unpack(systemId, &timeslice, component, fTrd2DConfig,
+            fCbmTsEventHeader->AddNDigisTrd2D(unpack(systemId, &timeslice, component, fTrd2DConfig,
                                                      fTrd2DConfig->GetOptOutAVec(), fTrd2DConfig->GetOptOutBVec()));
           }
         break;
