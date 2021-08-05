@@ -404,7 +404,8 @@ bool CbmTrdUnpackAlgoR::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
           word  = static_cast<size_t>(mscontent[iword]);
           frame = (word >> (32 * istream)) & 0xffffffff;
 
-          while (getMessageType(frame) == Spadic::MsMessageType::kRDA) {
+          // The maximum amount of samples (32) equals to 12 RDA messages
+          while (getMessageType(frame) == Spadic::MsMessageType::kRDA && irda < 12) {
             // We have to count the number of rda frames for sample reconstruction in eom
             irda++;
 
@@ -449,10 +450,10 @@ bool CbmTrdUnpackAlgoR::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
             // Number of samples indicator = nsamples % 4
             std::uint8_t nsamplesindicator = (frame >> 18) & 0x3;
             // Number of required samples as indicated
-            auto nreqsamples = (nadcbitstotal + 18) / 9;
-            std::uint8_t nn  = nreqsamples % 4;
+            std::uint64_t nreqsamples = (nadcbitstotal + 18) / 9;
+            std::uint8_t nn           = nreqsamples % 4;
             for (std::uint8_t itest = 0; itest < 3; itest++) {
-              if (nn == nsamplesindicator) break;
+              if (nn == nsamplesindicator || nreqsamples == 0) break;
               nreqsamples--;
               nn = nreqsamples % 4;
             }
@@ -477,8 +478,9 @@ bool CbmTrdUnpackAlgoR::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
               ++fNrCorruptEom;
             }
             ++fNrCreatedRawMsgs;
-            // the message is done and the raw message container should contain everything we need. So now we can call makeDigi()
-            makeDigi(raw);
+
+            // the message is done and the raw message container should contain everything we need. So now we can call makeDigi(). Nevertheless there is a chance for a corrupted message, which ends up with 0 samples so we have to check for it.
+            if (isample > 0) makeDigi(raw);
           }
           else {
             // We move the word counter backwards by one, such that the unexpected message can correctly be digested
