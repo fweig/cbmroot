@@ -21,23 +21,11 @@
 #ifndef CbmStsUnpackAlgo_H
 #define CbmStsUnpackAlgo_H
 
-#include "CbmErrorMessage.h"  // REMARK see remark in CbmStsUnpackConfig
 #include "CbmMcbm2018StsPar.h"
-#include "CbmRecoUnpackAlgo.tmpl"
-#include "CbmStsDigi.h"
-#include "CbmStsUnpackMonitor.h"
+#include "CbmStsUnpackAlgoBase.h"
 
-#include "Timeslice.hpp"  // timeslice
 
-#include <Rtypes.h>  // for types
-#include <RtypesCore.h>
-
-#include <cstddef>
-#include <cstdint>
-#include <memory>
-#include <utility>
-
-class CbmStsUnpackAlgo : public CbmRecoUnpackAlgo<CbmStsDigi, CbmErrorMessage> {
+class CbmStsUnpackAlgo : public CbmStsUnpackAlgoBase {
 public:
   /** @brief Create the Cbm Trd Unpack AlgoBase object */
   CbmStsUnpackAlgo();

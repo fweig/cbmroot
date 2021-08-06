@@ -13,7 +13,7 @@
 #include <cstdint>
 #include <iomanip>
 
-CbmStsUnpackAlgo::CbmStsUnpackAlgo() : CbmRecoUnpackAlgo("CbmStsUnpackAlgo") {}
+CbmStsUnpackAlgo::CbmStsUnpackAlgo() : CbmStsUnpackAlgoBase("CbmStsUnpackAlgo") {}
 
 CbmStsUnpackAlgo::~CbmStsUnpackAlgo() {}
 

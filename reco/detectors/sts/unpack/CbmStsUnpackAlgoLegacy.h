@@ -9,10 +9,7 @@
 #define CbmStsUnpackAlgoLegacy_H
 
 #include "CbmErrorMessage.h"  // REMARK see remark in CbmStsUnpackConfig
-#include "CbmRecoUnpackAlgo.tmpl"
-
-// Data
-#include "CbmStsDigi.h"
+#include "CbmStsUnpackAlgoBase.h"
 
 #include "StsXyterFinalHit.h"
 #include "StsXyterMessage.h"
@@ -29,7 +26,7 @@
 class CbmMcbm2018StsPar;
 class CbmStsUnpackMonitor;
 
-class CbmStsUnpackAlgoLegacy : public CbmRecoUnpackAlgo<CbmStsDigi, CbmErrorMessage> {
+class CbmStsUnpackAlgoLegacy : public CbmStsUnpackAlgoBase {
 public:
   CbmStsUnpackAlgoLegacy();
   ~CbmStsUnpackAlgoLegacy();

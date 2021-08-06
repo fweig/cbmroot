@@ -21,6 +21,7 @@ CbmStsRecoModule.cxx
 CbmStsTrackFinderIdeal.cxx
 
 unpack/CbmStsUnpackAlgo.cxx
+unpack/CbmStsUnpackAlgoBase.cxx
 unpack/CbmStsUnpackAlgoLegacy.cxx
 unpack/CbmStsUnpackConfig.cxx
 unpack/CbmStsUnpackMonitor.cxx

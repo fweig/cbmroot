@@ -30,7 +30,7 @@
 // -------------------------------------------------------------------------
 
 CbmStsUnpackAlgoLegacy::CbmStsUnpackAlgoLegacy()
-  : CbmRecoUnpackAlgo("CbmStsUnpackAlgoLegacy")
+  : CbmStsUnpackAlgoBase("CbmStsUnpackAlgoLegacy")
   ,
   /// From the class itself
   fbMonitorMode(false)
