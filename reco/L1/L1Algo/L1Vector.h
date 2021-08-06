@@ -94,6 +94,17 @@ public:
     Tbase::resize(count, value...);
   }
 
+  void reduce(std::size_t count)
+  {
+    if (count > Tbase::size()) {
+      LOG(FATAL) << "L1Vector \"" << fName << "\"::reduce(" << count
+                 << "): the new size is bigger than the current one " << Tbase::size() << ", something goes wrong."
+                 << std::endl;
+      assert(count < Tbase::size());
+    }
+    Tbase::resize(count);
+  }
+
   void reserve(std::size_t count)
   {
     if (!Tbase::empty()) {

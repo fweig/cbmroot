@@ -398,9 +398,10 @@ inline void L1Algo::f20(
   n2 = 0;                             // number of doublet
   for (Tindex i1 = 0; i1 < n1; ++i1)  // for each singlet
   {
-    const Tindex i1_V = i1 / fvecLen;
-    const Tindex i1_4 = i1 % fvecLen;
-    L1TrackPar& T1    = T_1[i1_V];
+    unsigned int Ndoublets = 0;
+    const Tindex i1_V      = i1 / fvecLen;
+    const Tindex i1_4      = i1 % fvecLen;
+    L1TrackPar& T1         = T_1[i1_V];
 
     const int n2Saved = n2;
 
@@ -533,9 +534,19 @@ inline void L1Algo::f20(
 #endif  // DOUB_PERFORMANCE
       hitsm_2.push_back(imh);
 
-      if (n2 > 8000) return;
-
+      Ndoublets++;
       n2++;
+
+#ifndef FAST_CODE
+      assert(Ndoublets < fMaxDoubletsPerSinglet);
+#endif
+
+      if (Ndoublets >= fMaxDoubletsPerSinglet) {
+        n2 = n2 - Ndoublets;
+        i1_2.reduce(i1_2.size() - Ndoublets);
+        hitsm_2.reduce(hitsm_2.size() - Ndoublets);
+        break;
+      }
     }
     lmDuplets[hitsl_1[i1]] = (n2Saved < n2);
   }  // for i1
@@ -710,8 +721,9 @@ inline void L1Algo::f30(  // input
                            sqrt(timeError) * 5);
 
 
-        THitI irh = 0;
-        int irh1  = -1;
+        THitI irh       = 0;
+        THitI Ntriplets = 0;
+        int irh1        = -1;
         while (true) {
           if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) {
             irh1++;
@@ -837,6 +849,7 @@ inline void L1Algo::f30(  // input
           timeER[n3_V][n3_4]  = hitr.timeEr;
 
           n3++;
+          Ntriplets++;
 
           n3_V = n3 / fvecLen;
           n3_4 = n3 % fvecLen;
@@ -854,7 +867,24 @@ inline void L1Algo::f30(  // input
             timeER.push_back(fvec_0);
           }
 
-          if (n3 > 4000) return;
+#ifndef FAST_CODE
+          assert(Ntriplets < fMaxTripletPerDoublets);
+#endif
+          if (Ntriplets >= fMaxTripletPerDoublets) {
+
+            n3 = n3 - Ntriplets;
+
+            T_3.resize(n3 / fvecLen);
+            u_front_3.resize(n3 / fvecLen);
+            u_back_3.resize(n3 / fvecLen);
+            z_Pos_3.resize(n3 / fvecLen);
+            du_.resize(n3 / fvecLen);
+            dv_.resize(n3 / fvecLen);
+            timeR.resize(n3 / fvecLen);
+            timeER.resize(n3 / fvecLen);
+
+            break;
+          }
         }
 
 

@@ -104,6 +104,9 @@ public:
   static constexpr unsigned int fkMaxNthreads  = (1 << fkThreadBits);   // 2^6 = 64
   static constexpr unsigned int fkMaxNtriplets = (1 << fkTripletBits);  // 2^20 = 262,144
 
+  unsigned int fMaxDoubletsPerSinglet = 150;
+  unsigned int fMaxTripletPerDoublets = 50;
+
   /// pack station, thread and triplet indices to an unique triplet ID
   static unsigned int PackTripletId(unsigned int Station, unsigned int Thread, unsigned int Triplet)
   {
