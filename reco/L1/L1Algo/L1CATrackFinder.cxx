@@ -234,7 +234,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     T.C30 = T.C31 = T.C32 = 0;
     T.C40 = T.C41 = T.C42 = T.C43 = 0;
     T.C50 = T.C51 = T.C52 = T.C53 = T.C54 = 0;
-    T.C22 = T.C33 = MaxSlope * MaxSlope / 9.;
+    T.C22 = T.C33 = MaxSlopePV * MaxSlopePV / 9.;
     if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) T.C22 = T.C33 = 10;
     T.C44 = MaxInvMom / 3. * MaxInvMom / 3.;
     T.C55 = timeEr * timeEr;
@@ -705,6 +705,9 @@ inline void L1Algo::f30(  // input
         if (fTrackingMode == kSts && (T2.C44[i2_4] < 0)) { continue; }
         if (T2.C00[i2_4] < 0 || T2.C11[i2_4] < 0 || T2.C22[i2_4] < 0 || T2.C33[i2_4] < 0 || T2.C55[i2_4] < 0) continue;
 
+        if (fabs(T2.tx[i2_4]) > MaxSlope) continue;
+        if (fabs(T2.ty[i2_4]) > MaxSlope) continue;
+
         const fvec Pick_r22    = (TRIPLET_CHI2_CUT - T2.chi2);
         const float& timeError = T2.C55[i2_4];
         const float& time      = T2.t[i2_4];
@@ -719,7 +722,6 @@ inline void L1Algo::f30(  // input
                            (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + MaxDZ * fabs(T2.tx))[i2_4] * iz,
                            (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + MaxDZ * fabs(T2.ty))[i2_4] * iz, time,
                            sqrt(timeError) * 5);
-
 
         THitI irh       = 0;
         THitI Ntriplets = 0;
@@ -1848,11 +1850,12 @@ void L1Algo::CATrackFinder()
         if ((isec == kAllPrimJumpIter) || (isec == kAllSecIter) || (isec == kAllSecJumpIter)) MaxInvMom = 1.0 / 0.1;
         if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllSecEIter)) MaxInvMom = 1. / 0.05;
 
-        MaxSlope = 1.1;
+        MaxSlopePV = 1.1;
         if (  // (isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) ||
           (isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
-          MaxSlope = 1.5;
+          MaxSlopePV = 1.5;
 
+        MaxSlope = 2.748;  // corresponds to 70 grad
         // define the target
         targX = 0;
         targY = 0;

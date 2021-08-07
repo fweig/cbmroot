@@ -105,7 +105,7 @@ public:
   static constexpr unsigned int fkMaxNtriplets = (1 << fkTripletBits);  // 2^20 = 262,144
 
   unsigned int fMaxDoubletsPerSinglet = 150;
-  unsigned int fMaxTripletPerDoublets = 50;
+  unsigned int fMaxTripletPerDoublets = 15;
 
   /// pack station, thread and triplet indices to an unique triplet ID
   static unsigned int PackTripletId(unsigned int Station, unsigned int Thread, unsigned int Triplet)
@@ -638,7 +638,8 @@ private:
   float Pick_gather {0.f};    // same for attaching additional hits to track
   float PickNeighbour {0.f};  // (PickNeighbour < dp/dp_error)  =>  triplets are neighbours
   fvec MaxInvMom {0.f};       // max considered q/p for tracks
-  fvec MaxSlope {0.f};        // max slope (tx\ty) in prim vertex
+  fvec MaxSlopePV {0.f};      // max slope (tx\ty) in prim vertex
+  float MaxSlope {0.f};       // max slope (tx\ty) in 3d hit position of a triplet
   fvec targX {0.f};  // target coor TODO: set defaults to a crasy value to be sure that the target is initialised later
   fvec targY {0.f};
   fvec targZ {0.f};
