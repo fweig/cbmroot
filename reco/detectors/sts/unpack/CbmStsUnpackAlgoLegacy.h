@@ -48,9 +48,7 @@ public:
   inline void SetMonitorMode(bool bFlagIn = true) { fbMonitorMode = bFlagIn; }
   inline void SetDebugMonitorMode(bool bFlagIn = true) { fbDebugMonitorMode = bFlagIn; }
   inline void SetTimeOffsetNs(double dOffsetIn = 0.0) { fdTimeOffsetNs = dOffsetIn; }
-  void SetTimeOffsetNsAsic(const uint32_t uAsicIdx, const double dOffsetIn = 0.0);
   void MaskNoisyChannel(const uint32_t uFeb, const uint32_t uChan, const bool bMasked = true);
-  void SetMinAdcCut(uint32_t uAdc) { fdAdcCut = uAdc; }
 
   void SetUnpackStsMonitor(CbmStsUnpackMonitor* inMonitor) { fUnpackMonitor = inMonitor; }
 
@@ -125,11 +123,9 @@ private:
 
   /// User settings: Data correction parameters
   double fdTimeOffsetNs;
-  std::vector<double> fvdTimeOffsetNsAsics;
   bool fbUseChannelMask;
   std::vector<std::vector<bool>>
     fvvbMaskedChannels;  //! Vector of channel masks, [ NbFeb ][ NbCHanInFeb ], used only if fbUseChannelMask is true
-  uint32_t fdAdcCut;
 
   /// Running indices
   /// TS/MS info

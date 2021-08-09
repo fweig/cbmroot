@@ -45,10 +45,8 @@ CbmStsUnpackAlgoLegacy::CbmStsUnpackAlgoLegacy()
   , fvdFebAdcGain()
   , fvdFebAdcOffs()
   , fdTimeOffsetNs(0.0)
-  , fvdTimeOffsetNsAsics()
   , fbUseChannelMask(false)
   , fvvbMaskedChannels()
-  , fdAdcCut(0)
   , fulCurrentMsIdx(0)
   , fuCurrDpbIdx(0)
   , fvulCurrentTsMsb()
@@ -402,6 +400,9 @@ void CbmStsUnpackAlgoLegacy::AddHitsToDigiVect(std::vector<stsxyter::FinalHit>* 
 
 bool CbmStsUnpackAlgoLegacy::unpack(const fles::Timeslice* ts, std::uint16_t uMsCompIdx, UInt_t uMsIdx)
 {
+  /// Ignore First TS as first MS is typically corrupt
+  if (0 == fTsIndex) { return true; }
+
   auto msDescriptor = ts->descriptor(uMsCompIdx, uMsIdx);
 
   //Current equipment ID, tells from which DPB the current MS is originating
@@ -529,6 +530,7 @@ void CbmStsUnpackAlgoLegacy::LoopMsMessages(const uint8_t* msContent, const uint
   for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx++) {
     /// Get message type
     const stsxyter::MessType typeMess = pMess[uIdx].GetMessType();
+
     if (fbMonitorMode && fbDebugMonitorMode) { fUnpackMonitor->ProcessDebugInfo(pMess[uIdx], fuCurrDpbIdx); }
     switch (typeMess) {
       case stsxyter::MessType::Hit: {
@@ -621,7 +623,7 @@ void CbmStsUnpackAlgoLegacy::ProcessHitInfo(const stsxyter::Message& mess)
   const double dHitTimeNs = ulHitTime * stsxyter::kdClockCycleNs;
 
   /// If EM flag ON, store a corresponding error message with the next flag after all other possible status flags set
-  if (mess.IsHitMissedEvts())
+  if (mess.IsHitMissedEvts() && fOptOutAVec != nullptr)
     fOptOutAVec->push_back(
       CbmErrorMessage(ECbmModuleId::kSts, dHitTimeNs, uAsicIdx, 1 << stsxyter::kusLenStatStatus, usChan));
 
@@ -749,13 +751,6 @@ void CbmStsUnpackAlgoLegacy::ProcessErrorInfo(const stsxyter::Message& mess)
     fOptOutAVec->push_back(
       CbmErrorMessage(ECbmModuleId::kSts, fulCurrentMsIdx, fuCurrDpbIdx, 0x20, mess.GetMsErrorType()));
   }
-}
-
-// -------------------------------------------------------------------------
-void CbmStsUnpackAlgoLegacy::SetTimeOffsetNsAsic(const uint32_t uAsicIdx, const double dOffsetIn)
-{
-  if (uAsicIdx >= fvdTimeOffsetNsAsics.size()) { fvdTimeOffsetNsAsics.resize(uAsicIdx + 1, 0.0); }
-  fvdTimeOffsetNsAsics[uAsicIdx] = dOffsetIn;
 }
 
 // -------------------------------------------------------------------------

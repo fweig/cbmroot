@@ -48,22 +48,6 @@ uint64_t CbmStsUnpackAlgo::getFullTimeStamp(const uint16_t usRawTs)
   return ulTime;
 }
 
-
-// ---- GetParContainerRequest ----
-std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
-  CbmStsUnpackAlgo::GetParContainerRequest(std::string /*geoTag*/, std::uint32_t /*runId*/)
-{
-  // Basepath for default Trd parameter sets (those connected to a geoTag)
-  std::string basepath = Form("%s", fParFilesBasePath.data());
-  std::string temppath = "";
-
-  // // Get parameter container
-  temppath = basepath + "mStsPar.par";
-  fParContVec.emplace_back(std::make_pair(temppath, std::make_shared<CbmMcbm2018StsPar>()));
-
-  return &fParContVec;
-}
-
 // ---- init
 Bool_t CbmStsUnpackAlgo::init() { return kTRUE; }
 

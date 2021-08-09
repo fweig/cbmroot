@@ -5,6 +5,7 @@
 #include "CbmStsUnpackConfig.h"
 
 #include "CbmStsUnpackAlgo.h"
+#include "CbmStsUnpackAlgoLegacy.h"
 
 #include <Logger.h>
 
@@ -50,7 +51,6 @@ void CbmStsUnpackConfig::InitUnpacker()
   for (auto chmask : fvChanMasks)
     algo->MaskNoisyChannel(chmask.uFeb, chmask.uChan, chmask.bMasked);
 
-
   // Now we have all information required to initialise the algorithm
   algo->Init();
 
@@ -64,13 +64,14 @@ void CbmStsUnpackConfig::InitUnpacker()
 }
 
 // ---- chooseAlgo ----
-std::shared_ptr<CbmStsUnpackAlgo> CbmStsUnpackConfig::chooseAlgo()
+std::shared_ptr<CbmStsUnpackAlgoBase> CbmStsUnpackConfig::chooseAlgo()
 {
   if (fDoLog) LOG(info) << fName << "::Init - chooseAlgo";
 
   // Default unpacker selection
   // Unpacker algo from mcbm 2021 on and hopefully default for a long time.
   auto algo = std::make_shared<CbmStsUnpackAlgo>();
+  //auto algo = std::make_shared<CbmStsUnpackAlgoLegacy>();
   LOG(info) << fName << "::chooseAlgo() - selected algo = " << algo->Class_Name();
   return algo;
 

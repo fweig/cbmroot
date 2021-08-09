@@ -35,7 +35,7 @@
 #include <memory>
 #include <vector>
 
-class CbmStsUnpackConfig : public CbmRecoUnpackConfig<CbmStsUnpackAlgo, CbmStsDigi, CbmErrorMessage> {
+class CbmStsUnpackConfig : public CbmRecoUnpackConfig<CbmStsUnpackAlgoBase, CbmStsDigi, CbmErrorMessage> {
 
 public:
   /**
@@ -107,7 +107,7 @@ protected:
    * 
    * @return Bool_t initOk 
   */
-  virtual std::shared_ptr<CbmStsUnpackAlgo> chooseAlgo();
+  virtual std::shared_ptr<CbmStsUnpackAlgoBase> chooseAlgo();
 
   /** @brief pointer to the monitor object */
   std::shared_ptr<CbmStsUnpackMonitor> fMonitor = nullptr;
@@ -120,7 +120,6 @@ protected:
 
   /// Temporary storage of user parameters
   std::vector<FebChanMaskReco> fvChanMasks = {};
-
 
   /** @brief Geometry setup tag for the given detector as used by CbmSetup objects */
   std::string fGeoSetupTag = "";

@@ -56,12 +56,51 @@ public:
   /** @brief Set a predefined monitor @param monitor predefined unpacking monitor */
   void SetMonitor(std::shared_ptr<CbmStsUnpackMonitor> monitor) { fMonitor = monitor; }
 
+  /** @brief Set the minimum adc cut value @param[in] value */
+  void SetMinAdcCut(uint32_t value) { fdAdcCut = value; }
+
+  /** @brief Set the time offset per Asic */
+  void SetAsicTimeOffsetVec(std::vector<double> value) { fvdTimeOffsetNsAsics.swap(value); }
+
+  /** @brief Set the time offset per Asic */
+  void SetTimeOffsetNsAsic(const uint32_t uAsicIdx, const double dOffsetIn = 0.0);
+
+  /**
+   * @brief Get the requested parameter containers. To be defined in the derived classes!
+   * Return the required parameter containers together with the paths to the ascii
+   * files to.
+   *
+   * @param[in] std::string geoTag as used in CbmSetup
+   * @param[in] std::uint32_t runId for runwise defined parameters
+   * @return fParContVec
+  */
+  virtual std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
+  GetParContainerRequest(std::string geoTag, std::uint32_t runId);
+
+  /**
+   * @brief Mask a Noisy Channel
+   *
+   * @param uFeb
+   * @param uChan
+   * @param bMasked
+  */
+  virtual void MaskNoisyChannel(const uint32_t uFeb, const uint32_t uChan, const bool bMasked = true)
+  {
+    (void) uFeb;
+    (void) uChan;
+    (void) bMasked;
+  };
 
 protected:
   // Monitoring
   /** @brief Potential (online) monitor for the unpacking process */
   std::shared_ptr<CbmStsUnpackMonitor> fMonitor = nullptr;
 
+  /** @brief Minimum adc cut to store a hit */
+  uint32_t fdAdcCut = 0;
+
+  /** @brief Time offsets per Asic??? @todo expert confirmation required */
+  std::vector<double> fvdTimeOffsetNsAsics = {};
 
 private:
   ClassDef(CbmStsUnpackAlgoBase, 2)

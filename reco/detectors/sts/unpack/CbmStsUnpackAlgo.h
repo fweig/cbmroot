@@ -40,18 +40,6 @@ public:
   CbmStsUnpackAlgo& operator=(const CbmStsUnpackAlgo&) = delete;
 
   /**
-   * @brief Get the requested parameter containers. To be defined in the derived classes!
-   * Return the required parameter containers together with the paths to the ascii
-   * files to.
-   *
-   * @param[in] std::string geoTag as used in CbmSetup
-   * @param[in] std::uint32_t runId for runwise defined parameters
-   * @return fParContVec
-  */
-  virtual std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
-  GetParContainerRequest(std::string geoTag, std::uint32_t runId);
-
-  /**
    * @brief Mask a Noisy Channel
    *
    * @param uFeb
@@ -59,12 +47,6 @@ public:
    * @param bMasked
   */
   void MaskNoisyChannel(const uint32_t uFeb, const uint32_t uChan, const bool bMasked = true);
-
-  /** @brief Set the minimum adc cut value @param[in] value */
-  void SetMinAdcCut(uint32_t value) { fdAdcCut = value; }
-
-  /** @brief Set the minimum adc cut value @param[in] value */
-  void SetAsicTimeOffsetVec(std::vector<double> value) { fvdTimeOffsetNsAsics.swap(value); }
 
   /** @brief Set a predefined monitor @param monitor predefined unpacking monitor */
   void SetMonitor(std::shared_ptr<CbmStsUnpackMonitor> monitor) { fMonitor = monitor; }
@@ -240,12 +222,6 @@ protected:
 
   /** @brief Vector used for the translation between eLink index and Asic index first is feb type A second is feb type b*/
   std::vector<std::pair<uint32_t, uint32_t>> fElinkIdxToAsicIdxVec = {};
-
-  /** @brief Minimum adc cut to store a hit */
-  uint32_t fdAdcCut = 0;
-
-  /** @brief Time offsets per Asic??? @todo expert confirmation required */
-  std::vector<double> fvdTimeOffsetNsAsics = {};
 
   /** @brief flag if channel mask is to be used or not. Set automatically via MaskNoisyChannels */
   bool fbUseChannelMask = false;
