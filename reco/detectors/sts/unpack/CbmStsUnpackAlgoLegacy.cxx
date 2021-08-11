@@ -33,9 +33,7 @@ CbmStsUnpackAlgoLegacy::CbmStsUnpackAlgoLegacy()
   : CbmStsUnpackAlgoBase("CbmStsUnpackAlgoLegacy")
   ,
   /// From the class itself
-  fbMonitorMode(false)
-  , fbDebugMonitorMode(false)
-  , fvbMaskedComponents()
+  fvbMaskedComponents()
   , fUnpackPar(nullptr)
   , fuNbFebs(0)
   , fDpbIdIndexMap()
@@ -78,12 +76,6 @@ bool CbmStsUnpackAlgoLegacy::init()
 // -------------------------------------------------------------------------
 void CbmStsUnpackAlgoLegacy::reset() {}
 
-// -------------------------------------------------------------------------
-void CbmStsUnpackAlgoLegacy::finish()
-{
-  /// Printout Goodbye message and stats
-  /// Write Output histos
-}
 
 // ---- initParSet(FairParGenericSet* parset) ----
 Bool_t CbmStsUnpackAlgoLegacy::initParSet(FairParGenericSet* parset)
@@ -342,33 +334,6 @@ void CbmStsUnpackAlgoLegacy::InitInternalStatus()
   }
 }
 
-/*
-// -------------------------------------------------------------------------
-bool CbmStsUnpackAlgoLegacy::Unpack(const fles::Timeslice& ts, const uint32_t uMsComp)
-{
-  fTsIndex = ts.index();
-
-  /// Loop over core microslices (and overlap ones if chosen)
-  for (uint32_t uMsIndex = 0; uMsIndex < fuNbMsLoop; uMsIndex++) {
-    if (false == ProcessMs(ts, uMsComp, uMsIndex)) {
-      LOG(error) << "Failed to process ts " << fTsIndex << " MS " << uMsIndex << " for component " << uMsComp;
-      return false;
-    }
-  }
-  /// Sort the buffers of hits
-  /// => Commented out as for now problems at MS borders due to offsets
-  //      std::sort( fvmHitsInMs.begin(), fvmHitsInMs.end() );
-
-  /// Add the hits to the output buffer as Digis
-  AddHitsToDigiVect(&fvmHitsInMs, &fOutputVec);
-
-  /// Clear the buffer of hits
-  fvmHitsInMs.clear();
-
-  return true;
-}
-*/
-
 void CbmStsUnpackAlgoLegacy::AddHitsToDigiVect(std::vector<stsxyter::FinalHit>* vmHitsIn,
                                                std::vector<CbmStsDigi>* vDigiVectOut)
 {
@@ -419,12 +384,12 @@ bool CbmStsUnpackAlgoLegacy::unpack(const fles::Timeslice* ts, std::uint16_t uMs
   //Temp holder until current equipment ID is properly filled in MS
   const uint32_t uCurrDpbId = static_cast<uint32_t>(uCurrentEquipmentId & 0xFFFF);
 
-  if (fbMonitorMode && fbDebugMonitorMode) {
+  if (fMonitor && fMonitor->GetDebugMode()) {
     const double dMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
-    if (uMsCompIdx < fUnpackMonitor->GetMaxNbFlibLinks()) {
+    if (uMsCompIdx < fMonitor->GetMaxNbFlibLinks()) {
       if (fdStartTimeMsSz < 0) fdStartTimeMsSz = dMsTime;
-      fUnpackMonitor->FillMsSize(uMsCompIdx, uSize);
-      fUnpackMonitor->FillMsSizeTime(uMsCompIdx, dMsTime - fdStartTimeMsSz, uSize);
+      fMonitor->FillMsSize(uMsCompIdx, uSize);
+      fMonitor->FillMsSizeTime(uMsCompIdx, dMsTime - fdStartTimeMsSz, uSize);
     }
   }
 
@@ -452,25 +417,25 @@ bool CbmStsUnpackAlgoLegacy::unpack(const fles::Timeslice* ts, std::uint16_t uMs
   else
     fuCurrDpbIdx = fDpbIdIndexMap[uCurrDpbId];
 
-  if (fbMonitorMode || fbDebugMonitorMode) fUnpackMonitor->FillMsCntEvo(fulCurrentMsIdx);
+  if (fMonitor) fMonitor->FillMsCntEvo(fulCurrentMsIdx);
 
   // Check the current TS_MSb cycle and correct it if wrong
   RefreshTsMsbFields(uMsIdx);
 
   //Reset internal monitor variables for debugging info
-  if (fbMonitorMode && fbDebugMonitorMode) { fUnpackMonitor->ResetDebugInfo(); }
+  if (fMonitor && fMonitor->GetDebugMode()) { fMonitor->ResetDebugInfo(); }
 
   //Main processing of MS content
   LoopMsMessages(msContent, uSize, uMsIdx);
 
   //Output debugging info
-  if (fbMonitorMode) {
-    if (fbDebugMonitorMode) { fUnpackMonitor->PrintDebugInfo(fulCurrentMsIdx, fTsIndex, msDescriptor.flags, uSize); }
+  if (fMonitor) {
+    if (fMonitor->GetDebugMode()) { fMonitor->PrintDebugInfo(fulCurrentMsIdx, fTsIndex, msDescriptor.flags, uSize); }
     for (auto itHit = fOutputVec.begin(); itHit != fOutputVec.end(); ++itHit) {
-      fUnpackMonitor->FillDigisTimeInRun(itHit->GetTime());  //check whether this does what it should
+      fMonitor->FillDigisTimeInRun(itHit->GetTime());  //check whether this does what it should
     }
-    fUnpackMonitor->FillVectorSize(ts->index(), fOutputVec.size());  //check whether this does what it should
-    //fUnpackMonitor->DrawCanvases();
+    fMonitor->FillVectorSize(ts->index(), fOutputVec.size());  //check whether this does what it should
+    //fMonitor->DrawCanvases();
   }
 
   AddHitsToDigiVect(&fvmHitsInMs, &fOutputVec);
@@ -531,7 +496,7 @@ void CbmStsUnpackAlgoLegacy::LoopMsMessages(const uint8_t* msContent, const uint
     /// Get message type
     const stsxyter::MessType typeMess = pMess[uIdx].GetMessType();
 
-    if (fbMonitorMode && fbDebugMonitorMode) { fUnpackMonitor->ProcessDebugInfo(pMess[uIdx], fuCurrDpbIdx); }
+    if (fMonitor && fMonitor->GetDebugMode()) { fMonitor->ProcessDebugInfo(pMess[uIdx], fuCurrDpbIdx); }
     switch (typeMess) {
       case stsxyter::MessType::Hit: {
         ProcessHitInfo(pMess[uIdx]);
@@ -627,19 +592,18 @@ void CbmStsUnpackAlgoLegacy::ProcessHitInfo(const stsxyter::Message& mess)
     fOptOutAVec->push_back(
       CbmErrorMessage(ECbmModuleId::kSts, dHitTimeNs, uAsicIdx, 1 << stsxyter::kusLenStatStatus, usChan));
 
-  if (fbMonitorMode) {
+  if (fMonitor) {
     // Check Starting point of histos with time as X axis
     if (-1 == fdStartTime) { fdStartTime = dHitTimeNs; }
-    if (fbDebugMonitorMode) {
-      fUnpackMonitor->FillHitDebugMonitoringHistos(uAsicIdx, usChan, usRawAdc, usRawTs, mess.IsHitMissedEvts());
+    if (fMonitor->GetDebugMode()) {
+      fMonitor->FillHitDebugMonitoringHistos(uAsicIdx, usChan, usRawAdc, usRawTs, mess.IsHitMissedEvts());
     }
     const uint32_t uAsicInFeb       = uAsicIdx % fUnpackPar->GetNbAsicsPerFeb();
     const double dTimeSinceStartSec = (dHitTimeNs - fdStartTime) * 1e-9;
     const double dCalAdc            = fvdFebAdcOffs[uFebIdx] + (usRawAdc - 1) * fvdFebAdcGain[uFebIdx];
-    fUnpackMonitor->FillHitMonitoringHistos(uFebIdx, usChan, uChanInFeb, usRawAdc, dCalAdc, usRawTs,
-                                            mess.IsHitMissedEvts());
-    fUnpackMonitor->FillHitEvoMonitoringHistos(uFebIdx, uAsicIdx, uAsicInFeb, uChanInFeb, dTimeSinceStartSec,
-                                               mess.IsHitMissedEvts());
+    fMonitor->FillHitMonitoringHistos(uFebIdx, usChan, uChanInFeb, usRawAdc, dCalAdc, usRawTs, mess.IsHitMissedEvts());
+    fMonitor->FillHitEvoMonitoringHistos(uFebIdx, uAsicIdx, uAsicInFeb, uChanInFeb, dTimeSinceStartSec,
+                                         mess.IsHitMissedEvts());
   }
 }
 
@@ -681,10 +645,10 @@ void CbmStsUnpackAlgoLegacy::ProcessTsMsbInfo(const stsxyter::Message& mess, uin
   else
     fvulCurrentTsMsb[fuCurrDpbIdx] = uVal;
 
-  if (fbMonitorMode && fbDebugMonitorMode) {  //also if( 1 < uMessIdx )?
-    fUnpackMonitor->FillStsDpbRawTsMsb(fuCurrDpbIdx, fvulCurrentTsMsb[fuCurrDpbIdx]);
-    fUnpackMonitor->FillStsDpbRawTsMsbSx(fuCurrDpbIdx, fvulCurrentTsMsb[fuCurrDpbIdx]);
-    fUnpackMonitor->FillStsDpbRawTsMsbDpb(fuCurrDpbIdx, fvulCurrentTsMsb[fuCurrDpbIdx]);
+  if (fMonitor && fMonitor->GetDebugMode()) {  //also if( 1 < uMessIdx )?
+    fMonitor->FillStsDpbRawTsMsb(fuCurrDpbIdx, fvulCurrentTsMsb[fuCurrDpbIdx]);
+    fMonitor->FillStsDpbRawTsMsbSx(fuCurrDpbIdx, fvulCurrentTsMsb[fuCurrDpbIdx]);
+    fMonitor->FillStsDpbRawTsMsbDpb(fuCurrDpbIdx, fvulCurrentTsMsb[fuCurrDpbIdx]);
   }
 }
 
@@ -698,7 +662,7 @@ void CbmStsUnpackAlgoLegacy::ProcessEpochInfo(const stsxyter::Message& /*mess*/)
 // -------------------------------------------------------------------------
 void CbmStsUnpackAlgoLegacy::ProcessStatusInfo(const stsxyter::Message& mess, uint32_t uIdx)
 {
-  if (fbMonitorMode && fbDebugMonitorMode) {
+  if (fMonitor && fMonitor->GetDebugMode()) {
     std::cout << Form("DPB %2u TS %12u MS %12u mess %5u ", fuCurrDpbIdx, fTsIndex, fulCurrentMsIdx, uIdx);
     mess.PrintMess(std::cout, stsxyter::MessagePrintMask::msg_print_Human);
   }
@@ -715,9 +679,9 @@ void CbmStsUnpackAlgoLegacy::ProcessStatusInfo(const stsxyter::Message& mess, ui
     (fuCurrDpbIdx * fUnpackPar->GetNbCrobsPerDpb() + uCrobIdx) * fUnpackPar->GetNbAsicsPerCrob()
     + fUnpackPar->ElinkIdxToAsicIdx(1 == fviFebType[fuCurrDpbIdx][uCrobIdx][uFebIdx], usElinkIdx);
 
-  if (fbMonitorMode) {
+  if (fMonitor) {
     const uint16_t usStatusField = mess.GetStatusStatus();
-    fUnpackMonitor->FillStsStatusMessType(uAsicIdx, usStatusField);
+    fMonitor->FillStsStatusMessType(uAsicIdx, usStatusField);
   }
   /// Compute the Full time stamp
   const int64_t ulTime = GetFullTimeStamp(0);
@@ -745,11 +709,11 @@ int64_t CbmStsUnpackAlgoLegacy::GetFullTimeStamp(const uint16_t usRawTs)
 void CbmStsUnpackAlgoLegacy::ProcessErrorInfo(const stsxyter::Message& mess)
 {
   if (mess.IsMsErrorFlagOn()) {
-    if (fbMonitorMode || fbDebugMonitorMode) {
-      fUnpackMonitor->FillMsErrorsEvo(fulCurrentMsIdx, mess.GetMsErrorType());
+    if (fMonitor) { fMonitor->FillMsErrorsEvo(fulCurrentMsIdx, mess.GetMsErrorType()); }
+    if (fOptOutAVec) {
+      fOptOutAVec->push_back(
+        CbmErrorMessage(ECbmModuleId::kSts, fulCurrentMsIdx, fuCurrDpbIdx, 0x20, mess.GetMsErrorType()));
     }
-    fOptOutAVec->push_back(
-      CbmErrorMessage(ECbmModuleId::kSts, fulCurrentMsIdx, fuCurrDpbIdx, 0x20, mess.GetMsErrorType()));
   }
 }
 

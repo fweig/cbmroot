@@ -47,12 +47,12 @@ void CbmStsUnpackConfig::InitUnpacker()
   // Set the single asics time offsets
   algo->SetAsicTimeOffsetVec(fvdTimeOffsetNsAsics);
 
+  // Now we have all information required to initialise the algorithm
+  algo->Init();
+
   // Mask the noisy channels set by the user
   for (auto chmask : fvChanMasks)
     algo->MaskNoisyChannel(chmask.uFeb, chmask.uChan, chmask.bMasked);
-
-  // Now we have all information required to initialise the algorithm
-  algo->Init();
 
   if (fMonitor) {
     fMonitor->Init(static_cast<CbmMcbm2018StsPar*>(reqparvec->at(0).second.get()));
@@ -71,7 +71,8 @@ std::shared_ptr<CbmStsUnpackAlgoBase> CbmStsUnpackConfig::chooseAlgo()
   // Default unpacker selection
   // Unpacker algo from mcbm 2021 on and hopefully default for a long time.
   auto algo = std::make_shared<CbmStsUnpackAlgo>();
-  //auto algo = std::make_shared<CbmStsUnpackAlgoLegacy>();
+  //auto algo = std::make_shared<CbmStsUnpackAlgoLegacy>();  // for 2020 runs
+
   LOG(info) << fName << "::chooseAlgo() - selected algo = " << algo->Class_Name();
   return algo;
 

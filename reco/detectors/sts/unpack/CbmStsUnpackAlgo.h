@@ -46,23 +46,12 @@ public:
    * @param uChan
    * @param bMasked
   */
-  void MaskNoisyChannel(const uint32_t uFeb, const uint32_t uChan, const bool bMasked = true);
+  virtual void MaskNoisyChannel(const uint32_t uFeb, const uint32_t uChan, const bool bMasked = true);
 
   /** @brief Set a predefined monitor @param monitor predefined unpacking monitor */
   void SetMonitor(std::shared_ptr<CbmStsUnpackMonitor> monitor) { fMonitor = monitor; }
 
 protected:
-  // /** @brief Add the sts-xyter-hits to the output buffer as Digis */
-  // void AddHitsToDigiVect(std::vector<stsxyter::FinalHit>* vmHitsIn, std::vector<CbmStsDigi>* vDigiVectOut);
-
-
-  /** @brief Finish function for this algorithm base clase */
-  void finish()
-  {
-    if (fMonitor) fMonitor->Finish();
-    return;
-  }
-
   /**
    * @brief Get the Asic Index
    *

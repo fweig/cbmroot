@@ -62,9 +62,6 @@ public:
   /** @brief Set the time offset per Asic */
   void SetAsicTimeOffsetVec(std::vector<double> value) { fvdTimeOffsetNsAsics.swap(value); }
 
-  /** @brief Set the time offset per Asic */
-  void SetTimeOffsetNsAsic(const uint32_t uAsicIdx, const double dOffsetIn = 0.0);
-
   /**
    * @brief Get the requested parameter containers. To be defined in the derived classes!
    * Return the required parameter containers together with the paths to the ascii
@@ -92,6 +89,13 @@ public:
   };
 
 protected:
+  /** @brief Finish function for this algorithm base clase */
+  virtual void finish()
+  {
+    if (fMonitor) fMonitor->Finish();
+    return;
+  }
+
   // Monitoring
   /** @brief Potential (online) monitor for the unpacking process */
   std::shared_ptr<CbmStsUnpackMonitor> fMonitor = nullptr;

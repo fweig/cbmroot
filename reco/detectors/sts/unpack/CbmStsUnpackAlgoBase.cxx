@@ -23,11 +23,4 @@ std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
   return &fParContVec;
 }
 
-// -------------------------------------------------------------------------
-void CbmStsUnpackAlgoBase::SetTimeOffsetNsAsic(const uint32_t uAsicIdx, const double dOffsetIn)
-{
-  if (uAsicIdx >= fvdTimeOffsetNsAsics.size()) { fvdTimeOffsetNsAsics.resize(uAsicIdx + 1, 0.0); }
-  fvdTimeOffsetNsAsics[uAsicIdx] = dOffsetIn;
-}
-
 ClassImp(CbmStsUnpackAlgoBase)

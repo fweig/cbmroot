@@ -39,18 +39,13 @@ public:
 
   virtual bool init();
   virtual void reset();
-  virtual void finish();
 
   bool InitParameters();
 
   //virtual bool Unpack(const fles::Timeslice& ts, const uint32_t uMsComp);
 
-  inline void SetMonitorMode(bool bFlagIn = true) { fbMonitorMode = bFlagIn; }
-  inline void SetDebugMonitorMode(bool bFlagIn = true) { fbDebugMonitorMode = bFlagIn; }
   inline void SetTimeOffsetNs(double dOffsetIn = 0.0) { fdTimeOffsetNs = dOffsetIn; }
-  void MaskNoisyChannel(const uint32_t uFeb, const uint32_t uChan, const bool bMasked = true);
-
-  void SetUnpackStsMonitor(CbmStsUnpackMonitor* inMonitor) { fUnpackMonitor = inMonitor; }
+  virtual void MaskNoisyChannel(const uint32_t uFeb, const uint32_t uChan, const bool bMasked = true);
 
 protected:
   /**
@@ -68,12 +63,7 @@ protected:
 
 private:
   /// Control flags
-  bool fbMonitorMode;       //! Switch ON the filling of a minimal set of histograms
-  bool fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
   std::vector<bool> fvbMaskedComponents;
-
-  /// Storage of monitoring histograms
-  CbmStsUnpackMonitor* fUnpackMonitor = nullptr;
 
   /// Settings from parameter file
   CbmMcbm2018StsPar* fUnpackPar;                //!
