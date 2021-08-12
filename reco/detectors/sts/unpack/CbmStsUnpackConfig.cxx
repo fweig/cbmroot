@@ -68,11 +68,17 @@ std::shared_ptr<CbmStsUnpackAlgoBase> CbmStsUnpackConfig::chooseAlgo()
 {
   if (fDoLog) LOG(info) << fName << "::Init - chooseAlgo";
 
+  // Non default unpacker selection
+  // Legacy unpacker for data taken before mcbm 2021
+  if (fGeoSetupTag.find("mcbm_beam_2020_03") != fGeoSetupTag.npos) {
+    auto algo = std::make_shared<CbmStsUnpackAlgoLegacy>();
+    LOG(info) << fName << "::chooseAlgo() - selected algo = " << algo->Class_Name();
+    return algo;
+  }
+
   // Default unpacker selection
   // Unpacker algo from mcbm 2021 on and hopefully default for a long time.
   auto algo = std::make_shared<CbmStsUnpackAlgo>();
-  //auto algo = std::make_shared<CbmStsUnpackAlgoLegacy>();  // for 2020 runs
-
   LOG(info) << fName << "::chooseAlgo() - selected algo = " << algo->Class_Name();
   return algo;
 

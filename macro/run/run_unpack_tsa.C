@@ -114,7 +114,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   // ---- STS ----
   std::shared_ptr<CbmStsUnpackConfig> stsconfig = nullptr;
 
-  stsconfig = std::make_shared<CbmStsUnpackConfig>("", runid);
+  stsconfig = std::make_shared<CbmStsUnpackConfig>(std::string(setupName), runid);
   if (stsconfig) {
     // stsconfig->SetDebugState();
     stsconfig->SetDoWriteOutput();
