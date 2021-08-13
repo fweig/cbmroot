@@ -379,7 +379,7 @@ Double_t CbmEvbuildRawTask::GetDigiTime(ECbmModuleId _system, UInt_t _entry)
     case ECbmModuleId::kTof: return (fTofDigis->at(_entry)).GetTime();
     case ECbmModuleId::kRich: return (fRichDigis->at(_entry)).GetTime();
     case ECbmModuleId::kPsd: return (fPsdDigis->at(_entry)).GetTime();
-    case ECbmModuleId::kHodo: return (fT0Digis->at(_entry)).GetTime();
+    case ECbmModuleId::kT0: return (fT0Digis->at(_entry)).GetTime();
     default: break;
   }
   return -1;
@@ -398,7 +398,7 @@ UInt_t CbmEvbuildRawTask::GetNofDigis(ECbmModuleId _system)
     case ECbmModuleId::kTof: return fTofDigis->size();
     case ECbmModuleId::kRich: return fRichDigis->size();
     case ECbmModuleId::kPsd: return fPsdDigis->size();
-    case ECbmModuleId::kHodo: return fT0Digis->size();
+    case ECbmModuleId::kT0: return fT0Digis->size();
     default: break;
   }
   return 0;
