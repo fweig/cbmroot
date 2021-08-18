@@ -1,6 +1,6 @@
 /* Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Florian Uhlig [committer] */
+   Authors: David Emschermann [committer], Alexandru Bercuci */
 
 ///
 /// \file Create_TRD_Geometry_v21a.C
@@ -783,9 +783,9 @@ void dump_digi_file()
   fprintf(ifile, "#define CBMTRDPADS_H\n");
   fprintf(ifile, "\n");
   fprintf(ifile, "Int_t fst1_sect_count = 3;\n");
-  fprintf(ifile, "// array of pad geometries in the TRD (trd1mod[1-8])\n");
-  fprintf(ifile, "// 8 modules  // 3 sectors  // 4 values \n");
-  fprintf(ifile, "Float_t fst1_pad_type[8][3][4] =        \n");
+  fprintf(ifile, "// array of pad geometries in the TRD (trd1mod[1-%d])\n", NofModuleTypes);
+  fprintf(ifile, "// %d modules  // 3 sectors  // 4 values \n", NofModuleTypes);
+  fprintf(ifile, "Float_t fst1_pad_type[%d][3][4] =        \n", NofModuleTypes);
   //fprintf(ifile,"Double_t fst1_pad_type[8][3][4] =       \n");
   fprintf(ifile, "			 		 \n");
 
@@ -2276,16 +2276,16 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
       new TGeoBBox(Form("%s_hc_bd", ppn), 1.0 + activeAreaX / 2., 0.9 + activeAreaY / 2., pp_hc_thickness / 2.);
     TGeoBBox* trd_ppHC_fc = new TGeoBBox(Form("%s_hc_fc", ppn), 2.4 / 2., 0.8 / 2., (1.e-4 + pp_hc_thickness) / 2.);
     //if(detTypeIdx==2) addFlatCableHoles(Form("%s_hc", ppn));
-    TGeoCompositeShape* trd_ppHC = new TGeoCompositeShape(Form("%s_hc", ppn), sexpr.Data());
-    TGeoVolume* vol_trd_ppHC     = new TGeoVolume(Form("vol_%s_hc", ppn), trd_ppHC, honeycombVolMed);
+    //TGeoCompositeShape* trd_ppHC = new TGeoCompositeShape(Form("%s_hc", ppn), sexpr.Data());
+    TGeoVolume* vol_trd_ppHC = new TGeoVolume(Form("vol_%s_hc", ppn), trd_ppHC_bd, honeycombVolMed);
     vol_trd_ppHC->SetLineColor(kOrange);
     // Pad Plane C fiber
     TGeoBBox* trd_ppC_bd =
       new TGeoBBox(Form("%s_c_bd", ppn), 1.0 + activeAreaX / 2., 0.9 + activeAreaY / 2., pp_c_thickness / 2.);
     TGeoBBox* trd_ppC_fc = new TGeoBBox(Form("%s_c_fc", ppn), 2.4 / 2., 0.8 / 2., (1.e-4 + pp_c_thickness) / 2.);
     //if(detTypeIdx==2) addFlatCableHoles(Form("%s_c", ppn));
-    TGeoCompositeShape* trd_ppC = new TGeoCompositeShape(Form("%s_c", ppn), sexpr.Data());
-    TGeoVolume* vol_trd_ppC     = new TGeoVolume(Form("vol_%s_c", ppn), trd_ppC, carbonVolMed);
+    //TGeoCompositeShape* trd_ppC = new TGeoCompositeShape(Form("%s_c", ppn), sexpr.Data());
+    TGeoVolume* vol_trd_ppC = new TGeoVolume(Form("vol_%s_c", ppn), trd_ppC_bd, carbonVolMed);
     vol_trd_ppC->SetLineColor(kGray);
 
     // Add up all components
@@ -2405,23 +2405,23 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
     TGeoBBox* bp_hc_bd = new TGeoBBox("bp_hc_bd", activeAreaX / 2., activeAreaY / 2., bp_hc_thickness / 2.);
     TGeoBBox* bp_hc_fc = new TGeoBBox("bp_hc_fc", 2.4 / 2., 0.8 / 2., (1.e-4 + bp_hc_thickness) / 2.);
     //if(detTypeIdx==2) addFlatCableHoles("bp_hc");
-    TGeoCompositeShape* bp_hc = new TGeoCompositeShape("bp_hc", sexpr.Data());
-    TGeoVolume* vol_bp_hc     = new TGeoVolume(".vol_bp_hc", bp_hc_bd, honeycombVolMed);
+    //TGeoCompositeShape* bp_hc = new TGeoCompositeShape("bp_hc", sexpr.Data());
+    TGeoVolume* vol_bp_hc = new TGeoVolume(".vol_bp_hc", bp_hc_bd, honeycombVolMed);
     vol_bp_hc->SetLineColor(kOrange);
     // Screen fibre-glass support (PCB)
     TGeoBBox* bp_pcb_bd =
       new TGeoBBox("bp_pcb_bd", 0.5 + activeAreaX / 2., 0.5 + activeAreaY / 2., bp_pcb_thickness / 2.);
     TGeoBBox* bp_pcb_fc = new TGeoBBox("bp_pcb_fc", 2.4 / 2., 0.8 / 2., (1.e-3 + bp_pcb_thickness) / 2.);
     //if(detTypeIdx==2) addFlatCableHoles("bp_pcb");
-    TGeoCompositeShape* bp_pcb = new TGeoCompositeShape("bp_pcb", sexpr.Data());
-    TGeoVolume* vol_bp_pcb     = new TGeoVolume("vol_bp_pcb", bp_pcb, padpcbVolMed);
+    //TGeoCompositeShape* bp_pcb = new TGeoCompositeShape("bp_pcb", sexpr.Data());
+    TGeoVolume* vol_bp_pcb = new TGeoVolume("vol_bp_pcb", bp_pcb_bd, padpcbVolMed);
     vol_bp_pcb->SetLineColor(kGreen);
     // Pad Copper
     TGeoBBox* bp_cu_bd = new TGeoBBox("bp_cu_bd", 0.5 + activeAreaX / 2., 0.5 + activeAreaY / 2., bp_cu_thickness / 2.);
     TGeoBBox* bp_cu_fc = new TGeoBBox("bp_cu_fc", 2.4 / 2., 0.8 / 2., (1.e-3 + bp_cu_thickness) / 2.);
     //if(detTypeIdx==2) addFlatCableHoles("bp_cu");
-    TGeoCompositeShape* bp_cu = new TGeoCompositeShape("bp_cu", sexpr.Data());
-    TGeoVolume* vol_bp_cu     = new TGeoVolume("vol_bp_cu", bp_cu, padcopperVolMed);
+    //TGeoCompositeShape* bp_cu = new TGeoCompositeShape("bp_cu", sexpr.Data());
+    TGeoVolume* vol_bp_cu = new TGeoVolume("vol_bp_cu", bp_cu_bd, padcopperVolMed);
     vol_bp_cu->SetLineColor(kRed);
 
     TGeoBBox* bp_fx       = new TGeoBBox("bp_fx", activeAreaX / 2., 0.5 / 2., bp_hc_thickness / 2.);
@@ -2964,7 +2964,8 @@ void create_detector_layers(Int_t layerId)
   TGeoCombiTrans* module_placement =
     new TGeoCombiTrans(xPos, yPos, LayerPosition[0] - (3 - layerId) * LayerThickness / 2,
                        module_rotation);  // shift by half layer thickness
-  gGeoMan->GetVolume(layername)->AddNode(gModules[type - 1], 1, module_placement);
+  Int_t copy = copy_nr(1, 1, 0, PlaneId[layerId], 1);
+  gGeoMan->GetVolume(layername)->AddNode(gModules[type - 1], copy, module_placement);
 }
 
 
