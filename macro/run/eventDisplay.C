@@ -13,7 +13,8 @@ void eventDisplay(TString dataset = "test")
 
   FairFileSource* inputSource = new FairFileSource(inFile.Data());
   fRun->SetSource(inputSource);
-  fRun->SetOutputFile(outFile);
+  FairRootFileSink* outputSink = new FairRootFileSink(outFile);
+  fRun->SetSink(outputSink);
 
   FairRuntimeDb* rtdb          = fRun->GetRuntimeDb();
   FairParRootFileIo* parInput1 = new FairParRootFileIo();
