@@ -17,8 +17,9 @@ L1Algo::L1Algo(unsigned int nThreads)
 
 void L1Algo::SetNThreads(unsigned int n)
 {
-  if (n > fkMaxNthreads) {
-    LOG(FATAL) << "L1Algo: n threads " << n << " is greater than the maximum " << fkMaxNthreads << std::endl;
+  if (n > static_cast<unsigned int>(fkMaxNthreads)) {
+    LOG(fatal) << "L1Algo: n threads " << n << " is greater than the maximum "
+               << static_cast<unsigned int>(fkMaxNthreads) << std::endl;
   }
   fNThreads = n;
 
