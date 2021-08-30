@@ -77,7 +77,7 @@ void CbmRichTrackExtrapolationLittrack::DoExtrapolation(CbmEvent* event, TClones
 
     CbmLitTrackParam litInParam, litOutParam;
     CbmLitConverterFairTrackParam::FairTrackParamToCbmLitTrackParam(stsTrack->GetParamLast(), &litInParam);
-    std::vector<litfloat> F(25);
+    std::vector<litfloat> F(36, 0.);
     litfloat length = 0;
 
     fLitPropagator->Propagate(&litInParam, &litOutParam, z, 11, &F, &length);
