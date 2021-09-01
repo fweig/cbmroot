@@ -394,7 +394,7 @@ void CbmRichUnpackAlgo::processTimeDataWord(CbmRichUnpackAlgoMicrosliceReader& r
           //    TH2D* h2 = GetTotH2(subSubEventId);
           //    if (h2 != nullptr) h2->Fill(td.fChannel, ToT);
           //  }
-          writeOutputDigi(subSubEventId, td.fChannel, raisingTime[td.fChannel], ToT);
+          if (fullTimeCorr >= 0.0) { writeOutputDigi(subSubEventId, td.fChannel, raisingTime[td.fChannel], ToT); }
         }
         // pair was created, set raising edge to -1.
         raisingTime[td.fChannel] = -1.;
@@ -411,8 +411,12 @@ void CbmRichUnpackAlgo::writeOutputDigi(Int_t fpgaID, Int_t channel, Double_t ti
   Double_t finalTime = time + (Double_t) fMsRefTime - fSystemTimeOffset;
   //   Double_t finalTime = time - fSystemTimeOffset - fTsStartTime;
 
-  Double_t lastTime = 0.;
+  fOutputVec.emplace_back(pixelUID, finalTime, tot - ToTcorr);
 
+  // Sorting of Digis (Now done in general part)
+  /*
+  Double_t lastTime = 0.;
+  
   if (fOutputVec.size() < 1) { fOutputVec.emplace_back(pixelUID, finalTime, tot - ToTcorr); }
   else {
     lastTime = fOutputVec[fOutputVec.size() - 1].GetTime();
@@ -432,6 +436,7 @@ void CbmRichUnpackAlgo::writeOutputDigi(Int_t fpgaID, Int_t channel, Double_t ti
       fOutputVec.emplace_back(pixelUID, finalTime, tot - ToTcorr);
     }
   }
+  */
 }
 
 bool CbmRichUnpackAlgo::checkMaskedDiRICH(Int_t subSubEventId)
