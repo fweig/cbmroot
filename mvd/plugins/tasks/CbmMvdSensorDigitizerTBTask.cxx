@@ -100,7 +100,6 @@ CbmMvdSensorDigitizerTBTask::CbmMvdSensorDigitizerTBTask()
   , fPixelCharge()
   , fDigis()
   , fDigiMatch()
-  , frand()
   , fproduceNoise()
   , fPixelChargeShort()
   , fPixelScanAccelerator()
@@ -162,7 +161,6 @@ CbmMvdSensorDigitizerTBTask::CbmMvdSensorDigitizerTBTask()
   //fLorentzNorm=0.00013010281679422413;
   fLorentzNorm = 1;
 
-  frand         = new TRandom3(0);
   fproduceNoise = kFALSE;
 
   fReadoutLast    = -1.;

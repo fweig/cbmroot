@@ -112,7 +112,6 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask()
   , fPixelCharge(new TClonesArray("CbmMvdPixelCharge"))
   , fDigis(NULL)
   , fDigiMatch(NULL)
-  , frand(nullptr)
   , fproduceNoise(kFALSE)
   , fPixelChargeShort()
   , fPixelScanAccelerator(NULL)
@@ -155,7 +154,6 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask()
   , h_ElossVsMomIn(NULL)
 {
   fRandGen.SetSeed(2736);
-  frand         = new TRandom3(0);
   fproduceNoise = kFALSE;
 }
 // -------------------------------------------------------------------------
@@ -216,7 +214,6 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask(Int_t iMode)
   , fPixelCharge(new TClonesArray("CbmMvdPixelCharge", 100000))
   , fDigis(NULL)
   , fDigiMatch(NULL)
-  , frand(nullptr)
   , fproduceNoise(kFALSE)
   , fPixelChargeShort()
   , fPixelScanAccelerator(NULL)
@@ -309,7 +306,6 @@ CbmMvdSensorDigitizerTask::CbmMvdSensorDigitizerTask(Int_t iMode)
 
   fcurrentFrameNumber = 0;
 
-  frand         = new TRandom3(0);
   fproduceNoise = kFALSE;
 }
 
@@ -941,14 +937,14 @@ void CbmMvdSensorDigitizerTask::ProducePixelCharge(CbmMvdPoint* point)
 void CbmMvdSensorDigitizerTask::ProduceNoise()
 {
   Int_t fmaxNoise = 100;
-  Int_t noiseHits = (Int_t)(frand->Rndm(fmaxNoise) * fmaxNoise);
+  Int_t noiseHits = (Int_t)(gRandom->Rndm(fmaxNoise) * fmaxNoise);
   Int_t xPix, yPix;
   CbmMvdPixelCharge* pixel;
   pair<Int_t, Int_t> thispoint;
 
   for (Int_t i = 0; i <= noiseHits; i++) {
-    xPix = frand->Integer(fNPixelsX);
-    yPix = frand->Integer(fNPixelsY);
+    xPix = gRandom->Integer(fNPixelsX);
+    yPix = gRandom->Integer(fNPixelsY);
 
     Double_t Current[3];
     fSensor->PixelToLocal(xPix, yPix, Current);

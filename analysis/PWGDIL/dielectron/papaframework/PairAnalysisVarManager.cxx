@@ -347,8 +347,6 @@ PairAnalysisVarManager::PairAnalysisVarManager() : TNamed("PairAnalysisVarManage
   for (Int_t i = 1; i < kNMaxValuesMC; ++i) {
     fgFormula[i] = 0x0;
   }
-
-  gRandom->SetSeed();
 }
 
 //________________________________________________________________
@@ -360,8 +358,6 @@ PairAnalysisVarManager::PairAnalysisVarManager(const char* name, const char* tit
   for (Int_t i = 1; i < kNMaxValuesMC; ++i) {
     fgFormula[i] = 0x0;
   }
-
-  gRandom->SetSeed();
 }
 
 //________________________________________________________________

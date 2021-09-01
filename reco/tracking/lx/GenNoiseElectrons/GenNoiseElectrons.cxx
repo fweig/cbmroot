@@ -104,9 +104,6 @@ InitStatus LxGenNoiseElectrons::Init()
     }
   }
 
-  time_t initTime;
-  gRandom->SetSeed(time(&initTime));
-
   fOutMCTracks = new TClonesArray("CbmMCTrack", 1000);
   ioman->Register("MCTrack", "MC", fOutMCTracks, kTRUE);
   fOutMuchPoints = new TClonesArray("CbmMuchPoint", 1000);

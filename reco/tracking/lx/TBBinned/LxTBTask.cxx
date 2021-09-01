@@ -398,9 +398,6 @@ InitStatus LxTBFinder::Init()
   gMuonMass     = TDatabasePDG::Instance()->GetParticle(13)->Mass();
   gElectronMass = TDatabasePDG::Instance()->GetParticle(11)->Mass();
 
-  time_t initTime;
-  gRandom->SetSeed(time(&initTime));
-
   //TObjArray* absorbers = CbmMuchGeoScheme::Instance()->GetAbsorbers(); (VF) unused
 
   hasTrd                        = useTrd ? HasTrd() : false;

@@ -143,7 +143,6 @@ private:
 
   TClonesArray* fDigiMatch;
 
-  TRandom3* frand;
   Bool_t fproduceNoise;
 
   std::vector<CbmMvdPixelCharge*> fPixelChargeShort;

@@ -36,7 +36,6 @@ PairAnalysisTrackRotator::PairAnalysisTrackRotator(const char* name, const char*
   //
   // Named Constructor
   //
-  gRandom->SetSeed();
 }
 
 //______________________________________________
