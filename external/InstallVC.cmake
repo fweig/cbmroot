@@ -8,6 +8,7 @@ set(Vc_LIBNAME "${CMAKE_STATIC_LIBRARY_PREFIX}Vc${CMAKE_STATIC_LIBRARY_SUFFIX}")
 set(Vc_LIBRARY "${Vc_ROOTDIR}/${_LIBDIR_DEFAULT}/${Vc_LIBNAME}")
 
 set(Vc_VERSION f8a18751dcb001c8d9820a6c90a1f605e27ca692) # Hash for tag 1.4.1, Need hash for tests 
+#set(Vc_VERSION fc2d75d0f23f33c2224d546acb965c535a45454a) # Hash for tag 1.4.2, Need hash for tests
 set(Vc_SRC_URL "https://github.com/VcDevel/Vc")
 
 download_project_if_needed(PROJECT         vc_source
@@ -35,6 +36,7 @@ ExternalProject_Add(VC
              -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
              -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
              -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
+#             -DBUILD_TESTING=TRUE
   INSTALL_COMMAND env DESTDIR=${Vc_DESTDIR} ${CMAKE_COMMAND} --build . --target install
 )
 
