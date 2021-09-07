@@ -699,24 +699,22 @@ inline void L1Extrapolate0(L1TrackPar& T,  // input track parameters (x,y,tx,ty,
 
 
 inline void L1ExtrapolateTime(L1TrackPar& T,  // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
-                              fvec dz         // extrapolate to this z position
-)
+                              fvec dz,        // extrapolate to this z position
+                              fvec timeInfo = 1.)
 {
 
   cnst c_light = 29.9792458;
 
-  T.t += sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1) * dz / c_light;
+  const fvec mask = (timeInfo > 0);
+  fvec dz_mask    = mask & dz;
 
-  const fvec k1 = T.tx * dz / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1));
-  const fvec k2 = T.ty * dz / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1));
+  T.t += sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1) * dz_mask / c_light;
+
+  const fvec k1 = dz_mask & T.tx / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1));
+  const fvec k2 = dz_mask & T.ty / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1));
 
   fvec c52 = T.C52;
   fvec c53 = T.C53;
-
-  //   cout<<k1<<" k1 "<<k2<<" k2 "<<endl;
-
-  //  fvec ha = T.C53;
-  //  fvec ha2 = T.C54;
 
   T.C50 += k1 * T.C20 + k2 * T.C30;
   T.C51 += k1 * T.C21 + k2 * T.C31;
@@ -724,9 +722,6 @@ inline void L1ExtrapolateTime(L1TrackPar& T,  // input track parameters (x,y,tx,
   T.C53 += k1 * T.C32 + k2 * T.C33;
   T.C54 += k1 * T.C42 + k2 * T.C43;
   T.C55 += k1 * (T.C52 + c52) + k2 * (T.C53 + c53);
-
-  //   cout<<ha<<" c53 "<<T.C53<<endl;
-  //     cout<<ha2<<" c54 "<<T.C54<<endl;
 }
 
 inline void L1ExtrapolateLine(L1TrackPar& T, fvec z_out)

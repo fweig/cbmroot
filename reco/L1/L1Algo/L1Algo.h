@@ -204,7 +204,7 @@ public:
   int NFStations {0};    // ?
 
   L1Station vStations[fkMaxNstations] _fvecalignment;  // station info
-  L1Vector<L1Material> fRadThick {"fRadThick"};      // material for each station
+  L1Vector<L1Material> fRadThick {"fRadThick"};        // material for each station
 
   int NStsStrips {0};                   // number of strips
   L1Vector<L1Hit>* vStsHits {nullptr};  // hits as a combination of front-, backstrips and z-position
@@ -441,7 +441,7 @@ private:
 
   /// Find the doublets. Reformat data in the portion of doublets.
   void f20(  // input
-    Tindex n1, L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1, THitI* hitsl_1,
+    Tindex n1, L1Station& stal, L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1, THitI* hitsl_1,
 
     // output
     Tindex& n2, L1Vector<THitI>& i1_2,

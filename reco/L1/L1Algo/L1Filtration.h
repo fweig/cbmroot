@@ -14,7 +14,7 @@
 #define cnst const fvec
 
 
-inline void FilterTime(L1TrackPar& T, fvec t0, fvec dt0, fvec w = 1.)
+inline void FilterTime(L1TrackPar& T, fvec t0, fvec dt0, fvec timeInfo = 1., fvec w = 1.)
 {
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1, F2, F3, F4, F5;
@@ -33,11 +33,11 @@ inline void FilterTime(L1TrackPar& T, fvec t0, fvec dt0, fvec w = 1.)
   F4 = T.C54;
   F5 = T.C55;
 
-#if 0  // use mask
-  const fvec mask = (HCH < info.sigma2 * 16.);
-  wi = w/( (mask & info.sigma2) +HCH );
-  zetawi = zeta *wi;
-  T.chi2 +=  mask & (zeta * zetawi);
+#if 1  // use mask
+  const fvec mask = (timeInfo > 0);
+  wi              = mask & w / (dt0 * dt0 + HCH);
+  zetawi          = zeta * wi;
+  T.chi2 += mask & (zeta * zetawi);
 #else
   wi     = w / (dt0 * dt0 + HCH);
   zetawi = zeta * wi;

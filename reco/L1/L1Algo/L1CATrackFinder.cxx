@@ -368,7 +368,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     if ((istam >= NMvdStations) && (istal <= NMvdStations - 1)) { fit.L1AddPipeMaterial(T, MaxInvMom, 1); }
 
     fvec dz = zstam - zl;
-    L1ExtrapolateTime(T, dz);
+    L1ExtrapolateTime(T, dz, stam.timeInfo);
 
     if (fGlobal || fmCBMmode)
     // extrapolate to left hit
@@ -387,7 +387,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 /// Find the doublets. Reformat data in the portion of doublets.
 inline void L1Algo::f20(
   /// input
-  Tindex n1, L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1, THitI* hitsl_1,
+  Tindex n1, L1Station& stal, L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1, THitI* hitsl_1,
   /// output
   Tindex& n2, L1Vector<THitI>& i1_2,
 #ifdef DOUB_PERFORMANCE
@@ -436,8 +436,10 @@ inline void L1Algo::f20(
 
 
       // check y-boundaries
-      if (fabs(time - hitm.time) > sqrt(timeError + hitm.timeEr * hitm.timeEr) * 5) continue;
-      if (fabs(time - hitm.time) > 30) continue;
+      if ((stam.timeInfo) && (stal.timeInfo))
+        if (fabs(time - hitm.time) > sqrt(timeError + hitm.timeEr * hitm.timeEr) * 5) continue;
+      if ((stam.timeInfo) && (stal.timeInfo))
+        if (fabs(time - hitm.time) > 30) continue;
 
 #ifdef USE_EVENT_NUMBER
       if ((Event[i1_V][i1_4] != hitm.n)) continue;
@@ -631,7 +633,7 @@ inline void L1Algo::f30(  // input
 
       fvec dz = zPos_2 - T2.z;
 
-      L1ExtrapolateTime(T2, dz);
+      L1ExtrapolateTime(T2, dz, stam.timeInfo);
       // add middle hit
       L1ExtrapolateLine(T2, zPos_2);
 
@@ -661,7 +663,7 @@ inline void L1Algo::f30(  // input
         L1Filter(T2, info, u_back_2);
 
 
-      FilterTime(T2, timeM, timeMEr);
+      FilterTime(T2, timeM, timeMEr, stam.timeInfo);
 #ifdef USE_RL_TABLE
       if (!fmCBMmode) fit.L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1);
 
@@ -673,7 +675,7 @@ inline void L1Algo::f30(  // input
       if ((istar >= NMvdStations) && (istam <= NMvdStations - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
 
       fvec dz2 = star.z - T2.z;
-      L1ExtrapolateTime(T2, dz2);
+      L1ExtrapolateTime(T2, dz2, stam.timeInfo);
 
       // extrapolate to the right hit station
 
@@ -741,12 +743,14 @@ inline void L1Algo::f30(  // input
 
 
           fvec dz3 = zr - T_cur.z;
-          L1ExtrapolateTime(T_cur, dz3);
+          L1ExtrapolateTime(T_cur, dz3, star.timeInfo);
 
           L1ExtrapolateLine(T_cur, zr);
 
-          if (fabs(T_cur.t[i2_4] - hitr.time) > sqrt(T_cur.C55[i2_4] + hitr.timeEr) * 5) continue;
-          if (fabs(T_cur.t[i2_4] - hitr.time) > 30) continue;
+          if ((star.timeInfo) && (stam.timeInfo))
+            if (fabs(T_cur.t[i2_4] - hitr.time) > sqrt(T_cur.C55[i2_4] + hitr.timeEr) * 5) continue;
+          if ((star.timeInfo) && (stam.timeInfo))
+            if (fabs(T_cur.t[i2_4] - hitr.time) > 30) continue;
 
 
           // - check whether hit belong to the window ( track position +\- errors ) -
@@ -805,7 +809,7 @@ inline void L1Algo::f30(  // input
 
           L1FilterChi2(info, x, y, C00, C10, C11, chi2, hitr.V());
 
-          FilterTime(T_cur, hitr.time, hitr.timeEr);
+          FilterTime(T_cur, hitr.time, hitr.timeEr, star.timeInfo);
 
 
 #ifdef DO_NOT_SELECT_TRIPLETS
@@ -877,7 +881,7 @@ inline void L1Algo::f31(  // input
 
     fvec dz = z_Pos[i3_V] - T_3[i3_V].z;
 
-    L1ExtrapolateTime(T_3[i3_V], dz);
+    L1ExtrapolateTime(T_3[i3_V], dz, star.timeInfo);
     L1ExtrapolateLine(T_3[i3_V], z_Pos[i3_V]);
 
 
@@ -907,7 +911,7 @@ inline void L1Algo::f31(  // input
     else
       L1Filter(T_3[i3_V], info, u_back_[i3_V]);
 
-    if (!fmCBMmode) FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V]);
+    if (!fmCBMmode) FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V], star.timeInfo);
 
     //  FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V]);
   }
@@ -1301,6 +1305,7 @@ inline void L1Algo::DupletsStaPort(
   ///   @&hitsm_2 - index of middle hit in hits array indexed by doublet index
 
   if (istam < NStations) {
+    L1Station& stal = vStations[istal];
     L1Station& stam = vStations[istam];
 
     // prepare data
@@ -1344,7 +1349,7 @@ inline void L1Algo::DupletsStaPort(
 #endif  // DOUB_PERFORMANCE
 
     f20(  // input
-      n1, stam, vStsHits_m, T_1, hitsl_1,
+      n1, stal, stam, vStsHits_m, T_1, hitsl_1,
       // output
       n_2, i1_2,
 #ifdef DOUB_PERFORMANCE
@@ -1654,12 +1659,6 @@ void L1Algo::CATrackFinder()
       const float& time = (*vStsHits)[ih].t;
       if ((lasttime < time) && (!std::isinf(time))) lasttime = time;
       if ((starttime > time) && (time > 0)) starttime = time;
-
-      if (ist < NMvdStations) {
-        L1Hit& h = (*vStsHits)[ih];
-        h.t      = 0;
-        h.dt     = 100;
-      }
     }
 
 

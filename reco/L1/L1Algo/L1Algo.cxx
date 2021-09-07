@@ -115,8 +115,10 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const boo
   std::cout << "L1Algo Input " << NStations << " Stations:" << std::endl;
 #endif  // TBB2
   for (int i = 0; i < NStations; i++) {
-    L1Station& st               = vStations[i];
-    st.type                     = geo[ind++];
+    L1Station& st = vStations[i];
+    st.type       = geo[ind++];
+    st.timeInfo   = 1;
+    if (st.type == 0) st.timeInfo = 0;
     st.z                        = geo[ind++];
     st.materialInfo.thick       = geo[ind++];
     st.Rmin                     = geo[ind++];

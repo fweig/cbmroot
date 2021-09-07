@@ -15,6 +15,7 @@ class L1Station {
 public:
   L1Station()
     : type(0)
+    , timeInfo(0)
     , z(0)
     , Rmin(0)
     , Rmax(0)
@@ -31,6 +32,7 @@ public:
   }
 
   int type;
+  int timeInfo;
   fvec z, Rmin, Rmax, Sy;
   L1MaterialInfo materialInfo;
   L1FieldSlice fieldSlice;
