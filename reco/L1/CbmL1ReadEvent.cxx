@@ -429,18 +429,20 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   Int_t nEntSts = 0;
   if (listStsHits) {
 
-    if (fTimesliceMode) { nEntSts = (event ? event->GetNofData(ECbmDataType::kStsHit) : listStsHits->GetEntriesFast()); }
+    if (fTimesliceMode) {
+      nEntSts = (event ? event->GetNofData(ECbmDataType::kStsHit) : listStsHits->GetEntriesFast());
+    }
     else {
       nEntSts = (event ? event->GetNofData(ECbmDataType::kStsHit) : listStsHits->GetEntriesFast());
     }
 
     int firstDetStrip = NStrips;
-    
-    if (event) FstHitinTs = 0; 
+
+    if (event) FstHitinTs = 0;
 
     for (Int_t j = FstHitinTs; j < nEntSts; j++) {
       Int_t hitIndex = 0;
-      hitIndex = (event ? event->GetIndex(ECbmDataType::kStsHit, j) : j);
+      hitIndex       = (event ? event->GetIndex(ECbmDataType::kStsHit, j) : j);
 
       int hitIndexSort = 0;
       if (fTimesliceMode) hitIndexSort = StsIndex[hitIndex];
@@ -472,10 +474,10 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
         /// stop if reco TS ends and many hits left
         if (!event)
-        if ((th.time > (TsStart + TsLength)) && ((nEntSts - hitIndex) > 300)) {
-          areDataLeft = true;  // there are unprocessed data left in the time slice
-          break;
-        }
+          if ((th.time > (TsStart + TsLength)) && ((nEntSts - hitIndex) > 300)) {
+            areDataLeft = true;  // there are unprocessed data left in the time slice
+            break;
+          }
 
         TVector3 pos, err;
         mh->Position(pos);
