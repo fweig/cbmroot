@@ -109,7 +109,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     if (listMvdHits) nHitsTotal += listMvdHits->GetEntriesFast();
     Int_t nEntSts = 0;
     if (listStsHits) {
-      if (!fTimesliceMode && event) { nEntSts = event->GetNofData(ECbmDataType::kStsHit); }
+      if (event) { nEntSts = event->GetNofData(ECbmDataType::kStsHit); }
       else {
         nEntSts = listStsHits->GetEntriesFast();
       }
@@ -429,18 +429,18 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   Int_t nEntSts = 0;
   if (listStsHits) {
 
-    if (fTimesliceMode) { nEntSts = listStsHits->GetEntriesFast(); }
+    if (fTimesliceMode) { nEntSts = (event ? event->GetNofData(ECbmDataType::kStsHit) : listStsHits->GetEntriesFast()); }
     else {
       nEntSts = (event ? event->GetNofData(ECbmDataType::kStsHit) : listStsHits->GetEntriesFast());
     }
 
     int firstDetStrip = NStrips;
+    
+    if (event) FstHitinTs = 0; 
 
     for (Int_t j = FstHitinTs; j < nEntSts; j++) {
       Int_t hitIndex = 0;
-      if (fTimesliceMode) hitIndex = j;
-      else
-        hitIndex = (event ? event->GetIndex(ECbmDataType::kStsHit, j) : j);
+      hitIndex = (event ? event->GetIndex(ECbmDataType::kStsHit, j) : j);
 
       int hitIndexSort = 0;
       if (fTimesliceMode) hitIndexSort = StsIndex[hitIndex];
@@ -471,6 +471,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           th.id = tmpHits.size();
 
         /// stop if reco TS ends and many hits left
+        if (!event)
         if ((th.time > (TsStart + TsLength)) && ((nEntSts - hitIndex) > 300)) {
           areDataLeft = true;  // there are unprocessed data left in the time slice
           break;
@@ -889,7 +890,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   int maxHitIndex = nMvdHits + nStsHits + nMuchHits + nTrdHits;
   if (fTofHits) maxHitIndex += fTofHits->GetEntriesFast();
 
-  SortedIndex.reset(std::max(nEntSts, maxHitIndex));
+  SortedIndex.reset(std::max(listStsHits->GetEntriesFast(), maxHitIndex));
 
   vStsHits.reserve(nHits);
   fData_->vStsHits.reserve(nHits);

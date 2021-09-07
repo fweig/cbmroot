@@ -1106,7 +1106,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     fData->Clear();
 
-    if (!fTimesliceMode) {
+    if (event) {
 
       fData->fStripFlag.clear();
 
@@ -1403,7 +1403,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
   // output performance
   if (fPerformance) {
-    if (fVerbose > 1) { cout << "Performance..." << endl; }
+     if (fVerbose > 1) { cout << "Performance..." << endl; }
     //HitMatch();
     TrackMatch();
   }
