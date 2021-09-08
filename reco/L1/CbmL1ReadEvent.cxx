@@ -430,7 +430,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   if (listStsHits) {
 
     nEntSts = (event ? event->GetNofData(ECbmDataType::kStsHit) : listStsHits->GetEntriesFast());
-    
+
     int firstDetStrip = NStrips;
 
     if (event) FstHitinTs = 0;
