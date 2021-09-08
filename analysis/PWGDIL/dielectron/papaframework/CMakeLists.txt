@@ -49,17 +49,15 @@ Include_Directories( ${INCLUDE_DIRECTORIES})
 Set(SYSTEM_INCLUDE_DIRECTORIES
   ${BASE_INCLUDE_DIRECTORIES} 
   ${Boost_INCLUDE_DIR}
-  ${VC_INCLUDE_DIRS}
 )
 
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
-${ROOT_LIBRARY_DIR}
-${FAIRROOT_LIBRARY_DIR}
-${Boost_LIBRARY_DIRS}
-${Vc_LIB_DIR}
 ${KFParticle_LIB_DIR}
+${FAIRROOT_LIBRARY_DIR}
+${ROOT_LIBRARY_DIR}
+${Boost_LIBRARY_DIRS}
 )
 
 #Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wshadow -Weffc++ -Wno-unused-variable -Wno-unused-parameter -Wno-sign-compare -Wno-ignored-qualifiers -Wno-overloaded-virtual")
@@ -147,7 +145,7 @@ EndIf()
 Set(LINKDEF CbmPapaLinkDef.h)
 Set(LIBRARY_NAME CbmPapa)
 Set(DEPENDENCIES
-    L1 KF Littrack CbmRichReco CbmRichBase CbmBase CbmData CbmSimGenerators Base Vc.a)
+    L1 KF Littrack CbmRichReco CbmRichBase CbmBase CbmData CbmSimGenerators Base)
 
 GENERATE_LIBRARY()
 

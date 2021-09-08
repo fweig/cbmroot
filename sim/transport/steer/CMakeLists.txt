@@ -47,11 +47,9 @@ ${BASE_INCLUDE_DIRECTORIES}
 
 # ----  Link directories ----------------------------------
 set(LINK_DIRECTORIES
-${ROOT_LIBRARY_DIR}
 ${FAIRROOT_LIBRARY_DIR}
+${ROOT_LIBRARY_DIR}
 ${Boost_LIBRARY_DIRS}
-${Vc_LIB_DIR}
-${KFParticle_LIB_DIR}
 ${SIMPATH}/lib
 )
 

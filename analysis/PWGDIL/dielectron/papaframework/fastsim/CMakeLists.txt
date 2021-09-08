@@ -12,14 +12,13 @@ Include_Directories( ${INCLUDE_DIRECTORIES})
 Set(SYSTEM_INCLUDE_DIRECTORIES
   ${BASE_INCLUDE_DIRECTORIES}
   ${Boost_INCLUDE_DIR}
-  ${VC_INCLUDE_DIRS}
 )
 
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
-${ROOT_LIBRARY_DIR}
 ${FAIRROOT_LIBRARY_DIR}
+${ROOT_LIBRARY_DIR}
 ${Boost_LIBRARY_DIRS}
 )
 
@@ -38,7 +37,7 @@ Set(HEADERS )
 Set(LINKDEF CbmFastSimLinkDef.h)
 Set(LIBRARY_NAME CbmFastSim)
 Set(DEPENDENCIES
-    CbmPapa CbmBase CbmData CbmSimGenerators Base VMC Vc.a
+    CbmPapa CbmBase CbmData CbmSimGenerators Base VMC
 )
 
 GENERATE_LIBRARY()

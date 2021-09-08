@@ -43,12 +43,12 @@ Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 set(LINK_DIRECTORIES
 ${Vc_LIB_DIR}
 ${KFParticle_LIB_DIR}
-${ROOT_LIBRARY_DIR}
 ${FAIRROOT_LIBRARY_DIR}
+${ROOT_LIBRARY_DIR}
 ${Boost_LIBRARY_DIRS}
 )
  
-link_directories( ${LINK_DIRECTORIES})
+link_directories(BEFORE ${LINK_DIRECTORIES})
 
 set(SRCS
 CbmKF.cxx 

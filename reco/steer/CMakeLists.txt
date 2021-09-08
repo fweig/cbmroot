@@ -62,10 +62,10 @@ ${IPC_INCLUDE_DIRECTORY}
 
 # ----  Link directories ----------------------------------
 set(LINK_DIRECTORIES
-${ROOT_LIBRARY_DIR}
-${FAIRROOT_LIBRARY_DIR}
-${Boost_LIBRARY_DIRS}
 ${KFParticle_LIB_DIR} # for rich reco
+${FAIRROOT_LIBRARY_DIR}
+${ROOT_LIBRARY_DIR}
+${Boost_LIBRARY_DIRS}
 )
 # ---------------------------------------------------------
 
