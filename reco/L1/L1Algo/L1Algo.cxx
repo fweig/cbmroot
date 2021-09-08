@@ -118,7 +118,7 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const boo
     L1Station& st = vStations[i];
     st.type       = geo[ind++];
     st.timeInfo   = 1;
-    if (st.type == 0) st.timeInfo = 0;
+    if (st.type == 1) st.timeInfo = 0;
     st.z                        = geo[ind++];
     st.materialInfo.thick       = geo[ind++];
     st.Rmin                     = geo[ind++];
