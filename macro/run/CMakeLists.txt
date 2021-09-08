@@ -5,6 +5,7 @@ GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_digi_json_config.C
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_tra_beam.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_digi.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_reco.C)
+GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_qa.C)
 # ============================================================================
 
 
@@ -220,6 +221,22 @@ foreach(setup IN LISTS cbm_setup)
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
 	FIXTURES_REQUIRED fixt_digi_ts_${setup}
 	FIXTURES_SETUP fixt_reco_ts_eb_real_${setup}
+ 	RESOURCE_LOCK collParDb_${setup}
+  )
+
+  # --- Test run_qa
+  # --- Run QA tasks with Event-by-event reconstruction from time-based simulation
+  # --- Real raw event builder
+  set(testname run_${sname}_qa)
+  add_test(${testname} ${MACRODIR}/run_qa.sh
+  	\"data/${sname}_coll\" \"data/${sname}_ts\"  \"data/${sname}_ts_eb_real\" 
+	\"data/${sname}_coll\" \"data/${sname}_qa\" \"${setup}\" -1 
+	\"data/${sname}_sign\" \"data/${sname}_beam\" )
+  set_tests_properties(${testname} PROPERTIES
+  	TIMEOUT ${timeOutTime}
+  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
+	FIXTURES_REQUIRED "fixt_tra_${setup}_coll;fixt_digi_ts_${setup};fixt_reco_ts_${setup}_eb_real"
+	FIXTURES_SETUP fixt_${setup}_qa
  	RESOURCE_LOCK collParDb_${setup}
   )
 

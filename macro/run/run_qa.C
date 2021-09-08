@@ -37,7 +37,10 @@
 #include <TStopwatch.h>
 #endif
 
-void run_qa(TString dataset = "data/sis100_muon_jpsi_test", TString setup = "sis100_muon_jpsi", Int_t nEvents = -1)
+void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "data/sis100_muon_jpsi_test",
+            TString dataReco = "data/sis100_muon_jpsi_test", TString dataPar = "data/sis100_muon_jpsi_test",
+            TString dataSink = "data/sis100_muon_jpsi_test", TString setup = "sis100_muon_jpsi", Int_t nEvents = -1,
+            TString dataTra2 = "", TString dataTra3 = "")
 {
 
   // ========================================================================
@@ -54,11 +57,13 @@ void run_qa(TString dataset = "data/sis100_muon_jpsi_test", TString setup = "sis
   // ------------------------------------------------------------------------
 
   // -----   In- and output file names   ------------------------------------
-  TString rawFile  = dataset + ".raw.root";
-  TString traFile  = dataset + ".tra.root";
-  TString parFile  = dataset + ".par.root";
-  TString recFile  = dataset + ".reco.root";
-  TString sinkFile = dataset + ".qa.root";
+  TString traFile  = dataTra + ".tra.root";
+  TString tra2File = dataTra2 + ".tra.root";
+  TString tra3File = dataTra3 + ".tra.root";
+  TString rawFile  = dataRaw + ".raw.root";
+  TString parFile  = dataPar + ".par.root";
+  TString recFile  = dataReco + ".reco.root";
+  TString sinkFile = dataSink + ".qa.root";
   // ------------------------------------------------------------------------
 
   // -----   Load the geometry setup   -------------------------------------
@@ -126,6 +131,8 @@ void run_qa(TString dataset = "data/sis100_muon_jpsi_test", TString setup = "sis
   FairFileSource* inputSource = new FairFileSource(rawFile);
   inputSource->AddFriend(traFile);
   inputSource->AddFriend(recFile);
+  if (!dataTra2.IsNull()) inputSource->AddFriend(tra2File);
+  if (!dataTra3.IsNull()) inputSource->AddFriend(tra3File);
 
   FairRunAna* run = new FairRunAna();
   run->SetSource(inputSource);
@@ -142,6 +149,9 @@ void run_qa(TString dataset = "data/sis100_muon_jpsi_test", TString setup = "sis
   // -----   MCDataManager  -----------------------------------
   CbmMCDataManager* mcManager = new CbmMCDataManager("MCDataManager", 0);
   mcManager->AddFile(traFile);
+  if (!dataTra2.IsNull()) mcManager->AddFile(tra2File);
+  if (!dataTra3.IsNull()) mcManager->AddFile(tra3File);
+
   run->AddTask(mcManager);
   // ------------------------------------------------------------------------
 
