@@ -710,8 +710,8 @@ inline void L1ExtrapolateTime(L1TrackPar& T,  // input track parameters (x,y,tx,
 
   T.t += sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1) * dz_mask / c_light;
 
-  const fvec k1 = dz_mask & T.tx / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1));
-  const fvec k2 = dz_mask & T.ty / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1));
+  const fvec k1 = dz_mask * T.tx / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1));
+  const fvec k2 = dz_mask * T.ty / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1));
 
   fvec c52 = T.C52;
   fvec c53 = T.C53;
