@@ -55,6 +55,18 @@ void CbmEvent::SetVertex(Double_t x, Double_t y, Double_t z, Double_t chi2, Int_
 }
 // -------------------------------------------------------------------------
 
+// -----    Swap two events
+void CbmEvent::Swap(CbmEvent& e)
+{
+  std::swap(fNumber, e.fNumber);
+  std::swap(fTimeStart, e.fTimeStart);
+  std::swap(fTimeEnd, e.fTimeEnd);
+  std::swap(fNofData, e.fNofData);
+  std::swap(fVertex, e.fVertex);
+  std::swap(fMatch, e.fMatch);
+  std::swap(fIndexMap, e.fIndexMap);
+}
+
 
 // -----   String output   -------------------------------------------------
 std::string CbmEvent::ToString() const

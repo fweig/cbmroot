@@ -38,24 +38,20 @@ CbmBuildEventsIdeal::~CbmBuildEventsIdeal() {}
 
 
 // =====   Number if different pairs (input,event) in a match object   =======
-UInt_t CbmBuildEventsIdeal::EventsInMatch(const CbmMatch* match)
+CbmMatch CbmBuildEventsIdeal::EventsInMatch(const CbmMatch* match)
 {
+  // --- Collect links from different events
 
-  // --- No or empty match object
-  if (match == nullptr) return 0;
-  if (!match->GetNofLinks()) return 0;
+  CbmMatch eventMatch;
+  Int_t nLinks = (match != nullptr) ? match->GetNofLinks() : 0;
 
-  // --- Only one link
-  if (match->GetNofLinks() == 1) return 1;
-
-  // --- More than one link: check whether they are from different events
-  CbmMatch testMatch;
-  for (Int_t iLink = 0; iLink < match->GetNofLinks(); iLink++) {
-    Int_t input = match->GetLink(iLink).GetFile();
-    Int_t event = match->GetLink(iLink).GetEntry();
-    testMatch.AddLink(1., 0, event, input);
+  for (Int_t iLink = 0; iLink < nLinks; iLink++) {
+    Int_t mcInput = match->GetLink(iLink).GetFile();
+    Int_t mcEvent = match->GetLink(iLink).GetEntry();
+    if (mcInput < 0 || mcEvent < 0) { continue; }
+    eventMatch.AddLink(1., 0, mcEvent, mcInput);
   }
-  return testMatch.GetNofLinks();
+  return eventMatch;
 }
 // ===========================================================================
 
@@ -85,54 +81,58 @@ void CbmBuildEventsIdeal::Exec(Option_t*)
     if (!fDigiMan->IsPresent(system)) continue;
     if (!fDigiMan->IsMatchPresent(system)) continue;
 
+    ECbmDataType digiType = ECbmDataType::kUnknown;
+
+    // --- Find the digi type
+    switch (system) {
+      case ECbmModuleId::kMvd: digiType = ECbmDataType::kMvdDigi; break;
+      case ECbmModuleId::kSts: digiType = ECbmDataType::kStsDigi; break;
+      case ECbmModuleId::kRich: digiType = ECbmDataType::kRichDigi; break;
+      case ECbmModuleId::kMuch: digiType = ECbmDataType::kMuchDigi; break;
+      case ECbmModuleId::kTrd: digiType = ECbmDataType::kTrdDigi; break;
+      case ECbmModuleId::kTof: digiType = ECbmDataType::kTofDigi; break;
+      case ECbmModuleId::kPsd: digiType = ECbmDataType::kPsdDigi; break;
+      default: break;
+    }  //? detector
+
+    if (digiType == ECbmDataType::kUnknown) {
+      LOG(fatal) << "unknown type of the module";
+      assert(0);
+      continue;  // in case assert(..) macro is switched off
+    }
+
     // --- Loop over digis for the current system
     Int_t nDigis  = fDigiMan->GetNofDigis(system);
     UInt_t nNoise = 0;
     UInt_t nAmbig = 0;
     for (Int_t iDigi = 0; iDigi < nDigis; iDigi++) {
 
-      // --- Get the MC input and event number through the match object
-      const CbmMatch* match = fDigiMan->GetMatch(system, iDigi);
-      assert(match);
-      Int_t mcInput = -1;
-      Int_t mcEvent = -1;
-      if (match->GetNofLinks()) {
-        mcInput = match->GetMatchedLink().GetFile();
-        mcEvent = match->GetMatchedLink().GetEntry();
-      }
+      // --- Get the MC input and event numbers through the match object
+
+      CbmMatch digiEvents = EventsInMatch(fDigiMan->GetMatch(system, iDigi));
+
+      for (Int_t iLink = 0; iLink < digiEvents.GetNofLinks(); iLink++) {
+        const auto& link = digiEvents.GetLink(iLink);
+        auto eventID     = make_pair(link.GetFile(), link.GetEntry());
+
+        // --- Get event pointer. If event is not yet present, create it.
+        CbmEvent* event = nullptr;
+        auto it         = eventMap.find(eventID);
+        if (it == eventMap.end()) {
+          event             = new CbmEvent();
+          eventMap[eventID] = event;
+        }
+        else {
+          event = it->second;
+        }
+        event->AddData(digiType, iDigi);
+      }  //# links
 
       // --- Empty match objects or negative event numbers signal noise
-      if (mcInput < 0 || mcEvent < 0) {
-        nNoise++;
-        continue;
-      }
+      if (!digiEvents.GetNofLinks() == 0) { nNoise++; }
 
       // --- Count occurrences of multiple MC events in match
-      if (EventsInMatch(match) > 1) nAmbig++;
-
-      // --- Get event pointer. If event is not yet present, create it.
-      CbmEvent* event = nullptr;
-      auto it         = eventMap.find(make_pair(mcInput, mcEvent));
-      if (it == eventMap.end()) {
-        assert(nEvents == fEvents->GetEntriesFast());
-        event                                 = new ((*fEvents)[nEvents]) CbmEvent(nEvents);
-        eventMap[make_pair(mcInput, mcEvent)] = event;
-        nEvents++;
-      }
-      else
-        event = it->second;
-
-      // --- Fill digi index into event
-      switch (system) {
-        case ECbmModuleId::kMvd: event->AddData(ECbmDataType::kMvdDigi, iDigi); break;
-        case ECbmModuleId::kSts: event->AddData(ECbmDataType::kStsDigi, iDigi); break;
-        case ECbmModuleId::kRich: event->AddData(ECbmDataType::kRichDigi, iDigi); break;
-        case ECbmModuleId::kMuch: event->AddData(ECbmDataType::kMuchDigi, iDigi); break;
-        case ECbmModuleId::kTrd: event->AddData(ECbmDataType::kTrdDigi, iDigi); break;
-        case ECbmModuleId::kTof: event->AddData(ECbmDataType::kTofDigi, iDigi); break;
-        case ECbmModuleId::kPsd: event->AddData(ECbmDataType::kPsdDigi, iDigi); break;
-        default: break;
-      }  //? detector
+      if (digiEvents.GetNofLinks() > 1) { nAmbig++; }
 
     }  //# digis
     LOG(debug) << GetName() << ": Detector " << CbmModuleList::GetModuleNameCaps(system) << ", digis " << nDigis << " ("
@@ -143,7 +143,15 @@ void CbmBuildEventsIdeal::Exec(Option_t*)
 
   }  //# detector systems
 
-  assert(nEvents == fEvents->GetEntriesFast());
+  // events are already ordered in the map, create CbmEvents in the same order
+  for (auto it = eventMap.begin(); it != eventMap.end(); it++) {
+    assert(nEvents == fEvents->GetEntriesFast());
+    CbmEvent* store = new ((*fEvents)[nEvents]) CbmEvent();
+    store->Swap(*(it->second));
+    store->SetNumber(nEvents++);
+    delete it->second;
+    it->second = nullptr;  // for a case
+  }
 
   // --- Timeslice log and statistics
   timer.Stop();

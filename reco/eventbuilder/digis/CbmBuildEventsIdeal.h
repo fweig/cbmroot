@@ -13,6 +13,7 @@
 
 
 #include "CbmDefs.h"
+#include "CbmMatch.h"
 
 #include <FairTask.h>
 
@@ -65,7 +66,7 @@ private:  // methods
 
 
   /** @brief Number of different MC events in a match object **/
-  UInt_t EventsInMatch(const CbmMatch* match);
+  CbmMatch EventsInMatch(const CbmMatch* match);
 
 
 private:                                  // members

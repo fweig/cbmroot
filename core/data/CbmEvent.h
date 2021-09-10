@@ -135,6 +135,10 @@ public:
 		 **/
   Double_t GetStartTime() const { return fTimeStart; }
 
+  /** Set event number
+		 ** @value Event number
+		 **/
+  void SetNumber(Int_t number) { fNumber = number; }
 
   /** Set end time
 		 ** @param endTime  End time of event [ns]
@@ -189,6 +193,8 @@ public:
 		 **/
   CbmVertex* GetVertex() { return &fVertex; }
 
+  /** Swap two events **/
+  void Swap(CbmEvent& e);
 
 private:
   /** Event meta data **/
