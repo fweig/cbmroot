@@ -146,7 +146,7 @@ private:
 
   Double_t fQuota = 0.7;  // True/all hits for track to be considered reconstructed
 
-  TFolder fOutFolder = {"CbmStsFindTracksQa", "CbmStsFindTracksQa"};  /// output folder with histos and canvases
+  TFolder fOutFolder = {"StsFindTracksQA", "StsFindTracksQA"};  /// output folder with histos and canvases
 
   /** Histograms **/
 

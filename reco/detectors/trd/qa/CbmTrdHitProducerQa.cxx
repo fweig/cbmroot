@@ -279,6 +279,9 @@ void CbmTrdHitProducerQa::PrepareHistograms()
 
 void CbmTrdHitProducerQa::WriteHistograms()
 {
+  gDirectory->mkdir("TrdHitProducerQA");
+  gDirectory->cd("TrdHitProducerQA");
+
   if (fHitPoolsX) fHitPoolsX->Write();
   if (fHitPoolsY) fHitPoolsY->Write();
 
@@ -295,6 +298,8 @@ void CbmTrdHitProducerQa::WriteHistograms()
   if (S3L4edEall) S3L4edEall->Write();
   if (S3L4pidE15) S3L4pidE15->Write();
   if (S3L4pidEall) S3L4pidEall->Write();
+
+  gDirectory->cd("..");
 }
 
 // --------------------------------------------------------------------------

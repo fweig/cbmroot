@@ -235,8 +235,8 @@ foreach(setup IN LISTS cbm_setup)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
-	FIXTURES_REQUIRED "fixt_tra_${setup}_coll;fixt_digi_ts_${setup};fixt_reco_ts_${setup}_eb_real"
-	FIXTURES_SETUP fixt_${setup}_qa
+	FIXTURES_REQUIRED "fixt_tra_coll_${setup};fixt_digi_ts_${setup};fixt_reco_ts_eb_real_${setup}"
+	FIXTURES_SETUP fixt_qa_${setup}
  	RESOURCE_LOCK collParDb_${setup}
   )
 

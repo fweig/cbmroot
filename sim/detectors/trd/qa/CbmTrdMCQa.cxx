@@ -174,10 +174,10 @@ void CbmTrdMCQa::Finish()
     fHM->Scale(Form("h_trd_PointsMapRate_Station%i", i), 10000000. * scale / nofEvents);
   }
 
-  gDirectory->mkdir("QA/TrdMCQa");
-  gDirectory->cd("QA/TrdMCQa");
+  gDirectory->mkdir("TrdMcQA");
+  gDirectory->cd("TrdMcQA");
   fHM->WriteToFile();
-  gDirectory->cd("../..");
+  gDirectory->cd("..");
   //    CbmSimulationReport* report = new CbmTrdMCQaReport(fSetup, fDigitizer);
   //    report -> Create(fHM, fOutputDir);
   //    delete report;

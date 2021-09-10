@@ -166,8 +166,26 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
     run->AddTask(new CbmMuchHitFinderQa());
   }
 
+  // ----- TRD QA  ---------------------------------
+  if (CbmSetup::Instance()->IsActive(ECbmModuleId::kTrd)) {
+    run->AddTask(new CbmTrdMCQa());
+    //run->AddTask(new CbmTrdHitRateQa());  //opens lots of windows
+    //run->AddTask(new CbmTrdDigitizerPRFQa()); //works put currently doesn't do anything
+    //run->AddTask(new CbmTrdHitRateFastQa());  //opens lots of windows
+    run->AddTask(new CbmTrdHitProducerQa());  //Histograms currently don't appear in output file
+  }
+  // ------------------------------------------------------------------------
+
   // ----- STS QA  ---------------------------------
-  if (CbmSetup::Instance()->IsActive(ECbmModuleId::kSts)) { run->AddTask(new CbmStsFindTracksQa()); }
+  if (CbmSetup::Instance()->IsActive(ECbmModuleId::kSts)) {
+    //run->AddTask(new CbmStsDigitizeQa()); //opens lots of windows
+    run->AddTask(new CbmStsFindTracksQa());
+  }
+  // ------------------------------------------------------------------------
+
+  // ----- Event builder QA  ---------------------------------
+  CbmBuildEventsQa* evBuildQA = new CbmBuildEventsQa();
+  run->AddTask(evBuildQA);
   // ------------------------------------------------------------------------
 
   // -----  Parameter database   --------------------------------------------
