@@ -100,7 +100,8 @@ private:
   Double_t fTime;
 
   /**
-	 * \brief Time-over-threshold, pulse width
+	 * \brief Time-over-threshold, pulse width. 
+   * This variable is only used in real data analysis, for the simulation it is set to 0.
 	 */
   Double_t fToT;
 
