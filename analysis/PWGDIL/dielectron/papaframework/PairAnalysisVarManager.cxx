@@ -1,3 +1,7 @@
+/* Copyright (C) 1998-2009 ALICE Experiment, CERN
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Julian Book [committer] */
+
 ///////////////////////////////////////////////////////////////////////////
 //                Variables Manager class
 //
