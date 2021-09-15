@@ -106,7 +106,7 @@ public:
   fvec GetParticleMass2() const { return fMass2; }
 
   void Filter(L1UMeasurementInfo& info, fvec u, fvec w = 1.);
-  void Filter(fvec t0, fvec dt0, fvec w = 1.);
+  void Filter(fvec t0, fvec dt0, fvec w = 1., fvec timeInfo = 1.);
   void FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w = 1.);
   void Extrapolate(fvec z_out, fvec qp0, const L1FieldRegion& F, fvec* w = 0);
   void ExtrapolateLine(fvec z_out, fvec* w = 0);

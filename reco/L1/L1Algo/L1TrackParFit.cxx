@@ -146,7 +146,7 @@ void L1TrackParFit::FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w)
   C55 -= K5 * F5;
 }
 
-void L1TrackParFit::Filter(fvec t0, fvec dt0, fvec w)
+void L1TrackParFit::Filter(fvec t0, fvec dt0, fvec w, fvec timeInfo)
 {
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1, F2, F3, F4, F5;
@@ -165,16 +165,17 @@ void L1TrackParFit::Filter(fvec t0, fvec dt0, fvec w)
   F4 = C54;
   F5 = C55;
 
-#if 0  // use mask
-  const fvec mask = (HCH < info.sigma2 * 16.);
-  wi = w/( (mask & info.sigma2) +HCH );
-  zetawi = zeta *wi;
-  chi2 +=  mask & (zeta * zetawi);
+#if 1  // use mask
+  const fvec mask = (timeInfo > 0);
+  wi              = mask & w / (dt0 * dt0 + HCH);
+  zetawi          = zeta * wi;
+  chi2 += mask & (zeta * zetawi);
 #else
   wi     = w / (dt0 * dt0 + HCH);
   zetawi = zeta * wi;
   chi2 += zeta * zetawi;
 #endif  // 0
+
   NDF += w;
 
   K1 = F1 * wi;
