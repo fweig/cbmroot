@@ -15,7 +15,7 @@ licenceHeaderCheck () {
 		FILE_CODE="1"
 	fi
 
-	head -n 1 $1 | grep -q '\/\* Copyright (C) [0-9-]* [a-zA-Z -]*, [a-zA-Z]*'
+	head -n 1 $1 | grep -q '\/\* Copyright (C) [0-9-]* [a-zA-Z -/]*, [a-zA-Z/]*'
 	if [ $? -ne 0 ]; then
 		echo "[ERROR] $1; line 1 has syntax errors in its licence header."
 		((RETURN_CODE++))
