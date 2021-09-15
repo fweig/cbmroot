@@ -101,7 +101,7 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*)
   Int_t modID        = -1;  // module ID
   Int_t scinID       = -1;  // #sciillator
   Int_t sec;
-  std::map<UInt_t, CbmPsdDigi> fired_digis_map; // map<UInt_t uAddress, CbmPsdDigi>
+  std::map<UInt_t, CbmPsdDigi> fired_digis_map;  // map<UInt_t uAddress, CbmPsdDigi>
 
   for (Int_t iPoint = 0; iPoint < nPoints; iPoint++) {
     point = (CbmPsdPoint*) fPointArray->At(iPoint);
@@ -110,22 +110,21 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*)
     modID          = point->GetModuleID();    //marina  1-44 (45)
     scinID         = point->GetDetectorID();  //1-60
     Double_t eLoss = point->GetEnergyLoss();
-    Double_t pTime = point->GetTime();
+    Double_t pTime     = point->GetTime();
     sec                = (Int_t)((scinID - 1) / 6) + 1;  //marina   1-10
-    UInt_t uAddress = CbmPsdAddress::GetAddress(modID, sec);
+    UInt_t uAddress    = CbmPsdAddress::GetAddress(modID, sec);
 
     auto it = fired_digis_map.find(uAddress);
     if (it != fired_digis_map.end()) {
-       //this key exists
-       it->second.SetEdep( it->second.GetEdep() + eLoss );
-       if(it->second.GetTime() > pTime) 
-          it->second.SetTime(pTime);
+      //this key exists
+      it->second.SetEdep(it->second.GetEdep() + eLoss);
+      if (it->second.GetTime() > pTime) it->second.SetTime(pTime);
     }
     else {
-       //this key is new
-       CbmPsdDigi digi = CbmPsdDigi(uAddress, pTime, eLoss);
-       fired_digis_map.insert(std::make_pair(uAddress, digi));
-    }    
+      //this key is new
+      CbmPsdDigi digi = CbmPsdDigi(uAddress, pTime, eLoss);
+      fired_digis_map.insert(std::make_pair(uAddress, digi));
+    }
   }  // Loop over MCPoints
 
 
@@ -142,8 +141,8 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*)
     CbmPsdDigi* digi = new CbmPsdDigi(entry.first, entry.second.GetTime(), eLossSmeared);
     SendData(digi);
     nDigis++;
-    LOG(debug1) << fName << ": Digi " << nDigis << " Section " << entry.second.GetSectionID() << " Module " << entry.second.GetModuleID() << " energy "
-                << eLossSmeared;
+    LOG(debug1) << fName << ": Digi " << nDigis << " Section " << entry.second.GetSectionID() << " Module "
+                << entry.second.GetModuleID() << " energy " << eLossSmeared;
   }
 
   // --- Event log
