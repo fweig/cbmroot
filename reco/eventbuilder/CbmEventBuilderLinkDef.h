@@ -19,6 +19,7 @@
 #pragma link C++ class CbmBuildEventsIdealNew + ;
 #pragma link C++ class CbmBuildEventsQA + ;
 #pragma link C++ class CbmBuildEventsSimple + ;
+#pragma link C++ class CbmSeedFinderSlidingWindow + ;
 //#pragma link C++ class CbmEvBuildSource+;
 
 #endif

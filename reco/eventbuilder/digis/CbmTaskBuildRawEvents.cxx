@@ -1,14 +1,13 @@
-/********************************************************************************
- *    Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH    *
- *                                                                              *
- *              This software is distributed under the terms of the             *
- *              GNU Lesser General Public Licence (LGPL) version 3,             *
- *                  copied verbatim in the file "LICENSE"                       *
- ********************************************************************************/
+/* Copyright (C) 2007-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Dominik Smith [committer] */
+
 #include "CbmTaskBuildRawEvents.h"
 
 #include "CbmDigiManager.h"
 #include "CbmEvent.h"
+#include "CbmMatch.h"
+#include "CbmSeedFinderSlidingWindow.h"
 
 #include <FairLogger.h>
 #include <FairRootManager.h>
@@ -24,16 +23,15 @@
 
 #include <iomanip>
 
-using std::cout;
-using std::endl;
-using std::fixed;
-using std::left;
-using std::pair;
-using std::right;
-using std::setprecision;
-using std::setw;
-using std::stringstream;
-
+CbmTaskBuildRawEvents::~CbmTaskBuildRawEvents()
+{
+  if (fpAlgo) delete fpAlgo;
+  if (fSeedFinderSlidingWindow) delete fSeedFinderSlidingWindow;
+  if (fSeedTimes) delete fSeedTimes;
+  if (fTempDigiTimes) delete fTempDigiTimes;
+  if (fTimer) delete fTimer;
+  if (fCopyTimer) delete fCopyTimer;
+}
 
 CbmTaskBuildRawEvents::CbmTaskBuildRawEvents() : FairTask("BuildRawEvents")
 {
@@ -41,37 +39,41 @@ CbmTaskBuildRawEvents::CbmTaskBuildRawEvents() : FairTask("BuildRawEvents")
   fpAlgo = new CbmAlgoBuildRawEvents();
 }
 
-CbmTaskBuildRawEvents::~CbmTaskBuildRawEvents() {}
-
-void CbmTaskBuildRawEvents::SetParContainers() {}
-
-void CbmTaskBuildRawEvents::SetSeedTimeFiller(RawEventBuilderDetector seedDet)
+void CbmTaskBuildRawEvents::AddSeedTimeFillerToList(RawEventBuilderDetector seedDet)
 {
-  if (fSeedTimeDetList.size() > 0) { LOG(fatal) << "Cannot use seed detector list and single instance together."; }
+  fSeedTimeDetList.push_back(seedDet);
 
-  fSeedTimeDet = seedDet;
-  if (fSeedTimeDet != kRawEventBuilderDetUndef) {
-    if (fSeedTimes == nullptr) { fSeedTimes = new std::vector<Double_t>; }
-  }
-  else {
-    if (fSeedTimes != nullptr) {
-      fSeedTimes->clear();
-      delete fSeedTimes;
-      fSeedTimes = nullptr;
-    }
-  }
+  if (fSeedTimes == nullptr) { fSeedTimes = new std::vector<Double_t>; }
   fpAlgo->SetSeedTimes(fSeedTimes);
 }
 
-void CbmTaskBuildRawEvents::AddSeedTimeFillerToList(RawEventBuilderDetector seedDet)
+void CbmTaskBuildRawEvents::SetSlidingWindowSeedFinder(Int_t minDigis, Double_t dWindDur, Double_t dDeadT)
 {
-  if (fSeedTimeDet != kRawEventBuilderDetUndef) {
-    LOG(fatal) << "Cannot use seed detector list and single instance together.";
+  if (fSeedFinderSlidingWindow) {
+    delete fSeedFinderSlidingWindow;
+    fSeedFinderSlidingWindow = nullptr;
   }
-  if (fSeedTimes == nullptr) { fSeedTimes = new std::vector<Double_t>; }
+  fSeedFinderSlidingWindow = new CbmSeedFinderSlidingWindow(fSeedTimes, minDigis, dWindDur, dDeadT);
 
-  fSeedTimeDetList.push_back(seedDet);
+  if (fSeedTimes == nullptr) { fSeedTimes = new std::vector<Double_t>; }
   fpAlgo->SetSeedTimes(fSeedTimes);
+}
+
+void CbmTaskBuildRawEvents::SetSeedFinderQa(Bool_t bFlagIn)
+{
+  if (bFlagIn == kTRUE) {
+    if (fSeedFinderSlidingWindow == nullptr) {
+      std::cout << "SetSeedFinderQa(): Cannot activate Qa when seed finder not active. Exiting." << std::endl;
+      exit(1);
+    }
+    if (fvDigiMatchQa == nullptr) { fvDigiMatchQa = new std::vector<CbmMatch>; }
+  }
+  else  //kFALSE
+  {
+    if (fvDigiMatchQa != nullptr) { delete fvDigiMatchQa; }
+    fvDigiMatchQa = nullptr;
+  }
+  if (fSeedFinderSlidingWindow != nullptr) fSeedFinderSlidingWindow->SetQa(bFlagIn);
 }
 
 InitStatus CbmTaskBuildRawEvents::Init()
@@ -188,12 +190,8 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
   //as the digi manager can return -1, which would be casted to +1
   //during comparison, leading to an error.
 
-  if (fSeedTimeDet != kRawEventBuilderDetUndef && fSeedTimeDetList.size() > 0) {
-    LOG(fatal) << "Cannot use seed detector list and single instance together.";
-  }
-
   //Reset explicit seed times if set
-  if (fSeedTimeDet != kRawEventBuilderDetUndef || fSeedTimeDetList.size() > 0) { fSeedTimes->clear(); }
+  if (fSeedTimes != nullptr) { fSeedTimes->clear(); }
 
   if (fCopyTimer != nullptr) { fCopyTimer->Start(kFALSE); }
 
@@ -203,7 +201,6 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
     for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kSts); i++) {
       const CbmStsDigi* Digi = fDigiMan->Get<CbmStsDigi>(i);
       fStsDigis->push_back(*Digi);
-      if (fSeedTimeDet.detId == ECbmModuleId::kSts) { fSeedTimes->push_back(Digi->GetTime()); }
     }
     LOG(debug) << "Read: " << fStsDigis->size() << " STS digis.";
     LOG(debug) << "In DigiManager: " << fDigiMan->GetNofDigis(ECbmModuleId::kSts) << " STS digis.";
@@ -216,7 +213,6 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
       for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kMuch); i++) {
         const CbmMuchBeamTimeDigi* Digi = fDigiMan->Get<CbmMuchBeamTimeDigi>(i);
         fMuchBeamTimeDigis->push_back(*Digi);
-        if (fSeedTimeDet.detId == ECbmModuleId::kMuch) { fSeedTimes->push_back(Digi->GetTime()); }
       }
       LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kMuch) << " MUCH digis.";
       LOG(debug) << "In DigiManager: " << fMuchBeamTimeDigis->size() << " MUCH digis.";
@@ -226,7 +222,6 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
       for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kMuch); i++) {
         const CbmMuchDigi* Digi = fDigiMan->Get<CbmMuchDigi>(i);
         fMuchDigis->push_back(*Digi);
-        if (fSeedTimeDet.detId == ECbmModuleId::kMuch) { fSeedTimes->push_back(Digi->GetTime()); }
       }
       LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kMuch) << " MUCH digis.";
       LOG(debug) << "In DigiManager: " << fMuchDigis->size() << " MUCH digis.";
@@ -239,7 +234,6 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
     for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kTrd); i++) {
       const CbmTrdDigi* Digi = fDigiMan->Get<CbmTrdDigi>(i);
       fTrdDigis->push_back(*Digi);
-      if (fSeedTimeDet.detId == ECbmModuleId::kTrd) { fSeedTimes->push_back(Digi->GetTime()); }
     }
     LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kTrd) << " TRD digis.";
     LOG(debug) << "In DigiManager: " << fTrdDigis->size() << " TRD digis.";
@@ -251,7 +245,6 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
     for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kTof); i++) {
       const CbmTofDigi* Digi = fDigiMan->Get<CbmTofDigi>(i);
       fTofDigis->push_back(*Digi);
-      if (fSeedTimeDet.detId == ECbmModuleId::kTof) { fSeedTimes->push_back(Digi->GetTime()); }
     }
     LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kTof) << " TOF digis.";
     LOG(debug) << "In DigiManager: " << fTofDigis->size() << " TOF digis.";
@@ -263,7 +256,6 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
     for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kRich); i++) {
       const CbmRichDigi* Digi = fDigiMan->Get<CbmRichDigi>(i);
       fRichDigis->push_back(*Digi);
-      if (fSeedTimeDet.detId == ECbmModuleId::kRich) { fSeedTimes->push_back(Digi->GetTime()); }
     }
     LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kRich) << " RICH digis.";
     LOG(debug) << "In DigiManager: " << fRichDigis->size() << " RICH digis.";
@@ -275,7 +267,6 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
     for (Int_t i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kPsd); i++) {
       const CbmPsdDigi* Digi = fDigiMan->Get<CbmPsdDigi>(i);
       fPsdDigis->push_back(*Digi);
-      if (fSeedTimeDet.detId == ECbmModuleId::kPsd) { fSeedTimes->push_back(Digi->GetTime()); }
     }
     LOG(debug) << "Read: " << fDigiMan->GetNofDigis(ECbmModuleId::kPsd) << " PSD digis.";
     LOG(debug) << "In DigiManager: " << fPsdDigis->size() << " PSD digis.";
@@ -283,7 +274,11 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
 
   if (fCopyTimer != nullptr) { fCopyTimer->Stop(); }
 
-  if (fSeedTimeDetList.size() > 0) { FillSeedTimesFromDetList(); }
+  if (fSeedFinderSlidingWindow != nullptr) { FillSeedTimesFromSlidingWindow(); }
+  else if (fSeedTimeDetList.size() > 0) {
+    FillSeedTimesFromDetList(fSeedTimes);
+  }
+
   //DumpSeedTimesFromDetList();
 
   /// Call Algo ProcessTs method
@@ -297,9 +292,9 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
 
   // --- Timeslice log and statistics
   timer.Stop();
-  stringstream logOut;
-  logOut << setw(20) << left << GetName() << " [";
-  logOut << fixed << setw(8) << setprecision(1) << right << timer.RealTime() * 1000. << " ms] ";
+  std::stringstream logOut;
+  logOut << std::setw(20) << std::left << GetName() << " [";
+  logOut << std::fixed << std::setw(8) << std::setprecision(1) << std::right << timer.RealTime() * 1000. << " ms] ";
   logOut << "TS " << fNofTs;
   if (fEvents) logOut << ", events " << fEvents->GetEntriesFast();
   LOG(info) << logOut.str();
@@ -308,11 +303,14 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
   fTime += timer.RealTime();
 }
 
-void CbmTaskBuildRawEvents::FillSeedTimesFromDetList()
+void CbmTaskBuildRawEvents::FillSeedTimesFromDetList(std::vector<Double_t>* vdSeedTimes,
+                                                     std::vector<CbmMatch>* vDigiMatch)
 {
   std::map<ECbmModuleId, UInt_t> DigiNumbers;
   std::map<ECbmModuleId, UInt_t> DigiCounters;
-  fSeedTimes->clear();
+  vdSeedTimes->clear();
+
+  if (vDigiMatch != nullptr) vDigiMatch->clear();
 
   for (RawEventBuilderDetector& system : fSeedTimeDetList) {
     DigiNumbers[system.detId]  = GetNofDigis(system.detId);
@@ -333,7 +331,11 @@ void CbmTaskBuildRawEvents::FillSeedTimesFromDetList()
       }
     }
     if (earliestTime != -1) {
-      fSeedTimes->push_back(earliestTime);
+      if (vDigiMatch != nullptr) {
+        const CbmMatch* digiMatch = fDigiMan->GetMatch(nextAddedSystem, DigiCounters[nextAddedSystem]);
+        vDigiMatch->push_back(*digiMatch);
+      }
+      vdSeedTimes->push_back(earliestTime);
       DigiCounters[nextAddedSystem]++;
     }
     else {
@@ -342,28 +344,56 @@ void CbmTaskBuildRawEvents::FillSeedTimesFromDetList()
   } while (true);
 }
 
-void CbmTaskBuildRawEvents::DumpSeedTimesFromDetList()
+void CbmTaskBuildRawEvents::FillSeedTimesFromSlidingWindow()
 {
-  std::ofstream timesUnsorted("digiTimesUnsorted.dat", std::ofstream::out);
-  timesUnsorted << std::setprecision(16);
+  if (fSeedTimeDetList.size() == 0) {
+    std::cout << "FillSeedTimesFromSlidingWindow(): Error, seed detector list empty." << std::endl;
+    exit(1);
+  }
+  if (fSeedTimeDetList.size() == 1) {
+    const RawEventBuilderDetector seedDet = fSeedTimeDetList.at(0);
+    FillSeedTimesFromSlidingWindow(&seedDet);
+  }
+  else {  // more than one seed detector
+    if (!fTempDigiTimes) { fTempDigiTimes = new std::vector<Double_t>; }
+    FillSeedTimesFromDetList(fTempDigiTimes, fvDigiMatchQa);
+    fSeedFinderSlidingWindow->FillSeedTimes(fTempDigiTimes, fvDigiMatchQa);
+  }
+}
 
-  for (RawEventBuilderDetector& system : fSeedTimeDetList) {
-    for (UInt_t i = 0; i < GetNofDigis(system.detId); i++) {
-      timesUnsorted << GetDigiTime(system.detId, i) << std::endl;
+void CbmTaskBuildRawEvents::FillSeedTimesFromSlidingWindow(const RawEventBuilderDetector* seedDet)
+{
+  if (fvDigiMatchQa != nullptr) {
+    if (!fDigiMan->IsMatchPresent(seedDet->detId)) {
+      std::cout << "FillSeedTimesFromSlidingWindow(): Error, QA set but no CbmMatch found for seed detector."
+                << std::endl;
+      exit(1);
+    }
+    fvDigiMatchQa->clear();
+    for (Int_t i = 0; i < fDigiMan->GetNofDigis(seedDet->detId); i++) {
+      const CbmMatch* digiMatch = fDigiMan->GetMatch(seedDet->detId, i);
+      fvDigiMatchQa->push_back(*digiMatch);
     }
   }
-  timesUnsorted.close();
-  LOG(info) << "Completed write of unsorted digi list.";
 
-  std::ofstream timesSorted("digiTimesSorted.dat", std::ofstream::out);
-  timesSorted << std::setprecision(16);
-
-  for (UInt_t i = 0; i < fSeedTimes->size(); i++) {
-    timesSorted << fSeedTimes->at(i) << std::endl;
+  switch (seedDet->detId) {
+    case ECbmModuleId::kMuch:
+      if (fbUseMuchBeamtimeDigi) {
+        fSeedFinderSlidingWindow->FillSeedTimes(fMuchBeamTimeDigis, fvDigiMatchQa);
+        break;
+      }
+      else {
+        fSeedFinderSlidingWindow->FillSeedTimes(fMuchDigis, fvDigiMatchQa);
+        break;
+      }
+    case ECbmModuleId::kSts: fSeedFinderSlidingWindow->FillSeedTimes(fStsDigis, fvDigiMatchQa); break;
+    case ECbmModuleId::kTrd: fSeedFinderSlidingWindow->FillSeedTimes(fTrdDigis, fvDigiMatchQa); break;
+    case ECbmModuleId::kTof: fSeedFinderSlidingWindow->FillSeedTimes(fTofDigis, fvDigiMatchQa); break;
+    case ECbmModuleId::kRich: fSeedFinderSlidingWindow->FillSeedTimes(fRichDigis, fvDigiMatchQa); break;
+    case ECbmModuleId::kPsd: fSeedFinderSlidingWindow->FillSeedTimes(fPsdDigis, fvDigiMatchQa); break;
+    case ECbmModuleId::kT0: fSeedFinderSlidingWindow->FillSeedTimes(fT0Digis, fvDigiMatchQa); break;
+    default: break;
   }
-  timesSorted.close();
-  LOG(info) << "Completed DumpSeedTimesFromDetList(). Closing.";
-  exit(0);  //terminate as this method should only be used for diagnostics
 }
 
 Double_t CbmTaskBuildRawEvents::GetDigiTime(ECbmModuleId _system, UInt_t _entry)
@@ -422,6 +452,8 @@ void CbmTaskBuildRawEvents::PrintTimings()
 
 void CbmTaskBuildRawEvents::Finish()
 {
+  if ((fvDigiMatchQa != nullptr) && (fSeedFinderSlidingWindow != nullptr)) { fSeedFinderSlidingWindow->OutputQa(); }
+
   /// Call Algo finish method
   fpAlgo->Finish();
   if (fbFillHistos) { SaveHistos(); }
@@ -432,7 +464,8 @@ void CbmTaskBuildRawEvents::Finish()
   LOG(info) << GetName() << ": Run summary";
   LOG(info) << "Time slices          : " << fNofTs;
   LOG(info) << "Events               : " << fNofEvents;
-  LOG(info) << "Time  / TS           : " << fixed << setprecision(2) << 1000. * fTime / Double_t(fNofTs) << " ms";
+  LOG(info) << "Time  / TS           : " << std::fixed << std::setprecision(2) << 1000. * fTime / Double_t(fNofTs)
+            << " ms";
   LOG(info) << "=====================================";
 }
 
@@ -496,5 +529,28 @@ void CbmTaskBuildRawEvents::SaveHistos()
   }
 }
 
+void CbmTaskBuildRawEvents::DumpSeedTimesFromDetList()
+{
+  std::ofstream timesUnsorted("digiTimesUnsorted.dat", std::ofstream::out);
+  timesUnsorted << std::setprecision(16);
+
+  for (RawEventBuilderDetector& system : fSeedTimeDetList) {
+    for (UInt_t i = 0; i < GetNofDigis(system.detId); i++) {
+      timesUnsorted << GetDigiTime(system.detId, i) << std::endl;
+    }
+  }
+  timesUnsorted.close();
+  LOG(info) << "Completed write of unsorted digi list.";
+
+  std::ofstream timesSorted("digiTimesSorted.dat", std::ofstream::out);
+  timesSorted << std::setprecision(16);
+
+  for (UInt_t i = 0; i < fSeedTimes->size(); i++) {
+    timesSorted << fSeedTimes->at(i) << std::endl;
+  }
+  timesSorted.close();
+  LOG(info) << "Completed DumpSeedTimesFromDetList(). Closing.";
+  exit(0);  //terminate as this method should only be used for diagnostics
+}
 
 ClassImp(CbmTaskBuildRawEvents)

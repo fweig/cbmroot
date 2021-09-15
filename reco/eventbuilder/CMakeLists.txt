@@ -74,6 +74,7 @@ digis/CbmBuildEventsIdeal.cxx
 digis/CbmBuildEventsIdealNew.cxx
 digis/CbmBuildEventsQA.cxx
 digis/CbmBuildEventsSimple.cxx
+digis/CbmSeedFinderSlidingWindow.cxx
 #digis/CbmEvBuildSource.cxx
 
 tracks/CbmBuildEventsFromTracksIdeal.cxx

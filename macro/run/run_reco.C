@@ -224,6 +224,12 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
       }
       // Set STS as reference detector
       evBuildRaw->SetReferenceDetector(kRawEventBuilderDetSts);
+
+      // Use sliding window seed builder with STS
+      //evBuildRaw->SetReferenceDetector(kRawEventBuilderDetUndef);
+      //evBuildRaw->AddSeedTimeFillerToList(kRawEventBuilderDetSts);
+      //evBuildRaw->SetSlidingWindowSeedFinder(1000, 500, 500);
+
       evBuildRaw->SetTsParameters(0.0, 1.e7, 0.0);
 
       // Use CbmMuchDigi instead of CbmMuchBeamtimeDigi

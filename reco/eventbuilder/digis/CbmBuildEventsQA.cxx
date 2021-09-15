@@ -137,6 +137,8 @@ void CbmBuildEventsQA::Exec(Option_t*)
     LOG(info) << GetName() << ": Event " << event->GetNumber() << ", digis in event: " << event->GetNofData()
               << ", links to MC events: " << event->GetMatch()->GetNofLinks() << ", matched MC event number "
               << mcEventNr;
+    LOG(info) << "Start time: " << event->GetStartTime() << ", end time: " << event->GetEndTime();
+    LOG(info) << "Middle time: " << (event->GetStartTime() + event->GetEndTime()) / 2.;
 
     // --- Loop over all detector systems
     for (ECbmModuleId& system : fSystems) {

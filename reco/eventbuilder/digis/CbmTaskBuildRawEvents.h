@@ -1,10 +1,7 @@
-/********************************************************************************
- *    Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH    *
- *                                                                              *
- *              This software is distributed under the terms of the             *
- *              GNU Lesser General Public Licence (LGPL) version 3,             *
- *                  copied verbatim in the file "LICENSE"                       *
- ********************************************************************************/
+/* Copyright (C) 2007-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Dominik Smith [committer] */
+
 #ifndef CBMTASKBUILDRAWEVENTS_H
 #define CBMTASKBUILDRAWEVENTS_H
 
@@ -13,7 +10,7 @@
 
 /// FAIRSOFT headers (geant, boost, ...)
 
-/// C/C++ headers
+/// CBMROOT headers
 #include "CbmAlgoBuildRawEvents.h"
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmMuchDigi.h"
@@ -23,6 +20,7 @@
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
 
+/// C/C++ headers
 #include <tuple>
 
 #include <array>
@@ -31,6 +29,8 @@
 #include <vector>
 
 class CbmDigiManager;
+class CbmMatch;
+class CbmSeedFinderSlidingWindow;
 class RawEventBuilderDetector;
 class TClonesArray;
 class TStopwatch;
@@ -59,9 +59,6 @@ public:
 
   /** Executed for each event. **/
   virtual void Exec(Option_t*);
-
-  /** Load the parameter container from the runtime database **/
-  virtual void SetParContainers();
 
   /** Finish task called at the end of the run **/
   virtual void Finish();
@@ -122,9 +119,11 @@ public:
     fbGetTimings = bFlagIn;
   }
 
+  void SetSeedFinderQa(Bool_t bFlagIn = kTRUE);
   void PrintTimings();
-  void SetSeedTimeFiller(RawEventBuilderDetector seedDet);
   void AddSeedTimeFillerToList(RawEventBuilderDetector seedDet);
+  void SetSlidingWindowSeedFinder(Int_t minDigis, Double_t dWindDur, Double_t dDeadT);
+
   void DumpSeedTimesFromDetList();
   void SetSeedTimeWindow(Double_t beg, Double_t end) { fpAlgo->SetSeedTimeWindow(beg, end); }
 
@@ -133,6 +132,8 @@ private:
   void SaveHistos();
 
   Bool_t fbUseMuchBeamtimeDigi = kTRUE;  //! Switch between MUCH digi classes
+
+  CbmSeedFinderSlidingWindow* fSeedFinderSlidingWindow = nullptr;
 
   CbmDigiManager* fDigiMan                             = nullptr;
   const std::vector<CbmTofDigi>* fT0Digis              = nullptr;
@@ -145,13 +146,20 @@ private:
   std::vector<CbmPsdDigi>* fPsdDigis                   = nullptr;
   std::vector<Double_t>* fSeedTimes                    = nullptr;
 
-  std::vector<RawEventBuilderDetector> fSeedTimeDetList;            //if multiple are desired
-  RawEventBuilderDetector fSeedTimeDet = kRawEventBuilderDetUndef;  //single seed det
+  std::vector<Double_t>* fTempDigiTimes =
+    nullptr;  //used when multiple seed detectors are combined with sliding window seed finder
+
+  std::vector<RawEventBuilderDetector> fSeedTimeDetList;  //for multiple seed detectors
+
+  // Store digi matches for QA tasks
+  std::vector<CbmMatch>* fvDigiMatchQa = nullptr;
 
   Double_t GetDigiTime(ECbmModuleId _system, UInt_t _entry);
   UInt_t GetNofDigis(ECbmModuleId _system);
 
-  void FillSeedTimesFromDetList();
+  void FillSeedTimesFromDetList(std::vector<Double_t>* vdSeedTimes, std::vector<CbmMatch>* vDigiMatch = nullptr);
+  void FillSeedTimesFromSlidingWindow();
+  void FillSeedTimesFromSlidingWindow(const RawEventBuilderDetector* seedDet);
 
   TStopwatch* fTimer     = nullptr;  //! is created when fbGetTimings is set before init
   TStopwatch* fCopyTimer = nullptr;  //! timing only for filling of std::vector<Digi> fields
