@@ -128,9 +128,10 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*)
   }  // Loop over MCPoints
 
   std::vector<CbmPsdDigi> PsdDigiVector;
-  std::transform( fired_digis_map.begin(), fired_digis_map.end(), std::back_inserter( PsdDigiVector ), [](const std::pair<UInt_t, CbmPsdDigi> &my_pair){ return my_pair.second;}  );
-//  std::sort(PsdDigiVector.begin(), PsdDigiVector.end(),
-//            [](const CbmPsdDigi& a, const CbmPsdDigi& b) -> bool { return a.GetTime() < b.GetTime(); });
+  std::transform(fired_digis_map.begin(), fired_digis_map.end(), std::back_inserter(PsdDigiVector),
+                 [](const std::pair<UInt_t, CbmPsdDigi>& my_pair) { return my_pair.second; });
+  //  std::sort(PsdDigiVector.begin(), PsdDigiVector.end(),
+  //            [](const CbmPsdDigi& a, const CbmPsdDigi& b) -> bool { return a.GetTime() < b.GetTime(); });
 
   Int_t nDigis = 0;
   for (auto entry : PsdDigiVector) {
@@ -145,8 +146,8 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*)
     CbmPsdDigi* digi = new CbmPsdDigi(entry.GetAddress(), entry.GetTime() + fCurrentEventTime, eLossSmeared);
     SendData(digi);
     nDigis++;
-    LOG(debug) << fName << ": Digi " << nDigis << " Time " << entry.GetTime() + fCurrentEventTime << " Section " << entry.GetSectionID() << " Module "
-                << entry.GetModuleID() << " energy " << eLossSmeared;
+    LOG(debug) << fName << ": Digi " << nDigis << " Time " << entry.GetTime() + fCurrentEventTime << " Section "
+               << entry.GetSectionID() << " Module " << entry.GetModuleID() << " energy " << eLossSmeared;
   }
 
   // --- Event log
