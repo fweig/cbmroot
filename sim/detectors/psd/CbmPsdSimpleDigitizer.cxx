@@ -127,22 +127,26 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*)
     }
   }  // Loop over MCPoints
 
+  std::vector<CbmPsdDigi> PsdDigiVector;
+  std::transform( fired_digis_map.begin(), fired_digis_map.end(), std::back_inserter( PsdDigiVector ), [](const std::pair<UInt_t, CbmPsdDigi> &my_pair){ return my_pair.second;}  );
+//  std::sort(PsdDigiVector.begin(), PsdDigiVector.end(),
+//            [](const CbmPsdDigi& a, const CbmPsdDigi& b) -> bool { return a.GetTime() < b.GetTime(); });
 
   Int_t nDigis = 0;
-  for (auto entry : fired_digis_map) {
-    Double_t eDep            = entry.second.GetEdep();
+  for (auto entry : PsdDigiVector) {
+    Double_t eDep            = entry.GetEdep();
     Double_t eLossMIP        = eDep / 0.005;  // 5MeV per MIP
     Double_t pixPerMIP       = 15.;           // 15 pix per MIP
     Double_t eLossMIPSmeared = gRandom->Gaus(eLossMIP * pixPerMIP, sqrt(eLossMIP * pixPerMIP)) / pixPerMIP;
     Double_t eLossSmeared    = eLossMIPSmeared * 0.005;
     Double_t eNoise          = gRandom->Gaus(0, 15) / 50. * 0.005;
     eLossSmeared += eNoise;
-    // The digi time is set to MC point time
-    CbmPsdDigi* digi = new CbmPsdDigi(entry.first, entry.second.GetTime(), eLossSmeared);
+    // The digi time is set to MC point time [relative to event start] + Event Start time
+    CbmPsdDigi* digi = new CbmPsdDigi(entry.GetAddress(), entry.GetTime() + fCurrentEventTime, eLossSmeared);
     SendData(digi);
     nDigis++;
-    LOG(debug1) << fName << ": Digi " << nDigis << " Section " << entry.second.GetSectionID() << " Module "
-                << entry.second.GetModuleID() << " energy " << eLossSmeared;
+    LOG(debug) << fName << ": Digi " << nDigis << " Time " << entry.GetTime() + fCurrentEventTime << " Section " << entry.GetSectionID() << " Module "
+                << entry.GetModuleID() << " energy " << eLossSmeared;
   }
 
   // --- Event log
