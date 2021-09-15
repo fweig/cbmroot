@@ -86,41 +86,22 @@ InitStatus CbmPsdSimpleDigitizer::Init()
 // -----   Public method Exec   --------------------------------------------
 void CbmPsdSimpleDigitizer::Exec(Option_t*)
 {
+  // Event info (for event time)
+  GetEventInfo();
 
   TStopwatch timer;
   timer.Start();
 
+  // Loop over PsdPoints
+  Int_t nPoints = fPointArray->GetEntriesFast();
   LOG(debug) << fName << ": processing event " << fCurrentEvent << " at t = " << fCurrentEventTime << " ns";
 
   // Declare some variables
-  CbmPsdPoint* point = NULL;
+  CbmPsdPoint* point = nullptr;
   Int_t modID        = -1;  // module ID
   Int_t scinID       = -1;  // #sciillator
-
-  Double_t edep
-    [N_PSD_SECT]
-    [N_PSD_MODS];  //SELIM: 49 modules, including central & corner modules (rejected in analysis/flow/eventPlane.cxx)
-  memset(edep, 0, (N_PSD_SECT * N_PSD_MODS) * sizeof(Double_t));
-
-  map<pair<int, int>, double> edepmap;
-
-  TVector3 pos;  // Position vector
-
-  //for (Int_t imod=0; imod<100; imod++)                   //SELIM: 49 modules, including central & corner modules (rejected in analysis/flow/eventPlane.cxx)
-  for (Int_t imod = 0; imod < N_PSD_MODS; imod++)  //marina
-  {
-    for (Int_t isec = 0; isec < N_PSD_SECT; isec++) {
-      edep[isec][imod] = 0.;
-    }
-  }
-
-  // Event info (for event time)
-  GetEventInfo();
-
-  // Loop over PsdPoints
-  Int_t nPoints = fPointArray->GetEntriesFast();
-
   Int_t sec;
+  std::map<UInt_t, CbmPsdDigi> fired_digis_map; // map<UInt_t uAddress, CbmPsdDigi>
 
   for (Int_t iPoint = 0; iPoint < nPoints; iPoint++) {
     point = (CbmPsdPoint*) fPointArray->At(iPoint);
@@ -129,55 +110,41 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*)
     modID          = point->GetModuleID();    //marina  1-44 (45)
     scinID         = point->GetDetectorID();  //1-60
     Double_t eLoss = point->GetEnergyLoss();
-
+    Double_t pTime = point->GetTime();
     sec                = (Int_t)((scinID - 1) / 6) + 1;  //marina   1-10
-    auto insert_result = edepmap.insert(std::make_pair(std::make_pair(modID, sec), point->GetEnergyLoss()));
+    UInt_t uAddress = CbmPsdAddress::GetAddress(modID, sec);
 
-    if (!insert_result.second) {  // this entry has existed before
-      (*insert_result.first).second += point->GetEnergyLoss();
+    auto it = fired_digis_map.find(uAddress);
+    if (it != fired_digis_map.end()) {
+       //this key exists
+       it->second.SetEdep( it->second.GetEdep() + eLoss );
+       if(it->second.GetTime() > pTime) 
+          it->second.SetTime(pTime);
     }
-    //cout <<"PSD modID,scinID,eloss " << modID << ", " << scinID << ", " << eLoss <<endl;
-
-    if (((sec - 1) >= 0 && (sec - 1) < N_PSD_SECT) && ((modID - 1) >= 0 && (modID - 1) < N_PSD_MODS)) {
-      edep[sec - 1][modID - 1] += eLoss;
-    }
-
+    else {
+       //this key is new
+       CbmPsdDigi digi = CbmPsdDigi(uAddress, pTime, eLoss);
+       fired_digis_map.insert(std::make_pair(uAddress, digi));
+    }    
   }  // Loop over MCPoints
 
-  Int_t nDigis = 0;
-  /*
-     for (Int_t imod=0; imod<N_PSD_MODS; imod++) {
-     for (Int_t isec=0; isec<N_PSD_SECT; isec++) {
-  //if (edep[isec][imod]<=0.) cout << "!!  edep  !! : " << edep[isec][imod] << endl;
-  if ( edep[isec][imod] <= 0. ) continue;
-  else {
-   */
-  for (auto edep_entry : edepmap) {
-    modID         = edep_entry.first.first;
-    int secID     = edep_entry.first.second;
-    Double_t eDep = edep_entry.second;
 
-    //Double_t eLossMIP = edep[isec][imod] / 0.005; // 5MeV per MIP
+  Int_t nDigis = 0;
+  for (auto entry : fired_digis_map) {
+    Double_t eDep            = entry.second.GetEdep();
     Double_t eLossMIP        = eDep / 0.005;  // 5MeV per MIP
     Double_t pixPerMIP       = 15.;           // 15 pix per MIP
     Double_t eLossMIPSmeared = gRandom->Gaus(eLossMIP * pixPerMIP, sqrt(eLossMIP * pixPerMIP)) / pixPerMIP;
     Double_t eLossSmeared    = eLossMIPSmeared * 0.005;
     Double_t eNoise          = gRandom->Gaus(0, 15) / 50. * 0.005;
     eLossSmeared += eNoise;
-    // V.F. The digi time is set to the event time. This is a workaround only
-    // to integrate PSD in the common digitisation scheme.
-    CbmPsdDigi* digi = new CbmPsdDigi(modID, secID, eLossSmeared, fCurrentEventTime);
+    // The digi time is set to MC point time
+    CbmPsdDigi* digi = new CbmPsdDigi(entry.first, entry.second.GetTime(), eLossSmeared);
     SendData(digi);
     nDigis++;
-    LOG(debug1) << fName << ": Digi " << nDigis << " Section " << secID << " Module " << modID << " energy "
+    LOG(debug1) << fName << ": Digi " << nDigis << " Section " << entry.second.GetSectionID() << " Module " << entry.second.GetModuleID() << " energy "
                 << eLossSmeared;
   }
-  /*
-     }
-     }// section
-     }//module
-   */
-
 
   // --- Event log
   timer.Stop();
