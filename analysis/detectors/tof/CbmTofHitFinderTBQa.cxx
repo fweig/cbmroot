@@ -8,7 +8,7 @@
  * and open the template in the editor.
  */
 
-#include "CbmTofHitFinderTBQA.h"
+#include "CbmTofHitFinderTBQa.h"
 
 #include "CbmMCDataManager.h"
 #include "CbmMatch.h"
@@ -115,7 +115,7 @@ static TH1F* pullYHisto              = 0;
 static TH1F* nofHitsHisto            = 0;
 static TH1F* nofTracksDepositedHisto = 0;
 
-CbmTofHitFinderTBQA::CbmTofHitFinderTBQA()
+CbmTofHitFinderTBQa::CbmTofHitFinderTBQa()
   : isEvByEv(false)
   , fTofHits(0)
   , fTofDigiMatchs(0)
@@ -128,7 +128,7 @@ CbmTofHitFinderTBQA::CbmTofHitFinderTBQA()
 {
 }
 
-InitStatus CbmTofHitFinderTBQA::Init()
+InitStatus CbmTofHitFinderTBQa::Init()
 {
   FairRootManager* ioman = FairRootManager::Instance();
 
@@ -214,7 +214,7 @@ static Int_t currentEvN = 0;
 static int globalNofHits  = 0;
 static int globalNofDigis = 0;
 
-void CbmTofHitFinderTBQA::Exec(Option_t*)
+void CbmTofHitFinderTBQa::Exec(Option_t*)
 {
   /*vector<TofHitDesc>& tofHitsEv = tofHitsAll[currentEvN];
    Int_t nofHits = fTofHits->GetEntriesFast();
@@ -379,7 +379,7 @@ static void SaveHisto(TH1* histo)
   TFile::CurrentFile() = curFile;
 }
 
-void CbmTofHitFinderTBQA::Finish()
+void CbmTofHitFinderTBQa::Finish()
 {
   /*cout << "min entry = " << minEntry << endl;
    cout << "max entry = " << maxEntry << endl;
@@ -585,4 +585,4 @@ void CbmTofHitFinderTBQA::Finish()
   cout << "Pure hits: " << eff << " % [ " << nofSingleHits << " / " << nofHits << " ]" << endl;
 }
 
-ClassImp(CbmTofHitFinderTBQA)
+ClassImp(CbmTofHitFinderTBQa)

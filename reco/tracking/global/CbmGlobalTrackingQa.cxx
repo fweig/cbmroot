@@ -8,7 +8,7 @@
  * and open the template in the editor.
  */
 
-#include "CbmGlobalTrackingQA.h"
+#include "CbmGlobalTrackingQa.h"
 
 #include "CbmDigiManager.h"
 #include "CbmGlobalTrack.h"
@@ -33,9 +33,9 @@ using std::set;
 using std::vector;
 
 
-CbmGlobalTrackingQA::CbmGlobalTrackingQA() {}
+CbmGlobalTrackingQa::CbmGlobalTrackingQa() {}
 
-InitStatus CbmGlobalTrackingQA::Init()
+InitStatus CbmGlobalTrackingQa::Init()
 {
   // FairRootManager
   FairRootManager* ioman = FairRootManager::Instance();
@@ -167,7 +167,7 @@ InitStatus CbmGlobalTrackingQA::Init()
   return kSUCCESS;
 }
 
-bool CbmGlobalTrackingQA::CheckMatch(const TrackData* stsMCTrack, Int_t tofHitInd, bool deepSearch) const
+bool CbmGlobalTrackingQa::CheckMatch(const TrackData* stsMCTrack, Int_t tofHitInd, bool deepSearch) const
 {
   set<TrackData*> tofMCTracks;
 
@@ -197,7 +197,7 @@ bool CbmGlobalTrackingQA::CheckMatch(const TrackData* stsMCTrack, Int_t tofHitIn
   return false;
 }
 
-bool CbmGlobalTrackingQA::SemiTofTrack(const TrackData* mcTrack) const
+bool CbmGlobalTrackingQa::SemiTofTrack(const TrackData* mcTrack) const
 {
   if (!mcTrack->tofPoints.empty()) return true;
 
@@ -222,7 +222,7 @@ int nofNonTofTracks          = 0;
 int nofMergedNonTofTracks    = 0;
 int nofNonMergedNonTofTracks = 0;
 
-void CbmGlobalTrackingQA::Exec(Option_t*)
+void CbmGlobalTrackingQa::Exec(Option_t*)
 {
   Int_t nofHits = fTofHits->GetEntriesFast();
 
@@ -345,7 +345,7 @@ void CbmGlobalTrackingQA::Exec(Option_t*)
   }  //for (int i = 0; i < nofGlobalTracks; ++i)
 }
 
-void CbmGlobalTrackingQA::Finish()
+void CbmGlobalTrackingQa::Finish()
 {
   double eff = 100 * nofCorMergedReferenceTofTracks;
   eff /= nofReferenceTofTracks;
@@ -383,4 +383,4 @@ void CbmGlobalTrackingQA::Finish()
        << " ]" << endl;
 }
 
-ClassImp(CbmGlobalTrackingQA)
+ClassImp(CbmGlobalTrackingQa)

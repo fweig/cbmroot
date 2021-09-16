@@ -72,14 +72,14 @@ digis/CbmAlgoBuildRawEvents.cxx
 digis/CbmTaskBuildRawEvents.cxx
 digis/CbmBuildEventsIdeal.cxx
 digis/CbmBuildEventsIdealNew.cxx
-digis/CbmBuildEventsQA.cxx
+digis/CbmBuildEventsQa.cxx
 digis/CbmBuildEventsSimple.cxx
 digis/CbmSeedFinderSlidingWindow.cxx
 #digis/CbmEvBuildSource.cxx
 
 tracks/CbmBuildEventsFromTracksIdeal.cxx
 tracks/CbmBuildEventsFromTracksReal.cxx
-tracks/CbmEventBuilderQA.cxx
+tracks/CbmEventBuilderQa.cxx
 )
 
 

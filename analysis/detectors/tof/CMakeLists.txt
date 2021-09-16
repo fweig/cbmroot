@@ -35,7 +35,7 @@ set(SRCS
   CbmTofAnaTestbeam.cxx 
   CbmTofGeometryQa.cxx
   CbmTofHitFinderQa.cxx
-  CbmTofHitFinderTBQA.cxx
+  CbmTofHitFinderTBQa.cxx
   CbmTofTests.cxx 
 )
 

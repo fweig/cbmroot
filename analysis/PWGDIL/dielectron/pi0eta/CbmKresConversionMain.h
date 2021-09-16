@@ -6,7 +6,7 @@
 #define CBM_KRES_CONVERSION_MAIN
 
 #include "CbmKFParticleFinder.h"
-#include "CbmKFParticleFinderQA.h"
+#include "CbmKFParticleFinderQa.h"
 #include "CbmKresConversionCorrectedPhotons.h"
 #include "CbmKresConversionGeneral.h"
 #include "CbmKresConversionKF.h"
@@ -51,7 +51,7 @@ public:
 
   virtual void Finish();
 
-  void SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA);
+  void SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQa* kfparticleQA);
 
 
 private:
@@ -74,7 +74,7 @@ private:
   CbmKresConversionKF* fKresKF;
   CbmKresConversionManual* fKresManual;
   CbmKFParticleFinder* fKFparticle;
-  CbmKFParticleFinderQA* fKFparticleFinderQA;
+  CbmKFParticleFinderQa* fKFparticleFinderQA;
 
   CbmKresConversionManualmbias1* fKresManualmbiasPart1;
   CbmKresConversionManualmbias2* fKresManualmbiasPart2;

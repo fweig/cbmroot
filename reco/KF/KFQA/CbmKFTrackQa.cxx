@@ -6,7 +6,7 @@
 //-----------------------------------------------------------
 
 // Cbm Headers ----------------------
-#include "CbmKFTrackQA.h"
+#include "CbmKFTrackQa.h"
 
 #include "CbmMCTrack.h"
 #include "CbmTrack.h"
@@ -55,7 +55,7 @@
 using std::map;
 using std::vector;
 
-CbmKFTrackQA::CbmKFTrackQA(const char* name, Int_t iVerbose, TString outFileName)
+CbmKFTrackQa::CbmKFTrackQa(const char* name, Int_t iVerbose, TString outFileName)
   : FairTask(name, iVerbose)
   , fStsTrackBranchName("StsTrack")
   , fGlobalTrackBranchName("GlobalTrack")
@@ -261,87 +261,87 @@ CbmKFTrackQA::CbmKFTrackQA(const char* name, Int_t iVerbose, TString outFileName
   fPDGtoIndexMap[1000020040] = 13;
 }
 
-CbmKFTrackQA::~CbmKFTrackQA() {}
+CbmKFTrackQa::~CbmKFTrackQa() {}
 
-InitStatus CbmKFTrackQA::Init()
+InitStatus CbmKFTrackQa::Init()
 {
   //Get ROOT Manager
   FairRootManager* ioman = FairRootManager::Instance();
 
   if (ioman == 0) {
-    Warning("CbmKFTrackQA::Init", "RootManager not instantiated!");
+    Warning("CbmKFTrackQa::Init", "RootManager not instantiated!");
     return kERROR;
   }
 
   // Get sts tracks
   fStsTrackArray = (TClonesArray*) ioman->GetObject(fStsTrackBranchName);
   if (fStsTrackArray == 0) {
-    Warning("CbmKFTrackQA::Init", "track-array not found!");
+    Warning("CbmKFTrackQa::Init", "track-array not found!");
     return kERROR;
   }
 
   // Get global tracks
   fGlobalTrackArray = (TClonesArray*) ioman->GetObject(fGlobalTrackBranchName);
-  if (fGlobalTrackArray == 0) Warning("CbmKFTrackQA::Init", "global track array not found!");
+  if (fGlobalTrackArray == 0) Warning("CbmKFTrackQa::Init", "global track array not found!");
 
   // Get ToF hits
   fTofHitArray = (TClonesArray*) ioman->GetObject(fTofBranchName);
-  if (fTofHitArray == 0) Warning("CbmKFTrackQA::Init", "TOF hit-array not found!");
+  if (fTofHitArray == 0) Warning("CbmKFTrackQa::Init", "TOF hit-array not found!");
 
   // TRD
   fTrdTrackArray = (TClonesArray*) ioman->GetObject(fTrdBranchName);
-  if (fTrdTrackArray == 0) Warning("CbmKFTrackQA::Init", "TRD track-array not found!");
+  if (fTrdTrackArray == 0) Warning("CbmKFTrackQa::Init", "TRD track-array not found!");
 
   fTrdHitArray = (TClonesArray*) ioman->GetObject(fTrdHitBranchName);
-  if (fTrdHitArray == 0) Warning("CbmKFTrackQA::Init", "TRD hit-array not found!");
+  if (fTrdHitArray == 0) Warning("CbmKFTrackQa::Init", "TRD hit-array not found!");
 
   fRichRingArray = (TClonesArray*) ioman->GetObject(fRichBranchName);
-  if (fRichRingArray == 0) Warning("CbmKFTrackQA::Init", "Rich ring array not found!");
+  if (fRichRingArray == 0) Warning("CbmKFTrackQa::Init", "Rich ring array not found!");
 
   fMCTrackArray = (TClonesArray*) ioman->GetObject(fMCTracksBranchName);
   if (fMCTrackArray == 0) {
-    Warning("CbmKFTrackQA::Init", "mc track array not found!");
+    Warning("CbmKFTrackQa::Init", "mc track array not found!");
     return kERROR;
   }
 
   //Track match
   fStsTrackMatchArray = (TClonesArray*) ioman->GetObject(fStsTrackMatchBranchName);
   if (fStsTrackMatchArray == 0) {
-    Warning("CbmKFTrackQA::Init", "track match array not found!");
+    Warning("CbmKFTrackQa::Init", "track match array not found!");
     return kERROR;
   }
 
   //Ring match
   fRichRingMatchArray = (TClonesArray*) ioman->GetObject(fRichRingMatchBranchName);
-  if (fRichRingMatchArray == 0) Warning("CbmKFTrackQA::Init", "RichRing match array not found!");
+  if (fRichRingMatchArray == 0) Warning("CbmKFTrackQa::Init", "RichRing match array not found!");
 
   //Tof match
   fTofHitMatchArray = (TClonesArray*) ioman->GetObject(fTofHitMatchBranchName);
-  if (fTofHitMatchArray == 0) Warning("CbmKFTrackQA::Init", "TofHit match array not found!");
+  if (fTofHitMatchArray == 0) Warning("CbmKFTrackQa::Init", "TofHit match array not found!");
 
   //TRD match
   fTrdTrackMatchArray = (TClonesArray*) ioman->GetObject(fTrdTrackMatchBranchName);
-  if (fTrdTrackMatchArray == 0) Warning("CbmKFTrackQA::Init", "TrdTrack match array not found!");
+  if (fTrdTrackMatchArray == 0) Warning("CbmKFTrackQa::Init", "TrdTrack match array not found!");
 
   //Much track match
   fMuchTrackMatchArray = (TClonesArray*) ioman->GetObject(fMuchTrackMatchBranchName);
-  if (fMuchTrackMatchArray == 0) { Warning("CbmKFTrackQA::Init", "Much track match array not found!"); }
+  if (fMuchTrackMatchArray == 0) { Warning("CbmKFTrackQa::Init", "Much track match array not found!"); }
   //Much
   fMuchTrackArray = (TClonesArray*) ioman->GetObject(fMuchTrackBranchName);
-  if (fMuchTrackArray == 0) { Warning("CbmKFTrackQA::Init", "Much track-array not found!"); }
+  if (fMuchTrackArray == 0) { Warning("CbmKFTrackQa::Init", "Much track-array not found!"); }
 
   // mc data manager
   CbmMCDataManager* mcManager = (CbmMCDataManager*) ioman->GetObject("MCDataManager");
-  if (mcManager == 0) { Warning("CbmKFTrackQA::Init", "mc manager not found!"); }
+  if (mcManager == 0) { Warning("CbmKFTrackQa::Init", "mc manager not found!"); }
 
   // Tof points
   fTofPoints = (CbmMCDataArray*) mcManager->InitBranch("TofPoint");
-  if (fTofPoints == 0) { Warning("CbmKFTrackQA::Init", "tof points not found!"); }
+  if (fTofPoints == 0) { Warning("CbmKFTrackQa::Init", "tof points not found!"); }
 
   return kSUCCESS;
 }
 
-void CbmKFTrackQA::Exec(Option_t* /*opt*/)
+void CbmKFTrackQa::Exec(Option_t* /*opt*/)
 {
   fNEvents++;
 
@@ -731,7 +731,7 @@ void CbmKFTrackQA::Exec(Option_t* /*opt*/)
   }
 }
 
-void CbmKFTrackQA::Finish()
+void CbmKFTrackQa::Finish()
 {
   TDirectory* curr   = gDirectory;
   TFile* currentFile = gFile;
@@ -747,7 +747,7 @@ void CbmKFTrackQA::Finish()
   gDirectory = curr;
 }
 
-void CbmKFTrackQA::WriteHistosCurFile(TObject* obj)
+void CbmKFTrackQa::WriteHistosCurFile(TObject* obj)
 {
 
 
@@ -768,7 +768,7 @@ void CbmKFTrackQA::WriteHistosCurFile(TObject* obj)
   }
 }
 
-int CbmKFTrackQA::GetHistoIndex(int pdg)
+int CbmKFTrackQa::GetHistoIndex(int pdg)
 {
   map<int, int>::iterator it;
   it = fPDGtoIndexMap.find(TMath::Abs(pdg));
@@ -777,7 +777,7 @@ int CbmKFTrackQA::GetHistoIndex(int pdg)
     return 6;
 }
 
-Int_t CbmKFTrackQA::GetZtoNStation(Double_t getZ)
+Int_t CbmKFTrackQa::GetZtoNStation(Double_t getZ)
 {
   if (TMath::Abs(getZ - 145) <= 2.0) return 1;
   if (TMath::Abs(getZ - 155) <= 2.0) return 2;
@@ -801,4 +801,4 @@ Int_t CbmKFTrackQA::GetZtoNStation(Double_t getZ)
   return -1;
 }
 
-ClassImp(CbmKFTrackQA);
+ClassImp(CbmKFTrackQa);

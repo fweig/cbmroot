@@ -217,7 +217,7 @@ void run_reco(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/l
 
   // ----------- QA for raw event builder -----------------------------------
   if (eventBased && useMC) {
-    CbmBuildEventsQA* evBuildQA = new CbmBuildEventsQA();
+    CbmBuildEventsQa* evBuildQA = new CbmBuildEventsQa();
     run->AddTask(evBuildQA);
   }
   // ------------------------------------------------------------------------

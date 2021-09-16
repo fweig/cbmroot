@@ -2,11 +2,11 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Alexander Zinchenko [committer] */
 
-/** CbmMuchFindVectorsQA.cxx
+/** CbmMuchFindVectorsQa.cxx
  *@author A.Zinchenko <Alexander.Zinchenko@jinr.ru>
  *@since 2014
  **/
-#include "CbmMuchFindVectorsQA.h"
+#include "CbmMuchFindVectorsQa.h"
 
 #include "CbmMuchCluster.h"
 #include "CbmMuchDigiMatch.h"
@@ -40,7 +40,7 @@ using std::pair;
 using std::set;
 
 // -----   Default (stabdard) constructor   --------------------------------
-CbmMuchFindVectorsQA::CbmMuchFindVectorsQA()
+CbmMuchFindVectorsQa::CbmMuchFindVectorsQa()
   : FairTask("MuchFindVectorsQA")
   , fGeoScheme(CbmMuchGeoScheme::Instance())
   , fStatFirst(-1)
@@ -50,11 +50,11 @@ CbmMuchFindVectorsQA::CbmMuchFindVectorsQA()
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMuchFindVectorsQA::~CbmMuchFindVectorsQA() {}
+CbmMuchFindVectorsQa::~CbmMuchFindVectorsQa() {}
 // -------------------------------------------------------------------------
 
 // -----   Public method Init (abstract in base class)  --------------------
-InitStatus CbmMuchFindVectorsQA::Init()
+InitStatus CbmMuchFindVectorsQa::Init()
 {
 
   // Get and check FairRootManager
@@ -111,11 +111,11 @@ InitStatus CbmMuchFindVectorsQA::Init()
 // -------------------------------------------------------------------------
 
 // -----  SetParContainers -------------------------------------------------
-void CbmMuchFindVectorsQA::SetParContainers() {}
+void CbmMuchFindVectorsQa::SetParContainers() {}
 // -------------------------------------------------------------------------
 
 // -----   Private method BookHistos   -------------------------------------
-void CbmMuchFindVectorsQA::BookHistos()
+void CbmMuchFindVectorsQa::BookHistos()
 {
   // Book histograms
 
@@ -205,7 +205,7 @@ void CbmMuchFindVectorsQA::BookHistos()
 // -------------------------------------------------------------------------
 
 // -----   Public method Exec   --------------------------------------------
-void CbmMuchFindVectorsQA::Exec(Option_t* opt)
+void CbmMuchFindVectorsQa::Exec(Option_t* opt)
 {
   // Do all processing
 
@@ -274,7 +274,7 @@ void CbmMuchFindVectorsQA::Exec(Option_t* opt)
 // -------------------------------------------------------------------------
 
 // -----   Private method CheckMatch   -------------------------------------
-Bool_t CbmMuchFindVectorsQA::CheckMatch(CbmMuchTrack* vec)
+Bool_t CbmMuchFindVectorsQa::CheckMatch(CbmMuchTrack* vec)
 {
   // Check matching quality of the vector
 
@@ -429,7 +429,7 @@ Bool_t CbmMuchFindVectorsQA::CheckMatch(CbmMuchTrack* vec)
 // -------------------------------------------------------------------------
 
 // -----   Private method CheckMatchGem   ----------------------------------
-Bool_t CbmMuchFindVectorsQA::CheckMatchGem(CbmMuchTrack* vec)
+Bool_t CbmMuchFindVectorsQa::CheckMatchGem(CbmMuchTrack* vec)
 {
   // Check matching quality of the vector for GEM stations
 
@@ -521,7 +521,7 @@ Bool_t CbmMuchFindVectorsQA::CheckMatchGem(CbmMuchTrack* vec)
 // -------------------------------------------------------------------------
 
 // -----   Private method CheckShorts   ------------------------------------
-void CbmMuchFindVectorsQA::CheckShorts(TClonesArray* hitArray)
+void CbmMuchFindVectorsQa::CheckShorts(TClonesArray* hitArray)
 {
   // Check short tracks
 
@@ -575,7 +575,7 @@ void CbmMuchFindVectorsQA::CheckShorts(TClonesArray* hitArray)
 // -------------------------------------------------------------------------
 
 // -----   Private method CheckEffic   -------------------------------------
-void CbmMuchFindVectorsQA::CheckEffic()
+void CbmMuchFindVectorsQa::CheckEffic()
 {
   // Check efficiency of the vector reco
 
@@ -740,7 +740,7 @@ void CbmMuchFindVectorsQA::CheckEffic()
 // -------------------------------------------------------------------------
 
 // -----   Public method Finish   ------------------------------------------
-void CbmMuchFindVectorsQA::Finish()
+void CbmMuchFindVectorsQa::Finish()
 {
   for (Int_t ista = 0; ista < fNstat; ++ista) {
     if (fNdoubl[ista]) fhOccup[ista]->Scale(1. / 2 / fNdoubl[ista] / 2 / fhEvents->GetEntries());
@@ -755,4 +755,4 @@ void CbmMuchFindVectorsQA::Finish()
 
 // -------------------------------------------------------------------------
 
-ClassImp(CbmMuchFindVectorsQA);
+ClassImp(CbmMuchFindVectorsQa);

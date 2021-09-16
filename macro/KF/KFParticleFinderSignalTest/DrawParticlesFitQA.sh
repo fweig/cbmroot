@@ -15,14 +15,14 @@ function DrawParticle {
   cd $CURDIR
   echo `pwd`
   
-  cp $MAINDIR/CbmKFParticleFinderQA.root .
+  cp $MAINDIR/CbmKFParticleFinderQa.root .
   cp $MAINDIR/DrawParticlesFitQA.C .
   root -l -b -q "DrawParticlesFitQA.C($1)" > fit.log
   
   mkdir Daughters
   mv *Daughters.pdf Daughters
   
-  rm -rf CbmKFParticleFinderQA.root DrawParticlesFitQA.C
+  rm -rf CbmKFParticleFinderQa.root DrawParticlesFitQA.C
   cd ../
 }
 

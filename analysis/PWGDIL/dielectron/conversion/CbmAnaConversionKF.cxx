@@ -17,7 +17,7 @@
 
 // included from CbmRoot
 #include "CbmKFParticleFinder.h"
-#include "CbmKFParticleFinderQA.h"
+#include "CbmKFParticleFinderQa.h"
 #include "CbmMCTrack.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
@@ -189,7 +189,7 @@ void CbmAnaConversionKF::Exec()
 }
 
 
-void CbmAnaConversionKF::SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA)
+void CbmAnaConversionKF::SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQa* kfparticleQA)
 {
   fKFparticle         = kfparticle;
   fKFparticleFinderQA = kfparticleQA;

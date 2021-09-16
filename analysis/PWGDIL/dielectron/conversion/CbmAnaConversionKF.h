@@ -23,7 +23,7 @@
 // included from CbmRoot
 #include "CbmKFParticle.h"
 #include "CbmKFParticleFinder.h"
-#include "CbmKFParticleFinderQA.h"
+#include "CbmKFParticleFinderQa.h"
 #include "CbmMCTrack.h"
 #include "CbmVertex.h"
 
@@ -46,7 +46,7 @@ public:
 
   //void KFParticle_Analysis();
 
-  void SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA);
+  void SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQa* kfparticleQA);
   void SetSignalIds(std::vector<int>* signalids);
   void SetGhostIds(std::vector<int>* ghostids);
 
@@ -74,7 +74,7 @@ private:
   TClonesArray* fStsTrackMatches;
 
   CbmKFParticleFinder* fKFparticle;
-  CbmKFParticleFinderQA* fKFparticleFinderQA;
+  CbmKFParticleFinderQa* fKFparticleFinderQA;
 
   const KFParticleTopoReconstructor* fKFtopo;
   KFTopoPerformance* fKFtopoPerf;

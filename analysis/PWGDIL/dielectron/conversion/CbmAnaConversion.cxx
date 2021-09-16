@@ -17,7 +17,7 @@
 #include "CbmDrawHist.h"
 #include "CbmGlobalTrack.h"
 #include "CbmKFParticleFinder.h"
-#include "CbmKFParticleFinderQA.h"
+#include "CbmKFParticleFinderQa.h"
 #include "CbmL1PFFitter.h"
 #include "CbmMCTrack.h"
 #include "CbmRichHit.h"
@@ -1736,7 +1736,7 @@ void CbmAnaConversion::ReconstructGamma()
 }
 
 
-void CbmAnaConversion::SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA)
+void CbmAnaConversion::SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQa* kfparticleQA)
 {
 
   fKFparticle         = kfparticle;

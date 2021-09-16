@@ -11,7 +11,7 @@
 #include <TSpline.h>
 
 #include "AnalysisFilter.h"
-#include "PairAnalysisCutQA.h"
+#include "PairAnalysisCutQa.h"
 #include "PairAnalysisHF.h"
 #include "PairAnalysisHistos.h"
 
@@ -157,7 +157,7 @@ public:
 
 private:
   Bool_t fCutQA                 = kFALSE;  // monitor cuts
-  PairAnalysisCutQA* fQAmonitor = NULL;    // monitoring of cuts
+  PairAnalysisCutQa* fQAmonitor = NULL;    // monitoring of cuts
 
   AnalysisFilter fEventFilter;        // Event cuts
   AnalysisFilter fTrackFilter;        // leg cuts

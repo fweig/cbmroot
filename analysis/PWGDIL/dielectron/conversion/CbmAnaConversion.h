@@ -31,7 +31,7 @@
 #include "CbmAnaConversionTest2.h"
 #include "CbmAnaConversionTomography.h"
 #include "CbmKFParticleFinder.h"
-#include "CbmKFParticleFinderQA.h"
+#include "CbmKFParticleFinderQa.h"
 
 #include "TStopwatch.h"
 
@@ -114,7 +114,7 @@ public:
   void ReconstructGamma();
 
 
-  void SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA);
+  void SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQa* kfparticleQA);
 
   Bool_t AnalysePi0_MC(CbmMCTrack* mctrack, int i);
   void AnalysePi0_Reco();
@@ -212,7 +212,7 @@ private:
 
 
   CbmKFParticleFinder* fKFparticle;
-  CbmKFParticleFinderQA* fKFparticleFinderQA;
+  CbmKFParticleFinderQa* fKFparticleFinderQA;
   const KFParticleTopoReconstructor* fKFtopo;
   std::vector<int> trackindexarray;
   Int_t particlecounter;

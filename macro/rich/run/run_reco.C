@@ -123,7 +123,7 @@ void run_reco(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim
 
 
   if (eventBased && useMC) {
-    CbmBuildEventsQA* evBuildQA = new CbmBuildEventsQA();
+    CbmBuildEventsQa* evBuildQA = new CbmBuildEventsQa();
     run->AddTask(evBuildQA);
   }
 

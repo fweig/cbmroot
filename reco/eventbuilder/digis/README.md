@@ -41,7 +41,7 @@ from digis can be carried out inside a Root macro:
 
 	// Add QA task in case of Monte Carlo data
 	if ( useMC ) {
-	   CbmBuildEventsQA* evBuildQA = new CbmBuildEventsQA();
+	   CbmBuildEventsQa* evBuildQA = new CbmBuildEventsQa();
 	   run->AddTask(evBuildQA);
 	}
 

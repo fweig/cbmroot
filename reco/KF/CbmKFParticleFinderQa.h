@@ -5,8 +5,8 @@
 //-----------------------------------------------------------
 //-----------------------------------------------------------
 
-#ifndef CbmKFParticleFinderQA_HH
-#define CbmKFParticleFinderQA_HH
+#ifndef CbmKFParticleFinderQa_HH
+#define CbmKFParticleFinderQa_HH
 
 #include "FairTask.h"
 
@@ -22,12 +22,12 @@ class CbmMCDataArray;
 class TFile;
 class TObject;
 
-class CbmKFParticleFinderQA : public FairTask {
+class CbmKFParticleFinderQa : public FairTask {
 public:
   // Constructors/Destructors ---------
-  CbmKFParticleFinderQA(const char* name = "CbmKFParticleFinderQA", Int_t iVerbose = 0,
-                        const KFParticleTopoReconstructor* tr = 0, TString outFileName = "CbmKFParticleFinderQA.root");
-  ~CbmKFParticleFinderQA();
+  CbmKFParticleFinderQa(const char* name = "CbmKFParticleFinderQa", Int_t iVerbose = 0,
+                        const KFParticleTopoReconstructor* tr = 0, TString outFileName = "CbmKFParticleFinderQa.root");
+  ~CbmKFParticleFinderQa();
 
   void SetEffFileName(const TString& name) { fEfffileName = name; }
   void SetMCTrackBranchName(const TString& name) { fMCTracksBranchName = name; }
@@ -52,8 +52,8 @@ public:
   bool IsTestPassed() { return fTestOk; }
 
 private:
-  const CbmKFParticleFinderQA& operator=(const CbmKFParticleFinderQA&);
-  CbmKFParticleFinderQA(const CbmKFParticleFinderQA&);
+  const CbmKFParticleFinderQa& operator=(const CbmKFParticleFinderQa&);
+  CbmKFParticleFinderQa(const CbmKFParticleFinderQa&);
 
   void WriteHistosCurFile(TObject* obj);
   void FitDecayQAHistograms(float sigma[14], const bool saveReferenceResults = false) const;
@@ -99,7 +99,7 @@ private:
   bool fCheckDecayQA;
   bool fTestOk;
 
-  ClassDef(CbmKFParticleFinderQA, 1);
+  ClassDef(CbmKFParticleFinderQa, 1);
 };
 
 #endif

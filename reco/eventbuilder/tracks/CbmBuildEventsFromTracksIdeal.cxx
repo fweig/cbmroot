@@ -77,7 +77,7 @@ InitStatus CbmBuildEventsFromTracksIdeal::Init()
 
   fEventList = (CbmMCEventList*) ioman->GetObject("MCEventList.");
   if (fEventList == 0) {
-    Error("CbmKFParticleFinderQA::Init", "MC Event List not found!");
+    Error("CbmKFParticleFinderQa::Init", "MC Event List not found!");
     return kERROR;
   }
 
@@ -87,7 +87,7 @@ InitStatus CbmBuildEventsFromTracksIdeal::Init()
 
   fStsTrackMatchArray = (TClonesArray*) ioman->GetObject("StsTrackMatch");
   if (fStsTrackMatchArray == 0) {
-    Error("CbmKFParticleFinderQA::Init", "track match array not found!");
+    Error("CbmKFParticleFinderQa::Init", "track match array not found!");
     return kERROR;
   }
 

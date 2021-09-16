@@ -1,12 +1,17 @@
-/* Copyright (C) 2015-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2017 IKF-UFra, GSI
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Maksym Zyzak [committer] */
+   Authors: Valentina Akishina , Maksym Zyzak, Valentina Akishina [committer] */
 
-//-----------------------------------------------------------
-//-----------------------------------------------------------
+/** @file CbmEventBuilderQa.h
+ ** @author Valentina Akishina <v.akishina@gsi.de>, Maksym Zyzak <m.zyzak@gsi.de>
+ ** @date 14.03.2017
+ **/
 
-#ifndef CbmKFTrackQA_HH
-#define CbmKFTrackQA_HH
+#ifndef CbmEventBuilderQa_H
+#define CbmEventBuilderQa_H
+
+#include "CbmEvent.h"
+#include "CbmStsTrack.h"
 
 #include "FairTask.h"
 
@@ -15,21 +20,25 @@
 #include <map>
 #include <vector>
 
-class KFParticleTopoReconstructor;
-class KFTopoPerformance;
+class TClonesArray;
+class CbmMCEventList;
+#include "CbmMCDataArray.h"
+
 class TClonesArray;
 class TFile;
 class TDirectory;
 class TH1F;
 class TH2F;
 class TObject;
-class CbmMCDataArray;
 
-class CbmKFTrackQA : public FairTask {
+class CbmEventBuilderQa : public FairTask {
 public:
   // Constructors/Destructors ---------
-  CbmKFTrackQA(const char* name = "CbmKFTrackQA", Int_t iVerbose = 0, TString outFileName = "CbmKFTrackQA.root");
-  ~CbmKFTrackQA();
+  CbmEventBuilderQa(const char* name = "CbmEventBuilderQa", Int_t iVerbose = 0,
+                    TString outFileName = "CbmEventBuilderQa.root");
+  const CbmEventBuilderQa& operator=(const CbmEventBuilderQa&) = delete;
+  CbmEventBuilderQa(const CbmEventBuilderQa&)                  = delete;
+  ~CbmEventBuilderQa();
 
   void SetStsTrackBranchName(const TString& name) { fStsTrackBranchName = name; }
   void SetGlobalTrackBranchName(const TString& name) { fGlobalTrackBranchName = name; }
@@ -38,28 +47,39 @@ public:
   void SetTrackMatchBranchName(const TString& name) { fStsTrackMatchBranchName = name; }
   void SetMuchTrackMatchBranchName(const TString& name) { fMuchTrackMatchBranchName = name; }
   void SetTrdBranchName(const TString& name) { fTrdBranchName = name; }
-  void SetTrdHitBranchName(const TString& name) { fTrdHitBranchName = name; }
   void SetRichBranchName(const TString& name) { fRichBranchName = name; }
   void SetMuchTrackBranchName(const TString& name) { fMuchTrackBranchName = name; }
-  Int_t GetZtoNStation(Double_t getZ);
 
   virtual InitStatus Init();
   virtual void Exec(Option_t* opt);
   virtual void Finish();
 
 private:
-  const CbmKFTrackQA& operator=(const CbmKFTrackQA&);
-  CbmKFTrackQA(const CbmKFTrackQA&);
+  std::vector<std::vector<std::vector<int>>> fPointsInTracks;
+
+
+  struct SortEvents {
+    CbmEvent* Event;
+    CbmStsTrack track;
+
+    SortEvents() : Event(nullptr), track() {}
+  };
+
+  static bool CompareTrackTime(const SortEvents& a, const SortEvents& b)
+  {
+    return (a.track.GetTime() < b.track.GetTime());
+  }
+
+  bool CalculateIsReconstructable(const int iMCFile, const int iMCEvent,
+                                  const int iMCTrack);  // bool CbmL1MCTrack::IsReconstructable()
 
   void WriteHistosCurFile(TObject* obj);
-  int GetHistoIndex(int pdg);
 
   //names of input branches
   TString fStsTrackBranchName;
   TString fGlobalTrackBranchName;
   TString fRichBranchName;
   TString fTrdBranchName;
-  TString fTrdHitBranchName;
   TString fTofBranchName;
   TString fMuchTrackBranchName;
   TString fMCTracksBranchName;
@@ -69,30 +89,26 @@ private:
   TString fTofHitMatchBranchName;
   TString fMuchTrackMatchBranchName;
 
-  //input branches
-  TClonesArray* fStsTrackArray;
-  TClonesArray* fGlobalTrackArray;
-  TClonesArray* fRichRingArray;
-  TClonesArray* fTrdTrackArray;
-  TClonesArray* fTrdHitArray;
-  TClonesArray* fTofHitArray;
-  TClonesArray* fMuchTrackArray;
-  TClonesArray* fMCTrackArray;
-  TClonesArray* fStsTrackMatchArray;
-  TClonesArray* fRichRingMatchArray;
-  TClonesArray* fTrdTrackMatchArray;
-  TClonesArray* fTofHitMatchArray;
-  TClonesArray* fMuchTrackMatchArray;
+  static const int fNTimeHistos = 27;
+  TH1F* fTimeHisto[fNTimeHistos];
 
-  CbmMCDataArray* fTofPoints;  // CbmTofPoint array
+
+  TClonesArray* fStsDigis;     ///< Input array (class CbmStsDigi)
+  TClonesArray* fStsTracks;    ///< Input array (class CbmStsDigi)
+  CbmMCDataArray* fMCTracks;   ///< Input array (class CbmStsDigi)
+  TClonesArray* fStsHits;      ///< Input array (class CbmStsDigi)
+  CbmMCDataArray* fMvdPoints;  ///< Input array (class CbmStsDigi)
+  CbmMCDataArray* fStsPoints;  ///< Input array (class CbmStsDigi)
+  TClonesArray* fEvents;       ///< Output array (class CbmEvent)
+  TClonesArray* fStsTrackMatchArray;
+  TClonesArray* fStsHitMatch;
+
+  CbmMCEventList* fEventList;
 
   //output file with histograms
   TString fOutFileName;
   TFile* fOutFile;
   TDirectory* fHistoDir;
-
-  Int_t fNEvents;
-  std::map<int, int> fPDGtoIndexMap;
 
   //histograms
   //STS
@@ -107,21 +123,8 @@ private:
   TH2F* hRichRingHisto2D
     [10]
     [NRichRingHisto2D];  //All tracks, electrons, muons, pions, kaons, protons, fragments, mismatch, ghost track, ghost ring
-  //Trd
-  static const int NTrdHisto = 2;
-  TH1F* hTrdHisto
-    [14]
-    [NTrdHisto];  //All tracks, electrons, muons, pions, kaons, protons, fragments, mismatch, ghost track, ghost trd track, d, t, He3, He4
-  static const int NTrdHisto2D = 1;
-  TH2F* hTrdHisto2D[14][NTrdHisto2D];
-  //Tof
-  static const int NTofHisto2D = 2;
-  TH2F* hTofHisto2D
-    [14]
-    [NTofHisto2D];  //All tracks, electrons, muons, pions, kaons, protons, fragments, mismatch, ghost hit, ghost tof hit, d, t, He3, He4
 
-
-  ClassDef(CbmKFTrackQA, 1);
+  ClassDef(CbmEventBuilderQa, 1);
 };
 
 #endif

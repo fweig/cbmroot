@@ -12,7 +12,7 @@
   include or exclude a certain selection in the analysis.
 
   It is recommmended to give the cut object a unique and meaning full name(+title), since 
-  they are used e.g. in PairAnalysisCutQA and PairAnalysis::GetCutStepHistogramList()
+  they are used e.g. in PairAnalysisCutQa and PairAnalysis::GetCutStepHistogramList()
   to monitor the cut impact.
 
   Many objects can be combined in a PairAnalysisCutGroup with additional cut logics.

@@ -175,8 +175,8 @@ void kf_kfparticle(Int_t nEvents = 2, const TString setupName = "sis100_electron
   // ------------------------------------------------------------------------
 
   // ----- KF Particle Finder QA --------------------------------------------
-  CbmKFParticleFinderQA* kfParticleFinderQA =
-    new CbmKFParticleFinderQA("CbmKFParticleFinderQA", 0, kfParticleFinder->GetTopoReconstructor(), histoFile.Data());
+  CbmKFParticleFinderQa* kfParticleFinderQA =
+    new CbmKFParticleFinderQa("CbmKFParticleFinderQa", 0, kfParticleFinder->GetTopoReconstructor(), histoFile.Data());
   kfParticleFinderQA->SetPrintEffFrequency(nEvents);
   if (superEvent) kfParticleFinderQA->SetSuperEventAnalysis();  // SuperEvent
   kfParticleFinderQA->SetEffFileName(effFile.Data());
@@ -194,7 +194,7 @@ void kf_kfparticle(Int_t nEvents = 2, const TString setupName = "sis100_electron
 
   // ----- KF Track QA ------------------------------------------------------
   // The module is under development.
-  //   CbmKFTrackQA* kfTrackQA = new CbmKFTrackQA();
+  //   CbmKFTrackQa* kfTrackQA = new CbmKFTrackQa();
   //   run->AddTask(kfTrackQA);
   // ------------------------------------------------------------------------
 

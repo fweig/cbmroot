@@ -9,7 +9,7 @@
  *
  *====================================================================
  */
-#include "CbmKFTrackFitQA.h"
+#include "CbmKFTrackFitQa.h"
 
 #include "CbmKF.h"
 #include "CbmKFMath.h"
@@ -33,9 +33,9 @@
 using namespace std;
 using std::vector;
 
-ClassImp(CbmKFTrackFitQA)
+ClassImp(CbmKFTrackFitQa)
 
-  CbmKFTrackFitQA::CbmKFTrackFitQA()
+  CbmKFTrackFitQa::CbmKFTrackFitQa()
   : listStsPts(0)
   , listMvdPts(0)
   , listMCTracks(0)
@@ -171,7 +171,7 @@ ClassImp(CbmKFTrackFitQA)
   gDirectory = currentDir;
 }
 
-CbmKFTrackFitQA::~CbmKFTrackFitQA()
+CbmKFTrackFitQa::~CbmKFTrackFitQa()
 {
   if (res_STShit_x) delete res_STShit_x;
   if (res_STShit_y) delete res_STShit_y;
@@ -208,9 +208,9 @@ CbmKFTrackFitQA::~CbmKFTrackFitQA()
   if (pull_AtFP_qp) delete pull_AtFP_qp;
 }
 
-InitStatus CbmKFTrackFitQA::ReInit() { return Init(); }
+InitStatus CbmKFTrackFitQa::ReInit() { return Init(); }
 
-InitStatus CbmKFTrackFitQA::Init()
+InitStatus CbmKFTrackFitQa::Init()
 {
   FairRootManager* fManger = FairRootManager::Instance();
 
@@ -237,7 +237,7 @@ InitStatus CbmKFTrackFitQA::Init()
   return kSUCCESS;
 }
 
-void CbmKFTrackFitQA::Exec(Option_t* /*option*/)
+void CbmKFTrackFitQa::Exec(Option_t* /*option*/)
 {
   FillHitHistos();
 
@@ -267,9 +267,9 @@ void CbmKFTrackFitQA::Exec(Option_t* /*option*/)
   }
   delete[] MCTrackSortedArray;
 }
-void CbmKFTrackFitQA::Finish() { KFWrite(); }
+void CbmKFTrackFitQa::Finish() { KFWrite(); }
 
-void CbmKFTrackFitQA::FillHistoAtParticleVertex(CbmMCTrack* track_mc, CbmKFTrack* track_kf)
+void CbmKFTrackFitQa::FillHistoAtParticleVertex(CbmMCTrack* track_mc, CbmKFTrack* track_kf)
 {
   CbmKFTrackInterface* tr_help1 = track_kf;
   CbmKFTrack* tr1               = new CbmKFTrack(*tr_help1);
@@ -325,7 +325,7 @@ void CbmKFTrackFitQA::FillHistoAtParticleVertex(CbmMCTrack* track_mc, CbmKFTrack
   }
 }
 
-void CbmKFTrackFitQA::FillHistoAtFirstPoint(CbmKFTrErrMCPoints* mc_points, CbmMCTrack* track_mc, CbmKFTrack* track_kf)
+void CbmKFTrackFitQa::FillHistoAtFirstPoint(CbmKFTrErrMCPoints* mc_points, CbmMCTrack* track_mc, CbmKFTrack* track_kf)
 {
   Double_t* fT = track_kf->GetTrack();
   Double_t* fC = track_kf->GetCovMatrix();
@@ -413,7 +413,7 @@ void CbmKFTrackFitQA::FillHistoAtFirstPoint(CbmKFTrErrMCPoints* mc_points, CbmMC
   }
 }
 
-void CbmKFTrackFitQA::KFWrite()
+void CbmKFTrackFitQa::KFWrite()
 {
   //This function writes obtained histograms to the root file
   TDirectory* curr   = gDirectory;
@@ -466,7 +466,7 @@ void CbmKFTrackFitQA::KFWrite()
   gDirectory = curr;
 }
 
-void CbmKFTrackFitQA::Save()
+void CbmKFTrackFitQa::Save()
 {
   //This function writes obtained histograms to the root file
 
@@ -509,7 +509,7 @@ void CbmKFTrackFitQA::Save()
   pull_AtFP_qp->SaveAs("pull_AtFP_qp.gif");
 }
 
-void CbmKFTrackFitQA::FillHitHistos()
+void CbmKFTrackFitQa::FillHitHistos()
 {
   vStsHitMatch.resize(listStsHits->GetEntriesFast());
   StsHitMatch();
@@ -548,7 +548,7 @@ void CbmKFTrackFitQA::FillHitHistos()
   //   }
 }
 
-void CbmKFTrackFitQA::StsHitMatch()
+void CbmKFTrackFitQa::StsHitMatch()
 {
   const bool useLinks =
     0;  // 0 - use HitMatch, one_to_one; 1 - use FairLinks, many_to_many. Set 0 to switch to old definition of efficiency.
@@ -617,7 +617,7 @@ void CbmKFTrackFitQA::StsHitMatch()
 }
 
 
-void CbmKFTrackFitQA::FindBackTracks()
+void CbmKFTrackFitQa::FindBackTracks()
 {
   /*
   Nback=0;
@@ -670,7 +670,7 @@ void CbmKFTrackFitQA::FindBackTracks()
   }*/
 }
 
-void CbmKFTrackFitQA::FindBackTracks(CbmKFTrErrMCPoints* /*mc_points*/, CbmMCTrack* /*track_mc*/,
+void CbmKFTrackFitQa::FindBackTracks(CbmKFTrErrMCPoints* /*mc_points*/, CbmMCTrack* /*track_mc*/,
                                      CbmKFTrack* /*track_kf*/, int /*iEvent*/)
 {
   /*

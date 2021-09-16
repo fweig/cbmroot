@@ -13,11 +13,11 @@
 
 #include "TClonesArray.h"
 
-class CbmTofHitFinderTBQA : public FairTask {
+class CbmTofHitFinderTBQa : public FairTask {
 public:
-  CbmTofHitFinderTBQA();
-  CbmTofHitFinderTBQA(const CbmTofHitFinderTBQA&) = delete;
-  CbmTofHitFinderTBQA& operator=(const CbmTofHitFinderTBQA&) = delete;
+  CbmTofHitFinderTBQa();
+  CbmTofHitFinderTBQa(const CbmTofHitFinderTBQa&) = delete;
+  CbmTofHitFinderTBQa& operator=(const CbmTofHitFinderTBQa&) = delete;
 
   InitStatus Init();
   void Exec(Option_t* option);
@@ -35,7 +35,7 @@ private:
   CbmTimeSlice* fTimeSlice;
   CbmMCEventList* fEventList;
 
-  ClassDef(CbmTofHitFinderTBQA, 1)
+  ClassDef(CbmTofHitFinderTBQa, 1)
 };
 
 #endif /* CBMTOFHITFINDERTBQA_H */

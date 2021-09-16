@@ -8,7 +8,7 @@
  * and open the template in the editor.
  */
 
-#include "CbmBinnedTrackerQANew.h"
+#include "CbmBinnedTrackerQaNew.h"
 
 #include "CbmMCDataManager.h"
 #include "CbmMCTrack.h"
@@ -41,9 +41,9 @@ struct MCTrackDesc {
 
 static vector<vector<MCTrackDesc>> gMCTracks;
 
-CbmBinnedTrackerQANew::CbmBinnedTrackerQANew() {}
+CbmBinnedTrackerQaNew::CbmBinnedTrackerQaNew() {}
 
-InitStatus CbmBinnedTrackerQANew::Init()
+InitStatus CbmBinnedTrackerQaNew::Init()
 {
   CbmStsSetup* stsSetup = CbmStsSetup::Instance();
 
@@ -246,7 +246,7 @@ static int gNofRecoTracks        = 0;
 static int gNofMatchedRecoTracks = 0;
 static int gNofClones            = 0;
 
-void CbmBinnedTrackerQANew::Exec(Option_t*)
+void CbmBinnedTrackerQaNew::Exec(Option_t*)
 {
   auto& eventMCTracks   = gMCTracks[gEventNumber];
   Int_t nofGlobalTracks = fGlobalTracks->GetEntriesFast();
@@ -434,7 +434,7 @@ void CbmBinnedTrackerQANew::Exec(Option_t*)
   ++gEventNumber;
 }  //Exec()
 
-void CbmBinnedTrackerQANew::Finish()
+void CbmBinnedTrackerQaNew::Finish()
 {
   int nofRefMCTRacks        = 0;
   int nofMatchedRefMCTracks = 0;
@@ -494,9 +494,9 @@ void CbmBinnedTrackerQANew::Finish()
   cout << "The share of clones: " << res << " % = 100 * " << gNofClones << " / " << gNofRecoTracks << endl;
 }
 
-void CbmBinnedTrackerQANew::SetParContainers()
+void CbmBinnedTrackerQaNew::SetParContainers()
 {
   fSettings = static_cast<CbmBinnedSettings*>(FairRun::Instance()->GetRuntimeDb()->getContainer("CbmBinnedSettings"));
 }
 
-ClassImp(CbmBinnedTrackerQANew)
+ClassImp(CbmBinnedTrackerQaNew)

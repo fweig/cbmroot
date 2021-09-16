@@ -122,15 +122,15 @@ void physSignal(Int_t nEvents = 1000, const char* setupName = "sis100_electron")
   run->AddTask(kfParticleFinder);
 
   // ----- KF Particle Finder QA --------------------------------------------
-  CbmKFParticleFinderQA* kfParticleFinderQA =
-    new CbmKFParticleFinderQA("CbmKFParticleFinderQA", 0, kfParticleFinder->GetTopoReconstructor(), histoFile.Data());
+  CbmKFParticleFinderQa* kfParticleFinderQA =
+    new CbmKFParticleFinderQa("CbmKFParticleFinderQa", 0, kfParticleFinder->GetTopoReconstructor(), histoFile.Data());
   kfParticleFinderQA->SetPrintEffFrequency(100);  //nEvents);
   //  kfParticleFinderQA->SetSuperEventAnalysis(); // SuperEvent
   kfParticleFinderQA->SetEffFileName(effFile.Data());
   run->AddTask(kfParticleFinderQA);
 
   // ----- KF Track QA --------------------------------------------
-  //  CbmKFTrackQA* kfTrackQA = new CbmKFTrackQA();
+  //  CbmKFTrackQa* kfTrackQA = new CbmKFTrackQa();
   //  run->AddTask(kfTrackQA);
 
   // -----  Parameter database   --------------------------------------------

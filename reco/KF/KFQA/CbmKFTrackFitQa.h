@@ -10,8 +10,8 @@
  *====================================================================
  */
 
-#ifndef _CbmKFTrackFitQA_h_
-#define _CbmKFTrackFitQA_h_
+#ifndef _CbmKFTrackFitQa_h_
+#define _CbmKFTrackFitQa_h_
 
 #include "CbmKFTrErrMCPoints.h"
 #include "CbmKFTrack.h"
@@ -34,10 +34,10 @@
 #include <iostream>
 #include <vector>
 
-class CbmKFTrackFitQA : public FairTask {
+class CbmKFTrackFitQa : public FairTask {
 public:
-  CbmKFTrackFitQA();
-  ~CbmKFTrackFitQA();
+  CbmKFTrackFitQa();
+  ~CbmKFTrackFitQa();
 
   void StsHitMatch();
   void FillHitHistos();
@@ -125,11 +125,11 @@ private:
   int Nback;
   //FILE *fBack;
 
-  ClassDef(CbmKFTrackFitQA, 1);
+  ClassDef(CbmKFTrackFitQa, 1);
 
 private:
-  CbmKFTrackFitQA(const CbmKFTrackFitQA&);
-  void operator=(const CbmKFTrackFitQA&);
+  CbmKFTrackFitQa(const CbmKFTrackFitQa&);
+  void operator=(const CbmKFTrackFitQa&);
 };
 
-#endif  // _CbmKFTrackFitQA_h_
+#endif  // _CbmKFTrackFitQa_h_

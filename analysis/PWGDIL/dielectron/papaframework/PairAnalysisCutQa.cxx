@@ -12,7 +12,7 @@
      PairAnalysis::SetCutQA(); 
 */
 
-#include "PairAnalysisCutQA.h"
+#include "PairAnalysisCutQa.h"
 
 #include "CbmMCTrack.h"
 
@@ -29,11 +29,11 @@
 #include "PairAnalysisTrack.h"
 
 
-ClassImp(PairAnalysisCutQA)
+ClassImp(PairAnalysisCutQa)
 
 
-  PairAnalysisCutQA::PairAnalysisCutQA()
-  : PairAnalysisCutQA("QAcuts", "QAcuts")
+  PairAnalysisCutQa::PairAnalysisCutQa()
+  : PairAnalysisCutQa("QAcuts", "QAcuts")
 {
   //
   // Default constructor
@@ -41,7 +41,7 @@ ClassImp(PairAnalysisCutQA)
 }
 
 //_____________________________________________________________________
-PairAnalysisCutQA::PairAnalysisCutQA(const char* name, const char* title) : TNamed(name, title), fQAHistList()
+PairAnalysisCutQa::PairAnalysisCutQa(const char* name, const char* title) : TNamed(name, title), fQAHistList()
 {
   //
   // Named Constructor
@@ -62,7 +62,7 @@ PairAnalysisCutQA::PairAnalysisCutQA(const char* name, const char* title) : TNam
 }
 
 //_____________________________________________________________________
-PairAnalysisCutQA::~PairAnalysisCutQA()
+PairAnalysisCutQa::~PairAnalysisCutQa()
 {
   //
   //Default Destructor
@@ -71,7 +71,7 @@ PairAnalysisCutQA::~PairAnalysisCutQA()
 }
 
 //_____________________________________________________________________
-void PairAnalysisCutQA::Init()
+void PairAnalysisCutQa::Init()
 {
 
   fQAHistList.SetName(Form("%s", GetName()));
@@ -197,7 +197,7 @@ void PairAnalysisCutQA::Init()
 }
 
 //_____________________________________________________________________
-void PairAnalysisCutQA::AddTrackFilter(AnalysisFilter* filter)
+void PairAnalysisCutQa::AddTrackFilter(AnalysisFilter* filter)
 {
   //
   // add track filter cuts to the qa histogram
@@ -219,7 +219,7 @@ void PairAnalysisCutQA::AddTrackFilter(AnalysisFilter* filter)
 }
 
 //_____________________________________________________________________
-void PairAnalysisCutQA::AddTrackFilterMC(AnalysisFilter* filter)
+void PairAnalysisCutQa::AddTrackFilterMC(AnalysisFilter* filter)
 {
   //
   // add MC track filter cuts to the qa histogram
@@ -242,7 +242,7 @@ void PairAnalysisCutQA::AddTrackFilterMC(AnalysisFilter* filter)
 }
 
 //_____________________________________________________________________
-void PairAnalysisCutQA::AddTrackFilter2(AnalysisFilter* filter)
+void PairAnalysisCutQa::AddTrackFilter2(AnalysisFilter* filter)
 {
   //
   // add track filter cuts to the qa histogram
@@ -265,7 +265,7 @@ void PairAnalysisCutQA::AddTrackFilter2(AnalysisFilter* filter)
 
 
 //_____________________________________________________________________
-void PairAnalysisCutQA::AddPairFilter(AnalysisFilter* pairFilter)
+void PairAnalysisCutQa::AddPairFilter(AnalysisFilter* pairFilter)
 {
   //
   // add track filter cuts to the qa histogram
@@ -286,7 +286,7 @@ void PairAnalysisCutQA::AddPairFilter(AnalysisFilter* pairFilter)
 }
 
 //_____________________________________________________________________
-void PairAnalysisCutQA::AddPrePairFilter(AnalysisFilter* pairFilter)
+void PairAnalysisCutQa::AddPrePairFilter(AnalysisFilter* pairFilter)
 {
   //
   // add track filter cuts to the qa histogram
@@ -309,7 +309,7 @@ void PairAnalysisCutQA::AddPrePairFilter(AnalysisFilter* pairFilter)
 }
 
 //_____________________________________________________________________
-void PairAnalysisCutQA::AddEventFilter(AnalysisFilter* eventFilter)
+void PairAnalysisCutQa::AddEventFilter(AnalysisFilter* eventFilter)
 {
   //
   // add track filter cuts to the qa histogram
@@ -331,7 +331,7 @@ void PairAnalysisCutQA::AddEventFilter(AnalysisFilter* eventFilter)
 }
 
 //_____________________________________________________________________
-void PairAnalysisCutQA::Fill(UInt_t mask, TObject* obj, UInt_t addIdx)
+void PairAnalysisCutQa::Fill(UInt_t mask, TObject* obj, UInt_t addIdx)
 {
   //
   // fill the corresponding step in the qa histogram
@@ -399,7 +399,7 @@ void PairAnalysisCutQA::Fill(UInt_t mask, TObject* obj, UInt_t addIdx)
 }
 
 //_____________________________________________________________________
-void PairAnalysisCutQA::FillAll(TObject* obj, UInt_t addIdx)
+void PairAnalysisCutQa::FillAll(TObject* obj, UInt_t addIdx)
 {
   //
   // fill the corresponding step in the qa histogram
@@ -456,7 +456,7 @@ void PairAnalysisCutQA::FillAll(TObject* obj, UInt_t addIdx)
 }
 
 //______________________________________________________________________
-UInt_t PairAnalysisCutQA::GetObjIndex(TObject* obj)
+UInt_t PairAnalysisCutQa::GetObjIndex(TObject* obj)
 {
   //
   // return the corresponding idex

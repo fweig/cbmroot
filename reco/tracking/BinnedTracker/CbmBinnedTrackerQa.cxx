@@ -10,7 +10,7 @@
 
 //#define CBM_BINNED_QA_FILL_HISTOS
 
-#include "CbmBinnedTrackerQA.h"
+#include "CbmBinnedTrackerQa.h"
 
 #include "CbmMCDataManager.h"
 #include "CbmMCTrack.h"
@@ -266,7 +266,7 @@ static TH1F* trdNearestHitDistHistos[] = {0, 0, 0, 0};
 
 static list<TrackDesc*> lambdaList;
 
-CbmBinnedTrackerQA::CbmBinnedTrackerQA()
+CbmBinnedTrackerQa::CbmBinnedTrackerQa()
   : fPrimaryParticleIds()
   , fIsOnlyPrimary(false)
   , fSettings(0)
@@ -298,7 +298,7 @@ CbmBinnedTrackerQA::CbmBinnedTrackerQA()
   fPrimaryParticleIds.push_back(ppiNone);
 }
 
-InitStatus CbmBinnedTrackerQA::Init()
+InitStatus CbmBinnedTrackerQa::Init()
 {
   CbmStsSetup* stsSetup = CbmStsSetup::Instance();
 
@@ -695,7 +695,7 @@ InitStatus CbmBinnedTrackerQA::Init()
   return kSUCCESS;
 }
 
-void CbmBinnedTrackerQA::IterateTrdHits(std::function<void(const CbmTrdHit*, const CbmTrdPoint*)> handleData)
+void CbmBinnedTrackerQa::IterateTrdHits(std::function<void(const CbmTrdHit*, const CbmTrdPoint*)> handleData)
 {
   Int_t nofTrdHits = fTrdHits->GetEntriesFast();
 
@@ -728,7 +728,7 @@ static Int_t gNofNonGhosts  = 0;
 static Int_t gNofClones     = 0;
 static vector<bool> gIsRecoClone;
 
-void CbmBinnedTrackerQA::Exec(Option_t*)
+void CbmBinnedTrackerQa::Exec(Option_t*)
 {
   gIsRecoClone.clear();
 
@@ -1162,7 +1162,7 @@ void CbmBinnedTrackerQA::Exec(Option_t*)
 
 static inline void IncrementForId(map<Int_t, set<Int_t>>& ids, Int_t id, Int_t stId) { ids[id].insert(stId); }
 
-void CbmBinnedTrackerQA::HandleSts(Int_t stsTrackIndex, map<Int_t, set<Int_t>>& mcTrackIds,
+void CbmBinnedTrackerQa::HandleSts(Int_t stsTrackIndex, map<Int_t, set<Int_t>>& mcTrackIds,
                                    set<Int_t>* globalTrackMCRefs, Int_t* globalTracksHitInds)
 {
   int nofStations             = fSettings->GetNofStations();
@@ -1264,7 +1264,7 @@ void CbmBinnedTrackerQA::HandleSts(Int_t stsTrackIndex, map<Int_t, set<Int_t>>& 
   }
 }
 
-void CbmBinnedTrackerQA::HandleMuch(Int_t muchTrackIndex, map<Int_t, set<Int_t>>& mcTrackIds,
+void CbmBinnedTrackerQa::HandleMuch(Int_t muchTrackIndex, map<Int_t, set<Int_t>>& mcTrackIds,
                                     set<Int_t>* globalTrackMCRefs, Int_t* globalTracksHitInds)
 {
   int nofStations               = fSettings->GetNofStations();
@@ -1368,7 +1368,7 @@ void CbmBinnedTrackerQA::HandleMuch(Int_t muchTrackIndex, map<Int_t, set<Int_t>>
   }
 }
 
-void CbmBinnedTrackerQA::HandleTrd(Int_t trdTrackIndex, map<Int_t, set<Int_t>>& mcTrackIds,
+void CbmBinnedTrackerQa::HandleTrd(Int_t trdTrackIndex, map<Int_t, set<Int_t>>& mcTrackIds,
                                    set<Int_t>* globalTrackMCRefs, Int_t* globalTracksHitInds)
 {
   int nofStations             = fSettings->GetNofStations();
@@ -1448,7 +1448,7 @@ void CbmBinnedTrackerQA::HandleTrd(Int_t trdTrackIndex, map<Int_t, set<Int_t>>& 
   }
 }
 
-void CbmBinnedTrackerQA::HandleTof(Int_t globalTrackIndex, Int_t tofHitIndex, map<Int_t, set<Int_t>>& mcTrackIds,
+void CbmBinnedTrackerQa::HandleTof(Int_t globalTrackIndex, Int_t tofHitIndex, map<Int_t, set<Int_t>>& mcTrackIds,
                                    set<Int_t>* globalTrackMCRefs, Int_t* globalTracksHitInds)
 {
   const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(globalTrackIndex));
@@ -1565,7 +1565,7 @@ static void effOfMCPoints(const char* name, const vector<vector<char>>& points)
        << endl;
 }
 
-void CbmBinnedTrackerQA::Finish()
+void CbmBinnedTrackerQa::Finish()
 {
   int nofAllTracks               = 0;
   int nofRefTracks               = 0;
@@ -2169,9 +2169,9 @@ void CbmBinnedTrackerQA::Finish()
 #endif  //CBM_BINNED_QA_FILL_HISTOS
 }
 
-void CbmBinnedTrackerQA::SetParContainers()
+void CbmBinnedTrackerQa::SetParContainers()
 {
   fSettings = static_cast<CbmBinnedSettings*>(FairRun::Instance()->GetRuntimeDb()->getContainer("CbmBinnedSettings"));
 }
 
-ClassImp(CbmBinnedTrackerQA)
+ClassImp(CbmBinnedTrackerQa)

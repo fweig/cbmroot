@@ -95,8 +95,8 @@ void run_phys(Int_t nEvents = 2, TString dataset = "test", TString setupName = "
   run->AddTask(kfParticleFinder);
 
   // ----- KF Particle Finder QA --------------------------------------------
-  CbmKFParticleFinderQA* kfParticleFinderQA =
-    new CbmKFParticleFinderQA("CbmKFParticleFinderQA", 0, kfParticleFinder->GetTopoReconstructor(), histoFile.Data());
+  CbmKFParticleFinderQa* kfParticleFinderQA =
+    new CbmKFParticleFinderQa("CbmKFParticleFinderQa", 0, kfParticleFinder->GetTopoReconstructor(), histoFile.Data());
   kfParticleFinderQA->SetPrintEffFrequency(nEvents);
   //  kfParticleFinderQA->SetSuperEventAnalysis(); // SuperEvent
   kfParticleFinderQA->SetEffFileName(effFile.Data());

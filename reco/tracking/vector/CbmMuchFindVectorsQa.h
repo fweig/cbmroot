@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Alexander Zinchenko [committer] */
 
-/** CbmMuchFindVectorsQA.h
+/** CbmMuchFindVectorsQa.h
  *@author A.Zinchenko <Alexander.Zinchenko@jinr.ru>
  *@since 2014
  **
@@ -25,13 +25,13 @@ class TClonesArray;
 class TH1D;
 class TH2D;
 
-class CbmMuchFindVectorsQA : public FairTask {
+class CbmMuchFindVectorsQa : public FairTask {
 public:
   /** Default (standard) constructor **/
-  CbmMuchFindVectorsQA();
+  CbmMuchFindVectorsQa();
 
   /** Destructor **/
-  virtual ~CbmMuchFindVectorsQA();
+  virtual ~CbmMuchFindVectorsQa();
 
   /** Initialisation **/
   virtual InitStatus Init();
@@ -108,10 +108,10 @@ private:
   void CheckShorts(TClonesArray* hitArray);
   void CheckEffic();
 
-  CbmMuchFindVectorsQA(const CbmMuchFindVectorsQA&);
-  CbmMuchFindVectorsQA& operator=(const CbmMuchFindVectorsQA&);
+  CbmMuchFindVectorsQa(const CbmMuchFindVectorsQa&);
+  CbmMuchFindVectorsQa& operator=(const CbmMuchFindVectorsQa&);
 
-  ClassDef(CbmMuchFindVectorsQA, 1)
+  ClassDef(CbmMuchFindVectorsQa, 1)
 };
 
 #endif

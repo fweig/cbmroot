@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Alexander Zinchenko [committer] */
 
-/** CbmMuchMergeVectorsQA.h
+/** CbmMuchMergeVectorsQa.h
  *@author A.Zinchenko <Alexander.Zinchenko@jinr.ru>
  *@since 2014
  **
@@ -25,13 +25,13 @@ class TClonesArray;
 class TH1D;
 class TH2D;
 
-class CbmMuchMergeVectorsQA : public FairTask {
+class CbmMuchMergeVectorsQa : public FairTask {
 public:
   /** Default (standard) constructor **/
-  CbmMuchMergeVectorsQA();
+  CbmMuchMergeVectorsQa();
 
   /** Destructor **/
-  virtual ~CbmMuchMergeVectorsQA();
+  virtual ~CbmMuchMergeVectorsQa();
 
   /** Initialisation **/
   virtual InitStatus Init();
@@ -79,10 +79,10 @@ private:
   Bool_t CheckMatch(CbmMuchTrack* vec);
   void CheckEffic();
 
-  CbmMuchMergeVectorsQA(const CbmMuchMergeVectorsQA&);
-  CbmMuchMergeVectorsQA& operator=(const CbmMuchMergeVectorsQA&);
+  CbmMuchMergeVectorsQa(const CbmMuchMergeVectorsQa&);
+  CbmMuchMergeVectorsQa& operator=(const CbmMuchMergeVectorsQa&);
 
-  ClassDef(CbmMuchMergeVectorsQA, 1)
+  ClassDef(CbmMuchMergeVectorsQa, 1)
 };
 
 #endif

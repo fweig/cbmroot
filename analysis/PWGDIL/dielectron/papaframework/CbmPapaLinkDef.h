@@ -18,7 +18,7 @@
 #pragma link C++ class PairAnalysisPairLV + ;
 #pragma link C++ class PairAnalysisPairKF + ;
 
-#pragma link C++ class PairAnalysisCutQA + ;
+#pragma link C++ class PairAnalysisCutQa + ;
 #pragma link C++ class PairAnalysisPairLegCuts + ;
 #pragma link C++ class PairAnalysisVarCuts + ;
 #pragma link C++ class PairAnalysisObjectCuts + ;

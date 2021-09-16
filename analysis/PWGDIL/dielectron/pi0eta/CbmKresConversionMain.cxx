@@ -255,7 +255,7 @@ void CbmKresConversionMain::Exec(Option_t* /*option*/)
 }
 
 ///// one needs to set KFparticle if one wants to use its features.
-void CbmKresConversionMain::SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA)
+void CbmKresConversionMain::SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQa* kfparticleQA)
 {
   fKFparticle         = kfparticle;
   fKFparticleFinderQA = kfparticleQA;

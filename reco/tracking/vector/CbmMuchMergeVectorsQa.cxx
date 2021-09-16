@@ -2,11 +2,11 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Alexander Zinchenko [committer] */
 
-/** CbmMuchMergeVectorsQA.cxx
+/** CbmMuchMergeVectorsQa.cxx
  *@author A.Zinchenko <Alexander.Zinchenko@jinr.ru>
  *@since 2014
  **/
-#include "CbmMuchMergeVectorsQA.h"
+#include "CbmMuchMergeVectorsQa.h"
 //#include "CbmMuchFindVectors.h"
 #include "CbmMuchDigiMatch.h"
 #include "CbmMuchFindHitsStraws.h"
@@ -34,7 +34,7 @@ using std::endl;
 using std::set;
 
 // -----   Default (stabdard) constructor   --------------------------------
-CbmMuchMergeVectorsQA::CbmMuchMergeVectorsQA()
+CbmMuchMergeVectorsQa::CbmMuchMergeVectorsQa()
   : FairTask("MuchMergeVectorsQA")
   , fGeoScheme(CbmMuchGeoScheme::Instance())
   , fStatFirst(-1)
@@ -44,11 +44,11 @@ CbmMuchMergeVectorsQA::CbmMuchMergeVectorsQA()
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
-CbmMuchMergeVectorsQA::~CbmMuchMergeVectorsQA() {}
+CbmMuchMergeVectorsQa::~CbmMuchMergeVectorsQa() {}
 // -------------------------------------------------------------------------
 
 // -----   Public method Init (abstract in base class)  --------------------
-InitStatus CbmMuchMergeVectorsQA::Init()
+InitStatus CbmMuchMergeVectorsQa::Init()
 {
 
   // Get and check FairRootManager
@@ -108,11 +108,11 @@ InitStatus CbmMuchMergeVectorsQA::Init()
 // -------------------------------------------------------------------------
 
 // -----  SetParContainers -------------------------------------------------
-void CbmMuchMergeVectorsQA::SetParContainers() {}
+void CbmMuchMergeVectorsQa::SetParContainers() {}
 // -------------------------------------------------------------------------
 
 // -----   Private method BookHistos   -------------------------------------
-void CbmMuchMergeVectorsQA::BookHistos()
+void CbmMuchMergeVectorsQa::BookHistos()
 {
   // Book histograms
 
@@ -135,7 +135,7 @@ void CbmMuchMergeVectorsQA::BookHistos()
 // -------------------------------------------------------------------------
 
 // -----   Public method Exec   --------------------------------------------
-void CbmMuchMergeVectorsQA::Exec(Option_t* opt)
+void CbmMuchMergeVectorsQa::Exec(Option_t* opt)
 {
   // Do all processing
 
@@ -145,7 +145,7 @@ void CbmMuchMergeVectorsQA::Exec(Option_t* opt)
 // -------------------------------------------------------------------------
 
 // -----   Private method CheckMatch   -------------------------------------
-Bool_t CbmMuchMergeVectorsQA::CheckMatch(CbmMuchTrack* vec)
+Bool_t CbmMuchMergeVectorsQa::CheckMatch(CbmMuchTrack* vec)
 {
   // Check matching quality of the vector
 
@@ -277,7 +277,7 @@ Bool_t CbmMuchMergeVectorsQA::CheckMatch(CbmMuchTrack* vec)
 // -------------------------------------------------------------------------
 
 // -----   Private method CheckEffic   -------------------------------------
-void CbmMuchMergeVectorsQA::CheckEffic()
+void CbmMuchMergeVectorsQa::CheckEffic()
 {
   // Check efficiency of the vector reco
 
@@ -437,7 +437,7 @@ void CbmMuchMergeVectorsQA::CheckEffic()
 // -------------------------------------------------------------------------
 
 // -----   Public method Finish   ------------------------------------------
-void CbmMuchMergeVectorsQA::Finish()
+void CbmMuchMergeVectorsQa::Finish()
 {
 
   TDirectory* dir0 = (TDirectory*) gROOT->FindObjectAny("muchQA");
@@ -450,4 +450,4 @@ void CbmMuchMergeVectorsQA::Finish()
 
 // -------------------------------------------------------------------------
 
-ClassImp(CbmMuchMergeVectorsQA);
+ClassImp(CbmMuchMergeVectorsQa);

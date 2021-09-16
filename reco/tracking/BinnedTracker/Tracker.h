@@ -898,7 +898,7 @@ private:
   CbmBinnedDebug fDebug;
 #endif
 
-  friend class CbmBinnedTrackerQA;
+  friend class CbmBinnedTrackerQa;
   friend struct CbmBinnedTracker::Track;
 };
 

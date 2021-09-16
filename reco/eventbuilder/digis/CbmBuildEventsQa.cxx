@@ -7,7 +7,7 @@
  ** @date 20.09.2016
  **/
 
-#include "CbmBuildEventsQA.h"
+#include "CbmBuildEventsQa.h"
 
 #include "CbmDigiManager.h"
 #include "CbmEvent.h"
@@ -31,7 +31,7 @@
 using namespace std;
 
 // =====   Constructor   =====================================================
-CbmBuildEventsQA::CbmBuildEventsQA()
+CbmBuildEventsQa::CbmBuildEventsQa()
   : FairTask("BuildEventsQA")
   , fEvents(NULL)
   , fNofEntries(0)
@@ -42,12 +42,12 @@ CbmBuildEventsQA::CbmBuildEventsQA()
 
 
 // =====   Destructor   ======================================================
-CbmBuildEventsQA::~CbmBuildEventsQA() { DeInit(); }
+CbmBuildEventsQa::~CbmBuildEventsQa() { DeInit(); }
 // ===========================================================================
 
 
 // =====   De-initialisation   =============================================
-void CbmBuildEventsQA::DeInit()
+void CbmBuildEventsQa::DeInit()
 {
   fOutFolder.Clear();
   histFolder = nullptr;
@@ -65,7 +65,7 @@ void CbmBuildEventsQA::DeInit()
 }
 
 // =====   Task initialisation   =============================================
-InitStatus CbmBuildEventsQA::Init()
+InitStatus CbmBuildEventsQa::Init()
 {
   DeInit();
 
@@ -76,7 +76,7 @@ InitStatus CbmBuildEventsQA::Init()
   // --- Get input array (CbmEvent)
   fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
   if (nullptr == fEvents) {
-    LOG(fatal) << "CbmBuildEventsQA::Init"
+    LOG(fatal) << "CbmBuildEventsQa::Init"
                << "No CbmEvent TClonesArray found!";
   }
 
@@ -116,7 +116,7 @@ InitStatus CbmBuildEventsQA::Init()
 
 
 // =====   Task execution   ==================================================
-void CbmBuildEventsQA::Exec(Option_t*)
+void CbmBuildEventsQa::Exec(Option_t*)
 {
   // --- Time and counters
   TStopwatch timer;
@@ -224,7 +224,7 @@ void CbmBuildEventsQA::Exec(Option_t*)
 
 
 // =====   Match event   =====================================================
-void CbmBuildEventsQA::MatchEvent(CbmEvent* event)
+void CbmBuildEventsQa::MatchEvent(CbmEvent* event)
 {
   // --- Get event match object. If present, will be cleared first. If not,
   // --- it will be created.
@@ -273,7 +273,7 @@ void CbmBuildEventsQA::MatchEvent(CbmEvent* event)
 
 
 // =====  Finish task  =======================================================
-void CbmBuildEventsQA::Finish()
+void CbmBuildEventsQa::Finish()
 {
   //output histograms
   if (!FairRootManager::Instance() || !FairRootManager::Instance()->GetSink()) {
@@ -287,7 +287,7 @@ void CbmBuildEventsQA::Finish()
 
 
 // =====  Get digi type  =====================================================
-ECbmDataType CbmBuildEventsQA::GetDigiType(ECbmModuleId system)
+ECbmDataType CbmBuildEventsQa::GetDigiType(ECbmModuleId system)
 {
   switch (system) {
     case ECbmModuleId::kMvd: return ECbmDataType::kMvdDigi;
@@ -303,4 +303,4 @@ ECbmDataType CbmBuildEventsQA::GetDigiType(ECbmModuleId system)
 // ===========================================================================
 
 
-ClassImp(CbmBuildEventsQA)
+ClassImp(CbmBuildEventsQa)

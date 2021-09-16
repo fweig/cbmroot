@@ -6,7 +6,7 @@
 #define CBM_KRES_CONVERSION_KF
 
 #include "CbmKFParticleFinder.h"
-#include "CbmKFParticleFinderQA.h"
+#include "CbmKFParticleFinderQa.h"
 #include "CbmKresConversionBG.h"
 #include "CbmMCTrack.h"
 #include "CbmRichRing.h"
@@ -35,7 +35,7 @@ public:
   void InitHistograms();
   void Finish();
 
-  void SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA);
+  void SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQa* kfparticleQA);
 
   void Exec(int fEventNumKF, double OpeningAngleCut, double GammaInvMassCut, int RealPID);
 
@@ -56,7 +56,7 @@ public:
 
 private:
   CbmKFParticleFinder* fKFparticle;
-  CbmKFParticleFinderQA* fKFparticleFinderQA;
+  CbmKFParticleFinderQa* fKFparticleFinderQA;
   const KFParticleTopoReconstructor* fKFtopo;
 
   CbmRichRingFitterEllipseTau* fTauFit;

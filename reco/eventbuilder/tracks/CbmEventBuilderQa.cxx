@@ -2,13 +2,13 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Valentina Akishina , Maksym Zyzak, Valentina Akishina [committer] */
 
-/** @file CbmEventBuilderQA.cxx
+/** @file CbmEventBuilderQa.cxx
  ** @author Valentina Akishina <v.akishina@gsi.de>, Maksym Zyzak <m.zyzak@gsi.de>
  ** @date 14.03.2017
  **/
 
 // Cbm Headers ----------------------
-#include "CbmEventBuilderQA.h"
+#include "CbmEventBuilderQa.h"
 
 #include "CbmMCTrack.h"
 #include "CbmTrack.h"
@@ -73,7 +73,7 @@ struct TH1FParameters {
   float xMin, xMax;
 };
 
-CbmEventBuilderQA::CbmEventBuilderQA(const char* name, Int_t iVerbose, TString outFileName)
+CbmEventBuilderQa::CbmEventBuilderQa(const char* name, Int_t iVerbose, TString outFileName)
   : FairTask(name, iVerbose)
   , fPointsInTracks()
   , fStsTrackBranchName("StsTrack")
@@ -185,7 +185,7 @@ CbmEventBuilderQA::CbmEventBuilderQA(const char* name, Int_t iVerbose, TString o
   gDirectory = curDirectory;
 }
 
-CbmEventBuilderQA::~CbmEventBuilderQA() {}
+CbmEventBuilderQa::~CbmEventBuilderQa() {}
 
 
 struct CbmBuildEventMCTrack {
@@ -199,13 +199,13 @@ struct CbmBuildEventMCTrack {
   vector<int> fRecoEventId;
 };
 
-InitStatus CbmEventBuilderQA::Init()
+InitStatus CbmEventBuilderQa::Init()
 {
   //Get ROOT Manager
   FairRootManager* ioman = FairRootManager::Instance();
 
   if (ioman == 0) {
-    Warning("CbmEventBuilderQA::Init", "RootManager not instantiated!");
+    Warning("CbmEventBuilderQa::Init", "RootManager not instantiated!");
     return kERROR;
   }
 
@@ -217,7 +217,7 @@ InitStatus CbmEventBuilderQA::Init()
 
   fEventList = (CbmMCEventList*) ioman->GetObject("MCEventList.");
   if (fEventList == 0) {
-    Error("CbmEventBuilderQA::Init", "MC Event List not found!");
+    Error("CbmEventBuilderQa::Init", "MC Event List not found!");
     return kERROR;
   }
 
@@ -227,7 +227,7 @@ InitStatus CbmEventBuilderQA::Init()
 
   fStsTrackMatchArray = (TClonesArray*) ioman->GetObject("StsTrackMatch");
   if (fStsTrackMatchArray == 0) {
-    Error("CbmEventBuilderQA::Init", "track match array not found!");
+    Error("CbmEventBuilderQa::Init", "track match array not found!");
     return kERROR;
   }
 
@@ -246,12 +246,12 @@ InitStatus CbmEventBuilderQA::Init()
 
   // --- Get input array (CbmEvent)
   fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
-  if (nullptr == fEvents) { Fatal("CbmEventBuilderQA::Init", "No CbmEvent TClonesArray found!"); }
+  if (nullptr == fEvents) { Fatal("CbmEventBuilderQa::Init", "No CbmEvent TClonesArray found!"); }
 
   return kSUCCESS;
 }
 
-void CbmEventBuilderQA::Exec(Option_t* /*opt*/)
+void CbmEventBuilderQa::Exec(Option_t* /*opt*/)
 {
   fPointsInTracks.clear();
 
@@ -664,7 +664,7 @@ void CbmEventBuilderQA::Exec(Option_t* /*opt*/)
   }
 }
 
-bool CbmEventBuilderQA::CalculateIsReconstructable(const int iMCFile, const int iMCEvent, const int iMCTrack)
+bool CbmEventBuilderQa::CalculateIsReconstructable(const int iMCFile, const int iMCEvent, const int iMCTrack)
 {
 
   CbmMCTrack* mcTrack = (CbmMCTrack*) fMCTracks->Get(iMCFile, iMCEvent, iMCTrack);
@@ -747,7 +747,7 @@ bool CbmEventBuilderQA::CalculateIsReconstructable(const int iMCFile, const int 
   return (isReconstructableTrack);
 };
 
-void CbmEventBuilderQA::Finish()
+void CbmEventBuilderQa::Finish()
 {
   TDirectory* curr   = gDirectory;
   TFile* currentFile = gFile;
@@ -763,7 +763,7 @@ void CbmEventBuilderQA::Finish()
   gDirectory = curr;
 }
 
-void CbmEventBuilderQA::WriteHistosCurFile(TObject* obj)
+void CbmEventBuilderQa::WriteHistosCurFile(TObject* obj)
 {
 
   if (!obj->IsFolder()) obj->Write();
@@ -784,4 +784,4 @@ void CbmEventBuilderQA::WriteHistosCurFile(TObject* obj)
 }
 
 
-ClassImp(CbmEventBuilderQA);
+ClassImp(CbmEventBuilderQa);

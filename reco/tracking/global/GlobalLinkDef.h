@@ -11,6 +11,6 @@
 #pragma link off all functions;
 
 #pragma link C++ class CbmGlobalTrackingTask + ;
-#pragma link C++ class CbmGlobalTrackingQA + ;
+#pragma link C++ class CbmGlobalTrackingQa + ;
 
 #endif

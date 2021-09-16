@@ -23,7 +23,7 @@
 
 #include "CbmGlobalTrack.h"
 #include "CbmKFParticleFinder.h"
-#include "CbmKFParticleFinderQA.h"
+#include "CbmKFParticleFinderQa.h"
 #include "CbmKresConversionBG.h"
 #include "CbmKresFunctions.h"
 #include "CbmLmvmKinematicParams.h"
@@ -467,7 +467,7 @@ CbmKresConversionKF::CbmKresConversionKF()
 
 CbmKresConversionKF::~CbmKresConversionKF() {}
 
-void CbmKresConversionKF::SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQA* kfparticleQA)
+void CbmKresConversionKF::SetKF(CbmKFParticleFinder* kfparticle, CbmKFParticleFinderQa* kfparticleQA)
 {
   fKFparticle         = kfparticle;
   fKFparticleFinderQA = kfparticleQA;

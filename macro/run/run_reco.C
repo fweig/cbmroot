@@ -254,7 +254,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
 
   // ----------- QA for raw event builder -----------------------------------
   if (eventBased && useMC) {
-    CbmBuildEventsQA* evBuildQA = new CbmBuildEventsQA();
+    CbmBuildEventsQa* evBuildQA = new CbmBuildEventsQa();
     run->AddTask(evBuildQA);
   }
   // ------------------------------------------------------------------------

@@ -27,11 +27,11 @@
 
 #include "Settings.h"
 
-class CbmBinnedTrackerQA : public FairTask {
+class CbmBinnedTrackerQa : public FairTask {
 public:
-  CbmBinnedTrackerQA();
-  CbmBinnedTrackerQA(const CbmBinnedTrackerQA&) = delete;
-  CbmBinnedTrackerQA& operator=(const CbmBinnedTrackerQA&) = delete;
+  CbmBinnedTrackerQa();
+  CbmBinnedTrackerQa(const CbmBinnedTrackerQa&) = delete;
+  CbmBinnedTrackerQa& operator=(const CbmBinnedTrackerQa&) = delete;
   InitStatus Init();         // Overridden from FairTask
   void Exec(Option_t* opt);  // Overridden from FairTask
   void Finish();             // Overridden from FairTask
@@ -88,7 +88,7 @@ private:
   CbmMCDataArray* fMuchPoints;
   CbmMCDataArray* fTrdPoints;
   CbmMCDataArray* fTofPoints;
-  ClassDef(CbmBinnedTrackerQA, 1)
+  ClassDef(CbmBinnedTrackerQa, 1)
 };
 
 #endif /* CBMBINNEDTRACKERQA_H */

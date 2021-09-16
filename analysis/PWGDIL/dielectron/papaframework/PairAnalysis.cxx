@@ -176,7 +176,7 @@ void PairAnalysis::Init()
 
   // initialize simple cut qa
   if (fCutQA) {
-    fQAmonitor = new PairAnalysisCutQA(Form("QAcuts_%s", GetName()), "QAcuts");
+    fQAmonitor = new PairAnalysisCutQa(Form("QAcuts_%s", GetName()), "QAcuts");
     fQAmonitor->AddTrackFilterMC(&fTrackFilterMC);
     fQAmonitor->AddTrackFilter(&fTrackFilter);
     fQAmonitor->AddPrePairFilter(&fPairPreFilter);

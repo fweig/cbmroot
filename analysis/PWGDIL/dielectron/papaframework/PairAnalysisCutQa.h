@@ -6,7 +6,7 @@
 #define PAIRANALYSISCUTQA_H
 //#################################################################
 //#                                                               #
-//#             Class PairAnalysisCutQA                             #
+//#             Class PairAnalysisCutQa                             #
 //#              PairAnalysis Group of cuts                         #
 //#                                                               #
 //#  Authors:                                                     #
@@ -25,7 +25,7 @@
 
 class TCollection;
 
-class PairAnalysisCutQA : public TNamed {
+class PairAnalysisCutQa : public TNamed {
 
 public:
   enum class ETypes
@@ -39,10 +39,10 @@ public:
     kNtypes
   };
 
-  PairAnalysisCutQA();
-  PairAnalysisCutQA(const char* name, const char* title);
+  PairAnalysisCutQa();
+  PairAnalysisCutQa(const char* name, const char* title);
 
-  virtual ~PairAnalysisCutQA();
+  virtual ~PairAnalysisCutQa();
 
   void Init();
   void AddTrackFilterMC(AnalysisFilter* trkFilterMC);
@@ -68,10 +68,10 @@ private:
 
   UInt_t GetObjIndex(TObject* obj);  // return object index
 
-  PairAnalysisCutQA(const PairAnalysisCutQA&);
-  PairAnalysisCutQA& operator=(const PairAnalysisCutQA&);
+  PairAnalysisCutQa(const PairAnalysisCutQa&);
+  PairAnalysisCutQa& operator=(const PairAnalysisCutQa&);
 
-  ClassDef(PairAnalysisCutQA, 3)  // Simple automatic cut QA
+  ClassDef(PairAnalysisCutQa, 3)  // Simple automatic cut QA
 };
 
 #endif

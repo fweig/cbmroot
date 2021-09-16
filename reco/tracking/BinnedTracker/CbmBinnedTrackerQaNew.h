@@ -25,11 +25,11 @@
 
 #include "Settings.h"
 
-class CbmBinnedTrackerQANew : public FairTask {
+class CbmBinnedTrackerQaNew : public FairTask {
 public:
-  CbmBinnedTrackerQANew();
-  CbmBinnedTrackerQANew(const CbmBinnedTrackerQANew&) = delete;
-  CbmBinnedTrackerQANew& operator=(const CbmBinnedTrackerQANew&) = delete;
+  CbmBinnedTrackerQaNew();
+  CbmBinnedTrackerQaNew(const CbmBinnedTrackerQaNew&) = delete;
+  CbmBinnedTrackerQaNew& operator=(const CbmBinnedTrackerQaNew&) = delete;
   InitStatus Init();     // Overridden from FairTask
   void Exec(Option_t*);  // Overridden from FairTask
   void Finish();         // Overridden from FairTask
@@ -75,7 +75,7 @@ private:
 
   uint fMinTrackLength = 0;
 
-  ClassDef(CbmBinnedTrackerQANew, 1)
+  ClassDef(CbmBinnedTrackerQaNew, 1)
 };
 
 #endif /* CBMBINNEDTRACKERQANEW_H */

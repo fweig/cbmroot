@@ -26,7 +26,7 @@ void DrawParticlesFitQA(int iParticle = 0)
   plain->SetOptTitle(0);
   plain->cd();
 
-  TString name = "CbmKFParticleFinderQA.root";
+  TString name = "CbmKFParticleFinderQa.root";
   //TFile *dir = new TFile(name.Data(),"read");
   TFile* f = new TFile(name.Data(), "read");
 

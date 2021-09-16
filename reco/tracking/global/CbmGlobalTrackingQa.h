@@ -28,7 +28,7 @@
 class CbmDigiManager;
 
 
-class CbmGlobalTrackingQA : public FairTask {
+class CbmGlobalTrackingQa : public FairTask {
 public:
   struct PointData;
 
@@ -82,10 +82,10 @@ public:
   };
 
 public:
-  CbmGlobalTrackingQA();
+  CbmGlobalTrackingQa();
 
-  CbmGlobalTrackingQA(const CbmGlobalTrackingQA&) = delete;
-  CbmGlobalTrackingQA& operator=(const CbmGlobalTrackingQA&) = delete;
+  CbmGlobalTrackingQa(const CbmGlobalTrackingQa&) = delete;
+  CbmGlobalTrackingQa& operator=(const CbmGlobalTrackingQa&) = delete;
 
   InitStatus Init();         // Overridden from FairTask
   void Exec(Option_t* opt);  // Overridden from FairTask
@@ -113,7 +113,7 @@ private:
   std::vector<std::vector<PointData>> fTofPoints {};
   std::vector<std::vector<PointData>> fStsPoints {};
   Int_t fNofEvents = 0;
-  ClassDef(CbmGlobalTrackingQA, 1)
+  ClassDef(CbmGlobalTrackingQa, 1)
 };
 
 #endif /* CBMGLOBALTRACKINGQA_H */

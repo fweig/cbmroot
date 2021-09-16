@@ -49,14 +49,14 @@
 #pragma link C++ class CbmKFPartEfficiencies + ;
 
 #pragma link C++ class CbmKFTrErrMCPoints + ;
-#pragma link C++ class CbmKFTrackFitQA + ;
-#pragma link C++ class CbmKFTrackQA + ;
+#pragma link C++ class CbmKFTrackFitQa + ;
+#pragma link C++ class CbmKFTrackQa + ;
 #pragma link C++ class KFParticleMatch + ;
 
 
 #pragma link C++ class CbmKFParticleFinder + ;
 #pragma link C++ class CbmKFParticleFinderPID + ;
-#pragma link C++ class CbmKFParticleFinderQA + ;
+#pragma link C++ class CbmKFParticleFinderQa + ;
 #pragma link C++ class CbmKFParticleInterface + ;
 
 #endif

@@ -6,7 +6,7 @@
 //-----------------------------------------------------------
 
 // Cbm Headers ----------------------
-#include "CbmKFParticleFinderQA.h"
+#include "CbmKFParticleFinderQa.h"
 
 #include "CbmMCDataArray.h"
 #include "CbmMCDataManager.h"
@@ -42,7 +42,7 @@
 #include <cmath>
 using std::vector;
 
-CbmKFParticleFinderQA::CbmKFParticleFinderQA(const char* name, Int_t iVerbose, const KFParticleTopoReconstructor* tr,
+CbmKFParticleFinderQa::CbmKFParticleFinderQa(const char* name, Int_t iVerbose, const KFParticleTopoReconstructor* tr,
                                              TString outFileName)
   : FairTask(name, iVerbose)
   , fMCTracksBranchName("MCTrack")
@@ -88,7 +88,7 @@ CbmKFParticleFinderQA::CbmKFParticleFinderQA(const char* name, Int_t iVerbose, c
   gDirectory = curDirectory;
 }
 
-CbmKFParticleFinderQA::~CbmKFParticleFinderQA()
+CbmKFParticleFinderQa::~CbmKFParticleFinderQa()
 {
   if (fTopoPerformance) delete fTopoPerformance;
 
@@ -99,13 +99,13 @@ CbmKFParticleFinderQA::~CbmKFParticleFinderQA()
   }
 }
 
-InitStatus CbmKFParticleFinderQA::Init()
+InitStatus CbmKFParticleFinderQa::Init()
 {
   //Get ROOT Manager
   FairRootManager* ioman = FairRootManager::Instance();
 
   if (ioman == 0) {
-    Error("CbmKFParticleFinderQA::Init", "RootManager not instantiated!");
+    Error("CbmKFParticleFinderQa::Init", "RootManager not instantiated!");
     return kERROR;
   }
 
@@ -117,18 +117,18 @@ InitStatus CbmKFParticleFinderQA::Init()
   if (fTimeSliceMode) {
     FairRootManager* fManger    = FairRootManager::Instance();
     CbmMCDataManager* mcManager = (CbmMCDataManager*) fManger->GetObject("MCDataManager");
-    if (mcManager == 0) Error("CbmKFParticleFinderQA::Init", "MC Data Manager not found!");
+    if (mcManager == 0) Error("CbmKFParticleFinderQa::Init", "MC Data Manager not found!");
 
     fMCTrackArray = mcManager->InitBranch("MCTrack");
 
     if (fMCTrackArray == 0) {
-      Error("CbmKFParticleFinderQA::Init", "mc track array not found!");
+      Error("CbmKFParticleFinderQa::Init", "mc track array not found!");
       return kERROR;
     }
 
     fEventList = (CbmMCEventList*) ioman->GetObject("MCEventList.");
     if (fEventList == 0) {
-      Error("CbmKFParticleFinderQA::Init", "MC Event List not found!");
+      Error("CbmKFParticleFinderQa::Init", "MC Event List not found!");
       return kERROR;
     }
   }
@@ -139,7 +139,7 @@ InitStatus CbmKFParticleFinderQA::Init()
   //Track match
   fTrackMatchArray = (TClonesArray*) ioman->GetObject(fTrackMatchBranchName);
   if (fTrackMatchArray == 0) {
-    Error("CbmKFParticleFinderQA::Init", "track match array not found!");
+    Error("CbmKFParticleFinderQa::Init", "track match array not found!");
     return kERROR;
   }
 
@@ -161,7 +161,7 @@ InitStatus CbmKFParticleFinderQA::Init()
   return kSUCCESS;
 }
 
-void CbmKFParticleFinderQA::Exec(Option_t* /*opt*/)
+void CbmKFParticleFinderQa::Exec(Option_t* /*opt*/)
 {
   if (!fSuperEventAnalysis) {
     if (fSaveParticles) fRecParticles->Delete();
@@ -337,7 +337,7 @@ void CbmKFParticleFinderQA::Exec(Option_t* /*opt*/)
   }
 }
 
-void CbmKFParticleFinderQA::Finish()
+void CbmKFParticleFinderQa::Finish()
 {
   if (fSuperEventAnalysis) {
     fTopoPerformance->SetPrintEffFrequency(1);
@@ -372,7 +372,7 @@ void CbmKFParticleFinderQA::Finish()
   WriteHistosCurFile(fTopoPerformance->GetHistosDirectory());
 
   if (fCheckDecayQA && fDecayToAnalyse > -1) {
-    if (fDecayToAnalyse < 0) Error("CbmKFParticleFinderQA::Finish", "Please specify the decay to be analysed.");
+    if (fDecayToAnalyse < 0) Error("CbmKFParticleFinderQa::Finish", "Please specify the decay to be analysed.");
     else
       CheckDecayQA();
   }
@@ -389,7 +389,7 @@ void CbmKFParticleFinderQA::Finish()
   eff.close();
 }
 
-void CbmKFParticleFinderQA::WriteHistosCurFile(TObject* obj)
+void CbmKFParticleFinderQa::WriteHistosCurFile(TObject* obj)
 {
   if (!obj->IsFolder()) obj->Write();
   else {
@@ -408,13 +408,13 @@ void CbmKFParticleFinderQA::WriteHistosCurFile(TObject* obj)
   }
 }
 
-void CbmKFParticleFinderQA::SetPrintEffFrequency(Int_t n)
+void CbmKFParticleFinderQa::SetPrintEffFrequency(Int_t n)
 {
   fTopoPerformance->SetPrintEffFrequency(n);
   fPrintFrequency = n;
 }
 
-void CbmKFParticleFinderQA::FitDecayQAHistograms(float sigma[14], const bool saveReferenceResults) const
+void CbmKFParticleFinderQa::FitDecayQAHistograms(float sigma[14], const bool saveReferenceResults) const
 {
   static const int nParameters       = 7;
   TString parameterName[nParameters] = {"X", "Y", "Z", "Px", "Py", "Pz", "E"};
@@ -467,7 +467,7 @@ void CbmKFParticleFinderQA::FitDecayQAHistograms(float sigma[14], const bool sav
     if (fit[iHisto]) delete fit[iHisto];
 }
 
-void CbmKFParticleFinderQA::CheckDecayQA()
+void CbmKFParticleFinderQa::CheckDecayQA()
 {
   float sigma[14];
   FitDecayQAHistograms(sigma, true);
@@ -538,4 +538,4 @@ void CbmKFParticleFinderQA::CheckDecayQA()
   gDirectory = curDirectory;
 }
 
-ClassImp(CbmKFParticleFinderQA);
+ClassImp(CbmKFParticleFinderQa);

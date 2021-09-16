@@ -41,8 +41,8 @@ Link_Directories( ${LINK_DIRECTORIES})
 Set(SRCS
   CbmBinnedTrackerConfigurator.cxx
   CbmBinnedTrackerTask.cxx
-  CbmBinnedTrackerQA.cxx
-  CbmBinnedTrackerQANew.cxx
+  CbmBinnedTrackerQa.cxx
+  CbmBinnedTrackerQaNew.cxx
   ContFactory.cxx
   Settings.cxx
   CbmTrackParam2.cxx

@@ -51,9 +51,9 @@ CbmTrdFindVectors.cxx
 CbmTrdToTofVector.cxx
 CbmMuchFindVectors.cxx
 CbmMuchFindVectorsGem.cxx
-#CbmMuchFindVectorsQA.cxx
+#CbmMuchFindVectorsQa.cxx
 CbmMuchMergeVectors.cxx
-#CbmMuchMergeVectorsQA.cxx
+#CbmMuchMergeVectorsQa.cxx
 CbmMuchToTrdVectors.cxx
 CbmMuchToTofVectors.cxx
 )

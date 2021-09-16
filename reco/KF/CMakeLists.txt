@@ -78,12 +78,12 @@ Interface/CbmGlobalTrackFitterKF.cxx
 # CbmKFParticle_simd.cxx
 # CbmKFParticleInterface.cxx
 KFQA/CbmKFTrErrMCPoints.cxx
-KFQA/CbmKFTrackFitQA.cxx
-KFQA/CbmKFTrackQA.cxx
+KFQA/CbmKFTrackFitQa.cxx
+KFQA/CbmKFTrackQa.cxx
 KFQA/KFParticleMatch.cxx
 CbmKFParticleFinder.cxx
 CbmKFParticleFinderPID.cxx
-CbmKFParticleFinderQA.cxx
+CbmKFParticleFinderQa.cxx
 CbmKFParticleInterface.cxx
 )
 
@@ -114,13 +114,13 @@ Interface/CbmTofTrackFitterKF.h
 Interface/CbmGlobalTrackFitterKF.h
 # CbmKFParticle.h
 KFQA/CbmKFTrErrMCPoints.h
-KFQA/CbmKFTrackFitQA.h
-KFQA/CbmKFTrackQA.h
+KFQA/CbmKFTrackFitQa.h
+KFQA/CbmKFTrackQa.h
 KFQA/CbmKFPartEfficiencies.h
 KFQA/KFParticleMatch.h
 CbmKFParticleFinder.h
 CbmKFParticleFinderPID.h
-CbmKFParticleFinderQA.h
+CbmKFParticleFinderQa.h
 CbmKFParticleInterface.h
 )
 

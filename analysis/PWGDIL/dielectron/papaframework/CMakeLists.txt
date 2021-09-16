@@ -76,7 +76,7 @@ PairAnalysisPairLV.cxx
 PairAnalysisHelper.cxx
 PairAnalysisStyler.cxx
 
-PairAnalysisCutQA.cxx
+PairAnalysisCutQa.cxx
 PairAnalysisVarCuts.cxx
 PairAnalysisObjectCuts.cxx
 PairAnalysisPairLegCuts.cxx

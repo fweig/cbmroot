@@ -30,14 +30,14 @@ class CbmEvent;
  ** and calculates the percentage of correctly assigned digis
  ** based on their matched link (largest weight).
  **/
-class CbmBuildEventsQA : public FairTask {
+class CbmBuildEventsQa : public FairTask {
 
 public:
   /** Constructor **/
-  CbmBuildEventsQA();
+  CbmBuildEventsQa();
 
   /** Destructor **/
-  virtual ~CbmBuildEventsQA();
+  virtual ~CbmBuildEventsQa();
 
   /** Task execution **/
   virtual void Exec(Option_t* opt);
@@ -74,10 +74,10 @@ private:
 
   std::vector<ECbmModuleId> fRefDetectors;  //  Detectors used for MC matching
 
-  CbmBuildEventsQA(const CbmBuildEventsQA&);
-  CbmBuildEventsQA& operator=(const CbmBuildEventsQA&);
+  CbmBuildEventsQa(const CbmBuildEventsQa&);
+  CbmBuildEventsQa& operator=(const CbmBuildEventsQa&);
 
-  ClassDef(CbmBuildEventsQA, 1);
+  ClassDef(CbmBuildEventsQa, 1);
 };
 
 #endif /* CBMBUILDEVENTSQA_H */

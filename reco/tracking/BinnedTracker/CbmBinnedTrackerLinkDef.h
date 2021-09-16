@@ -12,8 +12,8 @@
 #pragma link C++ class CbmBinnedSettings + ;
 #pragma link C++ class CbmBinnedTrackerConfigurator + ;
 #pragma link C++ class CbmBinnedTrackerTask + ;
-#pragma link C++ class CbmBinnedTrackerQA + ;
-#pragma link C++ class CbmBinnedTrackerQANew + ;
+#pragma link C++ class CbmBinnedTrackerQa + ;
+#pragma link C++ class CbmBinnedTrackerQaNew + ;
 #pragma link C++ class CbmTrackParam2 + ;
 
 #endif

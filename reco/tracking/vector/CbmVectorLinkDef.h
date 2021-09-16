@@ -13,9 +13,9 @@
 #pragma link C++ class CbmTrdToTofVector + ;
 #pragma link C++ class CbmMuchFindVectors + ;
 #pragma link C++ class CbmMuchFindVectorsGem + ;
-//#pragma link C++ class  CbmMuchFindVectorsQA+;
+//#pragma link C++ class  CbmMuchFindVectorsQa+;
 #pragma link C++ class CbmMuchMergeVectors + ;
-//#pragma link C++ class  CbmMuchMergeVectorsQA+;
+//#pragma link C++ class  CbmMuchMergeVectorsQa+;
 #pragma link C++ class CbmMuchToTrdVectors + ;
 #pragma link C++ class CbmMuchToTofVectors + ;
 
