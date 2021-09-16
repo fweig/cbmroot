@@ -1,3 +1,7 @@
+/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese [committer], Pierre-Alain Loizeau, Pascal Raisig  */
+
 /** @file CbmRecoUnpack.cxx
  ** @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
  ** @license SPDX-License-Identifier: GPL-3.0-only
@@ -300,6 +304,24 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
         break;
       }
     }
+  }
+
+  if (bOutputFullTimeSorting) {
+    /// Time sort the output vectors of all unpackers present
+    if (fPsdConfig->GetOutputVec()) { timesort(fPsdConfig->GetOutputVec()); }
+    if (fRichConfig->GetOutputVec()) { timesort(fRichConfig->GetOutputVec()); }
+    if (fStsConfig->GetOutputVec()) { timesort(fStsConfig->GetOutputVec()); }
+    if (fTofConfig->GetOutputVec()) { timesort(fTofConfig->GetOutputVec()); }
+    if (fTrd1DConfig->GetOutputVec()) { timesort(fTrd1DConfig->GetOutputVec()); }
+    if (fTrd2DConfig->GetOutputVec()) { timesort(fTrd2DConfig->GetOutputVec()); }
+
+    /// Time sort the output vectors of all unpackers present
+    if (fPsdConfig->GetOptOutAVec()) { timesort(fPsdConfig->GetOptOutAVec()); }
+    if (fRichConfig->GetOptOutAVec()) { timesort(fRichConfig->GetOptOutAVec()); }
+    if (fStsConfig->GetOptOutAVec()) { timesort(fStsConfig->GetOptOutAVec()); }
+    if (fTofConfig->GetOptOutAVec()) { timesort(fTofConfig->GetOptOutAVec()); }
+    if (fTrd1DConfig->GetOptOutAVec()) { timesort(fTrd1DConfig->GetOptOutAVec()); }
+    if (fTrd2DConfig->GetOptOutAVec()) { timesort(fTrd2DConfig->GetOptOutAVec()); }
   }
 }
 // ----------------------------------------------------------------------------

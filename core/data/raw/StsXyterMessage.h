@@ -375,7 +375,8 @@ namespace stsxyter
     inline void SetMsErrorType(uint16_t usVal) { SetField(kFieldMsErrType, usVal); }
 
     // ------------------------ General OP ---------------------------------------
-    bool PrintMess(std::ostream& os, MessagePrintMask ctrl = MessagePrintMask::msg_print_Human) const;
+    bool PrintMess(std::ostream& os, MessagePrintMask ctrl = MessagePrintMask::msg_print_Human,
+                   bool bBinning = true) const;
   };
 }  // namespace stsxyter
 #endif  // STSXYTERMESSAGE_H

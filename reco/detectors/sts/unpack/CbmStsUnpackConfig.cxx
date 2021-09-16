@@ -1,6 +1,6 @@
-/* Copyright (C) 2010 - 2021 Goethe-University Frankfurt
+/* Copyright (C) 2021 Goethe-University, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Pascal Raisig */
+   Authors: Pierre-Alain Loizeau, Pascal Raisig [committer], Dominik Smith */
 
 #include "CbmStsUnpackConfig.h"
 
@@ -46,6 +46,9 @@ void CbmStsUnpackConfig::InitUnpacker()
 
   // Set the single asics time offsets
   algo->SetAsicTimeOffsetVec(fvdTimeOffsetNsAsics);
+
+  // Set the flags for duplicate digis rejections
+  algo->SetDuplicatesRejection(fbRejectDuplicateDigis, fbDupliWithoutAdc);
 
   // Now we have all information required to initialise the algorithm
   algo->Init();

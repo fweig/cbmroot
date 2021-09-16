@@ -1,6 +1,6 @@
-/* Copyright (C) 2010 - 2021 Fair GmbH 
+/* Copyright (C) 2021 Fair GmbH, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Dominik Smith */
+   Authors: Pierre-Alain Loizeau, Dominik Smith [committer] */
 
 /**
  * @file CbmStsUnpackAlgoBase.h
@@ -8,14 +8,14 @@
  * @brief Baseclass for the Sts unpacker algorithms
  * @version 0.1
  * @date 2021-04-21
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
- * This is the base class for the algorithmic part of the tsa data unpacking 
+ *
+ * This is the base class for the algorithmic part of the tsa data unpacking
  * processes of the CbmSts.
- * The actual translation from tsa to digi happens in the derived classes. 
- * 
- * 
+ * The actual translation from tsa to digi happens in the derived classes.
+ *
+ *
 */
 
 #ifndef CbmStsUnpackAlgoBase_H
@@ -62,6 +62,13 @@ public:
   /** @brief Set the time offset per Asic */
   void SetAsicTimeOffsetVec(std::vector<double> value) { fvdTimeOffsetNsAsics.swap(value); }
 
+  /** @brief Enable/Disable the duplicate digis rejection, without or with same ADC checks */
+  void SetDuplicatesRejection(bool bIn = true, bool bDiffAdc = true)
+  {
+    fbRejectDuplicateDigis = bIn;
+    fbDupliWithoutAdc      = bDiffAdc;
+  }
+
   /**
    * @brief Get the requested parameter containers. To be defined in the derived classes!
    * Return the required parameter containers together with the paths to the ascii
@@ -105,6 +112,12 @@ protected:
 
   /** @brief Time offsets per Asic??? @todo expert confirmation required */
   std::vector<double> fvdTimeOffsetNsAsics = {};
+
+  /** @brief Enables the rejection of duplicate digis */
+  bool fbRejectDuplicateDigis = false;
+
+  /** @brief If rejecting duplicate digis, enables rejection even if ADC differs*/
+  bool fbDupliWithoutAdc = true;
 
 private:
   ClassDef(CbmStsUnpackAlgoBase, 2)

@@ -1,9 +1,6 @@
-// -----------------------------------------------------------------------------
-// -----                                                                   -----
-// -----                  CbmStsUnpackAlgoLegacy                       -----
-// -----               Created 26.01.2019 by P.-A. Loizeau                 -----
-// -----                                                                   -----
-// -----------------------------------------------------------------------------
+/* Copyright (C) 2019-2021 Fair GmbH, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau, Dominik Smith [committer] */
 
 #ifndef CbmStsUnpackAlgoLegacy_H
 #define CbmStsUnpackAlgoLegacy_H

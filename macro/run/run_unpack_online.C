@@ -1,3 +1,7 @@
+/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Jan de Cuveland, Volker Friese, Pierre-Alain Loizeau, Pascal Raisig [committer], Dominik Smith, Adrian A. Weber  */
+
 /** @file run_unpack_tsa.C
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since May 2021
@@ -47,7 +51,7 @@ std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline = false);
  ** selects the ideal raw event builder, which associates digis to events
  ** based on the MC truth. The option "Real" selects a real raw event builder
  ** (latest version, for older versions use "Real2018" or "Real2019").
- ** 
+ **
  **
  ** The file names must be specified without extensions. The convention is
  ** that the raw (input) file is [input].raw.root. The output file
@@ -169,7 +173,7 @@ void run_unpack_online(std::string publisher = "localhost", Int_t serverHttpPort
 
 /**
  * @brief Get the Trd Monitor. Extra function to keep default macro part more silent.
- * @return std::shared_ptr<CbmTrdUnpackMonitor> 
+ * @return std::shared_ptr<CbmTrdUnpackMonitor>
 */
 std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename)
 {
@@ -224,7 +228,7 @@ std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename)
 
 /**
  * @brief Get the Trd Spadic
- * @return std::shared_ptr<CbmTrdSpadic> 
+ * @return std::shared_ptr<CbmTrdSpadic>
 */
 std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline)
 {

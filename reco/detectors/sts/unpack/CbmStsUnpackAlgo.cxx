@@ -1,3 +1,6 @@
+/* Copyright (C) 2021 Goethe-University, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau, Pascal Raisig [committer], Dominik Smith */
 
 #include "CbmStsUnpackAlgo.h"
 
@@ -71,7 +74,7 @@ Bool_t CbmStsUnpackAlgo::initParSet(FairParGenericSet* parset)
   // If we do not know the derived ParSet class we return false
   LOG(error)
     << fName << "::initParSet - for container " << parset->ClassName()
-    << " failed, since CbmTrdUnpackAlgoBaseR::initParSet() does not know the derived ParSet and what to do with it!";
+    << " failed, since CbmStsUnpackAlgo::initParSet() does not know the derived ParSet and what to do with it!";
   return kFALSE;
 }
 
@@ -320,7 +323,7 @@ void CbmStsUnpackAlgo::loopMsMessages(const uint8_t* msContent, const uint32_t u
       case stsxyter::MessType::Epoch: {
         processEpochInfo(pMess[uIdx]);
         if (0 < uIdx) {
-          LOG(warning) << "CbmAlgoUnpackSts::loopMsMessages => "
+          LOG(warning) << "CbmStsUnpackAlgo::loopMsMessages => "
                        << "EPOCH message at unexpected position in MS: message " << uIdx << " VS message 0 expected!";
         }
         break;
@@ -340,7 +343,7 @@ void CbmStsUnpackAlgo::loopMsMessages(const uint8_t* msContent, const uint32_t u
         break;
       }
       default: {
-        LOG(fatal) << "CbmAlgoUnpackSts::DoUnpack => "
+        LOG(fatal) << "CbmStsUnpackAlgo::loopMsMessages => "
                    << "Unknown message type, should never happen, stopping "
                       "here! Type found was: "
                    << static_cast<int>(typeMess);
@@ -361,7 +364,7 @@ void CbmStsUnpackAlgo::MaskNoisyChannel(const uint32_t uFeb, const uint32_t uCha
   }
   if (uFeb < fuNbFebs && uChan < fNrChsPerFeb) fvvbMaskedChannels[uFeb][uChan] = bMasked;
   else
-    LOG(fatal) << "CbmAlgoUnpackSts::MaskNoisyChannel => Invalid FEB "
+    LOG(fatal) << "CbmStsUnpackAlgo::MaskNoisyChannel => Invalid FEB "
                   "and/or CHAN index:"
                << Form(" %u vs %u and %u vs %u", uFeb, fuNbFebs, uChan, fNrChsPerFeb);
 }
@@ -431,7 +434,7 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
   const uint32_t uCrobIdx   = usElinkIdx / fNrElinksPerCrob;
   int32_t uFebIdx           = fElinkIdxToFebIdxVec.at(usElinkIdx);
   if (-1 == uFebIdx) {
-    LOG(warning) << "CbmAlgoUnpackSts::DoUnpack => "
+    LOG(warning) << "CbmStsUnpackAlgo::processHitInfo => "
                  << "Wrong elink Idx! Elink raw " << Form("%d remap %d", usElinkIdx, uFebIdx);
     return;
   }
@@ -446,20 +449,6 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
   const uint16_t usRawTs    = mess.GetHitTimeBinning();
   const uint32_t uChanInFeb = usChan + fNrChsPerAsic * (uAsicIdx % fNrAsicsPerFeb);
 
-  /// Duplicate hits rejection
-  if (usRawTs == fvvusLastTsChan[uAsicIdx][usChan] &&
-      //       usRawAdc                           == fvvusLastAdcChan[ uAsicIdx ][ usChan ] &&
-      fvulCurrentTsMsb[fuCurrDpbIdx] - fvvusLastTsMsbChan[uAsicIdx][usChan] < kuMaxTsMsbDiffDuplicates
-      && fvuCurrentTsMsbCycle[fuCurrDpbIdx] == fvvusLastTsMsbCycleChan[uAsicIdx][usChan]) {
-    /// FIXME: add plots to check what is done in this rejection
-    return;
-  }  // if SMX 2.0 DPB and same TS, ADC, TS MSB, TS MSB cycle!
-  fvvusLastTsChan[uAsicIdx][usChan]         = usRawTs;
-  fvvusLastAdcChan[uAsicIdx][usChan]        = usRawAdc;
-  fvvusLastTsMsbChan[uAsicIdx][usChan]      = fvulCurrentTsMsb[fuCurrDpbIdx];
-  fvvusLastTsMsbCycleChan[uAsicIdx][usChan] = fvuCurrentTsMsbCycle[fuCurrDpbIdx];
-
-
   // Compute the Full time stamp
   const int64_t ulHitTime = getFullTimeStamp(usRawTs);
 
@@ -470,6 +459,24 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
     if (false == fbUseChannelMask || false == fvvbMaskedChannels[uFebIdx][uChanInFeb]) {
       // If you want to store this as well, add it to the template as TOptOut, otherwise I do not see a reason to create it at all
       // auto finalhit       = stsxyter::FinalHit(ulHitTime, usRawAdc, uAsicIdx, usChan, fuCurrDpbIdx, uCrobIdx);
+
+      /// Duplicate hits rejection
+      if (fbRejectDuplicateDigis) {
+        if (usRawTs == fvvusLastTsChan[uAsicIdx][usChan]
+            && (fbDupliWithoutAdc || usRawAdc == fvvusLastAdcChan[uAsicIdx][usChan])
+            && fulTsMsbIndexInTs[fuCurrDpbIdx] == fvvusLastTsMsbChan[uAsicIdx][usChan]) {
+          /// FIXME: add plots to check what is done in this rejection
+          LOG(debug) << "CbmStsUnpackAlgo::processHitInfo => "
+                     << Form("Rejecting duplicate on Asic %3d channel %3d, TS %3d, ADC %2d", uAsicIdx, usChan, usRawTs,
+                             usRawAdc);
+          return;
+        }  // if same TS, (ADC,) TS MSB, TS MSB cycle, reject
+        fvvusLastTsChan[uAsicIdx][usChan]         = usRawTs;
+        fvvusLastAdcChan[uAsicIdx][usChan]        = usRawAdc;
+        fvvusLastTsMsbChan[uAsicIdx][usChan]      = fulTsMsbIndexInTs[fuCurrDpbIdx];
+        fvvusLastTsMsbCycleChan[uAsicIdx][usChan] = fvuCurrentTsMsbCycle[fuCurrDpbIdx];
+      }  // if (fbRejectDuplicateDigis)
+
       uint32_t uChanInMod = usChan + fNrChsPerAsic * (uAsicIdx % fNrAsicsPerFeb);
 
       /// FIXME: see issue #1549
@@ -497,17 +504,17 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
                            fviFebSide[uFebIdx]);
       }
       fOutputVec.emplace_back(CbmStsDigi(fviFebAddress[uFebIdx], uChanInMod, ulTimeInNs, dCalAdc));
+
+      /// If EM flag ON, store a corresponding error message with the next flag after all other possible status flags set
+      if (mess.IsHitMissedEvts())
+        if (fOptOutAVec)
+          fOptOutAVec->emplace_back(
+            CbmErrorMessage(ECbmModuleId::kSts, dTimeInNs, uAsicIdx, 1 << stsxyter::kusLenStatStatus, usChan));
     }
   }
 
   // Convert the Hit time in bins to Hit time in ns
   const double dHitTimeNs = ulHitTime * stsxyter::kdClockCycleNs;
-
-  /// If EM flag ON, store a corresponding error message with the next flag after all other possible status flags set
-  if (mess.IsHitMissedEvts())
-    if (fOptOutAVec)
-      fOptOutAVec->emplace_back(
-        CbmErrorMessage(ECbmModuleId::kSts, dHitTimeNs, uAsicIdx, 1 << stsxyter::kusLenStatStatus, usChan));
 
   if (fMonitor) {
     // Check Starting point of histos with time as X axis
@@ -538,7 +545,7 @@ void CbmStsUnpackAlgo::processStatusInfo(const stsxyter::Message& mess, uint32_t
   const uint32_t uCrobIdx   = usElinkIdx / fNrElinksPerCrob;
   const int32_t uFebIdx     = fElinkIdxToFebIdxVec.at(usElinkIdx);
   if (-1 == uFebIdx) {
-    LOG(warning) << "CbmAlgoUnpackSts::DoUnpack => "
+    LOG(warning) << "CbmStsUnpackAlgo::processStatusInfo => "
                  << "Wrong elink Idx! Elink raw " << Form("%d remap %d", usElinkIdx, uFebIdx);
     return;
   }

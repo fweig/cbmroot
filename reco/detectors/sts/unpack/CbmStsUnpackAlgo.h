@@ -1,18 +1,18 @@
-/* Copyright (C) 2010 - 2021 Goethe-University Frankfurt
+/* Copyright (C) 2021 Goethe-University, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Pascal Raisig */
+   Authors: Pierre-Alain Loizeau, Pascal Raisig [committer], Dominik Smith */
 
 /**
  * @file CbmStsUnpackAlgo.h
  * @author Pascal Raisig (praisig@ikf.uni-frankfurt.de)
- * @brief Baseclass for the TrdR unpacker algorithms
+ * @brief Baseclass for the STS unpacker algorithms
  * @version 0.1
  * @date 2021-04-21
  *
  * @copyright Copyright (c) 2021
  *
  * This is the base class for the algorithmic part of the tsa data unpacking
- * processes of the CbmTrd.
+ * processes of the Cbm Sts.
  * The actual translation from tsa to digi happens in the derived classes.
  *
  *
@@ -27,10 +27,10 @@
 
 class CbmStsUnpackAlgo : public CbmStsUnpackAlgoBase {
 public:
-  /** @brief Create the Cbm Trd Unpack AlgoBase object */
+  /** @brief Create the Cbm Sts Unpack AlgoBase object */
   CbmStsUnpackAlgo();
 
-  /** @brief Destroy the Cbm Trd Unpack Task object */
+  /** @brief Destroy the Cbm Sts Unpack Task object */
   virtual ~CbmStsUnpackAlgo();
 
   /** @brief Copy constructor - not implemented **/

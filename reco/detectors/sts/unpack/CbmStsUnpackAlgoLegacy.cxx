@@ -1,9 +1,7 @@
-// -----------------------------------------------------------------------------
-// -----                                                                   -----
-// -----                  CbmStsUnpackAlgoLegacy                                 -----
-// -----               Created 26.01.2019 by P.-A. Loizeau                 -----
-// -----                                                                   -----
-// -----------------------------------------------------------------------------
+/* Copyright (C) 2019-2021 Fair GmbH, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau, Dominik Smith [committer] */
+
 
 #include "CbmStsUnpackAlgoLegacy.h"
 
@@ -545,7 +543,7 @@ void CbmStsUnpackAlgoLegacy::ProcessHitInfo(const stsxyter::Message& mess)
   const uint32_t uCrobIdx   = usElinkIdx / fUnpackPar->GetNbElinkPerCrob();
   const int32_t uFebIdx     = fUnpackPar->ElinkIdxToFebIdx(usElinkIdx);
   if (-1 == uFebIdx) {
-    LOG(warning) << "CbmStsUnpackAlgoLegacy::DoUnpack => "
+    LOG(warning) << "CbmStsUnpackAlgoLegacy::ProcessHitInfo => "
                  << "Wrong elink Idx! Elink raw " << Form("%d remap %d", usElinkIdx, uFebIdx);
     return;
   }
@@ -561,13 +559,18 @@ void CbmStsUnpackAlgoLegacy::ProcessHitInfo(const stsxyter::Message& mess)
   const uint32_t uChanInFeb = usChan + fUnpackPar->GetNbChanPerAsic() * (uAsicIdx % fUnpackPar->GetNbAsicsPerFeb());
 
   /// Duplicate hits rejection
-  if (usRawTs == fvvusLastTsChan[uAsicIdx][usChan] &&
-      //       usRawAdc                           == fvvusLastAdcChan[ uAsicIdx ][ usChan ] &&
-      fvulCurrentTsMsb[fuCurrDpbIdx] - fvvusLastTsMsbChan[uAsicIdx][usChan] < kuMaxTsMsbDiffDuplicates
-      && fvuCurrentTsMsbCycle[fuCurrDpbIdx] == fvvusLastTsMsbCycleChan[uAsicIdx][usChan]) {
-    /// FIXME: add plots to check what is done in this rejection
-    return;
-  }  // if SMX 2.0 DPB and same TS, ADC, TS MSB, TS MSB cycle!
+  if (fbRejectDuplicateDigis) {
+    if (usRawTs == fvvusLastTsChan[uAsicIdx][usChan]
+        && (fbDupliWithoutAdc || usRawAdc == fvvusLastAdcChan[uAsicIdx][usChan])
+        && fvulCurrentTsMsb[fuCurrDpbIdx] - fvvusLastTsMsbChan[uAsicIdx][usChan] < kuMaxTsMsbDiffDuplicates
+        && fvuCurrentTsMsbCycle[fuCurrDpbIdx] == fvvusLastTsMsbCycleChan[uAsicIdx][usChan]) {
+      /// FIXME: add plots to check what is done in this rejection
+      LOG(debug) << "CbmStsUnpackAlgoLegacy::ProcessHitInfo => "
+                 << Form("Rejecting duplicate on Asic %3d channel %3d, TS %3d, MSB %d, Cycle %d, ADC %2d", uAsicIdx,
+                         usChan, usRawTs, fvulCurrentTsMsb[fuCurrDpbIdx], fvuCurrentTsMsbCycle[fuCurrDpbIdx], usRawAdc);
+      return;
+    }  // if SMX 2.0 DPB and same TS, ADC, TS MSB, TS MSB cycle!
+  }    // if (fbRejectDuplicateDigis)
   fvvusLastTsChan[uAsicIdx][usChan]         = usRawTs;
   fvvusLastAdcChan[uAsicIdx][usChan]        = usRawAdc;
   fvvusLastTsMsbChan[uAsicIdx][usChan]      = fvulCurrentTsMsb[fuCurrDpbIdx];

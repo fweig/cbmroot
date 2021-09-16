@@ -30,7 +30,7 @@ MessSubType Message::GetSubType() const
   }  // switch( static_cast< uint16_t>( GetField( kFieldSubtype ) ) )
 }
 //----------------------------------------------------------------------------
-bool Message::PrintMess(std::ostream& os, MessagePrintMask ctrl) const
+bool Message::PrintMess(std::ostream& os, MessagePrintMask ctrl, bool bBinning) const
 {
   bool bPrintHex    = static_cast<bool>(ctrl & MessagePrintMask::msg_print_Hex);
   bool bPrintHuman  = static_cast<bool>(ctrl & MessagePrintMask::msg_print_Human);
@@ -62,14 +62,15 @@ bool Message::PrintMess(std::ostream& os, MessagePrintMask ctrl) const
       }  // case MessType::TsMsb
       case MessType::Hit: {
         os << " Hit => "
-           << " Lnk: " << std::setw(3) << GetLinkIndex() << " Ch: " << std::setw(3) << GetHitChannel()
-           << " Adc: " << std::setw(2) << GetHitAdc() << " Ts Full: " << std::setw(4) << GetHitTimeFull()
-           << " Ts Over: " << std::hex << GetHitTimeOver() << std::dec << " Ts: " << std::setw(3) << GetHitTime()
-           << " Missed? " << IsHitMissedEvts();
+           << " Lnk: " << std::setw(3) << (bBinning ? GetLinkIndexHitBinning() : GetLinkIndex())
+           << " Ch: " << std::setw(3) << GetHitChannel() << " Adc: " << std::setw(2) << GetHitAdc()
+           << " Ts Full: " << std::setw(4) << GetHitTimeFull() << " Ts Over: " << std::hex << GetHitTimeOver()
+           << std::dec << " Ts: " << std::setw(3) << (bBinning ? GetHitTimeBinning() : GetHitTime()) << " Missed? "
+           << IsHitMissedEvts();
         break;
       }  // case MessType::Hit
       case MessType::TsMsb: {
-        os << " TS_MSB => " << std::setw(12) << GetTsMsbVal();
+        os << " TS_MSB => " << std::setw(12) << (bBinning ? GetTsMsbValBinning() : GetTsMsbVal());
         break;
       }  // case MessType::TsMsb
       case MessType::Epoch: {

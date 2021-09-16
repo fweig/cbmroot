@@ -1,6 +1,6 @@
-/* Copyright (C) 2010 - 2021 Fair GmbH 
+/* Copyright (C) 2021 Fair GmbH, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Dominik Smith */
+   Authors: Pierre-Alain Loizeau, Dominik Smith [committer] */
 
 #include "CbmStsUnpackAlgoBase.h"
 
@@ -12,7 +12,7 @@ CbmStsUnpackAlgoBase::~CbmStsUnpackAlgoBase() {}
 std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
   CbmStsUnpackAlgoBase::GetParContainerRequest(std::string /*geoTag*/, std::uint32_t /*runId*/)
 {
-  // Basepath for default Trd parameter sets (those connected to a geoTag)
+  // Basepath for default Sts parameter sets (those connected to a geoTag)
   std::string basepath = Form("%s", fParFilesBasePath.data());
   std::string temppath = "";
 

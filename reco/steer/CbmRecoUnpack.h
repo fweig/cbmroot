@@ -1,3 +1,7 @@
+/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Volker Friese [committer], Pierre-Alain Loizeau, Pascal Raisig  */
+
 /** @file CbmRecoUnpack.h
  ** @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
  ** @license SPDX-License-Identifier: GPL-3.0-only
@@ -76,20 +80,27 @@ public:
 
   /**
    * @brief (De)Activate the performance profiling based on histograms
-   * 
-   * @param value 
+   *
+   * @param value
   */
   void SetDoPerfProfiling(bool value = true) { fDoPerfProf = value; }
 
   /**
    * @brief Set the performance profiling Output Filename
-   * 
-   * @param value 
+   *
+   * @param value
   */
   void SetOutputFilename(std::string value)
   {
     if (!value.empty()) fOutfilename = value;
   }
+
+  /**
+   * @brief Enable/disable a full time sorting. If off, time sorting happens per link/FLIM source
+   *
+   * @param value
+  */
+  void SetTimeSorting(bool bIn = true) { bOutputFullTimeSorting = bIn; }
 
   /** @brief Set the Psd Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmPsdUnpackConfig> config) { fPsdConfig = config; }
@@ -142,9 +153,9 @@ private:
 
   /**
    * @brief Init the performance profiling maps for a given unpacker
-   * 
-   * @param subsysid Subsystem Identifier casted to std::uint16_t 
-   * @param name Name of the unpacker 
+   *
+   * @param subsysid Subsystem Identifier casted to std::uint16_t
+   * @param name Name of the unpacker
   */
   void initPerformanceMaps(std::uint16_t subsysid, std::string name);
 
@@ -211,8 +222,8 @@ private:
 
     // Check if we want to write the output to somewhere (in pure online monitoring mode for example this can/would/should be skipped)
     if (config->GetOutputVec()) {
-      // Lets do some timesorting
-      timesort(&digivec);
+      // Lets do some time-sorting if we are not doing it later
+      if (!bOutputFullTimeSorting) timesort(&digivec);
 
       // Transfer the data from the timeslice vector to the target branch vector
       // Digis/default output retrieved as offered by the algorithm
@@ -221,7 +232,7 @@ private:
     }
     if (optouttargetvecA) {
       // Lets do some timesorting
-      timesort(&optoutAvec);
+      if (!bOutputFullTimeSorting) timesort(&optoutAvec);
       // Transfer the data from the timeslice vector to the target branch vector
       for (auto optoutA : optoutAvec)
         optouttargetvecA->emplace_back(optoutA);
@@ -291,6 +302,9 @@ private:
 
   /** @brief Name of the performance profiling output file */
   std::string fOutfilename = "CbmRecoUnpack.perf.root";
+
+  /** @brief Flag to Enable/disable a full time sorting. If off, time sorting happens per link/FLIM source */
+  bool bOutputFullTimeSorting = false;
 
 
   ClassDef(CbmRecoUnpack, 1);

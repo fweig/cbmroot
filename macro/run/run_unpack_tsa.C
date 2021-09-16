@@ -1,3 +1,7 @@
+/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Jan de Cuveland, Volker Friese, Pierre-Alain Loizeau, Pascal Raisig [committer], Dominik Smith, Adrian A. Weber  */
+
 /** @file run_unpack_tsa.C
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since May 2021
@@ -120,6 +124,9 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
     stsconfig->SetDoWriteOutput();
     std::string parfilesbasepathSts = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
     stsconfig->SetParFilesBasePath(parfilesbasepathSts);
+    /// Enable duplicates rejection, Ignores the ADC for duplicates check
+    //stsconfig->SetDuplicatesRejection ( true, true );
+    /// Enable Monitor plots
     //stsconfig->SetMonitor(GetStsMonitor(outfilename));
     stsconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
   }
@@ -195,6 +202,8 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
   auto unpack = source->GetRecoUnpack();
   unpack->SetDoPerfProfiling(doPerfProfiling);
   unpack->SetOutputFilename(perfProfFileName);
+  /// Enable full time sorting instead of time sorting per FLIM link
+  //unpack->SetTimeSorting(true);
   if (psdconfig) unpack->SetUnpackConfig(psdconfig);
   if (richconfig) unpack->SetUnpackConfig(richconfig);
   if (stsconfig) unpack->SetUnpackConfig(stsconfig);
