@@ -118,7 +118,7 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*)
     if (it != fired_digis_map.end()) {
       //this key exists
       it->second.SetEdep(it->second.GetEdep() + eLoss);
-      if (it->second.GetTime() > pTime) it->second.SetTime(pTime);
+      if (pTime < it->second.GetTime()) it->second.SetTime(pTime);
     }
     else {
       //this key is new
@@ -127,15 +127,9 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*)
     }
   }  // Loop over MCPoints
 
-  std::vector<CbmPsdDigi> PsdDigiVector;
-  std::transform(fired_digis_map.begin(), fired_digis_map.end(), std::back_inserter(PsdDigiVector),
-                 [](const std::pair<UInt_t, CbmPsdDigi>& my_pair) { return my_pair.second; });
-  //  std::sort(PsdDigiVector.begin(), PsdDigiVector.end(),
-  //            [](const CbmPsdDigi& a, const CbmPsdDigi& b) -> bool { return a.GetTime() < b.GetTime(); });
-
   Int_t nDigis = 0;
-  for (auto entry : PsdDigiVector) {
-    Double_t eDep            = entry.GetEdep();
+  for (auto entry : fired_digis_map) {
+    Double_t eDep            = entry.second.GetEdep();
     Double_t eLossMIP        = eDep / 0.005;  // 5MeV per MIP
     Double_t pixPerMIP       = 15.;           // 15 pix per MIP
     Double_t eLossMIPSmeared = gRandom->Gaus(eLossMIP * pixPerMIP, sqrt(eLossMIP * pixPerMIP)) / pixPerMIP;
@@ -143,11 +137,11 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*)
     Double_t eNoise          = gRandom->Gaus(0, 15) / 50. * 0.005;
     eLossSmeared += eNoise;
     // The digi time is set to MC point time [relative to event start] + Event Start time
-    CbmPsdDigi* digi = new CbmPsdDigi(entry.GetAddress(), entry.GetTime() + fCurrentEventTime, eLossSmeared);
+    CbmPsdDigi* digi = new CbmPsdDigi(entry.second.GetAddress(), entry.second.GetTime() + fCurrentEventTime, eLossSmeared);
     SendData(digi);
     nDigis++;
-    LOG(debug) << fName << ": Digi " << nDigis << " Time " << entry.GetTime() + fCurrentEventTime << " Section "
-               << entry.GetSectionID() << " Module " << entry.GetModuleID() << " energy " << eLossSmeared;
+    LOG(debug1) << fName << ": Digi " << nDigis << " Time " << entry.second.GetTime() + fCurrentEventTime << " Section "
+               << entry.second.GetSectionID() << " Module " << entry.second.GetModuleID() << " energy " << eLossSmeared;
   }
 
   // --- Event log
