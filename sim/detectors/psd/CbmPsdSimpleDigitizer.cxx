@@ -137,11 +137,13 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*)
     Double_t eNoise          = gRandom->Gaus(0, 15) / 50. * 0.005;
     eLossSmeared += eNoise;
     // The digi time is set to MC point time [relative to event start] + Event Start time
-    CbmPsdDigi* digi = new CbmPsdDigi(entry.second.GetAddress(), entry.second.GetTime() + fCurrentEventTime, eLossSmeared);
+    CbmPsdDigi* digi =
+      new CbmPsdDigi(entry.second.GetAddress(), entry.second.GetTime() + fCurrentEventTime, eLossSmeared);
     SendData(digi);
     nDigis++;
     LOG(debug1) << fName << ": Digi " << nDigis << " Time " << entry.second.GetTime() + fCurrentEventTime << " Section "
-               << entry.second.GetSectionID() << " Module " << entry.second.GetModuleID() << " energy " << eLossSmeared;
+                << entry.second.GetSectionID() << " Module " << entry.second.GetModuleID() << " energy "
+                << eLossSmeared;
   }
 
   // --- Event log
