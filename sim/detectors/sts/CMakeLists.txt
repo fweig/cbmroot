@@ -10,8 +10,6 @@ Set(LIBRARY_NAME CbmStsSim)
 # -----  Specify sources for compilation   ----------------
 set(SRCS
 CbmStsDigitize.cxx
-CbmStsDigitizeQa.cxx
-CbmStsDigitizeQaReport.cxx
 CbmStsMC.cxx
 CbmStsSensorPoint.cxx
 CbmStsSignal.cxx
@@ -21,6 +19,9 @@ CbmStsSimSensorDssd.cxx
 CbmStsSimSensorDssdOrtho.cxx
 CbmStsSimSensorDssdStereo.cxx
 CbmStsSimSensorFactory.cxx
+
+qa/CbmStsDigitizeQa.cxx
+qa/CbmStsDigitizeQaReport.cxx
 )
 # -----  End of sources   ---------------------------------
 
@@ -31,6 +32,7 @@ set(INCLUDE_DIRECTORIES
 
 # --- this directory
 ${CBMROOT_SOURCE_DIR}/sim/detectors/sts
+${CBMROOT_SOURCE_DIR}/sim/detectors/sts/qa
 
 # --- sts base
 ${CBMDETECTORBASE_DIR}/sts

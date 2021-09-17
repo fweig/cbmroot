@@ -16,7 +16,6 @@ CbmStsAlgoFindHits.cxx
 CbmStsAlgoFindHitsOrtho.cxx
 CbmStsFindTracks.cxx
 CbmStsFindTracksEvents.cxx
-CbmStsFindTracksQa.cxx
 CbmStsRecoModule.cxx
 CbmStsTrackFinderIdeal.cxx
 
@@ -25,6 +24,8 @@ unpack/CbmStsUnpackAlgoBase.cxx
 unpack/CbmStsUnpackAlgoLegacy.cxx
 unpack/CbmStsUnpackConfig.cxx
 unpack/CbmStsUnpackMonitor.cxx
+
+qa/CbmStsFindTracksQa.cxx
 )
 # -----  End of sources   ---------------------------------
 
@@ -36,6 +37,7 @@ set(INCLUDE_DIRECTORIES
 # This directory
 ${CBMROOT_SOURCE_DIR}/reco/detectors/sts
 ${CBMROOT_SOURCE_DIR}/reco/detectors/sts/unpack
+${CBMROOT_SOURCE_DIR}/reco/detectors/sts/qa
 
 # Reco
 ${CBMROOT_SOURCE_DIR}/reco/base
