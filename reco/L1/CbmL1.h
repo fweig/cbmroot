@@ -26,16 +26,12 @@
 /// temporary TEST !!!!
 ///#define HAVE_SSE
 
-#include "CbmL1Track.h"
-#include "CbmL1Vtx.h"
-
-#include "L1Algo/L1Vector.h"
-
-//#include "L1Algo/L1Algo.h"
 #include "CbmEvent.h"
 #include "CbmL1Hit.h"
 #include "CbmL1MCPoint.h"
 #include "CbmL1MCTrack.h"
+#include "CbmL1Track.h"
+#include "CbmL1Vtx.h"
 #include "CbmMCTrack.h"
 #include "CbmMvdHit.h"
 #include "CbmMvdPoint.h"
@@ -47,6 +43,9 @@
 #include "FairDetector.h"
 #include "FairRootManager.h"
 #include "FairTask.h"
+
+#include "L1Algo/L1Algo.h"
+#include "L1Algo/L1Vector.h"
 
 //#include "CbmMCEventHeader.h"
 //#include "L1AlgoInputData.h"
@@ -156,7 +155,9 @@ public:
   void SetDataMode(int TimesliceMode) { fTimesliceMode = TimesliceMode; }
   void SetMuchPar(TString fileName) { fMuchDigiFile = fileName; }
   void SetUseHitErrors(bool value) { fUseHitErrors = value; }
-  void SetmCBMmode(bool value) { fmCBMmode = value; }
+  void SetStsOnlyMode() { fTrackingMode = L1Algo::TrackingMode::kSts; }
+  void SetMcbmMode() { fTrackingMode = L1Algo::TrackingMode::kMcbm; }
+  void SetGlobalMode() { fTrackingMode = L1Algo::TrackingMode::kGlobal; }
 
   void Finish();
 
@@ -231,8 +232,8 @@ public:
 
   TString fMuchDigiFile {};  // Much digitization file name
   bool fUseHitErrors {false};
-  bool fmCBMmode {false};
-  bool fGlobalMode {false};
+  L1Algo::TrackingMode fTrackingMode {L1Algo::TrackingMode::kSts};
+
   L1Vector<CbmL1Track> vRTracks {"CbmL1::vRTracks"};  // reconstructed tracks
   DFSET vFileEvent {};
 

@@ -174,8 +174,14 @@ public:
   void DrawRecoTracksTime(const L1Vector<CbmL1Track>& tracks);
 #endif
 
+  enum TrackingMode
+  {
+    kSts,
+    kGlobal,
+    kMcbm
+  };
 
-  void Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const bool mCBMmode);
+  void Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const TrackingMode mode);
 
   void SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<unsigned char>& SFlag_,
                const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_);
@@ -201,7 +207,7 @@ public:
   int NStations {0};     // number of all detector stations
   int NMvdStations {0};  // number of mvd stations
   int NStsStations {0};  // number of sts stations
-  int NFStations {0};    // ?
+  int fNfieldStations {0};  // number of stations in the field region
 
   L1Station vStations[fkMaxNstations] _fvecalignment;  // station info
   L1Vector<L1Material> fRadThick {"fRadThick"};        // material for each station
@@ -248,8 +254,7 @@ public:
 
   int fNThreads {0};
   bool fUseHitErrors {0};
-  bool fmCBMmode {0};
-  bool fGlobal {0};
+  TrackingMode fTrackingMode {kSts};
 
   fvec EventTime[fkMaxNthreads][fkMaxNthreads] {{0}};
   fvec Err[fkMaxNthreads][fkMaxNthreads] {{0}};

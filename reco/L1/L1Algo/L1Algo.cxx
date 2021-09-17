@@ -59,7 +59,7 @@ void L1Algo::SetNThreads(unsigned int n)
 }
 
 
-void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const bool mCBMmode)
+void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const TrackingMode mode)
 {
 
   for (int iProc = 0; iProc < 4; iProc++) {
@@ -74,7 +74,7 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const boo
   }
 
   fUseHitErrors = UseHitErrors;
-  fmCBMmode     = mCBMmode;
+  fTrackingMode = mode;
 
   //lxir039
   //  for (int i=0; i<8; i++){
@@ -105,9 +105,9 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const boo
   NMvdStations = static_cast<int>(geo[ind++]);
   NStsStations = static_cast<int>(geo[ind++]);
 
-  NFStations = NStsStations + NMvdStations;
+  fNfieldStations = NStsStations + NMvdStations;
 
-  if (fmCBMmode) { NFStations = -1; }
+  if (fTrackingMode == kMcbm) { fNfieldStations = -1; }
 
 
   // cout << "N MVD & STS stations: " << NMvdStations << " " << NStations-NMvdStations << endl;

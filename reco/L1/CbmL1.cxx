@@ -191,14 +191,14 @@ InitStatus CbmL1::Init()
   fUseTRD  = 0;
   fUseTOF  = 0;
 
-  if (fmCBMmode) {
+  if (fTrackingMode == L1Algo::TrackingMode::kMcbm) {
     fUseMUCH = 0;
     fUseTRD  = 1;
     fUseTOF  = 1;
   }
 
 
-  if (fGlobalMode) {
+  if (fTrackingMode == L1Algo::TrackingMode::kGlobal) {
     fUseMUCH = 0;
     fUseTRD  = 1;
     fUseTOF  = 1;
@@ -736,7 +736,7 @@ InitStatus CbmL1::Init()
       LOG(error) << "-E- CbmL1: Read geometry from file " << fSTAPDataDir + "geo_algo.txt was NOT successful.";
   }
 
-  algo->Init(geo, fUseHitErrors, fmCBMmode);
+  algo->Init(geo, fUseHitErrors, fTrackingMode);
   geo.clear();
 
   algo->fRadThick.reset(algo->NStations);
@@ -1219,28 +1219,21 @@ void CbmL1::Reconstruct(CbmEvent* event)
     if (fVerbose > 1) { cout << "L1 Track finder ok" << endl; }
     //  algo->L1KFTrackFitter( fExtrapolateToTheEndOfSTS );
 
-
-    if (fmCBMmode || fGlobalMode) {
-
+    {  // track fit
       L1FieldValue fB0 = algo->GetVtxFieldValue();
 
-      if ((fabs(fB0.x[0]) < 0.0000001) && (fabs(fB0.y[0]) < 0.0000001) && (fabs(fB0.z[0]) < 0.0000001))
+      if ((fabs(fB0.x[0]) < 0.0000001) && (fabs(fB0.y[0]) < 0.0000001) && (fabs(fB0.z[0]) < 0.0000001)) {
         algo->KFTrackFitter_simple();
-
-      else
-        algo->L1KFTrackFitterMuch();
+      }
+      else {
+        if (fTrackingMode == L1Algo::TrackingMode::kGlobal || fTrackingMode == L1Algo::TrackingMode::kMcbm) {
+          algo->L1KFTrackFitterMuch();
+        }
+        else {
+          algo->L1KFTrackFitter();
+        }
+      }
     }
-    else {
-
-      L1FieldValue fB0 = algo->GetVtxFieldValue();
-
-      if ((fabs(fB0.x[0]) < 0.0000001) && (fabs(fB0.y[0]) < 0.0000001) && (fabs(fB0.z[0]) < 0.0000001))
-        algo->KFTrackFitter_simple();
-
-      else
-        algo->L1KFTrackFitter();
-    }
-
 
     if (fVerbose > 1) { cout << "L1 Track fitter  ok" << endl; }
 
