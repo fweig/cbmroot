@@ -152,7 +152,7 @@ public:
   void SetTrdMaterialBudgetFileName(TString fileName) { fTrdMatBudgetFileName = fileName; }
   void SetTofMaterialBudgetFileName(TString fileName) { fTofMatBudgetFileName = fileName; }
   void SetExtrapolateToTheEndOfSTS(bool b) { fExtrapolateToTheEndOfSTS = b; }
-  void SetDataMode(int TimesliceMode) { fTimesliceMode = TimesliceMode; }
+  void SetLegacyEventMode(bool b) { fLegacyEventMode = b; }
   void SetMuchPar(TString fileName) { fMuchDigiFile = fileName; }
   void SetUseHitErrors(bool value) { fUseHitErrors = value; }
   void SetStsOnlyMode() { fTrackingMode = L1Algo::TrackingMode::kSts; }
@@ -351,7 +351,7 @@ private:
   TString fTrdMatBudgetFileName {};
   TString fTofMatBudgetFileName {};
   bool fExtrapolateToTheEndOfSTS {false};
-  int fTimesliceMode {0};
+  bool fLegacyEventMode {false};
 
   KFTopoPerformance* fTopoPerformance {nullptr};
   L1EventEfficiencies fEventEfficiency {};  // average efficiencies

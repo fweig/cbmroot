@@ -440,7 +440,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       hitIndex       = (event ? event->GetIndex(ECbmDataType::kStsHit, j) : j);
 
       int hitIndexSort = 0;
-      if (fTimesliceMode) hitIndexSort = StsIndex[hitIndex];
+      if (!fLegacyEventMode) hitIndexSort = StsIndex[hitIndex];
       else
         hitIndexSort = j;
 
@@ -463,9 +463,10 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.time = mh->GetTime();
         th.dt   = mh->GetTimeError();
 
-        if (fTimesliceMode) th.id = nMvdHits + hitIndex;
-        else
+        if (!fLegacyEventMode) { th.id = nMvdHits + hitIndex; }
+        else {
           th.id = tmpHits.size();
+        }
 
         /// stop if reco TS ends and many hits left
         if (!event)
@@ -524,7 +525,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
                 bestWeight   = stsHitMatch.GetLink(iLink).GetWeight();
                 Int_t iFile  = stsHitMatch.GetLink(iLink).GetFile();
                 Int_t iEvent = stsHitMatch.GetLink(iLink).GetEntry();
-                //                 if(!fTimesliceMode) //TODO Fix the event number in links
+                //                 if(fLegacyEventMode) //TODO Fix the event number in links
                 //                   iEvent+=1;
                 Int_t iIndex            = stsHitMatch.GetLink(iLink).GetIndex() + nMvdPoints;
                 Double_t dtrck          = dFEI(iFile, iEvent, iIndex);
@@ -1085,7 +1086,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
   if (MVD == 0) {
     CbmStsPoint* pt = L1_DYNAMIC_CAST<CbmStsPoint*>(fStsPoints->Get(file, event, iPoint));  // file, event, object
     if (!pt) return 1;
-    //     if ( fTimesliceMode )
+    //     if ( !fLegacyEventMode )
     //     {
     //       Double_t StartTime = fTimeSlice->GetStartTime();
     //       Double_t EndTime = fTimeSlice->GetEndTime();
@@ -1095,7 +1096,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     //
     //       if (Time_MC_point > EndTime )
     //         return 1;
-    //     } //if ( fTimesliceMode )
+    //     }
 
     pt->Position(xyzI);
     pt->Momentum(PI);
@@ -1109,14 +1110,14 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
   if (MVD == 2) {
     CbmMuchPoint* pt = L1_DYNAMIC_CAST<CbmMuchPoint*>(fMuchPoints->Get(file, event, iPoint));  // file, event, object
     if (!pt) return 1;
-    if (fTimesliceMode) {
+    if (!fLegacyEventMode) {
       Double_t StartTime     = fTimeSlice->GetStartTime();
       Double_t EndTime       = fTimeSlice->GetEndTime();
       Double_t Time_MC_point = pt->GetTime() + fEventList->GetEventTime(event, file);
       if (Time_MC_point < StartTime) return 1;
 
       if (Time_MC_point > EndTime) return 1;
-    }  //if ( fTimesliceMode )
+    }
 
     pt->Position(xyzI);
     pt->Momentum(PI);
@@ -1131,7 +1132,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     CbmTrdPoint* pt = L1_DYNAMIC_CAST<CbmTrdPoint*>(fTrdPoints->Get(file, event, iPoint));  // file, event, object
 
     if (!pt) return 1;
-    if (fTimesliceMode) {
+    if (!fLegacyEventMode) {
       //Double_t StartTime = fTimeSlice->GetStartTime();  // not used
       //Double_t EndTime = fTimeSlice->GetEndTime();      // not used
       //Double_t Time_MC_point =  pt->GetTime() + fEventList->GetEventTime(event, file); // not used
@@ -1140,7 +1141,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
       //
       //       if (Time_MC_point > EndTime )
       //         return 1;
-    }  //if ( fTimesliceMode )
+    }
 
     pt->Position(xyzI);
     pt->Momentum(PI);
@@ -1154,14 +1155,14 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
   if (MVD == 4) {
     CbmTofPoint* pt = L1_DYNAMIC_CAST<CbmTofPoint*>(fTofPoints->Get(file, event, iPoint));  // file, event, object
     if (!pt) return 1;
-    if (fTimesliceMode) {
+    if (!fLegacyEventMode) {
       Double_t StartTime     = fTimeSlice->GetStartTime();
       Double_t EndTime       = fTimeSlice->GetEndTime();
       Double_t Time_MC_point = pt->GetTime() + fEventList->GetEventTime(event, file);
       if (Time_MC_point < StartTime) return 1;
 
       if (Time_MC_point > EndTime) return 1;
-    }  //if ( fTimesliceMode )
+    }
 
     pt->Position(xyzI);
     pt->Momentum(PI);
@@ -1277,7 +1278,7 @@ void CbmL1::HitMatch()
           Int_t iEvent        = link.GetEntry();
           Int_t iIndex        = link.GetIndex();
 
-          if (!fTimesliceMode) {
+          if (fLegacyEventMode) {
             iFile  = vFileEvent.begin()->first;
             iEvent = vFileEvent.begin()->second;
           }

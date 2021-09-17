@@ -223,11 +223,11 @@ InitStatus CbmL1::Init()
   vFileEvent.clear();
 
 
-  if (fTimesliceMode) {  //  Time-slice mode selected
+  if (!fLegacyEventMode) {  //  Time-slice mode selected
     LOG(info) << GetName() << ": running in time-slice mode.";
     fTimeSlice = NULL;
     fTimeSlice = (CbmTimeSlice*) fManger->GetObject("TimeSlice.");
-    if (fTimeSlice == NULL) LOG(fatal) << GetName() << ": No time slice branch in tree!";
+    if (fTimeSlice == NULL) LOG(fatal) << GetName() << ": No time slice branch in the tree!";
 
   }  //? time-slice mode
 
@@ -287,7 +287,7 @@ InitStatus CbmL1::Init()
     if (NULL == fStsPoints) LOG(fatal) << GetName() << ": No StsPoint data!";
     if (NULL == fMCTracks) LOG(fatal) << GetName() << ": No MCTrack data!";
 
-    if (fTimesliceMode) {
+    if (!fLegacyEventMode) {
       fEventList = (CbmMCEventList*) fManger->GetObject("MCEventList.");
       if (NULL == fEventList) LOG(fatal) << GetName() << ": No MCEventList data!";
     }
@@ -1062,7 +1062,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
     StsIndex.push_back(j);
   };
 
-  if (fTimesliceMode && fPerformance) {
+  if (!fLegacyEventMode && fPerformance) {
 
     int nofEvents = fEventList->GetNofEvents();
     for (int iE = 0; iE < nofEvents; iE++) {
@@ -1238,7 +1238,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
     if (fVerbose > 1) { cout << "L1 Track fitter  ok" << endl; }
 
     // save recontstructed tracks
-    if (!fTimesliceMode) vRTracksCur.clear();
+    if (fLegacyEventMode) vRTracksCur.clear();
     int start_hit = 0;
 
     float TsStart_new = TsStart + TsLength - TsOverlap;
@@ -1270,7 +1270,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
       for (int i = 0; i < it->NHits; i++) {
         int start_hit1 = start_hit;
         if (algo->fRecoHits[start_hit1] > vStsHits.size() - 1) start_hit++;
-        else if (fTimesliceMode) {
+        else if (!fLegacyEventMode) {
           t.StsHits.push_back(((*algo->vStsHits)[algo->fRecoHits[start_hit]]).ID);
         }
         else {
@@ -1312,7 +1312,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
       if (indd == 1) continue;
 
-      if ((fTimesliceMode) && (isInOverlap == 1)) {
+      if ((!fLegacyEventMode) && (isInOverlap == 1)) {
 
         continue;  ///Discard tracks from overlap region
 
@@ -1337,9 +1337,9 @@ void CbmL1::Reconstruct(CbmEvent* event)
       }
     };
 
-    if (fTimesliceMode) TsStart = TsStart_new;  ///Set new TS strat to earliest discarted track
+    if (!fLegacyEventMode) TsStart = TsStart_new;  ///Set new TS strat to earliest discarted track
 
-    if (fTimesliceMode) cout << "CA Track Finder: " << algo->fCATime << " s/sub-ts" << endl << endl;
+    if (!fLegacyEventMode) cout << "CA Track Finder: " << algo->fCATime << " s/sub-ts" << endl << endl;
   }
 
 
@@ -1373,7 +1373,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
   for (unsigned int iTrack = 0; iTrack < vRTracksCur.size(); iTrack++) {
 
     for (unsigned int iHit = 0; iHit < vRTracksCur[iTrack].StsHits.size(); iHit++)
-      if (fTimesliceMode) vRTracksCur[iTrack].StsHits[iHit] = SortedIndex[vRTracksCur[iTrack].StsHits[iHit]];
+      if (!fLegacyEventMode) vRTracksCur[iTrack].StsHits[iHit] = SortedIndex[vRTracksCur[iTrack].StsHits[iHit]];
 
     vRTracks.push_back(vRTracksCur[iTrack]);
   }

@@ -207,7 +207,6 @@ void run_reco(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim
     else {
       l1 = new CbmL1("L1", 0);
     }
-    l1->SetDataMode(!eventBased);
 
     // --- Material budget file names
     TString mvdGeoTag;

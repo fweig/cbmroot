@@ -331,7 +331,6 @@ void run_reco(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/l
     else {
       l1 = new CbmL1("L1", 0);
     }
-    l1->SetDataMode(!eventBased);
 
     // --- Material budget file names
     TString mvdGeoTag;

@@ -364,8 +364,8 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test", const ch
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
     CbmL1* l1 = new CbmL1();
-
-    l1->SetmCBMmode(1);
+    l1->SetLegacyEventMode(1);
+    l1->SetMcbmMode();
     l1->SetUseHitErrors(1);
 
     // --- Material budget file names

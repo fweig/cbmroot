@@ -372,7 +372,6 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
     else {
       l1 = new CbmL1("L1", 0);
     }
-    l1->SetDataMode(1);
 
     // --- Material budget file names
     TString mvdGeoTag;

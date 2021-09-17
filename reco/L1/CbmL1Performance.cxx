@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Ivan Kisel,  Sergey Gorbunov, Igor Kulakov, Valentina Akishina, Grigory Kozlov */
+   Authors: Ivan Kisel,  Sergey Gorbunov [committer], Igor Kulakov, Valentina Akishina, Grigory Kozlov */
 
 /*
  *====================================================================
@@ -441,7 +441,7 @@ void CbmL1::EfficienciesPerformance()
     cout << "MC tracks/event found  : "
          << int(double(L1_NTRA.reco.counters[L1_NTRA.indices["total"]]) / double(L1_NEVENTS)) << endl;
     cout << endl;
-    cout << "CA Track Finder: " << L1_CATIME / L1_NEVENTS << (fTimesliceMode ? " s/time slice" : " s/ev") << endl
+    cout << "CA Track Finder: " << L1_CATIME / L1_NEVENTS << (fLegacyEventMode ? " s/ev" : " s/time slice") << endl
          << endl;
   }
 }  // void CbmL1::Performance()
@@ -1859,7 +1859,7 @@ void CbmL1::InputPerformance()
 
         double mcTime = pt->GetTime();
 
-        if (fTimesliceMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
+        if (!fLegacyEventMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
 
         // hit pulls and residuals
 
@@ -1967,7 +1967,7 @@ void CbmL1::InputPerformance()
       CbmMuchPoint* pt = (CbmMuchPoint*) fMuchPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
       double mcTime    = pt->GetTime();
 
-      if (fTimesliceMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
+      if (!fLegacyEventMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
       // mcTime+=20;
 
       // hit pulls and residuals
@@ -2036,7 +2036,7 @@ void CbmL1::InputPerformance()
       CbmTrdPoint* pt = (CbmTrdPoint*) fTrdPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
       double mcTime   = pt->GetTime();
 
-      if (fTimesliceMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
+      if (!fLegacyEventMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
 
       // hit pulls and residuals
       //      if ((sh->GetPlaneId()) == 0) continue;
@@ -2104,7 +2104,7 @@ void CbmL1::InputPerformance()
       CbmTofPoint* pt = (CbmTofPoint*) fTofPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
       double mcTime   = pt->GetTime();
 
-      if (fTimesliceMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
+      if (!fLegacyEventMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
 
       // hit pulls and residuals
 
