@@ -260,7 +260,6 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
           fCbmTsEventHeader->AddNDigisPsd(unpack(systemId, &timeslice, component, fPsdConfig,
                                                  fPsdConfig->GetOptOutAVec(), fPsdConfig->GetOptOutBVec()));
         }
-
         break;
       }
       case fkFlesRich: {
@@ -292,11 +291,10 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
         break;
       }
       case fkFlesTrd2D: {
-        if (fTrd2DConfig)
-          if (fTrd2DConfig) {
-            fCbmTsEventHeader->AddNDigisTrd2D(unpack(systemId, &timeslice, component, fTrd2DConfig,
-                                                     fTrd2DConfig->GetOptOutAVec(), fTrd2DConfig->GetOptOutBVec()));
-          }
+        if (fTrd2DConfig) {
+          fCbmTsEventHeader->AddNDigisTrd2D(unpack(systemId, &timeslice, component, fTrd2DConfig,
+                                                   fTrd2DConfig->GetOptOutAVec(), fTrd2DConfig->GetOptOutBVec()));
+        }
         break;
       }
       default: {
@@ -308,20 +306,20 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
 
   if (bOutputFullTimeSorting) {
     /// Time sort the output vectors of all unpackers present
-    if (fPsdConfig->GetOutputVec()) { timesort(fPsdConfig->GetOutputVec()); }
-    if (fRichConfig->GetOutputVec()) { timesort(fRichConfig->GetOutputVec()); }
-    if (fStsConfig->GetOutputVec()) { timesort(fStsConfig->GetOutputVec()); }
-    if (fTofConfig->GetOutputVec()) { timesort(fTofConfig->GetOutputVec()); }
-    if (fTrd1DConfig->GetOutputVec()) { timesort(fTrd1DConfig->GetOutputVec()); }
-    if (fTrd2DConfig->GetOutputVec()) { timesort(fTrd2DConfig->GetOutputVec()); }
+    if (fPsdConfig && fPsdConfig->GetOutputVec()) { timesort(fPsdConfig->GetOutputVec()); }
+    if (fRichConfig && fRichConfig->GetOutputVec()) { timesort(fRichConfig->GetOutputVec()); }
+    if (fStsConfig && fStsConfig->GetOutputVec()) { timesort(fStsConfig->GetOutputVec()); }
+    if (fTofConfig && fTofConfig->GetOutputVec()) { timesort(fTofConfig->GetOutputVec()); }
+    if (fTrd1DConfig && fTrd1DConfig->GetOutputVec()) { timesort(fTrd1DConfig->GetOutputVec()); }
+    if (fTrd2DConfig && fTrd2DConfig->GetOutputVec()) { timesort(fTrd2DConfig->GetOutputVec()); }
 
     /// Time sort the output vectors of all unpackers present
-    if (fPsdConfig->GetOptOutAVec()) { timesort(fPsdConfig->GetOptOutAVec()); }
-    if (fRichConfig->GetOptOutAVec()) { timesort(fRichConfig->GetOptOutAVec()); }
-    if (fStsConfig->GetOptOutAVec()) { timesort(fStsConfig->GetOptOutAVec()); }
-    if (fTofConfig->GetOptOutAVec()) { timesort(fTofConfig->GetOptOutAVec()); }
-    if (fTrd1DConfig->GetOptOutAVec()) { timesort(fTrd1DConfig->GetOptOutAVec()); }
-    if (fTrd2DConfig->GetOptOutAVec()) { timesort(fTrd2DConfig->GetOptOutAVec()); }
+    if (fPsdConfig && fPsdConfig->GetOptOutAVec()) { timesort(fPsdConfig->GetOptOutAVec()); }
+    if (fRichConfig && fRichConfig->GetOptOutAVec()) { timesort(fRichConfig->GetOptOutAVec()); }
+    if (fStsConfig && fStsConfig->GetOptOutAVec()) { timesort(fStsConfig->GetOptOutAVec()); }
+    if (fTofConfig && fTofConfig->GetOptOutAVec()) { timesort(fTofConfig->GetOptOutAVec()); }
+    if (fTrd1DConfig && fTrd1DConfig->GetOptOutAVec()) { timesort(fTrd1DConfig->GetOptOutAVec()); }
+    if (fTrd2DConfig && fTrd2DConfig->GetOptOutAVec()) { timesort(fTrd2DConfig->GetOptOutAVec()); }
   }
 }
 // ----------------------------------------------------------------------------
