@@ -32,8 +32,8 @@ std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename);
 std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline = false);
 std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename);
 
-void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const char* setupName = "mcbm_beam_2021_03",
-                    std::int32_t nevents = -1, std::string outpath = "")
+void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid = 0,
+                    const char* setupName = "mcbm_beam_2021_03", std::int32_t nevents = -1, std::string outpath = "")
 {
 
   // ========================================================================
@@ -58,13 +58,13 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
 
 
   // -----   Output filename   ----------------------------------------------
-  std::string outfilename = infile;
-  auto filenamepos        = infile.find_last_of("/");
+  std::string outfilename = infile[0];
+  auto filenamepos        = infile[0].find_last_of("/");
   filenamepos++;
-  std::string filename = infile.substr(filenamepos);
-  if (filename.find("*") != infile.npos) filename = std::to_string(runid) + ".tsa";
-  if (filename.find(";") != infile.npos) filename = std::to_string(runid) + "_merged" + ".tsa";
-  if (outpath.empty()) { outpath = infile.substr(0, filenamepos); }
+  std::string filename = infile[0].substr(filenamepos);
+  if (filename.find("*") != infile[0].npos) filename = std::to_string(runid) + ".tsa";
+  if (filename.find(";") != infile[0].npos) filename = std::to_string(runid) + "_merged" + ".tsa";
+  if (outpath.empty()) { outpath = infile[0].substr(0, filenamepos); }
   outfilename = outpath + filename;
   outfilename.replace(outfilename.find(".tsa"), 4, ".digi.root");
   std::cout << "-I- " << myName << ": Output file will be " << outfilename << std::endl;
@@ -198,7 +198,7 @@ void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const cha
 
 
   // -----   CbmSourceTsArchive   -------------------------------------------
-  auto source = new CbmSourceTsArchive(infile.data());
+  auto source = new CbmSourceTsArchive(infile);
   auto unpack = source->GetRecoUnpack();
   unpack->SetDoPerfProfiling(doPerfProfiling);
   unpack->SetOutputFilename(perfProfFileName);
@@ -360,4 +360,11 @@ std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename)
   monitor->SetHistoFileName(outfilename);
   //monitor->SetDebugMode(true);
   return monitor;
+}
+
+void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const char* setupName = "mcbm_beam_2021_03",
+                    std::int32_t nevents = -1, std::string outpath = "")
+{
+  std::vector<std::string> vInFile = {infile};
+  return run_unpack_tsa(vInFile, runid, setupName, nevents, outpath);
 }

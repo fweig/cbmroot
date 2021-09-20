@@ -1,9 +1,6 @@
-/** @file CbmSourceTsArchive.h
- ** @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
- ** @license SPDX-License-Identifier: GPL-3.0-only
- ** @author Volker Friese [originator]
- **/
-
+/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Jan de Cuveland, Volker Friese[committer], Pierre-Alain Loizeau */
 
 #ifndef CBMSOURCETSARCHIVE_H
 #define CBMSOURCETSARCHIVE_H 1
@@ -36,6 +33,13 @@ public:
    */
   CbmSourceTsArchive(const char* fileName = "");
 
+  /** @brief Constructor
+   ** @param fileName  Vector with name(s) of input file(s).
+   **
+   ** More input files can be added by the method AddInputFile.
+   */
+  CbmSourceTsArchive(std::vector<std::string> fileNames);
+
 
   /** @brief Destructor **/
   virtual ~CbmSourceTsArchive() {};
@@ -67,7 +71,7 @@ public:
   /**
    * @brief Get the Reco Unpack
    * Access the CbmRecoUnpack class to add unpacker configs
-   * @return CbmRecoUnpack* 
+   * @return CbmRecoUnpack*
   */
   CbmRecoUnpack* GetRecoUnpack() { return &fUnpack; }
 

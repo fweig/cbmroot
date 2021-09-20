@@ -1,9 +1,6 @@
-/** @file CbmSourceTsArchive.cxx
- ** @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
- ** @license SPDX-License-Identifier: GPL-3.0-only
- ** @author Volker Friese [originator]
- **/
-
+/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Jan de Cuveland, Volker Friese[committer], Pierre-Alain Loizeau */
 
 #include "CbmSourceTsArchive.h"
 
@@ -20,6 +17,10 @@ using std::unique_ptr;
 
 // -----   Constructor   ------------------------------------------------------
 CbmSourceTsArchive::CbmSourceTsArchive(const char* fileName) { AddInputFile(fileName); }
+// ----------------------------------------------------------------------------
+
+// -----   Constructor   ------------------------------------------------------
+CbmSourceTsArchive::CbmSourceTsArchive(std::vector<std::string> fileNames) : fFileNames(fileNames) {}
 // ----------------------------------------------------------------------------
 
 
@@ -45,7 +46,16 @@ void CbmSourceTsArchive::Close()
 // -----   Initialisation   ---------------------------------------------------
 Bool_t CbmSourceTsArchive::Init()
 {
-  fTsSource = new fles::TimesliceAutoSource(fFileNames);
+  if (1 == fFileNames.size()) {
+    LOG(info) << "SourceTsArchive::Init() calling string constructor with ";
+    LOG(info) << fFileNames[0];
+    fTsSource = new fles::TimesliceAutoSource(fFileNames[0]);
+  }
+  else {
+    LOG(info) << "SourceTsArchive::Init() calling vector constructor with size ";
+    LOG(info) << fFileNames.size();
+    fTsSource = new fles::TimesliceAutoSource(fFileNames);
+  }
 
   // Initialise unpacker
   fUnpack.Init();
