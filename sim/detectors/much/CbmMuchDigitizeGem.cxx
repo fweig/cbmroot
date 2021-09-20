@@ -1,6 +1,6 @@
 /* Copyright (C) 2009-2021 St. Petersburg Polytechnic University, St. Petersburg
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Vikas Singhal, Ekata Nandy, Volker Friese, Evgeny Kryshen */
+   Authors: Vikas Singhal, Ekata Nandy, Volker Friese, Evgeny Kryshen [committer] */
 
 /** CbmMuchDigitizeGem.cxx
  *@author Vikas Singhal <vikas@vecc.gov.in>
