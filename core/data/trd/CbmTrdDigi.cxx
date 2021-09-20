@@ -244,7 +244,14 @@ void CbmTrdDigi::SetFlag(const Int_t iflag, Bool_t set)
 }
 
 //_________________________________________________________________________________
-void CbmTrdDigi::SetTime(Double_t t) { fTime = ULong64_t(TMath::Ceil(t / Clk(GetType()))); }
+void CbmTrdDigi::SetTime(Double_t t)
+{
+  switch (GetType()) {
+    case eCbmTrdAsicType::kFASP: fTime = ULong64_t(TMath::Ceil(t / Clk(GetType())));
+    case eCbmTrdAsicType::kSPADIC: fTime = static_cast<ULong64_t>(t);
+    case eCbmTrdAsicType::kNTypes: return;
+  }
+}
 
 //_________________________________________________________________________________
 void CbmTrdDigi::SetTimeOffset(Char_t t)
