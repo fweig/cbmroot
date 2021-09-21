@@ -1,6 +1,6 @@
 /* Copyright (C) 2004-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Volker Friese, Semen Lebedev, Denis Bertini [committer] */
+   Authors: Volker Friese, Semen Lebedev, Claudia Hoehne [committer] */
 
 /**
 * \file CbmRich.h

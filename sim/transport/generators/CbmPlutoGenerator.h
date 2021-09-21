@@ -1,6 +1,6 @@
-/* Copyright (C) 2015-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2004-2018 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Volker Friese, Florian Uhlig [committer] */
+   Authors: Volker Friese, Denis Bertini [committer] */
 
 // -------------------------------------------------------------------------
 // -----                 CbmPlutoGenerator header file                 -----

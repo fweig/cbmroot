@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Volker Friese */
+   Authors: Volker Friese [committer] */
 
 /** @file CbmTarget.h
  ** @author Volker Friese <v.friese@gsi.de>
