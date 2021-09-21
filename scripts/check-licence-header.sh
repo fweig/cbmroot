@@ -3,6 +3,18 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # First commited by Eoin Clerkin
 
+
+# In the array excludes all directories and/or files are listed which shouldn't be
+# tested if they habe the proper license statement.
+# For all the directories/files listed in the array an explanation should be given.
+
+excludes=(
+# The directory is excluded since the files have a license header
+# inherited from the ALICE experiment. The code was copied by the
+# original author when he started working for CBM.
+papaframework
+)
+
 RETURN_CODE="0"
 
 licenceHeaderCheck () {
@@ -43,7 +55,7 @@ licenceHeaderCheck () {
 
 
 if [ $# -eq 1 ]; then
-UPSTREAM=$1	
+  UPSTREAM=$1
 else
   if [ -z $UPSTREAM ]; then
     UPSTREAM=$(git remote -v | grep git.cbm.gsi.de[:/]computing/cbmroot | cut -f1 | uniq)
@@ -56,20 +68,24 @@ else
   fi
 fi
 
-
-
-if [ -f $1 ]; then 
-CHANGED_FILES="$1"
-echo "LICENCE HEADER CHECK FOR FILE: $1"
+if [ -f $1 ]; then
+  CHANGED_FILES="$1"
+  echo "LICENCE HEADER CHECK FOR FILE: $1"
 else
-echo "Upstream name is :" $UPSTREAM
-BASE_COMMIT=$UPSTREAM/master
-CHANGED_FILES=$(git diff --name-only $BASE_COMMIT | egrep '\.cxx$|\.h|\.C$')
+  echo "Upstream name is :" $UPSTREAM
+  BASE_COMMIT=$UPSTREAM/master
+  CHANGED_FILES=$(git diff --name-only $BASE_COMMIT | egrep '\.cxx$|\.h|\.C$')
 fi
 
-
+# Exclude files which shouldn't be tested
+# Check the license header for all other files
 for FILE in $CHANGED_FILES; do
-	licenceHeaderCheck $FILE
+  for EXCLUDE in "${excludes[@]}"; do
+    FILE=$(echo $FILE | egrep -v "$EXCLUDE")
+  done
+  if [[ -n $FILE ]]; then
+    licenceHeaderCheck $FILE
+  fi
 done
 
 if [ $RETURN_CODE -eq "0" ]; then
@@ -77,7 +93,5 @@ if [ $RETURN_CODE -eq "0" ]; then
 else
 	echo "[FAIL] Visit https://redmine.cbm.gsi.de/projects/cbmroot/wiki/Licence for information on correct syntax for licence header."
 fi
-
-
 
 exit $RETURN_CODE;
