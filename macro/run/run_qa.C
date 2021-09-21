@@ -172,7 +172,7 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
     //run->AddTask(new CbmTrdHitRateQa());  //opens lots of windows
     //run->AddTask(new CbmTrdDigitizerPRFQa()); //works put currently doesn't do anything
     //run->AddTask(new CbmTrdHitRateFastQa());  //opens lots of windows
-    run->AddTask(new CbmTrdHitProducerQa());  //Histograms currently don't appear in output file
+    run->AddTask(new CbmTrdHitProducerQa());
   }
   // ------------------------------------------------------------------------
 

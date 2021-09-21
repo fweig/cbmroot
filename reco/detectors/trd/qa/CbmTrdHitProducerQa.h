@@ -23,6 +23,9 @@
 
 #include "FairTask.h"
 
+#include <TFolder.h>
+
+class CbmDigiManager;
 class TClonesArray;
 class TH1F;
 
@@ -46,12 +49,14 @@ public:
   /* Finish at the end of each event */
   virtual void Finish();
 
-
 private:
+  TFolder fOutFolder;   /// output folder with histos and canvases
+  TFolder* histFolder;  /// subfolder for histograms
+
+  CbmDigiManager* fDigiMan = nullptr;
+
   /* Data branches*/
   TClonesArray* fTrdHitCollection;
-  TClonesArray* fTrdDigiCollection;
-  TClonesArray* fTrdDigiMatchCollection;
   TClonesArray* fTrdPointCollection;
   TClonesArray* fMCTrackArray;
 
@@ -61,6 +66,8 @@ private:
   /** Number of layers per station **/
   Int_t fNoTrdPerStation;
 
+  /* Write test histograms */
+  void WriteHistograms();
 
   /* Test histograms*/
   TH1F* fHitPoolsX;  // = ((Hit - Point) / HitError)  in X
@@ -80,18 +87,7 @@ private:
   TH1F* S3L4pidE15;   //
   TH1F* S3L4pidEall;  //
 
-private:
-  CbmTrdHitProducerQa(const CbmTrdHitProducerQa&);
-  CbmTrdHitProducerQa& operator=(const CbmTrdHitProducerQa&);
-
-  //public:
-
-  /* Write test histograms */
-  void WriteHistograms();
-
-
-  ClassDef(CbmTrdHitProducerQa, 2)
+  ClassDef(CbmTrdHitProducerQa, 3)
 };
-
 
 #endif
