@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Florian Uhlig, Andrey Lebedev */
+   Authors: Matus Kalisky [committer], Florian Uhlig, Andrey Lebedev */
 
 /**
  * \file CbmTrdHit.h

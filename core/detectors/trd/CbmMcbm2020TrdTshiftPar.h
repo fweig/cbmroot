@@ -1,6 +1,6 @@
 /* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Pascal Raisig */
+   Authors: Pascal Raisig [committer] */
 
 #ifndef CbmMcbm2020TrdTshiftPar_H
 #define CbmMcbm2020TrdTshiftPar_H

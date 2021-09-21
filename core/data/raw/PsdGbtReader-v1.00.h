@@ -1,9 +1,6 @@
-// -----------------------------------------------------------------------------
-// -----                                                                   -----
-// -----                       PsdGbtDataReader                            -----
-// -----              Created 14.09.2019 by N.Karpushkin                   -----
-// -----                                                                   -----
-// -----------------------------------------------------------------------------
+/* Copyright (C) 2019-2021 Institute for Nuclear Research, Moscow
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Nikolay Karpushkin [committer]*/
 
 #ifndef PSD_GBT_READER_V100_H
 #define PSD_GBT_READER_V100_H

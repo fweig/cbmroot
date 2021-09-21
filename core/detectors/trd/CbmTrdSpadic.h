@@ -1,3 +1,7 @@
+/* Copyright (C) 2021 Goethe-University Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pascal Raisig [committer] */
+
 /**
  * @file CbmTrdSpadic.h
  * @author Pascal Raisig (praisig@ikf.uni-frankfurt.de)

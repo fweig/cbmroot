@@ -1,13 +1,6 @@
-/* Copyright (C) 2019-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2019-2021 Institute for Nuclear Research, Moscow
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Nikolay Karpushkin, David Emschermann [committer], Pierre-Alain Loizeau */
-
-// -----------------------------------------------------------------------------
-// -----                                                                   -----
-// -----                       PsdGbtDataReader                            -----
-// -----              Created 14.09.2019 by N.Karpushkin                   -----
-// -----                                                                   -----
-// -----------------------------------------------------------------------------
+   Authors: Nikolay Karpushkin [committer], David Emschermann, Pierre-Alain Loizeau*/
 
 #ifndef PSD_GBT_READER_V000_H
 #define PSD_GBT_READER_V000_H

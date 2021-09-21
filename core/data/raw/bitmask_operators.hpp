@@ -1,3 +1,7 @@
+/* Copyright (C) 2017-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau [committer] */
+
 #ifndef JSS_BITMASK_HPP
 #define JSS_BITMASK_HPP
 

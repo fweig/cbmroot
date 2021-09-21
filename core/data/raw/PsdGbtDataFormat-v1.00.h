@@ -1,9 +1,6 @@
-// -----------------------------------------------------------------------------
-// -----                                                                   -----
-// -----                       PsdGbtDataFormat                            -----
-// -----              Created 14.09.2019 by N.Karpushkin                   -----
-// -----                        Version 1.00                               -----
-// -----------------------------------------------------------------------------
+/* Copyright (C) 2019-2021 Institute for Nuclear Research, Moscow
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Nikolay Karpushkin [committer]*/
 
 #ifndef PSD_GBT_DATA_FORMAT_V100_H_
 #define PSD_GBT_DATA_FORMAT_V100_H_

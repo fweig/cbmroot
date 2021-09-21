@@ -1,6 +1,6 @@
 /* Copyright (C) 2004-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Matus Kalisky, Cyrano Bergmann, Adrian Meyer-Ahrens, David Emschermann, Florian Uhlig */
+   Authors: Matus Kalisky [committer], Cyrano Bergmann, Adrian Meyer-Ahrens, David Emschermann, Florian Uhlig */
 
 // ------------------------------------------------------------------------
 // -----                       CbmTrdRadiator source file             -----

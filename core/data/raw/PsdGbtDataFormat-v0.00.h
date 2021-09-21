@@ -1,13 +1,6 @@
-/* Copyright (C) 2019 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2019-2021 Institute for Nuclear Research, Moscow
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Nikolay Karpushkin, David Emschermann [committer] */
-
-// -----------------------------------------------------------------------------
-// -----                                                                   -----
-// -----                       PsdGbtDataFormat                            -----
-// -----              Created 14.09.2019 by N.Karpushkin                   -----
-// -----                                                                   -----
-// -----------------------------------------------------------------------------
+   Authors: Nikolay Karpushkin [committer]*/
 
 #ifndef PSD_GBT_DATA_FORMAT_H_
 #define PSD_GBT_DATA_FORMAT_H_
