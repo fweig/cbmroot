@@ -54,6 +54,9 @@ public:
 
   Bool_t InitParameters();
 
+  std::vector<CbmStsDigi>& GetPulserVector() { return fPulserDigiVect; }
+  void ClearPulserVector() { fPulserDigiVect.clear(); }
+
   Bool_t ProcessTs(const fles::Timeslice& ts);
   Bool_t ProcessTs(const fles::Timeslice& ts, size_t /*component*/) { return ProcessTs(ts); }
   Bool_t ProcessMs(const fles::Timeslice& ts, size_t uMsCompIdx, size_t uMsIdx);
@@ -75,6 +78,8 @@ public:
 
   inline void SetVectCapInc(Double_t dIncFact) { fdCapacityIncFactor = dIncFact; }
 
+  void SeparatePulserOutput(Bool_t bFlagIn) { fbPulserOutput = bFlagIn; }
+
 private:
   /// Control flags
   Bool_t fbMonitorMode;       //! Switch ON the filling of a minimal set of histograms
@@ -82,6 +87,7 @@ private:
   std::vector<Bool_t> fvbMaskedComponents;
   /// => Quick and dirty hack for binning FW!!!
   Bool_t fbBinningFw = kFALSE;
+  Bool_t fbPulserOutput = kTRUE;  //! If ON a separate output vector of digi is used for the pulser
 
   /// Settings from parameter file
   CbmMcbm2018StsPar* fUnpackPar;  //!
@@ -102,6 +108,7 @@ private:
     fviFebModuleSide;  //! STS module side for each FEB, [ NbDpb ][ NbCrobPerDpb ][ NbFebsPerCrob ], 0 = P, 1 = N, -1 if inactive
   std::vector<std::vector<std::vector<Int_t>>>
     fviFebType;  //! FEB type, [ NbDpb ][ NbCrobPerDpb ][ NbFebsPerCrob ], 0 = A, 1 = B, -1 if inactive
+  std::vector<bool> fvbFebPulser = {};  //! Pulser flag for each FEB, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ]
   std::vector<Int_t> fviFebAddress;     //! STS address for each FEB, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ]
   std::vector<Int_t> fviFebSide;        //! Module side for each FEB, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ]
   std::vector<Double_t> fvdFebAdcGain;  //! ADC gain in e-/b, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ]
@@ -145,6 +152,9 @@ private:
   /// Hits time-sorting
   std::vector<stsxyter::FinalHit>
     fvmHitsInMs;  //! All hits (time in bins, ADC in bins, asic, channel) in last MS, sorted with "<" operator
+
+  /// Pulser Digis output, needed as STS reco does not accept Digis without a valid STS address
+  std::vector<CbmStsDigi> fPulserDigiVect = {};
 
   /// Duplicate hits suppression
   static const UInt_t kuMaxTsMsbDiffDuplicates = 8;

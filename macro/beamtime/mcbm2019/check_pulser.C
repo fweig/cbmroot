@@ -59,6 +59,7 @@ void check_pulser(UInt_t uRunId = 0, Int_t nrEvents = 0, TString sDir = "data")
   pulserChecker->SetRichOffsetSearchRange(1000);
   pulserChecker->SetPsdOffsetSearchRange(5000);
   if (0 < uRunId) pulserChecker->SetOutFilename(Form("data/HistosPulserCheck_%03u.root", uRunId));
+  pulserChecker->SetStsAddress(0x11E004E2);
   fRun->AddTask(pulserChecker);
 
   // -----  Parameter database   --------------------------------------------

@@ -124,6 +124,7 @@ void unpack_pulser_mcbm_stsbinning(UInt_t uRunId = 0, TString sHostname = "local
   unpacker_psd->SetWriteOutputFlag(kFALSE);
 
   unpacker_sts->SetAdcCut(3);
+  unpacker_sts->SeparatePulserOutput(kFALSE);
   unpacker_tof->SetSeparateArrayT0();
 
   unpacker_sts->SetBinningFwFlag(kTRUE);

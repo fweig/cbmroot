@@ -122,6 +122,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
   if (stsconfig) {
     // stsconfig->SetDebugState();
     stsconfig->SetDoWriteOutput();
+    stsconfig->SetDoWriteOptOutA("StsDigiPulser");
     std::string parfilesbasepathSts = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
     stsconfig->SetParFilesBasePath(parfilesbasepathSts);
     /// Enable duplicates rejection, Ignores the ADC for duplicates check

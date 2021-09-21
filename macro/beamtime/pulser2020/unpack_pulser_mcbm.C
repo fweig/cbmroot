@@ -97,6 +97,7 @@ void unpack_pulser_mcbm(UInt_t uRunId = 0, TString sHostname = "localhost", UInt
   unpacker_psd->SetWriteOutputFlag(kFALSE);
 
   //  unpacker_sts ->SetAdcCut( 3 );
+  unpacker_sts->SeparatePulserOutput(kFALSE);
   unpacker_tof->SetSeparateArrayT0();
 
   switch (uRunId) {

@@ -67,6 +67,12 @@ Bool_t CbmMcbm2018UnpackerTaskSts::Init()
   fpvDigiSts = &(fUnpackerAlgo->GetVector());
   ioman->RegisterAny("StsDigi", fpvDigiSts, fbWriteOutput);
 
+  if (fbPulserOutput) {
+    /// Get address of pulser vector from algo
+    fpvPulserDigiSts = &(fUnpackerAlgo->GetPulserVector());
+    ioman->RegisterAny("StsDigiPulser", fpvPulserDigiSts, fbWriteOutput);
+  }
+
   /// Get address of error vector from algo
   fpvErrorSts = &(fUnpackerAlgo->GetErrorVector());
   ioman->RegisterAny("CbmStsError", fpvErrorSts, fbWriteOutput);
@@ -194,6 +200,7 @@ void CbmMcbm2018UnpackerTaskSts::Reset()
 {
   fUnpackerAlgo->ClearVector();
   fUnpackerAlgo->ClearErrorVector();
+  if (fbPulserOutput) { fUnpackerAlgo->ClearPulserVector(); }
 }
 
 void CbmMcbm2018UnpackerTaskSts::Finish()
@@ -252,5 +259,10 @@ void CbmMcbm2018UnpackerTaskSts::SetAdcCut(UInt_t uAdc) { fUnpackerAlgo->SetAdcC
 
 void CbmMcbm2018UnpackerTaskSts::SetBinningFwFlag(Bool_t bEnable) { fUnpackerAlgo->SetBinningFwFlag(bEnable); }
 
+void CbmMcbm2018UnpackerTaskSts::SeparatePulserOutput(Bool_t bFlagIn)
+{
+  fbPulserOutput = bFlagIn;
+  fUnpackerAlgo->SeparatePulserOutput(fbPulserOutput);
+}
 
 ClassImp(CbmMcbm2018UnpackerTaskSts)

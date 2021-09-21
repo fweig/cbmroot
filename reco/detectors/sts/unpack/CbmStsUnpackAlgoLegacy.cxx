@@ -146,6 +146,7 @@ bool CbmStsUnpackAlgoLegacy::InitParameters()
     for (uint32_t uCrobIdx = 0; uCrobIdx < fUnpackPar->GetNbCrobsPerDpb(); ++uCrobIdx) {
       fviFebType[uDpb][uCrobIdx].resize(fUnpackPar->GetNbFebsPerCrob(), -1);
       for (uint32_t uFebIdx = 0; uFebIdx < fUnpackPar->GetNbFebsPerCrob(); ++uFebIdx) {
+        fvbFebPulser.push_back(fUnpackPar->IsFebPulser(uDpb, uCrobIdx, uFebIdx));
         fvdFebAdcGain.push_back(fUnpackPar->GetFebAdcGain(uDpb, uCrobIdx, uFebIdx));
         fvdFebAdcOffs.push_back(fUnpackPar->GetFebAdcOffset(uDpb, uCrobIdx, uFebIdx));
 
@@ -165,8 +166,8 @@ bool CbmStsUnpackAlgoLegacy::InitParameters()
               ///!        2) No accessor/setter to change only the side field of an STS address
               ///!            => hardcode the shift
               ///!            +> The bit is unused in the current scheme: the side is encoded in the Digi channel
-              fviFebAddress.push_back(viModAddress[viFebModuleIdx[uDpb][uCrobIdx][uFebIdx]]
-                                      + (viFebModuleSide[uDpb][uCrobIdx][uFebIdx] << 25));
+              fviFebAddress.push_back(viModAddress[viFebModuleIdx[uDpb][uCrobIdx][uFebIdx]]);
+              //                        + (viFebModuleSide[uDpb][uCrobIdx][uFebIdx] << 25));
               fviFebSide.push_back(viFebModuleSide[uDpb][uCrobIdx][uFebIdx]);
               break;
             }        // case 0: // FEB-8-1 with ZIF connector on the right
@@ -182,8 +183,8 @@ bool CbmStsUnpackAlgoLegacy::InitParameters()
               ///!        2) No accessor/setter to change only the side field of an STS address
               ///!            => hardcode the shift
               ///!            +> The bit is unused in the current scheme: the side is encoded in the Digi channel
-              fviFebAddress.push_back(viModAddress[viFebModuleIdx[uDpb][uCrobIdx][uFebIdx]]
-                                      + ((!viFebModuleSide[uDpb][uCrobIdx][uFebIdx]) << 25));
+              fviFebAddress.push_back(viModAddress[viFebModuleIdx[uDpb][uCrobIdx][uFebIdx]]);
+              //                        + ((!viFebModuleSide[uDpb][uCrobIdx][uFebIdx]) << 25));
               fviFebSide.push_back(viFebModuleSide[uDpb][uCrobIdx][uFebIdx]);
               break;
             }  // case 1: // FEB-8-1 with ZIF connector on the left
@@ -357,7 +358,16 @@ void CbmStsUnpackAlgoLegacy::AddHitsToDigiVect(std::vector<stsxyter::FinalHit>* 
       LOG(error) << Form("Digi on disabled FEB %02u has address 0x%08x and side %d", uFebIdx, fviFebAddress[uFebIdx],
                          fviFebSide[uFebIdx]);
     }
-    vDigiVectOut->emplace_back(fviFebAddress[uFebIdx], uChanInMod, ulTimeInNs, dCalAdc);
+
+    /// Catch the pulser digis and either save them to their own output or drop them
+    if (fvbFebPulser[uFebIdx]) {
+      if (fOptOutAVec) {
+        fOptOutAVec->emplace_back(fviFebAddress[uFebIdx], uChanInMod, ulTimeInNs, dCalAdc);
+      }  // if (fOptOutAVec)
+    }    // if (fvbFebPulser[uFebIdx])
+    else {
+      vDigiVectOut->emplace_back(fviFebAddress[uFebIdx], uChanInMod, ulTimeInNs, dCalAdc);
+    }  // else of if (fvbFebPulser[uFebIdx])
   }
 }
 
@@ -591,8 +601,8 @@ void CbmStsUnpackAlgoLegacy::ProcessHitInfo(const stsxyter::Message& mess)
   const double dHitTimeNs = ulHitTime * stsxyter::kdClockCycleNs;
 
   /// If EM flag ON, store a corresponding error message with the next flag after all other possible status flags set
-  if (mess.IsHitMissedEvts() && fOptOutAVec != nullptr)
-    fOptOutAVec->push_back(
+  if (mess.IsHitMissedEvts() && fOptOutBVec != nullptr)
+    fOptOutBVec->push_back(
       CbmErrorMessage(ECbmModuleId::kSts, dHitTimeNs, uAsicIdx, 1 << stsxyter::kusLenStatStatus, usChan));
 
   if (fMonitor) {
@@ -691,8 +701,10 @@ void CbmStsUnpackAlgoLegacy::ProcessStatusInfo(const stsxyter::Message& mess, ui
 
   /// Convert the time in bins to Hit time in ns
   const double dTimeNs = ulTime * stsxyter::kdClockCycleNs;
-  fOptOutAVec->push_back(
-    CbmErrorMessage(ECbmModuleId::kSts, dTimeNs, uAsicIdx, mess.GetStatusStatus(), mess.GetData()));
+  if (fOptOutBVec) {
+    fOptOutBVec->push_back(
+      CbmErrorMessage(ECbmModuleId::kSts, dTimeNs, uAsicIdx, mess.GetStatusStatus(), mess.GetData()));
+  }
 }
 
 // -------------------------------------------------------------------------
@@ -713,8 +725,8 @@ void CbmStsUnpackAlgoLegacy::ProcessErrorInfo(const stsxyter::Message& mess)
 {
   if (mess.IsMsErrorFlagOn()) {
     if (fMonitor) { fMonitor->FillMsErrorsEvo(fulCurrentMsIdx, mess.GetMsErrorType()); }
-    if (fOptOutAVec) {
-      fOptOutAVec->push_back(
+    if (fOptOutBVec) {
+      fOptOutBVec->push_back(
         CbmErrorMessage(ECbmModuleId::kSts, fulCurrentMsIdx, fuCurrDpbIdx, 0x20, mess.GetMsErrorType()));
     }
   }

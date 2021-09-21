@@ -12,7 +12,7 @@ ModuleType: Int_t \
 // STS address for the first strip of each module
 // 1 Line per ladder, from above beam to under beam
 ModAddress: Int_t \
-  0x10018002  0x10008002  0x99999999 // addresse matching the current mSTS geometry (PAL, 15/05/2020)
+  0x10018002  0x10008002  0x11E004E2 // addresse matching the current mSTS geometry (PAL, 15/05/2020)
 // Offset of module center in X, in mm (Should be done by geometry for the unpacker!)
 ModCenterPosX: Double_t \
          0.0        0.0        0.0
@@ -27,12 +27,15 @@ DbpIdArray: Int_t \
 // Array to hold the active flag for all CROBs, [ NbDpb * kuNbCrobPerDpb ] = [ NbDpb * 1 ]
 CrobActiveFlag: Int_t \
   1
+// Pulser flag for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ] = = [ NbDpb * 1 * 5 ], 1 if pulser, 0 otherwise
+FebPulserFlag: Int_t \
+     1       0       0       0       0
 // Index of the STS module for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ] = = [ NbDpb * 1 * 5 ], -1 if inactive
 FebModuleIdx: Int_t \
-  2  0  0  1  1
+     2       0       0       1       1
 // STS module side for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ], 0 = P, 1 = N, -1 if inactive
 FebModuleSide: Int_t \
-  0  1  0  1  0
+     0       1       0       1       0
 // ADC Gain in e-/ADC bin for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
 FebAdcGain: Double_t \
      1.0     1.0     1.0     1.0     1.0

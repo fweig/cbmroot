@@ -221,6 +221,8 @@ protected:
   /** @brief  FEB type, [ NbDpb ][ NbCrobPerDpb ][ NbFebsPerCrob ], 0 = A, 1 = B, -1 if inactive */
   std::vector<std::vector<std::vector<int32_t>>> fviFebType = {};  //!
 
+  /** @brief Pulser flag for each FEB, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ] */
+  std::vector<bool> fvbFebPulser;  //!
   /** @brief STS address for each FEB, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ] */
   std::vector<int32_t> fviFebAddress;  //!
   /** @brief Module side for each FEB, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ] */

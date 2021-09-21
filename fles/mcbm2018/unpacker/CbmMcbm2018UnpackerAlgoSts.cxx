@@ -198,6 +198,8 @@ Bool_t CbmMcbm2018UnpackerAlgoSts::InitParameters()
       for (UInt_t uFebIdx = 0; uFebIdx < fUnpackPar->GetNbFebsPerCrob(); ++uFebIdx) {
         fviFebModuleIdx[uDpb][uCrobIdx][uFebIdx]  = fUnpackPar->GetFebModuleIdx(uDpb, uCrobIdx, uFebIdx);
         fviFebModuleSide[uDpb][uCrobIdx][uFebIdx] = fUnpackPar->GetFebModuleSide(uDpb, uCrobIdx, uFebIdx);
+
+        fvbFebPulser.push_back(fUnpackPar->IsFebPulser(uDpb, uCrobIdx, uFebIdx));
         fvdFebAdcGain.push_back(fUnpackPar->GetFebAdcGain(uDpb, uCrobIdx, uFebIdx));
         fvdFebAdcOffs.push_back(fUnpackPar->GetFebAdcOffset(uDpb, uCrobIdx, uFebIdx));
 
@@ -407,7 +409,14 @@ Bool_t CbmMcbm2018UnpackerAlgoSts::ProcessTs(const fles::Timeslice& ts)
                            fviFebSide[uFebIdx]);
       }  // if( 0 == fviFebAddress[ uFebIdx ] || -1 == fviFebSide[ uFebIdx ] )
 
-      fDigiVect.emplace_back(fviFebAddress[uFebIdx], uChanInMod, ulTimeInNs, dCalAdc);
+
+      /// Catch the pulser digis and either save them to their own output or drop them
+      if (fbPulserOutput && fvbFebPulser[uFebIdx]) {
+        fPulserDigiVect.emplace_back(CbmStsDigi(fviFebAddress[uFebIdx], uChanInMod, ulTimeInNs, dCalAdc));
+      }  // if (fvbFebPulser[uFebIdx])
+      else {
+        fDigiVect.emplace_back(fviFebAddress[uFebIdx], uChanInMod, ulTimeInNs, dCalAdc);
+      }  // else of if (fvbFebPulser[uFebIdx])
     }  // for( auto itHitIn = fvmHitsInMs.begin(); itHitIn < fvmHitsInMs.end(); ++itHitIn )
 
     /// Clear the buffer of hits
@@ -426,6 +435,12 @@ Bool_t CbmMcbm2018UnpackerAlgoSts::ProcessTs(const fles::Timeslice& ts)
   /// Sort the buffers of hits due to the time offsets applied
   std::sort(fDigiVect.begin(), fDigiVect.end(),
             [](const CbmStsDigi& a, const CbmStsDigi& b) -> bool { return a.GetTime() < b.GetTime(); });
+
+  /// Sort the buffers of pulser hits due to the time offsets applied
+  if (fbPulserOutput) {
+    std::sort(fPulserDigiVect.begin(), fPulserDigiVect.end(),
+              [](const CbmStsDigi& a, const CbmStsDigi& b) -> bool { return a.GetTime() < b.GetTime(); });
+  }
 
   /// Fill plots if in monitor mode
   if (fbMonitorMode) {
@@ -1216,6 +1231,11 @@ Bool_t CbmMcbm2018UnpackerAlgoSts::FillHistograms()
   for (auto itHit = fDigiVect.begin(); itHit != fDigiVect.end(); ++itHit) {
     fhDigisTimeInRun->Fill(itHit->GetTime() * 1e-9);
   }  // for( auto itHit = fDigiVect.begin(); itHit != fDigiVect.end(); ++itHit)
+  if (fbPulserOutput) {
+    for (auto itHit = fPulserDigiVect.begin(); itHit != fPulserDigiVect.end(); ++itHit) {
+      fhDigisTimeInRun->Fill(itHit->GetTime() * 1e-9);
+    }  // for( auto itHit = fPulserDigiVect.begin(); itHit != fPulserDigiVect.end(); ++itHit)
+  }
   return kTRUE;
 }
 Bool_t CbmMcbm2018UnpackerAlgoSts::ResetHistograms()

@@ -33,6 +33,7 @@ If(DEFINED ENV{RAW_DATA_PATH} )
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/MonitorTof.C )       # CbmMcbm2018MonitorTaskTof + CbmMcbm2018MonitorAlgoTof
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/MonitorRich.C )      # CbmMcbm2018UnpackerTaskRich.h in monitor mode
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/MonitorPsd.C )       # CbmMcbm2018MonitorTaskPsd + CbmMcbm2018MonitorAlgoPsd
+  GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2020/unpack_pulser_mcbm.C ) # Unpackers + Pulser check
 
   ## Run only if raw data files present
   ForEach(RUN 759 760 761 762 811 812 819 824 831 856 )
@@ -65,19 +66,19 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       #### Make this test run alone to try to avoid memory errors on test machines
       set_tests_properties(${testname} PROPERTIES RUN_SERIAL true )
 
-      Set(testname mcbm_check_pulser_2020_${RUN})
-      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2020/check_pulser.sh ${RUN} )
-      Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
-      Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-      set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_unpacked_${RUN}})
-      set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_check_timing_2020_${RUN})
+#      Set(testname mcbm_check_pulser_2020_${RUN})
+#      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2020/check_pulser.sh ${RUN} )
+#      Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
+#      Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
+#      set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_unpacked_${RUN}})
+#      set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_check_timing_2020_${RUN})
 
       Set(testname mcbm_build_event_2020_${RUN})
       Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2020/build_events.sh \"data/unp_mcbm_${RUN}.root\" ${RUN} )
       Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
       Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
       set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_unpacked_${RUN}})
-      set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_check_pulser_2020_${RUN})
+      set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_check_timing_2020_${RUN})
       Set(fixture_built_evt_${RUN} fixture_done_${testname})
       set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_built_evt_${RUN}})
 
@@ -202,6 +203,13 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
       Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
       set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_monirich_2020_${RUN})
+
+      ### Unpack + pulser check, needed as STS unpacker now needs a special flag to store the pulser digis in the standard out
+      Set(testname mcbm_unpack_pulser_2020_${RUN})
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2020/unpack_pulser_mcbm.sh \"${RAW_DATA_PATH}/${RUN}_first20Ts.tsa\" ${RUN} )
+      Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
+      Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
+      set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_monirich_2020_)
     EndIf() # If(EXISTS ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa))
   EndForEach() # ForEach(RUN 759 760 761 762 811 812 819 824 856 )
 EndIf() # If(DEFINED ENV{RAW_DATA_PATH} )

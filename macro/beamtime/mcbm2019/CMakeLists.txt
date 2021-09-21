@@ -26,6 +26,7 @@ GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2019/MonitorM
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2019/MonitorTof.C )       # CbmMcbm2018MonitorTaskTof + CbmMcbm2018MonitorAlgoTof
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2019/MonitorRich.C )      # CbmMcbm2018UnpackerTaskRich.h in monitor mode
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2019/MonitorPsd.C )       # CbmMcbm2018MonitorTaskPsd + CbmMcbm2018MonitorAlgoPsd
+GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2019/unpack_pulser_mcbm.C ) # Unpackers + Pulser check
 
 ## Define tests + dependencies
 Set(testname mcbm_convert_2019)
@@ -69,19 +70,19 @@ Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed
 set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_unpacked})
 set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_check_stsdigis_2019)
 
-Set(testname mcbm_check_pulser_2019)
-Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2019/check_pulser.sh 399 )
-Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
-Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_unpacked})
-set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_check_muchdigis_2019)
+#Set(testname mcbm_check_pulser_2019)
+#Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2019/check_pulser.sh 399 )
+#Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
+#Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
+#set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_unpacked})
+#set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_check_muchdigis_2019)
 
 Set(testname mcbm_build_event_2019)
 Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2019/build_events.sh \"data/unp_mcbm_399.root\" 399 )
 Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
 Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
 set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_unpacked})
-set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_check_pulser_2019)
+set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_check_muchdigis_2019)
 Set(fixture_built_evt fixture_done_${testname})
 set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_built_evt})
 
@@ -128,4 +129,10 @@ Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
 Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
 set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_monirich_2019)
 
+### Unpack + pulser check, needed as STS unpacker now needs a special flag to store the pulser digis in the standard out
+Set(testname mcbm_unpack_pulser_2019)
+Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2019/unpack_pulser_mcbm.sh \"${CBMROOT_SOURCE_DIR}/input/mcbm_run399_first20Ts.tsa\" 399 )
+Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
+Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
+set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_monipsd_2019)
 #####################

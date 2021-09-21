@@ -82,6 +82,8 @@ public:
   Bool_t IsCrobActive(UInt_t uDpbIdx, UInt_t uCrobIdx);
   Bool_t IsFebActive(UInt_t uFebInSystIdx);
   Bool_t IsFebActive(UInt_t uDpbIdx, UInt_t uCrobIdx, UInt_t uFebIdx);
+  Bool_t IsFebPulser(UInt_t uFebInSystIdx);
+  Bool_t IsFebPulser(UInt_t uDpbIdx, UInt_t uCrobIdx, UInt_t uFebIdx);
   Int_t GetFebModuleIdx(UInt_t uDpbIdx, UInt_t uCrobIdx, UInt_t uFebIdx);
   Int_t GetFebModuleSide(UInt_t uDpbIdx, UInt_t uCrobIdx, UInt_t uFebIdx);
   Double_t GetFebAdcGain(UInt_t uDpbIdx, UInt_t uCrobIdx, UInt_t uFebIdx);
@@ -139,6 +141,8 @@ private:
   TArrayI fiDbpIdArray;      // Array to hold the unique IDs (equipment ID) for all STS DPBs
   TArrayI fiCrobActiveFlag;  // Array to hold the active flag for all CROBs, [ NbDpb * kuNbCrobPerDpb ]
   TArrayI
+    fiFebPulserFlag;  // Array to hold the pulser flag for all FEBs, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ], 1 if pulser, 0 if standard
+  TArrayI
     fiFebModuleIdx;  // Index of the STS module for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ], -1 if inactive
   TArrayI
     fiFebModuleSide;  // STS module side for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ], 0 = P, 1 = N, -1 if inactive
@@ -148,6 +152,6 @@ private:
   TArrayI
     fiFebAdcThrOffs;  // Thr. offset in Units vs Cal. Thr. for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
 
-  ClassDef(CbmMcbm2018StsPar, 1);
+  ClassDef(CbmMcbm2018StsPar, 2);
 };
 #endif  // CBMMCBM2018STSPAR_H

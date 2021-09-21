@@ -71,6 +71,7 @@ private:
 
   std::vector<std::vector<std::vector<int32_t>>>
     fviFebType;  //! FEB type, [ NbDpb ][ NbCrobPerDpb ][ NbFebsPerCrob ], 0 = A, 1 = B, -1 if inactive
+  std::vector<bool> fvbFebPulser;      //! Pulser flag for each FEB, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ]
   std::vector<int32_t> fviFebAddress;  //! STS address for each FEB, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ]
   std::vector<int32_t> fviFebSide;     //! Module side for each FEB, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ]
   std::vector<double> fvdFebAdcGain;   //! ADC gain in e-/b, [ NbDpb * NbCrobPerDpb * NbFebsPerCrob ]

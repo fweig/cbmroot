@@ -65,12 +65,14 @@ public:
 
   /// Task settings
   void SetWriteOutputFlag(Bool_t bFlagIn) { fbWriteOutput = bFlagIn; }
+  void SeparatePulserOutput(Bool_t bFlagIn);
 
 private:
   /// Control flags
-  Bool_t fbMonitorMode;       //! Switch ON the filling of a minimal set of histograms
-  Bool_t fbDebugMonitorMode;  //! Switch ON the filling of a additional set of histograms
-  Bool_t fbWriteOutput;       //! If ON the output TClonesArray of digi is written to disk
+  Bool_t fbMonitorMode;           //! Switch ON the filling of a minimal set of histograms
+  Bool_t fbDebugMonitorMode;      //! Switch ON the filling of a additional set of histograms
+  Bool_t fbWriteOutput;           //! If ON the output TClonesArray of digi is written to disk
+  Bool_t fbPulserOutput = kTRUE;  //! If ON a separate output vector of digi is used for the pulser
 
   /// Temporary storage of user parameters
   std::vector<FebChanMask> fvChanMasks;
@@ -80,6 +82,7 @@ private:
 
   /// Output vectors
   std::vector<CbmStsDigi>* fpvDigiSts       = nullptr;
+  std::vector<CbmStsDigi>* fpvPulserDigiSts = nullptr;
   std::vector<CbmErrorMessage>* fpvErrorSts = nullptr;
 
   /// Processing algo

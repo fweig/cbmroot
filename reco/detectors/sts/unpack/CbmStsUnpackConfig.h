@@ -35,7 +35,7 @@
 #include <memory>
 #include <vector>
 
-class CbmStsUnpackConfig : public CbmRecoUnpackConfig<CbmStsUnpackAlgoBase, CbmStsDigi, CbmErrorMessage> {
+class CbmStsUnpackConfig : public CbmRecoUnpackConfig<CbmStsUnpackAlgoBase, CbmStsDigi, CbmStsDigi, CbmErrorMessage> {
 
 public:
   /**

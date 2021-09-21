@@ -38,7 +38,7 @@
 #include <memory>
 #include <utility>
 
-class CbmStsUnpackAlgoBase : public CbmRecoUnpackAlgo<CbmStsDigi, CbmErrorMessage> {
+class CbmStsUnpackAlgoBase : public CbmRecoUnpackAlgo<CbmStsDigi, CbmStsDigi, CbmErrorMessage> {
 public:
   /** @brief Create the Cbm Sts Unpack AlgoBase object */
   CbmStsUnpackAlgoBase(std::string name);
