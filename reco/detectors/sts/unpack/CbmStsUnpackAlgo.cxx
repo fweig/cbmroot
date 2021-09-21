@@ -283,13 +283,11 @@ void CbmStsUnpackAlgo::initInternalStatus(CbmMcbm2018StsPar* parset)
 
   fvvusLastTsChan.resize(uNbStsXyters);
   fvvusLastAdcChan.resize(uNbStsXyters);
-  fvvusLastTsMsbChan.resize(uNbStsXyters);
-  fvvusLastTsMsbCycleChan.resize(uNbStsXyters);
+  fvvulLastTsMsbChan.resize(uNbStsXyters);
   for (uint32_t uAsicIdx = 0; uAsicIdx < uNbStsXyters; ++uAsicIdx) {
     fvvusLastTsChan[uAsicIdx].resize(fNrChsPerAsic, 0);
     fvvusLastAdcChan[uAsicIdx].resize(fNrChsPerAsic, 0);
-    fvvusLastTsMsbChan[uAsicIdx].resize(fNrChsPerAsic, 0);
-    fvvusLastTsMsbCycleChan[uAsicIdx].resize(fNrChsPerAsic, 0);
+    fvvulLastTsMsbChan[uAsicIdx].resize(fNrChsPerAsic, 0);
   }
 }
 
@@ -465,7 +463,7 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
       if (fbRejectDuplicateDigis) {
         if (usRawTs == fvvusLastTsChan[uAsicIdx][usChan]
             && (fbDupliWithoutAdc || usRawAdc == fvvusLastAdcChan[uAsicIdx][usChan])
-            && fulTsMsbIndexInTs[fuCurrDpbIdx] == fvvusLastTsMsbChan[uAsicIdx][usChan]) {
+            && fulTsMsbIndexInTs[fuCurrDpbIdx] == fvvulLastTsMsbChan[uAsicIdx][usChan]) {
           /// FIXME: add plots to check what is done in this rejection
           LOG(debug) << "CbmStsUnpackAlgo::processHitInfo => "
                      << Form("Rejecting duplicate on Asic %3d channel %3d, TS %3d, ADC %2d", uAsicIdx, usChan, usRawTs,
@@ -474,8 +472,7 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
         }  // if same TS, (ADC,) TS MSB, TS MSB cycle, reject
         fvvusLastTsChan[uAsicIdx][usChan]         = usRawTs;
         fvvusLastAdcChan[uAsicIdx][usChan]        = usRawAdc;
-        fvvusLastTsMsbChan[uAsicIdx][usChan]      = fulTsMsbIndexInTs[fuCurrDpbIdx];
-        fvvusLastTsMsbCycleChan[uAsicIdx][usChan] = fvuCurrentTsMsbCycle[fuCurrDpbIdx];
+        fvvulLastTsMsbChan[uAsicIdx][usChan]      = fulTsMsbIndexInTs[fuCurrDpbIdx];
       }  // if (fbRejectDuplicateDigis)
 
       uint32_t uChanInMod = usChan + fNrChsPerAsic * (uAsicIdx % fNrAsicsPerFeb);

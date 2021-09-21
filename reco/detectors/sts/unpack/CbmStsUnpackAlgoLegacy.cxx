@@ -52,7 +52,7 @@ CbmStsUnpackAlgoLegacy::CbmStsUnpackAlgoLegacy()
   , fvmHitsInMs()
   , fvvusLastTsChan()
   , fvvusLastAdcChan()
-  , fvvusLastTsMsbChan()
+  , fvvuLastTsMsbChan()
   , fvvusLastTsMsbCycleChan()
 {
 }
@@ -323,12 +323,12 @@ void CbmStsUnpackAlgoLegacy::InitInternalStatus()
 
   fvvusLastTsChan.resize(uNbStsXyters);
   fvvusLastAdcChan.resize(uNbStsXyters);
-  fvvusLastTsMsbChan.resize(uNbStsXyters);
+  fvvuLastTsMsbChan.resize(uNbStsXyters);
   fvvusLastTsMsbCycleChan.resize(uNbStsXyters);
   for (uint32_t uAsicIdx = 0; uAsicIdx < uNbStsXyters; ++uAsicIdx) {
     fvvusLastTsChan[uAsicIdx].resize(fUnpackPar->GetNbChanPerAsic(), 0);
     fvvusLastAdcChan[uAsicIdx].resize(fUnpackPar->GetNbChanPerAsic(), 0);
-    fvvusLastTsMsbChan[uAsicIdx].resize(fUnpackPar->GetNbChanPerAsic(), 0);
+    fvvuLastTsMsbChan[uAsicIdx].resize(fUnpackPar->GetNbChanPerAsic(), 0);
     fvvusLastTsMsbCycleChan[uAsicIdx].resize(fUnpackPar->GetNbChanPerAsic(), 0);
   }
 }
@@ -572,7 +572,7 @@ void CbmStsUnpackAlgoLegacy::ProcessHitInfo(const stsxyter::Message& mess)
   if (fbRejectDuplicateDigis) {
     if (usRawTs == fvvusLastTsChan[uAsicIdx][usChan]
         && (fbDupliWithoutAdc || usRawAdc == fvvusLastAdcChan[uAsicIdx][usChan])
-        && fvulCurrentTsMsb[fuCurrDpbIdx] - fvvusLastTsMsbChan[uAsicIdx][usChan] < kuMaxTsMsbDiffDuplicates
+        && fvulCurrentTsMsb[fuCurrDpbIdx] - fvvuLastTsMsbChan[uAsicIdx][usChan] < kuMaxTsMsbDiffDuplicates
         && fvuCurrentTsMsbCycle[fuCurrDpbIdx] == fvvusLastTsMsbCycleChan[uAsicIdx][usChan]) {
       /// FIXME: add plots to check what is done in this rejection
       LOG(debug) << "CbmStsUnpackAlgoLegacy::ProcessHitInfo => "
@@ -583,7 +583,7 @@ void CbmStsUnpackAlgoLegacy::ProcessHitInfo(const stsxyter::Message& mess)
   }    // if (fbRejectDuplicateDigis)
   fvvusLastTsChan[uAsicIdx][usChan]         = usRawTs;
   fvvusLastAdcChan[uAsicIdx][usChan]        = usRawAdc;
-  fvvusLastTsMsbChan[uAsicIdx][usChan]      = fvulCurrentTsMsb[fuCurrDpbIdx];
+  fvvuLastTsMsbChan[uAsicIdx][usChan]       = fvulCurrentTsMsb[fuCurrDpbIdx];
   fvvusLastTsMsbCycleChan[uAsicIdx][usChan] = fvuCurrentTsMsbCycle[fuCurrDpbIdx];
 
   // Compute the Full time stamp

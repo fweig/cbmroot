@@ -248,10 +248,8 @@ protected:
   std::vector<std::vector<uint16_t>> fvvusLastTsChan = {};  //!
   /** @brief ADC of last hit message for each channel, [ AsicIdx ][ Chan ] */
   std::vector<std::vector<uint16_t>> fvvusLastAdcChan = {};  //!
-  /** @brief TS MSB of last hit message for each channel, [ AsicIdx ][ Chan ] */
-  std::vector<std::vector<uint16_t>> fvvusLastTsMsbChan = {};  //!
-  /** @brief TS MSB cycle of last hit message for each channel, [ AsicIdx ][ Chan ] */
-  std::vector<std::vector<uint16_t>> fvvusLastTsMsbCycleChan = {};  //!
+  /** @brief TS MSB in TS of last hit message for each channel, [ AsicIdx ][ Chan ] */
+  std::vector<std::vector<uint64_t>> fvvulLastTsMsbChan = {};  //!
 
   /** @brief Time of first valid hit (TS_MSB available), used as reference for evolution plots @todo move this to the monitor the algo does not need it!*/
   double fdStartTime = 0;

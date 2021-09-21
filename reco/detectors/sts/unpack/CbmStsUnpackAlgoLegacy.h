@@ -139,8 +139,8 @@ private:
   std::vector<std::vector<uint16_t>> fvvusLastTsChan;  //! TS of last hit message for each channel, [ AsicIdx ][ Chan ]
   std::vector<std::vector<uint16_t>>
     fvvusLastAdcChan;  //! ADC of last hit message for each channel, [ AsicIdx ][ Chan ]
-  std::vector<std::vector<uint16_t>>
-    fvvusLastTsMsbChan;  //! TS MSB of last hit message for each channel, [ AsicIdx ][ Chan ]
+  std::vector<std::vector<uint32_t>>
+    fvvuLastTsMsbChan;  //! TS MSB of last hit message for each channel, [ AsicIdx ][ Chan ]
   std::vector<std::vector<uint16_t>>
     fvvusLastTsMsbCycleChan;  //! TS MSB cycle of last hit message for each channel, [ AsicIdx ][ Chan ]
 
