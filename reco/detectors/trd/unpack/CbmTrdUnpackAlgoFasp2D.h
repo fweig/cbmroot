@@ -24,6 +24,7 @@
 
 #include "CbmRecoUnpackAlgo.tmpl"
 #include "CbmTrdDigi.h"
+#include "CbmTrdParSetAsic.h"
 
 #include "Timeslice.hpp"  // timeslice
 
@@ -38,6 +39,7 @@
 #define NCRI 40  // no of CRI in the system (1/TRD-2D_FASP module)
 #define NCOLS 8  // no of cols / FASP
 
+class CbmTrdParSetDigi;
 class CbmTrdUnpackAlgoFasp2D : public CbmRecoUnpackAlgo<CbmTrdDigi> {
 public:
   /** @brief Bytes per FASP frame stored in the microslices (32 bits words) 
@@ -94,7 +96,17 @@ public:
     uint8_t cri;
   };
 
-  // Setters
+  /**
+   * @brief Get the requested parameter containers.
+   * Return the required parameter containers together with the paths to the ascii 
+   * files to.
+   *  
+   * @param[in] std::string geoTag as used in CbmSetup
+   * @param[in] std::uint32_t runId for runwise defined parameters
+   * @return fParContVec
+  */
+  virtual std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
+  GetParContainerRequest(std::string geoTag, std::uint32_t runId);
 
 protected:
   /** @brief Get message type from the FASP word */
@@ -126,8 +138,7 @@ protected:
    * @param parset 
    * @return Bool_t initOk 
   */
-  Bool_t initParSet(FairParGenericSet* /*parset*/) { return kTRUE; }
-
+  Bool_t initParSet(FairParGenericSet* parset);
 
   /**
    * @brief Unpack a given microslice.
@@ -163,7 +174,11 @@ protected:
 private:
   void prt_wd(uint32_t w);
 
-  ClassDef(CbmTrdUnpackAlgoFasp2D, 2)
+  std::vector<Int_t> fModuleId;
+  CbmTrdParSetAsic fAsicPar;
+  CbmTrdParSetDigi* fDigiSet;
+
+  ClassDef(CbmTrdUnpackAlgoFasp2D, 2)  // unpack FASP read-out detectors
 };
 
 #endif  // CbmTrdUnpackAlgoFasp2D_H

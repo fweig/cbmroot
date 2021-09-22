@@ -34,6 +34,7 @@ public:
 
   virtual Int_t GetModuleId(Int_t i) const;
   virtual const CbmTrdParMod* GetModulePar(Int_t detId) const;
+  virtual CbmTrdParMod* GetModulePar(Int_t detId);
   virtual Int_t GetNrOfModules() const { return fNrOfModules; }
   std::map<Int_t, CbmTrdParMod*> GetModuleMap() { return fModuleMap; }
   virtual void addParam(CbmTrdParMod* mod);

@@ -329,7 +329,8 @@ const Int_t layer3o[9][11] = {
 // Parameters defining the layout of the different detector modules
 const Int_t NofModuleTypes             = 10;
 const Int_t ModuleType[NofModuleTypes] = {
-  0, 0, 0, 2, 1, 1, 1, 1, 2, 3};  // 0 = small module, 1 = large module, 2 = mCBM Bucharest prototype
+  0, 0, 0, 2, 1, 1,
+  1, 1, 2, 3};  // 0 = small module, 1 = large module, 2 = mCBM Bucharest prototype, 3 = mCBM Bucharest TRD-2Dh prototype
 
 // FEB inclination angle
 const Double_t feb_rotation_angle[NofModuleTypes] = {
@@ -2947,8 +2948,8 @@ void create_detector_layers(Int_t layerId)
 
   //install TRD2D detectors in the TRD setup
   Int_t type = -1;
-  if (layerId == 2 && layerType == 2) type = 9;
-  if (layerId == 3 && layerType == 2) type = 10;
+  if (layerId == 2 && layerType == 2) type = 10;
+  if (layerId == 3 && layerType == 2) type = 9;
   if (type < 0) return;
   Info("create_detector_layers", "add module[0x%p] of type[%d]", (void*) gModules[type - 1], type);
 
@@ -2962,7 +2963,7 @@ void create_detector_layers(Int_t layerId)
 
   module_rotation = new TGeoRotation();
   TGeoCombiTrans* module_placement =
-    new TGeoCombiTrans(xPos, yPos, LayerPosition[0] - (3 - layerId) * LayerThickness / 2,
+    new TGeoCombiTrans(xPos, yPos, LayerPosition[0] - (layerId - 1) * LayerThickness / 2,
                        module_rotation);  // shift by half layer thickness
   Int_t copy = copy_nr(1, 1, 0, PlaneId[layerId], 1);
   gGeoMan->GetVolume(layername)->AddNode(gModules[type - 1], copy, module_placement);

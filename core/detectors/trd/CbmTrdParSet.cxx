@@ -54,6 +54,14 @@ const CbmTrdParMod* CbmTrdParSet::GetModulePar(Int_t detId) const
 }
 
 //_______________________________________________________________________________
+CbmTrdParMod* CbmTrdParSet::GetModulePar(Int_t detId)
+{
+  map<Int_t, CbmTrdParMod*>::const_iterator imod = fModuleMap.find(detId);
+  if (imod == fModuleMap.end()) return nullptr;
+  return imod->second;
+}
+
+//_______________________________________________________________________________
 Bool_t CbmTrdParSet::getParams(FairParamList* l)
 {
   if (!l) return kFALSE;

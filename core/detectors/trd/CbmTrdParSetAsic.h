@@ -30,6 +30,7 @@ public:
 
   /** \brief Reset all parameters **/
   virtual void clear() { ; }
+  virtual void addParam(CbmTrdParMod* mod);
   void AddParameters(CbmTrdParSetAsic*);  // (VF) renamed to avoid shadowing of virtual method
   Bool_t getParams(FairParamList*);
   void putParams(FairParamList*);

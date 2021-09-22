@@ -43,9 +43,20 @@ CbmTrdParSetAsic::~CbmTrdParSetAsic()
     fModPar.clear();
   }
 }
+
+//_______________________________________________________________________________
+void CbmTrdParSetAsic::addParam(CbmTrdParMod* mod)
+{
+  if (mod->IsA() != CbmTrdParFasp::Class() && mod->IsA() != CbmTrdParSpadic::Class()) return;
+
+  fModuleMap[((CbmTrdParAsic*) mod)->GetAddress()] = mod;
+  fNrOfModules++;
+}
+
 //_______________________________________________________________________________
 Bool_t CbmTrdParSetAsic::getParams(FairParamList* l)
 {
+  //LOG(info) << GetName() << "::getParams(FairParamList*)";
   if (!l) return kFALSE;
   if (!l->fill("NrOfModules", &fNrOfModules)) return kFALSE;
   TArrayI moduleId(fNrOfModules);
@@ -60,6 +71,7 @@ Bool_t CbmTrdParSetAsic::getParams(FairParamList* l)
     if (nAsic[imod] > maxNrAsics) maxNrAsics = nAsic[imod];
   }
   Int_t address(0);
+  fType = 0xff;
 
   CbmTrdParAsic* asic(nullptr);
   for (Int_t i = 0; i < fNrOfModules; i++) {
@@ -74,10 +86,12 @@ Bool_t CbmTrdParSetAsic::getParams(FairParamList* l)
       for (Int_t iasic = 0; iasic < nAsic[i]; iasic++) {
         Int_t offset = iasic * (sizePerFasp);
         address      = values[offset + 0];
+        if (address == moduleId[i] * 1000 + 999) continue;
         asic         = new CbmTrdParFasp(address);
         static_cast<CbmTrdParFasp*>(asic)->LoadParams(values, iasic);
         fModPar[moduleId[i]]->SetAsicPar(address, asic);
       }
+      fModPar[moduleId[i]]->SetAsicType(1);
     }
     else {
       Int_t maxValues = maxNrAsics * (5 + NSPADICCH);
@@ -97,6 +111,7 @@ Bool_t CbmTrdParSetAsic::getParams(FairParamList* l)
         asic->SetChannelAddresses(addresses);
         fModPar[moduleId[i]]->SetAsicPar(address, asic);
       }
+      fModPar[moduleId[i]]->SetAsicType(0);
     }
   }
   return kTRUE;
@@ -106,7 +121,7 @@ Bool_t CbmTrdParSetAsic::getParams(FairParamList* l)
 void CbmTrdParSetAsic::putParams(FairParamList* l)
 {
   if (!l) return;
-  LOG(info) << GetName() << "::putParams(FairParamList*)";
+  //LOG(info) << GetName() << "::putParams(FairParamList*)";
 
   Int_t idx(0);
   TArrayI moduleId(fNrOfModules), nAsic(fNrOfModules), typeAsic(fNrOfModules);
@@ -271,6 +286,7 @@ void CbmTrdParSetAsic::SetAsicPar(Int_t address, CbmTrdParAsic* p)
 {
   std::map<Int_t, CbmTrdParMod*>::iterator it = fModuleMap.find(address);
   if (it != fModuleMap.end()) {
+    if (address % 1000 == 999) return;
     LOG(warn) << GetName() << "::SetAsicPar : The ASIC @ " << address << " already initialized. Skip.";
     return;
   }

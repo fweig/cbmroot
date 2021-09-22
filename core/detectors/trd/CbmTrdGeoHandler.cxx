@@ -192,10 +192,17 @@ void CbmTrdGeoHandler::NavigateTo(const TString& path)
     Double_t local[3] = {0., 0., 0.};  // Local center of volume
     gGeoManager->LocalToMaster(local, fGlobal);
     fGlobalMatrix = gGeoManager->GetCurrentMatrix();
-    // Get module type information which is decoded in copy number.
-    const char* moduleName = gGeoManager->GetMother()->GetName();
-    fModuleType            = std::atoi(string(1, *(moduleName + 6)).c_str());  // 6th element module type
 
+    // Get module type information which is decoded in copy number.
+    std::string moduleName = gGeoManager->GetMother()->GetName();
+    auto typeposstart      = moduleName.find("module") + 6;
+    uint ndigits           = 0;
+    auto partoftype        = moduleName.at(typeposstart);
+    while (std::isdigit(partoftype) && (ndigits + typeposstart) < moduleName.size()) {
+      partoftype = moduleName.at(typeposstart + ndigits);
+      ++ndigits;
+    }
+    fModuleType = std::atoi(moduleName.substr(typeposstart, ndigits).data());  // 6th element+ module type
     // We take the mother of the mother node (layer) of the current node we are in (gas).
     TGeoNode* layernode = gGeoManager->GetMother(2);  // get layer
     Int_t layercopyNr   = layernode->GetNumber();

@@ -159,7 +159,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
   // ---- TRDFASP2D ----
   std::shared_ptr<CbmTrdUnpackConfigFasp2D> trdfasp2dconfig = nullptr;
 
-  trdfasp2dconfig = std::make_shared<CbmTrdUnpackConfigFasp2D>("", runid);
+  trdfasp2dconfig = std::make_shared<CbmTrdUnpackConfigFasp2D>(trdsetuptag.Data(), 3);
   if (trdfasp2dconfig) {
     // trdfasp2dconfig->SetDebugState();
     trdfasp2dconfig->SetDoWriteOutput();

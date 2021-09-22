@@ -6,8 +6,17 @@
 #include "CbmTrdUnpackAlgoFasp2D.h"
 
 #include "CbmTrdDigi.h"
+#include "CbmTrdParFasp.h"
+#include "CbmTrdParModDigi.h"
+#include "CbmTrdParSetDigi.h"
+#include "CbmTrdParSetGain.h"
+#include "CbmTrdParSetGas.h"
+#include "CbmTrdParSpadic.h"
 
+#include <FairParAsciiFileIo.h>
 #include <FairParGenericSet.h>
+#include <FairParamList.h>
+#include <FairRuntimeDb.h>
 #include <FairTask.h>
 #include <Logger.h>
 
@@ -18,12 +27,94 @@
 
 using namespace std;
 
-CbmTrdUnpackAlgoFasp2D::CbmTrdUnpackAlgoFasp2D() : CbmRecoUnpackAlgo("CbmTrdUnpackAlgoFasp2D")
+CbmTrdUnpackAlgoFasp2D::CbmTrdUnpackAlgoFasp2D()
+  : CbmRecoUnpackAlgo("CbmTrdUnpackAlgoFasp2D")
+  , fModuleId()
+  , fAsicPar()
+  , fDigiSet(nullptr)
 {
   memset(fTime, 0, NCRI * sizeof(ULong64_t));
 }
 
+//_________________________________________________________________________________
 CbmTrdUnpackAlgoFasp2D::~CbmTrdUnpackAlgoFasp2D() {}
+
+//_________________________________________________________________________________
+Bool_t CbmTrdUnpackAlgoFasp2D::initParSet(FairParGenericSet* parset)
+{
+  FairParamList parList;
+  Int_t nModules(0);
+  if (strcmp(parset->ClassName(), "CbmTrdParSetAsic") == 0) {
+    CbmTrdParSetAsic* setPar = static_cast<CbmTrdParSetAsic*>(parset);
+    for (auto did : fModuleId) {
+      const CbmTrdParSetAsic* setDet = static_cast<const CbmTrdParSetAsic*>(setPar->GetModuleSet(did));
+      if (!setDet) continue;
+      if (setDet->GetAsicType() != Int_t(CbmTrdDigi::eCbmTrdAsicType::kFASP)) continue;
+      nModules++;
+      std::vector<Int_t> a;
+      setDet->GetAsicAddresses(&a);
+      for (auto add : a) {
+        CbmTrdParAsic* asic = (CbmTrdParAsic*) setDet->GetModulePar(add);
+        if (asic->IsA() == CbmTrdParSpadic::Class()) continue;
+        fAsicPar.addParam(asic);
+        // asic->Print();
+      }
+    }
+    //      setPar->printParams();
+    LOG(info) << GetName() << "::initParSet - for container " << parset->ClassName() << " modules " << nModules
+              << " asics " << fAsicPar.GetNrOfModules();
+  }
+  else if (strcmp(parset->ClassName(), "CbmTrdParSetDigi") == 0) {
+    fDigiSet                          = static_cast<CbmTrdParSetDigi*>(parset);
+    map<Int_t, CbmTrdParMod*> digiPar = fDigiSet->GetModuleMap();
+    for (auto digi : digiPar)
+      fModuleId.emplace_back(digi.first);
+    // setPar->printParams();
+    LOG(info) << GetName() << "::initParSet - for container " << parset->ClassName() << " modules " << fModuleId.size();
+  }
+  else if (strcmp(parset->ClassName(), "CbmTrdParSetGas") == 0) {
+    CbmTrdParSetGas* setPar = static_cast<CbmTrdParSetGas*>(parset);
+    setPar->printParams();
+    nModules = setPar->GetNrOfModules();
+  }
+  else if (strcmp(parset->ClassName(), "CbmTrdParSetGain") == 0) {
+    CbmTrdParSetGain* setPar = static_cast<CbmTrdParSetGain*>(parset);
+    setPar->printParams();
+    nModules = setPar->GetNrOfModules();
+  }
+  else {
+    LOG(error) << "Parameter set " << parset->ClassName() << " not known. Skip.";
+    return kFALSE;
+  }
+  return kTRUE;
+}
+
+//_________________________________________________________________________________
+std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
+CbmTrdUnpackAlgoFasp2D::GetParContainerRequest(std::string geoTag, std::uint32_t runId)
+{
+  LOG(info) << GetName() << "::GetParContainerRequest - for container " << geoTag.data() << " run " << runId << "  "
+            << fParFilesBasePath.data();
+
+  // Basepath for default Trd parameter sets (those connected to a geoTag)
+  std::string basepath = Form("%s/trd_%s", fParFilesBasePath.data(), geoTag.data());
+  std::string temppath = "";
+
+  // Digest the runId information in case of runId = 0 we use the default fall back
+  std::string runpath = "";
+  if (runId != 0) { runpath = ".run" + std::to_string(runId); }
+
+  temppath = basepath + runpath + ".digi" + ".par";
+  fParContVec.emplace_back(std::make_pair(temppath, std::make_shared<CbmTrdParSetDigi>()));
+  temppath = basepath + runpath + ".asic" + ".par";
+  fParContVec.emplace_back(std::make_pair(temppath, std::make_shared<CbmTrdParSetAsic>()));
+  //   temppath = basepath + runpath + ".gas" + ".par";
+  //   fParContVec.emplace_back(std::make_pair(temppath, std::make_shared<CbmTrdParSetGas>()));
+  //   temppath = basepath + runpath + ".gain" + ".par";
+  //   fParContVec.emplace_back(std::make_pair(temppath, std::make_shared<CbmTrdParSetGain>()));
+
+  return &fParContVec;
+}
 
 //_________________________________________________________________________________
 CbmTrdUnpackAlgoFasp2D::CbmTrdFaspMessageType CbmTrdUnpackAlgoFasp2D::mess_type(uint32_t wd)
@@ -82,25 +173,56 @@ void CbmTrdUnpackAlgoFasp2D::mess_prt(CbmTrdFaspContent* mess)
 bool CbmTrdUnpackAlgoFasp2D::pushDigis(
   std::map<UChar_t, std::vector<CbmTrdUnpackAlgoFasp2D::CbmTrdFaspContent*>> messes)
 {
-  bool use(false);
+  bool use(false), kRowInverted(false);
   UChar_t lFasp(0xff);
   UShort_t lchR, lchT;
   Double_t r, t;
-  Int_t dt, dtime;
+  Int_t dt, dtime, pad, row;
+  ULong64_t tlab;
+  CbmTrdParFasp* faspPar(nullptr);
+  CbmTrdParModDigi* digiPar(nullptr);
   vector<CbmTrdDigi*> digis;
   for (Int_t col(0); col < NCOLS; col++) {
     if (!messes[col].size()) continue;
-    if (lFasp == 0xff) lFasp = messes[col][0]->fasp;
-    //printf("col[%d]=%lu\n", col, messes[col].size());
-    for (vector<CbmTrdFaspContent*>::iterator i = messes[col].begin(); i != messes[col].end(); i++) {
+    vector<CbmTrdFaspContent*>::iterator i = messes[col].begin();
+    if (lFasp == 0xff) {
+      lFasp = messes[col][0]->fasp;
+      // link data to the position on the padplane
+      if (!(faspPar = (CbmTrdParFasp*) fAsicPar.GetAsicPar((*i)->cri * 1000 + lFasp))) {
+        LOG(error) << GetName() << "::pushDigis - FASP par " << (int) lFasp << " for module " << (*i)->cri
+                   << " missing. Skip.";
+        return false;
+      }
+      if (!(digiPar = (CbmTrdParModDigi*) fDigiSet->GetModulePar((*i)->cri))) {
+        LOG(error) << GetName() << "::pushDigis - DIGI par for module " << (*i)->cri << " missing. Skip.";
+        return false;
+      }
+      pad = faspPar->GetChannelAddress(0);
+      row = digiPar->GetPadRow(pad);
+
+      // determine the HW direction in which the FASP channels are ordered
+      if (row % 2 == 0) {  // valid only for mCBM-07.2021 TRD-2D
+        kRowInverted = kTRUE;
+        pad          = faspPar->GetChannelAddress(15 - (*i)->ch);
+      }
+    }
+
+    for (; i != messes[col].end(); i++) {
       if (VERBOSE) mess_prt((*i));
 
       lchR = 0;
       lchT = 0;
       use  = false;
-      if ((*i)->ch % 2) lchR = (*i)->data;
-      else
-        lchT = (*i)->data;
+      if ((*i)->ch % 2 != 0) {
+        if (!kRowInverted) lchR = (*i)->data;
+        else
+          lchT = (*i)->data;
+      }
+      else {
+        if (!kRowInverted) lchT = (*i)->data;
+        else
+          lchR = (*i)->data;
+      }
       for (vector<CbmTrdDigi*>::iterator id = digis.begin(); id != digis.end(); id++) {
         dtime = (*id)->GetTimeDAQ() - (*i)->tlab;
         if (TMath::Abs(dtime) < 5) {
@@ -111,13 +233,21 @@ bool CbmTrdUnpackAlgoFasp2D::pushDigis(
             break;
           }
           else if (lchT && !int(t)) {
+            tlab = (*id)->GetTimeDAQ();
             (*id)->SetCharge(lchT, r, +dtime);
+            (*id)->SetTimeDAQ(ULong64_t(tlab - dtime));
             use = true;
             break;
           }
         }
       }
-      if (!use) digis.push_back(new CbmTrdDigi(lFasp * NCOLS + col, lchT, lchR, (*i)->tlab));
+
+      if (!use) {
+        pad              = faspPar->GetChannelAddress(kRowInverted ? (15 - (*i)->ch) : (*i)->ch);
+        CbmTrdDigi* digi = new CbmTrdDigi(pad, lchT, lchR, (*i)->tlab);
+        digi->SetAddressModule((*i)->cri);
+        digis.push_back(digi);
+      }
       delete (*i);
     }
 
@@ -210,16 +340,25 @@ bool CbmTrdUnpackAlgoFasp2D::unpack(const fles::Timeslice* ts, std::uint16_t ico
         vDigi.clear();
         lFaspOld = fasp_id;
       }
+      if (data & 0x1) {
+        LOG(warn) << GetName() << "::unpack - Data corrupted : detect end bit set.";
+        continue;
+      }
       if (VERBOSE)
         cout << boost::format("    DD : fasp_id=%02d ch_id=%02d slice=%03d data=%4d\n")
                   % static_cast<unsigned int>(fasp_id) % static_cast<unsigned int>(ch_id)
                   % static_cast<unsigned int>(slice) % static_cast<unsigned int>(data >> 1);
+      if (data & 0x2000) {
+        LOG(debug) << GetName() << "::unpack - Self-triggered data.";
+        data &= 0x1fff;
+      }
       mess       = new CbmTrdFaspContent;
       mess->ch   = ch_id;
       mess->type = 1;
       mess->tlab = slice;
       mess->data = data >> 1;
       mess->fasp = lFaspOld;
+      mess->cri  = 53;
       col        = ch_id >> 1;
       vDigi[col].push_back(mess);
     }

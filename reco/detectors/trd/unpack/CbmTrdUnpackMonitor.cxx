@@ -446,6 +446,7 @@ std::double_t CbmTrdUnpackMonitor::getDeltaT(CbmTrdDigi* digi)
   if (modulevecpair == fLastDigiTimeMap.end()) {
     auto nchannels = fModuleNrColumns.find(moduleid)->second * fModuleNrRows.find(moduleid)->second;
     std::vector<size_t> channelsvec(nchannels, 0);
+    if (channelid > nchannels) return 0;
     channelsvec.at(channelid) = digi->GetTime();
     auto pair                 = std::make_pair(moduleid, channelsvec);
     fLastDigiTimeMap.emplace(pair);
