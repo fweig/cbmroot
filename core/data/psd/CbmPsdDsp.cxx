@@ -1,6 +1,6 @@
-/* Copyright (C) 2012-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2021 Institute for Nuclear Research, Moscow
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Nikolay Karpushkin, Volker Friese [committer], Florian Uhlig */
+   Authors: Nikolay Karpushkin [committer] */
 
 /** @file CbmPsdDsp.cxx
  ** @author Nikolay Karpushkin <karpushkin@inr.ru>

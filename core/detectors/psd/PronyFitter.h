@@ -1,6 +1,6 @@
-/* Copyright (C) 2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+/* Copyright (C) 2020-2021 Institute for Nuclear Research, Moscow
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Nikolay Karpushkin, Pierre-Alain Loizeau [committer] */
+   Authors: Nikolay Karpushkin [committer] */
 
 /** @file   PronyFitter.h
     @class  PronyFitter
