@@ -1,6 +1,6 @@
-/* Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2018-2020 Horia Hulubei National Institute of Physics and Nuclear Engineering, Bucharest
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Alexandru Bercuci */
+   Authors: Alexandru Bercuci [committer] */
 
 #include "CbmTrdModuleRecT.h"
 

@@ -1,6 +1,6 @@
-/* Copyright (C) 2010 - 2021 Goethe-University Frankfurt
+/* Copyright (C) 2021 Goethe-University Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Pascal Raisig */
+   Authors: Pascal Raisig [committer] */
 
 #include "CbmTrdRawToDigiFitR.h"
 
