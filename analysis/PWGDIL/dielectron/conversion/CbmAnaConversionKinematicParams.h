@@ -1,6 +1,6 @@
 /* Copyright (C) 2015-2016 Fakultaet fuer Mathematik und Naturwissenschaften, Bergische Universitaet Wuppertal, Wuppertal
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Sascha Reinecke,  */
+   Authors: Sascha Reinecke [committer]  */
 
 /**
  * @author S. Reinecke <reinecke@uni-wuppertal.de>

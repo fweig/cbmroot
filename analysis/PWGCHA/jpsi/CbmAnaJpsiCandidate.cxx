@@ -1,6 +1,6 @@
-/* Copyright (C) 2015 UGiessen, JINR-LIT
+/* Copyright (C) 2015 UGiessen/JINR-LIT, Giessen/Dubna
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Semen Lebedev */
+   Authors: Semen Lebedev [committer] */
 
 /*
  * CbmAnaJpsiCandidate.cxx

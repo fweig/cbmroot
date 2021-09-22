@@ -1,6 +1,6 @@
 /* Copyright (C) 2009-2021 Petersburg Nuclear Physics Institute named by B.P.Konstantinov of National Research Centre "Kurchatov Institute", Gatchina
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Anna Senger */
+   Authors: Evgeny Kryshen [committer], Anna Senger */
 
 //----------------------------------------
 //

@@ -1,6 +1,6 @@
 /* Copyright (C) 2018-2021 Faculty of Physics, Warsaw University of Technology, Warsaw
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Daniel Wielanek */
+   Authors: Daniel Wielanek [committer]*/
 
 /*
  * CbmDetectorID.h

@@ -1,6 +1,6 @@
 /* Copyright (C) 2020-2021 Physikalisches Institut, Eberhard Karls Universitaet Tuebingen, Tuebingen
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Viktor Klochkov */
+   Authors: Viktor Klochkov [committer] */
 
 #include "CbmTofHitsConverter.h"
 
