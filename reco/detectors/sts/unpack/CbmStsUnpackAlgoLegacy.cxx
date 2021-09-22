@@ -587,7 +587,7 @@ void CbmStsUnpackAlgoLegacy::ProcessHitInfo(const stsxyter::Message& mess)
   fvvusLastTsMsbCycleChan[uAsicIdx][usChan] = fvuCurrentTsMsbCycle[fuCurrDpbIdx];
 
   // Compute the Full time stamp
-  const int64_t ulHitTime = GetFullTimeStamp(usRawTs);
+  const uint64_t ulHitTime = GetFullTimeStamp(usRawTs);
 
   /// Store hit for output only if it is mapped to a module!!!
   if (0 != fviFebAddress[uFebIdx] && fdAdcCut < usRawAdc) {
@@ -708,10 +708,10 @@ void CbmStsUnpackAlgoLegacy::ProcessStatusInfo(const stsxyter::Message& mess, ui
 }
 
 // -------------------------------------------------------------------------
-int64_t CbmStsUnpackAlgoLegacy::GetFullTimeStamp(const uint16_t usRawTs)
+uint64_t CbmStsUnpackAlgoLegacy::GetFullTimeStamp(const uint16_t usRawTs)
 {
   // Use TS w/o overlap bits as they will anyway come from the TS_MSB
-  const int64_t ulTime =
+  const uint64_t ulTime =
     usRawTs
     + static_cast<uint64_t>(stsxyter::kuHitNbTsBinsBinning) * static_cast<uint64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
     + static_cast<uint64_t>(stsxyter::kulTsCycleNbBinsBinning)

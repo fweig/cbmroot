@@ -107,7 +107,7 @@ private:
   void AddHitsToDigiVect(std::vector<stsxyter::FinalHit>* vmHitsIn, std::vector<CbmStsDigi>* vDigiVectOut);
 
   /// Get full time stamp from raw time stamp
-  int64_t GetFullTimeStamp(const uint16_t usRawTs);
+  uint64_t GetFullTimeStamp(const uint16_t usRawTs);
 
   /// User settings: Data correction parameters
   double fdTimeOffsetNs;
