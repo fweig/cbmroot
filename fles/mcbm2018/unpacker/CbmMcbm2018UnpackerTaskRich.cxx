@@ -1,6 +1,6 @@
 /* Copyright (C) 2019-2021 Justus-Liebig-Universitaet Giessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Egor Ovcharenko [committer], Pierre-Alain Loizeau */
+   Authors: Egor Ovcharenko [committer] */
 
 /**
  * CbmMcbm2018UnpackerTaskRich

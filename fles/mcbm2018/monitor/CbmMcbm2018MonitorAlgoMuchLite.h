@@ -1,3 +1,7 @@
+/* Copyright (C) 2021 Variable Energy Cyclotron Centre, Kolkata
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Vikas Singhal [committer] */
+
 // -----------------------------------------------------------------------------
 // -----                                                                   -----
 // -----                   CbmMcbm2018MonitorMuchLite                        -----

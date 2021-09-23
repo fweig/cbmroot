@@ -1,10 +1,7 @@
-#/********************************************************************************
- *    Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH    *
- *                                                                              *
- *              This software is distributed under the terms of the             *
- *              GNU Lesser General Public Licence (LGPL) version 3,             *
- *                  copied verbatim in the file "LICENSE"                       *
- ********************************************************************************/
+/* Copyright (C) 2019-2021 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau, Florian Uhlig [committer], Andreas Redelbach */
+
 #include "CbmCheckTiming.h"
 
 #include "CbmDigiManager.h"

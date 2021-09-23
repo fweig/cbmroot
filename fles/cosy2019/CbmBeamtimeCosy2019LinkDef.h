@@ -1,6 +1,6 @@
 /* Copyright (C) 2021 GSI, IKF-UFra
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Florian Uhlig */
+   Authors: Florian Uhlig [committer] */
 
 #ifdef __CINT__
 
