@@ -17,6 +17,10 @@ external
 # inherited from the ALICE experiment. The code was copied by the
 # original author when he started working for CBM.
 papaframework
+# The parameter server was copied from FairRoot and modified
+# Since we are not sure yet how this needs to be handled the
+# files are not tested
+ParameterMQServer
 )
 
 RETURN_CODE="0"
