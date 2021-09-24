@@ -33,7 +33,7 @@ std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline = false);
 std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename, bool bDebugMode = false);
 
 void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid = 0,
-                    const char* setupName = "mcbm_beam_2021_03", std::int32_t nevents = -1, std::string outpath = "")
+                    const char* setupName = "mcbm_beam_2021_07", std::int32_t nevents = -1, std::string outpath = "")
 {
 
   // ========================================================================
