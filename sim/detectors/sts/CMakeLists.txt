@@ -91,8 +91,8 @@ GENERATE_LIBRARY()
 # -----   Install headers   -------------------------------
 Install(
 FILES CbmStsDigitize.h
-	  CbmStsDigitizeQa.h
-	  CbmStsDigitizeQaReport.h
+	  qa/CbmStsDigitizeQa.h
+	  qa/CbmStsDigitizeQaReport.h
 	  CbmStsMC.h
 	  CbmStsSensorPoint.h
 	  CbmStsSignal.h
