@@ -1,3 +1,7 @@
+/* Copyright (C) 2021 Institute for Nuclear Research, Moscow
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Nikolay Karpushkin [committer] */
+
 #include "CbmDeviceMonitorPsd.h"
 
 #include <iomanip>

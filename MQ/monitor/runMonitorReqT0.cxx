@@ -1,7 +1,6 @@
-/** @file runMonitorReqT0.cxx
-  * @copyright Copyright (C) 2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Pierre-Alain Loizeau [orginator] **/
+/* Copyright (C) 2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau [committer] */
 
 #include "CbmDeviceMonitorReqT0.h"
 
