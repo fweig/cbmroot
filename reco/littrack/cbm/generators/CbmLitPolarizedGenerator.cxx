@@ -1,4 +1,4 @@
-/* Copyright (C) 2009-2011 GSI/JINR-LIT
+/* Copyright (C) 2009-2011 GSI/JINR-LIT, Darmstadt/Dubna
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Evgeny Kryshen, Andrey Lebedev [committer] */
 

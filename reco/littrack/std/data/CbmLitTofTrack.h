@@ -1,6 +1,6 @@
-/* Copyright (C) 2013-2017 GSI/JINR-LIT
+/* Copyright (C) 2013-2017 GSI/JINR-LIT, Darmstadt/Dubna
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Andrey Lebedev */
+   Authors: Andrey Lebedev [committer] */
 
 /*
  * CbmLitTofTrack.h

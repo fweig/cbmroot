@@ -1,6 +1,6 @@
-/* Copyright (C) 2011-2014 UGiessen, JINR-LIT
+/* Copyright (C) 2011-2014 UGiessen/JINR-LIT, Giessen/Dubna
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Semen Lebedev, Andrey Lebedev */
+   Authors: Semen Lebedev [committer], Andrey Lebedev */
 
 /**
  * \file CbmLitTrackingQaStudyReport.cxx

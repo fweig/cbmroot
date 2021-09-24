@@ -1,6 +1,6 @@
-/* Copyright (C) 2012-2016 FIAS, JINR-LIT
+/* Copyright (C) 2012-2016 FIAS/JINR-LIT, Frankfurt/Dubna
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Grigory Kozlov */
+   Authors: Grigory Kozlov [committer] */
 
 /*
  * CbmClusteringGeometry.h
