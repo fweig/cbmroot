@@ -451,6 +451,8 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
   // Compute the Full time stamp
   const uint64_t ulHitTime = getFullTimeStamp(usRawTs);
 
+  if (fMonitor) fMonitor->CountRawHit(uFebIdx, uChanInFeb);
+
   /// Store hit for output only if it is mapped to a module!!!
   if (0 != fviFebAddress[uFebIdx] && fdAdcCut < usRawAdc) {
     /// Store only if masking is disabled or if channeld is not masked
@@ -466,8 +468,10 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
             && fulTsMsbIndexInTs[fuCurrDpbIdx] == fvvulLastTsMsbChan[uAsicIdx][usChan]) {
           /// FIXME: add plots to check what is done in this rejection
           LOG(debug) << "CbmStsUnpackAlgo::processHitInfo => "
-                     << Form("Rejecting duplicate on Asic %3d channel %3d, TS %3d, ADC %2d", uAsicIdx, usChan, usRawTs,
+                     << Form("Rejecting duplicate on Asic %3u channel %3u, TS %3u, ADC %2u", uAsicIdx, usChan, usRawTs,
                              usRawAdc);
+
+          if (fMonitor) fMonitor->FillDuplicateHitsAdc(uFebIdx, uChanInFeb, usRawAdc);
           return;
         }  // if same TS, (ADC,) TS MSB, TS MSB cycle, reject
         fvvusLastTsChan[uAsicIdx][usChan]         = usRawTs;
@@ -501,6 +505,8 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
         LOG(error) << Form("Digi on disabled FEB %02u has address 0x%08x and side %d", uFebIdx, fviFebAddress[uFebIdx],
                            fviFebSide[uFebIdx]);
       }
+
+      if (fMonitor) fMonitor->CountDigi(uFebIdx, uChanInFeb);
 
       /// Catch the pulser digis and either save them to their own output or drop them
       if (fvbFebPulser[uFebIdx]) {
@@ -684,6 +690,14 @@ void CbmStsUnpackAlgo::refreshTsMsbFields(const uint32_t imslice, const size_t m
 bool CbmStsUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice)
 {
   auto msDescriptor = ts->descriptor(icomp, imslice);
+
+  /// If monitoring enable, fill here the "Per Timeslice" histograms with info from the previous TS
+  /// as only way to detect TS transitions due to the multiple calls in case of multiple components.
+  /// Time set to tlast MS in previous TS. Last TS will be missed.
+  if (fMonitor && 0 == imslice && 0 < fMsStartTime && msDescriptor.idx == ts->start_time()
+      && fMsStartTime < msDescriptor.idx) {
+    fMonitor->FillPerTimesliceCountersHistos(static_cast<double_t>(fMsStartTime) / 1e9);
+  }
 
   //Current equipment ID, tells from which DPB the current MS is originating
   const uint32_t uCurrentEquipmentId = msDescriptor.eq_id;

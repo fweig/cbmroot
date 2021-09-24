@@ -1,3 +1,7 @@
+/* Copyright (C) 2021 Goethe-University, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau, Pascal Raisig [committer], Dominik Smith */
+
 #include "CbmStsUnpackMonitor.h"
 
 #include "CbmQaCanvas.h"
@@ -54,6 +58,16 @@ Bool_t CbmStsUnpackMonitor::CreateHistograms(CbmMcbm2018StsPar* pUnpackPar)
   const UInt_t uNbAsicsPerFeb = pUnpackPar->GetNbAsicsPerFeb();
   const UInt_t uNbChanPerFeb  = pUnpackPar->GetNbChanPerFeb();
 
+  /// Initialize the per timeslice counters
+  fvuNbRawTsFeb.resize(uNbFebs);
+  fvvuNbRawTsChan.resize(uNbFebs);
+  fvuNbDigisTsFeb.resize(uNbFebs);
+  fvvuNbDigisTsChan.resize(uNbFebs);
+  for (uint32_t uFebIdx = 0; uFebIdx < uNbFebs; ++uFebIdx) {
+    fvvuNbRawTsChan[uFebIdx].resize(uNbChanPerFeb, 0);
+    fvvuNbDigisTsChan[uFebIdx].resize(uNbChanPerFeb, 0);
+  }
+
   /// Create general unpacking histograms
   fhDigisTimeInRun = new TH1I("hStsDigisTimeInRun", "Digis Nb vs Time in Run; Time in run [s]; Digis Nb []", 10, 0, 1);
   fhDigisTimeInRun->SetCanExtend(TH1::kAllAxes);
@@ -99,6 +113,12 @@ Bool_t CbmStsUnpackMonitor::CreateHistograms(CbmMcbm2018StsPar* pUnpackPar)
   fhStsStatusMessType = new TH2I(sHistName, title, uNbAsics, 0, uNbAsics, 16, 0., 16.);
   AddHistoToVector(fhStsStatusMessType, "");
 
+  /// Timeslice counter ratio Plots
+  sHistName           = "hRawHitRatioPerFeb";
+  title               = "Proportion of digis over raw hits in each FEB; FEB []; digis/raw [Prct]";
+  fhRawHitRatioPerFeb = new TProfile(sHistName, title, uNbFebs, -0.5, uNbFebs - 0.5);
+  AddHistoToVector(fhRawHitRatioPerFeb, "");
+
   ///++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++///
   UInt_t uAlignedLimit = fuLongHistoNbSeconds - (fuLongHistoNbSeconds % fuLongHistoBinSizeSec);
   fuLongHistoBinNb     = uAlignedLimit / fuLongHistoBinSizeSec;
@@ -107,6 +127,24 @@ Bool_t CbmStsUnpackMonitor::CreateHistograms(CbmMcbm2018StsPar* pUnpackPar)
   /// FEB-8 plots
   /// All histos per FEB: with channels or ASIC as axis!!
   for (UInt_t uFebIdx = 0; uFebIdx < uNbFebs; ++uFebIdx) {
+    /// Timeslice counter ratio Plots
+    sHistName = Form("hRawChRatio_%03d", uFebIdx);
+    title = Form("Proportion of raw hits in each channel of FEB %2d; Channel []; Share of FEB raw msg [Prct]", uFebIdx);
+    fvhRawChRatio.push_back(new TProfile(sHistName, title, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+    sHistName = Form("hHitChRatio_%03d", uFebIdx);
+    title     = Form("Proportion of digis in each channel of FEB %2d; Channel []; Share of FEB digis [Prct]", uFebIdx);
+    fvhHitChRatio.push_back(new TProfile(sHistName, title, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+    sHistName = Form("hDupliChRatio_%03d", uFebIdx);
+    title =
+      Form("Proportion of duplicates in each channel of FEB %2d; Channel []; Share of FEB duplicates [Prct]", uFebIdx);
+    fvhDupliChRatio.push_back(new TProfile(sHistName, title, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+    sHistName = Form("hRawHitRatioPerCh_%03d", uFebIdx);
+    title = Form("Proportion of digis over raw hits in each channel of FEB %2d; Channel []; digis/raw [Prct]", uFebIdx);
+    fvhRawHitRatioPerCh.push_back(new TProfile(sHistName, title, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+    sHistName = Form("hRawDupliRatioPerCh_%03d", uFebIdx);
+    title =
+      Form("Proportion of duplicates over raw hits in each channel of FEB %2d; Channel []; dupli/raw [Prct]", uFebIdx);
+    fvhRawDupliRatioPerCh.push_back(new TProfile(sHistName, title, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
 
     /// Channel counts
     sHistName = Form("hStsFebChanCntRaw_%03u", uFebIdx);
@@ -211,6 +249,11 @@ Bool_t CbmStsUnpackMonitor::CreateHistograms(CbmMcbm2018StsPar* pUnpackPar)
     title     = Form("Hits per second in FEB #%03u; Time [min]; Hits []", uFebIdx);
     fvhStsFebHitRateEvoLong.push_back(new TH1D(sHistName, title, fuLongHistoBinNb, -0.5, uAlignedLimit - 0.5));
 
+    AddHistoToVector(fvhRawChRatio[uFebIdx], "perFeb");
+    AddHistoToVector(fvhHitChRatio[uFebIdx], "perFeb");
+    AddHistoToVector(fvhDupliChRatio[uFebIdx], "perFeb");
+    AddHistoToVector(fvhRawHitRatioPerCh[uFebIdx], "perFeb");
+    AddHistoToVector(fvhRawDupliRatioPerCh[uFebIdx], "perFeb");
     AddHistoToVector(fvhStsFebChanCntRaw[uFebIdx], "perFeb");
     AddHistoToVector(fvhStsFebChanAdcRaw[uFebIdx], "perFeb");
     AddHistoToVector(fvhStsFebChanAdcRawProf[uFebIdx], "perFeb");
@@ -340,7 +383,15 @@ Bool_t CbmStsUnpackMonitor::ResetHistograms()
   fhStsAllAsicsHitRateEvo->Reset();
   fhStsFebAsicHitCounts->Reset();
   fhStsStatusMessType->Reset();
+  fhRawHitRatioPerFeb->Reset();
 
+  for (UInt_t uFebIdx = 0; uFebIdx < fvhRawChRatio.size(); ++uFebIdx) {
+    fvhRawChRatio[uFebIdx]->Reset();
+    fvhHitChRatio[uFebIdx]->Reset();
+    fvhDupliChRatio[uFebIdx]->Reset();
+    fvhRawHitRatioPerCh[uFebIdx]->Reset();
+    fvhRawDupliRatioPerCh[uFebIdx]->Reset();
+  }
   for (UInt_t uFebIdx = 0; uFebIdx < fvhStsFebChanCntRaw.size(); ++uFebIdx) {
     fvhStsFebChanCntRaw[uFebIdx]->Reset();
   }
@@ -397,6 +448,8 @@ Bool_t CbmStsUnpackMonitor::CreateDebugHistograms(CbmMcbm2018StsPar* pUnpackPar)
   const UInt_t uNbAsics       = pUnpackPar->GetNrOfAsics();
   const UInt_t uNrOfDpbs      = pUnpackPar->GetNrOfDpbs();
   const UInt_t uNbChanPerAsic = pUnpackPar->GetNbChanPerAsic();
+  const UInt_t uNbFebs        = pUnpackPar->GetNrOfFebs();
+  const UInt_t uNbChanPerFeb  = pUnpackPar->GetNbChanPerFeb();
   TString sHistName {""};
   TString title {""};
 
@@ -457,6 +510,52 @@ Bool_t CbmStsUnpackMonitor::CreateDebugHistograms(CbmMcbm2018StsPar* pUnpackPar)
   fhStsDpbRawTsMsbDpb->SetCanExtend(TH2::kAllAxes);
   AddHistoToVector(fhStsDpbRawTsMsbDpb, "");
 
+  /// Timeslice counter ratio Plots
+  sHistName              = "hRawHitRatioEvoPerFeb";
+  title                  = "Proportion of digis over raw hits in each FEB; Time [s]; FEB []; digis/raw [Prct]";
+  fhRawHitRatioEvoPerFeb = new TProfile2D(sHistName, title, 600, -0.5, 599.5, uNbFebs, -0.5, uNbFebs - 0.5);
+  AddHistoToVector(fhRawHitRatioEvoPerFeb, "");
+  for (uint32_t uFebIdx = 0; uFebIdx < uNbFebs; ++uFebIdx) {
+    sHistName = Form("hChDupliAdc_%03d", uFebIdx);
+    title     = Form("ADC in duplicate raw in each channel of FEB %2d; Channel []; ADC []", uFebIdx);
+    fvhChDupliAdc.push_back(new TH2I(sHistName, title, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5, 32, -0.5, 31.5));
+
+    sHistName = Form("hRawChRatioEvo_%03d", uFebIdx);
+    title = Form("Proportion of raw hits in each channel of FEB %2d; Time [s]; Channel []; Share of FEB raw msg [Prct]",
+                 uFebIdx);
+    fvhRawChRatioEvo.push_back(
+      new TProfile2D(sHistName, title, 600, -0.5, 599.5, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+    sHistName = Form("hHitChRatioEvo_%03d", uFebIdx);
+    title =
+      Form("Proportion of digis in each channel of FEB %2d; Time [s]; Channel []; Share of FEB digis [Prct]", uFebIdx);
+    fvhHitChRatioEvo.push_back(
+      new TProfile2D(sHistName, title, 600, -0.5, 599.5, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+    sHistName = Form("hDupliChRatioEvo_%03d", uFebIdx);
+    title =
+      Form("Proportion of duplicates in each channel of FEB %2d; Time [s]; Channel []; Share of FEB duplicates [Prct]",
+           uFebIdx);
+    fvhDupliChRatioEvo.push_back(
+      new TProfile2D(sHistName, title, 600, -0.5, 599.5, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+    sHistName = Form("hRawHitRatioEvoPerCh_%03d", uFebIdx);
+    title = Form("Proportion of digis over raw hits in each channel of FEB %2d; Time [s]; Channel []; digis/raw [Prct]",
+                 uFebIdx);
+    fvhRawHitRatioEvoPerCh.push_back(
+      new TProfile2D(sHistName, title, 600, -0.5, 599.5, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+    sHistName = Form("hRawDupliRatioEvoPerCh_%03d", uFebIdx);
+    title =
+      Form("Proportion of duplicates over raw hits in each channel of FEB %2d; Time [s]; Channel []; dupli/raw [Prct]",
+           uFebIdx);
+    fvhRawDupliRatioEvoPerCh.push_back(
+      new TProfile2D(sHistName, title, 600, -0.5, 599.5, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+
+    AddHistoToVector(fvhChDupliAdc[uFebIdx], "perFeb");
+    AddHistoToVector(fvhRawChRatioEvo[uFebIdx], "perFeb");
+    AddHistoToVector(fvhHitChRatioEvo[uFebIdx], "perFeb");
+    AddHistoToVector(fvhDupliChRatioEvo[uFebIdx], "perFeb");
+    AddHistoToVector(fvhRawHitRatioEvoPerCh[uFebIdx], "perFeb");
+    AddHistoToVector(fvhRawDupliRatioEvoPerCh[uFebIdx], "perFeb");
+  }
+
   /// Asic plots
   /// All histos per Asic: with channels or ASIC as axis!!
   for (UInt_t uAsicIdx = 0; uAsicIdx < uNbAsics; ++uAsicIdx) {
@@ -512,6 +611,16 @@ Bool_t CbmStsUnpackMonitor::ResetDebugHistograms()
   fhStsDpbRawTsMsb->Reset();
   fhStsDpbRawTsMsbSx->Reset();
   fhStsDpbRawTsMsbDpb->Reset();
+  fhRawHitRatioEvoPerFeb->Reset();
+
+  for (UInt_t uFebIdx = 0; uFebIdx < fvhRawChRatioEvo.size(); ++uFebIdx) {
+    fvhChDupliAdc[uFebIdx]->Reset();
+    fvhRawChRatioEvo[uFebIdx]->Reset();
+    fvhHitChRatioEvo[uFebIdx]->Reset();
+    fvhDupliChRatioEvo[uFebIdx]->Reset();
+    fvhRawHitRatioEvoPerCh[uFebIdx]->Reset();
+    fvhRawDupliRatioEvoPerCh[uFebIdx]->Reset();
+  }
 
   for (UInt_t uAsicIdx = 0; uAsicIdx < fvhStsChanCntRaw.size(); ++uAsicIdx) {
     fvhStsChanCntRaw[uAsicIdx]->Reset();
@@ -597,6 +706,80 @@ void CbmStsUnpackMonitor::FillHitEvoMonitoringHistos(const UInt_t& uFebIdx, cons
 */
 }
 
+// -------------------------------------------------------------------------
+void CbmStsUnpackMonitor::FillPerTimesliceCountersHistos(double_t dTsStartTimeS)
+{
+  if (0 == dFirstTsStartTime) dFirstTsStartTime = dTsStartTimeS;
+  double_t dTimeInRun     = dTsStartTimeS - dFirstTsStartTime;
+  double_t dRatio         = 0;
+  uint32_t uNbFebs        = fvuNbRawTsFeb.size();
+  uint32_t uNbChansPerFeb = (uNbFebs ? fvvuNbRawTsChan[0].size() : 0);
+  for (uint32_t uFebIdx = 0; uFebIdx < uNbFebs; ++uFebIdx) {
+    uint32_t uNbDupliFeb = fvuNbRawTsFeb[uFebIdx] - fvuNbDigisTsFeb[uFebIdx];
+    if (fvuNbRawTsFeb[uFebIdx]) {
+      dRatio = fvuNbDigisTsFeb[uFebIdx] * 100.0 / fvuNbRawTsFeb[uFebIdx];
+      fhRawHitRatioPerFeb->Fill(uFebIdx, dRatio);
+      if (fDebugMode) {  //
+        fhRawHitRatioEvoPerFeb->Fill(dTimeInRun, uFebIdx, dRatio);
+      }
+    }
+
+    for (uint32_t uChan = 0; uChan < uNbChansPerFeb; ++uChan) {
+      uint32_t uNbDupliChan = fvvuNbRawTsChan[uFebIdx][uChan] - fvvuNbDigisTsChan[uFebIdx][uChan];
+      if (fvuNbRawTsFeb[uFebIdx]) {
+        dRatio = fvvuNbRawTsChan[uFebIdx][uChan] * 100.0 / fvuNbRawTsFeb[uFebIdx];
+        fvhRawChRatio[uFebIdx]->Fill(uChan, dRatio);
+        if (fDebugMode) {  //
+          fvhRawChRatioEvo[uFebIdx]->Fill(dTimeInRun, uChan, dRatio);
+        }
+      }
+
+      if (fvuNbDigisTsFeb[uFebIdx]) {
+        dRatio = fvvuNbDigisTsChan[uFebIdx][uChan] * 100.0 / fvuNbDigisTsFeb[uFebIdx];
+        fvhHitChRatio[uFebIdx]->Fill(uChan, dRatio);
+        if (fDebugMode) {  //
+          fvhHitChRatioEvo[uFebIdx]->Fill(dTimeInRun, uChan, dRatio);
+        }
+      }
+
+      if (uNbDupliFeb) {
+        dRatio = uNbDupliChan * 100.0 / uNbDupliFeb;
+        fvhDupliChRatio[uFebIdx]->Fill(uChan, dRatio);
+        if (fDebugMode) {  //
+          fvhDupliChRatioEvo[uFebIdx]->Fill(dTimeInRun, uChan, dRatio);
+        }
+      }
+
+      if (fvvuNbRawTsChan[uFebIdx][uChan]) {
+        dRatio = fvvuNbDigisTsChan[uFebIdx][uChan] * 100.0 / fvvuNbRawTsChan[uFebIdx][uChan];
+        fvhRawHitRatioPerCh[uFebIdx]->Fill(uChan, dRatio);
+        if (fDebugMode) {  //
+          fvhRawHitRatioEvoPerCh[uFebIdx]->Fill(dTimeInRun, uChan, dRatio);
+        }
+
+        dRatio = uNbDupliChan * 100.0 / fvvuNbRawTsChan[uFebIdx][uChan];
+        fvhRawDupliRatioPerCh[uFebIdx]->Fill(uChan, dRatio);
+        if (fDebugMode) {  //
+          fvhRawDupliRatioEvoPerCh[uFebIdx]->Fill(dTimeInRun, uChan, dRatio);
+        }
+      }
+
+      fvvuNbRawTsChan[uFebIdx][uChan]   = 0;
+      fvvuNbDigisTsChan[uFebIdx][uChan] = 0;
+    }
+    fvuNbRawTsFeb[uFebIdx]   = 0;
+    fvuNbDigisTsFeb[uFebIdx] = 0;
+  }
+}
+
+// -------------------------------------------------------------------------
+void CbmStsUnpackMonitor::FillDuplicateHitsAdc(const uint32_t& uFebIdx, const uint32_t& uChanInFeb,
+                                               const uint16_t& usAdc)
+{
+  if (fDebugMode) {  //
+    fvhChDupliAdc[uFebIdx]->Fill(uChanInFeb, usAdc);
+  }
+}
 // -------------------------------------------------------------------------
 void CbmStsUnpackMonitor::ResetDebugInfo()
 {

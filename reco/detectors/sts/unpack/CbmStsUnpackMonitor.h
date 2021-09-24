@@ -1,9 +1,6 @@
-// -----------------------------------------------------------------------------
-// -----                                                                   -----
-// -----                  CbmStsUnpackMonitor                       -----
-// -----               Created 26.01.2019 by P.-A. Loizeau                 -----
-// -----                                                                   -----
-// -----------------------------------------------------------------------------
+/* Copyright (C) 2021 Goethe-University, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau, Pascal Raisig [committer], Dominik Smith */
 
 #ifndef CbmStsUnpackMonitor_H
 #define CbmStsUnpackMonitor_H
@@ -14,6 +11,7 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "TProfile.h"
+#include "TProfile2D.h"
 
 #include <cstdint>
 
@@ -211,6 +209,20 @@ public:
                                   const UInt_t& uChanInFeb, const Double_t& dTimeSinceStartSec,
                                   const bool& isHitMissedEvts);
 
+  void CountRawHit(uint32_t uFebIdx, uint32_t uChanInFeb)
+  {
+    fvuNbRawTsFeb[uFebIdx]++;
+    fvvuNbRawTsChan[uFebIdx][uChanInFeb]++;
+  }
+  void CountDigi(uint32_t uFebIdx, uint32_t uChanInFeb)
+  {
+    fvuNbDigisTsFeb[uFebIdx]++;
+    fvvuNbDigisTsChan[uFebIdx][uChanInFeb]++;
+  }
+
+  void FillPerTimesliceCountersHistos(double_t dTsStartTime);
+  void FillDuplicateHitsAdc(const uint32_t& uFebIdx, const uint32_t& uChanInFeb, const uint16_t& usAdc);
+
   /** @brief Activate the debug mode */
   bool GetDebugMode() { return fDebugMode; }
 
@@ -223,27 +235,41 @@ private:
   TString fHistoFileName = "HistosUnpackerSts.root";
 
   /// Rate evolution histos
+  double_t dFirstTsStartTime = 0;
   //Bool_t fbLongHistoEnable;
   UInt_t fuLongHistoNbSeconds  = 3600;
   UInt_t fuLongHistoBinSizeSec = 10;
-  UInt_t fuLongHistoBinNb;
+  UInt_t fuLongHistoBinNb      = 1;
+
+  /// Per timeslice counters to evaluate the eventual raw messages rejection per FEB
+  std::vector<uint32_t> fvuNbRawTsFeb   = {};
+  std::vector<uint32_t> fvuNbDigisTsFeb = {};
+  /// Per timeslice counters to evaluate the eventual raw messages rejection per [FEB, chan] pairs
+  std::vector<std::vector<uint32_t>> fvvuNbRawTsChan   = {};
+  std::vector<std::vector<uint32_t>> fvvuNbDigisTsChan = {};
 
   /// Canvases
   std::vector<CbmQaCanvas*> fvcStsSumm;
   std::vector<CbmQaCanvas*> fvcStsSmxErr;
 
   ///General histograms
-  TH1* fhDigisTimeInRun        = nullptr;
-  TH1* fhVectorSize            = nullptr;
-  TH1* fhVectorCapacity        = nullptr;
-  TH1* fhMsCntEvo              = nullptr;
-  TH2* fhMsErrorsEvo           = nullptr;
-  TH2* fhStsAllFebsHitRateEvo  = nullptr;
-  TH2* fhStsAllAsicsHitRateEvo = nullptr;
-  TH2* fhStsFebAsicHitCounts   = nullptr;
-  TH2* fhStsStatusMessType     = nullptr;
+  TH1* fhDigisTimeInRun         = nullptr;
+  TH1* fhVectorSize             = nullptr;
+  TH1* fhVectorCapacity         = nullptr;
+  TH1* fhMsCntEvo               = nullptr;
+  TH2* fhMsErrorsEvo            = nullptr;
+  TH2* fhStsAllFebsHitRateEvo   = nullptr;
+  TH2* fhStsAllAsicsHitRateEvo  = nullptr;
+  TH2* fhStsFebAsicHitCounts    = nullptr;
+  TH2* fhStsStatusMessType      = nullptr;
+  TProfile* fhRawHitRatioPerFeb = nullptr;
 
   ///General "per Feb" histogram vectors
+  std::vector<TProfile*> fvhRawChRatio         = {};
+  std::vector<TProfile*> fvhHitChRatio         = {};
+  std::vector<TProfile*> fvhDupliChRatio       = {};
+  std::vector<TProfile*> fvhRawHitRatioPerCh   = {};
+  std::vector<TProfile*> fvhRawDupliRatioPerCh = {};
   std::vector<TH1*> fvhStsFebChanCntRaw;
   std::vector<TH2*> fvhStsFebChanAdcRaw;
   std::vector<TProfile*> fvhStsFebChanAdcRawProf;
@@ -264,7 +290,7 @@ private:
   /** @brief Flag if debug mode is active or not */
   bool fDebugMode = false;
 
-  ///Debugging histograms
+  /// Debugging histograms
   TH1* fhStsMessType         = nullptr;
   TH2* fhStsMessTypePerDpb   = nullptr;
   TH2* fhStsMessTypePerElink = nullptr;
@@ -272,6 +298,14 @@ private:
   TH2* fhStsDpbRawTsMsb      = nullptr;
   TH2* fhStsDpbRawTsMsbSx    = nullptr;
   TH2* fhStsDpbRawTsMsbDpb   = nullptr;
+
+  TProfile2D* fhRawHitRatioEvoPerFeb                = nullptr;
+  std::vector<TH2*> fvhChDupliAdc                   = {};
+  std::vector<TProfile2D*> fvhRawChRatioEvo         = {};
+  std::vector<TProfile2D*> fvhHitChRatioEvo         = {};
+  std::vector<TProfile2D*> fvhDupliChRatioEvo       = {};
+  std::vector<TProfile2D*> fvhRawHitRatioEvoPerCh   = {};
+  std::vector<TProfile2D*> fvhRawDupliRatioEvoPerCh = {};
 
   static const UInt_t kiMaxNbFlibLinks = 32;
   TH1* fvhMsSize[kiMaxNbFlibLinks];

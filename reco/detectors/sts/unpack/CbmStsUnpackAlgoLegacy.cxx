@@ -576,7 +576,7 @@ void CbmStsUnpackAlgoLegacy::ProcessHitInfo(const stsxyter::Message& mess)
         && fvuCurrentTsMsbCycle[fuCurrDpbIdx] == fvvusLastTsMsbCycleChan[uAsicIdx][usChan]) {
       /// FIXME: add plots to check what is done in this rejection
       LOG(debug) << "CbmStsUnpackAlgoLegacy::ProcessHitInfo => "
-                 << Form("Rejecting duplicate on Asic %3d channel %3d, TS %3d, MSB %d, Cycle %d, ADC %2d", uAsicIdx,
+                 << Form("Rejecting duplicate on Asic %3u channel %3u, TS %3u, MSB %lu, Cycle %u, ADC %2u", uAsicIdx,
                          usChan, usRawTs, fvulCurrentTsMsb[fuCurrDpbIdx], fvuCurrentTsMsbCycle[fuCurrDpbIdx], usRawAdc);
       return;
     }  // if SMX 2.0 DPB and same TS, ADC, TS MSB, TS MSB cycle!
@@ -676,7 +676,7 @@ void CbmStsUnpackAlgoLegacy::ProcessEpochInfo(const stsxyter::Message& /*mess*/)
 void CbmStsUnpackAlgoLegacy::ProcessStatusInfo(const stsxyter::Message& mess, uint32_t uIdx)
 {
   if (fMonitor && fMonitor->GetDebugMode()) {
-    std::cout << Form("DPB %2u TS %12u MS %12u mess %5u ", fuCurrDpbIdx, fTsIndex, fulCurrentMsIdx, uIdx);
+    std::cout << Form("DPB %2u TS %12lu MS %12lu mess %5u ", fuCurrDpbIdx, fTsIndex, fulCurrentMsIdx, uIdx);
     mess.PrintMess(std::cout, stsxyter::MessagePrintMask::msg_print_Human);
   }
 

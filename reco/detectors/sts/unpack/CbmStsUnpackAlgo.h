@@ -166,9 +166,6 @@ protected:
   bool unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice);
 
   // Monitoring
-  /** @brief Potential (online) monitor for the unpacking process */
-  std::shared_ptr<CbmStsUnpackMonitor> fMonitor = nullptr;
-
   /** @brief Current µSlice time */
   uint64_t fMsStartTime = 0;
 

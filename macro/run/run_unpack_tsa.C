@@ -30,7 +30,7 @@
 
 std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename);
 std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline = false);
-std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename);
+std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename, bool bDebugMode = false);
 
 void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid = 0,
                     const char* setupName = "mcbm_beam_2021_03", std::int32_t nevents = -1, std::string outpath = "")
@@ -128,7 +128,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     /// Enable duplicates rejection, Ignores the ADC for duplicates check
     //stsconfig->SetDuplicatesRejection ( true, true );
     /// Enable Monitor plots
-    //stsconfig->SetMonitor(GetStsMonitor(outfilename));
+    //stsconfig->SetMonitor(GetStsMonitor(outfilename, true));
     stsconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
   }
   // -------------
@@ -330,7 +330,7 @@ std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline)
  * @brief Get the Sts Monitor. Extra function to keep default macro part more silent.
  * @return std::shared_ptr<CbmStsUnpackMonitor>
 */
-std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename)
+std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename, bool bDebugMode = false)
 {
   // -----   Output filename and path   -------------------------------------
   std::string outpath  = "";
@@ -341,8 +341,8 @@ std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename)
     filename = treefilename.substr(filenamepos++);
   }
   if (outpath.empty()) outpath = gSystem->GetWorkingDirectory();
-  std::string mydir = "/qa";
-  outpath += mydir;
+  //std::string mydir = "/qa";
+  //outpath += mydir;
 
   auto currentdir = gSystem->GetWorkingDirectory();
 
@@ -359,7 +359,7 @@ std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename)
 
   auto monitor = std::make_shared<CbmStsUnpackMonitor>();
   monitor->SetHistoFileName(outfilename);
-  //monitor->SetDebugMode(true);
+  monitor->SetDebugMode(bDebugMode);
   return monitor;
 }
 
