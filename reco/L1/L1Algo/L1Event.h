@@ -1,6 +1,6 @@
 /* Copyright (C) 2017-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Valentina Akishina */
+   Authors: Valentina Akishina [committer] */
 
 #ifndef L1Event_H
 #define L1Event_H

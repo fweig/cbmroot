@@ -1,11 +1,10 @@
-//-*- Mode: C++ -*-
-// $Id: AliHLTTPCCAGrid.h,v 1.1.1.1 2010/07/26 20:55:38 ikulakov Exp $
-// ************************************************************************
-// This file is property of and copyright by the ALICE HLT Project        *
-// ALICE Experiment at CERN, All rights reserved.                         *
-// See cxx source for full Copyright notice                               *
-//                                                                        *
-//*************************************************************************
+/* Copyright (C) 2010 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Igor Kulakov [committer] */
+
+// ****************************************************************
+// This code is based on the code of the ALICE HLT Project        *
+//*****************************************************************
 
 #ifndef L1GRID_H
 #define L1GRID_H

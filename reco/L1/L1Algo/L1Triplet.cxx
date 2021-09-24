@@ -1,10 +1,6 @@
-// @file L1Triplet.cxx
-// @author Sergey Gorbunov
-// @author VAlentina Akishina
-// @since 2021-05-18
-// @copyright Copyright (C) 2021 GSI Darmstadt
-// @licence SPDX-License-Identifier: GPL-3.0-only
-// @date 2021-05-18
+/* Copyright (C) 2019-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Valentina Akishina, Sergey Gorbunov[committer] */
 
 #include "L1Triplet.h"
 

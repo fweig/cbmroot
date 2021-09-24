@@ -1,3 +1,7 @@
+/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Valentina Akishina [committer] */
+
 /** @file CbmL1GlobalFindTracksEvent.h
  ** @author V. Akishina <v.akishina@gsi.de>
  ** based on CbmStsFindTracksEvent.h by Volker Friese <v.friese@gsi.de>
