@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Semen Lebedev (2016) (Initial version Supriya Das (2005)), Andrey Lebedev, Florian Uhlig */
+   Authors: Semen Lebedev, Andrey Lebedev, Florian Uhlig, Claudia Höhne [committer] */
 
 /**
  *  $Id: CbmRichRingFinderIdeal.cxx,v 1.5 2006/02/01 13:16:58 hoehne Exp $

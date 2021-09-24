@@ -1,6 +1,6 @@
 /* Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Norbert Herrmann */
+   Authors: Norbert Herrmann [committer] */
 
 // -------------------------------------------------------------------------
 // -----                  CbmTofExtendTracks source file                -----

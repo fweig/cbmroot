@@ -1,4 +1,4 @@
-/* Copyright (C) 2019-2021 UGiessen, JINR-LIT
+/* Copyright (C) 2019-2021 UGiessen/JINR-LIT, Giessen/Dubna
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Adrian Amatus Weber, Semen Lebedev [committer] */
 

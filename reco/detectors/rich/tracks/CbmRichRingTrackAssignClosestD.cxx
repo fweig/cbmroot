@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Claudia Hoehne, Semen Lebedev */
+   Authors: Claudia Hoehne [committer], Semen Lebedev */
 
 /**
 * \file CbmRichRingTrackAssignClosestD.cxx

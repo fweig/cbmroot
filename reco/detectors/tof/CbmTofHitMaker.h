@@ -1,6 +1,6 @@
-/* Copyright (C) 2020 PI-UHd, GSI
+/* Copyright (C) 2020 PI-UHd/GSI, Heidelberg/Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Norbert Herrmann */
+   Authors: Norbert Herrmann [committer] */
 
 /** @file CbmTofHitMaker.h
  ** @author nh adopted from

@@ -1,6 +1,6 @@
-/* Copyright (C) 2018-2019 GSI/JINR-LIT
+/* Copyright (C) 2018-2019 GSI/JINR-LIT, Darmstadt/Dubna
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Semen Lebedev */
+   Authors: Semen Lebedev [committer] */
 
 #include "CbmRichRonchiAna.h"
 

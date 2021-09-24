@@ -1,4 +1,4 @@
-/* Copyright (C) 2005-2021 GSI/JINR-LIT
+/* Copyright (C) 2005-2021 GSI/JINR-LIT, Darmstadt/Dubna
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Petr Stolpovsky, Andrey Lebedev [committer], Semen Lebedev */
 

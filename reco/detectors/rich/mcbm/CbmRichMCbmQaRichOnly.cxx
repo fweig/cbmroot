@@ -1,6 +1,6 @@
-/* Copyright (C) 2020-2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+/* Copyright (C) 2020-2021 Justus-Liebig-Universitaet Giessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Florian Uhlig */
+   Authors: Adrian Weber [committer] */
 
 #include "CbmRichMCbmQaRichOnly.h"
 

@@ -1,6 +1,6 @@
-/* Copyright (C) 2014-2020 UGiessen, JINR-LIT
+/* Copyright (C) 2014-2020 UGiessen/JINR-LIT, Giessen/Dubna
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Tariq Mahmoud */
+   Authors: Semen Lebedev [committer], Tariq Mahmoud */
 
 /**
  * \file CbmRichGeoOpt.cxx
