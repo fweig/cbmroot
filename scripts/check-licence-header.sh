@@ -9,6 +9,10 @@
 # For all the directories/files listed in the array an explanation should be given.
 
 excludes=(
+# The directory external is excluded from the check since this directory
+# contains code which isn't part of CbmRoot but external dependencies so
+# we don't have to test for our license header
+external
 # The directory is excluded since the files have a license header
 # inherited from the ALICE experiment. The code was copied by the
 # original author when he started working for CBM.
@@ -83,7 +87,7 @@ for FILE in $CHANGED_FILES; do
   for EXCLUDE in "${excludes[@]}"; do
     FILE=$(echo $FILE | egrep -v "$EXCLUDE")
   done
-  if [[ -n $FILE ]]; then
+  if [[ -n $FILE && -f $FILE ]]; then
     licenceHeaderCheck $FILE
   fi
 done
