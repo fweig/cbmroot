@@ -36,7 +36,6 @@ using std::endl;
 CbmTrdHitProducerQa::CbmTrdHitProducerQa() : CbmTrdHitProducerQa("TrdHitProducerQa", "") {}
 // --------------------------------------------------------------------------
 
-
 // ---- Standard constructor ------------------------------------------------
 CbmTrdHitProducerQa::CbmTrdHitProducerQa(const char* name, const char*)
   : FairTask(name)
@@ -46,29 +45,23 @@ CbmTrdHitProducerQa::CbmTrdHitProducerQa(const char* name, const char*)
   , fMCTrackArray(NULL)
   , fNoTrdStations(-1)
   , fNoTrdPerStation(-1)
-  , fHitPoolsX(new TH1F("fHitPoolsX", "", 500, -50, 50))
-  , fHitPoolsY(new TH1F("fHitPoolsY", "", 500, -50, 50))
-  , S1L1eTR15(new TH1F("S1L1eTR15", "TR of e- for first layer ", 600, 0., 60.))
-  , S1L1edEdx15(new TH1F("S1L1edEdx15", "dEdx of e- for first layer ", 600, 0., 60.))
-  , S1L1edE15(new TH1F("S1L1edE15", "dEdx+TR of e- for first layer ", 600, 0., 60.))
-  , S1L1edEall(new TH1F("S1L1edEall", "dEdx+TR of e- for first layer ", 600, 0., 60.))
-  , S1L1pidE15(new TH1F("S1L1pidE15", "dEdx+TR of pi- for first layer ", 600, 0., 60.))
-  , S1L1pidEall(new TH1F("S1L1pidEall", "dEdx+TR of pi- for first layer ", 600, 0., 60.))
-  , S3L4eTR15(NULL)
-  , S3L4edEdx15(NULL)
-  , S3L4edE15(NULL)
-  , S3L4edEall(new TH1F("S3L4edEall", "dEdx+TR of e- for layer 12", 600, 0., 60.))
-  , S3L4pidE15(NULL)
-  , S3L4pidEall(new TH1F("S3L4pidEall", "dEdx+TR of pi- for layer 12", 600, 0., 60.))
+  , fHitPullsX(new TH1F("fHitPullsX", "", 500, -50, 50))
+  , fHitPullsY(new TH1F("fHitPullsY", "", 500, -50, 50))
+  , S1L1edEcut(new TH1F("S1L1edEcut", "dEdx of e- for first layer, mom. cut ", 600, 0., 60.))
+  , S1L1edEall(new TH1F("S1L1edEall", "dEdx of e- for first layer ", 600, 0., 60.))
+  , S1L1pidEcut(new TH1F("S1L1pidEcut", "dEdx of pi- for first layer, mom. cut ", 600, 0., 60.))
+  , S1L1pidEall(new TH1F("S1L1pidEall", "dEdx of pi- for first layer ", 600, 0., 60.))
+  , S3L4edEcut(new TH1F("S3L4edEcut", "dEdx of e- for layer 12, mom. cut ", 600, 0., 60.))
+  , S3L4edEall(new TH1F("S3L4edEall", "dEdx of e- for layer 12", 600, 0., 60.))
+  , S3L4pidEcut(new TH1F("S3L4pidEcut", "dEdx of pi- for layer 12, mom. cut ", 600, 0., 60.))
+  , S3L4pidEall(new TH1F("S3L4pidEall", "dEdx of pi- for layer 12", 600, 0., 60.))
 {
 }
 // --------------------------------------------------------------------------
 
-
 // ---- Destructor ---------------------------------------------------------
 CbmTrdHitProducerQa::~CbmTrdHitProducerQa() {}
 // --------------------------------------------------------------------------
-
 
 // ---- Initialisation ------------------------------------------------------
 InitStatus CbmTrdHitProducerQa::Init()
@@ -76,15 +69,15 @@ InitStatus CbmTrdHitProducerQa::Init()
   fOutFolder.Clear();
   histFolder = fOutFolder.AddFolder("hist", "Histogramms");
 
-  histFolder->Add(fHitPoolsX);
-  histFolder->Add(fHitPoolsY);
-  histFolder->Add(S1L1eTR15);
-  histFolder->Add(S1L1edEdx15);
-  histFolder->Add(S1L1edE15);
+  histFolder->Add(fHitPullsX);
+  histFolder->Add(fHitPullsY);
+  histFolder->Add(S1L1edEcut);
   histFolder->Add(S1L1edEall);
-  histFolder->Add(S1L1pidE15);
+  histFolder->Add(S1L1pidEcut);
   histFolder->Add(S1L1pidEall);
+  histFolder->Add(S3L4edEcut);
   histFolder->Add(S3L4edEall);
+  histFolder->Add(S3L4pidEcut);
   histFolder->Add(S3L4pidEall);
 
   // Get pointer to the ROOT I/O manager
@@ -142,16 +135,8 @@ InitStatus CbmTrdHitProducerQa::Init()
 // ---- Task execution ------------------------------------------------------
 void CbmTrdHitProducerQa::Exec(Option_t*)
 {
-  //    Float_t  hitErrX  = 0;
-  //    Float_t  hitErrY  = 0;
-  Int_t partID = 0;
-  Float_t momentum;
-
-  // Event counters
-  Int_t nTrdHit = fTrdHitCollection->GetEntriesFast();
-
   // Loop over TRD hits
-  for (Int_t iHit = 0; iHit < nTrdHit; iHit++) {
+  for (Int_t iHit = 0; iHit < fTrdHitCollection->GetEntriesFast(); iHit++) {
     const CbmTrdHit* trdHit = (CbmTrdHit*) fTrdHitCollection->At(iHit);
     if (NULL == trdHit) continue;
 
@@ -167,47 +152,62 @@ void CbmTrdHitProducerQa::Exec(Option_t*)
     const Int_t plane = trdHit->GetPlaneId();
 
     if (plane == 1) {
-      partID   = (((CbmMCTrack*) fMCTrackArray->At(trdPoint->GetTrackID()))->GetPdgCode());
-      momentum = TMath::Sqrt((trdPoint->GetPx() * trdPoint->GetPx()) + (trdPoint->GetPy() * trdPoint->GetPy())
-                             + (trdPoint->GetPz() * trdPoint->GetPz()));
-
-      if ((TMath::Abs(partID) == 11) && (momentum > 1.25) && (momentum < 1.75)) {
-        S1L1eTR15->Fill(0);  //(trdHit->GetELossTR())*1000000);
-        S1L1edEdx15->Fill((trdHit->GetELoss()) * 1000000);
-        S1L1edE15->Fill((trdHit->GetELoss()) * 1000000);
+      const Int_t partID = (((CbmMCTrack*) fMCTrackArray->At(trdPoint->GetTrackID()))->GetPdgCode());
+      const Float_t momentum =
+        TMath::Sqrt((trdPoint->GetPx() * trdPoint->GetPx()) + (trdPoint->GetPy() * trdPoint->GetPy())
+                    + (trdPoint->GetPz() * trdPoint->GetPz()));
+      //electrons
+      if ((TMath::Abs(partID) == 11) && (momentum > fMomCutLower) && (momentum < fMomCutUpper)) {
+        S1L1edEcut->Fill((trdHit->GetELoss()) * 1000000);
       }
       if (TMath::Abs(partID) == 11) { S1L1edEall->Fill((trdHit->GetELoss()) * 1000000); }
-      if ((TMath::Abs(partID) == 211) && (momentum > 1.25) && (momentum < 1.75)) {
-        S1L1pidE15->Fill((trdHit->GetELoss()) * 1000000);
+
+      //pions
+      if ((TMath::Abs(partID) == 211) && (momentum > fMomCutLower) && (momentum < fMomCutUpper)) {
+        S1L1pidEcut->Fill((trdHit->GetELoss()) * 1000000);
       }
       if (TMath::Abs(partID) == 211) { S1L1pidEall->Fill((trdHit->GetELoss()) * 1000000); }
     }
 
+
     if (plane == 12) {
-      partID   = (((CbmMCTrack*) fMCTrackArray->At(trdPoint->GetTrackID()))->GetPdgCode());
-      momentum = TMath::Sqrt((trdPoint->GetPx() * trdPoint->GetPx()) + (trdPoint->GetPy() * trdPoint->GetPy())
-                             + (trdPoint->GetPz() * trdPoint->GetPz()));
+      const Int_t partID = (((CbmMCTrack*) fMCTrackArray->At(trdPoint->GetTrackID()))->GetPdgCode());
+      const Float_t momentum =
+        TMath::Sqrt((trdPoint->GetPx() * trdPoint->GetPx()) + (trdPoint->GetPy() * trdPoint->GetPy())
+                    + (trdPoint->GetPz() * trdPoint->GetPz()));
+      //electrons
+      if ((TMath::Abs(partID) == 11) && (momentum > fMomCutLower) && (momentum < fMomCutUpper)) {
+        S3L4edEcut->Fill((trdHit->GetELoss()) * 1000000);
+      }
       if (TMath::Abs(partID) == 11) { S3L4edEall->Fill((trdHit->GetELoss()) * 1000000); }
+
+      //pions
+      if ((TMath::Abs(partID) == 211) && (momentum > fMomCutLower) && (momentum < fMomCutUpper)) {
+        S3L4pidEcut->Fill((trdHit->GetELoss()) * 1000000);
+      }
       if (TMath::Abs(partID) == 211) { S3L4pidEall->Fill((trdHit->GetELoss()) * 1000000); }
     }
 
     if (plane == 1) {
       // compute the Hit pools for X and Y coordinate
-      const Float_t hitPosX = trdHit->GetX();
-      //	hitErrX   = trdHit->GetDx();
-      //        hitErrX  /= 10000;           // micrometers to centimeters
+      const Float_t hitPosX   = trdHit->GetX();
       const Float_t pointPosX = trdPoint->GetX();
-      const Float_t hitPoolX  = (hitPosX - pointPosX);  ///hitErrX;
+      const Float_t hitPullX  = (hitPosX - pointPosX);
 
-      const Float_t hitPosY = trdHit->GetY();
-      //	hitErrY   = trdHit->GetDy();
-      //        hitErrY  /= 10000;          // micrometers to centimeters
+      const Float_t hitPosY   = trdHit->GetY();
       const Float_t pointPosY = trdPoint->GetY();
-      const Float_t hitPoolY  = (hitPosY - pointPosY);  ///hitErrY;
+      const Float_t hitPullY  = (hitPosY - pointPosY);
 
       // fill histograms
-      fHitPoolsX->Fill(hitPoolX);
-      fHitPoolsY->Fill(hitPoolY);
+      fHitPullsX->Fill(hitPullX);
+      fHitPullsY->Fill(hitPullY);
+
+      //Float_t  hitErrX  = 0;
+      //Float_t  hitErrY  = 0;
+      //	hitErrX   = trdHit->GetDx();
+      //        hitErrX  /= 10000;           // micrometers to centimeters
+      //	hitErrY   = trdHit->GetDy();
+      //        hitErrY  /= 10000;          // micrometers to centimeters
     }
   }
 }

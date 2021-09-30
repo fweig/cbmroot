@@ -1,6 +1,6 @@
 /* Copyright (C) 2006-2014 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Matus Kalisky, Denis Bertini [committer], Florian Uhlig */
+   Authors: Matus Kalisky, Denis Bertini [committer], Florian Uhlig, Dominik Smith */
 
 // -----------------------------------------------------------------------
 // -----                     CbmTrdHitProducerQa                     -----
@@ -49,6 +49,13 @@ public:
   /* Finish at the end of each event */
   virtual void Finish();
 
+  /* Set the momentum cuts */
+  void SetMomentumCuts(Float_t CutLower, Float_t CutHigher)
+  {
+    fMomCutLower = CutLower;
+    fMomCutUpper = CutHigher;
+  }
+
 private:
   TFolder fOutFolder;   /// output folder with histos and canvases
   TFolder* histFolder;  /// subfolder for histograms
@@ -70,22 +77,22 @@ private:
   void WriteHistograms();
 
   /* Test histograms*/
-  TH1F* fHitPoolsX;  // = ((Hit - Point) / HitError)  in X
-  TH1F* fHitPoolsY;  // = ((Hit - Point) / HitError)  in Y
+  TH1F* fHitPullsX;  // = ((Hit - Point) / HitError)  in X
+  TH1F* fHitPullsY;  // = ((Hit - Point) / HitError)  in Y
 
-  TH1F* S1L1eTR15;    //
-  TH1F* S1L1edEdx15;  //
-  TH1F* S1L1edE15;    //
+  TH1F* S1L1edEcut;   //
   TH1F* S1L1edEall;   //
-  TH1F* S1L1pidE15;   //
+  TH1F* S1L1pidEcut;  //
   TH1F* S1L1pidEall;  //
 
-  TH1F* S3L4eTR15;    //
-  TH1F* S3L4edEdx15;  //
-  TH1F* S3L4edE15;    //
+  TH1F* S3L4edEcut;   //
   TH1F* S3L4edEall;   //
-  TH1F* S3L4pidE15;   //
+  TH1F* S3L4pidEcut;  //
   TH1F* S3L4pidEall;  //
+
+  /* Momentum cuts for energy distributions */
+  Float_t fMomCutLower = 1.25;
+  Float_t fMomCutUpper = 1.75;
 
   ClassDef(CbmTrdHitProducerQa, 3)
 };
