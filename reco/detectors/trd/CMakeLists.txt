@@ -15,6 +15,7 @@ Set(INCLUDE_DIRECTORIES
   ${CBMBASE_DIR}/draw
 
   ${CBMROOT_SOURCE_DIR}/reco/base
+  ${CBMROOT_SOURCE_DIR}/core/qa
   
   ${CBMDATA_DIR}
   ${CBMDATA_DIR}/base
@@ -100,6 +101,7 @@ Set(LIBRARY_NAME CbmTrdReco)
 Set(DEPENDENCIES
     CbmRecoBase
     CbmBase
+    CbmQaBase
     CbmData
     Base
     CbmTrdBase

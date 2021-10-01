@@ -26,6 +26,7 @@
 #include <TFolder.h>
 
 class CbmDigiManager;
+class CbmQaCanvas;
 class TClonesArray;
 class TH1F;
 
@@ -56,43 +57,48 @@ public:
     fMomCutUpper = CutHigher;
   }
 
+  /* Set number of TRD stations */
+  void SetNumberStations(Int_t nStations) { fNoTrdStations = nStations; }
+
+  /** Set number of layers per station **/
+  void SetLayersPerStations(Int_t nLayers) { fNoTrdPerStation = nLayers; }
+
 private:
-  TFolder fOutFolder;   /// output folder with histos and canvases
-  TFolder* histFolder;  /// subfolder for histograms
+  TFolder fOutFolder;             /// output folder with histos and canvases
+  TFolder* histFolder = nullptr;  /// subfolder for histograms
 
   CbmDigiManager* fDigiMan = nullptr;
 
   /* Data branches*/
-  TClonesArray* fTrdHitCollection;
-  TClonesArray* fTrdPointCollection;
-  TClonesArray* fMCTrackArray;
+  TClonesArray* fTrdHitCollection   = nullptr;
+  TClonesArray* fTrdPointCollection = nullptr;
+  TClonesArray* fMCTrackArray       = nullptr;
 
   /** Number of TRD stations **/
-  Int_t fNoTrdStations;
+  Int_t fNoTrdStations = 4;
 
   /** Number of layers per station **/
-  Int_t fNoTrdPerStation;
+  Int_t fNoTrdPerStation = 1;
 
   /* Write test histograms */
   void WriteHistograms();
 
   /* Test histograms*/
-  TH1F* fHitPullsX;  // = ((Hit - Point) / HitError)  in X
-  TH1F* fHitPullsY;  // = ((Hit - Point) / HitError)  in Y
+  std::vector<TH1F*> fvhHitPullsX;
+  std::vector<TH1F*> fvhHitPullsY;
 
-  TH1F* S1L1edEcut;   //
-  TH1F* S1L1edEall;   //
-  TH1F* S1L1pidEcut;  //
-  TH1F* S1L1pidEall;  //
+  std::vector<TH1F*> fvhedEcut;
+  std::vector<TH1F*> fvhedEall;
+  std::vector<TH1F*> fvhpidEcut;
+  std::vector<TH1F*> fvhpidEall;
 
-  TH1F* S3L4edEcut;   //
-  TH1F* S3L4edEall;   //
-  TH1F* S3L4pidEcut;  //
-  TH1F* S3L4pidEall;  //
+  /* Canvases */
+  std::vector<CbmQaCanvas*> fvdECanvas;
+  std::vector<CbmQaCanvas*> fvPullCanvas;
 
   /* Momentum cuts for energy distributions */
-  Float_t fMomCutLower = 1.25;
-  Float_t fMomCutUpper = 1.75;
+  Float_t fMomCutLower = 1.;
+  Float_t fMomCutUpper = 7.;
 
   ClassDef(CbmTrdHitProducerQa, 3)
 };

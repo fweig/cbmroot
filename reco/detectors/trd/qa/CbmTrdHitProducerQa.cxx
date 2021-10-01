@@ -12,6 +12,7 @@
 #include "CbmDigiManager.h"
 #include "CbmMCTrack.h"
 #include "CbmMatch.h"
+#include "CbmQaCanvas.h"
 #include "CbmTrdDigi.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
@@ -40,21 +41,6 @@ CbmTrdHitProducerQa::CbmTrdHitProducerQa() : CbmTrdHitProducerQa("TrdHitProducer
 CbmTrdHitProducerQa::CbmTrdHitProducerQa(const char* name, const char*)
   : FairTask(name)
   , fOutFolder("TrdHitProducerQA", "TrdHitProducerQA")
-  , fTrdHitCollection(NULL)
-  , fTrdPointCollection(NULL)
-  , fMCTrackArray(NULL)
-  , fNoTrdStations(-1)
-  , fNoTrdPerStation(-1)
-  , fHitPullsX(new TH1F("fHitPullsX", "", 500, -50, 50))
-  , fHitPullsY(new TH1F("fHitPullsY", "", 500, -50, 50))
-  , S1L1edEcut(new TH1F("S1L1edEcut", "dEdx of e- for first layer, mom. cut ", 600, 0., 60.))
-  , S1L1edEall(new TH1F("S1L1edEall", "dEdx of e- for first layer ", 600, 0., 60.))
-  , S1L1pidEcut(new TH1F("S1L1pidEcut", "dEdx of pi- for first layer, mom. cut ", 600, 0., 60.))
-  , S1L1pidEall(new TH1F("S1L1pidEall", "dEdx of pi- for first layer ", 600, 0., 60.))
-  , S3L4edEcut(new TH1F("S3L4edEcut", "dEdx of e- for layer 12, mom. cut ", 600, 0., 60.))
-  , S3L4edEall(new TH1F("S3L4edEall", "dEdx of e- for layer 12", 600, 0., 60.))
-  , S3L4pidEcut(new TH1F("S3L4pidEcut", "dEdx of pi- for layer 12, mom. cut ", 600, 0., 60.))
-  , S3L4pidEall(new TH1F("S3L4pidEall", "dEdx of pi- for layer 12", 600, 0., 60.))
 {
 }
 // --------------------------------------------------------------------------
@@ -69,16 +55,34 @@ InitStatus CbmTrdHitProducerQa::Init()
   fOutFolder.Clear();
   histFolder = fOutFolder.AddFolder("hist", "Histogramms");
 
-  histFolder->Add(fHitPullsX);
-  histFolder->Add(fHitPullsY);
-  histFolder->Add(S1L1edEcut);
-  histFolder->Add(S1L1edEall);
-  histFolder->Add(S1L1pidEcut);
-  histFolder->Add(S1L1pidEall);
-  histFolder->Add(S3L4edEcut);
-  histFolder->Add(S3L4edEall);
-  histFolder->Add(S3L4pidEcut);
-  histFolder->Add(S3L4pidEall);
+  const int nStations = fNoTrdStations * fNoTrdPerStation;
+
+  for (int i = 0; i < nStations; i++) {
+    fvhHitPullsX.push_back(new TH1F(Form("L%iHitPullsX", i), "", 500, -50, 50));
+    fvhHitPullsY.push_back(new TH1F(Form("L%iHitPullsY", i), "", 500, -50, 50));
+
+    histFolder->Add(fvhHitPullsX[i]);
+    histFolder->Add(fvhHitPullsY[i]);
+
+    fvhedEcut.push_back(new TH1F(Form("L%iedEcut", i), Form("dEdx of e- for layer %i, mom. cut", i), 600, 0., 60.));
+    fvhedEall.push_back(new TH1F(Form("L%iedEall", i), Form("dEdx of e- for layer %i", i), 600, 0., 60.));
+
+    fvhpidEcut.push_back(new TH1F(Form("L%ipidEcut", i), Form("dEdx of pi- for layer %i, mom. cut", i), 600, 0., 60.));
+    fvhpidEall.push_back(new TH1F(Form("L%ipidEall", i), Form("dEdx of pi- for layer %i", i), 600, 0., 60.));
+
+    histFolder->Add(fvhedEcut[i]);
+    histFolder->Add(fvhedEall[i]);
+    histFolder->Add(fvhpidEcut[i]);
+    histFolder->Add(fvhpidEall[i]);
+
+    fvdECanvas.push_back(new CbmQaCanvas(Form("cL%iEnergyLoss", i), Form("Energy Loss Layer %i", i), 2 * 400, 2 * 400));
+    fvdECanvas[i]->Divide2D(4);
+    fOutFolder.Add(fvdECanvas[i]);
+
+    fvPullCanvas.push_back(new CbmQaCanvas(Form("cL%iPull", i), Form("Pull Distribution Layer %i", i), 2 * 400, 400));
+    fvPullCanvas[i]->Divide2D(2);
+    fOutFolder.Add(fvPullCanvas[i]);
+  }
 
   // Get pointer to the ROOT I/O manager
   FairRootManager* rootMgr = FairRootManager::Instance();
@@ -149,66 +153,48 @@ void CbmTrdHitProducerQa::Exec(Option_t*)
     const CbmTrdPoint* trdPoint = (CbmTrdPoint*) fTrdPointCollection->At(trdDigiMatch->GetMatchedLink().GetIndex());
     if (NULL == trdPoint) continue;
 
-    const Int_t plane = trdHit->GetPlaneId();
+    const Int_t planeId = trdHit->GetPlaneId();
 
-    if (plane == 1) {
-      const Int_t partID = (((CbmMCTrack*) fMCTrackArray->At(trdPoint->GetTrackID()))->GetPdgCode());
-      const Float_t momentum =
-        TMath::Sqrt((trdPoint->GetPx() * trdPoint->GetPx()) + (trdPoint->GetPy() * trdPoint->GetPy())
-                    + (trdPoint->GetPz() * trdPoint->GetPz()));
-      //electrons
-      if ((TMath::Abs(partID) == 11) && (momentum > fMomCutLower) && (momentum < fMomCutUpper)) {
-        S1L1edEcut->Fill((trdHit->GetELoss()) * 1000000);
-      }
-      if (TMath::Abs(partID) == 11) { S1L1edEall->Fill((trdHit->GetELoss()) * 1000000); }
-
-      //pions
-      if ((TMath::Abs(partID) == 211) && (momentum > fMomCutLower) && (momentum < fMomCutUpper)) {
-        S1L1pidEcut->Fill((trdHit->GetELoss()) * 1000000);
-      }
-      if (TMath::Abs(partID) == 211) { S1L1pidEall->Fill((trdHit->GetELoss()) * 1000000); }
+    if (planeId >= fNoTrdStations * fNoTrdPerStation) {
+      cout << GetName() << ": Warning, TRD plane out of bounds, skipping hit." << endl;
+      continue;
     }
+    const Int_t partID = (((CbmMCTrack*) fMCTrackArray->At(trdPoint->GetTrackID()))->GetPdgCode());
+    const Float_t momentum =
+      TMath::Sqrt((trdPoint->GetPx() * trdPoint->GetPx()) + (trdPoint->GetPy() * trdPoint->GetPy())
+                  + (trdPoint->GetPz() * trdPoint->GetPz()));
 
-
-    if (plane == 12) {
-      const Int_t partID = (((CbmMCTrack*) fMCTrackArray->At(trdPoint->GetTrackID()))->GetPdgCode());
-      const Float_t momentum =
-        TMath::Sqrt((trdPoint->GetPx() * trdPoint->GetPx()) + (trdPoint->GetPy() * trdPoint->GetPy())
-                    + (trdPoint->GetPz() * trdPoint->GetPz()));
-      //electrons
-      if ((TMath::Abs(partID) == 11) && (momentum > fMomCutLower) && (momentum < fMomCutUpper)) {
-        S3L4edEcut->Fill((trdHit->GetELoss()) * 1000000);
-      }
-      if (TMath::Abs(partID) == 11) { S3L4edEall->Fill((trdHit->GetELoss()) * 1000000); }
-
-      //pions
-      if ((TMath::Abs(partID) == 211) && (momentum > fMomCutLower) && (momentum < fMomCutUpper)) {
-        S3L4pidEcut->Fill((trdHit->GetELoss()) * 1000000);
-      }
-      if (TMath::Abs(partID) == 211) { S3L4pidEall->Fill((trdHit->GetELoss()) * 1000000); }
+    //electrons
+    if ((TMath::Abs(partID) == 11) && (momentum > fMomCutLower) && (momentum < fMomCutUpper)) {
+      fvhedEcut[planeId]->Fill((trdHit->GetELoss()) * 1000000);
     }
+    if (TMath::Abs(partID) == 11) { fvhedEall[planeId]->Fill((trdHit->GetELoss()) * 1000000); }
 
-    if (plane == 1) {
-      // compute the Hit pools for X and Y coordinate
-      const Float_t hitPosX   = trdHit->GetX();
-      const Float_t pointPosX = trdPoint->GetX();
-      const Float_t hitPullX  = (hitPosX - pointPosX);
-
-      const Float_t hitPosY   = trdHit->GetY();
-      const Float_t pointPosY = trdPoint->GetY();
-      const Float_t hitPullY  = (hitPosY - pointPosY);
-
-      // fill histograms
-      fHitPullsX->Fill(hitPullX);
-      fHitPullsY->Fill(hitPullY);
-
-      //Float_t  hitErrX  = 0;
-      //Float_t  hitErrY  = 0;
-      //	hitErrX   = trdHit->GetDx();
-      //        hitErrX  /= 10000;           // micrometers to centimeters
-      //	hitErrY   = trdHit->GetDy();
-      //        hitErrY  /= 10000;          // micrometers to centimeters
+    //pions
+    if ((TMath::Abs(partID) == 211) && (momentum > fMomCutLower) && (momentum < fMomCutUpper)) {
+      fvhpidEcut[planeId]->Fill((trdHit->GetELoss()) * 1000000);
     }
+    if (TMath::Abs(partID) == 211) { fvhpidEall[planeId]->Fill((trdHit->GetELoss()) * 1000000); }
+
+    // compute the Hit pulls for X and Y coordinate
+    const Float_t hitPosX   = trdHit->GetX();
+    const Float_t pointPosX = trdPoint->GetX();
+    const Float_t hitPullX  = (hitPosX - pointPosX);
+
+    const Float_t hitPosY   = trdHit->GetY();
+    const Float_t pointPosY = trdPoint->GetY();
+    const Float_t hitPullY  = (hitPosY - pointPosY);
+
+    // fill histograms
+    fvhHitPullsX[planeId]->Fill(hitPullX);
+    fvhHitPullsY[planeId]->Fill(hitPullY);
+
+    //Float_t  hitErrX  = 0;
+    //Float_t  hitErrY  = 0;
+    //  hitErrX   = trdHit->GetDx();
+    //        hitErrX  /= 10000;           // micrometers to centimeters
+    //  hitErrY   = trdHit->GetDy();
+    //        hitErrY  /= 10000;          // micrometers to centimeters
   }
 }
 // --------------------------------------------------------------------------
@@ -220,6 +206,28 @@ void CbmTrdHitProducerQa::Finish() { WriteHistograms(); }
 // ---- Write test histograms ------------------------------------------------
 void CbmTrdHitProducerQa::WriteHistograms()
 {
+  for (UInt_t i = 0; i < fvdECanvas.size(); i++) {
+    fvdECanvas[i]->cd(1);
+    fvhedEcut[i]->DrawCopy("", "");
+
+    fvdECanvas[i]->cd(2);
+    fvhedEall[i]->DrawCopy("", "");
+
+    fvdECanvas[i]->cd(3);
+    fvhpidEcut[i]->DrawCopy("", "");
+
+    fvdECanvas[i]->cd(4);
+    fvhpidEall[i]->DrawCopy("", "");
+  }
+
+  for (UInt_t i = 0; i < fvPullCanvas.size(); i++) {
+    fvPullCanvas[i]->cd(1);
+    fvhHitPullsX[i]->DrawCopy("", "");
+
+    fvPullCanvas[i]->cd(2);
+    fvhHitPullsY[i]->DrawCopy("", "");
+  }
+
   FairSink* sink = FairRootManager::Instance()->GetSink();
   sink->WriteObject(&fOutFolder, nullptr);
 }
