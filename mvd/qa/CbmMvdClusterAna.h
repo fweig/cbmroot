@@ -1,4 +1,4 @@
-/* Copyright (C) 2015-2017 IKF-UFrac
+/* Copyright (C) 2015-2017 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Samir Amar-Youcef [committer] */
 

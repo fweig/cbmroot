@@ -1,12 +1,6 @@
 /* Copyright (C) 2019-2020 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Florian Uhlig */
-
-// -------------------------------------------------------------------------
-// -----                  CbmMvdSensorDigiToHitTask source file        -----
-// -----                  27.11.18 Edited by K. Hunold                 -----
-// -------------------------------------------------------------------------
-
+   Authors: Andreas Redelbach [committer] */
 
 #include "CbmMvdSensorDigiToHitTask.h"
 

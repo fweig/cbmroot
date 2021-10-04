@@ -1,6 +1,6 @@
 /* Copyright (C) 2019-2020 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Florian Uhlig */
+   Authors: Andreas Redelbach [committer] */
 
 // -------------------------------------------------------------------------
 // -----                    CbmMvdDigiToHitTB source file                -----

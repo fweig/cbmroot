@@ -1,12 +1,6 @@
 /* Copyright (C) 2019 Frankfurt Institute for Advanced Studies, Goethe-Universität Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors:  */
-
-// -------------------------------------------------------------------------
-// -----                   CbmMvdSensorClusterfinderTask header file   -----
-// -----                   27.11.18 Edited by K. Hunold                -----
-// -------------------------------------------------------------------------
-
+   Authors:  Andreas Redelbach [committer] */
 
 #ifndef CBMMVDSENSORDIGITOHITTASK_H
 #define CBMMVDSENSORDIGITOHITTASK_H 1

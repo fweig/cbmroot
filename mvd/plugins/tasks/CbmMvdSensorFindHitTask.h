@@ -1,4 +1,4 @@
-/* Copyright (C) 2014-2017 Institut für Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
+/* Copyright (C) 2014-2017 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Philipp Sitzmann [committer] */
 
