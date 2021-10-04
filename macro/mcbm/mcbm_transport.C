@@ -19,10 +19,12 @@
 void SetTrack(CbmTransport*, Double_t, Int_t, Double_t, Double_t, Double_t);
 
 void mcbm_transport(Int_t nEvents = 10,
+                    //                  const char* setupName = "mcbm_beam_2022_03",
+                    const char* setupName = "mcbm_beam_2021_07_surveyed",
                     //                  const char* setupName = "mcbm_beam_2021_07",
                     //                  const char* setupName = "mcbm_beam_2021_04",
                     //                  const char* setupName = "mcbm_beam_2021_03",
-                    const char* setupName = "mcbm_beam_2020_03",
+                    //                  const char* setupName = "mcbm_beam_2020_03",
                     //                  const char* setupName = "mcbm_beam_2019_11",
                     //                  const char* setupName = "mcbm_beam_2019_03",
                     //                  const char* setupName = "sis18_mcbm_25deg_long",

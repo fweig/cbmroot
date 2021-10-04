@@ -1,4 +1,4 @@
-set(GEOMETRY_VERSION 875439f929577d678b86bbc243b8f99a094fd31c)
+set(GEOMETRY_VERSION 83f5ffc1a886a350de6960437cdd85026ee5c666)
 
 set(GEOMETRY_SRC_URL "https://git.cbm.gsi.de/CbmSoft/cbmroot_geometry.git")
 
