@@ -1,6 +1,6 @@
 /* Copyright (C) 2019-2020 Justus-Liebig-Universitaet Giessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Egor Ovcharenko [committer] */
+   Authors: Egor Ovcharenko [committer], Semen Lebedev */
 
 /**
  * CbmMcbm2018UnpackerAlgoRich
