@@ -51,11 +51,16 @@ void dis_digi(Int_t nEvents = 100, Int_t calMode = 93, Int_t calSel = 1, Int_t c
 
   Int_t iGeo = 0;  //iMc;
   if (iGeo == 0) {
-    TString TofGeo = "";
     if (iRun < 690) TofGeo = "v20a_mcbm";
-    else
-      TofGeo = "v21a_mcbm";
-    TofGeo = "v21d_mcbm";
+    else {
+      if (iRun < 1112) { TofGeo = "v21a_mcbm"; }
+      else {
+        if (iRun < 1400) { TofGeo = "v21b_mcbm"; }
+        else {
+          TofGeo = "v21d_mcbm";
+        }
+      }
+    }	  
 
     cout << "Geometry version " << TofGeo << endl;
     /*  

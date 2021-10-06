@@ -53,10 +53,15 @@ void ana_trks(Int_t nEvents = 10000, Int_t iSel = 1, Int_t iGenCor = 1, TString 
   if (iGeo == 0) {
     TString TofGeo = "";
     if (iRun < 690) TofGeo = "v20a_mcbm";
-    else
-      TofGeo = "v21a_mcbm";
-    TofGeo = "v21d_mcbm";
-    cout << "Geometry version " << TofGeo << endl;
+    else {
+      if (iRun < 1112) { TofGeo = "v21a_mcbm"; }
+      else {
+        if (iRun < 1400) { TofGeo = "v21b_mcbm"; }
+        else {
+          TofGeo = "v21d_mcbm";
+        }
+      }
+    }    
 
     TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
     parFileList->Add(tofDigiBdfFile);
