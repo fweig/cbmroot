@@ -55,7 +55,7 @@ void dis_digi(Int_t nEvents = 100, Int_t calMode = 93, Int_t calSel = 1, Int_t c
     if (iRun < 690) TofGeo = "v20a_mcbm";
     else
       TofGeo = "v21a_mcbm";
-          TofGeo = "v21d_mcbm";
+    TofGeo = "v21d_mcbm";
 
     cout << "Geometry version " << TofGeo << endl;
     /*  

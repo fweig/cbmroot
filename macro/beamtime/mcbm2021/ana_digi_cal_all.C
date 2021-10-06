@@ -49,7 +49,7 @@ void ana_digi_cal_all(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel
   else
     TofGeo = "v21a_mcbm";
 
-        TofGeo = "v21d_mcbm";
+  TofGeo = "v21d_mcbm";
   cout << "Geometry version " << TofGeo << endl;
 
   //   TObjString *tofDigiFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par"); // TOF digi file

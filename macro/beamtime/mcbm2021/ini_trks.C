@@ -1,7 +1,6 @@
-/** @file ana_trks_eval.C
-  * @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbert Herrmann [orginator] **/
+/* Copyright (C) 2021 Physikalisches Institut, Universitaet Heidelberg, Heidelberg 
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors:  Norbert Herrmann [committer]*/
 
 void ini_trks(Int_t iSel = 910041, Int_t iTrackingSetup = 4, Int_t iGenCor = 1, Double_t dScalFac = 1.,
               Double_t dChi2Lim2 = 500., TString cCalId = "", Bool_t bUseSigCalib = kFALSE, Int_t iCalOpt = 1,

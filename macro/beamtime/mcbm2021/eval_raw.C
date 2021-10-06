@@ -1,7 +1,6 @@
-/** @file eval_raw.C
-  * @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-  * @license SPDX-License-Identifier: GPL-3.0-only
-  * @authors Norbrt Herrmann [orginator] **/
+/* Copyright (C) 2021 Physikalisches Institut, Universitaet Heidelberg, Heidelberg 
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors:  Norbert Herrmann [committer]*/
 
 void eval_raw(Int_t nEvents = 10000000, Int_t calMode = 33, Int_t calSel = 1, Int_t calSm = 900, Int_t RefSel = 1,
               TString cFileId = "Test", Int_t iCalSet = 910601600, Bool_t bOut = 0, Int_t iSel2 = 0,
