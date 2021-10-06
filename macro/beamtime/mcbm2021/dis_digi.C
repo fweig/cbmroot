@@ -60,7 +60,7 @@ void dis_digi(Int_t nEvents = 100, Int_t calMode = 93, Int_t calSel = 1, Int_t c
           TofGeo = "v21d_mcbm";
         }
       }
-    }	  
+    }
 
     cout << "Geometry version " << TofGeo << endl;
     /*  

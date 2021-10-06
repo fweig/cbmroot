@@ -61,7 +61,7 @@ void ana_trks(Int_t nEvents = 10000, Int_t iSel = 1, Int_t iGenCor = 1, TString 
           TofGeo = "v21d_mcbm";
         }
       }
-    }    
+    }
 
     TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
     parFileList->Add(tofDigiBdfFile);

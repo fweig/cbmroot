@@ -44,16 +44,16 @@ void ana_digi_cal(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel = 0
   TString cRun(FId(0, iNLen));
   Int_t iRun     = cRun.Atoi();
   TString TofGeo = "";
-      if (iRun < 690) TofGeo = "v20a_mcbm";
+  if (iRun < 690) TofGeo = "v20a_mcbm";
+  else {
+    if (iRun < 1112) { TofGeo = "v21a_mcbm"; }
     else {
-      if (iRun < 1112) { TofGeo = "v21a_mcbm"; }
+      if (iRun < 1400) { TofGeo = "v21b_mcbm"; }
       else {
-        if (iRun < 1400) { TofGeo = "v21b_mcbm"; }
-        else {
-          TofGeo = "v21d_mcbm";
-        }
+        TofGeo = "v21d_mcbm";
       }
     }
+  }
 
   cout << "Geometry version " << TofGeo << endl;
 
