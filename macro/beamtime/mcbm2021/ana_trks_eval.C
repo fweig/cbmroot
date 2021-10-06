@@ -59,6 +59,7 @@ void ana_trks_eval(Int_t nEvents = 10000, Int_t iSel = 1, Int_t iGenCor = 1, TSt
     if (iRun < 690) TofGeo = "v20a_mcbm";
     else
       TofGeo = "v21a_mcbm";
+          TofGeo = "v21d_mcbm";
     cout << "Geometry version " << TofGeo << endl;
 
     TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
