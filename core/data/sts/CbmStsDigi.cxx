@@ -23,4 +23,6 @@ string CbmStsDigi::ToString() const
   return ss.str();
 }
 
+#ifndef NO_ROOT
 ClassImp(CbmStsDigi)
+#endif

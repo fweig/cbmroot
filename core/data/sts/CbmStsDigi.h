@@ -14,7 +14,9 @@
 
 #include "CbmDefs.h"  // for ECbmModuleId::kSts
 
-#include <Rtypes.h>      // for ClassDef
+#ifndef NO_ROOT
+#include <Rtypes.h>  // for ClassDef
+#endif
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -126,13 +128,15 @@ public:
 private:
   friend class boost::serialization::access;
 
-  int64_t fTime    = 0.;  ///< Time [ns]
-  int32_t fAddress    = 0;   ///< Unique element address
+  int64_t fTime     = 0.;  ///< Time [ns]
+  int32_t fAddress  = 0;   ///< Unique element address
   uint16_t fChannel = 0;   ///< Channel number
   uint16_t fCharge  = 0;   ///< Charge [ADC units]
 
 
+#ifndef NO_ROOT
   ClassDefNV(CbmStsDigi, 7);
+#endif
 };
 
 
