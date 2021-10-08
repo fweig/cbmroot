@@ -15,10 +15,10 @@ ModuleType: Int_t \
 // STS address for the first strip of each module
 // 1 Line per ladder, from above beam to under beam FIXME
 ModAddress: Int_t \
-  0x10000002      0x10010002 \
-  0x10000012      0x10010012    0x11E004E2 \
-  0x10000022      0x10010022    0x11E104E2 \
-  0x10000032      0x10010032    0x10020032    0x10000432    0x10010432
+  0x10008002      0x10018002 \
+  0x10008402      0x10018402    0x11E004E2 \
+  0x10008012      0x10018012    0x11E104E2 \
+  0x10008412      0x10018412    0x10008812      0x10018812      0x10028812
 // Offset of module center in X, in mm (Should be done by geometry for the unpacker!)
 ModCenterPosX: Double_t \
          0.0        0.0 \
@@ -50,7 +50,7 @@ FebPulserFlag: Int_t \
 FebModuleIdx: Int_t \
     -1       0       0       1       1 \
      4       2       2       3       3 \
-     7       5       5       6       6 \
+     7       6       6       5       5 \
     10       9       9       8       8 \
     12      12      11      11      10
 // STS module side for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ], 0 = P, 1 = N, -1 if inactive
