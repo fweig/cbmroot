@@ -12,7 +12,6 @@
 #ifndef CBMDEFS_H
 #define CBMDEFS_H 1
 
-#include <RtypesCore.h>  // for Double_t
 #include <type_traits>   // for underlying_type
 
 #include <iostream>  // for ostream
@@ -145,8 +144,8 @@ enum class ECbmTreeAccess
 
 
 /** Global functions for particle masses **/
-inline Double_t CbmProtonMass() { return 0.938272046; }
-inline Double_t CbmNeutronMass() { return 0.939565379; }
-inline Double_t CbmElectronMass() { return 0.000510998928; }
+inline double CbmProtonMass() { return 0.938272046; }
+inline double CbmNeutronMass() { return 0.939565379; }
+inline double CbmElectronMass() { return 0.000510998928; }
 
 #endif

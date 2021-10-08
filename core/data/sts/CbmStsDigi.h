@@ -15,7 +15,6 @@
 #include "CbmDefs.h"  // for ECbmModuleId::kSts
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t, UShort_t, Long64_t, ULong64_t
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -44,7 +43,7 @@ public:
    ** @param  time     Measurement time [ns]
    ** @param  charge   Charge [ADC units]
    **/
-  CbmStsDigi(Int_t address, Int_t channel, ULong64_t time, UShort_t charge)
+  CbmStsDigi(int32_t address, int32_t channel, uint64_t time, uint16_t charge)
     : fTime(time)
     , fAddress(address)
     , fChannel(channel)
@@ -60,7 +59,7 @@ public:
   /** Unique detector element address  (see CbmStsAddress)
    ** @value Unique address of readout channel
    **/
-  Int_t GetAddress() const { return fAddress; }
+  int32_t GetAddress() const { return fAddress; }
 
 
   /** @brief Get the desired name of the branch for this obj in the cbm output tree  (static)
@@ -72,7 +71,7 @@ public:
   /** @brief Channel number in module
    ** @value Channel number
    **/
-  UShort_t GetChannel() const { return fChannel; }
+  uint16_t GetChannel() const { return fChannel; }
 
 
   /** @brief Class name (static)
@@ -84,7 +83,7 @@ public:
   /** Charge
    ** @value Charge [ADC units]
    **/
-  Double_t GetCharge() const { return Double_t(fCharge); }
+  double GetCharge() const { return double(fCharge); }
 
 
   /** System ID (static)
@@ -96,7 +95,7 @@ public:
   /** Time of measurement
    ** @value Time [ns]
    **/
-  Double_t GetTime() const { return Double_t(fTime); }
+  double GetTime() const { return double(fTime); }
 
 
   template<class Archive>
@@ -112,7 +111,7 @@ public:
   /** Update Time of measurement
    ** @param New Time [ns]
    **/
-  void SetTime(Double_t dNewTime)
+  void SetTime(double dNewTime)
   {
     // Future versions of StsDigi won't be able to store negative timestamps.
     assert(dNewTime >= 0);
@@ -127,10 +126,10 @@ public:
 private:
   friend class boost::serialization::access;
 
-  Long64_t fTime    = 0.;  ///< Time [ns]
-  Int_t fAddress    = 0;   ///< Unique element address
-  UShort_t fChannel = 0;   ///< Channel number
-  UShort_t fCharge  = 0;   ///< Charge [ADC units]
+  int64_t fTime    = 0.;  ///< Time [ns]
+  int32_t fAddress    = 0;   ///< Unique element address
+  uint16_t fChannel = 0;   ///< Channel number
+  uint16_t fCharge  = 0;   ///< Charge [ADC units]
 
 
   ClassDefNV(CbmStsDigi, 7);
