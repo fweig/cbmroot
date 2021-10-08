@@ -58,7 +58,7 @@ public:
 
   /** @brief Set the minimum adc cut value @param[in] value */
   void SetMinAdcCut(uint32_t value) { fdAdcCut = value; }
-  
+
   void SetMinAdcCut(uint32_t febid, uint32_t value) { fdAdcCut_perFeb[febid] = value; }
 
   /** @brief Set the time offset per Asic */
@@ -113,7 +113,7 @@ protected:
   uint32_t fdAdcCut = 0;
 
   /** @brief Minimum adc cut per Feb to store a hit */
-  std::map<uint32_t,uint32_t> fdAdcCut_perFeb;
+  std::map<uint32_t, uint32_t> fdAdcCut_perFeb;
 
   /** @brief Time offsets per Asic??? @todo expert confirmation required */
   std::vector<double> fvdTimeOffsetNsAsics = {};

@@ -124,7 +124,7 @@ protected:
   uint32_t fdAdcCut = 0;
 
   /** @brief Minimum adc cut per Feb to store a hit */
-  std::map<uint32_t,uint32_t> fdAdcCut_perFeb;
+  std::map<uint32_t, uint32_t> fdAdcCut_perFeb;
 
   /** @brief Vector with the Asic time offsets */
   std::vector<double> fvdTimeOffsetNsAsics = {};

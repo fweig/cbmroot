@@ -127,10 +127,29 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     std::string parfilesbasepathSts = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
     stsconfig->SetParFilesBasePath(parfilesbasepathSts);
     /// Enable duplicates rejection, Ignores the ADC for duplicates check
-    //stsconfig->SetDuplicatesRejection ( true, true );
+    stsconfig->SetDuplicatesRejection(true, true);
     /// Enable Monitor plots
     //stsconfig->SetMonitor(GetStsMonitor(outfilename, true));
     stsconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
+
+    stsconfig->SetMinAdcCut(1, 1);
+    stsconfig->SetMinAdcCut(2, 1);
+    stsconfig->SetMinAdcCut(3, 1);
+    stsconfig->SetMinAdcCut(4, 1);
+
+    stsconfig->MaskNoisyChannel(7, 715);
+    stsconfig->MaskNoisyChannel(7, 162);
+    stsconfig->MaskNoisyChannel(7, 159);
+    stsconfig->MaskNoisyChannel(7, 158);
+    stsconfig->MaskNoisyChannel(7, 125);
+    stsconfig->MaskNoisyChannel(7, 124);
+    stsconfig->MaskNoisyChannel(7, 123);
+    stsconfig->MaskNoisyChannel(12, 119);
+    stsconfig->MaskNoisyChannel(3, 85);
+    stsconfig->MaskNoisyChannel(3, 79);
+    stsconfig->MaskNoisyChannel(3, 75);
+    stsconfig->MaskNoisyChannel(3, 56);
+    stsconfig->MaskNoisyChannel(9, 709);
   }
   // -------------
 

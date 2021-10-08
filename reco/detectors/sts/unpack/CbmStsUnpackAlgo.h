@@ -182,6 +182,9 @@ protected:
   /** @brief Number of FEBs with StsXyter ASICs */
   uint32_t fuNbFebs = 0;  //!
 
+  /** @brief ADC cuts for FEBs */
+  std::vector<uint32_t> fvbFebAdcCut = {};
+
   /** @brief Number of eLinks per CROB */
   uint32_t fNrElinksPerCrob = 0;  //!
 

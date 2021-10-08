@@ -144,6 +144,12 @@ Bool_t CbmStsUnpackAlgo::initParSet(CbmMcbm2018StsPar* parset)
   //Initialize temporary "per Feb" fields
   initTempVectors(parset, &viModuleType, &viModAddress, &viFebModuleIdx, &vbCrobActiveFlag, &viFebModuleSide);
 
+  // Initialize ADC cuts for FEBs
+  fvbFebAdcCut.resize(fuNbFebs, fdAdcCut);
+  for (auto cut : fdAdcCut_perFeb) {
+    fvbFebAdcCut[cut.first] = cut.second;
+  }
+
   // Read dpb index map from parameter container
   initDpbIdIndexMap(parset);
 
@@ -454,10 +460,7 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
   if (fMonitor) fMonitor->CountRawHit(uFebIdx, uChanInFeb);
 
   /// Store hit for output only if it is mapped to a module!!!
-  bool apply_adc_cut  = fdAdcCut_perFeb.find(uFebIdx) != fdAdcCut_perFeb.end() ? 
-                        fdAdcCut_perFeb[uFebIdx] < usRawAdc :
-                        fdAdcCut < usRawAdc ;
-  if ( fviFebAddress[uFebIdx] != 0 && apply_adc_cut ) {
+  if (fviFebAddress[uFebIdx] != 0 && fvbFebAdcCut[uFebIdx] < usRawAdc) {
     /// Store only if masking is disabled or if channeld is not masked
     /// 2D vector is safe as always right size if masking enabled
     if (false == fbUseChannelMask || false == fvvbMaskedChannels[uFebIdx][uChanInFeb]) {
