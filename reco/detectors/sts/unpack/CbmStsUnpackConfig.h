@@ -103,6 +103,8 @@ public:
   /** @brief Set the minimum adc cut value @param[in] value */
   void SetMinAdcCut(uint32_t value) { fdAdcCut = value; }
 
+  void SetMinAdcCut(uint32_t febid, uint32_t value) { fdAdcCut_perFeb[febid] = value; }
+
   /** @brief Add a monitor to the unpacker. @param value CbmStsUnpackMonitor */
   void SetMonitor(std::shared_ptr<CbmStsUnpackMonitor> value) { fMonitor = value; }
 
@@ -120,6 +122,9 @@ protected:
 
   /** @brief Minimum adc cut to store a hit */
   uint32_t fdAdcCut = 0;
+
+  /** @brief Minimum adc cut per Feb to store a hit */
+  std::map<uint32_t,uint32_t> fdAdcCut_perFeb;
 
   /** @brief Vector with the Asic time offsets */
   std::vector<double> fvdTimeOffsetNsAsics = {};

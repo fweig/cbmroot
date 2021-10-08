@@ -44,6 +44,11 @@ void CbmStsUnpackConfig::InitUnpacker()
   // Set the minimum adc cut
   algo->SetMinAdcCut(fdAdcCut);
 
+  // Set the minimum adc cut Feb independent
+  for (auto cut=fdAdcCut_perFeb.begin() ; cut!=fdAdcCut_perFeb.end() ; cut++){
+    algo->SetMinAdcCut(cut->first,cut->second);
+  }
+
   // Set the single asics time offsets
   algo->SetAsicTimeOffsetVec(fvdTimeOffsetNsAsics);
 

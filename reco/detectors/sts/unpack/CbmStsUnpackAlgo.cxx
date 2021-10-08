@@ -454,7 +454,10 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
   if (fMonitor) fMonitor->CountRawHit(uFebIdx, uChanInFeb);
 
   /// Store hit for output only if it is mapped to a module!!!
-  if (0 != fviFebAddress[uFebIdx] && fdAdcCut < usRawAdc) {
+  bool apply_adc_cut  = fdAdcCut_perFeb.find(uFebIdx) != fdAdcCut_perFeb.end() ? 
+                        fdAdcCut_perFeb[uFebIdx] < usRawAdc :
+                        fdAdcCut < usRawAdc ;
+  if ( fviFebAddress[uFebIdx] != 0 && apply_adc_cut ) {
     /// Store only if masking is disabled or if channeld is not masked
     /// 2D vector is safe as always right size if masking enabled
     if (false == fbUseChannelMask || false == fvvbMaskedChannels[uFebIdx][uChanInFeb]) {
