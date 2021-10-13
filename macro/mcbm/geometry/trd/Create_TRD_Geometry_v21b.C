@@ -189,11 +189,12 @@ const Int_t MaxLayers = 10;  // max layers
 //const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };  // SIS300-e   // 1: plot, 0: hide
 Int_t ShowLayer[MaxLayers] = {1, 1, 1, 1, 0, 0, 0, 0, 0, 0};  // SIS100-4l is default
 
-Int_t BusBarOrientation[MaxLayers] = {1, 1, 0, 0, 1, 0, 0, 0, 0, 0};  // 1 = vertical
+//Int_t BusBarOrientation[MaxLayers] = {1, 1, 0, 0, 1, 0, 0, 0, 0, 0};  // 1 = vertical
+Int_t BusBarOrientation[MaxLayers] = {0, 0, 1, 1, 1, 0, 0, 0, 0, 0};  // 1 = vertical
 
 Int_t PlaneId[MaxLayers];  // automatically filled with layer ID
 
-const Int_t LayerType[MaxLayers] = {10, 11, 20, 20, 20, 21,
+const Int_t LayerType[MaxLayers] = {20, 20, 10, 11, 20, 21,
                                     20, 21, 30, 31};  // ab: a [1-4] - layer type, b [0,1] - vertical/horizontal pads
 // ### Layer Type 20 is mCBM Layer Type 2 with Buch prototype module (type 4) with vertical pads
 // ### Layer Type 11 is Layer Type 1 with detector modules rotated by 90??
@@ -341,12 +342,12 @@ const Double_t feb_rotation_angle[NofModuleTypes] = {
 //const Double_t feb_rotation_angle[NofModuleTypes] = { 45,  45,  45,  45,  45,  45,  45,  45 }; // rotation around x-axis, 0 = vertical, 90 = horizontal
 
 // GBTx ROB definitions
-const Int_t RobsPerModule[NofModuleTypes] = {3, 2, 1, 6, 2, 2, 1, 1, 30, 1};  // number of GBTx ROBs on module
+const Int_t RobsPerModule[NofModuleTypes] = {3, 2, 1, 6, 2, 2, 1, 1, 30, 2};  // number of GBTx ROBs on module
 const Int_t GbtxPerRob[NofModuleTypes]    = {105, 105, 105, 103, 107,
                                           105, 105, 103, 103, 103};  // number of GBTx ASICs on ROB
 
 const Int_t GbtxPerModule[NofModuleTypes]   = {15, 10, 5, 18, 0,
-                                             10, 5,  3, 18, 18};  // for .geo.info - TODO: merge with above GbtxPerRob
+                                             10, 5,  3, 6, 1};  // for .geo.info - TODO: merge with above GbtxPerRob
 const Int_t RobTypeOnModule[NofModuleTypes] = {
   555, 55, 5, 333333, 0, 55, 5, 3, 333333, 333333};  // for .geo.info - TODO: merge with above GbtxPerRob
 
@@ -356,10 +357,10 @@ const Int_t RobTypeOnModule[NofModuleTypes] = {
 //const Int_t RobTypeOnModule[NofModuleTypes] = { 77, 53,  5,  0,  0, 55,  5,  3 }; // for .geo.info - TODO: merge with above GbtxPerRob
 
 // super density for type 1 modules - 2017 - 540 mm
-const Int_t FebsPerModule[NofModuleTypes] = {9, 5, 6, 18, 12, 8, 4, 3, 18, 18};  // number of FEBs on backside
+const Int_t FebsPerModule[NofModuleTypes] = {9, 5, 6, 18, 12, 8, 4, 3, 30, 2};  // number of FEBs on backside
 //const Int_t FebsPerModule[NofModuleTypes] = {  9,  6,  3,  4, 12,  8,  4,  2 }; // number of FEBs on backside
 const Int_t AsicsPerFeb[NofModuleTypes] = {
-  210, 210, 210, 410, 108, 108, 108, 108, 410, 410};  // %100 gives number of ASICs on FEB, /100 gives grouping
+  210, 210, 210, 410, 108, 108, 108, 108, 406, 406};  // %100 gives number of ASICs on FEB, /100 gives grouping
 //// ultimate density - 540 mm
 //const Int_t FebsPerModule[NofModuleTypes] = {  6,  5,  6,  4, 12,  8,  4,  3 }; // number of FEBs on backside - reduced FEBs (64 ch ASICs)
 //const Int_t AsicsPerFeb[NofModuleTypes]   = {315,210,105,105,108,108,108,108 }; //  %100 gives number of ASICs on FEB, /100 gives grouping
@@ -604,6 +605,7 @@ void Create_TRD_Geometry_v21b()
   create_materials_from_media_file();
 
   // Position the layers in z
+  LayerPosition[0] = -54;
   for (Int_t iLayer = 1; iLayer < MaxLayers; iLayer++)
     LayerPosition[iLayer] =
       LayerPosition[iLayer - 1] + LayerThickness + LayerOffset[iLayer];  // add offset for extra gaps
@@ -2913,16 +2915,14 @@ void create_detector_layers(Int_t layerId)
           // DEDE
           // xPos = tan( frameref_angle ) * (zfront[setupid] + layerId * LayerThickness) - (DetectorSizeX[1]/2. - FrameWidth[1]);  // shift module along x-axis
           xPos = 0;
-          if (layerId == 0) {
+          if (layerId == 2) {
             xPos += -22;  // offset in x of 1st large TRD in mCBM 2021_07
             yPos += -0.5;
           }  // offset in x of 1st large TRD in mCBM 2021_07
-          if (layerId == 1) {
+          if (layerId == 3) {
             xPos += -19;  // offset in x of 2nd large TRD in mCBM 2021_07
             yPos += 4.5;
           }  // offset in x of 2nd large TRD in mCBM 2021_07
-          cout << "DESH layer " << layerId << " - xPos " << xPos << endl;
-
 
           layer_angle =
             atan((DetectorSizeX[1] / 2. - FrameWidth[1] + xPos) / (zfront[setupid] + layerId * LayerThickness));
@@ -2945,6 +2945,9 @@ void create_detector_layers(Int_t layerId)
           //            cout << "layer " << ilayer << " - xPos " << xPos << endl;
           //	  }
 
+          cout << "DESH layer " << layerId << " xPos " << xPos << endl;
+          cout << "DESH layer " << layerId << " yPos " << yPos << endl;
+          cout << "DESH layer " << layerId << " zPos " << LayerPosition[layerId] << " " <<  LayerThickness / 2  << " " <<  dz << endl;
 
           TGeoCombiTrans* module_placement =
             new TGeoCombiTrans(xPos, yPos, LayerPosition[layerId] + LayerThickness / 2 + dz,
@@ -2960,8 +2963,8 @@ void create_detector_layers(Int_t layerId)
 
   //install TRD2D detectors in the TRD setup
   Int_t type = -1;
-  if (layerId == 2 && layerType == 2) type = 10;
-  if (layerId == 3 && layerType == 2) type = 9;
+  if (layerId == 1 && layerType == 2) type = 10;
+  if (layerId == 0 && layerType == 2) type = 9;
   if (type < 0) return;
   Info("create_detector_layers", "add module[0x%p] of type[%d]", (void*) gModules[type - 1], type);
 
@@ -2971,11 +2974,11 @@ void create_detector_layers(Int_t layerId)
   Double_t yPos = 2.5 * 5.12;  // check with FASPRO_width;
   Double_t zPos = 0.;
 
-  if (layerId == 3) {
+  if (layerId == 0) {
     xPos = xPos - 35.5;
-    zPos = -2.0;
+    zPos = -2.0 + 13.5;
   }
-  if (layerId == 2) {
+  if (layerId == 1) {
     xPos = xPos - 22.5;
     yPos = yPos - 12.5;
     zPos = 3.0;
@@ -2985,9 +2988,10 @@ void create_detector_layers(Int_t layerId)
   ModuleStats[layerId][type - 1]++;
 
   module_rotation = new TGeoRotation();
-  // DESH
+  cout << "DESH layer " << layerId << " zPos " << LayerPosition[layerId] + LayerThickness / 2  << " " <<  zPos << endl;
   TGeoCombiTrans* module_placement =
-    new TGeoCombiTrans(xPos, yPos, LayerPosition[0] - (layerId - 1) * LayerThickness / 2 + zPos,
+    new TGeoCombiTrans(xPos, yPos, /*LayerPosition[0] - (layerId - 1) * LayerThickness / 2 + zPos*/
+                       LayerPosition[layerId] + LayerThickness / 2 + zPos,
                        module_rotation);  // shift by half layer thickness
   Int_t copy = copy_nr(1, 1, 0, PlaneId[layerId], 1);
   gGeoMan->GetVolume(layername)->AddNode(gModules[type - 1], copy, module_placement);
@@ -3125,11 +3129,11 @@ void create_gibbet_support()
     {
       TString layername = Form("layer%02d", l + 1);
       // DESH
-      if (l == 0) {
+      if (l == 2) {
         xPos = -22;  // offset in x of 1st large TRD in mCBM 2021_07
         yPos = -0.5;
       }  // offset in x of 1st large TRD in mCBM 2021_07
-      if (l == 1) {
+      if (l == 3) {
         xPos = -19;  // offset in x of 2nd large TRD in mCBM 2021_07
         yPos = 4.5;
       }  // offset in x of 2nd large TRD in mCBM 2021_07
