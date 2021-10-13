@@ -174,6 +174,7 @@ OffLineInterface/CbmL1GlobalFindTracksEvents.h
 #OffLineInterface / CbmL1SttTrackFinder.h
 #OffLineInterface / CbmL1SttTrack.h
 L1Algo/L1Def.h
+L1Algo/L1Vector.h
 )
 
 
