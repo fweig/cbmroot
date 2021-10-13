@@ -128,6 +128,7 @@ void CbmBuildEventsQa::Exec(Option_t*)
     CbmEvent* event = (CbmEvent*) fEvents->At(iEvent);
 
     // --- Match event to MC
+    LOG(info) << "";
     MatchEvent(event);
     if (event->GetMatch()->GetNofLinks() < 1) {
       LOG(warning) << "No links in this event match object, skipping the event";
@@ -135,10 +136,22 @@ void CbmBuildEventsQa::Exec(Option_t*)
     }  // if (-1 == event->GetMatch()->GetNofLinks())
     Int_t mcEventNr = event->GetMatch()->GetMatchedLink().GetEntry();
     LOG(info) << GetName() << ": Event " << event->GetNumber() << ", digis in event: " << event->GetNofData()
-              << ", links to MC events: " << event->GetMatch()->GetNofLinks() << ", matched MC event number "
-              << mcEventNr;
-    LOG(info) << "Start time: " << event->GetStartTime() << ", end time: " << event->GetEndTime();
-    LOG(info) << "Middle time: " << (event->GetStartTime() + event->GetEndTime()) / 2.;
+              << ", links to MC events: " << event->GetMatch()->GetNofLinks()
+              << ", matched MC event number: " << mcEventNr;
+    LOG(info) << "Start time: " << event->GetStartTime() << ", end time: " << event->GetEndTime()
+              << ", middle time: " << (event->GetStartTime() + event->GetEndTime()) / 2.;
+
+    const std::vector<CbmLink> linkList = event->GetMatch()->GetLinks();
+    for (Int_t iLink = 0; iLink < linkList.size(); iLink++) {
+      Int_t linkedEvent    = linkList.at(iLink).GetEntry();
+      Float_t linkedWeight = linkList.at(iLink).GetWeight();
+      std::string isMatched;
+      if (linkedEvent == mcEventNr) { isMatched = " (matched)"; }
+      else {
+        isMatched = "";
+      }
+      LOG(info) << "Link " << iLink << ": MC event " << linkedEvent << " weight " << linkedWeight << isMatched;
+    }
 
     // --- Loop over all detector systems
     for (ECbmModuleId& system : fSystems) {
