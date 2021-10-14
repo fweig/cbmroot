@@ -7,6 +7,7 @@
 /// \brief Generates TRD geometry in Root format.
 ///
 
+// 2021-10-10 - AB - v21b    - based on v21b. Correct order of TRD(2D) modules in the set-up
 // 2021-09-28 - SR - v21b    - based on v21a the position is corrected
 // 2021-07-25 - AB - v21a    - based on v20b, add 2 TRD2D modules and their support structure for the 2021 setup
 // 2020-05-25 - DE - v20b    - based on v20a, use 2 TRD modules for 2021 setup
@@ -347,7 +348,7 @@ const Int_t GbtxPerRob[NofModuleTypes]    = {105, 105, 105, 103, 107,
                                           105, 105, 103, 103, 103};  // number of GBTx ASICs on ROB
 
 const Int_t GbtxPerModule[NofModuleTypes]   = {15, 10, 5, 18, 0,
-                                             10, 5,  3, 6, 1};  // for .geo.info - TODO: merge with above GbtxPerRob
+                                             10, 5,  3, 6,  1};  // for .geo.info - TODO: merge with above GbtxPerRob
 const Int_t RobTypeOnModule[NofModuleTypes] = {
   555, 55, 5, 333333, 0, 55, 5, 3, 333333, 333333};  // for .geo.info - TODO: merge with above GbtxPerRob
 
@@ -2947,7 +2948,8 @@ void create_detector_layers(Int_t layerId)
 
           cout << "DESH layer " << layerId << " xPos " << xPos << endl;
           cout << "DESH layer " << layerId << " yPos " << yPos << endl;
-          cout << "DESH layer " << layerId << " zPos " << LayerPosition[layerId] << " " <<  LayerThickness / 2  << " " <<  dz << endl;
+          cout << "DESH layer " << layerId << " zPos " << LayerPosition[layerId] << " " << LayerThickness / 2 << " "
+               << dz << endl;
 
           TGeoCombiTrans* module_placement =
             new TGeoCombiTrans(xPos, yPos, LayerPosition[layerId] + LayerThickness / 2 + dz,
@@ -2988,7 +2990,7 @@ void create_detector_layers(Int_t layerId)
   ModuleStats[layerId][type - 1]++;
 
   module_rotation = new TGeoRotation();
-  cout << "DESH layer " << layerId << " zPos " << LayerPosition[layerId] + LayerThickness / 2  << " " <<  zPos << endl;
+  cout << "DESH layer " << layerId << " zPos " << LayerPosition[layerId] + LayerThickness / 2 << " " << zPos << endl;
   TGeoCombiTrans* module_placement =
     new TGeoCombiTrans(xPos, yPos, /*LayerPosition[0] - (layerId - 1) * LayerThickness / 2 + zPos*/
                        LayerPosition[layerId] + LayerThickness / 2 + zPos,
