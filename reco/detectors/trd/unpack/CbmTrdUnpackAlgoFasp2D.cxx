@@ -25,6 +25,8 @@
 
 #include <boost/format.hpp>
 
+#define VERBOSE 0
+
 using namespace std;
 
 CbmTrdUnpackAlgoFasp2D::CbmTrdUnpackAlgoFasp2D()
@@ -57,7 +59,7 @@ Bool_t CbmTrdUnpackAlgoFasp2D::initParSet(FairParGenericSet* parset)
         CbmTrdParAsic* asic = (CbmTrdParAsic*) setDet->GetModulePar(add);
         if (asic->IsA() == CbmTrdParSpadic::Class()) continue;
         fAsicPar.addParam(asic);
-        // asic->Print();
+        if (VERBOSE) asic->Print();
       }
     }
     //      setPar->printParams();
@@ -168,7 +170,6 @@ void CbmTrdUnpackAlgoFasp2D::mess_prt(CbmTrdFaspContent* mess)
               % static_cast<unsigned int>(mess->ch) % static_cast<unsigned int>(mess->epoch);
 }
 
-#define VERBOSE 0
 //_________________________________________________________________________________
 bool CbmTrdUnpackAlgoFasp2D::pushDigis(
   std::map<UChar_t, std::vector<CbmTrdUnpackAlgoFasp2D::CbmTrdFaspContent*>> messes)
@@ -189,7 +190,7 @@ bool CbmTrdUnpackAlgoFasp2D::pushDigis(
       lFasp = messes[col][0]->fasp;
       // link data to the position on the padplane
       if (!(faspPar = (CbmTrdParFasp*) fAsicPar.GetAsicPar((*i)->cri * 1000 + lFasp))) {
-        LOG(error) << GetName() << "::pushDigis - FASP par " << (int) lFasp << " for module " << (*i)->cri
+        LOG(error) << GetName() << "::pushDigis - Par for FASP " << (int) lFasp << " in module " << (*i)->cri
                    << " missing. Skip.";
         return false;
       }
@@ -358,7 +359,7 @@ bool CbmTrdUnpackAlgoFasp2D::unpack(const fles::Timeslice* ts, std::uint16_t ico
       mess->tlab = slice;
       mess->data = data >> 1;
       mess->fasp = lFaspOld;
-      mess->cri  = 53;
+      mess->cri  = 5;
       col        = ch_id >> 1;
       vDigi[col].push_back(mess);
     }
