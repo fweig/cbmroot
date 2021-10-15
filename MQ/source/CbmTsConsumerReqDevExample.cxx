@@ -88,7 +88,7 @@ bool CbmTsConsumerReqDevExample::InitContainers()
     if (Send(req, "parameters") > 0) {
       if (Receive(rep, "parameters") >= 0) {
         if (rep->GetSize() != 0) {
-          CbmMQTMessage tmsg(rep->GetData(), rep->GetSize());
+          CbmMqTMessage tmsg(rep->GetData(), rep->GetSize());
           newObj = static_cast<FairParGenericSet*>(tmsg.ReadObject(tmsg.GetClass()));
           LOG(info) << "Received unpack parameter from the server:";
           newObj->print();

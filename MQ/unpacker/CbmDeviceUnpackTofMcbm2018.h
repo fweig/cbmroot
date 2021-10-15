@@ -16,6 +16,7 @@
 #define CBMDEVICEUNPACKTOFMCBM2018_H_
 
 #include "CbmMcbm2018TofPar.h"
+#include "CbmMqTMessage.h"
 
 #include "MicrosliceDescriptor.hpp"
 #include "Timeslice.hpp"
@@ -23,7 +24,6 @@
 #include "FairMQDevice.h"
 
 #include "Rtypes.h"
-#include "TMessage.h"
 
 #include <map>
 #include <vector>
@@ -195,12 +195,6 @@ private:
 
   CbmDeviceUnpackTofMcbm2018(const CbmDeviceUnpackTofMcbm2018&) = delete;
   CbmDeviceUnpackTofMcbm2018 operator=(const CbmDeviceUnpackTofMcbm2018&) = delete;
-};
-
-// special class to expose protected TMessage constructor
-class CbmMQTMessage : public TMessage {
-public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 #endif /* CBMDEVICEUNPACKTOFMCBM2018_H_ */

@@ -14,6 +14,7 @@
 
 /// CBM headers
 #include "CbmMcbm2019TimeWinEventBuilderAlgo.h"
+#include "CbmMqTMessage.h"
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmPsdDigi.h"
 #include "CbmRichDigi.h"
@@ -26,7 +27,6 @@
 
 /// FAIRSOFT headers (geant, boost, ...)
 #include "Rtypes.h"
-#include "TMessage.h"
 #include "TObjArray.h"
 
 /// C/C++ headers
@@ -133,12 +133,5 @@ private:
   bool SendEvents(FairMQParts& partsIn);
   bool SendHistograms();
 };
-
-// special class to expose protected TMessage constructor
-class CbmMQTMessage : public TMessage {
-public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
-};
-
 
 #endif /* CBMDEVICEMCBMEVTBUILDERWIN_H_ */

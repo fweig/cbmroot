@@ -442,7 +442,7 @@ Bool_t CbmDeviceMcbmEventBuilderWin::InitParameters( TList* fParCList )
          {
             if( 0 !=  rep->GetSize() )
             {
-               CbmMQTMessage tmsg( rep->GetData(), rep->GetSize() );
+               CbmMqTMessage tmsg( rep->GetData(), rep->GetSize() );
                newObj = static_cast< FairParGenericSet* >( tmsg.ReadObject( tmsg.GetClass() ) );
                LOG( info ) << "Received unpack parameter from the server:";
                newObj->print();

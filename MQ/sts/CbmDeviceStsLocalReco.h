@@ -12,13 +12,14 @@
 #ifndef CBMDEVICEMSTSLOCALRECO_H_
 #define CBMDEVICEMSTSLOCALRECO_H_
 
+#include "CbmMqTMessage.h"
+
 #include "FairMQDevice.h"
 
 //#include "CbmStsDigitizeParameters.h"
 
 //#include "FairGeoParSet.h"
 
-#include "TMessage.h"
 //#include "Rtypes.h"
 //#include "TObjArray.h"
 
@@ -72,12 +73,6 @@ private:
   //    TList* fParCList;
 
   //    TObjArray fArrayHisto;
-};
-
-// special class to expose protected TMessage constructor
-class CbmMQTMessage : public TMessage {
-public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 #endif /* CBMDEVICESTSLOCALRECO_H_ */

@@ -12,6 +12,8 @@
 #ifndef CBMDEVICEUNPACKTOFSTAR2018_H_
 #define CBMDEVICEUNPACKTOFSTAR2018_H_
 
+#include "CbmMqTMessage.h"
+
 #include "MicrosliceDescriptor.hpp"
 #include "Timeslice.hpp"
 
@@ -151,12 +153,5 @@ private:
 
   inline Int_t GetArrayIndex(Int_t gdpbId, Int_t get4Id) { return gdpbId * fuNrOfGet4PerGdpb + get4Id; }
 };
-
-// special class to expose protected TMessage constructor
-class CbmMQTMessage : public TMessage {
-public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
-};
-
 
 #endif /* CBMDEVICEUNPACKTOFSTAR2018_H_ */

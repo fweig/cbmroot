@@ -5,12 +5,13 @@
 #ifndef CBMTSCONSUMERREQDEVEXPL_H_
 #define CBMTSCONSUMERREQDEVEXPL_H_
 
+#include "CbmMqTMessage.h"
+
 #include "Timeslice.hpp"
 
 #include "FairMQDevice.h"
 
 #include "Rtypes.h"
-#include "TMessage.h"
 #include "TObjArray.h"
 
 #include <chrono>
@@ -73,12 +74,5 @@ private:
   bool SendHistoConfAndData();
   bool SendHistograms();
 };
-
-// special class to expose protected TMessage constructor
-class CbmMQTMessage : public TMessage {
-public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
-};
-
 
 #endif /* CBMTSCONSUMERREQDEVEXPL_H_ */

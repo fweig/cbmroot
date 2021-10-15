@@ -427,7 +427,7 @@ Bool_t CbmDeviceHitBuilderTof::InitContainers()
     if (Send(req, Channel) > 0) {
       if (Receive(rep, Channel) >= 0) {
         if (rep->GetSize() != 0) {
-          CbmMQTMessage tmsg(rep->GetData(), rep->GetSize());
+          CbmMqTMessage tmsg(rep->GetData(), rep->GetSize());
           switch (iSet) {
             case 0:
               fDigiPar = static_cast<CbmTofDigiPar*>(tmsg.ReadObject(tmsg.GetClass()));

@@ -12,6 +12,7 @@
 #ifndef CBMDEVICEMCBMMONITORPULSER_H_
 #define CBMDEVICEMCBMMONITORPULSER_H_
 
+#include "CbmMqTMessage.h"
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmPsdDigi.h"
 #include "CbmRichDigi.h"
@@ -22,7 +23,6 @@
 #include "FairMQDevice.h"
 
 #include "Rtypes.h"
-#include "TMessage.h"
 #include "TObjArray.h"
 
 #include <chrono>
@@ -261,12 +261,5 @@ private:
   TH2* fDigiTimeEvoTof  = nullptr;
   /*********************** SHOULD GO IN ALGO ****************************/
 };
-
-// special class to expose protected TMessage constructor
-class CbmMQTMessage : public TMessage {
-public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
-};
-
 
 #endif /* CBMDEVICEMCBMMONITORPULSER_H_ */

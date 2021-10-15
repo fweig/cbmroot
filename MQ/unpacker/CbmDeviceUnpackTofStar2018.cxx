@@ -159,7 +159,7 @@ Bool_t CbmDeviceUnpackTofStar2018::InitContainers()
   if (Send(req, "parameters") > 0) {
     if (Receive(rep, "parameters") >= 0) {
       if (rep->GetSize() != 0) {
-        CbmMQTMessage tmsg(rep->GetData(), rep->GetSize());
+        CbmMqTMessage tmsg(rep->GetData(), rep->GetSize());
         fUnpackPar = static_cast<CbmTofUnpackPar*>(tmsg.ReadObject(tmsg.GetClass()));
         LOG(info) << "Received parameter from the server:";
         fUnpackPar->print();

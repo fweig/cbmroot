@@ -10,6 +10,8 @@
 #ifndef CBMDEVICEEVENTBUILDERETOFSTAR2019_H_
 #define CBMDEVICEEVENTBUILDERETOFSTAR2019_H_
 
+#include "CbmMqTMessage.h"
+
 #include "Timeslice.hpp"
 
 #include "FairMQDevice.h"
@@ -84,12 +86,6 @@ private:
   std::fstream* fpBinDumpFile;
   const UInt_t kuBinDumpBegWord = 0xFEEDBEAF;
   const UInt_t kuBinDumpEndWord = 0xFAEBDEEF;
-};
-
-// special class to expose protected TMessage constructor
-class CbmMQTMessage : public TMessage {
-public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 #endif /* CBMDEVICEEVENTBUILDERETOFSTAR2019_H_ */

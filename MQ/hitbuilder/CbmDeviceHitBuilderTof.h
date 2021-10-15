@@ -12,6 +12,7 @@
 #ifndef CBMDEVICEHITBUILDERTOF_H_
 #define CBMDEVICEHITBUILDERTOF_H_
 
+#include "CbmMqTMessage.h"
 #include "CbmTofAddress.h"     // in cbmdata/tof
 #include "CbmTofGeoHandler.h"  // in tof/TofTools
 
@@ -30,7 +31,6 @@
 #include <map>
 #include <vector>
 
-class CbmMQTMessage;
 class CbmHistManager;
 // Relevant TOF classes
 class CbmTofDigi;
@@ -284,12 +284,6 @@ private:
   TString fOutRootFileName;  // name of the output file name with Digis & Hits
   TFile* fCalParFile;        // pointer to Calibration Parameter file
   TFile* fOutRootFile;       // pointer to root output file
-};
-
-// special class to expose protected TMessage constructor
-class CbmMQTMessage : public TMessage {
-public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 #endif /* CBMDEVICEHITBUILDERTOF_H_ */

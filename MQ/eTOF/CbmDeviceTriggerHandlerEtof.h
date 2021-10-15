@@ -12,6 +12,7 @@
 #ifndef CBMDEVICETRIGGERHANDLERETOF_H_
 #define CBMDEVICETRIGGERHANDLERETOF_H_
 
+#include "CbmMqTMessage.h"
 #include "CbmTofStarData2019.h"
 
 #include "MicrosliceDescriptor.hpp"
@@ -20,12 +21,10 @@
 #include "FairMQDevice.h"
 
 #include "Rtypes.h"
-#include "TMessage.h"
 
 #include <map>
 #include <vector>
 
-class CbmMQTMessage;
 // Relevant TOF classes
 
 extern "C" int star_rhicf_write(unsigned int trg_word, void* dta, int bytes);
@@ -76,12 +75,6 @@ private:
   Double_t fdEvent;
 
   // histograms
-};
-
-// special class to expose protected TMessage constructor
-class CbmMQTMessage : public TMessage {
-public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 #endif /* CBMDEVICETRIGGERHANDLERETOF_H_ */

@@ -12,9 +12,9 @@
 #ifndef CBMDEVICESTSLOCALRECO_H_
 #define CBMDEVICESTSLOCALRECO_H_
 
-#include "FairMQDevice.h"
+#include "CbmMqTMessage.h"
 
-#include "TMessage.h"
+#include "FairMQDevice.h"
 
 #include <vector>
 
@@ -30,12 +30,6 @@ protected:
 private:
   uint64_t fMaxTimeslices;
   uint64_t fNumMessages;
-};
-
-// special class to expose protected TMessage constructor
-class CbmMQTMessage : public TMessage {
-public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
 };
 
 #endif /* CBMDEVICESTSLOCALRECO_H_ */

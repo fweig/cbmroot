@@ -9,6 +9,7 @@ set(INCLUDE_DIRECTORIES
     ${CBMDATA_DIR}/tof
     ${CBMBASE_DIR}
     ${CBMDETECTORBASE_DIR}/tof
+    ${CBMROOT_SOURCE_DIR}/MQ/base
 )
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
@@ -22,7 +23,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
     ${VMC_INCLUDE_DIRS}
 
     ${IPC_INCLUDE_DIRECTORY}
-    ${CBMROOT_SOURCE_DIR}/external/cppzmq        
+    ${CBMROOT_SOURCE_DIR}/external/cppzmq
     ${CBMROOT_SOURCE_DIR}/reco/detectors/tof
 )
 
@@ -74,7 +75,7 @@ set(DEPENDENCIES
   CbmBase
   CbmData
   CbmTofBase
-  Geom		
+  Geom
   Core
   MathCore
   Tree

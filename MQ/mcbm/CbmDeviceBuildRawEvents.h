@@ -26,7 +26,6 @@
 
 /// FAIRSOFT headers (geant, boost, ...)
 #include "Rtypes.h"
-#include "TMessage.h"
 #include "TObjArray.h"
 
 /// C/C++ headers
@@ -128,12 +127,5 @@ private:
   bool SendEvents(FairMQParts& partsIn);
   bool SendHistograms();
 };
-
-// special class to expose protected TMessage constructor
-class CbmMQTMessage : public TMessage {
-public:
-  CbmMQTMessage(void* buf, Int_t len) : TMessage(buf, len) { ResetBit(kIsOwner); }
-};
-
 
 #endif /* CBMDEVICEBUILDRAWEVENTS_H_ */

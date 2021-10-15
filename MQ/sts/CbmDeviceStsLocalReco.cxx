@@ -148,7 +148,7 @@ Bool_t CbmDeviceStsLocalReco::InitContainers()
   if (Send(req, "parameters") > 0) {
     if (Receive(rep, "parameters") >= 0) {
       if (rep->GetSize() != 0) {
-        CbmMQTMessage tmsg(rep->GetData(), rep->GetSize());
+        CbmMqTMessage tmsg(rep->GetData(), rep->GetSize());
         fDigiPar = dynamic_cast<CbmStsDigitizeParameters*>(tmsg.ReadObject(tmsg.GetClass()));
         LOG(INFO) << "Received unpack parameter from parmq server: " << fDigiPar;
         // TODO: check if fDigiPar is properly initialized from the file
@@ -171,7 +171,7 @@ Bool_t CbmDeviceStsLocalReco::InitContainers()
   if (Send(req1, "parameters") > 0) {
     if (Receive(rep1, "parameters") >= 0) {
       if (rep1->GetSize() != 0) {
-        CbmMQTMessage tmsg(rep1->GetData(), rep1->GetSize());
+        CbmMqTMessage tmsg(rep1->GetData(), rep1->GetSize());
         fGeoPar = static_cast<FairGeoParSet*>(tmsg.ReadObject(tmsg.GetClass()));
         LOG(INFO) << "Received unpack parameter from parmq server: " << fGeoPar;
         fGeoPar->Print();
@@ -196,7 +196,7 @@ Bool_t CbmDeviceStsLocalReco::InitContainers()
   if (Send(req2, "parameters") > 0) {
     if (Receive(rep2, "parameters") >= 0) {
       if (rep2->GetSize() != 0) {
-        CbmMQTMessage tmsg(rep2->GetData(), rep2->GetSize());
+        CbmMqTMessage tmsg(rep2->GetData(), rep2->GetSize());
         fFieldPar = static_cast<CbmFieldPar*>(tmsg.ReadObject(tmsg.GetClass()));
         LOG(info) << "Received unpack parameter from parmq server: " << fGeoPar;
         if (-1 == fFieldPar->GetType()) { throw InitTaskError("No field parameters available!"); }

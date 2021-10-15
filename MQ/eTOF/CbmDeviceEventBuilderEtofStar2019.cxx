@@ -137,7 +137,7 @@ Bool_t CbmDeviceEventBuilderEtofStar2019::InitContainers()
   if (Send(req, "parameters") > 0) {
     if (Receive(rep, "parameters") >= 0) {
       if (rep->GetSize() != 0) {
-        CbmMQTMessage tmsg(rep->GetData(), rep->GetSize());
+        CbmMqTMessage tmsg(rep->GetData(), rep->GetSize());
         fUnpackPar = dynamic_cast<CbmStar2019TofPar*>(tmsg.ReadObject(tmsg.GetClass()));
         LOG(info) << "Received unpack parameter from parmq server: " << fUnpackPar;
         fUnpackPar->Print();
