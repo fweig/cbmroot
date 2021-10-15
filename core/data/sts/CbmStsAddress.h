@@ -12,8 +12,6 @@
 
 #include "CbmDefs.h"  // for ECbmModuleId
 
-#include <RtypesCore.h>  // for Int_t, UInt_t
-
 #include <sstream>  // for string
 
 /** Enumerator for the hierarchy levels of the STS setup **/
@@ -50,13 +48,13 @@ enum EStsElementLevel
 namespace CbmStsAddress
 {
 
-  const UInt_t kCurrentVersion = 1;
+  const uint32_t kCurrentVersion = 1;
 
   // --- These values are not to be changed if backward compatibility
   // --- shall be maintained.
-  const Int_t kVersionSize  = 4;   // Bits for version number
-  const Int_t kVersionShift = 28;  // First bit for version number
-  const Int_t kVersionMask  = (1 << kVersionSize) - 1;
+  const int32_t kVersionSize  = 4;   // Bits for version number
+  const int32_t kVersionShift = 28;  // First bit for version number
+  const int32_t kVersionMask  = (1 << kVersionSize) - 1;
 
 
   /** @brief Construct address
@@ -69,15 +67,15 @@ namespace CbmStsAddress
    ** @param channel      Channel number
    ** @return Unique element address
    **/
-  Int_t GetAddress(UInt_t unit = 0, UInt_t ladder = 0, UInt_t halfladder = 0, UInt_t module = 0, UInt_t sensor = 0,
-                   UInt_t side = 0, UInt_t version = kCurrentVersion);
+  int32_t GetAddress(uint32_t unit = 0, uint32_t ladder = 0, uint32_t halfladder = 0, uint32_t module = 0,
+                     uint32_t sensor = 0, uint32_t side = 0, uint32_t version = kCurrentVersion);
 
 
   /** @brief Construct address
    ** @param elementIds   Array of element indices in their mother volumes
    ** @return Unique element address
    **/
-  Int_t GetAddress(UInt_t* elementId, UInt_t version);
+  int32_t GetAddress(uint32_t* elementId, uint32_t version);
 
 
   /** @brief Construct the address of an element from the address of a
@@ -89,7 +87,7 @@ namespace CbmStsAddress
    ** This strips of the address information of all hierarchy levels
    ** below the desired one.
    **/
-  Int_t GetMotherAddress(Int_t address, Int_t level);
+  int32_t GetMotherAddress(int32_t address, int32_t level);
 
 
   /** @brief Get the index of an element
@@ -97,13 +95,13 @@ namespace CbmStsAddress
    ** @param level Hierarchy level
    ** @return Element index
    **/
-  UInt_t GetElementId(Int_t address, Int_t level);
+  uint32_t GetElementId(int32_t address, int32_t level);
 
 
   /** @brief Get system Id (should be ECbmModuleId::kSts)
    ** @param address Unique element address
    **/
-  ECbmModuleId GetSystemId(Int_t address);
+  ECbmModuleId GetSystemId(int32_t address);
 
 
   /** @brief Extract version number
@@ -113,7 +111,7 @@ namespace CbmStsAddress
    ** The version is encoded in the last 6 bits (58 to 63).
    ** The maximal number of versions is 64.
    **/
-  UInt_t GetVersion(Int_t address);
+  uint32_t GetVersion(int32_t address);
 
 
   /** @brief Set the index of an element, leaving the other element levels
@@ -123,13 +121,27 @@ namespace CbmStsAddress
    ** @param newId   New element index
    ** @return New address
    **/
-  Int_t SetElementId(Int_t address, Int_t level, UInt_t newId);
+  int32_t SetElementId(int32_t address, int32_t level, uint32_t newId);
+
+
+  /** @brief Strip address to contain only unit, (half)ladder and module.
+   ** @param address Full address
+   ** @return 17 bit address that can be stored in a Digi
+   **/
+  int32_t PackDigiAddress(int32_t address);
+
+
+  /** @brief Add version and system to compressed address that's stored in a digi
+   ** @param digiAddress Compressed address from digi
+   ** @return Full address
+   **/
+  int32_t UnpackDigiAddress(int32_t digiAddress);
 
 
   /** @brief String output
    ** @param address Unique element address
    **/
-  std::string ToString(Int_t address);
+  std::string ToString(int32_t address);
 
 }  // Namespace CbmStsAddress
 
