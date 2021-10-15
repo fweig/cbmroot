@@ -37,12 +37,12 @@ CbmTrdDigi::CbmTrdDigi() : fInfo(0), fCharge(0), fTime(0) {}
 //_________________________________________________________________________________
 CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Float_t chargeT, Float_t chargeR, ULong64_t time) : fTime(time)
 {
-  /** Fill data structure according to FASP representation  
+  /** Fill data structure according to FASP representation
  * A - Asic type according to CbmTrdAsicType
  * M - module id in the layer
  * L - layer id in the TRD setup
  * p - pad address within the module
- * 
+ *
  * fCharge definition tttt.tttt tttt.tttt rrrr.rrrr rrrr.rrrr
  * t - tilt paired charge
  * r - rectangle paired charge
@@ -58,7 +58,7 @@ CbmTrdDigi::CbmTrdDigi(Int_t padChNr, Int_t uniqueModuleId, Float_t charge, ULon
   : fTime(time)
 {
   /**
- * Fill data structure according to SPADIC representation  
+ * Fill data structure according to SPADIC representation
  * A - Asic type according to CbmTrdAsicType
  * T - trigger type according to CbmTrdTriggerType
  * n - error class
@@ -247,8 +247,14 @@ void CbmTrdDigi::SetFlag(const Int_t iflag, Bool_t set)
 void CbmTrdDigi::SetTime(Double_t t)
 {
   switch (GetType()) {
-    case eCbmTrdAsicType::kFASP: fTime = ULong64_t(TMath::Ceil(t / Clk(GetType())));
-    case eCbmTrdAsicType::kSPADIC: fTime = static_cast<ULong64_t>(t);
+    case eCbmTrdAsicType::kFASP: {
+      fTime = ULong64_t(TMath::Ceil(t / Clk(GetType())));
+      break;
+    }
+    case eCbmTrdAsicType::kSPADIC: {
+      fTime = static_cast<ULong64_t>(t);
+      break;
+    }
     case eCbmTrdAsicType::kNTypes: return;
   }
 }
