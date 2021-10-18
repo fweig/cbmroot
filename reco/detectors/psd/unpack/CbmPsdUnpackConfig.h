@@ -8,11 +8,11 @@
  * @brief Configuration class for an unpacker algorithm
  * @version 0.1
  * @date 2021-04-21
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  * This is the common configuration class for unpacking algorithms
- * 
+ *
 */
 
 #ifndef CbmPsdUnpackConfig_H
@@ -38,7 +38,7 @@ class CbmPsdUnpackConfig : public CbmRecoUnpackConfig<CbmPsdUnpackAlgo, CbmPsdDi
 public:
   /**
    * @brief Create the Cbm Trd Unpack Task object
-   * 
+   *
    * @param geoSetupTag Geometry setup tag for the given detector as used by CbmSetup objects
    * @param runid set if unpacker is rerun on a special run with special parameters
    *@remark We use the string instead of CbmSetup here, to not having to link against sim/steer...
@@ -47,7 +47,7 @@ public:
 
   /**
    * @brief Destroy the Cbm Trd Unpack Task object
-   * 
+   *
   */
   virtual ~CbmPsdUnpackConfig();
 
@@ -60,30 +60,18 @@ public:
   // Getters
 
 
-  /**
-   * @brief Prepare the unpacker to be ready to run.
-   * In this function all initialization steps of the unpacker algorithms happen.
-  */
-  void InitUnpacker();
-
   // Setters
 
 protected:
   /**
    * @brief Choose the derived unpacker algorithm to be used for the DAQ output to Digi translation. If algo was already set manually by the user this algorithm is used.
-   * 
-   * @return Bool_t initOk 
+   *
+   * @return Bool_t initOk
   */
   virtual std::shared_ptr<CbmPsdUnpackAlgo> chooseAlgo();
 
-  /** @brief Geometry setup tag for the given detector as used by CbmSetup objects */
-  std::string fGeoSetupTag = "";
-
-  /** @brief RunId of the current run, if not known 0 is a valid runtime case. Used runId based parameter loading. */
-  UInt_t fRunId = 0;
-
 private:
-  ClassDef(CbmPsdUnpackConfig, 2)
+  ClassDef(CbmPsdUnpackConfig, 3)
 };
 
 #endif  // CbmPsdUnpackConfig_H

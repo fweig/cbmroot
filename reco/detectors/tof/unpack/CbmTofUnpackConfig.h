@@ -61,12 +61,6 @@ public:
   // Getters
 
 
-  /**
-   * @brief Prepare the unpacker to be ready to run.
-   * In this function all initialization steps of the unpacker algorithms happen.
-  */
-  void InitUnpacker();
-
   // Setters
 
 protected:
@@ -76,12 +70,6 @@ protected:
    * @return Bool_t initOk
   */
   virtual std::shared_ptr<CbmTofUnpackAlgo> chooseAlgo();
-
-  /** @brief Geometry setup tag for the given detector as used by CbmSetup objects */
-  std::string fGeoSetupTag = "";
-
-  /** @brief RunId of the current run, if not known 0 is a valid runtime case. Used runId based parameter loading. */
-  UInt_t fRunId = 0;
 
 private:
   ClassDef(CbmTofUnpackConfig, 1)

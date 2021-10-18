@@ -475,32 +475,32 @@ Bool_t CbmDeviceMcbmUnpack::DoUnpack(const fles::Timeslice& ts, size_t /*compone
 
   if (kFALSE == fUnpAlgoSts->ProcessTs(ts)) {
     LOG(error) << "Failed processing TS " << ts.index() << " in STS unpacker algorithm class";
-    return kTRUE;
+    return kFALSE;
   }  // if( kFALSE == fUnpAlgoSts->ProcessTs( ts ) )
 
   if (kFALSE == fUnpAlgoMuch->ProcessTs(ts)) {
     LOG(error) << "Failed processing TS " << ts.index() << " in MUCH unpacker algorithm class";
-    return kTRUE;
+    return kFALSE;
   }  // if( kFALSE == fUnpAlgoMuch->ProcessTs( ts ) )
 
   if (kFALSE == fUnpAlgoTrd->ProcessTs(ts)) {
     LOG(error) << "Failed processing TS " << ts.index() << " in TRD unpacker algorithm class";
-    return kTRUE;
+    return kFALSE;
   }  // if( kFALSE == fUnpAlgoTrd->ProcessTs( ts ) )
 
   if (kFALSE == fUnpAlgoTof->ProcessTs(ts)) {
     LOG(error) << "Failed processing TS " << ts.index() << " in TOF unpacker algorithm class";
-    return kTRUE;
+    return kFALSE;
   }  // if( kFALSE == fUnpAlgoTof->ProcessTs( ts ) )
 
   if (kFALSE == fUnpAlgoRich->ProcessTs(ts)) {
     LOG(error) << "Failed processing TS " << ts.index() << " in RICH unpacker algorithm class";
-    return kTRUE;
+    return kFALSE;
   }  // if( kFALSE == fUnpAlgoRich->ProcessTs( ts ) )
 
   if (kFALSE == fUnpAlgoPsd->ProcessTs(ts)) {
     LOG(error) << "Failed processing TS " << ts.index() << " in PSD unpacker algorithm class";
-    return kTRUE;
+    return kFALSE;
   }  // if( kFALSE == fUnpAlgoPsd->ProcessTs( ts ) )
 
 

@@ -231,6 +231,8 @@ Bool_t CbmStsUnpackAlgo::initParSet(CbmMcbm2018StsPar* parset)
   LOG(debug) << "Unpacking data in bin sorter FW mode";
   initInternalStatus(parset);
 
+  if (fMonitor) fMonitor->Init(parset);
+
   return kTRUE;
 }
 

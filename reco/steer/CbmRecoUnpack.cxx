@@ -70,49 +70,70 @@ Bool_t CbmRecoUnpack::Init()
 
   // --- Psd
   if (fPsdConfig) {
-    fPsdConfig->Init(ioman);
+    fPsdConfig->InitOutput();
+    RegisterOutputs(ioman, fPsdConfig);  /// Framework bound work = kept in this Task
+    fPsdConfig->SetAlgo();
+    initParContainers(fPsdConfig->GetParContainerRequest());  /// Framework bound work = kept in this Task
+    fPsdConfig->InitAlgo();
     initPerformanceMaps(fkFlesPsd, "PSD");
   }
   // --- Rich
   if (fRichConfig) {
-    fRichConfig->Init(ioman);
+    fRichConfig->InitOutput();
+    RegisterOutputs(ioman, fRichConfig);  /// Framework bound work = kept in this Task
+    fRichConfig->SetAlgo();
+    initParContainers(fRichConfig->GetParContainerRequest());  /// Framework bound work = kept in this Task
+    fRichConfig->InitAlgo();
     initPerformanceMaps(fkFlesRich, "RICH");
   }
 
   // --- Sts
   if (fStsConfig) {
-    fStsConfig->Init(ioman);
+    fStsConfig->InitOutput();
+    RegisterOutputs(ioman, fStsConfig);  /// Framework bound work = kept in this Task
+    fStsConfig->SetAlgo();
+    initParContainers(fStsConfig->GetParContainerRequest());  /// Framework bound work = kept in this Task
+    fStsConfig->InitAlgo();
     initPerformanceMaps(fkFlesSts, "STS");
   }
   // --- Tof
   if (fTofConfig) {
-    fTofConfig->Init(ioman);
+    fTofConfig->InitOutput();
+    RegisterOutputs(ioman, fTofConfig);  /// Framework bound work = kept in this Task
+    fTofConfig->SetAlgo();
+    initParContainers(fTofConfig->GetParContainerRequest());  /// Framework bound work = kept in this Task
+    fTofConfig->InitAlgo();
     initPerformanceMaps(fkFlesTof, "TOF");
   }
   // --- Trd
   if (fTrd1DConfig) {
-    fTrd1DConfig->Init(ioman);
+    fTrd1DConfig->InitOutput();
+    RegisterOutputs(ioman, fTrd1DConfig);  /// Framework bound work = kept in this Task
+    fTrd1DConfig->SetAlgo();
+    initParContainers(fTrd1DConfig->GetParContainerRequest());  /// Framework bound work = kept in this Task
+    fTrd1DConfig->InitAlgo();
     initPerformanceMaps(fkFlesTrd, "TRD1D");
   }
   // --- TRD2D
   if (fTrd2DConfig) {
-    if (fTrd1DConfig) {
-      if (fTrd2DConfig->GetOutputBranchName() == fTrd1DConfig->GetOutputBranchName()) {
-        LOG(info) << fTrd2DConfig->GetName() << "::Init() ---------------------------------";
-        fTrd2DConfig->SetOutputVec(fTrd1DConfig->GetOutputVec());
-        fTrd2DConfig->InitUnpacker();
-        LOG(info) << fTrd2DConfig->GetName() << " succesful initialized -----------------\n";
-      }
-      else {
-        fTrd2DConfig->Init(ioman);
-      }
+    if (fTrd1DConfig && (fTrd2DConfig->GetOutputBranchName() == fTrd1DConfig->GetOutputBranchName())) {
+      LOG(info) << fTrd2DConfig->GetName() << "::Init() ---------------------------------";
+      fTrd2DConfig->SetOutputVec(fTrd1DConfig->GetOutputVec());
     }
     else {
-      fTrd2DConfig->Init(ioman);
+      fTrd2DConfig->InitOutput();
+      RegisterOutputs(ioman, fTrd2DConfig);  /// Framework bound work = kept in this Task
     }
+    fTrd2DConfig->SetAlgo();
+    initParContainers(fTrd2DConfig->GetParContainerRequest());  /// Framework bound work = kept in this Task
+    fTrd2DConfig->InitAlgo();
     initPerformanceMaps(fkFlesTrd2D, "TRD2D");
   }
-  // This is an ugly work around, because the TRD and TRD2D want to access the same vector and there is no function to retrieve a writeable vector<obj> from the FairRootManager, especially before the branches are created, as far as I am aware. The second option workaround is in in Init() to look for the fasp config and create a separate branch for fasp created CbmTrdDigis PR 072021
+  // This is an ugly work around, because the TRD and TRD2D want to access the same vector and there is no
+  // function to retrieve a writeable vector<obj> from the FairRootManager, especially before the branches
+  // are created, as far as I am aware.
+  // The second option workaround is in in Init() to look for the fasp config and create a separate branch
+  // for fasp created CbmTrdDigis PR 072021
 
   return kTRUE;
 }

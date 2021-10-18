@@ -16,20 +16,16 @@
 #include <vector>
 
 CbmTrdUnpackConfig::CbmTrdUnpackConfig(std::string detGeoSetupTag, UInt_t runid)
-  : CbmRecoUnpackConfig("CbmTrdUnpackConfig")
-  , fGeoSetupTag(detGeoSetupTag)
-  , fRunId(runid)
+  : CbmRecoUnpackConfig("CbmTrdUnpackConfig", detGeoSetupTag, runid)
 {
 }
 
 CbmTrdUnpackConfig::~CbmTrdUnpackConfig() {}
 
 // ---- Init ----
-void CbmTrdUnpackConfig::InitUnpacker()
+void CbmTrdUnpackConfig::SetAlgo()
 {
   LOG(info) << fName << "::Init -";
-
-  auto initOk = kTRUE;
 
   // First choose the derived unpacking algorithm to be used and pass the raw to digi method
   auto algo = chooseAlgo();
@@ -48,13 +44,6 @@ void CbmTrdUnpackConfig::InitUnpacker()
 
   // If we have a monitor in the config add it to the algo
   if (fMonitor) algo->SetMonitor(fMonitor);
-
-  // Initialise the parameter containers required by the unpacker algo. Includes loading the corresponding ascii files
-  auto reqparvec = algo->GetParContainerRequest(fGeoSetupTag, fRunId);
-  initOk &= initParContainers(reqparvec);
-
-  // Now we have all information required to initialise the algorithm
-  algo->Init();
 
   // Pass the algo to its member in the base class
   fAlgo = algo;

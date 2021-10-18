@@ -70,10 +70,10 @@ public:
   std::shared_ptr<CbmStsUnpackMonitor> GetMonitor() { return fMonitor; }
 
   /**
-   * @brief Prepare the unpacker to be ready to run.
-   * In this function all initialization steps of the unpacker algorithms happen.
+   * @brief Initialize the algorithm, should include all steps needing te parameter objects to be present.
+   * In this function most initialization steps of the unpacker algorithms happen.
   */
-  void InitUnpacker();
+  void InitAlgo();
 
   void MaskNoisyChannel(UInt_t uFeb, UInt_t uChan, Bool_t bMasked = kTRUE)
   {
@@ -138,14 +138,8 @@ protected:
   /// Temporary storage of user parameters
   std::vector<FebChanMaskReco> fvChanMasks = {};
 
-  /** @brief Geometry setup tag for the given detector as used by CbmSetup objects */
-  std::string fGeoSetupTag = "";
-
-  /** @brief RunId of the current run, if not known 0 is a valid runtime case. Used runId based parameter loading. */
-  UInt_t fRunId = 0;
-
 private:
-  ClassDef(CbmStsUnpackConfig, 2)
+  ClassDef(CbmStsUnpackConfig, 3)
 };
 
 #endif  // CbmStsUnpackConfig_H

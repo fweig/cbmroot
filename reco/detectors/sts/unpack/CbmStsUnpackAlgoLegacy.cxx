@@ -93,6 +93,9 @@ Bool_t CbmStsUnpackAlgoLegacy::initParSet(CbmMcbm2018StsPar* parset)
 {
   fUnpackPar  = parset;
   bool initOK = InitParameters();
+
+  if (fMonitor) initOK &= fMonitor->Init(parset);
+
   return initOK;
 }
 

@@ -81,6 +81,7 @@ CbmPsdReco
 CbmRichReco
 CbmRecoSts
 CbmTofBase
+CbmTofReco
 CbmTrdReco
 CbmData
 KF

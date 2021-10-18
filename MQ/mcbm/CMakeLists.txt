@@ -12,6 +12,13 @@ set(INCLUDE_DIRECTORIES
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/commonMQ
     ${CBMROOT_SOURCE_DIR}/fles/flestools
     ${CBMROOT_SOURCE_DIR}/reco/eventbuilder/digis
+    ${CBMROOT_SOURCE_DIR}/reco/base/
+    ${CBMROOT_SOURCE_DIR}/reco/detectors/psd/unpack
+    ${CBMROOT_SOURCE_DIR}/reco/detectors/sts/unpack
+    ${CBMROOT_SOURCE_DIR}/reco/detectors/tof/unpack
+    ${CBMROOT_SOURCE_DIR}/reco/detectors/trd/unpack
+    ${CBMROOT_SOURCE_DIR}/reco/detectors/trd/rawToDigiMethods
+    ${CBMROOT_SOURCE_DIR}/reco/detectors/rich/unpack
     ${CBMDATA_DIR}
     ${CBMDATA_DIR}/global
     ${CBMDATA_DIR}/raw
@@ -23,8 +30,13 @@ set(INCLUDE_DIRECTORIES
     ${CBMDATA_DIR}/trd
     ${CBMDATA_DIR}/mvd # Feint to avoid crash of DigiManager due to missing source pointer
     ${CBMBASE_DIR}
+    ${CBMROOT_SOURCE_DIR}/sim/transport/steer # For CbmSetup.h!
+    ${CBMROOT_SOURCE_DIR}/sim/transport/geosetup # For CbmGeoSetupDbProvider.h, needed by CbmSetup
 
+    ${CBMDETECTORBASE_DIR}/sts # required for parameter handling of the sts
     ${CBMDETECTORBASE_DIR}/trd # required for parameter handling of the trd
+    ${CBMDETECTORBASE_DIR}/tof # required for parameter handling of the tof
+    ${CBMDETECTORBASE_DIR}/rich # required for parameter handling of the rich
     ${CBMDETECTORBASE_DIR}/psd # required for fitting tools of the psd
 )
 
@@ -189,5 +201,34 @@ set(DEPENDENCIES
   RHTTP
 )
 #GENERATE_LIBRARY()
+GENERATE_EXECUTABLE()
+
+
+set(EXE_NAME MqUnpack)
+set(SRCS CbmDeviceUnpack.cxx runUnpack.cxx)
+
+set(DEPENDENCIES
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ParBase
+  ${BOOST_LIBS}
+  fles_ipc
+  CbmFlibMcbm2018
+  CbmFlibFlesTools
+  CbmBase
+  CbmRecoBase
+  CbmPsdReco
+  CbmRichReco
+  CbmRecoSts
+  CbmTofReco
+  CbmTrdReco
+  CbmData
+  CbmSimSteer # for CbmSetup!
+  Core
+  RIO
+  Net
+  Hist
+  RHTTP
+)
 GENERATE_EXECUTABLE()
 

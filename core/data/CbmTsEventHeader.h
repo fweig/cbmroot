@@ -71,6 +71,10 @@ public:
   /** @brief Set the Ts Start Time @param value Start time of the TS */
   void SetTsStartTime(uint64_t value) { fTsStartTime = value; }
 
+
+  CbmTsEventHeader(const CbmTsEventHeader&) = default;
+  CbmTsEventHeader& operator=(const CbmTsEventHeader&) = default;
+
 protected:
   /** Timeslice index */
   uint64_t fTsIndex = 0;

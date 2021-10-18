@@ -15,37 +15,13 @@
 #include <vector>
 
 CbmTofUnpackConfig::CbmTofUnpackConfig(std::string detGeoSetupTag, UInt_t runid)
-  : CbmRecoUnpackConfig("CbmTofUnpackConfig")
-  , fGeoSetupTag(detGeoSetupTag)
-  , fRunId(runid)
+  : CbmRecoUnpackConfig("CbmTofUnpackConfig", detGeoSetupTag, runid)
 {
 }
 
 CbmTofUnpackConfig::~CbmTofUnpackConfig() {}
 
 // ---- Init ----
-void CbmTofUnpackConfig::InitUnpacker()
-{
-  LOG(info) << fName << "::Init -";
-
-  auto initOk = kTRUE;
-
-  // First choose the derived unpacking algorithm to be used and pass the raw to digi method
-  auto algo = chooseAlgo();
-
-  if (fDoLog) LOG(info) << fName << "::Init - SetParFilesBasePath";
-  algo->SetParFilesBasePath(fParFilesBasePath);
-
-  // Initialise the parameter containers required by the unpacker algo. Includes loading the corresponding ascii files
-  auto reqparvec = algo->GetParContainerRequest(fGeoSetupTag, fRunId);
-  initOk &= initParContainers(reqparvec);
-
-  // Now we have all information required to initialise the algorithm
-  algo->Init();
-
-  // Pass the algo to its member in the base class
-  fAlgo = algo;
-}
 
 // ---- chooseAlgo ----
 std::shared_ptr<CbmTofUnpackAlgo> CbmTofUnpackConfig::chooseAlgo()

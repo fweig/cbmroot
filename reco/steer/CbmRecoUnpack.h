@@ -23,6 +23,9 @@
 #include <MicrosliceDescriptor.hpp>
 #include <Timeslice.hpp>
 
+#include <FairParAsciiFileIo.h>
+#include <FairRootManager.h>
+
 #include <RtypesCore.h>
 #include <THnSparse.h>
 #include <TObject.h>
@@ -158,6 +161,59 @@ private:
    * @param name Name of the unpacker
   */
   void initPerformanceMaps(std::uint16_t subsysid, std::string name);
+
+
+  template<class TConfig>
+  void RegisterOutputs(FairRootManager* ioman, std::shared_ptr<TConfig> config)
+  {
+    /*
+ * FIXME: Compiling but leading to a segfault at runtime
+    auto pOutVect = config->GetOutputVec();
+    if (pOutVect) {
+      ioman->RegisterAny(config->GetOutputBranchName().data(), pOutVect, kTRUE);
+      LOG(info) << "CbmRecoUnpack::RegisterOutputs() " << config->GetOutputBranchName() << " at " << pOutVect;
+    }
+
+    auto pOutVectOptA = config->GetOptOutAVec();
+    if (pOutVectOptA) {
+      ioman->RegisterAny(config->GetOutputBranchNameOptA().data(), pOutVectOptA, kTRUE);
+      LOG(info) << "CbmRecoUnpack::RegisterOutputs() " << config->GetOutputBranchNameOptA() << " at " << pOutVectOptA;
+    }
+
+    auto pOutVectOptB = config->GetOptOutBVec();
+    if (pOutVectOptB) {
+      ioman->RegisterAny(config->GetOutputBranchNameOptB().data(), pOutVectOptB, kTRUE);
+      LOG(info) << "CbmRecoUnpack::RegisterOutputs() " << config->GetOutputBranchNameOptB() << " at " << pOutVectOptB;
+    }
+*/
+    /// Alternative which compiles and run but forces to keep a Fairroot dependency in the Config template
+    config->RegisterOutput(ioman);
+  }
+
+  /**
+   * @brief Initialise the parameter containers requested by the algorithm
+   *
+   * @return Bool_t initOk
+  */
+  virtual Bool_t initParContainers(std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>* reqparvec)
+  {
+    LOG(debug) << GetName() << "::Init - initParContainers";
+    if (!reqparvec) {
+      LOG(info) << GetName() << "::Init - initParContainers - empty requirements vector no parameters initialized.";
+      return kTRUE;
+    }
+
+    // Now get the actual ascii files and init the containers with the asciiIo
+    for (auto& pair : *reqparvec) {
+      auto filepath = pair.first;
+      auto parset   = pair.second;
+      FairParAsciiFileIo asciiInput;
+      if (!filepath.empty()) {
+        if (asciiInput.open(filepath.data())) { parset->init(&asciiInput); }
+      }
+    }
+    return kTRUE;
+  }
 
   /** @brief Sort a vector timewise vector type has to provide GetTime() */
   template<typename TVecobj>

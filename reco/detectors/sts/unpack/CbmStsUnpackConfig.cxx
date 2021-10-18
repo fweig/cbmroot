@@ -16,59 +16,37 @@
 #include <vector>
 
 CbmStsUnpackConfig::CbmStsUnpackConfig(std::string detGeoSetupTag, UInt_t runid)
-  : CbmRecoUnpackConfig("CbmStsUnpackConfig")
-  , fGeoSetupTag(detGeoSetupTag)
-  , fRunId(runid)
+  : CbmRecoUnpackConfig("CbmStsUnpackConfig", detGeoSetupTag, runid)
 {
 }
 
 CbmStsUnpackConfig::~CbmStsUnpackConfig() {}
 
 // ---- Init ----
-void CbmStsUnpackConfig::InitUnpacker()
+void CbmStsUnpackConfig::InitAlgo()
 {
-  LOG(info) << fName << "::Init -";
-
-  auto initOk = kTRUE;
-
-  // First choose the derived unpacking algorithm to be used and pass the raw to digi method
-  auto algo = chooseAlgo();
-
-  if (fDoLog) LOG(info) << fName << "::Init - SetParFilesBasePath";
-  algo->SetParFilesBasePath(fParFilesBasePath);
-
-  // Initialise the parameter containers required by the unpacker algo. Includes loading the corresponding ascii files
-  auto reqparvec = algo->GetParContainerRequest(fGeoSetupTag, fRunId);
-  initOk &= initParContainers(reqparvec);
-
   // Set the minimum adc cut
-  algo->SetMinAdcCut(fdAdcCut);
+  fAlgo->SetMinAdcCut(fdAdcCut);
 
   // Set the minimum adc cut Feb independent
   for (auto cut = fdAdcCut_perFeb.begin(); cut != fdAdcCut_perFeb.end(); cut++) {
-    algo->SetMinAdcCut(cut->first, cut->second);
+    fAlgo->SetMinAdcCut(cut->first, cut->second);
   }
 
   // Set the single asics time offsets
-  algo->SetAsicTimeOffsetVec(fvdTimeOffsetNsAsics);
+  fAlgo->SetAsicTimeOffsetVec(fvdTimeOffsetNsAsics);
 
   // Set the flags for duplicate digis rejections
-  algo->SetDuplicatesRejection(fbRejectDuplicateDigis, fbDupliWithoutAdc);
+  fAlgo->SetDuplicatesRejection(fbRejectDuplicateDigis, fbDupliWithoutAdc);
+
+  if (fMonitor) { fAlgo->SetMonitor(fMonitor); }
 
   // Now we have all information required to initialise the algorithm
-  algo->Init();
+  fAlgo->Init();
 
   // Mask the noisy channels set by the user
   for (auto chmask : fvChanMasks)
-    algo->MaskNoisyChannel(chmask.uFeb, chmask.uChan, chmask.bMasked);
-
-  if (fMonitor) {
-    fMonitor->Init(static_cast<CbmMcbm2018StsPar*>(reqparvec->at(0).second.get()));
-    algo->SetMonitor(fMonitor);
-  }
-
-  // Pass the algo to its member in the base class
-  fAlgo = algo;
+    fAlgo->MaskNoisyChannel(chmask.uFeb, chmask.uChan, chmask.bMasked);
 }
 
 // ---- chooseAlgo ----

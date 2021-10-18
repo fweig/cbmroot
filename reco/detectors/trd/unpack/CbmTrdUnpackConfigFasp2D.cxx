@@ -15,37 +15,13 @@
 #include <vector>
 
 CbmTrdUnpackConfigFasp2D::CbmTrdUnpackConfigFasp2D(std::string detGeoSetupTag, UInt_t runid)
-  : CbmRecoUnpackConfig("CbmTrdUnpackConfigFasp2D")
-  , fGeoSetupTag(detGeoSetupTag)
-  , fRunId(runid)
+  : CbmRecoUnpackConfig("CbmTrdUnpackConfigFasp2D", detGeoSetupTag, runid)
 {
 }
 
 CbmTrdUnpackConfigFasp2D::~CbmTrdUnpackConfigFasp2D() {}
 
 // ---- Init ----
-void CbmTrdUnpackConfigFasp2D::InitUnpacker()
-{
-  LOG(info) << fName << "::Init -";
-
-  auto initOk = kTRUE;
-
-  // First choose the derived unpacking algorithm to be used and pass the raw to digi method
-  auto algo = chooseAlgo();
-
-  if (fDoLog) LOG(info) << fName << "::Init - SetParFilesBasePath";
-  algo->SetParFilesBasePath(fParFilesBasePath);
-
-  // Initialise the parameter containers required by the unpacker algo. Includes loading the corresponding ascii files
-  auto reqparvec = algo->GetParContainerRequest(fGeoSetupTag, fRunId);
-  initOk &= initParContainers(reqparvec);
-
-  // Now we have all information required to initialise the algorithm
-  algo->Init();
-
-  // Pass the algo to its member in the base class
-  fAlgo = algo;
-}
 
 // ---- chooseAlgo ----
 std::shared_ptr<CbmTrdUnpackAlgoFasp2D> CbmTrdUnpackConfigFasp2D::chooseAlgo()
