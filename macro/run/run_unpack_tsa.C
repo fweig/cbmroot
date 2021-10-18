@@ -139,7 +139,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
   TString trdsetuptag = "";
   cbmsetup->GetGeoTag(ECbmModuleId::kTrd, trdsetuptag);
   // trd1Dconfig = std::make_shared<CbmTrdUnpackConfig>(trdsetuptag.Data(), runid);
-  trd1Dconfig = std::make_shared<CbmTrdUnpackConfig>(trdsetuptag.Data(), 3);
+  trd1Dconfig = std::make_shared<CbmTrdUnpackConfig>(trdsetuptag.Data());
   if (trd1Dconfig) {
     trd1Dconfig->SetDoWriteOutput();
     // Activate the line below to write Trd1D digis to a separate "TrdSpadicDigi" branch. Can be used to separate between Fasp and Spadic digis
@@ -159,7 +159,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
   // ---- TRDFASP2D ----
   std::shared_ptr<CbmTrdUnpackConfigFasp2D> trdfasp2dconfig = nullptr;
 
-  trdfasp2dconfig = std::make_shared<CbmTrdUnpackConfigFasp2D>(trdsetuptag.Data(), 3);
+  trdfasp2dconfig = std::make_shared<CbmTrdUnpackConfigFasp2D>(trdsetuptag.Data());
   if (trdfasp2dconfig) {
     // trdfasp2dconfig->SetDebugState();
     trdfasp2dconfig->SetDoWriteOutput();

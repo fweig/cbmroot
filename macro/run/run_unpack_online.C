@@ -100,7 +100,7 @@ void run_unpack_online(std::string publisher = "localhost", Int_t serverHttpPort
   // ---- TRD ----
   TString trdsetuptag = "";
   cbmsetup->GetGeoTag(ECbmModuleId::kTrd, trdsetuptag);
-  auto trdconfig               = std::make_shared<CbmTrdUnpackConfig>(trdsetuptag.Data(), runid);
+  auto trdconfig               = std::make_shared<CbmTrdUnpackConfig>(trdsetuptag.Data());
   std::string parfilesbasepath = Form("%s/parameters/trd", srcDir.Data());
   trdconfig->SetParFilesBasePath(parfilesbasepath);
   trdconfig->SetMonitor(GetTrdMonitor(outfilename));
