@@ -4,13 +4,18 @@
 
 set(SRCS
   ${CMAKE_SOURCE_DIR}/core/data/sts/CbmStsDigi.cxx
-)
+  ${CMAKE_SOURCE_DIR}/core/data/global/CbmDigiEvent.cxx
+  ${CMAKE_SOURCE_DIR}/core/data/global/CbmDigiTimeslice.cxx
+ )
 
 add_library(OnlineData SHARED ${SRCS})
 
 target_include_directories(OnlineData
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/base
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/sts
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/global
+  PUBLIC ${CMAKE_SOURCE_DIR}/external/ipc/ipc/lib/fles_ipc
 )
 
 target_include_directories(OnlineData SYSTEM

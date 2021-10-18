@@ -73,6 +73,7 @@ void CbmBuildEventsIdeal::Exec(Option_t*)
 
   // --- Bookkeeping: Map from (input number, event number) to event
   map<pair<Int_t, Int_t>, CbmEvent*> eventMap;
+  map<pair<Int_t, Int_t>, CbmDigiEvent*> digiEventMap;
 
   // --- Loop over all detector systems
   for (ECbmModuleId& system : fSystems) {
@@ -109,10 +110,10 @@ void CbmBuildEventsIdeal::Exec(Option_t*)
 
       // --- Get the MC input and event numbers through the match object
 
-      CbmMatch digiEvents = EventsInMatch(fDigiMan->GetMatch(system, iDigi));
+      CbmMatch matchedEvents = EventsInMatch(fDigiMan->GetMatch(system, iDigi));
 
-      for (Int_t iLink = 0; iLink < digiEvents.GetNofLinks(); iLink++) {
-        const auto& link = digiEvents.GetLink(iLink);
+      for (Int_t iLink = 0; iLink < matchedEvents.GetNofLinks(); iLink++) {
+        const auto& link = matchedEvents.GetLink(iLink);
         auto eventID     = make_pair(link.GetFile(), link.GetEntry());
 
         // --- Get event pointer. If event is not yet present, create it.
@@ -126,13 +127,29 @@ void CbmBuildEventsIdeal::Exec(Option_t*)
           event = it->second;
         }
         event->AddData(digiType, iDigi);
+
+        // --- Get event pointer. If event is not yet present, create it.
+        CbmDigiEvent* digiEvent = nullptr;
+        auto it2                = digiEventMap.find(eventID);
+        if (it2 == digiEventMap.end()) {
+          digiEvent             = new CbmDigiEvent();
+          digiEventMap[eventID] = digiEvent;
+        }
+        else {
+          digiEvent = it2->second;
+        }
+        if (system == ECbmModuleId::kSts) {
+          digiEvent->fData.fSts.fDigis.push_back(*(fDigiMan->Get<CbmStsDigi>(iDigi)));
+        }
+
+
       }  //# links
 
       // --- Empty match objects or negative event numbers signal noise
-      if (!digiEvents.GetNofLinks() == 0) { nNoise++; }
+      if (matchedEvents.GetNofLinks() == 0) { nNoise++; }
 
       // --- Count occurrences of multiple MC events in match
-      if (digiEvents.GetNofLinks() > 1) { nAmbig++; }
+      if (matchedEvents.GetNofLinks() > 1) { nAmbig++; }
 
     }  //# digis
     LOG(debug) << GetName() << ": Detector " << CbmModuleList::GetModuleNameCaps(system) << ", digis " << nDigis << " ("
@@ -152,6 +169,14 @@ void CbmBuildEventsIdeal::Exec(Option_t*)
     delete it->second;
     it->second = nullptr;  // for a case
   }
+
+  // Store CbmDigiEvent
+  for (auto it = digiEventMap.begin(); it != digiEventMap.end(); it++) {
+    fDigiEvents->push_back(*(it->second));
+    delete it->second;
+    it->second = nullptr;
+  }
+
 
   // --- Timeslice log and statistics
   timer.Stop();
@@ -230,6 +255,7 @@ InitStatus CbmBuildEventsIdeal::Init()
   }
 
   // Register output array (CbmEvent)
+  // TODO: This shall be removed once reconstruction from DigiEvent is established.
   if (ioman->GetObject("CbmEvent")) {
     LOG(fatal) << GetName() << ": Branch CbmEvent already exists!";
     return kFATAL;
@@ -240,6 +266,19 @@ InitStatus CbmBuildEventsIdeal::Init()
     LOG(fatal) << GetName() << ": Output branch could not be created!";
     return kFATAL;
   }
+
+  // Register output array (CbmDigiEvent)
+  if (ioman->GetObject("DigiEvent")) {
+    LOG(fatal) << GetName() << ": Branch DigiEvent already exists!";
+    return kFATAL;
+  }
+  fDigiEvents = new std::vector<CbmDigiEvent>;
+  ioman->RegisterAny("DigiEvent", fDigiEvents, IsOutputBranchPersistent("DigiEvent"));
+  if (!fDigiEvents) {
+    LOG(fatal) << GetName() << ": Output branch could not be created!";
+    return kFATAL;
+  }
+
 
   LOG(info) << "==================================================";
   std::cout << std::endl;

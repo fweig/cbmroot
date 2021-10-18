@@ -13,6 +13,7 @@
 
 
 #include "CbmDefs.h"
+#include "CbmDigiEvent.h"
 #include "CbmMatch.h"
 
 #include <FairTask.h>
@@ -69,16 +70,17 @@ private:  // methods
   CbmMatch EventsInMatch(const CbmMatch* match);
 
 
-private:                                  // members
-  CbmDigiManager* fDigiMan = nullptr;     //!
-  std::vector<ECbmModuleId> fSystems {};  //  List of detector systems
-  TClonesArray* fEvents   = nullptr;      //! Output array (class CbmEvent)
-  Int_t fNofEntries       = 0;            //  Number of processed time slices
-  Long64_t fNofEvents     = 0;
-  Double_t fNofDigisTotal = 0.;
-  Double_t fNofDigisAmbig = 0.;
-  Double_t fNofDigisNoise = 0.;
-  Double_t fTime          = 0.;
+private:                                             // members
+  CbmDigiManager* fDigiMan = nullptr;                //!
+  std::vector<ECbmModuleId> fSystems {};             //  List of detector systems
+  TClonesArray* fEvents                  = nullptr;  //! Output array (class CbmEvent)
+  Int_t fNofEntries                      = 0;        //  Number of processed time slices
+  Long64_t fNofEvents                    = 0;
+  Double_t fNofDigisTotal                = 0.;
+  Double_t fNofDigisAmbig                = 0.;
+  Double_t fNofDigisNoise                = 0.;
+  Double_t fTime                         = 0.;
+  std::vector<CbmDigiEvent>* fDigiEvents = nullptr;
 
 
   ClassDef(CbmBuildEventsIdeal, 3);

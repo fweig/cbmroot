@@ -14,6 +14,7 @@ set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}/rich
   ${CMAKE_CURRENT_SOURCE_DIR}/psd
   ${CMAKE_CURRENT_SOURCE_DIR}/global
+  ${CMAKE_SOURCE_DIR}/external/ipc/ipc/lib/fles_ipc
 )
 include_directories( ${INCLUDE_DIRECTORIES})
 
@@ -113,6 +114,8 @@ set(SRCS
   psd/CbmPsdAddress.cxx
   psd/CbmPsdMCbmHit.cxx
 
+  global/CbmDigiEvent.cxx
+  global/CbmDigiTimeslice.cxx
   global/CbmGlobalTrack.cxx
   global/CbmVertex.cxx
   global/CbmTofTrack.cxx
