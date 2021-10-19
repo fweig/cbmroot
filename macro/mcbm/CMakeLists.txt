@@ -23,13 +23,21 @@ Set(NumEvents 10)
 Set(BeamAngle 25)
 
 # Define the different setups to be tested
-If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
-  List(APPEND cbm_setup mcbm_beam_2020_03 mcbm_beam_2021_03)
+# Default should always be tested in all case
+# additional ones for current/future setups should also be added to the CI tests
+# Old ones may be tested in addition for nightly/weekly to ensure backward compatibility
+# Nightly if for now not different from CI so the "extras" are used only in Weekly
+If( ($ENV{ctest_model} MATCHES Weekly) )
+  List(APPEND cbm_setup mcbm_beam_2021_07_surveyed) # Default
+  List(APPEND cbm_setup mcbm_beam_2022_02 mcbm_beam_2022_03 mcbm_beam_2022_04 mcbm_beam_2022_05) # Non-default current/future setups
+  List(APPEND cbm_setup mcbm_beam_2020_03 mcbm_beam_2021_03) # Legacy
 Else()
-  List(APPEND cbm_setup mcbm_beam_2020_03 mcbm_beam_2021_03)
+  List(APPEND cbm_setup mcbm_beam_2021_07_surveyed) # Default
+#  List(APPEND cbm_setup mcbm_beam_2022_02 mcbm_beam_2022_03 mcbm_beam_2022_04 mcbm_beam_2022_05) # Non-default current/future setups, missing parameters
 EndIf()
 
 ForEach(setup IN LISTS cbm_setup)
+  Message( STATUS "Adding test for simulation chain of mCBM setup ${setup}" )
 
   Set(testname mcbm_transport_${setup})
   Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_transport.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\")
