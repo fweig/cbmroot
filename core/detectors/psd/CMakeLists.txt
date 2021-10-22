@@ -26,6 +26,6 @@ set(SRCS
 
 set(LINKDEF CbmPsdBaseLinkDef.h)
 Set(LIBRARY_NAME CbmPsdBase)
-Set(DEPENDENCIES Base)
+Set(DEPENDENCIES ParBase Base)
 
 GENERATE_LIBRARY()

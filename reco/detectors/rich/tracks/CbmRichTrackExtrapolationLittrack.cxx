@@ -12,9 +12,9 @@
 
 #include "CbmEvent.h"
 #include "CbmGlobalTrack.h"
+#include "CbmLitConverterFairTrackParam.h"
+#include "CbmLitToolFactory.h"
 #include "CbmStsTrack.h"
-#include "cbm/base/CbmLitToolFactory.h"
-#include "cbm/utils/CbmLitConverterFairTrackParam.h"
 #include "propagation/CbmLitTGeoTrackPropagator.h"
 
 #include "FairRootManager.h"

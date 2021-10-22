@@ -34,6 +34,7 @@ ${CBMROOT_SOURCE_DIR}/reco/littrack/std
 ${CBMROOT_SOURCE_DIR}/reco/littrack/std/base
 ${CBMROOT_SOURCE_DIR}/reco/littrack/cbm
 ${CBMROOT_SOURCE_DIR}/reco/littrack/cbm/utils
+${CBMROOT_SOURCE_DIR}/reco/littrack/cbm/base
 
 ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/Interface
