@@ -9,9 +9,6 @@
 
 #include <boost/serialization/access.hpp>
 
-#ifndef NO_ROOT
-#include <Rtypes.h>  // for ClassDef
-#endif
 
 /** @struct CbmDigiEvent
  ** @brief Container of digis from all detectors in an event
@@ -28,9 +25,6 @@ struct CbmDigiEvent {
     ar& fNumber;
     ar& fTime;
   }
-#ifndef NO_ROOT
-  ClassDefNV(CbmDigiEvent, 1);
-#endif
 };
 
 #endif /* CBMDIGIEVENT_H */

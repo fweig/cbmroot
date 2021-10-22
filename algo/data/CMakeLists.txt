@@ -4,8 +4,6 @@
 
 set(SRCS
   ${CMAKE_SOURCE_DIR}/core/data/sts/CbmStsDigi.cxx
-  ${CMAKE_SOURCE_DIR}/core/data/global/CbmDigiEvent.cxx
-  ${CMAKE_SOURCE_DIR}/core/data/global/CbmDigiTimeslice.cxx
  )
 
 add_library(OnlineData SHARED ${SRCS})

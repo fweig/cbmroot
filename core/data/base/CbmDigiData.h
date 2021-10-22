@@ -12,12 +12,8 @@
 
 #include <vector>
 
-#ifndef NO_ROOT
-#include <Rtypes.h>  // for ClassDef
-#endif
 
-
-/** @struct CbmDigiVector
+/** @struct DigiVec
  ** @brief Digi collection in a std::vector
  **
  ** This is the simplest form of a collection of detector digis. A detector-specific
@@ -25,7 +21,7 @@
  ** add meta-data.
  **/
 template<class Digi>
-struct CbmDigiVec {
+struct DigiVec {
   std::vector<Digi> fDigis;
   friend class boost::serialization::access;
   template<class Archive>
@@ -34,6 +30,10 @@ struct CbmDigiVec {
     ar& fDigis;
   }
 };
+
+/** Unless a detector-specific implementation for the digi data is present, the
+ ** simplest form (std::vector) will be used. **/
+typedef DigiVec<CbmStsDigi> StsDigiData;
 
 
 /** @struct CbmDigiData
@@ -46,16 +46,12 @@ struct CbmDigiVec {
  **/
 struct CbmDigiData {
   friend class boost::serialization::access;
-  typedef CbmDigiVec<CbmStsDigi> StsDigiData;
   StsDigiData fSts;
   template<class Archive>
   void serialize(Archive& ar, const unsigned int /*version*/)
   {
     ar& fSts;
   }
-#ifndef NO_ROOT
-  ClassDefNV(CbmDigiData, 1);
-#endif
 };
 
 

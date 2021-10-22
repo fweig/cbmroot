@@ -114,8 +114,6 @@ set(SRCS
   psd/CbmPsdAddress.cxx
   psd/CbmPsdMCbmHit.cxx
 
-  global/CbmDigiEvent.cxx
-  global/CbmDigiTimeslice.cxx
   global/CbmGlobalTrack.cxx
   global/CbmVertex.cxx
   global/CbmTofTrack.cxx
