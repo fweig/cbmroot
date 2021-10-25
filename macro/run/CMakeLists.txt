@@ -302,7 +302,7 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       ## Define tests + dependencies
       ### Raw data analysis tests: unpacking
       Set(testname mcbm_unpack_2021_${RUN})
-      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_unpack_tsa.sh \"${RAW_DATA_PATH}/${RUN}_first20Ts.tsa\" ${RUN} \"mcbm_beam_2021_03\" -1 \"data/\")
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_unpack_tsa.sh \"${RAW_DATA_PATH}/${RUN}_first20Ts.tsa\" ${RUN})
       Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
       Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Macro finished successfully")
       set_tests_properties(${testname} PROPERTIES DEPENDS run_cleanup)
