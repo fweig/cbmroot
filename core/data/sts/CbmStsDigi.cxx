@@ -37,7 +37,7 @@ void CbmStsDigi::PackAddressAndTime(int32_t newAddress, uint32_t newTime)
   uint32_t lowerAddr      = packedAddr & ((1 << kNumLowerAddrBits) - 1);
 
   fAddress = lowerAddr;
-  fTime    = (highestBitAddr << kNumTimestampBits) | newTime;
+  fTime    = (highestBitAddr << kNumTimestampBits) | (kTimestampMask & newTime);
 }
 
 int32_t CbmStsDigi::UnpackAddress() const

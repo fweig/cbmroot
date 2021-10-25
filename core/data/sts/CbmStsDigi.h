@@ -47,8 +47,9 @@ public:
    ** @param  time     Measurement time [ns]
    ** @param  charge   Charge [ADC units]
    **/
-  CbmStsDigi(int32_t address, int32_t channel, uint32_t time, uint16_t charge)
+  CbmStsDigi(int32_t address, int32_t channel, double time, uint16_t charge)
   {
+    assert(time >= 0 && time <= kMaxTimestamp);
     PackAddressAndTime(address, time);
     PackChannelAndCharge(channel, charge);
   }

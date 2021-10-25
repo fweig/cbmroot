@@ -203,6 +203,10 @@ int32_t CbmStsAddress::PackDigiAddress(int32_t address)
                          | kMask[1][kStsModule] << kShift[1][kStsModule];
 
   int32_t ret = (address & kDMask) >> kShift[1][kStsUnit];
+
+  // Check that no bits were set, that are stripped by this function.
+  assert(address == UnpackDigiAddress(ret));
+
   return ret;
 }
 // -------------------------------------------------------------------------
