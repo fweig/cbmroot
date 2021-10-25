@@ -31,9 +31,10 @@
 std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename);
 std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline = false);
 std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename, bool bDebugMode = false);
+const char* defaultSetupName = "mcbm_beam_2021_07_surveyed";
 
 void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid = 0,
-                    const char* setupName = "mcbm_beam_2021_07", std::int32_t nevents = -1, std::string outpath = "")
+                    const char* setupName = defaultSetupName, std::int32_t nevents = -1, std::string outpath = "data/")
 {
 
   // ========================================================================
@@ -363,8 +364,8 @@ std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename, boo
   return monitor;
 }
 
-void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const char* setupName = "mcbm_beam_2021_03",
-                    std::int32_t nevents = -1, std::string outpath = "")
+void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const char* setupName = defaultSetupName,
+                    std::int32_t nevents = -1, std::string outpath = "data/")
 {
   std::vector<std::string> vInFile = {infile};
   return run_unpack_tsa(vInFile, runid, setupName, nevents, outpath);
