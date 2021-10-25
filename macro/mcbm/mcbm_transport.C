@@ -107,9 +107,17 @@ void mcbm_transport(Int_t nEvents = 10,
   // ACC   SetTrack(&run, beamRotY,-13, -5.9,  0.0, 28.5);
   // ACC   SetTrack(&run, beamRotY,-13, -5.9, -5.8, 28.5);
   // ACC //
+  // ACC   SetTrack(&run, beamRotY, 11, -2.9, +8.8, 41.5);
+  // ACC   SetTrack(&run, beamRotY, 11, -2.9,  0.0, 41.5);
+  // ACC   SetTrack(&run, beamRotY, 11, -2.9, -8.8, 41.5);
+  // ACC //
   // ACC   SetTrack(&run, beamRotY, 11,  0.0, +5.8, 28.5);
   // ACC   SetTrack(&run, beamRotY, 11,  0.0,  0.0, 28.5);
   // ACC   SetTrack(&run, beamRotY, 11,  0.0, -5.8, 28.5);
+  // ACC //
+  // ACC   SetTrack(&run, beamRotY, 11, +2.9, +8.8, 41.5);
+  // ACC   SetTrack(&run, beamRotY, 11, +2.9,  0.0, 41.5);
+  // ACC   SetTrack(&run, beamRotY, 11, +2.9, -8.8, 41.5);
   // ACC //
   // ACC   SetTrack(&run, beamRotY,-11, +5.9, +5.8, 28.5);
   // ACC   SetTrack(&run, beamRotY,-11, +5.9,  0.0, 28.5);
@@ -166,7 +174,7 @@ void mcbm_transport(Int_t nEvents = 10,
                 targetRotY * TMath::DegToRad());
   run.SetBeamPosition(0., 0., 0.1, 0.1);  // Beam width 1 mm is assumed
   run.SetBeamAngle(beamRotY * TMath::DegToRad(), 0.);
-  //run.StoreTrajectories();
+  run.StoreTrajectories();
   run.Run(nEvents);
   // ------------------------------------------------------------------------
 
