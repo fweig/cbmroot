@@ -19,7 +19,10 @@
 void SetTrack(CbmTransport*, Double_t, Int_t, Double_t, Double_t, Double_t);
 
 void mcbm_transport(Int_t nEvents = 10,
+                    //                  const char* setupName = "mcbm_beam_2022_05",
+                    //                  const char* setupName = "mcbm_beam_2022_04",
                     //                  const char* setupName = "mcbm_beam_2022_03",
+                    //                  const char* setupName = "mcbm_beam_2022_02",
                     const char* setupName = "mcbm_beam_2021_07_surveyed",
                     //                  const char* setupName = "mcbm_beam_2021_07",
                     //                  const char* setupName = "mcbm_beam_2021_04",
@@ -98,6 +101,8 @@ void mcbm_transport(Int_t nEvents = 10,
   // --- Transport run   ----------------------------------------------------
   CbmTransport run;
 
+  // clang-format off
+
   // DE  run.AddInput(new FairParticleGenerator(2212, 1, 0., 0., 1.));  // single proton along beam axis
 
   // ACC // geometrical acceptance
@@ -162,6 +167,8 @@ void mcbm_transport(Int_t nEvents = 10,
   // STS   SetTrack(&run, beamRotY, 11, -5.9, -0.1, 27.5);
   // STS   SetTrack(&run, beamRotY, 11, -5.9, -3.0, 27.5);
   // STS   SetTrack(&run, beamRotY, 11, -5.9, -5.9, 27.5);
+
+  // clang-format on
 
   // comment the following line to remove target interaction
   run.AddInput(inFile);
