@@ -150,6 +150,108 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     stsconfig->MaskNoisyChannel(3, 75);
     stsconfig->MaskNoisyChannel(3, 56);
     stsconfig->MaskNoisyChannel(9, 709);
+
+    // Time OffSet
+    // U2 MOD1
+    stsconfig->SetAsicTimeOffset(104, 0.235097);
+    stsconfig->SetAsicTimeOffset(105, -0.919854);
+    stsconfig->SetAsicTimeOffset(106, 0.470871);
+    stsconfig->SetAsicTimeOffset(107, -0.302136);
+    stsconfig->SetAsicTimeOffset(108, 0.0538701);
+    stsconfig->SetAsicTimeOffset(109, -0.726945);
+    stsconfig->SetAsicTimeOffset(110, -0.474958);
+    stsconfig->SetAsicTimeOffset(111, -0.426105);
+    stsconfig->SetAsicTimeOffset(112, -0.642128);
+    stsconfig->SetAsicTimeOffset(113, 3.90217);
+    stsconfig->SetAsicTimeOffset(114, 4.50206);
+    stsconfig->SetAsicTimeOffset(115, 4.16447);
+    stsconfig->SetAsicTimeOffset(116, 5.00525);
+    stsconfig->SetAsicTimeOffset(117, 4.2554);
+    stsconfig->SetAsicTimeOffset(118, 5.51313);
+    stsconfig->SetAsicTimeOffset(119, 3.38058);
+    // U2 MOD0
+    stsconfig->SetAsicTimeOffset(88, 5.32785);
+    stsconfig->SetAsicTimeOffset(89, 5.10337);
+    stsconfig->SetAsicTimeOffset(90, 6.63223);
+    stsconfig->SetAsicTimeOffset(91, 4.44318);
+    stsconfig->SetAsicTimeOffset(92, 6.5406);
+    stsconfig->SetAsicTimeOffset(93, 3.82063);
+    stsconfig->SetAsicTimeOffset(94, 5.8673);
+    stsconfig->SetAsicTimeOffset(95, 4.41679);
+    stsconfig->SetAsicTimeOffset(96, 0.917994);
+    stsconfig->SetAsicTimeOffset(97, 2.7819);
+    stsconfig->SetAsicTimeOffset(98, 5.61836);
+    stsconfig->SetAsicTimeOffset(99, 5.9533);
+    stsconfig->SetAsicTimeOffset(100, 5.9789);
+    stsconfig->SetAsicTimeOffset(101, 5.24167);
+    stsconfig->SetAsicTimeOffset(102, 7.14848);
+    stsconfig->SetAsicTimeOffset(103, 6.12267);
+    // U1 MOD1
+    stsconfig->SetAsicTimeOffset(64, 6.94614);
+    stsconfig->SetAsicTimeOffset(65, 6.79433);
+    stsconfig->SetAsicTimeOffset(66, 5.57188);
+    stsconfig->SetAsicTimeOffset(67, 4.78256);
+    stsconfig->SetAsicTimeOffset(68, 4.47773);
+    stsconfig->SetAsicTimeOffset(69, 3.70702);
+    stsconfig->SetAsicTimeOffset(70, 4.02281);
+    stsconfig->SetAsicTimeOffset(71, 4.74402);
+    stsconfig->SetAsicTimeOffset(72, 2.13448);
+    stsconfig->SetAsicTimeOffset(73, 3.28798);
+    stsconfig->SetAsicTimeOffset(74, 4.13604);
+    stsconfig->SetAsicTimeOffset(76, 5.02552);
+    stsconfig->SetAsicTimeOffset(77, 3.55128);
+    stsconfig->SetAsicTimeOffset(78, 4.66596);
+    stsconfig->SetAsicTimeOffset(79, 3.76298);
+    // U1 MOD0
+    stsconfig->SetAsicTimeOffset(48, 10.0742);
+    stsconfig->SetAsicTimeOffset(49, 9.31221);
+    stsconfig->SetAsicTimeOffset(50, 6.09788);
+    stsconfig->SetAsicTimeOffset(51, 2.85866);
+    stsconfig->SetAsicTimeOffset(52, 5.45111);
+    stsconfig->SetAsicTimeOffset(53, 3.18376);
+    stsconfig->SetAsicTimeOffset(54, 4.77448);
+    stsconfig->SetAsicTimeOffset(55, 3.20388);
+    stsconfig->SetAsicTimeOffset(56, 3.37812);
+    stsconfig->SetAsicTimeOffset(57, 4.08165);
+    stsconfig->SetAsicTimeOffset(58, 5.06481);
+    stsconfig->SetAsicTimeOffset(59, 4.39388);
+    stsconfig->SetAsicTimeOffset(60, 5.63931);
+    stsconfig->SetAsicTimeOffset(61, 4.15354);
+    stsconfig->SetAsicTimeOffset(62, 6.67062);
+    stsconfig->SetAsicTimeOffset(63, 6.33579);
+    // U0 MOD1
+    stsconfig->SetAsicTimeOffset(24, 5.01505);
+    stsconfig->SetAsicTimeOffset(25, 3.84039);
+    stsconfig->SetAsicTimeOffset(26, 5.36344);
+    stsconfig->SetAsicTimeOffset(27, 2.96807);
+    stsconfig->SetAsicTimeOffset(28, 4.14668);
+    stsconfig->SetAsicTimeOffset(29, 2.4282);
+    stsconfig->SetAsicTimeOffset(30, 4.02055);
+    stsconfig->SetAsicTimeOffset(31, 4.13309);
+    stsconfig->SetAsicTimeOffset(32, 1.2073);
+    stsconfig->SetAsicTimeOffset(33, 4.02747);
+    stsconfig->SetAsicTimeOffset(34, 5.03306);
+    stsconfig->SetAsicTimeOffset(35, 3.5234);
+    stsconfig->SetAsicTimeOffset(36, 5.41946);
+    stsconfig->SetAsicTimeOffset(37, 4.82807);
+    stsconfig->SetAsicTimeOffset(38, 6.33436);
+    stsconfig->SetAsicTimeOffset(39, 4.71413);
+    // U0 MOD0
+    stsconfig->SetAsicTimeOffset(8, 8.15031);
+    stsconfig->SetAsicTimeOffset(9, 6.99897);
+    stsconfig->SetAsicTimeOffset(10, 8.14826);
+    stsconfig->SetAsicTimeOffset(11, 3.29095);
+    stsconfig->SetAsicTimeOffset(12, 3.04337);
+    stsconfig->SetAsicTimeOffset(14, 3.71628);
+    stsconfig->SetAsicTimeOffset(15, 3.82512);
+    stsconfig->SetAsicTimeOffset(16, 4.05862);
+    stsconfig->SetAsicTimeOffset(17, 4.53291);
+    stsconfig->SetAsicTimeOffset(18, 5.22825);
+    stsconfig->SetAsicTimeOffset(19, 4.93144);
+    stsconfig->SetAsicTimeOffset(20, 6.33821);
+    stsconfig->SetAsicTimeOffset(21, 5.66979);
+    stsconfig->SetAsicTimeOffset(22, 9.33802);
+    stsconfig->SetAsicTimeOffset(23, 7.41302);
   }
   // -------------
 
