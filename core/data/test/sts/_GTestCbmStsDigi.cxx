@@ -5,11 +5,15 @@
 #include "CbmStsAddress.h"
 #include "CbmStsDigi.h"
 
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+
 #include "compareStsDigi.h"
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
 
 static const Int_t kTestAddress = CbmStsAddress::GetAddress(5, 6, 1, 8, 0, 0, 1);
+
 
 TEST(_GTestCbmStsDigi, CheckDefaultConstructor)
 {
@@ -142,4 +146,16 @@ TEST(_GTestCbmStsDigi, CheckGetClassName)
   compareStsDigiDataMembers(test, kTestAddress, 23, 42, ECbmModuleId::kSts, 987654321);
 
   EXPECT_STREQ("CbmStsDigi", test.GetClassName());
+}
+
+TEST(_GTestCbmStsDigi, CheckSerialization)
+{
+  CbmStsDigi write(kTestAddress, 42, 987654321, 23);
+  std::stringstream s;
+  boost::archive::binary_oarchive outArchive(s);
+  outArchive << write;
+  CbmStsDigi read;
+  boost::archive::binary_iarchive inArchive(s);
+  inArchive >> read;
+  compareStsDigiDataMembers(read, kTestAddress, 23, 42, ECbmModuleId::kSts, 987654321);
 }

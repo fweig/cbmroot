@@ -20,17 +20,22 @@ EndMacro(CreateGTestExeAndAddTest)
 
 FIND_PACKAGE(Threads REQUIRED)
 
+add_subdirectory(global)
 add_subdirectory(psd)
 add_subdirectory(trd)
 
 Set(INCLUDE_DIRECTORIES
   ${CBMBASE_DIR}
   ${CBMDATA_DIR}
+  ${CBMDATA_DIR}/base
   ${CBMDATA_DIR}/global
   ${CBMDATA_DIR}/sts
   ${CBMDATA_DIR}/tof
   ${CBMDATA_DIR}/rich
   ${CBMDATA_DIR}/much
+  ${CBMDATA_DIR}/test/sts
+  ${CBMDATA_DIR}/test/global
+  ${CMAKE_SOURCE_DIR}/external/ipc/ipc/lib/fles_ipc
   ${BASE_INCLUDE_DIRECTORIES}
   ${GTEST_INCLUDE_DIR}
 )
@@ -55,6 +60,7 @@ Set(DEPENDENCIES
   GeoBase
   MbsAPI
   ${CMAKE_THREAD_LIBS_INIT}
+  boost_serialization
 )
 
 set(SPECIAL_DEPENDENCIES
@@ -76,6 +82,8 @@ EndIf()
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
   set(DEPENDENCIES ${DEPENDENCIES} rt)
 endif()
+
+
 
 Set(CbmLinkSources
   ${CBMDATA_DIR}/CbmLink.cxx
@@ -159,13 +167,6 @@ Set(CbmAddressSources
 CreateGTestExeAndAddTest(_GTestCbmAddress "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
                          "${CbmAddressSources}" "${DEPENDENCIES}" "_GTestCbmErrorMessage")
 
-Set(CbmVertexSources
-  ${CBMDATA_DIR}/global/CbmVertex.cxx
-  global/_GTestCbmVertex.cxx
-)
-
-CreateGTestExeAndAddTest(_GTestCbmVertex "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmVertexSources}" "${DEPENDENCIES}" "_GTestCbmAddress")
 
 
 #Set(CbmModuleListSources
