@@ -8,8 +8,7 @@
 /// \file Create_TRD_Geometry_v22a.C
 /// \brief Generates TRD geometry in Root format.
 ///
-// 2021-10-28 - SR - v22c    - based on v22a the trd 2d-h is removed 
-// 2021-10-28 - SR - v22b    - based on v22a the trd 2d is removed 
+// 2021-10-28 - SR - v22b    - based on v22a the trd 2d is removed
 // 2021-10-07 - SR - v22a    - based on v20b the trd 2d is inserted
 // 2021-09-28 - SR - v21b    - based on v21a the position is corrected
 // 2021-07-25 - AB - v21a    - based on v20b, add 2 TRD2D modules and their support structure for the 2021 setup
@@ -103,7 +102,7 @@
 #include <iostream>
 
 // Name of output file with geometry
-const TString tagVersion = "v22a_mcbm";
+const TString tagVersion = "v22b_mcbm";
 // const TString subVersion   = "_1h";
 // const TString subVersion   = "_1e";
 // const TString subVersion   = "_1m";
@@ -210,7 +209,8 @@ const Int_t MaxLayers = 10;  // max layers
 // SIS300-mu  // 1: plot, 0: hide
 // const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };  //
 // SIS300-e   // 1: plot, 0: hide
-Int_t ShowLayer[MaxLayers] = {1, 1, 0, 1, 0, 0, 0, 0, 0, 0};  // SIS100-4l is default
+//Int_t ShowLayer[MaxLayers] = {1, 1, 1, 1, 0, 0, 0, 0, 0, 0};  // SIS100-4l is default
+Int_t ShowLayer[MaxLayers] = {1, 1, 0, 0, 0, 0, 0, 0, 0, 0};  // SIS100-4l is default
 
 Int_t BusBarOrientation[MaxLayers] = {1, 1, 0, 0, 1, 0, 0, 0, 0, 0};  // 1 = vertical
 
@@ -695,7 +695,7 @@ void create_mag_field_vector();
 void dump_info_file();
 void dump_digi_file();
 
-void Create_TRD_Geometry_v22a()
+void Create_TRD_Geometry_v22b()
 {
 
   // declare TRD layer layout
@@ -3216,10 +3216,7 @@ void create_detector_layers(Int_t layerId)
   Double_t zPos = 0.;
 
   if (layerId == 3) {
-    // DESH
-    xPos = 0;
-    yPos = 0;
-    //    xPos = xPos - 35.5;
+    xPos = xPos - 35.5;
     zPos = -2.0;
   }
   if (layerId == 2) {

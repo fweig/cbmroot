@@ -61,7 +61,7 @@ const TString g10                 = "G10";
 const Int_t fNst = 1;  // Number of stations
 
 Int_t fNlayers        = 2;             // Number of layers
-Double_t fLayersZ0[2] = {55.7, 98.7};  // Layers Positions shifted -10cm,-20cm z axis {65.7,118.7)
+Double_t fLayersZ0[2] = {65.7, 88.7};  // Layers Positions shifted  z axis old {65.7,118.7)
 // Double_t fLayersZ0[2]  = {85.7, 118.7};   // Layers Positions
 Int_t fDetType[2]      = {3, 3};          // Detector type
 Double_t fX[2]         = {7.2, 7.2};      // Placement of modules in X [cm]
