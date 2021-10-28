@@ -163,7 +163,7 @@ Bool_t CbmMuch::ProcessHits(FairVolume* vol)
     Int_t iStation = CbmMuchAddress::GetStationIndex(fDetectorId);
     gMC->TrackPosition(fPosOut);
     gMC->TrackMomentum(fMomOut);
-
+    /*
     assert(iStation >= 0 && iStation < fPar->GetNStations());
     CbmMuchStation* station = (CbmMuchStation*) fPar->GetStations()->At(iStation);
     //cout<<" track # "<<fTrackID<<"   Rmin "<<station->GetRmin()<<"   Rmax  "<<station->GetRmax()<<" in perp "<<fPosIn.Perp()<<" out perp "<<fPosOut.Perp()<<"  eloss "<<fELoss<<endl;
@@ -171,7 +171,7 @@ Bool_t CbmMuch::ProcessHits(FairVolume* vol)
     if (fPosOut.Perp() > station->GetRmax()) { return kFALSE; }
     if (fPosIn.Perp() < station->GetRmin()) { return kFALSE; }
     if (fPosOut.Perp() < station->GetRmin()) { return kFALSE; }
-
+    */ //commented by SR
 
     if (fELoss == 0.) return kFALSE;
     AddHit(fTrackID, fDetectorId, TVector3(fPosIn.X(), fPosIn.Y(), fPosIn.Z()),
@@ -337,7 +337,7 @@ void CbmMuch::ConstructRootGeometry(TGeoMatrix*)
   TObjArray* fPassNodes = fPar->GetGeoPassiveNodes();
   TGeoNode* ncave       = gGeoManager->GetTopNode();
 
-  fGeoScheme->ExtractGeoParameter(ncave, fVolumeName.Data());
+  //  fGeoScheme->ExtractGeoParameter(ncave, fVolumeName.Data()); //commented by SR
 
   TString objName = fVolumeName + "_0";
   TGeoNode* nmuch = (TGeoNode*) ncave->GetNodes()->FindObject(objName);
