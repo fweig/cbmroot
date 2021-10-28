@@ -3,9 +3,8 @@ add_subdirectory(run)
 add_subdirectory(mcbm)
 add_subdirectory(mvd)
 add_subdirectory(much)
-add_subdirectory(beamtime)
 add_subdirectory(include)
- 
+
 
 #--- Additional tests for nightly builds
 If($ENV{ctest_model} MATCHES Nightly)
@@ -54,4 +53,4 @@ Install(CODE "FILE(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/share/cbmroot/macro/di
 #--- Deprecated (not running)
 #add_subdirectory(trd)
 #add_subdirectory(littrack)
-
+#add_subdirectory(beamtime)
