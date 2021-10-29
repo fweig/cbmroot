@@ -67,14 +67,13 @@
  ** http://computing.gitpages.cbm.gsi.de/cbmroot/classCbmTransport.html
  **/
 void run_tra_file(const char* input = "", Int_t nEvents = 1, const char* output = "",
-                  const char* setup = "sis100_electron", ECbmEngine engine = kGeant3)
+                  const char* setup = "sis100_electron", ECbmEngine engine = kGeant3, int randomSeed = 0)
 {
 
   // --- Logger settings ----------------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
   // ------------------------------------------------------------------------
-
 
   // -----   Environment   --------------------------------------------------
   TString myName = "run_tra_file";                 // this macro's name for screen output
@@ -153,6 +152,7 @@ void run_tra_file(const char* input = "", Int_t nEvents = 1, const char* output 
   run.SetTarget(targetMedium, targetThickness, targetDiameter);
   run.SetBeamPosition(beamPosX, beamPosY, beamSigmaX, beamSigmaY);
   if (rotateEvents) run.SetRandomEventPlane();
+  run.SetRandomSeed(randomSeed);
   run.Run(nEvents);
   // ------------------------------------------------------------------------
 

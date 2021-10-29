@@ -44,7 +44,7 @@
  ** CbmTransport.
  **/
 void run_transport(Int_t nEvents = 2, const char* setupName = "sis100_electron", const char* output = "test",
-                   const char* inputFile = "")
+                   const char* inputFile = "", Int_t randomSeed = 0)
 {
 
   // --- Logger settings ----------------------------------------------------
@@ -91,6 +91,7 @@ void run_transport(Int_t nEvents = 2, const char* setupName = "sis100_electron",
   run.SetBeamPosition(0., 0., 0.1, 0.1);
   run.SetRandomEventPlane();
   //  run.StoreTrajectories();
+  run.SetRandomSeed(randomSeed);
   run.Run(nEvents);
   // ------------------------------------------------------------------------
 

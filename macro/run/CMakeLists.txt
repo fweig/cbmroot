@@ -21,10 +21,12 @@ if($ENV{ctest_model} MATCHES Weekly)
   Set(nEvents 100)
   Set(uploadHistJPG 1)
   Set(pullDevAllowed .2)
+  Set(randomSeed 1)
 else()
   Set(nEvents 3)
   Set(uploadHistJPG 0)
   Set(pullDevAllowed .5)
+  Set(randomSeed 1)
 endIf()
 
 math(EXPR timeOutTime "${nEvents} * 200")
@@ -73,7 +75,7 @@ foreach(setup IN LISTS cbm_setup)
   # --- Test run_transport_json_config
   # --- Transport run using run_transport_json_config.C
   set(testname run_transport_json_config)
-  add_test(${testname} ${MACRO_DIR}/run_transport_json_config.sh)
+  add_test(${testname} ${MACRO_DIR}/run_transport_json_config.sh \"\" 2 ${randomSeed})
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
@@ -99,7 +101,7 @@ foreach(setup IN LISTS cbm_setup)
   set(testname run_${sname}_tra_coll)
   set(input ${CBMROOT_SOURCE_DIR}/input/urqmd.auau.10gev.centr.root)
   add_test(${testname} ${MACRO_DIR}/run_tra_file.sh
-  	\"${input}\" ${nEvents} \"data/${sname}_coll\" \"${setup}\")
+  	\"${input}\" ${nEvents} \"data/${sname}_coll\" \"${setup}\" kGeant3 ${randomSeed})
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
@@ -113,7 +115,7 @@ foreach(setup IN LISTS cbm_setup)
   set(testname run_${sname}_tra_sign)
   set(input ${CBMROOT_SOURCE_DIR}/input/pluto.auau.8gev.omega.mpmm.0001.root)
   add_test(${testname} ${MACRO_DIR}/run_tra_file.sh
-  	\"${input}\" ${nEvents} \"data/${sname}_sign\" \"${setup}\")
+  	\"${input}\" ${nEvents} \"data/${sname}_sign\" \"${setup}\" kGeant3 ${randomSeed})
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
@@ -126,7 +128,7 @@ foreach(setup IN LISTS cbm_setup)
   # --- Transport run with beam events, using run_tra_beam.C
   set(testname run_${sname}_tra_beam)
   add_test(${testname} ${MACRO_DIR}/run_tra_beam.sh
-  	${nBeam} \"Au\" 10 -1 \"data/${sname}_beam\" \"${setup}\")
+  	${nBeam} \"Au\" 10 -1 \"data/${sname}_beam\" \"${setup}\" kGeant3 ${randomSeed})
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
@@ -257,7 +259,7 @@ foreach(setup IN LISTS cbm_setup)
   # --- Test run_transport_json_config
   # --- Transport run using run_transport_json_config.C
   set(testname run_transport_json_config)
-  add_test(${testname} ${MACRO_DIR}/run_transport_json_config.sh)
+  add_test(${testname} ${MACRO_DIR}/run_transport_json_config.sh \"\" 2 ${randomSeed})
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"

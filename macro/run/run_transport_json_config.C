@@ -29,7 +29,7 @@
  ** the main config is applied. 
  **/
 
-void run_transport_json_config(std::string config = "", int nEvents = 2)
+void run_transport_json_config(std::string config = "", int nEvents = 2, int randomSeed = 0)
 {
   if (config == "") config = Form("%s/macro/run/config.json", gSystem->Getenv("VMCWORKDIR"));
 
@@ -39,6 +39,7 @@ void run_transport_json_config(std::string config = "", int nEvents = 2)
   // ------------------------------------------------------------------------
 
   CbmTransport run;
+  run.SetRandomSeed(randomSeed);
   if (CbmTransportConfig::Load(run, config)) run.Run(nEvents);
   else
     return;

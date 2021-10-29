@@ -58,7 +58,8 @@
  ** http://computing.gitpages.cbm.gsi.de/cbmroot/classCbmTransport.html
  **/
 void run_tra_beam(Int_t nEvents = 1, const char* species = "Au", Double_t beamP = 12., Double_t beamStartZ = -1.,
-                  const char* output = "beam", const char* setup = "sis100_electron", ECbmEngine engine = kGeant3)
+                  const char* output = "beam", const char* setup = "sis100_electron", ECbmEngine engine = kGeant3,
+                  int randomSeed = 0)
 {
 
   // --- Logger settings ----------------------------------------------------
@@ -154,6 +155,7 @@ void run_tra_beam(Int_t nEvents = 1, const char* species = "Au", Double_t beamP 
   run.SetBeamPosition(beamMeanX, beamMeanY, beamSigmaX, beamSigmaY, beamFocusZ);
   run.SetBeamAngle(beamMeanTx, beamMeanTy, beamSigmaTx, beamSigmaTy);
   run.AddInput(new CbmBeamGenerator(beamZ, beamA, beamQ, beamP, beamStartZ));
+  run.SetRandomSeed(randomSeed);
   run.Run(nEvents);
   // ------------------------------------------------------------------------
 
