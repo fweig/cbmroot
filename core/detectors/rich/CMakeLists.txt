@@ -51,7 +51,7 @@ ENDIF (SSE_FOUND)
 set(LINKDEF  CbmRichBaseLinkDef.h)
 
 Set(LIBRARY_NAME CbmRichBase)
-Set(DEPENDENCIES CbmData CbmBase Base)
+Set(DEPENDENCIES CbmData CbmBase Base MLP)
 
 GENERATE_LIBRARY()
 
