@@ -129,46 +129,46 @@ public:
     B[2]     = cz0 + cz1 * dz + cz2 * dz2;
   }
 
-  void Set(const L1FieldValue& B0, const fvec B0z, const L1FieldValue& B1, const fvec B1z, const L1FieldValue& B2,
-           const fvec B2z)
+  void Set(const L1FieldValue& b0, const fvec b0z, const L1FieldValue& b1, const fvec b1z, const L1FieldValue& b2,
+           const fvec b2z)
   {
-    z0       = B0z;
-    fvec dz1 = B1z - B0z, dz2 = B2z - B0z;
+    z0       = b0z;
+    fvec dz1 = b1z - b0z, dz2 = b2z - b0z;
     fvec det = rcp(fvec(dz1 * dz2 * (dz2 - dz1)));
     fvec w21 = -dz2 * det;
     fvec w22 = dz1 * det;
     fvec w11 = -dz2 * w21;
     fvec w12 = -dz1 * w22;
 
-    fvec dB1 = B1.x - B0.x;
-    fvec dB2 = B2.x - B0.x;
-    cx0      = B0.x;
-    cx1      = dB1 * w11 + dB2 * w12;
-    cx2      = dB1 * w21 + dB2 * w22;
+    fvec db1 = b1.x - b0.x;
+    fvec db2 = b2.x - b0.x;
+    cx0      = b0.x;
+    cx1      = db1 * w11 + db2 * w12;
+    cx2      = db1 * w21 + db2 * w22;
 
-    dB1 = B1.y - B0.y;
-    dB2 = B2.y - B0.y;
-    cy0 = B0.y;
-    cy1 = dB1 * w11 + dB2 * w12;
-    cy2 = dB1 * w21 + dB2 * w22;
+    db1 = b1.y - b0.y;
+    db2 = b2.y - b0.y;
+    cy0 = b0.y;
+    cy1 = db1 * w11 + db2 * w12;
+    cy2 = db1 * w21 + db2 * w22;
 
-    dB1 = B1.z - B0.z;
-    dB2 = B2.z - B0.z;
-    cz0 = B0.z;
-    cz1 = dB1 * w11 + dB2 * w12;
-    cz2 = dB1 * w21 + dB2 * w22;
+    db1 = b1.z - b0.z;
+    db2 = b2.z - b0.z;
+    cz0 = b0.z;
+    cz1 = db1 * w11 + db2 * w12;
+    cz2 = db1 * w21 + db2 * w22;
   }
 
-  void Set(const L1FieldValue& B0, const fvec B0z, const L1FieldValue& B1, const fvec B1z)
+  void Set(const L1FieldValue& b0, const fvec b0z, const L1FieldValue& b1, const fvec b1z)
   {
-    z0       = B0z[0];
-    fvec dzi = rcp(fvec(B1z - B0z));
-    cx0      = B0.x;
-    cy0      = B0.y;
-    cz0      = B0.z;
-    cx1      = (B1.x - B0.x) * dzi;
-    cy1      = (B1.y - B0.y) * dzi;
-    cz1      = (B1.z - B0.z) * dzi;
+    z0       = b0z[0];
+    fvec dzi = rcp(fvec(b1z - b0z));
+    cx0      = b0.x;
+    cy0      = b0.y;
+    cz0      = b0.z;
+    cx1      = (b1.x - b0.x) * dzi;
+    cy1      = (b1.y - b0.y) * dzi;
+    cz1      = (b1.z - b0.z) * dzi;
     cx2 = cy2 = cz2 = 0;
   }
 

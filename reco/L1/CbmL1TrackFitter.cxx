@@ -67,25 +67,25 @@ void CbmL1::TrackFitter(vector<CbmL1Track>& Tracks, CbmL1Vtx* V)
 	L1Station *st0 = &(algo->vStations[ist0]);
 	L1Station *st1 = &(algo->vStations[ist1]);
 	L1Station *st2 = &(algo->vStations[ist2]);
-	L1FieldValue B0, B1, B2;
-	fvec Z0= st0->z, Z1= st1->z, Z2= st2->z ; 
-	st0->fieldSlice.GetFieldValue( (*ih0)->x, (*ih0)->y, B0 );
-	st1->fieldSlice.GetFieldValue( (*ih1)->x, (*ih1)->y, B1 );
-	st2->fieldSlice.GetFieldValue( (*ih2)->x, (*ih2)->y, B2 );
-	fld[ist0].Set( B0, Z0, B1, Z1, B2, Z2 );
+	L1FieldValue b0, b1, b2;
+	fvec z0= st0->z, z1= st1->z, z2= st2->z ; 
+	st0->fieldSlice.GetFieldValue( (*ih0)->x, (*ih0)->y, b0 );
+	st1->fieldSlice.GetFieldValue( (*ih1)->x, (*ih1)->y, b1 );
+	st2->fieldSlice.GetFieldValue( (*ih2)->x, (*ih2)->y, b2 );
+	fld[ist0].Set( b0, z0, b1, z1, b2, z2 );
 	fld[ist1] = fld[ist0];
 	fld[ist2] = fld[ist0];
 	if( ih0!=T.StsHits.end() ){
 	  while(1){ 
-	    ih2 = ih1; B2 = B1; Z2 = Z1; st2 = st1;
-	    ih1 = ih0; B1 = B0; Z1 = Z0; st1 = st0;
+	    ih2 = ih1; b2 = b1; z2 = z1; st2 = st1;
+	    ih1 = ih0; b1 = b0; z1 = z0; st1 = st0;
 	    ih0++;
 	    if( ih0==T.StsHits.end() ) break;
 	    ist0 = (*ih0)->iStation;
 	    st0 = &(algo->vStations[ist0]);
-	    Z0 = st0->z;
-	    st0->fieldSlice.GetFieldValue( (*ih0)->x, (*ih0)->y, B0 );
-	    fld[ist0].Set( B0, Z0, B1, Z1, B2, Z2 );
+	    z0 = st0->z;
+	    st0->fieldSlice.GetFieldValue( (*ih0)->x, (*ih0)->y, b0 );
+	    fld[ist0].Set( b0, z0, b1, z1, b2, z2 );
 	  }
 	}
       }

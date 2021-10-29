@@ -86,7 +86,7 @@ void CbmL1PFFitter::FilterFirst(L1TrackPar& track, fvec& x, fvec& y, L1Station& 
 void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
 {
 
-  L1FieldValue fB0, fB1, fB2 _fvecalignment;
+  L1FieldValue b0, b1, b2 _fvecalignment;
   L1FieldRegion fld _fvecalignment;
 
 
@@ -117,7 +117,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
   fvec* w = new fvec[nHits];
   fvec y_temp;
   fvec x_first, y_first, x_last, y_last;
-  fvec fz0, fz1, fz2, dz, z_start, z_end;
+  fvec z0, z1, z2, dz, z_start, z_end;
   L1FieldValue* fB = new L1FieldValue[nHits];
   L1FieldValue fB_temp _fvecalignment;
 
@@ -231,20 +231,20 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
     i = 0;
     FilterFirst(T, x_first, y_first, staFirst);
     fvec qp0 = T.qp;
-    fz1      = z[i];
-    sta[i].fieldSlice.GetFieldValue(T.x, T.y, fB1);
-    fB1.Combine(fB[i], w[i]);
-    fz2 = z[i + 2];
-    dz  = fz2 - fz1;
-    sta[i].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, fB2);
-    fB2.Combine(fB[i + 2], w[i + 2]);
-    fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
+    z1       = z[i];
+    sta[i].fieldSlice.GetFieldValue(T.x, T.y, b1);
+    b1.Combine(fB[i], w[i]);
+    z2 = z[i + 2];
+    dz = z2 - z1;
+    sta[i].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, b2);
+    b2.Combine(fB[i + 2], w[i + 2]);
+    fld.Set(b2, z2, b1, z1, b0, z0);
     for (++i; i < nHits; i++) {
-      fz0 = z[i];
-      dz  = (fz1 - fz0);
-      sta[i].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, fB0);
-      fB0.Combine(fB[i], w[i]);
-      fld.Set(fB0, fz0, fB1, fz1, fB2, fz2);
+      z0 = z[i];
+      dz = (z1 - z0);
+      sta[i].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, b0);
+      b0.Combine(fB[i], w[i]);
+      fld.Set(b0, z0, b1, z1, b2, z2);
 
       fvec initialised = fvec(z[i] <= z_end) & fvec(z_start < z[i]);
       fvec w1          = (w[i] & (initialised));
@@ -264,10 +264,10 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       L1Filter(T, sta[i].frontInfo, u[i], w1);
       L1Filter(T, sta[i].backInfo, v[i], w1);
 
-      fB2 = fB1;
-      fz2 = fz1;
-      fB1 = fB0;
-      fz1 = fz0;
+      b2 = b1;
+      z2 = z1;
+      b1 = b0;
+      z1 = z0;
     }
 
     L1TrackPar Tout = T;
@@ -305,21 +305,21 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
 
     FilterFirst(T, x_last, y_last, staLast);
 
-    fz1 = z[i];
-    sta[i].fieldSlice.GetFieldValue(T.x, T.y, fB1);
-    fB1.Combine(fB[i], w[i]);
+    z1 = z[i];
+    sta[i].fieldSlice.GetFieldValue(T.x, T.y, b1);
+    b1.Combine(fB[i], w[i]);
 
-    fz2 = z[i - 2];
-    dz  = fz2 - fz1;
-    sta[i].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, fB2);
-    fB2.Combine(fB[i - 2], w[i - 2]);
-    fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
+    z2 = z[i - 2];
+    dz = z2 - z1;
+    sta[i].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, b2);
+    b2.Combine(fB[i - 2], w[i - 2]);
+    fld.Set(b2, z2, b1, z1, b0, z0);
     for (--i; i >= 0; i--) {
-      fz0 = z[i];
-      dz  = (fz1 - fz0);
-      sta[i].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, fB0);
-      fB0.Combine(fB[i], w[i]);
-      fld.Set(fB0, fz0, fB1, fz1, fB2, fz2);
+      z0 = z[i];
+      dz = (z1 - z0);
+      sta[i].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, b0);
+      b0.Combine(fB[i], w[i]);
+      fld.Set(b0, z0, b1, z1, b2, z2);
 
       fvec initialised = fvec(z[i] < z_end) & fvec(z_start <= z[i]);
       fvec w1          = (w[i] & (initialised));
@@ -339,10 +339,10 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       L1Filter(T, sta[i].frontInfo, u[i], w1);
       L1Filter(T, sta[i].backInfo, v[i], w1);
 
-      fB2 = fB1;
-      fz2 = fz1;
-      fB1 = fB0;
-      fz1 = fz0;
+      b2 = b1;
+      z2 = z1;
+      b1 = b0;
+      z1 = z0;
     }
 
     for (iVec = 0; iVec < nTracks_SIMD; iVec++) {

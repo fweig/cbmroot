@@ -105,18 +105,18 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   T.C44         = 1.;
   T.C55         = hit0.dt * hit0.dt;
 
-  L1FieldValue fB0, fB1, fB2 _fvecalignment;
+  L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
   L1FieldRegion fld _fvecalignment;
-  fvec fz0 = sta1.z;  // suppose field is smoth
-  fvec fz1 = sta2.z;
-  fvec fz2 = sta0.z;
+  fvec fldZ0 = sta1.z;  // suppose field is smoth
+  fvec fldZ1 = sta2.z;
+  fvec fldZ2 = sta0.z;
 
 
-  sta1.fieldSlice.GetFieldValue(x1, y1, fB0);
-  sta2.fieldSlice.GetFieldValue(x2, y2, fB1);
-  sta0.fieldSlice.GetFieldValue(x0, y0, fB2);
+  sta1.fieldSlice.GetFieldValue(x1, y1, fldB0);
+  sta2.fieldSlice.GetFieldValue(x2, y2, fldB1);
+  sta0.fieldSlice.GetFieldValue(x0, y0, fldB2);
 
-  fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
+  fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
 
   int ista_prev = ista1;
   int ista      = ista2;
@@ -163,16 +163,16 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
 
     FilterTime(T, hit.t, hit.dt);
 
-    fB0 = fB1;
-    fB1 = fB2;
-    fz0 = fz1;
-    fz1 = fz2;
+    fldB0 = fldB1;
+    fldB1 = fldB2;
+    fldZ0 = fldZ1;
+    fldZ1 = fldZ2;
     fvec x, y;
     StripsToCoor(u, v, x, y, sta);
-    sta.fieldSlice.GetFieldValue(x, y, fB2);
+    sta.fieldSlice.GetFieldValue(x, y, fldB2);
 
-    fz2 = sta.z;
-    fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
+    fldZ2 = sta.z;
+    fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
   }  // i
 
 }  // void L1Algo::BranchFitterFast
@@ -232,17 +232,17 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
   fvec x2, y2;
   StripsToCoor(u2, v2, x2, y2, sta2);
 
-  L1FieldValue fB0, fB1, fB2 _fvecalignment;
+  L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
   L1FieldRegion fld _fvecalignment;
-  fvec fz0 = sta1.z;
-  fvec fz1 = sta2.z;
-  fvec fz2 = sta0.z;
+  fvec fldZ0 = sta1.z;
+  fvec fldZ1 = sta2.z;
+  fvec fldZ2 = sta0.z;
 
-  sta1.fieldSlice.GetFieldValue(x1, y1, fB0);
-  sta2.fieldSlice.GetFieldValue(x2, y2, fB1);
-  sta0.fieldSlice.GetFieldValue(x0, y0, fB2);
+  sta1.fieldSlice.GetFieldValue(x1, y1, fldB0);
+  sta2.fieldSlice.GetFieldValue(x2, y2, fldB1);
+  sta0.fieldSlice.GetFieldValue(x0, y0, fldB2);
 
-  fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
+  fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
 
   int ista = ista2 + 2 * step;  // skip one station. if there would be hit it has to be found on previous stap
 
@@ -343,13 +343,13 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
     FilterTime(T, hit.t, hit.dt);
 
-    fB0 = fB1;
-    fB1 = fB2;
-    fz0 = fz1;
-    fz1 = fz2;
-    sta.fieldSlice.GetFieldValue(x, y, fB2);
-    fz2 = sta.z;
-    fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
+    fldB0 = fldB1;
+    fldB1 = fldB2;
+    fldZ0 = fldZ1;
+    fldZ1 = fldZ2;
+    sta.fieldSlice.GetFieldValue(x, y, fldB2);
+    fldZ2 = sta.z;
+    fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
   }
 
   // save hits

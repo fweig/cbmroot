@@ -1220,9 +1220,9 @@ void CbmL1::Reconstruct(CbmEvent* event)
     //  algo->L1KFTrackFitter( fExtrapolateToTheEndOfSTS );
 
     {  // track fit
-      L1FieldValue fB0 = algo->GetVtxFieldValue();
+      L1FieldValue b = algo->GetVtxFieldValue();
 
-      if ((fabs(fB0.x[0]) < 0.0000001) && (fabs(fB0.y[0]) < 0.0000001) && (fabs(fB0.z[0]) < 0.0000001)) {
+      if ((fabs(b.x[0]) < 0.0000001) && (fabs(b.y[0]) < 0.0000001) && (fabs(b.z[0]) < 0.0000001)) {
         algo->KFTrackFitter_simple();
       }
       else {

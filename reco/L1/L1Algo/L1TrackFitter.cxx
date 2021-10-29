@@ -107,20 +107,20 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         T.C22 = T.C33 = vINF;
         T.C44         = 1.;
 
-        //        static L1FieldValue fB0, fB1, fB2 _fvecalignment;
+        //        static L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
         //        static L1FieldRegion fld _fvecalignment;
-        L1FieldValue fB0, fB1, fB2 _fvecalignment;
+        L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
         L1FieldRegion fld _fvecalignment;
-        fvec fz0 = sta1.z;  // suppose field is smoth
-        fvec fz1 = sta2.z;
-        fvec fz2 = sta0.z;
+        fvec fldZ0 = sta1.z;  // suppose field is smoth
+        fvec fldZ1 = sta2.z;
+        fvec fldZ2 = sta0.z;
 
 
-        sta1.fieldSlice.GetFieldValue(x1, y1, fB0);
-        sta2.fieldSlice.GetFieldValue(x2, y2, fB1);
-        sta0.fieldSlice.GetFieldValue(x0, y0, fB2);
+        sta1.fieldSlice.GetFieldValue(x1, y1, fldB0);
+        sta2.fieldSlice.GetFieldValue(x2, y2, fldB1);
+        sta0.fieldSlice.GetFieldValue(x0, y0, fldB2);
 
-        fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
+        fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
 
         int ista = ista2;
         //cout<<"\nfit, iter=:"<<iter<<endl;
@@ -150,14 +150,14 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
 
           L1Filter(T, sta.frontInfo, u);
           L1Filter(T, sta.backInfo, v);
-          fB0 = fB1;
-          fB1 = fB2;
-          fz0 = fz1;
-          fz1 = fz2;
-          sta.fieldSlice.GetFieldValue(x, y, fB2);
+          fldB0 = fldB1;
+          fldB1 = fldB2;
+          fldZ0 = fldZ1;
+          fldZ1 = fldZ2;
+          sta.fieldSlice.GetFieldValue(x, y, fldB2);
 
-          fz2 = sta.z;
-          fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
+          fldZ2 = sta.z;
+          fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
         }  // i
 
         // write received parametres in track
@@ -245,19 +245,19 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         T.C22 = T.C33 = vINF;
         T.C44         = 1.;
 
-        //        static L1FieldValue fB0, fB1, fB2 _fvecalignment;
+        //        static L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
         //        static L1FieldRegion fld _fvecalignment;
-        L1FieldValue fB0, fB1, fB2 _fvecalignment;
+        L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
         L1FieldRegion fld _fvecalignment;
-        fvec fz0 = sta1.z;
-        fvec fz1 = sta2.z;
-        fvec fz2 = sta0.z;
+        fvec fldZ0 = sta1.z;
+        fvec fldZ1 = sta2.z;
+        fvec fldZ2 = sta0.z;
 
-        sta1.fieldSlice.GetFieldValue(x1, y1, fB0);
-        sta2.fieldSlice.GetFieldValue(x2, y2, fB1);
-        sta0.fieldSlice.GetFieldValue(x0, y0, fB2);
+        sta1.fieldSlice.GetFieldValue(x1, y1, fldB0);
+        sta2.fieldSlice.GetFieldValue(x2, y2, fldB1);
+        sta0.fieldSlice.GetFieldValue(x0, y0, fldB2);
 
-        fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
+        fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
         int ista = ista2;
 
         for (int i = 1; i < nHits; i++) {
@@ -282,13 +282,13 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
           L1Filter(T, sta.frontInfo, u);
           L1Filter(T, sta.backInfo, v);
 
-          fB0 = fB1;
-          fB1 = fB2;
-          fz0 = fz1;
-          fz1 = fz2;
-          sta.fieldSlice.GetFieldValue(x, y, fB2);
-          fz2 = sta.z;
-          fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
+          fldB0 = fldB1;
+          fldB1 = fldB2;
+          fldZ0 = fldZ1;
+          fldZ1 = fldZ2;
+          sta.fieldSlice.GetFieldValue(x, y, fldB2);
+          fldZ2 = sta.z;
+          fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
         }
 
         // write received parametres in track
@@ -328,13 +328,13 @@ void L1Algo::L1KFTrackFitter()
   //  cout << " Start L1 Track Fitter " << endl;
   int start_hit = 0;  // for interation in fRecoHits[]
 
-  //  static L1FieldValue fB0, fB1, fB2 _fvecalignment;
+  //  static L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
   //  static L1FieldRegion fld _fvecalignment;
-  L1FieldValue fB0, fB1, fB2 _fvecalignment;
+  L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
   L1FieldRegion fld _fvecalignment;
 
 
-  L1FieldValue fB01, fB11, fB21 _fvecalignment;
+  L1FieldValue fldB01, fldB11, fldB21 _fvecalignment;
   L1FieldRegion fld1 _fvecalignment;
 
   const int nHits = NStations;
@@ -359,7 +359,7 @@ void L1Algo::L1KFTrackFitter()
     time_er_lst, d_x_lst, d_y_lst, d_xy_lst;
   fvec Sy[fkMaxNstations], w[fkMaxNstations], w_time[fkMaxNstations];
   fvec y_temp, x_temp;
-  fvec fz0, fz1, fz2, z_start, z_end;
+  fvec fldZ0, fldZ1, fldZ2, z_start, z_end;
   L1FieldValue fB[fkMaxNstations], fB_temp _fvecalignment;
 
   fvec ZSta[fkMaxNstations];
@@ -475,25 +475,25 @@ void L1Algo::L1KFTrackFitter()
 
       // fit.L1AddMaterial( T, sta[i].materialInfo, qp0, 1 );
 
-      fz1 = z[i];
+      fldZ1 = z[i];
 
-      sta[i].fieldSlice.GetFieldValue(T.x, T.y, fB1);
+      sta[i].fieldSlice.GetFieldValue(T.x, T.y, fldB1);
 
 
-      fB1.Combine(fB[i], w[i]);
+      fldB1.Combine(fB[i], w[i]);
 
-      fz2     = z[i - 2];
-      fvec dz = fz2 - fz1;
-      sta[i].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, fB2);
-      fB2.Combine(fB[i - 2], w[i - 2]);
-      fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
+      fldZ2   = z[i - 2];
+      fvec dz = fldZ2 - fldZ1;
+      sta[i].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, fldB2);
+      fldB2.Combine(fB[i - 2], w[i - 2]);
+      fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
       for (--i; i >= 0; i--) {
 
-        fz0 = z[i];
-        dz  = (fz1 - fz0);
-        sta[i].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, fB0);
-        fB0.Combine(fB[i], w[i]);
-        fld.Set(fB0, fz0, fB1, fz1, fB2, fz2);
+        fldZ0 = z[i];
+        dz    = (fldZ1 - fldZ0);
+        sta[i].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, fldB0);
+        fldB0.Combine(fB[i], w[i]);
+        fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
         fvec initialised = fvec(z[i] < z_end) & fvec(z_start <= z[i]);
         fvec w1          = (w[i] & (initialised));
@@ -542,10 +542,10 @@ void L1Algo::L1KFTrackFitter()
         T1.Filter(time[i], timeEr[i], w1_time, sta[i].timeInfo);
 
 
-        fB2 = fB1;
-        fz2 = fz1;
-        fB1 = fB0;
-        fz1 = fz0;
+        fldB2 = fldB1;
+        fldZ2 = fldZ1;
+        fldB1 = fldB0;
+        fldZ1 = fldZ0;
       }
       // fit.L1AddHalfMaterial( T, sta[i].materialInfo, qp0 );
 
@@ -639,22 +639,22 @@ void L1Algo::L1KFTrackFitter()
       qp0  = T.qp;
       qp01 = T1.fqp;
 
-      fz1 = z[i];
-      sta[i].fieldSlice.GetFieldValue(T.x, T.y, fB1);
-      fB1.Combine(fB[i], w[i]);
+      fldZ1 = z[i];
+      sta[i].fieldSlice.GetFieldValue(T.x, T.y, fldB1);
+      fldB1.Combine(fB[i], w[i]);
 
-      fz2 = z[i + 2];
-      dz  = fz2 - fz1;
-      sta[i].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, fB2);
-      fB2.Combine(fB[i + 2], w[i + 2]);
-      fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
+      fldZ2 = z[i + 2];
+      dz    = fldZ2 - fldZ1;
+      sta[i].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, fldB2);
+      fldB2.Combine(fB[i + 2], w[i + 2]);
+      fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
 
       for (++i; i < nHits; i++) {
-        fz0 = z[i];
-        dz  = (fz1 - fz0);
-        sta[i].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, fB0);
-        fB0.Combine(fB[i], w[i]);
-        fld.Set(fB0, fz0, fB1, fz1, fB2, fz2);
+        fldZ0 = z[i];
+        dz    = (fldZ1 - fldZ0);
+        sta[i].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, fldB0);
+        fldB0.Combine(fB[i], w[i]);
+        fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
         fvec initialised = fvec(z[i] <= z_end) & fvec(z_start < z[i]);
         fvec w1          = (w[i] & (initialised));
@@ -700,10 +700,10 @@ void L1Algo::L1KFTrackFitter()
 
         T1.Filter(time[i], timeEr[i], w1_time, sta[i].timeInfo);
 
-        fB2 = fB1;
-        fz2 = fz1;
-        fB1 = fB0;
-        fz1 = fz0;
+        fldB2 = fldB1;
+        fldZ2 = fldZ1;
+        fldB1 = fldB0;
+        fldZ1 = fldZ0;
       }
       // fit.L1AddHalfMaterial( T, sta[i].materialInfo, qp0 );
 
@@ -750,13 +750,13 @@ void L1Algo::L1KFTrackFitterMuch()
   //  cout << " Start L1 Track Fitter " << endl;
   int start_hit = 0;  // for interation in fRecoHits[]
 
-  //  static L1FieldValue fB0, fB1, fB2 _fvecalignment;
+  //  static L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
   //  static L1FieldRegion fld _fvecalignment;
-  L1FieldValue fB0, fB1, fB2 _fvecalignment;
+  L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
   L1FieldRegion fld _fvecalignment;
 
 
-  L1FieldValue fB01, fB11, fB21 _fvecalignment;
+  L1FieldValue fldB01, fldB11, fldB21 _fvecalignment;
   L1FieldRegion fld1 _fvecalignment;
 
   const int nHits = NStations;
@@ -782,7 +782,7 @@ void L1Algo::L1KFTrackFitterMuch()
   int iSta[fkMaxNstations];
   fvec Sy[fkMaxNstations], w[fkMaxNstations];
   fvec y_temp, x_temp;
-  fvec fz0, fz1, fz2, z_start, z_end;
+  fvec fldZ0, fldZ1, fldZ2, z_start, z_end;
   L1FieldValue fB[fkMaxNstations], fB_temp _fvecalignment;
 
   fvec ZSta[fkMaxNstations];
@@ -912,33 +912,33 @@ void L1Algo::L1KFTrackFitterMuch()
 
       FilterFirst(T1, x_first, y_first, time_first, time_er_fst, staFirst, d_x_fst, d_y_fst, d_xy_fst);
 
-      fz1 = z[i];
+      fldZ1 = z[i];
 
-      sta[i].fieldSlice.GetFieldValue(T.x, T.y, fB1);
+      sta[i].fieldSlice.GetFieldValue(T.x, T.y, fldB1);
 
-      fB1.Combine(fB[i], w[i]);
+      fldB1.Combine(fB[i], w[i]);
 
-      fz2 = z[i + 2];
-      dz  = fz2 - fz1;
-      sta[i].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, fB2);
-      fB2.Combine(fB[i + 2], w[i + 2]);
+      fldZ2 = z[i + 2];
+      dz    = fldZ2 - fldZ1;
+      sta[i].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, fldB2);
+      fldB2.Combine(fB[i + 2], w[i + 2]);
 
-      fld.Set(fB2, fz2, fB1, fz1, fB0, fz0);
+      fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
 
       for (++i; i < nHits; i++) {
         fvec initialised = fvec(z[i] <= z_end) & fvec(z_start < z[i]);
         fvec w1          = (w[i] & (initialised));
         fvec wIn         = (ONE & (initialised));
 
-        fz0 = z[i];
-        dz  = (fz1 - fz0);
+        fldZ0 = z[i];
+        dz    = (fldZ1 - fldZ0);
 
 
         if (i < 8) {
 
-          sta[i].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, fB0);
-          fB0.Combine(fB[i], w[i]);
-          fld.Set(fB0, fz0, fB1, fz1, fB2, fz2);
+          sta[i].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, fldB0);
+          fldB0.Combine(fB[i], w[i]);
+          fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
           L1Extrapolate(T, z[i], qp0, fld, &w1);
 
@@ -952,10 +952,10 @@ void L1Algo::L1KFTrackFitterMuch()
             T1.EnergyLossCorrection(fit.PipeRadThick, qp01, fvec(-1.f), wIn);
           }
 
-          fB2 = fB1;
-          fz2 = fz1;
-          fB1 = fB0;
-          fz1 = fz0;
+          fldB2 = fldB1;
+          fldZ2 = fldZ1;
+          fldB1 = fldB0;
+          fldZ1 = fldZ0;
 #ifdef USE_RL_TABLE
           T1.EnergyLossCorrection(fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, fvec(-1.f), wIn);
 
@@ -1218,24 +1218,24 @@ void L1Algo::L1KFTrackFitterMuch()
             T1.ExtrapolateLine(z[7]);
 
             int i_sts = i + 1;
-            fz1       = z[i_sts];  //7
-            sta[i_sts].fieldSlice.GetFieldValue(T1.fx, T1.fy, fB1);
-            fB1.Combine(fB[i_sts], w[i_sts]);
+            fldZ1     = z[i_sts];  //7
+            sta[i_sts].fieldSlice.GetFieldValue(T1.fx, T1.fy, fldB1);
+            fldB1.Combine(fB[i_sts], w[i_sts]);
 
-            fz2 = z[i_sts - 2];  //5
-            dz  = fz2 - fz1;
+            fldZ2 = z[i_sts - 2];  //5
+            dz    = fldZ2 - fldZ1;
 
-            sta[i_sts].fieldSlice.GetFieldValue(T1.fx + T1.ftx * dz, T1.fy + T1.fty * dz, fB2);
-            fB2.Combine(fB[i_sts - 2], w[i_sts - 2]);
+            sta[i_sts].fieldSlice.GetFieldValue(T1.fx + T1.ftx * dz, T1.fy + T1.fty * dz, fldB2);
+            fldB2.Combine(fB[i_sts - 2], w[i_sts - 2]);
           }
 
 
-          fz0 = z[i];
-          dz  = (fz1 - fz0);
-          sta[i].fieldSlice.GetFieldValue(T1.fx - T1.ftx * dz, T1.fy - T1.fty * dz, fB0);
-          fB0.Combine(fB[i], w[i]);
+          fldZ0 = z[i];
+          dz    = (fldZ1 - fldZ0);
+          sta[i].fieldSlice.GetFieldValue(T1.fx - T1.ftx * dz, T1.fy - T1.fty * dz, fldB0);
+          fldB0.Combine(fB[i], w[i]);
 
-          fld.Set(fB0, fz0, fB1, fz1, fB2, fz2);
+          fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
           // fvec v_mc = fabs(1/qp01)/sqrt(mass2+fabs(1/qp01)*fabs(1/qp01));
 
@@ -1262,10 +1262,10 @@ void L1Algo::L1KFTrackFitterMuch()
           T1.Filter(time[i], timeEr[i], w1, sta[i].timeInfo);
 
 
-          fB2 = fB1;
-          fz2 = fz1;
-          fB1 = fB0;
-          fz1 = fz0;
+          fldB2 = fldB1;
+          fldZ2 = fldZ1;
+          fldB1 = fldB0;
+          fldZ1 = fldZ0;
         }
       }
       // fit.L1AddHalfMaterial( T, sta[i].materialInfo, qp0 );
