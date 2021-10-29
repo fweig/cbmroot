@@ -127,7 +127,7 @@ set(LINKDEF  CbmRichRecoLinkDef.h)
 
 Set(LIBRARY_NAME CbmRichReco)
 Set(DEPENDENCIES
-    KF L1 CbmRichBase CbmRecoBase CbmBase CbmData Base MLP boost_regex Gdml 
+    KF L1 Littrack CbmRichBase CbmRecoBase CbmBase CbmData Base MLP boost_regex Gdml 
     )
 
 GENERATE_LIBRARY()
