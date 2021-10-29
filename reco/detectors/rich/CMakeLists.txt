@@ -6,15 +6,10 @@ ${CMAKE_CURRENT_SOURCE_DIR}/finder
 ${CMAKE_CURRENT_SOURCE_DIR}/fitter
 ${CMAKE_CURRENT_SOURCE_DIR}/tracks
 ${CMAKE_CURRENT_SOURCE_DIR}/selection
-${CMAKE_CURRENT_SOURCE_DIR}/utils
 ${CMAKE_CURRENT_SOURCE_DIR}/qa
 ${CMAKE_CURRENT_SOURCE_DIR}/alignment
 ${CMAKE_CURRENT_SOURCE_DIR}/mcbm
 ${CMAKE_CURRENT_SOURCE_DIR}/unpack
-
-${CBMROOT_SOURCE_DIR}/core/detectors/rich
-
-${CBMROOT_SOURCE_DIR}/reco/base
 
 ${CBMBASE_DIR}
 ${CBMBASE_DIR}/report
@@ -29,6 +24,11 @@ ${CBMDATA_DIR}/tof
 ${CBMDATA_DIR}/sts
 ${CBMDATA_DIR}/global
 
+${CBMROOT_SOURCE_DIR}/core/detectors/rich
+${CBMROOT_SOURCE_DIR}/core/detectors/rich/utils
+
+${CBMROOT_SOURCE_DIR}/reco/base
+
 ${CBMROOT_SOURCE_DIR}/reco/littrack
 ${CBMROOT_SOURCE_DIR}/reco/littrack/std
 ${CBMROOT_SOURCE_DIR}/reco/littrack/std/base
@@ -39,8 +39,6 @@ ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/Interface
 
 ${CBMROOT_SOURCE_DIR}/reco/L1/OffLineInterface
-
-${CBMROOT_SOURCE_DIR}/run
 )
 
 Include_Directories( ${INCLUDE_DIRECTORIES})
@@ -89,7 +87,6 @@ unpack/CbmRichUnpackConfig.cxx
 )
 
 set(NO_DICT_SRCS
-CbmRichElectronIdAnn.cxx
 CbmRichConverter.cxx
 finder/CbmRichRingFinderIdeal.cxx
 finder/CbmRichRingFinderHoughImpl.cxx

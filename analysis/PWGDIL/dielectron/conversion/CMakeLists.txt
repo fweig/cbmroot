@@ -1,10 +1,6 @@
 Set(INCLUDE_DIRECTORIES
 ${CMAKE_CURRENT_SOURCE_DIR}
-${CBMROOT_SOURCE_DIR}/analysis/PWGDIL/dielectron/lmvm
 
-${CBMROOT_SOURCE_DIR}/reco/base
-
-#${CBMBASE_DIR} 
 ${CBMBASE_DIR}/draw
 ${CBMBASE_DIR}/utils
 
@@ -12,6 +8,11 @@ ${CBMDATA_DIR}
 ${CBMDATA_DIR}/sts
 ${CBMDATA_DIR}/global
 ${CBMDATA_DIR}/rich
+
+${CBMROOT_SOURCE_DIR}/core/detectors/rich/utils
+${CBMROOT_SOURCE_DIR}/core/detectors/rich
+
+${CBMROOT_SOURCE_DIR}/reco/base
 
 ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/Interface 
@@ -22,8 +23,7 @@ ${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder
 
 ${CBMROOT_SOURCE_DIR}/reco/littrack/cbm/elid
 
-${CBMROOT_SOURCE_DIR}/reco/detectors/rich
-${CBMROOT_SOURCE_DIR}/reco/detectors/rich/utils
+${CBMROOT_SOURCE_DIR}/analysis/PWGDIL/dielectron/lmvm
 )
 
 Include_Directories( ${INCLUDE_DIRECTORIES})

@@ -23,9 +23,10 @@ ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/radlength
 ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/tof
 
 ${CBMROOT_SOURCE_DIR}/reco/base
+
+# needed only for the LitrackQA library
 ${CBMROOT_SOURCE_DIR}/reco/detectors/rich
 ${CBMROOT_SOURCE_DIR}/reco/detectors/rich/fitter
-${CBMROOT_SOURCE_DIR}/reco/detectors/rich/utils
 
 ${CBMBASE_DIR}
 ${CBMBASE_DIR}/report
@@ -44,9 +45,8 @@ ${CBMDATA_DIR}/rich
 
 ${CBMDETECTORBASE_DIR}/much
 ${CBMDETECTORBASE_DIR}/sts
-
-
 ${CBMDETECTORBASE_DIR}/rich
+${CBMDETECTORBASE_DIR}/rich/utils
 
 ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/Interface
@@ -75,23 +75,17 @@ link_directories( ${LINK_DIRECTORIES})
 set(SRCS
 
    cbm/base/CbmLitDetectorSetup.cxx
-   
+
    cbm/elid/CbmLitGlobalElectronId.cxx
-   
+
    cbm/reco/CbmLitFindMvdTracks.cxx
    cbm/reco/CbmLitFitTracksParallel.cxx
    cbm/reco/CbmLitFitTracks.cxx
-   
+
    cbm/generators/CbmLitPolarizedGenerator.cxx
-   
-   cbm/qa/base/CbmLitResultChecker.cxx  
-   cbm/qa/material/CbmLitCheckEnergyLossMuons.cxx
-   cbm/qa/material/CbmLitCheckBrem.cxx 
-   cbm/qa/mc/CbmLitMCTrack.cxx
-   cbm/qa/mc/CbmLitMCTrackCreator.cxx
-   cbm/qa/CbmLitCreateStandaloneData.cxx
-   cbm/qa/CbmLitTestMatrixMath.cxx
+
    ${LITTRACKSTD_SRCS}
+
    cbm/base/CbmLitFieldGridCreator.cxx
    cbm/base/CbmLitFieldFitter.cxx
    cbm/base/CbmLitToolFactory.cxx
@@ -100,8 +94,18 @@ set(SRCS
    cbm/reco/CbmLitFindGlobalTracksIdeal.cxx 
    cbm/reco/CbmLitFindGlobalTracksParallel.cxx
    cbm/utils/CbmLitConverterParallel.cxx
+)
+
+set(QA_SRCS
+   cbm/qa/base/CbmLitResultChecker.cxx
+   cbm/qa/material/CbmLitCheckEnergyLossMuons.cxx
+   cbm/qa/material/CbmLitCheckBrem.cxx
+   cbm/qa/mc/CbmLitMCTrack.cxx
+   cbm/qa/mc/CbmLitMCTrackCreator.cxx
+   cbm/qa/CbmLitCreateStandaloneData.cxx
+   cbm/qa/CbmLitTestMatrixMath.cxx
    cbm/qa/tracking/CbmLitTrackingQa.cxx
-   cbm/qa/tracking/CbmLitTrackingQaStudyReport.cxx            
+   cbm/qa/tracking/CbmLitTrackingQaStudyReport.cxx
    cbm/qa/tracking/CbmLitTrackingQaReport.cxx
    cbm/qa/clustering/CbmLitClusteringQa.cxx
    cbm/qa/clustering/CbmLitClusteringQaReport.cxx
@@ -129,8 +133,11 @@ set(HEADERS
    cbm/reco/CbmLitFitTracks.h
    cbm/reco/CbmLitFindGlobalTracksParallel.h
    cbm/generators/CbmLitPolarizedGenerator.h
-   cbm/qa/material/CbmLitCheckEnergyLossMuons.h 
-   cbm/qa/material/CbmLitCheckBrem.h 
+)
+
+Set(QA_HEADERS
+   cbm/qa/material/CbmLitCheckEnergyLossMuons.h
+   cbm/qa/material/CbmLitCheckBrem.h
    cbm/qa/CbmLitCreateStandaloneData.h
    cbm/qa/CbmLitTestMatrixMath.h
    cbm/qa/tracking/CbmLitTrackingQa.h
@@ -139,7 +146,7 @@ set(HEADERS
    cbm/qa/clustering/CbmLitClusteringQa.h
    cbm/qa/clustering/CbmLitClusteringQaReport.h
    cbm/qa/clustering/CbmLitClusteringQaStudyReport.h
-   cbm/qa/fit/CbmLitFitQa.h 
+   cbm/qa/fit/CbmLitFitQa.h
    cbm/qa/fit/CbmLitFitQaReport.h
    cbm/qa/fit/CbmLitFitQaStudyReport.h
    cbm/qa/field/CbmLitFieldQa.h
@@ -174,7 +181,17 @@ EndIf (Boost_FOUND)
 set(LINKDEF  LittrackLinkDef.h)
 Set(LIBRARY_NAME Littrack)
 Set(DEPENDENCIES
-    Littrackparallel KF CbmMuchBase CbmStsBase CbmRichReco CbmRichBase CbmRecoBase CbmBase CbmData Base 
+    Littrackparallel KF CbmMuchBase CbmStsBase CbmRichBase CbmRecoBase CbmBase CbmData Base
+)
+GENERATE_LIBRARY()
+
+
+set(SRCS ${QA_SRCS})
+set(HEADERS ${QA_HEADERS})
+set(LINKDEF  LittrackQALinkDef.h)
+Set(LIBRARY_NAME LittrackQA)
+Set(DEPENDENCIES
+    Littrack
 )
 
 GENERATE_LIBRARY()

@@ -1,9 +1,5 @@
 Set(INCLUDE_DIRECTORIES
-
-#${CBMROOT_SOURCE_DIR}/analysis
 ${CMAKE_CURRENT_SOURCE_DIR}
-
-${CBMROOT_SOURCE_DIR}/sim/transport/generators/unigen
 
 ${CBMBASE_DIR} 
 ${CBMBASE_DIR}/draw
@@ -21,10 +17,9 @@ ${CBMDATA_DIR}/tof
 ${CBMDATA_DIR}/psd
 
 ${CBMROOT_SOURCE_DIR}/mvd 
-#${CBMROOT_SOURCE_DIR}/sts 
-${CBMROOT_SOURCE_DIR}/reco/detectors/rich
+${CBMROOT_SOURCE_DIR}/core/detectors/rich
 
-${CBMROOT_SOURCE_DIR}/run
+${CBMROOT_SOURCE_DIR}/sim/transport/generators/unigen
 
 ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/Interface 

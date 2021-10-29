@@ -1,8 +1,10 @@
 set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/utils
 
   ${CBMDATA_DIR}
   ${CBMDATA_DIR}/rich
+  ${CBMDATA_DIR}/global
 
   ${CBMBASE_DIR}
   ${CBMBASE_DIR}/draw
@@ -33,6 +35,7 @@ set(SRCS
 )
 
 set(NO_DICT_SRCS
+  CbmRichElectronIdAnn.cxx
   CbmRichGeoManager.cxx
   CbmRichDigiMapManager.cxx
   CbmRichMCbmDigiMapManager.cxx
