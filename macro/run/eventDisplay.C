@@ -22,7 +22,11 @@ void eventDisplay(TString dataset = "test")
   rtdb->setFirstInput(parInput1);
 
   FairEventManager* fMan = new FairEventManager();
-  FairMCTracks* Track    = new FairMCTracks("Monte-Carlo Tracks");
+  // for fairroot > v18.6.x
+  FairGeoTracksDraw* Track = new FairGeoTracksDraw();
+  //  //  FairMCTracksDraw *Track = new FairMCTracksDraw();
+  // for fairroot < v18.6.x
+  //  FairMCTracks* Track      = new FairMCTracks("Monte-Carlo Tracks");
 
   FairMCPointDraw* MvdPoint      = new FairMCPointDraw("MvdPoint", kBlack, kFullSquare);
   FairMCPointDraw* StsPoint      = new FairMCPointDraw("StsPoint", kBlue, kFullSquare);

@@ -90,6 +90,7 @@ void run_transport(Int_t nEvents = 2, const char* setupName = "sis100_electron",
   run.SetTarget("Gold", 0.025, 2.5);
   run.SetBeamPosition(0., 0., 0.1, 0.1);
   run.SetRandomEventPlane();
+  //  run.StoreTrajectories();
   run.Run(nEvents);
   // ------------------------------------------------------------------------
 
