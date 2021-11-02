@@ -88,10 +88,10 @@ void CbmStsRecoModule::Reconstruct()
             });
 
   // --- Perform cluster finding
-  fClusterFinder->Exec(fDigisF, fClustersF, fSetupModule->GetAddress(), fNofStripsF, 0, fTimeCutDigiSig,
-                       fTimeCutDigiAbs, fConnectEdgeFront, fParModule);
-  fClusterFinder->Exec(fDigisB, fClustersB, fSetupModule->GetAddress(), fNofStripsB, fNofStripsF, fTimeCutDigiSig,
-                       fTimeCutDigiAbs, fConnectEdgeBack, fParModule);
+  fClusterFinder->Exec(fDigisF, fClustersF, fSetupModule->GetAddress(), fNofStripsF, 0, fTimeCutDigisSig,
+                       fTimeCutDigisAbs, fConnectEdgeFront, fParModule);
+  fClusterFinder->Exec(fDigisB, fClustersB, fSetupModule->GetAddress(), fNofStripsB, fNofStripsF, fTimeCutDigisSig,
+                       fTimeCutDigisAbs, fConnectEdgeBack, fParModule);
 
   // --- Perform cluster analysis
   for (auto& cluster : fClustersF)
@@ -109,12 +109,12 @@ void CbmStsRecoModule::Reconstruct()
 
   // --- Perform hit finding
   if (fHitFinder)
-    fHitFinder->Exec(fClustersF, fClustersB, fHits, fSetupModule->GetAddress(), fTimeCutClusterSig, fTimeCutClusterAbs,
-                     fDyActive, fNofStripsF, fStripPitchF, fStereoFront, fStereoBack, fLorentzShiftF, fLorentzShiftB,
-                     fMatrix);
+    fHitFinder->Exec(fClustersF, fClustersB, fHits, fSetupModule->GetAddress(), fTimeCutClustersSig,
+                     fTimeCutClustersAbs, fDyActive, fNofStripsF, fStripPitchF, fStereoFront, fStereoBack,
+                     fLorentzShiftF, fLorentzShiftB, fMatrix);
   else if (fHitFinderOrtho)
-    fHitFinderOrtho->Exec(fClustersF, fClustersB, fHits, fSetupModule->GetAddress(), fTimeCutClusterSig,
-                          fTimeCutClusterAbs, fNofStripsF, fNofStripsB, fStripPitchF, fStripPitchB, fLorentzShiftF,
+    fHitFinderOrtho->Exec(fClustersF, fClustersB, fHits, fSetupModule->GetAddress(), fTimeCutClustersSig,
+                          fTimeCutClustersAbs, fNofStripsF, fNofStripsB, fStripPitchF, fStripPitchB, fLorentzShiftF,
                           fLorentzShiftB, fMatrix);
 }
 // -------------------------------------------------------------------------

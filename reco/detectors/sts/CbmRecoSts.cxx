@@ -121,6 +121,12 @@ UInt_t CbmRecoSts::CreateModules()
     // --- Create reco module
     CbmStsRecoModule* recoModule = new CbmStsRecoModule(setupModule, modPar, sensPar, lorentzF, lorentzB);
     assert(recoModule);
+
+    recoModule->SetTimeCutDigisAbs(fTimeCutDigisAbs);
+    recoModule->SetTimeCutDigisSig(fTimeCutDigisSig);
+    recoModule->SetTimeCutClustersAbs(fTimeCutClustersAbs);
+    recoModule->SetTimeCutClustersSig(fTimeCutClustersSig);
+
     auto result = fModules.insert({moduleAddress, recoModule});
     assert(result.second);
     fModuleIndex.push_back(recoModule);

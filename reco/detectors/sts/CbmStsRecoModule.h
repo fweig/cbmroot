@@ -117,6 +117,46 @@ public:
   /** @brief Info to string **/
   std::string ToString() const;
 
+  /** @brief Time cut on clusters for hit finding
+     ** @param value  Maximal time difference between two clusters in a hit [ns]
+     **
+     ** Two clusters are considered compatible if their time difference
+     ** is below value.
+     ** Setting this cut parameter to a positive value will override
+     ** the time cut defined by SetTimeCutClustersSig.
+     **/
+  void SetTimeCutClustersAbs(Double_t value) { fTimeCutClustersAbs = value; }
+
+
+  /** @brief Time cut on clusters for hit finding
+     ** @param value  Maximal time difference in units of error
+     **
+     ** Two clusters are considered compatible if their time difference
+     ** is below value * sqrt(terr1**2 + terr2*+2).
+     **/
+  void SetTimeCutClustersSig(Double_t value) { fTimeCutClustersSig = value; }
+
+
+  /** @brief Time cut on digis for cluster finding
+     ** @param value  Maximal time difference between two digis in a cluster [ns]
+     **
+     ** Two digis are considered compatible if their time difference
+     ** is below value.
+     ** Setting this cut parameter to a positive value will override
+     ** the time cut defined by SetTimeCutDigisSig.
+     **/
+  void SetTimeCutDigisAbs(Double_t value) { fTimeCutDigisAbs = value; }
+
+
+  /** @brief Time cut on digis for hit finding
+     ** @param value  Maximal time difference in units of error
+     **
+     ** Two digis are considered compatible if their time difference
+     ** is below value * sqrt2 * sigma(t), where the time error of
+     ** the digis is assumed to be the same.
+     **/
+  void SetTimeCutDigisSig(Double_t value) { fTimeCutDigisSig = value; }
+
 
 private:
   /** @brief Set and check the needed parameters **/
@@ -154,10 +194,10 @@ private:
   std::vector<CbmStsHit> fHits {};                                 //!
 
   // --- Settings
-  Double_t fTimeCutDigiSig    = 3.;      ///< Time cut for cluster finding (in sigma)
-  Double_t fTimeCutDigiAbs    = -1.;     ///< Time cut for cluster finding (in ns)
-  Double_t fTimeCutClusterSig = 4.;      ///< Time cut for hit finding (in ns)
-  Double_t fTimeCutClusterAbs = -1.;     ///< Time cut for hit finding (in sigma)
+  Double_t fTimeCutDigisSig    = 3.;      ///< Time cut for cluster finding (in sigma)
+  Double_t fTimeCutDigisAbs    = -1.;     ///< Time cut for cluster finding (in ns)
+  Double_t fTimeCutClustersSig = 4.;      ///< Time cut for hit finding (in ns)
+  Double_t fTimeCutClustersAbs = -1.;     ///< Time cut for hit finding (in sigma)
   Bool_t fConnectEdgeFront    = kFALSE;  ///< Round-the edge clustering front side
   Bool_t fConnectEdgeBack     = kFALSE;  ///< Round-the edge clustering back side
 
