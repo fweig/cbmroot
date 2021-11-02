@@ -83,7 +83,10 @@ private:
   std::vector<std::string> fG4Commands {"/process/optical/verbose 0",
                                         "/process/optical/defaults/cerenkov/setMaxPhotons 20",
                                         "/process/optical/defaults/cerenkov/setMaxBetaChange 0.1",
-                                        "/process/optical/setTrackSecondariesFirst Cerenkov false"};
+                                        "/process/optical/setTrackSecondariesFirst Cerenkov true",
+                                        "/process/optical/processActivation Cerenkov true",
+                                        "/process/optical/processActivation OpAbsorption true",
+                                        "/process/optical/processActivation OpBoundary true"};
 
   Int_t fMaxNumSteps {10000000};
 
