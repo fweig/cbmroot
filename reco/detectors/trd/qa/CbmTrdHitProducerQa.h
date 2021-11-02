@@ -51,17 +51,17 @@ public:
   virtual void Finish();
 
   /* Set the momentum cuts */
-  void SetMomentumCuts(Float_t CutLower, Float_t CutHigher)
+  void SetMomentumCuts(float CutLower, float CutHigher)
   {
     fMomCutLower = CutLower;
     fMomCutUpper = CutHigher;
   }
 
   /* Set number of TRD stations */
-  void SetNumberStations(Int_t nStations) { fNoTrdStations = nStations; }
+  void SetNumberStations(int nStations) { fNoTrdStations = nStations; }
 
   /** Set number of layers per station **/
-  void SetLayersPerStations(Int_t nLayers) { fNoTrdPerStation = nLayers; }
+  void SetLayersPerStations(int nLayers) { fNoTrdPerStation = nLayers; }
 
 private:
   TFolder fOutFolder;             /// output folder with histos and canvases
@@ -75,17 +75,21 @@ private:
   TClonesArray* fMCTrackArray       = nullptr;
 
   /** Number of TRD stations **/
-  Int_t fNoTrdStations = 4;
+  int fNoTrdStations = 4;
 
   /** Number of layers per station **/
-  Int_t fNoTrdPerStation = 1;
+  int fNoTrdPerStation = 1;
 
   /* Write test histograms */
   void WriteHistograms();
 
   /* Test histograms*/
-  std::vector<TH1F*> fvhHitPullsX;
-  std::vector<TH1F*> fvhHitPullsY;
+  std::vector<TH1F*> fvhHitPullX;
+  std::vector<TH1F*> fvhHitPullY;
+  std::vector<TH1F*> fvhHitPullT;
+  std::vector<TH1F*> fvhHitResX;
+  std::vector<TH1F*> fvhHitResY;
+  std::vector<TH1F*> fvhHitResT;
 
   std::vector<TH1F*> fvhedEcut;
   std::vector<TH1F*> fvhedEall;
@@ -97,8 +101,8 @@ private:
   std::vector<CbmQaCanvas*> fvPullCanvas;
 
   /* Momentum cuts for energy distributions */
-  Float_t fMomCutLower = 1.;
-  Float_t fMomCutUpper = 7.;
+  float fMomCutLower = 1.;
+  float fMomCutUpper = 7.;
 
   ClassDef(CbmTrdHitProducerQa, 3)
 };
