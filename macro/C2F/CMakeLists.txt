@@ -12,14 +12,17 @@ GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/analysis/common/qa/run_anal
 File(COPY ${CBMROOT_SOURCE_DIR}/macro/include/.rootrc DESTINATION ${MACRO_DIR})
 File(COPY ${CBMROOT_SOURCE_DIR}/macro/C2F/sis100_electron.tree.list DESTINATION ${MACRO_DIR})
 
-
 # Define the number of events to run
-Set(NumEvents 20)
+if(LARGE_TEST_STATISTIC)
+  Set(NumEvents 100)
+else()
+  Set(NumEvents 20)
+endif()
 
 # Define the different setups to be tested
-If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
+#If( ${CBM_TEST_MODEL} MATCHES Nightly OR ${CBM_TEST_MODEL} MATCHES Weekly )
   List(APPEND cbm_setup sis100_electron)
-EndIf()
+#EndIf()
 
   ForEach(setup IN LISTS cbm_setup)
 

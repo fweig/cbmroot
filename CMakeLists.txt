@@ -394,6 +394,12 @@ add_subdirectory (analysis)
 add_subdirectory (mvd)
 
 ### Others
+Option(LARGE_TEST_STATISTIC "Run the test suite with large statistic (100 events)" OFF)
+
+if(NOT CBM_TEST_MODEL)
+  set(CBM_TEST_MODEL Experimental)
+endif()
+
 add_subdirectory (macro)
 add_subdirectory(fles)
 If(FAIRMQ_FOUND)

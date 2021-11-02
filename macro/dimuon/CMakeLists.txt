@@ -15,7 +15,7 @@ File(COPY ${CBMROOT_SOURCE_DIR}/parameters/much/TOF8gev_fitParam_sigma2.sis100_m
 Set(NumEvents 1000)
 
 # Define the different setups to be tested
-If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
+#If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
   List(APPEND cbm_setup sis100_muon_lmvm)
 
   ForEach(setup IN LISTS cbm_setup)
@@ -70,7 +70,7 @@ If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
   
   EndForEach(setup IN LISTS cbm_setup)
   # end of test CBM setups from geometry/setup
-EndIf()
+#EndIf()
 
 # Installation of macros is done in macro/CMakeLists.txt to install the
 # macros even if the tests are not executed

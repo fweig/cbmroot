@@ -17,7 +17,7 @@ file(COPY ${CBMROOT_SOURCE_DIR}/macro/include/.rootrc
 
 
 # =====   Define variables for tests   =======================================
-if($ENV{ctest_model} MATCHES Weekly)
+if(${CBM_TEST_MODEL} MATCHES Weekly)
   Set(nEvents 100)
   Set(uploadHistJPG 1)
   Set(pullDevAllowed .2)
@@ -35,7 +35,7 @@ math(EXPR nBeam "${nEvents} * 3")
 
 
 # =====   Define the different setups to be tested with   ====================
-if(($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly))
+if(NOT ${CBM_TEST_MODEL} MATCHES Experimental )
   List(APPEND cbm_setup sis100_hadron sis100_electron sis100_muon_lmvm
   	sis100_muon_jpsi sis300_electron)
 else()

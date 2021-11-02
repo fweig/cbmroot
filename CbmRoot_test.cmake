@@ -6,6 +6,10 @@ Set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 Set(CTEST_PROJECT_NAME "CBMROOT")
 Set(EXTRA_FLAGS $ENV{EXTRA_FLAGS})
 
+if(NOT CBM_TEST_MODEL)
+  set(CBM_TEST_MODEL NIGHTLY)
+endif()
+
 include(${CTEST_SOURCE_DIRECTORY}/CTestConfig.cmake)
 Ctest_Read_Custom_Files("${CTEST_SOURCE_DIRECTORY}")
 
@@ -27,21 +31,26 @@ Else()
   Set(CTEST_USE_LAUNCHERS 1)
 EndIf()
 
-If($ENV{ctest_model} MATCHES Weekly)
-  Set(_Model PROFILE)
-ElseIf($ENV{ctest_model} MATCHES MergeRequest)
-  Set(_Model CONTINUOUS)
+
+If(${CBM_TEST_MODEL} MATCHES MergeRequest OR ${CBM_TEST_MODEL} MATCHES Continuous)
+  Set(_BuildType NIGHTLY)
+  Set(_CMakeModel Continuous)
+elseIf(${CBM_TEST_MODEL} MATCHES Weekly OR ${CBM_TEST_MODEL} MATCHES Profile)
+  Set(_BuildType PROFILE)
+  Set(_CMakeModel Nightly)
 Else()
-  String(TOUPPER $ENV{ctest_model} _Model)
+  String(TOUPPER ${CBM_TEST_MODEL} _BuildType)
+  set(_CMakeModel ${CBM_TEST_MODEL})
 EndIf()
 
 If(EXTRA_FLAGS)
-  Set(CTEST_CONFIGURE_COMMAND " \"${CMAKE_EXECUTABLE_NAME}\" \"-G${CTEST_CMAKE_GENERATOR}\" \"-DCMAKE_BUILD_TYPE=${_Model}\" \"-DCTEST_USE_LAUNCHERS=${CTEST_USE_LAUNCHERS}\" \"${EXTRA_FLAGS}\" \"${CTEST_SOURCE_DIRECTORY}\" ")
+  Set(CTEST_CONFIGURE_COMMAND " \"${CMAKE_EXECUTABLE_NAME}\" \"-G${CTEST_CMAKE_GENERATOR}\" \"-DCMAKE_BUILD_TYPE=${_BuildType}\" \"-DCTEST_USE_LAUNCHERS=${CTEST_USE_LAUNCHERS}\" \"${EXTRA_FLAGS}\" \"${CTEST_SOURCE_DIRECTORY}\" ")
 Else()
-  Set(CTEST_CONFIGURE_COMMAND " \"${CMAKE_EXECUTABLE_NAME}\" \"-G${CTEST_CMAKE_GENERATOR}\" \"-DCMAKE_BUILD_TYPE=${_Model}\" \"-DCTEST_USE_LAUNCHERS=${CTEST_USE_LAUNCHERS}\" \"${CTEST_SOURCE_DIRECTORY}\" ")
+  Set(CTEST_CONFIGURE_COMMAND " \"${CMAKE_EXECUTABLE_NAME}\" \"-G${CTEST_CMAKE_GENERATOR}\" \"-DCMAKE_BUILD_TYPE=${_BuildType}\" \"-DCTEST_USE_LAUNCHERS=${CTEST_USE_LAUNCHERS}\" \"${CTEST_SOURCE_DIRECTORY}\" ")
 EndIf()
 
-If($ENV{ctest_model} MATCHES Nightly OR $ENV{ctest_model} MATCHES Weekly OR $ENV{ctest_model} MATCHES Profile)
+#If(${CBM_TEST_MODEL} MATCHES Nightly OR ${CBM_TEST_MODEL} MATCHES Weekly OR ${CBM_TEST_MODEL} MATCHES Profile)
+If(NOT ${_BuildType} MATCHES Experimental)
 
   Find_Program(GCOV_COMMAND gcov)
   If(GCOV_COMMAND)
@@ -49,61 +58,31 @@ If($ENV{ctest_model} MATCHES Nightly OR $ENV{ctest_model} MATCHES Weekly OR $ENV
     Set(CTEST_COVERAGE_COMMAND ${GCOV_COMMAND})
   EndIf(GCOV_COMMAND)
 
-  If(NOT $ENV{ctest_model} MATCHES Weekly)
-    Set(ENV{ctest_model} Nightly)
-  EndIf()
-
-  # get the information about conflicting or localy modified files
-  # from svn, extract the relavant information about the file name
-  # and put the result in the output variable
-  If(EXISTS ${CTEST_SOURCE_DIRECTORY}/.svn)
-    Execute_Process(COMMAND svn stat -u
-                    COMMAND grep ^[CM]
-                    COMMAND cut -c21-
-                    OUTPUT_VARIABLE FILELIST
-                    )
-
-    # create out of the output a cmake list. This step is done to convert the
-    # stream into seperated filenames.
-    # The trick is to exchange an "\n" by an ";" which is the separartor in
-    # a list created by cmake
-    String(REGEX REPLACE "\n" ";" _result "${FILELIST}")
-
-    ForEach(_file ${_result})
-      String(STRIP "${_file}" _file1)
-      Set(CTEST_NOTES_FILES ${CTEST_NOTES_FILES} "${CTEST_SOURCE_DIRECTORY}/${_file1}")
-    EndForEach(_file ${_result})
-  EndIf()
-
   CTEST_EMPTY_BINARY_DIRECTORY(${CTEST_BINARY_DIRECTORY})
 
 EndIf()
 
-If($ENV{ctest_model} MATCHES MergeRequest)
-  set(ENV{ctest_model} Continuous)
-EndIf()
-
-Ctest_Start($ENV{ctest_model})
+Ctest_Start(${_CMakeModel})
 
 unset(repeat)
-If($ENV{ctest_model} MATCHES Continuous)
+If(${CBM_TEST_MODEL} MATCHES MergeRequest OR ${CBM_TEST_MODEL} MATCHES Continuous)
   if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
     set(repeat REPEAT UNTIL_PASS:2)
-  endif()
-  set(ENV{ctest_model} Nightly)
+  endif()        
 EndIf()
 
 
-If(NOT $ENV{ctest_model} MATCHES Experimental)
+If(NOT ${_BuildType} MATCHES Experimental)
   Ctest_Update(SOURCE "${CTEST_SOURCE_DIRECTORY}")
 EndIf()
 
 Ctest_Configure(BUILD "${CTEST_BINARY_DIRECTORY}"
                 RETURN_VALUE _RETVAL
 )
+
 If(NOT _RETVAL)
   Ctest_Build(BUILD "${CTEST_BINARY_DIRECTORY}")
-  If($ENV{ctest_model} MATCHES Continuous)
+  If(${_CMakeModel} MATCHES Continuous)
     If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
       CTest_Submit(PARTS Update Configure Build)
     Else()
@@ -119,7 +98,7 @@ If(NOT _RETVAL)
              RETURN_VALUE _ctest_test_ret_val
             )
 
-  If($ENV{ctest_model} MATCHES Continuous)
+  If(${_CMakeModel} MATCHES Continuous)
     If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
       CTest_Submit(PARTS Test)
     Else()
@@ -131,7 +110,7 @@ If(NOT _RETVAL)
 
   If(GCOV_COMMAND)
     Ctest_Coverage(BUILD "${CTEST_BINARY_DIRECTORY}")
-    If($ENV{ctest_model} MATCHES Continuous)
+    If(${_CMakeModel} MATCHES Continuous)
       If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
         CTest_Submit(PARTS Coverage)
       Else()
@@ -143,7 +122,7 @@ If(NOT _RETVAL)
   EndIf()
 
   Ctest_Upload(FILES ${CTEST_NOTES_FILES})
-  If(NOT $ENV{ctest_model} MATCHES Continuous)
+  If(NOT ${_CMakeModel} MATCHES Continuous)
     If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
       Ctest_Submit()
     Else()

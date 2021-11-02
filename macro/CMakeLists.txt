@@ -7,19 +7,16 @@ add_subdirectory(include)
 
 
 #--- Additional tests for nightly builds
-If($ENV{ctest_model} MATCHES Nightly)
+If(NOT ${CBM_TEST_MODEL} MATCHES Experimental)
   add_subdirectory(field)
   add_subdirectory(C2F)
   add_subdirectory(dimuon)
   Message("Additional Nightly tests")
-EndIf($ENV{ctest_model}  MATCHES Nightly)
+EndIf()
 
 #--- Additional tests for weekly builds
-If($ENV{ctest_model} MATCHES Weekly)
+If(${CBM_TEST_MODEL} MATCHES Weekly)
   add_subdirectory(KF)
-  add_subdirectory(field)
-  add_subdirectory(C2F)
-  add_subdirectory(dimuon)
   Message("Additional long running Weekly tests")
 EndIf()
 

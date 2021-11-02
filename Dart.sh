@@ -65,7 +65,8 @@ else
 fi
 
 # set the ctest model to command line parameter
-export ctest_model=$1
+#export ctest_model=$1
+ctest_model=$1
 
 # test for architecture
 arch=$(uname -s | tr '[A-Z]' '[a-z]')
@@ -128,4 +129,5 @@ echo "************************"
 
 cd $SOURCEDIR
 
-ctest -S $SOURCEDIR/CbmRoot_test.cmake -V --VV 
+ctest -S $SOURCEDIR/CbmRoot_test.cmake -V --VV -DCBM_TEST_MODEL=${ctest_model}
+#ctest -S $SOURCEDIR/CbmRoot_test.cmake -V --VV

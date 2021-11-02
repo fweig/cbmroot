@@ -27,7 +27,7 @@ Set(BeamAngle 25)
 # additional ones for current/future setups should also be added to the CI tests
 # Old ones may be tested in addition for nightly/weekly to ensure backward compatibility
 # Nightly if for now not different from CI so the "extras" are used only in Weekly
-If( ($ENV{ctest_model} MATCHES Weekly) )
+If(${CBM_TEST_MODEL} MATCHES Weekly)
   List(APPEND cbm_setup mcbm_beam_2021_07_surveyed) # Default
   List(APPEND cbm_setup mcbm_beam_2022_02 mcbm_beam_2022_03 mcbm_beam_2022_04 mcbm_beam_2022_05) # Non-default current/future setups
   List(APPEND cbm_setup mcbm_beam_2020_03 mcbm_beam_2021_03) # Legacy
@@ -113,13 +113,13 @@ ForEach(setup IN LISTS cbm_setup)
   Set(fixture_overlap fixture_overlap_${setup})
   set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_overlap})
 
-  If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
+#  If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
     Set(testname mcbm_check_media_${setup})
     Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/check_media.sh \"data/${setup}_test\")
     Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "60")
     Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
     set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_overlap})
-  EndIf()
+#  EndIf()
 
 EndForEach(setup IN LISTS cbm_setup)
 
