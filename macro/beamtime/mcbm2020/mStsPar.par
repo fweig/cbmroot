@@ -12,7 +12,7 @@ ModuleType: Int_t \
 // STS address for the first strip of each module
 // 1 Line per ladder, from above beam to under beam
 ModAddress: Int_t \
-  0x10018002  0x10008002  0x11E004E2 // addresse matching the current mSTS geometry (PAL, 15/05/2020)
+  0x10018002  0x10008002  0x10107C02 // addresse matching the current mSTS geometry (PAL, 15/05/2020)
 // Offset of module center in X, in mm (Should be done by geometry for the unpacker!)
 ModCenterPosX: Double_t \
          0.0        0.0        0.0
