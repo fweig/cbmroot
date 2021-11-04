@@ -138,6 +138,7 @@ private:
   CbmTrdParSetGain* fGainPar;  ///< parameter list for keV->ADC gain conversion
   CbmTrdParSetGeo* fGeoPar;    ///< parameter list for geometry definitions
   CbmTrdRadiator* fRadiator;   ///< parametrization of radiator TR yield
+  CbmTrdRadiator* fRadiator2D; ///< parametrization of 2D radiator TR yield
 
   CbmTrdRawToDigiR* fConverter;
   CbmTrdCheckUtil* fQA;

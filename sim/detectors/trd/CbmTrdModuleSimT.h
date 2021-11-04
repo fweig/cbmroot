@@ -17,9 +17,19 @@ class CbmTrdParSetAsic;
   **/
 class CbmTrdModuleSimT : public CbmTrdModuleSim {
 public:
+  enum ECbmTrdModuleSimT
+  {
+    kMeasurement = 0  ///< default simulate setup interactions, if set simulate laboratory measurement, see kLab
+      ,
+    kLab  ///< default simulate 55Fe, if set X-rays, see X-rays spectrum generator
+      ,
+    kFEE  ///< FEE simulator. Default FASP otherwise SPADIC
+  };
   CbmTrdModuleSimT(Int_t mod, Int_t ly, Int_t rot, Bool_t FASP = kTRUE);
   virtual ~CbmTrdModuleSimT();
 
+  Bool_t IsLabMeasurement() const { return TESTBIT(fConfig, kMeasurement); }
+  Bool_t IsFeCalib() const { return TESTBIT(fConfig, kLab); }
   /**
    * \brief Flush local buffer of digits which can no longer interact with current event
    * \param time current event time or 0 for all
@@ -41,9 +51,19 @@ public:
   void SetGamma(Double_t /*gamma*/) { ; }
   void SetMessageConverter(CbmTrdRawToDigiR* conv = NULL) { (void) conv; }
   void SetQA(CbmTrdCheckUtil* qa = NULL) { (void) qa; }
+  void SetLabMeasurement(Bool_t set=kTRUE) {
+    set ? SETBIT(fConfig, kMeasurement) : CLRBIT(fConfig, kMeasurement);
+    SetFeCalib(set);
+  }
+  void SetFeCalib(Bool_t set = kTRUE) { set ? SETBIT(fConfig, kLab) : CLRBIT(fConfig, kLab);}
 
-  void SetAsic(Bool_t /*set*/) { ; }
+  /**
+   * \brief Set the FEE type operating on the chamber
+   * \param[in] set default use FASP/GETS via CbmTrdFASP class. If set to false use SPADIC TODO
+   **/
+  void SetFasp(Bool_t set = kTRUE) { set ? SETBIT(fConfig, kFEE) : CLRBIT(fConfig, kFEE); }
   void SetAsicPar(CbmTrdParSetAsic* p = NULL);
+  Bool_t UseFasp() const { return TESTBIT(fConfig, kFEE); }
 
 private:
   CbmTrdModuleSimT(const CbmTrdModuleSimT& ref);
@@ -75,6 +95,7 @@ private:
    **/
   void DumpBuffer() const;
 
+  UChar_t fConfig;     ///< bit map for configuration. See class documentation
   CbmTrdTrianglePRF* fTriangleBinning;  ///< Integration of PRF on triangular pad-plane geometry
   CbmTrdFASP* fFASP;                    ///< FASP simulator
   CbmTimeSlice* fTimeSlice;             ///< link to CBM time slice

@@ -93,6 +93,7 @@ CbmTrdDigitizer::~CbmTrdDigitizer()
     delete imod->second;
   fModuleMap.clear();
 
+  if (fRadiator2D) delete fRadiator2D;
   delete fConverter;
   delete fQA;
 }
@@ -302,7 +303,40 @@ CbmTrdModuleSim* CbmTrdDigitizer::AddModule(Int_t detId)
              << "] ly[" << lyId << "] det[" << detId << "]";
   CbmTrdModuleSim* module(NULL);
   if (moduleType >= 9) {
+    // temporary fix for TRD-2Dh @ mCBM 2021
+    if (moduleType == 10) SetUseFASP(kFALSE);
+    else
+      SetUseFASP();
     module = fModuleMap[moduleAddress] = new CbmTrdModuleSimT(moduleAddress, lyId, orientation, UseFASP());
+    Int_t rType(-1);
+    if ( (rType = geoHandler.GetRadiatorType(path)) >= 0 ) {
+      if (!fRadiator2D) {  // strong TRD-2D entrance window
+        //   const Char_t *ewin = "Al;C;Air;C;Al";
+        const Char_t* ewin = "Al;C;HC;C;Al";
+        Float_t widths[]   = {
+          1.2e-3,  // 12 µm aluminized polyester foil
+          0.02,    // carbon laminate sheets of 0.2 mm thickness
+          0.9,     // 9mm Nomex honeycom
+          0.02,    // carbon laminate sheets of 0.2 mm thickness
+          1.2e-3,  // 12 µm aluminized polyester foil
+        };
+
+        //   // light TRD-2D entrance window
+        //   const Char_t *ewin = "Al;C;HC;Po;Al";
+        //   Float_t widths[] = {
+        //     1.2e-3, // 12 µm aluminized polyester foil
+        //     0.02,   // carbon laminate sheets of 0.2 mm thickness
+        //     0.9,    // 9mm Nomex honeycom
+        //     0.0025, // polyethylen sheets of 50 µm thickness
+        //     1.2e-3, // 12 µm aluminized polyester foil
+        //   };  pwidth = widths;
+        fRadiator2D = new CbmTrdRadiator(kTRUE, "tdr18", ewin);
+        fRadiator2D->SetEWwidths(5, widths);
+        fRadiator2D->Init();
+      }
+      module->SetRadiator(fRadiator2D);
+    }
+    //((CbmTrdModuleSimT*)module)->SetLabMeasurement();
   }
   else {
     module = fModuleMap[moduleAddress] = new CbmTrdModuleSimR(moduleAddress, lyId, orientation);

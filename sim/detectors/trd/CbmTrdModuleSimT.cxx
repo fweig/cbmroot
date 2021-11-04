@@ -43,13 +43,14 @@ using namespace std;
 //_________________________________________________________________________________
 CbmTrdModuleSimT::CbmTrdModuleSimT(Int_t mod, Int_t ly, Int_t rot, Bool_t FASP)
   : CbmTrdModuleSim(mod, ly, rot)
+  , fConfig( 0 )
   , fTriangleBinning(NULL)
   , fFASP(NULL)
   , fTimeSlice(NULL)
   , fTimeOld(0)
 {
   SetNameTitle(Form("TrdSimT%d", mod), "Simulator for triangular read-out.");
-  SetAsic(FASP);
+  SetFasp(FASP);
 }
 
 //_________________________________________________________________________________
@@ -567,10 +568,16 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time)
  * are produced by 2 particle close by. Also take into account FASP dead time and mark such digits correspondingly
  */
 
-  if (!fFASP) {  // Build & configure FASP simulator
-    fFASP = new CbmTrdFASP(1000);
-    fFASP->SetNeighbourTrigger(1);
-    fFASP->SetLGminLength(31);
+  if (UseFasp()) {
+    if (!fFASP) {  // Build & configure FASP simulator
+      fFASP = new CbmTrdFASP(1000);
+      fFASP->SetNeighbourTrigger(1);
+      fFASP->SetLGminLength(31);
+    }
+  }
+  else {
+    LOG(warn) << GetName() << "::FlushBuffer: Module operated with SPADIC. Development in progress.";
+    return 0;
   }
   if (!fTimeSlice) {
     FairRootManager* ioman = FairRootManager::Instance();
@@ -615,12 +622,16 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time)
     // get ASIC channel calibration
     Int_t asicAddress = fAsicPar->GetAsicAddress(localAddress << 1);
     if (asicAddress < 0) {
-      LOG(warn) << GetName() << "::FlushBuffer: FASP Calibration for ro_ch " << localAddress << " in module "
-                << fModAddress << " missing.";
+      LOG(debug) << GetName() << "::FlushBuffer: FASP Calibration for ro_ch " << localAddress << " in module "
+                 << fModAddress << " missing.";
+      // clear physical digi for which there is no ASIC model available
+      for (auto iv = fBuffer[localAddress].begin(); iv != fBuffer[localAddress].end(); iv++)
+        delete (*iv).first;
+      fBuffer[localAddress].clear();
     }
     else {
-      LOG(debug) << GetName() << "::FlushBuffer: Found FASP " << asicAddress % 1000 << " for ro_ch " << localAddress
-                 << " in module " << fModAddress;
+      LOG(debug2) << GetName() << "::FlushBuffer: Found FASP " << asicAddress % 1000 << " for ro_ch " << localAddress
+                  << " in module " << fModAddress;
       // fasp  = (CbmTrdParFasp*)fAsicPar->GetAsicPar(asicAddress); (VF) not used
       //fasp->Print();
       //       chFasp[0] = fasp->GetChannel(localAddress, 0);
@@ -659,7 +670,10 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time)
   std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>::iterator iv;
   while (it != fBuffer.end()) {
     localAddress = it->first;
-    if (!fBuffer[localAddress].size()) continue;
+    if (!fBuffer[localAddress].size()) {
+      it++;
+      continue;
+    }
 
     digiMatch = NULL;
     Int_t col(-1), row(-1), srow, sec;
