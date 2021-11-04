@@ -24,6 +24,7 @@
 #include <vector>
 
 #include <stdint.h>
+#include <stdio.h>
 
 class CbmMatch;
 
@@ -61,6 +62,9 @@ public:
   template<class inType>
   void FillSeedTimes(const std::vector<inType>* vIn, const std::vector<CbmMatch>* vDigiMatch = nullptr);
 
+  /** @brief Returns number of seed times currently stored in buffer. */
+  size_t GetNofSeeds() { return fvSeedTimes->size(); }
+
 private:
   /** @brief Output of the algorithm. Stores seed times for current time slice. */
   std::vector<double>* fvSeedTimes = nullptr;
@@ -96,4 +100,4 @@ private:
   */
   void FillEventMatch(int32_t WinStart, int32_t WinEnd, const std::vector<CbmMatch>* vDigiMatch);
 };
-#endif  //CbmSeedFinderSlidingWindow_tmpl
+#endif  //CbmSeedFinderSlidingWindow_h

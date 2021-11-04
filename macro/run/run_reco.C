@@ -229,6 +229,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
       //evBuildRaw->SetReferenceDetector(kRawEventBuilderDetUndef);
       //evBuildRaw->AddSeedTimeFillerToList(kRawEventBuilderDetSts);
       //evBuildRaw->SetSlidingWindowSeedFinder(1000, 500, 500);
+      //evBuildRaw->SetSeedFinderQa(true);  // optional QA information for seed finder
 
       evBuildRaw->SetTsParameters(0.0, 1.e7, 0.0);
 

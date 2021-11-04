@@ -87,6 +87,11 @@ void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<inType>* vIn, c
       winStartT = GetTime(vIn, j);
     }
   }
+
+  if (vDigiMatch && fvEventMatches) {  // QA mode
+    std::cout << "CbmSeedFinderSlidingWindow::FillSeedTimes(): Found " << GetNofSeeds() << " seeds for this timeslice."
+              << std::endl;
+  }
 }
 template void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<CbmMuchBeamTimeDigi>*,
                                                         const std::vector<CbmMatch>*);

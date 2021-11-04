@@ -98,15 +98,19 @@ InitStatus CbmBuildEventsQa::Init()
 
   // --- Init histograms
   histFolder            = fOutFolder.AddFolder("hist", "Histogramms");
-  fhCorrectDigiRatioAll = new TH1F("fhCorrectDigiRatioAll", "\% correct digis per event", 1001, 0., 100.1);
-  fhFoundDigiRatioAll   = new TH1F("fhFoundDigiRatioAll", "\% found digis per event", 1001, 0., 100.1);
+  fhCorrectDigiRatioAll = new TH1F("fhCorrectDigiRatioAll", "Correct digis per event [pct]", 402, -0.25, 100.25);
+  fhFoundDigiRatioAll   = new TH1F("fhFoundDigiRatioAll", "Found digis per event [pct]", 402, -0.25, 100.25);
   histFolder->Add(fhCorrectDigiRatioAll);
   histFolder->Add(fhFoundDigiRatioAll);
   for (ECbmModuleId& system : fSystems) {
-    TString h1name                  = "fhCorrectDigiRatio" + CbmModuleList::GetModuleNameCaps(system);
-    TString h2name                  = "fhFoundDigiRatio" + CbmModuleList::GetModuleNameCaps(system);
-    fhMapSystemsCorrectDigi[system] = new TH1F(h1name, "\% correct digis per event", 1001, 0., 100.1);
-    fhMapSystemsFoundDigi[system]   = new TH1F(h2name, "\% found digis per event", 1001, 0., 100.1);
+    TString h1name = "fhCorrectDigiRatio" + CbmModuleList::GetModuleNameCaps(system);
+    TString h2name = "fhFoundDigiRatio" + CbmModuleList::GetModuleNameCaps(system);
+    fhMapSystemsCorrectDigi[system] =
+      new TH1F(h1name, Form("Correct digis per event, %s [pct]", (CbmModuleList::GetModuleNameCaps(system)).Data()),
+               402, -0.25, 100.25);
+    fhMapSystemsFoundDigi[system] =
+      new TH1F(h2name, Form("Found digis per event, %s [pct]", (CbmModuleList::GetModuleNameCaps(system)).Data()), 402,
+               -0.25, 100.25);
     histFolder->Add(fhMapSystemsCorrectDigi[system]);
     histFolder->Add(fhMapSystemsFoundDigi[system]);
   }
