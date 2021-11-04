@@ -82,6 +82,10 @@ public:
   Double_t GetY(const TString& path);
   Double_t GetZ(const TString& path);
   Int_t GetModuleType(const TString& path);
+  /** \brief Navigate to node and return the radiator type build in the geometry based on the naming convention.
+   * @return radiator type ID or -1 if the radiator is not installed
+   */
+  Int_t GetRadiatorType(const TString& path);
 
   // for backward compatibility
   Int_t GetStation(const TString& path);
@@ -101,6 +105,7 @@ private:
   Int_t fLayerId;              //!
   Int_t fModuleId;             //!
   Int_t fModuleType;           //!
+  Int_t fRadiatorType;         //! radiator + chamber entrance window type 
   Int_t fRotation;             //! rotation angle 0,1,2,3
 
   // for backward compatibility
@@ -111,7 +116,7 @@ private:
   CbmTrdGeoHandler(const CbmTrdGeoHandler&);
   CbmTrdGeoHandler operator=(const CbmTrdGeoHandler&);
 
-  ClassDef(CbmTrdGeoHandler, 4)
+  ClassDef(CbmTrdGeoHandler, 5)
 };
 
 #endif  //CBMTRDGEOHANDLER_H

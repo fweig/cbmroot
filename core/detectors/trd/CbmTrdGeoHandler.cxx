@@ -39,6 +39,7 @@ CbmTrdGeoHandler::CbmTrdGeoHandler()
   , fLayerId(0)
   , fModuleId(0)
   , fModuleType(0)
+  , fRadiatorType(-1)
   , fRotation(0)
   , fStation(0)
   , fLayer(0)
@@ -159,6 +160,12 @@ Int_t CbmTrdGeoHandler::GetModuleType(const TString& path)
   return fModuleType;
 }
 
+Int_t CbmTrdGeoHandler::GetRadiatorType(const TString& path)
+{
+  if (fGeoPathHash != path.Hash()) { NavigateTo(path); }
+  return fRadiatorType;
+}
+
 Int_t CbmTrdGeoHandler::GetStation(const TString& path)
 {
   if (fGeoPathHash != path.Hash()) { NavigateTo(path); }
@@ -221,6 +228,13 @@ void CbmTrdGeoHandler::NavigateTo(const TString& path)
       // In TGeoManager numbering starts with 1, so we have to subtract 1.
       fModuleCopy = ((modulecopyNr / 1000000) % 100);  // from module copy number
       fRotation   = ((modulecopyNr / 100000) % 10);    // from module copy number
+      fRadiatorType = -1;
+      for (int i = 0; i < modulenode->GetNdaughters(); i++) {
+        TString nDaughter(modulenode->GetDaughter(i)->GetName());
+        if (!nDaughter.BeginsWith("radiator") && !nDaughter.BeginsWith("Radiator")) continue;
+        fRadiatorType = 0;
+        // TODO define radiator (+ entrance window) types according to the naming convention 
+      }
     }
     else  // 2013 and earlier
     {
