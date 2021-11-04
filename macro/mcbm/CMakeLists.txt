@@ -113,13 +113,13 @@ ForEach(setup IN LISTS cbm_setup)
   Set(fixture_overlap fixture_overlap_${setup})
   set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_overlap})
 
-#  If( ($ENV{ctest_model} MATCHES Nightly) OR ($ENV{ctest_model} MATCHES Weekly) )
+  If(NOT ${CBM_TEST_MODEL} MATCHES Experimental)
     Set(testname mcbm_check_media_${setup})
     Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/check_media.sh \"data/${setup}_test\")
     Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "60")
     Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
     set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_overlap})
-#  EndIf()
+  EndIf()
 
 EndForEach(setup IN LISTS cbm_setup)
 

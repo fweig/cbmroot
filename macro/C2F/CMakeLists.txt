@@ -19,12 +19,9 @@ else()
   Set(NumEvents 20)
 endif()
 
-# Define the different setups to be tested
-#If( ${CBM_TEST_MODEL} MATCHES Nightly OR ${CBM_TEST_MODEL} MATCHES Weekly )
-  List(APPEND cbm_setup sis100_electron)
-#EndIf()
+List(APPEND cbm_setup sis100_electron)
 
-  ForEach(setup IN LISTS cbm_setup)
+ForEach(setup IN LISTS cbm_setup)
 
     # The test dependencies are set such that parallel execution is prevented, even is there is no logical
     # dependence. The reason is that all runs (for a given setup) use the same ROOT parameter file,
@@ -92,8 +89,8 @@ endif()
     )
 
 
-  EndForEach(setup IN LISTS cbm_setup)
-  # end of test CBM setups from geometry/setup
+EndForEach(setup IN LISTS cbm_setup)
+# end of test CBM setups from geometry/setup
 
 # Installation of macros is done in macro/CMakeLists.txt to install the
 # macros even if the tests are not executed
