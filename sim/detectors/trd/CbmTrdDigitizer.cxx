@@ -309,7 +309,7 @@ CbmTrdModuleSim* CbmTrdDigitizer::AddModule(Int_t detId)
       SetUseFASP();
     module = fModuleMap[moduleAddress] = new CbmTrdModuleSimT(moduleAddress, lyId, orientation, UseFASP());
     Int_t rType(-1);
-    if ( (rType = geoHandler.GetRadiatorType(path)) >= 0 ) {
+    if ((rType = geoHandler.GetRadiatorType(path)) >= 0) {
       if (!fRadiator2D) {  // strong TRD-2D entrance window
         //   const Char_t *ewin = "Al;C;Air;C;Al";
         const Char_t* ewin = "Al;C;HC;C;Al";

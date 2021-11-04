@@ -233,7 +233,7 @@ void CbmTrdGeoHandler::NavigateTo(const TString& path)
         TString nDaughter(modulenode->GetDaughter(i)->GetName());
         if (!nDaughter.BeginsWith("radiator") && !nDaughter.BeginsWith("Radiator")) continue;
         fRadiatorType = 0;
-        // TODO define radiator (+ entrance window) types according to the naming convention 
+        // TODO define radiator (+ entrance window) types according to the naming convention
       }
     }
     else  // 2013 and earlier

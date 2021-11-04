@@ -51,11 +51,12 @@ public:
   void SetGamma(Double_t /*gamma*/) { ; }
   void SetMessageConverter(CbmTrdRawToDigiR* conv = NULL) { (void) conv; }
   void SetQA(CbmTrdCheckUtil* qa = NULL) { (void) qa; }
-  void SetLabMeasurement(Bool_t set=kTRUE) {
+  void SetLabMeasurement(Bool_t set = kTRUE)
+  {
     set ? SETBIT(fConfig, kMeasurement) : CLRBIT(fConfig, kMeasurement);
     SetFeCalib(set);
   }
-  void SetFeCalib(Bool_t set = kTRUE) { set ? SETBIT(fConfig, kLab) : CLRBIT(fConfig, kLab);}
+  void SetFeCalib(Bool_t set = kTRUE) { set ? SETBIT(fConfig, kLab) : CLRBIT(fConfig, kLab); }
 
   /**
    * \brief Set the FEE type operating on the chamber
@@ -95,7 +96,7 @@ private:
    **/
   void DumpBuffer() const;
 
-  UChar_t fConfig;     ///< bit map for configuration. See class documentation
+  UChar_t fConfig;                      ///< bit map for configuration. See class documentation
   CbmTrdTrianglePRF* fTriangleBinning;  ///< Integration of PRF on triangular pad-plane geometry
   CbmTrdFASP* fFASP;                    ///< FASP simulator
   CbmTimeSlice* fTimeSlice;             ///< link to CBM time slice

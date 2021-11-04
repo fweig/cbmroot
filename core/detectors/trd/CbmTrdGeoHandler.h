@@ -105,7 +105,7 @@ private:
   Int_t fLayerId;              //!
   Int_t fModuleId;             //!
   Int_t fModuleType;           //!
-  Int_t fRadiatorType;         //! radiator + chamber entrance window type 
+  Int_t fRadiatorType;         //! radiator + chamber entrance window type
   Int_t fRotation;             //! rotation angle 0,1,2,3
 
   // for backward compatibility

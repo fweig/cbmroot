@@ -43,7 +43,7 @@ using namespace std;
 //_________________________________________________________________________________
 CbmTrdModuleSimT::CbmTrdModuleSimT(Int_t mod, Int_t ly, Int_t rot, Bool_t FASP)
   : CbmTrdModuleSim(mod, ly, rot)
-  , fConfig( 0 )
+  , fConfig(0)
   , fTriangleBinning(NULL)
   , fFASP(NULL)
   , fTimeSlice(NULL)

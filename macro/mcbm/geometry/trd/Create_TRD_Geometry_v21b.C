@@ -414,8 +414,8 @@ Double_t asic_distance;
 //const Double_t FrameWidth[2]    = { 1.5, 2.0 };   // Width of detector frames in cm
 const Double_t FrameWidth[4] = {1.5, 1.5, 2.5, 1.5};  // Width of detector frames in cm
 // mini - production
-const Double_t DetectorSizeX[4] = {57., 95., 59.0, 23.04 + 3.};   // => 54 x 54 cm2 & 91 x 91 cm2 active area
-const Double_t DetectorSizeY[4] = {57., 95., 60.8, 8.16 + 3.};  // quadratic modules
+const Double_t DetectorSizeX[4] = {57., 95., 59.0, 23.04 + 3.};  // => 54 x 54 cm2 & 91 x 91 cm2 active area
+const Double_t DetectorSizeY[4] = {57., 95., 60.8, 8.16 + 3.};   // quadratic modules
 //// default
 //const Double_t DetectorSizeX[2] = { 60., 100.};   // => 57 x 57 cm2 & 96 x 96 cm2 active area
 //const Double_t DetectorSizeY[2] = { 60., 100.};   // quadratic modules
