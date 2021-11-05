@@ -26,6 +26,7 @@
 #include <TFolder.h>
 
 class CbmDigiManager;
+class CbmMCDataArray;
 class CbmQaCanvas;
 class TClonesArray;
 class TH1F;
@@ -70,9 +71,9 @@ private:
   CbmDigiManager* fDigiMan = nullptr;
 
   /* Data branches*/
-  TClonesArray* fTrdHitCollection   = nullptr;
-  TClonesArray* fTrdPointCollection = nullptr;
-  TClonesArray* fMCTrackArray       = nullptr;
+  TClonesArray* fTrdHitCollection = nullptr;
+  CbmMCDataArray* fMCTrackArray   = nullptr;
+  CbmMCDataArray* fTrdPoints      = nullptr;
 
   /** Number of TRD stations **/
   int fNoTrdStations = 4;

@@ -10,6 +10,8 @@
 #include "CbmTrdHitProducerQa.h"
 
 #include "CbmDigiManager.h"
+#include "CbmMCDataArray.h"
+#include "CbmMCDataManager.h"
 #include "CbmMCTrack.h"
 #include "CbmMatch.h"
 #include "CbmQaCanvas.h"
@@ -101,7 +103,7 @@ InitStatus CbmTrdHitProducerQa::Init()
 
   // Get pointer to the ROOT I/O manager
   FairRootManager* rootMgr = FairRootManager::Instance();
-  if (NULL == rootMgr) {
+  if (nullptr == rootMgr) {
     cout << "-E- CbmTrdHitProducerQa::Init : "
          << "ROOT manager is not instantiated !" << endl;
     return kFATAL;
@@ -109,16 +111,18 @@ InitStatus CbmTrdHitProducerQa::Init()
 
   // Get a pointer to the previous already existing data level
   fDigiMan = CbmDigiManager::Instance();
-  if (NULL == fDigiMan) {
+  if (nullptr == fDigiMan) {
     cout << "-W- CbmTrdHitProducerQa::Init : "
          << "no digi manager found !" << endl;
     return kERROR;
   }
   fDigiMan->Init();
 
+  CbmMCDataManager* mcManager = (CbmMCDataManager*) FairRootManager::Instance()->GetObject("MCDataManager");
+
   // Get pointer to TRD point array
-  fTrdPointCollection = (TClonesArray*) rootMgr->GetObject("TrdPoint");
-  if (NULL == fTrdPointCollection) {
+  fTrdPoints = mcManager->InitBranch("TrdPoint");
+  if (nullptr == fTrdPoints) {
     cout << "-W- CbmTrdHitProducerQa::Init : "
          << "no TRD point array !" << endl;
     return kERROR;
@@ -126,15 +130,15 @@ InitStatus CbmTrdHitProducerQa::Init()
 
   // Get pointer to TRD hit array
   fTrdHitCollection = (TClonesArray*) rootMgr->GetObject("TrdHit");
-  if (NULL == fTrdHitCollection) {
+  if (nullptr == fTrdHitCollection) {
     cout << "-W- CbmTrdHitProducerQa::Init : "
          << "no TRD hit array !" << endl;
     return kERROR;
   }
 
   // Get MCTrack array
-  fMCTrackArray = (TClonesArray*) rootMgr->GetObject("MCTrack");
-  if (!fMCTrackArray) {
+  fMCTrackArray = mcManager->InitBranch("MCTrack");
+  if (nullptr == fMCTrackArray) {
     cout << "-E- CbmTrdHitProducerQa::Init : No MCTrack array!" << endl;
     return kFATAL;
   }
@@ -157,16 +161,14 @@ void CbmTrdHitProducerQa::Exec(Option_t*)
   // Loop over TRD hits
   for (int iHit = 0; iHit < fTrdHitCollection->GetEntriesFast(); iHit++) {
     const CbmTrdHit* trdHit = (CbmTrdHit*) fTrdHitCollection->At(iHit);
-    if (NULL == trdHit) continue;
-
-    // This will have to change in the future, when the creation of the point
-    // will not be necessarily connected to existence of the point
+    if (nullptr == trdHit) continue;
 
     const CbmMatch* trdDigiMatch = fDigiMan->GetMatch(ECbmModuleId::kTrd, trdHit->GetRefId());
-    if (NULL == trdDigiMatch) continue;
+    if (nullptr == trdDigiMatch) continue;
 
-    const CbmTrdPoint* trdPoint = (CbmTrdPoint*) fTrdPointCollection->At(trdDigiMatch->GetMatchedLink().GetIndex());
-    if (NULL == trdPoint) continue;
+    const CbmTrdPoint* trdPoint =
+      dynamic_cast<CbmTrdPoint*>(fTrdPoints->Get(trdDigiMatch->GetMatchedLink()));  // file, event, object
+    if (nullptr == trdPoint) continue;
 
     const int planeId = trdHit->GetPlaneId();
 
@@ -174,7 +176,8 @@ void CbmTrdHitProducerQa::Exec(Option_t*)
       cout << GetName() << ": Warning, TRD plane out of bounds, skipping hit." << endl;
       continue;
     }
-    const int partID     = (((CbmMCTrack*) fMCTrackArray->At(trdPoint->GetTrackID()))->GetPdgCode());
+    const int partID = (dynamic_cast<CbmMCTrack*>(fMCTrackArray->Get(trdDigiMatch->GetMatchedLink())))->GetPdgCode();
+
     const float momentum = TMath::Sqrt((trdPoint->GetPx() * trdPoint->GetPx()) + (trdPoint->GetPy() * trdPoint->GetPy())
                                        + (trdPoint->GetPz() * trdPoint->GetPz()));
 
@@ -225,7 +228,7 @@ void CbmTrdHitProducerQa::Finish() { WriteHistograms(); }
 // ---- Write test histograms ------------------------------------------------
 void CbmTrdHitProducerQa::WriteHistograms()
 {
-  for (int i = 0; i < fvdECanvas.size(); i++) {
+  for (size_t i = 0; i < fvdECanvas.size(); i++) {
     fvdECanvas[i]->cd(1);
     fvhedEcut[i]->DrawCopy("", "");
 
@@ -239,7 +242,7 @@ void CbmTrdHitProducerQa::WriteHistograms()
     fvhpidEall[i]->DrawCopy("", "");
   }
 
-  for (int i = 0; i < fvPullCanvas.size(); i++) {
+  for (size_t i = 0; i < fvPullCanvas.size(); i++) {
     fvPullCanvas[i]->cd(1);
     fvhHitPullX[i]->DrawCopy("", "");
 
