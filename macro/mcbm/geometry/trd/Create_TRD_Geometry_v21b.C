@@ -2265,7 +2265,7 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
   const Double_t pp_pcb_thickness  = 0.0360;
   const Double_t pp_hc_thickness   = 0.2;
   const Double_t pp_c_thickness    = 0.05;
-  const Double_t pp_thickness      = /*pp_pads_thickness + */ pp_pcb_thickness + pp_hc_thickness + pp_c_thickness;
+  const Double_t pp_thickness      = pp_pads_thickness + pp_pcb_thickness + pp_hc_thickness + pp_c_thickness;
   if (IncludePadplane) {
     const Char_t* ppn = (detTypeIdx == 2 ? "pp" : "pph");
     Info("create_trd2d_module_type", "make pad-plane ...");
@@ -2297,10 +2297,12 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
 
     // Add up all components
     TGeoVolumeAssembly* vol_pp = new TGeoVolumeAssembly("PadPlane");
-    vol_pp->AddNode(vol_trd_pp, 1, new TGeoTranslation("", 0., 0., -pp_thickness / 2 - pp_pads_thickness / 2));
-    vol_pp->AddNode(vol_trd_ppPCB, 1, new TGeoTranslation("", 0., 0., -pp_thickness / 2 + pp_pcb_thickness / 2));
-    vol_pp->AddNode(vol_trd_ppHC, 1,
-                    new TGeoTranslation("", 0., 0., -pp_thickness / 2 + pp_pcb_thickness + pp_hc_thickness / 2));
+    vol_pp->AddNode(vol_trd_pp, 1, new TGeoTranslation("", 0., 0., -pp_thickness / 2 + pp_pads_thickness / 2));
+    vol_pp->AddNode(vol_trd_ppPCB, 1,
+                    new TGeoTranslation("", 0., 0., -pp_thickness / 2 + pp_pads_thickness + pp_pcb_thickness / 2));
+    vol_pp->AddNode(
+      vol_trd_ppHC, 1,
+      new TGeoTranslation("", 0., 0., -pp_thickness / 2 + pp_pads_thickness + pp_pcb_thickness + pp_hc_thickness / 2));
     vol_pp->AddNode(vol_trd_ppC, 1, new TGeoTranslation("", 0., 0., pp_thickness / 2 - pp_c_thickness / 2));
     module->AddNode(vol_pp, 1,
                     new TGeoTranslation("", 0., 0., gasBu_position + gas_thickness / 2. + pp_thickness / 2.));
@@ -2373,28 +2375,30 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
       // y direction
       TGeoBBox* frame_al_y0       = new TGeoBBox("frame_al_y0", 0.4 / 2., (sizeY - 1.4) / 2., 1.8 / 2.);
       TGeoVolume* vol_frame_al_y0 = new TGeoVolume("vol_frame_al_y0", frame_al_y0, aluminiumVolMed);
-      trd_gas_frame->AddNode(vol_frame_al_y0, 1, new TGeoTranslation("", -0.5 * (sizeX + 0.2) + 1.1, 0, -1));
-      trd_gas_frame->AddNode(vol_frame_al_y0, 2, new TGeoTranslation("", +0.5 * (sizeX + 0.2) - 1.1, 0, -1));
+      trd_gas_frame->AddNode(vol_frame_al_y0, 1, new TGeoTranslation("", -0.5 * sizeX + 1, 0, -1.));
+      trd_gas_frame->AddNode(vol_frame_al_y0, 2, new TGeoTranslation("", +0.5 * sizeX - 1, 0, -1.));
       //
       TGeoBBox* frame_al_y1       = new TGeoBBox("frame_al_y1", 2.5 / 2., (sizeY - 1.4) / 2., 0.4 / 2.);
       TGeoVolume* vol_frame_al_y1 = new TGeoVolume("vol_frame_al_y1", frame_al_y1, aluminiumVolMed);
-      trd_gas_frame->AddNode(vol_frame_al_y1, 1, new TGeoTranslation("", -0.5 * sizeX - 0.4, 0, -0.3));
-      trd_gas_frame->AddNode(vol_frame_al_y1, 2, new TGeoTranslation("", +0.5 * sizeX + 0.4, 0, -0.3));
+      trd_gas_frame->AddNode(vol_frame_al_y1, 1, new TGeoTranslation("", -0.5 * sizeX + 1 - 2.5 + 1.05, 0, -0.3));
+      trd_gas_frame->AddNode(vol_frame_al_y1, 2, new TGeoTranslation("", +0.5 * sizeX - 1 + 2.5 - 1.05, 0, -0.3));
       // connector to frame
       TGeoBBox* frame_al_y2       = new TGeoBBox("frame_al_y2", 2.5 / 2., (sizeY + 5) / 2., 0.8 / 2.);
       TGeoVolume* vol_frame_al_y2 = new TGeoVolume("vol_frame_al_y2", frame_al_y2, aluminiumVolMed);
-      trd_gas_frame->AddNode(vol_frame_al_y2, 1, new TGeoTranslation("", -0.5 * sizeX - 0.4, 0, -0.9));
-      trd_gas_frame->AddNode(vol_frame_al_y2, 2, new TGeoTranslation("", +0.5 * sizeX + 0.4, 0, -0.9));
+      trd_gas_frame->AddNode(vol_frame_al_y2, 1, new TGeoTranslation("", -0.5 * sizeX - 0.45, 0, -0.9));
+      trd_gas_frame->AddNode(vol_frame_al_y2, 2, new TGeoTranslation("", +0.5 * sizeX + 0.45, 0, -0.9));
+
       // x direction
-      TGeoBBox* frame_al_x0       = new TGeoBBox("frame_al_x0", (sizeX - 2.4) / 2., 0.3 / 2, 2.5 / 2.);
+      sizeY                       = 58.2;  // dirty fix for the TRD-2D @ mCBM 21
+      TGeoBBox* frame_al_x0       = new TGeoBBox("frame_al_x0", (sizeX - 2.4) / 2., 0.4 / 2, 2.5 / 2.);
       TGeoVolume* vol_frame_al_x0 = new TGeoVolume("vol_frame_al_x0", frame_al_x0, aluminiumVolMed);
-      trd_gas_frame->AddNode(vol_frame_al_x0, 1, new TGeoTranslation("", 0, -0.5 * (sizeY + 0.15) + 1.2, 0));
-      trd_gas_frame->AddNode(vol_frame_al_x0, 2, new TGeoTranslation("", 0, +0.5 * (sizeY + 0.15) - 1.2, 0));
+      trd_gas_frame->AddNode(vol_frame_al_x0, 1, new TGeoTranslation("", 0, -0.5 * (sizeY + 0.4), 0));
+      trd_gas_frame->AddNode(vol_frame_al_x0, 2, new TGeoTranslation("", 0, +0.5 * (sizeY + 0.4), 0));
       // ====
-      TGeoBBox* frame_al_x1       = new TGeoBBox("frame_al_x1", (sizeX - 2.4) / 2., 0.3 / 2, 2.5 / 2.);
+      TGeoBBox* frame_al_x1       = new TGeoBBox("frame_al_x1", (sizeX - 2.4) / 2., 2.5 / 2., 0.4 / 2);
       TGeoVolume* vol_frame_al_x1 = new TGeoVolume("vol_frame_al_x1", frame_al_x1, aluminiumVolMed);
-      trd_gas_frame->AddNode(vol_frame_al_x1, 1, new TGeoTranslation("", 0, -0.5 * (sizeY + 0.15) + 1.2, -0.5));
-      trd_gas_frame->AddNode(vol_frame_al_x1, 2, new TGeoTranslation("", 0, +0.5 * (sizeY + 0.15) - 1.2, -0.5));
+      trd_gas_frame->AddNode(vol_frame_al_x1, 1, new TGeoTranslation("", 0, -0.5 * (sizeY + 2.5), -0.5 * (2.5 + 0.4)));
+      trd_gas_frame->AddNode(vol_frame_al_x1, 2, new TGeoTranslation("", 0, +0.5 * (sizeY + 2.5), -0.5 * (2.5 + 0.4)));
     }
 
     module->AddNode(trd_gas_frame, 1, new TGeoTranslation("", 0., 0., gasBu_position));
@@ -2589,7 +2593,7 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
                       new TGeoTranslation("", 0, fasp_yoffset, GETS_zpos + 0.5 * GETS_thickness + 0.5 * fpga_size[2]));
     }
     // supports for electronics
-    TGeoBBox* faspro_fy       = new TGeoBBox("faspro_fy", 0.4 / 2, 0.5 + 0.5 * activeAreaY, 0.5 * FASPRO_zspace);
+    TGeoBBox* faspro_fy = new TGeoBBox("faspro_fy", 0.4 / 2, 0.5 + 0.5 * activeAreaY, 0.5 * (FASPRO_zspace - 0.2));
     TGeoVolume* vol_faspro_fy = new TGeoVolume("faspro_fy", faspro_fy, frameVolMed);
     vol_faspro_fy->SetLineColor(kViolet + 2);  //vol_faspro_fy->SetTransparency(50);
 
@@ -2600,7 +2604,7 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
       for (Int_t iFeb(0); cFeb < 2; cFeb++) {
         vol_feb->AddNode(vol_faspro_fy, cFeb + 1,
                          new TGeoTranslation("", (cFeb - 0.5) * (FASPRO_length + FASPRO_dx) - FASPRO_length / 3, 0.,
-                                             -0.5 * (FASPRO_thickness + FASPRO_zspace)));
+                                             -0.5 * (FASPRO_thickness + FASPRO_zspace) + 0.05));
         for (Int_t rFeb(1); rFeb < 5; rFeb++) {
           // the upper side ...
           //         vol_feb->AddNode(faspro, iFeb++,
@@ -2619,7 +2623,7 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
       TGeoRotation* faspro_rot = new TGeoRotation("faspro_rot");
       faspro_rot->RotateX(180.);
       faspro_rot->RegisterYourself();
-      TGeoTranslation* faspro_pos = new TGeoTranslation("", -4, 1.5 * FASPRO_width, -FASPRO_zspace);
+      TGeoTranslation* faspro_pos = new TGeoTranslation("", -4, 1.5 * FASPRO_width + 0.5, -FASPRO_zspace);
       TGeoHMatrix* faspro_mx      = new TGeoHMatrix("");
       (*faspro_mx)                = (*faspro_pos) * (*faspro_rot);
       vol_feb->AddNode(faspro, 5, faspro_mx);
