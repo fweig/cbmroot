@@ -28,6 +28,7 @@ void check_media(const char* dataset = "test")
 
 
   int wrong_media {0};
+  int missing_file {0};
   TGeoNode* topNode = gGeoManager->GetTopNode();
   TObjArray* nodes  = topNode->GetNodes();
   for (Int_t iNode = 0; iNode < nodes->GetEntriesFast(); iNode++) {
@@ -37,15 +38,15 @@ void check_media(const char* dataset = "test")
     std::cout << "Checking node " << nodename << std::endl;
     std::pair<int, int> retval = CheckGeometry(nodename);
     if (-1 == retval.second) {
-      RemoveGeoManager();
-      return;
+      ++missing_file;
+      continue;
     }
     wrong_media += retval.second;
     std::cout << "Checked " << retval.first << " sub nodes from " << nodename << " and found " << retval.second
               << " with wrongly assigned media" << std::endl;
   }
 
-  if (0 == wrong_media) {
+  if (0 == wrong_media && 0 == missing_file) {
     std::cout << std::endl;
     std::cout << "Test passed" << std::endl;
     std::cout << "All ok" << std::endl;
@@ -53,6 +54,7 @@ void check_media(const char* dataset = "test")
   else {
     std::cout << std::endl;
     std::cout << "Test failed" << std::endl;
+    std::cout << "In total " << missing_file << " files were missing" << std::endl;
     std::cout << "Found in total " << wrong_media << " nodes with wrongly assigned media" << std::endl;
   }
   RemoveGeoManager();
