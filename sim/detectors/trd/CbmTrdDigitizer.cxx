@@ -43,20 +43,18 @@
 
 #include <iomanip>
 #include <iostream>
+#include <memory>
 
 #include <cmath>
-using std::cout;
-using std::endl;
-using std::make_pair;
+
 using std::map;
-using std::max;
 using std::pair;
-using std::vector;
+using std::shared_ptr;
 using namespace std;
 Int_t CbmTrdDigitizer::fConfig = 0;
 
 //________________________________________________________________________________________
-CbmTrdDigitizer::CbmTrdDigitizer(CbmTrdRadiator* radiator)
+CbmTrdDigitizer::CbmTrdDigitizer(shared_ptr<CbmTrdRadiator> radiator)
   : CbmDigitize<CbmTrdDigi>("TrdDigitize")
   , fLastEventTime(0)
   , fpoints(0)
@@ -79,8 +77,12 @@ CbmTrdDigitizer::CbmTrdDigitizer(CbmTrdRadiator* radiator)
   , fModuleMap()
   , fDigiMap()
 {
-  if (fRadiator == NULL) fRadiator = new CbmTrdRadiator(kTRUE, "tdr18");
+  if (fRadiator == NULL) fRadiator = make_shared<CbmTrdRadiator>(kTRUE, "tdr18");
 }
+
+//________________________________________________________________________________________
+CbmTrdDigitizer::CbmTrdDigitizer(CbmTrdRadiator* radiator)
+  : CbmTrdDigitizer(std::make_shared<CbmTrdRadiator>(radiator)) {};
 
 
 //________________________________________________________________________________________
@@ -93,7 +95,6 @@ CbmTrdDigitizer::~CbmTrdDigitizer()
     delete imod->second;
   fModuleMap.clear();
 
-  // if (fRadiator2D) delete fRadiator2D;
   delete fConverter;
   delete fQA;
 }
@@ -330,7 +331,7 @@ CbmTrdModuleSim* CbmTrdDigitizer::AddModule(Int_t detId)
         //     0.0025, // polyethylen sheets of 50 µm thickness
         //     1.2e-3, // 12 µm aluminized polyester foil
         //   };  pwidth = widths;
-        fRadiator2D = new CbmTrdRadiator(kTRUE, "tdr18", ewin);
+        fRadiator2D = make_shared<CbmTrdRadiator>(kTRUE, "tdr18", ewin);
         fRadiator2D->SetEWwidths(5, widths);
         fRadiator2D->Init();
       }

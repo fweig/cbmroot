@@ -10,6 +10,7 @@
 #include "CbmTrdRawToDigiR.h"
 
 #include <map>
+#include <memory>
 
 class TClonesArray;
 class CbmTrdPoint;
@@ -72,8 +73,9 @@ public:
   virtual void SetEventId(Int_t id) { fEventId = id; }
   virtual void SetInputId(Int_t id) { fInputId = id; }
   virtual void SetPointId(Int_t id) { fPointId = id; }
-  virtual void SetRadiator(CbmTrdRadiator* radiator = NULL) = 0;
-  virtual void SetGamma(Double_t gamma = 0.)                = 0;
+  /** @brief Set the Radiator @param radiator Defintion of the radiator to be used for this module */
+  virtual void SetRadiator(std::shared_ptr<CbmTrdRadiator> radiator) { fRadiator = radiator; }
+  virtual void SetGamma(Double_t gamma = 0.) = 0;
   virtual void SetPositionMC(Double_t pos[3]) { memcpy(fXYZ, pos, 3 * sizeof(Double_t)); }
   virtual void SetLinkId(Int_t input, Int_t event = -1, Int_t point = -1)
   {
@@ -94,7 +96,8 @@ protected:
   CbmTrdDigitizer* fDigitizer;  //! Pointer to digitizer
 
   // calibration objects
-  CbmTrdRadiator* fRadiator;  ///< TR description for radiator
+  /** @brief TR description for radiator */
+  std::shared_ptr<CbmTrdRadiator> fRadiator = nullptr;
 
   std::map<Int_t, std::pair<CbmTrdDigi*, CbmMatch*>>
     fDigiMap;  ///< Temporary storage for complete digis for each CBM address.

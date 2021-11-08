@@ -42,7 +42,6 @@ public:
   void SetSpadicResponse(Double_t calibration, Double_t tau);
   void SetPulsePars(Int_t mode);
   void SetPulseMode(Bool_t pulsed);
-  void SetRadiator(CbmTrdRadiator* radiator) { fRadiator = radiator; }
   void SetGamma(Double_t gamma) { fGamma = gamma; }
   void SetTriggerThreshold(Double_t minCharge) { fMinimumChargeTH = minCharge; }
   void SetPadPlaneScanArea(Int_t row);

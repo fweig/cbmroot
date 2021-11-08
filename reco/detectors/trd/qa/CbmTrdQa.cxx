@@ -48,16 +48,21 @@
 #include "CbmTrdRadiator.h"
 #include "CbmTrdUtils.h"
 
-using std::cin;
 using std::cout;
 using std::endl;
 using std::fabs;
-using std::pair;
+
 
 CbmTrdQa::CbmTrdQa(CbmTrdRadiator* radiator) : CbmTrdQa("TrdQa", "", "", 1e-6, radiator) {}
 
-CbmTrdQa::CbmTrdQa(const char* /*name*/, const char* /*title*/, const char* geo, Double_t triggerThreshold,
+CbmTrdQa::CbmTrdQa(const char* name, const char* title, const char* geo, Double_t triggerThreshold,
                    CbmTrdRadiator* radiator)
+  : CbmTrdQa(name, title, geo, triggerThreshold, std::make_shared<CbmTrdRadiator>(radiator)) {};
+
+CbmTrdQa::CbmTrdQa(std::shared_ptr<CbmTrdRadiator> radiator) : CbmTrdQa("TrdQa", "", "", 1e-6, radiator) {}
+
+CbmTrdQa::CbmTrdQa(const char* /*name*/, const char* /*title*/, const char* geo, Double_t triggerThreshold,
+                   std::shared_ptr<CbmTrdRadiator> radiator)
   : FairTask("TrdQa")
   , fMCTracks(NULL)
   , fPoints(NULL)

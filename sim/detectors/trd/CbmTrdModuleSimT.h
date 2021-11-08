@@ -47,7 +47,6 @@ public:
    **/
   Bool_t MakeDigi(CbmTrdPoint* p, Double_t time, Bool_t TR);
   Bool_t MakeRaw(/*CbmTrdPoint *p*/) { return kTRUE; }
-  void SetRadiator(CbmTrdRadiator* radiator) { fRadiator = radiator; }
   void SetGamma(Double_t /*gamma*/) { ; }
   void SetMessageConverter(CbmTrdRawToDigiR* conv = NULL) { (void) conv; }
   void SetQA(CbmTrdCheckUtil* qa = NULL) { (void) qa; }

@@ -22,6 +22,7 @@
 #include "CbmTrdRawToDigiR.h"
 
 #include <map>
+#include <memory>
 
 class TClonesArray;
 
@@ -52,7 +53,14 @@ public:
   * \brief Constructor.
   * \param[in] radiator TRD radiator to be used in digitization.
   */
-  CbmTrdDigitizer(CbmTrdRadiator* radiator = NULL);
+  CbmTrdDigitizer(std::shared_ptr<CbmTrdRadiator> radiator = nullptr);
+
+  /**
+  * \brief Constructor.
+  * \param[in] radiator TRD radiator to be used in digitization.
+  * @remark This is needed for backward compatibility with macros not using smart pointers.
+  */
+  CbmTrdDigitizer(CbmTrdRadiator* radiator);
 
   /**
   * \brief Destructor.
@@ -137,8 +145,10 @@ private:
   CbmTrdParSetDigi* fDigiPar;  ///< parameter list for read-out geometry
   CbmTrdParSetGain* fGainPar;  ///< parameter list for keV->ADC gain conversion
   CbmTrdParSetGeo* fGeoPar;    ///< parameter list for geometry definitions
-  CbmTrdRadiator* fRadiator;   ///< parametrization of radiator TR yield
-  CbmTrdRadiator* fRadiator2D;  ///< parametrization of 2D radiator TR yield
+  /** @brief parametrization of radiator TR yield */
+  std::shared_ptr<CbmTrdRadiator> fRadiator = nullptr;
+  /** @brief parametrization of 2D radiator TR yield */
+  std::shared_ptr<CbmTrdRadiator> fRadiator2D = nullptr;
 
   CbmTrdRawToDigiR* fConverter;
   CbmTrdCheckUtil* fQA;

@@ -28,9 +28,11 @@ class TPolyLine;
 class CbmTrdQa : public FairTask {
 
 public:
-  CbmTrdQa(CbmTrdRadiator* radiator = NULL);
+  CbmTrdQa(std::shared_ptr<CbmTrdRadiator> radiator = nullptr);
+  CbmTrdQa(CbmTrdRadiator* radiator);
   CbmTrdQa(const char* name, const char* title = "CBM Task", const char* geo = "", Double_t triggerThreshold = 1.0e-6,
-           CbmTrdRadiator* radiator = NULL);
+           std::shared_ptr<CbmTrdRadiator> radiator = nullptr);
+  CbmTrdQa(const char* name, const char* title, const char* geo, Double_t triggerThreshold, CbmTrdRadiator* radiator);
   virtual ~CbmTrdQa();
   virtual InitStatus ReInit();
   virtual InitStatus Init();
@@ -184,7 +186,7 @@ private:
   TH2I* fPRF_2D;
   //LayerView
 
-  CbmTrdRadiator* fRadiator;
+  std::shared_ptr<CbmTrdRadiator> fRadiator = nullptr;
 
   ClassDef(CbmTrdQa, 1);
 };
