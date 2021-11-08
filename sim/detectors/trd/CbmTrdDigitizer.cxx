@@ -93,7 +93,7 @@ CbmTrdDigitizer::~CbmTrdDigitizer()
     delete imod->second;
   fModuleMap.clear();
 
-  if (fRadiator2D) delete fRadiator2D;
+  // if (fRadiator2D) delete fRadiator2D;
   delete fConverter;
   delete fQA;
 }
