@@ -45,17 +45,16 @@ void mcbm_check_overlaps(const char* dataset = "test")
       std::cout << ov->GetTitle() << std::endl << std::endl;
     }
     // overlap of T0 detector with pipe vacuum geometry
-    else if (OverlapName.Contains("vacu20_1 overlapping"))
-      if (OverlapName.Contains("module_5_0")) {
-        std::cout << "Expected Overlap between pipevacuum and T0 counter" << endl;
-        std::cout << ov->GetTitle() << std::endl << std::endl;
-      }
-      else {
-        cout << "Unexpected Overlap:" << endl;
-        ov->PrintInfo();
-        cout << endl;
-        unexpectedOverlaps++;
-      }
+    else if (OverlapName.Contains("vacu20_1 overlapping") && OverlapName.Contains("module_5_0")) {
+      std::cout << "Expected Overlap between pipevacuum and T0 counter" << endl;
+      std::cout << ov->GetTitle() << std::endl << std::endl;
+    }
+    else {
+      cout << "Unexpected Overlap:" << endl;
+      ov->PrintInfo();
+      cout << endl;
+      unexpectedOverlaps++;
+    }
   }
   std::cout << std::endl;
 
