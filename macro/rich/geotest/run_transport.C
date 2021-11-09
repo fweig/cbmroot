@@ -2,23 +2,24 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Semen Lebedev [committer], Andrey Lebedev */
 
-void run_sim_geotest(const string& plutoFile = "",  // if "", BoxGenerator is used
-                     const string& mcFile    = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/mc.00000.root",
-                     const string& parFile   = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/param.00000.root",
-                     const string& geoFile  = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/geosim.00000.root",
-                     const string& geoSetup = "sis100_electron",  //"mirror12_42",
-                     int nEvents            = 10)
+//
+void run_transport(const string& urqmdFile,  // only for "urqmdTest"
+                   const string& plutoFile,  // only for "geoTest", if "", BoxGenerator is used
+                   const string& traFile, const string& parFile, const string& geoFile, const string& geoSetup,
+                   int nEvents)
 {
   TTree::SetMaxTreeSize(90000000000);
 
   remove(parFile.c_str());
-  remove(mcFile.c_str());
+  remove(traFile.c_str());
   remove(geoFile.c_str());
 
   TStopwatch timer;
   timer.Start();
 
   CbmTransport run;
+
+  if (urqmdFile.length() > 0) { run.AddInput(urqmdFile.c_str()); }
 
   if (plutoFile.length() > 0) { run.AddInput(plutoFile.c_str(), kPluto); }
   else {
@@ -39,7 +40,8 @@ void run_sim_geotest(const string& plutoFile = "",  // if "", BoxGenerator is us
     run.AddInput(boxGen2);
   }
 
-  run.SetOutFileName(mcFile.c_str());
+
+  run.SetOutFileName(traFile.c_str());
   run.SetParFileName(parFile.c_str());
   run.SetGeoFileName(geoFile.c_str());
   run.LoadSetup(geoSetup.c_str());
@@ -52,7 +54,7 @@ void run_sim_geotest(const string& plutoFile = "",  // if "", BoxGenerator is us
   timer.Stop();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Output file is " << mcFile << std::endl;
+  std::cout << "Transport file is " << traFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
   std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << "s" << std::endl;

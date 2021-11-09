@@ -2,15 +2,10 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Semen Lebedev [committer], Andrey Lebedev */
 
-void run_digi_urqmdtest(
-  const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/mc.00000.root",
-  const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/param.00000.root",
-  const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/urqmdtest/digi.00000.root",
-  int nEvents            = 1000)
+void run_digi(const string& traFile, const string& parFile, const string& digiFile, int nEvents)
 {
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
-
   TTree::SetMaxTreeSize(90000000000);
 
   Double_t eventRate       = 1.e7;
@@ -24,7 +19,7 @@ void run_digi_urqmdtest(
   timer.Start();
 
   CbmDigitization run;
-  run.AddInput(mcFile.c_str(), eventRate);
+  run.AddInput(traFile.c_str(), eventRate);
   run.SetOutputFile(digiFile.c_str(), overwrite);
   run.SetParameterRootFile(parFile.c_str());
   run.SetTimeSliceLength(timeSliceLength);
@@ -33,7 +28,8 @@ void run_digi_urqmdtest(
 
   CbmRichDigitizer* richDigitizer = new CbmRichDigitizer();
   richDigitizer->SetMaxNofHitsPerPmtCut(65);
-  run.SetDigitizer(kRich, richDigitizer, "RichPoint", true);
+  richDigitizer->SetNoiseDigiRate(0.);
+  run.SetDigitizer(ECbmModuleId::kRich, richDigitizer, "RichPoint", true);
 
   run.Run(nEvents);
 

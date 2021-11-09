@@ -180,7 +180,7 @@ void CbmRichUrqmdTest::InitHistograms()
   fHM->Create1<TH1D>("fh_mu_mom", "fh_mu_mom;p [GeV/c];Number per event", 100, 0., 20);
 
   fHM->Create1<TH1D>("fh_nof_points_per_event", "fh_nof_points_per_event;Particle;# MC points per event", 7, .5, 7.5);
-  fHM->Create1<TH1D>("fh_nof_hits_per_event", "fh_nof_hits_per_event;# hits per event;Yield", 100, 0, 4000);
+  fHM->Create1<TH1D>("fh_nof_hits_per_event", "fh_nof_hits_per_event;# hits per event;Yield", 100, 0, 2000);
   fHM->Create1<TH1D>("fh_nof_hits_per_pmt", "fh_nof_hits_per_pmt;# hits per PMT;% of total", 65, -0.5, 64.5);
 
   vector<Double_t> xPmtBins = CbmRichDraw::GetPmtHistXbins();
@@ -677,7 +677,7 @@ void CbmRichUrqmdTest::DrawHist()
     ss6 << "#mu^{#pm} (" << fHM->H1("fh_mu_mom")->GetEntries() / fEventNum << ")";
     DrawH1({fHM->H1("fh_gamma_target_mom"), fHM->H1("fh_gamma_nontarget_mom"), fHM->H1("fh_secel_mom"),
             fHM->H1("fh_pi_mom"), fHM->H1("fh_kaon_mom"), fHM->H1("fh_mu_mom")},
-           list_of(ss1.str())(ss2.str())(ss3.str())(ss4.str())(ss5.str())(ss6.str()), kLinear, kLog, true, 0.5, 0.7,
+           list_of(ss1.str())(ss2.str())(ss3.str()) (ss4.str()) (ss5.str()) (ss6.str()), kLinear, kLog, true, 0.5, 0.7,
            0.99, 0.99, "hist");
   }
 
@@ -748,7 +748,8 @@ void CbmRichUrqmdTest::DrawHist()
   {
     fHM->CreateCanvas("rich_urqmd_nof_hits_per_event", "rich_urqmd_nof_hits_per_event", 800, 800);
     fHM->H1("fh_nof_hits_per_event")->Scale(1. / fHM->H1("fh_nof_hits_per_event")->Integral());
-    DrawH1andFitGauss(fHM->H1("fh_nof_hits_per_event"));
+    DrawH1(fHM->H1("fh_nof_hits_per_event"), kLinear, kLinear, "hist");
+    fHM->H1("fh_nof_hits_per_event")->SetStats(true);
     cout << "Mean number of hits per event = " << fHM->H1("fh_nof_hits_per_event")->GetMean() << endl;
   }
 
