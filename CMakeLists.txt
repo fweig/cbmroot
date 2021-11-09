@@ -382,8 +382,10 @@ endif()
 add_subdirectory (external)
 
 ### Base directories
-add_subdirectory (algo)
 add_subdirectory (core)
+if (${CMAKE_CXX_STANDARD} EQUAL 17)
+  add_subdirectory (algo)
+endif()
 add_subdirectory (sim)
 add_subdirectory (reco)
 add_subdirectory (analysis)
