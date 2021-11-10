@@ -176,7 +176,13 @@ void CbmTrdHitProducerQa::Exec(Option_t*)
       cout << GetName() << ": Warning, TRD plane out of bounds, skipping hit." << endl;
       continue;
     }
-    const int partID = (dynamic_cast<CbmMCTrack*>(fMCTrackArray->Get(trdDigiMatch->GetMatchedLink())))->GetPdgCode();
+
+    //get particle ID of track corresponding to point
+    const int fileId        = trdDigiMatch->GetMatchedLink().GetFile();
+    const int event         = trdDigiMatch->GetMatchedLink().GetEntry();
+    const int index         = trdPoint->GetTrackID();
+    const CbmMCTrack* track = dynamic_cast<CbmMCTrack*>(fMCTrackArray->Get(fileId, event, index));
+    const int partID        = track->GetPdgCode();
 
     const float momentum = TMath::Sqrt((trdPoint->GetPx() * trdPoint->GetPx()) + (trdPoint->GetPy() * trdPoint->GetPy())
                                        + (trdPoint->GetPz() * trdPoint->GetPz()));
