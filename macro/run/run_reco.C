@@ -62,7 +62,7 @@
  ** @param sEvBuildRaw    Option for raw event building
  ** @param setup          Name of predefined geometry setup
  ** @param paramFile      Parameter ROOT file (w/o extension .par.root)
- ** @param useMC          Option to provide the trackfinder with MC information
+ ** @param debugWithMC          Option to provide the trackfinder with MC information
  **
  ** This macro performs from the digis in a time-slice. It can be used
  ** for simulated data (result of run_digi.C) or real data after unpacking.
@@ -88,7 +88,8 @@
  **
  **/
 void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice = 0, TString output = "",
-              TString sEvBuildRaw = "", TString setup = "sis100_electron", TString paramFile = "", Bool_t useMC = false)
+              TString sEvBuildRaw = "", TString setup = "sis100_electron", TString paramFile = "",
+              Bool_t debugWithMC = false)
 {
 
   // ========================================================================
@@ -176,7 +177,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
   // -----   FairRunAna   ---------------------------------------------------
   FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(rawFile);
-  if (useMC) { inputSource->AddFriend(traFile); }
+  if (debugWithMC) { inputSource->AddFriend(traFile); }
   run->SetSource(inputSource);
   run->SetOutputFile(outFile);
   run->SetGenerateRunInfo(kTRUE);
@@ -184,7 +185,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
   // ------------------------------------------------------------------------
 
   // -----   MCDataManager  -----------------------------------
-  if (useMC) {
+  if (debugWithMC) {
     CbmMCDataManager* mcManager = new CbmMCDataManager("MCDataManager", 0);
     mcManager->AddFile(traFile);
     run->AddTask(mcManager);
@@ -254,7 +255,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
 
 
   // ----------- QA for raw event builder -----------------------------------
-  if (eventBased && useMC) {
+  if (eventBased && debugWithMC) {
     CbmBuildEventsQa* evBuildQA = new CbmBuildEventsQa();
     run->AddTask(evBuildQA);
   }
@@ -359,7 +360,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
     std::cout << "-I- " << myName << ": Added task " << psdHit->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
-  if (useMC) {
+  if (debugWithMC) {
     CbmMatchRecoToMC* match1 = new CbmMatchRecoToMC();
     run->AddTask(match1);
   }
@@ -369,7 +370,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
     CbmL1* l1 = 0;
-    if (useMC) { l1 = new CbmL1("L1", 2, 3); }
+    if (debugWithMC) { l1 = new CbmL1("L1", 2, 3); }
     else {
       l1 = new CbmL1("L1", 0);
     }
@@ -430,6 +431,16 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
     run->AddTask(finder);
     std::cout << "-I- : Added task " << finder->GetName() << std::endl;
     // ----------------------------------------------------------------------
+
+    // ---   Particle Id in TRD   -----------------------------------------
+    if (useTrd) {
+      CbmTrdSetTracksPidLike* trdLI = new CbmTrdSetTracksPidLike("TRDLikelihood", "TRDLikelihood");
+      trdLI->SetUseMCInfo(kTRUE);
+      trdLI->SetUseMomDependence(kTRUE);
+      run->AddTask(trdLI);
+      std::cout << "-I- : Added task " << trdLI->GetName() << std::endl;
+    }
+    // ------------------------------------------------------------------------
 
 
     // -----   RICH reconstruction   ----------------------------------------
