@@ -80,11 +80,19 @@ void CbmTrdHitProducer::addModuleHits(CbmTrdModuleRec* mod, Int_t* hitCounter, C
 //____________________________________________________________________________________
 CbmTrdModuleRec* CbmTrdHitProducer::AddModule(Int_t address, TGeoPhysicalNode* node)
 {
-  TString s(node->GetName());
-  Int_t typ = TString(s[s.Index("module") + 6]).Atoi();
+  CbmTrdGeoHandler geoHandler;
+  Int_t moduleAddress = geoHandler.GetModuleAddress(node->GetName()),
+        moduleType = geoHandler.GetModuleType(node->GetName()), lyId = CbmTrdAddress::GetLayerId(address);
+  if (moduleAddress != address) {
+    LOG(error) << "CbmTrdHitProducer::AddModule: Module ID " << address << " does not match geometry definition "
+               << moduleAddress << ". Module init failed!";
+    return NULL;
+  }
+  LOG(debug) << GetName() << "::AddModule(" << node->GetName() << " " << (moduleType < 9 ? 'R' : 'T') << "] mod["
+             << moduleAddress << "] ly[" << lyId << "] det[" << moduleAddress << "]";
 
   CbmTrdModuleRec* module(NULL);
-  if (typ == 9) { module = fModules[address] = new CbmTrdModuleRecT(address); }
+  if (moduleType >= 9) { module = fModules[address] = new CbmTrdModuleRecT(address); }
   else {
     module = fModules[address] = new CbmTrdModuleRecR(address);
   }
@@ -125,7 +133,7 @@ CbmTrdModuleRec* CbmTrdHitProducer::AddModule(Int_t address, TGeoPhysicalNode* n
     module->SetChmbPar(pChmb);
 
   // try to load Gain parameters for module
-  if (typ == 9) {
+  if (moduleType >= 9) {
     const CbmTrdParModGain* pGain(NULL);
     if (!fGainPar || !(pGain = (const CbmTrdParModGain*) fGainPar->GetModulePar(address))) {
       //LOG(warn) << GetName() << "::AddModule : No Gain params for modAddress "<< address <<". Using default.";
@@ -187,6 +195,7 @@ void CbmTrdHitProducer::processCluster(const Int_t clusterIdx)
   auto mod  = imod->second;
 
   std::vector<const CbmTrdDigi*> digivec = {};
+
   // get digis for current cluster
   for (Int_t iDigi = 0; iDigi < cluster->GetNofDigis(); iDigi++) {
     const CbmTrdDigi* digi = CbmDigiManager::Instance()->Get<CbmTrdDigi>(cluster->GetDigi(iDigi));
@@ -194,7 +203,6 @@ void CbmTrdHitProducer::processCluster(const Int_t clusterIdx)
     if (digi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kSPADIC && digi->GetCharge() <= 0) continue;
     digivec.emplace_back(digi);
   }
-
   mod->MakeHit(clusterIdx, cluster, &digivec);
 
   fNrClusters++;
@@ -207,7 +215,8 @@ Int_t CbmTrdHitProducer::addHits(CbmEvent* event)
   for (std::map<Int_t, CbmTrdModuleRec*>::iterator imod = fModules.begin(); imod != fModules.end(); imod++) {
     auto mod = imod->second;
 
-    mod->Finalize();
+    mod->PreProcessHits();
+    mod->PostProcessHits();
 
     addModuleHits(mod, &hitCounter, event);
   }

@@ -1,6 +1,6 @@
 /* Copyright (C) 2020 Institut fuer Kernphysik, Goethe-Universitaet Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Pascal Raisig [committer] */
+   Authors: Pascal Raisig [committer], Alexandru Bercuci */
 
 // $Id: TrdRecoLinkDef.h $
 
@@ -17,6 +17,7 @@
 #pragma link C++ class CbmTrdModuleRec + ;
 #pragma link C++ class CbmTrdModuleRecR + ;
 #pragma link C++ class CbmTrdModuleRecT + ;
+#pragma link C++ class CbmTrdDigiRec + ;
 
 #pragma link C++ class CbmTrdClusterizerFastQa + ;
 #pragma link C++ class CbmTrdHitDensityQa + ;

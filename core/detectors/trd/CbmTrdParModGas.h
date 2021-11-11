@@ -49,6 +49,11 @@ public:
    * \return charge at FASP input in fC
    */
   Float_t EkevFC(Float_t ekev) const;
+  /** \brief Convert pad-plane charge in fC to energy deposit [keV] taking into account the gas gain
+   * \param[in] efc charge in fC 
+   * \return energy deposit in keV
+   */
+  Float_t EfCkeV(Float_t efc) const;
   TString GetFileName() const { return fFileNamePID; }
   Double_t GetNobleGas() const { return 1. - fPercentCO2; }
   const Char_t* GetNobleGasName() const { return (GetNobleGasType() - 1 ? "Ar" : "Xe"); }

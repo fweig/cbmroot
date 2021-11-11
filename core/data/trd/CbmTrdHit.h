@@ -80,6 +80,7 @@ public:
   Bool_t GetMaxType() const { return TESTBIT(fDefine, kMaxType); }
   Bool_t HasOverFlow() const { return TESTBIT(fDefine, kOvfl); }
   Bool_t IsRowCross() const { return TESTBIT(fDefine, kRowCross); }
+  Bool_t IsUsed() const { return (GetRefId() < 0); }
 
   /** Setters **/
   void SetELoss(Double_t loss) { fELoss = loss; }
@@ -94,9 +95,10 @@ public:
 
 private:
   UChar_t fDefine;    // hit extra info
+  Int_t fNeighborId;  // refId in case of row cross clusters
   Double32_t fELoss;  // Energy deposit due to TR + dEdx
 
-  ClassDef(CbmTrdHit, 3);
+  ClassDef(CbmTrdHit, 4);
 };
 
 #endif

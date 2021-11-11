@@ -38,10 +38,10 @@ public:
    * \brief Clear local storage
    **/
   virtual void Clear(Option_t* opt = "");
-  /**
-   * \brief Reconstruct physics observables on hits
-   **/
-  virtual Bool_t Finalize() { return kTRUE; }
+  /** \brief Hit quality assesment */
+  virtual Bool_t PreProcessHits() { return kTRUE; }
+  /** \brief Hit quality assesment */
+  virtual Bool_t PostProcessHits() { return kTRUE; }
   /**
    * \brief Steering routine for finding digits clusters
    **/

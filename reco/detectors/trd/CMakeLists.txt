@@ -52,6 +52,7 @@ CbmTrdHitProducer.cxx
 CbmTrdModuleRec.cxx 
 CbmTrdModuleRecR.cxx 
 CbmTrdModuleRecT.cxx 
+CbmTrdDigiRec.cxx 
 
 unpack/CbmTrdUnpackConfig.cxx
 unpack/CbmTrdUnpackAlgoBaseR.cxx

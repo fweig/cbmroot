@@ -140,7 +140,12 @@ Int_t CbmTrdCluster::IsChannelInRange(Int_t ch) const
 Bool_t CbmTrdCluster::Merge(CbmTrdCluster* second)
 {
   if (GetRow() != second->GetRow()) return kFALSE;
-  if (TMath::Abs(second->fStartTime - fStartTime) > 20) return kFALSE;
+  // time difference condition
+  if (fNCols == 1 || second->fNCols == 1) {
+    if (TMath::Abs(second->fStartTime - fStartTime) > 50) return kFALSE;
+  }
+  else if (TMath::Abs(second->fStartTime - fStartTime) > 20)
+    return kFALSE;
   // look before current
   if (second->fStartCh + second->fNCols == fStartCh && !second->HasOpenStop() && !HasOpenStart()) {
     //     cout<<"Merge before with "<<second->ToString();

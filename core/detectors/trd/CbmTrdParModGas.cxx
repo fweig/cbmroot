@@ -119,6 +119,33 @@ Float_t CbmTrdParModGas::EkevFC(Float_t ekev) const
 }
 
 //_______________________________________________________________________________________________
+Float_t CbmTrdParModGas::EfCkeV(Float_t efC) const
+{
+  /** Convert energy deposit to no of primary ionisations and apply gas gain.
+  * Currently gas gain is evaluated from 55Fe spectrum analysis on ArCO2(80/20)
+  */
+
+  Int_t gasId = GetNobleGasType() - 1;
+  Float_t wi  = (1. - fPercentCO2) * fgkWi[gasId] + fPercentCO2 * fgkWi[2];
+
+  //gas gain
+  // G = G[ev->ADC] * wi[ArCO2]/C[mV->ADC]/A[fC->mV]/e
+  // G[ev->ADC] : measured gain based on 55Fe spectrum (expo)
+  // wi[ArCO2]  : average energy to produce a ele-ion pair in mixture (27.24 ev)
+  // C[mV->ADC] : FASP out [2V] to ADC range [4096 ch] (2)
+  // A[fC->mV]  : FASP gain from CADENCE (6)
+  // e : 1.6e-4 [fC] electric charge
+  Double_t gain = 170.25 * TMath::Exp(fgkGGainUaPar[0] + fgkGGainUaPar[1] * fUa * 1.e-3)
+                  / 12.;  // for Xe correct Ar gain measurements TODO
+  if (gasId == 0) gain *= 0.6;
+
+  Float_t ekev = efC * wi / gain / 0.16;
+  if (VERBOSE)
+    printf("        ua[V]=%d gain[%5.2e] wi[eV]=%5.2f :: E[keV]=%6.3f E[fC]=%6.2f\n", fUa, gain, wi, ekev, efC);
+  return ekev;
+}
+
+//_______________________________________________________________________________________________
 Int_t CbmTrdParModGas::GetShellId(const Char_t shell) const
 {
   /** Return index of atomic shell. 

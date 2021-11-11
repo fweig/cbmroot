@@ -92,22 +92,36 @@ Bool_t CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
 
   // General processing on the MC point
   Double_t ELossTR(0.), ELossdEdX(point->GetEnergyLoss());
-  if (fRadiator && TR) {
-    //    nofElectrons++;
-    if (
-      fRadiator->LatticeHit(
-        point)) {  // electron has passed lattice grid (or frame material) befor reaching the gas volume -> TR-photons have been absorbed by the lattice grid
-                   //      nofLatticeHits++;
+  if (IsLabMeasurement()) {
+    ELossdEdX = 0.;
+    if (IsFeCalib()) {
+      //E[keV]=5.895; // 55Fe, Ka (89%)
+      //E[keV]=6.492; // 55Fe, Kb (11%)
+      ELossTR = gRandom->Uniform() > 0.89 ? 6.492 : 5.895;
     }
-    else if (gout[2] >= gin[2]) {  //electron has passed the radiator
-      TVector3 mom;
-      point->Momentum(mom);
-      ELossTR = fRadiator->GetTR(mom);
+    else {  // TODO implement Xrays spectrum
+      ;     //if (fRadiator) ELossTR = fRadiator->GetXray(mom)*1.e6; // keV
+    }
+    if (VERBOSE) {
+      printf("CbmTrdModuleSimT::MakeDigi for %s ...\n", (IsFeCalib() ? "55Fe" : "X-rays"));
+      if (ELossTR > 0) LOG(info) << "    Ex " << ELossTR << " keV";
     }
   }
-  //ELossTR=5.895; // 55Fe, Ka (89%)
-  //ELossTR=6.492; // 55Fe, Kb (11%)
-  //ELossdEdX = gRandom->Gaus(ELossdEdX, );
+  else {
+    if (fRadiator && TR) {
+      //    nofElectrons++;
+      if (
+        fRadiator->LatticeHit(
+          point)) {  // electron has passed lattice grid (or frame material) befor reaching the gas volume -> TR-photons have been absorbed by the lattice grid
+                     //      nofLatticeHits++;
+      }
+      else if (gout[2] >= gin[2]) {  //electron has passed the radiator
+        TVector3 mom;
+        point->Momentum(mom);
+        ELossTR = fRadiator->GetTR(mom);
+      }
+    }
+  }
 
   // compute track length in the gas volume
   Double_t trackLength(0.), txy(0.);
@@ -274,7 +288,8 @@ Bool_t CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
     //ELossTR = gRandom->Gaus(ELossTR, ); // account for gain uncertainty
     ELossTR = fChmbPar->EkevFC(ELossTR);  // convert Edep [keV] to collected charge [fC]
 
-    ScanPadPlane(ain, tdrift * diffx, ELossTR, time + point->GetTime() + tdrift);
+    if (!IsLabMeasurement()) tdrift += time + point->GetTime();
+    ScanPadPlane(ain, tdrift * diffx, ELossTR, tdrift);
   }
   return kTRUE;
 }
@@ -530,7 +545,7 @@ void CbmTrdModuleSimT::AddDigi(Int_t address, Double_t* charge, Double_t time /*
   digi = new CbmTrdDigi(address, charge[0], charge[1], ULong64_t(TMath::Ceil(time)));
   digi->SetAddressModule(fModAddress);  // may not be needed in the future
   digiMatch          = new CbmMatch();
-  Double_t weighting = 1;
+  Double_t weighting = fChmbPar->EfCkeV(charge[0] * 0.1);  // save th. energy which is seen by pads;
   digiMatch->AddLink(CbmLink(weighting, fPointId, fEventId, fInputId));
   //digi->SetMatch(digiMatch);
 

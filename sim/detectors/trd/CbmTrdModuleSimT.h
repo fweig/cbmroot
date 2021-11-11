@@ -11,10 +11,17 @@ class CbmTimeSlice;
 class CbmTrdFASP;
 class CbmTrdTrianglePRF;
 class CbmTrdParSetAsic;
-/**
-  * \brief Simulation module implementation for triangular pad geometry
-  * \author Alex Bercuci <abercuci@niham.nipne.ro> 
-  **/
+/** @class CbmTrdModuleSimT
+ ** @brief Simulation module implementation for TRD-2D physics and FEE
+ ** @author Alex Bercuci <abercuci@niham.nipne.ro>  
+ ** @since 01.02.2019 
+ ** @date 10.10.2021 
+ **
+ ** The class is steered via CbmTrdDigitizer by looping over all MC points 
+ ** generated during track propagation. The class can be used to digitize MC 
+ ** output but also simulate laboratory set-ups (\sa SetLabMeasurement()) like 
+ ** 55Fe (\sa SetFeCalib()) or X-rays (\sa SetFeCalib(kFALSE))   
+ **/
 class CbmTrdModuleSimT : public CbmTrdModuleSim {
 public:
   enum ECbmTrdModuleSimT
