@@ -99,19 +99,38 @@ InitStatus CbmBuildEventsQa::Init()
   // --- Init histograms
   histFolder            = fOutFolder.AddFolder("hist", "Histogramms");
   fhCorrectDigiRatioAll = new TH1F("fhCorrectDigiRatioAll", "Correct digis per event [pct]", 402, -0.25, 100.25);
-  fhFoundDigiRatioAll   = new TH1F("fhFoundDigiRatioAll", "Found digis per event [pct]", 402, -0.25, 100.25);
+  fhCorrectDigiRatioAllNoNoise =
+    new TH1F("fhCorrectDigiRatioAllNoNoise", "Correct digis per event [pct], disregarding noise", 402, -0.25, 100.25);
+  fhNoiseDigiRatioAll = new TH1F("fhNoiseDigiRatioAll", "Noise digis per event [pct]", 402, -0.25, 100.25);
+  fhFoundDigiRatioAll = new TH1F("fhFoundDigiRatioAll", "Found digis per event [pct]", 402, -0.25, 100.25);
   histFolder->Add(fhCorrectDigiRatioAll);
+  histFolder->Add(fhCorrectDigiRatioAllNoNoise);
+  histFolder->Add(fhNoiseDigiRatioAll);
   histFolder->Add(fhFoundDigiRatioAll);
+
   for (ECbmModuleId& system : fSystems) {
     TString h1name = "fhCorrectDigiRatio" + CbmModuleList::GetModuleNameCaps(system);
-    TString h2name = "fhFoundDigiRatio" + CbmModuleList::GetModuleNameCaps(system);
+    TString h2name = "fhCorrectDigiRatioNoNoise" + CbmModuleList::GetModuleNameCaps(system);
+    TString h3name = "fhNoiseDigiRatio" + CbmModuleList::GetModuleNameCaps(system);
+    TString h4name = "fhFoundDigiRatio" + CbmModuleList::GetModuleNameCaps(system);
+
     fhMapSystemsCorrectDigi[system] =
       new TH1F(h1name, Form("Correct digis per event, %s [pct]", (CbmModuleList::GetModuleNameCaps(system)).Data()),
                402, -0.25, 100.25);
-    fhMapSystemsFoundDigi[system] =
-      new TH1F(h2name, Form("Found digis per event, %s [pct]", (CbmModuleList::GetModuleNameCaps(system)).Data()), 402,
+    fhMapSystemsCorrectDigiNoNoise[system] = new TH1F(
+      h2name,
+      Form("Correct digis per event, %s [pct], disregarding noise", (CbmModuleList::GetModuleNameCaps(system)).Data()),
+      402, -0.25, 100.25);
+    fhMapSystemsNoiseDigi[system] =
+      new TH1F(h3name, Form("Noise digis per event, %s [pct]", (CbmModuleList::GetModuleNameCaps(system)).Data()), 402,
                -0.25, 100.25);
+    fhMapSystemsFoundDigi[system] =
+      new TH1F(h4name, Form("Found digis per event, %s [pct]", (CbmModuleList::GetModuleNameCaps(system)).Data()), 402,
+               -0.25, 100.25);
+
     histFolder->Add(fhMapSystemsCorrectDigi[system]);
+    histFolder->Add(fhMapSystemsCorrectDigiNoNoise[system]);
+    histFolder->Add(fhMapSystemsNoiseDigi[system]);
     histFolder->Add(fhMapSystemsFoundDigi[system]);
   }
   return kSUCCESS;
@@ -127,8 +146,8 @@ void CbmBuildEventsQa::Exec(Option_t*)
   timer.Start();
 
   // --- Event loop
-  Int_t nEvents = fEvents->GetEntriesFast();
-  for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
+  int nEvents = fEvents->GetEntriesFast();
+  for (int iEvent = 0; iEvent < nEvents; iEvent++) {
     CbmEvent* event = (CbmEvent*) fEvents->At(iEvent);
 
     // --- Match event to MC
@@ -138,19 +157,27 @@ void CbmBuildEventsQa::Exec(Option_t*)
       LOG(warning) << "No links in this event match object, skipping the event";
       continue;
     }  // if (-1 == event->GetMatch()->GetNofLinks())
-    Int_t mcEventNr = event->GetMatch()->GetMatchedLink().GetEntry();
+    int matchedMcEventNr = event->GetMatch()->GetMatchedLink().GetEntry();
+
+    //match to -1 only if event is pure noise
+    if (event->GetMatch()->GetNofLinks() > 1 && matchedMcEventNr == -1) {
+      matchedMcEventNr = getMatchedMcEventNoNoise(event);
+    }
+
     LOG(info) << GetName() << ": Event " << event->GetNumber() << ", digis in event: " << event->GetNofData()
               << ", links to MC events: " << event->GetMatch()->GetNofLinks()
-              << ", matched MC event number: " << mcEventNr;
+              << ", matched MC event number: " << matchedMcEventNr;
+    if (matchedMcEventNr == -1) { LOG(info) << "(event is pure noise)"; }
+
     LOG(info) << "Start time: " << event->GetStartTime() << ", end time: " << event->GetEndTime()
               << ", middle time: " << (event->GetStartTime() + event->GetEndTime()) / 2.;
 
     const std::vector<CbmLink> linkList = event->GetMatch()->GetLinks();
-    for (Int_t iLink = 0; iLink < linkList.size(); iLink++) {
-      Int_t linkedEvent    = linkList.at(iLink).GetEntry();
-      Float_t linkedWeight = linkList.at(iLink).GetWeight();
+    for (size_t iLink = 0; iLink < linkList.size(); iLink++) {
+      int linkedEvent    = linkList.at(iLink).GetEntry();
+      float linkedWeight = linkList.at(iLink).GetWeight();
       std::string isMatched;
-      if (linkedEvent == mcEventNr) { isMatched = " (matched)"; }
+      if (linkedEvent == matchedMcEventNr) { isMatched = " (matched)"; }
       else {
         isMatched = "";
       }
@@ -165,62 +192,84 @@ void CbmBuildEventsQa::Exec(Option_t*)
       if (!fDigiMan->IsMatchPresent(system)) continue;
 
       // --- Counters
-      Int_t nDigis        = event->GetNofData(GetDigiType(system));
-      Int_t nDigiCorrect  = 0;
-      Int_t nLinks        = 0;
-      Int_t nLinksCorrect = 0;
+      int nDigis        = event->GetNofData(GetDigiType(system));
+      int nDigisNoise   = 0;
+      int nDigisCorrect = 0;
+      int nLinks        = 0;
+      int nLinksNoise   = 0;
+      int nLinksCorrect = 0;
 
       // --- Loop over digis in event
-      for (Int_t iDigi = 0; iDigi < nDigis; iDigi++) {
-        UInt_t index = event->GetIndex(GetDigiType(system), iDigi);
+      for (int iDigi = 0; iDigi < nDigis; iDigi++) {
+        unsigned int index = event->GetIndex(GetDigiType(system), iDigi);
 
         const CbmMatch* digiMatch = fDigiMan->GetMatch(system, index);
         assert(digiMatch);
 
         // --- Check MC event of digi match
         if (digiMatch->GetNofLinks()) {
-          if (digiMatch->GetMatchedLink().GetEntry() == mcEventNr) nDigiCorrect++;
+          if (digiMatch->GetMatchedLink().GetEntry() == matchedMcEventNr) nDigisCorrect++;
+          if (digiMatch->GetMatchedLink().GetEntry() == -1) nDigisNoise++;
         }
 
-        for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {
-          Int_t entry = digiMatch->GetLink(iLink).GetEntry();
+        for (int iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {
+          int entry = digiMatch->GetLink(iLink).GetEntry();
           nLinks++;
-          if (entry == mcEventNr) nLinksCorrect++;
+          if (entry == matchedMcEventNr) nLinksCorrect++;
+          if (entry == -1) nLinksNoise++;
         }
       }
 
       // --- Counters
-      Int_t totDigis      = fDigiMan->GetNofDigis(system);
-      Int_t totEventDigis = 0;
+      int totDigis      = fDigiMan->GetNofDigis(system);
+      int totEventDigis = 0;
 
       // --- Loop over all digis for the current system
-      for (Int_t iDigi = 0; iDigi < totDigis; iDigi++) {
+      for (int iDigi = 0; iDigi < totDigis; iDigi++) {
 
         // --- Get the event number through the match object
         const CbmMatch* match = fDigiMan->GetMatch(system, iDigi);
         assert(match);
-        Int_t mcEvent = -1;
+        int mcEvent = -1;
 
         if (match->GetNofLinks()) { mcEvent = match->GetMatchedLink().GetEntry(); }
         //digi belongs to current event
-        if (mcEvent == mcEventNr) totEventDigis++;
+        if (mcEvent == matchedMcEventNr) totEventDigis++;
       }
 
       // --- QA output
       if (0 < nDigis) {
         LOG(info) << GetName() << ": Detector " << CbmModuleList::GetModuleNameCaps(system);
-        LOG(info) << "Correct digis " << nDigiCorrect << " / " << nDigis << " = "
-                  << 100. * Double_t(nDigiCorrect) / Double_t(nDigis) << " %";
+        LOG(info) << "Correct digis " << nDigisCorrect << " / " << nDigis << " = "
+                  << 100. * Double_t(nDigisCorrect) / Double_t(nDigis) << " %";
+        if (matchedMcEventNr != -1) {
+          LOG(info) << "Noise digis " << nDigisNoise << " / " << nDigis << " = "
+                    << 100. * Double_t(nDigisNoise) / Double_t(nDigis) << " %";
+          LOG(info) << "Correct digis, disregarding noise " << nDigisCorrect << " / " << nDigis - nDigisNoise << " = "
+                    << 100. * Double_t(nDigisCorrect) / Double_t(nDigis - nDigisNoise) << " %";
+        }
         LOG(info) << "Correct digi links " << nLinksCorrect << " / " << nLinks << " = "
                   << 100. * Double_t(nLinksCorrect) / Double_t(nLinks) << " % ";
-        LOG(info) << "Digi percentage found " << nDigiCorrect << " / " << totEventDigis << " = "
-                  << 100. * Double_t(nDigiCorrect) / Double_t(totEventDigis) << " % ";
+        if (matchedMcEventNr != -1) {
+          LOG(info) << "Noise digi links " << nLinksNoise << " / " << nLinks << " = "
+                    << 100. * Double_t(nLinksNoise) / Double_t(nLinks) << " % ";
+          LOG(info) << "Correct digi links, disregarding noise " << nLinksCorrect << " / " << nLinks - nLinksNoise
+                    << " = " << 100. * Double_t(nLinksCorrect) / Double_t(nLinks - nLinksNoise) << " % ";
+        }
+        LOG(info) << "Digi percentage found " << nDigisCorrect << " / " << totEventDigis << " = "
+                  << 100. * Double_t(nDigisCorrect) / Double_t(totEventDigis) << " % ";
 
         //fill histograms
-        fhCorrectDigiRatioAll->Fill(100. * Double_t(nLinksCorrect) / Double_t(nLinks));
-        fhFoundDigiRatioAll->Fill(100. * Double_t(nDigiCorrect) / Double_t(totEventDigis));
-        fhMapSystemsCorrectDigi[system]->Fill(100. * Double_t(nLinksCorrect) / Double_t(nLinks));
-        fhMapSystemsFoundDigi[system]->Fill(100. * Double_t(nDigiCorrect) / Double_t(totEventDigis));
+        if (matchedMcEventNr != -1) {  //ignore events which are pure noise
+          fhCorrectDigiRatioAll->Fill(100. * Double_t(nDigisCorrect) / Double_t(nDigis));
+          fhCorrectDigiRatioAllNoNoise->Fill(100. * Double_t(nDigisCorrect) / Double_t(nDigis - nDigisNoise));
+          fhNoiseDigiRatioAll->Fill(100. * Double_t(nDigisNoise) / Double_t(nDigis));
+          fhFoundDigiRatioAll->Fill(100. * Double_t(nDigisCorrect) / Double_t(totEventDigis));
+          fhMapSystemsCorrectDigi[system]->Fill(100. * Double_t(nDigisCorrect) / Double_t(nDigis));
+          fhMapSystemsCorrectDigiNoNoise[system]->Fill(100. * Double_t(nDigisCorrect) / Double_t(nDigis - nDigisNoise));
+          fhMapSystemsNoiseDigi[system]->Fill(100. * Double_t(nDigisNoise) / Double_t(nDigis));
+          fhMapSystemsFoundDigi[system]->Fill(100. * Double_t(nDigisCorrect) / Double_t(totEventDigis));
+        }
       }
       else {
         LOG(info) << GetName() << ": Detector " << CbmModuleList::GetModuleNameCaps(system)
@@ -239,6 +288,22 @@ void CbmBuildEventsQa::Exec(Option_t*)
 }
 // ===========================================================================
 
+// =====   Match event   =====================================================
+int CbmBuildEventsQa::getMatchedMcEventNoNoise(const CbmEvent* event)
+{
+  const std::vector<CbmLink> linkList = event->GetMatch()->GetLinks();
+  int matchedEvent                    = -1;
+  float matchedWeight                 = 0.0;
+  for (size_t iLink = 0; iLink < linkList.size(); iLink++) {
+    const int linkedEvent    = linkList.at(iLink).GetEntry();
+    const float linkedWeight = linkList.at(iLink).GetWeight();
+    if (linkedEvent != -1 && linkedWeight > matchedWeight) {
+      matchedEvent  = linkedEvent;
+      matchedWeight = linkedWeight;
+    }
+  }
+  return matchedEvent;
+}
 
 // =====   Match event   =====================================================
 void CbmBuildEventsQa::MatchEvent(CbmEvent* event)
@@ -266,18 +331,18 @@ void CbmBuildEventsQa::MatchEvent(CbmEvent* event)
     }
 
     // --- Loop over digis in event
-    Int_t iNbDigis = event->GetNofData(GetDigiType(system));
-    for (Int_t iDigi = 0; iDigi < iNbDigis; iDigi++) {
-      Int_t index               = event->GetIndex(GetDigiType(system), iDigi);
+    int iNbDigis = event->GetNofData(GetDigiType(system));
+    for (int iDigi = 0; iDigi < iNbDigis; iDigi++) {
+      int index                 = event->GetIndex(GetDigiType(system), iDigi);
       const CbmMatch* digiMatch = fDigiMan->GetMatch(system, index);
       assert(digiMatch);
 
       // --- Update event match with digi links
       // --- N.b.: The member "index" of CbmLink has here no meaning, since
       // --- there is only one MC event per tree entry.
-      for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {
-        Int_t file      = digiMatch->GetLink(iLink).GetFile();
-        Int_t entry     = digiMatch->GetLink(iLink).GetEntry();
+      for (int iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {
+        int file        = digiMatch->GetLink(iLink).GetFile();
+        int entry       = digiMatch->GetLink(iLink).GetEntry();
         Double_t weight = digiMatch->GetLink(iLink).GetWeight();
         //     LOG(info) << "Adding link (weight, entry, file): " << weight << " "
         //		<< entry << " " << file;

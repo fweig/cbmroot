@@ -50,7 +50,7 @@ private:
   CbmDigiManager* fDigiMan = nullptr;     //!
   std::vector<ECbmModuleId> fSystems {};  //  List of detector systems
   TClonesArray* fEvents;                  ///< Input array (class CbmEvent)
-  Int_t fNofEntries = 0;                  ///< Number of processed entries
+  int fNofEntries = 0;                    ///< Number of processed entries
 
   TFolder* histFolder = nullptr;  /// subfolder for histograms
   TFolder fOutFolder;             /// output folder with histos and canvases
@@ -60,15 +60,24 @@ private:
   void DeInit();
 
   /** Histograms **/
-  TH1F* fhCorrectDigiRatioAll = nullptr;                  /// correct digis per event for all detectors
-  TH1F* fhFoundDigiRatioAll   = nullptr;                  /// digis found per event for all detectors
-  std::map<ECbmModuleId, TH1F*> fhMapSystemsCorrectDigi;  // histograms for subsystems
-  std::map<ECbmModuleId, TH1F*> fhMapSystemsFoundDigi;    // histograms for subsystems
+  TH1F* fhCorrectDigiRatioAll        = nullptr;  /// correct digis per event for all detectors
+  TH1F* fhCorrectDigiRatioAllNoNoise = nullptr;  /// correct digis per event for all detectors, disregarding noise
+  TH1F* fhNoiseDigiRatioAll          = nullptr;  /// noise digis per event for all detectors
+  TH1F* fhFoundDigiRatioAll          = nullptr;  /// digis found per event for all detectors
+  std::map<ECbmModuleId, TH1F*> fhMapSystemsCorrectDigi;         // histograms for subsystems
+  std::map<ECbmModuleId, TH1F*> fhMapSystemsCorrectDigiNoNoise;  // histograms for subsystems
+  std::map<ECbmModuleId, TH1F*> fhMapSystemsNoiseDigi;           // histograms for subsystems
+  std::map<ECbmModuleId, TH1F*> fhMapSystemsFoundDigi;           // histograms for subsystems
 
   /** Match a reconstructed event to MC events+
 		 ** @param event Pointer to reconstructed event
 		 **/
   void MatchEvent(CbmEvent* event);
+
+  /** Read out the best matched MC event that isn't noise+
+		 ** @param event Pointer to reconstructed event
+		 **/
+  int getMatchedMcEventNoNoise(const CbmEvent* event);
 
   ECbmDataType GetDigiType(ECbmModuleId system);
 
