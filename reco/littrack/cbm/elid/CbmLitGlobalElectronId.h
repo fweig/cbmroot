@@ -1,12 +1,6 @@
-/* Copyright (C) 2011-2017 UGiessen/JINR-LIT, Giessen/Dubna
+/* Copyright (C) 2011-2021 UGiessen/JINR-LIT, Giessen/Dubna
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Andrey Lebedev, Semen Lebedev [committer] */
-
-/**
- * \file CbmLitReconstructionQa.h
- * \author Semen Lebedev <s.lebedev@gsi.de>
- * \date 2011
- **/
 
 #ifndef CBMLITGLOBALELECTRONID_H_
 #define CBMLITGLOBALELECTRONID_H_
@@ -66,7 +60,8 @@ public:
     * \param[in] momentum Momentum of track.
     * \return true if track is identified as electron otherwise return false.
     */
-  Bool_t IsTofElectron(Int_t globalTrackIndex, Double_t momentum);
+  // TODO: 1000 ns is a hardcoded offset for even-by-even mode
+  Bool_t IsTofElectron(Int_t globalTrackIndex, Double_t momentum, Double_t eventTime = 1000.);
 
   /**
     * \brief Identify electron in RICH detector.
@@ -95,6 +90,14 @@ public:
 	* \return TRD ANN value.
 	*/
   Double_t GetTrdAnn(Int_t globalTrackindex, Double_t momentum);
+
+
+  /**
+	 * \brief Return TOF m2 value.
+	*/
+  // TODO: 1000 ns is a hardcoded offset for even-by-even mode
+  Double_t GetTofM2(Int_t globalTrackIndex, Double_t momentum, Double_t eventTime = 1000.);
+
 
   /**
 	 * \brief Set cut on TRD ANN output value.

@@ -4,26 +4,35 @@ import os, shutil
 
 def main():
   plutoParticles = ["inmed", "omegadalitz", "omegaepem", "phi", "qgp"]
-  dataDir = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/"
-  dataDirHistos = dataDir + "histograms/"
-  macroDir = "/lustre/cbm/users/criesen/cbmroot/macro/analysis/dielectron"
+  dataDir = "/lustre/nyx/cbm/users/criesen/data/lmvm/"
+  dataDirOut = dataDir + "/results/"
+  macroDir = "/lustre/cbm/users/criesen/cbmroot/macro/analysis/dielectron/"
+  useMvd = True
+  drawSig = True
   
-  if os.path.exists(dataDirHistos):
-    shutil.rmtree(dataDirHistos)
-  os.mkdir(dataDirHistos)
+  if os.path.exists(dataDirOut):
+    shutil.rmtree(dataDirOut)
+  os.mkdir(dataDirOut)
+
   
   for plutoParticle in plutoParticles:
-    outFile = dataDirHistos + plutoParticle
-    inFilesAna = dataDir + plutoParticle + "/analysis.all.root"
-    uMvd = True
-    drawSig = True
-    os.system(('root -l -b -q {}/draw_analysis.C\(\\"{}\\",\\"{}\\"\)').format(macroDir, inFilesAna, outFile, uMvd, drawSig))
+    resultDir = dataDirOut + plutoParticle
+    resultDirAna = resultDir + "/lmvm/"
+    inRootAna = dataDir + plutoParticle + "/analysis.all.root"
+    os.system(('root -l -b -q {}/draw_analysis.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\"\)').format(macroDir, inRootAna, resultDirAna, useMvd, drawSig))
     
-    inFilesLitqa = dataDir + plutoParticle + "/litqa.all.root"
-    os.system(('root -l -b -q {}/draw_litqa.C\(\\"{}\\",\\"{}\\"\)').format(macroDir, inFilesLitqa, outFile))
+    resultDirLitqa = resultDir + "/litqa/"
+    inRootLitqa = dataDir + plutoParticle + "/litqa.all.root"
+    os.system(('root -l -b -q {}/draw_litqa.C\(\\"{}\\",\\"{}\\"\)').format(macroDir, inRootLitqa, resultDirLitqa))
     
-  print("===== DRAW ALL =====")
-  os.system(('root -l -b -q {}/draw_analysis_all.C').format(macroDir))
+
+  allInmed  = dataDir + "/inmed/analysis.all.root"
+  allQgp = dataDir + "/qgp/analysis.all.root"
+  allOmega = dataDir + "/omegaepem/analysis.all.root"
+  allPhi = dataDir + "/phi/analysis.all.root"
+  allOmegaD = dataDir + "/omegadalitz/analysis.all.root"
+  resultDirAll = dataDirOut + "/lmvm_all/"
+  os.system(('root -l -b -q {}/draw_analysis_all.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\"\)').format(macroDir, allInmed, allQgp, allOmega, allPhi, allOmegaD, resultDirAll, useMvd))
 
 if __name__ == '__main__':
   main()

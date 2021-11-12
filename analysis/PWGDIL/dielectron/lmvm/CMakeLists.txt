@@ -47,24 +47,21 @@ ${Boost_LIBRARY_DIRS}
 link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
-CbmAnaDielectronTask.cxx
-CbmAnaDielectronTaskDraw.cxx
-CbmAnaDielectronTaskDrawAll.cxx
-CbmAnaLmvmDrawStudy.cxx
-CbmLmvmHist.cxx
-CbmAnaDielectronStudyReportAll.cxx
-CbmAnaDielectronReports.cxx
-CbmHaddBase.cxx
+LmvmTask.cxx
+LmvmDraw.cxx
+LmvmDrawAll.cxx
+LmvmHist.cxx
+LmvmUtils.cxx
 )
 
 
 IF (SSE_FOUND)
-  Message(STATUS "Analysis will be compiled with SSE support")
+  Message(STATUS "LMVM analysis will be compiled with SSE support")
   ADD_DEFINITIONS(-DHAVE_SSE)
   SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS 
   "-msse -O3")
 ELSE (SSE_FOUND)
-  MESSAGE(STATUS "Analysis will be compiled without SSE support")
+  MESSAGE(STATUS "LMVM analysis will be compiled without SSE support")
   SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS 
   "-O3")
 ENDIF (SSE_FOUND)
@@ -72,10 +69,10 @@ ENDIF (SSE_FOUND)
 ADD_DEFINITIONS(-DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 
 
-Set(LINKDEF CbmDiElectronAnalysisLinkDef.h)
-Set(LIBRARY_NAME CbmDiElectronAnalysis)
+Set(LINKDEF LmvmLinkDef.h)
+Set(LIBRARY_NAME CbmLmvm)
 Set(DEPENDENCIES
-    Littrack KF L1 CbmRichBase CbmRichReco CbmRecoBase CbmBase CbmData)
+    Littrack LittrackQA KF L1 CbmRichBase CbmRichReco CbmRecoBase CbmBase CbmData)
 Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 
 GENERATE_LIBRARY()

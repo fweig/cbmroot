@@ -1,18 +1,18 @@
-/* Copyright (C) 2014-2020 Justus-Liebig-Universitaet Giessen, Giessen
+/* Copyright (C) 2014-2021 Justus-Liebig-Universitaet Giessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Elena Lebedeva [committer], Andrey Lebedev */
+   Authors: Elena Lebedeva [committer], Semen Lebedev */
 
-void draw_litqa(const string& histRootFile = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/litqa.all.root",
-                const string& resultDir    = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/histograms/inmed/")
+void draw_litqa(const string& histRootFile = "/Users/slebedev/Development/cbm/data/lmvm/nov21/litqa.phi100k.all.root",
+                const string& resultDir    = "/Users/slebedev/Development/cbm/data/lmvm/nov21/litqa/")
 
 {
-  string outputDirTracking = resultDir + "results_litqa_tracking/";
+  string outputDirTracking = resultDir + "/tracking/";
   gSystem->mkdir(outputDirTracking.c_str(), true);
 
   CbmSimulationReport* trackingQaReport = new CbmLitTrackingQaReport();
   trackingQaReport->Create(histRootFile, outputDirTracking);
 
-  string outputDirClustering = resultDir + "results_litqa_clustering/";
+  string outputDirClustering = resultDir + "/clustering/";
   gSystem->mkdir(outputDirClustering.c_str(), true);
 
   CbmSimulationReport* clusteringQaReport = new CbmLitClusteringQaReport();

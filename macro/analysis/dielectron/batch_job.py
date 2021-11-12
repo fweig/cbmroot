@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import os     #operating system interfaces
-import sys    #provides access to some variables used or maintained by the interpreter and to functions that interact strongly with the interpreter
-import shutil #offers a number of high level operations on files and collections of files
+import os     
+import sys    
+import shutil
 
 def main():
   dataDir = sys.argv[1]
@@ -10,7 +10,7 @@ def main():
   plutoParticle = sys.argv[3]
   cbmrootConfigPath = "/lustre/nyx/cbm/users/criesen/build/config.sh"
   macroDir = "/lustre/nyx/cbm/users/criesen/cbmroot/macro/analysis/dielectron/"
-  nofEvents = 100
+  nofEvents = 1000
 
   taskId = os.environ.get('SLURM_ARRAY_TASK_ID')
   jobId = os.environ.get('SLURM_ARRAY_JOB_ID')
@@ -27,26 +27,29 @@ def main():
   os.makedirs(workDir)
   os.chdir(workDir)
 
-  #plutoFile = ""
-  plutoFile = getPlutoPath(colSystem, colEnergy, plutoParticle, taskId) #this one was activated before
-  #plutoFile = getPlutoPath("auau", "8gev", plutoParticle, taskId)
+  plutoFile = getPlutoPath(colSystem, colEnergy, plutoParticle, taskId)
 
-  urqmdFile = "/lustre/nyx/cbm/prod/gen/urqmd/auau/" + colEnergy + "/centr/urqmd.auau.8gev.centr." + str(taskId).zfill(5) + ".root"
-  #urqmdFile = "/lustre/nyx/cbm/prod/gen/urqmd/auau/8gev/centr/urqmd.auau.8gev.centr.00001.root"
+  urqmdFile = "/lustre/nyx/cbm/prod/gen/urqmd/auau/" + colEnergy + "/centr/urqmd.auau."+ colEnergy + ".centr." + str(taskId).zfill(5) + ".root"
 
-  mcFile = dataDir + "/mc." + taskId + ".root"
+  traFile = dataDir + "/tra." + taskId + ".root"
   parFile = dataDir + "/param." + taskId + ".root"
   digiFile = dataDir + "/digi." + taskId + ".root"
   recoFile = dataDir + "/reco." + taskId + ".root"
   litQaFile = dataDir + "/litqa." + taskId + ".root"
   analysisFile = dataDir + "/analysis." + taskId + ".root"
   geoSimFile = dataDir + "/geosim." + taskId + ".root"
-  sEvBuildRaw = "Ideal"
-  #os.system(('root -l -b -q {}/run_sim.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, urqmdFile, plutoFile, mcFile, parFile, geoSimFile, geoSetup, nofEvents))
-  #os.system(('root -l -b -q {}/run_digi.C\(\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, mcFile, parFile, digiFile, nofEvents))
-  os.system(('root -l -b -q {}/run_reco.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, mcFile, parFile, digiFile, recoFile, geoSetup, sEvBuildRaw, nofEvents))
-  os.system(('root -l -b -q {}/run_litqa.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, mcFile, parFile, digiFile, recoFile, litQaFile, geoSetup, nofEvents))
-  os.system(('root -l -b -q {}/run_analysis.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, mcFile, parFile, digiFile, recoFile, analysisFile, plutoParticle, colSystem, colEnergy, geoSetup, nofEvents))
+
+  traCmd = ('root -l -b -q {}/run_transport.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, urqmdFile, plutoFile, traFile, parFile, geoSimFile, geoSetup, nofEvents)
+  digiCmd = ('root -l -b -q {}/run_digi.C\(\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, traFile, parFile, digiFile, nofEvents)
+  recoCmd = ('root -l -b -q {}/run_reco.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, traFile, parFile, digiFile, recoFile, geoSetup, nofEvents)
+  qaCmd = ('root -l -b -q {}/run_litqa.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, traFile, parFile, digiFile, recoFile, litQaFile, geoSetup, nofEvents)
+  anaCmd = ('root -l -b -q {}/run_analysis.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, traFile, parFile, digiFile, recoFile, analysisFile, plutoParticle, colSystem, colEnergy, geoSetup, nofEvents)
+
+  os.system((". /{} -a; {}").format(cbmrootConfigPath, traCmd))
+  os.system((". /{} -a; {}").format(cbmrootConfigPath, digiCmd))
+  os.system((". /{} -a; {}").format(cbmrootConfigPath, recoCmd))
+  os.system((". /{} -a; {}").format(cbmrootConfigPath, qaCmd))
+  os.system((". /{} -a; {}").format(cbmrootConfigPath, anaCmd))
 
 def getPlutoPath(colSystem, colEnergy, plutoParticle, taskId):
   if plutoParticle == "rho0":

@@ -1,4 +1,4 @@
-/* Copyright (C) 2010-2020 GSI/JINR-LIT, Darmstadt/Dubna
+/* Copyright (C) 2010-2021 GSI/JINR-LIT, Darmstadt/Dubna
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Andrey Lebedev [committer], Florian Uhlig */
 
@@ -11,35 +11,38 @@
 #include <TH2.h>         // for TH2, TH2D
 #include <TSystem.h>     // for TSystem, gSystem
 
+#include "boost/filesystem.hpp"
+
 #include <string>  // for operator+, allocator, operator!=, char_traits
 #include <vector>  // for vector
 
 #include <stddef.h>  // for size_t
 
+using boost::filesystem::path;
 using std::string;
 using std::vector;
 
 namespace Cbm
 {
 
-  void SaveCanvasAsImage(TCanvas* c, const std::string& dir, const std::string& option)
+  void SaveCanvasAsImage(TCanvas* c, const string& dir, const string& option)
   {
     if (dir == "") return;
-    if (option.find("eps") != std::string::npos) {
-      string dir2 = dir + "/eps/";
-      gSystem->mkdir(dir2.c_str(),
-                     true);  // create directory if it does not exist
-      c->SaveAs(std::string(dir2 + std::string(c->GetTitle()) + ".eps").c_str());
-    }
-    if (option.find("png") != std::string::npos) {
-      string dir2 = dir + "/png/";
-      gSystem->mkdir(dir2.c_str(), true);
-      c->SaveAs(std::string(dir2 + std::string(c->GetTitle()) + ".png").c_str());
-    }
-    if (option.find("gif") != std::string::npos) {
-      string dir2 = dir + "/gif/";
-      gSystem->mkdir(dir2.c_str(), true);
-      c->SaveAs(std::string(dir2 + std::string(c->GetTitle()) + ".gif").c_str());
+    SaveCanvasAsImageImpl("eps", c, dir, option);
+    SaveCanvasAsImageImpl("png", c, dir, option);
+    SaveCanvasAsImageImpl("gif", c, dir, option);
+  }
+
+  void SaveCanvasAsImageImpl(const string& imageType, TCanvas* c, const string& dir, const string& option)
+  {
+    if (dir == "") return;
+    if (option.find(imageType) != string::npos) {
+      path fullPath  = path(dir + "/" + imageType + "/" + string(c->GetTitle()) + "." + imageType);
+      string fullDir = fullPath.parent_path().string();
+      if (fullDir.length() > 0) {
+        gSystem->mkdir(fullDir.c_str(), true);  // create directory if it does not exist
+      }
+      c->SaveAs(fullPath.c_str());
     }
   }
 

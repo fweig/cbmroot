@@ -2,13 +2,6 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Semen Lebedev, Elena Lebedeva [committer] */
 
-/**
- * @author Elena Lebedeva <e.lebedeva@gsi.de>
- * @since 2015
- * @version 1.0
- **/
-
-
 #ifndef CBM_HADD_BASE_H
 #define CBM_HADD_BASE_H
 

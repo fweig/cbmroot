@@ -1,46 +1,43 @@
-/* Copyright (C) 2011-2020 Justus-Liebig-Universitaet Giessen, Giessen
+/* Copyright (C) 2011-2021 Justus-Liebig-Universitaet Giessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Semen Lebedev, Elena Lebedeva [committer] */
 
-void run_sim(const string& urqmdFile = "/lustre/nyx/cbm/prod/gen/urqmd/auau/8gev/centr/"
-                                       "urqmd.auau.8gev.centr.00001.root",  // if "", no urqmd
-             const string& plutoFile =
-               "/lustre/nyx/cbm/prod/gen/pluto/auau/cktA/8gev/omega/epem/"
-               "pluto.auau.8gev.omega.epem.0001.root",  // if "", no pluto particles are embedded into event
-             const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/mc.2.root",
-             const string& parFile  = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/param.2.root",
-             const string& geoFile  = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/geosim.2.root",
-             const string& geoSetup = "sis100_electron", int nEvents = 1000)
+// Run this macro with run_local.py for local test and with batch_send(job).py for large productions
+void run_transport(const std::string& urqmdFile,  // if "", no urqmd
+                   const std::string& plutoFile,  // if "", no pluto particles are embedded into event
+                   const std::string& traFile, const std::string& parFile, const std::string& geoFile,
+                   const std::string& geoSetup, int nEvents)
 {
+
   TTree::SetMaxTreeSize(90000000000);
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
 
   remove(parFile.c_str());
-  remove(mcFile.c_str());
+  remove(traFile.c_str());
   remove(geoFile.c_str());
 
   TStopwatch timer;
   timer.Start();
 
   CbmTransport run;
-
   if (urqmdFile.length() > 0) { run.AddInput(urqmdFile.c_str()); }
-
   if (plutoFile.length() > 0) { run.AddInput(plutoFile.c_str(), kPluto); }
-
-  run.SetOutFileName(mcFile.c_str());
+  run.SetOutFileName(traFile.c_str());
   run.SetParFileName(parFile.c_str());
   run.SetGeoFileName(geoFile.c_str());
   run.LoadSetup(geoSetup.c_str());
   run.SetTarget("Gold", 0.0025, 2.5);  // for lmvm thickness = 0.0025; // 25 mum
   run.SetBeamPosition(0., 0., 0.1, 0.1);
+  //run.SetEngine(kGeant4);
+  //run.SetRandomEventPlane();
   run.Run(nEvents);
+
 
   timer.Stop();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished successfully." << std::endl;
-  std::cout << "Output file is " << mcFile << std::endl;
+  std::cout << "Output file is " << traFile << std::endl;
   std::cout << "Parameter file is " << parFile << std::endl;
   std::cout << "Geometry file is " << geoFile << std::endl;
   std::cout << "Real time " << timer.RealTime() << " s, CPU time " << timer.CpuTime() << "s" << std::endl;

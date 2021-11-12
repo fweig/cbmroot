@@ -1,6 +1,6 @@
-/* Copyright (C) 2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2016-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Florian Uhlig [committer] */
+   Authors: Florian Uhlig [committer], Semen Lebedev */
 
 #ifdef __CINT__
 
@@ -9,11 +9,10 @@
 #pragma link off all functions;
 
 
-#pragma link C++ class CbmAnaDielectronTask + ;
-#pragma link C++ class CbmAnaDielectronTaskDraw + ;
-#pragma link C++ class CbmAnaDielectronTaskDrawAll + ;
-#pragma link C++ class CbmAnaLmvmDrawStudy + ;
-#pragma link C++ class CbmAnaDielectronReports + ;
-#pragma link C++ class CbmHaddBase + ;
+#pragma link C++ class LmvmTask + ;
+#pragma link C++ class LmvmDraw + ;
+#pragma link C++ class LmvmDrawAll + ;
+#pragma link C++ class LmvmHist + ;
+#pragma link C++ class LmvmUtils + ;
 
 #endif

@@ -1,17 +1,16 @@
-/* Copyright (C) 2011-2020 Justus-Liebig-Universitaet Giessen, Giessen
+/* Copyright (C) 2011-2021 Justus-Liebig-Universitaet Giessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Elena Lebedeva [committer], Semen Lebedev */
 
 void draw_analysis_all(
-  const string& fileInmed  = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/analysis.all.root",
-  const string& fileQgp    = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/qgp/analysis.all.root",
-  const string& fileOmega  = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/omegaepem/analysis.all.root",
-  const string& filePhi    = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/phi/analysis.all.root",
-  const string& fileOmegaD = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/omegadalitz/analysis.all.root",
-  const string& resultDir  = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/histograms/results_all/",
-  Bool_t useMvd            = false)
+  const string& fileInmed  = "/Users/slebedev/Development/cbm/data/lmvm/nov21/analysis.inmed.all.root",
+  const string& fileQgp    = "/Users/slebedev/Development/cbm/data/lmvm/nov21/analysis.qgp.all.root",
+  const string& fileOmega  = "/Users/slebedev/Development/cbm/data/lmvm/nov21/analysis.omega.all.root",
+  const string& filePhi    = "/Users/slebedev/Development/cbm/data/lmvm/nov21/analysis.phi.all.root",
+  const string& fileOmegaD = "/Users/slebedev/Development/cbm/data/lmvm/nov21/analysis.omegaD.all.root",
+  const string& resultDir = "/Users/slebedev/Development/cbm/data/lmvm/nov21/results_all/", Bool_t useMvd = false)
 
 {
-  CbmAnaDielectronTaskDrawAll* draw = new CbmAnaDielectronTaskDrawAll();
-  draw->DrawHistosFromFile(fileInmed, fileQgp, fileOmega, filePhi, fileOmegaD, resultDir, useMvd);
+  LmvmDrawAll* draw = new LmvmDrawAll();
+  draw->DrawHistFromFile(fileInmed, fileQgp, fileOmega, filePhi, fileOmegaD, resultDir, useMvd);
 }

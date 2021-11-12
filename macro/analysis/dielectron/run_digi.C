@@ -1,20 +1,18 @@
-/* Copyright (C) 2020 UGiessen, JINR-LIT
+/* Copyright (C) 2020-2021 UGiessen, JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Semen Lebedev [committer] */
 
-void run_digi(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/mc.2.root",
-              const string& parFile  = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/param.2.root",
-              const string& digiFile = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/digi.2.root",
-              int nEvents            = 1000)
+// Run this macro with run_local.py for local test and with batch_send(job).py for large productions
+void run_digi(const std::string& traFile, const std::string& parFile, const std::string& digiFile, int nEvents)
 {
   TTree::SetMaxTreeSize(90000000000);
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
   FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
 
-  Double_t eventRate       = 1.e7;
-  Double_t timeSliceLength = 1.e4;
-  Bool_t eventMode         = true;
-  Bool_t overwrite         = true;
+  double eventRate       = 1.e7;
+  double timeSliceLength = 1.e4;
+  bool eventMode         = true;
+  bool overwrite         = true;
 
   remove(digiFile.c_str());
 
@@ -22,7 +20,7 @@ void run_digi(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/l
   timer.Start();
 
   CbmDigitization run;
-  run.AddInput(mcFile.c_str(), eventRate);
+  run.AddInput(traFile.c_str(), eventRate);
   run.SetOutputFile(digiFile.c_str(), overwrite);
   run.SetParameterRootFile(parFile.c_str());
   run.SetTimeSliceLength(timeSliceLength);

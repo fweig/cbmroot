@@ -1,38 +1,34 @@
-/* Copyright (C) 2015 Justus-Liebig-Universitaet Giessen, Giessen
+/* Copyright (C) 2015-2021 Justus-Liebig-Universitaet Giessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Elena Lebedeva [committer] */
+   Authors: Elena Lebedeva [committer], Semen Lebedev */
 
-/**
- * @author Elena Lebedeva <e.lebedeva@gsi.de>
- * @since 2015
- * @version 1.0
- **/
+#ifndef CBM_LMVM_KINE_PARAMS_H
+#define CBM_LMVM_KINE_PARAMS_H
 
-#ifndef CBM_LMVM_KINEMATIC_PARAMS_H
-#define CBM_LMVM_KINEMATIC_PARAMS_H
-
-#include "CbmLmvmCandidate.h"
 #include "CbmMCTrack.h"
 
 #include "TLorentzVector.h"
 #include "TMath.h"
 
+#include "LmvmCand.h"
+
 #define M2E 2.6112004954086e-7
 
 class CbmLmvmKinematicParams {
 public:
-  Double_t fMomentumMag;  // Absolute value of momentum
-  Double_t fPt;           // Transverse momentum
-  Double_t fRapidity;     // Rapidity
-  Double_t fMinv;         // Invariant mass
-  Double_t fAngle;        // Opening angle
+  Double_t fMomentumMag = 0.;  // Absolute value of momentum
+  Double_t fPt          = 0.;  // Transverse momentum
+  Double_t fRapidity    = 0.;  // Rapidity
+  Double_t fMinv        = 0.;  // Invariant mass
+  Double_t fAngle       = 0.;  // Opening angle
 
   /*
     * Calculate kinematic parameters for MC tracks.
     */
-  static CbmLmvmKinematicParams KinematicParamsWithMcTracks(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM)
+  static CbmLmvmKinematicParams Create(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM)
   {
     CbmLmvmKinematicParams params;
+    if (mctrackP == nullptr || mctrackM == nullptr) return params;
 
     TVector3 momP;  //momentum e+
     mctrackP->GetMomentum(momP);
@@ -64,10 +60,10 @@ public:
   /*
     * Calculate kinematic parameters for LMVM candidates.
     */
-  static CbmLmvmKinematicParams KinematicParamsWithCandidates(const CbmLmvmCandidate* candP,
-                                                              const CbmLmvmCandidate* candM)
+  static CbmLmvmKinematicParams Create(const LmvmCand* candP, const LmvmCand* candM)
   {
     CbmLmvmKinematicParams params;
+    if (candP == nullptr || candM == nullptr) return params;
 
     TLorentzVector lorVecP(candP->fMomentum, candP->fEnergy);
     TLorentzVector lorVecM(candM->fMomentum, candM->fEnergy);

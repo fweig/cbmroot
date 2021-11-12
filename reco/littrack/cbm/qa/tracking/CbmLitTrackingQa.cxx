@@ -1,4 +1,4 @@
-/* Copyright (C) 2007-2020 GSI/JINR-LIT, Darmstadt/Dubna
+/* Copyright (C) 2007-2021 GSI/JINR-LIT, Darmstadt/Dubna
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Andrey Lebedev [committer], Florian Uhlig */
 
@@ -228,15 +228,16 @@ void CbmLitTrackingQa::ReadDataBranches()
 
 void CbmLitTrackingQa::FillDefaultTrackCategories()
 {
-  vector<string> tmp = list_of("All")("Primary")("Secondary")("Reference")(
-    fDet.GetElectronSetup() ? "Electron" : "Muon")("Proton")("PionPlus")("PionMinus")("KaonPlus")("KaonMinus");
+  string elMu = fDet.GetElectronSetup() ? "Electron" : "Muon";
+  vector<string> tmp {"All",    "Primary",  "Secondary", "Reference", elMu,
+                      "Proton", "PionPlus", "PionMinus", "KaonPlus",  "KaonMinus"};
   fTrackCategories = tmp;
 }
 
 void CbmLitTrackingQa::FillDefaultRingCategories()
 {
-  vector<string> tmp = list_of("All")("AllReference")("Electron")("ElectronReference")("Pion")("PionReference");
-  fRingCategories    = tmp;
+  vector<string> tmp {"All", "AllReference", "Electron", "ElectronReference", "Pion", "PionReference"};
+  fRingCategories = tmp;
 }
 
 void CbmLitTrackingQa::FillDefaultTrackPIDCategories()
@@ -1111,10 +1112,10 @@ Bool_t CbmLitTrackingQa::ElectronId(Int_t mcEventId, Int_t mcId, const multimap<
                             ? CbmLitGlobalElectronId::GetInstance().IsRichElectron(globalTrackIndex, mom.Mag())
                             : true;
   Bool_t isTrdElectron  = (fDet.GetDet(ECbmModuleId::kTrd) && (effName.find("Trd") != string::npos))
-                            ? CbmLitGlobalElectronId::GetInstance().IsRichElectron(globalTrackIndex, mom.Mag())
+                            ? CbmLitGlobalElectronId::GetInstance().IsTrdElectron(globalTrackIndex, mom.Mag())
                             : true;
   Bool_t isTofElectron  = (fDet.GetDet(ECbmModuleId::kTof) && (effName.find("Tof") != string::npos))
-                            ? CbmLitGlobalElectronId::GetInstance().IsRichElectron(globalTrackIndex, mom.Mag())
+                            ? CbmLitGlobalElectronId::GetInstance().IsTofElectron(globalTrackIndex, mom.Mag())
                             : true;
   return isRichElectron && isTrdElectron && isTofElectron;
 }

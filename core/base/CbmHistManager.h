@@ -1,4 +1,4 @@
-/* Copyright (C) 2011-2020 GSI/JINR-LIT, Darmstadt/Dubna
+/* Copyright (C) 2011-2021 GSI/JINR-LIT, Darmstadt/Dubna
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Semen Lebedev, Andrey Lebedev [committer], Florian Uhlig */
 
@@ -132,6 +132,15 @@ public:
     T* h = new T(name.c_str(), title.c_str(), nofBinsX, minBinX, maxBinX, nofBinsY, minBinY, maxBinY, nofBinsZ, minBinZ,
                  maxBinZ);
     Add(name, h);
+  }
+
+  TNamed* GetObject(const std::string& name) const
+  {
+    if (fMap.count(name) == 0) {  // Temporarily used for debugging
+      LOG(error) << "CbmHistManager::GetObject(name): name=" << name;
+    }
+    assert(fMap.count(name) != 0);
+    return fMap.find(name)->second;
   }
 
   /**

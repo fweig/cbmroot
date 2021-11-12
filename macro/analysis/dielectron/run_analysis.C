@@ -1,38 +1,24 @@
-/* Copyright (C) 2010-2020 UGiessen, JINR-LIT
+/* Copyright (C) 2010-2021 UGiessen, JINR-LIT
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Andrey Lebedev, Semen Lebedev [committer] */
+   Authors: Semen Lebedev [committer] */
 
-void run_analysis(const string& mcFile        = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/mc.1.root",
-                  const string& parFile       = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/param.1.root",
-                  const string& digiFile      = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/digi.1.root",
-                  const string& recoFile      = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/reco.1.root",
-                  const string& analysisFile  = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/analysis.1.root",
-                  const string& plutoParticle = "inmed", const string& colSystem = "auau",
-                  const string& colEnergy = "8gev", const string& geoSetup = "sis100_electron", int nEvents = 1000)
+// Run this macro with run_local.py for local test and with batch_send(job).py for large productions
+void run_analysis(const std::string& traFile, const std::string& parFile, const std::string& digiFile,
+                  const std::string& recoFile, const std::string& analysisFile, const std::string& plutoParticle,
+                  const std::string& colSystem, const std::string& colEnergy, const std::string& geoSetup, int nEvents)
 {
-  /*cout << "Here: just entered run_ana.C" << endl;
-  Int_t Interval=10;
-  Int_t PID=gSystem->GetPid();
-  cout<<"PID: "<<PID<<endl;
-  TString cmdline="$VMCWORKDIR/macro/analysis/dielectron/check_memory.sh ";
-  cmdline+= PID;
-  cmdline+= " ";
-  cmdline+= Interval;
-  cmdline+= "  &";
-  cout<<cmdline<<endl;
-  gSystem->Exec(cmdline);*/
-
-
   TTree::SetMaxTreeSize(90000000000);
-
-  TString myName = "run_analysis";
+  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
+  FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   remove(analysisFile.c_str());
 
-  CbmSetup::Instance()->LoadSetup(geoSetup.c_str());
+  CbmSetup* geo = CbmSetup::Instance();
+  geo->LoadSetup(geoSetup.c_str());
 
-  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
+  bool useMvd = geo->IsActive(ECbmModuleId::kMvd);
+
   TList* parFileList = new TList();
 
   TStopwatch timer;
@@ -41,17 +27,14 @@ void run_analysis(const string& mcFile        = "/lustre/nyx/cbm/users/criesen/c
 
   FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(digiFile.c_str());
-  inputSource->AddFriend(mcFile.c_str());
+  inputSource->AddFriend(traFile.c_str());
   inputSource->AddFriend(recoFile.c_str());
   run->SetSource(inputSource);
   run->SetOutputFile(analysisFile.c_str());
   run->SetGenerateRunInfo(kFALSE);
 
-  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
-  FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
-
   CbmMCDataManager* mcManager = new CbmMCDataManager("MCManager", 1);
-  mcManager->AddFile(mcFile.c_str());
+  mcManager->AddFile(traFile.c_str());
   run->AddTask(mcManager);
 
   CbmKF* kalman = new CbmKF();
@@ -59,17 +42,31 @@ void run_analysis(const string& mcFile        = "/lustre/nyx/cbm/users/criesen/c
   CbmL1* l1 = new CbmL1();
   run->AddTask(l1);
 
-  CbmAnaDielectronTask* task = new CbmAnaDielectronTask();
+  // --- Material budget file names
+  TString mvdGeoTag;
+  if (useMvd && geo->GetGeoTag(ECbmModuleId::kMvd, mvdGeoTag)) {
+    TString parFile = gSystem->Getenv("VMCWORKDIR");
+    parFile += "/parameters/mvd/mvd_matbudget_" + mvdGeoTag + ".root";
+    std::cout << "Using material budget file " << parFile << std::endl;
+    l1->SetMvdMaterialBudgetFileName(parFile.Data());
+  }
+  TString stsGeoTag;
+  if (geo->GetGeoTag(ECbmModuleId::kSts, stsGeoTag)) {
+    TString parFile = gSystem->Getenv("VMCWORKDIR");
+    parFile += "/parameters/sts/sts_matbudget_" + stsGeoTag + ".root";
+    std::cout << "Using material budget file " << parFile << std::endl;
+    l1->SetStsMaterialBudgetFileName(parFile.Data());
+  }
+
+  LmvmTask* task = new LmvmTask();
   task->SetEnergyAndPlutoParticle(colEnergy, plutoParticle);
-  task->SetUseMvd(false);
-  task->SetUseRich(true);
-  task->SetUseTrd(true);
-  task->SetUseTof(true);
+  task->SetUseMvd(useMvd);
   // task->SetPionMisidLevel(pionMisidLevel);
   // task->SetTrdAnnCut(0.85);
   // task->SetRichAnnCut(-0.4);
   run->AddTask(task);
-  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
+
+
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
@@ -79,14 +76,14 @@ void run_analysis(const string& mcFile        = "/lustre/nyx/cbm/users/criesen/c
     parIo2->open(parFileList, "in");
     rtdb->setSecondInput(parIo2);
   }
-  std::cout << std::endl << "-I- " << myName << ": Initialise run" << std::endl;
+
   run->Init();
   rtdb->setOutput(parIo1);
   rtdb->saveOutput();
   rtdb->print();
 
-  std::cout << "-I- " << myName << ": Starting run" << std::endl;
   run->Run(0, nEvents);
+
   timer.Stop();
   std::cout << std::endl << std::endl;
   std::cout << "Macro finished succesfully." << std::endl;

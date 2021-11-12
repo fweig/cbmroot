@@ -2,21 +2,15 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Elena Lebedeva [committer], Florian Uhlig */
 
-/** CbmAnaLmvmDrawStudy.h
- * @author Elena Lebedeva <e.lebedeva@gsi.de>
- * @since 2012
- * @version 1.0
- **/
-
 #ifndef CBM_ANA_LMVM_DRAW_STUDY
 #define CBM_ANA_LMVM_DRAW_STUDY
-
-#include "CbmLmvmHist.h"
 
 #include "TObject.h"
 
 #include <string>
 #include <vector>
+
+#include "LmvmHist.h"
 
 class TH1;
 class TH2D;
@@ -61,25 +55,9 @@ private:
 
   std::string fOutputDir;  // output directory for figures and .json file
 
-  TCanvas* CreateCanvas(const std::string& name, const std::string& title, int width, int height);
-
-  void DrawTextOnHist(const std::string& text, Double_t x1, Double_t y1, Double_t x2, Double_t y2);
-
-  TH1D* H1(int studyNum, const std::string& name);
-
-  TH2D* H2(int studyNum, const std::string& name);
-
   void SaveCanvasToImage();
 
-  void SetAnalysisStepLabels(TH1* h);
-
   void DrawMinv();
-  void DrawNofBgTracks();
-  void DrawBgSourceTracks();
-  void DrawBgSourcePairsStep(int step);
-  void DrawBgSourcePairs();
-  void DrawBgSourceMinv();
-  void DrawDistributions(const std::string& canvasName, const std::string& histName, int step, int sourceType);
 
   ClassDef(CbmAnaLmvmDrawStudy, 1);
 };

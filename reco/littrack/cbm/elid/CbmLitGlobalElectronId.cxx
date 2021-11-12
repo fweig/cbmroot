@@ -1,4 +1,4 @@
-/* Copyright (C) 2011-2020 UGiessen/JINR-LIT, Giessen/Dubna
+/* Copyright (C) 2011-2021 UGiessen/JINR-LIT, Giessen/Dubna
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Semen Lebedev [committer], Andrey Lebedev */
 
@@ -23,6 +23,8 @@
 #include "TMath.h"
 #include "TString.h"
 #include "TSystem.h"
+
+#include <iostream>
 
 #include <cmath>
 
@@ -100,18 +102,10 @@ Bool_t CbmLitGlobalElectronId::IsTrdElectron(Int_t globalTrackIndex, Double_t mo
     return false;
 }
 
-Bool_t CbmLitGlobalElectronId::IsTofElectron(Int_t globalTrackIndex, Double_t momentum)
+Bool_t CbmLitGlobalElectronId::IsTofElectron(Int_t globalTrackIndex, Double_t momentum, Double_t eventTime)
 {
-  if (NULL == fGlobalTracks || NULL == fTofHits) return false;
-  const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(globalTrackIndex));
-  Double_t trackLength              = globalTrack->GetLength() / 100.;
-  Int_t tofId                       = globalTrack->GetTofHitIndex();
-  if (tofId < 0) return false;
-  CbmTofHit* tofHit = (CbmTofHit*) fTofHits->At(tofId);
-  if (NULL == tofHit) return false;
-
-  Double_t time  = 0.2998 * tofHit->GetTime();  // time in ns -> transfrom to ct in m
-  Double_t mass2 = TMath::Power(momentum, 2.) * (TMath::Power(time / trackLength, 2) - 1);
+  Double_t mass2 = GetTofM2(globalTrackIndex, momentum, eventTime);
+  if (mass2 == -1.) return false;
 
   if (momentum >= 1.) {
     if (mass2 < (0.013 * momentum - 0.003)) { return true; }
@@ -139,6 +133,23 @@ Double_t CbmLitGlobalElectronId::GetTrdAnn(Int_t globalTrackIndex, Double_t mome
   if (NULL == trdTrack) return -1.;
 
   return trdTrack->GetPidLikeEL();
+}
+
+Double_t CbmLitGlobalElectronId::GetTofM2(Int_t globalTrackIndex, Double_t momentum, Double_t eventTime)
+{
+  if (NULL == fGlobalTracks || NULL == fTofHits) return -1.;
+  const CbmGlobalTrack* globalTrack = static_cast<const CbmGlobalTrack*>(fGlobalTracks->At(globalTrackIndex));
+  Double_t trackLength              = globalTrack->GetLength() / 100.;
+  Int_t tofId                       = globalTrack->GetTofHitIndex();
+  if (tofId < 0) return -1.;
+  CbmTofHit* tofHit = (CbmTofHit*) fTofHits->At(tofId);
+  if (NULL == tofHit) return -1.;
+
+  Double_t noOffsetTime = tofHit->GetTime() - eventTime;
+  Double_t time         = 0.2998 * noOffsetTime;  // time in ns -> transfrom to ct in m
+  Double_t mass2        = momentum * momentum * (TMath::Power(time / trackLength, 2) - 1);
+
+  return mass2;
 }
 
 ClassImp(CbmLitGlobalElectronId);

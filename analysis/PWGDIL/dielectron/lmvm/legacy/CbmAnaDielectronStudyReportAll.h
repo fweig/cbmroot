@@ -39,11 +39,6 @@ protected:
    * \brief Draw Invariant mass of combinatorial BG.
    */
   void DrawBgMinv();
-
-  /**
-   * \brief Draw S/Bg ratio vs invariant mass.
-   */
-  void DrawSBgMinv();
 };
 
 #endif

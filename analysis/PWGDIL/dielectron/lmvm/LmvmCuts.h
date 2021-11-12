@@ -1,128 +1,101 @@
-/* Copyright (C) 2015-2018 Justus-Liebig-Universitaet Giessen, Giessen
+/* Copyright (C) 2015-2021 Justus-Liebig-Universitaet Giessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Elena Lebedeva [committer], Gregor Pitsch */
+   Authors: Elena Lebedeva [committer], Gregor Pitsch, Semen Lebedev */
 
-/**
- * @author Elena Lebedeva <e.lebedeva@gsi.de>
- * @since 2015
- * @version 1.0
- **/
+#ifndef LMVM_CUTS_H
+#define LMVM_CUTS_H
+
+#include <Logger.h>
+
+#include <math.h>
+
+#include "LmvmDef.h"
 
 
-#ifndef CBM_LMVM_CUTS_H
-#define CBM_LMVM_CUTS_H
-
-#include "TObject.h"
-
-#include <iostream>
-
-class CbmLmvmCuts {
+class LmvmCuts {
 public:
-  CbmLmvmCuts()
-    : fMomentumCut(0.)
-    , fChiPrimCut(0.)
-    , fPtCut(0.)
-    , fAngleCut(0.)
-    , fGammaCut(0.)
-    , fStCutAngle(0.)
-    , fStCutPP(0.)
-    , fTtCutAngle(0.)
-    , fTtCutPP(0.)
-    , fRtCutAngle(0.)
-    , fRtCutPP(0.)
-    , fMvd1CutP(0.)
-    , fMvd1CutD(0.)
-    , fMvd2CutP(0.)
-    , fMvd2CutD(0.)
+  LmvmCuts() {}
+
+  bool IsTopologyCutOk(ELmvmTopologyCut cut, double mom1, double mom2, double minAngle)
   {
-    SetDefaultCuts();
+    double angleCut = 0., ppCut = 0.;
+    if (cut == ELmvmTopologyCut::ST) {
+      angleCut = fStCutAngle;
+      ppCut    = fStCutPP;
+    }
+    else if (cut == ELmvmTopologyCut::RT) {
+      angleCut = fRtCutAngle;
+      ppCut    = fRtCutPP;
+    }
+    else if (cut == ELmvmTopologyCut::TT) {
+      angleCut = fTtCutAngle;
+      ppCut    = fTtCutPP;
+    }
+    else {
+      LOG(error) << "LmvmCuts::IsTopologyCut cut is not defined.";
+    }
+    double sqrt_mom = std::sqrt(mom1 * mom2);
+    double val      = -1. * (angleCut / ppCut) * sqrt_mom + angleCut;
+    if (!(sqrt_mom < ppCut && val > minAngle)) return true;
+    return false;
   }
 
-  /*
-	 * Set default electron ID and analysis cuts.
-	 */
-  void SetDefaultCuts()
+  bool IsChi2PrimaryOk(double chi2Prim) { return (chi2Prim < fChi2PrimCut); }
+
+  bool IsGammaCutOk(double minv) { return (minv >= fGammaCut); }
+
+  bool IsPtCutOk(double pt) { return (pt > fPtCut); }
+
+  bool IsMvdCutOk(int stationNum, double dmvd, double mom)
   {
-    //electron ID cuts, we use CbmLitGlobalElectronId for identification
-    fMomentumCut = -1.;  // if cut < 0 it is not used
-
-    // analysis cuts auau
-    fPtCut      = 0.2;
-    fAngleCut   = 1.;
-    fChiPrimCut = 3.;
-    fGammaCut   = 0.025;
-    //fStCutAngle = 1.5;
-    //fStCutPP = 1.5;
-    fStCutAngle = 2.4;
-    fStCutPP    = 1.;
-    //fTtCutAngle = 0.75;
-    //fTtCutPP = 4.0;
-    fTtCutAngle = 2.0;
-    fTtCutPP    = 3.0;
-    //fRtCutAngle = 1.0;
-    //fRtCutPP = 2.5;
-    fRtCutAngle = 1.2;
-    fRtCutPP    = 1.6;
-    fMvd1CutP   = 1.2;
-    fMvd1CutD   = 0.4;
-    fMvd2CutP   = 1.5;
-    fMvd2CutD   = 0.5;
-
-    // analysis cuts agag
-    /*    fPtCut = 0.2;
-		fAngleCut = 1.;
-		fChiPrimCut = 3.;
-		fGammaCut = 0.025;
-		fStCutAngle = 2.4;
-                fStCutPP = 1.;
-		fTtCutAngle = 1.5;
-                fTtCutPP = 1.7;
-	       	fRtCutAngle = 1.2;
-                fRtCutPP = 1.6;
-		fMvd1CutP = 1.2;
-		fMvd1CutD = 0.4;
-		fMvd2CutP = 1.5;
-		fMvd2CutD = 0.5;
-            */
+    if (stationNum <= 0 || stationNum > 2) {
+      LOG(error) << "LmvmCuts::IsMvdCut stationNum is not in valid. stationNum = " << stationNum;
+      return false;
+    }
+    // it is assumed that stationNum can be 1 or 2
+    double cutD = (stationNum == 1) ? fMvd1CutD : fMvd2CutD;
+    double cutP = (stationNum == 1) ? fMvd1CutP : fMvd2CutP;
+    double val  = -1. * (cutP / cutD) * dmvd + cutP;
+    if (!(dmvd < cutD && val > mom)) return true;
+    return false;
   }
 
-  /*
-	 * Print out cuts.
-	 */
-  void Print()
+  std::string ToString()
   {
-    std::cout << "Used cuts:" << std::endl
-              << "fChiPrimCut = " << fChiPrimCut << std::endl
-              << "fPtCut = " << fPtCut << std::endl
-              << "fAngleCut = " << fAngleCut << std::endl
-              << "fGammaCut = " << fGammaCut << std::endl
-              << "fStCut (ang,pp) = (" << fStCutAngle << "," << fStCutPP << ")" << std::endl
-              << "fRtCut (ang,pp) = (" << fRtCutAngle << "," << fRtCutPP << ")" << std::endl
-              << "fTtCut (ang,pp) = (" << fTtCutAngle << "," << fTtCutPP << ")" << std::endl
-              << "fMvd1Cut (p,d) = (" << fMvd1CutP << "," << fMvd1CutD << ")" << std::endl
-              << "fMvd2Cut (p,d) = (" << fMvd2CutP << "," << fMvd2CutD << ")" << std::endl
-              << "fMomentumCut = " << fMomentumCut << std::endl;
+    std::stringstream ss;
+    ss << "LMVM cuts:" << std::endl
+       << "fChiPrimCut = " << fChi2PrimCut << std::endl
+       << "fPtCut = " << fPtCut << std::endl
+       << "fAngleCut = " << fAngleCut << std::endl
+       << "fGammaCut = " << fGammaCut << std::endl
+       << "fStCut (ang,pp) = (" << fStCutAngle << "," << fStCutPP << ")" << std::endl
+       << "fRtCut (ang,pp) = (" << fRtCutAngle << "," << fRtCutPP << ")" << std::endl
+       << "fTtCut (ang,pp) = (" << fTtCutAngle << "," << fTtCutPP << ")" << std::endl
+       << "fMvd1Cut (p,d) = (" << fMvd1CutP << "," << fMvd1CutD << ")" << std::endl
+       << "fMvd2Cut (p,d) = (" << fMvd2CutP << "," << fMvd2CutD << ")" << std::endl
+       << "fMomentumCut = " << fMomentumCut << std::endl;
+    return ss.str();
   }
 
 public:
   // ID cuts, we use CbmLitGlobalElectronId for identification
-  Double_t fMomentumCut;  // if cut < 0 then it will not be used
+  double fMomentumCut = -1.;  // if fMomentumCut < 0 it is not used
 
   // Analysis cuts
-  Double_t fChiPrimCut;
-  Double_t fPtCut;
-  Double_t fAngleCut;
-  Double_t fGammaCut;
-  Double_t fStCutAngle;
-  Double_t fStCutPP;
-  Double_t fTtCutAngle;
-  Double_t fTtCutPP;
-  Double_t fRtCutAngle;
-  Double_t fRtCutPP;
-  Double_t fMvd1CutP;
-  Double_t fMvd1CutD;
-  Double_t fMvd2CutP;
-  Double_t fMvd2CutD;
+  double fPtCut       = 0.2;
+  double fAngleCut    = 1.;
+  double fChi2PrimCut = 3.;
+  double fGammaCut    = 0.025;
+  double fStCutAngle  = 2.4;
+  double fStCutPP     = 1.;
+  double fTtCutAngle  = 2.0;
+  double fTtCutPP     = 3.0;
+  double fRtCutAngle  = 1.2;
+  double fRtCutPP     = 1.6;
+  double fMvd1CutP    = 1.2;
+  double fMvd1CutD    = 0.4;
+  double fMvd2CutP    = 1.5;
+  double fMvd2CutD    = 0.5;
 };
 
 #endif

@@ -1,26 +1,23 @@
-/* Copyright (C) 2014-2020 Justus-Liebig-Universitaet Giessen, Giessen
+/* Copyright (C) 2014-2021 Justus-Liebig-Universitaet Giessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Andrey Lebedev, Semen Lebedev, Elena Lebedeva [committer] */
 
-void run_litqa(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/mc.2.root",
-               const string& parFile  = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/param.2.root",
-               const string& digiFile = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/digi.2.root",
-               const string& recoFile = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/reco.2.root",
-               const string& qaFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/lmvm/inmed/litqa.2.root",
-               const string& geoSetup = "sis100_electron", int nEvents = 1000)
+// Run this macro with run_local.py for local test and with batch_send(job).py for large productions
+void run_litqa(const std::string& traFile, const std::string& parFile, const std::string& digiFile,
+               const std::string& recoFile, const std::string& qaFile, const std::string& geoSetup, int nEvents)
 {
   TTree::SetMaxTreeSize(90000000000);
-
-  TString myName = "run_litqa";
+  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
+  FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
   TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
   remove(qaFile.c_str());
 
   CbmSetup::Instance()->LoadSetup(geoSetup.c_str());
 
-  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
   TString geoTag;
+
   // - TRD digitisation parameters
   if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTrd, geoTag)) {
     const Char_t* npar[4] = {"asic", "digi", "gas", "gain"};
@@ -28,38 +25,32 @@ void run_litqa(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/
     for (Int_t i(0); i < 4; i++) {
       trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "." + npar[i] + ".par");
       parFileList->Add(trdParFile);
-      std::cout << "-I- " << myName << ": Using parameter file " << trdParFile->GetString() << std::endl;
+      std::cout << "-I- "
+                << ": Using parameter file " << trdParFile->GetString() << std::endl;
     }
   }
 
   // - TOF digitisation parameters
   if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
-    //TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
-    //parFileList->Add(tofFile);
-    //std::cout << "-I- " << myName << ": Using parameter file " << tofFile->GetString() << std::endl;
     TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
+    std::cout << "-I- "
+              << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
+
   TStopwatch timer;
   timer.Start();
-  gDebug = 0;
 
   FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(digiFile.c_str());
-  inputSource->AddFriend(mcFile.c_str());
+  inputSource->AddFriend(traFile.c_str());
   inputSource->AddFriend(recoFile.c_str());
   run->SetSource(inputSource);
   run->SetOutputFile(qaFile.c_str());
   run->SetGenerateRunInfo(kFALSE);
 
-
-  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
-  FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
-
-
   CbmMCDataManager* mcManager = new CbmMCDataManager("MCManager", 1);
-  mcManager->AddFile(mcFile.c_str());
+  mcManager->AddFile(traFile.c_str());
   run->AddTask(mcManager);
 
   // RICH reco QA
@@ -108,7 +99,6 @@ void run_litqa(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/
   tofQa->SetOutputDir(std::string(""));
   // run->AddTask(tofQa);
 
-  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
@@ -118,14 +108,12 @@ void run_litqa(const string& mcFile   = "/lustre/nyx/cbm/users/criesen/cbm/data/
     parIo2->open(parFileList, "in");
     rtdb->setSecondInput(parIo2);
   }
-  std::cout << std::endl << "-I- " << myName << ": Initialise run" << std::endl;
-  run->Init();
 
+  run->Init();
   rtdb->setOutput(parIo1);
   rtdb->saveOutput();
   rtdb->print();
 
-  std::cout << "-I- " << myName << ": Starting run" << std::endl;
   run->Run(0, nEvents);
 
   timer.Stop();

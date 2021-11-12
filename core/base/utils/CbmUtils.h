@@ -1,4 +1,4 @@
-/* Copyright (C) 2010-2020 GSI/JINR-LIT, Darmstadt/Dubna
+/* Copyright (C) 2010-2021 GSI/JINR-LIT, Darmstadt/Dubna
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Andrey Lebedev [committer], Florian Uhlig */
 
@@ -47,6 +47,8 @@ namespace Cbm
   }
 
   void SaveCanvasAsImage(TCanvas* c, const std::string& dir, const std::string& option = "eps;png;gif");
+  void SaveCanvasAsImageImpl(const std::string& imageType, TCanvas* c, const std::string& dir,
+                             const std::string& option);
 
   std::string FindAndReplace(const std::string& name, const std::string& oldSubstr, const std::string& newSubstr);
 

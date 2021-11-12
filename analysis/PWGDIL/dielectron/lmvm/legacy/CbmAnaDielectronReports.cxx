@@ -2,11 +2,6 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Semen Lebedev [committer] */
 
-/**
- * \file CbmAnaDielectronReports.cxx
- * \author Semen Lebedev <s.lebedev@gsi.de>
- * \date 2012
- */
 #include "CbmAnaDielectronReports.h"
 
 #include "CbmAnaDielectronStudyReportAll.h"
