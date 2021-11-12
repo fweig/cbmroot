@@ -33,7 +33,8 @@ If(${CBM_TEST_MODEL} MATCHES Weekly)
   List(APPEND cbm_setup mcbm_beam_2020_03 mcbm_beam_2021_03) # Legacy
 Else()
   List(APPEND cbm_setup mcbm_beam_2021_07_surveyed) # Default
-#  List(APPEND cbm_setup mcbm_beam_2022_02 mcbm_beam_2022_03 mcbm_beam_2022_04 mcbm_beam_2022_05) # Non-default current/future setups, missing parameters
+  List(APPEND cbm_setup mcbm_beam_2022_03 ) # Non-default, representative & complete example of mCBM 2022 setups
+#  List(APPEND cbm_setup mcbm_beam_2022_02 mcbm_beam_2022_04 mcbm_beam_2022_05) # Non-default current/future setups, missing parameters
 EndIf()
 
 ForEach(setup IN LISTS cbm_setup)
