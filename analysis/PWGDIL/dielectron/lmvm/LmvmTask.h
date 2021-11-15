@@ -6,7 +6,6 @@
 #define LMVM_TASK_H
 
 #include "CbmKFVertex.h"
-#include "CbmLmvmKinematicParams.h"
 #include "CbmStsKFTrackFitter.h"
 
 #include "FairMCEventHeader.h"
@@ -22,6 +21,7 @@
 #include "LmvmCuts.h"
 #include "LmvmDef.h"
 #include "LmvmHist.h"
+#include "LmvmKinePar.h"
 
 class TClonesArray;
 class TH2D;
@@ -70,8 +70,7 @@ public:
      * \param[in] step Enumeration AnalysisSteps, specify analysis step.
      * \param[in] parRec Kinematic parameters for reconstructed pair.
      */
-  void PairSource(const LmvmCand& candP, const LmvmCand& candM, ELmvmAnaStep step,
-                  const CbmLmvmKinematicParams& parRec);
+  void PairSource(const LmvmCand& candP, const LmvmCand& candM, ELmvmAnaStep step, const LmvmKinePar& parRec);
 
   /*
      *  \brief Fills minv, pty, mom histograms for specified analysis step.
@@ -81,8 +80,8 @@ public:
      * \param[in] parRec Reconstructed kinematic parameters.
      * \param[in] step Enumeration AnalysisSteps, specify analysis step.
      */
-  void FillPairHists(const LmvmCand& candP, const LmvmCand& candM, const CbmLmvmKinematicParams& parMc,
-                     const CbmLmvmKinematicParams& parRec, ELmvmAnaStep step);
+  void FillPairHists(const LmvmCand& candP, const LmvmCand& candM, const LmvmKinePar& parMc, const LmvmKinePar& parRec,
+                     ELmvmAnaStep step);
 
   void FillMomHists(const CbmMCTrack* mct, const LmvmCand* cand, ELmvmSrc src, ELmvmAnaStep step);
 

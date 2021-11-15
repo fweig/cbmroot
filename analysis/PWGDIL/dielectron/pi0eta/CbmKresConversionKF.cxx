@@ -26,7 +26,6 @@
 #include "CbmKFParticleFinderQa.h"
 #include "CbmKresConversionBG.h"
 #include "CbmKresFunctions.h"
-#include "CbmLmvmKinematicParams.h"
 #include "CbmMCTrack.h"
 #include "CbmRichHit.h"
 #include "CbmRichRing.h"
@@ -37,6 +36,7 @@
 
 #include "KFParticle.h"
 #include "KFParticleTopoReconstructor.h"
+#include "LmvmKinePar.h"
 
 
 using namespace std;
@@ -1050,7 +1050,7 @@ void CbmKresConversionKF::FindPi0(TString /*mod*/, vector<vector<TVector3>> Gamm
       CbmMCTrack* mcTrack3 = GammasMC[gamma2][0];
       CbmMCTrack* mcTrack4 = GammasMC[gamma2][1];
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e1, e2, e3, e4);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e1, e2, e3, e4);
 
       Pi0InvMassRecoKF->Fill(params.fMinv);
 
@@ -1157,11 +1157,11 @@ void CbmKresConversionKF::MixedEvent()
   for (Int_t a = 0; a < nof - 1; a++) {
     for (Int_t b = a + 1; b < nof; b++) {
       if (EMT_Event[a] == EMT_Event[b]) continue;  // to make sure that the photons are from two different events
-      TVector3 e11                  = EMT_pair_momenta[a][0];
-      TVector3 e12                  = EMT_pair_momenta[a][1];
-      TVector3 e21                  = EMT_pair_momenta[b][0];
-      TVector3 e22                  = EMT_pair_momenta[b][1];
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      TVector3 e11       = EMT_pair_momenta[a][0];
+      TVector3 e12       = EMT_pair_momenta[a][1];
+      TVector3 e21       = EMT_pair_momenta[b][0];
+      TVector3 e22       = EMT_pair_momenta[b][1];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
 
       fEMT_InvMass_All->Fill(params.fMinv);
       if (EMT_NofRings[a] == 0 && EMT_NofRings[b] == 0) fEMT_InvMass_Zero->Fill(params.fMinv);
@@ -1203,11 +1203,11 @@ void CbmKresConversionKF::MixedEventMulti()
       if (EMT_Event_multi_all[a] == EMT_Event_multi_all[b])
         continue;  // to make sure that the photons are from two different events
       if (EMT_multi_all[a] != EMT_multi_all[b]) continue;  // check same multiplicity
-      TVector3 e11                  = EMT_pair_momenta_multi_all[a][0];
-      TVector3 e12                  = EMT_pair_momenta_multi_all[a][1];
-      TVector3 e21                  = EMT_pair_momenta_multi_all[b][0];
-      TVector3 e22                  = EMT_pair_momenta_multi_all[b][1];
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      TVector3 e11       = EMT_pair_momenta_multi_all[a][0];
+      TVector3 e12       = EMT_pair_momenta_multi_all[a][1];
+      TVector3 e21       = EMT_pair_momenta_multi_all[b][0];
+      TVector3 e22       = EMT_pair_momenta_multi_all[b][1];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
 
       if (EMT_multi_all[a] == 1) EMTMulti_InvMass_All_m1->Fill(params.fMinv);
       if (EMT_multi_all[a] == 2) EMTMulti_InvMass_All_m2->Fill(params.fMinv);
@@ -1227,11 +1227,11 @@ void CbmKresConversionKF::MixedEventMulti()
       if (EMT_Event_multi_zero[a] == EMT_Event_multi_zero[b])
         continue;  // to make sure that the photons are from two different events
       if (EMT_multi_zero[a] != EMT_multi_zero[b]) continue;  // check same multiplicity
-      TVector3 e11                  = EMT_pair_momenta_multi_zero[a][0];
-      TVector3 e12                  = EMT_pair_momenta_multi_zero[a][1];
-      TVector3 e21                  = EMT_pair_momenta_multi_zero[b][0];
-      TVector3 e22                  = EMT_pair_momenta_multi_zero[b][1];
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      TVector3 e11       = EMT_pair_momenta_multi_zero[a][0];
+      TVector3 e12       = EMT_pair_momenta_multi_zero[a][1];
+      TVector3 e21       = EMT_pair_momenta_multi_zero[b][0];
+      TVector3 e22       = EMT_pair_momenta_multi_zero[b][1];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
 
       if (EMT_multi_zero[a] == 1) EMTMulti_InvMass_Zero_m1->Fill(params.fMinv);
       if (EMT_multi_zero[a] == 2) EMTMulti_InvMass_Zero_m2->Fill(params.fMinv);
@@ -1251,11 +1251,11 @@ void CbmKresConversionKF::MixedEventMulti()
       if (EMT_Event_multi_one[a] == EMT_Event_multi_one[b])
         continue;  // to make sure that the photons are from two different events
       if (EMT_multi_one[a] != EMT_multi_one[b]) continue;  // check same multiplicity
-      TVector3 e11                  = EMT_pair_momenta_multi_one[a][0];
-      TVector3 e12                  = EMT_pair_momenta_multi_one[a][1];
-      TVector3 e21                  = EMT_pair_momenta_multi_one[b][0];
-      TVector3 e22                  = EMT_pair_momenta_multi_one[b][1];
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      TVector3 e11       = EMT_pair_momenta_multi_one[a][0];
+      TVector3 e12       = EMT_pair_momenta_multi_one[a][1];
+      TVector3 e21       = EMT_pair_momenta_multi_one[b][0];
+      TVector3 e22       = EMT_pair_momenta_multi_one[b][1];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
 
       if (EMT_multi_one[a] == 1) EMTMulti_InvMass_One_m1->Fill(params.fMinv);
       if (EMT_multi_one[a] == 2) EMTMulti_InvMass_One_m2->Fill(params.fMinv);
@@ -1275,11 +1275,11 @@ void CbmKresConversionKF::MixedEventMulti()
       if (EMT_Event_multi_two[a] == EMT_Event_multi_two[b])
         continue;  // to make sure that the photons are from two different events
       if (EMT_multi_two[a] != EMT_multi_two[b]) continue;  // check same multiplicity
-      TVector3 e11                  = EMT_pair_momenta_multi_two[a][0];
-      TVector3 e12                  = EMT_pair_momenta_multi_two[a][1];
-      TVector3 e21                  = EMT_pair_momenta_multi_two[b][0];
-      TVector3 e22                  = EMT_pair_momenta_multi_two[b][1];
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      TVector3 e11       = EMT_pair_momenta_multi_two[a][0];
+      TVector3 e12       = EMT_pair_momenta_multi_two[a][1];
+      TVector3 e21       = EMT_pair_momenta_multi_two[b][0];
+      TVector3 e22       = EMT_pair_momenta_multi_two[b][1];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
 
       if (EMT_multi_two[a] == 1) EMTMulti_InvMass_Two_m1->Fill(params.fMinv);
       if (EMT_multi_two[a] == 2) EMTMulti_InvMass_Two_m2->Fill(params.fMinv);
@@ -1299,11 +1299,11 @@ void CbmKresConversionKF::MixedEventMulti()
       if (EMT_Event_multi_onetwo[a] == EMT_Event_multi_onetwo[b])
         continue;  // to make sure that the photons are from two different events
       if (EMT_multi_onetwo[a] != EMT_multi_onetwo[b]) continue;  // check same multiplicity
-      TVector3 e11                  = EMT_pair_momenta_multi_onetwo[a][0];
-      TVector3 e12                  = EMT_pair_momenta_multi_onetwo[a][1];
-      TVector3 e21                  = EMT_pair_momenta_multi_onetwo[b][0];
-      TVector3 e22                  = EMT_pair_momenta_multi_onetwo[b][1];
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      TVector3 e11       = EMT_pair_momenta_multi_onetwo[a][0];
+      TVector3 e12       = EMT_pair_momenta_multi_onetwo[a][1];
+      TVector3 e21       = EMT_pair_momenta_multi_onetwo[b][0];
+      TVector3 e22       = EMT_pair_momenta_multi_onetwo[b][1];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
 
       if (EMT_multi_onetwo[a] == 1) EMTMulti_InvMass_OneTwo_m1->Fill(params.fMinv);
       if (EMT_multi_onetwo[a] == 2) EMTMulti_InvMass_OneTwo_m2->Fill(params.fMinv);

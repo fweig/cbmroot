@@ -651,9 +651,9 @@ void CbmKresConversionCorrectedPhotons::FindGammasTarget(
       }
       int richcheck = richcheck_0 + richcheck_1;
 
-      Double_t InvmassReco          = CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
-      Double_t OpeningAngle         = CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
+      Double_t InvmassReco  = CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
+      Double_t OpeningAngle = CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
+      LmvmKinePar params    = CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -1031,9 +1031,9 @@ void CbmKresConversionCorrectedPhotons::FindGammasOutside(
       }
 
 
-      Double_t InvmassReco          = CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
-      Double_t OpeningAngle         = CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
+      Double_t InvmassReco  = CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
+      Double_t OpeningAngle = CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
+      LmvmKinePar params    = CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -1701,7 +1701,7 @@ void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Target(double AngleC
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -1756,7 +1756,7 @@ void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Target(double AngleC
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -1825,7 +1825,7 @@ void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Outside(double Angle
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -1891,7 +1891,7 @@ void CbmKresConversionCorrectedPhotons::CDP_likesign_Mixing_Outside(double Angle
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -1953,7 +1953,7 @@ void CbmKresConversionCorrectedPhotons::CDP_Mixing_Target(double AngleCut, doubl
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;
@@ -2030,7 +2030,7 @@ void CbmKresConversionCorrectedPhotons::CDP_Mixing_Outside(double AngleCut, doub
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       if (params.fRapidity != params.fRapidity) continue;
       if (params.fPt != params.fPt) continue;

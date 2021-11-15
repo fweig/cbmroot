@@ -14,7 +14,6 @@
 #define CBM_KRES_FUNCTIONS
 
 #include "CbmGlobalTrack.h"
-#include "CbmLmvmKinematicParams.h"
 #include "CbmMCTrack.h"
 #include "CbmStsKFTrackFitter.h"
 #include "CbmVertex.h"
@@ -23,6 +22,8 @@
 #include "TMath.h"
 #include "TMatrixTSym.h"
 #include "TVector3.h"
+
+#include "LmvmKinePar.h"
 
 #define M2E 2.6112004954086e-7
 #define M2Pion 0.0194798351452
@@ -177,9 +178,9 @@ public:
 
 
   // calculation of many interesting for analysis physics parameters of 2 tracks: Invariant mass, opening angle, rapidity, pt,
-  static CbmLmvmKinematicParams CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2)
+  static LmvmKinePar CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2)
   {
-    CbmLmvmKinematicParams params;
+    LmvmKinePar params;
 
     Double_t energyP = TMath::Sqrt(electron1.Mag2() + M2E);
     TLorentzVector lorVecP(electron1, energyP);
@@ -206,10 +207,10 @@ public:
 
 
   // calculation of many interesting for analysis physics parameters of 4 tracks: Invariant mass, opening angle, rapidity, pt,
-  static CbmLmvmKinematicParams CalculateKinematicParams_4particles(const TVector3 part1, const TVector3 part2,
-                                                                    const TVector3 part3, const TVector3 part4)
+  static LmvmKinePar CalculateKinematicParams_4particles(const TVector3 part1, const TVector3 part2,
+                                                         const TVector3 part3, const TVector3 part4)
   {
-    CbmLmvmKinematicParams params;
+    LmvmKinePar params;
 
     Double_t energy1 = TMath::Sqrt(part1.Mag2() + M2E);
     TLorentzVector lorVec1(part1, energy1);
@@ -422,10 +423,10 @@ public:
 
 
   // calculation of many interesting for analysis physics parameters of 2 leptons and 2 pions: Invariant mass, opening angle, rapidity, pt,
-  static CbmLmvmKinematicParams CalculateKinematicParams_2el_2pions(const TVector3 part1, const TVector3 part2,
-                                                                    const TVector3 part3, const TVector3 part4)
+  static LmvmKinePar CalculateKinematicParams_2el_2pions(const TVector3 part1, const TVector3 part2,
+                                                         const TVector3 part3, const TVector3 part4)
   {
-    CbmLmvmKinematicParams params;
+    LmvmKinePar params;
 
     Double_t energy1 = TMath::Sqrt(part1.Mag2() + M2E);
     TLorentzVector lorVec1(part1, energy1);

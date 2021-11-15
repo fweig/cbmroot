@@ -22,12 +22,13 @@
 
 // included from CbmRoot
 #include "CbmLitGlobalElectronId.h"
-#include "CbmLmvmKinematicParams.h"
 #include "CbmMCTrack.h"
 #include "CbmRichElectronIdAnn.h"
 #include "CbmVertex.h"
 
 #include <vector>
+
+#include "LmvmKinePar.h"
 
 class CbmAnaConversionReco {
 
@@ -61,9 +62,9 @@ public:
                                                   TVector3 electron4);
 
   void CalculateInvMassWithFullRecoCuts();
-  CbmLmvmKinematicParams CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2);
-  CbmLmvmKinematicParams CalculateKinematicParams_4particles(const TVector3 part1, const TVector3 part2,
-                                                             const TVector3 part3, const TVector3 part4);
+  LmvmKinePar CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2);
+  LmvmKinePar CalculateKinematicParams_4particles(const TVector3 part1, const TVector3 part2, const TVector3 part3,
+                                                  const TVector3 part4);
 
   Bool_t IsRichElectronANN(Int_t globalTrackIndex, Double_t momentum);
   Double_t ElectronANNvalue(Int_t globalTrackIndex, Double_t momentum);

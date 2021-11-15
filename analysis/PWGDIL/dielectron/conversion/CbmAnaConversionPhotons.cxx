@@ -1033,10 +1033,9 @@ int CbmAnaConversionPhotons::CheckMC(CbmMCTrack* mctrack)
 }
 
 
-CbmLmvmKinematicParams CbmAnaConversionPhotons::CalculateKinematicParams(const CbmMCTrack* mctrackP,
-                                                                         const CbmMCTrack* mctrackM)
+LmvmKinePar CbmAnaConversionPhotons::CalculateKinematicParams(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM)
 {
-  CbmLmvmKinematicParams params;
+  LmvmKinePar params;
 
   TVector3 momP;  //momentum e+
   mctrackP->GetMomentum(momP);
@@ -1067,10 +1066,9 @@ CbmLmvmKinematicParams CbmAnaConversionPhotons::CalculateKinematicParams(const C
 }
 
 
-CbmLmvmKinematicParams CbmAnaConversionPhotons::CalculateKinematicParamsReco(const TVector3 electron1,
-                                                                             const TVector3 electron2)
+LmvmKinePar CbmAnaConversionPhotons::CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2)
 {
-  CbmLmvmKinematicParams params;
+  LmvmKinePar params;
 
   Double_t energyP = TMath::Sqrt(electron1.Mag2() + M2E);
   TLorentzVector lorVecP(electron1, energyP);
@@ -1109,7 +1107,7 @@ void CbmAnaConversionPhotons::AnalyseElectronsFromGammaMC()
       int motherID_i = fMCTracklist_allElectronsFromGamma[i]->GetMotherId();
       int motherID_j = fMCTracklist_allElectronsFromGamma[j]->GetMotherId();
 
-      CbmLmvmKinematicParams paramSet =
+      LmvmKinePar paramSet =
         CalculateKinematicParams(fMCTracklist_allElectronsFromGamma[i], fMCTracklist_allElectronsFromGamma[j]);
 
       CbmMCTrack* mothermctrack_i = (CbmMCTrack*) fMcTracks->At(motherID_i);
@@ -1214,9 +1212,9 @@ void CbmAnaConversionPhotons::AnalyseElectronsFromGammaReco()
         continue;  // only 1 electron and 1 positron allowed
 
 
-      CbmLmvmKinematicParams paramSet = CalculateKinematicParamsReco(fRecoTracklist_allElectronsFromGammaMom[i],
-                                                                     fRecoTracklist_allElectronsFromGammaMom[j]);
-      Double_t OpeningAngleCut        = CbmAnaConversionCutSettings::CalcOpeningAngleCut(paramSet.fPt);
+      LmvmKinePar paramSet     = CalculateKinematicParamsReco(fRecoTracklist_allElectronsFromGammaMom[i],
+                                                          fRecoTracklist_allElectronsFromGammaMom[j]);
+      Double_t OpeningAngleCut = CbmAnaConversionCutSettings::CalcOpeningAngleCut(paramSet.fPt);
 
 
       fhEFG_angle_all_reco->Fill(
@@ -1345,8 +1343,8 @@ void CbmAnaConversionPhotons::AnalyseElectronsFromPi0Reco()
         continue;  // only 1 electron and 1 positron allowed
 
 
-      CbmLmvmKinematicParams paramSet = CalculateKinematicParamsReco(fRecoTracklist_allElectronsFromPi0Mom[i],
-                                                                     fRecoTracklist_allElectronsFromPi0Mom[j]);
+      LmvmKinePar paramSet = CalculateKinematicParamsReco(fRecoTracklist_allElectronsFromPi0Mom[i],
+                                                          fRecoTracklist_allElectronsFromPi0Mom[j]);
 
       int motherID_i = fRecoTracklist_allElectronsFromPi0[i]->GetMotherId();
       int motherID_j = fRecoTracklist_allElectronsFromPi0[j]->GetMotherId();

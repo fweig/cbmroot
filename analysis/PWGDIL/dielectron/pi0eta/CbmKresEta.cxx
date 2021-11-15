@@ -1061,11 +1061,11 @@ void CbmKresEta::FindGammasTarget(int EventNumEta, double AngleCut, double InvMa
       }
       int richcheck = richcheck_0 + richcheck_1;
 
-      double InvmassReco            = CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
-      double OpeningAngle           = CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
-      double PlaneAngle_last        = CalculatePlaneAngle_last(sts1, sts2);
-      double PlaneAngle_first       = CalculatePlaneAngle_first(sts1, sts2);
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
+      double InvmassReco      = CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
+      double OpeningAngle     = CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
+      double PlaneAngle_last  = CalculatePlaneAngle_last(sts1, sts2);
+      double PlaneAngle_first = CalculatePlaneAngle_first(sts1, sts2);
+      LmvmKinePar params      = CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
 
       int TruePair =
         0;  //correctly reconstructed photon from eta meson:          0 - means wrong pair combination; 		1 - means correct pair
@@ -1299,11 +1299,11 @@ void CbmKresEta::FindGammasOutside(int EventNumEta, double AngleCut, double InvM
         richcheck = Rings_minus_Outside[i] + Rings_plus_Outside[j];
       }
 
-      double InvmassReco            = CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
-      double OpeningAngle           = CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
-      double PlaneAngle_last        = CalculatePlaneAngle_last(sts1, sts2);
-      double PlaneAngle_first       = CalculatePlaneAngle_first(sts1, sts2);
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
+      double InvmassReco      = CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
+      double OpeningAngle     = CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
+      double PlaneAngle_last  = CalculatePlaneAngle_last(sts1, sts2);
+      double PlaneAngle_first = CalculatePlaneAngle_first(sts1, sts2);
+      LmvmKinePar params      = CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
 
       int TruePair =
         0;  //correctly reconstructed photon from eta meson:          0 - means wrong pair combination; 		1 - means correct pair
@@ -1553,7 +1553,7 @@ void CbmKresEta::FindEta(TString /*mod*/, TString position, vector<vector<TVecto
           || StsIndex[gamma1][1] == StsIndex[gamma2][0] || StsIndex[gamma1][1] == StsIndex[gamma2][1])
         continue;  // particles are not used twice --> different
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
       double openingAngleBetweenGammasReco =
         CbmKresFunctions::CalculateOpeningAngleBetweenGammas_Reco(e11, e12, e21, e22);
 
@@ -1668,11 +1668,11 @@ void CbmKresEta::Mixing_Target()
     for (Int_t b = a + 1; b < nof_Target; b++) {
       if (EMT_eta_gg_Event_Target[a] == EMT_eta_gg_Event_Target[b])
         continue;  // to make sure that the photons are from two different events
-      TVector3 e11                  = EMT_eta_gg_pair_momenta_Target[a][0];
-      TVector3 e12                  = EMT_eta_gg_pair_momenta_Target[a][1];
-      TVector3 e21                  = EMT_eta_gg_pair_momenta_Target[b][0];
-      TVector3 e22                  = EMT_eta_gg_pair_momenta_Target[b][1];
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      TVector3 e11       = EMT_eta_gg_pair_momenta_Target[a][0];
+      TVector3 e12       = EMT_eta_gg_pair_momenta_Target[a][1];
+      TVector3 e21       = EMT_eta_gg_pair_momenta_Target[b][0];
+      TVector3 e22       = EMT_eta_gg_pair_momenta_Target[b][1];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
       double openingAngleBetweenGammasReco =
         CbmKresFunctions::CalculateOpeningAngleBetweenGammas_Reco(e11, e12, e21, e22);
       if (openingAngleBetweenGammasReco < 10 || openingAngleBetweenGammasReco > 40) continue;
@@ -1697,11 +1697,11 @@ void CbmKresEta::Mixing_Outside()
     for (Int_t b = a + 1; b < nof_Outside; b++) {
       if (EMT_eta_gg_Event_Outside[a] == EMT_eta_gg_Event_Outside[b])
         continue;  // to make sure that the photons are from two different events
-      TVector3 e11                  = EMT_eta_gg_pair_momenta_Outside[a][0];
-      TVector3 e12                  = EMT_eta_gg_pair_momenta_Outside[a][1];
-      TVector3 e21                  = EMT_eta_gg_pair_momenta_Outside[b][0];
-      TVector3 e22                  = EMT_eta_gg_pair_momenta_Outside[b][1];
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      TVector3 e11       = EMT_eta_gg_pair_momenta_Outside[a][0];
+      TVector3 e12       = EMT_eta_gg_pair_momenta_Outside[a][1];
+      TVector3 e21       = EMT_eta_gg_pair_momenta_Outside[b][0];
+      TVector3 e22       = EMT_eta_gg_pair_momenta_Outside[b][1];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
       double openingAngleBetweenGammasReco =
         CbmKresFunctions::CalculateOpeningAngleBetweenGammas_Reco(e11, e12, e21, e22);
       if (openingAngleBetweenGammasReco < 10 || openingAngleBetweenGammasReco > 40) continue;
@@ -1726,11 +1726,11 @@ void CbmKresEta::Mixing_Both(vector<TH1*> rap_pt_separation_all, vector<TH1*> ra
     for (Int_t b = a + 1; b < nof_Both; b++) {
       if (EMT_eta_gg_Event_Both[a] == EMT_eta_gg_Event_Both[b])
         continue;  // to make sure that the photons are from two different events
-      TVector3 e11                  = EMT_eta_gg_pair_momenta_Both[a][0];
-      TVector3 e12                  = EMT_eta_gg_pair_momenta_Both[a][1];
-      TVector3 e21                  = EMT_eta_gg_pair_momenta_Both[b][0];
-      TVector3 e22                  = EMT_eta_gg_pair_momenta_Both[b][1];
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      TVector3 e11       = EMT_eta_gg_pair_momenta_Both[a][0];
+      TVector3 e12       = EMT_eta_gg_pair_momenta_Both[a][1];
+      TVector3 e21       = EMT_eta_gg_pair_momenta_Both[b][0];
+      TVector3 e22       = EMT_eta_gg_pair_momenta_Both[b][1];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
       double openingAngleBetweenGammasReco =
         CbmKresFunctions::CalculateOpeningAngleBetweenGammas_Reco(e11, e12, e21, e22);
       if (openingAngleBetweenGammasReco < 10 || openingAngleBetweenGammasReco > 40) continue;

@@ -24,11 +24,12 @@
 #include "CbmGlobalTrack.h"
 #include "CbmKFVertex.h"
 #include "CbmLitGlobalElectronId.h"
-#include "CbmLmvmKinematicParams.h"
 #include "CbmMCTrack.h"
 #include "CbmVertex.h"
 
 #include <vector>
+
+#include "LmvmKinePar.h"
 
 class CbmAnaConversionTest2 {
 

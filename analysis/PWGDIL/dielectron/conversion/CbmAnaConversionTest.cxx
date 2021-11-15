@@ -638,7 +638,7 @@ void CbmAnaConversionTest::CombineElectrons_FromSTSandRICH()
         if (fVector_gtIndex[a] == fVector_electronRICH_gtIndex[b]) continue;
         if (fVector_richIndex[a] >= 0) continue;  // 4th lepton should have no signal in RICH, only in STS
 
-        //CbmLmvmKinematicParams params1 = CalculateKinematicParamsReco(fVector_momenta[a], fVector_electronRICH_momenta[b]);
+        //LmvmKinePar params1 = CalculateKinematicParamsReco(fVector_momenta[a], fVector_electronRICH_momenta[b]);
         CbmAnaConversionKinematicParams paramsTest = CbmAnaConversionKinematicParams::KinematicParams_2particles_Reco(
           fVector_momenta[a], fVector_electronRICH_momenta[b]);
 
@@ -698,7 +698,7 @@ void CbmAnaConversionTest::CombineElectrons_FromRICH()
         if (test != 1) continue;  // need one electron and one positron
         if (fVector_electronRICH_gtIndex[a] == fVector_electronRICH_gtIndex[b]) continue;
 
-        //CbmLmvmKinematicParams params1 = CalculateKinematicParamsReco(fVector_electronRICH_momenta[a], fVector_electronRICH_momenta[b]);
+        //LmvmKinePar params1 = CalculateKinematicParamsReco(fVector_electronRICH_momenta[a], fVector_electronRICH_momenta[b]);
         CbmAnaConversionKinematicParams paramsTest = CbmAnaConversionKinematicParams::KinematicParams_2particles_Reco(
           fVector_electronRICH_momenta[a], fVector_electronRICH_momenta[b]);
 
@@ -792,7 +792,7 @@ void CbmAnaConversionTest::CombinePhotons()
         //Double_t opening_angle = OpeningAngleBetweenPhotons(momenta, reconstructedPhotons[a], reconstructedPhotons[b]);
 
 
-        //CbmLmvmKinematicParams params1 = CalculateKinematicParams_4particles(momenta[electron11], momenta[electron12], momenta[electron21], momenta[electron22]);
+        //LmvmKinePar params1 = CalculateKinematicParams_4particles(momenta[electron11], momenta[electron12], momenta[electron21], momenta[electron22]);
 
 
         Double_t ANNe11 = ElectronANNvalue(gtIndex11, fVector_momenta[electron11].Mag());
@@ -972,10 +972,9 @@ void CbmAnaConversionTest::CombinePhotons()
 }
 
 
-CbmLmvmKinematicParams CbmAnaConversionTest::CalculateKinematicParamsReco(const TVector3 electron1,
-                                                                          const TVector3 electron2)
+LmvmKinePar CbmAnaConversionTest::CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2)
 {
-  CbmLmvmKinematicParams params;
+  LmvmKinePar params;
 
   Double_t energyP = TMath::Sqrt(electron1.Mag2() + M2E);
   TLorentzVector lorVecP(electron1, energyP);
@@ -1039,7 +1038,7 @@ void CbmAnaConversionTest::CombineElectrons_STSonly()
         if (test != 1) continue;  // need one electron and one positron
         if (fVector_gtIndex[a] == fVector_gtIndex[b]) continue;
 
-        //CbmLmvmKinematicParams params1 = CalculateKinematicParamsReco(fVector_electronRICH_momenta[a], fVector_electronRICH_momenta[b]);
+        //LmvmKinePar params1 = CalculateKinematicParamsReco(fVector_electronRICH_momenta[a], fVector_electronRICH_momenta[b]);
         CbmAnaConversionKinematicParams paramsTest =
           CbmAnaConversionKinematicParams::KinematicParams_2particles_Reco(fVector_momenta[a], fVector_momenta[b]);
 

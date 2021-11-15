@@ -2,8 +2,8 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Elena Lebedeva [committer], Semen Lebedev */
 
-#ifndef CBM_LMVM_KINE_PARAMS_H
-#define CBM_LMVM_KINE_PARAMS_H
+#ifndef LMVM_KINE_PAR_H
+#define LMVM_KINE_PAR_H
 
 #include "CbmMCTrack.h"
 
@@ -14,7 +14,7 @@
 
 #define M2E 2.6112004954086e-7
 
-class CbmLmvmKinematicParams {
+class LmvmKinePar {
 public:
   Double_t fMomentumMag = 0.;  // Absolute value of momentum
   Double_t fPt          = 0.;  // Transverse momentum
@@ -25,9 +25,9 @@ public:
   /*
     * Calculate kinematic parameters for MC tracks.
     */
-  static CbmLmvmKinematicParams Create(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM)
+  static LmvmKinePar Create(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM)
   {
-    CbmLmvmKinematicParams params;
+    LmvmKinePar params;
     if (mctrackP == nullptr || mctrackM == nullptr) return params;
 
     TVector3 momP;  //momentum e+
@@ -60,9 +60,9 @@ public:
   /*
     * Calculate kinematic parameters for LMVM candidates.
     */
-  static CbmLmvmKinematicParams Create(const LmvmCand* candP, const LmvmCand* candM)
+  static LmvmKinePar Create(const LmvmCand* candP, const LmvmCand* candM)
   {
-    CbmLmvmKinematicParams params;
+    LmvmKinePar params;
     if (candP == nullptr || candM == nullptr) return params;
 
     TLorentzVector lorVecP(candP->fMomentum, candP->fEnergy);

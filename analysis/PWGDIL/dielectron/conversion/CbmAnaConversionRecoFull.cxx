@@ -1386,7 +1386,7 @@ void CbmAnaConversionRecoFull::CombineElectrons(vector<CbmGlobalTrack*> gtrack, 
         if (test != 1) continue;  // need one electron and one positron
         //if(fElectrons_momentaChi[a] > 10 || fElectrons_momentaChi[b] > 10) continue;
 
-        CbmLmvmKinematicParams params1 = CalculateKinematicParamsReco(momenta[a], momenta[b]);
+        LmvmKinePar params1 = CalculateKinematicParamsReco(momenta[a], momenta[b]);
 
         CbmAnaConversionKinematicParams paramsTest =
           CbmAnaConversionKinematicParams::KinematicParams_2particles_Reco(momenta[a], momenta[b]);
@@ -1591,10 +1591,9 @@ Double_t CbmAnaConversionRecoFull::Rap_4particlesRECO(const TVector3 part1, cons
 }
 
 
-CbmLmvmKinematicParams CbmAnaConversionRecoFull::CalculateKinematicParamsReco(const TVector3 electron1,
-                                                                              const TVector3 electron2)
+LmvmKinePar CbmAnaConversionRecoFull::CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2)
 {
-  CbmLmvmKinematicParams params;
+  LmvmKinePar params;
 
   Double_t energyP = TMath::Sqrt(electron1.Mag2() + M2E);
   TLorentzVector lorVecP(electron1, energyP);
@@ -1620,12 +1619,10 @@ CbmLmvmKinematicParams CbmAnaConversionRecoFull::CalculateKinematicParamsReco(co
 }
 
 
-CbmLmvmKinematicParams CbmAnaConversionRecoFull::CalculateKinematicParams_4particles(const TVector3 part1,
-                                                                                     const TVector3 part2,
-                                                                                     const TVector3 part3,
-                                                                                     const TVector3 part4)
+LmvmKinePar CbmAnaConversionRecoFull::CalculateKinematicParams_4particles(const TVector3 part1, const TVector3 part2,
+                                                                          const TVector3 part3, const TVector3 part4)
 {
-  CbmLmvmKinematicParams params;
+  LmvmKinePar params;
 
   Double_t energy1 = TMath::Sqrt(part1.Mag2() + M2E);
   TLorentzVector lorVec1(part1, energy1);
@@ -1737,8 +1734,8 @@ void CbmAnaConversionRecoFull::CombinePhotons(vector<CbmGlobalTrack*> gtrack, ve
         if (index == 1) fhPhotons_angleBetween->Fill(opening_angle);
 
 
-        CbmLmvmKinematicParams params1 = CalculateKinematicParams_4particles(momenta[electron11], momenta[electron12],
-                                                                             momenta[electron21], momenta[electron22]);
+        LmvmKinePar params1 = CalculateKinematicParams_4particles(momenta[electron11], momenta[electron12],
+                                                                  momenta[electron21], momenta[electron22]);
 
         CbmAnaConversionKinematicParams paramsTest = CbmAnaConversionKinematicParams::KinematicParams_4particles_Reco(
           momenta[electron11], momenta[electron12], momenta[electron21], momenta[electron22]);
@@ -2252,7 +2249,7 @@ void CbmAnaConversionRecoFull::CombineElectronsRefit()
 				if(test != 1) continue;		// need one electron and one positron
 				//if(fElectrons_momentaChi[a] > 10 || fElectrons_momentaChi[b] > 10) continue;
 				
-				CbmLmvmKinematicParams params1 = CalculateKinematicParamsReco(fElectrons_momenta_refit[a], fElectrons_momenta_refit[b]);
+				LmvmKinePar params1 = CalculateKinematicParamsReco(fElectrons_momenta_refit[a], fElectrons_momenta_refit[b]);
 				
 				Double_t openingAngleCut = 1;
 				Double_t invMassCut = 0.03;
@@ -2387,12 +2384,12 @@ void CbmAnaConversionRecoFull::CombineElectrons()
 						fhElectrons_invmass->Fill(invmass);
 						
 						
-						CbmLmvmKinematicParams params1 = CalculateKinematicParamsReco(fElectrons_momenta[a], fElectrons_momenta[b]);
-						CbmLmvmKinematicParams params2 = CalculateKinematicParamsReco(fElectrons_momenta[a], fElectrons_momenta[c]);
-						CbmLmvmKinematicParams params3 = CalculateKinematicParamsReco(fElectrons_momenta[a], fElectrons_momenta[d]);
-						CbmLmvmKinematicParams params4 = CalculateKinematicParamsReco(fElectrons_momenta[b], fElectrons_momenta[c]);
-						CbmLmvmKinematicParams params5 = CalculateKinematicParamsReco(fElectrons_momenta[b], fElectrons_momenta[d]);
-						CbmLmvmKinematicParams params6 = CalculateKinematicParamsReco(fElectrons_momenta[c], fElectrons_momenta[d]);
+						LmvmKinePar params1 = CalculateKinematicParamsReco(fElectrons_momenta[a], fElectrons_momenta[b]);
+						LmvmKinePar params2 = CalculateKinematicParamsReco(fElectrons_momenta[a], fElectrons_momenta[c]);
+						LmvmKinePar params3 = CalculateKinematicParamsReco(fElectrons_momenta[a], fElectrons_momenta[d]);
+						LmvmKinePar params4 = CalculateKinematicParamsReco(fElectrons_momenta[b], fElectrons_momenta[c]);
+						LmvmKinePar params5 = CalculateKinematicParamsReco(fElectrons_momenta[b], fElectrons_momenta[d]);
+						LmvmKinePar params6 = CalculateKinematicParamsReco(fElectrons_momenta[c], fElectrons_momenta[d]);
 						
 						Double_t openingAngleCut = 1;
 						Int_t IsPhoton_openingAngle1 = (params1.fAngle < openingAngleCut);
@@ -2443,7 +2440,7 @@ void CbmAnaConversionRecoFull::CombineElectrons()
         if (test != 1) continue;  // need one electron and one positron
         //if(fElectrons_momentaChi[a] > 10 || fElectrons_momentaChi[b] > 10) continue;
 
-        CbmLmvmKinematicParams params1 = CalculateKinematicParamsReco(fElectrons_momenta[a], fElectrons_momenta[b]);
+        LmvmKinePar params1 = CalculateKinematicParamsReco(fElectrons_momenta[a], fElectrons_momenta[b]);
 
         // standard fixed opening angle cut
         //Double_t openingAngleCut = 1;
@@ -2551,7 +2548,7 @@ void CbmAnaConversionRecoFull::CombinePhotons()
         fhPhotons_angleBetween->Fill(opening_angle);
 
 
-        CbmLmvmKinematicParams params1 =
+        LmvmKinePar params1 =
           CalculateKinematicParams_4particles(fElectrons_momenta[electron11], fElectrons_momenta[electron12],
                                               fElectrons_momenta[electron21], fElectrons_momenta[electron22]);
 

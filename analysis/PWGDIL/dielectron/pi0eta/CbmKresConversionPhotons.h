@@ -8,7 +8,6 @@
 #include "CbmKFVertex.h"
 #include "CbmKresSelectAnnPhotons.h"
 #include "CbmKresTrainAnnDirectPhotons.h"
-#include "CbmLmvmKinematicParams.h"
 #include "CbmMCTrack.h"
 #include "CbmRichRing.h"
 #include "CbmRichRingFitterEllipseTau.h"
@@ -19,6 +18,7 @@
 #include <TClonesArray.h>
 
 #include "KFParticle.h"
+#include "LmvmKinePar.h"
 
 class CbmRichRingFitterEllipseTau;
 

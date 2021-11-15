@@ -841,9 +841,9 @@ void CbmKresConversionPhotons::FindGammasTarget(int EventNumMan, double AngleCut
       }
       int richcheck = richcheck_0 + richcheck_1;
 
-      Double_t InvmassReco          = CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
-      Double_t OpeningAngle         = CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
+      Double_t InvmassReco  = CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
+      Double_t OpeningAngle = CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
+      LmvmKinePar params    = CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
 
       DP_candidates_InvMass_vs_OA_Target->Fill(InvmassReco, OpeningAngle);
       DP_candidates_InvMass_vs_OA_Both->Fill(InvmassReco, OpeningAngle);
@@ -1428,9 +1428,9 @@ void CbmKresConversionPhotons::FindGammasOutside(
       }
 
 
-      Double_t InvmassReco          = CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
-      Double_t OpeningAngle         = CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
+      Double_t InvmassReco  = CbmKresFunctions::Invmass_2particles_RECO(part1, part2);
+      Double_t OpeningAngle = CbmKresFunctions::CalculateOpeningAngle_Reco(part1, part2);
+      LmvmKinePar params    = CbmKresFunctions::CalculateKinematicParamsReco(part1, part2);
 
       DP_candidates_InvMass_vs_OA_Outside->Fill(InvmassReco, OpeningAngle);
       DP_candidates_InvMass_vs_OA_Both->Fill(InvmassReco, OpeningAngle);
@@ -2354,7 +2354,7 @@ void CbmKresConversionPhotons::DP_likesign_Mixing_Target(double AngleCut, double
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       int rings_amount = DP_LK_EMT_NofRings_minus_Target[a] + DP_LK_EMT_NofRings_minus_Target[b];
 
@@ -2393,7 +2393,7 @@ void CbmKresConversionPhotons::DP_likesign_Mixing_Target(double AngleCut, double
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       int rings_amount = DP_LK_EMT_NofRings_plus_Target[a] + DP_LK_EMT_NofRings_plus_Target[b];
 
@@ -2446,7 +2446,7 @@ void CbmKresConversionPhotons::DP_likesign_Mixing_Outside(double AngleCut, doubl
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       int rings_amount = DP_LK_EMT_NofRings_minus_Outside[a] + DP_LK_EMT_NofRings_minus_Outside[b];
 
@@ -2496,7 +2496,7 @@ void CbmKresConversionPhotons::DP_likesign_Mixing_Outside(double AngleCut, doubl
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
 
       int rings_amount = DP_LK_EMT_NofRings_plus_Outside[a] + DP_LK_EMT_NofRings_plus_Outside[b];
 
@@ -2542,8 +2542,8 @@ void CbmKresConversionPhotons::DP_Mixing_Target(double AngleCut, double InvMassC
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
-      int rings_amount              = DP_EMT_NofRings_minus_Target[a] + DP_EMT_NofRings_plus_Target[b];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      int rings_amount   = DP_EMT_NofRings_minus_Target[a] + DP_EMT_NofRings_plus_Target[b];
 
       DP_EMT_Pt_all_Target->Fill(params.fPt);
       DP_EMT_Pt_all_Both->Fill(params.fPt);
@@ -2609,8 +2609,8 @@ void CbmKresConversionPhotons::DP_Mixing_Outside(double AngleCut, double InvMass
       if (TMath::Abs(InvmassReco) > InvMassCut) continue;
       // if (AnnValue < 0.9 || AnnValue > 1.1) continue;
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
-      int rings_amount              = DP_EMT_NofRings_minus_Outside[a] + DP_EMT_NofRings_plus_Outside[b];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParamsReco(e1, e2);
+      int rings_amount   = DP_EMT_NofRings_minus_Outside[a] + DP_EMT_NofRings_plus_Outside[b];
 
       DP_EMT_Pt_all_Outside->Fill(params.fPt);
       DP_EMT_Pt_all_Both->Fill(params.fPt);

@@ -22,11 +22,12 @@
 
 // included from CbmRoot
 #include "CbmKFVertex.h"
-#include "CbmLmvmKinematicParams.h"
 #include "CbmMCTrack.h"
 #include "CbmVertex.h"
 
 #include <vector>
+
+#include "LmvmKinePar.h"
 
 /*
 class CbmAnaConversionKinematicParams
@@ -62,8 +63,8 @@ public:
   int CheckMC(CbmMCTrack* mctrack);
 
   //CbmAnaConversionKinematicParams CalculateKinematicParams(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM);
-  CbmLmvmKinematicParams CalculateKinematicParams(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM);
-  CbmLmvmKinematicParams CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2);
+  LmvmKinePar CalculateKinematicParams(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM);
+  LmvmKinePar CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2);
 
 
   void AnalyseElectronsFromGammaMC();

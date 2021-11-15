@@ -24,11 +24,12 @@
 #include "CbmGlobalTrack.h"
 #include "CbmKFVertex.h"
 #include "CbmLitGlobalElectronId.h"
-#include "CbmLmvmKinematicParams.h"
 #include "CbmMCTrack.h"
 #include "CbmVertex.h"
 
 #include <vector>
+
+#include "LmvmKinePar.h"
 
 class CbmAnaConversionTest {
 
@@ -49,7 +50,7 @@ public:
   void CombineElectrons_FromSTSandRICH();
   void CombinePhotons();
   void CombineElectrons_FromRICH();
-  CbmLmvmKinematicParams CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2);
+  LmvmKinePar CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2);
   Double_t Invmass_4particlesRECO(const TVector3 part1, const TVector3 part2, const TVector3 part3,
                                   const TVector3 part4);
 

@@ -2198,7 +2198,7 @@ void CbmKresConversionManual::FindPi0(TString mod, TString position, vector<vect
           || StsIndex[gamma1][1] == StsIndex[gamma2][0] || StsIndex[gamma1][1] == StsIndex[gamma2][1])
         continue;  // particles are not used twice --> different
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
 
       CbmKresFunctions::CalculateOpeningAngle_Reco(e11, e12);
       CbmKresFunctions::CalculateOpeningAngle_Reco(e21, e22);
@@ -2578,11 +2578,11 @@ void CbmKresConversionManual::Mixing_Target()
     for (Int_t b = a + 1; b < nof_Target; b++) {
       if (EMT_man_Event_Target[a] == EMT_man_Event_Target[b])
         continue;  // to make sure that the photons are from two different events
-      TVector3 e11                  = EMT_man_pair_momenta_Target[a][0];
-      TVector3 e12                  = EMT_man_pair_momenta_Target[a][1];
-      TVector3 e21                  = EMT_man_pair_momenta_Target[b][0];
-      TVector3 e22                  = EMT_man_pair_momenta_Target[b][1];
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      TVector3 e11       = EMT_man_pair_momenta_Target[a][0];
+      TVector3 e12       = EMT_man_pair_momenta_Target[a][1];
+      TVector3 e21       = EMT_man_pair_momenta_Target[b][0];
+      TVector3 e22       = EMT_man_pair_momenta_Target[b][1];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
 
       EMT_InvMass_all_Target->Fill(params.fMinv);
       if (EMT_man_NofRings_Target[a] == 0 && EMT_man_NofRings_Target[b] == 0)
@@ -2608,11 +2608,11 @@ void CbmKresConversionManual::Mixing_Outside()
     for (Int_t b = a + 1; b < nof_Outside; b++) {
       if (EMT_man_Event_Outside[a] == EMT_man_Event_Outside[b])
         continue;  // to make sure that the photons are from two different events
-      TVector3 e11                  = EMT_man_pair_momenta_Outside[a][0];
-      TVector3 e12                  = EMT_man_pair_momenta_Outside[a][1];
-      TVector3 e21                  = EMT_man_pair_momenta_Outside[b][0];
-      TVector3 e22                  = EMT_man_pair_momenta_Outside[b][1];
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      TVector3 e11       = EMT_man_pair_momenta_Outside[a][0];
+      TVector3 e12       = EMT_man_pair_momenta_Outside[a][1];
+      TVector3 e21       = EMT_man_pair_momenta_Outside[b][0];
+      TVector3 e22       = EMT_man_pair_momenta_Outside[b][1];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
 
       EMT_InvMass_all_Outside->Fill(params.fMinv);
       if (EMT_man_NofRings_Outside[a] == 0 && EMT_man_NofRings_Outside[b] == 0)
@@ -2638,11 +2638,11 @@ void CbmKresConversionManual::Mixing_Both()
     for (Int_t b = a + 1; b < nof_Both; b++) {
       if (EMT_man_Event_Both[a] == EMT_man_Event_Both[b])
         continue;  // to make sure that the photons are from two different events
-      TVector3 e11                  = EMT_man_pair_momenta_Both[a][0];
-      TVector3 e12                  = EMT_man_pair_momenta_Both[a][1];
-      TVector3 e21                  = EMT_man_pair_momenta_Both[b][0];
-      TVector3 e22                  = EMT_man_pair_momenta_Both[b][1];
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      TVector3 e11       = EMT_man_pair_momenta_Both[a][0];
+      TVector3 e12       = EMT_man_pair_momenta_Both[a][1];
+      TVector3 e21       = EMT_man_pair_momenta_Both[b][0];
+      TVector3 e22       = EMT_man_pair_momenta_Both[b][1];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
 
       EMT_InvMass_all_Both->Fill(params.fMinv);
       if (EMT_man_NofRings_Both[a] == 0 && EMT_man_NofRings_Both[b] == 0) EMT_InvMass_zero_Both->Fill(params.fMinv);
@@ -2945,11 +2945,11 @@ void CbmKresConversionManual::Mixing_WAC()
     for (Int_t b = a + 1; b < nof_WAC; b++) {
       if (EMT_man_Event_WAC[a] == EMT_man_Event_WAC[b])
         continue;  // to make sure that the photons are from two different events
-      TVector3 e11                  = EMT_man_pair_momenta_WAC[a][0];
-      TVector3 e12                  = EMT_man_pair_momenta_WAC[a][1];
-      TVector3 e21                  = EMT_man_pair_momenta_WAC[b][0];
-      TVector3 e22                  = EMT_man_pair_momenta_WAC[b][1];
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      TVector3 e11       = EMT_man_pair_momenta_WAC[a][0];
+      TVector3 e12       = EMT_man_pair_momenta_WAC[a][1];
+      TVector3 e21       = EMT_man_pair_momenta_WAC[b][0];
+      TVector3 e22       = EMT_man_pair_momenta_WAC[b][1];
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
       EMT_InvMass_WAC->Fill(params.fMinv);
     }
   }

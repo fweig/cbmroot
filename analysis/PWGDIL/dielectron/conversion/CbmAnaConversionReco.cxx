@@ -1234,7 +1234,7 @@ void CbmAnaConversionReco::InvariantMassTest_4epem()
                 fhEPEM_pt_vs_p_all_refitted->Fill(fRecoRefittedMomentum[k].Perp(), fRecoRefittedMomentum[k].Mag());
                 fhEPEM_pt_vs_p_all_refitted->Fill(fRecoRefittedMomentum[l].Perp(), fRecoRefittedMomentum[l].Mag());
 
-                CbmLmvmKinematicParams params1 =
+                LmvmKinePar params1 =
                   CalculateKinematicParams_4particles(fRecoRefittedMomentum[i], fRecoRefittedMomentum[j],
                                                       fRecoRefittedMomentum[k], fRecoRefittedMomentum[l]);
                 fhPi0_pt_vs_rap_gee->Fill(params1.fPt, params1.fRapidity);
@@ -1328,7 +1328,7 @@ void CbmAnaConversionReco::InvariantMassTest_4epem()
                 fhEPEM_pt_vs_p_all_refitted->Fill(fRecoRefittedMomentum[k].Perp(), fRecoRefittedMomentum[k].Mag());
                 fhEPEM_pt_vs_p_all_refitted->Fill(fRecoRefittedMomentum[l].Perp(), fRecoRefittedMomentum[l].Mag());
 
-                CbmLmvmKinematicParams params1 =
+                LmvmKinePar params1 =
                   CalculateKinematicParams_4particles(fRecoRefittedMomentum[i], fRecoRefittedMomentum[j],
                                                       fRecoRefittedMomentum[k], fRecoRefittedMomentum[l]);
                 fhPi0_pt_vs_rap_gee->Fill(params1.fPt, params1.fRapidity);
@@ -1422,7 +1422,7 @@ void CbmAnaConversionReco::InvariantMassTest_4epem()
                 fhEPEM_pt_vs_p_all_refitted->Fill(fRecoRefittedMomentum[k].Perp(), fRecoRefittedMomentum[k].Mag());
                 fhEPEM_pt_vs_p_all_refitted->Fill(fRecoRefittedMomentum[l].Perp(), fRecoRefittedMomentum[l].Mag());
 
-                CbmLmvmKinematicParams params1 =
+                LmvmKinePar params1 =
                   CalculateKinematicParams_4particles(fRecoRefittedMomentum[i], fRecoRefittedMomentum[j],
                                                       fRecoRefittedMomentum[k], fRecoRefittedMomentum[l]);
                 fhPi0_pt_vs_rap_gee->Fill(params1.fPt, params1.fRapidity);
@@ -1744,7 +1744,7 @@ void CbmAnaConversionReco::InvariantMassTest_4epem()
               fhEPEM_openingAngle_betweenGammas_reco->Fill(openingAngleBetweenGammasReco);
 
 
-              CbmLmvmKinematicParams params1 = CalculateKinematicParams_4particles(
+              LmvmKinePar params1 = CalculateKinematicParams_4particles(
                 fRecoRefittedMomentum[i], fRecoRefittedMomentum[j], fRecoRefittedMomentum[k], fRecoRefittedMomentum[l]);
               fhPi0_pt_vs_rap_gg->Fill(params1.fPt, params1.fRapidity);
               fhPi0_pt_vs_rap_all->Fill(params1.fPt, params1.fRapidity);
@@ -1798,8 +1798,8 @@ void CbmAnaConversionReco::InvariantMassTest_4epem()
               Bool_t IsRichElectron3MC = (TMath::Abs(fRecoTracklistEPEM[k]->GetPdgCode()) == 11);
               Bool_t IsRichElectron4MC = (TMath::Abs(fRecoTracklistEPEM[l]->GetPdgCode()) == 11);
 
-              CbmLmvmKinematicParams paramsCut1;
-              CbmLmvmKinematicParams paramsCut2;
+              LmvmKinePar paramsCut1;
+              LmvmKinePar paramsCut2;
 
               if (motherId1 == motherId2) {
                 paramsCut1 = CalculateKinematicParamsReco(fRecoRefittedMomentum[i], fRecoRefittedMomentum[j]);
@@ -1941,8 +1941,8 @@ void CbmAnaConversionReco::CutEfficiencyStudies(int e1, int e2, int e3, int e4, 
   Double_t ANNvalueE3 = ElectronANNvalue(fRecoTracklistEPEM_gtid[e3], fRecoRefittedMomentum[e3].Mag());
   Double_t ANNvalueE4 = ElectronANNvalue(fRecoTracklistEPEM_gtid[e4], fRecoRefittedMomentum[e4].Mag());
 
-  CbmLmvmKinematicParams paramsCut1;
-  CbmLmvmKinematicParams paramsCut2;
+  LmvmKinePar paramsCut1;
+  LmvmKinePar paramsCut2;
 
   if (motherE1 == motherE2) {
     paramsCut1 = CalculateKinematicParamsReco(fRecoRefittedMomentum[e1], fRecoRefittedMomentum[e2]);
@@ -2330,18 +2330,12 @@ void CbmAnaConversionReco::CalculateInvMassWithFullRecoCuts()
             //fhElectrons_invmass->Fill(invmass);
 
 
-            CbmLmvmKinematicParams params1 =
-              CalculateKinematicParamsReco(fRecoRefittedMomentum[a], fRecoRefittedMomentum[b]);
-            CbmLmvmKinematicParams params2 =
-              CalculateKinematicParamsReco(fRecoRefittedMomentum[a], fRecoRefittedMomentum[c]);
-            CbmLmvmKinematicParams params3 =
-              CalculateKinematicParamsReco(fRecoRefittedMomentum[a], fRecoRefittedMomentum[d]);
-            CbmLmvmKinematicParams params4 =
-              CalculateKinematicParamsReco(fRecoRefittedMomentum[b], fRecoRefittedMomentum[c]);
-            CbmLmvmKinematicParams params5 =
-              CalculateKinematicParamsReco(fRecoRefittedMomentum[b], fRecoRefittedMomentum[d]);
-            CbmLmvmKinematicParams params6 =
-              CalculateKinematicParamsReco(fRecoRefittedMomentum[c], fRecoRefittedMomentum[d]);
+            LmvmKinePar params1 = CalculateKinematicParamsReco(fRecoRefittedMomentum[a], fRecoRefittedMomentum[b]);
+            LmvmKinePar params2 = CalculateKinematicParamsReco(fRecoRefittedMomentum[a], fRecoRefittedMomentum[c]);
+            LmvmKinePar params3 = CalculateKinematicParamsReco(fRecoRefittedMomentum[a], fRecoRefittedMomentum[d]);
+            LmvmKinePar params4 = CalculateKinematicParamsReco(fRecoRefittedMomentum[b], fRecoRefittedMomentum[c]);
+            LmvmKinePar params5 = CalculateKinematicParamsReco(fRecoRefittedMomentum[b], fRecoRefittedMomentum[d]);
+            LmvmKinePar params6 = CalculateKinematicParamsReco(fRecoRefittedMomentum[c], fRecoRefittedMomentum[d]);
 
             Double_t openingAngleCut     = 1;
             Int_t IsPhoton_openingAngle1 = (params1.fAngle < openingAngleCut);
@@ -2379,10 +2373,9 @@ void CbmAnaConversionReco::CalculateInvMassWithFullRecoCuts()
 }
 
 
-CbmLmvmKinematicParams CbmAnaConversionReco::CalculateKinematicParamsReco(const TVector3 electron1,
-                                                                          const TVector3 electron2)
+LmvmKinePar CbmAnaConversionReco::CalculateKinematicParamsReco(const TVector3 electron1, const TVector3 electron2)
 {
-  CbmLmvmKinematicParams params;
+  LmvmKinePar params;
 
   Double_t energyP = TMath::Sqrt(electron1.Mag2() + M2E);
   TLorentzVector lorVecP(electron1, energyP);
@@ -2408,12 +2401,10 @@ CbmLmvmKinematicParams CbmAnaConversionReco::CalculateKinematicParamsReco(const 
 }
 
 
-CbmLmvmKinematicParams CbmAnaConversionReco::CalculateKinematicParams_4particles(const TVector3 part1,
-                                                                                 const TVector3 part2,
-                                                                                 const TVector3 part3,
-                                                                                 const TVector3 part4)
+LmvmKinePar CbmAnaConversionReco::CalculateKinematicParams_4particles(const TVector3 part1, const TVector3 part2,
+                                                                      const TVector3 part3, const TVector3 part4)
 {
-  CbmLmvmKinematicParams params;
+  LmvmKinePar params;
 
   Double_t energy1 = TMath::Sqrt(part1.Mag2() + M2E);
   TLorentzVector lorVec1(part1, energy1);

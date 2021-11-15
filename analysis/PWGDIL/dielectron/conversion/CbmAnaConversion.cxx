@@ -1285,10 +1285,9 @@ void CbmAnaConversion::AnalyseElectrons(CbmMCTrack* mctrack)
 }
 
 
-CbmLmvmKinematicParams CbmAnaConversion::CalculateKinematicParams(const CbmMCTrack* mctrackP,
-                                                                  const CbmMCTrack* mctrackM)
+LmvmKinePar CbmAnaConversion::CalculateKinematicParams(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM)
 {
-  CbmLmvmKinematicParams params;
+  LmvmKinePar params;
 
   TVector3 momP;  //momentum e+
   mctrackP->GetMomentum(momP);

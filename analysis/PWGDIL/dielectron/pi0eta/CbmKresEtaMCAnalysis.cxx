@@ -854,9 +854,9 @@ void CbmKresEtaMCAnalysis::EtaDoubleGammaAnalysis_plusBG(double OpeningAngleCut,
       double openingAngleBetweenGammasReco = CalculateOpeningAngleBetweenGammas_Reco(e11, e12, e21, e22);
       if (openingAngleBetweenGammasReco < 10 || openingAngleBetweenGammasReco > 40) continue;
 
-      double InvMass_true           = CbmKresFunctions::Invmass_4particles_MC(mcTrack1, mcTrack2, mcTrack3, mcTrack4);
-      double InvMass_reco           = CbmKresFunctions::Invmass_4particles_RECO(e11, e12, e21, e22);
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      double InvMass_true = CbmKresFunctions::Invmass_4particles_MC(mcTrack1, mcTrack2, mcTrack3, mcTrack4);
+      double InvMass_reco = CbmKresFunctions::Invmass_4particles_RECO(e11, e12, e21, e22);
+      LmvmKinePar params  = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
 
       gg[8]->Fill(InvMass_true);
       gg[9]->Fill(InvMass_reco);
@@ -1023,9 +1023,9 @@ void CbmKresEtaMCAnalysis::EtaChargedPionsGammaAnalysis_plusBG(double OpeningAng
       TVector3 e21 = ECPGA_pions_RefMom[pionpair][0];
       TVector3 e22 = ECPGA_pions_RefMom[pionpair][1];
 
-      Double_t InvMass_true         = CbmKresFunctions::Invmass_4particles_MC(mcTrack1, mcTrack2, mcTrack3, mcTrack4);
-      Double_t InvMass_reco         = CbmKresFunctions::Invmass_2el_2pions_RECO(e11, e12, e21, e22);
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_2el_2pions(e11, e12, e21, e22);
+      Double_t InvMass_true = CbmKresFunctions::Invmass_4particles_MC(mcTrack1, mcTrack2, mcTrack3, mcTrack4);
+      Double_t InvMass_reco = CbmKresFunctions::Invmass_2el_2pions_RECO(e11, e12, e21, e22);
+      LmvmKinePar params    = CbmKresFunctions::CalculateKinematicParams_2el_2pions(e11, e12, e21, e22);
 
       ppg[6]->Fill(InvMass_true);
       ppg[7]->Fill(InvMass_reco);
@@ -1122,7 +1122,7 @@ void CbmKresEtaMCAnalysis::Mixing_gg()
       double openingAngleBetweenGammasReco = CalculateOpeningAngleBetweenGammas_Reco(e11, e12, e21, e22);
       if (openingAngleBetweenGammasReco < 10 || openingAngleBetweenGammasReco > 40) continue;
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_4particles(e11, e12, e21, e22);
       EMT_eta_gg->Fill(params.fMinv);
     }
   }
@@ -1143,7 +1143,7 @@ void CbmKresEtaMCAnalysis::Mixing_ppg()
       TVector3 e21 = EMT_ppg_pp_pair_momenta[b][0];
       TVector3 e22 = EMT_ppg_pp_pair_momenta[b][1];
 
-      CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_2el_2pions(e11, e12, e21, e22);
+      LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_2el_2pions(e11, e12, e21, e22);
       EMT_eta_ppg->Fill(params.fMinv);
     }
   }
@@ -1175,7 +1175,7 @@ void CbmKresEtaMCAnalysis::Mixing_three_body()
         TVector3 e11 = EMT_ppg_ee_pair_momenta[a][0];
         TVector3 e12 = EMT_ppg_ee_pair_momenta[a][1];
 
-        CbmLmvmKinematicParams params = CbmKresFunctions::CalculateKinematicParams_2el_2pions(e11, e12, e21, e22);
+        LmvmKinePar params = CbmKresFunctions::CalculateKinematicParams_2el_2pions(e11, e12, e21, e22);
         EMT_eta_three_body->Fill(params.fMinv);
       }
     }

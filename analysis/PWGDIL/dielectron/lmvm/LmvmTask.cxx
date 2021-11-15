@@ -311,10 +311,10 @@ void LmvmTask::DoMcPair()
 
     bool isAcc1 = IsMcTrackAccepted(iMc1);
     for (int iMc2 = iMc1 + 1; iMc2 < nMcTracks; iMc2++) {
-      CbmMCTrack* mct2            = static_cast<CbmMCTrack*>(fMCTracks->At(iMc2));
-      bool isAccPair              = isAcc1 && IsMcTrackAccepted(iMc2);
-      ELmvmSrc srcPair            = LmvmUtils::GetMcPairSrc(mct1, mct2, fMCTracks);
-      CbmLmvmKinematicParams pKin = CbmLmvmKinematicParams::Create(mct1, mct2);
+      CbmMCTrack* mct2 = static_cast<CbmMCTrack*>(fMCTracks->At(iMc2));
+      bool isAccPair   = isAcc1 && IsMcTrackAccepted(iMc2);
+      ELmvmSrc srcPair = LmvmUtils::GetMcPairSrc(mct1, mct2, fMCTracks);
+      LmvmKinePar pKin = LmvmKinePar::Create(mct1, mct2);
 
       if (srcPair == ELmvmSrc::Signal) {
         fH.FillH2("hMomVsAnglePairSignalMc", std::sqrt(mct1->GetP() * mct2->GetP()), pKin.fAngle);
@@ -574,8 +574,8 @@ void LmvmTask::CombinatorialPairs()
       if (cand2.IsMcSignal()) continue;
       //double weight = (cand1.IsMcSignal() || cand2.IsMcSignal()) ? fW : 1.;
 
-      CbmLmvmKinematicParams pRec = CbmLmvmKinematicParams::Create(&cand1, &cand2);
-      bool isSameEvent            = (cand1.fEventNumber == cand2.fEventNumber);
+      LmvmKinePar pRec = LmvmKinePar::Create(&cand1, &cand2);
+      bool isSameEvent = (cand1.fEventNumber == cand2.fEventNumber);
       for (auto step : fH.fAnaSteps) {
         if (step == ELmvmAnaStep::Mc || step == ELmvmAnaStep::Acc) continue;
         if (cand1.IsCutTill(step) && cand2.IsCutTill(step)) {
@@ -660,8 +660,7 @@ void LmvmTask::AssignMcToTopologyCands(vector<LmvmCand>& topoCands)
   }
 }
 
-void LmvmTask::PairSource(const LmvmCand& candP, const LmvmCand& candM, ELmvmAnaStep step,
-                          const CbmLmvmKinematicParams& parRec)
+void LmvmTask::PairSource(const LmvmCand& candP, const LmvmCand& candM, ELmvmAnaStep step, const LmvmKinePar& parRec)
 {
   ELmvmSrc src = LmvmUtils::GetMcPairSrc(candP, candM);
   fH.FillH1("hAnglePair", src, step, parRec.fAngle, fW);
@@ -729,8 +728,8 @@ void LmvmTask::TrackSource(const LmvmCand& cand, ELmvmAnaStep step, int pdg)
   }
 }
 
-void LmvmTask::FillPairHists(const LmvmCand& candP, const LmvmCand& candM, const CbmLmvmKinematicParams& parMc,
-                             const CbmLmvmKinematicParams& parRec, ELmvmAnaStep step)
+void LmvmTask::FillPairHists(const LmvmCand& candP, const LmvmCand& candM, const LmvmKinePar& parMc,
+                             const LmvmKinePar& parRec, ELmvmAnaStep step)
 {
   // mo need to fill histograms for MC and Acc steps
   if (step == ELmvmAnaStep::Mc || step == ELmvmAnaStep::Acc) return;
@@ -789,8 +788,8 @@ void LmvmTask::SignalAndBgReco()
       CbmMCTrack* mctrackM =
         (candM.fStsMcTrackId >= 0) ? static_cast<CbmMCTrack*>(fMCTracks->At(candM.fStsMcTrackId)) : nullptr;
 
-      CbmLmvmKinematicParams pMC  = CbmLmvmKinematicParams::Create(mctrackP, mctrackM);
-      CbmLmvmKinematicParams pRec = CbmLmvmKinematicParams::Create(&candP, &candM);
+      LmvmKinePar pMC  = LmvmKinePar::Create(mctrackP, mctrackM);
+      LmvmKinePar pRec = LmvmKinePar::Create(&candP, &candM);
 
       for (auto step : fH.fAnaSteps) {
         if (candP.IsCutTill(step) && candM.IsCutTill(step)) FillPairHists(candP, candM, pMC, pRec, step);
@@ -806,7 +805,7 @@ void LmvmTask::CheckGammaConvAndPi0()
     for (auto& candM : fCands) {
       if (candM.fCharge > 0) continue;
       if (candP.IsCutTill(ELmvmAnaStep::ElId) && candM.IsCutTill(ELmvmAnaStep::ElId)) {
-        CbmLmvmKinematicParams pRec = CbmLmvmKinematicParams::Create(&candP, &candM);
+        LmvmKinePar pRec = LmvmKinePar::Create(&candP, &candM);
         if (fCuts.IsGammaCutOk(pRec.fMinv)) {
           candM.fIsGammaCut = true;
           candP.fIsGammaCut = true;
@@ -842,7 +841,7 @@ void LmvmTask::CheckTopologyCut(ELmvmTopologyCut cut, const string& name)
       for (size_t iM = 0; iM < tpCands.size(); iM++) {
         // different charges, charge iM != charge iP
         if (tpCands[iM].fCharge != cand.fCharge) {
-          CbmLmvmKinematicParams pRec = CbmLmvmKinematicParams::Create(&cand, &tpCands[iM]);
+          LmvmKinePar pRec = LmvmKinePar::Create(&cand, &tpCands[iM]);
           dataV.emplace_back(pRec.fAngle, tpCands[iM].fMomentum.Mag(), iM);
         }
       }

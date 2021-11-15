@@ -15,10 +15,11 @@
 #define CBM_ANA_CONVERSION
 
 #include "CbmKFVertex.h"
-#include "CbmLmvmKinematicParams.h"
 #include "CbmMCTrack.h"
 
 #include "FairTask.h"
+
+#include "LmvmKinePar.h"
 
 //#include "KFParticleTopoReconstructor.h"
 #include "CbmAnaConversionKF.h"
@@ -82,7 +83,7 @@ public:
     */
   virtual void Exec(Option_t* option);
 
-  CbmLmvmKinematicParams CalculateKinematicParams(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM);
+  LmvmKinePar CalculateKinematicParams(const CbmMCTrack* mctrackP, const CbmMCTrack* mctrackM);
 
   Double_t Invmass_2gammas(const CbmMCTrack* gamma1, const CbmMCTrack* gamma2);
   Double_t Invmass_2particles(const CbmMCTrack* mctrack1, const CbmMCTrack* mctrack2);
