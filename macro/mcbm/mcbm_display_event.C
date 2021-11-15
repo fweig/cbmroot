@@ -17,8 +17,7 @@
 // --------------------------------------------------------------------------
 
 
-void mcbm_display_event(Int_t nEvents = 3, TString dataset = "data/test",
-                        const char* setupName = "mcbm_beam_2022_03")
+void mcbm_display_event(Int_t nEvents = 3, TString dataset = "data/test", const char* setupName = "mcbm_beam_2022_03")
 {
   // ========================================================================
   //          Adjust this part according to your requirements
