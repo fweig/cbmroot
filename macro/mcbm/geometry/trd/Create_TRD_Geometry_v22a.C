@@ -210,13 +210,13 @@ const Int_t MaxLayers = 10;  // max layers
 // SIS300-mu  // 1: plot, 0: hide
 // const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };  //
 // SIS300-e   // 1: plot, 0: hide
-Int_t ShowLayer[MaxLayers] = {1, 1, 0, 1, 0, 0, 0, 0, 0, 0};  // SIS100-4l is default
+Int_t ShowLayer[MaxLayers] = {1, 1, 1, 0, 0, 0, 0, 0, 0, 0};  // SIS100-4l is default
 
-Int_t BusBarOrientation[MaxLayers] = {1, 1, 0, 0, 1, 0, 0, 0, 0, 0};  // 1 = vertical
+Int_t BusBarOrientation[MaxLayers] = {0, 1, 1, 0, 1, 0, 0, 0, 0, 0};  // 1 = vertical
 
 Int_t PlaneId[MaxLayers];  // automatically filled with layer ID
 
-const Int_t LayerType[MaxLayers] = {10, 11, 20, 20, 20, 21, 20, 21, 30, 31};  // ab: a [1-4] - layer
+const Int_t LayerType[MaxLayers] = {20, 10, 11, 20, 20, 21, 20, 21, 30, 31};  // ab: a [1-4] - layer
                                                                               // type, b [0,1] -
                                                                               // vertical/horizontal pads
 // ### Layer Type 20 is mCBM Layer Type 2 with Buch prototype module (type 4)
@@ -3208,8 +3208,8 @@ void create_detector_layers(Int_t layerId)
 
   // install TRD2D detectors in the TRD setup
   Int_t type = -1;
-  if (layerId == 2 && layerType == 2) type = 10;
-  if (layerId == 3 && layerType == 2) type = 9;
+  if (layerId == 1 && layerType == 2) type = 10;
+  if (layerId == 0 && layerType == 2) type = 9;
   if (type < 0) return;
   Info("create_detector_layers", "add module[0x%p] of type[%d]", (void*) gModules[type - 1], type);
 
@@ -3219,14 +3219,14 @@ void create_detector_layers(Int_t layerId)
   Double_t yPos = 2.5 * 5.12;  // check with FASPRO_width;
   Double_t zPos = 0.;
 
-  if (layerId == 3) {
+  if (layerId == 0) {
     // DESH
     xPos = 0;
     yPos = 0;
     //    xPos = xPos - 35.5;
     zPos = -2.0;
   }
-  if (layerId == 2) {
+  if (layerId == 1) {
     xPos = xPos - 22.5;
     yPos = yPos - 12.5;
     zPos = 3.0;

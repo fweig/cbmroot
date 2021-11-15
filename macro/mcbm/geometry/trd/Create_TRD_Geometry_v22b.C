@@ -2,14 +2,13 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: David Emschermann [committer], Alexandru Bercuci */
 
-// clang-format off
-
 ///
-/// \file Create_TRD_Geometry_v22a.C
+/// \file Create_TRD_Geometry_v22b.C
 /// \brief Generates TRD geometry in Root format.
 ///
-// 2021-10-28 - SR - v22b    - based on v22a the trd 2d is removed
-// 2021-10-07 - SR - v22a    - based on v20b the trd 2d is inserted
+
+// 2021-11-15 - AB - v22b    - based on v21b. Both TRD-2D modules are removed
+// 2021-10-10 - AB - v21b    - based on v21b. Correct order of TRD(2D) modules in the set-up
 // 2021-09-28 - SR - v21b    - based on v21a the position is corrected
 // 2021-07-25 - AB - v21a    - based on v20b, add 2 TRD2D modules and their support structure for the 2021 setup
 // 2020-05-25 - DE - v20b    - based on v20a, use 2 TRD modules for 2021 setup
@@ -33,12 +32,15 @@
 // 2014-05-02 - DE - v14a_3e - redesign inner part of station 3, now with 5x5-1 small modules, like in station 1 and station 2
 // 2014-05-02 - DE - v14a_3e - include optional GBTX readout boards on each module
 // 2014-05-02 - DE - v14a_3e - introduce 3x5=15 Spadic FEBs for ultimate density on module type 1
+//
 // 2013-11-14 - DE - v13q_3e - generate information about pad plane layout (CbmTrdPads_v14a.h) for all module types in this macro
+//
 // 2013-11-04 - DE - v13p4 - adapt the number of front-end boards to the pad layout of the 540 mm modules
 // 2013-11-04 - DE - v13p4 - use 8 module types (4x S + 4x L) to better match the occupancy
 // 2013-10-31 - DE - v13p4 - modify the support structure of station 1 to match with the MUCH/RICH platform
 // 2013-10-29 - DE - v13p4 - build lattice grid as TGeoBBox instead of VolumeAssembly - in run_sim.C save  9% of time compared to v13p7
 // 2013-10-29 - DE - v13p4 - build lattice grid as TGeoBBox instead of CompositeShape - in run_sim.C save 18% of time compared to v13p6
+//
 // 2013-10-28 - DE - introduce new geometry naming scheme: v13p1 - SIS 100 hadron
 // 2013-10-28 - DE - introduce new geometry naming scheme: v13p2 - SIS 100 electron
 // 2013-10-28 - DE - introduce new geometry naming scheme: v13p3 - SIS 100 muon
@@ -46,6 +48,7 @@
 // 2013-10-28 - DE - introduce new geometry naming scheme: v13p5 - SIS 300 muon
 // 2013-10-28 - DE - add option to draw the magnetic field vector in the magnet
 // 2013-09-27 - DE - do not use TGeoXtru to build the supports, use TGeoBBox instead
+//
 // 2013-06-25 - DE - v13g trd300_rich             (10 layers, z = 4100 ) - TRD right behind SIS300 RICH
 // 2013-06-25 - DE - v13h trd100_sts              ( 4 layers, z = 2600 ) - TRD completely on RICH/MUCH platform to allow TOF to move upstream
 // 2013-06-25 - DE - v13i trd100_rich             ( 2 layers, z = 4100 ) - TRD right behind RICH
@@ -55,6 +58,7 @@
 // 2013-06-25 - DE - v13l trd100_much_3_absorbers ( 4 layers, z = 4600 ) - TRD right behind SIS100 MUCH
 // 2013-06-25 - DE - v13m trd300_much_6_absorbers (10 layers, z = 5500 ) - TRD right behind SIS300 MUCH
 // 2013-06-25 - DE - v13n trd300_rich_stretched   (10 layers, z = 4600 ) - TRD stretched behind SIS300 RICH
+//
 // 2013-06-19 - DE - add TRD (I, II, III) labels on support structure
 // 2013-05-29 - DE - allow for flexible TRD z-positions defined by position of layer01
 // 2013-05-23 - DE - remove "trd_" prefix from node names (except top node)
@@ -103,18 +107,17 @@
 
 // Name of output file with geometry
 const TString tagVersion = "v22b_mcbm";
-// const TString subVersion   = "_1h";
-// const TString subVersion   = "_1e";
-// const TString subVersion   = "_1m";
-// const TString subVersion   = "_3e";
-// const TString subVersion   = "_3m";
+//const TString subVersion   = "_1h";
+//const TString subVersion   = "_1e";
+//const TString subVersion   = "_1m";
+//const TString subVersion   = "_3e";
+//const TString subVersion   = "_3m";
 
 const Int_t setupid = 1;  // 1e is the default
-// const Double_t zfront[5]  = { 260., 410., 360., 410., 550. };
-const Double_t zfront[5] = {260., 155., 360., 410., 550.};  // move 1st TRD to z=180 cm  // mCBM 2021_07
-// const Double_t zfront[5] = {260., 177., 360., 410., 550.};  // move 1st TRD
-// to z=177 cm
-// const Double_t zfront[5]  = { 260., 140., 360., 410., 550. };
+//const Double_t zfront[5]  = { 260., 410., 360., 410., 550. };
+const Double_t zfront[5] = {260., 180., 360., 410., 550.};  // move 1st TRD to z=180 cm  // mCBM 2021_07
+//const Double_t zfront[5] = {260., 177., 360., 410., 550.};  // move 1st TRD to z=177 cm
+//const Double_t zfront[5]  = { 260., 140., 360., 410., 550. };
 const TString setupVer[5] = {"_1h", "_1e", "_1m", "_3e", "_3m"};
 const TString subVersion  = setupVer[setupid];
 
@@ -128,31 +131,25 @@ const TString FileNamePads = "CbmTrdPads_" + tagVersion + ".h";
 const Bool_t IncludeRadiator = false;  // false;  // true, if radiator is included in geometry
 const Bool_t IncludeLattice  = true;   // false;  // true, if lattice grid is included in geometry
 
-const Bool_t IncludeKaptonFoil = true;  // false;  // true, if entrance window is included in geometry
-const Bool_t IncludeGasFrame   = true;  // false;  // true, if frame around gas volume is included in geometry
-const Bool_t IncludePadplane   = true;  // false;  // true, if padplane is included in geometry
-const Bool_t IncludeBackpanel  = true;  // false;  // true, if backpanel is included in geometry
-const Bool_t IncludeAluLedge   = true;  // false;  // true, if Al-ledge around the
-                                        // backpanel is included in geometry
-const Bool_t IncludeGibbet    = true;   // false;  // true, if mTRD gibbet support to be drawn
-const Bool_t IncludePowerbars = false;  // false;  // true, if LV copper bus bars to be drawn
+const Bool_t IncludeKaptonFoil = true;   // false;  // true, if entrance window is included in geometry
+const Bool_t IncludeGasFrame   = true;   // false;  // true, if frame around gas volume is included in geometry
+const Bool_t IncludePadplane   = true;   // false;  // true, if padplane is included in geometry
+const Bool_t IncludeBackpanel  = true;   // false;  // true, if backpanel is included in geometry
+const Bool_t IncludeAluLedge   = true;   // false;  // true, if Al-ledge around the backpanel is included in geometry
+const Bool_t IncludeGibbet     = true;   // false;  // true, if mTRD gibbet support to be drawn
+const Bool_t IncludePowerbars  = false;  // false;  // true, if LV copper bus bars to be drawn
 
-const Bool_t IncludeFebs     = true;      // false;  // true, if FEBs are included in geometry
-const Bool_t IncludeRobs     = true;      // true, if ROBs are included in geometry
-const Bool_t IncludeAsics    = true;      // true, if ASICs are included in geometry
-const Bool_t IncludeSupports = false;     // false;  // true, if support structure is included in geometry
-const Bool_t IncludeLabels   = false;     // false;  // true, if TRD (I, II, III)
-                                          // labels are plotted in (VisLevel 5)
+const Bool_t IncludeFebs        = true;   // false;  // true, if FEBs are included in geometry
+const Bool_t IncludeRobs        = true;   // true, if ROBs are included in geometry
+const Bool_t IncludeAsics       = true;   // true, if ASICs are included in geometry
+const Bool_t IncludeSupports    = false;  // false;  // true, if support structure is included in geometry
+const Bool_t IncludeLabels      = false;  // false;  // true, if TRD (I, II, III) labels are plotted in (VisLevel 5)
 const Bool_t IncludeFieldVector = false;  // true, if magnetic field vector to be shown (in the magnet)
 
 // positioning switches
-const Bool_t DisplaceRandom = false;  // true; // false;  // add random
-                                      // displacement of modules for alignment
-                                      // study
-const Bool_t RotateRandom = false;    // true; // false;  // add random rotation of
-                                      // modules for alignment study
-const Bool_t DoExplode = false;       // true, // false;  // add random displacement
-                                      // of modules for alignment study
+const Bool_t DisplaceRandom = false;  // true; // false;  // add random displacement of modules for alignment study
+const Bool_t RotateRandom   = false;  // true; // false;  // add random rotation of modules for alignment study
+const Bool_t DoExplode      = false;  // true, // false;  // add random displacement of modules for alignment study
 
 // positioning parameters
 const Double_t maxdx = 0.2;  // max +- 0.1 cm shift in x
@@ -168,59 +165,40 @@ const Double_t ExplodeFactor = 1.02;  // 1.02; // Factor by which modules are ex
 // initialise random numbers
 TRandom3 r3(0);
 
-// Parameters defining the layout of the complete detector build out of
-// different detector layers.
+// Parameters defining the layout of the complete detector build out of different detector layers.
 const Int_t MaxLayers = 10;  // max layers
 
 // select layers to display
 //
-// const Int_t    ShowLayer[MaxLayers] = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };  //
-// 1st layer only
-// const Int_t    ShowLayer[MaxLayers] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 };  //
-// 2nd layer only
-// const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 };  //
-// 5th layer only
-// const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 };  //
-// 6th layer only
-// const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 };  //
-// 9th layer only
-// const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };  //
-// 10th layer only
+//const Int_t    ShowLayer[MaxLayers] = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };  //  1st layer only
+//const Int_t    ShowLayer[MaxLayers] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 };  //  2nd layer only
+//const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 };  //  5th layer only
+//const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 };  //  6th layer only
+//const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 };  //  9th layer only
+//const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };  // 10th layer only
 //
-// const Int_t    ShowLayer[MaxLayers] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };  //
-// Station 1, layer 1, 2
-// const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 };  //
-// Station 2, layer 5, 6
-// const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 };  //
-// Station 3, layer 9,10
-// const Int_t    ShowLayer[MaxLayers] = { 1, 1, 0, 0, 1, 1, 0, 0, 0, 0 };  //
-// Station 1 and 2
-// const Int_t    ShowLayer[MaxLayers] = { 1, 1, 0, 0, 1, 1, 1, 0, 1, 1 };  //
-// Station 1, 2 and 3
+//const Int_t    ShowLayer[MaxLayers] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };  // Station 1, layer 1, 2
+//const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 };  // Station 2, layer 5, 6
+//const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 };  // Station 3, layer 9,10
+//const Int_t    ShowLayer[MaxLayers] = { 1, 1, 0, 0, 1, 1, 0, 0, 0, 0 };  // Station 1 and 2
+//const Int_t    ShowLayer[MaxLayers] = { 1, 1, 0, 0, 1, 1, 1, 0, 1, 1 };  // Station 1, 2 and 3
 //
-// const Int_t    ShowLayer[MaxLayers] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };  //
-// SIS100-2l  // 1: plot, 0: hide
-// const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 };  //
-// SIS100-3l  // 1: plot, 0: hide
+//const Int_t    ShowLayer[MaxLayers] = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };  // SIS100-2l  // 1: plot, 0: hide
+//const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 };  // SIS100-3l  // 1: plot, 0: hide
 //
-// const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 };  //
-// SIS100-4l  // 1: plot, 0: hide
-// const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 1, 1, 1, 1, 1, 1 };  //
-// SIS300-mu  // 1: plot, 0: hide
-// const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };  //
-// SIS300-e   // 1: plot, 0: hide
-//Int_t ShowLayer[MaxLayers] = {1, 1, 1, 1, 0, 0, 0, 0, 0, 0};  // SIS100-4l is default
+//const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 };  // SIS100-4l  // 1: plot, 0: hide
+//const Int_t    ShowLayer[MaxLayers] = { 0, 0, 0, 0, 1, 1, 1, 1, 1, 1 };  // SIS300-mu  // 1: plot, 0: hide
+//const Int_t    ShowLayer[MaxLayers] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };  // SIS300-e   // 1: plot, 0: hide
 Int_t ShowLayer[MaxLayers] = {1, 1, 0, 0, 0, 0, 0, 0, 0, 0};  // SIS100-4l is default
 
-Int_t BusBarOrientation[MaxLayers] = {1, 1, 0, 0, 1, 0, 0, 0, 0, 0};  // 1 = vertical
+//Int_t BusBarOrientation[MaxLayers] = {1, 1, 0, 0, 1, 0, 0, 0, 0, 0};  // 1 = vertical
+Int_t BusBarOrientation[MaxLayers] = {1, 1, 1, 1, 1, 0, 0, 0, 0, 0};  // 1 = vertical
 
 Int_t PlaneId[MaxLayers];  // automatically filled with layer ID
 
-const Int_t LayerType[MaxLayers] = {10, 11, 20, 20, 20, 21, 20, 21, 30, 31};  // ab: a [1-4] - layer
-                                                                              // type, b [0,1] -
-                                                                              // vertical/horizontal pads
-// ### Layer Type 20 is mCBM Layer Type 2 with Buch prototype module (type 4)
-// with vertical pads
+const Int_t LayerType[MaxLayers] = {10, 11, 20, 20, 20, 21,
+                                    20, 21, 30, 31};  // ab: a [1-4] - layer type, b [0,1] - vertical/horizontal pads
+// ### Layer Type 20 is mCBM Layer Type 2 with Buch prototype module (type 4) with vertical pads
 // ### Layer Type 11 is Layer Type 1 with detector modules rotated by 90??
 // ### Layer Type 21 is Layer Type 2 with detector modules rotated by 90??
 // ### Layer Type 31 is Layer Type 3 with detector modules rotated by 90??
@@ -231,61 +209,42 @@ const Int_t LayerNrInStation[MaxLayers] = {1, 2, 3, 4, 1, 2, 3, 4, 1, 2};
 Double_t LayerPosition[MaxLayers] = {0.};  // start position = 0 - 2016-07-12 - DE
 
 // 5x z-positions from 260 till 550 cm
-// Double_t LayerPosition[MaxLayers] = { 260. }; // start position - 2013-10-28
-// - DE - v14_1h - SIS 100 hadron         ( 4 layers, z = 2600 )
-// Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-10-28
-// - DE - v14_1e - SIS 100 electron       ( 4 layers, z = 4100 )
-// Double_t LayerPosition[MaxLayers] = { 360. }; // start position - 2014-06-16
-// - DE - v14_1m - SIS 100 muon           ( 4 layers, z = 3600 ) was 460.
-// Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-10-28
-// - DE - v14_3e - SIS 300 electron       (10 layers, z = 4100 )
-// Double_t LayerPosition[MaxLayers] = { 550. }; // start position - 2013-10-28
-// - DE - v14_3m - SIS 300 muon     6_abs (10 layers, z = 5500 )
+//Double_t LayerPosition[MaxLayers] = { 260. }; // start position - 2013-10-28 - DE - v14_1h - SIS 100 hadron         ( 4 layers, z = 2600 )
+//Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-10-28 - DE - v14_1e - SIS 100 electron       ( 4 layers, z = 4100 )
+//Double_t LayerPosition[MaxLayers] = { 360. }; // start position - 2014-06-16 - DE - v14_1m - SIS 100 muon           ( 4 layers, z = 3600 ) was 460.
+//Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-10-28 - DE - v14_3e - SIS 300 electron       (10 layers, z = 4100 )
+//Double_t LayerPosition[MaxLayers] = { 550. }; // start position - 2013-10-28 - DE - v14_3m - SIS 300 muon     6_abs (10 layers, z = 5500 )
 //
 // obsolete variants
-// Double_t LayerPosition[MaxLayers] = { 460. }; // start position - 2013-10-28
-// - DE - v13x3 - SIS 100 muon         ( 4 layers, z = 4600 )
-// Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-06-25
-// - DE - v13i trd100_rich             ( 2 layers, z = 4100 )
-// Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-06-25
-// - DE - v13j trd100_rich             ( 3 layers, z = 4100 )
-// Double_t LayerPosition[MaxLayers] = { 430. }; // start position - 2013-06-25
-// - DE - ---  trd100_much_2_absorbers ( 4 layers, z = 4300 )
-// Double_t LayerPosition[MaxLayers] = { 460. }; // start position - 2013-06-25
-// - DE - v13n trd300_rich_stretched   (10 layers, z = 4600 )
+//Double_t LayerPosition[MaxLayers] = { 460. }; // start position - 2013-10-28 - DE - v13x3 - SIS 100 muon         ( 4 layers, z = 4600 )
+//Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-06-25 - DE - v13i trd100_rich             ( 2 layers, z = 4100 )
+//Double_t LayerPosition[MaxLayers] = { 410. }; // start position - 2013-06-25 - DE - v13j trd100_rich             ( 3 layers, z = 4100 )
+//Double_t LayerPosition[MaxLayers] = { 430. }; // start position - 2013-06-25 - DE - ---  trd100_much_2_absorbers ( 4 layers, z = 4300 )
+//Double_t LayerPosition[MaxLayers] = { 460. }; // start position - 2013-06-25 - DE - v13n trd300_rich_stretched   (10 layers, z = 4600 )
 
-// const Double_t LayerThickness = 22.0;  // miniCBM - Thickness of one TRD
-// layer in cm
+
+//const Double_t LayerThickness = 22.0;  // miniCBM - Thickness of one TRD layer in cm
 const Double_t LayerThickness = 27.0;  // miniCBM - Thickness of one TRD layer in cm
-// const Double_t LayerThickness = 25.0; // miniCBM - Thickness of one TRD layer
-// in cm
-// const Double_t LayerThickness = 45.0; // Thickness of one TRD layer in cm
+//const Double_t LayerThickness = 25.0; // miniCBM - Thickness of one TRD layer in cm
+//const Double_t LayerThickness = 45.0; // Thickness of one TRD layer in cm
 
 const Double_t LayerOffset[MaxLayers] = {0., 0., 0., 0., -112.,
                                          0., 0., 0., 5., 0.};  // v13x[4,5] - z offset in addition to LayerThickness
-// const Double_t LayerOffset[MaxLayers]    = {   0.,    0.,   0.,   0., -115.,
-// 0.,   0.,   0.,   5.,   0. };  // v13x[4,5] - z offset in addition to
-// LayerThickness
+//const Double_t LayerOffset[MaxLayers]    = {   0.,    0.,   0.,   0., -115.,   0.,   0.,   0.,   5.,   0. };  // v13x[4,5] - z offset in addition to LayerThickness
 // 140 / 165 / 190 / 215 / 240 - 115 = 125
-// const Double_t LayerOffset[MaxLayers]    = {   0.,    0.,   0.,   0., -115.,
-// 0.,   0.,   0.,   5.,   0. };  // v13x[4,5] - z offset in addition to
-// LayerThickness
+//const Double_t LayerOffset[MaxLayers]    = {   0.,    0.,   0.,   0., -115.,   0.,   0.,   0.,   5.,   0. };  // v13x[4,5] - z offset in addition to LayerThickness
 // 115 / 140 / 165 / 190 / 215 - 125 = 100
 
-// const Double_t LayerOffset[MaxLayers] = {   0.,  -10.,   0.,   0.,   0.,
-// 0.,   0.,   0.,   5.,   0. };  // v13x[4,5] - z offset in addition to
-// LayerThickness
+// const Double_t LayerOffset[MaxLayers] = {   0.,  -10.,   0.,   0.,   0.,   0.,   0.,   0.,   5.,   0. };  // v13x[4,5] - z offset in addition to LayerThickness
 // 100 / 125 - 10 = 115 / 140 / 165 / 190
 
-// const Double_t LayerOffset[MaxLayers] = {   0.,   0.,   0.,   0.,   0.,   0.,
-// 0.,   0.,   0.,   0. };  // SIS100 - z offset in addition to LayerThickness
-// const Double_t LayerOffset[MaxLayers] = {   0.,   0.,   0.,   0.,  95.,   0.,
-// 0.,   0.,   5.,   0. };  // v13n       - z offset in addition to
-// LayerThickness
+//const Double_t LayerOffset[MaxLayers] = {   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0. };  // SIS100 - z offset in addition to LayerThickness
+//const Double_t LayerOffset[MaxLayers] = {   0.,   0.,   0.,   0.,  95.,   0.,   0.,   0.,   5.,   0. };  // v13n       - z offset in addition to LayerThickness
 
 const Int_t LayerArraySize[3][4] = {{5, 5, 9, 11},  // for layer[1-3][i,o] below
                                     {5, 5, 9, 11},
                                     {5, 5, 9, 11}};
+
 
 // ### Layer Type 1
 // v14x - module types in the inner sector of layer type 1 - looking upstream
@@ -296,8 +255,7 @@ const Int_t layer1i[5][5] = {{0, 0, 0, 0, 0},
                              {0, 0, 0, 0, 0},
                              {0, 0, 0, 0, 0}};
 
-// const Int_t layer1i[5][5] = { { 323,  323,  321,  321,  321 },    // abc: a
-// module type - b orientation (x90 deg) in odd - c even layers
+//const Int_t layer1i[5][5] = { { 323,  323,  321,  321,  321 },    // abc: a module type - b orientation (x90 deg) in odd - c even layers
 //                              { 223,  123,  121,  121,  221 },
 //                              { 203,  103,    0,  101,  201 },
 //                              { 203,  103,  101,  101,  201 },
@@ -310,31 +268,22 @@ const Int_t layer1o[9][11] = {
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 821, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 //// v14x - module types in the outer sector of layer type 1 - looking upstream
-// const Int_t layer1o[9][11]= { {  0,    0,    0,    0,    0,    0,    0,    0,
-// 0,    0,    0 },
-//                              {  0,    0,    0,    0,    0,    0,    0,    0,
-//                              0,    0,    0 },
-//                              {  0,    0,  823,  823,  723,  721,  721,  821,
-//                              821,    0,    0 },
-//                              {  0,    0,  823,  623,    0,    0,    0,  621,
-//                              821,    0,    0 },
-//                              {  0,    0,  703,  603,    0,    0,    0,  601,
-//                              701,    0,    0 },
-//                              {  0,    0,  803,  603,    0,    0,    0,  601,
-//                              801,    0,    0 },
-//                              {  0,    0,  803,  803,  703,  701,  701,  801,
-//                              801,    0,    0 },
-//                              {  0,    0,    0,    0,    0,    0,    0,    0,
-//                              0,    0,    0 },
-//                              {  0,    0,    0,    0,    0,    0,    0,    0,
-//                              0,    0,    0 } };
+//const Int_t layer1o[9][11]= { {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
+//                              {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
+//                              {  0,    0,  823,  823,  723,  721,  721,  821,  821,    0,    0 },
+//                              {  0,    0,  823,  623,    0,    0,    0,  621,  821,    0,    0 },
+//                              {  0,    0,  703,  603,    0,    0,    0,  601,  701,    0,    0 },
+//                              {  0,    0,  803,  603,    0,    0,    0,  601,  801,    0,    0 },
+//                              {  0,    0,  803,  803,  703,  701,  701,  801,  801,    0,    0 },
+//                              {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
+//                              {  0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 } };
 // number of modules: 26
 // Layer1 =  24 + 26;   // v14a
 
+
 // ### Layer Type 2 -> remapped for Buch prototype
 // v14x - module types in the inner sector of layer type 2 - looking upstream
-// const Int_t layer2i[5][5] = { { 323,  323,  321,  321,  321 },    // abc: a
-// module type - b orientation (x90 deg) in odd - c even layers
+// const Int_t layer2i[5][5] = { { 323,  323,  321,  321,  321 },    // abc: a module type - b orientation (x90 deg) in odd - c even layers
 //                               { 223,  123,  121,  121,  221 },
 //                               { 203,  103,    0,  101,  201 },
 //                               { 203,  103,  101,  101,  201 },
@@ -348,36 +297,28 @@ const Int_t layer2i[5][5] = {{0},  // abc: a module type - b orientation (x90 de
 // number of modules: 24
 
 // v14x - module types in the outer sector of layer type 2 - looking upstream
-// const Int_t layer2o[9][11]= { {   0,    0,    0,    0,    0,    0,    0,
-// 0,    0,    0,    0 },
-//                               {   0,  823,  823,  823,  823,  821,  821,
-//                               821,  821,  821,    0 },
-//                               {   0,  823,  823,  823,  723,  721,  721,
-//                               821,  821,  821,    0 },
-//                               {   0,  823,  723,  623,    0,    0,    0,
-//                               621,  721,  821,    0 },
-//                               {   0,  803,  703,  603,    0,    0,    0,
-//                               601,  701,  801,    0 },
-//                               {   0,  803,  703,  603,    0,    0,    0,
-//                               601,  701,  801,    0 },
-//                               {   0,  803,  803,  803,  703,  701,  701,
-//                               801,  801,  801,    0 },
-//                               {   0,  803,  803,  803,  803,  801,  801,
-//                               801,  801,  801,    0 },
-//                               {   0,    0,    0,    0,    0,    0,    0,
-//                               0,    0,    0,    0 } };
+// const Int_t layer2o[9][11]= { {   0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 },
+//                               {   0,  823,  823,  823,  823,  821,  821,  821,  821,  821,    0 },
+//                               {   0,  823,  823,  823,  723,  721,  721,  821,  821,  821,    0 },
+//                               {   0,  823,  723,  623,    0,    0,    0,  621,  721,  821,    0 },
+//                               {   0,  803,  703,  603,    0,    0,    0,  601,  701,  801,    0 },
+//                               {   0,  803,  703,  603,    0,    0,    0,  601,  701,  801,    0 },
+//                               {   0,  803,  803,  803,  703,  701,  701,  801,  801,  801,    0 },
+//                               {   0,  803,  803,  803,  803,  801,  801,  801,  801,  801,    0 },
+//                               {   0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 } };
 const Int_t layer2o[9][11] = {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}};
 // number of modules: 54
 // Layer2 =  24 + 54;   // v14a
 
+
 // ### Layer Type 3
 // v14x - module types in the inner sector of layer type 3 - looking upstream
-const Int_t layer3i[5][5] = {{323, 323, 321, 321, 321},  // abc: a module type - b orientation (x90 deg)
-                                                         // in odd - c even layers
-                             {223, 123, 121, 121, 221},
-                             {203, 103, 0, 101, 201},
-                             {203, 103, 101, 101, 201},
-                             {303, 303, 301, 301, 301}};
+const Int_t layer3i[5][5] = {
+  {323, 323, 321, 321, 321},  // abc: a module type - b orientation (x90 deg) in odd - c even layers
+  {223, 123, 121, 121, 221},
+  {203, 103, 0, 101, 201},
+  {203, 103, 101, 101, 201},
+  {303, 303, 301, 301, 301}};
 // number of modules: 24
 
 // v14x - module types in the outer sector of layer type 3 - looking upstream
@@ -390,117 +331,80 @@ const Int_t layer3o[9][11] = {
 // number of modules: 90
 // Layer2 =  24 + 90;   // v14a
 
+
 // Parameters defining the layout of the different detector modules
 const Int_t NofModuleTypes             = 10;
-const Int_t ModuleType[NofModuleTypes] = {0, 0, 0, 2, 1, 1, 1, 1, 2, 3};  // 0 = small module, 1 =
-                                                                          // large module, 2 = mCBM
-                                                                          // Bucharest prototype, 3
-                                                                          // = mCBM Bucharest
-                                                                          // TRD-2Dh prototype
+const Int_t ModuleType[NofModuleTypes] = {
+  0, 0, 0, 2, 1, 1,
+  1, 1, 2, 3};  // 0 = small module, 1 = large module, 2 = mCBM Bucharest prototype, 3 = mCBM Bucharest TRD-2Dh prototype
 
 // FEB inclination angle
 const Double_t feb_rotation_angle[NofModuleTypes] = {
   70, 90, 90, 0, 80, 90, 90, 90, 0, 0};  // rotation around x-axis, 0 = vertical, 90 = horizontal
-// const Double_t feb_rotation_angle[NofModuleTypes] = { 45,  45,  45,  45,  45,
-// 45,  45,  45 }; // rotation around x-axis, 0 = vertical, 90 = horizontal
+//const Double_t feb_rotation_angle[NofModuleTypes] = { 45,  45,  45,  45,  45,  45,  45,  45 }; // rotation around x-axis, 0 = vertical, 90 = horizontal
 
 // GBTx ROB definitions
-const Int_t RobsPerModule[NofModuleTypes] = {3, 2, 1, 6, 2, 2, 1, 1, 30, 1};  // number of GBTx ROBs on module
+const Int_t RobsPerModule[NofModuleTypes] = {3, 2, 1, 6, 2, 2, 1, 1, 30, 2};  // number of GBTx ROBs on module
 const Int_t GbtxPerRob[NofModuleTypes]    = {105, 105, 105, 103, 107,
                                           105, 105, 103, 103, 103};  // number of GBTx ASICs on ROB
 
 const Int_t GbtxPerModule[NofModuleTypes]   = {15, 10, 5, 18, 0,
-                                             10, 5,  3, 18, 18};  // for .geo.info - TODO: merge with above GbtxPerRob
-const Int_t RobTypeOnModule[NofModuleTypes] = {555, 55, 5, 333333, 0,
-                                               55,  5,  3, 333333, 333333};  // for .geo.info - TODO: merge with above
-                                                                             // GbtxPerRob
+                                             10, 5,  3, 6,  1};  // for .geo.info - TODO: merge with above GbtxPerRob
+const Int_t RobTypeOnModule[NofModuleTypes] = {
+  555, 55, 5, 333333, 0, 55, 5, 3, 333333, 333333};  // for .geo.info - TODO: merge with above GbtxPerRob
 
-// const Int_t RobsPerModule[NofModuleTypes] = {  2,  2,  1,  1,  2,  2,  1,  1
-// }; // number of GBTx ROBs on module
-// const Int_t GbtxPerRob[NofModuleTypes]    = {107,105,105,103,107,105,105,103
-// }; // number of GBTx ASICs on ROB
-// const Int_t GbtxPerModule[NofModuleTypes] = { 14,  8,  5,  0,  0, 10,  5,  3
-// }; // for .geo.info - TODO: merge with above GbtxPerRob
-// const Int_t RobTypeOnModule[NofModuleTypes] = { 77, 53,  5,  0,  0, 55,  5,
-// 3 }; // for .geo.info - TODO: merge with above GbtxPerRob
+//const Int_t RobsPerModule[NofModuleTypes] = {  2,  2,  1,  1,  2,  2,  1,  1 }; // number of GBTx ROBs on module
+//const Int_t GbtxPerRob[NofModuleTypes]    = {107,105,105,103,107,105,105,103 }; // number of GBTx ASICs on ROB
+//const Int_t GbtxPerModule[NofModuleTypes] = { 14,  8,  5,  0,  0, 10,  5,  3 }; // for .geo.info - TODO: merge with above GbtxPerRob
+//const Int_t RobTypeOnModule[NofModuleTypes] = { 77, 53,  5,  0,  0, 55,  5,  3 }; // for .geo.info - TODO: merge with above GbtxPerRob
 
 // super density for type 1 modules - 2017 - 540 mm
-const Int_t FebsPerModule[NofModuleTypes] = {9, 5, 6, 18, 12, 8, 4, 3, 18, 18};  // number of FEBs on backside
-// const Int_t FebsPerModule[NofModuleTypes] = {  9,  6,  3,  4, 12,  8,  4,  2
-// }; // number of FEBs on backside
-const Int_t AsicsPerFeb[NofModuleTypes] = {210, 210, 210, 410, 108, 108, 108, 108, 410, 410};  // %100 gives
-                                                                                               // number of
-                                                                                               // ASICs on FEB,
-                                                                                               // /100 gives
-                                                                                               // grouping
+const Int_t FebsPerModule[NofModuleTypes] = {9, 5, 6, 18, 12, 8, 4, 3, 30, 2};  // number of FEBs on backside
+//const Int_t FebsPerModule[NofModuleTypes] = {  9,  6,  3,  4, 12,  8,  4,  2 }; // number of FEBs on backside
+const Int_t AsicsPerFeb[NofModuleTypes] = {
+  210, 210, 210, 410, 108, 108, 108, 108, 406, 406};  // %100 gives number of ASICs on FEB, /100 gives grouping
 //// ultimate density - 540 mm
-// const Int_t FebsPerModule[NofModuleTypes] = {  6,  5,  6,  4, 12,  8,  4,  3
-// }; // number of FEBs on backside - reduced FEBs (64 ch ASICs)
-// const Int_t AsicsPerFeb[NofModuleTypes]   = {315,210,105,105,108,108,108,108
-// }; //  %100 gives number of ASICs on FEB, /100 gives grouping
-////const Int_t FebsPerModule[NofModuleTypes] = {  6,  5,  3,  2,  6,  3,  4,  3
-///}; // min number of FEBs // number of FEBs on backside - reduced FEBs (64 ch
-/// ASICs)
-////const Int_t AsicsPerFeb[NofModuleTypes]   = {315,210,210,210,216,216,108,108
-///}; //  %100 gives number of ASICs on FEB, /100 gives grouping
-////const Int_t AsicsPerFeb[NofModuleTypes]   = {216,210,210,210,216,216,108,108
-///}; //  %100 gives number of ASICs on FEB, /100 gives grouping
+//const Int_t FebsPerModule[NofModuleTypes] = {  6,  5,  6,  4, 12,  8,  4,  3 }; // number of FEBs on backside - reduced FEBs (64 ch ASICs)
+//const Int_t AsicsPerFeb[NofModuleTypes]   = {315,210,105,105,108,108,108,108 }; //  %100 gives number of ASICs on FEB, /100 gives grouping
+////const Int_t FebsPerModule[NofModuleTypes] = {  6,  5,  3,  2,  6,  3,  4,  3 }; // min number of FEBs // number of FEBs on backside - reduced FEBs (64 ch ASICs)
+////const Int_t AsicsPerFeb[NofModuleTypes]   = {315,210,210,210,216,216,108,108 }; //  %100 gives number of ASICs on FEB, /100 gives grouping
+////const Int_t AsicsPerFeb[NofModuleTypes]   = {216,210,210,210,216,216,108,108 }; //  %100 gives number of ASICs on FEB, /100 gives grouping
 //
 ////// super density - 540 mm
-// const Int_t FebsPerModule[NofModuleTypes] = {  9,  5,  6,  4, 12,  6,  4,  3
-// }; // light // number of FEBs on backside - reduced FEBs (64 ch ASICs)
-// const Int_t AsicsPerFeb[NofModuleTypes]   = {210,210,105,105,108,108,108,108
-// }; // %100 gives number of ASICs on FEB, /100 gives grouping
+//const Int_t FebsPerModule[NofModuleTypes] = {  9,  5,  6,  4, 12,  6,  4,  3 }; // light // number of FEBs on backside - reduced FEBs (64 ch ASICs)
+//const Int_t AsicsPerFeb[NofModuleTypes]   = {210,210,105,105,108,108,108,108 }; // %100 gives number of ASICs on FEB, /100 gives grouping
 //
 //// normal density - 540 mm
-// const Int_t FebsPerModule[NofModuleTypes] = { 18, 10,  6,  4, 12,  6,  4,  3
-// }; // number of FEBs on backside (linked to pad layout) - mod4 = mod3,
-// therefore same
-// const Int_t AsicsPerFeb[NofModuleTypes]   = {105,105,105,105,108,108,108,108
-// }; // %100 gives number of ASICs on FEB, /100 gives grouping
+//const Int_t FebsPerModule[NofModuleTypes] = { 18, 10,  6,  4, 12,  6,  4,  3 }; // number of FEBs on backside (linked to pad layout) - mod4 = mod3, therefore same
+//const Int_t AsicsPerFeb[NofModuleTypes]   = {105,105,105,105,108,108,108,108 }; // %100 gives number of ASICs on FEB, /100 gives grouping
 
 // ultimate density - 570 mm
-// const Int_t FebsPerModule[NofModuleTypes] = {  6,  5,  3,  2,  5,  3,  2,  1
-// }; // min number of FEBs // number of FEBs on backside - reduced FEBs (64 ch
-// ASICs)
-// const Int_t AsicsPerFeb[NofModuleTypes]   = {216,210,210,210,216,216,216,216
-// }; //  %100 gives number of ASICs on FEB, /100 gives grouping
+//const Int_t FebsPerModule[NofModuleTypes] = {  6,  5,  3,  2,  5,  3,  2,  1 }; // min number of FEBs // number of FEBs on backside - reduced FEBs (64 ch ASICs)
+//const Int_t AsicsPerFeb[NofModuleTypes]   = {216,210,210,210,216,216,216,216 }; //  %100 gives number of ASICs on FEB, /100 gives grouping
 //
-// const Int_t FebsPerModule[NofModuleTypes] = {  6,  5,  3,  3, 10,  5,  3,  3
-// }; // min (6) module types // number of FEBs on backside - reduced FEBs (64
-// ch ASICs)
-// const Int_t AsicsPerFeb[NofModuleTypes]   = {216,210,210,210,108,108,108,108
-// }; //  %100 gives number of ASICs on FEB, /100 gives grouping
+//const Int_t FebsPerModule[NofModuleTypes] = {  6,  5,  3,  3, 10,  5,  3,  3 }; // min (6) module types // number of FEBs on backside - reduced FEBs (64 ch ASICs)
+//const Int_t AsicsPerFeb[NofModuleTypes]   = {216,210,210,210,108,108,108,108 }; //  %100 gives number of ASICs on FEB, /100 gives grouping
 //// super density - 570 mm
-// const Int_t FebsPerModule[NofModuleTypes] = { 10,  5,  5,  5, 12,  6,  4,  3
-// }; // light // number of FEBs on backside - reduced FEBs (64 ch ASICs)
-// const Int_t AsicsPerFeb[NofModuleTypes]   = {210,210,105,105,108,108,108,108
-// }; // %100 gives number of ASICs on FEB, /100 gives grouping
+//const Int_t FebsPerModule[NofModuleTypes] = { 10,  5,  5,  5, 12,  6,  4,  3 }; // light // number of FEBs on backside - reduced FEBs (64 ch ASICs)
+//const Int_t AsicsPerFeb[NofModuleTypes]   = {210,210,105,105,108,108,108,108 }; // %100 gives number of ASICs on FEB, /100 gives grouping
 //
 //// normal density - 570 mm
-// const Int_t FebsPerModule[NofModuleTypes] = { 19, 10,  5,  5, 12,  6,  4,  3
-// }; // number of FEBs on backside (linked to pad layout) - mod4 = mod3,
-// therefore same
-// const Int_t AsicsPerFeb[NofModuleTypes]   = {105,105,105,105,108,108,108,108
-// }; // %100 gives number of ASICs on FEB, /100 gives grouping
+//const Int_t FebsPerModule[NofModuleTypes] = { 19, 10,  5,  5, 12,  6,  4,  3 }; // number of FEBs on backside (linked to pad layout) - mod4 = mod3, therefore same
+//const Int_t AsicsPerFeb[NofModuleTypes]   = {105,105,105,105,108,108,108,108 }; // %100 gives number of ASICs on FEB, /100 gives grouping
+
 
 /* TODO: activate connector grouping info below
 // ultimate - grouping of pads to connectors
-const Int_t RowsPerConnector[NofModuleTypes]  = {  6,  4,  2,  2,  2,  2,  2,  2
-};
-const Int_t ColsPerConnector[NofModuleTypes]  = { 16, 16, 16, 16, 16, 16, 16, 16
-};
+const Int_t RowsPerConnector[NofModuleTypes]  = {  6,  4,  2,  2,  2,  2,  2,  2 };
+const Int_t ColsPerConnector[NofModuleTypes]  = { 16, 16, 16, 16, 16, 16, 16, 16 };
 // super    - grouping of pads to connectors
-const Int_t RowsPerConnector[NofModuleTypes]  = {  4,  4,  2,  2,  2,  2,  2,  2
-};
-const Int_t ColsPerConnector[NofModuleTypes]  = { 16, 16, 16, 16, 16, 16, 16, 16
-};
+const Int_t RowsPerConnector[NofModuleTypes]  = {  4,  4,  2,  2,  2,  2,  2,  2 };
+const Int_t ColsPerConnector[NofModuleTypes]  = { 16, 16, 16, 16, 16, 16, 16, 16 };
 // normal   - grouping of pads to connectors
-const Int_t RowsPerConnector[NofModuleTypes]  = {  2,  2,  2,  2,  2,  2,  2,  2
-};
-const Int_t ColsPerConnector[NofModuleTypes]  = { 16, 16, 16, 16, 16, 16, 16, 16
-};
+const Int_t RowsPerConnector[NofModuleTypes]  = {  2,  2,  2,  2,  2,  2,  2,  2 };
+const Int_t ColsPerConnector[NofModuleTypes]  = { 16, 16, 16, 16, 16, 16, 16, 16 };
 */
+
 
 const Double_t feb_z_offset = 0.1;  // 1 mm - offset in z of FEBs to backpanel
 const Double_t asic_offset  = 0.1;  // 1 mm - offset of ASICs to FEBs to avoid overlaps
@@ -508,20 +412,17 @@ const Double_t asic_offset  = 0.1;  // 1 mm - offset of ASICs to FEBs to avoid o
 // ASIC parameters
 Double_t asic_distance;
 
-// const Double_t FrameWidth[2]    = { 1.5, 2.0 };   // Width of detector frames
-// in cm
+//const Double_t FrameWidth[2]    = { 1.5, 2.0 };   // Width of detector frames in cm
 const Double_t FrameWidth[4] = {1.5, 1.5, 2.5, 1.5};  // Width of detector frames in cm
 // mini - production
 const Double_t DetectorSizeX[4] = {57., 95., 59.0, 23.04 + 3.};  // => 54 x 54 cm2 & 91 x 91 cm2 active area
 const Double_t DetectorSizeY[4] = {57., 95., 60.8, 8.16 + 3.};   // quadratic modules
 //// default
-// const Double_t DetectorSizeX[2] = { 60., 100.};   // => 57 x 57 cm2 & 96 x 96
-// cm2 active area
-// const Double_t DetectorSizeY[2] = { 60., 100.};   // quadratic modules
+//const Double_t DetectorSizeX[2] = { 60., 100.};   // => 57 x 57 cm2 & 96 x 96 cm2 active area
+//const Double_t DetectorSizeY[2] = { 60., 100.};   // quadratic modules
 
 // Parameters tor the lattice grid reinforcing the entrance window
-// const Double_t lattice_o_width[2] = { 1.5, 2.0 };   // Width of outer lattice
-// frame in cm
+//const Double_t lattice_o_width[2] = { 1.5, 2.0 };   // Width of outer lattice frame in cm
 const Double_t lattice_o_width[2] = {1.5, 1.5};  // Width of outer lattice frame in cm
 const Double_t lattice_i_width[2] = {0.2, 0.2};  // { 0.4, 0.4 };   // Width of inner lattice frame in cm
 // Thickness (in z) of lattice frames in cm - see below
@@ -531,12 +432,10 @@ Int_t ModuleStats[MaxLayers][NofModuleTypes] = {0};
 
 // z - geometry of TRD modules
 const Double_t radiator_thickness = 0.0;  // 35 cm thickness of radiator
-// const Double_t radiator_thickness     =  30.0;    // 30 cm thickness of
-// radiator + shift pad plane to integer multiple of 1 mm
+//const Double_t radiator_thickness     =  30.0;    // 30 cm thickness of radiator + shift pad plane to integer multiple of 1 mm
 const Double_t radiator_position = -LayerThickness / 2. + radiator_thickness / 2.;
 
-// const Double_t lattice_thickness      =   1.0;  // 1.0;  // 10 mm thick
-// lattice frames
+//const Double_t lattice_thickness      =   1.0;  // 1.0;  // 10 mm thick lattice frames
 const Double_t lattice_thickness = 1.0 - 0.0025;  // 0.9975;  // 1.0;  // 10 mm thick lattice frames
 const Double_t lattice_position  = radiator_position + radiator_thickness / 2. + lattice_thickness / 2.;
 
@@ -586,7 +485,7 @@ const Double_t rail_width     = 3.0;  // 3 cm in x/y direction
 const Double_t rail_position  = aluminium_position + aluminium_thickness / 2. + rail_thickness / 2.;
 
 // readout boards
-// const  Double_t feb_width           =  10.0;    // width of FEBs in cm
+//const  Double_t feb_width           =  10.0;    // width of FEBs in cm
 const Double_t feb_width          = 8.5;   // width of FEBs in cm
 const Double_t feb_thickness      = 0.25;  // light //  2.5 mm thickness of FEBs
 const Double_t febvolume_position = aluminium_position + aluminium_thickness / 2. + feb_width / 2.;
@@ -595,14 +494,13 @@ const Double_t febvolume_position = aluminium_position + aluminium_thickness / 2
 const Double_t asic_thickness = 0.25;  // 2.5 mm asic_thickness
 const Double_t asic_width     = 3.0;   // 2.0;  1.0;   // 1 cm
 
-// --------------      BUCHAREST PROTOTYPE SPECIFICS
-// ----------------------------------
+
+// --------------      BUCHAREST PROTOTYPE SPECIFICS      ----------------------------------
 // Frontpanel components
 const Double_t carbonBu_thickness    = 0.03;  // 300 micron thickness for 1 layer of carbon fibers
 const Double_t honeycombBu_thickness = 0.94;  // 9 mm thickness of honeycomb
 const Double_t WIN_Frame_thickness   = 0.6;   // entrance window framing 6x12 mm2
-// const Double_t carbonBu0_position    = radiator_position + radiator_thickness
-// / 2. + carbonBu_thickness / 2.;
+//const Double_t carbonBu0_position    = radiator_position + radiator_thickness / 2. + carbonBu_thickness / 2.;
 const Double_t honeycombBu0_position = radiator_position + radiator_thickness / 2. + honeycombBu_thickness / 2.;
 const Double_t carbonBu1_position    = honeycombBu0_position + honeycombBu_thickness / 2. + carbonBu_thickness / 2.;
 // Active volume
@@ -617,7 +515,7 @@ const Double_t glassFibre_thickness = 0.0270;  // 300 microns overall PCB thickn
 const Double_t cuCoating_thickness  = 0.0030;
 const Double_t glassFibre_position  = honeycombBu1_position + honeycombBu_thickness / 2. + glassFibre_thickness / 2.;
 const Double_t cuCoating_position   = glassFibre_position + glassFibre_thickness / 2. + cuCoating_thickness / 2.;
-// Frame around entrance window, active volume and exit window
+//Frame around entrance window, active volume and exit window
 const Double_t frameBu_thickness = 2 * carbonBu_thickness + honeycombBu_thickness + gas_thickness + padcopper_thickness
                                    + padplane_thickness + honeycombBu_thickness + glassFibre_thickness
                                    + cuCoating_thickness;
@@ -651,6 +549,7 @@ const Double_t gbtx_thickness = 0.25;  // 2.5 mm
 const Double_t gbtx_width     = 3.0;   // 2.0;  1.0;   // 1 cm
 const Double_t gbtx_distance  = 0.4;
 
+
 // Names of the different used materials which are used to build the modules
 // The materials are defined in the global media.geo file
 const TString KeepingVolumeMedium     = "air";
@@ -672,9 +571,9 @@ const TString AluminiumVolumeMedium   = "aluminium";
 const TString Kanya10x10sVolumeMedium = "KANYAProfile10x10Strong";
 const TString Kanya10x10nVolumeMedium = "KANYAProfile10x10Normal";
 const TString Kanya03x05nVolumeMedium = "KANYAProfile3x5Normal";
-// const TString MylarVolumeMedium       = "mylar";
-// const TString RadiatorVolumeMedium    = "polypropylene";
-// const TString ElectronicsVolumeMedium = "goldcoatedcopper";
+//const TString MylarVolumeMedium       = "mylar";
+//const TString RadiatorVolumeMedium    = "polypropylene";
+//const TString ElectronicsVolumeMedium = "goldcoatedcopper";
 
 // some global variables
 TGeoManager* gGeoMan = NULL;           // Pointer to TGeoManager instance
@@ -695,6 +594,7 @@ void create_mag_field_vector();
 void dump_info_file();
 void dump_digi_file();
 
+
 void Create_TRD_Geometry_v22b()
 {
 
@@ -707,6 +607,7 @@ void Create_TRD_Geometry_v22b()
   create_materials_from_media_file();
 
   // Position the layers in z
+  LayerPosition[0] = -54;
   for (Int_t iLayer = 1; iLayer < MaxLayers; iLayer++)
     LayerPosition[iLayer] =
       LayerPosition[iLayer - 1] + LayerThickness + LayerOffset[iLayer];  // add offset for extra gaps
@@ -730,8 +631,7 @@ void Create_TRD_Geometry_v22b()
 
   Int_t nLayer = 0;  // active layer counter
   for (Int_t iLayer = 0; iLayer < MaxLayers; iLayer++) {
-    //    if ((iLayer != 0) && (iLayer != 3))  continue;  // first layer only -
-    //    comment later on
+    //    if ((iLayer != 0) && (iLayer != 3))  continue;  // first layer only - comment later on
     //    if (iLayer != 0) continue;  // first layer only - comment later on
     if (ShowLayer[iLayer]) {
       PlaneId[iLayer] = ++nLayer;
@@ -766,11 +666,9 @@ void Create_TRD_Geometry_v22b()
   trd->Export(FileNameSim);  // an alternative way of writing the trd volume
 
   TFile* outfile = new TFile(FileNameSim, "UPDATE");
-  //  TGeoTranslation* trd_placement = new TGeoTranslation("trd_trans", 0., 0.,
-  //  0.);
-  TGeoTranslation* trd_placement = new TGeoTranslation("trd_trans", 0., 0., zfront[setupid]);
-  // TGeoTranslation* trd_placement = new TGeoTranslation("trd_trans", -7, 0.,
-  // zfront[setupid]);
+  //  TGeoTranslation* trd_placement = new TGeoTranslation("trd_trans", 0., 0., 0.);
+  //  TGeoTranslation* trd_placement = new TGeoTranslation("trd_trans", 0., 0., zfront[setupid]);
+  TGeoTranslation* trd_placement = new TGeoTranslation("trd_trans", -7., 0., zfront[setupid]);
   trd_placement->Write();
   outfile->Close();
 
@@ -783,12 +681,13 @@ void Create_TRD_Geometry_v22b()
 
   top->Draw("ogl");
 
-  // top->Raytrace();
+  //top->Raytrace();
 
   //  cout << "Press Return to exit" << endl;
   //  cin.get();
   //  exit();
 }
+
 
 //==============================================================
 void dump_digi_file()
@@ -865,7 +764,7 @@ void dump_digi_file()
              im + 1);
       printf("%.2f = %.2f + %.2f + %.2f\n", ActiveAreaY[ModuleType[im]], HeightOfSector[im][0], HeightOfSector[im][1],
              HeightOfSector[im][2]);
-      // exit(1);
+      //exit(1);
     }
   }
   //==============================================================
@@ -895,7 +794,7 @@ void dump_digi_file()
   fprintf(ifile, "// array of pad geometries in the TRD (trd1mod[1-%d])\n", NofModuleTypes);
   fprintf(ifile, "// %d modules  // 3 sectors  // 4 values \n", NofModuleTypes);
   fprintf(ifile, "Float_t fst1_pad_type[%d][3][4] =        \n", NofModuleTypes);
-  // fprintf(ifile,"Double_t fst1_pad_type[8][3][4] =       \n");
+  //fprintf(ifile,"Double_t fst1_pad_type[8][3][4] =       \n");
   fprintf(ifile, "			 		 \n");
 
   for (Int_t im = 0; im < NofModuleTypes; im++) {
@@ -941,56 +840,30 @@ void dump_digi_file()
 
   //  Int_t im = 0;
   //  fprintf(ifile,"// module type %d	 		   \n", im+1);
-  //  fprintf(ifile,"  { { { %.1f, %5.2f, %.1f/%3d, %5.2f },    \n",
-  //  ActiveAreaX[ModuleType[im]], HeightOfSector[im][0],
-  //  ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]],
-  //  PadHeightInSector[im][0]);
-  //  fprintf(ifile,"      { %.1f, %5.2f, %.1f/%3d, %5.2f },    \n",
-  //  ActiveAreaX[ModuleType[im]], HeightOfSector[im][1],
-  //  ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]],
-  //  PadHeightInSector[im][1]);
-  //  fprintf(ifile,"      { %.1f, %5.2f, %.1f/%3d, %5.2f } },  \n",
-  //  ActiveAreaX[ModuleType[im]], HeightOfSector[im][2],
-  //  ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]],
-  //  PadHeightInSector[im][2]);
+  //  fprintf(ifile,"  { { { %.1f, %5.2f, %.1f/%3d, %5.2f },    \n", ActiveAreaX[ModuleType[im]], HeightOfSector[im][0], ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]], PadHeightInSector[im][0]);
+  //  fprintf(ifile,"      { %.1f, %5.2f, %.1f/%3d, %5.2f },    \n", ActiveAreaX[ModuleType[im]], HeightOfSector[im][1], ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]], PadHeightInSector[im][1]);
+  //  fprintf(ifile,"      { %.1f, %5.2f, %.1f/%3d, %5.2f } },  \n", ActiveAreaX[ModuleType[im]], HeightOfSector[im][2], ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]], PadHeightInSector[im][2]);
   //  fprintf(ifile,"\n");
   //
   //  for (Int_t im = 1; im < NofModuleTypes-1; im++)
   //  {
   //    fprintf(ifile,"// module type %d	 		     \n", im+1);
-  //    fprintf(ifile,"    { { %.1f, %5.2f, %.1f/%3d, %5.2f },    \n",
-  //    ActiveAreaX[ModuleType[im]], HeightOfSector[im][0],
-  //    ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]],
-  //    PadHeightInSector[im][0]);
-  //    fprintf(ifile,"      { %.1f, %5.2f, %.1f/%3d, %5.2f },    \n",
-  //    ActiveAreaX[ModuleType[im]], HeightOfSector[im][1],
-  //    ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]],
-  //    PadHeightInSector[im][1]);
-  //    fprintf(ifile,"      { %.1f, %5.2f, %.1f/%3d, %5.2f } },  \n",
-  //    ActiveAreaX[ModuleType[im]], HeightOfSector[im][2],
-  //    ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]],
-  //    PadHeightInSector[im][2]);
+  //    fprintf(ifile,"    { { %.1f, %5.2f, %.1f/%3d, %5.2f },    \n", ActiveAreaX[ModuleType[im]], HeightOfSector[im][0], ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]], PadHeightInSector[im][0]);
+  //    fprintf(ifile,"      { %.1f, %5.2f, %.1f/%3d, %5.2f },    \n", ActiveAreaX[ModuleType[im]], HeightOfSector[im][1], ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]], PadHeightInSector[im][1]);
+  //    fprintf(ifile,"      { %.1f, %5.2f, %.1f/%3d, %5.2f } },  \n", ActiveAreaX[ModuleType[im]], HeightOfSector[im][2], ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]], PadHeightInSector[im][2]);
   //    fprintf(ifile,"\n");
   //  }
   //
   //  Int_t im = 7;
   //  fprintf(ifile,"// module type %d	 		   \n", im+1);
-  //  fprintf(ifile,"    { { %.1f, %5.2f, %.1f/%3d, %5.2f },    \n",
-  //  ActiveAreaX[ModuleType[im]], HeightOfSector[im][0],
-  //  ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]],
-  //  PadHeightInSector[im][0]);
-  //  fprintf(ifile,"      { %.1f, %5.2f, %.1f/%3d, %5.2f },    \n",
-  //  ActiveAreaX[ModuleType[im]], HeightOfSector[im][1],
-  //  ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]],
-  //  PadHeightInSector[im][1]);
-  //  fprintf(ifile,"      { %.1f, %5.2f, %.1f/%3d, %5.2f } } };\n",
-  //  ActiveAreaX[ModuleType[im]], HeightOfSector[im][2],
-  //  ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]],
-  //  PadHeightInSector[im][2]);
+  //  fprintf(ifile,"    { { %.1f, %5.2f, %.1f/%3d, %5.2f },    \n", ActiveAreaX[ModuleType[im]], HeightOfSector[im][0], ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]], PadHeightInSector[im][0]);
+  //  fprintf(ifile,"      { %.1f, %5.2f, %.1f/%3d, %5.2f },    \n", ActiveAreaX[ModuleType[im]], HeightOfSector[im][1], ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]], PadHeightInSector[im][1]);
+  //  fprintf(ifile,"      { %.1f, %5.2f, %.1f/%3d, %5.2f } } };\n", ActiveAreaX[ModuleType[im]], HeightOfSector[im][2], ActiveAreaX[ModuleType[im]], NofPadsInRow[ModuleType[im]], PadHeightInSector[im][2]);
   //  fprintf(ifile,"\n");
 
   fclose(ifile);
 }
+
 
 void dump_info_file()
 {
@@ -1172,6 +1045,7 @@ void dump_info_file()
   fprintf(ifile, "included\n");
 
   fprintf(ifile, "\n");
+
 
   // module statistics
   //  fprintf(ifile,"#\n##   modules\n#\n\n");
@@ -1471,8 +1345,7 @@ void dump_info_file()
   fprintf(ifile, "%7.1f%%u", (float) total_channels_u / (total_asics[NofModuleTypes] * 32) * 100);
   fprintf(ifile, "%7.1f%%s", (float) total_channels_s / (total_asics[NofModuleTypes] * 32) * 100);
   fprintf(ifile, "%7.1f%%r", (float) total_channels_r / (total_asics[NofModuleTypes] * 32) * 100);
-  fprintf(ifile, "                                                        "
-                 "channel ratio\n");
+  fprintf(ifile, "                                                        channel ratio\n");
 
   fprintf(ifile, "\n");
   fprintf(ifile, "%8.1f%%   channel efficiency\n",
@@ -1518,8 +1391,7 @@ void dump_info_file()
   for (Int_t iLayer = 0; iLayer < MaxLayers; iLayer++)
     if (ShowLayer[iLayer]) {
       if (iLayer <= 5) {
-        //        fprintf(ifile,"y %10.4f cm   x %10.4f cm\n", 2.5 *
-        //        DetectorSizeY[1], 3.5 * DetectorSizeX[1]);
+        //        fprintf(ifile,"y %10.4f cm   x %10.4f cm\n", 2.5 * DetectorSizeY[1], 3.5 * DetectorSizeX[1]);
         Int_t type(LayerType[iLayer] / 10);
         yangle = atan(2.5 * DetectorSizeY[type] / (LayerPosition[iLayer] + LayerThickness / 2. + padplane_position))
                  * 180. / acos(-1.);
@@ -1527,16 +1399,14 @@ void dump_info_file()
                  * 180. / acos(-1.);
       }
       if ((iLayer > 5) && (iLayer < 8)) {
-        //        fprintf(ifile,"y %10.4f cm   x %10.4f cm\n", 3.5 *
-        //        DetectorSizeY[1], 4.5 * DetectorSizeX[1]);
+        //        fprintf(ifile,"y %10.4f cm   x %10.4f cm\n", 3.5 * DetectorSizeY[1], 4.5 * DetectorSizeX[1]);
         yangle = atan(3.5 * DetectorSizeY[1] / (LayerPosition[iLayer] + LayerThickness / 2. + padplane_position)) * 180.
                  / acos(-1.);
         xangle = atan(4.5 * DetectorSizeX[1] / (LayerPosition[iLayer] + LayerThickness / 2. + padplane_position)) * 180.
                  / acos(-1.);
       }
       if ((iLayer >= 8) && (iLayer < 10)) {
-        //        fprintf(ifile,"y %10.4f cm   x %10.4f cm\n", 4.5 *
-        //        DetectorSizeY[1], 5.5 * DetectorSizeX[1]);
+        //        fprintf(ifile,"y %10.4f cm   x %10.4f cm\n", 4.5 * DetectorSizeY[1], 5.5 * DetectorSizeX[1]);
         yangle = atan(4.5 * DetectorSizeY[1] / (LayerPosition[iLayer] + LayerThickness / 2. + padplane_position)) * 180.
                  / acos(-1.);
         xangle = atan(5.5 * DetectorSizeX[1] / (LayerPosition[iLayer] + LayerThickness / 2. + padplane_position)) * 180.
@@ -1552,24 +1422,21 @@ void dump_info_file()
   for (Int_t iLayer = 0; iLayer < MaxLayers; iLayer++)
     if (ShowLayer[iLayer]) {
       if (iLayer <= 5) {
-        //        fprintf(ifile,"y %10.4f cm   x %10.4f cm\n", 2.5 *
-        //        DetectorSizeY[1], 3.5 * DetectorSizeX[1]);
+        //        fprintf(ifile,"y %10.4f cm   x %10.4f cm\n", 2.5 * DetectorSizeY[1], 3.5 * DetectorSizeX[1]);
         yangle = atan(0.5 * DetectorSizeY[0] / (LayerPosition[iLayer] + LayerThickness / 2. + padplane_position)) * 180.
                  / acos(-1.);
         xangle = atan(0.5 * DetectorSizeX[0] / (LayerPosition[iLayer] + LayerThickness / 2. + padplane_position)) * 180.
                  / acos(-1.);
       }
       if ((iLayer > 5) && (iLayer < 8)) {
-        //        fprintf(ifile,"y %10.4f cm   x %10.4f cm\n", 3.5 *
-        //        DetectorSizeY[1], 4.5 * DetectorSizeX[1]);
+        //        fprintf(ifile,"y %10.4f cm   x %10.4f cm\n", 3.5 * DetectorSizeY[1], 4.5 * DetectorSizeX[1]);
         yangle = atan(0.5 * DetectorSizeY[0] / (LayerPosition[iLayer] + LayerThickness / 2. + padplane_position)) * 180.
                  / acos(-1.);
         xangle = atan(0.5 * DetectorSizeX[0] / (LayerPosition[iLayer] + LayerThickness / 2. + padplane_position)) * 180.
                  / acos(-1.);
       }
       if ((iLayer >= 8) && (iLayer < 10)) {
-        //        fprintf(ifile,"y %10.4f cm   x %10.4f cm\n", 4.5 *
-        //        DetectorSizeY[1], 5.5 * DetectorSizeX[1]);
+        //        fprintf(ifile,"y %10.4f cm   x %10.4f cm\n", 4.5 * DetectorSizeY[1], 5.5 * DetectorSizeX[1]);
         yangle = atan(0.5 * DetectorSizeY[0] / (LayerPosition[iLayer] + LayerThickness / 2. + padplane_position)) * 180.
                  / acos(-1.);
         xangle = atan(0.5 * DetectorSizeX[0] / (LayerPosition[iLayer] + LayerThickness / 2. + padplane_position)) * 180.
@@ -1582,10 +1449,10 @@ void dump_info_file()
   fclose(ifile);
 }
 
+
 void create_materials_from_media_file()
 {
-  // Use the FairRoot geometry interface to load the media which are already
-  // defined
+  // Use the FairRoot geometry interface to load the media which are already defined
   FairGeoLoader* geoLoad    = new FairGeoLoader("TGeo", "FairGeoLoader");
   FairGeoInterface* geoFace = geoLoad->getGeoInterface();
   TString geoPath           = gSystem->Getenv("VMCWORKDIR");
@@ -1645,8 +1512,7 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
   TGeoMedium* honeycombVolMed = gGeoMan->GetMedium(HoneycombVolumeMedium);
   TGeoMedium* carbonVolMed    = gGeoMan->GetMedium(CarbonVolumeMedium);
   //  TGeoMedium* mylarVolMed       = gGeoMan->GetMedium(MylarVolumeMedium);
-  //  TGeoMedium* electronicsVolMed =
-  //  gGeoMan->GetMedium(ElectronicsVolumeMedium);
+  //  TGeoMedium* electronicsVolMed = gGeoMan->GetMedium(ElectronicsVolumeMedium);
   TGeoMedium* frameVolMed    = gGeoMan->GetMedium(FrameVolumeMedium);
   TGeoMedium* aluledgeVolMed = gGeoMan->GetMedium(AluLegdeVolumeMedium);
   TGeoMedium* febVolMed      = gGeoMan->GetMedium(FebVolumeMedium);
@@ -1656,16 +1522,14 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
   TString name       = Form("module%d", moduleType);
   TGeoVolume* module = new TGeoVolumeAssembly(name);
 
+
   if (IncludeRadiator) {
     // Radiator
-    //   TGeoBBox* trd_radiator = new TGeoBBox("", activeAreaX /2., activeAreaY
-    //   /2., radiator_thickness /2.);
+    //   TGeoBBox* trd_radiator = new TGeoBBox("", activeAreaX /2., activeAreaY /2., radiator_thickness /2.);
     TGeoBBox* trd_radiator     = new TGeoBBox("trd_radiator", sizeX / 2., sizeY / 2., radiator_thickness / 2.);
     TGeoVolume* trdmod1_radvol = new TGeoVolume("radiator", trd_radiator, radVolMed);
-    //     TGeoVolume* trdmod1_radvol = new TGeoVolume(Form("module%d_radiator",
-    //     moduleType), trd_radiator, radVolMed);
-    //     TGeoVolume* trdmod1_radvol = new TGeoVolume(Form("trd1mod%dradiator",
-    //     moduleType), trd_radiator, radVolMed);
+    //     TGeoVolume* trdmod1_radvol = new TGeoVolume(Form("module%d_radiator", moduleType), trd_radiator, radVolMed);
+    //     TGeoVolume* trdmod1_radvol = new TGeoVolume(Form("trd1mod%dradiator", moduleType), trd_radiator, radVolMed);
     trdmod1_radvol->SetLineColor(kBlue);
     trdmod1_radvol->SetTransparency(70);  // (60);  // (70);  // set transparency for the TRD radiator
     TGeoTranslation* trd_radiator_trans = new TGeoTranslation("", 0., 0., radiator_position);
@@ -1726,14 +1590,12 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
                             (0.00 * activeAreaY / 2.), -(0.40 * activeAreaY / 2.),
                             -(0.80 * activeAreaY / 2. + lattice_i_width[type] / 4.)};
 
-      //       TGeoVolumeAssembly* trdmod0_lattice = new
-      //       TGeoVolumeAssembly("mod0lattice"); // volume for lattice grid
+      //       TGeoVolumeAssembly* trdmod0_lattice = new TGeoVolumeAssembly("mod0lattice"); // volume for lattice grid
 
       TGeoBBox* trd_lattice_mod0  = new TGeoBBox("trd_lattice_mod0", sizeX / 2., sizeY / 2., lattice_thickness / 2.);
       TGeoVolume* trdmod0_lattice = new TGeoVolume("lat_grid_mod0", trd_lattice_mod0, keepVolMed);
 
-      //       trdmod0_lattice->SetLineColor(kGreen);  // set color for keeping
-      //       volume
+      //       trdmod0_lattice->SetLineColor(kGreen);  // set color for keeping volume
 
       // outer frame
       trdmod0_lattice->AddNode(trd_lattice_mod0_vol_ho, 1, tv010);
@@ -1756,11 +1618,9 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
       for (Int_t x = 0; x < 4; x++)
         for (Int_t y = 0; y < 5; y++) {
           TGeoTranslation* t0xy = new TGeoTranslation("", vxpos0[x], vypos0[y], 0);
-          if ((y == 0) || (y == 4)) trdmod0_lattice->AddNode(trd_lattice_mod0_vol_vb, lat0_no,
-                                                             t0xy);  // border piece
+          if ((y == 0) || (y == 4)) trdmod0_lattice->AddNode(trd_lattice_mod0_vol_vb, lat0_no, t0xy);  // border piece
           else
-            trdmod0_lattice->AddNode(trd_lattice_mod0_vol_vi, lat0_no,
-                                     t0xy);  // middle piece
+            trdmod0_lattice->AddNode(trd_lattice_mod0_vol_vi, lat0_no, t0xy);  // middle piece
           lat0_no++;
         }
 
@@ -1827,14 +1687,12 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
                             -(0.625 * activeAreaY / 2.),
                             -(0.875 * activeAreaY / 2. + lattice_i_width[type] / 4.)};
 
-      //       TGeoVolumeAssembly* trdmod1_lattice = new
-      //       TGeoVolumeAssembly("mod1lattice"); // volume for lattice grid
+      //       TGeoVolumeAssembly* trdmod1_lattice = new TGeoVolumeAssembly("mod1lattice"); // volume for lattice grid
 
       TGeoBBox* trd_lattice_mod1  = new TGeoBBox("trd_lattice_mod1", sizeX / 2., sizeY / 2., lattice_thickness / 2.);
       TGeoVolume* trdmod1_lattice = new TGeoVolume("lat_grid_mod1", trd_lattice_mod1, keepVolMed);
 
-      //       trdmod1_lattice->SetLineColor(kGreen);  // set color for keeping
-      //       volume
+      //       trdmod1_lattice->SetLineColor(kGreen);  // set color for keeping volume
 
       // outer frame
       trdmod1_lattice->AddNode(trd_lattice_mod1_vol_ho, 1, tv110);
@@ -1857,11 +1715,9 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
       for (Int_t x = 0; x < 7; x++)
         for (Int_t y = 0; y < 8; y++) {
           TGeoTranslation* t1xy = new TGeoTranslation("", vxpos1[x], vypos1[y], 0);
-          if ((y == 0) || (y == 7)) trdmod1_lattice->AddNode(trd_lattice_mod1_vol_vb, lat1_no,
-                                                             t1xy);  // border piece
+          if ((y == 0) || (y == 7)) trdmod1_lattice->AddNode(trd_lattice_mod1_vol_vb, lat1_no, t1xy);  // border piece
           else
-            trdmod1_lattice->AddNode(trd_lattice_mod1_vol_vi, lat1_no,
-                                     t1xy);  // middle piece
+            trdmod1_lattice->AddNode(trd_lattice_mod1_vol_vi, lat1_no, t1xy);  // middle piece
           lat1_no++;
         }
 
@@ -1876,11 +1732,8 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
     // Kapton Foil
     TGeoBBox* trd_kapton          = new TGeoBBox("trd_kapton", sizeX / 2., sizeY / 2., kapton_thickness / 2.);
     TGeoVolume* trdmod1_kaptonvol = new TGeoVolume("kaptonfoil", trd_kapton, kaptonVolMed);
-    //   TGeoVolume* trdmod1_kaptonvol = new
-    //   TGeoVolume(Form("module%d_kaptonfoil", moduleType), trd_kapton,
-    //   kaptonVolMed);
-    //   TGeoVolume* trdmod1_kaptonvol = new TGeoVolume(Form("trd1mod%dkapton",
-    //   moduleType), trd_kapton, kaptonVolMed);
+    //   TGeoVolume* trdmod1_kaptonvol = new TGeoVolume(Form("module%d_kaptonfoil", moduleType), trd_kapton, kaptonVolMed);
+    //   TGeoVolume* trdmod1_kaptonvol = new TGeoVolume(Form("trd1mod%dkapton", moduleType), trd_kapton, kaptonVolMed);
     trdmod1_kaptonvol->SetLineColor(kGreen);
     TGeoTranslation* trd_kapton_trans = new TGeoTranslation("", 0., 0., kapton_position);
     module->AddNode(trdmod1_kaptonvol, 1, trd_kapton_trans);
@@ -1890,10 +1743,8 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
   // Gas
   TGeoBBox* trd_gas          = new TGeoBBox("trd_gas", activeAreaX / 2., activeAreaY / 2., gas_thickness / 2.);
   TGeoVolume* trdmod1_gasvol = new TGeoVolume("gas", trd_gas, gasVolMed);
-  //   TGeoVolume* trdmod1_gasvol = new TGeoVolume(Form("module%d_gas",
-  //   moduleType), trd_gas, gasVolMed);
-  //   TGeoVolume* trdmod1_gasvol = new TGeoVolume(Form("trd1mod%dgas",
-  //   moduleType), trd_gas, gasVolMed);
+  //   TGeoVolume* trdmod1_gasvol = new TGeoVolume(Form("module%d_gas", moduleType), trd_gas, gasVolMed);
+  //   TGeoVolume* trdmod1_gasvol = new TGeoVolume(Form("trd1mod%dgas", moduleType), trd_gas, gasVolMed);
   //   trdmod1_gasvol->SetLineColor(kBlue);
   trdmod1_gasvol->SetLineColor(kGreen);  // to avoid blue overlaps in the screenshots
   trdmod1_gasvol->SetTransparency(40);   // set transparency for the TRD gas
@@ -1913,6 +1764,7 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
     trd_frame1_trans = new TGeoTranslation("", 0., -(activeAreaY / 2. + frameWidth / 2.), frame_position);
     module->AddNode(trdmod1_frame1vol, 2, trd_frame1_trans);
 
+
     // frame2
     TGeoBBox* trd_frame2          = new TGeoBBox("trd_frame2", frameWidth / 2., activeAreaY / 2., frame_thickness / 2.);
     TGeoVolume* trdmod1_frame2vol = new TGeoVolume("frame2", trd_frame2, frameVolMed);
@@ -1929,12 +1781,8 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
     // Pad Copper
     TGeoBBox* trd_padcopper          = new TGeoBBox("trd_padcopper", sizeX / 2., sizeY / 2., padcopper_thickness / 2.);
     TGeoVolume* trdmod1_padcoppervol = new TGeoVolume("padcopper", trd_padcopper, padcopperVolMed);
-    //   TGeoVolume* trdmod1_padcoppervol = new
-    //   TGeoVolume(Form("module%d_padcopper", moduleType), trd_padcopper,
-    //   padcopperVolMed);
-    //   TGeoVolume* trdmod1_padcoppervol = new
-    //   TGeoVolume(Form("trd1mod%dpadcopper", moduleType), trd_padcopper,
-    //   padcopperVolMed);
+    //   TGeoVolume* trdmod1_padcoppervol = new TGeoVolume(Form("module%d_padcopper", moduleType), trd_padcopper, padcopperVolMed);
+    //   TGeoVolume* trdmod1_padcoppervol = new TGeoVolume(Form("trd1mod%dpadcopper", moduleType), trd_padcopper, padcopperVolMed);
     trdmod1_padcoppervol->SetLineColor(kOrange);
     TGeoTranslation* trd_padcopper_trans = new TGeoTranslation("", 0., 0., padcopper_position);
     module->AddNode(trdmod1_padcoppervol, 1, trd_padcopper_trans);
@@ -1942,12 +1790,8 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
     // Pad Plane
     TGeoBBox* trd_padpcb          = new TGeoBBox("trd_padpcb", sizeX / 2., sizeY / 2., padplane_thickness / 2.);
     TGeoVolume* trdmod1_padpcbvol = new TGeoVolume("padplane", trd_padpcb, padpcbVolMed);
-    //   TGeoVolume* trdmod1_padpcbvol = new
-    //   TGeoVolume(Form("module%d_padplane", moduleType), trd_padpcb,
-    //   padpcbVolMed);
-    //   TGeoVolume* trdmod1_padpcbvol = new
-    //   TGeoVolume(Form("trd1mod%dpadplane", moduleType), trd_padpcb,
-    //   padpcbVolMed);
+    //   TGeoVolume* trdmod1_padpcbvol = new TGeoVolume(Form("module%d_padplane", moduleType), trd_padpcb, padpcbVolMed);
+    //   TGeoVolume* trdmod1_padpcbvol = new TGeoVolume(Form("trd1mod%dpadplane", moduleType), trd_padpcb, padpcbVolMed);
     trdmod1_padpcbvol->SetLineColor(kBlue);
     TGeoTranslation* trd_padpcb_trans = new TGeoTranslation("", 0., 0., padplane_position);
     module->AddNode(trdmod1_padpcbvol, 1, trd_padpcb_trans);
@@ -1957,12 +1801,8 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
     // Honeycomb
     TGeoBBox* trd_honeycomb          = new TGeoBBox("trd_honeycomb", sizeX / 2., sizeY / 2., honeycomb_thickness / 2.);
     TGeoVolume* trdmod1_honeycombvol = new TGeoVolume("honeycomb", trd_honeycomb, honeycombVolMed);
-    //   TGeoVolume* trdmod1_honeycombvol = new
-    //   TGeoVolume(Form("module%d_honeycomb", moduleType), trd_honeycomb,
-    //   honeycombVolMed);
-    //   TGeoVolume* trdmod1_honeycombvol = new
-    //   TGeoVolume(Form("trd1mod%dhoneycomb", moduleType), trd_honeycomb,
-    //   honeycombVolMed);
+    //   TGeoVolume* trdmod1_honeycombvol = new TGeoVolume(Form("module%d_honeycomb", moduleType), trd_honeycomb, honeycombVolMed);
+    //   TGeoVolume* trdmod1_honeycombvol = new TGeoVolume(Form("trd1mod%dhoneycomb", moduleType), trd_honeycomb, honeycombVolMed);
     trdmod1_honeycombvol->SetLineColor(kOrange);
     TGeoTranslation* trd_honeycomb_trans = new TGeoTranslation("", 0., 0., honeycomb_position);
     module->AddNode(trdmod1_honeycombvol, 1, trd_honeycomb_trans);
@@ -1970,11 +1810,8 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
     // Carbon fiber layers
     TGeoBBox* trd_carbon          = new TGeoBBox("trd_carbon", sizeX / 2., sizeY / 2., carbon_thickness / 2.);
     TGeoVolume* trdmod1_carbonvol = new TGeoVolume("carbonsheet", trd_carbon, carbonVolMed);
-    //   TGeoVolume* trdmod1_carbonvol = new
-    //   TGeoVolume(Form("module%d_carbonsheet", moduleType), trd_carbon,
-    //   carbonVolMed);
-    //   TGeoVolume* trdmod1_carbonvol = new TGeoVolume(Form("trd1mod%dcarbon",
-    //   moduleType), trd_carbon, carbonVolMed);
+    //   TGeoVolume* trdmod1_carbonvol = new TGeoVolume(Form("module%d_carbonsheet", moduleType), trd_carbon, carbonVolMed);
+    //   TGeoVolume* trdmod1_carbonvol = new TGeoVolume(Form("trd1mod%dcarbon", moduleType), trd_carbon, carbonVolMed);
     trdmod1_carbonvol->SetLineColor(kGreen);
     TGeoTranslation* trd_carbon_trans = new TGeoTranslation("", 0., 0., carbon_position);
     module->AddNode(trdmod1_carbonvol, 1, trd_carbon_trans);
@@ -1992,6 +1829,7 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
     module->AddNode(trdmod1_aluledge1vol, 1, trd_aluledge1_trans);
     trd_aluledge1_trans = new TGeoTranslation("", 0., -(sizeY / 2. - aluminium_width / 2.), aluminium_position);
     module->AddNode(trdmod1_aluledge1vol, 2, trd_aluledge1_trans);
+
 
     // Al-ledge
     TGeoBBox* trd_aluledge2 =
@@ -2013,18 +1851,10 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
     TGeoVolumeAssembly* trd_feb_vol = new TGeoVolumeAssembly("febvol");  // the mother volume of all FEBs
     TGeoVolumeAssembly* trd_feb_box =
       new TGeoVolumeAssembly("febbox");  // volume for inclined FEBs, then shifted along y
-    // TGeoVolumeAssembly* trd_feb_vol = new
-    // TGeoVolumeAssembly(Form("module%d_febvol", moduleType));  // the mother
-    // volume of all FEBs
-    // TGeoVolumeAssembly* trd_feb_box = new
-    // TGeoVolumeAssembly(Form("module%d_febbox", moduleType));  // volume for
-    // inclined FEBs, then shifted along y
-    // TGeoVolumeAssembly* trd_feb_vol = new
-    // TGeoVolumeAssembly(Form("trd1mod%dfebvol", moduleType));  // the mother
-    // volume of all FEBs
-    // TGeoVolumeAssembly* trd_feb_box = new
-    // TGeoVolumeAssembly(Form("trd1mod%dfebbox", moduleType));  // volume for
-    // inclined FEBs, then shifted along y
+    //TGeoVolumeAssembly* trd_feb_vol = new TGeoVolumeAssembly(Form("module%d_febvol", moduleType));  // the mother volume of all FEBs
+    //TGeoVolumeAssembly* trd_feb_box = new TGeoVolumeAssembly(Form("module%d_febbox", moduleType));  // volume for inclined FEBs, then shifted along y
+    //TGeoVolumeAssembly* trd_feb_vol = new TGeoVolumeAssembly(Form("trd1mod%dfebvol", moduleType));  // the mother volume of all FEBs
+    //TGeoVolumeAssembly* trd_feb_box = new TGeoVolumeAssembly(Form("trd1mod%dfebbox", moduleType));  // volume for inclined FEBs, then shifted along y
 
     // translations + rotations
     TGeoTranslation* trd_feb_trans1;      // center to corner
@@ -2038,14 +1868,11 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
     //  //      TGeoCombiTrans  *trd_feb_placement;
     //  //      // fix Z back offset 0.3 at some point
     //  //      yback = -    sin(feb_rotation_angle/180*3.141)  * feb_width /2.;
-    //  //      zback = - (1-cos(feb_rotation_angle/180*3.141)) * feb_width /2.
-    //  + 0.3;
-    //  //      trd_feb_placement = new TGeoCombiTrans(0, feb_pos_y + yback,
-    //  zback, trd_feb_rotation);
+    //  //      zback = - (1-cos(feb_rotation_angle/180*3.141)) * feb_width /2. + 0.3;
+    //  //      trd_feb_placement = new TGeoCombiTrans(0, feb_pos_y + yback, zback, trd_feb_rotation);
     //  //      trd_feb_box->AddNode(trdmod1_feb, iFeb+1, trd_feb_placement);
 
-    //      trd_feb_null       = new TGeoTranslation("", 0., 0., 0.);  // empty
-    //      operation
+    //      trd_feb_null       = new TGeoTranslation("", 0., 0., 0.);  // empty operation
     trd_feb_trans1   = new TGeoTranslation("", 0., -feb_thickness / 2.,
                                          -feb_width / 2.);  // move bottom right corner to center
     trd_feb_trans2   = new TGeoTranslation("", 0., feb_thickness / 2.,
@@ -2061,24 +1888,18 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
     //        (*incline_feb) = (*trd_feb_trans1) * (*trd_feb_y_position);  // OK
     //        (*incline_feb) = (*trd_feb_trans1) * (*trd_feb_trans2);      // OK
     //        (*incline_feb) = (*trd_feb_trans1) * (*trd_feb_rotation);    // OK
-    //        (*incline_feb) =  (*trd_feb_trans1) * (*trd_feb_rotation) *
-    //        (*trd_feb_trans2) * (*trd_feb_y_position);  // not OK
+    //        (*incline_feb) =  (*trd_feb_trans1) * (*trd_feb_rotation) * (*trd_feb_trans2) * (*trd_feb_y_position);  // not OK
     // trd_feb_y_position is displaced in rotated coordinate system
 
     // matrix operation to rotate FEB PCB around its corner on the backanel
     (*incline_feb) = (*trd_feb_trans1) * (*trd_feb_rotation) * (*trd_feb_trans2);  // OK
 
-    // Create all FEBs and place them in an assembly which will be added to the
-    // TRD module
+    // Create all FEBs and place them in an assembly which will be added to the TRD module
     TGeoBBox* trd_feb       = new TGeoBBox("trd_feb", activeAreaX / 2., feb_thickness / 2.,
                                      feb_width / 2.);               // the FEB itself - as a cuboid
     TGeoVolume* trdmod1_feb = new TGeoVolume("feb", trd_feb, febVolMed);  // the FEB made of a certain medium
-    //      TGeoVolume* trdmod1_feb = new TGeoVolume(Form("module%d_feb",
-    //      moduleType), trd_feb, febVolMed);  // the FEB made of a certain
-    //      medium
-    //      TGeoVolume* trdmod1_feb = new TGeoVolume(Form("trd1mod%dfeb",
-    //      moduleType), trd_feb, febVolMed);  // the FEB made of a certain
-    //      medium
+    //      TGeoVolume* trdmod1_feb = new TGeoVolume(Form("module%d_feb", moduleType), trd_feb, febVolMed);  // the FEB made of a certain medium
+    //      TGeoVolume* trdmod1_feb = new TGeoVolume(Form("trd1mod%dfeb", moduleType), trd_feb, febVolMed);  // the FEB made of a certain medium
     trdmod1_feb->SetLineColor(kYellow);  // set yellow color
     trd_feb_box->AddNode(trdmod1_feb, 1, incline_feb);
     // now we have an inclined FEB
@@ -2106,12 +1927,8 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
                                         asic_width / 2.);  // ASIC dimensions
       // TODO: use Silicon as ASICs material
       TGeoVolume* trdmod1_asic = new TGeoVolume("asic", trd_asic, asicVolMed);  // the ASIC made of a certain medium
-      //        TGeoVolume* trdmod1_asic = new TGeoVolume(Form("module%d_asic",
-      //        moduleType), trd_asic, asicVolMed);   // the ASIC made of a
-      //        certain medium
-      //        TGeoVolume* trdmod1_asic = new TGeoVolume(Form("trd1mod%dasic",
-      //        moduleType), trd_asic, asicVolMed);   // the ASIC made of a
-      //        certain medium
+      //        TGeoVolume* trdmod1_asic = new TGeoVolume(Form("module%d_asic", moduleType), trd_asic, asicVolMed);   // the ASIC made of a certain medium
+      //        TGeoVolume* trdmod1_asic = new TGeoVolume(Form("trd1mod%dasic", moduleType), trd_asic, asicVolMed);   // the ASIC made of a certain medium
       trdmod1_asic->SetLineColor(kBlue);  // set blue color for ASICs
 
       Int_t nofAsics   = AsicsPerFeb[moduleType - 1] % 100;
@@ -2124,9 +1941,8 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
       for (Int_t iAsic = 0; iAsic < (nofAsics / groupAsics); iAsic++) {
         if (groupAsics == 1)  // single ASICs
         {
-          asic_pos = (iAsic + 0.5) / nofAsics - 0.5;  // equal spacing of ASICs
-                                                      // on the FEB, e.g. for
-                                                      // no=3 : -1/3, 0, +1/3
+          asic_pos =
+            (iAsic + 0.5) / nofAsics - 0.5;  // equal spacing of ASICs on the FEB, e.g. for no=3 : -1/3, 0, +1/3
 
           // ASIC 1
           asic_pos_x      = asic_pos * activeAreaX;
@@ -2140,9 +1956,8 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
 
         if (groupAsics == 2)  // pairs of ASICs
         {
-          asic_pos =
-            (iAsic + 0.5) / (nofAsics / groupAsics) - 0.5;  // equal spacing of ASICs on the FEB, e.g. for no=3 :
-                                                            // -1/3, 0, +1/3
+          asic_pos = (iAsic + 0.5) / (nofAsics / groupAsics)
+                     - 0.5;  // equal spacing of ASICs on the FEB, e.g. for no=3 : -1/3, 0, +1/3
 
           // ASIC 1
           asic_pos_x      = asic_pos * activeAreaX + (0.5 + asic_distance / 2.) * asic_width;
@@ -2165,9 +1980,8 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
 
         if (groupAsics == 3)  // triplets of ASICs
         {
-          asic_pos =
-            (iAsic + 0.5) / (nofAsics / groupAsics) - 0.5;  // equal spacing of ASICs on the FEB, e.g. for no=3 :
-                                                            // -1/3, 0, +1/3
+          asic_pos = (iAsic + 0.5) / (nofAsics / groupAsics)
+                     - 0.5;  // equal spacing of ASICs on the FEB, e.g. for no=3 : -1/3, 0, +1/3
 
           // ASIC 1
           asic_pos_x      = asic_pos * activeAreaX + 1.1 * asic_width;  // (0.5 + asic_distance/2.) * asic_width;
@@ -2200,6 +2014,7 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
       // now we have an inclined FEB with ASICs
     }
 
+
     // now go on with FEB placement
     Double_t feb_pos;
     Double_t feb_pos_y;
@@ -2214,10 +2029,8 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
       // shift inclined FEB in y to its final position
       trd_feb_y_position = new TGeoTranslation("", 0., feb_pos_y,
                                                feb_z_offset);  // with additional fixed offset in z direction
-      //        trd_feb_y_position = new TGeoTranslation("", 0., feb_pos_y,
-      //        0.0);  // touching the backpanel with the corner
-      trd_feb_vol->AddNode(trd_feb_box, iFeb + 1,
-                           trd_feb_y_position);  // position FEB in y
+      //        trd_feb_y_position = new TGeoTranslation("", 0., feb_pos_y, 0.0);  // touching the backpanel with the corner
+      trd_feb_vol->AddNode(trd_feb_box, iFeb + 1, trd_feb_y_position);  // position FEB in y
     }
 
     if (IncludeRobs) {
@@ -2266,17 +2079,13 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
       Int_t iGbtx            = 1;
 
       for (Int_t iGbtxX = 0; iGbtxX < nofGbtxX; iGbtxX++) {
-        gbtx_pos = (iGbtxX + 0.5) / nofGbtxX - 0.5;  // equal spacing of GBTXs on
-                                                     // the FEB, e.g. for no=3 :
-                                                     // -1/3, 0, +1/3
+        gbtx_pos = (iGbtxX + 0.5) / nofGbtxX - 0.5;  // equal spacing of GBTXs on the FEB, e.g. for no=3 : -1/3, 0, +1/3
         gbtx_pos_x = -gbtx_pos * rob_size_x;
 
         if (iGbtxX > 0)
           for (Int_t iGbtxY = 0; iGbtxY < nofGbtxY; iGbtxY++) {
-            gbtx_pos = (iGbtxY + 0.5) / nofGbtxY - 0.5;  // equal spacing of
-                                                         // GBTXs on the FEB,
-                                                         // e.g. for no=3 : -1/3,
-                                                         // 0, +1/3
+            gbtx_pos =
+              (iGbtxY + 0.5) / nofGbtxY - 0.5;  // equal spacing of GBTXs on the FEB, e.g. for no=3 : -1/3, 0, +1/3
             gbtx_pos_y = gbtx_pos * rob_size_y;
 
             trd_gbtx_trans1 = new TGeoTranslation("", gbtx_pos_x, gbtx_pos_y,
@@ -2309,8 +2118,7 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
           trd_rob_y_position = new TGeoTranslation("", 0., rob_pos_y,
                                                    -feb_width / 2. + rob_offset);  // place ROBs close to FEBs
         else {
-          //	    Int_t rob_z_pos = 0.;  // test where ROB is placed by
-          // default
+          //	    Int_t rob_z_pos = 0.;  // test where ROB is placed by default
           Int_t rob_z_pos =
             -feb_width / 2. + feb_width * cos(feb_rotation_angle[moduleType - 1] * acos(-1.) / 180.) + rob_offset;
           if (rob_z_pos > feb_width / 2.)  // if the rob is too far out
@@ -2322,8 +2130,7 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
           }
           trd_rob_y_position = new TGeoTranslation("", 0., rob_pos_y, rob_z_pos);
         }
-        trd_feb_vol->AddNode(trd_rob_box, iRob + 1,
-                             trd_rob_y_position);  // position FEB in y
+        trd_feb_vol->AddNode(trd_rob_box, iRob + 1, trd_rob_y_position);  // position FEB in y
       }
 
     }  // IncludeGbtx
@@ -2331,10 +2138,7 @@ TGeoVolume* create_trd_module_type(Int_t moduleType)
     // put FEB box on module
     TGeoTranslation* trd_febvolume_trans = new TGeoTranslation("", 0., 0., febvolume_position);
     gGeoMan->GetVolume(name)->AddNode(trd_feb_vol, 1,
-                                      trd_febvolume_trans);  // put febvolume at
-                                                             // correct z
-                                                             // position wrt to
-                                                             // the module
+                                      trd_febvolume_trans);  // put febvolume at correct z position wrt to the module
   }
 
   // DE123
@@ -2387,8 +2191,7 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
   TGeoMedium* honeycombVolMed = gGeoMan->GetMedium(HoneycombVolumeMedium);
   TGeoMedium* carbonVolMed    = gGeoMan->GetMedium(CarbonVolumeMedium);
   //  TGeoMedium* mylarVolMed       = gGeoMan->GetMedium(MylarVolumeMedium);
-  //  TGeoMedium* electronicsVolMed =
-  //  gGeoMan->GetMedium(ElectronicsVolumeMedium);
+  //  TGeoMedium* electronicsVolMed = gGeoMan->GetMedium(ElectronicsVolumeMedium);
   TGeoMedium* frameVolMed     = gGeoMan->GetMedium(FrameVolumeMedium);
   TGeoMedium* febVolMed       = gGeoMan->GetMedium(FebVolumeMedium);
   TGeoMedium* asicVolMed      = gGeoMan->GetMedium(AsicVolumeMedium);
@@ -2396,6 +2199,7 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
 
   TString name       = Form("module%d", moduleType);
   TGeoVolume* module = new TGeoVolumeAssembly(name);
+
 
   if (IncludeRadiator) {  // Radiator
     TGeoBBox* trd_radiator     = new TGeoBBox("trd_radiator", sizeX / 2., sizeY / 2., radiator_thickness / 2.);
@@ -2409,8 +2213,7 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
   Double_t winIn_C_thickness  = 0.02;
   Double_t winIn_HC_thickness = 1.;
   Double_t winIn_thickness    = winIn_HC_thickness + /*2**/ winIn_C_thickness;
-  if (IncludeLattice) {  // Entrance window in the case of the Bucharest
-                         // prototype
+  if (IncludeLattice) {  // Entrance window in the case of the Bucharest prototype
     Info("create_trd2d_module_type", "make entrance widow ...");
     // Carbon fiber layers
     TGeoBBox* winIn_C = new TGeoBBox("winIn_C", 0.3 + activeAreaX / 2., 0.9 + activeAreaY / 2., winIn_C_thickness / 2.);
@@ -2442,18 +2245,16 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
     trd_win_in->AddNode(vol_winIn_C, 1,
                         new TGeoTranslation("", 0., 0., 0.5 * (winIn_HC_thickness + winIn_C_thickness)));
     //     trd_win_in->AddNode(vol_winIn_C, 2,
-    //                     new TGeoTranslation("", 0., 0.,
-    //                     -(winIn_thickness-winIn_C_thickness)/2.));
+    //                     new TGeoTranslation("", 0., 0., -(winIn_thickness-winIn_C_thickness)/2.));
     module->AddNode(trd_win_in, 1,
                     new TGeoTranslation(
                       "", 0., 0., gasBu_position - gas_thickness / 2. - winIn_C_thickness - winIn_HC_thickness / 2.));
   }
 
-  // Gas. The volume has to be defined only for pads (read-out) area. Take care
-  // in the DigiPara definition
+  // Gas. The volume has to be defined only for pads (read-out) area. Take care in the DigiPara definition
   TGeoBBox* trd_gas   = new TGeoBBox("trd_gas", 0.5 * activeAreaX, 0.5 * activeAreaY, 0.5 * gas_thickness);
   TGeoVolume* vol_gas = new TGeoVolume("gas", trd_gas, gasVolMed);
-  vol_gas->SetLineColor(kRed + 3);  // trdmod1_gasvol->SetTransparency(40);
+  vol_gas->SetLineColor(kRed + 3);  //trdmod1_gasvol->SetTransparency(40);
   TGeoBBox* trd_gas_dstr   = new TGeoBBox("trd_gas_dstr", 0.5 * activeAreaX, 0.2, 0.5 * gas_thickness);
   TGeoVolume* vol_gas_dstr = new TGeoVolume("inlet", trd_gas_dstr, gasVolMed);
   vol_gas_dstr->SetLineColor(kRed);
@@ -2482,18 +2283,16 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
     TGeoBBox* trd_ppHC_bd =
       new TGeoBBox(Form("%s_hc_bd", ppn), 1.0 + activeAreaX / 2., 0.9 + activeAreaY / 2., pp_hc_thickness / 2.);
     TGeoBBox* trd_ppHC_fc = new TGeoBBox(Form("%s_hc_fc", ppn), 2.4 / 2., 0.8 / 2., (1.e-4 + pp_hc_thickness) / 2.);
-    // if(detTypeIdx==2) addFlatCableHoles(Form("%s_hc", ppn));
-    // TGeoCompositeShape* trd_ppHC = new TGeoCompositeShape(Form("%s_hc", ppn),
-    // sexpr.Data());
+    //if(detTypeIdx==2) addFlatCableHoles(Form("%s_hc", ppn));
+    //TGeoCompositeShape* trd_ppHC = new TGeoCompositeShape(Form("%s_hc", ppn), sexpr.Data());
     TGeoVolume* vol_trd_ppHC = new TGeoVolume(Form("vol_%s_hc", ppn), trd_ppHC_bd, honeycombVolMed);
     vol_trd_ppHC->SetLineColor(kOrange);
     // Pad Plane C fiber
     TGeoBBox* trd_ppC_bd =
       new TGeoBBox(Form("%s_c_bd", ppn), 1.0 + activeAreaX / 2., 0.9 + activeAreaY / 2., pp_c_thickness / 2.);
     TGeoBBox* trd_ppC_fc = new TGeoBBox(Form("%s_c_fc", ppn), 2.4 / 2., 0.8 / 2., (1.e-4 + pp_c_thickness) / 2.);
-    // if(detTypeIdx==2) addFlatCableHoles(Form("%s_c", ppn));
-    // TGeoCompositeShape* trd_ppC = new TGeoCompositeShape(Form("%s_c", ppn),
-    // sexpr.Data());
+    //if(detTypeIdx==2) addFlatCableHoles(Form("%s_c", ppn));
+    //TGeoCompositeShape* trd_ppC = new TGeoCompositeShape(Form("%s_c", ppn), sexpr.Data());
     TGeoVolume* vol_trd_ppC = new TGeoVolume(Form("vol_%s_c", ppn), trd_ppC_bd, carbonVolMed);
     vol_trd_ppC->SetLineColor(kGray);
 
@@ -2510,6 +2309,7 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
                     new TGeoTranslation("", 0., 0., gasBu_position + gas_thickness / 2. + pp_thickness / 2.));
   }
 
+
   if (IncludeGasFrame) {
     Info("create_trd2d_module_type", "make gas frame ...");
     // framex
@@ -2519,22 +2319,22 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
     Double_t frame_fx1_thickness = winIn_thickness + gas_thickness + pp_thickness;
     TGeoBBox* frame_fx1          = new TGeoBBox("frame_fx1", 1. + activeAreaX / 2., 0.3 / 2., frame_fx1_thickness / 2.);
     TGeoVolume* vol_frame_fx1    = new TGeoVolume("vol_frame_fx1", frame_fx1, frameVolMed);
-    vol_frame_fx1->SetLineColor(kViolet);  // vol_frame_fx1->SetTransparency(50);
+    vol_frame_fx1->SetLineColor(kViolet);  //vol_frame_fx1->SetTransparency(50);
 
     // framey
     TGeoBBox* frame_fy_0       = new TGeoBBox("frame_fy_0", 0.7 / 2., (1.8 + activeAreaY) / 2., winIn_thickness / 2.);
     TGeoVolume* vol_frame_fy_0 = new TGeoVolume("vol_frame_fy_0", frame_fy_0, frameVolMed);
     vol_frame_fy_0->SetLineColor(kBlue);
-    TGeoBBox* frame_fy_1       = new TGeoBBox("frame_fy_1", 1.0 / 2., (1.8 + activeAreaY) / 2.,
-                                        0.4 / 2.);  // catode wire support
+    TGeoBBox* frame_fy_1 =
+      new TGeoBBox("frame_fy_1", 1.0 / 2., (1.8 + activeAreaY) / 2., 0.4 / 2.);  // catode wire support
     TGeoVolume* vol_frame_fy_1 = new TGeoVolume("vol_frame_fy_1", frame_fy_1, frameVolMed);
     vol_frame_fy_1->SetLineColor(kBlue - 3);
-    TGeoBBox* frame_fy_2       = new TGeoBBox("frame_fy_2", 0.7 / 2., (1.8 + activeAreaY) / 2.,
-                                        0.4 / 2.);  // anode wire support
+    TGeoBBox* frame_fy_2 =
+      new TGeoBBox("frame_fy_2", 0.7 / 2., (1.8 + activeAreaY) / 2., 0.4 / 2.);  // anode wire support
     TGeoVolume* vol_frame_fy_2 = new TGeoVolume("vol_frame_fy_2", frame_fy_2, frameVolMed);
     vol_frame_fy_2->SetLineColor(kOrange + 4);
-    TGeoBBox* frame_fy_3       = new TGeoBBox("frame_fy_3", 0.4 / 2., (1.8 + activeAreaY) / 2.,
-                                        0.4 / 2.);  // pad-plane support
+    TGeoBBox* frame_fy_3 =
+      new TGeoBBox("frame_fy_3", 0.4 / 2., (1.8 + activeAreaY) / 2., 0.4 / 2.);  // pad-plane support
     TGeoVolume* vol_frame_fy_3 = new TGeoVolume("vol_frame_fy_3", frame_fy_3, frameVolMed);
     vol_frame_fy_3->SetLineColor(kYellow + 3);
     // add up framey components
@@ -2547,7 +2347,7 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
     vol_frame_fy0->AddNode(vol_frame_fy_3, 1, new TGeoTranslation("", -0.4 / 2., 0., 0.4));
     TGeoBBox* frame_fy1       = new TGeoBBox("frame_fy1", 0.3 / 2., 1.2 + activeAreaY / 2., frame_fx1_thickness / 2.);
     TGeoVolume* vol_frame_fy1 = new TGeoVolume("vol_frame_fy1", frame_fy1, frameVolMed);
-    vol_frame_fy1->SetLineColor(kViolet + 2);  // vol_frame_fy1->SetTransparency(50);
+    vol_frame_fy1->SetLineColor(kViolet + 2);  //vol_frame_fy1->SetTransparency(50);
 
     // Add up all frames
     Double_t frame_fx1_position       = -winIn_thickness - gas_thickness / 2. + frame_fx1_thickness / 2.;
@@ -2605,6 +2405,7 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
     module->AddNode(trd_gas_frame, 1, new TGeoTranslation("", 0., 0., gasBu_position));
   }
 
+
   const Double_t bp_hc_thickness  = 2.;
   const Double_t bp_pcb_thickness = 0.05;
   const Double_t bp_cu_thickness  = 0.003;
@@ -2615,32 +2416,29 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
     // Honeycomb board and flat-cable hole
     TGeoBBox* bp_hc_bd = new TGeoBBox("bp_hc_bd", activeAreaX / 2., activeAreaY / 2., bp_hc_thickness / 2.);
     TGeoBBox* bp_hc_fc = new TGeoBBox("bp_hc_fc", 2.4 / 2., 0.8 / 2., (1.e-4 + bp_hc_thickness) / 2.);
-    // if(detTypeIdx==2) addFlatCableHoles("bp_hc");
-    // TGeoCompositeShape* bp_hc = new TGeoCompositeShape("bp_hc",
-    // sexpr.Data());
+    //if(detTypeIdx==2) addFlatCableHoles("bp_hc");
+    //TGeoCompositeShape* bp_hc = new TGeoCompositeShape("bp_hc", sexpr.Data());
     TGeoVolume* vol_bp_hc = new TGeoVolume(".vol_bp_hc", bp_hc_bd, honeycombVolMed);
     vol_bp_hc->SetLineColor(kOrange);
     // Screen fibre-glass support (PCB)
     TGeoBBox* bp_pcb_bd =
       new TGeoBBox("bp_pcb_bd", 0.5 + activeAreaX / 2., 0.5 + activeAreaY / 2., bp_pcb_thickness / 2.);
     TGeoBBox* bp_pcb_fc = new TGeoBBox("bp_pcb_fc", 2.4 / 2., 0.8 / 2., (1.e-3 + bp_pcb_thickness) / 2.);
-    // if(detTypeIdx==2) addFlatCableHoles("bp_pcb");
-    // TGeoCompositeShape* bp_pcb = new TGeoCompositeShape("bp_pcb",
-    // sexpr.Data());
+    //if(detTypeIdx==2) addFlatCableHoles("bp_pcb");
+    //TGeoCompositeShape* bp_pcb = new TGeoCompositeShape("bp_pcb", sexpr.Data());
     TGeoVolume* vol_bp_pcb = new TGeoVolume("vol_bp_pcb", bp_pcb_bd, padpcbVolMed);
     vol_bp_pcb->SetLineColor(kGreen);
     // Pad Copper
     TGeoBBox* bp_cu_bd = new TGeoBBox("bp_cu_bd", 0.5 + activeAreaX / 2., 0.5 + activeAreaY / 2., bp_cu_thickness / 2.);
     TGeoBBox* bp_cu_fc = new TGeoBBox("bp_cu_fc", 2.4 / 2., 0.8 / 2., (1.e-3 + bp_cu_thickness) / 2.);
-    // if(detTypeIdx==2) addFlatCableHoles("bp_cu");
-    // TGeoCompositeShape* bp_cu = new TGeoCompositeShape("bp_cu",
-    // sexpr.Data());
+    //if(detTypeIdx==2) addFlatCableHoles("bp_cu");
+    //TGeoCompositeShape* bp_cu = new TGeoCompositeShape("bp_cu", sexpr.Data());
     TGeoVolume* vol_bp_cu = new TGeoVolume("vol_bp_cu", bp_cu_bd, padcopperVolMed);
     vol_bp_cu->SetLineColor(kRed);
 
     TGeoBBox* bp_fx       = new TGeoBBox("bp_fx", activeAreaX / 2., 0.5 / 2., bp_hc_thickness / 2.);
     TGeoVolume* vol_bp_fx = new TGeoVolume("vol_bp_fx", bp_fx, frameVolMed);
-    vol_bp_fx->SetLineColor(kViolet);  // vol_gas_fx1->SetTransparency(50);
+    vol_bp_fx->SetLineColor(kViolet);  //vol_gas_fx1->SetTransparency(50);
     TGeoBBox* bp_fy       = new TGeoBBox("bp_fy", 0.5 / 2, 0.5 + 0.5 * activeAreaY, bp_hc_thickness / 2.);
     TGeoVolume* vol_bp_fy = new TGeoVolume("vol_bp_fy", bp_fy, frameVolMed);
     vol_bp_fy->SetLineColor(kViolet + 2);
@@ -2689,7 +2487,7 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
   const Double_t FMCsuppD  = 0.8;   // outer radius of FMC connector side supports
   const Double_t FMCsuppX  = 0.6;   // FMC connector side supports
   // GETS2C-ROB3 connector boord parameters
-  const Double_t robConn_size_x = 3.9;  // 15.0;
+  const Double_t robConn_size_x = 3.9;  //15.0;
   const Double_t robConn_size_y = 15.0;
   //  const Double_t robConn_xoffset      =  6.0;
   // SATA+ connector definition
@@ -2703,20 +2501,19 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
   if (IncludeFebs) {
     Info("create_trd2d_module_type", "make FEBs ...");
 
-    // Create all FEBs and place them in an assembly which will be added to the
-    // TRD module
+    // Create all FEBs and place them in an assembly which will be added to the TRD module
     // FASPRO board
     TGeoBBox* faspro_bd       = new TGeoBBox("faspro_bd", FASPRO_length / 2., FASPRO_width / 2., FASPRO_thickness / 2.);
     TGeoVolume* vol_faspro_bd = new TGeoVolume("vol_faspro_bd", faspro_bd, febVolMed);
-    vol_faspro_bd->SetLineColor(kGreen + 3);  // vol_faspro_bd->SetTransparency(50);
+    vol_faspro_bd->SetLineColor(kGreen + 3);  //vol_faspro_bd->SetTransparency(50);
     // GETS board
     TGeoBBox* gets_bd       = new TGeoBBox("gets_bd", GETS_length / 2., GETS_width / 2., GETS_thickness / 2.);
     TGeoVolume* vol_gets_bd = new TGeoVolume("vol_gets_bd", gets_bd, febVolMed);
-    vol_gets_bd->SetLineColor(kGreen + 3);  // vol_gets_bd->SetTransparency(50);
+    vol_gets_bd->SetLineColor(kGreen + 3);  //vol_gets_bd->SetTransparency(50);
     // GA01 board
     TGeoBBox* ga01_bd       = new TGeoBBox("ga01_bd", GA01_length / 2., GA01_width / 2., GA01_thickness / 2.);
     TGeoVolume* vol_ga01_bd = new TGeoVolume("vol_ga01_bd", ga01_bd, febVolMed);
-    vol_ga01_bd->SetLineColor(kGreen + 7);  // vol_gets_bd->SetTransparency(50);
+    vol_ga01_bd->SetLineColor(kGreen + 7);  //vol_gets_bd->SetTransparency(50);
 
     // Create connectors
     // FMC connector
@@ -2799,7 +2596,7 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
     // supports for electronics
     TGeoBBox* faspro_fy = new TGeoBBox("faspro_fy", 0.4 / 2, 0.5 + 0.5 * activeAreaY, 0.5 * (FASPRO_zspace - 0.2));
     TGeoVolume* vol_faspro_fy = new TGeoVolume("faspro_fy", faspro_fy, frameVolMed);
-    vol_faspro_fy->SetLineColor(kViolet + 2);  // vol_faspro_fy->SetTransparency(50);
+    vol_faspro_fy->SetLineColor(kViolet + 2);  //vol_faspro_fy->SetTransparency(50);
 
     // now go on with FEB placement
     TGeoVolumeAssembly* vol_feb = new TGeoVolumeAssembly("FEB");  // the mother volume of all FEBs
@@ -2812,9 +2609,7 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
         for (Int_t rFeb(1); rFeb < 5; rFeb++) {
           // the upper side ...
           //         vol_feb->AddNode(faspro, iFeb++,
-          //                           new TGeoTranslation("",
-          //                           cFeb*(FASPRO_length+FASPRO_dx),
-          //                           (rFeb+0.5)*(FASPRO_width+FASPRO_dy), 0));
+          //                           new TGeoTranslation("", cFeb*(FASPRO_length+FASPRO_dx), (rFeb+0.5)*(FASPRO_width+FASPRO_dy), 0));
           // the bottom side ...
           vol_feb->AddNode(faspro, iFeb++,
                            new TGeoTranslation("", cFeb * (FASPRO_length + FASPRO_dx) - FASPRO_length / 3.,
@@ -2862,7 +2657,7 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
       TGeoBBox* crob_gbtx       = new TGeoBBox("crob_gbtx", gbtx_width / 2., gbtx_width / 2., gbtx_thickness / 2.);
       TGeoVolume* vol_crob_gbtx = new TGeoVolume("crob_gbtx", crob_gbtx, asicVolMed);
       vol_crob_gbtx->SetLineColor(kGreen);
-      // place 3 GBTXs on each C-ROC
+      //place 3 GBTXs on each C-ROC
       Double_t gbtx_pos_x = 0.5 * (-rob_size_x + gbtx_width) - 1.5 /*-0.5*/;
       Double_t gbtx_pos_y = 0.5 * (rob_size_y - gbtx_width) - 0.5;
       crob->AddNode(vol_crob_gbtx, 0,
@@ -2876,30 +2671,25 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
       //       Int_t nofRobs = RobsPerModule[ 2 ], nofRobsHalf(nofRobs/2);
       //       for (Int_t iRob = 0, jRob(0); iRob < nofRobsHalf; iRob++) {
       //         printf("ROB[%d]\n", iRob);
-      //         Double_t rob_pos   = (iRob + 0.5) / nofRobsHalf - 0.5,   //
-      //         equal spacing of ROBs on the backpanel
+      //         Double_t rob_pos   = (iRob + 0.5) / nofRobsHalf - 0.5,   // equal spacing of ROBs on the backpanel
       //                  rob_pos_y = rob_pos * activeAreaY;
-      //         vol_feb->AddNode(crob, jRob++, new TGeoTranslation("",
-      //         -0.5*(FASPRO_length+FASPRO_dx), rob_pos_y, LVB_pos));
-      //         TGeoRotation *crob_rot = new TGeoRotation("crob_rot");
-      //         crob_rot->RotateZ(180.); crob_rot->RegisterYourself();
-      //         TGeoTranslation *crob_tra = new TGeoTranslation("crob_tra",
-      //         0.5*(FASPRO_length+FASPRO_dx), rob_pos_y, LVB_pos);
-      //         crob_tra->RegisterYourself();
-      //         TGeoHMatrix *crob_transform = new TGeoHMatrix("");
-      //         (*crob_transform)=(*crob_tra)*(*crob_rot);
+      //         vol_feb->AddNode(crob, jRob++, new TGeoTranslation("",  -0.5*(FASPRO_length+FASPRO_dx), rob_pos_y, LVB_pos));
+      //         TGeoRotation *crob_rot = new TGeoRotation("crob_rot"); crob_rot->RotateZ(180.); crob_rot->RegisterYourself();
+      //         TGeoTranslation *crob_tra = new TGeoTranslation("crob_tra",  0.5*(FASPRO_length+FASPRO_dx), rob_pos_y, LVB_pos); crob_tra->RegisterYourself();
+      //         TGeoHMatrix *crob_transform = new TGeoHMatrix(""); (*crob_transform)=(*crob_tra)*(*crob_rot);
       //         vol_feb->AddNode(crob, jRob++, crob_transform);
       //       }
     }  // IncludeGbtx
 
     // put FEB box on module
-    module->AddNode(vol_feb, 1, new TGeoTranslation("", 0., 0., FASPRO_position));  // put febvolume at
-                                                                                    // correct z position
-                                                                                    // wrt to the module
+    module->AddNode(
+      vol_feb, 1,
+      new TGeoTranslation("", 0., 0., FASPRO_position));  // put febvolume at correct z position wrt to the module
   }
 
   return module;
 }
+
 
 Int_t copy_nr(Int_t stationNr, Int_t copyNr, Int_t isRotated, Int_t planeNr, Int_t modinplaneNr)
 {
@@ -2967,8 +2757,7 @@ void create_detector_layers(Int_t layerId)
   Int_t i = LayerType[layerId] / 10 * 10000    // 1 digit  // fStation
             + LayerType[layerId] % 10 * 1000   // 1 digit  // isRotated
             + LayerNrInStation[layerId] * 100  // 1 digit  // fLayer
-            + PlaneId[layerId];                // 2 digits // fPlane   // layer type as leading
-                                               // digit in copy number of layer
+            + PlaneId[layerId];  // 2 digits // fPlane   // layer type as leading digit in copy number of layer
   gGeoMan->GetVolume(geoVersion)->AddNode(layer, i);
 
   //  Int_t i = 100 + PlaneId[layerId];
@@ -3010,32 +2799,23 @@ void create_detector_layers(Int_t layerId)
           // statistics per layer and module type
           ModuleStats[layerId][type - 1]++;
 
-          //          Int_t copy = copy_nr_modid(stationNr, layerNrInStation,
-          //          copyNrIn[type - 1], PlaneId[layerId], modId);  // with
-          //          modID
-          //          Int_t copy = copy_nr(stationNr, copyNrIn[type - 1],
-          //          isRotated, PlaneId[layerId], modId);
+          //          Int_t copy = copy_nr_modid(stationNr, layerNrInStation, copyNrIn[type - 1], PlaneId[layerId], modId);  // with modID
+          //          Int_t copy = copy_nr(stationNr, copyNrIn[type - 1], isRotated, PlaneId[layerId], modId);
 
           // take care of FEB orientation - away from beam
           Int_t copy      = 0;
-          module_rotation = new TGeoRotation();  // need to renew rotation to
-                                                 // start from 0 degree angle
+          module_rotation = new TGeoRotation();  // need to renew rotation to start from 0 degree angle
           if (isRotated == 0)                    // layer 1,3 ...
           {
             copy = copy_nr(stationNr, copyNrIn[type - 1], module_id / 10 % 10, PlaneId[layerId], modId);
-            module_rotation->RotateZ((module_id / 10 % 10) * 90.);  // rotate module by   0 or 180
-                                                                    // degrees, see layer[1-3][i,o] -
-                                                                    // vertical pads
+            module_rotation->RotateZ(
+              (module_id / 10 % 10) * 90.);  // rotate module by   0 or 180 degrees, see layer[1-3][i,o] - vertical pads
           }
           else  // layer 2,4 ...
           {
             copy = copy_nr(stationNr, copyNrIn[type - 1], module_id % 10, PlaneId[layerId], modId);
-            module_rotation->RotateZ((module_id % 10) * 90.);  // rotate module
-                                                               // by  90 or 270
-                                                               // degrees, see
-                                                               // layer[1-3][i,o]
-                                                               // - horizontal
-                                                               // pads
+            module_rotation->RotateZ(
+              (module_id % 10) * 90.);  // rotate module by  90 or 270 degrees, see layer[1-3][i,o] - horizontal pads
           }
 
           // rotation
@@ -3056,8 +2836,7 @@ void create_detector_layers(Int_t layerId)
           TGeoCombiTrans* module_placement =
             new TGeoCombiTrans(xPos, yPos, LayerPosition[layerId] + LayerThickness / 2 + dz,
                                module_rotation);  // shift by half layer thickness
-          //          gGeoMan->GetVolume(geoVersion)->AddNode(gModules[type -
-          //          1], copy, module_placement);
+          //          gGeoMan->GetVolume(geoVersion)->AddNode(gModules[type - 1], copy, module_placement);
           // add module to layer
           gGeoMan->GetVolume(layername)->AddNode(gModules[type - 1], copy, module_placement);
           //
@@ -3095,32 +2874,23 @@ void create_detector_layers(Int_t layerId)
           // statistics per layer and module type
           ModuleStats[layerId][type - 1]++;
 
-          //          Int_t copy = copy_nr_modid(stationNr, layerNrInStation,
-          //          copyNrOut[type - 5],  PlaneId[layerId], modId);  // with
-          //          modID
-          //          Int_t copy = copy_nr(stationNr, copyNrOut[type - 5],
-          //          isRotated, PlaneId[layerId], modId);
+          //          Int_t copy = copy_nr_modid(stationNr, layerNrInStation, copyNrOut[type - 5],  PlaneId[layerId], modId);  // with modID
+          //          Int_t copy = copy_nr(stationNr, copyNrOut[type - 5], isRotated, PlaneId[layerId], modId);
 
           // take care of FEB orientation - away from beam
           Int_t copy      = 0;
-          module_rotation = new TGeoRotation();  // need to renew rotation to
-                                                 // start from 0 degree angle
+          module_rotation = new TGeoRotation();  // need to renew rotation to start from 0 degree angle
           if (isRotated == 0)                    // layer 1,3 ...
           {
             copy = copy_nr(stationNr, copyNrOut[type - 5], module_id / 10 % 10, PlaneId[layerId], modId);
-            module_rotation->RotateZ((module_id / 10 % 10) * 90.);  // rotate module by   0 or 180
-                                                                    // degrees, see layer[1-3][i,o] -
-                                                                    // vertical pads
+            module_rotation->RotateZ(
+              (module_id / 10 % 10) * 90.);  // rotate module by   0 or 180 degrees, see layer[1-3][i,o] - vertical pads
           }
           else  // layer 2,4 ...
           {
             copy = copy_nr(stationNr, copyNrOut[type - 5], module_id % 10, PlaneId[layerId], modId);
-            module_rotation->RotateZ((module_id % 10) * 90.);  // rotate module
-                                                               // by  90 or 270
-                                                               // degrees, see
-                                                               // layer[1-3][i,o]
-                                                               // - horizontal
-                                                               // pads
+            module_rotation->RotateZ(
+              (module_id % 10) * 90.);  // rotate module by  90 or 270 degrees, see layer[1-3][i,o] - horizontal pads
           }
 
           // rotation
@@ -3143,56 +2913,48 @@ void create_detector_layers(Int_t layerId)
 
           cout << "layer " << layerId << " ---" << endl;
           frameref_angle = atan((DetectorSizeX[1] / 2. - FrameWidth[1]) / (zfront[setupid] + 3 * LayerThickness));
-          //          frameref_angle = 15. / 180. * acos(-1);  // set a fixed
-          //          reference angle
+          //          frameref_angle = 15. / 180. * acos(-1);  // set a fixed reference angle
           cout << "reference angle " << frameref_angle * 180 / acos(-1) << endl;
 
           layer_angle = atan((DetectorSizeX[1] / 2. - FrameWidth[1]) / (zfront[setupid] + layerId * LayerThickness));
           cout << "layer     angle " << layer_angle * 180 / acos(-1) << endl;
           // DEDE
-          // xPos = tan( frameref_angle ) * (zfront[setupid] + layerId *
-          // LayerThickness) - (DetectorSizeX[1]/2. - FrameWidth[1]);  // shift
-          // module along x-axis
+          // xPos = tan( frameref_angle ) * (zfront[setupid] + layerId * LayerThickness) - (DetectorSizeX[1]/2. - FrameWidth[1]);  // shift module along x-axis
           xPos = 0;
-          /*  if (layerId == 0) {
+          if (layerId == 2) {
             xPos += -22;  // offset in x of 1st large TRD in mCBM 2021_07
             yPos += -0.5;
           }  // offset in x of 1st large TRD in mCBM 2021_07
-          if (layerId == 1) {
+          if (layerId == 3) {
             xPos += -19;  // offset in x of 2nd large TRD in mCBM 2021_07
             yPos += 4.5;
           }  // offset in x of 2nd large TRD in mCBM 2021_07
-          cout << "DESH layer " << layerId << " - xPos " << xPos << endl;
-          */
 
           layer_angle =
             atan((DetectorSizeX[1] / 2. - FrameWidth[1] + xPos) / (zfront[setupid] + layerId * LayerThickness));
           cout << "corrected angle " << layer_angle * 180 / acos(-1) << endl;
 
+
           //          Double_t frameangle[4] = {0};
           //          for ( Int_t ilayer = 3; ilayer >= 0; ilayer--)
           //          {
-          //            frameangle[ilayer] = atan( (DetectorSizeX[1]/2. -
-          //            FrameWidth[1]) / (zfront[setupid] + ilayer *
-          //            LayerThickness) );
-          //            cout << "layer " << ilayer << " - angle " <<
-          //            frameangle[ilayer] * 180 / acos(-1) << endl;
+          //            frameangle[ilayer] = atan( (DetectorSizeX[1]/2. - FrameWidth[1]) / (zfront[setupid] + ilayer * LayerThickness) );
+          //            cout << "layer " << ilayer << " - angle " << frameangle[ilayer] * 180 / acos(-1) << endl;
           //
           //            xPos = (DetectorSizeX[1]/2. - FrameWidth[1]);
-          //            cout << "layer " << ilayer << " - xPos " << xPos <<
-          //            endl;
+          //            cout << "layer " << ilayer << " - xPos " << xPos << endl;
           //
-          //            xPos = tan( frameangle[3] ) * (zfront[setupid] + ilayer
-          //            * LayerThickness);
-          //            cout << "layer " << ilayer << " - xPos " << xPos <<
-          //            endl;
+          //            xPos = tan( frameangle[3] ) * (zfront[setupid] + ilayer * LayerThickness);
+          //            cout << "layer " << ilayer << " - xPos " << xPos << endl;
           //
-          //            xPos = (DetectorSizeX[1]/2. - FrameWidth[1])  - ( tan(
-          //            frameangle[3] ) * (zfront[setupid] + ilayer *
-          //            LayerThickness) );   // shift module along x-axis
-          //            cout << "layer " << ilayer << " - xPos " << xPos <<
-          //            endl;
+          //            xPos = (DetectorSizeX[1]/2. - FrameWidth[1])  - ( tan( frameangle[3] ) * (zfront[setupid] + ilayer * LayerThickness) );   // shift module along x-axis
+          //            cout << "layer " << ilayer << " - xPos " << xPos << endl;
           //	  }
+
+          cout << "DESH layer " << layerId << " xPos " << xPos << endl;
+          cout << "DESH layer " << layerId << " yPos " << yPos << endl;
+          cout << "DESH layer " << layerId << " zPos " << LayerPosition[layerId] << " " << LayerThickness / 2 << " "
+               << dz << endl;
 
           TGeoCombiTrans* module_placement =
             new TGeoCombiTrans(xPos, yPos, LayerPosition[layerId] + LayerThickness / 2 + dz,
@@ -3206,10 +2968,10 @@ void create_detector_layers(Int_t layerId)
     }
   }
 
-  // install TRD2D detectors in the TRD setup
+  //install TRD2D detectors in the TRD setup
   Int_t type = -1;
-  if (layerId == 2 && layerType == 2) type = 10;
-  if (layerId == 3 && layerType == 2) type = 9;
+  if (layerId == 1 && layerType == 2) type = 10;
+  if (layerId == 0 && layerType == 2) type = 9;
   if (type < 0) return;
   Info("create_detector_layers", "add module[0x%p] of type[%d]", (void*) gModules[type - 1], type);
 
@@ -3219,11 +2981,11 @@ void create_detector_layers(Int_t layerId)
   Double_t yPos = 2.5 * 5.12;  // check with FASPRO_width;
   Double_t zPos = 0.;
 
-  if (layerId == 3) {
+  if (layerId == 0) {
     xPos = xPos - 35.5;
-    zPos = -2.0;
+    zPos = -2.0 + 13.5;
   }
-  if (layerId == 2) {
+  if (layerId == 1) {
     xPos = xPos - 22.5;
     yPos = yPos - 12.5;
     zPos = 3.0;
@@ -3233,13 +2995,15 @@ void create_detector_layers(Int_t layerId)
   ModuleStats[layerId][type - 1]++;
 
   module_rotation = new TGeoRotation();
-  // DESH
+  cout << "DESH layer " << layerId << " zPos " << LayerPosition[layerId] + LayerThickness / 2 << " " << zPos << endl;
   TGeoCombiTrans* module_placement =
-    new TGeoCombiTrans(xPos, yPos, LayerPosition[0] - (layerId - 1) * LayerThickness / 2 + zPos,
+    new TGeoCombiTrans(xPos, yPos, /*LayerPosition[0] - (layerId - 1) * LayerThickness / 2 + zPos*/
+                       LayerPosition[layerId] + LayerThickness / 2 + zPos,
                        module_rotation);  // shift by half layer thickness
   Int_t copy = copy_nr(1, 1, 0, PlaneId[layerId], 1);
   gGeoMan->GetVolume(layername)->AddNode(gModules[type - 1], copy, module_placement);
 }
+
 
 void create_mag_field_vector()
 {
@@ -3276,10 +3040,10 @@ void create_mag_field_vector()
   TGeoCombiTrans* field_combi01 = new TGeoCombiTrans(0., 0., 40., rotx270);  // point in +y direction
   gGeoMan->GetVolume(geoVersion)->AddNode(cbmfield_1, 1, field_combi01);
 
-  //   TGeoCombiTrans* field_combi02 = new TGeoCombiTrans( 200., 0., 0.,
-  //   rotx090);   // point in -y direction
+  //   TGeoCombiTrans* field_combi02 = new TGeoCombiTrans( 200., 0., 0., rotx090);   // point in -y direction
   //   gGeoMan->GetVolume(geoVersion)->AddNode(cbmfield_1, 2, field_combi02);
 }
+
 
 void create_gibbet_support()
 {
@@ -3372,20 +3136,20 @@ void create_gibbet_support()
     {
       TString layername = Form("layer%02d", l + 1);
       // DESH
-      /*  if (l == 0) {
+      if (l == 2) {
         xPos = -22;  // offset in x of 1st large TRD in mCBM 2021_07
         yPos = -0.5;
       }  // offset in x of 1st large TRD in mCBM 2021_07
-      if (l == 1) {
+      if (l == 3) {
         xPos = -19;  // offset in x of 2nd large TRD in mCBM 2021_07
         yPos = 4.5;
       }  // offset in x of 2nd large TRD in mCBM 2021_07
-      */
       TGeoTranslation* gibbet_placement =
         new TGeoTranslation(xPos, yPos, LayerPosition[l] + LayerThickness / 2. + gibbet_position);
       gGeoMan->GetVolume(layername)->AddNode(gibbet_1, l, gibbet_placement);
     }
 }
+
 
 void create_power_bars_vertical()
 {
@@ -3430,6 +3194,7 @@ void create_power_bars_vertical()
 
   power1_trans = new TGeoTranslation("", 1 * DetectorSizeX[0], -1.5 * DetectorSizeY[1], 0.);
   power_1->AddNode(power1_vol, 4, power1_trans);
+
 
   // powerbus - vertical long
   power2 =
@@ -3512,6 +3277,7 @@ void create_power_bars_vertical()
     }
 }
 
+
 void create_power_bars_horizontal()
 {
   const TString power_01 = "power_bars_trd1";
@@ -3555,6 +3321,7 @@ void create_power_bars_horizontal()
 
   power1_trans = new TGeoTranslation("", -1.5 * DetectorSizeX[1], -1 * DetectorSizeY[0], 0.);
   power_1->AddNode(power1_vol, 4, power1_trans);
+
 
   // powerbus - horizontal long
   power2 =
@@ -3631,6 +3398,7 @@ void create_power_bars_horizontal()
       gGeoMan->GetVolume(layername)->AddNode(power_1, l, power_placement);
     }
 }
+
 
 void create_xtru_supports()
 {
@@ -3717,6 +3485,7 @@ void create_xtru_supports()
   rotxy02->RotateX(90.);   // rotate  90 deg around x-axis
   rotxy02->RotateZ(ang1);  // rotate  ang1   around rotated y-axis
 
+
   //-------------------
   // vertical pillars (Y)
   //-------------------
@@ -3784,6 +3553,7 @@ void create_xtru_supports()
     trd_3->AddNode(trd_H_vert_vol1, 34, trd_H_vert_combi04);
   }
 
+
   //-------------------
   // horizontal supports (X)
   //-------------------
@@ -3850,6 +3620,7 @@ void create_xtru_supports()
     TGeoCombiTrans* trd_H_hori_combi04 = new TGeoCombiTrans(0., -(BarPosY + Hhei / 2.), PilPosZ[5], roty090);
     trd_3->AddNode(trd_H_hori_vol1, 34, trd_H_hori_combi04);
   }
+
 
   //-------------------
   // horizontal supports (Z)
@@ -4001,6 +3772,7 @@ void create_xtru_supports()
     gGeoMan->GetVolume(geoVersion)->AddNode(trd_3, 3);
 }
 
+
 void add_trd_labels(TGeoVolume* trdbox1, TGeoVolume* trdbox2, TGeoVolume* trdbox3)
 {
   // write TRD (the 3 characters) in a simple geometry
@@ -4112,29 +3884,24 @@ void add_trd_labels(TGeoVolume* trdbox1, TGeoVolume* trdbox2, TGeoVolume* trdbox
   I->AddNode(Ibar2, 1, tr32);
   I->AddNode(Ibar2, 2, tr33);
 
+
   // build text block "TRD"  <32> + 8 + <28> + 8 + <32> = 108
 
   //  TGeoBBox *trdboxb = new TGeoBBox("", 108./2, 40./2, 8./2);
   //  TGeoVolume *trdbox = new TGeoVolume("trdboxb", trdboxb, textVolMed);
   //  trdbox->SetVisibility(kFALSE);
 
-  //  TGeoVolume* trdbox[0] = new TGeoVolumeAssembly("trdbox1"); // volume for
-  //  TRD text (108, 40, 8)
-  //  TGeoVolume* trdbox[1] = new TGeoVolumeAssembly("trdbox2"); // volume for
-  //  TRD text (108, 40, 8)
-  //  TGeoVolume* trdbox[2] = new TGeoVolumeAssembly("trdbox3"); // volume for
-  //  TRD text (108, 40, 8)
+  //  TGeoVolume* trdbox[0] = new TGeoVolumeAssembly("trdbox1"); // volume for TRD text (108, 40, 8)
+  //  TGeoVolume* trdbox[1] = new TGeoVolumeAssembly("trdbox2"); // volume for TRD text (108, 40, 8)
+  //  TGeoVolume* trdbox[2] = new TGeoVolumeAssembly("trdbox3"); // volume for TRD text (108, 40, 8)
 
   TGeoTranslation* tr100 = new TGeoTranslation(38., 0., 0.);
   TGeoTranslation* tr101 = new TGeoTranslation(0., 0., 0.);
   TGeoTranslation* tr102 = new TGeoTranslation(-38., 0., 0.);
 
-  //  TGeoTranslation *tr103 = new TGeoTranslation( -70., 0., 0.);  // on the
-  //  same line
-  //  TGeoTranslation *tr104 = new TGeoTranslation( -86., 0., 0.);  // on the
-  //  same line
-  //  TGeoTranslation *tr105 = new TGeoTranslation(-102., 0., 0.);  // on the
-  //  same line
+  //  TGeoTranslation *tr103 = new TGeoTranslation( -70., 0., 0.);  // on the same line
+  //  TGeoTranslation *tr104 = new TGeoTranslation( -86., 0., 0.);  // on the same line
+  //  TGeoTranslation *tr105 = new TGeoTranslation(-102., 0., 0.);  // on the same line
 
   TGeoTranslation* tr110 = new TGeoTranslation(0., -50., 0.);
   TGeoTranslation* tr111 = new TGeoTranslation(8., -50., 0.);
@@ -4183,8 +3950,7 @@ void add_trd_labels(TGeoVolume* trdbox1, TGeoVolume* trdbox2, TGeoVolume* trdbox
   trdbox3->AddNode(I, 2, tr213);
   trdbox3->AddNode(I, 3, tr214);
 
-  //  TGeoScale *sc100 = new TGeoScale( 36./50., 36./50., 1.);  // text is
-  //  vertical 50 cm, H-bar opening is 36 cm
+  //  TGeoScale *sc100 = new TGeoScale( 36./50., 36./50., 1.);  // text is vertical 50 cm, H-bar opening is 36 cm
   //
   //  // scale text
   //  TGeoHMatrix *mat100 = new TGeoHMatrix("");
@@ -4200,15 +3966,13 @@ void add_trd_labels(TGeoVolume* trdbox1, TGeoVolume* trdbox2, TGeoVolume* trdbox
 
   //   // final placement
   //   //   TGeoTranslation *tr103 = new TGeoTranslation(0., 400., 500.);
-  //   gGeoMan->GetVolume(geoVersion)->AddNode(trdbox, 1, new
-  //   TGeoTranslation(0., 400., 500.));
-  //   gGeoMan->GetVolume(geoVersion)->AddNode(trdbox, 2, new
-  //   TGeoTranslation(0., 500., 600.));
-  //   gGeoMan->GetVolume(geoVersion)->AddNode(trdbox, 3, new
-  //   TGeoTranslation(0., 600., 700.));
+  //   gGeoMan->GetVolume(geoVersion)->AddNode(trdbox, 1, new TGeoTranslation(0., 400., 500.));
+  //   gGeoMan->GetVolume(geoVersion)->AddNode(trdbox, 2, new TGeoTranslation(0., 500., 600.));
+  //   gGeoMan->GetVolume(geoVersion)->AddNode(trdbox, 3, new TGeoTranslation(0., 600., 700.));
 
   //  return trdbox;
 }
+
 
 void create_box_supports()
 {
@@ -4239,19 +4003,13 @@ void create_box_supports()
   const Double_t PlatformHeight = 234;  // platform is   2.34m above the floor
   const Double_t PlatformOffset = 1;    // distance to platform
 
-  //  Double_t AperX[3] = { 450., 550., 600.};  // 100 cm modules  // inner
-  //  aperture in X of support structure for stations 1,2,3
-  //  Double_t AperY[3] = { 350., 450., 500.};  // 100 cm modules  // inner
-  //  aperture in Y of support structure for stations 1,2,3
+  //  Double_t AperX[3] = { 450., 550., 600.};  // 100 cm modules  // inner aperture in X of support structure for stations 1,2,3
+  //  Double_t AperY[3] = { 350., 450., 500.};  // 100 cm modules  // inner aperture in Y of support structure for stations 1,2,3
 
   const Double_t AperX[3] = {4.5 * DetectorSizeX[1], 5.5 * DetectorSizeX[1],
-                             6 * DetectorSizeX[1]};  // inner aperture in X of
-                                                     // support structure for
-                                                     // stations 1,2,3
+                             6 * DetectorSizeX[1]};  // inner aperture in X of support structure for stations 1,2,3
   const Double_t AperY[3] = {3.5 * DetectorSizeY[1], 4.5 * DetectorSizeY[1],
-                             5 * DetectorSizeY[1]};  // inner aperture in Y of
-                                                     // support structure for
-                                                     // stations 1,2,3
+                             5 * DetectorSizeY[1]};  // inner aperture in Y of support structure for stations 1,2,3
   // platform
   const Double_t AperYbot[3] = {BeamHeight - (PlatformHeight + PlatformOffset + I_height), 4.5 * DetectorSizeY[1],
                                 5 * DetectorSizeY[1]};  // inner aperture for station1
@@ -4310,6 +4068,7 @@ void create_box_supports()
   rotxy02->RotateX(90.);   // rotate  90 deg around x-axis
   rotxy02->RotateZ(ang1);  // rotate  ang1   around rotated y-axis
 
+
   //-------------------
   // vertical pillars (Y)
   //-------------------
@@ -4317,13 +4076,11 @@ void create_box_supports()
   // station 1
   if (ShowLayer[0])  // if geometry contains layer 1 (1st layer of station 1)
   {
-    //      TGeoBBox* trd_I_vert1_keep  = new TGeoBBox("", I_thick /2., I_height
-    //      /2. - I_thick, (BeamHeight + (AperY[0]+I_height) ) /2.);
+    //      TGeoBBox* trd_I_vert1_keep  = new TGeoBBox("", I_thick /2., I_height /2. - I_thick, (BeamHeight + (AperY[0]+I_height) ) /2.);
     TGeoBBox* trd_I_vert1_keep = new TGeoBBox("trd_I_vert1_keep", I_thick / 2., I_height / 2. - I_thick,
                                               ((AperYbot[0] + I_height) + (AperY[0] + I_height)) / 2.);
     TGeoVolume* trd_I_vert1    = new TGeoVolume("trd_I_y11", trd_I_vert1_keep, aluminiumVolMed);
-    //      TGeoBBox* trd_I_vert2_keep  = new TGeoBBox("", I_width /2.,
-    //      I_thick /2., (BeamHeight + (AperY[0]+I_height) ) /2.);
+    //      TGeoBBox* trd_I_vert2_keep  = new TGeoBBox("", I_width /2.,            I_thick /2., (BeamHeight + (AperY[0]+I_height) ) /2.);
     TGeoBBox* trd_I_vert2_keep = new TGeoBBox("trd_I_vert2_keep", I_width / 2., I_thick / 2.,
                                               ((AperYbot[0] + I_height) + (AperY[0] + I_height)) / 2.);
     TGeoVolume* trd_I_vert2    = new TGeoVolume("trd_I_y12", trd_I_vert2_keep, aluminiumVolMed);
@@ -4335,14 +4092,12 @@ void create_box_supports()
     TGeoTranslation* ty02 = new TGeoTranslation("ty02", 0., (I_height - I_thick) / 2., 0.);
     TGeoTranslation* ty03 = new TGeoTranslation("ty03", 0., -(I_height - I_thick) / 2., 0.);
 
-    //      TGeoBBox* trd_I_vert_vol1_keep = new TGeoBBox("", I_width /2.,
-    //      I_height /2., (BeamHeight + (AperY[0]+I_height) ) /2.);
+    //      TGeoBBox* trd_I_vert_vol1_keep = new TGeoBBox("", I_width /2., I_height /2., (BeamHeight + (AperY[0]+I_height) ) /2.);
     TGeoBBox* trd_I_vert_vol1_keep = new TGeoBBox("trd_I_vert_vol1_keep", I_width / 2., I_height / 2.,
                                                   ((AperYbot[0] + I_height) + (AperY[0] + I_height)) / 2.);
     TGeoVolume* trd_I_vert_vol1    = new TGeoVolume("trd_I_y10", trd_I_vert_vol1_keep, keepVolMed);
 
-    // set green color for keeping volume of I profile, seen with
-    // gGeoManager->SetVisLevel(2)
+    // set green color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
     trd_I_vert_vol1->SetLineColor(kGreen);
 
     // build I-bar trd_I_vert_vol1
@@ -4355,12 +4110,8 @@ void create_box_supports()
       new TGeoBBox("trd_I_vert3_keep", (I_width - I_thick) / 2. / 2., I_height / 2. - I_thick, I_thick / 2.);
     TGeoVolume* trd_I_vert3 = new TGeoVolume("trd_I_y13", trd_I_vert3_keep, aluminiumVolMed);
     trd_I_vert3->SetLineColor(kGreen);
-    //      TGeoTranslation *ty04 = new TGeoTranslation("ty04",  (I_thick/2. +
-    //      (I_width-I_thick)/2./2.), 0., -( (AperYbot[0]+I_height) +
-    //      (AperY[0]+I_height) - I_width) /2.);  // top
-    //      TGeoTranslation *ty05 = new TGeoTranslation("ty05",  (I_thick/2. +
-    //      (I_width-I_thick)/2./2.), 0.,  ( (AperYbot[0]+I_height) +
-    //      (AperY[0]+I_height) - I_width) /2.);  // bottom
+    //      TGeoTranslation *ty04 = new TGeoTranslation("ty04",  (I_thick/2. + (I_width-I_thick)/2./2.), 0., -( (AperYbot[0]+I_height) + (AperY[0]+I_height) - I_width) /2.);  // top
+    //      TGeoTranslation *ty05 = new TGeoTranslation("ty05",  (I_thick/2. + (I_width-I_thick)/2./2.), 0.,  ( (AperYbot[0]+I_height) + (AperY[0]+I_height) - I_width) /2.);  // bottom
     TGeoTranslation* ty04 = new TGeoTranslation("ty04", (I_thick / 2. + (I_width - I_thick) / 2. / 2.), 0.,
                                                 -(zBarPosYbot[0] + zBarPosYtop[0]) / 2.);  // top
     TGeoTranslation* ty05 = new TGeoTranslation("ty05", (I_thick / 2. + (I_width - I_thick) / 2. / 2.), 0.,
@@ -4405,8 +4156,7 @@ void create_box_supports()
       new TGeoBBox("trd_I_vert_vol1_keep", I_width / 2., I_height / 2., (BeamHeight + (AperY[1] + I_height)) / 2.);
     TGeoVolume* trd_I_vert_vol1 = new TGeoVolume("trd_I_y20", trd_I_vert_vol1_keep, keepVolMed);
 
-    // set green color for keeping volume of I profile, seen with
-    // gGeoManager->SetVisLevel(2)
+    // set green color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
     trd_I_vert_vol1->SetLineColor(kGreen);
 
     // build I-bar trd_I_vert_vol1
@@ -4463,8 +4213,7 @@ void create_box_supports()
       new TGeoBBox("trd_I_vert_vol1_keep", I_width / 2., I_height / 2., (BeamHeight + (AperY[2] + I_height)) / 2.);
     TGeoVolume* trd_I_vert_vol1 = new TGeoVolume("trd_I_y30", trd_I_vert_vol1_keep, keepVolMed);
 
-    // set green color for keeping volume of I profile, seen with
-    // gGeoManager->SetVisLevel(2)
+    // set green color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
     trd_I_vert_vol1->SetLineColor(kGreen);
 
     // build I-bar trd_I_vert_vol1
@@ -4500,6 +4249,7 @@ void create_box_supports()
     trd_3->AddNode(trd_I_vert_vol1, 34, trd_I_vert_combi04);
   }
 
+
   //-------------------
   // horizontal supports (X)
   //-------------------
@@ -4522,8 +4272,7 @@ void create_box_supports()
     TGeoBBox* trd_I_hori_vol1_keep = new TGeoBBox("trd_I_hori_vol1_keep", I_width / 2., I_height / 2., AperX[0]);
     TGeoVolume* trd_I_hori_vol1    = new TGeoVolume("trd_I_x10", trd_I_hori_vol1_keep, keepVolMed);
 
-    // set red color for keeping volume of I profile, seen with
-    // gGeoManager->SetVisLevel(2)
+    // set red color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
     trd_I_hori_vol1->SetLineColor(kRed);
 
     // build I-bar trd_I_hori_vol1
@@ -4559,8 +4308,7 @@ void create_box_supports()
     TGeoBBox* trd_I_hori_vol1_keep = new TGeoBBox("trd_I_hori_vol1_keep", I_width / 2., I_height / 2., AperX[1]);
     TGeoVolume* trd_I_hori_vol1    = new TGeoVolume("trd_I_x20", trd_I_hori_vol1_keep, keepVolMed);
 
-    // set red color for keeping volume of I profile, seen with
-    // gGeoManager->SetVisLevel(2)
+    // set red color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
     trd_I_hori_vol1->SetLineColor(kRed);
 
     // build I-bar trd_I_hori_vol1
@@ -4596,8 +4344,7 @@ void create_box_supports()
     TGeoBBox* trd_I_hori_vol1_keep = new TGeoBBox("trd_I_hori_vol1_keep", I_width / 2., I_height / 2., AperX[2]);
     TGeoVolume* trd_I_hori_vol1    = new TGeoVolume("trd_I_x30", trd_I_hori_vol1_keep, keepVolMed);
 
-    // set red color for keeping volume of I profile, seen with
-    // gGeoManager->SetVisLevel(2)
+    // set red color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
     trd_I_hori_vol1->SetLineColor(kRed);
 
     // build I-bar trd_I_hori_vol1
@@ -4614,6 +4361,7 @@ void create_box_supports()
     TGeoCombiTrans* trd_I_hori_combi04 = new TGeoCombiTrans(0., -xBarPosYbot[2], PilPosZ[5], roty090);
     trd_3->AddNode(trd_I_hori_vol1, 34, trd_I_hori_combi04);
   }
+
 
   //-------------------
   // horizontal supports (Z)
@@ -4640,8 +4388,7 @@ void create_box_supports()
       new TGeoBBox("trd_I_slope_vol1_keep", I_width / 2., I_height / 2., (PilPosZ[1] - PilPosZ[0] - I_width) / 2.);
     TGeoVolume* trd_I_slope_vol1 = new TGeoVolume("trd_I_z10", trd_I_slope_vol1_keep, keepVolMed);
 
-    // set yellow color for keeping volume of I profile, seen with
-    // gGeoManager->SetVisLevel(2)
+    // set yellow color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
     trd_I_slope_vol1->SetLineColor(kYellow);
 
     // build I-bar trd_I_slope_vol1
@@ -4686,8 +4433,7 @@ void create_box_supports()
       new TGeoBBox("trd_I_slope_vol1_keep", I_width / 2., I_height / 2., (PilPosZ[3] - PilPosZ[2] - I_width) / 2.);
     TGeoVolume* trd_I_slope_vol1 = new TGeoVolume("trd_I_z20", trd_I_slope_vol1_keep, keepVolMed);
 
-    // set yellow color for keeping volume of I profile, seen with
-    // gGeoManager->SetVisLevel(2)
+    // set yellow color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
     trd_I_slope_vol1->SetLineColor(kYellow);
 
     // build I-bar trd_I_slope_vol1
@@ -4732,8 +4478,7 @@ void create_box_supports()
       new TGeoBBox("trd_I_slope_vol1_keep", I_width / 2., I_height / 2., (PilPosZ[5] - PilPosZ[4] - I_width) / 2.);
     TGeoVolume* trd_I_slope_vol1 = new TGeoVolume("trd_I_z30", trd_I_slope_vol1_keep, keepVolMed);
 
-    // set yellow color for keeping volume of I profile, seen with
-    // gGeoManager->SetVisLevel(2)
+    // set yellow color for keeping volume of I profile, seen with gGeoManager->SetVisLevel(2)
     trd_I_slope_vol1->SetLineColor(kYellow);
 
     // build I-bar trd_I_slope_vol1
