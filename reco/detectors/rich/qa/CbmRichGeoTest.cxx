@@ -20,6 +20,7 @@
 #include "CbmMCTrack.h"
 #include "CbmReport.h"
 #include "CbmRichConverter.h"
+#include "CbmRichDetectorData.h"
 #include "CbmRichDigi.h"
 #include "CbmRichDigiMapManager.h"
 #include "CbmRichDraw.h"

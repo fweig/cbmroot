@@ -5,6 +5,11 @@
 #ifndef CBMUTILS_H_
 #define CBMUTILS_H_
 
+#include "../CbmMCDataManager.h"
+
+#include "FairLogger.h"
+#include "FairRootManager.h"
+
 #include <sstream>  // for string, stringstream
 #include <vector>   // for vector
 
@@ -45,6 +50,28 @@ namespace Cbm
     static const T ZERO = 0;
     return (x > ZERO) ? 1 : ((x < ZERO) ? -1 : 0);
   }
+
+  /*
+    \brief Tries to get object from FairRootManager. If object is not found create Fatal error.
+    \param[in] objName Name of the object.
+    \param[in] description Optional description for LOG, usually class name + method name.
+  */
+  template<typename T>
+  T* GetOrFatal(const std::string& objName, const std::string& description = "")
+  {
+    FairRootManager* ioman = FairRootManager::Instance();
+    if (ioman == nullptr) { LOG(fatal) << description << " No FairRootManager!"; }
+    T* obj = static_cast<T*>(ioman->GetObject(objName.c_str()));
+    if (obj == nullptr) { LOG(fatal) << description << " No " << objName << " object!"; }
+    return obj;
+  }
+
+  /*
+    \brief Tries to get CbmMCDataArray from CbmMCDataManager. If object is not found create Fatal error.
+    \param[in] objName Name of the object.
+    \param[in] description Optional description for LOG, usually class name + method name.
+  */
+  CbmMCDataArray* InitOrFatalMc(const std::string& objName, const std::string& description = "");
 
   void SaveCanvasAsImage(TCanvas* c, const std::string& dir, const std::string& option = "eps;png;gif");
   void SaveCanvasAsImageImpl(const std::string& imageType, TCanvas* c, const std::string& dir,

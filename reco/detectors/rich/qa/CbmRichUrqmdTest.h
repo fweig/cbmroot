@@ -1,15 +1,6 @@
-/* Copyright (C) 2012-2020 UGiessen/JINR-LIT, Giessen/Dubna
+/* Copyright (C) 2012-2021 UGiessen/JINR-LIT, Giessen/Dubna
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Andrey Lebedev, Semen Lebedev [committer] */
-
-/**
- * \file CbmRichUrqmdTest.h
- *
- * \brief RICH geometry testing in Urqmd collisions.
- *
- * \author Semen Lebedev <s.lebedev@gsi.de>
- * \date 2012
- **/
 
 #ifndef CBM_RICH_URQMD_TEST
 #define CBM_RICH_URQMD_TEST
@@ -26,16 +17,7 @@ class CbmDigiManager;
 #include <map>
 #include <vector>
 
-using namespace std;
 
-/**
- * \class CbmRichUrqmdTest
- *
- * \brief RICH geometry testing in Urqmd collisions.
- *
- * \author Semen Lebedev <s.lebedev@gsi.de>
- * \date 2012
- **/
 class CbmRichUrqmdTest : public FairTask {
 
 public:
@@ -69,19 +51,34 @@ public:
      * \brief Set output directory where you want to write results (figures and json).
      * \param[in] dir Path to the output directory.
      */
-  void SetOutputDir(const string& dir) { fOutputDir = dir; }
+  void SetOutputDir(const std::string& dir) { fOutputDir = dir; }
 
 
 private:
+  CbmHistManager* fHM = nullptr;
+
+  std::string fOutputDir = "";  // output dir for results
+
+  TClonesArray* fRichHits        = nullptr;
+  TClonesArray* fRichRings       = nullptr;
+  CbmMCDataArray* fRichPoints    = nullptr;
+  CbmMCDataArray* fMcTracks      = nullptr;
+  TClonesArray* fRichRingMatches = nullptr;
+  TClonesArray* fRichProjections = nullptr;
+  CbmDigiManager* fDigiMan       = nullptr;
+  CbmMCEventList* fEventList     = nullptr;
+
+  Int_t fEventNum   = 0;
+  Int_t fMinNofHits = 7;  // Min number of hits in ring for detector acceptance calculation.
+
+  std::map<std::pair<Int_t, Int_t>, Int_t> fNofHitsInRingMap;  // Number of hits in the MC RICH ring
+
+  std::vector<std::pair<int, int>> fVertexZStsSlices;  // Slices (Zmin - Zmax) inside STS
+
   /**
      * \brief Initialize histograms.
      */
   void InitHistograms();
-
-  /**
-     * \brief
-     */
-  void FillRichRingNofHits();
 
   /**
      * \brief
@@ -120,25 +117,6 @@ private:
      * \brief Assignment operator.
      */
   CbmRichUrqmdTest& operator=(const CbmRichUrqmdTest&);
-
-  CbmHistManager* fHM;
-
-  string fOutputDir;  // output dir for results
-
-  TClonesArray* fRichHits;
-  TClonesArray* fRichRings;
-  CbmMCDataArray* fRichPoints;
-  CbmMCDataArray* fMcTracks;
-  TClonesArray* fRichRingMatches;
-  TClonesArray* fRichProjections;
-  CbmDigiManager* fDigiMan;
-  CbmMCEventList* fEventList;
-
-  Int_t fEventNum;
-  Int_t fMinNofHits;  // Min number of hits in ring for detector acceptance calculation.
-
-  // Number of hits in the MC RICH ring
-  std::map<pair<Int_t, Int_t>, Int_t> fNofHitsInRingMap;
 
   ClassDef(CbmRichUrqmdTest, 1)
 };

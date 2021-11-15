@@ -4,7 +4,9 @@ set(INCLUDE_DIRECTORIES
 
   ${CBMDATA_DIR}
   ${CBMDATA_DIR}/rich
+  ${CBMDATA_DIR}/tof
   ${CBMDATA_DIR}/global
+  ${CBMDATA_DIR}/base
 
   ${CBMBASE_DIR}
   ${CBMBASE_DIR}/draw
@@ -39,6 +41,7 @@ set(NO_DICT_SRCS
   CbmRichGeoManager.cxx
   CbmRichDigiMapManager.cxx
   CbmRichMCbmDigiMapManager.cxx
+  utils/CbmRichUtil.cxx
 )
 
 IF (SSE_FOUND)

@@ -2,13 +2,6 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Semen Lebedev [committer], Andrey Lebedev */
 
-/**
- * \file CbmRichUrqmdTest.cxx
- *
- * \author Semen Lebedev <s.lebedev@gsi.de>
- * \date 2012
- **/
-
 #include "CbmRichUrqmdTest.h"
 
 #include "CbmDigiManager.h"
@@ -18,13 +11,15 @@
 #include "CbmMCDataManager.h"
 #include "CbmMCEventList.h"
 #include "CbmMCTrack.h"
-#include "CbmMatchRecoToMC.h"
+#include "CbmRichDetectorData.h"
 #include "CbmRichDigi.h"
+#include "CbmRichDigiMapManager.h"
 #include "CbmRichDraw.h"
 #include "CbmRichGeoManager.h"
 #include "CbmRichHit.h"
 #include "CbmRichPoint.h"
 #include "CbmRichRing.h"
+#include "CbmRichUtil.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmUtils.h"
 
@@ -38,69 +33,37 @@
 #include "TStyle.h"
 #include <TFile.h>
 
-#include <boost/assign/list_of.hpp>
-
 #include <iostream>
 #include <sstream>
 #include <string>
 
 using namespace std;
-using boost::assign::list_of;
+using namespace Cbm;
 
-CbmRichUrqmdTest::CbmRichUrqmdTest()
-  : FairTask("CbmRichUrqmdTest")
-  , fHM(NULL)
-  , fOutputDir("")
-  , fRichHits(NULL)
-  , fRichRings(NULL)
-  , fRichPoints(NULL)
-  , fMcTracks(NULL)
-  , fRichRingMatches(NULL)
-  , fRichProjections(NULL)
-  , fDigiMan(nullptr)
-  , fEventList(NULL)
-  , fEventNum(0)
-  , fMinNofHits(7)
-  , fNofHitsInRingMap()
-{
-}
+CbmRichUrqmdTest::CbmRichUrqmdTest() : FairTask("CbmRichUrqmdTest") {}
 
 CbmRichUrqmdTest::~CbmRichUrqmdTest() {}
 
 InitStatus CbmRichUrqmdTest::Init()
 {
   cout << "CbmRichUrqmdTest::Init" << endl;
-  FairRootManager* ioman = FairRootManager::Instance();
-  if (NULL == ioman) { Fatal("CbmRichUrqmdTest::Init", "RootManager not instantised!"); }
-
-  CbmMCDataManager* mcManager = (CbmMCDataManager*) ioman->GetObject("MCDataManager");
-  if (mcManager == nullptr) LOG(fatal) << "CbmRichUrqmdTest::Init() NULL MCDataManager.";
-
-  fMcTracks = mcManager->InitBranch("MCTrack");
-  if (NULL == fMcTracks) { LOG(fatal) << "CbmRichUrqmdTest::Init No MCTrack!"; }
-
-  fRichPoints = mcManager->InitBranch("RichPoint");
-  if (NULL == fRichPoints) { LOG(fatal) << "CbmRichUrqmdTest::Init No RichPoint!"; }
-
-  fRichHits = (TClonesArray*) ioman->GetObject("RichHit");
-  if (NULL == fRichHits) { LOG(fatal) << "CbmRichUrqmdTest::Init No RichHit!"; }
-
-  fRichRings = (TClonesArray*) ioman->GetObject("RichRing");
-  if (NULL == fRichRings) { LOG(fatal) << "CbmRichUrqmdTest::Init No RichRing!"; }
+  fMcTracks        = InitOrFatalMc("MCTrack", "CbmRichUrqmdTest::Init");
+  fRichPoints      = InitOrFatalMc("RichPoint", "CbmRichUrqmdTest::Init");
+  fRichHits        = GetOrFatal<TClonesArray>("RichHit", "CbmRichUrqmdTest::Init");
+  fRichRings       = GetOrFatal<TClonesArray>("RichRing", "CbmRichUrqmdTest::Init");
+  fRichRingMatches = GetOrFatal<TClonesArray>("RichRingMatch", "CbmRichUrqmdTest::Init");
+  fRichProjections = GetOrFatal<TClonesArray>("RichProjection", "CbmRichUrqmdTest::Init");
+  fEventList       = GetOrFatal<CbmMCEventList>("MCEventList.", "CbmRichUrqmdTest::Init");
 
   fDigiMan = CbmDigiManager::Instance();
   fDigiMan->Init();
 
-  fRichRingMatches = (TClonesArray*) ioman->GetObject("RichRingMatch");
-  if (NULL == fRichRingMatches) { LOG(fatal) << "CbmRichUrqmdTest::Init No RichRingMatch!"; }
-
-  fRichProjections = (TClonesArray*) ioman->GetObject("RichProjection");
-  if (NULL == fRichProjections) { LOG(fatal) << "CbmRichUrqmdTest::Init No fRichProjection !"; }
-
-  fEventList = (CbmMCEventList*) ioman->GetObject("MCEventList.");
-  if (NULL == fEventList) { LOG(fatal) << "CbmRichUrqmdTest::Init No MCEventList!"; }
+  fVertexZStsSlices = {make_pair(0., 5.),   make_pair(5., 15.),  make_pair(15., 25.), make_pair(25., 35.),
+                       make_pair(35., 45.), make_pair(45., 55.), make_pair(55., 65.), make_pair(65., 75.),
+                       make_pair(75., 85.), make_pair(85., 95.), make_pair(95., 105.)};
 
   InitHistograms();
+
 
   return kSUCCESS;
 }
@@ -111,7 +74,7 @@ void CbmRichUrqmdTest::Exec(Option_t* /*option*/)
 
   cout << "CbmRichUrqmdTest, event No. " << fEventNum << endl;
 
-  FillRichRingNofHits();
+  fNofHitsInRingMap = CbmRichUtil::CreateNofHitsInRingMap(fRichHits, fRichPoints, fMcTracks, fDigiMan);
   NofRings();
   NofHitsAndPoints();
   NofProjections();
@@ -123,53 +86,33 @@ void CbmRichUrqmdTest::InitHistograms()
 {
   fHM = new CbmHistManager();
 
-  fHM->Create1<TH1D>("fh_vertex_z", "fh_vertex_z;z [cm];# vertices per event", 350, -1., 350);
-  fHM->Create1<TH1D>("fh_vertex_z_sts", "fh_vertex_z_sts;z [cm];# vertices per event", 222, -1., 110.);
-  fHM->Create2<TH2D>("fh_vertex_xy", "fh_vertex_xy;x [cm];y [cm];# vertices per event", 100, -200., 200., 100, -200.,
-                     200.);
-  fHM->Create2<TH2D>("fh_vertex_zy", "fh_vertex_zy;z [cm];y [cm];# vertices per event", 350, -1., 350, 100, -200.,
-                     200.);
-  fHM->Create2<TH2D>("fh_vertex_zx", "fh_vertex_zx;z [cm];x [cm];# vertices per event", 350, -1., 350, 100, -200.,
-                     200.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z100_180", "fh_vertex_xy_z100_180;x [cm];y [cm];# vertices per event", 100, -200.,
-                     200., 100, -200., 200.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z180_370", "fh_vertex_xy_z180_370;x [cm];y [cm];# vertices per event", 100, -200.,
-                     200., 100, -200., 200.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z180_230", "fh_vertex_xy_z180_230;x [cm];y [cm];# vertices per event", 100, -200.,
-                     200., 100, -200., 200.);
+  fHM->Create1<TH1D>("fh_vertex_z", "fh_vertex_z;z [cm];# vertices/ev.", 350, -1., 350);
+  fHM->Create1<TH1D>("fh_vertex_z_sts", "fh_vertex_z_sts;z [cm];# vertices/ev.", 222, -1., 110.);
+  fHM->Create2<TH2D>("fh_vertex_xy", "fh_vertex_xy;x [cm];y [cm];# vertices/ev.", 100, -200., 200., 100, -200., 200.);
+  fHM->Create2<TH2D>("fh_vertex_zy", "fh_vertex_zy;z [cm];y [cm];# vertices/ev.", 350, -1., 350, 100, -200., 200.);
+  fHM->Create2<TH2D>("fh_vertex_zx", "fh_vertex_zx;z [cm];x [cm];# vertices/ev.", 350, -1., 350, 100, -200., 200.);
 
-  fHM->Create2<TH2D>("fh_vertex_xy_z5", "fh_vertex_xy_z5;x [cm];y [cm];# vertices per event", 100, -100., 100., 100,
-                     -100., 100.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z5_15", "fh_vertex_xy_z5_15;x [cm];y [cm];# vertices per event", 100, -100., 100.,
-                     100, -100., 100.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z15_25", "fh_vertex_xy_z15_25;x [cm];y [cm];# vertices per event", 100, -100., 100.,
-                     100, -100., 100.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z25_35", "fh_vertex_xy_z25_35;x [cm];y [cm];# vertices per event", 100, -100., 100.,
-                     100, -100., 100.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z35_45", "fh_vertex_xy_z35_45;x [cm];y [cm];# vertices per event", 100, -100., 100.,
-                     100, -100., 100.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z45_55", "fh_vertex_xy_z45_55;x [cm];y [cm];# vertices per event", 100, -100., 100.,
-                     100, -100., 100.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z55_65", "fh_vertex_xy_z55_65;x [cm];y [cm];# vertices per event", 100, -100., 100.,
-                     100, -100., 100.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z65_75", "fh_vertex_xy_z65_75;x [cm];y [cm];# vertices per event", 100, -100., 100.,
-                     100, -100., 100.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z75_85", "fh_vertex_xy_z75_85;x [cm];y [cm];# vertices per event", 100, -100., 100.,
-                     100, -100., 100.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z85_95", "fh_vertex_xy_z85_95;x [cm];y [cm];# vertices per event", 100, -100., 100.,
-                     100, -100., 100.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z95_105", "fh_vertex_xy_z95_105;x [cm];y [cm];# vertices per event", 100, -100.,
-                     100., 100, -100., 100.);
 
-  fHM->Create1<TH1D>("fh_nof_rings_1hit", "fh_nof_rings_1hit;# detected particles/event;Yield", 250, -.5, 249.5);
-  fHM->Create1<TH1D>("fh_nof_rings_7hits", "fh_nof_rings_7hits;# detected particles/event;Yield", 250, -.5, 249.5);
-  fHM->Create1<TH1D>("fh_nof_rings_prim_1hit", "fh_nof_rings_prim_1hit;# detected particles/event;Yield", 50, -.5,
+  fHM->Create2<TH2D>("fh_vertex_xy_z100_180", "fh_vertex_xy_z100_180;x [cm];y [cm];# vertices/ev.", 100, -200., 200.,
+                     100, -200., 200.);
+  fHM->Create2<TH2D>("fh_vertex_xy_z180_370", "fh_vertex_xy_z180_370;x [cm];y [cm];# vertices/ev.", 100, -200., 200.,
+                     100, -200., 200.);
+  fHM->Create2<TH2D>("fh_vertex_xy_z180_230", "fh_vertex_xy_z180_230;x [cm];y [cm];# vertices/ev.", 100, -200., 200.,
+                     100, -200., 200.);
+
+  for (auto pair : fVertexZStsSlices) {
+    string name = "fh_vertex_xy_z" + to_string(pair.first) + "_" + to_string(pair.second);
+    fHM->Create2<TH2D>(name, name + ";x [cm];y [cm];# vertices/ev.", 100, -100., 100., 100, -100., 100.);
+  }
+
+  fHM->Create1<TH1D>("fh_nof_rings_1hit", "fh_nof_rings_1hit;# detected particles/ev.;Yield", 250, -.5, 249.5);
+  fHM->Create1<TH1D>("fh_nof_rings_7hits", "fh_nof_rings_7hits;# detected particles/ev.;Yield", 250, -.5, 249.5);
+  fHM->Create1<TH1D>("fh_nof_rings_prim_1hit", "fh_nof_rings_prim_1hit;# detected particles/ev.;Yield", 50, -.5, 69.5);
+  fHM->Create1<TH1D>("fh_nof_rings_prim_7hits", "fh_nof_rings_prim_7hits;# detected particles/ev.;Yield", 50, -.5,
                      69.5);
-  fHM->Create1<TH1D>("fh_nof_rings_prim_7hits", "fh_nof_rings_prim_7hits;# detected particles/event;Yield", 50, -.5,
-                     69.5);
-  fHM->Create1<TH1D>("fh_nof_rings_target_1hit", "fh_nof_rings_target_1hit;# detected particles/event;Yield", 60, -.5,
+  fHM->Create1<TH1D>("fh_nof_rings_target_1hit", "fh_nof_rings_target_1hit;# detected particles/ev.;Yield", 60, -.5,
                      79.5);
-  fHM->Create1<TH1D>("fh_nof_rings_target_7hits", "fh_nof_rings_target_7hits;# detected particles/event;Yield", 60, -.5,
+  fHM->Create1<TH1D>("fh_nof_rings_target_7hits", "fh_nof_rings_target_7hits;# detected particles/ev.;Yield", 60, -.5,
                      79.5);
 
   fHM->Create1<TH1D>("fh_secel_mom", "fh_secel_mom;p [GeV/c];Number per event", 100, 0., 20);
@@ -179,80 +122,31 @@ void CbmRichUrqmdTest::InitHistograms()
   fHM->Create1<TH1D>("fh_kaon_mom", "fh_kaon_mom;p [GeV/c];Number per event", 100, 0., 20);
   fHM->Create1<TH1D>("fh_mu_mom", "fh_mu_mom;p [GeV/c];Number per event", 100, 0., 20);
 
-  fHM->Create1<TH1D>("fh_nof_points_per_event", "fh_nof_points_per_event;Particle;# MC points per event", 7, .5, 7.5);
-  fHM->Create1<TH1D>("fh_nof_hits_per_event", "fh_nof_hits_per_event;# hits per event;Yield", 100, 0, 2000);
+  fHM->Create1<TH1D>("fh_nof_points_per_event", "fh_nof_points_per_event;Particle;# MC points/ev.", 7, .5, 7.5);
+  fHM->Create1<TH1D>("fh_nof_hits_per_event", "fh_nof_hits_per_event;# hits per event;Yield", 200, 0, 2000);
   fHM->Create1<TH1D>("fh_nof_hits_per_pmt", "fh_nof_hits_per_pmt;# hits per PMT;% of total", 65, -0.5, 64.5);
 
-  vector<Double_t> xPmtBins = CbmRichDraw::GetPmtHistXbins();
-  vector<Double_t> yPmtBins = CbmRichDraw::GetPmtHistYbins();
+  vector<double> xPmtBins = CbmRichUtil::GetPmtHistXbins();
+  vector<double> yPmtBins = CbmRichUtil::GetPmtHistYbins();
 
   // before drawing must be normalized by 1/64
-  TH2D* fh_hitrate_xy = new TH2D("fh_hitrate_xy", "fh_hitrate_xy;X [cm];Y [cm];# hits/pixel/s", xPmtBins.size() - 1,
-                                 &xPmtBins[0], yPmtBins.size() - 1, &yPmtBins[0]);
-  fHM->Add("fh_hitrate_xy", fh_hitrate_xy);
+  fHM->Create2<TH2D>("fh_hitrate_xy", "fh_hitrate_xy;X [cm];Y [cm];# hits/pixel/s", xPmtBins, yPmtBins);
+  fHM->Create2<TH2D>("fh_hits_xy", "fh_hits_xy;X [cm];Y [cm];# hits/PMT/ev.", xPmtBins, yPmtBins);
+  fHM->Create2<TH2D>("fh_points_xy", "fh_points_xy;X [cm];Y [cm];# MC points/PMT/ev.", xPmtBins, yPmtBins);
+  fHM->Create2<TH2D>("fh_points_xy_pions", "fh_points_xy_pions;X [cm];Y [cm];# MC points/PMT/ev.", xPmtBins, yPmtBins);
+  fHM->Create2<TH2D>("fh_points_xy_gamma_target", "fh_points_xy_gamma_target;X [cm];Y [cm];# MC points/PMT/ev.",
+                     xPmtBins, yPmtBins);
+  fHM->Create2<TH2D>("fh_points_xy_gamma_nontarget", "fh_points_xy_gamma_nontarget;X [cm];Y [cm];# MC points/PMT/ev.",
+                     xPmtBins, yPmtBins);
+  fHM->Create2<TH2D>("fh_skipped_pmt_10_xy", "fh_skipped_pmt_10_xy;X [cm];Y [cm];# skipped PMTs (>10 hits) [%]",
+                     xPmtBins, yPmtBins);
+  fHM->Create2<TH2D>("fh_skipped_pmt_20_xy", "fh_skipped_pmt_20_xy;X [cm];Y [cm];# skipped PMTs (>20 hits) [%]",
+                     xPmtBins, yPmtBins);
+  fHM->Create2<TH2D>("fh_skipped_pmt_30_xy", "fh_skipped_pmt_30_xy;X [cm];Y [cm];# skipped PMTs (>30 hits) [%]",
+                     xPmtBins, yPmtBins);
 
-  TH2D* fh_hits_xy = new TH2D("fh_hits_xy", "fh_hits_xy;X [cm];Y [cm];# hits/PMT/event", xPmtBins.size() - 1,
-                              &xPmtBins[0], yPmtBins.size() - 1, &yPmtBins[0]);
-  fHM->Add("fh_hits_xy", fh_hits_xy);
-
-  TH2D* fh_points_xy = new TH2D("fh_points_xy", "fh_points_xy;X [cm];Y [cm];# MC points/PMT/event", xPmtBins.size() - 1,
-                                &xPmtBins[0], yPmtBins.size() - 1, &yPmtBins[0]);
-  fHM->Add("fh_points_xy", fh_points_xy);
-
-  TH2D* fh_points_xy_pions = new TH2D("fh_points_xy_pions", "fh_points_xy_pions;X [cm];Y [cm];# MC points/PMT/event",
-                                      xPmtBins.size() - 1, &xPmtBins[0], yPmtBins.size() - 1, &yPmtBins[0]);
-  fHM->Add("fh_points_xy_pions", fh_points_xy_pions);
-
-  TH2D* fh_points_xy_gamma_target =
-    new TH2D("fh_points_xy_gamma_target", "fh_points_xy_gamma_target;X [cm];Y [cm];# MC points/PMT/event",
-             xPmtBins.size() - 1, &xPmtBins[0], yPmtBins.size() - 1, &yPmtBins[0]);
-  fHM->Add("fh_points_xy_gamma_target", fh_points_xy_gamma_target);
-
-  TH2D* fh_points_xy_gamma_nontarget =
-    new TH2D("fh_points_xy_gamma_nontarget", "fh_points_xy_gamma_nontarget;X [cm];Y [cm];# MC points/PMT/event",
-             xPmtBins.size() - 1, &xPmtBins[0], yPmtBins.size() - 1, &yPmtBins[0]);
-  fHM->Add("fh_points_xy_gamma_nontarget", fh_points_xy_gamma_nontarget);
-
-  TH2D* fh_skipped_pmt_10_xy =
-    new TH2D("fh_skipped_pmt_10_xy", "fh_skipped_pmt_10_xy;X [cm];Y [cm];# skipped PMTs (>10 hits) [%]",
-             xPmtBins.size() - 1, &xPmtBins[0], yPmtBins.size() - 1, &yPmtBins[0]);
-  fHM->Add("fh_skipped_pmt_10_xy", fh_skipped_pmt_10_xy);
-
-  TH2D* fh_skipped_pmt_20_xy =
-    new TH2D("fh_skipped_pmt_20_xy", "fh_skipped_pmt_20_xy;X [cm];Y [cm];# skipped PMTs (>20 hits) [%]",
-             xPmtBins.size() - 1, &xPmtBins[0], yPmtBins.size() - 1, &yPmtBins[0]);
-  fHM->Add("fh_skipped_pmt_20_xy", fh_skipped_pmt_20_xy);
-
-  TH2D* fh_skipped_pmt_30_xy =
-    new TH2D("fh_skipped_pmt_30_xy", "fh_skipped_pmt_30_xy;X [cm];Y [cm];# skipped PMTs (>30 hits) [%]",
-             xPmtBins.size() - 1, &xPmtBins[0], yPmtBins.size() - 1, &yPmtBins[0]);
-  fHM->Add("fh_skipped_pmt_30_xy", fh_skipped_pmt_30_xy);
-
-  fHM->Create1<TH1D>("fh_nof_proj_per_event", "fh_nof_proj_per_event;# tracks per event;Yield", 50, 0, 1000);
-  fHM->Create2<TH2D>("fh_proj_xy", "fh_proj_xy;X [cm];Y [cm];# tracks/cm^{2}/event", 240, -120, 120, 420, -210, 210);
-}
-
-void CbmRichUrqmdTest::FillRichRingNofHits()
-{
-  fNofHitsInRingMap.clear();
-  Int_t nofRichHits = fRichHits->GetEntriesFast();
-  for (Int_t iHit = 0; iHit < nofRichHits; iHit++) {
-    CbmRichHit* hit = static_cast<CbmRichHit*>(fRichHits->At(iHit));
-    if (NULL == hit) continue;
-    Int_t digiIndex = hit->GetRefId();
-    if (digiIndex < 0) continue;
-    const CbmRichDigi* digi = fDigiMan->Get<CbmRichDigi>(digiIndex);
-    if (NULL == digi) continue;
-    const CbmMatch* digiMatch = fDigiMan->GetMatch(ECbmModuleId::kRich, digiIndex);
-    if (NULL == digiMatch) continue;
-    Int_t eventId = digiMatch->GetMatchedLink().GetEntry();
-
-    vector<pair<Int_t, Int_t>> motherIds =
-      CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(fDigiMan, hit, fRichPoints, fMcTracks, eventId);
-    for (UInt_t i = 0; i < motherIds.size(); i++) {
-      fNofHitsInRingMap[motherIds[i]]++;
-    }
-  }
+  fHM->Create1<TH1D>("fh_nof_proj_per_event", "fh_nof_proj_per_event;# tracks/ev.;Yield", 50, 0, 1000);
+  fHM->Create2<TH2D>("fh_proj_xy", "fh_proj_xy;X [cm];Y [cm];# tracks/cm^{2}/ev.", 240, -120, 120, 420, -210, 210);
 }
 
 void CbmRichUrqmdTest::NofRings()
@@ -487,17 +381,10 @@ void CbmRichUrqmdTest::Vertex()
       if (v.Z() >= 180 && v.Z() <= 370) fHM->H2("fh_vertex_xy_z180_370")->Fill(v.X(), v.Y());
       if (v.Z() >= 180 && v.Z() <= 230) fHM->H2("fh_vertex_xy_z180_230")->Fill(v.X(), v.Y());
 
-      if (v.Z() <= 5) fHM->H2("fh_vertex_xy_z5")->Fill(v.X(), v.Y());
-      if (v.Z() > 5 && v.Z() <= 15) fHM->H2("fh_vertex_xy_z5_15")->Fill(v.X(), v.Y());
-      if (v.Z() > 15 && v.Z() <= 25) fHM->H2("fh_vertex_xy_z15_25")->Fill(v.X(), v.Y());
-      if (v.Z() > 25 && v.Z() <= 35) fHM->H2("fh_vertex_xy_z25_35")->Fill(v.X(), v.Y());
-      if (v.Z() > 35 && v.Z() <= 45) fHM->H2("fh_vertex_xy_z35_45")->Fill(v.X(), v.Y());
-      if (v.Z() > 45 && v.Z() <= 55) fHM->H2("fh_vertex_xy_z45_55")->Fill(v.X(), v.Y());
-      if (v.Z() > 55 && v.Z() <= 65) fHM->H2("fh_vertex_xy_z55_65")->Fill(v.X(), v.Y());
-      if (v.Z() > 65 && v.Z() <= 75) fHM->H2("fh_vertex_xy_z65_75")->Fill(v.X(), v.Y());
-      if (v.Z() > 75 && v.Z() <= 85) fHM->H2("fh_vertex_xy_z75_85")->Fill(v.X(), v.Y());
-      if (v.Z() > 85 && v.Z() <= 95) fHM->H2("fh_vertex_xy_z85_95")->Fill(v.X(), v.Y());
-      if (v.Z() > 95 && v.Z() <= 105) fHM->H2("fh_vertex_xy_z95_105")->Fill(v.X(), v.Y());
+      for (auto pair : fVertexZStsSlices) {
+        string name = "fh_vertex_xy_z" + to_string(pair.first) + "_" + to_string(pair.second);
+        if (v.Z() > pair.first && v.Z() <= pair.second) { fHM->H2(name)->Fill(v.X(), v.Y()); }
+      }
     }
   }
 }
@@ -538,54 +425,16 @@ void CbmRichUrqmdTest::DrawHist()
   {
     gStyle->SetOptTitle(1);
 
-    fHM->H2("fh_vertex_xy_z5")->Scale(1. / fEventNum);
-    fHM->H2("fh_vertex_xy_z5_15")->Scale(1. / fEventNum);
-    fHM->H2("fh_vertex_xy_z15_25")->Scale(1. / fEventNum);
-    fHM->H2("fh_vertex_xy_z25_35")->Scale(1. / fEventNum);
-    fHM->H2("fh_vertex_xy_z35_45")->Scale(1. / fEventNum);
-    fHM->H2("fh_vertex_xy_z45_55")->Scale(1. / fEventNum);
-    fHM->H2("fh_vertex_xy_z55_65")->Scale(1. / fEventNum);
-    fHM->H2("fh_vertex_xy_z65_75")->Scale(1. / fEventNum);
-    fHM->H2("fh_vertex_xy_z75_85")->Scale(1. / fEventNum);
-    fHM->H2("fh_vertex_xy_z85_95")->Scale(1. / fEventNum);
-    fHM->H2("fh_vertex_xy_z95_105")->Scale(1. / fEventNum);
-
-
     TCanvas* c = fHM->CreateCanvas("rich_urqmd_vertex_sts_xyz", "rich_urqmd_vertex_sts_xyz", 1600, 1200);
     c->Divide(4, 3);
-    c->cd(1);
-    DrawH2(fHM->H2("fh_vertex_xy_z5"), kLinear, kLinear, kLog);
-    DrawTextOnPad("Z < 5 cm", 0.3, 0.9, 0.7, 0.98);
-    c->cd(2);
-    DrawH2(fHM->H2("fh_vertex_xy_z5_15"), kLinear, kLinear, kLog);
-    DrawTextOnPad("5 < Z < 15 cm", 0.3, 0.9, 0.7, 0.98);
-    c->cd(3);
-    DrawH2(fHM->H2("fh_vertex_xy_z15_25"), kLinear, kLinear, kLog);
-    DrawTextOnPad("15 < Z < 25 cm", 0.3, 0.9, 0.7, 0.98);
-    c->cd(4);
-    DrawH2(fHM->H2("fh_vertex_xy_z25_35"), kLinear, kLinear, kLog);
-    DrawTextOnPad("25 < Z < 35 cm", 0.3, 0.9, 0.7, 0.98);
-    c->cd(5);
-    DrawH2(fHM->H2("fh_vertex_xy_z35_45"), kLinear, kLinear, kLog);
-    DrawTextOnPad("35 < Z < 45 cm", 0.3, 0.9, 0.7, 0.98);
-    c->cd(6);
-    DrawH2(fHM->H2("fh_vertex_xy_z45_55"), kLinear, kLinear, kLog);
-    DrawTextOnPad("45 < Z < 55 cm", 0.3, 0.9, 0.7, 0.98);
-    c->cd(7);
-    DrawH2(fHM->H2("fh_vertex_xy_z55_65"), kLinear, kLinear, kLog);
-    DrawTextOnPad("55 < Z < 65 cm", 0.3, 0.9, 0.7, 0.98);
-    c->cd(8);
-    DrawH2(fHM->H2("fh_vertex_xy_z65_75"), kLinear, kLinear, kLog);
-    DrawTextOnPad("65 < Z < 75 cm", 0.3, 0.9, 0.7, 0.98);
-    c->cd(9);
-    DrawH2(fHM->H2("fh_vertex_xy_z75_85"), kLinear, kLinear, kLog);
-    DrawTextOnPad("75 < Z < 85 cm", 0.3, 0.9, 0.7, 0.98);
-    c->cd(10);
-    DrawH2(fHM->H2("fh_vertex_xy_z85_95"), kLinear, kLinear, kLog);
-    DrawTextOnPad("85 < Z < 95 cm", 0.3, 0.9, 0.7, 0.98);
-    c->cd(11);
-    DrawH2(fHM->H2("fh_vertex_xy_z95_105"), kLinear, kLinear, kLog);
-    DrawTextOnPad("95 < Z < 105 cm", 0.3, 0.9, 0.7, 0.98);
+    int i = 1;
+    for (auto pair : fVertexZStsSlices) {
+      string name = "fh_vertex_xy_z" + to_string(pair.first) + "_" + to_string(pair.second);
+      fHM->H2(name)->Scale(1. / fEventNum);
+      c->cd(i++);
+      DrawH2(fHM->H2(name), kLinear, kLinear, kLog);
+      DrawTextOnPad(to_string(pair.first) + " cm < Z < " + to_string(pair.second) + " cm", 0.3, 0.9, 0.7, 0.98);
+    }
 
     gStyle->SetOptTitle(0);
   }
@@ -677,8 +526,8 @@ void CbmRichUrqmdTest::DrawHist()
     ss6 << "#mu^{#pm} (" << fHM->H1("fh_mu_mom")->GetEntries() / fEventNum << ")";
     DrawH1({fHM->H1("fh_gamma_target_mom"), fHM->H1("fh_gamma_nontarget_mom"), fHM->H1("fh_secel_mom"),
             fHM->H1("fh_pi_mom"), fHM->H1("fh_kaon_mom"), fHM->H1("fh_mu_mom")},
-           list_of(ss1.str())(ss2.str())(ss3.str()) (ss4.str()) (ss5.str()) (ss6.str()), kLinear, kLog, true, 0.5, 0.7,
-           0.99, 0.99, "hist");
+           {ss1.str(), ss2.str(), ss3.str(), ss4.str(), ss5.str(), ss6.str()}, kLinear, kLog, true, 0.5, 0.7, 0.99,
+           0.99, "hist");
   }
 
   {

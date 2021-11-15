@@ -25,6 +25,14 @@ using std::vector;
 namespace Cbm
 {
 
+  CbmMCDataArray* InitOrFatalMc(const std::string& objName, const std::string& description)
+  {
+    CbmMCDataManager* mcManager = GetOrFatal<CbmMCDataManager>("MCDataManager", description);
+    CbmMCDataArray* array       = mcManager->InitBranch(objName.c_str());
+    if (array == nullptr) { LOG(fatal) << description << " No MCTrack!"; }
+    return array;
+  }
+
   void SaveCanvasAsImage(TCanvas* c, const string& dir, const string& option)
   {
     if (dir == "") return;

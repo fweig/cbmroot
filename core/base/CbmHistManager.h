@@ -89,6 +89,21 @@ public:
   }
 
   /**
+    * \brief Helper function for creation of 1-dimensional histograms and profiles.
+    * Template argument is a real object type that has to be created, for example,
+    * Create1<TH1F>("name", "title", binsX);
+    * \param[in] name Object name.
+    * \param[in] title Object title.
+    * \param[in] binsX array of low-edges for each bin in X
+    */
+  template<class T>
+  void Create1(const std::string& name, const std::string& title, const std::vector<Double_t>& binsX)
+  {
+    T* h = new T(name.c_str(), title.c_str(), binsX.size() - 1, binsX.data());
+    Add(name, h);
+  }
+
+  /**
     * \brief Helper function for creation of 2-dimensional histograms and profiles.
     * Template argument is a real object type that has to be created, for example,
     * Create2<TH2F>("name", "title", 100, 0, 100, 200, 0, 200);
@@ -106,6 +121,23 @@ public:
                Int_t nofBinsY, Double_t minBinY, Double_t maxBinY)
   {
     T* h = new T(name.c_str(), title.c_str(), nofBinsX, minBinX, maxBinX, nofBinsY, minBinY, maxBinY);
+    Add(name, h);
+  }
+
+  /**
+    * \brief Helper function for creation of 2-dimensional histograms and profiles.
+    * Template argument is a real object type that has to be created, for example,
+    * Create2<TH2F>("name", "title", binsX, binsY);
+    * \param[in] name Object name.
+    * \param[in] title Object title.
+    * \param[in] binsX array of low-edges for each bin in X
+    * \param[in] binsY array of low-edges for each bin in Y
+    */
+  template<class T>
+  void Create2(const std::string& name, const std::string& title, const std::vector<Double_t>& binsX,
+               const std::vector<Double_t>& binsY)
+  {
+    T* h = new T(name.c_str(), title.c_str(), binsX.size() - 1, binsX.data(), binsY.size() - 1, binsY.data());
     Add(name, h);
   }
 

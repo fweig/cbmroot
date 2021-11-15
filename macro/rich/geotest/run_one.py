@@ -32,9 +32,9 @@ def main():
   recoCmd = ('root -l -b -q run_reco.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(testType, traFile, parFile, digiFile, recoFile, geoSetup, nEvents)
   qaCmd = ('root -l -b -q run_qa.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(testType, traFile, parFile, digiFile, recoFile, qaFile, geoSetup, resultDir, nEvents)
 
-  os.system((". /{} -a; {}").format(cbmrootConfigPath, traCmd))
-  os.system((". /{} -a; {}").format(cbmrootConfigPath, digiCmd))
-  os.system((". /{} -a; {}").format(cbmrootConfigPath, recoCmd))
+  # os.system((". /{} -a; {}").format(cbmrootConfigPath, traCmd))
+  # os.system((". /{} -a; {}").format(cbmrootConfigPath, digiCmd))
+  # os.system((". /{} -a; {}").format(cbmrootConfigPath, recoCmd))
   os.system((". /{} -a; {}").format(cbmrootConfigPath, qaCmd))
 
 # def make_args():
