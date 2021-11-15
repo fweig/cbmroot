@@ -18,8 +18,8 @@
 // --------------------------------------------------------------------------
 
 
-void mcbm_reco_event_tb(Int_t nEvents = 10, TString dataset = "data/mcbm_beam_2019_03",
-                        const char* setupName = "mcbm_beam_2019_03", bool timebased = false)
+void mcbm_reco_event_tb(Int_t nEvents = 10, TString dataset = "data/mcbm_beam_2022_03",
+                        const char* setupName = "mcbm_beam_2022_03", bool timebased = false)
 {  // USE e.g.:
   // transport : root -l -b './mcbm_transport.C(10000,"mcbm_beam_2019_03","data/mcbm_beam_2019_03")'
   // digi      : root -l -b './mcbm_digi.C(0,"data/mcbm_beam_2019_03", 1.e7, 1.e4, 0)';
@@ -191,7 +191,7 @@ void mcbm_reco_event_tb(Int_t nEvents = 10, TString dataset = "data/mcbm_beam_20
     // --- Hit finder for GEMs
     FairTask* muchHitGem = new CbmMuchFindHitsGem(parFile.Data(), muchFlag);
     run->AddTask(muchHitGem);
-    std::cout << "-I- " << myName << ": Added task " << muchHitGem->GetName() << FairLogger::endl;
+    std::cout << "-I- " << myName << ": Added task " << muchHitGem->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
 

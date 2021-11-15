@@ -18,7 +18,7 @@
 
 
 void mcbm_display_event(Int_t nEvents = 3, TString dataset = "data/test",
-                        const char* setupName = "sis18_mcbm_25deg_long")
+                        const char* setupName = "mcbm_beam_2022_03")
 {
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -170,7 +170,7 @@ void mcbm_display_event(Int_t nEvents = 3, TString dataset = "data/test",
     // --- Hit finder for GEMs
     FairTask* muchHitGem = new CbmMuchFindHitsGem(parFile.Data(), muchFlag);
     run->AddTask(muchHitGem);
-    std::cout << "-I- " << myName << ": Added task " << muchHitGem->GetName() << FairLogger::endl;
+    std::cout << "-I- " << myName << ": Added task " << muchHitGem->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
 

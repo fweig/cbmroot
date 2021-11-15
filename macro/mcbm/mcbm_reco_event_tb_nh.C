@@ -17,7 +17,7 @@
 // --------------------------------------------------------------------------
 
 void mcbm_reco_event_tb_nh(Int_t nEvents = 10, TString RunId = "test", TString InDir = "./data/",
-                           TString OutDir = "./data/", TString setupName = "mcbm_beam_2021_03", bool timebased = kTRUE,
+                           TString OutDir = "./data/", TString setupName = "mcbm_beam_2022_03", bool timebased = kTRUE,
                            Double_t eventRate       = 1.e5,  // Interaction rate [1/s]
                            Double_t timeSliceLength = 1.e4,  // Length of time-slice [ns]
                            Double_t Tint = 100., Double_t ReqTofMul = 2.)
@@ -238,7 +238,7 @@ void mcbm_reco_event_tb_nh(Int_t nEvents = 10, TString RunId = "test", TString I
         FairTask* muchHitGem = new CbmMuchFindHitsGem(parFile.Data(),muchFlag);
         run->AddTask(muchHitGem);
         std::cout << "-I- " << myName << ": Added task "
-            << muchHitGem->GetName() << FairLogger::endl;
+            << muchHitGem->GetName() << std::endl;
 */
   }
   // ------------------------------------------------------------------------
