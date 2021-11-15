@@ -21,6 +21,7 @@
 
 #include "TClonesArray.h"
 #include "TH1.h"
+#include "TH2.h"
 #include "TStopwatch.h"
 
 #include <cassert>
@@ -108,11 +109,21 @@ InitStatus CbmBuildEventsQa::Init()
   histFolder->Add(fhNoiseDigiRatioAll);
   histFolder->Add(fhFoundDigiRatioAll);
 
+  fhCorrectVsFoundAll = new TH2F("fhCorrectVsFoundAll", "Correct digis  [pct] vs. Found digis [pct] ", 402, -0.25,
+                                 100.25, 402, -0.25, 100.25);
+  fhCorrectVsFoundAllNoNoise =
+    new TH2F("fhCorrectVsFoundAllNoNoise", "Correct digis  [pct] vs. Found digis [pct], no noise for match ", 402,
+             -0.25, 100.25, 402, -0.25, 100.25);
+  histFolder->Add(fhCorrectVsFoundAll);
+  histFolder->Add(fhCorrectVsFoundAllNoNoise);
+
   for (ECbmModuleId& system : fSystems) {
     TString h1name = "fhCorrectDigiRatio" + CbmModuleList::GetModuleNameCaps(system);
     TString h2name = "fhCorrectDigiRatioNoNoise" + CbmModuleList::GetModuleNameCaps(system);
     TString h3name = "fhNoiseDigiRatio" + CbmModuleList::GetModuleNameCaps(system);
     TString h4name = "fhFoundDigiRatio" + CbmModuleList::GetModuleNameCaps(system);
+    TString h5name = "fhCorrectVsFound" + CbmModuleList::GetModuleNameCaps(system);
+    TString h6name = "fhCorrectVsFoundNoNoise" + CbmModuleList::GetModuleNameCaps(system);
 
     fhMapSystemsCorrectDigi[system] =
       new TH1F(h1name, Form("Correct digis per event, %s [pct]", (CbmModuleList::GetModuleNameCaps(system)).Data()),
@@ -132,6 +143,18 @@ InitStatus CbmBuildEventsQa::Init()
     histFolder->Add(fhMapSystemsCorrectDigiNoNoise[system]);
     histFolder->Add(fhMapSystemsNoiseDigi[system]);
     histFolder->Add(fhMapSystemsFoundDigi[system]);
+
+    fhMapSystemsCorrectVsFound[system] = new TH2F(
+      h5name, Form("Correct digis  [pct] vs. Found digis [pct], %s", (CbmModuleList::GetModuleNameCaps(system)).Data()),
+      402, -0.25, 100.25, 402, -0.25, 100.25);
+    fhMapSystemsCorrectVsFoundNoNoise[system] =
+      new TH2F(h6name,
+               Form("Correct digis  [pct] vs. Found digis [pct], %s, no noise for match",
+                    (CbmModuleList::GetModuleNameCaps(system)).Data()),
+               402, -0.25, 100.25, 402, -0.25, 100.25);
+
+    histFolder->Add(fhMapSystemsCorrectVsFound[system]);
+    histFolder->Add(fhMapSystemsCorrectVsFoundNoNoise[system]);
   }
   return kSUCCESS;
 }
@@ -239,36 +262,47 @@ void CbmBuildEventsQa::Exec(Option_t*)
 
       // --- QA output
       if (0 < nDigis) {
+        const double correctDigisPercent        = 100. * Double_t(nDigisCorrect) / Double_t(nDigis);
+        const double correctDigisPercentNoNoise = 100. * Double_t(nDigisCorrect) / Double_t(nDigis - nDigisNoise);
+        const double noiseDigisPercent          = 100. * Double_t(nDigisNoise) / Double_t(nDigis);
+        const double foundDigisPercent          = 100. * Double_t(nDigisCorrect) / Double_t(totEventDigis);
+        const double correctLinksPercent        = 100. * Double_t(nLinksCorrect) / Double_t(nLinks);
+        const double correctLinksPercentNoNoise = 100. * Double_t(nLinksCorrect) / Double_t(nLinks - nLinksNoise);
+        const double noiseLinksPercent          = 100. * Double_t(nLinksNoise) / Double_t(nLinks);
+
         LOG(info) << GetName() << ": Detector " << CbmModuleList::GetModuleNameCaps(system);
-        LOG(info) << "Correct digis " << nDigisCorrect << " / " << nDigis << " = "
-                  << 100. * Double_t(nDigisCorrect) / Double_t(nDigis) << " %";
+        LOG(info) << "Correct digis " << nDigisCorrect << " / " << nDigis << " = " << correctDigisPercent << " %";
         if (matchedMcEventNr != -1) {
-          LOG(info) << "Noise digis " << nDigisNoise << " / " << nDigis << " = "
-                    << 100. * Double_t(nDigisNoise) / Double_t(nDigis) << " %";
+          LOG(info) << "Noise digis " << nDigisNoise << " / " << nDigis << " = " << noiseDigisPercent << " %";
           LOG(info) << "Correct digis, disregarding noise " << nDigisCorrect << " / " << nDigis - nDigisNoise << " = "
-                    << 100. * Double_t(nDigisCorrect) / Double_t(nDigis - nDigisNoise) << " %";
+                    << correctDigisPercentNoNoise << " %";
         }
-        LOG(info) << "Correct digi links " << nLinksCorrect << " / " << nLinks << " = "
-                  << 100. * Double_t(nLinksCorrect) / Double_t(nLinks) << " % ";
+        LOG(info) << "Correct digi links " << nLinksCorrect << " / " << nLinks << " = " << correctLinksPercent << " % ";
         if (matchedMcEventNr != -1) {
-          LOG(info) << "Noise digi links " << nLinksNoise << " / " << nLinks << " = "
-                    << 100. * Double_t(nLinksNoise) / Double_t(nLinks) << " % ";
+          LOG(info) << "Noise digi links " << nLinksNoise << " / " << nLinks << " = " << noiseLinksPercent << " % ";
           LOG(info) << "Correct digi links, disregarding noise " << nLinksCorrect << " / " << nLinks - nLinksNoise
-                    << " = " << 100. * Double_t(nLinksCorrect) / Double_t(nLinks - nLinksNoise) << " % ";
+                    << " = " << correctLinksPercentNoNoise << " % ";
         }
-        LOG(info) << "Digi percentage found " << nDigisCorrect << " / " << totEventDigis << " = "
-                  << 100. * Double_t(nDigisCorrect) / Double_t(totEventDigis) << " % ";
+        LOG(info) << "Digi percentage found " << nDigisCorrect << " / " << totEventDigis << " = " << foundDigisPercent
+                  << " % ";
 
         //fill histograms
         if (matchedMcEventNr != -1) {  //ignore events which are pure noise
-          fhCorrectDigiRatioAll->Fill(100. * Double_t(nDigisCorrect) / Double_t(nDigis));
-          fhCorrectDigiRatioAllNoNoise->Fill(100. * Double_t(nDigisCorrect) / Double_t(nDigis - nDigisNoise));
-          fhNoiseDigiRatioAll->Fill(100. * Double_t(nDigisNoise) / Double_t(nDigis));
-          fhFoundDigiRatioAll->Fill(100. * Double_t(nDigisCorrect) / Double_t(totEventDigis));
-          fhMapSystemsCorrectDigi[system]->Fill(100. * Double_t(nDigisCorrect) / Double_t(nDigis));
-          fhMapSystemsCorrectDigiNoNoise[system]->Fill(100. * Double_t(nDigisCorrect) / Double_t(nDigis - nDigisNoise));
-          fhMapSystemsNoiseDigi[system]->Fill(100. * Double_t(nDigisNoise) / Double_t(nDigis));
-          fhMapSystemsFoundDigi[system]->Fill(100. * Double_t(nDigisCorrect) / Double_t(totEventDigis));
+          fhCorrectDigiRatioAll->Fill(correctDigisPercent);
+          fhCorrectDigiRatioAllNoNoise->Fill(correctDigisPercentNoNoise);
+          fhNoiseDigiRatioAll->Fill(noiseDigisPercent);
+          fhFoundDigiRatioAll->Fill(foundDigisPercent);
+
+          fhCorrectVsFoundAll->Fill(correctDigisPercent, foundDigisPercent);
+          fhCorrectVsFoundAllNoNoise->Fill(correctDigisPercentNoNoise, foundDigisPercent);
+
+          fhMapSystemsCorrectDigi[system]->Fill(correctDigisPercent);
+          fhMapSystemsCorrectDigiNoNoise[system]->Fill(correctDigisPercentNoNoise);
+          fhMapSystemsNoiseDigi[system]->Fill(noiseDigisPercent);
+          fhMapSystemsFoundDigi[system]->Fill(foundDigisPercent);
+
+          fhMapSystemsCorrectVsFound[system]->Fill(correctDigisPercent, foundDigisPercent);
+          fhMapSystemsCorrectVsFoundNoNoise[system]->Fill(correctDigisPercentNoNoise, foundDigisPercent);
         }
       }
       else {

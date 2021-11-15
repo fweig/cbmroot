@@ -17,6 +17,7 @@
 
 class TClonesArray;
 class TH1F;
+class TH2F;
 class CbmDigiManager;
 class CbmEvent;
 
@@ -64,10 +65,16 @@ private:
   TH1F* fhCorrectDigiRatioAllNoNoise = nullptr;  /// correct digis per event for all detectors, disregarding noise
   TH1F* fhNoiseDigiRatioAll          = nullptr;  /// noise digis per event for all detectors
   TH1F* fhFoundDigiRatioAll          = nullptr;  /// digis found per event for all detectors
-  std::map<ECbmModuleId, TH1F*> fhMapSystemsCorrectDigi;         // histograms for subsystems
-  std::map<ECbmModuleId, TH1F*> fhMapSystemsCorrectDigiNoNoise;  // histograms for subsystems
-  std::map<ECbmModuleId, TH1F*> fhMapSystemsNoiseDigi;           // histograms for subsystems
-  std::map<ECbmModuleId, TH1F*> fhMapSystemsFoundDigi;           // histograms for subsystems
+  TH2F* fhCorrectVsFoundAll          = nullptr;  ///  correct digis per event vs found digis per event, all detectors
+  TH2F* fhCorrectVsFoundAllNoNoise =
+    nullptr;  ///  correct digis per event vs found digis per event, all detectors, disregarding noise
+
+  std::map<ECbmModuleId, TH1F*> fhMapSystemsCorrectDigi;            // histograms for subsystems
+  std::map<ECbmModuleId, TH1F*> fhMapSystemsCorrectDigiNoNoise;     // histograms for subsystems
+  std::map<ECbmModuleId, TH1F*> fhMapSystemsNoiseDigi;              // histograms for subsystems
+  std::map<ECbmModuleId, TH1F*> fhMapSystemsFoundDigi;              // histograms for subsystems
+  std::map<ECbmModuleId, TH2F*> fhMapSystemsCorrectVsFound;         // histograms for subsystems
+  std::map<ECbmModuleId, TH2F*> fhMapSystemsCorrectVsFoundNoNoise;  // histograms for subsystems
 
   /** Match a reconstructed event to MC events+
 		 ** @param event Pointer to reconstructed event
