@@ -35,22 +35,22 @@ public:
   void AddNDigisTrd2D(uint64_t value) { fNDigisTrd2D += value; }
 
   /** @brief Get the number of digis in this Ts */
-  uint64_t GetNDigisPsd() { return fNDigisPsd; }
+  uint64_t GetNDigisPsd() const { return fNDigisPsd; }
   /** @brief Get the number of digis in this Ts */
-  uint64_t GetNDigisRich() { return fNDigisRich; }
+  uint64_t GetNDigisRich() const { return fNDigisRich; }
   /** @brief Get the number of digis in this Ts */
-  uint64_t GetNDigisSts() { return fNDigisSts; }
+  uint64_t GetNDigisSts() const { return fNDigisSts; }
   /** @brief Get the number of digis in this Ts */
-  uint64_t GetNDigisTof() { return fNDigisTof; }
+  uint64_t GetNDigisTof() const { return fNDigisTof; }
   /** @brief Get the number of digis in this Ts */
-  uint64_t GetNDigisTrd1D() { return fNDigisTrd1D; }
+  uint64_t GetNDigisTrd1D() const { return fNDigisTrd1D; }
   /** @brief Get the number of digis in this Ts */
-  uint64_t GetNDigisTrd2D() { return fNDigisTrd2D; }
+  uint64_t GetNDigisTrd2D() const { return fNDigisTrd2D; }
 
   /** Get the Start time of the this Timeslice linked to this event header*/
-  uint64_t GetTsIndex() { return fTsIndex; }
+  uint64_t GetTsIndex() const { return fTsIndex; }
   /** Get the Start time of the this Timeslice linked to this event header*/
-  uint64_t GetTsStartTime() { return fTsStartTime; }
+  uint64_t GetTsStartTime() const { return fTsStartTime; }
 
   /** @brief Resets counters and variables for a new Timeslice, e.g. the NDigis counter are set back to 0*/
   void Reset();
