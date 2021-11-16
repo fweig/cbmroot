@@ -14,6 +14,7 @@
 #include "CbmLink.h"
 #include "CbmMatch.h"
 #include "CbmModuleList.h"
+#include "CbmQaCanvas.h"
 #include "CbmStsDigi.h"
 
 #include "FairRootManager.h"
@@ -97,66 +98,78 @@ InitStatus CbmBuildEventsQa::Init()
     return kFATAL;
   }
 
+  InitHistograms();
+
+  return kSUCCESS;
+}
+// ===========================================================================
+
+
+// ==================== Init histograms ======================================
+void CbmBuildEventsQa::InitHistograms()
+{
+  // --- Init histogram folder
+  histFolder = fOutFolder.AddFolder("hist", "Histogramms");
+
   // --- Init histograms
-  histFolder            = fOutFolder.AddFolder("hist", "Histogramms");
   fhCorrectDigiRatioAll = new TH1F("fhCorrectDigiRatioAll", "Correct digis per event [pct]", 402, -0.25, 100.25);
   fhCorrectDigiRatioAllNoNoise =
     new TH1F("fhCorrectDigiRatioAllNoNoise", "Correct digis per event [pct], disregarding noise", 402, -0.25, 100.25);
   fhNoiseDigiRatioAll = new TH1F("fhNoiseDigiRatioAll", "Noise digis per event [pct]", 402, -0.25, 100.25);
   fhFoundDigiRatioAll = new TH1F("fhFoundDigiRatioAll", "Found digis per event [pct]", 402, -0.25, 100.25);
+  fhCorrectVsFoundAll = new TH2I("fhCorrectVsFoundAll", "Correct digis  [pct] vs. Found digis [pct]; Correct; Found ",
+                                 102, -1., 101., 102, -1., 101.);
+  fhCorrectVsFoundAllNoNoise =
+    new TH2I("fhCorrectVsFoundAllNoNoise", "Correct digis  [pct] vs. Found digis [pct], no noise; Correct; Found ", 102,
+             -1., 101., 102, -1., 101.);
+
   histFolder->Add(fhCorrectDigiRatioAll);
   histFolder->Add(fhCorrectDigiRatioAllNoNoise);
   histFolder->Add(fhNoiseDigiRatioAll);
   histFolder->Add(fhFoundDigiRatioAll);
-
-  fhCorrectVsFoundAll = new TH2F("fhCorrectVsFoundAll", "Correct digis  [pct] vs. Found digis [pct] ", 402, -0.25,
-                                 100.25, 402, -0.25, 100.25);
-  fhCorrectVsFoundAllNoNoise =
-    new TH2F("fhCorrectVsFoundAllNoNoise", "Correct digis  [pct] vs. Found digis [pct], no noise for match ", 402,
-             -0.25, 100.25, 402, -0.25, 100.25);
   histFolder->Add(fhCorrectVsFoundAll);
   histFolder->Add(fhCorrectVsFoundAllNoNoise);
 
+  fCanvAllSystems = new CbmQaCanvas("cAllSystems", "", 3 * 400, 2 * 400);
+  fCanvAllSystems->Divide2D(6);
+  fOutFolder.Add(fCanvAllSystems);
+
   for (ECbmModuleId& system : fSystems) {
-    TString h1name = "fhCorrectDigiRatio" + CbmModuleList::GetModuleNameCaps(system);
-    TString h2name = "fhCorrectDigiRatioNoNoise" + CbmModuleList::GetModuleNameCaps(system);
-    TString h3name = "fhNoiseDigiRatio" + CbmModuleList::GetModuleNameCaps(system);
-    TString h4name = "fhFoundDigiRatio" + CbmModuleList::GetModuleNameCaps(system);
-    TString h5name = "fhCorrectVsFound" + CbmModuleList::GetModuleNameCaps(system);
-    TString h6name = "fhCorrectVsFoundNoNoise" + CbmModuleList::GetModuleNameCaps(system);
+    TString moduleName = CbmModuleList::GetModuleNameCaps(system);
+    TString h1name     = "fhCorrectDigiRatio" + moduleName;
+    TString h2name     = "fhCorrectDigiRatioNoNoise" + moduleName;
+    TString h3name     = "fhNoiseDigiRatio" + moduleName;
+    TString h4name     = "fhFoundDigiRatio" + moduleName;
+    TString h5name     = "fhCorrectVsFound" + moduleName;
+    TString h6name     = "fhCorrectVsFoundNoNoise" + moduleName;
 
     fhMapSystemsCorrectDigi[system] =
-      new TH1F(h1name, Form("Correct digis per event, %s [pct]", (CbmModuleList::GetModuleNameCaps(system)).Data()),
-               402, -0.25, 100.25);
+      new TH1F(h1name, Form("Correct digis per event, %s [pct]", moduleName.Data()), 402, -0.25, 100.25);
     fhMapSystemsCorrectDigiNoNoise[system] = new TH1F(
-      h2name,
-      Form("Correct digis per event, %s [pct], disregarding noise", (CbmModuleList::GetModuleNameCaps(system)).Data()),
-      402, -0.25, 100.25);
+      h2name, Form("Correct digis per event, %s [pct], disregarding noise", moduleName.Data()), 402, -0.25, 100.25);
     fhMapSystemsNoiseDigi[system] =
-      new TH1F(h3name, Form("Noise digis per event, %s [pct]", (CbmModuleList::GetModuleNameCaps(system)).Data()), 402,
-               -0.25, 100.25);
+      new TH1F(h3name, Form("Noise digis per event, %s [pct]", moduleName.Data()), 402, -0.25, 100.25);
     fhMapSystemsFoundDigi[system] =
-      new TH1F(h4name, Form("Found digis per event, %s [pct]", (CbmModuleList::GetModuleNameCaps(system)).Data()), 402,
-               -0.25, 100.25);
+      new TH1F(h4name, Form("Found digis per event, %s [pct]", moduleName.Data()), 402, -0.25, 100.25);
+    fhMapSystemsCorrectVsFound[system] =
+      new TH2I(h5name, Form("Correct digis  [pct] vs. Found digis [pct], %s; Correct; Found", moduleName.Data()), 102,
+               -1., 101., 102, -1., 101.);
+    fhMapSystemsCorrectVsFoundNoNoise[system] = new TH2I(
+      h6name, Form("Correct digis  [pct] vs. Found digis [pct], %s, no noise; Correct; Found", moduleName.Data()), 102,
+      -1., 101., 102, -1., 101.);
 
     histFolder->Add(fhMapSystemsCorrectDigi[system]);
     histFolder->Add(fhMapSystemsCorrectDigiNoNoise[system]);
     histFolder->Add(fhMapSystemsNoiseDigi[system]);
     histFolder->Add(fhMapSystemsFoundDigi[system]);
-
-    fhMapSystemsCorrectVsFound[system] = new TH2F(
-      h5name, Form("Correct digis  [pct] vs. Found digis [pct], %s", (CbmModuleList::GetModuleNameCaps(system)).Data()),
-      402, -0.25, 100.25, 402, -0.25, 100.25);
-    fhMapSystemsCorrectVsFoundNoNoise[system] =
-      new TH2F(h6name,
-               Form("Correct digis  [pct] vs. Found digis [pct], %s, no noise for match",
-                    (CbmModuleList::GetModuleNameCaps(system)).Data()),
-               402, -0.25, 100.25, 402, -0.25, 100.25);
-
     histFolder->Add(fhMapSystemsCorrectVsFound[system]);
     histFolder->Add(fhMapSystemsCorrectVsFoundNoNoise[system]);
+
+    fCanvMapSystems[system] =
+      new CbmQaCanvas(Form("c%s", moduleName.Data()), Form("%s", moduleName.Data()), 3 * 400, 2 * 400);
+    fCanvMapSystems[system]->Divide2D(6);
+    fOutFolder.Add(fCanvMapSystems[system]);
   }
-  return kSUCCESS;
 }
 // ===========================================================================
 
@@ -396,6 +409,45 @@ void CbmBuildEventsQa::Finish()
     LOG(error) << "No sink found";
     return;
   }
+
+  fCanvAllSystems->cd(1);
+  fhCorrectDigiRatioAll->DrawCopy("colz", "");
+
+  fCanvAllSystems->cd(2);
+  fhCorrectDigiRatioAllNoNoise->DrawCopy("colz", "");
+
+  fCanvAllSystems->cd(3);
+  fhNoiseDigiRatioAll->DrawCopy("colz", "");
+
+  fCanvAllSystems->cd(4);
+  fhFoundDigiRatioAll->DrawCopy("colz", "");
+
+  fCanvAllSystems->cd(5);
+  fhCorrectVsFoundAll->DrawCopy("colz", "");
+
+  fCanvAllSystems->cd(6);
+  fhCorrectVsFoundAllNoNoise->DrawCopy("colz", "");
+
+  for (ECbmModuleId& system : fSystems) {
+    fCanvMapSystems[system]->cd(1);
+    fhMapSystemsCorrectDigi[system]->DrawCopy("colz", "");
+
+    fCanvMapSystems[system]->cd(2);
+    fhMapSystemsCorrectDigiNoNoise[system]->DrawCopy("colz", "");
+
+    fCanvMapSystems[system]->cd(3);
+    fhMapSystemsNoiseDigi[system]->DrawCopy("colz", "");
+
+    fCanvMapSystems[system]->cd(4);
+    fhMapSystemsFoundDigi[system]->DrawCopy("colz", "");
+
+    fCanvMapSystems[system]->cd(5);
+    fhMapSystemsCorrectVsFound[system]->DrawCopy("colz", "");
+
+    fCanvMapSystems[system]->cd(6);
+    fhMapSystemsCorrectVsFoundNoNoise[system]->DrawCopy("colz", "");
+  }
+
   FairSink* sink = FairRootManager::Instance()->GetSink();
   sink->WriteObject(&fOutFolder, nullptr);
 }

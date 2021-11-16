@@ -42,7 +42,7 @@ ${CBMROOT_SOURCE_DIR}/tof/TofMC
 ${CBMROOT_SOURCE_DIR}/psd
 ${CBMROOT_SOURCE_DIR}/field
 ${CBMROOT_SOURCE_DIR}/core/data/raw
-
+${CBMROOT_SOURCE_DIR}/core/qa
 )
 
 Include_Directories( ${INCLUDE_DIRECTORIES})
@@ -97,7 +97,7 @@ ENDIF (SSE_FOUND)
 set(LINKDEF CbmEventBuilderLinkDef.h)
 Set(LIBRARY_NAME CbmEventBuilder)
 Set(DEPENDENCIES
-    CbmData CbmBase CbmField CbmStsBase CbmMvd Base KF
+    CbmData CbmBase CbmField CbmStsBase CbmMvd Base KF CbmQaBase
 )
 
 GENERATE_LIBRARY()

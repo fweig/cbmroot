@@ -17,11 +17,12 @@
 
 class TClonesArray;
 class TH1F;
-class TH2F;
+class TH2I;
 class CbmDigiManager;
 class CbmEvent;
+class CbmQaCanvas;
 
-/** @class CbmStsBuildEventsQA
+/** @class CbmBuildEventsQA
  ** @brief Simple QA task for associating digis to events
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 20.09.2016
@@ -65,16 +66,23 @@ private:
   TH1F* fhCorrectDigiRatioAllNoNoise = nullptr;  /// correct digis per event for all detectors, disregarding noise
   TH1F* fhNoiseDigiRatioAll          = nullptr;  /// noise digis per event for all detectors
   TH1F* fhFoundDigiRatioAll          = nullptr;  /// digis found per event for all detectors
-  TH2F* fhCorrectVsFoundAll          = nullptr;  ///  correct digis per event vs found digis per event, all detectors
-  TH2F* fhCorrectVsFoundAllNoNoise =
+  TH2I* fhCorrectVsFoundAll          = nullptr;  ///  correct digis per event vs found digis per event, all detectors
+  TH2I* fhCorrectVsFoundAllNoNoise =
     nullptr;  ///  correct digis per event vs found digis per event, all detectors, disregarding noise
+
+  CbmQaCanvas* fCanvAllSystems;  ///summary canvas
 
   std::map<ECbmModuleId, TH1F*> fhMapSystemsCorrectDigi;            // histograms for subsystems
   std::map<ECbmModuleId, TH1F*> fhMapSystemsCorrectDigiNoNoise;     // histograms for subsystems
   std::map<ECbmModuleId, TH1F*> fhMapSystemsNoiseDigi;              // histograms for subsystems
   std::map<ECbmModuleId, TH1F*> fhMapSystemsFoundDigi;              // histograms for subsystems
-  std::map<ECbmModuleId, TH2F*> fhMapSystemsCorrectVsFound;         // histograms for subsystems
-  std::map<ECbmModuleId, TH2F*> fhMapSystemsCorrectVsFoundNoNoise;  // histograms for subsystems
+  std::map<ECbmModuleId, TH2I*> fhMapSystemsCorrectVsFound;         // histograms for subsystems
+  std::map<ECbmModuleId, TH2I*> fhMapSystemsCorrectVsFoundNoNoise;  // histograms for subsystems
+
+  std::map<ECbmModuleId, CbmQaCanvas*> fCanvMapSystems;  //summary canvas per system
+
+  /** Initialize histograms and output folder+  **/
+  void InitHistograms();
 
   /** Match a reconstructed event to MC events+
 		 ** @param event Pointer to reconstructed event
