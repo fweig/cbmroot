@@ -1,14 +1,6 @@
-[//]: # -----------------------------------------------------------------------------------
-[//]: # -----                                 README                                 -----
-[//]: # -----                           cbmroot/macro/trd                            -----
-[//]: # -----     Created : 16/12/2005                                               -----
-[//]: # ----- Last update : 16/11/2021                                               -----
-[//]: # -----------------------------------------------------------------------------------
-
-
 # Summary
 1. [Generating the parameter files](#generating-the-parameter-files-from-a-geometry)
-2. [Simulation](#run-simulation-in-macro/trd)
+2. [Simulation](#run-simulation)
 3. [TRD macros](#trd-macros)
 
 ## Generating the parameter files from a geometry
@@ -28,7 +20,8 @@ The following ordered steps should be performed in order to produce the paramete
     - trd_[tag].gas.par
 5. Move these files to the **parameters/trd** directory and execute item **3.** again.    
     
-## Run simulation in macro/trd
+## Run simulation 
+In the **macro/trd** directory execute the following scripts:
 - root -l run_sim.C
 - root -l run_reco.C
 - root -l eventDisplay.C 
@@ -37,26 +30,14 @@ Standard file contains only 5 events for run_sim in **input/urqmd.ftn14**. If yo
 from [here](http://cbm-wiki.gsi.de/cgi-bin/view/Computing/CbmDataUrQMD13) and link it to the input directory.
 
 
-[//]: # =============================================================
-[//]: # old comments below
-[//]: # =============================================================
-
 ## TRD macros
 
 | Macro name | Description |
 | -------- | ------------- |
-| sim.C | makes the transport of UrQMD events. Output files are
-   	                test.mc.root and test.mc.param.root |
-		Sts.C - runs reconstruction in the STS. Output file is
-		        test.stsTracks.root
-  CbmTrdHitProducer.C - produces TRD hits from TRD points. Output file is
-                        test.trdHits.root
-TrdTrackFinderIdeal.C - runs ideal TRD track finder and Kalman Filter
-                        track fitter together with performance tasks.
-			Output file is test.trdIdealTracks.root
-  TrdTrackFinderSts.C - runs TRD track finder, based on track following
-  			from STS approach. Found tracks are fitted
-			using the Kalman Filter fitter. Output file is
-			test.trdTracks.root
+| sim.C | makes the transport of UrQMD events. Output files are *test.mc.root* and *test.mc.param.root* |
+| Sts.C | runs reconstruction in the STS. Output file is *test.stsTracks.root* |
+| CbmTrdHitProducer.C | produces TRD hits from TRD points. Output file is *test.trdHits.root* |
+| TrdTrackFinderIdeal.C | runs ideal TRD track finder and Kalman Filter track fitter together with performance tasks. Output file is *test.trdIdealTracks.root* |
+| TrdTrackFinderSts.C | runs TRD track finder, based on track following from STS approach. Found tracks are fitted using the Kalman Filter fitter. Output file is *test.trdTracks.root* |
 
 
