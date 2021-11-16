@@ -7,10 +7,10 @@
 The following ordered steps should be performed in order to produce the parameter files for the TRD system. All files and directories are given relative to the CbmRoot source directory.
 
 1. Run the create geometry macro. Examples of such macro can be found in  **macro/trd/geometry/trd.v??** or **macro/mcbm/geometry/trd** and are named **Create_TRD_Geometry_[tag].C** where tag is a unique identifier of the geometry. Examples are tag = "v22a_mcbm". The following files will be created by the previous procedure:
-    1. trd_[tag].geo.info;
-    2. trd_[tag].geo.root;
-    3. trd_[tag]_geo.root;
-    4. CbmTrdPads_[tag].h;
+    - trd_[tag].geo.info;
+    - trd_[tag].geo.root;
+    - trd_[tag]_geo.root;
+    - CbmTrdPads_[tag].h;
 2. Copy the first two files **geometry/trd**. In the case when the geometry of the pad-plane is not of a default type as implemented in **core/detectors/trd/CbmTrdPads.h** replace also this file with the one newly generated CbmTrdPads_[tag].h.
 3. Compile the code by running **make install** on your build directory
 4. Execute **macro/trd/create_digipar_root.sh tag**. The following **four** files will be created: 
@@ -18,7 +18,7 @@ The following ordered steps should be performed in order to produce the paramete
     - trd_[tag].digi.par
     - trd_[tag].gain.par
     - trd_[tag].gas.par
-5. Move these files to the **parameters/trd** directory and execute item **3.** again.    
+5. Move these files to the **parameters/trd** directory and execute item *3* again.    
     
 ## Run simulation 
 In the **macro/trd** directory execute the following scripts:
