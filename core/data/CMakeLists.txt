@@ -146,6 +146,7 @@ GENERATE_LIBRARY()
 # Install file which has no corresponding source file
 Install(FILES
         CbmDefs.h rich/CbmRichRingLight.h base/CbmDigiVector.h
+        base/CbmDigiData.h global/CbmDigiEvent.h global/CbmDigiTimeslice.h
         raw/bitmask_operators.hpp raw/StsXyterFinalHit.h raw/PsdGbtDataFormat-v0.00.h raw/PsdGbtDataFormat-v1.00.h
         DESTINATION include
        )
