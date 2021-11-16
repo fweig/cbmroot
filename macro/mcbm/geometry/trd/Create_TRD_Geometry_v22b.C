@@ -2,6 +2,8 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: David Emschermann [committer], Alexandru Bercuci */
 
+// clang-format off
+
 ///
 /// \file Create_TRD_Geometry_v22b.C
 /// \brief Generates TRD geometry in Root format.
