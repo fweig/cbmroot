@@ -26,9 +26,9 @@ void run_analysis(const std::string& traFile, const std::string& parFile, const 
   gDebug = 0;
 
   FairRunAna* run             = new FairRunAna();
-  FairFileSource* inputSource = new FairFileSource(digiFile.c_str());
+  FairFileSource* inputSource = new FairFileSource(recoFile.c_str());
   inputSource->AddFriend(traFile.c_str());
-  inputSource->AddFriend(recoFile.c_str());
+  inputSource->AddFriend(digiFile.c_str());
   run->SetSource(inputSource);
   run->SetOutputFile(analysisFile.c_str());
   run->SetGenerateRunInfo(kFALSE);

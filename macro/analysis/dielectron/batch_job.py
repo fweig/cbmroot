@@ -10,7 +10,7 @@ def main():
   plutoParticle = sys.argv[3]
   cbmrootConfigPath = "/lustre/nyx/cbm/users/criesen/build/config.sh"
   macroDir = "/lustre/nyx/cbm/users/criesen/cbmroot/macro/analysis/dielectron/"
-  nofEvents = 1000
+  nofEvents = 500
 
   taskId = os.environ.get('SLURM_ARRAY_TASK_ID')
   jobId = os.environ.get('SLURM_ARRAY_JOB_ID')
@@ -45,9 +45,9 @@ def main():
   qaCmd = ('root -l -b -q {}/run_litqa.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, traFile, parFile, digiFile, recoFile, litQaFile, geoSetup, nofEvents)
   anaCmd = ('root -l -b -q {}/run_analysis.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(macroDir, traFile, parFile, digiFile, recoFile, analysisFile, plutoParticle, colSystem, colEnergy, geoSetup, nofEvents)
 
-  os.system((". /{} -a; {}").format(cbmrootConfigPath, traCmd))
-  os.system((". /{} -a; {}").format(cbmrootConfigPath, digiCmd))
-  os.system((". /{} -a; {}").format(cbmrootConfigPath, recoCmd))
+  #os.system((". /{} -a; {}").format(cbmrootConfigPath, traCmd))
+  #os.system((". /{} -a; {}").format(cbmrootConfigPath, digiCmd))
+  #os.system((". /{} -a; {}").format(cbmrootConfigPath, recoCmd))
   os.system((". /{} -a; {}").format(cbmrootConfigPath, qaCmd))
   os.system((". /{} -a; {}").format(cbmrootConfigPath, anaCmd))
 

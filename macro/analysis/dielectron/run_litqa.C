@@ -42,9 +42,9 @@ void run_litqa(const std::string& traFile, const std::string& parFile, const std
   timer.Start();
 
   FairRunAna* run             = new FairRunAna();
-  FairFileSource* inputSource = new FairFileSource(digiFile.c_str());
+  FairFileSource* inputSource = new FairFileSource(recoFile.c_str());
   inputSource->AddFriend(traFile.c_str());
-  inputSource->AddFriend(recoFile.c_str());
+  inputSource->AddFriend(digiFile.c_str());
   run->SetSource(inputSource);
   run->SetOutputFile(qaFile.c_str());
   run->SetGenerateRunInfo(kFALSE);

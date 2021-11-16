@@ -1,6 +1,6 @@
-/* Copyright (C) 2012-2021 UGiessen, JINR-LIT
+/* Copyright (C) 2021 Justus-Liebig-Universitaet Giessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Elena Lebedeva, Semen Lebedev [committer] */
+   Authors: Semen Lebedev [committer] */
 
 #include "LmvmHist.h"
 

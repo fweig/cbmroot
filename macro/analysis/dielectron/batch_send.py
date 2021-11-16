@@ -4,7 +4,7 @@ import os
 import shutil
 
 def main():
-  nofJobs = 100
+  nofJobs = 1000
   timeLimit = "08:00:00"
   geoSetup = "sis100_electron"
   plutoParticles =["inmed", "omegadalitz", "omegaepem", "phi", "qgp"]
@@ -21,7 +21,7 @@ def main():
   os.makedirs(dataDir,exist_ok = True)
 
   for plutoParticle in plutoParticles:
-    jobName = "LMVM" + plutoParticle
+    jobName = "LMVM_" + plutoParticle
     dataDirPluto = dataDir + plutoParticle
     logFile = dataDirPluto + "/log/log_slurm-%A_%a.out"
     errorFile = dataDirPluto + "/error/error_slurm-%A_%a.out"

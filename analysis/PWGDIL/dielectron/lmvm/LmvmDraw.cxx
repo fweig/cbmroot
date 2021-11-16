@@ -58,10 +58,10 @@ void LmvmDraw::DrawHistFromFile(const string& fileName, const string& outputDir,
   RebinMinvHist();
   DrawAnaStepMany("lmvm_pair_pty", [this](ELmvmAnaStep step) { DrawPtY(step); });
   DrawAnaStepMany("lmvm_pair_rapidity", [this](ELmvmAnaStep step) { DrawRapidity(step); });
-  DrawAnaStepMany("lmvm_pair_pty_efficiency", [this](ELmvmAnaStep step) { DrawPtYEfficiency(step); });
+  //DrawAnaStepMany("lmvm_pair_pty_efficiency", [this](ELmvmAnaStep step) { DrawPtYEfficiency(step); });  // TODO: causes segmentation violation error
   DrawAnaStepMany("lmvm_minv_sbg", [this](ELmvmAnaStep step) { DrawMinvSBg(step); });
-  DrawAnaStepMany("lmvm_minv_bgPairSrc", [this](ELmvmAnaStep step) { DrawMinvBgPairSrc(step); });
-  DrawAnaStepMany("lmvm_minv_matching", [this](ELmvmAnaStep step) { DrawMinvMatching(step); });
+  //DrawAnaStepMany("lmvm_minv_bgPairSrc", [this](ELmvmAnaStep step) { DrawMinvBgPairSrc(step); });	      // TODO: causes segmentation violation error
+  //DrawAnaStepMany("lmvm_minv_matching", [this](ELmvmAnaStep step) { DrawMinvMatching(step); });         // TODO: causes segmentation violation error
   DrawAnaStepMany("lmvm_minv_pt", [this](ELmvmAnaStep step) { DrawMinvPt(step); });
   DrawAnaStepMany("lmvm_anglePair", [this](ELmvmAnaStep step) { DrawSrcAnaStepH1("hAnglePair", step); });
 
@@ -71,7 +71,6 @@ void LmvmDraw::DrawHistFromFile(const string& fileName, const string& outputDir,
     DrawAnaStepMany("lmvm_" + hName + "EpEm", [this, hName](ELmvmAnaStep step) { DrawSrcAnaStepEpEmH1(hName, step); });
   }
   DrawMomAccEpEm();
-
   DrawMisc();
   DrawGammaVertex();
   DrawCuts();
@@ -804,5 +803,5 @@ void LmvmDraw::DrawMvdAndStsHist()
 
 void LmvmDraw::SaveCanvasToImage()
 {
-  fH.fHM.SaveCanvasToImage(fOutputDir, "png;eps");  // fHM->SaveCanvasToImage(fOutputDir, "png;eps");
+  fH.fHM.SaveCanvasToImage(fOutputDir, "png");  // fHM->SaveCanvasToImage(fOutputDir, "png;eps");
 }

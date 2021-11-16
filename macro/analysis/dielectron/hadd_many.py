@@ -3,7 +3,7 @@ import shutil
 
 def main():
   plutoParticles =["inmed", "omegadalitz", "omegaepem", "phi", "qgp"]
-  dataDir = "/lustre/nyx/cbm/users/criesen/data/lmvm/"
+  dataDir = "/lustre/nyx/cbm/users/criesen/data/lmvm"
   
   for plutoParticle in plutoParticles:
     dataDirPluto = dataDir + "/" + plutoParticle

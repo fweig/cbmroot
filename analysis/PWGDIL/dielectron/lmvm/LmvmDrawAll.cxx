@@ -57,7 +57,6 @@ void LmvmDrawAll::DrawHistFromFile(const string& fileInmed, const string& fileQg
     TFile* file = new TFile(fileNames[i].c_str());
     fH[i]->fHM.ReadFromFile(file);
     int nofEvents = (int) fH[i]->H1("hEventNumber")->GetEntries();
-    //fHM[i]->ScaleByPattern(".*", 1. / nofEvents); // TODO: keep this commented?
     LOG(info) << "Signal:" << fHMean.fSignalNames[i] << " nofEvents:" << nofEvents << endl;
   }
 
@@ -90,7 +89,7 @@ int LmvmDrawAll::GetNofTotalEvents()
 }
 
 template<class T>
-void LmvmDrawAll::CreateMeanHist(const string& name, int nofEvents)
+void LmvmDrawAll::CreateMeanHist(const string& name, int nofEvents, int nofRebins)
 {
   for (ELmvmSignal sig : fHMean.fSignals) {
     if (static_cast<int>(sig) == 0) fHMean.fHM.Add(name, static_cast<T*>(H(sig)->GetObject(name)->Clone()));
@@ -98,6 +97,11 @@ void LmvmDrawAll::CreateMeanHist(const string& name, int nofEvents)
       static_cast<T*>(fHMean.GetObject(name))->Add(static_cast<T*>(H(sig)->GetObject(name)->Clone()));
   }
   static_cast<T*>(fHMean.GetObject(name))->Scale(1. / (double) nofEvents);
+  if (nofRebins > 0) {
+    static_cast<T*>(fHMean.GetObject(name))->Rebin(nofRebins);
+    double binWidth = static_cast<T*>(fHMean.GetObject(name))->GetBinWidth(1);
+    static_cast<T*>(fHMean.GetObject(name))->Scale(1. / binWidth);
+  }
 }
 
 void LmvmDrawAll::CreateMeanHistAll()
@@ -106,14 +110,13 @@ void LmvmDrawAll::CreateMeanHistAll()
 
   for (auto step : fHMean.fAnaSteps) {
     for (auto src : {ELmvmSrc::Bg, ELmvmSrc::Eta, ELmvmSrc::Pi0}) {
-      CreateMeanHist<TH1D>(fHMean.GetName("hMinv", src, step), nofEvents);
+      CreateMeanHist<TH1D>(fHMean.GetName("hMinv", src, step), nofEvents, 20);
       CreateMeanHist<TH2D>(fHMean.GetName("hMinvPt", src, step), nofEvents);
     }
 
     for (const string& comb : {"PM", "PP", "MM"}) {
       for (const string& ev : {"sameEv", "mixedEv"}) {
-        // TODO: @Cornelius implement Proper scaling, nofEvents or nofMixedEvents
-        CreateMeanHist<TH2D>(fHMean.GetName("hMinvComb" + comb + "_" + ev, step), nofEvents);
+        CreateMeanHist<TH1D>(fHMean.GetName("hMinvComb" + comb + "_" + ev, step), nofEvents, 20);
       }
     }
   }
@@ -126,21 +129,26 @@ T* LmvmDrawAll::GetCocktailMinv(const string& name, ELmvmAnaStep step)
 {
   T* sEta = dynamic_cast<T*>(fHMean.GetObject(fHMean.GetName(name, ELmvmSrc::Eta, step)));
   T* sPi0 = dynamic_cast<T*>(fHMean.GetObject(fHMean.GetName(name, ELmvmSrc::Pi0, step)));
+  double binWidth = sEta->GetBinWidth(1);
 
-  T* coctail = nullptr;
+  T* cocktail = nullptr;
   for (ELmvmSignal signal : fHMean.fSignals) {
     string nameFull = fHMean.GetName(name, ELmvmSrc::Signal, step);
     T* sHist        = dynamic_cast<T*>(H(signal)->GetObject(nameFull)->Clone());
     int nofEvents   = (int) H(signal)->H1("hEventNumber")->GetEntries();
     sHist->Scale(1. / nofEvents);
-    if (coctail == nullptr) coctail = sHist;
+    if (name != "hMinvPt") {  // TODO: find another solution for this; rebin here has to be exactly the same as before
+      sHist->Rebin(20);
+      sHist->Scale(1. / binWidth);
+    }
+    if (cocktail == nullptr) cocktail = sHist;
     else
-      coctail->Add(sHist);
+      cocktail->Add(sHist);
   }
-  coctail->Add(sEta);
-  coctail->Add(sPi0);
+  cocktail->Add(sEta);
+  cocktail->Add(sPi0);
 
-  return coctail;
+  return cocktail;
 }
 
 void LmvmDrawAll::DrawMinvAll()
@@ -160,11 +168,14 @@ void LmvmDrawAll::DrawMinv(ELmvmAnaStep step)
   TH1D* cocktail = GetCocktailMinvH1(step);
   TH1D* sbg      = static_cast<TH1D*>(bg->Clone());
   sbg->Add(cocktail);
+  double binWidth = bg->GetBinWidth(1);
 
   vector<TH1D*> sHists(fHMean.fNofSignals);
   for (ELmvmSignal signal : fHMean.fSignals) {
     TH1D* sHist = H(signal)->H1Clone("hMinv", ELmvmSrc::Signal, step);
     sHist->Scale(1. / H(signal)->H1("hEventNumber")->GetEntries());
+    sHist->Rebin(20);  // TODO urgent: find solution to rebin w. same value as before!
+    sHist->Scale(1. / binWidth);
     sHists[static_cast<int>(signal)] = sHist;
   }
 
@@ -187,16 +198,12 @@ void LmvmDrawAll::DrawMinv(ELmvmAnaStep step)
   drawData.emplace_back(cocktail, -1, kRed + 2, 4, -1, "Cocktail");
 
 
-  double binWidth = drawData[0].fH->GetBinWidth(1);
   double min      = std::numeric_limits<Double_t>::max();
   double max      = std::numeric_limits<Double_t>::min();
   TH1D* h0        = nullptr;
   TLegend* leg    = new TLegend(0.7, 0.6, 0.99, 0.99);
   for (size_t i = 0; i < drawData.size(); i++) {
     const auto& d = drawData[i];
-    // TODO: Think about rebin
-    d.fH->Rebin(20);
-    d.fH->Scale(1. / binWidth);
     d.fH->GetYaxis()->SetTitle("dN/dM_{ee} [GeV/c^{2}]^{-1}");
     d.fH->GetYaxis()->SetLabelSize(0.05);
 
@@ -244,8 +251,6 @@ void LmvmDrawAll::DrawMinvCombSignalAndBg()
       c->cd(i++);
       TH1D* pp = fHMean.H1Clone("hMinvCombPP_sameEv", step);
       TH1D* mm = fHMean.H1Clone("hMinvCombMM_sameEv", step);
-      pp->Rebin(20);
-      mm->Rebin(20);
       mm->Divide(pp);
       mm->GetYaxis()->SetTitle("Ratio e^{-}e^{-}/e^{+}e^{+}");
       DrawH1(mm, kLinear, kLinear, "hist");
@@ -266,9 +271,6 @@ void LmvmDrawAll::DrawMinvCombSignalAndBg()
         TH1D* pp = fHMean.H1Clone("hMinvCombPP_" + ev, step);
         TH1D* mm = fHMean.H1Clone("hMinvCombMM_" + ev, step);
         TH1D* pm = fHMean.H1Clone("hMinvCombPM_" + ev, step);
-        pp->Rebin(20);
-        mm->Rebin(20);
-        pm->Rebin(20);
         pm->GetYaxis()->SetTitle("M_{ee}");
         DrawH1({pm, pp, mm}, {"e+e-", "e+e+", "e-e-"}, kLinear, kLog, true, 0.85, 0.7, 0.99, 0.99, "HIST");
         fHMean.DrawAnaStepOnPad(step);
@@ -292,9 +294,30 @@ void LmvmDrawAll::DrawMinvCombSignalAndBg()
         int maxBin   = same->FindBin(0.7);
         double scale = same->Integral(minBin, maxBin) / mixed->Integral(minBin, maxBin);
         mixed->Scale(scale);
-        same->Rebin(20);
-        mixed->Rebin(20);
         DrawH1({same, mixed}, {"Same " + comb, "Mixed " + comb}, kLinear, kLog, true, 0.8, 0.8, 0.99, 0.99, "HIST");
+        fHMean.DrawAnaStepOnPad(step);
+        int nofSamePairs  = same->GetEntries();
+        int nofMixedPairs = mixed->GetEntries();
+        DrawTextOnPad("same: " + Cbm::NumberToString(nofSamePairs, 5), 0.4, 0.7, 0.8, 0.9);
+        DrawTextOnPad("mixed: " + Cbm::NumberToString(nofMixedPairs, 5), 0.4, 0.5, 0.8, 0.7);
+      }
+    }
+  }
+
+  // Draw ratio mixed/same for PP, MM, PM cases
+  {
+    for (const string& comb : {"PM", "PP", "MM"}) {
+      string cName = "lmvmAll_CB_mixedOverSame" + comb;
+      TCanvas* c   = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 1800, 1800);
+      c->Divide(3, 3);
+      int i = 1;
+      for (auto step : fHMean.fAnaSteps) {
+        if (step < ELmvmAnaStep::ElId) continue;
+        c->cd(i++);
+        TH1D* same          = fHMean.H1Clone("hMinvComb" + comb + "_sameEv", step);
+        TH1D* mixedOverSame = fHMean.CreateHByClone<TH1D>("hMinvComb" + comb + "_mixedEv", "hMinvMixedOverSame", step);
+        mixedOverSame->Divide(mixedOverSame, same, 1., 1., "B");
+        DrawH1(mixedOverSame, kLinear, kLog, "hist");
         fHMean.DrawAnaStepOnPad(step);
       }
     }
@@ -307,8 +330,6 @@ void LmvmDrawAll::DrawMinvCombSignalAndBg()
       TH1D* pmSame = fHMean.H1Clone("hMinvCombPM_sameEv", step);
       TH1D* sbg    = fHMean.H1Clone("hMinv", ELmvmSrc::Bg, step);
       sbg->Add(GetCocktailMinvH1(step));
-      pmSame->Rebin(20);
-      sbg->Rebin(20);
       TH1D* ratio = (TH1D*) pmSame->Clone();
 
       string cName = "lmvmAll_CB_SameVsSbg_" + fHMean.fAnaStepNames[static_cast<int>(step)];
@@ -339,9 +360,7 @@ void LmvmDrawAll::DrawMinvCombSignalAndBg()
       int maxBin   = same->FindBin(0.7);
       double scale = same->Integral(minBin, maxBin) / mixed->Integral(minBin, maxBin);
       mixed->Scale(scale);
-      same->Rebin(20);
-      mixed->Rebin(20);
-      same->GetYaxis()->SetTitle("M_{ee}");
+      same->GetXaxis()->SetTitle("M_{ee}");
       DrawH1({same, mixed}, {"same", "mixed"}, kLinear, kLog, true, 0.8, 0.8, 0.99, 0.99, "HIST");
       fHMean.DrawAnaStepOnPad(step);
     }
@@ -356,9 +375,6 @@ void LmvmDrawAll::DrawMinvCombSignalAndBg()
       TH1D* cbgAsm = fHMean.H1Clone("hMinvCombBgAsm", step);
       TH1D* sbg    = GetCocktailMinvH1(step);
       sbg->Add(fHMean.H1("hMinv", ELmvmSrc::Bg, step));
-      cbg->Rebin(20);
-      cbgAsm->Rebin(20);
-      sbg->Rebin(20);
 
       TH1D* ratio1 = static_cast<TH1D*>(sbg->Clone());
       TH1D* ratio2 = static_cast<TH1D*>(sbg->Clone());
@@ -388,7 +404,6 @@ void LmvmDrawAll::DrawMinvCombSignalAndBg()
     for (auto step : fHMean.fAnaSteps) {
       if (step < ELmvmAnaStep::Reco) continue;
       hists.push_back(fHMean.H1Clone("hMinvCombK", step));
-      hists.back()->Rebin(20);
       legend.push_back(fHMean.fAnaStepLatex[static_cast<int>(step)]);
     }
     hists[0]->GetXaxis()->SetTitle("M_{ee}");
@@ -407,12 +422,8 @@ void LmvmDrawAll::DrawMinvCombSignalAndBg()
       TH1D* pmSame          = fHMean.H1Clone("hMinvCombPM_sameEv", step);
       TH1D* combPMSignalAsm = fHMean.H1Clone("hMinvCombPMSignalAsm", step);
       TH1D* combBgAsm       = fHMean.H1Clone("hMinvCombBgAsm", step);
-      TH1D* coctail         = GetCocktailMinvH1(step);
-      pmSame->Rebin(20);
-      combBgAsm->Rebin(20);
-      combPMSignalAsm->Rebin(20);
-      coctail->Rebin(20);
-      DrawH1({pmSame, combBgAsm, combPMSignalAsm, coctail},
+      TH1D* cocktail        = GetCocktailMinvH1(step);
+      DrawH1({pmSame, combBgAsm, combPMSignalAsm, cocktail},
              {"N_{same}^{+-}", "B_{c} (asm)", "Signal (N_{same}^{+-} - B_{c})", "Cocktail"}, kLinear, kLog, true, 0.8,
              0.8, 0.99, 0.99, "hist");
       fHMean.DrawAnaStepOnPad(step);
@@ -431,12 +442,8 @@ void LmvmDrawAll::DrawMinvCombSignalAndBg()
       sbg->Add(GetCocktailMinvH1(step));
       TH1D* combBgAsm    = fHMean.H1Clone("hMinvCombBgAsm", step);
       TH1D* sBgSignalAsm = fHMean.H1Clone("hMinvSBgSignalAsm", step);
-      TH1D* coctail      = GetCocktailMinvH1(step);
-      sbg->Rebin(20);
-      combBgAsm->Rebin(20);
-      sBgSignalAsm->Rebin(20);
-      coctail->Rebin(20);
-      DrawH1({sbg, combBgAsm, sBgSignalAsm, coctail},
+      TH1D* cocktail     = GetCocktailMinvH1(step);
+      DrawH1({sbg, combBgAsm, sBgSignalAsm, cocktail},
              {"Cocktail + BG", "B_{c} (asm)", "Signal (Cocktail+BG - B_{c})", "Cocktail"}, kLinear, kLog, true, 0.8,
              0.8, 0.99, 0.99, "hist");
       fHMean.DrawAnaStepOnPad(step);
@@ -450,17 +457,14 @@ void LmvmDrawAll::DrawSBgVsMinv()
   for (ELmvmAnaStep step : {ELmvmAnaStep::TtCut, ELmvmAnaStep::PtCut}) {
     TH1D* bg = fHMean.H1Clone("hMinv", ELmvmSrc::Bg, step);
     //TH1D* combBg  = fHMean.H1Clone("hMinvCombBg", step);
-    TH1D* coctail        = GetCocktailMinvH1(step);
-    TH1D* cocktailOverBg = fHMean.CreateHByClone<TH1D>("hMinv_bg", "hMinvCoctailOverBg", step);
-    bg->Rebin(20);
-    coctail->Rebin(20);
-    cocktailOverBg->Rebin(20);
+    TH1D* cocktail       = GetCocktailMinvH1(step);
+    TH1D* cocktailOverBg = fHMean.CreateHByClone<TH1D>("hMinv_bg", "hMinvCocktailOverBg", step);
     cocktailOverBg->GetYaxis()->SetTitle("Cocktail/Background");
-    cocktailOverBg->Divide(coctail, bg, 1., 1., "B");
+    cocktailOverBg->Divide(cocktail, bg, 1., 1., "B");
     hists.push_back(cocktailOverBg);
   }
 
-  fHMean.fHM.CreateCanvas("lmvmAll_minvCoctailOverBg", "lmvmAll_minvCoctailOverBg", 1000, 1000);
+  fHMean.fHM.CreateCanvas("lmvmAll_minvCocktailOverBg", "lmvmAll_minvCocktailOverBg", 1000, 1000);
   DrawH1(hists, {"Without Pt cut", "With Pt cut"}, kLinear, kLog, true, 0.6, 0.85, 0.99, 0.99, "hist");
 }
 
@@ -485,13 +489,13 @@ void LmvmDrawAll::CalcCombBGHistos()
       TH1D* pp   = fHMean.H1Clone("hMinvCombPP_" + ev, step);
       TH1D* mm   = fHMean.H1Clone("hMinvCombMM_" + ev, step);
       TH1D* geom = fHMean.CreateHByClone<TH1D>("hMinvCombMM_" + ev, "hMinvCombGeom_" + ev, step);
+
       for (int i = 1; i <= geom->GetNbinsX(); i++) {
         double cpp     = pp->GetBinContent(i);
         double cmm     = mm->GetBinContent(i);
-        double content = std::sqrt(cpp * cmm);
-        if (cpp == 0 && cmm != 0) content = cmm;
-        else if (cpp != 0 && cmm == 0)
-          content = cpp;
+        double content = std::sqrt(
+          cpp
+          * cmm);  // TODO: what, if one of these values is 0, even after rebinning? Should then last result be applied with a warning?
         geom->SetBinContent(i, content);
       }
     }
@@ -617,7 +621,7 @@ void LmvmDrawAll::CalcCutEffRange(double minMinv, double maxMinv)
   stringstream ss;
   ss << "lmvmAll_cutEff_" << minMinv << "to" << maxMinv;
   fHMean.fHM.CreateCanvas(ss.str(), ss.str(), 1000, 1000);
-  DrawH1({hBg, hS}, {"BG", "Coctail"}, kLinear, kLinear, true, 0.75, 0.85, 1.0, 1.0, "hist");
+  DrawH1({hBg, hS}, {"BG", "Cocktail"}, kLinear, kLinear, true, 0.75, 0.85, 1.0, 1.0, "hist");
   hBg->SetLineWidth(4);
   hS->SetLineWidth(4);
   hBg->SetMinimum(1);

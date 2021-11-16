@@ -73,7 +73,7 @@ public:
   // Cuts. If true then cut is passed
   bool fIsChi2Prim = false;
   bool fIsElectron = false;
-  bool fIsGammaCut = false;
+  bool fIsGammaCut = true;  // Will be set to 'false' as soon as a partner with minv < 25 MeV is found
   bool fIsMvd1Cut  = false;
   bool fIsMvd2Cut  = false;
   bool fIsTtCut    = false;

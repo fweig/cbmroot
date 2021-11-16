@@ -4,10 +4,9 @@
 
 //#include <experimental/filesystem>
 
-void draw_analysis(
-  const string& histRootFile = "/Users/slebedev/Development/cbm/data/lmvm/nov21/analysis.inmed.all.root",
-  const string& resultDir = "/Users/slebedev/Development/cbm/data/lmvm/nov21/results/", Bool_t useMvd = true,
-  Bool_t drawSignificance = true)
+void draw_analysis(const string& histRootFile = "/lustre/cbm/users/criesen/data/lmvm/inmed/analysis.all.root",
+                   const string& resultDir = "/lustre/cbm/users/criesen/data/lmvm/results/", Bool_t useMvd = true,
+                   Bool_t drawSignificance = true)
 
 {
   gSystem->mkdir(resultDir.c_str(), true);

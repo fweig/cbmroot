@@ -190,7 +190,8 @@ void LmvmTask::Exec(Option_t*)
   //   if (impactPar <= 7.7) isCentralCollision = true;
   // }
 
-  LOG(info) << "LmvmTask  event number " << fEventNumber;
+  cout << "========================================================" << endl;
+  LOG(info) << "LmvmTask event number " << fEventNumber;
   LOG(info) << "fPionMisidLevel = " << fPionMisidLevel;
   LOG(info) << fCuts.ToString();
   LOG(info) << "fW = " << fW;
@@ -215,7 +216,6 @@ void LmvmTask::Exec(Option_t*)
 
   fCandsTotal.insert(fCandsTotal.end(), fCands.begin(), fCands.end());
   LOG(info) << "fCandsTotal.size = " << fCandsTotal.size();
-
   //}
 }  // Exec
 
@@ -259,6 +259,8 @@ void LmvmTask::FillMomHists(const CbmMCTrack* mct, const LmvmCand* cand, ELmvmSr
 void LmvmTask::DoMcTrack()
 {
   int nMcTracks = fMCTracks->GetEntriesFast();
+  LOG(info) << "nMcTracks = " << nMcTracks;
+
   for (int i = 0; i < nMcTracks; i++) {
     CbmMCTrack* mct = static_cast<CbmMCTrack*>(fMCTracks->At(i));
     if (mct == nullptr) continue;
@@ -276,16 +278,6 @@ void LmvmTask::DoMcTrack()
     if (mct->GetNPoints(ECbmModuleId::kTrd) >= 2) fH.FillH1("hMomAcc" + chargeStr + "_trd", src, mom, fW);
     if (mct->GetNPoints(ECbmModuleId::kTof) >= 1) fH.FillH1("hMomAcc" + chargeStr + "_tof", src, mom, fW);
 
-    if (std::abs(mct->GetPdgCode()) == 11) {
-      int mcMotherPdg = 0;
-      if (mct->GetMotherId() != -1) {
-        CbmMCTrack* mother = static_cast<CbmMCTrack*>(fMCTracks->At(mct->GetMotherId()));
-        if (mother != nullptr) mcMotherPdg = mother->GetPdgCode();
-      }
-      fH.FillH1("hMotherPdg_mc", mcMotherPdg);
-      if (isAcc) fH.FillH1("hMotherPdg_acc", mcMotherPdg);
-    }
-
     if (LmvmUtils::IsMcGammaEl(mct, fMCTracks)) {
       TVector3 v;
       mct->GetStartVertex(v);
@@ -295,6 +287,20 @@ void LmvmTask::DoMcTrack()
         fH.FillH2("hVertexGammaYZ", step, v.Z(), v.Y());
         fH.FillH2("hVertexGammaXY", step, v.X(), v.Y());
         fH.FillH2("hVertexGammaRZ", step, v.Z(), sqrt(v.X() * v.X() + v.Y() * v.Y()));
+      }
+    }
+
+    // Fill PDG histos
+    int mcPdg = mct->GetPdgCode();
+    if (std::abs(mcPdg) == 11 || mcPdg == 99009911) {
+      int mcMotherPdg = 0;
+      if (mct->GetMotherId() != -1) {
+        CbmMCTrack* mother = static_cast<CbmMCTrack*>(fMCTracks->At(mct->GetMotherId()));
+        if (mother != nullptr) mcMotherPdg = mother->GetPdgCode();
+      }
+      if (std::abs(mcPdg) == 11) {
+        fH.FillH1("hMotherPdg_mc", mcMotherPdg);
+        if (isAcc) fH.FillH1("hMotherPdg_acc", mcMotherPdg);
       }
     }
   }
@@ -307,7 +313,8 @@ void LmvmTask::DoMcPair()
     CbmMCTrack* mct1 = static_cast<CbmMCTrack*>(fMCTracks->At(iMc1));
     ELmvmSrc src     = LmvmUtils::GetMcSrc(mct1, fMCTracks);
     // To speed up: select only signal, eta and pi0 electrons
-    if (!(src == ELmvmSrc::Signal || src == ELmvmSrc::Pi0 || src == ELmvmSrc::Eta)) continue;
+
+    if (!(src == ELmvmSrc::Signal || src == ELmvmSrc::Pi0 || src == ELmvmSrc::Eta)) continue;  // TODO: un-/comment?
 
     bool isAcc1 = IsMcTrackAccepted(iMc1);
     for (int iMc2 = iMc1 + 1; iMc2 < nMcTracks; iMc2++) {
@@ -572,9 +579,9 @@ void LmvmTask::CombinatorialPairs()
     for (size_t iC2 = iC1 + 1; iC2 < nCand; iC2++) {
       const auto& cand2 = fCandsTotal[iC2];
       if (cand2.IsMcSignal()) continue;
-      //double weight = (cand1.IsMcSignal() || cand2.IsMcSignal()) ? fW : 1.;
-
       LmvmKinePar pRec = LmvmKinePar::Create(&cand1, &cand2);
+
+      //double weight = (cand1.IsMcSignal() || cand2.IsMcSignal()) ? fW : 1.;
       bool isSameEvent = (cand1.fEventNumber == cand2.fEventNumber);
       for (auto step : fH.fAnaSteps) {
         if (step == ELmvmAnaStep::Mc || step == ELmvmAnaStep::Acc) continue;
@@ -682,7 +689,7 @@ void LmvmTask::PairSource(const LmvmCand& candP, const LmvmCand& candM, ELmvmAna
 
 void LmvmTask::TrackSource(const LmvmCand& cand, ELmvmAnaStep step, int pdg)
 {
-  // mo need to fill histograms for MC and Acc steps
+  // no need to fill histograms for MC and Acc steps
   if (step == ELmvmAnaStep::Mc || step == ELmvmAnaStep::Acc) return;
 
   double stepBin = static_cast<double>(step) + 0.5;
@@ -731,7 +738,7 @@ void LmvmTask::TrackSource(const LmvmCand& cand, ELmvmAnaStep step, int pdg)
 void LmvmTask::FillPairHists(const LmvmCand& candP, const LmvmCand& candM, const LmvmKinePar& parMc,
                              const LmvmKinePar& parRec, ELmvmAnaStep step)
 {
-  // mo need to fill histograms for MC and Acc steps
+  // no need to fill histograms for MC and Acc steps
   if (step == ELmvmAnaStep::Mc || step == ELmvmAnaStep::Acc) return;
   bool isMismatch = (LmvmUtils::IsMismatch(candP) || LmvmUtils::IsMismatch(candM));
   ELmvmSrc src    = LmvmUtils::GetMcPairSrc(candP, candM);
@@ -785,6 +792,7 @@ void LmvmTask::SignalAndBgReco()
       (candP.fStsMcTrackId >= 0) ? static_cast<CbmMCTrack*>(fMCTracks->At(candP.fStsMcTrackId)) : nullptr;
     for (const auto& candM : fCands) {
       if (candM.fCharge > 0) continue;
+
       CbmMCTrack* mctrackM =
         (candM.fStsMcTrackId >= 0) ? static_cast<CbmMCTrack*>(fMCTracks->At(candM.fStsMcTrackId)) : nullptr;
 
@@ -806,9 +814,9 @@ void LmvmTask::CheckGammaConvAndPi0()
       if (candM.fCharge > 0) continue;
       if (candP.IsCutTill(ELmvmAnaStep::ElId) && candM.IsCutTill(ELmvmAnaStep::ElId)) {
         LmvmKinePar pRec = LmvmKinePar::Create(&candP, &candM);
-        if (fCuts.IsGammaCutOk(pRec.fMinv)) {
-          candM.fIsGammaCut = true;
-          candP.fIsGammaCut = true;
+        if (!fCuts.IsGammaCutOk(pRec.fMinv)) {
+          candM.fIsGammaCut = false;
+          candP.fIsGammaCut = false;
         }
       }
     }
@@ -1041,7 +1049,7 @@ void LmvmTask::CheckClosestMvdHit(int mvdStationNum, const string& hist, const s
         stsMotherId      = (mct2 != nullptr) ? mct2->GetMotherId() : -2;
       }
 
-      bin = (mvdMotherId != -1 && mvdMotherId == stsMotherId) ? 0.5 : bin = 1.5;  // correct or wrong assignment
+      bin = (mvdMotherId != -1 && mvdMotherId == stsMotherId) ? 0.5 : 1.5;  // correct or wrong assignment
       if (cand.IsMcSignal()) {
         bin = (mvdMotherId == stsMotherId && mcMvdHitPdg == 11) ? 0.5 : 1.5;  // correct or wrong assignment
       }

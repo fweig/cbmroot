@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Justus-Liebig-Universitaet Giessen, Giessen
+/* Copyright (C) 2010-2021 Justus-Liebig-Universitaet Giessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Semen Lebedev [committer]*/
 

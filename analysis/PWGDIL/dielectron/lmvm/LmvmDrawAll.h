@@ -64,7 +64,7 @@ private:
   void DrawMinvCombSignalAndBg();
 
   template<class T>
-  void CreateMeanHist(const std::string& name, int nofEvents);
+  void CreateMeanHist(const std::string& name, int nofEvents, int nofRebins = -1);  // if nRebin = -1, no rebin
   void CreateMeanHistAll();
 
   /**
