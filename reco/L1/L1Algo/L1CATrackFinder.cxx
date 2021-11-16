@@ -538,7 +538,8 @@ inline void L1Algo::f20(
       n2++;
 
 #ifndef FAST_CODE
-      assert(Ndoublets < fMaxDoubletsPerSinglet);
+//TODO: optimise triplet portion limit and put a warning
+// assert(Ndoublets < fMaxDoubletsPerSinglet);
 #endif
 
       if (Ndoublets >= fMaxDoubletsPerSinglet) {
@@ -870,7 +871,8 @@ inline void L1Algo::f30(  // input
           }
 
 #ifndef FAST_CODE
-          assert(Ntriplets < fMaxTripletPerDoublets);
+//TODO: optimise triplet portion limit and put a warning
+// assert(Ntriplets < fMaxTripletPerDoublets);
 #endif
           if (Ntriplets >= fMaxTripletPerDoublets) {
 
