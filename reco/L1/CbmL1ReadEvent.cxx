@@ -242,6 +242,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             for (Int_t iSt = 0; iSt < NTrdStations; iSt++) {
               if (MC.z > sta[iSt].z[0] - 4.0) { MC.iStation = NMvdStations + NStsStations + NMuchStations + iSt; }
             }
+            if (MC.iStation < 0) continue;
             assert(MC.iStation >= 0);
             Double_t dtrck          = dFEI(iFile, iEvent, MC.ID);
             DFEI2I::iterator trk_it = dFEI2vMCTracks.find(dtrck);
@@ -321,7 +322,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             MC.iStation    = -1;
             L1Station* sta = algo->vStations + NMvdStations + NStsStations + NMuchStations + NTrdStations;
             for (Int_t iSt = 0; iSt < NTOFStation; iSt++)
-              MC.iStation = (MC.z > sta[iSt].z[0] - 1.5)
+              MC.iStation = (MC.z > sta[iSt].z[0] - 6)
                               ? (NMvdStations + NStsStations + NMuchStations + NTrdStations + iSt)
                               : MC.iStation;
 
@@ -678,7 +679,16 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       th.id = tmpHits.size();
 
-      th.iStation = NMvdStations + mh->GetPlaneId() + NStsStations + NMuchStations;
+      int sta = mh->GetPlaneId();
+
+      if (sta > 1) sta = sta - 1;
+
+      th.iStation = NMvdStations + sta + NStsStations + NMuchStations;
+
+      // if (mh->GetPlaneId()==0) continue;
+      // if (mh->GetPlaneId()==1) continue;
+      // if (mh->GetPlaneId()==2) continue;
+      // if (mh->GetPlaneId()==3) continue;
 
 
       th.time = mh->GetTime();
@@ -778,12 +788,16 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       int sttof = -1;
 
-      if (fTofDigiBdfPar->GetTrackingStation(mh) == 0) sttof = 0;
-      if (fTofDigiBdfPar->GetTrackingStation(mh) == 1) sttof = 0;
-      if (fTofDigiBdfPar->GetTrackingStation(mh) == 2) sttof = 1;
-      if (fTofDigiBdfPar->GetTrackingStation(mh) == 3) sttof = 1;
-      if (fTofDigiBdfPar->GetTrackingStation(mh) == 4) sttof = 2;
-      if (fTofDigiBdfPar->GetTrackingStation(mh) == 5) sttof = 2;
+      sttof = fTofDigiBdfPar->GetTrackingStation(mh);
+
+      // if (fTofDigiBdfPar->GetTrackingStation(mh) == 0) sttof = 0;
+      // if (fTofDigiBdfPar->GetTrackingStation(mh) == 1) sttof = 0;
+      // if (fTofDigiBdfPar->GetTrackingStation(mh) == 2) sttof = 1;
+      // if (fTofDigiBdfPar->GetTrackingStation(mh) == 3) sttof = 1;
+      // if (fTofDigiBdfPar->GetTrackingStation(mh) == 4) sttof = 2;
+      // if (fTofDigiBdfPar->GetTrackingStation(mh) == 5) sttof = 2;
+
+      if ((th.x > 20) && (th.z > 270) && (fTofDigiBdfPar->GetTrackingStation(mh) == 1)) sttof = 2;
 
       th.iStation = sttof + NMvdStations + NStsStations + NMuchStations + NTrdStations;
 
@@ -810,6 +824,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       th.x = pos.X();
       th.y = pos.Y();
       th.z = pos.Z();
+
+      if (th.z > 400) continue;
 
       L1Station& st = algo->vStations[th.iStation];
       th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];

@@ -476,7 +476,7 @@ inline void L1Algo::f20(
 
       const fscal dY = ym[i1_4] - y[i1_4];
 
-      if (dY * dY > dy_est2 && dY < 0) continue;
+      if (dY * dY > dy_est2) continue;
 
       // check x-boundaries
       fvec x, C00;
@@ -680,7 +680,7 @@ inline void L1Algo::f30(  // input
       if (fTrackingMode != kMcbm) fit.L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1);
 
       if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
-        fit.L1AddThickMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1, stam.materialInfo.thick, 1);
+        fit.L1AddThickMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), MaxInvMom, 1, stam.materialInfo.thick, 1);
 #else
       fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, 1);
 #endif
@@ -2696,8 +2696,8 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       Cty += new_trip.GetCty();
 
       if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) {
-        if (dty > 6 * Cty) continue;
-        if (dtx > 7 * Ctx) continue;
+        if (dty > 3 * Cty) continue;
+        if (dtx > 3 * Ctx) continue;
       }
 
 

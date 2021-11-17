@@ -398,7 +398,9 @@ InitStatus CbmL1::Init()
       }
     }
     NTrdStations = layerCounter;
+    NTrdStations = NTrdStations - 1;
   }
+
 
   // count ToF parameters
 
@@ -429,7 +431,7 @@ InitStatus CbmL1::Init()
   // }
 
   // TODO: Read N TOF stations from geometry
-  if (fUseTOF) NTOFStation = 3;  //fTofDigiBdfPar->GetNbTrackingStations();
+  if (fUseTOF) NTOFStation = 4;  //fTofDigiBdfPar->GetNbTrackingStations();
 
   CbmStsSetup* stsSetup = CbmStsSetup::Instance();
   if (!stsSetup->IsInit()) { stsSetup->Init(nullptr); }
@@ -607,7 +609,12 @@ InitStatus CbmL1::Init()
 
       //      Int_t nrModules = fTrdDigiPar->GetNrOfModules();
 
-      int ModuleId = fTrdDigiPar->GetModuleId(num);
+      int skip = 0;
+      if (num == 0) skip = 0;
+      if (num == 1) skip = 2;
+      if (num == 2) skip = 3;
+
+      int ModuleId = fTrdDigiPar->GetModuleId(skip);
 
       CbmTrdParModDigi* module = (CbmTrdParModDigi*) fTrdDigiPar->GetModulePar(ModuleId);
 
@@ -635,9 +642,10 @@ InitStatus CbmL1::Init()
 
       geo.push_back(4);
 
-      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 0)) geo.push_back(247);
-      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 1)) geo.push_back(264);
-      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 2)) geo.push_back(280);
+      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 0)) geo.push_back(251);
+      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 1)) geo.push_back(270);
+      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 2)) geo.push_back(293);
+      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 3)) geo.push_back(310);
 
       geo.push_back(10);  /// TODO: add Tof width dz
       geo.push_back(0);
