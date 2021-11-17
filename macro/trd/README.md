@@ -11,14 +11,14 @@ The following ordered steps should be performed in order to produce the paramete
     - trd_[tag].geo.root;
     - trd_[tag]_geo.root;
     - CbmTrdPads_[tag].h;
-2. Copy the first two files **geometry/trd**. In the case when the geometry of the pad-plane is not of a default type as implemented in **core/detectors/trd/CbmTrdPads.h** replace also this file with the one newly generated CbmTrdPads_[tag].h.
-3. Compile the code by running **make install** on your build directory
+2. In the case when the geometry of the pad-plane is not of a default type as implemented in **core/detectors/trd/CbmTrdPads.h** replace also this file with the one newly generated CbmTrdPads_[tag].h. Compile the code by running **make install** on your build directory.
+3. Copy the first two files from the list above to **$VMCWORKDIR/geometry/trd**. 
 4. Execute **macro/trd/create_digipar_root.sh tag**. The following **four** files will be created: 
     - trd_[tag].asic.par
     - trd_[tag].digi.par
     - trd_[tag].gain.par
     - trd_[tag].gas.par
-5. Move these files to the **parameters/trd** directory and execute item *3* again.    
+5. Move these files to the **$VMCWORKDIR/parameters/trd** directory.    
     
 ## Run simulation 
 In the **macro/trd** directory execute the following scripts:

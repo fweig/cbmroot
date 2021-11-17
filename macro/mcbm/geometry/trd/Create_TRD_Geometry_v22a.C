@@ -2804,25 +2804,24 @@ TGeoVolume* create_trd2d_module_type(Int_t moduleType)
     // now go on with FEB placement
     TGeoVolumeAssembly* vol_feb = new TGeoVolumeAssembly("FEB");  // the mother volume of all FEBs
     if (moduleType == 9) {                                        // define ROB placement fot large 2D chamber
-      Int_t cFeb(1);
+      Int_t cFeb(-1);
       for (Int_t iFeb(0); cFeb < 2; cFeb++) {
-        vol_feb->AddNode(vol_faspro_fy, cFeb + 1,
-                         new TGeoTranslation("", (cFeb - 0.5) * (FASPRO_length + FASPRO_dx) - FASPRO_length / 3, 0.,
+        vol_feb->AddNode(vol_faspro_fy, cFeb+1,
+                         new TGeoTranslation("", (cFeb - 0.5) * (FASPRO_length + FASPRO_dx), 0.,
                                              -0.5 * (FASPRO_thickness + FASPRO_zspace) + 0.05));
-        for (Int_t rFeb(1); rFeb < 5; rFeb++) {
+        for (Int_t rFeb(0); rFeb < 5; rFeb++) {
           // the upper side ...
-          //         vol_feb->AddNode(faspro, iFeb++,
-          //                           new TGeoTranslation("",
-          //                           cFeb*(FASPRO_length+FASPRO_dx),
-          //                           (rFeb+0.5)*(FASPRO_width+FASPRO_dy), 0));
+          vol_feb->AddNode(faspro, iFeb++,
+                           new TGeoTranslation("", cFeb*(FASPRO_length+FASPRO_dx),
+                            (rFeb+0.5)*(FASPRO_width+FASPRO_dy), 0));
           // the bottom side ...
           vol_feb->AddNode(faspro, iFeb++,
-                           new TGeoTranslation("", cFeb * (FASPRO_length + FASPRO_dx) - FASPRO_length / 3.,
-                                               -(rFeb + 0.5) * (FASPRO_width + FASPRO_dy) + FASPRO_width / 2, 0));
+                           new TGeoTranslation("", cFeb * (FASPRO_length + FASPRO_dx),
+                                               -(rFeb + 0.5) * (FASPRO_width + FASPRO_dy), 0));
         }
       }
       vol_feb->AddNode(vol_faspro_fy, cFeb + 1,
-                       new TGeoTranslation("", (cFeb - 0.5) * (FASPRO_length + FASPRO_dx) - FASPRO_length / 3., 0.,
+                       new TGeoTranslation("", (cFeb - 0.5) * (FASPRO_length + FASPRO_dx), 0.,
                                            -0.5 * (FASPRO_thickness + FASPRO_zspace)));
     }
     else {  // define ROB placement fot small 2D hybrid chamber
