@@ -20,6 +20,7 @@
 #include "CbmTrackMatchNew.h"
 
 #include "FairRootManager.h"
+#include "Logger.h"
 
 #include <algorithm>
 #include <map>
