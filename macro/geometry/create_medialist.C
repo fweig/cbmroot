@@ -54,8 +54,7 @@ void create_medialist(TString inFileName = "", bool removegeomgr = true)
   matlist.Write();
   outfile->Close();
 
-  if (removegeomgr)
-    RemoveGeoManager();
+  if (removegeomgr) RemoveGeoManager();
 }
 
 void loop_over_nodes(TObjArray* nodes, TString& path, CbmMediaList& matlist)
