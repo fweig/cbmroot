@@ -137,7 +137,7 @@ Int_t CbmTofGeoHandler::CheckGeometryVersion()
         return fGeoVersion;
       }
       else if ((TString(node->GetName()).Contains("v21")) || (TString(node->GetName()).Contains("v18"))
-               || (TString(node->GetName()).Contains("v20"))) {
+               || (TString(node->GetName()).Contains("v20")) || (TString(node->GetName()).Contains("v22"))){
         LOG(info) << "CbmTofGeoHandler::CheckGeometryVersion: Found TOF geometry " << TString(node->GetName())
                   << ", treat as Id 21a   ";
         //	if(nullptr!=fTofId) fTofId->Delete();
