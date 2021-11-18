@@ -16,8 +16,15 @@
 //
 // --------------------------------------------------------------------------
 
-void create_geometry_file_root(TString geoName = "trd_v13q")
+void create_geometry_file_root(TString geoName = "trd_v22a_mcbm")
 {
+  TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
+
+  // Set the path to the directory with macros for Geant3 and Geant4
+  // configuration
+  TString tut_configdir = srcDir + "/sim/transport/gconfig";
+  gSystem->Setenv("CONFIG_DIR", tut_configdir.Data());
+
   TString outDir  = "data";
   TString outFile = outDir + "/test.mc." + geoName + ".root";
   TString parFile = outDir + "/params.root";
@@ -38,6 +45,7 @@ void create_geometry_file_root(TString geoName = "trd_v13q")
     cave->SetGeometryFileName(caveGeom);
     run->AddModule(cave);
   }
+
   if (trdGeom != "") {
     FairDetector* trd = new CbmTrd("TRD", kTRUE);
     trd->SetGeometryFileName(trdGeom);

@@ -14,15 +14,16 @@
 //
 // --------------------------------------------------------------------------
 
-void create_digipar_root(TString geoName = "trd_v13q", Bool_t asicFASP = kTRUE)
+void create_digipar_root(TString geoName = "trd_v22a_mcbm", Bool_t asicFASP = kTRUE)
 {
   TString inFile   = "data/test.mc." + geoName + ".root";
   TString geoFile  = "geofile_" + geoName + ".root";
   TString outFile  = "data/test.esd." + geoName + ".root";
   TString digiFile = geoName + ".par";  // Digi Parameter Output File
 
-  FairRunAna* run = new FairRunAna();
-  run->SetInputFile(inFile);
+  FairRunAna* run             = new FairRunAna();
+  FairFileSource* inputSource = new FairFileSource(inFile);
+  run->SetSource(inputSource);
   run->SetOutputFile(outFile);
   run->SetGeomFile(geoFile);
 

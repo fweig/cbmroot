@@ -116,10 +116,8 @@ const TString tagVersion = "v22b_mcbm";
 //const TString subVersion   = "_3m";
 
 const Int_t setupid = 1;  // 1e is the default
-//const Double_t zfront[5]  = { 260., 410., 360., 410., 550. };
-const Double_t zfront[5] = {260., 180., 360., 410., 550.};  // move 1st TRD to z=180 cm  // mCBM 2021_07
-//const Double_t zfront[5] = {260., 177., 360., 410., 550.};  // move 1st TRD to z=177 cm
-//const Double_t zfront[5]  = { 260., 140., 360., 410., 550. };
+//const Double_t zfront[5]  = {260., 410., 360., 410., 550.};
+const Double_t zfront[5] = {260., 180., 360., 410., 550.};  // move 1st TRD-1D z=99 cm  // mCBM 2022_02
 const TString setupVer[5] = {"_1h", "_1e", "_1m", "_3e", "_3m"};
 const TString subVersion  = setupVer[setupid];
 
@@ -668,9 +666,7 @@ void Create_TRD_Geometry_v22b()
   trd->Export(FileNameSim);  // an alternative way of writing the trd volume
 
   TFile* outfile = new TFile(FileNameSim, "UPDATE");
-  //  TGeoTranslation* trd_placement = new TGeoTranslation("trd_trans", 0., 0., 0.);
-  //  TGeoTranslation* trd_placement = new TGeoTranslation("trd_trans", 0., 0., zfront[setupid]);
-  TGeoTranslation* trd_placement = new TGeoTranslation("trd_trans", -7., 0., zfront[setupid]);
+  TGeoTranslation* trd_placement = new TGeoTranslation("trd_trans", 0., 0., zfront[setupid]);
   trd_placement->Write();
   outfile->Close();
 
@@ -688,6 +684,13 @@ void Create_TRD_Geometry_v22b()
   //  cout << "Press Return to exit" << endl;
   //  cin.get();
   //  exit();
+
+  // create medialist for this geometry                                                                   
+  TString createmedialist = gSystem->Getenv("VMCWORKDIR");
+  createmedialist += "/macro/geometry/create_medialist.C";
+  std::cout << "Loading macro " << createmedialist << std::endl;
+  gROOT->LoadMacro(createmedialist);
+  gROOT->ProcessLine("create_medialist(\"\", false)");
 }
 
 

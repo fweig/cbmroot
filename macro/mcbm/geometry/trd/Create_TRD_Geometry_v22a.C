@@ -8,9 +8,8 @@
 /// \file Create_TRD_Geometry_v22a.C
 /// \brief Generates TRD geometry in Root format.
 ///
-// 2021-10-28 - SR - v22c    - based on v22a the trd 2d-h is removed 
-// 2021-10-28 - SR - v22b    - based on v22a the trd 2d is removed 
-// 2021-10-07 - SR - v22a    - based on v20b the trd 2d is inserted
+// 2021-10-28 - SR - v22b    - based on v22a the TRD-2D is removed 
+// 2021-10-07 - SR - v22a    - based on v20b the TRD-2D is inserted
 // 2021-09-28 - SR - v21b    - based on v21a the position is corrected
 // 2021-07-25 - AB - v21a    - based on v20b, add 2 TRD2D modules and their support structure for the 2021 setup
 // 2020-05-25 - DE - v20b    - based on v20a, use 2 TRD modules for 2021 setup
@@ -111,11 +110,8 @@ const TString tagVersion = "v22a_mcbm";
 // const TString subVersion   = "_3m";
 
 const Int_t setupid = 1;  // 1e is the default
-// const Double_t zfront[5]  = { 260., 410., 360., 410., 550. };
-const Double_t zfront[5] = {260., 155., 360., 410., 550.};  // move 1st TRD to z=180 cm  // mCBM 2021_07
-// const Double_t zfront[5] = {260., 177., 360., 410., 550.};  // move 1st TRD
-// to z=177 cm
-// const Double_t zfront[5]  = { 260., 140., 360., 410., 550. };
+// const Double_t zfront[5]  = {260., 410., 360., 410., 550.};
+const Double_t zfront[5] = {260., 99., 360., 410., 550.};  // move 1st TRD-1D z=99 cm  // mCBM 2022_02
 const TString setupVer[5] = {"_1h", "_1e", "_1m", "_3e", "_3m"};
 const TString subVersion  = setupVer[setupid];
 
@@ -766,11 +762,7 @@ void Create_TRD_Geometry_v22a()
   trd->Export(FileNameSim);  // an alternative way of writing the trd volume
 
   TFile* outfile = new TFile(FileNameSim, "UPDATE");
-  //  TGeoTranslation* trd_placement = new TGeoTranslation("trd_trans", 0., 0.,
-  //  0.);
   TGeoTranslation* trd_placement = new TGeoTranslation("trd_trans", 0., 0., zfront[setupid]);
-  // TGeoTranslation* trd_placement = new TGeoTranslation("trd_trans", -7, 0.,
-  // zfront[setupid]);
   trd_placement->Write();
   outfile->Close();
 
@@ -788,6 +780,13 @@ void Create_TRD_Geometry_v22a()
   //  cout << "Press Return to exit" << endl;
   //  cin.get();
   //  exit();
+
+  // create medialist for this geometry
+  TString createmedialist = gSystem->Getenv("VMCWORKDIR");
+  createmedialist += "/macro/geometry/create_medialist.C";
+  std::cout << "Loading macro " << createmedialist << std::endl;
+  gROOT->LoadMacro(createmedialist);
+  gROOT->ProcessLine("create_medialist(\"\", false)");
 }
 
 //==============================================================
