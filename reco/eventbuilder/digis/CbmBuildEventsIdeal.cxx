@@ -12,8 +12,9 @@
 #include "CbmDigiManager.h"
 #include "CbmEvent.h"
 #include "CbmLink.h"
-#include "CbmMatch.h"
+#include "CbmMCEventList.h"
 #include "CbmModuleList.h"
+#include "CbmTimeSlice.h"
 
 #include <Logger.h>
 
@@ -43,11 +44,11 @@ CbmMatch CbmBuildEventsIdeal::EventsInMatch(const CbmMatch* match)
   // --- Collect links from different events
 
   CbmMatch eventMatch;
-  Int_t nLinks = (match != nullptr) ? match->GetNofLinks() : 0;
+  int32_t nLinks = (match != nullptr) ? match->GetNofLinks() : 0;
 
-  for (Int_t iLink = 0; iLink < nLinks; iLink++) {
-    Int_t mcInput = match->GetLink(iLink).GetFile();
-    Int_t mcEvent = match->GetLink(iLink).GetEntry();
+  for (int32_t iLink = 0; iLink < nLinks; iLink++) {
+    int32_t mcInput = match->GetLink(iLink).GetFile();
+    int32_t mcEvent = match->GetLink(iLink).GetEntry();
     if (mcInput < 0 || mcEvent < 0) { continue; }
     eventMatch.AddLink(1., 0, mcEvent, mcInput);
   }
@@ -63,17 +64,20 @@ void CbmBuildEventsIdeal::Exec(Option_t*)
   // --- Timer and counters
   TStopwatch timer;
   timer.Start();
-  Int_t nEvents      = 0;  // Number of created events
-  UInt_t nDigisTot   = 0;  // Total number of digis
-  UInt_t nDigisNoise = 0;  // Digis without link to MC event
-  UInt_t nDigisAmbig = 0;  // Digis with links to multiple MC events
+  uint64_t nDigisTot   = 0;  // Total number of digis
+  uint64_t nDigisNoise = 0;  // Digis without link to MC event
+  uint64_t nDigisAmbig = 0;  // Digis with links to multiple MC events
 
   // --- Clear output array
   fEvents->Delete();
+  fDigiEvents->clear();
+
+  // --- Timeslice start time
+  double tsStart = fTimeslice->GetStartTime();
 
   // --- Bookkeeping: Map from (input number, event number) to event
-  map<pair<Int_t, Int_t>, CbmEvent*> eventMap;
-  map<pair<Int_t, Int_t>, CbmDigiEvent*> digiEventMap;
+  map<pair<int32_t, int32_t>, CbmEvent> eventMap;
+  map<pair<int32_t, int32_t>, CbmDigiEvent> digiEventMap;
 
   // --- Loop over all detector systems
   for (ECbmModuleId& system : fSystems) {
@@ -82,9 +86,8 @@ void CbmBuildEventsIdeal::Exec(Option_t*)
     if (!fDigiMan->IsPresent(system)) continue;
     if (!fDigiMan->IsMatchPresent(system)) continue;
 
-    ECbmDataType digiType = ECbmDataType::kUnknown;
-
     // --- Find the digi type
+    ECbmDataType digiType = ECbmDataType::kUnknown;
     switch (system) {
       case ECbmModuleId::kMvd: digiType = ECbmDataType::kMvdDigi; break;
       case ECbmModuleId::kSts: digiType = ECbmDataType::kStsDigi; break;
@@ -99,49 +102,43 @@ void CbmBuildEventsIdeal::Exec(Option_t*)
     if (digiType == ECbmDataType::kUnknown) {
       LOG(fatal) << "unknown type of the module";
       assert(0);
-      continue;  // in case assert(..) macro is switched off
+      continue;
     }
 
     // --- Loop over digis for the current system
-    Int_t nDigis  = fDigiMan->GetNofDigis(system);
-    UInt_t nNoise = 0;
-    UInt_t nAmbig = 0;
-    for (Int_t iDigi = 0; iDigi < nDigis; iDigi++) {
+    int64_t nDigis  = fDigiMan->GetNofDigis(system);
+    uint64_t nNoise = 0;
+    uint64_t nAmbig = 0;
+    for (int32_t iDigi = 0; iDigi < nDigis; iDigi++) {
 
       // --- Get the MC input and event numbers through the match object
-
       CbmMatch matchedEvents = EventsInMatch(fDigiMan->GetMatch(system, iDigi));
 
-      for (Int_t iLink = 0; iLink < matchedEvents.GetNofLinks(); iLink++) {
+      for (int32_t iLink = 0; iLink < matchedEvents.GetNofLinks(); iLink++) {
         const auto& link = matchedEvents.GetLink(iLink);
         auto eventID     = make_pair(link.GetFile(), link.GetEntry());
 
-        // --- Get event pointer. If event is not yet present, create it.
-        CbmEvent* event = nullptr;
-        auto it         = eventMap.find(eventID);
-        if (it == eventMap.end()) {
-          event             = new CbmEvent();
-          eventMap[eventID] = event;
+        // --- Get event. If not yet present, create it. Add digi to event.
+        auto eventIt = eventMap.find(eventID);
+        if (eventIt == eventMap.end()) {
+          auto result = eventMap.insert(make_pair(eventID, CbmEvent()));
+          assert(result.second);
+          eventIt = result.first;
         }
-        else {
-          event = it->second;
-        }
-        event->AddData(digiType, iDigi);
+        eventIt->second.AddData(digiType, iDigi);
 
-        // --- Get event pointer. If event is not yet present, create it.
-        CbmDigiEvent* digiEvent = nullptr;
-        auto it2                = digiEventMap.find(eventID);
-        if (it2 == digiEventMap.end()) {
-          digiEvent             = new CbmDigiEvent();
-          digiEventMap[eventID] = digiEvent;
+        // --- Get digiEvent. If not yet present, create it. Add digi to event.
+        auto digiEventIt = digiEventMap.find(eventID);
+        if (digiEventIt == digiEventMap.end()) {
+          auto result = digiEventMap.insert(make_pair(eventID, CbmDigiEvent()));
+          assert(result.second);
+          digiEventIt = result.first;
         }
-        else {
-          digiEvent = it2->second;
-        }
+        // TODO: Restricted to STS for the moment, until CbmDigiEvent is expanded to all
+        // detector systems (digi types)
         if (system == ECbmModuleId::kSts) {
-          digiEvent->fData.fSts.fDigis.push_back(*(fDigiMan->Get<CbmStsDigi>(iDigi)));
+          digiEventIt->second.fData.fSts.fDigis.push_back(*(fDigiMan->Get<CbmStsDigi>(iDigi)));
         }
-
 
       }  //# links
 
@@ -152,6 +149,7 @@ void CbmBuildEventsIdeal::Exec(Option_t*)
       if (matchedEvents.GetNofLinks() > 1) { nAmbig++; }
 
     }  //# digis
+
     LOG(debug) << GetName() << ": Detector " << CbmModuleList::GetModuleNameCaps(system) << ", digis " << nDigis << " ("
                << nAmbig << " ambiguous), noise " << nNoise;
     nDigisTot += nDigis;
@@ -160,43 +158,76 @@ void CbmBuildEventsIdeal::Exec(Option_t*)
 
   }  //# detector systems
 
-  // events are already ordered in the map, create CbmEvents in the same order
-  for (auto it = eventMap.begin(); it != eventMap.end(); it++) {
+  // --- Move CbmEvent objects from map (already ordered) to output branch
+  int32_t nEvents = 0;
+  for (auto& kv : eventMap) {
+
+    // TODO: Retrieving the MC event time from MCEventList currently does not work in case
+    // of multiple MC sources and/or repeat mode.
+    // Until this is fixed, the event time is set to the timeslice start time.
+    /*
+    double eventTime = fMCEvents->GetEventTime(kv.first.second, kv.first.first);
+    if (eventTime < 0.) {
+      LOG(info) << fMCEvents->ToString("long");
+      LOG(fatal) << GetName() << ": MC event " << kv.first.second << " from source " << kv.first.first
+                 << " not found in MCEventList!";
+      continue;
+    }
+    eventTime -= tsStart;
+    */
+
+    double eventTime = tsStart;
     assert(nEvents == fEvents->GetEntriesFast());
     CbmEvent* store = new ((*fEvents)[nEvents]) CbmEvent();
-    store->Swap(*(it->second));
+    store->Swap(kv.second);
+    store->SetStartTime(eventTime);
+    store->SetEndTime(eventTime);
     store->SetNumber(nEvents++);
-    delete it->second;
-    it->second = nullptr;  // for a case
   }
 
-  // Store CbmDigiEvent
-  for (auto it = digiEventMap.begin(); it != digiEventMap.end(); it++) {
-    fDigiEvents->push_back(*(it->second));
-    delete it->second;
-    it->second = nullptr;
-  }
+  // --- Move CbmDigiEvent objects from map (already ordered) to output branch
+  uint64_t evNum = 0;
+  for (auto& kv : digiEventMap) {
 
+    // TODO: Retrieving the MC event time from MCEventList currently does not work in case
+    // of multiple MC sources and/or repeat mode.
+    // Until this is fixed, the event time is set to the timeslice start time.
+    /*
+    double eventTime = fMCEvents->GetEventTime(kv.first.second, kv.first.first);
+    if (eventTime < 0.) {
+      LOG(info) << fMCEvents->ToString("long");
+      LOG(fatal) << GetName() << ": MC event " << kv.first.second << " from source " << kv.first.first
+                 << " not found in MCEventList!";
+      continue;
+    }
+    eventTime -= tsStart;
+    */
+
+    double eventTime  = tsStart;
+    kv.second.fTime   = eventTime;
+    kv.second.fNumber = evNum++;
+    fDigiEvents->push_back(std::move(kv.second));
+  }
 
   // --- Timeslice log and statistics
   timer.Stop();
   stringstream logOut;
   logOut << setw(20) << left << GetName() << " [";
-  logOut << fixed << setw(8) << setprecision(1) << right << timer.RealTime() * 1000. << "] ms: ";
-  logOut << "TS " << fNofEntries;
+  logOut << fixed << setw(8) << setprecision(1) << right << timer.RealTime() * 1000. << " ms] ";
+  logOut << "TS " << fNumEntries;
   if (fEvents) logOut << ", events " << nEvents;
   logOut << ", digis " << nDigisTot << " (" << nDigisAmbig << " ambiguous), noise: " << nDigisNoise;
   LOG(info) << logOut.str();
-  fNofEntries++;
-  fNofEvents += nEvents;
-  fNofDigisTotal += nDigisTot;
-  fNofDigisAmbig += nDigisAmbig;
-  fNofDigisNoise += nDigisNoise;
+  fNumEntries++;
+  fNumEvents += nEvents;
+  fNumDigisTotal += nDigisTot;
+  fNumDigisAmbig += nDigisAmbig;
+  fNumDigisNoise += nDigisNoise;
   fTime += timer.RealTime();
 
   // --- For debug: event info
   if (fair::Logger::Logging(fair::Severity::debug)) {
-    for (Int_t iEvent = 0; iEvent < fEvents->GetEntriesFast(); iEvent++) {
+    for (int32_t iEvent = 0; iEvent < fEvents->GetEntriesFast(); iEvent++) {
       CbmEvent* event = (CbmEvent*) fEvents->At(iEvent);
       LOG(info) << event->ToString();
     }
@@ -212,14 +243,14 @@ void CbmBuildEventsIdeal::Finish()
   std::cout << std::endl;
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
-  LOG(info) << "Time slices          : " << fNofEntries;
-  LOG(info) << "All digis       / TS : " << fixed << setprecision(2) << fNofDigisTotal / Double_t(fNofEntries);
-  LOG(info) << "Ambiguous digis / TS : " << fixed << setprecision(2) << fNofDigisAmbig / Double_t(fNofEntries) << " = "
-            << 100. * fNofDigisAmbig / fNofDigisTotal << " %";
-  LOG(info) << "Noise digis     / TS : " << fixed << setprecision(2) << fNofDigisNoise / Double_t(fNofEntries) << " = "
-            << 100. * fNofDigisNoise / fNofDigisTotal << " %";
-  LOG(info) << "Events               : " << fNofEvents;
-  LOG(info) << "Time  / TS           : " << fixed << setprecision(2) << 1000. * fTime / Double_t(fNofEntries) << " ms";
+  LOG(info) << "Time slices          : " << fNumEntries;
+  LOG(info) << "All digis       / TS : " << fixed << setprecision(2) << double(fNumDigisTotal) / double(fNumEntries);
+  LOG(info) << "Ambiguous digis / TS : " << fixed << setprecision(2) << double(fNumDigisAmbig) / double(fNumEntries)
+            << " = " << 100. * double(fNumDigisAmbig) / double(fNumDigisTotal) << " %";
+  LOG(info) << "Noise digis     / TS : " << fixed << setprecision(2) << double(fNumDigisNoise) / double(fNumEntries)
+            << " = " << 100. * double(fNumDigisNoise) / double(fNumDigisTotal) << " %";
+  LOG(info) << "Events               : " << fNumEvents;
+  LOG(info) << "Time  / TS           : " << fixed << setprecision(2) << 1000. * fTime / double(fNumEntries) << " ms";
   LOG(info) << "=====================================";
 }
 // -------------------------------------------------------------------------
@@ -242,7 +273,7 @@ InitStatus CbmBuildEventsIdeal::Init()
   LOG(info) << GetName() << ": Initialising...";
 
 
-  // --- Check input data
+  // --- Check input digis
   for (ECbmModuleId system = ECbmModuleId::kMvd; system < ECbmModuleId::kNofSystems; ++system) {
     if (fDigiMan->IsMatchPresent(system)) {
       LOG(info) << GetName() << ": Found match branch for " << CbmModuleList::GetModuleNameCaps(system);
@@ -254,7 +285,21 @@ InitStatus CbmBuildEventsIdeal::Init()
     return kFATAL;
   }
 
-  // Register output array (CbmEvent)
+  // --- Time slice meta-data (input)
+  fTimeslice = dynamic_cast<CbmTimeSlice*>(ioman->GetObject("TimeSlice."));
+  if (fTimeslice == nullptr) {
+    LOG(warn) << GetName() << ": No TimeSlice branch found!";
+    return kFATAL;
+  }
+
+  // --- MC event list (input)
+  fMCEvents = dynamic_cast<CbmMCEventList*>(ioman->GetObject("MCEventList."));
+  if (fMCEvents == nullptr) {
+    LOG(warn) << GetName() << ": No MCEventList branch found!";
+    return kFATAL;
+  }
+
+  // --- Register output array (CbmEvent)
   // TODO: This shall be removed once reconstruction from DigiEvent is established.
   if (ioman->GetObject("CbmEvent")) {
     LOG(fatal) << GetName() << ": Branch CbmEvent already exists!";
@@ -267,7 +312,7 @@ InitStatus CbmBuildEventsIdeal::Init()
     return kFATAL;
   }
 
-  // Register output array (CbmDigiEvent)
+  // --- Register output array (CbmDigiEvent)
   if (ioman->GetObject("DigiEvent")) {
     LOG(fatal) << GetName() << ": Branch DigiEvent already exists!";
     return kFATAL;
