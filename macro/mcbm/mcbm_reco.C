@@ -13,11 +13,12 @@
 // Binned tracker for track reconstruction
 //
 // V. Friese   11.06.2018
-// S. Roy      18.11.2021 // time-based mode event building and reconstruction. The "Real" event builder is used. 
+// S. Roy      18.11.2021 // time-based mode event building and reconstruction. The "Real" event builder is used.
 // --------------------------------------------------------------------------
 
 
-void mcbm_reco(Int_t nEvents = 10, TString dataset = "data/test", TString sEvBuildRaw = "Real", const char* setupName = "mcbm_beam_2022_05")
+void mcbm_reco(Int_t nEvents = 10, TString dataset = "data/test", TString sEvBuildRaw = "Real",
+               const char* setupName = "mcbm_beam_2022_05")
 {
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -55,7 +56,6 @@ void mcbm_reco(Int_t nEvents = 10, TString dataset = "data/test", TString sEvBui
   //  setup->RemoveModule(ECbmModuleId::kTrd);
   // ------------------------------------------------------------------------
 
-  
 
   // -----   Some global switches   -----------------------------------------
   Bool_t eventBased = !sEvBuildRaw.IsNull();
@@ -129,55 +129,54 @@ void mcbm_reco(Int_t nEvents = 10, TString dataset = "data/test", TString sEvBui
   FairLogger::GetLogger()->SetLogVerbosityLevel(logVerbosity.Data());
   // ------------------------------------------------------------------------
 
-  
 
   // -----   Raw event building from digis   --------------------------------
   if (sEvBuildRaw.EqualTo("Real", TString::ECaseCompare::kIgnoreCase)) {
-      CbmTaskBuildRawEvents* evBuildRaw = new CbmTaskBuildRawEvents();
+    CbmTaskBuildRawEvents* evBuildRaw = new CbmTaskBuildRawEvents();
 
-      //Choose between NoOverlap, MergeOverlap, AllowOverlap
-      evBuildRaw->SetEventOverlapMode(EOverlapModeRaw::AllowOverlap);
+    //Choose between NoOverlap, MergeOverlap, AllowOverlap
+    evBuildRaw->SetEventOverlapMode(EOverlapModeRaw::AllowOverlap);
 
-      // Remove detectors where digis not found
-      if (!useRich) evBuildRaw->RemoveDetector(kRawEventBuilderDetRich);
-      if (!useMuch) evBuildRaw->RemoveDetector(kRawEventBuilderDetMuch);
-      if (!usePsd) evBuildRaw->RemoveDetector(kRawEventBuilderDetPsd);
-      if (!useTof) evBuildRaw->RemoveDetector(kRawEventBuilderDetTof);
-      if (!useTrd) evBuildRaw->RemoveDetector(kRawEventBuilderDetTrd);
+    // Remove detectors where digis not found
+    if (!useRich) evBuildRaw->RemoveDetector(kRawEventBuilderDetRich);
+    if (!useMuch) evBuildRaw->RemoveDetector(kRawEventBuilderDetMuch);
+    if (!usePsd) evBuildRaw->RemoveDetector(kRawEventBuilderDetPsd);
+    if (!useTof) evBuildRaw->RemoveDetector(kRawEventBuilderDetTof);
+    if (!useTrd) evBuildRaw->RemoveDetector(kRawEventBuilderDetTrd);
 
-      if (!useSts) {
-        std::cerr << "-E- " << myName << ": Sts must be present for raw event "
-                  << "building using ``Real2019'' option. Terminating macro." << std::endl;
-        return;
-      }
-      // Set STS as reference detector
-       evBuildRaw->SetReferenceDetector(kRawEventBuilderDetSts);
-
-      // Use sliding window seed builder with STS
-       // evBuildRaw->SetReferenceDetector(kRawEventBuilderDetUndef);
-       // evBuildRaw->AddSeedTimeFillerToList(kRawEventBuilderDetSts);
-       // evBuildRaw->SetSlidingWindowSeedFinder(10, 40, 100);
-       //  evBuildRaw->SetSeedFinderQa(true);  // optional QA information for seed finder
-
-      evBuildRaw->SetTsParameters(0.0, 1.e7, 0.0);
-
-      // Use CbmMuchDigi instead of CbmMuchBeamtimeDigi
-      evBuildRaw->ChangeMuchBeamtimeDigiFlag(kFALSE);
-
-      evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kSts, 100);
-      evBuildRaw->SetTriggerMaxNumber(ECbmModuleId::kSts, -1);
-      evBuildRaw->SetTriggerWindow(ECbmModuleId::kSts, -10, 65);
-
-      run->AddTask(evBuildRaw);
-      std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName() << std::endl;
-      eventBased = kTRUE;
-    }  //? Real raw event building
-    else {
-      std::cerr << "-E- " << myName << ": Unknown option " << sEvBuildRaw
-                << " for raw event building! Terminating macro execution." << std::endl;
+    if (!useSts) {
+      std::cerr << "-E- " << myName << ": Sts must be present for raw event "
+                << "building using ``Real2019'' option. Terminating macro." << std::endl;
       return;
     }
-    //? event-based reco
+    // Set STS as reference detector
+    evBuildRaw->SetReferenceDetector(kRawEventBuilderDetSts);
+
+    // Use sliding window seed builder with STS
+    // evBuildRaw->SetReferenceDetector(kRawEventBuilderDetUndef);
+    // evBuildRaw->AddSeedTimeFillerToList(kRawEventBuilderDetSts);
+    // evBuildRaw->SetSlidingWindowSeedFinder(10, 40, 100);
+    //  evBuildRaw->SetSeedFinderQa(true);  // optional QA information for seed finder
+
+    evBuildRaw->SetTsParameters(0.0, 1.e7, 0.0);
+
+    // Use CbmMuchDigi instead of CbmMuchBeamtimeDigi
+    evBuildRaw->ChangeMuchBeamtimeDigiFlag(kFALSE);
+
+    evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kSts, 100);
+    evBuildRaw->SetTriggerMaxNumber(ECbmModuleId::kSts, -1);
+    evBuildRaw->SetTriggerWindow(ECbmModuleId::kSts, -10, 65);
+
+    run->AddTask(evBuildRaw);
+    std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName() << std::endl;
+    eventBased = kTRUE;
+  }  //? Real raw event building
+  else {
+    std::cerr << "-E- " << myName << ": Unknown option " << sEvBuildRaw
+              << " for raw event building! Terminating macro execution." << std::endl;
+    return;
+  }
+  //? event-based reco
   // ------------------------------------------------------------------------
 
 
@@ -520,9 +519,9 @@ void mcbm_reco(Int_t nEvents = 10, TString dataset = "data/test", TString sEvBui
 
 
   // -----   Database update   ----------------------------------------------
-// rtdb->setOutput(parIo1);
-// rtdb->saveOutput();
-// rtdb->print();
+  // rtdb->setOutput(parIo1);
+  // rtdb->saveOutput();
+  // rtdb->print();
   // ------------------------------------------------------------------------
 
 
@@ -547,17 +546,14 @@ void mcbm_reco(Int_t nEvents = 10, TString dataset = "data/test", TString sEvBui
   std::cout << " All ok " << std::endl;
   // ------------------------------------------------------------------------
   // save all historgrams
-  
+
   gROOT->LoadMacro("save_hst.C");
-  TString FSave = Form("save_hst(\"CluStatus%d_%d_Cal_%s.hst.root\")",
-                       iCalSet,
-                       iSel2in,
-                       cCalId.Data());
+  TString FSave = Form("save_hst(\"CluStatus%d_%d_Cal_%s.hst.root\")", iCalSet, iSel2in, cCalId.Data());
   gInterpreter->ProcessLine(FSave.Data());
-  
+
   // -----   Resource monitoring   ------------------------------------------
 
-if (hasFairMonitor) {  // FairRoot Version >= 15.11
+  if (hasFairMonitor) {  // FairRoot Version >= 15.11
     // Extract the maximal used memory an add is as Dart measurement
     // This line is filtered by CTest and the value send to CDash
     FairSystemInfo sysInfo;
@@ -575,5 +571,5 @@ if (hasFairMonitor) {  // FairRoot Version >= 15.11
     tempMon->Print();
   }
 
-// RemoveGeoManager();
+  // RemoveGeoManager();
 }
