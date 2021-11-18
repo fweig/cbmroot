@@ -898,7 +898,7 @@ void position_inner_tof_modules(Int_t modNType)
   NumberOfPoles++;
 
   // Mar2019 setup
-  Int_t modNum[4] = {4 * 0};
+  Int_t modNum[4]                = {4 * 0};
   const Int_t NModules           = 8;
   xPos                           = 0.;
   yPos                           = 0.;
@@ -912,7 +912,7 @@ void position_inner_tof_modules(Int_t modNType)
   TGeoRotation* module_rot           = NULL;
   TGeoCombiTrans* module_combi_trans = NULL;
 
-/*
+  /*
   for (Int_t iMod = 0; iMod < NModules; iMod++) {
     module_trans = new TGeoTranslation("", xPos + ModDx[iMod], yPos + ModDy[iMod], zPos + ModDz[iMod]);
     module_rot   = new TGeoRotation();
