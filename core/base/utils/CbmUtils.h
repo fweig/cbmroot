@@ -5,7 +5,7 @@
 #ifndef CBMUTILS_H_
 #define CBMUTILS_H_
 
-#include "../CbmMCDataManager.h"
+#include "CbmMCDataManager.h"
 
 #include "FairLogger.h"
 #include "FairRootManager.h"
