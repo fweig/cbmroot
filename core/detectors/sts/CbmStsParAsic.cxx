@@ -16,11 +16,10 @@
 
 #include <assert.h>  // for assert
 
-ClassImp(CbmStsParAsic)
 
-  // -----   Constructor   ---------------------------------------------------
-  CbmStsParAsic::CbmStsParAsic(UShort_t nChannels, UShort_t nAdc, Double_t dynRange, Double_t threshold,
-                               Double_t timeResol, Double_t deadTime, Double_t noise, Double_t znr)
+// -----   Constructor   ---------------------------------------------------
+CbmStsParAsic::CbmStsParAsic(UShort_t nChannels, UShort_t nAdc, double dynRange, double threshold, double timeResol,
+                             double deadTime, double noise, double znr)
 {
   Set(nChannels, nAdc, dynRange, threshold, timeResol, deadTime, noise, znr);
 }
@@ -32,6 +31,8 @@ CbmStsParAsic::CbmStsParAsic(const CbmStsParAsic& other)
 {
   Set(other.fNofChannels, other.fNofAdc, other.fDynRange, other.fThreshold, other.fTimeResolution, other.fDeadTime,
       other.fNoise, other.fZeroNoiseRate);
+  SetTimeOffset(other.fTimeOffset);
+  SetWalkCoef(other.fWalkCoef);
 }
 // -------------------------------------------------------------------------
 
@@ -41,6 +42,8 @@ CbmStsParAsic& CbmStsParAsic::operator=(const CbmStsParAsic& other)
 {
   Set(other.fNofChannels, other.fNofAdc, other.fDynRange, other.fThreshold, other.fTimeResolution, other.fDeadTime,
       other.fNoise, other.fZeroNoiseRate);
+  SetTimeOffset(other.fTimeOffset);
+  SetWalkCoef(other.fWalkCoef);
   return *this;
 }
 // -------------------------------------------------------------------------
@@ -55,23 +58,23 @@ CbmStsParAsic::~CbmStsParAsic()
 
 
 // -----  ADC channel from charge   ----------------------------------------
-Short_t CbmStsParAsic::ChargeToAdc(Double_t charge) const
+int16_t CbmStsParAsic::ChargeToAdc(double charge) const
 {
   if (charge < fThreshold) return -1;                        // Underflow
   if (charge >= fThreshold + fDynRange) return fNofAdc - 1;  // Overflow
-  return Short_t((charge - fThreshold) / fDynRange * Double_t(fNofAdc));
+  return int16_t((charge - fThreshold) / fDynRange * double(fNofAdc));
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Deactivate channels   -------------------------------------------
-UInt_t CbmStsParAsic::DeactivateRandomChannels(Double_t fraction)
+uint16_t CbmStsParAsic::DeactivateRandomChannels(double fraction)
 {
 
   if (fraction < 0.) return 0;
 
   // --- Average number of dead channels
-  Double_t meanDead = fraction * Double_t(fNofChannels);
+  double meanDead = fraction * double(fNofChannels);
   if (meanDead > fNofChannels) meanDead = fNofChannels;
 
   // --- Sample actual number of dead channels from Poissonian
@@ -94,17 +97,17 @@ UInt_t CbmStsParAsic::DeactivateRandomChannels(Double_t fraction)
 
 
 // -----   Single-channel noise rate   -------------------------------------
-Double_t CbmStsParAsic::GetNoiseRate() const
+double CbmStsParAsic::GetNoiseRate() const
 {
   if (fNoise == 0.) return 0.;
-  Double_t ratio = fThreshold / fNoise;
+  double ratio = fThreshold / fNoise;
   return 0.5 * fZeroNoiseRate * TMath::Exp(-0.5 * ratio * ratio);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Random charge of a noise signal   -------------------------------
-Double_t CbmStsParAsic::GetRandomNoiseCharge() const
+double CbmStsParAsic::GetRandomNoiseCharge() const
 {
   assert(fIsInit);
   return fNoiseCharge->GetRandom();
@@ -112,7 +115,7 @@ Double_t CbmStsParAsic::GetRandomNoiseCharge() const
 // -------------------------------------------------------------------------
 
 
-// -----   Intialise the noise charge distribution   -----------------------
+// -----   Initialise the noise charge distribution   ----------------------
 void CbmStsParAsic::Init()
 {
   if (fNoiseCharge) delete fNoiseCharge;
@@ -124,8 +127,8 @@ void CbmStsParAsic::Init()
 
 
 // -----   Set the parameters   ---------------------------------------------
-void CbmStsParAsic::Set(UShort_t nChannels, UShort_t nAdc, Double_t dynRange, Double_t threshold, Double_t timeResol,
-                        Double_t deadTime, Double_t noise, Double_t zeroNoiseRate, std::set<UShort_t> deadChannels)
+void CbmStsParAsic::Set(UShort_t nChannels, UShort_t nAdc, double dynRange, double threshold, double timeResol,
+                        double deadTime, double noise, double zeroNoiseRate, std::set<UShort_t> deadChannels)
 {
 
   // Assert validity of parameters
@@ -161,3 +164,6 @@ std::string CbmStsParAsic::ToString() const
   return ss.str();
 }
 // --------------------------------------------------------------------------
+
+
+ClassImp(CbmStsParAsic)

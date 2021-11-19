@@ -1,11 +1,8 @@
-/* Copyright (C) 2014-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2014-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Volker Friese [committer] */
 
-/** @file CbmStsParModule.cxx
- ** @author Volker Friese <v.friese@gsi.de>
- ** @date 28.06.2014
- **/
+
 #include "CbmStsParModule.h"
 
 #include <cassert>   // for assert
@@ -16,25 +13,23 @@
 using std::string;
 using std::stringstream;
 
-ClassImp(CbmStsParModule)
 
-
-  // -----   Constructor   ---------------------------------------------------
-  CbmStsParModule::CbmStsParModule(UInt_t nChannels, UInt_t nAsicChannels)
+// -----   Constructor   ---------------------------------------------------
+CbmStsParModule::CbmStsParModule(uint32_t nChannels, uint32_t nAsicChannels)
   : fNofChannels(nChannels)
   , fNofAsicChannels(nAsicChannels)
 {
-  UInt_t nAsics = (nChannels % nAsicChannels ? nChannels / nAsicChannels + 1 : nChannels / nAsicChannels);
+  uint32_t nAsics = (nChannels % nAsicChannels ? nChannels / nAsicChannels + 1 : nChannels / nAsicChannels);
   fAsicPars.resize(nAsics);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Randomly deactivate channels   ----------------------------------
-UInt_t CbmStsParModule::DeactivateRandomChannels(Double_t fraction)
+uint32_t CbmStsParModule::DeactivateRandomChannels(Double_t fraction)
 {
   if (fraction <= 0.) return 0;
-  UInt_t nDeactivated = 0;
+  uint32_t nDeactivated = 0;
   for (auto& asic : fAsicPars) {
     nDeactivated += asic.DeactivateRandomChannels(fraction);
   }
@@ -44,11 +39,11 @@ UInt_t CbmStsParModule::DeactivateRandomChannels(Double_t fraction)
 
 
 // -----   Get ASIC parameters   -------------------------------------------
-const CbmStsParAsic& CbmStsParModule::GetParAsic(UInt_t channel) const
+const CbmStsParAsic& CbmStsParModule::GetParAsic(uint32_t channel) const
 {
   assert(!fAsicPars.empty());
   assert(channel < fNofChannels);
-  UInt_t nAsic = channel / fNofAsicChannels;
+  uint32_t nAsic = channel / fNofAsicChannels;
   assert(nAsic < GetNofAsics());
   return fAsicPars[nAsic];
 }
@@ -56,10 +51,10 @@ const CbmStsParAsic& CbmStsParModule::GetParAsic(UInt_t channel) const
 
 
 // -----   Check for a channel being active   ------------------------------
-Bool_t CbmStsParModule::IsChannelActive(UInt_t channel) const
+Bool_t CbmStsParModule::IsChannelActive(uint32_t channel) const
 {
   const CbmStsParAsic& parAsic = GetParAsic(channel);
-  UShort_t asicChannel         = channel % fNofAsicChannels;
+  uint32_t asicChannel         = channel % fNofAsicChannels;
   return parAsic.IsChannelActive(asicChannel);
 }
 // -------------------------------------------------------------------------
@@ -77,6 +72,15 @@ void CbmStsParModule::SetAllAsics(const CbmStsParAsic& asicPar)
 // -------------------------------------------------------------------------
 
 
+// -----   Set parameters for one ASIC   -----------------------------------
+void CbmStsParModule::SetAsic(uint32_t asicNr, const CbmStsParAsic& asicPar)
+{
+  assert(asicNr < fAsicPars.size());
+  fAsicPars[asicNr] = asicPar;
+}
+// -------------------------------------------------------------------------
+
+
 // -----   String output   -------------------------------------------------
 string CbmStsParModule::ToString() const
 {
@@ -85,3 +89,6 @@ string CbmStsParModule::ToString() const
   return ss.str();
 }
 // -------------------------------------------------------------------------
+
+
+ClassImp(CbmStsParModule)
