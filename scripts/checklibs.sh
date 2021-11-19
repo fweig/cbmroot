@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 # Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
 # SPDX-License-Identifier: GPL-3.0-only
 # First commited by Florian Uhlig
@@ -13,7 +13,7 @@ LIBDIR=${2:-../lib}
 
 # find all libs
 # libraries are real files with the extensions .so and for macosx .dylib
-all_libs=$(find $LIBDIR -type f | grep -e \.dylib -e \.so)
+all_libs=$(find $LIBDIR -type f | grep -e \.dylib$ -e \.so$)
 
 tmpfile=$(mktemp)
 
