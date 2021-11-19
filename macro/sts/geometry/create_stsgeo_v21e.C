@@ -805,8 +805,8 @@ void create_stsgeo_v21e(const char* geoTag = "v21e")
 
   //  TGeoTranslation* stsTrans = new TGeoTranslation(0., 0., stsPosZ);
 
-  // to make translation from the second STS station (Reason: Origin point{x=0, y=0, z=0} is taken from the last sts station.)
-  TGeoTranslation* stsTrans = new TGeoTranslation(0., 0., (statPos[13] - statPos[0]));
+  // to make translation to the center of magnet (Reason: Origin point{x=0, y=0, z=0} is taken from the last sts station.)
+  TGeoTranslation* stsTrans = new TGeoTranslation(0., 0., 59.5);
   top->AddNode(sts, 1, stsTrans);
   top->GetShape()->ComputeBBox();
   cout << endl << endl;
@@ -825,7 +825,7 @@ void create_stsgeo_v21e(const char* geoTag = "v21e")
   sts->Export(geoFileName);  // an another way of writing the stsvolume placement
 
   TFile* geoFile                        = new TFile(geoFileName, "UPDATE");
-  TGeoTranslation* sts_volume_placement = new TGeoTranslation("sts_trans", 0., 0., (statPos[13] - statPos[0]));
+  TGeoTranslation* sts_volume_placement = new TGeoTranslation("sts_trans", 0., 0., 59.5);
   sts_volume_placement->Write();
   //*/
   cout << endl;
