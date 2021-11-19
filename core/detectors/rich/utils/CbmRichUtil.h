@@ -7,6 +7,7 @@
 
 #include <map>
 #include <vector>
+
 #include <stdint.h>
 
 class CbmDigiManager;
