@@ -9,6 +9,7 @@
 
 // STD
 #include <map>
+#include <vector>
 
 // ROOT
 #include <TArrayD.h>
@@ -19,11 +20,22 @@ public:
   CbmMcbm2018RichPar(const char* name = "CbmMcbm2018RichPar", const char* title = "RICH unpacker parameters",
                      const char* context = "Default");
 
+  /// Explicit copy assignment operator due to vector and map members!
+  CbmMcbm2018RichPar& operator=(const CbmMcbm2018RichPar& other)
+  {
+    fTRBaddresses = other.fTRBaddresses;
+    fToTshifts    = other.fToTshifts;
+    LoadInternalContainers();
+    return *this;
+  }
+
   virtual ~CbmMcbm2018RichPar();
 
   virtual void putParams(FairParamList*);
 
   virtual Bool_t getParams(FairParamList*);
+
+  void LoadInternalContainers();
 
 public:
   Int_t GetNaddresses(void) const { return fTRBaddresses.GetSize(); }
@@ -46,7 +58,9 @@ public:
 	 * First argument is TDC index (i.e. 0,1,2,...)
 	 * TODO: test!
 	 */
-  Double_t GetToTshift2(Int_t tdcIdx, Int_t ch) const { return fToTshiftMap.at(tdcIdx * 33 + ch); }
+  Double_t GetToTshift2(Int_t tdcIdx, Int_t ch) const;
+
+  void Print() const;
 
 private:  // Stored in the par file
   /**
@@ -72,11 +86,11 @@ private:  // Recalculated
   std::map<Int_t, Int_t> fTRBaddrMap;  //!
 
   /**
-	 * key - unique channel ID, value - ToT shift
+	 * index - unique channel ID, value - ToT shift
 	 */
-  std::map<Int_t, Double_t> fToTshiftMap;  //!
+  std::vector<Double_t> fToTshiftMap;  //!
 
-  ClassDef(CbmMcbm2018RichPar, 1);
+  ClassDef(CbmMcbm2018RichPar, 2);
 };
 
 #endif  // CbmMcbm2018RichPar_H

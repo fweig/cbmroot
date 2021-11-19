@@ -69,8 +69,9 @@ Bool_t CbmRichUnpackAlgo::initParSet(CbmMcbm2018RichPar* parset)
 {
   LOG(debug) << fName << "::initParSetAsic - ";
   fUnpackPar = *parset;
+  fUnpackPar.Print();
 
-  LOG(info) << fName << "::initParSetRichMcbm2018 - Successfully initialized Spadic hardware address map";
+  LOG(info) << fName << "::initParSetRichMcbm2018 - Successfully initialized RICH unpacking parameters";
 
   return kTRUE;
 }
@@ -416,7 +417,7 @@ void CbmRichUnpackAlgo::writeOutputDigi(Int_t fpgaID, Int_t channel, Double_t ti
   // Sorting of Digis (Now done in general part)
   /*
   Double_t lastTime = 0.;
-  
+
   if (fOutputVec.size() < 1) { fOutputVec.emplace_back(pixelUID, finalTime, tot - ToTcorr); }
   else {
     lastTime = fOutputVec[fOutputVec.size() - 1].GetTime();
