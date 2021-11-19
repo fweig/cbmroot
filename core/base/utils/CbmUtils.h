@@ -7,8 +7,8 @@
 
 #include "CbmMCDataManager.h"
 
-#include "FairLogger.h"
 #include "FairRootManager.h"
+#include "Logger.h"
 
 #include <sstream>  // for string, stringstream
 #include <vector>   // for vector
