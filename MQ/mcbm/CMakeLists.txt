@@ -1,6 +1,7 @@
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQMcbmPulserMonitor2020.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQMcbmPulserMonitor2020.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQMcbmEvtBuilderWin2020.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQMcbmEvtBuilderWin2020.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQBuildRawEvents.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQBuildRawEvents.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBuildRawEvents2021.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBuildRawEvents2021.sh)
 
 set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -213,7 +214,6 @@ set(DEPENDENCIES
   ParBase
   ${BOOST_LIBS}
   fles_ipc
-  CbmFlibMcbm2018
   CbmFlibFlesTools
   CbmBase
   CbmRecoBase
@@ -232,3 +232,25 @@ set(DEPENDENCIES
 )
 GENERATE_EXECUTABLE()
 
+set(EXE_NAME BuildDigiEvents)
+set(SRCS CbmDeviceBuildDigiEvents.cxx runBuildDigiEvents.cxx)
+
+set(DEPENDENCIES
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  CbmFlibFlesTools
+  CbmEventBuilder
+  KF
+  L1
+  CbmBase
+  CbmRecoBase
+  CbmData
+  CbmTofBase
+  Core
+  RIO
+  Net
+  Hist
+  RHTTP
+)
+GENERATE_EXECUTABLE()
