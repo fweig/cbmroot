@@ -37,8 +37,31 @@ CbmStsParAsic::CbmStsParAsic(const CbmStsParAsic& other)
 // -------------------------------------------------------------------------
 
 
+// -----   Move constructor   ----------------------------------------------
+CbmStsParAsic::CbmStsParAsic(CbmStsParAsic&& other)
+{
+  Set(other.fNofChannels, other.fNofAdc, other.fDynRange, other.fThreshold, other.fTimeResolution, other.fDeadTime,
+      other.fNoise, other.fZeroNoiseRate);
+  SetTimeOffset(other.fTimeOffset);
+  SetWalkCoef(other.fWalkCoef);
+}
+// -------------------------------------------------------------------------
+
+
 // -----   Copy assignment operator   --------------------------------------
 CbmStsParAsic& CbmStsParAsic::operator=(const CbmStsParAsic& other)
+{
+  Set(other.fNofChannels, other.fNofAdc, other.fDynRange, other.fThreshold, other.fTimeResolution, other.fDeadTime,
+      other.fNoise, other.fZeroNoiseRate);
+  SetTimeOffset(other.fTimeOffset);
+  SetWalkCoef(other.fWalkCoef);
+  return *this;
+}
+// -------------------------------------------------------------------------
+
+
+// -----   Move assignment operator   --------------------------------------
+CbmStsParAsic& CbmStsParAsic::operator=(CbmStsParAsic&& other)
 {
   Set(other.fNofChannels, other.fNofAdc, other.fDynRange, other.fThreshold, other.fTimeResolution, other.fDeadTime,
       other.fNoise, other.fZeroNoiseRate);
