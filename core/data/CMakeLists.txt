@@ -141,6 +141,11 @@ set(LINKDEF DataLinkDef.h)
 set(LIBRARY_NAME CbmData)
 set(DEPENDENCIES Base)
 
+# Generate list of headers from the list of source files and add some extra header files 
+CHANGE_FILE_EXTENSION(*.cxx *.h HEADERS "${SRCS}")
+list(APPEND HEADERS global/CbmDigiEvent.h)
+
+
 GENERATE_LIBRARY()
 
 # Install file which has no corresponding source file

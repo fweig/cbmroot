@@ -49,7 +49,7 @@ add_test(run_cleanup ${CMAKE_COMMAND}
 	-P ${CMAKE_SOURCE_DIR}/cmake/scripts/cleanmacrodir.cmake)
 set_tests_properties(run_cleanup PROPERTIES
 	TIMEOUT ${timeOutTime}
-	FIXTURES_SETUP cleanup
+	FIXTURES_SETUP run_cleanup
 )
 # ============================================================================
 
@@ -79,7 +79,7 @@ foreach(setup IN LISTS cbm_setup)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
-  	FIXTURES_REQUIRED cleanup
+  	FIXTURES_REQUIRED run_cleanup
   	FIXTURES_SETUP fixt_tra_json_config
   	RESOURCE_LOCK json_config_ParDb
   )
@@ -119,7 +119,7 @@ foreach(setup IN LISTS cbm_setup)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
-  	FIXTURES_REQUIRED cleanup
+  	FIXTURES_REQUIRED run_cleanup
   	FIXTURES_SETUP fixt_tra_sign_${setup}
   	RESOURCE_LOCK signParDb_${setup}
   )
@@ -132,7 +132,7 @@ foreach(setup IN LISTS cbm_setup)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
-  	FIXTURES_REQUIRED cleanup
+  	FIXTURES_REQUIRED run_cleanup
   	FIXTURES_SETUP fixt_tra_beam_${setup}
   	RESOURCE_LOCK beamParDb_${setup}
   )

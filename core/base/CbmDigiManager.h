@@ -69,6 +69,16 @@ public:
     return nullptr;
   }
 
+  /** @brief Access to a digi branch
+   ** @param system System identifier
+   ** @return Digi branch
+   **/
+  CbmDigiBranchBase* GetBranch(ECbmModuleId system)
+  {
+    auto it = fBranches.find(system);
+    return (it != fBranches.end() ? it->second : nullptr);
+  }
+
 
   /** @brief Get a match object
      ** @param  System identifier (ECbmModuleId)

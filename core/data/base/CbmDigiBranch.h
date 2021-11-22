@@ -175,7 +175,7 @@ public:
 
   // -----------------------------------------------------------------------
   /** @brief Get branch pointer
-		 ** @return Pointer to the connected data container
+		 ** @return Pointer to the connected data container (const)
 		 ** A std::vector is first looked for; if not found, a TClonesArray
 		 ** is looked for.
 		 ** Returns a null pointer if the branch is not present.

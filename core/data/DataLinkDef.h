@@ -89,9 +89,11 @@
 #pragma link C++ class CbmPsdAddress;
 #pragma link C++ class CbmPsdMCbmHit;
 
+// --- data/global
 #pragma link C++ class CbmGlobalTrack + ;
 #pragma link C++ class CbmTofTrack + ;
 #pragma link C++ class CbmVertex + ;
+#pragma link C++ class std::vector < CbmDigiEvent>;
 
 #pragma link C++ class stsxyter::Message;
 #pragma link C++ class gdpbv100::Message;
@@ -131,6 +133,7 @@
 #pragma link C++ class CbmDigiVector < CbmPsdDsp> + ;
 #pragma link C++ class vector < CbmEventStore> + ;
 
+/* clang-format off */
 #pragma read sourceClass="CbmStsDigi" version="[7]" targetClass="CbmStsDigi" \
     source="Long64_t fTime; Int_t fAddress; UShort_t fChannel; UShort_t fCharge" \
     target="" \
@@ -163,6 +166,8 @@
                      + ((chId & ((1 << 6) - 1)) << 22) \
                      + ((rpcType & ((1 << 4) - 1)) << 28); \
          }"
+/* clang-format on */
+
 
 #pragma read sourceClass = "CbmTofHit" version = "[1-4]" targetClass = "CbmTofHit" source = "" target = "" include =   \
   "Logger.h" code                                                                                     = "{ \
