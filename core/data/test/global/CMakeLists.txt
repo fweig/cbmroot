@@ -6,8 +6,14 @@ Set(INCLUDE_DIRECTORIES
   ${CBMDATA_DIR}/base
   ${CBMDATA_DIR}/global
   ${CBMDATA_DIR}/sts
+  ${CBMDATA_DIR}/much
+  ${CBMDATA_DIR}/rich
+  ${CBMDATA_DIR}/tof
+  ${CBMDATA_DIR}/psd
+  ${CBMDATA_DIR}/trd
+  ${CBMDATA_DIR}/mvd
   ${CBMDATA_DIR}/test/sts
-  ${CMAKE_SOURCE_DIR}/external/ipc/ipc/lib/fles_ipc 
+  ${CMAKE_SOURCE_DIR}/external/ipc/ipc/lib/fles_ipc
   ${BASE_INCLUDE_DIRECTORIES}
   ${GTEST_INCLUDE_DIR}
 )
@@ -49,7 +55,7 @@ Set(CbmDigiEventSources
 )
 CreateGTestExeAndAddTest(_GTestCbmDigiEvent "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
                          "${CbmDigiEventSources}" "${DEPENDENCIES}" "")
-                         
+
 # --- Test CbmDigiTimeslice
 Set(CbmDigiTimesliceSources
   ${CBMDATA_DIR}/global/CbmDigiTimeslice.h
@@ -57,7 +63,7 @@ Set(CbmDigiTimesliceSources
 )
 CreateGTestExeAndAddTest(_GTestCbmDigiTimeslice "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
                          "${CbmDigiTimesliceSources}" "${DEPENDENCIES}" "_GTestCbmDigiEvent")
-                         
+
  # --- Test CbmVertex
 Set(CbmVertexSources
   ${CBMDATA_DIR}/global/CbmVertex.cxx
@@ -65,5 +71,5 @@ Set(CbmVertexSources
 )
 CreateGTestExeAndAddTest(_GTestCbmVertex "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
                          "${CbmVertexSources}" "${DEPENDENCIES}" "_GTestCbmDigiTimeslice")
-                         
+
 

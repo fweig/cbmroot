@@ -133,6 +133,17 @@
 #pragma link C++ class CbmDigiVector < CbmPsdDsp> + ;
 #pragma link C++ class vector < CbmEventStore> + ;
 
+#pragma link C++ class std::vector < CbmEvent > + ;
+#pragma link C++ class StsDigiData + ;
+#pragma link C++ class MuchDigiData + ;
+#pragma link C++ class RichDigiData + ;
+#pragma link C++ class TrdDigiData + ;
+#pragma link C++ class TofDigiData + ;
+#pragma link C++ class PsdDigiData + ;
+#pragma link C++ class CbmDigiData + ;
+#pragma link C++ class CbmDigiEvent + ;
+#pragma link C++ class std::vector < CbmDigiEvent > + ;
+
 /* clang-format off */
 #pragma read sourceClass="CbmStsDigi" version="[7]" targetClass="CbmStsDigi" \
     source="int64_t fTime; int32_t fAddress; uint16_t fChannel; uint16_t fCharge" \

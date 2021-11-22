@@ -14,6 +14,20 @@
 #include <string>    // for char_traits
 #include <utility>   // for pair
 
+// -----   Add data to event   ---------------------------------------------
+CbmEvent::CbmEvent(const CbmEvent& rhs)
+  : TObject(rhs)
+  , fNumber(rhs.fNumber)
+  , fTimeStart(rhs.fTimeStart)
+  , fTimeEnd(rhs.fTimeEnd)
+  , fNofData(rhs.fNofData)
+  , fVertex(rhs.fVertex)
+  , fMatch(nullptr)
+  , fIndexMap(rhs.fIndexMap)
+{
+  if (fMatch) fMatch = new CbmMatch(*(rhs.fMatch));
+}
+// -------------------------------------------------------------------------
 
 // -----   Add data to event   ---------------------------------------------
 void CbmEvent::AddData(ECbmDataType type, uint32_t index)

@@ -54,6 +54,8 @@ public:
   {
   }
 
+  CbmEvent(const CbmEvent&);
+
   CbmEvent(CbmEvent&&) = default;
 
   /** Destructor **/
@@ -207,9 +209,7 @@ private:
   /** Arrays of indices to data types **/
   std::map<ECbmDataType, std::vector<uint32_t>> fIndexMap;
 
-  CbmEvent(const CbmEvent&);
   CbmEvent& operator=(const CbmEvent&);
-
 
   ClassDef(CbmEvent, 2);
 };

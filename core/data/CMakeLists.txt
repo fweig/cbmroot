@@ -137,6 +137,9 @@ Set(NO_DICT_SRCS
 # Mask warning from file provided by STAR
 SET_SOURCE_FILES_PROPERTIES(tof/etof/star_rhicf.c PROPERTIES COMPILE_FLAGS -Wno-pointer-sign)
 
+CHANGE_FILE_EXTENSION(*.cxx *.h HEADERS "${SRCS}")
+list(APPEND HEADERS base/CbmDigiData.h global/CbmDigiEvent.h)
+
 set(LINKDEF DataLinkDef.h)
 set(LIBRARY_NAME CbmData)
 set(DEPENDENCIES Base)
