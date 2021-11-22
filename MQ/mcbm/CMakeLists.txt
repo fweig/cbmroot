@@ -21,7 +21,6 @@ set(INCLUDE_DIRECTORIES
     ${CBMROOT_SOURCE_DIR}/reco/detectors/trd/rawToDigiMethods
     ${CBMROOT_SOURCE_DIR}/reco/detectors/rich/unpack
     ${CBMDATA_DIR}
-    ${CBMDATA_DIR}/global
     ${CBMDATA_DIR}/raw
     ${CBMDATA_DIR}/sts
     ${CBMDATA_DIR}/much
@@ -30,6 +29,8 @@ set(INCLUDE_DIRECTORIES
     ${CBMDATA_DIR}/psd
     ${CBMDATA_DIR}/trd
     ${CBMDATA_DIR}/mvd # Feint to avoid crash of DigiManager due to missing source pointer
+    ${CBMDATA_DIR}/base
+    ${CBMDATA_DIR}/global
     ${CBMBASE_DIR}
     ${CBMROOT_SOURCE_DIR}/sim/transport/steer # For CbmSetup.h!
     ${CBMROOT_SOURCE_DIR}/sim/transport/geosetup # For CbmGeoSetupDbProvider.h, needed by CbmSetup
@@ -253,4 +254,32 @@ set(DEPENDENCIES
   Hist
   RHTTP
 )
+GENERATE_EXECUTABLE()
+
+
+#set(INCLUDE_DIRECTORIES
+#    ${CBMDATA_DIR}/base
+#    $INCLUDE_DIRECTORIES
+#    )
+
+set(EXE_NAME DigiEventSink)
+set(SRCS CbmDeviceDigiEventSink.cxx runDigiEventSink.cxx)
+
+set(DEPENDENCIES
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  fles_ipc
+  CbmFlibMcbm2018
+  CbmFlibFlesTools
+  CbmBase
+  CbmData
+  Core
+  RIO
+  Tree
+  Net
+  Hist
+  RHTTP
+)
+#GENERATE_LIBRARY()
 GENERATE_EXECUTABLE()

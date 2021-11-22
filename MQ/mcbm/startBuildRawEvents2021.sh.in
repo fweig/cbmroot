@@ -174,15 +174,15 @@ while (( _iMoni < _nbmoni )); do
   EVTBUILDER+=" --PubTimeMax $_pubmaxsec"
   EVTBUILDER+=" --FillHistos true"
   EVTBUILDER+=" --IgnTsOver false"
-  EVTBUILDER+=" --EvtOverMode NoOverlap"
+  EVTBUILDER+=" --EvtOverMode AllowOverlap"
   EVTBUILDER+=" --RefDet kTof"
   EVTBUILDER+=" --DelDet kT0"
   EVTBUILDER+=" --DelDet kMuch"
-  EVTBUILDER+=" --SetTrigWin kSts,-50,100"
-  EVTBUILDER+=" --SetTrigWin kTrd,-250,100"
-  EVTBUILDER+=" --SetTrigWin kTof,-1,100" # To get T0 Digis (seed + close-by digis) in the event
-  EVTBUILDER+=" --SetTrigWin kRich,-150,20"
-  EVTBUILDER+=" --SetTrigWin kPsd,-50,10"
+  EVTBUILDER+=" --SetTrigWin kSts,-100,100"
+  EVTBUILDER+=" --SetTrigWin kTrd,-250,250"
+  EVTBUILDER+=" --SetTrigWin kTof,-150,150" # To get T0 Digis (seed + close-by digis) in the event
+  EVTBUILDER+=" --SetTrigWin kRich,-100,100"
+  EVTBUILDER+=" --SetTrigWin kPsd,-100,100"
   EVTBUILDER+=" --SetTrigMinNb kSts,0"
   EVTBUILDER+=" --SetTrigMinNb kTrd,0"
   EVTBUILDER+=" --SetTrigMinNb kTof,6"
@@ -212,9 +212,10 @@ while (( _iMoni < _nbmoni )); do
 
 done
 
-EVTSINK="McbmEventSink"
+EVTSINK="DigiEventSink"
 EVTSINK+=" --id evtsink1"
 EVTSINK+=" --severity info"
+#EVTSINK+=" --StoreFullTs 1"
 EVTSINK+=" --OutFileName mcbm_digis_events.root"
 EVTSINK+=" --FillHistos false"
 EVTSINK+=" --PubFreqTs $_pubfreqts"

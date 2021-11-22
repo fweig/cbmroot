@@ -478,7 +478,7 @@ bool CbmMQTsaMultiSampler::ConditionalRun()
       }    // if( 0 < fuPublishFreqTs )
 
       /// Missed TS detection (only if output channel name defined by user)
-      if ((uTsIndex != (fuPrevTsIndex + 1)) && (0 != fuPrevTsIndex && 0 != uTsIndex)) {
+      if ((uTsIndex != (fuPrevTsIndex + 1)) && !(0 == fuPrevTsIndex && 0 == uTsIndex)) {
         LOG(info) << "Missed Timeslices. Old TS Index was " << fuPrevTsIndex << " New TS Index is " << uTsIndex
                   << " diff is " << uTsIndex - fuPrevTsIndex << " Missing are " << uTsIndex - fuPrevTsIndex - 1;
 
@@ -505,7 +505,7 @@ bool CbmMQTsaMultiSampler::ConditionalRun()
           fhMissedTSEvo->Fill(fdTimeToStart, 1, uTsIndex - fuPrevTsIndex - 1);
         }  // if( 0 < fuPublishFreqTs )
 
-      }  // if( ( uTsIndex != ( fuPrevTsIndex + 1 ) ) && ( 0 != fuPrevTsIndex && 0 != uTsIndex ) )
+      }  // if( ( uTsIndex != ( fuPrevTsIndex + 1 ) ) && !( 0 == fuPrevTsIndex && 0 == uTsIndex ) )
 
       if (0 < fuPublishFreqTs) {
         fhMissedTS->Fill(0);

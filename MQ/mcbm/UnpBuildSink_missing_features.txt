@@ -1,0 +1,8 @@
+High priority
+- +++++ Switch Sampler-Unpackers connection from Push-Pull to Rep-Req! Highest priority for memory and load-balancing performances! See monitoring examples!
+- Make the parameter server the single source for the CbmSetup object (remove all disk accesses in Unpacker device!)
+
+Low priority
+- Pub-Sub Queue from Sink to intermediate devices (unpackers, Event builders, ?calibrators?, ...) to signal that last TS was received and dumped and Transition 
+  `Active -> Ready -> Stop -> End` can be done (e.g. through a Finish method)
+- Empty/custom TsEventHeader and event vector when dumping missing TS in Sink (vector maybe already OK)

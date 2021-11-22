@@ -17,8 +17,8 @@
 #include "CbmMQDefs.h"
 #include "CbmMatch.h"
 #include "CbmMvdDigi.h"
-
 #include "CbmTsEventHeader.h"
+
 #include "TimesliceMetaData.h"
 
 /// FAIRROOT headers
@@ -295,9 +295,6 @@ try {
   if (NULL == fTimeSliceMetaDataArray) { throw InitTaskError("Failed creating the TS meta data TClonesarray "); }
   fpAlgo->SetTimeSliceMetaDataArray(fTimeSliceMetaDataArray);
 
-  /// Create output TClonesArray
-  fEvents = new TClonesArray("CbmEvent", 500);
-
   /// Now that everything is set, initialize the Algorithm
   if (kFALSE == fpAlgo->InitAlgo()) { throw InitTaskError("Failed to initilize the algorithm class."); }
 
@@ -448,6 +445,19 @@ bool CbmDeviceBuildDigiEvents::HandleData(FairMQParts& parts, int /*index*/)
     TimesliceMetaData(std::move(*fTsMetaData));
   ++uPartIdx;
 
+  LOG(debug) << "T0 Vector size: " << fvDigiT0->size();
+  LOG(debug) << "STS Vector size: " << fvDigiSts->size();
+  LOG(debug) << "MUCH Vector size: " << fvDigiMuch->size();
+  LOG(debug) << "TRD Vector size: " << fvDigiTrd->size();
+  LOG(debug) << "TOF Vector size: " << fvDigiTof->size();
+  LOG(debug) << "RICH Vector size: " << fvDigiRich->size();
+  LOG(debug) << "PSD Vector size: " << fvDigiPsd->size();
+
+  if (1 == fulNumMessages) {
+    /// First message received
+    fpAlgo->SetTsParameters(0, fTsMetaData->GetDuration(), fTsMetaData->GetOverlapDuration());
+  }
+
   /// Call Algo ProcessTs method
   fpAlgo->ProcessTs();
 
@@ -468,7 +478,6 @@ bool CbmDeviceBuildDigiEvents::HandleData(FairMQParts& parts, int /*index*/)
 
   /// Clear event vector after usage
   fpAlgo->ClearEventVector();
-  fEvents->Clear("C");
 
   /// Histograms management
   if (kTRUE == fbFillHistos) {
@@ -489,31 +498,46 @@ bool CbmDeviceBuildDigiEvents::HandleData(FairMQParts& parts, int /*index*/)
 
 bool CbmDeviceBuildDigiEvents::SendEvents(FairMQParts& partsIn)
 {
-  /// Clear events TClonesArray before usage.
-  fEvents->Delete();
-
   /// Get vector reference from algo
   std::vector<CbmEvent*> vEvents = fpAlgo->GetEventVector();
 
-  /// Move CbmEvent from temporary vector to TClonesArray
+  /// Move CbmEvent from temporary vector to std::vector of full objects
+  LOG(debug) << "Vector size: " << vEvents.size();
+  std::vector<CbmEvent> vOutEvents;
   for (CbmEvent* event : vEvents) {
-    LOG(debug) << "Vector: " << event->ToString();
-    new ((*fEvents)[fEvents->GetEntriesFast()]) CbmEvent(std::move(*event));
-    LOG(debug) << "TClonesArray: " << static_cast<CbmEvent*>(fEvents->At(fEvents->GetEntriesFast() - 1))->ToString();
+    LOG(debug) << "Vector ptr: " << event->ToString();
+    vOutEvents.push_back(std::move(*event));
+    LOG(debug) << "Vector obj: " << vOutEvents[(vOutEvents.size()) - 1].ToString();
   }
 
   /// Serialize the array of events into a single MQ message
+  /// FIXME: Find out if possible to use only the boost serializer
   FairMQMessagePtr message(NewMessage());
-  Serialize<RootSerializer>(*message, fEvents);
+  Serialize<RootSerializer>(*message, &(vOutEvents));
+  /*
+  std::stringstream ossEvt;
+  boost::archive::binary_oarchive oaEvt(ossEvt);
+  oaEvt << vOutEvents;
+  std::string* strMsgEvt = new std::string(ossEvt.str());
+*/
 
   /// Add it at the end of the input composed message
+  /// FIXME: Find out if possible to use only the boost serializer
   FairMQParts partsOut(std::move(partsIn));
   partsOut.AddPart(std::move(message));
-
+  /*
+  partsOut.AddPart(NewMessage(
+    const_cast<char*>(strMsgEvt->c_str()),  // data
+    strMsgEvt->length(),                    // size
+    [](void*, void* object) { delete static_cast<std::string*>(object); },
+    strMsgEvt));  // object that manages the data
+*/
   if (Send(partsOut, fsChannelNameDataOutput) < 0) {
     LOG(error) << "Problem sending data to " << fsChannelNameDataOutput;
     return false;
   }
+
+  vOutEvents.clear();
 
   return true;
 }
@@ -554,12 +578,7 @@ CbmDeviceBuildDigiEvents::~CbmDeviceBuildDigiEvents()
   fTimeSliceMetaDataArray->Clear();
   delete fTsMetaData;
 
-  /// Clear events TClonesArray
-  fEvents->Delete();
-
-  delete fpRun;
   delete fTimeSliceMetaDataArray;
-  delete fEvents;
   delete fpAlgo;
 }
 

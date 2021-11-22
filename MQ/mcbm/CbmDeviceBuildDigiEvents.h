@@ -109,13 +109,6 @@ private:
   TClonesArray* fTimeSliceMetaDataArray = nullptr;  //!
   TimesliceMetaData* fTsMetaData        = nullptr;
 
-  /// Data emission
-  TClonesArray* fEvents = nullptr;  //! output container of CbmEvents
-  //      std::vector< CbmEvent * > &        fEventVector;    //! vector with all created events
-
-  /// Internal data registration (for FairRootManager -> DigiManager links)
-  FairRunOnline* fpRun = nullptr;
-
   /// Array of histograms to send to the histogram server
   TObjArray fArrayHisto = {};
   /// Vector of string pairs with ( HistoName, FolderPath ) to send to the histogram server
