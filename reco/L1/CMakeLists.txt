@@ -241,7 +241,19 @@ endif()
 
 GENERATE_LIBRARY()
 
-Install(FILES CbmL1Counters.h  
+Install(FILES CbmL1Counters.h
               L1Algo/L1EventEfficiencies.h
+              vectors/vec_arithmetic.h
         DESTINATION include
+       )
+
+Install(FILES L1Algo/L1Algo.h
+              L1Algo/L1Branch.h
+              L1Algo/L1Field.h
+              L1Algo/L1Hit.h
+        DESTINATION include/L1Algo
+       )
+
+Install(FILES vectors/P4_F32vec4.h
+        DESTINATION include/vectors
        )
