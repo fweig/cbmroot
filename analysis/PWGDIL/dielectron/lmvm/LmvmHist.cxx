@@ -151,13 +151,15 @@ void LmvmHist::FillH2(const string& name, ELmvmAnaStep step, double x, double y,
 void LmvmHist::FillH1(const string& name, ELmvmSrc src, ELmvmAnaStep step, double x, double wSignal)
 {
   if (src == ELmvmSrc::Undefined || step == ELmvmAnaStep::Undefined) return;
-  FillH1(GetName(name, src, step), x, wSignal);
+  double myWeight = (src == ELmvmSrc::Signal) ? wSignal : 1.;
+  FillH1(GetName(name, src, step), x, myWeight);
 }
 
 void LmvmHist::FillH2(const string& name, ELmvmSrc src, ELmvmAnaStep step, double x, double y, double wSignal)
 {
   if (src == ELmvmSrc::Undefined || step == ELmvmAnaStep::Undefined) return;
-  FillH2(GetName(name, src, step), x, y, wSignal);
+  double myWeight = (src == ELmvmSrc::Signal) ? wSignal : 1.;
+  FillH2(GetName(name, src, step), x, y, myWeight);
 }
 
 
