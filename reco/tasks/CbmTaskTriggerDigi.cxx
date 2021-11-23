@@ -3,44 +3,43 @@
    Authors: Volker Friese [committer] */
 
 
-#include "CbmTaskBuildEvents.h"
+#include "CbmTaskTriggerDigi.h"
 
 #include "CbmDefs.h"
 #include "CbmDigiBranchBase.h"
-#include "CbmDigiEvent.h"
 #include "CbmDigiManager.h"
-#include "CbmDigiTimeslice.h"
+#include "CbmStsDigi.h"
 
 #include <FairLogger.h>
 
+#include "TimeClusterTrigger.h"
 #include <TStopwatch.h>
 
+#include <algorithm>
 #include <cassert>
 #include <iomanip>
 #include <iostream>
 #include <vector>
-
-#include "EventBuilder.h"
 
 
 using namespace std;
 
 
 // -----   Constructor   -----------------------------------------------------
-CbmTaskBuildEvents::CbmTaskBuildEvents() : FairTask("BuildEvents") {}
+CbmTaskTriggerDigi::CbmTaskTriggerDigi() : FairTask("TriggerDigi") {}
 // ---------------------------------------------------------------------------
 
 
 // -----   Destructor   ------------------------------------------------------
-CbmTaskBuildEvents::~CbmTaskBuildEvents()
+CbmTaskTriggerDigi::~CbmTaskTriggerDigi()
 {
-  if (fEvents) delete fEvents;
+  if (fTriggers) delete fTriggers;
 }
 // ---------------------------------------------------------------------------
 
 
 // -----   Execution   -------------------------------------------------------
-void CbmTaskBuildEvents::Exec(Option_t*)
+void CbmTaskTriggerDigi::Exec(Option_t*)
 {
 
   // --- Timer and counters
@@ -48,32 +47,28 @@ void CbmTaskBuildEvents::Exec(Option_t*)
   TStopwatch timerTot;
   timerTot.Start();
 
-  // --- Clear output vector
-  fEvents->clear();
-
-  // --- Construct a DigiTimeslice from the data in CbmDigiManager
-  timerStep.Start();
-  CbmDigiTimeslice ts;
+  // --- Get input digi vector
   CbmDigiBranchBase* stsBranch      = fDigiMan->GetBranch(ECbmModuleId::kSts);
   const vector<CbmStsDigi>* digiVec = boost::any_cast<const vector<CbmStsDigi>*>(stsBranch->GetBranchContainer());
   assert(digiVec);
-  ts.fData.fSts.fDigis = *digiVec;
-  timerStep.Stop();
-  fTimeFillTs += timerStep.RealTime();
 
-  // --- Call event builder algorithm
+  // --- Extract digi times into to a vector
   timerStep.Start();
-  *fEvents = fAlgo(ts, *fTriggers);
+  std::vector<double> digiTimes(digiVec->size());
+  std::transform(digiVec->begin(), digiVec->end(), digiTimes.begin(),
+                 [](const CbmStsDigi& digi) { return digi.GetTime(); });
   timerStep.Stop();
-  fTimeBuildEvt += timerStep.RealTime();
+  fTimeExtract += timerStep.RealTime();
+
+  // --- Call the trigger algorithm
+  timerStep.Start();
+  *fTriggers = fAlgo(digiTimes, fTriggerWindow, fMinNumDigis, fDeadTime);
+  timerStep.Stop();
+  fTimeFind += timerStep.RealTime();
 
   // --- Timeslice statistics
-  size_t numTriggers   = fTriggers->size();
-  size_t numEvents     = fEvents->size();
-  size_t numDigisStsTs = ts.fData.fSts.fDigis.size();
-  size_t numDigisStsEv = 0;
-  for (auto& event : (*fEvents))
-    numDigisStsEv += event.fData.fSts.fDigis.size();
+  size_t numDigis    = digiVec->size();
+  size_t numTriggers = fTriggers->size();
 
   // --- Timeslice log
   timerTot.Stop();
@@ -81,45 +76,39 @@ void CbmTaskBuildEvents::Exec(Option_t*)
   stringstream logOut;
   logOut << setw(20) << left << GetName() << " [";
   logOut << fixed << setw(8) << setprecision(1) << right << timerTot.RealTime() * 1000. << " ms] ";
-  logOut << "TS " << fNumTs << ", triggers " << numTriggers << ", events " << numEvents;
-  logOut << ", frac digis " << 100. * double(numDigisStsEv) / double(numDigisStsTs) << " %";
+  logOut << "TS " << fNumTs << ", digis " << numDigis << ", triggers " << numTriggers;
   LOG(info) << logOut.str();
 
   // --- Run statistics
   fNumTs++;
+  fNumDigis += numDigis;
   fNumTriggers += numTriggers;
-  fNumEvents += numEvents;
-  fNumDigisStsTs += numDigisStsTs;
-  fNumDigisStsEv += numDigisStsEv;
 }
 // ----------------------------------------------------------------------------
 
 
 // -----   End-of-timeslice action   ------------------------------------------
-void CbmTaskBuildEvents::Finish()
+void CbmTaskTriggerDigi::Finish()
 {
 
   std::cout << std::endl;
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
   LOG(info) << "Timeslices         : " << fNumTs;
+  LOG(info) << "Digis              : " << fNumDigis;
   LOG(info) << "Triggers           : " << fNumTriggers;
-  LOG(info) << "Events             : " << fNumEvents;
-  LOG(info) << "Digis in timeslice : " << fNumDigisStsTs;
-  LOG(info) << "Digis in events    : " << fNumDigisStsEv << " = " << fixed << setprecision(2)
-            << 100. * double(fNumDigisStsEv) / double(fNumDigisStsTs) << " %";
   LOG(info) << "Time  / TS         : " << fixed << setprecision(2) << 1000. * fTimeTot / double(fNumTs) << " ms";
-  LOG(info) << "Time fill TS       : " << fixed << setprecision(2) << 1000. * fTimeFillTs / double(fNumTs)
-            << " ms = " << 100. * fTimeFillTs / fTimeTot << " %";
-  LOG(info) << "Time build events  : " << fixed << setprecision(2) << 1000. * fTimeBuildEvt / double(fNumTs)
-            << " ms = " << 100. * fTimeBuildEvt / fTimeTot << " %";
+  LOG(info) << "Time extract       : " << fixed << setprecision(2) << 1000. * fTimeExtract / double(fNumTs)
+            << " ms = " << 100. * fTimeExtract / fTimeTot << " %";
+  LOG(info) << "Time find trigger  : " << fixed << setprecision(2) << 1000. * fTimeFind / double(fNumTs)
+            << " ms = " << 100. * fTimeFind / fTimeTot << " %";
   LOG(info) << "=====================================";
 }
 // ----------------------------------------------------------------------------
 
 
 // -----   Initialisation   ---------------------------------------------------
-InitStatus CbmTaskBuildEvents::Init()
+InitStatus CbmTaskTriggerDigi::Init()
 {
 
   // --- Get FairRootManager instance
@@ -134,40 +123,28 @@ InitStatus CbmTaskBuildEvents::Init()
   LOG(info) << "==================================================";
   LOG(info) << GetName() << ": Initialising...";
 
-
-  // --- Check input data (digis, STS only for the time being)
+  // --- Check input data (STS only for the time being)
   if (!fDigiMan->IsPresent(ECbmModuleId::kSts)) {
     LOG(fatal) << GetName() << ": No digi branch for STS";
     return kFATAL;
   }
   LOG(info) << "--- Found branch STS digi";
 
-  // --- Get input data (triggers)
-  fTriggers = ioman->InitObjectAs<std::vector<double> const*>("Trigger");
+  // --- Register output array (Triggers)
+  if (ioman->GetObject("Trigger")) {
+    LOG(fatal) << GetName() << ": Branch Trigger already exists!";
+    return kFATAL;
+  }
+  fTriggers = new vector<double>;
+  ioman->RegisterAny("Trigger", fTriggers, IsOutputBranchPersistent("Trigger"));
   if (!fTriggers) {
-    LOG(fatal) << GetName() << ": No Trigger branch!" << endl;
-    return kFATAL;
-  }
-  LOG(info) << "--- Found branch Trigger";
-
-  // --- Register output array (CbmDigiEvent)
-  if (ioman->GetObject("DigiEvent")) {
-    LOG(fatal) << GetName() << ": Branch DigiEvent already exists!";
-    return kFATAL;
-  }
-  fEvents = new vector<CbmDigiEvent>;
-  ioman->RegisterAny("DigiEvent", fEvents, IsOutputBranchPersistent("DigiEvent"));
-  if (!fEvents) {
     LOG(fatal) << GetName() << ": Output branch could not be created!";
     return kFATAL;
   }
-  LOG(info) << "--- Registered branch DigiEvent";
+  LOG(info) << "--- Registered branch Trigger";
 
-  // --- Configure algorithm
-  fAlgo.SetTriggerWindow(ECbmModuleId::kSts, fEvtTimeStsMin, fEvtTimeStsMax);
-  LOG(info) << "--- Use algo EventBuilder with event window [" << fEvtTimeStsMin << ", " << fEvtTimeStsMax << "] ns";
-
-
+  LOG(info) << "--- Use algo TimeClusterTrigger with TriggerWin " << fTriggerWindow << " ns, threshold " << fMinNumDigis
+            << ", dead time " << fDeadTime << " ns";
   LOG(info) << "==================================================";
   std::cout << std::endl;
 
@@ -175,4 +152,4 @@ InitStatus CbmTaskBuildEvents::Init()
 }
 // ----------------------------------------------------------------------------
 
-ClassImp(CbmTaskBuildEvents)
+ClassImp(CbmTaskTriggerDigi)

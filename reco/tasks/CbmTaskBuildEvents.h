@@ -74,11 +74,12 @@ private:  // methods
   virtual InitStatus Init();
 
 
-private:                                         // members
-  CbmDigiManager* fDigiMan = nullptr;            //! Input data
-  std::vector<ECbmModuleId> fSystems {};         //  List of detector systems
-  std::vector<CbmDigiEvent>* fEvents = nullptr;  //! Output data
-  cbm::algo::EventBuilder fAlgo {};              //! Algorithm
+private:                                           // members
+  CbmDigiManager* fDigiMan             = nullptr;  //! Input data (digis)
+  const std::vector<double>* fTriggers = nullptr;  //! Input data (triggers)
+  std::vector<ECbmModuleId> fSystems {};           //  List of detector systems
+  std::vector<CbmDigiEvent>* fEvents = nullptr;    //! Output data (events)
+  cbm::algo::EventBuilder fAlgo {};                //! Algorithm
   double fEvtTimeStsMin = 0.;
   double fEvtTimeStsMax = 0.;
   size_t fNumTs         = 0;  //  Number of processed time slices

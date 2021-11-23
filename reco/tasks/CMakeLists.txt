@@ -10,6 +10,7 @@ Set(LIBRARY_NAME CbmRecoTasks)
 # -----  Compilation sources   ----------------------------
 set(SRCS
 CbmTaskBuildEvents.cxx
+CbmTaskTriggerDigi.cxx
 )
 # ---------------------------------------------------------
 
@@ -26,6 +27,7 @@ ${CBMROOT_SOURCE_DIR}/core/data/global
 ${CBMROOT_SOURCE_DIR}/core/data/sts
 
 ${CBMROOT_SOURCE_DIR}/algo/evbuild
+${CBMROOT_SOURCE_DIR}/algo/trigger
 
 )
 

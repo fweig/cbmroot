@@ -155,11 +155,11 @@ void CbmDigiManager::SetBranch()
   // --- Add branch object and connect it to the tree
   CbmDigiBranchBase* branch = new CbmDigiBranch<Digi>(branchName.c_str());
   if (branch->ConnectToTree()) {
-    LOG(info) << "DigiManager: Search branch " << branchName << " for class " << className << ": successful";
+    LOG(debug) << "DigiManager: Search branch " << branchName << " for class " << className << ": successful";
     fBranches[systemId] = branch;
   }
   else {
-    LOG(info) << "DigiManager: Search branch " << branchName << " for class " << className << ": failed";
+    LOG(debug) << "DigiManager: Search branch " << branchName << " for class " << className << ": failed";
     delete branch;
   }
 

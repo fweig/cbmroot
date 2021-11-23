@@ -9,9 +9,9 @@
 #include "CbmDefs.h"
 #include "CbmSetup.h"
 #include "CbmTaskBuildEvents.h"
+#include "CbmTaskTriggerDigi.h"
 
 #include <FairFileSource.h>
-#include <FairLogger.h>
 #include <FairMonitor.h>
 #include <FairParAsciiFileIo.h>
 #include <FairParRootFileIo.h>
@@ -20,8 +20,11 @@
 #include <FairSystemInfo.h>
 
 #include <TStopwatch.h>
+
+#include <memory>
 #endif
 
+#include <FairLogger.h>
 
 /** @brief Macro for CBM reconstruction from digi level
  ** @author Volker Friese <v.friese@gsi.de>
@@ -62,7 +65,7 @@ void reco_digi(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice 
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "run_reco_algo";                // this macro's name for screen output
+  TString myName = "reco_digi";                    // this macro's name for screen log
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
@@ -76,9 +79,9 @@ void reco_digi(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice 
   TString monFile = output + ".moni_reco.root";
   if (paramFile.IsNull()) paramFile = input;
   TString parFile = paramFile + ".par.root";
-  std::cout << "Inputfile " << rawFile << std::endl;
-  std::cout << "Outfile " << outFile << std::endl;
-  std::cout << "Parfile " << parFile << std::endl;
+  LOG(info) << myName << ": Input file is     " << rawFile;
+  LOG(info) << myName << ": Output file is    " << outFile;
+  LOG(info) << myName << ": Parameter file is " << parFile;
 
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
@@ -110,11 +113,22 @@ void reco_digi(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice 
   // ------------------------------------------------------------------------
 
 
+  // -----   Digi trigger   -------------------------------------------------
+  auto trigger         = std::make_unique<CbmTaskTriggerDigi>();
+  double triggerWindow = 10.;  // Trigger window size in ns
+  int32_t minNumDigis  = 100;  // Trigger threshold in number of digis
+  double deadTime      = 50.;  // Minimum time between two triggers
+  trigger->SetAlgoParams(triggerWindow, minNumDigis, deadTime);
+  LOG(info) << myName << ": Added task " << trigger->GetName();
+  run->AddTask(trigger.release());
+  // ------------------------------------------------------------------------
+
+
   // -----   Event building   -----------------------------------------------
-  CbmTaskBuildEvents* evtBuild = new CbmTaskBuildEvents();
-  evtBuild->SetTimeWindow(-20., 30.);  // event build window for STS
-  run->AddTask(evtBuild);
-  LOG(info) << myName << ": Addes task " << evtBuild->GetName();
+  auto evtBuild = std::make_unique<CbmTaskBuildEvents>();
+  evtBuild->SetTimeWindow(-20., 30.);  // event building time window for STS
+  LOG(info) << myName << ": Added task " << evtBuild->GetName();
+  run->AddTask(evtBuild.release());
   // ------------------------------------------------------------------------
 
 
