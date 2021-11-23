@@ -155,6 +155,7 @@ public:
   void SetLegacyEventMode(bool b) { fLegacyEventMode = b; }
   void SetMuchPar(TString fileName) { fMuchDigiFile = fileName; }
   void SetUseHitErrors(bool value) { fUseHitErrors = value; }
+  void SetMissingHits(bool value) { fMissingHits = value; }
   void SetStsOnlyMode() { fTrackingMode = L1Algo::TrackingMode::kSts; }
   void SetMcbmMode() { fTrackingMode = L1Algo::TrackingMode::kMcbm; }
   void SetGlobalMode() { fTrackingMode = L1Algo::TrackingMode::kGlobal; }
@@ -232,6 +233,7 @@ public:
 
   TString fMuchDigiFile {};  // Much digitization file name
   bool fUseHitErrors {false};
+  bool fMissingHits {false};
   L1Algo::TrackingMode fTrackingMode {L1Algo::TrackingMode::kSts};
 
   L1Vector<CbmL1Track> vRTracks {"CbmL1::vRTracks"};  // reconstructed tracks

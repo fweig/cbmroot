@@ -1768,7 +1768,7 @@ void L1Algo::CATrackFinder()
   for (isec = 0; isec < fNFindIterations; ++isec)  // all finder
   {
     if (fTrackingMode == kMcbm) {
-      if (isec > 1) { continue; }
+      if (isec > 3) { continue; }
     }
     // n_g1.assign(n_g1.size(), Portion);
 
@@ -1848,9 +1848,12 @@ void L1Algo::CATrackFinder()
 
         MaxInvMom = 1.0 / 0.5;  // max considered q/p
 
-        if (fTrackingMode == kMcbm) MaxInvMom = 1.5 / 0.1;  // max considered q/p
+        if (fTrackingMode == kMcbm) MaxInvMom = 1 / 0.3;  // max considered q/p
         if ((isec == kAllPrimJumpIter) || (isec == kAllSecIter) || (isec == kAllSecJumpIter)) MaxInvMom = 1.0 / 0.1;
         if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllSecEIter)) MaxInvMom = 1. / 0.05;
+
+        if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllSecEIter))
+          if (fTrackingMode == kMcbm) MaxInvMom = 1 / 0.1;  // max considered q/p
 
         MaxSlopePV = 1.1;
         if (  // (isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) ||
@@ -2030,32 +2033,34 @@ void L1Algo::CATrackFinder()
           // output
         );
 
-
-        if ((isec == kFastPrimJumpIter) || (isec == kAllPrimJumpIter) || (isec == kAllSecJumpIter)) {
+        if ((isec == kFastPrimJumpIter) || (isec == kAllPrimJumpIter) || (isec == kAllSecJumpIter) || (fMissingHits)) {
           Tindex nG_2;
           hitsmG_2.clear();
           i1G_2.clear();
 
-          DupletsStaPort(  // input
-            istal, istal + 2, ip, fDupletPortionSize, fDupletPortionStopIndex,
-            // output
-            TG_1, fldG_1, hitslG_1,
+          if ((fMissingHits && ((istal == 0) || (istal == 1))) || !fMissingHits)
+            DupletsStaPort(  // input
+              istal, istal + 2, ip, fDupletPortionSize, fDupletPortionStopIndex,
+              // output
+              TG_1, fldG_1, hitslG_1,
 
-            lmDupletsG[istal],
+              lmDupletsG[istal],
 
-            nG_2, i1G_2, hitsmG_2);
+              nG_2, i1G_2, hitsmG_2);
 
-          TripletsStaPort(  // input
-            istal, istal + 1, istal + 3, nstaltriplets, T_1, fld_1, hitsl_1,
+          if ((fMissingHits && (istal == 0)) || !fMissingHits)
+            TripletsStaPort(  // input
+              istal, istal + 1, istal + 3, nstaltriplets, T_1, fld_1, hitsl_1,
 
-            n_2, i1_2, hitsm_2, lmDupletsG[istal + 1]);
+              n_2, i1_2, hitsm_2, lmDupletsG[istal + 1]);
 
-          TripletsStaPort(  // input
-            istal, istal + 2, istal + 3, nstaltriplets, TG_1, fldG_1, hitslG_1,
+          if ((fMissingHits && (istal == 1)) || !fMissingHits)
+            TripletsStaPort(  // input
+              istal, istal + 2, istal + 3, nstaltriplets, TG_1, fldG_1, hitslG_1,
 
-            nG_2, i1G_2, hitsmG_2, lmDuplets[istal + 2]
+              nG_2, i1G_2, hitsmG_2, lmDuplets[istal + 2]
 
-          );
+            );
         }
       }  //
     }

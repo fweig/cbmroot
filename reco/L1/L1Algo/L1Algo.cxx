@@ -59,7 +59,7 @@ void L1Algo::SetNThreads(unsigned int n)
 }
 
 
-void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const TrackingMode mode)
+void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const TrackingMode mode, const bool MissingHits)
 {
 
   for (int iProc = 0; iProc < 4; iProc++) {
@@ -75,6 +75,7 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
 
   fUseHitErrors = UseHitErrors;
   fTrackingMode = mode;
+  fMissingHits  = MissingHits;
 
   //lxir039
   //  for (int i=0; i<8; i++){

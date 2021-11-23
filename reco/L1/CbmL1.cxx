@@ -744,7 +744,7 @@ InitStatus CbmL1::Init()
       LOG(error) << "-E- CbmL1: Read geometry from file " << fSTAPDataDir + "geo_algo.txt was NOT successful.";
   }
 
-  algo->Init(geo, fUseHitErrors, fTrackingMode);
+  algo->Init(geo, fUseHitErrors, fTrackingMode, fMissingHits);
   geo.clear();
 
   algo->fRadThick.reset(algo->NStations);
@@ -919,7 +919,10 @@ InitStatus CbmL1::Init()
       for (int j = 1, iSta = (NStsStations + NMvdStations + NMuchStations);
            iSta < (NStsStations + NMvdStations + NMuchStations + NTrdStations); iSta++, j++) {
         TString stationNameSts = stationName;
-        stationNameSts += j;
+        int skipStation        = j;
+        if (skipStation == 2) skipStation = 3;
+        if (skipStation == 3) skipStation = 4;
+        stationNameSts += skipStation;
         TProfile2D* hStaRadLen = (TProfile2D*) rlFile->Get(stationNameSts);
         if (!hStaRadLen) {
           cout << "L1: incorrect " << fTrdMatBudgetFileName << " file. No " << stationNameSts << "\n";
