@@ -208,6 +208,7 @@ FileLicenceCheck:
   tags:
     - CbmRoot_singularity
 
+
 .singularity_debian10_variables_jun19: &singularity_debian10_variables_jun19
     OS: debian10
     FAIRSOFT_VERSION: jun19p2
@@ -260,6 +261,15 @@ FileLicenceCheck:
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
     CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment_test.sh"
+
+.singularity_debian11_variables_apr21: &singularity_debian11_variables_apr21
+    CONTAINER: "/cvmfs/cbm.gsi.de/containers/debian11_v18.6.4_apr21p1.sif"
+    OS: debian11
+    FAIRSOFT_VERSION: apr21p1
+    FAIRROOT_VERSION: v18.6.4
+    BASE_PATH: "/opt/"
+    SIMPATH: "$BASE_PATH/fairsoft/apr21p1"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
 
 .linux_tag: &linux_tag
   stage: build
@@ -369,6 +379,11 @@ CbmRoot_Merge_Singularity_debian10_apr21:
   <<: [*singularity_tag, *check_merge_request, *build_and_test]
   variables:
     <<: [*mergeRequestVariables, *singularity_debian10_variables_apr21]
+
+CbmRoot_Merge_Singularity_debian11_apr21:
+  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *singularity_debian11_variables_apr21]
 
 CbmRoot_Merge_Singularity_centos7_apr21:
   <<: [*singularity_tag, *check_merge_request, *build_and_test]
