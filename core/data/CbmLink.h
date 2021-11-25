@@ -61,6 +61,8 @@ public:
     return (lhs.GetFile() == rhs.GetFile() && lhs.GetEntry() == rhs.GetEntry() && lhs.GetIndex() == rhs.GetIndex());
   }
 
+  friend Bool_t operator!=(const CbmLink& lhs, const CbmLink& rhs) { return !(lhs == rhs); }
+
   /** Comparison operators by //Dr.Sys **/
   friend Bool_t operator<(const CbmLink& l, const CbmLink& r)
   {

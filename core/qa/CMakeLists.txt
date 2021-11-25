@@ -24,6 +24,12 @@ CbmQaPie.cxx
 CbmQaHist.cxx
 )
 
+set(HEADERS
+CbmQaCanvas.h
+CbmQaPie.h
+CbmQaHist.h
+)
+
 set(LINKDEF CbmQaBaseLinkDef.h)
 Set(LIBRARY_NAME CbmQaBase)
 Set(DEPENDENCIES Hist Gpad)

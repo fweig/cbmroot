@@ -48,7 +48,9 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
 
   // -----   Logger settings   ----------------------------------------------
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
-  FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
+  fair::Logger::DefineVerbosity(
+    "user1", fair::VerbositySpec::Make(fair::VerbositySpec::Info::severity, fair::VerbositySpec::Info::file_line));
+  FairLogger::GetLogger()->SetLogVerbosityLevel("user1");
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
@@ -173,6 +175,7 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
     //run->AddTask(new CbmTrdDigitizerPRFQa()); //works put currently doesn't do anything
     //run->AddTask(new CbmTrdHitRateFastQa());  //opens lots of windows
     run->AddTask(new CbmTrdHitProducerQa());
+    run->AddTask(new CbmTrackerInputQaTrd());  // Tracker requirements to TRD
   }
   // ------------------------------------------------------------------------
 

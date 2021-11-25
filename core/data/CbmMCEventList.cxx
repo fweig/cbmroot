@@ -97,6 +97,17 @@ Double_t CbmMCEventList::GetEventTime(UInt_t eventId, UInt_t fileId)
 // ----------------------------------------------------------------------------
 
 
+// -----   Get event index in the list   -------------------------------------
+Int_t CbmMCEventList::GetEventIndex(UInt_t eventId, UInt_t fileId)
+{
+  if (!fIsSorted) Sort();
+  auto it = Find(fileId, eventId);
+  if (it == fEvents.end()) return -1.;
+  return (it - fEvents.begin());
+}
+// ----------------------------------------------------------------------------
+
+
 // -----   Get event time for event at index in list   ------------------------
 Double_t CbmMCEventList::GetEventTimeByIndex(UInt_t index)
 {

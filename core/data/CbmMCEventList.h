@@ -10,6 +10,7 @@
 #ifndef CBMMCEVENTLIST_H
 #define CBMMCEVENTLIST_H 1
 
+#include "CbmLink.h"
 #include "CbmMCEventInfo.h"  // for CbmMCEventInfo
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
@@ -72,6 +73,10 @@ public:
      **/
   Double_t GetEventTime(UInt_t event, UInt_t file);
 
+  /** @brief Event start time
+   * * @param link link to the MC event
+   **/
+  Double_t GetEventTime(const CbmLink& link) { return GetEventTime(link.GetEntry(), link.GetFile()); }
 
   /** @brief Event time by index
      ** @value Event time for event at given index in list
@@ -87,6 +92,19 @@ public:
      ** Returns -1 if the index is out of bounds.
      **/
   Int_t GetFileIdByIndex(UInt_t index);
+
+  /** @brief Event index
+     ** @param event  MC event number
+     ** @param file   MC input file number
+     ** @value eventindex in list
+     **
+     ** Returns -1. if the event is not present in the list.
+     **/
+  Int_t GetEventIndex(UInt_t event, UInt_t file);
+
+  /** @brief Event index
+     **/
+  Int_t GetEventIndex(const CbmLink& link) { return GetEventIndex(link.GetEntry(), link.GetFile()); }
 
 
   /** @brief Number of events in the list

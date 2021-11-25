@@ -41,6 +41,7 @@ ${CBMROOT_SOURCE_DIR}/reco/L1
 ${CBMROOT_SOURCE_DIR}/reco/L1/L1Algo
 ${CBMROOT_SOURCE_DIR}/reco/L1/OffLineInterface
 ${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder
+${CBMROOT_SOURCE_DIR}/reco/L1/qa
 
 ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/KFQA
@@ -52,7 +53,7 @@ ${CBMROOT_SOURCE_DIR}/sim/transport/geosetup
 ${CBMDATA_DIR}
 ${CBMDATA_DIR}/base
 
-  ${CBMDETECTORBASE_DIR}/sts
+${CBMDETECTORBASE_DIR}/sts
 
 ${CBMROOT_SOURCE_DIR}/mvd
   ${CBMDETECTORBASE_DIR}/trd
@@ -144,6 +145,8 @@ L1Algo/utils/L1AlgoPulls.cxx
 
 ParticleFinder/CbmL1PFFitter.cxx
 ParticleFinder/CbmL1PFMCParticle.cxx
+
+qa/CbmTrackerInputQaTrd.cxx
 )
 
 set(HEADERS
@@ -175,6 +178,8 @@ OffLineInterface/CbmL1GlobalFindTracksEvents.h
 #OffLineInterface / CbmL1SttTrack.h
 L1Algo/L1Def.h
 L1Algo/L1Vector.h
+
+qa/CbmTrackerInputQaTrd.h
 )
 
 
@@ -231,6 +236,7 @@ Set(DEPENDENCIES
     CbmStsBase
     CbmRecoBase
     CbmRecoSts
+    CbmQaBase
     boost_regex
    )
 

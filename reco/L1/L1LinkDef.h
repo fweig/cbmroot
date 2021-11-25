@@ -29,5 +29,7 @@
 //#pragma link C++ class  CbmL1SttHit+;
 //#pragma link C++ class  CbmL1SttTrackFinder+;
 //#pragma link C++ class  CbmL1SttTrack+;
+#pragma link C++ class CbmTrackerInputQaTrd + ;
+
 
 #endif

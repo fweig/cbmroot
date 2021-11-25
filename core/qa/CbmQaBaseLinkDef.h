@@ -11,10 +11,16 @@
 #pragma link C++ nestedclasses;
 #pragma link C++ nestedtypedef;
 
+// custom streamers are already implemented in the class body
 #pragma link C++ class CbmQaCanvas - ;
-#pragma link C++ class CbmQaPieSlice + ;
 #pragma link C++ class CbmQaPie - ;
-#pragma link C++ class CbmQaH1F + ;
-#pragma link C++ class CbmQaH1D + ;
+
+// create streamers automatically
+#pragma link C++ class CbmQaPieSlice + ;
+#pragma link C++ class CbmQaHist < TH1F> + ;
+#pragma link C++ class CbmQaHist < TH1D> + ;
+#pragma link C++ class CbmQaHist < TH1I> + ;
+#pragma link C++ class CbmQaHist < TProfile> + ;
+#pragma link C++ class CbmQaHist < TProfile2D> + ;
 
 #endif
