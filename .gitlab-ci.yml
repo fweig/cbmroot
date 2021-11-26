@@ -270,6 +270,7 @@ FileLicenceCheck:
     BASE_PATH: "/opt/"
     SIMPATH: "$BASE_PATH/fairsoft/apr21p1"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
+    EXTRA_FLAGS: '"-DCBM_TEST_INSTALL=TRUE\" \"-DCMAKE_INSTALL_PREFIX=install"'
 
 .linux_tag: &linux_tag
   stage: build
