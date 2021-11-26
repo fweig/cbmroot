@@ -150,8 +150,7 @@ endforeach(setup IN LISTS cbm_setup)
 
 # ============================================================================
 
-Install(FILES .rootrc run_tra_file.C run_tra_beam.C
-              run_digi.C reco_digi.C 
+Install(FILES reco_digi.C
         DESTINATION share/cbmroot/macro/reco
        )
 Install(CODE "FILE(MAKE_DIRECTORY \${CMAKE_INSTALL_PREFIX}/share/cbmroot/macro/reco/data)")
