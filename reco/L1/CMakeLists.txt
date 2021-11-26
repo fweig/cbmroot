@@ -268,7 +268,7 @@ Install(FILES L1Algo/L1Algo.h
               L1Algo/L1Branch.h
               L1Algo/L1Field.h
               L1Algo/L1Hit.h
-              L1Algo/LVector.h
+              L1Algo/L1Vector.h
         DESTINATION include/L1Algo
        )
 
