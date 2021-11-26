@@ -592,7 +592,7 @@ void CbmStsUnpackAlgo::processTsMsbInfo(const stsxyter::Message& mess, uint32_t 
   // Update Status counters
   if (uVal < fvulCurrentTsMsb[fuCurrDpbIdx]) {
 
-    LOG(debug) << " TS " << std::setw(12) << fTsIndex << uMsIdx << " MS Idx " << std::setw(4) << uMsIdx << " Msg Idx "
+    LOG(debug) << " TS " << std::setw(12) << fTsIndex << " MS Idx " << std::setw(4) << uMsIdx << " Msg Idx "
                << std::setw(5) << uMessIdx << " DPB " << std::setw(2) << fuCurrDpbIdx << " Old TsMsb " << std::setw(5)
                << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy " << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx]
                << " new TsMsb " << std::setw(5) << uVal;
@@ -610,7 +610,7 @@ void CbmStsUnpackAlgo::processTsMsbInfo(const stsxyter::Message& mess, uint32_t 
       && !(uVal == fvulCurrentTsMsb[fuCurrDpbIdx] && 2 == uMessIdx)
       /// New FW introduced TS_MSB suppression + large TS_MSB => warning only if value not increasing
       && uVal < fvulCurrentTsMsb[fuCurrDpbIdx]) {
-    LOG(debug) << "TS MSb Jump in "
+    LOG(debug) << "TS MSB Jump in "
                << " TS " << std::setw(12) << fTsIndex << " MS Idx " << std::setw(4) << uMsIdx << " Msg Idx "
                << std::setw(5) << uMessIdx << " DPB " << std::setw(2) << fuCurrDpbIdx << " => Old TsMsb "
                << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " new TsMsb " << std::setw(5) << uVal;
@@ -621,6 +621,10 @@ void CbmStsUnpackAlgo::processTsMsbInfo(const stsxyter::Message& mess, uint32_t 
   if (4194303 == uVal && 1 == uMessIdx) fvulCurrentTsMsb[fuCurrDpbIdx] = 0;
   else
     fvulCurrentTsMsb[fuCurrDpbIdx] = uVal;
+
+  LOG(debug1) << " TS " << std::setw(12) << fTsIndex << " MS Idx " << std::setw(4) << uMsIdx << " Msg Idx "
+              << std::setw(5) << uMessIdx << " DPB " << std::setw(2) << fuCurrDpbIdx << " TsMsb " << std::setw(5)
+              << fvulCurrentTsMsb[fuCurrDpbIdx] << " MsbCy " << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx];
 
   fulTsMsbIndexInTs[fuCurrDpbIdx] =
     fvulCurrentTsMsb[fuCurrDpbIdx]
@@ -653,12 +657,19 @@ void CbmStsUnpackAlgo::refreshTsMsbFields(const uint32_t imslice, const size_t m
     std::floor((mstime - uTsMsbCycleHeader * (stsxyter::kulTsCycleNbBinsBinning * stsxyter::kdClockCycleNs))
                / (stsxyter::kuHitNbTsBinsBinning * stsxyter::kdClockCycleNs));
 
+  LOG(debug1) << " TS " << std::setw(12) << fTsIndex << " MS " << std::setw(12) << mstime << " MS Idx " << std::setw(4)
+              << imslice << " Msg Idx " << std::setw(5) << 0 << " DPB " << std::setw(2) << fuCurrDpbIdx << " Old TsMsb "
+              << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy " << std::setw(5)
+              << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " header TsMsb " << uTsMsbHeader << " New MsbCy "
+              << uTsMsbCycleHeader;
+
   if (0 == imslice) {
     if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle[fuCurrDpbIdx])
       LOG(debug) << " TS " << std::setw(12) << fTsIndex << " MS " << std::setw(12) << mstime << " MS Idx "
                  << std::setw(4) << imslice << " Msg Idx " << std::setw(5) << 0 << " DPB " << std::setw(2)
                  << fuCurrDpbIdx << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy "
-                 << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " New MsbCy " << uTsMsbCycleHeader;
+                 << std::setw(5) << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " New TsMsb " << uTsMsbHeader << " New MsbCy "
+                 << uTsMsbCycleHeader;
     fvuCurrentTsMsbCycle[fuCurrDpbIdx] = uTsMsbCycleHeader;
     fvulCurrentTsMsb[fuCurrDpbIdx]     = uTsMsbHeader;
   }
@@ -712,7 +723,7 @@ bool CbmStsUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
 
   fMsStartTime = msDescriptor.idx;
   LOG(debug) << "Microslice: " << fMsStartTime << " from EqId " << std::hex << uCurrentEquipmentId << std::dec
-             << " has size: " << uSize;
+             << " has size: " << uSize << " (index " << imslice << ")";
 
   if (0 == fvbMaskedComponents.size()) fvbMaskedComponents.resize(ts->num_components(), false);
 

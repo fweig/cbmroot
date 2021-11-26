@@ -49,7 +49,10 @@ public:
    **/
   CbmStsDigi(int32_t address, int32_t channel, double time, uint16_t charge)
   {
-    assert(time >= 0 && time <= kMaxTimestamp);
+    // StsDigi is not able to store negative timestamps.
+    assert(time >= 0);
+    // StsDigi has a maximal time range of ~2.1s (2 147 483 647 ns).
+    assert(time <= kMaxTimestamp);
     PackAddressAndTime(address, time);
     PackChannelAndCharge(channel, charge);
   }
@@ -115,7 +118,9 @@ public:
   void SetTime(double dNewTime)
   {
     // StsDigi is not able to store negative timestamps.
-    assert(dNewTime >= 0 && dNewTime <= kMaxTimestamp);
+    assert(dNewTime >= 0);
+    // StsDigi has a maximal time range of ~2.1s (2 147 483 647 ns).
+    assert(dNewTime <= kMaxTimestamp);
     PackTime(dNewTime);
   }
 
