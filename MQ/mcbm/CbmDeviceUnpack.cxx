@@ -60,61 +60,22 @@ void CbmDeviceUnpack::InitTask()
 try {
   /// Read options from executable
   LOG(info) << "Init options for CbmDeviceUnpack.";
-  fsSetupName             = fConfig->GetValue<std::string>("Setup");
-  fuRunId                 = fConfig->GetValue<uint32_t>("RunId");
-  fbIgnoreOverlapMs       = fConfig->GetValue<bool>("IgnOverMs");
-  fbOutputFullTimeSorting = fConfig->GetValue<bool>("FullTimeSort");
-  fvsSetTimeOffs          = fConfig->GetValue<std::vector<std::string>>("SetTimeOffs");
-  fsChannelNameDataInput  = fConfig->GetValue<std::string>("TsNameIn");
-  fsChannelNameDataOutput = fConfig->GetValue<std::string>("TsNameOut");
-  /// TODO: option to set fuDigiMaskedIdT0 !!!!
-  fsAllowedChannels[0] = fsChannelNameDataInput;
-
-  // Get the information about created channels from the device
-  // Check if the defined channels from the topology (by name)
-  // are in the list of channels which are possible/allowed
-  // for the device
-  // The idea is to check at initilization if the devices are
-  // properly connected. For the time beeing this is done with a
-  // nameing convention. It is not avoided that someone sends other
-  // data on this channel.
-  //logger::SetLogLevel("INFO");
-
-  int noChannel = fChannels.size();
-  LOG(info) << "Number of defined channels: " << noChannel;
-  for (auto const& entry : fChannels) {
-    LOG(info) << "Channel name: " << entry.first;
-    if (std::string::npos != entry.first.find(fsChannelNameDataInput)) {
-      if (!IsChannelNameAllowed(entry.first)) throw InitTaskError("Channel name does not match.");
-      OnData(entry.first, &CbmDeviceUnpack::HandleData);
-    }  // if( entry.first.find( "ts" )
-  }    // for( auto const &entry : fChannels )
-  InitContainers();
+  fsSetupName              = fConfig->GetValue<std::string>("Setup");
+  fuRunId                  = fConfig->GetValue<uint32_t>("RunId");
+  fbIgnoreOverlapMs        = fConfig->GetValue<bool>("IgnOverMs");
+  fbOutputFullTimeSorting  = fConfig->GetValue<bool>("FullTimeSort");
+  fvsSetTimeOffs           = fConfig->GetValue<std::vector<std::string>>("SetTimeOffs");
+  fsChannelNameDataInput   = fConfig->GetValue<std::string>("TsNameIn");
+  fsChannelNameDataOutput  = fConfig->GetValue<std::string>("TsNameOut");
+  fuPublishFreqTs          = fConfig->GetValue<uint32_t>("PubFreqTs");
+  fdMinPublishTime         = fConfig->GetValue<double_t>("PubTimeMin");
+  fdMaxPublishTime         = fConfig->GetValue<double_t>("PubTimeMax");
+  fsChannelNameHistosInput = fConfig->GetValue<std::string>("ChNameIn");
 }
 catch (InitTaskError& e) {
   LOG(error) << e.what();
   // Wrapper defined in CbmMQDefs.h to support different FairMQ versions
   cbm::mq::ChangeState(this, cbm::mq::Transition::ErrorFound);
-}
-
-bool CbmDeviceUnpack::IsChannelNameAllowed(std::string channelName)
-{
-
-  for (auto const& entry : fsAllowedChannels) {
-    std::size_t pos1 = channelName.find(entry);
-    if (pos1 != std::string::npos) {
-      const vector<std::string>::const_iterator pos =
-        std::find(fsAllowedChannels.begin(), fsAllowedChannels.end(), entry);
-      const vector<std::string>::size_type idx = pos - fsAllowedChannels.begin();
-      LOG(info) << "Found " << entry << " in " << channelName;
-      LOG(info) << "Channel name " << channelName << " found in list of allowed channel names at position " << idx;
-      return true;
-    }  // if (pos1!=std::string::npos)
-  }    // for(auto const &entry : fsAllowedChannels)
-  LOG(info) << "Channel name " << channelName << " not found in list of allowed channel names.";
-  LOG(error) << "Stop device.";
-
-  return false;
 }
 
 Bool_t CbmDeviceUnpack::InitContainers()
@@ -565,15 +526,95 @@ CbmDeviceUnpack::InitParameters(std::vector<std::pair<std::string, std::shared_p
   return kTRUE;
 }
 
-// handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
-bool CbmDeviceUnpack::HandleData(FairMQMessagePtr& msg, int /*index*/)
+bool CbmDeviceUnpack::InitHistograms()
 {
+  /// Histos creation and obtain pointer on them
+  /// Trigger histo creation on all associated algos
+  // ALGO: bool initOK = fMonitorAlgo->CreateHistograms();
+  bool initOK = true;
+
+  /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
+  // ALGO: std::vector<std::pair<TNamed*, std::string>> vHistos = fMonitorAlgo->GetHistoVector();
+  std::vector<std::pair<TNamed*, std::string>> vHistos = {};
+  /// Obtain vector of pointers on each canvas from the algo (+ optionally desired folder)
+  // ALGO: std::vector<std::pair<TCanvas*, std::string>> vCanvases = fMonitorAlgo->GetCanvasVector();
+  std::vector<std::pair<TCanvas*, std::string>> vCanvases = {};
+
+  /// Add pointers to each histo in the histo array
+  /// Create histo config vector
+  /// ===> Use an std::vector< std::pair< std::string, std::string > > with < Histo name, Folder >
+  ///      and send it through a separate channel using the BoostSerializer
+  for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
+    //         LOG(info) << "Registering  " << vHistos[ uHisto ].first->GetName()
+    //                   << " in " << vHistos[ uHisto ].second.data()
+    //                   ;
+    fArrayHisto.Add(vHistos[uHisto].first);
+    std::pair<std::string, std::string> psHistoConfig(vHistos[uHisto].first->GetName(), vHistos[uHisto].second);
+    fvpsHistosFolder.push_back(psHistoConfig);
+
+    LOG(info) << "Config of hist  " << psHistoConfig.first.data() << " in folder " << psHistoConfig.second.data();
+  }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
+
+  /// Create canvas config vector
+  /// ===> Use an std::vector< std::pair< std::string, std::string > > with < Canvas name, config >
+  ///      and send it through a separate channel using the BoostSerializer
+  for (UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv) {
+    //         LOG(info) << "Registering  " << vCanvases[ uCanv ].first->GetName()
+    //                   << " in " << vCanvases[ uCanv ].second.data();
+    std::string sCanvName = (vCanvases[uCanv].first)->GetName();
+    std::string sCanvConf = GenerateCanvasConfigString(vCanvases[uCanv].first);
+
+    std::pair<std::string, std::string> psCanvConfig(sCanvName, sCanvConf);
+
+    fvpsCanvasConfig.push_back(psCanvConfig);
+
+    LOG(info) << "Config string of Canvas  " << psCanvConfig.first.data() << " is " << psCanvConfig.second.data();
+  }  //  for( UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv )
+
+  return initOK;
+}
+
+// Method called by run loop and requesting new data from the TS source whenever
+bool CbmDeviceUnpack::ConditionalRun()
+{
+  /// First request a new TS (full one)
+  std::string message = "full";
+  LOG(debug) << "Requesting new TS by sending message: full" << message;
+  FairMQMessagePtr req(NewSimpleMessage(message));
+  FairMQMessagePtr rep(NewMessage());
+
+  if (Send(req, fsChannelNameDataInput) <= 0) {
+    LOG(error) << "Failed to send the request! message was " << message;
+    return false;
+  }  // if (Send(req, fsChannelNameDataInput) <= 0)
+  else if (Receive(rep, fsChannelNameDataInput) < 0) {
+    LOG(error) << "Failed to receive a reply to the request! message was " << message;
+    return false;
+  }  // else if (Receive(rep, fsChannelNameDataInput) < 0)
+  else if (rep->GetSize() == 0) {
+    LOG(error) << "Received empty reply. Something went wrong with the timeslice generation! message was " << message;
+    return false;
+  }  // else if (rep->GetSize() == 0)
+
+  /// Message received, do Algo related Initialization steps if needed
+  if (0 == fulNumMessages) {
+    try {
+      InitContainers();
+    }
+    catch (InitTaskError& e) {
+      LOG(error) << e.what();
+      ChangeState(fair::mq::Transition::ErrorFound);
+    }
+  }  // if( 0 == fulNumMessages)
+
+  if (0 == fulNumMessages) InitHistograms();
+
   fulNumMessages++;
-  LOG(debug) << "Received message number " << fulNumMessages << " with size " << msg->GetSize();
+  LOG(debug) << "Received message number " << fulNumMessages << " with size " << rep->GetSize();
 
   if (0 == fulNumMessages % 10000) LOG(info) << "Received " << fulNumMessages << " messages";
 
-  std::string msgStr(static_cast<char*>(msg->GetData()), msg->GetSize());
+  std::string msgStr(static_cast<char*>(rep->GetData()), rep->GetSize());
   std::istringstream iss(msgStr);
   boost::archive::binary_iarchive inputArchive(iss);
 
@@ -603,8 +644,10 @@ bool CbmDeviceUnpack::HandleData(FairMQMessagePtr& msg, int /*index*/)
   /// Process the Timeslice
   DoUnpack(ts, 0);
 
+  LOG(debug) << "Unpack: Sending TS index " << ts.index();
   /// Send digi vectors to ouput
   if (!SendUnpData()) return false;
+  LOG(debug) << "Unpack: Sent TS index " << ts.index();
 
   // Reset the event header for a new timeslice
   fCbmTsEventHeader->Reset();
@@ -622,6 +665,23 @@ bool CbmDeviceUnpack::HandleData(FairMQMessagePtr& msg, int /*index*/)
   if (fRichConfig) fRichConfig->Reset();
   // ---- Psd ----
   if (fPsdConfig) fPsdConfig->Reset();
+
+  /// Send histograms each 100 time slices. Should be each ~1s
+  /// Use also runtime checker to trigger sending after M s if
+  /// processing too slow or delay sending if processing too fast
+  std::chrono::system_clock::time_point currentTime = std::chrono::system_clock::now();
+  std::chrono::duration<double_t> elapsedSeconds    = currentTime - fLastPublishTime;
+  if ((fdMaxPublishTime < elapsedSeconds.count())
+      || (0 == fulNumMessages % fuPublishFreqTs && fdMinPublishTime < elapsedSeconds.count())) {
+    if (!fbConfigSent) {
+      // Send the configuration only once per run!
+      fbConfigSent = SendHistoConfAndData();
+    }  // if( !fbConfigSent )
+    else
+      SendHistograms();
+
+    fLastPublishTime = std::chrono::system_clock::now();
+  }  // if( ( fdMaxPublishTime < elapsedSeconds.count() ) || ( 0 == fulNumMessages % fuPublishFreqTs && fdMinPublishTime < elapsedSeconds.count() ) )
 
   return true;
 }
@@ -748,6 +808,69 @@ bool CbmDeviceUnpack::SendUnpData()
 }
 
 
+bool CbmDeviceUnpack::SendHistoConfAndData()
+{
+  /// Prepare multiparts message and header
+  std::pair<uint32_t, uint32_t> pairHeader(fvpsHistosFolder.size(), fvpsCanvasConfig.size());
+  FairMQMessagePtr messageHeader(NewMessage());
+  Serialize<BoostSerializer<std::pair<uint32_t, uint32_t>>>(*messageHeader, pairHeader);
+
+  FairMQParts partsOut;
+  partsOut.AddPart(std::move(messageHeader));
+
+  for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto) {
+    /// Serialize the vector of histo config into a single MQ message
+    FairMQMessagePtr messageHist(NewMessage());
+    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, fvpsHistosFolder[uHisto]);
+
+    partsOut.AddPart(std::move(messageHist));
+  }  // for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto)
+
+  for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv) {
+    /// Serialize the vector of canvas config into a single MQ message
+    FairMQMessagePtr messageCan(NewMessage());
+    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, fvpsCanvasConfig[uCanv]);
+
+    partsOut.AddPart(std::move(messageCan));
+  }  // for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv)
+
+  /// Serialize the array of histos into a single MQ message
+  FairMQMessagePtr msgHistos(NewMessage());
+  Serialize<RootSerializer>(*msgHistos, &fArrayHisto);
+
+  partsOut.AddPart(std::move(msgHistos));
+
+  /// Send the multi-parts message to the common histogram messages queue
+  if (Send(partsOut, fsChannelNameHistosInput) < 0) {
+    LOG(error) << "CbmTsConsumerReqDevExample::SendHistoConfAndData => Problem sending data";
+    return false;
+  }  // if( Send( partsOut, fsChannelNameHistosInput ) < 0 )
+
+  /// Reset the histograms after sending them (but do not reset the time)
+  // ALGO: fMonitorAlgo->ResetHistograms(kFALSE);
+
+  return true;
+}
+
+bool CbmDeviceUnpack::SendHistograms()
+{
+  /// Serialize the array of histos into a single MQ message
+  FairMQMessagePtr message(NewMessage());
+  Serialize<RootSerializer>(*message, &fArrayHisto);
+
+  /// Send message to the common histogram messages queue
+  if (Send(message, fsChannelNameHistosInput) < 0) {
+    LOG(error) << "Problem sending data";
+    return false;
+  }  // if( Send( message, fsChannelNameHistosInput ) < 0 )
+
+  /// Reset the histograms after sending them (but do not reset the time)
+  // ALGO: fMonitorAlgo->ResetHistograms(kFALSE);
+
+  return true;
+}
+
+
 CbmDeviceUnpack::~CbmDeviceUnpack()
 {
   if (fStsConfig) fStsConfig->GetUnpacker()->Finish();
@@ -769,7 +892,7 @@ Bool_t CbmDeviceUnpack::DoUnpack(const fles::Timeslice& ts, size_t /*component*/
 
   uint64_t nComponents = ts.num_components();
   // if (fDoDebugPrints) LOG(info) << "Unpack: TS index " << ts.index() << " components " << nComponents;
-  LOG(info) << "Unpack: TS index " << ts.index() << " components " << nComponents;
+  LOG(debug) << "Unpack: TS index " << ts.index() << " components " << nComponents;
 
   for (uint64_t component = 0; component < nComponents; component++) {
     auto systemId = static_cast<std::uint16_t>(ts.descriptor(component, 0).sys_id);

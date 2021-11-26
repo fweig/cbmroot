@@ -64,12 +64,10 @@ private:
   std::vector<std::string> fvsSetTrigWin   = {};
   std::vector<std::string> fvsSetTrigMinNb = {};
   /// message queues
-  std::string fsChannelNameDataInput    = "unpts_0";
-  std::string fsChannelNameDataOutput   = "events";
-  std::string fsChannelNameCommands     = "commands";
-  std::string fsChannelNameHistosInput  = "histogram-in";
-  std::string fsChannelNameHistosConfig = "histo-conf";
-  std::string fsChannelNameCanvasConfig = "canvas-conf";
+  std::string fsChannelNameDataInput   = "unpts_0";
+  std::string fsChannelNameDataOutput  = "events";
+  std::string fsChannelNameCommands    = "commands";
+  std::string fsChannelNameHistosInput = "histogram-in";
   /// Histograms management
   uint32_t fuPublishFreqTs  = 100;
   double_t fdMinPublishTime = 0.5;
@@ -117,10 +115,14 @@ private:
   /// Format of Can config is "NbPadX(U);NbPadY(U);ConfigPad1(s);....;ConfigPadXY(s)"
   /// Format of Pad config is "GrixX(b),GridY(b),LogX(b),LogY(b),LogZ(b),HistoName(s),DrawOptions(s)"
   std::vector<std::pair<std::string, std::string>> fvpsCanvasConfig = {};
+  /// Flag indicating whether the histograms and canvases configurations were already published
+  bool fbConfigSent = false;
 
   bool IsChannelNameAllowed(std::string channelName);
+  bool InitHistograms();
   void Finish();
   bool SendEvents(FairMQParts& partsIn);
+  bool SendHistoConfAndData();
   bool SendHistograms();
 };
 

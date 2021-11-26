@@ -23,10 +23,18 @@ void addCustomOptions(bpo::options_description& options)
   options.add_options()("SetTimeOffs", bpo::value<std::vector<std::string>>()->multitoken()->composing(),
                         "Set time offset in ns for selected detector, use string matching "
                         "ECbmModuleId,dOffs e.g. kTof,-35.2");
-  options.add_options()("TsNameIn", bpo::value<std::string>()->default_value("fullts"),
+  options.add_options()("TsNameIn", bpo::value<std::string>()->default_value("ts-request"),
                         "MQ channel name for raw TS data");
   options.add_options()("TsNameOut", bpo::value<std::string>()->default_value("unpts_0"),
                         "MQ channel name for unpacked TS data");
+
+  options.add_options()("PubFreqTs", bpo::value<uint32_t>()->default_value(0), "Histo publishing frequency in TS");
+  options.add_options()("PubTimeMin", bpo::value<double_t>()->default_value(1.0),
+                        "Minimal time between two publishing");
+  options.add_options()("PubTimeMax", bpo::value<double_t>()->default_value(10.0),
+                        "Maximal time between two publishing");
+  options.add_options()("ChNameIn", bpo::value<std::string>()->default_value("histogram-in"),
+                        "MQ channel name for histos");
 }
 
 FairMQDevicePtr getDevice(const FairMQProgOptions& /*config*/) { return new CbmDeviceUnpack(); }

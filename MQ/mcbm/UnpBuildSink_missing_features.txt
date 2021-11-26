@@ -1,5 +1,4 @@
 High priority
-- +++++ Switch Sampler-Unpackers connection from Push-Pull to Rep-Req! Highest priority for memory and load-balancing performances! See monitoring examples!
 - Make the parameter server the single source for the CbmSetup object (remove all disk accesses in Unpacker device!)
 
 Low priority

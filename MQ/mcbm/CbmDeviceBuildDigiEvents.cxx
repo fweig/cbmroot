@@ -68,12 +68,10 @@ try {
   fvsSetTrigWin   = fConfig->GetValue<std::vector<std::string>>("SetTrigWin");
   fvsSetTrigMinNb = fConfig->GetValue<std::vector<std::string>>("SetTrigMinNb");
 
-  fsChannelNameDataInput    = fConfig->GetValue<std::string>("TsNameIn");
-  fsChannelNameDataOutput   = fConfig->GetValue<std::string>("EvtNameOut");
-  fsChannelNameHistosInput  = fConfig->GetValue<std::string>("ChNameIn");
-  fsChannelNameHistosConfig = fConfig->GetValue<std::string>("ChNameHistCfg");
-  fsChannelNameCanvasConfig = fConfig->GetValue<std::string>("ChNameCanvCfg");
-  fsAllowedChannels[0]      = fsChannelNameDataInput;
+  fsChannelNameDataInput   = fConfig->GetValue<std::string>("TsNameIn");
+  fsChannelNameDataOutput  = fConfig->GetValue<std::string>("EvtNameOut");
+  fsChannelNameHistosInput = fConfig->GetValue<std::string>("ChNameIn");
+  fsAllowedChannels[0]     = fsChannelNameDataInput;
 
   fuPublishFreqTs  = fConfig->GetValue<uint32_t>("PubFreqTs");
   fdMinPublishTime = fConfig->GetValue<double_t>("PubTimeMin");
@@ -296,58 +294,12 @@ try {
   fpAlgo->SetTimeSliceMetaDataArray(fTimeSliceMetaDataArray);
 
   /// Now that everything is set, initialize the Algorithm
-  if (kFALSE == fpAlgo->InitAlgo()) { throw InitTaskError("Failed to initilize the algorithm class."); }
+  if (kFALSE == fpAlgo->InitAlgo()) { throw InitTaskError("Failed to initialize the algorithm class."); }
 
   /// Histograms management
   if (kTRUE == fbFillHistos) {
-    /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
-    std::vector<std::pair<TNamed*, std::string>> vHistos = fpAlgo->GetHistoVector();
-    /// Obtain vector of pointers on each canvas from the algo (+ optionally desired folder)
-    std::vector<std::pair<TCanvas*, std::string>> vCanvases = fpAlgo->GetCanvasVector();
-
-    /// Add pointers to each histo in the histo array
-    /// Create histo config vector
-    /// ===> Use an std::vector< std::pair< std::string, std::string > > with < Histo name, Folder >
-    ///      and send it through a separate channel using the BoostSerializer
-    for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
-      //         LOG(info) << "Registering  " << vHistos[ uHisto ].first->GetName()
-      //                   << " in " << vHistos[ uHisto ].second.data()
-      //                   ;
-      fArrayHisto.Add(vHistos[uHisto].first);
-      std::pair<std::string, std::string> psHistoConfig(vHistos[uHisto].first->GetName(), vHistos[uHisto].second);
-      fvpsHistosFolder.push_back(psHistoConfig);
-
-      /// Serialize the vector of histo config into a single MQ message
-      FairMQMessagePtr messageHist(NewMessage());
-      Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, psHistoConfig);
-
-      /// Send message to the common histogram config messages queue
-      if (Send(messageHist, fsChannelNameHistosConfig) < 0) { throw InitTaskError("Problem sending histo config"); }
-      LOG(info) << "Config of hist  " << psHistoConfig.first.data() << " in folder " << psHistoConfig.second.data();
-    }
-
-    /// Create canvas config vector
-    /// ===> Use an std::vector< std::pair< std::string, std::string > > with < Canvas name, config >
-    ///      and send it through a separate channel using the BoostSerializer
-    for (UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv) {
-      //         LOG(info) << "Registering  " << vCanvases[ uCanv ].first->GetName()
-      //                   << " in " << vCanvases[ uCanv ].second.data();
-      std::string sCanvName = (vCanvases[uCanv].first)->GetName();
-      std::string sCanvConf = GenerateCanvasConfigString(vCanvases[uCanv].first);
-
-      std::pair<std::string, std::string> psCanvConfig(sCanvName, sCanvConf);
-
-      fvpsCanvasConfig.push_back(psCanvConfig);
-
-      /// Serialize the vector of canvas config into a single MQ message
-      FairMQMessagePtr messageCan(NewMessage());
-      Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, psCanvConfig);
-
-      /// Send message to the common canvas config messages queue
-      if (Send(messageCan, fsChannelNameCanvasConfig) < 0) { throw InitTaskError("Problem sending canvas config"); }
-
-      LOG(info) << "Config string of Canvas  " << psCanvConfig.first.data() << " is " << psCanvConfig.second.data();
-    }
+    /// Comment to prevent clang format single lining
+    if (kFALSE == InitHistograms()) { throw InitTaskError("Failed to initialize the histograms."); }
   }
 }
 catch (InitTaskError& e) {
@@ -372,6 +324,50 @@ bool CbmDeviceBuildDigiEvents::IsChannelNameAllowed(std::string channelName)
   LOG(info) << "Channel name " << channelName << " not found in list of allowed channel names.";
   LOG(error) << "Stop device.";
   return false;
+}
+
+
+bool CbmDeviceBuildDigiEvents::InitHistograms()
+{
+  bool initOK = true;
+
+  /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
+  std::vector<std::pair<TNamed*, std::string>> vHistos = fpAlgo->GetHistoVector();
+  /// Obtain vector of pointers on each canvas from the algo (+ optionally desired folder)
+  std::vector<std::pair<TCanvas*, std::string>> vCanvases = fpAlgo->GetCanvasVector();
+
+  /// Add pointers to each histo in the histo array
+  /// Create histo config vector
+  /// ===> Use an std::vector< std::pair< std::string, std::string > > with < Histo name, Folder >
+  ///      and send it through a separate channel using the BoostSerializer
+  for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
+    //         LOG(info) << "Registering  " << vHistos[ uHisto ].first->GetName()
+    //                   << " in " << vHistos[ uHisto ].second.data()
+    //                   ;
+    fArrayHisto.Add(vHistos[uHisto].first);
+    std::pair<std::string, std::string> psHistoConfig(vHistos[uHisto].first->GetName(), vHistos[uHisto].second);
+    fvpsHistosFolder.push_back(psHistoConfig);
+
+    LOG(info) << "Config of hist  " << psHistoConfig.first.data() << " in folder " << psHistoConfig.second.data();
+  }  // for( UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto )
+
+  /// Create canvas config vector
+  /// ===> Use an std::vector< std::pair< std::string, std::string > > with < Canvas name, config >
+  ///      and send it through a separate channel using the BoostSerializer
+  for (UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv) {
+    //         LOG(info) << "Registering  " << vCanvases[ uCanv ].first->GetName()
+    //                   << " in " << vCanvases[ uCanv ].second.data();
+    std::string sCanvName = (vCanvases[uCanv].first)->GetName();
+    std::string sCanvConf = GenerateCanvasConfigString(vCanvases[uCanv].first);
+
+    std::pair<std::string, std::string> psCanvConfig(sCanvName, sCanvConf);
+
+    fvpsCanvasConfig.push_back(psCanvConfig);
+
+    LOG(info) << "Config string of Canvas  " << psCanvConfig.first.data() << " is " << psCanvConfig.second.data();
+  }  //  for( UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv )
+
+  return initOK;
 }
 
 // handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
@@ -488,9 +484,15 @@ bool CbmDeviceBuildDigiEvents::HandleData(FairMQParts& parts, int /*index*/)
     std::chrono::duration<double_t> elapsedSeconds    = currentTime - fLastPublishTime;
     if ((fdMaxPublishTime < elapsedSeconds.count())
         || (0 == fulNumMessages % fuPublishFreqTs && fdMinPublishTime < elapsedSeconds.count())) {
-      SendHistograms();
+      if (!fbConfigSent) {
+        // Send the configuration only once per run!
+        fbConfigSent = SendHistoConfAndData();
+      }  // if( !fbConfigSent )
+      else
+        SendHistograms();
+
       fLastPublishTime = std::chrono::system_clock::now();
-    }
+    }  // if( ( fdMaxPublishTime < elapsedSeconds.count() ) || ( 0 == fulNumMessages % fuPublishFreqTs && fdMinPublishTime < elapsedSeconds.count() ) )
   }
 
   return true;
@@ -542,6 +544,50 @@ bool CbmDeviceBuildDigiEvents::SendEvents(FairMQParts& partsIn)
   return true;
 }
 
+bool CbmDeviceBuildDigiEvents::SendHistoConfAndData()
+{
+  /// Prepare multiparts message and header
+  std::pair<uint32_t, uint32_t> pairHeader(fvpsHistosFolder.size(), fvpsCanvasConfig.size());
+  FairMQMessagePtr messageHeader(NewMessage());
+  Serialize<BoostSerializer<std::pair<uint32_t, uint32_t>>>(*messageHeader, pairHeader);
+
+  FairMQParts partsOut;
+  partsOut.AddPart(std::move(messageHeader));
+
+  for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto) {
+    /// Serialize the vector of histo config into a single MQ message
+    FairMQMessagePtr messageHist(NewMessage());
+    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, fvpsHistosFolder[uHisto]);
+
+    partsOut.AddPart(std::move(messageHist));
+  }  // for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto)
+
+  for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv) {
+    /// Serialize the vector of canvas config into a single MQ message
+    FairMQMessagePtr messageCan(NewMessage());
+    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, fvpsCanvasConfig[uCanv]);
+
+    partsOut.AddPart(std::move(messageCan));
+  }  // for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv)
+
+  /// Serialize the array of histos into a single MQ message
+  FairMQMessagePtr msgHistos(NewMessage());
+  Serialize<RootSerializer>(*msgHistos, &fArrayHisto);
+
+  partsOut.AddPart(std::move(msgHistos));
+
+  /// Send the multi-parts message to the common histogram messages queue
+  if (Send(partsOut, fsChannelNameHistosInput) < 0) {
+    LOG(error) << "CbmTsConsumerReqDevExample::SendHistoConfAndData => Problem sending data";
+    return false;
+  }  // if( Send( partsOut, fsChannelNameHistosInput ) < 0 )
+
+  /// Reset the histograms after sending them (but do not reset the time)
+  fpAlgo->ResetHistograms(kFALSE);
+
+  return true;
+}
+
 bool CbmDeviceBuildDigiEvents::SendHistograms()
 {
   /// Serialize the array of histos into a single MQ message
@@ -552,7 +598,7 @@ bool CbmDeviceBuildDigiEvents::SendHistograms()
   if (Send(message, fsChannelNameHistosInput) < 0) {
     LOG(error) << "Problem sending data";
     return false;
-  }
+  }  // if( Send( message, fsChannelNameHistosInput ) < 0 )
 
   /// Reset the histograms after sending them (but do not reset the time)
   fpAlgo->ResetHistograms(kFALSE);

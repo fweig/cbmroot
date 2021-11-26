@@ -434,7 +434,6 @@ std::unique_ptr<fles::Timeslice> CbmMQTsSamplerRepReq::GetNewTs()
   std::unique_ptr<fles::Timeslice> timeslice = fSource->get();
   if (timeslice) {
     if (fulTsCounter < fulMaxTimeslices) {
-      fulTsCounter++;
 
       const fles::Timeslice& ts = *timeslice;
       uint64_t uTsIndex         = ts.index();
@@ -470,13 +469,18 @@ std::unique_ptr<fles::Timeslice> CbmMQTsSamplerRepReq::GetNewTs()
       }    // if( 0 < fuPublishFreqTs )
 
       /// Missed TS detection (only if output channel name defined by user)
-      if ((uTsIndex != (fulPrevTsIndex + 1)) && (0 != fulPrevTsIndex && 0 != uTsIndex)) {
+      if ((uTsIndex != (fulPrevTsIndex + 1)) && !(0 == fulPrevTsIndex && 0 == uTsIndex && 0 == fulTsCounter)) {
         LOG(info) << "Missed Timeslices. Old TS Index was " << fulPrevTsIndex << " New TS Index is " << uTsIndex
                   << " diff is " << uTsIndex - fulPrevTsIndex << " Missing are " << uTsIndex - fulPrevTsIndex - 1;
 
         if ("" != fsChannelNameMissedTs) {
           /// Add missing TS indices to a vector and send it in appropriate channel
           std::vector<uint64_t> vulMissedIndices;
+          if (0 == fulPrevTsIndex && 0 == fulTsCounter) {
+            /// Catch case where we do not start with the first TS but in the middle of a run
+            vulMissedIndices.emplace_back(0);
+          }
+          /// Standard cases starting with first TS after the last transmitted one
           for (uint64_t ulMiss = fulPrevTsIndex + 1; ulMiss < uTsIndex; ++ulMiss) {
             vulMissedIndices.emplace_back(ulMiss);
           }  // for( uint64_t ulMiss = fulPrevTsIndex + 1; ulMiss < uTsIndex; ++ulMiss )
@@ -497,20 +501,37 @@ std::unique_ptr<fles::Timeslice> CbmMQTsSamplerRepReq::GetNewTs()
           fhMissedTSEvo->Fill(fdTimeToStart, 1, uTsIndex - fulPrevTsIndex - 1);
         }  // if( 0 < fuPublishFreqTs )
 
-      }  // if( ( uTsIndex != ( fulPrevTsIndex + 1 ) ) && ( 0 != fulPrevTsIndex && 0 != uTsIndex ) )
+      }  // if( ( uTsIndex != ( fulPrevTsIndex + 1 ) ) && !( 0 == fulPrevTsIndex && 0 == uTsIndex ) )
 
       if (0 < fuPublishFreqTs) {
         fhMissedTS->Fill(0);
         fhMissedTSEvo->Fill(fdTimeToStart, 0, 1);
       }  // else if( 0 < fuPublishFreqTs )
 
+      fulTsCounter++;
       fulPrevTsIndex = uTsIndex;
 
       if (fulTsCounter % 10000 == 0) { LOG(info) << "Received TS " << fulTsCounter << " with index " << uTsIndex; }
 
       LOG(debug) << "Found " << ts.num_components() << " different components in timeslice";
+      return timeslice;
+    }  // if (fulTsCounter < fulMaxTimeslices)
+    else {
+      CalcRuntime();
+
+      /// If command channel defined, send command to all "slaves"
+      if ("" != fsChannelNameCommands) {
+        /// Wait 1 s before sending an EOF to let all slaves finish processing previous data
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+        std::string sCmd = "EOF ";
+        sCmd += FormatDecPrintout(fulPrevTsIndex);
+        sCmd += " ";
+        sCmd += FormatDecPrintout(fulTsCounter);
+        SendCommand(sCmd);
+      }  // if( "" != fsChannelNameCommands )
+
+      return nullptr;
     }  // else of if (fulTsCounter < fulMaxTimeslices)
-    return timeslice;
   }  // if (timeslice)
   else {
     CalcRuntime();

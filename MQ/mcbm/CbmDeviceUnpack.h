@@ -23,6 +23,7 @@
 #include "Rtypes.h"
 #include "TObjArray.h"
 
+#include <chrono>
 #include <map>
 #include <vector>
 
@@ -45,7 +46,7 @@ public:
 
 protected:
   virtual void InitTask();
-  bool HandleData(FairMQMessagePtr&, int);
+  bool ConditionalRun();
   bool HandleCommand(FairMQMessagePtr&, int);
 
   /** @brief Set the Sts Unpack Config @param config */
@@ -100,22 +101,24 @@ private:
   /// User settings parameters
   std::string fsSetupName             = "mcbm_beam_2021_07";
   uint32_t fuRunId                    = 1588;
-  std::string fsChannelNameDataInput  = "fullts";
-  std::string fsChannelNameDataOutput = "unpts_0";
-  std::string fsChannelNameCommands   = "commands";
-  UInt_t fuDigiMaskedIdT0             = 0x00005006;
-  UInt_t fuDigiMaskId                 = 0x0001FFFF;
-
-  /// List of MQ channels names
-  std::vector<std::string> fsAllowedChannels = {fsChannelNameDataInput};
+  /// message queues
+  std::string fsChannelNameDataInput   = "ts-request";
+  std::string fsChannelNameDataOutput  = "unpts_0";
+  std::string fsChannelNameCommands    = "commands";
+  std::string fsChannelNameHistosInput = "histogram-in";
+  /// Histograms management
+  uint32_t fuPublishFreqTs  = 100;
+  double_t fdMinPublishTime = 0.5;
+  double_t fdMaxPublishTime = 5.0;
 
   /// Parameters management
   //      TList* fParCList = nullptr;
   Bool_t InitParameters(std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>* reqparvec);
 
   /// Statistics & first TS rejection
-  uint64_t fulNumMessages = 0;
-  uint64_t fulTsCounter   = 0;
+  uint64_t fulNumMessages                                = 0;
+  uint64_t fulTsCounter                                  = 0;
+  std::chrono::system_clock::time_point fLastPublishTime = std::chrono::system_clock::now();
   /** @brief Map to store a name for the unpackers and the processed amount of digis, key = fkFlesId*/
   std::map<std::uint16_t, std::pair<std::string, size_t>> fNameMap = {};  //!
   /** @brief Map to store the cpu and wall time, key = fkFlesId*/
@@ -146,11 +149,24 @@ private:
   Double_t fdTsFullSizeInNs = -1.0;  //! Total size of all MS in a TS, [nanoseconds]
   TimesliceMetaData* fTsMetaData;
 
-  bool IsChannelNameAllowed(std::string channelName);
+  /// Array of histograms to send to the histogram server
+  TObjArray fArrayHisto = {};
+  /// Vector of string pairs with ( HistoName, FolderPath ) to send to the histogram server
+  std::vector<std::pair<std::string, std::string>> fvpsHistosFolder = {};
+  /// Vector of string pairs with ( CanvasName, CanvasConfig ) to send to the histogram server
+  /// Format of Can config is "NbPadX(U);NbPadY(U);ConfigPad1(s);....;ConfigPadXY(s)"
+  /// Format of Pad config is "GrixX(b),GridY(b),LogX(b),LogY(b),LogZ(b),HistoName(s),DrawOptions(s)"
+  std::vector<std::pair<std::string, std::string>> fvpsCanvasConfig = {};
+  /// Flag indicating whether the histograms and canvases configurations were already published
+  bool fbConfigSent = false;
+
   Bool_t InitContainers();
+  bool InitHistograms();
   Bool_t DoUnpack(const fles::Timeslice& ts, size_t component);
   void Finish();
   bool SendUnpData();
+  bool SendHistoConfAndData();
+  bool SendHistograms();
 
   std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline);
 
