@@ -130,8 +130,27 @@ If(NOT _RETVAL)
     EndIf()
   EndIf()
 
+  If(EXTRA_FLAGS MATCHES "INSTALL_PREFIX" AND EXTRA_FLAGS MATCHES "CBM_TEST_INSTALL" AND NOT _ctest_test_ret_val)
+    Message("Testing Installation")
+    execute_process(COMMAND ${BUILD_COMMAND} install -j$ENV{number_of_processors} WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
+                    RESULTS_VARIABLE _install_ret_value
+                   )
+    if (NOT _install_ret_value)
+      execute_process(COMMAND ${CMAKE_EXECUTABLE_NAME} -E rm -R MQ algo analysis core external fles mvd reco sim
+                      WORKING_DIRECTORY ${CTEST_SOURCE_DIRECTORY}
+                     )
+      message("executing test suite in ${CTEST_BINARY_DIRECTORY}/install")
+      execute_process(COMMAND ${CTEST_SOURCE_DIRECTORY}/cmake/scripts/execute_installation_test.sh ${CTEST_BINARY_DIRECTORY}/install
+                      RESULTS_VARIABLE _install_ret_value
+                     )
+    endif()
+ Else()
+   # if installation isn't tested the return value should be 0
+   set(_install_ret_value false)
+ EndIf()
+
   # Pipeline should fail also in case of failed tests
-  if (_ctest_test_ret_val)
+  if (_ctest_test_ret_val OR _install_ret_value)
     If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
     Else()
       message(STATUS " ")
