@@ -240,10 +240,27 @@ if (OPENMP_FOUND AND APPLE)
 endif()
 
 GENERATE_LIBRARY()
-
 Install(FILES CbmL1Counters.h
               L1Algo/L1EventEfficiencies.h
+              L1Algo/L1Grid.h
+              L1Algo/L1Branch.h
+              L1Algo/L1Field.h
+              L1Algo/L1Grid.h
+              L1Algo/L1Hit.h
+              L1Algo/L1HitPoint.h
+              L1Algo/L1HitsSortHelper.h
+              L1Algo/L1Portion.h
+              L1Algo/L1Station.h
+              L1Algo/L1Track.h
+              L1Algo/L1TrackPar.h
+              L1Algo/L1TrackParFit.h
+              L1Algo/L1Triplet.h
+              L1Algo/L1Vector.h
+              L1Algo/L1MaterialInfo.h
+              L1Algo/L1UMeasurementInfo.h
+              L1Algo/L1XYMeasurementInfo.h
               vectors/vec_arithmetic.h
+              vectors/std_alloc.h
         DESTINATION include
        )
 
@@ -251,6 +268,7 @@ Install(FILES L1Algo/L1Algo.h
               L1Algo/L1Branch.h
               L1Algo/L1Field.h
               L1Algo/L1Hit.h
+              L1Algo/LVector.h
         DESTINATION include/L1Algo
        )
 
