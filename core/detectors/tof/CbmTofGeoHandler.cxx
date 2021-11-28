@@ -211,7 +211,9 @@ Int_t CbmTofGeoHandler::GetUniqueDetectorId()
     else {
       Volname = CurrentVolOffName(4);
     }
-    smtype = Volname[7] - '0';
+    //smtype = Volname[7] - '0';
+    TString csmtype = Volname(7, Volname.Length());
+    smtype          = csmtype.Atoi();
     CurrentVolOffID(4, smodule);
     CurrentVolOffID(2, counter);
     CurrentVolOffID(1, gap);
@@ -222,6 +224,7 @@ Int_t CbmTofGeoHandler::GetUniqueDetectorId()
     cell--;
   }
 
+  LOG(debug1) << "GetUniqueDetectorId: ";
   LOG(debug1) << " Volname: " << Volname << ", " << CurrentVolOffName(3) << ", " << CurrentVolOffName(2) << ", "
               << CurrentVolOffName(1) << ", " << CurrentVolOffName(0);
 
@@ -279,7 +282,9 @@ Int_t CbmTofGeoHandler::GetUniqueCounterId()
     else {
       Volname = CurrentVolOffName(4);
     }
-    smtype = Volname[7] - '0';
+    //smtype = Volname[7] - '0';
+    TString csmtype = Volname(7, Volname.Length());
+    smtype          = csmtype.Atoi();
     CurrentVolOffID(4, smodule);
     CurrentVolOffID(2, counter);
     CurrentVolOffID(1, gap);

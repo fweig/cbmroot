@@ -53,7 +53,7 @@ if [[ ${cCalRef} = "" ]]; then
 fi
 
 dDTres=10000000
-nEvt=1000000
+nEvt=2000000
 
 cSel2=$iSel2;
 if [[ $iSel2 < 100 ]]; then
@@ -84,7 +84,9 @@ fRange2=2.5
 
 #frange1 limits DT spectrum range 
 fRange1=0.9
+#dDeadtime=00
 dDeadtime=50
+
 #./gen_digi.sh 600.100.5.0 30040500 500 50    600.100.5.0  30040500
 #./gen_digi.sh $cRun $iCalSet $iSel2 $Deadtime $CalIdMode CalIdSet
 

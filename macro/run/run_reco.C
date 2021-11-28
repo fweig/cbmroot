@@ -342,7 +342,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
 
   // -----   Local reconstruction in TOF   ----------------------------------
   if (useTof) {
-    CbmTofSimpClusterizer* tofCluster = new CbmTofSimpClusterizer("TofSimpClusterizer", 0);
+    CbmTofSimpClusterizer* tofCluster = new CbmTofSimpClusterizer("TOF Simple Clusterizer", 0);
     tofCluster->SetOutputBranchPersistent("TofHit", kTRUE);
     tofCluster->SetOutputBranchPersistent("TofDigiMatch", kTRUE);
     run->AddTask(tofCluster);

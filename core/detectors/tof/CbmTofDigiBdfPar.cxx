@@ -193,7 +193,7 @@ Bool_t CbmTofDigiBdfPar::getParams(FairParamList* l)
                    << " not found in the text file. "
                    << "This is normal for geometries < 14a but may indicate file "
                       "corruption "
-                   << " for newer geometries. Values are set to default 0.0 cm/ps.";
+                   << " for newer geometries. Values are set to default 0.0 cm/ns.";
       for (Int_t iRpc = 0; iRpc < fiNbRpc[iSmType]; iRpc++)
         fdSigVel[iSmType].SetAt(0.0, iRpc);
       //return kFALSE;
@@ -728,7 +728,7 @@ void CbmTofDigiBdfPar::printParams()
     sRpcNb += Form("%3d ", GetNbRpc(iSmType));
     sGapsNb[iSmType]     = Form("  Nb of Gaps in SM type    %3d:|->  ", iSmType);
     sGapsSz[iSmType]     = Form("  Gap Size(mm) in SM type  %3d:|-> ", iSmType);
-    sSigVel[iSmType]     = Form("  SigVel(cm/ps) in SM type %3d:|-> ", iSmType);
+    sSigVel[iSmType]     = Form("  SigVel(cm/ns) in SM type %3d:|-> ", iSmType);
     sChNb[iSmType]       = Form("  Nb of Chan in SM type    %3d:|->  ", iSmType);
     sChType[iSmType]     = Form("  Chan Type in SM type     %3d:|->  ", iSmType);
     sChOrient[iSmType]   = Form("  Chan Orientation in SM type  %3d:|->  ", iSmType);

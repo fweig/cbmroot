@@ -600,6 +600,11 @@ void ana_trks_eval(Int_t nEvents = 10000, Int_t iSel = 1, Int_t iGenCor = 1, TSt
                       tofAnaTestbeam->SetTShift(6.5);    // Shift DTD4 to 0
                       tofAnaTestbeam->SetSel2TOff(0.6);  // Shift Sel2 time peak to 0
                       break;
+                    case 1051:
+                    case 1058:
+                      tofAnaTestbeam->SetTShift(-3.);   // Shift DTD4 to 0
+                      tofAnaTestbeam->SetSel2TOff(0.);  // Shift Sel2 time peak to 0
+                      break;
                     case 717:
                     default:  // 714
                       //tofAnaTestbeam->SetSel2TOff(-1.3);  // Shift Sel2 time peak to 0

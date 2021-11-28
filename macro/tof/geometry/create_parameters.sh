@@ -30,9 +30,8 @@ root -b -q ''${workdir}'/make_geofile_noBfield.C("tof_'${cVersion}'")'
 
 cp -v ${workdir}/geofile_tof_${cVersion}.root ${VMCWORKDIR}/geometry/tof/
 
-root -b -q ''${workdir}'/create_digipar.C("tof_'${cVersion}'")'
-
-mv -v ${workdir}/tof_${cVersion}.digi.par ${VMCWORKDIR}/parameters/tof/
+#root -b -q ''${workdir}'/create_digipar.C("tof_'${cVersion}'")'
+#mv -v ${workdir}/tof_${cVersion}.digi.par ${VMCWORKDIR}/parameters/tof/
 
 rm -v ${workdir}/auaumbias.tof_${cVersion}.mc.root
 #rm -v ${workdir}/auaumbias.tof_${cVersion}.params.root
