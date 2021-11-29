@@ -28,6 +28,13 @@ add_test(load_libraries ${CBMROOT_BINARY_DIR}/macro/checklibs.sh)
 
 
 # Install in any case
+Install(PROGRAMS ${CBMROOT_SOURCE_DIR}/scripts/checklibs.sh
+        DESTINATION share/cbmroot/macro/
+       )
+Install(FILES ${CBMROOT_SOURCE_DIR}/scripts/loadlib.C
+        DESTINATION share/cbmroot/macro/
+       )
+
 Install(FILES KF/DecayConfig.C KF/registerGeantDecays.C KF/registerLightIons.C KF/registerPythiaDecays.C
               KF/kf_kfparticle.C KF/kf_thermal_signal_generator.C  KF/kf_transport.C
         DESTINATION share/cbmroot/macro/KF
