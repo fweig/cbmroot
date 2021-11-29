@@ -6,6 +6,7 @@ add_subdirectory (test)
 set(SRCS
   evbuild/EventBuilder.cxx
   trigger/TimeClusterTrigger.cxx
+  detectors/sts/UnpackSts.cxx
  )
 
 add_library(Algo SHARED ${SRCS})
