@@ -185,8 +185,8 @@ protected:
   /** @brief Number of corrupted EOM frames */
   size_t fNrCorruptEom = 0;
 
-  /** @brief Start time of the current µSlice in Spadic CC */
-  size_t fMsStartTimeCC = 0;
+  /** @brief Start time of the current µSlice relative to the Timeslice start time in Spadic CC. */
+  size_t fMsStartTimeRelCC = 0;
 
   // Constants
   /** @brief Bytes per spadic frame stored in the microslices */

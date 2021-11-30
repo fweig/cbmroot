@@ -315,9 +315,7 @@ CbmTrdRawMessageSpadic CbmTrdUnpackAlgoR::makeRaw(const std::uint32_t frame, std
   // We directly start with the largest possible samples vector to only init it once
   std::vector<std::int16_t> samples = std::vector<std::int16_t>(0);
 
-  // Get the µSlice starttime relative to the timeslice starttime. Otherwise the UTC will already here be to large due to a cast, caused by the multiplication with a double used in the raw message
-  auto relMsStartTimeCC = fMsStartTimeCC - (fTsStartTime / CbmTrdSpadic::GetClockCycle());
-  uint64_t fulltime     = relMsStartTimeCC + (fNrTsMsbVec.at(istream) * fTsMsbLengthCC) + timestamp;
+  uint64_t fulltime = fMsStartTimeRelCC + (fNrTsMsbVec.at(istream) * fTsMsbLengthCC) + timestamp;
 
 
   // Create message
@@ -333,8 +331,9 @@ bool CbmTrdUnpackAlgoR::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
 
   auto msdesc = ts->descriptor(icomp, imslice);
 
-  // Get the µSlice start time and reset the ts_msb counter
-  fMsStartTimeCC = msdesc.idx / fSpadic->GetClockCycle();
+  // Get the µSlice starttime relative to the timeslice starttime.
+  // The UTC is already to large for storing it CbmTrdRawMessageSpadic due to a cast, caused by the multiplication with a double used in the raw message
+  fMsStartTimeRelCC = (msdesc.idx - fTsStartTime) / fSpadic->GetClockCycle();
 
   // We only want to count on TS_MSB per Stream per TS_MSB package (each eLink sends its own TS_MSB frame) so we store the current TS_MSB and compare it to the incoming.
   std::uint8_t currTsMsb = 0;
