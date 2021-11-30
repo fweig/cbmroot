@@ -84,7 +84,7 @@ private:
   std::uint8_t fHitType;
   std::uint8_t fNrSamples;
   bool fMultiHit;
-  size_t fFullTime;                   /**< Fulltime in units of Clockcycles. */
+  std::uint64_t fFullTime;            /**< Fulltime in units of Clockcycles. */
   std::vector<std::int16_t> fSamples; /**< Holds up to 32 Samples from a Spadic Message. Valid values [-256,255] */
 
 public:
@@ -93,7 +93,7 @@ public:
 
   /** Constructor **/
   CbmTrdRawMessageSpadic(std::uint8_t channelId, std::uint8_t elinkId, std::uint8_t crobId, std::uint16_t criId,
-                         std::uint8_t hitType, std::uint8_t nrSamples, bool multiHi, size_t fullTime,
+                         std::uint8_t hitType, std::uint8_t nrSamples, bool multiHi, std::uint64_t fullTime,
                          std::vector<std::int16_t> samples);
 
   /** Copy Constructor **/
@@ -116,17 +116,17 @@ public:
   std::uint8_t GetHitType() const { return fHitType; }
   std::uint8_t GetNrSamples() const { return fNrSamples; }
   bool GetMultiHit() const { return fMultiHit; }
-  size_t GetFullTime() const { return fFullTime; }
+  std::uint64_t GetFullTime() const { return fFullTime; }
   const std::vector<std::int16_t>* GetSamples() const { return &fSamples; }
 
   /** Returns the full time in nanoseconds */
-  Double_t GetTime() const { return fFullTime * 62.5; }
+  double GetTime() const { return (fFullTime * 62.5); }
 
   /** @brief increase the number of samples stored in this raw message by one */
   void IncNrSamples() { fNrSamples++; }
 
   /** Set the full time in nanoseconds */
-  void SetTime(Double_t setvalue) { fFullTime = (size_t)(setvalue / 62.5); }
+  void SetTime(Double_t setvalue) { fFullTime = static_cast<std::uint64_t>(setvalue / 62.5); }
 
   /** Returns the value of the sample with the highest value. */
   int16_t GetMaxAdc();

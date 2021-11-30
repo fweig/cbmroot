@@ -7,6 +7,7 @@
 #include "CbmTrdParManager.h"
 #include "CbmTrdParSetAsic.h"
 #include "CbmTrdRawMessageSpadic.h"
+#include "CbmTrdSpadic.h"
 
 #include <FairTask.h>
 #include <Logger.h>
@@ -289,10 +290,8 @@ void CbmTrdUnpackAlgoR::makeDigi(CbmTrdRawMessageSpadic raw)
 
   // Get the time information and apply the necessary correction
   ULong64_t time = raw.GetTime();
-  time -= fSystemTimeOffset;
 
-  // Set the time relative to the TS start
-  time -= fTsStartTime;
+  time -= fSystemTimeOffset;
 
   auto digi = fRTDMethod->MakeDigi(raw.GetSamples(), padChNr, uniqueModuleId, time, triggerType, errClass);
 
@@ -309,15 +308,17 @@ CbmTrdRawMessageSpadic CbmTrdUnpackAlgoR::makeRaw(const std::uint32_t frame, std
 {
 
   auto chId             = static_cast<std::uint8_t>(((frame >> 17) & 0xf));
-  auto timestamp        = static_cast<std::uint16_t>((frame >> 9) & 0xff);
+  auto timestamp        = static_cast<std::uint8_t>((frame >> 9) & 0xff);
   bool multihit         = ((frame >> 8) & 0x1);
   auto hitType          = static_cast<std::uint8_t>((frame >> 6) & 0x3);
   std::uint8_t nsamples = 0;
   // We directly start with the largest possible samples vector to only init it once
   std::vector<std::int16_t> samples = std::vector<std::int16_t>(0);
 
-  // get the correct fulltime in units of clock cycles
-  size_t fulltime = fMsStartTimeCC + (fNrTsMsbVec.at(istream) * fTsMsbLengthCC) + timestamp;
+  // Get the µSlice starttime relative to the timeslice starttime. Otherwise the UTC will already here be to large due to a cast, caused by the multiplication with a double used in the raw message
+  auto relMsStartTimeCC = fMsStartTimeCC - (fTsStartTime / CbmTrdSpadic::GetClockCycle());
+  uint64_t fulltime     = relMsStartTimeCC + (fNrTsMsbVec.at(istream) * fTsMsbLengthCC) + timestamp;
+
 
   // Create message
   CbmTrdRawMessageSpadic retval(chId, elinkId, crobId, criId, hitType, nsamples, multihit, fulltime, samples);

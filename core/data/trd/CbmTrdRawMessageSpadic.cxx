@@ -7,6 +7,7 @@
 #include <Logger.h>  // for LOG
 
 #include <algorithm>  // for max_element
+#include <cstdint>
 #include <stdexcept>  // for range_error
 
 // -------  Default Constructor  ----------------
@@ -26,7 +27,7 @@ CbmTrdRawMessageSpadic::CbmTrdRawMessageSpadic()
 // -------          Constructor  ----------------
 CbmTrdRawMessageSpadic::CbmTrdRawMessageSpadic(std::uint8_t channelId, std::uint8_t elinkId, std::uint8_t crobId,
                                                std::uint16_t criId, std::uint8_t hitType, std::uint8_t nrSamples,
-                                               bool multiHit, size_t fullTime, std::vector<std::int16_t> samples)
+                                               bool multiHit, std::uint64_t fullTime, std::vector<std::int16_t> samples)
   : fChannelID {channelId}
   , fElinkID {elinkId}
   , fCrobId(crobId)
