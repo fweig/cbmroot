@@ -56,7 +56,9 @@ Install(FILES dimuon/.rootrc dimuon/dimuon_transport.C dimuon/invM.C
        )
 Install(CODE "FILE(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/share/cbmroot/macro/dimuon/data)")
 
+# Installation only
+add_subdirectory(beamtime)
+
 #--- Deprecated (not running)
 #add_subdirectory(trd)
 #add_subdirectory(littrack)
-#add_subdirectory(beamtime)
