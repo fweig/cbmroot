@@ -321,11 +321,11 @@ FileLicenceCheck:
 
 .macosx_11_variables: &macosx_11_variables
     OS: "macOS_11"
-    FAIRSOFT_VERSION: "jun19p1"
-    FAIRROOT_VERSION: "v18.2.1"
+    FAIRSOFT_VERSION: "apr21p1"
+    FAIRROOT_VERSION: "v18.6.4"
     BASE_PATH: "/opt"
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
-    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft-${FAIRSOFT_VERSION}"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
 
 .mergeVariables: &mergeVariables
     BUILD_TYPE: "Continuous"
