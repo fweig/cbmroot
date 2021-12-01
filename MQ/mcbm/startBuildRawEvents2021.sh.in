@@ -77,6 +77,7 @@ _parfileTrdGain=$VMCWORKDIR/parameters/trd/trd_v21b_mcbm.gain.par
 _parfileTof=$VMCWORKDIR/macro/beamtime/mcbm2021/mTofCriPar.par
 _parfileRich=$VMCWORKDIR/macro/beamtime/mcbm2021/mRichPar_70.par
 _parfilePsd=$VMCWORKDIR/macro/beamtime/mcbm2021/mPsdPar.par
+_setup_name=mcbm_beam_2021_07_surveyed
 
 LOGFILETAG=`hostname`
 LOGFILETAG+="_"
@@ -135,6 +136,7 @@ while (( _iMoni < _nbmoni )); do
   UNPACKER+=" --id unp$_iMoni"
   UNPACKER+=" --severity info"
   #UNPACKER+=" --severity debug"
+  UNPACKER+=" --Setup $_setup_name"
   UNPACKER+=" --IgnOverMs 1"
   UNPACKER+=" --SetTimeOffs kSTS,-2221"
   UNPACKER+=" --SetTimeOffs kMUCH,-885"
@@ -240,6 +242,7 @@ PARAMETERSERVER+=" --channel-config name=parameters,type=rep,method=bind,transpo
 PARAMETERSERVER+=" --first-input-name $_parfileSts;$_parfileMuch;$_parfileTrdAsic;$_parfileTrdDigi;$_parfileTrdGas;$_parfileTrdGain;$_parfileTof;$_parfileRich;$_parfilePsd"
 PARAMETERSERVER+=" --first-input-type ASCII"
 PARAMETERSERVER+=" --libs-to-load=libCbmFlibMcbm2018" # doesn't work due to runtime problem
+PARAMETERSERVER+=" --setup $_setup_name"
 # Replaces log filename Xterm.log.hostname.yyyy.mm.dd.hh.mm.ss.XXXXXX
 # with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
 PARAMSRV_LOG="parmq_$LOGFILETAG"

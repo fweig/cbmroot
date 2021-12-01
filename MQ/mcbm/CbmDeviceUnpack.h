@@ -99,8 +99,8 @@ private:
   bool fbOutputFullTimeSorting = false;
 
   /// User settings parameters
-  std::string fsSetupName             = "mcbm_beam_2021_07";
-  uint32_t fuRunId                    = 1588;
+  std::string fsSetupName = "mcbm_beam_2021_07_surveyed";
+  uint32_t fuRunId        = 1588;
   /// message queues
   std::string fsChannelNameDataInput   = "ts-request";
   std::string fsChannelNameDataOutput  = "unpts_0";

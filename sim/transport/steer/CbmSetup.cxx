@@ -42,6 +42,25 @@ CbmSetup* CbmSetup::fgInstance = NULL;
 void CbmSetup::Clear(Option_t*) { fProvider->Reset(); }
 // -------------------------------------------------------------------------
 
+// -----   Load a stored/exchanged copy of the setup   ---------------------
+void CbmSetup::LoadStoredSetup(CbmSetupStorable* setupIn)
+{
+  CbmGeoSetupRepoProvider* ptrRepoProv = setupIn->GetRepoProvPtr();
+  if (nullptr == ptrRepoProv) {
+    CbmGeoSetupDbProvider* ptrDbProv = setupIn->GetDbProvPtr();
+    if (nullptr == ptrDbProv) {
+      /// To avoid clang format one-lining
+      LOG(error) << "Could not  leod event as storable even does not contain any provider";
+    }
+    else {
+      SetProvider(ptrDbProv);
+    }
+  }
+  else {
+    SetProvider(ptrRepoProv);
+  }
+}
+// -------------------------------------------------------------------------
 
 // -----   Get field map type   --------------------------------------------
 CbmFieldMap* CbmSetup::CreateFieldMap()

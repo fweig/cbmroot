@@ -1,6 +1,9 @@
 Set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/MQ/base
+    ${CBMDATA_DIR} # For CbmDefs, needed by CbmSetup
+    ${CBMROOT_SOURCE_DIR}/sim/transport/steer # For CbmSetup.h!
+    ${CBMROOT_SOURCE_DIR}/sim/transport/geosetup # For CbmGeoSetupDbProvider.h, needed by CbmSetup
 )
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
@@ -10,6 +13,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
   ${FAIRMQ_INCLUDE_DIR}/options
   ${Boost_INCLUDE_DIR}
   ${ZeroMQ_INCLUDE_DIR}
+  ${FAIRLOGGER_INCLUDE_DIR} # For CbmSetup.h!
 )
 
 Include_Directories(${INCLUDE_DIRECTORIES})
@@ -51,8 +55,8 @@ If(FAIRLOGGER_FOUND)
 EndIf()
 
 Set(EXE_NAME parmq-server)
-Set(SRCS 
-  ParameterMQServer.cxx 
+Set(SRCS
+  ParameterMQServer.cxx
   runParameterMQServer.cxx
 #  CbmMQTestContFact.cxx
 )
@@ -64,11 +68,14 @@ Set(DEPENDENCIES
   Core
   Net
   Geom
+  CbmBase
+  CbmData
   CbmField
   CbmTofBase
   CbmStsBase
   CbmStsSim
   CbmSimBase
+  CbmSimSteer # for CbmSetup!
   CbmFlibMcbm2018
 )
 GENERATE_EXECUTABLE()

@@ -10,6 +10,7 @@
 
 // --- transport/base
 #pragma link C++ class CbmSetup + ;
+#pragma link C++ class CbmSetupStorable + ;
 #pragma link C++ class CbmTransport + ;
 #pragma link C++ class CbmVMCSettings + ;
 #pragma link C++ class CbmGeant3Settings + ;

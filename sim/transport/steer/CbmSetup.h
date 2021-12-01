@@ -28,6 +28,7 @@
 class FairModule;
 class FairRunSim;
 class CbmFieldMap;
+class CbmSetupStorable;
 
 enum ECbmSetupSource
 {
@@ -50,6 +51,10 @@ public:
      ** All settings are removed.
      **/
   virtual void Clear(Option_t* opt = "");
+
+  /** Load a stored/exchanged copy of the setup
+     **/
+  void LoadStoredSetup(CbmSetupStorable* setupIn);
 
   /** Load setup modules, field and media.
      ** Afterward the parameters can be overriden over the provider
@@ -184,7 +189,7 @@ public:
 
 
   /** @brief Set the geo setup provider
-     ** @param value provider 
+     ** @param value provider
      ** This class takes the ownership of the provider
      **/
   void SetProvider(CbmGeoSetupProvider* value)
@@ -210,4 +215,53 @@ private:
   ClassDef(CbmSetup, 3);
 };
 
+
+class CbmSetupStorable : public TNamed {
+public:
+  /** Default constructor **/
+  CbmSetupStorable() : TNamed("CBM Setup", "") {};
+
+  /** Destructor **/
+  ~CbmSetupStorable() {};
+
+  /** Copy constructor and assignment operator (not implemented ) **/
+  CbmSetupStorable(const CbmSetupStorable& rhs) : TNamed(rhs)
+  {
+    if (nullptr != rhs.fProviderRepo) {
+      /// To avoid clang format one-lining
+      fProviderRepo = new CbmGeoSetupRepoProvider(*(rhs.fProviderRepo));
+    }
+    else if (nullptr != fProviderDb) {
+      /// To avoid clang format one-lining
+      fProviderDb = new CbmGeoSetupDbProvider(*(rhs.fProviderDb));
+    }
+  }
+
+  /** Constructor from CbmSetup object **/
+  CbmSetupStorable(CbmSetup* rawSetup)
+  {
+    CbmGeoSetupProvider* ptrGenProv      = rawSetup->GetProvider();
+    CbmGeoSetupRepoProvider* ptrRepoProv = dynamic_cast<CbmGeoSetupRepoProvider*>(ptrGenProv);
+    if (nullptr == ptrRepoProv) {
+      /// To avoid clang format one-lining
+      CbmGeoSetupDbProvider* ptrDbProv = dynamic_cast<CbmGeoSetupDbProvider*>(ptrGenProv);
+      if (nullptr != ptrDbProv) {
+        /// To avoid clang format one-lining
+        fProviderDb = new CbmGeoSetupDbProvider(*ptrDbProv);
+      }
+    }
+    else {
+      fProviderRepo = new CbmGeoSetupRepoProvider(*ptrRepoProv);
+    }
+  }
+
+  CbmGeoSetupRepoProvider* GetRepoProvPtr() { return fProviderRepo; }
+  CbmGeoSetupDbProvider* GetDbProvPtr() { return fProviderDb; }
+
+private:
+  CbmGeoSetupRepoProvider* fProviderRepo = nullptr;
+  CbmGeoSetupDbProvider* fProviderDb     = nullptr;
+
+  ClassDef(CbmSetupStorable, 1);
+};
 #endif /* CBMSETUP_H */

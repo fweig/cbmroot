@@ -87,8 +87,34 @@ Bool_t CbmDeviceUnpack::InitContainers()
   //  TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
 
   // -----   CbmSetup   -----------------------------------------------------
-  auto cbmsetup = CbmSetup::Instance();
-  cbmsetup->LoadSetup(fsSetupName.data());  //nh - accesses file system! FIXME
+  // TODO: support for multiple setups on Par Server? with request containing setup name?
+  CbmSetup* cbmsetup = CbmSetup::Instance();
+  FairMQMessagePtr req(NewSimpleMessage("setup"));
+  FairMQMessagePtr rep(NewMessage());
+
+  if (Send(req, "parameters") > 0) {
+    if (Receive(rep, "parameters") >= 0) {
+      if (0 != rep->GetSize()) {
+        CbmSetupStorable* exchangableSetup;
+
+        CbmMqTMessage tmsg(rep->GetData(), rep->GetSize());
+        exchangableSetup = dynamic_cast<CbmSetupStorable*>(tmsg.ReadObject(tmsg.GetClass()));
+
+        if (nullptr != exchangableSetup) {
+          /// Prevent clang format single line if
+          cbmsetup->LoadStoredSetup(exchangableSetup);
+        }
+        else {
+          LOG(error) << "Received corrupt reply. Setup not available";
+          throw InitTaskError("Setup not received from par-server.");
+        }
+      }  // if( 0 !=  rep->GetSize() )
+      else {
+        LOG(error) << "Received empty reply. Setup not available";
+        throw InitTaskError("Setup not received from par-server.");
+      }  // else of if( 0 !=  rep->GetSize() )
+    }    // if( Receive( rep, "parameters" ) >= 0)
+  }      // if( Send(req, "parameters") > 0 )
   // ------------------------------------------------------------------------
 
   /// Initialize the UnpackerConfigs objects and their "user options"
@@ -97,6 +123,7 @@ Bool_t CbmDeviceUnpack::InitContainers()
   TString stsSetupTag                           = "";
   cbmsetup->GetGeoTag(ECbmModuleId::kSts, stsSetupTag);
   if ("" != stsSetupTag) {
+    LOG(info) << "From received setup, using STS tag: " << stsSetupTag;
     stsconfig = std::make_shared<CbmStsUnpackConfig>(std::string(fsSetupName), fuRunId);
     if (stsconfig) {
       // stsconfig->SetDebugState();
@@ -136,6 +163,7 @@ Bool_t CbmDeviceUnpack::InitContainers()
   TString trdsetuptag                             = "";
   cbmsetup->GetGeoTag(ECbmModuleId::kTrd, trdsetuptag);
   if ("" != trdsetuptag) {
+    LOG(info) << "From received setup, using TRD tag: " << trdsetuptag;
     // trd1Dconfig = std::make_shared<CbmTrdUnpackConfig>(trdsetuptag.Data(), fuRunId);
     trd1Dconfig = std::make_shared<CbmTrdUnpackConfig>(trdsetuptag.Data(), 3);
     if (trd1Dconfig) {
@@ -174,6 +202,7 @@ Bool_t CbmDeviceUnpack::InitContainers()
   TString tofSetupTag                           = "";
   cbmsetup->GetGeoTag(ECbmModuleId::kTof, tofSetupTag);
   if ("" != tofSetupTag) {
+    LOG(info) << "From received setup, using TOF tag: " << tofSetupTag;
     tofconfig = std::make_shared<CbmTofUnpackConfig>("", fuRunId);
     if (tofconfig) {
       // tofconfig->SetDebugState();
@@ -190,6 +219,7 @@ Bool_t CbmDeviceUnpack::InitContainers()
   TString richSetupTag                            = "";
   cbmsetup->GetGeoTag(ECbmModuleId::kRich, richSetupTag);
   if ("" != richSetupTag) {
+    LOG(info) << "From received setup, using RICH tag: " << richSetupTag;
     richconfig = std::make_shared<CbmRichUnpackConfig>("", fuRunId);
     if (richconfig) {
       richconfig->SetDebugState();
@@ -206,6 +236,7 @@ Bool_t CbmDeviceUnpack::InitContainers()
   TString psdSetupTag                           = "";
   cbmsetup->GetGeoTag(ECbmModuleId::kPsd, psdSetupTag);
   if ("" != psdSetupTag) {
+    LOG(info) << "From received setup, using PSD tag: " << psdSetupTag;
     psdconfig = std::make_shared<CbmPsdUnpackConfig>("", fuRunId);
     if (psdconfig) {
       // psdconfig->SetDebugState();

@@ -1,8 +1,8 @@
 /********************************************************************************
  *    Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH    *
  *                                                                              *
- *              This software is distributed under the terms of the             * 
- *         GNU Lesser General Public Licence version 3 (LGPL) version 3,        *  
+ *              This software is distributed under the terms of the             *
+ *         GNU Lesser General Public Licence version 3 (LGPL) version 3,        *
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
 /**
@@ -15,6 +15,7 @@
 #include "ParameterMQServer.h"
 
 #include "CbmMQDefs.h"
+#include "CbmSetup.h"
 
 #include "FairMQLogger.h"
 #include "FairMQProgOptions.h"
@@ -34,13 +35,6 @@ using namespace std;
 
 ParameterMQServer::ParameterMQServer()
   : fRtdb(FairRuntimeDb::instance())
-  , fFirstInputName("first_input.root")
-  , fFirstInputType("ROOT")
-  , fSecondInputName("")
-  , fSecondInputType("ROOT")
-  , fOutputName("")
-  , fOutputType("ROOT")
-  , fChannelName("data")
 {
 }
 
@@ -74,6 +68,8 @@ void ParameterMQServer::InitTask()
   fOutputName      = fConfig->GetValue<string>("output-name");
   fOutputType      = fConfig->GetValue<string>("output-type");
   fChannelName     = fConfig->GetValue<string>("channel-name");
+
+  fsSetupName = fConfig->GetValue<std::string>("setup");
 
   if (fRtdb != 0) {
     // Set first input
@@ -146,6 +142,13 @@ void ParameterMQServer::InitTask()
     }
   }
   fRtdb->print();
+
+  // -----   CbmSetup   -----------------------------------------------------
+  if ("" != fsSetupName) {
+    fSetup = CbmSetup::Instance();
+    fSetup->LoadSetup(fsSetupName.data());
+  }
+  // ------------------------------------------------------------------------
 }
 
 void ParameterMQServer::Run()
@@ -160,45 +163,75 @@ void ParameterMQServer::Run()
       string reqStr(static_cast<char*>(req->GetData()), req->GetSize());
       LOG(info) << "Received parameter request from client: \"" << reqStr << "\"";
 
-      size_t pos              = reqStr.rfind(",");
-      string newParameterName = reqStr.substr(0, pos);
-      int runId               = stoi(reqStr.substr(pos + 1));
-      LOG(info) << "Parameter name: " << newParameterName;
-      LOG(info) << "Run ID: " << runId;
+      if ("setup" == reqStr) {
+        // TODO: support for multiple setups on Par Server? with request containing setup name?
+        if ("" != fsSetupName && fSetup) {
+          /// Prepare serialized versions of the CbmSetup
+          CbmSetupStorable exchangableSetup(fSetup);
 
-      LOG(info) << "Retrieving parameter...";
-      // Check if the parameter name has changed to avoid getting same container repeatedly
-      if (newParameterName != parameterName) {
-        parameterName = newParameterName;
-        par           = static_cast<FairParGenericSet*>(fRtdb->getContainer(parameterName.c_str()));
-      }
-      LOG(info) << "Retrieving parameter...Done";
+          TMessage* tmsg = new TMessage(kMESS_OBJECT);
+          tmsg->WriteObject(&exchangableSetup);
 
-      if (-1 != runId) { fRtdb->initContainers(runId); }
+          FairMQMessagePtr rep(NewMessage(
+            tmsg->Buffer(), tmsg->BufferSize(),
+            [](void* /*data*/, void* object) { delete static_cast<TMessage*>(object); }, tmsg));
 
-      LOG(info) << "Sending following parameter to the client:";
-      if (par) {
-        par->print();
-
-        TMessage* tmsg = new TMessage(kMESS_OBJECT);
-        tmsg->WriteObject(par);
-
-        FairMQMessagePtr rep(NewMessage(
-          tmsg->Buffer(), tmsg->BufferSize(),
-          [](void* /*data*/, void* object) { delete static_cast<TMessage*>(object); }, tmsg));
-
-        if (Send(rep, fChannelName, 0) < 0) {
-          LOG(error) << "failed sending reply";
-          break;
+          if (Send(rep, fChannelName, 0) < 0) {
+            LOG(error) << "failed sending reply to Setup request";
+            break;
+          }
+        }
+        else {
+          LOG(error) << "CbmSetup uninitialized!";
+          // Send an empty message back to keep the REQ/REP cycle
+          FairMQMessagePtr rep(NewMessage());
+          if (Send(rep, fChannelName, 0) < 0) {
+            LOG(error) << "failed sending reply to Setup request";
+            break;
+          }
         }
       }
       else {
-        LOG(error) << "Parameter uninitialized!";
-        // Send an empty message back to keep the REQ/REP cycle
-        FairMQMessagePtr rep(NewMessage());
-        if (Send(rep, fChannelName, 0) < 0) {
-          LOG(error) << "failed sending reply";
-          break;
+        size_t pos              = reqStr.rfind(",");
+        string newParameterName = reqStr.substr(0, pos);
+        int runId               = stoi(reqStr.substr(pos + 1));
+        LOG(info) << "Parameter name: " << newParameterName;
+        LOG(info) << "Run ID: " << runId;
+
+        LOG(info) << "Retrieving parameter...";
+        // Check if the parameter name has changed to avoid getting same container repeatedly
+        if (newParameterName != parameterName) {
+          parameterName = newParameterName;
+          par           = static_cast<FairParGenericSet*>(fRtdb->getContainer(parameterName.c_str()));
+        }
+        LOG(info) << "Retrieving parameter...Done";
+
+        if (-1 != runId) { fRtdb->initContainers(runId); }
+
+        LOG(info) << "Sending following parameter to the client:";
+        if (par) {
+          par->print();
+
+          TMessage* tmsg = new TMessage(kMESS_OBJECT);
+          tmsg->WriteObject(par);
+
+          FairMQMessagePtr rep(NewMessage(
+            tmsg->Buffer(), tmsg->BufferSize(),
+            [](void* /*data*/, void* object) { delete static_cast<TMessage*>(object); }, tmsg));
+
+          if (Send(rep, fChannelName, 0) < 0) {
+            LOG(error) << "failed sending reply";
+            break;
+          }
+        }
+        else {
+          LOG(error) << "Parameter uninitialized!";
+          // Send an empty message back to keep the REQ/REP cycle
+          FairMQMessagePtr rep(NewMessage());
+          if (Send(rep, fChannelName, 0) < 0) {
+            LOG(error) << "failed sending reply";
+            break;
+          }
         }
       }
     }

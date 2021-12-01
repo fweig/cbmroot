@@ -1,8 +1,8 @@
 /********************************************************************************
  *    Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH    *
  *                                                                              *
- *              This software is distributed under the terms of the             * 
- *         GNU Lesser General Public Licence version 3 (LGPL) version 3,        *  
+ *              This software is distributed under the terms of the             *
+ *         GNU Lesser General Public Licence version 3 (LGPL) version 3,        *
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
 /**
@@ -20,6 +20,7 @@
 #include <string>
 
 class FairRuntimeDb;
+class CbmSetup;
 
 class ParameterMQServer : public FairMQDevice {
 public:
@@ -50,16 +51,19 @@ public:
   std::string GetChannelName() { return fChannelName; }
 
 private:
-  FairRuntimeDb* fRtdb;
+  FairRuntimeDb* fRtdb = nullptr;
+  CbmSetup* fSetup     = nullptr;
 
-  std::string fFirstInputName;
-  std::string fFirstInputType;
-  std::string fSecondInputName;
-  std::string fSecondInputType;
-  std::string fOutputName;
-  std::string fOutputType;
+  std::string fFirstInputName  = "first_input.root";
+  std::string fFirstInputType  = "ROOT";
+  std::string fSecondInputName = "";
+  std::string fSecondInputType = "ROOT";
+  std::string fOutputName      = "";
+  std::string fOutputType      = "ROOT";
 
-  std::string fChannelName;
+  std::string fChannelName = "data";
+
+  std::string fsSetupName = "";
 };
 
 #endif /* PARAMETERMQSERVER_H_ */
