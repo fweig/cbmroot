@@ -16,7 +16,12 @@ target_include_directories(Algo
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/base
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/global
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/sts
-  PUBLIC ${CMAKE_SOURCE_DIR}/external/ipc/ipc/lib/fles_ipc 
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/rich
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/much
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/trd
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/tof
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/psd
+  PUBLIC ${CMAKE_SOURCE_DIR}/external/ipc/ipc/lib/fles_ipc
 )
 
 target_include_directories(Algo SYSTEM
