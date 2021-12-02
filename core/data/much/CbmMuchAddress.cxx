@@ -6,6 +6,8 @@
 
 #include "CbmDefs.h"  // for kMuch
 
+#include <Logger.h>  // for Logger, LOG
+
 #include <iomanip>  // for setw, __iom_t6
 #include <ios>      // for right
 
@@ -105,5 +107,18 @@ void CbmMuchAddress::Print()
 }
 // -------------------------------------------------------------------------
 
+
+// -------------------------------------------------------------------------
+uint32_t CbmMuchAddress::SetElementId(uint32_t address, int32_t level, int32_t newId)
+{
+  if (level < 0 || level >= kMuchNofLevels) return address;
+  if (newId >= (1 << fgkBits[level])) {
+    LOG(error) << "Id " << newId << " for MUCH level " << level << " exceeds maximum (" << (1 << fgkBits[level]) - 1
+               << ")";
+    return 0;
+  }
+  return (address & (~(fgkMask[level] << fgkShift[level]))) | (newId << fgkShift[level]);
+}
+// -------------------------------------------------------------------------
 
 ClassImp(CbmMuchAddress)

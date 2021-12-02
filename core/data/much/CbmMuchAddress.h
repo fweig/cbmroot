@@ -7,8 +7,6 @@
 
 #include "CbmAddress.h"  // for CbmAddress
 
-#include <Logger.h>  // for Logger, LOG
-
 #include <Rtypes.h>  // for ClassDef
 
 #include <cstdint>
@@ -126,16 +124,7 @@ public:
      ** @param newId   New element index
      ** @return New address
      **/
-  static uint32_t SetElementId(uint32_t address, int32_t level, int32_t newId)
-  {
-    if (level < 0 || level >= kMuchNofLevels) return address;
-    if (newId >= (1 << fgkBits[level])) {
-      LOG(error) << "Id " << newId << " for MUCH level " << level << " exceeds maximum (" << (1 << fgkBits[level]) - 1
-                 << ")";
-      return 0;
-    }
-    return (address & (~(fgkMask[level] << fgkShift[level]))) | (newId << fgkShift[level]);
-  }
+  static uint32_t SetElementId(uint32_t address, int32_t level, int32_t newId);
 
 private:
   /** Number of bits for the different levels **/

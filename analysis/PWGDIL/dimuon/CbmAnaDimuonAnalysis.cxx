@@ -38,6 +38,7 @@
 
 #include "FairRootManager.h"
 #include "FairTrackParam.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TDirectory.h"

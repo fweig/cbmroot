@@ -11,7 +11,7 @@
  **@since 10/04/18
  **@version 2.0
  ** Removing fSignalShape, which is mainly useful for PileUp Cases,
- ** but taking too much memory. Will implement similar behaviour 
+ ** but taking too much memory. Will implement similar behaviour
  ** via computing PileUp effect on the fly.
  **@since 17/05/16
  **@version 1.0
@@ -30,6 +30,8 @@
 #include "CbmMuchAddress.h"
 #include "CbmMuchDigi.h"
 #include "CbmMuchDigiMatch.h"
+
+#include <Logger.h>  // for Logger, LOG
 
 #include "TMath.h"
 #include "TRandom.h"
@@ -128,7 +130,7 @@ void CbmMuchSignal::MergeSignal(CbmMuchSignal* signal)
 	fSignalShape.Set(fSignalShape.GetSize()+StopDiff);
 	//std::cout<<"MergeSignal called and size of fSignalShape "<<fSignalShape.GetSize()<<endl;
 	for (Int_t j=0;j<fSignalShape.GetSize()&&j<SecondSignalShape.GetSize();j++)
-		  
+
 		fSignalShape[j+StartDiff]=fSignalShape[j+StartDiff]+SecondSignalShape[j];
 		//SignalShape will be added in the first signal at location from where second signal start.
 */
@@ -179,8 +181,8 @@ void CbmMuchSignal::AddAdc(Int_t adc) {
 // -----   Set new charge   ------------------------------------------------
 void CbmMuchSignal::SetAdc(Int_t adc) {
 	//Charge value should not be more than saturation
-	
-	UShort_t saturation = 4095; //2 ^ 12 - 1;	
+
+	UShort_t saturation = 4095; //2 ^ 12 - 1;
 	if(adc>saturation){
 		fCharge=saturation;
 		fSaturationFlag=1;
