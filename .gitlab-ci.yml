@@ -268,7 +268,7 @@ FileLicenceCheck:
     FAIRSOFT_VERSION: apr21p1
     FAIRROOT_VERSION: v18.6.4
     BASE_PATH: "/opt/"
-    SIMPATH: "$BASE_PATH/fairsoft/apr21p1"
+    SIMPATH: "$BASE_PATH/fairsoft/${FAIRSOFT_VERSION}"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
     EXTRA_FLAGS: '"-DCBM_TEST_INSTALL=TRUE\" \"-DCMAKE_INSTALL_PREFIX=install"'
 
@@ -321,6 +321,19 @@ FileLicenceCheck:
 
 .macosx_11_variables: &macosx_11_variables
     OS: "macOS_11"
+    FAIRSOFT_VERSION: "apr21p1"
+    FAIRROOT_VERSION: "v18.6.4"
+    BASE_PATH: "/opt"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
+
+.macosx_12_tag: &macosx_12_tag
+  stage: build
+  tags:
+    - CbmRoot_macosx_12
+
+.macosx_12_variables: &macosx_12_variables
+    OS: "macOS_12"
     FAIRSOFT_VERSION: "apr21p1"
     FAIRROOT_VERSION: "v18.6.4"
     BASE_PATH: "/opt"
@@ -410,6 +423,11 @@ CbmRoot_Merge_macosx_11:
   <<: [*macosx_11_tag, *check_merge_request, *build_and_test]
   variables:
     <<: [*mergeRequestVariables, *macosx_11_variables]
+
+CbmRoot_Merge_macosx_12:
+  <<: [*macosx_12_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *macosx_12_variables]
 
 CbmRoot_Continuous:
   <<: [*linux_tag, *check_merge, *build_and_test]
