@@ -48,6 +48,7 @@ link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
 CbmAnaConversion.cxx
+CbmAnaConversionKF.cxx
 CbmAnaConversionTomography.cxx
 CbmAnaConversionRich.cxx
 CbmAnaConversionReco.cxx
