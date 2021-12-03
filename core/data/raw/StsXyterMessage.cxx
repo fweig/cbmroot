@@ -17,7 +17,6 @@ using namespace stsxyter;  // Class own namespace
 // Namespaces alias
 //namespace sxm = stsxyter::Message;
 
-
 //************************* Messages OP ************************************//
 //----------------------------------------------------------------------------
 MessSubType Message::GetSubType() const
@@ -147,6 +146,20 @@ bool Message::PrintMess(std::ostream& os, MessagePrintMask ctrl, bool bBinning) 
   os << std::endl;
 
   return true;
+}
+//----------------------------------------------------------------------------
+std::string Message::PrintMessType(MessType type)
+{
+  switch (type) {
+    case MessType::Dummy: return "Dummy";
+    case MessType::Hit: return "Hit";
+    case MessType::TsMsb: return "TsMsb";
+    case MessType::Epoch: return "Epoch";
+    case MessType::Status: return "Status";
+    case MessType::Empty: return "Empty";
+    case MessType::EndOfMs: return "EndOfMs";
+    default: return "Unknown";
+  }
 }
 //----------------------------------------------------------------------------
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

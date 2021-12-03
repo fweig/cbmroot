@@ -40,6 +40,7 @@ namespace stsxyter
     Empty,
     EndOfMs
   };
+
   /// Non-hit Message sub-types
   enum class MessSubType : uint16_t
   {
@@ -160,8 +161,9 @@ namespace stsxyter
                                                    /// Binning FW adds 1 bit to TS in HIT message
                                                    /// => Quick and dirty hack is a factor 2!!!
   static const uint32_t kuHitNbTsBinsBinning = 1 << 10;
+  static const uint32_t kuTsMsbNbTsBinsBinning = 1 << kusLenTsMsbValBinning;
   static const uint64_t kulTsCycleNbBinsBinning =
-    static_cast<uint64_t>(1 << kusLenTsMsbValBinning) * static_cast<uint64_t>(kuHitNbTsBinsBinning);
+    static_cast<uint64_t>(kuTsMsbNbTsBinsBinning) * static_cast<uint64_t>(kuHitNbTsBinsBinning);
 
   class Message {
   private:
@@ -377,6 +379,8 @@ namespace stsxyter
     // ------------------------ General OP ---------------------------------------
     bool PrintMess(std::ostream& os, MessagePrintMask ctrl = MessagePrintMask::msg_print_Human,
                    bool bBinning = true) const;
+
+    static std::string PrintMessType(MessType type);
   };
 }  // namespace stsxyter
 #endif  // STSXYTERMESSAGE_H

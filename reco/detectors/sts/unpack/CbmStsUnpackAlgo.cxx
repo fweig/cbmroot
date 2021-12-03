@@ -314,6 +314,9 @@ void CbmStsUnpackAlgo::loopMsMessages(const uint8_t* msContent, const uint32_t u
   for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx++) {
     /// Get message type
     const stsxyter::MessType typeMess = pMess[uIdx].GetMessType();
+
+    LOG(debug2) << " Msg Idx " << std::setw(6) << uIdx << " Type " << stsxyter::Message::PrintMessType(typeMess);
+
     if (fMonitor)
       if (fMonitor->GetDebugMode()) { fMonitor->ProcessDebugInfo(pMess[uIdx], fuCurrDpbIdx); }
     switch (typeMess) {
@@ -473,9 +476,9 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
             && (fbDupliWithoutAdc || usRawAdc == fvvusLastAdcChan[uAsicIdx][usChan])
             && fulTsMsbIndexInTs[fuCurrDpbIdx] == fvvulLastTsMsbChan[uAsicIdx][usChan]) {
           /// FIXME: add plots to check what is done in this rejection
-          LOG(debug) << "CbmStsUnpackAlgo::processHitInfo => "
-                     << Form("Rejecting duplicate on Asic %3u channel %3u, TS %3u, ADC %2u", uAsicIdx, usChan, usRawTs,
-                             usRawAdc);
+          LOG(debug1) << "CbmStsUnpackAlgo::processHitInfo => "
+                      << Form("Rejecting duplicate on Asic %3u channel %3u, TS %3u, ADC %2u", uAsicIdx, usChan, usRawTs,
+                              usRawAdc);
 
           if (fMonitor) fMonitor->FillDuplicateHitsAdc(uFebIdx, uChanInFeb, usRawAdc);
           return;
@@ -601,11 +604,9 @@ void CbmStsUnpackAlgo::processTsMsbInfo(const stsxyter::Message& mess, uint32_t 
   }
   if (uVal != fvulCurrentTsMsb[fuCurrDpbIdx] + 1
       /// Case where we reach a normal cycle edge
-      && !(0 == uVal && 4194303 == fvulCurrentTsMsb[fuCurrDpbIdx])
+      && !(0 == uVal && stsxyter::kuTsMsbNbTsBinsBinning == fvulCurrentTsMsb[fuCurrDpbIdx])
       /// First TS_MSB in MS may jump if TS dropped by DAQ
-      && 1 != uMessIdx
-      /// case with cycle et edge of 2 MS
-      && !(0 == uVal && 0 == fvulCurrentTsMsb[fuCurrDpbIdx] && 2 == uMessIdx)
+      && !(1 == uMessIdx && 0 == uMsIdx)
       /// Msg 1 and 2 will be same TS_MSB if data in 1st bin
       && !(uVal == fvulCurrentTsMsb[fuCurrDpbIdx] && 2 == uMessIdx)
       /// New FW introduced TS_MSB suppression + large TS_MSB => warning only if value not increasing
@@ -616,11 +617,7 @@ void CbmStsUnpackAlgo::processTsMsbInfo(const stsxyter::Message& mess, uint32_t 
                << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " new TsMsb " << std::setw(5) << uVal;
   }
 
-  /// Catch case where previous MS ended up on a TS MSB cycle as it is then
-  /// already updated from the MS index
-  if (4194303 == uVal && 1 == uMessIdx) fvulCurrentTsMsb[fuCurrDpbIdx] = 0;
-  else
-    fvulCurrentTsMsb[fuCurrDpbIdx] = uVal;
+  fvulCurrentTsMsb[fuCurrDpbIdx] = uVal;
 
   LOG(debug1) << " TS " << std::setw(12) << fTsIndex << " MS Idx " << std::setw(4) << uMsIdx << " Msg Idx "
               << std::setw(5) << uMessIdx << " DPB " << std::setw(2) << fuCurrDpbIdx << " TsMsb " << std::setw(5)
@@ -672,9 +669,24 @@ void CbmStsUnpackAlgo::refreshTsMsbFields(const uint32_t imslice, const size_t m
                  << uTsMsbCycleHeader;
     fvuCurrentTsMsbCycle[fuCurrDpbIdx] = uTsMsbCycleHeader;
     fvulCurrentTsMsb[fuCurrDpbIdx]     = uTsMsbHeader;
+
+    fulTsMsbIndexInTs[fuCurrDpbIdx] =
+      fvulCurrentTsMsb[fuCurrDpbIdx]
+      + (fvuCurrentTsMsbCycle[fuCurrDpbIdx] * static_cast<uint64_t>(1 << stsxyter::kusLenTsMsbValBinning));
+    if (fulTsMsbIndexInTs[fuCurrDpbIdx] < fulTsStartInTsMsb) {
+      LOG(fatal) << "CbmStsUnpackAlgo::refreshTsMsbFields => "
+                 << "Value computed from TS_MSB and TS_MSB cycle smaller than Timeslice start in TS_MSB, "
+                 << "would lead to a negative value so it cannot be recovered!!!!"
+                 << std::endl
+                 /// Values Printout
+                 << "TS_MSB: " << fvulCurrentTsMsb[fuCurrDpbIdx] << " Cycle: " << fvuCurrentTsMsbCycle[fuCurrDpbIdx]
+                 << " Full TS_MSB: " << fulTsMsbIndexInTs[fuCurrDpbIdx] << " TS Start offset: " << fulTsStartInTsMsb;
+    }
+    fulTsMsbIndexInTs[fuCurrDpbIdx] -= fulTsStartInTsMsb;
   }
   else if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle[fuCurrDpbIdx]) {
-    if (4194303 == fvulCurrentTsMsb[fuCurrDpbIdx]) {
+    if ((stsxyter::kuTsMsbNbTsBinsBinning - 1) == fvulCurrentTsMsb[fuCurrDpbIdx]) {
+      /// Transition at the edge of two MS, the first TS_MSB message (idx 1) will make the cycle
       LOG(debug) << " TS " << std::setw(12) << fTsIndex << " MS " << std::setw(12) << mstime << " MS Idx "
                  << std::setw(4) << imslice << " Msg Idx " << std::setw(5) << 0 << " DPB " << std::setw(2)
                  << fuCurrDpbIdx << " Old TsMsb " << std::setw(5) << fvulCurrentTsMsb[fuCurrDpbIdx] << " Old MsbCy "
@@ -685,22 +697,9 @@ void CbmStsUnpackAlgo::refreshTsMsbFields(const uint32_t imslice, const size_t m
                    << "for TS " << std::setw(12) << fTsIndex << " MS " << std::setw(12) << mstime << " MsInTs "
                    << std::setw(3) << imslice << " ====> " << fvuCurrentTsMsbCycle[fuCurrDpbIdx] << " (cnt) VS "
                    << uTsMsbCycleHeader << " (header)";
+      fvuCurrentTsMsbCycle[fuCurrDpbIdx] = uTsMsbCycleHeader;
     }
-    fvuCurrentTsMsbCycle[fuCurrDpbIdx] = uTsMsbCycleHeader;
   }
-  fulTsMsbIndexInTs[fuCurrDpbIdx] =
-    fvulCurrentTsMsb[fuCurrDpbIdx]
-    + (fvuCurrentTsMsbCycle[fuCurrDpbIdx] * static_cast<uint64_t>(1 << stsxyter::kusLenTsMsbValBinning));
-  if (fulTsMsbIndexInTs[fuCurrDpbIdx] < fulTsStartInTsMsb) {
-    LOG(fatal) << "CbmStsUnpackAlgo::refreshTsMsbFields => "
-               << "Value computed from TS_MSB and TS_MSB cycle smaller than Timeslice start in TS_MSB, "
-               << "would lead to a negative value so it cannot be recovered!!!!"
-               << std::endl
-               /// Values Printout
-               << "TS_MSB: " << fvulCurrentTsMsb[fuCurrDpbIdx] << " Cycle: " << fvuCurrentTsMsbCycle[fuCurrDpbIdx]
-               << " Full TS_MSB: " << fulTsMsbIndexInTs[fuCurrDpbIdx] << " TS Start offset: " << fulTsStartInTsMsb;
-  }
-  fulTsMsbIndexInTs[fuCurrDpbIdx] -= fulTsStartInTsMsb;
 }
 
 // ---- unpack ----
