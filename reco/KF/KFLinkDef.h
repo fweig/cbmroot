@@ -36,16 +36,9 @@
 #pragma link C++ class CbmTrdTrackFitterKF + ;
 #pragma link C++ class CbmTofTrackFitterKF + ;
 #pragma link C++ class CbmGlobalTrackFitterKF + ;
-// #pragma link C++ class  CbmKFParticle+;
-
-// //KFParticle
-//#pragma link C++ class  KFParticleBase+;
-//#pragma link C++ class  KFParticle+;
-//#pragma link C++ class  KFVertex+;
-//#pragma link C++ class  KFPartEfficiencies+;
-//#pragma link C++ class  KFMCParticle+;
 
 //KFQA
+/*
 #pragma link C++ class CbmKFPartEfficiencies + ;
 
 #pragma link C++ class CbmKFTrErrMCPoints + ;
@@ -58,5 +51,6 @@
 #pragma link C++ class CbmKFParticleFinderPID + ;
 #pragma link C++ class CbmKFParticleFinderQa + ;
 #pragma link C++ class CbmKFParticleInterface + ;
+*/
 
 #endif
