@@ -43,6 +43,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 Set(LINK_DIRECTORIES
+  ${KFParticle_LIB_DIR}
   ${ROOT_LIBRARY_DIR}
   ${FAIRROOT_LIBRARY_DIR}
   ${Boost_LIBRARY_DIRS}
@@ -67,7 +68,7 @@ Set(NO_DICT_SRCS
 set(LINKDEF LxLinkDef.h)
 Set(LIBRARY_NAME LxTrack)
 Set(DEPENDENCIES
-    CbmBase CbmData Base CbmMuchBase
+    CbmBase CbmData Base CbmMuchBase Littrack
 # CbmMuchSim CbmKF CbmLitTrack CbmSrt ????
 )
 

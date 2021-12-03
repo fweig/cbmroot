@@ -32,11 +32,8 @@ Set(INCLUDE_DIRECTORIES
   ${CBMROOT_SOURCE_DIR}/sim/transport/geosetup
 
   ${CBMROOT_SOURCE_DIR}/reco/KF
-  ${CBMROOT_SOURCE_DIR}/reco/KF/Interface
-  ${CBMROOT_SOURCE_DIR}/reco/KF/KFQA
   ${CBMROOT_SOURCE_DIR}/reco/L1
   ${CBMROOT_SOURCE_DIR}/reco/L1/L1Algo
-  ${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder
   ${KFParticle_INCLUDE_DIR}
   ${AnalysisTree_INCLUDE_DIR}
   ${CBMROOT_SOURCE_DIR}/sim/transport/generators/unigen
@@ -78,7 +75,7 @@ Set(DEPENDENCIES
 	${_AnalysisTree_LIB} 
 	CbmData 
 	CbmBase 
-	KF 
+	KFParticleInterface
 	L1 
 	CbmSimGenerators
 )

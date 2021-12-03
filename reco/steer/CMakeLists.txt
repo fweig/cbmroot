@@ -80,10 +80,11 @@ CbmPsdBase
 CbmPsdReco
 CbmRichReco
 CbmRecoSts
-# CbmTofReco
+CbmTofBase
 CbmTrdReco
 CbmData
 KF
+KFParticleInterface
 )
 # ---------------------------------------------------------
 

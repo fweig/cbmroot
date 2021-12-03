@@ -64,6 +64,7 @@ ${CBMROOT_SOURCE_DIR}/mvd
 Include_Directories( ${INCLUDE_DIRECTORIES})
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
+  ${VC_INCLUDE_DIRS}
   ${BASE_INCLUDE_DIRECTORIES} 
   ${KFParticle_INCLUDE_DIR}
 )
@@ -80,6 +81,7 @@ endif()
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
+${Vc_LIB_DIR}
 ${KFParticle_LIB_DIR}
 ${FAIRROOT_LIBRARY_DIR}
 ${ROOT_LIBRARY_DIR}
@@ -226,6 +228,7 @@ Set(LIBRARY_NAME L1)
 
 Set(DEPENDENCIES
     KF
+    KFParticle
     Base
     CbmBase
     CbmData
@@ -233,6 +236,7 @@ Set(DEPENDENCIES
 #    CbmGeoSetup
     CbmMuchBase
     CbmTrdBase
+    CbmTofBase
     CbmStsBase
     CbmRecoBase
     CbmRecoSts

@@ -24,18 +24,9 @@ ${CBMDATA_DIR}/global
 
 ${CBMROOT_SOURCE_DIR}/reco/L1
 ${CBMROOT_SOURCE_DIR}/reco/L1/L1Algo
-${CBMROOT_SOURCE_DIR}/reco/L1/OffLineInterface
-${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder
-
-${CBMROOT_SOURCE_DIR}/reco/KF
-${CBMROOT_SOURCE_DIR}/reco/KF/KFQA
-${CBMROOT_SOURCE_DIR}/reco/KF/Interface
-${CBMDATA_DIR}
 
 ${CBMROOT_SOURCE_DIR}/mvd
-  ${CBMDETECTORBASE_DIR}/sts
-#${CBMROOT_SOURCE_DIR}/sts/setup
-#${CBMROOT_SOURCE_DIR}/sts
+${CBMDETECTORBASE_DIR}/sts
 
 ${CBMROOT_SOURCE_DIR}/rich
 ${CBMROOT_SOURCE_DIR}/tof/TofMC
@@ -97,7 +88,7 @@ ENDIF (SSE_FOUND)
 set(LINKDEF CbmEventBuilderLinkDef.h)
 Set(LIBRARY_NAME CbmEventBuilder)
 Set(DEPENDENCIES
-    CbmData CbmBase CbmField CbmStsBase CbmMvd Base KF CbmQaBase
+    CbmData CbmBase CbmField CbmStsBase CbmMvd Base CbmQaBase
 )
 
 GENERATE_LIBRARY()

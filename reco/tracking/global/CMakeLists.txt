@@ -57,7 +57,7 @@ Set(NO_DICT_SRCS
 set(LINKDEF GlobalLinkDef.h)
 Set(LIBRARY_NAME CbmGlobalTracking)
 Set(DEPENDENCIES
-    CbmBase CbmData Base CbmMuchBase KF
+    CbmBase CbmData Base CbmMuchBase KF Littrack KFParticleInterface
 #   CbmLitTrack CbmKF CbmRun ????
 )
 

@@ -181,7 +181,8 @@ EndIf (Boost_FOUND)
 set(LINKDEF  LittrackLinkDef.h)
 Set(LIBRARY_NAME Littrack)
 Set(DEPENDENCIES
-    Littrackparallel KF CbmMuchBase CbmStsBase CbmRichBase CbmRecoBase CbmBase CbmData Base
+    Littrackparallel KF KFParticleInterface L1 CbmMuchBase CbmStsBase CbmRichBase CbmRecoBase CbmBase CbmData
+    CbmTofBase Base
 )
 GENERATE_LIBRARY()
 
@@ -191,7 +192,7 @@ set(HEADERS ${QA_HEADERS})
 set(LINKDEF  LittrackQALinkDef.h)
 Set(LIBRARY_NAME LittrackQA)
 Set(DEPENDENCIES
-    Littrack
+    Littrack CbmRichReco KFParticleInterface
 )
 
 GENERATE_LIBRARY()

@@ -60,7 +60,7 @@ Set(NO_DICT_SRCS
 set(LINKDEF CbmBinnedTrackerLinkDef.h)
 Set(LIBRARY_NAME CbmBinnedTracker)
 Set(DEPENDENCIES
-    CbmBase CbmData CbmMuchBase CbmStsBase Base 
+    CbmBase CbmData CbmMuchBase CbmStsBase Base CbmSimSteer
 )
 
 GENERATE_LIBRARY()
