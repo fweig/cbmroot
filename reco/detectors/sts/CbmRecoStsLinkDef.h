@@ -25,4 +25,6 @@
 #pragma link C++ class CbmStsUnpackConfig + ;
 #pragma link C++ class CbmStsUnpackMonitor + ;
 
+#pragma link C++ enum ECbmRecoMode;
+
 #endif /* __CINT__ */

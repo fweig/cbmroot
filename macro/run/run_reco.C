@@ -279,8 +279,8 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
 
   // -----   Local reconstruction in STS   ----------------------------------
   if (useSts) {
-    CbmRecoSts* stsReco = new CbmRecoSts(kCbmRecoTimeslice);
-    if (eventBased) stsReco->SetMode(kCbmRecoEvent);
+    CbmRecoSts* stsReco = new CbmRecoSts(ECbmRecoMode::kCbmRecoTimeslice);
+    if (eventBased) stsReco->SetMode(ECbmRecoMode::kCbmRecoEvent);
     run->AddTask(stsReco);
     std::cout << "-I- " << myName << ": Added task " << stsReco->GetName() << std::endl;
   }
