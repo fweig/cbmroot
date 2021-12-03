@@ -801,21 +801,6 @@ CbmLitFieldFitter::CbmLitFieldFitter(unsigned int polynomDegree)
 
 CbmLitFieldFitter::~CbmLitFieldFitter() {}
 
-template<class T>
-void CbmLitFieldFitter::FitSlice(float Z, lit::parallel::LitFieldSlice<T>& slice)
-{
-  std::vector<double> aparBx, aparBy, aparBz;
-  FitSlice(Z, aparBx, aparBy, aparBz);
-
-  std::vector<T> aparBxT, aparByT, aparBzT;
-  aparBxT.assign(aparBx.begin(), aparBx.end());
-  aparByT.assign(aparBy.begin(), aparBy.end());
-  aparBzT.assign(aparBz.begin(), aparBz.end());
-
-  slice.SetZ(Z);
-  slice.SetCoefficients(aparBxT, aparByT, aparBzT);
-}
-
 void CbmLitFieldFitter::FitSliceScal(float Z, lit::parallel::LitFieldSlice<fscal>& slice) { FitSlice<fscal>(Z, slice); }
 
 void CbmLitFieldFitter::FitSliceVec(float Z, lit::parallel::LitFieldSlice<fvec>& slice) { FitSlice<fvec>(Z, slice); }

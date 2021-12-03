@@ -81,7 +81,19 @@ public:
     * \param[out] slice Output approximated field slice.
     */
   template<class T>
-  void FitSlice(float Z, lit::parallel::LitFieldSlice<T>& slice);
+  void FitSlice(float Z, lit::parallel::LitFieldSlice<T>& slice)
+  {
+    std::vector<double> aparBx, aparBy, aparBz;
+    FitSlice(Z, aparBx, aparBy, aparBz);
+
+    std::vector<T> aparBxT, aparByT, aparBzT;
+    aparBxT.assign(aparBx.begin(), aparBx.end());
+    aparByT.assign(aparBy.begin(), aparBy.end());
+    aparBzT.assign(aparBz.begin(), aparBz.end());
+
+    slice.SetZ(Z);
+    slice.SetCoefficients(aparBxT, aparByT, aparBzT);
+  }
 
   /**
     * \brief FitSlice implementation using fscal data type.
