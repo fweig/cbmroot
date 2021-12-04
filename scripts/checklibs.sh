@@ -13,7 +13,7 @@ LIBDIR=${2:-../lib}
 
 # find all libs
 # libraries are real files with the extensions .so and for macosx .dylib
-all_libs=$(find $LIBDIR -type f | grep -e \.dylib$ -e \.so$)
+all_libs=$(find $LIBDIR -type f -o -type l | grep -e \.dylib$ -e \.so$)
 
 tmpfile=$(mktemp)
 
