@@ -5,62 +5,70 @@
 #include "UnpackSts.h"
 
 #include <cassert>
+#include <utility>
 #include <vector>
 
 #include <cmath>
 
 #include "StsXyterMessage.h"
 
+using std::unique_ptr;
 using std::vector;
 
 namespace cbm::algo
 {
 
   // ----   Algorithm execution   ---------------------------------------------
-  vector<CbmStsDigi> UnpackSts::operator()(const uint8_t* msContent, const fles::MicrosliceDescriptor& msDescr,
-                                           const uint64_t tTimeslice)
+  UnpackSts::resultType UnpackSts::operator()(const uint8_t* msContent, const fles::MicrosliceDescriptor& msDescr,
+                                              const uint64_t tTimeslice)
   {
 
     // --- Assert that parameters are set
     assert(fParams);
+
+    // --- Output data
+    vector<CbmStsDigi> digiVec = {};
+    UnpackStsMonitorData moni  = {};
+
+    // --- Current Timeslice time and TS_MSB epoch cycle
     fCurrentTsTime = tTimeslice;
+    auto msTime    = msDescr.idx;  // Unix time of MS in ns
+    fCurrentCycle  = std::ldiv(msTime, fkCycleLength).quot;
 
-    // --- Output vector
-    vector<CbmStsDigi> digiVec;
-
-    // --- Current TS_MSB epoch cycle
-    auto msTime   = msDescr.idx;  // Unix time of MS in ns
-    fCurrentCycle = std::ldiv(msTime, fCycleLength).quot;
+    // --- Interpret MS content as sequence of SMX messages
+    auto message = reinterpret_cast<const stsxyter::Message*>(msContent);
 
     // --- Get first TS_MSB (first message in microslice must be of type ts_msb)
-    const stsxyter::Message firstMessage(msContent[0]);
-    assert(firstMessage.GetMessType() == stsxyter::MessType::TsMsb);
-    ProcessTsmsbMessage(firstMessage);
+    if (message[0].GetMessType() != stsxyter::MessType::TsMsb) {
+      moni.fNumErrInvalidFirstMessage++;
+      return std::make_pair(digiVec, moni);
+    }
+    ProcessTsmsbMessage(message[0]);
 
     // --- Number of messages in microslice
     auto msSize = msDescr.size;
-    assert(msSize % sizeof(stsxyter::Message) == 0);
+    if (msSize % sizeof(stsxyter::Message) != 0) {
+      moni.fNumErrInvalidMsSize++;
+      return std::make_pair(digiVec, moni);
+    }
     const uint32_t numMessages = msSize / sizeof(stsxyter::Message);
 
     // --- Message loop
     for (uint32_t messageNr = 1; messageNr < numMessages; messageNr++) {
 
-      // --- Cast MS content to STSXYTER message
-      const stsxyter::Message message(msContent[messageNr]);
-      const stsxyter::MessType type = message.GetMessType();
-
       // --- Action depending on message type
-      switch (type) {
+      switch (message[messageNr].GetMessType()) {
 
         case stsxyter::MessType::Hit: {
-          ProcessHitMessage(message, digiVec);
+          ProcessHitMessage(message[messageNr], digiVec, moni);
           break;
         }
         case stsxyter::MessType::TsMsb: {
-          ProcessTsmsbMessage(message);
+          ProcessTsmsbMessage(message[messageNr]);
           break;
         }
         default: {
+          moni.fNumNonHitOrTsbMessage++;
           break;
         }
 
@@ -68,23 +76,29 @@ namespace cbm::algo
 
     }  //# Messages
 
-    return digiVec;
+    return std::make_pair(digiVec, moni);
   }
   // --------------------------------------------------------------------------
 
 
   // -----   Process hit message   --------------------------------------------
-  void UnpackSts::ProcessHitMessage(const stsxyter::Message& message, vector<CbmStsDigi>& digiVec) const
+  void UnpackSts::ProcessHitMessage(const stsxyter::Message& message, vector<CbmStsDigi>& digiVec,
+                                    UnpackStsMonitorData& moni) const
   {
 
-    uint16_t elink                    = message.GetLinkIndexHitBinning();
-    const UnpackStsElinkPar& elinkPar = fParams->GetElinkPar(elink);
+    // --- Check eLink and get parameters
+    uint16_t elink = message.GetLinkIndexHitBinning();
+    if (elink >= fParams->fElinkParams.size()) {
+      moni.fNumErrElinkOutOfRange++;
+      return;
+    }
+    const UnpackStsElinkPar& elinkPar = fParams->fElinkParams.at(elink);
     uint32_t asicNr                   = elinkPar.fAsicNr;
-    uint32_t numChansPerModule        = fParams->fNumAsicsPerModule * fParams->fNumChansPerAsic;
 
     // --- Hardware-to-software address
-    uint32_t address = elinkPar.fAddress;
-    uint32_t channel = 0;
+    uint32_t numChansPerModule = fParams->fNumAsicsPerModule * fParams->fNumChansPerAsic;
+    uint32_t address           = elinkPar.fAddress;
+    uint32_t channel           = 0;
     if (asicNr < fParams->fNumAsicsPerModule / 2) {  // front side (n side)
       channel = message.GetHitChannel() + fParams->fNumChansPerAsic * asicNr;
     }
@@ -94,10 +108,13 @@ namespace cbm::algo
 
     // --- Time stamp
     // --- Expand to full Unix time in clock cycles
-    uint64_t timeCC = message.GetHitTimeBinning() + fCurrentEpochTime;
+    uint64_t timeCc = message.GetHitTimeBinning() + fCurrentEpochTime;
+    if (timeCc >> 59 != 0) {  // avoid overflow in 64 bit // TODO: Hard-coded number!
+      moni.fNumErrTimestampOverflow++;
+      return;
+    }
     // --- Convert time into ns
-    assert(timeCC >> 59 == 0);  // avoid overflow in 64 bit
-    uint64_t timeNs = (timeCC * fParams->fClockCycleNom) / fParams->fClockCycleDen;
+    uint64_t timeNs = (timeCc * fkClockCycleNom + fkClockCycleDen / 2) / fkClockCycleDen;
     // --- Correct ASIC-wise offsets
     timeNs -= elinkPar.fTimeOffset;
     // --- Calculate time relative to timeslice
@@ -124,7 +141,7 @@ namespace cbm::algo
 
     // --- Update current epoch
     fCurrentEpoch     = epoch;
-    fCurrentEpochTime = (fCurrentCycle * fParams->fEpochsPerCycle + epoch) * fParams->fEpochLength;
+    fCurrentEpochTime = (fCurrentCycle * fkEpochsPerCycle + epoch) * fkEpochLength;
   }
   // --------------------------------------------------------------------------
 

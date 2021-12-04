@@ -155,10 +155,11 @@ namespace stsxyter
   static const uint32_t kuTsMsbNbTsBins = (0 < kusLenTsMsbVal ? 1 << kusLenTsMsbVal : 0);
   static const uint64_t kulTsCycleNbBins =
     static_cast<uint64_t>(kuTsMsbNbTsBins) * static_cast<uint64_t>(kuHitNbTsBins);
-  static const uint16_t kusMaskTsMsbOver = (1 << kusLenHitTsOver) - 1;
-  static const double kdClockCycleNs     = 3.125;  // ns, equivalent to 2*160 MHz clock
-                                                   /// Binning FW adds 1 bit to TS in HIT message
-                                                   /// => Quick and dirty hack is a factor 2!!!
+  static const uint16_t kusMaskTsMsbOver     = (1 << kusLenHitTsOver) - 1;
+  static constexpr uint32_t kulClockCycleNom = 25;  ///< Clock cycle nominator [ns], equivalent to 2*160 MHz clock
+  static constexpr uint32_t kulClockCycleDen = 8;   ///< Clock cycle denominator, equivalent to 2*160 MHz clock
+  static constexpr double kdClockCycleNs = static_cast<double>(kulClockCycleNom) / kulClockCycleDen;  // ns, not rounded
+
   static const uint32_t kuHitNbTsBinsBinning = 1 << 10;
   static const uint32_t kuTsMsbNbTsBinsBinning = 1 << kusLenTsMsbValBinning;
   static const uint64_t kulTsCycleNbBinsBinning =

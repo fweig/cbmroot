@@ -23,10 +23,10 @@ namespace cbm::algo
 {
 
 
-  /** @struct UnpackStsAsicPar
+  /** @struct UnpackStsElinkPar
    ** @author Volker Friese <v.friese@gsi.de>
    ** @since 25 November 2021
-   ** @brief Unpacking parameters for one eLink / ASIC
+   ** @brief STS Unpacking parameters for one eLink / ASIC
    **/
   struct UnpackStsElinkPar {
     uint32_t fAddress    = 0;   ///< CbmStsAddress for the connected module
@@ -43,22 +43,23 @@ namespace cbm::algo
    ** @brief Parameters required for the STS unpacking (specific to one component)
    **/
   struct UnpackStsPar {
+    uint32_t fNumChansPerAsic                   = 0;   ///< Number of channels per ASIC
+    uint32_t fNumAsicsPerModule                 = 0;   ///< Number of ASICS per module
+    std::vector<UnpackStsElinkPar> fElinkParams = {};  ///< Parameters for each eLink
+  };
 
-    uint32_t fNumChansPerAsic   = 0;              ///< Number of channels per ASIC
-    uint32_t fNumAsicsPerModule = 0;              ///< Number of ASICS per module
-    uint64_t fEpochsPerCycle    = 0;              ///< TS_MSB epochs per epoch cycle
-    uint64_t fEpochLength       = 0;              ///< Length of TS_MSB epoch in clock cycles
-    uint32_t fClockCycleNom     = 0;              ///< Clock cycle nominator [ns]
-    uint32_t fClockCycleDen     = 0.;             ///< Clock cycle denominator
-    std::vector<UnpackStsElinkPar> fElinkParams;  ///< Parameters for each eLink
 
-    size_t GetNumElinks() const { return fElinkParams.size(); }
-
-    const UnpackStsElinkPar& GetElinkPar(size_t eLink) const
-    {
-      assert(eLink < GetNumElinks());
-      return fElinkParams[eLink];
-    }
+  /** @struct UnpackStsMoni
+   ** @author Volker Friese <v.friese@gsi.de>
+   ** @since 2 December 2021
+   ** @brief Monitoring data for STS unpacking
+   **/
+  struct UnpackStsMonitorData {
+    uint32_t fNumNonHitOrTsbMessage     = 0;
+    uint32_t fNumErrElinkOutOfRange     = 0;  ///< Elink not contained in parameters
+    uint32_t fNumErrInvalidFirstMessage = 0;  ///< First message is not TS_MSB
+    uint32_t fNumErrInvalidMsSize       = 0;  ///< Microslice size is not multiple of message size
+    uint32_t fNumErrTimestampOverflow   = 0;  ///< Overflow in 64 bit time stamp
   };
 
 
@@ -71,6 +72,9 @@ namespace cbm::algo
   class UnpackSts {
 
   public:
+    typedef std::pair<std::vector<CbmStsDigi>, UnpackStsMonitorData> resultType;
+
+
     /** @brief Default constructor **/
     UnpackSts() {};
 
@@ -85,39 +89,43 @@ namespace cbm::algo
      ** @param  tTimeslice Unix start time of timeslice [ns]
      ** @return STS digi data
      **/
-    std::vector<CbmStsDigi> operator()(const uint8_t* msContent, const fles::MicrosliceDescriptor& msDescr,
-                                       const uint64_t tTimeslice);
+    resultType operator()(const uint8_t* msContent, const fles::MicrosliceDescriptor& msDescr,
+                          const uint64_t tTimeslice);
 
     /** @brief Set the parameter container
      ** @param params Pointer to parameter container
      **/
-    void SetParams(std::unique_ptr<UnpackStsPar> params)
-    {
-      fParams      = std::move(params);
-      fCycleLength = (fParams->fEpochsPerCycle * fParams->fEpochLength * fParams->fClockCycleNom);
-      fCycleLength /= fParams->fClockCycleDen;
-    }
+    void SetParams(std::unique_ptr<UnpackStsPar> params) { fParams = std::move(params); }
 
 
-  private:
+  private:  // methods
+    /** @brief Process a hit message
+     ** @param message SMX message (32-bit word)
+     ** @param digiVec Vector to append the created digi to
+     **/
+    void ProcessHitMessage(const stsxyter::Message& message, std::vector<CbmStsDigi>& digiVec,
+                           UnpackStsMonitorData& moni) const;
+
     /** @brief Process an epoch message (TS_MSB)
      ** @param message SMX message (32-bit word)
      ** @param digiVec Vector to append the created digi to
      **/
     void ProcessTsmsbMessage(const stsxyter::Message& message);
 
-    /** @brief Process a hit message
-     ** @param message SMX message (32-bit word)
-     ** @param digiVec Vector to append the created digi to
-     **/
-    void ProcessHitMessage(const stsxyter::Message& message, std::vector<CbmStsDigi>& digiVec) const;
 
-  private:
+  private:                           // members
     uint64_t fCurrentTsTime    = 0;  ///< Unix time of timeslice in ns
     uint64_t fCurrentCycle     = 0;  ///< Current epoch cycle
     uint32_t fCurrentEpoch     = 0;  ///< Current epoch number within epoch cycle
     uint64_t fCurrentEpochTime = 0;  ///< Unix time of current epoch in clock cycles
-    uint64_t fCycleLength      = 0;  ///< Epoch cycle length in ns
+
+    static constexpr uint64_t fkEpochsPerCycle = stsxyter::kuTsMsbNbTsBinsBinning;  ///< TS_MSB epochs per epoch cycle
+    static constexpr uint64_t fkEpochLength =
+      stsxyter::kuHitNbTsBinsBinning;                                        ///< Length of TS_MSB epoch in clock cycles
+    static constexpr uint32_t fkClockCycleNom = stsxyter::kulClockCycleNom;  ///< Clock cycle nominator [ns]
+    static constexpr uint32_t fkClockCycleDen = stsxyter::kulClockCycleDen;  ///< Clock cycle denominator
+    static constexpr uint64_t fkCycleLength =
+      (fkEpochsPerCycle * fkEpochLength * fkClockCycleNom) / fkClockCycleDen;  ///< Epoch cycle length in ns
 
     std::unique_ptr<UnpackStsPar> fParams = nullptr;  ///< Parameter container
   };
