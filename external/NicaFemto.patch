@@ -24,3 +24,29 @@ index 60ab7e6..b70ab36 100644
            endif()
            find_package(GSL REQUIRED)
          endif()
+diff --git a/cuts/CMakeLists.txt b/cuts/CMakeLists.txt
+index 1d1c4f0..e5676ba 100755
+--- a/cuts/CMakeLists.txt
++++ b/cuts/CMakeLists.txt
+@@ -114,7 +114,7 @@ cutmonitors/NicaPropertyMonitorXYZ.cxx
+ Set(HEADERS )
+ Set(LINKDEF NicaCutLinkDef.h)
+ Set(LIBRARY_NAME NicaCut)
+-Set(DEPENDENCIES NicaFeatures)
++Set(DEPENDENCIES NicaFeatures NicaDataFormat Base)
+ 
+ GENERATE_LIBRARY()
+ 
+diff --git a/dataformat/CMakeLists.txt b/dataformat/CMakeLists.txt
+index b8576ab..b3fc335 100644
+--- a/dataformat/CMakeLists.txt
++++ b/dataformat/CMakeLists.txt
+@@ -57,7 +57,7 @@ hiddeninfo/NicaV0Track.cxx
+ Set(HEADERS )
+ Set(LINKDEF NicaDataFormatLinkDef.h)
+ Set(LIBRARY_NAME NicaDataFormat)
+-Set(DEPENDENCIES NicaFeatures ${NICAFORMATLIBS})
++Set(DEPENDENCIES NicaFeatures ${NICAFORMATLIBS} Base EG)
+ 
+ GENERATE_LIBRARY()
+ 

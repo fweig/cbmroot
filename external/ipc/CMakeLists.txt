@@ -24,6 +24,10 @@ target_include_directories(fles_logging PUBLIC ipc/lib/logging/)
 
 target_include_directories(fles_logging SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 
+target_link_directories(fles_logging PUBLIC ${Boost_LIBRARY_DIRS})
+
+target_link_libraries(fles_logging boost_log)
+
 Install(TARGETS fles_logging DESTINATION lib)
 
 Set(INCLUDE_DIRECTORIES
