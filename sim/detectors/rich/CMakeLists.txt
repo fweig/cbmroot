@@ -46,6 +46,6 @@ ENDIF (SSE_FOUND)
 set(LINKDEF  CbmRichSimLinkDef.h)
 
 Set(LIBRARY_NAME CbmRichSim)
-Set(DEPENDENCIES Base CbmData CbmRichBase Gdml)
+Set(DEPENDENCIES Base CbmData CbmSimBase CbmRichBase Gdml)
 
 GENERATE_LIBRARY()

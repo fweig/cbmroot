@@ -81,7 +81,7 @@ ${Boost_LIBRARY_DIRS}
 
 # -----   Specify library dependences   -------------------
 Set(DEPENDENCIES
-    CbmBase CbmData CbmQaBase CbmRecoBase CbmStsBase 
+    CbmBase CbmData CbmQaBase CbmMvd CbmRecoBase CbmStsBase
 )
 # ---------------------------------------------------------
 

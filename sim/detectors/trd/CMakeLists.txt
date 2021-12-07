@@ -68,7 +68,7 @@ ENDIF (SSE_FOUND)
 set(LINKDEF CbmTrdSimLinkDef.h)
 Set(LIBRARY_NAME CbmTrdSim)
 Set(DEPENDENCIES
-    CbmBase CbmData Base CbmTrdBase
+    CbmBase CbmData Base CbmSimBase CbmTrdBase
 )
 
 GENERATE_LIBRARY()

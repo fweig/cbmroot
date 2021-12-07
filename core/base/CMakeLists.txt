@@ -70,7 +70,7 @@ EndIf()
 Set(LINKDEF CbmBaseLinkDef.h)
 Set(LIBRARY_NAME CbmBase)
 Set(DEPENDENCIES
-    CbmData Base boost_regex
+    CbmData Base boost_regex boost_filesystem
 )
 
 GENERATE_LIBRARY()

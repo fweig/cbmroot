@@ -59,7 +59,7 @@ set(LINKDEF CbmTofRecoLinkDef.h)
 Set(LIBRARY_NAME CbmTofReco)
 Set(DEFINITIONS ${DEFINITIONS} BUILD_TOF_BEAMTIME)
 Set(DEPENDENCIES
-    CbmTofBase CbmRecoBase CbmBase CbmData CbmDisplay Base Minuit
+    CbmTofBase CbmRecoBase CbmBase CbmData CbmFlibFlesTools CbmDisplay Base Minuit
 )
 
 GENERATE_LIBRARY()

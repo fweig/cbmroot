@@ -47,7 +47,7 @@ qa/CbmMuchDigitizerQa.cxx
 set(LINKDEF CbmMuchSimLinkDef.h)
 Set(LIBRARY_NAME CbmMuchSim)
 Set(DEPENDENCIES
-    CbmMuchBase CbmBase CbmData Base CbmQaBase
+    CbmMuchBase CbmSimBase CbmQaBase CbmBase CbmData Base
 )
 
 GENERATE_LIBRARY()
