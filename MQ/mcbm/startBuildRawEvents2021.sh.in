@@ -78,6 +78,7 @@ _parfileTof=$VMCWORKDIR/macro/beamtime/mcbm2021/mTofCriPar.par
 _parfileRich=$VMCWORKDIR/macro/beamtime/mcbm2021/mRichPar_70.par
 _parfilePsd=$VMCWORKDIR/macro/beamtime/mcbm2021/mPsdPar.par
 _setup_name=mcbm_beam_2021_07_surveyed
+_run_id=1588
 
 LOGFILETAG=`hostname`
 LOGFILETAG+="_"
@@ -100,7 +101,7 @@ SAMPLER+=" --max-timeslices 300"
 SAMPLER+=" --severity info"
 #SAMPLER+=" --flib-port 10"
 if [ "$_hostname" != "" ]; then
-  SAMPLER+=" --flib-host $_hostname"
+  SAMPLER+=" --fles-host $_hostname"
 elif [ "$_filename" != "" ]; then
   SAMPLER+=" --filename $_filename"
   if [ "$_dirname" != "" ]; then
@@ -137,6 +138,7 @@ while (( _iMoni < _nbmoni )); do
   UNPACKER+=" --severity info"
   #UNPACKER+=" --severity debug"
   UNPACKER+=" --Setup $_setup_name"
+  UNPACKER+=" --RunId $_run_id"
   UNPACKER+=" --IgnOverMs 1"
   UNPACKER+=" --SetTimeOffs kSTS,-2221"
   UNPACKER+=" --SetTimeOffs kMUCH,-885"
@@ -159,11 +161,7 @@ while (( _iMoni < _nbmoni )); do
   # with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
   UNPACKER_LOG="unp$_iMoni"
   UNPACKER_LOG+="_$LOGFILETAG"
-  VALGRIND_UNP="valgrind -v --error-limit=no --suppressions=$ROOTSYS/share/root/etc/valgrind-root.supp --leak-check=full --show-reachable=yes --log-file=valgrind_unp_log.txt"
-  VALGHEAP_UNP="valgrind -v --tool=massif --massif-out-file=valgrind_unp_massif.out"
   xterm -l -lf $UNPACKER_LOG -geometry 132x23+400+$_yOffset -hold -e ${VMCWORKDIR}/build/bin/MQ/mcbm/$UNPACKER &
-#  xterm -l -lf $UNPACKER_LOG -geometry 80x23+400+$_yOffset -hold -e $VALGRIND_UNP ${VMCWORKDIR}/build/bin/MQ/mcbm/$UNPACKER &
-#  xterm -l -lf $UNPACKER_LOG -geometry 80x23+400+$_yOffset -hold -e $VALGHEAP_UNP ${VMCWORKDIR}/build/bin/MQ/mcbm/$UNPACKER &
 
   EVTBUILDER="BuildDigiEvents"
   EVTBUILDER+=" --id build$_iMoni"
@@ -200,11 +198,7 @@ while (( _iMoni < _nbmoni )); do
   # with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
   EVTBUILDER_LOG="build$_iMoni"
   EVTBUILDER_LOG+="_$LOGFILETAG"
-  VALGRIND_EVT="valgrind -v --error-limit=no --suppressions=$ROOTSYS/share/root/etc/valgrind-root.supp --leak-check=full --show-reachable=yes --log-file=valgrind_evt_log.txt"
-  VALGHEAP_EVT="valgrind --tool=massif --massif-out-file=valgrind_evt_massif.out"
   xterm -l -lf $EVTBUILDER_LOG -geometry 80x23+800+$_yOffset -hold -e ${VMCWORKDIR}/build/bin/MQ/mcbm/$EVTBUILDER &
-#  xterm -l -lf $EVTBUILDER_LOG -geometry 80x23+800+$_yOffset -hold -e $VALGRIND_EVT ${VMCWORKDIR}/build/bin/MQ/mcbm/$EVTBUILDER &
-#  xterm -l -lf $EVTBUILDER_LOG -geometry 80x23+800+$_yOffset -hold -e $VALGHEAP_EVT ${VMCWORKDIR}/build/bin/MQ/mcbm/$EVTBUILDER &
 
 done
 
@@ -226,13 +220,7 @@ EVTSINK+=" --channel-config name=histogram-in,type=sub,method=bind,transport=zer
 # Replaces log filename Xterm.log.hostname.yyyy.mm.dd.hh.mm.ss.XXXXXX
 # with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
 EVTSINK_LOG="evtsink1_$LOGFILETAG"
-VALGRIND_SINK="valgrind -v --error-limit=no --suppressions=$ROOTSYS/share/root/etc/valgrind-root.supp --leak-check=full --show-reachable=yes --log-file=valgrind_sink_log.txt"
-VALGHEAP_SINK="valgrind -v --tool=massif --massif-out-file=valgrind_sink_massif.out"
-VALGCPU_SINK="valgrind -v --tool=callgrind"
 xterm -l -lf $EVTSINK_LOG -geometry 80x23+1200+0 -hold -e ${VMCWORKDIR}/build/bin/MQ/mcbm/$EVTSINK &
-#xterm -l -lf $EVTSINK_LOG -geometry 80x23+1200+0 -hold -e $VALGRIND_SINK ${VMCWORKDIR}/build/bin/MQ/mcbm/$EVTSINK &
-#xterm -l -lf $EVTSINK_LOG -geometry 80x23+1200+0 -hold -e $VALGHEAP_SINK ${VMCWORKDIR}/build/bin/MQ/mcbm/$EVTSINK &
-#xterm -l -lf $EVTSINK_LOG -geometry 80x23+1200+0 -hold -e $VALGCPU_SINK ${VMCWORKDIR}/build/bin/MQ/mcbm/$EVTSINK &
 
 PARAMETERSERVER="parmq-server"
 PARAMETERSERVER+=" --id parmq-server"

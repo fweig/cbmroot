@@ -291,12 +291,15 @@ void CbmTofUnpackAlgo::ProcessEpoch(const critof001::Message& mess, uint32_t uMe
   if (0 == uMesgIdx) {
     uint64_t ulMsStartInEpoch =
       static_cast<uint64_t>(fulCurrentMsIdx / critof001::kuEpochInNs) % critof001::kulEpochCycleEp;
-    /// FIXME: seems there is an offset of +4 Epoch between data and header
-    ///        from dt to PSD, the epoch seem to be right => placed in wrong MS!
-    if (ulMsStartInEpoch < 4) { ulMsStartInEpoch = critof001::kulEpochCycleEp + ulMsStartInEpoch - 4; }
-    else {
-      ulMsStartInEpoch -= 4;
-    }
+
+    if (fbEpochCountHack2021) {
+      /// FIXME: seems there is an offset of +4 Epoch between data and header
+      ///        from dt to PSD, the epoch seem to be right => placed in wrong MS!
+      if (ulMsStartInEpoch < 4) { ulMsStartInEpoch = critof001::kulEpochCycleEp + ulMsStartInEpoch - 4; }
+      else {
+        ulMsStartInEpoch -= 4;
+      }
+    }  // if (fbEpochCountHack2021)
 
     if (ulEpochNr != ulMsStartInEpoch) {
       // size_t required to silence a warning on macos (there a uint64_t is a llu)

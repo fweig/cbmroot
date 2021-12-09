@@ -60,8 +60,20 @@ public:
 
   // Getters
 
+  /**
+   * @brief Initialize the algorithm, should include all steps needing te parameter objects to be present.
+   * In this function most initialization steps of the unpacker algorithms happen.
+  */
+  void InitAlgo();
+
 
   // Setters
+  /**
+   * @brief Sets the flag enabling the epoch offset hack for the July 2021 data. Default is enable.
+   *
+   * @param[in] Optional: boolean flag value, default is true
+  */
+  void SetFlagEpochCountHack2021(bool bFlagin = true) { fbEpochCountHack2021 = bFlagin; }
 
 protected:
   /**
@@ -72,7 +84,10 @@ protected:
   virtual std::shared_ptr<CbmTofUnpackAlgo> chooseAlgo();
 
 private:
-  ClassDef(CbmTofUnpackConfig, 1)
+  /// Control flags
+  bool fbEpochCountHack2021 = false;
+
+  ClassDef(CbmTofUnpackConfig, 2)
 };
 
 #endif  // CbmTofUnpackConfig_H

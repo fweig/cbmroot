@@ -155,6 +155,108 @@ Bool_t CbmDeviceUnpack::InitContainers()
       stsconfig->MaskNoisyChannel(3, 75);
       stsconfig->MaskNoisyChannel(3, 56);
       stsconfig->MaskNoisyChannel(9, 709);
+
+      // Time OffSet
+      // U2 MOD1
+      stsconfig->SetAsicTimeOffset(104, 0.235097);
+      stsconfig->SetAsicTimeOffset(105, -0.919854);
+      stsconfig->SetAsicTimeOffset(106, 0.470871);
+      stsconfig->SetAsicTimeOffset(107, -0.302136);
+      stsconfig->SetAsicTimeOffset(108, 0.0538701);
+      stsconfig->SetAsicTimeOffset(109, -0.726945);
+      stsconfig->SetAsicTimeOffset(110, -0.474958);
+      stsconfig->SetAsicTimeOffset(111, -0.426105);
+      stsconfig->SetAsicTimeOffset(112, -0.642128);
+      stsconfig->SetAsicTimeOffset(113, 3.90217);
+      stsconfig->SetAsicTimeOffset(114, 4.50206);
+      stsconfig->SetAsicTimeOffset(115, 4.16447);
+      stsconfig->SetAsicTimeOffset(116, 5.00525);
+      stsconfig->SetAsicTimeOffset(117, 4.2554);
+      stsconfig->SetAsicTimeOffset(118, 5.51313);
+      stsconfig->SetAsicTimeOffset(119, 3.38058);
+      // U2 MOD0
+      stsconfig->SetAsicTimeOffset(88, 5.32785);
+      stsconfig->SetAsicTimeOffset(89, 5.10337);
+      stsconfig->SetAsicTimeOffset(90, 6.63223);
+      stsconfig->SetAsicTimeOffset(91, 4.44318);
+      stsconfig->SetAsicTimeOffset(92, 6.5406);
+      stsconfig->SetAsicTimeOffset(93, 3.82063);
+      stsconfig->SetAsicTimeOffset(94, 5.8673);
+      stsconfig->SetAsicTimeOffset(95, 4.41679);
+      stsconfig->SetAsicTimeOffset(96, 0.917994);
+      stsconfig->SetAsicTimeOffset(97, 2.7819);
+      stsconfig->SetAsicTimeOffset(98, 5.61836);
+      stsconfig->SetAsicTimeOffset(99, 5.9533);
+      stsconfig->SetAsicTimeOffset(100, 5.9789);
+      stsconfig->SetAsicTimeOffset(101, 5.24167);
+      stsconfig->SetAsicTimeOffset(102, 7.14848);
+      stsconfig->SetAsicTimeOffset(103, 6.12267);
+      // U1 MOD1
+      stsconfig->SetAsicTimeOffset(64, 6.94614);
+      stsconfig->SetAsicTimeOffset(65, 6.79433);
+      stsconfig->SetAsicTimeOffset(66, 5.57188);
+      stsconfig->SetAsicTimeOffset(67, 4.78256);
+      stsconfig->SetAsicTimeOffset(68, 4.47773);
+      stsconfig->SetAsicTimeOffset(69, 3.70702);
+      stsconfig->SetAsicTimeOffset(70, 4.02281);
+      stsconfig->SetAsicTimeOffset(71, 4.74402);
+      stsconfig->SetAsicTimeOffset(72, 2.13448);
+      stsconfig->SetAsicTimeOffset(73, 3.28798);
+      stsconfig->SetAsicTimeOffset(74, 4.13604);
+      stsconfig->SetAsicTimeOffset(76, 5.02552);
+      stsconfig->SetAsicTimeOffset(77, 3.55128);
+      stsconfig->SetAsicTimeOffset(78, 4.66596);
+      stsconfig->SetAsicTimeOffset(79, 3.76298);
+      // U1 MOD0
+      stsconfig->SetAsicTimeOffset(48, 10.0742);
+      stsconfig->SetAsicTimeOffset(49, 9.31221);
+      stsconfig->SetAsicTimeOffset(50, 6.09788);
+      stsconfig->SetAsicTimeOffset(51, 2.85866);
+      stsconfig->SetAsicTimeOffset(52, 5.45111);
+      stsconfig->SetAsicTimeOffset(53, 3.18376);
+      stsconfig->SetAsicTimeOffset(54, 4.77448);
+      stsconfig->SetAsicTimeOffset(55, 3.20388);
+      stsconfig->SetAsicTimeOffset(56, 3.37812);
+      stsconfig->SetAsicTimeOffset(57, 4.08165);
+      stsconfig->SetAsicTimeOffset(58, 5.06481);
+      stsconfig->SetAsicTimeOffset(59, 4.39388);
+      stsconfig->SetAsicTimeOffset(60, 5.63931);
+      stsconfig->SetAsicTimeOffset(61, 4.15354);
+      stsconfig->SetAsicTimeOffset(62, 6.67062);
+      stsconfig->SetAsicTimeOffset(63, 6.33579);
+      // U0 MOD1
+      stsconfig->SetAsicTimeOffset(24, 5.01505);
+      stsconfig->SetAsicTimeOffset(25, 3.84039);
+      stsconfig->SetAsicTimeOffset(26, 5.36344);
+      stsconfig->SetAsicTimeOffset(27, 2.96807);
+      stsconfig->SetAsicTimeOffset(28, 4.14668);
+      stsconfig->SetAsicTimeOffset(29, 2.4282);
+      stsconfig->SetAsicTimeOffset(30, 4.02055);
+      stsconfig->SetAsicTimeOffset(31, 4.13309);
+      stsconfig->SetAsicTimeOffset(32, 1.2073);
+      stsconfig->SetAsicTimeOffset(33, 4.02747);
+      stsconfig->SetAsicTimeOffset(34, 5.03306);
+      stsconfig->SetAsicTimeOffset(35, 3.5234);
+      stsconfig->SetAsicTimeOffset(36, 5.41946);
+      stsconfig->SetAsicTimeOffset(37, 4.82807);
+      stsconfig->SetAsicTimeOffset(38, 6.33436);
+      stsconfig->SetAsicTimeOffset(39, 4.71413);
+      // U0 MOD0
+      stsconfig->SetAsicTimeOffset(8, 8.15031);
+      stsconfig->SetAsicTimeOffset(9, 6.99897);
+      stsconfig->SetAsicTimeOffset(10, 8.14826);
+      stsconfig->SetAsicTimeOffset(11, 3.29095);
+      stsconfig->SetAsicTimeOffset(12, 3.04337);
+      stsconfig->SetAsicTimeOffset(14, 3.71628);
+      stsconfig->SetAsicTimeOffset(15, 3.82512);
+      stsconfig->SetAsicTimeOffset(16, 4.05862);
+      stsconfig->SetAsicTimeOffset(17, 4.53291);
+      stsconfig->SetAsicTimeOffset(18, 5.22825);
+      stsconfig->SetAsicTimeOffset(19, 4.93144);
+      stsconfig->SetAsicTimeOffset(20, 6.33821);
+      stsconfig->SetAsicTimeOffset(21, 5.66979);
+      stsconfig->SetAsicTimeOffset(22, 9.33802);
+      stsconfig->SetAsicTimeOffset(23, 7.41302);
     }
   }  // if ("" != stsSetupTag)
   // -------------
@@ -211,6 +313,10 @@ Bool_t CbmDeviceUnpack::InitContainers()
       std::string parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
       tofconfig->SetParFilesBasePath(parfilesbasepathTof);
       tofconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+      if (fuRunId <= 1659) {
+        /// Switch ON the -4 offset in epoch count (hack for Spring-Summer 2021)
+        tofconfig->SetFlagEpochCountHack2021();
+      }
     }
   }  // if ("" != tofSetupTag)
   // -------------
@@ -275,127 +381,6 @@ Bool_t CbmDeviceUnpack::InitContainers()
 
     if ("kSTS" == sSelDet && fStsConfig) {  //
       fStsConfig->SetSystemTimeOffset(iOffset);
-
-      fStsConfig->SetMinAdcCut(1, 1);
-      fStsConfig->SetMinAdcCut(2, 1);
-      fStsConfig->SetMinAdcCut(3, 1);
-      fStsConfig->SetMinAdcCut(4, 1);
-
-      fStsConfig->MaskNoisyChannel(7, 715);
-      fStsConfig->MaskNoisyChannel(7, 162);
-      fStsConfig->MaskNoisyChannel(7, 159);
-      fStsConfig->MaskNoisyChannel(7, 158);
-      fStsConfig->MaskNoisyChannel(7, 125);
-      fStsConfig->MaskNoisyChannel(7, 124);
-      fStsConfig->MaskNoisyChannel(7, 123);
-      fStsConfig->MaskNoisyChannel(12, 119);
-      fStsConfig->MaskNoisyChannel(3, 85);
-      fStsConfig->MaskNoisyChannel(3, 79);
-      fStsConfig->MaskNoisyChannel(3, 75);
-      fStsConfig->MaskNoisyChannel(3, 56);
-      fStsConfig->MaskNoisyChannel(9, 709);
-
-      // Time OffSet
-      // U2 MOD1
-      fStsConfig->SetAsicTimeOffset(104, 0.235097);
-      fStsConfig->SetAsicTimeOffset(105, -0.919854);
-      fStsConfig->SetAsicTimeOffset(106, 0.470871);
-      fStsConfig->SetAsicTimeOffset(107, -0.302136);
-      fStsConfig->SetAsicTimeOffset(108, 0.0538701);
-      fStsConfig->SetAsicTimeOffset(109, -0.726945);
-      fStsConfig->SetAsicTimeOffset(110, -0.474958);
-      fStsConfig->SetAsicTimeOffset(111, -0.426105);
-      fStsConfig->SetAsicTimeOffset(112, -0.642128);
-      fStsConfig->SetAsicTimeOffset(113, 3.90217);
-      fStsConfig->SetAsicTimeOffset(114, 4.50206);
-      fStsConfig->SetAsicTimeOffset(115, 4.16447);
-      fStsConfig->SetAsicTimeOffset(116, 5.00525);
-      fStsConfig->SetAsicTimeOffset(117, 4.2554);
-      fStsConfig->SetAsicTimeOffset(118, 5.51313);
-      fStsConfig->SetAsicTimeOffset(119, 3.38058);
-      // U2 MOD0
-      fStsConfig->SetAsicTimeOffset(88, 5.32785);
-      fStsConfig->SetAsicTimeOffset(89, 5.10337);
-      fStsConfig->SetAsicTimeOffset(90, 6.63223);
-      fStsConfig->SetAsicTimeOffset(91, 4.44318);
-      fStsConfig->SetAsicTimeOffset(92, 6.5406);
-      fStsConfig->SetAsicTimeOffset(93, 3.82063);
-      fStsConfig->SetAsicTimeOffset(94, 5.8673);
-      fStsConfig->SetAsicTimeOffset(95, 4.41679);
-      fStsConfig->SetAsicTimeOffset(96, 0.917994);
-      fStsConfig->SetAsicTimeOffset(97, 2.7819);
-      fStsConfig->SetAsicTimeOffset(98, 5.61836);
-      fStsConfig->SetAsicTimeOffset(99, 5.9533);
-      fStsConfig->SetAsicTimeOffset(100, 5.9789);
-      fStsConfig->SetAsicTimeOffset(101, 5.24167);
-      fStsConfig->SetAsicTimeOffset(102, 7.14848);
-      fStsConfig->SetAsicTimeOffset(103, 6.12267);
-      // U1 MOD1
-      fStsConfig->SetAsicTimeOffset(64, 6.94614);
-      fStsConfig->SetAsicTimeOffset(65, 6.79433);
-      fStsConfig->SetAsicTimeOffset(66, 5.57188);
-      fStsConfig->SetAsicTimeOffset(67, 4.78256);
-      fStsConfig->SetAsicTimeOffset(68, 4.47773);
-      fStsConfig->SetAsicTimeOffset(69, 3.70702);
-      fStsConfig->SetAsicTimeOffset(70, 4.02281);
-      fStsConfig->SetAsicTimeOffset(71, 4.74402);
-      fStsConfig->SetAsicTimeOffset(72, 2.13448);
-      fStsConfig->SetAsicTimeOffset(73, 3.28798);
-      fStsConfig->SetAsicTimeOffset(74, 4.13604);
-      fStsConfig->SetAsicTimeOffset(76, 5.02552);
-      fStsConfig->SetAsicTimeOffset(77, 3.55128);
-      fStsConfig->SetAsicTimeOffset(78, 4.66596);
-      fStsConfig->SetAsicTimeOffset(79, 3.76298);
-      // U1 MOD0
-      fStsConfig->SetAsicTimeOffset(48, 10.0742);
-      fStsConfig->SetAsicTimeOffset(49, 9.31221);
-      fStsConfig->SetAsicTimeOffset(50, 6.09788);
-      fStsConfig->SetAsicTimeOffset(51, 2.85866);
-      fStsConfig->SetAsicTimeOffset(52, 5.45111);
-      fStsConfig->SetAsicTimeOffset(53, 3.18376);
-      fStsConfig->SetAsicTimeOffset(54, 4.77448);
-      fStsConfig->SetAsicTimeOffset(55, 3.20388);
-      fStsConfig->SetAsicTimeOffset(56, 3.37812);
-      fStsConfig->SetAsicTimeOffset(57, 4.08165);
-      fStsConfig->SetAsicTimeOffset(58, 5.06481);
-      fStsConfig->SetAsicTimeOffset(59, 4.39388);
-      fStsConfig->SetAsicTimeOffset(60, 5.63931);
-      fStsConfig->SetAsicTimeOffset(61, 4.15354);
-      fStsConfig->SetAsicTimeOffset(62, 6.67062);
-      fStsConfig->SetAsicTimeOffset(63, 6.33579);
-      // U0 MOD1
-      fStsConfig->SetAsicTimeOffset(24, 5.01505);
-      fStsConfig->SetAsicTimeOffset(25, 3.84039);
-      fStsConfig->SetAsicTimeOffset(26, 5.36344);
-      fStsConfig->SetAsicTimeOffset(27, 2.96807);
-      fStsConfig->SetAsicTimeOffset(28, 4.14668);
-      fStsConfig->SetAsicTimeOffset(29, 2.4282);
-      fStsConfig->SetAsicTimeOffset(30, 4.02055);
-      fStsConfig->SetAsicTimeOffset(31, 4.13309);
-      fStsConfig->SetAsicTimeOffset(32, 1.2073);
-      fStsConfig->SetAsicTimeOffset(33, 4.02747);
-      fStsConfig->SetAsicTimeOffset(34, 5.03306);
-      fStsConfig->SetAsicTimeOffset(35, 3.5234);
-      fStsConfig->SetAsicTimeOffset(36, 5.41946);
-      fStsConfig->SetAsicTimeOffset(37, 4.82807);
-      fStsConfig->SetAsicTimeOffset(38, 6.33436);
-      fStsConfig->SetAsicTimeOffset(39, 4.71413);
-      // U0 MOD0
-      fStsConfig->SetAsicTimeOffset(8, 8.15031);
-      fStsConfig->SetAsicTimeOffset(9, 6.99897);
-      fStsConfig->SetAsicTimeOffset(10, 8.14826);
-      fStsConfig->SetAsicTimeOffset(11, 3.29095);
-      fStsConfig->SetAsicTimeOffset(12, 3.04337);
-      fStsConfig->SetAsicTimeOffset(14, 3.71628);
-      fStsConfig->SetAsicTimeOffset(15, 3.82512);
-      fStsConfig->SetAsicTimeOffset(16, 4.05862);
-      fStsConfig->SetAsicTimeOffset(17, 4.53291);
-      fStsConfig->SetAsicTimeOffset(18, 5.22825);
-      fStsConfig->SetAsicTimeOffset(19, 4.93144);
-      fStsConfig->SetAsicTimeOffset(20, 6.33821);
-      fStsConfig->SetAsicTimeOffset(21, 5.66979);
-      fStsConfig->SetAsicTimeOffset(22, 9.33802);
-      fStsConfig->SetAsicTimeOffset(23, 7.41302);
     }  // if( "kSTS"  == sSelDet && fStsConfig)
        /*
     else if ("kMUCH" == sSelDet) {

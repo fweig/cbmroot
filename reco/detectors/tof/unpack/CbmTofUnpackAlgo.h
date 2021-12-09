@@ -64,6 +64,13 @@ public:
   virtual std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
   GetParContainerRequest(std::string geoTag, std::uint32_t runId);
 
+  /**
+   * @brief Sets the flag enabling the epoch offset hack for the July 2021 data. Default is enable.
+   *
+   * @param[in] Optional: boolean flag value, default is true
+  */
+  void SetFlagEpochCountHack2021(bool bFlagin = true) { fbEpochCountHack2021 = bFlagin; }
+
 protected:
   /** @brief Finish function for this algorithm base clase */
   void finish()
@@ -174,6 +181,7 @@ private:
   ULong64_t fulCurrentEpoch = 0;  //! Current epoch index
 
   /// Control flags
+  bool fbEpochCountHack2021             = false;
   std::vector<bool> fvbMaskedComponents = {};
   bool fbLastEpochGood                  = false;
 
@@ -182,7 +190,7 @@ private:
   uint64_t fulTsStartInEpoch     = 0;
   uint64_t fulEpochIndexInTs     = 0;
 
-  ClassDef(CbmTofUnpackAlgo, 1)
+  ClassDef(CbmTofUnpackAlgo, 2)
 };
 
 #endif  // CbmTofUnpackAlgo_H

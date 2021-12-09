@@ -304,6 +304,10 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     std::string parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
     tofconfig->SetParFilesBasePath(parfilesbasepathTof);
     tofconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+    if (runid <= 1659) {
+      /// Switch ON the -4 offset in epoch count (hack for Spring-Summer 2021)
+      tofconfig->SetFlagEpochCountHack2021();
+    }
   }
   // -------------
 

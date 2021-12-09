@@ -22,6 +22,13 @@ CbmTofUnpackConfig::CbmTofUnpackConfig(std::string detGeoSetupTag, UInt_t runid)
 CbmTofUnpackConfig::~CbmTofUnpackConfig() {}
 
 // ---- Init ----
+void CbmTofUnpackConfig::InitAlgo()
+{
+  fAlgo->SetFlagEpochCountHack2021(fbEpochCountHack2021);
+
+  // Now we have all information required to initialise the algorithm
+  fAlgo->Init();
+}
 
 // ---- chooseAlgo ----
 std::shared_ptr<CbmTofUnpackAlgo> CbmTofUnpackConfig::chooseAlgo()
@@ -38,6 +45,5 @@ std::shared_ptr<CbmTofUnpackAlgo> CbmTofUnpackConfig::chooseAlgo()
              << "::Init - chooseAlgo() - no algorithm created something went wrong. We can not work like this!";
   return nullptr;
 }
-
 
 ClassImp(CbmTofUnpackConfig)
