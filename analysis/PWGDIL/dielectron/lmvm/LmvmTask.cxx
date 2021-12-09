@@ -98,6 +98,7 @@ void LmvmTask::InitHists()
   fH.CreateH1("hChi2PrimVertex", fH.fSrcNames, "#chi^{2}_{prim}", ax, 200, 0., 20.);
   fH.CreateH1("hNofMvdHits", fH.fSrcNames, "Number of hits in MVD", ax, 5, -0.5, 4.5);
   fH.CreateH1("hNofStsHits", fH.fSrcNames, "Number of hits in STS", ax, 9, -0.5, 8.5);
+  fH.CreateH2("hTrdLike", {"El", "Pi"}, fH.fSrcNames, "P [GeV/c]", "Likelihood output", ax, 100, 0., 6., 100, -0.1, 1.1);
 
   fH.CreateH2("hTtCut", {"all", "pion", "truePair"}, fH.fSrcNames, "#sqrt{p_{e^{#pm}} p_{rec}} [GeV/c]",
               "#theta_{e^{+},e^{-}} [deg]", ax, 100, 0., 5., 100, 0., 5.);
@@ -555,6 +556,8 @@ void LmvmTask::FillCands()
     if (richRing == nullptr || trdTrack == nullptr || tofHit == nullptr) continue;
 
     LmvmUtils::IsElectron(iGTrack, cand.fMomentum.Mag(), fCuts.fMomentumCut, &cand);
+    cand.fTrdLikeEl = trdTrack->GetPidLikeEL();
+    cand.fTrdLikePi = trdTrack->GetPidLikePI();
 
     fCands.push_back(cand);
 
@@ -960,6 +963,8 @@ void LmvmTask::DifferenceSignalAndBg()
     fH.FillH1("hRichAnn", cand.fMcSrc, cand.fRichAnn, fW);
     fH.FillH1("hTrdAnn", cand.fMcSrc, cand.fTrdAnn, fW);
     fH.FillH2("hTofM2", cand.fMcSrc, cand.fMomentum.Mag(), cand.fMass2, fW);
+    fH.FillH2("hTrdLike_El", cand.fMcSrc, cand.fMomentum.Mag(), cand.fTrdLikeEl, fW);
+    fH.FillH2("hTrdLike_Pi", cand.fMcSrc, cand.fMomentum.Mag(), cand.fTrdLikePi, fW);
 
     if (!cand.IsCutTill(ELmvmAnaStep::ElId)) continue;
     //fH.FillSourceH1("hPt", cand.fMcSrc, cand.fMomentum.Perp(), fW);

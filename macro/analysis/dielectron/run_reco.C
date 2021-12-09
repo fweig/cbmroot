@@ -88,8 +88,8 @@ void run_reco(const string& traFile, const string& parFile, const string& digiFi
   }
 
   if (useSts) {
-    CbmRecoSts* stsReco = new CbmRecoSts(kCbmRecoTimeslice);
-    if (eventBased) stsReco->SetMode(kCbmRecoEvent);
+    CbmRecoSts* stsReco = new CbmRecoSts(ECbmRecoMode::kCbmRecoTimeslice);
+    if (eventBased) stsReco->SetMode(ECbmRecoMode::kCbmRecoEvent);
     run->AddTask(stsReco);
   }
 

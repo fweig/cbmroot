@@ -337,6 +337,9 @@ void LmvmDraw::DrawCuts()
   //Draw1DCut("hMom", "left");
   Draw1DCut("hChi2Sts", "right");
 
+  Draw2DCut("hTrdLike_El");
+  Draw2DCut("hTrdLike_Pi");
+
   for (const string& type : {"all", "pion", "truePair"}) {
     Draw2DCut("hStCut_" + type, fCuts.fStCutPP, fCuts.fStCutAngle);
     Draw2DCut("hTtCut_" + type, fCuts.fTtCutPP, fCuts.fTtCutAngle);
