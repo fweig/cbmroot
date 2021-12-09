@@ -17,6 +17,7 @@ CbmStsAlgoFindHitsOrtho.cxx
 CbmStsFindTracks.cxx
 CbmStsFindTracksEvents.cxx
 CbmStsRecoModule.cxx
+CbmRecoStsPixel.cxx
 CbmStsTrackFinderIdeal.cxx
 
 unpack/CbmStsUnpackAlgo.cxx

@@ -17,6 +17,9 @@
 #pragma link C++ class CbmStsFindTracksEvents + ;
 #pragma link C++ class CbmStsFindTracksQa + ;
 #pragma link C++ class CbmStsRecoModule + ;
+
+#pragma link C++ class CbmRecoStsPixel + ;
+
 #pragma link C++ class CbmStsTrackFinderIdeal + ;
 
 #pragma link C++ class CbmStsUnpackAlgo + ;

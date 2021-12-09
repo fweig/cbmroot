@@ -232,7 +232,7 @@ public:
   L1Algo* algo {nullptr};  // for access to L1 Algorithm from L1::Instance
 
   TString fMuchDigiFile {};  // Much digitization file name
-  bool fUseHitErrors {false};
+  bool fUseHitErrors {true};
   bool fMissingHits {false};
   L1Algo::TrackingMode fTrackingMode {L1Algo::TrackingMode::kSts};
 

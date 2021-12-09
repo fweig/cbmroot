@@ -256,7 +256,7 @@ public:
   L1Vector<int> fStripToTrackB {"L1Algo::fStripToTrackB"};  // back strip to track pointers
 
   int fNThreads {0};
-  bool fUseHitErrors {0};
+  bool fUseHitErrors {true};
   bool fMissingHits {0};
   TrackingMode fTrackingMode {kSts};
 

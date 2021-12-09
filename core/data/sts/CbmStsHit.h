@@ -73,6 +73,14 @@ public:
      **/
   double GetDu() const { return fDu; }
 
+  /** @brief Error of coordinate across front-side strips
+     ** @value Coordinate error [cm]
+     **
+     ** Note that this error is defined only in the
+     ** local coordinate system of the sensor.
+     **/
+  void SetDu(Double_t du) { fDu = du; }
+
 
   /** @brief Error of coordinate across front-side strips
      ** @value Coordinate error [cm]
@@ -81,6 +89,14 @@ public:
      ** local coordinate system of the sensor.
      **/
   double GetDv() const { return fDv; }
+
+  /** @brief Error of coordinate across front-side strips
+     ** @value Coordinate error [cm]
+     **
+     ** Note that this error is defined only in the
+     ** local coordinate system of the sensor.
+     **/
+  void SetDv(Double_t dv) { fDv = dv; }
 
 
   /** Index of cluster at the front side

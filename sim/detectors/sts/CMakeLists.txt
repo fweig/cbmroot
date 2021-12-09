@@ -20,6 +20,8 @@ CbmStsSimSensorDssdOrtho.cxx
 CbmStsSimSensorDssdStereo.cxx
 CbmStsSimSensorFactory.cxx
 
+CbmStsDigitizePixel.cxx
+
 qa/CbmStsDigitizeQa.cxx
 qa/CbmStsDigitizeQaReport.cxx
 )
@@ -103,6 +105,7 @@ FILES CbmStsDigitize.h
 	  CbmStsSimSensorDssdOrtho.h
 	  CbmStsSimSensorFactory.h
 	  CbmStsTrackStatus.h
+	  CbmStsDigitizePixel.h
 DESTINATION include
 )
 # ---------------------------------------------------------

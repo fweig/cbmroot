@@ -21,5 +21,6 @@
 #pragma link C++ class CbmStsSimSensorDssdStereo + ;
 #pragma link C++ class CbmStsSimSensorDssdOrtho + ;
 #pragma link C++ class CbmStsSimSensorFactory + ;
+#pragma link C++ class CbmStsDigitizePixel + ;
 
 #endif /* __CINT__ */
