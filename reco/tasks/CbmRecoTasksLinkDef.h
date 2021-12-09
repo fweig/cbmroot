@@ -12,6 +12,7 @@
 
 // --- Classes
 #pragma link C++ class CbmTaskBuildEvents + ;
+#pragma link C++ class CbmTaskMakeRecoEvents + ;
 #pragma link C++ class CbmTaskTriggerDigi + ;
 
 #endif /* __CINT__ */

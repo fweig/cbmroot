@@ -10,6 +10,7 @@ Set(LIBRARY_NAME CbmRecoTasks)
 # -----  Compilation sources   ----------------------------
 set(SRCS
 CbmTaskBuildEvents.cxx
+CbmTaskMakeRecoEvents.cxx
 CbmTaskTriggerDigi.cxx
 )
 # ---------------------------------------------------------

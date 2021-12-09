@@ -226,7 +226,7 @@ void CbmRecoSts::Finish()
   LOG(info) << "Hits / TSlice          : " << fixed << setprecision(2) << fNofHits / Double_t(fNofTs);
   LOG(info) << "Digis per cluster      : " << fixed << setprecision(2) << digiCluster;
   LOG(info) << "Clusters per hit       : " << fixed << setprecision(2) << clusterHit;
-  LOG(info) << "Time per TSlice        : " << fixed << setprecision(2) << 1000. * fTimeRun / Double_t(fNofTs) << " s ";
+  LOG(info) << "Time per TSlice        : " << fixed << setprecision(2) << 1000. * fTimeRun / Double_t(fNofTs) << " ms ";
 
   fTimeRun /= Double_t(fNofEvents);
   fTime1Run /= Double_t(fNofEvents);

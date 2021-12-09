@@ -2,14 +2,43 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Volker Friese [committer], Dominik Smith */
 
+/** @file run_reco.C
+ ** @author Volker Friese <v.friese@gsi.de>
+ ** @since 14 November 2020
+ **/
+
 
 // --- Includes needed for IDE
 #include <RtypesCore.h>
 #if !defined(__CLING__)
+#include "CbmBuildEventsFromTracksReal.h"
+#include "CbmBuildEventsIdeal.h"
+#include "CbmBuildEventsQa.h"
 #include "CbmDefs.h"
+#include "CbmFindPrimaryVertex.h"
+#include "CbmKF.h"
+#include "CbmL1.h"
+#include "CbmL1StsTrackFinder.h"
+#include "CbmLitFindGlobalTracks.h"
+#include "CbmMCDataManager.h"
+#include "CbmMatchRecoToMC.h"
+#include "CbmMuchFindHitsGem.h"
+#include "CbmMvdClusterfinder.h"
+#include "CbmMvdHitfinder.h"
+#include "CbmPVFinderKF.h"
+#include "CbmPrimaryVertexFinder.h"
+#include "CbmPsdHitProducer.h"
+#include "CbmRecoSts.h"
+#include "CbmRichHitProducer.h"
+#include "CbmRichReconstruction.h"
 #include "CbmSetup.h"
-#include "CbmTaskBuildEvents.h"
-#include "CbmTaskTriggerDigi.h"
+#include "CbmStsFindTracks.h"
+#include "CbmStsFindTracksEvents.h"
+#include "CbmStsTrackFinder.h"
+#include "CbmTaskBuildRawEvents.h"
+#include "CbmTofSimpClusterizer.h"
+#include "CbmTrdClusterFinder.h"
+#include "CbmTrdHitProducer.h"
 
 #include <FairFileSource.h>
 #include <FairMonitor.h>
@@ -20,26 +49,24 @@
 #include <FairSystemInfo.h>
 
 #include <TStopwatch.h>
-
-#include <memory>
 #endif
 
-#include <FairLogger.h>
 
-/** @brief Macro for CBM reconstruction from digi level
+/** @brief Macro for CBM reconstruction
  ** @author Volker Friese <v.friese@gsi.de>
- ** @since  15 November 2021
+ ** @since  14 November 2020
  ** @param input          Name of input file (w/o extension .raw.root)
  ** @param nTimeSlices    Number of time-slices to process
  ** @param firstTimeSlice First time-slice (entry) to be processed
  ** @param output         Name of output file (w/o extension .rec.root)
+ ** @param sEvBuildRaw    Option for raw event building
  ** @param setup          Name of predefined geometry setup
  ** @param paramFile      Parameter ROOT file (w/o extension .par.root)
+ ** @param debugWithMC          Option to provide the trackfinder with MC information
  **
- ** Reconstruction from digi level. Currently included stages:
- ** - Event building (CbmTaskBuildEvents) (STS only)
- **
- ** TODO: To be expanded with the progress of the algo project.
+ ** This macro performs event-by-event reconstruction from from the digis in DigiEvents.
+ ** It can be used for real data after unpacking, triggering and event building or
+ ** for simulated data after triggering and event building with macro/reco/reco_digi.C.
  **
  ** The file names must be specified without extensions. The convention is
  ** that the raw (input) file is [input].raw.root. The output file
@@ -52,8 +79,8 @@
  ** from the ROOT prompt without user intervention.
  **
  **/
-void reco_digi(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice = 0, TString output = "",
-               TString setup = "sis100_electron", TString paramFile = "")
+void run_reco_digievent(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice = 0, TString output = "",
+                        TString setup = "sis100_electron", TString paramFile = "")
 {
 
   // ========================================================================
@@ -65,23 +92,22 @@ void reco_digi(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice 
   // ------------------------------------------------------------------------
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "reco_digi";                    // this macro's name for screen log
+  TString myName = "run_reco_digievent";           // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
 
   // -----   In- and output file names   ------------------------------------
   if (input.IsNull()) input = "test";
-  TString rawFile = input + ".raw.root";
-  TString traFile = input + ".tra.root";
+  TString rawFile = input + ".events.root";
   if (output.IsNull()) output = input;
-  TString outFile = output + ".events.root";
+  TString outFile = output + ".reco.root";
   TString monFile = output + ".moni_reco.root";
   if (paramFile.IsNull()) paramFile = input;
   TString parFile = paramFile + ".par.root";
-  LOG(info) << myName << ": Input file is     " << rawFile;
-  LOG(info) << myName << ": Output file is    " << outFile;
-  LOG(info) << myName << ": Parameter file is " << parFile;
+  std::cout << "Inputfile " << rawFile << std::endl;
+  std::cout << "Outfile " << outFile << std::endl;
+  std::cout << "Parfile " << parFile << std::endl;
 
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
@@ -89,6 +115,46 @@ void reco_digi(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice 
   CbmSetup* geo = CbmSetup::Instance();
   geo->LoadSetup(setup);
   // ------------------------------------------------------------------------
+
+
+  // -----   Some global switches   -----------------------------------------
+  Bool_t useMvd  = geo->IsActive(ECbmModuleId::kMvd);
+  Bool_t useSts  = geo->IsActive(ECbmModuleId::kSts);
+  Bool_t useRich = geo->IsActive(ECbmModuleId::kRich);
+  Bool_t useMuch = geo->IsActive(ECbmModuleId::kMuch);
+  Bool_t useTrd  = geo->IsActive(ECbmModuleId::kTrd);
+  Bool_t useTof  = geo->IsActive(ECbmModuleId::kTof);
+  Bool_t usePsd  = geo->IsActive(ECbmModuleId::kPsd);
+  // ------------------------------------------------------------------------
+
+
+  // -----   Parameter files as input to the runtime database   -------------
+  std::cout << std::endl;
+  std::cout << "-I- " << myName << ": Defining parameter files " << std::endl;
+  TList* parFileList = new TList();
+  TString geoTag;
+
+  // - TRD digitisation parameters
+  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTrd, geoTag)) {
+    const Char_t* npar[4] = {"asic", "digi", "gas", "gain"};
+    TObjString* trdParFile(NULL);
+    for (Int_t i(0); i < 4; i++) {
+      trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "." + npar[i] + ".par");
+      parFileList->Add(trdParFile);
+      std::cout << "-I- " << myName << ": Using parameter file " << trdParFile->GetString() << std::endl;
+    }
+  }
+
+  // - TOF digitisation parameters
+  if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
+    TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
+    parFileList->Add(tofBdfFile);
+    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
+  }
+  // ------------------------------------------------------------------------
+
+  // In general, the following parts need not be touched
+  // ========================================================================
 
 
   // -----   Timer   --------------------------------------------------------
@@ -113,32 +179,35 @@ void reco_digi(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice 
   // ------------------------------------------------------------------------
 
 
-  // -----   Digi trigger   -------------------------------------------------
-  auto trigger         = std::make_unique<CbmTaskTriggerDigi>();
-  double triggerWindow = 10.;  // Trigger window size in ns
-  int32_t minNumDigis  = 100;  // Trigger threshold in number of digis
-  double deadTime      = 50.;  // Minimum time between two triggers
-  trigger->SetAlgoParams(triggerWindow, minNumDigis, deadTime);
-  LOG(info) << myName << ": Added task " << trigger->GetName();
-  run->AddTask(trigger.release());
+  // ----   Make Reco Events   ----------------------------------------------
+  // ---- This is required if the input is in DigiEvent format
+  auto makeEvents = std::make_unique<CbmTaskMakeRecoEvents>();
+  LOG(info) << "-I- " << myName << ": Adding task " << makeEvents->GetName();
+  run->AddTask(makeEvents.release());
   // ------------------------------------------------------------------------
 
 
-  // -----   Event building   -----------------------------------------------
-  auto evtBuild = std::make_unique<CbmTaskBuildEvents>();
-  evtBuild->SetTimeWindow(-20., 30.);  // event building time window for STS
-  LOG(info) << myName << ": Added task " << evtBuild->GetName();
-  run->AddTask(evtBuild.release());
+  // -----   Local reconstruction in STS   ----------------------------------
+  if (useSts) {
+    auto recoSts = std::make_unique<CbmRecoSts>(kCbmRecoEvent);
+    std::cout << "-I- " << myName << ": Adding task " << recoSts->GetName();
+    run->AddTask(recoSts.release());
+  }
   // ------------------------------------------------------------------------
 
 
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;
   std::cout << "-I- " << myName << ": Set runtime DB" << std::endl;
-  FairRuntimeDb* rtdb      = run->GetRuntimeDb();
-  FairParRootFileIo* parIo = new FairParRootFileIo();
-  parIo->open(parFile.Data(), "UPDATE");
-  rtdb->setFirstInput(parIo);
+  FairRuntimeDb* rtdb        = run->GetRuntimeDb();
+  FairParRootFileIo* parIo1  = new FairParRootFileIo();
+  FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
+  parIo1->open(parFile.Data(), "UPDATE");
+  rtdb->setFirstInput(parIo1);
+  if (!parFileList->IsEmpty()) {
+    parIo2->open(parFileList, "in");
+    rtdb->setSecondInput(parIo2);
+  }
   // ------------------------------------------------------------------------
 
 
@@ -146,7 +215,7 @@ void reco_digi(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice 
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Initialise run" << std::endl;
   run->Init();
-  rtdb->setOutput(parIo);
+  rtdb->setOutput(parIo1);
   rtdb->saveOutput();
   rtdb->print();
   // ------------------------------------------------------------------------
