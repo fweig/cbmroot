@@ -36,7 +36,7 @@ namespace cbm::algo
 
         // Start new window after dead time
         winStart = current + 1;
-        while (winStart != dataVec.end() && *winStart - *current < deadTime)
+        while (winStart != dataVec.end() && *winStart - *current <= deadTime)
           winStart++;
         current = winStart;
       }
