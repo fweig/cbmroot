@@ -84,7 +84,7 @@ public:
   // Analysis cuts
   double fPtCut       = 0.2;
   double fAngleCut    = 1.;
-  double fChi2PrimCut = 3.;
+  double fChi2PrimCut = 3.0;
   double fGammaCut    = 0.025;
   double fStCutAngle  = 2.3;
   double fStCutPP     = 2.9;

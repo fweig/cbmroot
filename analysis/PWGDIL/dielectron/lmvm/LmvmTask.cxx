@@ -91,8 +91,9 @@ void LmvmTask::InitHists()
   fH.CreateH1("hEventNumber", "", "", 1, 0, 1.);
   fH.CreateH1("hEventNumberMixed", "", "", 1, 0, 1.);
 
-  fH.CreateH1("hRichAnn", fH.fSrcNames, "RICH ANN output", ax, 100, -1.1, 1.1);
-  fH.CreateH1("hTrdAnn", fH.fSrcNames, "Likelihood output", ax, 100, -.1, 1.1);  // TODO: change back to "TRD ANN"
+  fH.CreateH1("hAnnRich", fH.fSrcNames, "RICH ANN output", ax, 100, -1.1, 1.1);
+  fH.CreateH2("hAnnRichVsMom", fH.fSrcNames, "P [GeV/c]", "RICH ANN output", ax, 100, 0., 6., 100, -1.1, 1.1);
+  fH.CreateH1("hAnnTrd", fH.fSrcNames, "Likelihood output", ax, 100, -.1, 1.1);  // TODO: change back to "TRD ANN"
   fH.CreateH2("hTofM2", fH.fSrcNames, "P [GeV/c]", "m^{2} [GeV/c^{2}]^{2}", ax, 100, 0., 4., 500, -0.1, 1.0);
   fH.CreateH1("hChi2Sts", fH.fSrcNames, "#chi^{2}", ax, 200, 0., 20.);
   fH.CreateH1("hChi2PrimVertex", fH.fSrcNames, "#chi^{2}_{prim}", ax, 200, 0., 20.);
@@ -115,16 +116,16 @@ void LmvmTask::InitHists()
               2.);  // [0.5]-correct, [1.5]-wrong
   fH.CreateH1("hMvdMcDist", {"1", "2"}, fH.fSrcNames, "Track-Hit distance [cm]", ax, 100, 0., 10.);
 
-  fH.CreateH1("hMinv", fH.fSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", ax, 2000, 0., 2.);
-  fH.CreateH1("hMinvCombPM", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{e+e-} [GeV/c^{2}]", ax, 2000, 0., 2.);
-  fH.CreateH1("hMinvCombPP", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{e+e+} [GeV/c^{2}]", ax, 2000, 0., 2.);
-  fH.CreateH1("hMinvCombMM", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{e-e-} [GeV/c^{2}]", ax, 2000, 0., 2.);
+  fH.CreateH1("hMinv", fH.fSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", ax, 2500, 0., 2.5);
+  fH.CreateH1("hMinvCombPM", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{e+e-} [GeV/c^{2}]", ax, 2500, 0., 2.5);
+  fH.CreateH1("hMinvCombPP", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{e+e+} [GeV/c^{2}]", ax, 2500, 0., 2.5);
+  fH.CreateH1("hMinvCombMM", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{e-e-} [GeV/c^{2}]", ax, 2500, 0., 2.5);
   fH.CreateH1("hMinvBgMatch", {"trueMatch", "trueMatchEl", "trueMatchNotEl", "mismatch"}, fH.fAnaStepNames,
-              "M_{ee} [GeV/c^{2}]", ax, 2000, 0., 2.);
-  fH.CreateH1("hMinvBgSource", fH.fBgPairSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", ax, 2000, 0., 2.);
+              "M_{ee} [GeV/c^{2}]", ax, 2000, 0., 2.5);
+  fH.CreateH1("hMinvBgSource", fH.fBgPairSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", ax, 2500, 0., 2.5);
 
-  fH.CreateH2("hMinvPt", fH.fSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", "P_{t} [GeV/c]", ax, 100, 0., 2., 20, 0.,
-              2.);
+  fH.CreateH2("hMinvPt", fH.fSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", "P_{t} [GeV/c]", ax, 100, 0., 2., 25, 0.,
+              2.5);
 
   fH.CreateH1("hMomPairSignal", fH.fAnaStepNames, "P [GeV/c]", ax, 100, 0., 15.);
   fH.CreateH2("hPtYPairSignal", fH.fAnaStepNames, "Rapidity", "P_{t} [GeV/c]", ax, 40, 0., 4., 20, 0., 2.);
@@ -574,7 +575,7 @@ void LmvmTask::FillCands()
 void LmvmTask::CombinatorialPairs()
 {
   size_t nCand = fCandsTotal.size();
-  for (size_t iC1 = 0; iC1 < nCand; iC1++) {
+  for (size_t iC1 = 0; iC1 < nCand - 1; iC1++) {
     const auto& cand1 = fCandsTotal[iC1];
 
     for (size_t iC2 = iC1 + 1; iC2 < nCand; iC2++) {
@@ -957,8 +958,9 @@ void LmvmTask::DifferenceSignalAndBg()
     fH.FillH1("hChi2PrimVertex", cand.fMcSrc, cand.fChi2Prim, fW);
 
     if (!cand.fIsChi2Prim) continue;
-    fH.FillH1("hRichAnn", cand.fMcSrc, cand.fRichAnn, fW);
-    fH.FillH1("hTrdAnn", cand.fMcSrc, cand.fTrdAnn, fW);
+    fH.FillH1("hAnnRich", cand.fMcSrc, cand.fRichAnn, fW);
+    fH.FillH2("hAnnRichVsMom", cand.fMcSrc, cand.fMomentum.Mag(), cand.fRichAnn, fW);
+    fH.FillH1("hAnnTrd", cand.fMcSrc, cand.fTrdAnn, fW);
     fH.FillH2("hTofM2", cand.fMcSrc, cand.fMomentum.Mag(), cand.fMass2, fW);
     fH.FillH2("hTrdLike_El", cand.fMcSrc, cand.fMomentum.Mag(), cand.fTrdLikeEl, fW);
     fH.FillH2("hTrdLike_Pi", cand.fMcSrc, cand.fMomentum.Mag(), cand.fTrdLikePi, fW);

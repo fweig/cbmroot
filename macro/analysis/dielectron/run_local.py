@@ -9,7 +9,7 @@ def main():
   cbmrootConfigPath = "/home/aghoehne/soft/cbm/build/config.sh"
   urqmdFile = "/home/aghoehne/soft/cbm/data/input/urqmd.auau.8gev.centr.00001.root"
   plutoFile = "/home/aghoehne/soft/cbm/data/input/pluto.auau.8gev.phi.epem.0001.root"
-  dataDir = "/home/aghoehne/soft/cbm/data/output/phi"
+  dataDir = "/home/aghoehne/soft/cbm/data/output/phi/"
   
   runId = "1"
   geoSetup = "sis100_electron"

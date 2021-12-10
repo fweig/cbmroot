@@ -37,12 +37,11 @@ using namespace std;
 using namespace Cbm;
 LmvmDraw::LmvmDraw() {}
 
-void LmvmDraw::DrawHistFromFile(const string& fileName, const string& outputDir, bool useMvd, bool drawSig)
+void LmvmDraw::DrawHistFromFile(const string& fileName, const string& outputDir, bool useMvd)
 {
   SetDefaultDrawStyle();
   fOutputDir        = outputDir;
   fUseMvd           = useMvd;
-  fDrawSignificance = drawSig;
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
@@ -120,6 +119,7 @@ TH1D* LmvmDraw::CreateSignificanceH1(TH1D* s, TH1D* bg, const string& name, cons
       double sumBg     = bg->Integral(1, i, "width");
       double sign      = (sumSignal + sumBg != 0.) ? sumSignal / std::sqrt(sumSignal + sumBg) : 0.;
       hsig->SetBinContent(i, sign);
+      hsig->GetYaxis()->SetTitle("Significance");
     }
   }
   // "left" - reject left part of the histogram. value < cut -> reject
@@ -129,6 +129,7 @@ TH1D* LmvmDraw::CreateSignificanceH1(TH1D* s, TH1D* bg, const string& name, cons
       double sumBg     = bg->Integral(i, nBins, "width");
       double sign      = (sumSignal + sumBg != 0.) ? sumSignal / std::sqrt(sumSignal + sumBg) : 0.;
       hsig->SetBinContent(i, sign);
+      hsig->GetYaxis()->SetTitle("Significance");
     }
   }
   return hsig;
@@ -182,16 +183,18 @@ void LmvmDraw::DrawCutEffH1(const string& hist, const string& option)
     if (option == "right") {
       for (int iB = 1; iB <= nBins; iB++) {
         eff->SetBinContent(iB, fH.H1(hist, src)->Integral(1, iB, "width") / integralTotal);
+        eff->GetYaxis()->SetTitle("Cut Efficiency");
       }
     }
     else if (option == "left") {
       for (int iB = nBins; iB >= 1; iB--) {
         eff->SetBinContent(iB, fH.H1(hist, src)->Integral(iB, nBins, "width") / integralTotal);
+        eff->GetYaxis()->SetTitle("Cut Efficiency");
       }
     }
     effHist.push_back(eff);
   }
-  DrawH1(effHist, fH.fSrcLatex, kLinear, kLog, true, 0.8, 0.8, 0.99, 0.99, "hist");
+  DrawH1(effHist, fH.fSrcLatex, kLinear, kLinear, true, 0.8, 0.8, 0.99, 0.99, "hist");
 }
 
 
@@ -328,36 +331,35 @@ void LmvmDraw::DrawSrcH1(const string& hName, ELmvmAnaStep step, bool doScale)
 
 void LmvmDraw::Draw1DCut(const string& hist, const string& sigOption, double cut)
 {
-  int w = 800;
+  int w      = 2400;
   int h = 800;
-  if (fDrawSignificance) w = 2400;
-  TCanvas* c = fH.fHM.CreateCanvas(("lmvm_" + hist).c_str(), ("lmvm_" + hist).c_str(), w, h);
-  if (fDrawSignificance) {
-    c->Divide(3, 1);
-    c->cd(1);
-  }
+  TCanvas* c = fH.fHM.CreateCanvas(("lmvm_cuts/lmvm_" + hist).c_str(), ("lmvm_cuts/lmvm_" + hist).c_str(), w, h);
+  c->Divide(3, 1);
+
+  c->cd(1);
   DrawSrcH1(hist);
   if (cut != -999999.) {
     TLine* cutLine = new TLine(cut, 0.0, cut, 1.0);
     cutLine->SetLineWidth(2);
     cutLine->Draw();
   }
-  if (fDrawSignificance) {
-    c->cd(2);
-    DrawCutEffH1(hist, sigOption);
 
-    c->cd(3);
-    TH1D* sign =
-      CreateSignificanceH1(fH.H1(hist, ELmvmSrc::Signal), fH.H1(hist, ELmvmSrc::Bg), hist + "_significance", sigOption);
-    DrawH1(sign, kLinear, kLinear, "hist");
-  }
+  c->cd(2);
+  DrawCutEffH1(hist, sigOption);
+
+  c->cd(3);
+  TH1D* sign =
+    CreateSignificanceH1(fH.H1(hist, ELmvmSrc::Signal), fH.H1(hist, ELmvmSrc::Bg), hist + "_significance", sigOption);
+  DrawH1(sign, kLinear, kLinear, "hist");
 }
 
 void LmvmDraw::DrawCuts()
 {
-  Draw1DCut("hRichAnn", "left", -0.4);  // CbmLitGlobalElectronId::GetInstance().GetRichAnnCut()
-  Draw1DCut("hTrdAnn", "left", 0.85);   // CbmLitGlobalElectronId::GetInstance().GetTrdAnnCut()
+  Draw1DCut("hAnnRich", "left", -0.4);  // CbmLitGlobalElectronId::GetInstance().GetRichAnnCut()
+  Draw1DCut("hAnnTrd", "left", 0.1);    // CbmLitGlobalElectronId::GetInstance().GetTrdAnnCut()
+  Draw2DCut("hAnnRichVsMom");
   Draw2DCut("hTofM2");
+  DrawTofM2Cut();
 
   Draw1DCut("hChi2PrimVertex", "right", fCuts.fChi2PrimCut);
   //Draw1DCut("hPt", "left", fCuts.fPtCut);
@@ -378,6 +380,7 @@ void LmvmDraw::DrawCuts()
     Draw2DCut("hMvdCut_2", fCuts.fMvd2CutD, fCuts.fMvd2CutP);
   }
 }
+
 
 void LmvmDraw::DrawSrcBgPairs(ELmvmAnaStep step, bool inPercent, bool drawAnaStep)
 {
@@ -443,9 +446,30 @@ void LmvmDraw::Draw2DCutTriangle(double xCr, double yCr)
   }
 }
 
+void LmvmDraw::DrawTofM2Cut()
+{
+  vector<TLine*> lines {new TLine(0., 0.01, 1.3, 0.01), new TLine(1.3, 0.01, 2.5, 0.022)};  // set by hand
+  TCanvas* c = fH.fHM.CreateCanvas("lmvm_cuts/lmvm_hTofM2_zoom", "lmvm_cuts/lmvm_hTofM2_zoom", 1600, 800);
+  c->Divide(2, 1);
+  int hi = 1;
+  for (ELmvmSrc src : {ELmvmSrc::Signal, ELmvmSrc::Bg}) {
+    TH2D* hist = fH.H2Clone("hTofM2", src);
+    c->cd(hi);
+    hist->GetXaxis()->SetRangeUser(0., 2.5);
+    hist->GetYaxis()->SetRangeUser(-0.08, 0.05);
+    DrawH2(hist);
+    DrawTextOnPad(fH.fSrcLatex[static_cast<int>(src)], 0.6, 0.89, 0.7, 0.99);
+    for (size_t i = 0; i < lines.size(); i++) {
+      lines[i]->SetLineWidth(2.);
+      lines[i]->Draw();
+    }
+    hi++;
+  }
+}
+
 void LmvmDraw::Draw2DCut(const string& hist, double cutCrossX, double cutCrossY)
 {
-  TCanvas* c = fH.fHM.CreateCanvas(("lmvm_" + hist).c_str(), ("lmvm_" + hist).c_str(), 1000, 1500);
+  TCanvas* c = fH.fHM.CreateCanvas(("lmvm_cuts/lmvm_" + hist).c_str(), ("lmvm_cuts/lmvm_" + hist).c_str(), 1000, 1500);
   c->Divide(2, 3);
   vector<TH1*> projX, projY;
   vector<string> latex;
@@ -797,7 +821,7 @@ void LmvmDraw::SetAnalysisStepAxis(TH1* h)
 void LmvmDraw::DrawMvdCutQa()
 {
   if (!fUseMvd) return;
-  TCanvas* c = fH.fHM.CreateCanvas("lmvm_mvdCutQa", "lmvm_mvd1cut_qa", 1600, 800);
+  TCanvas* c = fH.fHM.CreateCanvas("lmvm_cuts/lmvm_mvdCutQa", "lmvm_cuts/lmvm_mvd1cut_qa", 1600, 800);
   c->Divide(2, 1);
   int i = 1;
   for (const string& num : {"1", "2"}) {

@@ -40,14 +40,12 @@ public:
      * \param[in] useMvd draw histograms related to the MVD detector?
      * \param[in] drawSig Do you want to draw significance histograms?
      **/
-  void DrawHistFromFile(const std::string& fileName, const std::string& outputDir = "", bool useMvd = true,
-                        bool drawSig = true);
+  void DrawHistFromFile(const std::string& fileName, const std::string& outputDir = "", bool useMvd = true);
 
 private:
   Int_t fNofEvents = 0;  // number of events of current job
 
   bool fUseMvd           = false;  // do you want to draw histograms related to the MVD detector?
-  bool fDrawSignificance = false;  // do you want to draw significance histograms of 1D cuts?
 
   LmvmCuts fCuts;  // electron identification and analysis cuts
 
@@ -98,6 +96,7 @@ private:
 
   void Draw1DCut(const std::string& hist, const std::string& sigOption, double cut = -999999.);
   void Draw2DCut(const std::string& hist, double cutCrossX = -999999., double cutCrossY = -999999.);
+  void DrawTofM2Cut();
   void DrawCuts();
 
   void DrawSrcBgPairs(ELmvmAnaStep step, bool inPercent, bool drawAnaStep = true);

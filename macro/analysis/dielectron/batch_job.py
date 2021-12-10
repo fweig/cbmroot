@@ -10,7 +10,7 @@ def main():
   plutoParticle = sys.argv[3]
   cbmrootConfigPath = "/lustre/nyx/cbm/users/criesen/build/config.sh"
   macroDir = "/lustre/nyx/cbm/users/criesen/cbmroot/macro/analysis/dielectron/"
-  nofEvents = 500
+  nofEvents = 1000
 
   taskId = os.environ.get('SLURM_ARRAY_TASK_ID')
   jobId = os.environ.get('SLURM_ARRAY_JOB_ID')
@@ -48,7 +48,7 @@ def main():
   #os.system((". /{} -a; {}").format(cbmrootConfigPath, traCmd))
   #os.system((". /{} -a; {}").format(cbmrootConfigPath, digiCmd))
   #os.system((". /{} -a; {}").format(cbmrootConfigPath, recoCmd))
-  os.system((". /{} -a; {}").format(cbmrootConfigPath, qaCmd))
+  #os.system((". /{} -a; {}").format(cbmrootConfigPath, qaCmd))
   os.system((". /{} -a; {}").format(cbmrootConfigPath, anaCmd))
 
 def getPlutoPath(colSystem, colEnergy, plutoParticle, taskId):

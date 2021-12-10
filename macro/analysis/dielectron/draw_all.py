@@ -8,7 +8,6 @@ def main():
   dataDirOut = dataDir + "/results/"
   macroDir = "/lustre/cbm/users/criesen/cbmroot/macro/analysis/dielectron/"
   useMvd = True
-  drawSig = True
   
   if os.path.exists(dataDirOut):
     shutil.rmtree(dataDirOut)
@@ -20,7 +19,7 @@ def main():
 
     resultDirAna = resultDir + "/lmvm/"
     inRootAna = dataDir + plutoParticle + "/analysis.all.root"
-    os.system(('root -l -b -q {}/draw_analysis.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\"\)').format(macroDir, inRootAna, resultDirAna, useMvd, drawSig))
+    os.system(('root -l -b -q {}/draw_analysis.C\(\\"{}\\",\\"{}\\",\\"{}\\"\)').format(macroDir, inRootAna, resultDirAna, useMvd))
     
     resultDirLitqa = resultDir + "/litqa/"
     inRootLitqa = dataDir + plutoParticle + "/litqa.all.root"
@@ -32,7 +31,7 @@ def main():
   allOmega = dataDir + "/omegaepem/analysis.all.root"
   allPhi = dataDir + "/phi/analysis.all.root"
   allOmegaD = dataDir + "/omegadalitz/analysis.all.root"
-  resultDirAll = dataDirOut + "/lmvm_all/"
+  resultDirAll = dataDirOut + "/all/"
 
   os.system(('root -l -b -q {}/draw_analysis_all.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\"\)').format(macroDir, allInmed, allQgp, allOmega, allPhi, allOmegaD, resultDirAll, useMvd))
 

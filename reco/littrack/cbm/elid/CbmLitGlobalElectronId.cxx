@@ -18,6 +18,7 @@
 #include "utils/CbmRichUtil.h"
 
 #include "FairRootManager.h"
+#include <Logger.h>
 
 #include "TClonesArray.h"
 #include "TMath.h"
@@ -57,6 +58,8 @@ void CbmLitGlobalElectronId::Init()
     fTrdTracks    = (TClonesArray*) ioman->GetObject("TrdTrack");
     fTofHits      = (TClonesArray*) ioman->GetObject("TofHit");
   }
+  LOG(info) << "fRichAnnCut = " << fRichAnnCut;
+  LOG(info) << "fTrdAnnCut = " << fTrdAnnCut;
 }
 
 Bool_t CbmLitGlobalElectronId::IsRichElectron(Int_t globalTrackIndex, Double_t momentum)
@@ -107,8 +110,8 @@ Bool_t CbmLitGlobalElectronId::IsTofElectron(Int_t globalTrackIndex, Double_t mo
   Double_t mass2 = GetTofM2(globalTrackIndex, momentum, eventTime);
   if (mass2 == -1.) return false;
 
-  if (momentum >= 1.25) {
-    if (mass2 < (0.013 * momentum - 0.003)) { return true; }
+  if (momentum >= 1.3) {
+    if (mass2 < (0.010 * momentum - 0.003)) { return true; }
   }
   else {
     if (mass2 < 0.01) {

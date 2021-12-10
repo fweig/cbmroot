@@ -110,13 +110,13 @@ void LmvmDrawAll::CreateMeanHistAll()
 
   for (auto step : fHMean.fAnaSteps) {
     for (auto src : {ELmvmSrc::Bg, ELmvmSrc::Eta, ELmvmSrc::Pi0}) {
-      CreateMeanHist<TH1D>(fHMean.GetName("hMinv", src, step), nofEvents, 20);
+      CreateMeanHist<TH1D>(fHMean.GetName("hMinv", src, step), nofEvents, fRebMinv);
       CreateMeanHist<TH2D>(fHMean.GetName("hMinvPt", src, step), nofEvents);
     }
 
     for (const string& comb : {"PM", "PP", "MM"}) {
       for (const string& ev : {"sameEv", "mixedEv"}) {
-        CreateMeanHist<TH1D>(fHMean.GetName("hMinvComb" + comb + "_" + ev, step), nofEvents, 20);
+        CreateMeanHist<TH1D>(fHMean.GetName("hMinvComb" + comb + "_" + ev, step), nofEvents, fRebMinv);
       }
     }
   }
@@ -137,8 +137,8 @@ T* LmvmDrawAll::GetCocktailMinv(const string& name, ELmvmAnaStep step)
     T* sHist        = dynamic_cast<T*>(H(signal)->GetObject(nameFull)->Clone());
     int nofEvents   = (int) H(signal)->H1("hEventNumber")->GetEntries();
     sHist->Scale(1. / nofEvents);
-    if (name != "hMinvPt") {  // TODO: find another solution for this; rebin here has to be exactly the same as before
-      sHist->Rebin(20);
+    if (name != "hMinvPt") {
+      sHist->Rebin(fRebMinv);
       sHist->Scale(1. / binWidth);
     }
     if (cocktail == nullptr) cocktail = sHist;
@@ -174,7 +174,7 @@ void LmvmDrawAll::DrawMinv(ELmvmAnaStep step)
   for (ELmvmSignal signal : fHMean.fSignals) {
     TH1D* sHist = H(signal)->H1Clone("hMinv", ELmvmSrc::Signal, step);
     sHist->Scale(1. / H(signal)->H1("hEventNumber")->GetEntries());
-    sHist->Rebin(20);  // TODO urgent: find solution to rebin w. same value as before!
+    sHist->Rebin(fRebMinv);
     sHist->Scale(1. / binWidth);
     sHists[static_cast<int>(signal)] = sHist;
   }
@@ -411,6 +411,27 @@ void LmvmDrawAll::DrawMinvCombSignalAndBg()
     DrawH1(hists, legend, kLinear, kLinear, true, 0.8, 0.6, 0.99, 0.99, "HIST");
   }
 
+  //Draw Combinatorial Signal from N+-same (without mixed geom. mean)      // TODO: without mixed: needed or delete?
+  {
+    TCanvas* c = fHMean.fHM.CreateCanvas("lmvmAll_minvCombPMSignal", "lmvmAll_minvCombPMSignal", 1800, 1800);
+    c->Divide(3, 3);
+    int i = 1;
+    for (auto step : fHMean.fAnaSteps) {
+      if (step < ELmvmAnaStep::ElId) continue;
+      c->cd(i++);
+      TH1D* pmSame          = fHMean.H1Clone("hMinvCombPM_sameEv", step);
+      TH1D* combPMSignalAsm = fHMean.H1Clone("hMinvCombPMSignal", step);
+      TH1D* combBgAsm       = fHMean.H1Clone("hMinvCombBg", step);
+      TH1D* cocktail        = GetCocktailMinvH1(step);
+      pmSame->SetMaximum(3e-1);
+      pmSame->SetMinimum(4e-8);
+      DrawH1({pmSame, combBgAsm, combPMSignalAsm, cocktail},
+             {"N_{same}^{+-}", "B_{c}", "Signal (N_{same}^{+-} - B_{c})", "Cocktail"}, kLinear, kLog, true, 0.8, 0.8,
+             0.99, 0.99, "hist");
+      fHMean.DrawAnaStepOnPad(step);
+    }
+  }
+
   //Draw Combinatorial Signal from N+-same
   {
     TCanvas* c = fHMean.fHM.CreateCanvas("lmvmAll_minvCombPMSignalAsm", "lmvmAll_minvCombPMSignalAsm", 1800, 1800);
@@ -423,6 +444,8 @@ void LmvmDrawAll::DrawMinvCombSignalAndBg()
       TH1D* combPMSignalAsm = fHMean.H1Clone("hMinvCombPMSignalAsm", step);
       TH1D* combBgAsm       = fHMean.H1Clone("hMinvCombBgAsm", step);
       TH1D* cocktail        = GetCocktailMinvH1(step);
+      pmSame->SetMaximum(3e-1);
+      pmSame->SetMinimum(4e-8);
       DrawH1({pmSame, combBgAsm, combPMSignalAsm, cocktail},
              {"N_{same}^{+-}", "B_{c} (asm)", "Signal (N_{same}^{+-} - B_{c})", "Cocktail"}, kLinear, kLog, true, 0.8,
              0.8, 0.99, 0.99, "hist");
@@ -442,10 +465,35 @@ void LmvmDrawAll::DrawMinvCombSignalAndBg()
       sbg->Add(GetCocktailMinvH1(step));
       TH1D* combBgAsm    = fHMean.H1Clone("hMinvCombBgAsm", step);
       TH1D* sBgSignalAsm = fHMean.H1Clone("hMinvSBgSignalAsm", step);
+      sbg->SetMaximum(3e-1);
+      sbg->SetMinimum(4e-8);
       TH1D* cocktail     = GetCocktailMinvH1(step);
       DrawH1({sbg, combBgAsm, sBgSignalAsm, cocktail},
              {"Cocktail + BG", "B_{c} (asm)", "Signal (Cocktail+BG - B_{c})", "Cocktail"}, kLinear, kLog, true, 0.8,
              0.8, 0.99, 0.99, "hist");
+      fHMean.DrawAnaStepOnPad(step);
+    }
+  }
+
+
+  //Draw Combinatorial Signal from Cocktail+BG (without mixed geom. mean)      // TODO: without mixed: needed or delete?
+  {
+    TCanvas* c = fHMean.fHM.CreateCanvas("lmvmAll_minvSbgSignal", "lmvmAll_minvSbgSignal", 1800, 1800);
+    c->Divide(3, 3);
+    int i = 1;
+    for (auto step : fHMean.fAnaSteps) {
+      if (step < ELmvmAnaStep::ElId) continue;
+      c->cd(i++);
+      TH1D* sbg = fHMean.H1Clone("hMinv_bg", step);
+      sbg->Add(GetCocktailMinvH1(step));
+      TH1D* combBgAsm    = fHMean.H1Clone("hMinvCombBg", step);
+      TH1D* sBgSignalAsm = fHMean.H1Clone("hMinvSBgSignal", step);
+      sbg->SetMaximum(3e-1);
+      sbg->SetMinimum(4e-8);
+      TH1D* cocktail = GetCocktailMinvH1(step);
+      DrawH1({sbg, combBgAsm, sBgSignalAsm, cocktail},
+             {"Cocktail + BG", "B_{c}", "Signal (Cocktail+BG - B_{c})", "Cocktail"}, kLinear, kLog, true, 0.8, 0.8,
+             0.99, 0.99, "hist");
       fHMean.DrawAnaStepOnPad(step);
     }
   }
@@ -531,13 +579,22 @@ void LmvmDrawAll::CalcCombBGHistos()
       }
     }
 
+    // calculate comb. signal from same events data (S = N^{+-}_{same} - B_{C})   // TODO: without mixed: needed?
+    TH1D* hCombPMSignal = fHMean.CreateHByClone<TH1D>("hMinvCombPM_sameEv", "hMinvCombPMSignal", step);
+    hCombPMSignal->Add(fHMean.H1("hMinvCombBg", step), -1.);
+
     // calculate assembled comb. signal from same (<= 0.3 GeV) and mixed (> 0.3 GeV) events data
     // from 'N+-same', Signal (N^{+-}_{same} - B_{C})
     //fh_mean_combSignalNpm_assemb_minv
     TH1D* hCombPMSignalAsm = fHMean.CreateHByClone<TH1D>("hMinvCombPM_sameEv", "hMinvCombPMSignalAsm", step);
     hCombPMSignalAsm->Add(fHMean.H1("hMinvCombBgAsm", step), -1.);
 
-    // from 'Cocktail + BG'
+    // from 'Cocktail + BG
+    TH1D* hBCSignal = fHMean.CreateHByClone<TH1D>("hMinv_bg", "hMinvSBgSignal", step);
+    hBCSignal->Add(GetCocktailMinvH1(step));
+    hBCSignal->Add(fHMean.H1("hMinvCombBg", step), -1.);
+
+    // from 'Cocktail + BG' (S = Coc+BG - B_{C})     // TODO: without mixed: needed?
     //fh_mean_combSignalBCoc_assemb_minv
     TH1D* hBCSignalAsm = fHMean.CreateHByClone<TH1D>("hMinv_bg", "hMinvSBgSignalAsm", step);
     hBCSignalAsm->Add(GetCocktailMinvH1(step));
@@ -750,7 +807,7 @@ LmvmSBgResultData LmvmDrawAll::CalculateSBgResult(ELmvmSignal signal, ELmvmAnaSt
 void LmvmDrawAll::SaveCanvasToImage()
 {
   cout << "Images output dir:" << fOutputDir << endl;
-  fHMean.fHM.SaveCanvasToImage(fOutputDir, "png;eps");  // fHM[0]->SaveCanvasToImage(fOutputDir, "eps;png");
+  fHMean.fHM.SaveCanvasToImage(fOutputDir, "png");  // fHM[0]->SaveCanvasToImage(fOutputDir, "eps;png");
 }
 
 ClassImp(LmvmDrawAll);

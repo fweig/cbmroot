@@ -37,6 +37,8 @@ private:
   std::vector<LmvmHist*> fH;
   LmvmHist fHMean;
 
+  int fRebMinv = 40;  // Rebin for minv histograms
+
   std::string fOutputDir;  // output directory for figures
 
   LmvmHist* H(ELmvmSignal signal);
