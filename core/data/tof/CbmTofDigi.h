@@ -17,9 +17,9 @@
  ** Calibrated Time [ps]:          32 bits double
  ** Calibrated Tot  [ps]:          32 bits double
  **
- ** In triggered setup, the time is relative to the trigger time, which 
- ** is measured with a resolution of a few ns corresponding to the TDC 
- ** system clock cycle. 
+ ** In triggered setup, the time is relative to the trigger time, which
+ ** is measured with a resolution of a few ns corresponding to the TDC
+ ** system clock cycle.
  ** In free-streaming setups, the time is relative to the last epoch.
  **/
 
@@ -29,7 +29,9 @@
 #include "CbmDefs.h"        // for kTof
 #include "CbmTofAddress.h"  // for CbmTofAddress
 
+#ifndef NO_ROOT
 #include <Rtypes.h>      // for ClassDef
+#endif
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -168,6 +170,8 @@ private:
     ar& fdTot;
   }
 
+#ifndef NO_ROOT
   ClassDefNV(CbmTofDigi, 3);
+#endif
 };
 #endif  // CBMTOFDIGI_H

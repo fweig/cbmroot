@@ -22,7 +22,9 @@
 #include "CbmDefs.h"        // for ECbmModuleId::kPsd
 #include "CbmPsdAddress.h"  // for CbmPsdAddress
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDefNV
+#ifndef NO_ROOT
+#include <Rtypes.h>  // for ClassDefNV
+#endif
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -163,7 +165,9 @@ private:
     ar& fdEdep;
   }
 
+#ifndef NO_ROOT
   ClassDefNV(CbmPsdDigi, 5);
+#endif
 };
 
 #endif  // CBMPSDDIGI_H

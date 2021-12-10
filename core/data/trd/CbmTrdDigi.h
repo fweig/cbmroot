@@ -7,7 +7,9 @@
 
 #include "CbmDefs.h"  // for kTrd
 
-#include <Rtypes.h>      // for ClassDef
+#ifndef NO_ROOT
+#include <Rtypes.h>  // for CLRBIT, SETBIT, TESTBIT, ClassDef
+#endif
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -81,14 +83,14 @@ public:
 
   /**
    * @brief Copy Construct a new Cbm Trd Digi
-   * 
+   *
    */
   CbmTrdDigi(const CbmTrdDigi&);
 
   /**
    * @brief Assignment operator
-   * 
-   * @return CbmTrdDigi& 
+   *
+   * @return CbmTrdDigi&
   */
   CbmTrdDigi& operator=(const CbmTrdDigi&) = default;
 
@@ -265,13 +267,13 @@ protected:
 
   /**
    * @brief clock length in ns for acquisition
-   * 
+   *
    */
   static const double fgClk[static_cast<size_t>(eCbmTrdAsicType::kNTypes) + 1];
 
   /**
   * @brief Nr. of digits stored for ASIC
-  * 
+  *
   */
   static const float fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kNTypes) + 1];
 
@@ -295,7 +297,9 @@ private:
     ar& fTime;
   }
 
+#ifndef NO_ROOT
   ClassDefNV(CbmTrdDigi, 4);  // Production ready TRD digit
+#endif
 };
 
 #endif

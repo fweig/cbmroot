@@ -15,6 +15,14 @@
 
 #include <cmath>
 
+#ifdef NO_ROOT
+// Coming from Rtypes.h in ROOT mode
+#define BIT(n) (1ULL << (n))
+#define SETBIT(n, i) ((n) |= BIT(i))
+#define CLRBIT(n, i) ((n) &= ~BIT(i))
+#define TESTBIT(n, i) ((Bool_t)(((n) &BIT(i)) != 0))
+#endif
+
 using std::endl;
 using std::string;
 using std::stringstream;
@@ -308,4 +316,6 @@ string CbmTrdDigi::ToString() const
   return ss.str();
 }
 
+#ifndef NO_ROOT
 ClassImp(CbmTrdDigi)
+#endif

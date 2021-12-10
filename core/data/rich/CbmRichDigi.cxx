@@ -25,4 +25,6 @@ CbmRichDigi::~CbmRichDigi()
   // TODO Auto-generated destructor stub
 }
 
+#ifndef NO_ROOT
 ClassImp(CbmRichDigi)
+#endif

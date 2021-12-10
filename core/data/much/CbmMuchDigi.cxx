@@ -58,4 +58,6 @@ void CbmMuchDigi::SetAdc(int32_t adc)
 void CbmMuchDigi::SetTime(uint64_t time) { fTime = time; }
 // -------------------------------------------------------------------------
 
+#ifndef NO_ROOT
 ClassImp(CbmMuchDigi)
+#endif

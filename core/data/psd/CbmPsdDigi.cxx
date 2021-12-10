@@ -41,5 +41,6 @@ std::string CbmPsdDigi::ToString() const
   return string.Data();
 }
 
-
+#ifndef NO_ROOT
 ClassImp(CbmPsdDigi)
+#endif

@@ -51,5 +51,6 @@ void CbmTofDigi::SetAddress(uint32_t Sm, uint32_t Rpc, uint32_t Channel, uint32_
   fuAddress = CbmTofAddress::GetUniqueAddress(Sm, Rpc, Channel, Side, SmType);
 }
 
-
+#ifndef NO_ROOT
 ClassImp(CbmTofDigi)
+#endif

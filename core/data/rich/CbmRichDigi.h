@@ -15,7 +15,9 @@
 
 #include "CbmDefs.h"  // for kRich
 
+#ifndef NO_ROOT
 #include <Rtypes.h>      // for ClassDef
+#endif
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -100,7 +102,7 @@ private:
   double fTime;
 
   /**
-	 * \brief Time-over-threshold, pulse width. 
+	 * \brief Time-over-threshold, pulse width.
    * This variable is only used in real data analysis, for the simulation it is set to 0.
 	 */
   double fToT;
@@ -115,7 +117,9 @@ private:
     ar& fToT;
   }
 
+#ifndef NO_ROOT
   ClassDefNV(CbmRichDigi, 3);
+#endif
 };
 
 #endif /* DATA_RICH_CBMRICHDIGI_H_ */

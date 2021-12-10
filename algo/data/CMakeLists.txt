@@ -5,6 +5,19 @@
 set(SRCS
   ${CMAKE_SOURCE_DIR}/core/data/sts/CbmStsDigi.cxx
   ${CMAKE_SOURCE_DIR}/core/data/sts/CbmStsAddress.cxx
+
+  ${CMAKE_SOURCE_DIR}/core/data/rich/CbmRichDigi.cxx
+
+  ${CMAKE_SOURCE_DIR}/core/data/much/CbmMuchDigi.cxx
+  ${CMAKE_SOURCE_DIR}/core/data/much/CbmMuchAddress.cxx
+
+  ${CMAKE_SOURCE_DIR}/core/data/trd/CbmTrdDigi.cxx
+
+  ${CMAKE_SOURCE_DIR}/core/data/tof/CbmTofDigi.cxx
+  ${CMAKE_SOURCE_DIR}/core/data/tof/CbmTofAddress.cxx
+
+  ${CMAKE_SOURCE_DIR}/core/data/psd/CbmPsdDigi.cxx
+  ${CMAKE_SOURCE_DIR}/core/data/psd/CbmPsdAddress.cxx
  )
 
 add_library(OnlineData SHARED ${SRCS})
@@ -13,6 +26,11 @@ target_include_directories(OnlineData
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/base
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/sts
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/rich
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/much
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/trd
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/tof
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/psd
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/global
   PUBLIC ${CMAKE_SOURCE_DIR}/external/ipc/ipc/lib/fles_ipc
 )

@@ -23,7 +23,9 @@
 #include "CbmDefs.h"         // for kMuch
 #include "CbmMuchAddress.h"  // for CbmMuchAddress, kMuchModule
 
+#ifndef NO_ROOT
 #include <Rtypes.h>      // for ClassDef
+#endif
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -121,6 +123,8 @@ private:
   bool fSaturationFlag =
     0;  //If adc value crosses the Maximum Adc value of actual electronics then SaturationFlag will be set.
 
-  ClassDef(CbmMuchDigi, 4);
+#ifndef NO_ROOT
+  ClassDefNV(CbmMuchDigi, 4);
+#endif
 };
 #endif
