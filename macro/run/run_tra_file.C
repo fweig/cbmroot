@@ -103,11 +103,13 @@ void run_tra_file(const char* input = "", Int_t nEvents = 1, const char* output 
   // For flexibility, the target volume is not part of the predefined
   // geometry setup. It thus has to be specified in this macro. By default,
   // a Gold target of 250 micrometer thickness and 2.5 cm diameter is used.
+  // The target shifts by 4 cm upstream by decision of the technical board
+  // in Apr 2020 which is 40 cm from center of magnet.
   const char* targetMedium = "Gold";
   Double_t targetThickness = 0.025;  // in cm
   Double_t targetDiameter  = 2.5;    // in cm
+  Double_t targetZpos = -40
   // ------------------------------------------------------------------------
-
 
   // -----   Beam properties   ----------------------------------------------
   // The beam particles themselves are not subject to the transport,
@@ -149,7 +151,8 @@ void run_tra_file(const char* input = "", Int_t nEvents = 1, const char* output 
   run.SetParFileName(parFile);
   run.SetGeoFileName(geoFile);
   run.LoadSetup(setup);
-  run.SetTarget(targetMedium, targetThickness, targetDiameter);
+//  run.SetTarget(targetMedium, targetThickness, targetDiameter);
+  run.SetTarget(targetMedium, targetThickness, targetDiameter, 0, 0, targetZpos);
   run.SetBeamPosition(beamPosX, beamPosY, beamSigmaX, beamSigmaY);
   if (rotateEvents) run.SetRandomEventPlane();
   run.SetRandomSeed(randomSeed);

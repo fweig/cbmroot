@@ -5,17 +5,22 @@
 
 echo "programme starts"
 
-if false; then
-if [ -z ${VMWORKDIR} ];
-then
-cat << EOT
-BUILT AND CONFIGURATION CBMROOT ENIVORNMENT NOT DETECTED\n
-HAVE YOU
-. build/config.sh -a
-SCRIPTS REQUIRES A RUNNING SYSTEM.
-EOT
-exit 
-fi
+# Detecting the GEOMETRY and PARAMETER GIT DIRECTORIES
+if [ -d ${PWD}/../../geometry/.git -a -d ${PWD}/../../parameters/.git ]; then
+GEO_SRC_DIR="$PWD/../../geometry" 
+PAR_SRC_DIR="$PWD/../../parameters" 
+cd $PWD/../run
+RUN_SRC_DIR=$PWD
+cd -
+else
+	if [ -z ${VMWORKDIR} -a -d ${VMCWORKDIR}/geometry/.git  -a -d ${VMCWORKDIR}/parameters/.git ]; then
+	PAR_SRC_DIR="${VMCWORKDIR}/parameters"	
+	GEO_SRC_DIR="${VMCWORKDIR}/geometry"
+	RUN_SRC_DIR="${VMCWORKDIR}/macro/run"
+	else
+	echo "Geometry or Parameter Git Source Directory not detected"
+	exit
+	fi
 fi
 
 # TAG FOR THE OFFICIAL APR 2019 CBMROOT SW Release
@@ -33,9 +38,6 @@ TEST_PARATAG="21bed5c5e746efdb63b696f4053b9e5f65f940a8"
 # GEOMETRY AMD PARAMETER GIT REPOSITORY
 GIT_GEOREPO="https://git.cbm.gsi.de/e.clerkin/cbmroot_geometry.git"
 GIT_PARAREPO="https://git.cbm.gsi.de/e.clerkin/cbmroot_parameter.git"
-
-
-
 
 ##########1234567890##########1234567890##########1234567890##########1234567890##########
 cat << EOT
@@ -57,11 +59,15 @@ EOT
 read RELEASE
 
 case "${RELEASE}" in
-    APR20)  echo "You specified APR20"; GEOMETRY_TAG=${APR20_GEOTAG}; PARAMETER_TAG=${APR20_PARATAG}  ;;
-    APR21)  echo "You specified APR21"; GEOMETRY_TAG=${APR21_GEOTAG}; PARAMETER_TAG=${APR21_PARATAG} ;;
-    TEST)   echo "You specified TEST "; GEOMETRY_TAG=${TEST_GEOTAG};  PARAMETER_TAG=${TEST_PARATAG} ;;
+    APR20)  echo "You specified APR20"; GEOMETRY_TAG=${APR20_GEOTAG}; PARAMETER_TAG=${APR20_PARATAG}; TARGET_Z_POS=0 ;;
+    APR21)  echo "You specified APR21"; GEOMETRY_TAG=${APR21_GEOTAG}; PARAMETER_TAG=${APR21_PARATAG}; TARGET_Z_POS=0 ;;
+    TEST)   echo "You specified ORIGIN_SHIFT "; GEOMETRY_TAG=${TEST_GEOTAG};  PARAMETER_TAG=${TEST_PARATAG}; TARGET_Z_POS=-40 ;;
     *)      echo "$ANSWER is an unknown option"; exit 1 ;;
 esac
+
+
+
+
 
 cat << EOT
 Have you read above, and understand that you will need to rerun the script to revert the changes?
@@ -74,10 +80,10 @@ if (echo "${CONFIRMATION}" | sed -n '/^Yes$/!{q10}')
 then
 	echo "Yes typed!"
 	
-
+	sed -i 's/Double_t[[:space:]]targetZpos.*$/Double_t targetZpos = '${TARGET_Z_POS}'/' ${RUN_SRC_DIR}/run_tra_file.C;	
 
 # Geometry Repostiory
-	cd ${VMCWORKDIR}/geometry
+	cd ${GEO_SRC_DIR}
 		git checkout ${GEOMETRY_TAG}
 		if [ $? -ne 0 ]; then
 			git fetch ${GIT_GEOREPO} ${GEOMETRY_TAG}
@@ -90,7 +96,7 @@ then
 	
 	cd $OLDPWD
 # Parameter Repository	
-	cd ${VMCWORKDIR}/parameters
+	cd ${PAR_SRC_DIR}
 		git checkout ${PARAMETER_TAG}
 		if [ $? -ne 0 ]; then
 			git fetch ${GIT_PARAREPO} ${PARAMETER_TAG}
@@ -108,17 +114,16 @@ else
   echo "No changed to geometry and parameter repositoroes made"
 fi
 
-
 cat << EOT
+The position of the target is at ${TARGET_Z_POS} cm from the origin.
 You may now run the standard CBMROOT macros, e.g.
 
-root -l run_tra_file.C
-root -l run_digi.C
-root -l run_reco.C
+root -l -q ${RUN_SRC_DIR}/run_tra_file.C
+root -l -q ${RUN_SRC_DIR}/run_digi.C
+root -l -q ${RUN_SRC_DIR}/run_reco.C
 
 and the specified default geometries will be used. To revert these changes, you may re-run this script or rebuild the CBMROOT framework.
 
 EOT
-
 
 echo "Program Ended"
