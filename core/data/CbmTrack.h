@@ -25,9 +25,10 @@
 #include <FairTrackParam.h>  // for FairTrackParam
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t, Double32_t
+#include <RtypesCore.h>  // for Double32_t
 #include <TObject.h>     // for TObject
 
+#include <cstdint>
 #include <string>  // for string
 #include <vector>  // for vector
 
@@ -51,64 +52,64 @@ public:
 	 * @param index Index of the hit in the array
 	 * @param type Type of the hit to be added
 	 **/
-  void AddHit(Int_t index, HitType type);
+  void AddHit(int32_t index, HitType type);
 
   /** Accessors  **/
-  virtual Int_t GetNofHits() const { return fHitIndex.size(); }
-  Int_t GetHitIndex(Int_t iHit) const { return fHitIndex[iHit]; }
-  HitType GetHitType(Int_t iHit) const { return fHitType[iHit]; }
-  Int_t GetPidHypo() const { return fPidHypo; }
-  Int_t GetFlag() const { return fFlag; }
-  Double_t GetChiSq() const { return fChiSq; }
-  Int_t GetNDF() const { return fNDF; }
-  Int_t GetPreviousTrackId() const { return fPreviousTrackId; }
+  virtual int32_t GetNofHits() const { return fHitIndex.size(); }
+  int32_t GetHitIndex(int32_t iHit) const { return fHitIndex[iHit]; }
+  HitType GetHitType(int32_t iHit) const { return fHitType[iHit]; }
+  int32_t GetPidHypo() const { return fPidHypo; }
+  int32_t GetFlag() const { return fFlag; }
+  double GetChiSq() const { return fChiSq; }
+  int32_t GetNDF() const { return fNDF; }
+  int32_t GetPreviousTrackId() const { return fPreviousTrackId; }
   const FairTrackParam* GetParamFirst() const { return &fParamFirst; }
   const FairTrackParam* GetParamLast() const { return &fParamLast; }
   CbmMatch* GetMatch() const { return fMatch; }
-  Double_t GetTime() const { return fTime; }
-  Double_t GetTimeError() const { return fTimeError; }
+  double GetTime() const { return fTime; }
+  double GetTimeError() const { return fTimeError; }
 
   /** Modifiers  **/
-  void SetPidHypo(Int_t pid) { fPidHypo = pid; }
-  void SetFlag(Int_t flag) { fFlag = flag; }
-  void SetChiSq(Double_t chiSq) { fChiSq = chiSq; }
-  void SetNDF(Int_t ndf) { fNDF = ndf; }
-  void SetPreviousTrackId(Int_t previousTrackId) { fPreviousTrackId = previousTrackId; }
+  void SetPidHypo(int32_t pid) { fPidHypo = pid; }
+  void SetFlag(int32_t flag) { fFlag = flag; }
+  void SetChiSq(double chiSq) { fChiSq = chiSq; }
+  void SetNDF(int32_t ndf) { fNDF = ndf; }
+  void SetPreviousTrackId(int32_t previousTrackId) { fPreviousTrackId = previousTrackId; }
   void SetParamFirst(const FairTrackParam* par) { fParamFirst = *par; }
   void SetParamLast(const FairTrackParam* par) { fParamLast = *par; }
   void SetMatch(CbmMatch* match);
-  void SetTime(Double_t time) { fTime = time; }
-  void SetTimeError(Double_t error) { fTimeError = error; }
+  void SetTime(double time) { fTime = time; }
+  void SetTimeError(double error) { fTimeError = error; }
 
   virtual std::string ToString() const;
 
 protected:
   /** Array contains the hit indices of the hits attached to the track **/
-  std::vector<Int_t> fHitIndex;
+  std::vector<int32_t> fHitIndex;
 
   /** Array contains the hit types of the hits attached to the track **/
   std::vector<HitType> fHitType;
 
   /** PID hypothesis used by the track fitter **/
-  Int_t fPidHypo;
+  int32_t fPidHypo;
 
   /** Track parameters at first and last fitted hit **/
   FairTrackParam fParamFirst;
   FairTrackParam fParamLast;
 
   /** Track start time **/
-  Double_t fTime;
-  Double_t fTimeError;
+  double fTime;
+  double fTimeError;
 
   /** Quality flag **/
-  Int_t fFlag;
+  int32_t fFlag;
 
   /** Chi square and NDF of track fit **/
   Double32_t fChiSq;
-  Int_t fNDF;
+  int32_t fNDF;
 
   /** Index of previous track segment **/
-  Int_t fPreviousTrackId;
+  int32_t fPreviousTrackId;
 
   /** Monte-Carlo information **/
   CbmMatch* fMatch;

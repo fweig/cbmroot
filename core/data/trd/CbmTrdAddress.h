@@ -26,9 +26,9 @@
 
 #include "CbmDefs.h"  // for kTrd
 
-#include <RtypesCore.h>  // for UInt_t, Int_t
-
 #include <cassert>  // for assert
+#include <cstdint>
+
 
 class CbmTrdAddress {
 public:
@@ -41,7 +41,7 @@ public:
    * \param[in] columnId Column ID.
    * \return Address from system ID, layer, module, sector, row and column IDs.
    **/
-  static UInt_t GetAddress(Int_t layerId, Int_t moduleId, Int_t sectorId, Int_t rowId, Int_t columnId)
+  static uint32_t GetAddress(int32_t layerId, int32_t moduleId, int32_t sectorId, int32_t rowId, int32_t columnId)
   {
     assert(!(layerId < 0 || layerId > fgkLayerIdLength || moduleId < 0 || moduleId > fgkModuleIdLength || sectorId < 0
              || sectorId > fgkSectorIdLength || rowId < 0 || rowId > fgkRowIdLength || columnId < 0
@@ -56,7 +56,7 @@ public:
    * \param[in] address Unique channel address.
    * \return System identifier from address.
    **/
-  static UInt_t GetSystemId(UInt_t address)
+  static uint32_t GetSystemId(uint32_t address)
   {
     return (address & (fgkSystemIdLength << fgkSystemIdShift)) >> fgkSystemIdShift;
   }
@@ -66,7 +66,7 @@ public:
    * \param[in] address Unique channel address.
    * \return Layer ID from address.
    **/
-  static UInt_t GetLayerId(UInt_t address)
+  static uint32_t GetLayerId(uint32_t address)
   {
     return (address & (fgkLayerIdLength << fgkLayerIdShift)) >> fgkLayerIdShift;
   }
@@ -76,7 +76,7 @@ public:
    * \param[in] address Unique channel address.
    * \return Module ID from address.
    **/
-  static UInt_t GetModuleId(UInt_t address)
+  static uint32_t GetModuleId(uint32_t address)
   {
     return (address & (fgkModuleIdLength << fgkModuleIdShift)) >> fgkModuleIdShift;
   }
@@ -86,7 +86,7 @@ public:
    * \param[in] address Unique channel address.
    * \return Sector ID from address.
    **/
-  static UInt_t GetSectorId(UInt_t address)
+  static uint32_t GetSectorId(uint32_t address)
   {
     return (address & (fgkSectorIdLength << fgkSectorIdShift)) >> fgkSectorIdShift;
   }
@@ -96,14 +96,14 @@ public:
    * \param[in] address Unique channel address.
    * \return Row ID from address.
    **/
-  static UInt_t GetRowId(UInt_t address) { return (address & (fgkRowIdLength << fgkRowIdShift)) >> fgkRowIdShift; }
+  static uint32_t GetRowId(uint32_t address) { return (address & (fgkRowIdLength << fgkRowIdShift)) >> fgkRowIdShift; }
 
   /**
    * \brief Return column ID from address.
    * \param[in] address Unique channel address.
    * \return Column ID from address.
    **/
-  static UInt_t GetColumnId(UInt_t address)
+  static uint32_t GetColumnId(uint32_t address)
   {
     return (address & (fgkColumnIdLength << fgkColumnIdShift)) >> fgkColumnIdShift;
   }
@@ -113,7 +113,7 @@ public:
    * \param[in] address Unique channel address.
    * \return Unique module ID from address.
    **/
-  static UInt_t GetModuleAddress(UInt_t address)
+  static uint32_t GetModuleAddress(uint32_t address)
   {
     return (address & (fgkModuleAddressLength << fgkModuleAddressStart)) >> fgkModuleAddressStart;
   }
@@ -123,7 +123,7 @@ public:
    * \param[in] address Unique channel address.
    * \return Unique sector ID from address.
    **/
-  static UInt_t GetSectorAddress(UInt_t address)
+  static uint32_t GetSectorAddress(uint32_t address)
   {
     return (address & (fgkSectorAddressLength << fgkSectorAddressStart)) >> fgkSectorAddressStart;
   }
@@ -134,7 +134,7 @@ public:
     * \param newLayerId New value for layer ID.
     * \return New address with modified layer ID.
     */
-  static UInt_t SetLayerId(UInt_t address, Int_t newLayerId)
+  static uint32_t SetLayerId(uint32_t address, int32_t newLayerId)
   {
     assert(!(newLayerId < 0 || newLayerId > fgkLayerIdLength));
     return GetAddress(newLayerId, GetModuleId(address), GetSectorId(address), GetRowId(address), GetColumnId(address));
@@ -146,7 +146,7 @@ public:
     * \param newModuleId New value for module ID.
     * \return New address with modified module ID.
     */
-  static UInt_t SetModuleId(UInt_t address, Int_t newModuleId)
+  static uint32_t SetModuleId(uint32_t address, int32_t newModuleId)
   {
     assert(!(newModuleId < 0 || newModuleId > fgkModuleIdLength));
     return GetAddress(GetLayerId(address), newModuleId, GetSectorId(address), GetRowId(address), GetColumnId(address));
@@ -158,7 +158,7 @@ public:
     * \param newSectorId New value for sector ID.
     * \return New address with modified sector ID.
     */
-  static UInt_t SetSectorId(UInt_t address, Int_t newSectorId)
+  static uint32_t SetSectorId(uint32_t address, int32_t newSectorId)
   {
     assert(!(newSectorId < 0 || newSectorId > fgkSectorIdLength));
     return GetAddress(GetLayerId(address), GetModuleId(address), newSectorId, GetRowId(address), GetColumnId(address));
@@ -170,7 +170,7 @@ public:
     * \param newRowId New value for row ID.
     * \return New address with modified row ID.
     */
-  static UInt_t SetRowId(UInt_t address, Int_t newRowId)
+  static uint32_t SetRowId(uint32_t address, int32_t newRowId)
   {
     assert(!(newRowId < 0 || newRowId > fgkRowIdLength));
     return GetAddress(GetLayerId(address), GetModuleId(address), GetSectorId(address), newRowId, GetColumnId(address));
@@ -182,7 +182,7 @@ public:
     * \param newColumnId New value for column ID.
     * \return New address with modified column ID.
     */
-  static UInt_t SetColumnId(UInt_t address, Int_t newColumnId)
+  static uint32_t SetColumnId(uint32_t address, int32_t newColumnId)
   {
     assert(!(newColumnId < 0 || newColumnId > fgkColumnIdLength));
     return GetAddress(GetLayerId(address), GetModuleId(address), GetSectorId(address), GetRowId(address), newColumnId);
@@ -190,27 +190,27 @@ public:
 
 private:
   // Length of the index of the corresponding volume
-  static const Int_t fgkSystemIdLength = 15;   // 2^4 - 1
-  static const Int_t fgkLayerIdLength  = 15;   // 2^4 - 1
-  static const Int_t fgkModuleIdLength = 127;  // 2^7 - 1
-  static const Int_t fgkSectorIdLength = 3;    // 2^2 - 1
-  static const Int_t fgkRowIdLength    = 127;  // 2^7 - 1
-  static const Int_t fgkColumnIdLength = 255;  // 2^8 - 1
+  static const int32_t fgkSystemIdLength = 15;   // 2^4 - 1
+  static const int32_t fgkLayerIdLength  = 15;   // 2^4 - 1
+  static const int32_t fgkModuleIdLength = 127;  // 2^7 - 1
+  static const int32_t fgkSectorIdLength = 3;    // 2^2 - 1
+  static const int32_t fgkRowIdLength    = 127;  // 2^7 - 1
+  static const int32_t fgkColumnIdLength = 255;  // 2^8 - 1
   // Number of a start bit for each volume
-  static const Int_t fgkSystemIdShift = 0;
-  static const Int_t fgkLayerIdShift  = 4;
-  static const Int_t fgkModuleIdShift = 8;
-  static const Int_t fgkSectorIdShift = 15;
-  static const Int_t fgkRowIdShift    = 17;
-  static const Int_t fgkColumnIdShift = 24;
+  static const int32_t fgkSystemIdShift = 0;
+  static const int32_t fgkLayerIdShift  = 4;
+  static const int32_t fgkModuleIdShift = 8;
+  static const int32_t fgkSectorIdShift = 15;
+  static const int32_t fgkRowIdShift    = 17;
+  static const int32_t fgkColumnIdShift = 24;
   // Start bit and length for unique module address.
   // For unique module address use all bits up to sector ID.
-  static const Int_t fgkModuleAddressStart  = 0;
-  static const Int_t fgkModuleAddressLength = 32767;  // 2^15 - 1
+  static const int32_t fgkModuleAddressStart  = 0;
+  static const int32_t fgkModuleAddressLength = 32767;  // 2^15 - 1
   // Start bit and length for unique sector address.
   // For unique sector address use all bits up to column ID.
-  static const Int_t fgkSectorAddressStart  = 0;
-  static const Int_t fgkSectorAddressLength = 131071;  // 2^17 - 1
+  static const int32_t fgkSectorAddressStart  = 0;
+  static const int32_t fgkSectorAddressLength = 131071;  // 2^17 - 1
 };
 
 #endif

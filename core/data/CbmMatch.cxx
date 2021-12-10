@@ -26,9 +26,9 @@ string CbmMatch::ToString() const
 {
   stringstream ss;
   ss << "CbmMatch: ";
-  Int_t nofLinks = GetNofLinks();
+  int32_t nofLinks = GetNofLinks();
   ss << "nofLinks=" << nofLinks << "\n";
-  for (Int_t i = 0; i < nofLinks; i++) {
+  for (int32_t i = 0; i < nofLinks; i++) {
     const CbmLink& link = fLinks[i];
     ss << link.ToString();
   }
@@ -38,17 +38,17 @@ string CbmMatch::ToString() const
 
 void CbmMatch::AddLinks(const CbmMatch& match)
 {
-  Int_t nofLinks = match.GetNofLinks();
-  for (Int_t i = 0; i < nofLinks; i++) {
+  int32_t nofLinks = match.GetNofLinks();
+  for (int32_t i = 0; i < nofLinks; i++) {
     AddLink(match.GetLink(i));
   }
 }
 
 void CbmMatch::AddLink(const CbmLink& newLink)
 {
-  Int_t addedIndex = -1;
-  Int_t nofLinks   = GetNofLinks();
-  for (Int_t i = 0; i < nofLinks; i++) {
+  int32_t addedIndex = -1;
+  int32_t nofLinks   = GetNofLinks();
+  for (int32_t i = 0; i < nofLinks; i++) {
     CbmLink& link = fLinks[i];
     if (link == newLink) {
       link.AddWeight(newLink.GetWeight());
@@ -68,7 +68,7 @@ void CbmMatch::AddLink(const CbmLink& newLink)
   }
 }
 
-void CbmMatch::AddLink(Double_t weight, Int_t index, Int_t entry, Int_t file)
+void CbmMatch::AddLink(double weight, int32_t index, int32_t entry, int32_t file)
 {
   CbmLink link(weight, index, entry, file);
   AddLink(link);

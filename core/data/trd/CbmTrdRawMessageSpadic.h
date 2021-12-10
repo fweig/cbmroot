@@ -12,13 +12,12 @@
 #define CbmTrdRawMessageSpadic_H
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Double_t
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/vector.hpp>
 
-#include <cstdint>  // for int16_t, uint8_t, uint16_t, uint64_t
+#include <cstdint>
 #include <vector>   // for vector
 
 namespace Spadic

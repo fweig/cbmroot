@@ -20,7 +20,7 @@ CbmMvdHitMatch::CbmMvdHitMatch() : CbmMatch(), fFileNumber(-1), fIndex(0), fWeig
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmMvdHitMatch::CbmMvdHitMatch(Double_t weight, Int_t index, Int_t entry, Int_t file)
+CbmMvdHitMatch::CbmMvdHitMatch(double weight, int32_t index, int32_t entry, int32_t file)
   : CbmMatch()
   , fFileNumber(file)
   , fIndex(index)

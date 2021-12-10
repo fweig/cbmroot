@@ -16,7 +16,8 @@
 #include "CbmMatch.h"  // for CbmMatch
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t, Float_t, Option_t
+
+#include <cstdint>
 
 class CbmMvdHitMatch : public CbmMatch {
 
@@ -26,9 +27,9 @@ public:
 
 
   /** Constructor with all parameters **/
-  CbmMvdHitMatch(Double_t weight, Int_t index, Int_t entry = -1, Int_t file = -1);
+  CbmMvdHitMatch(double weight, int32_t index, int32_t entry = -1, int32_t file = -1);
 
-  CbmMvdHitMatch(Int_t /*par1*/, Int_t /*par2*/, Int_t /*par3*/, Int_t /*par4*/, Int_t /*par5*/)
+  CbmMvdHitMatch(int32_t /*par1*/, int32_t /*par2*/, int32_t /*par3*/, int32_t /*par4*/, int32_t /*par5*/)
     : CbmMatch()
     , fFileNumber(-1)
     , fIndex(-1)
@@ -44,14 +45,14 @@ public:
 
 
   /** Accessors **/
-  Int_t GetFileNumber() const { return fFileNumber; }
-  Int_t GetIndexNumber() const { return fIndex; }
-  Int_t GetEntryNumber() const { return fEntry; }
-  Float_t GetWeight() const { return fWeight; }
+  int32_t GetFileNumber() const { return fFileNumber; }
+  int32_t GetIndexNumber() const { return fIndex; }
+  int32_t GetEntryNumber() const { return fEntry; }
+  float GetWeight() const { return fWeight; }
 
-  Int_t GetPointId() const { return 0; }
-  Int_t GetTrackId() const { return 0; }
-  Int_t GetNMerged() const { return 0; }
+  int32_t GetPointId() const { return 0; }
+  int32_t GetTrackId() const { return 0; }
+  int32_t GetNMerged() const { return 0; }
   void AddMerged() { ; }
 
 
@@ -59,10 +60,10 @@ public:
   virtual void Clear(Option_t*) { ; }
 
 private:
-  Int_t fFileNumber;
-  Int_t fIndex;
-  Double_t fWeight;
-  Int_t fEntry;
+  int32_t fFileNumber;
+  int32_t fIndex;
+  double fWeight;
+  int32_t fEntry;
 
   ClassDef(CbmMvdHitMatch, 1);
 };

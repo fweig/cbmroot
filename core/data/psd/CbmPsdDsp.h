@@ -19,11 +19,11 @@
 #include "CbmPsdAddress.h"  // for CbmPsdAddress
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDefNV
-#include <RtypesCore.h>  // for Double_t, UInt_t, Int_t
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 
+#include <cstdint>
 #include <string>  // for string
 
 
@@ -37,10 +37,10 @@ public:
 
   /** @brief Constructor with detailed assignment.
        **/
-  CbmPsdDsp(UInt_t address, Double_t time, Double_t ts_time, Double_t edep, UInt_t zl, Double_t accum,
-            Double_t adc_time, Double_t edep_wfm, Double_t ampl, UInt_t minimum, UInt_t time_max,
-            std::vector<std::uint16_t> wfm, Double_t fit_ampl, Double_t fit_zl, Double_t fit_edep, Double_t fit_r2,
-            Double_t fit_time_max, std::vector<std::uint16_t> fit_wfm);
+  CbmPsdDsp(uint32_t address, double time, double ts_time, double edep, uint32_t zl, double accum, double adc_time,
+            double edep_wfm, double ampl, uint32_t minimum, uint32_t time_max, std::vector<std::uint16_t> wfm,
+            double fit_ampl, double fit_zl, double fit_edep, double fit_r2, double fit_time_max,
+            std::vector<std::uint16_t> fit_wfm);
 
 
   /**  Copy constructor **/
@@ -72,37 +72,37 @@ public:
   /** @brief Address
        ** @return Unique channel address (see CbmPsdAddress)
        **/
-  UInt_t GetAddress() const { return fuAddress; };
+  uint32_t GetAddress() const { return fuAddress; };
 
 
   /** @brief Time
        ** @return Time [ns]
        **/
-  Double_t GetTime() const { return fdTime; };
+  double GetTime() const { return fdTime; };
 
 
   /** @brief TsTime
        ** @return TsTime [ns]
        **/
-  Double_t GetTsTime() const { return fdTsTime; };
+  double GetTsTime() const { return fdTsTime; };
 
 
   /** @brief Energy deposit
        ** @return Energy deposit
        **/
-  Double_t GetEdep() const { return fdEdep; };
+  double GetEdep() const { return fdEdep; };
 
 
   /** @brief Module Identifier
        ** @return Module number
        **/
-  Double_t GetModuleID() const { return CbmPsdAddress::GetModuleId(GetAddress()); }
+  double GetModuleID() const { return CbmPsdAddress::GetModuleId(GetAddress()); }
 
 
   /** @brief Section Identifier
        ** @return Section number
        **/
-  Double_t GetSectionID() const { return CbmPsdAddress::GetSectionId(GetAddress()); }
+  double GetSectionID() const { return CbmPsdAddress::GetSectionId(GetAddress()); }
 
 
   /** @brief System identifier
@@ -112,30 +112,30 @@ public:
 
 
   /** Modifiers **/
-  void SetAddress(UInt_t address) { fuAddress = address; };
-  void SetAddress(UInt_t moduleId, UInt_t sectionId);
-  void SetTime(Double_t time) { fdTime = time; }
-  void SetEdep(Double_t edep) { fdEdep = edep; }
+  void SetAddress(uint32_t address) { fuAddress = address; };
+  void SetAddress(uint32_t moduleId, uint32_t sectionId);
+  void SetTime(double time) { fdTime = time; }
+  void SetEdep(double edep) { fdEdep = edep; }
 
-  UInt_t fuAddress   = 0;    /// Unique channel address
-  Double_t fdTime    = -1.;  /// Time of measurement relative to TS [ns]
-  Double_t fdTsTime  = -1.;  /// Time of TimeSlice of measurement. Relative to first TS [ns]
-  Double_t fdEdep    = 0.;   /// Energy deposition from FPGA [MeV]
-  UInt_t fuZL        = 0;    /// ZeroLevel from waveform [adc counts]
-  Double_t fdAccum   = 0;    /// FPGA FEE Accumulator
-  Double_t fdAdcTime = -1.;  /// Adc time of measurement
+  uint32_t fuAddress = 0;    /// Unique channel address
+  double fdTime      = -1.;  /// Time of measurement relative to TS [ns]
+  double fdTsTime    = -1.;  /// Time of TimeSlice of measurement. Relative to first TS [ns]
+  double fdEdep      = 0.;   /// Energy deposition from FPGA [MeV]
+  uint32_t fuZL      = 0;    /// ZeroLevel from waveform [adc counts]
+  double fdAccum     = 0;    /// FPGA FEE Accumulator
+  double fdAdcTime   = -1.;  /// Adc time of measurement
 
-  Double_t fdEdepWfm          = 0.;  /// Energy deposition from waveform [MeV]
-  Double_t fdAmpl             = 0.;  /// Amplitude from waveform [mV]
-  UInt_t fuMinimum            = 0;   /// Minimum of waveform [adc samples]
-  UInt_t fuTimeMax            = 0;   /// Time of maximum in waveform [adc samples]
+  double fdEdepWfm            = 0.;  /// Energy deposition from waveform [MeV]
+  double fdAmpl               = 0.;  /// Amplitude from waveform [mV]
+  uint32_t fuMinimum          = 0;   /// Minimum of waveform [adc samples]
+  uint32_t fuTimeMax          = 0;   /// Time of maximum in waveform [adc samples]
   std::vector<uint16_t> fuWfm = std::vector<uint16_t>(32, 0);
 
-  Double_t fdFitAmpl             = 0.;    /// Amplitude from fit of waveform [mV]
-  Double_t fdFitZL               = 0.;    /// ZeroLevel from fit of waveform [adc counts]
-  Double_t fdFitEdep             = 0.;    /// Energy deposition from fit of waveform [MeV]
-  Double_t fdFitR2               = 999.;  /// Quality of waveform fit [] -- good near 0
-  Double_t fdFitTimeMax          = -1.;   /// Time of maximum in fit of waveform [adc samples]
+  double fdFitAmpl               = 0.;    /// Amplitude from fit of waveform [mV]
+  double fdFitZL                 = 0.;    /// ZeroLevel from fit of waveform [adc counts]
+  double fdFitEdep               = 0.;    /// Energy deposition from fit of waveform [MeV]
+  double fdFitR2                 = 999.;  /// Quality of waveform fit [] -- good near 0
+  double fdFitTimeMax            = -1.;   /// Time of maximum in fit of waveform [adc samples]
   std::vector<uint16_t> fuFitWfm = std::vector<uint16_t>(32, 0);
 
   template<class Archive>

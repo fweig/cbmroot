@@ -11,14 +11,14 @@
 #include "compareHit.h"
 #include "gtest/gtest.h"
 
-void comparePixelHitDataMembers(CbmPixelHit& test, HitType type, Double_t z, Double_t dz, Int_t refid, Int_t address,
-                                CbmMatch* match, Double_t time, Double_t errortime, Double_t x, Double_t dx, Double_t y,
-                                Double_t dy, Double_t dxy)
+void comparePixelHitDataMembers(CbmPixelHit& test, HitType type, double z, double dz, int32_t refid, int32_t address,
+                                CbmMatch* match, double time, double errortime, double x, double dx, double y,
+                                double dy, double dxy)
 {
 
   compareHitDataMembers(test, type, z, dz, refid, address, match, time, errortime);
 
-  Float_t retValFloat {-111.};
+  float retValFloat {-111.};
 
   retValFloat = test.GetX();
   EXPECT_FLOAT_EQ(x, retValFloat);

@@ -11,20 +11,20 @@
 #include "compareMatch.h"
 #include "gtest/gtest.h"
 
-void compareClusterDataMembers(CbmCluster& test, Int_t vectorsize, std::vector<Int_t> indices, Int_t address,
+void compareClusterDataMembers(CbmCluster& test, int32_t vectorsize, std::vector<int32_t> indices, int32_t address,
                                CbmMatch* match)
 {
-  Int_t retValInt {-111};
+  int32_t retValInt {-111};
 
   retValInt = test.GetNofDigis();
   EXPECT_EQ(vectorsize, retValInt);
 
   if (vectorsize > 0) {
-    for (Int_t counter = 0; counter < vectorsize; ++counter) {
+    for (int32_t counter = 0; counter < vectorsize; ++counter) {
       retValInt = test.GetDigi(counter);
       EXPECT_EQ(indices[counter], retValInt);
     }
-    std::vector<Int_t> compare = test.GetDigis();
+    std::vector<int32_t> compare = test.GetDigis();
     EXPECT_TRUE(std::equal(indices.begin(), indices.end(), compare.begin()));
   }
 

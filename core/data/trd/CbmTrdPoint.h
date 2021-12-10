@@ -21,8 +21,10 @@
 #include <FairMCPoint.h>  // for FairMCPoint
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Double_t, Double32_t, Int_t, Option_t
+#include <RtypesCore.h>  // for Double32_t
 #include <TVector3.h>    // for TVector3
+
+#include <cstdint>
 
 class CbmTrdPoint : public FairMCPoint {
 
@@ -42,8 +44,8 @@ public:
      *@param length   Track length since creation [cm]
      *@param eLoss    Energy deposit [GeV]
      **/
-  CbmTrdPoint(Int_t trackID, Int_t detID, const TVector3& posIn, const TVector3& momIn, const TVector3& posOut,
-              const TVector3& momOut, Double_t tof, Double_t length, Double_t eLoss);
+  CbmTrdPoint(int32_t trackID, int32_t detID, const TVector3& posIn, const TVector3& momIn, const TVector3& posOut,
+              const TVector3& momOut, double tof, double length, double eLoss);
 
 
   /** Copy constructor **/
@@ -57,20 +59,20 @@ public:
   virtual void Print(const Option_t* opt) const;
 
   /** Accessors **/
-  Double_t GetXIn() const { return fX; }
-  Double_t GetYIn() const { return fY; }
-  Double_t GetZIn() const { return fZ; }
-  Double_t GetXOut() const { return fX_out; }
-  Double_t GetYOut() const { return fY_out; }
-  Double_t GetZOut() const { return fZ_out; }
-  Double_t GetPxOut() const { return fPx_out; }
-  Double_t GetPyOut() const { return fPy_out; }
-  Double_t GetPzOut() const { return fPz_out; }
-  Double_t GetPxIn() const { return fPx; }
-  Double_t GetPyIn() const { return fPy; }
-  Double_t GetPzIn() const { return fPz; }
+  double GetXIn() const { return fX; }
+  double GetYIn() const { return fY; }
+  double GetZIn() const { return fZ; }
+  double GetXOut() const { return fX_out; }
+  double GetYOut() const { return fY_out; }
+  double GetZOut() const { return fZ_out; }
+  double GetPxOut() const { return fPx_out; }
+  double GetPyOut() const { return fPy_out; }
+  double GetPzOut() const { return fPz_out; }
+  double GetPxIn() const { return fPx; }
+  double GetPyIn() const { return fPy; }
+  double GetPzIn() const { return fPz; }
 
-  Int_t GetModuleAddress() const { return GetDetectorID(); }
+  int32_t GetModuleAddress() const { return GetDetectorID(); }
 
   void PositionOut(TVector3& pos) const { pos.SetXYZ(fX_out, fY_out, fZ_out); }
   void MomentumOut(TVector3& mom) const { mom.SetXYZ(fPx_out, fPy_out, fPz_out); }

@@ -25,13 +25,15 @@
 #include "CbmDefs.h"  // for ECbmModuleId, ECbmModuleId::kMvd, ECbmModuleId::kPsd, ECbmModuleId::kSts
 
 #include <Rtypes.h>          // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>      // for Double_t, Int_t, Double32_t, UInt_t
+#include <RtypesCore.h>      // for Double32_t
 #include <TLorentzVector.h>  // for TLorentzVector
-#include <TMath.h>           // for Sqrt
 #include <TObject.h>         // for TObject
 #include <TVector3.h>        // for TVector3
 
+#include <cstdint>
 #include <string>  // for string
+
+#include <cmath>
 
 class TParticle;
 
@@ -43,8 +45,8 @@ public:
 
 
   /**  Standard constructor  **/
-  CbmMCTrack(Int_t pdgCode, Int_t motherID, Double_t px, Double_t py, Double_t pz, Double_t x, Double_t y, Double_t z,
-             Double_t t, Int_t nPoints);
+  CbmMCTrack(int32_t pdgCode, int32_t motherID, double px, double py, double pz, double x, double y, double z, double t,
+             int32_t nPoints);
 
   /**  Copy constructor  **/
   CbmMCTrack(const CbmMCTrack& track);
@@ -57,21 +59,21 @@ public:
   /**  Destructor  **/
   virtual ~CbmMCTrack();
 
-  Int_t AccMVD() const { return GetNPoints(ECbmModuleId::kMvd); }
-  Int_t AccSTS() const { return GetNPoints(ECbmModuleId::kSts); }
-  Int_t AccPSD() const { return GetNPoints(ECbmModuleId::kPsd); }
+  int32_t AccMVD() const { return GetNPoints(ECbmModuleId::kMvd); }
+  int32_t AccSTS() const { return GetNPoints(ECbmModuleId::kSts); }
+  int32_t AccPSD() const { return GetNPoints(ECbmModuleId::kPsd); }
 
   /**  Accessors  **/
-  UInt_t GetGeantProcessId() const { return fProcessId; }
-  Int_t GetPdgCode() const { return fPdgCode; }
-  Int_t GetMotherId() const { return fMotherId; }
-  Double_t GetPx() const { return fPx; }
-  Double_t GetPy() const { return fPy; }
-  Double_t GetPz() const { return fPz; }
-  Double_t GetStartX() const { return fStartX; }
-  Double_t GetStartY() const { return fStartY; }
-  Double_t GetStartZ() const { return fStartZ; }
-  Double_t GetStartT() const { return fStartT; }
+  uint32_t GetGeantProcessId() const { return fProcessId; }
+  int32_t GetPdgCode() const { return fPdgCode; }
+  int32_t GetMotherId() const { return fMotherId; }
+  double GetPx() const { return fPx; }
+  double GetPy() const { return fPy; }
+  double GetPz() const { return fPz; }
+  double GetStartX() const { return fStartX; }
+  double GetStartY() const { return fStartY; }
+  double GetStartZ() const { return fStartZ; }
+  double GetStartT() const { return fStartT; }
 
   /** @brief Mass of the associated particle
    ** @return Particle mass [GeV]
@@ -80,7 +82,7 @@ public:
    ** For ions, the mass is calculated from the PDG code. The method
    ** throws an error for unknown PDG codes.
    **/
-  Double_t GetMass() const;
+  double GetMass() const;
 
   /** @brief Charge of the associated particle
    ** @return Particle charge [e]
@@ -89,24 +91,24 @@ public:
    ** For ions, the charge is calculated from the PDG code. The method
    ** throws an error for unknown PDG codes.
    **/
-  Double_t GetCharge() const;
+  double GetCharge() const;
 
-  Double_t GetEnergy() const;
-  Double_t GetPt() const { return TMath::Sqrt(fPx * fPx + fPy * fPy); }
-  Double_t GetP() const { return TMath::Sqrt(fPx * fPx + fPy * fPy + fPz * fPz); }
-  Double_t GetRapidity() const;
+  double GetEnergy() const;
+  double GetPt() const { return sqrt(fPx * fPx + fPy * fPy); }
+  double GetP() const { return sqrt(fPx * fPx + fPy * fPy + fPz * fPz); }
+  double GetRapidity() const;
   void GetMomentum(TVector3& momentum) const;
   void Get4Momentum(TLorentzVector& momentum) const;
   void GetStartVertex(TVector3& vertex) const;
 
 
   /** Accessors to the number of MCPoints in the detectors **/
-  Int_t GetNPoints(ECbmModuleId detId) const;
+  int32_t GetNPoints(ECbmModuleId detId) const;
 
 
   /**  Modifiers  **/
-  void SetMotherId(Int_t id) { fMotherId = id; }
-  void SetNPoints(ECbmModuleId iDet, Int_t np);
+  void SetMotherId(int32_t id) { fMotherId = id; }
+  void SetNPoints(ECbmModuleId iDet, int32_t np);
 
 
   /** String output **/
@@ -115,13 +117,13 @@ public:
 
 private:
   /**  TMCProcess code  **/
-  UInt_t fProcessId;
+  uint32_t fProcessId;
 
   /**  PDG particle code  **/
-  Int_t fPdgCode;
+  int32_t fPdgCode;
 
   /**  Index of mother track. -1 for primary particles.  **/
-  Int_t fMotherId;
+  int32_t fMotherId;
 
   /** Momentum components at start vertex [GeV]  **/
   Double32_t fPx, fPy, fPz;
@@ -147,7 +149,7 @@ private:
    **  with the inline functions. 
    **  Bits 26-31 are spare for potential additional detectors.
    **/
-  Int_t fNPoints;
+  int32_t fNPoints;
 
 
   ClassDef(CbmMCTrack, 3)
@@ -156,11 +158,11 @@ private:
 
 // ==========   Inline functions   ========================================
 
-inline Double_t CbmMCTrack::GetEnergy() const
+inline double CbmMCTrack::GetEnergy() const
 {
   if (fE > 0.) return fE;
-  Double_t mass = GetMass();
-  return TMath::Sqrt(mass * mass + fPx * fPx + fPy * fPy + fPz * fPz);
+  double mass = GetMass();
+  return sqrt(mass * mass + fPx * fPx + fPy * fPy + fPz * fPz);
 }
 
 

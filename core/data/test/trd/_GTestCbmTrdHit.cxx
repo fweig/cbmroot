@@ -22,12 +22,12 @@ TEST(_GTestCbmTrdHit, CheckDefaultConstructor)
 
 TEST(_GTestCbmTrdHit, CheckStandardConstructor)
 {
-  Int_t address {12345};
+  int32_t address {12345};
   TVector3 pos {-3., 5.777, 123.765};
   TVector3 error {0.77, 0.88, 0.99};
-  Double_t dxy {1.2};
-  Int_t refId {6};
-  Double_t eloss {123.};
+  double dxy {1.2};
+  int32_t refId {6};
+  double eloss {123.};
 
   // Create object
   CbmTrdHit test(address, pos, error, dxy, refId, eloss);
@@ -44,14 +44,14 @@ TEST(_GTestCbmTrdHit, CheckStandardConstructor)
 
 TEST(_GTestCbmTrdHit, CheckStandardConstructorWithTime)
 {
-  Int_t address {12345};
+  int32_t address {12345};
   TVector3 pos {-3., 5.777, 123.765};
   TVector3 error {0.77, 0.88, 0.99};
-  Double_t dxy {1.2};
-  Int_t refId {6};
-  Double_t eloss {123.};
-  Double_t time {456.};
-  Double_t timeError {1.34};
+  double dxy {1.2};
+  int32_t refId {6};
+  double eloss {123.};
+  double time {456.};
+  double timeError {1.34};
   // Create object
   CbmTrdHit test(address, pos, error, dxy, refId, eloss, time, timeError);
 
@@ -110,14 +110,14 @@ TEST(_GTestCbmTrdHit, CheckSetEloss)
 
 TEST(_GTestCbmTrdHit, CheckToString)
 {
-  Int_t address {12345};
+  int32_t address {12345};
   TVector3 pos {-3., 5.777, 123.765};
   TVector3 error {0.77, 0.88, 0.99};
-  Double_t dxy {1.2};
-  Int_t refId {6};
-  Double_t eloss {123.};
-  Double_t time {456.};
-  Double_t timeError {1.34};
+  double dxy {1.2};
+  int32_t refId {6};
+  double eloss {123.};
+  double time {456.};
+  double timeError {1.34};
   // Create object
   CbmTrdHit test(address, pos, error, dxy, refId, eloss, time, timeError);
 

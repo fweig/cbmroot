@@ -11,9 +11,9 @@
 
 TEST(_GTestCbmConstants, CheckParticleMasses)
 {
-  Double_t protonMass   = 0.938272046;
-  Double_t neutronMass  = 0.939565379;
-  Double_t electronMass = 0.000510998928;
+  double protonMass   = 0.938272046;
+  double neutronMass  = 0.939565379;
+  double electronMass = 0.000510998928;
 
   EXPECT_EQ(protonMass, CbmProtonMass());
   EXPECT_EQ(neutronMass, CbmNeutronMass());

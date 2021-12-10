@@ -82,7 +82,7 @@ CbmTrack::~CbmTrack()
   if (fMatch) delete fMatch;
 }
 
-void CbmTrack::AddHit(Int_t index, HitType type)
+void CbmTrack::AddHit(int32_t index, HitType type)
 {
   fHitIndex.push_back(index);
   fHitType.push_back(type);

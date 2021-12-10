@@ -135,29 +135,28 @@
 
 /* clang-format off */
 #pragma read sourceClass="CbmStsDigi" version="[7]" targetClass="CbmStsDigi" \
-    source="Long64_t fTime; Int_t fAddress; UShort_t fChannel; UShort_t fCharge" \
+    source="int64_t fTime; int32_t fAddress; uint16_t fChannel; uint16_t fCharge" \
     target="" \
     include="Logger.h" \
     code="{ newObj->SetAddressAndTime(onfile.fAddress, onfile.fTime); \
             newObj->SetChannelAndCharge(onfile.fChannel, onfile.fCharge); \
           }"
 
-#pragma read sourceClass="CbmTofDigi" version="[1-2]" targetClass="CbmTofDigi" \
-   source="UInt_t fuAddress" target="fuAddress" \
-   include="Logger.h" \
-   code="{ UInt_t system = (onfile.fuAddress >> 0) & ((1 << 4) - 1); \
-           UInt_t smId = (onfile.fuAddress >> 4) & ((1 << 8) - 1); \
-           UInt_t smType = (onfile.fuAddress >> 12) & ((1 << 4) - 1); \
-           UInt_t rpcId = (onfile.fuAddress >> 16) & ((1 << 7) - 1); \
-           UInt_t chSide = (onfile.fuAddress >> 23) & ((1 << 1) - 1); \
-           UInt_t chId = (onfile.fuAddress >> 24) & ((1 << 8) - 1); \
+#pragma read sourceClass = "CbmTofDigi" version = "[1-2]" targetClass = "CbmTofDigi" source =                          \
+  "uint32_t fuAddress" target = "fuAddress" include = "Logger.h" code =                                                \
+    "{ uint32_t system = (onfile.fuAddress >> 0) & ((1 << 4) - 1); \
+           uint32_t smId = (onfile.fuAddress >> 4) & ((1 << 8) - 1); \
+           uint32_t smType = (onfile.fuAddress >> 12) & ((1 << 4) - 1); \
+           uint32_t rpcId = (onfile.fuAddress >> 16) & ((1 << 7) - 1); \
+           uint32_t chSide = (onfile.fuAddress >> 23) & ((1 << 1) - 1); \
+           uint32_t chId = (onfile.fuAddress >> 24) & ((1 << 8) - 1); \
            if ( smId > 127 || rpcId > 63 || chId > 63 ) { \
              LOG(error) << \"You are trying to read an outdated version of CbmTofDigi\"; \
              LOG(error) << \"where the unique tof address can't be converted\"; \
              LOG(error) << \"automatically to the new tof addressing scheme.\"; \
              LOG(fatal) << \"Stop execution.\"; \
            } \
-           UInt_t rpcType = 0; \
+           uint32_t rpcType = 0; \
            fuAddress = (system & ((1 << 4) - 1)) \
                      + ((smId & ((1 << 7) - 1)) << 4) \
                      + ((smType & ((1 << 4) - 1)) << 11) \

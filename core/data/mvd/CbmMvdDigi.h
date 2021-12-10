@@ -16,9 +16,9 @@
 #include "CbmMvdDetectorId.h"  // for CbmMvdDetectorId
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, Float_t, Double_t
 #include <TObject.h>     // for TObject
 
+#include <cstdint>
 #include <string>  // for string
 
 
@@ -30,8 +30,8 @@ public:
 
   /** Constructor with all variables **/
 
-  CbmMvdDigi(Int_t iStation, Int_t iChannelNrX, Int_t iChannelNrY, Float_t charge, Float_t pixelSizeX,
-             Float_t pixelSizeY, Float_t time = 0.0, Int_t frame = 0);
+  CbmMvdDigi(int32_t iStation, int32_t iChannelNrX, int32_t iChannelNrY, float charge, float pixelSizeX,
+             float pixelSizeY, float time = 0.0, int32_t frame = 0);
   /**
      charge     : of each fired pixel in electrons
      PixelSize  : in cm
@@ -44,60 +44,60 @@ public:
   static ECbmModuleId GetSystem() { return ECbmModuleId::kMvd; }
 
   /** Accessors **/
-  Double_t GetCharge() const { return fCharge; };
-  Int_t GetPixelX();
-  Int_t GetPixelY();
-  Double_t GetPixelSizeX() { return fPixelSizeX; };
-  Double_t GetPixelSizeY() { return fPixelSizeY; };
-  Int_t GetAdcCharge(Int_t adcDynamic, Int_t adcOffset, Int_t adcBits);
-  Int_t GetFlag() { return fDigiFlag; };
-  Int_t GetStationNr() { return StationNr(fDetectorId); };
-  Int_t GetDetectorId() { return fDetectorId; };
-  Int_t GetAddress() const; /** Unique channel address  **/
-  Double_t GetTime() const; /** Absolute time [ns]  **/
-  Int_t GetFrameNumber() { return fFrameNumber; };
+  double GetCharge() const { return fCharge; };
+  int32_t GetPixelX();
+  int32_t GetPixelY();
+  double GetPixelSizeX() { return fPixelSizeX; };
+  double GetPixelSizeY() { return fPixelSizeY; };
+  int32_t GetAdcCharge(int32_t adcDynamic, int32_t adcOffset, int32_t adcBits);
+  int32_t GetFlag() { return fDigiFlag; };
+  int32_t GetStationNr() { return StationNr(fDetectorId); };
+  int32_t GetDetectorId() { return fDetectorId; };
+  int32_t GetAddress() const; /** Unique channel address  **/
+  double GetTime() const;     /** Absolute time [ns]  **/
+  int32_t GetFrameNumber() { return fFrameNumber; };
 
 
-  Int_t GetRefId() const { return fRefId; };
+  int32_t GetRefId() const { return fRefId; };
 
   std::string ToString() const { return ""; }
 
   //these functions are only for littrack
-  Int_t GetDominatorX() { return 0; };
-  Int_t GetDominatorY() { return 0; };
-  Int_t GetTrackID() { return 0; };
-  Int_t GetContributors() { return 0; };
-  Int_t GetPointID() { return 0; };
+  int32_t GetDominatorX() { return 0; };
+  int32_t GetDominatorY() { return 0; };
+  int32_t GetTrackID() { return 0; };
+  int32_t GetContributors() { return 0; };
+  int32_t GetPointID() { return 0; };
   //
 
 
   /** Modifiers **/
-  void SetCharge(Float_t charge) { fCharge = charge; };
-  void SetPixelX(Int_t xIndex) { fChannelNrX = xIndex; };
-  void SetPixelY(Int_t yIndex) { fChannelNrY = yIndex; };
-  void SetPixelIndex(Int_t pixelIndex) { fChannelNr = pixelIndex; };
-  void SetDetectorId(Int_t detId) { fDetectorId = detId; };
-  void SetFlag(Int_t flag) { fDigiFlag = flag; }
-  void SetFrameNr(Int_t frame) { fFrameNumber = frame; };
-  void SetRefId(Int_t refId) { fRefId = refId; }
-  void SetTime(Double_t time) { fDigiTime = time; }
+  void SetCharge(float charge) { fCharge = charge; };
+  void SetPixelX(int32_t xIndex) { fChannelNrX = xIndex; };
+  void SetPixelY(int32_t yIndex) { fChannelNrY = yIndex; };
+  void SetPixelIndex(int32_t pixelIndex) { fChannelNr = pixelIndex; };
+  void SetDetectorId(int32_t detId) { fDetectorId = detId; };
+  void SetFlag(int32_t flag) { fDigiFlag = flag; }
+  void SetFrameNr(int32_t frame) { fFrameNumber = frame; };
+  void SetRefId(int32_t refId) { fRefId = refId; }
+  void SetTime(double time) { fDigiTime = time; }
 
 private:
-  Float_t fCharge;
-  Int_t fChannelNrX;
-  Int_t fChannelNrY;
-  Int_t fTrackID;
-  Int_t fPointID;
-  Float_t fPixelSizeX;
-  Float_t fPixelSizeY;
-  Int_t fDetectorId;
-  Int_t fChannelNr;
-  Double_t fDigiTime;
-  Int_t fFrameNumber;
-  Int_t fRefId;
+  float fCharge;
+  int32_t fChannelNrX;
+  int32_t fChannelNrY;
+  int32_t fTrackID;
+  int32_t fPointID;
+  float fPixelSizeX;
+  float fPixelSizeY;
+  int32_t fDetectorId;
+  int32_t fChannelNr;
+  double fDigiTime;
+  int32_t fFrameNumber;
+  int32_t fRefId;
 
 
-  Int_t fDigiFlag;  // Debugging and analysis information
+  int32_t fDigiFlag;  // Debugging and analysis information
 
   ClassDef(CbmMvdDigi, 2);
 };

@@ -18,6 +18,8 @@
 #include <TNamed.h>
 #include <TVector3.h>
 
+#include <cstdint>
+
 
 class CbmMCEvent : public TNamed {
 
@@ -36,12 +38,12 @@ public:
    *@param phi      event plane angle [rad]
    *@param nPrim    number of input tracks
    **/
-  CbmMCEvent(UInt_t runId, Int_t iEvent, Double_t x, Double_t y, Double_t z, Double_t t, Double_t b, Double_t phi,
-             Int_t nPrim);
+  CbmMCEvent(uint32_t runId, int32_t iEvent, double x, double y, double z, double t, double b, double phi,
+             int32_t nPrim);
 
 
   /** Standard constructor with run identifier **/
-  CbmMCEvent(UInt_t runId);
+  CbmMCEvent(uint32_t runId);
 
 
   /** Destructor **/
@@ -49,27 +51,27 @@ public:
 
 
   /** Accessors **/
-  UInt_t GetRunID() const { return fRunId; }     // run identifier
-  Int_t GetEventID() const { return fEventId; }  // event identifier
-  Double_t GetX() const { return fX; }           // vertex x [cm]
-  Double_t GetY() const { return fY; }           // vertex y [cm]
-  Double_t GetZ() const { return fZ; }           // vertex z [cm]
-  Double_t GetT() const { return fT; }           // event time [ns]
-  Double_t GetB() const { return fB; }           // impact parameter [fm]
-  Double_t GetPhi() const { return fPhi; }       // event plane angle [rad]
-  Int_t GetNPrim() const { return fNPrim; }      // number of input tracks
-  Bool_t IsSet() const { return fIsSet; }        // Flag
+  uint32_t GetRunID() const { return fRunId; }     // run identifier
+  int32_t GetEventID() const { return fEventId; }  // event identifier
+  double GetX() const { return fX; }               // vertex x [cm]
+  double GetY() const { return fY; }               // vertex y [cm]
+  double GetZ() const { return fZ; }               // vertex z [cm]
+  double GetT() const { return fT; }               // event time [ns]
+  double GetB() const { return fB; }               // impact parameter [fm]
+  double GetPhi() const { return fPhi; }           // event plane angle [rad]
+  int32_t GetNPrim() const { return fNPrim; }      // number of input tracks
+  bool IsSet() const { return fIsSet; }            // Flag
   void GetVertex(TVector3& vertex) { vertex.SetXYZ(fX, fY, fZ); }
 
 
   /** Modifiers **/
-  void SetEventID(Int_t eventId) { fEventId = eventId; }
-  void SetTime(Double_t t) { fT = t; }
-  void SetB(Double_t b) { fB = b; }
-  void SetPhi(Double_t phi) { fPhi = phi; }
-  void SetNPrim(Int_t nPrim) { fNPrim = nPrim; }
-  void MarkSet(Bool_t isSet) { fIsSet = isSet; }
-  void SetVertex(Double_t x, Double_t y, Double_t z);
+  void SetEventID(int32_t eventId) { fEventId = eventId; }
+  void SetTime(double t) { fT = t; }
+  void SetB(double b) { fB = b; }
+  void SetPhi(double phi) { fPhi = phi; }
+  void SetNPrim(int32_t nPrim) { fNPrim = nPrim; }
+  void MarkSet(bool isSet) { fIsSet = isSet; }
+  void SetVertex(double x, double y, double z);
   void SetVertex(const TVector3& vertex);
 
 
@@ -78,23 +80,23 @@ public:
 
 
 private:
-  UInt_t fRunId;    //  Run identifier
-  UInt_t fEventId;  //  Event identifier
-  Double32_t fX;    //  Primary vertex x [cm]
-  Double32_t fY;    //  Primary vertex y [cm]
-  Double32_t fZ;    //  Primary vertex z [cm]
-  Double32_t fT;    //  Event time [s]
-  Double32_t fB;    //  Impact parameter [fm] (if relevant)
-  Double32_t fPhi;  //  Event plane angle [rad] (if relevant)
-  Int_t fNPrim;     //  Number of input tracks
-  Bool_t fIsSet;    //  Flag whether variables are filled
+  uint32_t fRunId;    //  Run identifier
+  uint32_t fEventId;  //  Event identifier
+  Double32_t fX;      //  Primary vertex x [cm]
+  Double32_t fY;      //  Primary vertex y [cm]
+  Double32_t fZ;      //  Primary vertex z [cm]
+  Double32_t fT;      //  Event time [s]
+  Double32_t fB;      //  Impact parameter [fm] (if relevant)
+  Double32_t fPhi;    //  Event plane angle [rad] (if relevant)
+  int32_t fNPrim;     //  Number of input tracks
+  bool fIsSet;        //  Flag whether variables are filled
 
 
   ClassDef(CbmMCEvent, 1);
 };
 
 
-inline void CbmMCEvent::SetVertex(Double_t x, Double_t y, Double_t z)
+inline void CbmMCEvent::SetVertex(double x, double y, double z)
 {
   fX = x;
   fY = y;

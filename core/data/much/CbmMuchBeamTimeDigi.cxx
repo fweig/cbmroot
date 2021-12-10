@@ -33,7 +33,7 @@ CbmMuchBeamTimeDigi::CbmMuchBeamTimeDigi()
 
 
 // -------------------------------------------------------------------------
-CbmMuchBeamTimeDigi::CbmMuchBeamTimeDigi(Int_t address, Int_t charge, ULong64_t time)
+CbmMuchBeamTimeDigi::CbmMuchBeamTimeDigi(int32_t address, int32_t charge, uint64_t time)
   : CbmMuchDigi(address, charge, time)
   , fPadX(-1)
   , fPadY(-1)

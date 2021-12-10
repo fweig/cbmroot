@@ -15,17 +15,17 @@
 
 using namespace std;
 
-const Int_t CbmTofDetectorId_v21a::shiftarray[] = {0, 4, 11, 15, 21, 22, 28};
-const Int_t CbmTofDetectorId_v21a::bitarray[]   = {4, 7, 4, 6, 1, 6, 4};
+const int32_t CbmTofDetectorId_v21a::shiftarray[] = {0, 4, 11, 15, 21, 22, 28};
+const int32_t CbmTofDetectorId_v21a::bitarray[]   = {4, 7, 4, 6, 1, 6, 4};
 
 
 CbmTofDetectorId_v21a::CbmTofDetectorId_v21a() : CbmTofDetectorId(), result_array(), maskarray(), modulemask(0)
 {
-  for (Int_t i = 0; i < array_length; i++) {
+  for (int32_t i = 0; i < array_length; i++) {
     maskarray[i] = (1 << bitarray[i]) - 1;
   }
 
-  for (Int_t i = 0; i < array_length - 1; i++) {
+  for (int32_t i = 0; i < array_length - 1; i++) {
     if (i == 4) continue;  // ignore side bit
     modulemask |= (maskarray[i] << shiftarray[i]);
   }
@@ -34,9 +34,9 @@ CbmTofDetectorId_v21a::CbmTofDetectorId_v21a() : CbmTofDetectorId(), result_arra
             << std::setfill(prev) << std::dec << std::endl;
 }
 
-CbmTofDetectorInfo CbmTofDetectorId_v21a::GetDetectorInfo(const Int_t detectorId)
+CbmTofDetectorInfo CbmTofDetectorId_v21a::GetDetectorInfo(const int32_t detectorId)
 {
-  for (Int_t i = 0; i < array_length; i++) {
+  for (int32_t i = 0; i < array_length; i++) {
     result_array[i] = ((detectorId >> shiftarray[i]) & maskarray[i]);
   }
 
@@ -44,55 +44,61 @@ CbmTofDetectorInfo CbmTofDetectorId_v21a::GetDetectorInfo(const Int_t detectorId
                             result_array[4], result_array[5], result_array[6]);
 }
 
-Int_t CbmTofDetectorId_v21a::GetSystemId(Int_t detectorId) { return (detectorId & maskarray[0]); }
+int32_t CbmTofDetectorId_v21a::GetSystemId(int32_t detectorId) { return (detectorId & maskarray[0]); }
 
 //-----------------------------------------------------------
 
-Int_t CbmTofDetectorId_v21a::GetSMType(const Int_t detectorId)
+int32_t CbmTofDetectorId_v21a::GetSMType(const int32_t detectorId)
 {
   return ((detectorId >> shiftarray[2]) & maskarray[2]);
 }
-Int_t CbmTofDetectorId_v21a::GetModuleType(const Int_t detectorId) { return GetSMType(detectorId); }
-Int_t CbmTofDetectorId_v21a::GetCounterType(const Int_t detectorId)
+int32_t CbmTofDetectorId_v21a::GetModuleType(const int32_t detectorId) { return GetSMType(detectorId); }
+int32_t CbmTofDetectorId_v21a::GetCounterType(const int32_t detectorId)
 {
   return ((detectorId >> shiftarray[6]) & maskarray[6]);
 }
 
 //-----------------------------------------------------------
 
-Int_t CbmTofDetectorId_v21a::GetSModule(const Int_t detectorId)
+int32_t CbmTofDetectorId_v21a::GetSModule(const int32_t detectorId)
 {
   return ((detectorId >> shiftarray[1]) & maskarray[1]);
 }
-Int_t CbmTofDetectorId_v21a::GetModuleId(const Int_t detectorId) { return GetSModule(detectorId); }
+int32_t CbmTofDetectorId_v21a::GetModuleId(const int32_t detectorId) { return GetSModule(detectorId); }
 
 //-----------------------------------------------------------
 
-Int_t CbmTofDetectorId_v21a::GetCounter(const Int_t detectorId)
+int32_t CbmTofDetectorId_v21a::GetCounter(const int32_t detectorId)
 {
   return ((detectorId >> shiftarray[3]) & maskarray[3]);
 }
 
 //-----------------------------------------------------------
 
-Int_t CbmTofDetectorId_v21a::GetSide(const Int_t detectorId) { return ((detectorId >> shiftarray[4]) & maskarray[4]); }
-Int_t CbmTofDetectorId_v21a::GetGap(const Int_t detectorId) { return GetSide(detectorId); }
+int32_t CbmTofDetectorId_v21a::GetSide(const int32_t detectorId)
+{
+  return ((detectorId >> shiftarray[4]) & maskarray[4]);
+}
+int32_t CbmTofDetectorId_v21a::GetGap(const int32_t detectorId) { return GetSide(detectorId); }
 
 //-----------------------------------------------------------
 
-Int_t CbmTofDetectorId_v21a::GetCell(const Int_t detectorId) { return ((detectorId >> shiftarray[5]) & maskarray[5]); }
+int32_t CbmTofDetectorId_v21a::GetCell(const int32_t detectorId)
+{
+  return ((detectorId >> shiftarray[5]) & maskarray[5]);
+}
 
-Int_t CbmTofDetectorId_v21a::GetStrip(const Int_t detectorId) { return GetCell(detectorId); }
-
-//-----------------------------------------------------------
-
-Int_t CbmTofDetectorId_v21a::GetRegion(const Int_t /*detectorId*/) { return -1; }
-
-Int_t CbmTofDetectorId_v21a::GetCellId(const Int_t detectorId) { return (detectorId & modulemask); }
+int32_t CbmTofDetectorId_v21a::GetStrip(const int32_t detectorId) { return GetCell(detectorId); }
 
 //-----------------------------------------------------------
 
-Int_t CbmTofDetectorId_v21a ::SetDetectorInfo(const CbmTofDetectorInfo detInfo)
+int32_t CbmTofDetectorId_v21a::GetRegion(const int32_t /*detectorId*/) { return -1; }
+
+int32_t CbmTofDetectorId_v21a::GetCellId(const int32_t detectorId) { return (detectorId & modulemask); }
+
+//-----------------------------------------------------------
+
+int32_t CbmTofDetectorId_v21a ::SetDetectorInfo(const CbmTofDetectorInfo detInfo)
 {
   /*
   std::cout << "SetDetectorInfo for "

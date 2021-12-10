@@ -8,14 +8,14 @@
 #include "compareMuchDigi.h"
 #include "gtest/gtest.h"
 
-void compareMuchBeamTimeDigiDataMembers(CbmMuchBeamTimeDigi& test, Int_t address, ECbmModuleId systemid, ULong64_t time,
-                                        Int_t charge, Int_t padx, Int_t pady, Int_t rocid, Int_t nxid, Int_t nxch,
-                                        Int_t elink)
+void compareMuchBeamTimeDigiDataMembers(CbmMuchBeamTimeDigi& test, int32_t address, ECbmModuleId systemid,
+                                        uint64_t time, int32_t charge, int32_t padx, int32_t pady, int32_t rocid,
+                                        int32_t nxid, int32_t nxch, int32_t elink)
 {
   CbmMuchDigi bla = static_cast<CbmMuchDigi>(test);
   compareMuchDigiDataMembers(bla, address, systemid, time, charge);
 
-  Int_t retValInt {-222};
+  int32_t retValInt {-222};
 
   retValInt = test.GetPadX();
   EXPECT_EQ(padx, retValInt);

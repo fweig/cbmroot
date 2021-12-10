@@ -16,8 +16,8 @@
 #include "CbmMatch.h"  // for CbmMatch
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t
 
+#include <cstdint>
 #include <string>  // for string
 
 class CbmTrackMatchNew : public CbmMatch {
@@ -33,23 +33,23 @@ public:
   virtual ~CbmTrackMatchNew();
 
   /* Accessors */
-  Int_t GetNofTrueHits() const { return fNofTrueHits; }
-  Int_t GetNofWrongHits() const { return fNofWrongHits; }
-  Int_t GetNofHits() const { return fNofTrueHits + fNofWrongHits; }
-  Double_t GetTrueOverAllHitsRatio() const
+  int32_t GetNofTrueHits() const { return fNofTrueHits; }
+  int32_t GetNofWrongHits() const { return fNofWrongHits; }
+  int32_t GetNofHits() const { return fNofTrueHits + fNofWrongHits; }
+  double GetTrueOverAllHitsRatio() const
   {
-    Double_t all = GetNofHits();
+    double all = GetNofHits();
     return (all == 0) ? 0. : (fNofTrueHits / all);
   }
-  Double_t GetWrongOverAllHitsRatio() const
+  double GetWrongOverAllHitsRatio() const
   {
-    Double_t all = GetNofHits();
+    double all = GetNofHits();
     return (all == 0) ? 0. : (fNofWrongHits / all);
   }
 
   /* Modifiers */
-  void SetNofTrueHits(Int_t nofTrueHits) { fNofTrueHits = nofTrueHits; }
-  void SetNofWrongHits(Int_t nofWrongHits) { fNofWrongHits = nofWrongHits; }
+  void SetNofTrueHits(int32_t nofTrueHits) { fNofTrueHits = nofTrueHits; }
+  void SetNofWrongHits(int32_t nofWrongHits) { fNofWrongHits = nofWrongHits; }
 
   /**
     * \brief Return string representation of the object.
@@ -58,8 +58,8 @@ public:
   virtual std::string ToString() const;
 
 private:
-  Int_t fNofTrueHits;   // Number of true hits in reconstructed track
-  Int_t fNofWrongHits;  // Number of wrong hits in reconstructed track
+  int32_t fNofTrueHits;   // Number of true hits in reconstructed track
+  int32_t fNofWrongHits;  // Number of wrong hits in reconstructed track
 
   ClassDef(CbmTrackMatchNew, 1);
 };

@@ -14,9 +14,9 @@
 #define CBMLINK_H_
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Int_t, Float_t, Bool_t
 #include <TObject.h>     // for TObject
 
+#include <cstdint>
 #include <string>  // for string
 
 class CbmLink : public TObject {
@@ -29,7 +29,7 @@ public:
   /**
     * \brief Standard constructor.
     */
-  CbmLink(Float_t weight, Int_t index, Int_t entry = -1, Int_t file = -1);
+  CbmLink(float weight, int32_t index, int32_t entry = -1, int32_t file = -1);
 
   /**
     * \brief Destructor.
@@ -37,18 +37,18 @@ public:
   virtual ~CbmLink();
 
   /* Modifiers */
-  Int_t GetFile() const { return fFile; }
-  Int_t GetEntry() const { return fEntry; }
-  Int_t GetIndex() const { return fIndex; }
-  Float_t GetWeight() const { return fWeight; }
+  int32_t GetFile() const { return fFile; }
+  int32_t GetEntry() const { return fEntry; }
+  int32_t GetIndex() const { return fIndex; }
+  float GetWeight() const { return fWeight; }
 
   /* Accessors */
-  void SetFile(Int_t file) { fFile = file; }
-  void SetEntry(Int_t entry) { fEntry = entry; }
-  void SetIndex(Int_t index) { fIndex = index; }
-  void SetWeight(Float_t weight) { fWeight = weight; }
+  void SetFile(int32_t file) { fFile = file; }
+  void SetEntry(int32_t entry) { fEntry = entry; }
+  void SetIndex(int32_t index) { fIndex = index; }
+  void SetWeight(float weight) { fWeight = weight; }
 
-  void AddWeight(Float_t weight) { fWeight += weight; }
+  void AddWeight(float weight) { fWeight += weight; }
 
   /**
     * \brief Return string representation of the object.
@@ -56,7 +56,7 @@ public:
     **/
   virtual std::string ToString() const;
 
-  friend Bool_t operator==(const CbmLink& lhs, const CbmLink& rhs)
+  friend bool operator==(const CbmLink& lhs, const CbmLink& rhs)
   {
     return (lhs.GetFile() == rhs.GetFile() && lhs.GetEntry() == rhs.GetEntry() && lhs.GetIndex() == rhs.GetIndex());
   }
@@ -64,7 +64,7 @@ public:
   friend Bool_t operator!=(const CbmLink& lhs, const CbmLink& rhs) { return !(lhs == rhs); }
 
   /** Comparison operators by //Dr.Sys **/
-  friend Bool_t operator<(const CbmLink& l, const CbmLink& r)
+  friend bool operator<(const CbmLink& l, const CbmLink& r)
   {
     if (l.GetFile() == r.GetFile()) {
       if (l.GetEntry() == r.GetEntry()) return l.GetIndex() < r.GetIndex();
@@ -73,7 +73,7 @@ public:
     return l.GetFile() < r.GetFile();
   }
 
-  friend Bool_t operator>(const CbmLink& l, const CbmLink& r)
+  friend bool operator>(const CbmLink& l, const CbmLink& r)
   {
     if (l.GetFile() == r.GetFile()) {
       if (l.GetEntry() == r.GetEntry()) return l.GetIndex() > r.GetIndex();
@@ -84,10 +84,10 @@ public:
 
 
 private:
-  Int_t fFile;      // File ID
-  Int_t fEntry;     // Entry number
-  Int_t fIndex;     // Index in array
-  Float_t fWeight;  // Weight
+  int32_t fFile;   // File ID
+  int32_t fEntry;  // Entry number
+  int32_t fIndex;  // Index in array
+  float fWeight;   // Weight
 
   ClassDef(CbmLink, 1)
 };

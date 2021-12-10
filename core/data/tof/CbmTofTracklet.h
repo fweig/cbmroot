@@ -15,12 +15,13 @@
 
 #include <FairTrackParam.h>  // for FairTrackParam
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t, Bool_t, Option_t
-#include <TMath.h>       // for Sqrt, ATan, Power
-#include <TObject.h>     // for TObject
+#include <Rtypes.h>   // for THashConsistencyHolder, ClassDef
+#include <TObject.h>  // for TObject
 
+#include <cstdint>
 #include <vector>  // for vector, __vector_base<>::value_type
+
+#include <cmath>
 
 /** @class CbmTofTracklet
  ** @brief Provides information on attaching a TofHit to a TofTrack
@@ -46,93 +47,90 @@ public:
   virtual void PrintInfo();
 
   /**  PID hypothesis for track extrapolation to TOF **/
-  Int_t GetPidHypo() const { return fPidHypo; }
+  int32_t GetPidHypo() const { return fPidHypo; }
 
   /**  Number of TOF hits **/
-  Int_t GetNofHits() const { return fTofHit.size(); }
+  int32_t GetNofHits() const { return fTofHit.size(); }
 
   /**  Index of TOF hit **/
-  Int_t GetHitIndex(Int_t ind) const { return fTofHit[ind]; }
+  int32_t GetHitIndex(int32_t ind) const { return fTofHit[ind]; }
 
-  Double_t GetT0() const { return fT0; }
-  Double_t GetTt() const { return fTt; }
-  Double_t GetT0Err() const { return fT0Err; }
-  Double_t GetTtErr() const { return fTtErr; }
-  Double_t GetT0TtCov() const { return fT0TtCov; }
-  Double_t GetTheta() const
+  double GetT0() const { return fT0; }
+  double GetTt() const { return fTt; }
+  double GetT0Err() const { return fT0Err; }
+  double GetTtErr() const { return fTtErr; }
+  double GetT0TtCov() const { return fT0TtCov; }
+  double GetTheta() const { return atan(sqrt(pow(fTrackPar.GetTy(), 2) + pow(fTrackPar.GetTx(), 2))); }
+  double GetPhi() const { return atan(fTrackPar.GetTy() / fTrackPar.GetTx()); }
+  int32_t GetStationHitIndex(int32_t iSm) const
   {
-    return TMath::ATan(TMath::Sqrt(TMath::Power(fTrackPar.GetTy(), 2) + TMath::Power(fTrackPar.GetTx(), 2)));
-  }
-  Double_t GetPhi() const { return TMath::ATan(fTrackPar.GetTy() / fTrackPar.GetTx()); }
-  Int_t GetStationHitIndex(Int_t iSm) const
-  {
-    for (Int_t i = 0; i < (Int_t) fTofHit.size(); i++)
+    for (int32_t i = 0; i < (int32_t) fTofHit.size(); i++)
       if (fTofDet[i] == iSm) return fTofHit[i];
     return -1;
   }
 
-  Int_t GetTofHitIndex(Int_t ind) const { return fTofHit[ind]; }
-  inline void SetTofHitIndex(Int_t ind, Int_t i) { fTofHit[ind] = i; }
-  CbmTofHit* GetTofHitPointer(Int_t ind) { return &fhit[ind]; }
-  Int_t GetTofDetIndex(Int_t ind) const { return fTofDet[ind]; }
+  int32_t GetTofHitIndex(int32_t ind) const { return fTofHit[ind]; }
+  inline void SetTofHitIndex(int32_t ind, int32_t i) { fTofHit[ind] = i; }
+  CbmTofHit* GetTofHitPointer(int32_t ind) { return &fhit[ind]; }
+  int32_t GetTofDetIndex(int32_t ind) const { return fTofDet[ind]; }
 
-  const std::vector<Int_t>& GetTofHitInd() const { return fTofHit; }
+  const std::vector<int32_t>& GetTofHitInd() const { return fTofHit; }
 
-  const Double_t* GetPoint(Int_t n);     // interface to event display: CbmEvDisTracks
-  const Double_t* GetFitPoint(Int_t n);  // interface to event display: CbmEvDisTracks
-
-  /**  Error of track x coordinate at TOF  **/
-  Double_t GetTrackDx() const { return TMath::Sqrt(fTrackPar.GetCovariance(0)); }
+  const double* GetPoint(int32_t n);     // interface to event display: CbmEvDisTracks
+  const double* GetFitPoint(int32_t n);  // interface to event display: CbmEvDisTracks
 
   /**  Error of track x coordinate at TOF  **/
-  Double_t GetTrackDy() const { return TMath::Sqrt(fTrackPar.GetCovariance(5)); }
+  double GetTrackDx() const { return sqrt(fTrackPar.GetCovariance(0)); }
+
+  /**  Error of track x coordinate at TOF  **/
+  double GetTrackDy() const { return sqrt(fTrackPar.GetCovariance(5)); }
 
   /**  Track length from primary vertex to TOF **/
-  Double_t GetTrackLength() const { return fTrackLength; }
+  double GetTrackLength() const { return fTrackLength; }
 
   /**  Track parameters at TOF **/
   CbmTofTrackletParam* GetTrackParameter() { return &fTrackPar; }
 
   /**  Track x position at TOF  **/
-  Double_t GetTrackX() const { return fTrackPar.GetX(); }
+  double GetTrackX() const { return fTrackPar.GetX(); }
 
   /**  Track y position at TOF  **/
-  Double_t GetTrackY() const { return fTrackPar.GetY(); }
+  double GetTrackY() const { return fTrackPar.GetY(); }
 
   /**  Track x slope  **/
-  Double_t GetTrackTx() const { return fTrackPar.GetTx(); }
+  double GetTrackTx() const { return fTrackPar.GetTx(); }
 
   /**  Track y slope  **/
-  Double_t GetTrackTy() const { return fTrackPar.GetTy(); }
+  double GetTrackTy() const { return fTrackPar.GetTy(); }
 
   /** Normalized distance from hit to track **/
-  Double_t GetDistance() const { return fDistance; }
-  Double_t GetTime() const { return fTime; }
-  Double_t UpdateTt();
-  Double_t UpdateT0();
-  Double_t GetTex(CbmTofHit* pHit);
+  double GetDistance() const { return fDistance; }
+  double GetTime() const { return fTime; }
+  double UpdateTt();
+  double UpdateT0();
+  double GetTex(CbmTofHit* pHit);
 
-  Int_t GetFirstInd(Int_t iSmType);  // return closest Hit to target except in iSmType
-  Double_t GetZ0x();                 // return intercept with z-axis
-  Double_t GetZ0y();                 // return intercept with z-axis
-  Double_t GetR0();                  // return transverse distance at z=0
-  Double_t GetFitX(Double_t Z);      // get x value of fit function at position z
-  Double_t GetFitY(Double_t Z);      // get y value of fit function at position z
-  Double_t GetFitT(Double_t R);      // get time of fit function at distance R
-  Double_t GetRefVel(UInt_t N);      // get reference velocity from first N hits
+  int32_t GetFirstInd(int32_t iSmType);  // return closest Hit to target except in iSmType
+  double GetZ0x();                       // return intercept with z-axis
+  double GetZ0y();                       // return intercept with z-axis
+  double GetR0();                        // return transverse distance at z=0
+  double GetFitX(double Z);              // get x value of fit function at position z
+  double GetFitY(double Z);              // get y value of fit function at position z
+  double GetFitT(double R);              // get time of fit function at distance R
+  double GetRefVel(uint32_t N);          // get reference velocity from first N hits
 
-  Double_t GetChiSq() const { return fChiSq; }
-  Int_t GetNDF() const { return fNDF; }
+  double GetChiSq() const { return fChiSq; }
+  int32_t GetNDF() const { return fNDF; }
 
   const FairTrackParam* GetParamFirst() const { return &fParamFirst; }
   const FairTrackParam* GetParamLast() const { return &fParamLast; }
 
   virtual void GetFairTrackParamLast();
 
-  virtual Double_t GetMatChi2(Int_t iSm);
+  virtual double GetMatChi2(int32_t iSm);
 
   /** Set TOF hit index **/
-  inline void SetTofHitIndex(Int_t tofHitIndex, Int_t iDet, CbmTofHit* pHit)
+  inline void SetTofHitIndex(int32_t tofHitIndex, int32_t iDet, CbmTofHit* pHit)
   {
     fTofHit.resize(1);
     fTofHit[0] = tofHitIndex;
@@ -143,7 +141,7 @@ public:
     fMatChi.resize(1);
   }
 
-  inline void SetTofHitIndex(Int_t tofHitIndex, Int_t iDet, CbmTofHit* pHit, Double_t chi2)
+  inline void SetTofHitIndex(int32_t tofHitIndex, int32_t iDet, CbmTofHit* pHit, double chi2)
   {
     fTofHit.resize(1);
     fTofHit[0] = tofHitIndex;
@@ -155,10 +153,10 @@ public:
     fMatChi[0] = chi2;
   }
 
-  inline void SetTofHitInd(const std::vector<Int_t>& tofHitInd) { fTofHit = tofHitInd; }
+  inline void SetTofHitInd(const std::vector<int32_t>& tofHitInd) { fTofHit = tofHitInd; }
 
 
-  inline void AddTofHitIndex(Int_t tofHitIndex, Int_t iDet, CbmTofHit* pHit)
+  inline void AddTofHitIndex(int32_t tofHitIndex, int32_t iDet, CbmTofHit* pHit)
   {
     fTofHit.resize(fTofHit.size() + 1);
     fTofHit[fTofHit.size() - 1] = tofHitIndex;
@@ -169,7 +167,7 @@ public:
     fMatChi.resize(fTofHit.size());
   }
 
-  inline void AddTofHitIndex(Int_t tofHitIndex, Int_t iDet, CbmTofHit* pHit, Double_t chi2)
+  inline void AddTofHitIndex(int32_t tofHitIndex, int32_t iDet, CbmTofHit* pHit, double chi2)
   {
     fTofHit.resize(fTofHit.size() + 1);
     fTofHit[fTofHit.size() - 1] = tofHitIndex;
@@ -181,9 +179,9 @@ public:
     fMatChi[fTofHit.size() - 1] = chi2;
   }
 
-  inline void ReplaceTofHitIndex(Int_t tofHitIndex, Int_t iDet, CbmTofHit* pHit, Double_t chi2)
+  inline void ReplaceTofHitIndex(int32_t tofHitIndex, int32_t iDet, CbmTofHit* pHit, double chi2)
   {
-    for (Int_t iHit = 0; iHit < (Int_t) fTofHit.size(); iHit++) {
+    for (int32_t iHit = 0; iHit < (int32_t) fTofHit.size(); iHit++) {
       if (iDet == fTofDet[iHit]) {
         fTofHit[iHit] = tofHitIndex;
         fhit[iHit]    = CbmTofHit(*pHit);
@@ -193,9 +191,9 @@ public:
     }
   }
 
-  inline void RemoveTofHitIndex(Int_t /*tofHitIndex*/, Int_t iDet, CbmTofHit* /*pHit*/, Double_t /*chi2*/)
+  inline void RemoveTofHitIndex(int32_t /*tofHitIndex*/, int32_t iDet, CbmTofHit* /*pHit*/, double /*chi2*/)
   {
-    for (Int_t iHit = 0; iHit < (Int_t) fTofHit.size(); iHit++) {
+    for (int32_t iHit = 0; iHit < (int32_t) fTofHit.size(); iHit++) {
       if (iDet == fTofDet[iHit]) {
         fTofHit.erase(fTofHit.begin() + iHit);
         fhit.erase(fhit.begin() + iHit);
@@ -205,34 +203,34 @@ public:
     }
   }
 
-  virtual Double_t GetXdif(Int_t iSmType, CbmTofHit* pHit);
-  virtual Double_t GetYdif(Int_t iSmType, CbmTofHit* pHit);
-  virtual Double_t GetTdif(Int_t iSmType, CbmTofHit* pHit);
-  virtual Double_t Dist3D(CbmTofHit* pHit0, CbmTofHit* pHit1);
-  virtual Bool_t ContainsAddr(Int_t iAddr);
-  virtual Int_t HitIndexOfAddr(Int_t iAddr);
-  virtual CbmTofHit* HitPointerOfAddr(Int_t iAddr);
+  virtual double GetXdif(int32_t iSmType, CbmTofHit* pHit);
+  virtual double GetYdif(int32_t iSmType, CbmTofHit* pHit);
+  virtual double GetTdif(int32_t iSmType, CbmTofHit* pHit);
+  virtual double Dist3D(CbmTofHit* pHit0, CbmTofHit* pHit1);
+  virtual bool ContainsAddr(int32_t iAddr);
+  virtual int32_t HitIndexOfAddr(int32_t iAddr);
+  virtual CbmTofHit* HitPointerOfAddr(int32_t iAddr);
 
   /** Set track parameter **/
   inline void SetTrackParameter(CbmTofTrackletParam* par) { fTrackPar = *par; }
 
   /** Set track length **/
-  inline void SetTrackLength(Double_t trackLength) { fTrackLength = trackLength; }
+  inline void SetTrackLength(double trackLength) { fTrackLength = trackLength; }
 
   /** Set PID hypothesis for track extrapolation to TOF **/
-  inline void SetPidHypo(Int_t pid) { fPidHypo = pid; }
+  inline void SetPidHypo(int32_t pid) { fPidHypo = pid; }
 
   /** Set normalized distance from hit to track **/
-  inline void SetDistance(Double_t distance) { fDistance = distance; }
-  inline void SetTime(Double_t val) { fTime = val; }
-  inline void SetTt(Double_t val) { fTt = val; }
-  inline void SetT0(Double_t val) { fT0 = val; }
-  inline void SetT0Err(Double_t val) { fT0Err = val; }
-  inline void SetTtErr(Double_t val) { fTtErr = val; }
-  inline void SetT0TtCov(Double_t val) { fT0TtCov = val; }
+  inline void SetDistance(double distance) { fDistance = distance; }
+  inline void SetTime(double val) { fTime = val; }
+  inline void SetTt(double val) { fTt = val; }
+  inline void SetT0(double val) { fT0 = val; }
+  inline void SetT0Err(double val) { fT0Err = val; }
+  inline void SetTtErr(double val) { fTtErr = val; }
+  inline void SetT0TtCov(double val) { fT0TtCov = val; }
 
-  inline void SetChiSq(Double_t chiSq) { fChiSq = chiSq; }
-  inline void SetNDF(Int_t ndf) { fNDF = ndf; }
+  inline void SetChiSq(double chiSq) { fChiSq = chiSq; }
+  inline void SetNDF(int32_t ndf) { fNDF = ndf; }
   inline void SetParamFirst(const FairTrackParam* par) { fParamFirst = *par; }
   inline void SetParamLast(const FairTrackParam* par) { fParamLast = *par; }
 
@@ -243,25 +241,25 @@ public:
   CbmTofTracklet(const CbmTofTracklet&); /**   Copy Constructor   **/
 
 private:
-  Double_t fTrackLength;          // Track length from primary vertex to TOF [cm]
-  Int_t fPidHypo;                 // PID hypothesis used for track extrapolation
-  Double_t fDistance;             // Normalized distance from hit to track
-  Double_t fTime;                 // Reference time of reference hit
-  Double_t fTt;                   // slope dT/dr
-  Double_t fT0;                   // Time at origin
-  Double_t fT0Err;                // Error on Time at origin
-  Double_t fTtErr;                // Error on slope dT/dr
-  Double_t fT0TtCov;              // Covariance od fT0 and fTt
-  Double_t fChiSq;                // Chi2 of fit
-  Int_t fNDF;                     // # of degrees of freedom
+  double fTrackLength;            // Track length from primary vertex to TOF [cm]
+  int32_t fPidHypo;               // PID hypothesis used for track extrapolation
+  double fDistance;               // Normalized distance from hit to track
+  double fTime;                   // Reference time of reference hit
+  double fTt;                     // slope dT/dr
+  double fT0;                     // Time at origin
+  double fT0Err;                  // Error on Time at origin
+  double fTtErr;                  // Error on slope dT/dr
+  double fT0TtCov;                // Covariance od fT0 and fTt
+  double fChiSq;                  // Chi2 of fit
+  int32_t fNDF;                   // # of degrees of freedom
   CbmTofTrackletParam fTrackPar;  //  Track parameters at z of TofHit
   FairTrackParam fParamFirst;     //  Track parameters at first and last fitted hit
   FairTrackParam fParamLast;      //
-  std::vector<Int_t> fTofHit;     // Index of TofHit
-  std::vector<Int_t> fTofDet;     // DetLayer of TofHit
-  std::vector<Double_t> fMatChi;  // Matching Chi2 of TofHit
+  std::vector<int32_t> fTofHit;   // Index of TofHit
+  std::vector<int32_t> fTofDet;   // DetLayer of TofHit
+  std::vector<double> fMatChi;    // Matching Chi2 of TofHit
   std::vector<CbmTofHit> fhit;    // vector of TofHit objects
-  Double_t fP[4];                 // transient (transfer) space point to Eve
+  double fP[4];                   // transient (transfer) space point to Eve
 
   CbmTofTracklet& operator=(const CbmTofTracklet&); /**   Assignment operator   **/
 

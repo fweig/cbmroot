@@ -5,9 +5,8 @@
 #ifndef GDPB_MESS_V1_00_DEF_H
 #define GDPB_MESS_V1_00_DEF_H
 
+#include <cstdint>
 #include <iostream>
-
-#include <stdint.h>
 
 namespace gdpbv100
 {

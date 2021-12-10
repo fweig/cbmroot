@@ -21,7 +21,6 @@
 #include "CbmTrack.h"  // for CbmTrack
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Double_t
 
 class CbmTrdTrack : public CbmTrack {
 public:
@@ -32,41 +31,41 @@ public:
   virtual ~CbmTrdTrack();
 
   /** Accessors  **/
-  Double_t GetPidWkn() const { return fPidWkn; }
-  Double_t GetPidANN() const { return fPidANN; }
-  Double_t GetELoss() const { return fELoss; }
-  Double_t GetPidLikeEL() const { return fPidLikeEL; }
-  Double_t GetPidLikePI() const { return fPidLikePI; }
-  Double_t GetPidLikeKA() const { return fPidLikeKA; }
-  Double_t GetPidLikePR() const { return fPidLikePR; }
-  Double_t GetPidLikeMU() const { return fPidLikeMU; }
+  double GetPidWkn() const { return fPidWkn; }
+  double GetPidANN() const { return fPidANN; }
+  double GetELoss() const { return fELoss; }
+  double GetPidLikeEL() const { return fPidLikeEL; }
+  double GetPidLikePI() const { return fPidLikePI; }
+  double GetPidLikeKA() const { return fPidLikeKA; }
+  double GetPidLikePR() const { return fPidLikePR; }
+  double GetPidLikeMU() const { return fPidLikeMU; }
 
   /** Modifiers  **/
-  void SetPidWkn(Double_t pid) { fPidWkn = pid; }
-  void SetPidANN(Double_t pid) { fPidANN = pid; }
-  void SetELoss(Double_t eLoss) { fELoss = eLoss; }
-  void SetPidLikeEL(Double_t value) { fPidLikeEL = value; }
-  void SetPidLikePI(Double_t value) { fPidLikePI = value; }
-  void SetPidLikeKA(Double_t value) { fPidLikeKA = value; }
-  void SetPidLikePR(Double_t value) { fPidLikePR = value; }
-  void SetPidLikeMU(Double_t value) { fPidLikeMU = value; }
+  void SetPidWkn(double pid) { fPidWkn = pid; }
+  void SetPidANN(double pid) { fPidANN = pid; }
+  void SetELoss(double eLoss) { fELoss = eLoss; }
+  void SetPidLikeEL(double value) { fPidLikeEL = value; }
+  void SetPidLikePI(double value) { fPidLikePI = value; }
+  void SetPidLikeKA(double value) { fPidLikeKA = value; }
+  void SetPidLikePR(double value) { fPidLikePR = value; }
+  void SetPidLikeMU(double value) { fPidLikeMU = value; }
 
 private:
   /** PID value based on Wkn method **/
-  Double_t fPidWkn;
+  double fPidWkn;
 
   /** PID value based on ANN method **/
-  Double_t fPidANN;
+  double fPidANN;
 
   /** PID values based on Likelihood method **/
-  Double_t fPidLikeEL;
-  Double_t fPidLikePI;
-  Double_t fPidLikeKA;
-  Double_t fPidLikePR;
-  Double_t fPidLikeMU;
+  double fPidLikeEL;
+  double fPidLikePI;
+  double fPidLikeKA;
+  double fPidLikePR;
+  double fPidLikeMU;
 
   /** Total energy loss in TRD **/
-  Double_t fELoss;
+  double fELoss;
 
   ClassDef(CbmTrdTrack, 4);
 };

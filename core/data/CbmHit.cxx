@@ -17,8 +17,7 @@
 
 CbmHit::CbmHit() : CbmHit(kHIT, 0., 0., -1, -1, -1., -1.) {}
 
-CbmHit::CbmHit(HitType _type, Double_t _z, Double_t _dz, Int_t _refId, Int_t _address, Double_t _time,
-               Double_t _timeError)
+CbmHit::CbmHit(HitType _type, double _z, double _dz, int32_t _refId, int32_t _address, double _time, double _timeError)
   : TObject()
   , fType(_type)
   , fZ(_z)

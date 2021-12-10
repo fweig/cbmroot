@@ -24,8 +24,10 @@
 #include <FairTrackParam.h>  // for FairTrackParam
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t, Double32_t, Option_t
+#include <RtypesCore.h>  // for Double32_t
 #include <TObject.h>     // for TObject
+
+#include <cstdint>
 
 class CbmGlobalTrack : public TObject {
 
@@ -39,35 +41,35 @@ public:
 
 
   /** Accessors **/
-  Int_t GetStsTrackIndex() const { return fStsTrack; }
-  Int_t GetTrdTrackIndex() const { return fTrdTrack; }
-  Int_t GetMuchTrackIndex() const { return fMuchTrack; }
-  Int_t GetRichRingIndex() const { return fRichRing; }
-  Int_t GetTofHitIndex() const { return fTofHit; }
+  int32_t GetStsTrackIndex() const { return fStsTrack; }
+  int32_t GetTrdTrackIndex() const { return fTrdTrack; }
+  int32_t GetMuchTrackIndex() const { return fMuchTrack; }
+  int32_t GetRichRingIndex() const { return fRichRing; }
+  int32_t GetTofHitIndex() const { return fTofHit; }
   const FairTrackParam* GetParamFirst() const { return &fParamFirst; }
   const FairTrackParam* GetParamLast() const { return &fParamLast; }
   const CbmTrackParam* GetParamVertex() const { return &fParamPrimaryVertex; }
-  Int_t GetPidHypo() const { return fPidHypo; }
-  Double_t GetChi2() const { return fChi2; }
-  Int_t GetNDF() const { return fNDF; }
-  Int_t GetFlag() const { return fFlag; }
-  Double_t GetLength() const { return fLength; }
+  int32_t GetPidHypo() const { return fPidHypo; }
+  double GetChi2() const { return fChi2; }
+  int32_t GetNDF() const { return fNDF; }
+  int32_t GetFlag() const { return fFlag; }
+  double GetLength() const { return fLength; }
 
 
   /** Modifiers **/
-  void SetStsTrackIndex(Int_t iSts) { fStsTrack = iSts; }
-  void SetTrdTrackIndex(Int_t iTrd) { fTrdTrack = iTrd; }
-  void SetMuchTrackIndex(Int_t iMuch) { fMuchTrack = iMuch; }
-  void SetRichRingIndex(Int_t iRing) { fRichRing = iRing; }
-  void SetTofHitIndex(Int_t iTofHit) { fTofHit = iTofHit; }
+  void SetStsTrackIndex(int32_t iSts) { fStsTrack = iSts; }
+  void SetTrdTrackIndex(int32_t iTrd) { fTrdTrack = iTrd; }
+  void SetMuchTrackIndex(int32_t iMuch) { fMuchTrack = iMuch; }
+  void SetRichRingIndex(int32_t iRing) { fRichRing = iRing; }
+  void SetTofHitIndex(int32_t iTofHit) { fTofHit = iTofHit; }
   void SetParamFirst(const FairTrackParam* parFirst) { fParamFirst = *parFirst; }
   void SetParamLast(const FairTrackParam* parLast) { fParamLast = *parLast; }
   void SetParamPrimaryVertex(const FairTrackParam* parPV) { fParamPrimaryVertex.Set(*parPV); }
-  void SetPidHypo(Int_t iPid) { fPidHypo = iPid; }
-  void SetChi2(Double_t chi2) { fChi2 = chi2; }
-  void SetNDF(Int_t ndf) { fNDF = ndf; }
-  void SetFlag(Int_t iFlag) { fFlag = iFlag; }
-  void SetLength(Double_t length) { fLength = length; }
+  void SetPidHypo(int32_t iPid) { fPidHypo = iPid; }
+  void SetChi2(double chi2) { fChi2 = chi2; }
+  void SetNDF(int32_t ndf) { fNDF = ndf; }
+  void SetFlag(int32_t iFlag) { fFlag = iFlag; }
+  void SetLength(double length) { fLength = length; }
 
 
   /** Output to screen **/
@@ -76,11 +78,11 @@ public:
 
 private:
   /** Indices of local StsTrack, TrdTrack, MuchTrack, RichRing and TofHit **/
-  Int_t fStsTrack;
-  Int_t fTrdTrack;
-  Int_t fMuchTrack;
-  Int_t fRichRing;
-  Int_t fTofHit;
+  int32_t fStsTrack;
+  int32_t fTrdTrack;
+  int32_t fMuchTrack;
+  int32_t fRichRing;
+  int32_t fTofHit;
 
   /** Global track parameters at first and last plane **/
   FairTrackParam fParamFirst;
@@ -88,16 +90,16 @@ private:
   CbmTrackParam fParamPrimaryVertex;
 
   /** PID hypothesis used for global track fit **/
-  Int_t fPidHypo;
+  int32_t fPidHypo;
 
   /** Chi2 of global track fit **/
   Double32_t fChi2;
 
   /** NDF of global track fit **/
-  Int_t fNDF;
+  int32_t fNDF;
 
   /** Quality flag **/
-  Int_t fFlag;
+  int32_t fFlag;
 
   /** Track length **/
   Double32_t fLength;

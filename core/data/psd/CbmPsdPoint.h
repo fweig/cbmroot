@@ -20,9 +20,9 @@
 #include <FairMCPoint.h>  // for FairMCPoint
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t, Option_t
 #include <TVector3.h>    // for TVector3
 
+#include <cstdint>
 #include <string>  // for string
 
 class CbmPsdPoint : public FairMCPoint {
@@ -41,7 +41,7 @@ public:
    *@param length   Track length since creation [cm]
    *@param eLoss    Energy deposit [GeV]
    **/
-  CbmPsdPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t tof, Double_t length, Double_t eLoss);
+  CbmPsdPoint(int32_t trackID, int32_t detID, TVector3 pos, TVector3 mom, double tof, double length, double eLoss);
 
 
   /** Copy constructor **/
@@ -56,14 +56,14 @@ public:
   virtual void Print(const Option_t* opt) const;
 
   /** Modifiers **/
-  void SetModuleID(Int_t mod) { fModuleID = mod; }
+  void SetModuleID(int32_t mod) { fModuleID = mod; }
   /** Accessors **/
-  Int_t GetModuleID() const { return fModuleID; }
+  int32_t GetModuleID() const { return fModuleID; }
 
   std::string ToString() const;
 
 private:
-  Int_t fModuleID;  //number of module
+  int32_t fModuleID;  //number of module
 
 
   ClassDef(CbmPsdPoint, 2)

@@ -24,9 +24,9 @@ struct InOutStructure {
 class CbmTrdDetectorIdParamTest : public ::testing::TestWithParam<InOutStructure> {
 protected:
   CbmTrdDetectorId fTrdId;
-  Int_t detInfo_array[6];
-  Int_t result;
-  Int_t uniqueId;
+  int32_t detInfo_array[6];
+  int32_t result;
+  int32_t uniqueId;
 
   virtual void SetUp()
   {

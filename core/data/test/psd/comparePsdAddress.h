@@ -7,9 +7,9 @@
 
 #include "gtest/gtest.h"
 
-void comparePsdAddressDataMembers(Int_t address, ECbmModuleId systemid, Int_t moduleid, Int_t sectionid)
+void comparePsdAddressDataMembers(int32_t address, ECbmModuleId systemid, int32_t moduleid, int32_t sectionid)
 {
-  Int_t retValInt {-222};
+  int32_t retValInt {-222};
 
   retValInt = CbmPsdAddress::GetSystemId(address);
   EXPECT_EQ(ToIntegralType(systemid), retValInt);

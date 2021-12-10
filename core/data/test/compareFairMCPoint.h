@@ -11,11 +11,11 @@
 
 #include "gtest/gtest.h"
 
-void compareFairMCPointDataMembers(FairMCPoint& test, Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom,
-                                   Double_t tof, Double_t length, Double_t eloss, Int_t eventid)
+void compareFairMCPointDataMembers(FairMCPoint& test, int32_t trackID, int32_t detID, TVector3 pos, TVector3 mom,
+                                   double tof, double length, double eloss, int32_t eventid)
 {
-  Int_t retValInt {-222};
-  Double_t retValDouble {-222.};
+  int32_t retValInt {-222};
+  double retValDouble {-222.};
 
   retValInt = test.GetDetectorID();
   EXPECT_EQ(detID, retValInt);

@@ -42,7 +42,6 @@
 
 #include <Logger.h>  // for Logger, LOG
 
-#include <TMath.h>    // for Pi
 #include <TObject.h>  // for TObject
 
 #include <cmath>  // for fabs, sqrt, atan, cos, sin
@@ -82,7 +81,7 @@ CbmRichRing::CbmRichRing()
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmRichRing::CbmRichRing(Float_t x, Float_t y, Float_t r)
+CbmRichRing::CbmRichRing(float x, float y, float r)
   : TObject()
   , fHitCollection()
   , fAPar(0.)
@@ -115,7 +114,7 @@ CbmRichRing::CbmRichRing(Float_t x, Float_t y, Float_t r)
 CbmRichRing::~CbmRichRing() { fHitCollection.clear(); }
 // -------------------------------------------------------------------------
 
-void CbmRichRing::SetXYABPhi(Double_t x, Double_t y, Double_t a, Double_t b, Double_t phi)
+void CbmRichRing::SetXYABPhi(double x, double y, double a, double b, double phi)
 {
   fCenterX = x;
   fCenterY = y;
@@ -124,10 +123,10 @@ void CbmRichRing::SetXYABPhi(Double_t x, Double_t y, Double_t a, Double_t b, Dou
   fPhi     = phi;
 }
 
-Bool_t CbmRichRing::RemoveHit(UInt_t hitId)
+bool CbmRichRing::RemoveHit(uint32_t hitId)
 {
-  //Int_t nofHits = fHitCollection.size();
-  std::vector<UInt_t>::iterator it;
+  //int32_t nofHits = fHitCollection.size();
+  std::vector<uint32_t>::iterator it;
   for (it = fHitCollection.begin(); it != fHitCollection.end(); it++) {
     if (hitId == *it) {
       fHitCollection.erase(it);
@@ -137,36 +136,36 @@ Bool_t CbmRichRing::RemoveHit(UInt_t hitId)
   return false;
 }
 
-Double_t CbmRichRing::GetXF1() const
+double CbmRichRing::GetXF1() const
 {
-  Double_t c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
-  Double_t xc = c * cos(fabs(fPhi));
+  double c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
+  double xc = c * cos(fabs(fPhi));
 
   return fCenterX + xc;
 }
 
-Double_t CbmRichRing::GetYF1() const
+double CbmRichRing::GetYF1() const
 {
-  Double_t c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
-  Double_t yc = c * sin(fabs(fPhi));
+  double c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
+  double yc = c * sin(fabs(fPhi));
   if (fPhi >= 0) { return fCenterY + yc; }
   else {
     return fCenterY - yc;
   }
 }
 
-Double_t CbmRichRing::GetXF2() const
+double CbmRichRing::GetXF2() const
 {
-  Double_t c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
-  Double_t xc = c * cos(fabs(fPhi));
+  double c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
+  double xc = c * cos(fabs(fPhi));
 
   return fCenterX - xc;
 }
 
-Double_t CbmRichRing::GetYF2() const
+double CbmRichRing::GetYF2() const
 {
-  Double_t c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
-  Double_t yc = c * sin(fabs(fPhi));
+  double c  = sqrt(fAaxis * fAaxis - fBaxis * fBaxis);
+  double yc = c * sin(fabs(fPhi));
   if (fPhi >= 0) { return fCenterY - yc; }
   else {
     return fCenterY + yc;
@@ -182,7 +181,7 @@ void CbmRichRing::Print(Option_t*) const
             << ", Chi2 = " << GetChi2() << ", Angle() = " << GetAngle() << ", NofHitsOnRing = " << GetNofHitsOnRing();
 }
 
-Float_t CbmRichRing::GetRadialPosition() const
+float CbmRichRing::GetRadialPosition() const
 {
   if (fCenterY > 0.f) { return sqrt(fCenterX * fCenterX + (fCenterY - 110.f) * (fCenterY - 110.f)); }
   else {
@@ -190,7 +189,7 @@ Float_t CbmRichRing::GetRadialPosition() const
   }
 }
 
-Double_t CbmRichRing::GetRadialAngle() const
+double CbmRichRing::GetRadialAngle() const
 {
   /*  if (fCenterY > 0){
             return  atan((100 - fCenterY) / (0 - fCenterX));
@@ -199,9 +198,9 @@ Double_t CbmRichRing::GetRadialAngle() const
     }*/
 
   if (fCenterX > 0 && fCenterY > 0) { return atan(fabs((100 - fCenterY) / (0 - fCenterX))); }
-  if (fCenterX < 0 && fCenterY > 0) { return TMath::Pi() - atan(fabs((100 - fCenterY) / (0 - fCenterX))); }
-  if (fCenterX < 0 && fCenterY < 0) { return TMath::Pi() + atan(fabs((-100 - fCenterY) / (0 - fCenterX))); }
-  if (fCenterX > 0 && fCenterY < 0) { return 2 * TMath::Pi() - atan(fabs((-100 - fCenterY) / (0 - fCenterX))); }
+  if (fCenterX < 0 && fCenterY > 0) { return M_PI - atan(fabs((100 - fCenterY) / (0 - fCenterX))); }
+  if (fCenterX < 0 && fCenterY < 0) { return M_PI + atan(fabs((-100 - fCenterY) / (0 - fCenterX))); }
+  if (fCenterX > 0 && fCenterY < 0) { return 2 * M_PI - atan(fabs((-100 - fCenterY) / (0 - fCenterX))); }
 
   return 999.;
 }

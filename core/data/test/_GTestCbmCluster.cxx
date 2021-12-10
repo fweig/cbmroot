@@ -14,7 +14,7 @@
 TEST(_GTestCbmCluster, CheckDefaultConstructor)
 {
   CbmCluster test;
-  std::vector<Int_t> testvector;
+  std::vector<int32_t> testvector;
   {
     SCOPED_TRACE("CheckDefaultConstructor");
     compareClusterDataMembers(test, 0, testvector, 0, nullptr);
@@ -23,7 +23,7 @@ TEST(_GTestCbmCluster, CheckDefaultConstructor)
 
 TEST(_GTestCbmCluster, CheckStandardConstructor)
 {
-  std::vector<Int_t> testvector {1, 2, 3, 4, 5};
+  std::vector<int32_t> testvector {1, 2, 3, 4, 5};
   CbmCluster test {testvector, -11};
   {
     SCOPED_TRACE("CheckStandardConstructor");
@@ -33,14 +33,14 @@ TEST(_GTestCbmCluster, CheckStandardConstructor)
 
 TEST(_GTestCbmCluster, CheckSetDigis)
 {
-  std::vector<Int_t> testvector {1, 2, 3, 4, 5};
+  std::vector<int32_t> testvector {1, 2, 3, 4, 5};
   CbmCluster test {testvector, -11};
   {
     SCOPED_TRACE("CheckSetDigis: InitialTest");
     compareClusterDataMembers(test, 5, testvector, -11, nullptr);
   }
 
-  std::vector<Int_t> testvector1 {11, 21, 31, 41, 51, 61};
+  std::vector<int32_t> testvector1 {11, 21, 31, 41, 51, 61};
   test.SetDigis(testvector1);
   {
     SCOPED_TRACE("CheckSetDigis: SetDigis");
@@ -50,9 +50,9 @@ TEST(_GTestCbmCluster, CheckSetDigis)
 
 TEST(_GTestCbmCluster, CheckAddDigi)
 {
-  std::vector<Int_t> testvector {1, 2, 3, 4, 5};
-  std::vector<Int_t> testvector1 {1, 2, 3, 4, 5, 111};
-  std::vector<Int_t> testvector2 {1, 2, 3, 4, 5, 111, 222};
+  std::vector<int32_t> testvector {1, 2, 3, 4, 5};
+  std::vector<int32_t> testvector1 {1, 2, 3, 4, 5, 111};
+  std::vector<int32_t> testvector2 {1, 2, 3, 4, 5, 111, 222};
 
   CbmCluster test {testvector, -11};
   {
@@ -75,9 +75,9 @@ TEST(_GTestCbmCluster, CheckAddDigi)
 
 TEST(_GTestCbmCluster, CheckAddDigis)
 {
-  std::vector<Int_t> testvector {1, 2, 3, 4, 5};
-  std::vector<Int_t> testvector1 {11, 21, 31, 41, 51, 61};
-  std::vector<Int_t> testvector2 {1, 2, 3, 4, 5, 11, 21, 31, 41, 51, 61};
+  std::vector<int32_t> testvector {1, 2, 3, 4, 5};
+  std::vector<int32_t> testvector1 {11, 21, 31, 41, 51, 61};
+  std::vector<int32_t> testvector2 {1, 2, 3, 4, 5, 11, 21, 31, 41, 51, 61};
 
   CbmCluster test {testvector, -11};
   {
@@ -94,8 +94,8 @@ TEST(_GTestCbmCluster, CheckAddDigis)
 
 TEST(_GTestCbmCluster, CheckClearDigis)
 {
-  std::vector<Int_t> testvector {1, 2, 3, 4, 5};
-  std::vector<Int_t> testvector1;
+  std::vector<int32_t> testvector {1, 2, 3, 4, 5};
+  std::vector<int32_t> testvector1;
 
   CbmCluster test {testvector, -11};
   {
@@ -112,7 +112,7 @@ TEST(_GTestCbmCluster, CheckClearDigis)
 
 TEST(_GTestCbmCluster, CheckSetters)
 {
-  std::vector<Int_t> testvector {1, 2, 3, 4, 5};
+  std::vector<int32_t> testvector {1, 2, 3, 4, 5};
 
   CbmCluster test {testvector, -11};
   {
@@ -136,7 +136,7 @@ TEST(_GTestCbmCluster, CheckSetters)
 
 TEST(_GTestCbmCluster, CheckToString)
 {
-  std::vector<Int_t> testvector {1, 2, 3, 4, 5};
+  std::vector<int32_t> testvector {1, 2, 3, 4, 5};
   CbmCluster test {testvector, -11};
 
   EXPECT_STREQ("CbmCluster: nofDigis=5 | 1 2 3 4 5  | address=-11\n", test.ToString().c_str());

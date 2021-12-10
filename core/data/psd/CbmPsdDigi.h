@@ -23,11 +23,11 @@
 #include "CbmPsdAddress.h"  // for CbmPsdAddress
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDefNV
-#include <RtypesCore.h>  // for Double_t, UInt_t, Int_t
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 
+#include <cstdint>
 #include <string>  // for string
 
 
@@ -44,7 +44,7 @@ public:
        ** @param time    Time [ns]
        ** @param edep    Energy deposition
        **/
-  CbmPsdDigi(UInt_t address, Double_t time, Double_t edep) : fuAddress(address), fdTime(time), fdEdep(edep) {}
+  CbmPsdDigi(uint32_t address, double time, double edep) : fuAddress(address), fdTime(time), fdEdep(edep) {}
 
 
   /** @brief Constructor with detailed assignment.
@@ -53,7 +53,7 @@ public:
        ** @param time          Time [ns]
        ** @param edep          Energy deposition
        **/
-  CbmPsdDigi(UInt_t moduleId, UInt_t sectionId, Double_t time, Double_t edep) : fuAddress(0), fdTime(time), fdEdep(edep)
+  CbmPsdDigi(uint32_t moduleId, uint32_t sectionId, double time, double edep) : fuAddress(0), fdTime(time), fdEdep(edep)
   {
     fuAddress = CbmPsdAddress::GetAddress(moduleId, sectionId);
   }
@@ -88,7 +88,7 @@ public:
   /** @brief Address
        ** @return Unique channel address (see CbmPsdAddress)
        **/
-  UInt_t GetAddress() const { return fuAddress; };
+  uint32_t GetAddress() const { return fuAddress; };
 
 
   /** @brief Get the desired name of the branch for this obj in the cbm output tree  (static)
@@ -100,7 +100,7 @@ public:
   /** @brief Time
        ** @return Time [ns]
        **/
-  Double_t GetTime() const { return fdTime; };
+  double GetTime() const { return fdTime; };
 
 
   /** @brief Charge
@@ -108,25 +108,25 @@ public:
        **
        ** Alias for GetEdep(), for compatibility with template methods
        */
-  Double_t GetCharge() const { return fdEdep; };
+  double GetCharge() const { return fdEdep; };
 
 
   /** @brief Energy deposit
        ** @return Energy deposit
        **/
-  Double_t GetEdep() const { return fdEdep; };
+  double GetEdep() const { return fdEdep; };
 
 
   /** @brief Module Identifier
        ** @return Module number
        **/
-  Double_t GetModuleID() const { return CbmPsdAddress::GetModuleId(GetAddress()); }
+  double GetModuleID() const { return CbmPsdAddress::GetModuleId(GetAddress()); }
 
 
   /** @brief Section Identifier
        ** @return Section number
        **/
-  Double_t GetSectionID() const { return CbmPsdAddress::GetSectionId(GetAddress()); }
+  double GetSectionID() const { return CbmPsdAddress::GetSectionId(GetAddress()); }
 
 
   /** @brief System identifier
@@ -136,10 +136,10 @@ public:
 
 
   /** Modifiers **/
-  void SetAddress(UInt_t address) { fuAddress = address; };
-  void SetAddress(UInt_t moduleId, UInt_t sectionId);
-  void SetTime(Double_t time) { fdTime = time; }
-  void SetEdep(Double_t edep) { fdEdep = edep; }
+  void SetAddress(uint32_t address) { fuAddress = address; };
+  void SetAddress(uint32_t moduleId, uint32_t sectionId);
+  void SetTime(double time) { fdTime = time; }
+  void SetEdep(double edep) { fdEdep = edep; }
 
 
   /** @brief String output
@@ -149,9 +149,9 @@ public:
 
 
 private:
-  UInt_t fuAddress = 0;    /// Unique channel address
-  Double_t fdTime  = -1.;  /// Time of measurement [ns]
-  Double_t fdEdep  = 0.;   /// Energy deposition from FPGA [MeV]
+  uint32_t fuAddress = 0;    /// Unique channel address
+  double fdTime      = -1.;  /// Time of measurement [ns]
+  double fdEdep      = 0.;   /// Energy deposition from FPGA [MeV]
 
   /// BOOST serialization interface
   friend class boost::serialization::access;

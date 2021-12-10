@@ -7,15 +7,15 @@
 // Specific headers
 
 // C++11 headers
+#include <cstdio>
+#include <cstring>
+
 #include <cmath>
 
 // std C++ lib headers
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-
-#include <stdio.h>
-#include <string.h>
 
 //#include <iostream>
 #include <iomanip>
@@ -179,7 +179,7 @@ void gdpbv100::Message::printDataLog(unsigned kind, uint32_t epoch) const { prin
 //! Print message in binary or human readable format to a stream.
 /*!
  * Prints a one line representation of the message in to a stream, selected by \a outType.
- * The stream is \a cout if \a outType is kFALSE and \a FairLogger if \a outType is kTRUE.
+ * The stream is \a cout if \a outType is false and \a FairLogger if \a outType is true.
  * The parameter \a kind is mask with 4 bits
  * \li gdpbv100::msg_print_Prefix (1) - message type
  * \li gdpbv100::msg_print_Data   (2) - print all message specific data fields

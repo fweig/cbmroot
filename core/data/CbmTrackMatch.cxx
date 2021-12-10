@@ -17,7 +17,7 @@ CbmTrackMatch::CbmTrackMatch() : fMCTrackId(-1), fNofTrueHits(0), fNofWrongHits(
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmTrackMatch::CbmTrackMatch(Int_t mcTrackId, Int_t nTrue, Int_t nWrong, Int_t nFake, Int_t nTracks)
+CbmTrackMatch::CbmTrackMatch(int32_t mcTrackId, int32_t nTrue, int32_t nWrong, int32_t nFake, int32_t nTracks)
   : fMCTrackId(mcTrackId)
   , fNofTrueHits(nTrue)
   , fNofWrongHits(nWrong)

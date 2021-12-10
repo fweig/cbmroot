@@ -19,12 +19,13 @@ CbmTofDigi::CbmTofDigi() : fdTime(0.), fdTot(-1.), fuAddress(0)
 {
 }
 
-CbmTofDigi::CbmTofDigi(UInt_t address, Double_t time, Double_t tot) : fdTime(time), fdTot(tot), fuAddress(address)
+CbmTofDigi::CbmTofDigi(uint32_t address, double time, double tot) : fdTime(time), fdTot(tot), fuAddress(address)
 //    fMatch(nullptr)
 {
 }
 
-CbmTofDigi::CbmTofDigi(UInt_t Sm, UInt_t Rpc, UInt_t Channel, Double_t time, Double_t tot, UInt_t Side, UInt_t SmType)
+CbmTofDigi::CbmTofDigi(uint32_t Sm, uint32_t Rpc, uint32_t Channel, double time, double tot, uint32_t Side,
+                       uint32_t SmType)
   : fdTime(time)
   , fdTot(tot)
   , fuAddress(0)
@@ -45,7 +46,7 @@ std::string CbmTofDigi::ToString() const
   return string.Data();
 }
 
-void CbmTofDigi::SetAddress(UInt_t Sm, UInt_t Rpc, UInt_t Channel, UInt_t Side, UInt_t SmType)
+void CbmTofDigi::SetAddress(uint32_t Sm, uint32_t Rpc, uint32_t Channel, uint32_t Side, uint32_t SmType)
 {
   fuAddress = CbmTofAddress::GetUniqueAddress(Sm, Rpc, Channel, Side, SmType);
 }

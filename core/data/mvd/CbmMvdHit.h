@@ -26,7 +26,8 @@
 #include "CbmPixelHit.h"       // for CbmPixelHit
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, Option_t
+
+#include <cstdint>
 
 class TVector3;
 
@@ -43,8 +44,8 @@ public:
   *@param dpos   Errors in position coordinates [cm]
   *@param flag   Hit flag
   **/
-  CbmMvdHit(Int_t statNr, TVector3& pos, TVector3& dpos, Int_t indexCentralX, Int_t indexCentralY = 0,
-            Int_t fClusterIndex = 0, Int_t flag = 0);
+  CbmMvdHit(int32_t statNr, TVector3& pos, TVector3& dpos, int32_t indexCentralX, int32_t indexCentralY = 0,
+            int32_t fClusterIndex = 0, int32_t flag = 0);
 
 
   /** Destructor **/
@@ -56,23 +57,23 @@ public:
 
 
   /** Accessors **/
-  Int_t GetSystemId() const { return SystemId(fDetectorID); };
-  virtual Int_t GetStationNr() const { return StationNr(fDetectorID); };
-  Int_t GetFlag() const { return fFlag; };
-  Int_t GetClusterIndex() const { return fClusterIndex; };
-  Int_t GetIndexCentralX() const { return fIndexCentralX; };  // returns index of center of gravity
-  Int_t GetIndexCentralY() const { return fIndexCentralY; };  // returns index of center of gravity
-  //  void GetDigiIndexVector(TClonesArray* cbmMvdClusterArray, std::vector<Int_t>* digiIndexVector);
-  Int_t GetRefIndex() { return fFlag; }
+  int32_t GetSystemId() const { return SystemId(fDetectorID); };
+  virtual int32_t GetStationNr() const { return StationNr(fDetectorID); };
+  int32_t GetFlag() const { return fFlag; };
+  int32_t GetClusterIndex() const { return fClusterIndex; };
+  int32_t GetIndexCentralX() const { return fIndexCentralX; };  // returns index of center of gravity
+  int32_t GetIndexCentralY() const { return fIndexCentralY; };  // returns index of center of gravity
+  //  void GetDigiIndexVector(TClonesArray* cbmMvdClusterArray, std::vector<int32_t>* digiIndexVector);
+  int32_t GetRefIndex() { return fFlag; }
 
 
 protected:
-  Int_t fFlag;  // Hit flag; to be used later
-  Int_t fClusterIndex;
-  Int_t fIndexCentralX;
-  Int_t fIndexCentralY;
+  int32_t fFlag;  // Hit flag; to be used later
+  int32_t fClusterIndex;
+  int32_t fIndexCentralX;
+  int32_t fIndexCentralY;
 
-  Int_t fDetectorID;
+  int32_t fDetectorID;
 
 
   ClassDef(CbmMvdHit, 3);

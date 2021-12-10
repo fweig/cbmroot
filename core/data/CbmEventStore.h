@@ -18,15 +18,14 @@
 #include <Logger.h>  // for LOG
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for UInt_t, Bool_t, kFALSE, kTRUE
 #include <TObjArray.h>   // for TObjArray
 #include <TObject.h>     // for TObject
 
 #include <boost/any.hpp>  // for any_cast
 
+#include <cassert>  // for assert
+#include <cstdint>
 #include <string>  // for string
-
-#include <assert.h>  // for assert
 
 class CbmMatch;
 
@@ -48,7 +47,7 @@ public:
 		 ** @param eventId  Unique event identifier
 		 ** @param has Matches  True if matches to MC are stored
 		 **/
-  CbmEventStore(UInt_t eventId = 0, Bool_t hasMatches = kFALSE);
+  CbmEventStore(uint32_t eventId = 0, bool hasMatches = false);
 
 
   /** @brief Copy constructor **/
@@ -81,7 +80,7 @@ public:
     assert(digi);
     ECbmModuleId system = Digi::GetSystem();
     assert(system < ECbmModuleId::kNofSystems);
-    if (!fDigis[system]) fDigis[system] = new CbmDigiVector<Digi>(kFALSE);
+    if (!fDigis[system]) fDigis[system] = new CbmDigiVector<Digi>(false);
     auto digis = static_cast<CbmDigiContainer*>(fDigis.at(system));
     assert(digis);
     digis->AddDigi(digi, nullptr);
@@ -108,7 +107,7 @@ public:
     assert(match);
     ECbmModuleId system = Digi::GetSystem();
     assert(system < ECbmModuleId::kNofSystems);
-    if (!fDigis[system]) fDigis[system] = new CbmDigiVector<Digi>(kTRUE);
+    if (!fDigis[system]) fDigis[system] = new CbmDigiVector<Digi>(true);
     auto digis = static_cast<CbmDigiContainer*>(fDigis.at(system));
     assert(digis);
     digis->AddDigi(digi, match);
@@ -123,7 +122,7 @@ public:
 		 ** present or the index is out of range.
 		 **/
   template<class Digi>
-  const Digi* GetDigi(UInt_t index) const
+  const Digi* GetDigi(uint32_t index) const
   {
     ECbmModuleId system = Digi::GetSystem();
     assert(system < ECbmModuleId::kNofSystems);
@@ -136,26 +135,26 @@ public:
   /** @brief Get event ID
      ** @return Event identifier
      **/
-  UInt_t GetEventId() const { return fEventId; }
+  uint32_t GetEventId() const { return fEventId; }
 
 
   /** @brief Number of digis for a given system
      ** @param system System identifier [ECbmModuleId]
      ** @return Number of digis for system in event
      **/
-  UInt_t GetNofDigis(ECbmModuleId system) const;
+  uint32_t GetNofDigis(ECbmModuleId system) const;
 
 
   /** @brief Presence of match objects
 		 ** @param If true, match objects are stored
 		 **/
-  Bool_t HasMatches() const { return fHasMatches; }
+  bool HasMatches() const { return fHasMatches; }
 
 
   /** @brief Indicate whether event contains no digis
 		 ** @return True is event is empty
 		 **/
-  Bool_t IsEmpty() const;
+  bool IsEmpty() const;
 
 
   /** @brief Match to MC event
@@ -176,8 +175,8 @@ public:
 
 
 private:
-  UInt_t fEventId    = -1;      ///< Event identifier
-  Bool_t fHasMatches = kFALSE;  ///< Presence of matches to MC
+  uint32_t fEventId = -1;     ///< Event identifier
+  bool fHasMatches  = false;  ///< Presence of matches to MC
   //		TObjArray* fDigis = nullptr;   ///< Array of CbmDigiVector
   std::map<ECbmModuleId, TObject*> fDigis;  ///< Map of CbmDigiVector
 

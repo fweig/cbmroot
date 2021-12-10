@@ -13,7 +13,7 @@
  ** @version 1.0
  **
  ** CbmTofAddress is the class for the concrete interfaces to the
- ** unique address, which is encoded in a 32-bit field (Int_t), for the 
+ ** unique address, which is encoded in a 32-bit field (int32_t), for the 
  ** ToF detector elements.
  ** Difference to CbmTofDetectorId is that this class is adapted to
  ** real data instead of simulated data => no Gap info but instead info
@@ -40,7 +40,7 @@
 #include "CbmTofDetectorId.h"       // for CbmTofDetectorInfo
 #include "CbmTofDetectorId_v12b.h"  // for CbmTofDetectorId_v12b
 
-#include <RtypesCore.h>  // for Int_t, UInt_t, Bool_t, kFALSE, kTRUE
+#include <cstdint>
 
 class CbmTofAddress : public CbmAddress {
 public:
@@ -54,45 +54,45 @@ public:
   /** Number of bits for Super Module Id in the address field
           ** @return Number of bits
           **/
-  static Int_t GetNofSmIdBits() { return fgkSmIdBits; };
+  static int32_t GetNofSmIdBits() { return fgkSmIdBits; };
   /** Number of bits for Super Module Type in the address field
           ** @return Number of bits
           **/
-  static Int_t GetNofSmTypeBits() { return fgkSmTypeBits; };
+  static int32_t GetNofSmTypeBits() { return fgkSmTypeBits; };
   /** Number of bits for Rpc Id in the address field
           ** @return Number of bits
           **/
-  static Int_t GetNofRpcIdBits() { return fgkRpcIdBits; };
+  static int32_t GetNofRpcIdBits() { return fgkRpcIdBits; };
   /** Number of bits for Channel Id in the address field
           ** @return Number of bits
           **/
-  static Int_t GetNofChannelIdBits() { return fgkChannelIdBits; };
+  static int32_t GetNofChannelIdBits() { return fgkChannelIdBits; };
   /** Number of bits for Channel Side in the address field
           ** @return Number of bits
           **/
-  static Int_t GetNofChSideBits() { return fgkChannelSideBits; };
+  static int32_t GetNofChSideBits() { return fgkChannelSideBits; };
 
   /** Maskers **/
   /** Get the Super Module Id from the address
           ** @param address  Unique address
           ** @return  systemId
           **/
-  static Int_t GetSmId(UInt_t address) { return ((address >> fgkSmIdOffset) & ((1 << fgkSmIdBits) - 1)); };
+  static int32_t GetSmId(uint32_t address) { return ((address >> fgkSmIdOffset) & ((1 << fgkSmIdBits) - 1)); };
   /** Get the Super Module Type from the address
           ** @param address  Unique address
           ** @return  systemId
           **/
-  static Int_t GetSmType(UInt_t address) { return ((address >> fgkSmTypeOffset) & ((1 << fgkSmTypeBits) - 1)); };
+  static int32_t GetSmType(uint32_t address) { return ((address >> fgkSmTypeOffset) & ((1 << fgkSmTypeBits) - 1)); };
   /** Get the Rpc Id from the address
           ** @param address  Unique address
           ** @return  systemId
           **/
-  static Int_t GetRpcId(UInt_t address) { return ((address >> fgkRpcIdOffset) & ((1 << fgkRpcIdBits) - 1)); };
+  static int32_t GetRpcId(uint32_t address) { return ((address >> fgkRpcIdOffset) & ((1 << fgkRpcIdBits) - 1)); };
   /** Get the Channel Id from the address
           ** @param address  Unique address
           ** @return  systemId
           **/
-  static Int_t GetChannelId(UInt_t address)
+  static int32_t GetChannelId(uint32_t address)
   {
     return ((address >> fgkChannelIdOffset) & ((1 << fgkChannelIdBits) - 1));
   };
@@ -100,7 +100,7 @@ public:
           ** @param address  Unique address
           ** @return  systemId
           **/
-  static Int_t GetChannelSide(UInt_t address)
+  static int32_t GetChannelSide(uint32_t address)
   {
     return ((address >> fgkChannelSideOffset) & ((1 << fgkChannelSideBits) - 1));
   };
@@ -108,7 +108,7 @@ public:
           ** @param address  Unique address
           ** @return  systemId
           **/
-  static Int_t GetModFullId(UInt_t address) { return (address & fgkiModFullIdMask); };
+  static int32_t GetModFullId(uint32_t address) { return (address & fgkiModFullIdMask); };
 
   /** Builder **/
   /** Get the unique address from all parameters
@@ -119,24 +119,24 @@ public:
           ** @param[in] Sm Type Super Module Type (optional).
           ** @return  address
           **/
-  static UInt_t GetUniqueAddress(UInt_t Sm, UInt_t Rpc, UInt_t Channel, UInt_t Side = 0, UInt_t SmType = 0,
-                                 UInt_t RpcType = 0)
+  static uint32_t GetUniqueAddress(uint32_t Sm, uint32_t Rpc, uint32_t Channel, uint32_t Side = 0, uint32_t SmType = 0,
+                                   uint32_t RpcType = 0)
   {
-    return (UInt_t)(((ToIntegralType(ECbmModuleId::kTof) & ((1 << fgkSystemBits) - 1)))
-                    + ((Sm & ((1 << fgkSmIdBits) - 1)) << fgkSmIdOffset)
-                    + ((SmType & ((1 << fgkSmTypeBits) - 1)) << fgkSmTypeOffset)
-                    + ((Side & ((1 << fgkChannelSideBits) - 1)) << fgkChannelSideOffset)
-                    + ((Rpc & ((1 << fgkRpcIdBits) - 1)) << fgkRpcIdOffset)
-                    + ((Channel & ((1 << fgkChannelIdBits) - 1)) << fgkChannelIdOffset)
-                    + ((RpcType & ((1 << fgkRpcTypeBits) - 1)) << fgkRpcTypeOffset));
+    return (uint32_t)(((ToIntegralType(ECbmModuleId::kTof) & ((1 << fgkSystemBits) - 1)))
+                      + ((Sm & ((1 << fgkSmIdBits) - 1)) << fgkSmIdOffset)
+                      + ((SmType & ((1 << fgkSmTypeBits) - 1)) << fgkSmTypeOffset)
+                      + ((Side & ((1 << fgkChannelSideBits) - 1)) << fgkChannelSideOffset)
+                      + ((Rpc & ((1 << fgkRpcIdBits) - 1)) << fgkRpcIdOffset)
+                      + ((Channel & ((1 << fgkChannelIdBits) - 1)) << fgkChannelIdOffset)
+                      + ((RpcType & ((1 << fgkRpcTypeBits) - 1)) << fgkRpcTypeOffset));
   };
 
-  static Bool_t SameModule(UInt_t addressA, UInt_t addressB)
+  static bool SameModule(uint32_t addressA, uint32_t addressB)
   {
-    return (GetModFullId(addressA) == GetModFullId(addressB)) ? kTRUE : kFALSE;
+    return (GetModFullId(addressA) == GetModFullId(addressB)) ? true : false;
   };
 
-  static UInt_t ConvertCbmTofDetectorInfo(CbmTofDetectorInfo infoInput)
+  static uint32_t ConvertCbmTofDetectorInfo(CbmTofDetectorInfo infoInput)
   {
     // For now assume that the system ID will always be correct
     // Otherwise would need including CbmDetectorList.h
@@ -146,7 +146,7 @@ public:
     return GetUniqueAddress(infoInput.fSModule, infoInput.fCounter, infoInput.fCell, 0, infoInput.fSMtype,
                             infoInput.fCounterType);
   };
-  static UInt_t ConvertCbmTofDetectorId(Int_t detIdInput)
+  static uint32_t ConvertCbmTofDetectorId(int32_t detIdInput)
   {
     // For now assume that the system ID will always be correct
     // Otherwise would need including CbmDetectorList.h
@@ -168,31 +168,31 @@ private:
   // v14a
   /*
   // Number of bits for Super Module Id in the address field
-  static const Int_t fgkSmIdBits = 8;
+  static const int32_t fgkSmIdBits = 8;
   // Number of bits for Super Module Type in the address field
-  static const Int_t fgkSmTypeBits = 4;
+  static const int32_t fgkSmTypeBits = 4;
   // Number of bits for Rpc Id in the address field
-  static const Int_t fgkRpcIdBits = 7;
+  static const int32_t fgkRpcIdBits = 7;
   // Number of bits for Channel Side in the address field
-  static const Int_t fgkChannelSideBits = 1;
+  static const int32_t fgkChannelSideBits = 1;
   // Number of bits for Channel Id in the address field
-  static const Int_t fgkChannelIdBits = 8;
+  static const int32_t fgkChannelIdBits = 8;
   // Number of bits for Rpc Type in the address field
-  static const Int_t fgkRpcTypeBits = 0;
+  static const int32_t fgkRpcTypeBits = 0;
   */
   // v21a
   // Number of bits for Super Module Id in the address field
-  static const Int_t fgkSmIdBits = 7;
+  static const int32_t fgkSmIdBits = 7;
   // Number of bits for Super Module Type in the address field
-  static const Int_t fgkSmTypeBits = 4;
+  static const int32_t fgkSmTypeBits = 4;
   // Number of bits for Rpc Id in the address field
-  static const Int_t fgkRpcIdBits = 6;
+  static const int32_t fgkRpcIdBits = 6;
   // Number of bits for Channel Side in the address field
-  static const Int_t fgkChannelSideBits = 1;
+  static const int32_t fgkChannelSideBits = 1;
   // Number of bits for Channel Id in the address field
-  static const Int_t fgkChannelIdBits = 6;
+  static const int32_t fgkChannelIdBits = 6;
   // Number of bits for Rpc Type in the address field
-  static const Int_t fgkRpcTypeBits = 4;
+  static const int32_t fgkRpcTypeBits = 4;
   /**
        ** To adapt the address sub-fields repartition in order,
        ** you just need to change the way the offset are calculated.
@@ -200,22 +200,22 @@ private:
 
   /** Sub-fields offsets in bits **/
   /** Offset in bits for Super Module Id in the address field  **/
-  static const Int_t fgkSmIdOffset;
+  static const int32_t fgkSmIdOffset;
   /** Offset in bits for Super Module Type in the address field  **/
-  static const Int_t fgkSmTypeOffset;
+  static const int32_t fgkSmTypeOffset;
   /** Offset in bits for Channel Side Id in the address field  **/
-  static const Int_t fgkChannelSideOffset;
+  static const int32_t fgkChannelSideOffset;
   /** Offset in bits for Rpc Id in the address field  **/
-  static const Int_t fgkRpcIdOffset;
+  static const int32_t fgkRpcIdOffset;
   /** Offset in bits for Channel Id in the address field  **/
-  static const Int_t fgkChannelIdOffset;
+  static const int32_t fgkChannelIdOffset;
   /** Offset in bits for Channel Id in the address field  **/
-  static const Int_t fgkRpcTypeOffset;
+  static const int32_t fgkRpcTypeOffset;
 
   /**
        ** For the module Full Id determination
        **/
-  static const Int_t fgkiModFullIdMask;
+  static const int32_t fgkiModFullIdMask;
 };
 
 #endif  // CBMTOFADDRESS_H

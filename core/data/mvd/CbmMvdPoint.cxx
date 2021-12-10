@@ -36,8 +36,8 @@ CbmMvdPoint::CbmMvdPoint()
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmMvdPoint::CbmMvdPoint(Int_t trackID, Int_t pdgCode, Int_t stationNr, TVector3 posIn, TVector3 posOut, TVector3 momIn,
-                         TVector3 momOut, Double_t tof, Double_t length, Double_t eLoss, Int_t frame)
+CbmMvdPoint::CbmMvdPoint(int32_t trackID, int32_t pdgCode, int32_t stationNr, TVector3 posIn, TVector3 posOut,
+                         TVector3 momIn, TVector3 momOut, double tof, double length, double eLoss, int32_t frame)
   : FairMCPoint(trackID, stationNr, posIn, momIn, tof, length, eLoss)
   , CbmMvdDetectorId()
   , fX_out(posOut.X())
@@ -78,11 +78,11 @@ void CbmMvdPoint::Print(const Option_t* /*opt*/) const
 // -------------------------------------------------------------------------
 
 // -----   Public method GetAbsTime   --------------------------------------
-Int_t CbmMvdPoint::GetAbsTime()
+int32_t CbmMvdPoint::GetAbsTime()
 {
 
 
-  Int_t absTime = fTime + fStartTime;
+  int32_t absTime = fTime + fStartTime;
 
   return absTime;
 }

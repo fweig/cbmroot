@@ -58,7 +58,7 @@ public:
 		 ** A std::vector is first looked for; if not found, a TClonesArray
 		 ** is looked for.
 		 **/
-  virtual Bool_t ConnectToTree()
+  virtual bool ConnectToTree()
   {
 
     FairRootManager* frm = FairRootManager::Instance();
@@ -76,8 +76,8 @@ public:
     // Try to find a TClonesArray branch for the match
     if (!fMatchVector) { fMatchArray = dynamic_cast<TClonesArray*>(frm->GetObject(mBranch.Data())); }
 
-    if (fDigiVector || fDigiArray) return kTRUE;
-    return kFALSE;
+    if (fDigiVector || fDigiArray) return true;
+    return false;
   }
   // -----------------------------------------------------------------------
 
@@ -106,7 +106,7 @@ public:
 		 **
 		 ** Returns a null pointer if the branch is not present.
 		 **/
-  virtual boost::any GetDigi(UInt_t index)
+  virtual boost::any GetDigi(uint32_t index)
   {
     const Digi* digi = nullptr;
     if (index < GetNofDigis()) {
@@ -126,7 +126,7 @@ public:
 		 **
 		 ** Returns a null pointer if the branch is not present.
 		 **/
-  virtual const CbmMatch* GetDigiMatch(UInt_t index)
+  virtual const CbmMatch* GetDigiMatch(uint32_t index)
   {
     const CbmMatch* match = nullptr;
     if (index < GetNofDigis()) {
@@ -141,12 +141,12 @@ public:
 
   // -----------------------------------------------------------------------
   /** @brief Presence of match branch
-		 ** @return kTRUE if match branch is present
+		 ** @return true if match branch is present
 		 **/
-  virtual Bool_t HasMatches()
+  virtual bool HasMatches()
   {
-    if (fMatchVector || fMatchArray) return kTRUE;
-    return kFALSE;
+    if (fMatchVector || fMatchArray) return true;
+    return false;
   }
   // -----------------------------------------------------------------------
 

@@ -18,15 +18,15 @@
 CbmPsdHit::CbmPsdHit() : TObject(), fModuleID(-1), fEdep(-1)  // SELIM: simplification vector [49] -> simple double
 {
 
-  //for (Int_t j=0; j<49; j++)     // SELIM: simplification vector [49] -> simple double
+  //for (int32_t j=0; j<49; j++)     // SELIM: simplification vector [49] -> simple double
   //  fEdep[j]=0;
 }
-CbmPsdHit::CbmPsdHit(Int_t module, Double_t edep)
+CbmPsdHit::CbmPsdHit(int32_t module, double edep)
   : TObject()
   , fModuleID(module)
   , fEdep(edep)  // SELIM: simplification vector [49] -> simple double
 {
-  //for (Int_t j=0; j<49; j++)     // SELIM: simplification vector [49] -> simple double
+  //for (int32_t j=0; j<49; j++)     // SELIM: simplification vector [49] -> simple double
   //fEdep[j] = edep;
 }
 

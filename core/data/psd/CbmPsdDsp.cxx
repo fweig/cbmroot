@@ -44,25 +44,25 @@ CbmPsdDsp::CbmPsdDsp()
 
 // clang-format off
 // --- Constructor with assignment
-CbmPsdDsp::CbmPsdDsp(UInt_t address,
-                     Double_t time, 
-                     Double_t ts_time, 
-                     Double_t edep, 
-                     UInt_t zl, 
-                     Double_t accum, 
-                     Double_t adc_time,
+CbmPsdDsp::CbmPsdDsp(uint32_t address,
+                     double time, 
+                     double ts_time, 
+                     double edep, 
+                     uint32_t zl, 
+                     double accum, 
+                     double adc_time,
 
-                     Double_t edep_wfm, 
-                     Double_t ampl,
-                     UInt_t minimum, 
-                     UInt_t time_max, 
+                     double edep_wfm, 
+                     double ampl,
+                     uint32_t minimum, 
+                     uint32_t time_max, 
                      std::vector<std::uint16_t> wfm,
 
-                     Double_t fit_ampl, 
-                     Double_t fit_zl, 
-                     Double_t fit_edep, 
-                     Double_t fit_r2, 
-                     Double_t fit_time_max, 
+                     double fit_ampl, 
+                     double fit_zl, 
+                     double fit_edep, 
+                     double fit_r2, 
+                     double fit_time_max, 
                      std::vector<std::uint16_t> fit_wfm)
 
   : fuAddress(address)

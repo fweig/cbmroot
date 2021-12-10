@@ -18,14 +18,14 @@ using std::stringstream;
 
 CbmPixelHit::CbmPixelHit() : CbmPixelHit(-1, 0., 0., 0., 0., 0., 0., 0., -1) {}
 
-CbmPixelHit::CbmPixelHit(Int_t address, const TVector3& pos, const TVector3& err, Double_t dxy, Int_t refId,
-                         Double_t time, Double_t timeError)
+CbmPixelHit::CbmPixelHit(int32_t address, const TVector3& pos, const TVector3& err, double dxy, int32_t refId,
+                         double time, double timeError)
   : CbmPixelHit(address, pos.X(), pos.Y(), pos.Z(), err.X(), err.Y(), err.Z(), dxy, refId, time, timeError)
 {
 }
 
-CbmPixelHit::CbmPixelHit(Int_t address, Double_t x, Double_t y, Double_t z, Double_t dx, Double_t dy, Double_t dz,
-                         Double_t dxy, Int_t refId, Double_t time, Double_t timeError)
+CbmPixelHit::CbmPixelHit(int32_t address, double x, double y, double z, double dx, double dy, double dz, double dxy,
+                         int32_t refId, double time, double timeError)
   : CbmHit(kPIXELHIT, z, dz, refId, address, time, timeError)
   , fX(x)
   , fY(y)

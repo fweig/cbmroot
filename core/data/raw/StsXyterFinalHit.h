@@ -10,9 +10,8 @@
 #define STSXYTERFINALHIT_H
 
 // C/C++ headers
+#include <cstdint>
 #include <iostream>
-
-#include <stdint.h>
 
 namespace stsxyter
 {

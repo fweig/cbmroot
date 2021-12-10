@@ -16,8 +16,9 @@
 #include "CbmTrdAddress.h"  // for CbmTrdAddress
 
 #include <Rtypes.h>      // for CLRBIT, SETBIT, TESTBIT, ClassDef
-#include <RtypesCore.h>  // for Bool_t, Double_t, kTRUE, Int_t, Double32_t
+#include <RtypesCore.h>  // for Double32_t
 
+#include <cstdint>
 #include <string>  // for string
 
 class TVector3;
@@ -62,41 +63,41 @@ public:
 	  *\param refId Index of digi or cluster
 	  *\param eLoss TR + dEdx
 	  **/
-  CbmTrdHit(Int_t address, const TVector3& pos, const TVector3& dpos, Double_t dxy, Int_t refId, Double_t eLoss,
-            Double_t time = 0., Double_t timeError = 0.);
+  CbmTrdHit(int32_t address, const TVector3& pos, const TVector3& dpos, double dxy, int32_t refId, double eLoss,
+            double time = 0., double timeError = 0.);
 
   /** \brief Destructor. */
   virtual ~CbmTrdHit();
 
   /** \brief Inherited from CbmBaseHit.*/
-  Int_t GetPlaneId() const { return CbmTrdAddress::GetLayerId(GetAddress()); }
+  int32_t GetPlaneId() const { return CbmTrdAddress::GetLayerId(GetAddress()); }
 
   /** \brief Inherited from CbmBaseHit.**/
   virtual std::string ToString() const;
 
   /** Accessors **/
-  Double_t GetELoss() const { return fELoss; }
-  Bool_t GetClassType() const { return TESTBIT(fDefine, kType); }
-  Bool_t GetMaxType() const { return TESTBIT(fDefine, kMaxType); }
-  Bool_t HasOverFlow() const { return TESTBIT(fDefine, kOvfl); }
-  Bool_t IsRowCross() const { return TESTBIT(fDefine, kRowCross); }
-  Bool_t IsUsed() const { return (GetRefId() < 0); }
+  double GetELoss() const { return fELoss; }
+  bool GetClassType() const { return TESTBIT(fDefine, kType); }
+  bool GetMaxType() const { return TESTBIT(fDefine, kMaxType); }
+  bool HasOverFlow() const { return TESTBIT(fDefine, kOvfl); }
+  bool IsRowCross() const { return TESTBIT(fDefine, kRowCross); }
+  bool IsUsed() const { return (GetRefId() < 0); }
 
   /** Setters **/
-  void SetELoss(Double_t loss) { fELoss = loss; }
+  void SetELoss(double loss) { fELoss = loss; }
   /** \brief Mark overflow in one or more digits which define the hit.*/
-  void SetOverFlow(Bool_t set = kTRUE) { set ? SETBIT(fDefine, kOvfl) : CLRBIT(fDefine, kOvfl); }
+  void SetOverFlow(bool set = true) { set ? SETBIT(fDefine, kOvfl) : CLRBIT(fDefine, kOvfl); }
   /** \brief Mark hit reconstructed between pad rows.*/
-  void SetRowCross(Bool_t set = kTRUE) { set ? SETBIT(fDefine, kRowCross) : CLRBIT(fDefine, kRowCross); }
+  void SetRowCross(bool set = true) { set ? SETBIT(fDefine, kRowCross) : CLRBIT(fDefine, kRowCross); }
   /** \brief Type of pad layout used in reconstruction R[0], T[1]*/
-  void SetClassType(Bool_t set = kTRUE) { set ? SETBIT(fDefine, kType) : CLRBIT(fDefine, kType); }
+  void SetClassType(bool set = true) { set ? SETBIT(fDefine, kType) : CLRBIT(fDefine, kType); }
   /** \brief Extra bool definition for the hit (e.g. the type of maximum for triangular pads).*/
-  void SetMaxType(Bool_t set = kTRUE) { set ? SETBIT(fDefine, kMaxType) : CLRBIT(fDefine, kMaxType); }
+  void SetMaxType(bool set = true) { set ? SETBIT(fDefine, kMaxType) : CLRBIT(fDefine, kMaxType); }
 
 private:
-  UChar_t fDefine;    // hit extra info
-  Int_t fNeighborId;  // refId in case of row cross clusters
-  Double32_t fELoss;  // Energy deposit due to TR + dEdx
+  uint8_t fDefine;      // hit extra info
+  int32_t fNeighborId;  // refId in case of row cross clusters
+  Double32_t fELoss;    // Energy deposit due to TR + dEdx
 
   ClassDef(CbmTrdHit, 4);
 };

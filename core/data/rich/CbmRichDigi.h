@@ -16,11 +16,11 @@
 #include "CbmDefs.h"  // for kRich
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Double_t, Int_t
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 
+#include <cstdint>
 #include <string>  // for basic_string, string
 
 #ifndef DATA_RICH_CBMRICHDIGI_H_
@@ -30,7 +30,7 @@ class CbmRichDigi {
 public:
   CbmRichDigi();
 
-  CbmRichDigi(Int_t addr, Double_t time, Double_t tot);
+  CbmRichDigi(int32_t addr, double time, double tot);
 
   ~CbmRichDigi();
 
@@ -38,7 +38,7 @@ public:
 	 * \brief Inherited from CbmDigi
 	 * @value Unique address of pixel channel
 	 */
-  Int_t GetAddress() const { return fAddress; }
+  int32_t GetAddress() const { return fAddress; }
 
   /** @brief Get the desired name of the branch for this obj in the cbm output tree  (static)
    ** @return "RichDigi"
@@ -51,7 +51,7 @@ public:
          ** Alias for GetToT, conversion factor should be added if needed.
 	 ** For compatibility with template methods
 	 **/
-  Double_t GetCharge() const { return fToT; }
+  double GetCharge() const { return fToT; }
 
   /** @brief Class name (static)
    ** @return CbmRichDigi
@@ -67,23 +67,23 @@ public:
 	 * @brief Time
 	 * @value Time [ns]
 	 */
-  Double_t GetTime() const { return fTime; }
+  double GetTime() const { return fTime; }
 
   /*
 	 * \brief Get Time-over-threshold
 	 * @value Time-over-threshold, pulse width [ns]
 	 */
-  Double_t GetToT() const { return fToT; }
+  double GetToT() const { return fToT; }
 
   /*
 	 * \brief Set pixel Address
 	 */
-  void SetAddress(Int_t address) { fAddress = address; }
+  void SetAddress(int32_t address) { fAddress = address; }
 
   /*
 	 * \brief Set pixel Address
 	 */
-  void SetTime(Double_t time) { fTime = time; }
+  void SetTime(double time) { fTime = time; }
 
 
   std::string ToString() const { return std::string {""}; }
@@ -92,18 +92,18 @@ private:
   /**
 	 * \brief Unique pixel address
 	 */
-  Int_t fAddress;
+  int32_t fAddress;
 
   /**
 	 * \brief Leading (rising) edge time
 	 */
-  Double_t fTime;
+  double fTime;
 
   /**
 	 * \brief Time-over-threshold, pulse width. 
    * This variable is only used in real data analysis, for the simulation it is set to 0.
 	 */
-  Double_t fToT;
+  double fToT;
 
   /// BOOST serialization interface
   friend class boost::serialization::access;

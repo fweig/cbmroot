@@ -31,7 +31,7 @@ public:
   /** @brief Constructor
      ** @param hasMatches  If true, a match vector will be managed.
      **/
-  CbmDigiVector(Bool_t hasMatches = kFALSE) : fHasMatches(hasMatches)
+  CbmDigiVector(bool hasMatches = false) : fHasMatches(hasMatches)
   {
     TString name = Digi::GetClassName();
     name += "_vector";
@@ -77,7 +77,7 @@ public:
      **
      ** Abstract from base class; no implementation here.
      **/
-  virtual Bool_t ConnectToTree()
+  virtual bool ConnectToTree()
   {
     LOG(fatal) << "Digi vector cannot be connected to a TTree!";
     return false;
@@ -90,9 +90,9 @@ public:
      **
      ** Returns a null pointer if index is out of range.
      **/
-  virtual boost::any GetDigi(UInt_t index)
+  virtual boost::any GetDigi(uint32_t index)
   {
-    fIsLocked          = kTRUE;
+    fIsLocked          = true;
     const Digi* result = nullptr;
     if (index < fDigis.size()) result = &(fDigis[index]);
     return boost::any(result);
@@ -106,9 +106,9 @@ public:
      ** Returns a null pointer if matches are not present or
      ** index is out of range.
      **/
-  virtual const CbmMatch* GetDigiMatch(UInt_t index)
+  virtual const CbmMatch* GetDigiMatch(uint32_t index)
   {
-    fIsLocked              = kTRUE;
+    fIsLocked              = true;
     const CbmMatch* result = nullptr;
     if (fHasMatches && index < fMatches.size()) result = &(fMatches[index]);
     return result;
@@ -118,16 +118,16 @@ public:
   /** @brief Presence of match objects
      ** @return True if matches are present; else false.
      **/
-  virtual Bool_t HasMatches() const { return fHasMatches; }
+  virtual bool HasMatches() const { return fHasMatches; }
 
 
   /** @brief Number of digis in the vector
      ** @return Number of digi objects
      **/
-  virtual ULong64_t GetNofDigis() const
+  virtual uint64_t GetNofDigis() const
   {
     if (fHasMatches) assert(fMatches.size() == fDigis.size());
-    return static_cast<ULong64_t>(fDigis.size());
+    return static_cast<uint64_t>(fDigis.size());
   }
 
 
@@ -146,8 +146,8 @@ public:
 private:
   std::vector<Digi> fDigis {};
   std::vector<CbmMatch> fMatches {};
-  Bool_t fHasMatches = kFALSE;
-  Bool_t fIsLocked   = kFALSE;
+  bool fHasMatches = false;
+  bool fIsLocked   = false;
 
 
   ClassDef(CbmDigiVector, 1);

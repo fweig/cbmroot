@@ -10,10 +10,10 @@
 
 #include "gtest/gtest.h"
 
-void compareMatchDataMembers(CbmMatch& testMatch, Int_t noflinks, Double_t weight)
+void compareMatchDataMembers(CbmMatch& testMatch, int32_t noflinks, double weight)
 {
-  Int_t linkLength {-111};
-  Double_t totalWeight {-111.};
+  int32_t linkLength {-111};
+  double totalWeight {-111.};
 
   std::vector<CbmLink> link = testMatch.GetLinks();
   linkLength                = link.size();

@@ -15,7 +15,7 @@ using std::string;
 using std::stringstream;
 
 // -----   Constructor   ------------------------------------------------------
-CbmMCEventInfo::CbmMCEventInfo(Int_t fileId, Int_t eventId, Double_t time)
+CbmMCEventInfo::CbmMCEventInfo(int32_t fileId, int32_t eventId, double time)
   : fFileId(fileId)
   , fEventId(eventId)
   , fTime(time)

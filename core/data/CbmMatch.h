@@ -16,9 +16,9 @@
 #include "CbmLink.h"  // for CbmLink
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t
 #include <TObject.h>     // for TObject
 
+#include <cstdint>
 #include <memory>  // for unique_ptr
 #include <string>  // for string
 #include <vector>  // for vector
@@ -36,16 +36,16 @@ public:
   virtual ~CbmMatch();
 
   /* Accessors */
-  const CbmLink& GetLink(Int_t i) const { return fLinks[i]; }
+  const CbmLink& GetLink(int32_t i) const { return fLinks[i]; }
   const std::vector<CbmLink>& GetLinks() const { return fLinks; }
   const CbmLink& GetMatchedLink() const { return fLinks[fMatchedIndex]; }
-  Int_t GetNofLinks() const { return fLinks.size(); }
-  Double_t GetTotalWeight() const { return fTotalWeight; }
+  int32_t GetNofLinks() const { return fLinks.size(); }
+  double GetTotalWeight() const { return fTotalWeight; }
 
   /* Modifiers */
   void AddLinks(const CbmMatch& match);
   void AddLink(const CbmLink& newLink);
-  void AddLink(Double_t weight, Int_t index, Int_t entry = -1, Int_t file = -1);
+  void AddLink(double weight, int32_t index, int32_t entry = -1, int32_t file = -1);
   void ClearLinks();
 
   /**
@@ -56,8 +56,8 @@ public:
 
 protected:
   std::vector<CbmLink> fLinks;  // List of links to MC
-  Double_t fTotalWeight;        // Sum of all reference weights
-  Int_t fMatchedIndex;          // Index of the matched reference in fReferences array
+  double fTotalWeight;          // Sum of all reference weights
+  int32_t fMatchedIndex;        // Index of the matched reference in fReferences array
 
   ClassDef(CbmMatch, 1);
 };

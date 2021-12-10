@@ -30,7 +30,7 @@ TEST(_GTestCbmAddress, CheckGetSytemId)
   SCOPED_TRACE("CheckGetNofSystemBits");
   CbmAddress test;
 
-  UInt_t testID {ToIntegralType(ECbmModuleId::kSts)};
+  uint32_t testID {ToIntegralType(ECbmModuleId::kSts)};
   EXPECT_EQ(ToIntegralType(ECbmModuleId::kSts), test.GetSystemId(testID));
 
   testID = ToIntegralType(ECbmModuleId::kTrd);

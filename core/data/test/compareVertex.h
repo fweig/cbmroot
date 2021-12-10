@@ -4,11 +4,11 @@
 
 #include "gtest/gtest.h"
 
-void compareVertexDataMembers(CbmVertex& test, Double_t x, Double_t y, Double_t z, Double_t chi2, Int_t ndf,
-                              Int_t ntracks, Double_t* cov)
+void compareVertexDataMembers(CbmVertex& test, double x, double y, double z, double chi2, int32_t ndf, int32_t ntracks,
+                              double* cov)
 {
-  Int_t retValInt {-111};
-  Double_t retValDouble {-111.};
+  int32_t retValInt {-111};
+  double retValDouble {-111.};
 
   retValDouble = test.GetX();
   EXPECT_FLOAT_EQ(x, retValDouble);

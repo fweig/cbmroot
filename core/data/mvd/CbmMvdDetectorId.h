@@ -30,7 +30,8 @@
 #include <Logger.h>  // for LOG
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t
+
+#include <cstdint>
 
 
 class CbmMvdDetectorId {
@@ -45,13 +46,13 @@ public:
 
 
   /** Create unique detector ID from station number **/
-  Int_t DetectorId(Int_t iStation) const { return (ToIntegralType(ECbmModuleId::kMvd) | (iStation << 5)); }
+  int32_t DetectorId(int32_t iStation) const { return (ToIntegralType(ECbmModuleId::kMvd) | (iStation << 5)); }
 
 
   /** Get System identifier from detector ID **/
-  Int_t SystemId(Int_t detectorId) const
+  int32_t SystemId(int32_t detectorId) const
   {
-    Int_t iSystem = detectorId & 31;
+    int32_t iSystem = detectorId & 31;
     if (iSystem != ToIntegralType(ECbmModuleId::kMvd)) {
       LOG(error) << "wrong system ID " << iSystem;
       return -1;
@@ -61,7 +62,7 @@ public:
 
 
   /** Get station number from detector ID **/
-  Int_t StationNr(Int_t detectorId) const { return ((detectorId & (~31)) >> 5); }
+  int32_t StationNr(int32_t detectorId) const { return ((detectorId & (~31)) >> 5); }
 
 
   ClassDef(CbmMvdDetectorId, 1);

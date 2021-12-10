@@ -11,8 +11,9 @@
 
 #include <Logger.h>  // for LOG, Logger
 
-#include <TMath.h>    // for Power
 #include <TObject.h>  // for TObject
+
+#include <cmath>
 
 // -----   Default constructor   -------------------------------------------
 CbmMvdDigi::CbmMvdDigi()
@@ -38,8 +39,8 @@ CbmMvdDigi::CbmMvdDigi()
 
 /*
 // -----   Constructor with parameters   -----------------------------------
-CbmMvdDigi::CbmMvdDigi(Int_t iStation, Int_t iChannelNrX, Int_t iChannelNrY, Float_t charge,
-                       Float_t pixelSizeX, Float_t pixelSizeY)
+CbmMvdDigi::CbmMvdDigi(int32_t iStation, int32_t iChannelNrX, int32_t iChannelNrY, float charge,
+                       float pixelSizeX, float pixelSizeY)
   : CbmDigi(kMVD, 0),
     CbmMvdDetectorId(), 	
     fCharge(charge),
@@ -76,8 +77,8 @@ CbmMvdDigi::CbmMvdDigi(Int_t iStation, Int_t iChannelNrX, Int_t iChannelNrY, Flo
 */
 
 // -----   Constructor with parameters  --> used only due to error TODO include correct version -----------------------------------
-CbmMvdDigi::CbmMvdDigi(Int_t iStation, Int_t iChannelNrX, Int_t iChannelNrY, Float_t charge, Float_t pixelSizeX,
-                       Float_t pixelSizeY, Float_t time, Int_t frame)
+CbmMvdDigi::CbmMvdDigi(int32_t iStation, int32_t iChannelNrX, int32_t iChannelNrY, float charge, float pixelSizeX,
+                       float pixelSizeY, float time, int32_t frame)
   : TObject()
   , CbmMvdDetectorId()
   , fCharge(charge)
@@ -99,7 +100,7 @@ CbmMvdDigi::CbmMvdDigi(Int_t iStation, Int_t iChannelNrX, Int_t iChannelNrY, Flo
 }
 // -------------------------------------------------------------------------
 
-Int_t CbmMvdDigi::GetAdcCharge(Int_t adcDynamic, Int_t adcOffset, Int_t adcBits)
+int32_t CbmMvdDigi::GetAdcCharge(int32_t adcDynamic, int32_t adcOffset, int32_t adcBits)
 {
   /**
      adcOffset  is the minimum value of the analogue signal
@@ -113,19 +114,19 @@ Int_t CbmMvdDigi::GetAdcCharge(Int_t adcDynamic, Int_t adcOffset, Int_t adcBits)
 
      */
 
-  Int_t adcCharge;
+  int32_t adcCharge;
 
   if (fCharge < adcOffset) { return 0; };
 
 
-  Double_t stepSize;
-  //    Int_t adcMax = adcOffset + adcDynamic;
+  double stepSize;
+  //    int32_t adcMax = adcOffset + adcDynamic;
 
-  stepSize  = adcDynamic / TMath::Power(2, adcBits);
+  stepSize  = adcDynamic / pow(2, adcBits);
   adcCharge = int((fCharge - adcOffset) / stepSize);
 
 
-  if (adcCharge > int(TMath::Power(2, adcBits) - 1)) { adcCharge = (int) TMath::Power(2, adcBits) - 1; }
+  if (adcCharge > int(pow(2, adcBits) - 1)) { adcCharge = (int) pow(2, adcBits) - 1; }
 
   if (gDebug > 0) { LOG(debug) << "CbmMvdDigi::GetAdcCharge() " << adcCharge; }
 
@@ -134,18 +135,18 @@ Int_t CbmMvdDigi::GetAdcCharge(Int_t adcDynamic, Int_t adcOffset, Int_t adcBits)
 
 
 // -------------------------------------------------------------------------
-Int_t CbmMvdDigi::GetPixelX() { return fChannelNrX; }
+int32_t CbmMvdDigi::GetPixelX() { return fChannelNrX; }
 // -------------------------------------------------------------------------
-Int_t CbmMvdDigi::GetPixelY() { return fChannelNrY; }
+int32_t CbmMvdDigi::GetPixelY() { return fChannelNrY; }
 // -------------------------------------------------------------------------
 
 /** Unique channel address  **/
-Int_t CbmMvdDigi::GetAddress() const { return 0; }
+int32_t CbmMvdDigi::GetAddress() const { return 0; }
 
 // -------------------------------------------------------------------------
 
 /** Absolute time [ns]  **/
-Double_t CbmMvdDigi::GetTime() const { return fDigiTime; }
+double CbmMvdDigi::GetTime() const { return fDigiTime; }
 
 
 // -------------------------------------------------------------------------

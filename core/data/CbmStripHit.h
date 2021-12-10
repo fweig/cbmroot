@@ -17,8 +17,8 @@
 #include "CbmHit.h"  // for CbmHit
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Double_t, Int_t
 
+#include <cstdint>
 #include <string>  // for string
 
 class TVector3;
@@ -44,8 +44,8 @@ public:
 	 * \param[in] timeError Error of hit time [ns].
 
 	 **/
-  CbmStripHit(Int_t address, Double_t u, Double_t phi, Double_t z, Double_t du, Double_t dphi, Double_t dz, Int_t refId,
-              Double_t time = -1., Double_t timeError = -1.);
+  CbmStripHit(int32_t address, double u, double phi, double z, double du, double dphi, double dz, int32_t refId,
+              double time = -1., double timeError = -1.);
 
   /**
 	 * \brief Standard constructor.
@@ -56,8 +56,8 @@ public:
 	 * \param[in] time Hit time [ns].
 	 * \param[in] timeError Error of hit time [ns].
 	 **/
-  CbmStripHit(Int_t address, const TVector3& pos, const TVector3& err, Int_t refId, Double_t time = -1.,
-              Double_t timeError = -1.);
+  CbmStripHit(int32_t address, const TVector3& pos, const TVector3& err, int32_t refId, double time = -1.,
+              double timeError = -1.);
 
   /**
 	 * \brief Destructor.
@@ -70,22 +70,22 @@ public:
   virtual std::string ToString() const;
 
   /* Accessors */
-  Double_t GetU() const { return fU; }
-  Double_t GetPhi() const { return fPhi; }
-  Double_t GetDu() const { return fDu; }
-  Double_t GetDphi() const { return fDphi; }
+  double GetU() const { return fU; }
+  double GetPhi() const { return fPhi; }
+  double GetDu() const { return fDu; }
+  double GetDphi() const { return fDphi; }
 
   /* Setters */
-  void SetU(Double_t u) { fU = u; }
-  void SetPhi(Double_t phi) { fPhi = phi; }
-  void SetDu(Double_t du) { fDu = du; }
-  void SetDphi(Double_t dphi) { fDphi = dphi; }
+  void SetU(double u) { fU = u; }
+  void SetPhi(double phi) { fPhi = phi; }
+  void SetDu(double du) { fDu = du; }
+  void SetDphi(double dphi) { fDphi = dphi; }
 
 private:
-  Double_t fU;     ///< U coordinate in the rotated c.s [cm]
-  Double_t fDu;    ///< U error [cm]
-  Double_t fPhi;   ///< strip rotation angle [rad]
-  Double_t fDphi;  ///< strip rotation error [rad]
+  double fU;     ///< U coordinate in the rotated c.s [cm]
+  double fDu;    ///< U error [cm]
+  double fPhi;   ///< strip rotation angle [rad]
+  double fDphi;  ///< strip rotation error [rad]
 
   ClassDef(CbmStripHit, 1);
 };

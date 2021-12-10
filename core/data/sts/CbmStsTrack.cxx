@@ -33,7 +33,7 @@ std::string CbmStsTrack::ToString() const
   stringstream ss;
   ss << "CbmStsTrack: time " << fTime << " ns | hits STS " << GetNofStsHits() << " MVD " << GetNofMvdHits() << " | q/p "
      << GetParamFirst()->GetQp() << " | chisq " << GetChiSq() << " | NDF " << GetNDF() << " | STS hits ";
-  for (Int_t iHit = 0; iHit < GetNofStsHits(); iHit++) {
+  for (int32_t iHit = 0; iHit < GetNofStsHits(); iHit++) {
     ss << GetStsHitIndex(iHit) << " ";
   }
   return ss.str();

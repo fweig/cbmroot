@@ -29,8 +29,8 @@ CbmStsHit::CbmStsHit() : CbmPixelHit(), fFrontClusterId(-1), fBackClusterId(-1),
 
 
 // -----   Constructor with parameters
-CbmStsHit::CbmStsHit(Int_t address, const TVector3& pos, const TVector3& dpos, Double_t dxy, Int_t frontClusterId,
-                     Int_t backClusterId, Double_t time, Double_t timeError, Double_t du, Double_t dv)
+CbmStsHit::CbmStsHit(int32_t address, const TVector3& pos, const TVector3& dpos, double dxy, int32_t frontClusterId,
+                     int32_t backClusterId, double time, double timeError, double du, double dv)
   : CbmPixelHit(address, pos, dpos, dxy, -1)
   , fFrontClusterId(frontClusterId)
   , fBackClusterId(backClusterId)

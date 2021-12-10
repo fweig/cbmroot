@@ -23,11 +23,12 @@
 #include "CbmTrack.h"  // for CbmTrack
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t, Double32_t
+#include <RtypesCore.h>  // for Double32_t
 
 #include <cassert>  // for assert
-#include <string>   // for string
-#include <vector>   // for vector
+#include <cstdint>
+#include <string>  // for string
+#include <vector>  // for vector
 
 /** @class CbmStsTrack.h
  ** @brief Data class with information on a STS local track
@@ -51,19 +52,19 @@ public:
   /** Associate a MvdHit to the track
     ** @param hitIndex  Index of the MVD hit in TClonesArray
     **/
-  void AddMvdHit(Int_t hitIndex) { fMvdHitIndex.push_back(hitIndex); }
+  void AddMvdHit(int32_t hitIndex) { fMvdHitIndex.push_back(hitIndex); }
 
 
   /** Associate a StsHit to the track
     ** @param hitIndex  Index of the STS hit in TClonesArray
     **/
-  void AddStsHit(Int_t hitIndex) { AddHit(hitIndex, kSTSHIT); }
+  void AddStsHit(int32_t hitIndex) { AddHit(hitIndex, kSTSHIT); }
 
 
   /** Impact parameter
     ** @return  Impact parameter at target z in units of error [cm]
     **/
-  Double_t GetB() const { return fB; }
+  double GetB() const { return fB; }
 
 
   /** Index of a MVD hit
@@ -71,25 +72,25 @@ public:
     **
     ** Throws std::vector exception if out of bounds.
     **/
-  Int_t GetMvdHitIndex(Int_t iHit) const { return fMvdHitIndex.at(iHit); }
+  int32_t GetMvdHitIndex(int32_t iHit) const { return fMvdHitIndex.at(iHit); }
 
 
   /** Total number of hits
     ** @return  Sum of numbers of STS and MVD hits
     **/
-  virtual Int_t GetNofHits() const { return (GetNofStsHits() + GetNofMvdHits()); }
+  virtual int32_t GetNofHits() const { return (GetNofStsHits() + GetNofMvdHits()); }
 
 
   /** Number of MVD hits
     ** @return  Number of MVD hits associated to the track
     **/
-  Int_t GetNofMvdHits() const { return fMvdHitIndex.size(); }
+  int32_t GetNofMvdHits() const { return fMvdHitIndex.size(); }
 
 
   /** Number of STS hits
     ** @return  Number of STS hits associated to the track
     **/
-  Int_t GetNofStsHits() const { return CbmTrack::GetNofHits(); }
+  int32_t GetNofStsHits() const { return CbmTrack::GetNofHits(); }
 
 
   /** Index of a STS hit
@@ -97,7 +98,7 @@ public:
     **
     ** Throws std::vector exception if out of bounds.
     **/
-  Int_t GetStsHitIndex(Int_t iHit) const
+  int32_t GetStsHitIndex(int32_t iHit) const
   {
     assert(iHit < GetNofStsHits());
     return GetHitIndex(iHit);
@@ -107,7 +108,7 @@ public:
   /** Set the impact parameter
     ** @param  Impact parameter at target z in units of error [cm]
     **/
-  void SetB(Double_t b) { fB = b; }
+  void SetB(double b) { fB = b; }
 
 
   /** Debug output **/
@@ -117,25 +118,25 @@ public:
   /** Get energy loss
    ** @return  median energy loss
    **/
-  Float_t GetELoss() const { return fELoss; }
+  float GetELoss() const { return fELoss; }
 
   /** Set energy loss
    ** @param  median energy loss
    **/
-  void SetELoss(Float_t ELoss) { fELoss = ELoss; }
+  void SetELoss(float ELoss) { fELoss = ELoss; }
 
-  constexpr static Float_t ELossOverflow() { return 1.e6; }
+  constexpr static float ELossOverflow() { return 1.e6; }
 
 private:
   /** Array with indices of the MVD hits attached to the track **/
-  std::vector<Int_t> fMvdHitIndex;
+  std::vector<int32_t> fMvdHitIndex;
 
 
   /** Impact parameter of track at target z, in units of its error **/
   Double32_t fB;
 
   /** median dE/dx [e/300µm] **/
-  Float_t fELoss {-1.f};
+  float fELoss {-1.f};
 
   ClassDef(CbmStsTrack, 3);
 };

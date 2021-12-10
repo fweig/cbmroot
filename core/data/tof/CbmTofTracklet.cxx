@@ -14,7 +14,6 @@
 #include <FairTrackParam.h>  // for FairTrackParam
 #include <Logger.h>          // for Logger, LOG
 
-#include <TMath.h>    // for Power, Sqrt
 #include <TObject.h>  // for TObject
 #include <TString.h>  // for Form
 
@@ -123,10 +122,10 @@ void CbmTofTracklet::GetFairTrackParamLast()
       fTrackPar.SetCovariance(k, fParamLast.GetCovariance(i, j));
 }
 
-Double_t CbmTofTracklet::GetMatChi2(Int_t iAddr)
+double CbmTofTracklet::GetMatChi2(int32_t iAddr)
 {
   //LOG(debug1) << "array sizes: " << fTofHit.size() << ", " << fTofDet.size() << ", " << fMatChi.size();
-  for (UInt_t iHit = 0; iHit < fTofHit.size(); iHit++) {
+  for (uint32_t iHit = 0; iHit < fTofHit.size(); iHit++) {
     //LOG(debug1) << Form(" -v- ind %d, tofhit %d, 0x%08x, chi %f ",iHit,fTofHit[iHit],fTofDet[iHit],fMatChi[iHit]);
     //if(0==fTofDet[iHit]) LOG(fatal) << " CbmTofTracklet::GetMatChi2 Invalid Detector Type! ";
     if (iAddr == fTofDet[iHit]) return fMatChi[iHit];
@@ -134,9 +133,9 @@ Double_t CbmTofTracklet::GetMatChi2(Int_t iAddr)
   return -1.;
 }
 
-Int_t CbmTofTracklet::GetFirstInd(Int_t iAddr)
+int32_t CbmTofTracklet::GetFirstInd(int32_t iAddr)
 {
-  for (UInt_t iHit = 0; iHit < fTofHit.size(); iHit++) {
+  for (uint32_t iHit = 0; iHit < fTofHit.size(); iHit++) {
     //    LOG(info) << "     GFI "<< iSm <<", "<<iHit<<", "<< fTofDet[iHit];
     if (iAddr != fTofDet[iHit]) return fTofHit[iHit];
   }
@@ -144,73 +143,73 @@ Int_t CbmTofTracklet::GetFirstInd(Int_t iAddr)
   return -1;
 }
 
-Double_t CbmTofTracklet::GetZ0x()
+double CbmTofTracklet::GetZ0x()
 {
-  Double_t dZ0 = 0.;
+  double dZ0 = 0.;
   if (fTrackPar.GetTx() != 0.) dZ0 = -fTrackPar.GetX() / fTrackPar.GetTx() + fTrackPar.GetZ();
   return dZ0;
 }
 
-Double_t CbmTofTracklet::GetZ0y()
+double CbmTofTracklet::GetZ0y()
 {
-  Double_t dZ0 = 0.;
+  double dZ0 = 0.;
   if (fTrackPar.GetTy() != 0.) dZ0 = -fTrackPar.GetY() / fTrackPar.GetTy() + fTrackPar.GetZ();
   return dZ0;
 }
 
-Double_t CbmTofTracklet::GetR0()
+double CbmTofTracklet::GetR0()
 {
-  Double_t dR0 = TMath::Sqrt(TMath::Power(GetFitX(0.), 2) + TMath::Power(GetFitY(0.), 2));
+  double dR0 = sqrt(pow(GetFitX(0.), 2) + pow(GetFitY(0.), 2));
   return dR0;
 }
 
-Double_t CbmTofTracklet::GetTex(CbmTofHit* pHit)
+double CbmTofTracklet::GetTex(CbmTofHit* pHit)
 {
   /*
-  Double_t dR2=0.;
-  dR2 += TMath::Power(fTrackPar.GetX()-pHit->GetX(),2);
-  dR2 += TMath::Power(fTrackPar.GetY()-pHit->GetY(),2);
-  dR2 += TMath::Power(fTrackPar.GetZ()-pHit->GetZ(),2);
-  Double_t dR = TMath::Sqrt(dR2);
+  double dR2=0.;
+  dR2 += pow(fTrackPar.GetX()-pHit->GetX(),2);
+  dR2 += pow(fTrackPar.GetY()-pHit->GetY(),2);
+  dR2 += pow(fTrackPar.GetZ()-pHit->GetZ(),2);
+  double dR = sqrt(dR2);
   */
   /*
-  Double_t dR = pHit->GetR();
+  double dR = pHit->GetR();
   LOG(debug) <<Form(" CbmTofTracklet::GetTex T0 %7.1f dR %7.1f, Tt %7.4f => Tex %7.3f, ",
 		    fT0,dR,fTt,fT0 + dR*fTt)
 	     <<fTrackPar.ToString()
 	     ;
   return   fT0 + dR*fTt;
   */
-  Double_t dZ    = pHit->GetZ();
-  Double_t dSign = 1.;
+  double dZ    = pHit->GetZ();
+  double dSign = 1.;
   if (pHit->GetZ() < fhit[0].GetZ()) dSign = -1;
-  Double_t dTex = fhit[0].GetTime() + fTt * dSign * Dist3D(pHit, &fhit[0]);
+  double dTex = fhit[0].GetTime() + fTt * dSign * Dist3D(pHit, &fhit[0]);
   LOG(debug) << Form("GetTex T0 %7.3f, Z %7.1f, DZ %5.1f, Sign %2.0f, Tt %7.4f => Tex %7.3f, ", fhit[0].GetTime(), dZ,
                      dZ - fhit[0].GetZ(), dSign, fTt, dTex)
              << fTrackPar.ToString();
   return dTex;
 }
 
-Double_t CbmTofTracklet::UpdateT0()
+double CbmTofTracklet::UpdateT0()
 {  //returns estimated time at R=0
-   //  Double_t dT0=0.;
-  Int_t nValidHits = 0;
-  Int_t iHit1;
-  Double_t dDist1;
+   //  double dT0=0.;
+  int32_t nValidHits = 0;
+  int32_t iHit1;
+  double dDist1;
 
-  Double_t aR[fTofHit.size()];
-  Double_t at[fTofHit.size()];
-  Double_t ae[fTofHit.size()];
-  for (UInt_t iHit = 0; iHit < fTofHit.size(); iHit++) {
+  double aR[fTofHit.size()];
+  double at[fTofHit.size()];
+  double ae[fTofHit.size()];
+  for (uint32_t iHit = 0; iHit < fTofHit.size(); iHit++) {
     if (fTofDet[iHit] >= 0) {  // exclude faked hits
       if (nValidHits == 0) {
         iHit1 = iHit;
         //dDist1=fhit[iHit1].GetR();
-        dDist1 = fhit[iHit1].GetZ()
-                 * TMath::Sqrt(1. + fTrackPar.GetTx() * fTrackPar.GetTx() + fTrackPar.GetTy() * fTrackPar.GetTy());
+        dDist1 =
+          fhit[iHit1].GetZ() * sqrt(1. + fTrackPar.GetTx() * fTrackPar.GetTx() + fTrackPar.GetTy() * fTrackPar.GetTy());
       }
       //aR[nValidHits]=fhit[iHit].GetR();
-      Double_t dSign = 1.;
+      double dSign = 1.;
       if (fhit[iHit].GetZ() < fhit[iHit1].GetZ()) dSign = -1.;
       aR[nValidHits] = dDist1 + dSign * Dist3D(&fhit[iHit], &fhit[iHit1]);
       at[nValidHits] = fhit[iHit].GetTime();
@@ -228,7 +227,7 @@ Double_t CbmTofTracklet::UpdateT0()
   TVectorD t; t.Use(nValidHits,at);
   TVectorD e; e.Use(nValidHits,ae);
 
-  const Int_t nrVar  = 2;
+  const int32_t nrVar  = 2;
   TMatrixD A(nValidHits,nrVar);
   TMatrixDColumn(A,0) = 1.0;
   TMatrixDColumn(A,1) = R;
@@ -236,13 +235,13 @@ Double_t CbmTofTracklet::UpdateT0()
   // first bring the weights in place
   TMatrixD Aw = A;
   TVectorD yw = t;
-  for (Int_t irow = 0; irow < A.GetNrows(); irow++) {
+  for (int32_t irow = 0; irow < A.GetNrows(); irow++) {
     TMatrixDRow(Aw,irow) *= 1/e(irow);
     yw(irow) /= e(irow);
   }
 
   TDecompSVD svd(Aw);
-  Bool_t ok;
+  bool ok;
   const TVectorD c_svd = svd.Solve(yw,ok);
 
   // c_svd.Print();
@@ -256,14 +255,14 @@ Double_t CbmTofTracklet::UpdateT0()
   // Converted into Matrix Form, Matrices calcualted and only resulting formula are implemented
   // J.Brandt
   //
-  Double_t RRsum      = 0;           //  Values will follow this procedure:
-  Double_t Rsum       = 0;           //  $Rsum=\sum_{i}^{nValidHits}\frac{R_i}{e_i^2}$
-  Double_t tsum       = 0;           //  where e_i will always be the error on the t measurement
-  Double_t esum       = 0;           //  RR=R^2 in numerator, e denotes 1 in numerator , Rt= R*t in numerator
-  Double_t Rtsum      = 0;           //
-  Double_t sig_weight = 0;           //  ae^2
-  Double_t yoffset    = at[0] - 10;  //  T0 time offset to scale times to ns regime and not 10^10ns
-  for (Int_t i = 0; i < nValidHits; i++) {
+  double RRsum      = 0;           //  Values will follow this procedure:
+  double Rsum       = 0;           //  $Rsum=\sum_{i}^{nValidHits}\frac{R_i}{e_i^2}$
+  double tsum       = 0;           //  where e_i will always be the error on the t measurement
+  double esum       = 0;           //  RR=R^2 in numerator, e denotes 1 in numerator , Rt= R*t in numerator
+  double Rtsum      = 0;           //
+  double sig_weight = 0;           //  ae^2
+  double yoffset    = at[0] - 10;  //  T0 time offset to scale times to ns regime and not 10^10ns
+  for (int32_t i = 0; i < nValidHits; i++) {
     at[i] -= yoffset;  //  substract offset
     sig_weight = (ae[i] * ae[i]);
     Rsum += (aR[i] / sig_weight);
@@ -272,13 +271,13 @@ Double_t CbmTofTracklet::UpdateT0()
     Rtsum += (aR[i] * at[i] / sig_weight);
     esum += (1 / sig_weight);
   }
-  Double_t det_cov_mat =
+  double det_cov_mat =
     esum * RRsum
     - Rsum * Rsum;  // Determinant of inverted Covariance Matrix -> 1/det is common Faktor of Cavariance Matrix
   fT0      = (RRsum * tsum - Rsum * Rtsum) / det_cov_mat;  // Best Guess for time at origin
   fTt      = (-Rsum * tsum + esum * Rtsum) / det_cov_mat;  // Best guess for inverted velocity
-  fT0Err   = TMath::Sqrt(RRsum / det_cov_mat);             // sqrt of (0,0) in Covariance matrix -> error on fT0
-  fTtErr   = TMath::Sqrt(esum / det_cov_mat);              // sqrt of (1,1) in Covariance Matrix -> error on fTt
+  fT0Err   = sqrt(RRsum / det_cov_mat);                    // sqrt of (0,0) in Covariance matrix -> error on fT0
+  fTtErr   = sqrt(esum / det_cov_mat);                     // sqrt of (1,1) in Covariance Matrix -> error on fTt
   fT0TtCov = -Rsum / det_cov_mat;                          // (0,1)=(1,0) in Covariance Matrix -> cov(fT0,fTt)
 
   fT0 += yoffset;  // Adding yoffset again
@@ -287,18 +286,18 @@ Double_t CbmTofTracklet::UpdateT0()
 
   LOG(debug) << Form("Trkl size %u,  validHits %d, Tt = %6.4f TtErr = %2.4f T0 "
                      "= %6.2f T0Err = %2.2f T0TtCov = %6.4f",
-                     (UInt_t) fTofHit.size(), nValidHits, fTt, fTtErr, fT0, fT0Err, fT0TtCov);
+                     (uint32_t) fTofHit.size(), nValidHits, fTt, fTtErr, fT0, fT0Err, fT0TtCov);
 
   return fT0;
 }
 
-Double_t CbmTofTracklet::UpdateTt()
+double CbmTofTracklet::UpdateTt()
 {
-  Double_t dTt = 0.;
-  Int_t iNt    = 0;
-  for (UInt_t iHL = 0; iHL < fhit.size() - 1; iHL++) {
+  double dTt  = 0.;
+  int32_t iNt = 0;
+  for (uint32_t iHL = 0; iHL < fhit.size() - 1; iHL++) {
     //if( fTofDet[iHL]>0 )                         // exclude faked hits
-    for (UInt_t iHH = iHL + 1; iHH < fhit.size(); iHH++) {
+    for (uint32_t iHH = iHL + 1; iHH < fhit.size(); iHH++) {
       //if( fTofDet[iHH]>0)   // exclude faked hits
       {
         dTt += (fhit[iHH].GetTime() - fhit[iHL].GetTime())
@@ -311,20 +310,20 @@ Double_t CbmTofTracklet::UpdateTt()
     LOG(WARNING) << "No valid hit pair ";
     return fTt;
   }
-  fTt = dTt / (Double_t) iNt;
+  fTt = dTt / (double) iNt;
   return fTt;
 }
 
-Double_t CbmTofTracklet::GetXdif(Int_t iDetId, CbmTofHit* pHit)
+double CbmTofTracklet::GetXdif(int32_t iDetId, CbmTofHit* pHit)
 {
-  Double_t dXref = 0.;
-  Int_t iNref    = 0;
-  Double_t dTx   = 0;
+  double dXref  = 0.;
+  int32_t iNref = 0;
+  double dTx    = 0;
 
   if (1) {
-    for (UInt_t iHL = 0; iHL < fhit.size() - 1; iHL++) {
+    for (uint32_t iHL = 0; iHL < fhit.size() - 1; iHL++) {
       if (iDetId == fTofDet[iHL] || 0 == fTofDet[iHL]) continue;  // exclude faked hits
-      for (UInt_t iHH = iHL + 1; iHH < fhit.size(); iHH++) {
+      for (uint32_t iHH = iHL + 1; iHH < fhit.size(); iHH++) {
         if (iDetId == fTofDet[iHH] || 0 == fTofDet[iHH]) continue;  // exclude faked hits
         //dTt+=(fhit[iHH].GetTime()-fhit[iHL].GetTime())/(fhit[iHH].GetR()-fhit[iHL].GetR()); // for projective geometries only !!!
         dTx += (fhit[iHH].GetX() - fhit[iHL].GetX()) / (fhit[iHH].GetZ() - fhit[iHL].GetZ());
@@ -338,10 +337,10 @@ Double_t CbmTofTracklet::GetXdif(Int_t iDetId, CbmTofHit* pHit)
   }
 
   iNref = 0;
-  for (UInt_t iHit = 0; iHit < fTofHit.size(); iHit++) {
+  for (uint32_t iHit = 0; iHit < fTofHit.size(); iHit++) {
     if (iDetId == fTofDet[iHit] || 0 == fTofDet[iHit]) continue;
 
-    Double_t dDZ = pHit->GetZ() - fhit[iHit].GetZ();
+    double dDZ = pHit->GetZ() - fhit[iHit].GetZ();
     dXref += fhit[iHit].GetX() + dTx * dDZ;
     iNref++;
   }
@@ -356,16 +355,16 @@ Double_t CbmTofTracklet::GetXdif(Int_t iDetId, CbmTofHit* pHit)
   return pHit->GetX() - dXref;
 }
 
-Double_t CbmTofTracklet::GetYdif(Int_t iDetId, CbmTofHit* pHit)
+double CbmTofTracklet::GetYdif(int32_t iDetId, CbmTofHit* pHit)
 {
-  Double_t dYref = 0.;
-  Int_t iNref    = 0;
-  Double_t dTy   = 0;
+  double dYref  = 0.;
+  int32_t iNref = 0;
+  double dTy    = 0;
 
   if (1) {
-    for (UInt_t iHL = 0; iHL < fhit.size() - 1; iHL++) {
+    for (uint32_t iHL = 0; iHL < fhit.size() - 1; iHL++) {
       if (iDetId == fTofDet[iHL] || 0 == fTofDet[iHL]) continue;  // exclude faked hits
-      for (UInt_t iHH = iHL + 1; iHH < fhit.size(); iHH++) {
+      for (uint32_t iHH = iHL + 1; iHH < fhit.size(); iHH++) {
         if (iDetId == fTofDet[iHH] || 0 == fTofDet[iHH]) continue;  // exclude faked hits
         dTy += (fhit[iHH].GetY() - fhit[iHL].GetY()) / (fhit[iHH].GetZ() - fhit[iHL].GetZ());
         iNref++;
@@ -378,10 +377,10 @@ Double_t CbmTofTracklet::GetYdif(Int_t iDetId, CbmTofHit* pHit)
   }
 
   iNref = 0;
-  for (UInt_t iHit = 0; iHit < fTofHit.size(); iHit++) {
+  for (uint32_t iHit = 0; iHit < fTofHit.size(); iHit++) {
     if (iDetId == fTofDet[iHit] || 0 == fTofDet[iHit]) continue;
 
-    Double_t dDZ = pHit->GetZ() - fhit[iHit].GetZ();
+    double dDZ = pHit->GetZ() - fhit[iHit].GetZ();
     dYref += fhit[iHit].GetY() + dTy * dDZ;
     iNref++;
   }
@@ -396,23 +395,23 @@ Double_t CbmTofTracklet::GetYdif(Int_t iDetId, CbmTofHit* pHit)
   return pHit->GetY() - dYref;
 }
 
-Double_t CbmTofTracklet::GetTdif(Int_t iDetId, CbmTofHit* pHit)
+double CbmTofTracklet::GetTdif(int32_t iDetId, CbmTofHit* pHit)
 {
-  Double_t dTref = 0.;
-  Double_t Nref  = 0;
-  Double_t dTt   = 0.;
-  Int_t iNt      = 0;
+  double dTref = 0.;
+  double Nref  = 0;
+  double dTt   = 0.;
+  int32_t iNt  = 0;
 
   if (1) {
-    for (UInt_t iHL = 0; iHL < fhit.size() - 1; iHL++) {
+    for (uint32_t iHL = 0; iHL < fhit.size() - 1; iHL++) {
       if (iDetId == fTofDet[iHL] || 0 == fTofDet[iHL]) continue;  // exclude faked hits
-      for (UInt_t iHH = iHL + 1; iHH < fhit.size(); iHH++) {
+      for (uint32_t iHH = iHL + 1; iHH < fhit.size(); iHH++) {
         if (iDetId == fTofDet[iHH] || 0 == fTofDet[iHH]) continue;  // exclude faked hits
         //dTt+=(fhit[iHH].GetTime()-fhit[iHL].GetTime())/(fhit[iHH].GetR()-fhit[iHL].GetR()); // for projective geometries only !!!
-        Double_t dDist = TMath::Sqrt(TMath::Power((fhit[iHH].GetX() - fhit[iHL].GetX()), 2)
-                                     + TMath::Power((fhit[iHH].GetY() - fhit[iHL].GetY()), 2)
-                                     + TMath::Power((fhit[iHH].GetZ() - fhit[iHL].GetZ()), 2));
-        Double_t dSign = 1.;
+        double dDist =
+          sqrt(pow((fhit[iHH].GetX() - fhit[iHL].GetX()), 2) + pow((fhit[iHH].GetY() - fhit[iHL].GetY()), 2)
+               + pow((fhit[iHH].GetZ() - fhit[iHL].GetZ()), 2));
+        double dSign = 1.;
         if (fhit[iHH].GetZ() < fhit[iHL].GetZ()) dSign = -1.;
         dTt += (fhit[iHH].GetTime() - fhit[iHL].GetTime()) / dDist * dSign;
         iNt++;
@@ -423,16 +422,16 @@ Double_t CbmTofTracklet::GetTdif(Int_t iDetId, CbmTofHit* pHit)
       LOG(error) << "No valid hit pair ";
       return 1.E20;
     }
-    dTt /= (Double_t) iNt;
+    dTt /= (double) iNt;
   }
   else {
     dTt = fTt;
   }
 
-  for (UInt_t iHit = 0; iHit < fTofHit.size(); iHit++) {
+  for (uint32_t iHit = 0; iHit < fTofHit.size(); iHit++) {
     if (iDetId == fTofDet[iHit] || 0 == fTofDet[iHit]) continue;
     //dTref += fhit[iHit].GetTime() - dTt*(fhit[iHit].GetR()-pHit->GetR());
-    Double_t dSign = 1.;
+    double dSign = 1.;
     if (fhit[iHit].GetZ() < pHit->GetZ()) dSign = -1;
     dTref += fhit[iHit].GetTime() - dTt * dSign * Dist3D(&fhit[iHit], pHit);
     Nref++;
@@ -441,44 +440,44 @@ Double_t CbmTofTracklet::GetTdif(Int_t iDetId, CbmTofHit* pHit)
     LOG(error) << "DetId " << iDetId << ", Nref " << Nref << " sizes " << fTofHit.size() << ", " << fhit.size();
     return 1.E20;
   }
-  dTref /= (Double_t) Nref;
-  Double_t dTdif = pHit->GetTime() - dTref;
+  dTref /= (double) Nref;
+  double dTdif = pHit->GetTime() - dTref;
   // LOG(debug) << "iSt "<< iSt<<" DetId "<<iDetId<<", Nref "<<Nref<<" Tdif
   // "<<dTdif;
   return dTdif;
 }
 
-Bool_t CbmTofTracklet::ContainsAddr(Int_t iAddr)
+bool CbmTofTracklet::ContainsAddr(int32_t iAddr)
 {
-  for (UInt_t iHit = 0; iHit < fTofHit.size(); iHit++) {
-    Int_t iHaddr = fhit[iHit].GetAddress() & 0x003FFFFF;
+  for (uint32_t iHit = 0; iHit < fTofHit.size(); iHit++) {
+    int32_t iHaddr = fhit[iHit].GetAddress() & 0x003FFFFF;
     /*
     LOG(debug)<<Form(" Contain test hit %d for 0x%08x, 0x%08x = 0x%08x ?",
 		     iHit,fhit[iHit].GetAddress(),iHaddr,iAddr)
 	      ;
     */
-    if (iHaddr == iAddr) return kTRUE;
+    if (iHaddr == iAddr) return true;
   }
-  return kFALSE;
+  return false;
 }
 
-Int_t CbmTofTracklet::HitIndexOfAddr(Int_t iAddr)
+int32_t CbmTofTracklet::HitIndexOfAddr(int32_t iAddr)
 {
-  for (UInt_t iHit = 0; iHit < fTofHit.size(); iHit++) {
+  for (uint32_t iHit = 0; iHit < fTofHit.size(); iHit++) {
     if ((fhit[iHit].GetAddress() & 0x003FFFFF) == iAddr) return iHit;
   }
   return -1;
 }
 
-CbmTofHit* CbmTofTracklet::HitPointerOfAddr(Int_t iAddr)
+CbmTofHit* CbmTofTracklet::HitPointerOfAddr(int32_t iAddr)
 {
-  for (UInt_t iHit = 0; iHit < fTofHit.size(); iHit++) {
+  for (uint32_t iHit = 0; iHit < fTofHit.size(); iHit++) {
     if ((fhit[iHit].GetAddress() & 0x003FFFFF) == iAddr) return &fhit[iHit];
   }
   return nullptr;
 }
 
-const Double_t* CbmTofTracklet::GetPoint(Int_t n)
+const double* CbmTofTracklet::GetPoint(int32_t n)
 {  // interface to event display: CbmTracks
   fP[0] = fhit[n].GetX();
   fP[1] = fhit[n].GetY();
@@ -488,7 +487,7 @@ const Double_t* CbmTofTracklet::GetPoint(Int_t n)
   return fP;
 }
 
-const Double_t* CbmTofTracklet::GetFitPoint(Int_t n)
+const double* CbmTofTracklet::GetFitPoint(int32_t n)
 {  // interface to event display: CbmTracks
   fP[0] = GetFitX(fhit[n].GetZ());
   fP[1] = GetFitY(fhit[n].GetZ());
@@ -501,17 +500,17 @@ const Double_t* CbmTofTracklet::GetFitPoint(Int_t n)
   return fP;
 }
 
-Double_t CbmTofTracklet::GetFitX(Double_t dZ) { return fTrackPar.GetX() + fTrackPar.GetTx() * (dZ - fTrackPar.GetZ()); }
+double CbmTofTracklet::GetFitX(double dZ) { return fTrackPar.GetX() + fTrackPar.GetTx() * (dZ - fTrackPar.GetZ()); }
 
-Double_t CbmTofTracklet::GetFitY(Double_t dZ) { return fTrackPar.GetY() + fTrackPar.GetTy() * (dZ - fTrackPar.GetZ()); }
+double CbmTofTracklet::GetFitY(double dZ) { return fTrackPar.GetY() + fTrackPar.GetTy() * (dZ - fTrackPar.GetZ()); }
 
-Double_t CbmTofTracklet::GetFitT(Double_t dZ)
+double CbmTofTracklet::GetFitT(double dZ)
 {
   //  return   fT0 + dR*fTt;
-  //return fT0 + fTt*dZ*TMath::Sqrt(fTrackPar.GetTx()*fTrackPar.GetTx()+fTrackPar.GetTy()*fTrackPar.GetTy());
+  //return fT0 + fTt*dZ*sqrt(fTrackPar.GetTx()*fTrackPar.GetTx()+fTrackPar.GetTy()*fTrackPar.GetTy());
   return fT0
          + fTt * (dZ - fTrackPar.GetZ())
-             * TMath::Sqrt(1. + fTrackPar.GetTx() * fTrackPar.GetTx() + fTrackPar.GetTy() * fTrackPar.GetTy());
+             * sqrt(1. + fTrackPar.GetTx() * fTrackPar.GetTx() + fTrackPar.GetTy() * fTrackPar.GetTy());
 }
 
 void CbmTofTracklet::Clear(Option_t* /*option*/)
@@ -527,28 +526,27 @@ void CbmTofTracklet::PrintInfo()
 {
   LOG(info) << Form("TrklInfo: Nhits %d, Tt %6.3f, stations: ", GetNofHits(), GetTt());
   LOG(info);
-  for (Int_t iH = 0; iH < GetNofHits(); iH++) {
+  for (int32_t iH = 0; iH < GetNofHits(); iH++) {
     LOG(info) << Form("  Hit %2d: Ind %5d, det 0x%08x, addr 0x%08x, chi %6.3f, ae[]= %6.4f", iH, fTofHit[iH],
                       fTofDet[iH], fhit[iH].GetAddress(), fMatChi[iH], fhit[iH].GetTimeError());
   }
 }
 
-Double_t CbmTofTracklet::Dist3D(CbmTofHit* pHit0, CbmTofHit* pHit1)
+double CbmTofTracklet::Dist3D(CbmTofHit* pHit0, CbmTofHit* pHit1)
 {
-  Double_t dDist =
-    TMath::Sqrt(TMath::Power((pHit0->GetX() - pHit1->GetX()), 2) + TMath::Power((pHit0->GetY() - pHit1->GetY()), 2)
-                + TMath::Power((pHit0->GetZ() - pHit1->GetZ()), 2));
+  double dDist = sqrt(pow((pHit0->GetX() - pHit1->GetX()), 2) + pow((pHit0->GetY() - pHit1->GetY()), 2)
+                      + pow((pHit0->GetZ() - pHit1->GetZ()), 2));
   return dDist;
 }
 
-Double_t CbmTofTracklet::GetRefVel(UInt_t iNhit)
+double CbmTofTracklet::GetRefVel(uint32_t iNhit)
 {
-  Double_t dVel = 0.;
-  Double_t dTt  = 0.;
-  Int_t iNt     = 0;
+  double dVel = 0.;
+  double dTt  = 0.;
+  int32_t iNt = 0;
   if (fhit.size() >= iNhit) {
-    for (UInt_t iHL = 0; iHL < iNhit - 1; iHL++) {
-      for (UInt_t iHH = iHL + 1; iHH < iNhit; iHH++) {
+    for (uint32_t iHL = 0; iHL < iNhit - 1; iHL++) {
+      for (uint32_t iHH = iHL + 1; iHH < iNhit; iHH++) {
         dTt += (fhit[iHH].GetTime() - fhit[iHL].GetTime()) / (fhit[iHH].GetR() - fhit[iHL].GetR());
         iNt++;
       }
@@ -556,7 +554,7 @@ Double_t CbmTofTracklet::GetRefVel(UInt_t iNhit)
   }
   if (iNt == 0) { LOG(debug) << " CbmTofTracklet::GetRefVel: No valid hit pair "; }
   else {
-    dVel = (Double_t) iNt / dTt;
+    dVel = (double) iNt / dTt;
   }
   return dVel;
 }

@@ -27,7 +27,7 @@ CbmRichHit::CbmRichHit()
   SetTime(0.);
 }
 
-CbmRichHit::CbmRichHit(Double_t x, Double_t y)
+CbmRichHit::CbmRichHit(double x, double y)
   : CbmPixelHit()
   , fPmtId(0)
   ,
@@ -41,7 +41,7 @@ CbmRichHit::CbmRichHit(Double_t x, Double_t y)
   SetTime(0.);
 }
 
-CbmRichHit::CbmRichHit(Double_t x, Double_t y, Double_t ts, Double_t tot)
+CbmRichHit::CbmRichHit(double x, double y, double ts, double tot)
   : CbmPixelHit()
   , fPmtId(0)
   ,

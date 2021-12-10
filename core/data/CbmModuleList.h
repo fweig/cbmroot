@@ -14,9 +14,9 @@
 
 #include "CbmDefs.h"  // for ECbmModuleId
 
-#include <RtypesCore.h>  // for ROOT data types
 #include <TString.h>     // for TString
 
+#include <cstdint>
 #include <map>  // for map
 
 /** @class CbmModuleList

@@ -10,14 +10,13 @@
 #ifndef CBMDIGIBRANCHBASE_H
 #define CBMDIGIBRANCHBASE_H 1
 
-#include <RtypesCore.h>  // for Bool_t, UInt_t
-#include <TString.h>     // for TString
+#include <TString.h>  // for TString
 
 #include <boost/any.hpp>  // for any
 
+#include <cstddef>  // for size_t
+#include <cstdint>
 #include <string>  // for string
-
-#include <stddef.h>  // for size_t
 
 class CbmMatch;
 
@@ -43,29 +42,29 @@ public:
 
   /** @brief Connect the branch to the ROOT tree
 		 ** @param ioMan  Pointer to FairRootManager singleton instance
-		 ** @return kTRUE if branch was found
+		 ** @return true if branch was found
 		 **/
-  virtual Bool_t ConnectToTree() = 0;
+  virtual bool ConnectToTree() = 0;
 
 
   /** @brief Get a digi from the branch
 		 ** @param index Index of digi in branch
 		 ** @return Pointer to constant digi object
 		 **/
-  virtual boost::any GetDigi(UInt_t index) = 0;
+  virtual boost::any GetDigi(uint32_t index) = 0;
 
 
   /** @brief Get a digi from the branch
 		 ** @param index Index of digi in branch
 		 ** @return Pointer to constant digi object
 		 **/
-  virtual const CbmMatch* GetDigiMatch(UInt_t index) = 0;
+  virtual const CbmMatch* GetDigiMatch(uint32_t index) = 0;
 
 
   /** @brief Presence of match branch
-		 ** @return kTRUE if a match branch is connected
+		 ** @return true if a match branch is connected
 		 **/
-  virtual Bool_t HasMatches() = 0;
+  virtual bool HasMatches() = 0;
 
 
   /** @brief Name of branch **/

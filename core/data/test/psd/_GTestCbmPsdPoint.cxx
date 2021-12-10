@@ -23,15 +23,15 @@ TEST(_GTestCbmPsdPoint, CheckDefaultConstructor)
 
 TEST(_GTestCbmPsdPoint, CheckStandardConstructor)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
   TVector3 mom {2.5, 4.5, 78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
-  Int_t moduleid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
+  int32_t moduleid {0};
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
@@ -44,15 +44,15 @@ TEST(_GTestCbmPsdPoint, CheckStandardConstructor)
 
 TEST(_GTestCbmPsdPoint, CheckCopyConstructor)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
   TVector3 mom {2.5, 4.5, 78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
-  Int_t moduleid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
+  int32_t moduleid {0};
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
@@ -71,15 +71,15 @@ TEST(_GTestCbmPsdPoint, CheckCopyConstructor)
 
 TEST(_GTestCbmPsdPoint, CheckCopyAssignmentOperator)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
   TVector3 mom {2.5, 4.5, 78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
-  Int_t moduleid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
+  int32_t moduleid {0};
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
@@ -99,15 +99,15 @@ TEST(_GTestCbmPsdPoint, CheckCopyAssignmentOperator)
 
 TEST(_GTestCbmPsdPoint, CheckMoveConstructor)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
   TVector3 mom {2.5, 4.5, 78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
-  Int_t moduleid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
+  int32_t moduleid {0};
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
@@ -127,15 +127,15 @@ TEST(_GTestCbmPsdPoint, CheckMoveConstructor)
 
 TEST(_GTestCbmPsdPoint, CheckAssignmentOperator)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
   TVector3 mom {2.5, 4.5, 78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
-  Int_t moduleid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
+  int32_t moduleid {0};
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
@@ -156,15 +156,15 @@ TEST(_GTestCbmPsdPoint, CheckAssignmentOperator)
 
 TEST(_GTestCbmPsdPoint, CheckSetModuleID)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
   TVector3 mom {2.5, 4.5, 78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
-  Int_t moduleid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
+  int32_t moduleid {0};
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
@@ -178,15 +178,15 @@ TEST(_GTestCbmPsdPoint, CheckSetModuleID)
 
 TEST(_GTestCbmPsdPoint, CheckToString)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
   TVector3 mom {2.5, 4.5, 78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
-  Int_t moduleid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
+  int32_t moduleid {0};
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 
@@ -200,15 +200,15 @@ TEST(_GTestCbmPsdPoint, CheckToString)
 
 TEST(_GTestCbmPsdPoint, CheckPrint)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 pos {-2.1, 6.1, 23.};
   TVector3 mom {2.5, 4.5, 78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
-  Int_t moduleid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
+  int32_t moduleid {0};
   // Create object
   CbmPsdPoint test(trackid, detid, pos, mom, tof, length, eloss);
 

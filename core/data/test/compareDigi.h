@@ -7,10 +7,10 @@
 
 #include "gtest/gtest.h"
 
-void compareDigiDataMembers(CbmTestDigi& test, Int_t address, Double_t charge, Int_t systemid, Double_t time)
+void compareDigiDataMembers(CbmTestDigi& test, int32_t address, double charge, int32_t systemid, double time)
 {
-  Int_t retValInt {-222};
-  Double_t retValDouble {-222.};
+  int32_t retValInt {-222};
+  double retValDouble {-222.};
 
   retValInt = test.GetAddress();
   EXPECT_EQ(address, retValInt);

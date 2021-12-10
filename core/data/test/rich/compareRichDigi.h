@@ -7,10 +7,10 @@
 
 #include "gtest/gtest.h"
 
-void compareRichDigiDataMembers(CbmRichDigi& test, Int_t address, ECbmModuleId systemid, Double_t time, Double_t tot)
+void compareRichDigiDataMembers(CbmRichDigi& test, int32_t address, ECbmModuleId systemid, double time, double tot)
 {
-  Int_t retValInt {-222};
-  Double_t retValDouble {-222.};
+  int32_t retValInt {-222};
+  double retValDouble {-222.};
   ECbmModuleId retVal {ECbmModuleId::kNotExist};
 
   retValInt = test.GetAddress();

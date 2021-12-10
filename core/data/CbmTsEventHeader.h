@@ -7,8 +7,6 @@
 
 #include <FairEventHeader.h>
 
-#include <RtypesCore.h>
-
 #include <cstddef>
 #include <cstdint>
 

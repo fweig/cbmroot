@@ -23,11 +23,11 @@
 //#include "CbmVertex.h"  // for CbmVertex, found in core/data/global
 
 //#include <Rtypes.h>          // for THashConsistencyHolder, ClassDef
-//#include <RtypesCore.h>      // for Double_t, UInt_t, Int_t
 //#include <TMatrixFSymfwd.h>  // for TMatrixFSym
 //#include <TObject.h>         // for TObject
 
 
+//#include <cstdint>
 //#include <map>  // for map, map<>::mapped_type
 //#include <span>
 //#include <string>  // for string
@@ -52,7 +52,7 @@ public:
    ** @param number    Event number
    ** @param time      Event trigger time [ns]
    **/
-  CbmRawEvent(uint64_t number, Double_t time = 0) : fNumber(number), fTime(time) {};
+  CbmRawEvent(uint64_t number, double time = 0) : fNumber(number), fTime(time) {};
 
 
   /** @brief Copy constructor **/
@@ -163,13 +163,13 @@ public:
   /** @brief Event time
    ** @return Event trigger time [ns]
    **/
-  Double_t GetTime() const { return fTime; }
+  double GetTime() const { return fTime; }
 
 
   /** @brief Set event time
    ** @param time  Event trigger time [ns]
 	 **/
-  void SetTime(Double_t time) { fTime = time; }
+  void SetTime(double time) { fTime = time; }
 
 
   /** @brief String output **/

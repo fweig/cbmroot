@@ -10,9 +10,9 @@
 
 TEST(_GTestCbmPsdAddress, CheckAddress)
 {
-  Int_t moduleid {1};
-  Int_t sectionid {0};
-  Int_t address {24};
+  int32_t moduleid {1};
+  int32_t sectionid {0};
+  int32_t address {24};
 
   comparePsdAddressDataMembers(address, ECbmModuleId::kPsd, moduleid, sectionid);
 
@@ -31,9 +31,9 @@ TEST(_GTestCbmPsdAddress, CheckAddress)
 
 TEST(_GTestCbmPsdAddress, CheckSetModuleId)
 {
-  Int_t moduleid {1};
-  Int_t sectionid {0};
-  Int_t address {24};
+  int32_t moduleid {1};
+  int32_t sectionid {0};
+  int32_t address {24};
 
   comparePsdAddressDataMembers(address, ECbmModuleId::kPsd, moduleid, sectionid);
 
@@ -42,9 +42,9 @@ TEST(_GTestCbmPsdAddress, CheckSetModuleId)
 
 TEST(_GTestCbmPsdAddress, CheckSetSectionId)
 {
-  Int_t moduleid {1};
-  Int_t sectionid {0};
-  Int_t address {24};
+  int32_t moduleid {1};
+  int32_t sectionid {0};
+  int32_t address {24};
 
   comparePsdAddressDataMembers(address, ECbmModuleId::kPsd, moduleid, sectionid);
 

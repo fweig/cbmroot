@@ -13,7 +13,8 @@
 #include <string>   // for char_traits
 
 // -----   Standard constructor   ------------------------------------------
-CbmErrorMessage::CbmErrorMessage(ECbmModuleId sysId, Double_t dTime, UInt_t uAddress, UInt_t uFlags, UInt_t uPayload)
+CbmErrorMessage::CbmErrorMessage(ECbmModuleId sysId, double dTime, uint32_t uAddress, uint32_t uFlags,
+                                 uint32_t uPayload)
   : fModuleId(sysId)
   , fdTime(dTime)
   , fuAddress(uAddress)

@@ -9,8 +9,8 @@
 
 #include "gtest/gtest.h"
 
-void compareErrorMessageDataMembers(CbmErrorMessage& test, ECbmModuleId sysId, Double_t dTime, UInt_t uAddress,
-                                    UInt_t uFlags, UInt_t uPayload)
+void compareErrorMessageDataMembers(CbmErrorMessage& test, ECbmModuleId sysId, double dTime, uint32_t uAddress,
+                                    uint32_t uFlags, uint32_t uPayload)
 {
   EXPECT_EQ(sysId, test.GetSystemId());
   EXPECT_EQ(uAddress, test.GetAddress());

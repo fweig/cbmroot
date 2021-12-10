@@ -7,17 +7,17 @@
 
 #include "gtest/gtest.h"
 
-void compareTrdDigiDataMembers(CbmTrdDigi& test, Int_t padChNr, ECbmModuleId systemid, ULong64_t time, Double_t charge)
+void compareTrdDigiDataMembers(CbmTrdDigi& test, int32_t padChNr, ECbmModuleId systemid, uint64_t time, double charge)
 {
-  Int_t retValInt {-222};
-  Double_t retValDouble {-222.};
+  int32_t retValInt {-222};
+  double retValDouble {-222.};
   ECbmModuleId retVal {ECbmModuleId::kNotExist};
 
   retValInt = test.GetAddressChannel();
   EXPECT_EQ(padChNr, retValInt);
 
   retValInt = test.GetAddressModule();
-  EXPECT_EQ((Int_t) systemid, retValInt);
+  EXPECT_EQ((int32_t) systemid, retValInt);
 
   // GetAddress() returns the full Address part of the fInfo data member. However, since Module-5 translated via CbmTrdAddress corresponds to the value 0 it should return the setted channel number.
   retValInt = test.GetAddress();
@@ -27,24 +27,24 @@ void compareTrdDigiDataMembers(CbmTrdDigi& test, Int_t padChNr, ECbmModuleId sys
   EXPECT_EQ(systemid, retVal);
 
   retValDouble = test.GetTime();
-  EXPECT_FLOAT_EQ(static_cast<Double_t>(time), retValDouble);
+  EXPECT_FLOAT_EQ(static_cast<double>(time), retValDouble);
 
   retValDouble = test.GetCharge();
-  EXPECT_FLOAT_EQ(static_cast<Double_t>(charge), retValDouble);
+  EXPECT_FLOAT_EQ(static_cast<double>(charge), retValDouble);
 }
 
-void compareTrdDigiDataMembers(CbmTrdDigi& test, Int_t padChNr, ECbmModuleId systemid, ULong64_t time,
-                               CbmTrdDigi::eTriggerType triggerType, Double_t charge)
+void compareTrdDigiDataMembers(CbmTrdDigi& test, int32_t padChNr, ECbmModuleId systemid, uint64_t time,
+                               CbmTrdDigi::eTriggerType triggerType, double charge)
 {
-  Int_t retValInt {-222};
-  Double_t retValDouble {-222.};
+  int32_t retValInt {-222};
+  double retValDouble {-222.};
   ECbmModuleId retVal {ECbmModuleId::kNotExist};
 
   retValInt = test.GetAddressChannel();
   EXPECT_EQ(padChNr, retValInt);
 
   retValInt = test.GetAddressModule();
-  EXPECT_EQ((Int_t) systemid, retValInt);
+  EXPECT_EQ((int32_t) systemid, retValInt);
 
   // GetAddress() returns the full Address part of the fInfo data member. However, since Module-5 translated via CbmTrdAddress corresponds to the value 0 it should return the setted channel number.
   retValInt = test.GetAddress();
@@ -54,13 +54,13 @@ void compareTrdDigiDataMembers(CbmTrdDigi& test, Int_t padChNr, ECbmModuleId sys
   EXPECT_EQ(systemid, retVal);
 
   retValDouble = test.GetTime();
-  EXPECT_FLOAT_EQ(static_cast<Double_t>(time), retValDouble);
+  EXPECT_FLOAT_EQ(static_cast<double>(time), retValDouble);
 
   retValDouble = test.GetCharge();
-  EXPECT_FLOAT_EQ(static_cast<Double_t>(charge), retValDouble);
+  EXPECT_FLOAT_EQ(static_cast<double>(charge), retValDouble);
 
   retValInt = test.GetTriggerType();
-  EXPECT_EQ(static_cast<Int_t>(triggerType), retValInt);
+  EXPECT_EQ(static_cast<int32_t>(triggerType), retValInt);
 }
 
 #endif  // COMPARETRDDIGI_H

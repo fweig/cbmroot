@@ -19,15 +19,15 @@ using std::stringstream;
 
 CbmStripHit::CbmStripHit() : CbmStripHit(-1, 0., 0., 0., 0., 0., 0., -1) {}
 
-CbmStripHit::CbmStripHit(Int_t address, const TVector3& pos, const TVector3& err, Int_t refId, Double_t time,
-                         Double_t timeError)
+CbmStripHit::CbmStripHit(int32_t address, const TVector3& pos, const TVector3& err, int32_t refId, double time,
+                         double timeError)
   : CbmStripHit(address, pos.X(), pos.Y(), pos.Z(), err.X(), err.Y(), err.Z(), refId, time, timeError)
 {
 }
 
 
-CbmStripHit::CbmStripHit(Int_t address, Double_t u, Double_t phi, Double_t z, Double_t du, Double_t dphi, Double_t dz,
-                         Int_t refId, Double_t time, Double_t timeError)
+CbmStripHit::CbmStripHit(int32_t address, double u, double phi, double z, double du, double dphi, double dz,
+                         int32_t refId, double time, double timeError)
   : CbmHit(kSTRIPHIT, z, dz, refId, address, time, timeError)
   , fU(u)
   , fDu(du)

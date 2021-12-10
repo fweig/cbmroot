@@ -154,7 +154,7 @@ TEST(_GTestCbmHit, TestSettersAndGetters)
   test.SetTime(-3., -3.);
   compareHitDataMembers(test, kHIT, -2., -2., -2, -2, nullptr, -3., -3.);
 
-  Int_t retValInt = test.GetPlaneId();
+  int32_t retValInt = test.GetPlaneId();
   EXPECT_EQ(-1, retValInt);
 
   // Test if we can add an empty CbmMatch, get it back, and extract

@@ -17,8 +17,8 @@ CbmMuchPixelHit::CbmMuchPixelHit() : CbmPixelHit(), fPlaneId(-1), fFlag(0) { Set
 
 CbmMuchPixelHit::~CbmMuchPixelHit() {}
 
-CbmMuchPixelHit::CbmMuchPixelHit(Int_t address, Double_t x, Double_t y, Double_t z, Double_t dx, Double_t dy,
-                                 Double_t dz, Double_t dxy, Int_t refId, Int_t planeId, Double_t t, Double_t dt)
+CbmMuchPixelHit::CbmMuchPixelHit(int32_t address, double x, double y, double z, double dx, double dy, double dz,
+                                 double dxy, int32_t refId, int32_t planeId, double t, double dt)
   : CbmPixelHit(address, x, y, z, dx, dy, dz, dxy, refId)
   , fPlaneId(planeId)
   , fFlag(0)
@@ -28,8 +28,8 @@ CbmMuchPixelHit::CbmMuchPixelHit(Int_t address, Double_t x, Double_t y, Double_t
   SetTimeError(dt);
 }
 
-CbmMuchPixelHit::CbmMuchPixelHit(Int_t address, const TVector3& pos, const TVector3& err, Double_t dxy, Int_t refId,
-                                 Int_t planeId)
+CbmMuchPixelHit::CbmMuchPixelHit(int32_t address, const TVector3& pos, const TVector3& err, double dxy, int32_t refId,
+                                 int32_t planeId)
   : CbmPixelHit(address, pos, err, dxy, refId)
   , fPlaneId(planeId)
   , fFlag(0)
@@ -39,8 +39,8 @@ CbmMuchPixelHit::CbmMuchPixelHit(Int_t address, const TVector3& pos, const TVect
   SetTimeError(-1.);
 }
 
-CbmMuchPixelHit::CbmMuchPixelHit(Int_t address, const TVector3& pos, const TVector3& err, Double_t dxy, Int_t refId,
-                                 Int_t planeId, Double_t /*time*/, Double_t /*dtime*/)
+CbmMuchPixelHit::CbmMuchPixelHit(int32_t address, const TVector3& pos, const TVector3& err, double dxy, int32_t refId,
+                                 int32_t planeId, double /*time*/, double /*dtime*/)
   : CbmPixelHit(address, pos, err, dxy, refId)
   , fPlaneId(planeId)
   , fFlag(0)

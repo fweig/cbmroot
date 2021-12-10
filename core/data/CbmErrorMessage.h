@@ -18,12 +18,12 @@
 
 /// Fairsoft (Root, Boost, ...) headers
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for UInt_t, Double_t, Int_t
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 
 /// C/C++ headers
+#include <cstdint>
 #include <memory>  // for unique_ptr
 #include <string>  // for string
 
@@ -55,7 +55,7 @@ public:
        * \param[in] uFlags   Flags/error pattern, 32b available.
        * \param[in] uPayload Optional error payload, 32b available.
        **/
-  CbmErrorMessage(ECbmModuleId sysId, Double_t dTime, UInt_t uAddress, UInt_t uFlags, UInt_t uPayload = 0);
+  CbmErrorMessage(ECbmModuleId sysId, double dTime, uint32_t uAddress, uint32_t uFlags, uint32_t uPayload = 0);
 
 
   /** Destructor  **/
@@ -73,19 +73,19 @@ public:
 
 
   /** @brief Absolute time [ns]  **/
-  Double_t GetTime() const { return fdTime; }
+  double GetTime() const { return fdTime; }
 
 
   /** @brief Origin address  **/
-  UInt_t GetAddress() const { return fuAddress; }
+  uint32_t GetAddress() const { return fuAddress; }
 
 
   /** @brief Flags (bitfield)  **/
-  UInt_t GetFlags() const { return fuFlags; }
+  uint32_t GetFlags() const { return fuFlags; }
 
 
   /** @brief Payload (optional)  **/
-  UInt_t GetPayload() const { return fuPayload; }
+  uint32_t GetPayload() const { return fuPayload; }
 
 
   /** @brief Output information **/
@@ -106,10 +106,10 @@ private:
   friend class boost::serialization::access;
 
   ECbmModuleId fModuleId = ECbmModuleId::kLastModule;
-  Double_t fdTime        = -1.0;
-  UInt_t fuAddress       = 0;
-  UInt_t fuFlags         = 0;
-  UInt_t fuPayload       = 0;
+  double fdTime          = -1.0;
+  uint32_t fuAddress     = 0;
+  uint32_t fuFlags       = 0;
+  uint32_t fuPayload     = 0;
 
 
   ClassDefNV(CbmErrorMessage, 1);

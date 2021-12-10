@@ -19,7 +19,7 @@
 
 #include "CbmDefs.h"
 
-#include <RtypesCore.h>  // for Int_t
+#include <cstdint>
 
 class CbmTofDetectorInfo {
 
@@ -33,7 +33,7 @@ public:
     , fCell(0)
     , fCounterType(0) {};
 
-  CbmTofDetectorInfo(Int_t detsystem, Int_t smtype, Int_t smodule, Int_t counter, Int_t gap, Int_t cell)
+  CbmTofDetectorInfo(int32_t detsystem, int32_t smtype, int32_t smodule, int32_t counter, int32_t gap, int32_t cell)
     : fDetectorSystem(detsystem)
     , fSMtype(smtype)
     , fSModule(smodule)
@@ -42,7 +42,8 @@ public:
     , fCell(cell)
     , fCounterType(0) {};
 
-  CbmTofDetectorInfo(ECbmModuleId detsystem, Int_t smtype, Int_t smodule, Int_t counter, Int_t gap, Int_t cell)
+  CbmTofDetectorInfo(ECbmModuleId detsystem, int32_t smtype, int32_t smodule, int32_t counter, int32_t gap,
+                     int32_t cell)
     : fDetectorSystem(ToIntegralType(detsystem))
     , fSMtype(smtype)
     , fSModule(smodule)
@@ -51,8 +52,8 @@ public:
     , fCell(cell)
     , fCounterType(0) {};
 
-  CbmTofDetectorInfo(ECbmModuleId detsystem, Int_t smtype, Int_t smodule, Int_t counter, Int_t gap, Int_t cell,
-                     Int_t counterType)
+  CbmTofDetectorInfo(ECbmModuleId detsystem, int32_t smtype, int32_t smodule, int32_t counter, int32_t gap,
+                     int32_t cell, int32_t counterType)
     : fDetectorSystem(ToIntegralType(detsystem))
     , fSMtype(smtype)
     , fSModule(smodule)
@@ -61,13 +62,13 @@ public:
     , fCell(cell)
     , fCounterType(counterType) {};
 
-  Int_t fDetectorSystem;
-  Int_t fSMtype;
-  Int_t fSModule;
-  Int_t fCounter;
-  Int_t fGap;
-  Int_t fCell;
-  Int_t fCounterType;
+  int32_t fDetectorSystem;
+  int32_t fSMtype;
+  int32_t fSModule;
+  int32_t fCounter;
+  int32_t fGap;
+  int32_t fCell;
+  int32_t fCounterType;
 };
 
 
@@ -82,43 +83,43 @@ public:
   virtual ~CbmTofDetectorId() { ; }
 
   /** Get System identifier from detector ID **/
-  //  Int_t GetSystemId(const Int_t detectorId);
+  //  int32_t GetSystemId(const int32_t detectorId);
 
   /** Get complete system info from detector ID
    ** This will return a pointer to an integer
    ** array of length array_length
    **/
-  virtual CbmTofDetectorInfo GetDetectorInfo(const Int_t detectorId) = 0;
+  virtual CbmTofDetectorInfo GetDetectorInfo(const int32_t detectorId) = 0;
 
   /** Get the global sytem ID **/
-  virtual Int_t GetSystemId(Int_t detectorId) = 0;
+  virtual int32_t GetSystemId(int32_t detectorId) = 0;
 
   /** Get SMType from detector ID **/
-  virtual Int_t GetSMType(const Int_t detectorId) = 0;
+  virtual int32_t GetSMType(const int32_t detectorId) = 0;
 
   /** Get SModule number from detector ID **/
-  virtual Int_t GetSModule(const Int_t detectorId) = 0;
+  virtual int32_t GetSModule(const int32_t detectorId) = 0;
 
   /** Get counter number from detector ID **/
-  virtual Int_t GetCounter(const Int_t detectorId) = 0;
+  virtual int32_t GetCounter(const int32_t detectorId) = 0;
 
   /** Get gap number from detector ID **/
-  virtual Int_t GetGap(const Int_t detectorId) = 0;
+  virtual int32_t GetGap(const int32_t detectorId) = 0;
 
   /** Get cell number from detector ID **/
-  virtual Int_t GetCell(const Int_t detectorId) = 0;
+  virtual int32_t GetCell(const int32_t detectorId) = 0;
 
   /** Get region number from detector ID **/
-  virtual Int_t GetRegion(const Int_t detectorId) = 0;
+  virtual int32_t GetRegion(const int32_t detectorId) = 0;
 
   /** Get cell number from detector ID **/
-  virtual Int_t GetCellId(const Int_t detectorId) = 0;
+  virtual int32_t GetCellId(const int32_t detectorId) = 0;
 
   /** Calculate the unique detector ID
    ** This will return a pointer to an integer
    ** array of length array_length
    **/
-  virtual Int_t SetDetectorInfo(const CbmTofDetectorInfo detectorInfo) = 0;
+  virtual int32_t SetDetectorInfo(const CbmTofDetectorInfo detectorInfo) = 0;
 
   //  char* itoa(int value, char* result, int base);
 

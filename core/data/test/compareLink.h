@@ -9,10 +9,10 @@
 
 #include "gtest/gtest.h"
 
-void compareLinkDataMembers(CbmLink& test, Int_t file, Int_t entry, Int_t index, Double_t weight)
+void compareLinkDataMembers(CbmLink& test, int32_t file, int32_t entry, int32_t index, double weight)
 {
-  Int_t intRetVal {-111};
-  Float_t floatRetVal {-111};
+  int32_t intRetVal {-111};
+  float floatRetVal {-111};
 
   intRetVal = test.GetFile();
   EXPECT_EQ(file, intRetVal);

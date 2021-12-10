@@ -15,10 +15,9 @@
 
 #include <algorithm>  // for lower_bound, sort
 #include <cassert>    // for assert
+#include <cstring>    // for strcmp, size_t
 #include <iostream>   // for operator<<, basic_ostream, stringstream
 #include <string>     // for char_traits
-
-#include <string.h>  // for strcmp, size_t
 
 using std::lower_bound;
 using std::string;
@@ -26,7 +25,7 @@ using std::stringstream;
 using std::vector;
 
 // -----   Constructor   ------------------------------------------------------
-CbmMCEventList::CbmMCEventList() : TNamed("MCEventList", "List of MC events"), fEvents(), fIsSorted(kFALSE) {}
+CbmMCEventList::CbmMCEventList() : TNamed("MCEventList", "List of MC events"), fEvents(), fIsSorted(false) {}
 // ----------------------------------------------------------------------------
 
 
@@ -36,15 +35,15 @@ CbmMCEventList::~CbmMCEventList() {}
 
 
 // -----   Check double occurrences of events   -------------------------------
-Bool_t CbmMCEventList::Check()
+bool CbmMCEventList::Check()
 {
 
-  Int_t lastFile    = -1;
-  Int_t lastEvent   = -1;
-  Double_t lastTime = 0.;
-  Int_t thisFile    = -1;
-  Int_t thisEvent   = -1;
-  Double_t thisTime = 0.;
+  int32_t lastFile  = -1;
+  int32_t lastEvent = -1;
+  double lastTime   = 0.;
+  int32_t thisFile  = -1;
+  int32_t thisEvent = -1;
+  double thisTime   = 0.;
 
   for (auto& eventInfo : fEvents) {
     thisFile  = eventInfo.GetFileId();
@@ -53,31 +52,31 @@ Bool_t CbmMCEventList::Check()
     if (thisFile == lastFile && thisEvent == lastEvent) {
       LOG(error) << fName << ": double entry for event " << thisEvent << ", file " << thisFile << ", first time "
                  << lastTime << ", second time " << thisTime;
-      return kFALSE;
+      return false;
     }
     lastFile  = thisFile;
     lastEvent = thisEvent;
     lastTime  = thisTime;
   }
-  return kTRUE;
+  return true;
 }
 // ----------------------------------------------------------------------------
 
 
 // -----   Find an event in the list   ----------------------------------------
-vector<CbmMCEventInfo>::iterator CbmMCEventList::Find(UInt_t file, UInt_t event)
+vector<CbmMCEventInfo>::iterator CbmMCEventList::Find(uint32_t file, uint32_t event)
 {
   if (!fIsSorted) Sort();
   auto it = lower_bound(fEvents.begin(), fEvents.end(), CbmMCEventInfo(file, event, -1.));
-  if (it->GetFileId() != Int_t(file)) return fEvents.end();
-  if (it->GetEventId() != Int_t(event)) return fEvents.end();
+  if (it->GetFileId() != int32_t(file)) return fEvents.end();
+  if (it->GetEventId() != int32_t(event)) return fEvents.end();
   return (it);
 }
 // ----------------------------------------------------------------------------
 
 
 // -----   Get event number for event at index in list   ----------------------
-Int_t CbmMCEventList::GetEventIdByIndex(UInt_t index)
+int32_t CbmMCEventList::GetEventIdByIndex(uint32_t index)
 {
   if (!fIsSorted) Sort();
   if (index >= GetNofEvents()) return -1;
@@ -87,7 +86,7 @@ Int_t CbmMCEventList::GetEventIdByIndex(UInt_t index)
 
 
 // -----   Get event time of a MC event   -------------------------------------
-Double_t CbmMCEventList::GetEventTime(UInt_t eventId, UInt_t fileId)
+double CbmMCEventList::GetEventTime(uint32_t eventId, uint32_t fileId)
 {
   if (!fIsSorted) Sort();
   auto it = Find(fileId, eventId);
@@ -109,7 +108,7 @@ Int_t CbmMCEventList::GetEventIndex(UInt_t eventId, UInt_t fileId)
 
 
 // -----   Get event time for event at index in list   ------------------------
-Double_t CbmMCEventList::GetEventTimeByIndex(UInt_t index)
+double CbmMCEventList::GetEventTimeByIndex(uint32_t index)
 {
   if (!fIsSorted) Sort();
   if (index >= GetNofEvents()) return -1.;
@@ -120,7 +119,7 @@ Double_t CbmMCEventList::GetEventTimeByIndex(UInt_t index)
 
 
 // -----   Get file number for event at index in list   -----------------------
-Int_t CbmMCEventList::GetFileIdByIndex(UInt_t index)
+int32_t CbmMCEventList::GetFileIdByIndex(uint32_t index)
 {
   if (!fIsSorted) Sort();
   if (index >= GetNofEvents()) return -1;
@@ -131,12 +130,12 @@ Int_t CbmMCEventList::GetFileIdByIndex(UInt_t index)
 
 
 // -----   Insert an event   --------------------------------------------------
-Bool_t CbmMCEventList::Insert(UInt_t event, UInt_t file, Double_t time)
+bool CbmMCEventList::Insert(uint32_t event, uint32_t file, double time)
 {
-  if (time < 0.) return kFALSE;
+  if (time < 0.) return false;
   fEvents.push_back(CbmMCEventInfo(file, event, time));
-  fIsSorted = kFALSE;
-  return kTRUE;
+  fIsSorted = false;
+  return true;
 }
 // ----------------------------------------------------------------------------
 
@@ -152,7 +151,7 @@ void CbmMCEventList::Sort()
   if (fIsSorted) return;
   std::sort(fEvents.begin(), fEvents.end());
   assert(Check());
-  fIsSorted = kTRUE;
+  fIsSorted = true;
 }
 // ----------------------------------------------------------------------------
 

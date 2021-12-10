@@ -16,11 +16,11 @@
 
 #include "compareVertex.h"
 
-void compareEventDataMembers(CbmEvent& test, Int_t evnumber, Double_t starttime, Double_t endtime, Int_t numobjects,
+void compareEventDataMembers(CbmEvent& test, int32_t evnumber, double starttime, double endtime, int32_t numobjects,
                              CbmMatch* match, CbmVertex* vertex)
 {
-  Int_t retValInt {-111};
-  Double_t retValDouble {-111.};
+  int32_t retValInt {-111};
+  double retValDouble {-111.};
 
   retValInt = test.GetNumber();
   EXPECT_EQ(evnumber, retValInt);
@@ -37,22 +37,22 @@ void compareEventDataMembers(CbmEvent& test, Int_t evnumber, Double_t starttime,
   EXPECT_EQ(match, test.GetMatch());
 
   if (!vertex) {
-    Double_t val[6] = {0., 0., 0., 0., 0., 0.};
+    double val[6] = {0., 0., 0., 0., 0., 0.};
     compareVertexDataMembers(*(test.GetVertex()), 0., 0., 0., 0., 0, 0, val);
   }
   else {
-    Double_t val[6] = {vertex->GetCovariance(0, 0), vertex->GetCovariance(0, 1), vertex->GetCovariance(0, 2),
-                       vertex->GetCovariance(1, 1), vertex->GetCovariance(1, 2), vertex->GetCovariance(2, 2)};
+    double val[6] = {vertex->GetCovariance(0, 0), vertex->GetCovariance(0, 1), vertex->GetCovariance(0, 2),
+                     vertex->GetCovariance(1, 1), vertex->GetCovariance(1, 2), vertex->GetCovariance(2, 2)};
     compareVertexDataMembers(*(test.GetVertex()), vertex->GetX(), vertex->GetY(), vertex->GetZ(), vertex->GetChi2(),
                              vertex->GetNDF(), vertex->GetNTracks(), val);
   }
 }
 
-void compareEventMap(CbmEvent& test, Int_t numobjects, Int_t numobjectstype, ECbmDataType type,
-                     std::vector<UInt_t> indices)
+void compareEventMap(CbmEvent& test, int32_t numobjects, int32_t numobjectstype, ECbmDataType type,
+                     std::vector<uint32_t> indices)
 {
-  Int_t retValInt {-111};
-  UInt_t retValUInt {111};
+  int32_t retValInt {-111};
+  uint32_t retValUInt {111};
 
   retValInt = test.GetNofData();
   EXPECT_EQ(numobjects, retValInt);
@@ -61,7 +61,7 @@ void compareEventMap(CbmEvent& test, Int_t numobjects, Int_t numobjectstype, ECb
   EXPECT_EQ(numobjectstype, retValInt);
 
   if (numobjectstype > 0) {
-    for (Int_t i = 0; i < numobjectstype; ++i) {
+    for (int32_t i = 0; i < numobjectstype; ++i) {
       retValUInt = test.GetIndex(type, i);
       EXPECT_EQ(indices[i], retValUInt);
     }
@@ -123,12 +123,12 @@ TEST(_GTestCbmEvent, CheckAddData)
     compareEventDataMembers(test, -111, 1., 2., 0, nullptr, nullptr);
   }
 
-  std::vector<UInt_t> mctrack;
-  std::vector<UInt_t> stspoint;
-  std::vector<UInt_t> stsdigi;
-  std::vector<UInt_t> stscluster;
-  std::vector<UInt_t> stshit;
-  std::vector<UInt_t> ststrack;
+  std::vector<uint32_t> mctrack;
+  std::vector<uint32_t> stspoint;
+  std::vector<uint32_t> stsdigi;
+  std::vector<uint32_t> stscluster;
+  std::vector<uint32_t> stshit;
+  std::vector<uint32_t> ststrack;
 
 
   mctrack.push_back(11);
@@ -157,7 +157,7 @@ TEST(_GTestCbmEvent, CheckAddData)
     compareEventMap(test, 2, -1, ECbmDataType::kStsTrack, ststrack);
   }
 
-  UInt_t retValUInt = test.GetIndex(ECbmDataType::kMCTrack, 25);
+  uint32_t retValUInt = test.GetIndex(ECbmDataType::kMCTrack, 25);
   EXPECT_EQ(-2, retValUInt);
 
   stspoint.push_back(1);

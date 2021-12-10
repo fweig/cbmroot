@@ -14,7 +14,8 @@
 #include "CbmPixelHit.h"  // for CbmPixelHit
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t
+
+#include <cstdint>
 
 class TVector3;
 
@@ -38,8 +39,8 @@ public:
 	 * \param refId some reference ID
 	 * \param planeId detector plane identifier
 	 **/
-  CbmMuchPixelHit(Int_t address, Double_t x, Double_t y, Double_t z, Double_t dx, Double_t dy, Double_t dz,
-                  Double_t dxy, Int_t refId, Int_t planeId, Double_t time, Double_t dtime);
+  CbmMuchPixelHit(int32_t address, double x, double y, double z, double dx, double dy, double dz, double dxy,
+                  int32_t refId, int32_t planeId, double time, double dtime);
 
   /**
 	 * \brief Standard constructor
@@ -50,7 +51,8 @@ public:
 	 * \param refId Index of digi or cluster
 	 * \param planeId Detector plane identifier
 	 **/
-  CbmMuchPixelHit(Int_t address, const TVector3& pos, const TVector3& err, Double_t dxy, Int_t refId, Int_t planeId);
+  CbmMuchPixelHit(int32_t address, const TVector3& pos, const TVector3& err, double dxy, int32_t refId,
+                  int32_t planeId);
 
   /** Standard constructor
 	  *\param address     Unique detector ID (including module number)
@@ -62,8 +64,8 @@ public:
 	  *\param time      Time since event start [ns]
 	  *\param dTime     Time resolution [ns]
 	**/
-  CbmMuchPixelHit(Int_t address, const TVector3& pos, const TVector3& err, Double_t dxy, Int_t refId, Int_t planeId,
-                  Double_t time, Double_t dtime);
+  CbmMuchPixelHit(int32_t address, const TVector3& pos, const TVector3& err, double dxy, int32_t refId, int32_t planeId,
+                  double time, double dtime);
 
   /**
 	 * \brief Destructor.
@@ -73,18 +75,18 @@ public:
   /**
 	 * \brief Inherited from CbmBaseHit.
 	 */
-  virtual Int_t GetPlaneId() const { return fPlaneId; }
+  virtual int32_t GetPlaneId() const { return fPlaneId; }
 
   /** Accessors **/
-  Int_t GetFlag() const { return fFlag; }
+  int32_t GetFlag() const { return fFlag; }
 
 
   /** Modifiers **/
-  void SetFlag(Int_t flag) { fFlag = flag; }
+  void SetFlag(int32_t flag) { fFlag = flag; }
 
 private:
-  Int_t fPlaneId;  // Plane number
-  Int_t fFlag;     // Flag
+  int32_t fPlaneId;  // Plane number
+  int32_t fFlag;     // Flag
 
   ClassDef(CbmMuchPixelHit, 3);
 };

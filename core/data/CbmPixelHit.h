@@ -17,9 +17,9 @@
 #include "CbmHit.h"  // for CbmHit
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Double_t, Int_t
 #include <TVector3.h>    // for TVector3
 
+#include <cstdint>
 #include <string>  // for string
 
 class CbmPixelHit : public CbmHit {
@@ -43,8 +43,8 @@ public:
          * \param[in] time Hit time [ns].   
          * \param[in] timeError Error of hit time [ns].         
  	 **/
-  CbmPixelHit(Int_t address, Double_t x, Double_t y, Double_t z, Double_t dx, Double_t dy, Double_t dz, Double_t dxy,
-              Int_t refId, Double_t time = -1., Double_t timeError = -1.);
+  CbmPixelHit(int32_t address, double x, double y, double z, double dx, double dy, double dz, double dxy, int32_t refId,
+              double time = -1., double timeError = -1.);
 
   /**
 	 * \breif Standard constructor.
@@ -56,8 +56,8 @@ public:
          * \param[in] time Hit time [ns].   
          * \param[in] timeError Error of hit time [ns].         
 	 **/
-  CbmPixelHit(Int_t address, const TVector3& pos, const TVector3& err, Double_t dxy, Int_t refId, Double_t time = -1.,
-              Double_t timeError = -1.);
+  CbmPixelHit(int32_t address, const TVector3& pos, const TVector3& err, double dxy, int32_t refId, double time = -1.,
+              double timeError = -1.);
 
   /**
 	 * brief Destructor.
@@ -70,11 +70,11 @@ public:
   virtual std::string ToString() const;
 
   /* Accessors */
-  Double_t GetX() const { return fX; }
-  Double_t GetY() const { return fY; }
-  Double_t GetDx() const { return fDx; }
-  Double_t GetDy() const { return fDy; }
-  Double_t GetDxy() const { return fDxy; }
+  double GetX() const { return fX; }
+  double GetY() const { return fY; }
+  double GetDx() const { return fDx; }
+  double GetDy() const { return fDy; }
+  double GetDxy() const { return fDxy; }
 
   /**
 	 * \brief Copies hit position to pos.
@@ -89,11 +89,11 @@ public:
   void PositionError(TVector3& dpos) const;
 
   /* Setters */
-  void SetX(Double_t x) { fX = x; }
-  void SetY(Double_t y) { fY = y; }
-  void SetDx(Double_t dx) { fDx = dx; }
-  void SetDy(Double_t dy) { fDy = dy; }
-  void SetDxy(Double_t dxy) { fDxy = dxy; }
+  void SetX(double x) { fX = x; }
+  void SetY(double y) { fY = y; }
+  void SetDx(double dx) { fDx = dx; }
+  void SetDy(double dy) { fDy = dy; }
+  void SetDxy(double dxy) { fDxy = dxy; }
 
   /**
 	 * \brief Sets position of the hit.
@@ -108,9 +108,9 @@ public:
   void SetPositionError(const TVector3& dpos);
 
 private:
-  Double_t fX, fY;    ///< X, Y positions of hit [cm]
-  Double_t fDx, fDy;  ///< X, Y errors [cm]
-  Double_t fDxy;      ///< XY correlation
+  double fX, fY;    ///< X, Y positions of hit [cm]
+  double fDx, fDy;  ///< X, Y errors [cm]
+  double fDxy;      ///< XY correlation
 
   ClassDef(CbmPixelHit, 1);
 };

@@ -26,14 +26,14 @@
 #include "CbmMuchDigi.h"  // for CbmMuchDigi
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, ULong64_t
 
+#include <cstdint>
 #include <string>  // for string
 
 class CbmMuchBeamTimeDigi : public CbmMuchDigi {
 public:
   CbmMuchBeamTimeDigi();
-  CbmMuchBeamTimeDigi(Int_t address, Int_t charge = 0, ULong64_t time = 0);
+  CbmMuchBeamTimeDigi(int32_t address, int32_t charge = 0, uint64_t time = 0);
   CbmMuchBeamTimeDigi(CbmMuchBeamTimeDigi* digi);
   CbmMuchBeamTimeDigi(const CbmMuchBeamTimeDigi&);
   CbmMuchBeamTimeDigi& operator=(const CbmMuchBeamTimeDigi&);
@@ -41,19 +41,19 @@ public:
 
   virtual ~CbmMuchBeamTimeDigi() {}
 
-  void SetPadX(Int_t padX) { fPadX = padX; }
-  void SetPadY(Int_t padY) { fPadY = padY; }
-  void SetRocId(Int_t rocId) { fRocId = rocId; }
-  void SetNxId(Int_t nxId) { fNxId = nxId; }
-  void SetNxCh(Int_t nxCh) { fNxCh = nxCh; }
-  void SetElink(Int_t elink) { fElink = elink; }
+  void SetPadX(int32_t padX) { fPadX = padX; }
+  void SetPadY(int32_t padY) { fPadY = padY; }
+  void SetRocId(int32_t rocId) { fRocId = rocId; }
+  void SetNxId(int32_t nxId) { fNxId = nxId; }
+  void SetNxCh(int32_t nxCh) { fNxCh = nxCh; }
+  void SetElink(int32_t elink) { fElink = elink; }
 
-  Int_t GetPadX() const { return fPadX; }
-  Int_t GetPadY() const { return fPadY; }
-  Int_t GetRocId() const { return fRocId; }
-  Int_t GetNxId() const { return fNxId; }
-  Int_t GetNxCh() const { return fNxCh; }
-  Int_t GetElink() const { return fElink; }
+  int32_t GetPadX() const { return fPadX; }
+  int32_t GetPadY() const { return fPadY; }
+  int32_t GetRocId() const { return fRocId; }
+  int32_t GetNxId() const { return fNxId; }
+  int32_t GetNxCh() const { return fNxCh; }
+  int32_t GetElink() const { return fElink; }
 
   std::string ToString() const { return std::string {""}; }
 
@@ -65,12 +65,12 @@ public:
 
 
 private:
-  Int_t fPadX;
-  Int_t fPadY;
-  Int_t fRocId;
-  Int_t fNxId;
-  Int_t fNxCh;
-  Int_t fElink;
+  int32_t fPadX;
+  int32_t fPadY;
+  int32_t fRocId;
+  int32_t fNxId;
+  int32_t fNxCh;
+  int32_t fElink;
 
   ClassDef(CbmMuchBeamTimeDigi, 3);
 };

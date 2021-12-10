@@ -12,8 +12,8 @@
 
 #include <Logger.h>  // for LOG, Logger
 
-const Int_t CbmTofDetectorId_v07a::shiftarray[] = {0, 5, 9, 19, 23};
-const Int_t CbmTofDetectorId_v07a::bitarray[]   = {5, 4, 10, 4, 9};
+const int32_t CbmTofDetectorId_v07a::shiftarray[] = {0, 5, 9, 19, 23};
+const int32_t CbmTofDetectorId_v07a::bitarray[]   = {5, 4, 10, 4, 9};
 
 //                                  3         2         1          shift length
 /** Current definition:            10987654321098765432109876543210
@@ -26,7 +26,7 @@ const Int_t CbmTofDetectorId_v07a::bitarray[]   = {5, 4, 10, 4, 9};
 
 CbmTofDetectorId_v07a::CbmTofDetectorId_v07a() : CbmTofDetectorId(), result_array(), maskarray(), modulemask(0)
 {
-  for (Int_t i = 0; i < array_length; i++) {
+  for (int32_t i = 0; i < array_length; i++) {
     maskarray[i] = (1 << bitarray[i]) - 1;
   }
 
@@ -34,51 +34,57 @@ CbmTofDetectorId_v07a::CbmTofDetectorId_v07a() : CbmTofDetectorId(), result_arra
                 | (0 << shiftarray[3]) | (maskarray[4] << shiftarray[4]));
 }
 
-CbmTofDetectorInfo CbmTofDetectorId_v07a::GetDetectorInfo(const Int_t detectorId)
+CbmTofDetectorInfo CbmTofDetectorId_v07a::GetDetectorInfo(const int32_t detectorId)
 {
-  for (Int_t i = 0; i < array_length; i++) {
+  for (int32_t i = 0; i < array_length; i++) {
     result_array[i] = ((detectorId >> shiftarray[i]) & maskarray[i]);
   }
   return CbmTofDetectorInfo(result_array[0], result_array[1], 0, result_array[2], result_array[3], result_array[4]);
 }
 
-Int_t CbmTofDetectorId_v07a::GetSystemId(Int_t detectorId) { return (detectorId & maskarray[0]); }
+int32_t CbmTofDetectorId_v07a::GetSystemId(int32_t detectorId) { return (detectorId & maskarray[0]); }
 
 //-----------------------------------------------------------
 
-Int_t CbmTofDetectorId_v07a::GetSMType(const Int_t detectorId)
+int32_t CbmTofDetectorId_v07a::GetSMType(const int32_t detectorId)
 {
   return ((detectorId >> shiftarray[1]) & maskarray[1]);
 }
 
 //-----------------------------------------------------------
 
-Int_t CbmTofDetectorId_v07a::GetSModule(const Int_t detectorId)
+int32_t CbmTofDetectorId_v07a::GetSModule(const int32_t detectorId)
 {
   return ((detectorId >> shiftarray[2]) & maskarray[2]);
 }
 
 //-----------------------------------------------------------
 
-Int_t CbmTofDetectorId_v07a::GetCounter(const Int_t /*detectorId*/) { return -1; }
+int32_t CbmTofDetectorId_v07a::GetCounter(const int32_t /*detectorId*/) { return -1; }
 
 //-----------------------------------------------------------
 
-Int_t CbmTofDetectorId_v07a::GetGap(const Int_t detectorId) { return ((detectorId >> shiftarray[3]) & maskarray[3]); }
+int32_t CbmTofDetectorId_v07a::GetGap(const int32_t detectorId)
+{
+  return ((detectorId >> shiftarray[3]) & maskarray[3]);
+}
 
 //-----------------------------------------------------------
 
-Int_t CbmTofDetectorId_v07a::GetCell(const Int_t detectorId) { return ((detectorId >> shiftarray[4]) & maskarray[4]); }
+int32_t CbmTofDetectorId_v07a::GetCell(const int32_t detectorId)
+{
+  return ((detectorId >> shiftarray[4]) & maskarray[4]);
+}
 
 //-----------------------------------------------------------
 
-Int_t CbmTofDetectorId_v07a::GetRegion(const Int_t /*detectorId*/) { return -1; }
+int32_t CbmTofDetectorId_v07a::GetRegion(const int32_t /*detectorId*/) { return -1; }
 
-Int_t CbmTofDetectorId_v07a::GetCellId(const Int_t detectorId) { return (detectorId & modulemask); }
+int32_t CbmTofDetectorId_v07a::GetCellId(const int32_t detectorId) { return (detectorId & modulemask); }
 
 //-----------------------------------------------------------
 
-Int_t CbmTofDetectorId_v07a::SetDetectorInfo(const CbmTofDetectorInfo detInfo)
+int32_t CbmTofDetectorId_v07a::SetDetectorInfo(const CbmTofDetectorInfo detInfo)
 {
 
   LOG(debug2) << "Det System: " << detInfo.fDetectorSystem;

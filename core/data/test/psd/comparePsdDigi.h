@@ -7,10 +7,10 @@
 
 #include "gtest/gtest.h"
 
-void comparePsdDigiDataMembers(CbmPsdDigi& test, Int_t address, ECbmModuleId systemid, Double_t time, Double_t edep)
+void comparePsdDigiDataMembers(CbmPsdDigi& test, int32_t address, ECbmModuleId systemid, double time, double edep)
 {
-  Int_t retValInt {-222};
-  Double_t retValDouble {-222.};
+  int32_t retValInt {-222};
+  double retValDouble {-222.};
   ECbmModuleId retVal {ECbmModuleId::kNotExist};
 
   retValInt = test.GetAddress();

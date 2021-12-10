@@ -18,9 +18,9 @@
 #include "CbmPixelHit.h"  // for CbmPixelHit
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Double_t, Int_t
 #include <TVector3.h>    // for TVector3
 
+#include <cstdint>
 #include <string>  // for string
 
 
@@ -51,8 +51,8 @@ public:
      ** @param du       Coordinate error across front-side strips [cm]
      ** @param dv       Coordinate error across back-side strips [cm]
      **/
-  CbmStsHit(Int_t address, const TVector3& pos, const TVector3& dpos, Double_t dxy, Int_t frontClusterId,
-            Int_t backClusterId, Double_t time = 0., Double_t timeError = 0., Double_t du = 0., Double_t dv = 0.);
+  CbmStsHit(int32_t address, const TVector3& pos, const TVector3& dpos, double dxy, int32_t frontClusterId,
+            int32_t backClusterId, double time = 0., double timeError = 0., double du = 0., double dv = 0.);
 
 
   /** Destructor **/
@@ -62,7 +62,7 @@ public:
   /** Index of cluster at the back side
      ** @value  Back-side cluster index
      **/
-  Int_t GetBackClusterId() const { return fBackClusterId; }
+  int32_t GetBackClusterId() const { return fBackClusterId; }
 
 
   /** @brief Error of coordinate across front-side strips
@@ -71,7 +71,7 @@ public:
      ** Note that this error is defined only in the
      ** local coordinate system of the sensor.
      **/
-  Double_t GetDu() const { return fDu; }
+  double GetDu() const { return fDu; }
 
 
   /** @brief Error of coordinate across front-side strips
@@ -80,35 +80,35 @@ public:
      ** Note that this error is defined only in the
      ** local coordinate system of the sensor.
      **/
-  Double_t GetDv() const { return fDv; }
+  double GetDv() const { return fDv; }
 
 
   /** Index of cluster at the front side
      ** @value  Front-side cluster index
      **/
-  Int_t GetFrontClusterId() const { return fFrontClusterId; }
+  int32_t GetFrontClusterId() const { return fFrontClusterId; }
 
   /** @brief Set the index of the frontside cluster 
      ** To keep track of the input during matching
      ** @param index  Index of cluster in cluster array
      **/
-  void SetFrontClusterId(Int_t index) { fFrontClusterId = index; }
+  void SetFrontClusterId(int32_t index) { fFrontClusterId = index; }
 
   /** @brief Set the index of the backside cluster
      ** To keep track of the input during matching
      ** @param index  Index of cluster in cluster array
      **/
-  void SetBackClusterId(Int_t index) { fBackClusterId = index; }
+  void SetBackClusterId(int32_t index) { fBackClusterId = index; }
 
   /** Info to string **/
   virtual std::string ToString() const;
 
 
 private:
-  Int_t fFrontClusterId;  ///< Cluster index front side
-  Int_t fBackClusterId;   ///< Cluster index back side
-  Double_t fDu;           ///< Error of coordinate across front-side strips [cm]
-  Double_t fDv;           ///< Error of coordinate across back-side strips [cm]
+  int32_t fFrontClusterId;  ///< Cluster index front side
+  int32_t fBackClusterId;   ///< Cluster index back side
+  double fDu;               ///< Error of coordinate across front-side strips [cm]
+  double fDv;               ///< Error of coordinate across back-side strips [cm]
 
   ClassDef(CbmStsHit, 7);
 };

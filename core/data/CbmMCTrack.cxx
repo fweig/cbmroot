@@ -12,7 +12,6 @@
 
 #include <TDatabasePDG.h>  // for TDatabasePDG
 #include <TMCProcess.h>    // for kPNoProcess, TMCProcessName
-#include <TMath.h>         // for Log
 #include <TObject.h>       // for TObject
 #include <TParticle.h>     // for TParticle
 #include <TParticlePDG.h>  // for TParticlePDG
@@ -44,8 +43,8 @@ CbmMCTrack::CbmMCTrack()
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmMCTrack::CbmMCTrack(Int_t pdgCode, Int_t motherId, Double_t px, Double_t py, Double_t pz, Double_t x, Double_t y,
-                       Double_t z, Double_t t, Int_t nPoints = 0)
+CbmMCTrack::CbmMCTrack(int32_t pdgCode, int32_t motherId, double px, double py, double pz, double x, double y, double z,
+                       double t, int32_t nPoints = 0)
   : TObject()
   , fProcessId(kPNoProcess)
   , fPdgCode(pdgCode)
@@ -113,7 +112,7 @@ CbmMCTrack::~CbmMCTrack() {}
 
 
 // -----   Public method GetMass   -----------------------------------------
-Double_t CbmMCTrack::GetMass() const
+double CbmMCTrack::GetMass() const
 {
 
   if (TDatabasePDG::Instance()) {
@@ -126,8 +125,8 @@ Double_t CbmMCTrack::GetMass() const
     // in the PDG code like 10LZZZAAAI, where L is strangeness, Z is charge,
     // A is number of nucleons, and I is isomer level.
     else if (fPdgCode > 1000000000) {
-      Int_t a = (fPdgCode % 10000) / 10;
-      return Double_t(a) * CbmProtonMass();
+      int32_t a = (fPdgCode % 10000) / 10;
+      return double(a) * CbmProtonMass();
     }
 
     // Cherenkov photons
@@ -148,7 +147,7 @@ Double_t CbmMCTrack::GetMass() const
 
 
 // -----   Public method GetCharge   ---------------------------------------
-Double_t CbmMCTrack::GetCharge() const
+double CbmMCTrack::GetCharge() const
 {
 
   if (TDatabasePDG::Instance()) {
@@ -161,7 +160,7 @@ Double_t CbmMCTrack::GetCharge() const
     // in the PDG code like 10LZZZAAAI, where L is strangeness, Z is charge,
     // A is number of nucleons, and I is isomer level.
     else if (fPdgCode > 1000000000) {
-      return Double_t((fPdgCode % 10000000) / 10000);
+      return double((fPdgCode % 10000000) / 10000);
     }
 
     // Cherenkov photons
@@ -182,17 +181,17 @@ Double_t CbmMCTrack::GetCharge() const
 
 
 // -----   Public method GetRapidity   -------------------------------------
-Double_t CbmMCTrack::GetRapidity() const
+double CbmMCTrack::GetRapidity() const
 {
-  Double_t e = GetEnergy();
-  Double_t y = 0.5 * TMath::Log((e + fPz) / (e - fPz));
+  double e = GetEnergy();
+  double y = 0.5 * log((e + fPz) / (e - fPz));
   return y;
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Public method GetNPoints   --------------------------------------
-Int_t CbmMCTrack::GetNPoints(ECbmModuleId detId) const
+int32_t CbmMCTrack::GetNPoints(ECbmModuleId detId) const
 {
   if (detId == ECbmModuleId::kRef) return (fNPoints & 1);
   else if (detId == ECbmModuleId::kMvd)
@@ -220,7 +219,7 @@ Int_t CbmMCTrack::GetNPoints(ECbmModuleId detId) const
 
 
 // -----   Public method SetNPoints   --------------------------------------
-void CbmMCTrack::SetNPoints(ECbmModuleId iDet, Int_t nPoints)
+void CbmMCTrack::SetNPoints(ECbmModuleId iDet, int32_t nPoints)
 {
 
   if (iDet == ECbmModuleId::kRef) {

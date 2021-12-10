@@ -32,7 +32,7 @@
 
 #include "CbmTofDetectorId.h"  // for CbmTofDetectorId, CbmTofDetectorInfo
 
-#include <RtypesCore.h>  // for Int_t
+#include <cstdint>
 
 class CbmTofDetectorId_v07a : public CbmTofDetectorId {
 
@@ -47,48 +47,48 @@ public:
    ** This will return a pointer to an integer
    ** array of length array_length
    **/
-  CbmTofDetectorInfo GetDetectorInfo(const Int_t detectorId);
+  CbmTofDetectorInfo GetDetectorInfo(const int32_t detectorId);
 
   /** Get the global sytem ID **/
-  Int_t GetSystemId(Int_t detectorId);
+  int32_t GetSystemId(int32_t detectorId);
 
   /** Get SMType number from detector ID **/
-  Int_t GetSMType(const Int_t detectorId);
+  int32_t GetSMType(const int32_t detectorId);
 
   /** Get smodule number from detector ID **/
-  Int_t GetSModule(const Int_t detectorId);
+  int32_t GetSModule(const int32_t detectorId);
 
   /** Get counter number from detector ID **/
-  Int_t GetCounter(const Int_t detectorId);
+  int32_t GetCounter(const int32_t detectorId);
 
   /** Get sector number from detector ID **/
-  Int_t GetGap(const Int_t detectorId);
+  int32_t GetGap(const int32_t detectorId);
 
   /** Get cell number from detector ID **/
-  Int_t GetCell(const Int_t detectorId);
+  int32_t GetCell(const int32_t detectorId);
 
   /** Get region number from detector ID **/
-  Int_t GetRegion(const Int_t detectorId);
+  int32_t GetRegion(const int32_t detectorId);
 
   /** Get cell number from detector ID.
    ** This is masking the the gap number
    ** if this is set.
    **/
-  Int_t GetCellId(const Int_t detectorId);
+  int32_t GetCellId(const int32_t detectorId);
 
   /** Calculate the unique detector ID
    ** This will return a pointer to an integer
    ** array of length array_length
    **/
-  Int_t SetDetectorInfo(const CbmTofDetectorInfo detectorInfo);
+  int32_t SetDetectorInfo(const CbmTofDetectorInfo detectorInfo);
 
 private:
-  static const Int_t array_length = 5;
-  static const Int_t shiftarray[];
-  static const Int_t bitarray[];
-  Int_t result_array[array_length];
-  Int_t maskarray[array_length];
-  Int_t modulemask;
+  static const int32_t array_length = 5;
+  static const int32_t shiftarray[];
+  static const int32_t bitarray[];
+  int32_t result_array[array_length];
+  int32_t maskarray[array_length];
+  int32_t modulemask;
 };
 
 #endif

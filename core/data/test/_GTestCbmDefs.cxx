@@ -45,7 +45,7 @@ class CbmDetectorListTest : public _TestCbmDetectorListBase<testing::Test> {
 class CbmDetectorListParamTest : public _TestCbmDetectorListBase<testing::TestWithParam<InOutStructure>> {
 protected:
   DetectorId detIdFromEnum;
-  Int_t detId;
+  int32_t detId;
   TString detName;
   TString detNameUppercase;
 

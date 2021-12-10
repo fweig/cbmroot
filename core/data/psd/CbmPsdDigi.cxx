@@ -28,7 +28,7 @@ CbmPsdDigi::CbmPsdDigi(CbmPsdDigi&& other) : fuAddress(other.fuAddress), fdTime(
 
 
 // --- Set address from module and section number
-void CbmPsdDigi::SetAddress(UInt_t moduleId, UInt_t sectionId)
+void CbmPsdDigi::SetAddress(uint32_t moduleId, uint32_t sectionId)
 {
   fuAddress = CbmPsdAddress::GetAddress(moduleId, sectionId);
 }

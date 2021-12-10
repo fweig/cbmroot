@@ -7,10 +7,11 @@
 
 #include "gtest/gtest.h"
 
-void compareMuchDigiDataMembers(CbmMuchDigi& test, Int_t address, ECbmModuleId systemid, ULong64_t time, Int_t charge)
+void compareMuchDigiDataMembers(CbmMuchDigi& test, int32_t address, ECbmModuleId systemid, uint64_t time,
+                                int32_t charge)
 {
-  Int_t retValInt {-222};
-  Double_t retValDouble {-222.};
+  int32_t retValInt {-222};
+  double retValDouble {-222.};
   ECbmModuleId retVal {ECbmModuleId::kNotExist};
 
   retValInt = test.GetAddress();
@@ -20,10 +21,10 @@ void compareMuchDigiDataMembers(CbmMuchDigi& test, Int_t address, ECbmModuleId s
   EXPECT_EQ(systemid, retVal);
 
   retValDouble = test.GetTime();
-  EXPECT_FLOAT_EQ(static_cast<Double_t>(time), retValDouble);
+  EXPECT_FLOAT_EQ(static_cast<double>(time), retValDouble);
 
   retValDouble = test.GetCharge();
-  EXPECT_EQ(static_cast<Double_t>(charge), retValDouble);
+  EXPECT_EQ(static_cast<double>(charge), retValDouble);
 
   retValInt = test.GetAdc();
   EXPECT_EQ(charge, retValInt);

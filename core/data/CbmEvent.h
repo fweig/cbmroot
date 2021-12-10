@@ -16,10 +16,10 @@
 #include "CbmVertex.h"  // for CbmVertex, found in core/data/global
 
 #include <Rtypes.h>          // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>      // for Double_t, UInt_t, Int_t
 #include <TMatrixFSymfwd.h>  // for TMatrixFSym
 #include <TObject.h>         // for TObject
 
+#include <cstdint>
 #include <map>     // for map, map<>::mapped_type
 #include <string>  // for string
 #include <vector>  // for vector
@@ -42,7 +42,7 @@ public:
 		 ** @param[in] startTime Event start time [ns]
 		 ** @param[in] endTime   Event start time [ns]
 		 **/
-  CbmEvent(Int_t number, Double_t startTime = 0., Double_t endTime = 0.)
+  CbmEvent(int32_t number, double startTime = 0., double endTime = 0.)
     : TObject()
     , fNumber(number)
     , fTimeStart(startTime)
@@ -70,13 +70,13 @@ public:
 		 ** @param DataType  Type of data (for values see CbmDetectorList.h)
 		 ** @param Index     Index of the data object in its TClonesArray
 		 */
-  void AddData(ECbmDataType type, UInt_t index);
+  void AddData(ECbmDataType type, uint32_t index);
 
 
   /** Add an STS track to the event
 		 ** @param Index of STS track in its TClonesArray
 		 **/
-  void AddStsTrack(UInt_t index) { AddData(ECbmDataType::kStsTrack, index); }
+  void AddStsTrack(uint32_t index) { AddData(ECbmDataType::kStsTrack, index); }
 
 
   /** Get the index of a data object in its TClonesArray
@@ -84,7 +84,7 @@ public:
 		 ** @param iData     Running number of data object in event
 		 ** @value Index of data object in its TClonesArray
 		 **/
-  UInt_t GetIndex(ECbmDataType type, UInt_t iData);
+  uint32_t GetIndex(ECbmDataType type, uint32_t iData);
 
 
   /** Get match object
@@ -94,7 +94,7 @@ public:
 
 
   /** Get total number of data (of all types) in the event **/
-  Int_t GetNofData() const { return fNofData; }
+  int32_t GetNofData() const { return fNofData; }
 
 
   /** Get number of data objects of a given type in this event
@@ -102,48 +102,48 @@ public:
 		 ** @value Number of objects of type DataType in the event.
 		 ** -1 is data type is not registered.
 		 **/
-  Int_t GetNofData(ECbmDataType type) const;
+  int32_t GetNofData(ECbmDataType type) const;
 
 
   /** Get number of STS tracks
 		 ** @value Number of STS tracks in the event. -1 if not registered.
 		 **/
-  Int_t GetNofStsTracks() const { return GetNofData(ECbmDataType::kStsTrack); }
+  int32_t GetNofStsTracks() const { return GetNofData(ECbmDataType::kStsTrack); }
 
 
   /** Get event number
 		 ** @value Event number
 		 **/
-  Int_t GetNumber() const { return fNumber; }
+  int32_t GetNumber() const { return fNumber; }
 
 
   /** Get STS track index
 		 ** @param iTrack  Running number of STS track in the event
 		 ** @value index   Index of STS track in TClonesArray
 		 **/
-  Int_t GetStsTrackIndex(Int_t iTrack) { return GetIndex(ECbmDataType::kStsTrack, iTrack); }
+  int32_t GetStsTrackIndex(int32_t iTrack) { return GetIndex(ECbmDataType::kStsTrack, iTrack); }
 
 
   /** Get event end time
 		 ** @value End time of event [ns]
 		 **/
-  Double_t GetEndTime() const { return fTimeEnd; }
+  double GetEndTime() const { return fTimeEnd; }
 
 
   /** Get event start time
 		 ** @value Start time of event [ns]
 		 **/
-  Double_t GetStartTime() const { return fTimeStart; }
+  double GetStartTime() const { return fTimeStart; }
 
   /** Set event number
 		 ** @value Event number
 		 **/
-  void SetNumber(Int_t number) { fNumber = number; }
+  void SetNumber(int32_t number) { fNumber = number; }
 
   /** Set end time
 		 ** @param endTime  End time of event [ns]
 		 **/
-  void SetEndTime(Double_t endTime) { fTimeEnd = endTime; }
+  void SetEndTime(double endTime) { fTimeEnd = endTime; }
 
 
   /** Set a match object
@@ -155,7 +155,7 @@ public:
   /** Set start time
 		 ** @param endTime  Start time of event [ns]
 		 **/
-  void SetStartTime(Double_t startTime) { fTimeStart = startTime; }
+  void SetStartTime(double startTime) { fTimeStart = startTime; }
 
 
   /** Set the STS track index array
@@ -163,7 +163,7 @@ public:
 		 ** Old content will be overwritten.
 		 ** @param indexVector  Vector with indices of STS tracks
 	     **/
-  void SetStsTracks(std::vector<UInt_t>& indexVector)
+  void SetStsTracks(std::vector<uint32_t>& indexVector)
   {
     fNofData -= fIndexMap[ECbmDataType::kStsTrack].size();
     fIndexMap[ECbmDataType::kStsTrack] = indexVector;
@@ -180,8 +180,7 @@ public:
 	   *@param nTracks   Number of tracks used for vertex fit
 	   *@param covMat    Covariance Matrix (symmetric, 3x3)
 	   **/
-  void SetVertex(Double_t x, Double_t y, Double_t z, Double_t chi2, Int_t ndf, Int_t nTracks,
-                 const TMatrixFSym& covMat);
+  void SetVertex(double x, double y, double z, double chi2, int32_t ndf, int32_t nTracks, const TMatrixFSym& covMat);
 
 
   /** String output **/
@@ -198,15 +197,15 @@ public:
 
 private:
   /** Event meta data **/
-  Int_t fNumber;        ///< Event number
-  Double_t fTimeStart;  ///< Event start time [ns]
-  Double_t fTimeEnd;    ///< Event end time [ns]
-  Int_t fNofData;       ///< Number of data objects in the event
+  int32_t fNumber;      ///< Event number
+  double fTimeStart;    ///< Event start time [ns]
+  double fTimeEnd;      ///< Event end time [ns]
+  int32_t fNofData;     ///< Number of data objects in the event
   CbmVertex fVertex;    ///< Primary Vertex
   CbmMatch* fMatch;     ///< Match object to MCEvent
 
   /** Arrays of indices to data types **/
-  std::map<ECbmDataType, std::vector<UInt_t>> fIndexMap;
+  std::map<ECbmDataType, std::vector<uint32_t>> fIndexMap;
 
   CbmEvent(const CbmEvent&);
   CbmEvent& operator=(const CbmEvent&);

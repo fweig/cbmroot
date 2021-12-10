@@ -30,10 +30,10 @@ CbmMvdCluster::~CbmMvdCluster() {}
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-void CbmMvdCluster::SetPixelMap(map<pair<Int_t, Int_t>, Int_t> PixelMap)
+void CbmMvdCluster::SetPixelMap(map<pair<int32_t, int32_t>, int32_t> PixelMap)
 {
   fPixelMap = PixelMap;
-  for (map<pair<Int_t, Int_t>, Int_t>::iterator iter = fPixelMap.begin(); iter != fPixelMap.end(); iter++)
+  for (map<pair<int32_t, int32_t>, int32_t>::iterator iter = fPixelMap.begin(); iter != fPixelMap.end(); iter++)
     fClusterCharge += iter->second;
 }
 

@@ -10,7 +10,7 @@
 #ifndef CBMADDRESS_H
 #define CBMADDRESS_H 1
 
-#include <RtypesCore.h>  // for ROOT data classes
+#include <cstdint>
 
 /** @class CbmAddress
  ** @brief Base class for interfaces to the unique address
@@ -18,7 +18,7 @@
  ** @version 1.0
  **
  ** CbmAddress is the base class for the concrete interfaces to the
- ** unique address, which is encoded in a 32-bit field (Int_t).
+ ** unique address, which is encoded in a 32-bit field (int32_t).
  ** The definition of this bit field is different for the various
  ** detector systems; common for all is that the first four bits are
  ** reserved for the system identifier.
@@ -37,19 +37,19 @@ public:
   /** Number of bits for system Id in the address field
      ** @return Number of bits
      **/
-  static Int_t GetNofSystemBits() { return fgkSystemBits; }
+  static int32_t GetNofSystemBits() { return fgkSystemBits; }
 
 
   /** Get the system Id from the address
      ** @param address  Unique address
      ** @return  systemId
      **/
-  static Int_t GetSystemId(UInt_t address) { return address & ((1 << fgkSystemBits) - 1); }
+  static int32_t GetSystemId(uint32_t address) { return address & ((1 << fgkSystemBits) - 1); }
 
 
 protected:
   /** Number of bits for system Id in the address field  **/
-  static const Int_t fgkSystemBits = 4;
+  static const int32_t fgkSystemBits = 4;
 };
 
 #endif /* CBMADDRESS_H */

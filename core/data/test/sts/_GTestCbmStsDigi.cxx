@@ -12,7 +12,7 @@
 #include "gtest/gtest-spi.h"
 #include "gtest/gtest.h"
 
-static const Int_t kTestAddress = CbmStsAddress::GetAddress(5, 6, 1, 8, 0, 0, 1);
+static const int32_t kTestAddress = CbmStsAddress::GetAddress(5, 6, 1, 8, 0, 0, 1);
 
 
 TEST(_GTestCbmStsDigi, CheckDefaultConstructor)
@@ -20,7 +20,7 @@ TEST(_GTestCbmStsDigi, CheckDefaultConstructor)
   // Create object
   CbmStsDigi test;
 
-  const Int_t defaultAddr = CbmStsAddress::GetAddress(0, 0, 0, 0, 0, 0, 1);
+  const int32_t defaultAddr = CbmStsAddress::GetAddress(0, 0, 0, 0, 0, 0, 1);
 
   compareStsDigiDataMembers(test, defaultAddr, 0, 0, ECbmModuleId::kSts, 0);
 

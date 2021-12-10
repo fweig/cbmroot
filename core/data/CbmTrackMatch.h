@@ -16,8 +16,9 @@
 #define CBMTRACKMATCH_H 1
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Int_t
 #include <TObject.h>     // for TObject
+
+#include <cstdint>
 
 class CbmTrackMatch : public TObject {
 
@@ -33,7 +34,7 @@ public:
   *@param nFake       Number of fake hits (not belonging to any MCTrack)
   *@param nTracks     Number of MCTracks with common hits
   **/
-  CbmTrackMatch(Int_t mcTrackID, Int_t nTrue, Int_t nWrong, Int_t nFake, Int_t nTracks);
+  CbmTrackMatch(int32_t mcTrackID, int32_t nTrue, int32_t nWrong, int32_t nFake, int32_t nTracks);
 
 
   /** Destructor **/
@@ -41,36 +42,36 @@ public:
 
 
   /** Index of matched MC track **/
-  Int_t GetMCTrackId() const { return fMCTrackId; };
+  int32_t GetMCTrackId() const { return fMCTrackId; };
 
   /** Number of true hits on track (from matched MC track) **/
-  Int_t GetNofTrueHits() const { return fNofTrueHits; };
+  int32_t GetNofTrueHits() const { return fNofTrueHits; };
 
   /** Number of wrong hits on track (from other MC tracks) **/
-  Int_t GetNofWrongHits() const { return fNofWrongHits; };
+  int32_t GetNofWrongHits() const { return fNofWrongHits; };
 
   /** Number of fake hits on track (from no MC track) **/
-  Int_t GetNofFakeHits() const { return fNofFakeHits; };
+  int32_t GetNofFakeHits() const { return fNofFakeHits; };
 
   /** Number of MCTracks with common hits **/
-  Int_t GetNofMCTracks() const { return fNofMCTracks; };
+  int32_t GetNofMCTracks() const { return fNofMCTracks; };
 
 
 private:
   /** Index of matched CbmMCTrack  **/
-  Int_t fMCTrackId;
+  int32_t fMCTrackId;
 
   /** Number of true hits (belonging to the matched MCTrack) **/
-  Int_t fNofTrueHits;
+  int32_t fNofTrueHits;
 
   /** Number of wrong hits (belonging to other MCTracks) **/
-  Int_t fNofWrongHits;
+  int32_t fNofWrongHits;
 
   /** Number of fake hits (belonging to no MCTrack) **/
-  Int_t fNofFakeHits;
+  int32_t fNofFakeHits;
 
   /** Number of MCTrackx with common hits **/
-  Int_t fNofMCTracks;
+  int32_t fNofMCTracks;
 
 
   ClassDef(CbmTrackMatch, 1);

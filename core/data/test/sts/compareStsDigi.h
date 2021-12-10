@@ -7,18 +7,18 @@
 
 #include "gtest/gtest.h"
 
-void compareStsDigiDataMembers(CbmStsDigi& test, Int_t address, UShort_t charge, UShort_t channel,
-                               ECbmModuleId systemid, Long64_t time)
+void compareStsDigiDataMembers(CbmStsDigi& test, int32_t address, uint16_t charge, uint16_t channel,
+                               ECbmModuleId systemid, int64_t time)
 {
-  Int_t retValInt {-222};
-  Double_t retValDouble {-222.};
+  int32_t retValInt {-222};
+  double retValDouble {-222.};
   ECbmModuleId retVal {ECbmModuleId::kNotExist};
 
   retValInt = test.GetAddress();
   EXPECT_EQ(address, retValInt);
 
   retValDouble = test.GetCharge();
-  EXPECT_FLOAT_EQ(static_cast<Double_t>(charge), retValDouble);
+  EXPECT_FLOAT_EQ(static_cast<double>(charge), retValDouble);
 
   retValInt = test.GetChannel();
   EXPECT_EQ(channel, retValInt);
@@ -27,7 +27,7 @@ void compareStsDigiDataMembers(CbmStsDigi& test, Int_t address, UShort_t charge,
   EXPECT_EQ(systemid, retVal);
 
   retValDouble = test.GetTime();
-  EXPECT_FLOAT_EQ(static_cast<Double_t>(time), retValDouble);
+  EXPECT_FLOAT_EQ(static_cast<double>(time), retValDouble);
 }
 
 #endif  // COMPARESTSDIGI_H

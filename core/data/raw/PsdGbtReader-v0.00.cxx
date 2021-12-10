@@ -11,7 +11,7 @@
 
 #include "PsdGbtReader-v0.00.h"
 
-#include <cstdint>  // for uint16_t, uint64_t, uint32_t
+#include <cstdint>
 
 namespace PsdDataV000
 {

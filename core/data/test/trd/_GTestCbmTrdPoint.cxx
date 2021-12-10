@@ -24,16 +24,16 @@ TEST(_GTestCbmTrdPoint, CheckDefaultConstructor)
 
 TEST(_GTestCbmTrdPoint, CheckStandardConstructor)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
   TVector3 momin {2.5, 4.5, 78.};
   TVector3 posout {2.1, -6.1, -23.};
   TVector3 momout {-2.5, -4.5, -78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
   // Create object
   CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
@@ -46,16 +46,16 @@ TEST(_GTestCbmTrdPoint, CheckStandardConstructor)
 
 TEST(_GTestCbmTrdPoint, CheckCopyConstructor)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
   TVector3 momin {2.5, 4.5, 78.};
   TVector3 posout {2.1, -6.1, -23.};
   TVector3 momout {-2.5, -4.5, -78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
   // Create object
   CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
@@ -74,16 +74,16 @@ TEST(_GTestCbmTrdPoint, CheckCopyConstructor)
 
 TEST(_GTestCbmTrdPoint, CheckCopyAssignmentOperator)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
   TVector3 momin {2.5, 4.5, 78.};
   TVector3 posout {2.1, -6.1, -23.};
   TVector3 momout {-2.5, -4.5, -78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
   // Create object
   CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
@@ -103,16 +103,16 @@ TEST(_GTestCbmTrdPoint, CheckCopyAssignmentOperator)
 
 TEST(_GTestCbmTrdPoint, CheckMoveConstructor)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
   TVector3 momin {2.5, 4.5, 78.};
   TVector3 posout {2.1, -6.1, -23.};
   TVector3 momout {-2.5, -4.5, -78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
   // Create object
   CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
@@ -132,16 +132,16 @@ TEST(_GTestCbmTrdPoint, CheckMoveConstructor)
 
 TEST(_GTestCbmTrdPoint, CheckAssignmentOperator)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
   TVector3 momin {2.5, 4.5, 78.};
   TVector3 posout {2.1, -6.1, -23.};
   TVector3 momout {-2.5, -4.5, -78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
   // Create object
   CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
@@ -162,16 +162,16 @@ TEST(_GTestCbmTrdPoint, CheckAssignmentOperator)
 
 TEST(_GTestCbmTrdPoint, CheckPrint)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
   TVector3 momin {2.5, 4.5, 78.};
   TVector3 posout {2.1, -6.1, -23.};
   TVector3 momout {-2.5, -4.5, -78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
   // Create object
   CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
@@ -192,16 +192,16 @@ TEST(_GTestCbmTrdPoint, CheckPrint)
 
 TEST(_GTestCbmTrdPoint, CheckPositionOut)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
   TVector3 momin {2.5, 4.5, 78.};
   TVector3 posout {2.1, -6.1, -23.};
   TVector3 momout {-2.5, -4.5, -78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
   // Create object
   CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 
@@ -219,16 +219,16 @@ TEST(_GTestCbmTrdPoint, CheckPositionOut)
 
 TEST(_GTestCbmTrdPoint, CheckMomentumOut)
 {
-  Int_t trackid {34};
-  Int_t detid {45};
+  int32_t trackid {34};
+  int32_t detid {45};
   TVector3 posin {-2.1, 6.1, 23.};
   TVector3 momin {2.5, 4.5, 78.};
   TVector3 posout {2.1, -6.1, -23.};
   TVector3 momout {-2.5, -4.5, -78.};
-  Double_t tof {34.56};
-  Double_t length {1.2};
-  Double_t eloss {0.4567};
-  Int_t eventid {0};
+  double tof {34.56};
+  double length {1.2};
+  double eloss {0.4567};
+  int32_t eventid {0};
   // Create object
   CbmTrdPoint test(trackid, detid, posin, momin, posout, momout, tof, length, eloss);
 

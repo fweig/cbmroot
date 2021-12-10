@@ -14,10 +14,10 @@
 #include <FairLink.h>     // for FairLink
 #include <FairMCPoint.h>  // for FairMCPoint
 
-#include <TMathBase.h>  // for Abs
-
 #include <sstream>  // for operator<<, basic_ostream, endl, stri...
 #include <string>   // for char_traits
+
+#include <cmath>
 
 using std::endl;
 using std::string;
@@ -41,9 +41,9 @@ CbmStsPoint::CbmStsPoint()
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmStsPoint::CbmStsPoint(Int_t trackID, Int_t detID, TVector3 posIn, TVector3 posOut, TVector3 momIn, TVector3 momOut,
-                         Double_t tof, Double_t length, Double_t eLoss, Int_t pid, Int_t eventId, Int_t index,
-                         Short_t flag)
+CbmStsPoint::CbmStsPoint(int32_t trackID, int32_t detID, TVector3 posIn, TVector3 posOut, TVector3 momIn,
+                         TVector3 momOut, double tof, double length, double eLoss, int32_t pid, int32_t eventId,
+                         int32_t index, int16_t flag)
   : FairMCPoint(trackID, detID, posIn, momIn, tof, length, eLoss, eventId)
   , fX_out(posOut.X())
   , fY_out(posOut.Y())
@@ -66,7 +66,7 @@ CbmStsPoint::~CbmStsPoint() {}
 
 
 // -----   Copy constructor with event and epoch time   --------------------
-CbmStsPoint::CbmStsPoint(const CbmStsPoint& point, Int_t eventId, Double_t eventTime, Double_t epochTime)
+CbmStsPoint::CbmStsPoint(const CbmStsPoint& point, int32_t eventId, double eventTime, double epochTime)
   : FairMCPoint(point)
   , fX_out(point.fX_out)
   , fY_out(point.fY_out)
@@ -87,33 +87,33 @@ CbmStsPoint::CbmStsPoint(const CbmStsPoint& point, Int_t eventId, Double_t event
 
 
 // -----   Point x coordinate from linear extrapolation   ------------------
-Double_t CbmStsPoint::GetX(Double_t z) const
+double CbmStsPoint::GetX(double z) const
 {
   //  LOG(info) << fZ << " " << z << " " << fZ_out;
   if ((fZ_out - z) * (fZ - z) >= 0.) return (fX_out + fX) / 2.;
-  Double_t dz = fZ_out - fZ;
+  double dz = fZ_out - fZ;
   return (fX + (z - fZ) / dz * (fX_out - fX));
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Point y coordinate from linear extrapolation   ------------------
-Double_t CbmStsPoint::GetY(Double_t z) const
+double CbmStsPoint::GetY(double z) const
 {
   if ((fZ_out - z) * (fZ - z) >= 0.) return (fY_out + fY) / 2.;
-  Double_t dz = fZ_out - fZ;
-  //  if ( TMath::Abs(dz) < 1.e-3 ) return (fY_out+fY)/2.;
+  double dz = fZ_out - fZ;
+  //  if ( abs(dz) < 1.e-3 ) return (fY_out+fY)/2.;
   return (fY + (z - fZ) / dz * (fY_out - fY));
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Public method IsUsable   ----------------------------------------
-Bool_t CbmStsPoint::IsUsable() const
+bool CbmStsPoint::IsUsable() const
 {
-  Double_t dz = fZ_out - fZ;
-  if (TMath::Abs(dz) < 1.e-4) return kFALSE;
-  return kTRUE;
+  double dz = fZ_out - fZ;
+  if (abs(dz) < 1.e-4) return false;
+  return true;
 }
 // -------------------------------------------------------------------------
 

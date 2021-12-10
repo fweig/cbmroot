@@ -5,9 +5,8 @@
 #ifndef CRI_GET4_MESS_V0_01_DEF_H
 #define CRI_GET4_MESS_V0_01_DEF_H
 
+#include <cstdint>
 #include <iostream>
-
-#include <stdint.h>
 
 namespace critof001
 {

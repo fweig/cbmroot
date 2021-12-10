@@ -34,7 +34,7 @@ CbmMuchDigi& CbmMuchDigi::operator=(const CbmMuchDigi& rhs)
 }
 
 // -----   Set new charge   ------------------------------------------------
-void CbmMuchDigi::SetAdc(Int_t adc)
+void CbmMuchDigi::SetAdc(int32_t adc)
 {
   //ADC value should not be more than saturation
   if (adc < 0) { fCharge = 0; }
@@ -42,8 +42,8 @@ void CbmMuchDigi::SetAdc(Int_t adc)
     fCharge = adc;
   }
   // if Saturation
-  //       	Int_t saturation = (1<<12); //2 ^ 12 - 1;
-  Int_t saturation = (1 << 5);  //2 ^ 5 - 1; // 32 for 5 bit adc*** modified by Ekata Nandy on 25/06/19***
+  //       	int32_t saturation = (1<<12); //2 ^ 12 - 1;
+  int32_t saturation = (1 << 5);  //2 ^ 5 - 1; // 32 for 5 bit adc*** modified by Ekata Nandy on 25/06/19***
   if (fCharge >= saturation) {
     //fCharge=saturation-1;
     fCharge         = saturation;  //As ADC value starts from 1, so -1 removed. Modified by Ekata Nandy on 25/06/19
@@ -55,7 +55,7 @@ void CbmMuchDigi::SetAdc(Int_t adc)
 
 
 // -------------------------------------------------------------------------
-void CbmMuchDigi::SetTime(ULong64_t time) { fTime = time; }
+void CbmMuchDigi::SetTime(uint64_t time) { fTime = time; }
 // -------------------------------------------------------------------------
 
 ClassImp(CbmMuchDigi)

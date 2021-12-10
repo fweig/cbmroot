@@ -12,7 +12,7 @@
  ** @brief Data level: TDC CALIB
  ** @version 1.0
  **
- ** The information is encoded into 3*4 bytes (2 Double_t + 1 UInt_t).
+ ** The information is encoded into 3*4 bytes (2 double + 1 uint32_t).
  ** Unique Address:                32 bits following CbmTofAddress
  ** Calibrated Time [ps]:          32 bits double
  ** Calibrated Tot  [ps]:          32 bits double
@@ -30,11 +30,11 @@
 #include "CbmTofAddress.h"  // for CbmTofAddress
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Double_t, UInt_t, Int_t, Bool_t, kTRUE
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 
+#include <cstdint>
 #include <string>  // for string
 
 //class CbmMatch;
@@ -52,7 +52,7 @@ public:
        ** @param[in] time    Absolute time [ps].
        ** @param[in] tot     Time Over Threshold [ps].
        **/
-  CbmTofDigi(UInt_t address, Double_t time, Double_t tot);
+  CbmTofDigi(uint32_t address, double time, double tot);
 
   /**
        ** @brief Constructor with detailled assignment.
@@ -64,7 +64,8 @@ public:
        ** @param[in] Side    Channel Side (optional, used for strips). (cf CbmTofAddress)
        ** @param[in] Sm Type Super Module Type (optional). (cf CbmTofAddress)
        **/
-  CbmTofDigi(UInt_t Sm, UInt_t Rpc, UInt_t Channel, Double_t time, Double_t tot, UInt_t Side = 0, UInt_t SmType = 0);
+  CbmTofDigi(uint32_t Sm, uint32_t Rpc, uint32_t Channel, double time, double tot, uint32_t Side = 0,
+             uint32_t SmType = 0);
 
   /**
        ** @brief Copy constructor.
@@ -93,7 +94,7 @@ public:
   /**
           ** @brief Inherited from CbmDigi.
           **/
-  Int_t GetAddress() const { return fuAddress; };
+  int32_t GetAddress() const { return fuAddress; };
 
 
   /** @brief Get the desired name of the branch for this obj in the cbm output tree  (static)
@@ -112,50 +113,50 @@ public:
   /**
           ** @brief Inherited from CbmDigi.
           **/
-  Double_t GetTime() const { return fdTime; };
+  double GetTime() const { return fdTime; };
 
   /**
           ** @brief Inherited from CbmDigi.
           **/
-  Double_t GetCharge() const { return fdTot; };
+  double GetCharge() const { return fdTot; };
   /**
           ** @brief Alias for GetCharge.
           **/
-  Double_t GetTot() const { return GetCharge(); };
+  double GetTot() const { return GetCharge(); };
   /**
           ** @brief Sm.
           **/
-  Double_t GetSm() const { return CbmTofAddress::GetSmId(GetAddress()); };
+  double GetSm() const { return CbmTofAddress::GetSmId(GetAddress()); };
   /**
           ** @brief Sm Type .
           **/
-  Double_t GetType() const { return CbmTofAddress::GetSmType(GetAddress()); };
+  double GetType() const { return CbmTofAddress::GetSmType(GetAddress()); };
   /**
           ** @brief Detector aka Module aka RPC .
           **/
-  Double_t GetRpc() const { return CbmTofAddress::GetRpcId(GetAddress()); };
+  double GetRpc() const { return CbmTofAddress::GetRpcId(GetAddress()); };
   /**
           ** @brief Channel .
           **/
-  Double_t GetChannel() const { return CbmTofAddress::GetChannelId(GetAddress()); };
+  double GetChannel() const { return CbmTofAddress::GetChannelId(GetAddress()); };
   /**
           ** @brief Channel Side.
           **/
-  Double_t GetSide() const { return CbmTofAddress::GetChannelSide(GetAddress()); };
+  double GetSide() const { return CbmTofAddress::GetChannelSide(GetAddress()); };
 
   /** Modifiers **/
-  void SetAddress(Int_t address) { fuAddress = address; };
-  void SetAddress(UInt_t Sm, UInt_t Rpc, UInt_t Channel, UInt_t Side = 0, UInt_t SmType = 0);
-  void SetTime(Double_t time) { fdTime = time; };
-  void SetTot(Double_t tot) { fdTot = tot; };
+  void SetAddress(int32_t address) { fuAddress = address; };
+  void SetAddress(uint32_t Sm, uint32_t Rpc, uint32_t Channel, uint32_t Side = 0, uint32_t SmType = 0);
+  void SetTime(double time) { fdTime = time; };
+  void SetTot(double tot) { fdTot = tot; };
 
   std::string ToString() const;
 
 
 private:
-  Double_t fdTime;   ///< Absolute time [ps]
-  Double_t fdTot;    ///< Tot [ps]
-  UInt_t fuAddress;  ///< Unique channel address
+  double fdTime;       ///< Absolute time [ps]
+  double fdTot;        ///< Tot [ps]
+  uint32_t fuAddress;  ///< Unique channel address
 
   friend class boost::serialization::access;
 

@@ -13,14 +13,13 @@
 #include "CbmLink.h"
 #include "CbmMCEventInfo.h"  // for CbmMCEventInfo
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for UInt_t, Bool_t, Double_t, Int_t, Option_t
-#include <TNamed.h>      // for TNamed
+#include <Rtypes.h>  // for THashConsistencyHolder, ClassDef
+#include <TNamed.h>  // for TNamed
 
+#include <cstddef>  // for size_t
+#include <cstdint>
 #include <string>  // for string
 #include <vector>  // for vector, vector<>::iterator
-
-#include <stddef.h>  // for size_t
 
 /* Implementation note (VF/180618):
  * Both indexed access (for loops over all MC events in a time slice)
@@ -61,7 +60,7 @@ public:
      **
      ** Returns -1 if the index is out of bounds.
      **/
-  Int_t GetEventIdByIndex(UInt_t index);
+  int32_t GetEventIdByIndex(uint32_t index);
 
 
   /** @brief Event start time
@@ -71,7 +70,7 @@ public:
      **
      ** Returns -1. if the event is not present in the list.
      **/
-  Double_t GetEventTime(UInt_t event, UInt_t file);
+  double GetEventTime(uint32_t event, uint32_t file);
 
   /** @brief Event start time
    * * @param link link to the MC event
@@ -83,7 +82,7 @@ public:
      **
      ** Returns -1. if the index is out of bounds.
      **/
-  Double_t GetEventTimeByIndex(UInt_t index);
+  double GetEventTimeByIndex(uint32_t index);
 
 
   /** @brief File number by index
@@ -91,7 +90,7 @@ public:
      **
      ** Returns -1 if the index is out of bounds.
      **/
-  Int_t GetFileIdByIndex(UInt_t index);
+  int32_t GetFileIdByIndex(uint32_t index);
 
   /** @brief Event index
      ** @param event  MC event number
@@ -117,15 +116,15 @@ public:
      ** @param event  MC event number
      ** @param file   MC input file number
      ** @param time   MC event start time [ns]
-     ** @value kFALSE if (file, event) is already in the list. Else kTRUE.
+     ** @value false if (file, event) is already in the list. Else true.
      **
      ** If the event from the given file is already in the list, the list
-     ** will not be modified and kFALSE is returned.
+     ** will not be modified and false is returned.
      **
-     ** Negative event times are not allowed. In that case, kFALSE is
+     ** Negative event times are not allowed. In that case, false is
      ** returned and the list will not be modified.
      */
-  Bool_t Insert(UInt_t event, UInt_t file, Double_t time);
+  bool Insert(uint32_t event, uint32_t file, double time);
 
 
   /** Print to screen **/
@@ -151,20 +150,20 @@ private:
   std::vector<CbmMCEventInfo> fEvents;
 
   /** Flag whether list has been sorted **/
-  Bool_t fIsSorted;
+  bool fIsSorted;
 
 
   /** @brief Check for double occurrences of events in list
-     ** @value kTRUE is no double occurrences, else kFALSE
+     ** @value true is no double occurrences, else false
      **/
-  Bool_t Check();
+  bool Check();
 
 
   /** @brief Find an element in the list
      ** @param file  Input file ID
      ** @param event MC event number (index)
      **/
-  std::vector<CbmMCEventInfo>::iterator Find(UInt_t file, UInt_t event);
+  std::vector<CbmMCEventInfo>::iterator Find(uint32_t file, uint32_t event);
 
 
   ClassDef(CbmMCEventList, 3);

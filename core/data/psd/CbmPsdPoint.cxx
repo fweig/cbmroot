@@ -20,8 +20,8 @@ CbmPsdPoint::CbmPsdPoint() : FairMCPoint(), fModuleID(0) {}
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmPsdPoint::CbmPsdPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t tof, Double_t length,
-                         Double_t eLoss)
+CbmPsdPoint::CbmPsdPoint(int32_t trackID, int32_t detID, TVector3 pos, TVector3 mom, double tof, double length,
+                         double eLoss)
   : FairMCPoint(trackID, detID, pos, mom, tof, length, eLoss)
   , fModuleID(0)
 {

@@ -16,8 +16,8 @@
 #include <FairMCPoint.h>  // for FairMCPoint
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t, UShort_t
 
+#include <cstdint>
 #include <string>  // for string
 
 class TVector3;
@@ -57,7 +57,7 @@ public:
    ** @param length   Track length since creation [cm]
    ** @param eLoss    Energy deposit [GeV]
    **/
-  CbmTofPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t tof, Double_t length, Double_t eLoss);
+  CbmTofPoint(int32_t trackID, int32_t detID, TVector3 pos, TVector3 mom, double tof, double length, double eLoss);
 
 
   /** @brief Destructor **/
@@ -67,55 +67,55 @@ public:
   /** @brief Number of traversed cells
    ** @value Number of traversed cells
    **/
-  Int_t GetNCells() const { return fNofCells; }
+  int32_t GetNCells() const { return fNofCells; }
 
 
   /** @brief Number of traversed gaps
    ** @value Number of traversed gaps
    **/
-  Int_t GetNGaps() const;
+  int32_t GetNGaps() const;
 
 
   /** @brief Index of first traversed gap
    ** @value First gap index
    **/
-  Int_t GetFirstGap() const;
+  int32_t GetFirstGap() const;
 
 
   /** @brief Index of last traversed gap
    ** @value Last gap index
    **/
-  Int_t GetLastGap() const;
+  int32_t GetLastGap() const;
 
 
   /** @brief Set x component of momentum
    ** @param pX  x component of momentum [GeV]
    **/
-  void SetPx(Double_t pX) { fPx = pX; }
+  void SetPx(double pX) { fPx = pX; }
 
 
   /** @brief Set y component of momentum
    ** @param pY  y component of momentum [GeV]
    **/
-  void SetPy(Double_t pY) { fPy = pY; }
+  void SetPy(double pY) { fPy = pY; }
 
 
   /** @brief Set z component of momentum
    ** @param pZ  z component of momentum [GeV]
    **/
-  void SetPz(Double_t pZ) { fPz = pZ; }
+  void SetPz(double pZ) { fPz = pZ; }
 
 
   /** @brief Set the number of traversed cells
    ** @param nCells  Number of traversed cells
    **/
-  void SetNCells(Int_t nCells) { fNofCells = nCells; }
+  void SetNCells(int32_t nCells) { fNofCells = nCells; }
 
 
   /** @brief Set a gap in the gap mask
    ** @param iGap  Gap number
    **/
-  void SetGap(Int_t iGap);
+  void SetGap(int32_t iGap);
 
 
   /** @brief String representation of the object.
@@ -125,8 +125,8 @@ public:
 
 
 private:
-  Int_t fNofCells;    /// Number of cells traversed
-  UShort_t fGapMask;  /// Set of gaps traversed
+  int32_t fNofCells;  /// Number of cells traversed
+  uint16_t fGapMask;  /// Set of gaps traversed
 
 
   ClassDef(CbmTofPoint, 4)

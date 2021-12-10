@@ -8,14 +8,14 @@
 #include "compareFairMCPoint.h"
 #include "gtest/gtest.h"
 
-void comparePsdPointDataMembers(CbmPsdPoint& test, Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t tof,
-                                Double_t length, Double_t eLoss, Int_t moduleid, Int_t eventid)
+void comparePsdPointDataMembers(CbmPsdPoint& test, int32_t trackID, int32_t detID, TVector3 pos, TVector3 mom,
+                                double tof, double length, double eLoss, int32_t moduleid, int32_t eventid)
 {
 
   FairMCPoint test1 = static_cast<FairMCPoint>(test);
   compareFairMCPointDataMembers(test1, trackID, detID, pos, mom, tof, length, eLoss, eventid);
 
-  Int_t retValInt {-222};
+  int32_t retValInt {-222};
 
   retValInt = test.GetModuleID();
   EXPECT_EQ(moduleid, retValInt);

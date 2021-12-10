@@ -14,9 +14,9 @@
 #include "CbmMatch.h"  // for CbmMatch
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Double_t, Int_t, Bool_t, kFALSE
 #include <TNamed.h>      // for TNamed
 
+#include <cstdint>
 #include <map>     // for map
 #include <string>  // for string
 
@@ -53,7 +53,7 @@ public:
      ** @param start    Start time of time slice [ns]
      ** @param duration Duration of time slice [ns]
      */
-  CbmTimeSlice(Double_t start, Double_t duration);
+  CbmTimeSlice(double start, double duration);
 
 
   /** Destructor **/
@@ -68,20 +68,20 @@ public:
   void AddData(ECbmModuleId detector)
   {
     fNofData[detector]++;
-    fIsEmpty = kFALSE;
+    fIsEmpty = false;
   }
   // TODO: Obsolete, remove
 
   /** @brief Add data with time to time-slice
      ** @param detector  System ID (ECbmModuleId)
      ** @param time      Data time [ns]
-     ** @value kFALSE if time is out of time-slice bounds; else kTRUE
+     ** @value false if time is out of time-slice bounds; else true
      **
      ** The respective counter will be incremented.
      ** Time of data is checked with time-slice bounds.
      ** Time of first and last data are updated.
      **/
-  Bool_t AddData(ECbmModuleId detector, Double_t time);
+  bool AddData(ECbmModuleId detector, double time);
   // TODO: Obsolete, remove
 
 
@@ -89,14 +89,14 @@ public:
      ** @param detector  system ID (ECbmModuleId)
      ** @value Size of raw data container (number of digis)
      **/
-  Int_t GetNofData(ECbmModuleId detector) const;
+  int32_t GetNofData(ECbmModuleId detector) const;
 
 
   /** Duration of time slice
      **
      ** @return duration [ns]
      **/
-  Double_t GetLength() const { return fLength; }
+  double GetLength() const { return fLength; }
 
 
   /** Get match object
@@ -111,7 +111,7 @@ public:
      ** If the type of the time slice is kEvent, the method returns the
      ** event time.
      **/
-  Double_t GetStartTime() const { return fStartTime; }
+  double GetStartTime() const { return fStartTime; }
 
 
   /** End time of time slice
@@ -120,69 +120,69 @@ public:
      ** If the type of the time slice is kEvent, the method returns the
      ** event time.
      **/
-  Double_t GetEndTime() const;
+  double GetEndTime() const;
 
 
   /** @brief Time stamp of first data
      ** @return Time stamp of first data [ns]
      **/
-  Double_t GetTimeDataFirst() const { return fTimeDataFirst; }
+  double GetTimeDataFirst() const { return fTimeDataFirst; }
 
 
   /** @brief Time stamp of last data
      ** @return Time stamp of last data [ns]
      **/
-  Double_t GetTimeDataLast() const { return fTimeDataLast; }
+  double GetTimeDataLast() const { return fTimeDataLast; }
 
 
   /** Check whether time slice contains data
-     ** @return kTRUE if time slice contains data
+     ** @return true if time slice contains data
      **/
-  Bool_t IsEmpty() const { return fNofData.empty(); }
+  bool IsEmpty() const { return fNofData.empty(); }
 
 
   /** Check for being of type regular
-     ** @return kTRUE if type is regular
+     ** @return true if type is regular
      **/
-  Bool_t IsEvent() const { return fType == kEvent; }
+  bool IsEvent() const { return fType == kEvent; }
 
 
   /** Check for being of type regular
-     ** @return kTRUE if type is regular
+     ** @return true if type is regular
      **/
-  Bool_t IsFlexible() const { return fType == kFlexible; }
+  bool IsFlexible() const { return fType == kFlexible; }
 
 
   /** Check for being of type regular
-     ** @return kTRUE if type is regular
+     ** @return true if type is regular
      **/
-  Bool_t IsRegular() const { return fType == kRegular; }
+  bool IsRegular() const { return fType == kRegular; }
 
 
   /** @brief Register data to time-slice header
      ** @param system    System ID (ECbmModuleId)
      ** @param time      Data time [ns]
-     ** @value kFALSE if time is out of time-slice bounds; else kTRUE
+     ** @value false if time is out of time-slice bounds; else true
      **
      ** The respective counter will be incremented.
      ** Time of data is checked with time-slice bounds.
      ** Time of first and last data are updated.
      **/
-  Bool_t RegisterData(ECbmModuleId system, Double_t time);
+  bool RegisterData(ECbmModuleId system, double time);
 
 
   /** @brief Register data to time-slice header (with match object)
      ** @param system    System ID (ECbmModuleId)
      ** @param time      Data time [ns]
      ** @param match     Reference to digi match object
-     ** @value kFALSE if time is out of time-slice bounds; else kTRUE
+     ** @value false if time is out of time-slice bounds; else true
      **
      ** The respective counter will be incremented.
      ** Time of data is checked with time-slice bounds.
      ** Time of first and last data are updated.
      ** The match objects of the time slice is updated.
      **/
-  Bool_t RegisterData(ECbmModuleId system, Double_t time, const CbmMatch& match);
+  bool RegisterData(ECbmModuleId system, double time, const CbmMatch& match);
 
 
   /** @brief Reset the time slice
@@ -199,13 +199,13 @@ public:
      ** Reset start time, length and counters.
      ** If used in mode kFlexible or kEvent, the arguments are ignored.
      **/
-  void Reset(Double_t start, Double_t length);
+  void Reset(double start, double length);
 
 
   /** @brief Set start time
      ** @param time Start time [ns]
      **/
-  void SetStartTime(Double_t time) { fStartTime = time; }
+  void SetStartTime(double time) { fStartTime = time; }
 
 
   /** Status to string **/
@@ -221,12 +221,12 @@ public:
 
 private:
   EType fType;                             ///< Time-slice type
-  Double_t fStartTime;                     ///< Start time [ns]
-  Double_t fLength;                        ///< Length of time-slice [ns]
-  Bool_t fIsEmpty;                         ///< Flag for containing no data
-  std::map<ECbmModuleId, Int_t> fNofData;  ///< SystemId -> Number of digis
-  Double_t fTimeDataFirst;                 ///< Time of first data object
-  Double_t fTimeDataLast;                  ///< Time of last data object
+  double fStartTime;                       ///< Start time [ns]
+  double fLength;                          ///< Length of time-slice [ns]
+  bool fIsEmpty;                           ///< Flag for containing no data
+  std::map<ECbmModuleId, int32_t> fNofData;  ///< SystemId -> Number of digis
+  double fTimeDataFirst;                     ///< Time of first data object
+  double fTimeDataLast;                      ///< Time of last data object
   CbmMatch fMatch;                         ///< Link time slice to events
 
 

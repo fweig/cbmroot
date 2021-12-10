@@ -21,8 +21,8 @@ CbmRichPoint::CbmRichPoint() : FairMCPoint() {}
 
 
 // -----   Standard constructor   ------------------------------------------
-CbmRichPoint::CbmRichPoint(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t tof, Double_t length,
-                           Double_t eLoss)
+CbmRichPoint::CbmRichPoint(int32_t trackID, int32_t detID, TVector3 pos, TVector3 mom, double tof, double length,
+                           double eLoss)
   : FairMCPoint(trackID, detID, pos, mom, tof, length, eLoss)
 {
 }

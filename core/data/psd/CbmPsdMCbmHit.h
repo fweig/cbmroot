@@ -20,9 +20,9 @@
 #define CBMPSDMCBMHIT_H
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Double_t, Int_t
 #include <TObject.h>     // for TObject
 
+#include <cstdint>
 #include <string>  // for string
 
 class CbmPsdMCbmHit : public TObject {
@@ -37,7 +37,7 @@ public:
      ** @param energy      Energy deposition
      ** @param time        Hit time [ns]
      **/
-  CbmPsdMCbmHit(UInt_t moduleId, UInt_t sectionId, Double_t energy, Double_t time);
+  CbmPsdMCbmHit(uint32_t moduleId, uint32_t sectionId, double energy, double time);
 
 
   /** Destructor **/
@@ -51,38 +51,38 @@ public:
   /** @brief  Index of PSD module
      ** @value  module index []
      **/
-  Int_t GetModuleID() const { return fuModuleId; }
+  int32_t GetModuleID() const { return fuModuleId; }
 
 
   /** @brief  Index of PSD section
      ** @value  section index []
      **/
-  Double_t GetSectionID() const { return fuSectionId; }
+  double GetSectionID() const { return fuSectionId; }
 
 
   /** @brief  Energy deposited in PSD section
      ** @value  Energy [a.u.]
      **/
-  Double_t GetEdep() const { return fdEdep; }
+  double GetEdep() const { return fdEdep; }
 
 
   /** @brief  Time of the signal
      ** @value  Time [ns]
      **/
-  Int_t GetTime() const { return fdTime; }
+  int32_t GetTime() const { return fdTime; }
 
 
   /** Modifiers **/
-  void SetModuleID(UInt_t mod) { fuModuleId = mod; }
-  void SetSectionID(UInt_t sec) { fuSectionId = sec; }
-  void SetEdep(Double_t edep) { fdEdep = edep; }
-  void SetTime(Double_t time) { fdTime = time; }
+  void SetModuleID(uint32_t mod) { fuModuleId = mod; }
+  void SetSectionID(uint32_t sec) { fuSectionId = sec; }
+  void SetEdep(double edep) { fdEdep = edep; }
+  void SetTime(double time) { fdTime = time; }
 
 private:
-  UInt_t fuModuleId  = 0;    /// Module index
-  UInt_t fuSectionId = 0;    /// Section index
-  Double_t fdEdep    = 0.;   /// Energy deposition
-  Double_t fdTime    = -1.;  /// Time of measurement
+  uint32_t fuModuleId  = 0;    /// Module index
+  uint32_t fuSectionId = 0;    /// Section index
+  double fdEdep        = 0.;   /// Energy deposition
+  double fdTime        = -1.;  /// Time of measurement
 
   ClassDef(CbmPsdMCbmHit, 1)
 };

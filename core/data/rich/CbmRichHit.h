@@ -16,8 +16,8 @@
 #include "CbmPixelHit.h"  // for CbmPixelHit
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Double_t, Int_t
 
+#include <cstdint>
 #include <string>  // for string
 
 class CbmRichHit : public CbmPixelHit {
@@ -31,12 +31,12 @@ public:
   /**
    * \brief Constructor with input hit coordinates.
    */
-  CbmRichHit(Double_t x, Double_t y);
+  CbmRichHit(double x, double y);
 
   /**
    * \brief Constructor with input hit coordinates, timestamp and ToT.
    */
-  CbmRichHit(Double_t x, Double_t y, Double_t ts, Double_t tot);
+  CbmRichHit(double x, double y, double ts, double tot);
 
   /**
    * \brief Destructor.
@@ -51,30 +51,30 @@ public:
   /**
    * \brief Inherited from CbmBaseHit.
    */
-  virtual Int_t GetPlaneId() const { return 0; }
+  virtual int32_t GetPlaneId() const { return 0; }
 
   /** Modifiers **/
-  virtual void SetPmtId(Int_t det) { fPmtId = det; }
-  //virtual void SetNPhotons (Int_t n) { fNPhotons = n; }
-  //virtual void SetAmplitude(Double_t amp) { fAmplitude = amp; }
-  void SetToT(Double_t tot) { fToT = tot; }
+  virtual void SetPmtId(int32_t det) { fPmtId = det; }
+  //virtual void SetNPhotons (int32_t n) { fNPhotons = n; }
+  //virtual void SetAmplitude(double amp) { fAmplitude = amp; }
+  void SetToT(double tot) { fToT = tot; }
 
   /** Accessors **/
-  virtual Int_t GetPmtId() const { return fPmtId; }
-  //virtual Int_t GetNPhotons() const { return fNPhotons; }
-  //virtual Double_t GetAmplitude() const { return fAmplitude; }
-  Double_t GetToT() const { return fToT; }
+  virtual int32_t GetPmtId() const { return fPmtId; }
+  //virtual int32_t GetNPhotons() const { return fNPhotons; }
+  //virtual double GetAmplitude() const { return fAmplitude; }
+  double GetToT() const { return fToT; }
 
   /** Outdated. Use CbmHit::GetTime() and SetTime() instead. **/
-  // Double_t GetTimestamp() const { return GetTime(); }
-  // void SetTimestamp(Double_t ts) { SetTime(ts); }
+  // double GetTimestamp() const { return GetTime(); }
+  // void SetTimestamp(double ts) { SetTime(ts); }
 
 private:
-  Int_t fPmtId;  // photomultiplier number
-  //Int_t fNPhotons; // number of photons in this hit
-  //Double32_t fAmplitude; // hit amplitude
+  int32_t fPmtId;  // photomultiplier number
+  //int32_t fNPhotons; // number of photons in this hit
+  //double fAmplitude; // hit amplitude
 
-  Double_t fToT;  // hit time-over-threshold
+  double fToT;  // hit time-over-threshold
 
   ClassDef(CbmRichHit, 3)
 };

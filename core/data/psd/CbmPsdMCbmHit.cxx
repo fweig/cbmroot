@@ -20,7 +20,7 @@ CbmPsdMCbmHit::CbmPsdMCbmHit() : TObject(), fuModuleId(0), fuSectionId(0), fdEde
 
 
 // -----   Constructor with parameters
-CbmPsdMCbmHit::CbmPsdMCbmHit(UInt_t ModuleId, UInt_t SectionId, Double_t Edep, Double_t Time)
+CbmPsdMCbmHit::CbmPsdMCbmHit(uint32_t ModuleId, uint32_t SectionId, double Edep, double Time)
   : TObject()
   , fuModuleId(ModuleId)
   , fuSectionId(SectionId)

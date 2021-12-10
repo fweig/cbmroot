@@ -13,7 +13,6 @@
 #define CBMRICHRINGLIGHT_H_
 
 #include <vector>
-
 #include <cmath>
 
 class CbmRichHitLight {

@@ -12,15 +12,15 @@
 #ifndef CBMTOFTRACKLETPARAM_H_
 #define CBMTOFTRACKLETPARAM_H_
 
-#include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Double_t
-#include <TObject.h>     // for TObject
-#include <TVector3.h>    // for TVector3
+#include <Rtypes.h>    // for ClassDef
+#include <TObject.h>   // for TObject
+#include <TVector3.h>  // for TVector3
 
+#include <cstdint>
 #include <sstream>  // for operator<<, basic_ostream, stringstream, cha...
 #include <vector>   // for vector
 
-#include <math.h>  // for abs, sqrt
+#include <cmath>  // for abs, sqrt
 
 /**
  * built by on 
@@ -55,32 +55,32 @@ public:
   virtual ~CbmTofTrackletParam() {}
 
   /* Getters */
-  Double_t GetX() const { return fX; }
-  Double_t GetY() const { return fY; }
-  Double_t GetZ() const { return fZ; }
-  Double_t GetT() const { return fT; }
-  Double_t GetLz() const { return fLz; }
-  Double_t GetTx() const { return fTx; }
-  Double_t GetTy() const { return fTy; }
-  Double_t GetTt() const { return fTt; }
-  Double_t GetQp() const { return fQp; }
-  Double_t GetChiSq() const { return fChiSq; }
-  Double_t GetCovariance(int index) const { return fCovMatrix[index]; }
-  const std::vector<Double_t>& GetCovMatrix() const { return fCovMatrix; }
+  double GetX() const { return fX; }
+  double GetY() const { return fY; }
+  double GetZ() const { return fZ; }
+  double GetT() const { return fT; }
+  double GetLz() const { return fLz; }
+  double GetTx() const { return fTx; }
+  double GetTy() const { return fTy; }
+  double GetTt() const { return fTt; }
+  double GetQp() const { return fQp; }
+  double GetChiSq() const { return fChiSq; }
+  double GetCovariance(int index) const { return fCovMatrix[index]; }
+  const std::vector<double>& GetCovMatrix() const { return fCovMatrix; }
 
   /* Setters */
-  void SetX(Double_t x) { fX = x; }
-  void SetY(Double_t y) { fY = y; }
-  void SetZ(Double_t z) { fZ = z; }
-  void SetT(Double_t t) { fT = t; }
-  void SetLz(Double_t lz) { fLz = lz; }
-  void SetTx(Double_t tx) { fTx = tx; }
-  void SetTy(Double_t ty) { fTy = ty; }
-  void SetTt(Double_t tt) { fTt = tt; }
-  void SetQp(Double_t qp) { fQp = qp; }
-  void SetChiSq(Double_t v) { fChiSq = v; }
-  void SetCovMatrix(const std::vector<Double_t>& C) { fCovMatrix.assign(C.begin(), C.end()); }
-  void SetCovariance(int index, Double_t cov) { fCovMatrix[index] = cov; }
+  void SetX(double x) { fX = x; }
+  void SetY(double y) { fY = y; }
+  void SetZ(double z) { fZ = z; }
+  void SetT(double t) { fT = t; }
+  void SetLz(double lz) { fLz = lz; }
+  void SetTx(double tx) { fTx = tx; }
+  void SetTy(double ty) { fTy = ty; }
+  void SetTt(double tt) { fTt = tt; }
+  void SetQp(double qp) { fQp = qp; }
+  void SetChiSq(double v) { fChiSq = v; }
+  void SetCovMatrix(const std::vector<double>& C) { fCovMatrix.assign(C.begin(), C.end()); }
+  void SetCovariance(int index, double cov) { fCovMatrix[index] = cov; }
 
   /**
     * \brief Return direction cosines.
@@ -88,12 +88,12 @@ public:
     * \param[out] ny Output direction cosine for OY axis.
     * \param[out] nz Output direction cosine for OZ axis.
     */
-  void GetDirCos(Double_t& nx, Double_t& ny, Double_t& nz) const
+  void GetDirCos(double& nx, double& ny, double& nz) const
   {
-    Double_t p    = (std::abs(fQp) != 0.) ? 1. / std::abs(fQp) : 1.e20;
-    Double_t pz   = std::sqrt(p * p / (fTx * fTx + fTy * fTy + 1));
-    Double_t px   = fTx * pz;
-    Double_t py   = fTy * pz;
+    double p      = (std::abs(fQp) != 0.) ? 1. / std::abs(fQp) : 1.e20;
+    double pz     = std::sqrt(p * p / (fTx * fTx + fTy * fTy + 1));
+    double px     = fTx * pz;
+    double py     = fTy * pz;
     TVector3 unit = TVector3(px, py, pz).Unit();
     nx            = unit.X();
     ny            = unit.Y();
@@ -104,9 +104,9 @@ public:
     * \brief Return state vector as vector.
     * \return State vector as vector.
     */
-  std::vector<Double_t> GetStateVector() const
+  std::vector<double> GetStateVector() const
   {
-    std::vector<Double_t> state(5, 0.);
+    std::vector<double> state(5, 0.);
     state[0] = GetX();
     state[1] = GetY();
     state[2] = GetTx();
@@ -119,7 +119,7 @@ public:
     * \brief Set parameters from vector.
     * \param[in] x State vector.
     */
-  void SetStateVector(const std::vector<Double_t>& x)
+  void SetStateVector(const std::vector<double>& x)
   {
     SetX(x[0]);
     SetY(x[1]);
@@ -138,7 +138,7 @@ public:
     ss << "TofTrackletParam: pos=(" << fX << "," << fY << "," << fZ << ") tx=" << fTx << " ty=" << fTy
        << " qp=" << fQp;  // << std::endl;
                           // ss << "cov: ";
-    // for (Int_t i = 0; i < 15; i++) ss << fCovMatrix[i] << " ";
+    // for (int32_t i = 0; i < 15; i++) ss << fCovMatrix[i] << " ";
     // ss << endl;
     ss.precision(3);
     ss << " cov: x=" << fCovMatrix[0] << " y=" << fCovMatrix[5] << " tx=" << fCovMatrix[9] << " ty=" << fCovMatrix[12]
@@ -146,9 +146,9 @@ public:
     return ss.str();
   }
 
-  Double_t GetZr(Double_t R) const;
+  double GetZr(double R) const;
 
-  Double_t GetZy(Double_t Y) const
+  double GetZy(double Y) const
   {
     if (fTy != 0.) { return (Y - fY) / fTy + fZ; }
     return 0.;
@@ -156,15 +156,15 @@ public:
 
 
 private:
-  Double_t fX, fY, fZ, fT;  // X, Y, Z coordinates in [cm]
-  Double_t fTx, fTy, fTt;   // Slopes: tx=dx/dz, ty=dy/dz
-  Double_t fQp;             // Q/p: Q is a charge (+/-1), p is momentum in [GeV/c]
-  Double_t fLz;             // tracklength in z - direction
-  Double_t fChiSq;
+  double fX, fY, fZ, fT;  // X, Y, Z coordinates in [cm]
+  double fTx, fTy, fTt;   // Slopes: tx=dx/dz, ty=dy/dz
+  double fQp;             // Q/p: Q is a charge (+/-1), p is momentum in [GeV/c]
+  double fLz;             // tracklength in z - direction
+  double fChiSq;
   /* Covariance matrix.
     * Upper triangle symmetric matrix.
     * a[0,0..4], a[1,1..4], a[2,2..4], a[3,3..4], a[4,4] */
-  std::vector<Double_t> fCovMatrix;
+  std::vector<double> fCovMatrix;
 
   ClassDef(CbmTofTrackletParam, 1);
 };

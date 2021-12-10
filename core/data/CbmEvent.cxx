@@ -16,7 +16,7 @@
 
 
 // -----   Add data to event   ---------------------------------------------
-void CbmEvent::AddData(ECbmDataType type, UInt_t index)
+void CbmEvent::AddData(ECbmDataType type, uint32_t index)
 {
 
   fIndexMap[type].push_back(index);
@@ -26,7 +26,7 @@ void CbmEvent::AddData(ECbmDataType type, UInt_t index)
 
 
 // -----   Get a data index   ----------------------------------------------
-UInt_t CbmEvent::GetIndex(ECbmDataType type, UInt_t iData)
+uint32_t CbmEvent::GetIndex(ECbmDataType type, uint32_t iData)
 {
 
   if (fIndexMap.find(type) == fIndexMap.end()) return -1;
@@ -37,7 +37,7 @@ UInt_t CbmEvent::GetIndex(ECbmDataType type, UInt_t iData)
 
 
 // -----   Get number of data of a type in this event   --------------------
-Int_t CbmEvent::GetNofData(ECbmDataType type) const
+int32_t CbmEvent::GetNofData(ECbmDataType type) const
 {
 
   if (fIndexMap.find(type) == fIndexMap.end()) return -1;
@@ -48,7 +48,7 @@ Int_t CbmEvent::GetNofData(ECbmDataType type) const
 
 
 // -----   Set the vertex parameters   -------------------------------------
-void CbmEvent::SetVertex(Double_t x, Double_t y, Double_t z, Double_t chi2, Int_t ndf, Int_t nTracks,
+void CbmEvent::SetVertex(double x, double y, double z, double chi2, int32_t ndf, int32_t nTracks,
                          const TMatrixFSym& covMat)
 {
   fVertex.SetVertex(x, y, z, chi2, ndf, nTracks, covMat);

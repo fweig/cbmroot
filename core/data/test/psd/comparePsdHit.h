@@ -7,10 +7,10 @@
 
 #include "gtest/gtest.h"
 
-void comparePsdHitDataMembers(CbmPsdHit& test, Int_t moduleid, Double_t edep)
+void comparePsdHitDataMembers(CbmPsdHit& test, int32_t moduleid, double edep)
 {
-  Int_t retValInt {-222};
-  Double_t retValDouble {-222.};
+  int32_t retValInt {-222};
+  double retValDouble {-222.};
 
   retValInt = test.GetModuleID();
   EXPECT_EQ(moduleid, retValInt);

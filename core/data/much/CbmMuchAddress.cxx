@@ -11,36 +11,36 @@
 
 
 // -----    Definition of the address field   -------------------------------
-const Int_t CbmMuchAddress::fgkBits[] = {fgkSystemBits,  // system = kMUCH
-                                         3,              // station
-                                         2,              // layer
-                                         1,              // layerside
-                                         5,              // module
-                                         8,              // sector
-                                         9};             // channel
+const int32_t CbmMuchAddress::fgkBits[] = {fgkSystemBits,  // system = kMUCH
+                                           3,              // station
+                                           2,              // layer
+                                           1,              // layerside
+                                           5,              // module
+                                           8,              // sector
+                                           9};             // channel
 // -------------------------------------------------------------------------
 
 // -----    Initialisation of bit shifts -----------------------------------
-const Int_t CbmMuchAddress::fgkShift[] = {0,
-                                          CbmMuchAddress::fgkShift[0] + CbmMuchAddress::fgkBits[0],
-                                          CbmMuchAddress::fgkShift[1] + CbmMuchAddress::fgkBits[1],
-                                          CbmMuchAddress::fgkShift[2] + CbmMuchAddress::fgkBits[2],
-                                          CbmMuchAddress::fgkShift[3] + CbmMuchAddress::fgkBits[3],
-                                          CbmMuchAddress::fgkShift[4] + CbmMuchAddress::fgkBits[4],
-                                          CbmMuchAddress::fgkShift[5] + CbmMuchAddress::fgkBits[5]};
+const int32_t CbmMuchAddress::fgkShift[] = {0,
+                                            CbmMuchAddress::fgkShift[0] + CbmMuchAddress::fgkBits[0],
+                                            CbmMuchAddress::fgkShift[1] + CbmMuchAddress::fgkBits[1],
+                                            CbmMuchAddress::fgkShift[2] + CbmMuchAddress::fgkBits[2],
+                                            CbmMuchAddress::fgkShift[3] + CbmMuchAddress::fgkBits[3],
+                                            CbmMuchAddress::fgkShift[4] + CbmMuchAddress::fgkBits[4],
+                                            CbmMuchAddress::fgkShift[5] + CbmMuchAddress::fgkBits[5]};
 // -------------------------------------------------------------------------
 
 
 // -----    Initialisation of bit masks  -----------------------------------
-const Int_t CbmMuchAddress::fgkMask[] = {(1 << fgkBits[0]) - 1, (1 << fgkBits[1]) - 1, (1 << fgkBits[2]) - 1,
-                                         (1 << fgkBits[3]) - 1, (1 << fgkBits[4]) - 1, (1 << fgkBits[5]) - 1,
-                                         (1 << fgkBits[6]) - 1};
+const int32_t CbmMuchAddress::fgkMask[] = {(1 << fgkBits[0]) - 1, (1 << fgkBits[1]) - 1, (1 << fgkBits[2]) - 1,
+                                           (1 << fgkBits[3]) - 1, (1 << fgkBits[4]) - 1, (1 << fgkBits[5]) - 1,
+                                           (1 << fgkBits[6]) - 1};
 // -------------------------------------------------------------------------
 
 
 // -----  Unique element address   -----------------------------------------
-UInt_t CbmMuchAddress::GetAddress(Int_t station, Int_t layer, Int_t layerside, Int_t module, Int_t sector,
-                                  Int_t channel)
+uint32_t CbmMuchAddress::GetAddress(int32_t station, int32_t layer, int32_t layerside, int32_t module, int32_t sector,
+                                    int32_t channel)
 {
 
   // Catch overrunning of allowed ranges
@@ -77,11 +77,11 @@ UInt_t CbmMuchAddress::GetAddress(Int_t station, Int_t layer, Int_t layerside, I
 
 
 // -----  Unique element address   -----------------------------------------
-UInt_t CbmMuchAddress::GetAddress(Int_t* elementId)
+uint32_t CbmMuchAddress::GetAddress(int32_t* elementId)
 {
 
-  UInt_t address = ToIntegralType(ECbmModuleId::kMuch) << fgkShift[kMuchSystem];
-  for (Int_t level = 1; level < kMuchNofLevels; level++) {
+  uint32_t address = ToIntegralType(ECbmModuleId::kMuch) << fgkShift[kMuchSystem];
+  for (int32_t level = 1; level < kMuchNofLevels; level++) {
     if (elementId[level] >= (1 << fgkBits[level])) {
       LOG(error) << "Id " << elementId[level] << " for MUCH level " << level << " exceeds maximum ("
                  << (1 << fgkBits[level]) - 1 << ")";
@@ -99,7 +99,7 @@ UInt_t CbmMuchAddress::GetAddress(Int_t* elementId)
 void CbmMuchAddress::Print()
 {
   LOG(info) << "Number of MUCH levels is " << kMuchNofLevels;
-  for (Int_t level = 0; level < kMuchNofLevels; level++)
+  for (int32_t level = 0; level < kMuchNofLevels; level++)
     LOG(info) << "Level " << std::setw(2) << std::right << level << ": bits " << std::setw(2) << fgkBits[level]
               << ", max. range " << std::setw(6) << fgkMask[level];
 }

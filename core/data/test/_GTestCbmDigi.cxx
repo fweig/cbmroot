@@ -43,15 +43,15 @@ public:
   }
 
   /** Unique channel address  **/
-  Int_t GetAddress() const { return CbmDigi::GetAddress(); }
+  int32_t GetAddress() const { return CbmDigi::GetAddress(); }
 
 
   /** System (enum DetectorId) **/
-  Int_t GetSystemId() const { return CbmDigi::GetSystemId(); };
+  int32_t GetSystemId() const { return CbmDigi::GetSystemId(); };
 
 
   /** Absolute time [ns]  **/
-  Double_t GetTime() const { return CbmDigi::GetTime(); }
+  double GetTime() const { return CbmDigi::GetTime(); }
 
   std::string ToString() const { return CbmDigi::ToString(); }
 };

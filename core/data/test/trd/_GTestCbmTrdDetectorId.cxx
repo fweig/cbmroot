@@ -45,23 +45,23 @@ class CbmTrdAddressTest : public _TestCbmTrdAddressBase<testing::Test> {
 
 TEST_F(CbmTrdAddressTest, CheckDefaultSettings)
 {
-  Int_t layerid          = 0;
-  Int_t moduleid         = 0;
-  Int_t sectorid         = 0;
-  Int_t rowid            = 0;
-  Int_t columnid         = 0;
-  Int_t detInfo_array[5] = {layerid, moduleid, sectorid, rowid, columnid};
+  int32_t layerid          = 0;
+  int32_t moduleid         = 0;
+  int32_t sectorid         = 0;
+  int32_t rowid            = 0;
+  int32_t columnid         = 0;
+  int32_t detInfo_array[5] = {layerid, moduleid, sectorid, rowid, columnid};
 
-  Int_t retVal = fTrdId.GetAddress(layerid, moduleid, sectorid, rowid, columnid);
+  int32_t retVal = fTrdId.GetAddress(layerid, moduleid, sectorid, rowid, columnid);
   EXPECT_EQ(0, retVal);
 }
 
 // This is the derived class for the parameterized test cases.
 class CbmTrdAddressParamTest : public _TestCbmTrdAddressBase<testing::TestWithParam<InOutStructure>> {
 protected:
-  Int_t detInfo_array[5];
-  Int_t modInfo_array[5];
-  Int_t result;
+  int32_t detInfo_array[5];
+  int32_t modInfo_array[5];
+  int32_t result;
 
   virtual void SetUp()
   {
@@ -86,22 +86,22 @@ protected:
 
 TEST_P(CbmTrdAddressParamTest, checkUniqueIdCreation)
 {
-  Int_t uniqueId =
+  int32_t uniqueId =
     fTrdId.GetAddress(detInfo_array[0], detInfo_array[1], detInfo_array[2], detInfo_array[3], detInfo_array[4]);
   EXPECT_EQ(result, uniqueId);
 
-  Int_t systemId = fTrdId.GetSystemId(uniqueId);
+  int32_t systemId = fTrdId.GetSystemId(uniqueId);
   EXPECT_EQ(kTrd, systemId);
 
   /*
-  Int_t sectorNr = fTrdId.GetSector(uniqueId);
+  int32_t sectorNr = fTrdId.GetSector(uniqueId);
   EXPECT_EQ(detInfo_array[5], sectorNr);
 
-  Int_t modId = fTrdId.SetDetectorInfo(modInfo_array);
-  Int_t newUniqueId = fTrdId.SetSector(modId, detInfo_array[5]);
+  int32_t modId = fTrdId.SetDetectorInfo(modInfo_array);
+  int32_t newUniqueId = fTrdId.SetSector(modId, detInfo_array[5]);
   EXPECT_EQ(result, newUniqueId);
 
-  Int_t newModId = fTrdId.GetModuleId(newUniqueId);
+  int32_t newModId = fTrdId.GetModuleId(newUniqueId);
   EXPECT_EQ(modId, newModId);
 */
 }
@@ -132,9 +132,9 @@ class CbmTrdAddressParamTest1 : public _TestCbmTrdAddressBase<
   testing::TestWithParam<InOutStructure> >
 {
  protected:  
-  Int_t detInfo_array[5];
-  Int_t result_array[5];
-  Int_t uniqueId;
+  int32_t detInfo_array[5];
+  int32_t result_array[5];
+  int32_t uniqueId;
 
   virtual void SetUp() {
     InOutStructure const& p = GetParam();
@@ -150,7 +150,7 @@ class CbmTrdAddressParamTest1 : public _TestCbmTrdAddressBase<
 
 TEST_P(CbmTrdAddressParamTest1, checkExtractInfoFromUniqueId)
 {
-  Int_t* retVal = fTrdId.GetAddress(uniqueId);
+  int32_t* retVal = fTrdId.GetAddress(uniqueId);
   for ( int i=0;i<5;i++) {
     EXPECT_EQ(result_array[i], retVal[i]);
   }

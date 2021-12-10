@@ -20,7 +20,7 @@
 using namespace std;
 
 CbmCluster::CbmCluster() : TObject(), fDigis(), fAddress(0), fMatch(nullptr) {}
-CbmCluster::CbmCluster(const std::vector<Int_t>& indices, Int_t address)
+CbmCluster::CbmCluster(const std::vector<int32_t>& indices, int32_t address)
   : TObject()
   , fDigis()
   , fAddress(address)
@@ -88,9 +88,9 @@ string CbmCluster::ToString() const
 {
   stringstream ss;
   ss << "CbmCluster: ";
-  Int_t nofDigis = GetNofDigis();
+  int32_t nofDigis = GetNofDigis();
   ss << "nofDigis=" << nofDigis << " | ";
-  for (Int_t i = 0; i < nofDigis; i++) {
+  for (int32_t i = 0; i < nofDigis; i++) {
     ss << fDigis[i] << " ";
   }
   ss << " | address=" << fAddress << endl;

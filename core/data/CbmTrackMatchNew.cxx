@@ -27,9 +27,9 @@ std::string CbmTrackMatchNew::ToString() const
 {
   stringstream ss;
   ss << "CbmMatch: ";
-  Int_t nofLinks = GetNofLinks();
+  int32_t nofLinks = GetNofLinks();
   ss << "nofLinks=" << nofLinks << "\n";
-  for (Int_t i = 0; i < nofLinks; i++) {
+  for (int32_t i = 0; i < nofLinks; i++) {
     const CbmLink& link = fLinks[i];
     ss << link.ToString();
   }

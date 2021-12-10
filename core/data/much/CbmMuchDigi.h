@@ -24,11 +24,11 @@
 #include "CbmMuchAddress.h"  // for CbmMuchAddress, kMuchModule
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, ULong64_t, UShort_t, Bool_t, Doub...
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
 
+#include <cstdint>
 #include <string>  // for string
 
 
@@ -42,7 +42,10 @@ public:
 	** @param  time     Measurement time [ns]
 	** @param  charge   Charge [ADC units]
  	**/
-  CbmMuchDigi(UInt_t address, UShort_t charge = 0, ULong64_t time = 0) : fTime(time), fAddress(address), fCharge(charge)
+  CbmMuchDigi(uint32_t address, uint16_t charge = 0, uint64_t time = 0)
+    : fTime(time)
+    , fAddress(address)
+    , fCharge(charge)
   {
   }
   //fMatch will be created in the CbmMuchSignal and should be deleted by that class destructor only.
@@ -61,7 +64,7 @@ public:
          ** Alias for GetAdc, conversion factor should be added if needed.
          ** For compatibility with template methods
          **/
-  Double_t GetCharge() const { return fCharge; }
+  double GetCharge() const { return fCharge; }
 
   //GetSystem is required due to CbmDigiManager
   /** System ID (static)
@@ -76,24 +79,24 @@ public:
   static const char* GetClassName() { return "CbmMuchDigi"; }
 
 
-  UShort_t GetAdc() const { return fCharge; }
+  uint16_t GetAdc() const { return fCharge; }
 
 
-  virtual Int_t GetAddress() const { return static_cast<Int_t>(fAddress); }
-  virtual Double_t GetTime() const { return static_cast<Double_t>(fTime); }
+  virtual int32_t GetAddress() const { return static_cast<int32_t>(fAddress); }
+  virtual double GetTime() const { return static_cast<double>(fTime); }
 
   // Setters
-  void SetAdc(Int_t adc);
-  void SetTime(ULong64_t time);
-  void SetSaturation(Bool_t saturate) { fSaturationFlag = saturate; }
-  void SetAddress(Int_t address) { fAddress = address; }
+  void SetAdc(int32_t adc);
+  void SetTime(uint64_t time);
+  void SetSaturation(bool saturate) { fSaturationFlag = saturate; }
+  void SetAddress(int32_t address) { fAddress = address; }
 
   // Specially for littrack
   // TODO remove after littrack fix
-  Int_t GetDetectorId() const { return CbmMuchAddress::GetElementAddress(GetAddress(), kMuchModule); }
-  Int_t GetChannelId() const { return GetAddress(); }
-  Int_t GetADCCharge() const { return GetAdc(); }
-  Int_t GetDTime() const { return 0; }
+  int32_t GetDetectorId() const { return CbmMuchAddress::GetElementAddress(GetAddress(), kMuchModule); }
+  int32_t GetChannelId() const { return GetAddress(); }
+  int32_t GetADCCharge() const { return GetAdc(); }
+  int32_t GetDTime() const { return 0; }
 
   std::string ToString() const { return std::string {""}; }
 
@@ -110,12 +113,12 @@ public:
 private:
   friend class boost::serialization::access;
 
-  ULong64_t fTime;   // Absolute Time Stamp[ns]
-  UInt_t fAddress;   // Unique detector address
-  UShort_t fCharge;  // Charge [ADC Units]
+  uint64_t fTime;     // Absolute Time Stamp[ns]
+  uint32_t fAddress;  // Unique detector address
+  uint16_t fCharge;   // Charge [ADC Units]
 
   //Below flag has to be set during the CbmMuchDigi Creation only.
-  Bool_t fSaturationFlag =
+  bool fSaturationFlag =
     0;  //If adc value crosses the Maximum Adc value of actual electronics then SaturationFlag will be set.
 
   ClassDef(CbmMuchDigi, 4);

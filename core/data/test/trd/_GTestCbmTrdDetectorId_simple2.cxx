@@ -11,20 +11,20 @@
 class CbmTrdDetectorIdTest : public ::testing::Test {
 protected:
   CbmTrdDetectorId fTrdId;
-  Int_t system;
-  Int_t station;
-  Int_t layer;
-  Int_t moduleType;
-  Int_t moduleNr;
-  Int_t sector;
-  Int_t detInfo_array[6];
-  Int_t retVal;
+  int32_t system;
+  int32_t station;
+  int32_t layer;
+  int32_t moduleType;
+  int32_t moduleNr;
+  int32_t sector;
+  int32_t detInfo_array[6];
+  int32_t retVal;
 
   virtual void SetUp() {}
 
   virtual void TearDown() {}
 
-  void FillDetArray(Int_t sys, Int_t stat, Int_t lay, Int_t type, Int_t copy, Int_t sect)
+  void FillDetArray(int32_t sys, int32_t stat, int32_t lay, int32_t type, int32_t copy, int32_t sect)
   {
     detInfo_array[0] = sys;
     detInfo_array[1] = stat;

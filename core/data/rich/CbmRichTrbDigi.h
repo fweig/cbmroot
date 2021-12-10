@@ -6,40 +6,41 @@
 #define CBMRICHTRBDIGI_H
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for UInt_t, Double_t, Bool_t
 #include <TObject.h>     // for TObject
+
+#include <cstdint>
 
 class CbmRichTrbDigi : public TObject {
 public:
   CbmRichTrbDigi();
-  CbmRichTrbDigi(UInt_t TDCid, Bool_t hasLedge, Bool_t hasTedge, UInt_t Lch, UInt_t Tch, Double_t Ltimestamp,
-                 Double_t Ttimestamp);
+  CbmRichTrbDigi(uint32_t TDCid, bool hasLedge, bool hasTedge, uint32_t Lch, uint32_t Tch, double Ltimestamp,
+                 double Ttimestamp);
   virtual ~CbmRichTrbDigi();
 
-  UInt_t GetTDCid() { return fTDCid; }
+  uint32_t GetTDCid() { return fTDCid; }
 
-  Bool_t GetHasLeadingEdge() { return fHasLeadingEdge; }
-  Bool_t GetHasTrailingEdge() { return fHasTrailingEdge; }
+  bool GetHasLeadingEdge() { return fHasLeadingEdge; }
+  bool GetHasTrailingEdge() { return fHasTrailingEdge; }
 
-  UInt_t GetLeadingEdgeChannel() { return fLeadingEdgeChannel; }
-  UInt_t GetTrailingEdgeChannel() { return fTrailingEdgeChannel; }
+  uint32_t GetLeadingEdgeChannel() { return fLeadingEdgeChannel; }
+  uint32_t GetTrailingEdgeChannel() { return fTrailingEdgeChannel; }
 
-  Double_t GetLeadingEdgeTimeStamp() { return fLeadingEdgeTimestamp; }
-  Double_t GetTrailingEdgeTimeStamp() { return fTrailingEdgeTimestamp; }
+  double GetLeadingEdgeTimeStamp() { return fLeadingEdgeTimestamp; }
+  double GetTrailingEdgeTimeStamp() { return fTrailingEdgeTimestamp; }
 
-  Double_t GetTOT() { return fTrailingEdgeTimestamp - fLeadingEdgeTimestamp; }
+  double GetTOT() { return fTrailingEdgeTimestamp - fLeadingEdgeTimestamp; }
 
 protected:
-  UInt_t fTDCid;
+  uint32_t fTDCid;
 
-  Bool_t fHasLeadingEdge;
-  Bool_t fHasTrailingEdge;
+  bool fHasLeadingEdge;
+  bool fHasTrailingEdge;
 
-  UInt_t fLeadingEdgeChannel;
-  UInt_t fTrailingEdgeChannel;
+  uint32_t fLeadingEdgeChannel;
+  uint32_t fTrailingEdgeChannel;
 
-  Double_t fLeadingEdgeTimestamp;
-  Double_t fTrailingEdgeTimestamp;
+  double fLeadingEdgeTimestamp;
+  double fTrailingEdgeTimestamp;
 
   ClassDef(CbmRichTrbDigi, 1)
 };

@@ -19,7 +19,7 @@
 TEST(_GTestCbmVertex, CheckDefaultConstructor)
 {
   CbmVertex test;
-  Double_t val[6] = {0., 0., 0., 0., 0., 0.};
+  double val[6] = {0., 0., 0., 0., 0., 0.};
   {
     SCOPED_TRACE("CheckDefaultConstructor");
     compareVertexDataMembers(test, 0., 0., 0., 0., 0, 0, val);
@@ -29,7 +29,7 @@ TEST(_GTestCbmVertex, CheckDefaultConstructor)
 TEST(_GTestCbmVertex, CheckStandardConstructor)
 {
   CbmVertex test {"Vertex", "Vertex"};
-  Double_t val[6] = {0., 0., 0., 0., 0., 0.};
+  double val[6] = {0., 0., 0., 0., 0., 0.};
   {
     SCOPED_TRACE("CheckStandardConstructor");
     compareVertexDataMembers(test, 0., 0., 0., 0., 0, 0, val);
@@ -49,7 +49,7 @@ TEST(_GTestCbmVertex, CheckConstructorAllArguments)
   Cov(2, 1) = 4.;
   Cov(2, 2) = 5.;
 
-  Double_t val[6] = {0., 1., 2., 3., 4., 5.};
+  double val[6] = {0., 1., 2., 3., 4., 5.};
   CbmVertex test {"Vertex", "Vertex", 1., 2., 3., 4., 5, 6, Cov};
   {
     SCOPED_TRACE("CheckConstructorAllArguments");
@@ -65,7 +65,7 @@ TEST(_GTestCbmVertex, CheckConstructorAllArguments)
   CovWrong(1, 0) = 1.;
   CovWrong(1, 1) = 2.;
 
-  Double_t val1[6] = {0., 0., 0., 0., 0., 0.};
+  double val1[6] = {0., 0., 0., 0., 0., 0.};
 
   testing::internal::CaptureStdout();
   CbmVertex test1 {"Vertex", "Vertex", 1., 2., 3., 4., 5, 6, CovWrong};
@@ -102,14 +102,14 @@ TEST(_GTestCbmVertex, CheckReset)
   Cov(2, 1) = 4.;
   Cov(2, 2) = 5.;
 
-  Double_t val[6] = {0., 1., 2., 3., 4., 5.};
+  double val[6] = {0., 1., 2., 3., 4., 5.};
   CbmVertex test {"Vertex", "Vertex", 1., 2., 3., 4., 5, 6, Cov};
   {
     SCOPED_TRACE("CheckReset: Initial Test");
     compareVertexDataMembers(test, 1., 2., 3., 4., 5, 6, val);
   }
 
-  Double_t val1[6] = {0., 0., 0., 0., 0., 0.};
+  double val1[6] = {0., 0., 0., 0., 0., 0.};
   test.Reset();
   {
     SCOPED_TRACE("CheckReset: Check after reset");
@@ -130,7 +130,7 @@ TEST(_GTestCbmVertex, CheckGetPosition)
   Cov(2, 1) = 4.;
   Cov(2, 2) = 5.;
 
-  Double_t val[6] = {0., 1., 2., 3., 4., 5.};
+  double val[6] = {0., 1., 2., 3., 4., 5.};
   CbmVertex test {"Vertex", "Vertex", 1., 2., 3., 4., 5, 6, Cov};
   {
     SCOPED_TRACE("CheckGetPosition: Initial Test");
@@ -163,7 +163,7 @@ TEST(_GTestCbmVertex, CheckGetCovMatrix)
   Cov(2, 1) = 4.;
   Cov(2, 2) = 5.;
 
-  Double_t val[6] = {0., 1., 2., 3., 4., 5.};
+  double val[6] = {0., 1., 2., 3., 4., 5.};
   CbmVertex test {"Vertex", "Vertex", 1., 2., 3., 4., 5, 6, Cov};
   {
     SCOPED_TRACE("CheckGetCovMatrix: Initial Test");
@@ -177,10 +177,10 @@ TEST(_GTestCbmVertex, CheckGetCovMatrix)
     SCOPED_TRACE("CheckGetCovMatrix: Check after Position");
     compareVertexDataMembers(test, 1., 2., 3., 4., 5, 6, val);
   }
-  for (Int_t i = 0; i < 3; ++i) {
-    for (Int_t j = 0; j < 3; ++j) {
-      Double_t origVal = Cov[i][j];
-      Double_t testVal = testCov[i][j];
+  for (int32_t i = 0; i < 3; ++i) {
+    for (int32_t j = 0; j < 3; ++j) {
+      double origVal = Cov[i][j];
+      double testVal = testCov[i][j];
       EXPECT_FLOAT_EQ(testVal, origVal);
     }
   }
@@ -191,7 +191,7 @@ TEST(_GTestCbmVertex, CheckSetVertex)
 {
 
   CbmVertex test;
-  Double_t val[6] = {0., 0., 0., 0., 0., 0.};
+  double val[6] = {0., 0., 0., 0., 0., 0.};
   {
     SCOPED_TRACE("CheckSetVertex: Initial Test");
     compareVertexDataMembers(test, 0., 0., 0., 0., 0, 0, val);
@@ -208,7 +208,7 @@ TEST(_GTestCbmVertex, CheckSetVertex)
   Cov(2, 1) = 4.;
   Cov(2, 2) = 5.;
 
-  Double_t val1[6] = {0., 1., 2., 3., 4., 5.};
+  double val1[6] = {0., 1., 2., 3., 4., 5.};
   test.SetVertex(1., 2., 3., 4., 5, 6, Cov);
   {
     SCOPED_TRACE("CheckSetVertex: After call of SetVertex");
@@ -224,7 +224,7 @@ TEST(_GTestCbmVertex, CheckSetVertex)
   CovWrong(1, 0) = 1.;
   CovWrong(1, 1) = 2.;
 
-  Double_t val2[6] = {0., 0., 0., 0., 0., 0.};
+  double val2[6] = {0., 0., 0., 0., 0., 0.};
 
   testing::internal::CaptureStdout();
   test.SetVertex(-1., -2., -3., -4., -5, -6, CovWrong);
@@ -261,7 +261,7 @@ TEST(_GTestCbmVertex, CheckPrint)
   Cov(2, 1) = 4.;
   Cov(2, 2) = 5.;
 
-  Double_t val[6] = {0., 1., 2., 3., 4., 5.};
+  double val[6] = {0., 1., 2., 3., 4., 5.};
   CbmVertex test {"Vertex", "Vertex", 1., 2., 3., 4., 5, 6, Cov};
   {
     SCOPED_TRACE("CheckSetVertex: Initial Test");

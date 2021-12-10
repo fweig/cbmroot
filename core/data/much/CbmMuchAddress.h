@@ -9,8 +9,9 @@
 
 #include <Logger.h>  // for Logger, LOG
 
-#include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Int_t, UInt_t
+#include <Rtypes.h>  // for ClassDef
+
+#include <cstdint>
 
 /** Enumerator for MUCH element levels
  ** If this is changed, the initialisation of the static members
@@ -63,25 +64,25 @@ public:
      ** @param channel      Channel number
      ** @return Unique element address
      **/
-  static UInt_t GetAddress(Int_t station = 0, Int_t layer = 0, Int_t side = 0, Int_t module = 0, Int_t sector = 0,
-                           Int_t channel = 0);
+  static uint32_t GetAddress(int32_t station = 0, int32_t layer = 0, int32_t side = 0, int32_t module = 0,
+                             int32_t sector = 0, int32_t channel = 0);
 
 
-  static UInt_t GetAddress(Int_t* elementIds);
+  static uint32_t GetAddress(int32_t* elementIds);
 
 
   /** Get the number of hierarchy levels
      ** For use in macros which do not include this header file.
      ** @return       Number of hierarchy levels
      **/
-  static Int_t GetNofLevels() { return kMuchNofLevels; }
+  static int32_t GetNofLevels() { return kMuchNofLevels; }
 
 
   /** Get the number of bits for a given hierarchy level
      ** @param level  Requested element level
      ** @return       Number of bits in address field
      **/
-  static Int_t GetNofBits(Int_t level)
+  static int32_t GetNofBits(int32_t level)
   {
     if (level < 0 || level >= kMuchNofLevels) return 0;
     return fgkBits[level];
@@ -93,24 +94,24 @@ public:
      ** @param level Hierarchy level
      ** @return Element index
      **/
-  static Int_t GetElementId(UInt_t address, Int_t level)
+  static int32_t GetElementId(uint32_t address, int32_t level)
   {
     if (level < 0 || level >= kMuchNofLevels) return -1;
     return (address & (fgkMask[level] << fgkShift[level])) >> fgkShift[level];
   }
 
   /** Derivatives */
-  static Int_t GetSystemIndex(Int_t address) { return GetElementId(address, kMuchSystem); }
-  static Int_t GetStationIndex(Int_t address) { return GetElementId(address, kMuchStation); }
-  static Int_t GetLayerIndex(Int_t address) { return GetElementId(address, kMuchLayer); }
-  static Int_t GetLayerSideIndex(Int_t address) { return GetElementId(address, kMuchLayerSide); }
-  static Int_t GetModuleIndex(Int_t address) { return GetElementId(address, kMuchModule); }
-  static Int_t GetSectorIndex(Int_t address) { return GetElementId(address, kMuchSector); }
-  static Int_t GetChannelIndex(Int_t address) { return GetElementId(address, kMuchChannel); }
+  static int32_t GetSystemIndex(int32_t address) { return GetElementId(address, kMuchSystem); }
+  static int32_t GetStationIndex(int32_t address) { return GetElementId(address, kMuchStation); }
+  static int32_t GetLayerIndex(int32_t address) { return GetElementId(address, kMuchLayer); }
+  static int32_t GetLayerSideIndex(int32_t address) { return GetElementId(address, kMuchLayerSide); }
+  static int32_t GetModuleIndex(int32_t address) { return GetElementId(address, kMuchModule); }
+  static int32_t GetSectorIndex(int32_t address) { return GetElementId(address, kMuchSector); }
+  static int32_t GetChannelIndex(int32_t address) { return GetElementId(address, kMuchChannel); }
 
-  static Int_t GetElementAddress(Int_t address, Int_t level)
+  static int32_t GetElementAddress(int32_t address, int32_t level)
   {
-    Int_t mask = (1 << (CbmMuchAddress::fgkShift[level] + CbmMuchAddress::fgkBits[level])) - 1;
+    int32_t mask = (1 << (CbmMuchAddress::fgkShift[level] + CbmMuchAddress::fgkBits[level])) - 1;
     return address & mask;
   }
 
@@ -125,7 +126,7 @@ public:
      ** @param newId   New element index
      ** @return New address
      **/
-  static UInt_t SetElementId(UInt_t address, Int_t level, Int_t newId)
+  static uint32_t SetElementId(uint32_t address, int32_t level, int32_t newId)
   {
     if (level < 0 || level >= kMuchNofLevels) return address;
     if (newId >= (1 << fgkBits[level])) {
@@ -138,13 +139,13 @@ public:
 
 private:
   /** Number of bits for the different levels **/
-  static const Int_t fgkBits[kMuchNofLevels];
+  static const int32_t fgkBits[kMuchNofLevels];
 
   /** Bit shifts for the different levels **/
-  static const Int_t fgkShift[kMuchNofLevels];
+  static const int32_t fgkShift[kMuchNofLevels];
 
   /** Bit masks for the different levels **/
-  static const Int_t fgkMask[kMuchNofLevels];
+  static const int32_t fgkMask[kMuchNofLevels];
 
 
   ClassDef(CbmMuchAddress, 1);

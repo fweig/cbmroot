@@ -11,8 +11,8 @@
 #define CBMMCEVENTINFO_H 1
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Int_t, Double_t
 
+#include <cstdint>
 #include <string>  // for string
 
 /** @class CbmMCEventInfo
@@ -36,7 +36,7 @@ public:
      ** @param eventId  MC event index (entry in ROOT tree)
      ** @param time     Event start time [ns]
      **/
-  CbmMCEventInfo(Int_t fileId = -1, Int_t eventId = -1, Double_t time = 0.);
+  CbmMCEventInfo(int32_t fileId = -1, int32_t eventId = -1, double time = 0.);
 
 
   /** @brief Destructor **/
@@ -46,19 +46,19 @@ public:
   /** @brief File index
      ** @value File index
      **/
-  Int_t GetFileId() const { return fFileId; }
+  int32_t GetFileId() const { return fFileId; }
 
 
   /** @brief Event index
      ** @value Event index
      **/
-  Int_t GetEventId() const { return fEventId; }
+  int32_t GetEventId() const { return fEventId; }
 
 
   /** @brief Event time
      ** @value Event time [ns]
      **/
-  Double_t GetTime() const { return fTime; }
+  double GetTime() const { return fTime; }
 
 
   /** Status to string **/
@@ -74,9 +74,9 @@ public:
 
 
 private:
-  Int_t fFileId;
-  Int_t fEventId;
-  Double_t fTime;
+  int32_t fFileId;
+  int32_t fEventId;
+  double fTime;
 
   ClassDef(CbmMCEventInfo, 1);
 };

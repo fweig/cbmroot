@@ -18,7 +18,7 @@ using std::stringstream;
 
 CbmLink::CbmLink() : TObject(), fFile(-1), fEntry(-1), fIndex(-1), fWeight(-1.) {}
 
-CbmLink::CbmLink(Float_t weight, Int_t index, Int_t entry, Int_t file)
+CbmLink::CbmLink(float weight, int32_t index, int32_t entry, int32_t file)
   : TObject()
   , fFile(file)
   , fEntry(entry)

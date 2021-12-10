@@ -5,11 +5,10 @@
 #ifndef PSD_GBT_DATA_FORMAT_H_
 #define PSD_GBT_DATA_FORMAT_H_
 
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
 #include <vector>
-
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
 
 namespace PsdDataV000
 {

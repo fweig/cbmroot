@@ -13,13 +13,11 @@
 #include "CbmMatch.h"       // for CbmMatch
 #include "CbmModuleList.h"  // for CbmModuleList
 
-#include <TString.h>  // for operator<<
-
 #include <iostream>  // for operator<<, basic_ostream, stringstream
 
 
 // -----   Constructor   ---------------------------------------------------
-CbmEventStore::CbmEventStore(UInt_t eventId, Bool_t hasMatches) : fEventId(eventId), fHasMatches(hasMatches)
+CbmEventStore::CbmEventStore(uint32_t eventId, bool hasMatches) : fEventId(eventId), fHasMatches(hasMatches)
 {
   //  fDigis = new TObjArray(ToIntegralType(ECbmModuleId::kNofSystems));
 }
@@ -50,27 +48,27 @@ CbmEventStore::~CbmEventStore()
 
 
 // -----   Test for being empty   ------------------------------------------
-Bool_t CbmEventStore::IsEmpty() const
+bool CbmEventStore::IsEmpty() const
 {
-  UInt_t nDigis = 0;
+  uint32_t nDigis = 0;
   for (auto system : fDigis) {
     auto* digis = dynamic_cast<CbmDigiContainer*>(system.second);
     nDigis += digis->GetNofDigis();
   }
 
   /*
-for ( Int_t system = 0; system < fDigis->GetEntriesFast(); system++) {
+for ( int32_t system = 0; system < fDigis->GetEntriesFast(); system++) {
     auto* digis = dynamic_cast<CbmDigiContainer*>(fDigis->At(system));
     if ( digis ) nDigis += digis->GetNofDigis();
   }
 */
-  return (nDigis > 0 ? kFALSE : kTRUE);
+  return (nDigis > 0 ? false : true);
 }
 // -------------------------------------------------------------------------
 
 
 // -----   Get number of data for a given system   -------------------------
-UInt_t CbmEventStore::GetNofDigis(ECbmModuleId system) const
+uint32_t CbmEventStore::GetNofDigis(ECbmModuleId system) const
 {
   if (system >= ECbmModuleId::kNofSystems) return 0;
   auto* digis = dynamic_cast<CbmDigiContainer*>(fDigis.at(system));
@@ -88,10 +86,10 @@ void CbmEventStore::MatchToMC(CbmMatch& result) const
   for (auto system : fDigis) {
     auto* digis = dynamic_cast<CbmDigiContainer*>(system.second);
     if (!digis) continue;
-    for (UInt_t index = 0; index < digis->GetNofDigis(); index++) {
+    for (uint32_t index = 0; index < digis->GetNofDigis(); index++) {
       const CbmMatch* match = digis->GetDigiMatch(index);
       assert(match);
-      for (Int_t iLink = 0; iLink < match->GetNofLinks(); iLink++) {
+      for (int32_t iLink = 0; iLink < match->GetNofLinks(); iLink++) {
         const CbmLink& link = match->GetLink(iLink);
         result.AddLink(link.GetWeight(), 0, link.GetEntry(), link.GetFile());
       }  //# Links in match
@@ -100,13 +98,13 @@ void CbmEventStore::MatchToMC(CbmMatch& result) const
 
 
   /*
-  for (Int_t system = 0; system < fDigis->GetEntriesFast(); system++) {
+  for (int32_t system = 0; system < fDigis->GetEntriesFast(); system++) {
     auto* digis = dynamic_cast<CbmDigiContainer*>(fDigis->At(system));
     if ( ! digis ) continue;
-    for (UInt_t index = 0; index < digis->GetNofDigis(); index++) {
+    for (uint32_t index = 0; index < digis->GetNofDigis(); index++) {
       const CbmMatch* match = digis->GetDigiMatch(index);
       assert(match);
-      for (Int_t iLink = 0; iLink < match->GetNofLinks(); iLink++) {
+      for (int32_t iLink = 0; iLink < match->GetNofLinks(); iLink++) {
         const CbmLink& link = match->GetLink(iLink);
         result.AddLink(link.GetWeight(), 0, link.GetEntry(), link.GetFile());
       } //# Links in match
@@ -127,7 +125,7 @@ std::string CbmEventStore::ToString() const
     ss << " Data: ";
     for (auto system : fDigis) {
       auto* vec = dynamic_cast<CbmDigiContainer*>(system.second);
-      //     for ( Int_t system = 0; system < fDigis->GetEntriesFast(); system++) {
+      //     for ( int32_t system = 0; system < fDigis->GetEntriesFast(); system++) {
       //       if ( fDigis->At(system) ) {
       //         auto vec = static_cast<CbmDigiContainer*>(fDigis->At(system));
       assert(vec);

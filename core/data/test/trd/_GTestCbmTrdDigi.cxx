@@ -23,11 +23,11 @@ TEST(_GTestCbmTrdDigi, CheckStandardConstructor)
 {
   // Create object
   // This creates a Spadic standard digi, fasp test to be added here
-  Int_t padChNr        = 42;
-  Int_t uniqueModuleId = (Int_t) ECbmModuleId::kTrd;  // Unique ModuleId of first module
-  Double_t charge      = 42.42;
-  ULong64_t digiTime   = 42001;
-  Int_t errClass       = 0;
+  int32_t padChNr        = 42;
+  int32_t uniqueModuleId = (int32_t) ECbmModuleId::kTrd;  // Unique ModuleId of first module
+  double charge          = 42.42;
+  uint64_t digiTime      = 42001;
+  int32_t errClass       = 0;
   CbmTrdDigi test(padChNr, uniqueModuleId, charge, digiTime, CbmTrdDigi::eTriggerType::kSelf, errClass);
   compareTrdDigiDataMembers(test, padChNr, ECbmModuleId::kTrd, digiTime, CbmTrdDigi::eTriggerType::kSelf, charge);
 

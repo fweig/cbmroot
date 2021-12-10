@@ -11,11 +11,11 @@
 #include "compareMatch.h"
 #include "gtest/gtest.h"
 
-void compareHitDataMembers(CbmHit& test, HitType type, Double_t z, Double_t dz, Int_t refid, Int_t address,
-                           CbmMatch* match, Double_t time, Double_t errortime)
+void compareHitDataMembers(CbmHit& test, HitType type, double z, double dz, int32_t refid, int32_t address,
+                           CbmMatch* match, double time, double errortime)
 {
-  Int_t retValInt {-111};
-  Float_t retValFloat {-111.};
+  int32_t retValInt {-111};
+  float retValFloat {-111.};
 
   EXPECT_EQ(type, test.GetType());
 

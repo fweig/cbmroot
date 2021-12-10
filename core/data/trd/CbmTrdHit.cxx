@@ -25,8 +25,8 @@ CbmTrdHit::CbmTrdHit() : CbmPixelHit(), fDefine(0), fNeighborId(-1), fELoss(-1.)
   SetTimeError(-1);
 }
 
-CbmTrdHit::CbmTrdHit(Int_t address, const TVector3& pos, const TVector3& dpos, Double_t dxy, Int_t refId,
-                     Double_t eLoss, Double_t time, Double_t timeError)
+CbmTrdHit::CbmTrdHit(int32_t address, const TVector3& pos, const TVector3& dpos, double dxy, int32_t refId,
+                     double eLoss, double time, double timeError)
   : CbmPixelHit(address, pos, dpos, dxy, refId)
   , fDefine(0)
   , fNeighborId(-1)

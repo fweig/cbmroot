@@ -18,8 +18,9 @@
 #define CBMPSDHIT_H 1
 
 #include <Rtypes.h>      // for ClassDef
-#include <RtypesCore.h>  // for Double_t, Int_t, Option_t
 #include <TObject.h>     // for TObject
+
+#include <cstdint>
 
 class CbmPsdHit : public TObject {
 
@@ -27,7 +28,7 @@ public:
   /**   Default constructor   **/
   CbmPsdHit();
 
-  CbmPsdHit(Int_t module, Double_t edep);
+  CbmPsdHit(int32_t module, double edep);
 
 
   /**   Destructor   **/
@@ -36,22 +37,22 @@ public:
 
   /**   Setters - Getters   **/
 
-  //Float_t GetEdep(Int_t module) const { return fEdep[module]; }      // SELIM: simplification vector [49] -> simple double
-  //void SetEdep(Float_t edep, Int_t module) {fEdep[module]=edep;}
+  //float GetEdep(int32_t module) const { return fEdep[module]; }      // SELIM: simplification vector [49] -> simple double
+  //void SetEdep(float edep, int32_t module) {fEdep[module]=edep;}
 
-  Double_t GetEdep() const { return fEdep; }  // SELIM: simplification vector [49] -> simple double
-  void SetEdep(Double_t edep) { fEdep = edep; }
+  double GetEdep() const { return fEdep; }  // SELIM: simplification vector [49] -> simple double
+  void SetEdep(double edep) { fEdep = edep; }
 
-  Int_t GetModuleID() const { return fModuleID; }
-  void SetModuleID(Int_t mod) { fModuleID = mod; }
+  int32_t GetModuleID() const { return fModuleID; }
+  void SetModuleID(int32_t mod) { fModuleID = mod; }
 
   void Print(Option_t* = "") const;
 
 private:
   /**   Data members  **/
 
-  Int_t fModuleID;
-  Double_t fEdep;  //[49];    // SELIM: simplification vector [49] -> simple double
+  int32_t fModuleID;
+  double fEdep;  //[49];    // SELIM: simplification vector [49] -> simple double
 
 
   ClassDef(CbmPsdHit, 1);

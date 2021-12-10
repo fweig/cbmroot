@@ -11,12 +11,12 @@
 #define CBMDIGICONTAINER_H 1
 
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Bool_t, UInt_t, ULong64_t, kFALSE
 #include <TNamed.h>      // for TNamed
 #include <TString.h>     // for TString
 
 #include <boost/any.hpp>  // for any
 
+#include <cstdint>
 #include <string>  // for string
 
 class CbmMatch;
@@ -50,9 +50,9 @@ public:
 
 
   /** @brief Connect the container to ROOT tree branch
-     ** @return kTRUE if branch was found
+     ** @return true if branch was found
      **/
-  virtual Bool_t ConnectToTree() { return kFALSE; }
+  virtual bool ConnectToTree() { return false; }
 
 
   /** @brief Get a digi from the container
@@ -63,20 +63,20 @@ public:
      ** boost::any_cast. It is in the responsibility of the implementation
      ** of the derived classes to ensure the correct data type.
      **/
-  virtual boost::any GetDigi(UInt_t index) = 0;
+  virtual boost::any GetDigi(uint32_t index) = 0;
 
 
   /** @brief Get a match object from the container
      ** @param index Index of digi
      ** @return Pointer to constant match object
      **/
-  virtual const CbmMatch* GetDigiMatch(UInt_t index) = 0;
+  virtual const CbmMatch* GetDigiMatch(uint32_t index) = 0;
 
 
   /** @brief Presence of match branch
-     ** @return kTRUE if a match branch is connected
+     ** @return true if a match branch is connected
      **/
-  virtual Bool_t HasMatches() const = 0;
+  virtual bool HasMatches() const = 0;
 
 
   /** @brief Name of container **/
@@ -84,7 +84,7 @@ public:
 
 
   /** @brief Get the number of digis in the container **/
-  virtual ULong64_t GetNofDigis() const = 0;
+  virtual uint64_t GetNofDigis() const = 0;
 
 
   /** @brief String output **/
