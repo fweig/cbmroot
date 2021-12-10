@@ -29,7 +29,7 @@
 #include <cmath>
 
 CbmLitGlobalElectronId::CbmLitGlobalElectronId()
-  : fTrdAnnCut(0.6)
+  : fTrdAnnCut(0.1)
   , fRichAnnCut(-0.4)
   , fRichUseAnn(true)
   , fRichMeanA(-1.)
@@ -107,7 +107,7 @@ Bool_t CbmLitGlobalElectronId::IsTofElectron(Int_t globalTrackIndex, Double_t mo
   Double_t mass2 = GetTofM2(globalTrackIndex, momentum, eventTime);
   if (mass2 == -1.) return false;
 
-  if (momentum >= 1.) {
+  if (momentum >= 1.25) {
     if (mass2 < (0.013 * momentum - 0.003)) { return true; }
   }
   else {
