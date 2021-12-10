@@ -79,6 +79,8 @@ private:
      */
   TH2D* CreateSignificanceH2(TH2D* signal, TH2D* bg, const std::string& name, const std::string& title);
 
+  void DrawCutEffH1(const std::string& hist, const std::string& option);
+
   void DrawAnaStepMany(const std::string& cName, std::function<void(ELmvmAnaStep)> drawFunc);
 
   void DrawPtY(ELmvmAnaStep step);

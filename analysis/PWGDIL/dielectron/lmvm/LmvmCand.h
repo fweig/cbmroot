@@ -70,7 +70,7 @@ public:
   double fTrdAnn     = 0.;
   double fMass2      = 0.;
   double fTrdLikeEl  = -1.;
-  double fTrdLikePi  = -1.;  
+  double fTrdLikePi  = -1.;
 
   // Cuts. If true then cut is passed
   bool fIsChi2Prim = false;

@@ -171,6 +171,30 @@ TH2D* LmvmDraw::CreateSignificanceH2(TH2D* signal, TH2D* bg, const string& name,
   return hsig;
 }
 
+void LmvmDraw::DrawCutEffH1(const string& hist, const string& option)
+{
+  vector<TH1*> effHist;
+  for (ELmvmSrc src : fH.fSrcs) {
+    TH1D* eff            = fH.H1Clone(hist, src);
+    int nBins            = eff->GetNbinsX();
+    double integralTotal = fH.H1(hist, src)->Integral(1, nBins, "width");
+
+    if (option == "right") {
+      for (int iB = 1; iB <= nBins; iB++) {
+        eff->SetBinContent(iB, fH.H1(hist, src)->Integral(1, iB, "width") / integralTotal);
+      }
+    }
+    else if (option == "left") {
+      for (int iB = nBins; iB >= 1; iB--) {
+        eff->SetBinContent(iB, fH.H1(hist, src)->Integral(iB, nBins, "width") / integralTotal);
+      }
+    }
+    effHist.push_back(eff);
+  }
+  DrawH1(effHist, fH.fSrcLatex, kLinear, kLog, true, 0.8, 0.8, 0.99, 0.99, "hist");
+}
+
+
 void LmvmDraw::DrawAnaStepMany(const string& cName, function<void(ELmvmAnaStep)> drawFunc)
 {
   int hi          = 1;
@@ -306,10 +330,10 @@ void LmvmDraw::Draw1DCut(const string& hist, const string& sigOption, double cut
 {
   int w = 800;
   int h = 800;
-  if (fDrawSignificance) w = 1600;
+  if (fDrawSignificance) w = 2400;
   TCanvas* c = fH.fHM.CreateCanvas(("lmvm_" + hist).c_str(), ("lmvm_" + hist).c_str(), w, h);
   if (fDrawSignificance) {
-    c->Divide(2, 1);
+    c->Divide(3, 1);
     c->cd(1);
   }
   DrawSrcH1(hist);
@@ -320,6 +344,9 @@ void LmvmDraw::Draw1DCut(const string& hist, const string& sigOption, double cut
   }
   if (fDrawSignificance) {
     c->cd(2);
+    DrawCutEffH1(hist, sigOption);
+
+    c->cd(3);
     TH1D* sign =
       CreateSignificanceH1(fH.H1(hist, ELmvmSrc::Signal), fH.H1(hist, ELmvmSrc::Bg), hist + "_significance", sigOption);
     DrawH1(sign, kLinear, kLinear, "hist");
