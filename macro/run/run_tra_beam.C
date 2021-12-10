@@ -137,12 +137,24 @@ void run_tra_beam(Int_t nEvents = 1, const char* species = "Au", Double_t beamP 
   Double_t beamSigmaTy = 0.001;  // Gaussian sigma of beam x-y angle [rad]
   // ------------------------------------------------------------------------
 
+  // -----  Target properties -----------------------------------------------
+  Double_t targetZpos = -40.0;
+  // The target position is at z=0 for the old coordinate system but is intended
+  // to be moved to -4cm in the DEC21 release. The global coordinate system will
+  // also shift from the old target position to the center of the magnet which
+  // is a net displacement of -40 cm. In terms of the new coordainte system
+  // the target is therefore to be at -44 cm. In order not to cause forgetting
+  // we will automate the shifting process for a short time, until the full move
+  // has been completed.
+  if (strstr(setup, "_APR21")) targetZpos = 0.0;
+  if (strstr(setup, "_DEC21")) targetZpos = -44.0;
+  std::cout << "Target is at " << targetZpos << "cm from origin" << std::endl;
+  // ------------------------------------------------------------------------
 
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
   // ------------------------------------------------------------------------
-
 
   // --- Transport run   ----------------------------------------------------
   CbmTransport run;
@@ -151,7 +163,7 @@ void run_tra_beam(Int_t nEvents = 1, const char* species = "Au", Double_t beamP 
   run.SetParFileName(parFile);
   run.SetGeoFileName(geoFile);
   run.LoadSetup(setup);
-  run.SetTarget("Gold", 0.025, 2.5);
+  run.SetTarget("Gold", 0.025, 2.5, 0, 0, targetZpos);
   run.SetBeamPosition(beamMeanX, beamMeanY, beamSigmaX, beamSigmaY, beamFocusZ);
   run.SetBeamAngle(beamMeanTx, beamMeanTy, beamSigmaTx, beamSigmaTy);
   run.AddInput(new CbmBeamGenerator(beamZ, beamA, beamQ, beamP, beamStartZ));

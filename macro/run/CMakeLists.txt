@@ -36,10 +36,15 @@ math(EXPR nBeam "${nEvents} * 3")
 
 # =====   Define the different setups to be tested with   ====================
 if(NOT ${CBM_TEST_MODEL} MATCHES Experimental )
-  List(APPEND cbm_setup sis100_hadron sis100_electron sis100_muon_lmvm
-  	sis100_muon_jpsi sis300_electron)
+  List(APPEND cbm_setup 
+	sis100_hadron_APR21 sis100_electron_APR21 
+	sis100_muon_lmvm_APR21 sis100_muon_jpsi_APR21 
+	sis300_electron
+	sis100_hadron sis100_electron
+	sis100_hadron_DEC21 sis100_electron_DEC21  
+	)
 else()
-  List(APPEND cbm_setup sis100_electron sis100_muon_jpsi)
+  List(APPEND cbm_setup sis100_electron_APR21 sis100_muon_jpsi_APR21)
 endif()
 # ============================================================================
 
@@ -171,7 +176,7 @@ foreach(setup IN LISTS cbm_setup)
   # --- Event-by-event reconstruction from event-based simulation
   # --- Ideal raw event builder
   set(testname run_${sname}_reco_ev_ideal)
-  add_test(${testname} ${MACRODIR}/run_reco.sh
+  add_test(${testname}	 ${MACRODIR}/run_reco.sh
   	\"data/${sname}_ev\" -1 0 \"data/${sname}_eb_eb_ideal\" \"Ideal\" \"${setup}\" \"data/${sname}_coll\")
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}

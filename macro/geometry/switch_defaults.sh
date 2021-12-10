@@ -32,8 +32,8 @@ APR21_GEOTAG="875439f929577d678b86bbc243b8f99a094fd31c"
 APR21_PARATAG="fc62e1c9f2a67109e45389ed93537a7d08973ce2"
 
 # TAG FOR NEW EXPERIMENTAL GEOMETRIES. NEXT SOFTWARE RELEASE CANDIDATES
-TEST_GEOTAG="114c7830dc6b8460a8527844aa253ec0c33b414d"
-TEST_PARATAG="21bed5c5e746efdb63b696f4053b9e5f65f940a8"
+TEST_GEOTAG="ac089a58dd6ba97ebd2253be7e72f08c46679083"
+TEST_PARATAG="a80c596bae4181fdad663140d5249d09c2bac1ff"
 
 # GEOMETRY AMD PARAMETER GIT REPOSITORY
 GIT_GEOREPO="https://git.cbm.gsi.de/e.clerkin/cbmroot_geometry.git"
@@ -80,7 +80,7 @@ if (echo "${CONFIRMATION}" | sed -n '/^Yes$/!{q10}')
 then
 	echo "Yes typed!"
 	
-	sed -i 's/Double_t[[:space:]]targetZpos.*$/Double_t targetZpos = '${TARGET_Z_POS}'/' ${RUN_SRC_DIR}/run_tra_file.C;	
+	sed -i 's/Double_t[[:space:]]targetZpos.*$/Double_t targetZpos = '${TARGET_Z_POS}';/' ${RUN_SRC_DIR}/run_tra_file.C;	
 
 # Geometry Repostiory
 	cd ${GEO_SRC_DIR}

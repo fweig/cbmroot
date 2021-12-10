@@ -6,9 +6,9 @@ files which contain a TGeoManager.
 
 ## Scan Geometry (scan_geometry.C)
 
-Scan geometry travels through the root geometry hierachy of a typical root geometry binary and outputs standard information regarding the node to the screen. There are several options, some of which are commented out in the file, which allows the easy comparison of root binaries. A GRAPHVIZ file named geo.gv is also output to the working directory.
+Scan geometry travels through the root geometry hierarchy of a typical root geometry binary and outputs standard information regarding the node to the screen. There are several options, some of which are commented out in the file, which allows the easy comparison of root binaries. A GRAPHVIZ file named geo.gv is also output to the working directory.
 
-### Examing Text
+### Examining Text
 
 A typical use may be
 
@@ -22,15 +22,15 @@ to look at output on screen. To save this output to a file, something like
 root -l -q '~/cbmroot/macro/geometry/scan_geometry.C("tof_v20a_1h.geo.root")' 2>&1 1>tof_v20a_1h
 ```
 
-Outputing two files may be compared with standard unix diff such as
+Outputting two files may be compared with standard UNIX diff such as
 
 ```
 diff -y -W 200 tof_v20a_1h tof_v20b_1h | less
 ```
 
-### Examining Graphical Represetation
+### Examining Graphical Representation
 
-Sometimes, especially if the output is very large, it can be more insighted, to get the overall picture to look at a graph tree of the volumes in a geometry instead. This can be done for a single detector or indeed the whole experimental setup, e.g. test.geo.root To make a pdf graph, a basic graph may be made with a command like
+Sometimes, especially if the output is very large, it can be more insightful, to get the overall picture to look at a graph tree of the volumes in a geometry instead. This can be done for a single detector or indeed the whole experimental setup, e.g. test.geo.root To make a pdf graph, a basic graph may be made with a command like
 
 ```
 sed -n '2,$p' geo.gv | head -n -1 | sort | uniq -c | awk 'BEGIN{print "digraph {"}{printf "%s -> %s [label=\"%d\"]\n", $2, $4, $1}END{print "}"}' > geo2.gv
@@ -45,7 +45,7 @@ The macro compares the media information at execution time with the media
 information assigned to the nodes when building the detector system
 geometry. The macro is executed automatically in the CbmRoot test suite for
 all tested setups.
-If needed it can be executed also manually as decribed in the following.
+If needed it can be executed also manually as described in the following.
 If the CbmRoot run time environment is set and a geometry file
 for a CBM setup is available the macro is used  in the following way
 
@@ -54,7 +54,7 @@ root -l $VMCWORKDIR/macro/geometry/check_media.C'("setup_name")'
 The setup_name is the name of the setup used during the simulation to create
 the geometry file.
 
-This macro to check the sanity odf the full geometry is/was needed due to
+This macro to check the sanity of the full geometry is/was needed due to
 the way we build the complete CBM geometry from independent geometries of the
 several detector systems.
 When building the complete geometry it happened that the media information
@@ -107,7 +107,7 @@ To achieve this some preparatory work is needed.
 ## print_medialist.C
 
 The macro can be used to print the information which is stored in the *geometrycheck.root
-files. The output is a list of all stored nodes with the corresponing media
+files. The output is a list of all stored nodes with the corresponding media
 name. To use the macro do
 
 root -l $VMCWORKDIR/macro/geometry/print_medialist.C\(\"$VMCWORKDIR/input/geometry_check/sts_v19a_geometrycheck.root\"\)
@@ -127,19 +127,34 @@ output file example.txt
 
 ## costum_setup.sh
 
+Intended for inspection of geometry setups. At the user risk, it may also work for simulation. 
+Generates a costum-setup file for the CBM experiemnt. User is prompted which subsystem and its configuration to include. 
+The scripts only works for default geometries and is not intended to switch between geometry versions. 
+For detectors which are placed on railsystems the user will be prompted as to specify its distance to the target.
+Specifying a variable like PSD_INCLUDE=1 will skip question relating to including the PSD, allowing a user to predefine a configuration skip.
+
+Suggested command to create costum setup file:  
+
+   sh costum-setup.sh
+
+Creates the run_transport_costum.C and run_reco_costum.C to use the setup_sis100_auto instead of setup_sis100_electron as default.
+
+Questions may be skipped by specifying to include a subsystem MAG_INCLUDE=1 or exclude MAG_INCLUDE=0. To a limited extent some subsystem
+detectors may be specified such as MAG_TAG="v20a".
+
 ---
 
 ## switch_defaults.sh
 
 This script switches between official and trial versions of the CBMROOT geometries. This
-is intended for use by a expert user, who will remember to swith back to the official
-geometry relase (currently APR21) once the specific use case has ended. Current options
+is intended for use by a expert user, who will remember to switch back to the official
+geometry release (currently APR21) once the specific use case has ended. Current options
 include This script switches between official and trial versions of the CBMROOT geometries. This
-is intended for use by a knowledgable user, who will remember to swith back to the official
-geometry relase (currently APR21) once the specific use case has ended. Current options
+is intended for use by a knowledgeable user, who will remember to switch back to the official
+geometry release (currently APR21) once the specific use case has ended. Current options
 include
 
 * APR20 - (previous 2020 default geometries. Run old defaults with the new CBMROOT software.)
 * APR21 - (current 2021 default geometries. This is the official release geometries.
-* TEST  - (Geoemtries shift such that the center of the magnet is the origin of the CBM exp.)
+* TEST  - (Geometries shift such that the center of the magnet is the origin of the CBM exp.)
 
