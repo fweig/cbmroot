@@ -92,8 +92,8 @@ void LmvmTask::InitHists()
   fH.CreateH1("hEventNumberMixed", "", "", 1, 0, 1.);
 
   fH.CreateH1("hRichAnn", fH.fSrcNames, "RICH ANN output", ax, 100, -1.1, 1.1);
-  fH.CreateH1("hTrdAnn", fH.fSrcNames, "TRD ANN output", ax, 100, -.1, 1.1);
-  fH.CreateH2("hTofM2", fH.fSrcNames, "P [GeV/c]", "m^{2} [GeV/c^{2}]^{2}", ax, 100, 0., 4., 200, -0.1, 1.0);
+  fH.CreateH1("hTrdAnn", fH.fSrcNames, "Likelihood output", ax, 100, -.1, 1.1);  // TODO: change back to "TRD ANN"
+  fH.CreateH2("hTofM2", fH.fSrcNames, "P [GeV/c]", "m^{2} [GeV/c^{2}]^{2}", ax, 100, 0., 4., 500, -0.1, 1.0);
   fH.CreateH1("hChi2Sts", fH.fSrcNames, "#chi^{2}", ax, 200, 0., 20.);
   fH.CreateH1("hChi2PrimVertex", fH.fSrcNames, "#chi^{2}_{prim}", ax, 200, 0., 20.);
   fH.CreateH1("hNofMvdHits", fH.fSrcNames, "Number of hits in MVD", ax, 5, -0.5, 4.5);
@@ -576,34 +576,30 @@ void LmvmTask::CombinatorialPairs()
   size_t nCand = fCandsTotal.size();
   for (size_t iC1 = 0; iC1 < nCand; iC1++) {
     const auto& cand1 = fCandsTotal[iC1];
-    // for the moment remove signal from combinatorics.
-    // TODO: Discuss if we need to include signal with weight
-    if (cand1.IsMcSignal()) continue;
 
     for (size_t iC2 = iC1 + 1; iC2 < nCand; iC2++) {
       const auto& cand2 = fCandsTotal[iC2];
-      if (cand2.IsMcSignal()) continue;
+      if (cand1.IsMcSignal() xor cand2.IsMcSignal()) continue;
       LmvmKinePar pRec = LmvmKinePar::Create(&cand1, &cand2);
-
-      //double weight = (cand1.IsMcSignal() || cand2.IsMcSignal()) ? fW : 1.;
+      double w         = (cand1.IsMcSignal() && cand2.IsMcSignal()) ? fW : 1.;
       bool isSameEvent = (cand1.fEventNumber == cand2.fEventNumber);
       for (auto step : fH.fAnaSteps) {
         if (step == ELmvmAnaStep::Mc || step == ELmvmAnaStep::Acc) continue;
         if (cand1.IsCutTill(step) && cand2.IsCutTill(step)) {
           if (cand1.fCharge * cand2.fCharge < 0) {
-            if (isSameEvent) fH.FillH1("hMinvCombPM_sameEv", step, pRec.fMinv);
+            if (isSameEvent) fH.FillH1("hMinvCombPM_sameEv", step, pRec.fMinv, w);
             else
-              fH.FillH1("hMinvCombPM_mixedEv", step, pRec.fMinv);
+              fH.FillH1("hMinvCombPM_mixedEv", step, pRec.fMinv, w);
           }
           if (cand1.fCharge < 0 && cand2.fCharge < 0) {
-            if (isSameEvent) fH.FillH1("hMinvCombMM_sameEv", step, pRec.fMinv);
+            if (isSameEvent) fH.FillH1("hMinvCombMM_sameEv", step, pRec.fMinv, w);
             else
-              fH.FillH1("hMinvCombMM_mixedEv", step, pRec.fMinv);
+              fH.FillH1("hMinvCombMM_mixedEv", step, pRec.fMinv, w);
           }
           if (cand1.fCharge > 0 && cand2.fCharge > 0) {
-            if (isSameEvent) fH.FillH1("hMinvCombPP_sameEv", step, pRec.fMinv);
+            if (isSameEvent) fH.FillH1("hMinvCombPP_sameEv", step, pRec.fMinv, w);
             else
-              fH.FillH1("hMinvCombPP_mixedEv", step, pRec.fMinv);
+              fH.FillH1("hMinvCombPP_mixedEv", step, pRec.fMinv, w);
           }
         }
       }

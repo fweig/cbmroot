@@ -4,8 +4,8 @@
 
 //#include <experimental/filesystem>
 
-void draw_analysis(const string& histRootFile = "/lustre/cbm/users/criesen/data/lmvm/inmed/analysis.all.root",
-                   const string& resultDir = "/lustre/cbm/users/criesen/data/lmvm/results/", Bool_t useMvd = true,
+void draw_analysis(const string& histRootFile = "/home/aghoehne/soft/cbm/data/output/phi/analysis.all.root",
+                   const string& resultDir = "/home/aghoehne/soft/cbm/data/output/results/", Bool_t useMvd = true,
                    Bool_t drawSignificance = true)
 
 {
