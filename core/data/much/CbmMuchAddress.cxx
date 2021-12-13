@@ -121,4 +121,6 @@ uint32_t CbmMuchAddress::SetElementId(uint32_t address, int32_t level, int32_t n
 }
 // -------------------------------------------------------------------------
 
+#ifndef NO_ROOT
 ClassImp(CbmMuchAddress)
+#endif

@@ -7,7 +7,9 @@
 
 #include "CbmAddress.h"  // for CbmAddress
 
+#ifndef NO_ROOT
 #include <Rtypes.h>  // for ClassDef
+#endif
 
 #include <cstdint>
 
@@ -137,7 +139,9 @@ private:
   static const int32_t fgkMask[kMuchNofLevels];
 
 
+#ifndef NO_ROOT
   ClassDef(CbmMuchAddress, 1);
+#endif
 };
 
 

@@ -28,5 +28,7 @@ target_include_directories(Algo SYSTEM
   PUBLIC ${Boost_INCLUDE_DIR}
 )
 
+target_link_libraries(Algo OnlineData)
+
 target_compile_definitions(Algo PUBLIC NO_ROOT)
 

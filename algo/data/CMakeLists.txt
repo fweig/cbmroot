@@ -3,6 +3,9 @@
 # The extension is already found.  Any number of sources could be listed here.
 
 set(SRCS
+  ${CMAKE_SOURCE_DIR}/core/data/CbmDefs.cxx
+  ${CMAKE_SOURCE_DIR}/core/data/CbmAddress.cxx
+
   ${CMAKE_SOURCE_DIR}/core/data/sts/CbmStsDigi.cxx
   ${CMAKE_SOURCE_DIR}/core/data/sts/CbmStsAddress.cxx
 
@@ -15,10 +18,13 @@ set(SRCS
 
   ${CMAKE_SOURCE_DIR}/core/data/tof/CbmTofDigi.cxx
   ${CMAKE_SOURCE_DIR}/core/data/tof/CbmTofAddress.cxx
+  ${CMAKE_SOURCE_DIR}/core/data/tof/CbmTofDetectorId.cxx
+  ${CMAKE_SOURCE_DIR}/core/data/tof/CbmTofDetectorId_v12b.cxx
+
 
   ${CMAKE_SOURCE_DIR}/core/data/psd/CbmPsdDigi.cxx
   ${CMAKE_SOURCE_DIR}/core/data/psd/CbmPsdAddress.cxx
- )
+)
 
 add_library(OnlineData SHARED ${SRCS})
 
