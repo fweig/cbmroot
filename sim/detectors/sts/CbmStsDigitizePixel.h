@@ -54,7 +54,7 @@ class CbmStsDigitizePixel : public CbmDigitize<CbmStsDigi> {
 
 public:
   /** Constructor **/
-  CbmStsDigitizePixel(Double_t pitchXcm = 0.0010, Double_t pitchYcm = 0.0010, Double_t pitchTns = 20);
+  CbmStsDigitizePixel(Double_t pitchXcm = 0.0010, Double_t pitchYcm = 0.0010, Double_t resolutionTns = 5.);
 
 
   /** Destructor **/
@@ -92,8 +92,8 @@ public:
   /// set pitch Y [cm]
   void SetPitchY(double pitchYcm) { fPitchYcm = pitchYcm; }
 
-  /// set pitch Time [ns]
-  void SetPitchT(double pitchTns) { fPitchTns = pitchTns; }
+  /// set resolution Time [ns]
+  void SetResolutionTime(double resolutionTns) { fResolutionTns = resolutionTns; }
 
 private:
   Bool_t fIsInitialised;  ///< kTRUE if Init() was called
@@ -112,7 +112,7 @@ private:
 
   Double_t fPitchXcm {0.0058};  // pitch in X [cm]
   Double_t fPitchYcm {0.0058};  // pitch in Y [cm]
-  Double_t fPitchTns {20};      // pitch in time [ns]
+  Double_t fResolutionTns {5.};  // resolution in time [ns]
 
   /** @brief Initialise the parameters **/
   void InitParams();

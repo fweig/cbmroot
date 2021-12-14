@@ -37,6 +37,8 @@
 #include "FairRuntimeDb.h"
 #include <Logger.h>
 
+#include <TRandom.h>
+
 // Includes from CbmRoot
 #include "CbmStsDigi.h"
 #include "CbmStsParSetModule.h"
@@ -72,11 +74,11 @@ using namespace CbmSts;
 ClassImp(CbmStsDigitizePixel);
 
 // -----   Standard constructor   ------------------------------------------
-CbmStsDigitizePixel::CbmStsDigitizePixel(Double_t pitchXcm, Double_t pitchYcm, Double_t pitchTns)
+CbmStsDigitizePixel::CbmStsDigitizePixel(Double_t pitchXcm, Double_t pitchYcm, Double_t resolutionTns)
   : CbmDigitize<CbmStsDigi>("StsDigitizePixel")
   , fPitchXcm(pitchXcm)
   , fPitchYcm(pitchYcm)
-  , fPitchTns(pitchTns)
+  , fResolutionTns(resolutionTns)
 {
 }
 // -------------------------------------------------------------------------
@@ -173,9 +175,10 @@ void CbmStsDigitizePixel::Exec(Option_t* /*opt*/)
     UInt_t address   = static_cast<UInt_t>(point->GetDetectorID());
     UShort_t channel = 0;
     double timef     = fCurrentEventTime + point->GetTime();
-    timef            = (floor(timef / fPitchTns) + 0.5) * fPitchTns;
-    Long64_t time    = Long64_t(round(timef));
-    UShort_t adc     = 30;
+    timef += gRandom->Gaus(0, fResolutionTns);
+    Long64_t time = Long64_t(round(timef));
+    if (time < 0) { time = 0; }
+    UShort_t adc = 30;
     assert(time >= 0);
 
     // Create digi and (if required) match and send them to DAQ
@@ -228,13 +231,13 @@ void CbmStsDigitizePixel::InitParams()
     UInt_t nAsicChannels = 128;   // Number of readout channels per ASIC
 
     // --- ASIC parameters
-    UShort_t nAdc      = 32;                     // Number of ADC channels (5 bit)
-    Double_t dynRange  = 75000.;                 // Dynamic range [e]
-    Double_t threshold = 3000.;                  // Threshold [e]
-    Double_t timeResol = fPitchTns / sqrt(12.);  // Time resolution [ns]
-    Double_t deadTime  = 800.;                   // Channel dead time [ns]
-    Double_t noiseRms  = 1000.;                  // RMS of noise [e]
-    Double_t znr       = 3.9789e-3;              // Zero-crossing noise rate [1/ns]
+    UShort_t nAdc      = 32;              // Number of ADC channels (5 bit)
+    Double_t dynRange  = 75000.;          // Dynamic range [e]
+    Double_t threshold = 3000.;           // Threshold [e]
+    Double_t timeResol = fResolutionTns;  // Time resolution [ns]
+    Double_t deadTime  = 800.;            // Channel dead time [ns]
+    Double_t noiseRms  = 1000.;           // RMS of noise [e]
+    Double_t znr       = 3.9789e-3;       // Zero-crossing noise rate [1/ns]
     CbmStsParAsic userParAsic(nAsicChannels, nAdc, dynRange, threshold, timeResol, deadTime, noiseRms, znr);
 
     CbmStsParModule userParModule(nChannels, nAsicChannels);
