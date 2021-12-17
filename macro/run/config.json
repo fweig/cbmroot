@@ -100,7 +100,7 @@
       {"id": -1,
        "path": "test_beam",
        "rate": "1.e9",
-       "treeAccessMode": "random"}
+       "treeAccessMode": "regular"}
     ],
     "output": {
       "path": "data/test_json",

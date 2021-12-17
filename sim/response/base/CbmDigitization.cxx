@@ -77,6 +77,8 @@ CbmDigitization::~CbmDigitization()
 void CbmDigitization::AddInput(UInt_t inputId, TString fileName, Double_t eventRate, ECbmTreeAccess mode)
 {
   if (gSystem->AccessPathName(fileName)) LOG(fatal) << fName << ": input file " << fileName << " does not exist!";
+  if (mode != ECbmTreeAccess::kRegular)
+    LOG(fatal) << fName << ": access modes other than kRegular are not yet supported!";
   TChain* chain = new TChain("cbmsim");
   chain->Add(fileName.Data());
   fSource->AddInput(inputId, chain, eventRate, mode);

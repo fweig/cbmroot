@@ -187,7 +187,7 @@ void CbmDaq::Exec(Option_t*)
 
   // Event info
   Int_t file         = FairRunAna::Instance()->GetEventHeader()->GetInputFileId();
-  Int_t event        = FairRootManager::Instance()->GetEntryNr();
+  Int_t event        = FairRunAna::Instance()->GetEventHeader()->GetMCEntryNumber();
   Double_t eventTime = FairRunAna::Instance()->GetEventHeader()->GetEventTime();
   fEventList.Insert(event, file, eventTime);
 

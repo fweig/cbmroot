@@ -132,7 +132,7 @@ void run_digi(TString inputEvents = "", Int_t nEvents = -1, TString output = "",
   run.AddInput(0, evntFile, eventRate);
   if (!eventMode) {
     if (!inputSignal.IsNull()) run.EmbedInput(1, signFile, 0);
-    if (!inputBeam.IsNull()) run.AddInput(2, beamFile, beamRate, ECbmTreeAccess::kRandom);
+    if (!inputBeam.IsNull()) run.AddInput(2, beamFile, beamRate);
   }
   run.SetOutputFile(outFile, overwrite);
   run.SetMonitorFile(moniFile);

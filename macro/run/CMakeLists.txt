@@ -154,7 +154,7 @@ foreach(setup IN LISTS cbm_setup)
   # --- Detector response simulation, time-based, using run_digi.C
   set(testname run_${sname}_digi_ts)
   set(eventrate 1.e7)
-  set(beamrate 1.e9)
+  set(beamrate 1.e7)
   set(tslength 1.e6)
   add_test(${testname} ${MACRO_DIR}/run_digi.sh
   	\"data/${sname}_coll\" -1 \"data/${sname}_ts\"\ ${eventrate} ${tslength}
