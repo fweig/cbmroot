@@ -9,6 +9,7 @@
 
 #include "CbmDefs.h"
 #include "CbmDigiEvent.h"
+#include "CbmEvent.h"
 
 #include <FairTask.h>
 
@@ -68,10 +69,36 @@ private:  // methods
   virtual InitStatus Init();
 
 
+  /** @brief Fill the tree structure with digis from CbmDigiEvent
+   ** @param inVec  Digi vector form CbmDigiEvent
+   ** @param outVec  Digi vector in TTree branch
+   ** @param event  Pointer to CbmEvent object the digis will be registered to
+   ** @param digiType  Type of digi class (ECbmDataType)
+   **
+   ** Copies the digis from CbmDigiEvent into the TTree branch and registers them to
+   ** the CbmEvent object.
+   **/
+  template<typename Digi>
+  void FillTree(const std::vector<Digi>& inVec, std::vector<Digi>* outVec, CbmEvent* event, ECbmDataType digiType)
+  {
+    size_t startIndex = outVec->size();
+    size_t stopIndex  = startIndex + inVec.size();
+    outVec->insert(outVec->end(), inVec.begin(), inVec.end());
+    for (size_t index = startIndex; index < stopIndex; index++)
+      event->AddData(digiType, index);
+  }
+
+
 private:  // members
   const std::vector<CbmDigiEvent>* fDigiEvents = nullptr;
   TClonesArray* fRecoEvents                    = nullptr;
+  std::vector<CbmTofDigi>* fT0Digis            = nullptr;
   std::vector<CbmStsDigi>* fStsDigis           = nullptr;
+  std::vector<CbmRichDigi>* fRichDigis         = nullptr;
+  std::vector<CbmMuchDigi>* fMuchDigis         = nullptr;
+  std::vector<CbmTrdDigi>* fTrdDigis           = nullptr;
+  std::vector<CbmTofDigi>* fTofDigis           = nullptr;
+  std::vector<CbmPsdDigi>* fPsdDigis           = nullptr;
   double fTimeTot                              = 0.;  ///< Execution time
   size_t fNumTs                                = 0;   ///< Number of processed timeslices
   size_t fNumEvents                            = 0;   ///< Number of events

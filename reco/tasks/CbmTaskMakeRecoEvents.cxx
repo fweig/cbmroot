@@ -53,16 +53,29 @@ void CbmTaskMakeRecoEvents::Exec(Option_t*)
   Int_t eventNr = 0;
   for (auto& digiEvent : *fDigiEvents) {
 
-    // --- Copy StsDigis
-    size_t startIndex = fStsDigis->size();
-    fStsDigis->insert(fStsDigis->end(), digiEvent.fData.fSts.fDigis.begin(), digiEvent.fData.fSts.fDigis.end());
-    size_t stopIndex = startIndex + digiEvent.fData.fSts.fDigis.size();
-
-    // --- Create and fill CbmEvent object
+    // --- Create CbmEvent object
     CbmEvent* recoEvent = new ((*fRecoEvents)[eventNr]) CbmEvent(eventNr);
-    for (size_t index = startIndex; index < stopIndex; index++) {
-      recoEvent->AddData(ECbmDataType::kStsDigi, index);
-    }
+
+    // --- Copy T0 digis
+    FillTree<CbmTofDigi>(digiEvent.fData.fT0.fDigis, fT0Digis, recoEvent, ECbmDataType::kT0Digi);
+
+    // --- Copy STS digis
+    FillTree<CbmStsDigi>(digiEvent.fData.fSts.fDigis, fStsDigis, recoEvent, ECbmDataType::kStsDigi);
+
+    // --- Copy RICH digis
+    FillTree<CbmRichDigi>(digiEvent.fData.fRich.fDigis, fRichDigis, recoEvent, ECbmDataType::kRichDigi);
+
+    // --- Copy MUCH digis
+    FillTree<CbmMuchDigi>(digiEvent.fData.fMuch.fDigis, fMuchDigis, recoEvent, ECbmDataType::kMuchDigi);
+
+    // --- Copy TRD digis
+    FillTree<CbmTrdDigi>(digiEvent.fData.fTrd.fDigis, fTrdDigis, recoEvent, ECbmDataType::kTrdDigi);
+
+    // --- Copy TOF digis
+    FillTree<CbmTofDigi>(digiEvent.fData.fTof.fDigis, fTofDigis, recoEvent, ECbmDataType::kTofDigi);
+
+    // --- Copy PSD digis
+    FillTree<CbmPsdDigi>(digiEvent.fData.fPsd.fDigis, fPsdDigis, recoEvent, ECbmDataType::kPsdDigi);
 
     eventNr++;
   }  //# events
@@ -72,9 +85,10 @@ void CbmTaskMakeRecoEvents::Exec(Option_t*)
   stringstream logOut;
   logOut << setw(20) << left << GetName() << " [";
   logOut << fixed << setw(8) << setprecision(1) << right << timer.RealTime() * 1000. << " ms] ";
-  logOut << "TS " << fNumTs << ", events " << fDigiEvents->size() << ", STS digis " << fStsDigis->size();
+  logOut << "TS " << fNumTs << ", events " << fDigiEvents->size() << ", Digis: T0 " << fT0Digis->size() << " STS "
+         << fStsDigis->size() << " RICH " << fRichDigis->size() << " MUCH " << fMuchDigis->size() << " TRD "
+         << fTrdDigis->size() << " TOF " << fTofDigis->size() << " PSD" << fPsdDigis->size();
   LOG(info) << logOut.str();
-  assert(fDigiEvents->size() == static_cast<size_t>(fRecoEvents->GetEntriesFast()));
 
   // --- Run statistics
   fNumTs++;
@@ -114,9 +128,11 @@ InitStatus CbmTaskMakeRecoEvents::Init()
   // --- Try to get input vector (CbmDigiEvent)
   fDigiEvents = frm->InitObjectAs<const std::vector<CbmDigiEvent>*>("DigiEvent");
 
-  // --- If DigiEvents are present, create StsDigi and CbmEvent branches
+  // --- If DigiEvents are present, create Digi and CbmEvent branches
   if (fDigiEvents) {
     LOG(info) << GetName() << ": Found branch DigiEvent";
+
+    // --- Event
     if (frm->GetObject("CbmEvent")) {
       LOG(error) << GetName() << ": Found branch CbmEvent! Aborting...";
       return kFATAL;
@@ -127,8 +143,34 @@ InitStatus CbmTaskMakeRecoEvents::Init()
       LOG(error) << GetName() << ": Found branch StsDigi! Aborting...";
       return kFATAL;
     }
+
+    // --- T0 digis
+    fT0Digis = new std::vector<CbmTofDigi>;
+    frm->RegisterAny("T0Digi", fT0Digis, kFALSE);
+
+    // --- STS digis
     fStsDigis = new std::vector<CbmStsDigi>;
     frm->RegisterAny("StsDigi", fStsDigis, kFALSE);
+
+    // --- RICH digis
+    fRichDigis = new std::vector<CbmRichDigi>;
+    frm->RegisterAny("RichDigi", fRichDigis, kFALSE);
+
+    // --- MUCH digis
+    fMuchDigis = new std::vector<CbmMuchDigi>;
+    frm->RegisterAny("MuchDigi", fMuchDigis, kFALSE);
+
+    // --- TRD digis
+    fTrdDigis = new std::vector<CbmTrdDigi>;
+    frm->RegisterAny("TrdDigi", fTrdDigis, kFALSE);
+
+    // --- TOF digis
+    fTofDigis = new std::vector<CbmTofDigi>;
+    frm->RegisterAny("TofDigi", fTofDigis, kFALSE);
+
+    // --- PSD digis
+    fPsdDigis = new std::vector<CbmPsdDigi>;
+    frm->RegisterAny("PsdDigi", fPsdDigis, kFALSE);
   }
 
   // --- If no DigiEvent branch is present, there must be a CbmEvent branch
