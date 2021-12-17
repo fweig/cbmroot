@@ -21,12 +21,7 @@
 #ifndef _CbmL1_h_
 #define _CbmL1_h_
 
-//#define GLOBAL
 
-/// temporary TEST !!!!
-///#define HAVE_SSE
-
-#include "CbmEvent.h"
 #include "CbmL1Hit.h"
 #include "CbmL1MCPoint.h"
 #include "CbmL1MCTrack.h"
@@ -35,10 +30,6 @@
 #include "CbmMCTrack.h"
 #include "CbmMvdHit.h"
 #include "CbmMvdPoint.h"
-#include "CbmStsCluster.h"
-#include "CbmStsDigi.h"
-#include "CbmStsHit.h"
-#include "CbmStsPoint.h"
 
 #include "FairDetector.h"
 #include "FairRootManager.h"
@@ -47,26 +38,12 @@
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1Vector.h"
 
-//#include "CbmMCEventHeader.h"
-//#include "L1AlgoInputData.h"
 #include "CbmMCDataArray.h"
 #include "CbmMCEventList.h"
 #include "CbmTimeSlice.h"
 
 #include "TClonesArray.h"
-#include "TGeoBBox.h"
-#include "TGeoCone.h"
-#include "TGeoManager.h"
-#include "TGeoMatrix.h"
-#include "TGeoPcon.h"
-#include "TGeoTube.h"
 #include "TH1.h"
-#include "TH2.h"
-#include "TParticle.h"
-#include "TProfile.h"
-#include "TProfile2D.h"
-#include "TRandom.h"
-#include "TRefArray.h"
 
 #include <algorithm>
 #include <fstream>
@@ -85,11 +62,16 @@ class L1FieldSlice;
 class CbmL1Track;
 class CbmL1MCTrack;
 class KFTopoPerformance;
-//class CbmEvBasedArray;
+
+class CbmEvent;
 class CbmStsParSetSensor;
 class CbmStsParSetSensorCond;
 class CbmStsParSetModule;
 class CbmTofDigiBdfPar;
+
+class CbmTrdParSetDigi;
+class CbmTrdParModDigi;
+class CbmTofDigiPar;
 
 class CbmL1HitStore {
 public:
@@ -98,16 +80,6 @@ public:
   double x, y, time, dx, dy, dt, dxy;
   int Det;
 };
-
-//class CbmL1FileEvent{
-//public:
-//  int File;
-//  int Event;
-//}
-
-class CbmTrdParSetDigi;
-class CbmTrdParModDigi;
-class CbmTofDigiPar;
 
 
 class CbmL1 : public FairTask {
@@ -280,7 +252,6 @@ private:
   CbmTimeSlice* fTimeSlice {nullptr};
   CbmMCEventList* fEventList {nullptr};  //!  MC event list (all)
 
-  L1Vector<CbmStsDigi> listStsDigi {"CbmL1::listStsDigi"};
   CbmMCDataArray* fStsPoints {nullptr};
   CbmMCDataArray* fMvdPoints {nullptr};
   CbmMCDataArray* fMCTracks {nullptr};

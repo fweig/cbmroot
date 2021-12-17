@@ -26,6 +26,9 @@
 #include "CbmMatch.h"
 #include "CbmMuchPixelHit.h"
 #include "CbmMuchPoint.h"
+#include "CbmStsDigi.h"
+#include "CbmStsHit.h"
+#include "CbmStsPoint.h"
 #include "CbmStsSetup.h"
 #include "CbmStsStation.h"
 #include "CbmTofHit.h"
@@ -35,6 +38,9 @@
 
 #include "FairTrackParam.h"  // for vertex pulls
 
+#include "TH1.h"
+#include "TH2.h"
+#include "TProfile.h"
 #include <TFile.h>
 
 #include <iostream>
@@ -1663,6 +1669,7 @@ void CbmL1::InputPerformance()
   static TH1F *pullXtrd, *pullYtrd, *pullTtrd, *resXtrd, *resYtrd, *resTtrd /*, *pullZ*/;
   static TH1F *pullXtof, *pullYtof, *pullTtof, *resXtof, *resYtof, *resTtof /*, *pullZ*/;
 
+  static TH1F* trdMCPointsZ = nullptr;
 
   static bool first_call = 1;
   if (first_call) {
@@ -1751,12 +1758,14 @@ void CbmL1::InputPerformance()
     gDirectory->mkdir("TRD");
     gDirectory->cd("TRD");
 
+    trdMCPointsZ = new TH1F("trdMCPointsZ", "trdMCPointsZ", 1000, 400., 700.);
+
     pullXtrd = new TH1F("Px_trd", "TRD Pull x", 100, -5, 5);
     pullYtrd = new TH1F("Py_trd", "TRD Pull y", 100, -5, 5);
     pullTtrd = new TH1F("Pt_trd", "TRD Pull t", 100, -5, 5);
 
-    resXtrd = new TH1F("x_trd", "TRD Residual x", 100, -200000, 200000);
-    resYtrd = new TH1F("y_trd", "TRD Residual y", 100, -200000, 200000);
+    resXtrd = new TH1F("x_trd", "TRD Residual x", 100, -10000, 10000);
+    resYtrd = new TH1F("y_trd", "TRD Residual y", 100, -10000, 10000);
     resTtrd = new TH1F("t_trd", "TRD Residual t", 100, -40, 40);
 
 
@@ -2018,11 +2027,12 @@ void CbmL1::InputPerformance()
 
 
       if (hm->GetNofLinks() == 0) continue;
+      if (hm->GetNofLinks() != 1) continue;  //SG!!
+
       Float_t bestWeight  = 0.f;
       Float_t totalWeight = 0.f;
       int iMCPoint        = -1;
       CbmLink link;
-
       for (int iLink = 0; iLink < hm->GetNofLinks(); iLink++) {
         totalWeight += hm->GetLink(iLink).GetWeight();
         if (hm->GetLink(iLink).GetWeight() > bestWeight) {
@@ -2068,6 +2078,7 @@ void CbmL1::InputPerformance()
       resXtrd->Fill((h.x - mcPos.X()) * 10 * 1000);
       resYtrd->Fill((h.y - mcPos.Y()) * 10 * 1000);
       resTtrd->Fill((h.t - mcTime));
+      trdMCPointsZ->Fill(mcPos.Z());
     }
   }  // much
 

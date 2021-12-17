@@ -18,6 +18,7 @@
  *
  */
 
+
 #include "L1Algo.h"
 #include "L1Extrapolation.h"
 #include "L1Filtration.h"
@@ -677,7 +678,8 @@ inline void L1Algo::f30(  // input
 
       FilterTime(T2, timeM, timeMEr, stam.timeInfo);
 #ifdef USE_RL_TABLE
-      if (fTrackingMode != kMcbm) fit.L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1);
+      if (fTrackingMode != kMcbm && fTrackingMode != kGlobal)
+        fit.L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1);
 
       if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
         fit.L1AddThickMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), MaxInvMom, 1, stam.materialInfo.thick, 1);
@@ -712,7 +714,6 @@ inline void L1Algo::f30(  // input
         const fvec Pick_r22    = (TRIPLET_CHI2_CUT - T2.chi2);
         const float& timeError = T2.C55[i2_4];
         const float& time      = T2.t[i2_4];
-
         // find first possible hit
 
 #ifdef DO_NOT_SELECT_TRIPLETS
@@ -736,7 +737,6 @@ inline void L1Algo::f30(  // input
           else {
             if (!area.GetNext(irh)) break;
           }
-
 
           // while (area.GetNext(irh)) {
           //for (int irh = 0; irh < ( StsHitsUnusedStopIndex[istar] - StsHitsUnusedStartIndex[istar] ); irh++){
@@ -762,15 +762,14 @@ inline void L1Algo::f30(  // input
 
           if ((star.timeInfo) && (stam.timeInfo))
             if (fabs(T_cur.t[i2_4] - hitr.time) > sqrt(T_cur.C55[i2_4] + hitr.timeEr) * 5) continue;
+
           if ((star.timeInfo) && (stam.timeInfo))
             if (fabs(T_cur.t[i2_4] - hitr.time) > 30) continue;
-
 
           // - check whether hit belong to the window ( track position +\- errors ) -
           // check lower boundary
           fvec y, C11;
           L1ExtrapolateYC11Line(T2, zr, y, C11);
-
           fscal dy_est2 =
             (Pick_r22[i2_4]
              * (fabs(
@@ -786,7 +785,6 @@ inline void L1Algo::f30(  // input
           const fscal dY  = yr[i2_4] - y[i2_4];
           const fscal dY2 = dY * dY;
           if (dY2 > dy_est2 && dY2 < 0) continue;  // if (yr < y_minus_new[i2_4]) continue;
-
           // check upper boundary
           if (dY2 > dy_est2) continue;  // if (yr > y_plus_new [i2_4] ) continue;
           // check x-boundaries
@@ -804,7 +802,6 @@ inline void L1Algo::f30(  // input
           }
 
           const fscal dX = xr[i2_4] - x[i2_4];
-
           if (dX * dX > dx_est2) continue;
           // check chi2  // not effective
           fvec C10;
@@ -828,7 +825,6 @@ inline void L1Algo::f30(  // input
 #ifdef DO_NOT_SELECT_TRIPLETS
           if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
 #endif
-
             if (chi2[i2_4] > TRIPLET_CHI2_CUT || C00[i2_4] < 0 || C11[i2_4] < 0 || T_cur.C55[i2_4] < 0)
               continue;  // chi2_triplet < CHI2_CUT
 
@@ -1813,6 +1809,8 @@ void L1Algo::CATrackFinder()
         // --- SET PARAMETERS FOR THE ITERATION ---
 
         FIRSTCASTATION = 0;
+        if (fTrackingMode == kGlobal) { FIRSTCASTATION = 12; }
+
         // if ( (isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter) )
         //   FIRSTCASTATION = 2;
 
@@ -2020,7 +2018,6 @@ void L1Algo::CATrackFinder()
 
 
                        n_2, i1_2, hitsm_2);
-
 
         Tindex nstaltriplets = 0;
 
@@ -2681,7 +2678,6 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       fscal dqp       = fabs(qp1 - qp2);
       fscal Cqp       = curr_trip->GetCqp();
       Cqp += new_trip.GetCqp();
-
       if (fTrackingMode != kMcbm) {
         if (dqp > PickNeighbour * Cqp) {
           continue;  // bad neighbour // CHECKME why do we need recheck it?? (it really change result)
@@ -2704,7 +2700,6 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
         if (dty > 3 * Cty) continue;
         if (dtx > 3 * Ctx) continue;
       }
-
 
       if (GetFUsed((*fStripFlag)[(*vStsHitsUnused)[new_trip.GetLHit()].f]
                    | (*fStripFlag)[(*vStsHitsUnused)[new_trip.GetLHit()].b])) {  //hits are used
@@ -2730,8 +2725,8 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
 
         dqp = dqp / Cqp;
 
-        dtx = dtx / Ctx;
-        dty = dty / Cty;
+        dtx = dtx / Ctx;  // TODO: SG: it must be /sqrt(Ctx);
+        dty = dty / Cty;  // TODO: SG: it must be /sqrt(Cty);
 
         if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) {
           new_chi2 += dtx * dtx;
@@ -2740,9 +2735,7 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
         else {
           new_chi2 += dqp * dqp;
         }
-
-        if (new_chi2 > TRACK_CHI2_CUT * new_L) continue;
-
+        if (new_chi2 > TRACK_CHI2_CUT * new_L) continue;  // TODO: SG: it must be  ( 2 * new_L )
         const int new_ista = ista + new_trip.GetMSta() - new_trip.GetLSta();
 
         CAFindTrack(new_ista, best_tr, best_L, best_chi2, &new_trip, new_tr[ista], new_L, new_chi2, min_best_l, new_tr);

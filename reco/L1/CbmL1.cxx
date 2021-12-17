@@ -32,6 +32,7 @@
 // TODO: include of CbmSetup.h creates problems on Mac
 // #include "CbmSetup.h"
 #include "CbmStsFindTracks.h"
+#include "CbmStsHit.h"
 #include "CbmStsParSetModule.h"
 #include "CbmStsParSetSensor.h"
 #include "CbmStsParSetSensorCond.h"
@@ -52,6 +53,7 @@
 #include "TGeoManager.h"
 #include "TGeoNode.h"
 #include "TMatrixD.h"
+#include "TProfile2D.h"
 #include "TROOT.h"
 #include "TRandom3.h"
 #include "TVector3.h"
@@ -201,7 +203,7 @@ InitStatus CbmL1::Init()
   if (fTrackingMode == L1Algo::TrackingMode::kGlobal) {
     fUseMUCH = 0;
     fUseTRD  = 1;
-    fUseTOF  = 1;
+    fUseTOF  = 0;
   }
 
 
@@ -219,7 +221,7 @@ InitStatus CbmL1::Init()
   fTofHitDigiMatches = 0;
 
   listStsClusters = 0;
-  listStsDigi.clear();
+
   vFileEvent.clear();
 
 
@@ -349,7 +351,7 @@ InitStatus CbmL1::Init()
   algo = &algo_static;
 
   L1Vector<fscal> geo("geo");
-  geo.reserve(1000);
+  geo.reserve(10000);
 
   for (int i = 0; i < 3; i++) {
     Double_t point[3] = {0, 0, 2.5 * i};
@@ -398,7 +400,7 @@ InitStatus CbmL1::Init()
       }
     }
     NTrdStations = layerCounter;
-    NTrdStations = NTrdStations - 1;
+    if (fTrackingMode == L1Algo::TrackingMode::kMcbm) { NTrdStations = NTrdStations - 1; }
   }
 
 
@@ -504,15 +506,12 @@ InitStatus CbmL1::Init()
   //   } // target field
 
   for (Int_t ist = 0; ist < NStation; ist++) {
-    double C[3][N];
     double z    = 0;
     double Xmax = 0, Ymax = 0;
     if (ist < NMvdStations) {
 
-
       CbmMvdDetector* mvdDetector     = CbmMvdDetector::Instance();
       CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();
-
 
       CbmKFTube& t = CbmKF::Instance()->vMvdMaterial[ist];
       geo.push_back(1);
@@ -530,6 +529,8 @@ InitStatus CbmL1::Init()
       geo.push_back(b_sigma);
       z    = t.z;
       Xmax = Ymax = t.R;
+
+      LOG(info) << "L1: Mvd station " << ist << " at z " << t.z << endl;
     }
 
 
@@ -562,6 +563,8 @@ InitStatus CbmL1::Init()
 
       Xmax = station->GetXmax();
       Ymax = station->GetYmax();
+
+      LOG(info) << "L1: Sts station " << ist - NMvdStations << " at z " << station->GetZ() << endl;
     }
 
     if ((ist < (NMvdStations + NStsStations + NMuchStations)) && (ist >= (NMvdStations + NStsStations))) {
@@ -595,6 +598,8 @@ InitStatus CbmL1::Init()
 
       Xmax = 100;  //station->GetRmax();
       Ymax = 100;  //station->GetRmax();
+
+      LOG(info) << "L1: Much station " << iStation << " at z " << z << endl;
     }
 
     //     int num = 0;
@@ -609,10 +614,12 @@ InitStatus CbmL1::Init()
 
       //      Int_t nrModules = fTrdDigiPar->GetNrOfModules();
 
-      int skip = 0;
-      if (num == 0) skip = 0;
-      if (num == 1) skip = 2;
-      if (num == 2) skip = 3;
+      int skip = num;
+      if (fTrackingMode == L1Algo::TrackingMode::kMcbm) {
+        if (num == 0) skip = 0;
+        if (num == 1) skip = 2;
+        if (num == 2) skip = 3;
+      }
 
       int ModuleId = fTrdDigiPar->GetModuleId(skip);
 
@@ -622,19 +629,24 @@ InitStatus CbmL1::Init()
 
       if (num == 0 || num == 2 || num == 4) geo.push_back(3);
       if (num == 1 || num == 3) geo.push_back(6);
-      geo.push_back(module->GetZ());
+
+      float stationZ = module->GetZ();
+
+      geo.push_back(stationZ);
 
       geo.push_back(2 * module->GetSizeZ());
       geo.push_back(0);
       geo.push_back(2 * module->GetSizeX());
       geo.push_back(10);
 
-      fscal f_phi = 0, f_sigma = 1 / 10000, b_phi = 3.14159265358 / 2., b_sigma = 1 / 10000;
+      fscal f_phi = 0, f_sigma = 1., b_phi = 3.14159265358 / 2., b_sigma = 1.;
       geo.push_back(f_phi);
       geo.push_back(f_sigma);
       geo.push_back(b_phi);
       geo.push_back(b_sigma);
-      Xmax = Ymax = 20;
+      Xmax = module->GetSizeX();
+      Ymax = module->GetSizeY();
+      LOG(info) << "L1: Trd station " << num << " at z " << stationZ << endl;
     }
 
     if ((ist < (NMvdStations + NStsStations + NTrdStations + NMuchStations + NTOFStation))
@@ -642,10 +654,16 @@ InitStatus CbmL1::Init()
 
       geo.push_back(4);
 
-      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 0)) geo.push_back(251);
-      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 1)) geo.push_back(270);
-      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 2)) geo.push_back(293);
-      if (ist == (NMvdStations + NStsStations + NTrdStations + NMuchStations + 3)) geo.push_back(310);
+      z = 0;
+
+      int num = ist - (NMvdStations + NStsStations + NTrdStations + NMuchStations);
+
+      if (num == 0) z = 251;
+      if (num == 1) z = 270;
+      if (num == 2) z = 293;
+      if (num == 3) z = 310;
+
+      geo.push_back(z);
 
       geo.push_back(10);  /// TODO: add Tof width dz
       geo.push_back(0);
@@ -658,6 +676,7 @@ InitStatus CbmL1::Init()
       geo.push_back(b_phi);
       geo.push_back(b_sigma);
       Xmax = Ymax = 20;
+      LOG(info) << "L1: Tof station " << num << " at z " << z << endl;
     }
 
     double dx = 1.;  // step for the field approximation
@@ -666,6 +685,7 @@ InitStatus CbmL1::Init()
     if (dx > Xmax / N / 2) dx = Xmax / N / 4.;
     if (dy > Ymax / N / 2) dy = Ymax / N / 4.;
 
+    double C[3][N];
     for (int i = 0; i < 3; i++)
       for (int k = 0; k < N; k++)
         C[i][k] = 0;
@@ -969,6 +989,7 @@ InitStatus CbmL1::Init()
         algo->fRadThick[iSta].table.resize(1);
         algo->fRadThick[iSta].table[0].resize(1);
         algo->fRadThick[iSta].table[0][0] = algo->vStations[iSta].materialInfo.RadThick[0];
+        cout << "TRD material: " << algo->vStations[iSta].materialInfo.RadThick[0] << endl;
       }
     }
 

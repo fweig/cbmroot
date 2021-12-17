@@ -21,6 +21,7 @@
 
 #include "CbmL1.h"
 #include "CbmStsAddress.h"
+#include "CbmStsHit.h"
 #include "CbmStsSetup.h"
 #include "CbmStsTrack.h"
 
