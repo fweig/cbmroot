@@ -20,7 +20,7 @@
 
 #include "CbmRecoUnpackConfig.tmpl"
 #include "CbmRichDigi.h"
-#include "CbmRichUnpackAlgo.h"
+#include "CbmRichUnpackAlgoBase.h"
 
 #include <FairLogger.h>
 #include <Logger.h>
@@ -33,7 +33,14 @@
 #include <memory>
 #include <vector>
 
-class CbmRichUnpackConfig : public CbmRecoUnpackConfig<CbmRichUnpackAlgo, CbmRichDigi, std::nullptr_t, std::nullptr_t> {
+enum class CbmRichUnpackerVersion
+{
+  v02,
+  v03
+};
+
+class CbmRichUnpackConfig :
+  public CbmRecoUnpackConfig<CbmRichUnpackAlgoBase, CbmRichDigi, std::nullptr_t, std::nullptr_t> {
 
 public:
   /**
@@ -70,15 +77,20 @@ public:
 
   void MaskDiRICH(Int_t DiRICH) { fMaskedDiRICHes.push_back(DiRICH); }
 
+  void SetUnpackerVersion(CbmRichUnpackerVersion vers) { fUnpackerVersion = vers; }
+
 protected:
   /**
    * @brief Choose the derived unpacker algorithm to be used for the DAQ output to Digi translation. If algo was already set manually by the user this algorithm is used.
    *
    * @return Bool_t initOk
   */
-  virtual std::shared_ptr<CbmRichUnpackAlgo> chooseAlgo();
+  virtual std::shared_ptr<CbmRichUnpackAlgoBase> chooseAlgo();
 
   std::vector<Int_t> fMaskedDiRICHes = {};
+
+  /** @brief Selector of Unpacker Version. */
+  CbmRichUnpackerVersion fUnpackerVersion = CbmRichUnpackerVersion::v02;
 
 private:
   ClassDef(CbmRichUnpackConfig, 3)

@@ -84,6 +84,8 @@ qa/CbmRichGeoTestOpt.cxx
 qa/CbmRichRecoQa.cxx
 
 unpack/CbmRichUnpackAlgo.cxx
+unpack/CbmRichUnpackAlgo2022.cxx
+unpack/CbmRichUnpackAlgoBase.cxx
 unpack/CbmRichUnpackConfig.cxx
 )
 

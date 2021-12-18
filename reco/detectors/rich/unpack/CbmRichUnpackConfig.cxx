@@ -5,6 +5,7 @@
 #include "CbmRichUnpackConfig.h"
 
 #include "CbmRichUnpackAlgo.h"
+#include "CbmRichUnpackAlgo2022.h"
 
 #include <Logger.h>
 
@@ -32,15 +33,23 @@ void CbmRichUnpackConfig::InitAlgo()
 }
 
 // ---- chooseAlgo ----
-std::shared_ptr<CbmRichUnpackAlgo> CbmRichUnpackConfig::chooseAlgo()
+std::shared_ptr<CbmRichUnpackAlgoBase> CbmRichUnpackConfig::chooseAlgo()
 {
   if (fDoLog) LOG(info) << fName << "::Init - chooseAlgo";
 
   // Default unpacker selection
   // Unpacker algo from mcbm 2021 on and hopefully default for a long time.
-  auto algo = std::make_shared<CbmRichUnpackAlgo>();
-  LOG(info) << fName << "::chooseAlgo() - selected algo = " << algo->Class_Name();
-  return algo;
+  if (fUnpackerVersion == CbmRichUnpackerVersion::v02) {
+    auto algo = std::make_shared<CbmRichUnpackAlgo>();
+    LOG(info) << fName << "::chooseAlgo() - selected algo = " << algo->Class_Name();
+    return algo;
+  }
+
+  if (fUnpackerVersion == CbmRichUnpackerVersion::v03) {
+    auto algo = std::make_shared<CbmRichUnpackAlgo2022>();
+    LOG(info) << fName << "::chooseAlgo() - selected algo = " << algo->Class_Name();
+    return algo;
+  }
 
   LOG(error) << fName
              << "::Init - chooseAlgo() - no algorithm created something went wrong. We can not work like this!";

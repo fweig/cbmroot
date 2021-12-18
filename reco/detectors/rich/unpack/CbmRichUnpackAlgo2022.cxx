@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Pascal Raisig [committer] */
 
-#include "CbmRichUnpackAlgo.h"
+#include "CbmRichUnpackAlgo2022.h"
 
 #include <FairParGenericSet.h>
 #include <FairTask.h>
@@ -14,23 +14,23 @@
 #include <cstdint>
 
 
-CbmRichUnpackAlgo::CbmRichUnpackAlgo() : CbmRichUnpackAlgoBase("CbmRichUnpackAlgo") {}
+CbmRichUnpackAlgo2022::CbmRichUnpackAlgo2022() : CbmRichUnpackAlgoBase("CbmRichUnpackAlgo2022") {}
 
-CbmRichUnpackAlgo::~CbmRichUnpackAlgo() {}
+CbmRichUnpackAlgo2022::~CbmRichUnpackAlgo2022() {}
 
 // ---- unpack
-bool CbmRichUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice)
+bool CbmRichUnpackAlgo2022::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice)
 {
 
   const fles::MicrosliceView mv            = ts->get_microslice(icomp, imslice);
   const fles::MicrosliceDescriptor& msDesc = mv.desc();
-
+  //std::cout<< "startMS"<<std::endl;
   CbmRichUnpackAlgoMicrosliceReader reader;
   reader.SetData(mv.content(), msDesc.size);
 
   auto mstime = msDesc.idx;
   fMsRefTime  = mstime - fTsStartTime;
-
+  //std::cout<< fMsRefTime <<"  "<< fTsStartTime << std::endl;
   // There are a lot of MS  with 8 bytes size
   // Does one need these MS?
   if (reader.GetSize() <= 8) return true;
@@ -53,7 +53,7 @@ bool CbmRichUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
   return true;
 }
 
-void CbmRichUnpackAlgo::processHubBlock(CbmRichUnpackAlgoMicrosliceReader& reader)
+void CbmRichUnpackAlgo2022::processHubBlock(CbmRichUnpackAlgoMicrosliceReader& reader)
 {
   uint32_t word    = reader.NextWord();
   uint32_t hubId   = word & 0xffff;          // 16 bits
@@ -66,9 +66,10 @@ void CbmRichUnpackAlgo::processHubBlock(CbmRichUnpackAlgoMicrosliceReader& reade
   //if (((HubId >> 8) & 0xff) == 0x82) // TRB subevent? // TODO: check if it starts from 0x82
 
   // if true then it is CTS sub-sub-event
-  bool isLast      = false;
-  size_t counter   = 0;
-  size_t totalSize = 0;
+  bool isLast         = false;
+  size_t counter      = 0;
+  size_t totalSize    = 0;
+  fCurrentSubSubEvent = 1;
   while (!isLast) {
     word                     = reader.NextWord();
     uint32_t subSubEventId   = word & 0xffff;                              // 16 bits
@@ -90,6 +91,7 @@ void CbmRichUnpackAlgo::processHubBlock(CbmRichUnpackAlgoMicrosliceReader& reade
       processSubSubEvent(reader, subSubEventSize, subSubEventId);
     }
     else {  // CTS event
+      fCurrentSubSubEvent = 0;
       processCtsSubSubEvent(reader, subSubEventSize, subSubEventId);
     }
 
@@ -104,6 +106,8 @@ void CbmRichUnpackAlgo::processHubBlock(CbmRichUnpackAlgoMicrosliceReader& reade
     }
 
     if (totalSize >= hubSize || isLast) break;
+
+    fCurrentSubSubEvent++;
   }
 
   // read last words
@@ -112,7 +116,10 @@ void CbmRichUnpackAlgo::processHubBlock(CbmRichUnpackAlgoMicrosliceReader& reade
     lastWordsCounter++;
     word = reader.NextWord();
     if (isLog()) LOG(debug4) << getLogHeader(reader);
-    if (word == 0x600dda7a) break;
+    if (word == 0x600dda7a) {
+      if (reader.IsNextPadding()) word = reader.NextWord();
+      break;
+    }
     if (lastWordsCounter >= 7) {
       LOG(error) << getLogHeader(reader)
                  << "CbmMcbm2018UnpackerAlgoRich::ProcessHubBlock() ERROR: No word == 0x600dda7a";
@@ -120,8 +127,8 @@ void CbmRichUnpackAlgo::processHubBlock(CbmRichUnpackAlgoMicrosliceReader& reade
   }
 }
 
-void CbmRichUnpackAlgo::processCtsSubSubEvent(CbmRichUnpackAlgoMicrosliceReader& reader, uint32_t subSubEventSize,
-                                              uint32_t subSubEventId)
+void CbmRichUnpackAlgo2022::processCtsSubSubEvent(CbmRichUnpackAlgoMicrosliceReader& reader, uint32_t subSubEventSize,
+                                                  uint32_t subSubEventId)
 {
   uint32_t word         = reader.NextWord();
   uint32_t ctsState     = word & 0xffff;                                                                   // 16 bits
@@ -147,8 +154,8 @@ void CbmRichUnpackAlgo::processCtsSubSubEvent(CbmRichUnpackAlgoMicrosliceReader&
   processSubSubEvent(reader, nofTimeWords, subSubEventId);
 }
 
-void CbmRichUnpackAlgo::processSubSubEvent(CbmRichUnpackAlgoMicrosliceReader& reader, int nofTimeWords,
-                                           uint32_t subSubEventId)
+void CbmRichUnpackAlgo2022::processSubSubEvent(CbmRichUnpackAlgoMicrosliceReader& reader, int nofTimeWords,
+                                               uint32_t subSubEventId)
 {
   // Store if a certain TDC word type was analysed,
   // later one can check if the order is correct
@@ -231,10 +238,41 @@ void CbmRichUnpackAlgo::processSubSubEvent(CbmRichUnpackAlgoMicrosliceReader& re
   }
 }
 
-void CbmRichUnpackAlgo::processTrbPacket(CbmRichUnpackAlgoMicrosliceReader& reader)
+void CbmRichUnpackAlgo2022::processTrbPacket(CbmRichUnpackAlgoMicrosliceReader& reader)
 {
-  processMbs(reader, false);  // Current MBS
-  processMbs(reader, true);   // Previous MBS
+  processCBMtime(reader);
+  uint32_t trigNum_this = reader.NextWord() & 0xFFFFFF;
+  for (auto l = 0; l < 5; ++l)
+    reader.NextWord();
+
+  //prev CBM time (64bit)
+  uint32_t cbmtime0           = reader.NextWord();  // CBM 63:32
+  uint32_t cbmtime1           = reader.NextWord();  // CBM 31: 0
+  uint64_t CbmTimePacket_prev = (uint64_t) cbmtime0 << 32 | cbmtime1;
+
+  uint32_t trigNum_prevMes = reader.NextWord() & 0xFFFFFF;
+
+  reader.NextWord();  // reserved
+  //std::cout<<"trigNum:  "<<std::hex<< trigNum_this <<std::dec  << "    trigNum_prev:  " <<std::hex<< trigNum_prevMes <<std::dec<<std::endl;
+  //std::cout<<"CBM time: "<<std::hex<< fCbmTimePacket <<std::dec<< "    CBM time prev: " <<std::hex<< CbmTimePacket_prev <<std::dec<<std::endl;
+  for (auto l = 0; l < 14; ++l) {
+    uint32_t wordEpoch = reader.NextWord();
+    uint32_t epoch     = CbmRichUnpackAlgoTdcWordReader::ProcessEpoch(wordEpoch);
+    uint32_t wordTime  = reader.NextWord();
+    CbmRichUnpackAlgoTdcTimeData td;
+    CbmRichUnpackAlgoTdcWordReader::ProcessTimeData(wordTime, td);
+
+    double fullTime = calculateTime(epoch, td.fCoarse, td.fFine);
+
+    if (l == 0) {
+      fMbsPrevTimeCh0       = fullTime;
+      fPrevLastCh0ReTime[0] = fullTime;
+    }
+    if (l == 1) fMbsPrevTimeCh1 = fullTime;
+    if (l > 1) fPrevLastCh0ReTime[l - 1] = fullTime;
+  }
+  //processMbs(reader, false);  // Current MBS
+  //processMbs(reader, true);   // Previous MBS
 
   uint32_t trbNum = reader.NextWord();  // TRB trigger number
   if (isLog()) LOG(debug4) << getLogHeader(reader) << "TRB Num:" << reader.GetWordAsHexString(trbNum);
@@ -242,7 +280,15 @@ void CbmRichUnpackAlgo::processTrbPacket(CbmRichUnpackAlgoMicrosliceReader& read
   processHubBlock(reader);
 }
 
-void CbmRichUnpackAlgo::processMbs(CbmRichUnpackAlgoMicrosliceReader& reader, bool isPrev)
+void CbmRichUnpackAlgo2022::processCBMtime(CbmRichUnpackAlgoMicrosliceReader& reader)
+{
+  uint32_t word_MSB = reader.NextWord();  // CBM 63:32
+  uint32_t word_LSB = reader.NextWord();  // CBM 31: 0
+  //fCbmTimePacket = 0;
+  //fCbmTimePacket = (uint64_t) word_MSB<<32 | word_LSB;
+}
+
+void CbmRichUnpackAlgo2022::processMbs(CbmRichUnpackAlgoMicrosliceReader& reader, bool isPrev)
 {
   uint32_t word     = reader.NextWord();
   uint32_t mbsNum   = word & 0xffffff;      //24 bits
@@ -274,8 +320,9 @@ void CbmRichUnpackAlgo::processMbs(CbmRichUnpackAlgoMicrosliceReader& reader, bo
 }
 
 // ---- processTimeDataWord ----
-void CbmRichUnpackAlgo::processTimeDataWord(CbmRichUnpackAlgoMicrosliceReader& reader, int iTdc, uint32_t epoch,
-                                            uint32_t tdcWord, uint32_t subSubEventId, std::vector<double>& raisingTime)
+void CbmRichUnpackAlgo2022::processTimeDataWord(CbmRichUnpackAlgoMicrosliceReader& reader, int iTdc, uint32_t epoch,
+                                                uint32_t tdcWord, uint32_t subSubEventId,
+                                                std::vector<double>& raisingTime)
 {
   CbmRichUnpackAlgoTdcTimeData td;
   CbmRichUnpackAlgoTdcWordReader::ProcessTimeData(tdcWord, td);
@@ -284,19 +331,25 @@ void CbmRichUnpackAlgo::processTimeDataWord(CbmRichUnpackAlgoMicrosliceReader& r
 
   if (td.fChannel == 0) {
     if (td.IsRisingEdge()) {
-      fPrevLastCh0ReTime[subSubEventId] = fLastCh0ReTime[subSubEventId];
-      fLastCh0ReTime[subSubEventId]     = fullTime;
       if (isLog())
         LOG(debug4) << getLogHeader(reader) << "SubSubEv[" << iTdc << "] " << td.ToString()
-                    << " CH0 Last:" << std::setprecision(15) << fLastCh0ReTime[subSubEventId]
-                    << " PrevLast:" << fPrevLastCh0ReTime[subSubEventId]
-                    << " diff:" << fLastCh0ReTime[subSubEventId] - fPrevLastCh0ReTime[subSubEventId];
+                    << " CH0 Last:" << std::setprecision(15) << fullTime
+                    << " PrevLast:" << fPrevLastCh0ReTime[fCurrentSubSubEvent]
+                    << " diff:" << fullTime - fPrevLastCh0ReTime[fCurrentSubSubEvent];
     }
   }
   else {
-    double dT           = fullTime - fPrevLastCh0ReTime[subSubEventId];
+    double dT           = fullTime - fPrevLastCh0ReTime[fCurrentSubSubEvent];
     double mbsCorr      = fMbsPrevTimeCh1 - fMbsPrevTimeCh0;
     double fullTimeCorr = dT - mbsCorr;
+
+    // std::cout<< dT <<"  "
+    //          << fullTimeCorr <<"  "<< std::setprecision(15)
+    //          << fullTime <<"  "
+    //          << fPrevLastCh0ReTime[fCurrentSubSubEvent] <<"  "
+    //          << mbsCorr <<"  "
+    //          << fCurrentSubSubEvent <<"  " <<std::hex
+    //          << subSubEventId << std::dec <<std::endl;
     if (isLog())
       LOG(debug4) << getLogHeader(reader) << "SubSubEv[" << iTdc << "] " << td.ToString()
                   << " time:" << std::setprecision(15) << fullTime << " fullTimeCorr:" << fullTimeCorr;
@@ -339,41 +392,16 @@ void CbmRichUnpackAlgo::processTimeDataWord(CbmRichUnpackAlgoMicrosliceReader& r
   }
 }
 
-void CbmRichUnpackAlgo::writeOutputDigi(Int_t fpgaID, Int_t channel, Double_t time, Double_t tot)
+void CbmRichUnpackAlgo2022::writeOutputDigi(Int_t fpgaID, Int_t channel, Double_t time, Double_t tot)
 {
   Double_t ToTcorr = fbDoToTCorr ? fUnpackPar.GetToTshift(fpgaID, channel) : 0.;
   Int_t pixelUID   = this->getPixelUID(fpgaID, channel);
   //check ordering
   Double_t finalTime = time + (Double_t) fMsRefTime - fSystemTimeOffset;
+  //printf("time: %.3f  %.3f %d\n",finalTime, time, fSystemTimeOffset);
   //   Double_t finalTime = time - fSystemTimeOffset - fTsStartTime;
 
   fOutputVec.emplace_back(pixelUID, finalTime, tot - ToTcorr);
-
-  // Sorting of Digis (Now done in general part)
-  /*
-  Double_t lastTime = 0.;
-
-  if (fOutputVec.size() < 1) { fOutputVec.emplace_back(pixelUID, finalTime, tot - ToTcorr); }
-  else {
-    lastTime = fOutputVec[fOutputVec.size() - 1].GetTime();
-    if (fOutputVec[0].GetTime() > finalTime) {
-      fOutputVec.emplace(fOutputVec.begin(), pixelUID, finalTime, tot - ToTcorr);
-    }
-    else if (lastTime > finalTime) {
-      for (int i = fOutputVec.size() - 1; i >= 0; i--) {
-        lastTime = fOutputVec[i].GetTime();
-        if (lastTime <= finalTime) {
-          fOutputVec.emplace(fOutputVec.begin() + i + 1, pixelUID, finalTime, tot - ToTcorr);
-          break;
-        }
-      }
-    }
-    else {
-      fOutputVec.emplace_back(pixelUID, finalTime, tot - ToTcorr);
-    }
-  }
-  */
 }
 
-
-ClassImp(CbmRichUnpackAlgo)
+ClassImp(CbmRichUnpackAlgo2022)

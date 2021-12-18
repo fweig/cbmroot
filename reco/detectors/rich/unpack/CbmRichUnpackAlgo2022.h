@@ -18,8 +18,8 @@
  * 
 */
 
-#ifndef CbmRichUnpackAlgo_H
-#define CbmRichUnpackAlgo_H
+#ifndef CbmRichUnpackAlgo2022_H
+#define CbmRichUnpackAlgo2022_H
 
 #include "CbmMcbm2018RichPar.h"
 #include "CbmRecoUnpackAlgo.tmpl"
@@ -37,23 +37,23 @@
 #include <memory>
 #include <utility>
 
-
-class CbmRichUnpackAlgo : public CbmRichUnpackAlgoBase {
+class CbmRichUnpackAlgo2022 : public CbmRichUnpackAlgoBase {
 public:
   /** @brief Create the Cbm Trd Unpack AlgoBase object */
-  CbmRichUnpackAlgo();
+  CbmRichUnpackAlgo2022();
 
   /** @brief Destroy the Cbm Trd Unpack Task object */
-  virtual ~CbmRichUnpackAlgo();
+  virtual ~CbmRichUnpackAlgo2022();
 
   /** @brief Copy constructor - not implemented **/
-  CbmRichUnpackAlgo(const CbmRichUnpackAlgo&) = delete;
+  CbmRichUnpackAlgo2022(const CbmRichUnpackAlgo2022&) = delete;
 
   /** @brief Assignment operator - not implemented **/
-  CbmRichUnpackAlgo& operator=(const CbmRichUnpackAlgo&) = delete;
+  CbmRichUnpackAlgo2022& operator=(const CbmRichUnpackAlgo2022&) = delete;
 
 
 protected:
+  void processCBMtime(CbmRichUnpackAlgoMicrosliceReader& reader);
 
   void processTrbPacket(CbmRichUnpackAlgoMicrosliceReader& reader);
 
@@ -88,16 +88,30 @@ protected:
   */
   bool unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice);
 
+  //bool checkMaskedDiRICH(Int_t subSubEventId);
+
+  /** @brief Parameters for the unpacking */
+  //CbmMcbm2018RichPar fUnpackPar;
+
+  //std::vector<Int_t>* fMaskedDiRICHes = nullptr;
 
   double fMbsPrevTimeCh0 = 0.;
   double fMbsPrevTimeCh1 = 0.;
 
-  std::map<uint32_t, double> fLastCh0ReTime;      //key:TDC ID, value:Full time of last rising edge from ch 0
-  std::map<uint32_t, double> fPrevLastCh0ReTime;  // key:TDC ID, value:Full time of previous last rising edge from ch 0
+  //size_t fMsRefTime = 0;
 
+  //double fToTMin = -20.;
+  //double fToTMax = 100.;
+
+  //uint64_t fCbmTimePacket = 0;
+
+  double fPrevLastCh0ReTime[13];  // 12 DiRICHes chnl0 + 1 CTS chnl0
+  int fCurrentSubSubEvent = 0;
+
+  //Bool_t fbDoToTCorr = true;  // kTRUE activates ToT correction from Parameterfile
 
 private:
-  ClassDef(CbmRichUnpackAlgo, 2)
+  ClassDef(CbmRichUnpackAlgo2022, 2)
 };
 
-#endif  // CbmRichUnpackAlgo_H
+#endif  // CbmRichUnpackAlgo2022_H
