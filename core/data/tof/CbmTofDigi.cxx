@@ -10,9 +10,9 @@
  **/
 #include "CbmTofDigi.h"
 
-#include <TString.h>  // for Form, TString
-
-#include <string>  // for basic_string
+#include <iomanip>  // for hex, setw, setfill, fixed, setprecission
+#include <sstream>  // for operator<<, basic_ostream, char_trait
+#include <string>   // for basic_string
 
 CbmTofDigi::CbmTofDigi() : fdTime(0.), fdTot(-1.), fuAddress(0)
 //    fMatch(nullptr)
@@ -39,11 +39,15 @@ CbmTofDigi::~CbmTofDigi()
   //  if ( fMatch ) delete fMatch;
 }
 
-
 std::string CbmTofDigi::ToString() const
 {
-  TString string = Form("CbmTofDigi: address = 0x%08X time = %f tot = %f", fuAddress, fdTime, fdTot);
-  return string.Data();
+  // Example Output i
+  // CbmTofDigi: address = 0x05020026 time = 1017.181900 tot = 1.221741
+
+  std::stringstream ss;
+  ss << "CbmTofDigi: address = 0x" << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << fuAddress
+     << " time = " << std::fixed << std::setprecision(6) << fdTime << " tot = " << fdTot;
+  return ss.str();
 }
 
 void CbmTofDigi::SetAddress(uint32_t Sm, uint32_t Rpc, uint32_t Channel, uint32_t Side, uint32_t SmType)

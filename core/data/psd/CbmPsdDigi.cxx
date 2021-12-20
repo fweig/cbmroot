@@ -11,11 +11,9 @@
 
 #include "CbmPsdDigi.h"
 
-#include <TBuffer.h>  // for TBuffer
-#include <TClass.h>   // for CbmPsdDigi::IsA()
-#include <TString.h>  // for Form, TString
-
-#include <string>  // for basic_string
+#include <iomanip>  // for hex, setw, setfill, fixed, setprecission
+#include <sstream>  // for operator<<, basic_ostream, char_trait
+#include <string>   // for basic_string
 
 // --- Copy constructor
 CbmPsdDigi::CbmPsdDigi(const CbmPsdDigi& other) : fuAddress(other.fuAddress), fdTime(other.fdTime), fdEdep(other.fdEdep)
@@ -37,8 +35,13 @@ void CbmPsdDigi::SetAddress(uint32_t moduleId, uint32_t sectionId)
 // --- Info to string
 std::string CbmPsdDigi::ToString() const
 {
-  TString string = Form("CbmPsdDigi: address = 0x%08X Charge = %f Time = %f", fuAddress, fdEdep, fdTime);
-  return string.Data();
+  // Example output
+  // CbmPsdDigi: address = 0x00001018 Charge = 0.011590 Time = 1006.438294
+
+  std::stringstream ss;
+  ss << "CbmPsdDigi: address = 0x" << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << fuAddress
+     << " Charge = " << std::fixed << std::setprecision(6) << fdEdep << " Time = " << fdTime;
+  return ss.str();
 }
 
 #ifndef NO_ROOT
