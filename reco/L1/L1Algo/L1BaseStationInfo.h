@@ -26,9 +26,6 @@
 #include <iomanip>
 #include <string>
 //#include <cmath>
-
-/// A base class which provides interface to L1Algo station geometry
-
 class L1BaseStationInfo {
 private:
   enum
@@ -47,7 +44,7 @@ private:
     kEstripsFrontSigma,
     kEstripsBackPhi,
     kEstripsBackSigma,
-    // The last item is equal to the number of bits in fInitFlags
+    /// v The last item is equal to the number of bits in fInitFlags
     kEND
   };
 
