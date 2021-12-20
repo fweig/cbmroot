@@ -31,12 +31,24 @@ public:
   {
   }
 
+  // TODO: test this constructors
+  //L1Station(const L1Station &) = default;
+  //L1Station & operator=(const L1Station &) = default;
+  //L1Station(L1Station &&) = default;
+  //L1Station & operator=(L1Station &&) = default;
+
   int type;
   int timeInfo;
-  fvec z, Rmin, Rmax, Sy;
+  fvec z;
+  fvec Rmin;
+  fvec Rmax;
+  fvec Sy;
   L1MaterialInfo materialInfo;
   L1FieldSlice fieldSlice;
-  L1UMeasurementInfo frontInfo, backInfo, xInfo, yInfo;
+  L1UMeasurementInfo frontInfo;
+  L1UMeasurementInfo backInfo;
+  L1UMeasurementInfo xInfo;
+  L1UMeasurementInfo yInfo;
   L1XYMeasurementInfo XYInfo;
 
 } _fvecalignment;

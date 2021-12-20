@@ -8,6 +8,8 @@
 #include <iostream>
 
 #include "L1Def.h"
+#include "L1Parameters.h"
+
 using std::cout;
 using std::endl;
 using std::ostream;
@@ -38,11 +40,13 @@ public:
 class L1FieldSlice {
 
 public:
-  fvec cx[21], cy[21], cz[21];  // polinom coeff.
+  fvec cx[L1Parameters::kN_FS_COEFFS];
+  fvec cy[L1Parameters::kN_FS_COEFFS];
+  fvec cz[L1Parameters::kN_FS_COEFFS];  // polinom coeff.
 
   L1FieldSlice()
   {
-    for (int i = 0; i < 21; i++)
+    for (int i = 0; i < L1Parameters::kN_FS_COEFFS; ++i)
       cx[i] = cy[i] = cz[i] = 0;
   }
 
