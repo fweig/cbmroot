@@ -2,11 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
-<<<<<<< HEAD
-/************************************************************************************************************
-=======
 /**************************************************************************************************************
->>>>>>> Added new class L1BaseStationInfo to the L1Algo core
  * @file L1BaseStationInfo.h
  * @bried A base class for a L1 station interface
  * @since 18.12.2021
@@ -29,16 +25,12 @@
 #include <string>
 #include <bitset>
 #include <iomanip>
-<<<<<<< HEAD
 //#include <cmath>
-
-/// A base class which provides interface to L1Algo station geometry
-
 class L1BaseStationInfo {
  private:
   enum { // Here we list all the fields, which must be initialized by user
-    // Basic fields initialization
-    // L1Station initialization
+    /// v Basic fields initialization
+    /// v L1Station initialization
     kEtype,
     kEtimeInfo,
     kEz,
@@ -51,7 +43,7 @@ class L1BaseStationInfo {
     kEstripsFrontSigma,
     kEstripsBackPhi,
     kEstripsBackSigma,
-    // The last item is equal to the number of bits in fInitFlags
+    /// v The last item is equal to the number of bits in fInitFlags
     kEND
   };
  public:
@@ -142,9 +134,6 @@ class L1BaseStationInfo {
     fL1Station.backInfo.sin_phi = s_b;
     fL1Station.backInfo.sigma2  = b_sigma * b_sigma;
   
-    if (fabs(b_phi - f_phi) < .1) {
-      std::cout << "test";
-    }
 
     //if (fabs(b_phi - f_phi) < .1) {
     //  double th  = b_phi - f_phi;
@@ -218,6 +207,7 @@ class L1BaseStationInfo {
   /// Gets array of the coefficients for the field z-component approximation
   const fvec * GetFieldSliceCz() const { return fL1Station.fieldSlice.cz; }
 
+<<<<<<< HEAD
 
   //-------------------------------------------------------------------------------------------------------//
   //    Other methods                                                                                      //
