@@ -400,40 +400,38 @@ InitStatus CbmL1::Init()
       }
     }
     NTrdStations = layerCounter;
-    if (fTrackingMode == L1Algo::TrackingMode::kMcbm) { NTrdStations = NTrdStations - 1; }
+
+    if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) { NTrdStations = NTrdStations - 1; }
   }
 
+  vector<float> TofStationZ;
+  vector<int> TofStationN;
+  if (fUseTOF) NTOFStation = fTofDigiBdfPar->GetNbTrackingStations();
+  {
+    TofStationZ.resize(NTOFStation, 0);
+    TofStationN.resize(NTOFStation, 0);
 
-  // count ToF parameters
-
-  // if (fUseTOF) {
-  //   int maxTofStation = 0;
-
-  //   L1Vector<int> NHits("NHits", 10, 0);
-  //   L1Vector<float> Z_pos("Z_pos", 10, 0.f);
-
-  //   if (fTofHits) {
-  //     for (int j = 0; j < fTofHits->GetEntriesFast(); j++) {
-
-  //       CbmTofHit* mh = L1_DYNAMIC_CAST<CbmTofHit*>(fTofHits->At(j));
-  //       int St        = fTofDigiBdfPar->GetNbTrackingStations();
-
-  //       if (maxTofStation < St) maxTofStation = St;
-
-  //       TVector3 pos;
-  //       mh->Position(pos);
-  //       Z_pos[St] += pos.Z();
-  //       NHits[St]++;
-  //     }
-  //   }
-
-  //   for (int i = 0; i < (maxTofStation + 1); i++) {
-  //     Z_pos[i] = Z_pos[i] / NHits[i];
-  //   }
-  // }
-
-  // TODO: Read N TOF stations from geometry
-  if (fUseTOF) NTOFStation = 4;  //fTofDigiBdfPar->GetNbTrackingStations();
+    for (int iSmType = 0; iSmType < fTofDigiBdfPar->GetNbSmTypes(); iSmType++) {
+      for (int iSm = 0; iSm < fTofDigiBdfPar->GetNbSm(iSmType); iSm++) {
+        for (int iRpc = 0; iRpc < fTofDigiBdfPar->GetNbRpc(iSmType); iRpc++) {
+          int iAddr                = CbmTofAddress::GetUniqueAddress(iSm, iRpc, 0, 0, iSmType);
+          int station              = fTofDigiBdfPar->GetTrackingStation(iSmType, iSm, iRpc);
+          CbmTofCell* fChannelInfo = fDigiPar->GetCell(iAddr);
+          if (NULL == fChannelInfo) break;
+          float z = fChannelInfo->GetZ();
+          float x = fChannelInfo->GetX();
+          if (fMissingHits) {
+            if ((x > 20) && (z > 270) && (station == 1)) station = 2;
+            if (z > 400) continue;
+          }
+          TofStationZ[station] += z;
+          TofStationN[station] += 1;
+        }
+      }
+    }
+    for (Int_t i = 0; i < NTOFStation; i++)
+      TofStationZ[i] = TofStationZ[i] / TofStationN[i];
+  }
 
   CbmStsSetup* stsSetup = CbmStsSetup::Instance();
   if (!stsSetup->IsInit()) { stsSetup->Init(nullptr); }
@@ -615,12 +613,9 @@ InitStatus CbmL1::Init()
       //      Int_t nrModules = fTrdDigiPar->GetNrOfModules();
 
       int skip = num;
-      if (fTrackingMode == L1Algo::TrackingMode::kMcbm) {
-        if (num == 0) skip = 0;
-        if (num == 1) skip = 2;
-        if (num == 2) skip = 3;
-      }
 
+      if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits))
+        if (num > 0) skip++;
       int ModuleId = fTrdDigiPar->GetModuleId(skip);
 
       CbmTrdParModDigi* module = (CbmTrdParModDigi*) fTrdDigiPar->GetModulePar(ModuleId);
@@ -654,16 +649,9 @@ InitStatus CbmL1::Init()
 
       geo.push_back(4);
 
-      z = 0;
-
       int num = ist - (NMvdStations + NStsStations + NTrdStations + NMuchStations);
 
-      if (num == 0) z = 251;
-      if (num == 1) z = 270;
-      if (num == 2) z = 293;
-      if (num == 3) z = 310;
-
-      geo.push_back(z);
+      geo.push_back(TofStationZ[ist - num]);
 
       geo.push_back(10);  /// TODO: add Tof width dz
       geo.push_back(0);
@@ -940,8 +928,10 @@ InitStatus CbmL1::Init()
            iSta < (NStsStations + NMvdStations + NMuchStations + NTrdStations); iSta++, j++) {
         TString stationNameSts = stationName;
         int skipStation        = j;
-        if (skipStation == 2) skipStation = 3;
-        if (skipStation == 3) skipStation = 4;
+        if (fMissingHits)
+          if (skipStation == 2) skipStation = 3;
+        if (fMissingHits)
+          if (skipStation == 3) skipStation = 4;
         stationNameSts += skipStation;
         TProfile2D* hStaRadLen = (TProfile2D*) rlFile->Get(stationNameSts);
         if (!hStaRadLen) {

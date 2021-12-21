@@ -731,7 +731,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       int sta = mh->GetPlaneId();
 
-      if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (sta > 1)) { sta = sta - 1; }
+      if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (sta > 1) && (fMissingHits)) { sta = sta - 1; }
 
       th.iStation = NMvdStations + sta + NStsStations + NMuchStations;
 
@@ -879,7 +879,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       th.y = pos.Y();
       th.z = pos.Z();
 
-      if ((th.x > 20) && (th.z > 270) && (fTofDigiBdfPar->GetTrackingStation(mh) == 1)) sttof = 2;
+      if (fMissingHits)
+        if ((th.x > 20) && (th.z > 270) && (fTofDigiBdfPar->GetTrackingStation(mh) == 1)) sttof = 2;
       if (th.z > 400) continue;
 
       th.iStation = sttof + NMvdStations + NStsStations + NMuchStations + NTrdStations;
