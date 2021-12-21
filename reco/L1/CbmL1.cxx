@@ -406,8 +406,8 @@ InitStatus CbmL1::Init()
 
   vector<float> TofStationZ;
   vector<int> TofStationN;
-  if (fUseTOF) NTOFStation = fTofDigiBdfPar->GetNbTrackingStations();
-  {
+  if (fUseTOF) {
+    NTOFStation = fTofDigiBdfPar->GetNbTrackingStations();
     TofStationZ.resize(NTOFStation, 0);
     TofStationN.resize(NTOFStation, 0);
 
