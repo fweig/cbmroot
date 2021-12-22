@@ -57,8 +57,6 @@ protected:
 
   void processTrbPacket(CbmRichUnpackAlgoMicrosliceReader& reader);
 
-  void processMbs(CbmRichUnpackAlgoMicrosliceReader& reader, bool isPrev);
-
   void processHubBlock(CbmRichUnpackAlgoMicrosliceReader& reader);
 
   void processCtsSubSubEvent(CbmRichUnpackAlgoMicrosliceReader& reader, uint32_t subSubEventSize,
@@ -93,22 +91,14 @@ protected:
   /** @brief Parameters for the unpacking */
   //CbmMcbm2018RichPar fUnpackPar;
 
-  //std::vector<Int_t>* fMaskedDiRICHes = nullptr;
-
   double fMbsPrevTimeCh0 = 0.;
   double fMbsPrevTimeCh1 = 0.;
 
-  //size_t fMsRefTime = 0;
-
-  //double fToTMin = -20.;
-  //double fToTMax = 100.;
-
-  //uint64_t fCbmTimePacket = 0;
+  uint64_t fCbmTimeMS;
+  uint64_t fCbmTimePacket;
 
   double fPrevLastCh0ReTime[13];  // 12 DiRICHes chnl0 + 1 CTS chnl0
   int fCurrentSubSubEvent = 0;
-
-  //Bool_t fbDoToTCorr = true;  // kTRUE activates ToT correction from Parameterfile
 
 private:
   ClassDef(CbmRichUnpackAlgo2022, 2)
