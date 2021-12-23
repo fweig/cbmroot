@@ -26,11 +26,14 @@
 #include <bitset>
 #include <iomanip>
 //#include <cmath>
+
+/// A base class which provides interface to L1Algo station geometry
+
 class L1BaseStationInfo {
  private:
   enum { // Here we list all the fields, which must be initialized by user
-    /// v Basic fields initialization
-    /// v L1Station initialization
+    // Basic fields initialization
+    // L1Station initialization
     kEtype,
     kEtimeInfo,
     kEz,
@@ -43,7 +46,7 @@ class L1BaseStationInfo {
     kEstripsFrontSigma,
     kEstripsBackPhi,
     kEstripsBackSigma,
-    /// v The last item is equal to the number of bits in fInitFlags
+    // The last item is equal to the number of bits in fInitFlags
     kEND
   };
  public:
@@ -207,7 +210,6 @@ class L1BaseStationInfo {
   /// Gets array of the coefficients for the field z-component approximation
   const fvec * GetFieldSliceCz() const { return fL1Station.fieldSlice.cz; }
 
-<<<<<<< HEAD
 
   //-------------------------------------------------------------------------------------------------------//
   //    Other methods                                                                                      //
