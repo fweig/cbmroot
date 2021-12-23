@@ -540,10 +540,10 @@ inline void L1Algo::f20(
 
 #ifndef FAST_CODE
 //TODO: optimise triplet portion limit and put a warning
-// assert(Ndoublets < fMaxDoubletsPerSinglet);
+// assert(Ndoublets < fL1Parameters.GetMaxDoubletsPerSinglet());
 #endif
 
-      if (Ndoublets >= fMaxDoubletsPerSinglet) {
+      if (Ndoublets >= fL1Parameters.GetMaxDoubletsPerSinglet()) {
         n2 = n2 - Ndoublets;
         i1_2.reduce(i1_2.size() - Ndoublets);
         hitsm_2.reduce(hitsm_2.size() - Ndoublets);
@@ -868,9 +868,9 @@ inline void L1Algo::f30(  // input
 
 #ifndef FAST_CODE
 //TODO: optimise triplet portion limit and put a warning
-// assert(Ntriplets < fMaxTripletPerDoublets);
+// assert(Ntriplets < fL1Parameters.GetMaxTripletPerDoublets());
 #endif
-          if (Ntriplets >= fMaxTripletPerDoublets) {
+          if (Ntriplets >= fL1Parameters.GetMaxTripletPerDoublets()) {
 
             n3 = n3 - Ntriplets;
 
@@ -1648,7 +1648,7 @@ void L1Algo::CATrackFinder()
   //  static Tindex stat_nDoublets[fNFindIterations] = {0};
   static Tindex stat_nTriplets[fNFindIterations] = {0};
 
-  static Tindex stat_nLevels[fkMaxNstations - 2][fNFindIterations] = {{0}};
+  static Tindex stat_nLevels[L1Parameters::kMaxNstations - 2][fNFindIterations] = {{0}};
   static Tindex stat_nCalls[fNFindIterations]                      = {0};  // n calls of CAFindTrack
   static Tindex stat_nTrCandidates[fNFindIterations]               = {0};
 #endif
@@ -1893,7 +1893,7 @@ void L1Algo::CATrackFinder()
             || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
           MaxDZ = 0.1;
 
-        if (NStations > (int) fkMaxNstations) cout << " CATrackFinder: Error: Too many Stations" << endl;
+        if (NStations > (int) L1Parameters::kMaxNstations) cout << " CATrackFinder: Error: Too many Stations" << endl;
       }
 
 #ifndef L1_NO_ASSERT
@@ -1977,9 +1977,9 @@ void L1Algo::CATrackFinder()
     L1Vector<THitI> hitsmG_2("L1CATrackFinder::hitsmG_2");  /// middle hits indexed by number of doublets in portion(i2)
     L1Vector<THitI> i1G_2(
       "L1CATrackFinder::i1G_2");  /// index in portion of singlets(i1) indexed by index in portion of doublets(i2)
-    L1Vector<char> lmDuplets[fkMaxNstations] {
+    L1Vector<char> lmDuplets[L1Parameters::kMaxNstations] {
       "L1CATrackFinder::lmDuplets"};  // is exist a doublet started from indexed by left hit
-    L1Vector<char> lmDupletsG[fkMaxNstations] {
+    L1Vector<char> lmDupletsG[L1Parameters::kMaxNstations] {
       "L1CATrackFinder::lmDupletsG"};  // is exist a doublet started from indexed by left hit
 
     for (int i = 0; i < NStations; i++) {
@@ -2062,7 +2062,7 @@ void L1Algo::CATrackFinder()
       }  //
     }
 
-    //     int nlevels[fkMaxNstations];  // number of triplets with some number of neighbours.
+    //     int nlevels[L1Parameters::kMaxNstations];  // number of triplets with some number of neighbours.
     //     for (int il = 0; il < NStations; ++il) nlevels[il] = 0;
     //
     //      f5(   // input
@@ -2103,7 +2103,7 @@ void L1Algo::CATrackFinder()
 
 
     L1Branch curr_tr;
-    L1Branch new_tr[fkMaxNstations];
+    L1Branch new_tr[L1Parameters::kMaxNstations];
     L1Branch best_tr;
     fscal curr_chi2 = 0;
 

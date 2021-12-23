@@ -10,16 +10,16 @@
 L1Algo::L1Algo(unsigned int nThreads)
 {
   SetNThreads(nThreads);
-  for (unsigned int i = 0; i < fkMaxNstations; i++) {
+  for (unsigned int i = 0; i < L1Parameters::kMaxNstations; i++) {
     vGridTime[i].AllocateMemory(fNThreads);
   }
 }
 
 void L1Algo::SetNThreads(unsigned int n)
 {
-  if (n > static_cast<unsigned int>(fkMaxNthreads)) {
+  if (n > static_cast<unsigned int>(L1Parameters::kMaxNthreads)) { // TODO: Why do we need static_cast here?
     LOG(fatal) << "L1Algo: n threads " << n << " is greater than the maximum "
-               << static_cast<unsigned int>(fkMaxNthreads) << std::endl;
+               << static_cast<unsigned int>(L1Parameters::kMaxNthreads); // The same
   }
   fNThreads = n;
 
@@ -52,7 +52,7 @@ void L1Algo::SetNThreads(unsigned int n)
     du[i].reserve(MaxPortionTriplets / fvecLen);
     dv[i].reserve(MaxPortionTriplets / fvecLen);
 
-    for (unsigned int j = 0; j < fkMaxNstations; j++) {
+    for (unsigned int j = 0; j < L1Parameters::kMaxNstations; j++) {
       fTriplets[j][i].SetName(std::stringstream() << "L1Algo::fTriplets[" << i << "][" << j << "]");
     }
   }
@@ -61,6 +61,7 @@ void L1Algo::SetNThreads(unsigned int n)
 
 void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const TrackingMode mode, const bool MissingHits)
 {
+  fL1Parameters.Print(); // TODO: Wrap this line into debug
 
   for (int iProc = 0; iProc < 4; iProc++) {
     for (int i = 0; i < 8; i++) {
@@ -282,7 +283,7 @@ void L1Algo::SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<unsign
     fRecoHits_local[i].reserve(nHits);
     fTrackCandidates[i].clear();
     fTrackCandidates[i].reserve(nHits / 10);
-    for (unsigned int j = 0; j < fkMaxNstations; j++) {
+    for (unsigned int j = 0; j < L1Parameters::kMaxNstations; j++) {
       fTriplets[j][i].clear();
       fTriplets[j][i].reserve(2 * nHits);
     }

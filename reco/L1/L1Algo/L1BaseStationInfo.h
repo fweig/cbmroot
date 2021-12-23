@@ -27,11 +27,13 @@
 #include <iomanip>
 //#include <cmath>
 
+/// A base class which provides interface to L1Algo station geometry
+
 class L1BaseStationInfo {
-private:
+ private:
   enum { // Here we list all the fields, which must be initialized by user
-    /// v Basic fields initialization
-    /// v L1Station initialization
+    // Basic fields initialization
+    // L1Station initialization
     kEtype,
     kEtimeInfo,
     kEz,
@@ -44,18 +46,10 @@ private:
     kEstripsFrontSigma,
     kEstripsBackPhi,
     kEstripsBackSigma,
-    /// v The last item is equal to the number of bits in fInitFlags
+    // The last item is equal to the number of bits in fInitFlags
     kEND
   };
-  std::bitset<L1BaseStationInfo::kEND> fInitFlags; /// Set of 
-  std::string fTypeName {"BASE"};
-  L1Station fL1Station {}; 
-    // TODO (!!!!) MUST THINK ABOUT THIS OBJECT LIFE TIME: will it be better to copy
-    //             or to move it to the core? If the second, what should we do with 
-    //             getters? Do we need to lock them, when the fL1Station object will 
-    //             be transfered?
-
-public:
+ public:
   L1BaseStationInfo() {
     std::cout << ">>>>>> L1BaseStationInfo: Constructor called\n"; // Temporary
   }
@@ -63,35 +57,41 @@ public:
     std::cout << ">>>>>> L1BaseStationInfo: Destructor called\n"; // Temporary
   }
 
-  ///-----------------------------------------------------------------------------------------------------///
-  ///   Basic methods                                                                                     ///
-  ///-----------------------------------------------------------------------------------------------------///
+  //-------------------------------------------------------------------------------------------------------//
+  //    Basic methods                                                                                      //
+  //-------------------------------------------------------------------------------------------------------//
   
-  std::string GetTypeName()   const { return fTypeName; }
-  // Checks if all the necessary fields are initialized by user
-  bool IsInitialized() const { return fInitFlags.size() == fInitFlags.count(); };
-  // Transfers all gathered data to L1Algo
+  /// Returns the name of the station (TODO: connect official naming)
+  std::string GetTypeName() const { return fTypeName; }
+  /// Checks if all the necessary fields are initialized by user
+  bool IsInitialized() const { return fInitFlags.size() == fInitFlags.count(); }
+  /// Transfers all gathered data to L1Algo (TODO)
   void TransferL1Station() { 
     /**********/
   }
   void TransferData() { /*********/ }    
 
-  ///-----------------------------------------------------------------------------------------------------///
-  ///   Interface for L1Station object initialization                                                     ///
-  ///-----------------------------------------------------------------------------------------------------///
+  //-------------------------------------------------------------------------------------------------------//
+  //    Interface for L1Station object initialization                                                      //
+  //-------------------------------------------------------------------------------------------------------//
 
-  /// Setters
-
-  // Sets type of station // TODO: Temporary method, must be selected automatically in the derived class
+  //
+  //  Setters
+  //
+  /// Sets type of station 
   void SetStationType(int inType)  { fL1Station.type = inType;         fInitFlags[kEtype] = true;}
+    // TODO: Temporary method, a type must be selected automatically in the derived classes
   void SetTimeInfo(int inTimeInfo) { fL1Station.timeInfo = inTimeInfo; fInitFlags[kEtimeInfo] = true;}
+    // ???
 
+  /// Sets nominal z position of the station
   void SetZ(double inZ)        { fL1Station.z = inZ;        fInitFlags[kEz] = true; }
+  /// Sets min transverse size of the station
   void SetRmin(double inRmin)  { fL1Station.Rmin = inRmin;  fInitFlags[kERmin] = true; }
+  /// Sets max transverse size of the station
   void SetRmax(double inRmax)  { fL1Station.Rmax = inRmax;  fInitFlags[kERmax] = true; }
 
-  // Sets material thickness and radiational length, calculates their ratio ("RadThick")
-  // and its logarithm ("logRadThick")
+  /// Sets station thickness and radiational length
   void SetMaterial(double inThickness, double inRL) {
 #ifndef L1_NO_ASSERT // check for zero denominator
     L1_ASSERT(inRL, "Attempt of entering zero inRL (radiational length) value");
@@ -104,9 +104,9 @@ public:
     fInitFlags[kEmaterialInfoRL] = true;
   }
 
-  // Sets coefficients of the magnetic field approximation
-  void SetFieldSlice(const double * Cx, const double * Cy, const double * Cz) {
-    for (int idx = 0; idx < L1Parameters::kN_FS_COEFFS; ++idx) {
+  /// Sets arrays of the approximation coefficients for the field x, y and z-components, respectively
+  void SetFieldSlice(const double* Cx, const double* Cy, const double* Cz) {
+    for (int idx = 0; idx < L1Parameters::kMaxNFieldApproxCoefficients; ++idx) {
       fL1Station.fieldSlice.cx[idx] = Cx[idx];
       fL1Station.fieldSlice.cy[idx] = Cy[idx];
       fL1Station.fieldSlice.cz[idx] = Cz[idx];
@@ -114,11 +114,12 @@ public:
     }
   }
 
-  // Sets stereo angles and sigmas for front and back strips, automatically set frontInfo, backInfo, 
-  // XYInfo, xInfo and yInfo
-  void SetFBStripsGeometry(double f_phi, double f_sigma, double b_phi, double b_sigma) {
+  /// Sets stereo angles and sigmas for front and back strips, automatically set frontInfo, backInfo, 
+  /// XYInfo, xInfo and yInfo
+  void SetFrontBackStripsGeometry(double f_phi, double f_sigma, double b_phi, double b_sigma) { 
     // TODO: may be is it better to define separate setters for these values and then calculate the 
     //       rest somewhere below?
+    // TODO: move into .cxx file
 
     //----- Original code from L1Algo ---------------------------------------------------------------------//
     double c_f     = cos(f_phi);
@@ -176,34 +177,48 @@ public:
     fInitFlags[kEstripsBackSigma]  = true;
   }
 
-  /// Getters
+  //
+  // Getters
+  //
+
+  /// Gets nominal z position of the station
   fvec GetZ()                    const { return fL1Station.z; }
+  /// Gets min transverse size of the station
   fvec GetRmin()                 const { return fL1Station.Rmin; }
+  /// Gets max transverse size of the station
   fvec GetRmax()                 const { return fL1Station.Rmax; }
 
+  /// Gets material thickness
   fvec GetMaterialThick()        const { return fL1Station.materialInfo.thick; }
     // TODO: investigate if thick, RL and RadThick are useful, may be we should have only 
     //       GetMateralLogRadThick?
+  /// Gets the radiation length of the station material
   fvec GetMaterialRL()           const { return fL1Station.materialInfo.RL; }             // TODO: -//-
-  fvec GetMaterialRadThick()     const { return fL1Station.materialInfo.RadThick; }       // TODO: -//-
+  /// Gets the relative material thickness in units of the radiational length
+  fvec GetMaterialRadThick()     const { return fL1Station.materialInfo.RadThick; }       // TODO: Rename?
+  /// Gets log of the relative material thickness in units of the radiational length
   fvec GetMaterialLogRadThick()  const { return fL1Station.materialInfo.logRadThick; }
 
-  // Methods to get particular element of Cx, Cy or Cz by its index
+  /// Gets a coefficient with idx for the field x-component approximation
   fvec GetFieldSliceCx(int idx)  const { return fL1Station.fieldSlice.cx[idx]; }
+  /// Gets a coefficient with idx for the field y-component approximation
   fvec GetFieldSliceCy(int idx)  const { return fL1Station.fieldSlice.cy[idx]; }
+  /// Gets a coefficient with idx for the field z-component approximation
   fvec GetFieldSliceCz(int idx)  const { return fL1Station.fieldSlice.cz[idx]; }
 
-  // Methods to get ptr to array of Cx, Cy or Cz
+  /// Gets array of the coefficients for the field x-component approximation
   const fvec * GetFieldSliceCx() const { return fL1Station.fieldSlice.cx; }
+  /// Gets array of the coefficients for the field y-component approximation
   const fvec * GetFieldSliceCy() const { return fL1Station.fieldSlice.cy; }
+  /// Gets array of the coefficients for the field z-component approximation
   const fvec * GetFieldSliceCz() const { return fL1Station.fieldSlice.cz; }
 
-  // Methods to get strip layers geometry
 
-  ///-----------------------------------------------------------------------------------------------------///
-  ///   Other methods                                                                                     ///
-  ///-----------------------------------------------------------------------------------------------------///
+  //-------------------------------------------------------------------------------------------------------//
+  //    Other methods                                                                                      //
+  //-------------------------------------------------------------------------------------------------------//
 
+  /// Prints registered fields (TODO: tmp, may be one needs to wrap it into debug directives)
   void Print() { 
     LOG(INFO) << "== L1Algo: station info ===========================================================";
     LOG(INFO) << "";
@@ -217,7 +232,7 @@ public:
     LOG(INFO) << "    log(X / X0):             " << fL1Station.materialInfo.logRadThick[0] ;
     LOG(INFO) << "    Field approximation coefficients:";
     LOG(INFO) << "      idx         CX         CY         CZ";
-    for (int idx = 0; idx < L1Parameters::kN_FS_COEFFS; ++idx) {
+    for (int idx = 0; idx < L1Parameters::kMaxNFieldApproxCoefficients; ++idx) {
       LOG(INFO) << std::setw(9)  << std::setfill(' ') << idx << ' '
                 << std::setw(10) << std::setfill(' ') << fL1Station.fieldSlice.cx[idx][0] << ' '
                 << std::setw(10) << std::setfill(' ') << fL1Station.fieldSlice.cy[idx][0] << ' '
@@ -247,8 +262,20 @@ public:
     LOG(INFO) << "";
     LOG(INFO) << "===================================================================================";
   }
-  
+ private:
+  /// Flags set. A particular flag is up if the corresponding setter was called (experimental)
+  std::bitset<L1BaseStationInfo::kEND> fInitFlags;
+  std::string                          fTypeName {"BASE"};
+  L1Station                            fL1Station {}; 
+    // TODO (!!!!) MUST THINK ABOUT THIS OBJECT LIFE TIME: will it be better to copy
+    //             or to move it to the core? If the second, what should we do with 
+    //             getters? Do we need to lock them, when the fL1Station object will 
+    //             be transfered?
+
+ 
 
 };
+
+
 
 #endif // L1BaseStationInfo_h

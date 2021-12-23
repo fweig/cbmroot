@@ -40,13 +40,13 @@ public:
 class L1FieldSlice {
 
 public:
-  fvec cx[L1Parameters::kN_FS_COEFFS];
-  fvec cy[L1Parameters::kN_FS_COEFFS];
-  fvec cz[L1Parameters::kN_FS_COEFFS];  // polinom coeff.
+  fvec cx[L1Parameters::kMaxNFieldApproxCoefficients];
+  fvec cy[L1Parameters::kMaxNFieldApproxCoefficients];
+  fvec cz[L1Parameters::kMaxNFieldApproxCoefficients];  // polinom coeff.
 
   L1FieldSlice()
   {
-    for (int i = 0; i < L1Parameters::kN_FS_COEFFS; ++i)
+    for (int i = 0; i < L1Parameters::kMaxNFieldApproxCoefficients; ++i)
       cx[i] = cy[i] = cz[i] = 0;
   }
 
