@@ -392,7 +392,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
     }
  
     // ---- L1Algo runtime constants selection interface example ------
-    l1->GetL1Parameters()->SetMaxDoubletsPerSinglet(125);
+    l1->GetL1Parameters()->SetMaxDoubletsPerSinglet(149);
     // ----------------------------------------------------------------
 
     run->AddTask(l1);
