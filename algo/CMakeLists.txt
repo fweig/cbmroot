@@ -1,6 +1,5 @@
 add_subdirectory (data)
-
-
+add_subdirectory (test)
 
 # Create a library libCbmAlgo
 
