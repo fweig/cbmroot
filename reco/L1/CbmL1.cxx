@@ -1672,7 +1672,7 @@ void CbmL1::WriteSTAPPerfData()  // must be called after ReadEvent
   TString fpdata_name = fSTAPDataDir + "data_perfo.txt";
   // write data for performance in file
   //   if ( vNEvent <= maxNEvent )  {
-  if (1) { 
+  if (1) {
 
     if (vNEvent == 1) fpdata.open(fpdata_name, std::fstream::out);  // begin new file
     else
