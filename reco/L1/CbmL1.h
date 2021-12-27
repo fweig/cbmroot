@@ -117,7 +117,7 @@ public:
         TString fSTAPDataDir_ = "./", int findParticleMode_ = 0);
 
   ~CbmL1(/*if (targetFieldSlice) delete;*/);
-  
+
   L1Parameters* GetL1Parameters() { return fL1ParametersPtr; }
 
   void SetStsMaterialBudgetFileName(TString fileName) { fStsMatBudgetFileName = fileName; }
@@ -217,7 +217,7 @@ public:
 
 private:
   static CbmL1* fInstance;
-  L1Parameters* fL1ParametersPtr {new L1Parameters()}; ///< pointer to L1Algo parameters class instance
+  L1Parameters* fL1ParametersPtr {new L1Parameters()};  ///< pointer to L1Algo parameters class instance
 
   L1AlgoInputData* fData {nullptr};
 

@@ -352,10 +352,10 @@ void L1Algo::L1KFTrackFitter()
 
   L1Station* sta = vStations;
   L1Station staFirst, staLast;
-  fvec x[L1Parameters::kMaxNstations], u[L1Parameters::kMaxNstations], v[L1Parameters::kMaxNstations], 
-    y[L1Parameters::kMaxNstations], time[L1Parameters::kMaxNstations], timeEr[L1Parameters::kMaxNstations], 
+  fvec x[L1Parameters::kMaxNstations], u[L1Parameters::kMaxNstations], v[L1Parameters::kMaxNstations],
+    y[L1Parameters::kMaxNstations], time[L1Parameters::kMaxNstations], timeEr[L1Parameters::kMaxNstations],
     z[L1Parameters::kMaxNstations];
-  fvec d_x[L1Parameters::kMaxNstations], d_y[L1Parameters::kMaxNstations], d_xy[L1Parameters::kMaxNstations], 
+  fvec d_x[L1Parameters::kMaxNstations], d_y[L1Parameters::kMaxNstations], d_xy[L1Parameters::kMaxNstations],
     d_u[L1Parameters::kMaxNstations], d_v[L1Parameters::kMaxNstations];
   fvec x_first, y_first, time_first, x_last, y_last, time_last, time_er_first, time_er_last, d_x_fst, d_y_fst, d_xy_fst,
     time_er_lst, d_x_lst, d_y_lst, d_xy_lst;
@@ -776,10 +776,10 @@ void L1Algo::L1KFTrackFitterMuch()
 
   L1Station* sta = vStations;
   L1Station staFirst, staLast;
-  fvec x[L1Parameters::kMaxNstations], u[L1Parameters::kMaxNstations], v[L1Parameters::kMaxNstations], 
-    y[L1Parameters::kMaxNstations], time[L1Parameters::kMaxNstations], timeEr[L1Parameters::kMaxNstations], 
+  fvec x[L1Parameters::kMaxNstations], u[L1Parameters::kMaxNstations], v[L1Parameters::kMaxNstations],
+    y[L1Parameters::kMaxNstations], time[L1Parameters::kMaxNstations], timeEr[L1Parameters::kMaxNstations],
     z[L1Parameters::kMaxNstations];
-  fvec d_x[L1Parameters::kMaxNstations], d_y[L1Parameters::kMaxNstations], d_xy[L1Parameters::kMaxNstations], 
+  fvec d_x[L1Parameters::kMaxNstations], d_y[L1Parameters::kMaxNstations], d_xy[L1Parameters::kMaxNstations],
     d_u[L1Parameters::kMaxNstations], d_v[L1Parameters::kMaxNstations];
   fvec x_first, y_first, time_first, x_last, y_last, time_last, time_er_fst, d_x_fst, d_y_fst, d_xy_fst, time_er_lst,
     d_x_lst, d_y_lst, d_xy_lst, dz;

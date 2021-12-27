@@ -755,7 +755,8 @@ InitStatus CbmL1::Init()
   if (fL1ParametersPtr) {
     algo->SetL1Parameters(*fL1ParametersPtr);
     delete fL1ParametersPtr;
-  } else {
+  }
+  else {
     LOG(error) << "-E- CbmL1: L1Parameters object was not transfered to the L1Algo core. Default parameters "
                << "will be used.";
   }
@@ -1630,9 +1631,8 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
     // write StsHitsStartIndex and StsHitsStopIndex
     n = 20;
     for (int i = 0; i < n; i++) {
-      if (int(L1Parameters::kMaxNstations) + 1 > i) {
-        fadata << algo->StsHitsStartIndex[i] << endl;
-      } else {
+      if (int(L1Parameters::kMaxNstations) + 1 > i) { fadata << algo->StsHitsStartIndex[i] << endl; }
+      else {
         fadata << 0 << endl;
       }
     };
@@ -1661,7 +1661,7 @@ void CbmL1::WriteSTAPPerfData()  // must be called after ReadEvent
   TString fpdata_name = fSTAPDataDir + "data_perfo.txt";
   // write data for performance in file
   //   if ( vNEvent <= maxNEvent )  {
-  if (1) { 
+  if (1) {
 
     if (vNEvent == 1) fpdata.open(fpdata_name, std::fstream::out);  // begin new file
     else
@@ -1888,7 +1888,7 @@ void CbmL1::ReadSTAPAlgoData()
            << " have been read." << endl;
     }
     // read StsHitsStartIndex and StsHitsStopIndex
-    n = 20; // TODO: Why 20?
+    n = 20;  // TODO: Why 20?
     for (int i = 0; i < n; i++) {
       int tmp;
       fadata >> tmp;

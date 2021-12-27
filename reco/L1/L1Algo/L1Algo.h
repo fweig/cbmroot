@@ -96,9 +96,9 @@ public:
 
   float fDefaultMass = 0.10565800;  // muon mass
                                     // NOTE: technically it is a default value, so it can be modified
-                                    // with a setter. But on other hand it is a phys constant, so we must 
+                                    // with a setter. But on other hand it is a phys constant, so we must
                                     // think again whether to handle the numerical literal as constexpr or not
-  //float fDefaultMass = L1Parameters::kMuonMass;  // muon mass 
+  //float fDefaultMass = L1Parameters::kMuonMass;  // muon mass
 
   /////--> moved to L1Parameters
   /////static constexpr unsigned int fkStationBits = 6;
@@ -111,14 +111,14 @@ public:
 
   /////--> moved to L1Parameters
   /////unsigned int fMaxDoubletsPerSinglet = 150;
-  /////unsigned int fMaxTripletPerDoublets = 15;  
+  /////unsigned int fMaxTripletPerDoublets = 15;
 
   /// pack station, thread and triplet indices to an unique triplet ID
   static unsigned int PackTripletId(unsigned int Station, unsigned int Thread, unsigned int Triplet)
   {
 #ifndef FAST_CODE
     assert(Station < L1Parameters::kMaxNstations);
-    assert(Thread  < L1Parameters::kMaxNthreads);
+    assert(Thread < L1Parameters::kMaxNthreads);
     assert(Triplet < L1Parameters::kMaxNtriplets);
 #endif
     constexpr unsigned int kMoveThread  = L1Parameters::kTripletBits;
@@ -149,14 +149,15 @@ public:
   }
 
 
-  L1Vector<L1Triplet> fTriplets[L1Parameters::kMaxNstations][L1Parameters::kMaxNthreads] {                              //<--------
+  L1Vector<L1Triplet> fTriplets[L1Parameters::kMaxNstations][L1Parameters::kMaxNthreads] {
+    //<--------
     {"L1Algo::fTriplets"}};  // created triplets at station + thread
 
   // Track candidates created out of adjacent triplets before the final track selection.
   // The candidates may share any amount of hits.
   L1Vector<L1Branch> fTrackCandidates[L1Parameters::kMaxNthreads] {"L1Algo::fTrackCandidates"};
 
-  Tindex fDupletPortionStopIndex[L1Parameters::kMaxNstations] {0};                  // end of the duplet portions for the station
+  Tindex fDupletPortionStopIndex[L1Parameters::kMaxNstations] {0};     // end of the duplet portions for the station
   L1Vector<Tindex> fDupletPortionSize {"L1Algo::fDupletPortionSize"};  // N duplets in a portion
 
   //
@@ -223,7 +224,7 @@ public:
 
   int NStsStrips {0};                   // number of strips
   L1Vector<L1Hit>* vStsHits {nullptr};  // hits as a combination of front-, backstrips and z-position
-  L1Grid vGrid[L1Parameters::kMaxNstations];         // hits as a combination of front-, backstrips and z-position
+  L1Grid vGrid[L1Parameters::kMaxNstations];  // hits as a combination of front-, backstrips and z-position
   L1Grid vGridTime[L1Parameters::kMaxNstations];
 
   L1Vector<unsigned char>* fStripFlag {nullptr};  // information of hits station & using hits in tracks;
@@ -285,8 +286,9 @@ public:
     MaxNPortion        = 40 * coeff / multiCoeff,
 
 
-    MaxArrSize =
-      MaxNPortion * MaxPortionDoublets / L1Parameters::kMaxNstations  //200000,  // standart size of big arrays  // mas be 40000 for normal work in cbmroot!
+    MaxArrSize = MaxNPortion * MaxPortionDoublets
+                 / L1Parameters::
+                   kMaxNstations  //200000,  // standart size of big arrays  // mas be 40000 for normal work in cbmroot!
   };
 
 
@@ -305,7 +307,7 @@ public:
   THitI StsHitsUnusedStopIndexEnd[L1Parameters::kMaxNstations + 1] {0};
 
 
-  L1Vector<int> TripForHit[2] {"L1Algo::TripForHit"}; // TODO: what does '2' stand for? 
+  L1Vector<int> TripForHit[2] {"L1Algo::TripForHit"};  // TODO: what does '2' stand for?
 
 
   //  fvec u_front[Portion/fvecLen], u_back[Portion/fvecLen];
@@ -367,13 +369,13 @@ public:
 
   /// Sets L1Algo parameters object
   void SetL1Parameters(const L1Parameters& other) { fL1Parameters = other; }
-  /// Gets a constant reference to the L1Algo parameters object 
+  /// Gets a constant reference to the L1Algo parameters object
   const L1Parameters& GetL1Parameters() const { return fL1Parameters; }
-    // TODO: We should think about, where non-constexpr L1Alog parameters can be modified. At the moment we can create a 
-    //       L1Parameters object somewhere outside the L1Algo, fill its fields there and then pass it directly to
-    //       the L1Algo instance.
+  // TODO: We should think about, where non-constexpr L1Alog parameters can be modified. At the moment we can create a
+  //       L1Parameters object somewhere outside the L1Algo, fill its fields there and then pass it directly to
+  //       the L1Algo instance.
 
- private:
+private:
   /// Object containing L1Parameters. Default consturctor is used
   L1Parameters fL1Parameters;
 

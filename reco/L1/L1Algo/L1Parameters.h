@@ -15,28 +15,28 @@
 #include <FairLogger.h>
 
 class L1Parameters {
- public:
+public:
   //-------------------------------------------------------------------------------------------------------//
   //    Compile time constants                                                                             //
   //-------------------------------------------------------------------------------------------------------//
   /// Amount of coefficients in field approximations
-  static constexpr int kMaxNFieldApproxCoefficients {21}; // TODO: May be it is better to use the polynomial 
-                                                          // order instead of this?  
+  static constexpr int kMaxNFieldApproxCoefficients {21};  // TODO: May be it is better to use the polynomial
+                                                           // order instead of this?
   /// Amount of bits to code one station
   static constexpr unsigned int kStationBits {6};
   /// Amount of bits to code one thread
-  static constexpr unsigned int kThreadBits  {6};
+  static constexpr unsigned int kThreadBits {6};
   /// Amount of bits to code one triple
   static constexpr unsigned int kTripletBits {32 - kStationBits - kThreadBits};
 
   /// Max number of stations
   static constexpr unsigned int kMaxNstations {1 << kStationBits};  // 2^6  = 64
   /// Max number of threads
-  static constexpr unsigned int kMaxNthreads  {1 << kThreadBits};   // 2^6  = 64
+  static constexpr unsigned int kMaxNthreads {1 << kThreadBits};  // 2^6  = 64
   /// Max number of triplets
   static constexpr unsigned int kMaxNtriplets {1 << kTripletBits};  // 2^20 = 1,048,576
 
- public:
+public:
   //-------------------------------------------------------------------------------------------------------//
   //    Basic methods                                                                                      //
   //-------------------------------------------------------------------------------------------------------//
@@ -53,7 +53,8 @@ class L1Parameters {
   /// Move assignment operator
   L1Parameters& operator=(L1Parameters&& /*other*/) = default;
   /// Prints configuration
-  void Print() {
+  void Print()
+  {
     LOG(INFO) << "== L1Algo parameters ==============================================================";
     LOG(INFO) << "";
     LOG(INFO) << "  COMPILE TIME CONSTANTS";
@@ -69,10 +70,10 @@ class L1Parameters {
     LOG(INFO) << "    Max number of triplets per doublet: " << fMaxTripletPerDoublets;
     LOG(INFO) << "===================================================================================";
   }
-    // TODO: change constant names with actual (human) names
-    // TODO: create a map with parameters, their description and  
+  // TODO: change constant names with actual (human) names
+  // TODO: create a map with parameters, their description and
 
- public:
+public:
   //-------------------------------------------------------------------------------------------------------//
   //    Runtime constants                                                                                 //
   //-------------------------------------------------------------------------------------------------------//
@@ -85,12 +86,11 @@ class L1Parameters {
   unsigned int GetMaxTripletPerDoublets() const { return fMaxTripletPerDoublets; }
 
 
- private:
-  /// 
+private:
+  ///
   unsigned int fMaxDoubletsPerSinglet {150};
   ///
   unsigned int fMaxTripletPerDoublets {15};
-
 };
 
-#endif // L1Parameters_h
+#endif  // L1Parameters_h
