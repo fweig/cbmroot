@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
-/**************************************************************************************************************
+/************************************************************************************************************
  * @file L1BaseStationInfo.h
  * @bried A base class for a L1 station interface
  * @since 18.12.2021
@@ -70,8 +70,12 @@ public:
   /// Checks if all the necessary fields are initialized by user
   bool IsInitialized() const { return fInitFlags.size() == fInitFlags.count(); }
   /// Transfers all gathered data to L1Algo (TODO)
-  void TransferL1Station() { /**********/ }
-  void TransferData() { /*********/ }
+  void TransferL1Station()
+  { /**********/
+  }
+  void TransferData()
+  { /*********/
+  }
 
   //-------------------------------------------------------------------------------------------------------//
   //    Interface for L1Station object initialization                                                      //
