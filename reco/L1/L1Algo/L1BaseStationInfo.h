@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
-/**************************************************************************************************************
+/************************************************************************************************************
  * @file L1BaseStationInfo.h
  * @bried A base class for a L1 station interface
  * @since 18.12.2021
