@@ -42,7 +42,7 @@
 /analysis/PWGCHA/                          @i.selyuzhenkov
 /analysis/PWGDIL/                          @i.selyuzhenkov
 /analysis/PWGDIL/dielectron/pi0eta/        @c.pauly
-/analysis/PWGDIL/dielectron/papaframework/ @praisig @a_meye37_AT_uni-muenster.de
+/analysis/PWGDIL/dielectron/papaframework/ @a_meye37_AT_uni-muenster.de
 /analysis/PWGDIL/dielectron/lmvm/          @i.selyuzhenkov
 /analysis/PWGDIL/dielectron/conversion/    @c.pauly
 /analysis/PWGDIL/dimuon/                   @i.selyuzhenkov
@@ -50,12 +50,12 @@
 ## Detectors
 
 # TRD
-/core/data/trd/       @praisig
-/core/data/test/trd/  @praisig
-/core/detectors/trd/  @praisig
-/macro/trd/           @praisig
-/sim/detectors/trd/   @praisig
-/reco/detectors/trd/  @praisig
+/core/data/trd/       @a.bercuci @p.kaehler
+/core/data/test/trd/  @a.bercuci @p.kaehler
+/core/detectors/trd/  @a.bercuci @p.kaehler
+/macro/trd/           @a.bercuci @p.kaehler
+/sim/detectors/trd/   @a.bercuci @p.kaehler
+/reco/detectors/trd/  @a.bercuci @p.kaehler
 
 # PSD
 /analysis/detectors/psd/ @karpushkin_AT_inr.ru
