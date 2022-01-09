@@ -766,6 +766,62 @@ InitStatus CbmL1::Init()
   }
 
   algo->SetL1Parameters(fL1Parameters);
+
+  /********************************************************************************************************************
+   *                                                                                                                  *
+   *                     EXPERIMENTAL FEATURE: usage of L1InitManager for L1Algo initialization                       *
+   *                                                                                                                  *
+   *   Stage 1: Repeat initialization steps in parallel to the original code                                          *
+   *   Stage 2: Compare two initialization procedures                                                                 *
+   *   Stage 3: Remove old initialization                                                                             *
+   *                                                                                                                  *
+   ********************************************************************************************************************/
+
+  // Get reference to the L1Algo initialization manager
+  L1InitManager * initMan = algo->GetL1InitManager();
+  constexpr double PI = 3.14159265358; // TODO: why cmath is not used?
+
+  // Fill STS info:
+  for (int iSt = 0; iSt < NStsStations; ++iSt) {
+    auto cbmSts = CbmStsSetup::Instance()->GetStation(iSt);
+    auto stsStation = new L1BaseStationInfo();
+    stsStation->SetStationID(iSt);
+    stsStation->SetStationType(0); // STS 
+
+    // Set up station geometry and material
+    stsStation->SetZ(cbmSts->GetZ());
+    double stsXmax = cbmSts->GetXmax();
+    double stsYmax = cbmSts->GetYmax();
+    stsStation->SetXmax(stsXmax);
+    stsStation->SetYmax(stsYmax);
+    stsStation->SetRmin(0);
+    stsStation->SetRmax(stsXmax > stsYmax ? stsXmax : stsYmax);
+    stsStation->SetMaterial(cbmSts->GetSensorD(), cbmSts->GetRadLength());
+
+    // Set up strips geometry
+    //   TODO: why fscal instead of double in initialization?
+    fscal stsFrontPhi = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(0) * PI / 180.;
+    fscal stsBackPhi  = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(1) * PI / 180.;
+    fscal stsFrontSigma = cbmSts->GetSensorPitch(0) / sqrt(12);
+    fscal stsBackSigma  = stsFrontSigma;
+    stsStation->SetFrontBackStripsGeometry(stsFrontPhi, stsFrontSigma, stsBackPhi, stsBackSigma);
+
+    // Set up magnetic field
+    // NOTE: Such tricky solution is needed to prevent L1Algo from FairRoot dependencies
+    auto getFieldValueFcn = [](const double (&inXYZ)[3], double (&outB)[3]) {
+      CbmKF::Instance()->GetMagneticField()->GetFieldValue(inXYZ, outB);
+    };
+    stsStation->SetFieldSlice(getFieldValueFcn);
+    initMan->AddStation(stsStation);
+    delete stsStation;
+  }
+  initMan->PrintStations(/*vebosity = */ 1);
+
+  /********************************************************************************************************************
+   ********************************************************************************************************************/
+
+
+
   algo->Init(geo, fUseHitErrors, fTrackingMode, fMissingHits);
   geo.clear();
 
