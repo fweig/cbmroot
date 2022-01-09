@@ -21,10 +21,18 @@
 #include "L1Parameters.h"
 #include "L1Station.h"
 
+// FairRoot
+#include "FairField.h"
+
+// Root
+#include "TMatrixD.h"
+#include "TVectorD.h"
+
 // C++ std
 #include <bitset>
 #include <iomanip>
 #include <string>
+#include <functional>
 //#include <cmath>
 
 /// A base class which provides interface to L1Algo station geometry
@@ -34,6 +42,9 @@ private:
   enum
   {  // Here we list all the fields, which must be initialized by user
     // Basic fields initialization
+    kEStationID,
+    kEXmax,
+    kEYmax,
     // L1Station initialization
     kEtype,
     kEtimeInfo,
@@ -84,11 +95,31 @@ public:
   //
   //  Setters
   //
+  /// Sets station ID
+  void SetStationID(int inID)
+  {
+    if (! fInitFlags[kEStationID]) {
+      fStationID = inID;
+      fInitFlags[kEStationID] = true;
+    }
+#ifndef FAST_CODE
+    else {
+      LOG(WARNING) << __FILE__ << ":" << __LINE__ << " Attempt of station ID redifinition\n";
+    }
+#endif // ! FAST_CODE
+  }
   /// Sets type of station
   void SetStationType(int inType)
   {
-    fL1Station.type    = inType;
-    fInitFlags[kEtype] = true;
+    if (! fInitFlags[kEtype]) {
+      fL1Station.type    = inType;
+      fInitFlags[kEtype] = true;
+    }
+#ifndef FAST_CODE
+    else {
+      LOG(WARNING) << __FILE__ << ":" << __LINE__ << " Attempt of station type redifinition\n";
+    }
+#endif // ! FAST_CODE
   }
   // TODO: Temporary method, a type must be selected automatically in the derived classes
   void SetTimeInfo(int inTimeInfo)
@@ -101,7 +132,8 @@ public:
   /// Sets nominal z position of the station
   void SetZ(double inZ)
   {
-    fL1Station.z    = inZ;
+    fL1Station.z = inZ; // setting simd vector of single-precision floats, which is passed to high performanced L1Algo
+    fZPos = inZ; // setting precise value to use in field approximation etc
     fInitFlags[kEz] = true;
   }
   /// Sets min transverse size of the station
@@ -138,8 +170,90 @@ public:
       fL1Station.fieldSlice.cx[idx] = Cx[idx];
       fL1Station.fieldSlice.cy[idx] = Cy[idx];
       fL1Station.fieldSlice.cz[idx] = Cz[idx];
-      fInitFlags[kEfieldSlice]      = true;
     }
+    fInitFlags[kEfieldSlice]      = true;
+  }
+  /// Sets arrays of the approcimation 
+  /// \param getField A user function, which gets a xyz array of position coordinates and fills B array
+  ///                 of magnetic field components in position
+  void SetFieldSlice(const std::function<void(const double (&xyz)[3], double (&B)[3])>& getFieldValue)
+  {
+    std::cout << ">>>>>>> CALL: SetFieldSlice\n";
+#ifndef L1_NO_ASSERT  // check for zero denominator
+    L1_ASSERT(fInitFlags[kEz], "Attempt to set magnetic field slice before setting z position of the station");
+    L1_ASSERT(fInitFlags[kEXmax], "Attempt to set magnetic field slice before setting Xmax size of the station");
+    L1_ASSERT(fInitFlags[kEYmax], "Attempt to set magnetic field slice before setting Ymax size of the station");
+#endif
+    constexpr int M = L1Parameters::kMaxFieldApproxPolynomialOrder;
+    constexpr int N = L1Parameters::kMaxNFieldApproxCoefficients;
+    constexpr int D = 3; ///> number of dimensions
+
+    // SLE initialization
+    double A[N][N + D] = {}; // augmented matrix
+    double dx = (fXmax / N / 2 < 1.) ? fXmax / N / 4. : 1.;
+    double dy = (fYmax / N / 2 < 1.) ? fYmax / N / 4. : 1.;
+    
+    for (double x = -fXmax; x <= fXmax; x += dx) {
+      for (double y = -fYmax; y <= fYmax; y += dy) {
+        double r = sqrt(fabs(x * x / fXmax / fXmax + y / fYmax * y / fYmax));
+        if (r > 1.) {
+          continue;
+        }
+        double p[D] = {x, y, fZPos};
+        double B[D] = {};
+        getFieldValue(p, B);
+
+        double m[N] = {1};
+        m[0] = 1;
+        for (int i = 1; i <= M; ++i) {
+          int k = (i - 1) * (i) / 2;
+          int l = i * (i + 1) / 2;
+          for (int j = 0; j < i; ++j) {
+            m[l + j] = x * m[k + j];
+          }
+          m[l + i] = y * m[k + i - 1];
+        }
+
+        double w = 1. / (r * r + 1);
+        for (int i = 0; i < N; ++i) {
+          // fill the left part of the matrix 
+          for (int j = 0; j < N; ++j) {
+            A[i][j] += w * m[i] * m[j];
+          }
+          // fill the right part of the matrix
+          for (int j = 0; j < D; ++j) {
+            A[i][N + j] += w * B[j] * m[i];
+          }
+        }
+      }
+    }
+
+    // SLE solution (Gaussian elimination)
+    //   
+    for (int kCol = 0; kCol < N - 1; ++kCol) {
+      for (int jRow = kCol + 1; jRow < N; ++jRow) {
+        double factor = A[jRow][kCol] / A[kCol][kCol];
+        for (int iCol = kCol; iCol < N + D; ++iCol) {
+          A[jRow][iCol] -= factor * A[kCol][iCol];
+        }
+      }
+    }
+    for (int kCol = N - 1; kCol > 0; --kCol) {
+      for (int jRow = kCol - 1; jRow >= 0; --jRow) {
+        double factor = A[jRow][kCol] / A[kCol][kCol];
+        for (int iCol = kCol; iCol < N + D; ++iCol) {
+          A[jRow][iCol] -= factor * A[kCol][iCol];
+        }
+      }
+    }
+
+    for (int j = 0; j < N; ++j) {
+      fL1Station.fieldSlice.cx[j] = A[j][N + 0] / A[j][j];
+      fL1Station.fieldSlice.cy[j] = A[j][N + 1] / A[j][j];
+      fL1Station.fieldSlice.cz[j] = A[j][N + 2] / A[j][j];
+    }
+
+    fInitFlags[kEfieldSlice] = true;
   }
 
   /// Sets stereo angles and sigmas for front and back strips, automatically set frontInfo, backInfo,
@@ -201,13 +315,31 @@ public:
     fInitFlags[kEstripsBackPhi]    = true;
     fInitFlags[kEstripsBackSigma]  = true;
   }
+  /// Sets maximum distance between station center and its edge in x direction
+  void SetXmax(double aSize)
+  {
+    fXmax = aSize;
+    fInitFlags[kEXmax] = true;
+  }
+  /// Sets maximum distance between station center and its edge in y direction
+  void SetYmax(double aSize)
+  {
+    fYmax = aSize;
+    fInitFlags[kEYmax] = true;
+  }
 
   //
   // Getters
   //
 
-  /// Gets nominal z position of the station
-  fvec GetZ() const { return fL1Station.z; }
+  /// Gets station ID
+  int GetStationID() const { return fStationID; }
+  /// Gets station type
+  int GetStationType() const { return fL1Station.type; }
+  /// Gets SIMD vectorized z position of the station
+  fvec GetZsimdVec() const { return fL1Station.z; }
+  /// Gets double precised z position of the station
+  double GetZdouble() const { return fZPos; }
   /// Gets min transverse size of the station
   fvec GetRmin() const { return fL1Station.Rmin; }
   /// Gets max transverse size of the station
@@ -238,6 +370,11 @@ public:
   /// Gets array of the coefficients for the field z-component approximation
   const fvec* GetFieldSliceCz() const { return fL1Station.fieldSlice.cz; }
 
+  /// Gets maximum distance between station center and its edge in x direction
+  double GetXmax() const { return fXmax; }
+  /// Gets maximum distance between station center and its edge in y direction
+  double GetYmax() const { return fYmax; }
+
 
   //-------------------------------------------------------------------------------------------------------//
   //    Other methods                                                                                      //
@@ -248,7 +385,9 @@ public:
   {
     LOG(INFO) << "== L1Algo: station info ===========================================================";
     LOG(INFO) << "";
+    LOG(INFO) << "    Station ID:              " << fStationID;
     LOG(INFO) << "  L1Station fields:";
+    LOG(INFO) << "    Station type ID:         " << fL1Station.type;
     LOG(INFO) << "    z position:              " << fL1Station.z[0];
     LOG(INFO) << "    Rmin:                    " << fL1Station.Rmin[0];
     LOG(INFO) << "    Rmax:                    " << fL1Station.Rmax[0];
@@ -286,14 +425,26 @@ public:
     LOG(INFO) << "        sin(phi):            " << fL1Station.yInfo.sin_phi[0];
     LOG(INFO) << "        sigma2:              " << fL1Station.yInfo.sigma2[0];
     LOG(INFO) << "";
+    LOG(INFO) << "  Additiona fields:";
+    LOG(INFO) << "    Xmax:                    " << fXmax;
+    LOG(INFO) << "    Ymax:                    " << fYmax;
+    LOG(INFO) << "";
     LOG(INFO) << "===================================================================================";
+  }
+  void Reset() {
+    L1BaseStationInfo other;
+    std::swap(*this, other);
   }
 
 private:
-  /// Flags set. A particular flag is up if the corresponding setter was called (experimental)
-  std::bitset<L1BaseStationInfo::kEND> fInitFlags;
-  std::string fTypeName {"BASE"};
-  L1Station fL1Station {};
+  
+  std::bitset<L1BaseStationInfo::kEND> fInitFlags;  ///< Class fileds initialization flags
+  std::string fTypeName {"BASE"};  ///< Station type name (TODO: probably should be replaced with function of type)
+  L1Station fL1Station {};  ///< L1Station structure, describes a station in L1Algo
+  int fStationID {-1}; ///< Station ID
+  double fXmax {0};  ///< Maximum distance between station center and its edge in x direction
+  double fYmax {0};  ///< Maximum distance between station center and its edge in y direction
+  double fZPos {0};  ///< z position of the station in double precision, used in field approximation
   // TODO (!!!!) MUST THINK ABOUT THIS OBJECT LIFE TIME: will it be better to copy
   //             or to move it to the core? If the second, what should we do with
   //             getters? Do we need to lock them, when the fL1Station object will

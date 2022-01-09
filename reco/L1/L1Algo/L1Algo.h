@@ -36,6 +36,7 @@ class L1AlgoDraw;
 //#endif
 //#define MERGE_CLONES
 
+#define FEATURING_L1ALGO_INIT
 
 #include <iomanip>
 #include <iostream>
@@ -48,6 +49,8 @@ class L1AlgoDraw;
 #include "L1Hit.h"
 #include "L1HitPoint.h"
 #include "L1HitsSortHelper.h"
+#include "L1InitManager.h"
+#include "L1Parameters.h"
 #include "L1Portion.h"
 #include "L1Station.h"
 #include "L1Track.h"
@@ -135,7 +138,6 @@ public:
 
 
   L1Vector<L1Triplet> fTriplets[L1Parameters::kMaxNstations][L1Parameters::kMaxNthreads] {
-    //<--------
     {"L1Algo::fTriplets"}};  // created triplets at station + thread
 
   // Track candidates created out of adjacent triplets before the final track selection.
@@ -359,10 +361,12 @@ public:
   // TODO: We should think about, where non-constexpr L1Alog parameters can be modified. At the moment we can create a
   //       L1Parameters object somewhere outside the L1Algo, fill its fields there and then pass it directly to
   //       the L1Algo instance.
+  L1InitManager * GetL1InitManager() { return &fL1InitManager; }
 
 private:
   /// Object containing L1Parameters. Default consturctor is used
-  L1Parameters fL1Parameters;
+  L1Parameters fL1Parameters;    ///< Object of L1Algo parameters class
+  L1InitManager fL1InitManager;  ///< Object of L1Algo initialization manager class
 
   /// =================================  FUNCTIONAL PART  =================================
 
