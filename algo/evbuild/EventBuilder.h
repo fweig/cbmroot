@@ -101,9 +101,11 @@ namespace cbm
       template<typename Data>
       static typename std::vector<Data> CopyRange(const std::vector<Data>& source, double tMin, double tMax)
       {
-        auto comp  = [](const Data& obj, double value) { return obj.GetTime() < value; };
-        auto lower = std::lower_bound(source.begin(), source.end(), tMin, comp);
-        auto upper = std::lower_bound(lower, source.end(), tMax, comp);
+        //auto comp  = [](const Data& obj, double value) { return obj.GetTime() < value; };
+        auto comp1 = [](const Data& obj, double value) { return obj.GetTime() < value; };
+        auto comp2 = [](double value, const Data& obj) { return value < obj.GetTime(); };
+        auto lower = std::lower_bound(source.begin(), source.end(), tMin, comp1);
+        auto upper = std::upper_bound(lower, source.end(), tMax, comp2);
         return std::vector<Data>(lower, upper);
       }
 
