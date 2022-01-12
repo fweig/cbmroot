@@ -13,7 +13,7 @@
 // Binned tracker for track reconstruction
 //
 // V. Friese   11.06.2018
-//
+// S. Roy     11.01.2022 - added the Real event building and modified STS parAsic parameter
 // --------------------------------------------------------------------------
 
 void mcbm_reco_event_tb_nh(Int_t nEvents = 10, TString RunId = "test", TString InDir = "./data/",
@@ -70,6 +70,20 @@ void mcbm_reco_event_tb_nh(Int_t nEvents = 10, TString RunId = "test", TString I
   setup->RemoveModule(ECbmModuleId::kTrd);
   //  setup->RemoveModule(ECbmModuleId::kTof);
   //  setup->RemoveModule(ECbmModuleId::kSts);
+  // ------------------------------------------------------------------------
+
+  TString sEvBuildRaw = "Real";
+
+
+  // -----   Some global switches   -----------------------------------------
+  // Bool_t eventBased = !sEvBuildRaw.IsNull();
+  Bool_t useMvd  = setup->IsActive(ECbmModuleId::kMvd);
+  Bool_t useSts  = setup->IsActive(ECbmModuleId::kSts);
+  Bool_t useRich = setup->IsActive(ECbmModuleId::kRich);
+  Bool_t useMuch = setup->IsActive(ECbmModuleId::kMuch);
+  Bool_t useTrd  = setup->IsActive(ECbmModuleId::kTrd);
+  Bool_t useTof  = setup->IsActive(ECbmModuleId::kTof);
+  Bool_t usePsd  = setup->IsActive(ECbmModuleId::kPsd);
   // ------------------------------------------------------------------------
 
 
@@ -136,7 +150,7 @@ void mcbm_reco_event_tb_nh(Int_t nEvents = 10, TString RunId = "test", TString I
   //mcManager->AddFile(rawFile);
   //run->AddTask(mcManager);
   // ------------------------------------------------------------------------
-
+  /*
   CbmMcbm2018EventBuilder* eventBuilder = new CbmMcbm2018EventBuilder();
   //  eventBuilder->SetEventBuilderAlgo(EventBuilderAlgo::MaximumTimeGap);
   //  eventBuilder->SetMaximumTimeGap(100.);
@@ -147,8 +161,60 @@ void mcbm_reco_event_tb_nh(Int_t nEvents = 10, TString RunId = "test", TString I
   eventBuilder->SetTriggerMinNumberMuch(0);
   eventBuilder->SetTriggerMinNumberTof(1);
   eventBuilder->SetTriggerMinNumberRich(0);
-  eventBuilder->SetFillHistos(kTRUE);
-  if (timebased) run->AddTask(eventBuilder);
+  eventBuilder->SetFillHistos(kTRUE);*/
+
+
+  // -----   Raw event building from digis (the "Real" event builder)  --------------------------------
+  if (sEvBuildRaw.EqualTo("Real", TString::ECaseCompare::kIgnoreCase)) {
+    CbmTaskBuildRawEvents* evBuildRaw = new CbmTaskBuildRawEvents();
+
+    //Choose between NoOverlap, MergeOverlap, AllowOverlap
+    evBuildRaw->SetEventOverlapMode(EOverlapModeRaw::AllowOverlap);
+
+    // Remove detectors where digis not found
+    if (!useMvd) evBuildRaw->RemoveDetector(kRawEventBuilderDetMvd);
+    if (!useRich) evBuildRaw->RemoveDetector(kRawEventBuilderDetRich);
+    if (!useMuch) evBuildRaw->RemoveDetector(kRawEventBuilderDetMuch);
+    if (!useTrd) evBuildRaw->RemoveDetector(kRawEventBuilderDetTrd);
+    if (!usePsd) evBuildRaw->RemoveDetector(kRawEventBuilderDetPsd);
+    if (!useTof) evBuildRaw->RemoveDetector(kRawEventBuilderDetTof);
+
+    if (!useSts) {
+      std::cerr << "-E- " << myName << ": Sts must be present for raw event "
+                << "building using ``Real2019'' option. Terminating macro." << std::endl;
+      return;
+    }  // Set STS or Tof as reference detector
+    if (!useTof) evBuildRaw->SetReferenceDetector(kRawEventBuilderDetSts);
+    else
+      evBuildRaw->SetReferenceDetector(kRawEventBuilderDetTof);
+
+    // Use sliding window seed builder with STS
+    // evBuildRaw->SetReferenceDetector(kRawEventBuilderDetUndef);
+    // evBuildRaw->AddSeedTimeFillerToList(kRawEventBuilderDetSts);
+    // evBuildRaw->SetSlidingWindowSeedFinder(10, 40, 100);
+    //  evBuildRaw->SetSeedFinderQa(true);  // optional QA information for seed finder
+    evBuildRaw->SetTsParameters(0.0, 1.e7, 0.0);  // Use CbmMuchDigi instead of CbmMuchBeamtimeDigi
+    evBuildRaw->ChangeMuchBeamtimeDigiFlag(kFALSE);
+
+    //Set event building parameters
+    if (!useTof) {
+      evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kSts, 1);
+      evBuildRaw->SetTriggerMaxNumber(ECbmModuleId::kSts, -1);
+      evBuildRaw->SetTriggerWindow(ECbmModuleId::kSts, -10, 40);
+    }
+    else {
+      evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kTof, 1);
+      evBuildRaw->SetTriggerWindow(ECbmModuleId::kTof, -10, 40);
+    }  //evBuildRaw->SetWriteHistosToFairSink(kFALSE);
+    //evBuildRaw->SetOutFilename("HistosEvtAllowOverlap_simulated.root");
+
+    run->AddTask(evBuildRaw);
+    std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName() << std::endl;
+
+  }  //? Real raw event building
+
+
+  // if (timebased) run->AddTask(eventBuilder);
 
   // -----   Local reconstruction in MVD   ----------------------------------
   if (setup->IsActive(ECbmModuleId::kMvd)) {
@@ -178,7 +244,7 @@ void mcbm_reco_event_tb_nh(Int_t nEvents = 10, TString RunId = "test", TString I
     if (kFALSE && timebased) {
       // ASIC params: #ADC channels, dyn. range, threshold, time resol., dead time,
       // noise RMS, zero-threshold crossing rate
-      auto parAsic = new CbmStsParAsic(32, 75000., 3000., 5., 800., 1000., 3.9789e-3);
+      auto parAsic = new CbmStsParAsic(128, 32, 75000., 3000., 5., 800., 1000., 3.9789e-3);
 
       // Module params: number of channels, number of channels per ASIC
       auto parMod = new CbmStsParModule(2048, 128);
