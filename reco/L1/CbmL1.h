@@ -82,9 +82,9 @@ public:
 };
 
 // TODO: insert documentation!
-//  
+//
 /// L1Algo runtime constants modification can be performed in run_reco.C. Example:
-///   
+///
 ///   l1->GetL1Parameters()->SetMaxDoubletsPerSinglet(149);
 ///
 class CbmL1 : public FairTask {
