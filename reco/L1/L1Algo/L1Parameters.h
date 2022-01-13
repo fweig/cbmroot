@@ -114,7 +114,7 @@ public:
     LOG(INFO) << "    Bits to code one station:          " << kStationBits;
     LOG(INFO) << "    Bits to code one thread:           " << kThreadBits;
     LOG(INFO) << "    Bits to code one triplet:          " << kTripletBits;
-    LOG(INFO) << "    Max number of stations:            " << kMaxNstations;
+    LOG(INFO) << " #endif // L1ALGODEV   Max number of stations:            " << kMaxNstations;
     LOG(INFO) << "    Max number of threads:             " << kMaxNthreads;
     LOG(INFO) << "    Max number of triplets:            " << kMaxNtriplets;
     LOG(INFO) << "";

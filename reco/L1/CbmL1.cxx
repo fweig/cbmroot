@@ -726,6 +726,11 @@ InitStatus CbmL1::Init()
             b2(i) += w * B[2] * m(i);
           }
         }
+<<<<<<< HEAD
+=======
+
+      // Solve SLE
+>>>>>>> tmp modifications
       double det;
       A.Invert(&det);
       TVectorD c0 = A * b0, c1 = A * b1, c2 = A * b2;
@@ -788,7 +793,7 @@ InitStatus CbmL1::Init()
     stsStation->SetStationID(iSt);
     stsStation->SetStationType(0); // STS 
 
-    // Set up station geometry and material
+    // Setup station geometry and material
     stsStation->SetZ(cbmSts->GetZ());
     double stsXmax = cbmSts->GetXmax();
     double stsYmax = cbmSts->GetYmax();
@@ -798,7 +803,7 @@ InitStatus CbmL1::Init()
     stsStation->SetRmax(stsXmax > stsYmax ? stsXmax : stsYmax);
     stsStation->SetMaterial(cbmSts->GetSensorD(), cbmSts->GetRadLength());
 
-    // Set up strips geometry
+    // Setup strips geometry
     //   TODO: why fscal instead of double in initialization?
     fscal stsFrontPhi = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(0) * PI / 180.;
     fscal stsBackPhi  = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(1) * PI / 180.;
@@ -806,8 +811,8 @@ InitStatus CbmL1::Init()
     fscal stsBackSigma  = stsFrontSigma;
     stsStation->SetFrontBackStripsGeometry(stsFrontPhi, stsFrontSigma, stsBackPhi, stsBackSigma);
 
-    // Set up magnetic field
-    // NOTE: Such tricky solution is needed to prevent L1Algo from FairRoot dependencies
+    // Setup magnetic field
+    // NOTE: Such solution is needed to prevent L1Algo from FairRoot dependencies
     auto getFieldValueFcn = [](const double (&inXYZ)[3], double (&outB)[3]) {
       CbmKF::Instance()->GetMagneticField()->GetFieldValue(inXYZ, outB);
     };
