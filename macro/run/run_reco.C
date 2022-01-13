@@ -204,7 +204,6 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
       FairTask* evBuildRaw = new CbmBuildEventsIdeal();
       run->AddTask(evBuildRaw);
       std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName() << std::endl;
-      eventBased = kTRUE;
     }  //? Ideal raw event building
     else if (sEvBuildRaw.EqualTo("Real", TString::ECaseCompare::kIgnoreCase)) {
       CbmTaskBuildRawEvents* evBuildRaw = new CbmTaskBuildRawEvents();
@@ -243,7 +242,6 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
 
       run->AddTask(evBuildRaw);
       std::cout << "-I- " << myName << ": Added task " << evBuildRaw->GetName() << std::endl;
-      eventBased = kTRUE;
     }  //? Real raw event building
     else {
       std::cerr << "-E- " << myName << ": Unknown option " << sEvBuildRaw
