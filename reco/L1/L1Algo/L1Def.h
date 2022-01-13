@@ -63,4 +63,12 @@ T finite(T x)
 
 typedef int index_type;
 
+/// Hash for unordered_map with enum class keys
+struct EnumClassHash {
+  template <typename T> size_t operator()(T t) const 
+  {
+    return static_cast<size_t>(t);
+  }
+};
+
 #endif

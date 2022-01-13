@@ -1760,8 +1760,16 @@ void L1Algo::CATrackFinder()
   TStopwatch c_time1;
   c_time1.Start();
 
+  /*********
+   * Debug *
+   *********/
+
+  std::ofstream outTFDEBUG("/u/szharko/frameworks/cbm/pg/DEBUG_TFIterationsCheck.txt");
+  outTFDEBUG << "Tracking mode: " << static_cast<unsigned int>(fTrackingMode) << '\n';
+  // ---- Loop over Track Finder iterations ----------------------------------------------------------------//
   for (isec = 0; isec < fNFindIterations; ++isec)  // all finder
   {
+    outTFDEBUG << "==== New TF iteration: isec ====\n";
     if (fTrackingMode == kMcbm) {
       if (isec > 3) { continue; }
     }
@@ -2475,6 +2483,8 @@ void L1Algo::CATrackFinder()
 #endif  // COUNTERS
     }
   }  // for (int isec
+  outTFDEBUG.close();
+  // ---- Loop over Track Finder iterations: END -----------------------------------------------------------//
 
 #ifdef XXX
   c_timerG.Stop();

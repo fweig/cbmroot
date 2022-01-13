@@ -26,6 +26,9 @@
 /// 5. blocks usage of boolean vectors, as they have a special
 ///    space-optimized but slow implementation in std. (Use L1Vector<char> instead).
 ///
+
+
+
 template<class T>
 class L1Vector : private std::vector<T> {
 public:
@@ -41,6 +44,8 @@ public:
                                               , fName(name)
   {
   }
+
+
 
   L1Vector(const L1Vector& v) : Tbase() { *this = v; }
 
