@@ -95,23 +95,7 @@ public:
   float GetDefaultParticleMass2() const { return fDefaultMass * fDefaultMass; }
 
   float fDefaultMass = 0.10565800;  // muon mass
-                                    // NOTE: technically it is a default value, so it can be modified
-                                    // with a setter. But on other hand it is a phys constant, so we must
-                                    // think again whether to handle the numerical literal as constexpr or not
-  //float fDefaultMass = L1Parameters::kMuonMass;  // muon mass
-
-  /////--> moved to L1Parameters
-  /////static constexpr unsigned int fkStationBits = 6;
-  /////static constexpr unsigned int fkThreadBits  = 6;
-  /////static constexpr unsigned int fkTripletBits = 32 - fkStationBits - fkThreadBits;
-
-  /////static constexpr unsigned int fkMaxNstations = (1 << fkStationBits);  // 2^6 =64
-  /////static constexpr unsigned int fkMaxNthreads  = (1 << fkThreadBits);   // 2^6 = 64
-  /////static constexpr unsigned int fkMaxNtriplets = (1 << fkTripletBits);  // 2^20 = 262,144
-
-  /////--> moved to L1Parameters
-  /////unsigned int fMaxDoubletsPerSinglet = 150;
-  /////unsigned int fMaxTripletPerDoublets = 15;
+  // TODO: make fDefaultMass a private member
 
   /// pack station, thread and triplet indices to an unique triplet ID
   static unsigned int PackTripletId(unsigned int Station, unsigned int Thread, unsigned int Triplet)

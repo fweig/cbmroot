@@ -81,7 +81,12 @@ public:
   int Det;
 };
 
-
+// TODO: insert documentation!
+//  
+/// L1Algo runtime constants modification can be performed in run_reco.C. Example:
+///   
+///   l1->GetL1Parameters()->SetMaxDoubletsPerSinglet(149);
+///
 class CbmL1 : public FairTask {
 private:
   CbmL1(const CbmL1&);
@@ -118,7 +123,7 @@ public:
 
   ~CbmL1(/*if (targetFieldSlice) delete;*/);
 
-  L1Parameters* GetL1Parameters() { return fL1ParametersPtr; }
+  L1Parameters* GetL1Parameters() { return &fL1Parameters; }
 
   void SetStsMaterialBudgetFileName(TString fileName) { fStsMatBudgetFileName = fileName; }
   void SetMvdMaterialBudgetFileName(TString fileName) { fMvdMatBudgetFileName = fileName; }
@@ -217,7 +222,7 @@ public:
 
 private:
   static CbmL1* fInstance;
-  L1Parameters* fL1ParametersPtr {new L1Parameters()};  ///< pointer to L1Algo parameters class instance
+  L1Parameters fL1Parameters;
 
   L1AlgoInputData* fData {nullptr};
 

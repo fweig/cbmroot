@@ -391,10 +391,6 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
       l1->SetStsMaterialBudgetFileName(parFile.Data());
     }
 
-    // ---- L1Algo runtime constants selection interface example ------
-    l1->GetL1Parameters()->SetMaxDoubletsPerSinglet(149);
-    // ----------------------------------------------------------------
-
     run->AddTask(l1);
     std::cout << "-I- " << myName << ": Added task " << l1->GetName() << std::endl;
 

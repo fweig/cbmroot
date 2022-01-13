@@ -752,15 +752,7 @@ InitStatus CbmL1::Init()
       LOG(error) << "-E- CbmL1: Read geometry from file " << fSTAPDataDir + "geo_algo.txt was NOT successful.";
   }
 
-  if (fL1ParametersPtr) {
-    algo->SetL1Parameters(*fL1ParametersPtr);
-    delete fL1ParametersPtr;
-  }
-  else {
-    LOG(error) << "-E- CbmL1: L1Parameters object was not transfered to the L1Algo core. Default parameters "
-               << "will be used.";
-  }
-
+  algo->SetL1Parameters(fL1Parameters);
   algo->Init(geo, fUseHitErrors, fTrackingMode, fMissingHits);
   geo.clear();
 
