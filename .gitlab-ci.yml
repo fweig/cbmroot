@@ -335,7 +335,7 @@ FileLicenceCheck:
 .macosx_12_variables: &macosx_12_variables
     OS: "macOS_12"
     FAIRSOFT_VERSION: "apr21p2"
-    FAIRROOT_VERSION: "v18.6.5"
+    FAIRROOT_VERSION: "v18.6.6"
     BASE_PATH: "/opt"
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
