@@ -5,10 +5,11 @@
 #ifndef CBMMQCHANNELS_H_
 #define CBMMQCHANNELS_H_
 
+#include "FairMQDevice.h"
+
 #include <string>
 #include <vector>
 
-class FairMQDevice;
 
 class CbmMQChannels {
 public:
