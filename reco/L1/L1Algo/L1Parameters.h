@@ -58,12 +58,12 @@ public:
     LOG(INFO) << "== L1Algo parameters ==============================================================";
     LOG(INFO) << "";
     LOG(INFO) << "  COMPILE TIME CONSTANTS";
-    LOG(INFO) << "    Bits to code one station:          " << kStationBits;
-    LOG(INFO) << "    Bits to code one thread:           " << kThreadBits;
-    LOG(INFO) << "    Bits to code one triplet:          " << kTripletBits;
-    LOG(INFO) << "    Max number of stations:            " << kMaxNstations;
-    LOG(INFO) << "    Max number of threads:             " << kMaxNthreads;
-    LOG(INFO) << "    Max number of triplets:            " << kMaxNtriplets;
+    LOG(INFO) << "    Bits to code one station:          " << static_cast<unsigned int>(kStationBits);
+    LOG(INFO) << "    Bits to code one thread:           " << static_cast<unsigned int>(kThreadBits);
+    LOG(INFO) << "    Bits to code one triplet:          " << static_cast<unsigned int>(kTripletBits);
+    LOG(INFO) << "    Max number of stations:            " << static_cast<unsigned int>(kMaxNstations);
+    LOG(INFO) << "    Max number of threads:             " << static_cast<unsigned int>(kMaxNthreads);
+    LOG(INFO) << "    Max number of triplets:            " << static_cast<unsigned int>(kMaxNtriplets);
     LOG(INFO) << "";
     LOG(INFO) << "  RUNTIME CONSTANTS (CUTS)";
     LOG(INFO) << "    Max number of doublets per singlet: " << fMaxDoubletsPerSinglet;
