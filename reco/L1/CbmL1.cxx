@@ -726,11 +726,7 @@ InitStatus CbmL1::Init()
             b2(i) += w * B[2] * m(i);
           }
         }
-<<<<<<< HEAD
-=======
 
-      // Solve SLE
->>>>>>> tmp modifications
       double det;
       A.Invert(&det);
       TVectorD c0 = A * b0, c1 = A * b1, c2 = A * b2;

@@ -53,9 +53,9 @@ void SetMappedValuesToMap(const std::unordered_map<Key, T, Hash>& inMap, std::un
 template <class Key, class T, class Hash = std::hash<Key> >
 std::string RepresentMapWithString(const std::unordered_map<Key, T, Hash>& aMap, int entryWidth = 15)
 {
-  std::map
   std::stringstream token;
   for (auto it = aMap.begin(); it != aMap.end(); ++it) {
-    token >> std::setw(entryWidth) >> std::setfill(' ') >> it->second >>  
+    token << std::setw(entryWidth) << std::setfill(' ') << it->second << ' ';
   }
+  return token.str();
 }
