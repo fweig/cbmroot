@@ -67,6 +67,7 @@ public:
   }
 
 private:
+  // TODO: TEST IT!!!!!!!!!!!!!!!!!!!!!
   L1Vector<L1BaseStationInfo> fvStationsInfo {"L1InitManager::fvStationsInfo"};  ///< Vector containing all the stations
   // TODO: Max stations is probably not optimal for vector initialization. Must think, what to do here. 
   std::unordered_map<int, int> fmStationsNumber;  ///< Number of each station type <station type, counter>
