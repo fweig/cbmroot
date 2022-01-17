@@ -52,8 +52,6 @@ typedef DigiVec<CbmPsdDigi> PsdDigiData;
  **
  ** If no detector-specific collection class is provided, the simplest form (DigiVector)
  ** is used.
- **
- ** The current implementation uses STS only - to be expanded for all systems.
  **/
 struct CbmDigiData {
   friend class boost::serialization::access;

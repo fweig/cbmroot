@@ -2,21 +2,25 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Volker Friese [committer] */
 
-
 #ifndef CBMTASKTRIGGERDIGI_H
 #define CBMTASKTRIGGERDIGI_H 1
 
-
 #include "CbmDefs.h"
+#include "CbmDigiBranchBase.h"
 
 #include <FairTask.h>
 
 #include "TimeClusterTrigger.h"
+#include <TStopwatch.h>
+
+#include <boost/any.hpp>
 
 #include <vector>
 
+class CbmDigiBranchBase;
 class CbmDigiManager;
 
+using namespace std;
 
 /** @class CbmTaskTriggerDigi
  ** @brief Task class for minimum-bias event trigger from time-distribution of digi data
@@ -67,11 +71,39 @@ public:
     fDeadTime      = deadTime;
   }
 
+  /** @brief Add a detector system to the trigger algorithm
+   ** @param system    System to be added
+   **/
+  void AddSystem(ECbmModuleId system)
+  {
+    if (std::find(fSystems.begin(), fSystems.end(), system) != fSystems.end()) return;
+    fSystems.push_back(system);
+  }
 
 private:  // methods
   /** @brief Task initialisation **/
   virtual InitStatus Init();
 
+  /** @brief Extract digi times from digi branch
+   ** @param digiBranch    Digi branch for one detector
+   **/
+  template<class TDigi>
+  std::vector<double> GetDigiTimes(const CbmDigiBranchBase* digiBranch)
+  {
+    TStopwatch timerStep;
+    // --- Get input digi vector
+    const vector<TDigi>* digiVec = boost::any_cast<const vector<TDigi>*>(digiBranch->GetBranchContainer());
+    assert(digiVec);
+
+    // --- Extract digi times into to a vector
+    timerStep.Start();
+    std::vector<double> digiTimes(digiVec->size());
+    std::transform(digiVec->begin(), digiVec->end(), digiTimes.begin(),
+                   [](const TDigi& digi) { return digi.GetTime(); });
+    timerStep.Stop();
+    fTimeExtract += timerStep.RealTime();
+    return digiTimes;
+  }
 
 private:                                     // members
   CbmDigiManager* fDigiMan = nullptr;        //! Input data

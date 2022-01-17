@@ -2,18 +2,21 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Volker Friese [committer] */
 
-
 #include "CbmTaskTriggerDigi.h"
 
 #include "CbmDefs.h"
-#include "CbmDigiBranchBase.h"
 #include "CbmDigiManager.h"
+#include "CbmModuleList.h"
+#include "CbmMuchDigi.h"
+#include "CbmPsdDigi.h"
+#include "CbmRichDigi.h"
 #include "CbmStsDigi.h"
+#include "CbmTofDigi.h"
+#include "CbmTrdDigi.h"
 
 #include <FairLogger.h>
 
 #include "TimeClusterTrigger.h"
-#include <TStopwatch.h>
 
 #include <algorithm>
 #include <cassert>
@@ -21,14 +24,9 @@
 #include <iostream>
 #include <vector>
 
-
-using namespace std;
-
-
 // -----   Constructor   -----------------------------------------------------
 CbmTaskTriggerDigi::CbmTaskTriggerDigi() : FairTask("TriggerDigi") {}
 // ---------------------------------------------------------------------------
-
 
 // -----   Destructor   ------------------------------------------------------
 CbmTaskTriggerDigi::~CbmTaskTriggerDigi()
@@ -36,7 +34,6 @@ CbmTaskTriggerDigi::~CbmTaskTriggerDigi()
   if (fTriggers) delete fTriggers;
 }
 // ---------------------------------------------------------------------------
-
 
 // -----   Execution   -------------------------------------------------------
 void CbmTaskTriggerDigi::Exec(Option_t*)
@@ -47,18 +44,45 @@ void CbmTaskTriggerDigi::Exec(Option_t*)
   TStopwatch timerTot;
   timerTot.Start();
 
-  // --- Get input digi vector
-  CbmDigiBranchBase* stsBranch      = fDigiMan->GetBranch(ECbmModuleId::kSts);
-  const vector<CbmStsDigi>* digiVec = boost::any_cast<const vector<CbmStsDigi>*>(stsBranch->GetBranchContainer());
-  assert(digiVec);
-
-  // --- Extract digi times into to a vector
-  timerStep.Start();
-  std::vector<double> digiTimes(digiVec->size());
-  std::transform(digiVec->begin(), digiVec->end(), digiTimes.begin(),
-                 [](const CbmStsDigi& digi) { return digi.GetTime(); });
-  timerStep.Stop();
-  fTimeExtract += timerStep.RealTime();
+  // --- Get digi times
+  std::vector<double> digiTimes;
+  for (const auto& system : fSystems) {
+    CbmDigiBranchBase* digiBranch = fDigiMan->GetBranch(system);
+    std::vector<double> locDigiTimes;
+    switch (system) {
+      case ECbmModuleId::kMuch: {  //we do not support the "MuchBeamTimeDigi"
+        locDigiTimes = GetDigiTimes<CbmMuchDigi>(digiBranch);
+        break;
+      }
+      case ECbmModuleId::kSts: {
+        locDigiTimes = GetDigiTimes<CbmStsDigi>(digiBranch);
+        break;
+      }
+      case ECbmModuleId::kTof: {
+        locDigiTimes = GetDigiTimes<CbmTofDigi>(digiBranch);
+        break;
+      }
+      case ECbmModuleId::kTrd: {
+        locDigiTimes = GetDigiTimes<CbmTrdDigi>(digiBranch);
+        break;
+      }
+      case ECbmModuleId::kRich: {
+        locDigiTimes = GetDigiTimes<CbmRichDigi>(digiBranch);
+        break;
+      }
+      case ECbmModuleId::kPsd: {
+        locDigiTimes = GetDigiTimes<CbmPsdDigi>(digiBranch);
+        break;
+      }
+      case ECbmModuleId::kT0: {  //T0 has Tof digis
+        locDigiTimes = GetDigiTimes<CbmTofDigi>(digiBranch);
+        break;
+      }
+      default: LOG(fatal) << GetName() << ": Reading digis from unknown detector type!";
+    }
+    digiTimes.insert(digiTimes.end(), locDigiTimes.begin(), locDigiTimes.end());
+  }
+  if (fSystems.size() > 1) { std::sort(digiTimes.begin(), digiTimes.end()); }
 
   // --- Call the trigger algorithm
   timerStep.Start();
@@ -67,7 +91,7 @@ void CbmTaskTriggerDigi::Exec(Option_t*)
   fTimeFind += timerStep.RealTime();
 
   // --- Timeslice statistics
-  size_t numDigis    = digiVec->size();
+  size_t numDigis    = digiTimes.size();
   size_t numTriggers = fTriggers->size();
 
   // --- Timeslice log
@@ -123,12 +147,14 @@ InitStatus CbmTaskTriggerDigi::Init()
   LOG(info) << "==================================================";
   LOG(info) << GetName() << ": Initialising...";
 
-  // --- Check input data (STS only for the time being)
-  if (!fDigiMan->IsPresent(ECbmModuleId::kSts)) {
-    LOG(fatal) << GetName() << ": No digi branch for STS";
-    return kFATAL;
+  // --- Check input data
+  for (const auto& system : fSystems) {
+    if (!fDigiMan->IsPresent(system)) {
+      LOG(fatal) << GetName() << ": No digi branch for " << CbmModuleList::GetModuleNameCaps(system);
+      return kFATAL;
+    }
+    LOG(info) << "--- Found digi branch for " << CbmModuleList::GetModuleNameCaps(system);
   }
-  LOG(info) << "--- Found branch STS digi";
 
   // --- Register output array (Triggers)
   if (ioman->GetObject("Trigger")) {

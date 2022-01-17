@@ -119,6 +119,7 @@ void reco_digi(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice 
   int32_t minNumDigis  = 100;  // Trigger threshold in number of digis
   double deadTime      = 50.;  // Minimum time between two triggers
   trigger->SetAlgoParams(triggerWindow, minNumDigis, deadTime);
+  trigger->AddSystem(ECbmModuleId::kSts);
   LOG(info) << myName << ": Added task " << trigger->GetName();
   run->AddTask(trigger.release());
   // ------------------------------------------------------------------------
