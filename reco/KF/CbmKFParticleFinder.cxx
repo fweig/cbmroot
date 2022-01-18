@@ -158,9 +158,17 @@ void CbmKFParticleFinder::Exec(Option_t* /*opt*/)
 
     //calculate number of d-He4 candidates
     int nCandidatesDHe4 = 0;
-    if (fPID)
-      for (int iTr = 0; iTr < nTracksEvent; iTr++)
-        if (TMath::Abs(fPID->GetPID()[iTr]) == 1000010029) nCandidatesDHe4++;
+    if (fPID) {
+      if ((int) fPID->GetPID().size() == nTracksEvent) {
+        for (int iTr = 0; iTr < nTracksEvent; iTr++) {
+          if (TMath::Abs(fPID->GetPID()[iTr]) == 1000010029) nCandidatesDHe4++;
+        }
+      }
+      else {
+        Error("CbmKFParticleFinder::Event", "PID task has a wrong number of tracks: %l of %l", fPID->GetPID().size(),
+              nTracksEvent);
+      }
+    }
 
     vector<CbmStsTrack> vRTracks(nTracksEvent + nCandidatesDHe4);
     vector<int> pdg(nTracksEvent + nCandidatesDHe4, -1);
