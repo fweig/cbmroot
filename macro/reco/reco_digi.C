@@ -127,7 +127,8 @@ void reco_digi(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice 
 
   // -----   Event building   -----------------------------------------------
   auto evtBuild = std::make_unique<CbmTaskBuildEvents>();
-  evtBuild->SetTimeWindow(-20., 30.);  // event building time window for STS
+  evtBuild->AddSystem(ECbmModuleId::kSts);
+  evtBuild->SetTimeWindow(ECbmModuleId::kSts, -20., 30.);  // event building time window for STS
   LOG(info) << myName << ": Added task " << evtBuild->GetName();
   run->AddTask(evtBuild.release());
   // ------------------------------------------------------------------------

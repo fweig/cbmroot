@@ -5,10 +5,11 @@
 #ifndef CBM_ALGO_EVENTBUILDER_H
 #define CBM_ALGO_EVENTBUILDER_H 1
 
-
 #include "CbmDefs.h"
 #include "CbmDigiEvent.h"
 #include "CbmDigiTimeslice.h"
+
+#include <FairLogger.h>
 
 #include <algorithm>
 #include <map>
@@ -25,7 +26,6 @@ namespace cbm
     {
       return obj1.GetTime() < obj2.GetTime();
     }
-
 
     /** @class EventBuilder
      ** @author Volker Friese <v.friese@gsi.de>
@@ -48,10 +48,8 @@ namespace cbm
       /** @brief Constructor **/
       EventBuilder() {};
 
-
       /** @brief Destructor **/
       virtual ~EventBuilder() {};
-
 
       /** @brief Execution
          ** @param  ts       Digi source (timeslice)
@@ -60,7 +58,6 @@ namespace cbm
          **/
       std::vector<CbmDigiEvent> operator()(const CbmDigiTimeslice& ts, const std::vector<double> triggers) const;
 
-
       /** @brief Build a single event from a trigger time
          ** @param  ts      Digi source (timeslice)
          ** @param  trigger Trigger time
@@ -68,6 +65,14 @@ namespace cbm
          **/
       CbmDigiEvent BuildEvent(const CbmDigiTimeslice& ts, double trigger) const;
 
+      /** @brief Add a detector system 
+ 	 ** @param system    System to be added
+	 **/
+      void AddSystem(ECbmModuleId system)
+      {
+        if (std::find(fSystems.begin(), fSystems.end(), system) != fSystems.end()) return;
+        fSystems.push_back(system);
+      }
 
       /** @brief Configure the trigger windows
          ** @param system  Detector system identifier
@@ -76,9 +81,13 @@ namespace cbm
          **/
       void SetTriggerWindow(ECbmModuleId system, double tMin, double tMax)
       {
+        if (std::find(fSystems.begin(), fSystems.end(), system) == fSystems.end()) {
+          //LOG(fatal) << "EventBuilder::SetTriggerWindow(): setting trigger window for non-added detector.";
+          std::cout << "EventBuilder::SetTriggerWindow(): setting trigger window for non-added detector." << std::endl;
+          exit(1);
+        }
         fTriggerWindows[system] = std::make_pair(tMin, tMax);
       }
-
 
     private:  // methods
       /** @brief Copy data objects in a given time interval from the source to the target vector
@@ -101,7 +110,6 @@ namespace cbm
       template<typename Data>
       static typename std::vector<Data> CopyRange(const std::vector<Data>& source, double tMin, double tMax)
       {
-        //auto comp  = [](const Data& obj, double value) { return obj.GetTime() < value; };
         auto comp1 = [](const Data& obj, double value) { return obj.GetTime() < value; };
         auto comp2 = [](double value, const Data& obj) { return value < obj.GetTime(); };
         auto lower = std::lower_bound(source.begin(), source.end(), tMin, comp1);
@@ -109,12 +117,10 @@ namespace cbm
         return std::vector<Data>(lower, upper);
       }
 
-
     private:  // data members
       std::map<ECbmModuleId, std::pair<double, double>> fTriggerWindows;
+      std::vector<ECbmModuleId> fSystems {};  //  List of detector systems
     };
-
-
   }  // namespace algo
 }  // namespace cbm
 

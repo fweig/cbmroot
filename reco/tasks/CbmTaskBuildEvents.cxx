@@ -2,14 +2,12 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Volker Friese [committer] */
 
-
 #include "CbmTaskBuildEvents.h"
 
-#include "CbmDefs.h"
 #include "CbmDigiBranchBase.h"
-#include "CbmDigiEvent.h"
 #include "CbmDigiManager.h"
 #include "CbmDigiTimeslice.h"
+#include "CbmModuleList.h"
 
 #include <FairLogger.h>
 
@@ -18,13 +16,8 @@
 #include <cassert>
 #include <iomanip>
 #include <iostream>
-#include <vector>
-
-#include "EventBuilder.h"
-
 
 using namespace std;
-
 
 // -----   Constructor   -----------------------------------------------------
 CbmTaskBuildEvents::CbmTaskBuildEvents() : FairTask("BuildEvents") {}
@@ -38,6 +31,68 @@ CbmTaskBuildEvents::~CbmTaskBuildEvents()
 }
 // ---------------------------------------------------------------------------
 
+
+// ------ Construct a DigiTimeslice from the data in CbmDigiManager ----------
+CbmDigiTimeslice CbmTaskBuildEvents::FillTimeSlice()
+{
+  CbmDigiTimeslice ts;
+  for (const auto& system : fSystems) {
+    CbmDigiBranchBase* digiBranch = fDigiMan->GetBranch(system);
+    switch (system) {
+      case ECbmModuleId::kMuch: {  //we do not support the "MuchBeamTimeDigi"
+        const vector<CbmMuchDigi>* digiVec =
+          boost::any_cast<const vector<CbmMuchDigi>*>(digiBranch->GetBranchContainer());
+        assert(digiVec);
+        ts.fData.fMuch.fDigis = *digiVec;
+        break;
+      }
+      case ECbmModuleId::kSts: {
+        const vector<CbmStsDigi>* digiVec =
+          boost::any_cast<const vector<CbmStsDigi>*>(digiBranch->GetBranchContainer());
+        assert(digiVec);
+        ts.fData.fSts.fDigis = *digiVec;
+        break;
+      }
+      case ECbmModuleId::kTof: {
+        const vector<CbmTofDigi>* digiVec =
+          boost::any_cast<const vector<CbmTofDigi>*>(digiBranch->GetBranchContainer());
+        assert(digiVec);
+        ts.fData.fTof.fDigis = *digiVec;
+        break;
+      }
+      case ECbmModuleId::kTrd: {
+        const vector<CbmTrdDigi>* digiVec =
+          boost::any_cast<const vector<CbmTrdDigi>*>(digiBranch->GetBranchContainer());
+        assert(digiVec);
+        ts.fData.fTrd.fDigis = *digiVec;
+        break;
+      }
+      case ECbmModuleId::kRich: {
+        const vector<CbmRichDigi>* digiVec =
+          boost::any_cast<const vector<CbmRichDigi>*>(digiBranch->GetBranchContainer());
+        assert(digiVec);
+        ts.fData.fRich.fDigis = *digiVec;
+        break;
+      }
+      case ECbmModuleId::kPsd: {
+        const vector<CbmPsdDigi>* digiVec =
+          boost::any_cast<const vector<CbmPsdDigi>*>(digiBranch->GetBranchContainer());
+        assert(digiVec);
+        ts.fData.fPsd.fDigis = *digiVec;
+        break;
+      }
+      case ECbmModuleId::kT0: {  //T0 has Tof digis
+        const vector<CbmTofDigi>* digiVec =
+          boost::any_cast<const vector<CbmTofDigi>*>(digiBranch->GetBranchContainer());
+        assert(digiVec);
+        ts.fData.fT0.fDigis = *digiVec;
+        break;
+      }
+      default: LOG(fatal) << GetName() << ": Reading digis from unknown detector type!";
+    }
+  }
+  return ts;
+}
 
 // -----   Execution   -------------------------------------------------------
 void CbmTaskBuildEvents::Exec(Option_t*)
@@ -53,11 +108,7 @@ void CbmTaskBuildEvents::Exec(Option_t*)
 
   // --- Construct a DigiTimeslice from the data in CbmDigiManager
   timerStep.Start();
-  CbmDigiTimeslice ts;
-  CbmDigiBranchBase* stsBranch      = fDigiMan->GetBranch(ECbmModuleId::kSts);
-  const vector<CbmStsDigi>* digiVec = boost::any_cast<const vector<CbmStsDigi>*>(stsBranch->GetBranchContainer());
-  assert(digiVec);
-  ts.fData.fSts.fDigis = *digiVec;
+  CbmDigiTimeslice ts = FillTimeSlice();
   timerStep.Stop();
   fTimeFillTs += timerStep.RealTime();
 
@@ -121,7 +172,6 @@ void CbmTaskBuildEvents::Finish()
 // -----   Initialisation   ---------------------------------------------------
 InitStatus CbmTaskBuildEvents::Init()
 {
-
   // --- Get FairRootManager instance
   FairRootManager* ioman = FairRootManager::Instance();
   assert(ioman);
@@ -134,13 +184,14 @@ InitStatus CbmTaskBuildEvents::Init()
   LOG(info) << "==================================================";
   LOG(info) << GetName() << ": Initialising...";
 
-
-  // --- Check input data (digis, STS only for the time being)
-  if (!fDigiMan->IsPresent(ECbmModuleId::kSts)) {
-    LOG(fatal) << GetName() << ": No digi branch for STS";
-    return kFATAL;
+  // --- Check input data
+  for (const auto& system : fSystems) {
+    if (!fDigiMan->IsPresent(system)) {
+      LOG(fatal) << GetName() << ": No digi branch for " << CbmModuleList::GetModuleNameCaps(system);
+      return kFATAL;
+    }
+    LOG(info) << "--- Found digi branch for " << CbmModuleList::GetModuleNameCaps(system);
   }
-  LOG(info) << "--- Found branch STS digi";
 
   // --- Get input data (triggers)
   fTriggers = ioman->InitObjectAs<std::vector<double> const*>("Trigger");
@@ -164,9 +215,16 @@ InitStatus CbmTaskBuildEvents::Init()
   LOG(info) << "--- Registered branch DigiEvent";
 
   // --- Configure algorithm
-  fAlgo.SetTriggerWindow(ECbmModuleId::kSts, fEvtTimeStsMin, fEvtTimeStsMax);
-  LOG(info) << "--- Use algo EventBuilder with event window [" << fEvtTimeStsMin << ", " << fEvtTimeStsMax << "] ns";
-
+  for (const auto& system : fSystems) {
+    if (fTriggerWindows.find(system) == fTriggerWindows.end()) {
+      LOG(fatal) << GetName() << ": no trigger window supplied for requested detector.";
+    }
+    const double tMin = fTriggerWindows.find(system)->second.first;
+    const double tMax = fTriggerWindows.find(system)->second.second;
+    fAlgo.SetTriggerWindow(system, tMin, tMax);
+    LOG(info) << "--- Use algo EventBuilder with event window [" << tMin << ", " << tMax << "] ns for "
+              << CbmModuleList::GetModuleNameCaps(system);
+  }
 
   LOG(info) << "==================================================";
   std::cout << std::endl;
