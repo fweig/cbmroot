@@ -72,7 +72,7 @@ InitStatus CbmRecoStsPixel::Init()
 {
 
   // --- Something for the screen
-  std::cout << std::endl;
+
   LOG(info) << "==========================================================";
   LOG(info) << GetName() << ": Initialising ";
 
@@ -259,31 +259,28 @@ void CbmRecoStsPixel::ProcessData(CbmEvent* event)
       break;
     }
 
-    double dx = pt->GetXOut() - pt->GetXIn();
-    double dy = pt->GetYOut() - pt->GetYIn();
-    double dz = pt->GetZOut() - pt->GetZIn();
-    if (fabs(dz) > 1.e-2) {
-      hit->SetX(pt->GetXIn() + dx * (staZ - pt->GetZIn()) / dz);
-      hit->SetY(pt->GetYIn() + dy * (staZ - pt->GetZIn()) / dz);
-      hit->SetZ(staZ);
-    }
-    else {
-      hit->SetX(pt->GetXIn());
-      hit->SetY(pt->GetYIn());
-      hit->SetZ(pt->GetZIn());
-    }
+    hit->SetX(0.5 * (pt->GetXIn() + pt->GetXOut()));
+    hit->SetY(0.5 * (pt->GetYIn() + pt->GetYOut()));
+    hit->SetZ(0.5 * (pt->GetZIn() + pt->GetZOut()));
 
-    Double_t pitchX = station->GetSensorPitch(0);
-    Double_t pitchY = station->GetSensorPitch(1);
+    Double_t resX = station->GetSensorPitch(0) / sqrt(12.);
+    Double_t resY = station->GetSensorPitch(1) / sqrt(12.);
 
-    assert(pitchX > 1.e-5);
-    assert(pitchY > 1.e-5);
+    assert(resX > 1.e-5);
+    assert(resY > 1.e-5);
 
-    hit->SetX((floor(hit->GetX() / pitchX) + 0.5) * pitchX);
-    hit->SetY((floor(hit->GetY() / pitchY) + 0.5) * pitchY);
+    auto gaus = []() {
+      double x = 5;
+      while (fabs(x) > 3.5) {
+        x = gRandom->Gaus(0., 1.);
+      }
+      return x;
+    };
 
-    hit->SetDx(pitchX / sqrt(12.));
-    hit->SetDy(pitchY / sqrt(12.));
+    hit->SetX(hit->GetX() + resX * gaus());
+    hit->SetY(hit->GetY() + resY * gaus());
+    hit->SetDx(resX);
+    hit->SetDy(resY);
     hit->SetDxy(0.);
     hit->SetDu(hit->GetDx());
     hit->SetDv(hit->GetDy());

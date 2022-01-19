@@ -74,11 +74,17 @@ using namespace CbmSts;
 ClassImp(CbmStsDigitizePixel);
 
 // -----   Standard constructor   ------------------------------------------
-CbmStsDigitizePixel::CbmStsDigitizePixel(Double_t pitchXcm, Double_t pitchYcm, Double_t resolutionTns)
+CbmStsDigitizePixel::CbmStsDigitizePixel() : CbmDigitize<CbmStsDigi>("StsDigitizePixel") {}
+// -------------------------------------------------------------------------
+
+// -----   Standard constructor   ------------------------------------------
+CbmStsDigitizePixel::CbmStsDigitizePixel(Double_t resolutionXcm, Double_t resolutionYcm, Double_t resolutionTns,
+                                         int nPixelStations)
   : CbmDigitize<CbmStsDigi>("StsDigitizePixel")
-  , fPitchXcm(pitchXcm)
-  , fPitchYcm(pitchYcm)
-  , fResolutionTns(resolutionTns)
+  , fPixelNstations(nPixelStations)
+  , fPixelResolutionXcm(resolutionXcm)
+  , fPixelResolutionYcm(resolutionYcm)
+  , fPixelResolutionTns(resolutionTns)
 {
 }
 // -------------------------------------------------------------------------
@@ -175,7 +181,12 @@ void CbmStsDigitizePixel::Exec(Option_t* /*opt*/)
     UInt_t address   = static_cast<UInt_t>(point->GetDetectorID());
     UShort_t channel = 0;
     double timef     = fCurrentEventTime + point->GetTime();
-    timef += gRandom->Gaus(0, fResolutionTns);
+
+    if (fSetup->GetStationNumber(address) < fPixelNstations) { timef += gRandom->Gaus(0, fPixelResolutionTns); }
+    else {
+      timef += gRandom->Gaus(0, fStripResolutionTns);
+    }
+
     Long64_t time = Long64_t(round(timef));
     if (time < 0) { time = 0; }
     UShort_t adc = 30;
@@ -195,7 +206,7 @@ void CbmStsDigitizePixel::Exec(Option_t* /*opt*/)
   }
 
   timer.Stop();
-  if (fCreateMatches) { std::cout << "create matches" << std::endl; }
+
   // --- Event log
   LOG(info) << left << setw(15) << GetName() << "[" << fixed << setprecision(3) << timer.RealTime() << " s]"
             << " Points processed " << fPoints->GetEntriesFast();
@@ -231,28 +242,40 @@ void CbmStsDigitizePixel::InitParams()
     UInt_t nAsicChannels = 128;   // Number of readout channels per ASIC
 
     // --- ASIC parameters
-    UShort_t nAdc      = 32;              // Number of ADC channels (5 bit)
-    Double_t dynRange  = 75000.;          // Dynamic range [e]
-    Double_t threshold = 3000.;           // Threshold [e]
-    Double_t timeResol = fResolutionTns;  // Time resolution [ns]
-    Double_t deadTime  = 800.;            // Channel dead time [ns]
-    Double_t noiseRms  = 1000.;           // RMS of noise [e]
-    Double_t znr       = 3.9789e-3;       // Zero-crossing noise rate [1/ns]
-    CbmStsParAsic userParAsic(nAsicChannels, nAdc, dynRange, threshold, timeResol, deadTime, noiseRms, znr);
+    UShort_t nAdc      = 32;         // Number of ADC channels (5 bit)
+    Double_t dynRange  = 75000.;     // Dynamic range [e]
+    Double_t threshold = 3000.;      // Threshold [e]
+    Double_t deadTime  = 800.;       // Channel dead time [ns]
+    Double_t noiseRms  = 1000.;      // RMS of noise [e]
+    Double_t znr       = 3.9789e-3;  // Zero-crossing noise rate [1/ns]
 
-    CbmStsParModule userParModule(nChannels, nAsicChannels);
-    userParModule.SetAllAsics(userParAsic);
+    CbmStsParAsic userParAsicStrip(nAsicChannels, nAdc, dynRange, threshold, fStripResolutionTns, deadTime, noiseRms,
+                                   znr);
+    CbmStsParModule userParModuleStrip(nChannels, nAsicChannels);
+    userParModuleStrip.SetAllAsics(userParAsicStrip);
+
+    CbmStsParAsic userParAsicPixel(nAsicChannels, nAdc, dynRange, threshold, fPixelResolutionTns, deadTime, noiseRms,
+                                   znr);
+    CbmStsParModule userParModulePixel(nChannels, nAsicChannels);
+    userParModulePixel.SetAllAsics(userParAsicPixel);
 
     assert(fParSetModule);
     fParSetModule->clear();
+
     for (Int_t iModule = 0; iModule < fSetup->GetNofModules(); iModule++) {
       UInt_t address = fSetup->GetModule(iModule)->GetAddress();
-      fParSetModule->SetParModule(address, userParModule);
+      if (fSetup->GetStationNumber(address) < fPixelNstations) {
+        fParSetModule->SetParModule(address, userParModulePixel);
+      }
+      else {
+        fParSetModule->SetParModule(address, userParModuleStrip);
+      }
     }
 
     fParSetModule->setChanged();
     fParSetModule->setInputVersion(-2, 1);
-    LOG(info) << GetName() << "--- Using global ASIC parameters: \n       " << userParAsic.ToString();
+    LOG(info) << GetName() << "--- Using global ASIC parameters for Pixels: \n       " << userParAsicPixel.ToString();
+    LOG(info) << GetName() << "--- Using global ASIC parameters for Strips: \n       " << userParAsicPixel.ToString();
     LOG(info) << GetName() << "--- Module parameters: " << fParSetModule->ToString();
   }
 
@@ -287,10 +310,17 @@ void CbmStsDigitizePixel::InitParams()
 
       // sensor parameters used by the tracker
 
-      par.SetPar(6, fPitchXcm);  // Strip pitch front side
-      par.SetPar(7, fPitchYcm);  // Strip pitch back side
-      par.SetPar(8, 0.);         // Stereo angle front side [deg]
-      par.SetPar(9, 90);         // Stereo angle back side [deg]
+      if (fSetup->GetStationNumber(address) < fPixelNstations) {
+        par.SetPar(6, fPixelResolutionXcm * sqrt(12.));  // Strip pitch front side
+        par.SetPar(7, fPixelResolutionYcm * sqrt(12.));  // Strip pitch back side
+      }
+      else {
+        par.SetPar(6, fStripResolutionXcm * sqrt(12.));  // Strip pitch front side
+        par.SetPar(7, fStripResolutionYcm * sqrt(12.));  // Strip pitch back side
+      }
+
+      par.SetPar(8, 0.);  // Stereo angle front side [deg]
+      par.SetPar(9, 90);  // Stereo angle back side [deg]
 
       fParSetSensor->SetParSensor(address, par);
     }

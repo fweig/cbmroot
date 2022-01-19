@@ -54,8 +54,10 @@ class CbmStsDigitizePixel : public CbmDigitize<CbmStsDigi> {
 
 public:
   /** Constructor **/
-  CbmStsDigitizePixel(Double_t pitchXcm = 0.0010, Double_t pitchYcm = 0.0010, Double_t resolutionTns = 5.);
+  CbmStsDigitizePixel();
 
+  /** Constructor **/
+  CbmStsDigitizePixel(Double_t resolutionXcm, Double_t resolutionYcm, Double_t resolutionTns, int nPixelStations);
 
   /** Destructor **/
   virtual ~CbmStsDigitizePixel();
@@ -86,14 +88,28 @@ public:
   /** Initialisation **/
   virtual InitStatus Init();
 
-  /// set pitch X [cm]
-  void SetPitchX(double pitchXcm) { fPitchXcm = pitchXcm; }
+  /// set number of pixel stations
 
-  /// set pitch Y [cm]
-  void SetPitchY(double pitchYcm) { fPitchYcm = pitchYcm; }
+  void SetPixelNstations(int n) { fPixelNstations = n; }
 
-  /// set resolution Time [ns]
-  void SetResolutionTime(double resolutionTns) { fResolutionTns = resolutionTns; }
+  /// set pixel resolution X [cm]
+  void SetPixelResolutionX(double resXcm) { fPixelResolutionXcm = resXcm; }
+
+  /// set pixel resolution Y [cm]
+  void SetPixelResolutionY(double resYcm) { fPixelResolutionYcm = resYcm; }
+
+  /// set pixel resolution Time [ns]
+  void SetPixelResolutionTime(double resolutionTns) { fPixelResolutionTns = resolutionTns; }
+
+  /// set strip resolution X [cm]
+  void SetStripResolutionX(double resXcm) { fStripResolutionXcm = resXcm; }
+
+  /// set strip resolution Y [cm]
+  void SetStripResolutionY(double resYcm) { fStripResolutionYcm = resYcm; }
+
+  /// set strip resolution Time [ns]
+  void SetStripResolutionTime(double resolutionTns) { fStripResolutionTns = resolutionTns; }
+
 
 private:
   Bool_t fIsInitialised;  ///< kTRUE if Init() was called
@@ -110,9 +126,17 @@ private:
 
   // data members
 
-  Double_t fPitchXcm {0.0058};  // pitch in X [cm]
-  Double_t fPitchYcm {0.0058};  // pitch in Y [cm]
-  Double_t fResolutionTns {5.};  // resolution in time [ns]
+  Int_t fPixelNstations {3};  // number of pixel stations.
+                              // First fPixelNStations stations of STS will be replaced by pixels.
+
+  Double_t fPixelResolutionXcm {0.0010 / sqrt(12.)};  // pixel resolution in X [cm]
+  Double_t fPixelResolutionYcm {0.0010 / sqrt(12.)};  // pixel resolution in Y [cm]
+  Double_t fPixelResolutionTns {2.6};                 // pixel resolution in time [ns]
+
+  Double_t fStripResolutionXcm {0.0010};  // strip resolution in X [cm]
+  Double_t fStripResolutionYcm {0.0100};  // strip resolution in Y [cm]
+  Double_t fStripResolutionTns {2.6};     // strip resolution in time [ns]
+
 
   /** @brief Initialise the parameters **/
   void InitParams();
