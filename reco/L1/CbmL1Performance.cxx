@@ -1025,6 +1025,22 @@ void CbmL1::TrackFitPerformance()
 
   static TH2F *PRes2D, *PRes2DPrim, *PRes2DSec;
 
+  static TH2F* pion_res_pt_fstt;
+  static TH2F* kaon_res_pt_fstt;
+  static TH2F* pton_res_pt_fstt;
+
+  static TH2F* pion_res_pt_vtxt;
+  static TH2F* kaon_res_pt_vtxt;
+  static TH2F* pton_res_pt_vtxt;
+
+  static TH2F* pion_res_pz_fstt;
+  static TH2F* kaon_res_pz_fstt;
+  static TH2F* pton_res_pz_fstt;
+
+  static TH2F* pion_res_pz_vtxt;
+  static TH2F* kaon_res_pz_vtxt;
+  static TH2F* pton_res_pz_vtxt;
+
   static bool first_call = 1;
 
   L1Fit fit;
@@ -1042,6 +1058,22 @@ void CbmL1::TrackFitPerformance()
       PRes2D     = new TH2F("PRes2D", "Resolution P vs P", 100, 0., 20., 100, -15., 15.);
       PRes2DPrim = new TH2F("PRes2DPrim", "Resolution P vs P", 100, 0., 20., 100, -15., 15.);
       PRes2DSec  = new TH2F("PRes2DSec", "Resolution P vs P", 100, 0., 20., 100, -15., 15.);
+
+      pion_res_pt_fstt = new TH2F("pion_res_pt_fstt", "", 100, 0, 10, 1000, 0, 500);
+      kaon_res_pt_fstt = new TH2F("kaon_res_pt_fstt", "", 100, 0, 10, 1000, 0, 500);
+      pton_res_pt_fstt = new TH2F("pton_res_pt_fstt", "", 100, 0, 10, 1000, 0, 500);
+
+      pion_res_pt_vtxt = new TH2F("pion_res_pt_vtxt", "", 100, 0, 10, 1000, 0, 5000);
+      kaon_res_pt_vtxt = new TH2F("kaon_res_pt_vtxt", "", 100, 0, 10, 1000, 0, 5000);
+      pton_res_pt_vtxt = new TH2F("pton_res_pt_vtxt", "", 100, 0, 10, 1000, 0, 5000);
+
+      pion_res_pz_fstt = new TH2F("pion_res_pz_fstt", "", 100, 0, 10, 1000, 0, 500);
+      kaon_res_pz_fstt = new TH2F("kaon_res_pz_fstt", "", 100, 0, 10, 1000, 0, 500);
+      pton_res_pz_fstt = new TH2F("pton_res_pz_fstt", "", 100, 0, 10, 1000, 0, 500);
+
+      pion_res_pz_vtxt = new TH2F("pion_res_pz_vtxt", "", 100, 0, 10, 1000, 0, 5000);
+      kaon_res_pz_vtxt = new TH2F("kaon_res_pz_vtxt", "", 100, 0, 10, 1000, 0, 5000);
+      pton_res_pz_vtxt = new TH2F("pton_res_pz_vtxt", "", 100, 0, 10, 1000, 0, 5000);
 
       struct {
         const char* name;
@@ -1151,8 +1183,12 @@ void CbmL1::TrackFitPerformance()
       fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
       L1Extrapolate(trPar, mcP.zIn, trPar.qp, fld);
 
-      h_fit[0]->Fill((trPar.x[0] - mcP.xIn) * 1.e4);
-      h_fit[1]->Fill((trPar.y[0] - mcP.yIn) * 1.e4);
+      double dx = trPar.x[0] - mcP.xIn;
+      double dy = trPar.y[0] - mcP.yIn;
+      double dt = sqrt(dx * dx + dy * dy);
+      double pt = sqrt(mcP.px * mcP.px + mcP.py * mcP.py);
+      h_fit[0]->Fill(dx * 1.e4);
+      h_fit[1]->Fill(dy * 1.e4);
       h_fit[2]->Fill((trPar.tx[0] - mcP.pxIn / mcP.pzIn) * 1.e3);
       h_fit[3]->Fill((trPar.ty[0] - mcP.pyIn / mcP.pzIn) * 1.e3);
       h_fit[4]->Fill(fabs(1. / trPar.qp[0]) / mcP.p - 1);
@@ -1160,9 +1196,26 @@ void CbmL1::TrackFitPerformance()
       PRes2D->Fill(mcP.p, (1. / fabs(trPar.qp[0]) - mcP.p) / mcP.p * 100.);
 
       CbmL1MCTrack mcTrack = *(it->GetMCTracks()[0]);
-      if (mcTrack.IsPrimary()) PRes2DPrim->Fill(mcP.p, (1. / fabs(trPar.qp[0]) - mcP.p) / mcP.p * 100.);
-      else
+
+      if (mcTrack.IsPrimary()) {
+        PRes2DPrim->Fill(mcP.p, (1. / fabs(trPar.qp[0]) - mcP.p) / mcP.p * 100.);
+
+        if (abs(mcTrack.pdg == 211)) {
+          pion_res_pz_fstt->Fill(mcP.pz, dt * 1.e4);
+          pion_res_pt_fstt->Fill(pt, dt * 1.e4);
+        }
+        if (abs(mcTrack.pdg == 321)) {
+          kaon_res_pz_fstt->Fill(mcP.pz, dt * 1.e4);
+          kaon_res_pt_fstt->Fill(pt, dt * 1.e4);
+        }
+        if (abs(mcTrack.pdg == 2212)) {
+          pton_res_pz_fstt->Fill(mcP.pz, dt * 1.e4);
+          pton_res_pt_fstt->Fill(pt, dt * 1.e4);
+        }
+      }
+      else {
         PRes2DSec->Fill(mcP.p, (1. / fabs(trPar.qp[0]) - mcP.p) / mcP.p * 100.);
+      }
 
       if (finite(trPar.C00[0]) && trPar.C00[0] > 0) h_fit[5]->Fill((trPar.x[0] - mcP.xIn) / sqrt(trPar.C00[0]));
       if (finite(trPar.C11[0]) && trPar.C11[0] > 0) h_fit[6]->Fill((trPar.y[0] - mcP.yIn) / sqrt(trPar.C11[0]));
@@ -1286,7 +1339,8 @@ void CbmL1::TrackFitPerformance()
       CbmL1MCTrack mc = *(it->GetMCTracks()[0]);
       L1TrackPar trPar(it->T, it->C);
 
-      if (mc.mother_ID != -1) {  // secondary
+      //      if (mc.mother_ID != -1) {  // secondary
+      if (!mc.IsPrimary()) {  // secondary
 
         {  // extrapolate to vertex
           L1FieldRegion fld _fvecalignment;
@@ -1402,6 +1456,23 @@ void CbmL1::TrackFitPerformance()
         }
         if (mc.z != trPar.z[0]) continue;
 
+        double dx = trPar.x[0] - mc.x;
+        double dy = trPar.y[0] - mc.y;
+        double dt = sqrt(dx * dx + dy * dy);
+        double pt = sqrt(mc.px * mc.px + mc.py * mc.py);
+
+        if (abs(mc.pdg == 211)) {
+          pion_res_pz_vtxt->Fill(mc.pz, dt * 1.e4);
+          pion_res_pt_vtxt->Fill(pt, dt * 1.e4);
+        }
+        if (abs(mc.pdg == 321)) {
+          kaon_res_pz_vtxt->Fill(mc.pz, dt * 1.e4);
+          kaon_res_pt_vtxt->Fill(pt, dt * 1.e4);
+        }
+        if (abs(mc.pdg == 2212)) {
+          pton_res_pz_vtxt->Fill(mc.pz, dt * 1.e4);
+          pton_res_pt_vtxt->Fill(pt, dt * 1.e4);
+        }
 
         // calculate pulls
         h_fitPV[0]->Fill((mc.x - trPar.x[0]));
@@ -1668,7 +1739,6 @@ void CbmL1::InputPerformance()
   static TH1F *pullXmuch, *pullYmuch, *pullTmuch, *resXmuch, *resYmuch, *resTmuch /*, *pullZ*/;
   static TH1F *pullXtrd, *pullYtrd, *pullTtrd, *resXtrd, *resYtrd, *resTtrd /*, *pullZ*/;
   static TH1F *pullXtof, *pullYtof, *pullTtof, *resXtof, *resYtof, *resTtof /*, *pullZ*/;
-
   static TH1F* trdMCPointsZ = nullptr;
 
   static bool first_call = 1;
@@ -1823,7 +1893,6 @@ void CbmL1::InputPerformance()
       if (h.Det != 1) continue;  // mvd hit
       const CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(h.extIndex));
 
-
       //    int iMCPoint = -1;
       CbmLink link;
       CbmStsPoint* pt = 0;
@@ -1847,19 +1916,15 @@ void CbmL1::InputPerformance()
           }
         }
 
-
         if (stsHitMatch.GetNofLinks() > 0) {
           Float_t bestWeight = 0.f;
           for (Int_t iLink = 0; iLink < stsHitMatch.GetNofLinks(); iLink++) {
             if (stsHitMatch.GetLink(iLink).GetWeight() > bestWeight) {
-              bestWeight   = stsHitMatch.GetLink(iLink).GetWeight();
-              Int_t iFile  = stsHitMatch.GetLink(iLink).GetFile();
-              Int_t iEvent = stsHitMatch.GetLink(iLink).GetEntry();
-
-              link = stsHitMatch.GetLink(iLink);
-
-
-              pt = (CbmStsPoint*) fStsPoints->Get(iFile, iEvent, stsHitMatch.GetLink(iLink).GetIndex());
+              link         = stsHitMatch.GetLink(iLink);
+              bestWeight   = link.GetWeight();
+              Int_t iFile  = link.GetFile();
+              Int_t iEvent = link.GetEntry();
+              pt           = (CbmStsPoint*) fStsPoints->Get(iFile, iEvent, link.GetIndex());
             }
           }
         }
@@ -1876,12 +1941,12 @@ void CbmL1::InputPerformance()
         sh->Position(hitPos);
         sh->PositionError(hitErr);
 
-        //       pt->Position(mcPos); // this is wrong!
-        mcPos.SetX(pt->GetX(hitPos.Z()));
-        mcPos.SetY(pt->GetY(hitPos.Z()));
+        double t = (hitPos.Z() - pt->GetZIn()) / (pt->GetZOut() - pt->GetZIn());
+        mcPos.SetX(pt->GetXIn() + t * (pt->GetXOut() - pt->GetXIn()));
+        mcPos.SetY(pt->GetYIn() + t * (pt->GetYOut() - pt->GetYIn()));
         mcPos.SetZ(hitPos.Z());
 
-#if 0  // standard errors
+#if 0    // standard errors
       if (hitErr.X() != 0) pullXsts->Fill( (hitPos.X() - mcPos.X()) / hitErr.X() ); // standard errors
       if (hitErr.Y() != 0) pullYsts->Fill( (hitPos.Y() - mcPos.Y()) / hitErr.Y() );
 #elif 1  // qa errors
@@ -1889,7 +1954,7 @@ void CbmL1::InputPerformance()
         if (hitErr.Y() != 0) pullYsts->Fill((hitPos.Y() - mcPos.Y()) / sh->GetDy());
 
         pullTsts->Fill((sh->GetTime() - mcTime) / sh->GetTimeError());
-#else  // errors used in TF
+#else    // errors used in TF
         if (hitErr.X() != 0)
           pullXsts->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
         if (hitErr.Y() != 0)
@@ -1995,7 +2060,7 @@ void CbmL1::InputPerformance()
       mcPos.SetY(0.5 * (pt->GetYIn() + pt->GetYOut()));
       mcPos.SetZ(hitPos.Z());
 
-#if 0  // standard errors
+#if 0    // standard errors
       if (hitErr.X() != 0) pullXmuch->Fill( (hitPos.X() - mcPos.X()) / hitErr.X() ); // standard errors
       if (hitErr.Y() != 0) pullYmuch->Fill( (hitPos.Y() - mcPos.Y()) / hitErr.Y() );
 #elif 1  // qa errors
@@ -2003,7 +2068,7 @@ void CbmL1::InputPerformance()
       if (hitErr.Y() != 0) pullYmuch->Fill((h.y - mcPos.Y()) / sh->GetDy());
 
       pullTmuch->Fill((h.t - mcTime) / sh->GetTimeError());
-#else  // errors used in TF
+#else    // errors used in TF
       if (hitErr.X() != 0)
         pullXmuch->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
       if (hitErr.Y() != 0)
@@ -2027,12 +2092,13 @@ void CbmL1::InputPerformance()
 
 
       if (hm->GetNofLinks() == 0) continue;
-      if (hm->GetNofLinks() != 1) continue;  //SG!!
+      if (hm->GetNofLinks() != 1) continue;  // only check single-linked hits
 
       Float_t bestWeight  = 0.f;
       Float_t totalWeight = 0.f;
       int iMCPoint        = -1;
       CbmLink link;
+
       for (int iLink = 0; iLink < hm->GetNofLinks(); iLink++) {
         totalWeight += hm->GetLink(iLink).GetWeight();
         if (hm->GetLink(iLink).GetWeight() > bestWeight) {
@@ -2062,7 +2128,7 @@ void CbmL1::InputPerformance()
       mcPos.SetY((pt->GetYIn() + pt->GetYOut()) / 2.);
       mcPos.SetZ(hitPos.Z());
 
-#if 0  // standard errors
+#if 0    // standard errors
     if (hitErr.X() != 0) pullXtrd->Fill( (hitPos.X() - mcPos.X()) / hitErr.X() ); // standard errors
     if (hitErr.Y() != 0) pullYtrd->Fill( (hitPos.Y() - mcPos.Y()) / hitErr.Y() );
 #elif 1  // qa errors
@@ -2070,7 +2136,7 @@ void CbmL1::InputPerformance()
       if (hitErr.Y() != 0) pullYtrd->Fill((h.y - mcPos.Y()) / sh->GetDy());
 
       pullTtrd->Fill((h.t - mcTime) / sh->GetTimeError());
-#else  // errors used in TF
+#else    // errors used in TF
       if (hitErr.X() != 0) pullXtrd->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
       if (hitErr.Y() != 0) pullYtrd->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->vStations[NMvdStations].XYInfo.C11[0]));
 #endif
@@ -2129,7 +2195,7 @@ void CbmL1::InputPerformance()
       mcPos.SetY((pt->GetY()));
       mcPos.SetZ(hitPos.Z());
 
-#if 0  // standard errors
+#if 0    // standard errors
     if (hitErr.X() != 0) pullXmuch->Fill( (hitPos.X() - mcPos.X()) / hitErr.X() ); // standard errors
     if (hitErr.Y() != 0) pullYmuch->Fill( (hitPos.Y() - mcPos.Y()) / hitErr.Y() );
 #elif 1  // qa errors
@@ -2137,7 +2203,7 @@ void CbmL1::InputPerformance()
       if (hitErr.Y() != 0) pullYtof->Fill((h.y - mcPos.Y()) / sh->GetDy());
 
       pullTtof->Fill((sh->GetTime() - mcTime) / sh->GetTimeError());
-#else  // errors used in TF
+#else    // errors used in TF
       if (hitErr.X() != 0) pullXtof->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
       if (hitErr.Y() != 0) pullYtof->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->vStations[NMvdStations].XYInfo.C11[0]));
 #endif
