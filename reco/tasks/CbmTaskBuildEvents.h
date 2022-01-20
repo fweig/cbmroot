@@ -87,14 +87,15 @@ private:                                           // members
 
   std::map<ECbmModuleId, std::pair<double, double>> fTriggerWindows;
 
-  size_t fNumTs         = 0;  //  Number of processed time slices
-  size_t fNumTriggers   = 0;  //  Number of triggers
-  size_t fNumEvents     = 0;  //  Number of produced events
-  size_t fNumDigisStsTs = 0;  //  Number of digis in timeslices
-  size_t fNumDigisStsEv = 0;  //  Number of digis in events
-  double fTimeFillTs    = 0.;
-  double fTimeBuildEvt  = 0.;
-  double fTimeTot       = 0.;
+  // for diagnostics
+  std::map<ECbmModuleId, size_t> fNumDigisTs;  //  Number of digis in timeslices
+  std::map<ECbmModuleId, size_t> fNumDigisEv;  //  Number of digis in events
+  size_t fNumTs        = 0;                    //  Number of processed time slices
+  size_t fNumTriggers  = 0;                    //  Number of triggers
+  size_t fNumEvents    = 0;                    //  Number of produced events
+  double fTimeFillTs   = 0.;
+  double fTimeBuildEvt = 0.;
+  double fTimeTot      = 0.;
 
   ClassDef(CbmTaskBuildEvents, 1);
 };

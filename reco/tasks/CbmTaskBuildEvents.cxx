@@ -119,12 +119,59 @@ void CbmTaskBuildEvents::Exec(Option_t*)
   fTimeBuildEvt += timerStep.RealTime();
 
   // --- Timeslice statistics
-  size_t numTriggers   = fTriggers->size();
-  size_t numEvents     = fEvents->size();
-  size_t numDigisStsTs = ts.fData.fSts.fDigis.size();
-  size_t numDigisStsEv = 0;
-  for (auto& event : (*fEvents))
-    numDigisStsEv += event.fData.fSts.fDigis.size();
+  size_t numTriggers = fTriggers->size();
+  size_t numEvents   = fEvents->size();
+  std::map<ECbmModuleId, size_t> NumDigisTs;
+  std::map<ECbmModuleId, size_t> NumDigisEv;
+
+  for (const auto& system : fSystems) {
+    NumDigisEv[system] = 0;
+    switch (system) {
+      case ECbmModuleId::kMuch: {
+        NumDigisTs[system] = ts.fData.fMuch.fDigis.size();
+        for (auto& event : (*fEvents))
+          NumDigisEv[system] += event.fData.fMuch.fDigis.size();
+        break;
+      }
+      case ECbmModuleId::kSts: {
+        NumDigisTs[system] = ts.fData.fSts.fDigis.size();
+        for (auto& event : (*fEvents))
+          NumDigisEv[system] += event.fData.fSts.fDigis.size();
+        break;
+      }
+      case ECbmModuleId::kTof: {
+        NumDigisTs[system] = ts.fData.fTof.fDigis.size();
+        for (auto& event : (*fEvents))
+          NumDigisEv[system] += event.fData.fTof.fDigis.size();
+        break;
+      }
+      case ECbmModuleId::kTrd: {
+        NumDigisTs[system] = ts.fData.fTrd.fDigis.size();
+        for (auto& event : (*fEvents))
+          NumDigisEv[system] += event.fData.fTrd.fDigis.size();
+        break;
+      }
+      case ECbmModuleId::kRich: {
+        NumDigisTs[system] = ts.fData.fRich.fDigis.size();
+        for (auto& event : (*fEvents))
+          NumDigisEv[system] += event.fData.fRich.fDigis.size();
+        break;
+      }
+      case ECbmModuleId::kPsd: {
+        NumDigisTs[system] = ts.fData.fPsd.fDigis.size();
+        for (auto& event : (*fEvents))
+          NumDigisEv[system] += event.fData.fPsd.fDigis.size();
+        break;
+      }
+      case ECbmModuleId::kT0: {
+        NumDigisTs[system] = ts.fData.fT0.fDigis.size();
+        for (auto& event : (*fEvents))
+          NumDigisEv[system] += event.fData.fT0.fDigis.size();
+        break;
+      }
+      default: break;
+    }
+  }
 
   // --- Timeslice log
   timerTot.Stop();
@@ -133,15 +180,23 @@ void CbmTaskBuildEvents::Exec(Option_t*)
   logOut << setw(20) << left << GetName() << " [";
   logOut << fixed << setw(8) << setprecision(1) << right << timerTot.RealTime() * 1000. << " ms] ";
   logOut << "TS " << fNumTs << ", triggers " << numTriggers << ", events " << numEvents;
-  logOut << ", frac digis " << 100. * double(numDigisStsEv) / double(numDigisStsTs) << " %";
+
+  for (const auto& system : fSystems) {
+    logOut << ", frac " << CbmModuleList::GetModuleNameCaps(system) << " digis "
+           << 100. * double(NumDigisEv[system]) / double(NumDigisTs[system]) << " %";
+  }
+
   LOG(info) << logOut.str();
 
   // --- Run statistics
   fNumTs++;
   fNumTriggers += numTriggers;
   fNumEvents += numEvents;
-  fNumDigisStsTs += numDigisStsTs;
-  fNumDigisStsEv += numDigisStsEv;
+
+  for (const auto& system : fSystems) {
+    fNumDigisTs[system] += NumDigisTs[system];
+    fNumDigisEv[system] += NumDigisEv[system];
+  }
 }
 // ----------------------------------------------------------------------------
 
@@ -149,16 +204,19 @@ void CbmTaskBuildEvents::Exec(Option_t*)
 // -----   End-of-timeslice action   ------------------------------------------
 void CbmTaskBuildEvents::Finish()
 {
-
   std::cout << std::endl;
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
   LOG(info) << "Timeslices         : " << fNumTs;
   LOG(info) << "Triggers           : " << fNumTriggers;
   LOG(info) << "Events             : " << fNumEvents;
-  LOG(info) << "Digis in timeslice : " << fNumDigisStsTs;
-  LOG(info) << "Digis in events    : " << fNumDigisStsEv << " = " << fixed << setprecision(2)
-            << 100. * double(fNumDigisStsEv) / double(fNumDigisStsTs) << " %";
+
+  for (const auto& system : fSystems) {
+    LOG(info) << CbmModuleList::GetModuleNameCaps(system) << " digis in timeslice : " << fNumDigisTs[system];
+    LOG(info) << CbmModuleList::GetModuleNameCaps(system) << " digis in events    : " << fNumDigisEv[system] << " = "
+              << fixed << setprecision(2) << 100. * double(fNumDigisEv[system]) / double(fNumDigisTs[system]) << " %";
+  }
+
   LOG(info) << "Time  / TS         : " << fixed << setprecision(2) << 1000. * fTimeTot / double(fNumTs) << " ms";
   LOG(info) << "Time fill TS       : " << fixed << setprecision(2) << 1000. * fTimeFillTs / double(fNumTs)
             << " ms = " << 100. * fTimeFillTs / fTimeTot << " %";
@@ -191,6 +249,12 @@ InitStatus CbmTaskBuildEvents::Init()
       return kFATAL;
     }
     LOG(info) << "--- Found digi branch for " << CbmModuleList::GetModuleNameCaps(system);
+  }
+
+  // --- Initialize diagnostics
+  for (const auto& system : fSystems) {
+    fNumDigisTs[system] = 0;
+    fNumDigisEv[system] = 0;
   }
 
   // --- Get input data (triggers)
