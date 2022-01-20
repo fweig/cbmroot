@@ -37,22 +37,21 @@ using namespace std;
 
 CbmLitFieldQa::CbmLitFieldQa()
   : fField(NULL)
-  , fNofSlices(0)
   , fZSlicePosition()
   , fXSlicePosition()
   , fYSlicePosition()
+  , fNofSlices(0)
+  , fNofBinsX(100)
+  , fNofBinsY(100)
+  , fMinZFieldIntegral(171.)
+  , fMaxZFieldIntegral(330.)
   , fAlongZAngles()
   , fAlongZXY()
   , fZMin(-10.)
   , fZMax(300.)
   , fZStep(1.)
-  ,
-  //fAcceptanceAngleX(35.),
-  //fAcceptanceAngleY(35.),
-  fNofBinsX(100)
-  , fNofBinsY(100)
-  , fMinZFieldIntegral(171.)
-  , fMaxZFieldIntegral(330.)
+  //, fAcceptanceAngleX(35.)
+  //, fAcceptanceAngleY(35.)
   , fHM(NULL)
   , fOutputDir("./")
 {
@@ -107,7 +106,7 @@ InitStatus CbmLitFieldQa::Init()
   // print some field values at RICH entrance
   Double_t B[3];
   vector<vector<Double_t>> pos = {{0., 0., 170.}, {0., 80., 170.}, {50., 0., 170.}, {0., 0., 250.}};
-  for (Int_t i = 0; i < pos.size(); i++) {
+  for (UInt_t i = 0; i < pos.size(); i++) {
     fField->GetFieldValue(&pos[i][0], B);
     Double_t magB = sqrt(B[0] * B[0] + B[1] * B[1] + B[2] * B[2]);
     cout << "B at (" << pos[i][0] << ", " << pos[i][1] << ", " << pos[i][2] << ") = " << magB << " kGauss" << endl;
@@ -118,7 +117,7 @@ InitStatus CbmLitFieldQa::Init()
   return kSUCCESS;
 }
 
-void CbmLitFieldQa::Exec(Option_t* opt) {}
+void CbmLitFieldQa::Exec(Option_t*) {}
 
 void CbmLitFieldQa::Finish() {}
 
@@ -139,14 +138,14 @@ void CbmLitFieldQa::CreateHistos()
   }
 
   for (Int_t v = 0; v < 4; v++) {
-    for (Int_t i = 0; i < fAlongZAngles.size(); i++) {
+    for (UInt_t i = 0; i < fAlongZAngles.size(); i++) {
       TGraph* graph = new TGraph();
       string name   = "hmf_" + names[v] + "AlongZAngle_Graph_" + ToString<Int_t>(fAlongZAngles[i]);
       string title  = name + ";Z [cm];B [kGauss]";
       graph->SetNameTitle(name.c_str(), title.c_str());
       fHM->Add(name, graph);
     }
-    for (Int_t i = 0; i < fAlongZXY.size(); i++) {
+    for (UInt_t i = 0; i < fAlongZXY.size(); i++) {
       TGraph* graph = new TGraph();
       string name   = "hmf_" + names[v] + "AlongZXY_Graph_" + ToString<Int_t>(fAlongZXY[i].first) + "_"
                     + ToString<Int_t>(fAlongZXY[i].second);
@@ -154,7 +153,7 @@ void CbmLitFieldQa::CreateHistos()
       graph->SetNameTitle(name.c_str(), title.c_str());
       fHM->Add(name, graph);
     }
-    for (Int_t i = 0; i < fAlongZXY.size(); i++) {
+    for (UInt_t i = 0; i < fAlongZXY.size(); i++) {
       TGraph* graph = new TGraph();
       string name   = "hmf_" + names[v] + "AlongZXYIntegral_Graph_" + ToString<Int_t>(fAlongZXY[i].first) + "_"
                     + ToString<Int_t>(fAlongZXY[i].second);
@@ -181,7 +180,7 @@ void CbmLitFieldQa::FillBHistos()
 {
   string names[] = {"Bx", "By", "Bz", "Mod"};
   // Fill graphs for magnetic field for each (X, Y) slice
-  for (UInt_t iSlice = 0; iSlice < fNofSlices; iSlice++) {  // loop over slices
+  for (Int_t iSlice = 0; iSlice < fNofSlices; iSlice++) {  // loop over slices
     Double_t Z = fZSlicePosition[iSlice];
 
     Int_t cnt   = 0;
@@ -208,7 +207,7 @@ void CbmLitFieldQa::FillBHistos()
   }
 
   // Fill histograms for magnetic field along Z for different angles
-  for (Int_t i = 0; i < fAlongZAngles.size(); i++) {
+  for (UInt_t i = 0; i < fAlongZAngles.size(); i++) {
     Int_t nofSteps = Int_t((fZMax - fZMin) / fZStep);
     for (Int_t istep = 0; istep < nofSteps; istep++) {
       Double_t Z         = fZMin + istep * fZStep;
@@ -230,7 +229,7 @@ void CbmLitFieldQa::FillBHistos()
     }
   }
   // Fill histograms for magnetic field along Z for different X position
-  for (Int_t i = 0; i < fAlongZXY.size(); i++) {
+  for (UInt_t i = 0; i < fAlongZXY.size(); i++) {
     Int_t nofSteps        = Int_t((fZMax - fZMin) / fZStep);
     Double_t integralB[4] = {0., 0., 0., 0.};
     for (Int_t istep = 0; istep < nofSteps; istep++) {
@@ -252,8 +251,8 @@ void CbmLitFieldQa::FillBHistos()
         // Calculate field integral in the RICH detector
         if (Z >= fMinZFieldIntegral && Z <= fMaxZFieldIntegral) {
           integralB[v] += 0.01 * fZStep * fabs(B[v]);  // in kGauss * meter
-          string name = "hmf_" + names[v] + "AlongZXYIntegral_Graph_" + ToString<Int_t>(fAlongZXY[i].first) + "_"
-                        + ToString<Int_t>(fAlongZXY[i].second);
+          name = "hmf_" + names[v] + "AlongZXYIntegral_Graph_" + ToString<Int_t>(fAlongZXY[i].first) + "_"
+                 + ToString<Int_t>(fAlongZXY[i].second);
           fHM->G1(name)->SetPoint(istep, Z, integralB[v]);
           fHM->G1(name)->SetMaximum(1.1 * integralB[v]);
         }
@@ -269,8 +268,8 @@ void CbmLitFieldQa::FillRichPmtPlaneBHistos()
   if (pixels.size() == 0) return;
 
   Double_t maxModB = 0.;
-  int iS           = -1;
-  for (Int_t i = 0; i < pixels.size(); i++) {
+  //int iS           = -1;
+  for (UInt_t i = 0; i < pixels.size(); i++) {
     TVector3 inPos;
     CbmRichPixelData* pixelData = CbmRichDigiMapManager::GetInstance().GetPixelDataByAddress(pixels[i]);
     inPos.SetXYZ(pixelData->fX, pixelData->fY, pixelData->fZ);

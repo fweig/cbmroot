@@ -60,7 +60,7 @@ InitStatus CbmLitRadLengthQa::Init()
   return kSUCCESS;
 }
 
-void CbmLitRadLengthQa::Exec(Option_t* opt)
+void CbmLitRadLengthQa::Exec(Option_t*)
 {
   static Int_t eventNo = 0;
   eventNo++;
@@ -198,7 +198,7 @@ void CbmLitRadLengthQa::ExecDetector(const string& pathPattern, const string& de
   map<Int_t, Double_t> thicknessOnTrack;         // track ID -> sum of track lengthens on track
   map<Int_t, Double_t> thicknessSiliconOnTrack;  // track ID -> sum of track lengthens on track in silicon equivalent
 
-  Double_t x, y;
+  Double_t x = 0., y = 0.;
   Double_t r2max = std::numeric_limits<Double_t>::min();
   for (Int_t iRL = 0; iRL < fRadLen->GetEntriesFast(); iRL++) {
     FairRadLenPoint* point = (FairRadLenPoint*) fRadLen->At(iRL);
@@ -210,10 +210,10 @@ void CbmLitRadLengthQa::ExecDetector(const string& pathPattern, const string& de
     //x = middle.X();
     //y = middle.Y();
 
-    TGeoNode* nodeOut = gGeoManager->FindNode(posOut.X(), posOut.Y(), posOut.Z());
-    Bool_t isOutside  = gGeoManager->IsOutside();
-    TGeoNode* node    = gGeoManager->FindNode(middle.X(), middle.Y(), middle.Z());
-    TString path      = gGeoManager->GetPath();
+    /* TGeoNode* nodeOut = */ gGeoManager->FindNode(posOut.X(), posOut.Y(), posOut.Z());
+    Bool_t isOutside = gGeoManager->IsOutside();
+    /* TGeoNode* node = */ gGeoManager->FindNode(middle.X(), middle.Y(), middle.Z());
+    TString path = gGeoManager->GetPath();
     if (!isOutside && path.Contains(TRegexp(pathPattern.c_str()))) {
       Double_t r2 = posOut.X() * posOut.X() + posOut.Y() * posOut.Y();
       if (r2 > r2max) {
@@ -271,7 +271,7 @@ void CbmLitRadLengthQa::ExecDetector(const string& detName, Int_t (*getStationId
   for (Int_t iRL = 0; iRL < fRadLen->GetEntriesFast(); iRL++) {
     FairRadLenPoint* point = (FairRadLenPoint*) fRadLen->At(iRL);
     Int_t trackId          = point->GetTrackID();
-    Int_t detId            = point->GetDetectorID();
+    //Int_t detId            = point->GetDetectorID();
 
     TVector3 pos    = point->GetPosition();
     TVector3 posOut = point->GetPositionOut();
@@ -280,7 +280,7 @@ void CbmLitRadLengthQa::ExecDetector(const string& detName, Int_t (*getStationId
     //x = posOut.X();
     //y = posOut.Y();
 
-    TGeoNode* node  = gGeoManager->FindNode(middle.X(), middle.Y(), middle.Z());
+    /* TGeoNode* node  = */ gGeoManager->FindNode(middle.X(), middle.Y(), middle.Z());
     TString path    = gGeoManager->GetPath();
     Int_t stationId = getStationId(path);
 
@@ -327,7 +327,7 @@ void CbmLitRadLengthQa::FillHistosDetector(const map<Int_t, map<Int_t, Double_t>
   }
 }
 
-Int_t CbmLitRadLengthQa::GetMvdStationId(const TString& nodePath)
+Int_t CbmLitRadLengthQa::GetMvdStationId(const TString& /*nodePath*/)
 {
   std::cout << "-W- CbmLitRadLengthQa::GetMvdStationId: function not implemented\n";
   return 0;
@@ -410,8 +410,8 @@ void CbmLitRadLengthQa::SaveDetectorMaterialBudgetToFile(const string& detName)
     (*it)->Write();
   }
   if (detName == "Much") {
-    vector<TH1*> histos = fHM->H1Vector("hrl_ThicknessSilicon_MuchAbsorber_.+_P2");
-    for (vector<TH1*>::const_iterator it = histos.begin(); it != histos.end(); it++) {
+    vector<TH1*> histos1 = fHM->H1Vector("hrl_ThicknessSilicon_MuchAbsorber_.+_P2");
+    for (vector<TH1*>::const_iterator it = histos1.begin(); it != histos1.end(); it++) {
       (*it)->Write();
     }
   }

@@ -27,7 +27,10 @@
 
 class CbmLitAcceptanceFunction {
 public:
-  static Bool_t AllTrackAcceptanceFunction(CbmMCDataArray* mcTracks, Int_t eventNo, Int_t index) { return true; }
+  static Bool_t AllTrackAcceptanceFunction(CbmMCDataArray* /*mcTracks*/, Int_t /*eventNo*/, Int_t /*index*/)
+  {
+    return true;
+  }
 
   static Bool_t NegativeTrackAcceptanceFunction(CbmMCDataArray* mcTracks, Int_t eventNo, Int_t index)
   {
@@ -155,7 +158,8 @@ public:
     return (mcTrack->GetPdgCode() == -321);
   }
 
-  static Bool_t AllRingAcceptanceFunction(CbmMCDataArray* mcTracks, Int_t eventNo, Int_t index, Int_t nofHitsInRing)
+  static Bool_t AllRingAcceptanceFunction(CbmMCDataArray* /*mcTracks*/, Int_t /*eventNo*/, Int_t /*index*/,
+                                          Int_t /*nofHitsInRing*/)
   {
     return true;
   }
@@ -169,7 +173,7 @@ public:
   }
 
   static Bool_t PrimaryElectronRingAcceptanceFunction(CbmMCDataArray* mcTracks, Int_t eventNo, Int_t index,
-                                                      Int_t nofHitsInRing)
+                                                      Int_t /*nofHitsInRing*/)
   {
     if (index < 0) return false;
     const CbmMCTrack* mcTrack = static_cast<const CbmMCTrack*>(mcTracks->Get(0, eventNo, index));
@@ -187,7 +191,8 @@ public:
            && (nofHitsInRing >= 15);
   }
 
-  static Bool_t PionRingAcceptanceFunction(CbmMCDataArray* mcTracks, Int_t eventNo, Int_t index, Int_t nofHitsInRing)
+  static Bool_t PionRingAcceptanceFunction(CbmMCDataArray* mcTracks, Int_t eventNo, Int_t index,
+                                           Int_t /*nofHitsInRing*/)
   {
     if (index < 0) return false;
     const CbmMCTrack* mcTrack = static_cast<const CbmMCTrack*>(mcTracks->Get(0, eventNo, index));
@@ -202,8 +207,8 @@ public:
     return (TMath::Abs(mcTrack->GetPdgCode()) == 211) && (nofHitsInRing >= 15);
   }
 
-  static Bool_t AllPiSuppAcceptanceFunction(const TClonesArray* globalTracks, const TClonesArray* stsMatches,
-                                            const TClonesArray* richMatches, Int_t index)
+  static Bool_t AllPiSuppAcceptanceFunction(const TClonesArray* /*globalTracks*/, const TClonesArray* /*stsMatches*/,
+                                            const TClonesArray* /*richMatches*/, Int_t /*index*/)
   {
     return true;
   }

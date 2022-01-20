@@ -47,10 +47,10 @@ CbmLitFitQa::CbmLitFitQa()
   , fTrdMinNofHits(0)
   , fMuchMinNofHits(0)
   , fOutputDir("./test/")
-  , fHM(NULL)
   , fPRangeMin(0.)
   , fPRangeMax(10.)
   , fPRangeBins(20)
+  , fHM(NULL)
   , fGlobalTracks(NULL)
   , fStsTracks(NULL)
   , fStsTrackMatches(NULL)
@@ -89,7 +89,7 @@ InitStatus CbmLitFitQa::Init()
   return kSUCCESS;
 }
 
-void CbmLitFitQa::Exec(Option_t* opt)
+void CbmLitFitQa::Exec(Option_t*)
 {
   static Int_t nofEvents = 0;
   nofEvents++;
@@ -453,8 +453,8 @@ void CbmLitFitQa::ProcessTrackMomentumAtVertex()
   for (int i = 0; i < nofTracks; ++i) {
     CbmGlobalTrack* globalTrack = static_cast<CbmGlobalTrack*>(fGlobalTracks->At(i));
     Int_t stsId                 = globalTrack->GetStsTrackIndex();
-    CbmStsTrack* stsTrack       = static_cast<CbmStsTrack*>(fStsTracks->At(stsId));
-    CbmTrackMatchNew* match     = static_cast<CbmTrackMatchNew*>(fStsTrackMatches->At(stsId));
+    //CbmStsTrack* stsTrack       = static_cast<CbmStsTrack*>(fStsTracks->At(stsId));
+    CbmTrackMatchNew* match = static_cast<CbmTrackMatchNew*>(fStsTrackMatches->At(stsId));
 
     if (match->GetNofLinks() < 1) continue;
 

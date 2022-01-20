@@ -97,7 +97,6 @@ void CbmLitMCTrackCreator::Create(Int_t eventNum)
   AddRingParameters(eventNum);
 
   std::map<std::pair<Int_t, Int_t>, CbmLitMCTrack>::iterator it;
-  int counter = 0;
   for (it = fLitMCTracks.begin(); it != fLitMCTracks.end(); it++) {
     it->second.CalculateNofConsecutivePoints();
   }
@@ -186,7 +185,7 @@ void CbmLitMCTrackCreator::AddRichHits(Int_t iEvent)
     if (NULL == hit) continue;
     vector<pair<Int_t, Int_t>> motherIds =
       CbmMatchRecoToMC::GetMcTrackMotherIdsForRichHit(fDigiMan, hit, fRichPoints, fMCTracks, iEvent);
-    for (Int_t i = 0; i < motherIds.size(); i++) {
+    for (UInt_t i = 0; i < motherIds.size(); i++) {
       nofHitsInRing[motherIds[i]]++;
     }
   }
@@ -224,7 +223,6 @@ void CbmLitMCTrackCreator::AddRingParameters(Int_t iEvent)
 
 
   map<pair<Int_t, Int_t>, CbmRichRingLight>::const_iterator it;
-  int i = 0;
   for (it = mapRings.begin(); it != mapRings.end(); it++) {
     CbmRichRingLight ring(it->second);
     fTauFit->DoFit(&ring);  //fLitMCTracks[it->first].SetNofRichHits(it->second);

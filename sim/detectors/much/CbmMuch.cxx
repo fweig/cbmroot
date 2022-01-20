@@ -160,10 +160,10 @@ Bool_t CbmMuch::ProcessHits(FairVolume* vol)
       printf(" Module: %i", CbmMuchAddress::GetModuleIndex(fDetectorId));
       printf(" Vol %i \n", fVolumeID);
     }
-    Int_t iStation = CbmMuchAddress::GetStationIndex(fDetectorId);
     gMC->TrackPosition(fPosOut);
     gMC->TrackMomentum(fMomOut);
     /*
+    Int_t iStation = CbmMuchAddress::GetStationIndex(fDetectorId);
     assert(iStation >= 0 && iStation < fPar->GetNStations());
     CbmMuchStation* station = (CbmMuchStation*) fPar->GetStations()->At(iStation);
     //cout<<" track # "<<fTrackID<<"   Rmin "<<station->GetRmin()<<"   Rmax  "<<station->GetRmax()<<" in perp "<<fPosIn.Perp()<<" out perp "<<fPosOut.Perp()<<"  eloss "<<fELoss<<endl;

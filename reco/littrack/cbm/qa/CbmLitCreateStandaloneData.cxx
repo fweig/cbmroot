@@ -68,7 +68,7 @@ InitStatus CbmLitCreateStandaloneData::Init()
 
 void CbmLitCreateStandaloneData::SetParContainers() {}
 
-void CbmLitCreateStandaloneData::Exec(Option_t* opt)
+void CbmLitCreateStandaloneData::Exec(Option_t* /*opt*/)
 {
   fSeedsFile << fEventNo << " " << fStsTracks->GetEntriesFast() << std::endl;
   for (Int_t iStsTrack = 0; iStsTrack < fStsTracks->GetEntriesFast(); iStsTrack++) {

@@ -122,7 +122,7 @@ void CbmLitFieldApproximationQaReport::Draw()
 void CbmLitFieldApproximationQaReport::DrawSlices(const string& b, const string& m)
 {
   vector<TGraph2D*> graphs2D = HM()->G2Vector("hfa_" + b + "_Graph2D_.*");
-  for (Int_t i = 0; i < graphs2D.size(); i++) {
+  for (UInt_t i = 0; i < graphs2D.size(); i++) {
     string name       = graphs2D[i]->GetName();
     string canvasName = GetReportName() + "_slice_" + b + "_" + m + "_at_z_" + Split(name, '_')[3];
     TCanvas* canvas   = CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
@@ -150,7 +150,7 @@ void CbmLitFieldApproximationQaReport::DrawSlices(const string& b, const string&
 void CbmLitFieldApproximationQaReport::DrawApr(const string& err)
 {
   vector<TGraph2D*> graphs2D = HM()->G2Vector("hfa_Bx_Graph2D_.*");
-  for (Int_t i = 0; i < graphs2D.size(); i++) {
+  for (UInt_t i = 0; i < graphs2D.size(); i++) {
     string z          = Split(graphs2D[i]->GetName(), '_')[3];
     string canvasName = GetReportName() + "_" + err + "_degree_z_" + z;
     TCanvas* canvas   = CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
@@ -171,7 +171,7 @@ void CbmLitFieldApproximationQaReport::DrawApr(const string& err)
     vector<TH1*> errBy(errBx.size());
     vector<TH1*> errBz(errBx.size());
     vector<TH1*> errMod(errBx.size());
-    for (Int_t iP = 0; iP < errBx.size(); iP++) {
+    for (UInt_t iP = 0; iP < errBx.size(); iP++) {
       string name = errBx[iP]->GetName();
 
       errBy[iP]       = HM()->H1(FindAndReplace(name, "_Bx", "_By"));

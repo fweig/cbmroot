@@ -52,7 +52,7 @@ void CbmLitFieldQaReport::Draw()
 void CbmLitFieldQaReport::DrawFieldSlices()
 {
   vector<TGraph2D*> graphsBx = HM()->G2Vector("hmf_Bx_Graph2D_.*");
-  for (Int_t i = 0; i < graphsBx.size(); i++) {
+  for (UInt_t i = 0; i < graphsBx.size(); i++) {
     string name       = graphsBx[i]->GetName();
     string canvasName = GetReportName() + "_map_at_z_" + Split(name, '_')[3];
     TCanvas* canvas   = CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
@@ -75,13 +75,13 @@ void CbmLitFieldQaReport::DrawFieldAlongZ()
 {
   // Draw for different angles
   vector<TGraph*> graphsBx = HM()->G1Vector("hmf_BxAlongZAngle_Graph_.*");
-  for (Int_t i = 0; i < graphsBx.size(); i++) {
+  for (UInt_t i = 0; i < graphsBx.size(); i++) {
     string name       = graphsBx[i]->GetName();
     string canvasName = GetReportName() + "_map_along_z_angle_" + Split(name, '_')[3];
-    TCanvas* canvas   = CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
-    TGraph* graphBy   = HM()->G1(FindAndReplace(name, "_Bx", "_By"));
-    TGraph* graphBz   = HM()->G1(FindAndReplace(name, "_Bx", "_Bz"));
-    TGraph* graphMod  = HM()->G1(FindAndReplace(name, "_Bx", "_Mod"));
+    CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
+    TGraph* graphBy  = HM()->G1(FindAndReplace(name, "_Bx", "_By"));
+    TGraph* graphBz  = HM()->G1(FindAndReplace(name, "_Bx", "_Bz"));
+    TGraph* graphMod = HM()->G1(FindAndReplace(name, "_Bx", "_Mod"));
     DrawGraph({graphsBx[i], graphBy, graphBz, graphMod}, {"B_{x}", "B_{y}", "B_{z}", "|B|"}, kLinear, kLinear, true,
               0.7, 0.5, 0.9, 0.3);
     gPad->SetGrid(true, true);
@@ -89,14 +89,14 @@ void CbmLitFieldQaReport::DrawFieldAlongZ()
 
   // Draw for different XY positions
   graphsBx = HM()->G1Vector("hmf_BxAlongZXY_Graph_.*");
-  for (Int_t i = 0; i < graphsBx.size(); i++) {
+  for (UInt_t i = 0; i < graphsBx.size(); i++) {
     string name           = graphsBx[i]->GetName();
     vector<string> splits = Split(name, '_');
     string canvasName     = GetReportName() + "_map_along_z_xy_" + splits[3] + "_" + splits[4];
-    TCanvas* canvas       = CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
-    TGraph* graphBy       = HM()->G1(FindAndReplace(name, "_Bx", "_By"));
-    TGraph* graphBz       = HM()->G1(FindAndReplace(name, "_Bx", "_Bz"));
-    TGraph* graphMod      = HM()->G1(FindAndReplace(name, "_Bx", "_Mod"));
+    CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
+    TGraph* graphBy  = HM()->G1(FindAndReplace(name, "_Bx", "_By"));
+    TGraph* graphBz  = HM()->G1(FindAndReplace(name, "_Bx", "_Bz"));
+    TGraph* graphMod = HM()->G1(FindAndReplace(name, "_Bx", "_Mod"));
     DrawGraph({graphsBx[i], graphBy, graphBz, graphMod}, {"B_{x}", "B_{y}", "B_{z}", "|B|"}, kLinear, kLinear, true,
               0.7, 0.5, 0.9, 0.3);
     gPad->SetGrid(true, true);
@@ -104,14 +104,14 @@ void CbmLitFieldQaReport::DrawFieldAlongZ()
 
   // Draw integral for different XY positions
   graphsBx = HM()->G1Vector("hmf_BxAlongZXYIntegral_Graph_.*");
-  for (Int_t i = 0; i < graphsBx.size(); i++) {
+  for (UInt_t i = 0; i < graphsBx.size(); i++) {
     string name           = graphsBx[i]->GetName();
     vector<string> splits = Split(name, '_');
     string canvasName     = GetReportName() + "_map_along_z_integral_xy_" + splits[3] + "_" + splits[4];
-    TCanvas* canvas       = CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
-    TGraph* graphBy       = HM()->G1(FindAndReplace(name, "_Bx", "_By"));
-    TGraph* graphBz       = HM()->G1(FindAndReplace(name, "_Bx", "_Bz"));
-    TGraph* graphMod      = HM()->G1(FindAndReplace(name, "_Bx", "_Mod"));
+    CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
+    TGraph* graphBy  = HM()->G1(FindAndReplace(name, "_Bx", "_By"));
+    TGraph* graphBz  = HM()->G1(FindAndReplace(name, "_Bx", "_Bz"));
+    TGraph* graphMod = HM()->G1(FindAndReplace(name, "_Bx", "_Mod"));
     DrawGraph({graphsBx[i], graphBy, graphBz, graphMod}, {"B_{x}", "B_{y}", "B_{z}", "|B|"}, kLinear, kLinear, true,
               0.7, 0.5, 0.9, 0.3);
     gPad->SetGrid(true, true);
@@ -132,12 +132,12 @@ void CbmLitFieldQaReport::DrawFieldRichPmtPlane()
   }
 
   string canvasName = GetReportName() + "_rich_pmt_projection_edge";
-  TCanvas* canvas   = CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
-  TH2D* h2U         = HM()->G2("hmf_Mod_Rich_Pmt_up")->GetHistogram();
-  TH2D* h2D         = HM()->G2("hmf_Mod_Rich_Pmt_down")->GetHistogram();
-  Int_t nBins       = h2D->GetNbinsY();
-  TH1D* hPrU        = h2U->ProjectionX("_px", 1, 1);
-  TH1D* hPrD        = h2D->ProjectionX("_px", nBins, nBins);
+  CreateCanvas(canvasName.c_str(), canvasName.c_str(), 1000, 1000);
+  TH2D* h2U   = HM()->G2("hmf_Mod_Rich_Pmt_up")->GetHistogram();
+  TH2D* h2D   = HM()->G2("hmf_Mod_Rich_Pmt_down")->GetHistogram();
+  Int_t nBins = h2D->GetNbinsY();
+  TH1D* hPrU  = h2U->ProjectionX("_px", 1, 1);
+  TH1D* hPrD  = h2D->ProjectionX("_px", nBins, nBins);
   hPrU->GetYaxis()->SetTitle(h2U->GetZaxis()->GetTitle());
   hPrD->GetYaxis()->SetTitle(h2D->GetZaxis()->GetTitle());
 

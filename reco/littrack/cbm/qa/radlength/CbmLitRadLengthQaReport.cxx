@@ -52,45 +52,45 @@ void CbmLitRadLengthQaReport::Draw()
 void CbmLitRadLengthQaReport::DrawDetector(const string& detName)
 {
   if (HM()->Exists("hrl_Thickness_" + detName + "_H1")) {
-    TCanvas* canvas1 = CreateCanvas(string("hrl_Thickness_" + detName + "_H1").c_str(),
-                                    string("hrl_Thickness_" + detName + "_H1").c_str(), 1200, 1000);
+    CreateCanvas(string("hrl_Thickness_" + detName + "_H1").c_str(), string("hrl_Thickness_" + detName + "_H1").c_str(),
+                 1200, 1000);
     DrawH1(HM()->H1("hrl_Thickness_" + detName + "_H1"));
   }
 
   if (HM()->Exists("hrl_Thickness_" + detName + "_P2")) {
-    TCanvas* canvas2 = CreateCanvas(string("hrl_Thickness_" + detName + "_P2").c_str(),
-                                    string("hrl_Thickness_" + detName + "_P2").c_str(), 1200, 1000);
+    CreateCanvas(string("hrl_Thickness_" + detName + "_P2").c_str(), string("hrl_Thickness_" + detName + "_P2").c_str(),
+                 1200, 1000);
     DrawH2(HM()->P2("hrl_Thickness_" + detName + "_P2"));
   }
 
   if (HM()->Exists("hrl_RadThickness_" + detName + "_H1")) {
-    TCanvas* canvas3 = CreateCanvas(string("hrl_RadThickness_" + detName + "_H1").c_str(),
-                                    string("hrl_RadThickness_" + detName + "_H1").c_str(), 1200, 1000);
+    CreateCanvas(string("hrl_RadThickness_" + detName + "_H1").c_str(),
+                 string("hrl_RadThickness_" + detName + "_H1").c_str(), 1200, 1000);
     DrawH1(HM()->H1("hrl_RadThickness_" + detName + "_H1"));
   }
 
   if (HM()->Exists("hrl_RadThickness_" + detName + "_P2")) {
-    TCanvas* canvas4 = CreateCanvas(string("hrl_RadThickness_" + detName + "_P2").c_str(),
-                                    string("hrl_RadThickness_" + detName + "_P2").c_str(), 1200, 1000);
+    CreateCanvas(string("hrl_RadThickness_" + detName + "_P2").c_str(),
+                 string("hrl_RadThickness_" + detName + "_P2").c_str(), 1200, 1000);
     DrawH2(HM()->P2("hrl_RadThickness_" + detName + "_P2"));
 
 
-    TCanvas* canvas4_2 = CreateCanvas(string("hrl_RadThickness_" + detName + "_P2_zoom").c_str(),
-                                      string("hrl_RadThickness_" + detName + "_P2_zoom").c_str(), 1200, 1000);
-    TProfile2D* pr     = (TProfile2D*) HM()->P2("hrl_RadThickness_" + detName + "_P2")->Clone();
+    CreateCanvas(string("hrl_RadThickness_" + detName + "_P2_zoom").c_str(),
+                 string("hrl_RadThickness_" + detName + "_P2_zoom").c_str(), 1200, 1000);
+    TProfile2D* pr = (TProfile2D*) HM()->P2("hrl_RadThickness_" + detName + "_P2")->Clone();
     pr->GetZaxis()->SetRangeUser(0, 100);
     DrawH2(pr);
   }
 
   if (HM()->Exists("hrl_ThicknessSilicon_" + detName + "_H1")) {
-    TCanvas* canvas5 = CreateCanvas(string("hrl_ThicknessSilicon_" + detName + "_H1").c_str(),
-                                    string("hrl_ThicknessSilicon_" + detName + "_H1").c_str(), 1200, 1000);
+    CreateCanvas(string("hrl_ThicknessSilicon_" + detName + "_H1").c_str(),
+                 string("hrl_ThicknessSilicon_" + detName + "_H1").c_str(), 1200, 1000);
     DrawH1(HM()->H1("hrl_ThicknessSilicon_" + detName + "_H1"));
   }
 
   if (HM()->Exists("hrl_ThicknessSilicon_" + detName + "_P2")) {
-    TCanvas* canvas6 = CreateCanvas(string("hrl_ThicknessSilicon_" + detName + "_P2").c_str(),
-                                    string("hrl_ThicknessSilicon_" + detName + "_P2").c_str(), 1200, 1000);
+    CreateCanvas(string("hrl_ThicknessSilicon_" + detName + "_P2").c_str(),
+                 string("hrl_ThicknessSilicon_" + detName + "_P2").c_str(), 1200, 1000);
     DrawH2(HM()->P2("hrl_ThicknessSilicon_" + detName + "_P2"));
   }
 }

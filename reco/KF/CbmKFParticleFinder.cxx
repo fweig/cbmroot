@@ -165,8 +165,8 @@ void CbmKFParticleFinder::Exec(Option_t* /*opt*/)
         }
       }
       else {
-        Error("CbmKFParticleFinder::Event", "PID task has a wrong number of tracks: %l of %l", fPID->GetPID().size(),
-              nTracksEvent);
+        Error("CbmKFParticleFinder::Event", "PID task has a wrong number of tracks: %i of %i",
+              (int) fPID->GetPID().size(), nTracksEvent);
       }
     }
 

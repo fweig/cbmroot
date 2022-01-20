@@ -61,19 +61,19 @@ CbmLitFieldApproximationQa::CbmLitFieldApproximationQa()
   , fZSlicePosition()
   , fXSlicePosition()
   , fYSlicePosition()
-  , fFixedBounds(true)
+  , fOutputDir("./field/")
   , fAcceptanceAngleX(25.)
   , fAcceptanceAngleY(25.)
   , fNofBinsX(30)
   , fNofBinsY(30)
   , fUseEllipseAcc(true)
-  , fOutputDir("./field/")
-  , fFitter()
-  , fGridCreator()
   , fPolynomDegreeIndex(1)
   , fNofPolynoms(4)
   , fPolynomDegrees()
+  , fFitter()
+  , fGridCreator()
   , fHM(NULL)
+  , fFixedBounds(true)
 {
 }
 
@@ -133,7 +133,7 @@ InitStatus CbmLitFieldApproximationQa::Init()
   return kSUCCESS;
 }
 
-void CbmLitFieldApproximationQa::Exec(Option_t* opt) {}
+void CbmLitFieldApproximationQa::Exec(Option_t*) {}
 
 void CbmLitFieldApproximationQa::Finish() {}
 
@@ -164,8 +164,8 @@ void CbmLitFieldApproximationQa::CreateFitterHistos()
 {
   string names[] = {"Bx", "By", "Bz", "Mod"};
 
-  Int_t nofBinsX       = fNofBinsX;
-  Int_t nofBinsY       = fNofBinsY;
+  //Int_t nofBinsX       = fNofBinsX;
+  //Int_t nofBinsY       = fNofBinsY;
   Int_t nofBinsErrB    = 100;
   Int_t nofBinsRelErrB = 100;
   Int_t nofBinsErrX    = 100;
@@ -186,7 +186,7 @@ void CbmLitFieldApproximationQa::CreateFitterHistos()
   // Create histograms
   for (Int_t v = 0; v < 4; v++) {
     for (Int_t i = 0; i < fNofSlices; i++) {
-      for (Int_t j = 0; j < fNofPolynoms; j++) {
+      for (UInt_t j = 0; j < fNofPolynoms; j++) {
         TGraph2D* graph = new TGraph2D();
         string name     = "hfa_" + names[v] + "Apr_Graph2D" + "_" + ToString<Int_t>(fZSlicePosition[i]) + "_"
                       + ToString<Int_t>(fPolynomDegrees[j]);
@@ -227,8 +227,8 @@ void CbmLitFieldApproximationQa::CreateGridHistos()
 {
   string names[] = {"Bx", "By", "Bz", "Mod"};
 
-  Int_t nofBinsX       = fNofBinsX;
-  Int_t nofBinsY       = fNofBinsY;
+  //Int_t nofBinsX       = fNofBinsX;
+  //Int_t nofBinsY       = fNofBinsY;
   Int_t nofBinsErrB    = 100;
   Int_t nofBinsRelErrB = 100;
   Int_t nofBinsErrX    = 100;
@@ -282,7 +282,7 @@ void CbmLitFieldApproximationQa::CreateGridHistos()
 void CbmLitFieldApproximationQa::FillBHistos()
 {
   // Fill graphs for magnetic field for each (X, Y) slice
-  for (UInt_t iSlice = 0; iSlice < fNofSlices; iSlice++) {  // loop over slices
+  for (Int_t iSlice = 0; iSlice < fNofSlices; iSlice++) {  // loop over slices
     Double_t Z = fZSlicePosition[iSlice];
 
     Int_t cnt   = 0;
@@ -334,8 +334,8 @@ void CbmLitFieldApproximationQa::FillFieldApproximationHistos()
   }
 
   // Fill graph for approximated field map
-  for (UInt_t iSlice = 0; iSlice < fNofSlices; iSlice++) {  // Loop over slices
-    Double_t Z = fZSlicePosition[iSlice];
+  for (Int_t iSlice = 0; iSlice < fNofSlices; iSlice++) {  // Loop over slices
+    //Double_t Z = fZSlicePosition[iSlice];
     Int_t cnt  = 0;
 
     Double_t HX = 2 * fXSlicePosition[iSlice] / fNofBinsX;  // Step size for X position
@@ -350,7 +350,7 @@ void CbmLitFieldApproximationQa::FillFieldApproximationHistos()
                       + (Y * Y) / (fYSlicePosition[iSlice] * fYSlicePosition[iSlice]);
         if (fUseEllipseAcc && el > 1.) { continue; }
 
-        for (Int_t p = 0; p < fNofPolynoms; p++) {
+        for (UInt_t p = 0; p < fNofPolynoms; p++) {
           LitFieldValueScal v;
           slices[p][iSlice].GetFieldValue(X, Y, v);
           Double_t mod = sqrt(v.Bx * v.Bx + v.By * v.By + v.Bz * v.Bz);
@@ -389,7 +389,7 @@ void CbmLitFieldApproximationQa::FillFieldApproximationHistos()
 
         Double_t Bmod = sqrt(B[0] * B[0] + B[1] * B[1] + B[2] * B[2]);
 
-        for (Int_t p = 0; p < fNofPolynoms; p++) {
+        for (UInt_t p = 0; p < fNofPolynoms; p++) {
           LitFieldValueScal v;
           slices[p][iSlice].GetFieldValue(X, Y, v);
           Double_t mod = sqrt(v.Bx * v.Bx + v.By * v.By + v.Bz * v.Bz);
@@ -437,7 +437,7 @@ void CbmLitFieldApproximationQa::FillGridCreatorHistos()
   // Fill graph
   for (Int_t iSlice = 0; iSlice < fNofSlices; iSlice++) {
     Int_t cnt   = 0;
-    Double_t Z  = fZSlicePosition[iSlice];
+    //Double_t Z  = fZSlicePosition[iSlice];
     Double_t HX = 2 * fXSlicePosition[iSlice] / fNofBinsX;  // step size for X position
     Double_t HY = 2 * fYSlicePosition[iSlice] / fNofBinsY;  // step size for Y position
     for (Int_t iX = 0; iX < fNofBinsX; iX++) {              // loop over x position

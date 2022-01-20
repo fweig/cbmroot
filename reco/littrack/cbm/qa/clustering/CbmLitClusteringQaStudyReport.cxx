@@ -49,7 +49,7 @@ string CbmLitClusteringQaStudyReport::PrintNofObjects() const
     histos[i] = HM(i)->H1Vector("hno_NofObjects_.+_Event");
   }
   string str = R()->TableBegin("Number of objects", list_of(string("")).range(GetStudyNames()));
-  for (Int_t iHist = 0; iHist < histos[0].size(); iHist++) {
+  for (UInt_t iHist = 0; iHist < histos[0].size(); iHist++) {
     string cellName = Split(histos[0][iHist]->GetName(), '_')[2];
     vector<string> cells(nofStudies);
     for (Int_t i = 0; i < nofStudies; i++) {

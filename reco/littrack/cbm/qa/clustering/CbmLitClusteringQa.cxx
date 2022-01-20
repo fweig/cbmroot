@@ -99,7 +99,7 @@ InitStatus CbmLitClusteringQa::Init()
   return kSUCCESS;
 }
 
-void CbmLitClusteringQa::Exec(Option_t* opt)
+void CbmLitClusteringQa::Exec(Option_t*)
 {
   fHM->H1("hen_EventNo_ClusteringQa")->Fill(0.5);
   Int_t eventNum = fHM->H1("hen_EventNo_ClusteringQa")->GetEntries() - 1;
@@ -558,8 +558,8 @@ void CbmLitClusteringQa::CreateHitEfficiencyHistograms(ECbmModuleId detId, const
   if (!fDet.GetDet(detId)) return;
   vector<string> types = list_of("Acc")("Rec")("Eff")("Clone")("CloneProb");
   vector<string> cat   = list_of("All");
-  for (Int_t iCat = 0; iCat < cat.size(); iCat++) {
-    for (Int_t iType = 0; iType < types.size(); iType++) {
+  for (UInt_t iCat = 0; iCat < cat.size(); iCat++) {
+    for (UInt_t iType = 0; iType < types.size(); iType++) {
       string yTitle    = (types[iType] == "Eff")         ? "Efficiency [%]"
                          : (types[iType] == "CloneProb") ? "Probability [%]"
                                                          : "Counter";

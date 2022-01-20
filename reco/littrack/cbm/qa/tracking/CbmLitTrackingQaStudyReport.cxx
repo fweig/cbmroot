@@ -98,7 +98,7 @@ string CbmLitTrackingQaStudyReport::PrintTable(const string& tableName, const st
     histos[i] = HM(i)->H1Vector(pattern);
   }
   string str = R()->TableBegin(tableName, list_of(string("")).range(GetStudyNames()));
-  for (Int_t iHist = 0; iHist < histos[0].size(); iHist++) {
+  for (UInt_t iHist = 0; iHist < histos[0].size(); iHist++) {
     string cellName = rowNameFormatter(histos[0][iHist]->GetName());
     vector<string> cells(nofStudies);
     for (Int_t i = 0; i < nofStudies; i++) {
@@ -120,7 +120,7 @@ string CbmLitTrackingQaStudyReport::PrintEfficiencyTable(const string& tableName
   }
   string str = R()->TableBegin(tableName, list_of(string("")).range(GetStudyNames()));
 
-  for (Int_t iHist = 0; iHist != histos[0].size(); iHist++) {
+  for (UInt_t iHist = 0; iHist != histos[0].size(); iHist++) {
     vector<string> split = Split(histos[0][iHist]->GetName(), '_');
     string cellName      = split[1] + "(" + split[2] + "):" + split[3];
     vector<string> cells(nofStudies);
@@ -184,7 +184,7 @@ void CbmLitTrackingQaStudyReport::DrawEfficiency(const string& canvasName, const
   vector<string> labels(nofStudies);
   vector<TH1*> histos(nofStudies);
   vector<Double_t> efficiencies(nofStudies);
-  for (UInt_t iStudy = 0; iStudy < nofStudies; iStudy++) {
+  for (Int_t iStudy = 0; iStudy < nofStudies; iStudy++) {
     CbmHistManager* hm   = HM()[iStudy];
     histos[iStudy]       = hm->H1(histName);
     efficiencies[iStudy] = CalcEfficiency(hm->H1(FindAndReplace(histName, "_Eff_", "_Rec_")),
@@ -205,7 +205,7 @@ void CbmLitTrackingQaStudyReport::DrawAccAndRec(const string& canvasName, const 
   Int_t nofStudies = HM().size();
   vector<string> labels(nofStudies);
   vector<TH1*> histos(nofStudies);
-  for (UInt_t iStudy = 0; iStudy < nofStudies; iStudy++) {
+  for (Int_t iStudy = 0; iStudy < nofStudies; iStudy++) {
     CbmHistManager* hm = HM()[iStudy];
     Int_t nofEvents    = hm->H1("hen_EventNo_TrackingQa")->GetEntries();
     histos[iStudy]     = hm->H1(histName);
@@ -234,7 +234,7 @@ void CbmLitTrackingQaStudyReport::DrawMeanEfficiencyLines(const vector<TH1*>& hi
   Double_t minX   = histos[0]->GetXaxis()->GetXmin();
   Double_t maxX   = histos[0]->GetXaxis()->GetXmax();
   Int_t nofHistos = histos.size();
-  for (UInt_t iHist = 0; iHist < nofHistos; iHist++) {
+  for (Int_t iHist = 0; iHist < nofHistos; iHist++) {
     TLine* line = new TLine(minX, efficiencies[iHist], maxX, efficiencies[iHist]);
     line->SetLineWidth(1);
     line->SetLineColor(histos[iHist]->GetLineColor());

@@ -60,26 +60,25 @@ CbmLitTrackingQa::CbmLitTrackingQa()
   ,  // SIS100
   fMinNofPointsMuch(10)
   , fMinNofPointsTof(1)
-  , fMinNofHitsRich(7)
   , fQuota(0.7)
+  , fUseConsecutivePointsInSts(true)
+  , fMinNofHitsRich(7)
   , fQuotaRich(0.6)
   , fMinNofHitsTrd(2)
   ,  // SIS100
   fMinNofHitsMuch(10)
-  , fUseConsecutivePointsInSts(true)
   , fPRangeMin(0.)
   , fPRangeMax(10.)
   , fPRangeBins(20.)
-  , fYRangeMin(0.)
-  , fYRangeMax(4.)
-  , fYRangeBins(16)
   , fPtRangeMin(0.)
   , fPtRangeMax(3.)
   , fPtRangeBins(12.)
+  , fYRangeMin(0.)
+  , fYRangeMax(4.)
+  , fYRangeBins(16)
   , fAngleRangeMin(0.)
   , fAngleRangeMax(25.)
   , fAngleRangeBins(10)
-  , fMcToRecoMap()
   , fMCTracks(NULL)
   , fGlobalTracks(NULL)
   , fMvdPoints(NULL)
@@ -93,8 +92,9 @@ CbmLitTrackingQa::CbmLitTrackingQa()
   , fTrdMatches(NULL)
   , fTofPoints(NULL)
   , fTofMatches(NULL)
-  , fRichAnnCut(0.25)
+  , fMcToRecoMap()
   , fTrdAnnCut(0.85)
+  , fRichAnnCut(0.25)
 {
 }
 
@@ -130,7 +130,7 @@ InitStatus CbmLitTrackingQa::Init()
 
   fMcToRecoMap.clear();
   vector<string> trackVariants = GlobalTrackVariants();
-  for (Int_t i = 0; i < trackVariants.size(); i++) {
+  for (UInt_t i = 0; i < trackVariants.size(); i++) {
     fMcToRecoMap.insert(make_pair(trackVariants[i], multimap<pair<Int_t, Int_t>, Int_t>()));
   }
 
@@ -140,7 +140,7 @@ InitStatus CbmLitTrackingQa::Init()
   return kSUCCESS;
 }
 
-void CbmLitTrackingQa::Exec(Option_t* opt)
+void CbmLitTrackingQa::Exec(Option_t* /*opt*/)
 {
   // Increase event counter
   fHM->H1("hen_EventNo_TrackingQa")->Fill(0.5);
@@ -306,7 +306,7 @@ void CbmLitTrackingQa::CreateH1Efficiency(const string& name, const string& para
                          : (opt == "track_pid") ? fTrackCategoriesPID
                                                 : fRingCategoriesPID;
 
-  for (Int_t iCat = 0; iCat < cat.size(); iCat++) {
+  for (UInt_t iCat = 0; iCat < cat.size(); iCat++) {
     for (Int_t iType = 0; iType < 3; iType++) {
       string yTitle    = (types[iType] == "Eff") ? "Efficiency [%]" : "Counter";
       string histName  = name + "_" + cat[iCat] + "_" + types[iType] + "_" + parameter;
@@ -327,7 +327,7 @@ void CbmLitTrackingQa::CreateH2Efficiency(const string& name, const string& para
                          : (opt == "track_pid") ? fTrackCategoriesPID
                                                 : fRingCategoriesPID;
 
-  for (Int_t iCat = 0; iCat < cat.size(); iCat++) {
+  for (UInt_t iCat = 0; iCat < cat.size(); iCat++) {
     for (Int_t iType = 0; iType < 3; iType++) {
       string zTitle    = (types[iType] == "Eff") ? "Efficiency [%]" : "Counter";
       string histName  = name + "_" + cat[iCat] + "_" + types[iType] + "_" + parameter;
@@ -342,7 +342,7 @@ void CbmLitTrackingQa::CreateH1PionSuppression(const string& name, const string&
                                                Int_t nofBins, Double_t minBin, Double_t maxBin)
 {
   vector<string> types = list_of("RecPions")("Rec")("PionSup");
-  for (Int_t iCat = 0; iCat < fPiSuppCategories.size(); iCat++) {
+  for (UInt_t iCat = 0; iCat < fPiSuppCategories.size(); iCat++) {
     for (Int_t iType = 0; iType < 3; iType++) {
       string yTitle    = (types[iType] == "PionSup") ? "Pion suppression" : "Counter";
       string histName  = name + "_" + fPiSuppCategories[iCat] + "_" + types[iType] + "_" + parameter;
@@ -438,7 +438,7 @@ vector<string> CbmLitTrackingQa::GlobalTrackVariants()
   if (fDet.GetDet(ECbmModuleId::kTrd)) detectors.push_back("Trd");
   if (fDet.GetDet(ECbmModuleId::kTof)) detectors.push_back("Tof");
   string name("");
-  for (Int_t i = 0; i < detectors.size(); i++) {
+  for (UInt_t i = 0; i < detectors.size(); i++) {
     name += detectors[i];
     trackVariants.insert(name);
   }
@@ -451,7 +451,7 @@ vector<string> CbmLitTrackingQa::GlobalTrackVariants()
     if (fDet.GetDet(ECbmModuleId::kTrd)) detectors.push_back("Trd");
     if (fDet.GetDet(ECbmModuleId::kTof)) detectors.push_back("Tof");
     name = "";
-    for (Int_t i = 0; i < detectors.size(); i++) {
+    for (UInt_t i = 0; i < detectors.size(); i++) {
       name += detectors[i];
       trackVariants.insert(name);
     }
@@ -471,7 +471,7 @@ vector<string> CbmLitTrackingQa::PionSuppressionVariants()
   if (fDet.GetDet(ECbmModuleId::kTrd)) detectors.push_back("Trd");
   if (fDet.GetDet(ECbmModuleId::kTof)) detectors.push_back("Tof");
   string name("");
-  for (Int_t i = 0; i < detectors.size(); i++) {
+  for (UInt_t i = 0; i < detectors.size(); i++) {
     name += detectors[i];
     variants.insert(name);
   }
@@ -483,7 +483,7 @@ vector<string> CbmLitTrackingQa::PionSuppressionVariants()
     if (fDet.GetDet(ECbmModuleId::kTrd)) detectors.push_back("Trd");
     if (fDet.GetDet(ECbmModuleId::kTof)) detectors.push_back("Tof");
     name = "";
-    for (Int_t i = 0; i < detectors.size(); i++) {
+    for (UInt_t i = 0; i < detectors.size(); i++) {
       name += detectors[i];
       variants.insert(name);
     }
@@ -502,7 +502,7 @@ string CbmLitTrackingQa::LocalEfficiencyNormalization(const string& detName)
   if (fDet.GetDet(ECbmModuleId::kTrd)) detectors.push_back("Trd");
   if (fDet.GetDet(ECbmModuleId::kTof)) detectors.push_back("Tof");
   string name("");
-  for (Int_t i = 0; i < detectors.size(); i++) {
+  for (UInt_t i = 0; i < detectors.size(); i++) {
     name += detectors[i];
     if (detectors[i] == detName) break;
   }
@@ -582,7 +582,7 @@ void CbmLitTrackingQa::CreateHistograms()
 
   // Global efficiency histograms
   vector<string> histoNames = CreateGlobalTrackingHistogramNames();
-  for (Int_t iHist = 0; iHist < histoNames.size(); iHist++) {
+  for (UInt_t iHist = 0; iHist < histoNames.size(); iHist++) {
     string name = histoNames[iHist];
     string opt  = (name.find("Rich") == string::npos) ? "track" : "ring";
     // Tracking efficiency
@@ -609,7 +609,7 @@ void CbmLitTrackingQa::CreateHistograms()
 
   // Create histograms for pion suppression calculation
   vector<string> psVariants = PionSuppressionVariants();
-  for (Int_t iHist = 0; iHist < psVariants.size(); iHist++) {
+  for (UInt_t iHist = 0; iHist < psVariants.size(); iHist++) {
     string name = "hps_" + psVariants[iHist];
     CreateH1PionSuppression(name, "p", "P [GeV/c]", fPRangeBins, fPRangeMin, fPRangeMax);
     CreateH1PionSuppression(name, "p", "P [GeV/c]", fPRangeBins, fPRangeMin, fPRangeMax);
@@ -689,8 +689,7 @@ void CbmLitTrackingQa::CreateHistograms()
 void CbmLitTrackingQa::ProcessGlobalTracks()
 {
   // Clear all maps for MC to reco matching
-  map<string, multimap<pair<Int_t, Int_t>, Int_t>>::iterator it;
-  for (it = fMcToRecoMap.begin(); it != fMcToRecoMap.end(); it++) {
+  for (auto it = fMcToRecoMap.begin(); it != fMcToRecoMap.end(); it++) {
     multimap<pair<Int_t, Int_t>, Int_t>& mcRecoMap = (*it).second;
     mcRecoMap.clear();
     //(*it).second.clear();
@@ -723,7 +722,7 @@ void CbmLitTrackingQa::ProcessGlobalTracks()
     if (isRichOk) rtDistance = CbmRichUtil::GetRingTrackDistance(iTrack);
 
     // check the quality of track segments
-    const CbmTrackMatchNew* stsTrackMatch;
+    const CbmTrackMatchNew* stsTrackMatch = nullptr;
     if (isStsOk) {
       stsTrackMatch = static_cast<const CbmTrackMatchNew*>(fStsMatches->At(stsId));
       isStsOk       = stsTrackMatch->GetTrueOverAllHitsRatio() >= fQuota;
@@ -745,7 +744,7 @@ void CbmLitTrackingQa::ProcessGlobalTracks()
         ProcessMvd(stsId);
       }
     }
-    const CbmTrackMatchNew* trdTrackMatch;
+    const CbmTrackMatchNew* trdTrackMatch = nullptr;
     if (isTrdOk) {
       trdTrackMatch = static_cast<const CbmTrackMatchNew*>(fTrdMatches->At(trdId));
       Int_t nofHits = trdTrackMatch->GetNofHits();
@@ -775,7 +774,7 @@ void CbmLitTrackingQa::ProcessGlobalTracks()
         isMuchOk = false;
       }
     }
-    const CbmTrackMatchNew* richRingMatch;
+    const CbmTrackMatchNew* richRingMatch = nullptr;
     if (isRichOk) {
       richRingMatch = static_cast<const CbmTrackMatchNew*>(fRichRingMatches->At(richId));
       Int_t nofHits = richRingMatch->GetNofHits();
@@ -826,8 +825,7 @@ void CbmLitTrackingQa::ProcessGlobalTracks()
       richMCId = {richRingMatch->GetMatchedLink().GetEntry(), richRingMatch->GetMatchedLink().GetIndex()};
     }
 
-    map<string, multimap<pair<Int_t, Int_t>, Int_t>>::iterator it;
-    for (it = fMcToRecoMap.begin(); it != fMcToRecoMap.end(); it++) {
+    for (auto it = fMcToRecoMap.begin(); it != fMcToRecoMap.end(); it++) {
       string name                                    = (*it).first;
       multimap<pair<Int_t, Int_t>, Int_t>& mcRecoMap = (*it).second;
       Bool_t sts  = (name.find("Sts") != string::npos) ? isStsOk && stsMCId.second != -1 : true;
@@ -918,8 +916,8 @@ void CbmLitTrackingQa::ProcessMcTracks(Int_t iEvent)
   vector<TH1*> effHistos = fHM->H1Vector("(hte|hpe)_.*_Eff_.*");
   Int_t nofEffHistos     = effHistos.size();
 
-  Int_t nofMcTracks       = fMCTracks->Size(0, iEvent);
-  Int_t nofExistsMcTracks = 0;
+  Int_t nofMcTracks = fMCTracks->Size(0, iEvent);
+  //Int_t nofExistsMcTracks = 0;
   for (Int_t iMCTrack = 0; iMCTrack < nofMcTracks; ++iMCTrack) {
     const CbmMCTrack* mcTrack = static_cast<const CbmMCTrack*>(fMCTracks->Get(0, iEvent, iMCTrack));
 
@@ -1006,12 +1004,12 @@ void CbmLitTrackingQa::ProcessMcTracks(Int_t iEvent)
 
       vector<Double_t> par = list_of(0);
       if (parName == "Np") {
-        vector<Double_t> tmp = list_of((effName == "Sts")    ? nofPointsSts
-                                       : (effName == "Trd")  ? nofPointsTrd
-                                       : (effName == "Much") ? nofPointsMuch
-                                       : (effName == "Tof")  ? nofPointsTof
-                                                             : 0);
-        par                  = tmp;
+        vector<Double_t> tmp9 = list_of((effName == "Sts")    ? nofPointsSts
+                                        : (effName == "Trd")  ? nofPointsTrd
+                                        : (effName == "Much") ? nofPointsMuch
+                                        : (effName == "Tof")  ? nofPointsTof
+                                                              : 0);
+        par                   = tmp9;
       }
       else {
         par = parMap[parName];

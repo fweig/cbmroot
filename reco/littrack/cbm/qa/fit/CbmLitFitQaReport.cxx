@@ -239,7 +239,7 @@ void CbmLitFitQaReport::DrawTrackParamsAtVertex()
   Int_t nBins    = hMomres->GetNbinsX();
   TH1* momResRms = hMomres->ProjectionX();
   for (Int_t i = 1; i < nBins; i++) {
-    TH1* projY   = hMomres->ProjectionY("_py", i, i);
+    projY        = hMomres->ProjectionY("_py", i, i);
     Double_t rms = projY->GetRMS();
     momResRms->SetBinContent(i, rms);
     momResRms->SetBinError(i, momslice->GetBinError(i));

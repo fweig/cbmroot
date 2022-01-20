@@ -307,8 +307,7 @@ void CbmLitTrackingQaReport::DrawEfficiencyHistos()
 
   // Draw ghost RICH rings vs position on photodetector plane
   if (HM()->Exists("hng_NofGhosts_Rich_RingXcYc")) {
-    TCanvas* canvas =
-      CreateCanvas("tracking_qa_hng_NofGhosts_Rich_RingXcYc", "tracking_qa_hng_NofGhosts_Rich_RingXcYc", 800, 800);
+    CreateCanvas("tracking_qa_hng_NofGhosts_Rich_RingXcYc", "tracking_qa_hng_NofGhosts_Rich_RingXcYc", 800, 800);
     Int_t nofEvents = HM()->H1("hen_EventNo_TrackingQa")->GetEntries();
     HM()->H2("hng_NofGhosts_Rich_RingXcYc")->Scale(1. / nofEvents);
     DrawH2(HM()->H2("hng_NofGhosts_Rich_RingXcYc"));
@@ -328,7 +327,7 @@ void CbmLitTrackingQaReport::DrawEfficiency(const string& canvasName, const stri
   Int_t nofHistos = histos.size();
   vector<string> labels(nofHistos);
   vector<Double_t> efficiencies(nofHistos);
-  for (UInt_t iHist = 0; iHist < nofHistos; iHist++) {
+  for (Int_t iHist = 0; iHist < nofHistos; iHist++) {
     string name         = histos[iHist]->GetName();
     efficiencies[iHist] = CalcEfficiency(HM()->H1(FindAndReplace(name, "_Eff_", "_Rec_")),
                                          HM()->H1(FindAndReplace(name, "_Eff_", "_Acc_")), 100.);
@@ -352,7 +351,7 @@ void CbmLitTrackingQaReport::DrawPionSuppression(const string& canvasName, const
   Int_t nofHistos = histos.size();
   vector<string> labels(nofHistos);
   vector<Double_t> ps(nofHistos);
-  for (UInt_t iHist = 0; iHist < nofHistos; iHist++) {
+  for (Int_t iHist = 0; iHist < nofHistos; iHist++) {
     string name   = histos[iHist]->GetName();
     ps[iHist]     = CalcEfficiency(HM()->H1(FindAndReplace(name, "_PionSup_", "_RecPions_")),
                                HM()->H1(FindAndReplace(name, "_PionSup_", "_Rec_")), 1.);
@@ -370,7 +369,7 @@ void CbmLitTrackingQaReport::DrawMeanEfficiencyLines(const vector<TH1*>& histos,
   Double_t minX   = histos[0]->GetXaxis()->GetXmin();
   Double_t maxX   = histos[0]->GetXaxis()->GetXmax();
   Int_t nofHistos = histos.size();
-  for (UInt_t iHist = 0; iHist < nofHistos; iHist++) {
+  for (Int_t iHist = 0; iHist < nofHistos; iHist++) {
     TLine* line = new TLine(minX, efficiencies[iHist], maxX, efficiencies[iHist]);
     line->SetLineWidth(1);
     line->SetLineColor(histos[iHist]->GetLineColor());
@@ -390,7 +389,7 @@ void CbmLitTrackingQaReport::DrawAccAndRec(const string& canvasName, const strin
   Int_t nofEvents = HM()->H1("hen_EventNo_TrackingQa")->GetEntries();
   Int_t nofHistos = histos.size();
   vector<string> labels(nofHistos);
-  for (UInt_t iHist = 0; iHist < nofHistos; iHist++) {
+  for (Int_t iHist = 0; iHist < nofHistos; iHist++) {
     TH1* hist = histos[iHist];
     hist->Scale(1. / nofEvents);
     string name          = hist->GetName();
@@ -428,7 +427,7 @@ void CbmLitTrackingQaReport::DrawYPt(const string& canvasName, const string& eff
   TH2* effHist = HM()->H2(effHistName);
 
   if (drawOnlyEfficiency) {
-    TCanvas* canvas = CreateCanvas(canvasName.c_str(), canvasName.c_str(), 800, 800);
+    CreateCanvas(canvasName.c_str(), canvasName.c_str(), 800, 800);
     //canvas->SetGrid();
     DrawH2(effHist);
   }

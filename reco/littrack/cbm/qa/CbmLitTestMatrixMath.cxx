@@ -90,7 +90,7 @@ void CbmLitTestMatrixMath::TestMult15On5(int testId)
   Mult15On5(input1, input2, a1);
   std::cout << "Output Mult15On5: " << VectorToString(a1);
 
-  litfloat rd1[25], rd2[15];
+  litfloat rd1[25];
   Convert15To25(&input1[0], rd1);
   TMatrixTSym<litfloat> r1(5, rd1);
   TMatrixT<litfloat> v1(5, 1, &input2[0]);
@@ -166,7 +166,7 @@ void CbmLitTestMatrixMath::Convert25To15(const litfloat* a25, litfloat* a15)
 std::string CbmLitTestMatrixMath::VectorToString(const std::vector<litfloat>& a)
 {
   std::stringstream out;
-  for (int i = 0; i < a.size(); i++) {
+  for (unsigned int i = 0; i < a.size(); i++) {
     out << a[i] << " ";
   }
   out << std::endl;

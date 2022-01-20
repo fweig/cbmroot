@@ -47,10 +47,10 @@ using std::vector;
 CbmLitTofQa::CbmLitTofQa()
   : fIsFixedBounds(true)
   , fOutputDir("./test/")
-  , fHM(NULL)
   , fPRangeMin(0.)
   , fPRangeMax(15.)
   , fPRangeBins(400)
+  , fHM(NULL)
   , fGlobalTracks(NULL)
   , fStsTracks(NULL)
   , fStsTrackMatches(NULL)
@@ -83,7 +83,7 @@ InitStatus CbmLitTofQa::Init()
   return kSUCCESS;
 }
 
-void CbmLitTofQa::Exec(Option_t* opt)
+void CbmLitTofQa::Exec(Option_t* /*opt*/)
 {
   static Int_t nofEvents = 0;
   nofEvents++;
@@ -207,7 +207,7 @@ void CbmLitTofQa::ProcessMC(Int_t iEvent)
 
   Int_t nofHits = fTofHits->GetEntriesFast();
   for (Int_t iHit = 0; iHit < nofHits; iHit++) {
-    const CbmTofHit* tofHit = static_cast<const CbmTofHit*>(fTofHits->At(iHit));
+    //const CbmTofHit* tofHit = static_cast<const CbmTofHit*>(fTofHits->At(iHit));
     CbmMatch* tofHitMatch   = static_cast<CbmMatch*>(fTofHitsMatches->At(iHit));
     if (tofHitMatch == NULL) { continue; }
     Int_t tofPointIndex         = tofHitMatch->GetMatchedLink().GetIndex();
@@ -262,7 +262,7 @@ void CbmLitTofQa::ProcessGlobalTracks()
     //      Double_t ctCorrection = -0.007;
     Double_t ctCorrection = 0.0;
     Double_t ctReco       = 0.299792458 * tofHit->GetTime() + ctCorrection;  // ToF time in ns -> transfrom to ct in m
-    Double_t ctMC         = 0.299792458 * tofPoint->GetTime();               // mc time in ns -> transfrom to ct in m
+    //Double_t ctMC         = 0.299792458 * tofPoint->GetTime();               // mc time in ns -> transfrom to ct in m
     Double_t trackLengthReco = globalTrack->GetLength() / 100.;              //global length
     // Double_t trackLengthMC = tofPoint->GetLength() / 100.; //mc length
     Double_t preco     = (vtxTrack.GetQp() != 0) ? std::abs(1. / vtxTrack.GetQp()) : 0;
@@ -322,7 +322,7 @@ void CbmLitTofQa::ProcessTofHits()
     Int_t tofMCPointId          = tofHitMatch->GetMatchedLink().GetIndex();
     Int_t tofMCEventId          = tofHitMatch->GetMatchedLink().GetEntry();
     const CbmTofPoint* tofPoint = static_cast<const CbmTofPoint*>(fTofPoints->Get(0, tofMCEventId, tofMCPointId));
-    Int_t tofMCTrackId          = tofPoint->GetTrackID();
+    //Int_t tofMCTrackId          = tofPoint->GetTrackID();
 
     fHM->H1("hmp_Tof_dTime")->Fill(1000 * (tofPoint->GetTime() - tofHit->GetTime()));
   }
