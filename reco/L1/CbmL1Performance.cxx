@@ -1033,13 +1033,13 @@ void CbmL1::TrackFitPerformance()
   static TH2F* kaon_res_pt_vtxt;
   static TH2F* pton_res_pt_vtxt;
 
-  static TH2F* pion_res_pz_fstt;
-  static TH2F* kaon_res_pz_fstt;
-  static TH2F* pton_res_pz_fstt;
+  static TH2F* pion_res_p_fstt;
+  static TH2F* kaon_res_p_fstt;
+  static TH2F* pton_res_p_fstt;
 
-  static TH2F* pion_res_pz_vtxt;
-  static TH2F* kaon_res_pz_vtxt;
-  static TH2F* pton_res_pz_vtxt;
+  static TH2F* pion_res_p_vtxt;
+  static TH2F* kaon_res_p_vtxt;
+  static TH2F* pton_res_p_vtxt;
 
   static bool first_call = 1;
 
@@ -1059,21 +1059,21 @@ void CbmL1::TrackFitPerformance()
       PRes2DPrim = new TH2F("PRes2DPrim", "Resolution P vs P", 100, 0., 20., 100, -15., 15.);
       PRes2DSec  = new TH2F("PRes2DSec", "Resolution P vs P", 100, 0., 20., 100, -15., 15.);
 
-      pion_res_pt_fstt = new TH2F("pion_res_pt_fstt", "", 100, 0, 10, 1000, 0, 500);
-      kaon_res_pt_fstt = new TH2F("kaon_res_pt_fstt", "", 100, 0, 10, 1000, 0, 500);
-      pton_res_pt_fstt = new TH2F("pton_res_pt_fstt", "", 100, 0, 10, 1000, 0, 500);
+      pion_res_pt_fstt = new TH2F("pion_res_pt_fstt", "", 100, 0, 10, 1000, -500, 500);
+      kaon_res_pt_fstt = new TH2F("kaon_res_pt_fstt", "", 100, 0, 10, 1000, -500, 500);
+      pton_res_pt_fstt = new TH2F("pton_res_pt_fstt", "", 100, 0, 10, 1000, -500, 500);
 
-      pion_res_pt_vtxt = new TH2F("pion_res_pt_vtxt", "", 100, 0, 10, 1000, 0, 5000);
-      kaon_res_pt_vtxt = new TH2F("kaon_res_pt_vtxt", "", 100, 0, 10, 1000, 0, 5000);
-      pton_res_pt_vtxt = new TH2F("pton_res_pt_vtxt", "", 100, 0, 10, 1000, 0, 5000);
+      pion_res_pt_vtxt = new TH2F("pion_res_pt_vtxt", "", 100, 0, 10, 1000, -5000, 5000);
+      kaon_res_pt_vtxt = new TH2F("kaon_res_pt_vtxt", "", 100, 0, 10, 1000, -5000, 5000);
+      pton_res_pt_vtxt = new TH2F("pton_res_pt_vtxt", "", 100, 0, 10, 1000, -5000, 5000);
 
-      pion_res_pz_fstt = new TH2F("pion_res_pz_fstt", "", 100, 0, 10, 1000, 0, 500);
-      kaon_res_pz_fstt = new TH2F("kaon_res_pz_fstt", "", 100, 0, 10, 1000, 0, 500);
-      pton_res_pz_fstt = new TH2F("pton_res_pz_fstt", "", 100, 0, 10, 1000, 0, 500);
+      pion_res_p_fstt = new TH2F("pion_res_p_fstt", "", 100, 0, 10, 1000, -500, 500);
+      kaon_res_p_fstt = new TH2F("kaon_res_p_fstt", "", 100, 0, 10, 1000, -500, 500);
+      pton_res_p_fstt = new TH2F("pton_res_p_fstt", "", 100, 0, 10, 1000, -500, 500);
 
-      pion_res_pz_vtxt = new TH2F("pion_res_pz_vtxt", "", 100, 0, 10, 1000, 0, 5000);
-      kaon_res_pz_vtxt = new TH2F("kaon_res_pz_vtxt", "", 100, 0, 10, 1000, 0, 5000);
-      pton_res_pz_vtxt = new TH2F("pton_res_pz_vtxt", "", 100, 0, 10, 1000, 0, 5000);
+      pion_res_p_vtxt = new TH2F("pion_res_p_vtxt", "", 100, 0, 10, 1000, -5000, 5000);
+      kaon_res_p_vtxt = new TH2F("kaon_res_p_vtxt", "", 100, 0, 10, 1000, -5000, 5000);
+      pton_res_p_vtxt = new TH2F("pton_res_p_vtxt", "", 100, 0, 10, 1000, -5000, 5000);
 
       struct {
         const char* name;
@@ -1186,6 +1186,8 @@ void CbmL1::TrackFitPerformance()
       double dx = trPar.x[0] - mcP.xIn;
       double dy = trPar.y[0] - mcP.yIn;
       double dt = sqrt(dx * dx + dy * dy);
+      // make dt distance negative for the half of the tracks to ease the gaussian fit and the rms calculation
+      if (mc.ID % 2) dt = -dt;
       double pt = sqrt(mcP.px * mcP.px + mcP.py * mcP.py);
       h_fit[0]->Fill(dx * 1.e4);
       h_fit[1]->Fill(dy * 1.e4);
@@ -1201,15 +1203,15 @@ void CbmL1::TrackFitPerformance()
         PRes2DPrim->Fill(mcP.p, (1. / fabs(trPar.qp[0]) - mcP.p) / mcP.p * 100.);
 
         if (abs(mcTrack.pdg == 211)) {
-          pion_res_pz_fstt->Fill(mcP.pz, dt * 1.e4);
+          pion_res_p_fstt->Fill(mcP.p, dt * 1.e4);
           pion_res_pt_fstt->Fill(pt, dt * 1.e4);
         }
         if (abs(mcTrack.pdg == 321)) {
-          kaon_res_pz_fstt->Fill(mcP.pz, dt * 1.e4);
+          kaon_res_p_fstt->Fill(mcP.p, dt * 1.e4);
           kaon_res_pt_fstt->Fill(pt, dt * 1.e4);
         }
         if (abs(mcTrack.pdg == 2212)) {
-          pton_res_pz_fstt->Fill(mcP.pz, dt * 1.e4);
+          pton_res_p_fstt->Fill(mcP.p, dt * 1.e4);
           pton_res_pt_fstt->Fill(pt, dt * 1.e4);
         }
       }
@@ -1459,18 +1461,21 @@ void CbmL1::TrackFitPerformance()
         double dx = trPar.x[0] - mc.x;
         double dy = trPar.y[0] - mc.y;
         double dt = sqrt(dx * dx + dy * dy);
+        // make dt distance negative for the half of the tracks to ease the gaussian fit and the rms calculation
+        if (mc.ID % 2) dt = -dt;
+
         double pt = sqrt(mc.px * mc.px + mc.py * mc.py);
 
         if (abs(mc.pdg == 211)) {
-          pion_res_pz_vtxt->Fill(mc.pz, dt * 1.e4);
+          pion_res_p_vtxt->Fill(mc.p, dt * 1.e4);
           pion_res_pt_vtxt->Fill(pt, dt * 1.e4);
         }
         if (abs(mc.pdg == 321)) {
-          kaon_res_pz_vtxt->Fill(mc.pz, dt * 1.e4);
+          kaon_res_p_vtxt->Fill(mc.p, dt * 1.e4);
           kaon_res_pt_vtxt->Fill(pt, dt * 1.e4);
         }
         if (abs(mc.pdg == 2212)) {
-          pton_res_pz_vtxt->Fill(mc.pz, dt * 1.e4);
+          pton_res_p_vtxt->Fill(mc.p, dt * 1.e4);
           pton_res_pt_vtxt->Fill(pt, dt * 1.e4);
         }
 
