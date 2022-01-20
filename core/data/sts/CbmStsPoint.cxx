@@ -90,8 +90,8 @@ CbmStsPoint::CbmStsPoint(const CbmStsPoint& point, int32_t eventId, double event
 double CbmStsPoint::GetX(double z) const
 {
   //  LOG(info) << fZ << " " << z << " " << fZ_out;
-  if ((fZ_out - z) * (fZ - z) >= 0.) return (fX_out + fX) / 2.;
   double dz = fZ_out - fZ;
+  if (fabs(dz) < 1.e-4) return 0.5 * (fX_out + fX);
   return (fX + (z - fZ) / dz * (fX_out - fX));
 }
 // -------------------------------------------------------------------------
@@ -100,9 +100,8 @@ double CbmStsPoint::GetX(double z) const
 // -----   Point y coordinate from linear extrapolation   ------------------
 double CbmStsPoint::GetY(double z) const
 {
-  if ((fZ_out - z) * (fZ - z) >= 0.) return (fY_out + fY) / 2.;
   double dz = fZ_out - fZ;
-  //  if ( abs(dz) < 1.e-3 ) return (fY_out+fY)/2.;
+  if (fabs(dz) < 1.e-4) return 0.5 * (fY_out + fY);
   return (fY + (z - fZ) / dz * (fY_out - fY));
 }
 // -------------------------------------------------------------------------
