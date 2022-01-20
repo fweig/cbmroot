@@ -1,9 +1,8 @@
 /* Copyright (C) 2021 Physikalisches Institut, Universitaet Heidelberg, Germany
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Ingo Deppner, Norbert Herrmann [committer] */
-
+   Authors: Ingo Deppner, Eoin Clerkin [committer] */
 ///
-/// \file Create_TOF_Geometry_v21a.C
+/// \file Create_TOF_Geometry_v13_4x.C
 /// \brief Generates TOF geometry in Root format.
 ///
 
@@ -55,59 +54,26 @@
 const Bool_t IncludeSupports = true;  // false;   // true, if support structure is included in geometry
 
 // Name of geometry version and output file
-const TString geoVersion = "tof_v21a_1h";  // SIS 100 hadron, 4.5 m
-//const TString geoVersion = "tof_v21a_1e";   // SIS 100 electron
-//const TString geoVersion = "tof_v21a_1m";   // SIS 100 mon
+//const TString geoVersion = "tof_v21at_1h";     // SIS 100 hadron, 4.5 m
+//const TString geoVersion = "tof_v21at_1e";     // SIS 100 electron, 6 m
+//const TString geoVersion = "tof_v21at_1m";     // SIS 100 muon, 6.8 m
+const TString geoVersion = "tof_v21a";  // SIS 300 electron, 8.8 m
+//const TString geoVersion = "tof_v21at_3m";     // SIS 300 muon, 10 m
 const TString FileNameSim  = geoVersion + ".geo.root";
 const TString FileNameGeo  = geoVersion + "_geo.root";
 const TString FileNameInfo = geoVersion + ".geo.info";
 
-const Double_t TOF_Z_Corr = ("tof_v21a_1e" == geoVersion ? 800 :                        // SIS 100 electron
-                               ("tof_v21a_1h" == geoVersion ? 800 :                     // SIS 100 hadron
-                                  ("tof_v21a_1m" == geoVersion ? 859 :                  // SIS 100 muon
-                                     ("tof_v16e_1h" == geoVersion ? 546.485 :           // SIS 100 hadron
-                                        ("tof_v16e_1e" == geoVersion ? 696.485 :        // SIS 100 electron
-                                           ("tof_v16e_1m" == geoVersion ? 776.485 :     // SIS 100 muon
-                                              ("tof_v16e_3e" == geoVersion ? 976.485 :  // SIS 300 electron
-                                                 ("tof_v16e_3m" == geoVersion ? 0 :     // SIS 300 muon
-                                                    600  // Set default to SIS 100 electron
-                                                  ))))))));
-
-
 // TOF_Z_Front corresponds to front cover of outer super module towers
-const Double_t TOF_Z_Front = ("tof_v21a_1m" == geoVersion ? (762 - TOF_Z_Corr) :                    // SIS 100 muon
-                                ("tof_v21a_1e" == geoVersion ? (703 - TOF_Z_Corr) :                 // SIS 100 electron
-                                   ("tof_v21a_1h" == geoVersion ? (703 - TOF_Z_Corr) :              // SIS 100 hadron
-                                      ("tof_v16e_1h" == geoVersion ? (450 - TOF_Z_Corr) :           // SIS 100 hadron
-                                         ("tof_v16e_1e" == geoVersion ? (600 - TOF_Z_Corr) :        // SIS 100 electron
-                                            ("tof_v16e_1m" == geoVersion ? (680 - TOF_Z_Corr) :     // SIS 100 muon
-                                               ("tof_v16e_3e" == geoVersion ? (880 - TOF_Z_Corr) :  // SIS 300 electron
-                                                  ("tof_v16e_3m" == geoVersion ? (1020 - TOF_Z_Corr) :  // SIS 300 muon
-                                                     600  // Set default to SIS 100 electron
-                                                   ))))))));
+const Float_t TOF_Z_Front = ("tof_v21at_1h" == geoVersion ? 450 :               // SIS 100 hadron
+                               ("tof_v21at_1e" == geoVersion ? 600 :            // SIS 100 electron
+                                  ("tof_v21at_1m" == geoVersion ? 680 :         // SIS 100 muon
+                                     ("tof_v21at_3e" == geoVersion ? 880 :      // SIS 300 electron
+                                        ("tof_v21at_3m" == geoVersion ? 1020 :  // SIS 300 muon
+                                           600                                  // Set default to SIS 100 electron
+                                         )))));
 
-// Shift of the TOF inner wall relative to default position [cm];
-const Double_t InnerWall_Z_PositionShift = TOF_Z_Front - 475;  // in cm, Inner wall Offset 0 for wall at 6m
-// Shift of the TOF outer wall relative to default position [cm];
-const Double_t Wall_Z_PositionShift = InnerWall_Z_PositionShift - 405;  // in cm, Outer wall Offset -5cm for wall at 10m
-// for 0 m
-/*
-const Double_t  = -600.;  // inner wall placed at 600
-const Double_t       = -998.;  // outer wall placed at 1000
-*/
-// for 6m
-/*
-const Double_t InnerWall_Z_PositionShift = 0.;    // -600.;  // inner wall placed at 600
-const Double_t Wall_Z_PositionShift      = -425.; // -998.;  // outer wall placed at 1000
-*/
-/*
-// for 10 m
-const Double_t InnerWall_Z_PositionShift = 400.;    // -600.;  // inner wall placed at 600
-const Double_t Wall_Z_PositionShift      = -25.; // -998.;  // outer wall placed at 1000
-*/
+const TString GeometryType = "20b";
 
-// Names of the different used materials which are used to build the modules
-// The materials are defined in the global media.geo file
 const TString KeepingVolumeMedium = "air";
 const TString BoxVolumeMedium     = "aluminium";
 const TString PoleVolumeMedium    = "tof_pole_aluminium";
@@ -148,10 +114,10 @@ const Int_t MaxNofCounters = 60;
 const Int_t MaxNofModules  = 230;
 
 const Int_t NCounterInModule[NofModuleTypes]     = {5, 5, 5, 5, 5, 30, 24, 27, 18, 24, 30, 24, 27, 18, 24};
-const Int_t NModulesOfModuleType[NofModuleTypes] = {62, 32, 8, 100, 16, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1};
+const Int_t NModulesOfModuleType[NofModuleTypes] = {62, 32, 8, 96, 16, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1};
 Int_t iMod[NofModuleTypes]                       = {0};
 //Int_t ActNofModuleTypes    = 2;
-Int_t NModules[NofModuleTypes] = {0};
+//Int_t NModules[NofModuleTypes] = {0};
 
 Float_t xPosCou[NofModuleTypes][MaxNofCounters];
 Float_t yPosCou[NofModuleTypes][MaxNofCounters];
@@ -161,7 +127,7 @@ Int_t CouType[NofModuleTypes][MaxNofCounters];
 Float_t xPosMod[MaxNofModules];
 Float_t yPosMod[MaxNofModules];
 Float_t zPosMod[MaxNofModules];
-Int_t ModType[MaxNofModules] = {MaxNofModules * -1};
+Int_t ModType[MaxNofModules];
 //Float_t FlipMod[NofModuleTypes][MaxNofModules];
 
 const Float_t Module_Size_X[NofModuleTypes] = {180.2, 180.2, 180.2, 180.2, 180.2, 210.5, 124.4, 98.3,
@@ -259,7 +225,7 @@ void dump_info_file();
 void read_module_positions();
 void read_counter_positions();
 
-void Create_TOF_Geometry_v21a()
+void Create_TOF_Geometry_v21a_FullWall()
 {
   // Load the necessary FairRoot libraries
   //  gROOT->LoadMacro("$VMCWORKDIR/gconfig/basiclibs.C");
@@ -292,9 +258,8 @@ void Create_TOF_Geometry_v21a()
   TGeoVolume* top = new TGeoVolumeAssembly("TOP");
   gGeoMan->SetTopVolume(top);
 
-  TGeoTranslation* toftrans = new TGeoTranslation(0., 0., TOF_Z_Corr);
-  TGeoVolume* tof           = new TGeoVolumeAssembly(geoVersion);
-  top->AddNode(tof, 1, toftrans);
+  TGeoVolume* tof = new TGeoVolumeAssembly(geoVersion);
+  top->AddNode(tof, 1);
 
   for (Int_t counterType = 0; counterType < NumberOfDifferentCounterTypes; counterType++) {
     //gCounter[counterType] = create_counter_simple(counterType);
@@ -312,10 +277,8 @@ void Create_TOF_Geometry_v21a()
 
   position_tof_modules();
 
-  if (IncludeSupports) {
-    position_tof_poles(0);
-    position_tof_bars(0);
-  }
+  if (IncludeSupports) position_tof_poles(0);
+  if (IncludeSupports) position_tof_bars(0);
 
   gGeoMan->CloseGeometry();
   gGeoMan->CheckOverlaps(0.00001);
@@ -323,6 +286,19 @@ void Create_TOF_Geometry_v21a()
   gGeoMan->PrintOverlaps();
   gGeoMan->GetListOfOverlaps()->Print();
   gGeoMan->Test();
+
+  tof->Export(FileNameSim);  // an alternative way of writing the tof volume
+
+  TFile* outfile                 = new TFile(FileNameSim, "UPDATE");
+  TGeoTranslation* tof_placement = new TGeoTranslation("tof_trans", 0., 0., 0.);
+  tof_placement->Write();
+  outfile->Close();
+
+  outfile = new TFile(FileNameGeo, "RECREATE");
+  gGeoMan->Write();
+  outfile->Close();
+
+  dump_info_file();
 
   top->SetVisContainers(1);
   gGeoMan->SetVisLevel(5);
@@ -335,17 +311,6 @@ void Create_TOF_Geometry_v21a()
   gModules[1]->SetVisContainers(1);
   //gModules[5]->Draw("");
   //  top->Raytrace();
-
-  tof->Export(FileNameSim);  // an alternative way of writing the tof volume
-  TFile* outfile = new TFile(FileNameSim, "UPDATE");
-  toftrans->Write();
-  outfile->Close();
-
-  outfile = new TFile(FileNameGeo, "RECREATE");
-  gGeoMan->Write();
-  outfile->Close();
-
-  dump_info_file();
 
   // Printout what we are generating
   std::cout << "Done generating geometry " << geoVersion << " at " << TOF_Z_Front << " cm from target." << std::endl;
@@ -425,16 +390,11 @@ void read_module_positions()
     ss >> iNum >> iModT >> iX >> iY >> iZ;
     ss << strdummy;
     //  ss>>iNum>>iX>>iY>>iZ>>cType[0]>>cType[1];
-    //cout<<iNum<<"   "<<iModT<<"   "<<iX<<"   "<<iY<<"   "<<iZ<<endl;
+    cout << iNum << "   " << iModT << "   " << iX << "   " << iY << "   " << iZ << endl;
 
     //cout<<" ModType "<<iModType<<endl;
     //cout<<" ModType "<<iModType<<", # "<<iMod<<endl;
     ModType[iMod] = iModT;
-    NModules[iModT]++;
-    if (NModules[iModT] > NModulesOfModuleType[iModT]) {
-      cout << "Too many modules of Type " << iModT << endl;
-      break;
-    }
     xPosMod[iMod] = iX;
     yPosMod[iMod] = iY;
     zPosMod[iMod] = iZ;
@@ -450,12 +410,8 @@ void read_module_positions()
     cout<<" ModType "<<iModType<<", Mod "<<iMod<<", x "<<xPosMod[iModType][iMod]<<", y "
       <<yPosMod[iModType][iMod]<<", z "<<zPosMod[iModType][iMod]<<endl;
   */
-    if (iMod > MaxNofModules) {
-      cout << "Too many modules found in input file, max is " << MaxNofModules << endl;
-      break;
-    }
   }
-  //cout <<"Data reading finished for "<< endl;
+  cout << "Data reading finished for " << endl;
 }
 
 
@@ -915,7 +871,7 @@ TGeoVolume* create_tof_bar(Float_t dx, Float_t dy, Float_t dz)
 
 void position_tof_poles(Int_t modType)
 {
-  cout << "Position " << NumberOfPoles << " TOF poles" << endl;
+
   TGeoTranslation* pole_trans = NULL;
 
   Int_t numPoles      = 0;
@@ -941,7 +897,7 @@ void position_tof_poles(Int_t modType)
       gGeoMan->GetVolume(geoVersion)->AddNode(gPoleShort, numPolesShort, pole_trans);
       numPolesShort++;
     }
-    cout << " Position Pole " << numPoles << " at z=" << Pole_ZPos[i] << ", x " << Pole_XPos[i] << endl;
+    //     cout << " Position Pole "<< numPoles<<" at z="<< Pole_ZPos[i] <<", x "<<Pole_XPos[i]<< endl;
   }
 }
 
@@ -1023,30 +979,23 @@ void position_tof_modules()
   TGeoCombiTrans* module_combi_trans = NULL;
 
   //  if(modType != 0) continue; // debugging
-  for (int iModT = 0; iModT < NofModuleTypes; iModT++)
-    for (Int_t i = 0; i < MaxNofModules; i++) {
-      if (ModType[i] != iModT) continue;  // process ModTypes in order
-      // for(Int_t i=0; i<5; i++) {
-      //if(i != 0) continue; // debugging
-      Float_t xPos = xPosMod[i];
-      Float_t yPos = yPosMod[i];
-      Float_t zPos = zPosMod[i] - 884.0 + TOF_Z_Front;
-      //cout<<"Place Mod Type "<<j<<" at x "<<xPos<<", y "<<yPos<<", z "<<zPos<<", Flip "<<FlipMod[j][i]<<endl;
+  for (Int_t i = 0; i < MaxNofModules; i++) {
+    // for(Int_t i=0; i<5; i++) {
+    //if(i != 0) continue; // debugging
+    Float_t xPos = xPosMod[i];
+    Float_t yPos = yPosMod[i];
+    Float_t zPos = zPosMod[i] - 884.0 + TOF_Z_Front;
+    //cout<<"Place Mod Type "<<j<<" at x "<<xPos<<", y "<<yPos<<", z "<<zPos<<", Flip "<<FlipMod[j][i]<<endl;
 
-      module_trans = new TGeoTranslation("", xPos, yPos, zPos);
-      if (ModType[i] < 5 && xPosMod[i] < 0.0) { module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot1); }
-      else {
-        module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot0);
-      }
-      cout << "AddModule " << i << "   ModType  " << ModType[i] << "  iMod:  " << iMod[ModType[i]] << endl;
-      gGeoMan->GetVolume(geoVersion)->AddNode(gModules[ModType[i]], iMod[ModType[i]], module_combi_trans);
-      iMod[ModType[i]]++;
-
-      if (iMod[ModType[i]] > NModulesOfModuleType[ModType[i]]) {
-        cout << "Inconsistent number of modules " << endl;
-        break;
-      }
+    module_trans = new TGeoTranslation("", xPos, yPos, zPos);
+    if (ModType[i] < 5 && xPosMod[i] < 0.0) { module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot1); }
+    else {
+      module_combi_trans = new TGeoCombiTrans(*module_trans, *module_rot0);
     }
+    cout << i << "   ModType  " << ModType[i] << "  iMod:  " << iMod[ModType[i]] << endl;
+    gGeoMan->GetVolume(geoVersion)->AddNode(gModules[ModType[i]], iMod[ModType[i]], module_combi_trans);
+    iMod[ModType[i]]++;
+  }
 }
 
 void dump_info_file()
