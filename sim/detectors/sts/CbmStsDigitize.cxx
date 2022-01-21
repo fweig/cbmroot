@@ -628,6 +628,17 @@ void CbmStsDigitize::ProcessMCEvent()
       }  //? MC track present
     }    //? discard secondaries
 
+    // --- Ignore points with unphysical time
+    // Such instances were observed using Geant4 in the fairsoft jun19 version.
+    // The cut at 1 ms from the event start is somehow arbitrary, but should suit the purpose.
+    // If not cut here, the time range for the StsDigi (2^31 ns) might be exceeded in
+    // flexible time slices or in event-by-event simulation.
+    if (point->GetTime() > 1.e6) {
+      fNofPointsIgno++;
+      continue;
+    }
+
+    // --- Process the StsPoint
     ProcessPoint(point, fCurrentEventTime, link);
     fNofPointsProc++;
     delete link;
