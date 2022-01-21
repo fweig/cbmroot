@@ -21,6 +21,7 @@ target_include_directories(Algo
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/trd
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/tof
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/psd
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/raw
   PUBLIC ${CMAKE_SOURCE_DIR}/external/ipc/ipc/lib/fles_ipc
 )
 
