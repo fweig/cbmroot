@@ -23,4 +23,23 @@ std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
   return &fParContVec;
 }
 
+void CbmStsUnpackAlgoBase::SetWalkMap(const std::map<uint32_t, CbmStsParModule>& mapIn)
+{
+  auto modIt = mapIn.begin();
+  for (auto& mapInEntry : mapIn) {
+    const std::vector<CbmStsParAsic>& asicPars = (mapInEntry.second).GetAsicParams();
+    uint32_t uNbAsics                          = asicPars.size();
+    fWalkLookup[mapInEntry.first].resize(uNbAsics);
+    for (uint32_t asicIdx = 0; asicIdx < uNbAsics; ++asicIdx) {
+      fWalkLookup[mapInEntry.first][asicIdx].resize(32);
+      for (double uAdc = 0; uAdc < 32; ++uAdc) {
+        fWalkLookup[mapInEntry.first][asicIdx][uAdc] =
+          asicPars[asicIdx].GetWalkCoef(3) * uAdc * uAdc * uAdc + asicPars[asicIdx].GetWalkCoef(2) * uAdc * uAdc
+          + asicPars[asicIdx].GetWalkCoef(1) * uAdc + asicPars[asicIdx].GetWalkCoef(0);
+      }
+    }
+  }
+  fbUseTimeWalkCorrection = true;
+}
+
 ClassImp(CbmStsUnpackAlgoBase)

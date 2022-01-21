@@ -24,6 +24,7 @@
 #include "CbmErrorMessage.h"  // REMARK see remark in CbmStsUnpackConfig
 #include "CbmRecoUnpackAlgo.tmpl"
 #include "CbmStsDigi.h"
+#include "CbmStsParModule.h"
 #include "CbmStsUnpackMonitor.h"
 
 #include "Timeslice.hpp"  // timeslice
@@ -63,6 +64,9 @@ public:
 
   /** @brief Set the time offset per Asic */
   void SetAsicTimeOffsetVec(std::vector<double> value) { fvdTimeOffsetNsAsics.swap(value); }
+
+  /** @brief Enable/Disable time-walk correction */
+  void SetWalkMap(const std::map<uint32_t, CbmStsParModule>& mapIn);
 
   /** @brief Enable/Disable the duplicate digis rejection, without or with same ADC checks */
   void SetDuplicatesRejection(bool bIn = true, bool bDiffAdc = true)
@@ -117,6 +121,12 @@ protected:
 
   /** @brief Time offsets per Asic??? @todo expert confirmation required */
   std::vector<double> fvdTimeOffsetNsAsics = {};
+
+  /** @brief Enable/Disable time-walk correction */
+  bool fbUseTimeWalkCorrection = false;
+
+  /** @brief Per-ASIC's sensors Time-Walk correction mapping */
+  std::map<uint32_t, std::vector<std::vector<double>>> fWalkLookup = {};
 
   /** @brief Enables the rejection of duplicate digis */
   bool fbRejectDuplicateDigis = false;

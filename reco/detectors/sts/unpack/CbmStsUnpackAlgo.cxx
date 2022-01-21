@@ -509,6 +509,11 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
       double dTimeInNs         = tsreltime - fSystemTimeOffset;
       if (uAsicIdx < fvdTimeOffsetNsAsics.size()) dTimeInNs -= fvdTimeOffsetNsAsics[uAsicIdx];
 
+      // Time-Walk correction
+      if (fbUseTimeWalkCorrection == true) {
+        dTimeInNs += fWalkLookup[fviFebAddress[uFebIdx]][uChanInMod / fNrChsPerAsic][usRawAdc];
+      }
+
       const uint64_t ulTimeInNs = static_cast<uint64_t>(dTimeInNs);
       const double dCalAdc      = fvdFebAdcOffs[uFebIdx] + (usRawAdc - 1) * fvdFebAdcGain[uFebIdx];
 

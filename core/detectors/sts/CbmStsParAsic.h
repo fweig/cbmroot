@@ -190,6 +190,16 @@ public:
    **/
   void SetWalkCoef(std::array<double, 4> par) { fWalkCoef = par; }
 
+  /** @brief Get one of the coefficients for walk correction
+   ** @param uIdx Index of the correction parameter
+   ** @return Double value of coeff
+   **/
+  double GetWalkCoef(uint32_t uIdx) const
+  {
+    if (uIdx < 4) return fWalkCoef[uIdx];
+    return 0.;
+  }
+
   /** @brief Info to string **/
   std::string ToString() const;
 

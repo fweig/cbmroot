@@ -21,6 +21,7 @@
 #include "CbmErrorMessage.h"  // REMARK this should become a Sts specific container I Would propose PR
 #include "CbmRecoUnpackConfig.tmpl"
 #include "CbmStsDigi.h"
+#include "CbmStsParModule.h"
 #include "CbmStsUnpackAlgo.h"
 #include "CbmStsUnpackMonitor.h"
 
@@ -92,6 +93,8 @@ public:
     if (fvdTimeOffsetNsAsics.size() < (asicid + 1)) fvdTimeOffsetNsAsics.resize(asicid + 1);
     fvdTimeOffsetNsAsics.at(asicid) = value;
   }
+  /** @brief Set Time-Walk correction map */
+  void SetWalkMap(const std::map<uint32_t, CbmStsParModule>& mapIn) { fWalkMap = mapIn; }
 
   /** @brief Enable/Disable the duplicate digis rejection, without or with same ADC checks */
   void SetDuplicatesRejection(bool bIn = true, bool bDiffAdc = true)
@@ -128,6 +131,12 @@ protected:
 
   /** @brief Vector with the Asic time offsets */
   std::vector<double> fvdTimeOffsetNsAsics = {};
+
+  /** @brief Enables time-walk correction */
+  bool fbUseTimeWalkCorrection = false;
+
+  /** @brief Time-Walk Parameters map */
+  std::map<uint32_t, CbmStsParModule> fWalkMap = {};
 
   /** @brief Enables the rejection of duplicate digis */
   bool fbRejectDuplicateDigis = false;
