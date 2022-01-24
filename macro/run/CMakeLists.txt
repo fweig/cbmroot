@@ -87,6 +87,7 @@ foreach(setup IN LISTS cbm_setup)
   add_test(${testname} ${MACRO_DIR}/run_transport_json_config.sh \"${json_config_file}\" 2 ${randomSeed})
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION "segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
   	FIXTURES_REQUIRED run_cleanup
   	FIXTURES_SETUP fixt_tra_json_config
@@ -99,6 +100,7 @@ foreach(setup IN LISTS cbm_setup)
   add_test(${testname} ${MACRO_DIR}/run_digi_json_config.sh \"${json_config_file}\")
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION "segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
   	FIXTURES_REQUIRED fixt_tra_json_config
   	FIXTURES_SETUP fixt_digi_json_config
@@ -113,6 +115,7 @@ foreach(setup IN LISTS cbm_setup)
   	\"${input}\" ${nEvents} \"data/${sname}_coll\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION "segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
         FIXTURES_REQUIRED run_cleanup
   	FIXTURES_SETUP fixt_tra_coll_${setup}
@@ -127,6 +130,7 @@ foreach(setup IN LISTS cbm_setup)
   	\"${input}\" ${nEvents} \"data/${sname}_sign\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION "segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
   	FIXTURES_REQUIRED run_cleanup
   	FIXTURES_SETUP fixt_tra_sign_${setup}
@@ -140,6 +144,7 @@ foreach(setup IN LISTS cbm_setup)
   	${nBeam} \"Au\" 10 -1 \"data/${sname}_beam\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION "segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
   	FIXTURES_REQUIRED run_cleanup
   	FIXTURES_SETUP fixt_tra_beam_${setup}
@@ -153,6 +158,7 @@ foreach(setup IN LISTS cbm_setup)
   	\"data/${sname}_coll\" -1 \"data/${sname}_ev\" -1.)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION "segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
 	FIXTURES_REQUIRED fixt_tra_coll_${setup}
   	FIXTURES_SETUP fixt_digi_ev_${setup}
@@ -170,6 +176,7 @@ foreach(setup IN LISTS cbm_setup)
   	\"data/${sname}_sign\" \"data/${sname}_beam\" ${beamrate})
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION "segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
  	FIXTURES_REQUIRED "fixt_tra_coll_${setup};fixt_tra_sign_${setup};fixt_tra_beam_${setup}"
   	FIXTURES_SETUP fixt_digi_ts_${setup}
@@ -195,6 +202,7 @@ foreach(setup IN LISTS cbm_setup)
   	\"data/${sname}_ev\" -1 0 \"data/${sname}_eb_eb_ideal\" \"Ideal\" \"${setup}\" \"data/${sname}_coll\")
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION "segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
 	FIXTURES_REQUIRED fixt_digi_ev_${setup}
 	FIXTURES_SETUP fixt_reco_ev_ideal_${setup}
@@ -210,6 +218,7 @@ foreach(setup IN LISTS cbm_setup)
     \"data/${sname}_coll\")
   set_tests_properties(${testname} PROPERTIES
     TIMEOUT ${timeOutTime}
+    FAIL_REGULAR_EXPRESSION "segmentation violation"
     PASS_REGULAR_EXPRESSION "Macro finished successfully"
     FIXTURES_REQUIRED fixt_digi_ev_${setup}
     FIXTURES_SETUP fixt_reco_ev_real_${setup}
@@ -225,6 +234,7 @@ foreach(setup IN LISTS cbm_setup)
   	\"data/${sname}_coll\")
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION "segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
 	FIXTURES_REQUIRED fixt_digi_ts_${setup}
 	FIXTURES_SETUP fixt_reco_ts_eb_ideal_${setup}
@@ -240,6 +250,7 @@ foreach(setup IN LISTS cbm_setup)
   	\"data/${sname}_coll\")
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION "segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
 	FIXTURES_REQUIRED fixt_digi_ts_${setup}
 	FIXTURES_SETUP fixt_reco_ts_eb_real_${setup}
@@ -256,6 +267,7 @@ foreach(setup IN LISTS cbm_setup)
 	\"data/${sname}_sign\" \"data/${sname}_beam\" )
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION "segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
 	FIXTURES_REQUIRED "fixt_tra_coll_${setup};fixt_digi_ts_${setup};fixt_reco_ts_eb_real_${setup}"
 	FIXTURES_SETUP fixt_qa_${setup}
@@ -270,11 +282,13 @@ foreach(setup IN LISTS cbm_setup)
   	\"data/${sname}_coll\")
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION "segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
 	FIXTURES_REQUIRED fixt_digi_ts_${setup}
 	FIXTURES_SETUP fixt_reco_ts_tb_${setup}
  	RESOURCE_LOCK collParDb_${setup}
   )
+
 
 endforeach(setup IN LISTS cbm_setup)
 # ============================================================================
@@ -301,7 +315,9 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       Set(testname mcbm_unpack_2021_${RUN})
       Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_unpack_tsa.sh \"${RAW_DATA_PATH}/${RUN}_first20Ts.tsa\" ${RUN})
       Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
-      Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Macro finished successfully")
+      Set_Tests_Properties(${testname} PROPERTIES
+            FAIL_REGULAR_EXPRESSION "segmentation violation"
+            PASS_REGULAR_EXPRESSION "Macro finished successfully")
       set_tests_properties(${testname} PROPERTIES DEPENDS run_cleanup)
       set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED run_cleanup)
       Set(fixture_unpacked_${RUN} fixture_done_${testname})
@@ -311,7 +327,9 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       Set(testname mcbm_chktime_2021_${RUN})
       Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2021/check_timing_any.sh \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" ${RUN})
       Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
-      Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Macro finished successfully")
+      Set_Tests_Properties(${testname} PROPERTIES
+            FAIL_REGULAR_EXPRESSION "segmentation violation"
+            PASS_REGULAR_EXPRESSION "Macro finished successfully")
       set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_unpack_2021_${RUN})
       set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_unpacked_${RUN}})
       Set(fixture_chktime_${RUN} fixture_done_${testname})

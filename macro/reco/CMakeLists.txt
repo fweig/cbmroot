@@ -79,6 +79,7 @@ foreach(setup IN LISTS cbm_setup)
   	\"${input}\" ${nEvents} \"${output}\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION	"segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
   	FIXTURES_REQUIRED reco_cleanup
   	FIXTURES_SETUP fixt_reco_tra_coll_${setup}
@@ -94,6 +95,7 @@ foreach(setup IN LISTS cbm_setup)
   	\"${input}\" ${nEvents} \"${output}\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION	"segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
   	FIXTURES_REQUIRED reco_cleanup
   	FIXTURES_SETUP fixt_reco_tra_sign_${setup}
@@ -108,6 +110,7 @@ foreach(setup IN LISTS cbm_setup)
   	${nBeam} \"Au\" 10 -1 \"${output}\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION	"segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
   	FIXTURES_REQUIRED reco_cleanup
   	FIXTURES_SETUP fixt_reco_tra_beam_${setup}
@@ -125,6 +128,7 @@ foreach(setup IN LISTS cbm_setup)
   	\"${datadir}/${sname}_sign\" \"${datadir}/${sname}_beam\" ${beamrate})
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION	"segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
  	FIXTURES_REQUIRED
   	"fixt_reco_tra_coll_${setup};fixt_reco_tra_sign_${setup};fixt_reco_tra_beam_${setup}"
@@ -139,6 +143,7 @@ foreach(setup IN LISTS cbm_setup)
   	\"${datadir}/${sname}.raw.root\" \"${datadir}/${sname}.reco.root\")
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
+	FAIL_REGULAR_EXPRESSION	"segmentation violation"
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
 	FIXTURES_REQUIRED fixt_reco_digi_ts_${setup}
 	FIXTURES_SETUP fixt_reco_digi_${setup}
