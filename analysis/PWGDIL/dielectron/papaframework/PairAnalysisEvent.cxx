@@ -75,6 +75,7 @@ PairAnalysisEvent::~PairAnalysisEvent()
   //  fTracks->Clear("C");
   fGlobalTracks->Delete();  //global tracks
   fMCHeader->Delete();      //mc tracks
+  fEvHeader->Delete();      //rec header
   fMCTracks->Delete();      //mc tracks
 
   fTrdTracks->Delete();   //TRD tracks
@@ -134,6 +135,7 @@ void PairAnalysisEvent::SetInput(FairRootManager* man)
   if (nullptr == fPrimVertex) { fPrimVertex = dynamic_cast<CbmVertex*>(man->GetObject("PrimaryVertex")); }
   // MC matches and tracks
   fMCHeader    = (FairMCEventHeader*) man->GetObject("MCEventHeader.");
+  fEvHeader    = (FairEventHeader*) man->GetObject("EventHeader.");
   fMCTracks    = (TClonesArray*) man->GetObject("MCTrack");
   fStsMatches  = (TClonesArray*) man->GetObject("StsTrackMatch");
   fMuchMatches = (TClonesArray*) man->GetObject("MuchTrackMatch");

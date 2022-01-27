@@ -34,6 +34,7 @@
 #include <CbmVertex.h>
 
 #include <FairMCEventHeader.h>
+#include <FairEventHeader.h>
 #include <FairMCPoint.h>
 #include <FairRootManager.h>
 #include <FairTrackParam.h>
@@ -279,6 +280,7 @@ public:
 
     kCentrality,    // event centrality fraction
     kNevents,       // event counter
+    kEvStartTime,   // reconstructed event start time
     kRunNumber,     // run number
     kYbeam,         // beam rapdity
     kMixingBin,     // event mixing pool number
@@ -612,6 +614,9 @@ inline void PairAnalysisVarManager::FillVarPairAnalysisEvent(const PairAnalysisE
 
   // Set header information
   FillVarMCHeader(event->GetMCHeader(), values);
+  values[kEvStartTime]=event->GetEvStartTime();
+  std::cout<< "Event Time: " << values[kEvStartTime] <<std::endl;
+
 }
 
 inline void PairAnalysisVarManager::FillVarMCHeader(const FairMCEventHeader* header, Double_t* const values)
@@ -1780,7 +1785,7 @@ inline void PairAnalysisVarManager::FillVarTofHit(const CbmTofHit* hit, Double_t
   FillVarPixelHit(hit, values);
 
   // Set
-  values[kBeta] = values[kTrackLength] / 100 / (hit->GetTime() * 1e-9) / TMath::C();
+  values[kBeta] = values[kTrackLength] / 100 / ((hit->GetTime()- values[kEvStartTime]) * 1e-9) / TMath::C();
   // PID value detla beta
   values[kTofPidDeltaBetaEL] =
     values[kBeta] - (values[kP] / TMath::Sqrt(values[kMEL] * values[kMEL] + values[kP] * values[kP]));
