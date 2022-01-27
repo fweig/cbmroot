@@ -673,7 +673,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     }  // for j
   }    // if listMvdHits
 
-  if (0 && (fTrackingMode = L1Algo::TrackingMode::kGlobal) && fUseTRD) {  // SG!! create TRD hits from TRD points
+  if (0 && (fTrackingMode == L1Algo::TrackingMode::kGlobal) && fUseTRD) {  // SG!! create TRD hits from TRD points
     int firstDetStrip = NStrips;
 
     for (int ip = firstTrdPoint; ip < firstTrdPoint + nTrdPoints; ip++) {
