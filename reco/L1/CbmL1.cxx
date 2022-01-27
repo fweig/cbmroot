@@ -651,7 +651,7 @@ InitStatus CbmL1::Init()
 
       int num = ist - (NMvdStations + NStsStations + NTrdStations + NMuchStations);
 
-      geo.push_back(TofStationZ[ist - num]);
+      geo.push_back(TofStationZ[num]);
 
       geo.push_back(10);  /// TODO: add Tof width dz
       geo.push_back(0);

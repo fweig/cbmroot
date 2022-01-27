@@ -772,57 +772,58 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       th.iMC  = -1;
       int iMC = -1;
 
-      if (1 && (fTrackingMode = L1Algo::TrackingMode::kGlobal) && fPerformance
-          && fTrdHitMatches) {  //SG!!! replace hits by MC points
+      if (1 && fPerformance && fTrdHitMatches) {
 
         CbmMatch* trdHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fTrdHitMatches->At(j));
 
-        if (trdHitMatch->GetNofLinks() == 1)
+        if (trdHitMatch->GetNofLinks() > 0)
           if (trdHitMatch->GetLink(0).GetIndex() < nTrdPoints) {
             iMC    = trdHitMatch->GetLink(0).GetIndex();
             th.iMC = iMC + nMvdPoints + nStsPoints + nMuchPoints;
             //                    th.track = vMCPoints[th.iMC].ID;
-            //
-            CbmTrdPoint* pt =
-              (CbmTrdPoint*) fTrdPoints->Get(trdHitMatch->GetLink(0).GetFile(), trdHitMatch->GetLink(0).GetEntry(),
-                                             trdHitMatch->GetLink(0).GetIndex());
 
-            th.dx = 0.1;
-            th.du = 0.1;
-            th.dy = 0.1;
-            th.dv = 0.1;
+            if (fTrackingMode == L1Algo::TrackingMode::kGlobal) {  //SG!!! replace hits by MC points
 
-            th.x    = 0.5 * (pt->GetXOut() + pt->GetXIn());  // + gRandom->Gaus(0, th.dx);
-            th.y    = 0.5 * (pt->GetYOut() + pt->GetYIn());  // + gRandom->Gaus(0, th.dy);
-            th.z    = 0.5 * (pt->GetZOut() + pt->GetZIn());
-            th.time = pt->GetTime();
-            th.dt   = 10000.;
+              CbmTrdPoint* pt =
+                (CbmTrdPoint*) fTrdPoints->Get(trdHitMatch->GetLink(0).GetFile(), trdHitMatch->GetLink(0).GetEntry(),
+                                               trdHitMatch->GetLink(0).GetIndex());
 
-            th.u_front = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
-            th.u_back  = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
-            th.dx      = 1.;
-            th.du      = 1.;
-            th.dy      = 1.;
-            th.dv      = 1.;
+              th.dx = 0.1;
+              th.du = 0.1;
+              th.dy = 0.1;
+              th.dv = 0.1;
+
+              th.x    = 0.5 * (pt->GetXOut() + pt->GetXIn());  // + gRandom->Gaus(0, th.dx);
+              th.y    = 0.5 * (pt->GetYOut() + pt->GetYIn());  // + gRandom->Gaus(0, th.dy);
+              th.z    = 0.5 * (pt->GetZOut() + pt->GetZIn());
+              th.time = pt->GetTime();
+              th.dt   = 10000.;
+
+              th.u_front = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
+              th.u_back  = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
+              th.dx      = 1.;
+              th.du      = 1.;
+              th.dy      = 1.;
+              th.dv      = 1.;
+
+              if (th.iMC < 0) continue;
+              if (mcUsed[iMC]) continue;
+              if (0) {
+                int mcTrack = -1;
+                float mcP   = 0;
+                if (th.iMC >= 0) {
+                  mcTrack = vMCPoints[th.iMC].ID;
+                  if (mcTrack >= 0) { mcP = vMCTracks[mcTrack].p; }
+                }
+                if (mcP < 1.) continue;
+              }
+              mcUsed[iMC] = 1;
+            }
           }
-      }
-      if (th.iMC < 0) continue;
-      if (mcUsed[iMC]) continue;
-      if (0) {
-        int mcTrack = -1;
-        float mcP   = 0;
-        if (th.iMC >= 0) {
-          mcTrack = vMCPoints[th.iMC].ID;
-          if (mcTrack >= 0) { mcP = vMCTracks[mcTrack].p; }
-        }
-        if (mcP < 1.) continue;
-      }
-      mcUsed[iMC] = 1;
 
-      tmpHits.push_back(th);
-      nTrdHits++;
-
-      //}
+        tmpHits.push_back(th);
+        nTrdHits++;
+      }
     }  // for j
   }    // if listTrdHits
 
