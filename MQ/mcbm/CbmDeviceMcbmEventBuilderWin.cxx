@@ -117,8 +117,8 @@ try {
   fpAlgo->SetEventOverlapMode(mode);
   /// Extract refdet
   EventBuilderDetector refDet = ("kT0"   == fsRefDet ? kEventBuilderDetT0
-                              : ("kSts"  == fsRefDet ? kEventBuilderDetMuch
-                              : ("kMuch" == fsRefDet ? kEventBuilderDetTrd
+                              : ("kSts"  == fsRefDet ? kEventBuilderDetSts
+                              : ("kMuch" == fsRefDet ? kEventBuilderDetMuch
                               : ("kTrd"  == fsRefDet ? kEventBuilderDetTrd
                               : ("kTof"  == fsRefDet ? kEventBuilderDetTof
                               : ("kRich" == fsRefDet ? kEventBuilderDetRich
