@@ -3,10 +3,13 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQMcbmEvtBuilderWin2020.sh.in ${
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQBuildRawEvents.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQBuildRawEvents.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBuildRawEvents2021.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBuildRawEvents2021.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBuildRawEventsCosmics2021.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBuildRawEventsCosmics2021.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startEventBuilder.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startEventBuilder.sh)
 
 set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/MQ/base
+    ${CBMROOT_SOURCE_DIR}/algo/evbuild
+    ${CBMROOT_SOURCE_DIR}/algo/trigger
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/unpacker
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/tasks
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/parameter
@@ -257,6 +260,29 @@ set(DEPENDENCIES
 )
 GENERATE_EXECUTABLE()
 
+set(EXE_NAME EventBuilder)
+set(SRCS CbmDeviceEventBuilder.cxx runEventBuilder.cxx)
+
+set(DEPENDENCIES
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  Algo
+  CbmFlibFlesTools
+  CbmEventBuilder
+  KF
+  L1
+  CbmBase
+  CbmRecoBase
+  CbmData
+  CbmTofBase
+  Core
+  RIO
+  Net
+  Hist
+  RHTTP
+)
+GENERATE_EXECUTABLE()
 
 #set(INCLUDE_DIRECTORIES
 #    ${CBMDATA_DIR}/base
