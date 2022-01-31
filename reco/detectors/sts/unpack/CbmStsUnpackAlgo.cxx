@@ -507,12 +507,15 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
 */
       const double_t tsreltime = static_cast<double_t>(ulHitTime) * stsxyter::kdClockCycleNs;
       double dTimeInNs         = tsreltime - fSystemTimeOffset;
-      if (uAsicIdx < fvdTimeOffsetNsAsics.size()) dTimeInNs -= fvdTimeOffsetNsAsics[uAsicIdx];
 
-      // Time-Walk correction
+      // Time-Walk correction or Asic-byAsic offsetting, depending on availability
       if (fbUseTimeWalkCorrection == true) {
         dTimeInNs += fWalkLookup[fviFebAddress[uFebIdx]][uChanInMod / fNrChsPerAsic][usRawAdc];
       }
+      else if (uAsicIdx < fvdTimeOffsetNsAsics.size()) {
+        dTimeInNs -= fvdTimeOffsetNsAsics[uAsicIdx];
+      }
+
 
       const uint64_t ulTimeInNs = static_cast<uint64_t>(dTimeInNs);
       const double dCalAdc      = fvdFebAdcOffs[uFebIdx] + (usRawAdc - 1) * fvdFebAdcGain[uFebIdx];

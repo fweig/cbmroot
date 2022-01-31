@@ -25,7 +25,6 @@ std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
 
 void CbmStsUnpackAlgoBase::SetWalkMap(const std::map<uint32_t, CbmStsParModule>& mapIn)
 {
-  auto modIt = mapIn.begin();
   for (auto& mapInEntry : mapIn) {
     const std::vector<CbmStsParAsic>& asicPars = (mapInEntry.second).GetAsicParams();
     uint32_t uNbAsics                          = asicPars.size();
