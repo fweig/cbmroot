@@ -404,10 +404,10 @@ CbmRoot_Merge_Singularity_centos7_apr21:
   variables:
     <<: [*mergeRequestVariables, *singularity_centos7_variables_apr21]
 
-CbmRoot_Merge:
-  <<: [*linux_tag, *check_merge_request, *build_and_test]
-  variables:
-    <<: [*mergeRequestVariables, *linux_variables]
+#CbmRoot_Merge:
+#  <<: [*linux_tag, *check_merge_request, *build_and_test]
+#  variables:
+#    <<: [*mergeRequestVariables, *linux_variables]
 
 #CbmRoot_Merge_macosx:
 #  <<: [*macosx_tag, *check_merge_request, *build_and_test]
