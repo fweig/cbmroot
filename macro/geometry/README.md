@@ -158,3 +158,27 @@ include
 * APR21 - (current 2021 default geometries. This is the official release geometries.
 * TEST  - (Geometries shift such that the center of the magnet is the origin of the CBM exp.)
 
+
+## check_radlen.sh
+
+Checks for a common issue whereby the radiaiton length is miscalculated by root. 
+
+The script calculates the radiation length from the stated atomic number, mass and density of the material
+and compares this to the stated radlen in the material. If the difference is more than a tolerance (currently 
+5%) then failure is declared. It is up to the use to assess information. Dummy and vacuum materials may be safely 
+ignored.
+
+Sugggested command
+
+sh check_radlen.sh much_v20b_mcbm.geo.root
+
+This will check the materials rad length within a certain tolerance (5%). Recommended checking 
+the transported geometry file in simulations to check whether target definition and all geometries
+are correct.
+
+sh check_radlen.sh test.geo.root
+
+
+---
+
+
