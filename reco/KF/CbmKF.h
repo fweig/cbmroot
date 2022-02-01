@@ -107,9 +107,8 @@ private:
   Int_t ReadTube(CbmKFTube& tube, FairGeoNode* node);
   CbmKFMaterial* ReadPassive(FairGeoNode* node);
   void GetTargetInfo();
-  void loop_over_nodes(TObjArray* nodes);
 
-  TGeoNode* fTarget {nullptr};
+  void FindTargetNode(TString& targetPath, TGeoNode*& targetNode);
 
 private:
   CbmKF(const CbmKF&);

@@ -84,6 +84,7 @@ public:
   int iEvent    = -1;
   int mother_ID = -1;
   int pdg       = -1;
+  bool isSignal {0};
   L1Vector<int> Points {"CbmL1MCTrack::Points"};    // indices of pints in L1::vMCPoints
   L1Vector<int> StsHits {"CbmL1MCTrack::StsHits"};  // indices of hits in algo->vStsHits or L1::vStsHits
 

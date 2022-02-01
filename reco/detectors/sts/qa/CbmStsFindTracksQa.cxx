@@ -491,7 +491,10 @@ InitStatus CbmStsFindTracksQa::GetGeometry()
   // Get target geometry
   GetTargetPosition();
   fMvdNstations = 0;
-  {
+  // CbmMvdDetector may issue an error when there is no MVD in the setup
+  // For now we determine the presence of MVD from the presence of the mvd hit branch
+  // TODO: use CbmSetup to determine if MVD is present
+  if (fManager->GetObject("MvdHit")) {
     CbmMvdDetector* mvdDetector = CbmMvdDetector::Instance();
     if (mvdDetector) {
       CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();

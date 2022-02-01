@@ -296,8 +296,8 @@ void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, char iS)
   L1Station& sta = vStations[int(iS)];
   fscal u        = _h.u;
   fscal v        = _h.v;
-  _x             = (sta.xInfo.sin_phi[0] * u + sta.xInfo.cos_phi[0] * v) / _h.z;
-  _y             = (sta.yInfo.cos_phi[0] * u + sta.yInfo.sin_phi[0] * v) / _h.z;
+  _x             = (sta.xInfo.sin_phi[0] * u + sta.xInfo.cos_phi[0] * v) / (_h.z - fCbmTargetZ[0]);
+  _y             = (sta.yInfo.cos_phi[0] * u + sta.yInfo.sin_phi[0] * v) / (_h.z - fCbmTargetZ[0]);
 }
 
 void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta)

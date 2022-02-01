@@ -21,12 +21,17 @@
 #ifndef L1Track_H
 #define L1Track_H
 
+#include <limits>
+
 class L1Track {
 public:
+  static constexpr float kNaN {std::numeric_limits<float>::signaling_NaN()};
+
   unsigned char NHits;
   unsigned char n;
-  float Momentum, fTrackTime;
-  fscal TFirst[7], CFirst[21], TLast[7], CLast[21], Tpv[7], Cpv[21], chi2;
+  float Momentum {kNaN}, fTrackTime {kNaN};
+  fscal TFirst[7] {kNaN}, CFirst[21] {kNaN}, TLast[7] {kNaN}, CLast[21] {kNaN}, Tpv[7] {kNaN}, Cpv[21] {kNaN},
+    chi2 {kNaN};
   short int NDF;
 
   int FirstHitIndex, LastHitIndex;

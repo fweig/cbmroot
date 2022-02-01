@@ -43,6 +43,8 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
             TString dataTra2 = "", TString dataTra3 = "")
 {
 
+  gROOT->SetBatch(kTRUE);
+
   // ========================================================================
   //          Adjust this part according to your requirements
 

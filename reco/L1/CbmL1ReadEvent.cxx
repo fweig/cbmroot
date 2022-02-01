@@ -22,6 +22,7 @@
 #include "CbmEvent.h"
 #include "CbmKF.h"
 #include "CbmL1.h"
+#include "CbmMCDataObject.h"
 #include "CbmMatch.h"
 #include "CbmMuchGeoScheme.h"
 #include "CbmMuchPixelHit.h"
@@ -37,6 +38,8 @@
 #include "CbmTofPoint.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
+
+#include "FairMCEventHeader.h"
 
 #include "L1Algo/L1Algo.h"
 #include "L1AlgoInputData.h"
@@ -168,15 +171,22 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       if (fMvdPoints) {
         Int_t nMvdPointsInEvent = fMvdPoints->Size(iFile, iEvent);
+        double maxDeviation     = 0;
         for (Int_t iMC = 0; iMC < nMvdPointsInEvent; iMC++) {
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 1)) {
-            MC.iStation    = -1;
-            L1Station* sta = algo->vStations;
-            for (Int_t iSt = 0; iSt < NStsStations; iSt++) {
-              if (MC.z > sta[iSt].z[0] - 1) { MC.iStation = iSt; }
+            MC.iStation     = -1;
+            L1Station* sta  = algo->vStations;
+            double bestDist = 1.e20;
+            for (Int_t iSt = 0; iSt < NMvdStations; iSt++) {
+              double d = (MC.z - sta[iSt].z[0]);
+              if (fabs(d) < fabs(bestDist)) {
+                bestDist    = d;
+                MC.iStation = iSt;
+              }
             }
             assert(MC.iStation >= 0);
+            if (fabs(maxDeviation) < fabs(bestDist)) { maxDeviation = bestDist; }
             Double_t dtrck          = dFEI(iFile, iEvent, MC.ID);
             DFEI2I::iterator trk_it = dFEI2vMCTracks.find(dtrck);
             assert(trk_it != dFEI2vMCTracks.end());
@@ -188,19 +198,29 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             nMvdPoints++;
           }
         }
+        // assert(fabs(maxDeviation)<1.);
+        if (fVerbose) { std::cout << "CbmL1ReadEvent: max deviation of Mvd points " << maxDeviation << std::endl; }
       }
 
+
       if (fStsPoints) {
-        Int_t nMC = fStsPoints->Size(iFile, iEvent);
+        Int_t nMC           = fStsPoints->Size(iFile, iEvent);
+        double maxDeviation = 0;
         for (Int_t iMC = 0; iMC < nMC; iMC++) {
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 0)) {
-            MC.iStation    = -1;
-            L1Station* sta = algo->vStations + NMvdStations;
+            MC.iStation     = -1;
+            L1Station* sta  = algo->vStations + NMvdStations;
+            double bestDist = 1.e20;
             for (Int_t iSt = 0; iSt < NStsStations; iSt++) {
-              if (MC.z > sta[iSt].z[0] - 2.5) { MC.iStation = NMvdStations + iSt; }
+              double d = (MC.z - sta[iSt].z[0]);
+              if (fabs(d) < fabs(bestDist)) {
+                bestDist    = d;
+                MC.iStation = NMvdStations + iSt;
+              }
             }
             assert(MC.iStation >= 0);
+            if (fabs(maxDeviation) < fabs(bestDist)) { maxDeviation = bestDist; }
             Double_t dtrck          = dFEI(iFile, iEvent, MC.ID);
             DFEI2I::iterator trk_it = dFEI2vMCTracks.find(dtrck);
             assert(trk_it != dFEI2vMCTracks.end());
@@ -212,6 +232,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             nStsPoints++;
           }
         }
+        assert(fabs(maxDeviation) < 1.);
+        if (fVerbose) { std::cout << "CbmL1ReadEvent: max deviation of Sts points " << maxDeviation << std::endl; }
       }
 
       if (fMuchPoints) {
@@ -1064,81 +1086,64 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
 void CbmL1::Fill_vMCTracks()
 {
-  PrimVtx.MC_ID = 999;
+  vMCTracks.clear();
   {
-    CbmL1Vtx Vtxcurr;
-    int nvtracks = 0, nvtrackscurr = 0;
-
-    vMCTracks.clear();
-    {
-      Int_t nMCTracks = 0;
-      for (DFSET::iterator set_it = vFileEvent.begin(); set_it != vFileEvent.end(); ++set_it) {
-        Int_t iFile  = set_it->first;
-        Int_t iEvent = set_it->second;
-        nMCTracks += fMCTracks->Size(iFile, iEvent);
-      }
-      vMCTracks.reserve(nMCTracks);
-    }
-
+    Int_t nMCTracks = 0;
     for (DFSET::iterator set_it = vFileEvent.begin(); set_it != vFileEvent.end(); ++set_it) {
       Int_t iFile  = set_it->first;
       Int_t iEvent = set_it->second;
+      nMCTracks += fMCTracks->Size(iFile, iEvent);
+    }
+    vMCTracks.reserve(nMCTracks);
+  }
 
-      Int_t nMCTrack = fMCTracks->Size(iFile, iEvent);
+  int fileEvent = 0;
+  for (DFSET::iterator set_it = vFileEvent.begin(); set_it != vFileEvent.end(); ++set_it, ++fileEvent) {
+    Int_t iFile  = set_it->first;
+    Int_t iEvent = set_it->second;
 
-      for (Int_t iMCTrack = 0; iMCTrack < nMCTrack; iMCTrack++) {
-        CbmMCTrack* MCTrack = L1_DYNAMIC_CAST<CbmMCTrack*>(fMCTracks->Get(iFile, iEvent, iMCTrack));
-        if (!MCTrack) continue;
+    auto header = dynamic_cast<FairMCEventHeader*>(fMcEventHeader->Get(iFile, iEvent));
+    assert(header);
+    if (fVerbose) {
+      cout << "mc event vertex at " << header->GetX() << " " << header->GetY() << " " << header->GetZ() << endl;
+    }
 
-        int mother_ID = MCTrack->GetMotherId();
+    Int_t nMCTrack = fMCTracks->Size(iFile, iEvent);
 
+    for (Int_t iMCTrack = 0; iMCTrack < nMCTrack; iMCTrack++) {
+      CbmMCTrack* MCTrack = L1_DYNAMIC_CAST<CbmMCTrack*>(fMCTracks->Get(iFile, iEvent, iMCTrack));
+      if (!MCTrack) continue;
 
-        if (mother_ID < 0 && mother_ID != -2) mother_ID = -iEvent - 1;
-        TVector3 vr;
-        TLorentzVector vp;
-        MCTrack->GetStartVertex(vr);
-        MCTrack->Get4Momentum(vp);
+      int mother_ID = MCTrack->GetMotherId();
 
-        Int_t pdg  = MCTrack->GetPdgCode();
-        Double_t q = 1, mass = 0.;
-        if (pdg < 9999999 && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg))) {
-          q    = TDatabasePDG::Instance()->GetParticle(pdg)->Charge() / 3.0;
-          mass = TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
-        }
-        else
-          q = 0;
-        Int_t IND_Track = vMCTracks.size();  //or iMCTrack?
-        CbmL1MCTrack T(mass, q, vr, vp, IND_Track, mother_ID, pdg);
-        //        CbmL1MCTrack T(mass, q, vr, vp, iMCTrack, mother_ID, pdg);
-        T.time   = MCTrack->GetStartT();
-        T.iFile  = iFile;
-        T.iEvent = iEvent;
+      if (mother_ID < 0 && mother_ID != -2) mother_ID = -iEvent - 1;
+      TVector3 vr;
+      TLorentzVector vp;
+      MCTrack->GetStartVertex(vr);
+      MCTrack->Get4Momentum(vp);
 
-        vMCTracks.push_back(T);
-        //    Double_t dtrck =dFEI(iFile,iEvent,iMCTrack);
-        dFEI2vMCTracks.insert(DFEI2I::value_type(dFEI(iFile, iEvent, iMCTrack), vMCTracks.size() - 1));
+      Int_t pdg  = MCTrack->GetPdgCode();
+      Double_t q = 0, mass = 0.;
+      if (pdg < 9999999 && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg))) {
+        q    = TDatabasePDG::Instance()->GetParticle(pdg)->Charge() / 3.0;
+        mass = TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
+      }
 
-        if (T.mother_ID < 0) {                                             // vertex track
-          if (PrimVtx.MC_ID == 999 || fabs(T.z - Vtxcurr.MC_z) > 1.e-7) {  // new vertex
-            if (nvtrackscurr > nvtracks) {
-              PrimVtx  = Vtxcurr;
-              nvtracks = nvtrackscurr;
-            }
-            Vtxcurr.MC_x  = T.x;
-            Vtxcurr.MC_y  = T.y;
-            Vtxcurr.MC_z  = T.z;
-            Vtxcurr.MC_ID = T.mother_ID;
-            nvtrackscurr  = 1;
-          }
-          else
-            nvtrackscurr++;
-        }
-      }  //iTracks
-    }    //Links
-    if (nvtrackscurr > nvtracks) PrimVtx = Vtxcurr;
-  }  //PrimVtx
+      Int_t IND_Track = vMCTracks.size();  //or iMCTrack?
+      CbmL1MCTrack T(mass, q, vr, vp, IND_Track, mother_ID, pdg);
+      //        CbmL1MCTrack T(mass, q, vr, vp, iMCTrack, mother_ID, pdg);
+      T.time   = MCTrack->GetStartT();
+      T.iFile  = iFile;
+      T.iEvent = iEvent;
+      // signal: primary tracks, displaced from the primary vertex
+      T.isSignal = T.IsPrimary() && (T.z > header->GetZ() + 1.e-10);
 
-  if (fVerbose && PrimVtx.MC_ID == 999) cout << "No primary vertex !!!" << endl;
+      vMCTracks.push_back(T);
+      //    Double_t dtrck =dFEI(iFile,iEvent,iMCTrack);
+      dFEI2vMCTracks.insert(DFEI2I::value_type(dFEI(iFile, iEvent, iMCTrack), vMCTracks.size() - 1));
+    }  //iTracks
+  }    //Links
+
 }  //Fill_vMCTracks
 
 bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int MVD)

@@ -369,7 +369,7 @@ void CbmL1::EfficienciesPerformance()
 
       ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "total");
 
-      if ((mtra.IsPrimary()) && (mtra.z > 0)) {  // D0
+      if (mtra.isSignal) {  // D0
         ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "d0");
       }
 
@@ -980,7 +980,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     }
 
 
-    if ((mtra.IsPrimary()) && (mtra.z > 0)) {  // D0
+    if (mtra.isSignal) {  // D0
       h_reco_d0_mom->Fill(momentum);
       if (reco) p_eff_d0_vs_mom->Fill(momentum, 100.0);
       else

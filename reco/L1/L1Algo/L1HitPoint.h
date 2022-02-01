@@ -99,6 +99,7 @@ public:
 
 static const float R                     = 60;
 static const float shortPackingConstant  = 2 * R / 65535.f;
+//TODO: change the Z conversion. Hit Z maybe negative in the new setup.
 static const float MZ                    = 110;
 static const float shortPackingConstantZ = MZ / 65535.f;
 

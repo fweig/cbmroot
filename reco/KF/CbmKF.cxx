@@ -262,65 +262,78 @@ void CbmKF::GetTargetInfo()
   // proper structure
   // The complete logic depends on the naming convention of the target.
   // If the node doesn't contain the string target the procedure will fail
-  TGeoNode* topNode = gGeoManager->GetTopNode();
-
-  TObjArray* nodes = topNode->GetNodes();
-
-  loop_over_nodes(nodes);
 
   CbmKFTube target {};
   target.ID = -111;
   target.F  = 1.;
 
-  if (fTarget) {
-    TGeoMatrix* matrix          = fTarget->GetMatrix();
-    const Double_t* translation = matrix->GetTranslation();
-    target.x                    = translation[0];
-    target.y                    = translation[1];
-    target.z                    = translation[2];
+  TString targetPath;
+  TGeoNode* targetNode {nullptr};
+  FindTargetNode(targetPath, targetNode);
 
-    TGeoVolume* volume = fTarget->GetVolume();
+  if (!targetNode) { LOG(fatal) << "Could not find the target."; }
 
-    TGeoShape* shape = volume->GetShape();
-    if (shape->TestShapeBit(TGeoShape::kGeoTube)) {
-      target.r  = static_cast<TGeoTube*>(shape)->GetRmin();
-      target.R  = static_cast<TGeoTube*>(shape)->GetRmax();
-      target.dz = 2. * static_cast<TGeoTube*>(shape)->GetDz();
-    }
-    else {
-      LOG(fatal) << "Only a target of a tube shape is supported";
-    }
+  Double_t local[3] = {0., 0., 0.};  // target centre, local c.s.
+  Double_t global[3];                // target centre, global c.s.
+  gGeoManager->cd(targetPath);
+  gGeoManager->GetCurrentMatrix()->LocalToMaster(local, global);
+  target.x = global[0];
+  target.y = global[1];
+  target.z = global[2];
 
-    TGeoMaterial* material = volume->GetMaterial();
-    Double_t radlength     = material->GetRadLen();
-    target.RadLength       = radlength;
-    target.Fe              = 0.02145;
+  if (fVerbose) {
+    cout << "KALMAN FILTER : === READ TARGET MATERIAL ===" << endl;
+    cout << " found targed \"" << targetPath << "\" at ( " << target.x << " " << target.y << " " << target.z << " ) "
+         << endl;
+  }
 
-    target.rr         = target.r * target.r;
-    target.RR         = target.R * target.R;
-    target.ZThickness = target.dz;
-    target.ZReference = target.z;
+  TGeoVolume* volume = targetNode->GetVolume();
 
-    vTargets.push_back(target);
-    LOG(info) << "Target info: " << target.KFInfo();
+  TGeoShape* shape = volume->GetShape();
+  if (shape->TestShapeBit(TGeoShape::kGeoTube)) {
+    target.r  = static_cast<TGeoTube*>(shape)->GetRmin();
+    target.R  = static_cast<TGeoTube*>(shape)->GetRmax();
+    target.dz = 2. * static_cast<TGeoTube*>(shape)->GetDz();
   }
   else {
-    LOG(fatal) << "Could not find the target.";
+    LOG(fatal) << "Only a target of a tube shape is supported";
   }
+
+  TGeoMaterial* material = volume->GetMaterial();
+  Double_t radlength     = material->GetRadLen();
+  target.RadLength       = radlength;
+  target.Fe              = 0.02145;
+
+  target.rr         = target.r * target.r;
+  target.RR         = target.R * target.R;
+  target.ZThickness = target.dz;
+  target.ZReference = target.z;
+
+  vTargets.push_back(target);
+  LOG(info) << "Target info: " << target.KFInfo();
 }
 
-void CbmKF::loop_over_nodes(TObjArray* nodes)
+void CbmKF::FindTargetNode(TString& targetPath, TGeoNode*& targetNode)
 {
-  for (Int_t iNode = 0; iNode < nodes->GetEntriesFast(); iNode++) {
-    TGeoNode* node   = static_cast<TGeoNode*>(nodes->At(iNode));
-    TString nodeName = node->GetName();
-    if (nodeName.Contains("target")) {
-      fTarget = node;
-      break;
-    }
-    TObjArray* subnodes = node->GetNodes();
-    if (nullptr != subnodes) { loop_over_nodes(subnodes); }
+  if (!targetNode) {  // init at the top of the tree
+    targetNode = gGeoManager->GetTopNode();
+    targetPath = "/" + TString(targetNode->GetName());
   }
+
+  if (TString(targetNode->GetName()).Contains("target")) { return; }
+
+  for (Int_t iNode = 0; iNode < targetNode->GetNdaughters(); iNode++) {
+    TGeoNode* newNode = targetNode->GetDaughter(iNode);
+    TString newPath   = targetPath + "/" + newNode->GetName();
+    FindTargetNode(newPath, newNode);
+    if (newNode) {
+      targetPath = newPath;
+      targetNode = newNode;
+      return;
+    }
+  }
+  targetPath = "";
+  targetNode = nullptr;
 }
 
 Int_t CbmKF::GetMaterialIndex(Int_t uid)

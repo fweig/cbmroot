@@ -27,20 +27,16 @@
 #include "CbmL1MCTrack.h"
 #include "CbmL1Track.h"
 #include "CbmL1Vtx.h"
+#include "CbmMCDataArray.h"
+#include "CbmMCEventList.h"
 #include "CbmMCTrack.h"
 #include "CbmMvdHit.h"
 #include "CbmMvdPoint.h"
+#include "CbmTimeSlice.h"
 
 #include "FairDetector.h"
 #include "FairRootManager.h"
 #include "FairTask.h"
-
-#include "L1Algo/L1Algo.h"
-#include "L1Algo/L1Vector.h"
-
-#include "CbmMCDataArray.h"
-#include "CbmMCEventList.h"
-#include "CbmTimeSlice.h"
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -52,6 +48,8 @@
 #include <set>
 #include <utility>
 
+#include "L1Algo/L1Algo.h"
+#include "L1Algo/L1Vector.h"
 #include "L1EventEfficiencies.h"
 
 class L1AlgoInputData;
@@ -62,6 +60,7 @@ class L1FieldSlice;
 class CbmL1Track;
 class CbmL1MCTrack;
 class KFTopoPerformance;
+class CbmMCDataObject;
 
 class CbmEvent;
 class CbmStsParSetSensor;
@@ -175,6 +174,7 @@ private:
   //   static bool compareZ(const int &a, const int &b );
   //   bool compareZ(const int &a, const int &b );
   void Fill_vMCTracks();
+
   /// Input Performance
   void HitMatch();            // Procedure for match hits and MCPoints.
   void FieldApproxCheck();    // Build histos with difference between Field map and approximated field
@@ -254,8 +254,6 @@ private:
   Bool_t fUseTRD {false};   // if Trd data should be processed
   Bool_t fUseTOF {false};   // if Tof data should be processed
 
-  CbmL1Vtx PrimVtx {};
-
   /// Input data
   CbmTimeSlice* fTimeSlice {nullptr};
   CbmMCEventList* fEventList {nullptr};  //!  MC event list (all)
@@ -263,6 +261,7 @@ private:
   CbmMCDataArray* fStsPoints {nullptr};
   CbmMCDataArray* fMvdPoints {nullptr};
   CbmMCDataArray* fMCTracks {nullptr};
+  CbmMCDataObject* fMcEventHeader {nullptr};
 
   TClonesArray* listStsDigiMatch {nullptr};
   TClonesArray* listStsClusters {nullptr};

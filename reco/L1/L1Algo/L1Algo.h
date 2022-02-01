@@ -39,6 +39,7 @@ class L1AlgoDraw;
 
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <map>
 
 #include "L1Branch.h"
@@ -627,6 +628,7 @@ private:
 
   map<int, int> threadNumberToCpuMap {};
 
+  static constexpr float kNaN {std::numeric_limits<float>::signaling_NaN()};
 
   float TRACK_CHI2_CUT {10.f};
   float TRIPLET_CHI2_CUT {5.f};  // cut for selecting triplets before collecting tracks.per one DoF
@@ -635,18 +637,22 @@ private:
   float TIME_CUT2 {0.f};
 
   fvec MaxDZ {
-    0.f};  // correction in order to take into account overlaping and iff z. if sort by y then it is max diff between same station's modules (~0.4cm)
+    kNaN};  // correction in order to take into account overlaping and iff z. if sort by y then it is max diff between same station's modules (~0.4cm)
 
   /// parameters which are different for different iterations. Set in the begin of CAL1TrackFinder
 
-  float Pick_gather {0.f};    // same for attaching additional hits to track
-  float PickNeighbour {0.f};  // (PickNeighbour < dp/dp_error)  =>  triplets are neighbours
-  fvec MaxInvMom {0.f};       // max considered q/p for tracks
-  fvec MaxSlopePV {0.f};      // max slope (tx\ty) in prim vertex
-  float MaxSlope {0.f};       // max slope (tx\ty) in 3d hit position of a triplet
-  fvec targX {0.f};  // target coor TODO: set defaults to a crasy value to be sure that the target is initialised later
-  fvec targY {0.f};
-  fvec targZ {0.f};
+  float Pick_gather {kNaN};    // same for attaching additional hits to track
+  float PickNeighbour {kNaN};  // (PickNeighbour < dp/dp_error)  =>  triplets are neighbours
+  fvec MaxInvMom {kNaN};       // max considered q/p for tracks
+  fvec MaxSlopePV {kNaN};      // max slope (tx\ty) in prim vertex
+  float MaxSlope {kNaN};       // max slope (tx\ty) in 3d hit position of a triplet
+  fvec fCbmTargetX {kNaN};     // target position
+  fvec fCbmTargetY {kNaN};
+  fvec fCbmTargetZ {kNaN};
+  fvec fTargX {kNaN};  // target position for the current iteration
+  fvec fTargY {kNaN};
+  fvec fTargZ {kNaN};
+
   L1FieldValue targB _fvecalignment {};                // field in the target point
   L1XYMeasurementInfo TargetXYInfo _fvecalignment {};  // target constraint  [cm]
 

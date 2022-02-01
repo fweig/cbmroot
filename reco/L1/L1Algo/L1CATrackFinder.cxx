@@ -132,7 +132,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
   fvec zstal      = stal.z;
   fvec zstam      = stam.z;
 
-  int istal_global       = 5;
+  int istal_global       = 5;  //TODO: SG: what are these stations? Should the numbers depend on the presence of mvd?
   int istam_global       = 6;
   L1Station& stal_global = vStations[istal_global];
   L1Station& stam_global = vStations[istam_global];
@@ -168,8 +168,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     fvec zl         = zPos_l[i1_V];
     fvec& time      = HitTime_l[i1_V];
     fvec& timeEr    = HitTimeEr[i1_V];
-    const fvec dzli = 1. / (zl - targZ);
-
+    const fvec dzli = 1.f / (zl - fTargZ);
     fvec dx1, dy1, dxy1 = 0;
 
     dUdV_to_dX(d_u[i1_V], d_v[i1_V], dx1, stal);
@@ -178,8 +177,8 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 
     StripsToCoor(u, v, xl, yl, stal);
 
-    const fvec tx = (xl - targX) * dzli;
-    const fvec ty = (yl - targY) * dzli;
+    const fvec tx = (xl - fTargX) * dzli;
+    const fvec ty = (yl - fTargY) * dzli;
 
     // estimate field for singlet creation
     int istac = istal / 2;  // "center" station
@@ -193,31 +192,31 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     L1Station& stac_global = vStations[istac_global];
     fvec zstac_global      = stac.z;
 
-    stac.fieldSlice.GetFieldValue(targX + tx * (zstac - targZ), targY + ty * (zstac - targZ), centB);
-    stal.fieldSlice.GetFieldValue(targX + tx * (zstal - targZ), targY + ty * (zstal - targZ), l_B);
+    stac.fieldSlice.GetFieldValue(fTargX + tx * (zstac - fTargZ), fTargY + ty * (zstac - fTargZ), centB);
+    stal.fieldSlice.GetFieldValue(fTargX + tx * (zstal - fTargZ), fTargY + ty * (zstal - fTargZ), l_B);
 
-    stam_global.fieldSlice.GetFieldValue(targX + tx * (zstam_global - targZ), targY + ty * (zstam_global - targZ),
+    stam_global.fieldSlice.GetFieldValue(fTargX + tx * (zstam_global - fTargZ), fTargY + ty * (zstam_global - fTargZ),
                                          m_B_global);
-    stal_global.fieldSlice.GetFieldValue(targX + tx * (zstal_global - targZ), targY + ty * (zstal_global - targZ),
+    stal_global.fieldSlice.GetFieldValue(fTargX + tx * (zstal_global - fTargZ), fTargY + ty * (zstal_global - fTargZ),
                                          l_B_global);
-    stac_global.fieldSlice.GetFieldValue(targX + tx * (zstac_global - targZ), targY + ty * (zstac_global - targZ),
+    stac_global.fieldSlice.GetFieldValue(fTargX + tx * (zstac_global - fTargZ), fTargY + ty * (zstac_global - fTargZ),
                                          centB_global);
 
-    if (istac != istal) fld0.Set(l_B, stal.z, centB, stac.z, targB, targZ);
+    if (istac != istal) fld0.Set(l_B, stal.z, centB, stac.z, targB, fTargZ);
     else
-      fld0.Set(l_B, zstal, targB, targZ);
+      fld0.Set(l_B, zstal, targB, fTargZ);
     // estimate field for the next extrapolations
-    stam.fieldSlice.GetFieldValue(targX + tx * (zstam - targZ), targY + ty * (zstam - targZ), m_B);
+    stam.fieldSlice.GetFieldValue(fTargX + tx * (zstam - fTargZ), fTargY + ty * (zstam - fTargZ), m_B);
 #define USE_3HITS
 #ifndef USE_3HITS
     if (istac != istal) fld1.Set(m_B, zstam, l_B, zstal, centB, zstac);
     else
-      fld1.Set(m_B, zstam, l_B, zstal, targB, targZ);
+      fld1.Set(m_B, zstam, l_B, zstal, targB, fTargZ);
 #else  // if USE_3HITS  // the best now
     L1FieldValue r_B _fvecalignment;
     L1Station& star = vStations[istam + 1];
     fvec zstar      = star.z;
-    star.fieldSlice.GetFieldValue(targX + tx * (zstar - targZ), targY + ty * (zstar - targZ), r_B);
+    star.fieldSlice.GetFieldValue(fTargX + tx * (zstar - fTargZ), fTargY + ty * (zstar - fTargZ), r_B);
     fld1.Set(r_B, zstar, m_B, zstam, l_B, zstal);
     if ((istam + 1) >= fNfieldStations)
       fld1.Set(m_B_global, zstam_global, l_B_global, zstal_global, centB_global, zstac_global);
@@ -265,7 +264,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
       if (istal < fNfieldStations) {
         fvec eX, eY, J04, J14;
         fvec dz;
-        dz = targZ - zl;
+        dz = fTargZ - zl;
         L1ExtrapolateJXY0(T.tx, T.ty, dz, fld0, eX, eY, J04, J14);
         fvec J[6];
         J[0] = dz;
@@ -274,11 +273,11 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
         J[3] = 0;
         J[4] = dz;
         J[5] = J14;
-        L1FilterVtx(T, targX, targY, TargetXYInfo, eX, eY, J);
+        L1FilterVtx(T, fTargX, fTargY, TargetXYInfo, eX, eY, J);
       }
       else {
-        L1ExtrapolateLine(T, targZ);
-        L1FilterXY(T, targX, targY, TargetXYInfo);
+        L1ExtrapolateLine(T, fTargZ);
+        L1FilterXY(T, fTargX, fTargY, TargetXYInfo);
       }
     }
 
@@ -289,7 +288,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     {
       fvec eX, eY, J04, J14;
       fvec dz;
-      dz = targZ - zl;
+      dz = fTargZ - zl;
       L1ExtrapolateJXY0(T.tx, T.ty, dz, fld0, eX, eY, J04, J14);
       fvec J[6];
       J[0] = dz;
@@ -298,16 +297,16 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
       J[3] = 0;
       J[4] = dz;
       J[5] = J14;
-      L1FilterVtx(T, targX, targY, TargetXYInfo, eX, eY, J);
+      L1FilterVtx(T, fTargX, fTargY, TargetXYInfo, eX, eY, J);
     }
 
 
 #else  // TODO: doesn't work. Why?
 
-    T.x = targX;
-    T.y = targY;
+    T.x = fTargX;
+    T.y = fTargY;
 
-    T.z   = targZ;
+    T.z   = fTargZ;
     T.C00 = TargetXYInfo.C00;
     T.C10 = TargetXYInfo.C10;
     T.C11 = TargetXYInfo.C11;
@@ -411,7 +410,7 @@ inline void L1Algo::f20(
     // Pick_m22 is not used, search for mean squared, 2nd version
 
     // -- collect possible doublets --
-    const fscal iz         = 1 / T1.z[i1_4];
+    const fscal iz         = 1.f / (T1.z[i1_4] - fCbmTargetZ[0]);
     const float& timeError = T1.C55[i1_4];
     const float& time      = T1.t[i1_4];
 
@@ -719,7 +718,7 @@ inline void L1Algo::f30(  // input
 #ifdef DO_NOT_SELECT_TRIPLETS
         if (isec == TRACKS_FROM_TRIPLETS_ITERATION) Pick_r22 = Pick_r2 + 1;
 #endif
-        const fscal iz = 1 / T2.z[i2_4];
+        const fscal iz = 1.f / (T2.z[i2_4] - fCbmTargetZ[0]);
         L1HitAreaTime area(vGridTime[&star - vStations], T2.x[i2_4] * iz, T2.y[i2_4] * iz,
                            (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + MaxDZ * fabs(T2.tx))[i2_4] * iz,
                            (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + MaxDZ * fabs(T2.ty))[i2_4] * iz, time,
@@ -1860,9 +1859,9 @@ void L1Algo::CATrackFinder()
 
         MaxSlope = 2.748;  // corresponds to 70 grad
         // define the target
-        targX = 0;
-        targY = 0;
-        targZ = 0;  //  suppose, what target will be at (0,0,0)
+        fTargX = fCbmTargetX;
+        fTargY = fCbmTargetY;
+        fTargZ = fCbmTargetZ;
 
         float SigmaTargetX = 0, SigmaTargetY = 0;  // target constraint [cm]
         if ((isec == kFastPrimIter) || (isec == kFastPrimIter2) || (isec == kFastPrimJumpIter) || (isec == kAllPrimIter)
@@ -1877,7 +1876,7 @@ void L1Algo::CATrackFinder()
             || (isec == kAllSecJumpIter)) {  //use outer radius of the 1st station as a constraint
           L1Station& st = vStations[0];
           SigmaTargetX = SigmaTargetY = 10;  //st.Rmax[0];
-          targZ                       = 0.;  //-1.;
+          fTargZ                      = fCbmTargetZ;  // fCbmTargetZ-1.;
           st.fieldSlice.GetFieldValue(0, 0, targB);
         }
 
@@ -2358,7 +2357,7 @@ void L1Algo::CATrackFinder()
                 float xcoor, ycoor = 0;
                 L1Station stah = vStations[0];
                 StripsToCoor(tempPoint.U(), tempPoint.V(), xcoor, ycoor, stah);
-                float zcoor = tempPoint.Z();
+                float zcoor = tempPoint.Z() - fCbmTargetZ[0];
 
                 float timeFlight = sqrt(xcoor * xcoor + ycoor * ycoor + zcoor * zcoor) / 30.f;  // c = 30[cm/ns]
                 sumTime += (hit.t - timeFlight);
