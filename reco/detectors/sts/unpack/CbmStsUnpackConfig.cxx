@@ -37,7 +37,7 @@ void CbmStsUnpackConfig::InitAlgo()
   fAlgo->SetAsicTimeOffsetVec(fvdTimeOffsetNsAsics);
 
   // Set Time Walk Correction map
-  fAlgo->SetWalkMap(fWalkMap);
+  if (!fWalkMap.empty()) { fAlgo->SetWalkMap(fWalkMap); }
 
   // Set the flags for duplicate digis rejections
   fAlgo->SetDuplicatesRejection(fbRejectDuplicateDigis, fbDupliWithoutAdc);
