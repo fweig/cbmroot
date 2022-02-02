@@ -107,6 +107,11 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
 
   richconfig = std::make_shared<CbmRichUnpackConfig>("", runid);
   if (richconfig) {
+    if (1904 < runid) {
+      /// Switch to new unpacking algo starting from first combined cosmics run in 2022
+      richconfig->SetUnpackerVersion(CbmRichUnpackerVersion::v03);
+    }
+
     richconfig->SetDebugState();
     richconfig->SetDoWriteOutput();
     std::string parfilesbasepathRich = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
