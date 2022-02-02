@@ -5,7 +5,7 @@
 /******************************************************************************
  ** Creation of STS geometry in ROOT format (TGeo).
  **
- ** @file create_stsgeo_v22b.C
+ ** @file create_stsgeo_v22c.C
  ** @author David Emschermann <d.emschermann@gsi.de>
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 15 June 2012
@@ -253,7 +253,7 @@ TGeoVolume* ConstructStation(Int_t iStation, Int_t nLadders, Int_t* ladderTypes,
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_stsgeo_v22b(const char* geoTag = "v22b_mcbm")
+void create_stsgeo_v22c(const char* geoTag = "v22c_mcbm")
 {
 
   // -------   Geometry file name (output)   ----------------------------------
@@ -267,7 +267,7 @@ void create_stsgeo_v22b(const char* geoTag = "v22b_mcbm")
   infoFileName.ReplaceAll("root", "info");
   fstream infoFile;
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "STS geometry created with create_stsgeo_v22b.C" << endl << endl;
+  infoFile << "STS geometry created with create_stsgeo_v22c.C" << endl << endl;
   infoFile << "Global variables: " << endl;
   infoFile << "Sensor thickness = " << gkSensorThickness << " cm" << endl;
   infoFile << "Vertical gap in sensor chain = " << gkChainGapY << " cm" << endl;
