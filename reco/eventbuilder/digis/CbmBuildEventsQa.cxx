@@ -190,7 +190,7 @@ void CbmBuildEventsQa::Exec(Option_t*)
     LOG(info) << "";
     MatchEvent(event);
     if (event->GetMatch()->GetNofLinks() < 1) {
-      LOG(warning) << "No links in this event match object, skipping the event";
+      LOG(info) << "Warning: No links in this event match object. Skipping event # " << event->GetNumber();
       continue;
     }  // if (-1 == event->GetMatch()->GetNofLinks())
     int matchedMcEventNr = event->GetMatch()->GetMatchedLink().GetEntry();
@@ -246,6 +246,9 @@ void CbmBuildEventsQa::Exec(Option_t*)
         if (digiMatch->GetNofLinks()) {
           if (digiMatch->GetMatchedLink().GetEntry() == matchedMcEventNr) nDigisCorrect++;
           if (digiMatch->GetMatchedLink().GetEntry() == -1) nDigisNoise++;
+        }
+        else {
+          nDigisNoise++;
         }
 
         for (int iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {

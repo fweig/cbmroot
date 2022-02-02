@@ -132,6 +132,11 @@ void CbmSeedFinderSlidingWindow::FillEventMatch(int32_t WinStart, int32_t WinEnd
   for (int32_t iDigi = WinStart; iDigi <= WinEnd; iDigi++) {
     const CbmMatch* digiMatch = &(vDigiMatch->at(iDigi));
     digiCount++;
+    if (digiMatch->GetNofLinks() == 0) {
+      //skip digis with no links to avoid T0 pollution
+      noiseDigiCount++;
+      continue;
+    }
     if (digiMatch->GetMatchedLink().GetEntry() == -1) {
       noiseDigiCount++;
       continue;  //disregard noise digis
@@ -166,7 +171,8 @@ void CbmSeedFinderSlidingWindow::FillEventMatch(int32_t WinStart, int32_t WinEnd
   //correct digis in seed window
   for (int32_t iDigi = WinStart; iDigi <= WinEnd; iDigi++) {
     const CbmMatch* digiMatch = &(vDigiMatch->at(iDigi));
-    const int32_t entry       = digiMatch->GetMatchedLink().GetEntry();
+    if (digiMatch->GetNofLinks() == 0) { continue; }  //skip digis with no links to avoid T0 pollution
+    const int32_t entry = digiMatch->GetMatchedLink().GetEntry();
     if (entry != -1)  // disregarding noise
     {
       if (entry == seedMatch.GetMatchedLink().GetEntry()) { correctDigiCount++; }
@@ -178,7 +184,8 @@ void CbmSeedFinderSlidingWindow::FillEventMatch(int32_t WinStart, int32_t WinEnd
   //found digis of matched event in seed window
   for (uint32_t iDigi = 0; iDigi < vDigiMatch->size(); iDigi++) {
     const CbmMatch* digiMatch = &(vDigiMatch->at(iDigi));
-    const int matchedEvent    = digiMatch->GetMatchedLink().GetEntry();
+    if (digiMatch->GetNofLinks() == 0) { continue; }  //skip digis with no links to avoid T0 pollution
+    const int matchedEvent = digiMatch->GetMatchedLink().GetEntry();
     if (matchedEvent == seedMatch.GetMatchedLink().GetEntry()) { matchedEventDigiCount++; }
   }
   const double foundDigiRatio = (double) correctDigiCount / matchedEventDigiCount;
