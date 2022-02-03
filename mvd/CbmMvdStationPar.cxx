@@ -12,6 +12,7 @@
 #include <Logger.h>
 
 #include <iostream>
+#include <limits>
 
 #include <math.h>
 
@@ -20,20 +21,7 @@ using std::endl;
 
 
 // -----   Default constructor   -------------------------------------------
-CbmMvdStationPar::CbmMvdStationPar()
-  : TNamed()
-  , fStationCount()
-  , fZPositions()
-  , fThicknesses()
-  , fHeights()
-  , fWidths()
-  , fXResolutions()
-  , fYResolutions()
-  , fRadiationLength()
-  , fBeamHeights()
-  , fBeamWidths()
-{
-}
+CbmMvdStationPar::CbmMvdStationPar() : TNamed() {}
 // -------------------------------------------------------------------------
 
 // -----   Destructor   ----------------------------------------------------
@@ -43,225 +31,142 @@ CbmMvdStationPar::~CbmMvdStationPar() {}
 // -----   Public method Print   -------------------------------------------
 void CbmMvdStationPar::Print(Option_t* /*opt*/) const
 {
+  LOG(info) << "MvdStationPar: Initialized parameter file with " << fStationCount << " stations";
 
-  LOG(info) << "MvdStationPar: Initialized parameter file with " << fZPositions.size() << " stations";
-
-  LOG(debug) << "Z Postion station 0: " << GetZPosition(0);
-  LOG(debug) << "Z Postion station 1: " << GetZPosition(1);
-  LOG(debug) << "Z Postion station 2: " << GetZPosition(2);
-  LOG(debug) << "Z Postion station 3: " << GetZPosition(3);
-
-  LOG(debug) << "Thickness station 0: " << GetThickness(0);
-  LOG(debug) << "Thickness station 1: " << GetThickness(1);
-  LOG(debug) << "Thickness station 2: " << GetThickness(2);
-  LOG(debug) << "Thickness station 3: " << GetThickness(3);
-
-  LOG(debug) << "Width station 0: " << GetWidth(0);
-  LOG(debug) << "Width station 1: " << GetWidth(1);
-  LOG(debug) << "Width station 2: " << GetWidth(2);
-  LOG(debug) << "Width station 3: " << GetWidth(3);
-
-  LOG(debug) << "Height station 0: " << GetHeight(0);
-  LOG(debug) << "Height station 1: " << GetHeight(1);
-  LOG(debug) << "Height station 2: " << GetHeight(2);
-  LOG(debug) << "Height station 3: " << GetHeight(3);
-}
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-Bool_t CbmMvdStationPar::Init()
-{
-  for (Int_t i = 0; i < fStationCount; i++) {
-    fZPositions[i]      = 0.;
-    fThicknesses[i]     = 0.;
-    fHeights[i]         = 0.;
-    fWidths[i]          = 0.;
-    fXResolutions[i]    = 0.;
-    fYResolutions[i]    = 0.;
-    fRadiationLength[i] = 0.;
-    fBeamHeights[i]     = 0.;
-    fBeamWidths[i]      = 0.;
+  for (int i = 0; i < fStationCount; i++) {
+    LOG(debug) << "Z Postion station " << i << ": " << GetZPosition(i);
   }
-  return 1;
+
+  for (int i = 0; i < fStationCount; i++) {
+    LOG(debug) << "Z Thickness station " << i << ": " << GetZThickness(i);
+  }
+
+  for (int i = 0; i < fStationCount; i++) {
+    LOG(debug) << "Width station " << i << ": " << GetWidth(i);
+  }
+
+  for (int i = 0; i < fStationCount; i++) {
+    LOG(debug) << "Height station " << i << ": " << GetHeight(i);
+  }
+
+  for (int i = 0; i < fStationCount; i++) {
+    LOG(debug) << "Z Radiation Thickness station " << i << ": " << GetZRadThickness(i);
+  }
+}
+// -------------------------------------------------------------------------
+
+void CbmMvdStationPar::Init(Int_t nrOfStations)
+{
+  fStationCount = nrOfStations;
+
+  constexpr float kNaN {std::numeric_limits<float>::signaling_NaN()};
+
+  // resize the arrays and set all initial values to NaN
+  // to ensure that they will be initialized later
+
+  fZPositions.resize(fStationCount, kNaN);
+  fZPositionMin.resize(fStationCount, std::numeric_limits<float>::max());
+  fZPositionMax.resize(fStationCount, -std::numeric_limits<float>::max());
+  fZThicknesses.resize(fStationCount, kNaN);
+  fHeights.resize(fStationCount, 0.);
+  fWidths.resize(fStationCount, 0.);
+  fXResolutions.resize(fStationCount, kNaN);
+  fYResolutions.resize(fStationCount, kNaN);
+  fZRadThickness.resize(fStationCount, kNaN);
+  fBeamHeights.resize(fStationCount, kNaN);
+  fBeamWidths.resize(fStationCount, kNaN);
+}
+
+// -------------------------------------------------------------------------
+Double_t CbmMvdStationPar::GetParameter(const std::vector<Double_t>& parArray, Int_t iStation) const
+{
+  // return a parameter after out-of-range check
+  if ((iStation < 0) || (iStation >= fStationCount)) {
+    LOG(error) << "Station number out of Range ";
+    return 0.;
+  }
+  return parArray.at(iStation);
 }
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-Double_t CbmMvdStationPar::GetZPosition(Int_t stationNumber) const
+void CbmMvdStationPar::SetParameterMax(std::vector<Double_t>& parArray, Int_t iStation, Double_t value)
 {
-  if (stationNumber <= fStationCount) { return fZPositions.at(stationNumber); }
+  // add a parameter after out-of-range check
+  value = fabs(value);
+  if ((iStation < 0) || (iStation >= fStationCount)) { LOG(error) << "Station number out of Range "; }
   else {
-    cout << "Station number out of Range " << endl;
+    Double_t& v = parArray[iStation];
+    if (isnan(v) || (v < value)) { v = value; }
   }
-  return 0.;
 }
 // -------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------
-Double_t CbmMvdStationPar::GetThickness(Int_t stationNumber) const
+void CbmMvdStationPar::SetParameterMin(std::vector<Double_t>& parArray, Int_t iStation, Double_t value)
 {
-  if (stationNumber <= fStationCount) { return fThicknesses.at(stationNumber); }
+  // add a parameter after out-of-range check
+  value = fabs(value);
+  if ((iStation < 0) || (iStation >= fStationCount)) { LOG(error) << "Station number out of Range "; }
   else {
-    cout << "Station number out of Range " << endl;
+    Double_t& v = parArray[iStation];
+    if (isnan(v) || (v > value)) { v = value; }
   }
-  return 0.;
 }
+// -------------------------------------------------------------------------
+
 
 // -------------------------------------------------------------------------
 
+Double_t CbmMvdStationPar::GetZPosition(Int_t iStation) const { return GetParameter(fZPositions, iStation); }
+
+Double_t CbmMvdStationPar::GetZThickness(Int_t iStation) const { return GetParameter(fZThicknesses, iStation); }
+
+Double_t CbmMvdStationPar::GetHeight(Int_t iStation) const { return GetParameter(fHeights, iStation); }
+
+Double_t CbmMvdStationPar::GetWidth(Int_t iStation) const { return GetParameter(fWidths, iStation); }
+
+Double_t CbmMvdStationPar::GetXRes(Int_t iStation) const { return GetParameter(fXResolutions, iStation); }
+
+Double_t CbmMvdStationPar::GetYRes(Int_t iStation) const { return GetParameter(fYResolutions, iStation); }
+
+Double_t CbmMvdStationPar::GetZRadThickness(Int_t iStation) const { return GetParameter(fZRadThickness, iStation); }
+
+Double_t CbmMvdStationPar::GetBeamHeight(Int_t iStation) const { return GetParameter(fBeamHeights, iStation); }
+
+Double_t CbmMvdStationPar::GetBeamWidth(Int_t iStation) const { return GetParameter(fBeamWidths, iStation); }
+
 // -------------------------------------------------------------------------
-Double_t CbmMvdStationPar::GetHeight(Int_t stationNumber) const
+
+
+// -------------------------------------------------------------------------
+void CbmMvdStationPar::AddZPosition(Int_t iStation, Double_t z, Double_t zThickness)
 {
-  if (stationNumber <= fStationCount) { return fHeights.at(stationNumber); }
-  else {
-    cout << "Station number out of Range " << endl;
-  }
-  return 0.;
+  Double_t& zMin = fZPositionMin[iStation];
+  Double_t& zMax = fZPositionMax[iStation];
+  assert(zThickness >= 0.);
+  if (z - zThickness < zMin) zMin = z - zThickness;
+  if (z + zThickness > zMax) zMax = z + zThickness;
+  fZPositions[iStation]   = 0.5 * (zMin + zMax);
+  fZThicknesses[iStation] = zMax - zMin;
 }
 
-// -------------------------------------------------------------------------
+void CbmMvdStationPar::AddHeight(Int_t iStation, Double_t value) { SetParameterMax(fHeights, iStation, value); }
 
-// -------------------------------------------------------------------------
-Double_t CbmMvdStationPar::GetWidth(Int_t stationNumber) const
+void CbmMvdStationPar::AddWidth(Int_t iStation, Double_t value) { SetParameterMax(fWidths, iStation, value); }
+
+void CbmMvdStationPar::AddXRes(Int_t iStation, Double_t value) { SetParameterMax(fXResolutions, iStation, value); }
+
+void CbmMvdStationPar::AddYRes(Int_t iStation, Double_t value) { SetParameterMax(fYResolutions, iStation, value); }
+
+void CbmMvdStationPar::AddZRadThickness(Int_t iStation, Double_t value)
 {
-  if (stationNumber <= fStationCount) { return fWidths.at(stationNumber); }
-  else {
-    cout << "Station number out of Range " << endl;
-  }
-  return 0.;
+  SetParameterMax(fZRadThickness, iStation, value);
 }
 
-// -------------------------------------------------------------------------
+void CbmMvdStationPar::AddBeamHeight(Int_t iStation, Double_t value) { SetParameterMin(fBeamHeights, iStation, value); }
 
-// -------------------------------------------------------------------------
-Double_t CbmMvdStationPar::GetXRes(Int_t stationNumber) const
-{
-  if (stationNumber <= fStationCount) { return fXResolutions.at(stationNumber); }
-  else {
-    cout << "Station number out of Range " << endl;
-  }
-  return 0.;
-}
-
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-Double_t CbmMvdStationPar::GetYRes(Int_t stationNumber) const
-{
-  if (stationNumber <= fStationCount) { return fYResolutions.at(stationNumber); }
-  else {
-    cout << "Station number out of Range " << endl;
-  }
-  return 0.;
-}
-
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-Double_t CbmMvdStationPar::GetRadLength(Int_t stationNumber) const
-{
-  if (stationNumber <= fStationCount) { return fRadiationLength.at(stationNumber); }
-  else {
-    cout << "Station number out of Range " << endl;
-  }
-  return 0.;
-}
-
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-Double_t CbmMvdStationPar::GetBeamHeight(Int_t stationNumber) const
-{
-  if (stationNumber <= fStationCount) { return fBeamHeights.at(stationNumber); }
-  else {
-    cout << "Station number out of Range " << endl;
-  }
-  return 0.;
-}
-
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-Double_t CbmMvdStationPar::GetBeamWidth(Int_t stationNumber) const
-{
-  if (stationNumber <= fStationCount) { return fBeamWidths.at(stationNumber); }
-  else {
-    cout << "Station number out of Range " << endl;
-  }
-  return 0.;
-}
-
-// -------------------------------------------------------------------------
-
-
-// -------------------------------------------------------------------------
-void CbmMvdStationPar::SetZPosition(Int_t stationNumber, Double_t z)
-{
-  if (fZPositions[stationNumber] != 0) {
-    fZPositions[stationNumber] = Int_t(((fZPositions[stationNumber] + z) / 2) + 0.5);
-  }
-  else {
-    fZPositions[stationNumber] = z;
-  }
-}
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-void CbmMvdStationPar::SetThickness(Int_t stationNumber, Double_t thickness)
-{
-  Float_t Sensorthickness = fabs(thickness - fZPositions[stationNumber]);
-  if (Sensorthickness > fThicknesses[stationNumber]) fThicknesses[stationNumber] = Sensorthickness;
-}
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-void CbmMvdStationPar::SetHeight(Int_t stationNumber, Double_t height)
-{
-  if (fHeights[stationNumber] < height) { fHeights[stationNumber] = height; }
-}
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-void CbmMvdStationPar::SetWidth(Int_t stationNumber, Double_t width)
-{
-  if (fWidths[stationNumber] < width) { fWidths[stationNumber] = width; }
-}
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-void CbmMvdStationPar::SetXRes(Int_t stationNumber, Double_t xres) { fXResolutions[stationNumber] = xres; }
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-void CbmMvdStationPar::SetYRes(Int_t stationNumber, Double_t yres) { fYResolutions[stationNumber] = yres; }
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-void CbmMvdStationPar::SetRadLength(Int_t stationNumber, Double_t length) { fRadiationLength[stationNumber] = length; }
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-void CbmMvdStationPar::SetBeamHeight(Int_t stationNumber, Double_t beamheight)
-{
-  if (fBeamHeights[stationNumber] != 0) {
-    if (fBeamHeights[stationNumber] > beamheight) { fBeamHeights[stationNumber] = beamheight; }
-  }
-  else {
-    fBeamHeights[stationNumber] = beamheight;
-  }
-}
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-void CbmMvdStationPar::SetBeamWidth(Int_t stationNumber, Double_t beamwidth)
-{
-  if (fBeamWidths[stationNumber] != 0) {
-    if (fBeamWidths[stationNumber] > beamwidth) { fBeamWidths[stationNumber] = beamwidth; }
-  }
-  else {
-    fBeamWidths[stationNumber] = beamwidth;
-  }
-}
+void CbmMvdStationPar::AddBeamWidth(Int_t iStation, Double_t value) { SetParameterMin(fBeamWidths, iStation, value); }
 // -------------------------------------------------------------------------
 
 

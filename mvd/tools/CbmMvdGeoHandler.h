@@ -112,10 +112,10 @@ private:
 
   Double_t fWidth;
   Double_t fHeight;
-  Double_t fRadLength;
+  Double_t fZRadThickness;
   Double_t fBeamwidth;
   Double_t fBeamheight;
-  Double_t fThickness;
+  Double_t fZThickness;
   Double_t fXres;
   Double_t fYres;
 
@@ -130,7 +130,7 @@ private:
   CbmMvdGeoHandler(const CbmMvdGeoHandler&);
   CbmMvdGeoHandler operator=(const CbmMvdGeoHandler&);
 
-  ClassDef(CbmMvdGeoHandler, 4)
+  ClassDef(CbmMvdGeoHandler, 5)
 };
 
 #endif  //CbmMvdGeoHandler_H

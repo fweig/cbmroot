@@ -27,6 +27,7 @@
 #include "TVirtualMC.h"
 
 #include <cstdlib>
+
 using std::atoi;
 
 
@@ -62,10 +63,10 @@ CbmMvdGeoHandler::CbmMvdGeoHandler()
   , fStationNumber(-1)
   , fWidth(0.)
   , fHeight(0.)
-  , fRadLength(0.)
+  , fZRadThickness(0.)
   , fBeamwidth(0.)
   , fBeamheight(0.)
-  , fThickness(0.)
+  , fZThickness(0.)
   , fXres(0.)
   , fYres(0.)
   , fStationName("")
@@ -104,12 +105,11 @@ void CbmMvdGeoHandler::Init(Bool_t isSimulation)
     switch (fGeoTyp) {
       case scripted:
       case FourStation:
-      case FourStationShift: fStationPar->SetNofStations(4); break;
-      case ThreeStation: fStationPar->SetNofStations(3); break;
-      case MiniCbm: fStationPar->SetNofStations(2); break;
-      default: fStationPar->SetNofStations(0);
+      case FourStationShift: fStationPar->Init(4); break;
+      case ThreeStation: fStationPar->Init(3); break;
+      case MiniCbm: fStationPar->Init(2); break;
+      default: fStationPar->Init(0);
     }
-    fStationPar->Init();
   }
 }
 //--------------------------------------------------------------------------
@@ -224,11 +224,13 @@ void CbmMvdGeoHandler::NavigateTo(const TString& path)
 
     local[0] = fVolumeShape->GetDX();
     local[1] = fVolumeShape->GetDY();
+    local[2] = fVolumeShape->GetDZ();
     Double_t fGlobalMax[3];
     gGeoManager->LocalToMaster(local, fGlobalMax);
 
     local[0] = -1 * fVolumeShape->GetDX();
     local[1] = -1 * fVolumeShape->GetDY();
+    local[2] = -1 * fVolumeShape->GetDZ();
     Double_t fGlobalMin[3];
     gGeoManager->LocalToMaster(local, fGlobalMin);
 
@@ -249,14 +251,9 @@ void CbmMvdGeoHandler::NavigateTo(const TString& path)
       fBeamheight = fGlobalMax[1];
     }
 
-    // TODO: hard coded numbers, find other way only for Mvd_v14a / v14b / v15a
-    if (fStationNumber == 0) fRadLength = 0.24;
-    else if (fStationNumber == 1)
-      fRadLength = 0.31;
-    else if (fStationNumber == 2)
-      fRadLength = 0.47;
-    else
-      fRadLength = 0.49;
+    fZThickness        = fabs(fGlobalMax[2] - fGlobalMin[2]);
+    Double_t radLength = fCurrentVolume->GetMaterial()->GetRadLen();
+    fZRadThickness     = fZThickness / radLength;
 
     fXres = 3.8;  // TODO: pixelSizeX / sqrt{12}
     fYres = 3.8;  // TODO: pixelSizeY / sqrt{12}
@@ -517,18 +514,15 @@ void CbmMvdGeoHandler::FillDetector()
 //--------------------------------------------------------------------------
 void CbmMvdGeoHandler::FillParameter()
 {
-
-
   if (fGeoPathHash != fnodeName.Hash()) { NavigateTo(fnodeName); }
-  fStationPar->SetZPosition(fStationNumber, fGlobal[2]);
-  fStationPar->SetWidth(fStationNumber, fWidth);
-  fStationPar->SetHeight(fStationNumber, fHeight);
-  fStationPar->SetThickness(fStationNumber, fGlobal[2]);
-  fStationPar->SetXRes(fStationNumber, fXres);
-  fStationPar->SetYRes(fStationNumber, fYres);
-  fStationPar->SetRadLength(fStationNumber, fRadLength);
-  if (fBeamheight > 0) fStationPar->SetBeamHeight(fStationNumber, fBeamheight);
-  if (fBeamwidth > 0) fStationPar->SetBeamWidth(fStationNumber, fBeamwidth);
+  fStationPar->AddZPosition(fStationNumber, fGlobal[2], fZThickness);
+  fStationPar->AddWidth(fStationNumber, fWidth);
+  fStationPar->AddHeight(fStationNumber, fHeight);
+  fStationPar->AddXRes(fStationNumber, fXres);
+  fStationPar->AddYRes(fStationNumber, fYres);
+  fStationPar->AddZRadThickness(fStationNumber, fZRadThickness);
+  fStationPar->AddBeamHeight(fStationNumber, fBeamheight);
+  fStationPar->AddBeamWidth(fStationNumber, fBeamwidth);
 }
 //--------------------------------------------------------------------------
 

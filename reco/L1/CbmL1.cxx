@@ -792,7 +792,7 @@ InitStatus CbmL1::Init()
         const float RMax = hStaRadLen->GetXaxis()->GetXmax();  // should be same as min
         algo->fRadThick[iSta].SetBins(NBins, RMax);
         algo->fRadThick[iSta].table.resize(NBins);
-        double sumRL = 0., nRL = 0.;
+        double sumRF = 0., nRF = 0.;
         for (int iB = 0; iB < NBins; iB++) {
           algo->fRadThick[iSta].table[iB].resize(NBins);
           for (int iB2 = 0; iB2 < NBins; iB2++) {
@@ -805,11 +805,11 @@ InitStatus CbmL1::Init()
             // Correction for the incorrect harcoded value of RadThick of MVD stations
             if (algo->fRadThick[iSta].table[iB][iB2] < 0.0015) algo->fRadThick[iSta].table[iB][iB2] = 0.0015;
             //              algo->fRadThick[iSta].table[iB][iB2] = algo->vStations[iSta].materialInfo.RadThick[0];
-            sumRL += algo->fRadThick[iSta].table[iB][iB2];
-            nRL++;
+            sumRF += algo->fRadThick[iSta].table[iB][iB2];
+            nRF++;
           }
         }
-        cout << " iSta " << iSta << " average RadLength in the material map " << sumRL / nRL << endl;
+        cout << " iSta " << iSta << " average RadThick in the material map " << sumRF / nRF << endl;
       }
       rlFile->Close();
       rlFile->Delete();
@@ -847,7 +847,7 @@ InitStatus CbmL1::Init()
       const float RMax = hStaRadLen->GetXaxis()->GetXmax();  // should be same as min
       algo->fRadThick[iSta].SetBins(NBins, RMax);
       algo->fRadThick[iSta].table.resize(NBins);
-      double sumRL = 0., nRL = 0.;
+      double sumRF = 0., nRF = 0.;
       for (int iB = 0; iB < NBins; iB++) {
         algo->fRadThick[iSta].table[iB].resize(NBins);
         for (int iB2 = 0; iB2 < NBins; iB2++) {
@@ -855,11 +855,11 @@ InitStatus CbmL1::Init()
           if (algo->fRadThick[iSta].table[iB][iB2] < algo->vStations[iSta].materialInfo.RadThick[0])
             algo->fRadThick[iSta].table[iB][iB2] = algo->vStations[iSta].materialInfo.RadThick[0];
           // cout << " iSta " << iSta << " iB " << iB << "iB2 " << iB2 << " RadThick " << algo->fRadThick[iSta].table[iB][iB2] << endl;
-          sumRL += algo->fRadThick[iSta].table[iB][iB2];
-          nRL++;
+          sumRF += algo->fRadThick[iSta].table[iB][iB2];
+          nRF++;
         }
       }
-      cout << " iSta " << iSta << " average RadLength in the material map " << sumRL / nRL << endl;
+      cout << " iSta " << iSta << " average RadThick in the material map " << sumRF / nRF << endl;
     }
     rlFile->Close();
     rlFile->Delete();
