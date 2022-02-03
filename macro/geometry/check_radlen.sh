@@ -4,7 +4,13 @@
 
 echo "Scanning the geometry" $1
 
-root -l -q '$VMCWORKDIR/macro/geometry/scan_geometry.C("'$1'")' 1>tmp
+root -l -b -q '$VMCWORKDIR/macro/geometry/scan_geometry.C("'$1'")' 1>tmp
+ROOT_EXIT=$?;
+
+if [ 0 -ne $ROOT_EXIT ]; then
+  echo "root command failed, nothing more done";
+  exit ${ROOT_EXIT};
+fi;
 
 grep '^M\(at\|ix\)' tmp | \
 sort | \
@@ -17,8 +23,8 @@ SKIP=0;
 OKAY=0;
 
 
-while IFS= read -r line; 
-do 
+while IFS= read -r line;
+do
 
 variables=`echo "$line" | sed -e 's/eff//g' | sed -e 's/index/jndex/g' | sed -e 's/.*A=/ A=/g' | sed -e 's/ / -v /g'`
 
@@ -26,13 +32,14 @@ variables=`echo "$line" | sed -e 's/eff//g' | sed -e 's/index/jndex/g' | sed -e 
     -v TOL=0.1 \
     $variables \
     'BEGIN{\
-        if(Z==0){
+        if(Z<1){
         printf "SKIP"; \
         exit 3;
         };
         cal_rad_len=(716.4*A/(Z*(Z+1)*log(287/sqrt(Z)))/rho);\
         #print cal_rad_len;
-        if(((cal_rad_len - radlen)/radlen)**2  <= TOL**2 ){\
+        diff=(cal_rad_len - radlen);\
+        if(diff*diff <= TOL*TOL*radlen*radlen ){\
         printf "OKAY"; exit 1;
         }else{\
         printf "FAIL"; exit 2;
@@ -45,8 +52,8 @@ variables=`echo "$line" | sed -e 's/eff//g' | sed -e 's/index/jndex/g' | sed -e 
     if [ $STATUS -eq 3 ]; then SKIP=$((SKIP+1)); fi;
 
     COUNT=$((COUNT+1));
-    
-    echo " \t $line"
+
+    echo -e " \t $line"
 
 done < MATERIALS
 
