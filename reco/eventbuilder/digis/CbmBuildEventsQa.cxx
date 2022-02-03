@@ -112,16 +112,16 @@ void CbmBuildEventsQa::InitHistograms()
   histFolder = fOutFolder.AddFolder("hist", "Histogramms");
 
   // --- Init histograms
-  fhCorrectDigiRatioAll = new TH1F("fhCorrectDigiRatioAll", "Correct digis per event [pct]", 402, -0.25, 100.25);
+  fhCorrectDigiRatioAll = new TH1F("fhCorrectDigiRatioAll", "Correct digis per event [pct]", 416, -2, 102);
   fhCorrectDigiRatioAllNoNoise =
-    new TH1F("fhCorrectDigiRatioAllNoNoise", "Correct digis per event [pct], disregarding noise", 402, -0.25, 100.25);
-  fhNoiseDigiRatioAll = new TH1F("fhNoiseDigiRatioAll", "Noise digis per event [pct]", 402, -0.25, 100.25);
-  fhFoundDigiRatioAll = new TH1F("fhFoundDigiRatioAll", "Found digis per event [pct]", 402, -0.25, 100.25);
+    new TH1F("fhCorrectDigiRatioAllNoNoise", "Correct digis per event [pct], disregarding noise", 416, -2, 102);
+  fhNoiseDigiRatioAll = new TH1F("fhNoiseDigiRatioAll", "Noise digis per event [pct]", 416, -2, 102);
+  fhFoundDigiRatioAll = new TH1F("fhFoundDigiRatioAll", "Found digis per event [pct]", 416, -2, 102);
   fhCorrectVsFoundAll = new TH2I("fhCorrectVsFoundAll", "Correct digis  [pct] vs. Found digis [pct]; Correct; Found ",
-                                 102, -1., 101., 102, -1., 101.);
+                                 110, -5., 105., 110, -5., 105.);
   fhCorrectVsFoundAllNoNoise =
-    new TH2I("fhCorrectVsFoundAllNoNoise", "Correct digis  [pct] vs. Found digis [pct], no noise; Correct; Found ", 102,
-             -1., 101., 102, -1., 101.);
+    new TH2I("fhCorrectVsFoundAllNoNoise", "Correct digis  [pct] vs. Found digis [pct], no noise; Correct; Found ", 110,
+             -5., 105., 110, -5., 105.);
 
   histFolder->Add(fhCorrectDigiRatioAll);
   histFolder->Add(fhCorrectDigiRatioAllNoNoise);
@@ -144,19 +144,19 @@ void CbmBuildEventsQa::InitHistograms()
     TString h6name     = "fhCorrectVsFoundNoNoise" + moduleName;
 
     fhMapSystemsCorrectDigi[system] =
-      new TH1F(h1name, Form("Correct digis per event, %s [pct]", moduleName.Data()), 402, -0.25, 100.25);
-    fhMapSystemsCorrectDigiNoNoise[system] = new TH1F(
-      h2name, Form("Correct digis per event, %s [pct], disregarding noise", moduleName.Data()), 402, -0.25, 100.25);
+      new TH1F(h1name, Form("Correct digis per event, %s [pct]", moduleName.Data()), 416, -2, 102);
+    fhMapSystemsCorrectDigiNoNoise[system] =
+      new TH1F(h2name, Form("Correct digis per event, %s [pct], disregarding noise", moduleName.Data()), 416, -2, 102);
     fhMapSystemsNoiseDigi[system] =
-      new TH1F(h3name, Form("Noise digis per event, %s [pct]", moduleName.Data()), 402, -0.25, 100.25);
+      new TH1F(h3name, Form("Noise digis per event, %s [pct]", moduleName.Data()), 416, -2, 102);
     fhMapSystemsFoundDigi[system] =
-      new TH1F(h4name, Form("Found digis per event, %s [pct]", moduleName.Data()), 402, -0.25, 100.25);
+      new TH1F(h4name, Form("Found digis per event, %s [pct]", moduleName.Data()), 416, -2, 102);
     fhMapSystemsCorrectVsFound[system] =
-      new TH2I(h5name, Form("Correct digis  [pct] vs. Found digis [pct], %s; Correct; Found", moduleName.Data()), 102,
-               -1., 101., 102, -1., 101.);
+      new TH2I(h5name, Form("Correct digis  [pct] vs. Found digis [pct], %s; Correct; Found", moduleName.Data()), 110,
+               -5., 105., 110, -5., 105.);
     fhMapSystemsCorrectVsFoundNoNoise[system] = new TH2I(
-      h6name, Form("Correct digis  [pct] vs. Found digis [pct], %s, no noise; Correct; Found", moduleName.Data()), 102,
-      -1., 101., 102, -1., 101.);
+      h6name, Form("Correct digis  [pct] vs. Found digis [pct], %s, no noise; Correct; Found", moduleName.Data()), 110,
+      -5., 105., 110, -5., 105.);
 
     histFolder->Add(fhMapSystemsCorrectDigi[system]);
     histFolder->Add(fhMapSystemsCorrectDigiNoNoise[system]);
