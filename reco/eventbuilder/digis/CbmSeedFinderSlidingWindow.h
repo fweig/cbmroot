@@ -21,12 +21,11 @@
 #ifndef CbmSeedFinderSlidingWindow_h
 #define CbmSeedFinderSlidingWindow_h
 
+#include <cstdint>
 #include <vector>
 
-#include <stdint.h>
-#include <stdio.h>
-
 class CbmMatch;
+class CbmSeedFinderQa;
 
 class CbmSeedFinderSlidingWindow {
 public:
@@ -66,21 +65,11 @@ public:
   size_t GetNofSeeds() { return fvSeedTimes->size(); }
 
 private:
+  /** @brief Processes QA info. */
+  CbmSeedFinderQa* fQa = nullptr;
+
   /** @brief Output of the algorithm. Stores seed times for current time slice. */
   std::vector<double>* fvSeedTimes = nullptr;
-
-  /** @brief For QA. Matches that link constructed event seeds to MC events. */
-  std::vector<CbmMatch>* fvEventMatches = nullptr;
-  /** @brief For QA. Full vector of all event seeds that is not cleared at the end of a timeslice. */
-  std::vector<double>* fvSeedTimesFull = nullptr;
-  /** @brief For QA. Counts how many digis contributed to a seed. */
-  std::vector<int32_t>* fvFullDigiCount = nullptr;
-  /** @brief For QA. Counts how many noise digis contributed to a seed. */
-  std::vector<int32_t>* fvNoiseDigiCount = nullptr;
-  /** @brief For QA. Ratio of digis from matched MC event (disregarding noise). */
-  std::vector<double>* fvCorrectDigiRatio = nullptr;
-  /** @brief For QA. Ratio of digis of matched events that were included in event seed. */
-  std::vector<double>* fvFoundDigiRatio = nullptr;
 
   /** @brief Minimum number of digis which must be found in the seed window. */
   int32_t fminDigis = 0;
@@ -92,12 +81,5 @@ private:
   /** @brief Fetches time at position i of either a digi vector or vector of times. */
   template<class inType>
   double GetTime(const std::vector<inType>* vIn, int32_t i);
-
-  /** @brief For QA. Fills fvEventMatches (matches that link constructed event seeds to MC events). 
-  * @params WinStart Starting position of seed window.
-  * @params WinStart End position of seed window.
-  * @params vDigiMatch Input vector of digi matches (should match input data to MC events). 
-  */
-  void FillEventMatch(int32_t WinStart, int32_t WinEnd, const std::vector<CbmMatch>* vDigiMatch);
 };
 #endif  //CbmSeedFinderSlidingWindow_h
