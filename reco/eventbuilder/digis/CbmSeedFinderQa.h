@@ -80,8 +80,9 @@ private:
   TH1F* fhCorrectDigiRatioNoNoise = nullptr;  /// correct digis per event, disregarding noise
   TH1F* fhNoiseDigiRatio          = nullptr;  /// noise digis per event
   TH1F* fhFoundDigiRatio          = nullptr;  /// digis found per event
-  TH2I* fhCorrectVsFound          = nullptr;  ///  correct digis per event vs found digis per event
-  TH2I* fhCorrectVsFoundNoNoise   = nullptr;  ///  correct digis per event vs found digis per event, disregarding noise
+  TH2I* fhCorrectVsFound          = nullptr;  /// correct digis per event vs found digis per event
+  TH2I* fhCorrectVsFoundNoNoise   = nullptr;  /// correct digis per event vs found digis per event, disregarding noise
+  TH1F* fhTimeOffset              = nullptr;  /// difference between true event time and seed
 
   CbmQaCanvas* fCanv;  ///summary canvas
 

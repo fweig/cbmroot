@@ -4,6 +4,7 @@
 
 #include "CbmSeedFinderQa.h"
 
+#include "CbmMCEventList.h"
 #include "CbmQaCanvas.h"
 
 #include "FairRootManager.h"
@@ -28,6 +29,7 @@ CbmSeedFinderQa::CbmSeedFinderQa() : fOutFolder("SeedFinderQA", "Seed finder QA"
   fhCorrectVsFoundNoNoise =
     new TH2I("fhCorrectVsFoundNoNoise", "Correct digis  [pct] vs. Found digis [pct], no noise; Correct; Found ", 110,
              -5., 105., 110, -5., 105.);
+  fhTimeOffset = new TH1F("fhTimeOffset", "tSeed - tMCEvent [ns]", 40, -10, 10);
 
   histFolder->Add(fhCorrectDigiRatio);
   histFolder->Add(fhCorrectDigiRatioNoNoise);
@@ -35,6 +37,7 @@ CbmSeedFinderQa::CbmSeedFinderQa() : fOutFolder("SeedFinderQA", "Seed finder QA"
   histFolder->Add(fhFoundDigiRatio);
   histFolder->Add(fhCorrectVsFound);
   histFolder->Add(fhCorrectVsFoundNoNoise);
+  histFolder->Add(fhTimeOffset);
 
   fCanv = new CbmQaCanvas("cSummary", "", 3 * 400, 2 * 400);
   fCanv->Divide2D(6);
@@ -49,6 +52,7 @@ CbmSeedFinderQa::~CbmSeedFinderQa()
   delete fhFoundDigiRatio;
   delete fhCorrectVsFound;
   delete fhCorrectVsFoundNoNoise;
+  delete fhTimeOffset;
   delete fCanv;
 }
 
@@ -131,6 +135,13 @@ void CbmSeedFinderQa::FillQaInfo(const int32_t WinStart, const int32_t WinEnd, c
 
 void CbmSeedFinderQa::FillHistos()
 {
+  if (!FairRootManager::Instance() || !FairRootManager::Instance()->GetObject("MCEventList.")) {
+    LOG(error) << "No MC event list found";
+    return;
+  }
+  CbmMCEventList* eventList = (CbmMCEventList*) FairRootManager::Instance()->GetObject("MCEventList.");
+  //eventList->Print();
+
   for (uint32_t iEvent = 0; iEvent < fvEventMatches.size(); iEvent++) {
     const int32_t digiCount                 = fvFullDigiCount.at(iEvent);
     const int32_t noiseCount                = fvNoiseDigiCount.at(iEvent);
@@ -144,6 +155,14 @@ void CbmSeedFinderQa::FillHistos()
     fhFoundDigiRatio->Fill(foundDigisPercent);
     fhCorrectVsFound->Fill(correctDigisPercent, foundDigisPercent);
     fhCorrectVsFoundNoNoise->Fill(correctDigisPercentNoNoise, foundDigisPercent);
+
+    const CbmMatch* match = &(fvEventMatches.at(iEvent));
+    const CbmLink& link   = match->GetMatchedLink();
+
+    if (link.GetEntry() != -1) {
+      const double timeDiff = fvSeedTimesFull.at(iEvent) - eventList->GetEventTime(link.GetEntry(), link.GetFile());
+      fhTimeOffset->Fill(timeDiff);
+    }
   }
 }
 

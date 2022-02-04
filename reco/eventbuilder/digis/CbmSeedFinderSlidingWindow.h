@@ -21,6 +21,7 @@
 #ifndef CbmSeedFinderSlidingWindow_h
 #define CbmSeedFinderSlidingWindow_h
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
