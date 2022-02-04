@@ -207,6 +207,7 @@ pair<UInt_t, UInt_t> CbmStsFindTracksEvents::ProcessEvent(CbmEvent* event)
   // --- Call track finder
   fTimer.Start();
   Int_t nTracks = fFinder->FindTracks(event);
+  fFinder->FillEloss();
   fTimer.Stop();
 
   // --- Event log

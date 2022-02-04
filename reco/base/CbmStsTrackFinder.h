@@ -56,6 +56,9 @@ public:
    **/
   virtual Int_t DoFind() = 0;
 
+  /** @brief Calculate the median energy loss for the tracks and fill the respective data members **/
+  void FillEloss();
+
 
   /** Virtual method Finish. If needed, to be implemented in the concrete
    ** class. Executed at the end of the run.
@@ -95,7 +98,6 @@ protected:
    ** https://indico.gsi.de/event/4760/session/4/contribution/80/material/slides/0.pdf
    **/
   double CalculateEloss(CbmStsTrack* cbmStsTrack);
-  void FillEloss();
 
 private:
   constexpr static int MaxAdcVal() { return 31; }
