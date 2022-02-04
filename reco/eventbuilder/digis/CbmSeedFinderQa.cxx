@@ -4,6 +4,54 @@
 
 #include "CbmSeedFinderQa.h"
 
+#include "CbmQaCanvas.h"
+
+#include "FairRootManager.h"
+#include <Logger.h>
+
+#include "TH1.h"
+#include "TH2.h"
+
+CbmSeedFinderQa::CbmSeedFinderQa() : fOutFolder("SeedFinderQA", "Seed finder QA")
+{
+  // --- Init histogram folder
+  histFolder = fOutFolder.AddFolder("hist", "Histogramms");
+
+  // --- Init histograms
+  fhCorrectDigiRatio = new TH1F("fhCorrectDigiRatio", "Correct digis per seed [pct]", 416, -2, 102);
+  fhCorrectDigiRatioNoNoise =
+    new TH1F("fhCorrectDigiRatioNoNoise", "Correct digis per seed [pct], disregarding noise", 416, -2, 102);
+  fhNoiseDigiRatio = new TH1F("fhNoiseDigiRatio", "Noise digis per seed [pct]", 416, -2, 102);
+  fhFoundDigiRatio = new TH1F("fhFoundDigiRatio", "Found digis per seed [pct]", 416, -2, 102);
+  fhCorrectVsFound = new TH2I("fhCorrectVsFound", "Correct digis  [pct] vs. Found digis [pct]; Correct; Found ", 110,
+                              -5., 105., 110, -5., 105.);
+  fhCorrectVsFoundNoNoise =
+    new TH2I("fhCorrectVsFoundNoNoise", "Correct digis  [pct] vs. Found digis [pct], no noise; Correct; Found ", 110,
+             -5., 105., 110, -5., 105.);
+
+  histFolder->Add(fhCorrectDigiRatio);
+  histFolder->Add(fhCorrectDigiRatioNoNoise);
+  histFolder->Add(fhNoiseDigiRatio);
+  histFolder->Add(fhFoundDigiRatio);
+  histFolder->Add(fhCorrectVsFound);
+  histFolder->Add(fhCorrectVsFoundNoNoise);
+
+  fCanv = new CbmQaCanvas("cSummary", "", 3 * 400, 2 * 400);
+  fCanv->Divide2D(6);
+  fOutFolder.Add(fCanv);
+}
+
+CbmSeedFinderQa::~CbmSeedFinderQa()
+{
+  delete fhCorrectDigiRatio;
+  delete fhCorrectDigiRatioNoNoise;
+  delete fhNoiseDigiRatio;
+  delete fhFoundDigiRatio;
+  delete fhCorrectVsFound;
+  delete fhCorrectVsFoundNoNoise;
+  delete fCanv;
+}
+
 void CbmSeedFinderQa::FillQaInfo(const int32_t WinStart, const int32_t WinEnd, const std::vector<CbmMatch>* vDigiMatch,
                                  const double seedTime)
 {
@@ -64,8 +112,11 @@ void CbmSeedFinderQa::FillQaInfo(const int32_t WinStart, const int32_t WinEnd, c
       if (entry == seedMatch.GetMatchedLink().GetEntry()) { correctDigiCount++; }
     }
   }
-  const double correctDigiRatio = (double) correctDigiCount / (digiCount - noiseDigiCount);
+  const double correctDigiRatio = (double) correctDigiCount / digiCount;
   fvCorrectDigiRatio.push_back(correctDigiRatio);
+
+  const double correctDigiRatioNoNoise = (double) correctDigiCount / (digiCount - noiseDigiCount);
+  fvCorrectDigiRatioNoNoise.push_back(correctDigiRatioNoNoise);
 
   //found digis of matched event in seed window
   for (uint32_t iDigi = 0; iDigi < vDigiMatch->size(); iDigi++) {
@@ -76,6 +127,24 @@ void CbmSeedFinderQa::FillQaInfo(const int32_t WinStart, const int32_t WinEnd, c
   }
   const double foundDigiRatio = (double) correctDigiCount / matchedEventDigiCount;
   fvFoundDigiRatio.push_back(foundDigiRatio);
+}
+
+void CbmSeedFinderQa::FillHistos()
+{
+  for (uint32_t iEvent = 0; iEvent < fvEventMatches.size(); iEvent++) {
+    const int32_t digiCount                 = fvFullDigiCount.at(iEvent);
+    const int32_t noiseCount                = fvNoiseDigiCount.at(iEvent);
+    const double noiseDigisPercent          = 100. * (double) noiseCount / digiCount;
+    const double correctDigisPercent        = 100. * fvCorrectDigiRatio.at(iEvent);
+    const double correctDigisPercentNoNoise = 100. * fvCorrectDigiRatioNoNoise.at(iEvent);
+    const double foundDigisPercent          = 100. * fvFoundDigiRatio.at(iEvent);
+    fhCorrectDigiRatio->Fill(correctDigisPercent);
+    fhCorrectDigiRatioNoNoise->Fill(correctDigisPercentNoNoise);
+    fhNoiseDigiRatio->Fill(noiseDigisPercent);
+    fhFoundDigiRatio->Fill(foundDigisPercent);
+    fhCorrectVsFound->Fill(correctDigisPercent, foundDigisPercent);
+    fhCorrectVsFoundNoNoise->Fill(correctDigisPercentNoNoise, foundDigisPercent);
+  }
 }
 
 void CbmSeedFinderQa::OutputQa()
@@ -94,9 +163,42 @@ void CbmSeedFinderQa::OutputQa()
     }
     std::cout << "Total digis in seed window: " << fvFullDigiCount.at(iEvent);
     std::cout << ", Noise digis in seed window: " << fvNoiseDigiCount.at(iEvent) << std::endl;
+    std::cout << "Fraction of correctly matched digis in seed window: " << fvCorrectDigiRatio.at(iEvent) << std::endl;
     std::cout << "Fraction of correctly matched digis in seed window (disregarding noise): "
-              << fvCorrectDigiRatio.at(iEvent) << std::endl;
+              << fvCorrectDigiRatioNoNoise.at(iEvent) << std::endl;
     std::cout << "Fraction of digis of matched event found in seed window: " << fvFoundDigiRatio.at(iEvent);
     std::cout << " (only from this timeslice)" << std::endl;
   }
+  FillHistos();
+  WriteHistos();
+}
+
+void CbmSeedFinderQa::WriteHistos()
+{
+  //output histograms
+  if (!FairRootManager::Instance() || !FairRootManager::Instance()->GetSink()) {
+    LOG(error) << "No sink found";
+    return;
+  }
+
+  fCanv->cd(1);
+  fhCorrectDigiRatio->DrawCopy("colz", "");
+
+  fCanv->cd(2);
+  fhCorrectDigiRatioNoNoise->DrawCopy("colz", "");
+
+  fCanv->cd(3);
+  fhNoiseDigiRatio->DrawCopy("colz", "");
+
+  fCanv->cd(4);
+  fhFoundDigiRatio->DrawCopy("colz", "");
+
+  fCanv->cd(5);
+  fhCorrectVsFound->DrawCopy("colz", "");
+
+  fCanv->cd(6);
+  fhCorrectVsFoundNoNoise->DrawCopy("colz", "");
+
+  FairSink* sink = FairRootManager::Instance()->GetSink();
+  sink->WriteObject(&fOutFolder, nullptr);
 }
