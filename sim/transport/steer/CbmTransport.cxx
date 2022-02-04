@@ -711,19 +711,24 @@ void CbmTransport::SetRandomEventPlane(Double_t phiMin, Double_t phiMax) { fEven
 
 
 // -----   Set output file name   -------------------------------------------
-void CbmTransport::SetOutFileName(TString fileName)
+void CbmTransport::SetOutFileName(TString fileName, Bool_t overwrite)
 {
 
-  // Check for the directory
-  std::string name = fileName.Data();
-  Int_t found      = name.find_last_of("/");
-  if (found >= 0) {
-    TString outDir = name.substr(0, found);
-    if (gSystem->AccessPathName(outDir.Data())) {
-      LOG(fatal) << GetName() << ": Output directory " << outDir << " does not exist!";
-      return;
-    }  //? Directory of output file does not exist
-  }    //? File name contains directory path
+  // --- Protect against overwriting an existing file
+  if ((!gSystem->AccessPathName(fileName.Data())) && (!overwrite)) {
+    LOG(fatal) << fName << ": output file " << fileName << " already exists!";
+    return;
+  }
+
+  // --- If the directory does not yet exist, create it
+  const char* directory = gSystem->DirName(fileName.Data());
+  if (gSystem->AccessPathName(directory)) {
+    Int_t success = gSystem->mkdir(directory, kTRUE);
+    if (success == -1)
+      LOG(fatal) << fName << ": output directory " << directory << " does not exist and cannot be created!";
+    else
+      LOG(info) << fName << ": created directory " << directory;
+  }
 
   fOutFileName = fileName;
 }

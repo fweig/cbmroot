@@ -286,10 +286,13 @@ public:
                  Double_t z = 0., Double_t rot = 0.);
 
 
-  /** @brief Define output file name
-     ** @param name  Name for output file
+  /** @brief Set the output file name
+     ** @param path  Name of output file
+     ** @param overwrite Overwrite output file if already existing
+     **
+     ** If the directory of the file does not exist, it will be created.
      **/
-  void SetOutFileName(TString name);
+  void SetOutFileName(TString name, Bool_t overwrite = kFALSE);
 
 
   /** @brief Activate random event plane
