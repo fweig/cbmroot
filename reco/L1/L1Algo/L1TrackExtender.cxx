@@ -267,7 +267,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
     fscal r2_best = 1e8;  // best distance to hit
     int iHit_best = -1;   // index of the best hit
 
-    const fscal iz = 1 / T.z[0];
+    const fscal iz = 1.f / (T.z[0] - fCbmTargetZ[0]);
 
 
     L1HitAreaTime area(vGridTime[ista], T.x[0] * iz, T.y[0] * iz,
