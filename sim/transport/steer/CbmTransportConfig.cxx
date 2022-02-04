@@ -26,6 +26,7 @@ CbmTransportConfig::TagSet_t CbmTransportConfig::GetValidationTags()
           "input.beamP",
           "input.beamStartZ",
           "output.path",
+          "output.overwrite",
           "target.material",
           "target.thickness",
           "target.diameter",
@@ -35,7 +36,7 @@ CbmTransportConfig::TagSet_t CbmTransportConfig::GetValidationTags()
           "target.rotation.y",
           "beam.position.x",
           "beam.position.y",
-          "beam.position.z",
+          "beam.position.zFocus",
           "beam.position.sigmaX",
           "beam.position.sigmaY",
           "beam.angle.x",
@@ -81,11 +82,13 @@ bool CbmTransportConfig::SetIO(CbmTransport& obj, const pt::ptree& moduleTree)
   auto inputs      = moduleTree.get_child("input");
   int inputCounter = 0;
   for (auto& input : inputs) {
-    pt::ptree pt_input    = input.second;
-    string inputGenerator = pt_input.get<string>("generator", "unigen");
-    string inputFile      = GetStringValue(pt_input, "file", "");
+    pt::ptree pt_input = input.second;
 
-    if (inputFile == "") { LOG(error) << "CbmTransportConfig: no input path specified for input #" << inputCounter; }
+    string inputGenerator = pt_input.get<string>("generator", "");
+    if (inputGenerator == "") continue;  // allow commenting out inputs
+
+    string inputFile = GetStringValue(pt_input, "file", "");
+    if (inputFile == "") { LOG(error) << "CbmTransportConfig: no path specified for input #" << inputCounter; }
 
     if (inputGenerator == "unigen") obj.AddInput(inputFile.c_str(), kUnigen);
     else if (inputGenerator == "pluto") {
@@ -110,7 +113,14 @@ bool CbmTransportConfig::SetIO(CbmTransport& obj, const pt::ptree& moduleTree)
         if (confBeamQ) beamQ = confBeamQ.get();
         else
           beamQ = confBeamA.get();
-        if (confBeamStartZ) beamStartZ = confBeamStartZ.get();
+        if (confBeamStartZ) {
+          beamStartZ = confBeamStartZ.get();
+          if (targetZ && beamStartZ > targetZ.get()) {
+            LOG(error) << "CbmTransportConfig: beam starts after the target: \n target.position.z = " << targetZ.get()
+                       << " cm\n beamStartZ = " << beamStartZ << " cm";
+            return false;
+          }
+        }
         else if (targetZ) {
           beamStartZ = targetZ.get() - 1.;
           LOG(warning) << "CbmTransportConfig: beamStartZ=targetZ-1. cm";
@@ -139,9 +149,15 @@ bool CbmTransportConfig::SetIO(CbmTransport& obj, const pt::ptree& moduleTree)
     inputCounter++;
   }
 
-  string outputPath = GetStringValue(moduleTree, "output.path", "test");
+  string outputPath = GetStringValue(moduleTree, "output.path", "");
+  if (outputPath == "") {
+    LOG(error) << "CbmTransportConfig: No output path provided!";
+    return false;
+  }
   LOG(info) << "CbmTransportConfig: Output path: " << outputPath;
-  obj.SetOutFileName(outputPath + ".tra.root");
+  bool overwrite = moduleTree.get<bool>("output.overwrite", false);
+  if (overwrite) LOG(info) << "CbmTransportConfig: Overwrite output!";
+  obj.SetOutFileName(outputPath + ".tra.root", overwrite);
   obj.SetParFileName(outputPath + ".par.root");
   obj.SetGeoFileName(outputPath + ".geo.root");
 
@@ -181,7 +197,7 @@ bool CbmTransportConfig::SetBeamProfile(CbmTransport& obj, const pt::ptree& modu
 {
   auto posX      = moduleTree.get_optional<float>("beam.position.x");
   auto posY      = moduleTree.get_optional<float>("beam.position.y");
-  auto posZ      = moduleTree.get_optional<float>("beam.position.z");
+  auto posZ      = moduleTree.get_optional<float>("beam.position.zFocus");
   auto posSigmaX = moduleTree.get_optional<float>("beam.position.sigmaX");
   auto posSigmaY = moduleTree.get_optional<float>("beam.position.sigmaY");
   if (posX && posY) {
@@ -219,7 +235,7 @@ bool CbmTransportConfig::SetBeamProfile(CbmTransport& obj, const pt::ptree& modu
 bool CbmTransportConfig::SetTransportParameters(CbmTransport& obj, const pt::ptree& moduleTree)
 {
   bool randomRP       = true;
-  auto configRandomRP = moduleTree.get_optional<float>("randomRP");
+  auto configRandomRP = moduleTree.get_optional<bool>("randomRP");
   if (configRandomRP) randomRP = configRandomRP.get();
   if (randomRP) obj.SetRandomEventPlane();
 

@@ -94,7 +94,9 @@ public:
     if (pt.empty() /* && !pt.data().empty()*/) {
       if (key.back() == '.') key.pop_back();
       LOG(debug) << "CbmConfig: Insert: " << key;
-      if (key.find("#") > key.size())  //used for comments
+      if (key.find("#") < key.size())  //used for comments
+        return;
+      else
         treeSet.insert(key);
     }
 
@@ -147,7 +149,9 @@ public:
       std::regex_search(s, match, rgx);
       std::string varString = match[0];
       std::string varName   = std::regex_replace(varString, std::regex("\\$|\\{|\\}"), "");
-      s.replace(s.find(varString), varString.size(), gSystem->Getenv(varName.c_str()));
+      const char* varValue  = gSystem->Getenv(varName.c_str());
+      if (!varValue) varValue = "";
+      s.replace(s.find(varString), varString.size(), varValue);
     }
     return s;
   }

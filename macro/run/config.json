@@ -15,7 +15,10 @@
        "beamP": 12.0,
        "beamStartZ": -1.0}
     ],
-    "output.path": "",
+    "output": {
+      "path": "test",
+      "overwrite": false
+    },
     "target": {
       "material": "Gold",
       "thickness": 0.025,
@@ -31,7 +34,7 @@
       "position": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.0,
+        "zFocus": 0.0,
         "sigmaX": 0.1,
         "sigmaY": 0.1
       },
@@ -58,18 +61,18 @@
         "position": {
           "x": 0.0,
           "y": 0.0,
-          "z": 40.0
+          "z": 0.0
         }
       },
       "subsystems": {
-        "magnet":   "v20a",
-        "pipe":     "v16b_1e",
+        "magnet":   "v21a",
+        "pipe":     "v16e_1e",
         "mvd":      "v20c_tr",
-        "sts":      "v19a",
-        "rich":     "v17a_1e",
-        "trd":      "v20b_1e",
-        "tof":      "v20b_1e",
-        "psd":      "v20a",
+        "sts":      "v20a",
+        "rich":     "v21a",
+        "trd":      "v20c_1e",
+        "tof":      "v20c_1e",
+        "psd":      "v20c",
         "platform": "v13a"
       }
     },

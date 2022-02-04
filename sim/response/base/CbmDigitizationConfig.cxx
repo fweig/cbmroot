@@ -93,7 +93,10 @@ bool CbmDigitizationConfig::SetIO(CbmDigitization& obj, const pt::ptree& moduleT
       obj.AddInput(id, path + ".tra.root", rate, treeAccessMode);
     }
     if (parameterSource) {
-      if (!parametersSet) { parametersPath = path; }
+      if (!parametersSet) {
+        parametersPath = path;
+        parametersSet  = true;
+      }
       else {
         LOG(error) << "CbmDigitizationConfig: only one parameter source is allowed!";
         return false;
@@ -105,10 +108,11 @@ bool CbmDigitizationConfig::SetIO(CbmDigitization& obj, const pt::ptree& moduleT
   string outputPath = GetStringValue(moduleTree, "output.path", paths.at(0));
   bool overwrite    = moduleTree.get<bool>("output.overwrite", false);
 
-  if (!parametersSet) parametersPath = paths.at(0);
+  if (!parametersSet) parametersPath = outputPath;
   LOG(info) << "CbmDigitizationConfig: Parameter source:\n" << parametersPath;
   obj.SetParameterRootFile(parametersPath + ".par.root");
   LOG(info) << "CbmDigitizationConfig: Output path:\n" << outputPath;
+  if (overwrite) LOG(info) << "CbmDigitizationConfig: Overwrite output!";
   obj.SetOutputFile(outputPath + ".raw.root", overwrite);
   obj.SetMonitorFile((outputPath + ".moni_digi.root").c_str());
 
@@ -125,7 +129,7 @@ bool CbmDigitizationConfig::SetDigitizationParameters(CbmDigitization& obj, cons
   auto startTime          = moduleTree.get_optional<float>("startTime");
 
   if (eventMode) {
-    if (storeAllTimeSlices || timeSliceLength || startTime) {
+    if (storeAllTimeSlices || timeSliceLength) {
       LOG(error) << "CbmDigitizationConfig: time slice settings should not be used in event mode!";
       return false;
     }
@@ -154,8 +158,7 @@ bool CbmDigitizationConfig::SetGeometry(CbmDigitization& obj, const pt::ptree& m
 
   if (modulesToDeactivate)
     for (auto& module : modulesToDeactivate.get())
-      if (module.first != "") obj.Deactivate(stringToECbmModuleId(module.first));
-
+      if (module.first != "") obj.Deactivate(stringToECbmModuleId(module.second.get<string>("")));
   return true;
 }
 
