@@ -38,11 +38,11 @@ class L1AlgoDraw;
 
 #define FEATURING_L1ALGO_INIT
 
+#include <array>
 #include <iomanip>
 #include <iostream>
 #include <limits>
 #include <map>
-#include <array>
 
 #include "L1Branch.h"
 #include "L1Field.h"
@@ -210,7 +210,7 @@ public:
 
   // TODO: Replace _fvecalignment with C++11 alignas(16) attibute, see vStationsNew
   L1Station vStations[L1Parameters::kMaxNstations] _fvecalignment;  // station info
-  alignas(16) std::array<L1Station, L1Parameters::kMaxNstations> fStationsNew; 
+  alignas(16) std::array<L1Station, L1Parameters::kMaxNstations> fStationsNew;
   L1Vector<L1Material> fRadThick {"fRadThick"};        // material for each station
 
   int NStsStrips {0};                   // number of strips
@@ -365,7 +365,7 @@ public:
   // TODO: We should think about, where non-constexpr L1Alog parameters can be modified. At the moment we can create a
   //       L1Parameters object somewhere outside the L1Algo, fill its fields there and then pass it directly to
   //       the L1Algo instance.
-  L1InitManager * GetL1InitManager() { return &fL1InitManager; }
+  L1InitManager* GetL1InitManager() { return &fL1InitManager; }
 
 private:
   /// Object containing L1Parameters. Default consturctor is used

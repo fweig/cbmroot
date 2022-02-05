@@ -774,41 +774,42 @@ InitStatus CbmL1::Init()
    *                     EXPERIMENTAL FEATURE: usage of L1InitManager for L1Algo initialization                       *
    ********************************************************************************************************************/
 
-  // NOTE: The 
+  // NOTE: The
 
   // Step 0: Get reference to the L1Algo initialization manager
-  L1InitManager * initMan = algo->GetL1InitManager();
+  L1InitManager* initMan = algo->GetL1InitManager();
 
   // Step 1: Initialize magnetic field function
   // Set magnetic field slices
-  auto fieldGetterFcn = 
-    [](const double (&inPos)[3], double (&outB)[3]) {CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);};
+  auto fieldGetterFcn = [](const double(&inPos)[3], double(&outB)[3]) {
+    CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);
+  };
   initMan->SetFieldFunction(fieldGetterFcn);
 
 
   /// TODO: temporary for tests, must be initialized somewhere in run_reco.C or similar
-  fActiveTrackingDetectorIDs = {L1DetectorID::kMvd, L1DetectorID::kSts };
+  fActiveTrackingDetectorIDs = {L1DetectorID::kMvd, L1DetectorID::kSts};
 
   /// Step 2: initialize IDs of detectors active in tracking
   initMan->SetActiveDetectorIDs(fActiveTrackingDetectorIDs);
 
 
-  constexpr double PI = 3.14159265358; // TODO: why cmath is not used?
+  constexpr double PI = 3.14159265358;  // TODO: why cmath is not used?
 
-  /// Step 2: initialize IDs 
+  /// Step 2: initialize IDs
   initMan->SetStationsNumberCrosscheck(L1DetectorID::kMvd, NMvdStations);
   initMan->SetStationsNumberCrosscheck(L1DetectorID::kSts, NStsStations);
   initMan->SetStationsNumberCrosscheck(L1DetectorID::kMuch, NMuchStations);
-  
+
 
   // Setup MVD stations info
-  for (int iSt = 0; iSt < NMvdStations; ++iSt) { // NOTE: example using in-stack defined objects
-    CbmMvdDetector* mvdDetector     =  CbmMvdDetector::Instance();
+  for (int iSt = 0; iSt < NMvdStations; ++iSt) {  // NOTE: example using in-stack defined objects
+    CbmMvdDetector* mvdDetector     = CbmMvdDetector::Instance();
     CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();
 
-    CbmKFTube& t = CbmKF::Instance()->vMvdMaterial[iSt];
+    CbmKFTube& t     = CbmKF::Instance()->vMvdMaterial[iSt];
     auto stationInfo = L1BaseStationInfo(L1DetectorID::kMvd, iSt);
-    stationInfo.SetStationType(1); // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.)
+    stationInfo.SetStationType(1);  // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.)
     stationInfo.SetTimeInfo(0);
     stationInfo.SetZ(t.z);
     stationInfo.SetMaterial(t.dz, t.RadLength);
@@ -816,21 +817,21 @@ InitStatus CbmL1::Init()
     stationInfo.SetYmax(t.R);
     stationInfo.SetRmin(t.r);
     stationInfo.SetRmax(t.R);
-    fscal mvdFrontPhi = 0;
-    fscal mvdBackPhi = PI / 2.;
+    fscal mvdFrontPhi   = 0;
+    fscal mvdBackPhi    = PI / 2.;
     fscal mvdFrontSigma = mvdStationPar->GetXRes(iSt) / 10000;
-    fscal mvdBackSigma = mvdStationPar->GetYRes(iSt) / 10000;
+    fscal mvdBackSigma  = mvdStationPar->GetYRes(iSt) / 10000;
     stationInfo.SetFrontBackStripsGeometry(mvdFrontPhi, mvdFrontSigma, mvdBackPhi, mvdBackSigma);
     initMan->AddStation(stationInfo);
   }
 
   // Setup STS stations info
-  for (int iSt = 0; iSt < NStsStations; ++iSt) { // NOTE: example using smart pointers
+  for (int iSt = 0; iSt < NStsStations; ++iSt) {  // NOTE: example using smart pointers
     auto cbmSts = CbmStsSetup::Instance()->GetStation(iSt);
     std::unique_ptr<L1BaseStationInfo> stationInfo(new L1BaseStationInfo(L1DetectorID::kSts, iSt));
     // TODO: replace with std::make_unique, when C++14 is avaliable!!!!
     // auto stsStation = std::make_unique<L1BaseStationInfo>(L1DetectorID::kSts, iSt);
-    stationInfo->SetStationType(0); // STS 
+    stationInfo->SetStationType(0);  // STS
     stationInfo->SetTimeInfo(0);
 
     // Setup station geometry and material
@@ -845,8 +846,8 @@ InitStatus CbmL1::Init()
 
     // Setup strips geometry
     //   TODO: why fscal instead of double in initialization?
-    fscal stsFrontPhi = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(0) * PI / 180.;
-    fscal stsBackPhi  = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(1) * PI / 180.;
+    fscal stsFrontPhi   = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(0) * PI / 180.;
+    fscal stsBackPhi    = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(1) * PI / 180.;
     fscal stsFrontSigma = cbmSts->GetSensorPitch(0) / sqrt(12);
     fscal stsBackSigma  = stsFrontSigma;
     stationInfo->SetFrontBackStripsGeometry(stsFrontPhi, stsFrontSigma, stsBackPhi, stsBackSigma);
@@ -857,7 +858,7 @@ InitStatus CbmL1::Init()
   /********************************************************************************************************************
    ********************************************************************************************************************/
 
-#endif // FEATURING_L1ALGO_INIT
+#endif  // FEATURING_L1ALGO_INIT
 
 
   algo->Init(geo, fUseHitErrors, fTrackingMode, fMissingHits);

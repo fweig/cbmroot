@@ -65,7 +65,11 @@ typedef int index_type;
 
 /// Hash for unordered_map with enum class keys
 struct EnumClassHash {
-  template <typename T> int operator()(T t) const { return static_cast<int>(t); }
+  template<typename T>
+  int operator()(T t) const
+  {
+    return static_cast<int>(t);
+  }
 };
 
 #endif

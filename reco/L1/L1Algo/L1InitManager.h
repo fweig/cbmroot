@@ -12,13 +12,13 @@
 #define L1InitManager_h 1
 
 #include "L1BaseStationInfo.h"
-#include "L1Parameters.h"
 #include "L1Field.h"
+#include "L1Parameters.h"
 
 //#include <string>
 #include <bitset>
+#include <memory>  //unique_ptr
 #include <set>
-#include <memory> //unique_ptr
 
 /// Forward declaration of the tracking detectors scoped enumeration. Concrete realization of this enumeration must be
 /// determined in the concrete setup class (i.e. CbmL1/BmnL1)
@@ -40,7 +40,7 @@ enum class L1DetectorID;
 ///    };
 ///
 /// 1. Get a pointer to the :L1InitManager field of L1Algo:
-/// 
+///
 ///    L1InitManager * initMan = algo->GetL1InitManager();
 ///
 /// 2. Initialize a set of L1DetectorID's for detectors active in tracking:
@@ -57,18 +57,19 @@ enum class L1DetectorID;
 ///
 class L1InitManager {
 private:
-  enum {
-    kEactiveDetectorIDs,        ///< If the detector sequence is set
-    kEstationsNumberCrosscheck, ///< If the crosscheck station numbers were setup
-    kEfieldFunction,            ///< If magnetic field getter funciton is set
-    kEprimaryVertexField,       ///< If magnetic field value and region defined at primary vertex
-    kEifStationNumbersChecked,  ///< If the station number was already checked
-    kEstationsInfo,             ///< If all the planned stations were added to the manager
-    kEL1StationTransfered,      ///< If the L1Station vector was already transfered to destination array
+  enum
+  {
+    kEactiveDetectorIDs,         ///< If the detector sequence is set
+    kEstationsNumberCrosscheck,  ///< If the crosscheck station numbers were setup
+    kEfieldFunction,             ///< If magnetic field getter funciton is set
+    kEprimaryVertexField,        ///< If magnetic field value and region defined at primary vertex
+    kEifStationNumbersChecked,   ///< If the station number was already checked
+    kEstationsInfo,              ///< If all the planned stations were added to the manager
+    kEL1StationTransfered,       ///< If the L1Station vector was already transfered to destination array
     kEND
   };
+
 public:
-  
   //
   // CONSTRUCTORS AND DESTRUCTOR
   //
@@ -132,16 +133,15 @@ public:
   void SetFieldFunction(const std::function<void(const double (&xyz)[3], double (&B)[3])>& fieldFcn);
   /// Sets a number of stations for a particular tracking detector ID to provide initialization cross-check
   void SetStationsNumberCrosscheck(L1DetectorID detectorID, int nStations);
-  /// Sets z coordinates referecne points in a vicinity of primary vertex to calculate L1FieldValue and L1FieldReference 
+  /// Sets z coordinates referecne points in a vicinity of primary vertex to calculate L1FieldValue and L1FieldReference
   /// values
   // TODO: Consider posibility for linear approximation
   void SetReferencePrimaryVertexPoints(double z0, double z1, double z2);
-  
 
 
 private:
   /// Checker for L1BaseStationInfo set
-  /// \return true if all L1BaseStationInfo objects were initialized properly. Similar effect can be achieved by 
+  /// \return true if all L1BaseStationInfo objects were initialized properly. Similar effect can be achieved by
   /// calling the fInitFlags[L1InitManager::kEstationsInfo] flag
   bool CheckStationsInfo();
 
@@ -149,21 +149,21 @@ private:
 
   std::bitset<L1InitManager::kEND> fInitFlags {};  ///< Initialization flags
   std::set<L1DetectorID> fActiveDetectorIDs {};    ///< Set of tracking detectors, active during this analysis session
-  
+
   /* Stations related fields */
-  
-  std::set<L1BaseStationInfo> fStationsInfo {};    ///< Set of L1BaseStationInfo objects
-  /// Map of station numbers used for initialization crosscheck   
+
+  std::set<L1BaseStationInfo> fStationsInfo {};  ///< Set of L1BaseStationInfo objects
+  /// Map of station numbers used for initialization crosscheck
   std::unordered_map<L1DetectorID, int, EnumClassHash> fStationsNumberCrosscheck {};
   /// A function which returns magnetic field vector B in a radius-vector xyz
-  std::function<void(const double (&xyz)[3], double (&B)[3])> fFieldFunction {[](const double (&)[3], double (&)[3]){}};
+  std::function<void(const double (&xyz)[3], double (&B)[3])> fFieldFunction {
+    [](const double (&)[3], double (&)[3]) {}};
   // NOTE: Stations of daetectors which will not be assigned as active, will not be included in the tracking!!!!!!!
   // NOTE: fTotalNumberOfStations is excess field for logic, but it's imortant to track L1Algo initialization
-  
+
   /* Vertex related fields */
-  L1FieldValue   fPrimaryVertexFieldValue {}; ///> L1FieldValue object at primary vertex
-  L1FieldRegion  fPrimaryVertexFieldRegion {}; ///> L1FieldRegion object at primary vertex
-  
+  L1FieldValue fPrimaryVertexFieldValue {};    ///> L1FieldValue object at primary vertex
+  L1FieldRegion fPrimaryVertexFieldRegion {};  ///> L1FieldRegion object at primary vertex
 };
 
-#endif // L1InitManager_h
+#endif  // L1InitManager_h

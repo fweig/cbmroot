@@ -2,12 +2,11 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
-#include <FairLogger.h>
 #include "L1CAIteration.h"
 
-L1CAIteration::L1CAIteration(const std::string& name, L1CAIterationType type)
-: fName(name),
-  fType(type)
+#include <FairLogger.h>
+
+L1CAIteration::L1CAIteration(const std::string& name, L1CAIterationType type) : fName(name), fType(type)
 {
   this->Print();
 }

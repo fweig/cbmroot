@@ -86,7 +86,7 @@ public:
   /// Less operator for L1BaseStationInfo object to perform their sorts. Sorting is carried out first by fDetectorID,
   /// and then by fStationID
   bool operator<(const L1BaseStationInfo& right) const
-  { 
+  {
     return fDetectorID != right.fDetectorID ? fDetectorID < right.fDetectorID : fStationID < right.fStationID;
   }
 
@@ -145,7 +145,6 @@ public:
   /// Gets a reference to Bitset object of initialization bits
   const std::bitset<L1BaseStationInfo::kEND>& GetInitFlags() const { return fInitFlags; }
 
-  
 
   //
   //  SETTERS
@@ -154,10 +153,10 @@ public:
   /// Sets station ID
   void SetStationID(int inID);
   /// Sets detector ID
-  void SetDetectorID(L1DetectorID inID );
+  void SetDetectorID(L1DetectorID inID);
 
   /// Sets type of station
-  void SetStationType(int inType); // TODO: this is a temporary solution since 
+  void SetStationType(int inType);  // TODO: this is a temporary solution since
   /// Sets flag: 0 - time information is not provided by this detector type
   //             1 - time information is provided by the detector and can be used in tracking
   void SetTimeInfo(int inTimeInfo);
@@ -176,7 +175,7 @@ public:
   /// \param Cy Array of approximation coefficients for y field component
   /// \param Cz Array of approximation coefficients for z field component
   void SetFieldSlice(const double* Cx, const double* Cy, const double* Cz);
-  /// Sets arrays of the approcimation 
+  /// Sets arrays of the approcimation
   /// \param getField A user function, which gets a xyz array of position coordinates and fills B array
   ///                 of magnetic field components in position
   void SetFieldSlice(const std::function<void(const double (&xyz)[3], double (&B)[3])>& getFieldValue);
@@ -191,12 +190,12 @@ public:
   /// Sets maximum distance between station center and its edge in y direction
   void SetYmax(double aSize);
 
-private: 
-  L1DetectorID fDetectorID {static_cast<L1DetectorID>(0)};  ///< Detector ID 
-  int          fStationID {-1};  ///< Station ID
-  double fXmax {0};  ///< Maximum distance between station center and its edge in x direction
-  double fYmax {0};  ///< Maximum distance between station center and its edge in y direction
-  double fZPos {0};  ///< z position of the station in double precision, used in field approximation
+private:
+  L1DetectorID fDetectorID {static_cast<L1DetectorID>(0)};  ///< Detector ID
+  int fStationID {-1};                                      ///< Station ID
+  double fXmax {0};         ///< Maximum distance between station center and its edge in x direction
+  double fYmax {0};         ///< Maximum distance between station center and its edge in y direction
+  double fZPos {0};         ///< z position of the station in double precision, used in field approximation
   L1Station fL1Station {};  ///< L1Station structure, describes a station in L1Algo
   std::bitset<L1BaseStationInfo::kEND> fInitFlags;  ///< Class fileds initialization flags
 };

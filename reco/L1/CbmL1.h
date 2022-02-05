@@ -89,7 +89,14 @@ public:
 
 /// Enumeration for the detector subsystems used in L1 tracking
 /// Note: L1DetectorID has a forward declaration in L1InitManager.h and L1BaseStationInfo.h
-enum class L1DetectorID { kMvd, kSts, kMuch, kTof, kTrd };
+enum class L1DetectorID
+{
+  kMvd,
+  kSts,
+  kMuch,
+  kTof,
+  kTrd
+};
 
 
 // TODO: insert documentation!
@@ -243,10 +250,8 @@ private:
   static CbmL1* fInstance;
   L1Parameters fL1Parameters;
 
-  std::set<L1DetectorID> fActiveTrackingDetectorIDs {
-    L1DetectorID::kMvd, 
-    L1DetectorID::kSts 
-  };  ///< Set of detectors active in tracking
+  std::set<L1DetectorID> fActiveTrackingDetectorIDs {L1DetectorID::kMvd,
+                                                     L1DetectorID::kSts};  ///< Set of detectors active in tracking
 
   L1AlgoInputData* fData {nullptr};
 

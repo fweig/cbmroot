@@ -68,11 +68,9 @@ public:
     LOG(info) << "--- Field approximation coefficients:";
     LOG(info) << "      idx         CX         CY         CZ";
     for (int idx = 0; idx < 21; ++idx) {
-      LOG(info) 
-        << std::setw(9) << std::setfill(' ') << idx << ' ' << std::setw(10) << std::setfill(' ')
-        << fieldSlice.cx[idx][0] << ' ' << std::setw(10) << std::setfill(' ')
-        << fieldSlice.cy[idx][0] << ' ' << std::setw(10) << std::setfill(' ')
-        << fieldSlice.cz[idx][0];
+      LOG(info) << std::setw(9) << std::setfill(' ') << idx << ' ' << std::setw(10) << std::setfill(' ')
+                << fieldSlice.cx[idx][0] << ' ' << std::setw(10) << std::setfill(' ') << fieldSlice.cy[idx][0] << ' '
+                << std::setw(10) << std::setfill(' ') << fieldSlice.cz[idx][0];
     }
     LOG(info) << "--- Strips geometry:";
     LOG(info) << "----- Front:";

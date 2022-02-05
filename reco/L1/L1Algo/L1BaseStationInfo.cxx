@@ -18,12 +18,12 @@
 
 // L1Algo core
 #include "L1BaseStationInfo.h"
-#include "L1Parameters.h"
 #include "L1Def.h"
+#include "L1Parameters.h"
 
 // C++ STL
-#include <utility>
 #include <iomanip>
+#include <utility>
 
 //
 // CONSTRUCTORS AND DESTRUCTOR
@@ -44,7 +44,7 @@ L1BaseStationInfo::L1BaseStationInfo(L1DetectorID detectorID, int stationID) noe
 {
   LOG(DEBUG) << "L1BaseStationInfo: Constructor (detectorID, stationID) called for " << this << '\n';  // Temporary
   fInitFlags[kEDetectorID] = true;
-  fInitFlags[kEStationID] = true;
+  fInitFlags[kEStationID]  = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -64,7 +64,7 @@ L1BaseStationInfo::L1BaseStationInfo(const L1BaseStationInfo& other) noexcept
   , fZPos(other.fZPos)
   , fL1Station(other.fL1Station)
   , fInitFlags(other.fInitFlags)
-{ 
+{
   LOG(debug) << "L1BaseStationInfo: Copy constructor called: " << &other << " was copied into " << this;
 }
 
@@ -81,9 +81,7 @@ L1BaseStationInfo::L1BaseStationInfo(L1BaseStationInfo&& other) noexcept
 L1BaseStationInfo& L1BaseStationInfo::operator=(const L1BaseStationInfo& other) noexcept
 {
   LOG(debug) << "L1BaseStationInfo: Copy operator= called for " << &other << " was copied into" << this;
-  if (this != &other) {
-    L1BaseStationInfo(other).Swap(*this);
-  }
+  if (this != &other) { L1BaseStationInfo(other).Swap(*this); }
   return *this;
 }
 
@@ -91,7 +89,7 @@ L1BaseStationInfo& L1BaseStationInfo::operator=(const L1BaseStationInfo& other) 
 //
 L1BaseStationInfo& L1BaseStationInfo::operator=(L1BaseStationInfo&& other) noexcept
 {
-  LOG(debug) << "L1BaseStationInfo: Move operator= called for " << &other << " was copied into" << this; 
+  LOG(debug) << "L1BaseStationInfo: Move operator= called for " << &other << " was copied into" << this;
   if (this != &other) {
     L1BaseStationInfo tmp(std::move(other));
     this->Swap(tmp);
@@ -121,11 +119,10 @@ void L1BaseStationInfo::Swap(L1BaseStationInfo& other) noexcept
 void L1BaseStationInfo::Print(int verbosity) const
 {
   if (verbosity == 0) {
-    LOG(info) 
-      << "L1BaseStationInfo object: {stationID, detectorID, address} = {" << fStationID << ", " 
-      << static_cast<int>(fDetectorID) << ", " << this << '}';
+    LOG(info) << "L1BaseStationInfo object: {stationID, detectorID, address} = {" << fStationID << ", "
+              << static_cast<int>(fDetectorID) << ", " << this << '}';
   }
-  else if(verbosity > 0) {
+  else if (verbosity > 0) {
     LOG(info) << "L1BaseStationInfo object: at " << this;
     LOG(info) << "- Station ID:              " << fStationID;
     LOG(info) << "- Detector ID:             " << static_cast<int>(fDetectorID);
@@ -143,11 +140,10 @@ void L1BaseStationInfo::Print(int verbosity) const
       LOG(info) << "--- Field approximation coefficients:";
       LOG(info) << "      idx         CX         CY         CZ";
       for (int idx = 0; idx < L1Parameters::kMaxNFieldApproxCoefficients; ++idx) {
-        LOG(info) 
-          << std::setw(9) << std::setfill(' ') << idx << ' ' << std::setw(10) << std::setfill(' ')
-          << fL1Station.fieldSlice.cx[idx][0] << ' ' << std::setw(10) << std::setfill(' ')
-          << fL1Station.fieldSlice.cy[idx][0] << ' ' << std::setw(10) << std::setfill(' ')
-          << fL1Station.fieldSlice.cz[idx][0];
+        LOG(info) << std::setw(9) << std::setfill(' ') << idx << ' ' << std::setw(10) << std::setfill(' ')
+                  << fL1Station.fieldSlice.cx[idx][0] << ' ' << std::setw(10) << std::setfill(' ')
+                  << fL1Station.fieldSlice.cy[idx][0] << ' ' << std::setw(10) << std::setfill(' ')
+                  << fL1Station.fieldSlice.cz[idx][0];
       }
       LOG(info) << "--- Strips geometry:";
       LOG(info) << "----- Front:";
@@ -195,14 +191,14 @@ void L1BaseStationInfo::Reset()
 //
 const L1Station& L1BaseStationInfo::GetL1Station() const
 {
-   bool isStationInitialized = IsInitialized();
-   if (!isStationInitialized) {
-     LOG(error)
-       << "L1BaseStationInfo::GetL1Station: attempt to get an L1Staion object from uninitialized L1BaseStation with "
-       << "stationID = "<< fStationID << " and detectorID = " << static_cast<int>(fDetectorID);
-     assert((!isStationInitialized));
-   }
-   return fL1Station;
+  bool isStationInitialized = IsInitialized();
+  if (!isStationInitialized) {
+    LOG(error)
+      << "L1BaseStationInfo::GetL1Station: attempt to get an L1Staion object from uninitialized L1BaseStation with "
+      << "stationID = " << fStationID << " and detectorID = " << static_cast<int>(fDetectorID);
+    assert((!isStationInitialized));
+  }
+  return fL1Station;
 }
 
 
@@ -214,8 +210,8 @@ const L1Station& L1BaseStationInfo::GetL1Station() const
 //
 void L1BaseStationInfo::SetStationID(int inID)
 {
-  if (! fInitFlags[kEStationID]) {
-    fStationID = inID;
+  if (!fInitFlags[kEStationID]) {
+    fStationID              = inID;
     fInitFlags[kEStationID] = true;
   }
   else {
@@ -227,8 +223,8 @@ void L1BaseStationInfo::SetStationID(int inID)
 //
 void L1BaseStationInfo::SetDetectorID(L1DetectorID inID)
 {
-  if (! fInitFlags[kEDetectorID]) {
-    fDetectorID = inID;
+  if (!fInitFlags[kEDetectorID]) {
+    fDetectorID              = inID;
     fInitFlags[kEDetectorID] = true;
   }
   else {
@@ -240,7 +236,7 @@ void L1BaseStationInfo::SetDetectorID(L1DetectorID inID)
 //
 void L1BaseStationInfo::SetStationType(int inType)
 {
-  if (! fInitFlags[kEtype]) {
+  if (!fInitFlags[kEtype]) {
     fL1Station.type    = inType;
     fInitFlags[kEtype] = true;
   }
@@ -261,8 +257,8 @@ void L1BaseStationInfo::SetTimeInfo(int inTimeInfo)
 //
 void L1BaseStationInfo::SetZ(double inZ)
 {
-  fL1Station.z = inZ; // setting simd vector of single-precision floats, which is passed to high performanced L1Algo
-  fZPos = inZ;        // setting precised value to use in field approximation etc
+  fL1Station.z    = inZ;  // setting simd vector of single-precision floats, which is passed to high performanced L1Algo
+  fZPos           = inZ;  // setting precised value to use in field approximation etc
   fInitFlags[kEz] = true;
 }
 
@@ -302,9 +298,8 @@ void L1BaseStationInfo::SetMaterial(double inThickness, double inRL)
 void L1BaseStationInfo::SetFieldSlice(const double* Cx, const double* Cy, const double* Cz)
 {
   if (fInitFlags[kEfieldSlice]) {
-    LOG(warn) 
-      << "L1BaseStationInfo::SetFieldSlice: Attempt to redifine field slice for station with detectorID = "
-      << static_cast<int>(fDetectorID) << " and stationID = " << fStationID << ". Redifinition ignored";
+    LOG(warn) << "L1BaseStationInfo::SetFieldSlice: Attempt to redifine field slice for station with detectorID = "
+              << static_cast<int>(fDetectorID) << " and stationID = " << fStationID << ". Redifinition ignored";
     return;
   }
 
@@ -322,9 +317,8 @@ void L1BaseStationInfo::SetFieldSlice(const double* Cx, const double* Cy, const 
 void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xyz)[3], double (&B)[3])>& getFieldValue)
 {
   if (fInitFlags[kEfieldSlice]) {
-    LOG(warn) 
-      << "L1BaseStationInfo::SetFieldSlice: Attempt to redifine field slice for station with detectorID = "
-      << static_cast<int>(fDetectorID) << " and stationID = " << fStationID << ". Redifinition ignored";
+    LOG(warn) << "L1BaseStationInfo::SetFieldSlice: Attempt to redifine field slice for station with detectorID = "
+              << static_cast<int>(fDetectorID) << " and stationID = " << fStationID << ". Redifinition ignored";
     return;
   }
 
@@ -335,25 +329,23 @@ void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xy
 #endif
   constexpr int M = L1Parameters::kMaxFieldApproxPolynomialOrder;
   constexpr int N = L1Parameters::kMaxNFieldApproxCoefficients;
-  constexpr int D = 3; ///> number of dimensions
+  constexpr int D = 3;  ///> number of dimensions
 
   // SLE initialization
-  double A[N][N + D] = {}; // augmented matrix
-  double dx = (fXmax / N / 2 < 1.) ? fXmax / N / 4. : 1.;
-  double dy = (fYmax / N / 2 < 1.) ? fYmax / N / 4. : 1.;
-  
+  double A[N][N + D] = {};  // augmented matrix
+  double dx          = (fXmax / N / 2 < 1.) ? fXmax / N / 4. : 1.;
+  double dy          = (fYmax / N / 2 < 1.) ? fYmax / N / 4. : 1.;
+
   for (double x = -fXmax; x <= fXmax; x += dx) {
     for (double y = -fYmax; y <= fYmax; y += dy) {
       double r = sqrt(fabs(x * x / fXmax / fXmax + y / fYmax * y / fYmax));
-      if (r > 1.) {
-        continue;
-      }
+      if (r > 1.) { continue; }
       double p[D] = {x, y, fZPos};
       double B[D] = {};
       getFieldValue(p, B);
 
       double m[N] = {1};
-      m[0] = 1;
+      m[0]        = 1;
       for (int i = 1; i <= M; ++i) {
         int k = (i - 1) * i / 2;
         int l = i * (i + 1) / 2;
@@ -365,7 +357,7 @@ void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xy
 
       double w = 1. / (r * r + 1);
       for (int i = 0; i < N; ++i) {
-        // fill the left part of the matrix 
+        // fill the left part of the matrix
         for (int j = 0; j < N; ++j) {
           A[i][j] += w * m[i] * m[j];
         }
@@ -378,7 +370,7 @@ void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xy
   }
 
   // SLE solution (Gaussian elimination)
-  //   
+  //
   for (int kCol = 0; kCol < N - 1; ++kCol) {
     for (int jRow = kCol + 1; jRow < N; ++jRow) {
       double factor = A[jRow][kCol] / A[kCol][kCol];
@@ -415,8 +407,8 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
   //----- Original code from L1Algo ---------------------------------------------------------------------//
   double cFront = cos(frontPhi);
   double sFront = sin(frontPhi);
-  double cBack = cos(backPhi);
-  double sBack = sin(backPhi);
+  double cBack  = cos(backPhi);
+  double sBack  = sin(backPhi);
 
   // NOTE: Here additional double variables are used to save the precission
 
@@ -468,7 +460,7 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
 //
 void L1BaseStationInfo::SetXmax(double aSize)
 {
-  fXmax = aSize;
+  fXmax              = aSize;
   fInitFlags[kEXmax] = true;
 }
 
@@ -476,7 +468,6 @@ void L1BaseStationInfo::SetXmax(double aSize)
 //
 void L1BaseStationInfo::SetYmax(double aSize)
 {
-  fYmax = aSize;
+  fYmax              = aSize;
   fInitFlags[kEYmax] = true;
 }
-

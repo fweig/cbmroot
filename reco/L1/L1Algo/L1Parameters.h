@@ -13,14 +13,15 @@
 #define L1Parameters_h 1
 
 #include <FairLogger.h>
+
+#include <iomanip>
+#include <sstream>
 #include <string>
 #include <unordered_map>
-#include <sstream>
-#include <iomanip>
 
-#include "utils/L1AlgoFunctions.h"
+#include "L1Def.h"  // For EnumClassHash
 #include "L1Vector.h"
-#include "L1Def.h" // For EnumClassHash
+#include "utils/L1AlgoFunctions.h"
 
 //#define L1ALGODEV
 
@@ -39,15 +40,15 @@
 //   kAllPrimJump,    ///< primary all tracks with jumped triplets
 //   kAllSec,         ///< secondary all tracks
 //   kAllPrimE,       ///< primary all electron tracks
-//   kAllSecE,        ///< secondary all electron tracks 
+//   kAllSecE,        ///< secondary all electron tracks
 //   kFastPrimJump,   ///< primary fast tracks with jumped triplets
 //   kAllSecJump      ///< secondary all tracks with jumped triplets
 // };
-// 
+//
 // // Type for mapping L1CATrackFinder parameters, which are dependent from the current track finder iteration
 // template <typename T>
 // using L1CATrackFinderIterParameterMap_t = std::unordered_map<L1CATrackFinderIter, T, EnumClassHash>;
-// 
+//
 // ////// > Will be moved to separate class
 // const L1CATrackFinderIterParameterMap_t<std::string> kTrackFinderIterNames = {
 //   { L1CATrackFinderIter::kFastPrim,     "Primary tracks, fast" },
@@ -59,7 +60,7 @@
 //   { L1CATrackFinderIter::kFastPrimJump, "Primary tracks with jumped triplets, fast" },
 //   { L1CATrackFinderIter::kAllSecJump,   "Secondary tracks with jumped triplets, all" }
 // };
-// 
+//
 // const L1CATrackFinderIterParameterMap_t<std::string> kTrackFinderIterNamesShort = {
 //   { L1CATrackFinderIter::kFastPrim,     "FastPrim" },
 //   { L1CATrackFinderIter::kAllPrim,      "AllPrim" },
@@ -79,15 +80,16 @@ public:
   /// Amount of coefficients in field approximations
   static constexpr int kMaxNFieldApproxCoefficients {21};  // TODO: May be it is better to use the polynomial
                                                            // order instead of this?
-  static constexpr int kMaxFieldApproxPolynomialOrder {5}; ///> Order of polynomial to approximate field in the vicinity of station plane
+  static constexpr int kMaxFieldApproxPolynomialOrder {
+    5};  ///> Order of polynomial to approximate field in the vicinity of station plane
 
   static constexpr unsigned int kStationBits {6u};  ///> Amount of bits to code one station
-  static constexpr unsigned int kThreadBits {6u};  ///> Amount of bits to code one thread
+  static constexpr unsigned int kThreadBits {6u};   ///> Amount of bits to code one thread
   static constexpr unsigned int kTripletBits {32u - kStationBits - kThreadBits};  ///> Amount of bits to code one triple
 
-  static constexpr int kMaxNstations { 1u << kStationBits };  ///> Max number of stations, 2^6  = 64
-  static constexpr int kMaxNthreads  { 1u << kThreadBits };  ///> Max number of threads, 2^6  = 64
-  static constexpr int kMaxNtriplets { 1u << kTripletBits };  ///> Max number of triplets, 2^20 = 1,048,576
+  static constexpr int kMaxNstations {1u << kStationBits};  ///> Max number of stations, 2^6  = 64
+  static constexpr int kMaxNthreads {1u << kThreadBits};    ///> Max number of threads, 2^6  = 64
+  static constexpr int kMaxNtriplets {1u << kTripletBits};  ///> Max number of triplets, 2^20 = 1,048,576
 
   static constexpr int kStandardIOWidth {15};  ///> Width of one output entry, passed to the std::setw()
 
@@ -127,7 +129,7 @@ public:
     LOG(INFO) << "    Max number of triplets per doublet: " << fMaxTripletPerDoublets;
     LOG(INFO) << "";
     LOG(INFO) << "  TRACK FINDER ITERATION DEPENDENT CONSTANTS";
-    
+
 
     LOG(INFO) << "===================================================================================";
   }
@@ -138,7 +140,7 @@ public:
   //-------------------------------------------------------------------------------------------------------//
   //    Runtime constants                                                                                  //
   //-------------------------------------------------------------------------------------------------------//
-  
+
   // ***** Setters ***** //
   /// Sets upper-bound cut on max number of doublets per one singlet
   void SetMaxDoubletsPerSinglet(unsigned int value) { fMaxDoubletsPerSinglet = value; }
@@ -149,60 +151,60 @@ public:
   // void SetTrackFinderIterSequence(const L1Vector<L1CATrackFinderIter>& iterations) {
   //   fTrackFinderIterSequence = iterations;
   // }
-  // 
+  //
   // /// Sets track Chi2 upper cut
   // /// \param tfIteration Track Finder iteration of the L1 algorithm run
-  // /// \param chi2Cut     Upper cut on track chi2 during selected iteration 
+  // /// \param chi2Cut     Upper cut on track chi2 during selected iteration
   // void SetTrackChi2Cut(L1CATrackFinderIter tfIteration, float chi2Cut) { fTrackChi2Cut[tfIteration] = chi2Cut; }
   // void SetTrackChi2Cut(float chi2Cut) { SetSameValueToMap(chi2Cut, fTrackChi2Cut); }
-  // void SetTrackChi2Cut(const L1CATrackFinderIterParameterMap_t<float>& newValues) 
-  // { 
-  //   SetMappedValuesToMap(newValues, fTrackChi2Cut); 
+  // void SetTrackChi2Cut(const L1CATrackFinderIterParameterMap_t<float>& newValues)
+  // {
+  //   SetMappedValuesToMap(newValues, fTrackChi2Cut);
   // }
   // /// Sets triplet Chi2 upper cut
   // /// \param tfIteration Track Finder iteration of the L1 algorithm run
-  // /// \param chi2Cut     Upper cut on triplet chi2 during selected iteration 
+  // /// \param chi2Cut     Upper cut on triplet chi2 during selected iteration
   // void SetTripletChi2Cut(L1CATrackFinderIter tfIteration, float chi2Cut) { fTripletChi2Cut[tfIteration] = chi2Cut; }
   // void SetTripletChi2Cut(float chi2Cut) { SetSameValueToMap(chi2Cut, fTripletChi2Cut); }
-  // void SetTripletChi2Cut(const L1CATrackFinderIterParameterMap_t<float>& newValues) 
+  // void SetTripletChi2Cut(const L1CATrackFinderIterParameterMap_t<float>& newValues)
   // {
   //   SetMappedValuesToMap(newValues, fTripletChi2Cut);
   // }
-  // /// Sets triplet Chi2 upper cut 
+  // /// Sets triplet Chi2 upper cut
   // /// \param tfIteration Track Finder iteration of the L1 algorithm run
-  // /// \param chi2Cut     Upper cut on triplet chi2 during selected iteration 
+  // /// \param chi2Cut     Upper cut on triplet chi2 during selected iteration
   // void SetDoubletChi2Cut(L1CATrackFinderIter tfIteration, float chi2Cut) { fDoubletChi2Cut[tfIteration] = chi2Cut; }
   // void SetDoubletChi2Cut(float chi2Cut) { SetSameValueToMap(chi2Cut, fDoubletChi2Cut); }
-  // void SetDoubletChi2Cut(const L1CATrackFinderIterParameterMap_t<float>& newValues) 
-  // { 
+  // void SetDoubletChi2Cut(const L1CATrackFinderIterParameterMap_t<float>& newValues)
+  // {
   //   SetMappedValuesToMap(newValues, fDoubletChi2Cut);
   // }
-  // 
-  
+  //
+
   // ***** Getters ***** //
   unsigned int GetMaxDoubletsPerSinglet() const { return fMaxDoubletsPerSinglet; }
   unsigned int GetMaxTripletPerDoublets() const { return fMaxTripletPerDoublets; }
-  
+
   // /// Gets track Chi2 upper cut
   // /// \param tfIteration Track Finder iteration of the L1 algorithm run
-  // /// \return            Upper cut on track chi2 during selected iteration 
+  // /// \return            Upper cut on track chi2 during selected iteration
   // float GetTrackChi2Cut(L1CATrackFinderIter tfIteration)   const { return fTrackChi2Cut.at(tfIteration); }
   // /// Gets triplet Chi2 upper cut
   // /// \param tfIteration Track Finder iteration of the L1 algorithm run
-  // /// \return            Upper cut on triplet chi2 during selected iteration 
+  // /// \return            Upper cut on triplet chi2 during selected iteration
   // float GetTripletChi2Cut(L1CATrackFinderIter tfIteration) const { return fTripletChi2Cut.at(tfIteration); }
   // /// Gets triplet Chi2 upper cut
   // /// \param tfIteration Track Finder iteration of the L1 algorithm run
-  // /// \return            Upper cut on triplet chi2 during selected iteration 
+  // /// \return            Upper cut on triplet chi2 during selected iteration
   // float GetDoubletChi2Cut(L1CATrackFinderIter tfIteration) const { return fDoubletChi2Cut.at(tfIteration); }
-  
-  
+
+
   //-------------------------------------------------------------------------------------------------------//
   //    Auxilary methods                                                                                   //
   //-------------------------------------------------------------------------------------------------------//
 public:
   //void PrintTrackFinderIterSequence() const
-  //{  
+  //{
   //  LOG(INFO) << "== L1Algo track finder iterations sequence ==========";
   //  LOG(INFO) << "";
   //  int idx = 0;
@@ -227,9 +229,9 @@ private:
 
 private:
   unsigned int fMaxDoubletsPerSinglet {150};  ///<
-  unsigned int fMaxTripletPerDoublets {15};  ///<
+  unsigned int fMaxTripletPerDoublets {15};   ///<
 
-  // L1Vector<L1CATrackFinderIter> fTrackFinderIterSequence {}; ///< Sequence of iterations in the track finder algorithm 
+  // L1Vector<L1CATrackFinderIter> fTrackFinderIterSequence {}; ///< Sequence of iterations in the track finder algorithm
 
   // // TODO: Develope naming system for these constants
   // L1CATrackFinderIterParameterMap_t<float> fTrackChi2Cut {
@@ -246,7 +248,7 @@ private:
   // //   23.4450 <- 7.815 * 3
   // //   18.7560 <- 6.252 * 3
   // //   11.3449 * 2. / 3.
-  // //   
+  // //
   // L1CATrackFinderIterParameterMap_t<float> fTripletChi2Cut {
   //   { L1CATrackFinderIter::kFastPrim,     23.4450f }, // kFastPrimIter
   //   { L1CATrackFinderIter::kAllPrim,      23.4450f },
