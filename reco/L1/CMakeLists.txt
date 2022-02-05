@@ -140,7 +140,9 @@ L1Algo/L1EventMatch.cxx
 L1Algo/L1MCEvent.cxx
 L1Algo/L1Fit.cxx
 CbmL1MCTrack.cxx
-
+L1Algo/L1CAIteration.cxx
+L1Algo/L1BaseStationInfo.cxx
+L1Algo/L1InitManager.cxx
 L1Algo/utils/L1AlgoDraw.cxx
 L1Algo/utils/L1AlgoEfficiencyPerformance.cxx
 L1Algo/utils/L1AlgoPulls.cxx
@@ -270,6 +272,8 @@ Install(FILES CbmL1Counters.h
               L1Algo/L1UMeasurementInfo.h
               L1Algo/L1XYMeasurementInfo.h
               L1Algo/L1BaseStationInfo.h
+              L1Algo/L1InitManager.h
+              L1Algo/L1CAIteration.h
               L1Algo/L1Parameters.h
               L1Algo/utils/L1Functions.h
               vectors/vec_arithmetic.h

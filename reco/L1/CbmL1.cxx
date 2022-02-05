@@ -768,36 +768,80 @@ InitStatus CbmL1::Init()
 
   algo->SetL1Parameters(fL1Parameters);
 
+
+#ifdef FEATURING_L1ALGO_INIT
   /********************************************************************************************************************
-   *                                                                                                                  *
    *                     EXPERIMENTAL FEATURE: usage of L1InitManager for L1Algo initialization                       *
-   *                                                                                                                  *
-   *   Stage 1: Repeat initialization steps in parallel to the original code                                          *
-   *   Stage 2: Compare two initialization procedures                                                                 *
-   *   Stage 3: Remove old initialization                                                                             *
-   *                                                                                                                  *
    ********************************************************************************************************************/
 
-  // Get reference to the L1Algo initialization manager
+  // NOTE: The 
+
+  // Step 0: Get reference to the L1Algo initialization manager
   L1InitManager * initMan = algo->GetL1InitManager();
+
+  // Step 1: Initialize magnetic field function
+  // Set magnetic field slices
+  auto fieldGetterFcn = 
+    [](const double (&inPos)[3], double (&outB)[3]) {CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);};
+  initMan->SetFieldFunction(fieldGetterFcn);
+
+
+  /// TODO: temporary for tests, must be initialized somewhere in run_reco.C or similar
+  fActiveTrackingDetectorIDs = {L1DetectorID::kMvd, L1DetectorID::kSts };
+
+  /// Step 2: initialize IDs of detectors active in tracking
+  initMan->SetActiveDetectorIDs(fActiveTrackingDetectorIDs);
+
+
   constexpr double PI = 3.14159265358; // TODO: why cmath is not used?
 
-  // Fill STS info:
-  for (int iSt = 0; iSt < NStsStations; ++iSt) {
+  /// Step 2: initialize IDs 
+  initMan->SetStationsNumberCrosscheck(L1DetectorID::kMvd, NMvdStations);
+  initMan->SetStationsNumberCrosscheck(L1DetectorID::kSts, NStsStations);
+  initMan->SetStationsNumberCrosscheck(L1DetectorID::kMuch, NMuchStations);
+  
+
+  // Setup MVD stations info
+  for (int iSt = 0; iSt < NMvdStations; ++iSt) { // NOTE: example using in-stack defined objects
+    CbmMvdDetector* mvdDetector     =  CbmMvdDetector::Instance();
+    CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();
+
+    CbmKFTube& t = CbmKF::Instance()->vMvdMaterial[iSt];
+    auto stationInfo = L1BaseStationInfo(L1DetectorID::kMvd, iSt);
+    stationInfo.SetStationType(1); // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.)
+    stationInfo.SetTimeInfo(0);
+    stationInfo.SetZ(t.z);
+    stationInfo.SetMaterial(t.dz, t.RadLength);
+    stationInfo.SetXmax(t.R);
+    stationInfo.SetYmax(t.R);
+    stationInfo.SetRmin(t.r);
+    stationInfo.SetRmax(t.R);
+    fscal mvdFrontPhi = 0;
+    fscal mvdBackPhi = PI / 2.;
+    fscal mvdFrontSigma = mvdStationPar->GetXRes(iSt) / 10000;
+    fscal mvdBackSigma = mvdStationPar->GetYRes(iSt) / 10000;
+    stationInfo.SetFrontBackStripsGeometry(mvdFrontPhi, mvdFrontSigma, mvdBackPhi, mvdBackSigma);
+    initMan->AddStation(stationInfo);
+  }
+
+  // Setup STS stations info
+  for (int iSt = 0; iSt < NStsStations; ++iSt) { // NOTE: example using smart pointers
     auto cbmSts = CbmStsSetup::Instance()->GetStation(iSt);
-    auto stsStation = new L1BaseStationInfo();
-    stsStation->SetStationID(iSt);
-    stsStation->SetStationType(0); // STS 
+    std::unique_ptr<L1BaseStationInfo> stationInfo(new L1BaseStationInfo(L1DetectorID::kSts, iSt));
+    // TODO: replace with std::make_unique, when C++14 is avaliable!!!!
+    // auto stsStation = std::make_unique<L1BaseStationInfo>(L1DetectorID::kSts, iSt);
+    stationInfo->SetStationType(0); // STS 
+    stationInfo->SetTimeInfo(0);
 
     // Setup station geometry and material
-    stsStation->SetZ(cbmSts->GetZ());
+    stationInfo->SetZ(cbmSts->GetZ());
     double stsXmax = cbmSts->GetXmax();
     double stsYmax = cbmSts->GetYmax();
-    stsStation->SetXmax(stsXmax);
-    stsStation->SetYmax(stsYmax);
-    stsStation->SetRmin(0);
-    stsStation->SetRmax(stsXmax > stsYmax ? stsXmax : stsYmax);
-    stsStation->SetMaterial(cbmSts->GetSensorD(), cbmSts->GetRadLength());
+    stationInfo->SetXmax(stsXmax);
+    stationInfo->SetYmax(stsYmax);
+    stationInfo->SetRmin(0);
+    stationInfo->SetRmax(stsXmax > stsYmax ? stsXmax : stsYmax);
+    stationInfo->SetMaterial(cbmSts->GetSensorD(), cbmSts->GetRadLength());
 
     // Setup strips geometry
     //   TODO: why fscal instead of double in initialization?
@@ -805,22 +849,15 @@ InitStatus CbmL1::Init()
     fscal stsBackPhi  = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(1) * PI / 180.;
     fscal stsFrontSigma = cbmSts->GetSensorPitch(0) / sqrt(12);
     fscal stsBackSigma  = stsFrontSigma;
-    stsStation->SetFrontBackStripsGeometry(stsFrontPhi, stsFrontSigma, stsBackPhi, stsBackSigma);
-
-    // Setup magnetic field
-    // NOTE: Such solution is needed to prevent L1Algo from FairRoot dependencies
-    auto getFieldValueFcn = [](const double (&inXYZ)[3], double (&outB)[3]) {
-      CbmKF::Instance()->GetMagneticField()->GetFieldValue(inXYZ, outB);
-    };
-    stsStation->SetFieldSlice(getFieldValueFcn);
-    initMan->AddStation(stsStation);
-    delete stsStation;
+    stationInfo->SetFrontBackStripsGeometry(stsFrontPhi, stsFrontSigma, stsBackPhi, stsBackSigma);
+    initMan->AddStation(stationInfo);
   }
   initMan->PrintStations(/*vebosity = */ 1);
 
   /********************************************************************************************************************
    ********************************************************************************************************************/
 
+#endif // FEATURING_L1ALGO_INIT
 
 
   algo->Init(geo, fUseHitErrors, fTrackingMode, fMissingHits);

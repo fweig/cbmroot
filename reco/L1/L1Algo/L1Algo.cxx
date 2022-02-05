@@ -225,6 +225,42 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
 #ifndef TBB2
   std::cout << "L1Algo initialized" << std::endl;
 #endif  // TBB2
+
+  //
+  // NEW INITIALIZATION (BETA)
+  //
+  
+
+  LOG(debug) << "\\";
+  LOG(debug) << " \\";
+  LOG(debug) << "     Original L1Station vector content";
+  LOG(debug) << " /";
+  LOG(debug) << "/";
+  int nStations = fL1InitManager.GetStationsNumber();
+  for (const auto& aStation: vStations) {
+    int idx = &aStation - vStations;
+    if (idx == nStations) {
+      break;
+    }
+    LOG(debug) << "Station Global No: " << idx;
+    aStation.Print();
+  }
+  LOG(debug) << "\\";
+  LOG(debug) << " \\";
+  LOG(debug) << "     New L1Station vector content";
+  LOG(debug) << " /";
+  LOG(debug) << "/";
+  fL1InitManager.TransferL1StationArray(fStationsNew);
+  nStations = fL1InitManager.GetStationsNumber();
+  for (const auto& aStation: fStationsNew) {
+    int idx = &aStation - &fStationsNew.front();
+    if (idx == nStations) {
+      break;
+    }
+    LOG(debug) << "Station Global No: " << idx;
+    aStation.Print();
+
+  }
 }
 
 

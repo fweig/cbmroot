@@ -42,6 +42,7 @@ class L1AlgoDraw;
 #include <iostream>
 #include <limits>
 #include <map>
+#include <array>
 
 #include "L1Branch.h"
 #include "L1Field.h"
@@ -125,14 +126,14 @@ public:
   static unsigned int TripletId2Thread(unsigned int ID)
   {
     constexpr unsigned int kMoveThread = L1Parameters::kTripletBits;
-    constexpr unsigned int kThreadMask = (1 << L1Parameters::kThreadBits) - 1;
+    constexpr unsigned int kThreadMask = (1u << L1Parameters::kThreadBits) - 1u;
     return (ID >> kMoveThread) & kThreadMask;
   }
 
   /// unpack the triplet ID to its triplet index
   static unsigned int TripletId2Triplet(unsigned int ID)
   {
-    constexpr unsigned int kTripletMask = (1 << L1Parameters::kTripletBits) - 1;
+    constexpr unsigned int kTripletMask = (1u << L1Parameters::kTripletBits) - 1u;
     return ID & kTripletMask;
   }
 
@@ -206,7 +207,10 @@ public:
   int NStsStations {0};     ///< number of sts stations
   int fNfieldStations {0};  ///< number of stations in the field region
 
+
+  // TODO: Replace _fvecalignment with C++11 alignas(16) attibute, see vStationsNew
   L1Station vStations[L1Parameters::kMaxNstations] _fvecalignment;  // station info
+  alignas(16) std::array<L1Station, L1Parameters::kMaxNstations> fStationsNew; 
   L1Vector<L1Material> fRadThick {"fRadThick"};        // material for each station
 
   int NStsStrips {0};                   // number of strips

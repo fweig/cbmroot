@@ -45,7 +45,10 @@ public:
   {
   }
 
-
+  /// Constructor to make initializations like L1Vector<int> myVector {"MyVector", {1, 2, 3}}
+  L1Vector(const std::string& name, std::initializer_list<T> init): Tbase(init), fName(name)
+  {
+  }
 
   L1Vector(const L1Vector& v) : Tbase() { *this = v; }
 

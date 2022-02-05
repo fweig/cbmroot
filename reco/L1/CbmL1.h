@@ -76,9 +76,21 @@ class CbmL1HitStore {
 public:
   int ExtIndex;
   int iStation;
-  double x, y, time, dx, dy, dt, dxy;
+  double x;
+  double y;
+  double time;
+  double dx;
+  double dy;
+  double dt;
+  double dxy;
   int Det;
 };
+
+
+/// Enumeration for the detector subsystems used in L1 tracking
+/// Note: L1DetectorID has a forward declaration in L1InitManager.h and L1BaseStationInfo.h
+enum class L1DetectorID { kMvd, kSts, kMuch, kTof, kTrd };
+
 
 // TODO: insert documentation!
 //
@@ -123,6 +135,13 @@ public:
   ~CbmL1(/*if (targetFieldSlice) delete;*/);
 
   L1Parameters* GetL1Parameters() { return &fL1Parameters; }
+
+  /// Gets a set of active detectors used in tracking
+  // TODO: think about return (value, reference or const reference?)
+  std::set<L1DetectorID> GetActiveTrackingDetectorIDs() const { return fActiveTrackingDetectorIDs; }
+  /// Sets a vector of detectors used in tracking
+  void SetActiveTrackingDetectorIDs(const std::set<L1DetectorID>& init) { fActiveTrackingDetectorIDs = init; }
+
 
   void SetStsMaterialBudgetFileName(TString fileName) { fStsMatBudgetFileName = fileName; }
   void SetMvdMaterialBudgetFileName(TString fileName) { fMvdMatBudgetFileName = fileName; }
@@ -223,6 +242,11 @@ public:
 private:
   static CbmL1* fInstance;
   L1Parameters fL1Parameters;
+
+  std::set<L1DetectorID> fActiveTrackingDetectorIDs {
+    L1DetectorID::kMvd, 
+    L1DetectorID::kSts 
+  };  ///< Set of detectors active in tracking
 
   L1AlgoInputData* fData {nullptr};
 
