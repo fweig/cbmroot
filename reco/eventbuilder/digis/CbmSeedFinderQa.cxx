@@ -29,7 +29,8 @@ CbmSeedFinderQa::CbmSeedFinderQa() : fOutFolder("SeedFinderQA", "Seed finder QA"
   fhCorrectVsFoundNoNoise =
     new TH2I("fhCorrectVsFoundNoNoise", "Correct digis  [pct] vs. Found digis [pct], no noise; Correct; Found ", 110,
              -5., 105., 110, -5., 105.);
-  fhTimeOffset = new TH1F("fhTimeOffset", "tSeed - tMCEvent [ns]", 40, -10, 10);
+  fhTimeOffset = new TH1F("fhTimeOffset", "tSeed - tMCEvent [ns]", 20, -5, 5);
+  fhTimeOffset->SetCanExtend(TH1::kAllAxes);
 
   histFolder->Add(fhCorrectDigiRatio);
   histFolder->Add(fhCorrectDigiRatioNoNoise);
@@ -39,8 +40,8 @@ CbmSeedFinderQa::CbmSeedFinderQa() : fOutFolder("SeedFinderQA", "Seed finder QA"
   histFolder->Add(fhCorrectVsFoundNoNoise);
   histFolder->Add(fhTimeOffset);
 
-  fCanv = new CbmQaCanvas("cSummary", "", 3 * 400, 2 * 400);
-  fCanv->Divide2D(6);
+  fCanv = new CbmQaCanvas("cSummary", "", 4 * 400, 2 * 400);
+  fCanv->Divide2D(7);
   fOutFolder.Add(fCanv);
 }
 
@@ -54,6 +55,15 @@ CbmSeedFinderQa::~CbmSeedFinderQa()
   delete fhCorrectVsFoundNoNoise;
   delete fhTimeOffset;
   delete fCanv;
+}
+
+void CbmSeedFinderQa::Init()
+{
+  if (!FairRootManager::Instance() || !FairRootManager::Instance()->GetObject("MCEventList.")) {
+    LOG(error) << "No MC event list found";
+    return;
+  }
+  fEventList = (CbmMCEventList*) FairRootManager::Instance()->GetObject("MCEventList.");
 }
 
 void CbmSeedFinderQa::FillQaInfo(const int32_t WinStart, const int32_t WinEnd, const std::vector<CbmMatch>* vDigiMatch,
@@ -98,8 +108,11 @@ void CbmSeedFinderQa::FillQaInfo(const int32_t WinStart, const int32_t WinEnd, c
   {
     seedMatch.AddLink(1.0, 0, -1, 0);
     fvEventMatches.push_back(seedMatch);
-    fvCorrectDigiRatio.push_back(-1.0);
-    fvFoundDigiRatio.push_back(-1.0);
+    //should never show up in histograms
+    fvCorrectDigiRatio.push_back(std::numeric_limits<double>::quiet_NaN());
+    fvCorrectDigiRatioNoNoise.push_back(std::numeric_limits<double>::quiet_NaN());
+    fvFoundDigiRatio.push_back(std::numeric_limits<double>::quiet_NaN());
+    fvTimeOffset.push_back(std::numeric_limits<double>::quiet_NaN());
     return;
   }
   else {
@@ -131,18 +144,22 @@ void CbmSeedFinderQa::FillQaInfo(const int32_t WinStart, const int32_t WinEnd, c
   }
   const double foundDigiRatio = (double) correctDigiCount / matchedEventDigiCount;
   fvFoundDigiRatio.push_back(foundDigiRatio);
+
+  //seed time offset to MC
+  const CbmLink& eventLink = seedMatch.GetMatchedLink();
+  const double timeDiff    = seedTime - fEventList->GetEventTime(eventLink.GetEntry(), eventLink.GetFile());
+  fvTimeOffset.push_back(timeDiff);
 }
 
 void CbmSeedFinderQa::FillHistos()
 {
-  if (!FairRootManager::Instance() || !FairRootManager::Instance()->GetObject("MCEventList.")) {
-    LOG(error) << "No MC event list found";
-    return;
-  }
-  CbmMCEventList* eventList = (CbmMCEventList*) FairRootManager::Instance()->GetObject("MCEventList.");
-  //eventList->Print();
-
   for (uint32_t iEvent = 0; iEvent < fvEventMatches.size(); iEvent++) {
+
+    const CbmMatch* match = &(fvEventMatches.at(iEvent));
+    const CbmLink& link   = match->GetMatchedLink();
+    if (link.GetEntry() == -1) { continue; }
+
+    fhTimeOffset->Fill(fvTimeOffset.at(iEvent));
     const int32_t digiCount                 = fvFullDigiCount.at(iEvent);
     const int32_t noiseCount                = fvNoiseDigiCount.at(iEvent);
     const double noiseDigisPercent          = 100. * (double) noiseCount / digiCount;
@@ -155,14 +172,6 @@ void CbmSeedFinderQa::FillHistos()
     fhFoundDigiRatio->Fill(foundDigisPercent);
     fhCorrectVsFound->Fill(correctDigisPercent, foundDigisPercent);
     fhCorrectVsFoundNoNoise->Fill(correctDigisPercentNoNoise, foundDigisPercent);
-
-    const CbmMatch* match = &(fvEventMatches.at(iEvent));
-    const CbmLink& link   = match->GetMatchedLink();
-
-    if (link.GetEntry() != -1) {
-      const double timeDiff = fvSeedTimesFull.at(iEvent) - eventList->GetEventTime(link.GetEntry(), link.GetFile());
-      fhTimeOffset->Fill(timeDiff);
-    }
   }
 }
 
@@ -194,12 +203,6 @@ void CbmSeedFinderQa::OutputQa()
 
 void CbmSeedFinderQa::WriteHistos()
 {
-  //output histograms
-  if (!FairRootManager::Instance() || !FairRootManager::Instance()->GetSink()) {
-    LOG(error) << "No sink found";
-    return;
-  }
-
   fCanv->cd(1);
   fhCorrectDigiRatio->DrawCopy("colz", "");
 
@@ -217,6 +220,9 @@ void CbmSeedFinderQa::WriteHistos()
 
   fCanv->cd(6);
   fhCorrectVsFoundNoNoise->DrawCopy("colz", "");
+
+  fCanv->cd(7);
+  fhTimeOffset->DrawCopy("colz", "");
 
   FairSink* sink = FairRootManager::Instance()->GetSink();
   sink->WriteObject(&fOutFolder, nullptr);

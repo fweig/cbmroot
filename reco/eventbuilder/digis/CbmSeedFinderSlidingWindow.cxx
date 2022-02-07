@@ -126,6 +126,11 @@ void CbmSeedFinderSlidingWindow::SetQa(bool doQA)
   }
 }
 
+void CbmSeedFinderSlidingWindow::Init()
+{
+  if (fQa) { fQa->Init(); }
+}
+
 void CbmSeedFinderSlidingWindow::OutputQa()
 {
   if (fQa) { fQa->OutputQa(); }

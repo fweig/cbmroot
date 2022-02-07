@@ -170,6 +170,9 @@ InitStatus CbmTaskBuildRawEvents::Init()
     LOG(info) << "CbmTaskBuildRawEvents::Init(): Real time " << rtime << " s, CPU time " << ctime << " s";
   }
 
+  // Init seed finder
+  if (fSeedFinderSlidingWindow) { fSeedFinderSlidingWindow->Init(); }
+
   /// Call Algo Init method
   if (kTRUE == fpAlgo->InitAlgo()) return kSUCCESS;
   else

@@ -27,6 +27,7 @@
 
 class TH1F;
 class TH2I;
+class CbmMCEventList;
 class CbmQaCanvas;
 
 class CbmSeedFinderQa {
@@ -55,6 +56,8 @@ public:
   std::vector<double> fvCorrectDigiRatioNoNoise;
   /** @brief Ratio of digis of matched events that were included in event seed. */
   std::vector<double> fvFoundDigiRatio;
+  /** @brief Difference between true event time and seed time. */
+  std::vector<double> fvTimeOffset;
 
   /** @brief Gather QA Information. 
   * @params WinStart Starting position of seed window.
@@ -71,6 +74,9 @@ public:
   /** @brief Finalize histograms and canvases and write to file. */
   void WriteHistos();
 
+  /** @brief Initialize communication with FairRootManager (needed for MC events). */
+  void Init();
+
 private:
   TFolder* histFolder = nullptr;  /// subfolder for histograms
   TFolder fOutFolder;             /// output folder with histos and canvases
@@ -82,9 +88,11 @@ private:
   TH1F* fhFoundDigiRatio          = nullptr;  /// digis found per event
   TH2I* fhCorrectVsFound          = nullptr;  /// correct digis per event vs found digis per event
   TH2I* fhCorrectVsFoundNoNoise   = nullptr;  /// correct digis per event vs found digis per event, disregarding noise
-  TH1F* fhTimeOffset              = nullptr;  /// difference between true event time and seed
+  TH1F* fhTimeOffset              = nullptr;  /// difference between true event time and seed time
 
   CbmQaCanvas* fCanv;  ///summary canvas
+
+  CbmMCEventList* fEventList = nullptr;  // to access MC truth
 
   /** @brief Fill output histograms with data from current timeslice. */
   void FillHistos();

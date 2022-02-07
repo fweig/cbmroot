@@ -65,6 +65,9 @@ public:
   /** @brief Returns number of seed times currently stored in buffer. */
   size_t GetNofSeeds() { return fvSeedTimes->size(); }
 
+  /** @brief Initializes QA object if set. */
+  void Init();
+
 private:
   /** @brief Processes QA info. */
   CbmSeedFinderQa* fQa = nullptr;
