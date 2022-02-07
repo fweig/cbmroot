@@ -25,6 +25,12 @@ bool CbmRichUnpackAlgo2022::unpack(const fles::Timeslice* ts, std::uint16_t icom
   const fles::MicrosliceView mv            = ts->get_microslice(icomp, imslice);
   const fles::MicrosliceDescriptor& msDesc = mv.desc();
 
+  // Check the version number of the MS to identify wrong unpacker for data
+  if (msDesc.sys_ver != 0x3) {
+    LOG(fatal) << "CbmRichUnpackAlgo2022: System Version of the microslice is not compatible with this unpacker!";
+    return false;
+  }
+
   // Clear CbmTime of MS. Used to get time offset of subtriggers to MS start
   fCbmTimeMS = 0;
 
