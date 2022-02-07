@@ -84,7 +84,6 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   //     threadNumberToCpuMap[2*i+1] = 15-(i+8);
   //   }
 
-
   int ind = 0;
   {
     L1FieldValue B[3];
@@ -104,8 +103,8 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   }
   //vStations.clear();
   NStations    = static_cast<int>(geo[ind++]);
-  NMvdStations = static_cast<int>(geo[ind++]);
-  NStsStations = static_cast<int>(geo[ind++]);
+  NMvdStations = static_cast<int>(geo[ind++]); // TODO: get rid of NMbdStations (S. Zh.)
+  NStsStations = static_cast<int>(geo[ind++]); // TODO: get rid of NStsStations (S. Zh.)
 
   fNfieldStations = NStsStations + NMvdStations;
 
@@ -230,26 +229,75 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   // NEW INITIALIZATION (BETA)
   //
 
+  // Get number of stations 
+  int NStationsNew = fInitManager.GetStationsNumber();
+  // TODO: we must to get rid of station specification in the L1Algo
+  int NMvdStationsNew = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(0));
+  int NStsStationsNew = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(1));
+  int NfieldStationsNew = NMvdStationsNew + NStsStationsNew;
+  
+  // Get field near target
+  L1FieldValue vtxFieldValueNew = fInitManager.GetTargetFieldValue();
+  L1FieldRegion vtxFieldRegionNew = fInitManager.GetTargetFieldRegion();
 
-  LOG(debug) << "\\";
-  LOG(debug) << " \\";
-  LOG(debug) << "     Original L1Station vector content";
-  LOG(debug) << " /";
-  LOG(debug) << "/";
-  int nStations = fL1InitManager.GetStationsNumber();
+  // Fill L1Station array 
+  fInitManager.TransferL1StationArray(fStationsNew);
+  
+
+  LOG(debug) << "**********************************************************************";
+  LOG(debug) << "*  New L1Algo initialization cross check  (tmp log, to be removed!)  *";
+  LOG(debug) << "**********************************************************************";
+  LOG(debug) << "** Number of stations (origial) **";
+  LOG(debug) << "\tTotal: " << NStations;
+  LOG(debug) << "\tMVD:   " << NMvdStations;
+  LOG(debug) << "\tSTS:   " << NStsStations;
+  LOG(debug) << "\tField: " << fNfieldStations;
+  LOG(debug) << "** Number of stations (new) **";
+  LOG(debug) << "\tTotal: " << NStationsNew;
+  LOG(debug) << "\tMVD:   " << NMvdStationsNew;
+  LOG(debug) << "\tSTS:   " << NStsStationsNew;
+  LOG(debug) << "\tField: " << NfieldStationsNew;
+
+  LOG(debug) << "** Magnetic field near target (original)**";
+  LOG(debug) << "\tField Value: " << vtxFieldValue.x[0] << ' ' << vtxFieldValue.y[0] << ' ' << vtxFieldValue.z[0];
+  LOG(debug) << "\tField Region:";
+  LOG(debug) << "\t\tcx0: " << vtxFieldRegion.cx0[0];
+  LOG(debug) << "\t\tcx1: " << vtxFieldRegion.cx1[0];
+  LOG(debug) << "\t\tcx2: " << vtxFieldRegion.cx2[0];
+  LOG(debug) << "\t\tcy0: " << vtxFieldRegion.cy0[0];
+  LOG(debug) << "\t\tcy1: " << vtxFieldRegion.cy1[0];
+  LOG(debug) << "\t\tcy2: " << vtxFieldRegion.cy2[0];
+  LOG(debug) << "\t\tcz0: " << vtxFieldRegion.cz0[0];
+  LOG(debug) << "\t\tcz1: " << vtxFieldRegion.cz1[0];
+  LOG(debug) << "\t\tcz2: " << vtxFieldRegion.cz2[0];
+  LOG(debug) << "\t\tz0:  " << vtxFieldRegion.z0[0];
+
+  
+
+  LOG(debug) << "** Magnetic field near target (new)**";
+  LOG(debug) << "\tField Value: " << vtxFieldValueNew.x[0] << ' ' << vtxFieldValueNew.y[0] << ' ' << vtxFieldValueNew.z[0];
+  LOG(debug) << "\tField Region:";
+  LOG(debug) << "\t\tcx0: " << vtxFieldRegionNew.cx0[0];
+  LOG(debug) << "\t\tcx1: " << vtxFieldRegionNew.cx1[0];
+  LOG(debug) << "\t\tcx2: " << vtxFieldRegionNew.cx2[0];
+  LOG(debug) << "\t\tcy0: " << vtxFieldRegionNew.cy0[0];
+  LOG(debug) << "\t\tcy1: " << vtxFieldRegionNew.cy1[0];
+  LOG(debug) << "\t\tcy2: " << vtxFieldRegionNew.cy2[0];
+  LOG(debug) << "\t\tcz0: " << vtxFieldRegionNew.cz0[0];
+  LOG(debug) << "\t\tcz1: " << vtxFieldRegionNew.cz1[0];
+  LOG(debug) << "\t\tcz2: " << vtxFieldRegionNew.cz2[0];
+  LOG(debug) << "\t\tz0:  " << vtxFieldRegionNew.z0[0];
+
+  LOG(debug) << "** Original L1Station array content **";
+  int nStations = fInitManager.GetStationsNumber();
   for (const auto& aStation : vStations) {
     int idx = &aStation - vStations;
     if (idx == nStations) { break; }
     LOG(debug) << "Station Global No: " << idx;
     aStation.Print();
   }
-  LOG(debug) << "\\";
-  LOG(debug) << " \\";
-  LOG(debug) << "     New L1Station vector content";
-  LOG(debug) << " /";
-  LOG(debug) << "/";
-  fL1InitManager.TransferL1StationArray(fStationsNew);
-  nStations = fL1InitManager.GetStationsNumber();
+  LOG(debug) << "** New L1Station array content **";
+  nStations = fInitManager.GetStationsNumber();
   for (const auto& aStation : fStationsNew) {
     int idx = &aStation - &fStationsNew.front();
     if (idx == nStations) { break; }

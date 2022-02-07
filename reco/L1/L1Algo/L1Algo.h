@@ -36,7 +36,8 @@ class L1AlgoDraw;
 //#endif
 //#define MERGE_CLONES
 
-#define FEATURING_L1ALGO_INIT
+
+#define FEATURING_L1ALGO_INIT 1 // If defined, new initialization will be used, if not - the old one
 
 #include <array>
 #include <iomanip>
@@ -365,12 +366,12 @@ public:
   // TODO: We should think about, where non-constexpr L1Alog parameters can be modified. At the moment we can create a
   //       L1Parameters object somewhere outside the L1Algo, fill its fields there and then pass it directly to
   //       the L1Algo instance.
-  L1InitManager* GetL1InitManager() { return &fL1InitManager; }
+  L1InitManager* GetL1InitManager() { return &fInitManager; }
 
 private:
   /// Object containing L1Parameters. Default consturctor is used
   L1Parameters fL1Parameters;    ///< Object of L1Algo parameters class
-  L1InitManager fL1InitManager;  ///< Object of L1Algo initialization manager class
+  L1InitManager fInitManager;  ///< Object of L1Algo initialization manager class
 
   /// =================================  FUNCTIONAL PART  =================================
 

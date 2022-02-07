@@ -10,6 +10,13 @@
 #include "L1UMeasurementInfo.h"
 #include "L1XYMeasurementInfo.h"
 
+
+#define L1Station_h_TMP_DEBUG 1
+
+#ifdef L1Station_h_TMP_DEBUG
+# include <iomanip>
+#endif // L1Station_h_TMP_DEBUG
+
 class L1Station {
 
 public:
@@ -55,6 +62,7 @@ public:
 
   void Print() const
   {
+#ifdef L1Station_h_TMP_DEBUG
     LOG(info) << "==== L1Station object at " << this;
     LOG(info) << "- L1Station fields:";
     LOG(info) << "--- Station type ID:             " << type;
@@ -94,6 +102,7 @@ public:
     LOG(info) << "------- sin(phi):            " << yInfo.sin_phi[0];
     LOG(info) << "------- sigma2:              " << yInfo.sigma2[0];
     LOG(info) << "";
+#endif // L1Station_h_TMP_DEBUG
   }
 
 } _fvecalignment;

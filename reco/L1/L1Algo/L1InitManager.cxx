@@ -201,39 +201,61 @@ void L1InitManager::SetStationsNumberCrosscheck(L1DetectorID detectorID, int nSt
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
-void L1InitManager::SetReferencePrimaryVertexPoints(double z0, double z1, double z2)
+void L1InitManager::SetTargetPosition(double x, double y, double z)
+{ 
+  if (fInitFlags[L1InitManager::kEtargetPos]) {
+    LOG(warn) << "L1InitManager::SetTargetPosition: attempt to reinitialize the target position. Ignore";
+    return;
+  }
+
+  fTargetPos[0] = x;
+  fTargetPos[1] = y;
+  fTargetPos[2] = z;
+  fInitFlags[L1InitManager::kEtargetPos] = true;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------
+//
+void L1InitManager::InitTargetField(double zStep)
 {
   if (fInitFlags[L1InitManager::kEprimaryVertexField]) {
-    LOG(warn)
-      << "L1InitManager::SetReferencePrimaryVertexPoints: attempt to redefine reference points for field calculation "
-      << "near primary vertex. Ignore";
+    LOG(warn) << "L1InitManager::InitTargetField: attempt to reinitialize the field value and field region "
+              << "near target. Ignore";
     return;
   }
 
   // Check for field function
   if (!fInitFlags[L1InitManager::kEfieldFunction]) {
-    LOG(error)
-      << "L1InitManager::SetReferencePrimaryVertexPoints: attempt to set reference points for field calculation near "
-      << "primary vertex before the magnetic field function intialization";
+    LOG(error) << "L1InitManager::InitTargetField: attempt to initialze the field value and field region near "
+               << "target before initializing field function";
     assert((fInitFlags[L1InitManager::kEfieldFunction]));
+  }
+
+  // Check for target defined
+  if (!fInitFlags[L1InitManager::kEtargetPos]) {
+    LOG(error) << "L1InitManager::InitTargetField: attempt to initialize the field value and field region near "
+               << "target before the target position initialization";
+    assert((fInitFlags[L1InitManager::kEtargetPos]));
   }
 
   constexpr int numberOfDimensions {3};
   constexpr int numberOfReferencePoints {3};
 
-  std::array<double, numberOfReferencePoints> inputZ  = {z0, z1, z2};  // tmp array to store input assigned with index
+  std::array<double, numberOfReferencePoints> inputNodalZ { 
+    fTargetPos[2], fTargetPos[2] + zStep, fTargetPos[2] + 2. * zStep };  
   std::array<L1FieldValue, numberOfReferencePoints> B = {};
-  std::array<fvec, numberOfReferencePoints> z         = {z0, z1, z2};
+  std::array<fvec, numberOfReferencePoints> z         = {};
   for (int idx = 0; idx < numberOfReferencePoints; ++idx) {
-    double point[numberOfDimensions] = {0., 0., inputZ[idx]};
+    double point[numberOfDimensions] = {0., 0., inputNodalZ[idx]};
     double field[numberOfDimensions] = {};
     fFieldFunction(point, field);
+    z[idx] = inputNodalZ[idx];
     B[idx].x = field[0];
     B[idx].y = field[1];
     B[idx].z = field[2];
   }
-  fPrimaryVertexFieldRegion.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
-  fPrimaryVertexFieldValue = B[0];
+  fTargetFieldRegion.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
+  fTargetFieldValue = B[0];
 
   fInitFlags[L1InitManager::kEprimaryVertexField] = true;
 }

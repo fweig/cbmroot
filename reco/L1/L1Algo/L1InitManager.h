@@ -62,6 +62,7 @@ private:
     kEactiveDetectorIDs,         ///< If the detector sequence is set
     kEstationsNumberCrosscheck,  ///< If the crosscheck station numbers were setup
     kEfieldFunction,             ///< If magnetic field getter funciton is set
+    kEtargetPos,                 ///< If target position was defined
     kEprimaryVertexField,        ///< If magnetic field value and region defined at primary vertex
     kEifStationNumbersChecked,   ///< If the station number was already checked
     kEstationsInfo,              ///< If all the planned stations were added to the manager
@@ -118,10 +119,13 @@ public:
   int GetStationsNumber() const { return static_cast<int>(fStationsInfo.size()); }
   /// Gets a number of stations for a particualr detector ID
   int GetStationsNumber(L1DetectorID detectorID) const;
+  /// Gets a target position
+  const std::array<double, 3>& GetTargetPosition() const { return fTargetPos; }
+    // TODO: define enum of dimensions....
   /// Gets a L1FieldRegion object at primary vertex
-  const L1FieldRegion& GetPrimaryVertexFieldRegion() const { return fPrimaryVertexFieldRegion; }
+  const L1FieldRegion& GetTargetFieldRegion() const { return fTargetFieldRegion; }
   /// Gets a L1FieldValue object at primary vertex
-  const L1FieldValue& GetPrimaryVertexFieldValue() const { return fPrimaryVertexFieldValue; }
+  const L1FieldValue& GetTargetFieldValue() const { return fTargetFieldValue; }
 
   //
   // SETTERS
@@ -133,10 +137,13 @@ public:
   void SetFieldFunction(const std::function<void(const double (&xyz)[3], double (&B)[3])>& fieldFcn);
   /// Sets a number of stations for a particular tracking detector ID to provide initialization cross-check
   void SetStationsNumberCrosscheck(L1DetectorID detectorID, int nStations);
-  /// Sets z coordinates referecne points in a vicinity of primary vertex to calculate L1FieldValue and L1FieldReference
-  /// values
+  /// Sets target poisition
+  void SetTargetPosition(double x, double y, double z);
+
+  /// Calculates L1FieldValue and L1FieldReference values for a selected step in z coordinate from the target position
+  /// \param zStep step between nodal points 
   // TODO: Consider posibility for linear approximation
-  void SetReferencePrimaryVertexPoints(double z0, double z1, double z2);
+  void InitTargetField(double zStep);
 
 
 private:
@@ -150,6 +157,10 @@ private:
   std::bitset<L1InitManager::kEND> fInitFlags {};  ///< Initialization flags
   std::set<L1DetectorID> fActiveDetectorIDs {};    ///< Set of tracking detectors, active during this analysis session
 
+  /* Target fields */
+
+  std::array<double, 3> fTargetPos {};  ///< Nominal target position coordinates
+
   /* Stations related fields */
 
   std::set<L1BaseStationInfo> fStationsInfo {};  ///< Set of L1BaseStationInfo objects
@@ -162,8 +173,8 @@ private:
   // NOTE: fTotalNumberOfStations is excess field for logic, but it's imortant to track L1Algo initialization
 
   /* Vertex related fields */
-  L1FieldValue fPrimaryVertexFieldValue {};    ///> L1FieldValue object at primary vertex
-  L1FieldRegion fPrimaryVertexFieldRegion {};  ///> L1FieldRegion object at primary vertex
+  L1FieldValue fTargetFieldValue {};    ///> L1FieldValue object at target
+  L1FieldRegion fTargetFieldRegion {};  ///> L1FieldRegion object at target
 };
 
-#endif  // L1InitManager_h
+#endif  
