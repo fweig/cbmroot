@@ -103,8 +103,8 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   }
   //vStations.clear();
   NStations    = static_cast<int>(geo[ind++]);
-  NMvdStations = static_cast<int>(geo[ind++]); // TODO: get rid of NMbdStations (S. Zh.)
-  NStsStations = static_cast<int>(geo[ind++]); // TODO: get rid of NStsStations (S. Zh.)
+  NMvdStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NMbdStations (S. Zh.)
+  NStsStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NStsStations (S. Zh.)
 
   fNfieldStations = NStsStations + NMvdStations;
 
@@ -229,20 +229,20 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   // NEW INITIALIZATION (BETA)
   //
 
-  // Get number of stations 
+  // Get number of stations
   int NStationsNew = fInitManager.GetStationsNumber();
   // TODO: we must to get rid of station specification in the L1Algo
-  int NMvdStationsNew = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(0));
-  int NStsStationsNew = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(1));
+  int NMvdStationsNew   = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(0));
+  int NStsStationsNew   = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(1));
   int NfieldStationsNew = NMvdStationsNew + NStsStationsNew;
-  
+
   // Get field near target
-  L1FieldValue vtxFieldValueNew = fInitManager.GetTargetFieldValue();
+  L1FieldValue vtxFieldValueNew   = fInitManager.GetTargetFieldValue();
   L1FieldRegion vtxFieldRegionNew = fInitManager.GetTargetFieldRegion();
 
-  // Fill L1Station array 
+  // Fill L1Station array
   fInitManager.TransferL1StationArray(fStationsNew);
-  
+
 
   LOG(debug) << "**********************************************************************";
   LOG(debug) << "*  New L1Algo initialization cross check  (tmp log, to be removed!)  *";
@@ -272,10 +272,10 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   LOG(debug) << "\t\tcz2: " << vtxFieldRegion.cz2[0];
   LOG(debug) << "\t\tz0:  " << vtxFieldRegion.z0[0];
 
-  
 
   LOG(debug) << "** Magnetic field near target (new)**";
-  LOG(debug) << "\tField Value: " << vtxFieldValueNew.x[0] << ' ' << vtxFieldValueNew.y[0] << ' ' << vtxFieldValueNew.z[0];
+  LOG(debug) << "\tField Value: " << vtxFieldValueNew.x[0] << ' ' << vtxFieldValueNew.y[0] << ' '
+             << vtxFieldValueNew.z[0];
   LOG(debug) << "\tField Region:";
   LOG(debug) << "\t\tcx0: " << vtxFieldRegionNew.cx0[0];
   LOG(debug) << "\t\tcx1: " << vtxFieldRegionNew.cx1[0];

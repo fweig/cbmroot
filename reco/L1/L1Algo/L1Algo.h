@@ -37,7 +37,7 @@ class L1AlgoDraw;
 //#define MERGE_CLONES
 
 
-#define FEATURING_L1ALGO_INIT 1 // If defined, new initialization will be used, if not - the old one
+#define FEATURING_L1ALGO_INIT 1  // If defined, new initialization will be used, if not - the old one
 
 #include <array>
 #include <iomanip>
@@ -370,7 +370,7 @@ public:
 
 private:
   /// Object containing L1Parameters. Default consturctor is used
-  L1Parameters fL1Parameters;    ///< Object of L1Algo parameters class
+  L1Parameters fL1Parameters;  ///< Object of L1Algo parameters class
   L1InitManager fInitManager;  ///< Object of L1Algo initialization manager class
 
   /// =================================  FUNCTIONAL PART  =================================

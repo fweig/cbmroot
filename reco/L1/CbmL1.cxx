@@ -775,7 +775,7 @@ InitStatus CbmL1::Init()
   /********************************************************************************************************************
    *                     EXPERIMENTAL FEATURE: usage of L1InitManager for L1Algo initialization                       *
    ********************************************************************************************************************/
-  {//L1Algo new init start
+  {  //L1Algo new init start
 
     // Step 0: Get reference to the L1Algo initialization manager
     L1InitManager* initMan = algo->GetL1InitManager();
@@ -788,15 +788,15 @@ InitStatus CbmL1::Init()
     initMan->SetFieldFunction(fieldGetterFcn);
 
     // Step 2: Initialize target
-    auto& target = CbmKF::Instance()->vTargets[0]; 
+    auto& target = CbmKF::Instance()->vTargets[0];
     initMan->SetTargetPosition(target.x, target.y, target.z);
-    
+
     // Step 3: Initialize primary vertex field
     initMan->InitTargetField(2.5);
 
 
     // Step 4: initialize IDs of detectors active in tracking
-      // TODO: temporary for tests, must be initialized somewhere in run_reco.C or similar
+    // TODO: temporary for tests, must be initialized somewhere in run_reco.C or similar
     fActiveTrackingDetectorIDs = {L1DetectorID::kMvd, L1DetectorID::kSts};
     initMan->SetActiveDetectorIDs(fActiveTrackingDetectorIDs);
 
@@ -806,10 +806,10 @@ InitStatus CbmL1::Init()
     initMan->SetStationsNumberCrosscheck(L1DetectorID::kMvd, NMvdStations);
     initMan->SetStationsNumberCrosscheck(L1DetectorID::kSts, NStsStations);
     initMan->SetStationsNumberCrosscheck(L1DetectorID::kMuch, NMuchStations);
-    initMan->SetStationsNumberCrosscheck(L1DetectorID::kTrd,  NTrdStations);
+    initMan->SetStationsNumberCrosscheck(L1DetectorID::kTrd, NTrdStations);
     initMan->SetStationsNumberCrosscheck(L1DetectorID::kTof, NTOFStation);
 
-    // Step 6: setup station info 
+    // Step 6: setup station info
 
     // Setup MVD stations info
     for (int iSt = 0; iSt < NMvdStations; ++iSt) {  // NOTE: example using in-stack defined objects
@@ -865,16 +865,16 @@ InitStatus CbmL1::Init()
 
     // Setup MuCh stations info
     for (int iSt = 0; iSt < NMuchStations; ++iSt) {
-      int muchStationID = iSt / 3;
-      int muchLayerID = iSt % 3;
+      int muchStationID       = iSt / 3;
+      int muchLayerID         = iSt % 3;
       CbmMuchStation* station = (CbmMuchStation*) fGeoScheme->GetStation(muchStationID);
-      CbmMuchLayer* layer = station->GetLayer(muchLayerID);
+      CbmMuchLayer* layer     = station->GetLayer(muchLayerID);
 
       auto stationInfo = L1BaseStationInfo(L1DetectorID::kMuch, iSt);
       stationInfo.SetStationType(2);  // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.)
       stationInfo.SetTimeInfo(1);
       stationInfo.SetZ(layer->GetZ());
-      stationInfo.SetMaterial(layer->GetDz(), 0); // TODO: Why rad len is 0?????
+      stationInfo.SetMaterial(layer->GetDz(), 0);  // TODO: Why rad len is 0?????
       stationInfo.SetXmax(100.);
       stationInfo.SetYmax(100.);
       stationInfo.SetRmin(0.);
@@ -889,12 +889,14 @@ InitStatus CbmL1::Init()
 
     // Setup TRD stations info
     for (int iSt = 0; iSt < NTrdStations; ++iSt) {
-      int skip = iSt; // temporary solution to remove TRD with id == 1 wrom mCBM
-      if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) {if (iSt > 0) {skip++;}}
-      int trdModuleID = fTrdDigiPar->GetModuleId(skip);
+      int skip = iSt;  // temporary solution to remove TRD with id == 1 wrom mCBM
+      if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) {
+        if (iSt > 0) { skip++; }
+      }
+      int trdModuleID          = fTrdDigiPar->GetModuleId(skip);
       CbmTrdParModDigi* module = (CbmTrdParModDigi*) fTrdDigiPar->GetModulePar(trdModuleID);
-      auto stationInfo = L1BaseStationInfo(L1DetectorID::kTrd, skip);
-      int stationType = (iSt == 1 || iSt == 3) ? 6 : 3;
+      auto stationInfo         = L1BaseStationInfo(L1DetectorID::kTrd, skip);
+      int stationType          = (iSt == 1 || iSt == 3) ? 6 : 3;
       stationInfo.SetStationType(stationType);
       stationInfo.SetTimeInfo(1);
       stationInfo.SetZ(module->GetZ());
@@ -902,7 +904,7 @@ InitStatus CbmL1::Init()
       stationInfo.SetXmax(module->GetSizeX());
       stationInfo.SetYmax(module->GetSizeY());
       stationInfo.SetRmin(0.);
-      stationInfo.SetRmax(2. * module->GetSizeX()); // TODO: Why multiplied with 2.?
+      stationInfo.SetRmax(2. * module->GetSizeX());  // TODO: Why multiplied with 2.?
       fscal trdFrontPhi   = 0;
       fscal trdBackPhi    = PI / 2.;
       fscal trdFrontSigma = 1.;
@@ -916,7 +918,7 @@ InitStatus CbmL1::Init()
       stationInfo.SetStationType(4);
       stationInfo.SetTimeInfo(1);
       stationInfo.SetZ(TofStationZ[iSt]);
-      stationInfo.SetMaterial(10., 10.); // TODO: add Tof width dz and rad. len
+      stationInfo.SetMaterial(10., 10.);  // TODO: add Tof width dz and rad. len
       stationInfo.SetXmax(20.);
       stationInfo.SetYmax(20.);
       stationInfo.SetRmin(0.);
@@ -929,7 +931,7 @@ InitStatus CbmL1::Init()
     }
 
     initMan->PrintStations(/*vebosity = */ 1);
-  } // L1Algo new init: end
+  }  // L1Algo new init: end
   /********************************************************************************************************************
    ********************************************************************************************************************/
 

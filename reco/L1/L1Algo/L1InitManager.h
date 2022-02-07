@@ -121,7 +121,7 @@ public:
   int GetStationsNumber(L1DetectorID detectorID) const;
   /// Gets a target position
   const std::array<double, 3>& GetTargetPosition() const { return fTargetPos; }
-    // TODO: define enum of dimensions....
+  // TODO: define enum of dimensions....
   /// Gets a L1FieldRegion object at primary vertex
   const L1FieldRegion& GetTargetFieldRegion() const { return fTargetFieldRegion; }
   /// Gets a L1FieldValue object at primary vertex
@@ -141,7 +141,7 @@ public:
   void SetTargetPosition(double x, double y, double z);
 
   /// Calculates L1FieldValue and L1FieldReference values for a selected step in z coordinate from the target position
-  /// \param zStep step between nodal points 
+  /// \param zStep step between nodal points
   // TODO: Consider posibility for linear approximation
   void InitTargetField(double zStep);
 
@@ -177,4 +177,4 @@ private:
   L1FieldRegion fTargetFieldRegion {};  ///> L1FieldRegion object at target
 };
 
-#endif  
+#endif

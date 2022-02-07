@@ -202,15 +202,15 @@ void L1InitManager::SetStationsNumberCrosscheck(L1DetectorID detectorID, int nSt
 //-----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::SetTargetPosition(double x, double y, double z)
-{ 
+{
   if (fInitFlags[L1InitManager::kEtargetPos]) {
     LOG(warn) << "L1InitManager::SetTargetPosition: attempt to reinitialize the target position. Ignore";
     return;
   }
 
-  fTargetPos[0] = x;
-  fTargetPos[1] = y;
-  fTargetPos[2] = z;
+  fTargetPos[0]                          = x;
+  fTargetPos[1]                          = y;
+  fTargetPos[2]                          = z;
   fInitFlags[L1InitManager::kEtargetPos] = true;
 }
 
@@ -241,15 +241,15 @@ void L1InitManager::InitTargetField(double zStep)
   constexpr int numberOfDimensions {3};
   constexpr int numberOfReferencePoints {3};
 
-  std::array<double, numberOfReferencePoints> inputNodalZ { 
-    fTargetPos[2], fTargetPos[2] + zStep, fTargetPos[2] + 2. * zStep };  
+  std::array<double, numberOfReferencePoints> inputNodalZ {fTargetPos[2], fTargetPos[2] + zStep,
+                                                           fTargetPos[2] + 2. * zStep};
   std::array<L1FieldValue, numberOfReferencePoints> B = {};
   std::array<fvec, numberOfReferencePoints> z         = {};
   for (int idx = 0; idx < numberOfReferencePoints; ++idx) {
     double point[numberOfDimensions] = {0., 0., inputNodalZ[idx]};
     double field[numberOfDimensions] = {};
     fFieldFunction(point, field);
-    z[idx] = inputNodalZ[idx];
+    z[idx]   = inputNodalZ[idx];
     B[idx].x = field[0];
     B[idx].y = field[1];
     B[idx].z = field[2];
