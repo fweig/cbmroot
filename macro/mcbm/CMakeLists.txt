@@ -37,66 +37,91 @@ Else()
 #  List(APPEND cbm_setup mcbm_beam_2022_02 mcbm_beam_2022_04 mcbm_beam_2022_05) # Non-default current/future setups, missing parameters
 EndIf()
 
+# =====   Cleanup the data directory   =======================================
+add_test(mcbm_cleanup ${CMAKE_COMMAND}
+        -P ${CMAKE_SOURCE_DIR}/cmake/scripts/cleanmacrodir.cmake)
+set_tests_properties(mcbm_cleanup PROPERTIES
+        TIMEOUT 10
+        FIXTURES_SETUP mcbm_cleanup
+)
+# ============================================================================
+
+
 ForEach(setup IN LISTS cbm_setup)
   Message( STATUS "Adding test for simulation chain of mCBM setup ${setup}" )
 
   Set(testname mcbm_transport_${setup})
+  Set(fixture_mcbm_transport fixture_${testname})
   Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_transport.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\")
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  Set(fixture_transport fixture_transport_${setup})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_transport})
+  Set_Tests_Properties(${testname} PROPERTIES
+          TIMEOUT "600"
+          PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+          FIXTURES_REQUIRED mcbm_cleanup
+          FIXTURES_SETUP ${fixture_mcbm_transport}
+  )
 
 
   Set(testname mcbm_digi_event_${setup})
+  Set(fixture_mcbm_digi_event fixture_${testname})
   Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_digi.sh ${NumEvents} \"data/${setup}_test\" 0. 0. 1)
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_transport})
-  Set(fixture_digi_event fixture_digi_event_${setup})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_digi_event})
+  Set_Tests_Properties(${testname} PROPERTIES
+          TIMEOUT "300"
+          PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+          FIXTURES_REQUIRED ${fixture_mcbm_transport}
+          FIXTURES_SETUP ${fixture_mcbm_digi_event}
+  )
 
   Set(testname mcbm_reco_event_${setup})
+  Set(fixture_mcbm_reco_event fixture_${testname})
   Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_reco_event.sh ${NumEvents} \"data/${setup}_test\" \"${setup}\")
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_digi_event})
-  Set(fixture_reco_event fixture_reco_event_${setup})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_reco_event})
+  Set_Tests_Properties(${testname} PROPERTIES
+          TIMEOUT "300"
+          PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+          FIXTURES_REQUIRED ${fixture_mcbm_digi_event}
+          FIXTURES_SETUP ${fixture_mcbm_reco_event}
+  )
 
   Set(testname mcbm_match_check_${setup})
+  Set(fixture_mcbm_match_check fixture_${testname})
   Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_match_check.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\")
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_reco_event})
-  Set(fixture_match_check fixture_match_check_${setup})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_match_check})
+  Set_Tests_Properties(${testname} PROPERTIES
+          TIMEOUT "300"
+          PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+          FIXTURES_REQUIRED ${fixture_mcbm_reco_event}
+          FIXTURES_SETUP ${fixture_mcbm_match_check}
+  )
 
   Set(testname mcbm_hadron_analysis_${setup})
+  Set(fixture_mcbm_hadron_analysis fixture_${testname})
   Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_hadron_analysis.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\")
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_match_check})
-  Set(fixture_hadron_analysis fixture_hadron_analysis_${setup})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_hadron_analysis})
+  Set_Tests_Properties(${testname} PROPERTIES
+          TIMEOUT "300"
+          PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+          FIXTURES_REQUIRED ${fixture_mcbm_match_check}
+          FIXTURES_SETUP ${fixture_mcbm_hadron_analysis}
+  )
 
   Set(testname mcbm_digi_${setup})
+  Set(fixture_mcbm_digi_tb fixture_${testname})
   Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_digi.sh ${NumEvents} \"data/${setup}_test\")
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_hadron_analysis})
-  Set(fixture_digi_tb fixture_digi_tb_${setup})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_digi_tb})
+  Set_Tests_Properties(${testname} PROPERTIES
+          TIMEOUT "300"
+          PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+          FIXTURES_REQUIRED ${fixture_mcbm_hadron_analysis}
+          FIXTURES_SETUP ${fixture_mcbm_digi_tb}
+  )
 
   Set(testname mcbm_qa_event_mc_${setup})
+  Set(fixture_mcbm_qa_event_mc fixture_${testname})
   Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_qa.sh ${NumEvents} \"data/${setup}_test\" \"${setup}\")
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  Set_Tests_Properties(${testname} PROPERTIES FAIL_REGULAR_EXPRESSION "ERROR")
-  Set_Tests_Properties(${testname} PROPERTIES FAIL_REGULAR_EXPRESSION "FATAL")
-  Set_Tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_digi_tb})
-  Set(fixture_qa_event_mc fixture_qa_event_mc_${setup})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_qa_event_mc})
+  Set_Tests_Properties(${testname} PROPERTIES
+          TIMEOUT "300"
+          PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+          FAIL_REGULAR_EXPRESSION "ERROR"
+          FAIL_REGULAR_EXPRESSION "FATAL"
+          FIXTURES_REQUIRED ${fixture_mcbm_digi_tb}
+          FIXTURES_SETUP ${fixture_mcbm_qa_event_mc}
+  )
 
   #Set(testname mcbm_reco_${setup})
   #Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_reco.sh ${NumEvents} ${BeamAngle} \"${setup}\")
@@ -107,19 +132,23 @@ ForEach(setup IN LISTS cbm_setup)
   #Set_Tests_Properties(${testname} PROPERTIES REQUIRED_FILES ${_FileName_Dependency})
 
   Set(testname mcbm_overlap_${setup})
+  Set(fixture_mcbm_overlap fixture_${testname})
   Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_check_overlaps.sh \"data/${setup}_test\")
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_qa_event_mc})
-  Set(fixture_overlap fixture_overlap_${setup})
-  set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_overlap})
+  Set_Tests_Properties(${testname} PROPERTIES
+          TIMEOUT "600"
+          PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+          FIXTURES_REQUIRED ${fixture_mcbm_qa_event_mc}
+          FIXTURES_SETUP ${fixture_mcbm_overlap}
+  )
 
   If(NOT ${CBM_TEST_MODEL} MATCHES Experimental)
     Set(testname mcbm_check_media_${setup})
     Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/check_media.sh \"data/${setup}_test\")
-    Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "60")
-    Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-    set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_overlap})
+    Set_Tests_Properties(${testname} PROPERTIES
+            TIMEOUT "60"
+            PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+            FIXTURES_REQUIRED ${fixture_mcbm_overlap}
+    )
   EndIf()
 
 EndForEach(setup IN LISTS cbm_setup)

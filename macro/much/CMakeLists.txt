@@ -11,35 +11,53 @@ File(COPY ${CBMROOT_SOURCE_DIR}/macro/include/.rootrc DESTINATION ${CBMROOT_BINA
 
 Set(NumEvents 3)
 
+# =====   Cleanup the data directory   =======================================
+add_test(much_cleanup ${CMAKE_COMMAND}
+        -P ${CMAKE_SOURCE_DIR}/cmake/scripts/cleanmacrodir.cmake)
+set_tests_properties(much_cleanup PROPERTIES
+        TIMEOUT 10
+        FIXTURES_SETUP much_cleanup
+)
+
+
 # --- Transport of UrQMD events
 Set(testname much_transport)
-add_test(${testname} ${MACRO_DIR}/run_transport.sh ${NumEvents} \"sis100_muon_lmvm_APR21\" \"muons\")
-SET_TESTS_PROPERTIES(${testname} PROPERTIES TIMEOUT "1200")
-SET_TESTS_PROPERTIES(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "TestPassed;All ok")
-set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP fixture_much_digi)
+add_test(${testname} ${MACRO_DIR}/run_transport.sh ${NumEvents} \"sis100_muon_lmvm_APR21\" \"data/muons\")
+SET_TESTS_PROPERTIES(${testname} PROPERTIES
+          TIMEOUT "1200"
+          PASS_REGULAR_EXPRESSION "TestPassed;All ok"
+          FIXTURES_SETUP fixture_much_digi
+          FIXTURES_REQUIRED much_cleanup
+)
 
 # --- Digitisation, event-by-event
 Set(testname much_digi)
-Add_Test(${testname} ${MACRO_DIR}/run_digi.sh \"muons\" ${NumEvents} \"muons.event\" -1.)
-Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "1200")
-Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Macro finished successfully")
-set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED fixture_much_digi)
-set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP fixture_much_reco)
+Add_Test(${testname} ${MACRO_DIR}/run_digi.sh \"data/muons\" ${NumEvents} \"data/muons.event\" -1.)
+Set_Tests_Properties(${testname} PROPERTIES
+          TIMEOUT "1200"
+          PASS_REGULAR_EXPRESSION "Macro finished successfully"
+          FIXTURES_REQUIRED fixture_much_digi
+          FIXTURES_SETUP fixture_much_reco
+)
 
 # --- Reconstruction, event-by-event
 Set(testname much_reco_event)
-add_test(${testname} ${MACRO_DIR}/run_reco_event.sh ${NumEvents} \"muons\" \"sis100_muon_lmvm_APR21\" 1 1)
-SET_TESTS_PROPERTIES(${testname} PROPERTIES TIMEOUT "1200")
-SET_TESTS_PROPERTIES(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "TestPassed;All ok")
-set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED fixture_much_reco)
-set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP fixture_much_ana)
+add_test(${testname} ${MACRO_DIR}/run_reco_event.sh ${NumEvents} \"data/muons\" \"sis100_muon_lmvm_APR21\" 1 1)
+SET_TESTS_PROPERTIES(${testname} PROPERTIES
+          TIMEOUT "1200"
+          PASS_REGULAR_EXPRESSION "TestPassed;All ok"
+          FIXTURES_REQUIRED fixture_much_reco
+          FIXTURES_SETUP fixture_much_ana
+)
 
 # --- Analysis, event-by-event
 Set(testname much_analysis)
-add_test(${testname} ${MACRO_DIR}/run_ana.sh ${NumEvents} \"muons\" \"sis100_muon_lmvm\" 1 \"\" -1)
-SET_TESTS_PROPERTIES(${testname} PROPERTIES TIMEOUT "1200")
-SET_TESTS_PROPERTIES(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "TestPassed;All ok")
-set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED fixture_much_ana)
+add_test(${testname} ${MACRO_DIR}/run_ana.sh ${NumEvents} \"data/muons\" \"sis100_muon_lmvm\" 1 \"\" -1)
+SET_TESTS_PROPERTIES(${testname} PROPERTIES
+          TIMEOUT "1200"
+          PASS_REGULAR_EXPRESSION "TestPassed;All ok"
+          FIXTURES_REQUIRED fixture_much_ana
+)
 
 
 Install(FILES .rootrc run_transport.C run_ana.C
