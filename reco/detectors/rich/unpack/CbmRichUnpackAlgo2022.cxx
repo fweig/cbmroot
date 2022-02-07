@@ -32,7 +32,7 @@ bool CbmRichUnpackAlgo2022::unpack(const fles::Timeslice* ts, std::uint16_t icom
   reader.SetData(mv.content(), msDesc.size);
 
   auto mstime = msDesc.idx;
-  fMsRefTime  = (mstime - fTsStartTime) * 25;  // msDesc.idx is in cnt, not in ns. (40MHz clk -> 25ns)
+  fMsRefTime  = mstime - fTsStartTime;
 
   // There are a lot of MS  with 8 bytes size
   // Does one need these MS?
