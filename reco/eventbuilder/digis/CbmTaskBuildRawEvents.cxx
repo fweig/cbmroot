@@ -47,13 +47,14 @@ void CbmTaskBuildRawEvents::AddSeedTimeFillerToList(RawEventBuilderDetector seed
   fpAlgo->SetSeedTimes(fSeedTimes);
 }
 
-void CbmTaskBuildRawEvents::SetSlidingWindowSeedFinder(Int_t minDigis, Double_t dWindDur, Double_t dDeadT)
+void CbmTaskBuildRawEvents::SetSlidingWindowSeedFinder(int32_t minDigis, double dWindDur, double dDeadT, double dOffset)
 {
   if (fSeedFinderSlidingWindow) {
     delete fSeedFinderSlidingWindow;
     fSeedFinderSlidingWindow = nullptr;
   }
   fSeedFinderSlidingWindow = new CbmSeedFinderSlidingWindow(fSeedTimes, minDigis, dWindDur, dDeadT);
+  fSeedFinderSlidingWindow->SetOffset(dOffset);
 
   if (fSeedTimes == nullptr) { fSeedTimes = new std::vector<Double_t>; }
   fpAlgo->SetSeedTimes(fSeedTimes);

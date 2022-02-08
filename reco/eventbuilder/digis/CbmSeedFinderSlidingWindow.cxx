@@ -62,7 +62,7 @@ void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<inType>* vIn, c
     if (nDigisWin >= fminDigis) {
       // Reached required number of digis
       const double seedTime =
-        (currentT + winStartT) / 2.;  //one possibility. perhaps better to place seed at end of window.
+        fdOffset + (currentT + winStartT) / 2.;  //one possibility. perhaps better to place seed at end of window.
       fvSeedTimes->push_back(seedTime);
 
       if (vDigiMatch && fQa) {  // QA mode

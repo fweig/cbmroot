@@ -62,6 +62,11 @@ public:
   template<class inType>
   void FillSeedTimes(const std::vector<inType>* vIn, const std::vector<CbmMatch>* vDigiMatch = nullptr);
 
+  /** @brief Sets a global constant offset which is applied to each trigger time
+   * @params Value of offset 
+   **/
+  void SetOffset(double offset) { fdOffset = offset; }
+
   /** @brief Returns number of seed times currently stored in buffer. */
   size_t GetNofSeeds() { return fvSeedTimes->size(); }
 
@@ -81,6 +86,9 @@ private:
   double fdWindDur = 0.;
   /** @brief ``Dead time'' i.e. time interval which is discarded after a seed is found. */
   double fdDeadT = 0.;
+
+  /** @brief Global time offset which is applied to each trigger time. */
+  double fdOffset = 0.;
 
   /** @brief Fetches time at position i of either a digi vector or vector of times. */
   template<class inType>

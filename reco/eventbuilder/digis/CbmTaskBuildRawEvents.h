@@ -122,7 +122,7 @@ public:
   void SetSeedFinderQa(Bool_t bFlagIn = kTRUE);
   void PrintTimings();
   void AddSeedTimeFillerToList(RawEventBuilderDetector seedDet);
-  void SetSlidingWindowSeedFinder(Int_t minDigis, Double_t dWindDur, Double_t dDeadT);
+  void SetSlidingWindowSeedFinder(int32_t minDigis, double dWindDur, double dDeadT, double dOffset = 0.0);
 
   void DumpSeedTimesFromDetList();
   void SetSeedTimeWindow(Double_t beg, Double_t end) { fpAlgo->SetSeedTimeWindow(beg, end); }
