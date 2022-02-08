@@ -76,7 +76,7 @@ foreach(setup IN LISTS cbm_setup)
   set(input ${CBMROOT_SOURCE_DIR}/input/urqmd.auau.10gev.centr.root)
   set(output ${datadir}/${sname}_coll)
   add_test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_tra_file.sh
-  	\"${input}\" ${nEvents} \"${output}\" \"${setup}\" kGeant3 ${randomSeed})
+  	\"${input}\" ${nEvents} \"${output}\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
@@ -91,7 +91,7 @@ foreach(setup IN LISTS cbm_setup)
   set(input ${CBMROOT_SOURCE_DIR}/input/pluto.auau.8gev.omega.mpmm.0001.root)
   set(output ${datadir}/${sname}_sign)
    add_test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_tra_file.sh
-  	\"${input}\" ${nEvents} \"${output}\" \"${setup}\" kGeant3 ${randomSeed})
+  	\"${input}\" ${nEvents} \"${output}\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
@@ -105,7 +105,7 @@ foreach(setup IN LISTS cbm_setup)
   set(testname reco_tra_beam_${sname})
   set(output ${datadir}/${sname}_beam)
    add_test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_tra_beam.sh
-  	${nBeam} \"Au\" 10 -1 \"${output}\" \"${setup}\" kGeant3 ${randomSeed})
+  	${nBeam} \"Au\" 10 -1 \"${output}\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"

@@ -31,7 +31,7 @@ void mcbm_transport(Int_t nEvents = 10,
                     //                  const char* setupName = "mcbm_beam_2019_11",
                     //                  const char* setupName = "mcbm_beam_2019_03",
                     //                  const char* setupName = "sis18_mcbm_25deg_long",
-                    const char* output = "data/test", const char* inputFile = "")
+                    const char* output = "data/test", const char* inputFile = "", Bool_t overwrite = kFALSE)
 {
   // --- Define the beam angle ----------------------------------------------
   Double_t beamRotY = 25.;
@@ -172,7 +172,7 @@ void mcbm_transport(Int_t nEvents = 10,
 
   // comment the following line to remove target interaction
   run.AddInput(inFile);
-  run.SetOutFileName(outFile);
+  run.SetOutFileName(outFile, overwrite);
   run.SetParFileName(parFile);
   run.SetGeoFileName(geoFile);
   run.LoadSetup(setupName);

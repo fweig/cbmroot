@@ -67,7 +67,8 @@
  ** http://computing.gitpages.cbm.gsi.de/cbmroot/classCbmTransport.html
  **/
 void run_tra_file(const char* input = "", Int_t nEvents = 1, const char* output = "",
-                  const char* setup = "sis100_electron", ECbmEngine engine = kGeant3, int randomSeed = 0)
+                  const char* setup = "sis100_electron", ECbmEngine engine = kGeant3, int randomSeed = 0,
+                  Bool_t overwrite = kFALSE)
 {
 
   // --- Logger settings ----------------------------------------------------
@@ -158,7 +159,7 @@ void run_tra_file(const char* input = "", Int_t nEvents = 1, const char* output 
   if (inFile.Contains("pluto", TString::kIgnoreCase)) { run.AddInput(inFile, kPluto); }
   else
     run.AddInput(inFile, kUnigen);
-  run.SetOutFileName(outFile);
+  run.SetOutFileName(outFile, overwrite);
   run.SetParFileName(parFile);
   run.SetGeoFileName(geoFile);
   run.LoadSetup(setup);

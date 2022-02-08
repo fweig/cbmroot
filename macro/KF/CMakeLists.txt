@@ -78,6 +78,14 @@ List(APPEND signalSetup  sis100_electron  # 0
                          sis100_electron  # 16
                          )
 
+# =====   Cleanup the data directory   =======================================
+add_test(kf_cleanup ${CMAKE_COMMAND}
+        -P ${CMAKE_SOURCE_DIR}/cmake/scripts/cleanmacrodir.cmake)
+set_tests_properties(kf_cleanup PROPERTIES
+        TIMEOUT 10
+        FIXTURES_SETUP kf_cleanup
+)
+
 ForEach(iSignal RANGE 16)
 
   # The test dependencies are set such that parallel execution is prevented, even is there is no logical
@@ -106,49 +114,58 @@ ForEach(iSignal RANGE 16)
   # --- For the input, not the files generated in the previous step but those predefined in the
   # --- reference directory are taken, to provide a better test stability.
   Set(testname KF_transport_${title})
+  Set(fixture_transport fixture_transport_${testname})
  # Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/KF/kf_transport.sh ${NSignalEvents} \"${setup}\" 
  #                      \"${WORKDIR}/${title}_test\" \"${WORKDIR}/${title}_test_Signal.root\" ${id})
   Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/KF/kf_transport.sh ${NSignalEvents} \"${setup}\" 
                        \"${WORKDIR}/${title}_test\"
                        \"${CBMROOT_SOURCE_DIR}/input/qa/KF/reference/input/${title}_test_Signal.root\" 
                        ${id})
-  Set_Tests_Properties(${testname} PROPERTIES WORKING_DIRECTORY ${WORKDIR})
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "1000")
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
+  Set_Tests_Properties(${testname} PROPERTIES 
+          WORKING_DIRECTORY ${WORKDIR}
+          TIMEOUT "1000"
+          PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+          FIXTURES_REQUIRED kf_cleanup
 #   Set_Tests_Properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_generator})
-  Set(fixture_transport fixture_transport_${testname})
-  Set_Tests_Properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_transport})
+          FIXTURES_SETUP ${fixture_transport}
+  )
 
   # --- Digitisation run, event-by-event (uses run/run_digi.C)
   Set(testname KF_digi_${title})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/KF/run_digi.sh \"${WORKDIR}/${title}_test\" -1 \"${WORKDIR}/${title}_test.event\" -1.)
-  Set_Tests_Properties(${testname} PROPERTIES WORKING_DIRECTORY ${WORKDIR})
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "1400")
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Macro finished successfully.")
-  Set_Tests_Properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_transport})
   Set(fixture_digi fixture_digi_${testname})
-  Set_Tests_Properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_digi})
+  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/KF/run_digi.sh \"${WORKDIR}/${title}_test\" -1 \"${WORKDIR}/${title}_test.event\" -1.)
+  Set_Tests_Properties(${testname} PROPERTIES 
+          WORKING_DIRECTORY ${WORKDIR}
+          TIMEOUT "1400"
+          PASS_REGULAR_EXPRESSION "Macro finished successfully."
+          FIXTURES_REQUIRED ${fixture_transport}
+          FIXTURES_SETUP ${fixture_digi}
+  )
 
 
   # --- Reconstruction run, event-by-event, with MC input, no PV finder (uses run/run_reco_event.C)
   Set(testname KF_reco_${title})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/KF/run_reco_event.sh ${NSignalEvents} \"${WORKDIR}/${title}_test\" \"${setup}\" kTRUE kFALSE)
-  Set_Tests_Properties(${testname} PROPERTIES WORKING_DIRECTORY ${WORKDIR})
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "1000")
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-  Set_Tests_Properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_digi})
   Set(fixture_reco fixture_reco_${testname})
-  Set_Tests_Properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_reco})
+  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/KF/run_reco_event.sh ${NSignalEvents} \"${WORKDIR}/${title}_test\" \"${setup}\" kTRUE kFALSE)
+  Set_Tests_Properties(${testname} PROPERTIES 
+          WORKING_DIRECTORY ${WORKDIR}
+          TIMEOUT "1000"
+          PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+          FIXTURES_REQUIRED ${fixture_digi}
+          FIXTURES_SETUP ${fixture_reco}
+  )
 
   # --- KF Particle Finder run, event-by-event, with MC pid (uses KF/kf_kfparticle.C)
   Set(testname KF_kfparticle_${title})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/KF/kf_kfparticle.sh ${NSignalEvents} \"${setup}\" \"${WORKDIR}/${title}_test\"  kFALSE kFALSE ${id})
-  Set_Tests_Properties(${testname} PROPERTIES WORKING_DIRECTORY ${WORKDIR})
-  Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "1000")
-  Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Macro finished successfully.")
-  Set_Tests_Properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_reco})
   Set(fixture_kfparticle fixture_kfparticle_${testname})
-  Set_Tests_Properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_kfparticle})
+  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/KF/kf_kfparticle.sh ${NSignalEvents} \"${setup}\" \"${WORKDIR}/${title}_test\"  kFALSE kFALSE ${id})
+  Set_Tests_Properties(${testname} PROPERTIES 
+          WORKING_DIRECTORY ${WORKDIR}
+          TIMEOUT "1000"
+          PASS_REGULAR_EXPRESSION "Macro finished successfully."
+          FIXTURES_REQUIRED ${fixture_reco}
+          FIXTURES_SETUP ${fixture_kfparticle}
+  )
   
  
 EndForEach(iSignal)

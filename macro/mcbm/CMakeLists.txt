@@ -52,7 +52,7 @@ ForEach(setup IN LISTS cbm_setup)
 
   Set(testname mcbm_transport_${setup})
   Set(fixture_mcbm_transport fixture_${testname})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_transport.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\")
+  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_transport.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\" \"\" kTRUE)
   Set_Tests_Properties(${testname} PROPERTIES
           TIMEOUT "600"
           PASS_REGULAR_EXPRESSION "Test Passed;All ok"

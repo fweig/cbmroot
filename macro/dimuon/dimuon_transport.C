@@ -40,7 +40,7 @@
 //---------------------------------------------------
 
 void dimuon_transport(Int_t nEvents = 1000, const char* setupName = "sis100_muon_lmvm", const char* output = "test",
-                      const char* inputFile = "")
+                      const char* inputFile = "", Bool_t overwrite = kFALSE)
 {
 
   // --- Logger settings ----------------------------------------------------
@@ -79,7 +79,7 @@ void dimuon_transport(Int_t nEvents = 1000, const char* setupName = "sis100_muon
   // --- Transport run   ----------------------------------------------------
   CbmTransport run;
   run.AddInput(inFile.Data(), kPluto);
-  run.SetOutFileName(outFile);
+  run.SetOutFileName(outFile, overwrite);
   run.SetParFileName(parFile);
   run.SetGeoFileName(geoFile);
   run.LoadSetup(setupName);

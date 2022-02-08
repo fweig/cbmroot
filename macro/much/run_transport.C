@@ -40,7 +40,7 @@
 //---------------------------------------------------
 
 void run_transport(Int_t nEvents = 3, const char* setupName = "sis100_muon_lmvm", const char* output = "muons",
-                   const char* inputFile = "", const char* plutoFile = "")
+                   const char* inputFile = "", const char* plutoFile = "", Bool_t overwrite = kFALSE)
 {
 
   // --- Logger settings ----------------------------------------------------
@@ -112,7 +112,7 @@ void run_transport(Int_t nEvents = 3, const char* setupName = "sis100_muon_lmvm"
   //  run.AddInput(new FairIonGenerator(47, 108, 108, Nion, 0., 0., bMom, 0., 0., -1.));
   //  run.AddInput(boxGen);
   //  run.AddInput(boxGen2);
-  run.SetOutFileName(outFile);
+  run.SetOutFileName(outFile, overwrite);
   run.SetParFileName(parFile);
   run.SetGeoFileName(geoFile);
   run.LoadSetup(setupName);

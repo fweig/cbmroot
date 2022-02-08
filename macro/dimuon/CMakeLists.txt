@@ -17,6 +17,15 @@ Set(NumEvents 1000)
 # Define the different setups to be tested
 List(APPEND cbm_setup sis100_muon_lmvm)
 
+# =====   Cleanup the data directory   =======================================
+add_test(dimuon_cleanup ${CMAKE_COMMAND}
+        -P ${CMAKE_SOURCE_DIR}/cmake/scripts/cleanmacrodir.cmake)
+set_tests_properties(dimuon_cleanup PROPERTIES
+        TIMEOUT 10
+        FIXTURES_SETUP dimuon_cleanup
+)
+
+
 ForEach(setup IN LISTS cbm_setup)
 
     # The test dependencies are set such that parallel execution is prevented, even is there is no logical
@@ -26,46 +35,57 @@ ForEach(setup IN LISTS cbm_setup)
 
     # --- Transport run, using run_transport.C
     Set(testname dimuon_transport_${setup})
-    Add_Test(${testname} ${MACRO_DIR}/dimuon_transport.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\")
-    Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
-    Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
     Set(fixture_dimuon_digi fixture_dimuon_digi_${testname})
-    set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_dimuon_digi})
+    Add_Test(${testname} ${MACRO_DIR}/dimuon_transport.sh ${NumEvents} \"${setup}\" \"data/${setup}_test\" \"\" kTRUE)
+    Set_Tests_Properties(${testname} PROPERTIES 
+            TIMEOUT "600"
+            PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+            FIXTURES_REQUIRED dimuon_cleanup
+            FIXTURES_SETUP ${fixture_dimuon_digi}
+    )
   
     # --- Digitisation run, event-by-event
     Set(testname dimuon_digi_event_${setup})
+    Set(fixture_dimuon_reco_event fixture_dimuon_reco_event_${testname})
     Add_Test(${testname} ${MACRO_DIR}/run_digi.sh \"data/${setup}_test\" ${NumEvents} 
     	\"data/${setup}_test.event\" -1.)
-    Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
-    Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Macro finished successfully")
-    set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_dimuon_digi})
-    Set(fixture_dimuon_reco_event fixture_dimuon_reco_event_${testname})
-    set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_dimuon_reco_event})
+    Set_Tests_Properties(${testname} PROPERTIES 
+            TIMEOUT "300"
+            PASS_REGULAR_EXPRESSION "Macro finished successfully"
+            FIXTURES_REQUIRED ${fixture_dimuon_digi}
+            FIXTURES_SETUP ${fixture_dimuon_reco_event}
+    )
 
     # --- Reconstruction run, event-by-event
     Set(testname dimuon_reco_event_${setup})
-    Add_Test(${testname} ${MACRO_DIR}/run_reco_event.sh ${NumEvents} \"data/${setup}_test\" \"${setup}\" 1 1)
-    Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "800")
-    Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-    set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_dimuon_reco_event})
     Set(fixture_dimuon_ana fixture_dimuon_ana_${testname})
-    set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_dimuon_ana})
+    Add_Test(${testname} ${MACRO_DIR}/run_reco_event.sh ${NumEvents} \"data/${setup}_test\" \"${setup}\" 1 1)
+    Set_Tests_Properties(${testname} PROPERTIES
+            TIMEOUT "800"
+            PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+            FIXTURES_REQUIRED ${fixture_dimuon_reco_event}
+            FIXTURES_SETUP ${fixture_dimuon_ana}
+    )
 
     # --- Much analysis
     Set(testname dimuon_analysis_${setup})
-    Add_Test(${testname} ${MACRO_DIR}/run_ana.sh ${NumEvents} \"data/${setup}_test\" \"${setup}\" 1 \"\" -1)
-    Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "300")
-    Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-    set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_dimuon_ana})
     Set(fixture_dimuon_mass fixture_dimuon_mass_${testname})
-    set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_dimuon_mass})
+    Add_Test(${testname} ${MACRO_DIR}/run_ana.sh ${NumEvents} \"data/${setup}_test\" \"${setup}\" 1 \"\" -1)
+    Set_Tests_Properties(${testname} PROPERTIES 
+            TIMEOUT "300"
+            PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+            FIXTURES_REQUIRED ${fixture_dimuon_ana}
+            FIXTURES_SETUP ${fixture_dimuon_mass}
+    )
   
     # --- Invariant Mass Spectrum
     Set(testname dimuon_inv_mass_${setup})
     Add_Test(${testname} ${MACRO_DIR}/invM.sh \"data/${setup}_test\")
-    Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "100")
-    Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Test Passed;All ok")
-    set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_dimuon_mass})
+    Set_Tests_Properties(${testname} PROPERTIES 
+            TIMEOUT "100"
+            PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+            FIXTURES_REQUIRED ${fixture_dimuon_mass}
+    )
   
 EndForEach(setup IN LISTS cbm_setup)
 # end of test CBM setups from geometry/setup

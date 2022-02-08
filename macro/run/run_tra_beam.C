@@ -59,7 +59,7 @@
  **/
 void run_tra_beam(Int_t nEvents = 1, const char* species = "Au", Double_t beamP = 12., Double_t beamStartZ = -1.,
                   const char* output = "beam", const char* setup = "sis100_electron", ECbmEngine engine = kGeant3,
-                  int randomSeed = 0)
+                  int randomSeed = 0, Bool_t overwrite = kFALSE)
 {
 
   // --- Logger settings ----------------------------------------------------
@@ -159,7 +159,7 @@ void run_tra_beam(Int_t nEvents = 1, const char* species = "Au", Double_t beamP 
   // --- Transport run   ----------------------------------------------------
   CbmTransport run;
   run.SetEngine(engine);
-  run.SetOutFileName(outFile);
+  run.SetOutFileName(outFile, overwrite);
   run.SetParFileName(parFile);
   run.SetGeoFileName(geoFile);
   run.LoadSetup(setup);

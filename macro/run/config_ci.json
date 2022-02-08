@@ -17,7 +17,7 @@
     ],
     "output": {
       "path": "data/test",
-      "overwrite": false
+      "overwrite": true
     },
     "target": {
       "material": "Gold",
