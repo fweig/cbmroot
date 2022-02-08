@@ -820,7 +820,7 @@ void CbmStsDigitize::SetProcesses(CbmStsELoss eLossModel, Bool_t useLorentzShift
     return;
   }
 
-  fParSim->SetProcesses(eLossModel, useLorentzShift, useDiffusion, useCrossTalk);
+  fUserParSim->SetProcesses(eLossModel, useLorentzShift, useDiffusion, useCrossTalk);
 }
 // -------------------------------------------------------------------------
 
