@@ -302,6 +302,11 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
   logOut << "TS " << fNofTs;
   if (fEvents) logOut << ", events " << fEvents->GetEntriesFast();
   LOG(info) << logOut.str();
+  if (fSeedFinderSlidingWindow) {
+    const size_t seedCount = fSeedFinderSlidingWindow->GetNofSeeds();
+    LOG(info) << seedCount << " trigger(s) for this TS.";
+    fTotalSeedCount += seedCount;
+  }
   fNofTs++;
   fNofEvents += fEvents->GetEntriesFast();
   fTime += timer.RealTime();
@@ -468,6 +473,7 @@ void CbmTaskBuildRawEvents::Finish()
   LOG(info) << GetName() << ": Run summary";
   LOG(info) << "Time slices          : " << fNofTs;
   LOG(info) << "Events               : " << fNofEvents;
+  if (fSeedFinderSlidingWindow) { LOG(info) << "Triggers             : " << fTotalSeedCount; }
   LOG(info) << "Time  / TS           : " << std::fixed << std::setprecision(2) << 1000. * fTime / Double_t(fNofTs)
             << " ms";
   LOG(info) << "=====================================";

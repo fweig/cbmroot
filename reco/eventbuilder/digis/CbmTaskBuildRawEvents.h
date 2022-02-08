@@ -179,6 +179,9 @@ private:
   Long64_t fNofEvents = 0;
   Double_t fTime      = 0.;
 
+  /** Name of the histogram output file **/
+  uint64_t fTotalSeedCount = 0;
+
   ClassDef(CbmTaskBuildRawEvents, 1);
 };
 
