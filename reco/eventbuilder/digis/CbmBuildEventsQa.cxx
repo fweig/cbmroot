@@ -391,9 +391,11 @@ void CbmBuildEventsQa::MatchEvent(CbmEvent* event)
       // --- N.b.: The member "index" of CbmLink has here no meaning, since
       // --- there is only one MC event per tree entry.
       for (int iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {
-        int file        = digiMatch->GetLink(iLink).GetFile();
-        int entry       = digiMatch->GetLink(iLink).GetEntry();
-        Double_t weight = digiMatch->GetLink(iLink).GetWeight();
+        int file  = digiMatch->GetLink(iLink).GetFile();
+        int entry = digiMatch->GetLink(iLink).GetEntry();
+        //Double_t weight = digiMatch->GetLink(iLink).GetWeight();
+        const double weight =
+          .00001;  // assign the same weight to all links, since different detectors don't use the same scale
         //     LOG(info) << "Adding link (weight, entry, file): " << weight << " "
         //		<< entry << " " << file;
         match->AddLink(weight, 0, entry, file);

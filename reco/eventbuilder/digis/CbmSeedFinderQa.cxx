@@ -94,8 +94,10 @@ void CbmSeedFinderQa::FillQaInfo(const int32_t WinStart, const int32_t WinEnd, c
     for (int32_t iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {
       int32_t entry = digiMatch->GetLink(iLink).GetEntry();
       if (entry == -1) { continue; }  //ignore noise links
-      int32_t file  = digiMatch->GetLink(iLink).GetFile();
-      double weight = digiMatch->GetLink(iLink).GetWeight();
+      int32_t file = digiMatch->GetLink(iLink).GetFile();
+      //double weight = digiMatch->GetLink(iLink).GetWeight();
+      const double weight =
+        .00001;  // assign the same weight to all links, since different detectors don't use the same scale
       //     LOG(info) << "Adding link (number, weight, entry, file): " << iLink << " " << weight << " "
       //              << entry << " " << file;
       seedMatch.AddLink(weight, 0, entry, file);
