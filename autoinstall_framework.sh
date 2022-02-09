@@ -30,10 +30,13 @@ main()
 
   setup_env_variables
 
+  number_of_cpus
+
   parse_command_line "$@"
 
-  echo FSOFTVER: $FSOFTVER
-  echo FROOTVER: $FROOTVER
+  echo "FSOFTVER: $FSOFTVER"
+  echo "FROOTVER: $FROOTVER"
+  echo "NUMOFCPU: $NUMOFCPU"
 
   check_prerequisites
 
@@ -63,9 +66,19 @@ setup_env_variables()
   export FSOFTVER=$FSOFTPRO
   export FROOTVER=$FROOTPRO
 
-  # My experience tells me that the default could be 2, even if there is only 1 processor, as 1 processing and 1 queued job normally is optimal Will leave it at 1 though.
-  export NUMOFCPU=`[ -f /proc/cpuinfo ] && grep -i processor /proc/cpuinfo | wc -l || echo 1`
   export CBMSRCDIR=`pwd`
+}
+
+number_of_cpus()
+{
+  arch=`uname -s | tr '[A-Z]' '[a-z]'`
+  # get the number of processors
+  if [ "$arch" = "linux" ]; then
+    NUMOFCPU=$([ -f /proc/cpuinfo ] && grep -i processor /proc/cpuinfo | wc -l || echo 1)
+  elif [ "$arch" = "darwin" ];
+  then
+    NUMOFCPU=$(sysctl -n hw.ncpu)
+  fi
 }
 
 parse_command_line()
@@ -96,6 +109,16 @@ parse_command_line()
 		echo "*** PRO VERSION specified"
 		export FSOFTVER=$FSOFTPRO
 		export FROOTVER=$FROOTPRO
+		shift;;
+	-nproc)
+		shift
+		NUMOFCPU=$1
+                re='^[0-9]+$'
+		if ! [[ $NUMOFCPU =~ $re ]]; then
+		  echo "$NUMOFCPU passed as argument of -nproc is no integer"
+		  exit 1
+		fi
+		echo "*** Building with $NUMOFCPU processes in parallel"
 		shift;;
 	-o|old|-old|--old)
 		echo "*** OLD VERSION specified"
@@ -150,13 +173,19 @@ parse_command_line()
 		echo "Autoinstall_framework will install FairSoft, FairRoot and CbmRoot packages"
 		echo "If no flags are specified, the program will install all three"
 		echo "otherwise the user may specify one or more to by calling the corresponding flags"
-		echo "-h, --help	Shows this brief help"
-		echo "-fs, --fairsoft	Installation of FairSoft"
-		echo "-fr, --fairroot	Installation of FairRoot"
-		echo "-cr, --cbmroot	Installation of CbmRoot"
+                echo
+		echo "-h, --help		Shows this brief help"
+		echo
+		echo "-fs, --fairsoft		Installation of FairSoft"
+		echo "-fr, --fairroot		Installation of FairRoot"
+		echo "-cr, --cbmroot		Installation of CbmRoot"
+		echo
+                echo "-nproc <number>		Use <number> of paralle processes for compilation"
+		echo
 		echo "-d, --dev		Runs with dev version"
 		echo "-p, --pro		Runs with pro version"
 		echo "-o, --old		Runs with old version"
+		echo
 		echo "-y, --yes		Automatically uses new envirnoment configuration post installation"
 		echo "-n, --no		Answers no to automatic environment update"
 		echo ""
