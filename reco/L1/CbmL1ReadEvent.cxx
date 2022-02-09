@@ -199,7 +199,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           }
         }
         // assert(fabs(maxDeviation)<1.);
-        if (fVerbose) { std::cout << "CbmL1ReadEvent: max deviation of Mvd points " << maxDeviation << std::endl; }
+        if (fVerbose > 2) { LOG(info) << "CbmL1ReadEvent: max deviation of Mvd points " << maxDeviation; }
       }
 
 
@@ -232,8 +232,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             nStsPoints++;
           }
         }
-        assert(fabs(maxDeviation) < 1.);
-        if (fVerbose) { std::cout << "CbmL1ReadEvent: max deviation of Sts points " << maxDeviation << std::endl; }
+        assert(fabs(maxDeviation) < 2.5);
+        if (fVerbose > 2) { LOG(info) << "CbmL1ReadEvent: max deviation of Sts points " << maxDeviation; }
       }
 
       if (fMuchPoints) {
@@ -456,10 +456,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   }    // if listMvdHits
   if (fVerbose >= 10) cout << "ReadEvent: mvd hits are gotten." << endl;
 
-  Int_t nEntSts = 0;
   if (listStsHits) {
 
-    nEntSts = (event ? event->GetNofData(ECbmDataType::kStsHit) : listStsHits->GetEntriesFast());
+    Int_t nEntSts = (event ? event->GetNofData(ECbmDataType::kStsHit) : listStsHits->GetEntriesFast());
 
     int firstDetStrip = NStrips;
 
@@ -971,21 +970,22 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   // save strips in L1Algo
   fData_->NStsStrips = NStrips;
   fData_->fStripFlag.reset(NStrips, 0);
+  int maxHitIndex = 0;
   for (int ih = 0; ih < nHits; ih++) {
     TmpHit& th                     = tmpHits[ih];
     char flag                      = th.iStation * 4;
     fData_->fStripFlag[th.iStripF] = flag;
     fData_->fStripFlag[th.iStripB] = flag;
+    if (maxHitIndex < th.id) { maxHitIndex = th.id; }
+
   }  // ih
 
   if (fVerbose >= 10) { cout << "ReadEvent: strips are read." << endl; }
 
   // -- save hits --
-  int nEffHits    = 0;
-  int maxHitIndex = nMvdHits + nStsHits + nMuchHits + nTrdHits;
-  if (fTofHits) maxHitIndex += fTofHits->GetEntriesFast();
+  int nEffHits = 0;
 
-  SortedIndex.reset(std::max(listStsHits->GetEntriesFast(), maxHitIndex));
+  SortedIndex.reset(maxHitIndex + 1);
 
   vStsHits.reserve(nHits);
   fData_->vStsHits.reserve(nHits);
@@ -1104,8 +1104,8 @@ void CbmL1::Fill_vMCTracks()
 
     auto header = dynamic_cast<FairMCEventHeader*>(fMcEventHeader->Get(iFile, iEvent));
     assert(header);
-    if (fVerbose) {
-      cout << "mc event vertex at " << header->GetX() << " " << header->GetY() << " " << header->GetZ() << endl;
+    if (fVerbose > 2) {
+      LOG(info) << "mc event vertex at " << header->GetX() << " " << header->GetY() << " " << header->GetZ();
     }
 
     Int_t nMCTrack = fMCTracks->Size(iFile, iEvent);
