@@ -4,7 +4,7 @@
 
 echo "Scanning the geometry" $1
 
-root -l -b -q '$VMCWORKDIR/macro/geometry/scan_geometry.C("'$1'")' 1>tmp
+root -l -b -q '$VMCWORKDIR/macro/geometry/scan_geometry.C("'$1'")' &>tmp
 ROOT_EXIT=$?;
 
 if [ 0 -ne $ROOT_EXIT ]; then
@@ -33,16 +33,16 @@ variables=`echo "$line" | sed -e 's/eff//g' | sed -e 's/index/jndex/g' | sed -e 
     $variables \
     'BEGIN{\
         if(Z<1){
-        printf "SKIP"; \
+        printf "SKIP \t "; \
         exit 3;
         };
         cal_rad_len=(716.4*A/(Z*(Z+1)*log(287/sqrt(Z)))/rho);\
         #print cal_rad_len;
         diff=(cal_rad_len - radlen);\
         if(diff*diff <= TOL*TOL*radlen*radlen ){\
-        printf "OKAY"; exit 1;
+        printf "OKAY \t " cal_rad_len; exit 1;
         }else{\
-        printf "FAIL"; exit 2;
+        printf "FAIL \t " cal_rad_len; exit 2;
         }}'
 
     STATUS=$?;

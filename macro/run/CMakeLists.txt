@@ -8,7 +8,7 @@ GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_reco.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_qa.C)
 
 Set(MACRO_DIR ${CMAKE_CURRENT_BINARY_DIR})
-GENERATE_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/geometry/check_radlen.sh ${MACRO_DIR})
+GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/geometry/check_radlen.C ${MACRO_DIR})
 # ============================================================================
 
 
@@ -82,9 +82,8 @@ foreach(setup IN LISTS cbm_setup)
 
   # --- Test run_transport_json_config
   # --- Transport run using run_transport_json_config.C
-  set(json_config_file ${CBMROOT_SOURCE_DIR}/macro/run/config_ci.json)
   set(testname run_transport_json_config)
-  add_test(${testname} ${MACRO_DIR}/run_transport_json_config.sh \"${json_config_file}\" 2 ${randomSeed})
+  add_test(${testname} ${MACRO_DIR}/run_transport_json_config.sh \"\" 2 ${randomSeed})
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
@@ -96,7 +95,7 @@ foreach(setup IN LISTS cbm_setup)
   # --- Test run_digi_json_config
   # --- Digitization run with using run_digi_json_config.C
   set(testname run_digi_json_config)
-  add_test(${testname} ${MACRO_DIR}/run_digi_json_config.sh \"${json_config_file}\")
+  add_test(${testname} ${MACRO_DIR}/run_digi_json_config.sh)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
@@ -110,11 +109,11 @@ foreach(setup IN LISTS cbm_setup)
   set(testname run_${sname}_tra_coll)
   set(input ${CBMROOT_SOURCE_DIR}/input/urqmd.auau.10gev.centr.root)
   add_test(${testname} ${MACRO_DIR}/run_tra_file.sh
-  	\"${input}\" ${nEvents} \"data/${sname}_coll\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
+  	\"${input}\" ${nEvents} \"data/${sname}_coll\" \"${setup}\" kGeant3 ${randomSeed})
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
-  	FIXTURES_REQUIRED run_cleanup
+  	FIXTURES_REQUIRED cleanup
   	FIXTURES_SETUP fixt_tra_coll_${setup}
   	RESOURCE_LOCK collParDb_${setup}
   )
@@ -124,7 +123,7 @@ foreach(setup IN LISTS cbm_setup)
   set(testname run_${sname}_tra_sign)
   set(input ${CBMROOT_SOURCE_DIR}/input/pluto.auau.8gev.omega.mpmm.0001.root)
   add_test(${testname} ${MACRO_DIR}/run_tra_file.sh
-  	\"${input}\" ${nEvents} \"data/${sname}_sign\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
+  	\"${input}\" ${nEvents} \"data/${sname}_sign\" \"${setup}\" kGeant3 ${randomSeed})
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
@@ -137,7 +136,7 @@ foreach(setup IN LISTS cbm_setup)
   # --- Transport run with beam events, using run_tra_beam.C
   set(testname run_${sname}_tra_beam)
   add_test(${testname} ${MACRO_DIR}/run_tra_beam.sh
-  	${nBeam} \"Au\" 10 -1 \"data/${sname}_beam\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
+  	${nBeam} \"Au\" 10 -1 \"data/${sname}_beam\" \"${setup}\" kGeant3 ${randomSeed})
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
@@ -179,8 +178,7 @@ foreach(setup IN LISTS cbm_setup)
   # --- Test check_radlen.sh
   # --- Transport run with collision events, using run_tra_file.C
   set(testname check_${sname}_radlen)
-  add_test(${testname} ${MACRO_DIR}/check_radlen.sh
-        data/${sname}_coll.geo.root )
+  add_test(${testname} ${MACRO_DIR}/check_radlen.sh \"data/${sname}_coll.geo.root\" )
   set_tests_properties(${testname} PROPERTIES
         TIMEOUT ${timeOutTime}
         FIXTURES_REQUIRED "fixt_digi_ev_${setup};fixt_digi_ts_${setup}"
@@ -252,8 +250,8 @@ foreach(setup IN LISTS cbm_setup)
   # --- Real raw event builder
   set(testname run_${sname}_qa)
   add_test(${testname} ${MACRODIR}/run_qa.sh
-  	\"data/${sname}_coll\" \"data/${sname}_ts\"  \"data/${sname}_ts_eb_real\"
-	\"data/${sname}_coll\" \"data/${sname}_qa\" \"${setup}\" -1
+  	\"data/${sname}_coll\" \"data/${sname}_ts\"  \"data/${sname}_ts_eb_real\" 
+	\"data/${sname}_coll\" \"data/${sname}_qa\" \"${setup}\" -1 
 	\"data/${sname}_sign\" \"data/${sname}_beam\" )
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
@@ -277,6 +275,29 @@ foreach(setup IN LISTS cbm_setup)
  	RESOURCE_LOCK collParDb_${setup}
   )
 
+  # --- Test run_transport_json_config
+  # --- Transport run using run_transport_json_config.C
+  set(testname run_transport_json_config)
+  add_test(${testname} ${MACRO_DIR}/run_transport_json_config.sh \"\" 2 ${randomSeed})
+  set_tests_properties(${testname} PROPERTIES
+  	TIMEOUT ${timeOutTime}
+  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
+  	FIXTURES_REQUIRED cleanup
+  	FIXTURES_SETUP fixt_tra_json_config
+  	RESOURCE_LOCK json_config_ParDb
+  )
+
+  # --- Test run_digi_json_config
+  # --- Digitization run with using run_digi_json_config.C
+  set(testname run_digi_json_config)
+  add_test(${testname} ${MACRO_DIR}/run_digi_json_config.sh)
+  set_tests_properties(${testname} PROPERTIES
+  	TIMEOUT ${timeOutTime}
+  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
+  	FIXTURES_REQUIRED fixt_tra_json_config
+  	FIXTURES_SETUP fixt_digi_json_config
+  	RESOURCE_LOCK json_config_ParDb
+  )
 
 
 endforeach(setup IN LISTS cbm_setup)

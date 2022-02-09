@@ -34,15 +34,17 @@ void scan_geometry(std::string fileName = "test.geo.root", uint32_t uMaxNodeDept
   file.GetListOfKeys()->Print();
   file.GetSize();
 
-  std::string geo_tag = fileName.substr(fileName.find_last_of('/') + 1);
-  geo_tag             = geo_tag.substr(0, geo_tag.find_first_of('.'));
-  std::cout << "geo tag extracted from file name is: " << geo_tag << std::endl;
   file.GetObject("FAIRGeom", gGeoManager);
 
   if (gGeoManager != nullptr) { top = gGeoManager->GetTopVolume(); };
   gROOT->cd();
 
-  if (top == nullptr) file.GetObject(geo_tag.c_str(), top);
+  if (top == nullptr) {
+    std::string geo_tag = fileName.substr(fileName.find_last_of('/') + 1);
+    geo_tag             = geo_tag.substr(0, geo_tag.find_first_of('.'));
+    std::cout << "geo tag extracted from file name is: " << geo_tag << std::endl;
+    file.GetObject(geo_tag.c_str(), top);
+  }
   if (top == nullptr) file.GetObject("FAIRGeom", top);
   if (top == nullptr) file.GetObject("top", top);
   if (top == nullptr) file.GetObject("TOP", top);

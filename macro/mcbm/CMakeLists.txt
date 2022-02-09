@@ -10,9 +10,7 @@ GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/mcbm/mcbm_qa.C)
 
 Set(MACRO_DIR ${CMAKE_CURRENT_BINARY_DIR})
 GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/geometry/check_media.C ${MACRO_DIR})
-
-GENERATE_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/geometry/check_radlen.sh ${MACRO_DIR})
-
+GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/geometry/check_radlen.C ${MACRO_DIR})
 # ============================================================================
 
 # disable dev tests - GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/mcbm/mcbm_mc_dev.C)
@@ -147,7 +145,7 @@ ForEach(setup IN LISTS cbm_setup)
 
   # --- Test check_radlen.sh
   set(testname mcbm_radlen_${setup})
-  add_test(${testname} ${MACRO_DIR}/check_radlen.sh data/${setup}_test.geo.root )
+  add_test(${testname} ${MACRO_DIR}/check_radlen.sh \"data/${setup}_test.geo.root\" )
   Set(fixture_mcbm_radlen fixture_radlen_${setup})
   set_tests_properties(${testname} PROPERTIES
         TIMEOUT 100
