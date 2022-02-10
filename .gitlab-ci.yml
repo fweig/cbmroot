@@ -217,37 +217,37 @@ FileLicenceCheck:
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
 
-.singularity_debian8_variables_jun19: &singularity_debian8_variables_jun19
-    OS: debian8
-    FAIRSOFT_VERSION: jun19p2
-    FAIRROOT_VERSION: v18.2.1
-    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS"
-    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
-    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft-${FAIRSOFT_VERSION}"
-    CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
+#.singularity_debian8_variables_jun19: &singularity_debian8_variables_jun19
+#    OS: debian8
+#    FAIRSOFT_VERSION: jun19p2
+#    FAIRROOT_VERSION: v18.2.1
+#    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS"
+#    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+#    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft-${FAIRSOFT_VERSION}"
+#    CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
 
-.singularity_debian8_variables_nov20: &singularity_debian8_variables_nov20
-    OS: debian8
-    FAIRSOFT_VERSION: nov20
-    FAIRROOT_VERSION: v18.4.2
-    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS"
-    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
-    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft-${FAIRSOFT_VERSION}"
-    CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
+#.singularity_debian8_variables_nov20: &singularity_debian8_variables_nov20
+#    OS: debian8
+#    FAIRSOFT_VERSION: nov20
+#    FAIRROOT_VERSION: v18.4.2
+#    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS"
+#    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+#    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft-${FAIRSOFT_VERSION}"
+#    CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
 
-.singularity_debian8_variables_apr21: &singularity_debian8_variables_apr21
-    OS: debian8
-    FAIRSOFT_VERSION: apr21
-    FAIRROOT_VERSION: v18.6.3
-    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS"
-    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
-    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft_${FAIRSOFT_VERSION}"
-    CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
+#.singularity_debian8_variables_apr21: &singularity_debian8_variables_apr21
+#    OS: debian8
+#    FAIRSOFT_VERSION: apr21
+#    FAIRROOT_VERSION: v18.6.3
+#    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS"
+#    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+#    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft_${FAIRSOFT_VERSION}"
+#    CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
 
 .singularity_debian10_variables_apr21: &singularity_debian10_variables_apr21
     OS: debian10
-    FAIRSOFT_VERSION: apr21
-    FAIRROOT_VERSION: v18.6.3
+    FAIRSOFT_VERSION: apr21p2
+    FAIRROOT_VERSION: v18.6.7
     BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS"
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
@@ -255,18 +255,18 @@ FileLicenceCheck:
 
 .singularity_centos7_variables_apr21: &singularity_centos7_variables_apr21
     OS: centos7
-    FAIRSOFT_VERSION: apr21
-    FAIRROOT_VERSION: v18.6.3
+    FAIRSOFT_VERSION: apr21p2
+    FAIRROOT_VERSION: v18.6.7
     BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS/gcc8"
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
     CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment_test.sh"
 
 .singularity_debian11_variables_apr21: &singularity_debian11_variables_apr21
-    CONTAINER: "/cvmfs/cbm.gsi.de/containers/debian11_v18.6.4_apr21p1.sif"
+    CONTAINER: "/cvmfs/cbm.gsi.de/containers/debian11_v18.6.7_apr21p2.sif"
     OS: debian11
-    FAIRSOFT_VERSION: apr21p1
-    FAIRROOT_VERSION: v18.6.4
+    FAIRSOFT_VERSION: apr21p2
+    FAIRROOT_VERSION: v18.6.7
     BASE_PATH: "/opt/"
     SIMPATH: "$BASE_PATH/fairsoft/${FAIRSOFT_VERSION}"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
@@ -291,14 +291,14 @@ FileLicenceCheck:
   tags:
     - CbmRoot_macosx
 
-.macosx_variables: &macosx_variables
-    OS: "macOS_10.13"
-    NCPU: 4
-    FAIRSOFT_VERSION: "jun19p1"
-    FAIRROOT_VERSION: "v18.2.1"
-    BASE_PATH: "/opt"
-    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
-    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft-${FAIRSOFT_VERSION}"
+#.macosx_variables: &macosx_variables
+#    OS: "macOS_10.13"
+#    NCPU: 4
+#    FAIRSOFT_VERSION: "jun19p1"
+#    FAIRROOT_VERSION: "v18.2.1"
+#    BASE_PATH: "/opt"
+#    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+#    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fairsoft-${FAIRSOFT_VERSION}"
 
 .macosx_1015_tag: &macosx_1015_tag
   stage: build
@@ -334,7 +334,7 @@ FileLicenceCheck:
 .macosx_12_variables: &macosx_12_variables
     OS: "macOS_12"
     FAIRSOFT_VERSION: "apr21p2"
-    FAIRROOT_VERSION: "v18.6.6"
+    FAIRROOT_VERSION: "v18.6.7"
     BASE_PATH: "/opt"
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
@@ -373,20 +373,20 @@ CbmRoot_Merge_Singularity_debian10_jun19:
   variables:
     <<: [*mergeRequestVariables, *singularity_debian10_variables_jun19]
 
-CbmRoot_Merge_Singularity_debian8_jun19:
-  <<: [*singularity_tag, *check_merge_request, *build_and_test]
-  variables:
-    <<: [*mergeRequestVariables, *singularity_debian8_variables_jun19]
+#CbmRoot_Merge_Singularity_debian8_jun19:
+#  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+#  variables:
+#    <<: [*mergeRequestVariables, *singularity_debian8_variables_jun19]
 
-CbmRoot_Merge_Singularity_debian8_nov20:
-  <<: [*singularity_tag, *check_merge_request, *build_and_test]
-  variables:
-    <<: [*mergeRequestVariables, *singularity_debian8_variables_nov20]
+#CbmRoot_Merge_Singularity_debian8_nov20:
+#  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+#  variables:
+#    <<: [*mergeRequestVariables, *singularity_debian8_variables_nov20]
 
-CbmRoot_Merge_Singularity_debian8_apr21:
-  <<: [*singularity_tag, *check_merge_request, *build_and_test]
-  variables:
-    <<: [*mergeRequestVariables, *singularity_debian8_variables_apr21]
+#CbmRoot_Merge_Singularity_debian8_apr21:
+#  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+#  variables:
+#    <<: [*mergeRequestVariables, *singularity_debian8_variables_apr21]
 
 CbmRoot_Merge_Singularity_debian10_apr21:
   <<: [*singularity_tag, *check_merge_request, *build_and_test]
