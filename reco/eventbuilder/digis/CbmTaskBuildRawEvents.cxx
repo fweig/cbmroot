@@ -332,6 +332,14 @@ void CbmTaskBuildRawEvents::FillSeedTimesFromDetList(std::vector<Double_t>* vdSe
 
     for (RawEventBuilderDetector& system : fSeedTimeDetList) {
       if (DigiCounters[system.detId] < DigiNumbers[system.detId]) {
+
+        // filter T0 digis from Tof (remove this statement if T0 properly implemented)
+        if (system.detId == ECbmModuleId::kTof
+            && (fTofDigis->at(DigiCounters[system.detId])).GetAddress() == CbmAlgoBuildRawEvents::fuT0Address) {
+          DigiCounters[system.detId]++;
+          continue;
+        }  // end of T0 filter
+
         Double_t thisTime = GetDigiTime(system.detId, DigiCounters[system.detId]);
         if (thisTime < earliestTime || earliestTime == -1) {
           nextAddedSystem = system.detId;
@@ -340,6 +348,7 @@ void CbmTaskBuildRawEvents::FillSeedTimesFromDetList(std::vector<Double_t>* vdSe
       }
     }
     if (earliestTime != -1) {
+
       if (vDigiMatch != nullptr) {
         const CbmMatch* digiMatch = fDigiMan->GetMatch(nextAddedSystem, DigiCounters[nextAddedSystem]);
         vDigiMatch->push_back(*digiMatch);
@@ -380,6 +389,13 @@ void CbmTaskBuildRawEvents::FillSeedTimesFromSlidingWindow(const RawEventBuilder
     }
     fvDigiMatchQa->clear();
     for (Int_t i = 0; i < fDigiMan->GetNofDigis(seedDet->detId); i++) {
+
+      // filter T0 digis from Tof (remove this statement if T0 properly implemented)
+      if (seedDet->detId == ECbmModuleId::kTof
+          && (fTofDigis->at(i)).GetAddress() == CbmAlgoBuildRawEvents::fuT0Address) {
+        continue;
+      }  // end of T0 filter
+
       const CbmMatch* digiMatch = fDigiMan->GetMatch(seedDet->detId, i);
       fvDigiMatchQa->push_back(*digiMatch);
     }
@@ -397,7 +413,21 @@ void CbmTaskBuildRawEvents::FillSeedTimesFromSlidingWindow(const RawEventBuilder
       }
     case ECbmModuleId::kSts: fSeedFinderSlidingWindow->FillSeedTimes(fStsDigis, fvDigiMatchQa); break;
     case ECbmModuleId::kTrd: fSeedFinderSlidingWindow->FillSeedTimes(fTrdDigis, fvDigiMatchQa); break;
-    case ECbmModuleId::kTof: fSeedFinderSlidingWindow->FillSeedTimes(fTofDigis, fvDigiMatchQa); break;
+    case ECbmModuleId::kTof: {
+
+      // filter T0 digis from Tof (remove this statement if T0 properly implemented)
+      std::vector<CbmTofDigi> vFilteredTofDigis;
+      for (const auto& tofDigi : *fTofDigis) {
+        if (tofDigi.GetAddress() == CbmAlgoBuildRawEvents::fuT0Address) { continue; }
+        vFilteredTofDigis.push_back(tofDigi);
+      }
+      fSeedFinderSlidingWindow->FillSeedTimes(&vFilteredTofDigis, fvDigiMatchQa);
+      break;
+      // end of T0 filter
+
+      //original version (no T0 filter)
+      //fSeedFinderSlidingWindow->FillSeedTimes(fTofDigis, fvDigiMatchQa); break;
+    }
     case ECbmModuleId::kRich: fSeedFinderSlidingWindow->FillSeedTimes(fRichDigis, fvDigiMatchQa); break;
     case ECbmModuleId::kPsd: fSeedFinderSlidingWindow->FillSeedTimes(fPsdDigis, fvDigiMatchQa); break;
     case ECbmModuleId::kT0: fSeedFinderSlidingWindow->FillSeedTimes(fT0Digis, fvDigiMatchQa); break;

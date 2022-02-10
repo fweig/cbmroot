@@ -284,8 +284,13 @@ void CbmAlgoBuildRawEvents::LoopOnSeeds()
     /// Loop on size of vector
     for (UInt_t uDigi = 0; uDigi < uNbRefDigis; ++uDigi) {
       LOG(debug) << Form("Checking seed %6u / %6u", uDigi, uNbRefDigis);
+
       const DigiSeed* pDigi = GetDigi<DigiSeed>(uDigi);
-      const Double_t dTime  = pDigi->GetTime();
+
+      // filter T0 digis from Tof (remove this line if T0 properly implemented)
+      if (fRefDet.detId == ECbmModuleId::kTof && pDigi->GetAddress() == fuT0Address) { continue; }
+
+      const Double_t dTime = pDigi->GetTime();
 
       /// Check if seed in acceptance window
       if (dTime < fdSeedWindowBeg) { continue; }
@@ -449,7 +454,11 @@ void CbmAlgoBuildRawEvents::SearchMatches(Double_t dSeedTime, RawEventBuilderDet
     const UInt_t uNbSelDigis = GetNofDigis(detMatch.detId);
     /// Loop on size of vector
     for (UInt_t uDigi = detMatch.fuStartIndex; uDigi < uNbSelDigis; ++uDigi) {
-      const DigiCheck* pDigi   = GetDigi<DigiCheck>(uDigi);
+      const DigiCheck* pDigi = GetDigi<DigiCheck>(uDigi);
+
+      // filter T0 digis from Tof (remove this line if T0 properly implemented)
+      if (detMatch.detId == ECbmModuleId::kTof && pDigi->GetAddress() == fuT0Address) { continue; }
+
       const Double_t dTime     = pDigi->GetTime();
       const Double_t dTimeDiff = dTime - dSeedTime;
       LOG(debug4) << detMatch.sName << Form(" => Checking match %6u / %6u, dt %f", uDigi, uNbSelDigis, dTimeDiff);

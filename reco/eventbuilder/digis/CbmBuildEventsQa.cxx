@@ -15,7 +15,6 @@
 #include "CbmMatch.h"
 #include "CbmModuleList.h"
 #include "CbmQaCanvas.h"
-#include "CbmStsDigi.h"
 
 #include "FairRootManager.h"
 #include <Logger.h>

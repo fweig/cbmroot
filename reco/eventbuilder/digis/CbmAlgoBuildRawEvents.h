@@ -107,6 +107,8 @@ static const RawEventBuilderDetector kRawEventBuilderDetUndef = RawEventBuilderD
 
 class CbmAlgoBuildRawEvents {
 public:
+  const static uint32_t fuT0Address = 10246;
+
   /** Default constructor **/
   CbmAlgoBuildRawEvents() = default;
 
