@@ -283,6 +283,8 @@ void create_stsgeo_v22b(const char* geoTag = "v22b_mcbm")
   infoFile << "Beam pipe: R3 = " << gkPipeR3 << " cm at z = " << gkPipeZ3 << " cm" << endl;
   // --------------------------------------------------------------------------
 
+  // Load FairRunSim to ensure the correct unit system
+  FairRunSim* sim = new FairRunSim();
 
   // -------   Load media from media file   -----------------------------------
   FairGeoLoader* geoLoad    = new FairGeoLoader("TGeo", "FairGeoLoader");
@@ -955,9 +957,13 @@ void create_stsgeo_v22b(const char* geoTag = "v22b_mcbm")
   gGeoMan->Test();
 
   TFile* geoFile = new TFile(geoFileName, "RECREATE");
-  top->Write();
+  sts->Export(geoFileName);
   cout << endl;
-  cout << "Geometry " << top->GetName() << " written to " << geoFileName << endl;
+  cout << "Geometry " << sts->GetName() << " exported to " << geoFileName << endl;
+  geoFile->Close();
+
+  geoFile = new TFile(geoFileName, "UPDATE");
+  stsTrans->Write();
   geoFile->Close();
 
   TString geoFileName_ = "sts_";
@@ -967,18 +973,17 @@ void create_stsgeo_v22b(const char* geoTag = "v22b_mcbm")
   gGeoMan->Write();  // use this is you want GeoManager format in the output
   geoFile->Close();
 
-  TString geoFileName__ = "sts_";
-  geoFileName_          = geoFileName__ + geoTag + "-geo.root";
-  sts->Export(geoFileName_);
-
-  geoFile = new TFile(geoFileName_, "UPDATE");
-  stsTrans->Write();
-  geoFile->Close();
-
   top->Draw("ogl");
   gGeoManager->SetVisLevel(6);
 
   infoFile.close();
+
+  // create medialist for this geometry
+  TString createmedialist = gSystem->Getenv("VMCWORKDIR");
+  createmedialist += "/macro/geometry/create_medialist.C";
+  std::cout << "Loading macro " << createmedialist << std::endl;
+  gROOT->LoadMacro(createmedialist);
+  gROOT->ProcessLine("create_medialist(\"\", false)");
 }
 // ============================================================================
 // ======                   End of main function                          =====
