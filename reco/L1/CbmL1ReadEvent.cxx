@@ -179,7 +179,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             L1Station* sta  = algo->vStations;
             double bestDist = 1.e20;
             for (Int_t iSt = 0; iSt < NMvdStations; iSt++) {
-              double d = (MC.z - sta[iSt].z[0]);
+              // use z_in since z_out is sometimes very wrong
+              // due to a problem in transport
+              double d = (MC.zIn - sta[iSt].z[0]);
               if (fabs(d) < fabs(bestDist)) {
                 bestDist    = d;
                 MC.iStation = iSt;
@@ -198,8 +200,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             nMvdPoints++;
           }
         }
-        // assert(fabs(maxDeviation)<1.);
         if (fVerbose > 2) { LOG(info) << "CbmL1ReadEvent: max deviation of Mvd points " << maxDeviation; }
+        // ensure that the nominal station positions are not far from the sensors
+        assert(fabs(maxDeviation) < 1.);
       }
 
 
@@ -213,7 +216,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             L1Station* sta  = algo->vStations + NMvdStations;
             double bestDist = 1.e20;
             for (Int_t iSt = 0; iSt < NStsStations; iSt++) {
-              double d = (MC.z - sta[iSt].z[0]);
+              // use z_in since z_out is sometimes very wrong
+              // due to a problem in transport
+              double d = (MC.zIn - sta[iSt].z[0]);
               if (fabs(d) < fabs(bestDist)) {
                 bestDist    = d;
                 MC.iStation = NMvdStations + iSt;
@@ -232,8 +237,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             nStsPoints++;
           }
         }
-        assert(fabs(maxDeviation) < 2.5);
         if (fVerbose > 2) { LOG(info) << "CbmL1ReadEvent: max deviation of Sts points " << maxDeviation; }
+        // ensure that the nominal station positions are not far from the sensors
+        assert(fabs(maxDeviation) < 1.);
       }
 
       if (fMuchPoints) {
