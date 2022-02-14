@@ -75,8 +75,6 @@ public:
   void SetMaxDoubletsPerSinglet(unsigned int value) { fMaxDoubletsPerSinglet = value; }
   /// Sets upper-bound cut on max number of triplets per one doublet
   void SetMaxTripletPerDoublets(unsigned int value) { fMaxTripletPerDoublets = value; }
-  /// Sets the vector of track finder iterations
-  void SetCAIterations(const L1Vector<L1CAIteration>& input) { fCAIterationsContainer = input; }
 
   //
   // GETTERS
@@ -85,8 +83,11 @@ public:
   unsigned int GetMaxDoubletsPerSinglet() const { return fMaxDoubletsPerSinglet; }
   /// Gets upper-bound cut on max number of triplets per one doublet
   unsigned int GetMaxTripletPerDoublets() const { return fMaxTripletPerDoublets; }
-  /// Gets track finder iteration vector
-  const L1Vector<L1CAIteration>& GetCAIterations() const { return fCAIterationsContainer; }
+
+  /// Provides access to L1CAIteration vector (modifiable)
+  L1Vector<L1CAIteration>& CAIterationsContainer() { return fCAIterationsContainer; }
+  /// Provides access to L1CAIteration vector (const)
+  const L1Vector<L1CAIteration>& CAIterationsContainer() const { return fCAIterationsContainer; }
 
 
 private:
