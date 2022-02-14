@@ -1,6 +1,6 @@
-/* Copyright (C) 2021 Justus Liebig Universität Giessen
+/* Copyright (C) 2022 Justus-Liebig-University Gießen, Gießen
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Adrian Weber [commiter]*/
+   Authors: Adrian Weber [committer]*/
 
 
 /**
