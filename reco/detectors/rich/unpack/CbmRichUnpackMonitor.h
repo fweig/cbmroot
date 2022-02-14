@@ -1,4 +1,4 @@
-/* Copyright (C) 2022 Justus-Liebig-Universität Gießen, Gießen
+/* Copyright (C) 2022 UGiessen, Giessen
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Adrian Weber [committer]*/
 
