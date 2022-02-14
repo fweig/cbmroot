@@ -323,6 +323,7 @@ std::vector<double> CbmDeviceEventBuilder::GetTriggerTimes(const CbmDigiTimeslic
     }
     default: LOG(fatal) << "CbmDeviceEventBuilder::GetTriggerTimes(): Reading digis from unknown detector type!";
   }
+  LOG(debug) << "CbmDeviceEventBuilder::GetTriggerTimes(): Building triggers from " << vDigiTimes.size() << " digis.";
   return fTriggerAlgo(vDigiTimes, fTriggerWindow, fMinNumDigis, fDeadTime);
 }
 
@@ -330,35 +331,25 @@ bool CbmDeviceEventBuilder::SendEvents(FairMQParts& partsIn, const std::vector<C
 {
   LOG(debug) << "Vector size: " << vEvents.size();
 
-  /// Serialize the array of events into a single MQ message
-  /// FIXME: Find out if possible to use only the boost serializer
-  FairMQMessagePtr message(NewMessage());
-  Serialize<RootSerializer>(*message, &(vEvents));
-  /*
   std::stringstream ossEvt;
   boost::archive::binary_oarchive oaEvt(ossEvt);
-  oaEvt << vOutEvents;
+  oaEvt << vEvents;
   std::string* strMsgEvt = new std::string(ossEvt.str());
-*/
 
-  /// Add it at the end of the input composed message
-  /// FIXME: Find out if possible to use only the boost serializer
   FairMQParts partsOut(std::move(partsIn));
-  partsOut.AddPart(std::move(message));
-  /*
+
   partsOut.AddPart(NewMessage(
     const_cast<char*>(strMsgEvt->c_str()),  // data
     strMsgEvt->length(),                    // size
     [](void*, void* object) { delete static_cast<std::string*>(object); },
     strMsgEvt));  // object that manages the data
-*/
+
   if (Send(partsOut, fsChannelNameDataOutput) < 0) {
     LOG(error) << "Problem sending data to " << fsChannelNameDataOutput;
     return false;
   }
   return true;
 }
-
 
 CbmDeviceEventBuilder::~CbmDeviceEventBuilder()
 {
