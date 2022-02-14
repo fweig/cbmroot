@@ -1,6 +1,20 @@
-/* Copyright (C) 2021 Goethe-University, Frankfurt
+/* Copyright (C) 2021 Justus Liebig Universität Giessen
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Adrian Weber [commiter]*/
+
+
+/**
+ * @file CbmRichUnpackMonitor.h
+ * @author Adrian Weber (adrian.a.weber@exp2.physik.uni-giessen.de)
+ * @brief Monitoring historgrams class for Rich unpacker
+ * @version 0.1
+ * @date 2022-02-14
+ *
+ * @copyright Copyright (c) 2022
+ *
+ * This is the monitoring class for Rich unpacker
+ *
+*/
 
 #ifndef CbmRichUnpackMonitor_H
 #define CbmRichUnpackMonitor_H
@@ -53,9 +67,9 @@ public:
   ///Fill general histograms
   void FillVectorSize(ULong64_t TsIdx, UInt_t Size) { fhVectorSize->Fill(TsIdx, Size); }
   void FillVectorCapacity(ULong64_t TsIdx, UInt_t Capacity) { fhVectorCapacity->Fill(TsIdx, Capacity); }
-  
+
   void FillDigisTimeInRun(Double_t Time) { fhDigisTimeInRun->Fill(Time * 1e-9); }
-  
+
   void FillDigisToT(Double_t ToT) { fhDigisToT->Fill(ToT); }
 
   void FillPerTimesliceCountersHistos(double_t dTsStartTime);
@@ -69,14 +83,14 @@ public:
 private:
   TString fHistoFileName = "HistosUnpackerRich.root";
 
-  
+
   double_t dFirstTsStartTime = 0;
 
   ///General histograms
-  TH1* fhDigisTimeInRun         = nullptr;
-  TH1* fhDigisToT               = nullptr;
-  TH1* fhVectorSize             = nullptr;
-  TH1* fhVectorCapacity         = nullptr;
+  TH1* fhDigisTimeInRun = nullptr;
+  TH1* fhDigisToT       = nullptr;
+  TH1* fhVectorSize     = nullptr;
+  TH1* fhVectorCapacity = nullptr;
 
   /** @brief Flag if debug mode is active or not */
   bool fDebugMode = false;

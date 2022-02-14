@@ -26,9 +26,7 @@
 
 #include <cmath>
 
-CbmRichUnpackMonitor::CbmRichUnpackMonitor(/* args */) : vNbMessType(7, 0), fvpAllHistoPointers()
-{
-}
+CbmRichUnpackMonitor::CbmRichUnpackMonitor(/* args */) : vNbMessType(7, 0), fvpAllHistoPointers() {}
 
 CbmRichUnpackMonitor::~CbmRichUnpackMonitor()
 {
@@ -49,10 +47,10 @@ Bool_t CbmRichUnpackMonitor::CreateHistograms(CbmMcbm2018RichPar* pUnpackPar)
   fhDigisTimeInRun = new TH1I("hRichDigisTimeInRun", "Digis Nb vs Time in Run; Time in run [s]; Digis Nb []", 10, 0, 1);
   fhDigisTimeInRun->SetCanExtend(TH1::kAllAxes);
   AddHistoToVector(fhDigisTimeInRun, "");
-  
+
   fhDigisToT = new TH1F("hDigisToT", "fhDigisToT; ToT [ns]; Entries", 400, 0, 40.);
   fhDigisTimeInRun->SetCanExtend(TH1::kAllAxes);
-  AddHistoToVector(fhDigisToT, "");  
+  AddHistoToVector(fhDigisToT, "");
 
   fhVectorSize = new TH1I("fhVectorSize", "Size of the vector VS TS index; TS index; Size [bytes]", 10, 0, 10);
   fhVectorSize->SetCanExtend(TH1::kAllAxes);
@@ -75,15 +73,9 @@ Bool_t CbmRichUnpackMonitor::ResetHistograms()
   return kTRUE;
 }
 
-Bool_t CbmRichUnpackMonitor::CreateDebugHistograms(CbmMcbm2018RichPar* pUnpackPar)
-{
-  return kTRUE;
-}
+Bool_t CbmRichUnpackMonitor::CreateDebugHistograms(CbmMcbm2018RichPar* pUnpackPar) { return kTRUE; }
 
-Bool_t CbmRichUnpackMonitor::ResetDebugHistograms()
-{
-  return kTRUE;
-}
+Bool_t CbmRichUnpackMonitor::ResetDebugHistograms() { return kTRUE; }
 // -------------------------------------------------------------------------
 
 
@@ -91,14 +83,14 @@ Bool_t CbmRichUnpackMonitor::ResetDebugHistograms()
 void CbmRichUnpackMonitor::FillPerTimesliceCountersHistos(double_t dTsStartTimeS)
 {
   if (0 == dFirstTsStartTime) dFirstTsStartTime = dTsStartTimeS;
-  double_t dTimeInRun     = dTsStartTimeS - dFirstTsStartTime;
-  double_t dRatio         = 0;
+  // double_t dTimeInRun     = dTsStartTimeS - dFirstTsStartTime;
+  // double_t dRatio         = 0;
 }
 
 
 // -------------------------------------------------------------------------
 void CbmRichUnpackMonitor::PrintDebugInfo(const uint64_t MsStartTime, const size_t NrProcessedTs,
-                                         const uint16_t msDescriptorFlags, const uint32_t uSize)
+                                          const uint16_t msDescriptorFlags, const uint32_t uSize)
 {
 }
 
@@ -140,7 +132,7 @@ void CbmRichUnpackMonitor::Finish()
   // open separate histo file in recreate mode
   histoFile = new TFile(fHistoFileName, "RECREATE");
   histoFile->cd();
-  
+
   /// Write histos to output file
   for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
     /// Make sure we end up in chosen folder
