@@ -21,6 +21,7 @@
 #include "CbmRecoUnpackConfig.tmpl"
 #include "CbmRichDigi.h"
 #include "CbmRichUnpackAlgoBase.h"
+#include "CbmRichUnpackMonitor.h"
 
 #include <FairLogger.h>
 #include <Logger.h>
@@ -65,6 +66,8 @@ public:
   CbmRichUnpackConfig& operator=(const CbmRichUnpackConfig&) = delete;
 
   // Getters
+  /** @brief Get the potentially added monitor. */
+  std::shared_ptr<CbmRichUnpackMonitor> GetMonitor() { return fMonitor; }
 
 
   /**
@@ -74,10 +77,12 @@ public:
   void InitAlgo();
 
   // Setters
-
   void MaskDiRICH(Int_t DiRICH) { fMaskedDiRICHes.push_back(DiRICH); }
 
   void SetUnpackerVersion(CbmRichUnpackerVersion vers) { fUnpackerVersion = vers; }
+
+  /** @brief Add a monitor to the unpacker. @param value CbmRichUnpackMonitor */
+  void SetMonitor(std::shared_ptr<CbmRichUnpackMonitor> value) { fMonitor = value; }
 
 protected:
   /**
@@ -88,6 +93,9 @@ protected:
   virtual std::shared_ptr<CbmRichUnpackAlgoBase> chooseAlgo();
 
   std::vector<Int_t> fMaskedDiRICHes = {};
+
+  /** @brief pointer to the monitor object */
+  std::shared_ptr<CbmRichUnpackMonitor> fMonitor = nullptr;
 
   /** @brief Selector of Unpacker Version. */
   CbmRichUnpackerVersion fUnpackerVersion = CbmRichUnpackerVersion::v02;

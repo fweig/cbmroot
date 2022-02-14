@@ -86,6 +86,7 @@ qa/CbmRichRecoQa.cxx
 unpack/CbmRichUnpackAlgo.cxx
 unpack/CbmRichUnpackAlgo2022.cxx
 unpack/CbmRichUnpackAlgoBase.cxx
+unpack/CbmRichUnpackMonitor.cxx
 unpack/CbmRichUnpackConfig.cxx
 )
 

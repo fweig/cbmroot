@@ -58,6 +58,14 @@ bool CbmRichUnpackAlgo2022::unpack(const fles::Timeslice* ts, std::uint16_t icom
   uint32_t msIndexWord2 = reader.NextWord();
   if (isLog()) LOG(DEBUG4) << getLogHeader(reader) << "Microslice Index 2:" << reader.GetWordAsHexString(msIndexWord2);
 
+  //Output debugging info
+  if (fMonitor) {
+    for (auto itHit = fOutputVec.begin(); itHit != fOutputVec.end(); ++itHit) {
+      fMonitor->FillDigisTimeInRun(itHit->GetTime());
+      fMonitor->FillDigisToT(itHit->GetToT());
+    }
+    fMonitor->FillVectorSize(ts->index(), fOutputVec.size());
+  }
 
   return true;
 }
@@ -390,6 +398,9 @@ void CbmRichUnpackAlgo2022::writeOutputDigi(Int_t fpgaID, Int_t channel, Double_
   Int_t pixelUID   = this->getPixelUID(fpgaID, channel);
   //check ordering
   Double_t finalTime = time + (Double_t) fMsRefTime - fSystemTimeOffset;
+
+  // Do not accept digis, where the MS und TS differs by more than 6 sec (mainly TS0)
+  if (6e9 < finalTime) return;
 
   fOutputVec.emplace_back(pixelUID, finalTime, tot - ToTcorr);
 }

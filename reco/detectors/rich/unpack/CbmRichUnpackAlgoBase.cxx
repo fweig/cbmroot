@@ -73,6 +73,8 @@ Bool_t CbmRichUnpackAlgoBase::initParSet(CbmMcbm2018RichPar* parset)
 
   LOG(info) << fName << "::initParSetRichMcbm2018 - Successfully initialized RICH unpacking parameters";
 
+  if (fMonitor) fMonitor->Init(parset);
+
   return kTRUE;
 }
 

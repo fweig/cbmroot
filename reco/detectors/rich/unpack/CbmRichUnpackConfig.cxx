@@ -28,6 +28,8 @@ void CbmRichUnpackConfig::InitAlgo()
   if (fDoLog) LOG(info) << fName << "::Init - SetMaskedDiRICHes";
   fAlgo->SetMaskedDiRICHes(&fMaskedDiRICHes);
 
+  if (fMonitor) { fAlgo->SetMonitor(fMonitor); }
+
   // Now we have all information required to initialise the algorithm
   fAlgo->Init();
 }

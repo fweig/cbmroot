@@ -8,14 +8,14 @@
  * @brief Baseclass for the TrdR unpacker algorithms
  * @version 0.1
  * @date 2021-04-21
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
- * This is the base class for the algorithmic part of the tsa data unpacking 
- * processes of the CbmTrd.
- * The actual translation from tsa to digi happens in the derived classes. 
- * 
- * 
+ *
+ * This is the base class for the algorithmic part of the tsa data unpacking
+ * processes of the CbmRich
+ * The actual translation from tsa to digi happens in the derived classes.
+ *
+ *
 */
 
 #ifndef CbmRichUnpackAlgoBase_H
@@ -24,6 +24,8 @@
 #include "CbmMcbm2018RichPar.h"
 #include "CbmRecoUnpackAlgo.tmpl"
 #include "CbmRichDigi.h"
+
+#include "CbmRichUnpackMonitor.h"
 
 #include "Timeslice.hpp"  // timeslice
 
@@ -209,9 +211,9 @@ public:
 
   /**
    * @brief Get the requested parameter containers. To be defined in the derived classes!
-   * Return the required parameter containers together with the paths to the ascii 
+   * Return the required parameter containers together with the paths to the ascii
    * files to.
-   *  
+   *
    * @param[in] std::string geoTag as used in CbmSetup
    * @param[in] std::uint32_t runId for runwise defined parameters
    * @return fParContVec
@@ -219,6 +221,11 @@ public:
   virtual std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
   GetParContainerRequest(std::string geoTag, std::uint32_t runId);
 
+  // Setters
+  /** @brief Set a predefined monitor @param monitor predefined unpacking monitor */
+  void SetMonitor(std::shared_ptr<CbmRichUnpackMonitor> monitor) { fMonitor = monitor; }
+
+  /** @brief Set Addresses of DiRICH boards to be masked @param maskedDiRICHes vector of Addresses */
   void SetMaskedDiRICHes(std::vector<Int_t>* maskedDiRICHes) { fMaskedDiRICHes = maskedDiRICHes; }
 
 protected:
@@ -229,8 +236,13 @@ protected:
   {
     finishDerived();
     // Finish the monitor if we have one
-    // if (fMonitor) fMonitor->Finish();
+    std::cout<<"Finish Monitor"<<std::endl;
+    if (fMonitor) fMonitor->Finish();
   }
+
+  // Monitoring
+  /** @brief Potential (online) monitor for the unpacking process */
+  std::shared_ptr<CbmRichUnpackMonitor> fMonitor = nullptr;
 
   /** @brief Function that allows special calls during Finish in the derived algos */
   virtual void finishDerived() { return; }
@@ -246,24 +258,24 @@ protected:
 
   /**
    * @brief Intialisation at begin of run. Special inits of the derived algos.
-   * 
+   *
    * @retval Bool_t initOk
   */
   Bool_t init();
 
   /**
    * @brief Handles the distribution of the hidden derived classes to their explicit functions.
-   * 
-   * @param parset 
-   * @return Bool_t initOk 
+   *
+   * @param parset
+   * @return Bool_t initOk
   */
   Bool_t initParSet(FairParGenericSet* parset);
 
   /**
    * @brief Handles the distribution of the hidden derived classes to their explicit functions.
-   * 
-   * @param parset 
-   * @return Bool_t initOk 
+   *
+   * @param parset
+   * @return Bool_t initOk
   */
   Bool_t initParSet(CbmMcbm2018RichPar* parset);
 
@@ -271,24 +283,24 @@ protected:
 
   /**
    * @brief Set the Derived Ts Parameters
-   * 
+   *
    * In this function parameters required by the explicit algo connected to the timeslice can be set.
-   * 
-   * @param itimeslice 
-   * @return true 
-   * @return false 
+   *
+   * @param itimeslice
+   * @return true
+   * @return false
   */
   bool setDerivedTsParameters(size_t /*itimeslice*/) { return true; }
 
   /**
    * @brief Unpack a given microslice. To be implemented in the derived unpacker algos.
-   * 
+   *
    * @param ts timeslice pointer
    * @param icomp index to the component to be unpacked
    * @param imslice index of the microslice to be unpacked
-   * @return true 
-   * @return false 
-   * 
+   * @return true
+   * @return false
+   *
    * @remark The content of the µslice can only be accessed via the timeslice. Hence, we need to pass the pointer to the full timeslice
   */
   //bool unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice);

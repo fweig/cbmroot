@@ -31,6 +31,7 @@
 std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename);
 std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline = false);
 std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename, bool bDebugMode = false);
+std::shared_ptr<CbmRichUnpackMonitor> GetRichMonitor(std::string treefilename, bool bDebugMode = false);
 const char* defaultSetupName = "mcbm_beam_2021_07_surveyed";
 
 void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid = 0,
@@ -110,6 +111,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     if (1904 < runid) {
       /// Switch to new unpacking algo starting from first combined cosmics run in 2022
       richconfig->SetUnpackerVersion(CbmRichUnpackerVersion::v03);
+      richconfig->SetMonitor(GetRichMonitor(outfilename, true));
     }
 
     richconfig->SetDebugState();
@@ -117,6 +119,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     std::string parfilesbasepathRich = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
     richconfig->SetParFilesBasePath(parfilesbasepathRich);
     richconfig->SetSystemTimeOffset(256000 - 1200);  // [ns] 1 MS and additional correction
+    if (runid > 1904)  richconfig->SetSystemTimeOffset(-1200);
     if (runid == 1588) richconfig->MaskDiRICH(0x7150);
   }
   // -------------
@@ -415,6 +418,42 @@ std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename, boo
   auto monitor = std::make_shared<CbmStsUnpackMonitor>();
   monitor->SetHistoFileName(outfilename);
   monitor->SetDebugMode(bDebugMode);
+  return monitor;
+}
+
+/**
+ * @brief Get the Rich Monitor. Extra function to keep default macro part more silent.
+ * @return std::shared_ptr<CbmRichUnpackMonitor>
+*/
+std::shared_ptr<CbmRichUnpackMonitor> GetRichMonitor(std::string treefilename, bool bDebugMode = false)
+{
+  // -----   Output filename and path   -------------------------------------
+  std::string outpath  = "";
+  std::string filename = "";
+  auto filenamepos     = treefilename.find_last_of("/");
+  if (filenamepos != treefilename.npos) {
+    outpath  = treefilename.substr(0, filenamepos);
+    filename = treefilename.substr(filenamepos++);
+  }
+  if (outpath.empty()) outpath = gSystem->GetWorkingDirectory();
+
+  auto currentdir = gSystem->GetWorkingDirectory();
+
+  if (!gSystem->cd(outpath.data())) gSystem->MakeDirectory(outpath.data());
+  else
+    gSystem->cd(currentdir.data());
+
+  std::string outfilename = outpath + filename;
+  auto filetypepos        = outfilename.find(".digi.root");
+  if (filetypepos != outfilename.npos) outfilename.replace(filetypepos, 10, ".mon.rich.root");
+  else
+    outfilename += ".mon.rich.root";
+  // ------------------------------------------------------------------------
+
+  auto monitor = std::make_shared<CbmRichUnpackMonitor>();
+  monitor->SetHistoFileName(outfilename);
+  monitor->SetDebugMode(bDebugMode);
+
   return monitor;
 }
 

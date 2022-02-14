@@ -36,6 +36,7 @@
 #pragma link C++ class CbmRichUnpackAlgo + ;
 #pragma link C++ class CbmRichUnpackAlgo2022 + ;
 #pragma link C++ class CbmRichUnpackAlgoBase + ;
+#pragma link C++ class CbmRichUnpackMonitor + ;
 #pragma link C++ class CbmRichUnpackConfig + ;
 
 
