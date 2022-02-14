@@ -134,6 +134,7 @@ L1Algo/L1HitsSortHelper.cxx
 L1Algo/L1Grid.cxx
 CbmL1Performance.cxx 
 CbmL1ReadEvent.cxx
+L1Algo/L1Station.cxx
 L1Algo/L1TrackParFit.cxx
 L1Algo/L1Event.cxx
 L1Algo/L1EventMatch.cxx
@@ -275,7 +276,7 @@ Install(FILES CbmL1Counters.h
               L1Algo/L1InitManager.h
               L1Algo/L1CAIteration.h
               L1Algo/L1Parameters.h
-              L1Algo/utils/L1AlgoFunctions.h
+              L1Algo/utils/L1Utils.h
               vectors/vec_arithmetic.h
               vectors/std_alloc.h
         DESTINATION include

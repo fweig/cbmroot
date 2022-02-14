@@ -29,25 +29,25 @@ private:
   enum
   {  // Here we list all the fields, which must be initialized by user
     // Basic fields initialization
-    kEDetectorID,
-    kEStationID,
-    kEXmax,
-    kEYmax,
+    keDetectorID,
+    keStationID,
+    keXmax,
+    keYmax,
     // L1Station initialization
-    kEtype,
-    kEtimeInfo,
-    kEz,
-    kERmin,
-    kERmax,
-    kEmaterialInfoThick,
-    kEmaterialInfoRL,
-    kEfieldSlice,
-    kEstripsFrontPhi,
-    kEstripsFrontSigma,
-    kEstripsBackPhi,
-    kEstripsBackSigma,
+    keType,
+    keTimeInfo,
+    keZ,
+    keRmin,
+    keRmax,
+    keMaterialInfoThick,
+    keMaterialInfoRL,
+    keFieldSlice,
+    keStripsFrontPhi,
+    keStripsFrontSigma,
+    keStripsBackPhi,
+    keStripsBackSigma,
     // The last item is equal to the number of bits in fInitFlags
-    kEND
+    keEnd
   };
 
 public:
@@ -112,12 +112,10 @@ public:
 
   /// Gets material thickness
   fvec GetMaterialThickness() const { return fL1Station.materialInfo.thick; }
-  // TODO: investigate if thick, RL and RadThick are useful, may be we should have only
-  //       GetMateralLogRadThick?
   /// Gets the radiation length of the station material
-  fvec GetMaterialRadLength() const { return fL1Station.materialInfo.RL; }  // TODO: -//-
+  fvec GetMaterialRadLength() const { return fL1Station.materialInfo.RL; }
   /// Gets the relative material thickness in units of the radiational length
-  fvec GetMaterialRadThick() const { return fL1Station.materialInfo.RadThick; }  // TODO: Rename?
+  fvec GetMaterialRadThick() const { return fL1Station.materialInfo.RadThick; } 
   /// Gets log of the relative material thickness in units of the radiational length
   fvec GetMaterialLogRadThick() const { return fL1Station.materialInfo.logRadThick; }
 
@@ -143,7 +141,7 @@ public:
   /// Gets a reference to L1Station info field of the L1BaseStation info
   const L1Station& GetL1Station() const;
   /// Gets a reference to Bitset object of initialization bits
-  const std::bitset<L1BaseStationInfo::kEND>& GetInitFlags() const { return fInitFlags; }
+  const std::bitset<L1BaseStationInfo::keEnd>& GetInitFlags() const { return fInitFlags; }
 
 
   //
@@ -156,7 +154,7 @@ public:
   void SetDetectorID(L1DetectorID inID);
 
   /// Sets type of station
-  void SetStationType(int inType);  // TODO: this is a temporary solution since
+  void SetStationType(int inType);  // TODO: this is a temporary solution (S.Zh.)
   /// Sets flag: 0 - time information is not provided by this detector type
   //             1 - time information is provided by the detector and can be used in tracking
   void SetTimeInfo(int inTimeInfo);
@@ -197,7 +195,7 @@ private:
   double fYmax {0};         ///< Maximum distance between station center and its edge in y direction
   double fZPos {0};         ///< z position of the station in double precision, used in field approximation
   L1Station fL1Station {};  ///< L1Station structure, describes a station in L1Algo
-  std::bitset<L1BaseStationInfo::kEND> fInitFlags;  ///< Class fileds initialization flags
+  std::bitset<L1BaseStationInfo::keEnd> fInitFlags;  ///< Class fileds initialization flags
 };
 
 /// swap function for two L1BaseStationInfo objects, expected to be used instead of std::swap

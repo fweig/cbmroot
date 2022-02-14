@@ -19,9 +19,8 @@
 //#include <string>
 //#include <unordered_map>
 
-#include "L1Def.h"  // For EnumClassHash
 #include "L1Vector.h"
-//#include "utils/L1AlgoFunctions.h"
+//#include "utils/L1Utils.h"
 
 //#define L1ALGODEV
 
@@ -47,7 +46,7 @@
 //
 // // Type for mapping L1CATrackFinder parameters, which are dependent from the current track finder iteration
 // template <typename T>
-// using L1CATrackFinderIterParameterMap_t = std::unordered_map<L1CATrackFinderIter, T, EnumClassHash>;
+// using L1CATrackFinderIterParameterMap_t = std::unordered_map<L1CATrackFinderIter, T, L1Utils::EnumClassHash>;
 //
 // ////// > Will be moved to separate class
 // const L1CATrackFinderIterParameterMap_t<std::string> kTrackFinderIterNames = {
@@ -218,7 +217,7 @@ public:
 
 private:
   /// Aux method for printing mapped Track Finder parameters
-  ///template <typename T> // NOTE: moved to L1AlgoFunctions.h
+  ///template <typename T> // NOTE: moved to L1Utils.h
   ///void PrintTrackFinderIterParameters(const std::string& parName, const L1CATrackFinderIterParameterMap_t<T>& parMap)
   ///{
   ///  std::stringstream token; // Is used because LOG() automatically sets '\n' to the end of the string

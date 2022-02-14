@@ -33,7 +33,7 @@
 //
 L1BaseStationInfo::L1BaseStationInfo() noexcept
 {
-  LOG(DEBUG) << "L1BaseStationInfo: Default constructor called for " << this << '\n';  // Temporary
+  LOG(debug) << "L1BaseStationInfo: Default constructor called for " << this << '\n';  // Temporary
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -42,16 +42,16 @@ L1BaseStationInfo::L1BaseStationInfo(L1DetectorID detectorID, int stationID) noe
   : fDetectorID(detectorID)
   , fStationID(stationID)
 {
-  LOG(DEBUG) << "L1BaseStationInfo: Constructor (detectorID, stationID) called for " << this << '\n';  // Temporary
-  fInitFlags[kEDetectorID] = true;
-  fInitFlags[kEStationID]  = true;
+  LOG(debug) << "L1BaseStationInfo: Constructor (detectorID, stationID) called for " << this << '\n';  // Temporary
+  fInitFlags[keDetectorID] = true;
+  fInitFlags[keStationID]  = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
 L1BaseStationInfo::~L1BaseStationInfo() noexcept
 {
-  LOG(DEBUG) << "L1BaseStationInfo: Destructor called for " << this << '\n';  // Temporary
+  LOG(debug) << "L1BaseStationInfo: Destructor called for " << this << '\n';  // Temporary
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -210,9 +210,9 @@ const L1Station& L1BaseStationInfo::GetL1Station() const
 //
 void L1BaseStationInfo::SetStationID(int inID)
 {
-  if (!fInitFlags[kEStationID]) {
+  if (!fInitFlags[keStationID]) {
     fStationID              = inID;
-    fInitFlags[kEStationID] = true;
+    fInitFlags[keStationID] = true;
   }
   else {
     LOG(warn) << "L1BaseStationInfo::SetStationID: Attempt of station ID redifinition";
@@ -223,9 +223,9 @@ void L1BaseStationInfo::SetStationID(int inID)
 //
 void L1BaseStationInfo::SetDetectorID(L1DetectorID inID)
 {
-  if (!fInitFlags[kEDetectorID]) {
+  if (!fInitFlags[keDetectorID]) {
     fDetectorID              = inID;
-    fInitFlags[kEDetectorID] = true;
+    fInitFlags[keDetectorID] = true;
   }
   else {
     LOG(warn) << "L1BaseStationInfo::SetDetectorID: Attempt of detector ID redifinition";
@@ -236,9 +236,9 @@ void L1BaseStationInfo::SetDetectorID(L1DetectorID inID)
 //
 void L1BaseStationInfo::SetStationType(int inType)
 {
-  if (!fInitFlags[kEtype]) {
+  if (!fInitFlags[keType]) {
     fL1Station.type    = inType;
-    fInitFlags[kEtype] = true;
+    fInitFlags[keType] = true;
   }
   else {
     LOG(warn) << "L1BaseStationInfo::SetStationType: Attempt of station type redifinition";
@@ -250,7 +250,7 @@ void L1BaseStationInfo::SetStationType(int inType)
 void L1BaseStationInfo::SetTimeInfo(int inTimeInfo)
 {
   fL1Station.timeInfo    = inTimeInfo;
-  fInitFlags[kEtimeInfo] = true;
+  fInitFlags[keTimeInfo] = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -259,7 +259,7 @@ void L1BaseStationInfo::SetZ(double inZ)
 {
   fL1Station.z    = inZ;  // setting simd vector of single-precision floats, which is passed to high performanced L1Algo
   fZPos           = inZ;  // setting precised value to use in field approximation etc
-  fInitFlags[kEz] = true;
+  fInitFlags[keZ] = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -267,7 +267,7 @@ void L1BaseStationInfo::SetZ(double inZ)
 void L1BaseStationInfo::SetRmin(double inRmin)
 {
   fL1Station.Rmin    = inRmin;
-  fInitFlags[kERmin] = true;
+  fInitFlags[keRmin] = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -275,7 +275,7 @@ void L1BaseStationInfo::SetRmin(double inRmin)
 void L1BaseStationInfo::SetRmax(double inRmax)
 {
   fL1Station.Rmax    = inRmax;
-  fInitFlags[kERmax] = true;
+  fInitFlags[keRmax] = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -289,15 +289,15 @@ void L1BaseStationInfo::SetMaterial(double inThickness, double inRL)
   fL1Station.materialInfo.RL          = inRL;
   fL1Station.materialInfo.RadThick    = fL1Station.materialInfo.thick / fL1Station.materialInfo.RL;
   fL1Station.materialInfo.logRadThick = log(fL1Station.materialInfo.RadThick);
-  fInitFlags[kEmaterialInfoThick]     = true;
-  fInitFlags[kEmaterialInfoRL]        = true;
+  fInitFlags[keMaterialInfoThick]     = true;
+  fInitFlags[keMaterialInfoRL]        = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
 void L1BaseStationInfo::SetFieldSlice(const double* Cx, const double* Cy, const double* Cz)
 {
-  if (fInitFlags[kEfieldSlice]) {
+  if (fInitFlags[keFieldSlice]) {
     LOG(warn) << "L1BaseStationInfo::SetFieldSlice: Attempt to redifine field slice for station with detectorID = "
               << static_cast<int>(fDetectorID) << " and stationID = " << fStationID << ". Redifinition ignored";
     return;
@@ -309,24 +309,25 @@ void L1BaseStationInfo::SetFieldSlice(const double* Cx, const double* Cy, const 
     fL1Station.fieldSlice.cz[idx] = Cz[idx];
   }
 
-  fInitFlags[kEfieldSlice] = true;
+  fInitFlags[keFieldSlice] = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
 void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xyz)[3], double (&B)[3])>& getFieldValue)
 {
-  if (fInitFlags[kEfieldSlice]) {
+  if (fInitFlags[keFieldSlice]) {
     LOG(warn) << "L1BaseStationInfo::SetFieldSlice: Attempt to redifine field slice for station with detectorID = "
               << static_cast<int>(fDetectorID) << " and stationID = " << fStationID << ". Redifinition ignored";
     return;
   }
 
 #ifndef L1_NO_ASSERT  // check for zero denominator
-  L1_ASSERT(fInitFlags[kEz], "Attempt to set magnetic field slice before setting z position of the station");
-  L1_ASSERT(fInitFlags[kEXmax], "Attempt to set magnetic field slice before setting Xmax size of the station");
-  L1_ASSERT(fInitFlags[kEYmax], "Attempt to set magnetic field slice before setting Ymax size of the station");
+  L1_ASSERT(fInitFlags[keZ], "Attempt to set magnetic field slice before setting z position of the station");
+  L1_ASSERT(fInitFlags[keXmax], "Attempt to set magnetic field slice before setting Xmax size of the station");
+  L1_ASSERT(fInitFlags[keYmax], "Attempt to set magnetic field slice before setting Ymax size of the station");
 #endif
+  // TODO: Change names of variables according to convention (S.Zh.)
   constexpr int M = L1Parameters::kMaxFieldApproxPolynomialOrder;
   constexpr int N = L1Parameters::kMaxNFieldApproxCoefficients;
   constexpr int D = 3;  ///> number of dimensions
@@ -394,16 +395,13 @@ void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xy
     fL1Station.fieldSlice.cz[j] = A[j][N + 2] / A[j][j];
   }
 
-  fInitFlags[kEfieldSlice] = true;
+  fInitFlags[keFieldSlice] = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
 void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double frontSigma, double backPhi, double backSigma)
 {
-  // TODO: may be is it better to define separate setters for these values and then calculate the
-  //       rest somewhere below?
-
   //----- Original code from L1Algo ---------------------------------------------------------------------//
   double cFront = cos(frontPhi);
   double sFront = sin(frontPhi);
@@ -450,10 +448,10 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
   fL1Station.yInfo.sigma2  = fL1Station.XYInfo.C11;
   //-----------------------------------------------------------------------------------------------------//
 
-  fInitFlags[kEstripsFrontPhi]   = true;
-  fInitFlags[kEstripsFrontSigma] = true;
-  fInitFlags[kEstripsBackPhi]    = true;
-  fInitFlags[kEstripsBackSigma]  = true;
+  fInitFlags[keStripsFrontPhi]   = true;
+  fInitFlags[keStripsFrontSigma] = true;
+  fInitFlags[keStripsBackPhi]    = true;
+  fInitFlags[keStripsBackSigma]  = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -461,7 +459,7 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
 void L1BaseStationInfo::SetXmax(double aSize)
 {
   fXmax              = aSize;
-  fInitFlags[kEXmax] = true;
+  fInitFlags[keXmax] = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -469,5 +467,5 @@ void L1BaseStationInfo::SetXmax(double aSize)
 void L1BaseStationInfo::SetYmax(double aSize)
 {
   fYmax              = aSize;
-  fInitFlags[kEYmax] = true;
+  fInitFlags[keYmax] = true;
 }

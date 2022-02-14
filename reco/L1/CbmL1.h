@@ -99,7 +99,7 @@ enum class L1DetectorID
 };
 
 
-// TODO: insert documentation!
+// TODO: insert documentation! (S.Zh.)
 //
 /// L1Algo runtime constants modification can be performed in run_reco.C. Example:
 ///
@@ -144,7 +144,7 @@ public:
   L1Parameters* GetL1Parameters() { return &fL1Parameters; }
 
   /// Gets a set of active detectors used in tracking
-  // TODO: think about return (value, reference or const reference?)
+  // TODO: think about return (value, reference or const reference?) (S.Zh.)
   std::set<L1DetectorID> GetActiveTrackingDetectorIDs() const { return fActiveTrackingDetectorIDs; }
   /// Sets a vector of detectors used in tracking
   void SetActiveTrackingDetectorIDs(const std::set<L1DetectorID>& init) { fActiveTrackingDetectorIDs = init; }

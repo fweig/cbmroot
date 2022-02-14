@@ -745,7 +745,7 @@ InitStatus CbmL1::Init()
     }
   }
 
-  // TODO: replace these values to L1Parameters
+  // TODO: replace these values to L1Parameters (S.Zh.)
   geo.push_back(fTrackingLevel);
   geo.push_back(fMomentumCutOff);
   geo.push_back(fGhostSuppression);
@@ -796,11 +796,11 @@ InitStatus CbmL1::Init()
 
 
     // Step 4: initialize IDs of detectors active in tracking
-    // TODO: temporary for tests, must be initialized somewhere in run_reco.C or similar
+    // TODO: temporary for tests, must be initialized somewhere in run_reco.C or similar (S.Zh.)
     fActiveTrackingDetectorIDs = {L1DetectorID::kMvd, L1DetectorID::kSts};
     initMan->SetActiveDetectorIDs(fActiveTrackingDetectorIDs);
 
-    constexpr double PI = 3.14159265358;  // TODO: why cmath is not used?
+    constexpr double PI = 3.14159265358;  // TODO: why cmath is not used? (S.Zh.)
 
     // Step 5: initialize number of stations for each detector ID
     initMan->SetStationsNumberCrosscheck(L1DetectorID::kMvd, NMvdStations);
@@ -818,7 +818,8 @@ InitStatus CbmL1::Init()
 
       CbmKFTube& t     = CbmKF::Instance()->vMvdMaterial[iSt];
       auto stationInfo = L1BaseStationInfo(L1DetectorID::kMvd, iSt);
-      stationInfo.SetStationType(1);  // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.)
+      stationInfo.SetStationType(1);  
+        // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
       stationInfo.SetTimeInfo(0);
       stationInfo.SetZ(t.z);
       stationInfo.SetMaterial(t.dz, t.RadLength);
@@ -838,7 +839,7 @@ InitStatus CbmL1::Init()
     for (int iSt = 0; iSt < NStsStations; ++iSt) {  // NOTE: example using smart pointers
       auto cbmSts = CbmStsSetup::Instance()->GetStation(iSt);
       std::unique_ptr<L1BaseStationInfo> stationInfo(new L1BaseStationInfo(L1DetectorID::kSts, iSt));
-      // TODO: replace with std::make_unique, when C++14 is avaliable!!!!
+      // TODO: replace with std::make_unique, when C++14 is avaliable!!!! (S.Zh.)
       // auto stsStation = std::make_unique<L1BaseStationInfo>(L1DetectorID::kSts, iSt);
       stationInfo->SetStationType(0);  // STS
       stationInfo->SetTimeInfo(1);
@@ -854,7 +855,6 @@ InitStatus CbmL1::Init()
       stationInfo->SetMaterial(cbmSts->GetSensorD(), cbmSts->GetRadLength());
 
       // Setup strips geometry
-      //   TODO: why fscal instead of double in initialization?
       fscal stsFrontPhi   = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(0) * PI / 180.;
       fscal stsBackPhi    = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(1) * PI / 180.;
       fscal stsFrontSigma = cbmSts->GetSensorPitch(0) / sqrt(12);
@@ -871,10 +871,11 @@ InitStatus CbmL1::Init()
       CbmMuchLayer* layer     = station->GetLayer(muchLayerID);
 
       auto stationInfo = L1BaseStationInfo(L1DetectorID::kMuch, iSt);
-      stationInfo.SetStationType(2);  // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.)
+      stationInfo.SetStationType(2);
+        // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
       stationInfo.SetTimeInfo(1);
       stationInfo.SetZ(layer->GetZ());
-      stationInfo.SetMaterial(layer->GetDz(), 0);  // TODO: Why rad len is 0?????
+      stationInfo.SetMaterial(layer->GetDz(), 0);  // TODO: Why rad len is 0????? (S.Zh.)
       stationInfo.SetXmax(100.);
       stationInfo.SetYmax(100.);
       stationInfo.SetRmin(0.);
@@ -2071,7 +2072,7 @@ void CbmL1::ReadSTAPAlgoData()
            << " have been read." << endl;
     }
     // read StsHitsStartIndex and StsHitsStopIndex
-    n = 20;  // TODO: Why 20?
+    n = 20;  // TODO: Why 20? (S.Zh.)
     for (int i = 0; i < n; i++) {
       int tmp;
       fadata >> tmp;

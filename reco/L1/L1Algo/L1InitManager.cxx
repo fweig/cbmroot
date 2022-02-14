@@ -20,25 +20,25 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
 {
   // Check if other fields were defined already
   // Active detector IDs
-  if (!fInitFlags[L1InitManager::kEactiveDetectorIDs]) {
+  if (!fInitFlags[L1InitManager::keActiveDetectorIDs]) {
     LOG(error) << "L1InitManager::AddStation: station initialization called before the active detectors set had been "
                   "initialized";
-    assert((fInitFlags[L1InitManager::kEactiveDetectorIDs]));
+    assert((fInitFlags[L1InitManager::keActiveDetectorIDs]));
   }
 
   // Number of stations check
-  if (!fInitFlags[L1InitManager::kEstationsNumberCrosscheck]) {
+  if (!fInitFlags[L1InitManager::keStationsNumberCrosscheck]) {
     LOG(error)
       << "L1InitManager::AddStation: station initialization called before the numbers of stations for each detector "
       << "had been initialized";
-    assert((fInitFlags[L1InitManager::kEstationsNumberCrosscheck]));
+    assert((fInitFlags[L1InitManager::keStationsNumberCrosscheck]));
   }
 
   // Field function
-  if (!fInitFlags[L1InitManager::kEfieldFunction]) {
+  if (!fInitFlags[L1InitManager::keFieldFunction]) {
     LOG(error)
       << "L1InitManager::AddStation: station initialization called before the magnetic field function was intialized";
-    assert((fInitFlags[L1InitManager::kEfieldFunction]));
+    assert((fInitFlags[L1InitManager::keFieldFunction]));
   }
 
   // Check activeness of this station type
@@ -66,7 +66,7 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
       insertionResult.first->Print();
       LOG(error) << ">>> A dublicating L1BaseStationInfo object:";
       inStation.Print();
-      assert((insertionResult.second));  // TODO: rewrite the assertion
+      assert((insertionResult.second));
     }
   }
   LOG(debug) << "L1InitManager: adding a station with stationID = " << inStation.GetStationID()
@@ -106,8 +106,8 @@ void L1InitManager::PrintStations(int verbosityLevel) const
 void L1InitManager::TransferL1StationArray(std::array<L1Station, L1Parameters::kMaxNstations>& destinationArray)
 {
   /// First of all, we must check if L1Station was properly initialized
-  // TODO: actually, false condition will never reached (must thing about it, may be remove assertions from
-  // CheckStationInfo and leave only warnings and flag)
+  // TODO: actually, false condition will never reached (must think about it, may be remove assertions from
+  // CheckStationInfo and leave only warnings and flag) (S.Zh.)
   bool ifStationsInitialized = CheckStationsInfo();
   if (!ifStationsInitialized) {
     LOG(error) << "L1InitManager::TransferL1StationArray: attempt to pass unitialized L1Station array to L1Algo core";
@@ -153,18 +153,18 @@ int L1InitManager::GetStationsNumber(L1DetectorID detectorID) const
 //
 void L1InitManager::SetActiveDetectorIDs(const std::set<L1DetectorID>& detectorIDs)
 {
-  // TODO: To think about redifinition possibilities: should it be allowed or not?
+  // TODO: To think about redifinition possibilities: should it be allowed or not? (S.Zh.)
   fActiveDetectorIDs                             = detectorIDs;
-  fInitFlags[L1InitManager::kEactiveDetectorIDs] = true;
+  fInitFlags[L1InitManager::keActiveDetectorIDs] = true;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::SetFieldFunction(const std::function<void(const double (&xyz)[3], double (&B)[3])>& fieldFunction)
 {
-  if (!fInitFlags[L1InitManager::kEfieldFunction]) {
+  if (!fInitFlags[L1InitManager::keFieldFunction]) {
     fFieldFunction                             = fieldFunction;
-    fInitFlags[L1InitManager::kEfieldFunction] = true;
+    fInitFlags[L1InitManager::keFieldFunction] = true;
   }
   else {
     LOG(warn) << "L1InitManager::SetFieldFunction: attemt to reinitialize the field function. Ignored";
@@ -184,7 +184,7 @@ void L1InitManager::SetStationsNumberCrosscheck(L1DetectorID detectorID, int nSt
 
   // Check if all the station numbers for active detectors are initialized now:
   LOG(debug) << "SetStationsNumberCrosscheck called for detectorID = " << static_cast<int>(detectorID);
-  if (!fInitFlags[L1InitManager::kEstationsNumberCrosscheck]) {
+  if (!fInitFlags[L1InitManager::keStationsNumberCrosscheck]) {
     bool ifInitialized = true;
     for (auto item : fActiveDetectorIDs) {
       if (fStationsNumberCrosscheck.find(item) == fStationsNumberCrosscheck.end()) {
@@ -194,16 +194,16 @@ void L1InitManager::SetStationsNumberCrosscheck(L1DetectorID detectorID, int nSt
         break;
       }
     }
-    fInitFlags[L1InitManager::kEstationsNumberCrosscheck] = ifInitialized;
+    fInitFlags[L1InitManager::keStationsNumberCrosscheck] = ifInitialized;
   }
-  LOG(debug) << "InitResult: " << fInitFlags[L1InitManager::kEstationsNumberCrosscheck];
+  LOG(debug) << "InitResult: " << fInitFlags[L1InitManager::keStationsNumberCrosscheck];
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::SetTargetPosition(double x, double y, double z)
 {
-  if (fInitFlags[L1InitManager::kEtargetPos]) {
+  if (fInitFlags[L1InitManager::keTargetPos]) {
     LOG(warn) << "L1InitManager::SetTargetPosition: attempt to reinitialize the target position. Ignore";
     return;
   }
@@ -211,31 +211,31 @@ void L1InitManager::SetTargetPosition(double x, double y, double z)
   fTargetPos[0]                          = x;
   fTargetPos[1]                          = y;
   fTargetPos[2]                          = z;
-  fInitFlags[L1InitManager::kEtargetPos] = true;
+  fInitFlags[L1InitManager::keTargetPos] = true;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::InitTargetField(double zStep)
 {
-  if (fInitFlags[L1InitManager::kEprimaryVertexField]) {
+  if (fInitFlags[L1InitManager::kePrimaryVertexField]) {
     LOG(warn) << "L1InitManager::InitTargetField: attempt to reinitialize the field value and field region "
               << "near target. Ignore";
     return;
   }
 
   // Check for field function
-  if (!fInitFlags[L1InitManager::kEfieldFunction]) {
+  if (!fInitFlags[L1InitManager::keFieldFunction]) {
     LOG(error) << "L1InitManager::InitTargetField: attempt to initialze the field value and field region near "
                << "target before initializing field function";
-    assert((fInitFlags[L1InitManager::kEfieldFunction]));
+    assert((fInitFlags[L1InitManager::keFieldFunction]));
   }
 
   // Check for target defined
-  if (!fInitFlags[L1InitManager::kEtargetPos]) {
+  if (!fInitFlags[L1InitManager::keTargetPos]) {
     LOG(error) << "L1InitManager::InitTargetField: attempt to initialize the field value and field region near "
                << "target before the target position initialization";
-    assert((fInitFlags[L1InitManager::kEtargetPos]));
+    assert((fInitFlags[L1InitManager::keTargetPos]));
   }
 
   constexpr int numberOfDimensions {3};
@@ -257,7 +257,7 @@ void L1InitManager::InitTargetField(double zStep)
   fTargetFieldRegion.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
   fTargetFieldValue = B[0];
 
-  fInitFlags[L1InitManager::kEprimaryVertexField] = true;
+  fInitFlags[L1InitManager::kePrimaryVertexField] = true;
 }
 
 
@@ -265,10 +265,10 @@ void L1InitManager::InitTargetField(double zStep)
 //
 bool L1InitManager::CheckStationsInfo()
 {
-  if (!fInitFlags[L1InitManager::kEstationsInfo]) {
+  if (!fInitFlags[L1InitManager::keStationsInfo]) {
     bool ifInitPassed = true;
 
-    if (!fInitFlags[L1InitManager::kEifStationNumbersChecked]) {
+    if (!fInitFlags[L1InitManager::keIfStationNumbersChecked]) {
       for (const auto& itemDetector : fActiveDetectorIDs) {
         int actualStationsNumber   = GetStationsNumber(itemDetector);
         int expectedStationsNumber = fStationsNumberCrosscheck.at(itemDetector);
@@ -280,7 +280,7 @@ bool L1InitManager::CheckStationsInfo()
           ifInitPassed = false;
         }
       }
-      fInitFlags[L1InitManager::kEifStationNumbersChecked] = ifInitPassed;
+      fInitFlags[L1InitManager::keIfStationNumbersChecked] = ifInitPassed;
     }
     if (!ifInitPassed) {
       LOG(error) << "L1InitManager::CheckStationsInfo: initialization failed";
@@ -293,16 +293,16 @@ bool L1InitManager::CheckStationsInfo()
       LOG(fatal) << "Actual total number of registered stations (" << totalStationsNumber
                  << ") is larger then designed one (" << L1Parameters::kMaxNstations
                  << "). Please, select another set of active tracking detectors";
-      // TODO: We have to provide an instruction of how to increase the kMaxNstations number keeping the code consistent
+      // TODO: We have to provide an instruction of how to increase the kMaxNstations number keeping the code consistent (S.Zh.)
       assert((totalStationsNumber <= L1Parameters::kMaxNstations));
     }
 
-    fInitFlags[L1InitManager::kEstationsInfo] = true;
+    fInitFlags[L1InitManager::keStationsInfo] = true;
   }
   else {
     LOG(warn) << "L1InitManager: L1BaseStationInfo set has already been initialized";
   }
   // NOTE: we return a flag here to reduce a number of calls outside the funcition. In other hands we keep this flag
   // to be consistent with other class fields initialization rules
-  return fInitFlags[L1InitManager::kEstationsInfo];
+  return fInitFlags[L1InitManager::keStationsInfo];
 }

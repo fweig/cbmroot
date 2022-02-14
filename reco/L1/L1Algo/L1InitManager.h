@@ -14,6 +14,7 @@
 #include "L1BaseStationInfo.h"
 #include "L1Field.h"
 #include "L1Parameters.h"
+#include "utils/L1Utils.h"
 
 //#include <string>
 #include <bitset>
@@ -59,15 +60,15 @@ class L1InitManager {
 private:
   enum
   {
-    kEactiveDetectorIDs,         ///< If the detector sequence is set
-    kEstationsNumberCrosscheck,  ///< If the crosscheck station numbers were setup
-    kEfieldFunction,             ///< If magnetic field getter funciton is set
-    kEtargetPos,                 ///< If target position was defined
-    kEprimaryVertexField,        ///< If magnetic field value and region defined at primary vertex
-    kEifStationNumbersChecked,   ///< If the station number was already checked
-    kEstationsInfo,              ///< If all the planned stations were added to the manager
-    kEL1StationTransfered,       ///< If the L1Station vector was already transfered to destination array
-    kEND
+    keActiveDetectorIDs,         ///< If the detector sequence is set
+    keStationsNumberCrosscheck,  ///< If the crosscheck station numbers were setup
+    keFieldFunction,             ///< If magnetic field getter funciton is set
+    keTargetPos,                 ///< If target position was defined
+    kePrimaryVertexField,        ///< If magnetic field value and region defined at primary vertex
+    keIfStationNumbersChecked,   ///< If the station number was already checked
+    keStationsInfo,              ///< If all the planned stations were added to the manager
+    keL1StationTransfered,       ///< If the L1Station vector was already transfered to destination array
+    keEnd
   };
 
 public:
@@ -99,7 +100,6 @@ public:
   /// Adds another station of a given type using pointer to a L1BaseStationInfo object
   void AddStation(const L1BaseStationInfo* inStationPtr) { AddStation(*inStationPtr); }
   /// Adds another station of a given type using std::unique_ptr-wraped pointer to L1BaseStationInfo
-  // TODO: Test weaknesses here
   void AddStation(const std::unique_ptr<L1BaseStationInfo>& inStationUniquePtr) { AddStation(*inStationUniquePtr); }
   /// Initializes L1Algo: transfers all caputred data to the L1 tracking core
   void Init() const;
@@ -121,7 +121,7 @@ public:
   int GetStationsNumber(L1DetectorID detectorID) const;
   /// Gets a target position
   const std::array<double, 3>& GetTargetPosition() const { return fTargetPos; }
-  // TODO: define enum of dimensions....
+  // TODO: define enum of dimensions.... (S.Zh.)
   /// Gets a L1FieldRegion object at primary vertex
   const L1FieldRegion& GetTargetFieldRegion() const { return fTargetFieldRegion; }
   /// Gets a L1FieldValue object at primary vertex
@@ -142,19 +142,19 @@ public:
 
   /// Calculates L1FieldValue and L1FieldReference values for a selected step in z coordinate from the target position
   /// \param zStep step between nodal points
-  // TODO: Consider posibility for linear approximation
+  // TODO: Consider posibility for linear approximation (S.Zh.)
   void InitTargetField(double zStep);
 
 
 private:
   /// Checker for L1BaseStationInfo set
   /// \return true if all L1BaseStationInfo objects were initialized properly. Similar effect can be achieved by
-  /// calling the fInitFlags[L1InitManager::kEstationsInfo] flag
+  /// calling the fInitFlags[L1InitManager::keStationsInfo] flag
   bool CheckStationsInfo();
 
   /* Basic fields */
 
-  std::bitset<L1InitManager::kEND> fInitFlags {};  ///< Initialization flags
+  std::bitset<L1InitManager::keEnd> fInitFlags {};  ///< Initialization flags
   std::set<L1DetectorID> fActiveDetectorIDs {};    ///< Set of tracking detectors, active during this analysis session
 
   /* Target fields */
@@ -165,7 +165,7 @@ private:
 
   std::set<L1BaseStationInfo> fStationsInfo {};  ///< Set of L1BaseStationInfo objects
   /// Map of station numbers used for initialization crosscheck
-  std::unordered_map<L1DetectorID, int, EnumClassHash> fStationsNumberCrosscheck {};
+  std::unordered_map<L1DetectorID, int, L1Utils::EnumClassHash> fStationsNumberCrosscheck {};
   /// A function which returns magnetic field vector B in a radius-vector xyz
   std::function<void(const double (&xyz)[3], double (&B)[3])> fFieldFunction {
     [](const double (&)[3], double (&)[3]) {}};

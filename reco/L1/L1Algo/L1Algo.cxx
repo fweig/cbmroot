@@ -17,9 +17,9 @@ L1Algo::L1Algo(unsigned int nThreads)
 
 void L1Algo::SetNThreads(unsigned int n)
 {
-  if (n > static_cast<unsigned int>(L1Parameters::kMaxNthreads)) {  // TODO: Why do we need static_cast here?
+  if (n > static_cast<unsigned int>(L1Parameters::kMaxNthreads)) {
     LOG(fatal) << "L1Algo: n threads " << n << " is greater than the maximum "
-               << static_cast<unsigned int>(L1Parameters::kMaxNthreads);  // The same
+               << static_cast<unsigned int>(L1Parameters::kMaxNthreads);
   }
   fNThreads = n;
 
@@ -61,7 +61,7 @@ void L1Algo::SetNThreads(unsigned int n)
 
 void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const TrackingMode mode, const bool MissingHits)
 {
-  fL1Parameters.Print();  // TODO: Wrap this line into debug
+  fL1Parameters.Print();  // TODO: Wrap this line into debug (S.Zh.)
 
   for (int iProc = 0; iProc < 4; iProc++) {
     for (int i = 0; i < 8; i++) {
@@ -231,7 +231,7 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
 
   // Get number of stations
   int NStationsNew = fInitManager.GetStationsNumber();
-  // TODO: we must to get rid of station specification in the L1Algo
+  // TODO: we must to get rid of station specification in the L1Algo (S.Zh.)
   int NMvdStationsNew   = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(0));
   int NStsStationsNew   = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(1));
   int NfieldStationsNew = NMvdStationsNew + NStsStationsNew;

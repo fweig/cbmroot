@@ -101,7 +101,7 @@ public:
   float GetDefaultParticleMass2() const { return fDefaultMass * fDefaultMass; }
 
   float fDefaultMass = 0.10565800;  // muon mass
-  // TODO: make fDefaultMass a private member
+  // TODO: make fDefaultMass a private member (S.Zh.)
 
   /// pack station, thread and triplet indices to an unique triplet ID
   static unsigned int PackTripletId(unsigned int Station, unsigned int Thread, unsigned int Triplet)
@@ -209,7 +209,7 @@ public:
   int fNfieldStations {0};  ///< number of stations in the field region
 
 
-  // TODO: Replace _fvecalignment with C++11 alignas(16) attibute, see vStationsNew
+  // TODO: Replace _fvecalignment with C++11 alignas(16) attibute, see vStationsNew (S.Zh.)
   L1Station vStations[L1Parameters::kMaxNstations] _fvecalignment;  // station info
   alignas(16) std::array<L1Station, L1Parameters::kMaxNstations> fStationsNew;
   L1Vector<L1Material> fRadThick {"fRadThick"};        // material for each station
@@ -363,9 +363,9 @@ public:
   void SetL1Parameters(const L1Parameters& other) { fL1Parameters = other; }
   /// Gets a constant reference to the L1Algo parameters object
   const L1Parameters& GetL1Parameters() const { return fL1Parameters; }
-  // TODO: We should think about, where non-constexpr L1Alog parameters can be modified. At the moment we can create a
+  // TODO: We should think about, where non-constexpr L1Algo parameters can be modified. At the moment we can create a
   //       L1Parameters object somewhere outside the L1Algo, fill its fields there and then pass it directly to
-  //       the L1Algo instance.
+  //       the L1Algo instance. (S.Zh.)
   L1InitManager* GetL1InitManager() { return &fInitManager; }
 
 private:
