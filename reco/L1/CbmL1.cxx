@@ -818,8 +818,8 @@ InitStatus CbmL1::Init()
 
       CbmKFTube& t     = CbmKF::Instance()->vMvdMaterial[iSt];
       auto stationInfo = L1BaseStationInfo(L1DetectorID::kMvd, iSt);
-      stationInfo.SetStationType(1);  
-        // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
+      stationInfo.SetStationType(1);
+      // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
       stationInfo.SetTimeInfo(0);
       stationInfo.SetZ(t.z);
       stationInfo.SetMaterial(t.dz, t.RadLength);
@@ -872,7 +872,7 @@ InitStatus CbmL1::Init()
 
       auto stationInfo = L1BaseStationInfo(L1DetectorID::kMuch, iSt);
       stationInfo.SetStationType(2);
-        // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
+      // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
       stationInfo.SetTimeInfo(1);
       stationInfo.SetZ(layer->GetZ());
       stationInfo.SetMaterial(layer->GetDz(), 0);  // TODO: Why rad len is 0????? (S.Zh.)

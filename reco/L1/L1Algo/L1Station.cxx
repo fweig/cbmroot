@@ -2,9 +2,11 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
-#include <iomanip>
-#include <FairLogger.h>
 #include "L1Station.h"
+
+#include <FairLogger.h>
+
+#include <iomanip>
 
 // TODO: Improve log style (S.Zh.)
 void L1Station::Print() const

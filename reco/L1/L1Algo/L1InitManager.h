@@ -155,7 +155,7 @@ private:
   /* Basic fields */
 
   std::bitset<L1InitManager::keEnd> fInitFlags {};  ///< Initialization flags
-  std::set<L1DetectorID> fActiveDetectorIDs {};    ///< Set of tracking detectors, active during this analysis session
+  std::set<L1DetectorID> fActiveDetectorIDs {};     ///< Set of tracking detectors, active during this analysis session
 
   /* Target fields */
 

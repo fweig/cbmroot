@@ -115,7 +115,7 @@ public:
   /// Gets the radiation length of the station material
   fvec GetMaterialRadLength() const { return fL1Station.materialInfo.RL; }
   /// Gets the relative material thickness in units of the radiational length
-  fvec GetMaterialRadThick() const { return fL1Station.materialInfo.RadThick; } 
+  fvec GetMaterialRadThick() const { return fL1Station.materialInfo.RadThick; }
   /// Gets log of the relative material thickness in units of the radiational length
   fvec GetMaterialLogRadThick() const { return fL1Station.materialInfo.logRadThick; }
 

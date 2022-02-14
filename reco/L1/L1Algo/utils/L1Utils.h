@@ -36,7 +36,7 @@ struct L1Utils {
   {
     aMap[key] = value;
   }
-  
+
   /// Template function, which sets a value to ALL elements of the map
   /// \param value  New value of the element under the selected key
   /// \param aMap   A reference to the map, which element is to be modified
@@ -47,18 +47,19 @@ struct L1Utils {
       it->second = value;
     }
   }
-  
+
   /// Template function, which resets the elements of one map with the values defined in another map
   /// \param inMap  A constant reference to the map containing new parameters
   /// \param aMap   A reference to the map, which is going to be modified
   template<class Key, class T, class Hash = std::hash<Key>>
-  static void SetMappedValuesToMap(const std::unordered_map<Key, T, Hash>& inMap, std::unordered_map<Key, T, Hash>& aMap)
+  static void SetMappedValuesToMap(const std::unordered_map<Key, T, Hash>& inMap,
+                                   std::unordered_map<Key, T, Hash>& aMap)
   {
     for (auto it = aMap.begin(); it != aMap.end(); ++it) {
       if (inMap.find(it->first) != inMap.end()) { it->second = inMap.at(it->first); }
     }
   }
-  
+
   /// Template function to represent mapped contents into std::string
   /// NOTE: operator<< must be defined for value of the map
   template<class Key, class T, class Hash = std::hash<Key>>
