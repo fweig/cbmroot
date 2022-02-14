@@ -114,12 +114,13 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
       richconfig->SetMonitor(GetRichMonitor(outfilename, true));
     }
 
+    richconfig->DoTotOffsetCorrection();  // correct ToT offset
     richconfig->SetDebugState();
     richconfig->SetDoWriteOutput();
     std::string parfilesbasepathRich = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
     richconfig->SetParFilesBasePath(parfilesbasepathRich);
     richconfig->SetSystemTimeOffset(256000 - 1200);  // [ns] 1 MS and additional correction
-    if (runid > 1904)  richconfig->SetSystemTimeOffset(-1200);
+    if (runid > 1904) richconfig->SetSystemTimeOffset(-1200);
     if (runid == 1588) richconfig->MaskDiRICH(0x7150);
   }
   // -------------

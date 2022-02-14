@@ -228,6 +228,9 @@ public:
   /** @brief Set Addresses of DiRICH boards to be masked @param maskedDiRICHes vector of Addresses */
   void SetMaskedDiRICHes(std::vector<Int_t>* maskedDiRICHes) { fMaskedDiRICHes = maskedDiRICHes; }
 
+  /** @brief (De-) Activate Tot offset correction of digis @param activate bool to activate the Tot offset correction */
+  void DoTotOffsetCorrection(Bool_t activate = true) { fbDoToTCorr = activate; }
+
 protected:
   double calculateTime(uint32_t epoch, uint32_t coarse, uint32_t fine);
 

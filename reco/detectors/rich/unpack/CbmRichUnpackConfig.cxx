@@ -27,6 +27,7 @@ void CbmRichUnpackConfig::InitAlgo()
 {
   if (fDoLog) LOG(info) << fName << "::Init - SetMaskedDiRICHes";
   fAlgo->SetMaskedDiRICHes(&fMaskedDiRICHes);
+  fAlgo->DoTotOffsetCorrection(fbDoToTCorr);
 
   if (fMonitor) { fAlgo->SetMonitor(fMonitor); }
 
