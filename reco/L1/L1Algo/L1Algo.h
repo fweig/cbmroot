@@ -612,7 +612,7 @@ private:
   {
     fNFindIterations = TRACKS_FROM_TRIPLETS_ITERATION + 1
   };  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
-#else
+#else  // not TRACKS_FROM_TRIPLETS
 
   enum
   {
@@ -620,8 +620,8 @@ private:
   };  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
 
 
-#endif
-#else
+#endif  // TRACKS_FROM_TRIPLETS
+#else  // not FIND_GAPED_TRACKS
   enum
   {
     kFastPrimIter = 0,  // primary fast tracks

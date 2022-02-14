@@ -87,18 +87,31 @@ void L1InitManager::Init() const
 //
 void L1InitManager::PrintStations(int verbosityLevel) const
 {
-  if (verbosityLevel < 1) {
-    for (auto& station : fStationsInfo) {
-      LOG(info) << "----------- station: ";
-      LOG(info) << "\ttype = " << station.GetStationType();  // TMP
-      LOG(info) << "\tz = " << station.GetZdouble();
-    }
+  for (const auto& station : fStationsInfo) {
+    station.Print(verbosityLevel);
   }
-  else {
-    for (auto& station : fStationsInfo) {
-      station.Print();
-    }
+}
+
+//-----------------------------------------------------------------------------------------------------------------------
+//
+void L1InitManager::PrintCAIterations(int verbosityLevel) const
+{
+  for (const auto& iteration : fCAIterationsContainer) {
+    iteration.Print(verbosityLevel);
   }
+}
+
+//-----------------------------------------------------------------------------------------------------------------------
+//
+void L1InitManager::PushBackCAIteration(const L1CAIteration& iteration)
+{
+  // TODO: probably some checks must be inserted here
+  if (!fInitFlags[L1InitManager::kECAIterationsNumberCrosscheck]) {
+    LOG(error) << "L1InitManager::PushBackCAIteration: attempt to push back a CA track finder iteration before the "
+               << "number of iterations was defined";
+    assert((fInitFlags[L1InitManager::kECAIterationsNumberCrosscheck]));
+  }
+  fCAIterationsContainer.push_back(iteration);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
@@ -129,6 +142,19 @@ void L1InitManager::TransferL1StationArray(std::array<L1Station, L1Parameters::k
     ++destinationArrayIterator;
   }
   LOG(info) << "L1InitManager: L1Station vector was successfully transfered to L1Algo core :)";
+}
+
+//-----------------------------------------------------------------------------------------------------------------------
+//
+void L1InitManager::TransferCAIterationsContainer(L1Vector<L1CAIteration>& destinationVector)
+{
+  bool ifCAIterationsInitialized = CheckCAIterations();
+  if (!ifCAIterationsInitialized) {
+    LOG(error) << "L1InitManager::TransferCAIterationsContainer: the CA track finder iterations container was not "
+               << "initialized properly";
+    assert((ifCAIterationsInitialized));
+  }
+  std::copy(fCAIterationsContainer.begin(), fCAIterationsContainer.end(), destinationVector.begin());
 }
 
 //
@@ -167,7 +193,7 @@ void L1InitManager::SetFieldFunction(const std::function<void(const double (&xyz
     fInitFlags[L1InitManager::keFieldFunction] = true;
   }
   else {
-    LOG(warn) << "L1InitManager::SetFieldFunction: attemt to reinitialize the field function. Ignored";
+    LOG(warn) << "L1InitManager::SetFieldFunction: attempt to reinitialize the field function. Ignored";
   }
 }
 
@@ -197,6 +223,14 @@ void L1InitManager::SetStationsNumberCrosscheck(L1DetectorID detectorID, int nSt
     fInitFlags[L1InitManager::keStationsNumberCrosscheck] = ifInitialized;
   }
   LOG(debug) << "InitResult: " << fInitFlags[L1InitManager::keStationsNumberCrosscheck];
+}
+
+//-----------------------------------------------------------------------------------------------------------------------
+//
+void L1InitManager::SetCAIterationsNumberCrosscheck(int nIterations)
+{
+  fCAIterationsNumberCrosscheck                             = nIterations;
+  fInitFlags[L1InitManager::kECAIterationsNumberCrosscheck] = true;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
@@ -305,4 +339,25 @@ bool L1InitManager::CheckStationsInfo()
   // NOTE: we return a flag here to reduce a number of calls outside the funcition. In other hands we keep this flag
   // to be consistent with other class fields initialization rules
   return fInitFlags[L1InitManager::keStationsInfo];
+}
+
+//-----------------------------------------------------------------------------------------------------------------------
+//
+bool L1InitManager::CheckCAIterations()
+{
+  // Check number of iterations
+  if (!fInitFlags[L1InitManager::kECAIterations]) {
+    int actualIterationsNumber   = fCAIterationsContainer.size();
+    int expectedIterationsNumber = fCAIterationsNumberCrosscheck;
+    if (actualIterationsNumber != expectedIterationsNumber) {
+      LOG(warn) << "L1InitManager::CheckCAIterations: incorrect number of iterations registered: "
+                << actualIterationsNumber << " of " << expectedIterationsNumber << " expected";
+      fInitFlags[L1InitManager::kECAIterations] = false;
+    }
+    else {
+      fInitFlags[L1InitManager::kECAIterations] = true;
+    }
+  }
+
+  return fInitFlags[L1InitManager::kECAIterations];
 }

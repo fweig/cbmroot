@@ -12,6 +12,7 @@
 #define L1InitManager_h 1
 
 #include "L1BaseStationInfo.h"
+#include "L1CAIteration.h"
 #include "L1Field.h"
 #include "L1Parameters.h"
 #include "L1Utils.h"
@@ -25,7 +26,7 @@
 /// determined in the concrete setup class (i.e. CbmL1/BmnL1)
 enum class L1DetectorID;
 
-/// Initialization manager for L1Aglo
+/// Initialization manager for L1Algo
 ///
 /// ==== Expected initialization steps ==== (TODO: keep this instruction up-to-date)
 ///
@@ -60,14 +61,16 @@ class L1InitManager {
 private:
   enum
   {
-    keActiveDetectorIDs,         ///< If the detector sequence is set
-    keStationsNumberCrosscheck,  ///< If the crosscheck station numbers were setup
-    keFieldFunction,             ///< If magnetic field getter funciton is set
-    keTargetPos,                 ///< If target position was defined
-    kePrimaryVertexField,        ///< If magnetic field value and region defined at primary vertex
-    keIfStationNumbersChecked,   ///< If the station number was already checked
-    keStationsInfo,              ///< If all the planned stations were added to the manager
-    keL1StationTransfered,       ///< If the L1Station vector was already transfered to destination array
+    keActiveDetectorIDs,             ///< If the detector sequence is set
+    keStationsNumberCrosscheck,      ///< If the crosscheck station numbers were setup
+    keFieldFunction,                 ///< If magnetic field getter funciton is set
+    keTargetPos,                     ///< If target position was defined
+    kePrimaryVertexField,            ///< If magnetic field value and region defined at primary vertex
+    keIfStationNumbersChecked,       ///< If the station number was already checked
+    keStationsInfo,                  ///< If all the planned stations were added to the manager
+    keL1StationTransfered,           ///< If the L1Station vector was already transfered to destination array
+    keCAIterationsNumberCrosscheck,  ///< If the CA trackfinder iterations were initialized
+    keCAIterations,                  ///< If the CA trackfinder iterations were initialized
     keEnd
   };
 
@@ -98,16 +101,28 @@ public:
   /// Adds another station of a given type using reference to a L1BaseStationInfo object
   void AddStation(const L1BaseStationInfo& inStation);
   /// Adds another station of a given type using pointer to a L1BaseStationInfo object
-  void AddStation(const L1BaseStationInfo* inStationPtr) { AddStation(*inStationPtr); }
+  void AddStation(const L1BaseStationInfo* inStationRawPtr) { AddStation(*inStationRawPtr); }
   /// Adds another station of a given type using std::unique_ptr-wraped pointer to L1BaseStationInfo
-  void AddStation(const std::unique_ptr<L1BaseStationInfo>& inStationUniquePtr) { AddStation(*inStationUniquePtr); }
+  void AddStation(const std::unique_ptr<L1BaseStationInfo>& inStationUPtr) { AddStation(*inStationUPtr); }
+
   /// Initializes L1Algo: transfers all caputred data to the L1 tracking core
   void Init() const;
   /// Prints a list of stations
   void PrintStations(int verbosityLevel = 0) const;
+  /// Prints a list of CA track finder iterations
+  void PrintCAIterations(int verbosityLevel = 0) const;
 
-  /// Transfer an array of L1Stations formed inside a set of L1BaseStationInfo to a destination std::array
+  /// Pushes an CA track finder iteration into a sequence of iteration using reference
+  void PushBackCAIteration(const L1CAIteration& iteration);
+  /// Pushes an CA track finder iteration into a sequence of iteration using raw pointer
+  void PushBackCAIteration(const L1CAIteration* iterationRawPtr) { PushBackCAIteration(*iterationRawPtr); }
+  /// Pushes an CA track finder iteration into a sequence of iteration using std::unique_ptr
+  void PushBackCAIteration(const std::unique_ptr<L1CAIteration>& iterationUPtr) { PushBackCAIteration(*iterationUPtr); }
+
+  /// Transfers an array of L1Stations formed inside a set of L1BaseStationInfo to a destination std::array
   void TransferL1StationArray(std::array<L1Station, L1Parameters::kMaxNstations>& destinationArray);
+  /// Transfers a vector of the CA track finder iterations
+  void TransferCAIterationsContainer(L1Vector<L1CAIteration>& destinationVector);
 
   //
   // GETTERS
@@ -137,6 +152,8 @@ public:
   void SetFieldFunction(const std::function<void(const double (&xyz)[3], double (&B)[3])>& fieldFcn);
   /// Sets a number of stations for a particular tracking detector ID to provide initialization cross-check
   void SetStationsNumberCrosscheck(L1DetectorID detectorID, int nStations);
+  /// Sets a number of CA track finder iterations to provide initialization cross-check
+  void SetCAIterationsNumberCrosscheck(int nIterations);
   /// Sets target poisition
   void SetTargetPosition(double x, double y, double z);
 
@@ -147,10 +164,13 @@ public:
 
 
 private:
-  /// Checker for L1BaseStationInfo set
-  /// \return true if all L1BaseStationInfo objects were initialized properly. Similar effect can be achieved by
+  /// Checker for L1BaseStationInfo set initialization
+  /// \return true If all L1BaseStationInfo objects were initialized properly. Similar effect can be achieved by
   /// calling the fInitFlags[L1InitManager::keStationsInfo] flag
   bool CheckStationsInfo();
+  /// Checker for L1CAIteration container initialization
+  /// \return true If all L1CAIteration objects were initialized properly
+  bool CheckCAIterations();
 
   /* Basic fields */
 
@@ -173,8 +193,14 @@ private:
   // NOTE: fTotalNumberOfStations is excess field for logic, but it's imortant to track L1Algo initialization
 
   /* Vertex related fields */
+
   L1FieldValue fTargetFieldValue {};    ///> L1FieldValue object at target
   L1FieldRegion fTargetFieldRegion {};  ///> L1FieldRegion object at target
+
+  /* CA track finder iterations related */
+
+  L1Vector<L1CAIteration> fCAIterationsContainer {};  ///> Container for CA track finder iterations
+  int fCAIterationsNumberCrosscheck {-1};  ///> Number of iterations to be passed (must be used for cross-checks)
 };
 
 #endif

@@ -144,6 +144,7 @@ CbmL1MCTrack.cxx
 L1Algo/L1CAIteration.cxx
 L1Algo/L1BaseStationInfo.cxx
 L1Algo/L1InitManager.cxx
+L1Algo/L1Parameters.cxx
 L1Algo/utils/L1AlgoDraw.cxx
 L1Algo/utils/L1AlgoEfficiencyPerformance.cxx
 L1Algo/utils/L1AlgoPulls.cxx

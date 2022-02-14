@@ -98,6 +98,21 @@ enum class L1DetectorID
   kTrd
 };
 
+/// Enumeration for the CA Track finder iterations
+/// NOTE: L1CAItrationType
+enum class L1CAIterationType
+{
+  kFastPrim,      ///< primary fast tracks
+  kAllPrim,       ///< primary all tracks
+  kAllPrimJump,   ///< primary all tracks with jumped triplets
+  kAllSec,        ///< secondary all tracks
+  kAllPrimE,      ///< primary all electron tracks
+  kAllSecE,       ///< secondary all electron tracks
+  kFastPrimJump,  ///< primary fast tracks with jumped triplets
+  kAllSecJump,    ///< secondary all tracks with jumped triplets
+  kEND            ///< dummy item, represents number of iterations
+};
+
 
 // TODO: insert documentation! (S.Zh.)
 //

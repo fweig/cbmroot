@@ -35,7 +35,7 @@
 #ifdef _OPENMP
 #include "omp.h"
 #include "pthread.h"
-#endif
+#endif  // _OPENMP
 
 #include "TRandom.h"
 
@@ -43,20 +43,20 @@
 #include "L1Timer.h"
 #ifdef DRAW
 #include "utils/L1AlgoDraw.h"
-#endif
+#endif  // DRAW
 #ifdef PULLS
 #include "utils/L1AlgoPulls.h"
-#endif
+#endif  // PULLS
 #ifdef TRIP_PERFORMANCE
 #include "utils/L1AlgoEfficiencyPerformance.h"
-#endif
+#endif  // TRIP_PERFORMANCE
 #ifdef DOUB_PERFORMANCE
 #include "utils/L1AlgoEfficiencyPerformance.h"
-#endif
+#endif  // DOUB_PERFORMANCE
 
 #ifdef TBB
 #include "L1AlgoTBB.h"
-#endif
+#endif  // TBB
 
 #include <algorithm>
 #include <fstream>
@@ -92,7 +92,7 @@ inline void L1Algo::f10(  // input
 
 #ifdef USE_EVENT_NUMBER
     Event_l[i1_V][i1_4] = hitl.track;
-#endif
+#endif  // USE_EVENT_NUMBER
 
     HitTime_l[i1_V][i1_4] = hitl.time;
     HitTimeEr[i1_V][i1_4] = hitl.timeEr;
@@ -207,7 +207,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
       fld0.Set(l_B, zstal, targB, fTargZ);
     // estimate field for the next extrapolations
     stam.fieldSlice.GetFieldValue(fTargX + tx * (zstam - fTargZ), fTargY + ty * (zstam - fTargZ), m_B);
-#define USE_3HITS
+#define USE_3HITS  // TODO: move this directive to more suitable place
 #ifndef USE_3HITS
     if (istac != istal) fld1.Set(m_B, zstam, l_B, zstal, centB, zstac);
     else
@@ -301,7 +301,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     }
 
 
-#else  // TODO: doesn't work. Why?
+#else  // not BEGIN_FROM_TARGET // TODO: doesn't work. Why?
 
     T.x = fTargX;
     T.y = fTargY;
@@ -324,9 +324,9 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     for (int ista = 0; ista <= istal - 1; ista++) {
 #ifdef USE_RL_TABLE
       fit.L1AddMaterial(T, fRadThick[ista].GetRadThick(T.x, T.y), MaxInvMom, 1);
-#else
+#else  // not USE_RL_TABLE
       fit.L1AddMaterial(T, vStations[ista].materialInfo, MaxInvMom, 1);
-#endif
+#endif  // USE_RL_TABLE
       if (ista == NMvdStations - 1) fit.L1AddPipeMaterial(T, MaxInvMom, 1);
     }
 
@@ -355,16 +355,16 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     else
       L1Filter(T, info, v);
 
-#endif
+#endif  // BEGIN_FROM_TARGET
 
 
 #ifdef USE_RL_TABLE
     if (fTrackingMode != kMcbm) fit.L1AddMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), MaxInvMom, 1);
     if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
       fit.L1AddThickMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), MaxInvMom, 1, stal.materialInfo.thick, 1);
-#else
+#else  // not USE_RL_TABLE
     fit.L1AddMaterial(T, stal.materialInfo, MaxInvMom, 1);
-#endif
+#endif  // USE_RL_TABLE
     if ((istam >= NMvdStations) && (istal <= NMvdStations - 1)) { fit.L1AddPipeMaterial(T, MaxInvMom, 1); }
 
     fvec dz = zstam - zl;
@@ -444,7 +444,7 @@ inline void L1Algo::f20(
 
 #ifdef USE_EVENT_NUMBER
       if ((Event[i1_V][i1_4] != hitm.n)) continue;
-#endif
+#endif  // USE_EVENT_NUMBER
       // - check whether hit belong to the window ( track position +\- errors ) -
       const fscal zm = hitm.Z();
       //       L1TrackPar T1_new = T1;
@@ -506,13 +506,13 @@ inline void L1Algo::f20(
       L1FilterChi2XYC00C10C11(info, x, y, C00, C10, C11, chi2, hitm.U());
 #ifdef DO_NOT_SELECT_TRIPLETS
       if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
-#endif
+#endif  // DO_NOT_SELECT_TRIPLETS
         if (chi2[i1_4] > DOUBLET_CHI2_CUT) continue;
           //       T1.t[i1_4] = hitm.time;
 
 #ifdef USE_EVENT_NUMBER
       T1.n[i1_4] = hitm.n;
-#endif
+#endif  // USE_EVENT_NUMBER
 
       info = stam.backInfo;
 
@@ -525,7 +525,7 @@ inline void L1Algo::f20(
 
 #ifdef DO_NOT_SELECT_TRIPLETS
       if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
-#endif
+#endif  // DO_NOT_SELECT_TRIPLETS
         if (chi2[i1_4] > DOUBLET_CHI2_CUT) continue;
 
       i1_2.push_back(i1);
@@ -540,7 +540,7 @@ inline void L1Algo::f20(
 #ifndef FAST_CODE
 //TODO: optimise triplet portion limit and put a warning
 // assert(Ndoublets < fL1Parameters.GetMaxDoubletsPerSinglet());
-#endif
+#endif  // FAST_CODE
 
       if (Ndoublets >= fL1Parameters.GetMaxDoubletsPerSinglet()) {
         n2 = n2 - Ndoublets;
@@ -682,9 +682,9 @@ inline void L1Algo::f30(  // input
 
       if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
         fit.L1AddThickMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), MaxInvMom, 1, stam.materialInfo.thick, 1);
-#else
+#else  // not USE_RL_TABLE
       fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, 1);
-#endif
+#endif  // USE_RL_TABLE
       if ((istar >= NMvdStations) && (istam <= NMvdStations - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
 
       fvec dz2 = star.z - T2.z;
@@ -717,7 +717,7 @@ inline void L1Algo::f30(  // input
 
 #ifdef DO_NOT_SELECT_TRIPLETS
         if (isec == TRACKS_FROM_TRIPLETS_ITERATION) Pick_r22 = Pick_r2 + 1;
-#endif
+#endif  // DO_NOT_SELECT_TRIPLETS
         const fscal iz = 1.f / (T2.z[i2_4] - fCbmTargetZ[0]);
         L1HitAreaTime area(vGridTime[&star - vStations], T2.x[i2_4] * iz, T2.y[i2_4] * iz,
                            (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + MaxDZ * fabs(T2.tx))[i2_4] * iz,
@@ -743,7 +743,7 @@ inline void L1Algo::f30(  // input
 
 #ifdef USE_EVENT_NUMBER
           if ((T2.n[i2_4] != hitr.n)) continue;
-#endif
+#endif  // USE_EVENT_NUMBER
           const fscal zr = hitr.Z();
           //  const fscal yr = hitr.Y();
 
@@ -823,7 +823,7 @@ inline void L1Algo::f30(  // input
 
 #ifdef DO_NOT_SELECT_TRIPLETS
           if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
-#endif
+#endif  // DO_NOT_SELECT_TRIPLETS
             if (chi2[i2_4] > TRIPLET_CHI2_CUT || C00[i2_4] < 0 || C11[i2_4] < 0 || T_cur.C55[i2_4] < 0)
               continue;  // chi2_triplet < CHI2_CUT
 
@@ -868,7 +868,7 @@ inline void L1Algo::f30(  // input
 #ifndef FAST_CODE
 //TODO: optimise triplet portion limit and put a warning
 // assert(Ntriplets < fL1Parameters.GetMaxTripletPerDoublets());
-#endif
+#endif  // FAST_CODE
           if (Ntriplets >= fL1Parameters.GetMaxTripletPerDoublets()) {
 
             n3 = n3 - Ntriplets;
@@ -1026,9 +1026,9 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
       L1Extrapolate(T, z[ih], T.qp, fld);
 #ifdef USE_RL_TABLE
       fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
-#else
+#else  // not USE_RL_TABLE
       fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
-#endif
+#endif  // USE_RL_TABLE
       if (ista[ih] == NMvdStations - 1) fit.L1AddPipeMaterial(T, T.qp, 1);
 
       L1Filter(T, sta[ih].frontInfo, u[ih]);
@@ -1061,9 +1061,9 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
         L1Extrapolate(T, z[ih], T.qp, fld);
 #ifdef USE_RL_TABLE
         fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
-#else
+#else  // not USE_RL_TABLE
         fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
-#endif
+#endif  // USE_RL_TABLE
         if (ista[ih] == NMvdStations) fit.L1AddPipeMaterial(T, T.qp, 1);
 
         L1Filter(T, sta[ih].frontInfo, u[ih]);
@@ -1092,9 +1092,9 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
         L1Extrapolate(T, z[ih], T.qp, fld);
 #ifdef USE_RL_TABLE
         fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
-#else
+#else  // not USE_RL_TABLE
         fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
-#endif
+#endif  // USE_RL_TABLE
         if (ista[ih] == NMvdStations + 1) fit.L1AddPipeMaterial(T, T.qp, 1);
 
         L1Filter(T, sta[ih].frontInfo, u[ih]);
@@ -1119,9 +1119,9 @@ inline void L1Algo::f4(  // input
 
 #ifdef _OPENMP
   unsigned int Thread = omp_get_thread_num();
-#else
+#else  // not _OPENMP
   unsigned int Thread = 0;
-#endif
+#endif  // _OPENMP
 
   THitI ihitl_priv = 0;
 
@@ -1152,7 +1152,7 @@ inline void L1Algo::f4(  // input
 
 #ifdef DO_NOT_SELECT_TRIPLETS
     if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
-#endif
+#endif  // DO_NOT_SELECT_TRIPLETS
       if (!finite(chi2) || chi2 < 0 || chi2 > TRIPLET_CHI2_CUT) continue;
 
     fscal qp = T3.qp[i3_4];
@@ -1764,6 +1764,7 @@ void L1Algo::CATrackFinder()
   // ---- Loop over Track Finder iterations ----------------------------------------------------------------//
   for (isec = 0; isec < fNFindIterations; ++isec)  // all finder
   {
+    std::cout << "CA Track Finder Iteration!!" << isec << '\n';
     if (fTrackingMode == kMcbm) {
       if (isec > 3) { continue; }
     }

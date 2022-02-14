@@ -851,7 +851,7 @@ InitStatus CbmL1::Init()
 
     // Step 6: setup station info
 
-    // Setup MVD stations info
+    /*** Setup MVD stations info ***/
     for (int iSt = 0; iSt < NMvdStations; ++iSt) {  // NOTE: example using in-stack defined objects
       CbmMvdDetector* mvdDetector     = CbmMvdDetector::Instance();
       CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();
@@ -970,14 +970,146 @@ InitStatus CbmL1::Init()
       fscal tofBackSigma  = 1.;
       stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofFrontSigma, tofBackPhi, tofBackSigma);
     }
-
     initMan->PrintStations(/*vebosity = */ 1);
+
+    // Step 7: initialize iterations and form a vector of them
+    {
+      // TODO: Possible, it will be more convenient to create a vector of these iterations, access its elements
+      //       by the enumeration item
+      // TODO: Need to provide a selection: default iterations input (these hardcoded ones), input from file or input
+      //       from runing macro
+      auto trackingIterFastPrim = L1CAIteration("FastPrimIter");
+      trackingIterFastPrim.SetTrackChi2Cut(10.f);
+      trackingIterFastPrim.SetTripletChi2Cut(23.4450f);  // = 7.815 * 3;  // prob = 0.05
+      trackingIterFastPrim.SetDoubletChi2Cut(7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
+      trackingIterFastPrim.SetPickGather(3.0f);
+      trackingIterFastPrim.SetPickNeighbour(5.0f);
+      trackingIterFastPrim.SetMaxInvMom(1.0 / 0.5);
+      trackingIterFastPrim.SetMaxSlopePV(1.1f);
+      trackingIterFastPrim.SetMaxSlope(2.748f);
+
+      auto trackingIterAllPrim = L1CAIteration("AllPrimIter");
+      trackingIterAllPrim.SetTrackChi2Cut(10.f);
+      trackingIterAllPrim.SetTripletChi2Cut(23.4450f);
+      trackingIterAllPrim.SetDoubletChi2Cut(7.56327f);
+      trackingIterAllPrim.SetPickGather(4.0f);
+      trackingIterAllPrim.SetPickNeighbour(5.0f);
+      trackingIterAllPrim.SetMaxInvMom(1.0 / 0.5);
+      trackingIterAllPrim.SetMaxSlopePV(1.1f);
+      trackingIterAllPrim.SetMaxSlope(2.748f);
+
+      auto trackingIterFastPrim2 = L1CAIteration("FastPrim2Iter");
+      trackingIterFastPrim2.SetTrackChi2Cut(10.f);
+      trackingIterFastPrim2.SetTripletChi2Cut(21.1075f);
+      trackingIterFastPrim2.SetDoubletChi2Cut(7.56327f);
+      trackingIterFastPrim2.SetPickGather(3.0f);
+      trackingIterFastPrim2.SetPickNeighbour(5.0f);
+      trackingIterFastPrim2.SetMaxInvMom(1.0 / 0.5);
+      trackingIterFastPrim2.SetMaxSlopePV(1.1f);
+      trackingIterFastPrim2.SetMaxSlope(2.748f);
+
+      auto trackingIterAllSec = L1CAIteration("AllSecIter");
+      trackingIterAllSec.SetTrackChi2Cut(10.f);
+      trackingIterAllSec.SetTripletChi2Cut(18.7560f);  // = 6.252 * 3;  // prob = 0.1
+      trackingIterAllSec.SetDoubletChi2Cut(7.56327f);
+      trackingIterAllSec.SetPickGather(4.0f);
+      trackingIterAllSec.SetPickNeighbour(5.0f);
+      trackingIterAllSec.SetMaxInvMom(1.0 / 0.5);
+      trackingIterAllSec.SetMaxSlopePV(1.5f);
+      trackingIterAllSec.SetMaxSlope(2.748f);
+
+      auto trackingIterFastPrimJump = L1CAIteration("FastPrimJumpIter");
+      trackingIterFastPrimJump.SetTrackChi2Cut(10.f);
+      trackingIterFastPrimJump.SetTripletChi2Cut(21.1075f);  // prob = 0.01
+      trackingIterFastPrimJump.SetDoubletChi2Cut(7.56327f);
+      trackingIterFastPrimJump.SetPickGather(3.0f);
+      trackingIterFastPrimJump.SetPickNeighbour(5.0f);
+      trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.5);
+      trackingIterFastPrimJump.SetMaxSlopePV(1.1f);
+      trackingIterFastPrimJump.SetMaxSlope(2.748f);
+
+      auto trackingIterAllPrimJump = L1CAIteration("AllPrimJumpIter");
+      trackingIterAllPrimJump.SetTrackChi2Cut(10.f);
+      trackingIterAllPrimJump.SetTripletChi2Cut(18.7560f);
+      trackingIterAllPrimJump.SetDoubletChi2Cut(7.56327f);
+      trackingIterAllPrimJump.SetPickGather(4.0f);
+      trackingIterAllPrimJump.SetPickNeighbour(5.0f);
+      trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.5);
+      trackingIterAllPrimJump.SetMaxSlopePV(1.1f);
+      trackingIterAllPrimJump.SetMaxSlope(2.748f);
+
+      auto trackingIterAllSecJump = L1CAIteration("AllSecJumpIter");
+      trackingIterAllSecJump.SetTrackChi2Cut(10.f);
+      trackingIterAllSecJump.SetTripletChi2Cut(21.1075f);
+      trackingIterAllSecJump.SetDoubletChi2Cut(7.56327f);
+      trackingIterAllSecJump.SetPickGather(4.0f);
+      trackingIterAllSecJump.SetPickNeighbour(5.0f);
+      trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.5);
+      trackingIterAllSecJump.SetMaxSlopePV(1.5f);
+      trackingIterAllSecJump.SetMaxSlope(2.748f);
+
+      auto trackingIterAllPrimE = L1CAIteration("AllPrimEIter");
+      trackingIterAllPrimE.SetTrackChi2Cut(10.f);
+      trackingIterAllPrimE.SetTripletChi2Cut(23.4450f);
+      trackingIterAllPrimE.SetDoubletChi2Cut(7.56327f);
+      trackingIterAllPrimE.SetPickGather(4.0f);
+      trackingIterAllPrimE.SetPickNeighbour(5.0f);
+      trackingIterAllPrimE.SetMaxInvMom(1.0 / 0.5);
+      trackingIterAllPrimE.SetMaxSlopePV(1.1f);
+      trackingIterAllPrimE.SetMaxSlope(2.748f);
+
+      auto trackingIterAllSecE = L1CAIteration("AllSecEIter");
+      trackingIterAllSecE.SetTrackChi2Cut(10.f);
+      trackingIterAllSecE.SetTripletChi2Cut(18.7560f);
+      trackingIterAllSecE.SetDoubletChi2Cut(7.56327f);
+      trackingIterAllSecE.SetPickGather(4.0f);
+      trackingIterAllSecE.SetPickNeighbour(5.0f);
+      trackingIterAllSecE.SetMaxInvMom(1.0 / 0.5);
+      trackingIterAllSecE.SetMaxSlopePV(1.5f);
+      trackingIterAllSecE.SetMaxSlope(2.748f);
+
+      // Select default track finder
+      if (fTrackingMode == L1Algo::TrackingMode::kMcbm) {
+        trackingIterAllPrim.SetMaxInvMom(1. / 0.1);
+        trackingIterAllPrimE.SetMaxInvMom(1. / 0.1);
+        trackingIterAllSecE.SetMaxInvMom(1. / 0.1);
+
+        trackingIterFastPrim.SetMaxInvMom(1.0 / 0.3);
+        trackingIterAllSec.SetMaxInvMom(1.0 / 0.3);
+        trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.3);
+        trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.3);
+        trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.3);
+
+        initMan->SetCAIterationsNumberCrosscheck(4);
+        // Initialize CA track finder iterations sequence
+        initMan->PushBackCAIteration(trackingIterFastPrim);
+        initMan->PushBackCAIteration(trackingIterAllPrim);
+        initMan->PushBackCAIteration(trackingIterAllPrimJump);
+        initMan->PushBackCAIteration(trackingIterAllSec);
+      }
+      else {
+        std::cout << "HERE";
+        initMan->SetCAIterationsNumberCrosscheck(9);
+        // Initialize CA track finder iterations sequence
+        initMan->PushBackCAIteration(trackingIterFastPrim);
+        initMan->PushBackCAIteration(trackingIterAllPrim);
+        initMan->PushBackCAIteration(trackingIterAllPrimJump);
+        initMan->PushBackCAIteration(trackingIterAllSec);
+        initMan->PushBackCAIteration(trackingIterAllPrimE);
+        initMan->PushBackCAIteration(trackingIterAllSecE);
+        initMan->PushBackCAIteration(trackingIterFastPrimJump);
+        initMan->PushBackCAIteration(trackingIterFastPrim2);
+        initMan->PushBackCAIteration(trackingIterAllSecJump);
+      }
+      initMan->PrintCAIterations();
+
+      // Set special cuts
+    }
   }  // L1Algo new init: end
   /********************************************************************************************************************
    ********************************************************************************************************************/
 
 #endif  // FEATURING_L1ALGO_INIT
-
 
   algo->Init(geo, fUseHitErrors, fTrackingMode, fMissingHits);
   geo.clear();
