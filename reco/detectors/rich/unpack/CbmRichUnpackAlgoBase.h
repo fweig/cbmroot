@@ -24,7 +24,6 @@
 #include "CbmMcbm2018RichPar.h"
 #include "CbmRecoUnpackAlgo.tmpl"
 #include "CbmRichDigi.h"
-
 #include "CbmRichUnpackMonitor.h"
 
 #include "Timeslice.hpp"  // timeslice
@@ -239,8 +238,10 @@ protected:
   {
     finishDerived();
     // Finish the monitor if we have one
-    std::cout<<"Finish Monitor"<<std::endl;
-    if (fMonitor) fMonitor->Finish();
+    if (fMonitor) {
+      std::cout << "Finish Monitor" << std::endl;
+      fMonitor->Finish();
+    }
   }
 
   // Monitoring

@@ -83,9 +83,9 @@ public:
 
   /** @brief Add a monitor to the unpacker. @param value CbmRichUnpackMonitor */
   void SetMonitor(std::shared_ptr<CbmRichUnpackMonitor> value) { fMonitor = value; }
-  
+
   /** @brief (De-) Activate Tot offset correction of digis @param activate bool to activate the Tot offset correction */
-  void DoTotOffsetCorrection(Bool_t activate = true) { fbDoToTCorr = activate; }  
+  void DoTotOffsetCorrection(Bool_t activate = true) { fbDoToTCorr = activate; }
 
 protected:
   /**
@@ -102,7 +102,7 @@ protected:
 
   /** @brief Selector of Unpacker Version. */
   CbmRichUnpackerVersion fUnpackerVersion = CbmRichUnpackerVersion::v02;
-  
+
   Bool_t fbDoToTCorr = true;  // kTRUE activates ToT correction from Parameterfile
 
 private:
