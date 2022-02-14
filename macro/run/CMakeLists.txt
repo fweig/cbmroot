@@ -40,11 +40,11 @@ math(EXPR nBeam "${nEvents} * 3")
 # =====   Define the different setups to be tested with   ====================
 if(NOT ${CBM_TEST_MODEL} MATCHES Experimental )
   List(APPEND cbm_setup
-	sis100_hadron_APR21 sis100_electron_APR21
-	sis100_muon_lmvm_APR21 sis100_muon_jpsi_APR21
+	sis100_hadron_APR21 sis100_hadron_DEC21 sis100_hadron
+        sis100_electron_APR21 sis100_electron_DEC21 sis100_electron
+	sis100_muon_lmvm_APR21
+        sis100_muon_jpsi_APR21
 	sis300_electron
-	sis100_hadron sis100_electron
-	sis100_hadron_DEC21 sis100_electron_DEC21
 	)
 else()
   List(APPEND cbm_setup sis100_electron_APR21 sis100_muon_jpsi_APR21)
@@ -67,9 +67,21 @@ foreach(setup IN LISTS cbm_setup)
 
   # --- Short name for setup
   if(setup MATCHES sis100_hadron)
-  	set(sname s100h)
+    if(setup MATCHES APR21)
+      set(sname s100h_apr21)
+    elseif(setup MATCHES DEC21)
+      set(sname s100h_dec21)
+    else()
+      set(sname s100h)
+    endif()
   elseif(setup MATCHES sis100_electron)
-  	set(sname s100e)
+    if(setup MATCHES APR21)
+      set(sname s100e_apr21)
+    elseif(setup MATCHES DEC21)
+      set(sname s100e_dec21)
+    else()
+      set(sname s100e)
+    endif()
   elseif(setup MATCHES sis100_muon_lmvm)
   	set(sname s100m2)
   elseif(setup MATCHES sis100_muon_jpsi)
@@ -82,8 +94,9 @@ foreach(setup IN LISTS cbm_setup)
 
   # --- Test run_transport_json_config
   # --- Transport run using run_transport_json_config.C
+  set(json_config_file ${CBMROOT_SOURCE_DIR}/macro/run/config_ci.json)
   set(testname run_transport_json_config)
-  add_test(${testname} ${MACRO_DIR}/run_transport_json_config.sh \"\" 2 ${randomSeed})
+  add_test(${testname} ${MACRO_DIR}/run_transport_json_config.sh \"${json_config_file}\" 2 ${randomSeed})
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
@@ -95,7 +108,7 @@ foreach(setup IN LISTS cbm_setup)
   # --- Test run_digi_json_config
   # --- Digitization run with using run_digi_json_config.C
   set(testname run_digi_json_config)
-  add_test(${testname} ${MACRO_DIR}/run_digi_json_config.sh)
+  add_test(${testname} ${MACRO_DIR}/run_digi_json_config.sh \"${json_config_file}\")
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
@@ -109,11 +122,11 @@ foreach(setup IN LISTS cbm_setup)
   set(testname run_${sname}_tra_coll)
   set(input ${CBMROOT_SOURCE_DIR}/input/urqmd.auau.10gev.centr.root)
   add_test(${testname} ${MACRO_DIR}/run_tra_file.sh
-  	\"${input}\" ${nEvents} \"data/${sname}_coll\" \"${setup}\" kGeant3 ${randomSeed})
+  	\"${input}\" ${nEvents} \"data/${sname}_coll\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
-  	FIXTURES_REQUIRED cleanup
+        FIXTURES_REQUIRED run_cleanup
   	FIXTURES_SETUP fixt_tra_coll_${setup}
   	RESOURCE_LOCK collParDb_${setup}
   )
@@ -123,7 +136,7 @@ foreach(setup IN LISTS cbm_setup)
   set(testname run_${sname}_tra_sign)
   set(input ${CBMROOT_SOURCE_DIR}/input/pluto.auau.8gev.omega.mpmm.0001.root)
   add_test(${testname} ${MACRO_DIR}/run_tra_file.sh
-  	\"${input}\" ${nEvents} \"data/${sname}_sign\" \"${setup}\" kGeant3 ${randomSeed})
+  	\"${input}\" ${nEvents} \"data/${sname}_sign\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
@@ -136,7 +149,7 @@ foreach(setup IN LISTS cbm_setup)
   # --- Transport run with beam events, using run_tra_beam.C
   set(testname run_${sname}_tra_beam)
   add_test(${testname} ${MACRO_DIR}/run_tra_beam.sh
-  	${nBeam} \"Au\" 10 -1 \"data/${sname}_beam\" \"${setup}\" kGeant3 ${randomSeed})
+  	${nBeam} \"Au\" 10 -1 \"data/${sname}_beam\" \"${setup}\" kGeant3 ${randomSeed} kTRUE)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
@@ -250,8 +263,8 @@ foreach(setup IN LISTS cbm_setup)
   # --- Real raw event builder
   set(testname run_${sname}_qa)
   add_test(${testname} ${MACRODIR}/run_qa.sh
-  	\"data/${sname}_coll\" \"data/${sname}_ts\"  \"data/${sname}_ts_eb_real\" 
-	\"data/${sname}_coll\" \"data/${sname}_qa\" \"${setup}\" -1 
+  	\"data/${sname}_coll\" \"data/${sname}_ts\"  \"data/${sname}_ts_eb_real\"
+	\"data/${sname}_coll\" \"data/${sname}_qa\" \"${setup}\" -1
 	\"data/${sname}_sign\" \"data/${sname}_beam\" )
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
@@ -274,31 +287,6 @@ foreach(setup IN LISTS cbm_setup)
 	FIXTURES_SETUP fixt_reco_ts_tb_${setup}
  	RESOURCE_LOCK collParDb_${setup}
   )
-
-  # --- Test run_transport_json_config
-  # --- Transport run using run_transport_json_config.C
-  set(testname run_transport_json_config)
-  add_test(${testname} ${MACRO_DIR}/run_transport_json_config.sh \"\" 2 ${randomSeed})
-  set_tests_properties(${testname} PROPERTIES
-  	TIMEOUT ${timeOutTime}
-  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
-  	FIXTURES_REQUIRED cleanup
-  	FIXTURES_SETUP fixt_tra_json_config
-  	RESOURCE_LOCK json_config_ParDb
-  )
-
-  # --- Test run_digi_json_config
-  # --- Digitization run with using run_digi_json_config.C
-  set(testname run_digi_json_config)
-  add_test(${testname} ${MACRO_DIR}/run_digi_json_config.sh)
-  set_tests_properties(${testname} PROPERTIES
-  	TIMEOUT ${timeOutTime}
-  	PASS_REGULAR_EXPRESSION "Macro finished successfully"
-  	FIXTURES_REQUIRED fixt_tra_json_config
-  	FIXTURES_SETUP fixt_digi_json_config
-  	RESOURCE_LOCK json_config_ParDb
-  )
-
 
 endforeach(setup IN LISTS cbm_setup)
 # ============================================================================
@@ -327,7 +315,7 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
       Set_Tests_Properties(${testname} PROPERTIES PASS_REGULAR_EXPRESSION "Macro finished successfully")
       set_tests_properties(${testname} PROPERTIES DEPENDS run_cleanup)
-      set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED cleanup)
+      set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED run_cleanup)
       Set(fixture_unpacked_${RUN} fixture_done_${testname})
       set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_unpacked_${RUN}})
 
