@@ -30,6 +30,9 @@
 
 class CbmTsEventHeader;
 
+class FairRunOnline;
+class FairRootManager;
+
 class CbmDeviceEventBuilder : public FairMQDevice {
 public:
   CbmDeviceEventBuilder();
@@ -41,6 +44,8 @@ protected:
   bool HandleCommand(FairMQMessagePtr&, int);
 
 private:
+  Bool_t fbFinishDone = false;  //! Keep track of whether the Finish was already called
+
   /// Constants
 
   /// Control flags
@@ -50,6 +55,8 @@ private:
   /// User settings parameters
   /// Algo enum settings
   ECbmModuleId fTriggerDet = ECbmModuleId::kT0;
+
+  std::string fsOutputFileName = "";
   /// message queues
   std::string fsChannelNameDataInput   = "unpts_0";
   std::string fsChannelNameDataOutput  = "events";
@@ -89,6 +96,13 @@ private:
   /// TS information in header
   CbmTsEventHeader* fCbmTsEventHeader = nullptr;
 
+  /// Data storage
+  FairRunOnline* fpRun           = nullptr;
+  FairRootManager* fpFairRootMgr = nullptr;
+
+  /// CbmEvents
+  std::vector<CbmDigiEvent>* fEventsSel = nullptr;  //! output container of CbmEvents
+
   bool IsChannelNameAllowed(std::string channelName);
   bool SendEvents(FairMQParts& partsIn, const std::vector<CbmDigiEvent>& vEvents);
 
@@ -107,7 +121,8 @@ private:
   // Get detector type from string containing name
   ECbmModuleId GetDetectorId(std::string detName);
 
-  void Finish() {};
+  void DumpTreeEntry();
+  void Finish();
 };
 
 #endif /* CBMDEVICEEVENTBUILDER_H_ */

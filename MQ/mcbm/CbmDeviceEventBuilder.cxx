@@ -23,6 +23,8 @@
 #include "FairMQLogger.h"
 #include "FairMQProgOptions.h"  // device->fConfig
 #include "FairParGenericSet.h"
+#include "FairRootFileSink.h"
+#include "FairRootManager.h"
 #include "FairRunOnline.h"
 
 #include "BoostSerializer.h"
@@ -59,6 +61,8 @@ try {
   //fbFillHistos      = fConfig->GetValue<bool>("FillHistos");
   //fbIgnoreTsOverlap = fConfig->GetValue<bool>("IgnOverMs");
 
+  fsOutputFileName = fConfig->GetValue<std::string>("OutFileName");  //For storage of events
+
   // Event builder algorithm params
   const std::vector<std::string> vsAddDet        = fConfig->GetValue<std::vector<std::string>>("AddDet");
   const std::vector<std::string> vsSetEvbuildWin = fConfig->GetValue<std::vector<std::string>>("SetEvbuildWin");
@@ -77,6 +81,31 @@ try {
   fuPublishFreqTs  = fConfig->GetValue<uint32_t>("PubFreqTs");
   fdMinPublishTime = fConfig->GetValue<double_t>("PubTimeMin");
   fdMaxPublishTime = fConfig->GetValue<double_t>("PubTimeMax");
+
+  /// Prepare root output
+  if ("" != fsOutputFileName) {
+    fpRun         = new FairRunOnline();  // is this needed?
+    fpFairRootMgr = FairRootManager::Instance();
+    fpFairRootMgr->SetSink(new FairRootFileSink(fsOutputFileName));
+    if (nullptr == fpFairRootMgr->GetOutFile()) {
+      throw InitTaskError("Could not open root file");
+    }  // if( nullptr == fpFairRootMgr->GetOutFile() )
+  }    // if( "" != fsOutputFileName )
+  else {
+    throw InitTaskError("Empty output filename!");
+  }  // else of if( "" != fsOutputFileName )
+
+  LOG(info) << "Init Root Output to " << fsOutputFileName;
+  fpFairRootMgr->InitSink();
+
+  /// Create input vectors
+  fCbmTsEventHeader = new CbmTsEventHeader();
+  fpFairRootMgr->Register("EventHeader.", "Event", fCbmTsEventHeader, kTRUE);
+
+  /// Create storage vector for events
+  fEventsSel = new std::vector<CbmDigiEvent>();
+  fpFairRootMgr->RegisterAny("DigiEvent", fEventsSel, kTRUE);
+  fpFairRootMgr->WriteFolder();
 
   // Get the information about created channels from the device
   // Check if the defined channels from the topology (by name)
@@ -157,9 +186,6 @@ try {
 
     fEvbuildAlgo.SetTriggerWindow(selDet, dWinBeg, dWinEnd);
   }
-
-  /// Create input vectors
-  fCbmTsEventHeader = new CbmTsEventHeader();
 }
 catch (InitTaskError& e) {
   LOG(error) << e.what();
@@ -202,13 +228,12 @@ bool CbmDeviceEventBuilder::IsChannelNameAllowed(std::string channelName)
   return false;
 }
 
-
 // handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
 bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
 {
   fulNumMessages++;
-  LOG(debug) << "Received message number " << fulNumMessages << " with " << parts.Size() << " parts"
-             << ", size0: " << parts.At(0)->GetSize();
+  LOG(info) << "Received message number " << fulNumMessages << " with " << parts.Size() << " parts"
+            << ", size0: " << parts.At(0)->GetSize();
 
   if (0 == fulNumMessages % 10000) LOG(info) << "Received " << fulNumMessages << " messages";
 
@@ -216,7 +241,8 @@ bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
   uint32_t uPartIdx = 0;
 
   /// TS header
-  Deserialize<RootSerializer>(*parts.At(uPartIdx), fCbmTsEventHeader);
+  CbmTsEventHeader* evtHeader = new CbmTsEventHeader();
+  Deserialize<RootSerializer>(*parts.At(uPartIdx), evtHeader);
   ++uPartIdx;
 
   CbmDigiTimeslice ts;
@@ -279,14 +305,40 @@ bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
   LOG(debug) << "PSD Vector size: " << ts.fData.fPsd.fDigis.size();
 
   const std::vector<double> triggers = GetTriggerTimes(ts);
+  LOG(debug) << "triggers: " << triggers.size();
 
   /// Create events
   std::vector<CbmDigiEvent> vEvents = fEvbuildAlgo(ts, triggers);
+  LOG(debug) << "vEvents size: " << vEvents.size();
 
   /// Send events vector to ouput
-  if (!SendEvents(parts, vEvents)) return false;
+  if (!SendEvents(parts, vEvents)) { return false; }
+
+  /// Write events to file
+  (*fEventsSel) = std::move(vEvents);
+  LOG(debug) << "fEventSel size: " << fEventsSel->size();
+
+  // FIXME: poor man solution with lots of data copy until we undertand how to properly deal
+  /// with FairMq messages ownership and memory managment
+  (*fCbmTsEventHeader) = std::move(*evtHeader);
+
+  DumpTreeEntry();
 
   return true;
+}
+
+void CbmDeviceEventBuilder::DumpTreeEntry()
+{
+  // Unpacked digis + CbmEvent output to root file
+
+  /// FairRunOnline style
+  fpFairRootMgr->StoreWriteoutBufferData(fpFairRootMgr->GetEventTime());
+  fpFairRootMgr->FillEventHeader(fCbmTsEventHeader);
+  fpFairRootMgr->Fill();
+  fpFairRootMgr->DeleteOldWriteoutBufferData();
+
+  /// Clear event vector
+  fEventsSel->clear();
 }
 
 std::vector<double> CbmDeviceEventBuilder::GetTriggerTimes(const CbmDigiTimeslice& ts)
@@ -336,9 +388,7 @@ bool CbmDeviceEventBuilder::SendEvents(FairMQParts& partsIn, const std::vector<C
   oaEvt << vEvents;
   std::string* strMsgEvt = new std::string(ossEvt.str());
 
-  FairMQParts partsOut(std::move(partsIn));
-
-  partsOut.AddPart(NewMessage(
+  FairMQParts partsOut(NewMessage(
     const_cast<char*>(strMsgEvt->c_str()),  // data
     strMsgEvt->length(),                    // size
     [](void*, void* object) { delete static_cast<std::string*>(object); },
@@ -351,8 +401,26 @@ bool CbmDeviceEventBuilder::SendEvents(FairMQParts& partsIn, const std::vector<C
   return true;
 }
 
+void CbmDeviceEventBuilder::Finish()
+{
+  // Clean closure of output to root file
+  fpFairRootMgr->Write();
+  fpFairRootMgr->CloseSink();
+  fbFinishDone = kTRUE;
+}
+
 CbmDeviceEventBuilder::~CbmDeviceEventBuilder()
 {
+  /// Close things properly if not alredy done
+  if (!fbFinishDone) Finish();
+
+  /// Clear events vector
+  if (fEventsSel) {
+    fEventsSel->clear();
+    delete fEventsSel;
+  }
+  if (fpRun) { delete fpRun; }
+
   /// Clear metadata
   delete fCbmTsEventHeader;
 }

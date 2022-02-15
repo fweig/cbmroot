@@ -171,6 +171,7 @@ while (( _iMoni < _nbmoni )); do
   EVTBUILDER+=" --PubTimeMin $_pubminsec"
   EVTBUILDER+=" --PubTimeMax $_pubmaxsec"
   EVTBUILDER+=" --FillHistos true"
+  EVTBUILDER+=" --OutFileName events.root"
   EVTBUILDER+=" --IgnTsOver false"
   EVTBUILDER+=" --TriggerDet kTof"
   EVTBUILDER+=" --TriggerWin 0.0"
@@ -202,7 +203,7 @@ while (( _iMoni < _nbmoni )); do
 
 done
 
-EVTSINK="DigiEventSink"
+EVTSINK="EventSink"
 EVTSINK+=" --id evtsink1"
 EVTSINK+=" --severity info"
 #EVTSINK+=" --severity debug"
