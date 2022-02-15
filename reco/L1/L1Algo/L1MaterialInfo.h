@@ -5,16 +5,21 @@
 #ifndef L1MaterialInfo_h
 #define L1MaterialInfo_h
 
+#include <string>
 #include <vector>
 
 #include "L1Def.h"
 
 class L1MaterialInfo {
 public:
-  L1MaterialInfo() : thick(0), RL(0), RadThick(0), logRadThick(0) {};
+  fvec thick {0};
+  fvec RL {0};
+  fvec RadThick {0};
+  fvec logRadThick {0};
 
-  fvec thick, RL, RadThick, logRadThick;
+  std::string
 } _fvecalignment;
+
 
 class L1Material {
 public:

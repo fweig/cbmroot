@@ -11,8 +11,12 @@
 class L1XYMeasurementInfo {
 
 public:
-  L1XYMeasurementInfo() : C00(0), C10(0), C11(0) {}
-  fvec C00, C10, C11;
+  fvec C00 {0};
+  fvec C10 {0};
+  fvec C11 {0};
+  /// String representation of class contents
+  /// \param indentLevel      number of indent characters in the output
+  std::string ToString(int indentLevel = 0) const;
 
 } _fvecalignment;
 

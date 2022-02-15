@@ -203,7 +203,7 @@ private:
   int fCAIterationsNumberCrosscheck {-1};  ///> Number of iterations to be passed (must be used for cross-checks)
 
   /// Pointer to L1Parameters object, which will be copied to L1Algo after checks
-  L1Parameters * fParametersPtr {nullptr};
+  L1Parameters* fParametersPtr {nullptr};
 };
 
 #endif

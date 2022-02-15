@@ -141,6 +141,7 @@ L1Algo/L1EventMatch.cxx
 L1Algo/L1MCEvent.cxx
 L1Algo/L1Fit.cxx
 CbmL1MCTrack.cxx
+L1Algo/L1XYMeasurementInfo.cxx
 L1Algo/L1CAIteration.cxx
 L1Algo/L1BaseStationInfo.cxx
 L1Algo/L1InitManager.cxx
