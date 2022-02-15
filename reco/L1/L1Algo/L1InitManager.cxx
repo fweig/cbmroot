@@ -106,10 +106,10 @@ void L1InitManager::PrintCAIterations(int verbosityLevel) const
 void L1InitManager::PushBackCAIteration(const L1CAIteration& iteration)
 {
   // TODO: probably some checks must be inserted here
-  if (!fInitFlags[L1InitManager::kECAIterationsNumberCrosscheck]) {
+  if (!fInitFlags[L1InitManager::keCAIterationsNumberCrosscheck]) {
     LOG(error) << "L1InitManager::PushBackCAIteration: attempt to push back a CA track finder iteration before the "
                << "number of iterations was defined";
-    assert((fInitFlags[L1InitManager::kECAIterationsNumberCrosscheck]));
+    assert((fInitFlags[L1InitManager::keCAIterationsNumberCrosscheck]));
   }
   fCAIterationsContainer.push_back(iteration);
 }
@@ -230,7 +230,7 @@ void L1InitManager::SetStationsNumberCrosscheck(L1DetectorID detectorID, int nSt
 void L1InitManager::SetCAIterationsNumberCrosscheck(int nIterations)
 {
   fCAIterationsNumberCrosscheck                             = nIterations;
-  fInitFlags[L1InitManager::kECAIterationsNumberCrosscheck] = true;
+  fInitFlags[L1InitManager::keCAIterationsNumberCrosscheck] = true;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
@@ -346,18 +346,18 @@ bool L1InitManager::CheckStationsInfo()
 bool L1InitManager::CheckCAIterations()
 {
   // Check number of iterations
-  if (!fInitFlags[L1InitManager::kECAIterations]) {
+  if (!fInitFlags[L1InitManager::keCAIterations]) {
     int actualIterationsNumber   = fCAIterationsContainer.size();
     int expectedIterationsNumber = fCAIterationsNumberCrosscheck;
     if (actualIterationsNumber != expectedIterationsNumber) {
       LOG(warn) << "L1InitManager::CheckCAIterations: incorrect number of iterations registered: "
                 << actualIterationsNumber << " of " << expectedIterationsNumber << " expected";
-      fInitFlags[L1InitManager::kECAIterations] = false;
+      fInitFlags[L1InitManager::keCAIterations] = false;
     }
     else {
-      fInitFlags[L1InitManager::kECAIterations] = true;
+      fInitFlags[L1InitManager::keCAIterations] = true;
     }
   }
 
-  return fInitFlags[L1InitManager::kECAIterations];
+  return fInitFlags[L1InitManager::keCAIterations];
 }

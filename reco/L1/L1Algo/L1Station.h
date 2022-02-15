@@ -34,7 +34,7 @@ public:
   L1XYMeasurementInfo XYInfo {};
 
   /// Prints object fields
-  void Print() const;
+  void Print(int verbosity = 0) const;
 
 } _fvecalignment;
 

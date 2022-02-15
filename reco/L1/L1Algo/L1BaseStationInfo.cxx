@@ -124,53 +124,12 @@ void L1BaseStationInfo::Print(int verbosity) const
   }
   else if (verbosity > 0) {
     LOG(info) << "L1BaseStationInfo object: at " << this;
-    LOG(info) << "- Station ID:              " << fStationID;
-    LOG(info) << "- Detector ID:             " << static_cast<int>(fDetectorID);
-    LOG(info) << "- L1Station fields:";
-    LOG(info) << "--- Station type ID:             " << fL1Station.type;
-    LOG(info) << "--- Time info ID:                " << fL1Station.timeInfo;
-    LOG(info) << "--- z position:                  " << fL1Station.z[0];
-    LOG(info) << "--- Rmin:                        " << fL1Station.Rmin[0];
-    LOG(info) << "--- Rmax:                        " << fL1Station.Rmax[0];
-    LOG(info) << "--- Thickness (X), cm:           " << fL1Station.materialInfo.thick[0];
-    LOG(info) << "--- Radiational length (X0), cm: " << fL1Station.materialInfo.RL[0];
-    if (verbosity > 1) {
-      LOG(info) << "--- X / X0:                      " << fL1Station.materialInfo.RadThick[0];
-      LOG(info) << "--- log(X / X0):                 " << fL1Station.materialInfo.logRadThick[0];
-      LOG(info) << "--- Field approximation coefficients:";
-      LOG(info) << "      idx         CX         CY         CZ";
-      for (int idx = 0; idx < L1Parameters::kMaxNFieldApproxCoefficients; ++idx) {
-        LOG(info) << std::setw(9) << std::setfill(' ') << idx << ' ' << std::setw(10) << std::setfill(' ')
-                  << fL1Station.fieldSlice.cx[idx][0] << ' ' << std::setw(10) << std::setfill(' ')
-                  << fL1Station.fieldSlice.cy[idx][0] << ' ' << std::setw(10) << std::setfill(' ')
-                  << fL1Station.fieldSlice.cz[idx][0];
-      }
-      LOG(info) << "--- Strips geometry:";
-      LOG(info) << "----- Front:";
-      LOG(info) << "------- cos(phi):            " << fL1Station.frontInfo.cos_phi[0];
-      LOG(info) << "------- sin(phi):            " << fL1Station.frontInfo.sin_phi[0];
-      LOG(info) << "------- sigma2:              " << fL1Station.frontInfo.sigma2[0];
-      LOG(info) << "----- Back:";
-      LOG(info) << "------- cos(phi):            " << fL1Station.backInfo.cos_phi[0];
-      LOG(info) << "------- sin(phi):            " << fL1Station.backInfo.sin_phi[0];
-      LOG(info) << "------- sigma2:              " << fL1Station.backInfo.sigma2[0];
-      LOG(info) << "----- XY cov matrix:";
-      LOG(info) << "------- C00:                 " << fL1Station.XYInfo.C00[0];
-      LOG(info) << "------- C10:                 " << fL1Station.XYInfo.C10[0];
-      LOG(info) << "------- C11:                 " << fL1Station.XYInfo.C11[0];
-      LOG(info) << "----- X layer:";
-      LOG(info) << "------- cos(phi):            " << fL1Station.xInfo.cos_phi[0];
-      LOG(info) << "------- sin(phi):            " << fL1Station.xInfo.sin_phi[0];
-      LOG(info) << "------- sigma2:              " << fL1Station.xInfo.sigma2[0];
-      LOG(info) << "----- Y layer:";
-      LOG(info) << "------- cos(phi):            " << fL1Station.yInfo.cos_phi[0];
-      LOG(info) << "------- sin(phi):            " << fL1Station.yInfo.sin_phi[0];
-      LOG(info) << "------- sigma2:              " << fL1Station.yInfo.sigma2[0];
-      LOG(info) << "";
-    }
-    LOG(info) << "- Additional fields:";
-    LOG(info) << "--- Xmax:                    " << fXmax;
-    LOG(info) << "--- Ymax:                    " << fYmax;
+    LOG(info) << "\tStation ID:              " << fStationID;
+    LOG(info) << "\tDetector ID:             " << static_cast<int>(fDetectorID);
+    fL1Station.Print(verbosity - 1);
+    LOG(info) << "\tAdditional fields:";
+    LOG(info) << "\t\tXmax:                    " << fXmax;
+    LOG(info) << "\t\tYmax:                    " << fYmax;
   }
 }
 
