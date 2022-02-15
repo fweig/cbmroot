@@ -19,6 +19,7 @@
 void SetTrack(CbmTransport*, Double_t, Int_t, Double_t, Double_t, Double_t);
 
 void mcbm_transport(Int_t nEvents = 10,
+                    //                  const char* setupName = "mcbm_beam_2022_06",
                     //                  const char* setupName = "mcbm_beam_2022_05",
                     //                  const char* setupName = "mcbm_beam_2022_04",
                     //                  const char* setupName = "mcbm_beam_2022_03",
