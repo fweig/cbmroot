@@ -202,7 +202,6 @@ private:
   L1Vector<L1CAIteration> fCAIterationsContainer {};  ///> Container for CA track finder iterations
   int fCAIterationsNumberCrosscheck {-1};  ///> Number of iterations to be passed (must be used for cross-checks)
 
-  /* Pointer to L1Parameters object */
   /// Pointer to L1Parameters object, which will be copied to L1Algo after checks
   L1Parameters * fParametersPtr {nullptr};
 };
