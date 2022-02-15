@@ -276,7 +276,7 @@ Install(FILES CbmL1Counters.h
               L1Algo/L1InitManager.h
               L1Algo/L1CAIteration.h
               L1Algo/L1Parameters.h
-              L1Algo/utils/L1Utils.h
+              L1Algo/L1Utils.h
               vectors/vec_arithmetic.h
               vectors/std_alloc.h
         DESTINATION include
