@@ -245,8 +245,6 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   // Fill L1Station array
   fInitManager.TransferL1StationArray(fStationsNew);
 
-  // Fill L1CAIteration array
-  fInitManager.Tra
 
   LOG(debug) << "**********************************************************************";
   LOG(debug) << "*  New L1Algo initialization cross check  (tmp log, to be removed!)  *";
