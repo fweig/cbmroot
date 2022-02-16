@@ -55,7 +55,7 @@ class TGeoPhysicalNode;
  **/
 class CbmTrdClusterFinder : public FairTask {
   friend class CbmTrdModuleRecR;
-  friend class CbmTrdModuleRecT;
+  friend class CbmTrdModuleRec2D;
 
 public:
   enum CbmTrdRecDef

@@ -20,7 +20,7 @@
  ** class which is in the end used to calculate the TRD hit parameters.
  **/
 class CbmTrdDigiRec : public CbmTrdDigi {
-  friend class CbmTrdModuleRecT;
+  friend class CbmTrdModuleRec2D;
 
 public:
   /** \brief Default constructor*/

@@ -20,7 +20,7 @@ using std::string;
 using std::stringstream;
 using std::vector;
 //____________________________________________________________________
-CbmTrdCluster::CbmTrdCluster() : CbmCluster(), fNCols(0), fNRows(0xff), fStartCh(0xffff), fStartTime(0xffff) {}
+CbmTrdCluster::CbmTrdCluster() : CbmCluster(), fNCols(0), fNRows(0x1f), fStartCh(0xffff), fStartTime(0xffffffff) {}
 
 //____________________________________________________________________
 CbmTrdCluster::CbmTrdCluster(const CbmTrdCluster& ref)
@@ -36,9 +36,9 @@ CbmTrdCluster::CbmTrdCluster(const CbmTrdCluster& ref)
 CbmTrdCluster::CbmTrdCluster(const std::vector<int32_t>& indices, int32_t address)
   : CbmCluster(indices, address)
   , fNCols(0)
-  , fNRows(0xff)
+  , fNRows(0x1f)
   , fStartCh(0xffff)
-  , fStartTime(0xffff)
+  , fStartTime(0xffffffff)
 {
 }
 
@@ -46,9 +46,9 @@ CbmTrdCluster::CbmTrdCluster(const std::vector<int32_t>& indices, int32_t addres
 CbmTrdCluster::CbmTrdCluster(int32_t address, int32_t idx, int32_t ch, int32_t row, int32_t time)
   : CbmCluster()
   , fNCols(0)
-  , fNRows(0xff)
+  , fNRows(0x1f)
   , fStartCh(0xffff)
-  , fStartTime(0xffff)
+  , fStartTime(0xffffffff)
 {
   ReInit(address, row, time);
   AddDigi(idx, ch);
@@ -104,9 +104,9 @@ void CbmTrdCluster::Clear(Option_t*)
 {
   CbmCluster::ClearDigis();
   fNCols     = 0;
-  fNRows     = 0xff;
+  fNRows     = 0x1f;
   fStartCh   = 0xffff;
-  fStartTime = 0xffff;
+  fStartTime = 0xffffffff;
 }
 
 //____________________________________________________________________
@@ -120,7 +120,7 @@ void CbmTrdCluster::ReInit(int32_t address, int32_t row, int32_t time)
   SetNRows(row);
   SetProfileStart(0);
   SetProfileStop(0);
-  if (time >= 0xffff) LOG(warn) << GetName() << "::ReInit: buffer time truncated to 2bytes.";
+  if (std::abs(time) >= 0x7fffffff) LOG(warn) << GetName() << "::ReInit: buffer time truncated to 4bytes.";
   fStartTime = time;
 }
 
@@ -137,14 +137,14 @@ int32_t CbmTrdCluster::IsChannelInRange(int32_t ch) const
 }
 
 //____________________________________________________________________
-bool CbmTrdCluster::Merge(CbmTrdCluster* second)
+bool CbmTrdCluster::Merge(CbmTrdCluster* second, bool typ)
 {
   if (GetRow() != second->GetRow()) return false;
   // time difference condition
   if (fNCols == 1 || second->fNCols == 1) {
-    if (abs(second->fStartTime - fStartTime) > 50) return false;
+    if (abs(int32_t(second->fStartTime - fStartTime)) > 50) return false;
   }
-  else if (abs(second->fStartTime - fStartTime) > 20)
+  else if (abs(int32_t(second->fStartTime - fStartTime)) > 20)
     return false;
   // look before current
   if (second->fStartCh + second->fNCols == fStartCh && !second->HasOpenStop() && !HasOpenStart()) {
@@ -160,8 +160,8 @@ bool CbmTrdCluster::Merge(CbmTrdCluster* second)
     if (second->HasOpenStart()) SetProfileStart();
     return true;
   }
-  // special care for FASP clusters which can be merged also on pairing neighboring
-  if (HasTrianglePads()) {
+  // special care for clusters which can be merged also on pairing neighboring on 2D read-out
+  if (typ) {
     if ((second->fStartCh + second->fNCols - 1 == fStartCh) && second->HasOpenStop()
         && HasOpenStart()) {  // need to merge digi
       fStartCh = second->fStartCh;
@@ -187,8 +187,8 @@ bool CbmTrdCluster::Merge(CbmTrdCluster* second)
     return true;
   }
 
-  // special care for FASP clusters which can be merged also on pairing neighboring
-  if (HasTrianglePads()) {
+  // special care for clusters which can be merged also on pairing neighboring on 2D read-out
+  if (typ) {
     if ((fStartCh + fNCols - 1 == second->fStartCh) && HasOpenStop() && second->HasOpenStart()) {  // need to merge digi
       fNCols += second->fNCols - 1;
       fStartTime = std::min(fStartTime, second->fStartTime);
@@ -206,8 +206,8 @@ string CbmTrdCluster::ToString() const
 {
   stringstream ss;
   ss << CbmCluster::ToString();
-  ss << "CbmTrdCluster: mod=" << GetAddress() << " t0=" << fStartTime << " R=" << (int32_t) GetRow() << " "
-     << (HasTrianglePads() ? "T" : "R") << "Chs=";
+  ss << "CbmTrdCluster: mod=" << GetAddress() << " t0=" << fStartTime << " row=" << (int32_t) GetRow() << " "
+     << (HasFaspDigis() ? "Fasp " : "Spadic ") << "Chs=";
   ss << (HasOpenStart() ? "/" : "|");
   for (int32_t i(0); i < fNCols; i++)
     ss << fStartCh + i << " ";

@@ -26,9 +26,9 @@
  */
 class CbmTrdCluster : public CbmCluster {
 public:
-  enum CbmTrdClusterDef
+  enum eCbmTrdClusterDef
   {
-    kTriang = 5  ///< set type of pads on which the cluster is reconstructed
+    kFasp = 5  ///< set type of FEE digis contained
       ,
     kProfileStart  ///< only for triangular if no T in first col
       ,
@@ -70,8 +70,8 @@ public:
   uint16_t GetEndCh() const { return fStartCh + fNCols - 1; }
   uint16_t GetRow() const { return GetNRows(); }
   uint16_t GetStartCh() const { return fStartCh; }
-  uint16_t GetStartTime() const { return fStartTime; }
-  bool HasTrianglePads() const { return TESTBIT(fNRows, kTriang); }
+  uint32_t GetStartTime() const { return fStartTime; }
+  bool HasFaspDigis() const { return TESTBIT(fNRows, kFasp); }
   bool HasOpenStart() const { return TESTBIT(fNRows, kProfileStart); }
   bool HasOpenStop() const { return TESTBIT(fNRows, kProfileStop); }
 
@@ -82,9 +82,10 @@ public:
   int32_t IsChannelInRange(int32_t ch) const;
   /** \brief Merge current cluster with info from second 
    * \param[in] second cluster to be added
+   * \param[in] typ the type of pad-plane of the source chamber; true if Trd2d 
    * \return success or fail
    */
-  bool Merge(CbmTrdCluster* second);
+  bool Merge(CbmTrdCluster* second, bool typ = true);
   /** \brief Initialize basic parameters of the cluster
    * \param[in] address global module address
    * \param[in] row cluster row in the module
@@ -98,7 +99,7 @@ public:
     fNRows &= (7 << 5);
     fNRows |= (nrows & 0x1f);
   }
-  void SetTrianglePads(bool set = true) { set ? SETBIT(fNRows, kTriang) : CLRBIT(fNRows, kTriang); }
+  void SetFaspDigis(bool set = true) { set ? SETBIT(fNRows, kFasp) : CLRBIT(fNRows, kFasp); }
   void SetProfileStart(bool set = true) { set ? SETBIT(fNRows, kProfileStart) : CLRBIT(fNRows, kProfileStart); }
   void SetProfileStop(bool set = true) { set ? SETBIT(fNRows, kProfileStop) : CLRBIT(fNRows, kProfileStop); }
 
@@ -106,11 +107,11 @@ public:
   virtual std::string ToString() const;
 
 protected:
-  uint8_t fNCols;       // number of columns with charge above threshold
-  uint8_t fNRows;       // cluster row info plus extra. Use dedicated getters for the correct value
+  uint8_t fNCols;       //! number of columns with charge above threshold
+  uint8_t fNRows;       //! cluster row info plus extra meta data. Use dedicated getters for the correct value
   uint16_t fStartCh;    //! channel address of first channel
-  uint16_t fStartTime;  //! start time of cluster in clk units wrt buffer start
+  uint32_t fStartTime;  //! start time of cluster in clk units wrt buffer start
 
-  ClassDef(CbmTrdCluster, 4)  // cluster of digi for the TRD detector
+  ClassDef(CbmTrdCluster, 5)  // cluster of digi for the TRD detector
 };
 #endif

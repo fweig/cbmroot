@@ -9,8 +9,8 @@
 #include "CbmTrdCluster.h"
 #include "CbmTrdDigi.h"
 #include "CbmTrdGeoHandler.h"
+#include "CbmTrdModuleRec2D.h"
 #include "CbmTrdModuleRecR.h"
-#include "CbmTrdModuleRecT.h"
 #include "CbmTrdParAsic.h"
 #include "CbmTrdParModDigi.h"
 #include "CbmTrdParModGain.h"
@@ -148,9 +148,11 @@ CbmTrdModuleRec* CbmTrdClusterFinder::AddModule(const CbmTrdDigi* digi)
 {
   Int_t address = digi->GetAddressModule();
   CbmTrdModuleRec* module(NULL);
-  if (digi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kFASP) module = fModules[address] = new CbmTrdModuleRecT(address);
+  if (digi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kFASP)
+    module = fModules[address] = new CbmTrdModuleRec2D(address);
   else
     module = fModules[address] = new CbmTrdModuleRecR(address);
+  LOG(debug) << GetName() << "::AddModule : " << module->GetName();
 
   // try to load Geometry parameters for module
   const CbmTrdParModGeo* pGeo(NULL);
@@ -349,7 +351,7 @@ Int_t CbmTrdClusterFinder::AddClusters(TClonesArray* clusters, CbmEvent* event, 
   for (Int_t ic(0); ic < clusters->GetEntriesFast(); ic++) {
     if (!(cls = (CbmTrdCluster*) (*clusters)[ic])) continue;
 
-    if (!cls->HasTrianglePads()) {  // only for rectangular clusters
+    if (!cls->HasFaspDigis()) {  // only for rectangular/SPADIC clusters
       if (!ncols) {
         digiPar = (CbmTrdParModDigi*) fDigiPar->GetModulePar(cls->GetAddress());
         if (!digiPar) {
@@ -380,7 +382,7 @@ Int_t CbmTrdClusterFinder::AddClusters(TClonesArray* clusters, CbmEvent* event, 
     // In case we have an event branch and we did only use digis from within the event, add the cluster to the event. This allows the hit producer to identify wether or not to add the corresponding hit to the event.
     if (event) event->AddData(ECbmDataType::kTrdCluster, ncl);
     ncl++;
-    clsSave->SetTrianglePads(cls->HasTrianglePads());
+    clsSave->SetFaspDigis(cls->HasFaspDigis());
     if (cls->GetMatch() != NULL)
       delete cls;  //only the matches have pointers to allocated memory, so otherwise the clear does the trick
     mcl++;
