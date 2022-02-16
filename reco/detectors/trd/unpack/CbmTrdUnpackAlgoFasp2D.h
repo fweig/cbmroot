@@ -24,8 +24,8 @@
 
 #include "CbmRecoUnpackAlgo.tmpl"
 #include "CbmTrdDigi.h"
-#include "CbmTrdParSetAsic.h"
 #include "CbmTrdParFasp.h"
+#include "CbmTrdParSetAsic.h"
 
 #include "Timeslice.hpp"  // timeslice
 
@@ -112,9 +112,9 @@ public:
   /**
    * @brief Introduce fasp index mapping
    */
-  void SetAsicMapping(const std::map<uint32_t, uint8_t[NFASPMOD]> &map);
+  void SetAsicMapping(const std::map<uint32_t, uint8_t[NFASPMOD]>& map);
   void PrintAsicMapping();
-  
+
 protected:
   /** @brief Get message type from the FASP word */
   CbmTrdFaspMessageType mess_type(uint32_t wd);
@@ -180,7 +180,7 @@ protected:
 
 private:
   void prt_wd(uint32_t w);
-  std::map<uint32_t, uint8_t[NFASPMOD]> *fFaspMap = nullptr;
+  std::map<uint32_t, uint8_t[NFASPMOD]>* fFaspMap = nullptr;
   std::vector<Int_t> fModuleId;
   CbmTrdParSetAsic fAsicPar;
   CbmTrdParSetDigi* fDigiSet = nullptr;

@@ -42,7 +42,7 @@ public:
   /** \brief Query pad pairing type.*/
   Bool_t HasPairingR() const { return TESTBIT(fConfig, kPair); }
   Bool_t HasPairingT() const { return !TESTBIT(fConfig, kPair); }
-  
+
   void Print(Option_t* opt = "") const;
   /** \brief Specify pad pairing type.
    *\param[in] rect if rect=kTRUE rectangular pairing; tilt otherwise 

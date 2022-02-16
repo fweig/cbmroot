@@ -29,10 +29,7 @@
 
 using namespace std;
 
-CbmTrdUnpackAlgoFasp2D::CbmTrdUnpackAlgoFasp2D() 
-  : CbmRecoUnpackAlgo("CbmTrdUnpackAlgoFasp2D")
-  , fModuleId()
-  , fAsicPar()
+CbmTrdUnpackAlgoFasp2D::CbmTrdUnpackAlgoFasp2D() : CbmRecoUnpackAlgo("CbmTrdUnpackAlgoFasp2D"), fModuleId(), fAsicPar()
 {
   memset(fTime, 0, NCRI * sizeof(ULong64_t));
 }
@@ -118,10 +115,11 @@ CbmTrdUnpackAlgoFasp2D::GetParContainerRequest(std::string geoTag, std::uint32_t
 }
 
 //_________________________________________________________________________________
-void CbmTrdUnpackAlgoFasp2D::SetAsicMapping(const std::map<uint32_t, uint8_t[NFASPMOD]> &asicMap)
+void CbmTrdUnpackAlgoFasp2D::SetAsicMapping(const std::map<uint32_t, uint8_t[NFASPMOD]>& asicMap)
 {
-  if(!fFaspMap) fFaspMap = new std::map<uint32_t, uint8_t[NFASPMOD]>(asicMap);
-  else (*fFaspMap) = asicMap;
+  if (!fFaspMap) fFaspMap = new std::map<uint32_t, uint8_t[NFASPMOD]>(asicMap);
+  else
+    (*fFaspMap) = asicMap;
 }
 
 //_________________________________________________________________________________
@@ -132,11 +130,11 @@ void CbmTrdUnpackAlgoFasp2D::PrintAsicMapping()
     return;
   }
   LOG(info) << GetName() << "Fasp Asic mapping on modules:";
-  for(auto imod : (*fFaspMap)) {
+  for (auto imod : (*fFaspMap)) {
     printf("Mod [%6d] : ", imod.first);
-    for(int ifasp(0); ifasp<NFASPMOD; ifasp++) {
+    for (int ifasp(0); ifasp < NFASPMOD; ifasp++) {
       int jfasp = imod.second[ifasp];
-      printf("%2d ", (jfasp == 0xff ?-1:jfasp));
+      printf("%2d ", (jfasp == 0xff ? -1 : jfasp));
     }
     printf("\n");
   }
@@ -185,7 +183,7 @@ void CbmTrdUnpackAlgoFasp2D::mess_readEW(uint32_t w, CbmTrdFaspContent* mess)
 //_________________________________________________________________________________
 void CbmTrdUnpackAlgoFasp2D::mess_prt(CbmTrdFaspContent* mess)
 {
-  if (mess->type == kData) 
+  if (mess->type == kData)
     cout << boost::format("    DATA : fasp_id=%02d ch_id=%02d tclk=%03d data=%4d\n")
               % static_cast<unsigned int>(mess->fasp) % static_cast<unsigned int>(mess->ch)
               % static_cast<unsigned int>(mess->tlab) % static_cast<unsigned int>(mess->data);
@@ -195,8 +193,7 @@ void CbmTrdUnpackAlgoFasp2D::mess_prt(CbmTrdFaspContent* mess)
 }
 
 //_________________________________________________________________________________
-bool CbmTrdUnpackAlgoFasp2D::pushDigis(
-  std::vector<CbmTrdUnpackAlgoFasp2D::CbmTrdFaspContent*> messes)
+bool CbmTrdUnpackAlgoFasp2D::pushDigis(std::vector<CbmTrdUnpackAlgoFasp2D::CbmTrdFaspContent*> messes)
 {
   UChar_t lFasp(0xff);
   UShort_t lchR, lchT;
@@ -220,21 +217,24 @@ bool CbmTrdUnpackAlgoFasp2D::pushDigis(
         LOG(error) << GetName() << "::pushDigis - DIGI par for module " << imess->cri << " missing. Skip.";
         return false;
       }
-      if(VERBOSE) faspPar->Print();
-      pad  = faspPar->GetChannelAddress(imess->ch);
+      if (VERBOSE) faspPar->Print();
+      pad     = faspPar->GetChannelAddress(imess->ch);
       chCalib = faspPar->GetChannel(imess->ch);
       ch      = 2 * pad + chCalib->HasPairingR();
       row     = digiPar->GetPadRow(pad);
-      if(VERBOSE) printf("fasp[%2d] ch[%4d / %2d] pad[%4d] row[%2d] col[%2d] tilt[%d]\n", lFasp, ch, imess->ch, pad, row, digiPar->GetPadColumn(pad), chCalib->HasPairingT());  
+      if (VERBOSE)
+        printf("fasp[%2d] ch[%4d / %2d] pad[%4d] row[%2d] col[%2d] tilt[%d]\n", lFasp, ch, imess->ch, pad, row,
+               digiPar->GetPadColumn(pad), chCalib->HasPairingT());
     }
 
     if (VERBOSE) mess_prt(imess);
 
-    lchR = 0;
-    lchT = 0;
+    lchR    = 0;
+    lchT    = 0;
     chCalib = faspPar->GetChannel(imess->ch);
-    if(chCalib->HasPairingR()) lchR = imess->data;
-    else lchT = imess->data;
+    if (chCalib->HasPairingR()) lchR = imess->data;
+    else
+      lchT = imess->data;
     pad = faspPar->GetChannelAddress(imess->ch);
 
     bool use(false);
@@ -348,7 +348,7 @@ bool CbmTrdUnpackAlgoFasp2D::unpack(const fles::Timeslice* ts, std::uint16_t ico
     }
     else {
       if (fFaspMap) fasp_id = ((*fFaspMap)[mod_id])[fasp_id];
-      
+
       if (lFaspOld != fasp_id) {
         // push
         if (vDigi.size()) { pushDigis(vDigi); }

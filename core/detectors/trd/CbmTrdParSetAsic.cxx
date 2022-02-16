@@ -190,18 +190,16 @@ void CbmTrdParSetAsic::putParams(FairParamList* l)
         CbmTrdParFasp* fasp = (CbmTrdParFasp*) iModuleIt.second;
 
         for (Int_t ich(0); ich < nchannels; ich++) {
-//          for (Int_t ipair(0); ipair < 2; ipair++) {
-            Int_t faspAddress                                  = fasp->GetChannelAddress(ich);
-            asicInfo[offset + 1 + ich]                 = faspAddress;
-            const CbmTrdParFaspChannel* ch                     = fasp->GetChannel(ich);
-            if(!ch) {
-               LOG(info) << "Missing calib for Fasp[" << offset << "] pad " << faspAddress;
-               continue;
-            }
-            asicInfo[offset + 1 + (1 * NFASPCH) + ich] = ch->GetPileUpTime();
-            asicInfo[offset + 1 + (2 * NFASPCH) + ich] = ch->GetThreshold();
-            asicInfo[offset + 1 + (3 * NFASPCH) + ich] = ch->GetMinDelaySignal();
-//          }
+          Int_t faspAddress              = fasp->GetChannelAddress(ich);
+          asicInfo[offset + 1 + ich]     = faspAddress;
+          const CbmTrdParFaspChannel* ch = fasp->GetChannel(ich);
+          if (!ch) {
+            LOG(info) << "Missing calib for Fasp[" << offset << "] pad " << faspAddress;
+            continue;
+          }
+          asicInfo[offset + 1 + (1 * NFASPCH) + ich] = ch->GetPileUpTime();
+          asicInfo[offset + 1 + (2 * NFASPCH) + ich] = ch->GetThreshold();
+          asicInfo[offset + 1 + (3 * NFASPCH) + ich] = ch->GetMinDelaySignal();
         }
         iAsicNr++;
       }

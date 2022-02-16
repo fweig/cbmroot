@@ -63,13 +63,13 @@ void CbmTrdParFasp::LoadParams(FairParamList* l)
 }
 
 void CbmTrdParFasp::LoadParams(TArrayI& valArray, Int_t iAsic)
-{ 
+{
   // Where does the asic info start in large array
   Int_t offset = iAsic * (1 + NFASPCH * 4);
   //  Int_t asicAddress = valArray[ offset++ ];
   offset++;
   for (Int_t ich(0); ich < NFASPCH; ich++) {
-    Int_t pair = ich % 2; // TODO pairing should be set from the external parameters
+    Int_t pair = ich % 2;  // TODO pairing should be set from the external parameters
     SetChannelAddress(valArray[offset++]);
     fCalib[ich].SetPairing(pair);
   }
