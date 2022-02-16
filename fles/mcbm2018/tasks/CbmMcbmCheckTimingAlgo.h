@@ -86,7 +86,6 @@ public:
   void RemoveCheckDetector(ECbmModuleId detIn);
 
   void SetTrdPeakWidthNs(Double_t val = 120.) { fTrdPeakWidthNs = val; }
-  void SetTrd2dPeakWidthNs(Double_t val = 120.) { fTrd2dPeakWidthNs = val; }
   void SetStsPeakWidthNs(Double_t val = 30.) { fStsPeakWidthNs = val; }
   void SetMuchPeakWidthNs(Double_t val = 100.) { fMuchPeakWidthNs = val; }
   void SetTofPeakWidthNs(Double_t val = 20.) { fTofPeakWidthNs = val; }
@@ -108,8 +107,6 @@ private:
 
   /** T0 is not included in CbmDigiManager, so add it explicitly here **/
   const std::vector<CbmTofDigi>* fpT0DigiVec = nullptr;  //!
-  /** TRD-2D is not included in CbmDigiManager, so add it explicitly here **/
-  const std::vector<CbmTrdDigi>* fpTrd2dDigiVec = nullptr;  //!
 
   /** @brief Pointer to the Timeslice start time used to write it to the output tree
       @remark since we hand this to the FairRootManager it also wants to delete it and we do not have to take care of deletion
@@ -138,7 +135,6 @@ private:
   Double_t DetPeakPosSingle;
   Double_t DetAverageSingle;
   Double_t fTrdPeakWidthNs   = 120.;
-  Double_t fTrd2dPeakWidthNs = 120.;
   Double_t fStsPeakWidthNs   = 30.;
   Double_t fMuchPeakWidthNs  = 100.;
   Double_t fTofPeakWidthNs   = 20.;

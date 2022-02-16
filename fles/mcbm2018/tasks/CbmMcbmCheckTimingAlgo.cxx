@@ -90,15 +90,6 @@ void CbmMcbmCheckTimingAlgo::CheckDataPresence(CheckTimingDetector detToCheck)
                     "Stopping there!";
     }  // if ( ! fpT0DigiVec )
   }    // if( ECbmModuleId::kT0 == detToCheck.detId )
-  /// Handle special case for TRD-2D as not yet supported in DigiManager
-  else if (ECbmModuleId::kTrd2d == detToCheck.detId) {
-    // Get a pointer to the previous already existing data level
-    fpTrd2dDigiVec = ioman->InitObjectAs<std::vector<CbmTrdDigi> const*>("TrdFaspDigi");
-    if (!fpTrd2dDigiVec) {
-      LOG(fatal) << "No storage with TRD-2D digis found while it should be used. "
-                    "Stopping there!";
-    }  // if ( ! fpTrd2dDigiVec )
-  }    // if( ECbmModuleId::kTrd2d == detToCheck.detId )
   else if (!fDigiMan->IsPresent(detToCheck.detId)) {
     LOG(fatal) << "No " << detToCheck.sName << " digis found while it should be used. Stopping there!";
   }  // else if ( ! fDigiMan->IsPresent( detToCheck.detId ) ) of if( ECbmModuleId::kT0 == detToCheck.detId )
@@ -253,10 +244,6 @@ void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset()
       uNbRefDigis = fpT0DigiVec->size();
       break;
     }  // case ECbmModuleId::kT0
-    case ECbmModuleId::kTrd2d: {
-      uNbRefDigis = fpTrd2dDigiVec->size();
-      break;
-    }  // case ECbmModuleId::kTrd2d
     default: {
       uNbRefDigis = fDigiMan->GetNofDigis(fRefDet.detId);
       break;
@@ -277,12 +264,7 @@ void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset()
     if (ECbmModuleId::kT0 == fRefDet.detId) {
       dRefTime   = fpT0DigiVec->at(uDigi).GetTime();
       dRefCharge = fpT0DigiVec->at(uDigi).GetCharge();
-    }  // if( ECbmModuleId::kT0 == fRefDet.detId )
-    else if (ECbmModuleId::kTrd2d == fRefDet.detId) {
-      dRefTime = fpTrd2dDigiVec->at(uDigi).GetTime();
-      //dRefCharge = fpTrd2dDigiVec->at(uDigi).GetCharge();
-      dRefCharge = 1;
-    }  // else if( ECbmModuleId::kTrd2d == fRefDet.detId )
+    }
     else {
       dRefTime   = fDigiMan->Get<DigiRef>(uDigi)->GetTime();
       dRefCharge = fDigiMan->Get<DigiRef>(uDigi)->GetCharge();
@@ -371,10 +353,6 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime, const
       uNbDigis = fpT0DigiVec->size();
       break;
     }  // case ECbmModuleId::kT0
-    case ECbmModuleId::kTrd2d: {
-      uNbDigis = fpTrd2dDigiVec->size();
-      break;
-    }  // case ECbmModuleId::kTrd2d
     default: {
       uNbDigis = fDigiMan->GetNofDigis(fvDets[uDetIdx].detId);
       break;
@@ -391,11 +369,6 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime, const
       dTime   = fpT0DigiVec->at(uDigiIdx).GetTime();
       dCharge = fpT0DigiVec->at(uDigiIdx).GetCharge();
     }  // if( ECbmModuleId::kT0 == fRefDet.detId )
-    else if (ECbmModuleId::kTrd2d == fvDets[uDetIdx].detId) {
-      dTime = fpTrd2dDigiVec->at(uDigiIdx).GetTime();
-      // dCharge = fpTrd2dDigiVec->at(uDigiIdx).GetCharge();
-      dCharge = 1;
-    }  // else if (ECbmModuleId::kTrd2d == fvDets[uDetIdx].detId)
     else {
       dTime   = fDigiMan->Get<Digi>(uDigiIdx)->GetTime();
       dCharge = fDigiMan->Get<Digi>(uDigiIdx)->GetCharge();
@@ -513,18 +486,6 @@ void CbmMcbmCheckTimingAlgo::WriteHistos()
           TF1* fitresult_trd = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_trd");
           LOG(debug) << fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_trd->GetParameter(0)
                      << ",  " << fitresult_trd->GetParameter(1) << ",  " << fitresult_trd->GetParameter(2);
-        }
-        break;
-      }
-      case ECbmModuleId::kTrd2d: {
-        if (DetAverageSingle > 0) {
-          TF1* gs_trd2d = new TF1("gs_trd2d", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fTrd2dPeakWidthNs,
-                                  DetPeakPosSingle + 2 * fTrd2dPeakWidthNs);
-          gs_trd2d->SetParameters(0.7 * DetAverageSingle, DetPeakPosSingle, fTrd2dPeakWidthNs, DetAverageSingle);
-          fvhDetToRefDiff[uDetIdx]->Fit("gs_trd2d", "R");
-          TF1* fitresult_trd2d = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_trd2d");
-          LOG(debug) << fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_trd2d->GetParameter(0)
-                     << ",  " << fitresult_trd2d->GetParameter(1) << ",  " << fitresult_trd2d->GetParameter(2);
         }
         break;
       }

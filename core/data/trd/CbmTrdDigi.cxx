@@ -149,12 +149,12 @@ int32_t CbmTrdDigi::GetAddressModule() const
 //_________________________________________________________________________________
 double CbmTrdDigi::GetCharge() const
 {
-  if (GetType() != eCbmTrdAsicType::kSPADIC) {
-    LOG(warn) << "CbmTrdDigi::GetCharge() : Use double GetCharge(double "
-                 "&tilt) instead.";
-    return 0;
+  if (GetType() == eCbmTrdAsicType::kSPADIC) {
+    return fCharge / fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kSPADIC)];
   }
-  return fCharge / fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kSPADIC)];
+  else {
+    return (fCharge & 0xfff) / fgPrecission[static_cast<size_t>(eCbmTrdAsicType::kFASP)];
+  }
 }
 
 //_________________________________________________________________________________

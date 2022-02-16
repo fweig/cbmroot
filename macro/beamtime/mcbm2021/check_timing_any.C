@@ -75,7 +75,7 @@ void check_timing_any(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TS
   */
 
   /// Add detectors not in default list
-  timeChecker->AddCheckDetector(ECbmModuleId::kTrd2d, "Trd2d", -3000, 3000, 160 * 3);
+  //timeChecker->AddCheckDetector(ECbmModuleId::kTrd2d, "Trd2d", -3000, 3000, 160 * 3);
 
   if (0 < uRunId) timeChecker->SetOutFilename(Form("%s/HistosTimeCheck_%03u.root", outDir.Data(), uRunId));
   fRun->AddTask(timeChecker);

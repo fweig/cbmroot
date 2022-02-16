@@ -118,7 +118,8 @@ public:
    * \return index of module in the experimental set-up. Should be dropped if data get organized module-wise
    */
   int32_t GetAddressModule() const;
-  /** \brief Charge getter for SPADIC*/
+  /** \brief Common purpose charge getter
+   * \return normal charge for SPADIC and rect paired charge for FASP */
   double GetCharge() const;
   /** \brief Charge getter for FASP
    * \param[out] tilt on returns contain the charge measured on tilted pads
