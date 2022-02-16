@@ -52,7 +52,7 @@ CbmTrdClusterFinder.cxx
 CbmTrdHitProducer.cxx 
 CbmTrdModuleRec.cxx 
 CbmTrdModuleRecR.cxx 
-CbmTrdModuleRecT.cxx 
+CbmTrdModuleRec2D.cxx 
 CbmTrdDigiRec.cxx 
 
 unpack/CbmTrdUnpackConfig.cxx

@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Alexandru Bercuci [committer] */
 
-#include "CbmTrdModuleRecT.h"
+#include "CbmTrdModuleRec2D.h"
 
 #include "CbmDigiManager.h"
 #include "CbmTrdCluster.h"
@@ -26,12 +26,12 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-Double_t CbmTrdModuleRecT::fgDT[]      = {4.181e-6, 1586, 24};
-TGraphErrors* CbmTrdModuleRecT::fgEdep = NULL;
-TGraphErrors* CbmTrdModuleRecT::fgT    = NULL;
-TF1* CbmTrdModuleRecT::fgPRF           = NULL;
+Double_t CbmTrdModuleRec2D::fgDT[]      = {4.181e-6, 1586, 24};
+TGraphErrors* CbmTrdModuleRec2D::fgEdep = NULL;
+TGraphErrors* CbmTrdModuleRec2D::fgT    = NULL;
+TF1* CbmTrdModuleRec2D::fgPRF           = NULL;
 //_______________________________________________________________________________
-CbmTrdModuleRecT::CbmTrdModuleRecT()
+CbmTrdModuleRec2D::CbmTrdModuleRec2D()
   : CbmTrdModuleRec()
   , fConfigMap(0)
   , fT0(0)
@@ -51,7 +51,7 @@ CbmTrdModuleRecT::CbmTrdModuleRecT()
 }
 
 //_______________________________________________________________________________
-CbmTrdModuleRecT::CbmTrdModuleRecT(Int_t mod, Int_t ly, Int_t rot)
+CbmTrdModuleRec2D::CbmTrdModuleRec2D(Int_t mod, Int_t ly, Int_t rot)
   : CbmTrdModuleRec(mod, ly, rot)
   , fConfigMap(0)
   , fT0(0)
@@ -68,22 +68,22 @@ CbmTrdModuleRecT::CbmTrdModuleRecT(Int_t mod, Int_t ly, Int_t rot)
   , vx()
   , vxe()
 {
-  // printf("AddModuleT @ %d\n", mod); Config(1,0);
-  SetNameTitle(Form("TrdRecT%d", mod), "Reconstructor for triangular read-out.");
+  SetNameTitle(Form("Trd2dReco%d", mod), "Reconstructor for triangular pads.");
+  // printf("%s (%s)\n", GetName(), GetTitle()); Config(1,0);
 }
 
 //_______________________________________________________________________________
-CbmTrdModuleRecT::~CbmTrdModuleRecT() {}
+CbmTrdModuleRec2D::~CbmTrdModuleRec2D() {}
 
 //_______________________________________________________________________________
-Bool_t CbmTrdModuleRecT::AddDigi(const CbmTrdDigi* d, Int_t id)
+Bool_t CbmTrdModuleRec2D::AddDigi(const CbmTrdDigi* d, Int_t id)
 {
   /** Add digi to cluster fragments. At first clusters are ordered on pad rows and time. 
  * No channel ordering is assumed. The time condition for a digi to enter a cluster 
  * chunk is to have abs(dt)<5 wrt cluster t0 
  */
 
-  if (CWRITE()) cout << "add @" << id << " " << d->ToString();
+  if (CWRITE()) cout << "\nadd @" << id << " " << d->ToString();
 
   Int_t ch = d->GetAddressChannel(), col, row = GetPadRowCol(ch, col), dtime;
   Double_t t, r = d->GetCharge(t, dtime);
@@ -103,7 +103,7 @@ Bool_t CbmTrdModuleRecT::AddDigi(const CbmTrdDigi* d, Int_t id)
     Bool_t kINSERT(kFALSE);
     std::list<CbmTrdCluster*>::iterator itc = fBuffer[row].begin();
     for (; itc != fBuffer[row].end(); itc++) {
-      if (CWRITE()) cout << (*itc)->ToString();
+      //if (CWRITE()) cout << (*itc)->ToString();
 
       UShort_t tc = (*itc)->GetStartTime();
       Int_t dt    = tc - tm;
@@ -128,21 +128,22 @@ Bool_t CbmTrdModuleRecT::AddDigi(const CbmTrdDigi* d, Int_t id)
       if (itc != fBuffer[row].end() && itc != fBuffer[row].begin()) {
         itc--;
         fBuffer[row].insert(itc, cl = new CbmTrdCluster(fModAddress, id, ch, row, tm));
-        if (CWRITE()) cout << "          => Cl (I) " << cl->ToString();
+        if (CWRITE()) cout << "          => Cl (I) ";
       }
       else {
         fBuffer[row].push_back(cl = new CbmTrdCluster(fModAddress, id, ch, row, tm));
-        if (CWRITE()) cout << "          => Cl (Pb) " << cl->ToString();
+        if (CWRITE()) cout << "          => Cl (Pb) ";
       }
-      cl->SetTrianglePads();
+      cl->SetFaspDigis((d->GetType() == CbmTrdDigi::eCbmTrdAsicType::kFASP));
       if (terminator < 0) cl->SetProfileStart();
       else if (terminator > 0)
         cl->SetProfileStop();
+      if (CWRITE()) cout << cl->ToString();
     }
   }
   else {
     fBuffer[row].push_back(cl = new CbmTrdCluster(fModAddress, id, ch, row, tm));
-    cl->SetTrianglePads();
+    cl->SetFaspDigis((d->GetType() == CbmTrdDigi::eCbmTrdAsicType::kFASP));
     if (terminator < 0) cl->SetProfileStart();
     else if (terminator > 0)
       cl->SetProfileStop();
@@ -153,7 +154,7 @@ Bool_t CbmTrdModuleRecT::AddDigi(const CbmTrdDigi* d, Int_t id)
 }
 
 //_______________________________________________________________________________
-Int_t CbmTrdModuleRecT::GetOverThreshold() const
+Int_t CbmTrdModuleRec2D::GetOverThreshold() const
 {
   Int_t nch(0);
   for (std::map<Int_t, std::list<CbmTrdCluster*>>::const_iterator ir = fBuffer.cbegin(); ir != fBuffer.cend(); ir++) {
@@ -164,7 +165,7 @@ Int_t CbmTrdModuleRecT::GetOverThreshold() const
 }
 
 //_______________________________________________________________________________
-Int_t CbmTrdModuleRecT::FindClusters()
+Int_t CbmTrdModuleRec2D::FindClusters()
 {
   CbmTrdCluster* cl(NULL);
 
@@ -196,29 +197,29 @@ Int_t CbmTrdModuleRecT::FindClusters()
     for (itc0 = (*ir).second.begin(); itc0 != (*ir).second.end(); itc0++) {
       cl = (*itc0);
       cl = new ((*fClusters)[ncl++]) CbmTrdCluster(*cl);
-      cl->SetTrianglePads();
+      cl->SetFaspDigis((*itc0)->HasFaspDigis());
       delete (*itc0);
     }
   }
   fBuffer.clear();
 
-  //printf("fClusters[%p] nCl[%d]\n", (void*)fClusters, fClusters->GetEntriesFast());
-  //LOG(info) << GetName() << "::FindClusters : " << ncl;
+  // printf("fClusters[%p] nCl[%d]\n", (void*)fClusters, fClusters->GetEntriesFast());
+  // LOG(info) << GetName() << "::FindClusters : " << ncl;
   return ncl;
 }
 
 //_______________________________________________________________________________
-Bool_t CbmTrdModuleRecT::MakeHits() { return kTRUE; }
+Bool_t CbmTrdModuleRec2D::MakeHits() { return kTRUE; }
 
 //_______________________________________________________________________________
-Bool_t CbmTrdModuleRecT::PreProcessHits()
+Bool_t CbmTrdModuleRec2D::PreProcessHits()
 {
   /** Steering routine for classifying hits and apply further analysis
  * -> hit deconvolution (see Deconvolute)
  */
 
   Int_t nhits = fHits->GetEntriesFast();
-  if (CWRITE()) LOG(info) << "\n" << GetName() << "::PreProcessHits(" << nhits << ")";
+  if (CWRITE()) LOG(info) << GetName() << "::PreProcessHits(" << nhits << ")";
 
   CbmTrdHit* hit(NULL);
   for (Int_t ih(0); ih < nhits; ih++) {
@@ -227,18 +228,18 @@ Bool_t CbmTrdModuleRecT::PreProcessHits()
     nhits += Deconvolute(hit);
   }
   nhits = fHits->GetEntriesFast();
-  if (CWRITE()) LOG(info) << "\n" << GetName() << "::Deconvolute(" << nhits << ")";
+  if (CWRITE()) LOG(info) << GetName() << "::Deconvolute(" << nhits << ")";
   return kTRUE;
 }
 
 //_______________________________________________________________________________
-Bool_t CbmTrdModuleRecT::CheckConvolution(CbmTrdHit* /*h*/) const { return kFALSE; }
+Bool_t CbmTrdModuleRec2D::CheckConvolution(CbmTrdHit* /*h*/) const { return kFALSE; }
 
 //_______________________________________________________________________________
-Bool_t CbmTrdModuleRecT::Deconvolute(CbmTrdHit* /*h*/) { return kFALSE; }
+Bool_t CbmTrdModuleRec2D::Deconvolute(CbmTrdHit* /*h*/) { return kFALSE; }
 
 //_______________________________________________________________________________
-Bool_t CbmTrdModuleRecT::PostProcessHits()
+Bool_t CbmTrdModuleRec2D::PostProcessHits()
 {
   /**  Steering routine for classifying hits and apply further analysis
  * -> hit merging for row-cross (see RowCross)
@@ -296,13 +297,13 @@ Bool_t CbmTrdModuleRecT::PostProcessHits()
   }
   fDigis.clear();
 
-  if (CWRITE()) LOG(info) << "\n" << GetName() << "::MergeHits(" << nhits << ")";
+  if (CWRITE()) LOG(info) << GetName() << "::MergeHits(" << nhits << ")";
   return kTRUE;
 }
 
 
 //_______________________________________________________________________________
-Int_t CbmTrdModuleRecT::CheckMerge(Int_t cid, Int_t cjd)
+Int_t CbmTrdModuleRec2D::CheckMerge(Int_t cid, Int_t cjd)
 {
   /** Check topologic conditions if the 2 clusters (in digi representation) can be merged.
  * The first pair is always from the bottom row
@@ -421,7 +422,7 @@ Int_t CbmTrdModuleRecT::CheckMerge(Int_t cid, Int_t cjd)
 
 
 //_______________________________________________________________________________
-Bool_t CbmTrdModuleRecT::MergeHits(CbmTrdHit* h, Int_t a0)
+Bool_t CbmTrdModuleRec2D::MergeHits(CbmTrdHit* h, Int_t a0)
 {
   Int_t n0(vs.size() - 2);
   Double_t dx(0.), dy(0.);
@@ -568,7 +569,7 @@ Bool_t CbmTrdModuleRecT::MergeHits(CbmTrdHit* h, Int_t a0)
 }
 
 //_______________________________________________________________________________
-Bool_t CbmTrdModuleRecT::BuildHit(CbmTrdHit* h)
+Bool_t CbmTrdModuleRec2D::BuildHit(CbmTrdHit* h)
 {
   Int_t n0(vs.size() - 2);
   Double_t dx(0.), dy(0.);  //, da(0.);
@@ -768,8 +769,15 @@ Bool_t CbmTrdModuleRecT::BuildHit(CbmTrdHit* h)
 #include <TCanvas.h>
 #include <TH1.h>
 //_______________________________________________________________________________
-CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic, const CbmTrdCluster* cl, std::vector<const CbmTrdDigi*>* digis)
+CbmTrdHit* CbmTrdModuleRec2D::MakeHit(Int_t ic, const CbmTrdCluster* cl, std::vector<const CbmTrdDigi*>* digis)
 {
+  if (!cl->HasFaspDigis()) {
+    LOG(debug) << GetName() << "::MakeHit: Hybrid cluster SPADIC/Trd2d. Skipped for the moment.";
+    // std::cout << cl->ToString();
+    return nullptr;
+  }  
+  //printf("%s (%s)\n", GetName(), GetTitle()); Config(1,0);
+
   if (!fgEdep) {  // first use initialization of PRF helppers
     LOG(info) << GetName() << "::MakeHit: Init static helpers. ";
     fgEdep = new TGraphErrors;
@@ -815,7 +823,7 @@ CbmTrdHit* CbmTrdModuleRecT::MakeHit(Int_t ic, const CbmTrdCluster* cl, std::vec
 }
 
 //_______________________________________________________________________________
-Int_t CbmTrdModuleRecT::GetHitClass() const
+Int_t CbmTrdModuleRec2D::GetHitClass() const
 {
   /** Incapsulate hit classification criteria based on signal topology
  * [0] : center hit type
@@ -832,7 +840,7 @@ Int_t CbmTrdModuleRecT::GetHitClass() const
 }
 
 //_______________________________________________________________________________
-Int_t CbmTrdModuleRecT::GetHitRcClass(Int_t a0) const
+Int_t CbmTrdModuleRec2D::GetHitRcClass(Int_t a0) const
 {
   Int_t a0m    = TMath::Abs(a0);
   UChar_t xmap = vyM & 0xff;
@@ -851,7 +859,7 @@ Int_t CbmTrdModuleRecT::GetHitRcClass(Int_t a0) const
 }
 
 //_______________________________________________________________________________
-Double_t CbmTrdModuleRecT::GetXoffset(Int_t n0) const
+Double_t CbmTrdModuleRec2D::GetXoffset(Int_t n0) const
 {
   Double_t dx(0.), R(0.);
   Int_t n(n0 ? n0 : vs.size());
@@ -866,7 +874,7 @@ Double_t CbmTrdModuleRecT::GetXoffset(Int_t n0) const
 }
 
 //_______________________________________________________________________________
-Double_t CbmTrdModuleRecT::GetYoffset(Int_t n0) const
+Double_t CbmTrdModuleRec2D::GetYoffset(Int_t n0) const
 {
   Double_t dy(0.), T(0.);
   Int_t n(n0 ? n0 : vs.size());
@@ -882,7 +890,7 @@ Double_t CbmTrdModuleRecT::GetYoffset(Int_t n0) const
 }
 
 //_______________________________________________________________________________
-Double_t CbmTrdModuleRecT::GetXcorr(Double_t dxIn, Int_t typ, Int_t cls) const
+Double_t CbmTrdModuleRec2D::GetXcorr(Double_t dxIn, Int_t typ, Int_t cls) const
 {
   /** Give the linear interpolation of SYS correction for current position offset "dx" based 
  * on LUT calculated wrt MC EbyE data. The position offset is expresed in [pw] units 
@@ -918,7 +926,7 @@ Double_t CbmTrdModuleRecT::GetXcorr(Double_t dxIn, Int_t typ, Int_t cls) const
 }
 
 //_______________________________________________________________________________
-Double_t CbmTrdModuleRecT::GetYcorr(Double_t dy, Int_t /* cls*/) const
+Double_t CbmTrdModuleRec2D::GetYcorr(Double_t dy, Int_t /* cls*/) const
 {
   /** Process y offset. Apply systematic correction for y (MC derived).
  * The position offset is expresed in [pw] units while the output is in [cm]
@@ -970,7 +978,7 @@ Double_t CbmTrdModuleRecT::GetYcorr(Double_t dy, Int_t /* cls*/) const
 }
 
 //_______________________________________________________________________________
-void CbmTrdModuleRecT::RecenterXoffset(Double_t& dx)
+void CbmTrdModuleRec2D::RecenterXoffset(Double_t& dx)
 {
   /** Shift graph representation to fit dx[pw] in [-0.5, 0.5]
    */
@@ -990,7 +998,7 @@ void CbmTrdModuleRecT::RecenterXoffset(Double_t& dx)
 
 
 //_______________________________________________________________________________
-void CbmTrdModuleRecT::RecenterYoffset(Double_t& dy)
+void CbmTrdModuleRec2D::RecenterYoffset(Double_t& dy)
 {
   /** Shift graph representation to fit dy[ph] in [-0.5, 0.5]
    */
@@ -1008,7 +1016,7 @@ void CbmTrdModuleRecT::RecenterYoffset(Double_t& dy)
 }
 
 //_______________________________________________________________________________
-Int_t CbmTrdModuleRecT::LoadDigis(vector<const CbmTrdDigi*>* din, Int_t cid)
+Int_t CbmTrdModuleRec2D::LoadDigis(vector<const CbmTrdDigi*>* din, Int_t cid)
 {
   /** Load RAW digis info in calibration aware strucuture CbmTrdDigiReco
  * Do basic sanity checks; also incomplete adjacent digi and if found merge them.
@@ -1045,7 +1053,7 @@ Int_t CbmTrdModuleRecT::LoadDigis(vector<const CbmTrdDigi*>* din, Int_t cid)
 }
 
 //_______________________________________________________________________________
-Int_t CbmTrdModuleRecT::ProjectDigis(Int_t cid, Int_t cjd)
+Int_t CbmTrdModuleRec2D::ProjectDigis(Int_t cid, Int_t cjd)
 {
   /** Load digis information in working vectors Digis are represented in the normal coordinate system of
    * (pad width [pw], DAQ time [clk], signal [ADC chs]) with rectangular signals at integer 
@@ -1314,8 +1322,8 @@ Int_t CbmTrdModuleRecT::ProjectDigis(Int_t cid, Int_t cjd)
 }
 
 //_______________________________________________________________________________
-Int_t CbmTrdModuleRecT::LoadDigis(vector<const CbmTrdDigi*>* digis, vector<CbmTrdDigi*>* vdgM, vector<Bool_t>* vmask,
-                                  ULong64_t& t0, Int_t& cM)
+Int_t CbmTrdModuleRec2D::LoadDigis(vector<const CbmTrdDigi*>* digis, vector<CbmTrdDigi*>* vdgM, vector<Bool_t>* vmask,
+                                   ULong64_t& t0, Int_t& cM)
 {
   /** Load digis information in working vectors. 
  * The digis as provided by the digitizer are replaced by the merged one 
@@ -1448,8 +1456,8 @@ Int_t CbmTrdModuleRecT::LoadDigis(vector<const CbmTrdDigi*>* digis, vector<CbmTr
 
 
 //_______________________________________________________________________________
-Int_t CbmTrdModuleRecT::LoadDigisRC(vector<const CbmTrdDigi*>* digis, const Int_t r0, const Int_t a0,
-                                    /*vector<CbmTrdDigi*> *vdgM, */ ULong64_t& t0, Int_t& cM)
+Int_t CbmTrdModuleRec2D::LoadDigisRC(vector<const CbmTrdDigi*>* digis, const Int_t r0, const Int_t a0,
+                                     /*vector<CbmTrdDigi*> *vdgM, */ ULong64_t& t0, Int_t& cM)
 {
   /** Load digis information for row-cross hits in working vectors. 
   * The digis as provided by the digitizer are replaced by the merged one (TODO) 
@@ -1647,7 +1655,7 @@ Int_t CbmTrdModuleRecT::LoadDigisRC(vector<const CbmTrdDigi*>* digis, const Int_
 }
 
 //_______________________________________________________________________________
-Bool_t CbmTrdModuleRecT::MergeDigis(vector<const CbmTrdDigi*>* digis, vector<CbmTrdDigi*>* vdgM, vector<Bool_t>* vmask)
+Bool_t CbmTrdModuleRec2D::MergeDigis(vector<const CbmTrdDigi*>* digis, vector<CbmTrdDigi*>* vdgM, vector<Bool_t>* vmask)
 {
   /* Merge digis in the cluster if their topology within it allows it although cuts in the 
  * digi merger procedure (CbmTrdFASP::WriteDigi()) were not fulfilled. 
@@ -1703,8 +1711,8 @@ Bool_t CbmTrdModuleRecT::MergeDigis(vector<const CbmTrdDigi*>* digis, vector<Cbm
 }
 
 
-Float_t CbmTrdModuleRecT::fgCorrXdx                 = 0.01;
-Float_t CbmTrdModuleRecT::fgCorrXval[3][NBINSCORRX] = {
+Float_t CbmTrdModuleRec2D::fgCorrXdx                 = 0.01;
+Float_t CbmTrdModuleRec2D::fgCorrXval[3][NBINSCORRX] = {
   {-0.001, -0.001, -0.002, -0.002, -0.003, -0.003, -0.003, -0.004, -0.004, -0.006, -0.006, -0.006, -0.007,
    -0.007, -0.008, -0.008, -0.008, -0.009, -0.009, -0.011, -0.011, -0.011, -0.012, -0.012, -0.012, -0.012,
    -0.013, -0.013, -0.013, -0.013, -0.014, -0.014, -0.014, -0.014, -0.014, -0.016, -0.016, -0.016, -0.016,
@@ -1717,11 +1725,11 @@ Float_t CbmTrdModuleRecT::fgCorrXval[3][NBINSCORRX] = {
    0.002,  0.002,  0.002,  0.003,  0.004,  0.003,  0.004,  0.004,  0.007,  0.003,  0.004,  0.002,  0.002,
    -0.011, -0.011, -0.012, -0.012, -0.012, -0.013, -0.013, -0.013, -0.014, -0.014, -0.014, -0.016, -0.016,
    -0.016, -0.017, -0.017, -0.017, -0.018, -0.018, -0.018, -0.019, 0.029,  0.018,  0.001}};
-Float_t CbmTrdModuleRecT::fgCorrYval[NBINSCORRY][2]   = {{2.421729, 0.},
-                                                       {0.629389, -0.215285},
-                                                       {0.23958, 0.},
-                                                       {0.151913, 0.054404}};
-Float_t CbmTrdModuleRecT::fgCorrRcXval[2][NBINSCORRX] = {
+Float_t CbmTrdModuleRec2D::fgCorrYval[NBINSCORRY][2]   = {{2.421729, 0.},
+                                                        {0.629389, -0.215285},
+                                                        {0.23958, 0.},
+                                                        {0.151913, 0.054404}};
+Float_t CbmTrdModuleRec2D::fgCorrRcXval[2][NBINSCORRX] = {
   {-0.00050, -0.00050, -0.00150, -0.00250, -0.00250, -0.00350, -0.00450, -0.00450, -0.00550, -0.00650,
    -0.00650, -0.00750, -0.00850, -0.00850, -0.00850, -0.00950, -0.00950, -0.00950, -0.01050, -0.01150,
    -0.01150, -0.01150, -0.01250, -0.01250, -0.01250, -0.01250, -0.01350, -0.01350, -0.01350, -0.01350,
@@ -1731,7 +1739,7 @@ Float_t CbmTrdModuleRecT::fgCorrRcXval[2][NBINSCORRX] = {
    0.18520, 0.17582, 0.16600, 0.14600, 0.13800, 0.14280, 0.14200, 0.13400, 0.12600, 0.12200, 0.11000, 0.10200, 0.09400,
    0.09000, 0.08600, 0.08200, 0.07400, 0.07000, 0.06600, 0.06600, 0.06200, 0.05800, 0.05400, 0.05400, 0.05000, 0.04600,
    0.04600, 0.04200, 0.03800, 0.03800, 0.03400, 0.03400, 0.03000, 0.03000, 0.02600, 0.02200, 0.02200}};
-Float_t CbmTrdModuleRecT::fgCorrRcXbiasXval[3][NBINSCORRX] = {
+Float_t CbmTrdModuleRec2D::fgCorrRcXbiasXval[3][NBINSCORRX] = {
   {0.00100, 0.00260, 0.00540, 0.00740, 0.00900, 0.01060, 0.01300, 0.01460, 0.01660, 0.01900, 0.02060, 0.02260, 0.02420,
    0.02700, 0.02860, 0.02980, 0.03220, 0.03340, 0.03540, 0.03620, 0.03820, 0.04020, 0.04180, 0.04340, 0.04460, 0.04620,
    0.04740, 0.04941, 0.05088, 0.05233, 0.05375, 0.05515, 0.05653, 0.05788, 0.05921, 0.06052, 0.06180, 0.06306, 0.06430,
@@ -1745,4 +1753,4 @@ Float_t CbmTrdModuleRecT::fgCorrRcXbiasXval[3][NBINSCORRX] = {
    0.02820, 0.02900, 0.03020, 0.03180, 0.03300, 0.03260, 0.03380, 0.03460, 0.03500, 0.03580, 0.03780, 0.03820, 0.03860,
    0.03900, 0.04100, 0.04180, 0.04060, 0.04300, 0.04340, 0.04340, 0.04380, 0.04460, 0.04580, 0.04540}};
 
-ClassImp(CbmTrdModuleRecT)
+ClassImp(CbmTrdModuleRec2D)

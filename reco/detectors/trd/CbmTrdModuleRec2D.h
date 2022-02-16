@@ -2,16 +2,16 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Alexandru Bercuci[committer] */
 
-#ifndef CBMTRDMODULERECT_H
-#define CBMTRDMODULERECT_H
+#ifndef CBMTRDMODULEREC2D_H
+#define CBMTRDMODULEREC2D_H
 
 #include "CbmTrdModuleRec.h"
 
 #include <list>
 #include <map>
 #include <vector>
-#define NBINSCORRX 50   //! no of bins in the discretized correction LUT
-#define NBINSCORRY 4    //! no of bins in the parametrization correction
+#define NBINSCORRX 50  //! no of bins in the discretized correction LUT
+#define NBINSCORRY 4   //! no of bins in the parametrization correction
 #define NANODE 9
 
 using std::list;
@@ -20,7 +20,7 @@ using std::vector;
 class TGraphErrors;
 class CbmTrdDigiRec;
 class TF1;
-/** @class CbmTrdModuleRecT
+/** @class CbmTrdModuleRec2D
  ** @brief Cluster finding and hit reconstruction algorithms for the TRD(2D) module. 
  ** @author Alexandru Bercucic <abercuci@niham.nipne.ro>
  ** @since 01.02.2019
@@ -33,9 +33,9 @@ class TF1;
  ** - apply FEE (channel gain, baseline) and detector (energy gain, maps, etc) calibration
  ** - steer the calculation of hit 4D parameters (x, y, t, E)
  **/
-class CbmTrdModuleRecT : public CbmTrdModuleRec {
+class CbmTrdModuleRec2D : public CbmTrdModuleRec {
 public:
-  enum CbmTrdModuleRecTconfig
+  enum CbmTrdModuleRec2Dconfig
   {
     kVerbose = 0  // steer verbosity on/off
       ,
@@ -43,10 +43,10 @@ public:
   };
 
   /** \brief Default constructor.*/
-  CbmTrdModuleRecT();
+  CbmTrdModuleRec2D();
   /** \brief Constructor with placement */
-  CbmTrdModuleRecT(Int_t mod, Int_t ly = -1, Int_t rot = 0);
-  virtual ~CbmTrdModuleRecT();
+  CbmTrdModuleRec2D(Int_t mod, Int_t ly = -1, Int_t rot = 0);
+  virtual ~CbmTrdModuleRec2D();
 
 
   /** \brief Add digi to local module **/
@@ -120,8 +120,8 @@ public:
 
 protected:
 private:
-  CbmTrdModuleRecT(const CbmTrdModuleRecT& ref);
-  const CbmTrdModuleRecT& operator=(const CbmTrdModuleRecT& ref);
+  CbmTrdModuleRec2D(const CbmTrdModuleRec2D& ref);
+  const CbmTrdModuleRec2D& operator=(const CbmTrdModuleRec2D& ref);
 
   Bool_t CDRAW() const { return TESTBIT(fConfigMap, kDraw); }
   Bool_t CWRITE() const { return TESTBIT(fConfigMap, kVerbose); }
@@ -201,33 +201,33 @@ private:
   std::vector<Double_t> vx;   //! working copy of signal relative positions
   std::vector<Double_t> vxe;  //! working copy of signal relative position errors
 
-  static Float_t fgCorrXdx;                  //! step of the discretized correction LUT
-  static Float_t fgCorrXval[3][NBINSCORRX];  //! discretized correction LUT
-  static Float_t fgCorrYval[NBINSCORRY][2];  //! discretized correction params
+  static Float_t fgCorrXdx;                         //! step of the discretized correction LUT
+  static Float_t fgCorrXval[3][NBINSCORRX];         //! discretized correction LUT
+  static Float_t fgCorrYval[NBINSCORRY][2];         //! discretized correction params
   static Float_t fgCorrRcXval[2][NBINSCORRX];       //! discretized correction LUT
   static Float_t fgCorrRcXbiasXval[3][NBINSCORRX];  //! discretized correction LUT
-  static Double_t fgDT[3];                   //! FASP delay wrt signal
-  static TGraphErrors* fgEdep;               //! data handler for cluster PRF
-  static TF1* fgPRF;                         //! fitter for cluster PRF
-  static TGraphErrors* fgT;                  //! data handler for cluster TRF
+  static Double_t fgDT[3];                          //! FASP delay wrt signal
+  static TGraphErrors* fgEdep;                      //! data handler for cluster PRF
+  static TF1* fgPRF;                                //! fitter for cluster PRF
+  static TGraphErrors* fgT;                         //! data handler for cluster TRF
 
-  ClassDef(CbmTrdModuleRecT,
+  ClassDef(CbmTrdModuleRec2D,
            2)  // Triangular pad module; Cluster finding and hit reconstruction algorithms
 };
 
-void CbmTrdModuleRecT::Config(Bool_t v, Bool_t d)
+void CbmTrdModuleRec2D::Config(Bool_t v, Bool_t d)
 {
   if (v) SETBIT(fConfigMap, kVerbose);
   else
     CLRBIT(fConfigMap, kVerbose);
-  printf("CbmTrdModuleRecT::Verbose[%c]\n", CWRITE() ? 'y' : 'n');
+  printf("CbmTrdModuleRec2D::Verbose[%c]\n", CWRITE() ? 'y' : 'n');
   if (d) SETBIT(fConfigMap, kDraw);
   else
     CLRBIT(fConfigMap, kDraw);
-  printf("CbmTrdModuleRecT::Draw[%c]\n", CDRAW() ? 'y' : 'n');
+  printf("CbmTrdModuleRec2D::Draw[%c]\n", CDRAW() ? 'y' : 'n');
 }
 
-Bool_t CbmTrdModuleRecT::IsOpenRight() const
+Bool_t CbmTrdModuleRec2D::IsOpenRight() const
 {
   Int_t nR = vs.size() - 1 - viM;
   return (nR % 2 && IsMaxTilt()) || (!(nR % 2) && !IsMaxTilt());

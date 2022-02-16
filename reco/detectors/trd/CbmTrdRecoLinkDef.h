@@ -16,7 +16,7 @@
 #pragma link C++ class CbmTrdHitProducer + ;
 #pragma link C++ class CbmTrdModuleRec + ;
 #pragma link C++ class CbmTrdModuleRecR + ;
-#pragma link C++ class CbmTrdModuleRecT + ;
+#pragma link C++ class CbmTrdModuleRec2D + ;
 #pragma link C++ class CbmTrdDigiRec + ;
 
 #pragma link C++ class CbmTrdClusterizerFastQa + ;
