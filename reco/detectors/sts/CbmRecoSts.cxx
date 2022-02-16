@@ -375,10 +375,9 @@ void CbmRecoSts::ProcessData(CbmEvent* event)
 
 
   // --- Distribute digis to modules
-  Int_t digiIndex = -1;
   //#pragma omp parallel for schedule(static) if(fParallelism_enabled)
   for (Int_t iDigi = 0; iDigi < nDigis; iDigi++) {
-    digiIndex              = (event ? event->GetIndex(ECbmDataType::kStsDigi, iDigi) : iDigi);
+    Int_t digiIndex        = (event ? event->GetIndex(ECbmDataType::kStsDigi, iDigi) : iDigi);
     const CbmStsDigi* digi = fDigiManager->Get<const CbmStsDigi>(digiIndex);
     assert(digi);
 
