@@ -990,6 +990,7 @@ void CbmTofFindTracks::Exec(Option_t* opt)
     for (Int_t iEvent = 0; iEvent < fEventsColl->GetEntriesFast(); iEvent++) {
       CbmEvent* tEvent = dynamic_cast<CbmEvent*>(fEventsColl->At(iEvent));
       LOG(debug) << "Process event " << iEvent << " with " << tEvent->GetNofData(ECbmDataType::kTofHit) << " hits";
+      if ((tEvent->GetNofData(ECbmDataType::kTofHit)) < 1) continue;
 
       if (fTofHitArray) fTofHitArray->Clear("C");
       Int_t iNbHits = 0;
