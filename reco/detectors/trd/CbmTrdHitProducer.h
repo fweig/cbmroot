@@ -90,13 +90,13 @@ private:
   void processCluster(const Int_t clusterIdx);
 
   /**
-   * @brief Pass all hits produced by the given module to the TrdHit branch
+   * @brief Pass all hits produced by the given module to the TrdHit branch. 
+   * In case of event not nullptr only the hits conditioned by event are returned.
    * 
-   * @param mod 
-   * @param hitCounter 
-   * @param event 
+   * @param mod : Trd module being processed
+   * @param event : not nullptr for event based reconstruction
    */
-  void addModuleHits(CbmTrdModuleRec* mod, Int_t* hitCounter, CbmEvent* event);
+  UInt_t addModuleHits(CbmTrdModuleRec* mod, CbmEvent* event);
 
   /**
    * @brief Loop over all modules in the given geometry and call addModuleHits(imodule)
@@ -132,6 +132,9 @@ private:
 
   /** @brief Number of produced hits. */
   UInt_t fNrHits = 0;
+
+  /** @brief Number of produced hits per call of Exec, i.e. Event(EbyE) or TimeSlice(TB). */
+  UInt_t fNrHitsCall = 0;
 
   /** @brief Total processing time [RealTime]. */
   Float_t fProcessTime = 0;

@@ -12,8 +12,8 @@
 #include "CbmTrdGeoHandler.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdModuleRec.h"
+#include "CbmTrdModuleRec2D.h"
 #include "CbmTrdModuleRecR.h"
-#include "CbmTrdModuleRecT.h"
 #include "CbmTrdParAsic.h"
 #include "CbmTrdParModDigi.h"
 #include "CbmTrdParModGain.h"
@@ -56,25 +56,31 @@ CbmTrdHitProducer::~CbmTrdHitProducer()
 }
 
 //____________________________________________________________________________________
-void CbmTrdHitProducer::addModuleHits(CbmTrdModuleRec* mod, Int_t* hitCounter, CbmEvent* event)
+UInt_t CbmTrdHitProducer::addModuleHits(CbmTrdModuleRec* mod, CbmEvent* event)
 {
 
   /** Absorb the TClonesArrays of the individual modules into the global
       TClonesArray.
    */
 
-  if (!mod) return;
+  if (!mod) return 0;
 
   auto hits = mod->GetHits();
 
-  if (!hits) return;
+  if (!hits) return 0;
 
-  while (!hits->IsEmpty()) {
-    fHits->AbsorbObjects(hits, 0, 0);
-    if (event) event->AddData(ECbmDataType::kTrdHit, *hitCounter);
-    (*hitCounter)++;
-    fNrHits++;
+  std::uint32_t numModuleHits = hits->GetEntriesFast();
+  if (!numModuleHits) return 0;
+  if (event) {
+    uint32_t nHitsTs = fNrHitsCall;
+    int32_t nHitsEv  = event->GetNofData(ECbmDataType::kTrdHit);
+    if (nHitsEv > 0) nHitsTs += nHitsEv;
+    for (std::uint32_t iHit = 0; iHit < numModuleHits; ++iHit)
+      event->AddData(ECbmDataType::kTrdHit, nHitsTs + iHit);
   }
+  fHits->AbsorbObjects(hits);
+  fNrHits += numModuleHits;
+  return numModuleHits;
 }
 
 //____________________________________________________________________________________
@@ -91,8 +97,8 @@ CbmTrdModuleRec* CbmTrdHitProducer::AddModule(Int_t address, TGeoPhysicalNode* n
   LOG(debug) << GetName() << "::AddModule(" << node->GetName() << " " << (moduleType < 9 ? 'R' : 'T') << "] mod["
              << moduleAddress << "] ly[" << lyId << "] det[" << moduleAddress << "]";
 
-  CbmTrdModuleRec* module(NULL);
-  if (moduleType >= 9) { module = fModules[address] = new CbmTrdModuleRecT(address); }
+  CbmTrdModuleRec* module(nullptr);
+  if (moduleType >= 9) { module = fModules[address] = new CbmTrdModuleRec2D(address); }
   else {
     module = fModules[address] = new CbmTrdModuleRecR(address);
   }
@@ -218,7 +224,7 @@ Int_t CbmTrdHitProducer::addHits(CbmEvent* event)
     mod->PreProcessHits();
     mod->PostProcessHits();
 
-    addModuleHits(mod, &hitCounter, event);
+    hitCounter += addModuleHits(mod, event);
   }
 
   // AbsorberObjects takes care of cleaning up.
@@ -287,15 +293,15 @@ void CbmTrdHitProducer::Exec(Option_t*)
   timerTs.Start();
 
   Long64_t nClusters  = fClusters->GetEntriesFast();
-  UInt_t hitCounterTs = 0;
   UInt_t nEvents      = 0;
+  fNrHitsCall         = 0;
 
   if (CbmTrdClusterFinder::UseOnlyEventDigis()) {
     for (auto eventobj : *fEvents) {
       timer.Start();
       auto event = static_cast<CbmEvent*>(eventobj);
       if (!event) continue;
-      hitCounterTs += processClusters(event);
+      fNrHitsCall += processClusters(event);
       fNrEvents++;
       nEvents++;
       timer.Stop();
@@ -310,7 +316,7 @@ void CbmTrdHitProducer::Exec(Option_t*)
 
   if (!CbmTrdClusterFinder::UseOnlyEventDigis()) {
     timer.Start();
-    hitCounterTs = processClusters();
+    fNrHitsCall = processClusters();
     fNrEvents++;
     timer.Stop();
     if (CbmTrdClusterFinder::DoDebugPrintouts()) {
@@ -333,7 +339,7 @@ void CbmTrdHitProducer::Exec(Option_t*)
   logOut << fixed << setw(8) << setprecision(1) << right << timerTs.RealTime() * 1000. << " ms] ";
   logOut << "TS " << fNrTs;
   if (CbmTrdClusterFinder::UseOnlyEventDigis()) logOut << ", events " << nEvents;
-  logOut << ", clusters " << nClusters << ", hits " << hitCounterTs;
+  logOut << ", clusters " << nClusters << ", hits " << fNrHitsCall;
   LOG(info) << logOut.str();
   fNrTs++;
 }
