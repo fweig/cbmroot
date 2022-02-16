@@ -22,6 +22,7 @@
 #include "CbmRecoUnpackConfig.tmpl"
 #include "CbmTrdDigi.h"
 #include "CbmTrdUnpackAlgoFasp2D.h"
+#include "CbmTrdParFasp.h"
 
 #include <FairLogger.h>
 #include <Logger.h>
@@ -33,6 +34,7 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include <map>
 
 class CbmTrdUnpackConfigFasp2D : public CbmRecoUnpackConfig<CbmTrdUnpackAlgoFasp2D, CbmTrdDigi> {
 
@@ -58,6 +60,16 @@ public:
   /** @brief Assignment operator - not implemented **/
   CbmTrdUnpackConfigFasp2D& operator=(const CbmTrdUnpackConfigFasp2D&) = delete;
 
+  /**
+   * @brief Initialize the algorithm, include all calibration for Trd FASP.
+  */
+  void InitAlgo();
+
+  /** @brief define fasp mapping for each module
+   * @param modAddress module address according to geometry
+   * @param faspMap mapped ids of FASP ASICs for module
+   */
+  void SetFaspMapping(int modAddress, uint8_t faspMap[NFASPMOD]);
 protected:
   /**
    * @brief Choose the derived unpacker algorithm to be used for the DAQ output to Digi translation. If algo was already set manually by the user this algorithm is used.
@@ -67,7 +79,9 @@ protected:
   virtual std::shared_ptr<CbmTrdUnpackAlgoFasp2D> chooseAlgo();
 
 private:
-  ClassDef(CbmTrdUnpackConfigFasp2D, 3)
+  std::map<uint32_t, uint8_t[NFASPMOD]> fFaspMap;  ///> DAQ packing of FASP id
+  
+  ClassDef(CbmTrdUnpackConfigFasp2D, 4)
 };
 
 #endif  // CbmTrdUnpackConfigFasp2D_H

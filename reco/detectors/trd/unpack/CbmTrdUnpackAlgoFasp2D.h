@@ -25,6 +25,7 @@
 #include "CbmRecoUnpackAlgo.tmpl"
 #include "CbmTrdDigi.h"
 #include "CbmTrdParSetAsic.h"
+#include "CbmTrdParFasp.h"
 
 #include "Timeslice.hpp"  // timeslice
 
@@ -108,6 +109,12 @@ public:
   virtual std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
   GetParContainerRequest(std::string geoTag, std::uint32_t runId);
 
+  /**
+   * @brief Introduce fasp index mapping
+   */
+  void SetAsicMapping(const std::map<uint32_t, uint8_t[NFASPMOD]> &map);
+  void PrintAsicMapping();
+  
 protected:
   /** @brief Get message type from the FASP word */
   CbmTrdFaspMessageType mess_type(uint32_t wd);
@@ -117,7 +124,7 @@ protected:
   void mess_readEW(uint32_t wd, CbmTrdFaspContent* mess);
   /** @brief Print FASP message */
   void mess_prt(CbmTrdFaspContent* mess);
-  bool pushDigis(std::map<UChar_t, std::vector<CbmTrdUnpackAlgoFasp2D::CbmTrdFaspContent*>> digis);
+  bool pushDigis(std::vector<CbmTrdUnpackAlgoFasp2D::CbmTrdFaspContent*> digis);
   ULong64_t fTime[NCRI];
 
   /** @brief Finish function for this algorithm base clase */
@@ -173,10 +180,10 @@ protected:
 
 private:
   void prt_wd(uint32_t w);
-
+  std::map<uint32_t, uint8_t[NFASPMOD]> *fFaspMap = nullptr;
   std::vector<Int_t> fModuleId;
   CbmTrdParSetAsic fAsicPar;
-  CbmTrdParSetDigi* fDigiSet;
+  CbmTrdParSetDigi* fDigiSet = nullptr;
 
   ClassDef(CbmTrdUnpackAlgoFasp2D, 2)  // unpack FASP read-out detectors
 };

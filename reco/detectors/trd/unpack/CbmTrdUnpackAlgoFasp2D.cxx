@@ -29,11 +29,10 @@
 
 using namespace std;
 
-CbmTrdUnpackAlgoFasp2D::CbmTrdUnpackAlgoFasp2D()
+CbmTrdUnpackAlgoFasp2D::CbmTrdUnpackAlgoFasp2D() 
   : CbmRecoUnpackAlgo("CbmTrdUnpackAlgoFasp2D")
   , fModuleId()
   , fAsicPar()
-  , fDigiSet(nullptr)
 {
   memset(fTime, 0, NCRI * sizeof(ULong64_t));
 }
@@ -119,6 +118,31 @@ CbmTrdUnpackAlgoFasp2D::GetParContainerRequest(std::string geoTag, std::uint32_t
 }
 
 //_________________________________________________________________________________
+void CbmTrdUnpackAlgoFasp2D::SetAsicMapping(const std::map<uint32_t, uint8_t[NFASPMOD]> &asicMap)
+{
+  if(!fFaspMap) fFaspMap = new std::map<uint32_t, uint8_t[NFASPMOD]>(asicMap);
+  else (*fFaspMap) = asicMap;
+}
+
+//_________________________________________________________________________________
+void CbmTrdUnpackAlgoFasp2D::PrintAsicMapping()
+{
+  if (!fFaspMap) {
+    LOG(info) << GetName() << "No asic mapping loaded.";
+    return;
+  }
+  LOG(info) << GetName() << "Fasp Asic mapping on modules:";
+  for(auto imod : (*fFaspMap)) {
+    printf("Mod [%6d] : ", imod.first);
+    for(int ifasp(0); ifasp<NFASPMOD; ifasp++) {
+      int jfasp = imod.second[ifasp];
+      printf("%2d ", (jfasp == 0xff ?-1:jfasp));
+    }
+    printf("\n");
+  }
+}
+
+//_________________________________________________________________________________
 CbmTrdUnpackAlgoFasp2D::CbmTrdFaspMessageType CbmTrdUnpackAlgoFasp2D::mess_type(uint32_t wd)
 {
   if ((wd >> kMessCh) & 0x1) return kData;
@@ -161,7 +185,7 @@ void CbmTrdUnpackAlgoFasp2D::mess_readEW(uint32_t w, CbmTrdFaspContent* mess)
 //_________________________________________________________________________________
 void CbmTrdUnpackAlgoFasp2D::mess_prt(CbmTrdFaspContent* mess)
 {
-  if (mess->type == kData)
+  if (mess->type == kData) 
     cout << boost::format("    DATA : fasp_id=%02d ch_id=%02d tclk=%03d data=%4d\n")
               % static_cast<unsigned int>(mess->fasp) % static_cast<unsigned int>(mess->ch)
               % static_cast<unsigned int>(mess->tlab) % static_cast<unsigned int>(mess->data);
@@ -172,97 +196,85 @@ void CbmTrdUnpackAlgoFasp2D::mess_prt(CbmTrdFaspContent* mess)
 
 //_________________________________________________________________________________
 bool CbmTrdUnpackAlgoFasp2D::pushDigis(
-  std::map<UChar_t, std::vector<CbmTrdUnpackAlgoFasp2D::CbmTrdFaspContent*>> messes)
+  std::vector<CbmTrdUnpackAlgoFasp2D::CbmTrdFaspContent*> messes)
 {
-  bool use(false), kRowInverted(false);
   UChar_t lFasp(0xff);
   UShort_t lchR, lchT;
   Double_t r, t;
-  Int_t dt, dtime, pad, row;
+  Int_t dt, dtime, ch, pad, row;
   ULong64_t tlab;
   CbmTrdParFasp* faspPar(nullptr);
+  const CbmTrdParFaspChannel* chCalib(nullptr);
   CbmTrdParModDigi* digiPar(nullptr);
   vector<CbmTrdDigi*> digis;
-  for (Int_t col(0); col < NCOLS; col++) {
-    if (!messes[col].size()) continue;
-    vector<CbmTrdFaspContent*>::iterator i = messes[col].begin();
+  for (auto imess : messes) {
     if (lFasp == 0xff) {
-      lFasp = messes[col][0]->fasp;
+      lFasp = messes[0]->fasp;
       // link data to the position on the padplane
-      if (!(faspPar = (CbmTrdParFasp*) fAsicPar.GetAsicPar((*i)->cri * 1000 + lFasp))) {
-        LOG(error) << GetName() << "::pushDigis - Par for FASP " << (int) lFasp << " in module " << (*i)->cri
+      if (!(faspPar = (CbmTrdParFasp*) fAsicPar.GetAsicPar(imess->cri * 1000 + lFasp))) {
+        LOG(error) << GetName() << "::pushDigis - Par for FASP " << (int) lFasp << " in module " << imess->cri
                    << " missing. Skip.";
         return false;
       }
-      if (!(digiPar = (CbmTrdParModDigi*) fDigiSet->GetModulePar((*i)->cri))) {
-        LOG(error) << GetName() << "::pushDigis - DIGI par for module " << (*i)->cri << " missing. Skip.";
+      if (!(digiPar = (CbmTrdParModDigi*) fDigiSet->GetModulePar(imess->cri))) {
+        LOG(error) << GetName() << "::pushDigis - DIGI par for module " << imess->cri << " missing. Skip.";
         return false;
       }
-      pad = faspPar->GetChannelAddress(0);
-      row = digiPar->GetPadRow(pad);
-
-      // determine the HW direction in which the FASP channels are ordered
-      if (row % 2 == 0) {  // valid only for mCBM-07.2021 TRD-2D
-        kRowInverted = kTRUE;
-        pad          = faspPar->GetChannelAddress(15 - (*i)->ch);
-      }
+      if(VERBOSE) faspPar->Print();
+      pad  = faspPar->GetChannelAddress(imess->ch);
+      chCalib = faspPar->GetChannel(imess->ch);
+      ch      = 2 * pad + chCalib->HasPairingR();
+      row     = digiPar->GetPadRow(pad);
+      if(VERBOSE) printf("fasp[%2d] ch[%4d / %2d] pad[%4d] row[%2d] col[%2d] tilt[%d]\n", lFasp, ch, imess->ch, pad, row, digiPar->GetPadColumn(pad), chCalib->HasPairingT());  
     }
 
-    for (; i != messes[col].end(); i++) {
-      if (VERBOSE) mess_prt((*i));
+    if (VERBOSE) mess_prt(imess);
 
-      lchR = 0;
-      lchT = 0;
-      use  = false;
-      if ((*i)->ch % 2 != 0) {
-        if (!kRowInverted) lchR = (*i)->data;
-        else
-          lchT = (*i)->data;
-      }
-      else {
-        if (!kRowInverted) lchT = (*i)->data;
-        else
-          lchR = (*i)->data;
-      }
-      for (vector<CbmTrdDigi*>::iterator id = digis.begin(); id != digis.end(); id++) {
-        dtime = (*id)->GetTimeDAQ() - (*i)->tlab;
-        if (TMath::Abs(dtime) < 5) {
-          r = (*id)->GetCharge(t, dt);
-          if (lchR && !int(r)) {
-            (*id)->SetCharge(t, lchR, -dtime);
-            use = true;
-            break;
-          }
-          else if (lchT && !int(t)) {
-            tlab = (*id)->GetTimeDAQ();
-            (*id)->SetCharge(lchT, r, +dtime);
-            (*id)->SetTimeDAQ(ULong64_t(tlab - dtime));
-            use = true;
-            break;
-          }
+    lchR = 0;
+    lchT = 0;
+    chCalib = faspPar->GetChannel(imess->ch);
+    if(chCalib->HasPairingR()) lchR = imess->data;
+    else lchT = imess->data;
+    pad = faspPar->GetChannelAddress(imess->ch);
+
+    bool use(false);
+    for (auto id : digis) {
+      if (id->GetAddressChannel() != pad) continue;
+      dtime = id->GetTimeDAQ() - imess->tlab;
+      if (TMath::Abs(dtime) < 5) {
+        r = id->GetCharge(t, dt);
+        if (lchR && !int(r)) {
+          id->SetCharge(t, lchR, -dtime);
+          use = true;
+          break;
+        }
+        else if (lchT && !int(t)) {
+          tlab = id->GetTimeDAQ();
+          id->SetCharge(lchT, r, +dtime);
+          id->SetTimeDAQ(ULong64_t(tlab - dtime));
+          use = true;
+          break;
         }
       }
-
-      if (!use) {
-        pad              = faspPar->GetChannelAddress(kRowInverted ? (15 - (*i)->ch) : (*i)->ch);
-        CbmTrdDigi* digi = new CbmTrdDigi(pad, lchT, lchR, (*i)->tlab);
-        digi->SetAddressModule((*i)->cri);
-        digis.push_back(digi);
-      }
-      delete (*i);
     }
 
-    // push finalized digits to the next level
-    for (vector<CbmTrdDigi*>::iterator id = digis.begin(); id != digis.end(); id++) {
-      (*id)->SetTimeDAQ(fTime[0] + (*id)->GetTimeDAQ());
-      fOutputVec.emplace_back(*std::move(*id));
-      if (VERBOSE) cout << (*id)->ToString();
+    if (!use) {
+      CbmTrdDigi* digi = new CbmTrdDigi(pad, lchT, lchR, imess->tlab);
+      digi->SetAddressModule(imess->cri);
+      digis.push_back(digi);
     }
-
-    digis.clear();
-    messes[col].clear();
+    delete imess;
   }
 
+  // push finalized digits to the next level
+  for (vector<CbmTrdDigi*>::iterator id = digis.begin(); id != digis.end(); id++) {
+    (*id)->SetTimeDAQ(fTime[0] + (*id)->GetTimeDAQ());
+    fOutputVec.emplace_back(*std::move(*id));
+    if (VERBOSE) cout << (*id)->ToString();
+  }
+
+  digis.clear();
+  messes.clear();
 
   return true;
 }
@@ -273,6 +285,7 @@ bool CbmTrdUnpackAlgoFasp2D::unpack(const fles::Timeslice* ts, std::uint16_t ico
   if (VERBOSE) printf("CbmTrdUnpackAlgoFasp2D::unpack 0x%04x %d\n", icomp, imslice);
   //LOG(info) << "Component " << icomp << " connected to config CbmTrdUnpackConfig2D. Slice "<<imslice;
 
+  uint32_t mod_id = 5;
   bool unpackOk = true;
   //Double_t fdMsSizeInNs = 1.28e6;
 
@@ -296,8 +309,8 @@ bool CbmTrdUnpackAlgoFasp2D::unpack(const fles::Timeslice* ts, std::uint16_t ico
   const uint32_t* wd = reinterpret_cast<const uint32_t*>(mscontent);
 
 
-  UChar_t lFaspOld(0xff), col;
-  map<UChar_t, vector<CbmTrdFaspContent*>> vDigi;
+  UChar_t lFaspOld(0xff);
+  vector<CbmTrdFaspContent*> vDigi;
   CbmTrdFaspContent* mess(nullptr);
   for (uint64_t j = 0; j < nwords; j++, wd++) {
     //     // Select the appropriate conversion type of the word according to the message type
@@ -309,7 +322,6 @@ bool CbmTrdUnpackAlgoFasp2D::unpack(const fles::Timeslice* ts, std::uint16_t ico
     //         mess_readEW(*wd, &mess);
     //         break;
     //     }
-    //if(VERBOSE) mess_prt(&mess);
     uint32_t w      = *wd;
     uint8_t ch_id   = w & 0xf;
     uint8_t isaux   = (w >> 4) & 0x1;
@@ -317,7 +329,7 @@ bool CbmTrdUnpackAlgoFasp2D::unpack(const fles::Timeslice* ts, std::uint16_t ico
     uint16_t data   = (w >> 12) & 0x3fff;
     uint32_t epoch  = (w >> 5) & 0x1fffff;
     uint8_t fasp_id = (w >> 26) & 0x3f;
-    //    out<<"fasp_id="<<static_cast<unsigned int>(fasp_id)<<" ch_id="<<static_cast<unsigned int>(ch_id)<<" isaux="<<static_cast<unsigned int>(isaux)<<std::endl;
+    // std::cout<<"fasp_id="<<static_cast<unsigned int>(fasp_id)<<" ch_id="<<static_cast<unsigned int>(ch_id)<<" isaux="<<static_cast<unsigned int>(isaux)<<std::endl;
     if (isaux) {
       if (!ch_id) {
         if (VERBOSE)
@@ -335,6 +347,8 @@ bool CbmTrdUnpackAlgoFasp2D::unpack(const fles::Timeslice* ts, std::uint16_t ico
       }
     }
     else {
+      if (fFaspMap) fasp_id = ((*fFaspMap)[mod_id])[fasp_id];
+      
       if (lFaspOld != fasp_id) {
         // push
         if (vDigi.size()) { pushDigis(vDigi); }
@@ -359,9 +373,8 @@ bool CbmTrdUnpackAlgoFasp2D::unpack(const fles::Timeslice* ts, std::uint16_t ico
       mess->tlab = slice;
       mess->data = data >> 1;
       mess->fasp = lFaspOld;
-      mess->cri  = 5;
-      col        = ch_id >> 1;
-      vDigi[col].push_back(mess);
+      mess->cri  = mod_id;
+      vDigi.push_back(mess);
     }
     //prt_wd(*wd);
   }

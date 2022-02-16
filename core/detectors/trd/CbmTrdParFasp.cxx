@@ -24,20 +24,29 @@ CbmTrdParFasp::CbmTrdParFasp(Int_t address, Int_t FebGrouping, Double_t x, Doubl
 }
 
 //___________________________________________________________________
-const CbmTrdParFaspChannel* CbmTrdParFasp::GetChannel(Int_t address, UChar_t pairing) const
+const CbmTrdParFaspChannel* CbmTrdParFasp::GetChannel(Int_t pad_address, UChar_t pairing) const
 {
-  Int_t id = QueryChannel(2 * address + pairing);
+  Int_t id = QueryChannel(2 * pad_address + pairing);
   if (id < 0) return nullptr;
   return &fCalib[id];
 }
 
 //___________________________________________________________________
+const CbmTrdParFaspChannel* CbmTrdParFasp::GetChannel(Int_t ch_address) const
+{
+  if (ch_address < 0 || ch_address >= NFASPCH) return nullptr;
+  return &fCalib[ch_address];
+}
+
+//___________________________________________________________________
 void CbmTrdParFasp::LoadParams(FairParamList* l)
 {
+  printf("CbmTrdParFasp::LoadParams(FairParamList*)\n");
   TArrayI value(NFASPCH);
   if (l->fill(Form("%dCHS", fAddress), &value)) {
     for (Int_t ich(0); ich < NFASPCH; ich++) {
       Int_t pair = ich % 2;
+      printf("  ch[%2d] pair[%d] value[%d] ChAddress=%d\n", ich, pair, value[ich], 2 * value[ich] + pair);
       SetChannelAddress(2 * value[ich] + pair);
       fCalib[ich].SetPairing(pair);
     }
@@ -54,14 +63,14 @@ void CbmTrdParFasp::LoadParams(FairParamList* l)
 }
 
 void CbmTrdParFasp::LoadParams(TArrayI& valArray, Int_t iAsic)
-{
+{ 
   // Where does the asic info start in large array
   Int_t offset = iAsic * (1 + NFASPCH * 4);
   //  Int_t asicAddress = valArray[ offset++ ];
   offset++;
   for (Int_t ich(0); ich < NFASPCH; ich++) {
-    Int_t pair = ich % 2;
-    SetChannelAddress(2 * valArray[offset++] + pair);
+    Int_t pair = ich % 2; // TODO pairing should be set from the external parameters
+    SetChannelAddress(valArray[offset++]);
     fCalib[ich].SetPairing(pair);
   }
   for (Int_t ich(0); ich < NFASPCH; ich++) {
@@ -124,7 +133,7 @@ CbmTrdParFaspChannel::CbmTrdParFaspChannel(Int_t pup, Int_t ft, Int_t thr, Int_t
 //___________________________________________________________________
 void CbmTrdParFaspChannel::Print(Option_t* /*opt*/) const
 {
-  printf("[%c]; CALIB { PUT[ns]=%3d FT[clk]=%2d THR[ADC]=%4d MDS[ADC]=%4d }\n", (HasPairing(kTRUE) ? 'R' : 'T'),
+  printf("[%c]; CALIB { PUT[ns]=%3d FT[clk]=%2d THR[ADC]=%4d MDS[ADC]=%4d }\n", (HasPairingR() ? 'R' : 'T'),
          fPileUpTime, fFlatTop, fThreshold, fMinDelaySignal);
 }
 
