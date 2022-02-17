@@ -33,6 +33,9 @@ class CbmTsEventHeader;
 class FairRunOnline;
 class FairRootManager;
 
+class TClonesArray;
+class TimesliceMetaData;
+
 class CbmDeviceEventBuilder : public FairMQDevice {
 public:
   CbmDeviceEventBuilder();
@@ -96,6 +99,10 @@ private:
   /// TS information in header
   CbmTsEventHeader* fCbmTsEventHeader = nullptr;
 
+  /// TS MetaData storage
+  TClonesArray* fTimeSliceMetaDataArray = nullptr;
+  TimesliceMetaData* fTsMetaData        = nullptr;
+
   /// Data storage
   FairRunOnline* fpRun           = nullptr;
   FairRootManager* fpFairRootMgr = nullptr;
@@ -104,7 +111,7 @@ private:
   std::vector<CbmDigiEvent>* fEventsSel = nullptr;  //! output container of CbmEvents
 
   bool IsChannelNameAllowed(std::string channelName);
-  bool SendEvents(FairMQParts& partsIn, const std::vector<CbmDigiEvent>& vEvents);
+  bool SendEvents(const std::vector<CbmDigiEvent>& vEvents);
 
   // --- Extract digi times into to a vector
   template<class TDigi>

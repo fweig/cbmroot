@@ -32,7 +32,10 @@
 #include "RootSerializer.h"
 
 /// FAIRSOFT headers (geant, boost, ...)
+#include "TimesliceMetaData.h"
+
 #include "TCanvas.h"
+#include "TClonesArray.h"
 #include "TFile.h"
 #include "TH1.h"
 #include "TList.h"
@@ -105,6 +108,11 @@ try {
   /// Create storage vector for events
   fEventsSel = new std::vector<CbmDigiEvent>();
   fpFairRootMgr->RegisterAny("DigiEvent", fEventsSel, kTRUE);
+
+  fTimeSliceMetaDataArray = new TClonesArray("TimesliceMetaData", 1);
+  if (nullptr == fTimeSliceMetaDataArray) { throw InitTaskError("Failed creating the TS meta data TClonesarray "); }
+  fpFairRootMgr->Register("TimesliceMetaData", "TS Meta Data", fTimeSliceMetaDataArray, kTRUE);
+
   fpFairRootMgr->WriteFolder();
 
   // Get the information about created channels from the device
@@ -296,6 +304,17 @@ bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
   inputArchivePsd >> ts.fData.fPsd.fDigis;
   ++uPartIdx;
 
+  /// TS metadata
+  Deserialize<RootSerializer>(*parts.At(uPartIdx), fTsMetaData);
+  new ((*fTimeSliceMetaDataArray)[fTimeSliceMetaDataArray->GetEntriesFast()])
+    TimesliceMetaData(std::move(*fTsMetaData));
+  ++uPartIdx;
+
+  //if (1 == fulNumMessages) {
+  /// First message received (do TS metadata stuff here)
+  //fpAlgo->SetTsParameters(0, fTsMetaData->GetDuration(), fTsMetaData->GetOverlapDuration());
+  //}
+
   LOG(debug) << "T0 Vector size: " << ts.fData.fT0.fDigis.size();
   LOG(debug) << "STS Vector size: " << ts.fData.fSts.fDigis.size();
   LOG(debug) << "MUCH Vector size: " << ts.fData.fMuch.fDigis.size();
@@ -312,7 +331,10 @@ bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
   LOG(debug) << "vEvents size: " << vEvents.size();
 
   /// Send events vector to ouput
-  if (!SendEvents(parts, vEvents)) { return false; }
+  if (!SendEvents(vEvents)) {
+    fTimeSliceMetaDataArray->Clear();
+    return false;
+  }
 
   /// Write events to file
   (*fEventsSel) = std::move(vEvents);
@@ -323,6 +345,12 @@ bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
   (*fCbmTsEventHeader) = std::move(*evtHeader);
 
   DumpTreeEntry();
+
+  /// Clear metadata
+  fTimeSliceMetaDataArray->Clear();
+
+  /// Clear event vector
+  fEventsSel->clear();
 
   return true;
 }
@@ -336,9 +364,6 @@ void CbmDeviceEventBuilder::DumpTreeEntry()
   fpFairRootMgr->FillEventHeader(fCbmTsEventHeader);
   fpFairRootMgr->Fill();
   fpFairRootMgr->DeleteOldWriteoutBufferData();
-
-  /// Clear event vector
-  fEventsSel->clear();
 }
 
 std::vector<double> CbmDeviceEventBuilder::GetTriggerTimes(const CbmDigiTimeslice& ts)
@@ -379,16 +404,21 @@ std::vector<double> CbmDeviceEventBuilder::GetTriggerTimes(const CbmDigiTimeslic
   return fTriggerAlgo(vDigiTimes, fTriggerWindow, fMinNumDigis, fDeadTime);
 }
 
-bool CbmDeviceEventBuilder::SendEvents(FairMQParts& partsIn, const std::vector<CbmDigiEvent>& vEvents)
+bool CbmDeviceEventBuilder::SendEvents(const std::vector<CbmDigiEvent>& vEvents)
 {
   LOG(debug) << "Vector size: " << vEvents.size();
+
+  FairMQMessagePtr messTsMeta(NewMessage());
+  Serialize<RootSerializer>(*messTsMeta, fTsMetaData);
 
   std::stringstream ossEvt;
   boost::archive::binary_oarchive oaEvt(ossEvt);
   oaEvt << vEvents;
   std::string* strMsgEvt = new std::string(ossEvt.str());
 
-  FairMQParts partsOut(NewMessage(
+  FairMQParts partsOut(std::move(messTsMeta));
+
+  partsOut.AddPart(NewMessage(
     const_cast<char*>(strMsgEvt->c_str()),  // data
     strMsgEvt->length(),                    // size
     [](void*, void* object) { delete static_cast<std::string*>(object); },
@@ -423,4 +453,9 @@ CbmDeviceEventBuilder::~CbmDeviceEventBuilder()
 
   /// Clear metadata
   delete fCbmTsEventHeader;
+
+  /// Clear metadata
+  fTimeSliceMetaDataArray->Clear();
+  delete fTimeSliceMetaDataArray;
+  delete fTsMetaData;
 }
