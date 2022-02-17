@@ -439,3 +439,28 @@ std::string L1BaseStationInfo::ToString(int verbosityLevel, int indentLevel) con
   }
   return aStream.str();
 }
+
+//----------------------------------------------------------------------------------------------------------------------//
+//
+std::string L1BaseStationInfo::ToString(int verbosityLevel, int indentLevel) const
+{
+  std::stringstream aStream {};
+  constexpr char indentChar = '\t';
+  std::string indent(indentLevel, indentChar);
+
+  if (verbosityLevel == 0) {
+    aStream << indent << "L1BaseStationInfo object: {stationID, detectorID, address} = {" << fStationID << ", "
+            << static_cast<int>(fDetectorID) << ", " << this << '}';
+  }
+  else if (verbosityLevel > 0) {
+    aStream << indent << "L1BaseStationInfo object: at " << this << '\n';
+    aStream << indent << indentChar << "Station ID:              " << fStationID << '\n';
+    aStream << indent << indentChar << "Detector ID:             " << static_cast<int>(fDetectorID) << '\n';
+    aStream << indent << indentChar << "L1Station object:" << '\n';
+    aStream << fL1Station.ToString(verbosityLevel - 1, indentLevel + 1) << '\n';
+    aStream << indent << indentChar << "Additional fields:\n";
+    aStream << indent << indentChar << indentChar << "Xmax:                    " << fXmax << '\n';
+    aStream << indent << indentChar << indentChar << "Ymax:                    " << fYmax << '\n';
+  }
+  return aStream.str();
+}

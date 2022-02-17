@@ -130,7 +130,7 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
     double f_sigma = geo[ind++];
     double b_phi   = geo[ind++];
     double b_sigma = geo[ind++];
-    double dt      = geo[ind++];
+    double dt      = geo[ind++]; //TODO: Add this field to L1BaseStationInfo and to ToString fcn (S.Zharko)
     double c_f     = cos(f_phi);
     double s_f     = sin(f_phi);
     double c_b     = cos(b_phi);
