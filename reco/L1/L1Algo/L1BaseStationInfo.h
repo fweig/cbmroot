@@ -18,6 +18,7 @@
 // C++ std
 #include <bitset>
 #include <functional>
+#include <string>
 
 #include "L1Station.h"
 
@@ -187,6 +188,9 @@ public:
   void SetXmax(double aSize);
   /// Sets maximum distance between station center and its edge in y direction
   void SetYmax(double aSize);
+  /// String representation of class contents
+  /// \param indentLevel    number of indent characters in the output
+  std::string ToString(int verbosityLevel = 0, int indentLevel = 0) const;
 
 private:
   L1DetectorID fDetectorID {static_cast<L1DetectorID>(0)};  ///< Detector ID

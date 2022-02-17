@@ -5,6 +5,8 @@
 #ifndef L1MaterialInfo_h
 #define L1MaterialInfo_h
 
+#include <iomanip>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -17,10 +19,16 @@ public:
   fvec RadThick {0};
   fvec logRadThick {0};
 
-  std::string
+  /// String representation of class contents
+  /// \param indentLevel    number of indent characters in the output
+  std::string ToString(int indentLevel = 0) const;
 } _fvecalignment;
 
 
+// TODO: Probably one should refactor this class:
+//       1) Make MBins and RMax private
+//       2) Replace std::vector<std::vector<float>> with std::vector<float> (using recalculation of (i,j) into one idx)
+//       (S.Zharko)
 class L1Material {
 public:
   L1Material() : table(0), NBins(0), RMax(0.), iD(0.) {};

@@ -5,8 +5,9 @@
 #ifndef L1XYMeasurementInfo_h
 #define L1XYMeasurementInfo_h 1
 
-#include "L1Def.h"
+#include <string>
 
+#include "L1Def.h"
 
 class L1XYMeasurementInfo {
 

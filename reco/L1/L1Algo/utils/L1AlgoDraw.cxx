@@ -25,6 +25,11 @@
 
 #include "L1Algo.h"
 
+// NOTE: using std::cout, std::endl were removed from one of the headers, and it
+//       caused errors. Please, don't use "using" in headers
+using std::cout;
+using std::endl;
+
 L1AlgoDraw::L1AlgoDraw()
 {
 

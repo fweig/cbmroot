@@ -5,234 +5,126 @@
 #ifndef L1Field_h
 #define L1Field_h 1
 
-#include <iostream>
+#include <string>
 
 #include "L1Def.h"
 #include "L1Parameters.h"
 
-using std::cout;
-using std::endl;
-using std::ostream;
-
-
 class L1FieldValue {
-
-
 public:
-  L1FieldValue() : x(0), y(0), z(0) {};
+  fvec x {0.f};  //< x-component of the field
+  fvec y {0.f};  //< y-component of the field
+  fvec z {0.f};  //< z-component of the field
 
-  fvec x, y, z;
-
-  void Combine(L1FieldValue& B, fvec w)
-  {
-    x += w * (B.x - x);
-    y += w * (B.y - y);
-    z += w * (B.z - z);
-  }
-
-  friend ostream& operator<<(ostream& out, L1FieldValue& B)
-  {
-    return out << B.x[0] << " | " << B.y[0] << " | " << B.z[0];
-  };
+  /// Combines the magnetic field with another field value object using weight
+  /// \param B  other field value to combine with
+  /// \param w  weight from 0 to 1 // TODO: Do we need any checks here? (S.Zharko)
+  void Combine(L1FieldValue& B, fvec w);  // TODO: Shouldn't the B parameter be const? (S.Zharko)
+  /// Operator << overloading
+  friend std::ostream& operator<<(std::ostream& out, const L1FieldValue& B);
+  /// String representation of class contents
+  /// \param indentLevel      number of indent characters in the output
+  std::string ToString(int indentLevel) const;
 } _fvecalignment;
 
 
+/// Class represents a set of magnetic field approximation coefficients
+///
+// TODO: Crosscheck the default content (S.Zharko)
 class L1FieldSlice {
+public:
+  L1FieldSlice() noexcept;
+  /// Gets field value from (x, y) fvec point
+  /// \param x  x-coordinate of input
+  /// \param y  y-coordinate of input
+  /// \param B  the L1FieldValue output
+  void GetFieldValue(const fvec& x, const fvec& y, L1FieldValue& B) const;
+  /// String representation of class contents
+  /// \param indentLevel      number of indent characters in the output
+  std::string ToString(int indentLevel = 0) const;
 
 public:
-  fvec cx[L1Parameters::kMaxNFieldApproxCoefficients];
-  fvec cy[L1Parameters::kMaxNFieldApproxCoefficients];
-  fvec cz[L1Parameters::kMaxNFieldApproxCoefficients];  // polinom coeff.
-
-  L1FieldSlice()
-  {
-    for (int i = 0; i < L1Parameters::kMaxNFieldApproxCoefficients; ++i)
-      cx[i] = cy[i] = cz[i] = 0;
-  }
-
-  void GetFieldValue(const fvec& x, const fvec& y, L1FieldValue& B) const
-  {
-    fvec x2 = x * x;
-    fvec y2 = y * y;
-    fvec xy = x * y;
-
-    fvec x3  = x2 * x;
-    fvec y3  = y2 * y;
-    fvec xy2 = x * y2;
-    fvec x2y = x2 * y;
-
-    fvec x4   = x3 * x;
-    fvec y4   = y3 * y;
-    fvec xy3  = x * y3;
-    fvec x2y2 = x2 * y2;
-    fvec x3y  = x3 * y;
-
-    fvec x5   = x4 * x;
-    fvec y5   = y4 * y;
-    fvec xy4  = x * y4;
-    fvec x2y3 = x2 * y3;
-    fvec x3y2 = x3 * y2;
-    fvec x4y  = x4 * y;
-
-    B.x = cx[0] + cx[1] * x + cx[2] * y + cx[3] * x2 + cx[4] * xy + cx[5] * y2 + cx[6] * x3 + cx[7] * x2y + cx[8] * xy2
-          + cx[9] * y3 + cx[10] * x4 + cx[11] * x3y + cx[12] * x2y2 + cx[13] * xy3 + cx[14] * y4 + cx[15] * x5
-          + cx[16] * x4y + cx[17] * x3y2 + cx[18] * x2y3 + cx[19] * xy4 + cx[20] * y5;
-
-    B.y = cy[0] + cy[1] * x + cy[2] * y + cy[3] * x2 + cy[4] * xy + cy[5] * y2 + cy[6] * x3 + cy[7] * x2y + cy[8] * xy2
-          + cy[9] * y3 + cy[10] * x4 + cy[11] * x3y + cy[12] * x2y2 + cy[13] * xy3 + cy[14] * y4 + cy[15] * x5
-          + cy[16] * x4y + cy[17] * x3y2 + cy[18] * x2y3 + cy[19] * xy4 + cy[20] * y5;
-
-    B.z = cz[0] + cz[1] * x + cz[2] * y + cz[3] * x2 + cz[4] * xy + cz[5] * y2 + cz[6] * x3 + cz[7] * x2y + cz[8] * xy2
-          + cz[9] * y3 + cz[10] * x4 + cz[11] * x3y + cz[12] * x2y2 + cz[13] * xy3 + cz[14] * y4 + cz[15] * x5
-          + cz[16] * x4y + cz[17] * x3y2 + cz[18] * x2y3 + cz[19] * xy4 + cz[20] * y5;
-  }
+  // NOTE: We don't use an initialization of arrays here because we cannot be sure
+  //       if the underlying type (fvec) has a default constructor, but
+  //       we are sure, that it can be initialized with a float. (S.Zharko)
+  fvec cx[L1Parameters::kMaxNFieldApproxCoefficients];  ///< Polynomial coefficients for x-component of the field value
+  fvec cy[L1Parameters::kMaxNFieldApproxCoefficients];  ///< Polynomial coefficients for y-component of the field value
+  fvec cz[L1Parameters::kMaxNFieldApproxCoefficients];  ///< Polynomial coefficients for z-component of the field value
 } _fvecalignment;
 
 
 class L1FieldRegion {
+public:
+  // NOTE: When a custom constructor is defined, default constructor also should be provided (S.Zharko)
+  L1FieldRegion() = default;
+  L1FieldRegion(float reg[10]) noexcept;
+
+  /// Gets the field vector at z
+  // TODO: Probably we need a const specifier here, because the method does not change the fields
+  L1FieldValue Get(const fvec z);
+  /// Gets the field vector and writes it into B pointer
+  /// \param z_  z-coordinate of the point to calculate the field
+  /// \param B   pointer to the output fvec array of the magnetic field
+  void Get(const fvec z_, fvec* B) const;
+  /// Interpolates the magnetic field by three nodal points and sets the result to this L1FieldRegion object
+  /// The result is a quadratic interpolation of the field as a function of z
+  /// \param b0   field value in the first nodal point
+  /// \param b0z  z-coordinate of the first nodal point
+  /// \param b1   field value in the second nodal point
+  /// \param b1z  z-coordinate of the second nodal point
+  /// \param b2   field value in the third nodal point
+  /// \param b2z  z-coordinate of the third nodal point
+  /// TODO: does the sequence of b0z, b1z and b2z matter? If yes, probalby we need an assertion (S.Zharko)
+  void Set(const L1FieldValue& b0, const fvec b0z, const L1FieldValue& b1, const fvec b1z, const L1FieldValue& b2,
+           const fvec b2z);
+  /// Interpolates the magnetic field by thwo nodal points and sets the result to this L1FieldRegion object.
+  /// The result is a linear interpolation of the field as a function of z
+  /// \param b0   field value in the first nodal point
+  /// \param b0z  z-coordinate of the first nodal point
+  /// \param b1   field value in the second nodal point
+  /// \param b1z  z-coordinate of the second nodal point
+  /// TODO: does the sequence of b0z and b1z matter? If yes, probalby we need an assertion (S.Zharko)
+  void Set(const L1FieldValue& b0, const fvec b0z, const L1FieldValue& b1, const fvec b1z);
+  /// Shifts the coefficients to new central point
+  /// \param z  z-coordinate of the new central point
+  void Shift(fvec z);
+  /// Replaces the selected layer of the coefficients with one from another
+  /// L1FieldRegion object
+  /// \param i0    the index of the fvect layer in this L1FieldRegion object
+  /// \param fl    the other L1FieldRegion object, which layer is going to be replaced
+  /// \param i1    the index of the source fvect layer to copy
+  void SetOneEntry(const int i0, const L1FieldRegion& f1, const int i1);
+  /// Replaces all the layers of the coefficients with one selected layer from another
+  /// L1FieldRegion object
+  /// \param fl    the other L1FieldRegion object, which layer is going to be replaced
+  /// \param i1    the index of the source fvect layer to copy
+  void SetOneEntry(const L1FieldRegion& f1, const int i1);
+  /// Saves the contents of the particular layer of the coefficients into an array of floats
+  /// \param reg    output array of 10 floats
+  /// \param iVec   index of the input
+  // TODO: Probably, it would be better to rename "reg" into "output" and make it the second
+  //       parameter of this function (S.Zharko)
+  // TODO: Probably we need a const specifier here, because the method does not change the fields
+  void GetOneEntry(float reg[10], const int iVec);
+  /// String representation of class contents
+  /// \param indentLevel      number of indent characters in the output
+  std::string ToString(int indentLevel = 0) const;
 
 public:
-  L1FieldRegion() : cx0(0), cx1(0), cx2(0), cy0(0), cy1(0), cy2(0), cz0(0), cz1(0), cz2(0), z0(0) {}
-
-  L1FieldRegion(float reg[10])
-    : cx0(reg[0])
-    , cx1(reg[1])
-    , cx2(reg[2])
-    , cy0(reg[3])
-    , cy1(reg[4])
-    , cy2(reg[5])
-    , cz0(reg[6])
-    , cz1(reg[7])
-    , cz2(reg[8])
-    , z0(reg[9])
-  {
-  }
-
-  fvec cx0, cx1, cx2;  // Bx(z) = cx0 + cx1*(z-z0) + cx2*(z-z0)^2
-  fvec cy0, cy1, cy2;  // By(z) = cy0 + cy1*(z-z0) + cy2*(z-z0)^2
-  fvec cz0, cz1, cz2;  // Bz(z) = cz0 + cz1*(z-z0) + cz2*(z-z0)^2
-  fvec z0;
-
-  L1FieldValue Get(const fvec z)
-  {
-    fvec dz  = (z - z0);
-    fvec dz2 = dz * dz;
-    L1FieldValue B;
-    B.x = cx0 + cx1 * dz + cx2 * dz2;
-    B.y = cy0 + cy1 * dz + cy2 * dz2;
-    B.z = cz0 + cz1 * dz + cz2 * dz2;
-    return B;
-  }
-
-  void Get(const fvec z_, fvec* B) const
-  {
-    fvec dz  = (z_ - z0);
-    fvec dz2 = dz * dz;
-    B[0]     = cx0 + cx1 * dz + cx2 * dz2;
-    B[1]     = cy0 + cy1 * dz + cy2 * dz2;
-    B[2]     = cz0 + cz1 * dz + cz2 * dz2;
-  }
-
-  void Set(const L1FieldValue& b0, const fvec b0z, const L1FieldValue& b1, const fvec b1z, const L1FieldValue& b2,
-           const fvec b2z)
-  {
-    z0       = b0z;
-    fvec dz1 = b1z - b0z, dz2 = b2z - b0z;
-    fvec det = rcp(fvec(dz1 * dz2 * (dz2 - dz1)));
-    fvec w21 = -dz2 * det;
-    fvec w22 = dz1 * det;
-    fvec w11 = -dz2 * w21;
-    fvec w12 = -dz1 * w22;
-
-    fvec db1 = b1.x - b0.x;
-    fvec db2 = b2.x - b0.x;
-    cx0      = b0.x;
-    cx1      = db1 * w11 + db2 * w12;
-    cx2      = db1 * w21 + db2 * w22;
-
-    db1 = b1.y - b0.y;
-    db2 = b2.y - b0.y;
-    cy0 = b0.y;
-    cy1 = db1 * w11 + db2 * w12;
-    cy2 = db1 * w21 + db2 * w22;
-
-    db1 = b1.z - b0.z;
-    db2 = b2.z - b0.z;
-    cz0 = b0.z;
-    cz1 = db1 * w11 + db2 * w12;
-    cz2 = db1 * w21 + db2 * w22;
-  }
-
-  void Set(const L1FieldValue& b0, const fvec b0z, const L1FieldValue& b1, const fvec b1z)
-  {
-    z0       = b0z[0];
-    fvec dzi = rcp(fvec(b1z - b0z));
-    cx0      = b0.x;
-    cy0      = b0.y;
-    cz0      = b0.z;
-    cx1      = (b1.x - b0.x) * dzi;
-    cy1      = (b1.y - b0.y) * dzi;
-    cz1      = (b1.z - b0.z) * dzi;
-    cx2 = cy2 = cz2 = 0;
-  }
-
-  void Shift(fvec z)
-  {
-    fvec dz    = z - z0;
-    fvec cx2dz = cx2 * dz;
-    fvec cy2dz = cy2 * dz;
-    fvec cz2dz = cz2 * dz;
-    z0         = z[0];
-    cx0 += (cx1 + cx2dz) * dz;
-    cy0 += (cy1 + cy2dz) * dz;
-    cz0 += (cz1 + cz2dz) * dz;
-    cx1 += cx2dz + cx2dz;
-    cy1 += cy2dz + cy2dz;
-    cz1 += cz2dz + cz2dz;
-  }
-
-  void SetOneEntry(const int i0, const L1FieldRegion& f1, const int i1)
-  {
-    cx0[i0] = f1.cx0[i1];
-    cx1[i0] = f1.cx1[i1];
-    cx2[i0] = f1.cx2[i1];
-    cy0[i0] = f1.cy0[i1];
-    cy1[i0] = f1.cy1[i1];
-    cy2[i0] = f1.cy2[i1];
-    cz0[i0] = f1.cz0[i1];
-    cz1[i0] = f1.cz1[i1];
-    cz2[i0] = f1.cz2[i1];
-    z0[i0]  = f1.z0[i1];
-  }
-
-  void SetOneEntry(const L1FieldRegion& f1, const int i1)
-  {
-    cx0 = f1.cx0[i1];
-    cx1 = f1.cx1[i1];
-    cx2 = f1.cx2[i1];
-    cy0 = f1.cy0[i1];
-    cy1 = f1.cy1[i1];
-    cy2 = f1.cy2[i1];
-    cz0 = f1.cz0[i1];
-    cz1 = f1.cz1[i1];
-    cz2 = f1.cz2[i1];
-    z0  = f1.z0[i1];
-  }
-
-  void GetOneEntry(float reg[10], const int iVec)
-  {
-    reg[0] = cx0[iVec];
-    reg[1] = cx1[iVec];
-    reg[2] = cx2[iVec];
-    reg[3] = cy0[iVec];
-    reg[4] = cy1[iVec];
-    reg[5] = cy2[iVec];
-    reg[6] = cz0[iVec];
-    reg[7] = cz1[iVec];
-    reg[8] = cz2[iVec];
-    reg[9] = z0[iVec];
-  }
+  // TODO: Probably it's better to have arrays instead of separate fvec values? (S.Zharko)
+  // Bx(z) = cx0 + cx1*(z-z0) + cx2*(z-z0)^2
+  fvec cx0 {0.f};
+  fvec cx1 {0.f};
+  fvec cx2 {0.f};
+  // By(z) = cy0 + cy1*(z-z0) + cy2*(z-z0)^2
+  fvec cy0 {0.f};
+  fvec cy1 {0.f};
+  fvec cy2 {0.f};
+  // Bz(z) = cz0 + cz1*(z-z0) + cz2*(z-z0)^2
+  fvec cz0 {0.f};
+  fvec cz1 {0.f};
+  fvec cz2 {0.f};
+  fvec z0 {0.f};  ///< z-coordinate of the field region central point
 } _fvecalignment;
-
 
 #endif

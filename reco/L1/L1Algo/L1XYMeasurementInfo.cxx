@@ -4,6 +4,7 @@
 
 #include "L1XYMeasurementInfo.h"
 
+#include <iomanip>
 #include <sstream>  // for stringstream
 
 std::string L1XYMeasurementInfo::ToString(int indentLevel) const
@@ -12,8 +13,8 @@ std::string L1XYMeasurementInfo::ToString(int indentLevel) const
   // TODO: possibly is better to be place indentChar into L1Parameters (S.Zharko)
   constexpr char indentChar = '\t';
   std::string indent(indentLevel, indentChar);
-  aStream << indent << "C00: " << std::setw(12) << std::setfill(' ') << C00 << '\n';
-  aStream << indent << "C10: " << std::setw(12) << std::setfill(' ') << C10 << '\n';
-  aStream << indent << "C11: " << std::setw(12) << std::setfill(' ') << C11;
+  aStream << indent << "C00:         " << std::setw(12) << std::setfill(' ') << C00[0] << '\n';
+  aStream << indent << "C10:         " << std::setw(12) << std::setfill(' ') << C10[0] << '\n';
+  aStream << indent << "C11:         " << std::setw(12) << std::setfill(' ') << C11[0];
   return aStream.str();
 }

@@ -5,15 +5,19 @@
 #ifndef L1UMeasurementInfo_h
 #define L1UMeasurementInfo_h 1
 
-#include "L1Def.h"
+#include <string>
 
+#include "L1Def.h"
 
 class L1UMeasurementInfo {
 
 public:
-  L1UMeasurementInfo() : cos_phi(0), sin_phi(0), sigma2(0) {}
-
-  fvec cos_phi, sin_phi, sigma2;
+  fvec cos_phi {0.f};
+  fvec sin_phi {0.f};
+  fvec sigma2 {0.f};
+  /// String representation of class contents
+  /// \param indentLevel      number of indent characters in the output
+  std::string ToString(int indentLevel = 0) const;
 
 } _fvecalignment;
 

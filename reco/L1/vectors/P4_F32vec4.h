@@ -5,6 +5,7 @@
 #ifndef L1Algo_F32vec4P4_H
 #define L1Algo_F32vec4P4_H
 
+#include <iomanip>
 #include <iostream>
 
 #include <cmath>
@@ -210,7 +211,12 @@ public:
 
   friend std::ostream& operator<<(std::ostream& strm, const F32vec4& a)
   {
-    strm << "[" << a[0] << " " << a[1] << " " << a[2] << " " << a[3] << "]";
+    //strm << "[" << a[0] << " " << a[1] << " " << a[2] << " " << a[3] << "]";
+    strm << '[';
+    strm << std::setw(12) << std::setfill(' ') << a[0] << ' ';
+    strm << std::setw(12) << std::setfill(' ') << a[1] << ' ';
+    strm << std::setw(12) << std::setfill(' ') << a[2] << ' ';
+    strm << std::setw(12) << std::setfill(' ') << a[3] << ']';
     return strm;
   }
 

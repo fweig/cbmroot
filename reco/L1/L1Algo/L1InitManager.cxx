@@ -51,7 +51,7 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
     if (!isStationInitialized) {
       LOG(debug) << "L1InitManager::AddStation: station init flags (original)" << inStation.GetInitFlags();
       LOG(debug) << "L1InitManager::AddStation: station init flags (copy)    " << inStation.GetInitFlags();
-      LOG(error) << "L1InitManager::AddStation: Trying to add incompletely initialized object with detectorID = "
+      LOG(error) << "L1InitManager::AddStation: attempt to add incompletely initialized object with detectorID = "
                  << static_cast<int>(inStationCopy.GetDetectorID())
                  << " and stationID = " << inStationCopy.GetStationID();
       assert((isStationInitialized));
