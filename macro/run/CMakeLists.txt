@@ -335,7 +335,7 @@ EndIf() # If(DEFINED ENV{RAW_DATA_PATH} )
 # ============================================================================
 
 Install(FILES .rootrc run_tra_file.C run_tra_beam.C run_transport_json_config.C run_digi_json_config.C config.json
-              run_digi.C run_reco.C run_unpack_online.C run_unpack_tsa.C
+              run_digi.C run_reco.C run_unpack_online.C run_unpack_tsa.C config_ci.json
         DESTINATION share/cbmroot/macro/run
        )
 Install(PROGRAMS run_tests.sh

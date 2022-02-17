@@ -107,7 +107,7 @@
     ],
     "output": {
       "path": "data/test_json",
-      "overwrite": false
+      "overwrite": true
     },
     "geometry": {
       "deactivate": ["", ""],

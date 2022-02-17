@@ -24,7 +24,7 @@ main () {
   check_string="Macro finished successfully"
 
   input=${VMCWORKDIR}/input/urqmd.auau.10gev.centr.root
-  execute_macro "run_tra_file.C(\"${input}\", ${nEvents}, \"data/${sname}_coll\", \"${setup}\")" \
+  execute_macro "run_tra_file.C(\"${input}\", ${nEvents}, \"data/${sname}_coll\", \"${setup}\", kGeant3, 1, kTRUE)" \
                 $log_file_name \
                 $check_string
      
@@ -33,7 +33,7 @@ main () {
   check_string="Macro finished successfully"
   
   input=${VMCWORKDIR}/input/pluto.auau.8gev.omega.mpmm.0001.root
-  execute_macro "run_tra_file.C(\"${input}\", ${nEvents}, \"data/${sname}_sign\", \"${setup}\")" \
+  execute_macro "run_tra_file.C(\"${input}\", ${nEvents}, \"data/${sname}_sign\", \"${setup}\", kGeant3, 1, kTRUE)" \
                 $log_file_name \
                 $check_string
  
@@ -41,14 +41,14 @@ main () {
   log_file_name=data/run_tra_beam.log
   check_string="Macro finished successfully"
 
-  execute_macro "run_tra_beam.C(${nBeam}, \"Au\", 10, -1, \"data/${sname}_beam\", \"${setup}\")" \
+  execute_macro "run_tra_beam.C(${nBeam}, \"Au\", 10, -1, \"data/${sname}_beam\", \"${setup}\", kGeant3, 1, kTRUE)" \
                 $log_file_name \
                 $check_string
 
   log_file_name=data/run_tra_json.log
   check_string="Macro finished successfully"
 
-  execute_macro "run_transport_json_config.C" \
+  execute_macro "run_transport_json_config.C(\"config_ci.json\")" \
                 $log_file_name \
                 $check_string
  
@@ -56,7 +56,7 @@ main () {
   log_file_name=data/run_digi_json.log
   check_string="Macro finished successfully"
 
-  execute_macro "run_digi_json_config.C" \
+  execute_macro "run_digi_json_config.C(\"config_ci.json\")" \
                 $log_file_name \
                 $check_string
 
