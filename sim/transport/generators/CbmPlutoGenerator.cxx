@@ -34,29 +34,11 @@
 #include <sys/stat.h>
 
 // -----   Default constructor   ------------------------------------------
-CbmPlutoGenerator::CbmPlutoGenerator()
-  : FairGenerator()
-  , fdata(makeStaticData())
-  , fbase(makeDataBase())
-  , iEvent(0)
-  , fFileName(nullptr)
-  , fInputChain(nullptr)
-  , fParticles(nullptr)
-  , fPDGmanual(0)
-{
-}
+CbmPlutoGenerator::CbmPlutoGenerator() : FairGenerator() {}
 // ------------------------------------------------------------------------
 
 // -----   Standard constructor   -----------------------------------------
-CbmPlutoGenerator::CbmPlutoGenerator(const Char_t* fileName)
-  : FairGenerator()
-  , fdata(makeStaticData())
-  , fbase(makeDataBase())
-  , iEvent(0)
-  , fFileName(fileName)
-  , fInputChain(nullptr)
-  , fParticles(new TClonesArray("PParticle", 100))
-  , fPDGmanual(0)
+CbmPlutoGenerator::CbmPlutoGenerator(const Char_t* fileName) : FairGenerator(), fFileName(fileName)
 {
   fInputChain = new TChain("data");
 
@@ -68,19 +50,12 @@ CbmPlutoGenerator::CbmPlutoGenerator(const Char_t* fileName)
   else {
     LOG(fatal) << "Problem opening file " << fileName;
   }
+  fAvailableEvents = fInputChain->GetEntries();
 }
 // ------------------------------------------------------------------------
 
 // -----  Constructor with file list   -----------------------------------------
-CbmPlutoGenerator::CbmPlutoGenerator(std::vector<std::string> fileNames)
-  : FairGenerator()
-  , fdata(makeStaticData())
-  , fbase(makeDataBase())
-  , iEvent(0)
-  , fFileName()
-  , fInputChain(nullptr)
-  , fParticles(new TClonesArray("PParticle", 100))
-  , fPDGmanual(0)
+CbmPlutoGenerator::CbmPlutoGenerator(std::vector<std::string> fileNames) : FairGenerator()
 {
   fInputChain = new TChain("data");
   for (const auto& name : fileNames) {
@@ -94,6 +69,7 @@ CbmPlutoGenerator::CbmPlutoGenerator(std::vector<std::string> fileNames)
   }
 
   fInputChain->SetBranchAddress("Particles", &fParticles);
+  fAvailableEvents = fInputChain->GetEntries();
 }
 
 

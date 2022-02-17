@@ -22,18 +22,18 @@
 
 #include "FairGenerator.h"  // for FairGenerator
 
-#include "Rtypes.h"  // for Char_t, etc
+#include "Rtypes.h"        // for Char_t, etc
+#include "TClonesArray.h"  // for TClonesArray
 
 #include <string>
 #include <vector>
 
+#include "PParticle.h"    // for PParticle
+#include "PStaticData.h"  // for PStaticData
+
 class FairPrimaryGenerator;
 
-class TClonesArray;
 class TChain;
-
-class PStaticData;
-class PDataBase;
 
 class CbmPlutoGenerator : public FairGenerator {
 
@@ -66,22 +66,27 @@ public:
   virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen);
   void SetManualPDG(Int_t pdg) { fPDGmanual = pdg; }
 
+  /** @brief Get the maximum number of events available in the input file
+    ** @return number of available ebvents
+    */
+  Int_t GetNumAvailableEvents() { return fAvailableEvents; }
 
 private:
-  PStaticData* fdata;  //! pluto static data
-  PDataBase* fbase;    //! pluto data base
+  PStaticData* fdata {makeStaticData()};  //! pluto static data
+  PDataBase* fbase {makeDataBase()};      //! pluto data base
 
-  Int_t iEvent;              //! Event number
-  const Char_t* fFileName;   //! Input file name
-  TChain* fInputChain;       //! Pointer to input file
-  TClonesArray* fParticles;  //! Particle array from PLUTO
-  Int_t fPDGmanual;          //! forced pdg value for undefined pluto codes
+  Int_t iEvent {0};                                               //! Event number
+  const Char_t* fFileName {""};                                   //! Input file name
+  TChain* fInputChain {nullptr};                                  //! Pointer to input file
+  TClonesArray* fParticles {new TClonesArray("PParticle", 100)};  //! Particle array from PLUTO
+  Int_t fPDGmanual {0};                                           //! forced pdg value for undefined pluto codes
+  Int_t fAvailableEvents {0};                                     //! Maximum number of events in the input file
 
   /** Private method CloseInput. Just for convenience. Closes the
      ** input file properly. Called from destructor and from ReadEvent. **/
   void CloseInput();
 
-  ClassDef(CbmPlutoGenerator, 4);
+  ClassDef(CbmPlutoGenerator, 5);
 };
 
 #endif

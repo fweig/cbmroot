@@ -35,17 +35,6 @@ CbmUnigenGenerator::CbmUnigenGenerator(const char* fileName, EMode mode)
   : FairGenerator("UnigenGenerator", "CBM generator")
   , fFileName(fileName)
   , fMode(mode)
-  , fPhi(0.)
-  , fIsInit(kFALSE)
-  , fFile(nullptr)
-  , fTree(nullptr)
-  , fCurrentEntry(-1)
-  , fEvent(new UEvent())
-  , fNofPrimaries(0)
-  , fNofEvents(0)
-  , fBetaCM(0.)
-  , fGammaCM(1.)
-  , fIonMap()
 {
   LOG(debug) << GetName() << ": Constructor";
   if (mode == kRotateFixed)
@@ -63,16 +52,6 @@ CbmUnigenGenerator::CbmUnigenGenerator(const char* fileName, EMode mode, Double_
   , fFileName(fileName)
   , fMode(mode)
   , fPhi(phi)
-  , fIsInit(kFALSE)
-  , fFile(nullptr)
-  , fTree(nullptr)
-  , fCurrentEntry(-1)
-  , fEvent(new UEvent())
-  , fNofPrimaries(0)
-  , fNofEvents(0)
-  , fBetaCM(0.)
-  , fGammaCM(1.)
-  , fIonMap()
 {
   LOG(debug) << GetName() << ": Constructor";
   if (fileName[0] == '\0') return;
@@ -207,7 +186,8 @@ Bool_t CbmUnigenGenerator::Init()
     return kFALSE;
   }
   fTree->SetBranchAddress("event", &fEvent);
-  LOG(info) << GetName() << ": " << fTree->GetEntries() << " events in input tree";
+  fAvailableEvents = fTree->GetEntriesFast();
+  LOG(info) << GetName() << ": " << fAvailableEvents << " events in input tree";
 
   // --- Register ions found in the input file
   Int_t nIons = RegisterIons();

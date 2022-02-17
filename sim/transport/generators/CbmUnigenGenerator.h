@@ -19,9 +19,10 @@
 
 #include <map>
 
+#include "UEvent.h"
+
 class TFile;
 class TTree;
-class UEvent;
 class UParticle;
 class FairIon;
 class FairPrimaryGenerator;
@@ -93,21 +94,26 @@ public:
      **/
   virtual Bool_t ReadEvent(FairPrimaryGenerator* primGen);
 
+  /** @brief Get the maximum number of events available in the input file
+    ** @return number of available ebvents
+    */
+  Int_t GetNumAvailableEvents() { return fAvailableEvents; }
 
 private:
-  TString fFileName;                    ///< Input file name
-  EMode fMode;                          ///< Rotation mode
-  Double_t fPhi;                        ///< Event plane rotation angle
-  Bool_t fIsInit;                       ///< Flag whether generator is initialised
-  TFile* fFile;                         //!< Input ROOT file
-  TTree* fTree;                         //!< Input ROOT tree
-  Int_t fCurrentEntry;                  ///< Current entry number
-  UEvent* fEvent;                       //!< Current input event
-  Int_t fNofPrimaries;                  //!< Number of primaries registered in current event
-  Int_t fNofEvents;                     ///< Number of processed events
-  Double_t fBetaCM;                     ///< CM velocity in the lab frame
-  Double_t fGammaCM;                    ///< Gamma factor of CM in lab frame
-  std::map<TString, FairIon*> fIonMap;  //!< Map from ion name to FairIon
+  TString fFileName      = "";             ///< Input file name
+  EMode fMode            = kStandard;      ///< Rotation mode
+  Double_t fPhi          = 0.;             ///< Event plane rotation angle
+  Bool_t fIsInit         = kFALSE;         ///< Flag whether generator is initialised
+  TFile* fFile           = nullptr;        //!< Input ROOT file
+  TTree* fTree           = nullptr;        //!< Input ROOT tree
+  Int_t fCurrentEntry    = -1;             ///< Current entry number
+  UEvent* fEvent         = new UEvent();   //!< Current input event
+  Int_t fNofPrimaries    = 0;              //!< Number of primaries registered in current event
+  Int_t fNofEvents       = 0;              ///< Number of processed events
+  Double_t fBetaCM       = 0;              ///< CM velocity in the lab frame
+  Double_t fGammaCM      = 0;              ///< Gamma factor of CM in lab frame
+  Int_t fAvailableEvents = 0;              ///< Maximum number of events in the input file
+  std::map<TString, FairIon*> fIonMap {};  //!< Map from ion name to FairIon
 
   // Constants for decimal decomposition of ion PDG.
   // For ions the PDG code is +-10LZZZAAAI, with L = number of Lambdas,
@@ -204,7 +210,7 @@ private:
   CbmUnigenGenerator& operator=(const CbmUnigenGenerator&) = delete;
 
 
-  ClassDef(CbmUnigenGenerator, 4);
+  ClassDef(CbmUnigenGenerator, 5);
 };
 
 #endif

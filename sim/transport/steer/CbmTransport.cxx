@@ -49,6 +49,7 @@
 
 #include <array>
 #include <cassert>
+#include <climits>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -468,6 +469,35 @@ void CbmTransport::PiAndEtaDecay(TVirtualMC* vmc)
 void CbmTransport::Run(Int_t nEvents)
 {
 
+  // Get the minimum number of events from all file based generators
+  // Set the number of events to process to this minimum number of events
+  Int_t numAvailEvents {0};
+  Int_t numMinAvailEvents {INT_MAX};
+  TObjArray* genList = fEventGen->GetListOfGenerators();
+  for (Int_t i = 0; i < genList->GetEntries(); i++) {
+    CbmUnigenGenerator* gen = dynamic_cast<CbmUnigenGenerator*>(genList->At(i));
+    if (gen) {
+      numAvailEvents = gen->GetNumAvailableEvents();
+      if (nEvents > numAvailEvents) {
+        if (numAvailEvents < numMinAvailEvents) { numMinAvailEvents = numAvailEvents; }
+      }
+    }
+    CbmPlutoGenerator* pgen = dynamic_cast<CbmPlutoGenerator*>(genList->At(i));
+    if (pgen) {
+      numAvailEvents = pgen->GetNumAvailableEvents();
+      if (nEvents > numAvailEvents) {
+        if (numAvailEvents < numMinAvailEvents) { numMinAvailEvents = numAvailEvents; }
+      }
+    }
+  }
+  if (nEvents > numMinAvailEvents) {
+    LOG(warning) << "";
+    LOG(warning) << "The number of requested events (" << nEvents << ") is larger than the number of available events ("
+                 << numMinAvailEvents << ")";
+    LOG(warning) << "Set the number of events to process to " << numMinAvailEvents;
+    LOG(warning) << "";
+  }
+
   // --- Timer
   TStopwatch timer;
 
@@ -524,7 +554,6 @@ void CbmTransport::Run(Int_t nEvents)
 
   // --- Initialise the event generator
   InitEventGenerator();
-
 
   // --- Trigger generation of run info
   fRun->SetGenerateRunInfo(fGenerateRunInfo);

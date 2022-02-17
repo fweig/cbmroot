@@ -31,6 +31,8 @@ ${CBMROOT_SOURCE_DIR}/sim
 ${CBMROOT_SOURCE_DIR}/sim/transport
 ${CBMROOT_SOURCE_DIR}/sim/transport/base
 ${CBMROOT_SOURCE_DIR}/sim/transport/generators
+${CBMROOT_SOURCE_DIR}/sim/transport/generators/unigen
+${CBMROOT_SOURCE_DIR}/sim/transport/generators/pluto
 ${CBMROOT_SOURCE_DIR}/sim/transport/steer
 ${CBMROOT_SOURCE_DIR}/sim/transport/geosetup
 ${CBMDATA_DIR}
