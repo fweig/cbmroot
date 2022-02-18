@@ -16,9 +16,12 @@ def main():
   resultDir = "results_" + runId + "_"+ energy +"/" 
   
   #runId = "0"
-  geoSetup = "sis100_electron"
-  nEvents = 1000
-  testType = "urqmdTest" # urqmdTest or geoTest
+  geoSetup = "sis100_electron_APR21"
+  nEvents = 10
+  testType = "geoTest" # urqmdTest or geoTest
+
+  if testType == "geoTest":
+    urqmdFile = ""
 
   traFile = dataDir + "/tra." + runId + ".root"  
   parFile = dataDir + "/param." + runId + ".root"
@@ -32,9 +35,9 @@ def main():
   recoCmd = ('root -l -b -q run_reco.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(testType, traFile, parFile, digiFile, recoFile, geoSetup, nEvents)
   qaCmd = ('root -l -b -q run_qa.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(testType, traFile, parFile, digiFile, recoFile, qaFile, geoSetup, resultDir, nEvents)
 
-  # os.system((". /{} -a; {}").format(cbmrootConfigPath, traCmd))
-  # os.system((". /{} -a; {}").format(cbmrootConfigPath, digiCmd))
-  # os.system((". /{} -a; {}").format(cbmrootConfigPath, recoCmd))
+  os.system((". /{} -a; {}").format(cbmrootConfigPath, traCmd))
+  os.system((". /{} -a; {}").format(cbmrootConfigPath, digiCmd))
+  os.system((". /{} -a; {}").format(cbmrootConfigPath, recoCmd))
   os.system((". /{} -a; {}").format(cbmrootConfigPath, qaCmd))
 
 # def make_args():

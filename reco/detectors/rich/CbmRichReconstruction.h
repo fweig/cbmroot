@@ -133,7 +133,8 @@ private:
   string fTrackAssignName   = "closest_distance";
 
   // Z coordinate where STS tracks will be extrapolated.
-  Double_t fZTrackExtrapolation = 260.;
+  // Initialized later using geometry.
+  Double_t fZTrackExtrapolation = -1;  //260.
 
   /**
     * \brief

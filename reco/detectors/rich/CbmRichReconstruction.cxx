@@ -30,6 +30,7 @@
 #include "CbmEvent.h"
 #include "CbmGlobalTrack.h"
 #include "CbmRichConverter.h"
+#include "CbmRichGeoManager.h"
 #include "CbmRichRingFitterCOP.h"
 #include "CbmRichRingFitterCircle.h"
 #include "CbmRichRingFitterEllipseMinuit.h"
@@ -91,6 +92,17 @@ InitStatus CbmRichReconstruction::Init()
 
   fRichRings = new TClonesArray("CbmRichRing", 100);
   manager->Register("RichRing", "RICH", fRichRings, IsOutputBranchPersistent("RichRing"));
+
+  // This was checked for v17a, v21a geometries. The offset was chosen that
+  // the value for v17a is 260 cm and the value for v21a is 220 cm
+  double offset        = 205.7331;
+  fZTrackExtrapolation = CbmRichGeoManager::GetInstance().fGP->fMirrorZ + offset;
+  LOG(info) << "CbmRichReconstruction::Init() fZTrackExtrapolation = " << fZTrackExtrapolation;
+  if (fZTrackExtrapolation < 200. || fZTrackExtrapolation > 300.) {
+    LOG(fatal) << "CbmRichReconstruction::Init() fZTrackExtrapolation = " << fZTrackExtrapolation
+               << " The value of fZTrackExtrapolation is not correct. It must be in the range [200, 300] cm."
+               << " Probably the RICH geometry is not correct or it is not supported.";
+  }
 
   if (fRunExtrapolation) InitExtrapolation();
   if (fRunProjection) InitProjection();
