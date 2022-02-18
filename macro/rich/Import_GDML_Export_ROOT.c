@@ -1,4 +1,7 @@
 
+void addCopyNumbersToNodes(TGeoVolume* volume);
+
+
 void Import_GDML_Export_ROOT()
 {
 
@@ -94,6 +97,7 @@ void Import_GDML_Export_ROOT()
 
   gdmlTop->Print();
   gGeoManager->SetTopVolume(rootTop);
+  gGeoManager->SetAllIndex();
 
   // Starting from the version v18a position is defined inside the GDML file
   // Define your position HERE
@@ -102,6 +106,8 @@ void Import_GDML_Export_ROOT()
   TGeoCombiTrans* posrot = new TGeoCombiTrans(0., 0., 218.75, rot);  // v16a - 270, v17a - 258.75, v18a - 0
 
   rootTop->AddNode(gdmlTop, 1, posrot);
+
+  addCopyNumbersToNodes(gGeoManager->GetTopNode()->GetVolume());
 
   gGeoManager->CloseGeometry();
   gGeoManager->CheckOverlaps();
@@ -135,4 +141,22 @@ void Import_GDML_Export_ROOT()
   std::cout << "Loading macro " << createmedialist << std::endl;
   gROOT->LoadMacro(createmedialist);
   gROOT->ProcessLine("create_medialist(\"\", false)");
+}
+
+
+void addCopyNumbersToNodes(TGeoVolume* volume)
+{
+  map<string, int> counterMap;
+  TGeoIterator geoIterator(volume);
+  geoIterator.SetType(1);
+  geoIterator.Reset();
+  TGeoNode* curNode;
+  while ((curNode = geoIterator())) {
+    string volumeName = string(curNode->GetVolume()->GetName());
+    counterMap[volumeName]++;
+    int curCounter = counterMap[volumeName];
+    curNode->SetNumber(curCounter);
+    curNode->SetName((volumeName + "_" + to_string(curCounter)).c_str());
+    addCopyNumbersToNodes(curNode->GetVolume());
+  }
 }
