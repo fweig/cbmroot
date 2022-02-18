@@ -209,7 +209,7 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     // trdfasp2dconfig->SetDebugState();
     trdfasp2dconfig->SetDoWriteOutput();
     // Activate the line below to write Trd1D digis to a separate "TrdFaspDigi" branch. Can be used to separate between Fasp and Spadic digis
-    trdfasp2dconfig->SetOutputBranchName("TrdFaspDigi");
+    //trdfasp2dconfig->SetOutputBranchName("TrdFaspDigi");
     std::string parfilesbasepathTrdfasp2d = Form("%s/parameters/trd", srcDir.Data());
     trdfasp2dconfig->SetParFilesBasePath(parfilesbasepathTrdfasp2d);
     trdfasp2dconfig->SetSystemTimeOffset(-1800);  // [ns] value to be updated
