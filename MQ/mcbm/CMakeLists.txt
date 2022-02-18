@@ -8,6 +8,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startEventBuilder.sh.in ${CMAKE_BINAR
 set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/MQ/base
+    ${CBMROOT_SOURCE_DIR}/algo
     ${CBMROOT_SOURCE_DIR}/algo/evbuild
     ${CBMROOT_SOURCE_DIR}/algo/trigger
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/unpacker
@@ -309,4 +310,25 @@ set(DEPENDENCIES
   RHTTP
 )
 #GENERATE_LIBRARY()
+GENERATE_EXECUTABLE()
+
+set(EXE_NAME EventSink)
+set(SRCS CbmDeviceEventSink.cxx runEventSink.cxx)
+
+set(DEPENDENCIES
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  fles_ipc
+  CbmFlibMcbm2018
+  CbmFlibFlesTools
+  CbmBase
+  CbmData
+  Core
+  RIO
+  Tree
+  Net
+  Hist
+  RHTTP
+)
 GENERATE_EXECUTABLE()
