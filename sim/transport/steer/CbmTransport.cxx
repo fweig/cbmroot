@@ -496,6 +496,7 @@ void CbmTransport::Run(Int_t nEvents)
                  << numMinAvailEvents << ")";
     LOG(warning) << "Set the number of events to process to " << numMinAvailEvents;
     LOG(warning) << "";
+    nEvents = numMinAvailEvents;
   }
 
   // --- Timer
