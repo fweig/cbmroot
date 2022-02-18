@@ -1,13 +1,6 @@
-/* Copyright (C) 2021 Facility for Antiproton and Ion Research in Europe, Darmstadt
+/* Copyright (C) 2022 Facility for Antiproton and Ion Research in Europe, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Pierre-Alain Loizeau[committer] */
-
-/**
- * CbmDeviceEventBuilder.cxx
- *
- * @since 2021-11-18
- * @author P.-A. Loizeau
- */
+   Authors: Pierre-Alain Loizeau[committer], Dominik Smith */
 
 #include "CbmDeviceEventBuilder.h"
 
@@ -87,33 +80,25 @@ try {
 
   /// Prepare root output
   if ("" != fsOutputFileName) {
-    fpRun         = new FairRunOnline();  // is this needed?
+    fpRun         = new FairRunOnline();
     fpFairRootMgr = FairRootManager::Instance();
     fpFairRootMgr->SetSink(new FairRootFileSink(fsOutputFileName));
-    if (nullptr == fpFairRootMgr->GetOutFile()) {
-      throw InitTaskError("Could not open root file");
-    }  // if( nullptr == fpFairRootMgr->GetOutFile() )
-  }    // if( "" != fsOutputFileName )
-  else {
-    throw InitTaskError("Empty output filename!");
-  }  // else of if( "" != fsOutputFileName )
+    if (nullptr == fpFairRootMgr->GetOutFile()) { throw InitTaskError("Could not open root file"); }
+    LOG(info) << "Init Root Output to " << fsOutputFileName;
+    fpFairRootMgr->InitSink();
 
-  LOG(info) << "Init Root Output to " << fsOutputFileName;
-  fpFairRootMgr->InitSink();
+    /// Create storage objects
+    fCbmTsEventHeaderOut = new CbmTsEventHeader();
+    fpFairRootMgr->Register("EventHeader.", "Event", fCbmTsEventHeaderOut, kTRUE);
 
-  /// Create input vectors
-  fCbmTsEventHeader = new CbmTsEventHeader();
-  fpFairRootMgr->Register("EventHeader.", "Event", fCbmTsEventHeader, kTRUE);
+    fEventsSelOut = new std::vector<CbmDigiEvent>();
+    fpFairRootMgr->RegisterAny("DigiEvent", fEventsSelOut, kTRUE);
 
-  /// Create storage vector for events
-  fEventsSel = new std::vector<CbmDigiEvent>();
-  fpFairRootMgr->RegisterAny("DigiEvent", fEventsSel, kTRUE);
+    fTimeSliceMetaDataArrayOut = new TClonesArray("TimesliceMetaData", 1);
+    fpFairRootMgr->Register("TimesliceMetaData", "TS Meta Data", fTimeSliceMetaDataArrayOut, kTRUE);
 
-  fTimeSliceMetaDataArray = new TClonesArray("TimesliceMetaData", 1);
-  if (nullptr == fTimeSliceMetaDataArray) { throw InitTaskError("Failed creating the TS meta data TClonesarray "); }
-  fpFairRootMgr->Register("TimesliceMetaData", "TS Meta Data", fTimeSliceMetaDataArray, kTRUE);
-
-  fpFairRootMgr->WriteFolder();
+    fpFairRootMgr->WriteFolder();
+  }  // if( "" != fsOutputFileName )
 
   // Get the information about created channels from the device
   // Check if the defined channels from the topology (by name)
@@ -305,14 +290,13 @@ bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
   ++uPartIdx;
 
   /// TS metadata
-  Deserialize<RootSerializer>(*parts.At(uPartIdx), fTsMetaData);
-  new ((*fTimeSliceMetaDataArray)[fTimeSliceMetaDataArray->GetEntriesFast()])
-    TimesliceMetaData(std::move(*fTsMetaData));
+  TimesliceMetaData* tsMetaData = new TimesliceMetaData();
+  Deserialize<RootSerializer>(*parts.At(uPartIdx), tsMetaData);
   ++uPartIdx;
 
   //if (1 == fulNumMessages) {
   /// First message received (do TS metadata stuff here)
-  //fpAlgo->SetTsParameters(0, fTsMetaData->GetDuration(), fTsMetaData->GetOverlapDuration());
+  //fpAlgo->SetTsParameters(0, fTsMetaDataOut->GetDuration(), fTsMetaDataOut->GetOverlapDuration());
   //}
 
   LOG(debug) << "T0 Vector size: " << ts.fData.fT0.fDigis.size();
@@ -330,27 +314,27 @@ bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
   std::vector<CbmDigiEvent> vEvents = fEvbuildAlgo(ts, triggers);
   LOG(debug) << "vEvents size: " << vEvents.size();
 
-  /// Send events vector to ouput
-  if (!SendEvents(vEvents)) {
-    fTimeSliceMetaDataArray->Clear();
-    return false;
-  }
+  /// Send output message
+  if (!SendEvents(vEvents, tsMetaData, evtHeader)) { return false; }
 
   /// Write events to file
-  (*fEventsSel) = std::move(vEvents);
-  LOG(debug) << "fEventSel size: " << fEventsSel->size();
-
   // FIXME: poor man solution with lots of data copy until we undertand how to properly deal
   /// with FairMq messages ownership and memory managment
-  (*fCbmTsEventHeader) = std::move(*evtHeader);
 
-  DumpTreeEntry();
+  if ("" != fsOutputFileName) {
+    (*fEventsSelOut) = std::move(vEvents);
+    LOG(debug) << "fEventSel size: " << fEventsSelOut->size();
 
-  /// Clear metadata
-  fTimeSliceMetaDataArray->Clear();
+    (*fCbmTsEventHeaderOut) = std::move(*evtHeader);
 
-  /// Clear event vector
-  fEventsSel->clear();
+    new ((*fTimeSliceMetaDataArrayOut)[fTimeSliceMetaDataArrayOut->GetEntriesFast()])
+      TimesliceMetaData(std::move(*tsMetaData));
+
+    DumpTreeEntry();
+
+    fTimeSliceMetaDataArrayOut->Clear();
+    fEventsSelOut->clear();
+  }
 
   return true;
 }
@@ -361,7 +345,7 @@ void CbmDeviceEventBuilder::DumpTreeEntry()
 
   /// FairRunOnline style
   fpFairRootMgr->StoreWriteoutBufferData(fpFairRootMgr->GetEventTime());
-  fpFairRootMgr->FillEventHeader(fCbmTsEventHeader);
+  fpFairRootMgr->FillEventHeader(fCbmTsEventHeaderOut);
   fpFairRootMgr->Fill();
   fpFairRootMgr->DeleteOldWriteoutBufferData();
 }
@@ -404,19 +388,28 @@ std::vector<double> CbmDeviceEventBuilder::GetTriggerTimes(const CbmDigiTimeslic
   return fTriggerAlgo(vDigiTimes, fTriggerWindow, fMinNumDigis, fDeadTime);
 }
 
-bool CbmDeviceEventBuilder::SendEvents(const std::vector<CbmDigiEvent>& vEvents)
+bool CbmDeviceEventBuilder::SendEvents(const std::vector<CbmDigiEvent>& vEvents, const TimesliceMetaData* tsMetaData,
+                                       const CbmTsEventHeader* eventHeader)
 {
   LOG(debug) << "Vector size: " << vEvents.size();
 
-  FairMQMessagePtr messTsMeta(NewMessage());
-  Serialize<RootSerializer>(*messTsMeta, fTsMetaData);
+  FairMQParts partsOut;
 
+  /// Prepare serialized versions of the TS Event header
+  FairMQMessagePtr messTsHeader(NewMessage());
+  Serialize<RootSerializer>(*messTsHeader, eventHeader);
+  partsOut.AddPart(std::move(messTsHeader));
+
+  // Prepare TS meta data
+  FairMQMessagePtr messTsMeta(NewMessage());
+  Serialize<RootSerializer>(*messTsMeta, tsMetaData);
+  partsOut.AddPart(std::move(messTsMeta));
+
+  // Prepare event vector.
   std::stringstream ossEvt;
   boost::archive::binary_oarchive oaEvt(ossEvt);
   oaEvt << vEvents;
   std::string* strMsgEvt = new std::string(ossEvt.str());
-
-  FairMQParts partsOut(std::move(messTsMeta));
 
   partsOut.AddPart(NewMessage(
     const_cast<char*>(strMsgEvt->c_str()),  // data
@@ -433,9 +426,11 @@ bool CbmDeviceEventBuilder::SendEvents(const std::vector<CbmDigiEvent>& vEvents)
 
 void CbmDeviceEventBuilder::Finish()
 {
-  // Clean closure of output to root file
-  fpFairRootMgr->Write();
-  fpFairRootMgr->CloseSink();
+  if ("" != fsOutputFileName) {
+    // Clean closure of output to root file
+    fpFairRootMgr->Write();
+    fpFairRootMgr->CloseSink();
+  }
   fbFinishDone = kTRUE;
 }
 
@@ -443,19 +438,8 @@ CbmDeviceEventBuilder::~CbmDeviceEventBuilder()
 {
   /// Close things properly if not alredy done
   if (!fbFinishDone) Finish();
-
-  /// Clear events vector
-  if (fEventsSel) {
-    fEventsSel->clear();
-    delete fEventsSel;
-  }
+  if (fEventsSelOut) { delete fEventsSelOut; }
   if (fpRun) { delete fpRun; }
-
-  /// Clear metadata
-  delete fCbmTsEventHeader;
-
-  /// Clear metadata
-  fTimeSliceMetaDataArray->Clear();
-  delete fTimeSliceMetaDataArray;
-  delete fTsMetaData;
+  if (fCbmTsEventHeaderOut) { delete fCbmTsEventHeaderOut; }
+  if (fTimeSliceMetaDataArrayOut) { delete fTimeSliceMetaDataArrayOut; }
 }

@@ -59,7 +59,6 @@ private:
   /// Algo enum settings
   ECbmModuleId fTriggerDet = ECbmModuleId::kT0;
 
-  std::string fsOutputFileName = "";
   /// message queues
   std::string fsChannelNameDataInput   = "unpts_0";
   std::string fsChannelNameDataOutput  = "events";
@@ -87,31 +86,17 @@ private:
   int32_t fMinNumDigis  = 0;
   double fDeadTime      = 0.;
 
-  /// TS MetaData stable values storage
-  size_t fuNbCoreMsPerTs    = 0;        //!
-  size_t fuNbOverMsPerTs    = 0;        //!
-  Double_t fdMsSizeInNs     = 1280000;  //! Size of a single MS, [nanoseconds]
-  Double_t fdTsCoreSizeInNs = -1.0;     //! Total size of the core MS in a TS, [nanoseconds]
-  Double_t fdTsOverSizeInNs = -1.0;     //! Total size of the overlap MS in a TS, [nanoseconds]
-  Double_t fdTsFullSizeInNs = -1.0;     //! Total size of all MS in a TS, [nanoseconds]
-
-  /// Data reception
-  /// TS information in header
-  CbmTsEventHeader* fCbmTsEventHeader = nullptr;
-
-  /// TS MetaData storage
-  TClonesArray* fTimeSliceMetaDataArray = nullptr;
-  TimesliceMetaData* fTsMetaData        = nullptr;
-
   /// Data storage
-  FairRunOnline* fpRun           = nullptr;
-  FairRootManager* fpFairRootMgr = nullptr;
-
-  /// CbmEvents
-  std::vector<CbmDigiEvent>* fEventsSel = nullptr;  //! output container of CbmEvents
+  std::string fsOutputFileName             = "";
+  FairRunOnline* fpRun                     = nullptr;
+  FairRootManager* fpFairRootMgr           = nullptr;
+  CbmTsEventHeader* fCbmTsEventHeaderOut   = nullptr;  // output container for TS information in header
+  std::vector<CbmDigiEvent>* fEventsSelOut = nullptr;  // output container of CbmDigiEvents
+  TClonesArray* fTimeSliceMetaDataArrayOut = nullptr;  // output container of meta data
 
   bool IsChannelNameAllowed(std::string channelName);
-  bool SendEvents(const std::vector<CbmDigiEvent>& vEvents);
+  bool SendEvents(const std::vector<CbmDigiEvent>& vEvents, const TimesliceMetaData* tsMetaData,
+                  const CbmTsEventHeader* eventHeader);
 
   // --- Extract digi times into to a vector
   template<class TDigi>

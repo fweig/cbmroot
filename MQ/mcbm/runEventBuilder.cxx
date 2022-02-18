@@ -21,7 +21,7 @@ void addCustomOptions(bpo::options_description& options)
   options.add_options()("FillHistos", bpo::value<bool>()->default_value(true),
                         "Fill histograms and send them to histo server if true");
   options.add_options()("IgnTsOver", bpo::value<bool>()->default_value(false), "Ignore TS overlap if true");
-  options.add_options()("OutFileName", bpo::value<std::string>()->default_value("events.root"),
+  options.add_options()("OutFileName", bpo::value<std::string>()->default_value(""),
                         "Name (full or relative path) of the output .root file ");
   options.add_options()("TriggerDet", bpo::value<std::string>()->default_value("kT0"),
                         "Set the trigger detector, use string matching an ECbmModuleId ");
