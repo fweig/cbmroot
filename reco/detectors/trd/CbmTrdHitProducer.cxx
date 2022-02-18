@@ -94,8 +94,8 @@ CbmTrdModuleRec* CbmTrdHitProducer::AddModule(Int_t address, TGeoPhysicalNode* n
                << moduleAddress << ". Module init failed!";
     return NULL;
   }
-  LOG(debug) << GetName() << "::AddModule(" << node->GetName() << " " << (moduleType < 9 ? 'R' : 'T') << "] mod["
-             << moduleAddress << "] ly[" << lyId << "] det[" << moduleAddress << "]";
+  LOG(info) << GetName() << "::AddModule(" << node->GetName() << " " << (moduleType < 9 ? '1' : '2') << "D] mod["
+            << moduleAddress << "] ly[" << lyId << "] det[" << moduleAddress << "]";
 
   CbmTrdModuleRec* module(nullptr);
   if (moduleType >= 9) { module = fModules[address] = new CbmTrdModuleRec2D(address); }

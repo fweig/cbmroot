@@ -298,7 +298,7 @@ void CbmTrdDigi::SetTriggerType(const int32_t ttype)
 string CbmTrdDigi::ToString() const
 {
   stringstream ss;
-  ss << "CbmTrdDigi(" << (GetType() == eCbmTrdAsicType::kFASP ? "T)" : "R)")
+  ss << "CbmTrdDigi(" << (GetType() == eCbmTrdAsicType::kFASP ? "F)" : "S)")
      << " | moduleAddress=" << GetAddressModule() << " | layer=" << Layer() << " | moduleId=" << Module()
      << " | pad=" << GetAddressChannel() << " | time[ns]=" << std::fixed << std::setprecision(1) << GetTime();
   if (GetType() == eCbmTrdAsicType::kFASP) {

@@ -775,7 +775,7 @@ CbmTrdHit* CbmTrdModuleRec2D::MakeHit(Int_t ic, const CbmTrdCluster* cl, std::ve
     LOG(debug) << GetName() << "::MakeHit: Hybrid cluster SPADIC/Trd2d. Skipped for the moment.";
     // std::cout << cl->ToString();
     return nullptr;
-  }  
+  }
   //printf("%s (%s)\n", GetName(), GetTitle()); Config(1,0);
 
   if (!fgEdep) {  // first use initialization of PRF helppers
