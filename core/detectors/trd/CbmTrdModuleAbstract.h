@@ -21,6 +21,12 @@ class CbmTrdParModGas;
   **/
 class CbmTrdModuleAbstract : public TNamed {
 public:
+  enum eCbmTrdModuleDef
+  {
+    kTrd2d = 0  ///< toggle pad-plane type of the chamber
+      ,
+    kFasp = 1  ///< toggle FEE type for the module
+  };
   /** \brief Default constructor.*/
   CbmTrdModuleAbstract();
   /** \brief Constructor with placement */
@@ -58,14 +64,50 @@ public:
    */
   virtual inline Int_t GetPadRowCol(Int_t address, Int_t& c) const;
   virtual const Char_t* GetPath() const { return fGeoPar ? fGeoPar->GetTitle() : ""; }
+  /** \brief Inquire the FEE read-out type of the module
+   * \return false for SPADIC and true for FASP
+   */
+  bool HasFaspFEE() const { return TESTBIT(fModConfig, eCbmTrdModuleDef::kFasp); }
+  /** \brief Inquire the pad-plane type of the chamber
+   * \return false for TRD-1D and true for TRD-2D
+   */
+  bool Has2dPadPlane() const { return TESTBIT(fModConfig, eCbmTrdModuleDef::kTrd2d); }
+
   virtual void LocalToMaster(Double_t in[3], Double_t out[3]);
+
   virtual void SetAsicPar(CbmTrdParSetAsic* p = nullptr) { fAsicPar = p; }
   virtual void SetChmbPar(const CbmTrdParModGas* p) { fChmbPar = p; }
   virtual void SetDigiPar(const CbmTrdParModDigi* p) { fDigiPar = p; }
   virtual void SetGainPar(const CbmTrdParModGain* p) { fGainPar = p; }
   virtual void SetGeoPar(const CbmTrdParModGeo* p) { fGeoPar = p; }
 
+  /** \brief Define the read-out FEE type of the module
+   * \param[in] set true for FASP and false [default] for SPADIC
+   */
+  void SetFEE(bool set = true)
+  {
+    set ? SETBIT(fModConfig, eCbmTrdModuleDef::kFasp) : CLRBIT(fModConfig, eCbmTrdModuleDef::kFasp);
+  }
+  /** \brief Define the pad-plane type of the chamber
+   * \param[in] set true for TRD-2D and false [default] for TRD-1D
+   */
+  void SetPadPlane(bool set = true)
+  {
+    set ? SETBIT(fModConfig, eCbmTrdModuleDef::kTrd2d) : CLRBIT(fModConfig, eCbmTrdModuleDef::kTrd2d);
+  }
+
 protected:
+  /** 8 bits bit map for module configuration
+   * [0] - chamber's pad-plane type; 0 rectangular pads, 1 triangular pads, \see SetRO
+   * [1] - chamber's FEE type; 0 SPADIC, 1 FASP, \see SetFEE
+   * [2] -  
+   * [3] -  
+   * [4] -  
+   * [5] -  
+   * [6] -  
+   * [7] -  
+   */
+  uint8_t fModConfig;
   // geometrical definitions imported from CbmTrdGeoHandler
   UShort_t fModAddress;  ///< unique identifier for current module
   Char_t fLayerId;       ///< layer identifier
@@ -82,7 +124,7 @@ private:
   CbmTrdModuleAbstract(const CbmTrdModuleAbstract& ref);
   const CbmTrdModuleAbstract& operator=(const CbmTrdModuleAbstract& ref);
 
-  ClassDef(CbmTrdModuleAbstract, 1)
+  ClassDef(CbmTrdModuleAbstract, 2)
 };
 
 //_______________________________________________________________________________
