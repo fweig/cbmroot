@@ -37,9 +37,8 @@ TGeoVolume* ConstructShield(const char* name, Double_t sizeXY, Double_t holesize
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_psdgeo_with_hole()
+void create_psdgeo_with_hole(TString geoTag = "v22a")
 {
-  TString geoTag = "v20c";  // Geometry tag
 
   // -----   Steering variables   ---------------------------------------------
   Double_t psdX;      // x position (cm) of PSD in cave (front plane center)
@@ -47,8 +46,25 @@ void create_psdgeo_with_hole()
   Double_t psdZ;      // z position (cm) of PSD in cave (front plane center)
   Double_t psdRotY;   // Rotation of PSD around y axis (rad)
   Double_t holeSize;  // side length of the square shaped hole (cm)
+  TString comment;    // short description
 
-  if (geoTag == "v20c") {
+  if (geoTag == "v22a") {
+    psdX     = 13.1;
+    psdY     = 0.;
+    psdZ     = 1010;
+    psdRotY  = 0.01335;
+    holeSize = 20.;
+    comment  = "Position for Au beam at 12A GeV/c and 100% magnetic field strength";
+  }
+  else if (geoTag == "v22b") {
+    psdX     = 28.56;
+    psdY     = 0.;
+    psdZ     = 1010;
+    psdRotY  = 0.02906;
+    holeSize = 20.;
+    comment  = "Position for Au beam at 3.3A GeV/c and 60% magnetic field strength (to fit beam dump)";
+  }
+  else if (geoTag == "v20c") {
     psdX     = 12.95;
     psdY     = 0.;
     psdZ     = 1010;
@@ -125,6 +141,7 @@ void create_psdgeo_with_hole()
   fstream infoFile;
   infoFile.open(infoFileName.Data(), fstream::out);
   infoFile << "PSD geometry " << geoTag << " created with create_psdgeo_with_hole.C" << endl << endl;
+  infoFile << comment << endl << endl;
   infoFile << "Number of modules: " << nModulesX << " x " << nModulesY << endl;
   infoFile << "Big module size: " << bigModuleSize << " cm x " << bigModuleSize << " cm" << endl;
   infoFile << "PSD front plane center coordinates: (" << psdX << ", " << psdY << ", " << psdZ << ") cm" << endl;

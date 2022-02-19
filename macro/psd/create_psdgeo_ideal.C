@@ -34,20 +34,91 @@ TGeoVolume* ConstructIdealPsd(const char* name, Double_t sizeX, Double_t sizeY, 
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_psdgeo_ideal()
+void create_psdgeo_ideal(TString geoTag = "v22a")
 {
-  // -----   Steering variables   ---------------------------------------------
-  const Double_t psdX     = 9.65;     // x position of PSD in cave (front plane center)
-  const Double_t psdY     = 0.;       // y position of PSD in cave (front plane center)
-  const Double_t psdZ     = 800.;     // z position of PSD in cave (front plane center)
-  const Double_t psdRotY  = 0.01321;  // Rotation of PSD around y axis [rad]
-  const Double_t holeSize = 20.;      // diagonal size of the square shaped hole
 
+  // -----   Steering variables   ---------------------------------------------
+  Double_t psdX;      // x position (cm) of PSD in cave (front plane center)
+  Double_t psdY;      // y position (cm) of PSD in cave (front plane center)
+  Double_t psdZ;      // z position (cm) of PSD in cave (front plane center)
+  Double_t psdRotY;   // Rotation of PSD around y axis (rad)
+  Double_t holeSize;  // side length of the square shaped hole (cm)
+  TString comment;    // short description
+
+  if (geoTag == "v22a") {
+    psdX     = 13.1;
+    psdY     = 0.;
+    psdZ     = 1010;
+    psdRotY  = 0.01335;
+    holeSize = 0.;
+    comment  = "Position for Au beam at 12A GeV/c and 100% magnetic field strength";
+  }
+  else if (geoTag == "v22b") {
+    psdX     = 28.56;
+    psdY     = 0.;
+    psdZ     = 1010;
+    psdRotY  = 0.02906;
+    holeSize = 0.;
+    comment  = "Position for Au beam at 3.3A GeV/c and 60% magnetic field strength (to fit beam dump)";
+  }
+  else if (geoTag == "v20c") {
+    psdX     = 12.95;
+    psdY     = 0.;
+    psdZ     = 1010;
+    psdRotY  = 0.0132;
+    holeSize = 20.;
+  }
+  else if (geoTag == "v20a") {
+    psdX     = 12.95;
+    psdY     = 0.;
+    psdZ     = 1050;
+    psdRotY  = 0.0132;
+    holeSize = 20.;
+  }
+  else if (geoTag == "v20b") {
+    psdX     = 13.75;
+    psdY     = 0.;
+    psdZ     = 1100;
+    psdRotY  = 0.0132;
+    holeSize = 20.;
+  }
+  else if (geoTag == "v18e") {
+    psdX     = 9.65;
+    psdY     = 0.;
+    psdZ     = 800.;
+    psdRotY  = 0.01321;
+    holeSize = 20.;
+  }
+  else if (geoTag == "v18f") {
+    psdX     = 9.65;
+    psdY     = 0.;
+    psdZ     = 800.;
+    psdRotY  = 0.01321;
+    holeSize = 6.;
+  }
+  else if (geoTag == "v18g") {
+    psdX     = 9.65;
+    psdY     = 0.;
+    psdZ     = 800.;
+    psdRotY  = 0.01321;
+    holeSize = 0.;
+  }
+  else if (geoTag == "v18m") {
+    psdX     = 8.9;
+    psdY     = 0.;
+    psdZ     = 1500.;
+    psdRotY  = 0.01321;
+    holeSize = 20.;
+  }
+  else {
+    cout << "\n\n\nERROR: Unrecognized geoTag! Exiting!\n\n\n";
+    return;
+  }
+
+  geoTag += "_ideal";
   const Double_t bigModuleSize = 20.;  // Module size [cm]
   const Int_t nModulesX        = 8;    // Number of modules in a row (x direction)
   const Int_t nModulesY        = 6;    // Number of modules in a row (x direction)
-
-  TString geoTag = Form("1mod_hole%icm_xshift%4.2fcm", (int) holeSize, psdX);  // Geometry tag
 
   // --------------------------------------------------------------------------
   cout << "Number of modules per row and column = " << nModulesX << " " << nModulesY << endl;
@@ -57,15 +128,16 @@ void create_psdgeo_ideal()
   infoFileName         = infoFileName + geoTag + ".geo.info";
   fstream infoFile;
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "PSD geometry " << geoTag << " created with create_psdgeo_with_hole.C" << endl << endl;
+  infoFile << "PSD geometry " << geoTag << " created with create_psdgeo_ideal.C" << endl << endl;
   infoFile << "Ideal PSD geometry for performance studies - whole volume as a "
               "single module"
            << endl;
+  infoFile << comment << endl << endl;
   infoFile << "Number of modules: " << nModulesX << " x " << nModulesY << endl;
   infoFile << "Big module size: " << bigModuleSize << " cm x " << bigModuleSize << " cm" << endl;
   infoFile << "PSD front plane center coordinates: (" << psdX << ", " << psdY << ", " << psdZ << ") cm" << endl;
   infoFile << "PSD rotation around y axis: " << psdRotY * TMath::RadToDeg() << " degrees" << endl;
-  infoFile << "Diagonal size of the square shaped hole in PSD center: " << holeSize << " cm" << endl << endl;
+  infoFile << "Side length of the square shaped hole in PSD center: " << holeSize << " cm" << endl << endl;
   // --------------------------------------------------------------------------
 
 
