@@ -211,10 +211,10 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     // Activate the line below to write Trd1D digis to a separate "TrdFaspDigi" branch. Can be used to separate between Fasp and Spadic digis
     //trdfasp2dconfig->SetOutputBranchName("TrdFaspDigi");
     if (runid <= 1588) {
-      uint8_t map[NFASPMOD],
-              map21[] = {9, 2, 3, 11, 10, 7, 8, 0, 1, 4, 6, 5};
-      
-      for (int i(0); i< NFASPMOD; i++) map[i] = (i<12 ? map21[i] : i);
+      uint8_t map[NFASPMOD], map21[] = {9, 2, 3, 11, 10, 7, 8, 0, 1, 4, 6, 5};
+
+      for (int i(0); i < NFASPMOD; i++)
+        map[i] = (i < 12 ? map21[i] : i);
       trdfasp2dconfig->SetFaspMapping(5, map);
     }
     std::string parfilesbasepathTrdfasp2d = Form("%s/parameters/trd", srcDir.Data());

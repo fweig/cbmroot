@@ -35,7 +35,7 @@ void CbmTrdUnpackConfigFasp2D::InitAlgo()
 {
   if (fDoLog) LOG(info) << fName << "::InitAlgo - SetFaspMapping";
   fAlgo->SetAsicMapping(fFaspMap);
-  /*if (fDoLog) */fAlgo->PrintAsicMapping();
+  /*if (fDoLog) */ fAlgo->PrintAsicMapping();
 
   // Now we have all information required to initialise the algorithm
   fAlgo->Init();
