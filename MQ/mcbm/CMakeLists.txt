@@ -261,29 +261,31 @@ set(DEPENDENCIES
 )
 GENERATE_EXECUTABLE()
 
-set(EXE_NAME EventBuilder)
-set(SRCS CbmDeviceEventBuilder.cxx runEventBuilder.cxx)
+if (${CMAKE_CXX_STANDARD} EQUAL 17)
+  set(EXE_NAME EventBuilder)
+  set(SRCS CbmDeviceEventBuilder.cxx runEventBuilder.cxx)
 
-set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
-  Algo
-  CbmFlibFlesTools
-  CbmEventBuilder
-  KF
-  L1
-  CbmBase
-  CbmRecoBase
-  CbmData
-  CbmTofBase
-  Core
-  RIO
-  Net
-  Hist
-  RHTTP
-)
-GENERATE_EXECUTABLE()
+  set(DEPENDENCIES
+    ${DEPENDENCIES}
+    ${FAIR_LIBS}
+    ${BOOST_LIBS}
+    Algo
+    CbmFlibFlesTools
+    CbmEventBuilder
+    KF
+    L1
+    CbmBase
+    CbmRecoBase
+    CbmData
+    CbmTofBase
+    Core
+    RIO
+    Net
+    Hist
+    RHTTP
+  )
+  GENERATE_EXECUTABLE()
+endif()
 
 #set(INCLUDE_DIRECTORIES
 #    ${CBMDATA_DIR}/base
@@ -312,23 +314,26 @@ set(DEPENDENCIES
 #GENERATE_LIBRARY()
 GENERATE_EXECUTABLE()
 
-set(EXE_NAME EventSink)
-set(SRCS CbmDeviceEventSink.cxx runEventSink.cxx)
+if (${CMAKE_CXX_STANDARD} EQUAL 17)
+  set(EXE_NAME EventSink)
+  set(SRCS CbmDeviceEventSink.cxx runEventSink.cxx)
 
-set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
-  fles_ipc
-  CbmFlibMcbm2018
-  CbmFlibFlesTools
-  CbmBase
-  CbmData
-  Core
-  RIO
-  Tree
-  Net
-  Hist
-  RHTTP
-)
-GENERATE_EXECUTABLE()
+  set(DEPENDENCIES
+    ${DEPENDENCIES}
+    ${FAIR_LIBS}
+    ${BOOST_LIBS}
+    fles_ipc
+    CbmFlibMcbm2018
+    CbmFlibFlesTools
+    CbmBase
+    CbmData
+    Core
+    RIO
+    Tree
+    Net
+    Hist
+    RHTTP
+  )
+  GENERATE_EXECUTABLE()
+endif()
+
