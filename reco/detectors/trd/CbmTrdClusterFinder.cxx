@@ -218,7 +218,7 @@ InitStatus CbmTrdClusterFinder::Init()
 
 
   CbmDigiManager::Instance()->Init();
-  if (!CbmDigiManager::Instance()->IsPresent(ECbmModuleId::kTrd)) LOG(fatal);
+  if (!CbmDigiManager::Instance()->IsPresent(ECbmModuleId::kTrd)) LOG(fatal) << GetName() << "Missing Trd digi branch.";
 
   fClusters = new TClonesArray("CbmTrdCluster", 100);
   ioman->Register("TrdCluster", "TRD", fClusters, IsOutputBranchPersistent("TrdCluster"));

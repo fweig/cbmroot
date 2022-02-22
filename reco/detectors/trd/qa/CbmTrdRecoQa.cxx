@@ -104,7 +104,7 @@ InitStatus CbmTrdRecoQa::Init()
   }
 
   CbmDigiManager::Instance()->Init();
-  if (!CbmDigiManager::Instance()->IsPresent(ECbmModuleId::kTrd)) LOG(fatal);
+  if (!CbmDigiManager::Instance()->IsPresent(ECbmModuleId::kTrd)) LOG(fatal) << GetName() << "Missing Trd digi branch.";
 
 
   // Get pointer to TRD point array
