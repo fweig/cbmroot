@@ -1,5 +1,4 @@
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerUnpackerParserverHitBuilder.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQSamplerUnpackerParserverHitBuilder.sh)
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQ_Mcbm.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQ_Mcbm.sh)
 
 set(INCLUDE_DIRECTORIES
@@ -38,7 +37,10 @@ set(LINK_DIRECTORIES
 
 link_directories(${LINK_DIRECTORIES})
 
+# Set the install path within the build directory
 set(EXECUTABLE_OUTPUT_PATH "${EXECUTABLE_OUTPUT_PATH}/MQ/hitbuilder")
+# Set the install path within the installation directory
+set(BIN_DESTINATION bin/MQ/hitbuilder)
 
 Set(BOOST_LIBS
   ${Boost_SYSTEM_LIBRARY}
@@ -85,4 +87,22 @@ set(DEPENDENCIES
   Hist
 )
 GENERATE_EXECUTABLE()
+
+# Set the correct variables for the installation
+set(VMCWORKDIR ${CMAKE_INSTALL_PREFIX}/share/cbmroot)
+
+set(MY_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_CURRENT_SOURCE_DIR ${VMCWORKDIR}/input)
+
+set(TMPDIR "${CMAKE_BINARY_DIR}")
+set(CMAKE_BINARY_DIR ${CMAKE_INSTALL_PREFIX})
+
+# Configure file for installation directory
+configure_file(${MY_SOURCE_DIR}/startMQSamplerUnpackerParserverHitBuilder.sh.in ${TMPDIR}/bin/MQ/topologies/install/startMQSamplerUnpackerParserverHitBuilder.sh)
+configure_file(${MY_SOURCE_DIR}/startMQ_Mcbm.sh.in                      ${TMPDIR}/bin/MQ/topologies/install/startMQ_Mcbm.sh)
+
+install(PROGRAMS ${TMPDIR}/bin/MQ/topologies/install/startMQSamplerUnpackerParserverHitBuilder.sh
+                 ${TMPDIR}/bin/MQ/topologies/install/startMQ_Mcbm.sh
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/MQ/topologies
+       )
 

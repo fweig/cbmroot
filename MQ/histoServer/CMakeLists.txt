@@ -62,6 +62,11 @@ set(DEPENDENCIES_ALL
   ${BOOST_LIBS}
 )
 
+# Set the install path within the build directory
+set(EXECUTABLE_OUTPUT_PATH "${EXECUTABLE_OUTPUT_PATH}/MQ/histogramServer")
+# Set the install path within the installation directory
+set(BIN_DESTINATION bin/MQ/histogramServer)
+
 set(EXE_NAME HistoServer)
 set(SRCS CbmHistoServer.cxx runCbmHistoServer.cxx)
 set(DEPENDENCIES
@@ -75,8 +80,6 @@ set(DEPENDENCIES
   RHTTP
 )
 GENERATE_EXECUTABLE()
-
-set(EXECUTABLE_OUTPUT_PATH "${EXECUTABLE_OUTPUT_PATH}/MQ/histogramServer")
 
 set(EXE_NAME MqHistoServer)
 set(SRCS CbmMqHistoServer.cxx runCbmMqHistoServer.cxx)

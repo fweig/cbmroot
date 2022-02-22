@@ -74,7 +74,10 @@ set(LINK_DIRECTORIES
 
 link_directories(${LINK_DIRECTORIES})
 
+# Set the install path within the build directory
 set(EXECUTABLE_OUTPUT_PATH "${EXECUTABLE_OUTPUT_PATH}/MQ/mcbm")
+# Set the install path within the installation directory
+set(BIN_DESTINATION bin/MQ/mcbm)
 
 Set(BOOST_LIBS
   ${Boost_SYSTEM_LIBRARY}
@@ -115,7 +118,6 @@ set(DEPENDENCIES
   Hist
   RHTTP
 )
-#GENERATE_LIBRARY()
 GENERATE_EXECUTABLE()
 
 set(EXE_NAME McbmMonitorPulser)
@@ -136,7 +138,6 @@ set(DEPENDENCIES
   Hist
   RHTTP
 )
-#GENERATE_LIBRARY()
 GENERATE_EXECUTABLE()
 
 set(EXE_NAME BuildRawEvents)
@@ -163,7 +164,6 @@ set(DEPENDENCIES
   Hist
   RHTTP
 )
-#GENERATE_LIBRARY()
 GENERATE_EXECUTABLE()
 
 
@@ -185,7 +185,6 @@ set(DEPENDENCIES
   Hist
   RHTTP
 )
-#GENERATE_LIBRARY()
 GENERATE_EXECUTABLE()
 
 set(EXE_NAME McbmEventSink)
@@ -207,7 +206,6 @@ set(DEPENDENCIES
   Hist
   RHTTP
 )
-#GENERATE_LIBRARY()
 GENERATE_EXECUTABLE()
 
 
@@ -311,7 +309,6 @@ set(DEPENDENCIES
   Hist
   RHTTP
 )
-#GENERATE_LIBRARY()
 GENERATE_EXECUTABLE()
 
 if (${CMAKE_CXX_STANDARD} EQUAL 17)
@@ -337,3 +334,28 @@ if (${CMAKE_CXX_STANDARD} EQUAL 17)
   GENERATE_EXECUTABLE()
 endif()
 
+# Set the correct variables for the installation
+set(VMCWORKDIR ${CMAKE_INSTALL_PREFIX}/share/cbmroot)
+
+set(MY_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_CURRENT_SOURCE_DIR ${VMCWORKDIR}/input)
+
+set(TMPDIR "${CMAKE_BINARY_DIR}")
+set(CMAKE_BINARY_DIR ${CMAKE_INSTALL_PREFIX})
+
+# Configure file for installation directory
+configure_file(${MY_SOURCE_DIR}/startMQMcbmPulserMonitor2020.sh.in   ${TMPDIR}/bin/MQ/topologies/install/startMQMcbmPulserMonitor2020.sh)
+configure_file(${MY_SOURCE_DIR}/startMQMcbmEvtBuilderWin2020.sh.in   ${TMPDIR}/bin/MQ/topologies/install/startMQMcbmEvtBuilderWin2020.sh)
+configure_file(${MY_SOURCE_DIR}/startMQBuildRawEvents.sh.in          ${TMPDIR}/bin/MQ/topologies/install/startMQBuildRawEvents.sh)
+configure_file(${MY_SOURCE_DIR}/startBuildRawEvents2021.sh.in        ${TMPDIR}/bin/MQ/topologies/install/startBuildRawEvents2021.sh)
+configure_file(${MY_SOURCE_DIR}/startBuildRawEventsCosmics2021.sh.in ${TMPDIR}/bin/MQ/topologies/install/startBuildRawEventsCosmics2021.sh)
+configure_file(${MY_SOURCE_DIR}/startEventBuilder.sh.in              ${TMPDIR}/bin/MQ/topologies/startEventBuilder.sh)
+
+install(PROGRAMS ${TMPDIR}/bin/MQ/topologies/install/startMQMcbmPulserMonitor2020.sh
+                 ${TMPDIR}/bin/MQ/topologies/install/startMQMcbmEvtBuilderWin2020.sh
+                 ${TMPDIR}/bin/MQ/topologies/install/startMQBuildRawEvents.sh
+                 ${TMPDIR}/bin/MQ/topologies/install/startBuildRawEvents2021.sh
+                 ${TMPDIR}/bin/MQ/topologies/install/startBuildRawEventsCosmics2021.sh
+                 ${TMPDIR}/bin/MQ/topologies/install/startEventBuilder.sh
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/MQ/topologies
+       )

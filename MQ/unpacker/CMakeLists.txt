@@ -83,5 +83,34 @@ set(DEPENDENCIES
   Net
   Hist
 )
+
+# set the install dir
+set(BIN_DESTINATION bin/MQ/unpacker)
 GENERATE_EXECUTABLE()
 
+# Install script and input file(s)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/MapTofHdCosmics_v18d.par
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/cbmroot/input
+       )
+
+if(EXISTS ${VMCWORKDIR}/input/tofget4_hd2018.tsa)
+  install(FILES ${VMCWORKDIR}/input/tofget4_hd2018.tsa
+          DESTINATION ${CMAKE_INSTALL_PREFIX}/share/cbmroot/input
+         )
+endif()
+
+# Set the correct variables for the installation
+set(VMCWORKDIR ${CMAKE_INSTALL_PREFIX}/share/cbmroot)
+
+set(MY_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_CURRENT_SOURCE_DIR ${VMCWORKDIR}/input)
+
+set(TMPDIR "${CMAKE_BINARY_DIR}")
+set(CMAKE_BINARY_DIR ${CMAKE_INSTALL_PREFIX})
+
+# Configure file for installation directory
+configure_file(${MY_SOURCE_DIR}/startMQSamplerUnpackerParserver.sh.in ${TMPDIR}/bin/MQ/topologies/install/startMQSamplerUnpackerParserver.sh)
+
+install(PROGRAMS ${TMPDIR}/bin/MQ/topologies/install/startMQSamplerUnpackerParserver.sh
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/MQ/topologies
+       )

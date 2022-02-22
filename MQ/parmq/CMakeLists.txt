@@ -27,7 +27,10 @@ Set(LINK_DIRECTORIES
 
 Link_Directories(${LINK_DIRECTORIES})
 
+# Set the install path within the build directory
 set(EXECUTABLE_OUTPUT_PATH "${EXECUTABLE_OUTPUT_PATH}/MQ/parmq")
+# Set the install path within the installation directory
+set(BIN_DESTINATION bin/MQ/parmq)
 
 Set(BOOST_LIBS
   ${Boost_SYSTEM_LIBRARY}
