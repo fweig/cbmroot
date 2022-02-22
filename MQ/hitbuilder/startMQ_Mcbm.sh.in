@@ -1,33 +1,35 @@
 #!/bin/bash
-$FAIRROOTPATH/bin/shmmonitor --cleanup
+if [ -e @SIMPATH@/bin/fairmq-shmmonitor ]; then
+  @SIMPATH@/bin/fairmq-shmmonitor --cleanup
+fi
 
-if [ -z "$1" ]; then 
+if [ -z "$1" ]; then
     _runname="r0088_20180905_1602"
-else 
+else
     _runname=$1
 fi
-  
+
 _reqmod=3
 _reqtint=50
 _ntimeslices=-1
 _iUnp=4
 _batch=1
-_pulmode=1 
+_pulmode=1
 _pulmulmin=9
 _pultotmin=50
-#_tshiftref=0. 
-_tshiftref=-35. 
+#_tshiftref=0.
+_tshiftref=-35.
 
 #_dirname=@VMCWORKDIR@/macro/beamtime/mcbm2018/input/$_runname/
 _outdir=@VMCWORKDIR@/macro/beamtime/mcbm2018/data/
 #_datapath=~/KRONOS/CBM/cbmroot/trunk
 #_dirname=$_datapath/macro/beamtime/mcbm2018/input/$_runname/
 #_outdir=$_datapath/macro/beamtime/mcbm2018/data/
- 
+
 _filename="./tsaData/${_runname}_pn05_*.tsa;./tsaData/${_runname}_pn06_*.tsa;./tsaData/${_runname}_pn07_*.tsa"
 _digifile=$_runname.$_reqtint.$_reqmod.$_pulmode.root
 
-# ASCII files  
+# ASCII files
 #_mapfile=@CMAKE_CURRENT_SOURCE_DIR@/MapTofGbtx.par
 _mapfile=@VMCWORKDIR@/macro/beamtime/mcbm2018/mTofPar.par
 #_mapfile=@VMCWORKDIR@/macro/beamtime/mcbm2018/etofPar.par
@@ -36,10 +38,10 @@ _mapfile=@VMCWORKDIR@/macro/beamtime/mcbm2018/mTofPar.par
 _digibdffile=@VMCWORKDIR@/parameters/tof/v18l_mCbm.digibdf.par
 _digiparfile=@VMCWORKDIR@/parameters/tof/tof_v18l_mCbm.digi.par
 
-# ROOT files 
+# ROOT files
 _geofile=@VMCWORKDIR@/macro/beamtime/mcbm2018/tof_v18l_mCbm.par.root
 
-rm -v nohup.out 
+rm -v nohup.out
 rm -v *log
 rm all_*
 
@@ -57,7 +59,7 @@ PARAMETERSERVER+=" --first-input-type ASCII"
 PARAMETERSERVER+=" --second-input-name $_geofile"
 PARAMETERSERVER+=" --second-input-type ROOT"
 PARAMETERSERVER+=" --severity INFO"
-if  [[ $_batch = 1 ]]; then 
+if  [[ $_batch = 1 ]]; then
 PARAMETERSERVER+=" --control static"
 PARAMETERSERVER+=" --log-to-file ParServ.out"
 nohup @CMAKE_BINARY_DIR@/bin/MQ/parmq/$PARAMETERSERVER &
@@ -82,14 +84,14 @@ SAMPLER+=" --channel-config name=syscmd,type=pub,method=bind,transport=zeromq,ad
 #SAMPLER+=" --severity WARN"
 SAMPLER+=" --severity INFO"
 #SAMPLER+=" --severity DEBUG"
-if  [[ $_batch = 1 ]]; then 
+if  [[ $_batch = 1 ]]; then
 SAMPLER+=" --log-to-file Sampl.out"
 SAMPLER+=" --control static"
-nohup  @CMAKE_BINARY_DIR@/bin/MQ/source/$SAMPLER & 
-else 
+nohup  @CMAKE_BINARY_DIR@/bin/MQ/source/$SAMPLER &
+else
 xterm -geometry 80x23+0+0 -hold -e @CMAKE_BINARY_DIR@/bin/MQ/source/$SAMPLER &
 fi
- 
+
 while (( _iUnp > 0 )); do
 
 UNPACKER="UnpackTofMcbm2018"
@@ -107,16 +109,16 @@ UNPACKER+=" --PulserMode $_pulmode"
 UNPACKER+=" --PulMulMin $_pulmulmin"
 UNPACKER+=" --PulTotMin $_pultotmin"
 UNPACKER+=" --TShiftRef $_tshiftref"
-if  [[ $_batch = 1 ]]; then 
+if  [[ $_batch = 1 ]]; then
 UNPACKER+=" --control static"
 UNPACKER+=" --log-to-file Unp.out"
 nohup @CMAKE_BINARY_DIR@/bin/MQ/unpacker/$UNPACKER &
-else 
-xterm -geometry 110x23+520+0 -hold -e @CMAKE_BINARY_DIR@/bin/MQ/unpacker/$UNPACKER & 
+else
+xterm -geometry 110x23+520+0 -hold -e @CMAKE_BINARY_DIR@/bin/MQ/unpacker/$UNPACKER &
 fi
 
 (( _iUnp -= 1 ))
-done 
+done
 
 HITBUILDER="HitBuilderTof"
 HITBUILDER+=" --id hitbuilder1"
@@ -148,7 +150,7 @@ HITBUILDER+=" --Sel2Type  0"
 HITBUILDER+=" --Sel2Sm    2"
 HITBUILDER+=" --Sel2Rpc   2"
 
-if  [[ $_batch = 1 ]]; then 
+if  [[ $_batch = 1 ]]; then
 HITBUILDER+=" --control static"
 HITBUILDER+=" --log-to-file HitBuild.out"
 nohup  @CMAKE_BINARY_DIR@/bin/MQ/hitbuilder/$HITBUILDER &

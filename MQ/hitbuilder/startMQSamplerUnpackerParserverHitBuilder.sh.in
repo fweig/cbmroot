@@ -1,23 +1,24 @@
-
 #!/bin/bash
 
 Running=`ps uaxww | grep HitB`
 
-if [[ $Running == *"hitbuilder1"* ]]; then 
+if [[ $Running == *"hitbuilder1"* ]]; then
     echo Hitbuilder is still running, wait or cleanup!
-    exit 1 
+    exit 1
 fi
 
-$FAIRROOTPATH/bin/shmmonitor --cleanup
+if [ -e @SIMPATH@/bin/fairmq-shmmonitor ]; then
+  @SIMPATH@/bin/fairmq-shmmonitor --cleanup
+fi
 
-if [ -z "$1" ]; then 
+if [ -z "$1" ]; then
     _runname="r0088_20180905_1602"
-else 
+else
     _runname=$1
 fi
-  
-_reqmod=3 
-_reqtint=100 
+
+_reqmod=3
+_reqtint=100
 _batch=1
 _iUnp=6
 
@@ -25,18 +26,18 @@ _dirname=@VMCWORKDIR@/macro/beamtime/star2019/input/$_runname/
 _filename=$_runname_*.tsa
 _digifile=$_runname.$_reqtint.$_reqmod.root
 
-# ASCII files  
+# ASCII files
 _mapfile=@CMAKE_CURRENT_SOURCE_DIR@/MapTofGbtx.par
 #_digibdffile=@CMAKE_CURRENT_SOURCE_DIR@/v18j_cosmicHD.digibdf.par
 #_digiparfile=@CMAKE_CURRENT_SOURCE_DIR@/tof_v18j_cosmicHD.digi.par
 _digibdffile=@VMCWORKDIR@/parameters/tof/v18_star_cosmics.digibdf.par
 _digiparfile=@VMCWORKDIR@/parameters/tof/tof_v18_star_cosmics.digi.par
 
-# ROOT files 
+# ROOT files
 #_geofile=@CMAKE_CURRENT_SOURCE_DIR@/tof_v18j_cosmicHD.par.root
 _geofile=@CMAKE_CURRENT_SOURCE_DIR@/tof_v18_star_cosmics.par.root
 
-rm -v nohup.out 
+rm -v nohup.out
 rm -v *log
 rm all_*
 
@@ -53,7 +54,7 @@ PARAMETERSERVER+=" --first-input-type ASCII"
 PARAMETERSERVER+=" --second-input-name $_geofile"
 PARAMETERSERVER+=" --second-input-type ROOT"
 PARAMETERSERVER+=" --verbosity INFO"
-if  [[ $_batch = 1 ]]; then 
+if  [[ $_batch = 1 ]]; then
 PARAMETERSERVER+=" --control static"
 PARAMETERSERVER+=" --log-to-file ParServ.out"
 nohup @CMAKE_BINARY_DIR@/bin/MQ/parmq/$PARAMETERSERVER &
@@ -78,14 +79,14 @@ SAMPLER+=" --channel-config name=syscmd,type=pub,method=bind,transport=zeromq,ad
 #SAMPLER+=" --verbosity WARN"
 SAMPLER+=" --verbosity INFO"
 #SAMPLER+=" --verbosity DEBUG"
-if  [[ $_batch = 1 ]]; then 
+if  [[ $_batch = 1 ]]; then
 SAMPLER+=" --log-to-file Sampl.out"
 SAMPLER+=" --control static"
-nohup  @CMAKE_BINARY_DIR@/bin/MQ/source/$SAMPLER & 
-else 
+nohup  @CMAKE_BINARY_DIR@/bin/MQ/source/$SAMPLER &
+else
 xterm -geometry 80x23+0+0 -hold -e @CMAKE_BINARY_DIR@/bin/MQ/source/$SAMPLER &
 fi
- 
+
 while (( _iUnp > 0 )); do
 
 UNPACKER="UnpackTofMcbm2018"
@@ -117,16 +118,16 @@ UNPACKER+=" --ReqDet14 131110"
 UNPACKER+=" --ReqDet15 131126"
 UNPACKER+=" --ReqDet16 131142"
 UNPACKER+=" --ReqDet17 131158"
-if  [[ $_batch = 1 ]]; then 
+if  [[ $_batch = 1 ]]; then
 UNPACKER+=" --control static"
 UNPACKER+=" --log-to-file Unp.out"
 nohup @CMAKE_BINARY_DIR@/bin/MQ/unpacker/$UNPACKER &
-else 
-xterm -geometry 110x23+520+0 -hold -e @CMAKE_BINARY_DIR@/bin/MQ/unpacker/$UNPACKER & 
+else
+xterm -geometry 110x23+520+0 -hold -e @CMAKE_BINARY_DIR@/bin/MQ/unpacker/$UNPACKER &
 fi
 
 (( _iUnp -= 1 ))
-done 
+done
 
 HITBUILDER="HitBuilderTof"
 HITBUILDER+=" --id hitbuilder1"
@@ -144,7 +145,7 @@ HITBUILDER+=" --OutRootFile $_digifile"
 HITBUILDER+=" --RunId 1538835959"
 #HITBUILDER+=" --RunId 1536669562"
 #HITBUILDER+=" --RunId 1537898701"
-if  [[ $_batch = 1 ]]; then 
+if  [[ $_batch = 1 ]]; then
 HITBUILDER+=" --control static"
 HITBUILDER+=" --log-to-file HitBuild.out"
 nohup  @CMAKE_BINARY_DIR@/bin/MQ/hitbuilder/$HITBUILDER &

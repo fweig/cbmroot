@@ -1,9 +1,11 @@
 #!/bin/bash
-$FAIRROOTPATH/bin/shmmonitor --cleanup
+if [ -e @SIMPATH@/bin/fairmq-shmmonitor ]; then
+  @SIMPATH@/bin/fairmq-shmmonitor --cleanup
+fi
 
-if [ -z "$1" ]; then 
+if [ -z "$1" ]; then
     _filename=@VMCWORKDIR@/input/tofget4_hd2018.tsa
-else 
+else
     _filename=$1
 fi
 

@@ -1,13 +1,13 @@
 #!/bin/bash
-if [ -e $FAIRROOTPATH/bin/shmmonitor ]; then
-  $FAIRROOTPATH/bin/shmmonitor --cleanup
-fi 
+if [ -e @SIMPATH@/bin/fairmq-shmmonitor ]; then
+  @SIMPATH@/bin/fairmq-shmmonitor --cleanup
+fi
 
-if [ -z "$1" ]; then 
+if [ -z "$1" ]; then
 #    _filename=@VMCWORKDIR@/input/stsxyter_cosy2018.tsa
     _filename=tofget4_hd2018.tsa
     _dirname=@VMCWORKDIR@/input/
-else 
+else
     _filename=$1
     _dirname=$2
 fi

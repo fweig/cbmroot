@@ -1,9 +1,11 @@
 #!/bin/bash
-$FAIRROOTPATH/bin/shmmonitor --cleanup
+if [ -e @SIMPATH@/bin/fairmq-shmmonitor ]; then
+  @SIMPATH@/bin/fairmq-shmmonitor --cleanup
+fi
 
-if [ -z "$1" ]; then 
+if [ -z "$1" ]; then
     _run_id="1568041655"
-else 
+else
     _run_id=$1
 fi
 
