@@ -66,6 +66,7 @@ struct CbmL1MCPoint {
   int pointId   = -1;
   int file      = -1;
   int event     = -1;
+  int trackId   = -1;
   L1Vector<int> hitIds {"CbmL1MCPoint::hitIds"};  // indices of CbmL1Hits in L1->vStsHits array
 };
 

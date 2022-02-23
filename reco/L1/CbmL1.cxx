@@ -195,7 +195,7 @@ InitStatus CbmL1::Init()
   fUseTOF  = 0;
 
   if (fTrackingMode == L1Algo::TrackingMode::kMcbm) {
-    fUseMUCH = 0;
+    fUseMUCH = 1;
     fUseTRD  = 1;
     fUseTOF  = 1;
   }
@@ -433,6 +433,8 @@ InitStatus CbmL1::Init()
           if (NULL == fChannelInfo) break;
           float z = fChannelInfo->GetZ();
           float x = fChannelInfo->GetX();
+          float y = fChannelInfo->GetY();
+          
           if (fMissingHits) {
             if ((x > 20) && (z > 270) && (station == 1)) station = 2;
             if (z > 400) continue;
@@ -534,11 +536,12 @@ InitStatus CbmL1::Init()
       geo.push_back(t.RadLength);
 
       fscal f_phi = 0, f_sigma = mvdStationPar->GetXRes(ist) / 10000, b_phi = 3.14159265358 / 2.,
-            b_sigma = mvdStationPar->GetYRes(ist) / 10000;
+            b_sigma = mvdStationPar->GetYRes(ist) / 10000, dt = 1000;
       geo.push_back(f_phi);
       geo.push_back(f_sigma);
       geo.push_back(b_phi);
       geo.push_back(b_sigma);
+      geo.push_back(dt);
       z    = t.z;
       Xmax = Ymax = t.R;
 
@@ -564,6 +567,7 @@ InitStatus CbmL1::Init()
       b_phi += station->GetSensorStereoAngle(1) * Pi / 180.;
       f_sigma = station->GetSensorPitch(0) / TMath::Sqrt(12);
       b_sigma = f_sigma;
+      fscal dt = 5;
       //f_sigma *= cos(f_phi);  // TODO: think about this
       //b_sigma *= cos(b_phi);
 
@@ -571,6 +575,7 @@ InitStatus CbmL1::Init()
       geo.push_back(f_sigma);
       geo.push_back(b_phi);
       geo.push_back(b_sigma);
+      geo.push_back(dt);
       z = station->GetZ();
 
       Xmax = station->GetXmax();
@@ -597,15 +602,17 @@ InitStatus CbmL1::Init()
       geo.push_back(2);
       geo.push_back(z);
       geo.push_back(layer->GetDz());
-      geo.push_back(0);
+      geo.push_back(10);
       geo.push_back(100);  //station->GetRmax()
       geo.push_back(0);
 
-      fscal f_phi = 0, f_sigma = 0.1, b_phi = 3.14159265358 / 2., b_sigma = 0.1;
+     // fscal f_phi = 0, f_sigma = 0.1, b_phi = 3.14159265358 / 2., b_sigma = 0.1;
+      fscal f_phi = 0, f_sigma = 0.35, b_phi = 3.14159265358 / 2., b_sigma = 0.35, dt = 3.9;
       geo.push_back(f_phi);
       geo.push_back(f_sigma);
       geo.push_back(b_phi);
       geo.push_back(b_sigma);
+      geo.push_back(dt);
 
 
       Xmax = 100;  //station->GetRmax();
@@ -644,15 +651,17 @@ InitStatus CbmL1::Init()
       geo.push_back(stationZ);
 
       geo.push_back(2 * module->GetSizeZ());
-      geo.push_back(0);
+      geo.push_back(10);
       geo.push_back(2 * module->GetSizeX());
       geo.push_back(10);
 
-      fscal f_phi = 0, f_sigma = 1., b_phi = 3.14159265358 / 2., b_sigma = 1.;
+    //  fscal f_phi = 0, f_sigma = 1., b_phi = 3.14159265358 / 2., b_sigma = 1.;
+      fscal f_phi = 0, f_sigma = 0.15, b_phi = 3.14159265358 / 2., b_sigma = 0.15, dt = 10;
       geo.push_back(f_phi);
       geo.push_back(f_sigma);
       geo.push_back(b_phi);
       geo.push_back(b_sigma);
+      geo.push_back(dt);
       Xmax = module->GetSizeX();
       Ymax = module->GetSizeY();
       LOG(info) << "L1: Trd station " << num << " at z " << stationZ << endl;
@@ -672,11 +681,13 @@ InitStatus CbmL1::Init()
       geo.push_back(150);  /// TODO: add Tof max radius
       geo.push_back(10);
 
-      fscal f_phi = 0, f_sigma = 1 / 10000, b_phi = 3.14159265358 / 2., b_sigma = 1 / 10000;
+     // fscal f_phi = 0, f_sigma = 1 / 10000, b_phi = 3.14159265358 / 2., b_sigma = 1 / 10000;
+      fscal f_phi = 0, f_sigma = 0.42, b_phi = 3.14159265358 / 2., b_sigma = 0.23, dt = 0.075;
       geo.push_back(f_phi);
       geo.push_back(f_sigma);
       geo.push_back(b_phi);
       geo.push_back(b_sigma);
+      geo.push_back(dt);
       Xmax = Ymax = 20;
       LOG(info) << "L1: Tof station " << num << " at z " << z << endl;
     }
@@ -875,7 +886,7 @@ InitStatus CbmL1::Init()
       // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
       stationInfo.SetTimeInfo(1);
       stationInfo.SetZ(layer->GetZ());
-      stationInfo.SetMaterial(layer->GetDz(), 0);  // TODO: Why rad len is 0????? (S.Zh.)
+      stationInfo.SetMaterial(layer->GetDz(), 10);  // TODO: Why rad len is 0????? (S.Zh.)
       stationInfo.SetXmax(100.);
       stationInfo.SetYmax(100.);
       stationInfo.SetRmin(0.);
@@ -1073,10 +1084,11 @@ InitStatus CbmL1::Init()
         const float RMax = hStaRadLen->GetXaxis()->GetXmax();  // should be same as min
         algo->fRadThick[iSta].SetBins(NBins, RMax);
         algo->fRadThick[iSta].table.resize(NBins);
+        
+        float hole = 0.15;
 
         for (int iB = 0; iB < NBins; iB++) {
           algo->fRadThick[iSta].table[iB].resize(NBins);
-          float hole = 0.15;
           for (int iB2 = 0; iB2 < NBins; iB2++) {
             algo->fRadThick[iSta].table[iB][iB2] = 0.01 * hStaRadLen->GetBinContent(iB, iB2);
             // Correction for holes in material map
@@ -1137,10 +1149,10 @@ InitStatus CbmL1::Init()
         const float RMax = hStaRadLen->GetXaxis()->GetXmax();  // should be same as min
         algo->fRadThick[iSta].SetBins(NBins, RMax);
         algo->fRadThick[iSta].table.resize(NBins);
+        float hole = 0.15;
 
         for (int iB = 0; iB < NBins; iB++) {
           algo->fRadThick[iSta].table[iB].resize(NBins);
-          float hole = 0.15;
           for (int iB2 = 0; iB2 < NBins; iB2++) {
             algo->fRadThick[iSta].table[iB][iB2] = 0.01 * hStaRadLen->GetBinContent(iB, iB2);
             // Correction for holes in material map

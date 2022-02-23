@@ -149,6 +149,14 @@ public:
   /// Sets a vector of detectors used in tracking
   void SetActiveTrackingDetectorIDs(const std::set<L1DetectorID>& init) { fActiveTrackingDetectorIDs = init; }
 
+  void SetUseMcHit(int StsUseMcHit = 0, int MuchUseMcHit = 0, int TrdUseMcHit = 0, int TofUseMcHit = 0)
+  {
+    fStsUseMcHit  = StsUseMcHit;
+    fMuchUseMcHit = MuchUseMcHit;
+    fTrdUseMcHit  = TrdUseMcHit;
+    fTofUseMcHit  = TofUseMcHit;
+  }
+
 
   void SetStsMaterialBudgetFileName(TString fileName) { fStsMatBudgetFileName = fileName; }
   void SetMvdMaterialBudgetFileName(TString fileName) { fMvdMatBudgetFileName = fileName; }
@@ -278,6 +286,11 @@ private:
   Double_t fMomentumCutOff {0.1};   // currently not used
   Bool_t fGhostSuppression {true};  // currently not used
 
+  Int_t fStsUseMcHit {-1};   // if STS data should be processed
+  Int_t fMuchUseMcHit {-1};  // if Much data should be processed
+  Int_t fTrdUseMcHit {-1};   // if Trd data should be processed
+  Int_t fTofUseMcHit {-1};   // if Tof data should be processed
+
   Bool_t fUseMVD {false};   // if Mvd data should be processed
   Bool_t fUseMUCH {false};  // if Much data should be processed
   Bool_t fUseTRD {false};   // if Trd data should be processed
@@ -326,6 +339,7 @@ private:
   TClonesArray* fTofHits {nullptr};            // CbmMatches array
   CbmTofDigiPar* fDigiPar {nullptr};
   CbmTofDigiBdfPar* fTofDigiBdfPar {nullptr};
+  vector<vector<int>> TofPointToTrack;
 
   TFile* fPerfFile {nullptr};
   TDirectory* fHistoDir {nullptr};

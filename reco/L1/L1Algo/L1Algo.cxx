@@ -132,6 +132,7 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
     double f_sigma = geo[ind++];
     double b_phi   = geo[ind++];
     double b_sigma = geo[ind++];
+    double dt      = geo[ind++];
     double c_f     = cos(f_phi);
     double s_f     = sin(f_phi);
     double c_b     = cos(b_phi);
@@ -144,6 +145,7 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
     st.backInfo.cos_phi = c_b;
     st.backInfo.sin_phi = s_b;
     st.backInfo.sigma2  = b_sigma * b_sigma;
+    st.dt               = dt;
 
     if (fabs(b_phi - f_phi) < .1) {
       double th  = b_phi - f_phi;

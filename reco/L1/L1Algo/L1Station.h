@@ -12,7 +12,6 @@
 
 class L1Station {
 public:
-
   // TODO: test this constructors
   //L1Station(const L1Station &) = default;
   //L1Station & operator=(const L1Station &) = default;
@@ -25,6 +24,7 @@ public:
   fvec Rmin {0};
   fvec Rmax {0};
   fvec Sy {0};
+  fvec dt {0};
   L1MaterialInfo materialInfo {};
   L1FieldSlice fieldSlice {};
   L1UMeasurementInfo frontInfo {};
