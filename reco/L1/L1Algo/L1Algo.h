@@ -214,8 +214,8 @@ public:
   alignas(16) std::array<L1Station, L1Parameters::kMaxNstations> fStationsNew;
   L1Vector<L1Material> fRadThick {"fRadThick"};        // material for each station
 
-  int NStsStrips {0};                   // number of strips
-  L1Vector<L1Hit>* vStsHits {nullptr};  // hits as a combination of front-, backstrips and z-position
+  int NStsStrips {0};                         // number of strips
+  L1Vector<L1Hit>* vStsHits {nullptr};        // hits as a combination of front-, backstrips and z-position
   L1Grid vGrid[L1Parameters::kMaxNstations];  // hits as a combination of front-, backstrips and z-position
   L1Grid vGridTime[L1Parameters::kMaxNstations];
 
@@ -367,6 +367,8 @@ public:
   //       L1Parameters object somewhere outside the L1Algo, fill its fields there and then pass it directly to
   //       the L1Algo instance. (S.Zh.)
   L1InitManager* GetL1InitManager() { return &fInitManager; }
+
+  fvec GetCbmTargetZ() const { return fCbmTargetZ; }
 
 private:
   /// Object containing L1Parameters. Default consturctor is used
@@ -567,7 +569,6 @@ private:
                    fvec& dxy);
   void FilterFirstL(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& t_er, L1Station& st, fvec& dx, fvec& dy,
                     fvec& dxy);
-
 
 #ifdef TBB
   enum

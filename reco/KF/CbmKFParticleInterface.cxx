@@ -162,6 +162,7 @@ void CbmKFParticleInterface::ExtrapolateTrackToPV(const CbmStsTrack* track, CbmV
   CbmL1PFFitter fitter;
   vector<float> vChiToPrimVtx;
   CbmKFVertex kfVertex;
+  assert(pv);
   if (pv) kfVertex = CbmKFVertex(*pv);
 
   vector<L1FieldRegion> vField;

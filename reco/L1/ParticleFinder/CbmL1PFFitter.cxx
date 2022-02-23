@@ -483,7 +483,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
     }
 
     fB[0]     = CbmL1::Instance()->algo->GetVtxFieldValue();
-    zField[0] = 0;
+    zField[0] = CbmL1::Instance()->algo->GetCbmTargetZ();
     fld.Set(fB[2], zField[2], fB[1], zField[1], fB[0], zField[0]);
     field.push_back(fld);
 
@@ -623,7 +623,7 @@ void CbmL1PFFitter::CalculateFieldRegion(vector<CbmStsTrack>& Tracks, vector<L1F
     }
 
     fB[0]     = CbmL1::Instance()->algo->GetVtxFieldValue();
-    zField[0] = 0;
+    zField[0] = CbmL1::Instance()->algo->GetCbmTargetZ();
     fld.Set(fB[2], zField[2], fB[1], zField[1], fB[0], zField[0]);
     field.push_back(fld);
   }
