@@ -498,6 +498,8 @@ if(NOT CBMROOT_MINIMAL)
       "${CMAKE_INSTALL_PREFIX}/include/mvd"
       "${CMAKE_INSTALL_PREFIX}/include/littrack"
       "${CMAKE_INSTALL_PREFIX}/include/KF"
+      "${CMAKE_INSTALL_PREFIX}/include/AnalysisTree"
+      "${CMAKE_INSTALL_PREFIX}/include/AnalysisTreeQA"
      )
   set(CMAKE_INSTALL_LIBDIR lib)
   SET(VMCWORKDIR ${CMAKE_INSTALL_PREFIX}/share/cbmroot)

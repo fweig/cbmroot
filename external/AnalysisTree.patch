@@ -1,0 +1,112 @@
+diff --git a/core/CMakeLists.txt b/core/CMakeLists.txt
+index ab4c300..765e1db 100644
+--- a/core/CMakeLists.txt
++++ b/core/CMakeLists.txt
+@@ -16,7 +16,28 @@ string(REPLACE ".cpp" ".hpp" HEADERS "${SOURCES}")
+ list(APPEND HEADERS "Constants.hpp" "Detector.hpp")
+ 
+ add_library(AnalysisTreeBase SHARED ${SOURCES} G__AnalysisTreeBase.cxx)
+-ROOT_GENERATE_DICTIONARY(G__AnalysisTreeBase ${HEADERS} LINKDEF AnalysisTreeCoreLinkDef.h)
++
++if(${ROOT_VERSION} VERSION_GREATER 6.18.0)
++  message(STATUS "ROOT ${ROOT_VERSION}, use the standard ROOT_GENERATE_DICTIONARY macro.")
++  ROOT_GENERATE_DICTIONARY(G__AnalysisTreeBase ${HEADERS} LINKDEF AnalysisTreeCoreLinkDef.h)
++else()
++  message(STATUS "ROOT ${ROOT_VERSION} has a broken ROOT_GENERATE_DICTIONARY macro, so build the dictionary ourself.")
++  set(dictionary_includes ${HEADERS})
++  set(dictionary_linkdef "AnalysisTreeCoreLinkDef.h")
++  set(dictionary_source "G__AnalysisTreeBase.cxx")
++
++  add_custom_command(OUTPUT ${dictionary_source}
++                     COMMAND ${ROOT_rootcling_CMD} -f ${dictionary_source}
++                     -rml libAnalysisTreeBase
++                     -rmf libAnalysisTreeBase.rootmap
++                     -s   libAnalysisTreeBase
++                     -inlineInputHeader
++                     -I${CMAKE_CURRENT_SOURCE_DIR} ${dictionary_includes}
++                     ${CMAKE_CURRENT_SOURCE_DIR}/${dictionary_linkdef}
++                     DEPENDS ${dictionary_includes} ${dictionary_linkdef}
++                    )
++endif()
++
+ target_link_libraries(AnalysisTreeBase ${ROOT_LIBRARIES} EG)
+ 
+ add_custom_command(TARGET AnalysisTreeBase PRE_BUILD
+diff --git a/core/Constants.hpp b/core/Constants.hpp
+index ed7b9c6..f9cbcc3 100644
+--- a/core/Constants.hpp
++++ b/core/Constants.hpp
+@@ -109,4 +109,4 @@ enum EventHeaderFields : ShortInt_t {
+ 
+ }// namespace AnalysisTree
+ 
+-#endif
+\ No newline at end of file
++#endif
+diff --git a/core/Module.hpp b/core/Module.hpp
+index 9c523aa..c54d17e 100644
+--- a/core/Module.hpp
++++ b/core/Module.hpp
+@@ -93,4 +93,4 @@ class ModulePosition : public IndexedObject {
+ };
+ }// namespace AnalysisTree
+ 
+-#endif
+\ No newline at end of file
++#endif
+diff --git a/infra/CMakeLists.txt b/infra/CMakeLists.txt
+index ed7bd9b..a63a7b1 100644
+--- a/infra/CMakeLists.txt
++++ b/infra/CMakeLists.txt
+@@ -30,12 +30,34 @@ add_library(AnalysisTreeInfra SHARED ${SOURCES} G__AnalysisTreeInfra.cxx)
+ target_compile_definitions(AnalysisTreeInfra PUBLIC
+         $<$<BOOL:${Boost_FOUND}>:ANALYSISTREE_BOOST_FOUND>)
+ 
+-ROOT_GENERATE_DICTIONARY(G__AnalysisTreeInfra ${HEADERS}
+-        LINKDEF AnalysisTreeInfraLinkDef.h
+-        OPTIONS
+-            -I${CMAKE_BINARY_DIR}/include
+-            $<$<BOOL:${Boost_FOUND}>:-DANALYSISTREE_BOOST_FOUND>
+-        )
++if(${ROOT_VERSION} VERSION_GREATER 6.18.0)
++  message(STATUS "ROOT ${ROOT_VERSION}, use the standard ROOT_GENERATE_DICTIONARY macro.")
++  ROOT_GENERATE_DICTIONARY(G__AnalysisTreeInfra ${HEADERS}
++          LINKDEF AnalysisTreeInfraLinkDef.h
++          OPTIONS
++              -I${CMAKE_BINARY_DIR}/include
++              $<$<BOOL:${Boost_FOUND}>:-DANALYSISTREE_BOOST_FOUND>
++          )
++else()
++  message(STATUS "ROOT ${ROOT_VERSION} has a broken ROOT_GENERATE_DICTIONARY macro, so build the dictionary ourself.")
++  set(dictionary_includes ${HEADERS})
++  set(dictionary_linkdef "AnalysisTreeInfraLinkDef.h")
++  set(dictionary_source "G__AnalysisTreeInfra.cxx")
++
++  add_custom_command(OUTPUT ${dictionary_source}
++                     COMMAND ${ROOT_rootcling_CMD} -f ${dictionary_source}
++                     -rml libAnalysisTreeInfra
++                     -rmf libAnalysisTreeInfra.rootmap
++                     -s   libAnalysisTreeInfra
++                     -inlineInputHeader
++                     -I${CMAKE_CURRENT_SOURCE_DIR} ${dictionary_includes}
++                     -I${CMAKE_BINARY_DIR}/include
++                     -I${CMAKE_BINARY_DIR}/include/AnalysisTree
++                     $<$<BOOL:${Boost_FOUND}>:-DANALYSISTREE_BOOST_FOUND>
++                     ${CMAKE_CURRENT_SOURCE_DIR}/${dictionary_linkdef}
++                     DEPENDS ${dictionary_includes} ${dictionary_linkdef}
++                    )
++endif()
+ target_link_libraries(AnalysisTreeInfra
+         PUBLIC
+             ${ROOT_LIBRARIES}
+diff --git a/infra/SimpleCut.hpp b/infra/SimpleCut.hpp
+index 4ec5458..21fe68c 100644
+--- a/infra/SimpleCut.hpp
++++ b/infra/SimpleCut.hpp
+@@ -116,4 +116,4 @@ SimpleCut RangeCut(const std::string& variable_name, float lo, float hi, const s
+ SimpleCut EqualsCut(const std::string& variable_name, int value, const std::string& title = "");
+ 
+ }// namespace AnalysisTree
+-#endif//ANALYSISTREE_SIMPLECUT_H
+\ No newline at end of file
++#endif//ANALYSISTREE_SIMPLECUT_H

@@ -1,0 +1,45 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index ee90134..0861bc8 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -20,11 +20,35 @@ endif ()
+ 
+ #add_dependencies(AnalysisTreeQA ${PROJECT_DEPENDENCIES})
+ 
+-ROOT_GENERATE_DICTIONARY(G__AnalysisTreeQA
+-        ${HEADERS}
+-        LINKDEF AnalysisTreeQALinkDef.h
+-        OPTIONS -I${CMAKE_BINARY_DIR}/include
+-        )
++if(${ROOT_VERSION} VERSION_GREATER 6.18.0)
++  message(STATUS "ROOT ${ROOT_VERSION}, use the standard ROOT_GENERATE_DICTIONARY macro.")
++  ROOT_GENERATE_DICTIONARY(G__AnalysisTreeQA
++          ${HEADERS}
++          LINKDEF AnalysisTreeQALinkDef.h
++          OPTIONS -I${CMAKE_BINARY_DIR}/include
++          )
++else()
++  message(STATUS "ROOT ${ROOT_VERSION} has a broken ROOT_GENERATE_DICTIONARY macro, so build the dictionary ourself.")
++  set(dictionary_includes ${HEADERS})
++  set(dictionary_linkdef "AnalysisTreeQALinkDef.h")
++  set(dictionary_source "G__AnalysisTreeQA.cxx")
++
++  add_custom_command(OUTPUT ${dictionary_source}
++                     COMMAND ${ROOT_rootcling_CMD} -f ${dictionary_source}
++                     -rml libAnalysisTreeQA
++                     -rmf libAnalysisTreeQA.rootmap
++                     -s   libAnalysisTreeQA
++                     -inlineInputHeader
++                     -I${AnalysisTree_INCLUDE_DIR}
++                     -I${CMAKE_CURRENT_SOURCE_DIR}
++                     ${dictionary_includes}
++                     ${CMAKE_CURRENT_SOURCE_DIR}/${dictionary_linkdef}
++                     DEPENDS ${dictionary_includes} ${dictionary_linkdef}
++                    )
++endif()
++
++
++
+ target_link_libraries(AnalysisTreeQA
+         PUBLIC
+         AnalysisTreeBase

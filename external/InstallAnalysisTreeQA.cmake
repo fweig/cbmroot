@@ -9,6 +9,7 @@ download_project_if_needed(PROJECT         AnalysisTreeQA_source
         GIT_TAG         ${ANALYSISTREEQA_VERSION}
         SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/AnalysisTreeQA
         TEST_FILE       CMakeLists.txt
+        PATCH_COMMAND   "patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/AnalysisTreeQA.patch"
         )
 
 If(ProjectUpdated)
