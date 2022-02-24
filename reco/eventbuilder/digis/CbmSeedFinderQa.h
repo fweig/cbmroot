@@ -44,6 +44,8 @@ public:
 
   /** @brief Matches that link constructed event seeds to MC events. */
   std::vector<CbmMatch> fvEventMatches;
+  /** @brief Counts how many MC events contributed to a seed. */
+  std::vector<uint32_t> fvLinkedMCEventsCount;
   /** @brief Full vector of all event seeds that is not cleared at the end of a timeslice. */
   std::vector<double> fvSeedTimesFull;
   /** @brief Counts how many digis contributed to a seed. */
@@ -82,13 +84,14 @@ private:
   TFolder fOutFolder;             /// output folder with histos and canvases
 
   /** Histograms **/
-  TH1F* fhCorrectDigiRatio        = nullptr;  /// correct digis per event
-  TH1F* fhCorrectDigiRatioNoNoise = nullptr;  /// correct digis per event, disregarding noise
-  TH1F* fhNoiseDigiRatio          = nullptr;  /// noise digis per event
-  TH1F* fhFoundDigiRatio          = nullptr;  /// digis found per event
-  TH2I* fhCorrectVsFound          = nullptr;  /// correct digis per event vs found digis per event
-  TH2I* fhCorrectVsFoundNoNoise   = nullptr;  /// correct digis per event vs found digis per event, disregarding noise
-  TH1F* fhTimeOffset              = nullptr;  /// difference between true event time and seed time
+  TH1F* fhLinkedMCEventsPerTrigger = nullptr;  /// linked MC events per trigger
+  TH1F* fhCorrectDigiRatio         = nullptr;  /// correct digis per event
+  TH1F* fhCorrectDigiRatioNoNoise  = nullptr;  /// correct digis per event, disregarding noise
+  TH1F* fhNoiseDigiRatio           = nullptr;  /// noise digis per event
+  TH1F* fhFoundDigiRatio           = nullptr;  /// digis found per event
+  TH2I* fhCorrectVsFound           = nullptr;  /// correct digis per event vs found digis per event
+  TH2I* fhCorrectVsFoundNoNoise    = nullptr;  /// correct digis per event vs found digis per event, disregarding noise
+  TH1F* fhTimeOffset               = nullptr;  /// difference between true event time and seed time
 
   CbmQaCanvas* fCanv;  ///summary canvas
 

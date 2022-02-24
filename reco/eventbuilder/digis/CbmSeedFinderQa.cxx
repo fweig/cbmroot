@@ -19,6 +19,10 @@ CbmSeedFinderQa::CbmSeedFinderQa() : fOutFolder("SeedFinderQA", "Seed finder QA"
   histFolder = fOutFolder.AddFolder("hist", "Histogramms");
 
   // --- Init histograms
+  fhLinkedMCEventsPerTrigger =
+    new TH1F("fhLinkedMCEventsPerTrigger", "Linked MC events per trigger (=0 for pure noise)", 5, -1, 4);
+  fhLinkedMCEventsPerTrigger->SetCanExtend(TH1::kAllAxes);
+
   fhCorrectDigiRatio = new TH1F("fhCorrectDigiRatio", "Correct digis per seed [pct]", 416, -2, 102);
   fhCorrectDigiRatioNoNoise =
     new TH1F("fhCorrectDigiRatioNoNoise", "Correct digis per seed [pct], disregarding noise", 416, -2, 102);
@@ -39,9 +43,10 @@ CbmSeedFinderQa::CbmSeedFinderQa() : fOutFolder("SeedFinderQA", "Seed finder QA"
   histFolder->Add(fhCorrectVsFound);
   histFolder->Add(fhCorrectVsFoundNoNoise);
   histFolder->Add(fhTimeOffset);
+  histFolder->Add(fhLinkedMCEventsPerTrigger);
 
   fCanv = new CbmQaCanvas("cSummary", "", 4 * 400, 2 * 400);
-  fCanv->Divide2D(7);
+  fCanv->Divide2D(8);
   fOutFolder.Add(fCanv);
 }
 
@@ -54,6 +59,7 @@ CbmSeedFinderQa::~CbmSeedFinderQa()
   delete fhCorrectVsFound;
   delete fhCorrectVsFoundNoNoise;
   delete fhTimeOffset;
+  delete fhLinkedMCEventsPerTrigger;
   delete fCanv;
 }
 
@@ -105,6 +111,7 @@ void CbmSeedFinderQa::FillQaInfo(const int32_t WinStart, const int32_t WinEnd, c
   }
   fvFullDigiCount.push_back(digiCount);
   fvNoiseDigiCount.push_back(noiseDigiCount);
+  fvLinkedMCEventsCount.push_back(seedMatch.GetNofLinks());
 
   if (seedMatch.GetNofLinks() == 0)  //seed is only noise digis
   {
@@ -156,6 +163,8 @@ void CbmSeedFinderQa::FillQaInfo(const int32_t WinStart, const int32_t WinEnd, c
 void CbmSeedFinderQa::FillHistos()
 {
   for (uint32_t iEvent = 0; iEvent < fvEventMatches.size(); iEvent++) {
+
+    fhLinkedMCEventsPerTrigger->Fill(fvLinkedMCEventsCount.at(iEvent));
 
     const CbmMatch* match = &(fvEventMatches.at(iEvent));
     const CbmLink& link   = match->GetMatchedLink();
@@ -225,6 +234,9 @@ void CbmSeedFinderQa::WriteHistos()
 
   fCanv->cd(7);
   fhTimeOffset->DrawCopy("colz", "");
+
+  fCanv->cd(8);
+  fhLinkedMCEventsPerTrigger->DrawCopy("colz", "");
 
   FairSink* sink = FairRootManager::Instance()->GetSink();
   sink->WriteObject(&fOutFolder, nullptr);
