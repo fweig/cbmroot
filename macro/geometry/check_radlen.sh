@@ -4,7 +4,7 @@
 
 echo "Scanning the geometry" $1
 
-root -l -b -q '$VMCWORKDIR/macro/geometry/scan_geometry.C("'$1'")' &>tmp
+root -l -b -q '$VMCWORKDIR/macro/geometry/scan_geometry.C("'$1'")' 1>tmp
 ROOT_EXIT=$?;
 
 if [ 0 -ne $ROOT_EXIT ]; then
@@ -53,7 +53,7 @@ variables=`echo "$line" | sed -e 's/eff//g' | sed -e 's/index/jndex/g' | sed -e 
 
     COUNT=$((COUNT+1));
 
-    echo -e " \t $line"
+    echo " \t $line"
 
 done < MATERIALS
 

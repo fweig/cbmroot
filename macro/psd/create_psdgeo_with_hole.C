@@ -37,7 +37,7 @@ TGeoVolume* ConstructShield(const char* name, Double_t sizeXY, Double_t holesize
 // ======                         Main function                           =====
 // ============================================================================
 
-void create_psdgeo_with_hole(TString geoTag = "v22a")
+void create_psdgeo_with_hole(TString geoTag = "v22c")
 {
 
   // -----   Steering variables   ---------------------------------------------
@@ -64,12 +64,21 @@ void create_psdgeo_with_hole(TString geoTag = "v22a")
     holeSize = 20.;
     comment  = "Position for Au beam at 3.3A GeV/c and 60% magnetic field strength (to fit beam dump)";
   }
+  else if (geoTag == "v22c") {
+    psdX     = -90;
+    psdY     = -70;
+    psdZ     = 1756;
+    psdRotY  = 0.0;
+    holeSize = 20.;
+    comment  = "This is the PSD parking position for an out-of-the-way position to be used in hadron and muon setuos.";
+  }
   else if (geoTag == "v20c") {
     psdX     = 12.95;
     psdY     = 0.;
     psdZ     = 1010;
     psdRotY  = 0.0132;
     holeSize = 20.;
+    comment  = "This is a coordinate shifted version of v20a";
   }
   else if (geoTag == "v20a") {
     psdX     = 12.95;
