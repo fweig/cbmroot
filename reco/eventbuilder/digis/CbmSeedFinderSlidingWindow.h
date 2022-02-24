@@ -26,6 +26,7 @@
 #include <vector>
 
 class CbmMatch;
+class CbmMCEventList;
 class CbmSeedFinderQa;
 
 class CbmSeedFinderSlidingWindow {
@@ -67,6 +68,15 @@ public:
    **/
   void SetOffset(double offset) { fdOffset = offset; }
 
+  /** @brief Switches to ``ideal mode'' in which event times from MC data are used as triggers
+   *  (no algorithm is run in this case)
+   **/
+  void SetIdealMode(const int32_t fileId = -1)
+  {
+    fbIdealMode      = true;
+    fIdealModeFileId = fileId;
+  }
+
   /** @brief Returns number of seed times currently stored in buffer. */
   size_t GetNofSeeds() { return fvSeedTimes->size(); }
 
@@ -89,6 +99,15 @@ private:
 
   /** @brief Global time offset which is applied to each trigger time. */
   double fdOffset = 0.;
+
+  /** @brief ``ideal mode'' uses MC truth as trigger times. */
+  bool fbIdealMode = false;
+
+  /** @brief If only a single file is to be used in ``ideal mode'' (-1 = all files). */
+  int32_t fIdealModeFileId = -1;
+
+  /** @brief To access MC truth in ``ideal mode''. */
+  CbmMCEventList* fEventList = nullptr;
 
   /** @brief Fetches time at position i of either a digi vector or vector of times. */
   template<class inType>

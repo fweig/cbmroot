@@ -47,6 +47,12 @@ void CbmTaskBuildRawEvents::AddSeedTimeFillerToList(RawEventBuilderDetector seed
   fpAlgo->SetSeedTimes(fSeedTimes);
 }
 
+void CbmTaskBuildRawEvents::SetIdealSeedFinder(const int32_t fileId)
+{
+  SetSlidingWindowSeedFinder(1, 0.0, 0.0, 0.0);
+  fSeedFinderSlidingWindow->SetIdealMode(fileId);
+}
+
 void CbmTaskBuildRawEvents::SetSlidingWindowSeedFinder(int32_t minDigis, double dWindDur, double dDeadT, double dOffset)
 {
   if (fSeedFinderSlidingWindow) {
