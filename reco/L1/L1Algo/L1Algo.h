@@ -81,7 +81,8 @@ class L1AlgoEfficiencyPerformance;
 #endif
 typedef int Tindex;
 
-
+/// Central class of L1 tracking
+///
 class L1Algo {
 public:
   L1Algo(unsigned int nThreads = 1);
@@ -360,20 +361,19 @@ public:
 
 
   /// Sets L1Algo parameters object
-  void SetL1Parameters(const L1Parameters& other) { fL1Parameters = other; }
-  /// Gets a constant reference to the L1Algo parameters object
-  const L1Parameters& GetL1Parameters() const { return fL1Parameters; }
-  // TODO: We should think about, where non-constexpr L1Algo parameters can be modified. At the moment we can create a
-  //       L1Parameters object somewhere outside the L1Algo, fill its fields there and then pass it directly to
-  //       the L1Algo instance. (S.Zh.)
-  L1InitManager* GetL1InitManager() { return &fInitManager; }
+  void SetParameters(const L1Parameters& other) { fParameters = other; }
+
+  /// Gets a pointer to the L1Algo parameters object
+  L1Parameters* GetParameters() { return &fParameters; }
+  /// Gets a pointer to the L1Algo initialization object
+  L1InitManager* GetInitManager() { return &fInitManager; }
 
   fvec GetCbmTargetZ() const { return fCbmTargetZ; }
 
 private:
-  /// Object containing L1Parameters. Default consturctor is used
-  L1Parameters fL1Parameters;  ///< Object of L1Algo parameters class
-  L1InitManager fInitManager;  ///< Object of L1Algo initialization manager class
+  L1Parameters fParameters {};                ///< Object of L1Algo parameters class
+  L1InitManager fInitManager {&fParameters};  ///< Object of L1Algo initialization manager class
+
 
   /// =================================  FUNCTIONAL PART  =================================
 

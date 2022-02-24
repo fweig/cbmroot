@@ -118,7 +118,8 @@ enum class L1CAIterationType
 //
 /// L1Algo runtime constants modification can be performed in run_reco.C. Example:
 ///
-///   l1->GetL1Parameters()->SetMaxDoubletsPerSinglet(149);
+///   l1->GetInitManager()->GetParameters()->SetMaxDoubletsPerSinglet(149);
+/// TODO: L1InitManager - main interface of communication between cbmroot/bmnroot and L1Algo (S.Zharko)
 ///
 class CbmL1 : public FairTask {
 private:
@@ -157,7 +158,7 @@ public:
 
   ~CbmL1(/*if (targetFieldSlice) delete;*/);
 
-  L1Parameters* GetL1Parameters() { return &fL1Parameters; }
+  //L1Parameters* GetParameters() { return &fParameters; }
 
   /// Gets a set of active detectors used in tracking
   // TODO: think about return (value, reference or const reference?) (S.Zh.)
@@ -272,7 +273,8 @@ public:
 
 private:
   static CbmL1* fInstance;
-  L1Parameters fL1Parameters;
+
+  L1InitManager* fpInitManager {nullptr};  ///< Pointer to L1InitManager object of L1 algorithm core
 
   std::set<L1DetectorID> fActiveTrackingDetectorIDs {L1DetectorID::kMvd,
                                                      L1DetectorID::kSts};  ///< Set of detectors active in tracking

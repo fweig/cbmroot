@@ -11,7 +11,7 @@
 
 #include <FairLogger.h>
 
-void L1Parameters::Print() const
+void L1Parameters::Print(int verbosityLevel) const
 {
   LOG(info) << "== L1Algo parameters ==============================================================";
   LOG(info) << "";
@@ -27,6 +27,9 @@ void L1Parameters::Print() const
   LOG(info) << "    Max number of doublets per singlet: " << fMaxDoubletsPerSinglet;
   LOG(info) << "    Max number of triplets per doublet: " << fMaxTripletPerDoublets;
   LOG(info) << "";
-  LOG(info) << "  TRACK FINDER ITERATION DEPENDENT CONSTANTS";
+  LOG(info) << "  TRACK FINDER ITERATIONS";
+  for (const auto& iteration : fCAIterationsContainer) {
+    iteration.Print(verbosityLevel);
+  }
   LOG(info) << "===================================================================================";
 }

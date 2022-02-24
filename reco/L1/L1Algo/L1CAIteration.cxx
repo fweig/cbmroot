@@ -89,8 +89,9 @@ L1CAIteration::L1CAIteration(const std::string& name) noexcept : fName(name)
 //
 void L1CAIteration::Print(int verbosityLevel) const
 {
-  LOG(info) << "CA Track Finder Iteration: " << fName;
+  if (verbosityLevel == 0) { LOG(info) << "  - " << fName; }
   if (verbosityLevel > 0) {
+    LOG(info) << "L1CAIteration: " << fName;
     LOG(info) << "\tTrack chi2 cut: " << fTrackChi2Cut;
     LOG(info) << "\tTriplet chi2 cut: " << fTripletChi2Cut;
     LOG(info) << "\tDoublet chi2 cut: " << fDoubletChi2Cut;

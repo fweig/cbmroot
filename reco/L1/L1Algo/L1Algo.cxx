@@ -61,8 +61,6 @@ void L1Algo::SetNThreads(unsigned int n)
 
 void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const TrackingMode mode, const bool MissingHits)
 {
-  fL1Parameters.Print();  // TODO: Wrap this line into debug (S.Zh.)
-
   for (int iProc = 0; iProc < 4; iProc++) {
     for (int i = 0; i < 8; i++) {
       threadNumberToCpuMap[2 * i + 0 + iProc * 20] = 4 * i + iProc;
@@ -231,12 +229,19 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   // NEW INITIALIZATION (BETA)
   //
 
+  // Final init checks (the function provides purity of fields initialization and turn on the last bits of
+  // the L1ObjectInitController):
+  fInitManager.CheckInit();  // NOTE: after passing this frontier L1Algo is (will be) accounted as initialized
+
+  // Check initialization
+  LOG(info) << "InitManager " << fInitManager.GetInitController().ToString();
+
   // Get number of stations
-  int NStationsNew = fInitManager.GetStationsNumber();
+  int nStationsNew = fInitManager.GetStationsNumber();
   // TODO: we must to get rid of station specification in the L1Algo (S.Zh.)
-  int NMvdStationsNew   = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(0));
-  int NStsStationsNew   = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(1));
-  int NfieldStationsNew = NMvdStationsNew + NStsStationsNew;
+  int nMvdStationsNew   = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(0));
+  int nStsStationsNew   = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(1));
+  int nFieldStationsNew = nMvdStationsNew + nStsStationsNew;
 
   // Get field near target
   L1FieldValue vtxFieldValueNew   = fInitManager.GetTargetFieldValue();
@@ -244,7 +249,6 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
 
   // Fill L1Station array
   fInitManager.TransferL1StationArray(fStationsNew);
-
 
   LOG(info) << "**********************************************************************";
   LOG(info) << "*  New L1Algo initialization cross check  (tmp log, to be removed!)  *";
@@ -255,10 +259,10 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   LOG(info) << "\tSTS:   " << NStsStations;
   LOG(info) << "\tField: " << fNfieldStations;
   LOG(info) << "** Number of stations (new) **";
-  LOG(info) << "\tTotal: " << NStationsNew;
-  LOG(info) << "\tMVD:   " << NMvdStationsNew;
-  LOG(info) << "\tSTS:   " << NStsStationsNew;
-  LOG(info) << "\tField: " << NfieldStationsNew;
+  LOG(info) << "\tTotal: " << nStationsNew;
+  LOG(info) << "\tMVD:   " << nMvdStationsNew;
+  LOG(info) << "\tSTS:   " << nStsStationsNew;
+  LOG(info) << "\tField: " << nFieldStationsNew;
 
   LOG(info) << "** Magnetic field near target (original)**";
   LOG(info) << "\tField Value:  " << '\n' << vtxFieldValue.ToString(/*indent = */ 1) << '\n';
@@ -280,6 +284,9 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
     LOG(info) << "Station Global No: " << iSt;
     LOG(info) << '\n' << fStationsNew[iSt].ToString(/*verbosity = */ 3);
   }
+
+  // Print L1Parameters
+  fParameters.Print(/*verbosity=*/0);
 }
 
 
@@ -448,5 +455,3 @@ void L1Algo::CreateHitPoint(const L1Hit& hit, L1HitPoint& point)
 // }
 //
 //   inline int L1Algo::UnPackIndex(const int& i, int& a, int& b, int& c) {
-//       return   (a) + ((b)*10000) + (c*100000000);
-// }

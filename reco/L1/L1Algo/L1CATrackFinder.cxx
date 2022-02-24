@@ -539,10 +539,10 @@ inline void L1Algo::f20(
 
 #ifndef FAST_CODE
 //TODO: optimise triplet portion limit and put a warning
-// assert(Ndoublets < fL1Parameters.GetMaxDoubletsPerSinglet());
+// assert(Ndoublets < fParameters.GetMaxDoubletsPerSinglet());
 #endif  // FAST_CODE
 
-      if (Ndoublets >= fL1Parameters.GetMaxDoubletsPerSinglet()) {
+      if (Ndoublets >= fParameters.GetMaxDoubletsPerSinglet()) {
         n2 = n2 - Ndoublets;
         i1_2.reduce(i1_2.size() - Ndoublets);
         hitsm_2.reduce(hitsm_2.size() - Ndoublets);
@@ -867,9 +867,9 @@ inline void L1Algo::f30(  // input
 
 #ifndef FAST_CODE
 //TODO: optimise triplet portion limit and put a warning
-// assert(Ntriplets < fL1Parameters.GetMaxTripletPerDoublets());
+// assert(Ntriplets < fParameters.GetMaxTripletPerDoublets());
 #endif  // FAST_CODE
-          if (Ntriplets >= fL1Parameters.GetMaxTripletPerDoublets()) {
+          if (Ntriplets >= fParameters.GetMaxTripletPerDoublets()) {
 
             n3 = n3 - Ntriplets;
 

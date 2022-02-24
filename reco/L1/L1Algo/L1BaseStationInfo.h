@@ -15,43 +15,48 @@
 #ifndef L1BaseStationInfo_h
 #define L1BaseStationInfo_h 1
 
+// L1 Core
+#include "L1ObjectInitController.h"
+#include "L1Station.h"
 // C++ std
-#include <bitset>
 #include <functional>
 #include <string>
-
-#include "L1Station.h"
 
 enum class L1DetectorID;
 
 /// A base class which provides interface to L1Algo station geometry
 class L1BaseStationInfo {
-private:
-  enum
-  {  // Here we list all the fields, which must be initialized by user
+public:
+  /// Enumeration of fields, which must be initialized so the object can pass the threshold
+  enum class InitKey
+  {
     // Basic fields initialization
-    keDetectorID,
-    keStationID,
-    keXmax,
-    keYmax,
+    keDetectorID,  ///< detector ID
+    keStationID,   ///< station ID
+    keXmax,        ///< max size in X direction
+    keYmax,        ///< max size in Y direction
     // L1Station initialization
-    keType,
-    keTimeInfo,
-    keZ,
-    keRmin,
-    keRmax,
-    keMaterialInfoThick,
-    keMaterialInfoRL,
-    keFieldSlice,
-    keStripsFrontPhi,
-    keStripsFrontSigma,
-    keStripsBackPhi,
-    keStripsBackSigma,
+    keType,               ///< station type
+    keTimeInfo,           ///< if time info is used (flag)
+    keZ,                  ///< z coordinate of the station position
+    keRmin,               ///< internal radius of station (gap size)
+    keRmax,               ///< exteranl radius of station
+    keMaterialInfoThick,  ///< thickness of the station
+    keMaterialInfoRL,     ///< rad length of the station
+    keFieldSlice,         ///< L1Station.L1FieldSlice object initialization
+    keStripsFrontPhi,     ///< strips geometry initialization
+    keStripsFrontSigma,   ///<
+    keStripsBackPhi,      ///<
+    keStripsBackSigma,    ///<
     // The last item is equal to the number of bits in fInitFlags
     keEnd
   };
 
-public:
+  using L1ObjectInitController_t = L1ObjectInitController<static_cast<int>(InitKey::keEnd), InitKey>;
+
+  //
+  // CONSTRUCTORS AND DESTRUCTORS
+  //
   /// Default constructor
   L1BaseStationInfo() noexcept;
   /// Constructor from stationID and detectorID
@@ -62,28 +67,14 @@ public:
   L1BaseStationInfo(const L1BaseStationInfo& other) noexcept;
   /// Move constructor
   L1BaseStationInfo(L1BaseStationInfo&& other) noexcept;
-  /// Copy operator=
+  /// Copy assignment operator
   L1BaseStationInfo& operator=(const L1BaseStationInfo& other) noexcept;
-  /// Move operator=
+  /// Move assignment operator
   L1BaseStationInfo& operator=(L1BaseStationInfo&& other) noexcept;
-  /// Swap method for easier implementation of above ones (NOTE: all the fields must be accounted carefully here)
-  void Swap(L1BaseStationInfo& other) noexcept;
 
   //
   // BASIC METHODS
   //
-
-  /// Checks if all the necessary fields are initialized by user
-  bool IsInitialized() const { return fInitFlags.size() == fInitFlags.count(); }
-  /// Prints registered fields
-  /// verbosity = 0: print only station id, detector id and address in one line
-  /// verbosity = 1: print basic L1Station fields
-  /// verbosity = 2: print all L1Staion fields
-  void Print(int verbosity = 0) const;
-  /// Print initialization flags (debug function)
-  void PrintInit() const;
-  /// Resets fields to the default values
-  void Reset();
   /// Less operator for L1BaseStationInfo object to perform their sorts. Sorting is carried out first by fDetectorID,
   /// and then by fStationID
   bool operator<(const L1BaseStationInfo& right) const
@@ -91,26 +82,27 @@ public:
     return fDetectorID != right.fDetectorID ? fDetectorID < right.fDetectorID : fStationID < right.fStationID;
   }
 
-
   //
   // GETTERS
   //
-
-  /// Gets station ID
-  int GetStationID() const { return fStationID; }
   /// Gets detector ID
   L1DetectorID GetDetectorID() const { return fDetectorID; }
-  /// Gets station type
-  int GetStationType() const { return fL1Station.type; }
-  /// Gets SIMD vectorized z position of the station
-  fvec GetZsimdVec() const { return fL1Station.z; }
-  /// Gets double precised z position of the station
-  double GetZdouble() const { return fZPos; }
-  /// Gets min transverse size of the station
-  fvec GetRmin() const { return fL1Station.Rmin; }
-  /// Gets max transverse size of the station
-  fvec GetRmax() const { return fL1Station.Rmax; }
-
+  /// Gets a coefficient with idx for the field x-component approximation
+  fvec GetFieldSliceCx(int idx) const { return fL1Station.fieldSlice.cx[idx]; }
+  /// Gets a coefficient with idx for the field y-component approximation
+  fvec GetFieldSliceCy(int idx) const { return fL1Station.fieldSlice.cy[idx]; }
+  /// Gets a coefficient with idx for the field z-component approximation
+  fvec GetFieldSliceCz(int idx) const { return fL1Station.fieldSlice.cz[idx]; }
+  /// Gets array of the coefficients for the field x-component approximation
+  const fvec* GetFieldSliceCx() const { return fL1Station.fieldSlice.cx; }
+  /// Gets array of the coefficients for the field y-component approximation
+  const fvec* GetFieldSliceCy() const { return fL1Station.fieldSlice.cy; }
+  /// Gets array of the coefficients for the field z-component approximation
+  const fvec* GetFieldSliceCz() const { return fL1Station.fieldSlice.cz; }
+  /// Gets a const reference to the L1ObjectInitController object
+  const L1ObjectInitController_t& GetInitController() const { return fInitController; }
+  /// Gets a reference to L1Station info field of the L1BaseStation info
+  const L1Station& GetL1Station() const;
   /// Gets material thickness
   fvec GetMaterialThickness() const { return fL1Station.materialInfo.thick; }
   /// Gets the radiation length of the station material
@@ -119,56 +111,36 @@ public:
   fvec GetMaterialRadThick() const { return fL1Station.materialInfo.RadThick; }
   /// Gets log of the relative material thickness in units of the radiational length
   fvec GetMaterialLogRadThick() const { return fL1Station.materialInfo.logRadThick; }
-
-  /// Gets a coefficient with idx for the field x-component approximation
-  fvec GetFieldSliceCx(int idx) const { return fL1Station.fieldSlice.cx[idx]; }
-  /// Gets a coefficient with idx for the field y-component approximation
-  fvec GetFieldSliceCy(int idx) const { return fL1Station.fieldSlice.cy[idx]; }
-  /// Gets a coefficient with idx for the field z-component approximation
-  fvec GetFieldSliceCz(int idx) const { return fL1Station.fieldSlice.cz[idx]; }
-
-  /// Gets array of the coefficients for the field x-component approximation
-  const fvec* GetFieldSliceCx() const { return fL1Station.fieldSlice.cx; }
-  /// Gets array of the coefficients for the field y-component approximation
-  const fvec* GetFieldSliceCy() const { return fL1Station.fieldSlice.cy; }
-  /// Gets array of the coefficients for the field z-component approximation
-  const fvec* GetFieldSliceCz() const { return fL1Station.fieldSlice.cz; }
-
+  /// Gets min transverse size of the station
+  fvec GetRmin() const { return fL1Station.Rmin; }
+  /// Gets max transverse size of the station
+  fvec GetRmax() const { return fL1Station.Rmax; }
+  /// Gets station ID
+  int GetStationID() const { return fStationID; }
+  /// Gets station type
+  int GetStationType() const { return fL1Station.type; }
   /// Gets maximum distance between station center and its edge in x direction
   double GetXmax() const { return fXmax; }
   /// Gets maximum distance between station center and its edge in y direction
   double GetYmax() const { return fYmax; }
+  /// Gets double precised z position of the station
+  double GetZdouble() const { return fZPos; }
+  /// Gets SIMD vectorized z position of the station
+  fvec GetZsimdVec() const { return fL1Station.z; }
 
-  /// Gets a reference to L1Station info field of the L1BaseStation info
-  const L1Station& GetL1Station() const;
-  /// Gets a reference to Bitset object of initialization bits
-  const std::bitset<L1BaseStationInfo::keEnd>& GetInitFlags() const { return fInitFlags; }
-
+  /// Prints registered fields
+  /// verbosity = 0: print only station id, detector id and address in one line
+  /// verbosity = 1: print basic L1Station fields
+  /// verbosity = 2: print all L1Staion fields
+  void Print(int verbosity = 0) const;
+  /// Resets fields to the default values
+  void Reset();
 
   //
   //  SETTERS
   //
-
-  /// Sets station ID
-  void SetStationID(int inID);
   /// Sets detector ID
   void SetDetectorID(L1DetectorID inID);
-
-  /// Sets type of station
-  void SetStationType(int inType);  // TODO: this is a temporary solution (S.Zh.)
-  /// Sets flag: 0 - time information is not provided by this detector type
-  //             1 - time information is provided by the detector and can be used in tracking
-  void SetTimeInfo(int inTimeInfo);
-  /// Sets nominal z position of the station
-  void SetZ(double inZ);
-  /// Sets min transverse size of the station
-  void SetRmin(double inRmin);
-  /// Sets max transverse size of the station
-  void SetRmax(double inRmax);
-  /// Sets station thickness and radiational length
-  /// \param thickness         thickness of station
-  /// \param radiationalLength radiational length of station
-  void SetMaterial(double thickness, double radiationalLength);
   /// Sets field approximation at the station plain
   /// \param Cx Array of approximation coefficients for x field component
   /// \param Cy Array of approximation coefficients for y field component
@@ -184,10 +156,31 @@ public:
   /// \param b_phi   Stereoangle of back strips
   /// \param b_sigma Sigma of back strips
   void SetFrontBackStripsGeometry(double fPhi, double fSigma, double bPhi, double bSigma);
+  /// Sets station thickness and radiational length
+  /// \param thickness         thickness of station
+  /// \param radiationalLength radiational length of station
+  void SetMaterial(double thickness, double radiationalLength);
+  /// Sets max transverse size of the station
+  void SetRmax(double inRmax);
+  /// Sets min transverse size of the station
+  void SetRmin(double inRmin);
+  /// Sets station ID
+  void SetStationID(int inID);
+  /// Sets type of station
+  void SetStationType(int inType);  // TODO: this is a temporary solution (S.Zh.)
+  /// Sets flag: 0 - time information is not provided by this detector type
+  ///            1 - time information is provided by the detector and can be used in tracking
+  void SetTimeInfo(int inTimeInfo);
   /// Sets maximum distance between station center and its edge in x direction
   void SetXmax(double aSize);
   /// Sets maximum distance between station center and its edge in y direction
   void SetYmax(double aSize);
+  /// Sets nominal z position of the station
+  void SetZ(double inZ);
+
+  /// Swap method for easier implementation of above ones (NOTE: all the fields must be accounted carefully here)
+  void Swap(L1BaseStationInfo& other) noexcept;
+
   /// String representation of class contents
   /// \param indentLevel    number of indent characters in the output
   std::string ToString(int verbosityLevel = 0, int indentLevel = 0) const;
@@ -199,7 +192,7 @@ private:
   double fYmax {0};         ///< Maximum distance between station center and its edge in y direction
   double fZPos {0};         ///< z position of the station in double precision, used in field approximation
   L1Station fL1Station {};  ///< L1Station structure, describes a station in L1Algo
-  std::bitset<L1BaseStationInfo::keEnd> fInitFlags;  ///< Class fileds initialization flags
+  L1ObjectInitController_t fInitController {};  ///< Class fileds initialization flags
 };
 
 /// swap function for two L1BaseStationInfo objects, expected to be used instead of std::swap

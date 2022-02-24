@@ -808,7 +808,7 @@ InitStatus CbmL1::Init()
       LOG(error) << "-E- CbmL1: Read geometry from file " << fSTAPDataDir + "geo_algo.txt was NOT successful.";
   }
 
-  algo->SetL1Parameters(fL1Parameters);
+  //algo->SetParameters(fParameters);
 
 
 #ifdef FEATURING_L1ALGO_INIT
@@ -818,7 +818,7 @@ InitStatus CbmL1::Init()
   {  //L1Algo new init start
 
     // Step 0: Get reference to the L1Algo initialization manager
-    L1InitManager* initMan = algo->GetL1InitManager();
+    L1InitManager* initMan = algo->GetInitManager();
 
     // Step 1: Initialize magnetic field function
     // Set magnetic field slices
@@ -970,7 +970,7 @@ InitStatus CbmL1::Init()
       fscal tofBackSigma  = 1.;
       stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofFrontSigma, tofBackPhi, tofBackSigma);
     }
-    initMan->PrintStations(/*vebosity = */ 1);
+    //initMan->PrintStations(/*vebosity = */ 1);
 
     // Step 7: initialize iterations and form a vector of them
     {
@@ -1088,7 +1088,6 @@ InitStatus CbmL1::Init()
         initMan->PushBackCAIteration(trackingIterAllSec);
       }
       else {
-        std::cout << "HERE";
         initMan->SetCAIterationsNumberCrosscheck(9);
         // Initialize CA track finder iterations sequence
         initMan->PushBackCAIteration(trackingIterFastPrim);
@@ -1101,7 +1100,6 @@ InitStatus CbmL1::Init()
         initMan->PushBackCAIteration(trackingIterFastPrim2);
         initMan->PushBackCAIteration(trackingIterAllSecJump);
       }
-      initMan->PrintCAIterations();
 
       // Set special cuts
     }

@@ -6,7 +6,6 @@
  * @file L1InitManager.h
  * @bried Input data management class for L1Algo
  * @since 24.12.2021
- *
  ***********************************************************************************************************/
 #ifndef L1InitManager_h
 #define L1InitManager_h 1
@@ -14,6 +13,7 @@
 #include "L1BaseStationInfo.h"
 #include "L1CAIteration.h"
 #include "L1Field.h"
+#include "L1ObjectInitController.h"
 #include "L1Parameters.h"
 #include "L1Utils.h"
 
@@ -55,32 +55,38 @@ enum class L1DetectorID;
 ///    initMan->SetStationsNumberCrosscheck(L1DetectorID::kMvd, NMvdStations)
 ///    initMan->SetStationsNumberCrosscheck(L1DetectorID::kMvd, NStsStations);
 ///
-/// 3. Initialize each station using L1BaseStationInfo:
+/// 4. Initialize each station using L1BaseStationInfo:
 ///
 class L1InitManager {
 private:
-  enum
+  enum class InitKey
   {
-    keActiveDetectorIDs,             ///< If the detector sequence is set
-    keStationsNumberCrosscheck,      ///< If the crosscheck station numbers were setup
-    keFieldFunction,                 ///< If magnetic field getter funciton is set
-    keTargetPos,                     ///< If target position was defined
-    kePrimaryVertexField,            ///< If magnetic field value and region defined at primary vertex
-    keIfStationNumbersChecked,       ///< If the station number was already checked
-    keStationsInfo,                  ///< If all the planned stations were added to the manager
-    keL1StationTransfered,           ///< If the L1Station vector was already transfered to destination array
-    keCAIterationsNumberCrosscheck,  ///< If the CA trackfinder iterations were initialized
-    keCAIterations,                  ///< If the CA trackfinder iterations were initialized
-    keEnd
+    // NOTE: Please, keep the numbers of enum items in the existing order: it helps to debug the initialization with
+    //       this->GetObjectInitController().ToString() method call (S.Zharko)
+    keActiveDetectorIDs,             ///< 0) If the detector sequence is set
+    keStationsNumberCrosscheck,      ///< 1) If the crosscheck station numbers were setup
+    keFieldFunction,                 ///< 2) If magnetic field getter funciton is set
+    keTargetPos,                     ///< 3) If target position was defined
+    kePrimaryVertexField,            ///< 4) If magnetic field value and region defined at primary vertex
+    keStationsInfo,                  ///< 5) If all the planned stations were added to the manager
+    keCAIterationsNumberCrosscheck,  ///< 6) If the number of CA track finder is initialized
+    keCAIterations,                  ///< 7) If the CA track finder iterations were initialized
+    keEnd                            ///< 8 - number of entries in the enum
   };
+
+  using L1DetectorIDIntMap_t     = std::unordered_map<L1DetectorID, int, L1Utils::EnumClassHash>;
+  using L1DetectorIDSet_t        = std::set<L1DetectorID>;
+  using L1FieldFunction_t        = std::function<void(const double (&xyz)[3], double (&B)[3])>;
+  using L1ObjectInitController_t = L1ObjectInitController<static_cast<int>(InitKey::keEnd), InitKey>;
 
 public:
   //
   // CONSTRUCTORS AND DESTRUCTOR
   //
-
   /// Default constructor
-  L1InitManager() = default;
+  L1InitManager() = delete;
+  /// Constructor from ptr to L1Paramters object
+  L1InitManager(L1Parameters* pParameters);
   /// Destructor
   ~L1InitManager() = default;
   /// Copy constructor is forbidden
@@ -92,103 +98,101 @@ public:
   /// Move assignment operator is forbidden
   L1InitManager& operator=(L1InitManager&& /*other*/) = delete;
 
-
   //
   // BASIC METHODS
   //
-
-
   /// Adds another station of a given type using reference to a L1BaseStationInfo object
-  void AddStation(const L1BaseStationInfo& inStation);
+  void AddStation(const L1BaseStationInfo& station);
   /// Adds another station of a given type using pointer to a L1BaseStationInfo object
-  void AddStation(const L1BaseStationInfo* inStationRawPtr) { AddStation(*inStationRawPtr); }
+  void AddStation(const L1BaseStationInfo* pStation) { AddStation(*pStation); }
   /// Adds another station of a given type using std::unique_ptr-wraped pointer to L1BaseStationInfo
-  void AddStation(const std::unique_ptr<L1BaseStationInfo>& inStationUPtr) { AddStation(*inStationUPtr); }
-
-  /// Initializes L1Algo: transfers all caputred data to the L1 tracking core
-  void Init() const;
-  /// Prints a list of stations
-  void PrintStations(int verbosityLevel = 0) const;
-  /// Prints a list of CA track finder iterations
-  void PrintCAIterations(int verbosityLevel = 0) const;
-
-  /// Pushes an CA track finder iteration into a sequence of iteration using reference
-  void PushBackCAIteration(const L1CAIteration& iteration);
-  /// Pushes an CA track finder iteration into a sequence of iteration using raw pointer
-  void PushBackCAIteration(const L1CAIteration* iterationRawPtr) { PushBackCAIteration(*iterationRawPtr); }
-  /// Pushes an CA track finder iteration into a sequence of iteration using std::unique_ptr
-  void PushBackCAIteration(const std::unique_ptr<L1CAIteration>& iterationUPtr) { PushBackCAIteration(*iterationUPtr); }
-
-  /// Transfers an array of L1Stations formed inside a set of L1BaseStationInfo to a destination std::array
-  void TransferL1StationArray(std::array<L1Station, L1Parameters::kMaxNstations>& destinationArray);
-  /// Transfers a vector of the CA track finder iterations
-  void TransferCAIterationsContainer(L1Vector<L1CAIteration>& destinationVector);
+  void AddStation(const std::unique_ptr<L1BaseStationInfo>& puStation) { AddStation(*puStation); }
+  /// Provides final checks of large fields initialization calling Check"Object"Init() privat methods,
+  /// must be called in the begining of L1Algo::Init()
+  void CheckInit();
+  // NOTE: This method calls checkers of large fields initializations like a station or an iteration. The method must be
+  //       called in the L1Algo class. (S.Zharko)
 
   //
   // GETTERS
   //
-
   /// Gets a set of actie detectors for this analysis
-  std::set<L1DetectorID> GetActiveDetectorIDs() const { return fActiveDetectorIDs; }
+  const L1DetectorIDSet_t& GetActiveDetectorIDs() const { return fActiveDetectorIDs; }
+  /// Gets a const reference to L1ObjectInitController
+  const L1ObjectInitController_t& GetInitController() const { return fInitController; }
+  /// Gets a pointer to L1Parameters instance with a posibility of its fields modification
+  const L1Parameters* GetParameters() const { return fpParameters; }
   /// Gets a total number of stations (NOTE: this number includes both active and unactive stations!)
   int GetStationsNumber() const { return static_cast<int>(fStationsInfo.size()); }
   /// Gets a number of stations for a particualr detector ID
   int GetStationsNumber(L1DetectorID detectorID) const;
-  /// Gets a target position
-  const std::array<double, 3>& GetTargetPosition() const { return fTargetPos; }
   // TODO: define enum of dimensions.... (S.Zh.)
   /// Gets a L1FieldRegion object at primary vertex
   const L1FieldRegion& GetTargetFieldRegion() const { return fTargetFieldRegion; }
   /// Gets a L1FieldValue object at primary vertex
   const L1FieldValue& GetTargetFieldValue() const { return fTargetFieldValue; }
-
-  //
-  // SETTERS
-  //
-
-  /// Sets a set of active tracking detector IDs
-  void SetActiveDetectorIDs(const std::set<L1DetectorID>& detectorIDs);
-  /// Sets a magnetic field function, which will be applied for all the stations
-  void SetFieldFunction(const std::function<void(const double (&xyz)[3], double (&B)[3])>& fieldFcn);
-  /// Sets a number of stations for a particular tracking detector ID to provide initialization cross-check
-  void SetStationsNumberCrosscheck(L1DetectorID detectorID, int nStations);
-  /// Sets a number of CA track finder iterations to provide initialization cross-check
-  void SetCAIterationsNumberCrosscheck(int nIterations);
-  /// Sets target poisition
-  void SetTargetPosition(double x, double y, double z);
+  /// Gets a target position
+  const std::array<double, 3>& GetTargetPosition() const { return fTargetPos; }
 
   /// Calculates L1FieldValue and L1FieldReference values for a selected step in z coordinate from the target position
   /// \param zStep step between nodal points
   // TODO: Consider posibility for linear approximation (S.Zh.)
   void InitTargetField(double zStep);
 
+  /// Prints a list of CA track finder iterations
+  void PrintCAIterations(int verbosityLevel = 0) const;
+  /// Prints a list of stations
+  void PrintStations(int verbosityLevel = 0) const;
+
+  /// Pushes an CA track finder iteration into a sequence of iteration using reference
+  void PushBackCAIteration(const L1CAIteration& iteration);
+  /// Pushes an CA track finder iteration into a sequence of iteration using raw pointer
+  void PushBackCAIteration(const L1CAIteration* pIteration) { PushBackCAIteration(*pIteration); }
+  /// Pushes an CA track finder iteration into a sequence of iteration using std::unique_ptr
+  void PushBackCAIteration(const std::unique_ptr<L1CAIteration>& puIteration) { PushBackCAIteration(*puIteration); }
+
+  //
+  // SETTERS
+  //
+  /// Sets a set of active tracking detector IDs
+  void SetActiveDetectorIDs(const L1DetectorIDSet_t& detectorIDs);
+  /// Sets a number of CA track finder iterations to provide initialization cross-check
+  void SetCAIterationsNumberCrosscheck(int nIterations);
+  /// Sets a magnetic field function, which will be applied for all the stations
+  void SetFieldFunction(const L1FieldFunction_t& fieldFcn);
+  /// Sets a number of stations for a particular tracking detector ID to provide initialization cross-check
+  void SetStationsNumberCrosscheck(L1DetectorID detectorID, int nStations);
+  /// Sets target poisition
+  void SetTargetPosition(double x, double y, double z);
+
+  /// Transfers an array of L1Stations formed inside a set of L1BaseStationInfo to a destination std::array
+  void TransferL1StationArray(std::array<L1Station, L1Parameters::kMaxNstations>& destinationArray);
+
 
 private:
-  /// Checker for L1BaseStationInfo set initialization
-  /// \return true If all L1BaseStationInfo objects were initialized properly. Similar effect can be achieved by
-  /// calling the fInitFlags[L1InitManager::keStationsInfo] flag
-  bool CheckStationsInfo();
-  /// Checker for L1CAIteration container initialization
+  /// Checker for L1CAIteration container initialization (sets InitKey::keCAIterations)
   /// \return true If all L1CAIteration objects were initialized properly
-  bool CheckCAIterations();
+  void CheckCAIterationsInit();
+  /// Checker for L1BaseStationInfo set initialization (sets InitKey::keStationsInfo)
+  /// \return true If all L1BaseStationInfo objects were initialized properly. Similar effect can be achieved by
+  void CheckStationsInfoInit();
 
   /* Basic fields */
 
-  std::bitset<L1InitManager::keEnd> fInitFlags {};  ///< Initialization flags
-  std::set<L1DetectorID> fActiveDetectorIDs {};     ///< Set of tracking detectors, active during this analysis session
+  L1ObjectInitController_t fInitController {};  ///< Initialization flags
+  L1DetectorIDSet_t fActiveDetectorIDs {};      ///< Set of tracking detectors, active during this analysis session
 
   /* Target fields */
 
-  std::array<double, 3> fTargetPos {};  ///< Nominal target position coordinates
+  std::array<double, /*nDimensions=*/3> fTargetPos {};  ///< Nominal target position coordinates
 
   /* Stations related fields */
 
   std::set<L1BaseStationInfo> fStationsInfo {};  ///< Set of L1BaseStationInfo objects
   /// Map of station numbers used for initialization crosscheck
-  std::unordered_map<L1DetectorID, int, L1Utils::EnumClassHash> fStationsNumberCrosscheck {};
+  L1DetectorIDIntMap_t fStationsNumberCrosscheck {};
   /// A function which returns magnetic field vector B in a radius-vector xyz
-  std::function<void(const double (&xyz)[3], double (&B)[3])> fFieldFunction {
-    [](const double (&)[3], double (&)[3]) {}};
+  L1FieldFunction_t fFieldFunction {[](const double (&)[3], double (&)[3]) {}};
   // NOTE: Stations of daetectors which will not be assigned as active, will not be included in the tracking!!!!!!!
   // NOTE: fTotalNumberOfStations is excess field for logic, but it's imortant to track L1Algo initialization
 
@@ -199,11 +203,12 @@ private:
 
   /* CA track finder iterations related */
 
-  L1Vector<L1CAIteration> fCAIterationsContainer {};  ///> Container for CA track finder iterations
+  //L1Vector<L1CAIteration> fCAIterationsContainer {};  ///> Container for CA track finder iterations
   int fCAIterationsNumberCrosscheck {-1};  ///> Number of iterations to be passed (must be used for cross-checks)
 
-  /// Pointer to L1Parameters object, which will be copied to L1Algo after checks
-  L1Parameters* fParametersPtr {nullptr};
+  /// Pointer to L1Parameters object
+  // NOTE: Owner of the object is L1Algo instance
+  L1Parameters* fpParameters {nullptr};
 };
 
 #endif

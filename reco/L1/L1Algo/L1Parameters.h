@@ -60,7 +60,7 @@ public:
   //
 
   /// Prints configuration
-  void Print() const;
+  void Print(int verbosityLevel = 0) const;
 
   // TODO: change constant names with actual (human) names
 

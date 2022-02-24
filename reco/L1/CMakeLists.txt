@@ -270,6 +270,7 @@ Install(FILES CbmL1Counters.h
               L1Algo/L1TrackParFit.h
               L1Algo/L1Triplet.h
               L1Algo/L1Vector.h
+              L1Algo/L1ObjectInitController.h
               L1Algo/L1MaterialInfo.h
               L1Algo/L1UMeasurementInfo.h
               L1Algo/L1XYMeasurementInfo.h

@@ -7,7 +7,6 @@
  * @file L1CAIteration.h
  * @brief Class for L1 CA Track Finder Iteration 
  * @since 01.15.2022
- *
  ***********************************************************************************************************/
 
 #ifndef L1CAIteration_h

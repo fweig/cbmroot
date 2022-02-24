@@ -20,7 +20,6 @@
 #include "L1BaseStationInfo.h"
 #include "L1Def.h"
 #include "L1Parameters.h"
-
 // C++ STL
 #include <iomanip>
 #include <sstream>
@@ -44,8 +43,8 @@ L1BaseStationInfo::L1BaseStationInfo(L1DetectorID detectorID, int stationID) noe
   , fStationID(stationID)
 {
   LOG(debug) << "L1BaseStationInfo: Constructor (detectorID, stationID) called for " << this << '\n';  // Temporary
-  fInitFlags[keDetectorID] = true;
-  fInitFlags[keStationID]  = true;
+  fInitController.SetFlag(InitKey::keDetectorID);
+  fInitController.SetFlag(InitKey::keStationID);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -64,7 +63,7 @@ L1BaseStationInfo::L1BaseStationInfo(const L1BaseStationInfo& other) noexcept
   , fYmax(other.fYmax)
   , fZPos(other.fZPos)
   , fL1Station(other.fL1Station)
-  , fInitFlags(other.fInitFlags)
+  , fInitController(other.fInitController)
 {
   LOG(debug) << "L1BaseStationInfo: Copy constructor called: " << &other << " was copied into " << this;
 }
@@ -98,18 +97,6 @@ L1BaseStationInfo& L1BaseStationInfo::operator=(L1BaseStationInfo&& other) noexc
   return *this;
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
-//
-void L1BaseStationInfo::Swap(L1BaseStationInfo& other) noexcept
-{
-  std::swap(fDetectorID, other.fDetectorID);
-  std::swap(fStationID, other.fStationID);
-  std::swap(fXmax, other.fXmax);
-  std::swap(fYmax, other.fYmax);
-  std::swap(fZPos, other.fZPos);
-  std::swap(fL1Station, other.fL1Station);
-  std::swap(fInitFlags, other.fInitFlags);
-}
 
 //
 // BASIC METHODS
@@ -139,19 +126,18 @@ void L1BaseStationInfo::Print(int verbosity) const
 void L1BaseStationInfo::Reset()
 {
   L1BaseStationInfo other;
-  std::swap(*this, other);
+  this->Swap(other);
 }
 
 
 //
 // GETTERS
 //
-
 //----------------------------------------------------------------------------------------------------------------------//
 //
 const L1Station& L1BaseStationInfo::GetL1Station() const
 {
-  bool isStationInitialized = IsInitialized();
+  bool isStationInitialized = fInitController.IsFinalized();
   if (!isStationInitialized) {
     LOG(error)
       << "L1BaseStationInfo::GetL1Station: attempt to get an L1Staion object from uninitialized L1BaseStation with "
@@ -161,31 +147,17 @@ const L1Station& L1BaseStationInfo::GetL1Station() const
   return fL1Station;
 }
 
-
 //
 // SETTERS
 //
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
-void L1BaseStationInfo::SetStationID(int inID)
-{
-  if (!fInitFlags[keStationID]) {
-    fStationID              = inID;
-    fInitFlags[keStationID] = true;
-  }
-  else {
-    LOG(warn) << "L1BaseStationInfo::SetStationID: Attempt of station ID redifinition";
-  }
-}
-
-//----------------------------------------------------------------------------------------------------------------------//
-//
 void L1BaseStationInfo::SetDetectorID(L1DetectorID inID)
 {
-  if (!fInitFlags[keDetectorID]) {
-    fDetectorID              = inID;
-    fInitFlags[keDetectorID] = true;
+  if (!fInitController.GetFlag(InitKey::keDetectorID)) {
+    fDetectorID = inID;
+    fInitController.SetFlag(InitKey::keDetectorID);
   }
   else {
     LOG(warn) << "L1BaseStationInfo::SetDetectorID: Attempt of detector ID redifinition";
@@ -194,70 +166,25 @@ void L1BaseStationInfo::SetDetectorID(L1DetectorID inID)
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
-void L1BaseStationInfo::SetStationType(int inType)
+void L1BaseStationInfo::SetRmax(double inRmax)
 {
-  if (!fInitFlags[keType]) {
-    fL1Station.type    = inType;
-    fInitFlags[keType] = true;
-  }
-  else {
-    LOG(warn) << "L1BaseStationInfo::SetStationType: Attempt of station type redifinition";
-  }
-}
-
-//----------------------------------------------------------------------------------------------------------------------//
-//
-void L1BaseStationInfo::SetTimeInfo(int inTimeInfo)
-{
-  fL1Station.timeInfo    = inTimeInfo;
-  fInitFlags[keTimeInfo] = true;
-}
-
-//----------------------------------------------------------------------------------------------------------------------//
-//
-void L1BaseStationInfo::SetZ(double inZ)
-{
-  fL1Station.z    = inZ;  // setting simd vector of single-precision floats, which is passed to high performanced L1Algo
-  fZPos           = inZ;  // setting precised value to use in field approximation etc
-  fInitFlags[keZ] = true;
+  fL1Station.Rmax = inRmax;
+  fInitController.SetFlag(InitKey::keRmax);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
 void L1BaseStationInfo::SetRmin(double inRmin)
 {
-  fL1Station.Rmin    = inRmin;
-  fInitFlags[keRmin] = true;
-}
-
-//----------------------------------------------------------------------------------------------------------------------//
-//
-void L1BaseStationInfo::SetRmax(double inRmax)
-{
-  fL1Station.Rmax    = inRmax;
-  fInitFlags[keRmax] = true;
-}
-
-//----------------------------------------------------------------------------------------------------------------------//
-//
-void L1BaseStationInfo::SetMaterial(double inThickness, double inRL)
-{
-#ifndef L1_NO_ASSERT  // check for zero denominator
-  L1_ASSERT(inRL, "Attempt of entering zero inRL (radiational length) value");
-#endif
-  fL1Station.materialInfo.thick       = inThickness;
-  fL1Station.materialInfo.RL          = inRL;
-  fL1Station.materialInfo.RadThick    = fL1Station.materialInfo.thick / fL1Station.materialInfo.RL;
-  fL1Station.materialInfo.logRadThick = log(fL1Station.materialInfo.RadThick);
-  fInitFlags[keMaterialInfoThick]     = true;
-  fInitFlags[keMaterialInfoRL]        = true;
+  fL1Station.Rmin = inRmin;
+  fInitController.SetFlag(InitKey::keRmin);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
 void L1BaseStationInfo::SetFieldSlice(const double* Cx, const double* Cy, const double* Cz)
 {
-  if (fInitFlags[keFieldSlice]) {
+  if (fInitController.GetFlag(InitKey::keFieldSlice)) {
     LOG(warn) << "L1BaseStationInfo::SetFieldSlice: Attempt to redifine field slice for station with detectorID = "
               << static_cast<int>(fDetectorID) << " and stationID = " << fStationID << ". Redifinition ignored";
     return;
@@ -269,23 +196,26 @@ void L1BaseStationInfo::SetFieldSlice(const double* Cx, const double* Cy, const 
     fL1Station.fieldSlice.cz[idx] = Cz[idx];
   }
 
-  fInitFlags[keFieldSlice] = true;
+  fInitController.SetFlag(InitKey::keFieldSlice);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
 void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xyz)[3], double (&B)[3])>& getFieldValue)
 {
-  if (fInitFlags[keFieldSlice]) {
+  if (fInitController.GetFlag(InitKey::keFieldSlice)) {
     LOG(warn) << "L1BaseStationInfo::SetFieldSlice: Attempt to redifine field slice for station with detectorID = "
               << static_cast<int>(fDetectorID) << " and stationID = " << fStationID << ". Redifinition ignored";
     return;
   }
 
 #ifndef L1_NO_ASSERT  // check for zero denominator
-  L1_ASSERT(fInitFlags[keZ], "Attempt to set magnetic field slice before setting z position of the station");
-  L1_ASSERT(fInitFlags[keXmax], "Attempt to set magnetic field slice before setting Xmax size of the station");
-  L1_ASSERT(fInitFlags[keYmax], "Attempt to set magnetic field slice before setting Ymax size of the station");
+  L1_ASSERT(fInitController.GetFlag(InitKey::keZ),
+            "Attempt to set magnetic field slice before setting z position of the station");
+  L1_ASSERT(fInitController.GetFlag(InitKey::keXmax),
+            "Attempt to set magnetic field slice before Xmax size of the station");
+  L1_ASSERT(fInitController.GetFlag(InitKey::keYmax),
+            "Attempt to set magnetic field slice before Ymax size of the station");
 #endif
   // TODO: Change names of variables according to convention (S.Zh.)
   constexpr int M = L1Parameters::kMaxFieldApproxPolynomialOrder;
@@ -355,7 +285,7 @@ void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xy
     fL1Station.fieldSlice.cz[j] = A[j][N + 2] / A[j][j];
   }
 
-  fInitFlags[keFieldSlice] = true;
+  fInitController.SetFlag(InitKey::keFieldSlice);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -369,7 +299,6 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
   double sBack  = sin(backPhi);
 
   // NOTE: Here additional double variables are used to save the precission
-
   fL1Station.frontInfo.cos_phi = cFront;
   fL1Station.frontInfo.sin_phi = sFront;
   fL1Station.frontInfo.sigma2  = frontSigma * frontSigma;
@@ -377,21 +306,6 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
   fL1Station.backInfo.cos_phi = cBack;
   fL1Station.backInfo.sin_phi = sBack;
   fL1Station.backInfo.sigma2  = backSigma * backSigma;
-
-  //if (fabs(b_phi - f_phi) < .1) {
-  //  double th  = b_phi - f_phi;
-  //  double det = cos(th);
-  //  det *= det;
-  //  fL1Station.XYInfo.C00 = (s_b * s_b * f_sigma * f_sigma + s_f * s_f * b_sigma * b_sigma) / det;
-  //  fL1Station.XYInfo.C10 = -(s_b * c_b * f_sigma * f_sigma + s_f * c_f * b_sigma * b_sigma) / det;
-  //  fL1Station.XYInfo.C11 = (c_b * c_b * f_sigma * f_sigma + c_f * c_f * b_sigma * b_sigma) / det;
-  //} else {
-  //  double det = c_f * s_b - s_f * c_b;
-  //  det *= det;
-  //  fL1Station.XYInfo.C00 = (s_b * s_b * f_sigma * f_sigma + s_f * s_f * b_sigma * b_sigma) / det;
-  //  fL1Station.XYInfo.C10 = -(s_b * c_b * f_sigma * f_sigma + s_f * c_f * b_sigma * b_sigma) / det;
-  //  fL1Station.XYInfo.C11 = (c_b * c_b * f_sigma * f_sigma + c_f * c_f * b_sigma * b_sigma) / det;
-  //}
 
   double det = (fabs(backPhi - frontPhi) < 0.1) ? cos(backPhi - frontPhi) : (cFront * sBack - sFront * cBack);
   det *= det;
@@ -408,26 +322,97 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
   fL1Station.yInfo.sigma2  = fL1Station.XYInfo.C11;
   //-----------------------------------------------------------------------------------------------------//
 
-  fInitFlags[keStripsFrontPhi]   = true;
-  fInitFlags[keStripsFrontSigma] = true;
-  fInitFlags[keStripsBackPhi]    = true;
-  fInitFlags[keStripsBackSigma]  = true;
+  fInitController.SetFlag(InitKey::keStripsFrontPhi);
+  fInitController.SetFlag(InitKey::keStripsFrontSigma);
+  fInitController.SetFlag(InitKey::keStripsBackPhi);
+  fInitController.SetFlag(InitKey::keStripsBackSigma);
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+//
+void L1BaseStationInfo::SetMaterial(double inThickness, double inRL)
+{
+#ifndef L1_NO_ASSERT  // check for zero denominator
+  L1_ASSERT(inRL, "Attempt of entering zero inRL (radiational length) value");
+#endif
+  fL1Station.materialInfo.thick       = inThickness;
+  fL1Station.materialInfo.RL          = inRL;
+  fL1Station.materialInfo.RadThick    = fL1Station.materialInfo.thick / fL1Station.materialInfo.RL;
+  fL1Station.materialInfo.logRadThick = log(fL1Station.materialInfo.RadThick);
+  fInitController.SetFlag(InitKey::keMaterialInfoThick);
+  fInitController.SetFlag(InitKey::keMaterialInfoRL);
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+//
+void L1BaseStationInfo::SetStationID(int inID)
+{
+  if (!fInitController.GetFlag(InitKey::keStationID)) {
+    fStationID = inID;
+    fInitController.SetFlag(InitKey::keStationID);
+  }
+  else {
+    LOG(warn) << "L1BaseStationInfo::SetStationID: Attempt of station ID redifinition";
+  }
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+//
+void L1BaseStationInfo::SetStationType(int inType)
+{
+  if (!fInitController.GetFlag(InitKey::keType)) {
+    fL1Station.type = inType;
+    fInitController.SetFlag(InitKey::keType);
+  }
+  else {
+    LOG(warn) << "L1BaseStationInfo::SetStationType: Attempt of station type redifinition";
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
 void L1BaseStationInfo::SetXmax(double aSize)
 {
-  fXmax              = aSize;
-  fInitFlags[keXmax] = true;
+  fXmax = aSize;
+  fInitController.SetFlag(InitKey::keXmax);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
 void L1BaseStationInfo::SetYmax(double aSize)
 {
-  fYmax              = aSize;
-  fInitFlags[keYmax] = true;
+  fYmax = aSize;
+  fInitController.SetFlag(InitKey::keYmax);
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+//
+void L1BaseStationInfo::SetTimeInfo(int inTimeInfo)
+{
+  fL1Station.timeInfo = inTimeInfo;
+  fInitController.SetFlag(InitKey::keTimeInfo);
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+//
+void L1BaseStationInfo::SetZ(double inZ)
+{
+  fL1Station.z = inZ;  // setting simd vector of single-precision floats, which is passed to high performanced L1Algo
+  fZPos        = inZ;  // setting precised value to use in field approximation etc
+  fInitController.SetFlag(InitKey::keZ);
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+//
+void L1BaseStationInfo::Swap(L1BaseStationInfo& other) noexcept
+{
+  std::swap(fDetectorID, other.fDetectorID);
+  std::swap(fStationID, other.fStationID);
+  std::swap(fXmax, other.fXmax);
+  std::swap(fYmax, other.fYmax);
+  std::swap(fZPos, other.fZPos);
+  std::swap(fL1Station, other.fL1Station);
+  std::swap(fInitController, other.fInitController);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
