@@ -363,8 +363,10 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         }
 
         for (int iSt = 0; iSt < NTOFStation; iSt++)
-          for (unsigned int i = 0; i < TofPointToTrackdZ[iSt].size(); i++)
+          for (unsigned int i = 0; i < TofPointToTrackdZ[iSt].size(); i++) {
             TofPointToTrackdZ[iSt][i] = 100000;
+            TofPointToTrack[iSt][i]   = -1;
+          }
 
 
         for (Int_t iMC = 0; iMC < fTofPoints->Size(iFile, iEvent); iMC++) {
@@ -373,7 +375,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
 
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 4)) {
-
             Double_t dtrck          = dFEI(iFile, iEvent, MC.ID);
             DFEI2I::iterator trk_it = dFEI2vMCTracks.find(dtrck);
             if (trk_it == dFEI2vMCTracks.end()) continue;
@@ -382,23 +383,26 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             MC.iStation    = -1;
             L1Station* sta = algo->vStations + NMvdStations + NStsStations + NMuchStations + NTrdStations;
             for (Int_t iSt = 0; iSt < NTOFStation; iSt++)
-              MC.iStation = (MC.z > sta[iSt].z[0] - 6)
+              MC.iStation = (MC.z > sta[iSt].z[0] - 15)
                               ? (NMvdStations + NStsStations + NMuchStations + NTrdStations + iSt)
                               : MC.iStation;
             if (MC.iStation < 0) continue;
+            if (MC.z < 240) continue;
             assert(MC.iStation >= 0);
             int iTofSta = MC.iStation - (NMvdStations + NStsStations + NMuchStations + NTrdStations);
-            float dz    = TofPointToTrackdZ[iTofSta][IND_Track];
-            if (MC.iStation >= 0)
-              if (fabs(sta[MC.iStation].z[0] - MC.z) < dz) TofPointToTrack[iTofSta][IND_Track] = iMC;
-            TofPointToTrackdZ[iTofSta][IND_Track] = fabs(sta[MC.iStation].z[0] - MC.z);
+
+            if (iTofSta >= 0) {
+              float dz = TofPointToTrackdZ[iTofSta][IND_Track];
+              if (fabs(sta[MC.iStation].z[0] - MC.z) < dz) { TofPointToTrack[iTofSta][IND_Track] = iMC; }
+              TofPointToTrackdZ[iTofSta][IND_Track] = fabs(sta[MC.iStation].z[0] - MC.z);
+            }
           }
         }
 
         for (int iTofSta = 0; iTofSta < NTOFStation; iTofSta++)
           for (unsigned int iMC = 0; iMC < TofPointToTrack[iTofSta].size(); iMC++) {
 
-            if (TofPointToTrack[iTofSta][iMC] == 0) continue;
+            if (TofPointToTrack[iTofSta][iMC] == -1) continue;
 
             CbmL1MCPoint MC;
 
@@ -411,6 +415,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
                                 ? (NMvdStations + NStsStations + NMuchStations + NTrdStations + iSt)
                                 : MC.iStation;
 
+              if (MC.iStation < 0) continue;
+              TofPointToTrack[iTofSta][iMC] = vMCPoints.size();
               vMCTracks[iMC].Points.push_back_no_warning(vMCPoints.size());
 
               MC.ID = iMC;
@@ -937,6 +943,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       sttof = fTofDigiBdfPar->GetTrackingStation(mh);
 
+      if (sttof < 0) continue;
+
       // if (fTofDigiBdfPar->GetTrackingStation(mh) == 0) sttof = 0;
       // if (fTofDigiBdfPar->GetTrackingStation(mh) == 1) sttof = 0;
       // if (fTofDigiBdfPar->GetTrackingStation(mh) == 2) sttof = 1;
@@ -998,8 +1006,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           Double_t dtrck          = dFEI(iFile, iEvent, pt->GetTrackID());
           DFEI2I::iterator trk_it = dFEI2vMCPoints.find(dtrck);
           if (trk_it == dFEI2vMCPoints.end()) continue;
+          if (-1 == TofPointToTrack[sttof][trk_it->second]) continue;
           th.iMC = TofPointToTrack[sttof][trk_it->second];
-
           if ((1 == fTofUseMcHit) && (th.iMC > -1)) th.SetHitFromPoint(vMCPoints[th.iMC], algo->vStations[th.iStation]);
         }
       }
