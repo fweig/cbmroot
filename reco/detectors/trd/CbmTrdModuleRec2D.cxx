@@ -27,46 +27,14 @@ using std::endl;
 using std::vector;
 
 Double_t CbmTrdModuleRec2D::fgDT[]      = {4.181e-6, 1586, 24};
-TGraphErrors* CbmTrdModuleRec2D::fgEdep = NULL;
-TGraphErrors* CbmTrdModuleRec2D::fgT    = NULL;
-TF1* CbmTrdModuleRec2D::fgPRF           = NULL;
+TGraphErrors* CbmTrdModuleRec2D::fgEdep = nullptr;
+TGraphErrors* CbmTrdModuleRec2D::fgT    = nullptr;
+TF1* CbmTrdModuleRec2D::fgPRF           = nullptr;
 //_______________________________________________________________________________
-CbmTrdModuleRec2D::CbmTrdModuleRec2D()
-  : CbmTrdModuleRec()
-  , fConfigMap(0)
-  , fT0(0)
-  , fBuffer()
-  , fDigis()
-  , vt0(0)
-  , vcM(0)
-  , vrM(0)
-  , viM(0)
-  , vyM(0)
-  , vs()
-  , vse()
-  , vt()
-  , vx()
-  , vxe()
-{
-}
+CbmTrdModuleRec2D::CbmTrdModuleRec2D() : CbmTrdModuleRec() {}
 
 //_______________________________________________________________________________
-CbmTrdModuleRec2D::CbmTrdModuleRec2D(Int_t mod, Int_t ly, Int_t rot)
-  : CbmTrdModuleRec(mod, ly, rot)
-  , fConfigMap(0)
-  , fT0(0)
-  , fBuffer()
-  , fDigis()
-  , vt0(0)
-  , vcM(0)
-  , vrM(0)
-  , viM(0)
-  , vyM(0)
-  , vs()
-  , vse()
-  , vt()
-  , vx()
-  , vxe()
+CbmTrdModuleRec2D::CbmTrdModuleRec2D(Int_t mod, Int_t ly, Int_t rot) : CbmTrdModuleRec(mod, ly, rot)
 {
   SetNameTitle(Form("Trd2dReco%d", mod), "Reconstructor for triangular pads.");
   // printf("%s (%s)\n", GetName(), GetTitle()); Config(1,0);
@@ -94,7 +62,7 @@ Bool_t CbmTrdModuleRec2D::AddDigi(const CbmTrdDigi* d, Int_t id)
     terminator = -1;
 
   if (CWRITE()) printf("row[%2d] col[%2d] tm[%2d] terminator[%d]\n", row, col, tm, terminator);
-  CbmTrdCluster* cl(NULL);
+  CbmTrdCluster* cl(nullptr);
 
   // get the link to saved clusters
   std::map<Int_t, std::list<CbmTrdCluster*>>::iterator it = fBuffer.find(row);
@@ -167,7 +135,7 @@ Int_t CbmTrdModuleRec2D::GetOverThreshold() const
 //_______________________________________________________________________________
 Int_t CbmTrdModuleRec2D::FindClusters()
 {
-  CbmTrdCluster* cl(NULL);
+  CbmTrdCluster* cl(nullptr);
 
   // get the link to saved clusters
   Int_t ncl(0);
@@ -221,7 +189,7 @@ Bool_t CbmTrdModuleRec2D::PreProcessHits()
   Int_t nhits = fHits->GetEntriesFast();
   if (CWRITE()) LOG(info) << GetName() << "::PreProcessHits(" << nhits << ")";
 
-  CbmTrdHit* hit(NULL);
+  CbmTrdHit* hit(nullptr);
   for (Int_t ih(0); ih < nhits; ih++) {
     hit = (CbmTrdHit*) ((*fHits)[ih]);
     if (!CheckConvolution(hit)) continue;
@@ -245,7 +213,7 @@ Bool_t CbmTrdModuleRec2D::PostProcessHits()
  * -> hit merging for row-cross (see RowCross)
  */
 
-  CbmTrdHit *h0(NULL), *h1(NULL);
+  CbmTrdHit *h0(nullptr), *h1(nullptr);
 
   Int_t a0, nhits = fHits->GetEntriesFast();
   Float_t Dx(2 * fDigiPar->GetPadSizeX(0)), Dy(2 * fDigiPar->GetPadSizeY(0));
@@ -719,7 +687,7 @@ Bool_t CbmTrdModuleRec2D::BuildHit(CbmTrdHit* h)
   fgPRF->SetParameter(2, 0.65);
   fgPRF->SetParLimits(2, 0.45, 10.5);
   fgEdep->Fit(fgPRF, "QBN", "goff", xlo - 0.5, xhi + 0.5);
-  if (!fgPRF->GetNDF()) return NULL;
+  if (!fgPRF->GetNDF()) return nullptr;
   //chi = fgPRF->GetChisquare()/fgPRF->GetNDF();
   e = fgPRF->Integral(xlo - 0.5, xhi + 0.5);
 
@@ -790,8 +758,8 @@ CbmTrdHit* CbmTrdModuleRec2D::MakeHit(Int_t ic, const CbmTrdCluster* cl, std::ve
     fgPRF->SetLineColor(kRed);
     fgPRF->SetParNames("E", "x", "prf");
   }
-  TH1* hf(NULL);
-  TCanvas* cvs(NULL);
+  TH1* hf(nullptr);
+  TCanvas* cvs(nullptr);
   if (CDRAW()) {
     cvs = new TCanvas("c", "TRD Anode Hypothesis", 10, 600, 1000, 500);
     cvs->Divide(2, 1, 1.e-5, 1.e-5);
@@ -809,8 +777,8 @@ CbmTrdHit* CbmTrdModuleRec2D::MakeHit(Int_t ic, const CbmTrdCluster* cl, std::ve
   }
 
   if (CWRITE()) cout << cl->ToString();
-  if (!LoadDigis(digis, ic)) return NULL;
-  if (!ProjectDigis(ic)) return NULL;
+  if (!LoadDigis(digis, ic)) return nullptr;
+  if (!ProjectDigis(ic)) return nullptr;
   Int_t nofHits  = fHits->GetEntriesFast();
   CbmTrdHit* hit = new ((*fHits)[nofHits]) CbmTrdHit();
   hit->SetAddress(fModAddress);
@@ -1022,7 +990,7 @@ Int_t CbmTrdModuleRec2D::LoadDigis(vector<const CbmTrdDigi*>* din, Int_t cid)
  * Do basic sanity checks; also incomplete adjacent digi and if found merge them.
  */
   Int_t col(-1), /*row, */ colT(-1), colR(-1);
-  const CbmTrdDigi *dgT(NULL), *dgR(NULL);
+  const CbmTrdDigi *dgT(nullptr), *dgR(nullptr);
   for (vector<const CbmTrdDigi*>::iterator i = din->begin(), j = i + 1; i != din->end(); i++) {
     dgT = (*i);
     //row =
@@ -1034,7 +1002,7 @@ Int_t CbmTrdModuleRec2D::LoadDigis(vector<const CbmTrdDigi*>* din, Int_t cid)
     }
     col  = colT;
     colR = -1;
-    dgR  = NULL;
+    dgR  = nullptr;
     if (j != din->end()) {
       dgR = (*j);
       //row =
@@ -1102,11 +1070,11 @@ Int_t CbmTrdModuleRec2D::ProjectDigis(Int_t cid, Int_t cjd)
       i1 = fDigis[cjd].begin();
   }
 
-  const CbmTrdDigiRec *dg(NULL), *dg0(NULL), *dg1(NULL);
+  const CbmTrdDigiRec *dg(nullptr), *dg0(nullptr), *dg1(nullptr);
   for (vector<CbmTrdDigiRec*>::iterator i = fDigis[cid].begin(); i != fDigis[cid].end(); i++, j++) {
     dg  = (*i);
-    dg0 = NULL;
-    dg1 = NULL;
+    dg0 = nullptr;
+    dg1 = nullptr;
     if (CWRITE()) cout << "dg0 :" << dg->ToString();
 
     //  initialize
@@ -1124,7 +1092,7 @@ Int_t CbmTrdModuleRec2D::ProjectDigis(Int_t cid, Int_t cjd)
     if (on) nr = 1;
     // look for matching neighbor digis in case of pad row cross
     if (cjd >= 0) {
-      if ((dg0 = (i1 != fDigis[cjd].end()) ? (*i1) : NULL)) {
+      if ((dg0 = (i1 != fDigis[cjd].end()) ? (*i1) : nullptr)) {
         row1 = GetPadRowCol(dg0->GetAddressChannel(), col1);
         if (!step) step = vrM - row1;
         if (col1 == col0) {
@@ -1132,7 +1100,7 @@ Int_t CbmTrdModuleRec2D::ProjectDigis(Int_t cid, Int_t cjd)
           if (on) nr++;
         }
         else
-          dg0 = NULL;
+          dg0 = nullptr;
       }
       if (step == 1 && i1 != fDigis[cjd].begin()) {
         dg1 = (*(i1 - 1));
@@ -1142,7 +1110,7 @@ Int_t CbmTrdModuleRec2D::ProjectDigis(Int_t cid, Int_t cjd)
           if (on) nt++;
         }
         else
-          dg1 = NULL;
+          dg1 = nullptr;
       }
       if (step == -1 && i1 != fDigis[cjd].end() && i1 + 1 != fDigis[cjd].end()) {
         dg1 = (*(i1 + 1));
@@ -1152,7 +1120,7 @@ Int_t CbmTrdModuleRec2D::ProjectDigis(Int_t cid, Int_t cjd)
           if (on) nt++;
         }
         else
-          dg1 = NULL;
+          dg1 = nullptr;
       }
       if (dg0) i1++;
     }
@@ -1349,7 +1317,7 @@ Int_t CbmTrdModuleRec2D::LoadDigis(vector<const CbmTrdDigi*>* digis, vector<CbmT
     xc(-0.5),            // running signal-pad position
     max(0.);             // max signal
   Int_t j(0), col0(-1), col1(0);
-  const CbmTrdDigi* dg(NULL);
+  const CbmTrdDigi* dg(nullptr);
   vector<CbmTrdDigi*>::iterator idgM = vdgM->begin();
   for (vector<const CbmTrdDigi*>::iterator i = digis->begin(); i != digis->end(); i++, j++) {
     dg = (*i);
@@ -1516,13 +1484,13 @@ Int_t CbmTrdModuleRec2D::LoadDigisRC(vector<const CbmTrdDigi*>* digis, const Int
     step = 1;
   }
   if (CWRITE()) printf("col0[%d] col1[%d] step[%2d]\n", col0, col1, step);
-  const CbmTrdDigi *dg0(NULL), *dg1(NULL), *dg10(NULL);
+  const CbmTrdDigi *dg0(nullptr), *dg1(nullptr), *dg10(nullptr);
 
   // always loop on the largest cluster
   for (; i0 != ix0; i0++, j++) {
     dg0  = (*i0);
-    dg1  = NULL;
-    dg10 = NULL;
+    dg1  = nullptr;
+    dg10 = nullptr;
     if (CWRITE()) cout << "dg0 :" << dg0->ToString();
 
     r = dg0->GetCharge(t, dt);
@@ -1541,14 +1509,14 @@ Int_t CbmTrdModuleRec2D::LoadDigisRC(vector<const CbmTrdDigi*>* digis, const Int
     }
 
     // look for matching neighbor digis
-    if ((dg1 = (i1 != ix1) ? (*i1) : NULL)) {
+    if ((dg1 = (i1 != ix1) ? (*i1) : nullptr)) {
       GetPadRowCol(dg1->GetAddressChannel(), col1);
       if (col1 == col0) {
         R = dg1->GetCharge(T, dT);
         if (R > 0.) r += R - CbmTrdFASP::GetBaselineCorr();
       }
       else
-        dg1 = NULL;
+        dg1 = nullptr;
     }
     if (step == 1 && i1 != digis->begin()) {
       dg10 = (*(i1 - 1));
@@ -1558,7 +1526,7 @@ Int_t CbmTrdModuleRec2D::LoadDigisRC(vector<const CbmTrdDigi*>* digis, const Int
         if (T > 0.) t += T - CbmTrdFASP::GetBaselineCorr();
       }
       else
-        dg10 = NULL;
+        dg10 = nullptr;
     }
     if (step == -1 && i1 != ix1 && i1 + 1 != ix1) {
       dg10 = (*(i1 + 1));
@@ -1568,7 +1536,7 @@ Int_t CbmTrdModuleRec2D::LoadDigisRC(vector<const CbmTrdDigi*>* digis, const Int
         if (T > 0.) t += T - CbmTrdFASP::GetBaselineCorr();
       }
       else
-        dg10 = NULL;
+        dg10 = nullptr;
     }
     if (dg1) i1++;
 
@@ -1662,7 +1630,7 @@ Bool_t CbmTrdModuleRec2D::MergeDigis(vector<const CbmTrdDigi*>* digis, vector<Cb
  * Normally this are boundary signals with large time delays wrt neighbors
  */
 
-  CbmTrdDigi* dgM(NULL);
+  CbmTrdDigi* dgM(nullptr);
   if (digis->size() < 2) {  // sanity check ... just in case
     LOG(warn) << GetName() << "::MergeDigis : Bad digi config for cluster :";
     return kFALSE;

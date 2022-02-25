@@ -16,6 +16,7 @@
 
 #include <cstdint>
 #include <string>  // for string
+#include <utility>  // for pair
 
 class CbmTrdDigi {
 public:

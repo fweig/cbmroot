@@ -20,7 +20,7 @@ using std::string;
 using std::stringstream;
 using std::vector;
 //____________________________________________________________________
-CbmTrdCluster::CbmTrdCluster() : CbmCluster(), fNCols(0), fNRows(0x1f), fStartCh(0xffff), fStartTime(0xffffffff) {}
+CbmTrdCluster::CbmTrdCluster() : CbmCluster() {}
 
 //____________________________________________________________________
 CbmTrdCluster::CbmTrdCluster(const CbmTrdCluster& ref)
@@ -35,20 +35,12 @@ CbmTrdCluster::CbmTrdCluster(const CbmTrdCluster& ref)
 //____________________________________________________________________
 CbmTrdCluster::CbmTrdCluster(const std::vector<int32_t>& indices, int32_t address)
   : CbmCluster(indices, address)
-  , fNCols(0)
-  , fNRows(0x1f)
-  , fStartCh(0xffff)
-  , fStartTime(0xffffffff)
 {
 }
 
 //____________________________________________________________________
 CbmTrdCluster::CbmTrdCluster(int32_t address, int32_t idx, int32_t ch, int32_t row, int32_t time)
   : CbmCluster()
-  , fNCols(0)
-  , fNRows(0x1f)
-  , fStartCh(0xffff)
-  , fStartTime(0xffffffff)
 {
   ReInit(address, row, time);
   AddDigi(idx, ch);
