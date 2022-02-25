@@ -118,8 +118,10 @@ CbmTrdUnpackAlgoFasp2D::GetParContainerRequest(std::string geoTag, std::uint32_t
 void CbmTrdUnpackAlgoFasp2D::SetAsicMapping(const std::map<uint32_t, uint8_t[NFASPMOD]>& asicMap)
 {
   if (!fFaspMap) fFaspMap = new std::map<uint32_t, uint8_t[NFASPMOD]>(asicMap);
-  else
-    (*fFaspMap) = asicMap;
+  else {
+    delete fFaspMap;
+    fFaspMap = new std::map<uint32_t, uint8_t[NFASPMOD]>(asicMap);
+  }
 }
 
 //_________________________________________________________________________________
@@ -333,7 +335,7 @@ bool CbmTrdUnpackAlgoFasp2D::unpack(const fles::Timeslice* ts, std::uint16_t ico
     if (isaux) {
       if (!ch_id) {
         if (VERBOSE)
-          cout << boost::format("    EE : cri_id=%02d ch_id=%02d epoch=%03d\n") % static_cast<unsigned int>(fasp_id)
+          cout << boost::format("    EE : fasp_id=%02d ch_id=%02d epoch=%03d\n") % static_cast<unsigned int>(fasp_id)
                     % static_cast<unsigned int>(ch_id) % static_cast<unsigned int>(epoch);
 
         if (vDigi.size()) { pushDigis(vDigi); }
