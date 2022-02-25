@@ -107,10 +107,10 @@ public:
   virtual std::string ToString() const;
 
 protected:
-  uint8_t fNCols(0);          //! number of columns with charge above threshold
-  uint8_t fNRows(0x1f);       //! cluster row info plus extra meta data. Use dedicated getters for the correct value
-  uint16_t fStartCh(0xffff);  //! channel address of first channel
-  uint32_t fStartTime(0xffffffff);  //! start time of cluster in clk units wrt buffer start
+  uint8_t fNCols      = 0;       //! number of columns with charge above threshold
+  uint8_t fNRows      = 0x1f;    //! cluster row info plus extra meta data. Use dedicated getters for the correct value
+  uint16_t fStartCh   = 0xffff;  //! channel address of first channel
+  uint32_t fStartTime = 0xffffffff;  //! start time of cluster in clk units wrt buffer start
 
   ClassDef(CbmTrdCluster, 5)  // cluster of digi for the TRD detector
 };

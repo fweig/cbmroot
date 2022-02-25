@@ -55,7 +55,7 @@ public:
    * \param[in] v verbosity toggle
    * \param[in] d drawing toggle
    */
-  virtual inline void Config(Bool_t v, Bool_t d);
+  virtual inline void Config(Bool_t vb, Bool_t dw);
   virtual void DrawHit(CbmTrdHit*) const { ; }
   /** \brief Count RO channels (R or T) with data**/
   virtual Int_t GetOverThreshold() const;
@@ -185,21 +185,21 @@ private:
   void SetMaxTilt(Bool_t set = 1) { set ? SETBIT(vyM, 0) : CLRBIT(vyM, 0); }
   void SetOvf(Bool_t set = 1) { set ? SETBIT(vyM, 12) : CLRBIT(vyM, 12); }
 
-  UChar_t fConfigMap(0);                                 // task configuration settings
-  ULong64_t fT0(0);                                      //! start time of event/time slice [clk]
-  std::map<Int_t, std::list<CbmTrdCluster*>> fBuffer();  //row-wise organized clusters
-  std::map<Int_t, vector<CbmTrdDigiRec*>> fDigis();      //!cluster-wise organized calibrated digi
+  UChar_t fConfigMap = 0;                              //! task configuration settings
+  ULong64_t fT0      = 0;                              //! start time of event/time slice [clk]
+  std::map<Int_t, std::list<CbmTrdCluster*>> fBuffer;  //row-wise organized clusters
+  std::map<Int_t, vector<CbmTrdDigiRec*>> fDigis;      //!cluster-wise organized calibrated digi
   // working representation of a hit on which the reconstruction is performed
-  ULong64_t vt0(0);             //! start time of current hit [clk]
-  UChar_t vcM(0);               //! maximum col
-  UChar_t vrM(0);               //! maximum row
-  UChar_t viM(0);               //! index of maximum signal in the projection
-  UShort_t vyM(0);              //! bit map for cluster topology classification
-  std::vector<Double_t> vs();   //! working copy of signals from cluster
-  std::vector<Double_t> vse();  //! working copy of signal errors from cluster
-  std::vector<Char_t> vt();     //! working copy of signal relative timing
-  std::vector<Double_t> vx();   //! working copy of signal relative positions
-  std::vector<Double_t> vxe();  //! working copy of signal relative position errors
+  ULong64_t vt0 = 0;          //! start time of current hit [clk]
+  UChar_t vcM   = 0;          //! maximum col
+  UChar_t vrM   = 0;          //! maximum row
+  UChar_t viM   = 0;          //! index of maximum signal in the projection
+  UShort_t vyM  = 0;          //! bit map for cluster topology classification
+  std::vector<Double_t> vs;   //! working copy of signals from cluster
+  std::vector<Double_t> vse;  //! working copy of signal errors from cluster
+  std::vector<Char_t> vt;     //! working copy of signal relative timing
+  std::vector<Double_t> vx;   //! working copy of signal relative positions
+  std::vector<Double_t> vxe;  //! working copy of signal relative position errors
 
   static Float_t fgCorrXdx;                         //! step of the discretized correction LUT
   static Float_t fgCorrXval[3][NBINSCORRX];         //! discretized correction LUT
@@ -215,13 +215,13 @@ private:
            2)  // Triangular pad module; Cluster finding and hit reconstruction algorithms
 };
 
-void CbmTrdModuleRec2D::Config(Bool_t v, Bool_t d)
+void CbmTrdModuleRec2D::Config(Bool_t vb, Bool_t dw)
 {
-  if (v) SETBIT(fConfigMap, kVerbose);
+  if (vb) SETBIT(fConfigMap, kVerbose);
   else
     CLRBIT(fConfigMap, kVerbose);
   printf("CbmTrdModuleRec2D::Verbose[%c]\n", CWRITE() ? 'y' : 'n');
-  if (d) SETBIT(fConfigMap, kDraw);
+  if (dw) SETBIT(fConfigMap, kDraw);
   else
     CLRBIT(fConfigMap, kDraw);
   printf("CbmTrdModuleRec2D::Draw[%c]\n", CDRAW() ? 'y' : 'n');

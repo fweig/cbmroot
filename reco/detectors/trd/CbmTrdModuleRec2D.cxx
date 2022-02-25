@@ -687,7 +687,7 @@ Bool_t CbmTrdModuleRec2D::BuildHit(CbmTrdHit* h)
   fgPRF->SetParameter(2, 0.65);
   fgPRF->SetParLimits(2, 0.45, 10.5);
   fgEdep->Fit(fgPRF, "QBN", "goff", xlo - 0.5, xhi + 0.5);
-  if (!fgPRF->GetNDF()) return nullptr;
+  if (!fgPRF->GetNDF()) return false;
   //chi = fgPRF->GetChisquare()/fgPRF->GetNDF();
   e = fgPRF->Integral(xlo - 0.5, xhi + 0.5);
 
@@ -1677,7 +1677,6 @@ Bool_t CbmTrdModuleRec2D::MergeDigis(vector<const CbmTrdDigi*>* digis, vector<Cb
   }
   return kTRUE;
 }
-
 
 Float_t CbmTrdModuleRec2D::fgCorrXdx                 = 0.01;
 Float_t CbmTrdModuleRec2D::fgCorrXval[3][NBINSCORRX] = {
