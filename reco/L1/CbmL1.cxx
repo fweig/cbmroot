@@ -434,7 +434,9 @@ InitStatus CbmL1::Init()
           float z = fChannelInfo->GetZ();
           float x = fChannelInfo->GetX();
           float y = fChannelInfo->GetY();
-          
+
+          if (station < 0) continue;
+
           if (fMissingHits) {
             if ((x > 20) && (z > 270) && (station == 1)) station = 2;
             if (z > 400) continue;
@@ -565,8 +567,8 @@ InitStatus CbmL1::Init()
       b_phi = f_phi;
       f_phi += station->GetSensorStereoAngle(0) * Pi / 180.;
       b_phi += station->GetSensorStereoAngle(1) * Pi / 180.;
-      f_sigma = station->GetSensorPitch(0) / TMath::Sqrt(12);
-      b_sigma = f_sigma;
+      f_sigma  = station->GetSensorPitch(0) / TMath::Sqrt(12);
+      b_sigma  = f_sigma;
       fscal dt = 5;
       //f_sigma *= cos(f_phi);  // TODO: think about this
       //b_sigma *= cos(b_phi);
@@ -606,7 +608,7 @@ InitStatus CbmL1::Init()
       geo.push_back(100);  //station->GetRmax()
       geo.push_back(0);
 
-     // fscal f_phi = 0, f_sigma = 0.1, b_phi = 3.14159265358 / 2., b_sigma = 0.1;
+      // fscal f_phi = 0, f_sigma = 0.1, b_phi = 3.14159265358 / 2., b_sigma = 0.1;
       fscal f_phi = 0, f_sigma = 0.35, b_phi = 3.14159265358 / 2., b_sigma = 0.35, dt = 3.9;
       geo.push_back(f_phi);
       geo.push_back(f_sigma);
@@ -655,7 +657,7 @@ InitStatus CbmL1::Init()
       geo.push_back(2 * module->GetSizeX());
       geo.push_back(10);
 
-    //  fscal f_phi = 0, f_sigma = 1., b_phi = 3.14159265358 / 2., b_sigma = 1.;
+      //  fscal f_phi = 0, f_sigma = 1., b_phi = 3.14159265358 / 2., b_sigma = 1.;
       fscal f_phi = 0, f_sigma = 0.15, b_phi = 3.14159265358 / 2., b_sigma = 0.15, dt = 10;
       geo.push_back(f_phi);
       geo.push_back(f_sigma);
@@ -681,7 +683,7 @@ InitStatus CbmL1::Init()
       geo.push_back(150);  /// TODO: add Tof max radius
       geo.push_back(10);
 
-     // fscal f_phi = 0, f_sigma = 1 / 10000, b_phi = 3.14159265358 / 2., b_sigma = 1 / 10000;
+      // fscal f_phi = 0, f_sigma = 1 / 10000, b_phi = 3.14159265358 / 2., b_sigma = 1 / 10000;
       fscal f_phi = 0, f_sigma = 0.42, b_phi = 3.14159265358 / 2., b_sigma = 0.23, dt = 0.075;
       geo.push_back(f_phi);
       geo.push_back(f_sigma);
@@ -1084,7 +1086,7 @@ InitStatus CbmL1::Init()
         const float RMax = hStaRadLen->GetXaxis()->GetXmax();  // should be same as min
         algo->fRadThick[iSta].SetBins(NBins, RMax);
         algo->fRadThick[iSta].table.resize(NBins);
-        
+
         float hole = 0.15;
 
         for (int iB = 0; iB < NBins; iB++) {

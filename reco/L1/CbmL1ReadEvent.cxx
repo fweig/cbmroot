@@ -97,7 +97,7 @@ struct TmpHit {  // used for sort Hits before writing in the normal arrays
     id       = nTmpHits;  //tmpHits.size();
     iStation = point.iStation;
 
-    dt   = st.dt[0];
+    dt   = 5;           //st.dt[0];
     time = point.time;  // + gRandom->Gaus(0, dt);
 
     iStripF = nStripF + ip;  //firstDetStrip + ip;
@@ -108,14 +108,14 @@ struct TmpHit {  // used for sort Hits before writing in the normal arrays
     //1.;
     float b_sigma = 0.1;  // sqrt(st.backInfo.sigma2[0]);//1.;
 
-    dx            = f_sigma;
-    dy            = b_sigma;
-    dxy           = 0;
-    du            = f_sigma;
-    dv            = b_sigma;
+    dx  = f_sigma;
+    dy  = b_sigma;
+    dxy = 0;
+    du  = f_sigma;
+    dv  = b_sigma;
 
-    x = point.x + gRandom->Gaus(0, dx);
-    y = point.y + gRandom->Gaus(0, dy);
+    x = point.x;  // + gRandom->Gaus(0, dx);
+    y = point.y;  // + gRandom->Gaus(0, dy);
     z = point.z;
 
     xmc = point.x;
@@ -211,8 +211,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   int firstStsPoint  = 0;
   int firstMuchPoint = 0;
   int firstTofPoint  = 0;
-
-  // L1Vector<CbmLink*> ToFPointsMatch("CbmL1ReadEvent::ToFPointsMatch");
 
   if (fPerformance) {
     Fill_vMCTracks();
@@ -350,7 +348,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           }
         }
 
-      //ToFPointsMatch.clear();
 
       firstTofPoint = vMCPoints.size();
       if (fTofPoints) {
@@ -410,7 +407,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
               MC.iStation    = -1;
               L1Station* sta = algo->vStations + NMvdStations + NStsStations + NMuchStations + NTrdStations;
               for (Int_t iSt = 0; iSt < NTOFStation; iSt++)
-                MC.iStation = (MC.z > sta[iSt].z[0] - 5)
+                MC.iStation = (MC.z > sta[iSt].z[0] - 15)
                                 ? (NMvdStations + NStsStations + NMuchStations + NTrdStations + iSt)
                                 : MC.iStation;
 
@@ -512,9 +509,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     int firstDetStrip = NStrips;
     for (int ip = firstStsPoint; ip < firstStsPoint + nStsPoints; ip++) {
       const CbmL1MCPoint& p = vMCPoints[ip];
-//       int mcTrack           = p.ID;
-//       if (mcTrack < 0) continue;
-//       const CbmL1MCTrack& t = vMCTracks[mcTrack];
+      //       int mcTrack           = p.ID;
+      //       if (mcTrack < 0) continue;
+      //       const CbmL1MCTrack& t = vMCTracks[mcTrack];
       //if (t.p < 1) continue;
       // if (t.Points.size() > 4) continue;
       // cout << "sts mc: station " << p.iStation - NMvdStations << " x " << p.x << " y " << p.y << " z " << p.z << " t "
@@ -663,9 +660,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     for (int ip = firstMuchPoint; ip < firstMuchPoint + nMuchPoints; ip++) {
       const CbmL1MCPoint& p = vMCPoints[ip];
 
-//       int mcTrack = p.ID;
-//       if (mcTrack < 0) continue;
-//       const CbmL1MCTrack& t = vMCTracks[mcTrack];
+      //       int mcTrack = p.ID;
+      //       if (mcTrack < 0) continue;
+      //       const CbmL1MCTrack& t = vMCTracks[mcTrack];
       //if (t.p < 1) continue;
       // if (t.Points.size() > 4) continue;
 
@@ -768,9 +765,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     for (int ip = firstTrdPoint; ip < firstTrdPoint + nTrdPoints; ip++) {
       const CbmL1MCPoint& p = vMCPoints[ip];
 
-//       int mcTrack = p.ID;
-//       if (mcTrack < 0) continue;
-//       const CbmL1MCTrack& t = vMCTracks[mcTrack];
+      //       int mcTrack = p.ID;
+      //       if (mcTrack < 0) continue;
+      //       const CbmL1MCTrack& t = vMCTracks[mcTrack];
 
       TmpHit th;
       int DetId = 3;
@@ -902,7 +899,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     for (int ip = firstTofPoint; ip < firstTofPoint + nTofPoints; ip++) {
       const CbmL1MCPoint& p = vMCPoints[ip];
 
-//       int mcTrack = p.ID;
+      //       int mcTrack = p.ID;
       //  if (mcTrack < 0) continue;
       //const CbmL1MCTrack& t = vMCTracks[mcTrack];
       //if (t.p < 1) continue;
@@ -1225,17 +1222,17 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
   if (MVD == 0) {
     CbmStsPoint* pt = L1_DYNAMIC_CAST<CbmStsPoint*>(fStsPoints->Get(file, event, iPoint));  // file, event, object
     if (!pt) return 1;
-    //     if ( !fLegacyEventMode )
-    //     {
-    //       Double_t StartTime = fTimeSlice->GetStartTime();
-    //       Double_t EndTime = fTimeSlice->GetEndTime();
-    //       Double_t Time_MC_point =  pt->GetTime() + fEventList->GetEventTime(event, file);
-    //       if (Time_MC_point < StartTime )
-    //         return 1;
-    //
-    //       if (Time_MC_point > EndTime )
-    //         return 1;
-    //     }
+    if (!fLegacyEventMode) {
+      Double_t StartTime     = fTimeSlice->GetStartTime();
+      Double_t EndTime       = fTimeSlice->GetEndTime();
+      Double_t Time_MC_point = pt->GetTime() + fEventList->GetEventTime(event, file);
+
+      if (StartTime > 0)
+        if (Time_MC_point < StartTime) return 1;
+
+      if (EndTime > 0)
+        if (Time_MC_point > EndTime) return 1;
+    }
 
     pt->Position(xyzI);
     pt->Momentum(PI);
@@ -1253,11 +1250,12 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
       Double_t StartTime     = fTimeSlice->GetStartTime();
       Double_t EndTime       = fTimeSlice->GetEndTime();
       Double_t Time_MC_point = pt->GetTime() + fEventList->GetEventTime(event, file);
-      
-      cout<<StartTime<<" StartTime "<<EndTime<<" EndTime "<<Time_MC_point<<" Time_MC_point "<<fEventList->GetEventTime(event, file)<<endl;
-      //       if (Time_MC_point < StartTime) return 1;
-      //
-      //       if (Time_MC_point > EndTime) return 1;
+
+      if (StartTime > 0)
+        if (Time_MC_point < StartTime) return 1;
+
+      if (EndTime > 0)
+        if (Time_MC_point > EndTime) return 1;
     }
 
     pt->Position(xyzI);
@@ -1274,14 +1272,15 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
 
     if (!pt) return 1;
     if (!fLegacyEventMode) {
-      //Double_t StartTime = fTimeSlice->GetStartTime();  // not used
-      //Double_t EndTime = fTimeSlice->GetEndTime();      // not used
-      //Double_t Time_MC_point =  pt->GetTime() + fEventList->GetEventTime(event, file); // not used
-      //       if (Time_MC_point < StartTime )
-      //         return 1;
-      //
-      //       if (Time_MC_point > EndTime )
-      //         return 1;
+      Double_t StartTime     = fTimeSlice->GetStartTime();                             // not used
+      Double_t EndTime       = fTimeSlice->GetEndTime();                               // not used
+      Double_t Time_MC_point = pt->GetTime() + fEventList->GetEventTime(event, file);  // not used
+
+      if (StartTime > 0)
+        if (Time_MC_point < StartTime) return 1;
+
+      if (EndTime > 0)
+        if (Time_MC_point > EndTime) return 1;
     }
 
     pt->Position(xyzI);
@@ -1297,12 +1296,15 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
     CbmTofPoint* pt = L1_DYNAMIC_CAST<CbmTofPoint*>(fTofPoints->Get(file, event, iPoint));  // file, event, object
     if (!pt) return 1;
     if (!fLegacyEventMode) {
-      //       Double_t StartTime     = fTimeSlice->GetStartTime();
-      //       Double_t EndTime       = fTimeSlice->GetEndTime();
-      //       Double_t Time_MC_point = pt->GetTime() + fEventList->GetEventTime(event, file);
-      //       if (Time_MC_point < StartTime) return 1;
-      //
-      //       if (Time_MC_point > EndTime) return 1; continue!!!!
+      Double_t StartTime     = fTimeSlice->GetStartTime();
+      Double_t EndTime       = fTimeSlice->GetEndTime();
+      Double_t Time_MC_point = pt->GetTime() + fEventList->GetEventTime(event, file);
+
+      if (StartTime > 0)
+        if (Time_MC_point < StartTime) return 1;
+
+      if (EndTime > 0)
+        if (Time_MC_point > EndTime) return 1;
     }
 
     pt->Position(xyzI);
