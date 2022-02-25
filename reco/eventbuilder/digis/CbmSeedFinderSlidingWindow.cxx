@@ -32,6 +32,8 @@ void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<inType>* vIn, c
   // Reset output array
   fvSeedTimes->clear();
 
+  if (fQa) { fQa->ResetPerTsStorage(); }
+
   // Ideal mode ignores digi input and copies MC event list
   if (fbIdealMode) {
 
@@ -53,7 +55,7 @@ void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<inType>* vIn, c
     }
     if (fQa) {
       for (uint32_t i = 0; i < fvSeedTimes->size(); i++) {
-        fQa->FillQaInfo(i, i, &eventMatches, fvSeedTimes->at(i));
+        fQa->FillQaSeedInfo(i, i, &eventMatches, fvSeedTimes->at(i));
       }
     }
     return;
@@ -98,7 +100,7 @@ void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<inType>* vIn, c
       fvSeedTimes->push_back(seedTime);
 
       if (vDigiMatch && fQa) {  // QA mode
-        fQa->FillQaInfo(winStartN, i, vDigiMatch, seedTime);
+        fQa->FillQaSeedInfo(winStartN, i, vDigiMatch, seedTime);
       }
       nDigisWin = 0;
 
@@ -115,6 +117,8 @@ void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<inType>* vIn, c
       winStartT = GetTime(vIn, j);
     }
   }
+
+  if (fQa) { fQa->FillQaMCInfo(); }
 
   //if (fQa && vDigiMatch) {  // QA mode
   //  std::cout << "CbmSeedFinderSlidingWindow::FillSeedTimes(): Found " << GetNofSeeds() << " seeds for this timeslice."

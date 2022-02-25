@@ -61,17 +61,26 @@ public:
   /** @brief Difference between true event time and seed time. */
   std::vector<double> fvTimeOffset;
 
+  /** @brief Matches that link constructed event seeds to MC events, current timeslice only. */
+  std::vector<CbmMatch> fvEventMatchesPerTs;
+
   /** @brief Gather QA Information. 
   * @params WinStart Starting position of seed window.
   * @params WinStart End position of seed window.
   * @params vDigiMatch Input vector of digi matches (should match input data to MC events). 
   * @params seedTime Current seed. 
   **/
-  void FillQaInfo(const int32_t WinStart, const int32_t WinEnd, const std::vector<CbmMatch>* vDigiMatch,
-                  const double seedTime);
+  void FillQaSeedInfo(const int32_t WinStart, const int32_t WinEnd, const std::vector<CbmMatch>* vDigiMatch,
+                      const double seedTime);
 
   /** @brief Output QA Information. */
   void OutputQa();
+
+  /** @brief Fill QA Information that uses the full list of MC events per TS. */
+  void FillQaMCInfo();
+
+  /** @brief Reset containers that are persistent for one TS. */
+  void ResetPerTsStorage();
 
   /** @brief Finalize histograms and canvases and write to file. */
   void WriteHistos();
@@ -84,14 +93,16 @@ private:
   TFolder fOutFolder;             /// output folder with histos and canvases
 
   /** Histograms **/
-  TH1F* fhLinkedMCEventsPerTrigger = nullptr;  /// linked MC events per trigger
-  TH1F* fhCorrectDigiRatio         = nullptr;  /// correct digis per event
-  TH1F* fhCorrectDigiRatioNoNoise  = nullptr;  /// correct digis per event, disregarding noise
-  TH1F* fhNoiseDigiRatio           = nullptr;  /// noise digis per event
-  TH1F* fhFoundDigiRatio           = nullptr;  /// digis found per event
-  TH2I* fhCorrectVsFound           = nullptr;  /// correct digis per event vs found digis per event
-  TH2I* fhCorrectVsFoundNoNoise    = nullptr;  /// correct digis per event vs found digis per event, disregarding noise
-  TH1F* fhTimeOffset               = nullptr;  /// difference between true event time and seed time
+  TH1F* fhLinkedTriggersPerMCEvent  = nullptr;  /// linked triggers per MC event
+  TH1F* fhMatchedTriggersPerMCEvent = nullptr;  /// matchted triggers per MC event
+  TH1F* fhLinkedMCEventsPerTrigger  = nullptr;  /// linked MC events per trigger
+  TH1F* fhCorrectDigiRatio          = nullptr;  /// correct digis per event
+  TH1F* fhCorrectDigiRatioNoNoise   = nullptr;  /// correct digis per event, disregarding noise
+  TH1F* fhNoiseDigiRatio            = nullptr;  /// noise digis per event
+  TH1F* fhFoundDigiRatio            = nullptr;  /// digis found per event
+  TH2I* fhCorrectVsFound            = nullptr;  /// correct digis per event vs found digis per event
+  TH2I* fhCorrectVsFoundNoNoise     = nullptr;  /// correct digis per event vs found digis per event, disregarding noise
+  TH1F* fhTimeOffset                = nullptr;  /// difference between true event time and seed time
 
   CbmQaCanvas* fCanv;  ///summary canvas
 

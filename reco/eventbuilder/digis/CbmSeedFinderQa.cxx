@@ -23,6 +23,12 @@ CbmSeedFinderQa::CbmSeedFinderQa() : fOutFolder("SeedFinderQA", "Seed finder QA"
     new TH1F("fhLinkedMCEventsPerTrigger", "Linked MC events per trigger (=0 for pure noise)", 5, -1, 4);
   fhLinkedMCEventsPerTrigger->SetCanExtend(TH1::kAllAxes);
 
+  fhLinkedTriggersPerMCEvent = new TH1F("fhLinkedTriggersPerMCEvent", "Linked triggers per MC event", 5, -1, 4);
+  fhLinkedTriggersPerMCEvent->SetCanExtend(TH1::kAllAxes);
+
+  fhMatchedTriggersPerMCEvent = new TH1F("fhMatchedTriggersPerMCEvent", "Matched triggers per MC event", 5, -1, 4);
+  fhMatchedTriggersPerMCEvent->SetCanExtend(TH1::kAllAxes);
+
   fhCorrectDigiRatio = new TH1F("fhCorrectDigiRatio", "Correct digis per seed [pct]", 416, -2, 102);
   fhCorrectDigiRatioNoNoise =
     new TH1F("fhCorrectDigiRatioNoNoise", "Correct digis per seed [pct], disregarding noise", 416, -2, 102);
@@ -44,9 +50,11 @@ CbmSeedFinderQa::CbmSeedFinderQa() : fOutFolder("SeedFinderQA", "Seed finder QA"
   histFolder->Add(fhCorrectVsFoundNoNoise);
   histFolder->Add(fhTimeOffset);
   histFolder->Add(fhLinkedMCEventsPerTrigger);
+  histFolder->Add(fhLinkedTriggersPerMCEvent);
+  histFolder->Add(fhMatchedTriggersPerMCEvent);
 
-  fCanv = new CbmQaCanvas("cSummary", "", 4 * 400, 2 * 400);
-  fCanv->Divide2D(8);
+  fCanv = new CbmQaCanvas("cSummary", "", 4 * 400, 3 * 400);
+  fCanv->Divide2D(10);
   fOutFolder.Add(fCanv);
 }
 
@@ -60,6 +68,8 @@ CbmSeedFinderQa::~CbmSeedFinderQa()
   delete fhCorrectVsFoundNoNoise;
   delete fhTimeOffset;
   delete fhLinkedMCEventsPerTrigger;
+  delete fhLinkedTriggersPerMCEvent;
+  delete fhMatchedTriggersPerMCEvent;
   delete fCanv;
 }
 
@@ -72,8 +82,10 @@ void CbmSeedFinderQa::Init()
   fEventList = (CbmMCEventList*) FairRootManager::Instance()->GetObject("MCEventList.");
 }
 
-void CbmSeedFinderQa::FillQaInfo(const int32_t WinStart, const int32_t WinEnd, const std::vector<CbmMatch>* vDigiMatch,
-                                 const double seedTime)
+void CbmSeedFinderQa::ResetPerTsStorage() { fvEventMatchesPerTs.clear(); }
+
+void CbmSeedFinderQa::FillQaSeedInfo(const int32_t WinStart, const int32_t WinEnd,
+                                     const std::vector<CbmMatch>* vDigiMatch, const double seedTime)
 {
   fvSeedTimesFull.push_back(seedTime);
 
@@ -117,6 +129,8 @@ void CbmSeedFinderQa::FillQaInfo(const int32_t WinStart, const int32_t WinEnd, c
   {
     seedMatch.AddLink(1.0, 0, -1, 0);
     fvEventMatches.push_back(seedMatch);
+    fvEventMatchesPerTs.push_back(seedMatch);
+
     //should never show up in histograms
     fvCorrectDigiRatio.push_back(std::numeric_limits<double>::quiet_NaN());
     fvCorrectDigiRatioNoNoise.push_back(std::numeric_limits<double>::quiet_NaN());
@@ -126,6 +140,7 @@ void CbmSeedFinderQa::FillQaInfo(const int32_t WinStart, const int32_t WinEnd, c
   }
   else {
     fvEventMatches.push_back(seedMatch);
+    fvEventMatchesPerTs.push_back(seedMatch);
   }
 
   //correct digis in seed window
@@ -158,6 +173,33 @@ void CbmSeedFinderQa::FillQaInfo(const int32_t WinStart, const int32_t WinEnd, c
   const CbmLink& eventLink = seedMatch.GetMatchedLink();
   const double timeDiff    = seedTime - fEventList->GetEventTime(eventLink.GetEntry(), eventLink.GetFile());
   fvTimeOffset.push_back(timeDiff);
+}
+
+void CbmSeedFinderQa::FillQaMCInfo()
+{
+  const uint32_t nEvents = fEventList->GetNofEvents();
+  std::vector<uint32_t> vLinkedTriggersPerMCEvent;
+  std::vector<uint32_t> vMatchedTriggersPerMCEvent;
+  vLinkedTriggersPerMCEvent.resize(nEvents, 0);
+  vMatchedTriggersPerMCEvent.resize(nEvents, 0);
+
+  for (uint32_t iSeed = 0; iSeed < fvEventMatchesPerTs.size(); iSeed++) {
+
+    const CbmMatch eventMatch = fvEventMatchesPerTs.at(iSeed);
+    for (int32_t iLink = 0; iLink < eventMatch.GetNofLinks(); iLink++) {
+      const CbmLink eventLink = eventMatch.GetLink(iLink);
+      vLinkedTriggersPerMCEvent[fEventList->GetEventIndex(eventLink)]++;
+    }
+    const CbmLink matchedLink = eventMatch.GetMatchedLink();
+    vMatchedTriggersPerMCEvent[fEventList->GetEventIndex(matchedLink)]++;
+  }
+
+  for (const auto& value : vLinkedTriggersPerMCEvent) {
+    fhLinkedTriggersPerMCEvent->Fill(value);
+  }
+  for (const auto& value : vMatchedTriggersPerMCEvent) {
+    fhMatchedTriggersPerMCEvent->Fill(value);
+  }
 }
 
 void CbmSeedFinderQa::FillHistos()
@@ -237,6 +279,12 @@ void CbmSeedFinderQa::WriteHistos()
 
   fCanv->cd(8);
   fhLinkedMCEventsPerTrigger->DrawCopy("colz", "");
+
+  fCanv->cd(9);
+  fhLinkedTriggersPerMCEvent->DrawCopy("colz", "");
+
+  fCanv->cd(10);
+  fhMatchedTriggersPerMCEvent->DrawCopy("colz", "");
 
   FairSink* sink = FairRootManager::Instance()->GetSink();
   sink->WriteObject(&fOutFolder, nullptr);
