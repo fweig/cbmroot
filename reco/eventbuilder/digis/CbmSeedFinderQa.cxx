@@ -39,8 +39,12 @@ CbmSeedFinderQa::CbmSeedFinderQa() : fOutFolder("SeedFinderQA", "Seed finder QA"
   fhCorrectVsFoundNoNoise =
     new TH2I("fhCorrectVsFoundNoNoise", "Correct digis  [pct] vs. Found digis [pct], no noise; Correct; Found ", 110,
              -5., 105., 110, -5., 105.);
-  fhTimeOffset = new TH1F("fhTimeOffset", "tSeed - tMCEvent [ns]", 20, -5, 5);
+
+  fhTimeOffset = new TH1F("fhTimeOffsetMatched", "tSeed - tMCMatched [ns]", 20, -5, 5);
   fhTimeOffset->SetCanExtend(TH1::kAllAxes);
+
+  fhTimeOffsetClosest = new TH1F("fhTimeOffsetClosest", "tSeed - tMCClosest [ns]", 20, -5, 5);
+  fhTimeOffsetClosest->SetCanExtend(TH1::kAllAxes);
 
   histFolder->Add(fhCorrectDigiRatio);
   histFolder->Add(fhCorrectDigiRatioNoNoise);
@@ -49,6 +53,7 @@ CbmSeedFinderQa::CbmSeedFinderQa() : fOutFolder("SeedFinderQA", "Seed finder QA"
   histFolder->Add(fhCorrectVsFound);
   histFolder->Add(fhCorrectVsFoundNoNoise);
   histFolder->Add(fhTimeOffset);
+  histFolder->Add(fhTimeOffsetClosest);
   histFolder->Add(fhLinkedMCEventsPerTrigger);
   histFolder->Add(fhLinkedTriggersPerMCEvent);
   histFolder->Add(fhMatchedTriggersPerMCEvent);
@@ -67,6 +72,7 @@ CbmSeedFinderQa::~CbmSeedFinderQa()
   delete fhCorrectVsFound;
   delete fhCorrectVsFoundNoNoise;
   delete fhTimeOffset;
+  delete fhTimeOffsetClosest;
   delete fhLinkedMCEventsPerTrigger;
   delete fhLinkedTriggersPerMCEvent;
   delete fhMatchedTriggersPerMCEvent;
@@ -82,12 +88,17 @@ void CbmSeedFinderQa::Init()
   fEventList = (CbmMCEventList*) FairRootManager::Instance()->GetObject("MCEventList.");
 }
 
-void CbmSeedFinderQa::ResetPerTsStorage() { fvEventMatchesPerTs.clear(); }
+void CbmSeedFinderQa::ResetPerTsStorage()
+{
+  fvEventMatchesPerTs.clear();
+  fvSeedTimesPerTs.clear();
+}
 
 void CbmSeedFinderQa::FillQaSeedInfo(const int32_t WinStart, const int32_t WinEnd,
                                      const std::vector<CbmMatch>* vDigiMatch, const double seedTime)
 {
   fvSeedTimesFull.push_back(seedTime);
+  fvSeedTimesPerTs.push_back(seedTime);
 
   int32_t digiCount             = 0;
   int32_t noiseDigiCount        = 0;
@@ -178,6 +189,8 @@ void CbmSeedFinderQa::FillQaSeedInfo(const int32_t WinStart, const int32_t WinEn
 void CbmSeedFinderQa::FillQaMCInfo()
 {
   const uint32_t nEvents = fEventList->GetNofEvents();
+  if (nEvents == 0) { return; }
+
   std::vector<uint32_t> vLinkedTriggersPerMCEvent;
   std::vector<uint32_t> vMatchedTriggersPerMCEvent;
   vLinkedTriggersPerMCEvent.resize(nEvents, 0);
@@ -199,6 +212,21 @@ void CbmSeedFinderQa::FillQaMCInfo()
   }
   for (const auto& value : vMatchedTriggersPerMCEvent) {
     fhMatchedTriggersPerMCEvent->Fill(value);
+  }
+
+  // get sorted vector of MC event times
+  std::vector<double> vMCEventTimes;
+  for (uint32_t iEvent = 0; iEvent < nEvents; iEvent++) {
+    vMCEventTimes.push_back(fEventList->GetEventTimeByIndex(iEvent));
+  }
+  std::sort(std::begin(vMCEventTimes), std::end(vMCEventTimes));
+
+  //find closest MC event for each seed (assumes both arrays are sorted in time)
+  auto minElem = vMCEventTimes.begin();
+  for (const auto& seedTime : fvSeedTimesPerTs) {
+    auto comp = [&, seedTime](double val1, double val2) { return fabs(seedTime - val1) < fabs(seedTime - val2); };
+    minElem   = std::min_element(minElem, vMCEventTimes.end(), comp);
+    fhTimeOffsetClosest->Fill(seedTime - *minElem);
   }
 }
 
@@ -278,12 +306,15 @@ void CbmSeedFinderQa::WriteHistos()
   fhTimeOffset->DrawCopy("colz", "");
 
   fCanv->cd(8);
-  fhLinkedMCEventsPerTrigger->DrawCopy("colz", "");
+  fhTimeOffsetClosest->DrawCopy("colz", "");
 
   fCanv->cd(9);
-  fhLinkedTriggersPerMCEvent->DrawCopy("colz", "");
+  fhLinkedMCEventsPerTrigger->DrawCopy("colz", "");
 
   fCanv->cd(10);
+  fhLinkedTriggersPerMCEvent->DrawCopy("colz", "");
+
+  fCanv->cd(11);
   fhMatchedTriggersPerMCEvent->DrawCopy("colz", "");
 
   FairSink* sink = FairRootManager::Instance()->GetSink();

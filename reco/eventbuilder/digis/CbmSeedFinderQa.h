@@ -63,6 +63,8 @@ public:
 
   /** @brief Matches that link constructed event seeds to MC events, current timeslice only. */
   std::vector<CbmMatch> fvEventMatchesPerTs;
+  /** @brief Vector of event seeds, current TS only. */
+  std::vector<double> fvSeedTimesPerTs;
 
   /** @brief Gather QA Information. 
   * @params WinStart Starting position of seed window.
@@ -103,6 +105,7 @@ private:
   TH2I* fhCorrectVsFound            = nullptr;  /// correct digis per event vs found digis per event
   TH2I* fhCorrectVsFoundNoNoise     = nullptr;  /// correct digis per event vs found digis per event, disregarding noise
   TH1F* fhTimeOffset                = nullptr;  /// difference between true event time and seed time
+  TH1F* fhTimeOffsetClosest         = nullptr;  /// difference between seed time and closest MC event time
 
   CbmQaCanvas* fCanv;  ///summary canvas
 
