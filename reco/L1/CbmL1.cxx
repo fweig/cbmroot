@@ -653,9 +653,9 @@ InitStatus CbmL1::Init()
       geo.push_back(stationZ);
 
       geo.push_back(2 * module->GetSizeZ());
-      geo.push_back(10);
+      geo.push_back(0);
       geo.push_back(2 * module->GetSizeX());
-      geo.push_back(10);
+      geo.push_back(1.6);
 
       //  fscal f_phi = 0, f_sigma = 1., b_phi = 3.14159265358 / 2., b_sigma = 1.;
       fscal f_phi = 0, f_sigma = 0.15, b_phi = 3.14159265358 / 2., b_sigma = 0.15, dt = 10;
@@ -678,10 +678,10 @@ InitStatus CbmL1::Init()
 
       geo.push_back(TofStationZ[num]);
 
-      geo.push_back(10);  /// TODO: add Tof width dz
-      geo.push_back(0);
-      geo.push_back(150);  /// TODO: add Tof max radius
-      geo.push_back(10);
+      geo.push_back(10);   /// materialInfo.thick
+      geo.push_back(0);    /// Rmin
+      geo.push_back(150);  /// Rmax
+      geo.push_back(2);    /// materialInfo.RL
 
       // fscal f_phi = 0, f_sigma = 1 / 10000, b_phi = 3.14159265358 / 2., b_sigma = 1 / 10000;
       fscal f_phi = 0, f_sigma = 0.42, b_phi = 3.14159265358 / 2., b_sigma = 0.23, dt = 0.075;
