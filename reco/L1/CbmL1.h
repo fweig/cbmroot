@@ -125,6 +125,7 @@ public:
   static CbmL1* Instance() { return fInstance; }
 
   void SetParContainers();
+  void CheckDetectorPresence();
   virtual InitStatus ReInit();
   virtual InitStatus Init();
   void Exec(Option_t* option);

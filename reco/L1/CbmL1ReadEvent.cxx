@@ -387,7 +387,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
                               ? (NMvdStations + NStsStations + NMuchStations + NTrdStations + iSt)
                               : MC.iStation;
             if (MC.iStation < 0) continue;
-            if (MC.z < 240) continue;
             assert(MC.iStation >= 0);
             int iTofSta = MC.iStation - (NMvdStations + NStsStations + NMuchStations + NTrdStations);
 

@@ -109,6 +109,31 @@ CbmL1::~CbmL1()
   if (fInstance == this) fInstance = nullptr;
 }
 
+void CbmL1::CheckDetectorPresence()
+{
+  Bool_t IsMuch       = 0;
+  Bool_t IsTrd        = 0;
+  Bool_t IsTof        = 0;
+  Bool_t IsSts        = 0;
+  Bool_t IsMvd        = 0;
+  TObjArray* topNodes = gGeoManager->GetTopNode()->GetNodes();
+
+  for (Int_t iTopNode = 0; iTopNode < topNodes->GetEntriesFast(); iTopNode++) {
+    TGeoNode* topNode = static_cast<TGeoNode*>(topNodes->At(iTopNode));
+
+    if (TString(topNode->GetName()).Contains("much")) IsMuch = 1;
+    if (TString(topNode->GetName()).Contains("trd")) IsTrd = 1;
+    if (TString(topNode->GetName()).Contains("tof")) IsTof = 1;
+    if (TString(topNode->GetName()).Contains("sts")) IsSts = 1;
+    if (TString(topNode->GetName()).Contains("mvd")) IsMvd = 1;
+  }
+
+  fUseMUCH = (fUseMUCH && IsMuch);
+  fUseTRD  = fUseTRD && IsTrd;
+  fUseTOF  = fUseTOF && IsTof;
+  fUseMVD  = fUseMVD && IsMvd;
+}
+
 
 void CbmL1::SetParContainers()
 {
@@ -206,6 +231,8 @@ InitStatus CbmL1::Init()
     fUseTRD  = 1;
     fUseTOF  = 0;
   }
+
+  CheckDetectorPresence();
 
 
   fStsPoints  = 0;
@@ -1441,7 +1468,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     if (fVerbose > 1) { cout << "L1 Track finder..." << endl; }
     algo->CATrackFinder();
-    // IdealTrackFinder();
+    //      IdealTrackFinder();
     fTrackingTime += algo->fCATime;
 
     if (fVerbose > 1) { cout << "L1 Track finder ok" << endl; }
