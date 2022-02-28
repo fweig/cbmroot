@@ -598,6 +598,8 @@ void dump_digi_file();
 
 void Create_TRD_Geometry_v21d()
 {
+  // Load FairRunSim to ensure the correct unit system
+  FairRunSim* sim = new FairRunSim();
 
   // declare TRD layer layout
   if (setupid > 2)
@@ -676,6 +678,13 @@ void Create_TRD_Geometry_v21d()
   outfile = new TFile(FileNameGeo, "RECREATE");
   gGeoMan->Write();  // use this is you want GeoManager format in the output
   outfile->Close();
+
+  // create medialist for this geometry
+  TString createmedialist = gSystem->Getenv("VMCWORKDIR");
+  createmedialist += "/macro/geometry/create_medialist.C";
+  std::cout << "Loading macro " << createmedialist << std::endl;
+  gROOT->LoadMacro(createmedialist);
+  gROOT->ProcessLine("create_medialist(\"\", false)");
 
   dump_info_file();
   dump_digi_file();
