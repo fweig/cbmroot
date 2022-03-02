@@ -70,6 +70,7 @@ CbmRichMCbmQaReal::CbmRichMCbmQaReal()
   , fRichRings(nullptr)
   , fTofHits(nullptr)
   , fTofTracks(nullptr)
+  , fTSHeader(nullptr)
   , fCbmEvent(nullptr)
   , fHM(nullptr)
   , fXOffsetHisto(0.)
@@ -90,53 +91,55 @@ InitStatus CbmRichMCbmQaReal::Init()
   cout << "CbmRichMCbmQaReal::Init" << endl;
 
   FairRootManager* ioman = FairRootManager::Instance();
-  if (nullptr == ioman) { Fatal("CbmRichMCbmQaReal::Init", "RootManager not instantised!"); }
+  if (nullptr == ioman)
+    LOG(fatal) << "CbmRichMCbmQaReal::Init "
+               << "RootManager not instantised!";
 
   fDigiMan = CbmDigiManager::Instance();
   fDigiMan->Init();
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kRich)) Fatal("CbmRichMCbmQaReal::Init", "No Rich Digis!");
+  if (!fDigiMan->IsPresent(ECbmModuleId::kRich))
+    LOG(fatal) << "CbmRichMCbmQaReal::Init: "
+               << "No Rich Digis!";
 
-  if (!fDigiMan->IsPresent(ECbmModuleId::kTof)) Fatal("CbmRichMCbmQaReal::Init", "No Tof Digis!");
-
+  if (!fDigiMan->IsPresent(ECbmModuleId::kTof))
+    LOG(fatal) << "CbmRichMCbmQaReal::Init: "
+               << "No Tof Digis!";
 
   fRichHits = (TClonesArray*) ioman->GetObject("RichHit");
-  if (nullptr == fRichHits) { Fatal("CbmRichMCbmQaReal::Init", "No Rich Hits!"); }
+  if (nullptr == fRichHits)
+    LOG(fatal) << "CbmRichMCbmQaReal::Init: "
+               << "No Rich Hits!";
 
   fRichRings = (TClonesArray*) ioman->GetObject("RichRing");
-  if (nullptr == fRichRings) { Fatal("CbmRichMCbmQaReal::Init", "No Rich Rings!"); }
+  if (nullptr == fRichRings)
+    LOG(fatal) << "CbmRichMCbmQaReal::Init: "
+               << "No Rich Rings!";
 
   fTofHits = (TClonesArray*) ioman->GetObject("TofHit");
-  if (nullptr == fTofHits) { Fatal("CbmRichMCbmQaReal::Init", "No Tof Hits!"); }
+  if (nullptr == fTofHits)
+    LOG(fatal) << "CbmRichMCbmQaReal::Init: "
+               << "No Tof Hits!";
 
   fTofTracks = (TClonesArray*) ioman->GetObject("TofTracks");
-  if (nullptr == fTofTracks) { Fatal("CbmRichMCbmQaReal::Init", "No Tof Tracks!"); }
+  if (nullptr == fTofTracks)
+    LOG(warning) << "CbmRichMCbmQaReal::Init: "
+                 << "No Tof Tracks!";
 
-  //     fT0Digis =(TClonesArray*) ioman->GetObject("CbmT0Digi");
-  //     if (nullptr == fT0Digis) { Fatal("CbmRichMCbmQaReal::Init", "No T0 Digis!");}
-  //  Get a pointer to the previous already existing data level
   fT0Digis = ioman->InitObjectAs<std::vector<CbmTofDigi> const*>("T0Digi");
-  /*if ( ! fT0DigiVec ) {
-       fT0DigiArr = dynamic_cast<TClonesArray*>(ioman->GetObject("T0Digi"));
-       if ( ! fT0DigiArr ) {
-         LOG(fatal) << "No TClonesArray with T0 digis found.";
-       }
-    }*/
+  if (nullptr == fT0Digis)
+    LOG(warning) << "CbmRichMCbmQaReal::Init: "
+                 << "No T0 Digis!";
 
-  // ---- Init Z Positioning ---------
-  /*    CbmSetup *pSetup=CbmSetup::Instance();
-    TString geoTag;
-	if ( pSetup->IsActive(ECbmModuleId::kRich) ) {
-		pSetup->GetGeoTag(ECbmModuleId::kRich, geoTag);
-    }
-
-    if (geoTag == "v20d") RichZPos = 340.8;
-    std::cout<<"mRICH Geo Tag is "<< geoTag<< ". Z Position of PMT plane set to "<<RichZPos<<"."<<std::endl;
-    */
-  // ---------------------------------
+  fTSHeader = ioman->InitObjectAs<CbmTsEventHeader const*>("EventHeader.");
+  if (nullptr == fTSHeader)
+    LOG(warning) << "CbmRichMCbmQaReal::Init: "
+                 << "No EventHeader!";
 
   fCbmEvent = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
-  if (nullptr == fCbmEvent) { Fatal("CbmRichMCbmQaReal::Init", "No Event!"); }
+  if (nullptr == fCbmEvent)
+    LOG(fatal) << "CbmRichMCbmQaReal::Init: "
+               << "No Event!";
 
   InitHistograms();
 
@@ -475,6 +478,8 @@ void CbmRichMCbmQaReal::InitHistograms()
   fHM->Create2<TH2D>("fhTofTracksXYRICH_Accectance", "fhTofTracksXYRICH_Accectance;X[cm];Y[cm];NofTracks/cm^2", 50,
                      -20 + fXOffsetHisto, 30 + fXOffsetHisto, 180, -90,
                      90);  // projected in RICH Plane
+
+  fHM->Create1<TH1D>("fhHitTimeEvent", "fhHitTimeEvent;time [ns];Entries", 700, -100., 600);
 }
 
 
@@ -484,6 +489,10 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
   fHM->H1("fhNofEvents")->Fill(1);
   cout << "CbmRichMCbmQaReal, event No. " << fEventNum << endl;
 
+  uint64_t tsStartTime = 0;
+  if (nullptr != fTSHeader) tsStartTime = fTSHeader->GetTsStartTime();
+
+  uint64_t TSMinTime = 0;
   if (fDigiHitsInitialized == false) {
     auto nOfCbmEvent = fCbmEvent->GetEntriesFast();
     if (nOfCbmEvent > 0) {
@@ -524,6 +533,7 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
         fHM->H1("fhT0DigisTimeLogZoom")->GetXaxis()->SetLimits(minTime, minTime + dTZoom1);
         fHM->H1("fhT0DigisTimeLogZoom2")->GetXaxis()->SetLimits(minTime, minTime + dTZoom2);
 
+        TSMinTime            = tsStartTime;
         fDigiHitsInitialized = true;
       }
     }
@@ -531,38 +541,39 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
 
   if (fDigiHitsInitialized == true) {
 
+    double TsTimeAfterStart = static_cast<double>(tsStartTime - TSMinTime);
     int nofRichDigis = fDigiMan->GetNofDigis(ECbmModuleId::kRich);
     fHM->H1("fhNofRichDigisInTimeslice")->Fill(nofRichDigis);
     for (int i = 0; i < nofRichDigis; i++) {
       const CbmRichDigi* digi = fDigiMan->Get<CbmRichDigi>(i);
-      fHM->H1("fhRichDigisTimeLog")->Fill(digi->GetTime());
-      fHM->H1("fhRichDigisTimeLogZoom")->Fill(digi->GetTime());
-      fHM->H1("fhRichDigisTimeLogZoom2")->Fill(digi->GetTime());
+      fHM->H1("fhRichDigisTimeLog")->Fill(digi->GetTime() + TsTimeAfterStart);
+      fHM->H1("fhRichDigisTimeLogZoom")->Fill(digi->GetTime() + TsTimeAfterStart);
+      fHM->H1("fhRichDigisTimeLogZoom2")->Fill(digi->GetTime() + TsTimeAfterStart);
     }
 
     int nofRichRings = fRichRings->GetEntriesFast();
     for (int i = 0; i < nofRichRings; i++) {
       CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(i));
-      fHM->H1("fhRichRingsTimeLog")->Fill(ring->GetTime());
-      fHM->H1("fhRichRingsTimeLogZoom")->Fill(ring->GetTime());
-      fHM->H1("fhRichRingsTimeLogZoom2")->Fill(ring->GetTime());
+      fHM->H1("fhRichRingsTimeLog")->Fill(ring->GetTime() + TsTimeAfterStart);
+      fHM->H1("fhRichRingsTimeLogZoom")->Fill(ring->GetTime() + TsTimeAfterStart);
+      fHM->H1("fhRichRingsTimeLogZoom2")->Fill(ring->GetTime() + TsTimeAfterStart);
     }
 
     int nofTofDigis = fDigiMan->GetNofDigis(ECbmModuleId::kTof);
     for (int i = 0; i < nofTofDigis; i++) {
       const CbmTofDigi* digi = fDigiMan->Get<CbmTofDigi>(i);
-      fHM->H1("fhTofDigisTimeLog")->Fill(digi->GetTime());
-      fHM->H1("fhTofDigisTimeLogZoom")->Fill(digi->GetTime());
-      fHM->H1("fhTofDigisTimeLogZoom2")->Fill(digi->GetTime());
+      fHM->H1("fhTofDigisTimeLog")->Fill(digi->GetTime() + TsTimeAfterStart);
+      fHM->H1("fhTofDigisTimeLogZoom")->Fill(digi->GetTime() + TsTimeAfterStart);
+      fHM->H1("fhTofDigisTimeLogZoom2")->Fill(digi->GetTime() + TsTimeAfterStart);
     }
 
     if (fDigiMan->IsPresent(ECbmModuleId::kSts)) {
       int nofStsDigis = fDigiMan->GetNofDigis(ECbmModuleId::kSts);
       for (int i = 0; i < nofStsDigis; i++) {
         const CbmStsDigi* digi = fDigiMan->Get<CbmStsDigi>(i);
-        fHM->H1("fhStsDigisTimeLog")->Fill(digi->GetTime());
-        fHM->H1("fhStsDigisTimeLogZoom")->Fill(digi->GetTime());
-        fHM->H1("fhStsDigisTimeLogZoom2")->Fill(digi->GetTime());
+        fHM->H1("fhStsDigisTimeLog")->Fill(digi->GetTime() + TsTimeAfterStart);
+        fHM->H1("fhStsDigisTimeLogZoom")->Fill(digi->GetTime() + TsTimeAfterStart);
+        fHM->H1("fhStsDigisTimeLogZoom2")->Fill(digi->GetTime() + TsTimeAfterStart);
       }
     }
 
@@ -577,9 +588,9 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
         if (fT0Digis) T0Digi = &(fT0Digis->at(iT0));
         //else if ( fT0DigiArr ) T0Digi = dynamic_cast<const CbmTofDigi*>(fT0DigiArr->At(iT0));
         assert(T0Digi);
-        fHM->H1("fhT0DigisTimeLog")->Fill(T0Digi->GetTime());
-        fHM->H1("fhT0DigisTimeLogZoom")->Fill(T0Digi->GetTime());
-        fHM->H1("fhT0DigisTimeLogZoom2")->Fill(T0Digi->GetTime());
+        fHM->H1("fhT0DigisTimeLog")->Fill(T0Digi->GetTime() + TsTimeAfterStart);
+        fHM->H1("fhT0DigisTimeLogZoom")->Fill(T0Digi->GetTime() + TsTimeAfterStart);
+        fHM->H1("fhT0DigisTimeLogZoom2")->Fill(T0Digi->GetTime() + TsTimeAfterStart);
       }
     }
   }
@@ -651,6 +662,7 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
       auto iRichHit = ev->GetIndex(ECbmDataType::kRichHit, j);
       evRichHitIndx.push_back(iRichHit);
       CbmRichHit* richHit = static_cast<CbmRichHit*>(fRichHits->At(iRichHit));
+      fHM->H1("fhHitTimeEvent")->Fill(richHit->GetTime() - fCbmEventStartTime);
       fHM->H1("fhRichHitToTEvent")->Fill(richHit->GetToT());
       fHM->H2("fhRichHitXYEvent")->Fill(richHit->GetX(), richHit->GetY());
       //Blob finder
@@ -1819,6 +1831,11 @@ void CbmRichMCbmQaReal::DrawHist()
   {
     fHM->CreateCanvas("TofTracksXYRICH_Accectance", "TofTracksXYRICH_Accectance", 1200, 1200);
     DrawH2(fHM->H2("fhTofTracksXYRICH_Accectance"));
+  }
+
+  {
+    fHM->CreateCanvas("HitTimeEvent", "HitTimeEvent", 1200, 1200);
+    DrawH1(fHM->H1("fhHitTimeEvent"));
   }
 }
 

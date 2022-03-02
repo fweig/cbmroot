@@ -109,6 +109,7 @@ InitStatus CbmRichMCbmQaRichOnly::Init()
   ///fSeDisplay->SetTofTracks(fTofTracks);
   fSeDisplay->SetTotRich(23.7, 30.);
   fSeDisplay->SetMaxNofDrawnEvents(fMaxNofDrawnEvents);
+  fSeDisplay->XOffsetHistos(fXOffsetHisto);
   fSeDisplay->SetOutDir(fOutputDir);
 
   //Init OffsetCorrection ICD

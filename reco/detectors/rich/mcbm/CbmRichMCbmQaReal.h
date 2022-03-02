@@ -8,6 +8,7 @@
 #include "CbmEvent.h"
 #include "CbmHistManager.h"  // for ROOTCLING
 #include "CbmRichRingFinderHoughImpl.h"
+#include "CbmTsEventHeader.h"
 
 #include "FairTask.h"
 
@@ -140,6 +141,8 @@ private:
   TClonesArray* fTofHits;
 
   TClonesArray* fTofTracks;
+
+  const CbmTsEventHeader* fTSHeader;
 
   TClonesArray* fCbmEvent;
 
