@@ -48,9 +48,16 @@ Bool_t CbmRichUnpackMonitor::CreateHistograms(CbmMcbm2018RichPar* pUnpackPar)
   fhDigisTimeInRun->SetCanExtend(TH1::kAllAxes);
   AddHistoToVector(fhDigisTimeInRun, "");
 
-  fhDigisToT = new TH1F("hDigisToT", "fhDigisToT; ToT [ns]; Entries", 400, 0, 40.);
-  fhDigisTimeInRun->SetCanExtend(TH1::kAllAxes);
+  fhDigisToT = new TH1D("hDigisToT", "fhDigisToT; ToT [ns]; Entries", 400, 0, 40.);
   AddHistoToVector(fhDigisToT, "");
+
+  for (Int_t i = 0; i < pUnpackPar->GetNaddresses(); ++i) {
+    auto DiRICH = pUnpackPar->GetAddress(i);
+    TH2* hist   = new TH2D(Form("fhDigisToT_0x%04x", DiRICH),
+                         Form("fhDigisToT_0x%04x; channel; ToT [ns]; Entries", DiRICH), 33, 0, 32, 450, 15, 30.);
+    fhDigisToTDiRICH.push_back(hist);
+    AddHistoToVector(fhDigisToTDiRICH.back(), "");
+  }
 
   fhVectorSize = new TH1I("fhVectorSize", "Size of the vector VS TS index; TS index; Size [bytes]", 10, 0, 10);
   fhVectorSize->SetCanExtend(TH1::kAllAxes);
@@ -87,6 +94,14 @@ void CbmRichUnpackMonitor::FillPerTimesliceCountersHistos(double_t dTsStartTimeS
   // double_t dRatio         = 0;
 }
 
+void CbmRichUnpackMonitor::FillDigisToTDiRICH(Int_t Address, Double_t ToT)
+{
+  // Get Index from Address;
+  Int_t Fpga    = (Address >> 16) & 0xFFFF;
+  Int_t channel = Address & 0xFFFF;
+
+  fhDigisToTDiRICH.at(pUnpackParameters->GetAddressIdx(Fpga))->Fill(channel, ToT);
+}
 
 // -------------------------------------------------------------------------
 void CbmRichUnpackMonitor::PrintDebugInfo(const uint64_t MsStartTime, const size_t NrProcessedTs,
@@ -97,6 +112,7 @@ void CbmRichUnpackMonitor::PrintDebugInfo(const uint64_t MsStartTime, const size
 // ---- Init ----
 Bool_t CbmRichUnpackMonitor::Init(CbmMcbm2018RichPar* parset)
 {
+  pUnpackParameters = parset;
   /// Trigger histo creation on all associated monitors
   CreateHistograms(parset);
   if (fDebugMode) CreateDebugHistograms(parset);

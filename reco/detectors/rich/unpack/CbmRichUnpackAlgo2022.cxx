@@ -63,6 +63,7 @@ bool CbmRichUnpackAlgo2022::unpack(const fles::Timeslice* ts, std::uint16_t icom
     for (auto itHit = fOutputVec.begin(); itHit != fOutputVec.end(); ++itHit) {
       fMonitor->FillDigisTimeInRun(itHit->GetTime());
       fMonitor->FillDigisToT(itHit->GetToT());
+      fMonitor->FillDigisToTDiRICH(itHit->GetAddress(), itHit->GetToT());
     }
     fMonitor->FillVectorSize(ts->index(), fOutputVec.size());
   }

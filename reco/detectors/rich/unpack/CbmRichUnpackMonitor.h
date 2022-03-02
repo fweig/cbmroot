@@ -71,6 +71,7 @@ public:
   void FillDigisTimeInRun(Double_t Time) { fhDigisTimeInRun->Fill(Time * 1e-9); }
 
   void FillDigisToT(Double_t ToT) { fhDigisToT->Fill(ToT); }
+  void FillDigisToTDiRICH(Int_t Address, Double_t ToT);
 
   void FillPerTimesliceCountersHistos(double_t dTsStartTime);
 
@@ -91,6 +92,10 @@ private:
   TH1* fhDigisToT       = nullptr;
   TH1* fhVectorSize     = nullptr;
   TH1* fhVectorCapacity = nullptr;
+
+  std::vector<TH2*> fhDigisToTDiRICH;
+
+  CbmMcbm2018RichPar* pUnpackParameters = nullptr;
 
   /** @brief Flag if debug mode is active or not */
   bool fDebugMode = false;
