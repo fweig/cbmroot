@@ -12,11 +12,11 @@ void draw_litqa(const string& histRootFile = "/lustre/cbm/users/criesen/data/lmv
   CbmSimulationReport* trackingQaReport = new CbmLitTrackingQaReport();
   trackingQaReport->Create(histRootFile, outputDirTracking);
 
-  string outputDirClustering = resultDir + "clustering/";
+  /*string outputDirClustering = resultDir + "clustering/";
   gSystem->mkdir(outputDirClustering.c_str(), true);
 
   CbmSimulationReport* clusteringQaReport = new CbmLitClusteringQaReport();
-  clusteringQaReport->Create(histRootFile, outputDirClustering);
+  clusteringQaReport->Create(histRootFile, outputDirClustering);*/
 
   //   CbmSimulationReport* fitQaReport = new CbmLitFitQaReport();
   //   fitQaReport->Create(fileName, outputDir);

@@ -92,9 +92,8 @@ CbmLitTrackingQa::CbmLitTrackingQa()
   , fTrdMatches(NULL)
   , fTofPoints(NULL)
   , fTofMatches(NULL)
-  , fMcToRecoMap()
-  , fTrdAnnCut(0.85)
-  , fRichAnnCut(0.25)
+  , fRichAnnCut(0.0)  // values loose | strict: -0.4 | 0.0
+  , fTrdAnnCut(0.8) // at the moment, TrdAnn is likelihood value	// values loose | strict: 0.2 | 0.8
 {
 }
 

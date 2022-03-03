@@ -30,8 +30,8 @@
 #include <cmath>
 
 CbmLitGlobalElectronId::CbmLitGlobalElectronId()
-  : fTrdAnnCut(0.1)
-  , fRichAnnCut(-0.4)
+  : fTrdAnnCut(0.8) // TODO: at the moment, TrdAnn is Likelilhood value; change this if TrdAnn works again	// values loose | strict: 0.2 | 0.8
+  , fRichAnnCut(-0.0)	// values loose | strict: -0.4 | 0.0
   , fRichUseAnn(true)
   , fRichMeanA(-1.)
   , fRichMeanB(-1.)
@@ -100,6 +100,10 @@ Bool_t CbmLitGlobalElectronId::IsTrdElectron(Int_t globalTrackIndex, Double_t mo
   if (NULL == trdTrack) return false;
 
   Double_t ann = trdTrack->GetPidLikeEL();
+  
+  // TODO @Cornelius: remove following P<1GeV condition
+  if (momentum < 1.) return true;  
+  
   if (ann > fTrdAnnCut) return true;
   else
     return false;
@@ -110,14 +114,25 @@ Bool_t CbmLitGlobalElectronId::IsTofElectron(Int_t globalTrackIndex, Double_t mo
   Double_t mass2 = GetTofM2(globalTrackIndex, momentum, eventTime);
   if (mass2 == -1.) return false;
 
+  // loose cut
   if (momentum >= 1.3) {
     if (mass2 < (0.010 * momentum - 0.003)) { return true; }
   }
   else {
-    if (mass2 < 0.01) {
-      return true;  //fTofM2
-    }
+    if (mass2 < 0.01) { return true; }
   }
+  
+  // stricter cut
+  /*if (momentum >= 0.8) {
+    if (mass2 < (- 0.020 * momentum + 0.026)) { return true; }
+  }
+  else {
+    if (mass2 < 0.01) { return true; }
+  }*/
+  
+  // simple linear cut
+  //if (mass2 < 0.01) return true;
+  
   return false;
 }
 

@@ -37,7 +37,7 @@ private:
   std::vector<LmvmHist*> fH;
   LmvmHist fHMean;
 
-  int fRebMinv = 40;  // Rebin for minv histograms
+  int fRebMinv = 50;  // Rebin for minv histograms
 
   std::string fOutputDir;  // output directory for figures
 
@@ -58,6 +58,7 @@ private:
   void DrawMinvAll();
   void DrawMinv(ELmvmAnaStep step);
   void DrawMinvPtAll();
+  void DrawMinvBgSourcesAll();
 
   /**
      * \brief Draw invariant mass spectra for all signal types for specified analysis step with BG reduced by combinatorial BG.

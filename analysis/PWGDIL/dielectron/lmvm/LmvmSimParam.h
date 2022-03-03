@@ -23,7 +23,7 @@ public:
       if (particle == "omegadalitz" || particle == "wdalitz") return 2.28721 * 7.7e-4;
       if (particle == "phi") return 0.311619 * 2.97e-4;
       if (particle == "inmed" || particle == "rho0") return 0.0304706;
-      if (particle == "qgp" || particle == "qgp_epem") return 4.52941e-4;
+      if (particle == "qgp" || particle == "qgp_epem") return 10 * 4.52941e-4;	// TODO urgent: delete factor 10 and set right parameter!!!
     }
     else if (energy == "25gev") {
       if (particle == "rho0") return 23 * 4.7e-5;

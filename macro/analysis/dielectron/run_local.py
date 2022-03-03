@@ -18,13 +18,13 @@ def main():
   colSystem = "auau"
   plutoParticle = "phi"
 
-  traFile = dataDir + "/tra." + runId + ".root"  
-  parFile = dataDir + "/param." + runId + ".root"
-  digiFile = dataDir + "/digi." + runId + ".root"
-  recoFile = dataDir + "/reco." + runId + ".root"
-  litQaFile = dataDir + "/litqa." + runId + ".root"
-  analysisFile = dataDir + "/analysis." + runId + ".root"
-  geoSimFile = dataDir + "/geosim." + runId + ".root"
+  traFile = dataDir + "tra." + runId + ".root"  
+  parFile = dataDir + "param." + runId + ".root"
+  digiFile = dataDir + "digi." + runId + ".root"
+  recoFile = dataDir + "reco." + runId + ".root"
+  litQaFile = dataDir + "litqa." + runId + ".root"
+  analysisFile = dataDir + "analysis." + runId + ".root"
+  geoSimFile = dataDir + "geosim." + runId + ".root"
 
   traCmd = ('root -l -b -q run_transport.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(urqmdFile, plutoFile, traFile, parFile, geoSimFile, geoSetup, nEvents)
   digiCmd = ('root -l -b -q run_digi.C\(\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(traFile, parFile, digiFile, nEvents)

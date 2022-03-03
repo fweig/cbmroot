@@ -87,6 +87,8 @@ public:
 
   void TrackSource(const LmvmCand& cand, ELmvmAnaStep step, int pdg);
 
+  void BgPairPdg(const LmvmCand& candP, const LmvmCand& candM, ELmvmAnaStep step);
+
   void DoMcTrack();
 
   void DoMcPair();
@@ -137,7 +139,7 @@ public:
 
   virtual void Finish();
 
-  void FillPionsHist();
+  void FillAccRecVsMomHist();
 
 
   ClassDef(LmvmTask, 1);

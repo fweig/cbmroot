@@ -81,7 +81,7 @@ private:
 
   void DrawAnaStepMany(const std::string& cName, std::function<void(ELmvmAnaStep)> drawFunc);
 
-  void DrawPtY(ELmvmAnaStep step);
+  void DrawPtY(const std::string& hist, ELmvmAnaStep step);
   void DrawRapidity(ELmvmAnaStep step);
   void DrawPtYEfficiency(ELmvmAnaStep step);
   void DrawMinvSBg(ELmvmAnaStep step);
@@ -97,14 +97,14 @@ private:
   void Draw1DCut(const std::string& hist, const std::string& sigOption, double cut = -999999.);
   void Draw2DCut(const std::string& hist, double cutCrossX = -999999., double cutCrossY = -999999.);
   void DrawTofM2Cut();
+  void DrawElPurity();
   void DrawCuts();
+  void DrawCombinatorialPairs();
 
-  void DrawSrcBgPairs(ELmvmAnaStep step, bool inPercent, bool drawAnaStep = true);
-  void DrawSrcBgPairsAll();
+  void DrawBgSourcePairs(ELmvmAnaStep step, bool inPercent, bool drawAnaStep = true);
+  void DrawBgSourcePairsAll();
 
-  void DrawMomAccEpEm();
-
-  void DrawPiMom();
+  void DrawAccRecMom();
 
   void Draw2DCutTriangle(double xCr, double yCr);
 
@@ -114,7 +114,9 @@ private:
 
   void DrawMinvAll();
 
-  void DrawBgSource2D(const std::string& cName, const std::string& hName, const std::vector<std::string>& yLabels,
+  void DrawMinvBg();
+
+  void DrawSource2D(const std::string& cName, const std::string& hName, const std::vector<std::string>& yLabels,
                       double scale, const std::string& zTitle);
 
 

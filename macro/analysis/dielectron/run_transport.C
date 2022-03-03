@@ -27,7 +27,7 @@ void run_transport(const std::string& urqmdFile,  // if "", no urqmd
   run.SetParFileName(parFile.c_str());
   run.SetGeoFileName(geoFile.c_str());
   run.LoadSetup(geoSetup.c_str());
-  run.SetTarget("Gold", 0.0025, 2.5);  // for lmvm thickness = 0.0025; // 25 mum
+  run.SetTarget("Gold", 0.0025, 2.5, 0., 0., -44., 0.);  // for lmvm thickness = 0.0025; // 25 mum
   run.SetBeamPosition(0., 0., 0.1, 0.1);
   //run.SetEngine(kGeant4);
   //run.SetRandomEventPlane();

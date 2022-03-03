@@ -4,10 +4,10 @@ import os
 import shutil
 
 def main():
-  nofJobs = 1000
+  nofJobs = 1000 
   timeLimit = "08:00:00"
   geoSetup = "sis100_electron"
-  plutoParticles =["inmed", "omegadalitz", "omegaepem", "phi", "qgp"]
+  plutoParticles = ["inmed", "omegadalitz", "omegaepem", "phi", "qgp"]
 
   dataDir = "/lustre/nyx/cbm/users/criesen/data/lmvm/"
 
@@ -21,7 +21,7 @@ def main():
   os.makedirs(dataDir,exist_ok = True)
 
   for plutoParticle in plutoParticles:
-    jobName = "LMVM_" + plutoParticle
+    jobName = plutoParticle
     dataDirPluto = dataDir + plutoParticle
     logFile = dataDirPluto + "/log/log_slurm-%A_%a.out"
     errorFile = dataDirPluto + "/error/error_slurm-%A_%a.out"

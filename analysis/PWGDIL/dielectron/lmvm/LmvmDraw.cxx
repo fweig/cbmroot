@@ -55,31 +55,36 @@ void LmvmDraw::DrawHistFromFile(const string& fileName, const string& outputDir,
 
   fH.fHM.ScaleByPattern(".*", 1. / fNofEvents);
   RebinMinvHist();
-  DrawAnaStepMany("lmvm_pair_pty", [this](ELmvmAnaStep step) { DrawPtY(step); });
-  DrawAnaStepMany("lmvm_pair_rapidity", [this](ELmvmAnaStep step) { DrawRapidity(step); });
-  //DrawAnaStepMany("lmvm_pair_pty_efficiency", [this](ELmvmAnaStep step) { DrawPtYEfficiency(step); });  // TODO: causes segmentation violation error
-  DrawAnaStepMany("lmvm_minv_sbg", [this](ELmvmAnaStep step) { DrawMinvSBg(step); });
-  //DrawAnaStepMany("lmvm_minv_bgPairSrc", [this](ELmvmAnaStep step) { DrawMinvBgPairSrc(step); });	      // TODO: causes segmentation violation error
-  //DrawAnaStepMany("lmvm_minv_matching", [this](ELmvmAnaStep step) { DrawMinvMatching(step); });         // TODO: causes segmentation violation error
-  DrawAnaStepMany("lmvm_minv_pt", [this](ELmvmAnaStep step) { DrawMinvPt(step); });
-  DrawAnaStepMany("lmvm_anglePair", [this](ELmvmAnaStep step) { DrawSrcAnaStepH1("hAnglePair", step); });
+  //DrawAnaStepMany("pair_pty", [this](ELmvmAnaStep step) { DrawPtY(step); });
+  DrawAnaStepMany("pty_pair_signal", [this](ELmvmAnaStep step) { DrawPtY("hPtYPairSignal", step); });
+  DrawAnaStepMany("pty_cand", [this](ELmvmAnaStep step) { DrawPtY("hPtYCandidate", step); });
+  DrawAnaStepMany("pair_rapidity", [this](ELmvmAnaStep step) { DrawRapidity(step); });
+  //DrawAnaStepMany("pair_pty_efficiency", [this](ELmvmAnaStep step) { DrawPtYEfficiency(step); });  // TODO: causes segmentation violation error
+  DrawAnaStepMany("minv_sbg", [this](ELmvmAnaStep step) { DrawMinvSBg(step); });
+  //DrawAnaStepMany("minv_bgPairSrc", [this](ELmvmAnaStep step) { DrawMinvBgPairSrc(step); });	      // TODO: causes segmentation violation error
+  //DrawAnaStepMany("minv_matching", [this](ELmvmAnaStep step) { DrawMinvMatching(step); });         // TODO: causes segmentation violation error
+  DrawAnaStepMany("minv_pt", [this](ELmvmAnaStep step) { DrawMinvPt(step); });
+  DrawAnaStepMany("anglePair", [this](ELmvmAnaStep step) { DrawSrcAnaStepH1("hAnglePair", step); });
 
   // draw momentum histograms
   for (const string& hName : {"hMom", "hMomPx", "hMomPy", "hMomPz", "hPt", "hRapidity"}) {
-    DrawAnaStepMany("lmvm_" + hName, [this, hName](ELmvmAnaStep step) { DrawSrcAnaStepH1(hName, step); });
-    DrawAnaStepMany("lmvm_" + hName + "EpEm", [this, hName](ELmvmAnaStep step) { DrawSrcAnaStepEpEmH1(hName, step); });
+    DrawAnaStepMany(hName, [this, hName](ELmvmAnaStep step) { DrawSrcAnaStepH1(hName, step); });
+    DrawAnaStepMany(hName + "EpEm", [this, hName](ELmvmAnaStep step) { DrawSrcAnaStepEpEmH1(hName, step); });
   }
-  DrawMomAccEpEm();
+  DrawElPurity();
+  DrawCombinatorialPairs();
   DrawMisc();
   DrawGammaVertex();
   DrawCuts();
   DrawMinvAll();
   DrawBgSourceTracks();
+  DrawBgSourcePairsAll();
   DrawMismatchesAndGhosts();
   DrawMvdCutQa();
   DrawMvdAndStsHist();
-  DrawPiMom();
+  DrawAccRecMom();
   DrawPmtXY();
+  DrawMinvBg();   // TODO: do not extra method
   SaveCanvasToImage();
 
   /// Restore old global file and folder pointer to avoid messing with FairRoot
@@ -95,13 +100,16 @@ bool LmvmDraw::SkipMvd(ELmvmAnaStep step)
 void LmvmDraw::RebinMinvHist()
 {
   int nGroup      = 20;
-  int nGroupCB    = 10;  // rebin for CB histos
+  int nGroupCB    = 100;  // rebin for CB histos
   int nGroupMatch = 50;
   int nGroupBgSrc = 50;
   fH.Rebin("hMinv", fH.fSrcNames, fH.fAnaStepNames, nGroup);
   fH.Rebin("hMinvCombPM", {"sameEv", "mixedEv"}, fH.fAnaStepNames, nGroupCB);
   fH.Rebin("hMinvCombPP", {"sameEv", "mixedEv"}, fH.fAnaStepNames, nGroupCB);
   fH.Rebin("hMinvCombMM", {"sameEv", "mixedEv"}, fH.fAnaStepNames, nGroupCB);
+  fH.Rebin("hMinvCombPM", {"pluto", "urqmd"}, fH.fAnaStepNames, nGroupCB);
+  fH.Rebin("hMinvCombPP", {"pluto", "urqmd"}, fH.fAnaStepNames, nGroupCB);
+  fH.Rebin("hMinvCombMM", {"pluto", "urqmd"}, fH.fAnaStepNames, nGroupCB);
   fH.Rebin("hMinvBgMatch", {"trueMatch", "trueMatchEl", "trueMatchNotEl", "mismatch"}, fH.fAnaStepNames, nGroupMatch);
   fH.Rebin("hMinvBgSource", fH.fBgPairSrcNames, fH.fAnaStepNames, nGroupBgSrc);
 }
@@ -197,7 +205,6 @@ void LmvmDraw::DrawCutEffH1(const string& hist, const string& option)
   DrawH1(effHist, fH.fSrcLatex, kLinear, kLinear, true, 0.8, 0.8, 0.99, 0.99, "hist");
 }
 
-
 void LmvmDraw::DrawAnaStepMany(const string& cName, function<void(ELmvmAnaStep)> drawFunc)
 {
   int hi          = 1;
@@ -218,10 +225,10 @@ void LmvmDraw::DrawAnaStepMany(const string& cName, function<void(ELmvmAnaStep)>
   }
 }
 
-void LmvmDraw::DrawPtY(ELmvmAnaStep step)
+void LmvmDraw::DrawPtY(const string& hist, ELmvmAnaStep step)
 {
-  TH2D* h   = fH.H2("hPtYPairSignal", step);
-  TH2D* hmc = fH.H2("hPtYPairSignal", ELmvmAnaStep::Mc);
+  TH2D* h   = fH.H2(hist.c_str(), step);
+  TH2D* hmc = fH.H2(hist.c_str(), ELmvmAnaStep::Mc);
   DrawH2(h, kLinear, kLinear, kLinear, "COLZ");
   bool drawAnaStep = true;
   if (drawAnaStep) fH.DrawEfficiency(h, hmc, 0.2, 1.8);
@@ -273,39 +280,62 @@ void LmvmDraw::DrawSrcAnaStepEpEmH1(const string& hName, ELmvmAnaStep step)
   fH.DrawAnaStepOnPad(step);
 }
 
-void LmvmDraw::DrawMomAccEpEm()
-{
-  for (const string& det : {"sts", "rich", "trd", "tof"}) {
-    vector<TH1*> hVec;
-    vector<string> latex;
-    for (const ELmvmSrc src : {ELmvmSrc::Signal, ELmvmSrc::Pi0, ELmvmSrc::Gamma}) {
-      for (const string& pm : {"+", "-"}) {
-        hVec.push_back(fH.H1("hMomAcc" + pm + "_" + det, src));
-        latex.push_back(fH.fSrcLatex[static_cast<int>(src)] + " (e" + pm + ")");
-      }
-    }
-    fH.fHM.CreateCanvas("lmvm_momDetAcc/lmvm_momDetAcc_" + det, "lmvm_momDetAcc/lmvm_momDetAcc_" + det, 800, 800);
-    DrawH1(hVec, latex, kLinear, kLog, true, 0.90, 0.7, 0.99, 0.99, "hist");
-    DrawTextOnPad(det, 0.4, 0.9, 0.6, 0.999);
-  }
-}
-
 void LmvmDraw::DrawMisc()
 {
-  fH.fHM.CreateCanvas("lmvm_mom_pairSignal", "lmvm_mom_pairSignal", 800, 800);
+  fH.fHM.CreateCanvas("mom_pairSignal", "mom_pairSignal", 800, 800);
   DrawAnaStepH1("hMomPairSignal", true);
 
-  fH.fHM.CreateCanvas("lmvm_mother_pdg", "lmvm_mother_pdg", 800, 800);
+  fH.fHM.CreateCanvas("mother_pdg", "mother_pdg", 800, 800);
   DrawH1({fH.H1("hMotherPdg_mc"), fH.H1("hMotherPdg_acc")}, {"MC", "acc"}, kLinear, kLog, true, 0.7, 0.7, 0.99, 0.99,
          "hist");
 
-  fH.fHM.CreateCanvas("lmvm_momVsAngle_pairSignal", "lmvm_momVsAngle_pairSignal", 800, 800);
+  fH.fHM.CreateCanvas("momVsAngle_pairSignal", "momVsAngle_pairSignal", 800, 800);
   DrawH2(fH.H2("hMomVsAnglePairSignalMc"));
+}
+
+void LmvmDraw::DrawCombinatorialPairs()
+{
+  // Draw same sign pairs, geometric mean and k factor seperate for PLUTO and UrQMD
+  for (const string& type :{"pluto", "urqmd"}) {  
+    TH1* pm = fH.H1Clone("hMinvCombPM_" + type + "_ttcut");
+    TH1* pp = fH.H1Clone("hMinvCombPP_" + type + "_ttcut");
+    TH1* mm = fH.H1Clone("hMinvCombMM_" + type + "_ttcut");
+
+    TH1* rat = fH.H1Clone("hMinvCombPP_" + type + "_ttcut");
+    rat->Divide(mm);    
+    
+    fH.fHM.CreateCanvas("CombPairs/pairs_" + type, "CombPairs/pairs_" + type, 800, 800);
+    DrawH1({pm, pp, mm}, {"e^{+}e^{-} pairs", "e^{+}e^{+} pairs", "e^{-}e^{-} pairs"}, kLinear, kLog, true, 0.7, 0.7, 0.99, 0.99, "hist");
+    DrawTextOnPad(type, 0.4, 0.87, 0.6, 0.97);
+
+    fH.fHM.CreateCanvas("CombPairs/ratio_ppmm_" + type, "CombPairs/ratio_ppmm_" + type, 800, 800);
+    DrawH1(rat, kLinear, kLinear, "hist");
+    DrawTextOnPad(type, 0.4, 0.87, 0.6, 0.97);
+
+    TH1* gm = fH.H1Clone("hMinvCombPP_" + type + "_ttcut");
+
+    for (int i = 1; i <= gm->GetNbinsX(); i++) {
+      double con = std::sqrt(pp->GetBinContent(i) * mm->GetBinContent(i));
+      gm->SetBinContent(i, con);
+    }
+
+    TH1D* hK = (TH1D*) pm->Clone("hK");
+    hK->Divide(gm);
+    hK->Scale(0.5);
+  
+    fH.fHM.CreateCanvas("CombPairs/kFactor_" + type, "CombPairs/kFactor_" + type, 800, 800);
+    DrawH1(hK, kLinear, kLinear, "p");
+    DrawTextOnPad(type, 0.4, 0.87, 0.6, 0.97);
+
+    fH.fHM.CreateCanvas("CombPairs/geomMean_" + type, "CombPairs/geomMean_" + type, 800, 800);
+    DrawH1(gm, kLinear, kLog, "hist");
+    DrawTextOnPad(type, 0.4, 0.87, 0.6, 0.97);
+  }
 }
 
 void LmvmDraw::DrawPmtXY()
 {
-  TCanvas* c = fH.fHM.CreateCanvas("lmvm_pmtXY", "lmvm_pmtXY", 1800, 600);
+  TCanvas* c = fH.fHM.CreateCanvas("pmtXY", "pmtXY", 1800, 600);
   c->Divide(3, 1);
   vector<ELmvmSrc> src {ELmvmSrc::Signal, ELmvmSrc::Pi0, ELmvmSrc::Gamma};
   for (size_t i = 0; i < src.size(); i++) {
@@ -333,7 +363,7 @@ void LmvmDraw::Draw1DCut(const string& hist, const string& sigOption, double cut
 {
   int w      = 2400;
   int h = 800;
-  TCanvas* c = fH.fHM.CreateCanvas(("lmvm_cuts/lmvm_" + hist).c_str(), ("lmvm_cuts/lmvm_" + hist).c_str(), w, h);
+  TCanvas* c = fH.fHM.CreateCanvas(("cuts/" + hist).c_str(), ("cuts/" + hist).c_str(), w, h);
   c->Divide(3, 1);
 
   c->cd(1);
@@ -356,18 +386,16 @@ void LmvmDraw::Draw1DCut(const string& hist, const string& sigOption, double cut
 void LmvmDraw::DrawCuts()
 {
   Draw1DCut("hAnnRich", "left", -0.4);  // CbmLitGlobalElectronId::GetInstance().GetRichAnnCut()
-  Draw1DCut("hAnnTrd", "left", 0.1);    // CbmLitGlobalElectronId::GetInstance().GetTrdAnnCut()
+  //Draw1DCut("hAnnTrd", "left", 0.1);    // CbmLitGlobalElectronId::GetInstance().GetTrdAnnCut() // TODO: uncomment when Trd Ann works again
+  Draw2DCut("hTrdLike_El");
+  Draw2DCut("hTrdLike_Pi");
   Draw2DCut("hAnnRichVsMom");
   Draw2DCut("hTofM2");
-  DrawTofM2Cut();
-
+  
   Draw1DCut("hChi2PrimVertex", "right", fCuts.fChi2PrimCut);
   //Draw1DCut("hPt", "left", fCuts.fPtCut);
   //Draw1DCut("hMom", "left");
   Draw1DCut("hChi2Sts", "right");
-
-  Draw2DCut("hTrdLike_El");
-  Draw2DCut("hTrdLike_Pi");
 
   for (const string& type : {"all", "pion", "truePair"}) {
     Draw2DCut("hStCut_" + type, fCuts.fStCutPP, fCuts.fStCutAngle);
@@ -382,16 +410,16 @@ void LmvmDraw::DrawCuts()
 }
 
 
-void LmvmDraw::DrawSrcBgPairs(ELmvmAnaStep step, bool inPercent, bool drawAnaStep)
+void LmvmDraw::DrawBgSourcePairs(ELmvmAnaStep step, bool inPercent, bool drawAnaStep)
 {
   TH2D* h = fH.H2Clone("hSrcBgPairsEpEm", step);
   gStyle->SetPaintTextFormat("4.1f");
-  string labels[3] = {"#gamma", "#pi^{0}", "oth"};
-  for (int i = 1; i <= 3; i++) {
+  string labels[4] = {"#gamma", "#pi^{0}", "#pi^{#pm}", "oth"};
+  for (int i = 1; i <= 4; i++) {
     h->GetYaxis()->SetBinLabel(i, labels[i - 1].c_str());
     h->GetXaxis()->SetBinLabel(i, labels[i - 1].c_str());
   }
-  h->SetMarkerSize(3);
+  h->SetMarkerSize(2.5);
   if (inPercent) {
     h->Scale(100. / h->Integral());
     h->GetZaxis()->SetTitle("[%]");
@@ -406,34 +434,34 @@ void LmvmDraw::DrawSrcBgPairs(ELmvmAnaStep step, bool inPercent, bool drawAnaSte
   if (drawAnaStep) fH.DrawAnaStepOnPad(step);
 }
 
-void LmvmDraw::DrawSrcBgPairsAll()
+void LmvmDraw::DrawBgSourcePairsAll()
 {
   int hi      = 1;
-  TCanvas* c1 = fH.fHM.CreateCanvas("lmvm_srcBgPairs_abs", "lmvm_srcBgPairs_abs", 1500, 1500);
+  TCanvas* c1 = fH.fHM.CreateCanvas("bg/srcPairs_abs", "bg/srcPairs_abs", 1500, 1500);
   c1->Divide(3, 3);
   for (ELmvmAnaStep step : fH.fAnaSteps) {
     if (step == ELmvmAnaStep::Mc || step == ELmvmAnaStep::Acc || SkipMvd(step)) continue;
     c1->cd(hi++);
-    DrawSrcBgPairs(step, false);
+    DrawBgSourcePairs(step, false);
   }
 
   hi          = 1;
-  TCanvas* c2 = fH.fHM.CreateCanvas("lmvm_srcBgPairs_perc", "lmvm_srcBgPairs_perc", 1500, 1500);
+  TCanvas* c2 = fH.fHM.CreateCanvas("bg/srcPairs_perc", "bg/srcPairs_perc", 1500, 1500);
   c2->Divide(3, 3);
   for (ELmvmAnaStep step : fH.fAnaSteps) {
     if (step == ELmvmAnaStep::Mc || step == ELmvmAnaStep::Acc || SkipMvd(step)) continue;
-    c1->cd(hi++);
-    DrawSrcBgPairs(step, true);
+    c2->cd(hi++);
+    DrawBgSourcePairs(step, true);
   }
 
-  string ptCutName = fH.fAnaStepNames[static_cast<int>(ELmvmAnaStep::PtCut)];
-  fH.fHM.CreateCanvas("lmvm_srcBgPairs_abs_" + ptCutName, "lmvm_srcBgPairs_abs_" + ptCutName, 900, 900);
-  DrawSrcBgPairs(ELmvmAnaStep::PtCut, false, false);
+  string elidCutName = fH.fAnaStepNames[static_cast<int>(ELmvmAnaStep::ElId)];
+  fH.fHM.CreateCanvas("bg/srcPairs_abs_" + elidCutName, "bg/srcPairs_abs_" + elidCutName, 1100, 800);
+  DrawBgSourcePairs(ELmvmAnaStep::ElId, false, false);
 
-  fH.fHM.CreateCanvas("lmvm_srcBgPairs_perc_" + ptCutName, "lmvm_srcBgPairs_perc_" + ptCutName, 900, 900);
-  DrawSrcBgPairs(ELmvmAnaStep::PtCut, true, false);
+  fH.fHM.CreateCanvas("bg/srcPairs_perc_" + elidCutName, "bg/srcPairs_perc_" + elidCutName, 1100, 800);
+  DrawBgSourcePairs(ELmvmAnaStep::ElId, true, false);
 
-  DrawBgSource2D("lmvm_srcBgPairs_2d", "hSrcBgPairs", fH.fBgPairSrcLatex, 1000., "Pairs per event x10^{3}");
+  DrawSource2D("bg/srcPairs_2d", "hSrcBgPairs", fH.fBgPairSrcLatex, 1000., "Pairs per event x10^{3}");
 }
 
 void LmvmDraw::Draw2DCutTriangle(double xCr, double yCr)
@@ -446,32 +474,148 @@ void LmvmDraw::Draw2DCutTriangle(double xCr, double yCr)
   }
 }
 
-void LmvmDraw::DrawTofM2Cut()
+void LmvmDraw::DrawMinvBg()
 {
-  vector<TLine*> lines {new TLine(0., 0.01, 1.3, 0.01), new TLine(1.3, 0.01, 2.5, 0.022)};  // set by hand
-  TCanvas* c = fH.fHM.CreateCanvas("lmvm_cuts/lmvm_hTofM2_zoom", "lmvm_cuts/lmvm_hTofM2_zoom", 1600, 800);
-  c->Divide(2, 1);
-  int hi = 1;
-  for (ELmvmSrc src : {ELmvmSrc::Signal, ELmvmSrc::Bg}) {
-    TH2D* hist = fH.H2Clone("hTofM2", src);
-    c->cd(hi);
-    hist->GetXaxis()->SetRangeUser(0., 2.5);
-    hist->GetYaxis()->SetRangeUser(-0.08, 0.05);
-    DrawH2(hist);
-    DrawTextOnPad(fH.fSrcLatex[static_cast<int>(src)], 0.6, 0.89, 0.7, 0.99);
-    for (size_t i = 0; i < lines.size(); i++) {
-      lines[i]->SetLineWidth(2.);
-      lines[i]->Draw();
+  TH1D* gg     = fH.H1Clone("hMinvBgSource2_elid_gg");
+  TH1D* pipi   = fH.H1Clone("hMinvBgSource2_elid_pipi");
+  TH1D* pi0pi0 = fH.H1Clone("hMinvBgSource2_elid_pi0pi0");
+  TH1D* oo     = fH.H1Clone("hMinvBgSource2_elid_oo");
+  TH1D* gpi    = fH.H1Clone("hMinvBgSource2_elid_gpi");
+  TH1D* gpi0   = fH.H1Clone("hMinvBgSource2_elid_gpi0");
+  TH1D* go     = fH.H1Clone("hMinvBgSource2_elid_go");
+  TH1D* pipi0  = fH.H1Clone("hMinvBgSource2_elid_pipi0");
+  TH1D* pio    = fH.H1Clone("hMinvBgSource2_elid_pio");
+  TH1D* pi0o   = fH.H1Clone("hMinvBgSource2_elid_pi0o");
+  
+  cout << "Entries gg: " << gg->GetEntries() << endl;
+  cout << "Entries pipi: " << pipi->GetEntries() << endl;
+  cout << "Entries pi0pi0: " << pi0pi0->GetEntries() << endl;
+  cout << "Entries oo: " << oo->GetEntries() << endl;
+  cout << "Entries gpi: " << gpi->GetEntries() << endl;
+  cout << "Entries gpi0: " << gpi0->GetEntries() << endl;
+  cout << "Entries go: " << go->GetEntries() << endl;
+  cout << "Entries pipi0: " << pipi0->GetEntries() << endl;
+  cout << "Entries pio: " << pio->GetEntries() << endl;
+  cout << "Entries pi0o: " << pi0o->GetEntries() << endl;
+  
+  int reb = 50;
+
+  gg->Rebin(reb);
+  pi0pi0->Rebin(reb);
+  gpi0->Rebin(reb);
+  go->Rebin(reb);
+  pi0o->Rebin(reb);
+  
+  gg->Scale(1. / reb);
+  pi0pi0->Scale(1. / reb);
+  gpi0->Scale(1. / reb);
+  go->Scale(1. / reb);
+  pi0o->Scale(1. / reb);
+  
+  string cName = "minvBgSrc/minvBgSrc";
+  //vector<string> names = {"#gamma-#gamma", "#pi^{#pm}-#pi^{#pm}", "#pi^{0}-#pi^{0}", "o.-o.", "#gamma-#pi^{#pm}", "#gamma-#pi^{0}", "#gamma-o.", "#pi^{#pm}-#pi^{0}", "#pi^{#pm}-o.", "#pi^{0}-o.", "misid. #pi^{#pm}"};
+  vector<string> names = {"#gamma-#gamma", "#pi^{0}-#pi^{0}", "#gamma-#pi^{0}", "#gamma-o.", "#pi^{0}-o."};
+  fH.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 1000, 1000);
+  //DrawH1({gg, pipi, pi0pi0, oo, gpi, gpi0, go, pipi0, pio, pi0o}, names, kLinear, kLog, true, 0.85, 0.7, 0.99, 0.99, "hist");
+  DrawH1({gg, pi0pi0, gpi0, go, pi0o}, names, kLinear, kLog, true, 0.85, 0.7, 0.99, 0.99, "hist");
+}
+
+void LmvmDraw::DrawElPurity()
+{
+  // All occuring PIDs
+  for (ELmvmAnaStep step : fH.fAnaSteps) {
+    if (step == ELmvmAnaStep::Mc || step == ELmvmAnaStep::Acc) continue;
+    TCanvas* c = fH.fHM.CreateCanvas("purity/pid_"+ fH.fAnaStepNames[static_cast<int>(step)], "purity/pid_"  + fH.fAnaStepNames[static_cast<int>(step)], 1600, 800);
+    c->Divide(2,1);
+    c->cd(1);
+    DrawH1(fH.H1("hCandPdg_" + fH.fAnaStepNames[static_cast<int>(step)]), kLinear, kLog, "hist text40");
+    c->cd(2);
+    TH1D* pdgZoom = fH.H1Clone("hCandPdg_" + fH.fAnaStepNames[static_cast<int>(step)]);
+    pdgZoom->GetXaxis()->SetRangeUser(-20., 20.);
+    DrawH1(pdgZoom, kLinear, kLog, "hist text40");    
+  }
+
+  // PID vs momentum
+  vector<string> yLabel = {"e^{#pm}_{PLUTO}", "e^{#pm}_{UrQMD}", "#pi^{#pm}", "p", "K^{+}", "o." };
+  for (ELmvmAnaStep step : fH.fAnaSteps) {
+    if (step == ELmvmAnaStep::Mc || step == ELmvmAnaStep::Acc) continue;
+    fH.fHM.CreateCanvas("purity/PidVsMom_" + fH.fAnaStepNames[static_cast<int>(step)], "purity/PidVsMom_"  + fH.fAnaStepNames[static_cast<int>(step)], 800, 600);
+    TH2D* hPidMom = fH.H2("hCandPdgVsMom_" + fH.fAnaStepNames[static_cast<int>(step)]);
+    hPidMom->SetMinimum(5e-7);
+    DrawH2(hPidMom, kLinear, kLinear, kLog, "COLZ");
+    for (size_t y = 1; y <= yLabel.size(); y++) {
+      hPidMom->GetYaxis()->SetBinLabel(y, yLabel[y-1].c_str());
     }
-    hi++;
+    double nEl = hPidMom->Integral(1, hPidMom->GetXaxis()->GetNbins(), 2, 2);	// do not count PLUTO particles
+    double purity = (nEl /  hPidMom->Integral(1, hPidMom->GetXaxis()->GetNbins(), 2, hPidMom->GetYaxis()->GetNbins())) * 100;
+    DrawTextOnPad("Purity: " + Cbm::NumberToString(purity, 1) + " %", 0.1, 0.9, 0.45, 0.99);
+  }
+
+  // Purity vs momentum
+  int   nBins = fH.H2("hCandPdgVsMom_elid")->GetXaxis()->GetNbins();
+  double xMin = fH.H2("hCandPdgVsMom_elid")->GetXaxis()->GetXmin();
+  double xMax = fH.H2("hCandPdgVsMom_elid")->GetXaxis()->GetXmax();
+  TH1D* purity = new TH1D("purity_Mom", "purity_Mom; P [GeV/c]; Purity [%]", nBins, xMin, xMax);
+  for (int i = 1; i <= purity->GetNbinsX(); i++) {
+    double nEl  = fH.H2("hCandPdgVsMom", ELmvmAnaStep::ElId)->GetBinContent(i, 2);
+    double nAll = fH.H2("hCandPdgVsMom", ELmvmAnaStep::ElId)->Integral(i, i, 2, fH.H2("hCandPdgVsMom_elid")->GetYaxis()->GetNbins());
+    double val = (nAll != 0) ? 100 * nEl/nAll : 0.;
+    purity->SetBinContent(i, val);
+  }
+  purity->Rebin(5);
+  purity->Scale(1. / 5.);
+  fH.fHM.CreateCanvas("purity/purity_mom_elid", "purity/purity_mom_elid", 800, 800);
+  DrawH1(purity, kLinear, kLinear, "pe");
+
+  // Source of electron (PDG = +-11) candidates
+  DrawSource2D("purity/SrcTracksEl_2d", "hCandElSrc",
+                 {"#gamma", "#pi^{0}", "#pi^{#pm}", "p", "K", "e^{#pm}_{sec}", "oth.", "signal"}, 1000.,
+                 "Tracks per event x10^{3}");
+  
+  // Occurency of Electrons and not-Electrons for various cut categories
+  for (const string& hName : {"hAnnRichVsMomPur", "hTrdElLikePur", "hTofM2Pur"}) {
+    string cName = "purity/cuts_" + hName;
+    TCanvas* c = fH.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 2400, 800);
+    c->Divide(3, 1);
+    int hi = 1;
+    for (const string& id : {"El", "Bg"}) {
+      TH2D* hist = fH.H2Clone(hName + "_" + id);
+      if (hName == "hTofM2Pur") {
+        hist->GetXaxis()->SetRangeUser(0., 3.);
+        hist->GetYaxis()->SetRangeUser(-0.1, 0.05);
+      }
+      c->cd(hi);
+      DrawH2(hist, kLinear, kLinear, kLog, "COLZ");
+      DrawTextOnPad(id.c_str(), 0.6, 0.89, 0.7, 0.99);
+      
+      if (hName == "hTofM2Pur") { // TODO: these drawn lines needed?
+        vector<TLine*> lines {new TLine(0., 0.01, 1.3, 0.01), new TLine(1.3, 0.01, 2.5, 0.022)};  // set by hand
+        for (size_t i = 0; i < lines.size(); i++) {
+          lines[i]->SetLineWidth(2.);
+          lines[i]->Draw();
+        }
+      }
+      hi++;
+    }
+    c->cd(hi);
+    TH2D* ratio = fH.H2Clone(hName + "_El");
+    ratio->Divide(fH.H2(hName + "_Bg"));
+    if (hName == "hTofM2Pur") {
+      ratio->GetXaxis()->SetRangeUser(0., 3.);
+      ratio->GetYaxis()->SetRangeUser(-0.1, 0.05);
+    }
+    DrawH2(ratio, kLinear, kLinear, kLog, "COLZ");
+    DrawTextOnPad("Ratio El/Bg", 0.4, 0.85, 0.8, 0.99);
   }
 }
 
 void LmvmDraw::Draw2DCut(const string& hist, double cutCrossX, double cutCrossY)
 {
-  TCanvas* c = fH.fHM.CreateCanvas(("lmvm_cuts/lmvm_" + hist).c_str(), ("lmvm_cuts/lmvm_" + hist).c_str(), 1000, 1500);
+  TCanvas* c = fH.fHM.CreateCanvas(("cuts/" + hist).c_str(), ("cuts/" + hist).c_str(), 1000, 1500);
   c->Divide(2, 3);
   vector<TH1*> projX, projY;
+  projX.clear();  // TODO: clearing needed?
+  projY.clear();
   vector<string> latex;
   for (ELmvmSrc src : {ELmvmSrc::Signal, ELmvmSrc::Bg, ELmvmSrc::Pi0, ELmvmSrc::Gamma}) {
     int srcInt = static_cast<int>(src);
@@ -481,7 +625,7 @@ void LmvmDraw::Draw2DCut(const string& hist, double cutCrossX, double cutCrossY)
     DrawTextOnPad((Cbm::NumberToString(nofPerEvent, 2) + "/ev."), 0.1, 0.9, 0.5, 0.99);
     DrawTextOnPad(fH.fSrcLatex[srcInt], 0.6, 0.89, 0.7, 0.99);
     Draw2DCutTriangle(cutCrossX, cutCrossY);
-    projX.push_back(fH.H2(hist, src)->ProjectionX());
+    projX.push_back(fH.H2(hist, src)->ProjectionX((hist + fH.fSrcLatex[static_cast<int>(src)]).c_str(), 1, fH.H2(hist, src)->GetYaxis()->GetNbins(), ""));
     projY.push_back(fH.H2(hist, src)->ProjectionY());
     latex.push_back(fH.fSrcLatex[srcInt]);
   }
@@ -498,7 +642,7 @@ void LmvmDraw::DrawGammaVertex()
   vector<TH2D*> xyz {fH.H2("hVertexGammaXZ", ELmvmAnaStep::Mc), fH.H2("hVertexGammaYZ", ELmvmAnaStep::Mc),
                      fH.H2("hVertexGammaXY", ELmvmAnaStep::Mc)};
 
-  TCanvas* c = fH.fHM.CreateCanvas("lmvm_vertexGamma_mc", "lmvm_vertexGamma_mc", 1800, 600);
+  TCanvas* c = fH.fHM.CreateCanvas("vertexGamma_mc", "vertexGamma_mc", 1800, 600);
   c->Divide(3, 1);
   for (size_t i = 0; i < xyz.size(); i++) {
     c->cd(i + 1);
@@ -507,7 +651,7 @@ void LmvmDraw::DrawGammaVertex()
     gPad->SetLogz(true);
   }
 
-  TCanvas* cZ = fH.fHM.CreateCanvas("lmvm_vertexGamma_z", "lmvm_vertexGamma_z", 1500, 750);
+  TCanvas* cZ = fH.fHM.CreateCanvas("vertexGamma_z", "vertexGamma_z", 1500, 750);
   cZ->Divide(2, 1);
   int counter = 1;
   for (ELmvmAnaStep step : {ELmvmAnaStep::Mc, ELmvmAnaStep::PtCut}) {
@@ -520,7 +664,7 @@ void LmvmDraw::DrawGammaVertex()
     fH.DrawAnaStepOnPad(step);
   }
 
-  TCanvas* cZoom = fH.fHM.CreateCanvas("lmvm_vertexGamma_mc_zoom", "lmvm_vertexGamma_mc_zoom", 1800, 600);
+  TCanvas* cZoom = fH.fHM.CreateCanvas("vertexGamma_mc_zoom", "vertexGamma_mc_zoom", 1800, 600);
   cZoom->Divide(3, 1);
   for (size_t i = 0; i < xyz.size(); i++) {
     TH2D* hZoom = (TH2D*) xyz[i]->Clone();
@@ -532,7 +676,7 @@ void LmvmDraw::DrawGammaVertex()
     gPad->SetLogz(true);
   }
 
-  fH.fHM.CreateCanvas("lmvm_vertexGamma_rz_mc", "lmvm_vertexGamma_rz_mc", 900, 900);
+  fH.fHM.CreateCanvas("vertexGamma_rz_mc", "vertexGamma_rz_mc", 900, 900);
   DrawH2(fH.H2("hVertexGammaRZ", ELmvmAnaStep::Mc));
   fH.H2("hVertexGammaRZ", ELmvmAnaStep::Mc)->SetMinimum(1e-3);
   gPad->SetLogz(true);
@@ -570,14 +714,14 @@ void LmvmDraw::DrawAnaStepH1(const string& name, bool logy)
 
 void LmvmDraw::DrawMinvAll()
 {
-  TCanvas* c1 = fH.fHM.CreateCanvas("lmvm_minv_sbg_anaStep", "lmvm_minv_sbg_anaStep", 1200, 600);
+  TCanvas* c1 = fH.fHM.CreateCanvas("minv_sbg_anaStep", "minv_sbg_anaStep", 1200, 600);
   c1->Divide(2, 1);
   c1->cd(1);
   DrawAnaStepH1(fH.GetName("hMinv", ELmvmSrc::Signal), true);
   c1->cd(2);
   DrawAnaStepH1(fH.GetName("hMinv", ELmvmSrc::Bg), true);
 
-  TCanvas* c2 = fH.fHM.CreateCanvas("lmvm_minv_pi0_eta_gamma_anaStep", "lmvm_minv_pi0_eta_gamma_anaStep", 1800, 600);
+  TCanvas* c2 = fH.fHM.CreateCanvas("minv_pi0_eta_gamma_anaStep", "minv_pi0_eta_gamma_anaStep", 1800, 600);
   c2->Divide(3, 1);
   c2->cd(1);
   DrawAnaStepH1(fH.GetName("hMinv", ELmvmSrc::Pi0), true);
@@ -587,15 +731,18 @@ void LmvmDraw::DrawMinvAll()
   DrawAnaStepH1(fH.GetName("hMinv", ELmvmSrc::Gamma), true);
 
   for (const string& name : {"sameEv", "mixedEv"}) {
-    string cName = "lmvm_minv_combPairs_" + name;
+    string cName = "minv_combPairs_" + name;
     TCanvas* c3  = fH.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 1800, 600);
     c3->Divide(3, 1);
     c3->cd(1);
     DrawAnaStepH1("hMinvCombPM_" + name, true);
+    DrawTextOnPad("e^{+}e^{-} pairs " + name, 0.35, 0.9, 0.65, 0.99);
     c3->cd(2);
     DrawAnaStepH1("hMinvCombPP_" + name, true);
+    DrawTextOnPad("e^{+}e^{+} pairs " + name, 0.35, 0.9, 0.65, 0.99);
     c3->cd(3);
     DrawAnaStepH1("hMinvCombMM_" + name, true);
+    DrawTextOnPad("e^{-}e^{-} pairs " + name, 0.35, 0.9, 0.65, 0.99);
   }
 }
 
@@ -633,10 +780,7 @@ void LmvmDraw::DrawMinvBgPairSrc(ELmvmAnaStep step)
   vector<TH1*> hists;
   vector<string> latex;
   for (int i = 0; i < fH.fNofBgPairSrc; i++) {
-    stringstream ss;
-    ss << "hMinvBgSource_" << fH.fBgPairSrcNames[i] << "_" << fH.fAnaStepNames[static_cast<int>(step)];
-    hists.push_back(fH.H1(ss.str()));
-    hists[i]->SetMinimum(1e-8);
+    hists.push_back(fH.H1("hMinvBgSource_" + fH.fBgPairSrcNames[i] + "_" + fH.fAnaStepNames[static_cast<int>(step)])); // segmentation violation error is caused by this specific histogram; works with others
     string perc = Cbm::NumberToString(100. * hists[i]->GetEntries() / nofBg, 1);
     latex.push_back(fH.fBgPairSrcLatex[i] + "(" + perc + "%)");
   }
@@ -661,39 +805,73 @@ void LmvmDraw::DrawMinvMatching(ELmvmAnaStep step)
   fH.DrawAnaStepOnPad(step);
 }
 
-void LmvmDraw::DrawPiMom()
+void LmvmDraw::DrawAccRecMom()
 {
-  vector<string> subNames {"mc", "acc", "rec", "recOnlySts", "recStsRichTrd", "recStsRichTrdTof"};
-  vector<string> latex {"MC", "Acc", "Rec", "Rec only STS", "Rec STS-RICH-TRD", "Rec STS-RICH-TRD-TOF"};
-  vector<string> latexAll(latex.size()), latexPrim(latex.size());
-  vector<TH1*> histsAll, histsPrim;
+  // Acceptance and reconstruction yields for various detector combinations
+  for (const int& pdg : {11, 211, 2212}) {
+    vector<string> subNames {"mc", "acc", "recSts", "recStsRich", "recStsRichTrd", "recStsRichTrdTof"};
+    vector<string> latex {"MC", "Acc", "Rec in STS", "Rec in STS-RICH", "Rec in STS-RICH-TRD", "Rec in STS-RICH-TRD-TOF"};
+    vector<string> latexAll(latex.size()), latexPrim(latex.size());
+    string hName = (pdg == 11) ? "hElMom" : (pdg == 211) ? "hPiMom" : "hProtonMom";
+    string cName = "AccRecMom/" + hName;
+    vector<TH1*> histsAll, histsPrim;
+    int i = 0;
+    for (const string& subName : subNames) {
+      TH1D* hAll  = fH.H1(hName + "_all_" + subName);
+      hAll->SetMinimum(3e-6);
+      hAll->SetMaximum(50);
+      latexAll[i] = latex[i] + " (" + Cbm::NumberToString(hAll->GetEntries() / fNofEvents, 2) + "/ev.)";
+      histsAll.push_back(hAll);
 
-  int i = 0;
-  for (const string& subName : subNames) {
-    TH1D* hAll  = fH.H1("hPiMom_all_" + subName);
-    latexAll[i] = latex[i] + " (" + Cbm::NumberToString(hAll->GetEntries() / fNofEvents, 2) + "/ev.)";
-    histsAll.push_back(hAll);
+      TH1D* hPrim  = fH.H1(hName + "_prim_" + subName);
+      hPrim->SetMinimum(3e-6);
+      hPrim->SetMaximum(50);
+      latexPrim[i] = latex[i] + " (" + Cbm::NumberToString(hPrim->GetEntries() / fNofEvents, 2) + "/ev.)";
+      histsPrim.push_back(hPrim);
+      i++;
+    }
 
-    TH1D* hPrim  = fH.H1("hPiMom_prim_" + subName);
-    latexPrim[i] = latex[i] + " (" + Cbm::NumberToString(hPrim->GetEntries() / fNofEvents, 2) + "/ev.)";
-    histsPrim.push_back(hPrim);
-    i++;
+    double y1 = 0.17; //(pdg == 211) ? 0.20 : 0.74;
+    double y2 = 0.42;  //(pdg == 211) ? 0.45 : 0.99;
+    fH.fHM.CreateCanvas(cName, cName, 900, 900);
+    DrawH1(histsAll, latexAll, kLinear, kLog, true, 0.4, y1, 0.95, y2, "hist");
+
+    fH.fHM.CreateCanvas(cName + "_prime", cName + "_prime", 900, 900);
+    DrawH1(histsPrim, latexPrim, kLinear, kLog, true, 0.4, y1, 0.95, y2, "hist");
   }
 
-  fH.fHM.CreateCanvas("lmvm_piMom", "lmvm_piMom", 900, 900);
-  DrawH1(histsAll, latexAll, kLinear, kLog, true, 0.45, 0.75, 0.99, 0.99, "hist");
+  // Pions, protons and kaons that are misidentified as electrons
+  TH1* misPi   = fH.H1Clone("hCandMisIdAsEl_pi");
+  TH1* misProt = fH.H1Clone("hCandMisIdAsEl_proton");
+  TH1* misKa   = fH.H1Clone("hCandMisIdAsEl_kaon");
 
-  fH.fHM.CreateCanvas("lmvm_piMomPrim", "lmvm_piMomPrim", 900, 900);
-  DrawH1(histsPrim, latexPrim, kLinear, kLog, true, 0.45, 0.75, 0.99, 0.99, "hist");
+  fH.fHM.CreateCanvas("AccRecMom/MisidCands", "AccRecMom/MisidCands", 800, 800);
+  DrawH1({misPi, misProt, misKa}, {"#pi^{#pm}", "proton", "kaon"}, kLinear, kLog, true, 0.89, 0.75, 0.99, 0.92, "p");
+
+  // Acceptance in single detectors
+  for (const string& det : {"sts", "rich", "trd", "tof"}) {
+    vector<TH1*> hVec;
+    vector<string> latex;
+    for (const ELmvmSrc src : {ELmvmSrc::Signal, ELmvmSrc::Pi0, ELmvmSrc::Gamma}) {
+      for (const string& pm : {"+", "-"}) {
+        hVec.push_back(fH.H1("hMomAcc" + pm + "_" + det, src));
+        latex.push_back(fH.fSrcLatex[static_cast<int>(src)] + " (e" + pm + ")");
+      }
+    }
+    fH.fHM.CreateCanvas("AccRecMom/momDetAcc_" + det, "AccRecMom/momDetAcc_" + det, 800, 800);
+    DrawH1(hVec, latex, kLinear, kLog, true, 0.90, 0.7, 0.99, 0.99, "hist");
+    DrawTextOnPad(det, 0.4, 0.9, 0.6, 0.999);
+  }
 }
 
-void LmvmDraw::DrawBgSource2D(const string& cName, const string& hName, const vector<string>& yLabels, double scale,
+void LmvmDraw::DrawSource2D(const string& cName, const string& hName, const vector<string>& yLabels, double scale,
                               const string& zTitle)
 {
   fH.fHM.CreateCanvas((cName + "_abs").c_str(), (cName + "_abs").c_str(), 900, 600);
   TH2D* habs = fH.H2Clone(hName);
   habs->SetStats(false);
   habs->Scale(scale);
+  habs->SetMinimum(1e-2);
   habs->GetZaxis()->SetTitle(zTitle.c_str());
   habs->SetMarkerSize(1.4);
   DrawH2(habs, kLinear, kLinear, kLog, "text COLZ");
@@ -716,7 +894,7 @@ void LmvmDraw::DrawBgSource2D(const string& cName, const string& hName, const ve
   hperc->GetZaxis()->SetTitle("[%]");
   hperc->GetYaxis()->SetLabelSize(0.06);
   hperc->SetMarkerColor(kBlack);
-  hperc->SetMarkerSize(1.8);
+  hperc->SetMarkerSize(1.4);
   DrawH2(hperc, kLinear, kLinear, kLinear, "text COLZ");
 
   for (size_t y = 1; y <= yLabels.size(); y++) {
@@ -732,18 +910,18 @@ void LmvmDraw::DrawBgSourceTracks()
 {
   gStyle->SetPaintTextFormat("4.1f");
 
-  fH.fHM.CreateCanvas("lmvm_nofBgTracks", "lmvm_nofBgTracks", 900, 900);
+  fH.fHM.CreateCanvas("bg/nofBgTracks", "bg/nofBgTracks", 900, 900);
   TH1D* hbg = fH.H1Clone("hNofBgTracks");
   hbg->Scale(10);
   hbg->GetYaxis()->SetTitle("Tracks/event x10");
   DrawH1(hbg, kLinear, kLog, "hist text0");
   hbg->SetMarkerSize(2.);
 
-  fH.fHM.CreateCanvas("lmvm_nofSignalTracks", "lmvm_nofSignalTracks", 900, 900);
+  fH.fHM.CreateCanvas("signal/nofSignalTracks", "signal/nofSignalTracks", 900, 900);
   TH1D* hel = fH.H1("hNofSignalTracks");
   DrawH1(hel, kLinear, kLog, "hist");
 
-  fH.fHM.CreateCanvas("lmvm_purity", "lmvm_purity", 900, 900);
+  fH.fHM.CreateCanvas("purity", "purity", 900, 900);
   TH1D* purity = new TH1D("purity", "Purity;Analysis steps;Purity", fH.fNofAnaSteps, 0., fH.fNofAnaSteps);
   purity->Divide(fH.H1("hNofBgTracks"), fH.H1("hNofSignalTracks"));
   DrawH1(purity, kLinear, kLog, "hist text30");
@@ -753,11 +931,11 @@ void LmvmDraw::DrawBgSourceTracks()
   SetAnalysisStepAxis(hel);
   SetAnalysisStepAxis(purity);
 
-  DrawBgSource2D("lmvm_bgSrcTracks_2d", "hBgSrcTracks",
-                 {"#gamma", "#pi^{0}", "#pi^{#pm}", "p", "K", "e^{#pm}_{sec}", "oth."}, 100.,
-                 "Tracks per event x10^{2}");
+  DrawSource2D("bg/SrcTracksBg_2d", "hBgSrcTracks",
+                 {"#gamma", "#pi^{0}", "#pi^{#pm}", "p", "K", "e^{#pm}_{sec}", "oth.", "signal"}, 1000.,
+                 "Tracks per event x10^{3}");
 
-  TCanvas* c = fH.fHM.CreateCanvas("lmvm_nofTopoPairs", "lmvm_nofTopoPairs", 1600, 800);
+  TCanvas* c = fH.fHM.CreateCanvas("nofTopoPairs", "nofTopoPairs", 1600, 800);
   c->Divide(2, 1);
   int i = 1;
   for (const string& p : {"gamma", "pi0"}) {
@@ -772,7 +950,7 @@ void LmvmDraw::DrawBgSourceTracks()
 void LmvmDraw::DrawMismatchesAndGhosts()
 {
   gStyle->SetPaintTextFormat("4.1f");
-  TCanvas* c1 = fH.fHM.CreateCanvas("lmvm_nofMismatches", "lmvm_nofMismatches", 1500, 1500);
+  TCanvas* c1 = fH.fHM.CreateCanvas("nofMismatches", "nofMismatches", 1500, 1500);
   c1->Divide(2, 2);
   vector<string> dets {"all", "rich", "trd", "tof"};
   for (size_t i = 0; i < dets.size(); i++) {
@@ -785,7 +963,7 @@ void LmvmDraw::DrawMismatchesAndGhosts()
     SetAnalysisStepAxis(h);
   }
 
-  fH.fHM.CreateCanvas("lmvm_nofGhosts", "lmvm_nofGhosts", 900, 900);
+  fH.fHM.CreateCanvas("nofGhosts", "nofGhosts", 900, 900);
   DrawH1(fH.H1("hNofGhosts"), kLinear, kLog, "hist");
   SetAnalysisStepAxis(fH.H1("hNofGhosts"));
 }
@@ -821,7 +999,7 @@ void LmvmDraw::SetAnalysisStepAxis(TH1* h)
 void LmvmDraw::DrawMvdCutQa()
 {
   if (!fUseMvd) return;
-  TCanvas* c = fH.fHM.CreateCanvas("lmvm_cuts/lmvm_mvdCutQa", "lmvm_cuts/lmvm_mvd1cut_qa", 1600, 800);
+  TCanvas* c = fH.fHM.CreateCanvas("cuts/mvdCutQa", "cuts/mvd1cut_qa", 1600, 800);
   c->Divide(2, 1);
   int i = 1;
   for (const string& num : {"1", "2"}) {
@@ -839,7 +1017,7 @@ void LmvmDraw::DrawMvdCutQa()
 void LmvmDraw::DrawMvdAndStsHist()
 {
   if (!fUseMvd) return;
-  TCanvas* c1 = fH.fHM.CreateCanvas("lmvm_nofHitsMvdSts", "lmvm_nofHitsMvdSts", 1600, 800);
+  TCanvas* c1 = fH.fHM.CreateCanvas("nofHitsMvdSts", "nofHitsMvdSts", 1600, 800);
   c1->Divide(2, 1);
   c1->cd(1);
   DrawSrcH1("hNofMvdHits");
@@ -847,11 +1025,11 @@ void LmvmDraw::DrawMvdAndStsHist()
   DrawSrcH1("hNofStsHits");
 
   Draw2DCut("hMvdXY_1");
-  fH.fHM.CreateCanvas("lmvm_mvd1", "lmvm_mvd1", 900, 900);
+  fH.fHM.CreateCanvas("mvd1", "mvd1", 900, 900);
   DrawSrcH1("hMvdR_1");
 
   Draw2DCut("hMvdXY_2");
-  fH.fHM.CreateCanvas("lmvm_mvd2", "lmvm_mvd2", 900, 900);
+  fH.fHM.CreateCanvas("mvd2", "mvd2", 900, 900);
   DrawSrcH1("hMvdR_2");
 }
 

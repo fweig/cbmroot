@@ -10,9 +10,9 @@ def main():
     
     inFilesLitQa = dataDirPluto + "/litqa.*.root"
     outFileLitQa = dataDirPluto + "/litqa.all.root"
-    if os.path.exists(outFileLitQa):
-      os.remove(outFileLitQa)
-    os.system(('hadd -j -T -f {} {}').format(outFileLitQa, inFilesLitQa))
+    #if os.path.exists(outFileLitQa):
+    #  os.remove(outFileLitQa)
+    #os.system(('hadd -j -T -f {} {}').format(outFileLitQa, inFilesLitQa))
     
     inFilesAna = dataDirPluto + "/analysis.*.root"
     outFileAna = dataDirPluto + "/analysis.all.root"

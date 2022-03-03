@@ -28,6 +28,7 @@ def main():
   os.chdir(workDir)
 
   plutoFile = getPlutoPath(colSystem, colEnergy, plutoParticle, taskId)
+  #plutoFile = getPlutoPathTetyana(colSystem, colEnergy, plutoParticle, taskId)
 
   urqmdFile = "/lustre/nyx/cbm/prod/gen/urqmd/auau/" + colEnergy + "/centr/urqmd.auau."+ colEnergy + ".centr." + str(taskId).zfill(5) + ".root"
 
@@ -68,6 +69,23 @@ def getPlutoPath(colSystem, colEnergy, plutoParticle, taskId):
     return "/lustre/nyx/cbm/prod/gen/pluto/auau/cktRapp/" + colEnergy + "/rapp.qgp/epem/pluto.auau." + colEnergy + ".rapp.qgp.epem." + str(taskId).zfill(4) + ".root"
   elif plutoParticle == "urqmd":
     return ""
+
+def getPlutoPathTetyana(colSystem, colEnergy, plutoParticle, taskId):
+  if plutoParticle == "rho0":
+    return "/lustre/nyx/cbm/users/galatyuk/pluto/epem/" + colEnergy + "/rho0_pluto/sum_rho0_1000_001.zip#rho0_" + str(taskId).zfill(5) + ".root"
+  elif plutoParticle == "omegaepem":
+    return "/lustre/nyx/cbm/users/galatyuk/pluto/epem/" + colEnergy + "/w_pluto/sum_w_1000_001.zip#w_" + str(taskId).zfill(5) + ".root"
+  elif plutoParticle == "omegadalitz":
+    return "/lustre/nyx/cbm/users/galatyuk/pluto/epem/" + colEnergy + "/wdalitz_pluto/sum_wdalitz_1000_001.zip#wdalitz_" + str(taskId).zfill(5) + ".root"
+  elif plutoParticle == "phi":
+    return "/lustre/nyx/cbm/users/galatyuk/pluto/epem/" + colEnergy + "/phi_pluto/sum_phi_1000_001.zip#phi_" + str(taskId).zfill(5) + ".root"
+  elif plutoParticle == "inmed":
+    return "/lustre/nyx/cbm/users/galatyuk/pluto/epem/" + colEnergy + "/inmed_had_epem_" + colEnergy + "_pluto/sum_inmed_had_6800_001.zip#inmed_had_epem_8gev_" + str(taskId).zfill(5) + ".root"
+  elif plutoParticle == "qgp":
+    return "/lustre/nyx/cbm/users/galatyuk/pluto/epem/" + colEnergy + "/qgp_epem_8gev_pluto/sum_qgp_6800_001.zip#qgp_epem_8gev_" + str(taskId).zfill(5) + ".root"
+  elif plutoParticle == "urqmd":
+    return ""
+
 
 if __name__ == '__main__':
   main()
