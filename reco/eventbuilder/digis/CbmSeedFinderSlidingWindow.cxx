@@ -136,6 +136,16 @@ template void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<CbmTof
 template void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<CbmTrdDigi>*, const std::vector<CbmMatch>*);
 template void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<double>*, const std::vector<CbmMatch>*);
 
+void CbmSeedFinderSlidingWindow::FillSeedTimes()
+{
+  if (!fbIdealMode) {
+    std::cout << "CbmSeedFinderSlidingWindow: Error, called algo without digi input, but ideal mode is not set."
+              << std::endl;
+    exit(1);
+  }
+  FillSeedTimes<double>(nullptr);
+}
+
 template<class inType>
 double CbmSeedFinderSlidingWindow::GetTime(const std::vector<inType>* vIn, int32_t i)
 {

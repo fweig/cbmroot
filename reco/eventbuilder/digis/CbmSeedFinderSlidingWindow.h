@@ -63,6 +63,10 @@ public:
   template<class inType>
   void FillSeedTimes(const std::vector<inType>* vIn, const std::vector<CbmMatch>* vDigiMatch = nullptr);
 
+  /** @brief Function which builds event seeds without digi input. Can only be used in ideal mode.
+  **/
+  void FillSeedTimes();
+
   /** @brief Sets a global constant offset which is applied to each trigger time
    * @params Value of offset 
    **/

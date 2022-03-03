@@ -59,11 +59,11 @@ void CbmTaskBuildRawEvents::SetSlidingWindowSeedFinder(int32_t minDigis, double 
     delete fSeedFinderSlidingWindow;
     fSeedFinderSlidingWindow = nullptr;
   }
-  fSeedFinderSlidingWindow = new CbmSeedFinderSlidingWindow(fSeedTimes, minDigis, dWindDur, dDeadT);
-  fSeedFinderSlidingWindow->SetOffset(dOffset);
-
   if (fSeedTimes == nullptr) { fSeedTimes = new std::vector<Double_t>; }
   fpAlgo->SetSeedTimes(fSeedTimes);
+
+  fSeedFinderSlidingWindow = new CbmSeedFinderSlidingWindow(fSeedTimes, minDigis, dWindDur, dDeadT);
+  fSeedFinderSlidingWindow->SetOffset(dOffset);
 }
 
 void CbmTaskBuildRawEvents::SetSeedFinderQa(Bool_t bFlagIn)
@@ -185,7 +185,6 @@ InitStatus CbmTaskBuildRawEvents::Init()
   else
     return kFATAL;
 }
-
 
 InitStatus CbmTaskBuildRawEvents::ReInit() { return kSUCCESS; }
 
@@ -371,8 +370,14 @@ void CbmTaskBuildRawEvents::FillSeedTimesFromDetList(std::vector<Double_t>* vdSe
 void CbmTaskBuildRawEvents::FillSeedTimesFromSlidingWindow()
 {
   if (fSeedTimeDetList.size() == 0) {
-    std::cout << "FillSeedTimesFromSlidingWindow(): Error, seed detector list empty." << std::endl;
-    exit(1);
+    if (fSeedFinderSlidingWindow->IsIdealMode()) {
+      fSeedFinderSlidingWindow->FillSeedTimes();
+      return;
+    }
+    else {
+      std::cout << "FillSeedTimesFromSlidingWindow(): Error, seed detector list empty." << std::endl;
+      exit(1);
+    }
   }
   if (fSeedTimeDetList.size() == 1) {
     const RawEventBuilderDetector seedDet = fSeedTimeDetList.at(0);
