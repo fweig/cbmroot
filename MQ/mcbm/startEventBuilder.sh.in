@@ -1,5 +1,8 @@
 #!/bin/bash
-$SIMPATH/bin/fairmq-shmmonitor --cleanup
+
+if [ -e @SIMPATH@/bin/fairmq-shmmonitor ]; then
+  @SIMPATH@/bin/fairmq-shmmonitor --cleanup
+fi
 
 if [ $# -ge 1 ]; then
   _nbmoni=$1
@@ -68,15 +71,15 @@ else
   _pubmaxsec=10.0
 fi
 
-_parfileSts=$VMCWORKDIR/macro/beamtime/mcbm2021/mStsPar.par
-_parfileMuch=$VMCWORKDIR/macro/beamtime/mcbm2021/mMuchPar.par
-_parfileTrdAsic=$VMCWORKDIR/parameters/trd/trd_v21b_mcbm.asic.par
-_parfileTrdDigi=$VMCWORKDIR/parameters/trd/trd_v21b_mcbm.digi.par
-_parfileTrdGas=$VMCWORKDIR/parameters/trd/trd_v21b_mcbm.gas.par
-_parfileTrdGain=$VMCWORKDIR/parameters/trd/trd_v21b_mcbm.gain.par
-_parfileTof=$VMCWORKDIR/macro/beamtime/mcbm2021/mTofCriPar.par
-_parfileRich=$VMCWORKDIR/macro/beamtime/mcbm2021/mRichPar_70.par
-_parfilePsd=$VMCWORKDIR/macro/beamtime/mcbm2021/mPsdPar.par
+_parfileSts=@VMCWORKDIR@/macro/beamtime/mcbm2021/mStsPar.par
+_parfileMuch=@VMCWORKDIR@/macro/beamtime/mcbm2021/mMuchPar.par
+_parfileTrdAsic=@VMCWORKDIR@/parameters/trd/trd_v21b_mcbm.asic.par
+_parfileTrdDigi=@VMCWORKDIR@/parameters/trd/trd_v21b_mcbm.digi.par
+_parfileTrdGas=@VMCWORKDIR@/parameters/trd/trd_v21b_mcbm.gas.par
+_parfileTrdGain=@VMCWORKDIR@/parameters/trd/trd_v21b_mcbm.gain.par
+_parfileTof=@VMCWORKDIR@/macro/beamtime/mcbm2021/mTofCriPar.par
+_parfileRich=@VMCWORKDIR@/macro/beamtime/mcbm2021/mRichPar_70.par
+_parfilePsd=@VMCWORKDIR@/macro/beamtime/mcbm2021/mPsdPar.par
 _setup_name=mcbm_beam_2021_07_surveyed
 _run_id=1588
 

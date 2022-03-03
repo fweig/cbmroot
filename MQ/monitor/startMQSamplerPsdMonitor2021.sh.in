@@ -1,5 +1,8 @@
 #!/bin/bash
-$SIMPATH/bin/fairmq-shmmonitor --cleanup
+
+if [ -e @SIMPATH@/bin/fairmq-shmmonitor ]; then
+  @SIMPATH@/bin/fairmq-shmmonitor --cleanup
+fi
 
 if [ $# -ge 1 ]; then
   _nbmoni=$1
@@ -44,8 +47,7 @@ else
   _nbmoni=1
 fi
 
-_paramfile=/mnt/scratch/users/ploizeau/mcbm2020/cbmroot_pal/macro/beamtime/mcbm2020/mPsdPar.par
-##_paramfile=$VMCWORKDIR/macro/beamtime/mcbm2021/mPsdPar.par
+_paramfile=@VMCWORKDIR@/macro/beamtime/mcbm2021/mPsdPar.par
 
 SAMPLER="MultiTsaSampler"
 SAMPLER+=" --id sampler1"

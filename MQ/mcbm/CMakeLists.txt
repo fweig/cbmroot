@@ -349,7 +349,7 @@ configure_file(${MY_SOURCE_DIR}/startMQMcbmEvtBuilderWin2020.sh.in   ${TMPDIR}/b
 configure_file(${MY_SOURCE_DIR}/startMQBuildRawEvents.sh.in          ${TMPDIR}/bin/MQ/topologies/install/startMQBuildRawEvents.sh)
 configure_file(${MY_SOURCE_DIR}/startBuildRawEvents2021.sh.in        ${TMPDIR}/bin/MQ/topologies/install/startBuildRawEvents2021.sh)
 configure_file(${MY_SOURCE_DIR}/startBuildRawEventsCosmics2021.sh.in ${TMPDIR}/bin/MQ/topologies/install/startBuildRawEventsCosmics2021.sh)
-configure_file(${MY_SOURCE_DIR}/startEventBuilder.sh.in              ${TMPDIR}/bin/MQ/topologies/startEventBuilder.sh)
+configure_file(${MY_SOURCE_DIR}/startEventBuilder.sh.in              ${TMPDIR}/bin/MQ/topologies/install/startEventBuilder.sh)
 
 install(PROGRAMS ${TMPDIR}/bin/MQ/topologies/install/startMQMcbmPulserMonitor2020.sh
                  ${TMPDIR}/bin/MQ/topologies/install/startMQMcbmEvtBuilderWin2020.sh

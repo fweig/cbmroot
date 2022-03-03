@@ -1,5 +1,8 @@
 #!/bin/bash
-$SIMPATH/bin/fairmq-shmmonitor --cleanup
+
+if [ -e @SIMPATH@/bin/fairmq-shmmonitor ]; then
+  @SIMPATH@/bin/fairmq-shmmonitor --cleanup
+fi
 
 if [ $# -ge 1 ]; then
   _nbmoni=$1
@@ -68,15 +71,15 @@ else
   _pubmaxsec=10.0
 fi
 
-_parfileSts=$VMCWORKDIR/macro/beamtime/mcbm2021/mStsPar.par
-_parfileMuch=$VMCWORKDIR/macro/beamtime/mcbm2021/mMuchPar.par
-_parfileTrdAsic=$VMCWORKDIR/macro/beamtime/mcbm2022/trd_v21b_mcbm.asic.par
-_parfileTrdDigi=$VMCWORKDIR/parameters/trd/trd_v21b_mcbm.digi.par
-_parfileTrdGas=$VMCWORKDIR/parameters/trd/trd_v21b_mcbm.gas.par
-_parfileTrdGain=$VMCWORKDIR/parameters/trd/trd_v21b_mcbm.gain.par
-_parfileTof=$VMCWORKDIR/macro/beamtime/mcbm2022/mTofCriPar.par
-_parfileRich=$VMCWORKDIR/macro/beamtime/mcbm2021/mRichPar_70.par
-_parfilePsd=$VMCWORKDIR/macro/beamtime/mcbm2021/mPsdPar.par
+_parfileSts=@VMCWORKDIR@/macro/beamtime/mcbm2021/mStsPar.par
+_parfileMuch=@VMCWORKDIR@/macro/beamtime/mcbm2021/mMuchPar.par
+_parfileTrdAsic=@VMCWORKDIR@/macro/beamtime/mcbm2022/trd_v21b_mcbm.asic.par
+_parfileTrdDigi=@VMCWORKDIR@/parameters/trd/trd_v21b_mcbm.digi.par
+_parfileTrdGas=@VMCWORKDIR@/parameters/trd/trd_v21b_mcbm.gas.par
+_parfileTrdGain=@VMCWORKDIR@/parameters/trd/trd_v21b_mcbm.gain.par
+_parfileTof=@VMCWORKDIR@/macro/beamtime/mcbm2022/mTofCriPar.par
+_parfileRich=@VMCWORKDIR@/macro/beamtime/mcbm2021/mRichPar_70.par
+_parfilePsd=@VMCWORKDIR@/macro/beamtime/mcbm2021/mPsdPar.par
 _setup_name=mcbm_beam_2021_07_surveyed
 _run_id=1660
 
@@ -123,7 +126,7 @@ SAMPLER+=" --transport zeromq"
 # Replaces log filename Xterm.log.hostname.yyyy.mm.dd.hh.mm.ss.XXXXXX
 # with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
 SAMPLER_LOG="sampler1_$LOGFILETAG"
-xterm -l -lf $SAMPLER_LOG -geometry 80x23+0+0 -hold -e ${VMCWORKDIR}/build/bin/MQ/source/$SAMPLER  &
+xterm -l -lf $SAMPLER_LOG -geometry 80x23+0+0 -hold -e @CMAKE_BINARY_DIR@/bin/MQ/source/$SAMPLER  &
 
 echo $SAMPLER
 
@@ -162,7 +165,7 @@ while (( _iMoni < _nbmoni )); do
   # with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
   UNPACKER_LOG="unp$_iMoni"
   UNPACKER_LOG+="_$LOGFILETAG"
-  xterm -l -lf $UNPACKER_LOG -geometry 132x23+400+$_yOffset -hold -e ${VMCWORKDIR}/build/bin/MQ/mcbm/$UNPACKER &
+  xterm -l -lf $UNPACKER_LOG -geometry 132x23+400+$_yOffset -hold -e @CMAKE_BINARY_DIR@/bin/MQ/mcbm/$UNPACKER &
 
   EVTBUILDER="BuildDigiEvents"
   EVTBUILDER+=" --id build$_iMoni"
@@ -199,7 +202,7 @@ while (( _iMoni < _nbmoni )); do
   # with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
   EVTBUILDER_LOG="build$_iMoni"
   EVTBUILDER_LOG+="_$LOGFILETAG"
-  xterm -l -lf $EVTBUILDER_LOG -geometry 80x23+800+$_yOffset -hold -e ${VMCWORKDIR}/build/bin/MQ/mcbm/$EVTBUILDER &
+  xterm -l -lf $EVTBUILDER_LOG -geometry 80x23+800+$_yOffset -hold -e @CMAKE_BINARY_DIR@/bin/MQ/mcbm/$EVTBUILDER &
 
 done
 
@@ -221,7 +224,7 @@ EVTSINK+=" --channel-config name=histogram-in,type=sub,method=bind,transport=zer
 # Replaces log filename Xterm.log.hostname.yyyy.mm.dd.hh.mm.ss.XXXXXX
 # with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
 EVTSINK_LOG="evtsink1_$LOGFILETAG"
-xterm -l -lf $EVTSINK_LOG -geometry 80x23+1200+0 -hold -e ${VMCWORKDIR}/build/bin/MQ/mcbm/$EVTSINK &
+xterm -l -lf $EVTSINK_LOG -geometry 80x23+1200+0 -hold -e @CMAKE_BINARY_DIR@/bin/MQ/mcbm/$EVTSINK &
 
 PARAMETERSERVER="parmq-server"
 PARAMETERSERVER+=" --id parmq-server"
@@ -235,7 +238,7 @@ PARAMETERSERVER+=" --setup $_setup_name"
 # Replaces log filename Xterm.log.hostname.yyyy.mm.dd.hh.mm.ss.XXXXXX
 # with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
 PARAMSRV_LOG="parmq_$LOGFILETAG"
-xterm -l -lf $PARAMSRV_LOG -geometry 80x23+1600+0 -hold -e ${VMCWORKDIR}/build/bin/MQ/parmq/$PARAMETERSERVER &
+xterm -l -lf $PARAMSRV_LOG -geometry 80x23+1600+0 -hold -e @CMAKE_BINARY_DIR@/bin/MQ/parmq/$PARAMETERSERVER &
 
 HISTSERVER="MqHistoServer"
 HISTSERVER+=" --id server1"
@@ -247,4 +250,4 @@ HISTSERVER+=" --channel-config name=canvas-conf,type=sub,method=bind,transport=z
 # Replaces log filename Xterm.log.hostname.yyyy.mm.dd.hh.mm.ss.XXXXXX
 # with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
 HISTSRV_LOG="server1_$LOGFILETAG"
-xterm -l -lf $HISTSRV_LOG -geometry 80x23+2000+0 -hold -e ${VMCWORKDIR}/build/bin/MQ/histogramServer/$HISTSERVER &
+xterm -l -lf $HISTSRV_LOG -geometry 80x23+2000+0 -hold -e @CMAKE_BINARY_DIR@/bin/MQ/histogramServer/$HISTSERVER &
