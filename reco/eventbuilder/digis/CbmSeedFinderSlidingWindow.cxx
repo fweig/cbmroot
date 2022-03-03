@@ -57,6 +57,7 @@ void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<inType>* vIn, c
       for (uint32_t i = 0; i < fvSeedTimes->size(); i++) {
         fQa->FillQaSeedInfo(i, i, &eventMatches, fvSeedTimes->at(i));
       }
+      fQa->FillQaMCInfo();
     }
     return;
   }

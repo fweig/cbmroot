@@ -77,6 +77,9 @@ public:
     fIdealModeFileId = fileId;
   }
 
+  /** @brief Is ``ideal mode'' switched on? **/
+  bool IsIdealMode() { return fbIdealMode; }
+
   /** @brief Returns number of seed times currently stored in buffer. */
   size_t GetNofSeeds() { return fvSeedTimes->size(); }
 

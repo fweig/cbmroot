@@ -20,13 +20,13 @@ CbmSeedFinderQa::CbmSeedFinderQa() : fOutFolder("SeedFinderQA", "Seed finder QA"
 
   // --- Init histograms
   fhLinkedMCEventsPerTrigger =
-    new TH1F("fhLinkedMCEventsPerTrigger", "Linked MC events per trigger (=0 for pure noise)", 5, -1, 4);
+    new TH1F("fhLinkedMCEventsPerTrigger", "Linked MC events per trigger (=0 for pure noise)", 5, -1.5, 3.5);
   fhLinkedMCEventsPerTrigger->SetCanExtend(TH1::kAllAxes);
 
-  fhLinkedTriggersPerMCEvent = new TH1F("fhLinkedTriggersPerMCEvent", "Linked triggers per MC event", 5, -1, 4);
+  fhLinkedTriggersPerMCEvent = new TH1F("fhLinkedTriggersPerMCEvent", "Linked triggers per MC event", 5, -1.5, 3.5);
   fhLinkedTriggersPerMCEvent->SetCanExtend(TH1::kAllAxes);
 
-  fhMatchedTriggersPerMCEvent = new TH1F("fhMatchedTriggersPerMCEvent", "Matched triggers per MC event", 5, -1, 4);
+  fhMatchedTriggersPerMCEvent = new TH1F("fhMatchedTriggersPerMCEvent", "Matched triggers per MC event", 5, -1.5, 3.5);
   fhMatchedTriggersPerMCEvent->SetCanExtend(TH1::kAllAxes);
 
   fhCorrectDigiRatio = new TH1F("fhCorrectDigiRatio", "Correct digis per seed [pct]", 416, -2, 102);
@@ -43,6 +43,9 @@ CbmSeedFinderQa::CbmSeedFinderQa() : fOutFolder("SeedFinderQA", "Seed finder QA"
   fhTimeOffset = new TH1F("fhTimeOffsetMatched", "tSeed - tMCMatched [ns]", 20, -5, 5);
   fhTimeOffset->SetCanExtend(TH1::kAllAxes);
 
+  fhTimeOffsetSingletOnly = new TH1F("fhTimeOffsetSingletOnly", "tSeed - tMCMatched [ns], one-to-one only", 20, -5, 5);
+  fhTimeOffsetSingletOnly->SetCanExtend(TH1::kAllAxes);
+
   fhTimeOffsetClosest = new TH1F("fhTimeOffsetClosest", "tSeed - tMCClosest [ns]", 20, -5, 5);
   fhTimeOffsetClosest->SetCanExtend(TH1::kAllAxes);
 
@@ -53,13 +56,14 @@ CbmSeedFinderQa::CbmSeedFinderQa() : fOutFolder("SeedFinderQA", "Seed finder QA"
   histFolder->Add(fhCorrectVsFound);
   histFolder->Add(fhCorrectVsFoundNoNoise);
   histFolder->Add(fhTimeOffset);
+  histFolder->Add(fhTimeOffsetSingletOnly);
   histFolder->Add(fhTimeOffsetClosest);
   histFolder->Add(fhLinkedMCEventsPerTrigger);
   histFolder->Add(fhLinkedTriggersPerMCEvent);
   histFolder->Add(fhMatchedTriggersPerMCEvent);
 
   fCanv = new CbmQaCanvas("cSummary", "", 4 * 400, 3 * 400);
-  fCanv->Divide2D(10);
+  fCanv->Divide2D(11);
   fOutFolder.Add(fCanv);
 }
 
@@ -197,7 +201,6 @@ void CbmSeedFinderQa::FillQaMCInfo()
   vMatchedTriggersPerMCEvent.resize(nEvents, 0);
 
   for (uint32_t iSeed = 0; iSeed < fvEventMatchesPerTs.size(); iSeed++) {
-
     const CbmMatch eventMatch = fvEventMatchesPerTs.at(iSeed);
     for (int32_t iLink = 0; iLink < eventMatch.GetNofLinks(); iLink++) {
       const CbmLink eventLink = eventMatch.GetLink(iLink);
@@ -205,6 +208,16 @@ void CbmSeedFinderQa::FillQaMCInfo()
     }
     const CbmLink matchedLink = eventMatch.GetMatchedLink();
     vMatchedTriggersPerMCEvent[fEventList->GetEventIndex(matchedLink)]++;
+  }
+
+  for (uint32_t iSeed = 0; iSeed < fvEventMatchesPerTs.size(); iSeed++) {
+    const CbmMatch eventMatch = fvEventMatchesPerTs.at(iSeed);
+    const CbmLink matchedLink = eventMatch.GetMatchedLink();
+    if (vMatchedTriggersPerMCEvent[fEventList->GetEventIndex(matchedLink)] == 1) {
+      const double seedTime = fvSeedTimesPerTs[iSeed];
+      const double timeDiff = seedTime - fEventList->GetEventTime(matchedLink.GetEntry(), matchedLink.GetFile());
+      fhTimeOffsetSingletOnly->Fill(timeDiff);
+    }
   }
 
   for (const auto& value : vLinkedTriggersPerMCEvent) {
@@ -306,15 +319,18 @@ void CbmSeedFinderQa::WriteHistos()
   fhTimeOffset->DrawCopy("colz", "");
 
   fCanv->cd(8);
-  fhTimeOffsetClosest->DrawCopy("colz", "");
+  fhTimeOffsetSingletOnly->DrawCopy("colz", "");
 
   fCanv->cd(9);
-  fhLinkedMCEventsPerTrigger->DrawCopy("colz", "");
+  fhTimeOffsetClosest->DrawCopy("colz", "");
 
   fCanv->cd(10);
-  fhLinkedTriggersPerMCEvent->DrawCopy("colz", "");
+  fhLinkedMCEventsPerTrigger->DrawCopy("colz", "");
 
   fCanv->cd(11);
+  fhLinkedTriggersPerMCEvent->DrawCopy("colz", "");
+
+  fCanv->cd(12);
   fhMatchedTriggersPerMCEvent->DrawCopy("colz", "");
 
   FairSink* sink = FairRootManager::Instance()->GetSink();

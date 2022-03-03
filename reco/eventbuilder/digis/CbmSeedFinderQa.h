@@ -106,6 +106,8 @@ private:
   TH2I* fhCorrectVsFoundNoNoise     = nullptr;  /// correct digis per event vs found digis per event, disregarding noise
   TH1F* fhTimeOffset                = nullptr;  /// difference between true event time and seed time
   TH1F* fhTimeOffsetClosest         = nullptr;  /// difference between seed time and closest MC event time
+  TH1F* fhTimeOffsetSingletOnly =
+    nullptr;  /// difference between true event time and seed time for one-to-one matched cases
 
   CbmQaCanvas* fCanv;  ///summary canvas
 
