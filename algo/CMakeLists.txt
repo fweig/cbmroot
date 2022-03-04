@@ -6,6 +6,7 @@ add_subdirectory (test)
 set(SRCS
   evbuild/EventBuilder.cxx
   trigger/TimeClusterTrigger.cxx
+  detectors/sts/StsReadoutConfig.cxx
   detectors/sts/UnpackSts.cxx
  )
 

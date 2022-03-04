@@ -25,6 +25,11 @@ struct CbmDigiTimeslice {
     ar& fData;
     ar& fDesc;
   }
+  void Clear()
+  {
+    fData.Clear();
+    fDesc = fles::TimesliceDescriptor();
+  }
 };
 
 #endif /* CBMDIGITIMESLICE_H */

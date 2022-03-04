@@ -138,16 +138,11 @@ Set(NO_DICT_SRCS
 SET_SOURCE_FILES_PROPERTIES(tof/etof/star_rhicf.c PROPERTIES COMPILE_FLAGS -Wno-pointer-sign)
 
 CHANGE_FILE_EXTENSION(*.cxx *.h HEADERS "${SRCS}")
-list(APPEND HEADERS base/CbmDigiData.h global/CbmDigiEvent.h)
+list(APPEND HEADERS base/CbmDigiData.h global/CbmDigiEvent.h global/CbmDigiTimeslice.h)
 
 set(LINKDEF DataLinkDef.h)
 set(LIBRARY_NAME CbmData)
 set(DEPENDENCIES Base)
-
-# Generate list of headers from the list of source files and add some extra header files 
-CHANGE_FILE_EXTENSION(*.cxx *.h HEADERS "${SRCS}")
-list(APPEND HEADERS global/CbmDigiEvent.h)
-
 
 GENERATE_LIBRARY()
 

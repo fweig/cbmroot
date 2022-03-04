@@ -23,9 +23,6 @@ namespace cbm::algo
                                               const uint64_t tTimeslice)
   {
 
-    // --- Assert that parameters are set
-    assert(fParams);
-
     // --- Output data
     vector<CbmStsDigi> digiVec = {};
     UnpackStsMonitorData moni  = {};
@@ -38,12 +35,20 @@ namespace cbm::algo
     // --- Interpret MS content as sequence of SMX messages
     auto message = reinterpret_cast<const stsxyter::Message*>(msContent);
 
-    // --- Get first TS_MSB (first message in microslice must be of type ts_msb)
-    if (message[0].GetMessType() != stsxyter::MessType::TsMsb) {
+    // --- The first message in the MS is expected to be of type EPOCH and can be ignored
+    if (message[0].GetMessType() != stsxyter::MessType::Epoch) {
+      std::cout << "Error: UnpackSts: First message type is " << uint16_t(message[0].GetMessType()) << std::endl;
       moni.fNumErrInvalidFirstMessage++;
       return std::make_pair(digiVec, moni);
     }
-    ProcessTsmsbMessage(message[0]);
+
+    // --- The second message must be of type ts_msb
+    if (message[1].GetMessType() != stsxyter::MessType::TsMsb) {
+      std::cout << "Error: UnpackSts: Second message type is " << uint16_t(message[0].GetMessType()) << std::endl;
+      moni.fNumErrInvalidFirstMessage++;
+      return std::make_pair(digiVec, moni);
+    }
+    ProcessTsmsbMessage(message[1]);
 
     // --- Number of messages in microslice
     auto msSize = msDescr.size;
@@ -54,7 +59,7 @@ namespace cbm::algo
     const uint32_t numMessages = msSize / sizeof(stsxyter::Message);
 
     // --- Message loop
-    for (uint32_t messageNr = 1; messageNr < numMessages; messageNr++) {
+    for (uint32_t messageNr = 2; messageNr < numMessages; messageNr++) {
 
       // --- Action depending on message type
       switch (message[messageNr].GetMessType()) {
@@ -88,19 +93,19 @@ namespace cbm::algo
 
     // --- Check eLink and get parameters
     uint16_t elink = message.GetLinkIndexHitBinning();
-    if (elink >= fParams->fElinkParams.size()) {
+    if (elink >= fParams.fElinkParams.size()) {
       moni.fNumErrElinkOutOfRange++;
       return;
     }
-    const UnpackStsElinkPar& elinkPar = fParams->fElinkParams.at(elink);
+    const UnpackStsElinkPar& elinkPar = fParams.fElinkParams.at(elink);
     uint32_t asicNr                   = elinkPar.fAsicNr;
 
     // --- Hardware-to-software address
-    uint32_t numChansPerModule = fParams->fNumAsicsPerModule * fParams->fNumChansPerAsic;
+    uint32_t numChansPerModule = fParams.fNumAsicsPerModule * fParams.fNumChansPerAsic;
     uint32_t address           = elinkPar.fAddress;
     uint32_t channel           = 0;
-    if (asicNr < fParams->fNumAsicsPerModule / 2) {  // front side (n side)
-      channel = message.GetHitChannel() + fParams->fNumChansPerAsic * asicNr;
+    if (asicNr < fParams.fNumAsicsPerModule / 2) {  // front side (n side)
+      channel = message.GetHitChannel() + fParams.fNumChansPerAsic * asicNr;
     }
     else {  // back side (p side)
       channel = numChansPerModule - message.GetHitChannel() + 1;

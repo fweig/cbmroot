@@ -35,6 +35,7 @@ struct DigiVec {
   {
     ar& fDigis;
   }
+  void Clear() { fDigis.clear(); }
 };
 
 /** Unless a detector-specific implementation for the digi data is present, the
@@ -72,6 +73,16 @@ struct CbmDigiData {
     ar& fTof;
     ar& fPsd;
     ar& fRich;
+  }
+  void Clear()
+  {
+    fT0.Clear();
+    fSts.Clear();
+    fMuch.Clear();
+    fTrd.Clear();
+    fTof.Clear();
+    fPsd.Clear();
+    fRich.Clear();
   }
 };
 

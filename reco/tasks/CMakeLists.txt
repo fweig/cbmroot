@@ -12,6 +12,8 @@ set(SRCS
 CbmTaskBuildEvents.cxx
 CbmTaskMakeRecoEvents.cxx
 CbmTaskTriggerDigi.cxx
+CbmTaskUnpack.cxx
+CbmSourceTs.cxx
 )
 # ---------------------------------------------------------
 
@@ -31,9 +33,11 @@ ${CBMROOT_SOURCE_DIR}/core/data/much
 ${CBMROOT_SOURCE_DIR}/core/data/trd
 ${CBMROOT_SOURCE_DIR}/core/data/tof
 ${CBMROOT_SOURCE_DIR}/core/data/psd
+${CBMROOT_SOURCE_DIR}/core/data/raw
 
 ${CBMROOT_SOURCE_DIR}/algo/evbuild
 ${CBMROOT_SOURCE_DIR}/algo/trigger
+${CBMROOT_SOURCE_DIR}/algo/detectors/sts
 
 )
 

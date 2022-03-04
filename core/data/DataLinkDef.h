@@ -133,7 +133,7 @@
 #pragma link C++ class CbmDigiVector < CbmPsdDsp> + ;
 #pragma link C++ class vector < CbmEventStore> + ;
 
-#pragma link C++ class std::vector < CbmEvent > + ;
+#pragma link C++ class std::vector < CbmEvent> + ;
 #pragma link C++ class StsDigiData + ;
 #pragma link C++ class MuchDigiData + ;
 #pragma link C++ class RichDigiData + ;
@@ -142,7 +142,8 @@
 #pragma link C++ class PsdDigiData + ;
 #pragma link C++ class CbmDigiData + ;
 #pragma link C++ class CbmDigiEvent + ;
-#pragma link C++ class std::vector < CbmDigiEvent > + ;
+#pragma link C++ class std::vector < CbmDigiEvent> + ;
+#pragma link C++ class CbmDigiTimeslice + ;
 
 /* clang-format off */
 #pragma read sourceClass="CbmStsDigi" version="[7]" targetClass="CbmStsDigi" \

@@ -29,7 +29,7 @@ namespace cbm::algo
    ** @brief STS Unpacking parameters for one eLink / ASIC
    **/
   struct UnpackStsElinkPar {
-    uint32_t fAddress    = 0;   ///< CbmStsAddress for the connected module
+    int32_t fAddress     = 0;   ///< CbmStsAddress for the connected module
     uint32_t fAsicNr     = 0;   ///< Number of connected ASIC within the module
     uint64_t fTimeOffset = 0.;  ///< Time calibration parameter
     double fAdcOffset    = 0.;  ///< Charge calibration parameter
@@ -60,6 +60,12 @@ namespace cbm::algo
     uint32_t fNumErrInvalidFirstMessage = 0;  ///< First message is not TS_MSB
     uint32_t fNumErrInvalidMsSize       = 0;  ///< Microslice size is not multiple of message size
     uint32_t fNumErrTimestampOverflow   = 0;  ///< Overflow in 64 bit time stamp
+    bool HasErrors()
+    {
+      uint32_t numErrors = fNumNonHitOrTsbMessage + fNumErrElinkOutOfRange + fNumErrInvalidFirstMessage
+                           + fNumErrInvalidMsSize + fNumErrTimestampOverflow;
+      return (numErrors > 0 ? true : false);
+    }
   };
 
 
@@ -95,7 +101,7 @@ namespace cbm::algo
     /** @brief Set the parameter container
      ** @param params Pointer to parameter container
      **/
-    void SetParams(std::unique_ptr<UnpackStsPar> params) { fParams = std::move(params); }
+    void SetParams(std::unique_ptr<UnpackStsPar> params) { fParams = *(std::move(params)); }
 
 
   private:  // methods
@@ -127,7 +133,8 @@ namespace cbm::algo
     static constexpr uint64_t fkCycleLength =
       (fkEpochsPerCycle * fkEpochLength * fkClockCycleNom) / fkClockCycleDen;  ///< Epoch cycle length in ns
 
-    std::unique_ptr<UnpackStsPar> fParams = nullptr;  ///< Parameter container
+    //std::unique_ptr<UnpackStsPar> fParams = nullptr;  ///< Parameter container
+    UnpackStsPar fParams = {};  ///< Parameter container
   };
 
 
