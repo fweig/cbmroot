@@ -9,6 +9,7 @@
 
 // Changelog
 //
+// 2021-03-04 - EC - Bugfix of positioning of front face
 // 2021-12-15 - EC - Placement for centre of the magnet as global coordinate system
 // 2020-04-19 - FU - The change are the same ones introduced with 723791eafb1810b6e1e067e067907420668056de
 //                   in the file Create_TOF_Geometry_v20a.C to fix a problem with the geometry.
@@ -78,7 +79,7 @@ const TString FileNameInfo = geoVersion + ".geo.info";
 
 const Double_t TOF_Z_Corr = ("tof_v20c_1e" == geoVersion ? 760 :                        // SIS 100 electron
                                ("tof_v20c_1h" == geoVersion ? 760 :                     // SIS 100 hadron
-                                  ("tof_v20c_1m" == geoVersion ? 839 :                  // SIS 100 muon
+                                  ("tof_v20c_1m" == geoVersion ? 819 :                  // SIS 100 muon
                                      ("tof_v16e_1h" == geoVersion ? 546.485 :           // SIS 100 hadron
                                         ("tof_v16e_1e" == geoVersion ? 696.485 :        // SIS 100 electron
                                            ("tof_v16e_1m" == geoVersion ? 776.485 :     // SIS 100 muon
@@ -89,9 +90,9 @@ const Double_t TOF_Z_Corr = ("tof_v20c_1e" == geoVersion ? 760 :                
 
 
 // TOF_Z_Front corresponds to front cover of outer super module towers
-const Double_t TOF_Z_Front = ("tof_v20c_1m" == geoVersion ? (762 - TOF_Z_Corr) :                    // SIS 100 muon
-                                ("tof_v20c_1e" == geoVersion ? (703 - TOF_Z_Corr) :                 // SIS 100 electron
-                                   ("tof_v20c_1h" == geoVersion ? (703 - TOF_Z_Corr) :              // SIS 100 hadron
+const Double_t TOF_Z_Front = ("tof_v20c_1m" == geoVersion ? (722 - TOF_Z_Corr) :                    // SIS 100 muon
+                                ("tof_v20c_1e" == geoVersion ? (663 - TOF_Z_Corr) :                 // SIS 100 electron
+                                   ("tof_v20c_1h" == geoVersion ? (663 - TOF_Z_Corr) :              // SIS 100 hadron
                                       ("tof_v16e_1h" == geoVersion ? (450 - TOF_Z_Corr) :           // SIS 100 hadron
                                          ("tof_v16e_1e" == geoVersion ? (600 - TOF_Z_Corr) :        // SIS 100 electron
                                             ("tof_v16e_1m" == geoVersion ? (680 - TOF_Z_Corr) :     // SIS 100 muon

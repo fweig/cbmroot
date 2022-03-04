@@ -62,9 +62,11 @@ const TString FileNameSim  = geoVersion + ".geo.root";
 const TString FileNameGeo  = geoVersion + "_geo.root";
 const TString FileNameInfo = geoVersion + ".geo.info";
 
-const Double_t TOF_Z_Corr = ("tof_v21a_1e" == geoVersion ? 800 :                        // SIS 100 electron
-                               ("tof_v21a_1h" == geoVersion ? 800 :                     // SIS 100 hadron
-                                  ("tof_v21a_1m" == geoVersion ? 859 :                  // SIS 100 muon
+// Seting the TOF_Z_Corr and the TOF_Z_Front to be equal sets the origin of the tof to be the most upstream point
+
+const Double_t TOF_Z_Corr = ("tof_v21a_1e" == geoVersion ? 705 :                        // SIS 100 electron
+                               ("tof_v21a_1h" == geoVersion ? 705 :                     // SIS 100 hadron
+                                  ("tof_v21a_1m" == geoVersion ? 740 :                  // SIS 100 muon
                                      ("tof_v16e_1h" == geoVersion ? 546.485 :           // SIS 100 hadron
                                         ("tof_v16e_1e" == geoVersion ? 696.485 :        // SIS 100 electron
                                            ("tof_v16e_1m" == geoVersion ? 776.485 :     // SIS 100 muon
@@ -75,9 +77,9 @@ const Double_t TOF_Z_Corr = ("tof_v21a_1e" == geoVersion ? 800 :                
 
 
 // TOF_Z_Front corresponds to front cover of outer super module towers
-const Double_t TOF_Z_Front = ("tof_v21a_1m" == geoVersion ? (762 - TOF_Z_Corr) :                    // SIS 100 muon
-                                ("tof_v21a_1e" == geoVersion ? (703 - TOF_Z_Corr) :                 // SIS 100 electron
-                                   ("tof_v21a_1h" == geoVersion ? (703 - TOF_Z_Corr) :              // SIS 100 hadron
+const Double_t TOF_Z_Front = ("tof_v21a_1m" == geoVersion ? (740 - TOF_Z_Corr) :                    // SIS 100 muon
+                                ("tof_v21a_1e" == geoVersion ? (705 - TOF_Z_Corr) :                 // SIS 100 electron
+                                   ("tof_v21a_1h" == geoVersion ? (705 - TOF_Z_Corr) :              // SIS 100 hadron
                                       ("tof_v16e_1h" == geoVersion ? (450 - TOF_Z_Corr) :           // SIS 100 hadron
                                          ("tof_v16e_1e" == geoVersion ? (600 - TOF_Z_Corr) :        // SIS 100 electron
                                             ("tof_v16e_1m" == geoVersion ? (680 - TOF_Z_Corr) :     // SIS 100 muon
