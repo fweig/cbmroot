@@ -10,10 +10,8 @@
 /// This file provides level-dependent assertion mechanism. Two defined macros L1ASSERT(LEVEL, COND)
 /// and L1MASSERT(LEVEL, COND, MSG), which will do the assertion for LEVEL >= L1Assert::kAssertionLevel
 /// and skip it otherwise. When L1ASSERT(LEVEL, COND) is called the COND expression is printed on the screen.
-/// When L
-
-
-
+/// When L1MASSERT(LEVEL, COND, MSG) is called, the MSG will be printed instead of expression
+///
 #ifndef L1Assert_h
 #define L1Assert_h 1
 
@@ -23,20 +21,24 @@
 #define L1ASSERT(LEVEL, COND)
 #define L1MASSERT(LEVEL, COND, MSG)
 #else
-#define L1ASSERT(LEVEL, COND) L1Assert::DoAssertion<(LEVEL) >= L1Assert::kAssertionLevel>((LEVEL), (COND), (#COND), __FILE__, __LINE__)
-#define L1MASSERT(LEVEL, COND, MSG) L1Assert::DoAssertion<(LEVEL) >= L1Assert::kAssertionLevel>((LEVEL), (COND), (MSG), __FILE__, __LINE__)
+#define L1ASSERT(LEVEL, COND) L1Assert::DoAssertion<(LEVEL) <= L1Assert::kAssertionLevel>((LEVEL), (COND), (#COND), __FILE__, __LINE__)
+#define L1MASSERT(LEVEL, COND, MSG) L1Assert::DoAssertion<(LEVEL) <= L1Assert::kAssertionLevel>((LEVEL), (COND), (MSG), __FILE__, __LINE__)
 #endif // defined(NDEBUG) || defined(L1_NO_ASSERT)
 
 namespace L1Assert {
+  /// Assertion levels
+  /// 0 - 
+  /// 1 - 
+  /// 2 - 
   constexpr int kAssertionLevel {1};
   
   /// Basic template function. Usage: place "level >= L1Assert::kAssertionLevel"
-  template <bool IsAsserted>
-  int DoAssertion (int level, bool condition, const char* msg, const char* fileName, int lineNo);
+  //template <bool IsAsserted>
+  //int DoAssertion (int level, bool condition, const char* msg, const char* fileName, int lineNo);
 
   /// Specialization in case of IsAsserted = true, i.e. the assertion is made
-  template <>
-  int DoAssertion<true>(int level, bool condition, const char* msg, const char* fileName, int lineNo)
+  template <bool IsAsserted>
+  int DoAssertion(int level, bool condition, const char* msg, const char* fileName, int lineNo)
   {
     if (!condition) {
       LOG(fatal) << "Level " << level << " assertion failed: " << msg << " (" << fileName << " : " << lineNo << ")\n";
@@ -47,7 +49,7 @@ namespace L1Assert {
 
   /// Specialization in case of IsAsserted = false, i.e. the assertion is not made
   template <>
-  int DoAssertion<false>(int level, bool condition, const char* msg, const char* fileName, int lineNo) { return 0 };
+  constexpr int DoAssertion<false>(int /*level*/, bool /*condition*/, const char* /*msg*/, const char* /*fileName*/, int /*lineNo*/) { return 0; }
 };
 
 #endif // L1Assert_h

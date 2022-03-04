@@ -255,6 +255,7 @@ endif()
 
 GENERATE_LIBRARY()
 Install(FILES CbmL1Counters.h
+              L1Algo/L1Assert.h
               L1Algo/L1EventEfficiencies.h
               L1Algo/L1Grid.h
               L1Algo/L1Branch.h
