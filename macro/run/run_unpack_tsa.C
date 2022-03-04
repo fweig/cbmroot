@@ -222,13 +222,16 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     trdfasp2dconfig->SetDoWriteOutput();
     // Activate the line below to write Trd1D digis to a separate "TrdFaspDigi" branch. Can be used to separate between Fasp and Spadic digis
     // trdfasp2dconfig->SetOutputBranchName("TrdFaspDigi");
+    uint8_t map[NFASPMOD];
     if (runid <= 1588) {
-      uint8_t map[NFASPMOD], map21[] = {9, 2, 3, 11, 10, 7, 8, 0, 1, 4, 6, 5};
-
+      uint8_t map21[] = {9, 2, 3, 11, 10, 7, 8, 0, 1, 4, 6, 5};
       for (int i(0); i < NFASPMOD; i++)
         map[i] = (i < 12 ? map21[i] : i);
-      trdfasp2dconfig->SetFaspMapping(5, map);
     }
+    else
+      for (int i(0); i < NFASPMOD; i++)
+        map[i] = i;
+    trdfasp2dconfig->SetFaspMapping(5, map);
     std::string parfilesbasepathTrdfasp2d = Form("%s/parameters/trd", srcDir.Data());
     trdfasp2dconfig->SetParFilesBasePath(parfilesbasepathTrdfasp2d);
     trdfasp2dconfig->SetSystemTimeOffset(-1800);  // [ns] value to be updated
