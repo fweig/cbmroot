@@ -40,7 +40,7 @@ class L1AlgoDraw;
 /*********************************************************************************
  ************ TEMPORARY MACROS, SHOULD BE REMOVED (TODO!!, S. Zharko)  ***********
  *                                                                               */
- 
+
 #define FEATURING_L1ALGO_INIT 1  // If defined, new initialization will be used, if not - the old one
 // Macro: 1 - new track finder loop, other - old track finder loop
 #define FEATURING_L1ALGO_CATRACKFINDER_ITERATIONLOOP 1

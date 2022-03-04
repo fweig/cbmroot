@@ -68,10 +68,10 @@
 #include <list>
 
 #include "L1Algo/L1Algo.h"
+#include "L1Algo/L1Assert.h"
 #include "L1Algo/L1Branch.h"
 #include "L1Algo/L1Field.h"
 #include "L1Algo/L1Hit.h"
-#include "L1Algo/L1Assert.h"
 #include "L1AlgoInputData.h"
 #include "L1Event.h"
 

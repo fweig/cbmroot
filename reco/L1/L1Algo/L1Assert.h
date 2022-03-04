@@ -21,23 +21,26 @@
 #define L1ASSERT(LEVEL, COND)
 #define L1MASSERT(LEVEL, COND, MSG)
 #else
-#define L1ASSERT(LEVEL, COND) L1Assert::DoAssertion<(LEVEL) <= L1Assert::kAssertionLevel>((LEVEL), (COND), (#COND), __FILE__, __LINE__)
-#define L1MASSERT(LEVEL, COND, MSG) L1Assert::DoAssertion<(LEVEL) <= L1Assert::kAssertionLevel>((LEVEL), (COND), (MSG), __FILE__, __LINE__)
-#endif // defined(NDEBUG) || defined(L1_NO_ASSERT)
+#define L1ASSERT(LEVEL, COND)                                                                                          \
+  L1Assert::DoAssertion<(LEVEL) <= L1Assert::kAssertionLevel>((LEVEL), (COND), (#COND), __FILE__, __LINE__)
+#define L1MASSERT(LEVEL, COND, MSG)                                                                                    \
+  L1Assert::DoAssertion<(LEVEL) <= L1Assert::kAssertionLevel>((LEVEL), (COND), (MSG), __FILE__, __LINE__)
+#endif  // defined(NDEBUG) || defined(L1_NO_ASSERT)
 
-namespace L1Assert {
+namespace L1Assert
+{
   /// Assertion levels
-  /// 0 - 
-  /// 1 - 
-  /// 2 - 
+  /// 0 -
+  /// 1 -
+  /// 2 -
   constexpr int kAssertionLevel {1};
-  
+
   /// Basic template function. Usage: place "level >= L1Assert::kAssertionLevel"
   //template <bool IsAsserted>
   //int DoAssertion (int level, bool condition, const char* msg, const char* fileName, int lineNo);
 
   /// Specialization in case of IsAsserted = true, i.e. the assertion is made
-  template <bool IsAsserted>
+  template<bool IsAsserted>
   int DoAssertion(int level, bool condition, const char* msg, const char* fileName, int lineNo)
   {
     if (!condition) {
@@ -48,8 +51,12 @@ namespace L1Assert {
   }
 
   /// Specialization in case of IsAsserted = false, i.e. the assertion is not made
-  template <>
-  constexpr int DoAssertion<false>(int /*level*/, bool /*condition*/, const char* /*msg*/, const char* /*fileName*/, int /*lineNo*/) { return 0; }
-};
+  template<>
+  constexpr int DoAssertion<false>(int /*level*/, bool /*condition*/, const char* /*msg*/, const char* /*fileName*/,
+                                   int /*lineNo*/)
+  {
+    return 0;
+  }
+};  // namespace L1Assert
 
-#endif // L1Assert_h
+#endif  // L1Assert_h
