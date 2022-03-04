@@ -129,6 +129,9 @@ public:
   void SetSeedTimeWindow(Double_t beg, Double_t end) { fpAlgo->SetSeedTimeWindow(beg, end); }
 
 private:
+  /** Read digis from input, call seed finder, then build events **/
+  void BuildEvents();
+
   void FillOutput();
   void SaveHistos();
 
@@ -147,10 +150,18 @@ private:
   std::vector<CbmPsdDigi>* fPsdDigis                   = nullptr;
   std::vector<Double_t>* fSeedTimes                    = nullptr;
 
+  /** Create digi vector and pass to algo **/
+  template<class TDigi>
+  void InitDigis(ECbmModuleId detId, std::vector<TDigi>** vDigi);
+
   std::vector<Double_t>* fTempDigiTimes =
     nullptr;  //used when multiple seed detectors are combined with sliding window seed finder
 
   std::vector<RawEventBuilderDetector> fSeedTimeDetList;  //for multiple seed detectors
+
+  /** Read digis from digi manager **/
+  template<class TDigi>
+  void ReadDigis(ECbmModuleId detId, std::vector<TDigi>* vDigis);
 
   // Store digi matches for QA tasks
   std::vector<CbmMatch>* fvDigiMatchQa = nullptr;

@@ -184,16 +184,13 @@ public:
 
   /// Set digi containers
   void SetT0Digis(const std::vector<CbmTofDigi>* T0DigiVec) { fT0DigiVec = T0DigiVec; }
-  void SetStsDigis(std::vector<CbmStsDigi>* StsDigis) { fStsDigis = StsDigis; }
-  void SetMuchDigis(std::vector<CbmMuchDigi>* MuchDigis) { fMuchDigis = MuchDigis; }
-  void SetTrdDigis(std::vector<CbmTrdDigi>* TrdDigis) { fTrdDigis = TrdDigis; }
-  void SetTofDigis(std::vector<CbmTofDigi>* TofDigis) { fTofDigis = TofDigis; }
-  void SetRichDigis(std::vector<CbmRichDigi>* RichDigis) { fRichDigis = RichDigis; }
-  void SetPsdDigis(std::vector<CbmPsdDigi>* PsdDigis) { fPsdDigis = PsdDigis; }
-  void SetMuchBeamTimeDigis(std::vector<CbmMuchBeamTimeDigi>* MuchBeamTimeDigis)
-  {
-    fMuchBeamTimeDigis = MuchBeamTimeDigis;
-  }
+  void SetDigis(std::vector<CbmStsDigi>* StsDigis) { fStsDigis = StsDigis; }
+  void SetDigis(std::vector<CbmMuchDigi>* MuchDigis) { fMuchDigis = MuchDigis; }
+  void SetDigis(std::vector<CbmTrdDigi>* TrdDigis) { fTrdDigis = TrdDigis; }
+  void SetDigis(std::vector<CbmTofDigi>* TofDigis) { fTofDigis = TofDigis; }
+  void SetDigis(std::vector<CbmRichDigi>* RichDigis) { fRichDigis = RichDigis; }
+  void SetDigis(std::vector<CbmPsdDigi>* PsdDigis) { fPsdDigis = PsdDigis; }
+  void SetDigis(std::vector<CbmMuchBeamTimeDigi>* MuchBeamTimeDigis) { fMuchBeamTimeDigis = MuchBeamTimeDigis; }
 
   void SetSeedTimes(std::vector<Double_t>* SeedTimes) { fSeedTimes = SeedTimes; }
 

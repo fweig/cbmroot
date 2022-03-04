@@ -282,12 +282,12 @@ try {
 
   /// Digis storage
   fpAlgo->SetT0Digis(fvDigiT0);
-  fpAlgo->SetStsDigis(fvDigiSts);
-  fpAlgo->SetMuchBeamTimeDigis(fvDigiMuch);
-  fpAlgo->SetTrdDigis(fvDigiTrd);
-  fpAlgo->SetTofDigis(fvDigiTof);
-  fpAlgo->SetRichDigis(fvDigiRich);
-  fpAlgo->SetPsdDigis(fvDigiPsd);
+  fpAlgo->SetDigis(fvDigiSts);
+  fpAlgo->SetDigis(fvDigiMuch);
+  fpAlgo->SetDigis(fvDigiTrd);
+  fpAlgo->SetDigis(fvDigiTof);
+  fpAlgo->SetDigis(fvDigiRich);
+  fpAlgo->SetDigis(fvDigiPsd);
 
   // Mvd currently not implemented in event builder
   //std::vector<CbmMvdDigi>* pMvdDigi = new std::vector<CbmMvdDigi>();
