@@ -65,7 +65,7 @@ EndIf()
 Ctest_Start(${_CMakeModel})
 
 unset(repeat)
-If(${CBM_TEST_MODEL} MATCHES MergeRequest OR ${CBM_TEST_MODEL} MATCHES Continuous)
+if(${_CMakeModel} MATCHES Continuous)
   if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
     set(repeat REPEAT UNTIL_PASS:2)
   endif()        
@@ -81,7 +81,10 @@ Ctest_Configure(BUILD "${CTEST_BINARY_DIRECTORY}"
 )
 
 If(NOT _RETVAL)
-  Ctest_Build(BUILD "${CTEST_BINARY_DIRECTORY}")
+  Ctest_Build(BUILD "${CTEST_BINARY_DIRECTORY}"
+              NUMBER_ERRORS _NUM_ERROR
+             )
+
   If(${_CMakeModel} MATCHES Continuous)
     If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
       CTest_Submit(PARTS Update Configure Build)
@@ -90,6 +93,23 @@ If(NOT _RETVAL)
                    BUILD_ID cdash_build_id
                   )
     EndIf()
+    if(${_NUM_ERROR} GREATER 0)
+      If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
+      Else()
+        message(STATUS " ")
+        message(STATUS " You can find the produced results on the CDash server")
+        message(STATUS " ")
+        message(STATUS " CDash Build Summary ..: "
+                "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/buildSummary.php?buildid=${cdash_build_id}"
+               )
+        message(STATUS " CDash Test List ......: "
+                "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/viewTest.php?buildid=${cdash_build_id}"
+               )
+        message(STATUS " ")
+      EndIf()
+      Message(STATUS "Build finished with ${_NUM_ERROR} errors")
+      message(FATAL_ERROR "Compilation failure")
+    endif()
   EndIf()
 
   Ctest_Test(BUILD "${CTEST_BINARY_DIRECTORY}"
