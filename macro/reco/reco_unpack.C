@@ -39,8 +39,8 @@ void reco_unpack(TString tsaFile = "", TString outFile = "")
   // In general, the following parts need not be touched
   // ========================================================================
 
-  //tsaFile = "/Users/vfriese/Cbmroot/data/1588_node8_1_0000";   Used for testing
-  //outFile = "test";
+  tsaFile = "/Users/vfriese/Cbmroot/data/1588_node8_1_0000";
+  outFile = "test";
 
   // ----- Default file names   ---------------------------------------------
   if (tsaFile.IsNull()) tsaFile = srcDir + "/input/mcbm_run399_first20Ts";

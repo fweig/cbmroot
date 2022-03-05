@@ -66,9 +66,6 @@ private:  // methods
   virtual InitStatus Init();
 
 
-  void InitStsConfig();
-
-
 private:  // members
   CbmSourceTs* fSource                       = nullptr;
   std::vector<cbm::algo::UnpackSts> fAlgoSts = {};  //!
@@ -78,13 +75,6 @@ private:  // members
   size_t fNumDigis             = 0;
   double fTime                 = 0.;
   CbmDigiTimeslice* fTimeslice = nullptr;  ///< Output data
-
-  // --- STS readout configuration; temporary in this class, will be moved later.
-  // --- Map index: (component, elink), map value: (module address, ASIC number in module
-  std::map<uint16_t, std::map<uint16_t, std::pair<int32_t, uint16_t>>> fStsMap = {};  //!
-
-private:  // methods
-  std::string PrintReadoutMap();
 
 
   ClassDef(CbmTaskUnpack, 1);

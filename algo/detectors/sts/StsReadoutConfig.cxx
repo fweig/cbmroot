@@ -6,6 +6,7 @@
 
 #include "CbmStsAddress.h"
 
+#include <cassert>
 #include <iomanip>
 
 using std::pair;
