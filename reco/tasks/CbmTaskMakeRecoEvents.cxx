@@ -45,9 +45,16 @@ void CbmTaskMakeRecoEvents::Exec(Option_t*)
   if (!fDigiEvents) return;
 
   // --- Clear output arrays
+  fT0Digis->clear();
   fStsDigis->clear();
-  fRecoEvents->Clear();
+  fRichDigis->clear();
+  fMuchDigis->clear();
+  fTrdDigis->clear();
+  fTofDigis->clear();
+  fPsdDigis->clear();
 
+  //fRecoEvents->Clear(); //causes memory leak
+  fRecoEvents->Delete();
 
   // --- Event loop
   Int_t eventNr = 0;
