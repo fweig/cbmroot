@@ -20,7 +20,7 @@
 #include "CbmStsUnpackConfig.h"
 #include "CbmTofUnpackConfig.h"
 #include "CbmTrdUnpackConfig.h"
-#include "CbmTrdUnpackConfigFasp2D.h"
+#include "CbmTrdUnpackFaspConfig.h"
 
 #include "StorableTimeslice.hpp"
 #include "TimesliceMetaData.h"
@@ -211,9 +211,9 @@ Bool_t CbmDeviceUnpack::InitContainers()
   }  // if ("" != trdsetuptag)
   // -------------
   // ---- TRDFASP2D ----
-  std::shared_ptr<CbmTrdUnpackConfigFasp2D> trdfasp2dconfig = nullptr;
+  std::shared_ptr<CbmTrdUnpackFaspConfig> trdfasp2dconfig = nullptr;
   if ("" != trdsetuptag) {
-    trdfasp2dconfig = std::make_shared<CbmTrdUnpackConfigFasp2D>(trdsetuptag.Data(), 3);
+    trdfasp2dconfig = std::make_shared<CbmTrdUnpackFaspConfig>(trdsetuptag.Data(), 3);
     if (trdfasp2dconfig) {
       // trdfasp2dconfig->SetDebugState();
       trdfasp2dconfig->SetDoWriteOutput();

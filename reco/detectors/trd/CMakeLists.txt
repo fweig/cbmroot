@@ -61,8 +61,8 @@ unpack/CbmTrdUnpackAlgoR.cxx
 unpack/CbmTrdUnpackAlgoLegacy2020R.cxx
 unpack/CbmTrdUnpackMonitor.cxx
 
-unpack/CbmTrdUnpackAlgoFasp2D.cxx
-unpack/CbmTrdUnpackConfigFasp2D.cxx
+unpack/CbmTrdUnpackFaspAlgo.cxx
+unpack/CbmTrdUnpackFaspConfig.cxx
 
 qa/CbmTrdClusterizerFastQa.cxx
 qa/CbmTrdHitDensityQa.cxx

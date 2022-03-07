@@ -35,8 +35,8 @@
 #pragma link C++ class CbmTrdUnpackConfig + ;
 #pragma link C++ class CbmTrdUnpackMonitor + ;
 
-#pragma link C++ class CbmTrdUnpackAlgoFasp2D + ;
-#pragma link C++ class CbmTrdUnpackConfigFasp2D + ;
+#pragma link C++ class CbmTrdUnpackFaspAlgo + ;
+#pragma link C++ class CbmTrdUnpackFaspConfig + ;
 
 #pragma link C++ class CbmTrdElectronsTrainAnn + ;
 #pragma link C++ class CbmTrdSetTracksPidWkn + ;

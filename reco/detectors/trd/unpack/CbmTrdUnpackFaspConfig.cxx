@@ -1,0 +1,50 @@
+/* Copyright (C) 2021 Goethe-University Frankfurt, Frankfurt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pascal Raisig [committer], Alexandru Bercuci*/
+
+#include "CbmTrdUnpackFaspConfig.h"
+
+CbmTrdUnpackFaspConfig::CbmTrdUnpackFaspConfig(std::string detGeoSetupTag, UInt_t runid)
+  : CbmRecoUnpackConfig("CbmTrdUnpackFaspConfig", detGeoSetupTag, runid)
+  , fFaspMap()
+{
+}
+
+CbmTrdUnpackFaspConfig::~CbmTrdUnpackFaspConfig() {}
+
+// ---- Init ----
+
+// ---- chooseAlgo ----
+std::shared_ptr<CbmTrdUnpackFaspAlgo> CbmTrdUnpackFaspConfig::chooseAlgo()
+{
+  if (fDoLog) LOG(info) << fName << "::Init - chooseAlgo";
+
+  // Default unpacker selection
+  // Unpacker algo from mcbm 2021 on and hopefully default for a long time.
+  auto algo = std::make_shared<CbmTrdUnpackFaspAlgo>();
+  LOG(info) << fName << "::chooseAlgo() - selected algo = " << algo->Class_Name();
+  return algo;
+
+  LOG(error) << fName
+             << "::Init - chooseAlgo() - no algorithm created something went wrong. We can not work like this!";
+  return nullptr;
+}
+
+//_____________________________________________________________________
+void CbmTrdUnpackFaspConfig::InitAlgo()
+{
+  if (fDoLog) LOG(info) << fName << "::InitAlgo - SetFaspMapping";
+  fAlgo->SetAsicMapping(fFaspMap);
+  /*if (fDoLog) */ fAlgo->PrintAsicMapping();
+
+  // Now we have all information required to initialise the algorithm
+  fAlgo->Init();
+}
+
+//_____________________________________________________________________
+void CbmTrdUnpackFaspConfig::SetFaspMapping(int modAddress, uint8_t faspMap[NFASPMOD])
+{
+  memcpy(fFaspMap[modAddress], faspMap, NFASPMOD * sizeof(uint8_t));
+}
+
+ClassImp(CbmTrdUnpackFaspConfig)

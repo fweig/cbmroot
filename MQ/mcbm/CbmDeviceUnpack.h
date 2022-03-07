@@ -32,7 +32,7 @@ class CbmPsdUnpackConfig;
 class CbmRichUnpackConfig;
 class CbmStsUnpackConfig;
 class CbmTofUnpackConfig;
-class CbmTrdUnpackConfigFasp2D;
+class CbmTrdUnpackFaspConfig;
 class CbmTrdUnpackConfig;
 
 class TimesliceMetaData;
@@ -59,7 +59,7 @@ protected:
   void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackConfig> config) { fTrd1DConfig = config; }
 
   /** @brief Set the Trd2D Unpack Config @param config */
-  void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackConfigFasp2D> config) { fTrd2DConfig = config; }
+  void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackFaspConfig> config) { fTrd2DConfig = config; }
 
   /** @brief Set the Rich Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmRichUnpackConfig> config) { fRichConfig = config; }
@@ -128,7 +128,7 @@ private:
 
   /// Configuration of the unpackers. Provides the configured algorithm
   std::shared_ptr<CbmStsUnpackConfig> fStsConfig         = nullptr;
-  std::shared_ptr<CbmTrdUnpackConfigFasp2D> fTrd2DConfig = nullptr;
+  std::shared_ptr<CbmTrdUnpackFaspConfig> fTrd2DConfig   = nullptr;
   std::shared_ptr<CbmTrdUnpackConfig> fTrd1DConfig       = nullptr;
   std::shared_ptr<CbmTofUnpackConfig> fTofConfig         = nullptr;
   std::shared_ptr<CbmRichUnpackConfig> fRichConfig       = nullptr;
