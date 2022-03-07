@@ -26,6 +26,7 @@
 #include "CbmTrdDigi.h"
 #include "CbmTrdParFasp.h"
 #include "CbmTrdParSetAsic.h"
+#include "CbmTrdUnpackFaspMonitor.h"
 
 #include "Timeslice.hpp"  // timeslice
 
@@ -108,12 +109,13 @@ public:
   */
   virtual std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
   GetParContainerRequest(std::string geoTag, std::uint32_t runId);
-
-  /**
-   * @brief Introduce fasp index mapping
-   */
-  void SetAsicMapping(const std::map<uint32_t, uint8_t[NFASPMOD]>& map);
   void PrintAsicMapping();
+
+  /** @brief Introduce fasp index mapping*/
+  void SetAsicMapping(const std::map<uint32_t, uint8_t[NFASPMOD]>& map);
+  /** @brief Set a predefined monitor 
+   *  @param monitor predefined unpacking monitor */
+  void SetMonitor(std::shared_ptr<CbmTrdUnpackFaspMonitor> monitor) { fMonitor = monitor; }
 
 protected:
   /** @brief Get message type from the FASP word */
@@ -128,7 +130,9 @@ protected:
   ULong64_t fTime[NCRI];
 
   /** @brief Finish function for this algorithm base clase */
-  void finish() { return; }
+  void finish() {
+    if (fMonitor) fMonitor->Finish();
+  }
 
   /**
    * @brief Additional initialisation function for all BaseR derived algorithms.
@@ -181,11 +185,13 @@ protected:
 private:
   void prt_wd(uint32_t w);
   std::map<uint32_t, uint8_t[NFASPMOD]>* fFaspMap = nullptr;
+  /** @brief Potential (online) monitor for the unpacking process */
+  std::shared_ptr<CbmTrdUnpackFaspMonitor> fMonitor = nullptr;
   std::vector<Int_t> fModuleId;
   CbmTrdParSetAsic fAsicPar;
   CbmTrdParSetDigi* fDigiSet = nullptr;
 
-  ClassDef(CbmTrdUnpackFaspAlgo, 2)  // unpack FASP read-out detectors
+  ClassDef(CbmTrdUnpackFaspAlgo, 3)  // unpack FASP read-out detectors
 };
 
 #endif  // CbmTrdUnpackFaspAlgo_H

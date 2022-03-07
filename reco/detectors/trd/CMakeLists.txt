@@ -63,6 +63,7 @@ unpack/CbmTrdUnpackMonitor.cxx
 
 unpack/CbmTrdUnpackFaspAlgo.cxx
 unpack/CbmTrdUnpackFaspConfig.cxx
+unpack/CbmTrdUnpackFaspMonitor.cxx
 
 qa/CbmTrdClusterizerFastQa.cxx
 qa/CbmTrdHitDensityQa.cxx

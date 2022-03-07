@@ -69,6 +69,11 @@ Bool_t CbmTrdUnpackFaspAlgo::initParSet(FairParGenericSet* parset)
       fModuleId.emplace_back(digi.first);
     // setPar->printParams();
     LOG(info) << GetName() << "::initParSet - for container " << parset->ClassName() << " modules " << fModuleId.size();
+
+    if (fMonitor) {
+      LOG(info) << fName << "::initParSet(CbmTrdParSetDigi) - Forwarding ParSetDigi to the monitor";
+      fMonitor->Init(fDigiSet);
+    }
   }
   else if (strcmp(parset->ClassName(), "CbmTrdParSetGas") == 0) {
     CbmTrdParSetGas* setPar = static_cast<CbmTrdParSetGas*>(parset);
@@ -264,6 +269,7 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
       CbmTrdDigi* digi = new CbmTrdDigi(pad, lchT, lchR, imess->tlab);
       digi->SetAddressModule(imess->cri);
       digis.push_back(digi);
+      if (fMonitor) fMonitor->FillHistos(digi);
     }
     delete imess;
   }

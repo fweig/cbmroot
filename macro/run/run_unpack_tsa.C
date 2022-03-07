@@ -28,7 +28,7 @@
 #include <TSystem.h>
 #endif
 
-std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename);
+std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename, bool fasp = false);
 std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline = false);
 std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename, bool bDebugMode = false);
 std::shared_ptr<CbmRichUnpackMonitor> GetRichMonitor(std::string treefilename, bool bDebugMode = false);
@@ -214,9 +214,9 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
   // -------------
 
   // ---- TRDFASP2D ----
-  std::shared_ptr<CbmTrdUnpackConfigFasp2D> trdfasp2dconfig = nullptr;
+  std::shared_ptr<CbmTrdUnpackFaspConfig> trdfasp2dconfig = nullptr;
 
-  trdfasp2dconfig = std::make_shared<CbmTrdUnpackConfigFasp2D>(trdsetuptag.Data());
+  trdfasp2dconfig = std::make_shared<CbmTrdUnpackFaspConfig>(trdsetuptag.Data());
   if (trdfasp2dconfig) {
     // trdfasp2dconfig->SetDebugState();
     trdfasp2dconfig->SetDoWriteOutput();
@@ -235,6 +235,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     std::string parfilesbasepathTrdfasp2d = Form("%s/parameters/trd", srcDir.Data());
     trdfasp2dconfig->SetParFilesBasePath(parfilesbasepathTrdfasp2d);
     trdfasp2dconfig->SetSystemTimeOffset(-1800);  // [ns] value to be updated
+    trdfasp2dconfig->SetMonitor(dynamic_pointer_cast<CbmTrdUnpackFaspMonitor>(GetTrdMonitor(outfilename, 1)));
   }
   // -------------
 
@@ -328,7 +329,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
  * @brief Get the Trd Monitor. Extra function to keep default macro part more silent.
  * @return std::shared_ptr<CbmTrdUnpackMonitor>
 */
-std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename)
+std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename, bool fasp)
 {
   // -----   Output filename and path   -------------------------------------
   std::string outpath  = "";
@@ -371,12 +372,21 @@ std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename)
 
   std::vector<CbmTrdUnpackMonitor::eOtherHistos> otherhistovec = {CbmTrdUnpackMonitor::eOtherHistos::kSpadic_Info_Types,
                                                                   CbmTrdUnpackMonitor::eOtherHistos::kMs_Flags};
-
-  auto monitor = std::make_shared<CbmTrdUnpackMonitor>();
-  monitor->SetActiveHistos(digihistovec);
-  monitor->SetActiveHistos(rawhistovec);
-  monitor->SetActiveHistos(otherhistovec);
-  monitor->SetWriteToFile(outfilename.data());
+  std::shared_ptr<CbmTrdUnpackMonitor> monitor(nullptr);
+  if (!fasp) {  // SPADIC monitor
+    monitor = std::make_shared<CbmTrdUnpackMonitor>();
+    monitor->SetActiveHistos(digihistovec);
+    monitor->SetActiveHistos(rawhistovec);
+    monitor->SetActiveHistos(otherhistovec);
+    monitor->SetWriteToFile(outfilename.data());
+  } 
+  else {  // FASP monitoring settings
+    monitor = std::make_shared<CbmTrdUnpackFaspMonitor>();
+    monitor->SetActiveHistos(digihistovec);
+    //monitor->SetActiveHistos(rawhistovec);
+    //monitor->SetActiveHistos(otherhistovec);
+    monitor->SetWriteToFile(outfilename.data());
+  }
 
   return monitor;
 }

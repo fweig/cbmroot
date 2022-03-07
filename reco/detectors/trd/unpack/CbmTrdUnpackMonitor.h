@@ -198,16 +198,16 @@ protected:
   }
 
   /** @brief Create the actual TH1 shared_ptrs */
-  void createHistos();
+  virtual void createHistos();
 
   /** @brief Create the actual TH1 shared_ptrs of the Digi histos */
-  void createHisto(eDigiHistos kHisto);
+  virtual void createHisto(eDigiHistos kHisto);
 
   /** @brief Create the actual TH1 shared_ptrs of the Raw histos */
-  void createHisto(eRawHistos kHisto);
+  virtual void createHisto(eRawHistos kHisto);
 
   /** @brief Create the actual TH1 shared_ptrs of the Others histos */
-  void createHisto(eOtherHistos kHisto);
+  virtual void createHisto(eOtherHistos kHisto);
 
   /**
    * @brief Fill the given histo with the information from the digi
@@ -217,7 +217,7 @@ protected:
    * @param[in] moduleid Unique module Id from which the digi came
    * @param[out] histo pointer to the histo (we do not want to extract it a snd time from the map)
   */
-  void fillHisto(CbmTrdDigi* digi, eDigiHistos kHisto, std::uint32_t moduleid, std::shared_ptr<TH1> histo);
+  virtual void fillHisto(CbmTrdDigi* digi, eDigiHistos kHisto, std::uint32_t moduleid, std::shared_ptr<TH1> histo);
 
   /**
    * @brief Fill the given histo with the information from the raw message

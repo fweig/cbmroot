@@ -37,6 +37,9 @@ void CbmTrdUnpackFaspConfig::InitAlgo()
   fAlgo->SetAsicMapping(fFaspMap);
   /*if (fDoLog) */ fAlgo->PrintAsicMapping();
 
+  // If we have a monitor in the config add it to the algo
+  if (fMonitor) fAlgo->SetMonitor(fMonitor);
+  
   // Now we have all information required to initialise the algorithm
   fAlgo->Init();
 }

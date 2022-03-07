@@ -23,6 +23,7 @@
 #include "CbmTrdDigi.h"
 #include "CbmTrdParFasp.h"
 #include "CbmTrdUnpackFaspAlgo.h"
+#include "CbmTrdUnpackFaspMonitor.h"
 
 #include <FairLogger.h>
 #include <Logger.h>
@@ -60,9 +61,10 @@ public:
   /** @brief Assignment operator - not implemented **/
   CbmTrdUnpackFaspConfig& operator=(const CbmTrdUnpackFaspConfig&) = delete;
 
-  /**
-   * @brief Initialize the algorithm, include all calibration for Trd FASP.
-  */
+  /** @brief Get the monitor. */
+  std::shared_ptr<CbmTrdUnpackFaspMonitor> GetMonitor() { return fMonitor; }
+
+  /** @brief Initialize the algorithm, include all calibration for Trd FASP.*/
   void InitAlgo();
 
   /** @brief define fasp mapping for each module
@@ -70,6 +72,10 @@ public:
    * @param faspMap mapped ids of FASP ASICs for module
    */
   void SetFaspMapping(int modAddress, uint8_t faspMap[NFASPMOD]);
+
+  /** @brief Add a monitor to the unpacker. 
+   *  @param value CbmTrdUnpackFaspMonitor */
+  void SetMonitor(std::shared_ptr<CbmTrdUnpackFaspMonitor> value) { fMonitor = value; }
 
 protected:
   /**
@@ -81,8 +87,10 @@ protected:
 
 private:
   std::map<uint32_t, uint8_t[NFASPMOD]> fFaspMap;  ///> DAQ packing of FASP id
+  /** @brief pointer to the monitor object */
+  std::shared_ptr<CbmTrdUnpackFaspMonitor> fMonitor = nullptr;
 
-  ClassDef(CbmTrdUnpackFaspConfig, 4)
+  ClassDef(CbmTrdUnpackFaspConfig, 5)
 };
 
 #endif  // CbmTrdUnpackFaspConfig_H
