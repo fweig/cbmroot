@@ -97,8 +97,8 @@ struct TmpHit {  // used for sort Hits before writing in the normal arrays
     id       = nTmpHits;  //tmpHits.size();
     iStation = point.iStation;
 
-    dt   = 5;           //st.dt[0];
-    time = point.time;  // + gRandom->Gaus(0, dt);
+    dt   = st.dt[0];
+    time = point.time + gRandom->Gaus(0, dt);
 
     iStripF = nStripF + ip;  //firstDetStrip + ip;
     iStripB = iStripF;
@@ -807,7 +807,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       //  if (mh->GetPlaneId()==2) continue;
       //  if (mh->GetPlaneId()==3) continue;
 
-
       th.time = mh->GetTime();
       th.dt   = mh->GetTimeError();
 
@@ -847,7 +846,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           if (trdHitMatch->GetLink(0).GetIndex() < nTrdPoints) {
             iMC    = trdHitMatch->GetLink(0).GetIndex();
             th.iMC = iMC + nMvdPoints + nStsPoints + nMuchPoints;
-            //                    th.track = vMCPoints[th.iMC].ID;
+            //                                th.track = vMCPoints[th.iMC].ID;
 
             if ((1 == fTrdUseMcHit) && (th.iMC > -1))  //SG!!! replace hits by MC points
 
@@ -891,10 +890,11 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
               mcUsed[iMC] = 1;
             }
           }
-
-        tmpHits.push_back(th);
-        nTrdHits++;
       }
+
+      tmpHits.push_back(th);
+      nTrdHits++;
+
     }  // for j
   }    // if listTrdHits
 
@@ -1004,9 +1004,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           pt->GetTrackID();
           Double_t dtrck          = dFEI(iFile, iEvent, pt->GetTrackID());
           DFEI2I::iterator trk_it = dFEI2vMCPoints.find(dtrck);
-          if (trk_it == dFEI2vMCPoints.end()) continue;
-          if (-1 == TofPointToTrack[sttof][trk_it->second]) continue;
-          th.iMC = TofPointToTrack[sttof][trk_it->second];
+          if (trk_it != dFEI2vMCPoints.end()) th.iMC = TofPointToTrack[sttof][trk_it->second];
           if ((1 == fTofUseMcHit) && (th.iMC > -1)) th.SetHitFromPoint(vMCPoints[th.iMC], algo->vStations[th.iStation]);
         }
       }
@@ -1034,6 +1032,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   fData_->NStsStrips = NStrips;
   fData_->fStripFlag.reset(NStrips, 0);
   int maxHitIndex = 0;
+
   for (int ih = 0; ih < nHits; ih++) {
     TmpHit& th                     = tmpHits[ih];
     char flag                      = th.iStation * 4;
