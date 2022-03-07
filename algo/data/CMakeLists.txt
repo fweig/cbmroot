@@ -21,9 +21,10 @@ set(SRCS
   ${CMAKE_SOURCE_DIR}/core/data/tof/CbmTofDetectorId.cxx
   ${CMAKE_SOURCE_DIR}/core/data/tof/CbmTofDetectorId_v12b.cxx
 
-
   ${CMAKE_SOURCE_DIR}/core/data/psd/CbmPsdDigi.cxx
   ${CMAKE_SOURCE_DIR}/core/data/psd/CbmPsdAddress.cxx
+  
+  ${CMAKE_SOURCE_DIR}/core/data/raw/StsXyterMessage.cxx
 )
 
 add_library(OnlineData SHARED ${SRCS})
@@ -38,6 +39,7 @@ target_include_directories(OnlineData
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/tof
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/psd
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/global
+  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/raw
   PUBLIC ${CMAKE_SOURCE_DIR}/external/ipc/ipc/lib/fles_ipc
 )
 
