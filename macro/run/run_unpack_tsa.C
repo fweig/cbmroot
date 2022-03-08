@@ -235,7 +235,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     std::string parfilesbasepathTrdfasp2d = Form("%s/parameters/trd", srcDir.Data());
     trdfasp2dconfig->SetParFilesBasePath(parfilesbasepathTrdfasp2d);
     trdfasp2dconfig->SetSystemTimeOffset(-1800);  // [ns] value to be updated
-    trdfasp2dconfig->SetMonitor(dynamic_pointer_cast<CbmTrdUnpackFaspMonitor>(GetTrdMonitor(outfilename, 1)));
+    // trdfasp2dconfig->SetMonitor(dynamic_pointer_cast<CbmTrdUnpackFaspMonitor>(GetTrdMonitor(outfilename, 1)));
   }
   // -------------
 
@@ -379,12 +379,12 @@ std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename, boo
     monitor->SetActiveHistos(rawhistovec);
     monitor->SetActiveHistos(otherhistovec);
     monitor->SetWriteToFile(outfilename.data());
-  } 
+  }
   else {  // FASP monitoring settings
     monitor = std::make_shared<CbmTrdUnpackFaspMonitor>();
     monitor->SetActiveHistos(digihistovec);
-    //monitor->SetActiveHistos(rawhistovec);
-    //monitor->SetActiveHistos(otherhistovec);
+    filetypepos = outfilename.find(".trd.root");
+    outfilename.replace(filetypepos, 10, ".fasp.root");
     monitor->SetWriteToFile(outfilename.data());
   }
 

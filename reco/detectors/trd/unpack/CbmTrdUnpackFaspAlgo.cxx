@@ -48,6 +48,7 @@ Bool_t CbmTrdUnpackFaspAlgo::initParSet(FairParGenericSet* parset)
       const CbmTrdParSetAsic* setDet = static_cast<const CbmTrdParSetAsic*>(setPar->GetModuleSet(did));
       if (!setDet) continue;
       if (setDet->GetAsicType() != Int_t(CbmTrdDigi::eCbmTrdAsicType::kFASP)) continue;
+      if (fMonitor) fMonitor->addParam(did, setDet);
       nModules++;
       std::vector<Int_t> a;
       setDet->GetAsicAddresses(&a);
@@ -65,15 +66,12 @@ Bool_t CbmTrdUnpackFaspAlgo::initParSet(FairParGenericSet* parset)
   else if (strcmp(parset->ClassName(), "CbmTrdParSetDigi") == 0) {
     fDigiSet                          = static_cast<CbmTrdParSetDigi*>(parset);
     map<Int_t, CbmTrdParMod*> digiPar = fDigiSet->GetModuleMap();
-    for (auto digi : digiPar)
+    for (auto digi : digiPar) {
       fModuleId.emplace_back(digi.first);
+      if (fMonitor) fMonitor->addParam(digi.first, (CbmTrdParModDigi*) digi.second);
+    }
     // setPar->printParams();
     LOG(info) << GetName() << "::initParSet - for container " << parset->ClassName() << " modules " << fModuleId.size();
-
-    if (fMonitor) {
-      LOG(info) << fName << "::initParSet(CbmTrdParSetDigi) - Forwarding ParSetDigi to the monitor";
-      fMonitor->Init(fDigiSet);
-    }
   }
   else if (strcmp(parset->ClassName(), "CbmTrdParSetGas") == 0) {
     CbmTrdParSetGas* setPar = static_cast<CbmTrdParSetGas*>(parset);
@@ -138,10 +136,11 @@ void CbmTrdUnpackFaspAlgo::PrintAsicMapping()
   }
   LOG(info) << GetName() << "Fasp Asic mapping on modules:";
   for (auto imod : (*fFaspMap)) {
-    printf("Mod [%6d] : ", imod.first);
+    printf("Mod [%6d] :", imod.first);
     for (int ifasp(0); ifasp < NFASPMOD; ifasp++) {
+      if (ifasp % 30 == 0) printf("\n");
       int jfasp = imod.second[ifasp];
-      printf("%2d ", (jfasp == 0xff ? -1 : jfasp));
+      printf("%3d ", (jfasp == 0xff ? -1 : jfasp));
     }
     printf("\n");
   }
@@ -269,7 +268,6 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
       CbmTrdDigi* digi = new CbmTrdDigi(pad, lchT, lchR, imess->tlab);
       digi->SetAddressModule(imess->cri);
       digis.push_back(digi);
-      if (fMonitor) fMonitor->FillHistos(digi);
     }
     delete imess;
   }
@@ -278,6 +276,7 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
   for (vector<CbmTrdDigi*>::iterator id = digis.begin(); id != digis.end(); id++) {
     (*id)->SetTimeDAQ(fTime[0] + (*id)->GetTimeDAQ());
     fOutputVec.emplace_back(*std::move(*id));
+    if (fMonitor) fMonitor->FillHistos((*id));
     if (VERBOSE) cout << (*id)->ToString();
   }
 

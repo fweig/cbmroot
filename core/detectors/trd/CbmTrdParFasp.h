@@ -5,7 +5,7 @@
 #ifndef CBMTRDPARFASP_H
 #define CBMTRDPARFASP_H
 
-#define NFASPMOD 30
+#define NFASPMOD 180
 #define NFASPCH 16
 
 #include "CbmTrdParAsic.h"  // for CbmTrdParAsic

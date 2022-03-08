@@ -33,15 +33,21 @@ std::shared_ptr<CbmTrdUnpackFaspAlgo> CbmTrdUnpackFaspConfig::chooseAlgo()
 //_____________________________________________________________________
 void CbmTrdUnpackFaspConfig::InitAlgo()
 {
-  if (fDoLog) LOG(info) << fName << "::InitAlgo - SetFaspMapping";
+  if (fDoLog) LOG(info) << fName << "::InitAlgo - Setup Fasp mapping";
   fAlgo->SetAsicMapping(fFaspMap);
   /*if (fDoLog) */ fAlgo->PrintAsicMapping();
 
   // If we have a monitor in the config add it to the algo
   if (fMonitor) fAlgo->SetMonitor(fMonitor);
-  
+
   // Now we have all information required to initialise the algorithm
   fAlgo->Init();
+
+  // Finish initialization of the monitoring task after all information for the run are gathered
+  if (fMonitor) {
+    /*if (fDoLog)*/ LOG(info) << fName << "::InitAlgo - Setup monitoring task";
+    fMonitor->Init();
+  }
 }
 
 //_____________________________________________________________________

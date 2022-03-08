@@ -375,12 +375,12 @@ std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename, boo
     monitor->SetActiveHistos(rawhistovec);
     monitor->SetActiveHistos(otherhistovec);
     monitor->SetWriteToFile(outfilename.data());
-  } 
+  }
   else {  // FASP monitoring settings
     auto monitor = std::make_shared<CbmTrdUnpackFaspMonitor>();
     monitor->SetActiveHistos(digihistovec);
-    //monitor->SetActiveHistos(rawhistovec);
-    //monitor->SetActiveHistos(otherhistovec);
+    filetypepos = outfilename.find(".trd.root");
+    outfilename.replace(filetypepos, 10, ".fasp.root");
     monitor->SetWriteToFile(outfilename.data());
   }
   return monitor;

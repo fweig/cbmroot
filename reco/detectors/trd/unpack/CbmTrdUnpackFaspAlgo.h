@@ -130,7 +130,8 @@ protected:
   ULong64_t fTime[NCRI];
 
   /** @brief Finish function for this algorithm base clase */
-  void finish() {
+  void finish()
+  {
     if (fMonitor) fMonitor->Finish();
   }
 
