@@ -9,6 +9,8 @@
 #include <FairSource.h>
 #include <Logger.h>
 
+#include <iostream>
+
 
 using fles::Timeslice;
 using std::string;
@@ -52,12 +54,14 @@ Bool_t CbmSourceTs::Init()
 // -----   Read one time slice from archive   ---------------------------------
 Int_t CbmSourceTs::ReadEvent(UInt_t)
 {
+  std::cout << std::endl;
   fFlesTs = fFlesSource->get();
   if (!fFlesTs) {
     LOG(info) << "SourceTs: End of archive reached; stopping run.";
     return 1;
   }
-  LOG(info) << "SourceTs: Reading time slice " << fNumTs << " (index " << fFlesTs->index() << ")";
+  LOG(info) << "SourceTs: Reading time slice " << fNumTs << " (index " << fFlesTs->index()
+            << ") at t = " << fFlesTs->start_time() << " ns";
   fNumTs++;
   return 0;
 }

@@ -74,13 +74,14 @@ void CbmTaskUnpack::Exec(Option_t*)
   uint64_t numComp     = timeslice->num_components();
   uint64_t numCompUsed = 0;
 
-  LOG(info) << GetName() << ": TS " << tsIndex << " at t = " << tsTime << ", components " << numComp;
-
   // ---  Component loop
   for (uint64_t comp = 0; comp < numComp; comp++) {
 
     uint8_t systemId = timeslice->descriptor(comp, 0).sys_id;
     if (systemId == static_cast<uint8_t>(fles::SubsystemIdentifier::STS)) {
+      uint16_t equipmentId = timeslice->descriptor(comp, 0).eq_id;
+      auto algoIt          = fAlgoSts.find(equipmentId);
+      assert(algoIt != fAlgoSts.end());
 
       // --- Component log
       size_t numDigisInComp = 0;
@@ -91,7 +92,7 @@ void CbmTaskUnpack::Exec(Option_t*)
       for (uint64_t mslice = 0; mslice < numMsInComp; mslice++) {
         auto msDescriptor = timeslice->descriptor(comp, mslice);
         auto msContent    = timeslice->content(comp, mslice);
-        auto result       = fAlgoSts[comp](msContent, msDescriptor, tsTime);
+        auto result       = (algoIt->second)(msContent, msDescriptor, tsTime);
         LOG(debug1) << GetName() << ": Component " << comp << ", microslice " << mslice << ", digis "
                     << result.first.size() << ", errors " << result.second.fNumNonHitOrTsbMessage << " | "
                     << result.second.fNumErrElinkOutOfRange << " | " << result.second.fNumErrInvalidFirstMessage
@@ -105,8 +106,8 @@ void CbmTaskUnpack::Exec(Option_t*)
       }  //# microslice
 
       compTimer.Stop();
-      LOG(info) << GetName() << ": Component " << comp << ", microslices " << numMsInComp << ", digis "
-                << numDigisInComp << ", CPU time " << compTimer.CpuTime() * 1000. << " ms";
+      LOG(debug) << GetName() << ": Component " << comp << ", microslices " << numMsInComp << ", digis "
+                 << numDigisInComp << ", CPU time " << compTimer.CpuTime() * 1000. << " ms";
       numCompUsed++;
       numDigis += numDigisInComp;
       numMs += numMsInComp;
@@ -204,16 +205,14 @@ InitStatus CbmTaskUnpack::Init()
       // TODO: Add parameters for time and ADC calibration
       par->fElinkParams.push_back(elinkPar);
     }
-    cbm::algo::UnpackSts algo;
-    algo.SetParams(std::move(par));
-    fAlgoSts.push_back(algo);
+    fAlgoSts[equip].SetParams(std::move(par));
     LOG(info) << GetName() << ": configured equipment " << equip << " with " << numElinks << " elinks";
   }  //# equipments
 
   LOG(info) << GetName() << ": configured " << fAlgoSts.size() << " unpacker algorithms for STS.";
+  LOG(debug) << "Readout map:" << fStsConfig.PrintReadoutMap();
   LOG(info) << "==================================================";
   std::cout << std::endl;
-  LOG(info) << "Readout map:" << fStsConfig.PrintReadoutMap();
 
   return kSUCCESS;
 }

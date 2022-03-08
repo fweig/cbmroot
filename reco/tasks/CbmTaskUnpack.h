@@ -67,8 +67,8 @@ private:  // methods
 
 
 private:  // members
-  CbmSourceTs* fSource                       = nullptr;
-  std::vector<cbm::algo::UnpackSts> fAlgoSts = {};  //!
+  CbmSourceTs* fSource                              = nullptr;
+  std::map<uint16_t, cbm::algo::UnpackSts> fAlgoSts = {};
   cbm::algo::StsReadoutConfig fStsConfig {};
   size_t fNumTs                = 0;
   size_t fNumMs                = 0;

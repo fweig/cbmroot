@@ -160,7 +160,8 @@ namespace stsxyter
   static constexpr uint32_t kulClockCycleDen = 8;   ///< Clock cycle denominator, equivalent to 2*160 MHz clock
   static constexpr double kdClockCycleNs = static_cast<double>(kulClockCycleNom) / kulClockCycleDen;  // ns, not rounded
 
-  static const uint32_t kuHitNbTsBinsBinning = 1 << 10;
+  // Binning FW adds 1 bit to TS in HIT message => Quick and dirty hack is a factor 2!!!
+  static const uint32_t kuHitNbTsBinsBinning   = 1 << 10;
   static const uint32_t kuTsMsbNbTsBinsBinning = 1 << kusLenTsMsbValBinning;
   static const uint64_t kulTsCycleNbBinsBinning =
     static_cast<uint64_t>(kuTsMsbNbTsBinsBinning) * static_cast<uint64_t>(kuHitNbTsBinsBinning);

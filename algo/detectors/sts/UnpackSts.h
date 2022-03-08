@@ -108,15 +108,16 @@ namespace cbm::algo
     /** @brief Process a hit message
      ** @param message SMX message (32-bit word)
      ** @param digiVec Vector to append the created digi to
+     ** @param monitor Reference to monitor object
      **/
     void ProcessHitMessage(const stsxyter::Message& message, std::vector<CbmStsDigi>& digiVec,
-                           UnpackStsMonitorData& moni) const;
+                           UnpackStsMonitorData& monitor) const;
 
     /** @brief Process an epoch message (TS_MSB)
      ** @param message SMX message (32-bit word)
-     ** @param digiVec Vector to append the created digi to
+     ** @param monitor Reference to monitor object
      **/
-    void ProcessTsmsbMessage(const stsxyter::Message& message);
+    void ProcessTsmsbMessage(const stsxyter::Message& message, UnpackStsMonitorData& monitor);
 
 
   private:                           // members

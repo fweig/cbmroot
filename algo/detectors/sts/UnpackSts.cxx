@@ -24,8 +24,8 @@ namespace cbm::algo
   {
 
     // --- Output data
-    vector<CbmStsDigi> digiVec = {};
-    UnpackStsMonitorData moni  = {};
+    vector<CbmStsDigi> digiVec   = {};
+    UnpackStsMonitorData monitor = {};
 
     // --- Current Timeslice time and TS_MSB epoch cycle
     fCurrentTsTime = tTimeslice;
@@ -38,23 +38,23 @@ namespace cbm::algo
     // --- The first message in the MS is expected to be of type EPOCH and can be ignored
     if (message[0].GetMessType() != stsxyter::MessType::Epoch) {
       std::cout << "Error: UnpackSts: First message type is " << uint16_t(message[0].GetMessType()) << std::endl;
-      moni.fNumErrInvalidFirstMessage++;
-      return std::make_pair(digiVec, moni);
+      monitor.fNumErrInvalidFirstMessage++;
+      return std::make_pair(digiVec, monitor);
     }
 
     // --- The second message must be of type ts_msb
     if (message[1].GetMessType() != stsxyter::MessType::TsMsb) {
       std::cout << "Error: UnpackSts: Second message type is " << uint16_t(message[0].GetMessType()) << std::endl;
-      moni.fNumErrInvalidFirstMessage++;
-      return std::make_pair(digiVec, moni);
+      monitor.fNumErrInvalidFirstMessage++;
+      return std::make_pair(digiVec, monitor);
     }
-    ProcessTsmsbMessage(message[1]);
+    ProcessTsmsbMessage(message[1], monitor);
 
     // --- Number of messages in microslice
     auto msSize = msDescr.size;
     if (msSize % sizeof(stsxyter::Message) != 0) {
-      moni.fNumErrInvalidMsSize++;
-      return std::make_pair(digiVec, moni);
+      monitor.fNumErrInvalidMsSize++;
+      return std::make_pair(digiVec, monitor);
     }
     const uint32_t numMessages = msSize / sizeof(stsxyter::Message);
 
@@ -65,15 +65,15 @@ namespace cbm::algo
       switch (message[messageNr].GetMessType()) {
 
         case stsxyter::MessType::Hit: {
-          ProcessHitMessage(message[messageNr], digiVec, moni);
+          ProcessHitMessage(message[messageNr], digiVec, monitor);
           break;
         }
         case stsxyter::MessType::TsMsb: {
-          ProcessTsmsbMessage(message[messageNr]);
+          ProcessTsmsbMessage(message[messageNr], monitor);
           break;
         }
         default: {
-          moni.fNumNonHitOrTsbMessage++;
+          monitor.fNumNonHitOrTsbMessage++;
           break;
         }
 
@@ -81,20 +81,20 @@ namespace cbm::algo
 
     }  //# Messages
 
-    return std::make_pair(digiVec, moni);
+    return std::make_pair(digiVec, monitor);
   }
   // --------------------------------------------------------------------------
 
 
   // -----   Process hit message   --------------------------------------------
   void UnpackSts::ProcessHitMessage(const stsxyter::Message& message, vector<CbmStsDigi>& digiVec,
-                                    UnpackStsMonitorData& moni) const
+                                    UnpackStsMonitorData& monitor) const
   {
 
     // --- Check eLink and get parameters
     uint16_t elink = message.GetLinkIndexHitBinning();
     if (elink >= fParams.fElinkParams.size()) {
-      moni.fNumErrElinkOutOfRange++;
+      monitor.fNumErrElinkOutOfRange++;
       return;
     }
     const UnpackStsElinkPar& elinkPar = fParams.fElinkParams.at(elink);
@@ -111,32 +111,25 @@ namespace cbm::algo
       channel = numChansPerModule - message.GetHitChannel() + 1;
     }
 
-    // --- Time stamp
-    // --- Expand to full Unix time in clock cycles
-    uint64_t timeCc = message.GetHitTimeBinning() + fCurrentEpochTime;
-    if (timeCc >> 59 != 0) {  // avoid overflow in 64 bit // TODO: Hard-coded number!
-      moni.fNumErrTimestampOverflow++;
-      return;
-    }
-    // --- Convert time into ns
-    uint64_t timeNs = (timeCc * fkClockCycleNom + fkClockCycleDen / 2) / fkClockCycleDen;
+    // --- Convert time stamp from clock cycles to ns
+    uint64_t messageTime = (message.GetHitTimeBinning() * fkClockCycleNom + fkClockCycleDen / 2) / fkClockCycleDen;
+    // --- Expand to time within timeslice
+    messageTime += fCurrentEpochTime;
     // --- Correct ASIC-wise offsets
-    timeNs -= elinkPar.fTimeOffset;
-    // --- Calculate time relative to timeslice
-    timeNs -= fCurrentTsTime;
+    messageTime -= elinkPar.fTimeOffset;
     // --- TODO: Add walk correction (depends on ADC)
 
     // --- Charge
     double charge = elinkPar.fAdcOffset + (message.GetHitAdc() - 1) * elinkPar.fAdcGain;
 
     // --- Create output digi
-    digiVec.emplace_back(address, channel, timeNs, charge);
+    digiVec.emplace_back(address, channel, messageTime, charge);
   }
   // --------------------------------------------------------------------------
 
 
   // -----   Process an epoch (TS_MSB) message   ------------------------------
-  void UnpackSts::ProcessTsmsbMessage(const stsxyter::Message& message)
+  void UnpackSts::ProcessTsmsbMessage(const stsxyter::Message& message, UnpackStsMonitorData& monitor)
   {
 
     auto epoch = message.GetTsMsbValBinning();
@@ -145,8 +138,16 @@ namespace cbm::algo
     if (epoch < fCurrentEpoch) fCurrentCycle++;
 
     // --- Update current epoch
-    fCurrentEpoch     = epoch;
-    fCurrentEpochTime = (fCurrentCycle * fkEpochsPerCycle + epoch) * fkEpochLength;
+    fCurrentEpoch          = epoch;
+    uint64_t epochTimeInCc = (fCurrentCycle * fkEpochsPerCycle + epoch) * fkEpochLength;
+    if (epochTimeInCc >> 59 != 0) {  // avoid overflow in 64 bit // TODO: Hard-coded number!
+      monitor.fNumErrTimestampOverflow++;
+      return;
+    }
+
+    // --- Calculate epoch time in ns relative to timeslice start time
+    fCurrentEpochTime = (epochTimeInCc * fkClockCycleNom + fkClockCycleDen / 2) / fkClockCycleDen;
+    fCurrentEpochTime -= fCurrentTsTime;
   }
   // --------------------------------------------------------------------------
 
