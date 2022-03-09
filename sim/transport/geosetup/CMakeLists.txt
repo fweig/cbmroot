@@ -2,43 +2,46 @@
 # the array .
 # The extension is already found.  Any number of sources could be listed here.
 
-If(NOT EXISTS geodb.tar.gz AND DOWNLOAD_EXTERNALS)
-  Message(STATUS "Download geometry database")
-  FILE(DOWNLOAD http://cbmdb.jinr.ru/geometry/download_file.php?type=all&tag=all ${CMAKE_BINARY_DIR}/geodb.tar.gz SHOW_PROGRESS)
+# Don't download the geometry database any longer. The server isn't
+# available in the moment
 
-  File(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/geodb)
-  File(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/geometry/db)
+#If(NOT EXISTS geodb.tar.gz AND DOWNLOAD_EXTERNALS)
+#  Message(STATUS "Download geometry database")
+#  FILE(DOWNLOAD http://cbmdb.jinr.ru/geometry/download_file.php?type=all&tag=all ${CMAKE_BINARY_DIR}/geodb.tar.gz SHOW_PROGRESS)
 
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar xvzf ${CMAKE_BINARY_DIR}/geodb.tar.gz
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/geodb
-    OUTPUT_VARIABLE TAR_OUTPUT
-    ERROR_VARIABLE TAR_OUTPUT
-    RESULT_VARIABLE TAR_RETURN_VALUE
-  )
+#  File(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/geodb)
+#  File(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/geometry/db)
 
-  if (NOT TAR_RETURN_VALUE EQUAL 0)
-    message(FATAL_ERROR "Error: ${TAR_OUTPUT}")
-  endif()
+#  execute_process(
+#    COMMAND ${CMAKE_COMMAND} -E tar xvzf ${CMAKE_BINARY_DIR}/geodb.tar.gz
+#    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/geodb
+#    OUTPUT_VARIABLE TAR_OUTPUT
+#    ERROR_VARIABLE TAR_OUTPUT
+#    RESULT_VARIABLE TAR_RETURN_VALUE
+#  )
 
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/geodb/storage ${CMAKE_SOURCE_DIR}/geometry/db
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/geodb/local.db ${CMAKE_SOURCE_DIR}/geometry/db/
-    OUTPUT_VARIABLE COPY_OUTPUT
-    ERROR_VARIABLE COPY_OUTPUT
-    RESULT_VARIABLE COPY_RETURN_VALUE
-  )
+#  if (NOT TAR_RETURN_VALUE EQUAL 0)
+#    message(FATAL_ERROR "Error: ${TAR_OUTPUT}")
+#  endif()
 
-  if (NOT COPY_RETURN_VALUE EQUAL 0)
-    message("Error: ${COPY_OUTPUT}")
-  endif()
+#  execute_process(
+#    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/geodb/storage ${CMAKE_SOURCE_DIR}/geometry/db
+#    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/geodb/local.db ${CMAKE_SOURCE_DIR}/geometry/db/
+#    OUTPUT_VARIABLE COPY_OUTPUT
+#    ERROR_VARIABLE COPY_OUTPUT
+#    RESULT_VARIABLE COPY_RETURN_VALUE
+#  )
 
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/geodb/storage 
-  )
+#  if (NOT COPY_RETURN_VALUE EQUAL 0)
+#    message("Error: ${COPY_OUTPUT}")
+#  endif()
 
-  Message(STATUS "Download and unpacking done")
-EndIf()
+#  execute_process(
+#    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/geodb/storage 
+#  )
+
+#  Message(STATUS "Download and unpacking done")
+#EndIf()
 
 
 Set(INCLUDE_DIRECTORIES
