@@ -61,7 +61,7 @@ void CbmTrdUnpackFaspMonitor::Finish()
     TDirectory* oldDir = gDirectory;
 
     /// (Re-)Create ROOT file to store the histos
-    TFile histofile(fOutfilename.data(), "RECREATE");
+    TFile histofile(fOutfilename.data(), "UPDATE");
 
     nhistos += writeHistosToFile(&fDigiHistoMap, &histofile);
     nhistos += writeHistosToFile(&fRawHistoMap, &histofile);
@@ -91,8 +91,12 @@ Bool_t CbmTrdUnpackFaspMonitor::Init()
   }
 
   // Purge the module list. Remove non-FASP modules
-  for (auto moduleDef : fModuleDef) {
-    if (!(std::get<0>(moduleDef.second).size())) fModuleDef.erase(moduleDef.first);
+  auto it = fModuleDef.begin();
+  while (it != fModuleDef.end()) {
+    size_t nchs = std::get<0>((*it).second).size();
+    if (nchs == 0) it = fModuleDef.erase(it);
+    else
+      it++;
   }
   createHistos();
 
@@ -108,7 +112,7 @@ void CbmTrdUnpackFaspMonitor::addParam(uint32_t madd, const CbmTrdParSetAsic* as
     return;
   }
 
-  std::vector<int32_t> faspMapping(NFASPMOD * NFASPCH, -1);
+  std::vector<int32_t> padToFaspMapping(NFASPMOD * NFASPCH, -1);
   std::vector<Int_t> add;
   asics->GetAsicAddresses(&add);
   for (auto afasp : add) {
@@ -116,11 +120,11 @@ void CbmTrdUnpackFaspMonitor::addParam(uint32_t madd, const CbmTrdParSetAsic* as
 
     int faspid(afasp % 1000), ich(faspid * 100);
     for (auto ach : fasp->GetChannelAddresses()) {
-      faspMapping[ach] = ich;
+      padToFaspMapping[ach] = ich;
       ich++;
     }
   }
-  std::get<0>((*moduleDef).second) = faspMapping;
+  std::get<0>((*moduleDef).second) = padToFaspMapping;
 }
 
 //_________________________________________________________________________
@@ -149,13 +153,11 @@ void CbmTrdUnpackFaspMonitor::createHisto(eDigiHistos kHisto)
     auto nrows = std::get<2>(moduleDef.second);
     auto nchs  = nrows * ncols;
 
-    histoname = "ModuleId_" + std::to_string(modId) + "-";
-    histoname += getTypeName(kHisto) + "_";
-    histoname += getHistoName(kHisto);
+    histoname = "Fasp_" + getTypeName(kHisto) + "_" + getHistoName(kHisto);
     switch (kHisto) {
       case eDigiHistos::kMap:
-        newhisto = std::make_shared<TH2I>(histoname.data(), histoname.data(), 2 * ncols, -0.5, (ncols - 0.5), nrows,
-                                          -0.5, (nrows - 0.5));
+        newhisto = std::make_shared<TH2I>(histoname.data(), Form("%s %d", histoname.data(), modId), 2 * ncols, -0.5,
+                                          (ncols - 0.5), nrows, -0.5, (nrows - 0.5));
         newhisto->SetXTitle("COL (pad)");
         newhisto->SetYTitle("ROW (pad)");
         newhisto->SetZTitle("Yield");
@@ -163,28 +165,29 @@ void CbmTrdUnpackFaspMonitor::createHisto(eDigiHistos kHisto)
 
       case eDigiHistos::kCharge:
         newhisto =
-          std::make_shared<TH2I>(histoname.data(), histoname.data(), 2 * nchs, -0.5, (nchs - 0.5), 4095, 0.5, 4095.5);
+          std::make_shared<TH2I>(histoname.data(), Form("%s %d", histoname.data(), modId), 2 * nchs, -0.5, 
+                                 (nchs - 0.5), 4095, 0.5, 4095.5);
         newhisto->SetXTitle("Pad-Id");
         newhisto->SetYTitle("Sgn [ADU]");
         newhisto->SetZTitle("Yield");
         break;
       case eDigiHistos::kChannel:
-        newhisto = std::make_shared<TH2I>(histoname.data(), histoname.data(), NFASPMOD, -0.5, (NFASPMOD - 0.5), NFASPCH,
-                                          -0.5, NFASPCH - 0.5);
+        newhisto = std::make_shared<TH2I>(histoname.data(), Form("%s %d", histoname.data(), modId), NFASPMOD, -0.5, 
+                                          (NFASPMOD - 0.5), NFASPCH, -0.5, NFASPCH - 0.5);
         newhisto->SetXTitle("FASP-Id");
         newhisto->SetYTitle("FASP-Ch");
         newhisto->SetZTitle("Yield");
         break;
       case eDigiHistos::kDigiDeltaT:
         newhisto =
-          std::make_shared<TH2I>(histoname.data(), histoname.data(), 2 * nchs, -0.5, (nchs - 0.5), 1000, 0, 1e2);
+          std::make_shared<TH2I>(histoname.data(), Form("%s %d", histoname.data(), modId), 2 * nchs, -0.5, 
+                                 (nchs - 0.5), 1000, 0, 1e2);
         newhisto->SetXTitle("Pad-Id");
         newhisto->SetYTitle("Rate_{SGN} [kHz]");
         newhisto->SetZTitle("Yield");
         break;
       default: return;
     }
-    // printf("AB :: createHisto(%s) row[%d] col[%d]\n", histoname.c_str(), nrows, ncols);
     LOG(debug) << Class_Name() << "::CreateHisto() HistoDigi " << static_cast<size_t>(kHisto) << " Module " << modId
                << " initialized as " << histoname.data();
     if (newhisto) { addHistoToMap<eDigiHistos>(newhisto, &fDigiHistoMap, modId, kHisto); }

@@ -107,12 +107,15 @@ void CbmTrdUnpackMonitor::Finish()
 }
 
 // ---- Init ----
-Bool_t CbmTrdUnpackMonitor::Init(CbmTrdParSetDigi* digiParSet)
+Bool_t CbmTrdUnpackMonitor::Init(CbmTrdParSetDigi* digiParSet, CbmTrdParSetAsic* asicParSet)
 {
   auto modulemap = digiParSet->GetModuleMap();
   for (auto modulepair : modulemap) {
     auto parmoddigi = static_cast<CbmTrdParModDigi*>(modulepair.second);
-
+    if (asicParSet) {
+      auto asicParMod = static_cast<const CbmTrdParSetAsic*>(asicParSet->GetModuleSet(modulepair.first));
+      if (asicParMod->GetAsicType() != Int_t(CbmTrdDigi::eCbmTrdAsicType::kSPADIC)) continue;
+    }
     fModuleIdsVec.emplace_back(modulepair.first);
 
     fModuleOrientation.emplace(std::pair<std::uint32_t, std::uint8_t>(modulepair.first, parmoddigi->GetOrientation()));

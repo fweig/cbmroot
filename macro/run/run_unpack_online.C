@@ -368,19 +368,17 @@ std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename, boo
 
   std::vector<CbmTrdUnpackMonitor::eOtherHistos> otherhistovec = {CbmTrdUnpackMonitor::eOtherHistos::kSpadic_Info_Types,
                                                                   CbmTrdUnpackMonitor::eOtherHistos::kMs_Flags};
-
+  std::shared_ptr<CbmTrdUnpackMonitor> monitor(nullptr);
   if (!fasp) {  // SPADIC monitor
-    auto monitor = std::make_shared<CbmTrdUnpackMonitor>();
+    monitor = std::make_shared<CbmTrdUnpackMonitor>();
     monitor->SetActiveHistos(digihistovec);
     monitor->SetActiveHistos(rawhistovec);
     monitor->SetActiveHistos(otherhistovec);
     monitor->SetWriteToFile(outfilename.data());
   }
   else {  // FASP monitoring settings
-    auto monitor = std::make_shared<CbmTrdUnpackFaspMonitor>();
+    monitor = std::make_shared<CbmTrdUnpackFaspMonitor>();
     monitor->SetActiveHistos(digihistovec);
-    filetypepos = outfilename.find(".trd.root");
-    outfilename.replace(filetypepos, 10, ".fasp.root");
     monitor->SetWriteToFile(outfilename.data());
   }
   return monitor;

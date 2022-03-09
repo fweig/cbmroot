@@ -114,7 +114,12 @@ Bool_t CbmTrdUnpackAlgoBaseR::initParSet(CbmTrdParSetDigi* parset)
   // The monitor needs the ParSetDigi to extract module informations and other stuff
   if (fMonitor) {
     LOG(info) << fName << "::initParSet(CbmTrdParSetDigi) - Forwarding ParSetDigi to the monitor";
-    initOk &= fMonitor->Init(parset);
+    CbmTrdParSetAsic* asics(nullptr);
+    for (auto pair : fParContVec) {
+      if ((pair.second).get()->IsA() != CbmTrdParSetAsic::Class()) continue;
+      asics = static_cast<CbmTrdParSetAsic*>((pair.second).get());
+    }
+    initOk &= fMonitor->Init(parset, asics);
   }
 
   return initOk;

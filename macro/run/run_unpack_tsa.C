@@ -383,8 +383,6 @@ std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename, boo
   else {  // FASP monitoring settings
     monitor = std::make_shared<CbmTrdUnpackFaspMonitor>();
     monitor->SetActiveHistos(digihistovec);
-    filetypepos = outfilename.find(".trd.root");
-    outfilename.replace(filetypepos, 10, ".fasp.root");
     monitor->SetWriteToFile(outfilename.data());
   }
 

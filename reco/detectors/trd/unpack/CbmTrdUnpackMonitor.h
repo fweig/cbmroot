@@ -23,6 +23,7 @@
 
 #include "CbmTrdDigi.h"
 #include "CbmTrdParSetDigi.h"
+#include "CbmTrdParSetAsic.h"
 #include "CbmTrdRawMessageSpadic.h"
 #include "CbmTrdSpadic.h"
 
@@ -121,7 +122,7 @@ public:
 
   // Runtime functions
   /** @brief Init all required parameter informations */
-  Bool_t Init(CbmTrdParSetDigi* digiParSet);
+  Bool_t Init(CbmTrdParSetDigi* digiParSet, CbmTrdParSetAsic* asicParSet = nullptr);
 
   /** @brief transfer the enums for the histos to be activated to the member vector */
   void SetActiveHistos(std::vector<eDigiHistos> vec) { fActiveDigiHistos.swap(vec); }
