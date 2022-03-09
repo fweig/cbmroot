@@ -33,15 +33,15 @@ void create_rich_v21b_mcbm()
   TString geoFileName = "rich_v21b_mcbm.geo.root";
   TString topNodeName = "rich_v21b_mcbm";
 
+  // displace RICH module along the rails on the TOF frame
   Double_t XOffset = 0;
   Double_t ZOffset = 0;
 
-  // displace RICH module along the rails on the TOF frame
   Double_t displacement_along_rails     = -20.0; // cm for Carbon-12 run
   Double_t support_frame_rotation_angle =  12.5; // degrees
 
-  XOffset = +displacement_along_rails *cos( support_frame_rotation_angle * acos(-1)/180 );
-  ZOffset = -displacement_along_rails *sin( support_frame_rotation_angle * acos(-1)/180 );
+  XOffset += +displacement_along_rails *cos( support_frame_rotation_angle * acos(-1)/180 );
+  ZOffset += -displacement_along_rails *sin( support_frame_rotation_angle * acos(-1)/180 );
   // end of displacement along the rails
   
   FairGeoLoader* geoLoad    = new FairGeoLoader("TGeo", "FairGeoLoader");
