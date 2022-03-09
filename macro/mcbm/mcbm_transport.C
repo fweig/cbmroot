@@ -18,13 +18,14 @@
 
 void SetTrack(CbmTransport*, Double_t, Int_t, Double_t, Double_t, Double_t);
 
-void mcbm_transport(Int_t nEvents = 10,
+void mcbm_transport(Int_t nEvents = 2,
                     //                  const char* setupName = "mcbm_beam_2022_06",
                     //                  const char* setupName = "mcbm_beam_2022_05",
                     //                  const char* setupName = "mcbm_beam_2022_04",
                     //                  const char* setupName = "mcbm_beam_2022_03",
                     //                  const char* setupName = "mcbm_beam_2022_02",
                     //                  const char* setupName = "mcbm_beam_2022_01",
+                    //                  const char* setupName = "mcbm_beam_2022_03_09_carbon",
                     const char* setupName = "mcbm_beam_2021_07_surveyed",
                     //                  const char* setupName = "mcbm_beam_2021_04",
                     //                  const char* setupName = "mcbm_beam_2021_03",
@@ -32,7 +33,7 @@ void mcbm_transport(Int_t nEvents = 10,
                     //                  const char* setupName = "mcbm_beam_2019_11",
                     //                  const char* setupName = "mcbm_beam_2019_03",
                     //                  const char* setupName = "sis18_mcbm_25deg_long",
-                    const char* output = "data/test", const char* inputFile = "", Bool_t overwrite = kFALSE)
+                    const char* output = "data/test", const char* inputFile = "", Bool_t overwrite = kTRUE)
 {
   // --- Define the beam angle ----------------------------------------------
   Double_t beamRotY = 25.;
