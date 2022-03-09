@@ -19,8 +19,8 @@
 #define CbmTrdUnpackFaspMonitor_H
 
 #include "CbmTrdDigi.h"
-#include "CbmTrdParSetAsic.h"
 #include "CbmTrdParModDigi.h"
+#include "CbmTrdParSetAsic.h"
 #include "CbmTrdUnpackMonitor.h"
 
 #include <MicrosliceDescriptor.hpp>

@@ -22,8 +22,8 @@
 #define CbmTrdUnpackMonitor_H
 
 #include "CbmTrdDigi.h"
-#include "CbmTrdParSetDigi.h"
 #include "CbmTrdParSetAsic.h"
+#include "CbmTrdParSetDigi.h"
 #include "CbmTrdRawMessageSpadic.h"
 #include "CbmTrdSpadic.h"
 

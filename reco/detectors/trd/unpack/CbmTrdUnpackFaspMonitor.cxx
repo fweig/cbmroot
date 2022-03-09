@@ -164,24 +164,22 @@ void CbmTrdUnpackFaspMonitor::createHisto(eDigiHistos kHisto)
         break;
 
       case eDigiHistos::kCharge:
-        newhisto =
-          std::make_shared<TH2I>(histoname.data(), Form("%s %d", histoname.data(), modId), 2 * nchs, -0.5, 
-                                 (nchs - 0.5), 4095, 0.5, 4095.5);
+        newhisto = std::make_shared<TH2I>(histoname.data(), Form("%s %d", histoname.data(), modId), 2 * nchs, -0.5,
+                                          (nchs - 0.5), 4095, 0.5, 4095.5);
         newhisto->SetXTitle("Pad-Id");
         newhisto->SetYTitle("Sgn [ADU]");
         newhisto->SetZTitle("Yield");
         break;
       case eDigiHistos::kChannel:
-        newhisto = std::make_shared<TH2I>(histoname.data(), Form("%s %d", histoname.data(), modId), NFASPMOD, -0.5, 
+        newhisto = std::make_shared<TH2I>(histoname.data(), Form("%s %d", histoname.data(), modId), NFASPMOD, -0.5,
                                           (NFASPMOD - 0.5), NFASPCH, -0.5, NFASPCH - 0.5);
         newhisto->SetXTitle("FASP-Id");
         newhisto->SetYTitle("FASP-Ch");
         newhisto->SetZTitle("Yield");
         break;
       case eDigiHistos::kDigiDeltaT:
-        newhisto =
-          std::make_shared<TH2I>(histoname.data(), Form("%s %d", histoname.data(), modId), 2 * nchs, -0.5, 
-                                 (nchs - 0.5), 1000, 0, 1e2);
+        newhisto = std::make_shared<TH2I>(histoname.data(), Form("%s %d", histoname.data(), modId), 2 * nchs, -0.5,
+                                          (nchs - 0.5), 1000, 0, 1e2);
         newhisto->SetXTitle("Pad-Id");
         newhisto->SetYTitle("Rate_{SGN} [kHz]");
         newhisto->SetZTitle("Yield");
