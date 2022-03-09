@@ -2,6 +2,8 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Florian Uhlig, David Emschermann [committer] */
 
+// clang-format off
+
 #include <iostream>
 //#include "FairGeoMedium.h"
 //#include "FairGeoBuilder.h"
