@@ -19,6 +19,7 @@
 
 class CbmDigiBranchBase;
 class CbmDigiManager;
+struct CbmDigiTimeslice;
 
 using namespace std;
 
@@ -105,11 +106,20 @@ private:  // methods
     return digiTimes;
   }
 
-private:                                     // members
-  CbmDigiManager* fDigiMan = nullptr;        //! Input data
-  std::vector<ECbmModuleId> fSystems {};     //  List of detector systems
-  std::vector<double>* fTriggers = nullptr;  //! Output data
-  cbm::algo::TimeClusterTrigger fAlgo {};    //! Algorithm
+
+  /** @brief Extract digi times from CbmDigiTimeslice
+   ** @param system Detector system (enum ECbmModuleId)
+   ** @return Vector of digi times for the specified system
+   **/
+  std::vector<double> GetDigiTimes(ECbmModuleId system);
+
+
+private:                                         // members
+  const CbmDigiTimeslice* fTimeslice = nullptr;  //! Input data (from unpacking)
+  CbmDigiManager* fDigiMan           = nullptr;  //! Input data (from simulation)
+  std::vector<ECbmModuleId> fSystems {};         //  List of detector systems
+  std::vector<double>* fTriggers = nullptr;      //! Output data
+  cbm::algo::TimeClusterTrigger fAlgo {};        //! Algorithm
   double fTriggerWindow = 0.;
   int32_t fMinNumDigis  = 0;
   double fDeadTime      = 0.;

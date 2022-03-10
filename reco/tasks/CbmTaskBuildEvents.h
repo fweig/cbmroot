@@ -33,59 +33,62 @@ public:
   /** @brief Constructor **/
   CbmTaskBuildEvents();
 
+
   /** @brief Copy constructor (disabled) **/
   CbmTaskBuildEvents(const CbmTaskBuildEvents&) = delete;
+
 
   /** @brief Destructor **/
   virtual ~CbmTaskBuildEvents();
 
+
   /** @brief Task execution **/
   virtual void Exec(Option_t* opt);
+
 
   /** @brief Finish timeslice **/
   virtual void Finish();
 
+
   /** @brief Assignment operator (disabled) **/
   CbmTaskBuildEvents& operator=(const CbmTaskBuildEvents&) = delete;
 
-  /** @brief Add a detector system to the event builder algorithm
-   ** @param system    System to be added
-   **/
-  void AddSystem(ECbmModuleId system)
-  {
-    fAlgo.AddSystem(system);
-    if (std::find(fSystems.begin(), fSystems.end(), system) != fSystems.end()) return;
-    fSystems.push_back(system);
-  }
 
   /** @brief Configure the event building time intervals
    ** @param system  Detector system identifier
-   ** @param tMin    Trigger window start time w.r.t. trigger time
-   ** @param tMax    Trigger window end time w.r.t. trigger time
+   ** @param tMin    Event window start time w.r.t. event time
+   ** @param tMax    Event window end time w.r.t. event time
    **/
-  void SetTimeWindow(ECbmModuleId system, double tMin, double tMax)
+  void SetEventWindow(ECbmModuleId system, double tMin, double tMax)
   {
-    if (std::find(fSystems.begin(), fSystems.end(), system) == fSystems.end()) {
-      LOG(fatal) << GetName() << ": setting time window for non-added detector.";
-    }
-    fTriggerWindows[system] = std::make_pair(tMin, tMax);
+    fEventWindows[system] = std::make_pair(tMin, tMax);
   }
 
 private:  // methods
   /** @brief Task initialisation **/
   virtual InitStatus Init();
 
+
   /** @brief Construct a DigiTimeslice from the data in CbmDigiManager **/
   CbmDigiTimeslice FillTimeSlice();
 
+
+  /** @brief Number of digis for a given system
+   ** @param data    CbmDigiData object (DigiTimeslice or DigiEvent)
+   ** @param system  System identifier (enum ECbmModuleId)
+   ** @return        Number of digis for the system
+   **/
+  size_t GetNumDigis(const CbmDigiData& data, ECbmModuleId system);
+
+
 private:                                           // members
-  CbmDigiManager* fDigiMan             = nullptr;  //! Input data (digis)
+  const CbmDigiTimeslice* fTimeslice   = nullptr;  //! Input data (from unpacking)
+  CbmDigiManager* fDigiMan             = nullptr;  //! Input data (from simulation)
   const std::vector<double>* fTriggers = nullptr;  //! Input data (triggers)
-  std::vector<ECbmModuleId> fSystems {};           //  List of detector systems
-  std::vector<CbmDigiEvent>* fEvents = nullptr;    //! Output data (events)
+  std::vector<CbmDigiEvent>* fEvents   = nullptr;  //! Output data (events)
   cbm::algo::EventBuilder fAlgo {};                //! Algorithm
 
-  std::map<ECbmModuleId, std::pair<double, double>> fTriggerWindows;
+  std::map<ECbmModuleId, std::pair<double, double>> fEventWindows;
 
   // for diagnostics
   std::map<ECbmModuleId, size_t> fNumDigisTs;  //  Number of digis in timeslices

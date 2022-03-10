@@ -30,35 +30,30 @@ namespace cbm
       event.fTime = trigger;
 
       // --- Loop over systems
-      for (const auto& system : fSystems) {
+      for (auto entry : fEventWindows) {
 
-        // --- Look for trigger window in list
-        if (fTriggerWindows.find(system) == fTriggerWindows.end()) {
-          //LOG(fatal) << "EventBuilder::BuildEvent(): no trigger window supplied for requested detector.";
-          std::cout << "EventBuilder::BuildEvent(): no trigger window supplied for requested detector." << std::endl;
-          exit(1);
-        }
-        const double tMin = trigger + fTriggerWindows.find(system)->second.first;
-        const double tMax = trigger + fTriggerWindows.find(system)->second.second;
+        auto system       = entry.first;
+        const double tMin = trigger + entry.second.first;
+        const double tMax = trigger + entry.second.second;
 
         // --- Build the event using trigger window
         switch (system) {
-          case ECbmModuleId::kMuch: {  //we do not support the "MuchBeamTimeDigi"
-            assert(is_sorted(ts.fData.fMuch.fDigis.begin(), ts.fData.fMuch.fDigis.end(),
-                             IsBefore<CbmMuchDigi, CbmMuchDigi>));
-            event.fData.fMuch.fDigis = CopyRange(ts.fData.fMuch.fDigis, tMin, tMax);
-            break;
-          }
           case ECbmModuleId::kSts: {
             assert(
               is_sorted(ts.fData.fSts.fDigis.begin(), ts.fData.fSts.fDigis.end(), IsBefore<CbmStsDigi, CbmStsDigi>));
             event.fData.fSts.fDigis = CopyRange(ts.fData.fSts.fDigis, tMin, tMax);
             break;
           }
-          case ECbmModuleId::kTof: {
-            assert(
-              is_sorted(ts.fData.fTof.fDigis.begin(), ts.fData.fTof.fDigis.end(), IsBefore<CbmTofDigi, CbmTofDigi>));
-            event.fData.fTof.fDigis = CopyRange(ts.fData.fTof.fDigis, tMin, tMax);
+          case ECbmModuleId::kRich: {
+            assert(is_sorted(ts.fData.fRich.fDigis.begin(), ts.fData.fRich.fDigis.end(),
+                             IsBefore<CbmRichDigi, CbmRichDigi>));
+            event.fData.fRich.fDigis = CopyRange(ts.fData.fRich.fDigis, tMin, tMax);
+            break;
+          }
+          case ECbmModuleId::kMuch: {
+            assert(is_sorted(ts.fData.fMuch.fDigis.begin(), ts.fData.fMuch.fDigis.end(),
+                             IsBefore<CbmMuchDigi, CbmMuchDigi>));
+            event.fData.fMuch.fDigis = CopyRange(ts.fData.fMuch.fDigis, tMin, tMax);
             break;
           }
           case ECbmModuleId::kTrd: {
@@ -67,10 +62,10 @@ namespace cbm
             event.fData.fTrd.fDigis = CopyRange(ts.fData.fTrd.fDigis, tMin, tMax);
             break;
           }
-          case ECbmModuleId::kRich: {
-            assert(is_sorted(ts.fData.fRich.fDigis.begin(), ts.fData.fRich.fDigis.end(),
-                             IsBefore<CbmRichDigi, CbmRichDigi>));
-            event.fData.fRich.fDigis = CopyRange(ts.fData.fRich.fDigis, tMin, tMax);
+          case ECbmModuleId::kTof: {
+            assert(
+              is_sorted(ts.fData.fTof.fDigis.begin(), ts.fData.fTof.fDigis.end(), IsBefore<CbmTofDigi, CbmTofDigi>));
+            event.fData.fTof.fDigis = CopyRange(ts.fData.fTof.fDigis, tMin, tMax);
             break;
           }
           case ECbmModuleId::kPsd: {
@@ -84,11 +79,7 @@ namespace cbm
             event.fData.fT0.fDigis = CopyRange(ts.fData.fT0.fDigis, tMin, tMax);
             break;
           }
-          default: {
-            //LOG(fatal) << "EventBuilder::BuildEvent():GetName(): Reading digis from unknown detector type!";
-            std::cout << "EventBuilder::BuildEvent():GetName(): Reading digis from unknown detector type!" << std::endl;
-            exit(1);
-          }
+          default: break;
         }
       }
       return event;

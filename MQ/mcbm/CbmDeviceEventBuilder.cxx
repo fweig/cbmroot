@@ -129,6 +129,7 @@ try {
   }
 
   /// Extract detector to add if any
+  /*
   for (std::vector<std::string>::const_iterator itStrAdd = vsAddDet.begin(); itStrAdd != vsAddDet.end(); ++itStrAdd) {
     const ECbmModuleId addDet = GetDetectorId(*itStrAdd);
     if (ECbmModuleId::kNotExist != addDet) { fEvbuildAlgo.AddSystem(addDet); }
@@ -139,6 +140,7 @@ try {
       continue;
     }
   }
+  */
 
   /// Extract event builder window to add if any
   for (std::vector<std::string>::const_iterator itStrEvbuildWin = vsSetEvbuildWin.begin();
@@ -177,7 +179,7 @@ try {
     charPosDel++;
     double dWinEnd = std::stod(sNext.substr(charPosDel));
 
-    fEvbuildAlgo.SetTriggerWindow(selDet, dWinBeg, dWinEnd);
+    fEvbuildAlgo.SetEventWindow(selDet, dWinBeg, dWinEnd);
   }
 }
 catch (InitTaskError& e) {

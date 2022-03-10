@@ -12,20 +12,13 @@ TEST(_GTestEventBuilder, CheckEventBuilderAlgorithmSimple)
 
   //Initialize event builder
   cbm::algo::EventBuilder evbuild;
-  evbuild.AddSystem(ECbmModuleId::kMuch);
-  evbuild.AddSystem(ECbmModuleId::kSts);
-  evbuild.AddSystem(ECbmModuleId::kTof);
-  evbuild.AddSystem(ECbmModuleId::kTrd);
-  evbuild.AddSystem(ECbmModuleId::kRich);
-  evbuild.AddSystem(ECbmModuleId::kPsd);
-  evbuild.AddSystem(ECbmModuleId::kT0);
-  evbuild.SetTriggerWindow(ECbmModuleId::kMuch, -45.0, 45.0);
-  evbuild.SetTriggerWindow(ECbmModuleId::kSts, -45.0, 45.0);
-  evbuild.SetTriggerWindow(ECbmModuleId::kTof, -45.0, 45.0);
-  evbuild.SetTriggerWindow(ECbmModuleId::kTrd, -45.0, 45.0);
-  evbuild.SetTriggerWindow(ECbmModuleId::kRich, -45.0, 45.0);
-  evbuild.SetTriggerWindow(ECbmModuleId::kPsd, -45.0, 45.0);
-  evbuild.SetTriggerWindow(ECbmModuleId::kT0, -45.0, 45.0);
+  evbuild.SetEventWindow(ECbmModuleId::kMuch, -45.0, 45.0);
+  evbuild.SetEventWindow(ECbmModuleId::kSts, -45.0, 45.0);
+  evbuild.SetEventWindow(ECbmModuleId::kTof, -45.0, 45.0);
+  evbuild.SetEventWindow(ECbmModuleId::kTrd, -45.0, 45.0);
+  evbuild.SetEventWindow(ECbmModuleId::kRich, -45.0, 45.0);
+  evbuild.SetEventWindow(ECbmModuleId::kPsd, -45.0, 45.0);
+  evbuild.SetEventWindow(ECbmModuleId::kT0, -45.0, 45.0);
 
   CbmDigiTimeslice tsIn;
   const uint nInput         = 1000;

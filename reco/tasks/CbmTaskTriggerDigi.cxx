@@ -6,6 +6,7 @@
 
 #include "CbmDefs.h"
 #include "CbmDigiManager.h"
+#include "CbmDigiTimeslice.h"
 #include "CbmModuleList.h"
 #include "CbmMuchDigi.h"
 #include "CbmPsdDigi.h"
@@ -46,43 +47,59 @@ void CbmTaskTriggerDigi::Exec(Option_t*)
 
   // --- Get digi times
   std::vector<double> digiTimes;
-  for (const auto& system : fSystems) {
-    CbmDigiBranchBase* digiBranch = fDigiMan->GetBranch(system);
-    std::vector<double> locDigiTimes;
-    switch (system) {
-      case ECbmModuleId::kMuch: {  //we do not support the "MuchBeamTimeDigi"
-        locDigiTimes = GetDigiTimes<CbmMuchDigi>(digiBranch);
-        break;
-      }
-      case ECbmModuleId::kSts: {
-        locDigiTimes = GetDigiTimes<CbmStsDigi>(digiBranch);
-        break;
-      }
-      case ECbmModuleId::kTof: {
-        locDigiTimes = GetDigiTimes<CbmTofDigi>(digiBranch);
-        break;
-      }
-      case ECbmModuleId::kTrd: {
-        locDigiTimes = GetDigiTimes<CbmTrdDigi>(digiBranch);
-        break;
-      }
-      case ECbmModuleId::kRich: {
-        locDigiTimes = GetDigiTimes<CbmRichDigi>(digiBranch);
-        break;
-      }
-      case ECbmModuleId::kPsd: {
-        locDigiTimes = GetDigiTimes<CbmPsdDigi>(digiBranch);
-        break;
-      }
-      case ECbmModuleId::kT0: {  //T0 has Tof digis
-        locDigiTimes = GetDigiTimes<CbmTofDigi>(digiBranch);
-        break;
-      }
-      default: LOG(fatal) << GetName() << ": Reading digis from unknown detector type!";
+
+  // --- Case: input CbmDigiTimeslice
+  if (fTimeslice) {
+    for (const auto& system : fSystems) {
+      std::vector<double> systemDigiTimes = GetDigiTimes(system);
+      digiTimes.insert(digiTimes.end(), systemDigiTimes.begin(), systemDigiTimes.end());
     }
-    digiTimes.insert(digiTimes.end(), locDigiTimes.begin(), locDigiTimes.end());
+    if (fSystems.size() > 1) { std::sort(digiTimes.begin(), digiTimes.end()); }
   }
-  if (fSystems.size() > 1) { std::sort(digiTimes.begin(), digiTimes.end()); }
+
+  // --- Case: input digi branches
+  else {
+    for (const auto& system : fSystems) {
+      CbmDigiBranchBase* digiBranch = fDigiMan->GetBranch(system);
+      std::vector<double> locDigiTimes;
+      switch (system) {
+        case ECbmModuleId::kMuch: {  //we do not support the "MuchBeamTimeDigi"
+          locDigiTimes = GetDigiTimes<CbmMuchDigi>(digiBranch);
+          break;
+        }
+        case ECbmModuleId::kSts: {
+          locDigiTimes = GetDigiTimes<CbmStsDigi>(digiBranch);
+          break;
+        }
+        case ECbmModuleId::kTof: {
+          locDigiTimes = GetDigiTimes<CbmTofDigi>(digiBranch);
+          break;
+        }
+        case ECbmModuleId::kTrd: {
+          locDigiTimes = GetDigiTimes<CbmTrdDigi>(digiBranch);
+          break;
+        }
+        case ECbmModuleId::kRich: {
+          locDigiTimes = GetDigiTimes<CbmRichDigi>(digiBranch);
+          break;
+        }
+        case ECbmModuleId::kPsd: {
+          locDigiTimes = GetDigiTimes<CbmPsdDigi>(digiBranch);
+          break;
+        }
+        case ECbmModuleId::kT0: {  //T0 has Tof digis
+          locDigiTimes = GetDigiTimes<CbmTofDigi>(digiBranch);
+          break;
+        }
+        default: {
+          LOG(error) << GetName() << ": Unknown detector type!";
+          break;
+        }
+      }
+      digiTimes.insert(digiTimes.end(), locDigiTimes.begin(), locDigiTimes.end());
+    }
+    if (fSystems.size() > 1) { std::sort(digiTimes.begin(), digiTimes.end()); }
+  }
 
   // --- Call the trigger algorithm
   timerStep.Start();
@@ -107,6 +124,72 @@ void CbmTaskTriggerDigi::Exec(Option_t*)
   fNumTs++;
   fNumDigis += numDigis;
   fNumTriggers += numTriggers;
+}
+// ----------------------------------------------------------------------------
+
+
+// -----   Get digi times from CbmDigiTimeslice   -----------------------------
+std::vector<double> CbmTaskTriggerDigi::GetDigiTimes(ECbmModuleId system)
+{
+  assert(fTimeslice);
+  std::vector<double> result;
+  switch (system) {
+    case ECbmModuleId::kSts: {
+      result.resize(fTimeslice->fData.fSts.fDigis.size());
+      auto it1 = fTimeslice->fData.fSts.fDigis.begin();
+      auto it2 = fTimeslice->fData.fSts.fDigis.end();
+      std::transform(it1, it2, result.begin(), [](const CbmStsDigi& digi) { return digi.GetTime(); });
+      break;
+    }
+    case ECbmModuleId::kRich: {
+      result.resize(fTimeslice->fData.fRich.fDigis.size());
+      auto it1 = fTimeslice->fData.fRich.fDigis.begin();
+      auto it2 = fTimeslice->fData.fRich.fDigis.end();
+      std::transform(it1, it2, result.begin(), [](const CbmRichDigi& digi) { return digi.GetTime(); });
+      break;
+    }
+    case ECbmModuleId::kMuch: {
+      result.resize(fTimeslice->fData.fMuch.fDigis.size());
+      auto it1 = fTimeslice->fData.fMuch.fDigis.begin();
+      auto it2 = fTimeslice->fData.fMuch.fDigis.end();
+      std::transform(it1, it2, result.begin(), [](const CbmMuchDigi& digi) { return digi.GetTime(); });
+      break;
+    }
+    case ECbmModuleId::kTrd: {
+      result.resize(fTimeslice->fData.fTrd.fDigis.size());
+      auto it1 = fTimeslice->fData.fTrd.fDigis.begin();
+      auto it2 = fTimeslice->fData.fTrd.fDigis.end();
+      std::transform(it1, it2, result.begin(), [](const CbmTrdDigi& digi) { return digi.GetTime(); });
+      break;
+    }
+    case ECbmModuleId::kTof: {
+      result.resize(fTimeslice->fData.fTof.fDigis.size());
+      auto it1 = fTimeslice->fData.fTof.fDigis.begin();
+      auto it2 = fTimeslice->fData.fTof.fDigis.end();
+      std::transform(it1, it2, result.begin(), [](const CbmTofDigi& digi) { return digi.GetTime(); });
+      break;
+    }
+    case ECbmModuleId::kPsd: {
+      result.resize(fTimeslice->fData.fPsd.fDigis.size());
+      auto it1 = fTimeslice->fData.fPsd.fDigis.begin();
+      auto it2 = fTimeslice->fData.fPsd.fDigis.end();
+      std::transform(it1, it2, result.begin(), [](const CbmPsdDigi& digi) { return digi.GetTime(); });
+      break;
+    }
+    case ECbmModuleId::kT0: {
+      result.resize(fTimeslice->fData.fT0.fDigis.size());
+      auto it1 = fTimeslice->fData.fT0.fDigis.begin();
+      auto it2 = fTimeslice->fData.fT0.fDigis.end();
+      std::transform(it1, it2, result.begin(), [](const CbmTofDigi& digi) { return digi.GetTime(); });
+      break;
+    }
+    default: {
+      LOG(error) << GetName() << ": Unknown system " << system;
+      break;
+    }
+  }  //? system
+
+  return result;
 }
 // ----------------------------------------------------------------------------
 
@@ -139,21 +222,25 @@ InitStatus CbmTaskTriggerDigi::Init()
   FairRootManager* ioman = FairRootManager::Instance();
   assert(ioman);
 
-  // --- DigiManager instance
-  fDigiMan = CbmDigiManager::Instance();
-  fDigiMan->Init();
-
   std::cout << std::endl;
   LOG(info) << "==================================================";
   LOG(info) << GetName() << ": Initialising...";
 
   // --- Check input data
-  for (const auto& system : fSystems) {
-    if (!fDigiMan->IsPresent(system)) {
-      LOG(fatal) << GetName() << ": No digi branch for " << CbmModuleList::GetModuleNameCaps(system);
-      return kFATAL;
+  // --- DigiTimeslice: Unpacked data from FLES
+  fTimeslice = ioman->InitObjectAs<const CbmDigiTimeslice*>("DigiTimeslice.");
+  if (fTimeslice) { LOG(info) << GetName() << ": Found branch DigiTimeslice."; }
+  // --- DigiManager: Simulated digi data
+  else {
+    fDigiMan = CbmDigiManager::Instance();
+    fDigiMan->Init();
+    for (const auto& system : fSystems) {
+      if (!fDigiMan->IsPresent(system)) {
+        LOG(fatal) << GetName() << ": No digi branch for " << CbmModuleList::GetModuleNameCaps(system);
+        return kFATAL;
+      }
+      LOG(info) << "--- Found digi branch for " << CbmModuleList::GetModuleNameCaps(system);
     }
-    LOG(info) << "--- Found digi branch for " << CbmModuleList::GetModuleNameCaps(system);
   }
 
   // --- Register output array (Triggers)
