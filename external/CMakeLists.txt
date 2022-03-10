@@ -17,10 +17,10 @@ if(DOWNLOAD_EXTERNALS)
   install(FILES cppzmq/zmq.hpp DESTINATION include)
 
 
-  Set(IPC_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ipc/ipc/lib/fles_ipc PARENT_SCOPE)
-  Set(IPCLOG_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ipc/ipc/lib/logging PARENT_SCOPE)
+  Set(IPC_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/fles/flesnet/lib/fles_ipc PARENT_SCOPE)
+  Set(IPCLOG_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/fles/flesnet/lib/logging PARENT_SCOPE)
 
-  Add_Subdirectory(ipc)
+  Add_Subdirectory(fles)
   Add_Subdirectory(flib_dpb)
 
   find_package(Vc 1.4.1)

@@ -35,7 +35,7 @@ Set(INCLUDE_DIRECTORIES
   ${CBMDATA_DIR}/much
   ${CBMDATA_DIR}/test/sts
   ${CBMDATA_DIR}/test/global
-  ${CMAKE_SOURCE_DIR}/external/ipc/ipc/lib/fles_ipc
+  ${CMAKE_SOURCE_DIR}/external/fles/flesnet/lib/fles_ipc
   ${BASE_INCLUDE_DIRECTORIES}
   ${GTEST_INCLUDE_DIR}
 )

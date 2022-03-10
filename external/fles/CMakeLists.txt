@@ -3,16 +3,16 @@
 # This library provides the interface to the experiment data in timeslices
 # both online as delivered by flesnet and to timeslice archive (.tsa) files.
 
-download_project_if_needed(PROJECT         fles_ipc
+download_project_if_needed(PROJECT         flesnet
                            GIT_REPOSITORY  "https://github.com/cbm-fles/flesnet"
                            GIT_TAG         "301000b321eb7bc3a47a79b2ceadf2aa844327fe"
                            GIT_STASH       TRUE
-                           SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/ipc
+                           SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/flesnet
                            TEST_FILE       CMakeLists.txt
                            )
 
 # Create the logging library
-add_library(fles_logging SHARED ipc/lib/logging/log.cpp ipc/lib/logging/log.hpp)
+add_library(fles_logging SHARED flesnet/lib/logging/log.cpp flesnet/lib/logging/log.hpp)
 
 target_compile_definitions(fles_logging
   PUBLIC BOOST_LOG_DYN_LINK
@@ -20,7 +20,7 @@ target_compile_definitions(fles_logging
   PUBLIC BOOST_ERROR_CODE_HEADER_ONLY
 )
 
-target_include_directories(fles_logging PUBLIC ipc/lib/logging/)
+target_include_directories(fles_logging PUBLIC flesnet/lib/logging/)
 
 target_include_directories(fles_logging SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 
@@ -37,8 +37,8 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
   ${Boost_INCLUDE_DIR}
   ${ZMQ_INCLUDE_DIR}
   ${CMAKE_SOURCE_DIR}/external/cppzmq
-  ${CMAKE_SOURCE_DIR}/external/ipc/ipc
-  ${CMAKE_SOURCE_DIR}/external/ipc/ipc/lib/logging
+  ${CMAKE_SOURCE_DIR}/external/fles/flesnet
+  ${CMAKE_SOURCE_DIR}/external/fles/flesnet/lib/logging
 )
 
 Include_Directories( ${INCLUDE_DIRECTORIES})
@@ -54,19 +54,19 @@ Set(LINK_DIRECTORIES
 Link_Directories( ${LINK_DIRECTORIES})
 
 Set(SRCS
-ipc/lib/fles_ipc/Microslice.cpp
-ipc/lib/fles_ipc/MicrosliceView.cpp
-ipc/lib/fles_ipc/StorableMicroslice.cpp
-ipc/lib/fles_ipc/StorableTimeslice.cpp
-ipc/lib/fles_ipc/System.cpp
-ipc/lib/fles_ipc/Timeslice.cpp
-ipc/lib/fles_ipc/TimeslicePublisher.cpp
-ipc/lib/fles_ipc/TimesliceReceiver.cpp
-ipc/lib/fles_ipc/TimesliceSubscriber.cpp
-ipc/lib/fles_ipc/TimesliceView.cpp
-ipc/lib/fles_ipc/TimesliceMultiInputArchive.cpp
-ipc/lib/fles_ipc/TimesliceMultiSubscriber.cpp
-ipc/lib/fles_ipc/TimesliceAutoSource.cpp
+flesnet/lib/fles_ipc/Microslice.cpp
+flesnet/lib/fles_ipc/MicrosliceView.cpp
+flesnet/lib/fles_ipc/StorableMicroslice.cpp
+flesnet/lib/fles_ipc/StorableTimeslice.cpp
+flesnet/lib/fles_ipc/System.cpp
+flesnet/lib/fles_ipc/Timeslice.cpp
+flesnet/lib/fles_ipc/TimeslicePublisher.cpp
+flesnet/lib/fles_ipc/TimesliceReceiver.cpp
+flesnet/lib/fles_ipc/TimesliceSubscriber.cpp
+flesnet/lib/fles_ipc/TimesliceView.cpp
+flesnet/lib/fles_ipc/TimesliceMultiInputArchive.cpp
+flesnet/lib/fles_ipc/TimesliceMultiSubscriber.cpp
+flesnet/lib/fles_ipc/TimesliceAutoSource.cpp
 )
 
 
@@ -83,6 +83,6 @@ EndIf()
 GENERATE_LIBRARY()
 
 # Install header files
-install(FILES ipc/lib/logging/log.hpp DESTINATION include)
-file(GLOB_RECURSE IPC_HEADERS ipc/lib/fles_ipc/*.hpp)
+install(FILES flesnet/lib/logging/log.hpp DESTINATION include)
+file(GLOB_RECURSE IPC_HEADERS flesnet/lib/fles_ipc/*.hpp)
 install(FILES ${IPC_HEADERS} DESTINATION include)

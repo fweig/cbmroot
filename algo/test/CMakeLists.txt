@@ -31,7 +31,7 @@ Set(INCLUDE_DIRECTORIES
   ${CBMDATA_DIR}/much
   ${CBMDATA_DIR}/psd
   ${CBMDATA_DIR}/trd
-  ${CMAKE_SOURCE_DIR}/external/ipc/ipc/lib/fles_ipc
+  ${CMAKE_SOURCE_DIR}/external/fles/flesnet/lib/fles_ipc
   ${CMAKE_SOURCE_DIR}/algo
   ${CMAKE_SOURCE_DIR}/algo/trigger
   ${CMAKE_SOURCE_DIR}/algo/evbuild
