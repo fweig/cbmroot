@@ -2945,15 +2945,12 @@ void create_detector_layers(Int_t layerId)
           // DEDE
           // xPos = tan( frameref_angle ) * (zfront[setupid] + layerId * LayerThickness) - (DetectorSizeX[1]/2. - FrameWidth[1]);  // shift module along x-axis
           xPos = 0;
-	  /*  if (layerId == 2) {
-            xPos += -22;  // offset in x of 1st large TRD in mCBM 2021_07
-            yPos += -0.5;
-          }  // offset in x of 1st large TRD in mCBM 2021_07
+	  if (layerId == 2) {
+            xPos += 7.;  // offset in x mCBM Carbon March 2022
+          }
           if (layerId == 3) {
-            xPos += -19;  // offset in x of 2nd large TRD in mCBM 2021_07
-            yPos += 4.5;
-          }  // offset in x of 2nd large TRD in mCBM 2021_07
-          */
+            xPos += 7.;  // offset in x mCBM Carbon March 2022
+          }
 
           layer_angle =
             atan((DetectorSizeX[1] / 2. - FrameWidth[1] + xPos) / (zfront[setupid] + layerId * LayerThickness));
@@ -3161,15 +3158,13 @@ void create_gibbet_support()
     {
       TString layername = Form("layer%02d", l + 1);
       // DESH
-      /*  if (l == 2) {
-        xPos = -22;  // offset in x of 1st large TRD in mCBM 2021_07
-        yPos = -0.5;
-      }  // offset in x of 1st large TRD in mCBM 2021_07
+      if (l == 2) {
+        xPos = 7.;  // offset in x mCBM Carbon March 2022
+      }
       if (l == 3) {
-        xPos = -19;  // offset in x of 2nd large TRD in mCBM 2021_07
-        yPos = 4.5;
-      }  // offset in x of 2nd large TRD in mCBM 2021_07
-      */
+        xPos = 7.;  // offset in x mCBM Carbon March 2022
+      }
+
       TGeoTranslation* gibbet_placement =
         new TGeoTranslation(xPos, yPos, LayerPosition[l] + LayerThickness / 2. + gibbet_position);
       gGeoMan->GetVolume(layername)->AddNode(gibbet_1, l, gibbet_placement);
