@@ -246,7 +246,13 @@ bool CbmTrdHardwareSetupR::WriteComponentIdsToParams()
 void CbmTrdHardwareSetupR::SelectComponentIdMap(TString geoTag)
 {
   ECbmTrdHardwareSetupVersion hwSetupVersion(ECbmTrdHardwareSetupVersion::kUndefined);
-  if (geoTag.Contains("mcbm")) { hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2020; }
+  if (geoTag.Contains("mcbm") && geoTag.Contains("v20")) { hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2020; }
+  else if (geoTag.Contains("mcbm") && geoTag.Contains("v21")) {
+    hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2021;
+  }
+  else if (geoTag.Contains("mcbm") && geoTag.Contains("v22")) {
+    hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2022;
+  }
   else if (geoTag.Contains("trd_ikfLabOneSpadic")) {
     hwSetupVersion = ECbmTrdHardwareSetupVersion::kLabIkfOneSpadic;
   }
@@ -322,6 +328,68 @@ void CbmTrdHardwareSetupR::SelectComponentIdMap(ECbmTrdHardwareSetupVersion hwSe
                          {21021, 2498200036},
                          {21022, 2498200038},
                          {21023, 2498200040}};
+      break;
+    case ECbmTrdHardwareSetupVersion::kMcbm2021:
+    case ECbmTrdHardwareSetupVersion::kMcbm2022:
+      fComponentIdMap = {// Module 21
+                         {21000, 3298000040},
+                         {21001, 3298000026},
+                         {21002, 3298000099},
+                         // Module 37
+                         {37000, 3298100098},
+                         {37001, 3298100028},
+                         {37002, 3298100030},
+                         {37003, 3298100032},
+                         {37004, 3298100034},
+                         {37005, 3298100036},
+                         {37006, 3298100038},
+                         {37007, 3298100040},
+
+                         {37008, 3298100098},
+                         {37009, 3298100014},
+                         {37010, 3298100016},
+                         {37011, 3298100018},
+                         {37012, 3298100020},
+                         {37013, 3298100022},
+                         {37014, 3298100024},
+                         {37015, 3298100026},
+
+                         {37016, 3298100098},
+                         {37017, 3298100000},
+                         {37018, 3298100002},
+                         {37019, 3298100004},
+                         {37020, 3298100006},
+                         {37021, 3298100008},
+                         {37022, 3298100010},
+                         {37023, 3298100012},
+
+                         // Module 53
+                         {53000, 3297900098},
+                         {53001, 3297900028},
+                         {53002, 3297900030},
+                         {53003, 3297900032},
+                         {53004, 3297900034},
+                         {53005, 3297900036},
+                         {53006, 3297900038},
+                         {53007, 3297900040},
+
+                         {53008, 3297900098},
+                         {53009, 3297900014},
+                         {53010, 3297900016},
+                         {53011, 3297900018},
+                         {53012, 3297900020},
+                         {53013, 3297900022},
+                         {53014, 3297900024},
+                         {53015, 3297900026},
+
+                         {53016, 3297900098},
+                         {53017, 3297900000},
+                         {53018, 3297900002},
+                         {53019, 3297900004},
+                         {53020, 3297900006},
+                         {53021, 3297900008},
+                         {53022, 3297900010},
+                         {53023, 3297900012}};
       break;
     case ECbmTrdHardwareSetupVersion::kLabIkfOneSpadic:
       // REMARK This map is incomplete! Spadic position is random and not yet correlated to the true position in the lab.

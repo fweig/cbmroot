@@ -28,6 +28,8 @@ enum class ECbmTrdHardwareSetupVersion : Int_t
 {
   kUndefined = 0,
   kMcbm2020  = 1,
+  kMcbm2021,
+  kMcbm2022,
   kLabIkfOneSpadic,
   kDesy2019,
   kCbm2025
