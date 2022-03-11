@@ -7,6 +7,7 @@
 
 #include "TLorentzVector.h"
 #include "TObject.h"
+#include "TString.h"
 
 class UParticle;
 

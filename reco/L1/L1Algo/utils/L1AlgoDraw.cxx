@@ -12,6 +12,7 @@
 #include "TEllipse.h"
 #include "TFrame.h"
 #include "TLatex.h"
+#include "TLine.h"
 #include "TMarker.h"
 #include "TPad.h"
 #include "TPaveText.h"

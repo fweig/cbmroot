@@ -1376,7 +1376,6 @@ void CbmTrdQa::SaveHistos()
   newpath.ReplaceAll("eds", "trd_qa");
   newpath.ReplaceAll(":/", "");
   TFile* tempFile = new TFile(newpath, "recreate");
-  gDirectory      = tempFile->CurrentDirectory();
   gDirectory->pwd();
 
   TString title;
@@ -1723,7 +1722,6 @@ void CbmTrdQa::CreateLayerView(std::map<Int_t, TH1*>& Map, TString folder, TStri
   newpath.ReplaceAll("eds", "trd_qa");
   newpath.ReplaceAll(":/", "");
   TFile* tempFile = new TFile(newpath, "recreate");
-  gDirectory      = tempFile->CurrentDirectory();
   gDirectory->pwd();
   TString title(""), name("");
   name.Form("_TH_%.2EGeV_", fTriggerThreshold);
@@ -1809,7 +1807,6 @@ void CbmTrdQa::CreateLayerView()
   newpath.ReplaceAll("eds", "trd_qa");
   newpath.ReplaceAll(":/", "");
   TFile* tempFile = new TFile(newpath, "recreate");
-  gDirectory      = tempFile->CurrentDirectory();
   gDirectory->pwd();
   TString title(""), name("");
   TPaveText* text = NULL;

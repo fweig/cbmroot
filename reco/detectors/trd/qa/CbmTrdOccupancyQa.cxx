@@ -405,7 +405,6 @@ void CbmTrdOccupancyQa::SwitchToMergedFile()
   TString filename = "data/result.root";
   TFile* Target    = new TFile(filename, "READ");
   if (Target) {
-    gDirectory = Target->CurrentDirectory();
     for (fModuleOccupancyMapIt = fModuleOccupancyMap.begin(); fModuleOccupancyMapIt != fModuleOccupancyMap.end();
          ++fModuleOccupancyMapIt) {
       TString histName = fModuleOccupancyMapIt->second->GetName();
@@ -437,7 +436,6 @@ void CbmTrdOccupancyQa::CreateLayerView()
   newpath.ReplaceAll(":/", "");
 
   TFile* tempFile = new TFile(newpath, "recreate");
-  gDirectory      = tempFile->CurrentDirectory();
   gDirectory->pwd();
   cout << "CreateLayerView" << endl;
   Bool_t debug = false;
@@ -641,7 +639,6 @@ void CbmTrdOccupancyQa::SaveHistos2File()
   newpath.ReplaceAll(":/", "");
 
   TFile* tempFile = new TFile(newpath, "Update");
-  gDirectory      = tempFile->CurrentDirectory();
   gDirectory->pwd();
 
   cout << "SaveHistos2File" << endl;

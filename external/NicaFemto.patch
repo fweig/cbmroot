@@ -50,3 +50,15 @@ index b8576ab..b3fc335 100644
  
  GENERATE_LIBRARY()
  
+diff --git a/features/NicaHelixBase.cxx b/features/NicaHelixBase.cxx
+index e248f54..7317950 100644
+--- a/features/NicaHelixBase.cxx
++++ b/features/NicaHelixBase.cxx
+@@ -8,6 +8,7 @@
+  */
+ #include "NicaHelixBase.h"
+ #include <TMath.h>
++#include <TString.h>
+ #include <iostream>
+
+ Double_t NicaHelixBase::fgHelixBz = 0.5;

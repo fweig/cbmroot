@@ -412,7 +412,6 @@ void CbmTrdHitDensityQa::Finish()
   }
   else
     tempFile = new TFile(newpath, "recreate");
-  gDirectory = tempFile->CurrentDirectory();
   gDirectory->pwd();
 
   if (fPlotResults) fEventCounter = (TH1I*) tempFile->Get("fEventCounter");
