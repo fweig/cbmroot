@@ -43,14 +43,6 @@ public:
                      const char* context = "Default");
 
 
-  /** @brief Copy constructor (disabled) **/
-  CbmStsParSetModule(const CbmStsParSetModule&) = delete;
-
-
-  /** @brief Move constructor (disabled) **/
-  CbmStsParSetModule(CbmStsParSetModule&&) = delete;
-
-
   /** @brief Destructor **/
   virtual ~CbmStsParSetModule();
 
@@ -89,18 +81,6 @@ public:
   Bool_t IsSet() const { return (fUseGlobal || (!fParams.empty())); }
 
 
-  /** @brief Copy assignment operator (disabled) **/
-  CbmStsParSetModule& operator=(const CbmStsParSetModule&) = delete;
-
-
-  /** @brief Move assignment operator (disabled) **/
-  CbmStsParSetModule& operator=(CbmStsParSetModule&&) = delete;
-
-
-  /** @brief Writing parameters to ASCII. Abstract in base class.
-     **
-     ** An ASCII I/O is not implemented. The method throws an error.
-     **/
   virtual void putParams(FairParamList* parList);
 
 

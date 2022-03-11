@@ -43,20 +43,12 @@ public:
                      const char* context = "Default");
 
 
-  /** @brief Copy constructor (disabled) **/
-  CbmStsParSetSensor(const CbmStsParSetSensor&) = delete;
-
-
-  /** @brief Move constructor (disabled) **/
-  CbmStsParSetSensor(CbmStsParSetSensor&&) = delete;
+  /** @brief Destructor **/
+  virtual ~CbmStsParSetSensor();
 
 
   /** @brief Reset all parameters **/
   virtual void clear();
-
-
-  /** @brief Destructor **/
-  virtual ~CbmStsParSetSensor();
 
 
   /** @brief Reading parameters from ASCII. Abstract in base class.
@@ -71,14 +63,6 @@ public:
      ** @return Module parameter object
      **/
   const CbmStsParSensor& GetParSensor(UInt_t address);
-
-
-  /** @brief Copy assignment operator (disabled) **/
-  CbmStsParSetSensor& operator=(const CbmStsParSetSensor&) = delete;
-
-
-  /** @brief Move assignment operator (disabled) **/
-  CbmStsParSetSensor& operator=(CbmStsParSetSensor&&) = delete;
 
 
   /** @brief Writing parameters to ASCII. Abstract in base class.

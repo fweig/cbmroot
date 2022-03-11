@@ -186,7 +186,7 @@ public:
       ** If defined, these condition parameters will be used for all sensors instead
       ** of those found in the runtimeDb.
       */
-  void UseSensorCond(CbmStsParSensorCond* sensorCond) { fUserParSensorCond = sensorCond; }
+  void UseSensorCond(CbmStsParSensorCond* sensorCond) { fUserParCond = sensorCond; }
 
   /** @brief User-defined module parameter set
      ** @param parModule Module parameter set object
@@ -237,6 +237,16 @@ private:
   void GetSensorParameters(CbmStsElement* geoSensor);
 
 
+  /** @brief Initialise parameters
+   **
+   ** For simulated data, the parameters for modules and sensors are retrieved from the
+   ** runtimeDb. They can be overridden by user-specified parameter sets using the respective
+   ** setters. This is necessary when processing experiment data without a prior simulation step.
+   **
+   **/
+  void InitParams();
+
+
   /** @brief Process one time slice or event
      ** @param event  Pointer to CbmEvent object
      **
@@ -260,10 +270,10 @@ private:
   CbmStsParSetSensorCond* fParSetCond = nullptr;  ///< Sensor conditions
 
   // --- User-defined parameters, not from database
-  CbmStsParAsic* fUserParAsic             = nullptr;
-  CbmStsParModule* fUserParModule         = nullptr;
-  CbmStsParSensor* fUserParSensor         = nullptr;
-  CbmStsParSensorCond* fUserParSensorCond = nullptr;
+  CbmStsParAsic* fUserParAsic       = nullptr;
+  CbmStsParModule* fUserParModule   = nullptr;
+  CbmStsParSensor* fUserParSensor   = nullptr;
+  CbmStsParSensorCond* fUserParCond = nullptr;
 
   // --- User-defined parameter sets, not from database
   CbmStsParSetModule* fUserParSetModule   = nullptr;

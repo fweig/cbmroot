@@ -75,20 +75,10 @@ UInt_t CbmRecoSts::CreateModules()
     assert(setupSensor);
     Int_t sensorAddress = Int_t(setupSensor->GetAddress());
 
-    // --- Parameter sets from database or user-defined
-    CbmStsParSetModule* modulePars      = (fUserParSetModule ? fUserParSetModule : fParSetModule);
-    CbmStsParSetSensor* sensorPars      = (fUserParSetSensor ? fUserParSetSensor : fParSetSensor);
-    CbmStsParSetSensorCond* sensorConds = (fUserParSetCond ? fUserParSetCond : fParSetCond);
-
     // --- Module parameters
-    const CbmStsParModule& modPar = (fUserParModule ? *fUserParModule : modulePars->GetParModule(moduleAddress));
-
-    // --- Sensor parameters
-    const CbmStsParSensor& sensPar = (fUserParSensor ? *fUserParSensor : sensorPars->GetParSensor(sensorAddress));
-
-    // --- Sensor conditions
-    const CbmStsParSensorCond& sensCond =
-      (fUserParSensorCond ? *fUserParSensorCond : sensorConds->GetParSensor(sensorAddress));
+    const CbmStsParModule& modPar       = fParSetModule->GetParModule(moduleAddress);
+    const CbmStsParSensor& sensPar      = fParSetSensor->GetParSensor(sensorAddress);
+    const CbmStsParSensorCond& sensCond = fParSetCond->GetParSensor(sensorAddress);
 
     // --- Calculate and set average Lorentz shift
     // --- This will be used in hit finding for correcting the position.
@@ -290,18 +280,8 @@ InitStatus CbmRecoSts::Init()
   assert(fParSim);
   LOG(info) << GetName() << ": Sim settings " << fParSim->ToString();
 
-  // --- Module parameters
-  assert(fParSetModule);
-  LOG(info) << GetName() << ": Module parameters " << fParSetModule->ToString();
-
-  // --- Sensor parameters
-  assert(fParSetSensor);
-  LOG(info) << GetName() << ": Sensor parameters " << fParSetModule->ToString();
-
-  // --- Sensor conditions
-  assert(fParSetCond);
-  //assert(fParSetCond->IsSet());
-  LOG(info) << GetName() << ": Sensor conditions " << fParSetCond->ToString();
+  // --- Parameters
+  InitParams();
 
   // --- Initialise STS setup
   fSetup = CbmStsSetup::Instance();
@@ -316,6 +296,70 @@ InitStatus CbmRecoSts::Init()
   LOG(info) << "==========================================================";
 
   return kSUCCESS;
+}
+// -------------------------------------------------------------------------
+
+
+// -----   Parameter initialisation   --------------------------------------
+void CbmRecoSts::InitParams()
+{
+
+  // --- Module parameters
+  TString sourceModu = "database";
+  assert(fParSetModule);
+  if (fUserParSetModule) {
+    fParSetModule->clear();
+    *fParSetModule = *fUserParSetModule;
+    fParSetModule->setChanged();
+    fParSetModule->setInputVersion(-2, 1);
+    sourceModu = "user-defined";
+  }
+  if (fUserParModule) {  // global settings override
+    fParSetModule->clear();
+    fParSetModule->SetGlobalPar(*fUserParModule);
+    fParSetModule->setChanged();
+    fParSetModule->setInputVersion(-2, 1);
+    sourceModu = "user-defined, global";
+  }
+  LOG(info) << GetName() << ": Module parameters (" << sourceModu << ") " << fParSetModule->ToString();
+
+  // --- Sensor parameters
+  TString sourceSens = "database";
+  assert(fParSetSensor);
+  if (fUserParSetSensor) {
+    fParSetSensor->clear();
+    *fParSetSensor = *fUserParSetSensor;
+    fParSetSensor->setChanged();
+    fParSetSensor->setInputVersion(-2, 1);
+    sourceSens = "user-defined";
+  }
+  if (fUserParSensor) {  // global settings override
+    fParSetSensor->clear();
+    fParSetSensor->SetGlobalPar(*fUserParSensor);
+    fParSetSensor->setChanged();
+    fParSetSensor->setInputVersion(-2, 1);
+    sourceSens = "user-defined, global";
+  }
+  LOG(info) << GetName() << ": Sensor parameters (" << sourceSens << ")" << fParSetSensor->ToString();
+
+  // --- Sensor conditions
+  TString sourceCond = "database";
+  assert(fParSetCond);
+  if (fUserParSetCond) {
+    fParSetCond->clear();
+    *fParSetCond = *fUserParSetCond;
+    fParSetCond->setChanged();
+    fParSetCond->setInputVersion(-2, 1);
+    sourceSens = "user-defined";
+  }
+  if (fUserParCond) {  // global settings override
+    fParSetCond->clear();
+    fParSetCond->SetGlobalPar(*fUserParCond);
+    fParSetCond->setChanged();
+    fParSetCond->setInputVersion(-2, 1);
+    sourceCond = "user-defined, global";
+  }
+  LOG(info) << GetName() << ": Sensor conditions (" << sourceCond << ")" << fParSetCond->ToString();
 }
 // -------------------------------------------------------------------------
 

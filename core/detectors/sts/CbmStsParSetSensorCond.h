@@ -43,14 +43,6 @@ public:
                          const char* context = "Default");
 
 
-  /** @brief Copy constructor (disabled) **/
-  CbmStsParSetSensorCond(const CbmStsParSetSensorCond&) = delete;
-
-
-  /** @brief Move constructor (disabled) **/
-  CbmStsParSetSensorCond(CbmStsParSetSensorCond&&) = delete;
-
-
   /** @brief Destructor **/
   virtual ~CbmStsParSetSensorCond();
 
@@ -77,14 +69,6 @@ public:
      ** @return kTRUE if neither global parameters nor parameter map are set
      **/
   Bool_t IsSet() const { return (fGlobal || !fParams.empty()); }
-
-
-  /** @brief Copy assignment operator (disabled) **/
-  CbmStsParSetSensorCond& operator=(const CbmStsParSetSensorCond&) = delete;
-
-
-  /** @brief Move assignment operator (disabled) **/
-  CbmStsParSetSensorCond& operator=(CbmStsParSetSensorCond&&) = delete;
 
 
   /** @brief Writing parameters to ASCII. Abstract in base class.
