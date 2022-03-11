@@ -115,27 +115,29 @@ namespace cbm::algo
 
     /** @brief Process an epoch message (TS_MSB)
      ** @param message SMX message (32-bit word)
-     ** @param monitor Reference to monitor object
      **/
-    void ProcessTsmsbMessage(const stsxyter::Message& message, UnpackStsMonitorData& monitor);
+    void ProcessTsmsbMessage(const stsxyter::Message& message);
 
 
-  private:                           // members
-    uint64_t fCurrentTsTime    = 0;  ///< Unix time of timeslice in ns
-    uint64_t fCurrentCycle     = 0;  ///< Current epoch cycle
-    uint32_t fCurrentEpoch     = 0;  ///< Current epoch number within epoch cycle
-    uint64_t fCurrentEpochTime = 0;  ///< Unix time of current epoch in clock cycles
+  private:                            // members
+    uint64_t fCurrentTsTime    = 0;   ///< Unix time of timeslice in units of epoch length
+    uint64_t fCurrentCycle     = 0;   ///< Current epoch cycle
+    uint32_t fCurrentEpoch     = 0;   ///< Current epoch number within epoch cycle
+    uint64_t fCurrentEpochTime = 0;   ///< Current epoch time relative to timeslice in clock cycles
+    UnpackStsPar fParams       = {};  ///< Parameter container
 
-    static constexpr uint64_t fkEpochsPerCycle = stsxyter::kuTsMsbNbTsBinsBinning;  ///< TS_MSB epochs per epoch cycle
-    static constexpr uint64_t fkEpochLength =
-      stsxyter::kuHitNbTsBinsBinning;                                        ///< Length of TS_MSB epoch in clock cycles
-    static constexpr uint32_t fkClockCycleNom = stsxyter::kulClockCycleNom;  ///< Clock cycle nominator [ns]
-    static constexpr uint32_t fkClockCycleDen = stsxyter::kulClockCycleDen;  ///< Clock cycle denominator
-    static constexpr uint64_t fkCycleLength =
-      (fkEpochsPerCycle * fkEpochLength * fkClockCycleNom) / fkClockCycleDen;  ///< Epoch cycle length in ns
+    /** Number of TS_MSB epochs per cycle **/
+    static constexpr uint64_t fkEpochsPerCycle = stsxyter::kuTsMsbNbTsBinsBinning;
 
-    //std::unique_ptr<UnpackStsPar> fParams = nullptr;  ///< Parameter container
-    UnpackStsPar fParams = {};  ///< Parameter container
+    /** Length of TS_MSB epoch in clock cycles **/
+    static constexpr uint64_t fkEpochLength = stsxyter::kuHitNbTsBinsBinning;
+
+    /** Clock cycle nominator [ns] and denominator. The clock cycle in ns is nominator / denominator. **/
+    static constexpr uint32_t fkClockCycleNom = stsxyter::kulClockCycleNom;
+    static constexpr uint32_t fkClockCycleDen = stsxyter::kulClockCycleDen;
+
+    /** Epoch cycle length in ns **/
+    static constexpr uint64_t fkCycleLength = (fkEpochsPerCycle * fkEpochLength * fkClockCycleNom) / fkClockCycleDen;
   };
 
 

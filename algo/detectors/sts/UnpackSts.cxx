@@ -26,10 +26,14 @@ namespace cbm::algo
     // --- Output data
     resultType result = {};
 
-    // --- Current Timeslice time and TS_MSB epoch cycle
-    fCurrentTsTime = tTimeslice;
-    auto msTime    = msDescr.idx;  // Unix time of MS in ns
-    fCurrentCycle  = std::ldiv(msTime, fkCycleLength).quot;
+    // --- Current Timeslice start time in epoch units. Note that it is always a multiple of epochs
+    // --- and the epoch is a multiple of ns.
+    const uint64_t epochLengthInNs = fkEpochLength * fkClockCycleNom / fkClockCycleDen;
+    fCurrentTsTime                 = tTimeslice / epochLengthInNs;
+
+    // --- Current TS_MSB epoch cycle
+    auto const msTime = msDescr.idx;  // Unix time of MS in ns
+    fCurrentCycle     = std::ldiv(msTime, fkCycleLength).quot;
 
     // --- Number of messages in microslice
     auto msSize = msDescr.size;
@@ -46,18 +50,18 @@ namespace cbm::algo
     // --- Interpret MS content as sequence of SMX messages
     auto message = reinterpret_cast<const stsxyter::Message*>(msContent);
 
-    // --- The first message in the MS is expected to be of type EPOCH and can be ignored
+    // --- The first message in the MS is expected to be of type EPOCH and can be ignored.
     if (message[0].GetMessType() != stsxyter::MessType::Epoch) {
       result.second.fNumErrInvalidFirstMessage++;
       return result;
     }
 
-    // --- The second message must be of type ts_msb
+    // --- The second message must be of type ts_msb.
     if (message[1].GetMessType() != stsxyter::MessType::TsMsb) {
       result.second.fNumErrInvalidFirstMessage++;
       return result;
     }
-    ProcessTsmsbMessage(message[1], result.second);
+    ProcessTsmsbMessage(message[1]);
 
     // --- Message loop
     for (uint32_t messageNr = 2; messageNr < numMessages; messageNr++) {
@@ -70,7 +74,7 @@ namespace cbm::algo
           break;
         }
         case stsxyter::MessType::TsMsb: {
-          ProcessTsmsbMessage(message[messageNr], result.second);
+          ProcessTsmsbMessage(message[messageNr]);
           break;
         }
         default: {
@@ -112,10 +116,12 @@ namespace cbm::algo
       channel = numChansPerModule - message.GetHitChannel() + 1;
     }
 
-    // --- Convert time stamp from clock cycles to ns
-    uint64_t messageTime = (message.GetHitTimeBinning() * fkClockCycleNom + fkClockCycleDen / 2) / fkClockCycleDen;
-    // --- Expand to time within timeslice
-    messageTime += fCurrentEpochTime;
+    // --- Expand time stamp to time within timeslice (in clock cycle)
+    uint64_t messageTime = message.GetHitTimeBinning() + fCurrentEpochTime;
+
+    // --- Convert time stamp from clock cycles to ns. Round to nearest full ns.
+    messageTime = (messageTime * fkClockCycleNom + fkClockCycleDen / 2) / fkClockCycleDen;
+
     // --- Correct ASIC-wise offsets
     messageTime -= elinkPar.fTimeOffset;
     // --- TODO: Add walk correction (depends on ADC)
@@ -130,25 +136,26 @@ namespace cbm::algo
 
 
   // -----   Process an epoch (TS_MSB) message   ------------------------------
-  inline void UnpackSts::ProcessTsmsbMessage(const stsxyter::Message& message, UnpackStsMonitorData& monitor)
+  inline void UnpackSts::ProcessTsmsbMessage(const stsxyter::Message& message)
   {
-
+    // The compression of time is based on the hierarchy epoch cycle - epoch - message time.
+    // Cycles are counted from the start of Unix time and are multiples of an epoch (ts_msb).
+    // The epoch number is counted within each cycle. The time in the hit message is expressed
+    // in units of the readout clock cycle relative to the current epoch.
+    // The ts_msb message indicates the start of a new epoch. Its basic information is the epoch
+    // number within the current cycle. A cycle wrap resets the epoch number to zero, so it is
+    // indicated by the epoch number being smaller than the previous one (epoch messages are
+    // seemingly not consecutively in the data stream, but only if there are hit messages in between).
     auto epoch = message.GetTsMsbValBinning();
 
     // --- Cycle wrap
     if (epoch < fCurrentEpoch) fCurrentCycle++;
 
-    // --- Update current epoch
-    fCurrentEpoch          = epoch;
-    uint64_t epochTimeInCc = (fCurrentCycle * fkEpochsPerCycle + epoch) * fkEpochLength;
-    if (epochTimeInCc >> 59 != 0) {  // avoid overflow in 64 bit // TODO: Hard-coded number!
-      monitor.fNumErrTimestampOverflow++;
-      return;
-    }
+    // --- Update current epoch counter
+    fCurrentEpoch = epoch;
 
-    // --- Calculate epoch time in ns relative to timeslice start time
-    fCurrentEpochTime = (epochTimeInCc * fkClockCycleNom + fkClockCycleDen / 2) / fkClockCycleDen;
-    fCurrentEpochTime -= fCurrentTsTime;
+    // --- Calculate epoch time in clocks cycles relative to timeslice start time
+    fCurrentEpochTime = (fCurrentCycle * fkEpochsPerCycle + epoch - fCurrentTsTime) * fkEpochLength;
   }
   // --------------------------------------------------------------------------
 
