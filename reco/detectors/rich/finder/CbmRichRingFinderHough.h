@@ -60,10 +60,12 @@ public:
   virtual Int_t DoFind(CbmEvent* event, TClonesArray* rHitArray, TClonesArray* rProjArray, TClonesArray* rRingArray);
 
   void SetUseAnnSelect(bool use) { fUseAnnSelect = use; }
+  void SetUseSubdivide(bool use) { fUseSubdivide = use; }
 
 private:
   Int_t fEventNum      = 0;
   Bool_t fUseAnnSelect = true;
+  Bool_t fUseSubdivide = true;
 
 // choose between serial and SIMD implementation of the ring finder
 #ifdef HOUGH_SERIAL

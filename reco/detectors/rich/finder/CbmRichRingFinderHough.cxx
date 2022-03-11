@@ -69,8 +69,13 @@ Int_t CbmRichRingFinderHough::DoFind(CbmEvent* event, TClonesArray* rHitArray, T
     return -1;
   }
 
-  UpH.reserve(nofRichHits / 2);
-  DownH.reserve(nofRichHits / 2);
+  if (fUseSubdivide) {
+    UpH.reserve(nofRichHits / 2);
+    DownH.reserve(nofRichHits / 2);
+  }
+  else {
+    UpH.reserve(nofRichHits);
+  }
 
   // convert CbmRichHit to CbmRichHoughHit and
   // sort hits according to the photodetector (up or down)
@@ -85,7 +90,7 @@ Int_t CbmRichRingFinderHough::DoFind(CbmEvent* event, TClonesArray* rHitArray, T
       tempPoint.fX2plusY2 = hit->GetX() * hit->GetX() + hit->GetY() * hit->GetY();
       tempPoint.fTime     = hit->GetTime();
       tempPoint.fIsUsed   = false;
-      if (hit->GetY() >= 0) UpH.push_back(tempPoint);
+      if (hit->GetY() >= 0 || !fUseSubdivide) UpH.push_back(tempPoint);
       else
         DownH.push_back(tempPoint);
     }

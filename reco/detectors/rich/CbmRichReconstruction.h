@@ -77,6 +77,7 @@ public:
   void SetTrackAssignName(const string& n) { fTrackAssignName = n; }
 
   void SetUseHTAnnSelect(bool select) { fUseHTAnnSelect = select; }
+  void SetUseHTSubdivide(bool select) { fUseHTSubdivide = select; }
 
   /**
     * \brief Set Z coordinate where STS tracks will be extrapolated.
@@ -90,6 +91,7 @@ public:
     this->SetRunProjection(false);
     this->SetRunTrackAssign(false);
     this->SetUseHTAnnSelect(false);
+    this->SetUseHTSubdivide(false);
   }
 
 private:
@@ -124,6 +126,9 @@ private:
 
   // Run ring-candidate selection algorithm based on ANN
   bool fUseHTAnnSelect = true;
+
+  // Subdivide the RICH plain at y=0 to run both parts in parallel
+  bool fUseHTSubdivide = true;
 
   // Algorithm names for each step of reconstruction.
   string fExtrapolationName = "littrack";

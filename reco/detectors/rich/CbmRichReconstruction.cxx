@@ -191,6 +191,7 @@ void CbmRichReconstruction::InitFinder()
   if (fFinderName == "hough") {
     fRingFinder = new CbmRichRingFinderHough();
     static_cast<CbmRichRingFinderHough*>(fRingFinder)->SetUseAnnSelect(fUseHTAnnSelect);
+    static_cast<CbmRichRingFinderHough*>(fRingFinder)->SetUseSubdivide(fUseHTSubdivide);
   }
   else if (fFinderName == "ideal") {
     fRingFinder = new CbmRichRingFinderIdeal();
