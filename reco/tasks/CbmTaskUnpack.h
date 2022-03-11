@@ -72,6 +72,7 @@ private:  // members
   cbm::algo::StsReadoutConfig fStsConfig {};
   size_t fNumTs                = 0;
   size_t fNumMs                = 0;
+  size_t fNumBytes             = 0;
   size_t fNumDigis             = 0;
   double fTime                 = 0.;
   CbmDigiTimeslice* fTimeslice = nullptr;  ///< Output data

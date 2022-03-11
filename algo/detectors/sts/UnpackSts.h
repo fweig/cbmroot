@@ -57,7 +57,7 @@ namespace cbm::algo
   struct UnpackStsMonitorData {
     uint32_t fNumNonHitOrTsbMessage     = 0;
     uint32_t fNumErrElinkOutOfRange     = 0;  ///< Elink not contained in parameters
-    uint32_t fNumErrInvalidFirstMessage = 0;  ///< First message is not TS_MSB
+    uint32_t fNumErrInvalidFirstMessage = 0;  ///< First message is not TS_MSB or second is not EPOCH
     uint32_t fNumErrInvalidMsSize       = 0;  ///< Microslice size is not multiple of message size
     uint32_t fNumErrTimestampOverflow   = 0;  ///< Overflow in 64 bit time stamp
     bool HasErrors()

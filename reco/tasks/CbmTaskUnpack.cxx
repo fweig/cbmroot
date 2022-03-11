@@ -66,33 +66,42 @@ void CbmTaskUnpack::Exec(Option_t*)
   TStopwatch compTimer;
   timer.Start();
   size_t numMs    = 0;
+  size_t numBytes = 0;
   size_t numDigis = 0;
 
   // --- Timeslice properties
-  uint64_t tsIndex     = timeslice->index();
-  uint64_t tsTime      = timeslice->start_time();
-  uint64_t numComp     = timeslice->num_components();
-  uint64_t numCompUsed = 0;
+  const uint64_t tsIndex = timeslice->index();
+  const uint64_t tsTime  = timeslice->start_time();
+  const uint64_t numComp = timeslice->num_components();
+  uint64_t numCompUsed   = 0;
 
   // ---  Component loop
   for (uint64_t comp = 0; comp < numComp; comp++) {
 
-    uint8_t systemId = timeslice->descriptor(comp, 0).sys_id;
-    if (systemId == static_cast<uint8_t>(fles::SubsystemIdentifier::STS)) {
-      uint16_t equipmentId = timeslice->descriptor(comp, 0).eq_id;
-      auto algoIt          = fAlgoSts.find(equipmentId);
+    auto systemId = static_cast<fles::SubsystemIdentifier>(timeslice->descriptor(comp, 0).sys_id);
+    if (systemId == fles::SubsystemIdentifier::STS) {
+      const uint16_t equipmentId = timeslice->descriptor(comp, 0).eq_id;
+      const auto algoIt          = fAlgoSts.find(equipmentId);
       assert(algoIt != fAlgoSts.end());
 
+      // The current algorithm works for the STS data format version 0x20 used in 2021.
+      // Other versions are not yet supported.
+      // In the future, different data formats will be supported by instantiating different
+      // algorithms depending on the version.
+      assert(timeslice->descriptor(comp, 0).sys_ver == 0x20);
+
       // --- Component log
+      size_t numBytesInComp = 0;
       size_t numDigisInComp = 0;
       compTimer.Start();
 
       // --- Microslice loop
       uint64_t numMsInComp = timeslice->num_microslices(comp);
       for (uint64_t mslice = 0; mslice < numMsInComp; mslice++) {
-        auto msDescriptor = timeslice->descriptor(comp, mslice);
-        auto msContent    = timeslice->content(comp, mslice);
-        auto result       = (algoIt->second)(msContent, msDescriptor, tsTime);
+        const auto msDescriptor = timeslice->descriptor(comp, mslice);
+        const auto msContent    = timeslice->content(comp, mslice);
+        numBytesInComp += msDescriptor.size;
+        auto result = (algoIt->second)(msContent, msDescriptor, tsTime);
         LOG(debug1) << GetName() << ": Component " << comp << ", microslice " << mslice << ", digis "
                     << result.first.size() << ", errors " << result.second.fNumNonHitOrTsbMessage << " | "
                     << result.second.fNumErrElinkOutOfRange << " | " << result.second.fNumErrInvalidFirstMessage
@@ -100,15 +109,17 @@ void CbmTaskUnpack::Exec(Option_t*)
                     << " | ";
         //std::move(result.first.begin(), result.first.end(), fTimeslice->fData.fSts.fDigis.end());
         // TODO: The above usage of std::move does not work (seg. fault). Would need advice.
-        auto it = fTimeslice->fData.fSts.fDigis.end();
+        const auto it = fTimeslice->fData.fSts.fDigis.end();
         fTimeslice->fData.fSts.fDigis.insert(it, result.first.begin(), result.first.end());
         numDigisInComp += result.first.size();
       }  //# microslice
 
       compTimer.Stop();
-      LOG(debug) << GetName() << ": Component " << comp << ", microslices " << numMsInComp << ", digis "
-                 << numDigisInComp << ", CPU time " << compTimer.CpuTime() * 1000. << " ms";
+      LOG(debug) << GetName() << ": Component " << comp << ", microslices " << numMsInComp << " input size "
+                 << numBytesInComp << " bytes, "
+                 << ", digis " << numDigisInComp << ", CPU time " << compTimer.CpuTime() * 1000. << " ms";
       numCompUsed++;
+      numBytes += numBytesInComp;
       numDigis += numDigisInComp;
       numMs += numMsInComp;
 
@@ -120,16 +131,18 @@ void CbmTaskUnpack::Exec(Option_t*)
   // --- Timeslice log
   timer.Stop();
   stringstream logOut;
-  logOut << setw(20) << left << GetName() << " [";
+  logOut << setw(15) << left << GetName() << " [";
   logOut << fixed << setw(8) << setprecision(1) << right << timer.RealTime() * 1000. << " ms] ";
   logOut << "TS " << fNumTs << " (index " << tsIndex << ")";
   logOut << ", components " << numCompUsed << " / " << numComp << ", microslices " << numMs;
+  logOut << ", input rate " << double(numBytes) / timer.RealTime() / 1.e6 << " MB/s";
   logOut << ", digis " << numDigis;
   LOG(info) << logOut.str();
 
   // --- Run statistics
   fNumTs++;
   fNumMs += numMs;
+  fNumBytes += numBytes;
   fNumDigis += numDigis;
   fTime += timer.RealTime();
 }
@@ -140,12 +153,15 @@ void CbmTaskUnpack::Exec(Option_t*)
 void CbmTaskUnpack::Finish()
 {
   std::cout << std::endl;
+  double timePerTs = 1000. * fTime / double(fNumTs);  // in ms
+  double rate      = fNumBytes / 1.e6 / fTime;        // in MB/s
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
-  LOG(info) << "Timeslices         : " << fNumTs;
-  LOG(info) << "Microslices        : " << fNumMs;
-  LOG(info) << "Digis              : " << fNumDigis;
-  LOG(info) << "Time  / TS         : " << fixed << setprecision(2) << 1000. * fTime / double(fNumTs) << " ms";
+  LOG(info) << "Timeslices     : " << fNumTs;
+  LOG(info) << "Microslices    : " << fNumMs;
+  LOG(info) << "Digis          : " << fNumDigis;
+  LOG(info) << "Av. input rate : " << fixed << setprecision(2) << rate << " MB/s";
+  LOG(info) << "Time / TS      : " << fixed << setprecision(2) << timePerTs << " ms";
   LOG(info) << "=====================================";
 }
 // ----------------------------------------------------------------------------
@@ -193,7 +209,7 @@ InitStatus CbmTaskUnpack::Init()
     std::unique_ptr<UnpackStsPar> par(new UnpackStsPar());
     par->fNumChansPerAsic   = numChansPerAsic;
     par->fNumAsicsPerModule = numAsicsPerModule;
-    size_t numElinks        = fStsConfig.GetNumElinks(equip);
+    const size_t numElinks  = fStsConfig.GetNumElinks(equip);
     for (size_t elink = 0; elink < numElinks; elink++) {
       UnpackStsElinkPar elinkPar;
       auto mapEntry        = fStsConfig.Map(equip, elink);

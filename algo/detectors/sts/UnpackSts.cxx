@@ -24,39 +24,40 @@ namespace cbm::algo
   {
 
     // --- Output data
-    vector<CbmStsDigi> digiVec   = {};
-    UnpackStsMonitorData monitor = {};
+    resultType result = {};
 
     // --- Current Timeslice time and TS_MSB epoch cycle
     fCurrentTsTime = tTimeslice;
     auto msTime    = msDescr.idx;  // Unix time of MS in ns
     fCurrentCycle  = std::ldiv(msTime, fkCycleLength).quot;
 
+    // --- Number of messages in microslice
+    auto msSize = msDescr.size;
+    if (msSize % sizeof(stsxyter::Message) != 0) {
+      result.second.fNumErrInvalidMsSize++;
+      return result;
+    }
+    const uint32_t numMessages = msSize / sizeof(stsxyter::Message);
+    if (numMessages < 2) {
+      result.second.fNumErrInvalidMsSize++;
+      return result;
+    }
+
     // --- Interpret MS content as sequence of SMX messages
     auto message = reinterpret_cast<const stsxyter::Message*>(msContent);
 
     // --- The first message in the MS is expected to be of type EPOCH and can be ignored
     if (message[0].GetMessType() != stsxyter::MessType::Epoch) {
-      std::cout << "Error: UnpackSts: First message type is " << uint16_t(message[0].GetMessType()) << std::endl;
-      monitor.fNumErrInvalidFirstMessage++;
-      return std::make_pair(digiVec, monitor);
+      result.second.fNumErrInvalidFirstMessage++;
+      return result;
     }
 
     // --- The second message must be of type ts_msb
     if (message[1].GetMessType() != stsxyter::MessType::TsMsb) {
-      std::cout << "Error: UnpackSts: Second message type is " << uint16_t(message[0].GetMessType()) << std::endl;
-      monitor.fNumErrInvalidFirstMessage++;
-      return std::make_pair(digiVec, monitor);
+      result.second.fNumErrInvalidFirstMessage++;
+      return result;
     }
-    ProcessTsmsbMessage(message[1], monitor);
-
-    // --- Number of messages in microslice
-    auto msSize = msDescr.size;
-    if (msSize % sizeof(stsxyter::Message) != 0) {
-      monitor.fNumErrInvalidMsSize++;
-      return std::make_pair(digiVec, monitor);
-    }
-    const uint32_t numMessages = msSize / sizeof(stsxyter::Message);
+    ProcessTsmsbMessage(message[1], result.second);
 
     // --- Message loop
     for (uint32_t messageNr = 2; messageNr < numMessages; messageNr++) {
@@ -65,15 +66,15 @@ namespace cbm::algo
       switch (message[messageNr].GetMessType()) {
 
         case stsxyter::MessType::Hit: {
-          ProcessHitMessage(message[messageNr], digiVec, monitor);
+          ProcessHitMessage(message[messageNr], result.first, result.second);
           break;
         }
         case stsxyter::MessType::TsMsb: {
-          ProcessTsmsbMessage(message[messageNr], monitor);
+          ProcessTsmsbMessage(message[messageNr], result.second);
           break;
         }
         default: {
-          monitor.fNumNonHitOrTsbMessage++;
+          result.second.fNumNonHitOrTsbMessage++;
           break;
         }
 
@@ -81,14 +82,14 @@ namespace cbm::algo
 
     }  //# Messages
 
-    return std::make_pair(digiVec, monitor);
+    return result;
   }
   // --------------------------------------------------------------------------
 
 
   // -----   Process hit message   --------------------------------------------
-  void UnpackSts::ProcessHitMessage(const stsxyter::Message& message, vector<CbmStsDigi>& digiVec,
-                                    UnpackStsMonitorData& monitor) const
+  inline void UnpackSts::ProcessHitMessage(const stsxyter::Message& message, vector<CbmStsDigi>& digiVec,
+                                           UnpackStsMonitorData& monitor) const
   {
 
     // --- Check eLink and get parameters
@@ -129,7 +130,7 @@ namespace cbm::algo
 
 
   // -----   Process an epoch (TS_MSB) message   ------------------------------
-  void UnpackSts::ProcessTsmsbMessage(const stsxyter::Message& message, UnpackStsMonitorData& monitor)
+  inline void UnpackSts::ProcessTsmsbMessage(const stsxyter::Message& message, UnpackStsMonitorData& monitor)
   {
 
     auto epoch = message.GetTsMsbValBinning();
