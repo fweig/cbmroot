@@ -195,7 +195,7 @@ InitStatus CbmTaskUnpack::Init()
     return kFATAL;
   }
   fTimeslice = new CbmDigiTimeslice();
-  ioman->RegisterAny("DigiTimeslice.", fTimeslice, kTRUE);
+  ioman->RegisterAny("DigiTimeslice.", fTimeslice, IsOutputBranchPersistent("DigiTimeslice."));
   LOG(info) << "--- Registered branch DigiTimeslice.";
 
   // --- Common parameters for all components

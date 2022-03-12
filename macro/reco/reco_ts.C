@@ -93,6 +93,7 @@ void reco_ts(TString tsaFile = "", TString outFile = "")
 
   // -----   Unpacking   ----------------------------------------------------
   auto unpack = std::make_unique<CbmTaskUnpack>();
+  unpack->SetOutputBranchPersistent("DigiTimeslice.", kFALSE);
   LOG(info) << myName << ": Added task " << unpack->GetName();
   run->AddTask(unpack.release());
   // ------------------------------------------------------------------------
@@ -105,6 +106,7 @@ void reco_ts(TString tsaFile = "", TString outFile = "")
   double deadTime      = 50.;  // Minimum time between two triggers
   trigger->SetAlgoParams(triggerWindow, minNumDigis, deadTime);
   trigger->AddSystem(ECbmModuleId::kSts);
+  trigger->SetOutputBranchPersistent("Trigger", kFALSE);
   LOG(info) << myName << ": Added task " << trigger->GetName();
   run->AddTask(trigger.release());
   // ------------------------------------------------------------------------
