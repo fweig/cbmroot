@@ -16,7 +16,6 @@ namespace cbm
     // --- Execution
     std::vector<CbmDigiEvent> EventBuilder::operator()(const CbmDigiTimeslice& ts, const vector<double> triggers) const
     {
-      assert(is_sorted(triggers.begin(), triggers.end()));
       vector<CbmDigiEvent> eventVec(triggers.size());
       std::transform(triggers.begin(), triggers.end(), eventVec.begin(),
                      [&ts, this](const double& trigger) { return BuildEvent(ts, trigger); });
@@ -39,43 +38,30 @@ namespace cbm
         // --- Build the event using trigger window
         switch (system) {
           case ECbmModuleId::kSts: {
-            assert(
-              is_sorted(ts.fData.fSts.fDigis.begin(), ts.fData.fSts.fDigis.end(), IsBefore<CbmStsDigi, CbmStsDigi>));
             event.fData.fSts.fDigis = CopyRange(ts.fData.fSts.fDigis, tMin, tMax);
             break;
           }
           case ECbmModuleId::kRich: {
-            assert(is_sorted(ts.fData.fRich.fDigis.begin(), ts.fData.fRich.fDigis.end(),
-                             IsBefore<CbmRichDigi, CbmRichDigi>));
             event.fData.fRich.fDigis = CopyRange(ts.fData.fRich.fDigis, tMin, tMax);
             break;
           }
           case ECbmModuleId::kMuch: {
-            assert(is_sorted(ts.fData.fMuch.fDigis.begin(), ts.fData.fMuch.fDigis.end(),
-                             IsBefore<CbmMuchDigi, CbmMuchDigi>));
             event.fData.fMuch.fDigis = CopyRange(ts.fData.fMuch.fDigis, tMin, tMax);
             break;
           }
           case ECbmModuleId::kTrd: {
-            assert(
-              is_sorted(ts.fData.fTrd.fDigis.begin(), ts.fData.fTrd.fDigis.end(), IsBefore<CbmTrdDigi, CbmTrdDigi>));
             event.fData.fTrd.fDigis = CopyRange(ts.fData.fTrd.fDigis, tMin, tMax);
             break;
           }
           case ECbmModuleId::kTof: {
-            assert(
-              is_sorted(ts.fData.fTof.fDigis.begin(), ts.fData.fTof.fDigis.end(), IsBefore<CbmTofDigi, CbmTofDigi>));
             event.fData.fTof.fDigis = CopyRange(ts.fData.fTof.fDigis, tMin, tMax);
             break;
           }
           case ECbmModuleId::kPsd: {
-            assert(
-              is_sorted(ts.fData.fPsd.fDigis.begin(), ts.fData.fPsd.fDigis.end(), IsBefore<CbmPsdDigi, CbmPsdDigi>));
             event.fData.fPsd.fDigis = CopyRange(ts.fData.fPsd.fDigis, tMin, tMax);
             break;
           }
-          case ECbmModuleId::kT0: {  //T0 has Tof digis
-            assert(is_sorted(ts.fData.fT0.fDigis.begin(), ts.fData.fT0.fDigis.end(), IsBefore<CbmTofDigi, CbmTofDigi>));
+          case ECbmModuleId::kT0: {
             event.fData.fT0.fDigis = CopyRange(ts.fData.fT0.fDigis, tMin, tMax);
             break;
           }

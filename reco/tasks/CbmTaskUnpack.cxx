@@ -107,8 +107,6 @@ void CbmTaskUnpack::Exec(Option_t*)
                     << result.second.fNumErrElinkOutOfRange << " | " << result.second.fNumErrInvalidFirstMessage
                     << " | " << result.second.fNumErrInvalidMsSize << " | " << result.second.fNumErrTimestampOverflow
                     << " | ";
-        //std::move(result.first.begin(), result.first.end(), fTimeslice->fData.fSts.fDigis.end());
-        // TODO: The above usage of std::move does not work (seg. fault). Would need advice.
         const auto it = fTimeslice->fData.fSts.fDigis.end();
         fTimeslice->fData.fSts.fDigis.insert(it, result.first.begin(), result.first.end());
         numDigisInComp += result.first.size();
@@ -126,6 +124,10 @@ void CbmTaskUnpack::Exec(Option_t*)
     }  //? system (only STS)
 
   }  //# component
+
+  // --- Sorting of output digis. Is required by both digi trigger and event builder.
+  std::sort(fTimeslice->fData.fSts.fDigis.begin(), fTimeslice->fData.fSts.fDigis.end(),
+            [](CbmStsDigi digi1, CbmStsDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
 
 
   // --- Timeslice log
@@ -173,7 +175,7 @@ InitStatus CbmTaskUnpack::Init()
 
   std::cout << std::endl;
   LOG(info) << "==================================================";
-  LOG(info) << GetName() << ": Init";
+  LOG(info) << GetName() << ": Initialising...";
 
   // --- Get source instance
   fSource = dynamic_cast<CbmSourceTs*>(FairRunOnline::Instance()->GetSource());
@@ -181,7 +183,7 @@ InitStatus CbmTaskUnpack::Init()
     LOG(error) << GetName() << ": No valid source class registered!";
     return kFATAL;
   }
-  LOG(info) << GetName() << ": Found CbmSourceTs instance";
+  LOG(info) << "--- Found CbmSourceTs instance";
 
   // --- Get FairRootManager instance
   FairRootManager* ioman = FairRootManager::Instance();
@@ -194,10 +196,7 @@ InitStatus CbmTaskUnpack::Init()
   }
   fTimeslice = new CbmDigiTimeslice();
   ioman->RegisterAny("DigiTimeslice.", fTimeslice, kTRUE);
-  LOG(info) << GetName() << ": Registered branch DigiTimeslice.";
-
-  // --- Initialise STS readout configuration
-  //InitStsConfig();
+  LOG(info) << "--- Registered branch DigiTimeslice.";
 
   // --- Common parameters for all components
   uint32_t numChansPerAsic   = 128;  // R/O channels per ASIC
@@ -222,10 +221,10 @@ InitStatus CbmTaskUnpack::Init()
       par->fElinkParams.push_back(elinkPar);
     }
     fAlgoSts[equip].SetParams(std::move(par));
-    LOG(info) << GetName() << ": configured equipment " << equip << " with " << numElinks << " elinks";
+    LOG(info) << "--- Configured equipment " << equip << " with " << numElinks << " elinks";
   }  //# equipments
 
-  LOG(info) << GetName() << ": configured " << fAlgoSts.size() << " unpacker algorithms for STS.";
+  LOG(info) << "--- Configured " << fAlgoSts.size() << " unpacker algorithms for STS.";
   LOG(debug) << "Readout map:" << fStsConfig.PrintReadoutMap();
   LOG(info) << "==================================================";
   std::cout << std::endl;

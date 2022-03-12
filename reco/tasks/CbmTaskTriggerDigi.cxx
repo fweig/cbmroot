@@ -115,7 +115,7 @@ void CbmTaskTriggerDigi::Exec(Option_t*)
   timerTot.Stop();
   fTimeTot += timerTot.RealTime();
   stringstream logOut;
-  logOut << setw(20) << left << GetName() << " [";
+  logOut << setw(15) << left << GetName() << " [";
   logOut << fixed << setw(8) << setprecision(1) << right << timerTot.RealTime() * 1000. << " ms] ";
   logOut << "TS " << fNumTs << ", digis " << numDigis << ", triggers " << numTriggers;
   LOG(info) << logOut.str();
@@ -229,7 +229,7 @@ InitStatus CbmTaskTriggerDigi::Init()
   // --- Check input data
   // --- DigiTimeslice: Unpacked data from FLES
   fTimeslice = ioman->InitObjectAs<const CbmDigiTimeslice*>("DigiTimeslice.");
-  if (fTimeslice) { LOG(info) << GetName() << ": Found branch DigiTimeslice."; }
+  if (fTimeslice) { LOG(info) << "--- Found branch DigiTimeslice."; }
   // --- DigiManager: Simulated digi data
   else {
     fDigiMan = CbmDigiManager::Instance();

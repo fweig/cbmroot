@@ -113,8 +113,6 @@ void CbmTaskBuildEvents::Exec(Option_t*)
 
   // --- If the input is already CbmDigiTimeslice (from unpacking), use that directly
   if (fTimeslice) {
-    LOG(info) << "Exec timeslice " << fNumTs << " with " << fTriggers->size() << " triggers"
-              << " from " << *(fTriggers->begin()) << " to " << fTriggers->back();
     timerStep.Start();
     *fEvents = fAlgo(*fTimeslice, *fTriggers);
     timerStep.Stop();
@@ -150,7 +148,7 @@ void CbmTaskBuildEvents::Exec(Option_t*)
   timerTot.Stop();
   fTimeTot += timerTot.RealTime();
   stringstream logOut;
-  logOut << setw(20) << left << GetName() << " [";
+  logOut << setw(15) << left << GetName() << " [";
   logOut << fixed << setw(8) << setprecision(1) << right << timerTot.RealTime() * 1000. << " ms] ";
   logOut << "TS " << fNumTs << ", triggers " << numTriggers << ", events " << numEvents;
 
@@ -182,21 +180,21 @@ void CbmTaskBuildEvents::Finish()
   std::cout << std::endl;
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
-  LOG(info) << "Timeslices         : " << fNumTs;
-  LOG(info) << "Triggers           : " << fNumTriggers;
-  LOG(info) << "Events             : " << fNumEvents;
-
+  LOG(info) << "Timeslices           : " << fNumTs;
+  LOG(info) << "Triggers             : " << fNumTriggers;
+  LOG(info) << "Events               : " << fNumEvents;
   for (const auto& entry : fEventWindows) {
     auto system = entry.first;
-    LOG(info) << CbmModuleList::GetModuleNameCaps(system) << " digis in timeslice : " << fNumDigisTs[system];
-    LOG(info) << CbmModuleList::GetModuleNameCaps(system) << " digis in events    : " << fNumDigisEv[system] << " = "
-              << fixed << setprecision(2) << 100. * double(fNumDigisEv[system]) / double(fNumDigisTs[system]) << " %";
+    LOG(info) << setw(4) << left << CbmModuleList::GetModuleNameCaps(system)
+              << " digis in TS     : " << fNumDigisTs[system];
+    LOG(info) << setw(4) << left << CbmModuleList::GetModuleNameCaps(system)
+              << " digis in events : " << fNumDigisEv[system] << " = " << fixed << setprecision(2)
+              << 100. * double(fNumDigisEv[system]) / double(fNumDigisTs[system]) << " %";
   }
-
-  LOG(info) << "Time  / TS         : " << fixed << setprecision(2) << 1000. * fTimeTot / double(fNumTs) << " ms";
-  LOG(info) << "Time fill TS       : " << fixed << setprecision(2) << 1000. * fTimeFillTs / double(fNumTs)
+  LOG(info) << "Time  / TS           : " << fixed << setprecision(2) << 1000. * fTimeTot / double(fNumTs) << " ms";
+  LOG(info) << "Time fill TS         : " << fixed << setprecision(2) << 1000. * fTimeFillTs / double(fNumTs)
             << " ms = " << 100. * fTimeFillTs / fTimeTot << " %";
-  LOG(info) << "Time build events  : " << fixed << setprecision(2) << 1000. * fTimeBuildEvt / double(fNumTs)
+  LOG(info) << "Time build events    : " << fixed << setprecision(2) << 1000. * fTimeBuildEvt / double(fNumTs)
             << " ms = " << 100. * fTimeBuildEvt / fTimeTot << " %";
   LOG(info) << "=====================================";
 }
@@ -229,10 +227,6 @@ InitStatus CbmTaskBuildEvents::Init()
   FairRootManager* ioman = FairRootManager::Instance();
   assert(ioman);
 
-  // --- DigiManager instance
-  fDigiMan = CbmDigiManager::Instance();
-  fDigiMan->Init();
-
   std::cout << std::endl;
   LOG(info) << "==================================================";
   LOG(info) << GetName() << ": Initialising...";
@@ -240,7 +234,7 @@ InitStatus CbmTaskBuildEvents::Init()
   // --- Check input data
   // --- DigiTimeslice: Unpacked data from FLES
   fTimeslice = ioman->InitObjectAs<const CbmDigiTimeslice*>("DigiTimeslice.");
-  if (fTimeslice) { LOG(info) << GetName() << ": Found branch DigiTimeslice."; }
+  if (fTimeslice) { LOG(info) << "--- Found branch DigiTimeslice."; }
   // --- DigiManager: Simulated digi data
   else {
     fDigiMan = CbmDigiManager::Instance();
