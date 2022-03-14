@@ -9,6 +9,7 @@ Set(LIBRARY_NAME CbmRecoSteer)
 
 # -----  Compilation sources   ----------------------------
 set(SRCS
+CbmReco.cxx
 CbmRecoUnpack.cxx
 CbmSourceTsArchive.cxx
 )
@@ -20,6 +21,7 @@ CbmSourceTsArchive.cxx
 set(INCLUDE_DIRECTORIES
 ${CBMROOT_SOURCE_DIR}/reco/steer
 ${CBMROOT_SOURCE_DIR}/reco/base
+${CBMROOT_SOURCE_DIR}/reco/tasks
 
 ${CBMROOT_SOURCE_DIR}/reco/detectors/psd
 ${CBMROOT_SOURCE_DIR}/reco/detectors/psd/unpack
@@ -48,7 +50,9 @@ ${CBMROOT_SOURCE_DIR}/core/detectors/sts
 ${CBMROOT_SOURCE_DIR}/core/detectors/tof
 ${CBMROOT_SOURCE_DIR}/core/detectors/trd
 
-
+${CBMROOT_SOURCE_DIR}/algo/detectors/sts
+${CBMROOT_SOURCE_DIR}/algo/trigger
+${CBMROOT_SOURCE_DIR}/algo/evbuild
 
 )
 
@@ -83,6 +87,7 @@ CbmRecoSts
 CbmTofBase
 CbmTofReco
 CbmTrdReco
+CbmRecoTasks
 CbmData
 KF
 KFParticleInterface
