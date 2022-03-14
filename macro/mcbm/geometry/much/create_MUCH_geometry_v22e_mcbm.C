@@ -138,13 +138,14 @@ TGeoVolume* CreateLayersRpc(int istn, int ily);
 fstream infoFile;
 void create_MUCH_geometry_v22e_mcbm()
 {
-
+  // Load FairRunSim to ensure the correct unit system
+  FairRunSim* sim = new FairRunSim();
 
   // -------   Open info file   -----------------------------------------------
   TString infoFileName = FileNameSim;
   infoFileName.ReplaceAll("root", "info");
   infoFile.open(infoFileName.Data(), fstream::out);
-  infoFile << "MUCH geometry created with create_MUCH_geometry_v20a_mcbm.C" << endl << endl;
+  infoFile << "MUCH geometry created with create_MUCH_geometry_v22e_mcbm.C" << endl << endl;
   infoFile << "Build a mMUCH setup for mCBM with 2 GEM." << endl;
   infoFile << "10 mm thick Al plates are used for support and cooling in the "
               "GEM modules."
