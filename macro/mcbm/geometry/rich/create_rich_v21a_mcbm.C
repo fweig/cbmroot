@@ -2,6 +2,8 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Florian Uhlig [committer] */
 
+// clang-format off
+
 #include <iostream>
 //#include "FairGeoMedium.h"
 //#include "FairGeoBuilder.h"
@@ -28,6 +30,9 @@ using namespace std;
 void create_rich_v21a_mcbm()
 {
   gSystem->Load("libGeom");
+
+  // Load FairRunSim to ensure the correct unit system
+  FairRunSim* sim = new FairRunSim();
 
   TString geoFileName = "rich_v21a_mcbm.geo.root";
   TString topNodeName = "rich_v21a_mcbm";

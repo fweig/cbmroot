@@ -15,7 +15,7 @@ using namespace std;
 
 // Changelog
 
-// 2022-03-08 - v21b - DE - Based on v21a, relocate RICH along the rail onto the 25 degree line
+// 2022-03-08 - v21b - DE - Based on v21a, relocate RICH along the rail onto the 25 degree line by -20 cm
 // 2021-09-28 - v21a - SR - Based on v20d, moved RICH according to the TOF v21d
 // 2020-05-25 - v20d - AW - Move mRICH by +7.2cm in Z accordingly to the mTOF movement from rev 16441
 // 2020-05-20 - v20d - AW - changed positioning to +2.5cm to 25°line (nearer to beam axis) (from Analysis)
@@ -31,6 +31,9 @@ using namespace std;
 void create_rich_v21b_mcbm()
 {
   gSystem->Load("libGeom");
+
+  // Load FairRunSim to ensure the correct unit system
+  FairRunSim* sim = new FairRunSim();
 
   TString geoFileName = "rich_v21b_mcbm.geo.root";
   TString topNodeName = "rich_v21b_mcbm";
