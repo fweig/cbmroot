@@ -43,6 +43,7 @@ ${CBMROOT_SOURCE_DIR}/core/data/rich
 ${CBMROOT_SOURCE_DIR}/core/data/sts
 ${CBMROOT_SOURCE_DIR}/core/data/tof
 ${CBMROOT_SOURCE_DIR}/core/data/trd
+${CBMROOT_SOURCE_DIR}/core/data/global
 
 ${CBMROOT_SOURCE_DIR}/core/detectors/psd
 ${CBMROOT_SOURCE_DIR}/core/detectors/rich
