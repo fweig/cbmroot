@@ -61,8 +61,9 @@ void reco_ts(TString tsaFile = "", TString outFile = "")
   // In general, the following parts need not be touched
   // ========================================================================
 
-  tsaFile = "/Users/vfriese/Cbmroot/data/1588_node8_1_0000";
-  outFile = "test";
+  // Tested with file 1588_node8_1_0000.tsa
+  // TODO: Would need a small up-to-date default input file; the one distributed with
+  // the code is outdated.
 
   // ----- Default file names   ---------------------------------------------
   if (tsaFile.IsNull()) tsaFile = srcDir + "/input/mcbm_run399_first20Ts";
