@@ -16,19 +16,44 @@
 
 #include <iostream>
 #include <memory>
+#include <string>
 
 using std::cout;
 using std::endl;
-using std::make_unique;
+using std::string;
 
 
-// -----   Constructor   ------------------------------------------------------
-CbmReco::CbmReco(TString source, TString outFile, int32_t numTs, const CbmRecoConfig& config)
-  : fInputFileName(source)
+// -----   Constructor from single source   -----------------------------------
+CbmReco::CbmReco(string source, TString outFile, int32_t numTs, const CbmRecoConfig& config)
+  : fSourceNames {source}
   , fOutputFileName(outFile)
   , fNumTs(numTs)
   , fConfig(config)
 {
+}
+// ----------------------------------------------------------------------------
+
+
+// -----   Constructor from multiple sources   --------------------------------
+CbmReco::CbmReco(std::vector<string> sources, TString outFile, int32_t numTs, const CbmRecoConfig& config)
+  : fSourceNames(sources)
+  , fOutputFileName(outFile)
+  , fNumTs(numTs)
+  , fConfig(config)
+{
+}
+// ----------------------------------------------------------------------------
+
+
+// -----   List of source names   ---------------------------------------------
+std::string CbmReco::ListSources() const
+{
+  std::string result = "{";
+  for (auto& source : fSourceNames) {
+    result += source + ", ";
+  }
+  result += "}";
+  return result;
 }
 // ----------------------------------------------------------------------------
 
@@ -41,16 +66,19 @@ int32_t CbmReco::Run()
   TStopwatch timer;
   timer.Start();
 
+  // TODO: I cannot yet use unique pointers for the objects to be passed to FairRunline.
+  // Ownership, however, is passed to FairRunOnline, which takes care of deleting the objects.
+
   // --- Input source
-  auto source = make_unique<CbmSourceTs>(fInputFileName.Data());
-  if (source) LOG(info) << "Reco: Using source " << fInputFileName.Data();
+  auto source = new CbmSourceTs(fSourceNames);
+  if (source) LOG(info) << "Reco: Using sources " << ListSources();
   else {
-    LOG(error) << "Reco: Could not open source " << fInputFileName.Data() << "; aborting.";
+    LOG(error) << "Reco: Could not open sources " << ListSources() << "; aborting.";
     return -1;
   }
 
   // --- Output file
-  auto sink = make_unique<FairRootFileSink>(fOutputFileName.Data());
+  auto sink = new FairRootFileSink(fOutputFileName.Data());
   if (sink) LOG(info) << "Reco: Using output file " << fOutputFileName.Data();
   else {
     LOG(error) << "Reco: Could not open output " << fOutputFileName.Data() << "; aborting.";
@@ -58,31 +86,31 @@ int32_t CbmReco::Run()
   }
 
   // --- Event header
-  auto header = make_unique<CbmTsEventHeader>();
+  auto header = new CbmTsEventHeader();
 
   // --- Unpacking
-  auto unpack = make_unique<CbmTaskUnpack>();
+  auto unpack = new CbmTaskUnpack();
   unpack->SetOutputBranchPersistent("DigiTimeslice.", fConfig.fStoreTimeslice);
 
   // --- Digi trigger
-  auto trigger = make_unique<CbmTaskTriggerDigi>();
+  auto trigger = new CbmTaskTriggerDigi();
   trigger->AddSystem(fConfig.fTriggerDet);
   trigger->SetAlgoParams(fConfig.fTriggerWin, fConfig.fTriggerThreshold, fConfig.fTriggerDeadTime);
   trigger->SetOutputBranchPersistent("Trigger", fConfig.fStoreTrigger);
 
   // --- Event building
-  auto evtBuild = make_unique<CbmTaskBuildEvents>();
+  auto evtBuild = new CbmTaskBuildEvents();
   for (auto& entry : fConfig.fEvtbuildWindows)
     evtBuild->SetEventWindow(entry.first, entry.second.first, entry.second.second);
   evtBuild->SetOutputBranchPersistent("DigiEvent", fConfig.fStoreEvents);
 
   // --- Run configuration
-  FairRunOnline run(source.release());
-  run.SetSink(sink.release());
-  run.SetEventHeader(header.release());
-  run.AddTask(unpack.release());
-  run.AddTask(trigger.release());
-  run.AddTask(evtBuild.release());
+  FairRunOnline run(source);
+  run.SetSink(sink);
+  run.SetEventHeader(header);
+  run.AddTask(unpack);
+  run.AddTask(trigger);
+  run.AddTask(evtBuild);
 
   // --- Initialise and start run
   timer.Stop();

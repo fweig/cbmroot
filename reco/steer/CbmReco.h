@@ -10,6 +10,7 @@
 #include <TString.h>
 
 #include <map>
+#include <string>
 #include <utility>
 
 
@@ -58,17 +59,32 @@ public:
   CbmReco() {};
 
 
-  /** @brief Standard constructor
-   ** @param source  Name of input file or input source
+  /** @brief Standard constructor for a single source
+   ** @param source  Name of input file or stream
    ** @param outFile Name of output file
    ** @param numTs   Number of timeslices to process. If negative, all available will be used.
    ** @param config  Configuration
    **/
-  CbmReco(TString source, TString outFile, int32_t numTs, const CbmRecoConfig& config);
+  CbmReco(std::string source, TString outFile, int32_t numTs, const CbmRecoConfig& config);
+
+
+  /** @brief Standard constructor for list of sources
+   ** @param source  Vector of names of input files or input sources
+   ** @param outFile Name of output file
+   ** @param numTs   Number of timeslices to process. If negative, all available will be used.
+   ** @param config  Configuration
+   **/
+  CbmReco(std::vector<std::string> sources, TString outFile, int32_t numTs, const CbmRecoConfig& config);
 
 
   /** @brief Destructor **/
   virtual ~CbmReco() {};
+
+
+  /** @brief List all entries in the input vector
+   ** @return String concatenating the sources names
+   **/
+  std::string ListSources() const;
 
 
   /** @brief Configure and execute run
@@ -78,10 +94,10 @@ public:
 
 
 private:
-  TString fInputFileName  = "";
-  TString fOutputFileName = "";
-  int32_t fNumTs          = -1;
-  CbmRecoConfig fConfig   = {};
+  std::vector<std::string> fSourceNames = {};  ///< Sources (input files or stream)
+  TString fOutputFileName               = "";
+  int32_t fNumTs                        = -1;
+  CbmRecoConfig fConfig                 = {};
 
   ClassDef(CbmReco, 1);
 };
