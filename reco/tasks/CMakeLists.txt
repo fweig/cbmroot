@@ -7,16 +7,17 @@
 Set(LIBRARY_NAME CbmRecoTasks)
 # ---------------------------------------------------------
 
+
 # -----  Compilation sources   ----------------------------
 set(SRCS
+CbmReco.cxx
+CbmSourceTs.cxx
 CbmTaskBuildEvents.cxx
 CbmTaskMakeRecoEvents.cxx
 CbmTaskTriggerDigi.cxx
 CbmTaskUnpack.cxx
-CbmSourceTs.cxx
 )
 # ---------------------------------------------------------
-
 
 
 # ----  Include directories -------------------------------

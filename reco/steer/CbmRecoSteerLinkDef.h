@@ -9,8 +9,6 @@
 #pragma link off all functions;
 
 // --- Classes
-#pragma link C++ class CbmReco + ;
-#pragma link C++ class CbmRecoConfig + ;
 #pragma link C++ class CbmRecoUnpack + ;
 #pragma link C++ class CbmSourceTsArchive + ;
 

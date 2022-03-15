@@ -20,6 +20,7 @@
 
 using std::cout;
 using std::endl;
+using std::make_unique;
 using std::string;
 
 
@@ -66,11 +67,8 @@ int32_t CbmReco::Run()
   TStopwatch timer;
   timer.Start();
 
-  // TODO: I cannot yet use unique pointers for the objects to be passed to FairRunline.
-  // Ownership, however, is passed to FairRunOnline, which takes care of deleting the objects.
-
   // --- Input source
-  auto source = new CbmSourceTs(fSourceNames);
+  auto source = make_unique<CbmSourceTs>(fSourceNames);
   if (source) LOG(info) << "Reco: Using sources " << ListSources();
   else {
     LOG(error) << "Reco: Could not open sources " << ListSources() << "; aborting.";
@@ -78,7 +76,7 @@ int32_t CbmReco::Run()
   }
 
   // --- Output file
-  auto sink = new FairRootFileSink(fOutputFileName.Data());
+  auto sink = make_unique<FairRootFileSink>(fOutputFileName.Data());
   if (sink) LOG(info) << "Reco: Using output file " << fOutputFileName.Data();
   else {
     LOG(error) << "Reco: Could not open output " << fOutputFileName.Data() << "; aborting.";
@@ -86,31 +84,31 @@ int32_t CbmReco::Run()
   }
 
   // --- Event header
-  auto header = new CbmTsEventHeader();
+  auto header = make_unique<CbmTsEventHeader>();
 
   // --- Unpacking
-  auto unpack = new CbmTaskUnpack();
+  auto unpack = make_unique<CbmTaskUnpack>();
   unpack->SetOutputBranchPersistent("DigiTimeslice.", fConfig.fStoreTimeslice);
 
   // --- Digi trigger
-  auto trigger = new CbmTaskTriggerDigi();
+  auto trigger = make_unique<CbmTaskTriggerDigi>();
   trigger->AddSystem(fConfig.fTriggerDet);
   trigger->SetAlgoParams(fConfig.fTriggerWin, fConfig.fTriggerThreshold, fConfig.fTriggerDeadTime);
   trigger->SetOutputBranchPersistent("Trigger", fConfig.fStoreTrigger);
 
   // --- Event building
-  auto evtBuild = new CbmTaskBuildEvents();
+  auto evtBuild = make_unique<CbmTaskBuildEvents>();
   for (auto& entry : fConfig.fEvtbuildWindows)
     evtBuild->SetEventWindow(entry.first, entry.second.first, entry.second.second);
   evtBuild->SetOutputBranchPersistent("DigiEvent", fConfig.fStoreEvents);
 
   // --- Run configuration
-  FairRunOnline run(source);
-  run.SetSink(sink);
-  run.SetEventHeader(header);
-  run.AddTask(unpack);
-  run.AddTask(trigger);
-  run.AddTask(evtBuild);
+  FairRunOnline run(source.release());
+  run.SetSink(sink.release());
+  run.SetEventHeader(header.release());
+  run.AddTask(unpack.release());
+  run.AddTask(trigger.release());
+  run.AddTask(evtBuild.release());
 
   // --- Initialise and start run
   timer.Stop();

@@ -9,7 +9,6 @@ Set(LIBRARY_NAME CbmRecoSteer)
 
 # -----  Compilation sources   ----------------------------
 set(SRCS
-CbmReco.cxx
 CbmRecoUnpack.cxx
 CbmSourceTsArchive.cxx
 )

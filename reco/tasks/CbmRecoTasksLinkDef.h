@@ -11,10 +11,13 @@
 #pragma link off all functions;
 
 // --- Classes
+#pragma link C++ class CbmReco + ;
+#pragma link C++ class CbmRecoConfig + ;
+#pragma link C++ class CbmSourceTs + ;
 #pragma link C++ class CbmTaskBuildEvents + ;
 #pragma link C++ class CbmTaskMakeRecoEvents + ;
 #pragma link C++ class CbmTaskTriggerDigi + ;
 #pragma link C++ class CbmTaskUnpack + ;
-#pragma link C++ class CbmSourceTs + ;
+
 
 #endif /* __CINT__ */
