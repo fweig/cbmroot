@@ -97,9 +97,6 @@ void CbmMcbmCheckTimingAlgo::CheckDataPresence(CheckTimingDetector detToCheck)
 
 void CbmMcbmCheckTimingAlgo::CreateHistos()
 {
-  /// FIXME: Disable clang formatting for histograms declaration for now
-  /* clang-format off */
-
    /// Logarithmic bining for self time comparison
   uint32_t iNbBinsLog = 0;
     /// Parameters are NbDecadesLog, NbStepsDecade, NbSubStepsInStep
@@ -108,51 +105,51 @@ void CbmMcbmCheckTimingAlgo::CreateHistos()
 
   for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
   {
-    fvhDetSelfDiff.push_back( new TH1D( Form( "h%sSelfDiff", (*det).sName.data() ),
-                                        Form( "time difference between consecutivs %s  Digis;time diff [ns];Counts",
-                                              (*det).sName.data() ),
-                                        iNbBinsLog, dBinsLog )
-                            );
+    for (uint i(0); i < (*det).uNdiv; i++) {
+      fvhDetSelfDiff[(*det).detId].push_back(
+        new TH1D(Form("h%sSelfDiff%d", (*det).sName.data(), i),
+                 Form("time difference between consecutivs %s (%s)  Digis;time diff [ns];Counts", (*det).sName.data(),
+                      (*det).vName[i].data()),
+                 iNbBinsLog, dBinsLog));
 
-    fvhDetToRefDiff.push_back( new TH1D( Form( "h%s%sDiff", (*det).sName.data(), fRefDet.sName.data() ),
-                                        Form( "%s - %s time difference;time diff [ns];Counts",
-                                              (*det).sName.data(), fRefDet.sName.data() ),
-                                        (*det).uRangeNbBins, (*det).dTimeRangeBeg, (*det).dTimeRangeEnd )
-                             );
+      fvhDetToRefDiff[(*det).detId].push_back(
+        new TH1D(Form("h%s%sDiff%d", (*det).sName.data(), fRefDet.sName.data(), i),
+                 Form("%s(%s) - %s time difference;time diff [ns];Counts", (*det).sName.data(), (*det).vName[i].data(),
+                      fRefDet.sName.data()),
+                 (*det).uRangeNbBins, (*det).dTimeRangeBeg, (*det).dTimeRangeEnd));
 
-    fvhDetToRefDiffRefCharge.push_back( new TH2F( Form( "h%s%sDiffRefCharge", (*det).sName.data(), fRefDet.sName.data() ),
-                                                  Form( "%s - %s;time diff [ns]; %s Charge [a.u]; Counts",
-                                                        (*det).sName.data(), fRefDet.sName.data(), fRefDet.sName.data() ),
-                                                  (*det).uRangeNbBins, (*det).dTimeRangeBeg, (*det).dTimeRangeEnd,
-                                                  256, 0, 256 )
-                                      );
-    fvhDetToRefDiffDetCharge.push_back( new TH2F( Form( "h%s%sDiffDetCharge", (*det).sName.data(), fRefDet.sName.data() ),
-                                                  Form( "%s - %s;time diff [ns]; %s Charge [a.u]; Counts",
-                                                        (*det).sName.data(), fRefDet.sName.data(), (*det).sName.data() ),
-                                                  (*det).uRangeNbBins, (*det).dTimeRangeBeg, (*det).dTimeRangeEnd,
-                                                  256, 0, 256 )
-                                      );
-    fvhDetToRefDiffEvo.push_back( new TH2F( Form( "h%s%sDiffEvo", (*det).sName.data(), fRefDet.sName.data() ),
-                                            Form( "%s - %s;TS; time diff [ns];Counts",
-                                                  (*det).sName.data(), fRefDet.sName.data() ),
-                                            1000, 0, 10000,
-                                            (*det).uRangeNbBins, (*det).dTimeRangeBeg, (*det).dTimeRangeEnd )
-                                );
-    fvhDetToRefDiffEvoLong.push_back( new TH2F( Form( "h%s%sDiffEvoLong", (*det).sName.data(), fRefDet.sName.data() ),
-                                                Form( "%s - %s;TS; time diff [ns];Counts",
-                                                      (*det).sName.data(), fRefDet.sName.data() ),
-                                                1800, 0, 18000,
-                                                (*det).uRangeNbBins, (*det).dTimeRangeBeg, (*det).dTimeRangeEnd )
-                                    );
+      fvhDetToRefDiffRefCharge[(*det).detId].push_back(
+        new TH2F(Form("h%s%sDiffRefCharge%d", (*det).sName.data(), fRefDet.sName.data(), i),
+                 Form("%s(%s) - %s;time diff [ns]; %s Charge [a.u]; Counts", (*det).sName.data(),
+                      (*det).vName[i].data(), fRefDet.sName.data(), fRefDet.sName.data()),
+                 (*det).uRangeNbBins, (*det).dTimeRangeBeg, (*det).dTimeRangeEnd, 256, 0, 256));
+
+      fvhDetToRefDiffDetCharge[(*det).detId].push_back(
+        new TH2F(Form("h%s%sDiffDetCharge%d", (*det).sName.data(), fRefDet.sName.data(), i),
+                 Form("%s(%s) - %s;time diff [ns]; %s(%s) Charge [a.u]; Counts", (*det).sName.data(),
+                      (*det).vName[i].data(), fRefDet.sName.data(), (*det).sName.data(), (*det).vName[i].data()),
+                 (*det).uRangeNbBins, (*det).dTimeRangeBeg, (*det).dTimeRangeEnd, 256, 0, 256));
+
+      fvhDetToRefDiffEvo[(*det).detId].push_back(
+        new TH2F(Form("h%s%sDiffEvo%d", (*det).sName.data(), fRefDet.sName.data(), i),
+                 Form("%s(%s) - %s;TS; time diff [ns];Counts", (*det).sName.data(), (*det).vName[i].data(),
+                      fRefDet.sName.data()),
+                 1000, 0, 10000, (*det).uRangeNbBins, (*det).dTimeRangeBeg, (*det).dTimeRangeEnd));
+
+      fvhDetToRefDiffEvoLong[(*det).detId].push_back(
+        new TH2F(Form("h%s%sDiffEvoLong%d", (*det).sName.data(), fRefDet.sName.data(), i),
+                 Form("%s(%s) - %s;TS; time diff [ns];Counts", (*det).sName.data(), (*det).vName[i].data(),
+                      fRefDet.sName.data()),
+                 1800, 0, 18000, (*det).uRangeNbBins, (*det).dTimeRangeBeg, (*det).dTimeRangeEnd));
+    }
     LOG( info ) << "Created histos for " << (*det).sName;
   } // for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
   /// Add reference detector digi to digi time difference histo at end of vector
-  fvhDetSelfDiff.push_back( new TH1D( Form( "h%sSelfDiff", fRefDet.sName.data() ),
-                                      Form( "time difference between consecutivs %s  Digis;time diff [ns];Counts",
-                                            fRefDet.sName.data() ),
-                                      iNbBinsLog, dBinsLog )
-                          );
+  fvhDetSelfDiff[fRefDet.detId].push_back(
+    new TH1D(Form("h%sSelfDiff", fRefDet.sName.data()),
+             Form("time difference between consecutivs %s  Digis;time diff [ns];Counts", fRefDet.sName.data()),
+             iNbBinsLog, dBinsLog));
 
   /// Register the histos in the HTTP server
   FairRunOnline* run = FairRunOnline::Instance();
@@ -162,23 +159,19 @@ void CbmMcbmCheckTimingAlgo::CreateHistos()
     if( nullptr != server )
     {
       /// Register histos for all checked detectors
-      for( UInt_t uDetIdx = 0; uDetIdx < fvDets.size(); ++uDetIdx )
-      {
-        server->Register("/CheckTiming/SelfDiff", fvhDetSelfDiff[ uDetIdx ] );
-        server->Register("/CheckTiming/RefDiff", fvhDetToRefDiff[ uDetIdx ] );
-        server->Register("/CheckTiming/DiffCharge", fvhDetToRefDiffRefCharge[ uDetIdx ] );
-        server->Register("/CheckTiming/DiffCharge", fvhDetToRefDiffDetCharge[ uDetIdx ] );
-        server->Register("/CheckTiming/DiffEvo", fvhDetToRefDiffEvo[ uDetIdx ] );
-        server->Register("/CheckTiming/DiffEvo", fvhDetToRefDiffEvoLong[ uDetIdx ] );
-      } // for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
+      for (auto uDetIdx : fvDets) {
+        server->Register("/CheckTiming/SelfDiff", fvhDetSelfDiff[uDetIdx.detId][0]);
+        server->Register("/CheckTiming/RefDiff", fvhDetToRefDiff[uDetIdx.detId][0]);
+        server->Register("/CheckTiming/DiffCharge", fvhDetToRefDiffRefCharge[uDetIdx.detId][0]);
+        server->Register("/CheckTiming/DiffCharge", fvhDetToRefDiffDetCharge[uDetIdx.detId][0]);
+        server->Register("/CheckTiming/DiffEvo", fvhDetToRefDiffEvo[uDetIdx.detId][0]);
+        server->Register("/CheckTiming/DiffEvo", fvhDetToRefDiffEvoLong[uDetIdx.detId][0]);
+      }  // for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
       /// Register the histo for reference detector digi to digi time difference
-      server->Register("/CheckTiming/SelfDiff", fvhDetSelfDiff[ fvDets.size() ] );
+      server->Register("/CheckTiming/SelfDiff", fvhDetSelfDiff[fRefDet.detId][0]);
     } // if( nullptr != server )
   } // if( run )
-
-  /// FIXME: Re-enable clang formatting after histograms declaration
-  /* clang-format on */
 }
 // ---- ReInit  -------------------------------------------------------
 Bool_t CbmMcbmCheckTimingAlgo::ReInit() { return kTRUE; }
@@ -272,7 +265,7 @@ void CbmMcbmCheckTimingAlgo::CheckInterSystemOffset()
     }  // else of if( ECbmModuleId::kT0 == fRefDet.detId )
 
     /// Fill self time difference histo
-    fvhDetSelfDiff[fvDets.size()]->Fill(dRefTime - fRefDet.dPrevTime);
+    (fvhDetSelfDiff[fRefDet.detId])[0]->Fill(dRefTime - fRefDet.dPrevTime);
     fRefDet.dPrevTime = dRefTime;
 
     /// Charge cut if defined!
@@ -342,7 +335,8 @@ template<class Digi>
 void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime, const Double_t dRefCharge, UInt_t uDetIdx)
 {
   UInt_t uNbDigis = 0;
-  switch (fvDets[uDetIdx].detId) {
+  ECbmModuleId edetId = fvDets[uDetIdx].detId;
+  switch (edetId) {
     case ECbmModuleId::kNotExist: {
       LOG(fatal) << "CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos => Unknow "
                     "detector enum! "
@@ -354,22 +348,25 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime, const
       break;
     }  // case ECbmModuleId::kT0
     default: {
-      uNbDigis = fDigiMan->GetNofDigis(fvDets[uDetIdx].detId);
+      uNbDigis = fDigiMan->GetNofDigis(edetId);
       break;
     }  // default:
   }    // switch( fRefDet.detId )
 
   UInt_t uFirstDigiInWin = fvDets[uDetIdx].iPrevRefFirstDigi;
 
+  std::vector<Double_t> vSelDiff;
   for (UInt_t uDigiIdx = fvDets[uDetIdx].iPrevRefFirstDigi; uDigiIdx < uNbDigis; ++uDigiIdx) {
     Double_t dTime   = 0;
     Double_t dCharge = 0;
     UInt_t uAddress  = 0;
-    if (ECbmModuleId::kT0 == fvDets[uDetIdx].detId) {
+    const void* digi(nullptr);
+    if (ECbmModuleId::kT0 == edetId) {
       dTime   = fpT0DigiVec->at(uDigiIdx).GetTime();
       dCharge = fpT0DigiVec->at(uDigiIdx).GetCharge();
     }  // if( ECbmModuleId::kT0 == fRefDet.detId )
     else {
+      digi     = fDigiMan->Get<Digi>(uDigiIdx);
       dTime   = fDigiMan->Get<Digi>(uDigiIdx)->GetTime();
       dCharge = fDigiMan->Get<Digi>(uDigiIdx)->GetCharge();
       uAddress = fDigiMan->Get<Digi>(uDigiIdx)->GetAddress();
@@ -378,7 +375,7 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime, const
     /// Fill self correlation histo while avoiding double counting due to
     /// the "smart looping"
     if (fvDets[uDetIdx].dPrevTime <= dTime) {
-      fvhDetSelfDiff[uDetIdx]->Fill(dTime - fvDets[uDetIdx].dPrevTime);
+      vSelDiff.push_back(dTime - fvDets[uDetIdx].dPrevTime);
       fvDets[uDetIdx].dPrevTime = dTime;
     }  // if( fvDets[ uDetIdx ].dPrevTime < dTime )
 
@@ -411,22 +408,80 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime, const
       }    // else of if( fvDets[ uDetIdx ].uChargeCutMin < fvDets[ uDetIdx ].uChargeCutMax )
     }      // if( fvDets[ uDetIdx ].uChargeCutMin != fvDets[ uDetIdx ].uChargeCutMax )
 
-    /// Fill histos
-    fvhDetToRefDiff[uDetIdx]->Fill(dDiffTime);
-    fvhDetToRefDiffRefCharge[uDetIdx]->Fill(dDiffTime, dRefCharge);
-    fvhDetToRefDiffDetCharge[uDetIdx]->Fill(dDiffTime, dCharge);
-    if (nullptr == fCbmTsEventHeader) {
-      fvhDetToRefDiffEvo[uDetIdx]->Fill(fuNbTs, dDiffTime);
-      fvhDetToRefDiffEvoLong[uDetIdx]->Fill(fuNbTs, dDiffTime);
-    }
-    else {
-      fvhDetToRefDiffEvo[uDetIdx]->Fill(fCbmTsEventHeader->GetTsIndex(), dDiffTime);
-      fvhDetToRefDiffEvoLong[uDetIdx]->Fill(fCbmTsEventHeader->GetTsIndex(), dDiffTime);
+    for (uint uid(0); uid < fvDets[uDetIdx].uNdiv; uid++) {
+      if (digi && !CheckCondition(uDetIdx, uid, digi)) continue;
+
+      /// Fill histos
+      for (auto dt : vSelDiff)
+        fvhDetSelfDiff[edetId][uid]->Fill(dt);
+      vSelDiff.clear();
+
+      fvhDetToRefDiff[edetId][uid]->Fill(dDiffTime);
+      fvhDetToRefDiffRefCharge[edetId][uid]->Fill(dDiffTime, dRefCharge);
+      fvhDetToRefDiffDetCharge[edetId][uid]->Fill(dDiffTime, dCharge);
+      if (nullptr == fCbmTsEventHeader) {
+        fvhDetToRefDiffEvo[edetId][uid]->Fill(fuNbTs, dDiffTime);
+        fvhDetToRefDiffEvoLong[edetId][uid]->Fill(fuNbTs, dDiffTime);
+      }
+      else {
+        fvhDetToRefDiffEvo[edetId][uid]->Fill(fCbmTsEventHeader->GetTsIndex(), dDiffTime);
+        fvhDetToRefDiffEvoLong[edetId][uid]->Fill(fCbmTsEventHeader->GetTsIndex(), dDiffTime);
+      }
+      break;
     }
   }  // for( UInt_t uDigiIdx = fvDets[ uDetIdx ].iPrevRefFirstDigi; uDigiIdx < uNbDigis; ++uDigiIdx )
 
   /// Store earliest possible starting index for next reference digi (time sorted!)
   fvDets[uDetIdx].iPrevRefFirstDigi = uFirstDigiInWin;
+}
+
+// ---- CheckCondition ------------------------------------------------
+bool CbmMcbmCheckTimingAlgo::CheckCondition(UInt_t uDetId, UInt_t uCond, const void* digi)
+{
+  CheckTimingDetector uDet = fvDets[uDetId];
+  if (uCond >= uDet.uNdiv) return false;
+  switch (uDet.detId) {
+    case ECbmModuleId::kSts: return CheckCondition(&uDet, uCond, static_cast<const CbmStsDigi*>(digi));
+    case ECbmModuleId::kMuch: return CheckCondition(&uDet, uCond, static_cast<const CbmMuchDigi*>(digi));
+    case ECbmModuleId::kTrd: return CheckCondition(&uDet, uCond, static_cast<const CbmTrdDigi*>(digi));
+    case ECbmModuleId::kTof: return CheckCondition(&uDet, uCond, static_cast<const CbmTofDigi*>(digi));
+    case ECbmModuleId::kRich: return CheckCondition(&uDet, uCond, static_cast<const CbmRichDigi*>(digi));
+    case ECbmModuleId::kPsd: return CheckCondition(&uDet, uCond, static_cast<const CbmPsdDigi*>(digi));
+    default: break;
+  }
+  return true;
+}
+bool CbmMcbmCheckTimingAlgo::CheckCondition(CheckTimingDetector* /*det*/, UInt_t /*uCond*/, const CbmStsDigi* /*digi*/)
+{
+  return true;
+}
+bool CbmMcbmCheckTimingAlgo::CheckCondition(CheckTimingDetector* /*det*/, UInt_t /*uCond*/, const CbmMuchDigi* /*digi*/)
+{
+  return true;
+}
+bool CbmMcbmCheckTimingAlgo::CheckCondition(CheckTimingDetector* det, UInt_t uCond, const CbmTrdDigi* digi)
+{
+  try {
+    int moduleId = std::stoi(det->vName[uCond]);
+    if (digi->GetAddressModule() != moduleId) return false;
+  }
+  catch (const std::invalid_argument& ia) {
+    LOG(warning) << "Trd condition " << det->vName[uCond] << " not implemented. Skipped";
+    return false;
+  }
+  return true;
+}
+bool CbmMcbmCheckTimingAlgo::CheckCondition(CheckTimingDetector* /*det*/, UInt_t /*uCond*/, const CbmTofDigi* /*digi*/)
+{
+  return true;
+}
+bool CbmMcbmCheckTimingAlgo::CheckCondition(CheckTimingDetector* /*det*/, UInt_t /*uCond*/, const CbmRichDigi* /*digi*/)
+{
+  return true;
+}
+bool CbmMcbmCheckTimingAlgo::CheckCondition(CheckTimingDetector* /*det*/, UInt_t /*uCond*/, const CbmPsdDigi* /*digi*/)
+{
+  return true;
 }
 
 // ---- Finish --------------------------------------------------------
@@ -439,114 +494,130 @@ void CbmMcbmCheckTimingAlgo::WriteHistos()
 
   TFile* outfile = TFile::Open(fOutFileName, "RECREATE");
 
-  for (UInt_t uDetIdx = 0; uDetIdx < fvDets.size(); ++uDetIdx) {
-    LOG(debug) << "Saving histos for " << fvDets[uDetIdx].sName;
-    fvhDetSelfDiff[uDetIdx]->Write();
-    fvhDetToRefDiffRefCharge[uDetIdx]->Write();
-    fvhDetToRefDiffDetCharge[uDetIdx]->Write();
-    fvhDetToRefDiffEvo[uDetIdx]->Write();
-    fvhDetToRefDiffEvoLong[uDetIdx]->Write();
-    LOG(debug) << "WriteHistos, uDetIdx, Det, entries = " << uDetIdx << "  " << fvDets[uDetIdx].sName << "   "
-               << fvhDetToRefDiff[uDetIdx]->GetEntries();
-    LOG(info) << "Saved histos for " << fvDets[uDetIdx].sName;
-    DetPeakPosSingle = fvhDetToRefDiff[uDetIdx]->GetMaximumBin() * fvhDetToRefDiff[uDetIdx]->GetBinWidth(1)
-                       + fvhDetToRefDiff[uDetIdx]->GetXaxis()->GetXmin();
-    DetAverageSingle = (fvhDetToRefDiff[uDetIdx]->Integral()) / (fvhDetToRefDiff[uDetIdx]->GetNbinsX());
-    switch (fvDets[uDetIdx].detId) {
-      case ECbmModuleId::kSts: {
-        if (DetAverageSingle > 0) {
-          TF1* gs_sts = new TF1("gs_sts", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fStsPeakWidthNs,
-                                DetPeakPosSingle + 2 * fStsPeakWidthNs);
-          gs_sts->SetParameters(DetAverageSingle, DetPeakPosSingle, fStsPeakWidthNs, DetAverageSingle);
-          fvhDetToRefDiff[uDetIdx]->Fit("gs_sts", "R");
-          TF1* fitresult_sts = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_sts");
-          LOG(debug) << fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_sts->GetParameter(0)
-                     << ",  " << fitresult_sts->GetParameter(1) << ",  " << fitresult_sts->GetParameter(2);
+  for (auto uDet : fvDets) {
+    LOG(debug) << "Saving histos for " << uDet.sName;
+    outfile->mkdir(uDet.sName.data());
+    outfile->cd(uDet.sName.data());
+    for (uint id(0); id < uDet.uNdiv; id++)
+      fvhDetSelfDiff[uDet.detId][id]->Write();
+    for (uint id(0); id < uDet.uNdiv; id++)
+      fvhDetToRefDiffRefCharge[uDet.detId][id]->Write();
+    for (uint id(0); id < uDet.uNdiv; id++)
+      fvhDetToRefDiffDetCharge[uDet.detId][id]->Write();
+    for (uint id(0); id < uDet.uNdiv; id++)
+      fvhDetToRefDiffEvo[uDet.detId][id]->Write();
+    for (uint id(0); id < uDet.uNdiv; id++)
+      fvhDetToRefDiffEvoLong[uDet.detId][id]->Write();
+    for (uint id(0); id < uDet.uNdiv; id++) {
+      LOG(debug) << "WriteHistos, Det, entries = " << uDet.sName << "   "
+                 << fvhDetToRefDiff[uDet.detId][id]->GetEntries();
+      LOG(info) << "Saved histos for " << uDet.sName << "(" << uDet.vName[id] << ")";
+      DetPeakPosSingle =
+        fvhDetToRefDiff[uDet.detId][id]->GetMaximumBin() * fvhDetToRefDiff[uDet.detId][id]->GetBinWidth(1)
+        + fvhDetToRefDiff[uDet.detId][id]->GetXaxis()->GetXmin();
+      DetAverageSingle = (fvhDetToRefDiff[uDet.detId][id]->Integral()) / (fvhDetToRefDiff[uDet.detId][id]->GetNbinsX());
+
+      switch (uDet.detId) {
+        case ECbmModuleId::kSts: {
+          if (DetAverageSingle > 0) {
+            TF1* gs_sts = new TF1("gs_sts", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fStsPeakWidthNs,
+                                  DetPeakPosSingle + 2 * fStsPeakWidthNs);
+            gs_sts->SetParameters(DetAverageSingle, DetPeakPosSingle, fStsPeakWidthNs, DetAverageSingle);
+            fvhDetToRefDiff[uDet.detId][id]->Fit("gs_sts", "R");
+            TF1* fitresult_sts = fvhDetToRefDiff[uDet.detId][id]->GetFunction("gs_sts");
+            LOG(debug) << uDet.sName << " parameters from Gauss fit = " << fitresult_sts->GetParameter(0) << ",  "
+                       << fitresult_sts->GetParameter(1) << ",  " << fitresult_sts->GetParameter(2);
+          }
+          break;
         }
-        break;
-      }
-      case ECbmModuleId::kMuch: {
-        if (DetAverageSingle > 0) {
-          TF1* gs_much = new TF1("gs_much", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fMuchPeakWidthNs,
-                                 DetPeakPosSingle + 2 * fMuchPeakWidthNs);
-          gs_much->SetParameters(DetAverageSingle, DetPeakPosSingle, fMuchPeakWidthNs, DetAverageSingle);
-          fvhDetToRefDiff[uDetIdx]->Fit("gs_much", "R");
-          TF1* fitresult_much = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_much");
-          LOG(debug) << fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_much->GetParameter(0)
-                     << ",  " << fitresult_much->GetParameter(1) << ",  " << fitresult_much->GetParameter(2);
+        case ECbmModuleId::kMuch: {
+          if (DetAverageSingle > 0) {
+            TF1* gs_much = new TF1("gs_much", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fMuchPeakWidthNs,
+                                   DetPeakPosSingle + 2 * fMuchPeakWidthNs);
+            gs_much->SetParameters(DetAverageSingle, DetPeakPosSingle, fMuchPeakWidthNs, DetAverageSingle);
+            fvhDetToRefDiff[uDet.detId][id]->Fit("gs_much", "R");
+            TF1* fitresult_much = fvhDetToRefDiff[uDet.detId][id]->GetFunction("gs_much");
+            LOG(debug) << uDet.sName << " parameters from Gauss fit = " << fitresult_much->GetParameter(0) << ",  "
+                       << fitresult_much->GetParameter(1) << ",  " << fitresult_much->GetParameter(2);
+          }
+          break;
         }
-        break;
-      }
-      case ECbmModuleId::kTrd: {
-        if (DetAverageSingle > 0) {
-          TF1* gs_trd = new TF1("gs_trd", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fTrdPeakWidthNs,
-                                DetPeakPosSingle + 2 * fTrdPeakWidthNs);
-          gs_trd->SetParameters(0.7 * DetAverageSingle, DetPeakPosSingle, fTrdPeakWidthNs, DetAverageSingle);
-          fvhDetToRefDiff[uDetIdx]->Fit("gs_trd", "R");
-          TF1* fitresult_trd = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_trd");
-          LOG(debug) << fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_trd->GetParameter(0)
-                     << ",  " << fitresult_trd->GetParameter(1) << ",  " << fitresult_trd->GetParameter(2);
+        case ECbmModuleId::kTrd: {
+          if (DetAverageSingle > 0) {
+            TF1* gs_trd = new TF1("gs_trd", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fTrdPeakWidthNs,
+                                  DetPeakPosSingle + 2 * fTrdPeakWidthNs);
+            gs_trd->SetParameters(0.7 * DetAverageSingle, DetPeakPosSingle, fTrdPeakWidthNs, DetAverageSingle);
+            fvhDetToRefDiff[uDet.detId][id]->Fit("gs_trd", "R");
+            TF1* fitresult_trd = fvhDetToRefDiff[uDet.detId][id]->GetFunction("gs_trd");
+            LOG(debug) << uDet.sName << " parameters from Gauss fit = " << fitresult_trd->GetParameter(0) << ",  "
+                       << fitresult_trd->GetParameter(1) << ",  " << fitresult_trd->GetParameter(2);
+          }
+          break;
         }
-        break;
-      }
-      case ECbmModuleId::kT0: {
-        if (DetAverageSingle > 0) {
-          TF1* gs_tof = new TF1("gs_tof", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fTofPeakWidthNs,
-                                DetPeakPosSingle + 2 * fTofPeakWidthNs);
-          gs_tof->SetParameters(DetAverageSingle, DetPeakPosSingle, fTofPeakWidthNs, DetAverageSingle);
-          fvhDetToRefDiff[uDetIdx]->Fit("gs_tof", "R");
-          TF1* fitresult_tof = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_tof");
-          LOG(debug) << fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_tof->GetParameter(0)
-                     << ",  " << fitresult_tof->GetParameter(1) << ",  " << fitresult_tof->GetParameter(2);
+        case ECbmModuleId::kT0: {
+          if (DetAverageSingle > 0) {
+            TF1* gs_tof = new TF1("gs_tof", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fTofPeakWidthNs,
+                                  DetPeakPosSingle + 2 * fTofPeakWidthNs);
+            gs_tof->SetParameters(DetAverageSingle, DetPeakPosSingle, fTofPeakWidthNs, DetAverageSingle);
+            fvhDetToRefDiff[uDet.detId][id]->Fit("gs_tof", "R");
+            TF1* fitresult_tof = fvhDetToRefDiff[uDet.detId][id]->GetFunction("gs_tof");
+            LOG(debug) << uDet.sName << " parameters from Gauss fit = " << fitresult_tof->GetParameter(0) << ",  "
+                       << fitresult_tof->GetParameter(1) << ",  " << fitresult_tof->GetParameter(2);
+          }
+          break;
         }
-        break;
-      }
-      case ECbmModuleId::kTof: {
-        if (DetAverageSingle > 0) {
-          TF1* gs_tof = new TF1("gs_tof", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fTofPeakWidthNs,
-                                DetPeakPosSingle + 2 * fTofPeakWidthNs);
-          gs_tof->SetParameters(DetAverageSingle, DetPeakPosSingle, fTofPeakWidthNs, DetAverageSingle);
-          fvhDetToRefDiff[uDetIdx]->Fit("gs_tof", "R");
-          TF1* fitresult_tof = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_tof");
-          LOG(debug) << fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_tof->GetParameter(0)
-                     << ",  " << fitresult_tof->GetParameter(1) << ",  " << fitresult_tof->GetParameter(2);
+        case ECbmModuleId::kTof: {
+          if (DetAverageSingle > 0) {
+            TF1* gs_tof = new TF1("gs_tof", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fTofPeakWidthNs,
+                                  DetPeakPosSingle + 2 * fTofPeakWidthNs);
+            gs_tof->SetParameters(DetAverageSingle, DetPeakPosSingle, fTofPeakWidthNs, DetAverageSingle);
+            fvhDetToRefDiff[uDet.detId][id]->Fit("gs_tof", "R");
+            TF1* fitresult_tof = fvhDetToRefDiff[uDet.detId][id]->GetFunction("gs_tof");
+            LOG(debug) << uDet.sName << " parameters from Gauss fit = " << fitresult_tof->GetParameter(0) << ",  "
+                       << fitresult_tof->GetParameter(1) << ",  " << fitresult_tof->GetParameter(2);
+          }
+          break;
         }
-        break;
-      }
-      case ECbmModuleId::kRich: {
-        if (DetAverageSingle > 0) {
-          TF1* gs_rich = new TF1("gs_rich", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fRichPeakWidthNs,
-                                 DetPeakPosSingle + 2 * fRichPeakWidthNs);
-          gs_rich->SetParameters(0.5 * DetAverageSingle, DetPeakPosSingle, fRichPeakWidthNs, DetAverageSingle);
-          fvhDetToRefDiff[uDetIdx]->Fit("gs_rich", "R");
-          TF1* fitresult_rich = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_rich");
-          LOG(debug) << fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_rich->GetParameter(0)
-                     << ",  " << fitresult_rich->GetParameter(1) << ",  " << fitresult_rich->GetParameter(2);
+        case ECbmModuleId::kRich: {
+          if (DetAverageSingle > 0) {
+            TF1* gs_rich = new TF1("gs_rich", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fRichPeakWidthNs,
+                                   DetPeakPosSingle + 2 * fRichPeakWidthNs);
+            gs_rich->SetParameters(0.5 * DetAverageSingle, DetPeakPosSingle, fRichPeakWidthNs, DetAverageSingle);
+            fvhDetToRefDiff[uDet.detId][id]->Fit("gs_rich", "R");
+            TF1* fitresult_rich = fvhDetToRefDiff[uDet.detId][id]->GetFunction("gs_rich");
+            LOG(debug) << uDet.sName << " parameters from Gauss fit = " << fitresult_rich->GetParameter(0) << ",  "
+                       << fitresult_rich->GetParameter(1) << ",  " << fitresult_rich->GetParameter(2);
+          }
+          break;
         }
-        break;
-      }
-      case ECbmModuleId::kPsd: {
-        if (DetAverageSingle > 0) {
-          TF1* gs_psd = new TF1("gs_psd", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fPsdPeakWidthNs,
-                                DetPeakPosSingle + 2 * fPsdPeakWidthNs);
-          gs_psd->SetParameters(DetAverageSingle, DetPeakPosSingle, fPsdPeakWidthNs, DetAverageSingle);
-          fvhDetToRefDiff[uDetIdx]->Fit("gs_psd", "R");
-          TF1* fitresult_psd = fvhDetToRefDiff[uDetIdx]->GetFunction("gs_psd");
-          LOG(debug) << fvDets[uDetIdx].sName << " parameters from Gauss fit = " << fitresult_psd->GetParameter(0)
-                     << ",  " << fitresult_psd->GetParameter(1) << ",  " << fitresult_psd->GetParameter(2);
+        case ECbmModuleId::kPsd: {
+          if (DetAverageSingle > 0) {
+            TF1* gs_psd = new TF1("gs_psd", "gaus(0)+pol0(3)", DetPeakPosSingle - 2 * fPsdPeakWidthNs,
+                                  DetPeakPosSingle + 2 * fPsdPeakWidthNs);
+            gs_psd->SetParameters(DetAverageSingle, DetPeakPosSingle, fPsdPeakWidthNs, DetAverageSingle);
+            fvhDetToRefDiff[uDet.detId][id]->Fit("gs_psd", "R");
+            TF1* fitresult_psd = fvhDetToRefDiff[uDet.detId][id]->GetFunction("gs_psd");
+            LOG(debug) << uDet.sName << " parameters from Gauss fit = " << fitresult_psd->GetParameter(0) << ",  "
+                       << fitresult_psd->GetParameter(1) << ",  " << fitresult_psd->GetParameter(2);
+          }
+          break;
         }
-        break;
+        default: {
+          LOG(info) << "Detector ID for fitting is not valid.";
+          break;
+        }
       }
-      default: {
-        LOG(info) << "Detector ID for fitting is not valid.";
-        break;
-      }
+      fvhDetToRefDiff[uDet.detId][id]->Write();  //At the end in order to include fitting results in histos
     }
-    fvhDetToRefDiff[uDetIdx]->Write();  //At the end in order to include fitting results in histos
+    outfile->cd();
   }  // for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
 
   /// Register the histo for reference detector digi to digi time difference
-  fvhDetSelfDiff[fvDets.size()]->Write();
+  outfile->mkdir(fRefDet.sName.data());
+  outfile->cd(fRefDet.sName.data());
+  for (uint id(0); id < fRefDet.uNdiv; id++)
+    fvhDetSelfDiff[fRefDet.detId][id]->Write();
+  outfile->cd();
 
   outfile->Close();
   delete outfile;
@@ -568,6 +639,24 @@ void CbmMcbmCheckTimingAlgo::SetReferenceDetector(ECbmModuleId refDetIn, std::st
   fRefDet.uChargeCutMin = uChargeCutMinIn;
   fRefDet.uChargeCutMax = uChargeCutMaxIn;
 }
+
+void CbmMcbmCheckTimingAlgo::SetDetectorDifferential(ECbmModuleId detIn, std::vector<std::string> vName)
+{
+  bool found(false);
+  std::vector<CheckTimingDetector>::iterator det;
+  for (det = fvDets.begin(); det != fvDets.end(); ++det) {
+    if ((*det).detId != detIn) continue;
+    found        = true;
+    (*det).vName = vName;
+    (*det).uNdiv = vName.size();
+    break;
+  }
+
+  if (!found)
+    LOG(warning) << "CbmMcbmCheckTimingAlgo::SetDetectorDifferential => Detector not in the "
+                    "list, Nothing done at this point!";
+}
+
 void CbmMcbmCheckTimingAlgo::AddCheckDetector(ECbmModuleId detIn, std::string sNameIn, Double_t dTimeRangeBegIn,
                                               Double_t dTimeRangeEndIn, UInt_t uRangeNbBinsIn, UInt_t uChargeCutMinIn,
                                               UInt_t uChargeCutMaxIn)

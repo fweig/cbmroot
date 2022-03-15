@@ -17,7 +17,12 @@
 class TH1;
 class TH2;
 class CbmDigiManager;
-
+class CbmStsDigi;
+class CbmMuchDigi;
+class CbmTrdDigi;
+class CbmTofDigi;
+class CbmRichDigi;
+class CbmPsdDigi;
 class CheckTimingDetector {
 public:
   CheckTimingDetector() { ; }
@@ -37,7 +42,8 @@ public:
     0;  /// Charge cut used for example to reject/select pulser, no effect if equal, select if min < max, reject if max < min
   UInt_t uChargeCutMax =
     0;  /// Charge cut used for example to reject/select pulser, no effect if equal, select if min < max, reject if max < min
-
+  UInt_t uNdiv                   = 1;  /// No of subdivisions for ech detector
+  std::vector<std::string> vName = {"none"};
   /// Book-keeping variables
   Double_t dPrevTime      = 0.;
   Int_t iPrevRefFirstDigi = 0;
@@ -84,6 +90,7 @@ public:
                         Double_t dTimeRangeEndIn = 1000.0, UInt_t uRangeNbBinsIn = 320, UInt_t uChargeCutMinIn = 0,
                         UInt_t uChargeCutMaxIn = 0);
   void RemoveCheckDetector(ECbmModuleId detIn);
+  void SetDetectorDifferential(ECbmModuleId detIn, std::vector<std::string> vName);
 
   void SetTrdPeakWidthNs(Double_t val = 120.) { fTrdPeakWidthNs = val; }
   void SetStsPeakWidthNs(Double_t val = 30.) { fStsPeakWidthNs = val; }
@@ -100,6 +107,13 @@ private:
   void CheckInterSystemOffset();
   template<class Digi>
   void FillTimeOffsetHistos(const Double_t dRefTime, const Double_t dRefCharge, UInt_t uDetIdx);
+  bool CheckCondition(UInt_t uDet, UInt_t uCond, const void* digi);
+  bool CheckCondition(CheckTimingDetector* det, UInt_t uCond, const CbmStsDigi* digi);
+  bool CheckCondition(CheckTimingDetector* det, UInt_t uCond, const CbmMuchDigi* digi);
+  bool CheckCondition(CheckTimingDetector* det, UInt_t uCond, const CbmTrdDigi* digi);
+  bool CheckCondition(CheckTimingDetector* det, UInt_t uCond, const CbmTofDigi* digi);
+  bool CheckCondition(CheckTimingDetector* det, UInt_t uCond, const CbmRichDigi* digi);
+  bool CheckCondition(CheckTimingDetector* det, UInt_t uCond, const CbmPsdDigi* digi);
 
 
   /** Input array from previous already existing data level **/
@@ -123,12 +137,12 @@ private:
     CheckTimingDetector(ECbmModuleId::kRich, "Rich"), CheckTimingDetector(ECbmModuleId::kPsd, "Psd")};
 
   /// vectors storing histograms for each detector under investigation
-  std::vector<TH1*> fvhDetSelfDiff           = {};
-  std::vector<TH1*> fvhDetToRefDiff          = {};
-  std::vector<TH2*> fvhDetToRefDiffRefCharge = {};
-  std::vector<TH2*> fvhDetToRefDiffDetCharge = {};
-  std::vector<TH2*> fvhDetToRefDiffEvo       = {};
-  std::vector<TH2*> fvhDetToRefDiffEvoLong   = {};
+  std::map<ECbmModuleId, std::vector<TH1*>> fvhDetSelfDiff           = {};
+  std::map<ECbmModuleId, std::vector<TH1*>> fvhDetToRefDiff          = {};
+  std::map<ECbmModuleId, std::vector<TH2*>> fvhDetToRefDiffRefCharge = {};
+  std::map<ECbmModuleId, std::vector<TH2*>> fvhDetToRefDiffDetCharge = {};
+  std::map<ECbmModuleId, std::vector<TH2*>> fvhDetToRefDiffEvo       = {};
+  std::map<ECbmModuleId, std::vector<TH2*>> fvhDetToRefDiffEvoLong   = {};
 
   /** Name of the histogram output file **/
   TString fOutFileName = "data/HistosCheckTiming.root";

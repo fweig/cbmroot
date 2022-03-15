@@ -128,5 +128,10 @@ void CbmMcbmCheckTimingTask::AddCheckDetector(ECbmModuleId detIn, std::string sN
 
 void CbmMcbmCheckTimingTask::RemoveCheckDetector(ECbmModuleId detIn) { fpAlgo->RemoveCheckDetector(detIn); }
 
+void CbmMcbmCheckTimingTask::SetDetectorDifferential(ECbmModuleId detIn, std::vector<std::string> vn)
+{
+  fpAlgo->SetDetectorDifferential(detIn, vn);
+}
+
 //----------------------------------------------------------------------
 ClassImp(CbmMcbmCheckTimingTask)

@@ -58,6 +58,7 @@ public:
                         Double_t dTimeRangeEndIn = 1000.0, UInt_t uRangeNbBinsIn = 320, UInt_t uChargeCutMinIn = 0,
                         UInt_t uChargeCutMaxIn = 0);
   void RemoveCheckDetector(ECbmModuleId detIn);
+  void SetDetectorDifferential(ECbmModuleId detIn, std::vector<std::string> vName);
 
 private:
   void SaveHistos();
