@@ -20,7 +20,6 @@ CbmSourceTsArchive.cxx
 set(INCLUDE_DIRECTORIES
 ${CBMROOT_SOURCE_DIR}/reco/steer
 ${CBMROOT_SOURCE_DIR}/reco/base
-${CBMROOT_SOURCE_DIR}/reco/tasks
 
 ${CBMROOT_SOURCE_DIR}/reco/detectors/psd
 ${CBMROOT_SOURCE_DIR}/reco/detectors/psd/unpack
@@ -88,7 +87,6 @@ CbmRecoSts
 CbmTofBase
 CbmTofReco
 CbmTrdReco
-CbmRecoTasks
 CbmData
 KF
 KFParticleInterface
