@@ -2,6 +2,8 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Volker Friese [committer], David Emschermann */
 
+// clang-format off
+
 // --------------------------------------------------------------------------
 //
 // Macro for standard transport simulation in mCBM using UrQMD input and GEANT3
@@ -18,7 +20,7 @@
 
 void SetTrack(CbmTransport*, Double_t, Int_t, Double_t, Double_t, Double_t);
 
-void mcbm_transport(Int_t nEvents = 2,
+void mcbm_transport(Int_t nEvents = 10,
                     //                  const char* setupName = "mcbm_beam_2022_06",
                     //                  const char* setupName = "mcbm_beam_2022_05",
                     //                  const char* setupName = "mcbm_beam_2022_04",
@@ -26,9 +28,11 @@ void mcbm_transport(Int_t nEvents = 2,
                     //                  const char* setupName = "mcbm_beam_2022_02",
                     //                  const char* setupName = "mcbm_beam_2022_01",
                     //                  const char* setupName = "mcbm_beam_2022_03_28_uranium",
+                    const char* setupName = "mcbm_beam_2022_03_27_iron",
                     //                  const char* setupName = "mcbm_beam_2022_03_22_iron",
+                    //                  const char* setupName = "mcbm_beam_2022_03_20_iron",
                     //                  const char* setupName = "mcbm_beam_2022_03_09_carbon",
-                    const char* setupName = "mcbm_beam_2021_07_surveyed",
+                    //                  const char* setupName = "mcbm_beam_2021_07_surveyed",
                     //                  const char* setupName = "mcbm_beam_2021_04",
                     //                  const char* setupName = "mcbm_beam_2021_03",
                     //                  const char* setupName = "mcbm_beam_2020_03",
@@ -111,26 +115,31 @@ void mcbm_transport(Int_t nEvents = 2,
 
   // ACC // geometrical acceptance
   //
+  // ACC  Double_t stszoff = 0.;  // nominal
+  // IRO  Double_t stszoff = 5.;  // Iron Carbon 2022
+  // CAR  Double_t stszoff = 7.;  // July 2021 and Carbon 2022
+  // nominal
+  //
   // ACC // mSTS station 0
-  // ACC   SetTrack(&run, beamRotY,-13, -5.9, +5.8, 28.5);
-  // ACC   SetTrack(&run, beamRotY,-13, -5.9,  0.0, 28.5);
-  // ACC   SetTrack(&run, beamRotY,-13, -5.9, -5.8, 28.5);
+  // ACC   SetTrack(&run, beamRotY,-13, -5.9, +5.8, 28.5 + stszoff);
+  // ACC   SetTrack(&run, beamRotY,-13, -5.9,  0.0, 28.5 + stszoff);
+  // ACC   SetTrack(&run, beamRotY,-13, -5.9, -5.8, 28.5 + stszoff);
   // ACC //
-  // ACC   SetTrack(&run, beamRotY, 11, -2.9, +8.8, 41.5);
-  // ACC   SetTrack(&run, beamRotY, 11, -2.9,  0.0, 41.5);
-  // ACC   SetTrack(&run, beamRotY, 11, -2.9, -8.8, 41.5);
+  // ACC   SetTrack(&run, beamRotY, 11, -2.9, +8.8, 41.5 + stszoff);
+  // ACC   SetTrack(&run, beamRotY, 11, -2.9,  0.0, 41.5 + stszoff);
+  // ACC   SetTrack(&run, beamRotY, 11, -2.9, -8.8, 41.5 + stszoff);
   // ACC //
-  // ACC   SetTrack(&run, beamRotY, 11,  0.0, +5.8, 28.5);
-  // ACC   SetTrack(&run, beamRotY, 11,  0.0,  0.0, 28.5);
-  // ACC   SetTrack(&run, beamRotY, 11,  0.0, -5.8, 28.5);
+  // ACC   SetTrack(&run, beamRotY, 11,  0.0, +5.8, 28.5 + stszoff);
+  // ACC   SetTrack(&run, beamRotY, 11,  0.0,  0.0, 28.5 + stszoff);
+  // ACC   SetTrack(&run, beamRotY, 11,  0.0, -5.8, 28.5 + stszoff);
   // ACC //
-  // ACC   SetTrack(&run, beamRotY, 11, +2.9, +8.8, 41.5);
-  // ACC   SetTrack(&run, beamRotY, 11, +2.9,  0.0, 41.5);
-  // ACC   SetTrack(&run, beamRotY, 11, +2.9, -8.8, 41.5);
+  // ACC   SetTrack(&run, beamRotY, 11, +2.9, +8.8, 41.5 + stszoff);
+  // ACC   SetTrack(&run, beamRotY, 11, +2.9,  0.0, 41.5 + stszoff);
+  // ACC   SetTrack(&run, beamRotY, 11, +2.9, -8.8, 41.5 + stszoff);
   // ACC //
-  // ACC   SetTrack(&run, beamRotY,-11, +5.9, +5.8, 28.5);
-  // ACC   SetTrack(&run, beamRotY,-11, +5.9,  0.0, 28.5);
-  // ACC   SetTrack(&run, beamRotY,-11, +5.9, -5.8, 28.5);
+  // ACC   SetTrack(&run, beamRotY,-11, +5.9, +5.8, 28.5 + stszoff);
+  // ACC   SetTrack(&run, beamRotY,-11, +5.9,  0.0, 28.5 + stszoff);
+  // ACC   SetTrack(&run, beamRotY,-11, +5.9, -5.8, 28.5 + stszoff);
   //
   // WIN   //  x : cos(25.*acos(-1.)/180.) *  -4.25              : x =  -3.852 cm
   // WIN   //  z : sin(25.*acos(-1.)/180.) *  -4.25 + 15.2 + 0.3 : z =  13.704 cm

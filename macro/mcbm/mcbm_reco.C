@@ -18,7 +18,7 @@
 
 
 void mcbm_reco(Int_t nEvents = 10, TString dataset = "data/test", TString sEvBuildRaw = "Real",
-               const char* setupName = "mcbm_beam_2022_05")
+               const char* setupName = "mcbm_beam_2022_03_09_carbon")
 {
   // ========================================================================
   //          Adjust this part according to your requirements
