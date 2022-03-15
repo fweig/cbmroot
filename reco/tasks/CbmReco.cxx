@@ -129,19 +129,22 @@ int32_t CbmReco::Run()
 
   // --- Run log
   std::cout << std::endl;
+  auto src = dynamic_cast<CbmSourceTs*>(run.GetSource());
+  assert(src);
+  size_t numTs     = src->GetNumTs();
   double timeTotal = timeSetup + timeInit + timeRun;
   LOG(info) << "=====================================";
   LOG(info) << "Reco: Run summary";
-  LOG(info) << "Timeslices  : " << fNumTs;
+  LOG(info) << "Timeslices  : " << numTs;
   LOG(info) << "Time setup  : " << timeSetup << " s";
   LOG(info) << "Time init   : " << timeInit << " s";
   LOG(info) << "Time run    : " << timeRun << " s";
   LOG(info) << "Time total  : " << timeTotal << " s"
-            << " (" << timeTotal / fNumTs << " s/ts)";
+            << " (" << timeTotal / numTs << " s/ts)";
   LOG(info) << "Output file : " << fOutputFileName;
   LOG(info) << "=====================================";
 
-  return fNumTs;
+  return numTs;
 }
 // ----------------------------------------------------------------------------
 

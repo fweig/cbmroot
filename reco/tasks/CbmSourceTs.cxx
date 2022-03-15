@@ -54,15 +54,22 @@ Bool_t CbmSourceTs::Init()
 // -----   Read one time slice from archive   ---------------------------------
 Int_t CbmSourceTs::ReadEvent(UInt_t)
 {
+  // Timeslices can only be read sequentially, so the argument is ignored.
+  // It appears that the first call to this method from FairRunOnline is in the
+  // init stage. In order not to always lose the first timeslice, a call to
+  // TimesliceSource::get is avoided in the first call.
   std::cout << std::endl;
-  fFlesTs = fFlesSource->get();
-  if (!fFlesTs) {
-    LOG(info) << "SourceTs: End of archive reached; stopping run.";
-    return 1;
+  if (fNumCalls == 0) LOG(info) << "SourceTs: Init call to ReadEvent";
+  else {
+    fFlesTs = fFlesSource->get();
+    if (!fFlesTs) {
+      LOG(info) << "SourceTs: End of archive reached; stopping run.";
+      return 1;
+    }
+    LOG(info) << "SourceTs: Reading time slice " << GetNumTs() << " (index " << fFlesTs->index()
+              << ") at t = " << fFlesTs->start_time() << " ns";
   }
-  LOG(info) << "SourceTs: Reading time slice " << fNumTs << " (index " << fFlesTs->index()
-            << ") at t = " << fFlesTs->start_time() << " ns";
-  fNumTs++;
+  fNumCalls++;
   return 0;
 }
 // ----------------------------------------------------------------------------

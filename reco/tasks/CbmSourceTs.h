@@ -64,6 +64,14 @@ public:
   virtual void Close();
 
 
+  /** @brief Number of processed timeslices
+   ** @return Number of timeslices
+   **
+   ** The first call to ReadEvent is in Init, so not timeslice is processed.
+   **/
+  size_t GetNumTs() const { return fNumCalls - 1; }
+
+
   /** @brief Demanded by base class **/
   virtual Source_Type GetSourceType() { return kFILE; }
 
@@ -111,8 +119,8 @@ private:  // member variables
   /** Pointer to current time slice **/
   std::unique_ptr<fles::Timeslice> fFlesTs = nullptr;  //!
 
-  /** Time-slice counter **/
-  size_t fNumTs = 0;
+  /** ReadEvent call counter **/
+  size_t fNumCalls = 0;
 
 
   ClassDef(CbmSourceTs, 1)

@@ -22,8 +22,8 @@ using std::string;
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since  12 March 2022
  ** @param tsaFile    Name of input file (w/o extension .tsa)
- ** @param numTs      Number of timeslice to process. If -1, all available will be used.
  ** @param outFile    Name of output file (w/o extension .digi.root)
+ ** @param numTs      Number of timeslices to process. If not specified, all available will be used.
  **
  ** Reconstruction from timeslice level, making use of the steering class CbmReco.
  ** Currently included stages:
@@ -36,7 +36,7 @@ using std::string;
  ** the extension .tsa by .digi.root
  **/
 
-void reco_steer(TString tsaFile = "", int32_t numTs = -1, TString outFile = "")
+void reco_steer(TString tsaFile = "", TString outFile = "", int32_t numTs = std::numeric_limits<int32_t>::max())
 {
 
   // ========================================================================

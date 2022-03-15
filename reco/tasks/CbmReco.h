@@ -95,9 +95,9 @@ public:
 
 private:
   std::vector<std::string> fSourceNames = {};  ///< Sources (input files or stream)
-  TString fOutputFileName               = "";
-  int32_t fNumTs                        = -1;
-  CbmRecoConfig fConfig                 = {};
+  TString fOutputFileName               = "";  ///< Output file
+  int32_t fNumTs                        = 0;   ///< Number of timeslices to process
+  CbmRecoConfig fConfig                 = {};  ///< Configuration parameters
 
   ClassDef(CbmReco, 1);
 };
