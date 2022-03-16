@@ -12,12 +12,17 @@
 /// and skip it otherwise. When L1ASSERT(LEVEL, COND) is called the COND expression is printed on the screen.
 /// When L1MASSERT(LEVEL, COND, MSG) is called, the MSG will be printed instead of expression
 ///
+/// Assertion levels:
+/// - 0: non-critical code (any kind of algorithm initialization checks, code, which is called once)
+/// - 1: semi-critical code (may be called inside the L1 core, but a small number of times)
+/// - 2: critical code (possibly called in large loops inside the algorithm)
+
 #ifndef L1Assert_h
 #define L1Assert_h 1
 
 #include "FairLogger.h"
 
-#if defined(NDEBUG) || defined(L1_NO_ASSERT)
+#if defined(NDEBUG) || defined(L1_NO_ASSERT) // TODO: Do we need to add FAST_CODE here? (S.Zharko)
 #define L1ASSERT(LEVEL, COND)
 #define L1MASSERT(LEVEL, COND, MSG)
 #else
@@ -29,23 +34,19 @@
 
 namespace L1Assert
 {
-  /// Assertion levels
-  /// 0 -
-  /// 1 -
-  /// 2 -
-  constexpr int kAssertionLevel {1};
+  constexpr int kAssertionLevel {3};
 
-  /// Basic template function. Usage: place "level >= L1Assert::kAssertionLevel"
-  //template <bool IsAsserted>
-  //int DoAssertion (int level, bool condition, const char* msg, const char* fileName, int lineNo);
-
-  /// Specialization in case of IsAsserted = true, i.e. the assertion is made
+  /// Basic template function. Usage: place "level <= L1Assert::kAssertionLevel" as a template parameter
   template<bool IsAsserted>
   int DoAssertion(int level, bool condition, const char* msg, const char* fileName, int lineNo)
   {
     if (!condition) {
-      LOG(fatal) << "Level " << level << " assertion failed: " << msg << " (" << fileName << " : " << lineNo << ")\n";
-      //std::abort(); // Do we need it with LOG(fatal)?
+      LOG(fatal) << '\n'
+                 << " ***** Level " << level << " assertion failed: " << '\n' 
+                 << " *****   message/condition : " << msg << '\n'
+                 << " *****   file:               " << fileName << '\n'
+                 << " *****   line:               " << lineNo;
+      std::abort(); // keep it here, because sometimes LOG(fatal) does not work (for example, in your tester)
     }
     return 1;
   }

@@ -843,7 +843,7 @@ InitStatus CbmL1::Init()
     // Step 4: initialize IDs of detectors active in tracking
     // TODO: temporary for tests, must be initialized somewhere in run_reco.C or similar (S.Zh.)
     fActiveTrackingDetectorIDs = {L1DetectorID::kMvd, L1DetectorID::kSts};
-    //initMan->SetActiveDetectorIDs(fActiveTrackingDetectorIDs);
+    initMan->SetActiveDetectorIDs(fActiveTrackingDetectorIDs);
 
     constexpr double PI = 3.14159265358;  // TODO: why cmath is not used? (S.Zh.)
 

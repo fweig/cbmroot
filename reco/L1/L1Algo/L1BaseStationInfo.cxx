@@ -17,6 +17,7 @@
 #include <FairLogger.h>
 
 // L1Algo core
+#include "L1Assert.h"
 #include "L1BaseStationInfo.h"
 #include "L1Def.h"
 #include "L1Parameters.h"
@@ -137,13 +138,10 @@ void L1BaseStationInfo::Reset()
 //
 const L1Station& L1BaseStationInfo::GetL1Station() const
 {
-  bool isStationInitialized = fInitController.IsFinalized();
-  if (!isStationInitialized) {
-    LOG(error)
-      << "L1BaseStationInfo::GetL1Station: attempt to get an L1Staion object from uninitialized L1BaseStation with "
-      << "stationID = " << fStationID << " and detectorID = " << static_cast<int>(fDetectorID);
-    assert((!isStationInitialized));
-  }
+  std::stringstream aStream;
+  aStream << "L1BaseStationInfo::GetL1Station: attempt to get an L1Staion object from uninitialized L1BaseStation with "
+          << "stationID = " << fStationID << " and detectorID = " << static_cast<int>(fDetectorID);
+  L1MASSERT(0, fInitController.IsFinalized(), aStream.str().c_str());
   return fL1Station;
 }
 
@@ -209,14 +207,12 @@ void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xy
     return;
   }
 
-#ifndef L1_NO_ASSERT  // check for zero denominator
-  L1_ASSERT(fInitController.GetFlag(InitKey::keZ),
+  L1MASSERT(0, fInitController.GetFlag(InitKey::keZ),
             "Attempt to set magnetic field slice before setting z position of the station");
-  L1_ASSERT(fInitController.GetFlag(InitKey::keXmax),
+  L1MASSERT(0, fInitController.GetFlag(InitKey::keXmax),
             "Attempt to set magnetic field slice before Xmax size of the station");
-  L1_ASSERT(fInitController.GetFlag(InitKey::keYmax),
+  L1MASSERT(0, fInitController.GetFlag(InitKey::keYmax),
             "Attempt to set magnetic field slice before Ymax size of the station");
-#endif
   // TODO: Change names of variables according to convention (S.Zh.)
   constexpr int M = L1Parameters::kMaxFieldApproxPolynomialOrder;
   constexpr int N = L1Parameters::kMaxNFieldApproxCoefficients;
@@ -332,9 +328,8 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
 //
 void L1BaseStationInfo::SetMaterial(double inThickness, double inRL)
 {
-#ifndef L1_NO_ASSERT  // check for zero denominator
-  L1_ASSERT(inRL, "Attempt of entering zero inRL (radiational length) value");
-#endif
+  L1MASSERT(0, inRL, "Attempt of entering zero inRL (radiational length) value");
+
   fL1Station.materialInfo.thick       = inThickness;
   fL1Station.materialInfo.RL          = inRL;
   fL1Station.materialInfo.RadThick    = fL1Station.materialInfo.thick / fL1Station.materialInfo.RL;

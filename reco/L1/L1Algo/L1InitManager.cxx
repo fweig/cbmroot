@@ -9,9 +9,10 @@
  ***********************************************************************************************************/
 
 #include "L1InitManager.h"
+#include "L1Assert.h"
 
 #include <algorithm>
-
+#include <sstream>
 //-----------------------------------------------------------------------------------------------------------------------
 //
 L1InitManager::L1InitManager(L1Parameters* pParameters) : fpParameters(pParameters) {}
@@ -22,26 +23,17 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
 {
   // Check if other fields were defined already
   // Active detector IDs
-  if (!fInitController.GetFlag(InitKey::keActiveDetectorIDs)) {
-    LOG(error) << "L1InitManager::AddStation: station initialization called before the active detectors set had been "
-                  "initialized";
-    assert((fInitController.GetFlag(InitKey::keActiveDetectorIDs)));
-  }
+  
+  L1MASSERT(0, fInitController.GetFlag(InitKey::keActiveDetectorIDs), 
+            "Attempt to add a station info before the active detetors set had been initialized");
 
   // Number of stations check
-  if (!fInitController.GetFlag(InitKey::keStationsNumberCrosscheck)) {
-    LOG(error)
-      << "L1InitManager::AddStation: station initialization called before the numbers of stations for each detector "
-      << "had been initialized";
-    assert((fInitController.GetFlag(InitKey::keStationsNumberCrosscheck)));
-  }
+  L1MASSERT(0, fInitController.GetFlag(InitKey::keStationsNumberCrosscheck), 
+            "Attempt to add a station info before the numbers of stations for each detector had been initialized");
 
   // Field function
-  if (!fInitController.GetFlag(InitKey::keFieldFunction)) {
-    LOG(error)
-      << "L1InitManager::AddStation: station initialization called before the magnetic field function was intialized";
-    assert((fInitController.GetFlag(InitKey::keFieldFunction)));
-  }
+  L1MASSERT(0, fInitController.GetFlag(InitKey::keFieldFunction), 
+            "Attempt to add a station info before the magnetic field function had been intialized");
 
   // Check activeness of this station type
   bool isDetectorActive = fActiveDetectorIDs.find(inStation.GetDetectorID()) != fActiveDetectorIDs.end();
@@ -49,28 +41,27 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
     // initialize magnetic field slice
     L1BaseStationInfo inStationCopy = L1BaseStationInfo(inStation);  // make a copy of station so it can be initialized
     inStationCopy.SetFieldSlice(fFieldFunction);
-    bool isStationInitialized = inStationCopy.GetInitController().IsFinalized();
-    if (!isStationInitialized) {
+    // Check station init
+    {
       LOG(debug) << "L1InitManager::AddStation:(original) L1BaseStationInfo "
                  << inStation.GetInitController().ToString();
       LOG(debug) << "L1InitManager::AddStation:(copy)     L1BaseStationInfo "
                  << inStation.GetInitController().ToString();
-      LOG(error) << "L1InitManager::AddStation: attempt to add incompletely initialized object with detectorID = "
-                 << static_cast<int>(inStationCopy.GetDetectorID())
-                 << " and stationID = " << inStationCopy.GetStationID();
-      assert((isStationInitialized));
+      std::stringstream aStream;
+      aStream << "Attempt to add an incompletely initialized station info object (detectorID = "
+              << static_cast<int>(inStationCopy.GetDetectorID())
+              << ", stationID = " << inStationCopy.GetStationID() << ")";
+      L1MASSERT(0, inStationCopy.GetInitController().IsFinalized(), aStream.str().c_str()); 
     }
     // insert the station in a set
     auto insertionResult = fStationsInfo.insert(std::move(inStationCopy));
-    if (!insertionResult.second) {
-      LOG(error) << "L1InitManager::AddStation: attempt to insert a dublicating L1BaseStationInfo with StationID = "
-                 << inStation.GetStationID() << " and DetectorID = " << static_cast<int>(inStation.GetDetectorID())
-                 << ":";
-      LOG(error) << ">>> Already inserted L1BaseStationInfo object:";
-      insertionResult.first->Print();
-      LOG(error) << ">>> A dublicating L1BaseStationInfo object:";
-      inStation.Print();
-      assert((insertionResult.second));
+    // Check insertion
+    {
+      std::stringstream aStream;
+      aStream << "Attempt to add a dublicating station info object (detectorID = "
+              << static_cast<int>(inStationCopy.GetDetectorID())
+              << ", stationID = " << inStationCopy.GetStationID() << ")";
+      L1MASSERT(0, insertionResult.second, aStream.str().c_str());
     }
   }
   LOG(debug) << "L1InitManager: adding a station with stationID = " << inStation.GetStationID()
@@ -107,18 +98,12 @@ void L1InitManager::InitTargetField(double zStep)
   }
 
   // Check for field function
-  if (!fInitController.GetFlag(InitKey::keFieldFunction)) {
-    LOG(error) << "L1InitManager::InitTargetField: attempt to initialze the field value and field region near "
-               << "target before initializing field function";
-    assert((fInitController.GetFlag(InitKey::keFieldFunction)));
-  }
+  L1MASSERT(0, fInitController.GetFlag(InitKey::keFieldFunction), 
+            "Attempt to initialze the field value and field region near target before initializing field function");
 
   // Check for target defined
-  if (!fInitController.GetFlag(InitKey::keTargetPos)) {
-    LOG(error) << "L1InitManager::InitTargetField: attempt to initialize the field value and field region near "
-               << "target before the target position initialization";
-    assert((fInitController.GetFlag(InitKey::keTargetPos)));
-  }
+  L1MASSERT(0, fInitController.GetFlag(InitKey::keTargetPos), 
+            "Attempt to initialize the field value and field region near target before the target position initialization");
 
   constexpr int nDimensions {3};
   constexpr int nPointsNodal {3};
@@ -164,20 +149,17 @@ void L1InitManager::PrintStations(int verbosityLevel) const
 //
 void L1InitManager::PushBackCAIteration(const L1CAIteration& iteration)
 {
-  // TODO: probably some checks must be inserted here
-  if (!fInitController.GetFlag(InitKey::keCAIterationsNumberCrosscheck)) {
-    LOG(error) << "L1InitManager::PushBackCAIteration: attempt to push back a CA track finder iteration before the "
-               << "number of iterations was defined";
-    assert((fInitController.GetFlag(InitKey::keCAIterationsNumberCrosscheck)));
-  }
-  //fCAIterationsContainer.push_back(iteration);
+  // TODO: probably some checks must be inserted here (S.Zharko)
+  L1MASSERT(0, fInitController.GetFlag(InitKey::keCAIterationsNumberCrosscheck), 
+            "Attempt to push back a CA track finder iteration before the number of iterations was defined");
+
   L1Vector<L1CAIteration>& iterationsContainer = fpParameters->CAIterationsContainer();
   iterationsContainer.push_back(iteration);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
-void L1InitManager::SetActiveDetectorIDs(const std::set<L1DetectorID>& detectorIDs)
+void L1InitManager::SetActiveDetectorIDs(const L1DetectorIDSet_t& detectorIDs)
 {
   // TODO: To think about redifinition possibilities: should it be allowed or not? (S.Zh.)
   fActiveDetectorIDs = detectorIDs;
@@ -256,22 +238,21 @@ void L1InitManager::TransferL1StationArray(std::array<L1Station, L1Parameters::k
   //
   // 1) Check, if all fields of this were initialized
   //
-  if (!fInitController.IsFinalized()) {
-    LOG(error) << "L1InitManager::TransferL1StationArray: attempt to pass L1Station array to L1Algo core before "
-               << "all necessary fields initialization";
-    LOG(error) << "L1InitManager " << fInitController.ToString();
-    assert((fInitController.IsFinalized()));
+  {
+    std::stringstream aStream;
+    aStream << "Attempt to pass L1Station array to L1Algo core before all necessary fields initialization\n"
+            << "L1InitManager " << fInitController.ToString();
+    L1MASSERT(0, fInitController.IsFinalized(), aStream.str().c_str());
   }
-
   //
   // 2) Check, if destinationArraySize is enough for the transfer
   //
-  int nStationsTotal            = this->GetStationsNumber();
-  bool ifDestinationArraySizeOk = nStationsTotal <= static_cast<int>(destinationArray.size());
-  if (!ifDestinationArraySizeOk) {
-    LOG(error) << "L1InitManager::TransferL1StationArray: destination array size (" << destinationArray.size()
-               << ") is smaller then actual number of active tracking stations (" << nStationsTotal << ")";
-    assert((ifDestinationArraySizeOk));
+  {
+    int nStationsTotal = this->GetStationsNumber();
+    std::stringstream aStream;
+    aStream << "Destination array size (" << destinationArray.size()
+            << ") is smaller then the actual number of active tracking stations (" << nStationsTotal << ")";
+    L1MASSERT(0, nStationsTotal <= static_cast<int>(destinationArray.size()), aStream.str().c_str());
   }
 
   auto destinationArrayIterator = destinationArray.begin();
@@ -326,24 +307,21 @@ void L1InitManager::CheckStationsInfoInit()
         ifInitPassed = false;
       }
     }  // loop over active detectors: end
-
-    if (!ifInitPassed) {
-      LOG(error) << "L1InitManager::IsStationsInfo: initialization failed";
-      assert((ifInitPassed));
-    }
-
+    L1MASSERT(0, ifInitPassed, "Station info initialization failed");
+    
     //
     // 2) Check for maximum allowed number of stations
     //
     int nStationsTotal = GetStationsNumber();
     if (nStationsTotal > L1Parameters::kMaxNstations) {
-      LOG(fatal) << "Actual total number of registered stations (" << nStationsTotal
-                 << ") is larger then designed one (" << L1Parameters::kMaxNstations
-                 << "). Please, select another set of active tracking detectors";
+      std::stringstream aStream;
+      aStream << "Actual total number of registered stations (" << nStationsTotal
+              << ") is larger then designed one (" << L1Parameters::kMaxNstations
+              << "). Please, select another set of active tracking detectors";
       // TODO: We have to provide an instruction of how to increase the kMaxNstations
       //       number keeping the code consistent (S.Zharko)
       ifInitPassed = false;
-      assert((nStationsTotal <= L1Parameters::kMaxNstations));
+      L1MASSERT(0, false, aStream.str().c_str());
     }
   }
   fInitController.SetFlag(InitKey::keStationsInfo, ifInitPassed);
