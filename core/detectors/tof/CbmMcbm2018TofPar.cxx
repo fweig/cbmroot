@@ -216,6 +216,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMap()
   UInt_t uCh = 0;
   for (UInt_t uGbtx = 0; uGbtx < uNrOfGbtx; ++uGbtx) {
     switch (fiRpcType[uGbtx]) {
+      case 2: // intended fall-through
       case 0: {
         // CBM modules
         BuildChannelsUidMapCbm(uCh, uGbtx);
@@ -417,6 +418,21 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapStar2(UInt_t& uCh, UInt_t uGbtx)
               iSideMap = iSide[1];
               break;
             default:;
+          }
+          break;
+        case 3:  // direct beam 20210524
+          switch (iFeet) {
+            case 0:
+              iRpcMap  = 0;
+              iSideMap = 0;
+              iStrMap  = iStr;
+              break;
+            case 1:
+              iRpcMap  = 0;
+              iSideMap = 1;
+              iStrMap  = 31 - iStr;
+              break;
+            default: iSideMap = -1;
           }
           break;
       }

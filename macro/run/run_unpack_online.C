@@ -236,6 +236,10 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     tofconfig->SetDoWriteOutput();
     // tofconfig->SetDoWriteOptOutA("CbmTofErrors");
     std::string parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+    if (2060 <= runid ) {
+      /// Additional modules added just before the 10/03/2022 Carbon run
+      parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
+    }
     tofconfig->SetParFilesBasePath(parfilesbasepathTof);
     tofconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
     if (runid <= 1659) {
