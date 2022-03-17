@@ -1,6 +1,6 @@
 /* Copyright (C) 2021 Goethe-University Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Pascal Raisig [committer] */
+   Authors: Pierre-Alain Loizeau, Pascal Raisig [committer] */
 
 /**
  * @file CbmTofUnpackAlgo.h
@@ -25,6 +25,7 @@
 #include "CbmMcbm2018TofPar.h"
 #include "CbmRecoUnpackAlgo.tmpl"
 #include "CbmTofDigi.h"
+#include "CbmTofUnpackMonitor.h"
 
 #include "Timeslice.hpp"  // timeslice
 
@@ -71,13 +72,26 @@ public:
   */
   void SetFlagEpochCountHack2021(bool bFlagin = true) { fbEpochCountHack2021 = bFlagin; }
 
+  /**
+   * @brief Sets the name of the parameter file to be used.
+   *
+   * @param[in] std:string, path should not be included as set in the Config class
+  */
+  void SetParFileName(std::string sNewName) { fParFileName = sNewName; }
+
+  /** @brief Set a predefined monitor @param monitor predefined unpacking monitor */
+  void SetMonitor(std::shared_ptr<CbmTofUnpackMonitor> monitor) { fMonitor = monitor; }
+
 protected:
   /** @brief Finish function for this algorithm base clase */
   void finish()
   {
     finishDerived();
     // Finish the monitor if we have one
-    // if (fMonitor) fMonitor->Finish();
+    if (fMonitor) {
+      std::cout << "Finish Monitor" << std::endl;
+      fMonitor->Finish();
+    }
   }
 
   /** @brief Function that allows special calls during Finish in the derived algos */
@@ -144,6 +158,7 @@ private:
 
 
   /// Settings from parameter file
+  std::string fParFileName      = "mTofCriPar.par";
   CbmMcbm2018TofPar* fUnpackPar = nullptr;  //! For static/inline mapping functions
 
   /// Readout chain dimensions and mapping
@@ -160,20 +175,17 @@ private:
   /// Detector Mapping
   UInt_t fuNrOfGbtx              = 0;
   UInt_t fuNrOfModules           = 0;
-  std::vector<Int_t> fviNrOfRpc  = {};
-  std::vector<Int_t> fviRpcType  = {};
-  std::vector<Int_t> fviRpcSide  = {};
-  std::vector<Int_t> fviModuleId = {};
   std::vector<Int_t> fviRpcChUId = {};
 
   /// Running indices
   UInt_t fuMapWarnToPrint     = 100;
-  ULong64_t fulCurrentTsIdx   = 0;  //! Idx of the current TS
-  ULong64_t fulCurrentMsIdx   = 0;  //! Idx of the current MS in TS (0 to fuTotalMsNb)
-  size_t fuCurrentMsSysId     = 0;  //! SysId of the current MS in TS (0 to fuTotalMsNb)
-  UInt_t fuCurrentEquipmentId = 0;  //! Current equipment ID, tells from which DPB the current MS is originating
-  UInt_t fuCurrDpbId          = 0;  //! Temp holder until Current equipment ID is properly filled in MS
-  UInt_t fuCurrDpbIdx         = 0;  //! Index of the DPB from which the MS currently unpacked is coming
+  ULong64_t fulCurrentTsIdx   = 0;    //! Idx of the current TS
+  ULong64_t fulCurrentMsIdx   = 0;    //! Idx of the current MS in TS (0 to fuTotalMsNb)
+  double fdCurrentMsTime      = 0.0;  //! Time of the current MS in s
+  size_t fuCurrentMsSysId     = 0;    //! SysId of the current MS in TS (0 to fuTotalMsNb)
+  UInt_t fuCurrentEquipmentId = 0;    //! Current equipment ID, tells from which DPB the current MS is originating
+  UInt_t fuCurrDpbId          = 0;    //! Temp holder until Current equipment ID is properly filled in MS
+  UInt_t fuCurrDpbIdx         = 0;    //! Index of the DPB from which the MS currently unpacked is coming
   UInt_t fuGet4Id =
     0;  //! running number (0 to fuNrOfGet4PerGdpb) of the Get4 chip of a unique GDPB for current message
   UInt_t fuGet4Nr = 0;  //! running number (0 to fuNrOfGet4) of the Get4 chip in the system for current message
@@ -189,6 +201,9 @@ private:
   uint32_t fuProcEpochUntilError = 0;
   uint64_t fulTsStartInEpoch     = 0;
   uint64_t fulEpochIndexInTs     = 0;
+
+  /** @brief Potential (online) monitor for the unpacking process */
+  std::shared_ptr<CbmTofUnpackMonitor> fMonitor = nullptr;
 
   ClassDef(CbmTofUnpackAlgo, 2)
 };

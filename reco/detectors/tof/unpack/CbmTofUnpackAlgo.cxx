@@ -1,6 +1,6 @@
 /* Copyright (C) 2021 Goethe-University Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Pascal Raisig [committer] */
+   Authors: Pierre-Alain Loizeau, Pascal Raisig [committer] */
 
 #include "CbmTofUnpackAlgo.h"
 
@@ -30,7 +30,7 @@ std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
   std::string temppath = "";
 
   // // Get parameter container
-  temppath = basepath + "mTofCriPar.par";
+  temppath = basepath + fParFileName;
   LOG(info) << fName << "::GetParContainerRequest - Trying to open file " << temppath;
   fParContVec.emplace_back(std::make_pair(temppath, std::make_shared<CbmMcbm2018TofPar>()));
 
@@ -93,17 +93,6 @@ Bool_t CbmTofUnpackAlgo::initParSet(CbmMcbm2018TofPar* parset)
   fuNrOfGbtx = parset->GetNrOfGbtx();
   LOG(debug) << "Nr. of GBTx: " << fuNrOfGbtx;
 
-  fviRpcType.resize(fuNrOfGbtx);
-  fviModuleId.resize(fuNrOfGbtx);
-  fviNrOfRpc.resize(fuNrOfGbtx);
-  fviRpcSide.resize(fuNrOfGbtx);
-  for (UInt_t uGbtx = 0; uGbtx < fuNrOfGbtx; ++uGbtx) {
-    fviNrOfRpc[uGbtx]  = parset->GetNrOfRpc(uGbtx);
-    fviRpcType[uGbtx]  = parset->GetRpcType(uGbtx);
-    fviRpcSide[uGbtx]  = parset->GetRpcSide(uGbtx);
-    fviModuleId[uGbtx] = parset->GetModuleId(uGbtx);
-  }  // for( UInt_t uGbtx = 0; uGbtx < fuNrOfGbtx; ++uGbtx)
-
   UInt_t uNrOfChannels = fuNrOfGet4 * fuNrOfChannelsPerGet4;
   LOG(debug) << "Nr. of possible Tof channels: " << uNrOfChannels;
 
@@ -114,11 +103,23 @@ Bool_t CbmTofUnpackAlgo::initParSet(CbmMcbm2018TofPar* parset)
   for (UInt_t uCh = 0; uCh < uNrOfChannels; ++uCh) {
     if (0 == uCh % 8) sPrintout += "\n";
     if (0 == uCh % fuNrOfChannelsPerGdpb) sPrintout += Form("\n Gdpb %u\n", uCh / fuNrOfChannelsPerGdpb);
-    sPrintout += Form(" 0x%08x", fviRpcChUId[uCh]);
+    if (0 == fviRpcChUId[uCh]) {
+      /// Tricking clang to avoid one liner
+      sPrintout += " ----------";
+    }
+    else {
+      sPrintout += Form(" 0x%08x", fviRpcChUId[uCh]);
+    }
   }  // for( UInt_t i = 0; i < uNrOfChannels; ++i)
-  LOG(debug) << sPrintout;
+  LOG(info) << sPrintout;
 
   LOG(info) << fName << "::initParSetTofMcbm2018 - Successfully initialized TOF settings";
+
+  if (fMonitor) {
+    fMonitor->Init(parset);
+    LOG(info) << fName << "::initParSetTofMcbm2018 - Successfully initialized TOF monitor";
+  }
+
 
   return kTRUE;
 }
@@ -132,6 +133,7 @@ bool CbmTofUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
   fulCurrentTsIdx = ts->index();
   uint32_t uSize  = msDescriptor.size;
   fulCurrentMsIdx = msDescriptor.idx;
+  fdCurrentMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
   //   Double_t dMsTime = (1e-9) * static_cast<double>(fulCurrentMsIdx);
   LOG(debug) << "Microslice: " << fulCurrentMsIdx << " from EqId " << std::hex << fuCurrentEquipmentId << std::dec
              << " has size: " << uSize;
@@ -163,6 +165,13 @@ bool CbmTofUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
     fuCurrDpbIdx = fGdpbIdIndexMap[fuCurrDpbId];
 
   fuCurrentMsSysId = static_cast<unsigned int>(msDescriptor.sys_id);
+
+  if (fMonitor) {
+    if (0x90 == fuCurrentMsSysId) {
+      /// Tricking clang to avoid one liner
+      fMonitor->CheckBmonSpillLimits(fdCurrentMsTime);
+    }
+  }
 
   // If not integer number of message in input buffer, print warning/error
   if (0 != (uSize % sizeof(critof001::Message)))
@@ -252,10 +261,31 @@ bool CbmTofUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
         }  // if single chip epoch message
         break;
       }  // case critof001::MSG_EPOCH:
-      case critof001::MSG_SLOWC:
+      case critof001::MSG_SLOWC: {
+        /// Ignored messages
+        /// TODO,FIXME: should be filled into fOptOutAVec as CbmErrorMessage
+        if (fMonitor) {
+          fMonitor->FillScmMonitoringHistos(fuCurrDpbIdx, fuGet4Id, pMess[uIdx].getGdpbSlcChan(),
+                                            pMess[uIdx].getGdpbSlcEdge(), pMess[uIdx].getGdpbSlcType());
+        }
+        break;
+      }  // case critof001::MSG_SLOWC:
       case critof001::MSG_SYST: {
         /// Ignored messages
         /// TODO,FIXME: should be filled into fOptOutAVec as CbmErrorMessage
+        if (fMonitor) {
+          fMonitor->FillSysMonitoringHistos(fuCurrDpbIdx, fuGet4Id, pMess[uIdx].getGdpbSysSubType());
+          if (critof001::SYS_GET4_ERROR == pMess[uIdx].getGdpbSysSubType()) {
+            fMonitor->FillErrMonitoringHistos(fuCurrDpbIdx, fuGet4Id, pMess[uIdx].getGdpbSysErrChanId(),
+                                              pMess[uIdx].getGdpbSysErrData());
+
+            if (90 == fuCurrentMsSysId) {
+              fMonitor->FillErrBmonMonitoringHistos(fdCurrentMsTime, fuCurrDpbIdx, fuGet4Id,
+                                                    critof001::GET4_V2X_ERR_LOST_EVT
+                                                      == pMess[uIdx].getGdpbSysErrData());
+            }  // if (90 == fuCurrentMsSysId)
+          }    // if (critof001::SYS_GET4_ERROR == pMess[uIdx].getGdpbSysSubType())
+        }      // if (fMonitor )
         break;
       }  // case critof001::MSG_ERROR
       default:
@@ -264,7 +294,11 @@ bool CbmTofUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
                    << " not included in Get4 unpacker.";
     }  // switch( mess.getMessageType() )
   }    // for (uint32_t uIdx = 0; uIdx < uNbMessages; uIdx ++)
-
+       /*
+  if (0x90 == fuCurrentMsSysId && 0xabf3 == fuCurrDpbId) {
+      LOG(fatal) << "Last T0, stop there";
+  }
+*/
   return true;
 }
 
@@ -275,18 +309,17 @@ void CbmTofUnpackAlgo::ExtractTsStartEpoch(const uint64_t& ulTsStart)
 
   /// FIXME: seems there is an offset of +4 Epoch between data and header
   ///        from dt to PSD, the epoch seem to be right => placed in wrong MS!
-  if (fulTsStartInEpoch < 4) { fulTsStartInEpoch = critof001::kulEpochCycleEp + fulTsStartInEpoch - 4; }
-  else {
-    fulTsStartInEpoch -= 4;
-  }
+  if (fbEpochCountHack2021) {
+    if (fulTsStartInEpoch < 4) { fulTsStartInEpoch = critof001::kulEpochCycleEp + fulTsStartInEpoch - 4; }
+    else {
+      fulTsStartInEpoch -= 4;
+    }
+  }  // if (fbEpochCountHack2021)
 }
 
 void CbmTofUnpackAlgo::ProcessEpoch(const critof001::Message& mess, uint32_t uMesgIdx)
 {
-  /// FIXME: seems there is an offset of +4 Epoch between data and header
-  ///        from dt to PSD, the epoch seem to be right => placed in wrong MS!
   ULong64_t ulEpochNr = mess.getGdpbEpEpochNb();
-  //ULong64_t ulEpochNr = (mess.getGdpbEpEpochNb() + 4) % critof001::kulEpochCycleEp;
 
   if (0 == uMesgIdx) {
     uint64_t ulMsStartInEpoch =
@@ -310,7 +343,7 @@ void CbmTofUnpackAlgo::ProcessEpoch(const critof001::Message& mess, uint32_t uMe
                 static_cast<unsigned long long int>(mess.getData()), fuProcEpochUntilError,
                 static_cast<size_t>(fulCurrentMsIdx / critof001::kuEpochInNs),
                 fulCurrentMsIdx / critof001::kuEpochInNs);
-      LOG(error) << fName << "::ProcessEpoch => Ignoring data until next valid epoch";
+      LOG(fatal) << fName << "::ProcessEpoch => Stopping there, system is not synchronized and send corrupt data";
 
       fbLastEpochGood       = false;
       ulEpochNr             = ulMsStartInEpoch;
@@ -323,9 +356,11 @@ void CbmTofUnpackAlgo::ProcessEpoch(const critof001::Message& mess, uint32_t uMe
   }    // if( 0 < uMesgIdx )
   else if (((fulCurrentEpoch + 1) % critof001::kulEpochCycleEp) != ulEpochNr) {
     // Cast required to silence a warning on macos (there a uint64_t is a llu)
-    LOG(error) << fName << "::ProcessEpoch => Error global epoch, "
-               << Form("last 0x%06llx, current 0x%06llx, diff %lld, raw 0x%016lx, NoErr %d", fulCurrentEpoch, ulEpochNr,
-                       ulEpochNr - fulCurrentEpoch, static_cast<size_t>(mess.getData()), fuProcEpochUntilError);
+    LOG(error) << fName << "::ProcessEpoch => Error global epoch, DPB 0x" << std::setw(4) << std::hex << fuCurrDpbId
+               << std::dec
+               << Form(" last 0x%06llx, current 0x%06llx, diff %lld, raw 0x%016lx, NoErr %d", fulCurrentEpoch,
+                       ulEpochNr, ulEpochNr - fulCurrentEpoch, static_cast<size_t>(mess.getData()),
+                       fuProcEpochUntilError);
     LOG(error) << fName << "::ProcessEpoch => Ignoring data until next valid epoch";
 
     ulEpochNr             = (fulCurrentEpoch + 1) % critof001::kulEpochCycleEp;
@@ -342,13 +377,19 @@ void CbmTofUnpackAlgo::ProcessEpoch(const critof001::Message& mess, uint32_t uMe
   else {
     fulEpochIndexInTs = ulEpochNr + critof001::kulEpochCycleEp - fulTsStartInEpoch;
   }
-  if (10e9 < critof001::kuEpochInNs * fulEpochIndexInTs)
+  if (10e9 < critof001::kuEpochInNs * fulEpochIndexInTs) {
     // Cast required to silence a warning on macos (there a uint64_t is a llu)
     LOG(debug) << fName << "::ProcessEpoch => "
                << Form("Raw Epoch: 0x%06llx, Epoch offset 0x%06llx, Epoch in Ts: 0x%07lx, time %f ns (%f * %lu)",
                        ulEpochNr, static_cast<long long unsigned int>(fulTsStartInEpoch),
                        static_cast<size_t>(fulEpochIndexInTs), critof001::kuEpochInNs * fulEpochIndexInTs,
                        critof001::kuEpochInNs, static_cast<size_t>(fulEpochIndexInTs));
+  }
+
+  if (fMonitor) {
+    fMonitor->FillEpochMonitoringHistos(fuCurrDpbIdx, fuGet4Id, mess.getGdpbEpSync(), mess.getGdpbEpDataLoss(),
+                                        mess.getGdpbEpEpochLoss(), mess.getGdpbEpMissmatch());
+  }
 }
 
 void CbmTofUnpackAlgo::ProcessHit(const critof001::Message& mess)
@@ -360,18 +401,39 @@ void CbmTofUnpackAlgo::ProcessHit(const critof001::Message& mess)
   UInt_t uChannelNrInFee = (fuGet4Id % fuNrOfGet4PerFee) * fuNrOfChannelsPerGet4 + uChannel;
   UInt_t uFeeNr          = (fuGet4Id / fuNrOfGet4PerFee);
   UInt_t uFeeNrInSys     = fuCurrDpbIdx * fuNrOfFeePerGdpb + uFeeNr;
-  // UInt_t uRemappedChannelNr = uFeeNr * fuNrOfChannelsPerFee + fUnpackPar->Get4ChanToPadiChan(uChannelNrInFee);
+  UInt_t uRemappedChannelNr = uFeeNr * fuNrOfChannelsPerFee + fUnpackPar->Get4ChanToPadiChan(uChannelNrInFee);
 
   UInt_t uRemappedChannelNrInSys = fuCurrDpbIdx * fuNrOfChannelsPerGdpb + uFeeNr * fuNrOfChannelsPerFee
                                    + fUnpackPar->Get4ChanToPadiChan(uChannelNrInFee);
   /// Diamond FEE have straight connection from Get4 to eLink and from PADI to GET4
   if (0x90 == fuCurrentMsSysId) {
-    // uRemappedChannelNr      = uChannelNr;
-    uRemappedChannelNrInSys = fuCurrDpbIdx * fUnpackPar->GetNrOfChannelsPerGdpb() + uChannelNr;
+    uRemappedChannelNr      = uChannelNr;
+    uRemappedChannelNrInSys = fuCurrDpbIdx * fuNrOfChannelsPerGdpb + uChannelNr;
   }  // if(0x90 == fuCurrentMsSysId)
 
   Double_t dHitTime = mess.getMsgFullTimeD(fulEpochIndexInTs);
   Double_t dHitTot  = uTot;  // in bins
+
+  if (fMonitor) {
+    fMonitor->FillHitMonitoringHistos(fdCurrentMsTime, fuCurrDpbIdx, fuGet4Id, uChannelNr, uRemappedChannelNr, uTot);
+    if (0x90 == fuCurrentMsSysId && 0 == uChannel) {
+      fMonitor->FillHitBmonMonitoringHistos(fdCurrentMsTime, fuCurrDpbIdx, fuGet4Id, uTot);
+    }
+  }
+
+  /// Diamond debug
+  if (0x90 == fuCurrentMsSysId) {
+    LOG(debug) << fName << "::unpack => "
+               << "T0 data item at " << std::setw(4) << uRemappedChannelNrInSys << ", from FLIM " << fuCurrDpbIdx
+               << ", Get4 " << std::setw(2) << fuGet4Id << ", Ch " << uChannel << ", ChNr " << std::setw(2)
+               << uChannelNr << ", ChNrIF " << std::setw(2) << uChannelNrInFee << ", FiS " << std::setw(2)
+               << uFeeNrInSys
+               << (fviRpcChUId.size() < uRemappedChannelNrInSys || 0 == fviRpcChUId[uRemappedChannelNrInSys]
+                     ? " ----------"
+                     : Form(" 0x%08x", fviRpcChUId[uRemappedChannelNrInSys]))
+               << " TOT " << std::setw(3) << uTot << " time " << dHitTime;
+    // return;
+  }  // if(0x90 == fuCurrentMsSysId)
 
   if (fviRpcChUId.size() < uRemappedChannelNrInSys) {
     LOG(fatal) << fName << "::unpack => "
@@ -385,10 +447,10 @@ void CbmTofUnpackAlgo::ProcessHit(const critof001::Message& mess)
 
   if (0 == uChanUId) {
     if (0 < fuMapWarnToPrint--)
-      LOG(warning) << fName << "::unpack => "
-                   << "Unused data item at " << uRemappedChannelNrInSys << ", from FLIM " << fuCurrDpbIdx << ", Get4 "
-                   << fuGet4Id << ", Ch " << uChannel << ", ChNr " << uChannelNr << ", ChNrIF " << uChannelNrInFee
-                   << ", FiS " << uFeeNrInSys;
+      LOG(debug) << fName << "::unpack => "
+                 << "Unused data item at " << uRemappedChannelNrInSys << ", from FLIM " << fuCurrDpbIdx << ", Get4 "
+                 << fuGet4Id << ", Ch " << uChannel << ", ChNr " << uChannelNr << ", ChNrIF " << uChannelNrInFee
+                 << ", FiS " << uFeeNrInSys;
     return;  // Hit not mapped to digi
   }
 
@@ -398,9 +460,11 @@ void CbmTofUnpackAlgo::ProcessHit(const critof001::Message& mess)
     dHitTime -= fSystemTimeOffset;
   }
 
-  /// FIXME: seems there is an offset of +4 Epoch between data and header
-  ///        from dt to PSD, the epoch are probably the one off, not the MS time!
-  dHitTime -= 4.0 * critof001::kuEpochInNs;
+  if (fbEpochCountHack2021) {
+    /// FIXME: seems there is an offset of +4 Epoch between data and header
+    ///        from dt to PSD, the epoch are probably the one off, not the MS time!
+    dHitTime -= 4.0 * critof001::kuEpochInNs;
+  }
 
   LOG(debug) << Form("Insert 0x%08x digi with time ", uChanUId) << dHitTime << Form(", Tot %4.0f", dHitTot)
              << " at epoch " << fulEpochIndexInTs;

@@ -19,6 +19,7 @@ void CbmTsEventHeader::Reset()
   fNDigisTof   = 0;
   fNDigisTrd1D = 0;
   fNDigisTrd2D = 0;
+  fNDigisBmon  = 0;
 }
 
 ClassImp(CbmTsEventHeader)

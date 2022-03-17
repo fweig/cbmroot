@@ -47,6 +47,7 @@ void CbmRecoUnpack::Finish()
   if (fTofConfig) fTofConfig->GetUnpacker()->Finish();
   if (fTrd1DConfig) fTrd1DConfig->GetUnpacker()->Finish();
   if (fTrd2DConfig) fTrd2DConfig->GetUnpacker()->Finish();
+  if (fBmonConfig) fBmonConfig->GetUnpacker()->Finish();
 
   // Create some default performance profiling histograms and write them to a file
   if (fDoPerfProf) performanceProfiling();
@@ -101,6 +102,7 @@ Bool_t CbmRecoUnpack::Init()
     fTofConfig->InitOutput();
     RegisterOutputs(ioman, fTofConfig);  /// Framework bound work = kept in this Task
     fTofConfig->SetAlgo();
+    fTofConfig->LoadParFileName();  /// Needed to change the Parameter file name before it is used!!!
     initParContainers(fTofConfig->GetParContainerRequest());  /// Framework bound work = kept in this Task
     fTofConfig->InitAlgo();
     initPerformanceMaps(fkFlesTof, "TOF");
@@ -134,6 +136,17 @@ Bool_t CbmRecoUnpack::Init()
   // are created, as far as I am aware.
   // The second option workaround is in in Init() to look for the fasp config and create a separate branch
   // for fasp created CbmTrdDigis PR 072021
+
+  // --- Bmon
+  if (fBmonConfig) {
+    fBmonConfig->InitOutput();
+    RegisterOutputs(ioman, fBmonConfig);  /// Framework bound work = kept in this Task
+    fBmonConfig->SetAlgo();
+    fBmonConfig->LoadParFileName();  /// Needed to change the Parameter file name before it is used!!!
+    initParContainers(fBmonConfig->GetParContainerRequest());  /// Framework bound work = kept in this Task
+    fBmonConfig->InitAlgo();
+    initPerformanceMaps(fkFlesBmon, "Bmon");
+  }
 
   return kTRUE;
 }
@@ -253,6 +266,8 @@ void CbmRecoUnpack::Reset()
   if (fTrd1DConfig) fTrd1DConfig->Reset();
   // ---- Trd2D ----
   if (fTrd2DConfig) fTrd2DConfig->Reset();
+  // ---- Bmon ----
+  if (fBmonConfig) fBmonConfig->Reset();
 }
 
 // ----------------------------------------------------------------------------
@@ -317,6 +332,13 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
         }
         break;
       }
+      case fkFlesBmon: {
+        if (fBmonConfig) {
+          fCbmTsEventHeader->AddNDigisBmon(unpack(systemId, &timeslice, component, fBmonConfig,
+                                                  fBmonConfig->GetOptOutAVec(), fBmonConfig->GetOptOutBVec()));
+        }
+        break;
+      }
       default: {
         if (fDoDebugPrints) LOG(error) << "Unpack: Unknown system ID " << systemId << " for component " << component;
         break;
@@ -324,7 +346,7 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
     }
   }
 
-  if (bOutputFullTimeSorting) {
+  if (!bMonitoringOnly && bOutputFullTimeSorting) {
     /// Time sort the output vectors of all unpackers present
     if (fPsdConfig && fPsdConfig->GetOutputVec()) { timesort(fPsdConfig->GetOutputVec()); }
     if (fRichConfig && fRichConfig->GetOutputVec()) { timesort(fRichConfig->GetOutputVec()); }
@@ -332,6 +354,7 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
     if (fTofConfig && fTofConfig->GetOutputVec()) { timesort(fTofConfig->GetOutputVec()); }
     if (fTrd1DConfig && fTrd1DConfig->GetOutputVec()) { timesort(fTrd1DConfig->GetOutputVec()); }
     if (fTrd2DConfig && fTrd2DConfig->GetOutputVec()) { timesort(fTrd2DConfig->GetOutputVec()); }
+    if (fBmonConfig && fBmonConfig->GetOutputVec()) { timesort(fBmonConfig->GetOutputVec()); }
 
     /// Time sort the output vectors of all unpackers present
     if (fPsdConfig && fPsdConfig->GetOptOutAVec()) { timesort(fPsdConfig->GetOptOutAVec()); }
@@ -340,6 +363,7 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
     if (fTofConfig && fTofConfig->GetOptOutAVec()) { timesort(fTofConfig->GetOptOutAVec()); }
     if (fTrd1DConfig && fTrd1DConfig->GetOptOutAVec()) { timesort(fTrd1DConfig->GetOptOutAVec()); }
     if (fTrd2DConfig && fTrd2DConfig->GetOptOutAVec()) { timesort(fTrd2DConfig->GetOptOutAVec()); }
+    if (fBmonConfig && fBmonConfig->GetOptOutAVec()) { timesort(fBmonConfig->GetOptOutAVec()); }
   }
 }
 // ----------------------------------------------------------------------------

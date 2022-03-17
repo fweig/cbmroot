@@ -1,6 +1,6 @@
 /* Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Florian Uhlig [committer] */
+   Authors: Pierre-Alain Loizeau, Florian Uhlig [committer] */
 
 #ifdef __CINT__
 
@@ -23,5 +23,7 @@
 
 #pragma link C++ class CbmTofUnpackAlgo + ;
 #pragma link C++ class CbmTofUnpackConfig + ;
+#pragma link C++ class CbmBmonUnpackConfig + ;
+#pragma link C++ class CbmTofUnpackMonitor + ;
 
 #endif

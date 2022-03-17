@@ -88,6 +88,7 @@ private:
   void BuildChannelsUidMapCbm(UInt_t& uCh, UInt_t uGbtx);
   void BuildChannelsUidMapStar(UInt_t& uCh, UInt_t uGbtx);
   void BuildChannelsUidMapT0(UInt_t& uCh, UInt_t uGbtx);
+  void BuildChannelsUidMapT0_2022(UInt_t& uCh, UInt_t uGbtx);
   void BuildChannelsUidMapCern(UInt_t& uCh, UInt_t uGbtx);
   void BuildChannelsUidMapCera(UInt_t& uCh, UInt_t uGbtx);
   void BuildChannelsUidMapStar2(UInt_t& uCh, UInt_t uGbtx);

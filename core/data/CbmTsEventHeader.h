@@ -31,6 +31,8 @@ public:
   void AddNDigisTrd1D(uint64_t value) { fNDigisTrd1D += value; }
   /** @brief Add a number of digis from this Ts */
   void AddNDigisTrd2D(uint64_t value) { fNDigisTrd2D += value; }
+  /** @brief Add a number of digis from this Ts */
+  void AddNDigisBmon(uint64_t value) { fNDigisBmon += value; }
 
   /** @brief Get the number of digis in this Ts */
   uint64_t GetNDigisPsd() const { return fNDigisPsd; }
@@ -44,6 +46,8 @@ public:
   uint64_t GetNDigisTrd1D() const { return fNDigisTrd1D; }
   /** @brief Get the number of digis in this Ts */
   uint64_t GetNDigisTrd2D() const { return fNDigisTrd2D; }
+  /** @brief Get the number of digis in this Ts */
+  uint64_t GetNDigisBmon() const { return fNDigisBmon; }
 
   /** Get the Start time of the this Timeslice linked to this event header*/
   uint64_t GetTsIndex() const { return fTsIndex; }
@@ -65,6 +69,8 @@ public:
   void SetNDigisTrd1D(uint64_t value) { fNDigisTrd1D = value; }
   /** @brief Set the number of digis in this Ts */
   void SetNDigisTrd2D(uint64_t value) { fNDigisTrd2D = value; }
+  /** @brief Set the number of digis in this Ts */
+  void SetNDigisBmon(uint64_t value) { fNDigisBmon = value; }
 
   /** @brief Set the Ts Start Time @param value Start time of the TS */
   void SetTsIndex(uint64_t value) { fTsIndex = value; }
@@ -93,7 +99,9 @@ protected:
   uint64_t fNDigisTrd1D = 0;
   /** @brief nDigis in "this" timeslice measured by the TRD2D */
   uint64_t fNDigisTrd2D = 0;
+  /** @brief nDigis in "this" timeslice measured by the BMON */
+  uint64_t fNDigisBmon = 0;
 
-  ClassDef(CbmTsEventHeader, 5)
+  ClassDef(CbmTsEventHeader, 6)
 };
 #endif

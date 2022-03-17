@@ -12,6 +12,7 @@
 #ifndef CBMRECOUNPACK_H
 #define CBMRECOUNPACK_H 1
 
+#include "CbmBmonUnpackConfig.h"
 #include "CbmPsdUnpackConfig.h"
 #include "CbmRichUnpackConfig.h"
 #include "CbmStsUnpackConfig.h"
@@ -105,6 +106,13 @@ public:
   */
   void SetTimeSorting(bool bIn = true) { bOutputFullTimeSorting = bIn; }
 
+  /**
+   * @brief Enable/disable the data output. If On, data unpacked and monitored but neither sorted nor written to disk.
+   *
+   * @param value
+  */
+  void SetMonitoringOnly(bool bIn = true) { bMonitoringOnly = bIn; }
+
   /** @brief Set the Psd Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmPsdUnpackConfig> config) { fPsdConfig = config; }
 
@@ -123,6 +131,9 @@ public:
   /** @brief Set the Trd2D Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackFaspConfig> config) { fTrd2DConfig = config; }
 
+  /** @brief Set the Bmon Unpack Config @param config */
+  void SetUnpackConfig(std::shared_ptr<CbmBmonUnpackConfig> config) { fBmonConfig = config; }
+
   /** @brief Trigger the unpacking procedure **/
   void Unpack(std::unique_ptr<fles::Timeslice> ts);
 
@@ -135,6 +146,7 @@ private:
   static constexpr std::uint16_t fkFlesTrd   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::TRD);
   static constexpr std::uint16_t fkFlesTrd2D = static_cast<std::uint16_t>(fles::SubsystemIdentifier::TRD2D);
   static constexpr std::uint16_t fkFlesTof   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::RPC);
+  static constexpr std::uint16_t fkFlesBmon  = static_cast<std::uint16_t>(fles::SubsystemIdentifier::T0);
 
   /** @brief Flag if extended debug output is to be printed or not*/
   bool fDoDebugPrints = false;  //!
@@ -277,29 +289,31 @@ private:
     auto digivec = algo->Unpack(ts, icomp);
 
     // Check if we want to write the output to somewhere (in pure online monitoring mode for example this can/would/should be skipped)
-    if (config->GetOutputVec()) {
-      // Lets do some time-sorting if we are not doing it later
-      if (!bOutputFullTimeSorting) timesort(&digivec);
+    if (!bMonitoringOnly) {
+      if (config->GetOutputVec()) {
+        // Lets do some time-sorting if we are not doing it later
+        if (!bOutputFullTimeSorting) timesort(&digivec);
 
-      // Transfer the data from the timeslice vector to the target branch vector
-      // Digis/default output retrieved as offered by the algorithm
-      for (auto digi : digivec)
-        config->GetOutputVec()->emplace_back(digi);
-    }
-    if (optouttargetvecA) {
-      // Lets do some timesorting
-      if (!bOutputFullTimeSorting) timesort(&optoutAvec);
-      // Transfer the data from the timeslice vector to the target branch vector
-      for (auto optoutA : optoutAvec)
-        optouttargetvecA->emplace_back(optoutA);
-    }
-    if (optouttargetvecB) {
-      // Second opt output is not time sorted to allow non GetTime data container.
-      // Lets do some timesorting
-      timesort(&optoutAvec);
-      // Transfer the data from the timeslice vector to the target branch vector
-      for (auto optoutB : optoutBvec)
-        optouttargetvecB->emplace_back(optoutB);
+        // Transfer the data from the timeslice vector to the target branch vector
+        // Digis/default output retrieved as offered by the algorithm
+        for (auto digi : digivec)
+          config->GetOutputVec()->emplace_back(digi);
+      }
+      if (optouttargetvecA) {
+        // Lets do some timesorting
+        if (!bOutputFullTimeSorting) timesort(&optoutAvec);
+        // Transfer the data from the timeslice vector to the target branch vector
+        for (auto optoutA : optoutAvec)
+          optouttargetvecA->emplace_back(optoutA);
+      }
+      if (optouttargetvecB) {
+        // Second opt output is not time sorted to allow non GetTime data container.
+        // Lets do some timesorting
+        timesort(&optoutAvec);
+        // Transfer the data from the timeslice vector to the target branch vector
+        for (auto optoutB : optoutBvec)
+          optouttargetvecB->emplace_back(optoutB);
+      }
     }
 
     std::clock_t cpuendtime = std::clock();
@@ -353,6 +367,9 @@ private:
   /** @brief Configuration of the Trd unpacker. Provides the configured algorithm */
   std::shared_ptr<CbmTrdUnpackFaspConfig> fTrd2DConfig = nullptr;  //!
 
+  /** @brief Configuration of the Bmon unpacker. Provides the configured algorithm */
+  std::shared_ptr<CbmBmonUnpackConfig> fBmonConfig = nullptr;  //!
+
   /** @brief Pointer to the Timeslice start time used to write it to the output tree @remark since we hand this to the FairRootManager it also wants to delete it and we do not have to take care of deletion */
   CbmTsEventHeader* fCbmTsEventHeader = nullptr;
 
@@ -362,8 +379,11 @@ private:
   /** @brief Flag to Enable/disable a full time sorting. If off, time sorting happens per link/FLIM source */
   bool bOutputFullTimeSorting = false;
 
+  /** @brief Flag to Enable/disable the output completely */
+  bool bMonitoringOnly = false;
 
-  ClassDef(CbmRecoUnpack, 1);
+
+  ClassDef(CbmRecoUnpack, 2);
 };
 
 

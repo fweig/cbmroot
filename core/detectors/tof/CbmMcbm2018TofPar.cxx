@@ -149,6 +149,7 @@ Bool_t CbmMcbm2018TofPar::getParams(FairParamList* l)
   if (!l->fill("StarTriggerWinSize", &fdStarTriggerWinSize)) return kFALSE;
   if (!l->fill("TsDeadtimePeriod", &fdTsDeadtimePeriod)) return kFALSE;
 
+  LOG(info) << "Build TOF Channels UId Map:";
   BuildChannelsUidMap();
 
   return kTRUE;
@@ -215,8 +216,9 @@ void CbmMcbm2018TofPar::BuildChannelsUidMap()
 
   UInt_t uCh = 0;
   for (UInt_t uGbtx = 0; uGbtx < uNrOfGbtx; ++uGbtx) {
+    uint32_t uCh0 = uCh;
     switch (fiRpcType[uGbtx]) {
-      case 2: // intended fall-through
+      case 2:  // intended fall-through
       case 0: {
         // CBM modules
         BuildChannelsUidMapCbm(uCh, uGbtx);
@@ -230,6 +232,11 @@ void CbmMcbm2018TofPar::BuildChannelsUidMap()
       case 5: {
         /// Special Treatment for the T0 diamond
         BuildChannelsUidMapT0(uCh, uGbtx);
+        break;
+      }
+      case 99: {
+        /// Special Treatment for the 2022 T0 diamond, keep past behavior for older data!
+        BuildChannelsUidMapT0_2022(uCh, uGbtx);
         break;
       }
       case 78: {
@@ -254,6 +261,15 @@ void CbmMcbm2018TofPar::BuildChannelsUidMap()
         BuildChannelsUidMapBuc(uCh, uGbtx);
         break;
       }
+      case 69: {
+        /// 2022 case: 69 is followed by 4 and 9
+        BuildChannelsUidMapBuc(uCh, uGbtx);
+        /// Map also 4 and 9 (equivalent to fallthrough to 4 then 9 but without changing past behaviors)
+        uCh -= 80;  // PAL, 2022/03/17: ?!?
+        BuildChannelsUidMapStar2(uCh, uGbtx);
+        uCh -= 80;  // PAL, 2022/03/17: ?!?
+        break;
+      }
       case -1: {
         LOG(info) << " Found unused GBTX link at uCh = " << uCh;
         uCh += 160;
@@ -263,11 +279,15 @@ void CbmMcbm2018TofPar::BuildChannelsUidMap()
         LOG(error) << "Invalid Tof Type specifier for GBTx " << std::setw(2) << uGbtx << ": " << fiRpcType[uGbtx];
       }
     }  // switch (fiRpcType[uGbtx])
+    if (uCh - uCh0 != fiNrOfFeesPerGdpb * fiNrOfGet4PerFee * fiNrOfChannelsPerGet4 / 2) {
+      LOG(fatal) << "Tof mapping error for Gbtx " << uGbtx << ",  diff = " << uCh - uCh0;
+    }
   }    // for (UInt_t uGbtx = 0; uGbtx < uNrOfGbtx; ++uGbtx)
 }
 // -------------------------------------------------------------------------
 void CbmMcbm2018TofPar::BuildChannelsUidMapCbm(UInt_t& uCh, UInt_t uGbtx)
 {
+  LOG(info) << " Map mTof box " << fiModuleId[uGbtx] << " at GBTX " << uGbtx << " -  uCh = " << uCh;
   if (fiRpcSide[uGbtx] < 2) {  // mTof modules
     LOG(debug) << " Map mTof box " << fiModuleId[uGbtx] << " at GBTX  -  uCh = " << uCh;
     const Int_t RpcMap[5] = {4, 2, 0, 3, 1};
@@ -353,6 +373,28 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapT0(UInt_t& uCh, UInt_t uGbtx)
   }    // for( UInt_t uFee = 0; uFee < kuNbChannelsPerFee; ++uFee )
 }
 // -------------------------------------------------------------------------
+void CbmMcbm2018TofPar::BuildChannelsUidMapT0_2022(UInt_t& uCh, UInt_t uGbtx)
+{
+  LOG(info) << " Map 2022 diamond " << fiModuleId[uGbtx] << " at GBTX " << uGbtx << " -  uCh = " << uCh;
+  for (UInt_t uGet4 = 0; uGet4 < kuNbGet4PerGbtx; ++uGet4) {
+    for (UInt_t uGet4Ch = 0; uGet4Ch < kuNbChannelsPerGet4; ++uGet4Ch) {
+      /// Mapping for the 2022 beamtime
+      if (0 == uGet4 % 4 && 0 == uGet4Ch && -1 < fiModuleId[uGbtx]) {
+        UInt_t uChannelT0 = uGet4 / 8;  // + 4 * fiRpcSide[uGbtx];
+        /// Type hard-coded to allow different parameter values to separate 2022 T0 and pre-2022 T0
+        fviRpcChUId[uCh] = CbmTofAddress::GetUniqueAddress(fiModuleId[uGbtx], 0, uChannelT0, 0, 5);
+        LOG(info) << Form("  T0 channel: %u from GBTx %2u, "
+                          "indx %d address %08x",
+                          uChannelT0, uGbtx, uCh, fviRpcChUId[uCh]);
+      }  // Valid T0 channel
+      else {
+        fviRpcChUId[uCh] = 0;
+      }  // Invalid T0 channel
+      uCh++;
+    }  // for( UInt_t uCh = 0; uCh < kuNbFeePerGbtx; ++uCh )
+  }    // for( UInt_t uFee = 0; uFee < kuNbChannelsPerFee; ++uFee )
+}
+// -------------------------------------------------------------------------
 void CbmMcbm2018TofPar::BuildChannelsUidMapCern(UInt_t& uCh, UInt_t /*uGbtx*/)
 {
   LOG(info) << " Map CERN 20 gap  at GBTX  -  uCh = " << uCh;
@@ -392,7 +434,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapCera(UInt_t& uCh, UInt_t /*uGbtx*/)
 // -------------------------------------------------------------------------
 void CbmMcbm2018TofPar::BuildChannelsUidMapStar2(UInt_t& uCh, UInt_t uGbtx)
 {
-  LOG(info) << " Map Star2 box " << fiModuleId[uGbtx] << " at GBTX  -  uCh = " << uCh;
+  LOG(info) << " Map Star2 box " << fiModuleId[uGbtx] << " at GBTX " << uGbtx << " -  uCh = " << uCh;
   const Int_t iRpc[5]  = {1, -1, 1, 0, 0};
   const Int_t iSide[5] = {1, -1, 0, 1, 0};
   for (Int_t iFeet = 0; iFeet < 5; iFeet++) {
@@ -448,7 +490,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapStar2(UInt_t& uCh, UInt_t uGbtx)
 // -------------------------------------------------------------------------
 void CbmMcbm2018TofPar::BuildChannelsUidMapBuc(UInt_t& uCh, UInt_t uGbtx)
 {
-  LOG(info) << " Map Buc box  at GBTX  -  uCh = " << uCh;
+  LOG(info) << " Map Buc box " << fiModuleId[uGbtx] << " at GBTX " << uGbtx << " -  uCh = " << uCh;
 
   Int_t iModuleIdMap   = fiModuleId[uGbtx];
   const Int_t iRpc[5]  = {0, -1, 0, 1, 1};
@@ -533,9 +575,9 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapBuc(UInt_t& uCh, UInt_t uGbtx)
             case 4: iSideMap = -1; break;
           }
           iModuleIdMap = fiModuleId[uGbtx];
-          LOG(info) << "Buc of GBTX " << uGbtx << " Ch " << uCh
-                    << Form(", Feet %1d, Str %2d, Ind %3d, i %3d, FeetInd %1d, Rpc %1d, Side %1d, Str %2d ", iFeet,
-                            iStr, iInd, i, iFeetInd, iRpcMap, iSideMap, iStrMap);
+          LOG(debug) << "Buc of GBTX " << uGbtx << " Ch " << uCh
+                     << Form(", Feet %1d, Str %2d, Ind %3d, i %3d, FeetInd %1d, Rpc %1d, Side %1d, Str %2d ", iFeet,
+                             iStr, iInd, i, iFeetInd, iRpcMap, iSideMap, iStrMap);
         } break;
         default:;
       }  // switch (fiRpcSide[uGbtx])

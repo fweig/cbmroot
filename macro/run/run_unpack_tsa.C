@@ -32,6 +32,7 @@ std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename, boo
 std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline = false);
 std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename, bool bDebugMode = false);
 std::shared_ptr<CbmRichUnpackMonitor> GetRichMonitor(std::string treefilename, bool bDebugMode = false);
+std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, bool bBmonMode = false);
 const char* defaultSetupName = "mcbm_beam_2021_07_surveyed";
 
 void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid = 0,
@@ -248,16 +249,35 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     tofconfig->SetDoWriteOutput();
     // tofconfig->SetDoWriteOptOutA("CbmTofErrors");
     std::string parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
-    if (2060 <= runid ) {
+    if (2060 <= runid) {
       /// Additional modules added just before the 10/03/2022 Carbon run
       parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
     }
     tofconfig->SetParFilesBasePath(parfilesbasepathTof);
     tofconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
-    if (runid <= 1659) {
+    if (runid <= 1659 && runid < 2060) {
       /// Switch ON the -4 offset in epoch count (hack for Spring-Summer 2021)
       tofconfig->SetFlagEpochCountHack2021();
     }
+    /// Enable Monitor plots
+    // tofconfig->SetMonitor(GetTofMonitor(outfilename, false));
+  }
+  // -------------
+
+  // ---- BMON ----
+  std::shared_ptr<CbmBmonUnpackConfig> bmonconfig = nullptr;
+
+  bmonconfig = std::make_shared<CbmBmonUnpackConfig>("", runid);
+  if (bmonconfig) {
+    // bmonconfig->SetDebugState();
+    bmonconfig->SetDoWriteOutput();
+    // bmonconfig->SetDoWriteOptOutA("CbmBmonErrors");
+    std::string parfilesbasepathBmon = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
+    bmonconfig->SetParFilesBasePath(parfilesbasepathBmon);
+    bmonconfig->SetParFileName("mBmonCriPar.par");
+    bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+    /// Enable Monitor plots
+    // bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));
   }
   // -------------
 
@@ -286,7 +306,9 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
   if (trd1Dconfig) unpack->SetUnpackConfig(trd1Dconfig);
   if (trdfasp2dconfig) unpack->SetUnpackConfig(trdfasp2dconfig);
   if (tofconfig) unpack->SetUnpackConfig(tofconfig);
+  if (bmonconfig) unpack->SetUnpackConfig(bmonconfig);
   // ------------------------------------------------------------------------
+
 
   // -----   FairRunAna   ---------------------------------------------------
   auto run  = new FairRunOnline(source);
@@ -333,7 +355,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
  * @brief Get the Trd Monitor. Extra function to keep default macro part more silent.
  * @return std::shared_ptr<CbmTrdUnpackMonitor>
 */
-std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename, bool fasp)
+std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename, bool fasp = false)
 {
   // -----   Output filename and path   -------------------------------------
   std::string outpath  = "";
@@ -389,7 +411,6 @@ std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename, boo
     monitor->SetActiveHistos(digihistovec);
     monitor->SetWriteToFile(outfilename.data());
   }
-
   return monitor;
 }
 
@@ -477,6 +498,49 @@ std::shared_ptr<CbmRichUnpackMonitor> GetRichMonitor(std::string treefilename, b
   monitor->SetHistoFileName(outfilename);
   monitor->SetDebugMode(bDebugMode);
 
+  return monitor;
+}
+
+/**
+ * @brief Get the Tof Monitor. Extra function to keep default macro part more silent.
+ * @return std::shared_ptr<CbmTofUnpackMonitor>
+*/
+std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, bool bBmonMode = false)
+{
+  // -----   Output filename and path   -------------------------------------
+  std::string outpath  = "";
+  std::string filename = "";
+  auto filenamepos     = treefilename.find_last_of("/");
+  if (filenamepos != treefilename.npos) {
+    outpath  = treefilename.substr(0, filenamepos);
+    filename = treefilename.substr(filenamepos++);
+  }
+  if (outpath.empty()) outpath = gSystem->GetWorkingDirectory();
+  //std::string mydir = "/qa";
+  //outpath += mydir;
+
+  auto currentdir = gSystem->GetWorkingDirectory();
+
+  if (!gSystem->cd(outpath.data())) gSystem->MakeDirectory(outpath.data());
+  else
+    gSystem->cd(currentdir.data());
+
+  std::string sSystemType = ".mon.tof.root";
+  if (bBmonMode) {
+    //
+    sSystemType = ".mon.bmon.root";
+  }
+
+  std::string outfilename = outpath + filename;
+  auto filetypepos        = outfilename.find(".digi.root");
+  if (filetypepos != outfilename.npos) outfilename.replace(filetypepos, 10, sSystemType);
+  else
+    outfilename += sSystemType;
+  // ------------------------------------------------------------------------
+
+  auto monitor = std::make_shared<CbmTofUnpackMonitor>();
+  monitor->SetHistoFileName(outfilename);
+  monitor->SetBmonMode(bBmonMode);
   return monitor;
 }
 

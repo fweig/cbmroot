@@ -1,6 +1,6 @@
 /* Copyright (C) 2021 Goethe-University Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Pascal Raisig [committer] */
+   Authors: Pierre-Alain Loizeau, Pascal Raisig [committer] */
 
 #include "CbmTofUnpackConfig.h"
 
@@ -25,6 +25,8 @@ CbmTofUnpackConfig::~CbmTofUnpackConfig() {}
 void CbmTofUnpackConfig::InitAlgo()
 {
   fAlgo->SetFlagEpochCountHack2021(fbEpochCountHack2021);
+
+  if (fMonitor) { fAlgo->SetMonitor(fMonitor); }
 
   // Now we have all information required to initialise the algorithm
   fAlgo->Init();

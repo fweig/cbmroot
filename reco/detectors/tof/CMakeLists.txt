@@ -16,6 +16,7 @@ set(INCLUDE_DIRECTORIES
   ${CBMROOT_SOURCE_DIR}/reco/base
 
   ${CBMROOT_SOURCE_DIR}/core/eventdisplay
+  ${CBMROOT_SOURCE_DIR}/core/qa
 
   ${CBMROOT_SOURCE_DIR}/fles/flestools # for Timeslice/Microslice printout formatting tools
 )
@@ -53,6 +54,8 @@ set(SRCS
 
   unpack/CbmTofUnpackAlgo.cxx
   unpack/CbmTofUnpackConfig.cxx
+  unpack/CbmBmonUnpackConfig.cxx
+  unpack/CbmTofUnpackMonitor.cxx
 )
 
 set(LINKDEF CbmTofRecoLinkDef.h)

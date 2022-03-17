@@ -1,6 +1,6 @@
 /* Copyright (C) 2021 Goethe-University Frankfurt, Frankfurt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Pascal Raisig [committer] */
+   Authors: Pierre-Alain Loizeau, Pascal Raisig [committer] */
 
 /**
  * @file CbmTofUnpackConfig.h
@@ -22,6 +22,7 @@
 #include "CbmRecoUnpackConfig.tmpl"
 #include "CbmTofDigi.h"
 #include "CbmTofUnpackAlgo.h"
+#include "CbmTofUnpackMonitor.h"
 
 #include <FairLogger.h>
 #include <Logger.h>
@@ -75,6 +76,17 @@ public:
   */
   void SetFlagEpochCountHack2021(bool bFlagin = true) { fbEpochCountHack2021 = bFlagin; }
 
+  /**
+   * @brief Sets the name of the parameter file to be used.
+   *
+   * @param[in] std:string, path should not be included as set in the Config class
+  */
+  void SetParFileName(std::string sNewName) { fsParFileName = sNewName; }
+  void LoadParFileName() { fAlgo->SetParFileName(fsParFileName); }
+
+  /** @brief Add a monitor to the unpacker. @param value CbmStsUnpackMonitor */
+  void SetMonitor(std::shared_ptr<CbmTofUnpackMonitor> value) { fMonitor = value; }
+
 protected:
   /**
    * @brief Choose the derived unpacker algorithm to be used for the DAQ output to Digi translation. If algo was already set manually by the user this algorithm is used.
@@ -86,8 +98,13 @@ protected:
 private:
   /// Control flags
   bool fbEpochCountHack2021 = false;
+  /// Parameter file name
+  std::string fsParFileName = "mTofCriPar.par";
 
-  ClassDef(CbmTofUnpackConfig, 2)
+  /** @brief pointer to the monitor object */
+  std::shared_ptr<CbmTofUnpackMonitor> fMonitor = nullptr;
+
+  ClassDef(CbmTofUnpackConfig, 3)
 };
 
 #endif  // CbmTofUnpackConfig_H
