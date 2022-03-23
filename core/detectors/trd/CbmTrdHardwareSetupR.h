@@ -30,6 +30,8 @@ enum class ECbmTrdHardwareSetupVersion : Int_t
   kMcbm2020  = 1,
   kMcbm2021,
   kMcbm2022,
+  kMcbm2022WithoutHybrid,  // for v22e setup
+  kMcbm2022Only1D,         // for v22f setup
   kLabIkfOneSpadic,
   kDesy2019,
   kCbm2025
