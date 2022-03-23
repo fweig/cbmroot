@@ -124,11 +124,15 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     stsconfig->SetDoWriteOutput();
     stsconfig->SetDoWriteOptOutA("StsDigiPulser");
     std::string parfilesbasepathSts = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+    if (2060 <= runid) {
+      /// Starting to readout the U3 since 10/03/2022 Carbon run
+      parfilesbasepathSts = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
+    }
     stsconfig->SetParFilesBasePath(parfilesbasepathSts);
     /// Enable duplicates rejection, Ignores the ADC for duplicates check
     stsconfig->SetDuplicatesRejection(true, true);
     /// Enable Monitor plots
-    stsconfig->SetMonitor(GetStsMonitor(outfilename, true));
+    stsconfig->SetMonitor(GetStsMonitor(outfilename, false));
     stsconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
 
     stsconfig->SetMinAdcCut(1, 1);
@@ -193,7 +197,7 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     /// Enable duplicates rejection, Ignores the ADC for duplicates check
     muchconfig->SetDuplicatesRejection(true, true);
     /// Enable Monitor plots
-    muchconfig->SetMonitor(GetMuchMonitor(outfilename, true));
+    muchconfig->SetMonitor(GetMuchMonitor(outfilename, false));
     muchconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
 
     // muchconfig->SetMinAdcCut(1, 1);

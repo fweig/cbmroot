@@ -136,6 +136,10 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     stsconfig->SetDoWriteOutput();
     stsconfig->SetDoWriteOptOutA("StsDigiPulser");
     std::string parfilesbasepathSts = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+    if (2060 <= runid) {
+      /// Starting to readout the U3 since 10/03/2022 Carbon run
+      parfilesbasepathSts = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
+    }
     stsconfig->SetParFilesBasePath(parfilesbasepathSts);
     /// Enable duplicates rejection, Ignores the ADC for duplicates check
     stsconfig->SetDuplicatesRejection(true, true);

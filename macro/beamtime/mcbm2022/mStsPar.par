@@ -1,0 +1,90 @@
+##############################################################################
+# Class:   CbmMcbm2018StsPar
+# Context: For mSTS testing
+##############################################################################
+[CbmMcbm2018StsPar]
+//----------------------------------------------------------------------------
+// Total number of STS modules in the setup (11 sensors + 2 pulsers)
+NbModules: Int_t 13
+// Type of each module: 0 for connectors on the right, 1 for connectors on the left
+ModuleType: Int_t \
+       0              0 \
+       1              1             1 \
+       0              0             0 \
+       1              1             1            1             1
+// STS address for the first strip of each module
+// 1 Line per ladder, from above beam to under beam FIXME
+ModAddress: Int_t \
+  0x10008002      0x10018002 \
+  0x10008402      0x10018402    0x10107C02 \
+  0x10008412      0x10018412    0x101FFC02 \
+  0x10008812      0x10018812    0x10028812      0x10008012      0x10018012
+// Offset of module center in X, in mm (Should be done by geometry for the unpacker!)
+ModCenterPosX: Double_t \
+         0.0        0.0 \
+         0.0        0.0        0.0 \
+         0.0        0.0        0.0 \
+         0.0        0.0        0.0         0.0        0.0
+// Offset of module center in Y, in mm (Should be done by geometry for the unpacker!)
+ModCenterPosY: Double_t \
+         0.0        0.0 \
+         0.0        0.0        0.0 \
+         0.0        0.0        0.0 \
+         0.0        0.0        0.0         0.0        0.0
+// Total number of STS DPBs in system FIXME
+NrOfDpbs: Int_t 5
+// Array to hold the unique IDs (equipment ID) for all STS DPBs, Array size has to match NrOfDpbs FIXME
+DbpIdArray: Int_t \
+        0x1003      0x1002    0x1006    0x1004    0x1005
+// Array to hold the active flag for all CROBs, [ NbDpb * kuNbCrobPerDpb ] = [ NbDpb * 1 ]
+CrobActiveFlag: Int_t \
+  1        1     1        1    1
+// Pulser flag for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ] = = [ NbDpb * 1 * 5 ], 1 if pulser, 0 otherwise
+FebPulserFlag: Int_t \
+     0       0       0        0     0 \
+     1       0       0        0     0 \
+     1       0       0        0     0 \
+     0       0       0        0     0 \
+     0       0       0        0     0
+// Index of the STS module for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ] = = [ NbDpb * 1 * 5 ], -1 if inactive
+FebModuleIdx: Int_t \
+    -1       1       1       0       0 \
+     4       3       3       2       2 \
+     7       6       6       5       5 \
+     10      9       9       8       8 \
+    12      12      11      11      10
+// STS module side for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ], 0 = P, 1 = N, -1 if inactive
+FebModuleSide: Int_t \
+    -1       1       0       1       0 \
+     1       1       0       1       0 \
+     1       1       0       1       0 \
+     0       1       0       1       0 \
+     1       0       1       0       1
+// ADC Gain in e-/ADC bin for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
+FebAdcGain: Double_t \
+     1.0     1.0     1.0     1.0     1.0 \
+     1.0     1.0     1.0     1.0     1.0 \
+     1.0     1.0     1.0     1.0     1.0 \
+     1.0     1.0     1.0     1.0     1.0 \
+     1.0     1.0     1.0     1.0     1.0
+// Base at Cal. Thr. in e- for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
+FebAdcBase: Double_t \
+     1.0     1.0     1.0     1.0     1.0 \
+     1.0     1.0     1.0     1.0     1.0 \
+     1.0     1.0     1.0     1.0     1.0 \
+     1.0     1.0     1.0     1.0     1.0 \
+     1.0     1.0     1.0     1.0     1.0
+// Thr. step in e-/Thr. Unit for each FEB, [ NbDpb * kuNbCrobPerDpb * kuNbFebsPerCrob ]
+FebAdcThrGain: Double_t \
+     0.0     0.0     0.0     0.0     0.0 \
+     0.0     0.0     0.0     0.0     0.0 \
+     0.0     0.0     0.0     0.0     0.0 \
+     0.0     0.0     0.0     0.0     0.0 \
+     0.0     0.0     0.0     0.0     0.0
+FebAdcThrOffs: Int_t \
+     0       0       0       0       0 \
+     0       0       0       0       0 \
+     0       0       0       0       0 \
+     0       0       0       0       0 \
+     0       0       0       0       0
+#######################
