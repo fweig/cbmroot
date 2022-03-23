@@ -22,12 +22,16 @@ CbmMcbm2018MuchPar::CbmMcbm2018MuchPar(const char* name, const char* title, cons
   , fiCrobActiveFlag()
   , fuFebsInGemA(0)
   , fuFebsInGemB(0)
+  , fuFebsInRpc(0)
   , fnFebsIdsArrayGemA()
   , fnFebsIdsArrayGemB()
+  , fnFebsIdsArrayRpc()
   , fChannelsToPadXA()
   , fChannelsToPadYA()
   , fChannelsToPadXB()
   , fChannelsToPadYB()
+  , fChannelsToPadXRpc()
+  , fChannelsToPadYRpc()
   , fRealX()
   , fRealPadSize()
 {
@@ -62,10 +66,14 @@ void CbmMcbm2018MuchPar::putParams(FairParamList* l)
   l->add("nFebsIdsArrayA", fnFebsIdsArrayGemA);
   l->add("NrOfFebsInGemB", fuFebsInGemB);
   l->add("nFebsIdsArrayB", fnFebsIdsArrayGemB);
+  l->add("NrOfFebsInRpc", fuFebsInRpc);
+  l->add("nFebsIdsArrayRpc", fnFebsIdsArrayRpc);
   l->add("ChannelsToPadXA", fChannelsToPadXA);
   l->add("ChannelsToPadYA", fChannelsToPadYA);
   l->add("ChannelsToPadXB", fChannelsToPadXB);
   l->add("ChannelsToPadYB", fChannelsToPadYB);
+  l->add("ChannelsToPadXRpc", fChannelsToPadXRpc);
+  l->add("ChannelsToPadYRpc", fChannelsToPadYRpc);
   l->add("RealX", fRealX);
   l->add("PadSize", fRealPadSize);
 }
@@ -95,6 +103,11 @@ Bool_t CbmMcbm2018MuchPar::getParams(FairParamList* l)
   fnFebsIdsArrayGemB.Set(GetNrOfFebsInGemB());
   if (!l->fill("nFebsIdsArrayB", &fnFebsIdsArrayGemB)) return kFALSE;
 
+  if (!l->fill("NrOfFebsInRpc", &fuFebsInRpc)) return kFALSE;
+
+  fnFebsIdsArrayRpc.Set(GetNrOfFebsInRpc());
+  if (!l->fill("nFebsIdsArrayRpc", &fnFebsIdsArrayRpc)) return kFALSE;
+
   fChannelsToPadXA.Set(GetNrOfFebs() * kuNbChanPerAsic);
   if (!l->fill("ChannelsToPadXA", &fChannelsToPadXA)) return kFALSE;
 
@@ -106,6 +119,12 @@ Bool_t CbmMcbm2018MuchPar::getParams(FairParamList* l)
 
   fChannelsToPadYB.Set(GetNrOfFebs() * kuNbChanPerAsic);
   if (!l->fill("ChannelsToPadYB", &fChannelsToPadYB)) return kFALSE;
+
+  fChannelsToPadXRpc.Set(GetNrOfFebsInRpc() * kuNbChanPerAsic);
+  if (!l->fill("ChannelsToPadXRpc", &fChannelsToPadXRpc)) return kFALSE;
+
+  fChannelsToPadYRpc.Set(GetNrOfFebsInRpc() * kuNbChanPerAsic);
+  if (!l->fill("ChannelsToPadYRpc", &fChannelsToPadYRpc)) return kFALSE;
 
   fRealX.Set(2232);  // Number of Sectors in one GEM Module
   if (!l->fill("RealX", &fRealX)) return kFALSE;
@@ -245,26 +264,66 @@ Short_t CbmMcbm2018MuchPar::GetPadYB(UShort_t febid, UShort_t channelid)
   return fChannelsToPadYB[(febid * kuNbChanPerAsic) + channelid];
 }
 
+
+Short_t CbmMcbm2018MuchPar::GetPadXRpc(UShort_t febid, UShort_t channelid)
+{
+  if (fChannelsToPadXRpc.GetSize() <= static_cast<Int_t>((febid * kuNbChanPerAsic) + channelid)) {
+    LOG(debug) << "CbmMcbm2018MuchPar::GetPadXRpc => Index out of bounds: " << ((febid * kuNbChanPerAsic) + channelid)
+               << " VS " << fChannelsToPadXRpc.GetSize() << " (" << febid << " and " << channelid << ")";
+    return -2;
+  }  // if( fChannelsToPadXB.GetSize () <= static_cast< Int_t >( (febid*kuNbChanPerAsic)+channelid ) )
+
+
+  return fChannelsToPadXRpc[(febid * kuNbChanPerAsic) + channelid];
+}
+Short_t CbmMcbm2018MuchPar::GetPadYRpc(UShort_t febid, UShort_t channelid)
+{
+  if (fChannelsToPadXRpc.GetSize() <= static_cast<Int_t>((febid * kuNbChanPerAsic) + channelid)) {
+    LOG(debug) << "CbmMcbm2018MuchPar::GetPadYRpc => Index out of bounds: " << ((febid * kuNbChanPerAsic) + channelid)
+               << " VS " << fChannelsToPadYRpc.GetSize() << " (" << febid << " and " << channelid << ")";
+    return -2;
+  }  // if( fChannelsToPadXB.GetSize () <= static_cast< Int_t >( (febid*kuNbChanPerAsic)+channelid ) )
+
+  return fChannelsToPadYRpc[(febid * kuNbChanPerAsic) + channelid];
+}
+
+
 UInt_t CbmMcbm2018MuchPar::GetFebId(UInt_t uAsicIdx)
 {
+  //22022022:- Not enabled GEM2 (GemB) Working for GemA and RPC under one CRI
   //LOG(info)<<" fnFebsIdsArrayGemA.GetSize() "<<fnFebsIdsArrayGemA.GetSize()<<" fnFebsIdsArrayGemB.GetSize()"<<fnFebsIdsArrayGemB.GetSize();
+  if (uAsicIdx >= GetNrOfFebsInGemA()) {
+    if ((uAsicIdx % GetNrOfFebsInGemA()) < GetNrOfFebsInRpc()) return fnFebsIdsArrayRpc[uAsicIdx % GetNrOfFebsInGemA()];
+    else {
+      LOG(error) << "CbmMcbm2018MuchPar::GetFebId => Index out of bounds: " << uAsicIdx << " VS " << GetNrOfFebsInGemA()
+                 << " and " << GetNrOfFebsInRpc() << " => Returning crazy value!!!";
+      return 10000 * (GetNrOfFebsInGemA() + GetNrOfFebsInRpc());
+    }  // else of if( ( uAsicIdx % GetNrOfFebsInGemA() ) < GetNrOfFebsInGemB() )
+  }    // if(uAsicIdx >= GetNrOfFebsInGemA())
+  else
+    return fnFebsIdsArrayGemA[uAsicIdx];
+
+  //uncomment below when GemB also visible with another CRI
+  /*
   if (uAsicIdx >= GetNrOfFebsInGemA()) {
     if ((uAsicIdx % GetNrOfFebsInGemA()) < GetNrOfFebsInGemB())
       return fnFebsIdsArrayGemB[uAsicIdx % GetNrOfFebsInGemA()];
     else {
-      LOG(error) << "CbmMcbm2018MuchPar::GetFebId => Index out of bounds: " << uAsicIdx << " VS " << GetNrOfFebsInGemA()
-                 << " and " << GetNrOfFebsInGemB() << " => Returning crazy value!!!";
+     // LOG(error) << "CbmMcbm2018MuchPar::GetFebId => Index out of bounds: " << uAsicIdx << " VS " << GetNrOfFebsInGemA()
+       //          << " and " << GetNrOfFebsInGemB() << " => Returning crazy value!!!";
       return 10000 * (GetNrOfFebsInGemA() + GetNrOfFebsInGemB());
     }  // else of if( ( uAsicIdx % GetNrOfFebsInGemA() ) < GetNrOfFebsInGemB() )
   }    // if(uAsicIdx >= GetNrOfFebsInGemA())
   else
     return fnFebsIdsArrayGemA[uAsicIdx];
+  */
 }
 
 UInt_t CbmMcbm2018MuchPar::GetModule(UInt_t uAsicIdx)
 {
   if (uAsicIdx >= GetNrOfFebsInGemA()) {
-    if ((uAsicIdx % GetNrOfFebsInGemA()) < GetNrOfFebsInGemB()) return 1;
+    //if ((uAsicIdx % GetNrOfFebsInGemA()) < GetNrOfFebsInGemB()) return 1;
+    if ((uAsicIdx % GetNrOfFebsInGemA()) < GetNrOfFebsInRpc()) return 1;
     else
       return 2;
   }  // if(uAsicIdx >= GetNrOfFebsInGemA())

@@ -229,6 +229,10 @@ private:
   TH2* fhMsStatusFieldType;
   TH2* fhMuchHitsElinkPerDpb;
 
+  //TH1* fhElinkIdxTsMsb;
+  //TH1* fhElinkIdxEpoch;
+  //TH1* fhElinkIdxStatus;
+  TH2* fhMuchMessTypePerElink;
   TH1* fhRate;
   TH1* fhRateAdcCut;
   TH1* fhFEBcount = nullptr;
@@ -299,9 +303,10 @@ private:
 
   std::vector<std::vector<std::vector<UInt_t>>> fvuChanNbHitsInMs;  //! Number of hits in each MS for each Channel
 
-  // Methods later going into Algo
+  TH1* fhElinkIdxHit;
   size_t fuNbOverMsPerTs;  //!
 
+  // Methods later going into Algo
 
   void FillTsMsbInfo(stsxyter::Message mess, UInt_t uMessIdx = 0, UInt_t uMsIdx = 0);
   void FillEpochInfo(stsxyter::Message mess);

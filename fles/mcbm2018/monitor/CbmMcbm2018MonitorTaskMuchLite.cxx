@@ -341,6 +341,7 @@ void CbmMcbm2018MonitorTaskMuchLite::Reset() {}
 
 void CbmMcbm2018MonitorTaskMuchLite::Finish()
 {
+  fMonitorAlgo->Finish();
   /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
   std::vector<std::pair<TNamed*, std::string>> vHistos = fMonitorAlgo->GetHistoVector();
 

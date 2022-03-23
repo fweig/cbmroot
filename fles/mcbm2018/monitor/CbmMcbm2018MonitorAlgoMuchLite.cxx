@@ -114,7 +114,11 @@ CbmMcbm2018MonitorAlgoMuchLite::CbmMcbm2018MonitorAlgoMuchLite()
   , fvMsComponentsList()
   , fuMaxNbMicroslices(100)
   , fvuChanNbHitsInMs()
+  , fhElinkIdxHit(NULL)
   , fuNbOverMsPerTs(0)
+//  , fhElinkIdxTsMsb(NULL)
+//  , fhElinkIdxEpoch(NULL)
+//  , fhElinkIdxStatus(NULL)
 {
 }
 
@@ -133,7 +137,7 @@ void CbmMcbm2018MonitorAlgoMuchLite::Reset() {}
 
 void CbmMcbm2018MonitorAlgoMuchLite::Finish()
 {
-
+  //fhElinkIdx->Draw();
   LOG(info) << "-------------------------------------";
   LOG(info) << "CbmMcbm2018MonitorAlgoMuchLite statistics are ";
   LOG(info) << " Hit      messages: " << fmMsgCounter[stsxyter::MessType::Hit] << "\n"
@@ -144,7 +148,7 @@ void CbmMcbm2018MonitorAlgoMuchLite::Finish()
 
   LOG(info) << "-------------------------------------";
 
-  SaveAllHistos(fsHistoFileFullname);
+  //SaveAllHistos(fsHistoFileFullname);
   //SaveAllHistos();
 }
 
@@ -155,6 +159,10 @@ Bool_t CbmMcbm2018MonitorAlgoMuchLite::InitContainers()
   Bool_t bInit = InitMuchParameters();
   //LOG(info) << "bInit ok.";
   //if (kTRUE == bInit) CreateHistograms();
+  //fhElinkIdxHit = new TH1I("ElinkIdxHit", "Active Elink Ids for Hit Messages", 42, 0,41);
+  //fhElinkIdxTsMsb = new TH1I("ElinkIdxTsMsb", "Active Elink Ids for TsMsb", 42, 0,41);
+  //fhElinkIdxEpoch = new TH1I("ElinkIdxEpoch", "Active Elink Ids for Epoch", 42, 0,41);
+  //fhElinkIdxStatus = new TH1I("ElinkIdxStatus", "Active Elink Ids for Status", 42, 0,41);
 
   return bInit;
 }
@@ -438,6 +446,20 @@ Bool_t CbmMcbm2018MonitorAlgoMuchLite::CreateHistograms()
   fhMuchMessTypePerDpb->GetYaxis()->SetBinLabel(5, "Status");
   fhMuchMessTypePerDpb->GetYaxis()->SetBinLabel(6, "Empty");
 
+  sHistName              = "hMuchMessTypePerElink";
+  title                  = "Nb of message of each type for each Elink; Elink; Type";
+  fhMuchMessTypePerElink = new TH2I(sHistName, title, fuNrOfDpbs * fUnpackParMuch->GetNbElinkPerCrob(), 0,
+                                    fuNrOfDpbs * fUnpackParMuch->GetNbElinkPerCrob(), 6, 0., 6.);
+  fhMuchMessTypePerElink->GetYaxis()->SetBinLabel(1, "Dummy");
+  fhMuchMessTypePerElink->GetYaxis()->SetBinLabel(2, "Hit");
+  fhMuchMessTypePerElink->GetYaxis()->SetBinLabel(3, "TsMsb");
+  fhMuchMessTypePerElink->GetYaxis()->SetBinLabel(4, "Epoch");
+  fhMuchMessTypePerElink->GetYaxis()->SetBinLabel(5, "Status");
+  fhMuchMessTypePerElink->GetYaxis()->SetBinLabel(6, "Empty");
+
+
+  fhElinkIdxHit = new TH1I("ElinkIdxHit", "Active Elink Ids for Hit Messages", 42, 0, 41);
+
   for (UInt_t uModuleId = 0; uModuleId < 2; ++uModuleId) {
     /// Raw Ts Distribution
     sHistName = Form("HistPadDistr_Module_%01u", uModuleId);
@@ -494,6 +516,7 @@ Bool_t CbmMcbm2018MonitorAlgoMuchLite::CreateHistograms()
   sHistName             = "hMuchHitsElinkPerDpb";
   title                 = "Nb of hit messages per eLink for each DPB; DPB; eLink; Hits nb []";
   fhMuchHitsElinkPerDpb = new TH2I(sHistName, title, fuNrOfDpbs, 0, fuNrOfDpbs, 42, 0., 42.);
+
 
   LOG(debug) << "Initialized 2nd Histo";
   /*
@@ -566,7 +589,7 @@ Bool_t CbmMcbm2018MonitorAlgoMuchLite::CreateHistograms()
 
     sHistName = Form("fhMuchFebSpill_%03u", uFebIdx);
     title     = Form("Time distribution of hits, FEB #%03u; Time ; Counts ", uFebIdx);
-    fhMuchFebSpill.push_back(new TH1I(sHistName, title, 1000, 0, 1000));
+    fhMuchFebSpill.push_back(new TH1I(sHistName, title, 2000, 0, 2000));
 
 
     sHistName = Form("hMuchChannelTime_FEB%03u", uFebIdx);
@@ -700,20 +723,27 @@ Bool_t CbmMcbm2018MonitorAlgoMuchLite::CreateHistograms()
   // THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
   // if (server) {
   for (UInt_t uModuleId = 0; uModuleId < 2; ++uModuleId) {
-    // server->Register("/MuchRaw", fHistPadDistr[uModuleId] );
-    // server->Register("/MuchRaw", fRealHistPadDistr[uModuleId] );
+    //server->Register("/MuchRaw", fHistPadDistr[uModuleId] );
+    AddHistoToVector(fHistPadDistr[uModuleId], "MuchRaw");
+    //server->Register("/MuchRaw", fRealHistPadDistr[uModuleId] );
+    AddHistoToVector(fRealHistPadDistr[uModuleId], "MuchRaw");
     // server->Register("/MuchFeb", fhMuchFebDuplicateHitProf[uModuleId] );
   }
 
   //  server->Register("/MuchRaw", fhRate );
   //  server->Register("/MuchRaw", fhRateAdcCut );
   // server->Register("/MuchRaw", fhFEBcount); //closed by me
+  AddHistoToVector(fhFEBcount, "MuchRaw");
   AddHistoToVector(fhMuchMessType, "MuchRaw");
   // server->Register("/MuchRaw", fhMuchMessType); //closed by me
-  AddHistoToVector(fhMuchMessType, "MuchRaw");
+  AddHistoToVector(fhElinkIdxHit, "MuchRaw");
+  //AddHistoToVector(fhElinkIdxTsMsb, "MuchRaw");
+  //AddHistoToVector(fhElinkIdxEpoch, "MuchRaw");
+  //AddHistoToVector(fhElinkIdxStatus, "MuchRaw");
   // server->Register("/MuchRaw", fhMuchSysMessType );
   //server->Register("/MuchRaw", fhMuchMessTypePerDpb); //closed by me
   AddHistoToVector(fhMuchMessTypePerDpb, "MuchRaw");
+  AddHistoToVector(fhMuchMessTypePerElink, "MuchRaw");
   //server->Register("/MuchRaw", fhMuchSysMessTypePerDpb); //closed by me
   AddHistoToVector(fhMuchSysMessTypePerDpb, "MuchRaw");
   // server->Register("/MuchRaw", fhStatusMessType );
@@ -755,8 +785,9 @@ Bool_t CbmMcbm2018MonitorAlgoMuchLite::CreateHistograms()
 
     }  // if( kTRUE == fUnpackParMuch->IsFebActive( uFebIdx ) )
     //server->Register("/MuchRaw", fhDpbMsErrors); //closed by me
-    AddHistoToVector(fhDpbMsErrors, "MuchRaw");
+    //AddHistoToVector(fhDpbMsErrors, "MuchRaw");
   }  // for( UInt_t uFebIdx = 0; uFebIdx < fuNbFebs; ++uFebIdx )
+  AddHistoToVector(fhDpbMsErrors, "MuchRaw");
 
   //  LOG(debug) << "Initialized FEB  8th Histo";
   /*server->RegisterCommand("/Reset_All", "bMcbm2018ResetAlgoMuchLite=kTRUE");
@@ -1103,13 +1134,17 @@ Bool_t CbmMcbm2018MonitorAlgoMuchLite::ProcessMs(const fles::Timeslice& ts, size
         UShort_t usElinkIdx = mess.GetLinkIndex();
         /// => Quick and dirty hack for binning FW!!!
         if (kTRUE == fbBinningFw) usElinkIdx = mess.GetLinkIndexHitBinning();
-
+        fhElinkIdxHit->Fill(usElinkIdx);
+        //LOG(info) << "Elink Id" << usElinkIdx ;
         UInt_t uCrobIdx = usElinkIdx / fUnpackParMuch->GetNbElinkPerCrob();
         Int_t uFebIdx   = fUnpackParMuch->ElinkIdxToFebIdx(usElinkIdx);
         //            if(usElinkIdx!=0)
-        //LOG(info) <<" usElinkIdx "<<usElinkIdx<<" uCrobIdx "<<uCrobIdx<<" uFebIdx "<<uFebIdx;
+        LOG(debug) << " usElinkIdx " << usElinkIdx << " uCrobIdx " << uCrobIdx << " uFebIdx " << uFebIdx
+                   << " MessageTypeValue " << static_cast<uint16_t>(typeMess);
         if (kTRUE == fbMuchMode) uFebIdx = usElinkIdx;
         fhMuchHitsElinkPerDpb->Fill(fuCurrDpbIdx, usElinkIdx);
+        fhMuchMessTypePerElink->Fill(fuCurrDpbIdx * fUnpackParMuch->GetNbElinkPerCrob(),
+                                     static_cast<uint16_t>(typeMess));
         if (-1 == uFebIdx) {
           LOG(warning) << "CbmMcbm2018MonitorMuchLite::DoUnpack => "
                        << "Wrong elink Idx! Elink raw " << Form("%d remap %d", usElinkIdx, uFebIdx);
@@ -1124,10 +1159,18 @@ Bool_t CbmMcbm2018MonitorAlgoMuchLite::ProcessMs(const fles::Timeslice& ts, size
         break;
       }  // case stsxyter::MessType::Hit :
       case stsxyter::MessType::TsMsb: {
+
+        fhMuchMessTypePerElink->Fill(fuCurrDpbIdx * fUnpackParMuch->GetNbElinkPerCrob(),
+                                     static_cast<uint16_t>(typeMess));
+
         FillTsMsbInfo(mess, uIdx, uMsIdx);
         break;
       }  // case stsxyter::MessType::TsMsb :
       case stsxyter::MessType::Epoch: {
+
+        fhMuchMessTypePerElink->Fill(fuCurrDpbIdx * fUnpackParMuch->GetNbElinkPerCrob(),
+                                     static_cast<uint16_t>(typeMess));
+
         // The first message in the TS is a special ones: EPOCH
         FillEpochInfo(mess);
 
@@ -1148,6 +1191,13 @@ Bool_t CbmMcbm2018MonitorAlgoMuchLite::ProcessMs(const fles::Timeslice& ts, size
 
         // fhStatusMessType->Fill( uAsicIdx, usStatusField );
         /// Always print status messages... or not?
+        // UShort_t usElinkIdx = mess.GetLinkIndex();
+        /// => Quick and dirty hack for binning FW!!!
+        //if (kTRUE == fbBinningFw) usElinkIdx = mess.GetLinkIndexHitBinning();
+        // fhElinkIdxStatus->Fill(usElinkIdx);
+        fhMuchMessTypePerElink->Fill(fuCurrDpbIdx * fUnpackParMuch->GetNbElinkPerCrob(),
+                                     static_cast<uint16_t>(typeMess));
+
         if (fbPrintMessages) {
           std::cout << Form("DPB %2u TS %12llu MS %12llu mess %5u ", fuCurrDpbIdx, fulCurrentTsIdx, fulCurrentMsIdx,
                             uIdx);
@@ -1158,6 +1208,8 @@ Bool_t CbmMcbm2018MonitorAlgoMuchLite::ProcessMs(const fles::Timeslice& ts, size
       }  // case stsxyter::MessType::Status
       case stsxyter::MessType::Empty: {
         //                   FillTsMsbInfo( mess );
+        fhMuchMessTypePerElink->Fill(fuCurrDpbIdx * fUnpackParMuch->GetNbElinkPerCrob(),
+                                     static_cast<uint16_t>(typeMess));
         break;
       }  // case stsxyter::MessType::Empty :
       case stsxyter::MessType::EndOfMs: {
@@ -1183,72 +1235,25 @@ Bool_t CbmMcbm2018MonitorAlgoMuchLite::ProcessMs(const fles::Timeslice& ts, size
 }
 
 void CbmMcbm2018MonitorAlgoMuchLite::FillHitInfo(stsxyter::Message mess, const UShort_t& /*usElinkIdx*/,
-                                                 const UInt_t& uAsicIdx, const UInt_t& uMsIdx)
+                                                 const UInt_t& uAsicIdx, const UInt_t& /*uMsIdx*/)
 {
   UShort_t usChan   = mess.GetHitChannel();
   UShort_t usRawAdc = mess.GetHitAdc();
-  //   UShort_t usFullTs = mess.GetHitTimeFull();
-  //   UShort_t usTsOver = mess.GetHitTimeOver();
   UShort_t usRawTs = mess.GetHitTime();
-  //Below FebID is according to FEB Position in Module GEM A or Module GEM B (Carefully write MUCH Par file)
-  Int_t FebId = fUnpackParMuch->GetFebId(uAsicIdx);
 
   /// => Quick and dirty hack for binning FW!!!
   if (kTRUE == fbBinningFw) usRawTs = mess.GetHitTimeBinning();
-
-  //   UInt_t uFebIdx    = uAsicIdx / fUnpackParMuch->GetNbAsicsPerFeb();
+  //LOG(debug) << " AsicIdx " << uAsicIdx << " Channel Id " << usChan << " Adc " << usRawAdc << " Time " << usRawTs;
   //For MUCH each FEB has one StsXyter
   UInt_t uFebIdx = uAsicIdx;
-  //   UInt_t uCrobIdx   = usElinkIdx / fUnpackParMuch->GetNbElinkPerCrob();
-  //   UInt_t uAsicInFeb = uAsicIdx % fUnpackParMuch->GetNbAsicsPerFeb();
-  UInt_t uChanInFeb = usChan + fUnpackParMuch->GetNbChanPerAsic() * (uAsicIdx % fUnpackParMuch->GetNbAsicsPerFeb());
-  Int_t ModuleNr    = fUnpackParMuch->GetModule(uAsicIdx);
-  Int_t sector      = fUnpackParMuch->GetPadXA(FebId, usChan);
-  Int_t channel     = fUnpackParMuch->GetPadYA(FebId, usChan);
-
-  //Convert into Real X Y Position
-  //   Double_t ActualX = fUnpackParMuch->GetRealX(channel+97*sector);
-  //   Double_t ActualY = fUnpackParMuch->GetRealPadSize(channel+97*sector);
-  Double_t ActualX = fUnpackParMuch->GetRealX(channel, sector);
-  Double_t ActualY = fUnpackParMuch->GetRealPadSize(channel, sector);
-
-  //Converting Module (Small side up)
-  ActualX = 1000 - ActualX;
-  channel = 96 - channel;
-
-  LOG(debug) << "Module Nr " << ModuleNr << " Sector Nr " << sector << " Channel Nr " << channel << "Actual X "
-             << ActualX << "Actual Y " << ActualY << "uAsicIdx " << uAsicIdx;
-
-
-  //   fHistPadDistr[ModuleNr]->Fill(sector, channel);
-  //   fRealHistPadDistr[ModuleNr]->Fill(ActualY, ActualX);
-
-  //Double_t dCalAdc = fvdFebAdcOffs[ fuCurrDpbIdx ][ uCrobIdx ][ uFebIdx ]
-  //                  + (usRawAdc - 1)* fvdFebAdcGain[ fuCurrDpbIdx ][ uCrobIdx ][ uFebIdx ];
   fhFEBcount->Fill(uFebIdx);
-  //   fhMuchFebSpill[uFebIdx] ->Fill(usRawTs);
-  fhMuchFebChanCntRaw[uFebIdx]->Fill(uChanInFeb);
-  //   fhMuchFebChanAdcRaw[  uFebIdx ]->Fill( uChanInFeb, usRawAdc );
-  //  fhMuchFebChanAdcRawProf[  uFebIdx ]->Fill( uChanInFeb, usRawAdc );
-  //fhMuchFebChanAdcCal[  uFebIdx ]->Fill(     uChanInFeb, dCalAdc );
-  //fhMuchFebChanAdcCalProf[  uFebIdx ]->Fill( uChanInFeb, dCalAdc );
-  // fhMuchFebChanRawTs[   uFebIdx ]->Fill( usChan, usRawTs );
-  //fhMuchFebChanMissEvt[ uFebIdx ]->Fill( usChan, mess.IsHitMissedEvts() );
-  //  fhMuchFebChanAdcRaw_combined->Fill(usRawAdc);
 
-
+  fhMuchFebChanCntRaw[uFebIdx]->Fill(usChan);  //change the name of histogram
   fhMuchFebADC[uFebIdx]->Fill(usChan, usRawAdc);
-  // Compute the Full time stamp
-  //   ULong64_t ulOldHitTime = fvulChanLastHitTime[ uAsicIdx ][ usChan ]; // commented 03.07.20 FU unused
-  //   Long64_t dOldHitTime  = fvdChanLastHitTime[ uAsicIdx ][ usChan ];
-
-  // Use TS w/o overlap bits as they will anyway come from the TS_MSB
   fvulChanLastHitTime[uAsicIdx][usChan] = usRawTs;
-
   fvulChanLastHitTime[uAsicIdx][usChan] +=
     static_cast<ULong64_t>(stsxyter::kuHitNbTsBins) * static_cast<ULong64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
     + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBins) * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
-
   /// => Quick and dirty hack for binning FW!!!
   if (kTRUE == fbBinningFw)
     fvulChanLastHitTime[uAsicIdx][usChan] =
@@ -1257,35 +1262,10 @@ void CbmMcbm2018MonitorAlgoMuchLite::FillHitInfo(stsxyter::Message mess, const U
       + static_cast<ULong64_t>(stsxyter::kulTsCycleNbBinsBinning)
           * static_cast<ULong64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
 
-
   // Convert the Hit time in bins to Hit time in ns
-  Long64_t dHitTimeNs = fvulChanLastHitTime[uAsicIdx][usChan] * stsxyter::kdClockCycleNs;
+  // Long64_t dHitTimeNs = fvulChanLastHitTime[uAsicIdx][usChan] * stsxyter::kdClockCycleNs;
 
-  // Store new value of Hit time in ns
   fvdChanLastHitTime[uAsicIdx][usChan] = fvulChanLastHitTime[uAsicIdx][usChan] * stsxyter::kdClockCycleNs;
-  // For StsXyter2.0 Duplicate Hit Error
-  //Int_t ModuleNr = fUnpackParMuch->GetModule(uAsicIdx);
-  /*
-   fhMuchFebDuplicateHitProf[ModuleNr]->Fill(FebId,0);
-   if( ulOldHitTime == fvulChanLastHitTime[uAsicIdx][usChan] )
-  		     fhMuchFebDuplicateHitProf[ModuleNr]->Fill(FebId,1);
-*/
-
-  /*
-   LOG(info) << " Asic " << std::setw( 2 ) << uAsicIdx
-             << " Channel " << std::setw( 3 ) << usChan
-             << " Diff to last hit " << std::setw( 12 ) << ( fvulChanLastHitTime[ uAsicIdx ][ usChan ] - ulOldHitTime)
-             << " in s " << std::setw( 12 ) << ( fvdChanLastHitTime[ uAsicIdx ][ usChan ] - dOldHitTime) * 1e-9;
-*/
-  // Pulser and MS
-  fvuChanNbHitsInMs[uAsicIdx][usChan][uMsIdx]++;
-  fvdChanLastHitTimeInMs[uAsicIdx][usChan][uMsIdx] = dHitTimeNs;
-  fvusChanLastHitAdcInMs[uAsicIdx][usChan][uMsIdx] = usRawAdc;
-  /*
-   fvmChanHitsInTs[        uAsicIdx ][ usChan ].insert( stsxyter::FinalHit( fvulChanLastHitTime[ uAsicIdx ][ usChan ],
-                                                                            usRawAdc, uAsicIdx, usChan ) );
-*/
-  fvmHitsInMs.push_back(stsxyter::FinalHit(fvulChanLastHitTime[uAsicIdx][usChan], usRawAdc, uAsicIdx, usChan));
 
   // Check Starting point of histos with time as X axis
   if (-1 == fdStartTime) fdStartTime = fvdChanLastHitTime[uAsicIdx][usChan];
@@ -1303,46 +1283,42 @@ void CbmMcbm2018MonitorAlgoMuchLite::FillHitInfo(stsxyter::Message mess, const U
     Counter1     = 0;
     prevtime_new = fvdChanLastHitTime[uAsicIdx][usChan];
   }
-
-
   // Fill histos with time as X axis
   Double_t dTimeSinceStartSec = (fvdChanLastHitTime[uAsicIdx][usChan] - fdStartTime) * 1e-9;  //uTimeBin
-  //   Double_t dTimeSinceStartMin = dTimeSinceStartSec / 60.0;
-
-  fviFebCountsSinceLastRateUpdate[uFebIdx]++;
-  fvdFebChanCountsSinceLastRateUpdate[uFebIdx][uChanInFeb] += 1;
-
-  // fhMuchFebChanHitRateEvo[ uFebIdx ]->Fill( dTimeSinceStartSec, uChanInFeb );
-  //fhMuchFebAsicHitRateEvo[ uFebIdx ]->Fill( dTimeSinceStartSec, uAsicInFeb );
-  // fhMuchFebHitRateEvo[ uFebIdx ]->Fill( dTimeSinceStartSec );
-  // fhMuchFebHitRateEvo_mskch[ uFebIdx ]->Fill( dTimeSinceStartSec );
-  // if(usRawAdc>1)fhMuchFebHitRateEvo_mskch_adccut[ uFebIdx ]->Fill(     dTimeSinceStartSec );
-  //fhMuchFebChanHitRateEvoLong[ uFebIdx ]->Fill( dTimeSinceStartMin, uChanInFeb, 1.0/60.0 );
-  //fhMuchFebAsicHitRateEvoLong[ uFebIdx ]->Fill( dTimeSinceStartMin, uAsicInFeb,   1.0/60.0 );
-  //fhMuchFebHitRateEvoLong[ uFebIdx ]->Fill(     dTimeSinceStartMin,             1.0/60.0 );
-
+  /* LOG(info) << "fvul Hit Time " << fvulChanLastHitTime[uAsicIdx][usChan] << " clock cycle Ns " << stsxyter::kdClockCycleNs;
+  LOG(info) << "Last Hit Time " << fvdChanLastHitTime[uAsicIdx][usChan];
+  LOG(info) << "1st Hit Time " << fdStartTime; */
+  //LOG(info) << "Spill Time " << dTimeSinceStartSec;
   fhMuchFebSpill[uFebIdx]->Fill(dTimeSinceStartSec);
   fhMuchFebChanCntRaw[uFebIdx]->Fill(usChan);
   fhMuchChannelTime[uFebIdx]->Fill(dTimeSinceStartSec, usChan);
 
+  //---------------------------------------
+  /* Below code for Monitoring Trapezoidal shape of REAL GEM and RPC Module. RealX and RealY taken from par file. */
+  //Below FebID is according to FEB Position in Module GEM A or Module GEM B (Carefully write MUCH Par file)
   /*
-   if( mess.IsHitMissedEvts() )
-   {
-      fhMuchFebChanMissEvtEvo[ uFebIdx ]->Fill( dTimeSinceStartSec, uChanInFeb );
-      fhMuchFebAsicMissEvtEvo[ uFebIdx ]->Fill( dTimeSinceStartSec, uAsicInFeb );
-      fhMuchFebMissEvtEvo[ uFebIdx ]->Fill(     dTimeSinceStartSec );
-   } // if( mess.IsHitMissedEvts() )
-   //if(fvdChanLastHitTime[ uAsicIdx ][ usChan ] == prevTime && uAsicIdx == prevAsic && usChan == prevChan)
-   */
-  if (fvdChanLastHitTime[uAsicIdx][usChan] == prevTime && usChan == prevChan) {
-    //fDupliCount++;
-  }
-  else {
-    // fhMuchFebHitRateEvo_WithoutDupli[ uFebIdx ]->Fill( dTimeSinceStartSec );
-  }
-  prevTime = fvdChanLastHitTime[uAsicIdx][usChan];
-  prevChan = usChan;
-  prevAsic = uAsicIdx;
+  Int_t FebId = fUnpackParMuch->GetFebId(uAsicIdx);
+
+  //UInt_t uChanInFeb = usChan + fUnpackParMuch->GetNbChanPerAsic() * (uAsicIdx % fUnpackParMuch->GetNbAsicsPerFeb());
+  Int_t ModuleNr    = fUnpackParMuch->GetModule(uAsicIdx);
+  Int_t sector      = fUnpackParMuch->GetPadXA(FebId, usChan);
+  Int_t channel     = fUnpackParMuch->GetPadYA(FebId, usChan);
+
+  //Convert into Real X Y Position
+  Double_t ActualX = fUnpackParMuch->GetRealX(channel, sector);
+  Double_t ActualY = fUnpackParMuch->GetRealPadSize(channel, sector);
+
+  //Converting Module (Small side up)
+  ActualX = 1000 - ActualX;
+  channel = 96 - channel;
+
+  LOG(debug) << "Module Nr " << ModuleNr << " Sector Nr " << sector << " Channel Nr " << channel << "Actual X "
+             << ActualX << "Actual Y " << ActualY << "uAsicIdx " << uAsicIdx;
+
+  fHistPadDistr[ModuleNr]->Fill(sector, channel);
+  fRealHistPadDistr[ModuleNr]->Fill(ActualY, ActualX);
+  */
+  //----------------------------------------------------------
 }
 
 void CbmMcbm2018MonitorAlgoMuchLite::FillTsMsbInfo(stsxyter::Message mess, UInt_t /*uMessIdx*/, UInt_t /*uMsIdx*/)
@@ -1389,8 +1365,8 @@ void CbmMcbm2018MonitorAlgoMuchLite::SaveAllHistos(TString sFileName)
   gDirectory->cd("Much_Raw");
 
   for (UInt_t uModuleId = 0; uModuleId < 2; ++uModuleId) {
-    //  fHistPadDistr[uModuleId]->Write();
-    // fRealHistPadDistr[uModuleId]->Write();
+    fHistPadDistr[uModuleId]->Write();
+    fRealHistPadDistr[uModuleId]->Write();
     // fhMuchFebDuplicateHitProf[uModuleId]->Write();
   }
   //  fhRate->Write();

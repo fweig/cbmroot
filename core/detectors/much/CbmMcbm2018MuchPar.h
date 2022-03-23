@@ -5,7 +5,9 @@
 // -------------------------------------------------------------------------
 // -----            CbmMcbm2018MuchPar header file                      -----
 // -----            Created 25/07/17  by P.-A. Loizeau                  ----
-// -----            Modified 07/12/18  by A Kumar                        -----
+// -----            Modified 07/12/18  by A Kumar                       -----
+// -----            Modified 20/02/22  by Vikas Singhal                 -----
+// -----            Modified for 2 GEM and 1 RPC module                 -----
 // -------------------------------------------------------------------------
 
 #ifndef CBMMCBM2018MUCHPAR_H
@@ -58,12 +60,14 @@ public:
   /*UInt_t ElinkIdxToAsicIdxFebA( UInt_t uElink );
    UInt_t ElinkIdxToAsicIdxFebB( UInt_t uElink );*/
 
+  //Common Functions
   UInt_t GetNrOfDpbs() { return fuNrOfDpbs; }
   UInt_t GetDpbId(UInt_t uDpbIdx);
   UInt_t GetNrOfCrobs() { return fuNrOfDpbs * kuNbCrobsPerDpb; }
   UInt_t GetNrOfFebs() { return GetNrOfCrobs() * kuNbFebsPerCrob; }
   UInt_t GetNrOfAsics() { return GetNrOfFebs() * kuNbAsicsPerFeb; }
   //inline Int_t GetFebsIdsFromArray(Int_t i) { return fnFebsIdsArray[i]; }
+  //GEM Module Related Functions
   UInt_t GetNrOfFebsInGemA() { return fuFebsInGemA; }
   UInt_t GetNrOfFebsInGemB() { return fuFebsInGemB; }
   Int_t GetNrOfChannels() { return kuNbChanPerAsic; }
@@ -81,6 +85,10 @@ public:
 
   Double_t GetRealX(Int_t Channel, Int_t Sector);
   Double_t GetRealPadSize(Int_t Channel, Int_t Sector);
+  //RPC Module Related Functions
+  UInt_t GetNrOfFebsInRpc() { return fuFebsInRpc; }
+  Short_t GetPadXRpc(UShort_t febid, UShort_t channelid);
+  Short_t GetPadYRpc(UShort_t febid, UShort_t channelid);
 
   Bool_t IsCrobActive(UInt_t uDpbIdx, UInt_t uCrobIdx);
   Bool_t IsFebActive(UInt_t uFebInSystIdx);
@@ -90,7 +98,7 @@ private:
   /// Constants
   static const UInt_t kuNbCrobsPerDpb   = 1;    // Number of CROBs possible per DPB
   static const UInt_t kuNbElinksPerCrob = 42;   // Number of elinks in each CROB ?
-  static const UInt_t kuNbFebsPerCrob   = 6;    // Number of FEBs  connected to each CROB for mMuch 2019
+  static const UInt_t kuNbFebsPerCrob   = 9;    // Number of FEBs  connected to each CROB for mMuch 2022
   static const UInt_t kuNbAsicsPerFeb   = 1;    // Number of ASICs connected in each FEB for MUCH
   static const UInt_t kuNbChanPerAsic   = 128;  // Number of channels in each ASIC
   //   static constexpr UInt_t  kuCrobMapElinkFebA[ kuNbElinksPerCrob ] = {
@@ -110,10 +118,10 @@ private:
                                                            0x0002, 0x0002, 0x0002, 0x0002, 0x0003,
                                                            0x0003, 0x0003, 0x0003, 0x0003, 0x0004,
                                                            0x0004, 0x0004, 0x0004, 0x0004, 0x0005,
-                                                           0x0005, 0x0005, 0x0005, 0x0003, 0x0003,
-                                                           0x0003, 0x0003, 0x0003, 0x0004, 0x0004,
-                                                           0x0004, 0x0004, 0x0004, 0x0005, 0x0005,
-                                                           0x0005, 0x0005};  //! Map from eLink index to ASIC index within CROB ( 0 to kuNbFebsPerCrob * kuNbAsicPerFeb )
+                                                           0x0005, 0x0005, 0x0005, 0x0006, 0x0006,
+                                                           0x0006, 0x0006, 0x0006, 0x0007, 0x0007,
+                                                           0x0007, 0x0007, 0x0007, 0x0008, 0x0008,
+                                                           0x0008, 0x0008};  //! Map from eLink index to ASIC index within CROB ( 0 to kuNbFebsPerCrob * kuNbAsicPerFeb )
                                                                              /*
    const UInt_t  kuCrobMapElinkFebMuch[ kuNbElinksPerCrob ] = {
             0x001C, 0x001D, 0x001E, 0x001F, 0x0020, 0x0021,
@@ -138,15 +146,19 @@ private:
   TArrayI fiCrobActiveFlag;    // Array to hold the active flag for all CROBs, [ NbDpb * kuNbCrobPerDpb ]
   UInt_t fuFebsInGemA;         // Number of FEBs connected in GEM Module A
   UInt_t fuFebsInGemB;         // Number of FEBs connected in GEM Module B
+  UInt_t fuFebsInRpc;          // Number of FEBs connected in RPC Module
   TArrayI fnFebsIdsArrayGemA;  // Array to hold FEB IDs connected to GEM Module A
   TArrayI fnFebsIdsArrayGemB;  // Array to hold FEB IDs connected to GEM Module B
+  TArrayI fnFebsIdsArrayRpc;   // Array to hold FEB IDs connected to RPC Module
   TArrayI fChannelsToPadXA;    // Array which stores the corresponding x position of PAD of entire module A
   TArrayI fChannelsToPadYA;    // Array which stores the corresponding y position of PAD of entire module A
   TArrayI fChannelsToPadXB;    // Array which stores the corresponding x position of PAD of entire module B
   TArrayI fChannelsToPadYB;    // Array which stores the corresponding y position of PAD of entire module B
+  TArrayI fChannelsToPadXRpc;  // Array which stores the corresponding x position of PAD of RPC module
+  TArrayI fChannelsToPadYRpc;  // Array which stores the corresponding y position of PAD of RPC module
   TArrayD fRealX;              // Array which stores the Real X (starting 18.733 cm) position of PAD
   TArrayD fRealPadSize;        // Array which stores the Real Progressive size of each padX (starting .327 cm )
 
-  ClassDef(CbmMcbm2018MuchPar, 1);
+  ClassDef(CbmMcbm2018MuchPar, 2);
 };
 #endif  // CBMMCBM2018MUCHPAR_H
