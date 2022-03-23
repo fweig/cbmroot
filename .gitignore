@@ -9,3 +9,6 @@
 
 # Comment some single files
 Dart*.cfg
+
+# gdb Crash dumps
+**/core_dump_*
