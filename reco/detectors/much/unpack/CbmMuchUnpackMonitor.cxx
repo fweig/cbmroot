@@ -4,14 +4,13 @@
 
 #include "CbmMuchUnpackMonitor.h"
 
-#include "CbmQaCanvas.h"
-
 #include "MicrosliceDescriptor.hpp"
 
 #include <FairRun.h>
 #include <FairRunOnline.h>
 #include <Logger.h>
 
+#include "TCanvas.h"
 #include <RtypesCore.h>
 #include <TFile.h>
 #include <TH1.h>
@@ -73,18 +72,19 @@ Bool_t CbmMuchUnpackMonitor::CreateHistograms(CbmMuchUnpackPar* pUnpackPar)
   fhDigisTimeInRun->SetCanExtend(TH1::kAllAxes);
   AddHistoToVector(fhDigisTimeInRun, "");
 
-  fhVectorSize = new TH1I("fhVectorSize", "Size of the vector VS TS index; TS index; Size [bytes]", 10, 0, 10);
+  fhVectorSize = new TH1I("fhMuchVectorSize", "Size of the vector VS TS index; TS index; Size [bytes]", 10, 0, 10);
   fhVectorSize->SetCanExtend(TH1::kAllAxes);
   AddHistoToVector(fhVectorSize, "");
 
   fhVectorCapacity =
-    new TH1I("fhVectorCapacity", "Size of the vector VS TS index; TS index; Size [bytes]", 10000, 0., 10000.);
+    new TH1I("fhMuchVectorCapacity", "Size of the vector VS TS index; TS index; Size [bytes]", 10000, 0., 10000.);
   AddHistoToVector(fhVectorCapacity, "");
 
-  fhMsCntEvo = new TH1I("fhMsCntEvo", "; MS index [s]; Counts []", 600, 0.0, 600.0);
+  fhMsCntEvo = new TH1I("fhMuchMsCntEvo", "; MS index [s]; Counts []", 600, 0.0, 600.0);
   AddHistoToVector(fhMsCntEvo, "");
 
-  fhMsErrorsEvo = new TH2I("fhMsErrorsEvo", "; MS index [s]; Error type []; Counts []", 600, 0.0, 600.0, 4, -0.5, 3.5);
+  fhMsErrorsEvo =
+    new TH2I("fhMuchMsErrorsEvo", "; MS index [s]; Error type []; Counts []", 600, 0.0, 600.0, 4, -0.5, 3.5);
   AddHistoToVector(fhMsErrorsEvo, "");
 
   /// Hit rates evo per FEB in system
@@ -114,7 +114,7 @@ Bool_t CbmMuchUnpackMonitor::CreateHistograms(CbmMuchUnpackPar* pUnpackPar)
   AddHistoToVector(fhMuchStatusMessType, "");
 
   /// Timeslice counter ratio Plots
-  sHistName           = "hRawHitRatioPerFeb";
+  sHistName           = "hMuchRawHitRatioPerFeb";
   title               = "Proportion of digis over raw hits in each FEB; FEB []; digis/raw [Prct]";
   fhRawHitRatioPerFeb = new TProfile(sHistName, title, uNbFebs, -0.5, uNbFebs - 0.5);
   AddHistoToVector(fhRawHitRatioPerFeb, "");
@@ -128,20 +128,20 @@ Bool_t CbmMuchUnpackMonitor::CreateHistograms(CbmMuchUnpackPar* pUnpackPar)
   /// All histos per FEB: with channels or ASIC as axis!!
   for (UInt_t uFebIdx = 0; uFebIdx < uNbFebs; ++uFebIdx) {
     /// Timeslice counter ratio Plots
-    sHistName = Form("hRawChRatio_%03d", uFebIdx);
+    sHistName = Form("hMuchRawChRatio_%03d", uFebIdx);
     title = Form("Proportion of raw hits in each channel of FEB %2d; Channel []; Share of FEB raw msg [Prct]", uFebIdx);
     fvhRawChRatio.push_back(new TProfile(sHistName, title, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
-    sHistName = Form("hHitChRatio_%03d", uFebIdx);
+    sHistName = Form("hMuchHitChRatio_%03d", uFebIdx);
     title     = Form("Proportion of digis in each channel of FEB %2d; Channel []; Share of FEB digis [Prct]", uFebIdx);
     fvhHitChRatio.push_back(new TProfile(sHistName, title, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
-    sHistName = Form("hDupliChRatio_%03d", uFebIdx);
+    sHistName = Form("hMuchDupliChRatio_%03d", uFebIdx);
     title =
       Form("Proportion of duplicates in each channel of FEB %2d; Channel []; Share of FEB duplicates [Prct]", uFebIdx);
     fvhDupliChRatio.push_back(new TProfile(sHistName, title, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
-    sHistName = Form("hRawHitRatioPerCh_%03d", uFebIdx);
+    sHistName = Form("hMuchRawHitRatioPerCh_%03d", uFebIdx);
     title = Form("Proportion of digis over raw hits in each channel of FEB %2d; Channel []; digis/raw [Prct]", uFebIdx);
     fvhRawHitRatioPerCh.push_back(new TProfile(sHistName, title, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
-    sHistName = Form("hRawDupliRatioPerCh_%03d", uFebIdx);
+    sHistName = Form("hMuchRawDupliRatioPerCh_%03d", uFebIdx);
     title =
       Form("Proportion of duplicates over raw hits in each channel of FEB %2d; Channel []; dupli/raw [Prct]", uFebIdx);
     fvhRawDupliRatioPerCh.push_back(new TProfile(sHistName, title, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
@@ -282,7 +282,7 @@ Bool_t CbmMuchUnpackMonitor::CreateHistograms(CbmMuchUnpackPar* pUnpackPar)
   for (UInt_t uFebIdx = 0; uFebIdx < uNbFebs; ++uFebIdx) {
     // if (kTRUE == fUnpackParMuch->IsFebActive(uFebIdx)) {
     fvcMuchSumm[uFebIdx] =
-      new CbmQaCanvas(Form("cMuchSum_%03u", uFebIdx), Form("Summary plots for FEB %03u", uFebIdx), w, h);
+      new TCanvas(Form("cMuchSum_%03u", uFebIdx), Form("Summary plots for FEB %03u", uFebIdx), w, h);
     AddCanvasToVector(fvcMuchSumm[uFebIdx], "perFebCanvases");
 
     fvcMuchSumm[uFebIdx]->Divide(2, 3);
@@ -298,37 +298,37 @@ void CbmMuchUnpackMonitor::DrawCanvases()
     gPad->SetGridx();
     gPad->SetGridy();
     gPad->SetLogy();
-    fvhMuchFebChanCntRaw[uFebIdx]->DrawCopy();
+    fvhMuchFebChanCntRaw[uFebIdx]->Draw();
 
     //fvcMuchSumm[uFebIdx]->cd(2);
     //gPad->SetGridx();
     //gPad->SetGridy();
     //gPad->SetLogy();
-    //fvhMuchFebChanHitRateProf[uFebIdx]->DrawCopy("e0");
+    //fvhMuchFebChanHitRateProf[uFebIdx]->Draw("e0");
 
     fvcMuchSumm[uFebIdx]->cd(3);
     gPad->SetGridx();
     gPad->SetGridy();
     gPad->SetLogz();
-    fvhMuchFebChanAdcRaw[uFebIdx]->DrawCopy("colz");
+    fvhMuchFebChanAdcRaw[uFebIdx]->Draw("colz");
 
     fvcMuchSumm[uFebIdx]->cd(4);
     gPad->SetGridx();
     gPad->SetGridy();
     //gPad->SetLogy();
-    fvhMuchFebChanAdcRawProf[uFebIdx]->DrawCopy();
+    fvhMuchFebChanAdcRawProf[uFebIdx]->Draw();
 
     fvcMuchSumm[uFebIdx]->cd(5);
     gPad->SetGridx();
     gPad->SetGridy();
     gPad->SetLogz();
-    fvhMuchFebChanHitRateEvo[uFebIdx]->DrawCopy("colz");
+    fvhMuchFebChanHitRateEvo[uFebIdx]->Draw("colz");
 
     fvcMuchSumm[uFebIdx]->cd(6);
     gPad->SetGridx();
     gPad->SetGridy();
     //gPad->SetLogy();
-    fvhMuchFebChanMissEvt[uFebIdx]->DrawCopy("colz");
+    fvhMuchFebChanMissEvt[uFebIdx]->Draw("colz");
 
     // two following two are inactive as currently adc raw and cal are the same
 
@@ -336,27 +336,27 @@ void CbmMuchUnpackMonitor::DrawCanvases()
     //gPad->SetGridx();
     //gPad->SetGridy();
     //gPad->SetLogz();
-    //fvhMuchFebChanAdcCal[ uFebIdx ]->DrawCopy( "colz" );
+    //fvhMuchFebChanAdcCal[ uFebIdx ]->Draw( "colz" );
 
     //fvcMuchSumm[ uFebIdx ]->cd(6);
     //gPad->SetGridx();
     //gPad->SetGridy();
     //gPad->SetLogy();
-    //fvhMuchFebChanAdcCalProf[ uFebIdx ]->DrawCopy();
+    //fvhMuchFebChanAdcCalProf[ uFebIdx ]->Draw();
   }
 }
 
 Bool_t CbmMuchUnpackMonitor::CreateMsComponentSizeHistos(UInt_t component)
 {
   if (nullptr == fvhMsSize[component]) {
-    TString sMsSizeName  = Form("MsSize_link_%02u", component);
+    TString sMsSizeName  = Form("MuchMsSize_link_%02u", component);
     TString sMsSizeTitle = Form("Size of MS for nDPB of link %02u; Ms Size [bytes]", component);
     fvhMsSize[component] = new TH1F(sMsSizeName.Data(), sMsSizeTitle.Data(), 30000, 0., 30000.);
     fvhMsSize[component]->SetCanExtend(TH2::kAllAxes);
     AddHistoToVector(fvhMsSize[component], "perComponent");
   }
   if (nullptr == fvhMsSizeTime[component]) {
-    TString sMsSizeName      = Form("MsSizeTime_link_%02u", component);
+    TString sMsSizeName      = Form("MuchMsSizeTime_link_%02u", component);
     TString sMsSizeTitle     = Form("Size of MS vs time for gDPB of link %02u; Time[s] ; Ms Size [bytes]", component);
     fvhMsSizeTime[component] = new TProfile(sMsSizeName.Data(), sMsSizeTitle.Data(), 15000, 0., 300.);
     fvhMsSizeTime[component]->SetCanExtend(TH2::kAllAxes);
@@ -453,7 +453,7 @@ Bool_t CbmMuchUnpackMonitor::CreateDebugHistograms(CbmMuchUnpackPar* pUnpackPar)
   TString sHistName {""};
   TString title {""};
 
-  sHistName      = "hPulserMessageType";
+  sHistName      = "hMuchPulserMessageType";
   title          = "Nb of message for each type; Type";
   fhMuchMessType = new TH1I(sHistName, title, 6, 0., 6.);
   fhMuchMessType->GetXaxis()->SetBinLabel(1, "Dummy");
@@ -464,7 +464,7 @@ Bool_t CbmMuchUnpackMonitor::CreateDebugHistograms(CbmMuchUnpackPar* pUnpackPar)
   fhMuchMessType->GetXaxis()->SetBinLabel(6, "Empty");
   AddHistoToVector(fhMuchMessType, "");
 
-  sHistName            = "hPulserMessageTypePerDpb";
+  sHistName            = "hMuchPulserMessageTypePerDpb";
   title                = "Nb of message of each type for each DPB; DPB; Type";
   fhMuchMessTypePerDpb = new TH2I(sHistName, title, uNrOfDpbs, 0, uNrOfDpbs, 6, 0., 6.);
   fhMuchMessTypePerDpb->GetYaxis()->SetBinLabel(1, "Dummy");
@@ -511,37 +511,37 @@ Bool_t CbmMuchUnpackMonitor::CreateDebugHistograms(CbmMuchUnpackPar* pUnpackPar)
   AddHistoToVector(fhMuchDpbRawTsMsbDpb, "");
 
   /// Timeslice counter ratio Plots
-  sHistName              = "hRawHitRatioEvoPerFeb";
+  sHistName              = "hMuchRawHitRatioEvoPerFeb";
   title                  = "Proportion of digis over raw hits in each FEB; Time [s]; FEB []; digis/raw [Prct]";
   fhRawHitRatioEvoPerFeb = new TProfile2D(sHistName, title, 600, -0.5, 599.5, uNbFebs, -0.5, uNbFebs - 0.5);
   AddHistoToVector(fhRawHitRatioEvoPerFeb, "");
   for (uint32_t uFebIdx = 0; uFebIdx < uNbFebs; ++uFebIdx) {
-    sHistName = Form("hChDupliAdc_%03d", uFebIdx);
+    sHistName = Form("hMuchChDupliAdc_%03d", uFebIdx);
     title     = Form("ADC in duplicate raw in each channel of FEB %2d; Channel []; ADC []", uFebIdx);
     fvhChDupliAdc.push_back(new TH2I(sHistName, title, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5, 32, -0.5, 31.5));
 
-    sHistName = Form("hRawChRatioEvo_%03d", uFebIdx);
+    sHistName = Form("hMuchRawChRatioEvo_%03d", uFebIdx);
     title = Form("Proportion of raw hits in each channel of FEB %2d; Time [s]; Channel []; Share of FEB raw msg [Prct]",
                  uFebIdx);
     fvhRawChRatioEvo.push_back(
       new TProfile2D(sHistName, title, 600, -0.5, 599.5, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
-    sHistName = Form("hHitChRatioEvo_%03d", uFebIdx);
+    sHistName = Form("hMuchHitChRatioEvo_%03d", uFebIdx);
     title =
       Form("Proportion of digis in each channel of FEB %2d; Time [s]; Channel []; Share of FEB digis [Prct]", uFebIdx);
     fvhHitChRatioEvo.push_back(
       new TProfile2D(sHistName, title, 600, -0.5, 599.5, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
-    sHistName = Form("hDupliChRatioEvo_%03d", uFebIdx);
+    sHistName = Form("hMuchDupliChRatioEvo_%03d", uFebIdx);
     title =
       Form("Proportion of duplicates in each channel of FEB %2d; Time [s]; Channel []; Share of FEB duplicates [Prct]",
            uFebIdx);
     fvhDupliChRatioEvo.push_back(
       new TProfile2D(sHistName, title, 600, -0.5, 599.5, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
-    sHistName = Form("hRawHitRatioEvoPerCh_%03d", uFebIdx);
+    sHistName = Form("hMuchRawHitRatioEvoPerCh_%03d", uFebIdx);
     title = Form("Proportion of digis over raw hits in each channel of FEB %2d; Time [s]; Channel []; digis/raw [Prct]",
                  uFebIdx);
     fvhRawHitRatioEvoPerCh.push_back(
       new TProfile2D(sHistName, title, 600, -0.5, 599.5, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
-    sHistName = Form("hRawDupliRatioEvoPerCh_%03d", uFebIdx);
+    sHistName = Form("hMuchRawDupliRatioEvoPerCh_%03d", uFebIdx);
     title =
       Form("Proportion of duplicates over raw hits in each channel of FEB %2d; Time [s]; Channel []; dupli/raw [Prct]",
            uFebIdx);
@@ -875,23 +875,28 @@ Bool_t CbmMuchUnpackMonitor::Init(CbmMuchUnpackPar* parset)
   CreateHistograms(parset);
   if (fDebugMode) CreateDebugHistograms(parset);
 
+  /// Trigger Canvas creation on all associated monitors
+  DrawCanvases();
+
   /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
   std::vector<std::pair<TNamed*, std::string>> vHistos = GetHistoVector();
 
   /// Obtain vector of pointers on each canvas from the algo (+ optionally desired folder)
-  std::vector<std::pair<CbmQaCanvas*, std::string>> vCanvases = GetCanvasVector();
+  std::vector<std::pair<TCanvas*, std::string>> vCanvases = GetCanvasVector();
 
   /// Register the histos and canvases in the HTTP server
   THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
   if (nullptr != server) {
     for (UInt_t uCanvas = 0; uCanvas < vCanvases.size(); ++uCanvas) {
-      server->Register(Form("/%s", vCanvases[uCanvas].second.data()), vCanvases[uCanvas].first);
+      server->Register(Form("/much/%s", vCanvases[uCanvas].second.data()), vCanvases[uCanvas].first);
     }
     for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
-      server->Register(Form("/%s", vHistos[uHisto].second.data()), vHistos[uHisto].first);
+      server->Register(Form("/much/%s", vHistos[uHisto].second.data()), vHistos[uHisto].first);
     }
+    /*
     server->RegisterCommand("/Reset_UnpMuch_Hist", "bMcbm2018UnpackerTaskMuchResetHistos=kTRUE");
     server->Restrict("/Reset_UnpMuch_Hist", "allow=admin");
+*/
   }
 
   return kTRUE;
@@ -900,13 +905,11 @@ Bool_t CbmMuchUnpackMonitor::Init(CbmMuchUnpackPar* parset)
 // ---- Finish ----
 void CbmMuchUnpackMonitor::Finish()
 {
-  DrawCanvases();
-
   /// Obtain vector of pointers on each histo (+ optionally desired folder)
   std::vector<std::pair<TNamed*, std::string>> vHistos = GetHistoVector();
 
   /// Obtain vector of pointers on each canvas (+ optionally desired folder)
-  std::vector<std::pair<CbmQaCanvas*, std::string>> vCanvases = GetCanvasVector();
+  std::vector<std::pair<TCanvas*, std::string>> vCanvases = GetCanvasVector();
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;

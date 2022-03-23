@@ -43,7 +43,7 @@ std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
 /*
 uint32_t CbmMuchUnpackAlgo::getFebIndex(uint32_t dpbidx, uint32_t crobidx, uint16_t elinkidx)
 {
-  // This function generates FEB index between 0 to dpbidx * 9 NrAsicsPerCrob 
+  // This function generates FEB index between 0 to dpbidx * 9 NrAsicsPerCrob
   uint32_t asicidx       = fUnpackPar->ElinkIdxToFebIdx(elinkidx);
   const uint32_t uAsicIdx = (dpbidx * fNrCrobPerDpb + crobidx) * fNrAsicsPerCrob + asicidx;
   return uAsicIdx;
@@ -256,6 +256,10 @@ Bool_t CbmMuchUnpackAlgo::initParSet(CbmMuchUnpackPar* parset)
   LOG(debug) << "Unpacking data in bin sorter FW mode";
   initInternalStatus(parset);
 
+  if (fMonitor) {
+    fMonitor->Init(parset);
+    LOG(info) << fName << "::initParSet - Successfully initialized MUCH monitor";
+  }
 
   return kTRUE;
 }
@@ -566,7 +570,8 @@ void CbmMuchUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
     }
     const uint32_t uAsicInFeb       = uAsicIdx % fNrAsicsPerFeb;
     const double dTimeSinceStartSec = (dHitTimeNs - fdStartTime) * 1e-9;
-    const double dCalAdc            = fvdFebAdcOffs[uFebIdx] + (usRawAdc - 1) * fvdFebAdcGain[uFebIdx];
+    const double dCalAdc            = usRawAdc;
+    // const double dCalAdc            = fvdFebAdcOffs[uFebIdx] + (usRawAdc - 1) * fvdFebAdcGain[uFebIdx];
     fMonitor->FillHitMonitoringHistos(uFebIdx, usChan, uChanInFeb, usRawAdc, dCalAdc, usRawTs, mess.IsHitMissedEvts());
     fMonitor->FillHitEvoMonitoringHistos(uFebIdx, uAsicIdx, uAsicInFeb, uChanInFeb, dTimeSinceStartSec,
                                          mess.IsHitMissedEvts());
@@ -692,7 +697,7 @@ uint32_t CbmMuchUnpackAlgo::CreateMuchAddress(uint32_t dpbidx, uint32_t iFebId, 
   //         fDigiVect.push_back( CbmMuchDigi( address, itHitIn->GetAdc(), ulTimeInNs ) );
 
   /// With Beamtime MUCH digi
-  
+
   CbmMuchBeamTimeDigi* digi = new CbmMuchBeamTimeDigi(address, itHitIn->GetAdc(), ulTimeInNs);
   LOG(debug) << "Sector " << sSector << " channel " << sChannel << " layer " << layer << " Address " << address
              << " Time " << ulTimeInNs;

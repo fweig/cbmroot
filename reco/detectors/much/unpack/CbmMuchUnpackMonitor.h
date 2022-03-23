@@ -17,7 +17,7 @@
 
 #include "StsXyterMessage.h"
 
-class CbmQaCanvas;
+class TCanvas;
 
 class CbmMuchUnpackMonitor {
 public:
@@ -59,11 +59,11 @@ public:
   }
   std::vector<std::pair<TNamed*, std::string>> GetHistoVector() { return fvpAllHistoPointers; }
 
-  void AddCanvasToVector(CbmQaCanvas* pointer, std::string sFolder = "")
+  void AddCanvasToVector(TCanvas* pointer, std::string sFolder = "")
   {
-    fvpAllCanvasPointers.push_back(std::pair<CbmQaCanvas*, std::string>(pointer, sFolder));
+    fvpAllCanvasPointers.push_back(std::pair<TCanvas*, std::string>(pointer, sFolder));
   }
-  std::vector<std::pair<CbmQaCanvas*, std::string>> GetCanvasVector() { return fvpAllCanvasPointers; }
+  std::vector<std::pair<TCanvas*, std::string>> GetCanvasVector() { return fvpAllCanvasPointers; }
 
   void SetLongDurationLimits(UInt_t uDurationSeconds, UInt_t uBinSize)
   {
@@ -255,8 +255,8 @@ private:
   std::vector<std::vector<uint32_t>> fvvuNbDigisTsChan = {};
 
   /// Canvases
-  std::vector<CbmQaCanvas*> fvcMuchSumm;
-  std::vector<CbmQaCanvas*> fvcMuchSmxErr;
+  std::vector<TCanvas*> fvcMuchSumm;
+  std::vector<TCanvas*> fvcMuchSmxErr;
 
   ///General histograms
   TH1* fhDigisTimeInRun         = nullptr;
@@ -341,7 +341,7 @@ private:
   /// ===>    server->Register( vHistos[ uHisto ].second.data(), dynamic_cast< TH2 * >(vHistos[ uHisto ].first) );
   std::vector<std::pair<TNamed*, std::string>>
     fvpAllHistoPointers;  //! Vector of pointers to histograms + optional folder name
-  std::vector<std::pair<CbmQaCanvas*, std::string>>
+  std::vector<std::pair<TCanvas*, std::string>>
     fvpAllCanvasPointers;  //! Vector of pointers to canvases + optional folder name
 
   CbmMuchUnpackMonitor(const CbmMuchUnpackMonitor&);
