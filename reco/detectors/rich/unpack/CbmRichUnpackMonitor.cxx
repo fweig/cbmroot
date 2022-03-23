@@ -124,10 +124,12 @@ Bool_t CbmRichUnpackMonitor::Init(CbmMcbm2018RichPar* parset)
   THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
   if (nullptr != server) {
     for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
-      server->Register(Form("/%s", vHistos[uHisto].second.data()), vHistos[uHisto].first);
+      server->Register(Form("/rich/%s", vHistos[uHisto].second.data()), vHistos[uHisto].first);
     }
+    /*
     server->RegisterCommand("/Reset_UnpRich_Hist", "bMcbm2018UnpackerTaskRichResetHistos=kTRUE");
     server->Restrict("/Reset_UnpRich_Hist", "allow=admin");
+*/
   }
 
   return kTRUE;
