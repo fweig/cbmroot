@@ -14,5 +14,8 @@
 #pragma link C++ class CbmMuchHitProducerIdeal + ;
 #pragma link C++ class CbmMuchMatchTracks + ;
 #pragma link C++ class CbmMuchTrackFinderIdeal + ;
+#pragma link C++ class CbmMuchUnpackAlgo + ;
+#pragma link C++ class CbmMuchUnpackMonitor + ;
+#pragma link C++ class CbmMuchUnpackConfig + ;
 
 #endif

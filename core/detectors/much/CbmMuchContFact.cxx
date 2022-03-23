@@ -15,6 +15,7 @@
 
 #include "CbmGeoMuchPar.h"       // for CbmGeoMuchPar
 #include "CbmMcbm2018MuchPar.h"  // for CbmMcbm2018MuchPar
+#include "CbmMuchUnpackPar.h"    // for CbmMuchUnpackPar
 
 #include <FairContFact.h>   // for FairContainer
 #include <FairRuntimeDb.h>  // for FairRuntimeDb
@@ -55,6 +56,10 @@ void CbmMuchContFact::setAllContainers()
   FairContainer* beamPars = new FairContainer("CbmMcbm2018MuchPar", "Much at MCBM 2018 Unpack Parameters", "Default");
   beamPars->addContext("Default");
   containers->Add(beamPars);
+
+  FairContainer* unpackPars = new FairContainer("CbmMuchUnpackPar", "Much Generic Unpack Parameters", "Default");
+  beamPars->addContext("Default");
+  containers->Add(unpackPars);
 }
 
 FairParSet* CbmMuchContFact::createContainer(FairContainer* c)
@@ -71,10 +76,13 @@ FairParSet* CbmMuchContFact::createContainer(FairContainer* c)
   else if (strcmp(name, "CbmMcbm2018MuchPar") == 0) {
     p = new CbmMcbm2018MuchPar(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   }
+  else if (strcmp(name, "CbmMuchUnpackPar") == 0) {
+    p = new CbmMuchUnpackPar(c->getConcatName().Data(), c->GetTitle(), c->getContext());
+  }
 
   return p;
 }
-
+/*
 void CbmMuchContFact::activateParIo(FairParIo*)
 {
   // activates the input/output class for the parameters
@@ -88,3 +96,4 @@ void CbmMuchContFact::activateParIo(FairParIo*)
   //     io->setDetParIo(p);
   //   }
 }
+*/

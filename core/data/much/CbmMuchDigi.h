@@ -81,6 +81,12 @@ public:
   static const char* GetClassName() { return "CbmMuchDigi"; }
 
 
+  /** @brief Get the desired name of the branch for this obj in the cbm output tree  (static)
+   ** @return "MuchDigi"
+   **/
+  static const char* GetBranchName() { return "MuchDigi"; }
+
+
   uint16_t GetAdc() const { return fCharge; }
 
 

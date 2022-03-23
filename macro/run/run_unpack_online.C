@@ -33,6 +33,7 @@
 std::shared_ptr<CbmTrdUnpackMonitor> GetTrdMonitor(std::string treefilename, bool fasp = false);
 std::shared_ptr<CbmTrdSpadic> GetTrdSpadic(bool useAvgBaseline = false);
 std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename, bool bDebugMode = false);
+std::shared_ptr<CbmMuchUnpackMonitor> GetMuchMonitor(std::string treefilename, bool bDebugMode = false);
 std::shared_ptr<CbmRichUnpackMonitor> GetRichMonitor(std::string treefilename, bool bDebugMode = false);
 std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, bool bBmonMode = false);
 const char* defaultSetupName = "mcbm_beam_2021_07_surveyed";
@@ -127,7 +128,7 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     /// Enable duplicates rejection, Ignores the ADC for duplicates check
     stsconfig->SetDuplicatesRejection(true, true);
     /// Enable Monitor plots
-    //stsconfig->SetMonitor(GetStsMonitor(outfilename, true));
+    stsconfig->SetMonitor(GetStsMonitor(outfilename, true));
     stsconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
 
     stsconfig->SetMinAdcCut(1, 1);
@@ -179,6 +180,28 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
   }
   // -------------
 
+  // ---- MUCH ----
+  std::shared_ptr<CbmMuchUnpackConfig> muchconfig = nullptr;
+
+  muchconfig = std::make_shared<CbmMuchUnpackConfig>(std::string(setupName), runid);
+  if (muchconfig) {
+    // muchconfig->SetDebugState();
+    muchconfig->SetDoWriteOutput();
+    muchconfig->SetDoWriteOptOutA("MuchDigiPulser");
+    std::string parfilesbasepathMuch = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
+    muchconfig->SetParFilesBasePath(parfilesbasepathMuch);
+    /// Enable duplicates rejection, Ignores the ADC for duplicates check
+    muchconfig->SetDuplicatesRejection(true, true);
+    /// Enable Monitor plots
+    muchconfig->SetMonitor(GetMuchMonitor(outfilename, true));
+    muchconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
+
+    // muchconfig->SetMinAdcCut(1, 1);
+
+    // muchconfig->MaskNoisyChannel(3, 56);
+  }
+  // -------------
+
   // ---- TRD ----
   std::shared_ptr<CbmTrdUnpackConfig> trd1Dconfig = nullptr;
 
@@ -195,7 +218,7 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
 
     std::string parfilesbasepathTrd = Form("%s/parameters/trd", srcDir.Data());
     trd1Dconfig->SetParFilesBasePath(parfilesbasepathTrd);
-    // trd1Dconfig->SetMonitor(GetTrdMonitor(outfilename));
+    trd1Dconfig->SetMonitor(GetTrdMonitor(outfilename));
     // Get the spadic configuration true = avg baseline active / false plain sample 0
     trd1Dconfig->SetSpadicObject(GetTrdSpadic(true));
     trd1Dconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
@@ -243,7 +266,7 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     }
     tofconfig->SetParFilesBasePath(parfilesbasepathTof);
     tofconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
-    if (runid <= 1659 && runid < 2060) {
+    if (runid <= 1659) {
       /// Switch ON the -4 offset in epoch count (hack for Spring-Summer 2021)
       tofconfig->SetFlagEpochCountHack2021();
     }
@@ -292,6 +315,7 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
   if (psdconfig) unpack->SetUnpackConfig(psdconfig);
   if (richconfig) unpack->SetUnpackConfig(richconfig);
   if (stsconfig) unpack->SetUnpackConfig(stsconfig);
+  if (muchconfig) unpack->SetUnpackConfig(muchconfig);
   if (trd1Dconfig) unpack->SetUnpackConfig(trd1Dconfig);
   if (trdfasp2dconfig) unpack->SetUnpackConfig(trdfasp2dconfig);
   if (tofconfig) unpack->SetUnpackConfig(tofconfig);
@@ -456,6 +480,41 @@ std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename, boo
   // ------------------------------------------------------------------------
 
   auto monitor = std::make_shared<CbmStsUnpackMonitor>();
+  monitor->SetHistoFileName(outfilename);
+  monitor->SetDebugMode(bDebugMode);
+  return monitor;
+}
+
+/**
+ * @brief Get the Much Monitor. Extra function to keep default macro part more silent.
+ * @return std::shared_ptr<CbmMuchUnpackMonitor>
+*/
+std::shared_ptr<CbmMuchUnpackMonitor> GetMuchMonitor(std::string treefilename, bool bDebugMode = false)
+{
+  // -----   Output filename and path   -------------------------------------
+  std::string outpath  = "";
+  std::string filename = "";
+  auto filenamepos     = treefilename.find_last_of("/");
+  if (filenamepos != treefilename.npos) {
+    outpath  = treefilename.substr(0, filenamepos);
+    filename = treefilename.substr(filenamepos++);
+  }
+  if (outpath.empty()) outpath = gSystem->GetWorkingDirectory();
+
+  auto currentdir = gSystem->GetWorkingDirectory();
+
+  if (!gSystem->cd(outpath.data())) gSystem->MakeDirectory(outpath.data());
+  else
+    gSystem->cd(currentdir.data());
+
+  std::string outfilename = outpath + filename;
+  auto filetypepos        = outfilename.find(".digi.root");
+  if (filetypepos != outfilename.npos) outfilename.replace(filetypepos, 10, ".mon.much.root");
+  else
+    outfilename += ".mon.much.root";
+  // ------------------------------------------------------------------------
+
+  auto monitor = std::make_shared<CbmMuchUnpackMonitor>();
   monitor->SetHistoFileName(outfilename);
   monitor->SetDebugMode(bDebugMode);
   return monitor;

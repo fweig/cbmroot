@@ -7,7 +7,7 @@
  * @author  M. Ryzhinskiy <m.ryzhinskiy@gsi.de>
  * @version 0.0
  * @since   15.03.07
- * 
+ *
  *  Factory for the parameter containers for MUon CHambers detector
  *
  */
@@ -31,7 +31,7 @@ public:
   CbmMuchContFact();
   ~CbmMuchContFact() {}
   FairParSet* createContainer(FairContainer*);
-  void activateParIo(FairParIo* io);
+  //  void activateParIo(FairParIo* io);
   ClassDef(CbmMuchContFact, 0)  // Factory for all Much parameter containers
 };
 

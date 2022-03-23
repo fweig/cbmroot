@@ -20,6 +20,8 @@ public:
   virtual ~CbmTsEventHeader() {};
 
   /** @brief Add a number of digis from this Ts */
+  void AddNDigisMuch(uint64_t value) { fNDigisMuch += value; }
+  /** @brief Add a number of digis from this Ts */
   void AddNDigisPsd(uint64_t value) { fNDigisPsd += value; }
   /** @brief Add a number of digis from this Ts */
   void AddNDigisRich(uint64_t value) { fNDigisRich += value; }
@@ -34,6 +36,8 @@ public:
   /** @brief Add a number of digis from this Ts */
   void AddNDigisBmon(uint64_t value) { fNDigisBmon += value; }
 
+  /** @brief Get the number of digis in this Ts */
+  uint64_t GetNDigisMuch() const { return fNDigisMuch; }
   /** @brief Get the number of digis in this Ts */
   uint64_t GetNDigisPsd() const { return fNDigisPsd; }
   /** @brief Get the number of digis in this Ts */
@@ -57,6 +61,8 @@ public:
   /** @brief Resets counters and variables for a new Timeslice, e.g. the NDigis counter are set back to 0*/
   void Reset();
 
+  /** @brief Set the number of digis in this Ts */
+  void SetNDigisMuch(uint64_t value) { fNDigisMuch = value; }
   /** @brief Set the number of digis in this Ts */
   void SetNDigisPsd(uint64_t value) { fNDigisPsd = value; }
   /** @brief Set the number of digis in this Ts */
@@ -87,6 +93,8 @@ protected:
   /** Timeslice start time */
   uint64_t fTsStartTime = 0;
 
+  /** @brief nDigis in "this" timeslice measured by the MUCH */
+  uint64_t fNDigisMuch = 0;
   /** @brief nDigis in "this" timeslice measured by the PSD */
   uint64_t fNDigisPsd = 0;
   /** @brief nDigis in "this" timeslice measured by the RICH */

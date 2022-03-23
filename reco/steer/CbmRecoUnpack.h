@@ -13,6 +13,7 @@
 #define CBMRECOUNPACK_H 1
 
 #include "CbmBmonUnpackConfig.h"
+#include "CbmMuchUnpackConfig.h"
 #include "CbmPsdUnpackConfig.h"
 #include "CbmRichUnpackConfig.h"
 #include "CbmStsUnpackConfig.h"
@@ -112,6 +113,9 @@ public:
    * @param value
   */
   void SetMonitoringOnly(bool bIn = true) { bMonitoringOnly = bIn; }
+
+  /** @brief Set the Much Unpack Config @param config */
+  void SetUnpackConfig(std::shared_ptr<CbmMuchUnpackConfig> config) { fMuchConfig = config; }
 
   /** @brief Set the Psd Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmPsdUnpackConfig> config) { fPsdConfig = config; }
@@ -349,6 +353,9 @@ private:
   }
   // ----------------------------------------------------------------------------
 
+  /** @brief Configuration of the Much unpacker. Provides the configured algorithm */
+  std::shared_ptr<CbmMuchUnpackConfig> fMuchConfig = nullptr;  //!
+
   /** @brief Configuration of the Psd unpacker. Provides the configured algorithm */
   std::shared_ptr<CbmPsdUnpackConfig> fPsdConfig = nullptr;  //!
 
@@ -383,7 +390,7 @@ private:
   bool bMonitoringOnly = false;
 
 
-  ClassDef(CbmRecoUnpack, 2);
+  ClassDef(CbmRecoUnpack, 3);
 };
 
 

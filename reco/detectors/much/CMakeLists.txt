@@ -1,6 +1,7 @@
 Set(INCLUDE_DIRECTORIES
 ${CMAKE_CURRENT_SOURCE_DIR}
 ${CMAKE_CURRENT_SOURCE_DIR}/qa
+${CMAKE_CURRENT_SOURCE_DIR}/unpack
 
 ${CBMDETECTORBASE_DIR}/much
 
@@ -10,6 +11,7 @@ ${CBMROOT_SOURCE_DIR}/core/qa
 ${CBMBASE_DIR}
 
 ${CBMDATA_DIR}
+${CBMDATA_DIR}/raw
 ${CBMDATA_DIR}/much
 ${CBMDATA_DIR}/global
 ${CBMDATA_DIR}/base
@@ -19,6 +21,7 @@ Include_Directories( ${INCLUDE_DIRECTORIES})
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
   ${BASE_INCLUDE_DIRECTORIES}
+  ${IPC_INCLUDE_DIRECTORY} # for fles for unpacker
 )
 
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
@@ -40,6 +43,10 @@ CbmMuchMatchTracks.cxx
 CbmMuchTrackFinderIdeal.cxx
 
 qa/CbmMuchHitFinderQa.cxx
+
+unpack/CbmMuchUnpackAlgo.cxx
+unpack/CbmMuchUnpackMonitor.cxx
+unpack/CbmMuchUnpackConfig.cxx
 )
 
 set(LINKDEF CbmMuchRecoLinkDef.h)

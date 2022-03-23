@@ -21,6 +21,7 @@ set(INCLUDE_DIRECTORIES
 ${CBMROOT_SOURCE_DIR}/reco/steer
 ${CBMROOT_SOURCE_DIR}/reco/base
 
+${CBMROOT_SOURCE_DIR}/reco/detectors/much/unpack
 ${CBMROOT_SOURCE_DIR}/reco/detectors/psd
 ${CBMROOT_SOURCE_DIR}/reco/detectors/psd/unpack
 ${CBMROOT_SOURCE_DIR}/reco/detectors/rich/unpack
@@ -36,14 +37,15 @@ ${CBMROOT_SOURCE_DIR}/core/data
 ${CBMROOT_SOURCE_DIR}/core/qa
 ${CBMROOT_SOURCE_DIR}/core/data/raw
 ${CBMROOT_SOURCE_DIR}/core/data/base
+${CBMROOT_SOURCE_DIR}/core/data/much
 ${CBMROOT_SOURCE_DIR}/core/data/psd
 ${CBMROOT_SOURCE_DIR}/core/data/rich
 ${CBMROOT_SOURCE_DIR}/core/data/sts
 ${CBMROOT_SOURCE_DIR}/core/data/tof
 ${CBMROOT_SOURCE_DIR}/core/data/trd
-${CBMROOT_SOURCE_DIR}/core/data/much
 ${CBMROOT_SOURCE_DIR}/core/data/global
 
+${CBMROOT_SOURCE_DIR}/core/detectors/much
 ${CBMROOT_SOURCE_DIR}/core/detectors/psd
 ${CBMROOT_SOURCE_DIR}/core/detectors/rich
 ${CBMROOT_SOURCE_DIR}/core/detectors/sts

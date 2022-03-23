@@ -13,6 +13,7 @@ CbmTsEventHeader::CbmTsEventHeader() {}
 void CbmTsEventHeader::Reset()
 {
   // Reset the digi counters
+  fNDigisMuch  = 0;
   fNDigisPsd   = 0;
   fNDigisRich  = 0;
   fNDigisSts   = 0;

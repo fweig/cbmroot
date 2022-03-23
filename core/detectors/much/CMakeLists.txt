@@ -29,6 +29,7 @@ link_directories( ${LINK_DIRECTORIES})
 set(SRCS
 CbmGeoMuchPar.cxx
 CbmMcbm2018MuchPar.cxx
+CbmMuchUnpackPar.cxx
 CbmMuchContFact.cxx
 CbmMuchGeoScheme.cxx
 CbmMuchLayer.cxx

@@ -42,6 +42,7 @@ void CbmRecoUnpack::Finish()
   LOG(info) << "CbmRecoUnpack::Finish() I do let the unpackers talk first :\n";
 
   if (fPsdConfig) fPsdConfig->GetUnpacker()->Finish();
+  if (fMuchConfig) fMuchConfig->GetUnpacker()->Finish();
   if (fRichConfig) fRichConfig->GetUnpacker()->Finish();
   if (fStsConfig) fStsConfig->GetUnpacker()->Finish();
   if (fTofConfig) fTofConfig->GetUnpacker()->Finish();
@@ -97,6 +98,18 @@ Bool_t CbmRecoUnpack::Init()
     fStsConfig->InitAlgo();
     initPerformanceMaps(fkFlesSts, "STS");
   }
+
+  // --- Much
+  if (fMuchConfig) {
+    fMuchConfig->InitOutput();
+    RegisterOutputs(ioman, fMuchConfig);  /// Framework bound work = kept in this Task
+    fMuchConfig->SetAlgo();
+    initParContainers(fMuchConfig->GetParContainerRequest());  /// Framework bound work = kept in this Task
+    fMuchConfig->InitAlgo();
+    initPerformanceMaps(fkFlesMuch, "RICH");
+  }
+
+
   // --- Tof
   if (fTofConfig) {
     fTofConfig->InitOutput();
@@ -254,6 +267,8 @@ void CbmRecoUnpack::Reset()
 
   // Reset the unpackers for a new timeslice, e.g. clear the output vectors
 
+  // ----Much ----
+  if (fMuchConfig) fMuchConfig->Reset();
   // ---- Psd ----
   if (fPsdConfig) fPsdConfig->Reset();
   // ---- Rich ----
@@ -290,6 +305,14 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
     auto systemId = static_cast<std::uint16_t>(ts->descriptor(component, 0).sys_id);
 
     switch (systemId) {
+      case fkFlesMuch: {
+        if (fMuchConfig) {
+          fCbmTsEventHeader->AddNDigisMuch(unpack(systemId, &timeslice, component, fMuchConfig,
+                                                  fMuchConfig->GetOptOutAVec(), fMuchConfig->GetOptOutBVec()));
+        }
+        break;
+      }
+
       case fkFlesPsd: {
         if (fPsdConfig) {
           fCbmTsEventHeader->AddNDigisPsd(unpack(systemId, &timeslice, component, fPsdConfig,
@@ -348,6 +371,7 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
 
   if (!bMonitoringOnly && bOutputFullTimeSorting) {
     /// Time sort the output vectors of all unpackers present
+    if (fMuchConfig && fMuchConfig->GetOutputVec()) { timesort(fMuchConfig->GetOutputVec()); }
     if (fPsdConfig && fPsdConfig->GetOutputVec()) { timesort(fPsdConfig->GetOutputVec()); }
     if (fRichConfig && fRichConfig->GetOutputVec()) { timesort(fRichConfig->GetOutputVec()); }
     if (fStsConfig && fStsConfig->GetOutputVec()) { timesort(fStsConfig->GetOutputVec()); }
@@ -357,6 +381,7 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
     if (fBmonConfig && fBmonConfig->GetOutputVec()) { timesort(fBmonConfig->GetOutputVec()); }
 
     /// Time sort the output vectors of all unpackers present
+    if (fMuchConfig && fMuchConfig->GetOptOutAVec()) { timesort(fMuchConfig->GetOptOutAVec()); }
     if (fPsdConfig && fPsdConfig->GetOptOutAVec()) { timesort(fPsdConfig->GetOptOutAVec()); }
     if (fRichConfig && fRichConfig->GetOptOutAVec()) { timesort(fRichConfig->GetOptOutAVec()); }
     if (fStsConfig && fStsConfig->GetOptOutAVec()) { timesort(fStsConfig->GetOptOutAVec()); }
