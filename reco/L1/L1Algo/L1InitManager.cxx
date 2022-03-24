@@ -9,10 +9,11 @@
  ***********************************************************************************************************/
 
 #include "L1InitManager.h"
-#include "L1Assert.h"
 
 #include <algorithm>
 #include <sstream>
+
+#include "L1Assert.h"
 //-----------------------------------------------------------------------------------------------------------------------
 //
 L1InitManager::L1InitManager(L1Parameters* pParameters) : fpParameters(pParameters) {}
@@ -23,16 +24,16 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
 {
   // Check if other fields were defined already
   // Active detector IDs
-  
-  L1MASSERT(0, fInitController.GetFlag(InitKey::keActiveDetectorIDs), 
+
+  L1MASSERT(0, fInitController.GetFlag(InitKey::keActiveDetectorIDs),
             "Attempt to add a station info before the active detetors set had been initialized");
 
   // Number of stations check
-  L1MASSERT(0, fInitController.GetFlag(InitKey::keStationsNumberCrosscheck), 
+  L1MASSERT(0, fInitController.GetFlag(InitKey::keStationsNumberCrosscheck),
             "Attempt to add a station info before the numbers of stations for each detector had been initialized");
 
   // Field function
-  L1MASSERT(0, fInitController.GetFlag(InitKey::keFieldFunction), 
+  L1MASSERT(0, fInitController.GetFlag(InitKey::keFieldFunction),
             "Attempt to add a station info before the magnetic field function had been intialized");
 
   // Check activeness of this station type
@@ -49,9 +50,9 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
                  << inStation.GetInitController().ToString();
       std::stringstream aStream;
       aStream << "Attempt to add an incompletely initialized station info object (detectorID = "
-              << static_cast<int>(inStationCopy.GetDetectorID())
-              << ", stationID = " << inStationCopy.GetStationID() << ")";
-      L1MASSERT(0, inStationCopy.GetInitController().IsFinalized(), aStream.str().c_str()); 
+              << static_cast<int>(inStationCopy.GetDetectorID()) << ", stationID = " << inStationCopy.GetStationID()
+              << ")";
+      L1MASSERT(0, inStationCopy.GetInitController().IsFinalized(), aStream.str().c_str());
     }
     // insert the station in a set
     auto insertionResult = fStationsInfo.insert(std::move(inStationCopy));
@@ -59,8 +60,8 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
     {
       std::stringstream aStream;
       aStream << "Attempt to add a dublicating station info object (detectorID = "
-              << static_cast<int>(inStationCopy.GetDetectorID())
-              << ", stationID = " << inStationCopy.GetStationID() << ")";
+              << static_cast<int>(inStationCopy.GetDetectorID()) << ", stationID = " << inStationCopy.GetStationID()
+              << ")";
       L1MASSERT(0, insertionResult.second, aStream.str().c_str());
     }
   }
@@ -98,12 +99,13 @@ void L1InitManager::InitTargetField(double zStep)
   }
 
   // Check for field function
-  L1MASSERT(0, fInitController.GetFlag(InitKey::keFieldFunction), 
+  L1MASSERT(0, fInitController.GetFlag(InitKey::keFieldFunction),
             "Attempt to initialze the field value and field region near target before initializing field function");
 
   // Check for target defined
-  L1MASSERT(0, fInitController.GetFlag(InitKey::keTargetPos), 
-            "Attempt to initialize the field value and field region near target before the target position initialization");
+  L1MASSERT(
+    0, fInitController.GetFlag(InitKey::keTargetPos),
+    "Attempt to initialize the field value and field region near target before the target position initialization");
 
   constexpr int nDimensions {3};
   constexpr int nPointsNodal {3};
@@ -150,7 +152,7 @@ void L1InitManager::PrintStations(int verbosityLevel) const
 void L1InitManager::PushBackCAIteration(const L1CAIteration& iteration)
 {
   // TODO: probably some checks must be inserted here (S.Zharko)
-  L1MASSERT(0, fInitController.GetFlag(InitKey::keCAIterationsNumberCrosscheck), 
+  L1MASSERT(0, fInitController.GetFlag(InitKey::keCAIterationsNumberCrosscheck),
             "Attempt to push back a CA track finder iteration before the number of iterations was defined");
 
   L1Vector<L1CAIteration>& iterationsContainer = fpParameters->CAIterationsContainer();
@@ -308,16 +310,15 @@ void L1InitManager::CheckStationsInfoInit()
       }
     }  // loop over active detectors: end
     L1MASSERT(0, ifInitPassed, "Station info initialization failed");
-    
+
     //
     // 2) Check for maximum allowed number of stations
     //
     int nStationsTotal = GetStationsNumber();
     if (nStationsTotal > L1Parameters::kMaxNstations) {
       std::stringstream aStream;
-      aStream << "Actual total number of registered stations (" << nStationsTotal
-              << ") is larger then designed one (" << L1Parameters::kMaxNstations
-              << "). Please, select another set of active tracking detectors";
+      aStream << "Actual total number of registered stations (" << nStationsTotal << ") is larger then designed one ("
+              << L1Parameters::kMaxNstations << "). Please, select another set of active tracking detectors";
       // TODO: We have to provide an instruction of how to increase the kMaxNstations
       //       number keeping the code consistent (S.Zharko)
       ifInitPassed = false;

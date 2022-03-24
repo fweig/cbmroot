@@ -22,7 +22,7 @@
 
 #include "FairLogger.h"
 
-#if defined(NDEBUG) || defined(L1_NO_ASSERT) // TODO: Do we need to add FAST_CODE here? (S.Zharko)
+#if defined(NDEBUG) || defined(L1_NO_ASSERT)  // TODO: Do we need to add FAST_CODE here? (S.Zharko)
 #define L1ASSERT(LEVEL, COND)
 #define L1MASSERT(LEVEL, COND, MSG)
 #else
@@ -42,11 +42,11 @@ namespace L1Assert
   {
     if (!condition) {
       LOG(fatal) << '\n'
-                 << " ***** Level " << level << " assertion failed: " << '\n' 
+                 << " ***** Level " << level << " assertion failed: " << '\n'
                  << " *****   message/condition : " << msg << '\n'
                  << " *****   file:               " << fileName << '\n'
                  << " *****   line:               " << lineNo;
-      std::abort(); // keep it here, because sometimes LOG(fatal) does not work (for example, in your tester)
+      std::abort();  // keep it here, because sometimes LOG(fatal) does not work (for example, in your tester)
     }
     return 1;
   }
