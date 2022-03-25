@@ -59,7 +59,7 @@
  **/
 void run_tra_beam(Int_t nEvents = 1, const char* species = "Au", Double_t beamP = 12., Double_t beamStartZ = -1.,
                   const char* output = "beam", const char* setup = "sis100_electron", ECbmEngine engine = kGeant3,
-                  int randomSeed = 0, Bool_t overwrite = kFALSE)
+                  int randomSeed = 0, Bool_t overwrite = kTRUE)
 {
 
   // --- Logger settings ----------------------------------------------------
@@ -138,16 +138,10 @@ void run_tra_beam(Int_t nEvents = 1, const char* species = "Au", Double_t beamP 
   // ------------------------------------------------------------------------
 
   // -----  Target properties -----------------------------------------------
-  Double_t targetZpos = -40.0;
-  // The target position is at z=0 for the old coordinate system but is intended
-  // to be moved to -4cm in the DEC21 release. The global coordinate system will
-  // also shift from the old target position to the center of the magnet which
-  // is a net displacement of -40 cm. In terms of the new coordainte system
-  // the target is therefore to be at -44 cm. In order not to cause forgetting
-  // we will automate the shifting process for a short time, until the full move
-  // has been completed.
-  if (strstr(setup, "_APR21")) targetZpos = 0.0;
-  if (strstr(setup, "_DEC21")) targetZpos = -44.0;
+  Double_t targetZpos = -44.0;
+  // According to a Technical Board decision in April 2020, the target is
+  // moved upstream by 4cm. The target is therefore 44cm from the centre of
+  // the magnet.
   std::cout << "Target is at " << targetZpos << "cm from origin" << std::endl;
   // ------------------------------------------------------------------------
 

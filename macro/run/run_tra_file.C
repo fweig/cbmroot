@@ -70,7 +70,7 @@
  **/
 void run_tra_file(const char* input = "", Int_t nEvents = 1, const char* output = "",
                   const char* setup = "sis100_electron", ECbmEngine engine = kGeant3, int randomSeed = 0,
-                  Bool_t overwrite = kFALSE)
+                  Bool_t overwrite = kTRUE)
 {
 
   // --- Logger settings ----------------------------------------------------
@@ -112,16 +112,8 @@ void run_tra_file(const char* input = "", Int_t nEvents = 1, const char* output 
   Double_t targetThickness = 0.025;  // in cm
   Double_t targetDiameter  = 2.5;    // in cm
 
-  Double_t targetZpos = -40.0;
-  // The target position is at z=0 for the old coordinate system but is intended
-  // to be moved to -4cm in the DEC21 release. The global coordinate system will
-  // also shift from the old target position to the center of the magnet which
-  // is a net displacement of -40 cm. In terms of the new coordainte system
-  // the target is therefore to be at -44 cm. In order not to cause forgetting
-  // we will automate the shifting process for a short time, until the full move
-  // has been completed.
-  if (strstr(setup, "_APR21")) targetZpos = 0.0;
-  if (strstr(setup, "_DEC21")) targetZpos = -44.0;
+  Double_t targetZpos = -44.0;
+  // The target is at -44 cm from the centre of the magnet.
   std::cout << "Target is at " << targetZpos << "cm from origin" << std::endl;
   // ------------------------------------------------------------------------
 
