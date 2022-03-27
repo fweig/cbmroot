@@ -42,7 +42,6 @@ void mcbm_reco(Int_t nEvents = 10, TString dataset = "data/test", TString sEvBui
   // ------------------------------------------------------------------------
 
   Int_t iTofCluMode = 1;
-  Int_t iTrackMode  = 1;
 
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
@@ -317,112 +316,104 @@ void mcbm_reco(Int_t nEvents = 10, TString dataset = "data/test", TString sEvBui
   // -----   Track reconstruction   ------------------------------------------
   Double_t beamWidthX = 0.1;
   Double_t beamWidthY = 0.1;
-  switch (iTrackMode) {
-    case 1: {
-      Int_t iGenCor        = 1;
-      Double_t dScalFac    = 1.;
-      Double_t dChi2Lim2   = 3.5;
-      TString cTrkFile     = Form("%s_tofFindTracks.hst.root", "MC");
-      Int_t iTrackingSetup = 1;
+  Int_t iGenCor        = 1;
+  Double_t dScalFac    = 1.;
+  Double_t dChi2Lim2   = 3.5;
+  TString cTrkFile     = Form("%s_tofFindTracks.hst.root", "MC");
+  Int_t iTrackingSetup = 1;
 
-      CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
-      tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm
-      tofTrackFinder->SetTxLIM(0.3);                 // max slope dx/dz
-      tofTrackFinder->SetTyLIM(0.3);                 // max dev from mean slope dy/dz
-      tofTrackFinder->SetTyMean(0.);                 // mean slope dy/dz
-      CbmTofTrackFitter* tofTrackFitter = new CbmTofTrackFitterKF(0, 211);
-      TFitter* MyFit                    = new TFitter(1);  // initialize Minuit
-      tofTrackFinder->SetFitter(tofTrackFitter);
-      CbmTofFindTracks* tofFindTracks = new CbmTofFindTracks("TOF Track Finder");
-      tofFindTracks->UseFinder(tofTrackFinder);
-      tofFindTracks->UseFitter(tofTrackFitter);
-      tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
-      tofFindTracks->SetTtTarg(0.041);     // target value for inverse velocity, > 0.033 ns/cm!
-      //tofFindTracks->SetTtTarg(0.035);                // target value for inverse velocity, > 0.033 ns/cm!
-      tofFindTracks->SetCalParFileName(cTrkFile);  // Tracker parameter value file name
-      tofFindTracks->SetBeamCounter(5, 0, 0);      // default beam counter
-      tofFindTracks->SetStationMaxHMul(30);        // Max Hit Multiplicity in any used station
+  CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
+  tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm
+  tofTrackFinder->SetTxLIM(0.3);                 // max slope dx/dz
+  tofTrackFinder->SetTyLIM(0.3);                 // max dev from mean slope dy/dz
+  tofTrackFinder->SetTyMean(0.);                 // mean slope dy/dz
+  CbmTofTrackFitter* tofTrackFitter = new CbmTofTrackFitterKF(0, 211);
+  TFitter* MyFit                    = new TFitter(1);  // initialize Minuit
+  tofTrackFinder->SetFitter(tofTrackFitter);
+  CbmTofFindTracks* tofFindTracks = new CbmTofFindTracks("TOF Track Finder");
+  tofFindTracks->UseFinder(tofTrackFinder);
+  tofFindTracks->UseFitter(tofTrackFitter);
+  tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
+  tofFindTracks->SetTtTarg(0.041);     // target value for inverse velocity, > 0.033 ns/cm!
+  //tofFindTracks->SetTtTarg(0.035);                // target value for inverse velocity, > 0.033 ns/cm!
+  tofFindTracks->SetCalParFileName(cTrkFile);  // Tracker parameter value file name
+  tofFindTracks->SetBeamCounter(5, 0, 0);      // default beam counter
+  tofFindTracks->SetStationMaxHMul(30);        // Max Hit Multiplicity in any used station
 
-      tofFindTracks->SetT0MAX(dScalFac);           // in ns
-      tofFindTracks->SetSIGT(0.08);                // default in ns
-      tofFindTracks->SetSIGX(0.3);                 // default in cm
-      tofFindTracks->SetSIGY(0.45);                // default in cm
-      tofFindTracks->SetSIGZ(0.05);                // default in cm
-      tofFindTracks->SetUseSigCalib(kFALSE);       // ignore resolutions in CalPar file
-      tofTrackFinder->SetSIGLIM(dChi2Lim2 * 2.);   // matching window in multiples of chi2
-      tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
+  tofFindTracks->SetT0MAX(dScalFac);           // in ns
+  tofFindTracks->SetSIGT(0.08);                // default in ns
+  tofFindTracks->SetSIGX(0.3);                 // default in cm
+  tofFindTracks->SetSIGY(0.45);                // default in cm
+  tofFindTracks->SetSIGZ(0.05);                // default in cm
+  tofFindTracks->SetUseSigCalib(kFALSE);       // ignore resolutions in CalPar file
+  tofTrackFinder->SetSIGLIM(dChi2Lim2 * 2.);   // matching window in multiples of chi2
+  tofTrackFinder->SetChiMaxAccept(dChi2Lim2);  // max tracklet chi2
 
-      Int_t iMinNofHits   = -1;
-      Int_t iNStations    = 0;
-      Int_t iNReqStations = 3;
-      switch (iTrackingSetup) {
-        case 0:  // bypass mode
-          iMinNofHits = -1;
-          iNStations  = 1;
-          tofFindTracks->SetStation(0, 5, 0, 0);  // Diamond
-          break;
-        case 1:  // for calibration mode of full setup
-          iMinNofHits = 3;
-          //          iNStations    = 39;
-          iNStations    = 26;
-          iNReqStations = 3;
-          tofFindTracks->SetStation(0, 5, 0, 0);
-          tofFindTracks->SetStation(1, 0, 2, 2);
-          tofFindTracks->SetStation(2, 0, 1, 2);
-          tofFindTracks->SetStation(3, 0, 0, 2);
-          tofFindTracks->SetStation(4, 0, 2, 1);
-          tofFindTracks->SetStation(5, 0, 1, 1);
-          tofFindTracks->SetStation(6, 0, 0, 1);
-          tofFindTracks->SetStation(7, 0, 2, 3);
-          tofFindTracks->SetStation(8, 0, 1, 3);
-          tofFindTracks->SetStation(9, 0, 0, 3);
-          tofFindTracks->SetStation(10, 0, 2, 0);
-          tofFindTracks->SetStation(11, 0, 1, 0);
-          tofFindTracks->SetStation(12, 0, 0, 0);
-          tofFindTracks->SetStation(13, 0, 2, 4);
-          tofFindTracks->SetStation(14, 0, 1, 4);
-          tofFindTracks->SetStation(15, 0, 0, 4);
-          tofFindTracks->SetStation(16, 0, 4, 0);
-          tofFindTracks->SetStation(17, 0, 3, 0);
-          tofFindTracks->SetStation(18, 0, 4, 1);
-          tofFindTracks->SetStation(19, 0, 3, 1);
-          tofFindTracks->SetStation(20, 0, 4, 2);
-          tofFindTracks->SetStation(21, 0, 3, 2);
-          tofFindTracks->SetStation(22, 0, 4, 3);
-          tofFindTracks->SetStation(23, 0, 3, 3);
-          tofFindTracks->SetStation(24, 0, 4, 4);
-          tofFindTracks->SetStation(25, 0, 3, 4);
+  Int_t iMinNofHits   = -1;
+  Int_t iNStations    = 0;
+  Int_t iNReqStations = 3;
+  switch (iTrackingSetup) {
+    case 0:  // bypass mode
+      iMinNofHits = -1;
+      iNStations  = 1;
+      tofFindTracks->SetStation(0, 5, 0, 0);  // Diamond
+      break;
+    case 1:  // for calibration mode of full setup
+      iMinNofHits = 3;
+      //          iNStations    = 39;
+      iNStations    = 26;
+      iNReqStations = 3;
+      tofFindTracks->SetStation(0, 5, 0, 0);
+      tofFindTracks->SetStation(1, 0, 2, 2);
+      tofFindTracks->SetStation(2, 0, 1, 2);
+      tofFindTracks->SetStation(3, 0, 0, 2);
+      tofFindTracks->SetStation(4, 0, 2, 1);
+      tofFindTracks->SetStation(5, 0, 1, 1);
+      tofFindTracks->SetStation(6, 0, 0, 1);
+      tofFindTracks->SetStation(7, 0, 2, 3);
+      tofFindTracks->SetStation(8, 0, 1, 3);
+      tofFindTracks->SetStation(9, 0, 0, 3);
+      tofFindTracks->SetStation(10, 0, 2, 0);
+      tofFindTracks->SetStation(11, 0, 1, 0);
+      tofFindTracks->SetStation(12, 0, 0, 0);
+      tofFindTracks->SetStation(13, 0, 2, 4);
+      tofFindTracks->SetStation(14, 0, 1, 4);
+      tofFindTracks->SetStation(15, 0, 0, 4);
+      tofFindTracks->SetStation(16, 0, 4, 0);
+      tofFindTracks->SetStation(17, 0, 3, 0);
+      tofFindTracks->SetStation(18, 0, 4, 1);
+      tofFindTracks->SetStation(19, 0, 3, 1);
+      tofFindTracks->SetStation(20, 0, 4, 2);
+      tofFindTracks->SetStation(21, 0, 3, 2);
+      tofFindTracks->SetStation(22, 0, 4, 3);
+      tofFindTracks->SetStation(23, 0, 3, 3);
+      tofFindTracks->SetStation(24, 0, 4, 4);
+      tofFindTracks->SetStation(25, 0, 3, 4);
 
-          /*
-          tofFindTracks->SetStation(26, 9, 0, 0);
-          tofFindTracks->SetStation(27, 9, 0, 1);
-          tofFindTracks->SetStation(28, 7, 0, 0);
-          tofFindTracks->SetStation(29, 6, 0, 0);
-          tofFindTracks->SetStation(30, 6, 0, 1);
-          tofFindTracks->SetStation(31, 8, 0, 0);
-          tofFindTracks->SetStation(32, 8, 0, 1);
-          tofFindTracks->SetStation(33, 8, 0, 2);
-          tofFindTracks->SetStation(34, 8, 0, 3);
-          tofFindTracks->SetStation(35, 8, 0, 4);
-          tofFindTracks->SetStation(36, 8, 0, 5);
-          tofFindTracks->SetStation(37, 8, 0, 6);
-          tofFindTracks->SetStation(38, 8, 0, 7);
-          */
+      /*
+      tofFindTracks->SetStation(26, 9, 0, 0);
+      tofFindTracks->SetStation(27, 9, 0, 1);
+      tofFindTracks->SetStation(28, 7, 0, 0);
+      tofFindTracks->SetStation(29, 6, 0, 0);
+      tofFindTracks->SetStation(30, 6, 0, 1);
+      tofFindTracks->SetStation(31, 8, 0, 0);
+      tofFindTracks->SetStation(32, 8, 0, 1);
+      tofFindTracks->SetStation(33, 8, 0, 2);
+      tofFindTracks->SetStation(34, 8, 0, 3);
+      tofFindTracks->SetStation(35, 8, 0, 4);
+      tofFindTracks->SetStation(36, 8, 0, 5);
+      tofFindTracks->SetStation(37, 8, 0, 6);
+      tofFindTracks->SetStation(38, 8, 0, 7);
+      */
 
-          break;
-      }
-      tofFindTracks->SetMinNofHits(iMinNofHits);
-      tofFindTracks->SetNStations(iNStations);
-      tofFindTracks->SetNReqStations(iNReqStations);
-      tofFindTracks->PrintSetup();
-      // run->AddTask(tofFindTracks);
-    } break;
-    default: {
-      CbmBinnedTrackerTask* trackerTask = new CbmBinnedTrackerTask(kTRUE, beamWidthX, beamWidthY);
-      trackerTask->SetUse(ECbmModuleId::kTrd, kFALSE);
-      // run->AddTask(trackerTask);
-    }
+      break;
   }
+  tofFindTracks->SetMinNofHits(iMinNofHits);
+  tofFindTracks->SetNStations(iNStations);
+  tofFindTracks->SetNReqStations(iNReqStations);
+  tofFindTracks->PrintSetup();
+  // run->AddTask(tofFindTracks);
+
   // ------------------------------------------------------------------------
 
 
