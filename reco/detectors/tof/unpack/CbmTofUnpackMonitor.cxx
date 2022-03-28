@@ -920,7 +920,7 @@ void CbmTofUnpackMonitor::DrawBmonCanvases()
     fvhBmonChannelMapSpill[uSpill]->Draw();
     gPad->Update();
     TPaveStats* st = (TPaveStats*) fvhBmonChannelMapSpill[uSpill]->FindObject("stats");
-    st->SetOptStat(10);
+    st->SetOptStat(110);
     st->SetX1NDC(0.25);
     st->SetX2NDC(0.95);
     st->SetY1NDC(0.90);

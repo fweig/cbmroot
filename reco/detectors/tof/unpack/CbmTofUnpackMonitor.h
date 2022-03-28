@@ -154,7 +154,7 @@ private:
   /// Map from electronics channel to BMon strip
   /// 2022 mapping: Y[0-3] on c0, Y[4-7] on c1, X[0-3] on c2, X[4-7] on c3
   /// Y not cabled for diamond but pulser there
-  UInt_t fuBmonChanMap[kuNbChanBmon] = {8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7};
+  UInt_t fuBmonChanMap[kuNbChanBmon] = {8, 9, 10, 11, 12, 13, 14, 15, 4, 5, 6, 7, 0, 1, 2, 3};
 
   /// MS size histograms
   TH1* fvhMsSize[kuMaxNbFlibLinks];

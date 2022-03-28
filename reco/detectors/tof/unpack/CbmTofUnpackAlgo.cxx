@@ -454,11 +454,7 @@ void CbmTofUnpackAlgo::ProcessHit(const critof001::Message& mess)
     return;  // Hit not mapped to digi
   }
 
-  /// Apply offset to T0 only to TOF digis
-  if (0x90 != fuCurrentMsSysId) {
-    /// Tricking clang to avoid one liner
-    dHitTime -= fSystemTimeOffset;
-  }
+  dHitTime -= fSystemTimeOffset;
 
   if (fbEpochCountHack2021) {
     /// FIXME: seems there is an offset of +4 Epoch between data and header
