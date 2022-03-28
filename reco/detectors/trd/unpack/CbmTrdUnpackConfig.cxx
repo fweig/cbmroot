@@ -42,6 +42,10 @@ void CbmTrdUnpackConfig::SetAlgo()
   if (fDoLog) LOG(info) << fName << "::Init - SetParFilesBasePath";
   algo->SetParFilesBasePath(fParFilesBasePath);
 
+  // Set the global system time offset
+  if (fDoLog) LOG(info) << fName << "::SetAlgo - SetSystemTimeOffset";
+  algo->SetSystemTimeOffset(fSystemTimeOffset);
+
   // If we have a monitor in the config add it to the algo
   if (fMonitor) algo->SetMonitor(fMonitor);
 
