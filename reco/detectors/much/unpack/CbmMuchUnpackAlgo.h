@@ -19,7 +19,6 @@
 
 
 #include "CbmErrorMessage.h"  // REMARK see remark in CbmMuchUnpackConfig
-#include "CbmMcbm2018MuchPar.h"
 #include "CbmMuchDigi.h"
 #include "CbmMuchUnpackMonitor.h"
 #include "CbmMuchUnpackPar.h"
@@ -94,6 +93,14 @@ public:
 
   /** @brief Set a predefined monitor @param monitor predefined unpacking monitor */
   void SetMonitor(std::shared_ptr<CbmMuchUnpackMonitor> monitor) { fMonitor = monitor; }
+
+  /**
+   * @brief Sets the name of the parameter file to be used.
+   *
+   * @param[in] std:string, path should not be included as set in the Config class
+  */
+  void SetParFileName(std::string sNewName) { fParFileName = sNewName; }
+
 
 protected:
   /**
@@ -190,7 +197,7 @@ protected:
 
   /** @brief experts please add description here */
   void refreshTsMsbFields(const uint32_t imslice, const size_t mstime);
-  uint32_t CreateMuchAddress(uint32_t dpbidx, uint32_t febId, uint32_t usChan);
+  uint32_t CreateMuchAddress(uint32_t dpbidx, int32_t febId, uint32_t usChan);
 
   /**
    * @brief Set the Derived Ts Parameters
@@ -335,7 +342,9 @@ private:
   uint64_t fuSkippMessNoValidAddress     = 0;
   uint64_t fuSkippMessNoValidFebPosition = 0;
   uint64_t fuSkippMessNoValidElink       = 0;
-  ClassDef(CbmMuchUnpackAlgo, 1)
+  /// Settings from parameter file
+  std::string fParFileName = "mMuchPar.par";
+  ClassDef(CbmMuchUnpackAlgo, 2)
 };
 
 #endif  // CbmMuchUnpackAlgo_H

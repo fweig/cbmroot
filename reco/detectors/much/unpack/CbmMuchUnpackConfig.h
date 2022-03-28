@@ -105,6 +105,14 @@ public:
   /** @brief Add a monitor to the unpacker. @param value CbmMuchUnpackMonitor */
   void SetMonitor(std::shared_ptr<CbmMuchUnpackMonitor> value) { fMonitor = value; }
 
+  /**
+    * @brief Sets the name of the parameter file to be used.
+    *
+    * @param[in] std:string, path should not be included as set in the Config class
+  */
+  void SetParFileName(std::string sNewName) { fsParFileName = sNewName; }
+  void LoadParFileName() { fAlgo->SetParFileName(fsParFileName); }
+
 
 protected:
   /**
@@ -135,8 +143,11 @@ protected:
   /// Temporary storage of user parameters
   std::vector<FebChanMaskReco> fvChanMasks = {};
 
+  /// Parameter file name
+  std::string fsParFileName = "mTofCriPar.par";
+
 private:
-  ClassDef(CbmMuchUnpackConfig, 1)
+  ClassDef(CbmMuchUnpackConfig, 2)
 };
 
 #endif  // CbmMuchUnpackConfig_H

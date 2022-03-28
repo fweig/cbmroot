@@ -466,11 +466,6 @@ void CbmMuchUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
     fuSkippMessNoValidElink++;
     return;
   }
-  //uFebIdx +=  ( fuCurrDpbIdx * fNrCrobPerDpb + ____CrobIndexCalculationIfNeeded___() ) * fuNbFebsPerCrob;
-  //uncomment below line if kuNbCrobsPerDpb > 1
-  //uFebIdx += (fuCurrDpbIdx * fNrCrobPerDpb) * fNrFebsPerCrob;  //no Crob index calculation for now
-
-
   const uint16_t usChan     = mess.GetHitChannel();
   const uint16_t usRawAdc   = mess.GetHitAdc();
   const uint16_t usRawTs    = mess.GetHitTimeBinning();
@@ -478,6 +473,11 @@ void CbmMuchUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
 
   // Compute the Full time stamp
   const uint64_t ulHitTime = getFullTimeStamp(usRawTs);
+
+  //uFebIdx +=  ( fuCurrDpbIdx * fNrCrobPerDpb + ____CrobIndexCalculationIfNeeded___() ) * fuNbFebsPerCrob;
+  //uncomment below line if kuNbCrobsPerDpb > 1
+  //uFebIdx += (fuCurrDpbIdx * fNrCrobPerDpb) * fNrFebsPerCrob;  //no Crob index calculation for now
+
 
   if (fMonitor) fMonitor->CountRawHit(uFebIdx, uChanInFeb);
 
@@ -534,6 +534,12 @@ void CbmMuchUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
                  << uFebIdx << " Channnel Id " << uChanInFeb;
       if (address) {
         /// Prevent Clang from onlining
+        // Storing Pulser FEB Data in another output stream (pulser feb gives -7 )
+        if (-7 == uFebIdx) {
+          //presently for Pulser Output CbmMuchDigi address is 0
+          fOptOutAVec->emplace_back(CbmMuchDigi(address, usRawAdc, ulTimeInNs));
+          return;
+        }  // if (-7 == uFebIdx)
         fOutputVec.emplace_back(CbmMuchDigi(address, usRawAdc, ulTimeInNs));
       }
       else {
@@ -541,7 +547,7 @@ void CbmMuchUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
         fuSkippMessNoValidAddress++;
       }
       /// Catch the pulser digis and either save them to their own output or drop them
-      ///Commented below 6 lines as we do not use FebPulser Vector
+      //Commented below 6 lines as we do not use FebPulser Vector
       //if (fvbFebPulser[uFebIdx]) {
       //  if (fOptOutAVec) {
       //    fOptOutAVec->emplace_back(CbmMuchDigi(address, usRawAdc, ulTimeInNs));
@@ -580,13 +586,18 @@ void CbmMuchUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
 
 //---------------CreateMuchDigi -------
 //To do address need to be checked carefully
-uint32_t CbmMuchUnpackAlgo::CreateMuchAddress(uint32_t dpbidx, uint32_t iFebId, uint32_t usChan)
+uint32_t CbmMuchUnpackAlgo::CreateMuchAddress(uint32_t dpbidx, int32_t iFebId, uint32_t usChan)
 {
   // For generating Station number (GEM1 station = 0, GEM2 station = 1 and RPC station = 2)
   /// Below FebID is according to FEB Position in Module GEM A or Module GEM B (Carefully write MUCH Par file)
   int32_t station = -1;
   int32_t layer   = -1;
-  if (dpbidx == 0 || dpbidx == 1 || dpbidx == 2)  //First 3 DPBs are for GEM-1
+  if (iFebId == -7)  //Pulser FEB
+  {
+    station = 6;  // for Pulser
+    layer   = 0;  //
+  }
+  else if (dpbidx == 0 || dpbidx == 1 || dpbidx == 2)  //First 3 DPBs are for GEM-1
   {
     station = 0;  // for mCBM setup
     layer   = 0;  // Station 0 for GEM-A and station 1 for Module GEM-B
