@@ -22,5 +22,6 @@
 #pragma link C++ class CbmQaHist < TH1I> + ;
 #pragma link C++ class CbmQaHist < TProfile> + ;
 #pragma link C++ class CbmQaHist < TProfile2D> + ;
+#pragma link C++ class CbmQaTable + ;
 
 #endif

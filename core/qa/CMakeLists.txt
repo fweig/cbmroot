@@ -22,12 +22,14 @@ set(SRCS
 CbmQaCanvas.cxx
 CbmQaPie.cxx
 CbmQaHist.cxx
+CbmQaTable.cxx
 )
 
 set(HEADERS
 CbmQaCanvas.h
 CbmQaPie.h
 CbmQaHist.h
+CbmQaTable.h
 )
 
 set(LINKDEF CbmQaBaseLinkDef.h)
