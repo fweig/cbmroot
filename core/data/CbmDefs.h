@@ -12,9 +12,10 @@
 #ifndef CBMDEFS_H
 #define CBMDEFS_H 1
 
-#include <type_traits>   // for underlying_type
+#include <type_traits>  // for underlying_type
 
 #include <iostream>  // for ostream
+#include <string>
 
 // Convert an element of enum class to its underlying intergral type
 // since with C++11 the return type can't be deduced automatically it has
@@ -76,6 +77,10 @@ ECbmModuleId& operator++(ECbmModuleId&);
 // Converts the enum value to a string which is put in the stream
 std::ostream& operator<<(std::ostream&, const ECbmModuleId&);
 
+// conversion functions between ECbmModuleId and std::string
+std::string ToString(ECbmModuleId modId);
+ECbmModuleId ToCbmModuleId(std::string modIdStr);
+ECbmModuleId ToCbmModuleIdCaseInsensitive(std::string modIdStr);
 
 /** Enumerator for CBM data types **/
 enum class ECbmDataType
