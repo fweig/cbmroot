@@ -115,7 +115,9 @@ void run_tra_file_sis18(const char* input = "", Int_t nEvents = 1, const char* o
   Double_t targetThickness = 0.025;  // in cm
   Double_t targetDiameter  = 2.5;    // in cm
 
-  Double_t targetZpos = -12.5;  // SIS18 setup with 5 layers of STS
+  Double_t targetZpos = 12.5;  // SIS18 5 cm upstream of 4th STS station
+  //  Double_t targetZpos = 7.0;  // SIS18 location of 3rd STS station
+  //  Double_t targetZpos = -12.5;  // SIS18 30 cm upstream of 4th STS station
   //  Double_t targetZpos = -44.0;
   // The target position is at z=0 for the old coordinate system but is intended
   // to be moved to -4cm in the DEC21 release. The global coordinate system will
@@ -124,8 +126,8 @@ void run_tra_file_sis18(const char* input = "", Int_t nEvents = 1, const char* o
   // the target is therefore to be at -44 cm. In order not to cause forgetting
   // we will automate the shifting process for a short time, until the full move
   // has been completed.
-  if (strstr(setup, "_APR21")) targetZpos = 0.0;
-  if (strstr(setup, "_DEC21")) targetZpos = -44.0;
+  //  if (strstr(setup, "_APR21")) targetZpos = 0.0;
+  //  if (strstr(setup, "_DEC21")) targetZpos = -44.0;
   std::cout << "Target is at " << targetZpos << "cm from origin" << std::endl;
   // ------------------------------------------------------------------------
 
@@ -220,7 +222,7 @@ void SetTrack(CbmTransport* run, Double_t beamRotY, Int_t pdgid, Double_t x, Dou
 {
   TVector3 v;
   v.SetXYZ(x, y, z);
-  //  v.RotateY(-beamRotY * acos(-1.) / 180.);
+  v.RotateY(-beamRotY * acos(-1.) / 180.);
   cout << "X " << v.X() << " Y " << v.Y() << " Z " << v.Z() << endl;
 
   run->AddInput(new FairParticleGenerator(pdgid, 1, v.X(), v.Y(), v.Z()));  // single electron along beam axis
