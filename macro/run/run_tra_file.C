@@ -2,6 +2,8 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Volker Friese [committer] */
 
+// clang-format off
+
 /** @file run_tra_file.C
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 3 November 2020
@@ -158,12 +160,15 @@ void run_tra_file(const char* input = "", Int_t nEvents = 1, const char* output 
   run.SetEngine(engine);
   if (inFile.Contains("pluto", TString::kIgnoreCase)) { run.AddInput(inFile, kPluto); }
   else
-    run.AddInput(inFile, kUnigen);
+  run.AddInput(inFile, kUnigen);
   run.SetOutFileName(outFile, overwrite);
   run.SetParFileName(parFile);
   run.SetGeoFileName(geoFile);
   run.LoadSetup(setup);
+  if (!(run.GetSetup())->IsActive(ECbmModuleId::kTarget)) {
+  std::cout << "Target being generated in tra macro" << std::endl;
   run.SetTarget(targetMedium, targetThickness, targetDiameter, 0, 0, targetZpos);
+  };
   run.SetBeamPosition(beamPosX, beamPosY, beamSigmaX, beamSigmaY);
   if (rotateEvents) run.SetRandomEventPlane();
   run.SetRandomSeed(randomSeed);
