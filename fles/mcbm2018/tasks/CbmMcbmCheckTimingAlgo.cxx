@@ -62,7 +62,7 @@ Bool_t CbmMcbmCheckTimingAlgo::Init()
   /// Try to get the 2021 Event header which is containing the Timeslice info
   /// If not present, we have "old" data and will simply catch it with the nullptr value
   auto eh = FairRun::Instance()->GetEventHeader();
-  LOG(info) << "CbmMcbmCheckTimingAlgo => EventHeader ptr: " << eh << " " << eh->IsA();
+  LOG(info) << "CbmMcbmCheckTimingAlgo => EventHeader ptr: " << eh << " (" << eh->IsA()->GetName() << ")";
   fCbmTsEventHeader = dynamic_cast<CbmTsEventHeader*>(eh);
   if (nullptr != fCbmTsEventHeader) {
     LOG(info) << "CbmMcbmCheckTimingAlgo => Using the index from the TS Event header for Evo plots";
@@ -134,7 +134,7 @@ void CbmMcbmCheckTimingAlgo::CreateHistos()
         new TH2F(Form("h%s%sDiffEvo%d", (*det).sName.data(), fRefDet.sName.data(), i),
                  Form("%s(%s) - %s;TS; time diff [ns];Counts", (*det).sName.data(), (*det).vName[i].data(),
                       fRefDet.sName.data()),
-                 1000, 0, 10000, (*det).uRangeNbBins, (*det).dTimeRangeBeg, (*det).dTimeRangeEnd));
+                 10000, -0.5, 10000 - 0.5, (*det).uRangeNbBins, (*det).dTimeRangeBeg, (*det).dTimeRangeEnd));
 
       fvhDetToRefDiffEvoLong[(*det).detId].push_back(
         new TH2F(Form("h%s%sDiffEvoLong%d", (*det).sName.data(), fRefDet.sName.data(), i),
@@ -179,7 +179,8 @@ Bool_t CbmMcbmCheckTimingAlgo::ReInit() { return kTRUE; }
 // ---- Exec ----------------------------------------------------------
 void CbmMcbmCheckTimingAlgo::ProcessTs()
 {
-  LOG(debug) << "executing TS " << fuNbTs;
+  LOG(info) << "executing TS " << fuNbTs << " index ["
+            << (fCbmTsEventHeader != nullptr ? fCbmTsEventHeader->GetTsIndex() : -1) << "]";
 
   switch (fRefDet.detId) {
     case ECbmModuleId::kSts: {

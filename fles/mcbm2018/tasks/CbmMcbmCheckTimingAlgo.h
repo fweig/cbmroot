@@ -43,7 +43,7 @@ public:
   UInt_t uChargeCutMax =
     0;  /// Charge cut used for example to reject/select pulser, no effect if equal, select if min < max, reject if max < min
   UInt_t uNdiv                   = 1;  /// No of subdivisions for ech detector
-  std::vector<std::string> vName = {"none"};
+  std::vector<std::string> vName = {""};
   /// Book-keeping variables
   Double_t dPrevTime      = 0.;
   Int_t iPrevRefFirstDigi = 0;
