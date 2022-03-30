@@ -75,7 +75,8 @@ set(CTEST_CUSTOM_WARNING_EXCEPTION
 
         # -- warnings from macosx test machines
         "ld: warning: dylib.*was built for newer macOS version.*than being linked"
-        ".*^.*"
+        ".*\\^.*"
+        "warning.*generated."
 
         # -- don't show pragma message warnings
         "Compiling CBM Configuration"
