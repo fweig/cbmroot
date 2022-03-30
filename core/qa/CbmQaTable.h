@@ -12,21 +12,21 @@
 
 #ifndef CbmQaTable_h
 #define CbmQaTable_h 1
-#include "TROOT.h"
 #include "TH2D.h"
+#include "TROOT.h"
 
 #include <fstream>
 #include <string>
 
 // TODO: We need a method, which sets and gets cell values! (S.Zharko)
 
-class CbmQaTable: public TH2D {
+class CbmQaTable : public TH2D {
 public:
   //
   // CONSTRUCTORS AND DESTRUCTORS
   //
-  /// Default constructor 
-  CbmQaTable(): TH2D() {}
+  /// Default constructor
+  CbmQaTable() : TH2D() {}
   /// Constructor from number of rows and columns
   CbmQaTable(const char* name, const char* title, Int_t nRows, Int_t nCols);
   /// Destructor
@@ -34,7 +34,7 @@ public:
 
   /// Dumps table content into a string
   std::string ToString() const;
-  /// Dumps table content into a text file. File open mode is also controllable, for example, use 
+  /// Dumps table content into a text file. File open mode is also controllable, for example, use
   /// mode = std::ios_base::app to append the table into an existing file
   void ToTextFile(const std::string& fileName, std::ios_base::openmode mode = std::ios_base::out) const;
 
@@ -74,17 +74,17 @@ private:
   // Structural fields
   Int_t fNcols {0};  ///< number of columns in a table
   Int_t fNrows {0};  ///< number of rows in a table
- 
-  // Some hard-coded constants
-  static constexpr Float_t kDefaultTextSize  {0.03};  ///< default size of text
-  static constexpr Style_t kDefaultFontStyle {62};    ///< default text style
 
-  static constexpr Int_t kDefaultSetwPar   {12};  ///< default size of entry in std::setw() for columns
+  // Some hard-coded constants
+  static constexpr Float_t kDefaultTextSize {0.03};  ///< default size of text
+  static constexpr Style_t kDefaultFontStyle {62};   ///< default text style
+
+  static constexpr Int_t kDefaultSetwPar {12};    ///< default size of entry in std::setw() for columns
   static constexpr Int_t kRowTitlesSetwPar {30};  ///< size of entry in std::setw() for row titles
-  static constexpr Int_t kValuesPrecision  {3};   ///< precision of output parameters
+  static constexpr Int_t kValuesPrecision {3};    ///< precision of output parameters
   // TODO: Apply this precision and other options to graphical verion of the table
 
   ClassDef(CbmQaTable, 1);
 };
 
-#endif // CbmQaTable_h
+#endif  // CbmQaTable_h

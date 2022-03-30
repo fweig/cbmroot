@@ -14,9 +14,9 @@
 
 #include "TAxis.h"
 
+#include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <fstream>
 #include <sstream>
 
 // TODO: Insert class info, try __PRETTY_FUNCTION__ and inline function for its modification (S.Zharko)
@@ -48,24 +48,15 @@ CbmQaTable::CbmQaTable(const char* name, const char* title, Int_t nRows, Int_t n
 //
 //------------------------------------------------------------------------------------------------------------------------
 //
-CbmQaTable::~CbmQaTable()
-{
-
-}
+CbmQaTable::~CbmQaTable() {}
 //
 //------------------------------------------------------------------------------------------------------------------------
 //
-Double_t CbmQaTable::GetCell(Int_t iRow, Int_t iCol) const
-{
-  return TH2D::GetBinContent(iCol + 1, fNrows - iRow);
-}
+Double_t CbmQaTable::GetCell(Int_t iRow, Int_t iCol) const { return TH2D::GetBinContent(iCol + 1, fNrows - iRow); }
 //
 //------------------------------------------------------------------------------------------------------------------------
 //
-Double_t CbmQaTable::GetCellError(Int_t iRow, Int_t iCol) const
-{
-  return TH2D::GetBinError(iCol + 1, fNrows - iRow);
-}
+Double_t CbmQaTable::GetCellError(Int_t iRow, Int_t iCol) const { return TH2D::GetBinError(iCol + 1, fNrows - iRow); }
 //
 //------------------------------------------------------------------------------------------------------------------------
 //
@@ -79,7 +70,7 @@ void CbmQaTable::SetCell(Int_t iRow, Int_t iCol, Double_t content, Double_t erro
 //
 void CbmQaTable::SetNamesOfCols(const std::vector<std::string>& names)
 {
-  Int_t nEntries = (fNcols > static_cast<Int_t>(names.size())) ? static_cast<Int_t>(names.size()) : fNcols; 
+  Int_t nEntries = (fNcols > static_cast<Int_t>(names.size())) ? static_cast<Int_t>(names.size()) : fNcols;
   // TODO: Possibly, we need a restriction on the names size (S.Zharko)
   for (Int_t iCol = 1; iCol <= nEntries; ++iCol) {
     TH2D::GetXaxis()->SetBinLabel(iCol, names[iCol - 1].c_str());
@@ -90,7 +81,7 @@ void CbmQaTable::SetNamesOfCols(const std::vector<std::string>& names)
 //
 void CbmQaTable::SetNamesOfRows(const std::vector<std::string>& names)
 {
-  Int_t nEntries = (fNrows > static_cast<Int_t>(names.size())) ? static_cast<Int_t>(names.size()) : fNrows; 
+  Int_t nEntries = (fNrows > static_cast<Int_t>(names.size())) ? static_cast<Int_t>(names.size()) : fNrows;
   // TODO: Possibly, we need a restriction on the names size (S.Zharko)
   for (Int_t iRow = 1; iRow <= nEntries; ++iRow) {
     TH2D::GetYaxis()->SetBinLabel(fNrows - iRow + 1, names[iRow - 1].c_str());
@@ -134,7 +125,7 @@ std::ostream& operator<<(std::ostream& out, const CbmQaTable& aTable)
   out.precision(3);
   out.setf(std::ios::left);
   // Print column titles
-  out << std::setw(CbmQaTable::kRowTitlesSetwPar) << std::setfill(' ') << ' ' << ' '; // top-left cell, always 
+  out << std::setw(CbmQaTable::kRowTitlesSetwPar) << std::setfill(' ') << ' ' << ' ';  // top-left cell, always
   for (Int_t iCol = 1; iCol <= aTable.fNcols; ++iCol) {
     std::string entry = std::string(aTable.GetXaxis()->GetBinLabel(iCol));
     if (static_cast<Int_t>(entry.size()) > CbmQaTable::kDefaultSetwPar) {
@@ -151,7 +142,7 @@ std::ostream& operator<<(std::ostream& out, const CbmQaTable& aTable)
       entry = entry.substr(0, CbmQaTable::kDefaultSetwPar - 3) + "...";
     }
     out << std::setw(CbmQaTable::kRowTitlesSetwPar) << std::setfill(' ') << entry << ' ';
-    
+
     for (Int_t iCol = 0; iCol < aTable.fNcols; ++iCol) {
       out << std::setw(CbmQaTable::kDefaultSetwPar) << std::setfill(' ') << aTable.GetCell(iRow, iCol) << ' ';
     }
@@ -162,8 +153,3 @@ std::ostream& operator<<(std::ostream& out, const CbmQaTable& aTable)
 //
 //------------------------------------------------------------------------------------------------------------------------
 //
-
-
-
-
-
