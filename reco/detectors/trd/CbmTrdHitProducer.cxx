@@ -98,7 +98,10 @@ CbmTrdModuleRec* CbmTrdHitProducer::AddModule(Int_t address, TGeoPhysicalNode* n
             << moduleAddress << "] ly[" << lyId << "] det[" << moduleAddress << "]";
 
   CbmTrdModuleRec* module(nullptr);
-  if (moduleType >= 9) { module = fModules[address] = new CbmTrdModuleRec2D(address); }
+  if (moduleType >= 9) {
+    module = fModules[address] = new CbmTrdModuleRec2D(address);
+    ((CbmTrdModuleRec2D*) module)->SetUseHelpers(CbmTrdClusterFinder::UseRecoHelpers());
+  }
   else {
     module = fModules[address] = new CbmTrdModuleRecR(address);
   }
@@ -339,7 +342,8 @@ void CbmTrdHitProducer::Exec(Option_t*)
   logOut << fixed << setw(8) << setprecision(1) << right << timerTs.RealTime() * 1000. << " ms] ";
   logOut << "TS " << fNrTs;
   if (CbmTrdClusterFinder::UseOnlyEventDigis()) logOut << ", events " << nEvents;
-  logOut << ", clusters " << nClusters << ", hits " << fNrHitsCall;
+  logOut << ", clusters " << nClusters << ", hits " << fNrHitsCall << ", time/1k-hit " << setprecision(4)
+         << timerTs.RealTime() * 1e6 / fNrHitsCall << " [ms]";
   LOG(info) << logOut.str();
   fNrTs++;
 }

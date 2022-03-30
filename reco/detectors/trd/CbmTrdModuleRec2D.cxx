@@ -642,74 +642,88 @@ Bool_t CbmTrdModuleRec2D::BuildHit(CbmTrdHit* h)
   LocalToMaster(local, global);
 
   // COMPUTE TIME
+  Double_t t_avg(0.), e_avg(0.);
   for (Int_t idx(1); idx <= n0; idx++) {
     Double_t dtFEE =
       fgDT[0] * (vs[idx] - fgDT[1]) * (vs[idx] - fgDT[1]) / CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP);
     if (vxe[idx] > 0) vx[idx] += dy / fDigiPar->GetPadSizeY(0);
-    fgT->SetPoint(idx - 1, vx[idx], vt[idx] - dtFEE);
+    if (fgT != nullptr) fgT->SetPoint(idx - 1, vx[idx], vt[idx] - dtFEE);
+    else
+      t_avg += (vt[idx] - dtFEE);
   }
-  Double_t xc = vx[n0 + 2];
-  for (Int_t ip(n0); ip < fgT->GetN(); ip++) {
-    fgT->SetPoint(ip, xc, 0);
-    xc += 0.5;
+  Double_t xc(0.);
+  if (fgT != nullptr) {
+    xc = vx[n0 + 2];
+    for (Int_t ip(n0); ip < fgT->GetN(); ip++) {
+      fgT->SetPoint(ip, xc, 0);
+      xc += 0.5;
+    }
   }
   Double_t time(-21.), tdrift(100);  // should depend on Ua
-  if (n0 > 1 && (fgT->Fit("pol1", "QC", "goff") == 0)) {
-    TF1* f = fgT->GetFunction("pol1");
-    time   = f->GetParameter(0) - fgDT[2];
-    if (TMath::IsNaN(time)) time = -21;
-    //dtime += TMath::Abs(f->GetParameter(1)*(vx[n0+1] - vx[1]));
+  if (n0 > 1) {
+    if (fgT != nullptr && (fgT->Fit("pol1", "QC", "goff") == 0)) {
+      TF1* f = fgT->GetFunction("pol1");
+      time   = f->GetParameter(0) - fgDT[2];
+      if (TMath::IsNaN(time)) time = -21;
+      //dtime += TMath::Abs(f->GetParameter(1)*(vx[n0+1] - vx[1]));
+    }
+    else
+      time = t_avg / n0;
   }
-
   // COMPUTE ENERGY
   for (UInt_t idx(0); idx < vs.size(); idx++) {
-    if (vxe[idx] > 0) {
-      fgEdep->SetPoint(idx, vx[idx] + dy / fDigiPar->GetPadSizeY(0), vs[idx]);
+    if (fgEdep != nullptr) {
+      double x_offset = dy / fDigiPar->GetPadSizeY(0), xp = vx[idx] + (vxe[idx] > 0 ? x_offset : 0);
+      fgEdep->SetPoint(idx, xp, vs[idx]);
       fgEdep->SetPointError(idx, vxe[idx], vse[idx]);
     }
-    else {
-      fgEdep->SetPoint(idx, vx[idx], vs[idx]);
-      fgEdep->SetPointError(idx, vxe[idx], vse[idx]);
+    else
+      e_avg += vs[idx];
+  }
+  if (fgEdep != nullptr) {
+    xc = vx[n0 + 2];
+    for (Int_t ip(vs.size()); ip < fgEdep->GetN(); ip++) {
+      //fgEdep->RemovePoint(ip);
+      xc += 0.5;
+      fgEdep->SetPoint(ip, xc, 0);
+      fgEdep->SetPointError(ip, 0., 300);
     }
+    //if(CWRITE()) fgEdep->Print();
   }
-  xc = vx[n0 + 2];
-  for (Int_t ip(vs.size()); ip < fgEdep->GetN(); ip++) {
-    //fgEdep->RemovePoint(ip);
-    xc += 0.5;
-    fgEdep->SetPoint(ip, xc, 0);
-    fgEdep->SetPointError(ip, 0., 300);
-  }
-  //if(CWRITE()) fgEdep->Print();
 
   Double_t e(0.), xlo(*vx.begin()), xhi(*vx.rbegin());
-  fgPRF->SetParameter(0, vs[viM]);
-  fgPRF->FixParameter(1, dx / fDigiPar->GetPadSizeX(0));
-  fgPRF->SetParameter(2, 0.65);
-  fgPRF->SetParLimits(2, 0.45, 10.5);
-  fgEdep->Fit(fgPRF, "QBN", "goff", xlo - 0.5, xhi + 0.5);
-  if (!fgPRF->GetNDF()) return false;
-  //chi = fgPRF->GetChisquare()/fgPRF->GetNDF();
-  e = fgPRF->Integral(xlo - 0.5, xhi + 0.5);
+  if (fgEdep != nullptr) {
+    fgPRF->SetParameter(0, vs[viM]);
+    fgPRF->FixParameter(1, dx / fDigiPar->GetPadSizeX(0));
+    fgPRF->SetParameter(2, 0.65);
+    fgPRF->SetParLimits(2, 0.45, 10.5);
+    fgEdep->Fit(fgPRF, "QBN", "goff", xlo - 0.5, xhi + 0.5);
+    if (!fgPRF->GetNDF()) return false;
+    //chi = fgPRF->GetChisquare()/fgPRF->GetNDF();
+    e = fgPRF->Integral(xlo - 0.5, xhi + 0.5);
 
-  // apply MC correction
-  Float_t gain0 = 210.21387;  //(XeCO2 @ 1900V)
-  //   Float_t grel[3] = {1., 0.98547803, 0.93164071},
-  //           goff[3][3] = {
-  //             {0.05714, -0.09, -0.09},
-  //             {0., -0.14742, -0.14742},
-  //             {0., -0.29, -0.393}
-  //           };
-  //   Int_t ian=0;
-  //   if(TMath::Abs(dy)<=0.3) ian=0;
-  //   else if(TMath::Abs(dy)<=0.6) ian=1;
-  //   else if(TMath::Abs(dy)<=0.9) ian=2;
-  //   Int_t isize=0;
-  //   if(n0<=3) isize=0;
-  //   else if(n0<=4) isize=1;
-  //   else isize=2;
-  Float_t gain = gain0;  //*grel[ian];
-  e /= gain;             // apply effective gain
-  //e+=goff[ian][isize];  // apply missing energy offset
+    // apply MC correction
+    Float_t gain0 = 210.21387;  //(XeCO2 @ 1900V)
+    //   Float_t grel[3] = {1., 0.98547803, 0.93164071},
+    //           goff[3][3] = {
+    //             {0.05714, -0.09, -0.09},
+    //             {0., -0.14742, -0.14742},
+    //             {0., -0.29, -0.393}
+    //           };
+    //   Int_t ian=0;
+    //   if(TMath::Abs(dy)<=0.3) ian=0;
+    //   else if(TMath::Abs(dy)<=0.6) ian=1;
+    //   else if(TMath::Abs(dy)<=0.9) ian=2;
+    //   Int_t isize=0;
+    //   if(n0<=3) isize=0;
+    //   else if(n0<=4) isize=1;
+    //   else isize=2;
+    Float_t gain = gain0;  //*grel[ian];
+    e /= gain;             // apply effective gain
+    //e+=goff[ian][isize];  // apply missing energy offset
+  }
+  else
+    e = e_avg;
 
   h->SetX(global[0]);
   h->SetY(global[1]);
@@ -746,7 +760,7 @@ CbmTrdHit* CbmTrdModuleRec2D::MakeHit(Int_t ic, const CbmTrdCluster* cl, std::ve
   }
   //printf("%s (%s)\n", GetName(), GetTitle()); Config(1,0);
 
-  if (!fgEdep) {  // first use initialization of PRF helppers
+  if (CHELPERS() && fgEdep == nullptr) {  // first use initialization of PRF helppers
     LOG(info) << GetName() << "::MakeHit: Init static helpers. ";
     fgEdep = new TGraphErrors;
     fgEdep->SetLineColor(kBlue);

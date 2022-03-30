@@ -58,17 +58,18 @@ class CbmTrdClusterFinder : public FairTask {
   friend class CbmTrdModuleRec2D;
 
 public:
-  enum CbmTrdRecDef
+  enum ECbmTrdRecDef
   {
-    kTime = 0,        ///< select Time based/Event by event reconstruction
-    kMultiHit,        ///< multi hit detection
-    kRowMerger,       ///< merge clusters over neighbour rows
-    kNeighbourCol,    ///< use neighbour trigger; column wise
-    kNeighbourRow,    ///< use neighbour trigger; row wise
-    kDumpClusters,    ///< write clustered digis to output
-    kFASP,            ///< use FASP ASIC for triangular pad plane geometry
-    kOnlyEventDigis,  ///< use only digis connected to a CbmEvent
-    kDebugStatements  ///< print out debug statements with LOG(info)
+    kTime = 0,         ///< select Time based/Event by event reconstruction
+    kMultiHit,         ///< multi hit detection
+    kRowMerger,        ///< merge clusters over neighbor rows
+    kNeighbourCol,     ///< use neighbor trigger; column wise
+    kNeighbourRow,     ///< use neighbor trigger; row wise
+    kDumpClusters,     ///< write clustered digis to output
+    kFASP,             ///< use FASP ASIC for triangular pad plane geometry
+    kOnlyEventDigis,   ///< use only digis connected to a CbmEvent
+    kDebugStatements,  ///< print out debug statements with LOG(info)
+    kUseRecoHelpers    ///< use graph helpers in hit reco for improving performance
   };
 
   /**
@@ -89,11 +90,12 @@ public:
   static Bool_t HasRowMerger() { return TESTBIT(fgConfig, kRowMerger); }
   static Bool_t IsTimeBased() { return TESTBIT(fgConfig, kTime); }
   static Bool_t DoDebugPrintouts() { return TESTBIT(fgConfig, kDebugStatements); }
+  static Bool_t UseRecoHelpers() { return TESTBIT(fgConfig, kUseRecoHelpers); }
 
   /**
    * @brief If true only digis connected ro a CbmEvent are processed
    * Per default this is activated on construction, such that the user can 
-   * turn it off before Init(), where it will also be autmatically 
+   * turn it off before Init(), where it will also be automatically 
    * deactivated if no CbmEvent branch is found.
    * @return Bool_t 
    */
@@ -129,12 +131,19 @@ public:
   {
     set ? SETBIT(fgConfig, kDebugStatements) : CLRBIT(fgConfig, kDebugStatements);
   }
+  /**
+   * @brief Steer usage of TGraph support in TRD-2D for improved performance. The cost in terms of CPU has to be weighted against performance increase
+   */
+  static void SetUseRecoHelpers(Bool_t set = kTRUE)
+  {
+    set ? SETBIT(fgConfig, kUseRecoHelpers) : CLRBIT(fgConfig, kUseRecoHelpers);
+  }
 
 
   /**
    * @brief Set the Use Only Event Digis
    * Per default this is activated on construction, such that the user can 
-   * turn it off before Init(), where it will also be autmatically 
+   * turn it off before Init(), where it will also be automatically 
    * deactivated if no CbmEvent branch is found.
    * @param set 
    */

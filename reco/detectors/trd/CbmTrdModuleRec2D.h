@@ -35,11 +35,11 @@ class TF1;
  **/
 class CbmTrdModuleRec2D : public CbmTrdModuleRec {
 public:
-  enum CbmTrdModuleRec2Dconfig
+  enum ECbmTrdModuleRec2D
   {
-    kVerbose = 0  // steer verbosity on/off
-      ,
-    kDraw  // steer graphic representation on/off
+    kVerbose = 0,  ///< steer verbosity on/off
+    kDraw    = 1,  ///< steer graphic representation on/off
+    kHelpers = 2   ///< use helper graph for time and energy estimation
   };
 
   /** \brief Default constructor.*/
@@ -118,13 +118,23 @@ public:
    */
   Int_t GetHitRcClass(Int_t a0) const;
 
+  /** @brief Steer usage of helper graphs for computing time and energy per hit. 
+   * A cost wrt the additional  performance vs. CPU has to be performed. 
+   */
+  void SetUseHelpers(bool use = true)
+  {
+    use ? SETBIT(fConfigMap, ECbmTrdModuleRec2D::kHelpers) : CLRBIT(fConfigMap, ECbmTrdModuleRec2D::kHelpers);
+  }
+
 protected:
 private:
   CbmTrdModuleRec2D(const CbmTrdModuleRec2D& ref);
   const CbmTrdModuleRec2D& operator=(const CbmTrdModuleRec2D& ref);
 
-  Bool_t CDRAW() const { return TESTBIT(fConfigMap, kDraw); }
-  Bool_t CWRITE() const { return TESTBIT(fConfigMap, kVerbose); }
+  Bool_t CDRAW() const { return TESTBIT(fConfigMap, ECbmTrdModuleRec2D::kDraw); }
+  Bool_t CWRITE() const { return TESTBIT(fConfigMap, ECbmTrdModuleRec2D::kVerbose); }
+  Bool_t CHELPERS() const { return TESTBIT(fConfigMap, ECbmTrdModuleRec2D::kHelpers); }
+
   /** \brief Implement cuts for hit convolution definition
    * \param[in] h hit to be analysed.
    * \return TRUE if double cluster
@@ -217,13 +227,13 @@ private:
 
 void CbmTrdModuleRec2D::Config(Bool_t vb, Bool_t dw)
 {
-  if (vb) SETBIT(fConfigMap, kVerbose);
+  if (vb) SETBIT(fConfigMap, ECbmTrdModuleRec2D::kVerbose);
   else
-    CLRBIT(fConfigMap, kVerbose);
+    CLRBIT(fConfigMap, ECbmTrdModuleRec2D::kVerbose);
   printf("CbmTrdModuleRec2D::Verbose[%c]\n", CWRITE() ? 'y' : 'n');
-  if (dw) SETBIT(fConfigMap, kDraw);
+  if (dw) SETBIT(fConfigMap, ECbmTrdModuleRec2D::kDraw);
   else
-    CLRBIT(fConfigMap, kDraw);
+    CLRBIT(fConfigMap, ECbmTrdModuleRec2D::kDraw);
   printf("CbmTrdModuleRec2D::Draw[%c]\n", CDRAW() ? 'y' : 'n');
 }
 
