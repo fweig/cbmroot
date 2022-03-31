@@ -65,22 +65,22 @@ CbmKFParticleFinderQa.h
 CbmKFParticleInterface.h
 )
 
-If (APPLE)
+If(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   ADD_DEFINITIONS(-Wall -Wsign-promo -Wctor-dtor-privacy -Wreorder -Wno-deprecated -Wno-parentheses -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS) # -Weffc++ -Wnon-virtual-dtor -Woverloaded-virtual -Wold-style-cast   : wait for other parts of cbmroot\root.
   #---Check for compiler flags
-  CHECK_CXX_COMPILER_FLAG("-Wno-pmf-conversions" HAS_PMF)
+  CHECK_CXX_COMPILER_FLAG("-Werror -Wno-pmf-conversions" HAS_PMF)
   If(HAS_PMF)
     ADD_DEFINITIONS(-Wno-pmf-conversions)
   EndIf()
-  CHECK_CXX_COMPILER_FLAG("-Wstrict-null-sentinel" HAS_SENTINEL)
+  CHECK_CXX_COMPILER_FLAG("-Werror -Wstrict-null-sentinel" HAS_SENTINEL)
   If(HAS_SENTINEL)
     ADD_DEFINITIONS(-Wstrict-null-sentinel)
   EndIf()
-  CHECK_CXX_COMPILER_FLAG("-Wno-non-template-friend" HAS_TEMPLATE_FRIEND)
+  CHECK_CXX_COMPILER_FLAG("-Werror -Wno-non-template-friend" HAS_TEMPLATE_FRIEND)
   If(HAS_TEMPLATE_FRIEND)
     ADD_DEFINITIONS(-Wno-non-template-friend)
   EndIf()
-  CHECK_CXX_COMPILER_FLAG("-Wno-pragmas" HAS_PRAGMA)
+  CHECK_CXX_COMPILER_FLAG("-Werror -Wno-pragmas" HAS_PRAGMA)
   If(HAS_PRAGMA)
     ADD_DEFINITIONS(-Wno-pragmas)
   EndIf()
@@ -89,12 +89,12 @@ Else()
 EndIf()
 
 IF (SSE_FOUND)
-  Message(STATUS "KF will be compiled with SSE support")
+  Message(STATUS "KFParticleInterface will be compiled with SSE support")
   ADD_DEFINITIONS(-DHAVE_SSE)
   SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS 
   "-msse -O3")
 ELSE (SSE_FOUND)
-  MESSAGE(STATUS "KF will be compiled without SSE support")
+  MESSAGE(STATUS "KFParticleInterface will be compiled without SSE support")
   SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS 
   "-O3")
 ENDIF (SSE_FOUND)

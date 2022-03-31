@@ -79,9 +79,9 @@ IF (SSE_FOUND)
   ADD_DEFINITIONS(-DHAVE_SSE)
   SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS 
   "-msse -O3")
-  Message(STATUS "L1 will be compiled with SSE support")
+  Message(STATUS "eventbuilder will be compiled with SSE support")
 ELSE (SSE_FOUND)
-  Message(STATUS "L1 will be compiled without SSE support")
+  Message(STATUS "eventbuilder will be compiled without SSE support")
   SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS 
   "-O3")
 ENDIF (SSE_FOUND)
