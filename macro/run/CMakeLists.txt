@@ -40,14 +40,14 @@ math(EXPR nBeam "${nEvents} * 3")
 # =====   Define the different setups to be tested with   ====================
 if(NOT ${CBM_TEST_MODEL} MATCHES Experimental )
   List(APPEND cbm_setup
-	sis100_hadron_APR21 sis100_hadron_DEC21 sis100_hadron
-        sis100_electron_APR21 sis100_electron_DEC21 sis100_electron
-	sis100_muon_lmvm_APR21
-        sis100_muon_jpsi_APR21
+	sis100_hadron
+        sis100_electron
+	sis100_muon_lmvm
+        sis100_muon_jpsi
 	sis300_electron
 	)
 else()
-  List(APPEND cbm_setup sis100_electron_APR21 sis100_muon_jpsi_APR21)
+  List(APPEND cbm_setup sis100_electron sis100_muon_jpsi)
 endif()
 # ============================================================================
 
@@ -67,23 +67,11 @@ foreach(setup IN LISTS cbm_setup)
 
   # --- Short name for setup
   if(setup MATCHES sis100_hadron)
-    if(setup MATCHES APR21)
-      set(sname s100h_apr21)
-    elseif(setup MATCHES DEC21)
-      set(sname s100h_dec21)
-    else()
-      set(sname s100h)
-    endif()
+        set(sname s100h)
   elseif(setup MATCHES sis100_electron)
-    if(setup MATCHES APR21)
-      set(sname s100e_apr21)
-    elseif(setup MATCHES DEC21)
-      set(sname s100e_dec21)
-    else()
-      set(sname s100e)
-    endif()
+        set(sname s100e)
   elseif(setup MATCHES sis100_muon_lmvm)
-  	set(sname s100m2)
+	set(sname s100m2)
   elseif(setup MATCHES sis100_muon_jpsi)
   	set(sname s100m3)
   elseif(setup MATCHES sis300_electron)
