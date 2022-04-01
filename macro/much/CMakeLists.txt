@@ -22,7 +22,7 @@ set_tests_properties(much_cleanup PROPERTIES
 
 # --- Transport of UrQMD events
 Set(testname much_transport)
-add_test(${testname} ${MACRO_DIR}/run_transport.sh ${NumEvents} \"sis100_muon_lmvm_APR21\" \"data/muons\")
+add_test(${testname} ${MACRO_DIR}/run_transport.sh ${NumEvents} \"sis100_muon_lmvm\" \"data/muons\")
 SET_TESTS_PROPERTIES(${testname} PROPERTIES
           TIMEOUT "1200"
           PASS_REGULAR_EXPRESSION "TestPassed;All ok"
@@ -42,7 +42,7 @@ Set_Tests_Properties(${testname} PROPERTIES
 
 # --- Reconstruction, event-by-event
 Set(testname much_reco_event)
-add_test(${testname} ${MACRO_DIR}/run_reco_event.sh ${NumEvents} \"data/muons\" \"sis100_muon_lmvm_APR21\" 1 1)
+add_test(${testname} ${MACRO_DIR}/run_reco_event.sh ${NumEvents} \"data/muons\" \"sis100_muon_lmvm\" 1 1)
 SET_TESTS_PROPERTIES(${testname} PROPERTIES
           TIMEOUT "1200"
           PASS_REGULAR_EXPRESSION "TestPassed;All ok"
