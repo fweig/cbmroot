@@ -9,6 +9,7 @@
  **/
 #include "CbmEvent.h"
 
+#include <algorithm>  // for std::sort
 #include <iostream>  // for operator<<, basic_ostream
 #include <sstream>   // for stringstream
 #include <string>    // for char_traits
@@ -95,5 +96,13 @@ std::string CbmEvent::ToString() const
 }
 // -------------------------------------------------------------------------
 
+// -------------------------------------------------------------------------
+void CbmEvent::SortIndices()
+{
+  for (auto it = fIndexMap.begin(); it != fIndexMap.end(); it++) {
+    std::sort(it->second.begin(), it->second.end());
+  }
+}
+// -------------------------------------------------------------------------
 
 ClassImp(CbmEvent)

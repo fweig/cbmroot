@@ -270,7 +270,8 @@ bool CbmDeviceDigiEventSink::HandleData(FairMQParts& parts, int /*index*/)
   CbmEventTimeslice unpTs(parts);
 
   /// FIXME: Need to check if TS arrived in order (probably not!!!) + buffer!!!
-  LOG(debug) << "Next TS check " << fuPrevTsIndex << " " << fulTsCounter << " " << unpTs.fTsMetaData.GetIndex();
+  LOG(info) << "Next TS check " << fuPrevTsIndex << " " << fulTsCounter << " " << unpTs.fTsMetaData.GetIndex()
+            << " Sorage size: " << fmFullTsStorage.size();
   if (fuPrevTsIndex + 1 == unpTs.fTsMetaData.GetIndex()
       || (0 == fuPrevTsIndex && 0 == fulTsCounter && 0 == unpTs.fTsMetaData.GetIndex())) {
     LOG(debug) << "TS direct to dump";
@@ -764,62 +765,185 @@ std::vector<CbmDigiEvent> CbmEventTimeslice::GetSelectedData()
     selEvent.fTime   = event.GetStartTime();
     selEvent.fNumber = event.GetNumber();
 
+    /// FIXME: for pure digi based event, we select "continuous slices of digis"
+    ///        => Copy block of [First Digi index, last digi index] with assign(it_start, it_stop)
+    /// FIXME: Keep TRD1D + TRD2D support, may lead to holes in the digi sequence!
+    ///        => Would need to keep the loop
+
+    /// Get the proper order for block selection as TRD1D and TRD2D may insert indices in separate loops
+    /// => Needed to ensure that the start and stop of the block copy do not trigger a vector size exception
+    event.SortIndices();
+
     /// for each detector, find the data in the Digi vectors and copy them
     /// TODO: Template + loop on list of data types?
     /// ==> T0
     uint32_t uNbDigis = (0 < event.GetNofData(ECbmDataType::kT0Digi) ? event.GetNofData(ECbmDataType::kT0Digi) : 0);
     if (uNbDigis) {
-      for (uint32_t uDigiIdx = 0; uDigiIdx < uNbDigis; ++uDigiIdx) {
-        selEvent.fData.fT0.fDigis.push_back(fvDigiT0[event.GetIndex(ECbmDataType::kT0Digi, uDigiIdx)]);
+      auto startIt = fvDigiT0.begin() + event.GetIndex(ECbmDataType::kT0Digi, 0);
+      auto stopIt  = fvDigiT0.begin() + event.GetIndex(ECbmDataType::kT0Digi, uNbDigis - 1);
+      selEvent.fData.fT0.fDigis.assign(startIt, stopIt);
+
+      /*
+      uint32_t uPrevIdx = event.GetIndex(ECbmDataType::kT0Digi, 0);
+      uint32_t uNbExtra = 0;
+      for (uint32_t uDigiIdx = 1; uDigiIdx < uNbDigis; ++uDigiIdx) {
+        // selEvent.fData.fT0.fDigis.push_back(fvDigiT0[event.GetIndex(ECbmDataType::kT0Digi, uDigiIdx)]);
+        if (uPrevIdx + 1 != event.GetIndex(ECbmDataType::kT0Digi, uDigiIdx)) {
+          uNbExtra += event.GetIndex(ECbmDataType::kT0Digi, uDigiIdx) - (uPrevIdx + 1);
+        }
+        uPrevIdx = event.GetIndex(ECbmDataType::kT0Digi, uDigiIdx);
       }
+      if (0 < uNbExtra) {
+        LOG(info) << "In event " << event.GetNumber() << " the T0 block selection added " << uNbExtra
+                  << " extra digis compared to the loop one";
+      }
+      */
     }
 
     /// ==> STS
     uNbDigis = (0 < event.GetNofData(ECbmDataType::kStsDigi) ? event.GetNofData(ECbmDataType::kStsDigi) : 0);
     if (uNbDigis) {
-      for (uint32_t uDigiIdx = 0; uDigiIdx < uNbDigis; ++uDigiIdx) {
-        selEvent.fData.fSts.fDigis.push_back(fvDigiSts[event.GetIndex(ECbmDataType::kStsDigi, uDigiIdx)]);
+      auto startIt = fvDigiSts.begin() + event.GetIndex(ECbmDataType::kStsDigi, 0);
+      auto stopIt  = fvDigiSts.begin() + event.GetIndex(ECbmDataType::kStsDigi, uNbDigis - 1);
+      selEvent.fData.fSts.fDigis.assign(startIt, stopIt);
+
+      /*
+      uint32_t uPrevIdx = event.GetIndex(ECbmDataType::kStsDigi, 0);
+      uint32_t uNbExtra = 0;
+      for (uint32_t uDigiIdx = 1; uDigiIdx < uNbDigis; ++uDigiIdx) {
+        // selEvent.fData.fSts.fDigis.push_back(fvDigiSts[event.GetIndex(ECbmDataType::kStsDigi, uDigiIdx)]);
+        if (uPrevIdx + 1 != event.GetIndex(ECbmDataType::kStsDigi, uDigiIdx)) {
+          uNbExtra += event.GetIndex(ECbmDataType::kStsDigi, uDigiIdx) - (uPrevIdx + 1);
+        }
+        uPrevIdx = event.GetIndex(ECbmDataType::kStsDigi, uDigiIdx);
       }
+      if (0 < uNbExtra) {
+        LOG(info) << "In event " << event.GetNumber() << " the STS block selection added " << uNbExtra
+                  << " extra digis compared to the loop one";
+      }
+      */
     }
 
     /// ==> MUCH
     uNbDigis = (0 < event.GetNofData(ECbmDataType::kMuchDigi) ? event.GetNofData(ECbmDataType::kMuchDigi) : 0);
     if (uNbDigis) {
-      for (uint32_t uDigiIdx = 0; uDigiIdx < uNbDigis; ++uDigiIdx) {
-        selEvent.fData.fMuch.fDigis.push_back(fvDigiMuch[event.GetIndex(ECbmDataType::kMuchDigi, uDigiIdx)]);
+      auto startIt = fvDigiMuch.begin() + event.GetIndex(ECbmDataType::kMuchDigi, 0);
+      auto stopIt  = fvDigiMuch.begin() + event.GetIndex(ECbmDataType::kMuchDigi, uNbDigis - 1);
+      selEvent.fData.fMuch.fDigis.assign(startIt, stopIt);
+
+      /*
+      uint32_t uPrevIdx = event.GetIndex(ECbmDataType::kMuchDigi, 0);
+      uint32_t uNbExtra = 0;
+      for (uint32_t uDigiIdx = 1; uDigiIdx < uNbDigis; ++uDigiIdx) {
+        // selEvent.fData.fMuch.fDigis.push_back(fvDigiMuch[event.GetIndex(ECbmDataType::kMuchDigi, uDigiIdx)]);
+        if (uPrevIdx + 1 != event.GetIndex(ECbmDataType::kMuchDigi, uDigiIdx)) {
+          uNbExtra += event.GetIndex(ECbmDataType::kMuchDigi, uDigiIdx) - (uPrevIdx + 1);
+        }
+        uPrevIdx = event.GetIndex(ECbmDataType::kMuchDigi, uDigiIdx);
       }
+      if (0 < uNbExtra) {
+        LOG(info) << "In event " << event.GetNumber() << " the MUCH block selection added " << uNbExtra
+                  << " extra digis compared to the loop one";
+      }
+      */
     }
 
-    /// ==> TRD
+    /// ==> TRD + TRD2D
     uNbDigis = (0 < event.GetNofData(ECbmDataType::kTrdDigi) ? event.GetNofData(ECbmDataType::kTrdDigi) : 0);
     if (uNbDigis) {
-      for (uint32_t uDigiIdx = 0; uDigiIdx < uNbDigis; ++uDigiIdx) {
-        selEvent.fData.fTrd.fDigis.push_back(fvDigiTrd[event.GetIndex(ECbmDataType::kTrdDigi, uDigiIdx)]);
+      auto startIt = fvDigiTrd.begin() + event.GetIndex(ECbmDataType::kTrdDigi, 0);
+      auto stopIt  = fvDigiTrd.begin() + event.GetIndex(ECbmDataType::kTrdDigi, uNbDigis - 1);
+      selEvent.fData.fTrd.fDigis.assign(startIt, stopIt);
+
+      /*
+      uint32_t uPrevIdx = event.GetIndex(ECbmDataType::kTrdDigi, 0);
+      uint32_t uNbExtra = 0;
+      for (uint32_t uDigiIdx = 1; uDigiIdx < uNbDigis; ++uDigiIdx) {
+        // selEvent.fData.fTrd.fDigis.push_back(fvDigiTrd[event.GetIndex(ECbmDataType::kTrdDigi, uDigiIdx)]);
+        if (uPrevIdx + 1 != event.GetIndex(ECbmDataType::kTrdDigi, uDigiIdx)) {
+          uNbExtra += event.GetIndex(ECbmDataType::kTrdDigi, uDigiIdx) - (uPrevIdx + 1);
+          LOG(info) << "Extra TRD digi: prev is " << uPrevIdx << " vs new " << event.GetIndex(ECbmDataType::kTrdDigi, uDigiIdx)
+                    << " index " << uDigiIdx << " out of " << uNbDigis;
+        }
+        uPrevIdx = event.GetIndex(ECbmDataType::kTrdDigi, uDigiIdx);
       }
+      if (0 < uNbExtra) {
+        LOG(info) << "In event " << event.GetNumber() << " the TRD block selection added " << uNbExtra
+                  << " extra digis compared to the loop one";
+      }
+      */
     }
 
     /// ==> TOF
     uNbDigis = (0 < event.GetNofData(ECbmDataType::kTofDigi) ? event.GetNofData(ECbmDataType::kTofDigi) : 0);
     if (uNbDigis) {
-      for (uint32_t uDigiIdx = 0; uDigiIdx < uNbDigis; ++uDigiIdx) {
-        selEvent.fData.fTof.fDigis.push_back(fvDigiTof[event.GetIndex(ECbmDataType::kTofDigi, uDigiIdx)]);
+      auto startIt = fvDigiTof.begin() + event.GetIndex(ECbmDataType::kTofDigi, 0);
+      auto stopIt  = fvDigiTof.begin() + event.GetIndex(ECbmDataType::kTofDigi, uNbDigis - 1);
+      selEvent.fData.fTof.fDigis.assign(startIt, stopIt);
+
+      /*
+      uint32_t uPrevIdx = event.GetIndex(ECbmDataType::kTofDigi, 0);
+      uint32_t uNbExtra = 0;
+      for (uint32_t uDigiIdx = 1; uDigiIdx < uNbDigis; ++uDigiIdx) {
+        // selEvent.fData.fTof.fDigis.push_back(fvDigiTof[event.GetIndex(ECbmDataType::kTofDigi, uDigiIdx)]);
+        if (uPrevIdx + 1 != event.GetIndex(ECbmDataType::kTofDigi, uDigiIdx)) {
+          uNbExtra += event.GetIndex(ECbmDataType::kTofDigi, uDigiIdx) - (uPrevIdx + 1);
+        }
+        uPrevIdx = event.GetIndex(ECbmDataType::kTofDigi, uDigiIdx);
       }
+      if (0 < uNbExtra) {
+        LOG(info) << "In event " << event.GetNumber() << " the TOF block selection added " << uNbExtra
+                  << " extra digis compared to the loop one";
+      }
+      */
     }
 
     /// ==> RICH
     uNbDigis = (0 < event.GetNofData(ECbmDataType::kRichDigi) ? event.GetNofData(ECbmDataType::kRichDigi) : 0);
     if (uNbDigis) {
-      for (uint32_t uDigiIdx = 0; uDigiIdx < uNbDigis; ++uDigiIdx) {
-        selEvent.fData.fRich.fDigis.push_back(fvDigiRich[event.GetIndex(ECbmDataType::kRichDigi, uDigiIdx)]);
+      auto startIt = fvDigiRich.begin() + event.GetIndex(ECbmDataType::kRichDigi, 0);
+      auto stopIt  = fvDigiRich.begin() + event.GetIndex(ECbmDataType::kRichDigi, uNbDigis - 1);
+      selEvent.fData.fRich.fDigis.assign(startIt, stopIt);
+
+      /*
+      uint32_t uPrevIdx = event.GetIndex(ECbmDataType::kRichDigi, 0);
+      uint32_t uNbExtra = 0;
+      for (uint32_t uDigiIdx = 1; uDigiIdx < uNbDigis; ++uDigiIdx) {
+        // selEvent.fData.fRich.fDigis.push_back(fvDigiRich[event.GetIndex(ECbmDataType::kRichDigi, uDigiIdx)]);
+        if (uPrevIdx + 1 != event.GetIndex(ECbmDataType::kRichDigi, uDigiIdx)) {
+          uNbExtra += event.GetIndex(ECbmDataType::kRichDigi, uDigiIdx) - (uPrevIdx + 1);
+        }
+        uPrevIdx = event.GetIndex(ECbmDataType::kRichDigi, uDigiIdx);
       }
+      if (0 < uNbExtra) {
+        LOG(info) << "In event " << event.GetNumber() << " the RICH block selection added " << uNbExtra
+                  << " extra digis compared to the loop one";
+      }
+      */
     }
 
     /// ==> PSD
     uNbDigis = (0 < event.GetNofData(ECbmDataType::kPsdDigi) ? event.GetNofData(ECbmDataType::kPsdDigi) : 0);
     if (uNbDigis) {
-      for (uint32_t uDigiIdx = 0; uDigiIdx < uNbDigis; ++uDigiIdx) {
-        selEvent.fData.fPsd.fDigis.push_back(fvDigiPsd[event.GetIndex(ECbmDataType::kPsdDigi, uDigiIdx)]);
+      auto startIt = fvDigiPsd.begin() + event.GetIndex(ECbmDataType::kPsdDigi, 0);
+      auto stopIt  = fvDigiPsd.begin() + event.GetIndex(ECbmDataType::kPsdDigi, uNbDigis - 1);
+      selEvent.fData.fPsd.fDigis.assign(startIt, stopIt);
+
+      /*
+      uint32_t uPrevIdx = event.GetIndex(ECbmDataType::kPsdDigi, 0);
+      uint32_t uNbExtra = 0;
+      for (uint32_t uDigiIdx = 1; uDigiIdx < uNbDigis; ++uDigiIdx) {
+        // selEvent.fData.fPsd.fDigis.push_back(fvDigiPsd[event.GetIndex(ECbmDataType::kPsdDigi, uDigiIdx)]);
+        if (uPrevIdx + 1 != event.GetIndex(ECbmDataType::kPsdDigi, uDigiIdx)) {
+          uNbExtra += event.GetIndex(ECbmDataType::kPsdDigi, uDigiIdx) - (uPrevIdx + 1);
+        }
+        uPrevIdx = event.GetIndex(ECbmDataType::kPsdDigi, uDigiIdx);
       }
+      if (0 < uNbExtra) {
+        LOG(info) << "In event " << event.GetNumber() << " the PSD block selection added " << uNbExtra
+                  << " extra digis compared to the loop one";
+      }
+      */
     }
 
     vEventsSel.push_back(selEvent);
