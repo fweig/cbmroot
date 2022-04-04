@@ -94,6 +94,8 @@ static const RawEventBuilderDetector kRawEventBuilderDetMuch =
   RawEventBuilderDetector(ECbmModuleId::kMuch, ECbmDataType::kMuchDigi, "Much");
 static const RawEventBuilderDetector kRawEventBuilderDetTrd =
   RawEventBuilderDetector(ECbmModuleId::kTrd, ECbmDataType::kTrdDigi, "Trd");
+static const RawEventBuilderDetector kRawEventBuilderDetTrd2D =
+  RawEventBuilderDetector(ECbmModuleId::kTrd2d, ECbmDataType::kTrdDigi, "kTrd2D");
 static const RawEventBuilderDetector kRawEventBuilderDetTof =
   RawEventBuilderDetector(ECbmModuleId::kTof, ECbmDataType::kTofDigi, "Tof");
 static const RawEventBuilderDetector kRawEventBuilderDetRich =
@@ -185,12 +187,20 @@ public:
   /// Set digi containers
   void SetT0Digis(const std::vector<CbmTofDigi>* T0DigiVec) { fT0DigiVec = T0DigiVec; }
   void SetDigis(std::vector<CbmStsDigi>* StsDigis) { fStsDigis = StsDigis; }
-  void SetDigis(std::vector<CbmMuchDigi>* MuchDigis) { fMuchDigis = MuchDigis; }
+  void SetDigis(std::vector<CbmMuchDigi>* MuchDigis)
+  {
+    fMuchDigis            = MuchDigis;
+    fbUseMuchBeamtimeDigi = kFALSE;
+  }
   void SetDigis(std::vector<CbmTrdDigi>* TrdDigis) { fTrdDigis = TrdDigis; }
   void SetDigis(std::vector<CbmTofDigi>* TofDigis) { fTofDigis = TofDigis; }
   void SetDigis(std::vector<CbmRichDigi>* RichDigis) { fRichDigis = RichDigis; }
   void SetDigis(std::vector<CbmPsdDigi>* PsdDigis) { fPsdDigis = PsdDigis; }
-  void SetDigis(std::vector<CbmMuchBeamTimeDigi>* MuchBeamTimeDigis) { fMuchBeamTimeDigis = MuchBeamTimeDigis; }
+  void SetDigis(std::vector<CbmMuchBeamTimeDigi>* MuchBeamTimeDigis)
+  {
+    fMuchBeamTimeDigis    = MuchBeamTimeDigis;
+    fbUseMuchBeamtimeDigi = kTRUE;
+  }
 
   void SetSeedTimes(std::vector<Double_t>* SeedTimes) { fSeedTimes = SeedTimes; }
 
@@ -256,6 +266,7 @@ private:
     RawEventBuilderDetector(ECbmModuleId::kSts, ECbmDataType::kStsDigi, "kSts"),
     RawEventBuilderDetector(ECbmModuleId::kMuch, ECbmDataType::kMuchDigi, "kMuch"),
     RawEventBuilderDetector(ECbmModuleId::kTrd, ECbmDataType::kTrdDigi, "kTrd"),
+    RawEventBuilderDetector(ECbmModuleId::kTrd2d, ECbmDataType::kTrdDigi, "kTrd2D"),
     RawEventBuilderDetector(ECbmModuleId::kTof, ECbmDataType::kTofDigi, "kTof"),
     RawEventBuilderDetector(ECbmModuleId::kRich, ECbmDataType::kRichDigi, "kRich"),
     RawEventBuilderDetector(ECbmModuleId::kPsd, ECbmDataType::kPsdDigi, "kPsd")};
@@ -321,6 +332,8 @@ private:
   TH2* fhNbDigiPerEvtTime = nullptr;  //! histogram with the nb of all  digis per event vs seed time of the events
   std::vector<TH2*> fvhNbDigiPerEvtTimeDet =
     {};  //! histograms with the nb of digis in each detector per event vs seed time of the events
+  std::vector<TH1*> fvhNbDigiPerEvtDet = {};  //! histograms with the nb of digis in each detector per event
+  std::vector<TH1*> fvhTDiff           = {};  // digi time difference to seed
 
   /// Internal state variables
   UInt_t fuCurEv            = 0;   //! Event Counter
