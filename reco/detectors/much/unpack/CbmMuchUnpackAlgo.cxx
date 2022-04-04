@@ -543,7 +543,9 @@ void CbmMuchUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
         fOutputVec.emplace_back(CbmMuchDigi(address, usRawAdc, ulTimeInNs));
       }
       else {
-        LOG(warning) << "Digi not created due to generated address is " << address;
+        if (-7 != uFebIdx) {  //
+          LOG(warning) << "Digi not created due to generated address is " << address;
+        }
         fuSkippMessNoValidAddress++;
       }
       /// Catch the pulser digis and either save them to their own output or drop them
