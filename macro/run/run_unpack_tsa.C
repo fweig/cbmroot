@@ -212,6 +212,10 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     muchconfig->SetDoWriteOptOutA("MuchDigiPulser");
     std::string parfilesbasepathMuch = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
     muchconfig->SetParFilesBasePath(parfilesbasepathMuch);
+    if (2060 <= runid && runid <= 2162) {
+      /// Starting to use CRI Based MUCH setup with 2GEM and 1 RPC since 09/03/2022 Carbon run
+      muchconfig->SetParFileName("mMuchParUpto26032022.par");
+    }
     /// Enable duplicates rejection, Ignores the ADC for duplicates check
     muchconfig->SetDuplicatesRejection(true, true);
     /// Enable Monitor plots
