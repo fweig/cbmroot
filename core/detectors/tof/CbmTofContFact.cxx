@@ -58,6 +58,11 @@ void CbmTofContFact::setAllContainers()
   FairContainer* beamPars = new FairContainer("CbmMcbm2018TofPar", "TOF at MCBM 2018 Unpack Parameters", "Default");
   beamPars->addContext("Default");
   containers->Add(beamPars);
+
+  FairContainer* beamParsBmon = new FairContainer(
+    "CbmMcbm2018BmonPar", "BMon at MCBM 2022+ Unpack Parameters, interim for dual instances", "Default");
+  beamParsBmon->addContext("Default");
+  containers->Add(beamParsBmon);
 }
 
 FairParSet* CbmTofContFact::createContainer(FairContainer* c)
@@ -76,6 +81,9 @@ FairParSet* CbmTofContFact::createContainer(FairContainer* c)
   }
   else if (strcmp(name, "CbmMcbm2018TofPar") == 0) {
     p = new CbmMcbm2018TofPar(c->getConcatName().Data(), c->GetTitle(), c->getContext());
+  }
+  else if (strcmp(name, "CbmMcbm2018BmonPar") == 0) {
+    p = new CbmMcbm2018BmonPar(c->getConcatName().Data(), c->GetTitle(), c->getContext());
   }
 
   return p;

@@ -73,6 +73,13 @@ public:
   void SetFlagEpochCountHack2021(bool bFlagin = true) { fbEpochCountHack2021 = bFlagin; }
 
   /**
+   * @brief Sets the flag switching to a request of CbmMcbm2018BmonPar. Default is enable.
+   *
+   * @param[in] Optional: boolean flag value, default is true
+  */
+  void SetFlagBmonParMode(bool bFlagin = true) { fbBmonParMode = bFlagin; }
+
+  /**
    * @brief Sets the name of the parameter file to be used.
    *
    * @param[in] std:string, path should not be included as set in the Config class
@@ -194,6 +201,7 @@ private:
 
   /// Control flags
   bool fbEpochCountHack2021             = false;
+  bool fbBmonParMode                    = false;
   std::vector<bool> fvbMaskedComponents = {};
   bool fbLastEpochGood                  = false;
 

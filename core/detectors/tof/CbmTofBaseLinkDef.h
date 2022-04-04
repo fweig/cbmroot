@@ -15,6 +15,7 @@
 #pragma link C++ class CbmTofDigiPar + ;
 #pragma link C++ class CbmMcbm2018TofPar + ;
 #pragma link C++ class CbmTofGeoHandler + ;
+#pragma link C++ class CbmMcbm2018BmonPar + ;
 
 #pragma link C++ class TTrbHeader + ;
 #endif

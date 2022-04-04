@@ -25,14 +25,21 @@ CbmTofUnpackAlgo::~CbmTofUnpackAlgo() {}
 std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
   CbmTofUnpackAlgo::GetParContainerRequest(std::string /*geoTag*/, std::uint32_t /*runId*/)
 {
-  // Basepath for default Trd parameter sets (those connected to a geoTag)
+  // Basepath for default Tof parameter sets (those connected to a geoTag)
   std::string basepath = Form("%s", fParFilesBasePath.data());
   std::string temppath = "";
 
   // // Get parameter container
   temppath = basepath + fParFileName;
   LOG(info) << fName << "::GetParContainerRequest - Trying to open file " << temppath;
-  fParContVec.emplace_back(std::make_pair(temppath, std::make_shared<CbmMcbm2018TofPar>()));
+  if (fbBmonParMode) {
+    /// Should be enabled only when both TOF and BMON are used with same RunManagerDb (only MQ for now)
+    LOG(info) << fName << "::GetParContainerRequest - Requesting CbmMcbm2018BmonPar instead of CbmMcbm2018TofPar";
+    fParContVec.emplace_back(std::make_pair(temppath, std::make_shared<CbmMcbm2018BmonPar>()));
+  }
+  else {
+    fParContVec.emplace_back(std::make_pair(temppath, std::make_shared<CbmMcbm2018TofPar>()));
+  }
 
   return &fParContVec;
 }
@@ -44,7 +51,14 @@ Bool_t CbmTofUnpackAlgo::init() { return kTRUE; }
 Bool_t CbmTofUnpackAlgo::initParSet(FairParGenericSet* parset)
 {
   LOG(info) << fName << "::initParSet - for container " << parset->ClassName();
-  if (parset->IsA() == CbmMcbm2018TofPar::Class()) return initParSet(static_cast<CbmMcbm2018TofPar*>(parset));
+  if (parset->IsA() == CbmMcbm2018BmonPar::Class()) {
+    /// Should be the case only if fbBmonParMode is enabled and when both TOF and BMON are used with same
+    /// RunManagerDb (only MQ for now). CbmMcbm2018BmonPar is an identical derivation of CbmMcbm2018TofPar
+    return initParSet(dynamic_cast<CbmMcbm2018TofPar*>(parset));
+  }
+  else if (parset->IsA() == CbmMcbm2018TofPar::Class()) {
+    return initParSet(static_cast<CbmMcbm2018TofPar*>(parset));
+  }
 
   // If we do not know the derived ParSet class we return false
   LOG(error)

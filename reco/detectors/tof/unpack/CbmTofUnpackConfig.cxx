@@ -41,6 +41,11 @@ std::shared_ptr<CbmTofUnpackAlgo> CbmTofUnpackConfig::chooseAlgo()
   // Unpacker algo from mcbm 2021 on and hopefully default for a long time.
   auto algo = std::make_shared<CbmTofUnpackAlgo>();
   LOG(info) << fName << "::chooseAlgo() - selected algo = " << algo->Class_Name();
+  if (fbBmonParMode) {
+    LOG(info) << fName << "::chooseAlgo - Setting the new algo in BMon Par mode";
+    algo->SetFlagBmonParMode(fbBmonParMode);
+  }
+
   return algo;
 
   LOG(error) << fName

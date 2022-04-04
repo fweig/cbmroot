@@ -17,6 +17,7 @@
 CbmBmonUnpackConfig::CbmBmonUnpackConfig(std::string detGeoSetupTag, UInt_t runid)
   : CbmTofUnpackConfig(detGeoSetupTag, runid)
 {
+  SetFlagBmonParMode();
 }
 
 CbmBmonUnpackConfig::~CbmBmonUnpackConfig() {}

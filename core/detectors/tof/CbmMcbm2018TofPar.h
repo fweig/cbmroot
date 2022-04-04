@@ -168,4 +168,16 @@ private:
 
   ClassDef(CbmMcbm2018TofPar, 1);
 };
+
+class CbmMcbm2018BmonPar : public CbmMcbm2018TofPar {
+public:
+  /** Standard constructor **/
+  CbmMcbm2018BmonPar(const char* name = "CbmMcbm2018BmonPar", const char* title = "Bmon unpacker parameters",
+                     const char* context = "Default")
+    : CbmMcbm2018TofPar(name, title, context) {};
+
+private:
+  // just an alias for the Parameter container to allow two instances
+  ClassDef(CbmMcbm2018BmonPar, 1);
+};
 #endif  // CBMMCBM2018TOFPAR_H
