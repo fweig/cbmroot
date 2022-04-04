@@ -35,6 +35,17 @@ if(DOWNLOAD_EXTERNALS)
     set(KF_DEPENDS_ON "")
   endif()
 
+  download_project_if_needed(PROJECT           xpu
+    GIT_REPOSITORY    "https://git.cbm.gsi.de/fweig/xpu.git"
+    GIT_TAG           "v0.6.4"
+    SOURCE_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/xpu
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND     ""
+    INSTALL_COMMAND   ""
+  )
+  Add_Subdirectory(xpu)
+
+
   Include(InstallKFParticle.cmake)
   Include(InstallNicaFemto.cmake)
   Include(InstallAnalysisTree.cmake)
