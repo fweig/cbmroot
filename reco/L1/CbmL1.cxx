@@ -17,6 +17,9 @@
  *
  *====================================================================
  */
+
+#include <boost/filesystem.hpp>
+
 #include "CbmL1.h"
 
 #include "CbmKF.h"
@@ -1822,7 +1825,11 @@ void CbmL1::Finish()
   TFile* currentFile = gFile;
 
   // Open output file and write histograms
-  TFile* outfile = new TFile("L1_histo.root", "RECREATE");
+  boost::filesystem::path p = (FairRunAna::Instance()->GetUserOutputFileName()).Data();
+  std::string histoOutName = p.parent_path().string() + "/L1_histo_" + p.filename().string();
+  LOG(info) << "\033[31;1mHistograms will be saved to: \033[0m" << histoOutName;
+
+  TFile* outfile = new TFile(histoOutName.c_str(), "RECREATE");
   outfile->cd();
   writedir2current(fHistoDir);
   outfile->Close();

@@ -53,8 +53,8 @@ namespace L1Assert
 
   /// Specialization in case of IsAsserted = false, i.e. the assertion is not made
   template<>
-  constexpr int DoAssertion<false>(int /*level*/, bool /*condition*/, const char* /*msg*/, const char* /*fileName*/,
-                                   int /*lineNo*/)
+  inline __attribute__((always_inline)) int DoAssertion<false>(int /*level*/, bool /*condition*/, const char* /*msg*/, 
+                                                               const char* /*fileName*/, int /*lineNo*/)
   {
     return 0;
   }

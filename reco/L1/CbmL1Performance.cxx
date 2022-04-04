@@ -35,6 +35,8 @@
 #include "CbmTofPoint.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
+#include "CbmQaTable.h"
+
 
 #include "FairTrackParam.h"  // for vertex pulls
 
@@ -220,47 +222,80 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
     mc_length_hits.counters[index] += _mc_length_hits;
   };
 
-  void PrintEff()
+  void PrintEff(const std::string& nameOfTable = "efficiency_table")
   {
     L1_assert(nEvents != 0);
 
-    cout.setf(ios::fixed);
-    cout.setf(ios::showpoint);
-    cout.precision(3);
-    cout.setf(ios::right);
-    cout << "Track category         : "
-         << " Eff  "
-         << " / "
-         << "Killed"
-         << " / "
-         << "Length"
-         << " / "
-         << "Fakes "
-         << " / "
-         << "Clones"
-         << " / "
-         << "All Reco"
-         << " | "
-         << "  All MC "
-         << " / "
-         << "MCl(hits)"
-         << " / "
-         << "MCl(MCps)" << endl;
-
+    // cout.setf(ios::fixed);
+    // cout.setf(ios::showpoint);
+    // cout.precision(3);
+    // cout.setf(ios::right);
+    // cout << "Track category         : "
+    //      << " Eff  "
+    //      << " / "
+    //      << "Killed"
+    //      << " / "
+    //      << "Length"
+    //      << " / "
+    //      << "Fakes "
+    //      << " / "
+    //      << "Clones"
+    //      << " / "
+    //      << "All Reco"
+    //      << " | "
+    //      << "  All MC "
+    //      << " / "
+    //      << "MCl(hits)"
+    //      << " / "
+    //      << "MCl(MCps)" << endl;
     int NCounters = mc.GetNcounters();
-    for (int iC = 0; iC < NCounters; iC++) {
-      if ((names[iC] != "D0        efficiency") || (mc.counters[iC] != 0))
-        cout << names[iC] << "   : " << ratio_reco.counters[iC] << "  / "
-             << ratio_killed.counters[iC]            // tracks with aren't reco because other tracks takes their hit(-s)
-             << "  / " << ratio_length.counters[iC]  // nRecoMCHits/nMCHits
-             << "  / " << ratio_fakes.counters[iC]   // nFakeHits/nRecoAllHits
-             << "  / " << ratio_clone.counters[iC]   // nCloneTracks/nMCTracks
-             << "  / " << setw(8) << reco.counters[iC] / double(nEvents) << " | " << setw(8)
-             << mc.counters[iC] / double(nEvents) << "  / " << mc_length_hits.counters[iC] / double(mc.counters[iC])
-             << "  / " << mc_length.counters[iC] / double(mc.counters[iC]) << endl;
+    std::vector<std::string> rowNames(20);
+    for (int iC = 0; iC < NCounters; ++iC) {
+      rowNames[iC] = std::string(names[iC].Data());
     }
+    std::vector<std::string> colNames = {
+      "Eff.",
+      "Killed",
+      "Length",
+      "Fakes",
+      "Clones",
+      "All Reco",
+      "All MC",
+      "MCl(hits)",
+      "MCl(MCps)"
+    };
+
+    TDirectory* curdir = gDirectory;
+    gDirectory         = fOutDir;
+    
+    static int sTableNo = 0;
+    std::string nameOfTableNew = nameOfTable + "_no" + std::to_string(sTableNo);
+    LOG(info) << ">> Table No " << sTableNo;
+    ++sTableNo;
+
+
+
+    CbmQaTable* aTable = new CbmQaTable(nameOfTableNew.c_str(), "Track Efficiency", 20, 9);
+    aTable->SetNamesOfRows(rowNames);
+    aTable->SetNamesOfCols(colNames);
+    for (int iC = 0; iC < NCounters; iC++) {
+      aTable->SetCell(iC, 0, ratio_reco.counters[iC]);
+      aTable->SetCell(iC, 1, ratio_killed.counters[iC]);
+      aTable->SetCell(iC, 2, ratio_length.counters[iC]);
+      aTable->SetCell(iC, 3, ratio_fakes.counters[iC]);
+      aTable->SetCell(iC, 4, ratio_clone.counters[iC]);
+      aTable->SetCell(iC, 5, reco.counters[iC] / double(nEvents));
+      aTable->SetCell(iC, 6, mc.counters[iC] / double(nEvents));
+      aTable->SetCell(iC, 7, mc_length_hits.counters[iC] / double(mc.counters[iC]));
+      aTable->SetCell(iC, 8, mc_length.counters[iC] / double(mc.counters[iC]));
+    }
+    cout << *aTable;
     cout << "Ghost     probability  : " << ratio_ghosts << "  | " << ghosts << endl;
+  
+    gDirectory = curdir;
   };
+
+  
 
   TL1TracksCatCounters<double> ratio_killed;
   TL1TracksCatCounters<double> ratio_clone;
@@ -273,6 +308,8 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
   TL1TracksCatCounters<double> reco_fakes;
   TL1TracksCatCounters<int> mc_length;
   TL1TracksCatCounters<int> mc_length_hits;
+  
+  TDirectory* fOutDir {nullptr};
 };
 
 
@@ -285,6 +322,7 @@ void CbmL1::EfficienciesPerformance()
 
 
   TL1PerfEfficiencies ntra;  // efficiencies for current event
+  ntra.fOutDir = fHistoDir; // Setup a pointer for output directory
 
   for (vector<CbmL1Track>::iterator rtraIt = vRTracks.begin(); rtraIt != vRTracks.end(); ++rtraIt) {
     ntra.ghosts += rtraIt->IsGhost();
