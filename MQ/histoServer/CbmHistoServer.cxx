@@ -48,7 +48,8 @@ bool CbmHistoServer::ReceiveData(FairMQMessagePtr& msg, int /*index*/)
 #ifdef HAVE_RootDeserializer
   Deserialize<RootDeserializer>(*msg, tempObject);
 #else
-  Deserialize<RootSerializer>(*msg, tempObject);
+  //  Deserialize<RootSerializer>(*msg, tempObject);
+  RootSerializer().Deserialize(*msg, tempObject);
 #endif
 
   if (TString(tempObject->ClassName()).EqualTo("TObjArray")) {

@@ -305,7 +305,8 @@ bool CbmDeviceMcbmUnpack::SendUnpData()
    std::string* strMsgTsMetaE = new std::string(ossTsMeta.str());
 */
   FairMQMessagePtr messTsMeta(NewMessage());
-  Serialize<RootSerializer>(*messTsMeta, fTsMetaData);
+  //  Serialize<RootSerializer>(*messTsMeta, fTsMetaData);
+  RootSerializer().Serialize(*messTsMeta, fTsMetaData);
 
   std::stringstream ossSts;
   boost::archive::binary_oarchive oaSts(ossSts);

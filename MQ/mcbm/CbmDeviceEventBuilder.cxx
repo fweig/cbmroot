@@ -237,7 +237,8 @@ bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
 
   /// TS header
   CbmTsEventHeader* evtHeader = new CbmTsEventHeader();
-  Deserialize<RootSerializer>(*parts.At(uPartIdx), evtHeader);
+  //  Deserialize<RootSerializer>(*parts.At(uPartIdx), evtHeader);
+  RootSerializer().Deserialize(*parts.At(uPartIdx), evtHeader);
   ++uPartIdx;
 
   CbmDigiTimeslice ts;
@@ -293,7 +294,8 @@ bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
 
   /// TS metadata
   TimesliceMetaData* tsMetaData = new TimesliceMetaData();
-  Deserialize<RootSerializer>(*parts.At(uPartIdx), tsMetaData);
+  //  Deserialize<RootSerializer>(*parts.At(uPartIdx), tsMetaData);
+  RootSerializer().Deserialize(*parts.At(uPartIdx), tsMetaData);
   ++uPartIdx;
 
   //if (1 == fulNumMessages) {
@@ -399,12 +401,14 @@ bool CbmDeviceEventBuilder::SendEvents(const std::vector<CbmDigiEvent>& vEvents,
 
   /// Prepare serialized versions of the TS Event header
   FairMQMessagePtr messTsHeader(NewMessage());
-  Serialize<RootSerializer>(*messTsHeader, eventHeader);
+  //  Serialize<RootSerializer>(*messTsHeader, eventHeader);
+  RootSerializer().Serialize(*messTsHeader, eventHeader);
   partsOut.AddPart(std::move(messTsHeader));
 
   // Prepare TS meta data
   FairMQMessagePtr messTsMeta(NewMessage());
-  Serialize<RootSerializer>(*messTsMeta, tsMetaData);
+  //  Serialize<RootSerializer>(*messTsMeta, tsMetaData);
+  RootSerializer().Serialize(*messTsMeta, tsMetaData);
   partsOut.AddPart(std::move(messTsMeta));
 
   // Prepare event vector.

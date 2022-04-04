@@ -194,7 +194,8 @@ try {
 
          /// Serialize the vector of histo config into a single MQ message
          FairMQMessagePtr messageHist( NewMessage() );
-         Serialize< BoostSerializer < std::pair< std::string, std::string > > >( *messageHist, psHistoConfig );
+//         Serialize< BoostSerializer < std::pair< std::string, std::string > > >( *messageHist, psHistoConfig );
+         BoostSerializer < std::pair< std::string, std::string > >.Serialize( *messageHist, psHistoConfig );
 
          /// Send message to the common histogram config messages queue
          if( Send( messageHist, fsChannelNameHistosConfig ) < 0 )
@@ -222,7 +223,8 @@ try {
 
          /// Serialize the vector of canvas config into a single MQ message
          FairMQMessagePtr messageCan( NewMessage() );
-         Serialize< BoostSerializer < std::pair< std::string, std::string > > >( *messageCan, psCanvConfig );
+//         Serialize< BoostSerializer < std::pair< std::string, std::string > > >( *messageCan, psCanvConfig );
+         BoostSerializer < std::pair< std::string, std::string > >.Serialize( *messageCan, psCanvConfig );
 
          /// Send message to the common canvas config messages queue
          if( Send( messageCan, fsChannelNameCanvasConfig ) < 0 )
@@ -360,7 +362,8 @@ bool CbmDeviceMcbmEventSink::HandleData(FairMQParts& parts, int /*index*/)
   inputArchiveTsMeta >> (*fTsMetaData);
   ++uPartIdx;
 */
-  Deserialize<RootSerializer>(*parts.At(uPartIdx), fTsMetaData);
+  //  Deserialize<RootSerializer>(*parts.At(uPartIdx), fTsMetaData);
+  RootSerializer().Deserialize(*parts.At(uPartIdx), fTsMetaData);
   LOG(debug) << "TS metadata extracted";
 
   /// FIXME: Need to check if TS arrived in order (probably not!!!) + buffer!!!
@@ -613,7 +616,8 @@ bool CbmDeviceMcbmEventSink::SendHistograms()
 {
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr message(NewMessage());
-  Serialize<RootSerializer>(*message, &fArrayHisto);
+  //  Serialize<RootSerializer>(*message, &fArrayHisto);
+  RootSerializer().Serialize(*message, &fArrayHisto);
 
   /// Send message to the common histogram messages queue
   if (Send(message, fsChannelNameHistosInput) < 0) {

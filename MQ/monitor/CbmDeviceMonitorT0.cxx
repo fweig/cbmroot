@@ -312,7 +312,8 @@ bool CbmDeviceMonitorT0::SendHistoConfAndData()
   /// Prepare multiparts message and header
   std::pair<uint32_t, uint32_t> pairHeader(fvpsHistosFolder.size(), fvpsCanvasConfig.size());
   FairMQMessagePtr messageHeader(NewMessage());
-  Serialize<BoostSerializer<std::pair<uint32_t, uint32_t>>>(*messageHeader, pairHeader);
+  //  Serialize<BoostSerializer<std::pair<uint32_t, uint32_t>>>(*messageHeader, pairHeader);
+  BoostSerializer<std::pair<uint32_t, uint32_t>>().Serialize(*messageHeader, pairHeader);
 
   FairMQParts partsOut;
   partsOut.AddPart(std::move(messageHeader));
@@ -320,7 +321,8 @@ bool CbmDeviceMonitorT0::SendHistoConfAndData()
   for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto) {
     /// Serialize the vector of histo config into a single MQ message
     FairMQMessagePtr messageHist(NewMessage());
-    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, fvpsHistosFolder[uHisto]);
+    //    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, fvpsHistosFolder[uHisto]);
+    BoostSerializer<std::pair<std::string, std::string>>().Serialize(*messageHist, fvpsHistosFolder[uHisto]);
 
     partsOut.AddPart(std::move(messageHist));
   }  // for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto)
@@ -328,14 +330,16 @@ bool CbmDeviceMonitorT0::SendHistoConfAndData()
   for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv) {
     /// Serialize the vector of canvas config into a single MQ message
     FairMQMessagePtr messageCan(NewMessage());
-    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, fvpsCanvasConfig[uCanv]);
+    //    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, fvpsCanvasConfig[uCanv]);
+    BoostSerializer<std::pair<std::string, std::string>>().Serialize(*messageCan, fvpsCanvasConfig[uCanv]);
 
     partsOut.AddPart(std::move(messageCan));
   }  // for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv)
 
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr msgHistos(NewMessage());
-  Serialize<RootSerializer>(*msgHistos, &fArrayHisto);
+  //  Serialize<RootSerializer>(*msgHistos, &fArrayHisto);
+  RootSerializer().Serialize(*msgHistos, &fArrayHisto);
 
   partsOut.AddPart(std::move(msgHistos));
 
@@ -355,7 +359,8 @@ bool CbmDeviceMonitorT0::SendHistograms()
 {
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr message(NewMessage());
-  Serialize<RootSerializer>(*message, &fArrayHisto);
+  //  Serialize<RootSerializer>(*message, &fArrayHisto);
+  RootSerializer().Serialize(*message, &fArrayHisto);
 
   /// Send message to the common histogram messages queue
   if (Send(message, fsChannelNameHistosInput) < 0) {

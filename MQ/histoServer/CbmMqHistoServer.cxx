@@ -89,7 +89,8 @@ bool CbmMqHistoServer::ReceiveData(FairMQMessagePtr& msg, int /*index*/)
 {
   TObject* tempObject = nullptr;
 
-  Deserialize<RootSerializer>(*msg, tempObject);
+  //  Deserialize<RootSerializer>(*msg, tempObject);
+  RootSerializer().Deserialize(*msg, tempObject);
 
   if (TString(tempObject->ClassName()).EqualTo("TObjArray")) {
     std::lock_guard<std::mutex> lk(mtx);
@@ -155,7 +156,9 @@ bool CbmMqHistoServer::ReceiveHistoConfig(FairMQMessagePtr& msg, int /*index*/)
 {
   std::pair<std::string, std::string> tempObject;
 
-  Deserialize<BoostSerializer<std::pair<std::string, std::string>>>(*msg, tempObject);
+  //  Deserialize<BoostSerializer<std::pair<std::string, std::string>>>(*msg, tempObject);
+  BoostSerializer<std::pair<std::string, std::string>>().Deserialize(*msg, tempObject);
+
 
   LOG(info) << " Received configuration for histo " << tempObject.first << " : " << tempObject.second;
 
@@ -185,7 +188,8 @@ bool CbmMqHistoServer::ReceiveCanvasConfig(FairMQMessagePtr& msg, int /*index*/)
 {
   std::pair<std::string, std::string> tempObject;
 
-  Deserialize<BoostSerializer<std::pair<std::string, std::string>>>(*msg, tempObject);
+  //  Deserialize<BoostSerializer<std::pair<std::string, std::string>>>(*msg, tempObject);
+  BoostSerializer<std::pair<std::string, std::string>>().Deserialize(*msg, tempObject);
 
   LOG(info) << " Received configuration for canvas " << tempObject.first << " : " << tempObject.second;
 
@@ -233,7 +237,8 @@ bool CbmMqHistoServer::ReceiveConfigAndData(FairMQParts& parts, int /*index*/)
 
   /// Header contains a pair of
   std::pair<uint32_t, uint32_t> pairHeader;
-  Deserialize<BoostSerializer<std::pair<uint32_t, uint32_t>>>(*parts.At(0), pairHeader);
+  //  Deserialize<BoostSerializer<std::pair<uint32_t, uint32_t>>>(*parts.At(0), pairHeader);
+  BoostSerializer<std::pair<uint32_t, uint32_t>>().Deserialize(*parts.At(0), pairHeader);
 
   LOG(info) << "CbmMqHistoServer::ReceiveConfigAndData => Received configuration for " << pairHeader.first
             << " histos and " << pairHeader.second << " canvases";

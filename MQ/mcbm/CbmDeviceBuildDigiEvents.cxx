@@ -383,7 +383,8 @@ bool CbmDeviceBuildDigiEvents::HandleData(FairMQParts& parts, int /*index*/)
   uint32_t uPartIdx = 0;
 
   /// TS header
-  Deserialize<RootSerializer>(*parts.At(uPartIdx), fCbmTsEventHeader);
+  //  Deserialize<RootSerializer>(*parts.At(uPartIdx), fCbmTsEventHeader);
+  RootSerializer().Deserialize(*parts.At(uPartIdx), fCbmTsEventHeader);
   ++uPartIdx;
 
   /// T0
@@ -436,7 +437,8 @@ bool CbmDeviceBuildDigiEvents::HandleData(FairMQParts& parts, int /*index*/)
   ++uPartIdx;
 
   /// TS metadata
-  Deserialize<RootSerializer>(*parts.At(uPartIdx), fTsMetaData);
+  //  Deserialize<RootSerializer>(*parts.At(uPartIdx), fTsMetaData);
+  RootSerializer().Deserialize(*parts.At(uPartIdx), fTsMetaData);
   new ((*fTimeSliceMetaDataArray)[fTimeSliceMetaDataArray->GetEntriesFast()])
     TimesliceMetaData(std::move(*fTsMetaData));
   ++uPartIdx;
@@ -515,7 +517,8 @@ bool CbmDeviceBuildDigiEvents::SendEvents(FairMQParts& partsIn)
   /// Serialize the array of events into a single MQ message
   /// FIXME: Find out if possible to use only the boost serializer
   FairMQMessagePtr message(NewMessage());
-  Serialize<RootSerializer>(*message, &(vOutEvents));
+  //  Serialize<RootSerializer>(*message, &(vOutEvents));
+  RootSerializer().Serialize(*message, &(vOutEvents));
   /*
   std::stringstream ossEvt;
   boost::archive::binary_oarchive oaEvt(ossEvt);
@@ -549,31 +552,31 @@ bool CbmDeviceBuildDigiEvents::SendHistoConfAndData()
   /// Prepare multiparts message and header
   std::pair<uint32_t, uint32_t> pairHeader(fvpsHistosFolder.size(), fvpsCanvasConfig.size());
   FairMQMessagePtr messageHeader(NewMessage());
-  Serialize<BoostSerializer<std::pair<uint32_t, uint32_t>>>(*messageHeader, pairHeader);
-
+  //  Serialize<BoostSerializer<std::pair<uint32_t, uint32_t>>>(*messageHeader, pairHeader);
+  BoostSerializer<std::pair<uint32_t, uint32_t>>().Serialize(*messageHeader, pairHeader);
   FairMQParts partsOut;
   partsOut.AddPart(std::move(messageHeader));
 
   for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto) {
     /// Serialize the vector of histo config into a single MQ message
     FairMQMessagePtr messageHist(NewMessage());
-    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, fvpsHistosFolder[uHisto]);
-
+    //    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, fvpsHistosFolder[uHisto]);
+    BoostSerializer<std::pair<std::string, std::string>>().Serialize(*messageHist, fvpsHistosFolder[uHisto]);
     partsOut.AddPart(std::move(messageHist));
   }  // for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto)
 
   for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv) {
     /// Serialize the vector of canvas config into a single MQ message
     FairMQMessagePtr messageCan(NewMessage());
-    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, fvpsCanvasConfig[uCanv]);
-
+    //    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, fvpsCanvasConfig[uCanv]);
+    BoostSerializer<std::pair<std::string, std::string>>().Serialize(*messageCan, fvpsCanvasConfig[uCanv]);
     partsOut.AddPart(std::move(messageCan));
   }  // for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv)
 
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr msgHistos(NewMessage());
-  Serialize<RootSerializer>(*msgHistos, &fArrayHisto);
-
+  //  Serialize<RootSerializer>(*msgHistos, &fArrayHisto);
+  RootSerializer().Serialize(*msgHistos, &fArrayHisto);
   partsOut.AddPart(std::move(msgHistos));
 
   /// Send the multi-parts message to the common histogram messages queue
@@ -592,8 +595,8 @@ bool CbmDeviceBuildDigiEvents::SendHistograms()
 {
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr message(NewMessage());
-  Serialize<RootSerializer>(*message, &fArrayHisto);
-
+  //  Serialize<RootSerializer>(*message, &fArrayHisto);
+  RootSerializer().Serialize(*message, &fArrayHisto);
   /// Send message to the common histogram messages queue
   if (Send(message, fsChannelNameHistosInput) < 0) {
     LOG(error) << "Problem sending data";

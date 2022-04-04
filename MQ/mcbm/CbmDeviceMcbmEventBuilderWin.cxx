@@ -340,7 +340,8 @@ try {
 
       /// Serialize the vector of histo config into a single MQ message
       FairMQMessagePtr messageHist(NewMessage());
-      Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, psHistoConfig);
+      //      Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, psHistoConfig);
+      BoostSerializer<std::pair<std::string, std::string>>().Serialize(*messageHist, psHistoConfig);
 
       /// Send message to the common histogram config messages queue
       if (Send(messageHist, fsChannelNameHistosConfig) < 0) {
@@ -365,7 +366,8 @@ try {
 
       /// Serialize the vector of canvas config into a single MQ message
       FairMQMessagePtr messageCan(NewMessage());
-      Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, psCanvConfig);
+      //      Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, psCanvConfig);
+      BoostSerializer<std::pair<std::string, std::string>>().Serialize(*messageCan, psCanvConfig);
 
       /// Send message to the common canvas config messages queue
       if (Send(messageCan, fsChannelNameCanvasConfig) < 0) {
@@ -482,7 +484,8 @@ bool CbmDeviceMcbmEventBuilderWin::HandleData(FairMQParts& parts, int /*index*/)
   inputArchiveTsMeta >> (*fTsMetaData);
   ++uPartIdx;
 */
-  Deserialize<RootSerializer>(*parts.At(uPartIdx), fTsMetaData);
+  //  Deserialize<RootSerializer>(*parts.At(uPartIdx), fTsMetaData);
+  RootSerializer().Deserialize(*parts.At(uPartIdx), fTsMetaData);
   /// FIXME: Not if this is the proper way to insert the data
   new ((*fTimeSliceMetaDataArray)[fTimeSliceMetaDataArray->GetEntriesFast()
                                   //                                    ] ) TimesliceMetaData( *fTsMetaData ) ;
@@ -598,7 +601,8 @@ bool CbmDeviceMcbmEventBuilderWin::SendEvents(FairMQParts& partsIn)
 
   /// Serialize the array of events into a single MQ message
   FairMQMessagePtr message(NewMessage());
-  Serialize<RootSerializer>(*message, fEvents);
+  //  Serialize<RootSerializer>(*message, fEvents);
+  RootSerializer().Serialize(*message, fEvents);
 
   /// Add it at the end of the input composed message
   /// FIXME: use move or fix addition of new part to avoid full message copy
@@ -634,7 +638,8 @@ bool CbmDeviceMcbmEventBuilderWin::SendHistograms()
 {
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr message(NewMessage());
-  Serialize<RootSerializer>(*message, &fArrayHisto);
+  //  Serialize<RootSerializer>(*message, &fArrayHisto);
+  RootSerializer().Serialize(*message, &fArrayHisto);
 
   /// Send message to the common histogram messages queue
   if (Send(message, fsChannelNameHistosInput) < 0) {
