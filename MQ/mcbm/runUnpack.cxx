@@ -17,6 +17,14 @@ void addCustomOptions(bpo::options_description& options)
   options.add_options()("Setup", bpo::value<std::string>()->default_value("mcbm_beam_2021_07_surveyed"),
                         "Name/tag of the geomatry setup");
   options.add_options()("RunId", bpo::value<uint32_t>()->default_value(1588), "Run ID");
+  options.add_options()("UnpBmon", bpo::value<bool>()->default_value(false), "Enable Bmon unpacking if true");
+  options.add_options()("UnpSts", bpo::value<bool>()->default_value(true), "Enable STS unpacking if true");
+  options.add_options()("UnpMuch", bpo::value<bool>()->default_value(false), "Enable MUCH unpacking if true");
+  options.add_options()("UnpTrd1d", bpo::value<bool>()->default_value(true), "Enable TRD 1D unpacking if true");
+  options.add_options()("UnpTrd2d", bpo::value<bool>()->default_value(true), "Enable TRD 2D unpacking if true");
+  options.add_options()("UnpTof", bpo::value<bool>()->default_value(true), "Enable TOF unpacking if true");
+  options.add_options()("UnpRich", bpo::value<bool>()->default_value(true), "Enable RICH unpacking if true");
+  options.add_options()("UnpPsd", bpo::value<bool>()->default_value(true), "Enable PSD unpacking if true");
   options.add_options()("IgnOverMs", bpo::value<bool>()->default_value(true), "Ignore overlap MS if true");
   options.add_options()("FullTimeSort", bpo::value<bool>()->default_value(true),
                         "Full time sorting per detector before sending output array");

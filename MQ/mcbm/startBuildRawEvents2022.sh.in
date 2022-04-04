@@ -1,0 +1,308 @@
+#!/bin/bash
+
+if [ -e @SIMPATH@/bin/fairmq-shmmonitor ]; then
+  @SIMPATH@/bin/fairmq-shmmonitor --cleanup
+fi
+
+if [ $# -ge 1 ]; then
+  _nbmoni=$1
+  ((_pubfreqts = $_nbmoni*100 ))
+  _pubminsec=1.0
+  _pubmaxsec=10.0
+
+  if [ $# -ge 4 ]; then
+    _filename=""
+    _dirname=""
+    _hostname=$4
+
+    if [ $# -ge 5 ]; then
+      _pubfreqts=$5
+
+      if [ $# -ge 6 ]; then
+        _pubminsec=$6
+
+        if [ $# -ge 7 ]; then
+          _pubmaxsec=$7
+        fi
+      fi
+    fi
+  elif [ $# -ge 2 ]; then
+    _filename=$2
+    _hostname=""
+    if [ $# -eq 3 ]; then
+      _dirname=$3
+    else
+      _dirname=""
+    fi
+  else
+    echo 'Starting connection to local stream'
+    echo ' for other usages, please supply at least a filename.'
+    echo 'Possible usages are:'
+    echo 'startBuildRawEvents2022.sh'
+    echo 'startBuildRawEvents2022.sh <Nb Unp & Moni processes>'
+    echo 'startBuildRawEvents2022.sh <Nb Unp & Moni processes> <full filename pattern list>'
+    echo 'startBuildRawEvents2022.sh <Nb Unp & Moni processes> <filename pattern> <folder_path>'
+    echo 'startBuildRawEvents2022.sh <Nb Unp & Moni processes> "" "" <hostname(s) list>'
+    echo 'startBuildRawEvents2022.sh <Nb Unp & Moni processes> "" "" <hostname(s) list> <Hist publish freq. in TS>'
+    echo 'startBuildRawEvents2022.sh <Nb Unp & Moni processes> "" "" <hostname(s) list> <Hist publish freq. in TS> <Min Hist pub. in s>'
+    echo 'startBuildRawEvents2022.sh <Nb Unp & Moni processes> "" "" <hostname(s) list> <Hist publish freq. in TS> <Min Hist pub. in s> <Max Hist pub. in s>'
+    _filename=""
+    _dirname=""
+    _hostname="localhost"
+  fi
+else
+  echo 'Starting connection to local stream with 1 monitor process'
+  echo ' for other usages, please supply at least a filename.'
+  echo 'Possible usages are:'
+  echo 'startBuildRawEvents2022.sh'
+  echo 'startBuildRawEvents2022.sh <Nb Unp & Moni processes>'
+  echo 'startBuildRawEvents2022.sh <Nb Unp & Moni processes> <full filename pattern list>'
+  echo 'startBuildRawEvents2022.sh <Nb Unp & Moni processes> <filename pattern> <folder_path>'
+  echo 'startBuildRawEvents2022.sh <Nb Unp & Moni processes> "" "" <hostname(s) list>'
+  echo 'startBuildRawEvents2022.sh <Nb Unp & Moni processes> "" "" <hostname(s) list> <Hist publish freq. in TS>'
+  echo 'startBuildRawEvents2022.sh <Nb Unp & Moni processes> "" "" <hostname(s) list> <Hist publish freq. in TS> <Min Hist pub. in s>'
+  echo 'startBuildRawEvents2022.sh <Nb Unp & Moni processes> "" "" <hostname(s) list> <Hist publish freq. in TS> <Min Hist pub. in s> <Max Hist pub. in s>'
+  _filename=""
+  _dirname=""
+  _hostname="localhost"
+  _nbmoni=1
+  _pubfreqts=100
+  _pubminsec=1.0
+  _pubmaxsec=10.0
+fi
+
+_parfileSts=@VMCWORKDIR@/macro/beamtime/mcbm2022/mStsPar.par
+_parfileMuch=@VMCWORKDIR@/macro/beamtime/mcbm2022/mMuchPar.par
+_parfileTrdAsic=@VMCWORKDIR@/parameters/trd/trd_v22d_mcbm.asic.par
+_parfileTrdDigi=@VMCWORKDIR@/parameters/trd/trd_v22d_mcbm.digi.par
+_parfileTrdGas=@VMCWORKDIR@/parameters/trd/trd_v22d_mcbm.gas.par
+_parfileTrdGain=@VMCWORKDIR@/parameters/trd/trd_v22d_mcbm.gain.par
+_parfileTof=@VMCWORKDIR@/macro/beamtime/mcbm2022/mTofCriPar.par
+_parfileBmon=@VMCWORKDIR@/macro/beamtime/mcbm2022/mBmonCriPar.par
+_parfileRich=@VMCWORKDIR@/macro/beamtime/mcbm2021/mRichPar_70.par
+_parfilePsd=@VMCWORKDIR@/macro/beamtime/mcbm2021/mPsdPar.par
+_setup_name=mcbm_beam_2022_03_22_iron
+_run_id=2158
+
+_ratelog=0 # hides ZMQ messages rates and bandwidth
+#_ratelog=1 # display ZMQ messages rates and bandwidth
+
+LOGFILETAG=`hostname`
+LOGFILETAG+="_"
+LOGFILETAG+=`date +%Y_%m_%d_%H_%M_%S`
+LOGFILETAG+=".log"
+
+LIST_OF_PIDS=""
+
+(( _paraBuffSz=100 ))
+(( _singBuffSz=_paraBuffSz*_nbmoni ))
+
+echo "Buffer size for parallel  devices $_paraBuffSz"
+echo "Buffer size for singleton devices $_singBuffSz"
+
+
+SAMPLER="RepReqTsSampler"
+SAMPLER+=" --control static"
+SAMPLER+=" --id sampler1"
+#SAMPLER+=" --max-timeslices 0"
+#SAMPLER+=" --max-timeslices 10"
+#SAMPLER+=" --max-timeslices 100"
+#SAMPLER+=" --max-timeslices 300"
+#SAMPLER+=" --max-timeslices 1000"
+#SAMPLER+=" --severity info"
+#SAMPLER+=" --flib-port 10"
+if [ "$_hostname" != "" ]; then
+  SAMPLER+=" --fles-host $_hostname"
+elif [ "$_filename" != "" ]; then
+  SAMPLER+=" --filename $_filename"
+  if [ "$_dirname" != "" ]; then
+    SAMPLER+=" --dirname $_dirname"
+  fi
+fi
+SAMPLER+=" --high-water-mark 10"
+SAMPLER+=" --no-split-ts 1"
+SAMPLER+=" --ChNameMissTs missedts"
+SAMPLER+=" --ChNameCmds commands"
+SAMPLER+=" --PubFreqTs $_pubfreqts"
+SAMPLER+=" --PubTimeMin $_pubminsec"
+SAMPLER+=" --PubTimeMax $_pubmaxsec"
+SAMPLER+=" --channel-config name=ts-request,type=rep,method=bind,transport=zeromq,address=tcp://127.0.0.1:11555,rateLogging=$_ratelog"
+SAMPLER+=" --channel-config name=histogram-in,type=pub,method=connect,transport=zeromq,address=tcp://127.0.0.1:11666,rateLogging=$_ratelog"
+SAMPLER+=" --channel-config name=missedts,type=pub,method=bind,address=tcp://127.0.0.1:11006,rateLogging=$_ratelog"
+SAMPLER+=" --channel-config name=commands,type=pub,method=bind,address=tcp://127.0.0.1:11007,rateLogging=$_ratelog"
+SAMPLER+=" --transport zeromq"
+# Replaces log filename Xterm.log.hostname.yyyy.mm.dd.hh.mm.ss.XXXXXX
+# with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
+SAMPLER_LOG="sampler1_$LOGFILETAG"
+# xterm -l -lf $SAMPLER_LOG -geometry 80x23+0+0 -hold -e @CMAKE_BINARY_DIR@/bin/MQ/source/$SAMPLER  &
+nohup @CMAKE_BINARY_DIR@/bin/MQ/source/$SAMPLER  &> $SAMPLER_LOG &
+
+echo $SAMPLER
+
+LIST_OF_PIDS+=$!
+LIST_OF_PIDS+=" "
+
+PARAMETERSERVER="parmq-server"
+PARAMETERSERVER+=" --control static"
+PARAMETERSERVER+=" --id parmq-server"
+PARAMETERSERVER+=" --severity info"
+PARAMETERSERVER+=" --channel-name parameters"
+PARAMETERSERVER+=" --channel-config name=parameters,type=rep,method=bind,transport=zeromq,address=tcp://127.0.0.1:11005,rateLogging=0"
+PARAMETERSERVER+=" --first-input-name $_parfileSts;$_parfileMuch;$_parfileTrdAsic;$_parfileTrdDigi;$_parfileTrdGas;$_parfileTrdGain;$_parfileTof;$_parfileBmon;$_parfileRich;$_parfilePsd"
+PARAMETERSERVER+=" --first-input-type ASCII"
+#PARAMETERSERVER+=" --libs-to-load=CbmStsBase;CbmMuchBase;CbmTrdBase;CbmTofBase;CbmRichBase" # doesn't work due to runtime problem
+PARAMETERSERVER+=" --setup $_setup_name"
+# Replaces log filename Xterm.log.hostname.yyyy.mm.dd.hh.mm.ss.XXXXXX
+# with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
+PARAMSRV_LOG="parmq_$LOGFILETAG"
+# xterm -l -lf $PARAMSRV_LOG -geometry 80x23+1600+0 -hold -e @CMAKE_BINARY_DIR@/bin/MQ/parmq/$PARAMETERSERVER &
+nohup @CMAKE_BINARY_DIR@/bin/MQ/parmq/$PARAMETERSERVER &> $PARAMSRV_LOG &
+
+LIST_OF_PIDS+=$!
+LIST_OF_PIDS+=" "
+
+HISTSERVER="MqHistoServer"
+HISTSERVER+=" --control static"
+HISTSERVER+=" --id server1"
+HISTSERVER+=" --severity info"
+HISTSERVER+=" --histport 8081"
+HISTSERVER+=" --channel-config name=histogram-in,type=sub,method=bind,transport=zeromq,address=tcp://127.0.0.1:11666,rateLogging=$_ratelog"
+HISTSERVER+=" --channel-config name=histo-conf,type=sub,method=bind,transport=zeromq,address=tcp://127.0.0.1:11667,rateLogging=0"
+HISTSERVER+=" --channel-config name=canvas-conf,type=sub,method=bind,transport=zeromq,address=tcp://127.0.0.1:11668,rateLogging=0"
+# Replaces log filename Xterm.log.hostname.yyyy.mm.dd.hh.mm.ss.XXXXXX
+# with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
+HISTSRV_LOG="server1_$LOGFILETAG"
+# xterm -l -lf $HISTSRV_LOG -geometry 80x23+2000+0 -hold -e @CMAKE_BINARY_DIR@/bin/MQ/histogramServer/$HISTSERVER &
+nohup @CMAKE_BINARY_DIR@/bin/MQ/histogramServer/$HISTSERVER &> $HISTSRV_LOG &
+
+LIST_OF_PIDS+=$!
+LIST_OF_PIDS+=" "
+
+sleep 1
+
+_iMoni=0
+while (( _iMoni < _nbmoni )); do
+  (( _yOffset=200*_iMoni ))
+  (( _iMoni += 1 ))
+  (( _iPort = 11680 + _iMoni ))
+
+  UNPACKER="MqUnpack"
+  UNPACKER+=" --control static"
+  UNPACKER+=" --id unp$_iMoni"
+  #UNPACKER+=" --severity error"
+  UNPACKER+=" --severity info"
+  #UNPACKER+=" --severity debug"
+  UNPACKER+=" --Setup $_setup_name"
+  UNPACKER+=" --RunId $_run_id"
+  UNPACKER+=" --IgnOverMs 1"
+  UNPACKER+=" --UnpBmon true"
+  UNPACKER+=" --UnpMuch true"
+  UNPACKER+=" --UnpPsd false"
+  UNPACKER+=" --SetTimeOffs kT0,-40"
+  UNPACKER+=" --SetTimeOffs kSTS,-1025"
+  UNPACKER+=" --SetTimeOffs kMUCH,-1020"
+  UNPACKER+=" --SetTimeOffs kTRD,1190"
+  UNPACKER+=" --SetTimeOffs kTRD2D,-540"
+  UNPACKER+=" --SetTimeOffs kTOF,0"
+  UNPACKER+=" --SetTimeOffs kRICH,50"
+  UNPACKER+=" --PubFreqTs $_pubfreqts"
+  UNPACKER+=" --PubTimeMin $_pubminsec"
+  UNPACKER+=" --PubTimeMax $_pubmaxsec"
+  UNPACKER+=" --TsNameOut unpts$_iMoni"
+  UNPACKER+=" --channel-config name=ts-request,type=req,method=connect,transport=zeromq,address=tcp://127.0.0.1:11555,rateLogging=$_ratelog"
+  UNPACKER+=" --channel-config name=parameters,type=req,method=connect,transport=zeromq,address=tcp://127.0.0.1:11005,rateLogging=0"
+  UNPACKER+=" --channel-config name=unpts$_iMoni,type=push,method=bind,transport=zeromq,sndBufSize=2,address=tcp://127.0.0.1:$_iPort,rateLogging=$_ratelog"
+#  UNPACKER+=" --channel-config name=commands,type=sub,method=connect,transport=zeromq,address=tcp://127.0.0.1:11007"
+  UNPACKER+=" --channel-config name=histogram-in,type=pub,method=connect,transport=zeromq,address=tcp://127.0.0.1:11666,rateLogging=$_ratelog"
+  UNPACKER+=" --transport zeromq"
+  # Replaces log filename Xterm.log.hostname.yyyy.mm.dd.hh.mm.ss.XXXXXX
+  # with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
+  UNPACKER_LOG="unp$_iMoni"
+  UNPACKER_LOG+="_$LOGFILETAG"
+  # xterm -l -lf $UNPACKER_LOG -geometry 132x23+400+$_yOffset -hold -e @CMAKE_BINARY_DIR@/bin/MQ/mcbm/$UNPACKER &
+  nohup @CMAKE_BINARY_DIR@/bin/MQ/mcbm/$UNPACKER &> $UNPACKER_LOG &
+
+  LIST_OF_PIDS+=$!
+  LIST_OF_PIDS+=" "
+
+  EVTBUILDER="BuildDigiEvents"
+  EVTBUILDER+=" --control static"
+  EVTBUILDER+=" --id build$_iMoni"
+  EVTBUILDER+=" --severity info"
+  #EVTBUILDER+=" --severity debug"
+  EVTBUILDER+=" --PubFreqTs $_pubfreqts"
+  EVTBUILDER+=" --PubTimeMin $_pubminsec"
+  EVTBUILDER+=" --PubTimeMax $_pubmaxsec"
+  EVTBUILDER+=" --FillHistos true"
+#  EVTBUILDER+=" --FillHistos false"
+  EVTBUILDER+=" --IgnTsOver false"
+  EVTBUILDER+=" --EvtOverMode AllowOverlap"
+  EVTBUILDER+=" --RefDet kTof"
+  EVTBUILDER+=" --AddDet kT0"
+  EVTBUILDER+=" --AddDet kMuch"
+  EVTBUILDER+=" --DelDet kPsd"
+  EVTBUILDER+=" --SetTrigWin kT0,-100,100"
+  EVTBUILDER+=" --SetTrigWin kSts,-60,60"
+  EVTBUILDER+=" --SetTrigWin kMuch,-400,400"
+  EVTBUILDER+=" --SetTrigWin kTrd,-300,300"
+  EVTBUILDER+=" --SetTrigWin kTrd2D,-300,300"
+  EVTBUILDER+=" --SetTrigWin kTof,-100,100"
+  EVTBUILDER+=" --SetTrigWin kRich,0,80"
+  EVTBUILDER+=" --SetTrigMinNb kT0,0"
+  EVTBUILDER+=" --SetTrigMinNb kSts,0"
+  EVTBUILDER+=" --SetTrigMinNb kMuch,0"
+  EVTBUILDER+=" --SetTrigMinNb kTrd,0"
+  EVTBUILDER+=" --SetTrigMinNb kTrd2D,0"
+  EVTBUILDER+=" --SetTrigMinNb kTof,8" # Beam
+#  EVTBUILDER+=" --SetTrigMinNb kTof,40" #Pulser
+  EVTBUILDER+=" --SetTrigMinNb kRich,0"
+  EVTBUILDER+=" --TsNameIn unpts$_iMoni"
+  EVTBUILDER+=" --EvtNameOut events"
+  EVTBUILDER+=" --channel-config name=unpts$_iMoni,type=pull,method=connect,transport=zeromq,rcvBufSize=2,address=tcp://127.0.0.1:$_iPort,rateLogging=$_ratelog"
+  EVTBUILDER+=" --channel-config name=events,type=push,method=connect,transport=zeromq,sndBufSize=2,address=tcp://127.0.0.1:11556,rateLogging=$_ratelog"
+#  EVTBUILDER+=" --channel-config name=commands,type=sub,method=connect,transport=zeromq,address=tcp://127.0.0.1:11007"
+  EVTBUILDER+=" --channel-config name=parameters,type=req,method=connect,transport=zeromq,address=tcp://127.0.0.1:11005,rateLogging=0"
+  EVTBUILDER+=" --channel-config name=histogram-in,type=pub,method=connect,transport=zeromq,address=tcp://127.0.0.1:11666,rateLogging=$_ratelog"
+  EVTBUILDER+=" --transport zeromq"
+  # Replaces log filename Xterm.log.hostname.yyyy.mm.dd.hh.mm.ss.XXXXXX
+  # with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
+  EVTBUILDER_LOG="build$_iMoni"
+  EVTBUILDER_LOG+="_$LOGFILETAG"
+  # xterm -l -lf $EVTBUILDER_LOG -geometry 80x23+800+$_yOffset -hold -e @CMAKE_BINARY_DIR@/bin/MQ/mcbm/$EVTBUILDER &
+  nohup @CMAKE_BINARY_DIR@/bin/MQ/mcbm/$EVTBUILDER &> $EVTBUILDER_LOG &
+  VALGRIND_EVT="valgrind -v --error-limit=no --suppressions=$ROOTSYS/etc/root/valgrind-root.supp --leak-check=full --show-reachable=yes --log-file=valgrind_evt_log.txt"
+  VALGHEAP_EVT="valgrind --tool=massif --massif-out-file=valgrind_evt_massif.out"
+#  nohup $VALGRIND_EVT @CMAKE_BINARY_DIR@/bin/MQ/mcbm/$EVTBUILDER &> $EVTBUILDER_LOG &
+#  nohup $VALGHEAP_EVT @CMAKE_BINARY_DIR@/bin/MQ/mcbm/$EVTBUILDER &> $EVTBUILDER_LOG &
+
+  LIST_OF_PIDS+=$!
+  LIST_OF_PIDS+=" "
+done
+
+EVTSINK="DigiEventSink"
+EVTSINK+=" --control static"
+EVTSINK+=" --id evtsink1"
+EVTSINK+=" --severity info"
+#EVTSINK+=" --severity debug"
+#EVTSINK+=" --StoreFullTs 1"
+EVTSINK+=" --OutFileName mcbm_digis_events.root"
+EVTSINK+=" --FillHistos true"
+EVTSINK+=" --PubFreqTs $_pubfreqts"
+EVTSINK+=" --PubTimeMin $_pubminsec"
+EVTSINK+=" --PubTimeMax $_pubmaxsec"
+EVTSINK+=" --EvtNameIn events"
+EVTSINK+=" --channel-config name=events,type=pull,method=bind,transport=zeromq,rcvBufSize=$_nbmoni,address=tcp://127.0.0.1:11556,rateLogging=$_ratelog"
+EVTSINK+=" --channel-config name=missedts,type=sub,method=connect,transport=zeromq,address=tcp://127.0.0.1:11006,rateLogging=$_ratelog"
+EVTSINK+=" --channel-config name=commands,type=sub,method=connect,transport=zeromq,address=tcp://127.0.0.1:11007,rateLogging=$_ratelog"
+EVTSINK+=" --channel-config name=histogram-in,type=pub,method=connect,transport=zeromq,address=tcp://127.0.0.1:11666,rateLogging=$_ratelog"
+# Replaces log filename Xterm.log.hostname.yyyy.mm.dd.hh.mm.ss.XXXXXX
+# with ProcessName_hostname_yyyy_mm_dd_hh_mm_ss.log
+EVTSINK_LOG="evtsink1_$LOGFILETAG"
+# xterm -l -lf $EVTSINK_LOG -geometry 80x23+1200+0 -hold -e @CMAKE_BINARY_DIR@/bin/MQ/mcbm/$EVTSINK &
+nohup @CMAKE_BINARY_DIR@/bin/MQ/mcbm/$EVTSINK &> $EVTSINK_LOG &
+
+LIST_OF_PIDS+=$!
+LIST_OF_PIDS+=" "
+
+PID_LOG="pids_$LOGFILETAG"
+echo $LIST_OF_PIDS &> $PID_LOG

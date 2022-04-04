@@ -4,6 +4,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQBuildRawEvents.sh.in ${CMAKE_B
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBuildRawEvents2021.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBuildRawEvents2021.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBuildRawEventsCosmics2021.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBuildRawEventsCosmics2021.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startEventBuilder.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startEventBuilder.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBuildRawEvents2022.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBuildRawEvents2022.sh)
 
 set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -19,12 +20,13 @@ set(INCLUDE_DIRECTORIES
     ${CBMROOT_SOURCE_DIR}/fles/flestools
     ${CBMROOT_SOURCE_DIR}/reco/eventbuilder/digis
     ${CBMROOT_SOURCE_DIR}/reco/base/
+    ${CBMROOT_SOURCE_DIR}/reco/detectors/much/unpack
     ${CBMROOT_SOURCE_DIR}/reco/detectors/psd/unpack
+    ${CBMROOT_SOURCE_DIR}/reco/detectors/rich/unpack
     ${CBMROOT_SOURCE_DIR}/reco/detectors/sts/unpack
     ${CBMROOT_SOURCE_DIR}/reco/detectors/tof/unpack
     ${CBMROOT_SOURCE_DIR}/reco/detectors/trd/unpack
     ${CBMROOT_SOURCE_DIR}/reco/detectors/trd/rawToDigiMethods
-    ${CBMROOT_SOURCE_DIR}/reco/detectors/rich/unpack
     ${CBMDATA_DIR}
     ${CBMDATA_DIR}/raw
     ${CBMDATA_DIR}/sts
@@ -41,6 +43,7 @@ set(INCLUDE_DIRECTORIES
     ${CBMROOT_SOURCE_DIR}/sim/transport/geosetup # For CbmGeoSetupDbProvider.h, needed by CbmSetup
 
     ${CBMDETECTORBASE_DIR}/sts # required for parameter handling of the sts
+    ${CBMDETECTORBASE_DIR}/much # required for parameter handling of the much
     ${CBMDETECTORBASE_DIR}/trd # required for parameter handling of the trd
     ${CBMDETECTORBASE_DIR}/tof # required for parameter handling of the tof
     ${CBMDETECTORBASE_DIR}/rich # required for parameter handling of the rich
@@ -218,6 +221,7 @@ set(DEPENDENCIES
   CbmFlibFlesTools
   CbmBase
   CbmRecoBase
+  CbmMuchReco
   CbmPsdReco
   CbmRichReco
   CbmRecoSts

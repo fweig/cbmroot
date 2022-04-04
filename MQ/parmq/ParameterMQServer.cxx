@@ -70,6 +70,8 @@ void ParameterMQServer::InitTask()
   fChannelName     = fConfig->GetValue<string>("channel-name");
 
   fsSetupName = fConfig->GetValue<std::string>("setup");
+  LOG(info) << "Using setup: " << fsSetupName;
+
 
   if (fRtdb != 0) {
     // Set first input

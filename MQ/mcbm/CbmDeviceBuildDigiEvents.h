@@ -63,6 +63,7 @@ private:
   std::vector<std::string> fvsDelDet       = {};
   std::vector<std::string> fvsSetTrigWin   = {};
   std::vector<std::string> fvsSetTrigMinNb = {};
+  std::vector<std::string> fvsSetTrigMaxNb = {};
   /// message queues
   std::string fsChannelNameDataInput   = "unpts_0";
   std::string fsChannelNameDataOutput  = "events";

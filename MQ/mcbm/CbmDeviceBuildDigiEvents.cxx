@@ -67,6 +67,7 @@ try {
   fvsDelDet       = fConfig->GetValue<std::vector<std::string>>("DelDet");
   fvsSetTrigWin   = fConfig->GetValue<std::vector<std::string>>("SetTrigWin");
   fvsSetTrigMinNb = fConfig->GetValue<std::vector<std::string>>("SetTrigMinNb");
+  fvsSetTrigMaxNb = fConfig->GetValue<std::vector<std::string>>("SetTrigMaxNb");
 
   fsChannelNameDataInput   = fConfig->GetValue<std::string>("TsNameIn");
   fsChannelNameDataOutput  = fConfig->GetValue<std::string>("EvtNameOut");
@@ -110,14 +111,15 @@ try {
                                       : EOverlapModeRaw::NoOverlap)));
   fpAlgo->SetEventOverlapMode(mode);
   /// Extract refdet
-  RawEventBuilderDetector refDet = ("kT0"   == fsRefDet ? kRawEventBuilderDetT0
-                              : ("kSts"  == fsRefDet ? kRawEventBuilderDetSts
-                              : ("kMuch" == fsRefDet ? kRawEventBuilderDetMuch
-                              : ("kTrd"  == fsRefDet ? kRawEventBuilderDetTrd
-                              : ("kTof"  == fsRefDet ? kRawEventBuilderDetTof
-                              : ("kRich" == fsRefDet ? kRawEventBuilderDetRich
-                              : ("kPsd"  == fsRefDet ? kRawEventBuilderDetPsd
-                                                     : kRawEventBuilderDetUndef)))))));
+  RawEventBuilderDetector refDet = ("kT0"    == fsRefDet ? kRawEventBuilderDetT0
+                                 : ("kSts"   == fsRefDet ? kRawEventBuilderDetSts
+                                 : ("kMuch"  == fsRefDet ? kRawEventBuilderDetMuch
+                                 : ("kTrd"   == fsRefDet ? kRawEventBuilderDetTrd
+                                 : ("kTrd2D" == fsRefDet ? kRawEventBuilderDetTrd2D
+                                 : ("kTof"   == fsRefDet ? kRawEventBuilderDetTof
+                                 : ("kRich"  == fsRefDet ? kRawEventBuilderDetRich
+                                 : ("kPsd"   == fsRefDet ? kRawEventBuilderDetPsd
+                                                         : kRawEventBuilderDetUndef))))))));
   if (kRawEventBuilderDetUndef != refDet) {
     fpAlgo->SetReferenceDetector(refDet);
   }
@@ -131,14 +133,15 @@ try {
   for (std::vector<std::string>::iterator itStrAdd = fvsAddDet.begin();
        itStrAdd != fvsAddDet.end();
        ++itStrAdd) {
-    RawEventBuilderDetector addDet = ("kT0"   == *itStrAdd ? kRawEventBuilderDetT0
-                                : ("kSts"  == *itStrAdd ? kRawEventBuilderDetSts
-                                : ("kMuch" == *itStrAdd ? kRawEventBuilderDetMuch
-                                : ("kTrd"  == *itStrAdd ? kRawEventBuilderDetTrd
-                                : ("kTof"  == *itStrAdd ? kRawEventBuilderDetTof
-                                : ("kRich" == *itStrAdd ? kRawEventBuilderDetRich
-                                : ("kPsd"  == *itStrAdd ? kRawEventBuilderDetPsd
-                                                        : kRawEventBuilderDetUndef)))))));
+    RawEventBuilderDetector addDet = ("kT0"    == *itStrAdd ? kRawEventBuilderDetT0
+                                   : ("kSts"   == *itStrAdd ? kRawEventBuilderDetSts
+                                   : ("kMuch"  == *itStrAdd ? kRawEventBuilderDetMuch
+                                   : ("kTrd"   == *itStrAdd ? kRawEventBuilderDetTrd
+                                   : ("kTrd2D" == *itStrAdd ? kRawEventBuilderDetTrd2D
+                                   : ("kTof"   == *itStrAdd ? kRawEventBuilderDetTof
+                                   : ("kRich"  == *itStrAdd ? kRawEventBuilderDetRich
+                                   : ("kPsd"   == *itStrAdd ? kRawEventBuilderDetPsd
+                                                            : kRawEventBuilderDetUndef))))))));
     if (kRawEventBuilderDetUndef != addDet) {
       fpAlgo->AddDetector(addDet);
     }
@@ -154,14 +157,15 @@ try {
   for (std::vector<std::string>::iterator itStrRem = fvsDelDet.begin();
        itStrRem != fvsDelDet.end();
        ++itStrRem) {
-    RawEventBuilderDetector remDet = ("kT0"   == *itStrRem ? kRawEventBuilderDetT0
-                                : ("kSts"  == *itStrRem ? kRawEventBuilderDetSts
-                                : ("kMuch" == *itStrRem ? kRawEventBuilderDetMuch
-                                : ("kTrd"  == *itStrRem ? kRawEventBuilderDetTrd
-                                : ("kTof"  == *itStrRem ? kRawEventBuilderDetTof
-                                : ("kRich" == *itStrRem ? kRawEventBuilderDetRich
-                                : ("kPsd"  == *itStrRem ? kRawEventBuilderDetPsd
-                                                        : kRawEventBuilderDetUndef)))))));
+    RawEventBuilderDetector remDet = ("kT0"    == *itStrRem ? kRawEventBuilderDetT0
+                                   : ("kSts"   == *itStrRem ? kRawEventBuilderDetSts
+                                   : ("kMuch"  == *itStrRem ? kRawEventBuilderDetMuch
+                                   : ("kTrd"   == *itStrRem ? kRawEventBuilderDetTrd
+                                   : ("kTrd2D" == *itStrRem ? kRawEventBuilderDetTrd2D
+                                   : ("kTof"   == *itStrRem ? kRawEventBuilderDetTof
+                                   : ("kRich"  == *itStrRem ? kRawEventBuilderDetRich
+                                   : ("kPsd"   == *itStrRem ? kRawEventBuilderDetPsd
+                                                           : kRawEventBuilderDetUndef))))))));
     if (kRawEventBuilderDetUndef != remDet) {
       fpAlgo->RemoveDetector(remDet);
     }
@@ -188,14 +192,15 @@ try {
 
     /// Detector Enum Tag
     std::string sSelDet = (*itStrTrigWin).substr(0, charPosDel);
-    ECbmModuleId selDet = ("kT0"   == sSelDet ? ECbmModuleId::kT0
-                        : ("kSts"  == sSelDet ? ECbmModuleId::kSts
-                        : ("kMuch" == sSelDet ? ECbmModuleId::kMuch
-                        : ("kTrd"  == sSelDet ? ECbmModuleId::kTrd
-                        : ("kTof"  == sSelDet ? ECbmModuleId::kTof
-                        : ("kRich" == sSelDet ? ECbmModuleId::kRich
-                        : ("kPsd"  == sSelDet ? ECbmModuleId::kPsd
-                                              : ECbmModuleId::kNotExist)))))));
+    ECbmModuleId selDet = ("kT0"    == sSelDet ? ECbmModuleId::kT0
+                        : ("kSts"   == sSelDet ? ECbmModuleId::kSts
+                        : ("kMuch"  == sSelDet ? ECbmModuleId::kMuch
+                        : ("kTrd"   == sSelDet ? ECbmModuleId::kTrd
+                        : ("kTrd2D" == sSelDet ? ECbmModuleId::kTrd2d
+                        : ("kTof"   == sSelDet ? ECbmModuleId::kTof
+                        : ("kRich"  == sSelDet ? ECbmModuleId::kRich
+                        : ("kPsd"   == sSelDet ? ECbmModuleId::kPsd
+                                               : ECbmModuleId::kNotExist))))))));
     if (ECbmModuleId::kNotExist == selDet) {
       LOG(info)
         << "CbmDeviceBuildDigiEvents::InitTask => "
@@ -224,7 +229,7 @@ try {
 
     fpAlgo->SetTriggerWindow(selDet, dWinBeg, dWinEnd);
   }
-     /// Extract MinNb for trigger if any
+  /// Extract MinNb for trigger if any
   for (std::vector<std::string>::iterator itStrMinNb = fvsSetTrigMinNb.begin();
        itStrMinNb != fvsSetTrigMinNb.end();
        ++itStrMinNb) {
@@ -240,14 +245,15 @@ try {
 
     /// Detector Enum Tag
     std::string sSelDet = (*itStrMinNb).substr(0, charPosDel);
-    ECbmModuleId selDet = ("kT0"   == sSelDet ? ECbmModuleId::kT0
-                        : ("kSts"  == sSelDet ? ECbmModuleId::kSts
-                        : ("kMuch" == sSelDet ? ECbmModuleId::kMuch
-                        : ("kTrd"  == sSelDet ? ECbmModuleId::kTrd
-                        : ("kTof"  == sSelDet ? ECbmModuleId::kTof
-                        : ("kRich" == sSelDet ? ECbmModuleId::kRich
-                        : ("kPsd"  == sSelDet ? ECbmModuleId::kPsd
-                                              : ECbmModuleId::kNotExist)))))));
+    ECbmModuleId selDet = ("kT0"    == sSelDet ? ECbmModuleId::kT0
+                        : ("kSts"   == sSelDet ? ECbmModuleId::kSts
+                        : ("kMuch"  == sSelDet ? ECbmModuleId::kMuch
+                        : ("kTrd"   == sSelDet ? ECbmModuleId::kTrd
+                        : ("kTrd2D" == sSelDet ? ECbmModuleId::kTrd2d
+                        : ("kTof"   == sSelDet ? ECbmModuleId::kTof
+                        : ("kRich"  == sSelDet ? ECbmModuleId::kRich
+                        : ("kPsd"   == sSelDet ? ECbmModuleId::kPsd
+                                               : ECbmModuleId::kNotExist))))))));
     if (ECbmModuleId::kNotExist == selDet) {
       LOG(info)
         << "CbmDeviceBuildDigiEvents::InitTask => "
@@ -261,6 +267,46 @@ try {
     UInt_t uMinNb = std::stoul((*itStrMinNb).substr(charPosDel));
 
     fpAlgo->SetTriggerMinNumber(selDet, uMinNb);
+  }
+
+  /// Extract MaxNb for trigger if any
+  for (std::vector<std::string>::iterator itStrMaxNb = fvsSetTrigMaxNb.begin();
+       itStrMaxNb != fvsSetTrigMaxNb.end();
+       ++itStrMaxNb) {
+    size_t charPosDel = (*itStrMaxNb).find(',');
+    if (std::string::npos == charPosDel) {
+      LOG(info)
+        << "CbmDeviceBuildDigiEvents::InitTask => "
+        << "Trying to set trigger Max Nb with invalid option pattern, ignored! "
+        << " (Should be ECbmModuleId,uMaxNb but instead found " << (*itStrMaxNb)
+        << " )";
+      continue;
+    }
+
+    /// Detector Enum Tag
+    std::string sSelDet = (*itStrMaxNb).substr(0, charPosDel);
+    ECbmModuleId selDet = ("kT0"    == sSelDet ? ECbmModuleId::kT0
+                        : ("kSts"   == sSelDet ? ECbmModuleId::kSts
+                        : ("kMuch"  == sSelDet ? ECbmModuleId::kMuch
+                        : ("kTrd"   == sSelDet ? ECbmModuleId::kTrd
+                        : ("kTrd2D" == sSelDet ? ECbmModuleId::kTrd2d
+                        : ("kTof"   == sSelDet ? ECbmModuleId::kTof
+                        : ("kRich"  == sSelDet ? ECbmModuleId::kRich
+                        : ("kPsd"   == sSelDet ? ECbmModuleId::kPsd
+                                               : ECbmModuleId::kNotExist))))))));
+    if (ECbmModuleId::kNotExist == selDet) {
+      LOG(info)
+        << "CbmDeviceBuildDigiEvents::InitTask => "
+        << "Trying to set trigger Max Nb for unsupported detector, ignored! "
+        << sSelDet;
+      continue;
+    }
+
+    /// Max number
+    charPosDel++;
+    UInt_t uMaxNb = std::stoul((*itStrMaxNb).substr(charPosDel));
+
+    fpAlgo->SetTriggerMaxNumber(selDet, uMaxNb);
   }
 
   /// FIXME: Re-enable clang formatting after formatted lines
@@ -388,52 +434,66 @@ bool CbmDeviceBuildDigiEvents::HandleData(FairMQParts& parts, int /*index*/)
   ++uPartIdx;
 
   /// T0
-  std::string msgStrT0(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issT0(msgStrT0);
-  boost::archive::binary_iarchive inputArchiveT0(issT0);
-  inputArchiveT0 >> *fvDigiT0;
+  if (0 < (parts.At(uPartIdx))->GetSize()) {
+    std::string msgStrT0(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issT0(msgStrT0);
+    boost::archive::binary_iarchive inputArchiveT0(issT0);
+    inputArchiveT0 >> *fvDigiT0;
+  }
   ++uPartIdx;
 
   /// STS
-  std::string msgStrSts(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issSts(msgStrSts);
-  boost::archive::binary_iarchive inputArchiveSts(issSts);
-  inputArchiveSts >> *fvDigiSts;
+  if (0 < (parts.At(uPartIdx))->GetSize()) {
+    std::string msgStrSts(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issSts(msgStrSts);
+    boost::archive::binary_iarchive inputArchiveSts(issSts);
+    inputArchiveSts >> *fvDigiSts;
+  }
   ++uPartIdx;
 
   /// MUCH
-  std::string msgStrMuch(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issMuch(msgStrMuch);
-  boost::archive::binary_iarchive inputArchiveMuch(issMuch);
-  inputArchiveMuch >> *fvDigiMuch;
+  if (0 < (parts.At(uPartIdx))->GetSize()) {
+    std::string msgStrMuch(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issMuch(msgStrMuch);
+    boost::archive::binary_iarchive inputArchiveMuch(issMuch);
+    inputArchiveMuch >> *fvDigiMuch;
+  }
   ++uPartIdx;
 
   /// TRD
-  std::string msgStrTrd(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issTrd(msgStrTrd);
-  boost::archive::binary_iarchive inputArchiveTrd(issTrd);
-  inputArchiveTrd >> *fvDigiTrd;
+  if (0 < (parts.At(uPartIdx))->GetSize()) {
+    std::string msgStrTrd(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issTrd(msgStrTrd);
+    boost::archive::binary_iarchive inputArchiveTrd(issTrd);
+    inputArchiveTrd >> *fvDigiTrd;
+  }
   ++uPartIdx;
 
   /// T0F
-  std::string msgStrTof(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issTof(msgStrTof);
-  boost::archive::binary_iarchive inputArchiveTof(issTof);
-  inputArchiveTof >> *fvDigiTof;
+  if (0 < (parts.At(uPartIdx))->GetSize()) {
+    std::string msgStrTof(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issTof(msgStrTof);
+    boost::archive::binary_iarchive inputArchiveTof(issTof);
+    inputArchiveTof >> *fvDigiTof;
+  }
   ++uPartIdx;
 
   /// RICH
-  std::string msgStrRich(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issRich(msgStrRich);
-  boost::archive::binary_iarchive inputArchiveRich(issRich);
-  inputArchiveRich >> *fvDigiRich;
+  if (0 < (parts.At(uPartIdx))->GetSize()) {
+    std::string msgStrRich(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issRich(msgStrRich);
+    boost::archive::binary_iarchive inputArchiveRich(issRich);
+    inputArchiveRich >> *fvDigiRich;
+  }
   ++uPartIdx;
 
   /// PSD
-  std::string msgStrPsd(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issPsd(msgStrPsd);
-  boost::archive::binary_iarchive inputArchivePsd(issPsd);
-  inputArchivePsd >> *fvDigiPsd;
+  if (0 < (parts.At(uPartIdx))->GetSize()) {
+    std::string msgStrPsd(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issPsd(msgStrPsd);
+    boost::archive::binary_iarchive inputArchivePsd(issPsd);
+    inputArchivePsd >> *fvDigiPsd;
+  }
   ++uPartIdx;
 
   /// TS metadata

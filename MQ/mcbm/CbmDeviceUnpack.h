@@ -28,12 +28,14 @@
 #include <vector>
 
 class TList;
-class CbmPsdUnpackConfig;
-class CbmRichUnpackConfig;
+class CbmBmonUnpackConfig;
 class CbmStsUnpackConfig;
-class CbmTofUnpackConfig;
+class CbmMuchUnpackConfig;
 class CbmTrdUnpackFaspConfig;
 class CbmTrdUnpackConfig;
+class CbmTofUnpackConfig;
+class CbmRichUnpackConfig;
+class CbmPsdUnpackConfig;
 
 class TimesliceMetaData;
 
@@ -49,17 +51,23 @@ protected:
   bool ConditionalRun();
   bool HandleCommand(FairMQMessagePtr&, int);
 
+  /** @brief Set the Bmon Unpack Config @param config */
+  void SetUnpackConfig(std::shared_ptr<CbmBmonUnpackConfig> config) { fBmonConfig = config; }
+
   /** @brief Set the Sts Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmStsUnpackConfig> config) { fStsConfig = config; }
 
-  // /** @brief Set the Tof Unpack Config @param config */
-  void SetUnpackConfig(std::shared_ptr<CbmTofUnpackConfig> config) { fTofConfig = config; }
+  /** @brief Set the Much Unpack Config @param config */
+  void SetUnpackConfig(std::shared_ptr<CbmMuchUnpackConfig> config) { fMuchConfig = config; }
 
   /** @brief Set the Trd Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackConfig> config) { fTrd1DConfig = config; }
 
   /** @brief Set the Trd2D Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmTrdUnpackFaspConfig> config) { fTrd2DConfig = config; }
+
+  /** @brief Set the Tof Unpack Config @param config */
+  void SetUnpackConfig(std::shared_ptr<CbmTofUnpackConfig> config) { fTofConfig = config; }
 
   /** @brief Set the Rich Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmRichUnpackConfig> config) { fRichConfig = config; }
@@ -69,14 +77,7 @@ protected:
 
 private:
   /// Constants
-  static const uint16_t kusSysIdSts  = 0x10;
-  static const uint16_t kusSysIdMuch = 0x50;
-  static const uint16_t kusSysIdTrd  = 0x40;
-  static const uint16_t kusSysIdTof  = 0x60;
-  static const uint16_t kusSysIdT0   = 0x90;
-  static const uint16_t kusSysIdRich = 0x30;
-  static const uint16_t kusSysIdPsd  = 0x80;
-
+  static constexpr std::uint16_t fkFlesBmon  = static_cast<std::uint16_t>(fles::SubsystemIdentifier::T0);
   static constexpr std::uint16_t fkFlesMvd   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::MVD);
   static constexpr std::uint16_t fkFlesSts   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::STS);
   static constexpr std::uint16_t fkFlesMuch  = static_cast<std::uint16_t>(fles::SubsystemIdentifier::MUCH);
@@ -101,6 +102,15 @@ private:
   /// User settings parameters
   std::string fsSetupName = "mcbm_beam_2021_07_surveyed";
   uint32_t fuRunId        = 1588;
+  /// ---> for selective unpacking
+  bool fbUnpBmon  = false;
+  bool fbUnpSts   = true;
+  bool fbUnpMuch  = false;
+  bool fbUnpTrd1D = true;
+  bool fbUnpTrd2D = true;
+  bool fbUnpTof   = true;
+  bool fbUnpRich  = true;
+  bool fbUnpPsd   = true;
   /// message queues
   std::string fsChannelNameDataInput   = "ts-request";
   std::string fsChannelNameDataOutput  = "unpts_0";
@@ -127,12 +137,14 @@ private:
   std::map<std::uint16_t, std::pair<double, double>> fDataSizeMap = {};  //!
 
   /// Configuration of the unpackers. Provides the configured algorithm
-  std::shared_ptr<CbmStsUnpackConfig> fStsConfig         = nullptr;
-  std::shared_ptr<CbmTrdUnpackFaspConfig> fTrd2DConfig   = nullptr;
-  std::shared_ptr<CbmTrdUnpackConfig> fTrd1DConfig       = nullptr;
-  std::shared_ptr<CbmTofUnpackConfig> fTofConfig         = nullptr;
-  std::shared_ptr<CbmRichUnpackConfig> fRichConfig       = nullptr;
-  std::shared_ptr<CbmPsdUnpackConfig> fPsdConfig         = nullptr;
+  std::shared_ptr<CbmBmonUnpackConfig> fBmonConfig     = nullptr;
+  std::shared_ptr<CbmStsUnpackConfig> fStsConfig       = nullptr;
+  std::shared_ptr<CbmMuchUnpackConfig> fMuchConfig     = nullptr;
+  std::shared_ptr<CbmTrdUnpackFaspConfig> fTrd2DConfig = nullptr;
+  std::shared_ptr<CbmTrdUnpackConfig> fTrd1DConfig     = nullptr;
+  std::shared_ptr<CbmTofUnpackConfig> fTofConfig       = nullptr;
+  std::shared_ptr<CbmRichUnpackConfig> fRichConfig     = nullptr;
+  std::shared_ptr<CbmPsdUnpackConfig> fPsdConfig       = nullptr;
 
   /// Pointer to the Timeslice header conatining start time and index
   CbmTsEventHeader* fCbmTsEventHeader = nullptr;
