@@ -18,8 +18,6 @@
  *====================================================================
  */
 
-#include <boost/filesystem.hpp>
-
 #include "CbmL1.h"
 
 #include "CbmKF.h"
@@ -33,6 +31,7 @@
 #include "CbmMvdDetector.h"
 #include "CbmMvdStationPar.h"
 #include "CbmSetup.h"
+#include <boost/filesystem.hpp>
 // TODO: include of CbmSetup.h creates problems on Mac
 // #include "CbmSetup.h"
 #include "CbmMCDataObject.h"
@@ -1826,7 +1825,7 @@ void CbmL1::Finish()
 
   // Open output file and write histograms
   boost::filesystem::path p = (FairRunAna::Instance()->GetUserOutputFileName()).Data();
-  std::string histoOutName = p.parent_path().string() + "/L1_histo_" + p.filename().string();
+  std::string histoOutName  = p.parent_path().string() + "/L1_histo_" + p.filename().string();
   LOG(info) << "\033[31;1mHistograms will be saved to: \033[0m" << histoOutName;
 
   TFile* outfile = new TFile(histoOutName.c_str(), "RECREATE");

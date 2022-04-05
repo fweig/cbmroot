@@ -26,6 +26,7 @@
 #include "CbmMatch.h"
 #include "CbmMuchPixelHit.h"
 #include "CbmMuchPoint.h"
+#include "CbmQaTable.h"
 #include "CbmStsDigi.h"
 #include "CbmStsHit.h"
 #include "CbmStsPoint.h"
@@ -35,8 +36,6 @@
 #include "CbmTofPoint.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
-#include "CbmQaTable.h"
-
 
 #include "FairTrackParam.h"  // for vertex pulls
 
@@ -253,29 +252,13 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
     for (int iC = 0; iC < NCounters; ++iC) {
       rowNames[iC] = std::string(names[iC].Data());
     }
-    std::vector<std::string> colNames = {
-      "Eff.",
-      "Killed",
-      "Length",
-      "Fakes",
-      "Clones",
-      "All Reco",
-      "All MC",
-      "MCl(hits)",
-      "MCl(MCps)"
-    };
+    std::vector<std::string> colNames = {"Eff.",     "Killed", "Length",    "Fakes",    "Clones",
+                                         "All Reco", "All MC", "MCl(hits)", "MCl(MCps)"};
 
     TDirectory* curdir = gDirectory;
     gDirectory         = fOutDir;
-    
-    static int sTableNo = 0;
-    std::string nameOfTableNew = nameOfTable + "_no" + std::to_string(sTableNo);
-    LOG(info) << ">> Table No " << sTableNo;
-    ++sTableNo;
 
-
-
-    CbmQaTable* aTable = new CbmQaTable(nameOfTableNew.c_str(), "Track Efficiency", 20, 9);
+    CbmQaTable* aTable = new CbmQaTable(nameOfTable.c_str(), "Track Efficiency", 20, 9);
     aTable->SetNamesOfRows(rowNames);
     aTable->SetNamesOfCols(colNames);
     for (int iC = 0; iC < NCounters; iC++) {
@@ -289,13 +272,12 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
       aTable->SetCell(iC, 7, mc_length_hits.counters[iC] / double(mc.counters[iC]));
       aTable->SetCell(iC, 8, mc_length.counters[iC] / double(mc.counters[iC]));
     }
-    cout << *aTable;
+    cout << *aTable;  // print a table to log
     cout << "Ghost     probability  : " << ratio_ghosts << "  | " << ghosts << endl;
-  
+
     gDirectory = curdir;
   };
 
-  
 
   TL1TracksCatCounters<double> ratio_killed;
   TL1TracksCatCounters<double> ratio_clone;
@@ -308,8 +290,8 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
   TL1TracksCatCounters<double> reco_fakes;
   TL1TracksCatCounters<int> mc_length;
   TL1TracksCatCounters<int> mc_length_hits;
-  
-  TDirectory* fOutDir {nullptr};
+
+  TDirectory* fOutDir {nullptr};  // Specified for saving tables
 };
 
 
@@ -322,7 +304,8 @@ void CbmL1::EfficienciesPerformance()
 
 
   TL1PerfEfficiencies ntra;  // efficiencies for current event
-  ntra.fOutDir = fHistoDir; // Setup a pointer for output directory
+  ntra.fOutDir    = fHistoDir;  // Setup a pointer for output directory
+  L1_NTRA.fOutDir = fHistoDir;  // Save average efficiencies
 
   for (vector<CbmL1Track>::iterator rtraIt = vRTracks.begin(); rtraIt != vRTracks.end(); ++rtraIt) {
     ntra.ghosts += rtraIt->IsGhost();
