@@ -1,0 +1,12 @@
+trigger:
+  detector: STS
+  window: 10
+  threshold: 100
+  deadtime: 50
+eventbuilder:
+  windows:
+    STS: [-20, 30]
+store:
+  timeslice: false
+  triggers: false
+  events: true

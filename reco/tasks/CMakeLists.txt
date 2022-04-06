@@ -68,6 +68,7 @@ Base
 CbmBase
 CbmData
 Algo
+external::yaml-cpp
 )
 # ---------------------------------------------------------
 

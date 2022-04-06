@@ -43,6 +43,8 @@ if(DOWNLOAD_EXTERNALS)
   Include(InstallParameter.cmake)
   Include(InstallInput.cmake)
   Include(InstallGeometry.cmake)
+
+  Include(InstallYamlCpp.cmake)
 else()
   # Define targets which are needed by CbmRoot but are not available
   # whithout the external packages

@@ -8,4 +8,4 @@ flib_dpb/flib_dpb
 ipc/ipc
 jsroot
 googletest
-
+yaml-cpp/

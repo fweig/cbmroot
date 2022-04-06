@@ -32,6 +32,9 @@ public:
   bool fStoreTimeslice = false;
   bool fStoreTrigger   = false;
   bool fStoreEvents    = false;
+  // --- Load/save using yaml-cpp
+  void LoadYaml(const std::string& filename);
+  void SaveYaml(const std::string& filename);
   // --- Destructor
   virtual ~CbmRecoConfig() {};
 
