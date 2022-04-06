@@ -82,7 +82,18 @@ _parfileBmon=@VMCWORKDIR@/macro/beamtime/mcbm2022/mBmonCriPar.par
 _parfileRich=@VMCWORKDIR@/macro/beamtime/mcbm2021/mRichPar_70.par
 _parfilePsd=@VMCWORKDIR@/macro/beamtime/mcbm2021/mPsdPar.par
 _setup_name=mcbm_beam_2022_03_22_iron
-_run_id=2158
+_run_id=2160
+
+if [ _run_id -ge 2060 ]; then
+  if [ _run_id -le 2065 ]; then
+    _setup_name=mcbm_beam_2022_03_09_carbon
+  elif [ _run_id -le 2160 ]; then # Potentially wrong setup between 2065 and 2150 but not official runs
+    _setup_name=mcbm_beam_2022_03_22_iron
+  elif [ _run_id -le 2310 ]; then # Potentially wrong setup between 2160 and 2176 but not official runs
+    _setup_name=mcbm_beam_2022_03_28_uranium
+  fi
+fi
+
 
 _ratelog=0 # hides ZMQ messages rates and bandwidth
 #_ratelog=1 # display ZMQ messages rates and bandwidth

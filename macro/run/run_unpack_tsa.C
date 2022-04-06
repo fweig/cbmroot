@@ -85,6 +85,21 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
 
 
   // -----   CbmSetup   -----------------------------------------------------
+  if (2060 <= runid && defaultSetupName == setupName) {
+    /// Setup changed multiple times between the 2022 carbon and uranium runs
+    if (runid <= 2065) {
+      /// Carbon runs: 2060 - 2065 = 10/03/2022
+      setupName = "mcbm_beam_2022_03_09_carbon";
+    }
+    else if (2150 <= runid && runid <= 2160) {
+      /// Iron runs: 2150 - 2160 = 24-25/03/2022
+      setupName = "mcbm_beam_2022_03_22_iron";
+    }
+    else if (2176 <= runid && runid <= 2310) {
+      /// Uranium runs: 2176 - 2310 = 30/03/2022 - 01/04/2022
+      setupName = "mcbm_beam_2022_03_28_uranium";
+    }
+  }
   auto cbmsetup = CbmSetup::Instance();
   cbmsetup->LoadSetup(setupName);
   // ------------------------------------------------------------------------
