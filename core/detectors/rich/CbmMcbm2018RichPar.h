@@ -60,7 +60,7 @@ public:
 	 */
   Double_t GetToTshift2(Int_t tdcIdx, Int_t ch) const;
 
-  void Print() const;
+  void Print(Option_t* option = "") const;
 
 private:  // Stored in the par file
   /**

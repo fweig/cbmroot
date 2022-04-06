@@ -99,7 +99,7 @@ Double_t CbmMcbm2018RichPar::GetToTshift2(Int_t tdcIdx, Int_t ch) const
   return fToTshiftMap[tdcIdx * 33 + ch];
 }
 
-void CbmMcbm2018RichPar::Print() const
+void CbmMcbm2018RichPar::Print(Option_t*) const
 {
   LOG(info) << "Nb available TRB addresses: " << GetNaddresses();
 
