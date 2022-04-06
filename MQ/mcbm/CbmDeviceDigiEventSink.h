@@ -82,9 +82,10 @@ private:
   /// Constants
 
   /// Control flags
-  Bool_t fbStoreFullTs = false;  //! If true, store digis vectors with full TS in addition to selected events
-  Bool_t fbFillHistos  = false;  //! Switch ON/OFF filling of histograms
-  Bool_t fbFinishDone  = false;  //! Keep track of whether the Finish was already called
+  bool fbStoreFullTs         = false;  //! If true, store digis vectors with full TS in addition to selected events
+  bool fbBypassConsecutiveTs = false;  //! Switch ON/OFF the bypass of the consecutive TS buffer before writing to file
+  bool fbFillHistos          = false;  //! Switch ON/OFF filling of histograms
+  bool fbFinishDone          = false;  //! Keep track of whether the Finish was already called
 
   /// User settings parameters
   /// Algo enum settings

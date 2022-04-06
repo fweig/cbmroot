@@ -473,6 +473,8 @@ bool CbmMqHistoServer::SaveHistograms()
   // open separate histo file in recreate mode
   histoFile = new TFile(fsHistoFileName.data(), "RECREATE");
 
+  LOG(info) << "Save Histos in file " << fsHistoFileName.data();
+
   if (nullptr == histoFile) return false;
 
   /// Register the histos in the HTTP server

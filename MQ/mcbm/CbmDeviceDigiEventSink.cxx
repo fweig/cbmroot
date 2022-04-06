@@ -69,6 +69,8 @@ try {
   fsChannelNameDataInput = fConfig->GetValue<std::string>("EvtNameIn");
   fsAllowedChannels[0]   = fsChannelNameDataInput;
 
+  fbBypassConsecutiveTs = fConfig->GetValue<bool>("BypassConsecutiveTs");
+
   fbFillHistos             = fConfig->GetValue<bool>("FillHistos");
   fuPublishFreqTs          = fConfig->GetValue<uint32_t>("PubFreqTs");
   fdMinPublishTime         = fConfig->GetValue<double_t>("PubTimeMin");
@@ -270,9 +272,9 @@ bool CbmDeviceDigiEventSink::HandleData(FairMQParts& parts, int /*index*/)
   CbmEventTimeslice unpTs(parts);
 
   /// FIXME: Need to check if TS arrived in order (probably not!!!) + buffer!!!
-  LOG(info) << "Next TS check " << fuPrevTsIndex << " " << fulTsCounter << " " << unpTs.fTsMetaData.GetIndex()
-            << " Sorage size: " << fmFullTsStorage.size();
-  if (fuPrevTsIndex + 1 == unpTs.fTsMetaData.GetIndex()
+  LOG(debug) << "Next TS check " << fuPrevTsIndex << " " << fulTsCounter << " " << unpTs.fTsMetaData.GetIndex()
+             << " Storage size: " << fmFullTsStorage.size();
+  if (fbBypassConsecutiveTs || (fuPrevTsIndex + 1 == unpTs.fTsMetaData.GetIndex())
       || (0 == fuPrevTsIndex && 0 == fulTsCounter && 0 == unpTs.fTsMetaData.GetIndex())) {
     LOG(debug) << "TS direct to dump";
     /// Fill all storage variables registers for data output
@@ -294,9 +296,26 @@ bool CbmDeviceDigiEventSink::HandleData(FairMQParts& parts, int /*index*/)
   /// Clear metadata => crashes, maybe not needed as due to move the pointer is invalidated?
   //   delete fTsMetaData;
 
-  /// Check TS queue and process it if needed (in case it filled a hole!)
-  CheckTsQueues();
-  LOG(debug) << "TS queues checked";
+  if (fbBypassConsecutiveTs) {
+    /// Skip checking the TS buffer as writing straight to file
+    /// => Just check if we are done and can close the file or not
+    if (fbReceivedEof) {
+      /// In this case we cannot check if the last TS received/processed is the final one due to lack of order
+      /// => use instead the fact that we received all expected TS
+      if ((fulTsCounter + fvulMissedTsIndices.size()) == fuTotalTsCount) {
+        LOG(info) << "CbmDeviceDigiEventSink::HandleData => "
+                  << "Found all expected TS (" << fulTsCounter << ") and total nb of TS " << fuTotalTsCount
+                  << " after accounting for the ones reported as missing by the source (" << fvulMissedTsIndices.size()
+                  << ")";
+        Finish();
+      }  // if ((fulTsCounter + fvulMissedTsIndices.size()) == fuTotalTsCount)
+    }
+  }
+  else {
+    /// Check TS queue and process it if needed (in case it filled a hole!)
+    CheckTsQueues();
+    LOG(debug) << "TS queues checked";
+  }
 
   /// Histograms management
   if (kTRUE == fbFillHistos) {
@@ -613,7 +632,7 @@ CbmDeviceDigiEventSink::~CbmDeviceDigiEventSink()
 {
   /// FIXME: Add pointers check before delete
 
-  /// Close things properly if not alredy done
+  /// Close things properly if not already done
   if (!fbFinishDone) Finish();
 
   /// Clear events vector
