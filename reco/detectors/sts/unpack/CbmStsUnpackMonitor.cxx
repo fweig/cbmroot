@@ -651,8 +651,8 @@ void CbmStsUnpackMonitor::FillHitMonitoringHistos(const UInt_t& uFebIdx, const U
   FillStsFebChanAdcCalProf(uFebIdx, uChanInFeb, dCalAdc);
   FillStsFebChanCntRaw(uFebIdx, uChanInFeb);
   FillStsFebChanAdcRaw(uFebIdx, uChanInFeb, usRawAdc);
-  FillStsFebChanRawTs(uFebIdx, usChan, usRawTs);
-  FillStsFebChanMissEvt(uFebIdx, usChan, isHitMissedEvts);
+  FillStsFebChanRawTs(uFebIdx, uChanInFeb, usRawTs);
+  FillStsFebChanMissEvt(uFebIdx, uChanInFeb, isHitMissedEvts);
   FillStsFebChanAdcRawProf(uFebIdx, uChanInFeb, usRawAdc);
 }
 

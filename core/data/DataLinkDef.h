@@ -28,6 +28,7 @@
 #pragma link C++ class CbmErrorMessage + ;
 #pragma link C++ class CbmRawEvent + ;
 #pragma link C++ class CbmTsEventHeader + ;
+#pragma link C++ class std::vector<CbmErrorMessage> + ;
 
 // ---In base
 #pragma link C++ class CbmDigiBranchBase + ;

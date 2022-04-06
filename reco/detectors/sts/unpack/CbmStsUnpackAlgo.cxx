@@ -540,8 +540,8 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
       /// If EM flag ON, store a corresponding error message with the next flag after all other possible status flags set
       if (mess.IsHitMissedEvts())
         if (fOptOutBVec)
-          fOptOutBVec->emplace_back(
-            CbmErrorMessage(ECbmModuleId::kSts, dTimeInNs, uAsicIdx, 1 << stsxyter::kusLenStatStatus, usChan));
+          fOptOutBVec->emplace_back(CbmErrorMessage(ECbmModuleId::kSts, dTimeInNs, fviFebAddress[uFebIdx],
+                                                    1 << stsxyter::kusLenStatStatus, uChanInMod));
     }
   }
 
