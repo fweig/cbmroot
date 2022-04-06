@@ -13,6 +13,7 @@ set(SRCS
 CbmReco.cxx
 CbmSourceTs.cxx
 CbmTaskBuildEvents.cxx
+CbmTaskDigiEventQa.cxx
 CbmTaskMakeRecoEvents.cxx
 CbmTaskTriggerDigi.cxx
 CbmTaskUnpack.cxx

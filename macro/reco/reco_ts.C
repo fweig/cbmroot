@@ -65,6 +65,7 @@ void reco_ts(TString tsaFile = "", TString outFile = "")
   // TODO: Would need a small up-to-date default input file; the one distributed with
   // the code is outdated.
 
+
   // ----- Default file names   ---------------------------------------------
   if (tsaFile.IsNull()) tsaFile = srcDir + "/input/mcbm_run399_first20Ts";
   TString inFile = tsaFile + ".tsa";
@@ -118,6 +119,13 @@ void reco_ts(TString tsaFile = "", TString outFile = "")
   evtBuild->SetEventWindow(ECbmModuleId::kSts, -20., 30.);  // event building time window for STS
   LOG(info) << myName << ": Added task " << evtBuild->GetName();
   run->AddTask(evtBuild.release());
+  // ------------------------------------------------------------------------
+
+
+  // -----   Event QA   -----------------------------------------------------
+  auto eventQa = std::make_unique<CbmTaskDigiEventQa>();
+  LOG(info) << myName << ": Added task " << eventQa->GetName();
+  run->AddTask(eventQa.release());
   // ------------------------------------------------------------------------
 
 

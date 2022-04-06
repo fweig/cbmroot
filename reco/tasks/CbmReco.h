@@ -64,8 +64,9 @@ public:
    ** @param outFile Name of output file
    ** @param numTs   Number of timeslices to process. If negative, all available will be used.
    ** @param config  Configuration
+   ** @param port    Port number for the http server. If 0, server will not be activated.
    **/
-  CbmReco(std::string source, TString outFile, int32_t numTs, const CbmRecoConfig& config);
+  CbmReco(std::string source, TString outFile, int32_t numTs, const CbmRecoConfig& config, uint16_t port = 0);
 
 
   /** @brief Standard constructor for list of sources
@@ -73,8 +74,10 @@ public:
    ** @param outFile Name of output file
    ** @param numTs   Number of timeslices to process. If negative, all available will be used.
    ** @param config  Configuration
+   ** @param port    Port number for the http server
    **/
-  CbmReco(std::vector<std::string> sources, TString outFile, int32_t numTs, const CbmRecoConfig& config);
+  CbmReco(std::vector<std::string> sources, TString outFile, int32_t numTs, const CbmRecoConfig& config,
+          uint16_t port = 0);
 
 
   /** @brief Destructor **/
@@ -98,6 +101,7 @@ private:
   TString fOutputFileName               = "";  ///< Output file
   int32_t fNumTs                        = 0;   ///< Number of timeslices to process
   CbmRecoConfig fConfig                 = {};  ///< Configuration parameters
+  uint16_t fHttpServerPort              = 0;
 
   ClassDef(CbmReco, 1);
 };

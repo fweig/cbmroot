@@ -6,6 +6,7 @@
 
 #include "CbmSourceTs.h"
 #include "CbmTaskBuildEvents.h"
+#include "CbmTaskDigiEventQa.h"
 #include "CbmTaskTriggerDigi.h"
 #include "CbmTaskUnpack.h"
 #include "CbmTsEventHeader.h"
@@ -13,6 +14,9 @@
 #include <FairLogger.h>
 #include <FairRootFileSink.h>
 #include <FairRunOnline.h>
+
+#include <THttpServer.h>
+#include <TRootSniffer.h>
 
 #include <iostream>
 #include <memory>
@@ -25,22 +29,25 @@ using std::string;
 
 
 // -----   Constructor from single source   -----------------------------------
-CbmReco::CbmReco(string source, TString outFile, int32_t numTs, const CbmRecoConfig& config)
+CbmReco::CbmReco(string source, TString outFile, int32_t numTs, const CbmRecoConfig& config, uint16_t port)
   : fSourceNames {source}
   , fOutputFileName(outFile)
   , fNumTs(numTs)
   , fConfig(config)
+  , fHttpServerPort(port)
 {
 }
 // ----------------------------------------------------------------------------
 
 
 // -----   Constructor from multiple sources   --------------------------------
-CbmReco::CbmReco(std::vector<string> sources, TString outFile, int32_t numTs, const CbmRecoConfig& config)
+CbmReco::CbmReco(std::vector<string> sources, TString outFile, int32_t numTs, const CbmRecoConfig& config,
+                 uint16_t port)
   : fSourceNames(sources)
   , fOutputFileName(outFile)
   , fNumTs(numTs)
   , fConfig(config)
+  , fHttpServerPort(port)
 {
 }
 // ----------------------------------------------------------------------------
@@ -102,6 +109,10 @@ int32_t CbmReco::Run()
     evtBuild->SetEventWindow(entry.first, entry.second.first, entry.second.second);
   evtBuild->SetOutputBranchPersistent("DigiEvent", fConfig.fStoreEvents);
 
+  // --- Event QA
+  auto evtQa = make_unique<CbmTaskDigiEventQa>();
+  evtQa->Config(fConfig);
+
   // --- Run configuration
   FairRunOnline run(source.release());
   run.SetSink(sink.release());
@@ -109,6 +120,14 @@ int32_t CbmReco::Run()
   run.AddTask(unpack.release());
   run.AddTask(trigger.release());
   run.AddTask(evtBuild.release());
+  run.AddTask(evtQa.release());
+
+  // ----- HttpServer for online monitoring
+  if (fHttpServerPort) {
+    Int_t serverRefreshRate = 100;  // timeslices
+    run.ActivateHttpServer(serverRefreshRate, fHttpServerPort);
+    run.GetHttpServer()->GetSniffer()->SetScanGlobalDir(kFALSE);
+  }
 
   // --- Initialise and start run
   timer.Stop();

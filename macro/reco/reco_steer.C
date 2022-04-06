@@ -24,6 +24,7 @@ using std::string;
  ** @param tsaFile    Name of input file (w/o extension .tsa)
  ** @param outFile    Name of output file (w/o extension .digi.root)
  ** @param numTs      Number of timeslices to process. If not specified, all available will be used.
+ ** @param port       Port of http server. If 0, server will not be activated.
  **
  ** Reconstruction from timeslice level, making use of the steering class CbmReco.
  ** Currently included stages:
@@ -36,7 +37,8 @@ using std::string;
  ** the extension .tsa by .digi.root
  **/
 
-void reco_steer(TString tsaFile = "", TString outFile = "", int32_t numTs = std::numeric_limits<int32_t>::max())
+void reco_steer(TString tsaFile = "", TString outFile = "", int32_t numTs = std::numeric_limits<int32_t>::max(),
+                uint32_t port = 8080)
 {
 
   // ========================================================================
@@ -98,7 +100,7 @@ void reco_steer(TString tsaFile = "", TString outFile = "", int32_t numTs = std:
   // -----   Run reconstruction   -------------------------------------------
   TStopwatch timer;
   timer.Start();
-  CbmReco run(inFile.Data(), outFile.Data(), numTs, config);
+  CbmReco run(inFile.Data(), outFile.Data(), numTs, config, port);
   run.Run();
   timer.Stop();
   // ------------------------------------------------------------------------
