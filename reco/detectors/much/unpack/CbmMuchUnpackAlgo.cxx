@@ -32,7 +32,7 @@ std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
   std::string temppath = "";
 
   // // Get parameter container
-  temppath = basepath + "mMuchPar.par";
+  temppath = basepath + fParFileName;
   LOG(debug) << "mMuchPar path Name: " << temppath;
   fParContVec.emplace_back(std::make_pair(temppath, std::make_shared<CbmMuchUnpackPar>()));
 

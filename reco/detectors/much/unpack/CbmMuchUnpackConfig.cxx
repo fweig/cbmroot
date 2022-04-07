@@ -58,6 +58,10 @@ std::shared_ptr<CbmMuchUnpackAlgo> CbmMuchUnpackConfig::chooseAlgo()
   // Unpacker algo from mcbm 2021-2022 on and hopefully default for a long time.
   auto algo = std::make_shared<CbmMuchUnpackAlgo>();
   LOG(info) << fName << "::chooseAlgo() - selected algo = " << algo->Class_Name();
+
+  // Make sure the par file name picked by the user is sent to the algo
+  algo->SetParFileName(fsParFileName);
+
   return algo;
 
   LOG(error) << fName
