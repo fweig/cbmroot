@@ -1,17 +1,18 @@
 Installation Instructions for for CbmRoot
 =========================================
 
+The easiest way to install CbmRoot is described in Chapter 3 which
+introduces a scripts for automatic installation of CbmRoot and its
+dependencies. If you are unsure how to install CbmRoot please follow
+the instructions in this chapter.
+
 # 1. Dependencies
+
 
 ## 1.1 Compiler
 
-To be able to compile CbmRoot, the required compiler strongly depends on the used
-FairSoft version.
-When using FairSoft jun19p3 a compiler with full C++11 support is enough.
-In this case GCC since version 4.8 and clang since version 3.4 are known to work
-without problems.
-If FairSoft apr21p2 is used a compiler which supports C++17 is needed. A GCC
-beginning from version 7 and clang beginning from version 6 should be okay.
+To be able to compile CbmRoot, the used compiler must support the C++17 standard.
+A GCC beginning from version 7 and clang beginning from version 6 should be okay.
 
 
 ## 1.2 FairSoft
@@ -30,7 +31,7 @@ the contained packages, can be found on the project's GitHub page:
 This page should be considered the primary source of information regarding FairSoft,
 which takes precedence over any others (which may in some cases be outdated).
 Additional information, for instance regarding older versions, can be found on
-Cbm Redmine:
+CBM Redmine:
 
   https://redmine.cbm.gsi.de/projects/cbmroot/wiki/Install_External_Packages
 
@@ -117,7 +118,7 @@ source of problems.
 After installing FairSoft and FairRoot, to install CbmRoot first
 create a local clone of the Git repository using:
 
-    git clone git@git.cbm.gsi.de:computing/cbmroot.git
+    git clone https://git.cbm.gsi.de/computing/cbmroot
 
 Subsequently, create a build directory:
 
@@ -157,10 +158,21 @@ of this process is at
 
   https://redmine.cbm.gsi.de/projects/cbmroot/wiki/InstallCbmRootAuto
 
-The one-line command which has to be executed inside the CbmRoot source
-directory is
+To get the script and the needed CbmRoot source code to your local computer
+you need to clone the CbmRoot repository from out Git repository using:
+
+    git clone https://git.cbm.gsi.de/computing/cbmroot
+
+The needed skript is then available in the CbmRoot source directory and can
+be executed from there by a one-line command
 
     ./autoinstall_framework.sh --fairsoft --fairroot --cbmroot
+
+The command automatically install the defined production versions of
+FairSoft and FairRoot. If you want to check for the avaible options you can
+get the complete list with
+
+    ./autoinstall_framework.sh --help
 
 If any problems appear and the script stops with an error message please
 redo the installation step by step to see where the problem appears.
@@ -179,16 +191,9 @@ combinations of FairSoft and FairRoot
 
 | OS            | FairSoft   | FairRoot |
 |---------------|------------|----------|
-| Ubuntu 20.04  | jun19p3    | v18.2.1  |
 | Ubuntu 20.04  | apr21p2    | v18.6.7  |
-| OpenSuse 15.4 | jun19p3    | v18.2.1  |
 | OpenSuse 15.4 | apr21p2    | v18.6.7  |
 | Fedora 35     | apr21p2    | v18.6.7  |
-| Fedora 35     | (jun19p3)  | v18.2.1  |
-
-In principle the FairSoft version jun19p3 can be installed on Fedora 35 but
-due to the new gcc compiler (gcc 11.2) several changes to the various source
-codes are needed.
 
 # 4. Recommended versions
 
