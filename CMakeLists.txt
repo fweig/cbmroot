@@ -45,16 +45,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 set(CMAKE_PREFIX_PATH $ENV{SIMPATH} ${CMAKE_PREFIX_PATH})
 set(CMAKE_INSTALL_LIBDIR lib)
 
-# Check if the compiler support specific C++11 features
-# Up to now this is only a check since the code does not use
-# any of the features of the new standard
-
-IF(FAIRROOTPATH)
-  Set(CheckSrcDir "${FAIRROOTPATH}/share/fairbase/cmake/checks")
-ELSE(FAIRROOTPATH)
-  Set(CheckSrcDir "${CMAKE_SOURCE_DIR}/cmake/checks")
-ENDIF(FAIRROOTPATH)
-
 if(FAIRROOTPATH)
   find_package(FairRoot)
   SET(MY_ROOT_INCLUDE_PATH ${FAIRROOT_INCLUDE_DIR})
@@ -70,9 +60,6 @@ if(FAIRROOTPATH)
   EndIf(CMAKE_INSTALL_PREFIX)
 endif(FAIRROOTPATH)
 
-include(CheckCXX11Features)
-
-
 # Load some basic macros which are needed later on
 include(CbmMacros)
 include(FairMacros)
@@ -81,38 +68,28 @@ include(CTest)
 include(CheckCompiler)
 Include(ExternalProject)
 
-# CbmRoot uses from 22.07.15 C++11, so we need an compiler which supports C++11
+# CbmRoot needs from 07.04.22 at least C++17 support, so we need an compiler which supports
+# this C++ standard.
 # Check if the used compiler support C++11. If not stop with an error message
-# Check also if FairSoft and FairRoot have been compiled with C++11 support
-If(NOT _HAS_CXX11_FLAG)
-  Message(FATAL_ERROR "The used C++ compiler (${CMAKE_CXX_COMPILER}) does not support C++11. CbmRoot can only be compiled with compilers supporting C++11. Please install such an compiler.")
+# Check also if FairSoft and FairRoot have been compiled with C++17 support
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag("-std=c++17" _HAS_CXX17_FLAG)
+
+If(NOT _HAS_CXX17_FLAG)
+  Message(FATAL_ERROR "The used C++ compiler (${CMAKE_CXX_COMPILER}) does not support C++17. CbmRoot can only be compiled with compilers supporting C++17. Please install such an compiler.")
 EndIf()
 
 Execute_process(COMMAND $ENV{SIMPATH}/bin/fairsoft-config --cxxflags OUTPUT_VARIABLE _res_fairsoft_config OUTPUT_STRIP_TRAILING_WHITESPACE)
-String(FIND ${_res_fairsoft_config} "-std=c++11" POS_C++11)
-If(${POS_C++11} EQUAL -1)
-  String(FIND ${_res_fairsoft_config} "-std=c++14" POS_C++11)
-  If(${POS_C++11} EQUAL -1)
-    String(FIND ${_res_fairsoft_config} "-std=c++17" POS_C++11)
-    If(${POS_C++11} EQUAL -1)
-      Message(FATAL_ERROR "FairSoft wasn't compiled with support for c++11 or above. Please recompile FairSoft with a compiler which supports c++11, c++14 or c++17.")
-    else()
-      set(CMAKE_CXX_STANDARD 17)
-    EndIf()
-  else()
-    set(CMAKE_CXX_STANDARD 14)
-  EndIf()
+String(FIND ${_res_fairsoft_config} "-std=c++17" POS_C++17)
+If(${POS_C++17} EQUAL -1)
+  Message(FATAL_ERROR "FairSoft wasn't compiled with support for c++17. Please recompile FairSoft with a compiler which supports c++17.")
 else()
-  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD 17)
 EndIf()
 
 Execute_process(COMMAND $ENV{SIMPATH}/bin/fairsoft-config --root-version OUTPUT_VARIABLE _res_root_version OUTPUT_STRIP_TRAILING_WHITESPACE)
-String(FIND ${_res_root_version} "Usage" POS_USAGE)
-If(${POS_USAGE} EQUAL 1)
-  Message(FATAL_ERROR "FairSoft version to old. At least nov15 compiled with ROOT6 is needed.")
-EndIf()
 If(NOT ${_res_root_version} EQUAL 6)
-  Message(FATAL_ERROR "FairSoft was not compiled with ROOT6. At least FairSoft nov15 compiled with ROOT6 is needed.")
+  Message(FATAL_ERROR "FairSoft was not compiled with ROOT6.")
 EndIf()
 
 # Extract the FairRoot version from fairroot-config
@@ -121,14 +98,14 @@ EndIf()
 FairRootVersion()
 FairSoftVersion()
 
-# Since 20.02.2019 CbmRoot need at least FairRoot v18.0.5 and FairSoft may18
+# Since 07.04.2022 CbmRoot need at least FairRoot v18.6.7 and FairSoft apr21p2
 # Check if FairRoot and FairSoft have at least this versions
-If(FairRoot_VERSION VERSION_LESS 18.0.5)
-  Message(FATAL_ERROR "\n CbmRoot needs at least FairRoot version v18.0.5. \n You use FairRoot ${FairRoot_VERSION}. Please upgrade your FairRoot version.")
+If(FairRoot_VERSION VERSION_LESS 18.6.7)
+  Message(FATAL_ERROR "\n CbmRoot needs at least FairRoot version v18.6.7. \n You use FairRoot ${FairRoot_VERSION}. Please upgrade your FairRoot version.")
 EndIf()
-# FairSoft version 18.5.0 means may18
-If(FairSoft_VERSION VERSION_LESS 18.5.0)
-  Message(FATAL_ERROR "\n CbmRoot needs at least FairSoft version may18. \n You use FairSoft ${_fairsoft_version}. Please upgrade your FairSoft version.")
+# FairSoft version 21.4.0 means apr21
+If(FairSoft_VERSION VERSION_LESS 21.4.0)
+  Message(FATAL_ERROR "\n CbmRoot needs at least FairSoft version apr21p2. \n You use FairSoft ${_fairsoft_version}. Please upgrade your FairSoft version.")
 EndIf()
 
 Execute_process(COMMAND $ENV{FAIRROOTPATH}/bin/fairroot-config --fairsoft_path OUTPUT_VARIABLE _simpath OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -305,13 +282,6 @@ else(CBMROOT_MINIMAL)
 
   Find_Package(FairLogger)
   Find_Package(FairMQ)
-  if(FAIRMQ_FOUND)
-    if(EXISTS ${FAIRMQ_LIBRARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}FairMQStateMachine${CMAKE_SHARED_LIBRARY_SUFFIX})
-      set(FairMQ_HAS_StateMachine TRUE)
-    else()
-      set(FairMQ_HAS_StateMachine FALSE)
-    endif()
-  endif()
 
   find_package(OpenMP)
 
@@ -385,9 +355,7 @@ add_subdirectory (external)
 
 ### Base directories
 add_subdirectory (core)
-if (${CMAKE_CXX_STANDARD} EQUAL 17)
-  add_subdirectory (algo)
-endif()
+add_subdirectory (algo)
 add_subdirectory (sim)
 add_subdirectory (reco)
 add_subdirectory (analysis)
