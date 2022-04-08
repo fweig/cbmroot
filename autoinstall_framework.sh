@@ -56,11 +56,11 @@ setup_env_variables()
   export FSOFTDEV=apr21p2
   export FROOTDEV=v18.6.7
 
-  export FSOFTPRO=jun19p3
-  export FROOTPRO=v18.2.1
+  export FSOFTPRO=apr21p2
+  export FROOTPRO=v18.6.7
 
   export FSOFTOLD=jun19p3
-  export FROOTOLD=v18.2.0
+  export FROOTOLD=v18.2.1
 
   # set default version to pro
   export FSOFTVER=$FSOFTPRO
@@ -182,9 +182,9 @@ parse_command_line()
 		echo
                 echo "-nproc <number>		Use <number> of paralle processes for compilation"
 		echo
-		echo "-d, --dev		Runs with dev version"
-		echo "-p, --pro		Runs with pro version"
-		echo "-o, --old		Runs with old version"
+		echo "-d, --dev		Runs with dev version (FairSoft: $FSOFTDEV, FairRoot: $FROOTDEV)"
+		echo "-p, --pro		Runs with pro version (FairSoft: $FSOFTPRO, FairRoot: $FROOTPRO)"
+		echo "-o, --old		Runs with old version (FairSoft: $FSOFTOLD, FairRoot: $FROOTOLD)"
 		echo
 		echo "-y, --yes		Automatically uses new envirnoment configuration post installation"
 		echo "-n, --no		Answers no to automatic environment update"
@@ -222,6 +222,8 @@ check_prerequisites()
   check_file_exist /usr/include/openssl/ssl.h ssl-dev
   check_file_exist /usr/include/gsl/gsl_types.h gsl-dev
   check_file_exist /usr/include/tbb/tbb.h tbb-dev
+  check_file_exist /usr/include/xercesc/dom/DOM.hpp xecesc-dev
+  check_file_exist /usr/include/yaml-cpp/binary.h yaml-cpp
 
   check_file_exist /usr/bin/curl-config curl-dev
   check_file_exist /usr/bin/xml2-config xml2-dev
