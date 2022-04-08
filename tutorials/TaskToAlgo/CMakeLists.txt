@@ -82,11 +82,7 @@ If(UNIX AND NOT APPLE)
   List(APPEND BOOST_LIBS pthread)
 EndIf()
 
-if(FairMQ_HAS_StateMachine)
-  Set(FAIR_LIBS FairMQStateMachine FairMQ)
-else()
-  Set(FAIR_LIBS FairMQ)
-EndIf()
+Set(FAIR_LIBS FairMQStateMachine FairMQ)
 
 If(FAIRLOGGER_FOUND)
   set(FAIR_LIBS

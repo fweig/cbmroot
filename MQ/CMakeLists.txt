@@ -1,13 +1,4 @@
-If(FairSoft_VERSION VERSION_LESS 18.6.0)
-  Add_Definitions(-DHAVE_FAIRMQSTATEMACHINE)
-EndIf()
-
-
-if(FairMQ_HAS_StateMachine)
-  Set(FAIRMQ_LIBS FairMQStateMachine FairMQ)
-else()
-  Set(FAIRMQ_LIBS FairMQ)
-EndIf()
+Set(FAIRMQ_LIBS FairMQStateMachine FairMQ)
 
 # RPATH information should be present for executables in the build as well
 # as in the installation directory

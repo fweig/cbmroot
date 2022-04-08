@@ -45,12 +45,7 @@ void CbmHistoServer::InitTask()
 bool CbmHistoServer::ReceiveData(FairMQMessagePtr& msg, int /*index*/)
 {
   TObject* tempObject = nullptr;
-#ifdef HAVE_RootDeserializer
-  Deserialize<RootDeserializer>(*msg, tempObject);
-#else
-  //  Deserialize<RootSerializer>(*msg, tempObject);
-  RootSerializer().Deserialize(*msg, tempObject);
-#endif
+  Deserialize<RootSerializer>(*msg, tempObject);
 
   if (TString(tempObject->ClassName()).EqualTo("TObjArray")) {
     std::lock_guard<std::mutex> lk(mtx);

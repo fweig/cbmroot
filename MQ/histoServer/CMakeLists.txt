@@ -51,11 +51,6 @@ If(UNIX AND NOT APPLE)
   List(APPEND BOOST_LIBS pthread)
 EndIf()
 
-If(FairRoot_VERSION VERSION_LESS 18.2.0)
-  Add_Definitions(-DHAVE_RootDeserializer)
-EndIf()
-
-
 set(DEPENDENCIES_ALL
   ${DEPENDENCIES}
   ${FAIR_LIBS}

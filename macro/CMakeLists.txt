@@ -4,9 +4,7 @@ add_subdirectory(mcbm)
 add_subdirectory(mvd)
 add_subdirectory(much)
 add_subdirectory(include)
-if (${CMAKE_CXX_STANDARD} EQUAL 17)
-  add_subdirectory (reco)
-endif()
+add_subdirectory (reco)
 
 #--- Additional tests for nightly builds
 If(NOT ${CBM_TEST_MODEL} MATCHES Experimental)

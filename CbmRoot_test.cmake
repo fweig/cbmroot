@@ -25,12 +25,7 @@ Set(CMAKE_MODULE_PATH "${CTEST_SOURCE_DIRECTORY}/cmake/modules" ${CMAKE_MODULE_P
 Include(CbmMacros)
 FairRootVersion()
 
-If(${FairRoot_VERSION} VERSION_LESS 16.0.0)
-  Set(CTEST_USE_LAUNCHERS 0)
-Else()
-  Set(CTEST_USE_LAUNCHERS 1)
-EndIf()
-
+Set(CTEST_USE_LAUNCHERS 1)
 
 If(${CBM_TEST_MODEL} MATCHES MergeRequest OR ${CBM_TEST_MODEL} MATCHES Continuous)
   Set(_BuildType NIGHTLY)

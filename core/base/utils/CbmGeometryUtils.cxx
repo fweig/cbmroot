@@ -326,11 +326,7 @@ namespace Cbm
         if (fNode->GetNdaughters() > 0) { Cbm::GeometryUtils::ExpandNodes(v, mod); }
         Cbm::GeometryUtils::AssignMediumAtImport(v);
 
-#ifdef OLD_MODULE_VERSION
-        if ((mod->InheritsFrom("FairDetector")) && mod->CheckIfSensitive(v->GetName())) {
-#else
         if ((mod->InheritsFrom("FairDetector")) && mod->IsSensitive(v->GetName())) {
-#endif
           LOG(debug) << "Module " << v->GetName() << " of detector " << mod->GetName() << " is sensitive";
           mod->AddSensitiveVolume(v);
         }
