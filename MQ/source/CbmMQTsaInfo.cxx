@@ -86,7 +86,7 @@ try {
   if (0 == fFileName.size() && 0 != fHost.size()) {
     std::string connector = "tcp://" + fHost + ":" + std::to_string(fPort);
     LOG(info) << "Open TSPublisher at " << connector;
-    fSource = new fles::TimesliceSubscriber(connector);
+    fSource = new fles::TimesliceSubscriber(connector, 1);
     if (!fSource) { throw InitTaskError("Could not connect to publisher."); }
   }
   else {

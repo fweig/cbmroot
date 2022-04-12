@@ -179,7 +179,7 @@ try {
   if (0 == fFileName.size() && 0 != fHost.size()) {
     std::string connector = "tcp://" + fHost + ":" + std::to_string(fPort);
     LOG(info) << "Open TSPublisher at " << connector;
-    fSource = new fles::TimesliceSubscriber(connector);
+    fSource = new fles::TimesliceSubscriber(connector, 1);
     if (!fSource) { throw InitTaskError("Could not connect to publisher."); }
   }
   else {
@@ -305,7 +305,7 @@ bool CbmMQTsaSampler::CreateAndSendComponent(const fles::Timeslice& ts, int nrCo
     if (fComponentsToSend[idx] > 0) {
       LOG(info) << "Create timeslice component for link " << nrComp;
 
-      fles::StorableTimeslice component {static_cast<uint32_t>(ts.num_microslices(nrComp), ts.index())};
+      fles::StorableTimeslice component {static_cast<uint32_t>(ts.num_microslices(nrComp)), ts.index()};
       component.append_component(ts.num_microslices(0));
 
       for (size_t m = 0; m < ts.num_microslices(nrComp); ++m) {
