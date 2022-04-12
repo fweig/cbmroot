@@ -69,6 +69,7 @@ CbmBase
 CbmData
 Algo
 external::yaml-cpp
+OpenMP::OpenMP_CXX
 )
 # ---------------------------------------------------------
 

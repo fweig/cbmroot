@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <execution>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -63,20 +64,15 @@ void CbmTaskUnpack::Exec(Option_t*)
 
   // --- Timer and counters
   TStopwatch timer;
-  TStopwatch compTimer;
   timer.Start();
-  size_t numMs    = 0;
-  size_t numBytes = 0;
-  size_t numDigis = 0;
-
-  // --- Timeslice properties
-  const uint64_t tsIndex = timeslice->index();
-  const uint64_t tsTime  = timeslice->start_time();
-  const uint64_t numComp = timeslice->num_components();
-  uint64_t numCompUsed   = 0;
+  size_t numMs         = 0;
+  size_t numBytes      = 0;
+  size_t numDigis      = 0;
+  uint64_t numCompUsed = 0;
 
   // ---  Component loop
-  for (uint64_t comp = 0; comp < numComp; comp++) {
+#pragma omp parallel for schedule(dynamic) default(none) shared(timeslice) reduction(+: numMs, numBytes, numDigis, numCompUsed)
+  for (uint64_t comp = 0; comp < timeslice->num_components(); comp++) {
 
     auto systemId = static_cast<fles::SubsystemIdentifier>(timeslice->descriptor(comp, 0).sys_id);
     if (systemId == fles::SubsystemIdentifier::STS) {
@@ -93,6 +89,7 @@ void CbmTaskUnpack::Exec(Option_t*)
       // --- Component log
       size_t numBytesInComp = 0;
       size_t numDigisInComp = 0;
+      TStopwatch compTimer;
       compTimer.Start();
 
       // --- Microslice loop
@@ -101,15 +98,16 @@ void CbmTaskUnpack::Exec(Option_t*)
         const auto msDescriptor = timeslice->descriptor(comp, mslice);
         const auto msContent    = timeslice->content(comp, mslice);
         numBytesInComp += msDescriptor.size;
-        auto result = (algoIt->second)(msContent, msDescriptor, tsTime);
+        auto result = (algoIt->second)(msContent, msDescriptor, timeslice->start_time());
         LOG(debug1) << GetName() << ": Component " << comp << ", microslice " << mslice << ", digis "
                     << result.first.size() << ", errors " << result.second.fNumNonHitOrTsbMessage << " | "
                     << result.second.fNumErrElinkOutOfRange << " | " << result.second.fNumErrInvalidFirstMessage
                     << " | " << result.second.fNumErrInvalidMsSize << " | " << result.second.fNumErrTimestampOverflow
                     << " | ";
-        const auto it = fTimeslice->fData.fSts.fDigis.end();
-        fTimeslice->fData.fSts.fDigis.insert(it, result.first.begin(), result.first.end());
         numDigisInComp += result.first.size();
+#pragma omp critical(insert_sts_digis)
+        fTimeslice->fData.fSts.fDigis.insert(fTimeslice->fData.fSts.fDigis.end(), result.first.begin(),
+                                             result.first.end());
       }  //# microslice
 
       compTimer.Stop();
@@ -126,7 +124,7 @@ void CbmTaskUnpack::Exec(Option_t*)
   }  //# component
 
   // --- Sorting of output digis. Is required by both digi trigger and event builder.
-  std::sort(fTimeslice->fData.fSts.fDigis.begin(), fTimeslice->fData.fSts.fDigis.end(),
+  std::sort(std::execution::par_unseq, fTimeslice->fData.fSts.fDigis.begin(), fTimeslice->fData.fSts.fDigis.end(),
             [](CbmStsDigi digi1, CbmStsDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
 
 
@@ -135,8 +133,8 @@ void CbmTaskUnpack::Exec(Option_t*)
   stringstream logOut;
   logOut << setw(15) << left << GetName() << " [";
   logOut << fixed << setw(8) << setprecision(1) << right << timer.RealTime() * 1000. << " ms] ";
-  logOut << "TS " << fNumTs << " (index " << tsIndex << ")";
-  logOut << ", components " << numCompUsed << " / " << numComp << ", microslices " << numMs;
+  logOut << "TS " << fNumTs << " (index " << timeslice->index() << ")";
+  logOut << ", components " << numCompUsed << " / " << timeslice->num_components() << ", microslices " << numMs;
   logOut << ", input rate " << double(numBytes) / timer.RealTime() / 1.e6 << " MB/s";
   logOut << ", digis " << numDigis;
   LOG(info) << logOut.str();
