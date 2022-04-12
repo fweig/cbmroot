@@ -67,7 +67,7 @@ set(EXE_NAME HistoServer)
 set(SRCS CbmHistoServer.cxx runCbmHistoServer.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   Core
   RIO
   Net

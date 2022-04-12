@@ -14,7 +14,7 @@ set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}/rich
   ${CMAKE_CURRENT_SOURCE_DIR}/psd
   ${CMAKE_CURRENT_SOURCE_DIR}/global
-  ${CMAKE_SOURCE_DIR}/external/fles/flesnet/lib/fles_ipc
+  ${FLES_IPC_INCLUDE_DIRECTORY}
 )
 include_directories( ${INCLUDE_DIRECTORIES})
 

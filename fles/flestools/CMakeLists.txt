@@ -9,7 +9,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
   ${BASE_INCLUDE_DIRECTORIES}
   ${Boost_INCLUDE_DIR}
   ${ROOT_INCLUDE_DIR}
-  ${IPC_INCLUDE_DIRECTORY}
+  ${FLES_IPC_INCLUDE_DIRECTORY}
 )
 
 Include_Directories(${INCLUDE_DIRECTORIES})
@@ -43,7 +43,7 @@ EndIf()
 #Set(LINKDEF CbmFlibMcbm2018LinkDef.h )
 Set(LIBRARY_NAME CbmFlibFlesTools)
 Set(DEPENDENCIES
-    fles_ipc Hist
+    external::fles_ipc Hist
 )
 
 GENERATE_LIBRARY()

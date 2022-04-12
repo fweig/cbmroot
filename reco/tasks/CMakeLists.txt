@@ -44,7 +44,7 @@ ${CBMROOT_SOURCE_DIR}/algo/detectors/sts
 
 set(SYSTEM_INCLUDE_DIRECTORIES
 ${BASE_INCLUDE_DIRECTORIES}
-${IPC_INCLUDE_DIRECTORY}
+${FLES_IPC_INCLUDE_DIRECTORY}
 )
 # ---------------------------------------------------------
 
@@ -62,7 +62,7 @@ ${Boost_LIBRARY_DIRS}
 
 # -----   Library dependences   ---------------------------
 Set(DEPENDENCIES
-fles_ipc
+external::fles_ipc
 Base
 CbmBase
 CbmData

@@ -27,7 +27,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
     ${VMC_INCLUDE_DIRS}
     ${FAIRLOGGER_INCLUDE_DIR}
 
-    ${IPC_INCLUDE_DIRECTORY}
+    ${FLES_IPC_INCLUDE_DIRECTORY}
     ${CBMROOT_SOURCE_DIR}/external/cppzmq
 )
 
@@ -82,7 +82,7 @@ set(EXE_NAME TsaSampler)
 set(SRCS CbmMQTsaSampler.cxx runTsaSampler.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmMQBase
 )
 GENERATE_EXECUTABLE()
@@ -91,7 +91,7 @@ set(EXE_NAME MultiTsaSampler)
 set(SRCS CbmMQTsaMultiSampler.cxx runTsaMultiSampler.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmMQBase
   CbmFlibFlesTools
   Core
@@ -107,7 +107,7 @@ set(EXE_NAME RepReqTsSampler)
 set(SRCS CbmMQTsSamplerRepReq.cxx runTsSamplerRepReq.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmMQBase
   CbmFlibFlesTools
   Core
@@ -124,7 +124,7 @@ set(EXE_NAME TsaSamplerTof)
 set(SRCS CbmMQTsaSamplerTof.cxx runTsaSamplerTof.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmMQBase
 )
 GENERATE_EXECUTABLE()
@@ -133,7 +133,7 @@ set(EXE_NAME TsaMultiSamplerTof)
 set(SRCS CbmMQTsaMultiSamplerTof.cxx runTsaMultiSamplerTof.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmMQBase
 )
 GENERATE_EXECUTABLE()
@@ -142,7 +142,7 @@ set(EXE_NAME TsaInfo)
 set(SRCS CbmMQTsaInfo.cxx runTsaInfo.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmMQBase
 )
 GENERATE_EXECUTABLE()
@@ -171,7 +171,7 @@ set(EXE_NAME TsConsumerReqExample)
 set(SRCS CbmTsConsumerReqDevExample.cxx runTsConsumerReqExample.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmMQBase
   CbmFlibFlesTools
   Core

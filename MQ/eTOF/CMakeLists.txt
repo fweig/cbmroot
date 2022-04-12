@@ -26,7 +26,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
     ${FAIRMQ_INCLUDE_DIR}
     ${FAIRMQ_INCLUDE_DIR}/options
 
-    ${IPC_INCLUDE_DIRECTORY}
+    ${FLES_IPC_INCLUDE_DIRECTORY}
     ${CBMROOT_SOURCE_DIR}/external/cppzmq
 )
 
@@ -77,7 +77,7 @@ set(EXE_NAME EventBuilderEtofStar2019)
 set(SRCS CbmDeviceEventBuilderEtofStar2019.cxx runEventBuilderEtofStar2019.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmFlibStar2019
   CbmFlibMcbm2018
   CbmBase
@@ -101,6 +101,7 @@ SET_SOURCE_FILES_PROPERTIES(${CBMROOT_SOURCE_DIR}/fles/star2017/unpacker/star_rh
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
   fles_ipc
+  external::fles_ipc
   CbmFlibStar2019
   CbmFlibMcbm2018
   CbmBase

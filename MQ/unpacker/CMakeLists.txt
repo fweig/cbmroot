@@ -25,7 +25,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
     ${FAIRMQ_INCLUDE_DIR}
     ${FAIRMQ_INCLUDE_DIR}/options
 
-    ${IPC_INCLUDE_DIRECTORY}
+    ${FLES_IPC_INCLUDE_DIRECTORY}
     ${CBMROOT_SOURCE_DIR}/external/cppzmq
 )
 
@@ -77,7 +77,7 @@ set(SRCS CbmTbDaqBuffer.cxx CbmDeviceUnpackTofMcbm2018.cxx runUnpackTofMcbm2018.
 
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmFlibMcbm2018
   CbmTofBase
   CbmBase

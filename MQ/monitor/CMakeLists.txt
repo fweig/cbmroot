@@ -31,7 +31,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
     ${FAIRMQ_INCLUDE_DIR}
     ${FAIRMQ_INCLUDE_DIR}/options
 
-    ${IPC_INCLUDE_DIRECTORY}
+    ${FLES_IPC_INCLUDE_DIRECTORY}
     ${CBMROOT_SOURCE_DIR}/external/cppzmq
 )
 
@@ -85,7 +85,7 @@ set(SRCS CbmDeviceMonitorT0.cxx runMonitorT0.cxx)
 
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
   CbmBase
@@ -103,7 +103,7 @@ set(SRCS CbmDeviceMonitorTof.cxx runMonitorTof.cxx)
 
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
   CbmBase
@@ -121,7 +121,7 @@ set(SRCS CbmDeviceMonitorReqT0.cxx runMonitorReqT0.cxx)
 
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
   CbmBase
@@ -139,7 +139,7 @@ set(SRCS CbmDeviceMonitorReqTof.cxx runMonitorReqTof.cxx)
 
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
   CbmBase
@@ -157,7 +157,7 @@ set(SRCS CbmDeviceMonitorPsd.cxx runMonitorPsd.cxx)
 
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
   CbmBase

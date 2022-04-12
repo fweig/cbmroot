@@ -40,7 +40,7 @@ target_include_directories(OnlineData
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/psd
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/global
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/raw
-  PUBLIC ${CMAKE_SOURCE_DIR}/external/fles/flesnet/lib/fles_ipc
+  PUBLIC ${FLES_IPC_INCLUDE_DIRECTORY}
 )
 
 target_include_directories(OnlineData SYSTEM

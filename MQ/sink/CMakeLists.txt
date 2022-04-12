@@ -13,7 +13,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
     ${FAIRMQ_INCLUDE_DIR}
     ${FAIRMQ_INCLUDE_DIR}/options
 
-    ${IPC_INCLUDE_DIRECTORY}
+    ${FLES_IPC_INCLUDE_DIRECTORY}
     ${CBMROOT_SOURCE_DIR}/external/cppzmq
 )
 
@@ -65,7 +65,7 @@ set(EXE_NAME DevNullSink)
 set(SRCS CbmDevNullSink.cxx runDevNullSink.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
 )
 GENERATE_EXECUTABLE()
 
@@ -73,7 +73,7 @@ set(EXE_NAME TsaComponentSink)
 set(SRCS CbmTsaComponentSink.cxx runTsaComponentSink.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
 )
 GENERATE_EXECUTABLE()
 

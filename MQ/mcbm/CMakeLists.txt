@@ -60,7 +60,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
     ${VMC_INCLUDE_DIRS}
     ${FAIRLOGGER_INCLUDE_DIR}
 
-    ${IPC_INCLUDE_DIRECTORY}
+    ${FLES_IPC_INCLUDE_DIRECTORY}
     ${CBMROOT_SOURCE_DIR}/external/cppzmq
 )
 
@@ -116,6 +116,7 @@ set(SRCS CbmDeviceMcbmUnpack.cxx runMcbmUnpack.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
   fles_ipc
+  external::fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
   CbmBase
@@ -134,6 +135,7 @@ set(SRCS CbmDeviceMcbmMonitorPulser.cxx runMcbmMonitorPulser.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
   fles_ipc
+  external::fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
   CbmBase
@@ -151,7 +153,7 @@ set(SRCS CbmDeviceBuildRawEvents.cxx runBuildRawEvents.cxx)
 
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   KFParticle
   CbmFlibMcbm2018
   CbmFlibFlesTools
@@ -176,7 +178,7 @@ set(SRCS CbmDeviceMcbmEventBuilderWin.cxx runMcbmEvtBuilderWin.cxx)
 
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
   CbmBase
@@ -194,7 +196,7 @@ set(SRCS CbmDeviceMcbmEventSink.cxx runMcbmEventSink.cxx)
 
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
   CbmBase
@@ -217,7 +219,7 @@ set(DEPENDENCIES
   ${FAIR_LIBS}
   ParBase
   ${BOOST_LIBS}
-  fles_ipc
+  external::fles_ipc
   CbmFlibFlesTools
   CbmBase
   CbmRecoBase
@@ -285,7 +287,7 @@ set(SRCS CbmDeviceDigiEventSink.cxx runDigiEventSink.cxx)
 
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
   CbmBase
@@ -304,7 +306,7 @@ set(SRCS CbmDeviceEventSink.cxx runEventSink.cxx)
 
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
+  external::fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
   CbmBase
@@ -317,6 +319,7 @@ set(DEPENDENCIES
   RHTTP
 )
 GENERATE_EXECUTABLE()
+
 
 # Set the correct variables for the installation
 set(VMCWORKDIR ${CMAKE_INSTALL_PREFIX}/share/cbmroot)

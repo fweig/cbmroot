@@ -37,7 +37,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
   ${BASE_INCLUDE_DIRECTORIES}
   ${Boost_INCLUDE_DIR}
   ${ROOT_INCLUDE_DIR}
-  ${IPC_INCLUDE_DIRECTORY}
+  ${FLES_IPC_INCLUDE_DIRECTORY}
   ${CBMROOT_SOURCE_DIR}/external/flib_dpb/flib_dpb
   ${CMAKE_SOURCE_DIR}/external/cppzmq
 )
@@ -136,7 +136,7 @@ Set(LIBRARY_NAME CbmFlibMcbm2018)
 Set(DEPENDENCIES
     CbmFlibFlesTools CbmStsBase CbmTofBase
     CbmRichBase CbmMuchBase CbmTrdBase CbmPsdBase
-    CbmData CbmBase fles_ipc Eve Base
+    CbmData CbmBase external::fles_ipc Eve Base
 )
 
 GENERATE_LIBRARY()

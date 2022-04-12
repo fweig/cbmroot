@@ -32,7 +32,7 @@ Include_Directories( ${INCLUDE_DIRECTORIES})
 Set(SYSTEM_INCLUDE_DIRECTORIES
   ${BASE_INCLUDE_DIRECTORIES} 
   ${Boost_INCLUDE_DIR}
-  ${IPC_INCLUDE_DIRECTORY} # for fles infos for unpacker
+  ${FLES_IPC_INCLUDE_DIRECTORY} # for fles infos for unpacker
 )
 
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})

@@ -25,7 +25,7 @@ include_directories(${INCLUDE_DIRECTORIES})
 
 set(SYSTEM_INCLUDE_DIRECTORIES
   ${BASE_INCLUDE_DIRECTORIES}
-  ${IPC_INCLUDE_DIRECTORY} # for fles infos for unpacker
+  ${FLES_IPC_INCLUDE_DIRECTORY} # for fles infos for unpacker
 )
 
 include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})

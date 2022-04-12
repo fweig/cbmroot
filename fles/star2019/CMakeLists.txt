@@ -33,7 +33,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
   ${BASE_INCLUDE_DIRECTORIES}
   ${Boost_INCLUDE_DIR}
   ${ROOT_INCLUDE_DIR}
-  ${IPC_INCLUDE_DIRECTORY}
+  ${FLES_IPC_INCLUDE_DIRECTORY}
   ${CBMROOT_SOURCE_DIR}/external/flib_dpb/flib_dpb
   ${CMAKE_SOURCE_DIR}/external/cppzmq
 )
@@ -74,7 +74,7 @@ EndIf()
 Set(LINKDEF CbmFlibStar2019LinkDef.h )
 Set(LIBRARY_NAME CbmFlibStar2019)
 Set(DEPENDENCIES
-    CbmFlibMcbm2018 CbmData CbmBase fles_ipc Eve Base
+    CbmFlibMcbm2018 CbmData CbmBase external::fles_ipc Eve Base
 )
 
 GENERATE_LIBRARY()

@@ -28,7 +28,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
   ${BASE_INCLUDE_DIRECTORIES}
   ${Boost_INCLUDE_DIR}
   ${ROOT_INCLUDE_DIR}
-  ${IPC_INCLUDE_DIRECTORY}
+  ${FLES_IPC_INCLUDE_DIRECTORY}
 )
 
 Include_Directories(${INCLUDE_DIRECTORIES})
@@ -68,7 +68,7 @@ Set(LIBRARY_NAME CbmBeamtimeCosy2019)
 Set(DEPENDENCIES
     CbmFlibFlesTools CbmFlibMcbm2018
     CbmStsBase
-    CbmData CbmBase fles_ipc Eve Base
+    CbmData CbmBase external::fles_ipc Eve Base
 )
 
 GENERATE_LIBRARY()

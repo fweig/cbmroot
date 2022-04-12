@@ -23,7 +23,7 @@ target_include_directories(Algo
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/tof
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/psd
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/raw
-  PUBLIC ${CMAKE_SOURCE_DIR}/external/ipc/ipc/lib/fles_ipc
+  PUBLIC ${FLES_IPC_INCLUDE_DIRECTORY}
 )
 
 target_include_directories(Algo SYSTEM

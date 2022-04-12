@@ -66,7 +66,7 @@ ${CBMDETECTORBASE_DIR}/sts
 
 set(SYSTEM_INCLUDE_DIRECTORIES
 ${BASE_INCLUDE_DIRECTORIES}
-${IPC_INCLUDE_DIRECTORY} # for fles infos for unpacker
+${FLES_IPC_INCLUDE_DIRECTORY} # for fles infos for unpacker
 )
 # ----  End of include directories ------------------------
 
