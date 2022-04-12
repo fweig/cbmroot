@@ -9,3 +9,4 @@ ipc/ipc
 jsroot
 googletest
 yaml-cpp/
+xpu/
