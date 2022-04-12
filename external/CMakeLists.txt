@@ -16,11 +16,10 @@ if(DOWNLOAD_EXTERNALS)
   # Install header files
   install(FILES cppzmq/zmq.hpp DESTINATION include)
 
+  Include(InstallFlesnet.cmake)
+  Set(FLES_IPC_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/flesnet/lib/fles_ipc PARENT_SCOPE)
+  Set(FLES_LOGGING_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/flesnet/lib/logging PARENT_SCOPE)
 
-  Set(IPC_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/fles/flesnet/lib/fles_ipc PARENT_SCOPE)
-  Set(IPCLOG_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/fles/flesnet/lib/logging PARENT_SCOPE)
-
-  Add_Subdirectory(fles)
   Add_Subdirectory(flib_dpb)
 
   find_package(Vc 1.4.1)
@@ -44,7 +43,6 @@ if(DOWNLOAD_EXTERNALS)
     INSTALL_COMMAND   ""
   )
   Add_Subdirectory(xpu)
-
 
   Include(InstallKFParticle.cmake)
   Include(InstallNicaFemto.cmake)

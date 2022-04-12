@@ -5,7 +5,7 @@ NicaFemto
 Vc
 cppzmq
 flib_dpb/flib_dpb
-fles/flesnet
+flesnet/
 jsroot
 googletest
 yaml-cpp/
