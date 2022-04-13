@@ -119,6 +119,7 @@ set(SRCS
   global/CbmTofTrack.cxx
   global/CbmTrackParam.cxx
 
+  raw/AccDataSis18.cxx
   raw/StsXyterMessage.cxx
   raw/gDpbMessv100.cxx
   raw/CriGet4Mess001.cxx

@@ -96,6 +96,9 @@
 #pragma link C++ class CbmVertex + ;
 #pragma link C++ class std::vector < CbmDigiEvent>;
 
+// --- data/raw
+#pragma link C++ class AccTimingEvent;
+#pragma link C++ class AccStatusTs;
 #pragma link C++ class stsxyter::Message;
 #pragma link C++ class gdpbv100::Message;
 #pragma link C++ class gdpbv100::FullMessage;
