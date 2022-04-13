@@ -69,8 +69,11 @@ CbmBase
 CbmData
 Algo
 external::yaml-cpp
-OpenMP::OpenMP_CXX
 )
+if(OpenMP_CXX_FOUND)
+  list(APPEND DEPENDENCIES OpenMP::OpenMP_CXX)
+endif()
+
 # ---------------------------------------------------------
 
 
