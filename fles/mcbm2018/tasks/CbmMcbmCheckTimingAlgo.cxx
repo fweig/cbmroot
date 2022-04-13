@@ -61,9 +61,7 @@ Bool_t CbmMcbmCheckTimingAlgo::Init()
 
   /// Try to get the 2021 Event header which is containing the Timeslice info
   /// If not present, we have "old" data and will simply catch it with the nullptr value
-  auto eh = FairRun::Instance()->GetEventHeader();
-  LOG(info) << "CbmMcbmCheckTimingAlgo => EventHeader ptr: " << eh << " (" << eh->IsA()->GetName() << ")";
-  fCbmTsEventHeader = dynamic_cast<CbmTsEventHeader*>(eh);
+  fCbmTsEventHeader = FairRootManager::Instance()->InitObjectAs<CbmTsEventHeader const*>("EventHeader.");
   if (nullptr != fCbmTsEventHeader) {
     LOG(info) << "CbmMcbmCheckTimingAlgo => Using the index from the TS Event header for Evo plots";
   }
@@ -105,7 +103,7 @@ void CbmMcbmCheckTimingAlgo::CreateHistos()
 
   for( std::vector< CheckTimingDetector >::iterator det = fvDets.begin(); det != fvDets.end(); ++det )
   {
-    for (uint i(0); i < (*det).uNdiv; i++) {
+    for (uint i(0); i < (*det).uNviews; i++) {
       fvhDetSelfDiff[(*det).detId].push_back(
         new TH1D(Form("h%sSelfDiff%d", (*det).sName.data(), i),
                  Form("time difference between consecutivs %s (%s)  Digis;time diff [ns];Counts", (*det).sName.data(),
@@ -181,8 +179,6 @@ void CbmMcbmCheckTimingAlgo::ProcessTs()
 {
   LOG(info) << "executing TS " << fuNbTs << " index ["
             << (fCbmTsEventHeader != nullptr ? fCbmTsEventHeader->GetTsIndex() : -1) << "]";
-
-  fuNbTrdCondWarn = 0;
 
   switch (fRefDet.detId) {
     case ECbmModuleId::kSts: {
@@ -358,61 +354,54 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime, const
 
   UInt_t uFirstDigiInWin = fvDets[uDetIdx].iPrevRefFirstDigi;
 
-  std::vector<Double_t> vSelDiff;
+  bool exit                                               = false;
+  std::vector<Double_t> vSelDiff                          = {};
+  std::vector<std::tuple<double, double, uint>> vDigiInfo = {};  // digi info containing (time, charge, address)
   for (UInt_t uDigiIdx = fvDets[uDetIdx].iPrevRefFirstDigi; uDigiIdx < uNbDigis; ++uDigiIdx) {
-    Double_t dTime   = 0;
-    Double_t dCharge = 0;
-    UInt_t uAddress  = 0;
-    const void* digi(nullptr);
-    if (ECbmModuleId::kT0 == edetId) {
-      dTime   = fpT0DigiVec->at(uDigiIdx).GetTime();
-      dCharge = fpT0DigiVec->at(uDigiIdx).GetCharge();
-    }  // if( ECbmModuleId::kT0 == fRefDet.detId )
-    else {
-      digi     = fDigiMan->Get<Digi>(uDigiIdx);
-      dTime   = fDigiMan->Get<Digi>(uDigiIdx)->GetTime();
-      dCharge = fDigiMan->Get<Digi>(uDigiIdx)->GetCharge();
-      uAddress = fDigiMan->Get<Digi>(uDigiIdx)->GetAddress();
-    }  // else of if( ECbmModuleId::kT0 == fRefDet.detId )
+    if (!GetDigiInfo<Digi>(uDigiIdx, &vDigiInfo, edetId)) continue;
+    for (auto dInfo : vDigiInfo) {
+      Double_t dTime   = std::get<0>(dInfo);
+      Double_t dCharge = std::get<1>(dInfo);
+      UInt_t uAddress  = std::get<2>(dInfo);
 
-    /// Fill self correlation histo while avoiding double counting due to
-    /// the "smart looping"
-    if (fvDets[uDetIdx].dPrevTime <= dTime) {
-      vSelDiff.push_back(dTime - fvDets[uDetIdx].dPrevTime);
-      fvDets[uDetIdx].dPrevTime = dTime;
-    }  // if( fvDets[ uDetIdx ].dPrevTime < dTime )
+      /// Fill self correlation histo while avoiding double counting due to
+      /// the "smart looping"
+      if (fvDets[uDetIdx].dPrevTime <= dTime) {
+        vSelDiff.push_back(dTime - fvDets[uDetIdx].dPrevTime);
+        fvDets[uDetIdx].dPrevTime = dTime;
+      }  // if( fvDets[ uDetIdx ].dPrevTime < dTime )
+      Double_t dDiffTime = dTime - dRefTime;
+      if (dDiffTime < fvDets[uDetIdx].dTimeRangeBeg) {
+        ++uFirstDigiInWin;  // Update Index of first digi in Win to next digi
+        //continue;           // not yet in interesting range
+        break;  // not yet in interesting range
+      }         // if (diffTime > offsetRange)
+      if (fvDets[uDetIdx].dTimeRangeEnd < dDiffTime) {
+        exit = true;
+        /// already past interesting range
+        break;
+      }  // if( fvDets[ uDetIdx ].dTimeRangeEnd < dDiffTime )
 
-    Double_t dDiffTime = dTime - dRefTime;
+      /// Charge cut if defined!
+      if (fvDets[uDetIdx].uChargeCutMin != fvDets[uDetIdx].uChargeCutMax) {
+        if (fvDets[uDetIdx].uChargeCutMin < fvDets[uDetIdx].uChargeCutMax) {
+          /// Cut charges between Min and Max to reject pulser
+          if (fvDets[uDetIdx].uChargeCutMin < dCharge && dCharge < fvDets[uDetIdx].uChargeCutMax) {
+            continue;
+          }  // if( fvDets[ uDetIdx ].uChargeCutMin < dCharge && dCharge < fvDets[ uDetIdx ].uChargeCutMax )
+        }    // if( fvDets[ uDetIdx ].uChargeCutMin < fvDets[ uDetIdx ].uChargeCutMax )
+        else {
+          /// Select charges between Max and Min to select pulser (Min and Max swapped!!)
+          if (fvDets[uDetIdx].uChargeCutMin < dCharge || dCharge < fvDets[uDetIdx].uChargeCutMax) {
+            continue;
+          }  // if( fvDets[ uDetIdx ].uChargeCutMin < dCharge || dCharge < fvDets[ uDetIdx ].uChargeCutMax )
+          /// Psd Pulser selection
+          if (ECbmModuleId::kPsd == fvDets[uDetIdx].detId && CbmPsdAddress::GetSectionId(uAddress) != 10) continue;
+        }  // else of if( fvDets[ uDetIdx ].uChargeCutMin < fvDets[ uDetIdx ].uChargeCutMax )
+      }    // if( fvDets[ uDetIdx ].uChargeCutMin != fvDets[ uDetIdx ].uChargeCutMax )
 
-    if (dDiffTime < fvDets[uDetIdx].dTimeRangeBeg) {
-      ++uFirstDigiInWin;  // Update Index of first digi in Win to next digi
-      continue;           // not yet in interesting range
-    }                     // if (diffTime > offsetRange)
-    if (fvDets[uDetIdx].dTimeRangeEnd < dDiffTime) {
-      /// already past interesting range
-      break;
-    }  // if( fvDets[ uDetIdx ].dTimeRangeEnd < dDiffTime )
-
-    /// Charge cut if defined!
-    if (fvDets[uDetIdx].uChargeCutMin != fvDets[uDetIdx].uChargeCutMax) {
-      if (fvDets[uDetIdx].uChargeCutMin < fvDets[uDetIdx].uChargeCutMax) {
-        /// Cut charges between Min and Max to reject pulser
-        if (fvDets[uDetIdx].uChargeCutMin < dCharge && dCharge < fvDets[uDetIdx].uChargeCutMax) {
-          continue;
-        }  // if( fvDets[ uDetIdx ].uChargeCutMin < dCharge && dCharge < fvDets[ uDetIdx ].uChargeCutMax )
-      }    // if( fvDets[ uDetIdx ].uChargeCutMin < fvDets[ uDetIdx ].uChargeCutMax )
-      else {
-        /// Select charges between Max and Min to select pulser (Min and Max swapped!!)
-        if (fvDets[uDetIdx].uChargeCutMin < dCharge || dCharge < fvDets[uDetIdx].uChargeCutMax) {
-          continue;
-        }  // if( fvDets[ uDetIdx ].uChargeCutMin < dCharge || dCharge < fvDets[ uDetIdx ].uChargeCutMax )
-        /// Psd Pulser selection
-        if (ECbmModuleId::kPsd == fvDets[uDetIdx].detId && CbmPsdAddress::GetSectionId(uAddress) != 10) continue;
-      }    // else of if( fvDets[ uDetIdx ].uChargeCutMin < fvDets[ uDetIdx ].uChargeCutMax )
-    }      // if( fvDets[ uDetIdx ].uChargeCutMin != fvDets[ uDetIdx ].uChargeCutMax )
-
-    for (uint uid(0); uid < fvDets[uDetIdx].uNdiv; uid++) {
-      if (digi && !CheckCondition(uDetIdx, uid, digi)) continue;
+      int uid = GetViewId<Digi>(fvDets[uDetIdx], dInfo);
+      if (uid < 0 || uint(uid) >= fvDets[uDetIdx].uNviews) continue;
 
       /// Fill histos
       for (auto dt : vSelDiff)
@@ -430,65 +419,88 @@ void CbmMcbmCheckTimingAlgo::FillTimeOffsetHistos(const Double_t dRefTime, const
         fvhDetToRefDiffEvo[edetId][uid]->Fill(fCbmTsEventHeader->GetTsIndex(), dDiffTime);
         fvhDetToRefDiffEvoLong[edetId][uid]->Fill(fCbmTsEventHeader->GetTsIndex(), dDiffTime);
       }
-      break;
-    }
+    }  // for (auto dInfo : vDigiInfo) {
+    if (exit) break;
   }  // for( UInt_t uDigiIdx = fvDets[ uDetIdx ].iPrevRefFirstDigi; uDigiIdx < uNbDigis; ++uDigiIdx )
 
   /// Store earliest possible starting index for next reference digi (time sorted!)
   fvDets[uDetIdx].iPrevRefFirstDigi = uFirstDigiInWin;
 }
 
-// ---- CheckCondition ------------------------------------------------
-bool CbmMcbmCheckTimingAlgo::CheckCondition(UInt_t uDetId, UInt_t uCond, const void* digi)
+// ---- GetDigiTime ------------------------------------------------------
+template<class Digi>
+uint CbmMcbmCheckTimingAlgo::GetDigiInfo(UInt_t uDigi, std::vector<std::tuple<double, double, uint>>* vec, ECbmModuleId)
 {
-  CheckTimingDetector uDet = fvDets[uDetId];
-  if (uCond >= uDet.uNdiv) return false;
-  switch (uDet.detId) {
-    case ECbmModuleId::kSts: return CheckCondition(&uDet, uCond, static_cast<const CbmStsDigi*>(digi));
-    case ECbmModuleId::kMuch: return CheckCondition(&uDet, uCond, static_cast<const CbmMuchDigi*>(digi));
-    case ECbmModuleId::kTrd: return CheckCondition(&uDet, uCond, static_cast<const CbmTrdDigi*>(digi));
-    case ECbmModuleId::kTof: return CheckCondition(&uDet, uCond, static_cast<const CbmTofDigi*>(digi));
-    case ECbmModuleId::kRich: return CheckCondition(&uDet, uCond, static_cast<const CbmRichDigi*>(digi));
-    case ECbmModuleId::kPsd: return CheckCondition(&uDet, uCond, static_cast<const CbmPsdDigi*>(digi));
-    default: break;
+  const Digi* digi = fDigiMan->Get<Digi>(uDigi);
+  vec->clear();
+  if (digi == nullptr) return 0;
+  vec->push_back(std::make_tuple(digi->GetTime(), digi->GetCharge(), digi->GetAddress()));
+  return 1;
+}
+template<>
+uint CbmMcbmCheckTimingAlgo::GetDigiInfo<CbmTofDigi>(UInt_t uDigi, std::vector<std::tuple<double, double, uint>>* vec,
+                                                     ECbmModuleId detId)
+{
+  /** Template specialization for ToF in order to distinguish T0 digis.
+   */
+  vec->clear();
+  const CbmTofDigi* pDigi(nullptr);
+  if (detId == ECbmModuleId::kT0) pDigi = &fpT0DigiVec->at(uDigi);
+  else
+    pDigi = fDigiMan->Get<CbmTofDigi>(uDigi);
+
+  if (pDigi == nullptr) return 0;
+  vec->push_back(std::make_tuple(pDigi->GetTime(), pDigi->GetCharge(), pDigi->GetAddress()));
+  return 1;
+}
+template<>
+uint CbmMcbmCheckTimingAlgo::GetDigiInfo<CbmTrdDigi>(UInt_t uDigi, std::vector<std::tuple<double, double, uint>>* vec,
+                                                     ECbmModuleId)
+{
+  /** Template specialization for TRD in order to distinguish SPADIC and FASP digis.
+   */
+  vec->clear();
+  const CbmTrdDigi* trdDigi = fDigiMan->Get<CbmTrdDigi>(uDigi);
+  if (trdDigi == nullptr) return 0;
+
+  const double dt = trdDigi->GetTime();
+
+  if (trdDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kSPADIC) {
+    vec->push_back(std::make_tuple(trdDigi->GetTime(), trdDigi->GetCharge(), trdDigi->GetAddressModule()));
+    return 1;
   }
-  return true;
-}
-bool CbmMcbmCheckTimingAlgo::CheckCondition(CheckTimingDetector* /*det*/, UInt_t /*uCond*/, const CbmStsDigi* /*digi*/)
-{
-  return true;
-}
-bool CbmMcbmCheckTimingAlgo::CheckCondition(CheckTimingDetector* /*det*/, UInt_t /*uCond*/, const CbmMuchDigi* /*digi*/)
-{
-  return true;
-}
-bool CbmMcbmCheckTimingAlgo::CheckCondition(CheckTimingDetector* det, UInt_t uCond, const CbmTrdDigi* digi)
-{
-  try {
-    int moduleId = std::stoi(det->vName[uCond]);
-    if (digi->GetAddressModule() != moduleId) return false;
+
+  int toff(0);
+  uint n(0);
+  double t, r = trdDigi->GetCharge(t, toff);
+  if (t > 0) {
+    vec->push_back(std::make_tuple(dt, t, trdDigi->GetAddressModule()));
+    n++;
   }
-  catch (const std::invalid_argument& ia) {
-    if (fuNbTrdCondWarn < 10) {
-      LOG(warning) << "Trd condition for index " << uCond << " name " << det->vName[uCond]
-                   << " not implemented. Skipped";
-      ++fuNbTrdCondWarn;
-    }
-    return false;
+  if (r > 0) {
+    vec->push_back(std::make_tuple(dt + toff, r, trdDigi->GetAddressModule()));
+    n++;
   }
-  return true;
+  return n;
 }
-bool CbmMcbmCheckTimingAlgo::CheckCondition(CheckTimingDetector* /*det*/, UInt_t /*uCond*/, const CbmTofDigi* /*digi*/)
+
+// ---- GetViewId ------------------------------------------------------
+template<class Digi>
+int CbmMcbmCheckTimingAlgo::GetViewId(CheckTimingDetector, std::tuple<double, double, uint>)
 {
-  return true;
+  return 0;
 }
-bool CbmMcbmCheckTimingAlgo::CheckCondition(CheckTimingDetector* /*det*/, UInt_t /*uCond*/, const CbmRichDigi* /*digi*/)
+template<>
+int CbmMcbmCheckTimingAlgo::GetViewId<CbmTrdDigi>(CheckTimingDetector det, std::tuple<double, double, uint> info)
 {
-  return true;
-}
-bool CbmMcbmCheckTimingAlgo::CheckCondition(CheckTimingDetector* /*det*/, UInt_t /*uCond*/, const CbmPsdDigi* /*digi*/)
-{
-  return true;
+  uint moduleId = std::get<2>(info);
+  uint iview    = 0;
+  for (auto view : det.vName) {
+    if (view.compare(std::to_string(moduleId)) == 0) return iview;
+    iview++;
+  }
+  LOG(warning) << "Trd condition not implemented. Skip.";
+  return -1;
 }
 
 // ---- Finish --------------------------------------------------------
@@ -505,17 +517,17 @@ void CbmMcbmCheckTimingAlgo::WriteHistos()
     LOG(debug) << "Saving histos for " << uDet.sName;
     outfile->mkdir(uDet.sName.data());
     outfile->cd(uDet.sName.data());
-    for (uint id(0); id < uDet.uNdiv; id++)
+    for (uint id(0); id < uDet.uNviews; id++)
       fvhDetSelfDiff[uDet.detId][id]->Write();
-    for (uint id(0); id < uDet.uNdiv; id++)
+    for (uint id(0); id < uDet.uNviews; id++)
       fvhDetToRefDiffRefCharge[uDet.detId][id]->Write();
-    for (uint id(0); id < uDet.uNdiv; id++)
+    for (uint id(0); id < uDet.uNviews; id++)
       fvhDetToRefDiffDetCharge[uDet.detId][id]->Write();
-    for (uint id(0); id < uDet.uNdiv; id++)
+    for (uint id(0); id < uDet.uNviews; id++)
       fvhDetToRefDiffEvo[uDet.detId][id]->Write();
-    for (uint id(0); id < uDet.uNdiv; id++)
+    for (uint id(0); id < uDet.uNviews; id++)
       fvhDetToRefDiffEvoLong[uDet.detId][id]->Write();
-    for (uint id(0); id < uDet.uNdiv; id++) {
+    for (uint id(0); id < uDet.uNviews; id++) {
       LOG(debug) << "WriteHistos, Det, entries = " << uDet.sName << "   "
                  << fvhDetToRefDiff[uDet.detId][id]->GetEntries();
       LOG(info) << "Saved histos for " << uDet.sName << "(" << uDet.vName[id] << ")";
@@ -622,7 +634,7 @@ void CbmMcbmCheckTimingAlgo::WriteHistos()
   /// Register the histo for reference detector digi to digi time difference
   outfile->mkdir(fRefDet.sName.data());
   outfile->cd(fRefDet.sName.data());
-  for (uint id(0); id < fRefDet.uNdiv; id++)
+  for (uint id(0); id < fRefDet.uNviews; id++)
     fvhDetSelfDiff[fRefDet.detId][id]->Write();
   outfile->cd();
 
@@ -655,7 +667,7 @@ void CbmMcbmCheckTimingAlgo::SetDetectorDifferential(ECbmModuleId detIn, std::ve
     if ((*det).detId != detIn) continue;
     found        = true;
     (*det).vName = vName;
-    (*det).uNdiv = vName.size();
+    (*det).uNviews = vName.size();
     break;
   }
 
@@ -671,15 +683,14 @@ void CbmMcbmCheckTimingAlgo::AddCheckDetector(ECbmModuleId detIn, std::string sN
   std::vector<CheckTimingDetector>::iterator det;
   for (det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det).detId == detIn) {
-      LOG(warning) << "CbmMcbmCheckTimingAlgo::AddCheckDetector => Detector already in "
-                      "list, this call will only update the parameters!";
-
       (*det).dTimeRangeBeg = dTimeRangeBegIn;
       (*det).dTimeRangeEnd = dTimeRangeEndIn;
       (*det).uRangeNbBins  = uRangeNbBinsIn;
       (*det).uChargeCutMin = uChargeCutMinIn;
       (*det).uChargeCutMax = uChargeCutMaxIn;
-
+      LOG(info) << "CbmMcbmCheckTimingAlgo::AddCheckDetector => Detector " << (*det).sName << " range "
+                << (*det).dTimeRangeBeg << " :: " << (*det).dTimeRangeEnd << " bins " << (*det).uRangeNbBins
+                << " charge " << (*det).uChargeCutMin << "::" << (*det).uChargeCutMax;
       break;
     }  // if( (*det).detId == detIn )
   }    // for( det = fvDets.begin(); det != fvDets.end(); ++det )

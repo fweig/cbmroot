@@ -42,8 +42,8 @@ public:
     0;  /// Charge cut used for example to reject/select pulser, no effect if equal, select if min < max, reject if max < min
   UInt_t uChargeCutMax =
     0;  /// Charge cut used for example to reject/select pulser, no effect if equal, select if min < max, reject if max < min
-  UInt_t uNdiv                   = 1;  /// No of subdivisions for ech detector
-  std::vector<std::string> vName = {""};
+  UInt_t uNviews                 = 1;     /// No of views for each detector
+  std::vector<std::string> vName = {""};  /// view string definitions; to be defined by detectors
   /// Book-keeping variables
   Double_t dPrevTime      = 0.;
   Int_t iPrevRefFirstDigi = 0;
@@ -107,14 +107,22 @@ private:
   void CheckInterSystemOffset();
   template<class Digi>
   void FillTimeOffsetHistos(const Double_t dRefTime, const Double_t dRefCharge, UInt_t uDetIdx);
-  bool CheckCondition(UInt_t uDet, UInt_t uCond, const void* digi);
-  bool CheckCondition(CheckTimingDetector* det, UInt_t uCond, const CbmStsDigi* digi);
-  bool CheckCondition(CheckTimingDetector* det, UInt_t uCond, const CbmMuchDigi* digi);
-  bool CheckCondition(CheckTimingDetector* det, UInt_t uCond, const CbmTrdDigi* digi);
-  bool CheckCondition(CheckTimingDetector* det, UInt_t uCond, const CbmTofDigi* digi);
-  bool CheckCondition(CheckTimingDetector* det, UInt_t uCond, const CbmRichDigi* digi);
-  bool CheckCondition(CheckTimingDetector* det, UInt_t uCond, const CbmPsdDigi* digi);
-
+  /** @brief Retrieve digi (time,charge,addres) info. Use template specialization for special cases (e.g. T0, TRD, PSD)
+   * @param iDigi digi index in the digi array
+   * @param vec on return contains the signal(s), time(s) and address pairs. Should be allocated by the user
+   * @param detId if needed spec
+   * @return size of vector
+   */
+  template<class Digi>
+  uint GetDigiInfo(UInt_t iDigi, std::vector<std::tuple<double, double, uint>>* vec,
+                   ECbmModuleId detId = ECbmModuleId::kNotExist);
+  /** @brief Retrieve the detector view corresponding to the digi data (@see CheckTimingDetector::vName)
+   * @param det detector definitions
+   * @param info tuple of digi info (time, charge address)
+   * @return the view index for the curent data or -1 if there is none
+   */
+  template<class Digi>
+  int GetViewId(CheckTimingDetector det, std::tuple<double, double, uint> info);
 
   /** Input array from previous already existing data level **/
   CbmDigiManager* fDigiMan = nullptr;  //!
@@ -125,11 +133,10 @@ private:
   /** @brief Pointer to the Timeslice start time used to write it to the output tree
       @remark since we hand this to the FairRootManager it also wants to delete it and we do not have to take care of deletion
    **/
-  CbmTsEventHeader* fCbmTsEventHeader = nullptr;
+  const CbmTsEventHeader* fCbmTsEventHeader = nullptr;
 
   //
   UInt_t fuNbTs = 0;
-  UInt_t fuNbTrdCondWarn = 0;
 
   CheckTimingDetector fRefDet {CheckTimingDetector(ECbmModuleId::kT0, "T0")};
   std::vector<CheckTimingDetector> fvDets {
