@@ -360,6 +360,10 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
           fCbmTsEventHeader->AddNDigisBmon(unpack(systemId, &timeslice, component, fBmonConfig,
                                                   fBmonConfig->GetOptOutAVec(), fBmonConfig->GetOptOutBVec()));
         }
+        else if (fTofConfig) {
+          fCbmTsEventHeader->AddNDigisTof(unpack(fkFlesTof, &timeslice, component, fTofConfig,
+                                                 fTofConfig->GetOptOutAVec(), fTofConfig->GetOptOutBVec()));
+        }
         break;
       }
       default: {

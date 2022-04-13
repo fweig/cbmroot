@@ -33,6 +33,18 @@
 template<>
 void CbmAlgoBuildRawEvents::LoopOnSeeds<Double_t>();
 
+template<class Digi>
+uint32_t GetTofDetType(const Digi* /*pDigi*/)
+{
+  return 0;
+}
+
+uint32_t GetTofDetType(const CbmTofDigi* pDigi)
+{
+  /// Used only if TOF digi, otherwise template with 0 return is called
+  return CbmTofAddress::GetSmType(pDigi->GetAddress());
+}
+
 Bool_t CbmAlgoBuildRawEvents::InitAlgo()
 {
   LOG(info) << "CbmAlgoBuildRawEvents::InitAlgo => Starting sequence";
@@ -271,13 +283,44 @@ template<class DigiSeed>
 void CbmAlgoBuildRawEvents::LoopOnSeeds()
 {
   if (ECbmModuleId::kT0 == fRefDet.detId) {
-    const UInt_t uNbRefDigis = fT0DigiVec->size();
-    /// Loop on size of vector
-    for (UInt_t uDigi = 0; uDigi < uNbRefDigis; ++uDigi) {
-      LOG(debug) << Form("Checking seed %6u / %6u", uDigi, uNbRefDigis);
-      Double_t dTime = fT0DigiVec->at(uDigi).GetTime();
-      /// Check Seed and build event if needed
-      CheckSeed(dTime, uDigi);
+    if (0 == fuDetTypeT0) {
+      const UInt_t uNbRefDigis = fT0DigiVec->size();
+      /// Loop on size of vector
+      for (UInt_t uDigi = 0; uDigi < uNbRefDigis; ++uDigi) {
+        LOG(debug) << Form("Checking seed %6u / %6u", uDigi, uNbRefDigis);
+        Double_t dTime = fT0DigiVec->at(uDigi).GetTime();
+
+        /// Check if seed in acceptance window
+        if (dTime < fdSeedWindowBeg) { continue; }
+        else if (fdSeedWindowEnd < dTime) {
+          break;
+        }
+        /// Check Seed and build event if needed
+        CheckSeed(dTime, uDigi);
+      }
+    }
+    else {
+      // filter T0 digis from Tof (remove this block if T0 properly implemented)
+      const UInt_t uNbRefDigis = GetNofDigis(ECbmModuleId::kTof);
+      /// Loop on size of vector
+      for (UInt_t uDigi = 0; uDigi < uNbRefDigis; ++uDigi) {
+        LOG(debug) << Form("Checking seed %6u / %6u", uDigi, uNbRefDigis);
+
+        const DigiSeed* pDigi = GetDigi<DigiSeed>(uDigi);
+
+        // filter T0 digis from Tof
+        if (GetTofDetType(pDigi) != fuDetTypeT0) { continue; }
+
+        const Double_t dTime = pDigi->GetTime();
+
+        /// Check if seed in acceptance window
+        if (dTime < fdSeedWindowBeg) { continue; }
+        else if (fdSeedWindowEnd < dTime) {
+          break;
+        }
+        /// Check Seed and build event if needed
+        CheckSeed(dTime, uDigi);
+      }
     }
   }
   else {
@@ -289,7 +332,7 @@ void CbmAlgoBuildRawEvents::LoopOnSeeds()
       const DigiSeed* pDigi = GetDigi<DigiSeed>(uDigi);
 
       // filter T0 digis from Tof (remove this line if T0 properly implemented)
-      if (fRefDet.detId == ECbmModuleId::kTof && pDigi->GetAddress() == fuT0Address) { continue; }
+      if (fRefDet.detId == ECbmModuleId::kTof && 0 != fuDetTypeT0 && GetTofDetType(pDigi) == fuDetTypeT0) { continue; }
 
       const Double_t dTime = pDigi->GetTime();
 
@@ -359,10 +402,22 @@ void CbmAlgoBuildRawEvents::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx)
     if (fRefDet.fdTimeWinBeg < fRefDet.fdTimeWinEnd) {
       SearchMatches(dSeedTime, fRefDet);
       /// Also add the seed if the window starts after the seed
-      if (0 < fRefDet.fdTimeWinBeg) AddDigiToEvent(fRefDet, uSeedDigiIdx);
+      if (0 < fRefDet.fdTimeWinBeg) {
+        if (ECbmModuleId::kT0 == fRefDet.detId && 0 != fuDetTypeT0) {
+          AddDigiToEvent(kRawEventBuilderDetTof, uSeedDigiIdx);
+        }
+        else {
+          AddDigiToEvent(fRefDet, uSeedDigiIdx);
+        }
+      }
     }
     else {
-      AddDigiToEvent(fRefDet, uSeedDigiIdx);
+      if (ECbmModuleId::kT0 == fRefDet.detId && 0 != fuDetTypeT0) {
+        AddDigiToEvent(kRawEventBuilderDetTof, uSeedDigiIdx);
+      }
+      else {
+        AddDigiToEvent(fRefDet, uSeedDigiIdx);
+      }
     }
   }
 
@@ -468,53 +523,69 @@ void CbmAlgoBuildRawEvents::SearchMatches(Double_t dSeedTime, RawEventBuilderDet
 
   /// Check the Digis until out of window
   if (ECbmModuleId::kT0 == detMatch.detId) {
+    if (0 == fuDetTypeT0) {
+      /// Loop on size of vector
+      const UInt_t uNbSelDigis = fT0DigiVec->size();
+      for (UInt_t uDigi = detMatch.fuStartIndex; uDigi < uNbSelDigis; ++uDigi) {
+        const Double_t dTime     = fT0DigiVec->at(uDigi).GetTime();
+        const Double_t dTimeDiff = dTime - dSeedTime;
 
-    /// Loop on size of vector
-    const UInt_t uNbSelDigis = fT0DigiVec->size();
-    for (UInt_t uDigi = detMatch.fuStartIndex; uDigi < uNbSelDigis; ++uDigi) {
-      const Double_t dTime     = fT0DigiVec->at(uDigi).GetTime();
-      const Double_t dTimeDiff = dTime - dSeedTime;
+        /// Check if within time window, update start/stop indices if needed
+        if (dTimeDiff < detMatch.fdTimeWinBeg) {
+          ++uLocalIndexStart;
+          continue;
+        }
+        else if (detMatch.fdTimeWinEnd < dTimeDiff) {
+          /// Store as end the first digi out of window to avoid double counting in case of
+          /// merged overlap event mode
+          uLocalIndexEnd = uDigi;
+          break;
+        }
+        AddDigiToEvent(detMatch, uDigi);
+        if (fdPrevEvtEndTime < dTime) fdPrevEvtEndTime = dTime;
+      }
 
-      /// Check if within time window, update start/stop indices if needed
-      if (dTimeDiff < detMatch.fdTimeWinBeg) {
-        ++uLocalIndexStart;
-        continue;
-      }
-      else if (detMatch.fdTimeWinEnd < dTimeDiff) {
-        /// Store as end the first digi out of window to avoid double counting in case of
-        /// merged overlap event mode
-        uLocalIndexEnd = uDigi;
-        break;
-      }
-      AddDigiToEvent(detMatch, uDigi);
-      if (fdPrevEvtEndTime < dTime) fdPrevEvtEndTime = dTime;
+      /// catch the case where we reach the end of the vector before being out of the time window
+      if (uLocalIndexEnd < uLocalIndexStart) uLocalIndexEnd = uNbSelDigis;
     }
+    else {
+      // filter T0 digis from Tof (remove this block if T0 properly implemented)
+      const UInt_t uNbSelDigis = GetNofDigis(ECbmModuleId::kTof);
+      /// Loop on size of vector
+      for (UInt_t uDigi = detMatch.fuStartIndex; uDigi < uNbSelDigis; ++uDigi) {
+        const DigiCheck* pDigi = GetDigi<DigiCheck>(uDigi);
 
-    /// catch the case where we reach the end of the vector before being out of the time window
-    if (uLocalIndexEnd < uLocalIndexStart) uLocalIndexEnd = uNbSelDigis;
+        const Double_t dTime     = pDigi->GetTime();
+        const Double_t dTimeDiff = dTime - dSeedTime;
+        LOG(debug4) << detMatch.sName << Form(" => Checking match %6u / %6u, dt %f", uDigi, uNbSelDigis, dTimeDiff);
+
+        /// Check if within time window, update start/stop indices if needed
+        if (dTimeDiff < detMatch.fdTimeWinBeg) {
+          ++uLocalIndexStart;
+          continue;
+        }
+        else if (detMatch.fdTimeWinEnd < dTimeDiff) {
+          /// Store as end the first digi out of window to avoid double counting in case of
+          /// merged overlap event mode
+          uLocalIndexEnd = uDigi;
+          break;
+        }
+
+        // filter T0 digis from Tof
+        if (GetTofDetType(pDigi) != fuDetTypeT0) { continue; }
+
+        AddDigiToEvent(kRawEventBuilderDetTof, uDigi);
+        if (fdPrevEvtEndTime < dTime) fdPrevEvtEndTime = dTime;
+      }
+      /// catch the case where we reach the end of the vector before being out of the time window
+      if (uLocalIndexEnd < uLocalIndexStart) uLocalIndexEnd = uNbSelDigis;
+    }
   }
   else {
     const UInt_t uNbSelDigis = GetNofDigis(detMatch.detId);
     /// Loop on size of vector
     for (UInt_t uDigi = detMatch.fuStartIndex; uDigi < uNbSelDigis; ++uDigi) {
       const DigiCheck* pDigi = GetDigi<DigiCheck>(uDigi);
-
-      // Filter TRD2D digis if 1D and reverse
-      if (detMatch.detId == ECbmModuleId::kTrd) {
-        const CbmTrdDigi* pTrdDigi = GetDigi<CbmTrdDigi>(uDigi);
-        if (pTrdDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kFASP) {  //
-          continue;
-        }
-      }
-      else if (detMatch.detId == ECbmModuleId::kTrd2d) {
-        const CbmTrdDigi* pTrdDigi = GetDigi<CbmTrdDigi>(uDigi);
-        if (pTrdDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kSPADIC) {  //
-          continue;
-        }
-      }
-
-      // filter T0 digis from Tof (remove this line if T0 properly implemented)
-      //if (detMatch.detId == ECbmModuleId::kTof && pDigi->GetAddress() == fuT0Address) { continue; }
 
       const Double_t dTime     = pDigi->GetTime();
       const Double_t dTimeDiff = dTime - dSeedTime;
@@ -531,6 +602,24 @@ void CbmAlgoBuildRawEvents::SearchMatches(Double_t dSeedTime, RawEventBuilderDet
         uLocalIndexEnd = uDigi;
         break;
       }
+
+      // Filter TRD2D digis if 1D and reverse
+      if (detMatch.detId == ECbmModuleId::kTrd) {
+        const CbmTrdDigi* pTrdDigi = GetDigi<CbmTrdDigi>(uDigi);
+        if (pTrdDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kFASP) {  //
+          continue;
+        }
+      }
+      else if (detMatch.detId == ECbmModuleId::kTrd2d) {
+        const CbmTrdDigi* pTrdDigi = GetDigi<CbmTrdDigi>(uDigi);
+        if (pTrdDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kSPADIC) {  //
+          continue;
+        }
+      }
+
+      // filter T0 digis from Tof (remove this line if T0 properly implemented)
+      if (detMatch.detId == ECbmModuleId::kTof && 0 != fuDetTypeT0 && GetTofDetType(pDigi) == fuDetTypeT0) { continue; }
+
       AddDigiToEvent(detMatch, uDigi);
       if (fdPrevEvtEndTime < dTime) fdPrevEvtEndTime = dTime;
     }
@@ -543,7 +632,7 @@ void CbmAlgoBuildRawEvents::SearchMatches(Double_t dSeedTime, RawEventBuilderDet
   detMatch.fuEndIndex   = uLocalIndexEnd;
 }
 
-void CbmAlgoBuildRawEvents::AddDigiToEvent(RawEventBuilderDetector& det, Int_t _entry)
+void CbmAlgoBuildRawEvents::AddDigiToEvent(const RawEventBuilderDetector& det, Int_t _entry)
 {
   fCurrentEvent->AddData(det.dataType, _entry);
 }
@@ -586,7 +675,7 @@ Bool_t CbmAlgoBuildRawEvents::HasTrigger(CbmEvent* event)
   return kTRUE;
 }
 
-Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, RawEventBuilderDetector& det)
+Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, const RawEventBuilderDetector& det)
 {
   /// Check if both Trigger conditions disabled for this detector
   if (0 == det.fuTriggerMinDigis && det.fiTriggerMaxDigis < 0) { return kTRUE; }
@@ -600,7 +689,30 @@ Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, RawEventBu
   }
 
   /// Check trigger rejection by minimal number or absence
-  const Int_t iNbDigis = event->GetNofData(det.dataType);
+  int32_t iNbDigis = event->GetNofData(det.dataType);
+  if (0 != fuDetTypeT0) {
+    // filter T0 digis from Tof (remove this block if T0 properly implemented)
+    if (ECbmModuleId::kT0 == det.detId || ECbmModuleId::kTof == det.detId) {
+      iNbDigis                 = 0;
+      int32_t uNbSelDigisTofT0 = event->GetNofData(kRawEventBuilderDetTof.dataType);
+      /// Loop on size of vector
+      for (int32_t iDigi = 0; iDigi < uNbSelDigisTofT0; ++iDigi) {
+        uint idx                = event->GetIndex(kRawEventBuilderDetTof.dataType, iDigi);
+        const CbmTofDigi* pDigi = GetDigi<CbmTofDigi>(idx);
+        if (nullptr == pDigi) continue;
+
+        // filter T0 digis from Tof
+        if (GetTofDetType(pDigi) == fuDetTypeT0) {  //
+          if (ECbmModuleId::kT0 == det.detId) {     //
+            iNbDigis++;
+          }
+        }
+        else if (ECbmModuleId::kTof == det.detId) {  //
+          iNbDigis++;
+        }
+      }
+    }
+  }
   if ((-1 == iNbDigis) || (static_cast<UInt_t>(iNbDigis) < det.fuTriggerMinDigis)) {
     LOG(debug2) << "Event does not have enough digis: " << iNbDigis << " vs " << det.fuTriggerMinDigis << " for "
                 << det.sName;
@@ -663,14 +775,14 @@ Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, RawEventBu
         break;
       }
       case ECbmModuleId::kMuch: {
-        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => Fired layers check not implemented yet for "
+        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckTriggerConditions => Fired layers check not implemented yet for "
                    << det.sName;
         return kFALSE;
         break;
       }
       case ECbmModuleId::kTrd2d:  // Same data storage as trd 1d
       case ECbmModuleId::kTrd: {
-        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => Fired layers check not implemented yet for "
+        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckTriggerConditions => Fired layers check not implemented yet for "
                    << det.sName;
         return kFALSE;
         break;
@@ -716,25 +828,25 @@ Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, RawEventBu
         break;
       }
       case ECbmModuleId::kRich: {
-        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => Fired layers check not implemented yet for "
+        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckTriggerConditions => Fired layers check not implemented yet for "
                    << det.sName;
         return kFALSE;
         break;
       }
       case ECbmModuleId::kPsd: {
-        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => Fired layers check not implemented yet for "
+        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckTriggerConditions => Fired layers check not implemented yet for "
                    << det.sName;
         return kFALSE;
         break;
       }
       case ECbmModuleId::kT0: {
-        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => Fired layers check not implemented yet for "
+        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckTriggerConditions => Fired layers check not implemented yet for "
                    << det.sName;
         return kFALSE;
         break;
       }
       default: {
-        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => Fired layers check not implemented yet for "
+        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckTriggerConditions => Fired layers check not implemented yet for "
                    << det.sName;
         return kFALSE;
         break;
@@ -748,7 +860,7 @@ Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, RawEventBu
 
 //----------------------------------------------------------------------
 
-Bool_t CbmAlgoBuildRawEvents::CheckDataAvailable(RawEventBuilderDetector& det)
+Bool_t CbmAlgoBuildRawEvents::CheckDataAvailable(const RawEventBuilderDetector& det)
 {
   if (!CheckDataAvailable(det.detId)) {
     LOG(info) << "No " << det.sName << " digi input found.";
@@ -783,7 +895,9 @@ bool CbmAlgoBuildRawEvents::CheckDataAvailable(ECbmModuleId detId)
       return fPsdDigis != nullptr;
     }
     case ECbmModuleId::kT0: {
-      return fT0DigiVec != nullptr;
+      if (0 != fuDetTypeT0) return fTofDigis != nullptr;
+      else
+        return fT0DigiVec != nullptr;
     }
     default: {
       LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => "
@@ -819,7 +933,9 @@ UInt_t CbmAlgoBuildRawEvents::GetNofDigis(ECbmModuleId detId)
       return fPsdDigis->size();
     }
     case ECbmModuleId::kT0: {
-      return fT0DigiVec->size();  //what to do here? Not in digi manager.
+      if (0 != fuDetTypeT0) return fTofDigis->size();
+      else
+        return fT0DigiVec->size();  //what to do here? Not in digi manager.
     }
     default: {
       LOG(fatal) << "CbmAlgoBuildRawEvents::GetNofDigis => "
@@ -889,6 +1005,13 @@ void CbmAlgoBuildRawEvents::CreateHistograms()
   }
 
   /// Same plots for the reference detector
+  TH2I* hNbDigiPerEvtTimeDet = new TH2I(Form("hNbDigiPerEvtTime%s", fRefDet.sName.data()),
+                                        Form("nb of %s digis per event vs seed time of the events; Seed time in TS "
+                                             "[s]; Nb Digis []; Events []",
+                                             fRefDet.sName.data()),
+                                        1000, 0, 0.2, 5000, 0, 5000);
+  fvhNbDigiPerEvtTimeDet.push_back(hNbDigiPerEvtTimeDet);
+
   TH1I* hNbDigiPerEvtDet =
     new TH1I(Form("hNbDigiPerEvt%s", fRefDet.sName.data()),
              Form("nb of %s digis per event; Nb Digis []", fRefDet.sName.data()), 10000, 0, 10000);
@@ -1008,13 +1131,53 @@ void CbmAlgoBuildRawEvents::FillHistos()
     fhNbDigiPerEvtTime->Fill(evt->GetStartTime() * 1e-9, evt->GetNofData());
 
     /// Loop on selection detectors
+    uint32_t uNbDataT0    = 0;  // filter T0 digis from Tof (remove this block if T0 properly implemented)
+    uint32_t uNbDataTof   = 0;  // filter T0 digis from Tof (remove this block if T0 properly implemented)
     uint32_t uNbDataTrd1d = 0;
     uint32_t uNbDataTrd2d = 0;
     for (UInt_t uDetIdx = 0; uDetIdx < fvDets.size(); ++uDetIdx) {
       if (nullptr == fvhNbDigiPerEvtDet[uDetIdx]) continue;
 
-      fvhNbDigiPerEvtDet[uDetIdx]->Fill(TMath::Max(0, evt->GetNofData(fvDets[uDetIdx].dataType)));
-      if (nullptr == fvhTDiff[uDetIdx]) continue;
+      if (0 != fuDetTypeT0) {
+        // filter T0 digis from Tof (remove this block if T0 properly implemented)
+        if (ECbmDataType::kT0Digi == fvDets[uDetIdx].dataType) {
+          for (int idigi = 0; idigi < evt->GetNofData(ECbmDataType::kTofDigi); ++idigi) {
+            double dTimeDiff = 1.E30;
+            uint idx         = evt->GetIndex(ECbmDataType::kTofDigi, idigi);
+            auto pDigi       = GetDigi<CbmTofDigi>(idx);
+            if (nullptr == pDigi) continue;
+
+            // filter T0 digis from Tof
+            if (GetTofDetType(pDigi) == fuDetTypeT0) {
+              uNbDataT0++;
+              dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+              if (dTimeDiff < 1.E30) {  //
+                fvhTDiff[uDetIdx]->Fill(dTimeDiff);
+              }
+            }
+          }
+          continue;
+        }  // if (ECbmDataType::kT0Digi == fvDets[uDetIdx].dataType)
+        else if (ECbmDataType::kTofDigi == fvDets[uDetIdx].dataType) {
+          for (int idigi = 0; idigi < evt->GetNofData(fvDets[uDetIdx].dataType); ++idigi) {
+            double dTimeDiff = 1.E30;
+            uint idx         = evt->GetIndex(fvDets[uDetIdx].dataType, idigi);
+            auto pDigi       = GetDigi<CbmTofDigi>(idx);
+            if (nullptr == pDigi) continue;
+
+            // filter T0 digis from Tof
+            if (GetTofDetType(pDigi) != fuDetTypeT0) {
+              uNbDataTof++;
+              dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+              if (dTimeDiff < 1.E30) {  //
+                fvhTDiff[uDetIdx]->Fill(dTimeDiff);
+              }
+            }
+          }
+          continue;
+        }  // else if (ECbmDataType::kTofDigi == fvDets[uDetIdx].dataType)
+      }
+
       for (int idigi = 0; idigi < evt->GetNofData(fvDets[uDetIdx].dataType); ++idigi) {
         double dTimeDiff = 1.E30;
         uint idx         = evt->GetIndex(fvDets[uDetIdx].dataType, idigi);
@@ -1080,77 +1243,127 @@ void CbmAlgoBuildRawEvents::FillHistos()
 
         if (dTimeDiff < 1.E30) fvhTDiff[uDetIdx]->Fill(dTimeDiff);
       }
+
+      if (ECbmDataType::kT0Digi == fvDets[uDetIdx].dataType) {
+        uNbDataT0 = TMath::Max(0, evt->GetNofData(fvDets[uDetIdx].dataType));
+      }
+      if (ECbmDataType::kTofDigi == fvDets[uDetIdx].dataType) {
+        uNbDataTof = TMath::Max(0, evt->GetNofData(fvDets[uDetIdx].dataType));
+      }
     }
     /// Reference detector
     uint32_t uRefDetIdx = fvDets.size();
     if (nullptr != fvhNbDigiPerEvtDet[uRefDetIdx]) {
 
-      fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(TMath::Max(0, evt->GetNofData(fRefDet.dataType)));
-      if (nullptr == fvhTDiff[uRefDetIdx]) continue;
-      for (int idigi = 0; idigi < evt->GetNofData(fRefDet.dataType); ++idigi) {
-        double dTimeDiff = 1.E30;
-        uint idx         = evt->GetIndex(fRefDet.dataType, idigi);
-        switch (fRefDet.dataType) {
-          case ECbmDataType::kT0Digi: {
-            if (fT0DigiVec->size() <= idx) continue;
-            dTimeDiff = fT0DigiVec->at(idx).GetTime() - evt->GetStartTime();
-            break;
-          }
-          case ECbmDataType::kStsDigi: {
-            auto pDigi = GetDigi<CbmStsDigi>(idx);
-            if (nullptr == pDigi) continue;
+      if (0 != fuDetTypeT0 && ECbmDataType::kT0Digi == fRefDet.dataType) {
+        // filter T0 digis from Tof (remove this block if T0 properly implemented)
+        for (int idigi = 0; idigi < evt->GetNofData(ECbmDataType::kTofDigi); ++idigi) {
+          double dTimeDiff = 1.E30;
+          uint idx         = evt->GetIndex(ECbmDataType::kTofDigi, idigi);
+          auto pDigi       = GetDigi<CbmTofDigi>(idx);
+          if (nullptr == pDigi) continue;
+
+          // filter T0 digis from Tof
+          if (GetTofDetType(pDigi) == fuDetTypeT0) {
+            uNbDataT0++;
             dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
-            break;
+            if (dTimeDiff < 1.E30) {  //
+              fvhTDiff[uRefDetIdx]->Fill(dTimeDiff);
+            }
           }
-          case ECbmDataType::kMuchDigi: {
-            if (fbUseMuchBeamtimeDigi) {
-              auto pDigi = GetDigi<CbmMuchBeamTimeDigi>(idx);
+        }
+      }  // if (0 != fuDetTypeT0 && ECbmDataType::kT0Digi == fRefDet.dataType)
+      else if (0 != fuDetTypeT0 && ECbmDataType::kTofDigi == fRefDet.dataType) {
+        // filter T0 digis from Tof (remove this block if T0 properly implemented)
+        for (int idigi = 0; idigi < evt->GetNofData(fRefDet.dataType); ++idigi) {
+          double dTimeDiff = 1.E30;
+          uint idx         = evt->GetIndex(fRefDet.dataType, idigi);
+          auto pDigi       = GetDigi<CbmTofDigi>(idx);
+          if (nullptr == pDigi) continue;
+
+          // filter T0 digis from Tof
+          if (GetTofDetType(pDigi) != fuDetTypeT0) {
+            uNbDataTof++;
+            dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+            if (dTimeDiff < 1.E30) {  //
+              fvhTDiff[uRefDetIdx]->Fill(dTimeDiff);
+            }
+          }
+        }
+      }  // else if (0 != fuDetTypeT0 && ECbmDataType::kTofDigi == fRefDet.dataType)
+      else {
+        for (int idigi = 0; idigi < evt->GetNofData(fRefDet.dataType); ++idigi) {
+          double dTimeDiff = 1.E30;
+          uint idx         = evt->GetIndex(fRefDet.dataType, idigi);
+          switch (fRefDet.dataType) {
+            case ECbmDataType::kT0Digi: {
+              if (fT0DigiVec->size() <= idx) continue;
+              dTimeDiff = fT0DigiVec->at(idx).GetTime() - evt->GetStartTime();
+              break;
+            }
+            case ECbmDataType::kStsDigi: {
+              auto pDigi = GetDigi<CbmStsDigi>(idx);
               if (nullptr == pDigi) continue;
               dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+              break;
             }
-            else {
-              auto pDigi = GetDigi<CbmMuchDigi>(idx);
+            case ECbmDataType::kMuchDigi: {
+              if (fbUseMuchBeamtimeDigi) {
+                auto pDigi = GetDigi<CbmMuchBeamTimeDigi>(idx);
+                if (nullptr == pDigi) continue;
+                dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+              }
+              else {
+                auto pDigi = GetDigi<CbmMuchDigi>(idx);
+                if (nullptr == pDigi) continue;
+                dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+              }
+              break;
+            }
+            case ECbmDataType::kTofDigi: {
+              auto pDigi = GetDigi<CbmTofDigi>(idx);
               if (nullptr == pDigi) continue;
               dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+              break;
             }
-            break;
-          }
-          case ECbmDataType::kTofDigi: {
-            auto pDigi = GetDigi<CbmTofDigi>(idx);
-            if (nullptr == pDigi) continue;
-            dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
-            break;
-          }
-          case ECbmDataType::kTrdDigi: {
-            auto pDigi = GetDigi<CbmTrdDigi>(idx);
-            if (nullptr == pDigi) continue;
-            dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
-            if (pDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kSPADIC) {
-              if (fRefDet.sName == "kTrd2D") continue;
-              ++uNbDataTrd1d;
+            case ECbmDataType::kTrdDigi: {
+              auto pDigi = GetDigi<CbmTrdDigi>(idx);
+              if (nullptr == pDigi) continue;
+              dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+              if (pDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kSPADIC) {
+                if (fRefDet.sName == "kTrd2D") continue;
+                ++uNbDataTrd1d;
+              }
+              else if (pDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kFASP) {
+                if (fRefDet.sName == "kTrd") continue;
+                ++uNbDataTrd2d;
+              }
+              break;
             }
-            else if (pDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kFASP) {
-              if (fRefDet.sName == "kTrd") continue;
-              ++uNbDataTrd2d;
+            case ECbmDataType::kRichDigi: {
+              auto pDigi = GetDigi<CbmRichDigi>(idx);  // FIXME, need to find the proper digi template
+              if (nullptr == pDigi) continue;
+              dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+              break;
             }
-            break;
+            case ECbmDataType::kPsdDigi: {
+              auto pDigi = GetDigi<CbmPsdDigi>(idx);  // FIXME, need to find the proper digi template
+              if (nullptr == pDigi) continue;
+              dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+              break;
+            }
+            default: LOG(error) << "Unkown dataType " << fRefDet.dataType;
           }
-          case ECbmDataType::kRichDigi: {
-            auto pDigi = GetDigi<CbmRichDigi>(idx);  // FIXME, need to find the proper digi template
-            if (nullptr == pDigi) continue;
-            dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
-            break;
-          }
-          case ECbmDataType::kPsdDigi: {
-            auto pDigi = GetDigi<CbmPsdDigi>(idx);  // FIXME, need to find the proper digi template
-            if (nullptr == pDigi) continue;
-            dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
-            break;
-          }
-          default: LOG(error) << "Unkown dataType " << fRefDet.dataType;
+
+          if (dTimeDiff < 1.E30) fvhTDiff[uRefDetIdx]->Fill(dTimeDiff);
         }
 
-        if (dTimeDiff < 1.E30) fvhTDiff[uRefDetIdx]->Fill(dTimeDiff);
+        if (ECbmDataType::kT0Digi == fRefDet.dataType) {  //
+          uNbDataT0 = TMath::Max(0, evt->GetNofData(fRefDet.dataType));
+        }
+        if (ECbmDataType::kTofDigi == fRefDet.dataType) {
+          uNbDataTof = TMath::Max(0, evt->GetNofData(fRefDet.dataType));
+        }
       }
     }
 
@@ -1158,16 +1371,55 @@ void CbmAlgoBuildRawEvents::FillHistos()
     for (UInt_t uDetIdx = 0; uDetIdx < fvDets.size(); ++uDetIdx) {
       if (nullptr == fvhNbDigiPerEvtTimeDet[uDetIdx]) continue;
 
-      if (fvDets[uDetIdx].sName == "kTrd") {
+      if (0 != fuDetTypeT0 && fvDets[uDetIdx].sName == "T0") {
+        // filter T0 digis from Tof (remove this block if T0 properly implemented)
+        fvhNbDigiPerEvtDet[uDetIdx]->Fill(uNbDataT0);
+        fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataT0);
+      }
+      else if (0 != fuDetTypeT0 && fvDets[uDetIdx].sName == "Tof") {
+        // filter T0 digis from Tof (remove this block if T0 properly implemented)
+        fvhNbDigiPerEvtDet[uDetIdx]->Fill(uNbDataTof);
+        fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTof);
+      }
+      else if (fvDets[uDetIdx].sName == "kTrd") {
+        fvhNbDigiPerEvtDet[uDetIdx]->Fill(uNbDataTrd1d);
         fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTrd1d);
       }
       else if (fvDets[uDetIdx].sName == "kTrd2D") {
+        fvhNbDigiPerEvtDet[uDetIdx]->Fill(uNbDataTrd2d);
         fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTrd2d);
       }
       else {
-        fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(evt->GetStartTime() * 1e-9, evt->GetNofData(fvDets[uDetIdx].dataType));
+        fvhNbDigiPerEvtDet[uDetIdx]->Fill(TMath::Max(0, evt->GetNofData(fvDets[uDetIdx].dataType)));
+        fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(evt->GetStartTime() * 1e-9,
+                                              TMath::Max(0, evt->GetNofData(fvDets[uDetIdx].dataType)));
       }
     }
+    /// Same for the reference detector
+    if (0 != fuDetTypeT0 && fRefDet.sName == "T0") {
+      // filter T0 digis from Tof (remove this block if T0 properly implemented)
+      fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataT0);
+      fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataT0);
+    }
+    else if (0 != fuDetTypeT0 && fRefDet.sName == "Tof") {
+      // filter T0 digis from Tof (remove this block if T0 properly implemented)
+      fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTof);
+      fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTof);
+    }
+    else if (fRefDet.sName == "kTrd") {
+      fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTrd1d);
+      fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTrd1d);
+    }
+    else if (fRefDet.sName == "kTrd2D") {
+      fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTrd2d);
+      fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTrd2d);
+    }
+    else {
+      fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(TMath::Max(0, evt->GetNofData(fRefDet.dataType)));
+      fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9,
+                                               TMath::Max(0, evt->GetNofData(fRefDet.dataType)));
+    }
+
     dPreEvtTime = evt->GetStartTime();
   }
 }
@@ -1192,6 +1444,7 @@ void CbmAlgoBuildRawEvents::ResetHistograms(Bool_t /*bResetTime*/)
   for (std::vector<TH1*>::iterator itHist = fvhTDiff.begin(); itHist != fvhTDiff.end(); ++itHist) {
     (*itHist)->Reset();
   }
+
   /*
    if( kTRUE == bResetTime )
    {

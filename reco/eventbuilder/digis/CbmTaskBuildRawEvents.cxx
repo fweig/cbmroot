@@ -266,8 +266,8 @@ void CbmTaskBuildRawEvents::FillSeedTimesFromDetList(std::vector<Double_t>* vdSe
       if (DigiCounters[system.detId] < DigiNumbers[system.detId]) {
 
         // filter T0 digis from Tof (remove this statement if T0 properly implemented)
-        if (system.detId == ECbmModuleId::kTof
-            && (fTofDigis->at(DigiCounters[system.detId])).GetAddress() == CbmAlgoBuildRawEvents::fuT0Address) {
+        if (system.detId == ECbmModuleId::kTof && 0 != fuDetTypeT0
+            && (fTofDigis->at(DigiCounters[system.detId])).GetType() == fuDetTypeT0) {
           DigiCounters[system.detId]++;
           continue;
         }  // end of T0 filter
@@ -329,8 +329,7 @@ void CbmTaskBuildRawEvents::FillSeedTimesFromSlidingWindow(const RawEventBuilder
     for (Int_t i = 0; i < fDigiMan->GetNofDigis(seedDet->detId); i++) {
 
       // filter T0 digis from Tof (remove this statement if T0 properly implemented)
-      if (seedDet->detId == ECbmModuleId::kTof
-          && (fTofDigis->at(i)).GetAddress() == CbmAlgoBuildRawEvents::fuT0Address) {
+      if (seedDet->detId == ECbmModuleId::kTof && 0 != fuDetTypeT0 && (fTofDigis->at(i)).GetType() == fuDetTypeT0) {
         continue;
       }  // end of T0 filter
 
@@ -352,23 +351,42 @@ void CbmTaskBuildRawEvents::FillSeedTimesFromSlidingWindow(const RawEventBuilder
     case ECbmModuleId::kSts: fSeedFinderSlidingWindow->FillSeedTimes(fStsDigis, fvDigiMatchQa); break;
     case ECbmModuleId::kTrd: fSeedFinderSlidingWindow->FillSeedTimes(fTrdDigis, fvDigiMatchQa); break;
     case ECbmModuleId::kTof: {
-
-      // filter T0 digis from Tof (remove this statement if T0 properly implemented)
-      std::vector<CbmTofDigi> vFilteredTofDigis;
-      for (const auto& tofDigi : *fTofDigis) {
-        if (tofDigi.GetAddress() == CbmAlgoBuildRawEvents::fuT0Address) { continue; }
-        vFilteredTofDigis.push_back(tofDigi);
+      if (0 != fuDetTypeT0) {
+        // filter T0 digis from Tof (remove this block if T0 properly implemented)
+        std::vector<CbmTofDigi> vFilteredTofDigis;
+        for (const auto& tofDigi : *fTofDigis) {
+          if (tofDigi.GetType() == fuDetTypeT0) { continue; }
+          vFilteredTofDigis.push_back(tofDigi);
+        }
+        fSeedFinderSlidingWindow->FillSeedTimes(&vFilteredTofDigis, fvDigiMatchQa);
+        // end of T0 filter
       }
-      fSeedFinderSlidingWindow->FillSeedTimes(&vFilteredTofDigis, fvDigiMatchQa);
+      else {
+        // original version (no T0 filter)
+        fSeedFinderSlidingWindow->FillSeedTimes(fTofDigis, fvDigiMatchQa);
+      }
       break;
-      // end of T0 filter
-
-      //original version (no T0 filter)
-      //fSeedFinderSlidingWindow->FillSeedTimes(fTofDigis, fvDigiMatchQa); break;
     }
     case ECbmModuleId::kRich: fSeedFinderSlidingWindow->FillSeedTimes(fRichDigis, fvDigiMatchQa); break;
     case ECbmModuleId::kPsd: fSeedFinderSlidingWindow->FillSeedTimes(fPsdDigis, fvDigiMatchQa); break;
-    case ECbmModuleId::kT0: fSeedFinderSlidingWindow->FillSeedTimes(fT0Digis, fvDigiMatchQa); break;
+    case ECbmModuleId::kT0: {
+      if (0 != fuDetTypeT0) {
+        // filter T0 digis in Tof array (remove this block if T0 properly implemented)
+        // => This T0 seed finding is untested and without ensurance
+        std::vector<CbmTofDigi> vFilteredTofDigis;
+        for (const auto& tofDigi : *fTofDigis) {
+          if (tofDigi.GetType() != fuDetTypeT0) { continue; }
+          vFilteredTofDigis.push_back(tofDigi);
+        }
+        fSeedFinderSlidingWindow->FillSeedTimes(&vFilteredTofDigis, fvDigiMatchQa);
+        // end of T0 filter
+      }
+      else {
+        // original version (no T0 filter needed)
+        fSeedFinderSlidingWindow->FillSeedTimes(fT0Digis, fvDigiMatchQa);
+      }
+      break;
+    }
     default: break;
   }
 }

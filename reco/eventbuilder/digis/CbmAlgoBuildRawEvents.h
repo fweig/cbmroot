@@ -113,8 +113,6 @@ static const RawEventBuilderDetector kRawEventBuilderDetUndef = RawEventBuilderD
 
 class CbmAlgoBuildRawEvents {
 public:
-  const static uint32_t fuT0Address = 10246;
-
   /** Default constructor **/
   CbmAlgoBuildRawEvents() = default;
 
@@ -177,6 +175,8 @@ public:
 
   void ChangeMuchBeamtimeDigiFlag(Bool_t bFlagIn = kFALSE) { fbUseMuchBeamtimeDigi = bFlagIn; }
 
+  void SetT0InTofDetType(uint32_t uTypeIn = 5) { fuDetTypeT0 = uTypeIn; }
+
   /// For monitor algos
   void AddHistoToVector(TNamed* pointer, std::string sFolder = "")
   {
@@ -224,7 +224,7 @@ public:
 
 private:
   /// Internal methods
-  Bool_t CheckDataAvailable(RawEventBuilderDetector& det);
+  Bool_t CheckDataAvailable(const RawEventBuilderDetector& det);
   void InitTs();
   void InitSeedWindow();
   void BuildEvents();
@@ -241,9 +241,9 @@ private:
   template<class DigiCheck>
   void SearchMatches(Double_t dSeedTime, RawEventBuilderDetector& detMatch);
   void SearchMatches(Double_t dSeedTime, RawEventBuilderDetector& detMatch);
-  void AddDigiToEvent(RawEventBuilderDetector& det, Int_t uIdx);
+  void AddDigiToEvent(const RawEventBuilderDetector& det, Int_t uIdx);
   Bool_t HasTrigger(CbmEvent*);
-  Bool_t CheckTriggerConditions(CbmEvent* event, RawEventBuilderDetector& det);
+  Bool_t CheckTriggerConditions(CbmEvent* event, const RawEventBuilderDetector& det);
 
   void UpdateTimeWinBoundariesExtrema();
   void UpdateWidestTimeWinRange();
@@ -261,8 +261,10 @@ private:
   Bool_t fbUseMuchBeamtimeDigi = kTRUE;   //! Switch between MUCH digi classes
   Bool_t fbGetTimings          = kFALSE;  //! Measure CPU time using stopwatch
   Bool_t fbUseTsMetaData       = kTRUE;   //! Read Ts Parameters from input tree
-    /// Event building mode and detectors selection
+  /// Event building mode and detectors selection
   EOverlapModeRaw fOverMode {EOverlapModeRaw::AllowOverlap};
+  /// for filtering T0 digis from Tof (remove this line if T0 properly implemented)
+  uint32_t fuDetTypeT0 = 0;
 
   TStopwatch* fTimer = nullptr;  //! is create when fbGetTimings is set before init
 

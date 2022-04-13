@@ -118,6 +118,11 @@ public:
     if (nullptr != fpAlgo) fpAlgo->SetTimings(bFlagIn);
     fbGetTimings = bFlagIn;
   }
+  void SetT0InTofDetType(uint32_t uTypeIn = 5)
+  {
+    if (nullptr != fpAlgo) fpAlgo->SetT0InTofDetType(uTypeIn);
+    fuDetTypeT0 = uTypeIn;
+  }
 
   void SetSeedFinderQa(Bool_t bFlagIn = kTRUE);
   void PrintTimings();
@@ -183,6 +188,8 @@ private:
   Bool_t fbFillHistos {kTRUE};             //! Switch ON/OFF filling of histograms
   Bool_t fbWriteHistosToFairSink {kTRUE};  //! Write histos to FairRootManager instead of separate file
   Bool_t fbGetTimings = kFALSE;            //! Measure CPU time using stopwatch
+  /// for filtering T0 digis from Tof (remove this line if T0 properly implemented)
+  uint32_t fuDetTypeT0 = 0;
 
   /** Name of the histogram output file **/
   TString fsOutFileName {"data/HistosEvtWin.root"};
