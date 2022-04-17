@@ -1001,7 +1001,7 @@ InitStatus CbmL1::Init()
       trackingIterAllPrim.SetDoubletChi2Cut(7.56327f);
       trackingIterAllPrim.SetPickGather(4.0f);
       trackingIterAllPrim.SetPickNeighbour(5.0f);
-      trackingIterAllPrim.SetMaxInvMom(1.0 / 0.5);
+      trackingIterAllPrim.SetMaxInvMom(1.0 / 0.05);
       trackingIterAllPrim.SetMaxSlopePV(1.1f);
       trackingIterAllPrim.SetMaxSlope(2.748f);
 
@@ -1021,7 +1021,7 @@ InitStatus CbmL1::Init()
       trackingIterAllSec.SetDoubletChi2Cut(7.56327f);
       trackingIterAllSec.SetPickGather(4.0f);
       trackingIterAllSec.SetPickNeighbour(5.0f);
-      trackingIterAllSec.SetMaxInvMom(1.0 / 0.5);
+      trackingIterAllSec.SetMaxInvMom(1.0 / 0.1);
       trackingIterAllSec.SetMaxSlopePV(1.5f);
       trackingIterAllSec.SetMaxSlope(2.748f);
 
@@ -1041,7 +1041,7 @@ InitStatus CbmL1::Init()
       trackingIterAllPrimJump.SetDoubletChi2Cut(7.56327f);
       trackingIterAllPrimJump.SetPickGather(4.0f);
       trackingIterAllPrimJump.SetPickNeighbour(5.0f);
-      trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.5);
+      trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.1);
       trackingIterAllPrimJump.SetMaxSlopePV(1.1f);
       trackingIterAllPrimJump.SetMaxSlope(2.748f);
 
@@ -1051,7 +1051,7 @@ InitStatus CbmL1::Init()
       trackingIterAllSecJump.SetDoubletChi2Cut(7.56327f);
       trackingIterAllSecJump.SetPickGather(4.0f);
       trackingIterAllSecJump.SetPickNeighbour(5.0f);
-      trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.5);
+      trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.1);
       trackingIterAllSecJump.SetMaxSlopePV(1.5f);
       trackingIterAllSecJump.SetMaxSlope(2.748f);
 
@@ -1061,7 +1061,7 @@ InitStatus CbmL1::Init()
       trackingIterAllPrimE.SetDoubletChi2Cut(7.56327f);
       trackingIterAllPrimE.SetPickGather(4.0f);
       trackingIterAllPrimE.SetPickNeighbour(5.0f);
-      trackingIterAllPrimE.SetMaxInvMom(1.0 / 0.5);
+      trackingIterAllPrimE.SetMaxInvMom(1.0 / 0.05);
       trackingIterAllPrimE.SetMaxSlopePV(1.1f);
       trackingIterAllPrimE.SetMaxSlope(2.748f);
 
@@ -1071,7 +1071,7 @@ InitStatus CbmL1::Init()
       trackingIterAllSecE.SetDoubletChi2Cut(7.56327f);
       trackingIterAllSecE.SetPickGather(4.0f);
       trackingIterAllSecE.SetPickNeighbour(5.0f);
-      trackingIterAllSecE.SetMaxInvMom(1.0 / 0.5);
+      trackingIterAllSecE.SetMaxInvMom(1.0 / 0.05);
       trackingIterAllSecE.SetMaxSlopePV(1.5f);
       trackingIterAllSecE.SetMaxSlope(2.748f);
 
@@ -1095,17 +1095,17 @@ InitStatus CbmL1::Init()
         initMan->PushBackCAIteration(trackingIterAllSec);
       }
       else {
-        initMan->SetCAIterationsNumberCrosscheck(9);
+        initMan->SetCAIterationsNumberCrosscheck(4);
         // Initialize CA track finder iterations sequence
         initMan->PushBackCAIteration(trackingIterFastPrim);
         initMan->PushBackCAIteration(trackingIterAllPrim);
         initMan->PushBackCAIteration(trackingIterAllPrimJump);
         initMan->PushBackCAIteration(trackingIterAllSec);
-        initMan->PushBackCAIteration(trackingIterAllPrimE);
-        initMan->PushBackCAIteration(trackingIterAllSecE);
-        initMan->PushBackCAIteration(trackingIterFastPrimJump);
-        initMan->PushBackCAIteration(trackingIterFastPrim2);
-        initMan->PushBackCAIteration(trackingIterAllSecJump);
+        //initMan->PushBackCAIteration(trackingIterAllPrimE);
+        //initMan->PushBackCAIteration(trackingIterAllSecE);
+        //initMan->PushBackCAIteration(trackingIterFastPrimJump);
+        //initMan->PushBackCAIteration(trackingIterFastPrim2);
+        //initMan->PushBackCAIteration(trackingIterAllSecJump);
       }
 
       // Set special cuts

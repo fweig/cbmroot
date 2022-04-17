@@ -1762,7 +1762,14 @@ void L1Algo::CATrackFinder()
 
 
   // ---- Loop over Track Finder iterations ----------------------------------------------------------------//
-  for (isec = 0; isec < fNFindIterations; ++isec)  // all finder
+#ifdef FIND_GAPED_TRACKS
+  std::cout << "\033[1;32mFIND_GAPED_TRACKS\033[0m\n";
+#endif  // FIND_GAPED_TRACKS
+  std::cout << "Number of iterations:      \033[1;31m" << fNFindIterations << "\033[0m\n";
+  std::cout << "Number of iterations(new): \033[1;31m" << fParameters.CAIterationsContainer().size() << "\033[0m\n";
+  std::cout << "Tracking mode: " << fTrackingMode << '\n';
+  isec = 0;                                                            // TODO: temporary! (S.Zharko)
+  for (const auto& caIteration : fParameters.CAIterationsContainer())  // all finder
   {
     std::cout << "CA Track Finder Iteration!!" << isec << '\n';
     if (fTrackingMode == kMcbm) {
@@ -1816,51 +1823,54 @@ void L1Algo::CATrackFinder()
         // if ( (isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter) )
         //   FIRSTCASTATION = 2;
 
-        DOUBLET_CHI2_CUT = 11.3449 * 2.f / 3.f;  // prob = 0.1
+        DOUBLET_CHI2_CUT = caIteration.GetDoubletChi2Cut();  //11.3449 * 2.f / 3.f;  // prob = 0.1
 
-        TRIPLET_CHI2_CUT = 21.1075;  // prob = 0.01%
+        TRIPLET_CHI2_CUT = caIteration.GetTripletChi2Cut();  //21.1075;  // prob = 0.01%
 
-        switch (isec) {
-          case kFastPrimIter:
-            TRIPLET_CHI2_CUT = 7.815 * 3;  // prob = 0.05
-            break;
-          case kAllPrimIter:
-          case kAllPrimEIter:
-            TRIPLET_CHI2_CUT = 7.815 * 3;  // prob = 0.05
-            break;
-          case kAllPrimJumpIter:
-            TRIPLET_CHI2_CUT = 6.252 * 3;  // prob = 0.1
-            break;
-          case kAllSecIter:
-          case kAllSecEIter:
-            TRIPLET_CHI2_CUT = 6.252 * 3;  //2.706; // prob = 0.1
-            break;
-        }
+        //switch (isec) {
+        //  case kFastPrimIter:
+        //    TRIPLET_CHI2_CUT = 7.815 * 3;  // prob = 0.05
+        //    break;
+        //  case kAllPrimIter:
+        //  case kAllPrimEIter:
+        //    TRIPLET_CHI2_CUT = 7.815 * 3;  // prob = 0.05
+        //    break;
+        //  case kAllPrimJumpIter:
+        //    TRIPLET_CHI2_CUT = 6.252 * 3;  // prob = 0.1
+        //    break;
+        //  case kAllSecIter:
+        //  case kAllSecEIter:
+        //    TRIPLET_CHI2_CUT = 6.252 * 3;  //2.706; // prob = 0.1
+        //    break;
+        //}
 
-        Pick_gather = 3.0;  /// coefficient for size of region for attach new hits to the created track
-        if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) || (isec == kAllSecIter)
-            || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
-          Pick_gather = 4.0;
+        Pick_gather =
+          caIteration
+            .GetPickGather();  //3.0;  /// coefficient for size of region for attach new hits to the created track
+        //if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) || (isec == kAllSecIter)
+        //    || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
+        //  Pick_gather = 4.0;
 
-        PickNeighbour = 5.0;  // (PickNeighbour < dp/dp_error)  =>  triplets are neighbours
+        PickNeighbour =
+          caIteration.GetPickGather();  //5.0;  // (PickNeighbour < dp/dp_error)  =>  triplets are neighbours
         // if ( (isec == kFastPrimIter) )
         //   PickNeighbour = 5.0*0.5; // TODO understand why works with 0.2
 
-        MaxInvMom = 1.0 / 0.5;  // max considered q/p
+        MaxInvMom = caIteration.GetMaxInvMom();  //1.0 / 0.5;  // max considered q/p
 
-        if (fTrackingMode == kMcbm) MaxInvMom = 1 / 0.3;  // max considered q/p
-        if ((isec == kAllPrimJumpIter) || (isec == kAllSecIter) || (isec == kAllSecJumpIter)) MaxInvMom = 1.0 / 0.1;
-        if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllSecEIter)) MaxInvMom = 1. / 0.05;
+        //if (fTrackingMode == kMcbm) MaxInvMom = 1 / 0.3;  // max considered q/p
+        //if ((isec == kAllPrimJumpIter) || (isec == kAllSecIter) || (isec == kAllSecJumpIter)) MaxInvMom = 1.0 / 0.1;
+        //if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllSecEIter)) MaxInvMom = 1. / 0.05;
 
-        if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllSecEIter))
-          if (fTrackingMode == kMcbm) MaxInvMom = 1 / 0.1;  // max considered q/p
+        //if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllSecEIter))
+        //  if (fTrackingMode == kMcbm) MaxInvMom = 1 / 0.1;  // max considered q/p
 
-        MaxSlopePV = 1.1;
-        if (  // (isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) ||
-          (isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
-          MaxSlopePV = 1.5;
+        MaxSlopePV = caIteration.GetMaxSlopePV();  //1.1;
+        //if (  // (isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) ||
+        //  (isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
+        //  MaxSlopePV = 1.5;
 
-        MaxSlope = 2.748;  // corresponds to 70 grad
+        MaxSlope = caIteration.GetMaxSlope();  //2.748;  // corresponds to 70 grad
         // define the target
         fTargX = fCbmTargetX;
         fTargY = fCbmTargetY;
@@ -2477,7 +2487,8 @@ void L1Algo::CATrackFinder()
 
 #endif  // COUNTERS
     }
-  }  // for (int isec
+    ++isec;  // TODO: temporary, to be removed! ()
+  }          // for (int isec
   // ---- Loop over Track Finder iterations: END -----------------------------------------------------------//
 
 #ifdef XXX
