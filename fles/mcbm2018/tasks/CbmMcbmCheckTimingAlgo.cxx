@@ -463,7 +463,7 @@ uint CbmMcbmCheckTimingAlgo::GetDigiInfo<CbmTrdDigi>(UInt_t uDigi, std::vector<s
   const CbmTrdDigi* trdDigi = fDigiMan->Get<CbmTrdDigi>(uDigi);
   if (trdDigi == nullptr) return 0;
 
-  const double dt = trdDigi->GetTime();
+  double dt = trdDigi->GetTime();
 
   if (trdDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kSPADIC) {
     vec->push_back(std::make_tuple(trdDigi->GetTime(), trdDigi->GetCharge(), trdDigi->GetAddressModule()));
@@ -473,12 +473,20 @@ uint CbmMcbmCheckTimingAlgo::GetDigiInfo<CbmTrdDigi>(UInt_t uDigi, std::vector<s
   int toff(0);
   uint n(0);
   double t, r = trdDigi->GetCharge(t, toff);
+  if (toff < 0) {  // keep increasing order in time of digi
+    double tmp = t;
+    t          = r;
+    dt -= toff * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP);
+    r    = tmp;
+    toff = -toff;
+  }
   if (t > 0) {
-    vec->push_back(std::make_tuple(dt, t, trdDigi->GetAddressModule()));
+    vec->push_back(std::make_tuple(dt, t / 20., trdDigi->GetAddressModule()));
     n++;
   }
   if (r > 0) {
-    vec->push_back(std::make_tuple(dt + toff, r, trdDigi->GetAddressModule()));
+    vec->push_back(std::make_tuple(dt + toff * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP), r / 20.,
+                                   trdDigi->GetAddressModule()));
     n++;
   }
   return n;
