@@ -46,7 +46,7 @@ namespace L1Assert
                  << " *****   message/condition : " << msg << '\n'
                  << " *****   file:               " << fileName << '\n'
                  << " *****   line:               " << lineNo;
-      std::abort();  // keep it here, because sometimes LOG(fatal) does not work (for example, in your tester)
+      std::abort();  // keep it here, because sometimes LOG(fatal) does not work (for example, in your unit testes)
     }
     return 1;
   }

@@ -20,6 +20,7 @@
 
 
 #include "L1Algo.h"
+#include "L1Assert.h"
 #include "L1Extrapolation.h"
 #include "L1Filtration.h"
 #include "L1Fit.h"
@@ -234,9 +235,9 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     T.C30 = T.C31 = T.C32 = 0;
     T.C40 = T.C41 = T.C42 = T.C43 = 0;
     T.C50 = T.C51 = T.C52 = T.C53 = T.C54 = 0;
-    T.C22 = T.C33 = MaxSlopePV * MaxSlopePV / 9.;
+    T.C22 = T.C33 = fMaxSlopePV * fMaxSlopePV / 9.;
     if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) T.C22 = T.C33 = 10;
-    T.C44 = MaxInvMom / 3. * MaxInvMom / 3.;
+    T.C44 = fMaxInvMom / 3. * fMaxInvMom / 3.;
     T.C55 = timeEr * timeEr;
 
 
@@ -323,11 +324,11 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 
     for (int ista = 0; ista <= istal - 1; ista++) {
 #ifdef USE_RL_TABLE
-      fit.L1AddMaterial(T, fRadThick[ista].GetRadThick(T.x, T.y), MaxInvMom, 1);
+      fit.L1AddMaterial(T, fRadThick[ista].GetRadThick(T.x, T.y), fMaxInvMom, 1);
 #else  // not USE_RL_TABLE
-      fit.L1AddMaterial(T, vStations[ista].materialInfo, MaxInvMom, 1);
+      fit.L1AddMaterial(T, vStations[ista].materialInfo, fMaxInvMom, 1);
 #endif  // USE_RL_TABLE
-      if (ista == NMvdStations - 1) fit.L1AddPipeMaterial(T, MaxInvMom, 1);
+      if (ista == NMvdStations - 1) fit.L1AddPipeMaterial(T, fMaxInvMom, 1);
     }
 
     // add left hit
@@ -359,13 +360,13 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 
 
 #ifdef USE_RL_TABLE
-    if (fTrackingMode != kMcbm) fit.L1AddMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), MaxInvMom, 1);
+    if (fTrackingMode != kMcbm) fit.L1AddMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), fMaxInvMom, 1);
     if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
-      fit.L1AddThickMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), MaxInvMom, 1, stal.materialInfo.thick, 1);
+      fit.L1AddThickMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), fMaxInvMom, 1, stal.materialInfo.thick, 1);
 #else  // not USE_RL_TABLE
-    fit.L1AddMaterial(T, stal.materialInfo, MaxInvMom, 1);
+    fit.L1AddMaterial(T, stal.materialInfo, fMaxInvMom, 1);
 #endif  // USE_RL_TABLE
-    if ((istam >= NMvdStations) && (istal <= NMvdStations - 1)) { fit.L1AddPipeMaterial(T, MaxInvMom, 1); }
+    if ((istam >= NMvdStations) && (istal <= NMvdStations - 1)) { fit.L1AddPipeMaterial(T, fMaxInvMom, 1); }
 
     fvec dz = zstam - zl;
     L1ExtrapolateTime(T, dz, stam.timeInfo);
@@ -406,7 +407,7 @@ inline void L1Algo::f20(
     const int n2Saved = n2;
 
     const fvec Pick_m22 =
-      (DOUBLET_CHI2_CUT - T1.chi2);  // if make it bigger the found hits will be rejected later because of the chi2 cut.
+      (fDoubletChi2Cut - T1.chi2);  // if make it bigger the found hits will be rejected later because of the chi2 cut.
     // Pick_m22 is not used, search for mean squared, 2nd version
 
     // -- collect possible doublets --
@@ -416,8 +417,8 @@ inline void L1Algo::f20(
 
 
     L1HitAreaTime areaTime(vGridTime[&stam - vStations], T1.x[i1_4] * iz, T1.y[i1_4] * iz,
-                           (sqrt(Pick_m22 * (T1.C00 + stam.XYInfo.C00)) + MaxDZ * fabs(T1.tx))[i1_4] * iz,
-                           (sqrt(Pick_m22 * (T1.C11 + stam.XYInfo.C11)) + MaxDZ * fabs(T1.ty))[i1_4] * iz, time,
+                           (sqrt(Pick_m22 * (T1.C00 + stam.XYInfo.C00)) + fMaxDZ * fabs(T1.tx))[i1_4] * iz,
+                           (sqrt(Pick_m22 * (T1.C11 + stam.XYInfo.C11)) + fMaxDZ * fabs(T1.ty))[i1_4] * iz, time,
                            sqrt(timeError) * 5);
 
 
@@ -507,7 +508,7 @@ inline void L1Algo::f20(
 #ifdef DO_NOT_SELECT_TRIPLETS
       if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
 #endif  // DO_NOT_SELECT_TRIPLETS
-        if (chi2[i1_4] > DOUBLET_CHI2_CUT) continue;
+        if (chi2[i1_4] > fDoubletChi2Cut) continue;
           //       T1.t[i1_4] = hitm.time;
 
 #ifdef USE_EVENT_NUMBER
@@ -526,7 +527,7 @@ inline void L1Algo::f20(
 #ifdef DO_NOT_SELECT_TRIPLETS
       if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
 #endif  // DO_NOT_SELECT_TRIPLETS
-        if (chi2[i1_4] > DOUBLET_CHI2_CUT) continue;
+        if (chi2[i1_4] > fDoubletChi2Cut) continue;
 
       i1_2.push_back(i1);
 #ifdef DOUB_PERFORMANCE
@@ -681,7 +682,7 @@ inline void L1Algo::f30(  // input
         fit.L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1);
 
       if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
-        fit.L1AddThickMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), MaxInvMom, 1, stam.materialInfo.thick, 1);
+        fit.L1AddThickMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), fMaxInvMom, 1, stam.materialInfo.thick, 1);
 #else  // not USE_RL_TABLE
       fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, 1);
 #endif  // USE_RL_TABLE
@@ -707,10 +708,10 @@ inline void L1Algo::f30(  // input
         if (fTrackingMode == kSts && (T2.C44[i2_4] < 0)) { continue; }
         if (T2.C00[i2_4] < 0 || T2.C11[i2_4] < 0 || T2.C22[i2_4] < 0 || T2.C33[i2_4] < 0 || T2.C55[i2_4] < 0) continue;
 
-        if (fabs(T2.tx[i2_4]) > MaxSlope) continue;
-        if (fabs(T2.ty[i2_4]) > MaxSlope) continue;
+        if (fabs(T2.tx[i2_4]) > fMaxSlope) continue;
+        if (fabs(T2.ty[i2_4]) > fMaxSlope) continue;
 
-        const fvec Pick_r22    = (TRIPLET_CHI2_CUT - T2.chi2);
+        const fvec Pick_r22    = (fTripletChi2Cut - T2.chi2);
         const float& timeError = T2.C55[i2_4];
         const float& time      = T2.t[i2_4];
         // find first possible hit
@@ -720,8 +721,8 @@ inline void L1Algo::f30(  // input
 #endif  // DO_NOT_SELECT_TRIPLETS
         const fscal iz = 1.f / (T2.z[i2_4] - fCbmTargetZ[0]);
         L1HitAreaTime area(vGridTime[&star - vStations], T2.x[i2_4] * iz, T2.y[i2_4] * iz,
-                           (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + MaxDZ * fabs(T2.tx))[i2_4] * iz,
-                           (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + MaxDZ * fabs(T2.ty))[i2_4] * iz, time,
+                           (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + fMaxDZ * fabs(T2.tx))[i2_4] * iz,
+                           (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + fMaxDZ * fabs(T2.ty))[i2_4] * iz, time,
                            sqrt(timeError) * 5);
 
         THitI irh       = 0;
@@ -824,7 +825,7 @@ inline void L1Algo::f30(  // input
 #ifdef DO_NOT_SELECT_TRIPLETS
           if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
 #endif  // DO_NOT_SELECT_TRIPLETS
-            if (chi2[i2_4] > TRIPLET_CHI2_CUT || C00[i2_4] < 0 || C11[i2_4] < 0 || T_cur.C55[i2_4] < 0)
+            if (chi2[i2_4] > fTripletChi2Cut || C00[i2_4] < 0 || C11[i2_4] < 0 || T_cur.C55[i2_4] < 0)
               continue;  // chi2_triplet < CHI2_CUT
 
           // pack triplet
@@ -1153,7 +1154,7 @@ inline void L1Algo::f4(  // input
 #ifdef DO_NOT_SELECT_TRIPLETS
     if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
 #endif  // DO_NOT_SELECT_TRIPLETS
-      if (!finite(chi2) || chi2 < 0 || chi2 > TRIPLET_CHI2_CUT) continue;
+      if (!finite(chi2) || chi2 < 0 || chi2 > fTripletChi2Cut) continue;
 
     fscal qp = T3.qp[i3_4];
 
@@ -1169,8 +1170,8 @@ inline void L1Algo::f4(  // input
       // TODO: But for some reason, the efficiency degrades without them.
       // TODO: It needs to be investigated. If the cuts are necessary, they need to be adjusted.
 
-      fscal Cmax = 0.04 * MaxInvMom[0];  // minimal momentum: 0.05 - 0.1
-                                         //if ( isec == kAllPrimJumpIter ) {
+      fscal Cmax = 0.04 * fMaxInvMom[0];  // minimal momentum: 0.05 - 0.1
+                                          //if ( isec == kAllPrimJumpIter ) {
       if (Cqp > Cmax) {
         //cout << "isec " << isec << " Cqp " << Cqp << " max " << Cmax << " add " << 0.05 * Cmax << endl;
         Cqp = Cmax;
@@ -1279,7 +1280,7 @@ inline void L1Algo::f5(  // input
               //      if (neigh.GetMSta() != istar) continue; // neighbours should have 2 common hits
               //      if (neigh.GetMHit() != ihitr) continue; //!!!
 
-              if (fabs(trip.GetQp() - neigh.GetQp()) > PickNeighbour * (trip.GetCqp() + neigh.GetCqp()))
+              if (fabs(trip.GetQp() - neigh.GetQp()) > fPickNeighbour * (trip.GetCqp() + neigh.GetCqp()))
                 continue;  // neighbours should have same qp
 
               // calculate level
@@ -1526,7 +1527,7 @@ L1Algo::TripletsStaPort(  /// creates triplets: input: @istal - start station nu
 #else
       fL1Eff_triplets->AddOne(iHits);
 #endif
-      if (T_3[i_V].chi2[i_4] < TRIPLET_CHI2_CUT) fL1Eff_triplets2->AddOne(iHits);
+      if (T_3[i_V].chi2[i_4] < fTripletChi2Cut) fL1Eff_triplets2->AddOne(iHits);
     }
 #endif  // TRIP_PERFORMANCE
 
@@ -1762,19 +1763,15 @@ void L1Algo::CATrackFinder()
 
 
   // ---- Loop over Track Finder iterations ----------------------------------------------------------------//
-#ifdef FIND_GAPED_TRACKS
-  std::cout << "\033[1;32mFIND_GAPED_TRACKS\033[0m\n";
-#endif  // FIND_GAPED_TRACKS
-  std::cout << "Number of iterations:      \033[1;31m" << fNFindIterations << "\033[0m\n";
-  std::cout << "Number of iterations(new): \033[1;31m" << fParameters.CAIterationsContainer().size() << "\033[0m\n";
-  std::cout << "Tracking mode: " << fTrackingMode << '\n';
-  isec = 0;                                                            // TODO: temporary! (S.Zharko)
+  L1ASSERT(0, fNFindIterations == fParameters.CAIterationsContainer().size());
+  isec = 0;  // TODO: temporary! (S.Zharko)
+  std::cout << "\033[1;31mfNThreads\033[0m = " << fNThreads << '\n';
   for (const auto& caIteration : fParameters.CAIterationsContainer())  // all finder
   {
     std::cout << "CA Track Finder Iteration!!" << isec << '\n';
-    if (fTrackingMode == kMcbm) {
-      if (isec > 3) { continue; }
-    }
+    //if (fTrackingMode == kMcbm) {
+    //  if (isec > 3) { continue; }
+    //}
     // n_g1.assign(n_g1.size(), Portion);
 
     for (int n = 0; n < fNThreads; n++) {
@@ -1800,7 +1797,7 @@ void L1Algo::CATrackFinder()
       vStsHitPointsUnused                        = vStsHitPointsUnused_buf;
       vStsHitPointsUnused_buf                    = vStsHitsUnused_temp2;
     }
-
+    // TODO: Replace NStations with fInitManager.GetStationsNumber() (S.Zharko)
     for (int ist = 0; ist < NStations; ++ist) {
       for (THitI ih = StsHitsUnusedStartIndex[ist]; ih < StsHitsUnusedStopIndex[ist]; ++ih) {
         //SG!!
@@ -1823,54 +1820,54 @@ void L1Algo::CATrackFinder()
         // if ( (isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter) )
         //   FIRSTCASTATION = 2;
 
-        DOUBLET_CHI2_CUT = caIteration.GetDoubletChi2Cut();  //11.3449 * 2.f / 3.f;  // prob = 0.1
+        fDoubletChi2Cut = caIteration.GetDoubletChi2Cut();  //11.3449 * 2.f / 3.f;  // prob = 0.1
 
-        TRIPLET_CHI2_CUT = caIteration.GetTripletChi2Cut();  //21.1075;  // prob = 0.01%
+        fTripletChi2Cut = caIteration.GetTripletChi2Cut();  //21.1075;  // prob = 0.01%
 
         //switch (isec) {
         //  case kFastPrimIter:
-        //    TRIPLET_CHI2_CUT = 7.815 * 3;  // prob = 0.05
+        //    fTripletChi2Cut = 7.815 * 3;  // prob = 0.05
         //    break;
         //  case kAllPrimIter:
         //  case kAllPrimEIter:
-        //    TRIPLET_CHI2_CUT = 7.815 * 3;  // prob = 0.05
+        //    fTripletChi2Cut = 7.815 * 3;  // prob = 0.05
         //    break;
         //  case kAllPrimJumpIter:
-        //    TRIPLET_CHI2_CUT = 6.252 * 3;  // prob = 0.1
+        //    fTripletChi2Cut = 6.252 * 3;  // prob = 0.1
         //    break;
         //  case kAllSecIter:
         //  case kAllSecEIter:
-        //    TRIPLET_CHI2_CUT = 6.252 * 3;  //2.706; // prob = 0.1
+        //    fTripletChi2Cut = 6.252 * 3;  //2.706; // prob = 0.1
         //    break;
         //}
 
-        Pick_gather =
-          caIteration
-            .GetPickGather();  //3.0;  /// coefficient for size of region for attach new hits to the created track
+        /// coefficient for size of region for attach new hits to the created track
+        fPickGather = caIteration.GetPickGather();  //3.0;
         //if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) || (isec == kAllSecIter)
         //    || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
-        //  Pick_gather = 4.0;
+        //  fPickGather = 4.0;
 
-        PickNeighbour =
-          caIteration.GetPickGather();  //5.0;  // (PickNeighbour < dp/dp_error)  =>  triplets are neighbours
+        // (fPickNeighbour < dp/dp_error)  =>  triplets are neighbours
+        fPickNeighbour = caIteration.GetPickNeighbour();  //5.0;
         // if ( (isec == kFastPrimIter) )
-        //   PickNeighbour = 5.0*0.5; // TODO understand why works with 0.2
+        //   fPickNeighbour = 5.0*0.5; // TODO understand why works with 0.2
 
-        MaxInvMom = caIteration.GetMaxInvMom();  //1.0 / 0.5;  // max considered q/p
+        fMaxInvMom = caIteration.GetMaxInvMom();  //1.0 / 0.5;  // max considered q/p
 
-        //if (fTrackingMode == kMcbm) MaxInvMom = 1 / 0.3;  // max considered q/p
-        //if ((isec == kAllPrimJumpIter) || (isec == kAllSecIter) || (isec == kAllSecJumpIter)) MaxInvMom = 1.0 / 0.1;
-        //if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllSecEIter)) MaxInvMom = 1. / 0.05;
+        //if (fTrackingMode == kMcbm) fMaxInvMom = 1 / 0.3;  // max considered q/p
+        //if ((isec == kAllPrimJumpIter) || (isec == kAllSecIter) || (isec == kAllSecJumpIter)) fMaxInvMom = 1.0 / 0.1;
+        //if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllSecEIter)) fMaxInvMom = 1. / 0.05;
 
         //if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllSecEIter))
-        //  if (fTrackingMode == kMcbm) MaxInvMom = 1 / 0.1;  // max considered q/p
+        //  if (fTrackingMode == kMcbm) fMaxInvMom = 1 / 0.1;  // max considered q/p
 
-        MaxSlopePV = caIteration.GetMaxSlopePV();  //1.1;
+        fMaxSlopePV = caIteration.GetMaxSlopePV();  //1.1;
         //if (  // (isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) ||
         //  (isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
-        //  MaxSlopePV = 1.5;
+        //  fMaxSlopePV = 1.5;
 
-        MaxSlope = caIteration.GetMaxSlope();  //2.748;  // corresponds to 70 grad
+        fMaxSlope = caIteration.GetMaxSlope();  //2.748;  // corresponds to 70 grad
+
         // define the target
         fTargX = fCbmTargetX;
         fTargY = fCbmTargetY;
@@ -1900,10 +1897,10 @@ void L1Algo::CATrackFinder()
         /// Set correction in order to take into account overlaping and iff z.
         /// The reason is that low momentum tracks are too curved and goes not from target direction. That's why sort by hit_y/hit_z is not work idealy
         /// If sort by y then it is max diff between same station's modules (~0.4cm)
-        MaxDZ = 0;
+        fMaxDZ = 0;
         if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) || (isec == kAllSecIter)
             || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
-          MaxDZ = 0.1;
+          fMaxDZ = 0.1;
 
         if (NStations > (int) L1Parameters::kMaxNstations) cout << " CATrackFinder: Error: Too many Stations" << endl;
       }
@@ -2642,7 +2639,7 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
     }
 
     //if( curr_L < min_best_l - 1 ) return; // suppouse that only one hit can be added by extender
-    if (curr_chi2 > TRACK_CHI2_CUT * (curr_L * 2 - 5.0)) return;
+    if (curr_chi2 > fTrackChi2Cut * (curr_L * 2 - 5.0)) return;
 
 
     //       // try to find more hits
@@ -2677,7 +2674,7 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       //    ID = curr_trip->neighbours[in];
       //    const fscal &qp2 = curr_trip->GetQp();
       //    fscal &Cqp2 = curr_trip->Cqp;
-      //    if (( fabs(qp - qp2) > PickNeighbour * (Cqp + Cqp2) ) )  continue;
+      //    if (( fabs(qp - qp2) > fPickNeighbour * (Cqp + Cqp2) ) )  continue;
 
       unsigned int Station = TripletId2Station(ID);
       unsigned int Thread  = TripletId2Thread(ID);
@@ -2693,7 +2690,7 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       fscal Cqp       = curr_trip->GetCqp();
       Cqp += new_trip.GetCqp();
       if (fTrackingMode != kMcbm) {
-        if (dqp > PickNeighbour * Cqp) {
+        if (dqp > fPickNeighbour * Cqp) {
           continue;  // bad neighbour // CHECKME why do we need recheck it?? (it really change result)
         }
       }
@@ -2749,7 +2746,7 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
         else {
           new_chi2 += dqp * dqp;
         }
-        if (new_chi2 > TRACK_CHI2_CUT * new_L) continue;  // TODO: SG: it must be  ( 2 * new_L )
+        if (new_chi2 > fTrackChi2Cut * new_L) continue;  // TODO: SG: it must be  ( 2 * new_L )
         const int new_ista = ista + new_trip.GetMSta() - new_trip.GetLSta();
 
         CAFindTrack(new_ista, best_tr, best_L, best_chi2, &new_trip, new_tr[ista], new_L, new_chi2, min_best_l, new_tr);

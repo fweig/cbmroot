@@ -248,7 +248,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
   if (ista2 == FIRSTCASTATION) ista = ista2 + step;
 
-  const fvec Pick_gather2 = Pick_gather * Pick_gather;
+  const fvec pickGather2 = fPickGather * fPickGather;
 
   for (; (ista < NStations) && (ista >= 0); ista += step) {  // CHECKME why ista2?
 
@@ -271,8 +271,8 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
 
     L1HitAreaTime area(vGridTime[ista], T.x[0] * iz, T.y[0] * iz,
-                       (sqrt(Pick_gather * (T.C00 + sta.XYInfo.C00)) + MaxDZ * fabs(T.tx))[0] * iz,
-                       (sqrt(Pick_gather * (T.C11 + sta.XYInfo.C11)) + MaxDZ * fabs(T.ty))[0] * iz, T.t[0],
+                       (sqrt(fPickGather * (T.C00 + sta.XYInfo.C00)) + fMaxDZ * fabs(T.tx))[0] * iz,
+                       (sqrt(fPickGather * (T.C11 + sta.XYInfo.C11)) + fMaxDZ * fabs(T.ty))[0] * iz, T.t[0],
                        sqrt(T.C55[0]));
 
     THitI ih = 0;
@@ -291,7 +291,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
       fvec y, C11;
       L1ExtrapolateYC11Line(T, zh, y, C11);
 
-      //   fscal dym_est = ( Pick_gather*sqrt(fabs(C11[0]+sta.XYInfo.C11[0])) );
+      //   fscal dym_est = ( fPickGather * sqrt(fabs(C11[0]+sta.XYInfo.C11[0])) );
       //   fscal y_minus_new = y[0] - dym_est;
       // if (yh < y_minus_new) continue;  // CHECKME take into account overlaping?
 
@@ -303,7 +303,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
       fscal d2  = d_x * d_x + d_y * d_y;
       if (d2 > r2_best) continue;
 
-      fscal dxm_est2 = (Pick_gather2 * (fabs(C00 + sta.XYInfo.C00)))[0];
+      fscal dxm_est2 = (pickGather2 * (fabs(C00 + sta.XYInfo.C00)))[0];
       if (d_x * d_x > dxm_est2) continue;
 
       r2_best   = d2;

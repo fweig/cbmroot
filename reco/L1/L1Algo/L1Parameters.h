@@ -61,6 +61,8 @@ public:
 
   /// Prints configuration
   void Print(int verbosityLevel = 0) const;
+  /// String representation of the class contents
+  std::string ToString(int indentLevel = 0) const;
 
   // TODO: change constant names with actual (human) names
 

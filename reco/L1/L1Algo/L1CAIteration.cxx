@@ -6,13 +6,11 @@
 
 #include <FairLogger.h>
 
-//----------------------------------------------------------------------------------------------------------------------
-//
-L1CAIteration::L1CAIteration() noexcept { LOG(debug) << "L1CAIteration: Default constructor called for " << this; }
+#include <sstream>
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-L1CAIteration::~L1CAIteration() noexcept { LOG(debug) << "L1CAIteration: Destructor called for " << this; }
+L1CAIteration::L1CAIteration() noexcept { LOG(debug) << "L1CAIteration: Default constructor called for " << this; }
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -28,6 +26,7 @@ L1CAIteration::L1CAIteration(const L1CAIteration& other) noexcept
   , fMaxInvMom(other.fMaxInvMom)
   , fMaxSlopePV(other.fMaxSlopePV)
   , fMaxSlope(other.fMaxSlope)
+  , fMaxDZ(other.fMaxDZ)
 {
   LOG(debug) << "L1CAIteration: Copy constructor called: " << &other << " was copied into " << this;
 }
@@ -39,6 +38,17 @@ L1CAIteration::L1CAIteration(L1CAIteration&& other) noexcept
   this->Swap(other);
   LOG(debug) << "L1CAIteration: Move constructor called: " << &other << " was moved into " << this;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+L1CAIteration::L1CAIteration(const std::string& name) noexcept : fName(name)
+{
+  LOG(debug) << "L1CAIteration: Constructor from name called for " << this;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+L1CAIteration::~L1CAIteration() noexcept { LOG(debug) << "L1CAIteration: Destructor called for " << this; }
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -63,6 +73,14 @@ L1CAIteration& L1CAIteration::operator=(L1CAIteration&& other) noexcept
 
 //----------------------------------------------------------------------------------------------------------------------
 //
+void L1CAIteration::Print(int verbosityLevel) const
+{
+  if (verbosityLevel == 0) { LOG(info) << "  - " << fName; }
+  if (verbosityLevel > 0) { LOG(info) << ToString(0); }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
 void L1CAIteration::Swap(L1CAIteration& other) noexcept
 {
   // Basic fields
@@ -76,29 +94,25 @@ void L1CAIteration::Swap(L1CAIteration& other) noexcept
   std::swap(fMaxInvMom, other.fMaxInvMom);
   std::swap(fMaxSlopePV, other.fMaxSlopePV);
   std::swap(fMaxSlope, other.fMaxSlope);
+  std::swap(fMaxDZ, other.fMaxDZ);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-L1CAIteration::L1CAIteration(const std::string& name) noexcept : fName(name)
+std::string L1CAIteration::ToString(int indentLevel) const
 {
-  LOG(debug) << "L1CAIteration: Constructor from name called for " << this;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-//
-void L1CAIteration::Print(int verbosityLevel) const
-{
-  if (verbosityLevel == 0) { LOG(info) << "  - " << fName; }
-  if (verbosityLevel > 0) {
-    LOG(info) << "L1CAIteration: " << fName;
-    LOG(info) << "\tTrack chi2 cut: " << fTrackChi2Cut;
-    LOG(info) << "\tTriplet chi2 cut: " << fTripletChi2Cut;
-    LOG(info) << "\tDoublet chi2 cut: " << fDoubletChi2Cut;
-    LOG(info) << "\tPick gather: " << fPickGather;
-    LOG(info) << "\tPick neighbour: " << fPickNeighbour;
-    LOG(info) << "\tMax invariant momentum: " << fMaxInvMom;
-    LOG(info) << "\tMax slope at primary vertex: " << fMaxSlopePV;
-    LOG(info) << "\tMax slope: " << fMaxSlope;
-  }
+  std::stringstream aStream {};
+  constexpr char indentChar = '\t';
+  std::string indent(indentLevel, indentChar);
+  aStream << indent << "L1CAIteration: " << fName << '\n';
+  aStream << indent << indentChar << "Track chi2 cut:              " << fTrackChi2Cut << '\n';
+  aStream << indent << indentChar << "Triplet chi2 cut:            " << fTripletChi2Cut << '\n';
+  aStream << indent << indentChar << "Doublet chi2 cut:            " << fDoubletChi2Cut << '\n';
+  aStream << indent << indentChar << "Pick gather:                 " << fPickGather << '\n';
+  aStream << indent << indentChar << "Pick neighbour:              " << fPickNeighbour << '\n';
+  aStream << indent << indentChar << "Max invariant momentum:      " << fMaxInvMom << '\n';
+  aStream << indent << indentChar << "Max slope at primary vertex: " << fMaxSlopePV << '\n';
+  aStream << indent << indentChar << "Max slope:                   " << fMaxSlope << '\n';
+  aStream << indent << indentChar << "Max DZ:                      " << fMaxDZ;
+  return aStream.str();
 }

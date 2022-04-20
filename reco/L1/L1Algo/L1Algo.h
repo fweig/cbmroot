@@ -206,7 +206,7 @@ public:
 
   void L1KFTrackFitterMuch();
 
-  float GetMaxInvMom() const { return MaxInvMom[0]; }
+  float GetMaxInvMom() const { return fMaxInvMom[0]; }
 
   /// ----- Input data -----
   // filled in CbmL1::ReadEvent();
@@ -647,24 +647,25 @@ private:
 
   map<int, int> threadNumberToCpuMap {};
 
+  /// TODO: move to separate header with predefined utility values (S.Zharko)
   static constexpr float kNaN {std::numeric_limits<float>::signaling_NaN()};
 
-  float TRACK_CHI2_CUT {10.f};
-  float TRIPLET_CHI2_CUT {5.f};  // cut for selecting triplets before collecting tracks.per one DoF
-  float DOUBLET_CHI2_CUT {5.f};
-  float TIME_CUT1 {0.f};
-  float TIME_CUT2 {0.f};
+  float fTrackChi2Cut {10.f};
+  float fTripletChi2Cut {5.f};  // cut for selecting triplets before collecting tracks.per one DoF
+  float fDoubletChi2Cut {5.f};
+  float fTimeCut1 {0.f};  // TODO: please, specify "1" and "2" (S.Zharko)
+  float fTimeCut2 {0.f};
 
-  fvec MaxDZ {
-    kNaN};  // correction in order to take into account overlaping and iff z. if sort by y then it is max diff between same station's modules (~0.4cm)
+  /// correction in order to take into account overlaping and iff z. if sort by y then it is max diff between same station's modules (~0.4cm)
+  fvec fMaxDZ {kNaN};
 
   /// parameters which are different for different iterations. Set in the begin of CAL1TrackFinder
 
-  float Pick_gather {kNaN};    // same for attaching additional hits to track
-  float PickNeighbour {kNaN};  // (PickNeighbour < dp/dp_error)  =>  triplets are neighbours
-  fvec MaxInvMom {kNaN};       // max considered q/p for tracks
-  fvec MaxSlopePV {kNaN};      // max slope (tx\ty) in prim vertex
-  float MaxSlope {kNaN};       // max slope (tx\ty) in 3d hit position of a triplet
+  float fPickGather {kNaN};     // same for attaching additional hits to track
+  float fPickNeighbour {kNaN};  // (fPickNeighbour < dp/dp_error)  =>  triplets are neighbours
+  fvec fMaxInvMom {kNaN};       // max considered q/p for tracks
+  fvec fMaxSlopePV {kNaN};      // max slope (tx\ty) in prim vertex
+  float fMaxSlope {kNaN};       // max slope (tx\ty) in 3d hit position of a triplet
   fvec fCbmTargetX {kNaN};     // target position
   fvec fCbmTargetY {kNaN};
   fvec fCbmTargetZ {kNaN};
