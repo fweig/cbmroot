@@ -68,6 +68,7 @@ class L1AlgoDraw;
 #include "L1TrackPar.h"
 #include "L1TrackParFit.h"
 #include "L1Triplet.h"
+#include "L1Utils.h"
 #include "L1Vector.h"
 
 #ifdef _OPENMP
@@ -647,9 +648,6 @@ private:
 
   map<int, int> threadNumberToCpuMap {};
 
-  /// TODO: move to separate header with predefined utility values (S.Zharko)
-  static constexpr float kNaN {std::numeric_limits<float>::signaling_NaN()};
-
   float fTrackChi2Cut {10.f};
   float fTripletChi2Cut {5.f};  // cut for selecting triplets before collecting tracks.per one DoF
   float fDoubletChi2Cut {5.f};
@@ -657,23 +655,23 @@ private:
   float fTimeCut2 {0.f};
 
   /// correction in order to take into account overlaping and iff z. if sort by y then it is max diff between same station's modules (~0.4cm)
-  fvec fMaxDZ {kNaN};
+  fvec fMaxDZ {L1Utils::kNaN};
 
   /// parameters which are different for different iterations. Set in the begin of CAL1TrackFinder
 
-  float fPickGather {kNaN};     // same for attaching additional hits to track
-  float fPickNeighbour {kNaN};  // (fPickNeighbour < dp/dp_error)  =>  triplets are neighbours
-  fvec fMaxInvMom {kNaN};       // max considered q/p for tracks
-  fvec fMaxSlopePV {kNaN};      // max slope (tx\ty) in prim vertex
-  float fMaxSlope {kNaN};       // max slope (tx\ty) in 3d hit position of a triplet
-  fvec fCbmTargetX {kNaN};     // target position
-  fvec fCbmTargetY {kNaN};
-  fvec fCbmTargetZ {kNaN};
-  fvec fTargX {kNaN};  // target position for the current iteration
-  fvec fTargY {kNaN};
-  fvec fTargZ {kNaN};
+  float fPickGather {L1Utils::kNaN};     // same for attaching additional hits to track
+  float fPickNeighbour {L1Utils::kNaN};  // (fPickNeighbour < dp/dp_error)  =>  triplets are neighbours
+  fvec fMaxInvMom {L1Utils::kNaN};       // max considered q/p for tracks
+  fvec fMaxSlopePV {L1Utils::kNaN};      // max slope (tx\ty) in prim vertex
+  float fMaxSlope {L1Utils::kNaN};       // max slope (tx\ty) in 3d hit position of a triplet
+  fvec fCbmTargetX {L1Utils::kNaN};     // target position
+  fvec fCbmTargetY {L1Utils::kNaN};
+  fvec fCbmTargetZ {L1Utils::kNaN};
+  fvec fTargX {L1Utils::kNaN};  // target position for the current iteration
+  fvec fTargY {L1Utils::kNaN};
+  fvec fTargZ {L1Utils::kNaN};
 
-  L1FieldValue targB _fvecalignment {};                // field in the target point
+  L1FieldValue fTargB _fvecalignment {};                // field in the target point
   L1XYMeasurementInfo TargetXYInfo _fvecalignment {};  // target constraint  [cm]
 
 

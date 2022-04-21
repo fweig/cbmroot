@@ -17,6 +17,7 @@ L1CAIteration::L1CAIteration() noexcept { LOG(debug) << "L1CAIteration: Default 
 L1CAIteration::L1CAIteration(const L1CAIteration& other) noexcept
   // Basic fields
   : fName(other.fName)
+  , fControlFlags(other.fControlFlags)
   // Cuts
   , fTrackChi2Cut(other.fTrackChi2Cut)
   , fTripletChi2Cut(other.fTripletChi2Cut)
@@ -27,6 +28,8 @@ L1CAIteration::L1CAIteration(const L1CAIteration& other) noexcept
   , fMaxSlopePV(other.fMaxSlopePV)
   , fMaxSlope(other.fMaxSlope)
   , fMaxDZ(other.fMaxDZ)
+  , fTargetPosSigmaX(other.fTargetPosSigmaX)
+  , fTargetPosSigmaY(other.fTargetPosSigmaY)
 {
   LOG(debug) << "L1CAIteration: Copy constructor called: " << &other << " was copied into " << this;
 }
@@ -81,10 +84,19 @@ void L1CAIteration::Print(int verbosityLevel) const
 
 //----------------------------------------------------------------------------------------------------------------------
 //
+void L1CAIteration::SetTargetPosSigmaXY(float sigmaX, float sigmaY)
+{
+  fTargetPosSigmaX = sigmaX;
+  fTargetPosSigmaY = sigmaY;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
 void L1CAIteration::Swap(L1CAIteration& other) noexcept
 {
   // Basic fields
   std::swap(fName, other.fName);
+  std::swap(fControlFlags, other.fControlFlags);
   // Cuts
   std::swap(fTrackChi2Cut, other.fTrackChi2Cut);
   std::swap(fTripletChi2Cut, other.fTripletChi2Cut);
@@ -95,6 +107,8 @@ void L1CAIteration::Swap(L1CAIteration& other) noexcept
   std::swap(fMaxSlopePV, other.fMaxSlopePV);
   std::swap(fMaxSlope, other.fMaxSlope);
   std::swap(fMaxDZ, other.fMaxDZ);
+  std::swap(fTargetPosSigmaX, other.fTargetPosSigmaX);
+  std::swap(fTargetPosSigmaY, other.fTargetPosSigmaY);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -105,14 +119,18 @@ std::string L1CAIteration::ToString(int indentLevel) const
   constexpr char indentChar = '\t';
   std::string indent(indentLevel, indentChar);
   aStream << indent << "L1CAIteration: " << fName << '\n';
-  aStream << indent << indentChar << "Track chi2 cut:              " << fTrackChi2Cut << '\n';
-  aStream << indent << indentChar << "Triplet chi2 cut:            " << fTripletChi2Cut << '\n';
-  aStream << indent << indentChar << "Doublet chi2 cut:            " << fDoubletChi2Cut << '\n';
-  aStream << indent << indentChar << "Pick gather:                 " << fPickGather << '\n';
-  aStream << indent << indentChar << "Pick neighbour:              " << fPickNeighbour << '\n';
-  aStream << indent << indentChar << "Max invariant momentum:      " << fMaxInvMom << '\n';
-  aStream << indent << indentChar << "Max slope at primary vertex: " << fMaxSlopePV << '\n';
-  aStream << indent << indentChar << "Max slope:                   " << fMaxSlope << '\n';
-  aStream << indent << indentChar << "Max DZ:                      " << fMaxDZ;
+  aStream << indent << indentChar << "Is primary:                   " << fControlFlags[static_cast<int>(ControlFlag::kePrimary)] << '\n';
+  aStream << indent << indentChar << "Track chi2 cut:               " << fTrackChi2Cut << '\n';
+  aStream << indent << indentChar << "Triplet chi2 cut:             " << fTripletChi2Cut << '\n';
+  aStream << indent << indentChar << "Doublet chi2 cut:             " << fDoubletChi2Cut << '\n';
+  aStream << indent << indentChar << "Pick gather:                  " << fPickGather << '\n';
+  aStream << indent << indentChar << "Pick neighbour:               " << fPickNeighbour << '\n';
+  aStream << indent << indentChar << "Max invariant momentum:       " << fMaxInvMom << '\n';
+  aStream << indent << indentChar << "Max slope at primary vertex:  " << fMaxSlopePV << '\n';
+  aStream << indent << indentChar << "Max slope:                    " << fMaxSlope << '\n';
+  aStream << indent << indentChar << "Max DZ:                       " << fMaxDZ << '\n';
+  aStream << indent << indentChar << "Target position sigma X [cm]: " << fTargetPosSigmaX << '\n';
+  aStream << indent << indentChar << "Target position sigma Y [cm]: " << fTargetPosSigmaY;
+
   return aStream.str();
 }

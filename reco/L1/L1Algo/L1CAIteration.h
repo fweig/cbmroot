@@ -12,12 +12,19 @@
 #ifndef L1CAIteration_h
 #define L1CAIteration_h 1
 
+#include <bitset>
 #include <string>
 
 /// Class L1CAIteration describes L1 Track finder iteration. Each iteration contains specific cuts and special
 /// flags.
 ///
 class L1CAIteration {
+  enum class ControlFlag {
+    kePrimary,  ///< true - track is primary, false - track is secondary (not primary)
+    keEnd
+  };
+  using ControlFlags_t = std::bitset<static_cast<int>(ControlFlag::keEnd)>;
+
 public:
   /// Default constructor
   L1CAIteration() noexcept;
@@ -50,10 +57,17 @@ public:
   float GetPickGather() const { return fPickGather; }
   ///
   float GetPickNeighbour() const { return fPickNeighbour; }
+  /// Gets sigma target position in X direction [cm]
+  float GetTargetPosSigmaX() const { return fTargetPosSigmaX; }
+  /// Gets sigma target position in Y direction [cm]
+  float GetTargetPosSigmaY() const { return fTargetPosSigmaY; }
   /// Gets track chi2 upper cut
   float GetTrackChi2Cut() const { return fTrackChi2Cut; }
   /// Gets triplet chi2 upper cut
   float GetTripletChi2Cut() const { return fTripletChi2Cut; }
+  
+  /// flag check: primary tracks - true, secondary tracks - false
+  bool IsPrimary() const { return fControlFlags[static_cast<int>(ControlFlag::kePrimary)]; }
 
   /// Prints iteration options
   void Print(int verbosityLevel = 0) const;
@@ -74,6 +88,10 @@ public:
   void SetPickGather(float input) { fPickGather = input; }
   ///
   void SetPickNeighbour(float input) { fPickNeighbour = input; }
+  /// Sets flag: primary tracks - true, secondary tracks - false
+  void SetPrimary(bool flag) { fControlFlags[static_cast<int>(ControlFlag::kePrimary)] = flag; }
+  /// Sets sigma of target positions in XY plane (in cm)
+  void SetTargetPosSigmaXY(float sigmaX, float sigmaY);
   /// Sets track chi2 upper cut
   void SetTrackChi2Cut(float input) { fTrackChi2Cut = input; }
   /// Sets triplet chi2 upper cut
@@ -86,9 +104,8 @@ public:
 
 private:
   //-------------------------------------------------------------------------------------------------------------------
-  // Basic class fields
-  //-------------------------------------------------------------------------------------------------------------------
-  std::string fName {""};  ///< Iteration name
+  std::string fName {""};           ///< Iteration name
+  ControlFlags_t fControlFlags {};  ///< bitset flags to control iteration behaviour
 
   //-------------------------------------------------------------------------------------------------------------------
   // Track finder dependent cuts
@@ -104,6 +121,9 @@ private:
   float fMaxSlopePV {1.1};                      ///> max slope (tx\ty) in prim vertex
   float fMaxSlope {2.748};                      ///> max slope (tx\ty) in 3d hit position of a triplet
   float fMaxDZ {0.f};                           ///> Correction for accounting overlaping and iff z
+  float fTargetPosSigmaX {0};                   ///> Constraint on target position in X direction [cm]
+  float fTargetPosSigmaY {0};                   ///> Constraint on target position in Y direction [cm]
+ 
 };
 
 #endif  // L1CAIteration_h

@@ -152,9 +152,9 @@ void L1InitManager::PrintStations(int verbosityLevel) const
 void L1InitManager::PushBackCAIteration(const L1CAIteration& iteration)
 {
   // TODO: probably some checks must be inserted here (S.Zharko)
-  //bool control = fInitController.GetFlag(InitKey::keCAIterationsNumberCrosscheck);
+  bool control = fInitController.GetFlag(InitKey::keCAIterationsNumberCrosscheck);
   //std::cout << "L1InitManager::PushBackCAIteration " << control << '\n';
-  L1MASSERT(0, fInitController.GetFlag(InitKey::keCAIterationsNumberCrosscheck),
+  L1MASSERT(0, control, //fInitController.GetFlag(InitKey::keCAIterationsNumberCrosscheck),
             "Attempt to push back a CA track finder iteration before the number of iterations was defined");
 
   L1Vector<L1CAIteration>& iterationsContainer = fpParameters->CAIterationsContainer();

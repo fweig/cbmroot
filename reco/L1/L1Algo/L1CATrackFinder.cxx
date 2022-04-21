@@ -203,16 +203,16 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     stac_global.fieldSlice.GetFieldValue(fTargX + tx * (zstac_global - fTargZ), fTargY + ty * (zstac_global - fTargZ),
                                          centB_global);
 
-    if (istac != istal) fld0.Set(l_B, stal.z, centB, stac.z, targB, fTargZ);
+    if (istac != istal) fld0.Set(l_B, stal.z, centB, stac.z, fTargB, fTargZ);
     else
-      fld0.Set(l_B, zstal, targB, fTargZ);
+      fld0.Set(l_B, zstal, fTargB, fTargZ);
     // estimate field for the next extrapolations
     stam.fieldSlice.GetFieldValue(fTargX + tx * (zstam - fTargZ), fTargY + ty * (zstam - fTargZ), m_B);
 #define USE_3HITS  // TODO: move this directive to more suitable place
 #ifndef USE_3HITS
     if (istac != istal) fld1.Set(m_B, zstam, l_B, zstal, centB, zstac);
     else
-      fld1.Set(m_B, zstam, l_B, zstal, targB, fTargZ);
+      fld1.Set(m_B, zstam, l_B, zstal, fTargB, fTargZ);
 #else  // if USE_3HITS  // the best now
     L1FieldValue r_B _fvecalignment;
     L1Station& star = vStations[istam + 1];
@@ -1821,8 +1821,10 @@ void L1Algo::CATrackFinder()
         //   FIRSTCASTATION = 2;
 
         fDoubletChi2Cut = caIteration.GetDoubletChi2Cut();  //11.3449 * 2.f / 3.f;  // prob = 0.1
+        //fDoubletChi2Cut = 11.3449 * 2.f / 3.f;  // prob = 0.1
 
         fTripletChi2Cut = caIteration.GetTripletChi2Cut();  //21.1075;  // prob = 0.01%
+        //fTripletChi2Cut = 21.1075;  // prob = 0.01%
 
         //switch (isec) {
         //  case kFastPrimIter:
@@ -1843,16 +1845,19 @@ void L1Algo::CATrackFinder()
 
         /// coefficient for size of region for attach new hits to the created track
         fPickGather = caIteration.GetPickGather();  //3.0;
+        //fPickGather = 3.0;
         //if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) || (isec == kAllSecIter)
         //    || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
         //  fPickGather = 4.0;
 
         // (fPickNeighbour < dp/dp_error)  =>  triplets are neighbours
         fPickNeighbour = caIteration.GetPickNeighbour();  //5.0;
-        // if ( (isec == kFastPrimIter) )
-        //   fPickNeighbour = 5.0*0.5; // TODO understand why works with 0.2
+        //fPickNeighbour = 5.0;
+        //if ( (isec == kFastPrimIter) )
+        //  fPickNeighbour = 5.0*0.5; // TODO understand why works with 0.2
 
         fMaxInvMom = caIteration.GetMaxInvMom();  //1.0 / 0.5;  // max considered q/p
+        //fMaxInvMom = 1.0 / 0.5;  // max considered q/p
 
         //if (fTrackingMode == kMcbm) fMaxInvMom = 1 / 0.3;  // max considered q/p
         //if ((isec == kAllPrimJumpIter) || (isec == kAllSecIter) || (isec == kAllSecJumpIter)) fMaxInvMom = 1.0 / 0.1;
@@ -1861,34 +1866,44 @@ void L1Algo::CATrackFinder()
         //if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllSecEIter))
         //  if (fTrackingMode == kMcbm) fMaxInvMom = 1 / 0.1;  // max considered q/p
 
+        
         fMaxSlopePV = caIteration.GetMaxSlopePV();  //1.1;
+        //fMaxSlopePV = 1.1;
         //if (  // (isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) ||
         //  (isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
         //  fMaxSlopePV = 1.5;
 
         fMaxSlope = caIteration.GetMaxSlope();  //2.748;  // corresponds to 70 grad
+        //fMaxSlope = 2.748;  // corresponds to 70 grad
 
         // define the target
         fTargX = fCbmTargetX;
         fTargY = fCbmTargetY;
         fTargZ = fCbmTargetZ;
 
-        float SigmaTargetX = 0, SigmaTargetY = 0;  // target constraint [cm]
-        if ((isec == kFastPrimIter) || (isec == kFastPrimIter2) || (isec == kFastPrimJumpIter) || (isec == kAllPrimIter)
-            || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter)) {  // target
-          targB = vtxFieldValue;
-          if ((isec == kFastPrimIter) || (isec == kAllPrimIter) || (isec == kAllPrimEIter))
-            SigmaTargetX = SigmaTargetY = 1;  // target
-          else
-            SigmaTargetX = SigmaTargetY = 5;
-        }
-        if ((isec == kAllSecIter) || (isec == kAllSecEIter)
-            || (isec == kAllSecJumpIter)) {  //use outer radius of the 1st station as a constraint
-          L1Station& st = vStations[0];
-          SigmaTargetX = SigmaTargetY = 10;  //st.Rmax[0];
-          fTargZ                      = fCbmTargetZ;  // fCbmTargetZ-1.;
-          st.fieldSlice.GetFieldValue(0, 0, targB);
-        }
+        float SigmaTargetX = caIteration.GetTargetPosSigmaX();
+        float SigmaTargetY = caIteration.GetTargetPosSigmaY();  // target constraint [cm]
+        
+        // Select magnetic field. For primary tracks - vtxFieldValue, for secondary tracks - st.fieldSlice
+        if (caIteration.IsPrimary()) { fTargB = vtxFieldValue; } 
+        else { vStations[0].fieldSlice.GetFieldValue(0, 0, fTargB); } // NOTE: calculates field fTargB in the center of 0th station
+        
+        
+        //if ((isec == kFastPrimIter) || (isec == kFastPrimIter2) || (isec == kFastPrimJumpIter) || (isec == kAllPrimIter)
+        //    || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter)) {  // target
+        //  fTargB = vtxFieldValue;
+        //  if ((isec == kFastPrimIter) || (isec == kAllPrimIter) || (isec == kAllPrimEIter))
+        //    SigmaTargetX = SigmaTargetY = 1;  // target
+        //  else
+        //    SigmaTargetX = SigmaTargetY = 5;
+        //}
+        //if ((isec == kAllSecIter) || (isec == kAllSecEIter)
+        //    || (isec == kAllSecJumpIter)) {  //use outer radius of the 1st station as a constraint // ?
+        //  L1Station& st = vStations[0];
+        //  SigmaTargetX = SigmaTargetY = 10;  //st.Rmax[0];
+        //  fTargZ                      = fCbmTargetZ;  // fCbmTargetZ-1.;
+        //  st.fieldSlice.GetFieldValue(0, 0, fTargB);
+        //}
 
         TargetXYInfo.C00 = SigmaTargetX * SigmaTargetX;
         TargetXYInfo.C10 = 0;
@@ -1897,11 +1912,13 @@ void L1Algo::CATrackFinder()
         /// Set correction in order to take into account overlaping and iff z.
         /// The reason is that low momentum tracks are too curved and goes not from target direction. That's why sort by hit_y/hit_z is not work idealy
         /// If sort by y then it is max diff between same station's modules (~0.4cm)
-        fMaxDZ = 0;
-        if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) || (isec == kAllSecIter)
-            || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
-          fMaxDZ = 0.1;
+        fMaxDZ = caIteration.GetMaxDZ(); //0;
+        //fMaxDZ = 0;
+        //if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) || (isec == kAllSecIter)
+        //    || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
+        //  fMaxDZ = 0.1;
 
+        // TODO: to be removed, because this condition is checked in L1InitManager (S.Zharko)
         if (NStations > (int) L1Parameters::kMaxNstations) cout << " CATrackFinder: Error: Too many Stations" << endl;
       }
 
