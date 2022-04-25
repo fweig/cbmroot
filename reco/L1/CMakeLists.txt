@@ -236,7 +236,7 @@ Set(DEPENDENCIES
     Base
     CbmBase
     CbmData
-#    CbmSimSteer
+    CbmSimSteer
 #    CbmGeoSetup
     CbmMuchBase
     CbmTrdBase

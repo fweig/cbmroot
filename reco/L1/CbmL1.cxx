@@ -29,6 +29,7 @@
 #include "CbmMuchStation.h"
 #include "CbmMvdDetector.h"
 #include "CbmMvdStationPar.h"
+#include "CbmSetup.h"
 // TODO: include of CbmSetup.h creates problems on Mac
 // #include "CbmSetup.h"
 #include "CbmMCDataObject.h"
@@ -111,11 +112,13 @@ CbmL1::~CbmL1()
 
 void CbmL1::CheckDetectorPresence()
 {
-  Bool_t IsMuch       = 0;
-  Bool_t IsTrd        = 0;
-  Bool_t IsTof        = 0;
-  Bool_t IsSts        = 0;
-  Bool_t IsMvd        = 0;
+  Bool_t IsMuch = CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch);
+  Bool_t IsTrd  = CbmSetup::Instance()->IsActive(ECbmModuleId::kTrd);
+  Bool_t IsTof  = CbmSetup::Instance()->IsActive(ECbmModuleId::kTof);
+  //Bool_t IsSts        = CbmSetup::Instance()->IsActive(ECbmModuleId::kSts);
+  Bool_t IsMvd = CbmSetup::Instance()->IsActive(ECbmModuleId::kMvd);
+
+  /*
   TObjArray* topNodes = gGeoManager->GetTopNode()->GetNodes();
 
   for (Int_t iTopNode = 0; iTopNode < topNodes->GetEntriesFast(); iTopNode++) {
@@ -124,9 +127,10 @@ void CbmL1::CheckDetectorPresence()
     if (TString(topNode->GetName()).Contains("much")) IsMuch = 1;
     if (TString(topNode->GetName()).Contains("trd")) IsTrd = 1;
     if (TString(topNode->GetName()).Contains("tof")) IsTof = 1;
-    if (TString(topNode->GetName()).Contains("sts")) IsSts = 1;
+    //if (TString(topNode->GetName()).Contains("sts")) IsSts = 1;
     if (TString(topNode->GetName()).Contains("mvd")) IsMvd = 1;
   }
+  */
 
   fUseMUCH = (fUseMUCH && IsMuch);
   fUseTRD  = fUseTRD && IsTrd;
@@ -460,7 +464,7 @@ InitStatus CbmL1::Init()
           if (NULL == fChannelInfo) break;
           float z = fChannelInfo->GetZ();
           float x = fChannelInfo->GetX();
-          float y = fChannelInfo->GetY();
+          //float y = fChannelInfo->GetY();
 
           if (station < 0) continue;
 
