@@ -141,6 +141,14 @@ void mcbm_transport(Int_t nEvents = 10,
   // ACC   SetTrack(&run, beamRotY,-11, +5.9,  0.0, 28.5 + stszoff);
   // ACC   SetTrack(&run, beamRotY,-11, +5.9, -5.8, 28.5 + stszoff);
   //
+  // TOFDS  SetTrack(&run, beamRotY,-13, 71, +5.8, 235);
+  // TOFDS  SetTrack(&run, beamRotY,-13, 71,  0.0, 235);
+  // TOFDS  SetTrack(&run, beamRotY,-13, 71, -5.8, 235);
+  // TOFDS
+  // TOFDS  SetTrack(&run, beamRotY,-13, 35, +5.8, 242);
+  // TOFDS  SetTrack(&run, beamRotY,-13, 35,  0.0, 242);
+  // TOFDS  SetTrack(&run, beamRotY,-13, 35, -5.8, 242);
+  //
   // WIN   //  x : cos(25.*acos(-1.)/180.) *  -4.25              : x =  -3.852 cm
   // WIN   //  z : sin(25.*acos(-1.)/180.) *  -4.25 + 15.2 + 0.3 : z =  13.704 cm
   // WIN   //   SetTrack(&run, 0, 13, -3.852, 0.0, 13.704);
