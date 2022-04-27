@@ -36,11 +36,10 @@ void check_timing_any(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TS
   CbmMcbmCheckTimingTask* timeChecker = new CbmMcbmCheckTimingTask();
   /// Default is using T0 as reference
   /// With Pulser rejection
-  /*
   timeChecker->SetReferenceDetector( ECbmModuleId::kT0, "T0",
                                      -1000., 1000., 320.,
                                      182, 190 );
-*/
+
   /// With pulser selection
   /*
   timeChecker->SetReferenceDetector( ECbmModuleId::kT0, "T0",
@@ -48,9 +47,9 @@ void check_timing_any(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TS
                                      190, 182 );
 */
   /// Here swapping with TOF
-  timeChecker->SetReferenceDetector(ECbmModuleId::kTof, "Tof", -3000, 3000, 3000);
-  timeChecker->RemoveCheckDetector(ECbmModuleId::kTof);
-  //timeChecker->AddCheckDetector(ECbmModuleId::kT0, "T0");
+  //   timeChecker->SetReferenceDetector(ECbmModuleId::kTof, "Tof", -3000, 3000, 3000);
+  //   timeChecker->RemoveCheckDetector(ECbmModuleId::kTof);
+  //   timeChecker->AddCheckDetector(ECbmModuleId::kT0, "T0");
 
   /// Here swapping with MUCH
   /*
@@ -60,7 +59,7 @@ void check_timing_any(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TS
   */
 
   /// Remove detectors not present in 2021
-  timeChecker->RemoveCheckDetector(ECbmModuleId::kT0);
+  //timeChecker->RemoveCheckDetector(ECbmModuleId::kT0);
   timeChecker->RemoveCheckDetector(ECbmModuleId::kMuch);
   //timeChecker->SetReferenceDetector(ECbmModuleId::kPsd, "Psd", -300000, 300000, 320 * 300);
   timeChecker->RemoveCheckDetector(ECbmModuleId::kPsd);
@@ -77,9 +76,10 @@ void check_timing_any(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TS
   */
 
   /// Add extra differential analysis on specific detectors
-  timeChecker->AddCheckDetector(ECbmModuleId::kSts, "Sts", -200., 200., 4000);
+  timeChecker->AddCheckDetector(ECbmModuleId::kSts, "Sts", -100., 100., 4000);
   timeChecker->AddCheckDetector(ECbmModuleId::kRich, "Rich", -100., 100., 4000);
-  timeChecker->AddCheckDetector(ECbmModuleId::kTrd, "Trd", -500.5, 500.5, 1001);
+  timeChecker->AddCheckDetector(ECbmModuleId::kTrd, "Trd", -500., 500., 250);
+  timeChecker->AddCheckDetector(ECbmModuleId::kTof, "Tof", -100, 100, 4000);
   timeChecker->SetDetectorDifferential(ECbmModuleId::kTrd, {"5", "21", "37", "53"});
 
   TString outFileName = fileName(0, fileName.Index(".digi.root"));

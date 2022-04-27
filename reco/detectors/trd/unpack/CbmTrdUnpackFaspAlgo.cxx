@@ -205,7 +205,7 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
   UShort_t lchR, lchT;
   Double_t r, t;
   Int_t dt, dtime, ch, pad, row;
-  ULong64_t tlab;
+  ULong64_t tlab, tdaqOffset(0);
   CbmTrdParFasp* faspPar(nullptr);
   const CbmTrdParFaspChannel* chCalib(nullptr);
   CbmTrdParModDigi* digiPar(nullptr);
@@ -228,6 +228,7 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
       chCalib = faspPar->GetChannel(imess->ch);
       ch      = 2 * pad + chCalib->HasPairingR();
       row     = digiPar->GetPadRow(pad);
+      if (row % 2) tdaqOffset = 3;
       if (VERBOSE)
         printf("fasp[%2d] ch[%4d / %2d] pad[%4d] row[%2d] col[%2d] tilt[%d]\n", lFasp, ch, imess->ch, pad, row,
                digiPar->GetPadColumn(pad), chCalib->HasPairingT());
@@ -274,7 +275,9 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
 
   // push finalized digits to the next level
   for (vector<CbmTrdDigi*>::iterator id = digis.begin(); id != digis.end(); id++) {
-    (*id)->SetTimeDAQ(fTime[0] + (*id)->GetTimeDAQ());
+    // TODO temporary add DAQ time calibration for FASPRO.
+    // Should be absorbed in the ASIC parameter definition
+    (*id)->SetTimeDAQ(fTime[0] + (*id)->GetTimeDAQ() + tdaqOffset);
     fOutputVec.emplace_back(*std::move(*id));
     if (fMonitor) fMonitor->FillHistos((*id));
     if (VERBOSE) cout << (*id)->ToString();
