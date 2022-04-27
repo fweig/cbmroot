@@ -95,6 +95,7 @@ CbmL1* CbmL1::fInstance = 0;
 CbmL1::CbmL1() : FairTask("L1")
 {
   if (!fInstance) fInstance = this;
+  if (!fpInitManager) { fpInitManager = algo_static.GetInitManager(); }
 }
 
 CbmL1::CbmL1(const char* name, Int_t iVerbose, Int_t _fPerformance, int fSTAPDataMode_, TString fSTAPDataDir_,
@@ -106,6 +107,7 @@ CbmL1::CbmL1(const char* name, Int_t iVerbose, Int_t _fPerformance, int fSTAPDat
   , fFindParticlesMode(findParticleMode_)
 {
   if (!fInstance) fInstance = this;
+  if (!fpInitManager) { fpInitManager = algo_static.GetInitManager(); }
 }
 
 CbmL1::~CbmL1()
@@ -386,8 +388,9 @@ InitStatus CbmL1::Init()
   NTOFStation   = 0;
   NStation      = 0;
 
-
+  // TODO: Replace algo initialization in the constructor (S.Zharko)
   algo = &algo_static;
+
 
   L1Vector<fscal> geo("geo");
   geo.reserve(10000);
@@ -629,10 +632,6 @@ InitStatus CbmL1::Init()
 
       CbmMuchLayer* layer = station->GetLayer((ist - NMvdStations - NStsStations) % 3);
 
-      //  CbmMuchModuleGem* module = (CbmMuchModuleGem*)  CbmMuchGeoScheme::Instance()->GetModule(0,0,0,0);
-
-      // vector<CbmMuchPad*> pads = module->GetPads();
-
       z = layer->GetZ();
 
       geo.push_back(2);
@@ -824,37 +823,34 @@ InitStatus CbmL1::Init()
    ********************************************************************************************************************/
   {  //L1Algo new init start
 
-    // Step 0: Get reference to the L1Algo initialization manager
-    L1InitManager* initMan = algo->GetInitManager();
-
     // Step 1: Initialize magnetic field function
     // Set magnetic field slices
     auto fieldGetterFcn = [](const double(&inPos)[3], double(&outB)[3]) {
       CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);
     };
-    initMan->SetFieldFunction(fieldGetterFcn);
+    fpInitManager->SetFieldFunction(fieldGetterFcn);
 
     // Step 2: Initialize target
     auto& target = CbmKF::Instance()->vTargets[0];
-    initMan->SetTargetPosition(target.x, target.y, target.z);
+    fpInitManager->SetTargetPosition(target.x, target.y, target.z);
 
     // Step 3: Initialize primary vertex field
-    initMan->InitTargetField(2.5);
+    fpInitManager->InitTargetField(2.5);
 
 
     // Step 4: initialize IDs of detectors active in tracking
     // TODO: temporary for tests, must be initialized somewhere in run_reco.C or similar (S.Zh.)
     fActiveTrackingDetectorIDs = {L1DetectorID::kMvd, L1DetectorID::kSts};
-    initMan->SetActiveDetectorIDs(fActiveTrackingDetectorIDs);
+    fpInitManager->SetActiveDetectorIDs(fActiveTrackingDetectorIDs);
 
     constexpr double PI = 3.14159265358;  // TODO: why cmath is not used? (S.Zh.)
 
     // Step 5: initialize number of stations for each detector ID
-    initMan->SetStationsNumberCrosscheck(L1DetectorID::kMvd, NMvdStations);
-    initMan->SetStationsNumberCrosscheck(L1DetectorID::kSts, NStsStations);
-    initMan->SetStationsNumberCrosscheck(L1DetectorID::kMuch, NMuchStations);
-    initMan->SetStationsNumberCrosscheck(L1DetectorID::kTrd, NTrdStations);
-    initMan->SetStationsNumberCrosscheck(L1DetectorID::kTof, NTOFStation);
+    fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kMvd, NMvdStations);
+    fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kSts, NStsStations);
+    fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kMuch, NMuchStations);
+    fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kTrd, NTrdStations);
+    fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kTof, NTOFStation);
 
     // Step 6: setup station info
 
@@ -879,7 +875,7 @@ InitStatus CbmL1::Init()
       fscal mvdFrontSigma = mvdStationPar->GetXRes(iSt) / 10000;
       fscal mvdBackSigma  = mvdStationPar->GetYRes(iSt) / 10000;
       stationInfo.SetFrontBackStripsGeometry(mvdFrontPhi, mvdFrontSigma, mvdBackPhi, mvdBackSigma);
-      initMan->AddStation(stationInfo);
+      fpInitManager->AddStation(stationInfo);
     }
 
     // Setup STS stations info
@@ -907,7 +903,7 @@ InitStatus CbmL1::Init()
       fscal stsFrontSigma = cbmSts->GetSensorPitch(0) / sqrt(12);
       fscal stsBackSigma  = stsFrontSigma;
       stationInfo->SetFrontBackStripsGeometry(stsFrontPhi, stsFrontSigma, stsBackPhi, stsBackSigma);
-      initMan->AddStation(stationInfo);
+      fpInitManager->AddStation(stationInfo);
     }
 
     // Setup MuCh stations info
@@ -932,7 +928,7 @@ InitStatus CbmL1::Init()
       fscal muchFrontSigma = 0.1;
       fscal muchBackSigma  = 0.1;
       stationInfo.SetFrontBackStripsGeometry(muchFrontPhi, muchFrontSigma, muchBackPhi, muchBackSigma);
-      initMan->AddStation(stationInfo);
+      fpInitManager->AddStation(stationInfo);
     }
 
     // Setup TRD stations info
@@ -958,6 +954,7 @@ InitStatus CbmL1::Init()
       fscal trdFrontSigma = 1.;
       fscal trdBackSigma  = 1.;
       stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdFrontSigma, trdBackPhi, trdBackSigma);
+      fpInitManager->AddStation(stationInfo);
     }
 
     // Setup TOF stations info
@@ -976,6 +973,7 @@ InitStatus CbmL1::Init()
       fscal tofFrontSigma = 1.;
       fscal tofBackSigma  = 1.;
       stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofFrontSigma, tofBackPhi, tofBackSigma);
+      fpInitManager->AddStation(stationInfo);
     }
     //initMan->PrintStations(/*vebosity = */ 1);
 
@@ -1112,25 +1110,25 @@ InitStatus CbmL1::Init()
         trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.3);
         trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.3);
 
-        initMan->SetCAIterationsNumberCrosscheck(4);
+        fpInitManager->SetCAIterationsNumberCrosscheck(4);
         // Initialize CA track finder iterations sequence
-        initMan->PushBackCAIteration(trackingIterFastPrim);
-        initMan->PushBackCAIteration(trackingIterAllPrim);
-        initMan->PushBackCAIteration(trackingIterAllPrimJump);
-        initMan->PushBackCAIteration(trackingIterAllSec);
+        fpInitManager->PushBackCAIteration(trackingIterFastPrim);
+        fpInitManager->PushBackCAIteration(trackingIterAllPrim);
+        fpInitManager->PushBackCAIteration(trackingIterAllPrimJump);
+        fpInitManager->PushBackCAIteration(trackingIterAllSec);
       }
       else {
-        initMan->SetCAIterationsNumberCrosscheck(4);
+        fpInitManager->SetCAIterationsNumberCrosscheck(4);
         // Initialize CA track finder iterations sequence
-        initMan->PushBackCAIteration(trackingIterFastPrim);
-        initMan->PushBackCAIteration(trackingIterAllPrim);
-        initMan->PushBackCAIteration(trackingIterAllPrimJump);
-        initMan->PushBackCAIteration(trackingIterAllSec);
-        //initMan->PushBackCAIteration(trackingIterAllPrimE);
-        //initMan->PushBackCAIteration(trackingIterAllSecE);
-        //initMan->PushBackCAIteration(trackingIterFastPrimJump);
-        //initMan->PushBackCAIteration(trackingIterFastPrim2);
-        //initMan->PushBackCAIteration(trackingIterAllSecJump);
+        fpInitManager->PushBackCAIteration(trackingIterFastPrim);
+        fpInitManager->PushBackCAIteration(trackingIterAllPrim);
+        fpInitManager->PushBackCAIteration(trackingIterAllPrimJump);
+        fpInitManager->PushBackCAIteration(trackingIterAllSec);
+        //fpInitManager->PushBackCAIteration(trackingIterAllPrimE);
+        //fpInitManager->PushBackCAIteration(trackingIterAllSecE);
+        //fpInitManager->PushBackCAIteration(trackingIterFastPrimJump);
+        //fpInitManager->PushBackCAIteration(trackingIterFastPrim2);
+        //fpInitManager->PushBackCAIteration(trackingIterAllSecJump);
       }
 
       // Set special cuts

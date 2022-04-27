@@ -19,7 +19,8 @@
 /// flags.
 ///
 class L1CAIteration {
-  enum class ControlFlag {
+  enum class ControlFlag
+  {
     kePrimary,  ///< true - track is primary, false - track is secondary (not primary)
     keEnd
   };
@@ -65,7 +66,7 @@ public:
   float GetTrackChi2Cut() const { return fTrackChi2Cut; }
   /// Gets triplet chi2 upper cut
   float GetTripletChi2Cut() const { return fTripletChi2Cut; }
-  
+
   /// flag check: primary tracks - true, secondary tracks - false
   bool IsPrimary() const { return fControlFlags[static_cast<int>(ControlFlag::kePrimary)]; }
 
@@ -123,7 +124,6 @@ private:
   float fMaxDZ {0.f};                           ///> Correction for accounting overlaping and iff z
   float fTargetPosSigmaX {0};                   ///> Constraint on target position in X direction [cm]
   float fTargetPosSigmaY {0};                   ///> Constraint on target position in Y direction [cm]
- 
 };
 
 #endif  // L1CAIteration_h

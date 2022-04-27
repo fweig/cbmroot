@@ -1372,6 +1372,7 @@ inline void L1Algo::DupletsStaPort(
 
     /// Find the doublets. Reformat data in the portion of doublets.
 
+    // TODO: repalce with constexpr if (C++17) (S.Zharko)
 #ifdef DOUB_PERFORMANCE
     L1Vector<THitI> hitsl_2("L1CATrackFinder::hitsl_2");
 #endif  // DOUB_PERFORMANCE
@@ -1866,7 +1867,7 @@ void L1Algo::CATrackFinder()
         //if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllSecEIter))
         //  if (fTrackingMode == kMcbm) fMaxInvMom = 1 / 0.1;  // max considered q/p
 
-        
+
         fMaxSlopePV = caIteration.GetMaxSlopePV();  //1.1;
         //fMaxSlopePV = 1.1;
         //if (  // (isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) ||
@@ -1883,12 +1884,14 @@ void L1Algo::CATrackFinder()
 
         float SigmaTargetX = caIteration.GetTargetPosSigmaX();
         float SigmaTargetY = caIteration.GetTargetPosSigmaY();  // target constraint [cm]
-        
+
         // Select magnetic field. For primary tracks - vtxFieldValue, for secondary tracks - st.fieldSlice
-        if (caIteration.IsPrimary()) { fTargB = vtxFieldValue; } 
-        else { vStations[0].fieldSlice.GetFieldValue(0, 0, fTargB); } // NOTE: calculates field fTargB in the center of 0th station
-        
-        
+        if (caIteration.IsPrimary()) { fTargB = vtxFieldValue; }
+        else {
+          vStations[0].fieldSlice.GetFieldValue(0, 0, fTargB);
+        }  // NOTE: calculates field fTargB in the center of 0th station
+
+
         //if ((isec == kFastPrimIter) || (isec == kFastPrimIter2) || (isec == kFastPrimJumpIter) || (isec == kAllPrimIter)
         //    || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter)) {  // target
         //  fTargB = vtxFieldValue;
@@ -1912,7 +1915,7 @@ void L1Algo::CATrackFinder()
         /// Set correction in order to take into account overlaping and iff z.
         /// The reason is that low momentum tracks are too curved and goes not from target direction. That's why sort by hit_y/hit_z is not work idealy
         /// If sort by y then it is max diff between same station's modules (~0.4cm)
-        fMaxDZ = caIteration.GetMaxDZ(); //0;
+        fMaxDZ = caIteration.GetMaxDZ();  //0;
         //fMaxDZ = 0;
         //if ((isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter) || (isec == kAllSecIter)
         //    || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))

@@ -11,17 +11,17 @@
 #define L1Utils_h 1
 
 #include <iomanip>
+#include <limits>
 #include <map>
 #include <sstream>
 #include <string>
 #include <unordered_map>
-#include <limits>
 
 /// Class contains some utility functions for L1Algo
 struct L1Utils {
 
   /// Some constants
-  static constexpr float kNaN {std::numeric_limits<float>::signaling_NaN()}; 
+  static constexpr float kNaN {std::numeric_limits<float>::signaling_NaN()};
 
   /// Hash for unordered_map with enum class keys
   struct EnumClassHash {
@@ -78,4 +78,4 @@ struct L1Utils {
   }
 };
 
-#endif // L1Utils_h
+#endif  // L1Utils_h

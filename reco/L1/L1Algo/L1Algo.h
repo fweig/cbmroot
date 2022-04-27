@@ -664,14 +664,14 @@ private:
   fvec fMaxInvMom {L1Utils::kNaN};       // max considered q/p for tracks
   fvec fMaxSlopePV {L1Utils::kNaN};      // max slope (tx\ty) in prim vertex
   float fMaxSlope {L1Utils::kNaN};       // max slope (tx\ty) in 3d hit position of a triplet
-  fvec fCbmTargetX {L1Utils::kNaN};     // target position
+  fvec fCbmTargetX {L1Utils::kNaN};      // target position
   fvec fCbmTargetY {L1Utils::kNaN};
   fvec fCbmTargetZ {L1Utils::kNaN};
   fvec fTargX {L1Utils::kNaN};  // target position for the current iteration
   fvec fTargY {L1Utils::kNaN};
   fvec fTargZ {L1Utils::kNaN};
 
-  L1FieldValue fTargB _fvecalignment {};                // field in the target point
+  L1FieldValue fTargB _fvecalignment {};               // field in the target point
   L1XYMeasurementInfo TargetXYInfo _fvecalignment {};  // target constraint  [cm]
 
 

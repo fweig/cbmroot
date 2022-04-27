@@ -189,6 +189,7 @@ private:
   /* Stations related fields */
 
   std::set<L1BaseStationInfo> fStationsInfo {};  ///< Set of L1BaseStationInfo objects
+
   /// Map of station numbers used for initialization crosscheck
   L1DetectorIDIntMap_t fStationsNumberCrosscheck {};
   /// A function which returns magnetic field vector B in a radius-vector xyz

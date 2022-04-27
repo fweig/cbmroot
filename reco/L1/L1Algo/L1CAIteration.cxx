@@ -119,7 +119,8 @@ std::string L1CAIteration::ToString(int indentLevel) const
   constexpr char indentChar = '\t';
   std::string indent(indentLevel, indentChar);
   aStream << indent << "L1CAIteration: " << fName << '\n';
-  aStream << indent << indentChar << "Is primary:                   " << fControlFlags[static_cast<int>(ControlFlag::kePrimary)] << '\n';
+  aStream << indent << indentChar
+          << "Is primary:                   " << fControlFlags[static_cast<int>(ControlFlag::kePrimary)] << '\n';
   aStream << indent << indentChar << "Track chi2 cut:               " << fTrackChi2Cut << '\n';
   aStream << indent << indentChar << "Triplet chi2 cut:             " << fTripletChi2Cut << '\n';
   aStream << indent << indentChar << "Doublet chi2 cut:             " << fDoubletChi2Cut << '\n';

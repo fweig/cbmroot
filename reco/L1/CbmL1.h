@@ -98,22 +98,6 @@ enum class L1DetectorID
   kTrd
 };
 
-/// Enumeration for the CA Track finder iterations
-/// NOTE: L1CAItrationType
-enum class L1CAIterationType
-{
-  kFastPrim,      ///< primary fast tracks
-  kAllPrim,       ///< primary all tracks
-  kAllPrimJump,   ///< primary all tracks with jumped triplets
-  kAllSec,        ///< secondary all tracks
-  kAllPrimE,      ///< primary all electron tracks
-  kAllSecE,       ///< secondary all electron tracks
-  kFastPrimJump,  ///< primary fast tracks with jumped triplets
-  kAllSecJump,    ///< secondary all tracks with jumped triplets
-  kEND            ///< dummy item, represents number of iterations
-};
-
-
 // TODO: insert documentation! (S.Zh.)
 //
 /// L1Algo runtime constants modification can be performed in run_reco.C. Example:
@@ -158,8 +142,8 @@ public:
 
   ~CbmL1(/*if (targetFieldSlice) delete;*/);
 
-  //L1Parameters* GetParameters() { return &fParameters; }
-
+  /// Gets a pointer to L1InitManager (for access in run_reco.C)
+  L1InitManager* GetInitManager() { return fpInitManager; }
   /// Gets a set of active detectors used in tracking
   // TODO: think about return (value, reference or const reference?) (S.Zh.)
   std::set<L1DetectorID> GetActiveTrackingDetectorIDs() const { return fActiveTrackingDetectorIDs; }
