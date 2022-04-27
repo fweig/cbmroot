@@ -671,7 +671,7 @@ InitStatus CbmTofAnaTestbeam::Init()
   if (NULL == fFindTracks) {
     //fdTShift   += fChannelInfoDut->GetZ()/30.;  // in ns
     //if ( NULL != fChannelInfoSel2 ) fdSel2TOff += fChannelInfoSel2->GetZ()/30.;
-    LOG(WARNING) << Form("no FindTracks instance found, use TShift = %8.3f, Sel2Toff = %8.3f", fdTShift, fdSel2TOff);
+    LOG(warning) << Form("no FindTracks instance found, use TShift = %8.3f, Sel2Toff = %8.3f", fdTShift, fdSel2TOff);
   }
   else {  // reinitialize Offsets
     fdTShift += -fFindTracks->GetTOff(fiMrpcRefAddr) + fFindTracks->GetTOff(fiBeamRefAddr);
@@ -777,7 +777,7 @@ void CbmTofAnaTestbeam::Exec(Option_t* opt)
         const CbmTofDigi* tDigi = fDigiMan->Get<CbmTofDigi>(iDigiIndex);
 //        CbmTofDigi* tDigi = dynamic_cast<CbmTofDigi*>(fTofDigisCollIn->At(iDigiIndex));
         assert (tDigi);
-        //LOG(INFO) << "Copy TofDigi " << iDigi << " from " <<  iDigiIndex << " to " << iNbDigi;
+        //LOG(info) << "Copy TofDigi " << iDigi << " from " <<  iDigiIndex << " to " << iNbDigi;
         //new((*fTofDigisColl)[iNbDigi++]) CbmTofDigi(*tDigi); // does not work for tDigi, since no TObject
       }
       */
@@ -940,7 +940,7 @@ Bool_t CbmTofAnaTestbeam::RegisterInputs()
     if (NULL == fTofDigisColl) fTofDigisColl = (TClonesArray*) fManager->GetObject("TofCalDigi");
 
     if (NULL == fTofDigisColl) {
-      LOG(WARNING) << "CbmTofAnaTestbeam::RegisterInputs => Could not get the TofDigi "
+      LOG(warning) << "CbmTofAnaTestbeam::RegisterInputs => Could not get the TofDigi "
                       "TClonesArray!!! ... continuing with incomplete input ";
       // return kFALSE;
     }  // if( NULL == fTofDigisColl)
@@ -1093,7 +1093,7 @@ Bool_t CbmTofAnaTestbeam::RegisterInputs()
        fTofDigisCollIn = (TClonesArray *) fManager->GetObject("TofDigi");
      */
     if (NULL == fTofDigisCollIn) {
-      LOG(WARNING) << "CbmTofAnaTestbeam::RegisterInputs => Could not get the TofDigi "
+      LOG(warning) << "CbmTofAnaTestbeam::RegisterInputs => Could not get the TofDigi "
                       "TClonesArray!!! ... continuing with incomplete input ";
       //return kFALSE;
     }  // if( NULL == fTofDigisColl)
@@ -4375,7 +4375,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos()
               pHit         = pTrk->HitPointerOfAddr(fiDutAddr);
             }
 
-            if (NULL == pHit) LOG(WARNING) << "Dut not found in full length track";
+            if (NULL == pHit) LOG(warning) << "Dut not found in full length track";
 
             //fChannelInfo = fDigiPar->GetCell(pHit->GetAddress());
             //gGeoManager->FindNode(fChannelInfo->GetX(),fChannelInfo->GetY(),fChannelInfo->GetZ());
@@ -4672,7 +4672,7 @@ Bool_t CbmTofAnaTestbeam::FillHistos()
         gGeoManager->MasterToLocal(hitpos, hitpos_local);
         if (fhLHTime.size() > 0) {
           if (static_cast<size_t>(iDet) >= fhLHTime.size()) {
-            LOG(WARNING) << " LHdeb:  invalid iDet index " << iDet << " of " << fhLHTime.size();
+            LOG(warning) << " LHdeb:  invalid iDet index " << iDet << " of " << fhLHTime.size();
             fFindTracks->PrintMapRpcIdParInd();
             continue;
           }
@@ -5482,7 +5482,7 @@ Bool_t CbmTofAnaTestbeam::WriteHistos()
         }
       }
       else {
-        LOG(WARNING) << "Histo fhDTD4DT04D4Off not found ";
+        LOG(warning) << "Histo fhDTD4DT04D4Off not found ";
       }
       //   fhDTD4DT04D4best->Write();
       htmp1D->Write();
@@ -5507,7 +5507,7 @@ Bool_t CbmTofAnaTestbeam::WriteHistos()
         }
       }
       else {
-        LOG(WARNING) << "Histo fhDTX4D4Off not found ";
+        LOG(warning) << "Histo fhDTX4D4Off not found ";
       }
       htmpx1D->Write();
       if (fhDTD4DT04D4Off != NULL) fhDTD4DT04D4Off->Write();
@@ -5532,7 +5532,7 @@ Bool_t CbmTofAnaTestbeam::WriteHistos()
         }
       }
       else {
-        LOG(WARNING) << "Histo fhDTY4D4Off not found ";
+        LOG(warning) << "Histo fhDTY4D4Off not found ";
       }
       htmpx1D->Write();
       if (fhDTD4DT04D4Off != NULL) fhDTD4DT04D4Off->Write();
@@ -5557,7 +5557,7 @@ Bool_t CbmTofAnaTestbeam::WriteHistos()
         }
       }
       else {
-        LOG(WARNING) << "Histo fhDTTexpD4Off not found ";
+        LOG(warning) << "Histo fhDTTexpD4Off not found ";
       }
       htmpx1D->Write();
       if (fhDTD4DT04D4Off != NULL) fhDTD4DT04D4Off->Write();
@@ -5582,7 +5582,7 @@ Bool_t CbmTofAnaTestbeam::WriteHistos()
         }
       }
       else {
-        LOG(WARNING) << "Histo fhCluSize0DT04D4Off not found ";
+        LOG(warning) << "Histo fhCluSize0DT04D4Off not found ";
       }
       htmpx1D->Write();
       if (fhDTD4DT04D4Off != NULL) fhDTD4DT04D4Off->Write();
@@ -5607,7 +5607,7 @@ Bool_t CbmTofAnaTestbeam::WriteHistos()
         }
       }
       else {
-        LOG(WARNING) << "Histo fhCluSize4DT04D4Off not found ";
+        LOG(warning) << "Histo fhCluSize4DT04D4Off not found ";
       }
       htmpx1D->Write();
       if (fhDTD4DT04D4Off != NULL) fhDTD4DT04D4Off->Write();
@@ -5632,7 +5632,7 @@ Bool_t CbmTofAnaTestbeam::WriteHistos()
         }
       }
       else {
-        LOG(WARNING) << "Histo fhTot0DT04D4Off not found ";
+        LOG(warning) << "Histo fhTot0DT04D4Off not found ";
       }
       htmpx1D->Write();
       if (fhDTD4DT04D4Off != NULL) fhDTD4DT04D4Off->Write();
@@ -5657,7 +5657,7 @@ Bool_t CbmTofAnaTestbeam::WriteHistos()
         }
       }
       else {
-        LOG(WARNING) << "Histo fhTot4DT04D4Off not found ";
+        LOG(warning) << "Histo fhTot4DT04D4Off not found ";
       }
       htmpx1D->Write();
       if (fhDTD4DT04D4Off != NULL) fhDTD4DT04D4Off->Write();

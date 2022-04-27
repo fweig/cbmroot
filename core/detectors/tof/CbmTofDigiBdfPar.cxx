@@ -72,9 +72,9 @@ ClassImp(CbmTofDigiBdfPar)
 
 CbmTofDigiBdfPar::~CbmTofDigiBdfPar(void)
 {
-  LOG(DEBUG4) << "Enter CbmTofDigiBdfPar destructor";
+  LOG(debug4) << "Enter CbmTofDigiBdfPar destructor";
   clear();
-  LOG(DEBUG4) << "Leave CbmTofDigiBdfPar destructor";
+  LOG(debug4) << "Leave CbmTofDigiBdfPar destructor";
 }
 
 void CbmTofDigiBdfPar::clear(void)
@@ -189,7 +189,7 @@ Bool_t CbmTofDigiBdfPar::getParams(FairParamList* l)
   for (Int_t iSmType = 0; iSmType < fiNbSmTypes; iSmType++) {
     fdSigVel[iSmType].Set(fiNbSm[iSmType] * fiNbRpc[iSmType]);
     if (!l->fill(Form("SigVel%03d", iSmType), &(fdSigVel[iSmType]))) {
-      LOG(WARNING) << "CbmTofDigiBdfPar::getParams => parameter " << Form("SigVel%03d", iSmType)
+      LOG(warning) << "CbmTofDigiBdfPar::getParams => parameter " << Form("SigVel%03d", iSmType)
                    << " not found in the text file. "
                    << "This is normal for geometries < 14a but may indicate file "
                       "corruption "
@@ -496,16 +496,16 @@ Bool_t CbmTofDigiBdfPar::GetLandauParFromBeamDataFit()
       else {
         // Pair is not unique
         // => Do nothing, as default parameters should have been previously loaded
-        LOG(WARNING) << "CbmTofDigiBdfPar::GetLandauParFromBeamDataFit => Fit "
+        LOG(warning) << "CbmTofDigiBdfPar::GetLandauParFromBeamDataFit => Fit "
                         "values matching a non-unique param pair for Sm Type "
                      << iSmType << ": " << hFitR0CntAll->GetBinContent(hFitR0CntAll->FindBin(dMpv, dSigma));
-        LOG(WARNING) << " => Use default values from ASCII parameter file";
+        LOG(warning) << " => Use default values from ASCII parameter file";
       }  // Nor unique pair
     }    // if( kTRUE == pResult->IsValid() )
     else {
       // Fit failed
       // => Do nothing, as default parameters should have been previously loaded
-      LOG(WARNING) << "CbmTofDigiBdfPar::GetLandauParFromBeamDataFit => Fit "
+      LOG(warning) << "CbmTofDigiBdfPar::GetLandauParFromBeamDataFit => Fit "
                       "failed for Sm Type "
                    << iSmType << " => Use default values from ASCII parameter file";
     }  // else of if( kTRUE == pResult->IsValid() )

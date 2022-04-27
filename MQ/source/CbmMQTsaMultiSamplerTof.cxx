@@ -107,7 +107,7 @@ try {
   }
   else if (0 == fFileName.size() && 0 == fDirName.size() && 0 != fHost.size() && 0 == fPort) {
     isGoodInputCombi = true;
-    LOG(INFO) << "Host string: " << fHost;
+    LOG(info) << "Host string: " << fHost;
   }
   else {
     isGoodInputCombi = false;

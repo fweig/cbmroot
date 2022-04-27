@@ -83,7 +83,7 @@ void CbmUnigenGenerator::AddPrimary(FairPrimaryGenerator* primGen, Int_t pdgCode
 void CbmUnigenGenerator::CloseInput()
 {
   if (!fFile) return;
-  LOG(INFO) << GetName() << ": Closing input file " << fFileName;
+  LOG(info) << GetName() << ": Closing input file " << fFileName;
   fFile->Close();
   fFile = nullptr;
 }
@@ -108,7 +108,7 @@ Bool_t CbmUnigenGenerator::GetNextEntry()
   // Read entry
   Int_t result = fTree->GetEntry(fCurrentEntry);
   if (result <= 0) {
-    LOG(ERROR) << GetName() << ": Error reading entry " << fCurrentEntry << " (returns " << result << ")!";
+    LOG(error) << GetName() << ": Error reading entry " << fCurrentEntry << " (returns " << result << ")!";
     return kFALSE;
   }
 
@@ -136,7 +136,7 @@ Bool_t CbmUnigenGenerator::Init()
     case kReuseEvents: ss << " re-use events if necessary; random event plane angle"; break;
     default: ss << "unkown"; break;
   }
-  LOG(INFO) << GetName() << ": Mode " << ss.str();
+  LOG(info) << GetName() << ": Mode " << ss.str();
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;

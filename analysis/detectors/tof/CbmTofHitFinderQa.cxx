@@ -758,17 +758,17 @@ Bool_t CbmTofHitFinderQa::RegisterInputs()
 
   fTofDigisColl = (TClonesArray*) fManager->GetObject("TofDigi");
   if (NULL == fTofDigisColl) {
-    LOG(WARNING) << "CbmTofHitFinderQa::RegisterInputs => Could not get the "
+    LOG(warning) << "CbmTofHitFinderQa::RegisterInputs => Could not get the "
                     "TofDigi TClonesArray!!!";
-    LOG(WARNING) << "                                  => Assuming that the "
+    LOG(warning) << "                                  => Assuming that the "
                     "CbmTofHitProducerNew is used!!!";
     //     return kFALSE;
   }  // if( NULL == fTofDigisColl)
   fTofDigiMatchPointsColl = (TClonesArray*) fManager->GetObject("TofDigiMatchPoints");
   if (NULL == fTofDigiMatchPointsColl) {
-    LOG(WARNING) << "CbmTofHitFinderQa::RegisterInputs => Could not get the "
+    LOG(warning) << "CbmTofHitFinderQa::RegisterInputs => Could not get the "
                     "TofDigiMatchPoints TClonesArray!!!";
-    LOG(WARNING) << "                                  => Assuming that the "
+    LOG(warning) << "                                  => Assuming that the "
                     "CbmTofHitProducerNew is used!!!";
     //      return kFALSE;
   }  // if( NULL == fTofDigiMatchPointsColl)
@@ -781,9 +781,9 @@ Bool_t CbmTofHitFinderQa::RegisterInputs()
   }  // if( NULL == fTofHitsColl)
   fTofDigiMatchColl = (TClonesArray*) fManager->GetObject("TofDigiMatch");
   if (NULL == fTofDigiMatchColl) {
-    LOG(WARNING) << "CbmTofHitFinderQa::RegisterInputs => Could not get the "
+    LOG(warning) << "CbmTofHitFinderQa::RegisterInputs => Could not get the "
                     "TofDigiMatch TClonesArray!!!";
-    LOG(WARNING) << "                                  => Assuming that the "
+    LOG(warning) << "                                  => Assuming that the "
                     "CbmTofHitProducerNew is used!!!";
     //     return kFALSE;
   }  // if( NULL == fTofDigiMatchColl)

@@ -232,30 +232,30 @@ void CbmLitFindGlobalTracks::ReadInputBranches()
   // --- STS hits
   fStsHits = dynamic_cast<TClonesArray*>(ioman->GetObject("StsHit"));
   if (!fStsHits) {
-    LOG(FATAL) << GetName() << ": No StsHit branch!";
+    LOG(fatal) << GetName() << ": No StsHit branch!";
     fDet.SetDet(ECbmModuleId::kSts, false);
   }
   else
-    LOG(INFO) << GetName() << ": Found StsHit branch";
+    LOG(info) << GetName() << ": Found StsHit branch";
 
   // --- STS tracks
   fStsTracks = dynamic_cast<TClonesArray*>(ioman->GetObject("StsTrack"));
   if (!fStsTracks) {
-    LOG(FATAL) << GetName() << ": No StsTrack branch!";
+    LOG(fatal) << GetName() << ": No StsTrack branch!";
     fDet.SetDet(ECbmModuleId::kSts, false);
   }
   else
-    LOG(INFO) << GetName() << ": Found StsTrack branch";
+    LOG(info) << GetName() << ": Found StsTrack branch";
 
   // --- MUCH hits
   if (fDet.GetDet(ECbmModuleId::kMuch)) {
     fMuchPixelHits = dynamic_cast<TClonesArray*>(ioman->GetObject("MuchPixelHit"));
     if (!fMuchPixelHits) {
-      LOG(WARNING) << GetName() << "No MuchPixelHit branch!";
+      LOG(warning) << GetName() << "No MuchPixelHit branch!";
       fDet.SetDet(ECbmModuleId::kMuch, false);
     }
     else {
-      if (fMuchPixelHits) LOG(INFO) << GetName() << ": Found MuchPixelHit branch";
+      if (fMuchPixelHits) LOG(info) << GetName() << ": Found MuchPixelHit branch";
     }
   }  //? MUCH in geometry
 
@@ -263,35 +263,35 @@ void CbmLitFindGlobalTracks::ReadInputBranches()
   if (fDet.GetDet(ECbmModuleId::kTrd)) {
     fTrdHits = dynamic_cast<TClonesArray*>(ioman->GetObject("TrdHit"));
     if (NULL == fTrdHits) {
-      LOG(WARNING) << GetName() << ": No TrdHit branch!";
+      LOG(warning) << GetName() << ": No TrdHit branch!";
       fDet.SetDet(ECbmModuleId::kTrd, false);
     }
-    LOG(INFO) << GetName() << ": Found TrdHit branch";
+    LOG(info) << GetName() << ": Found TrdHit branch";
   }  //? TRD in geometry
 
   // --- TOF hits
   if (fDet.GetDet(ECbmModuleId::kTof)) {
     fTofHits = dynamic_cast<TClonesArray*>(ioman->GetObject("TofHit"));
     if (NULL == fTofHits) {
-      LOG(WARNING) << GetName() << ": No TofHit branch!";
+      LOG(warning) << GetName() << ": No TofHit branch!";
       fDet.SetDet(ECbmModuleId::kTof, false);
     }
     else
-      LOG(INFO) << GetName() << ": Found TofHit branch";
+      LOG(info) << GetName() << ": Found TofHit branch";
   }  //? TOF in geometry
 
   // --- Events
   fEvents = dynamic_cast<TClonesArray*>(ioman->GetObject("CbmEvent"));
-  if (fEvents) LOG(INFO) << GetName() << ": Found Event branch";
+  if (fEvents) LOG(info) << GetName() << ": Found Event branch";
   else
-    LOG(INFO) << GetName() << ": No Event branch; run in time-based mode";
+    LOG(info) << GetName() << ": No Event branch; run in time-based mode";
 
   // --- Primary vertex
   fPrimVertex = dynamic_cast<CbmVertex*>(ioman->GetObject("PrimaryVertex."));
   if (nullptr == fPrimVertex) { fPrimVertex = dynamic_cast<CbmVertex*>(ioman->GetObject("PrimaryVertex")); }
-  if (nullptr == fPrimVertex) LOG(WARNING) << GetName() << ": No PrimaryVertex branch!";
+  if (nullptr == fPrimVertex) LOG(warning) << GetName() << ": No PrimaryVertex branch!";
   else
-    LOG(INFO) << GetName() << ": Found PrimaryVertex branch";
+    LOG(info) << GetName() << ": Found PrimaryVertex branch";
 }
 
 void CbmLitFindGlobalTracks::RegisterOutputBranches()
@@ -303,27 +303,27 @@ void CbmLitFindGlobalTracks::RegisterOutputBranches()
   if (fDet.GetDet(ECbmModuleId::kMuch)) {
     fMuchTracks = new TClonesArray("CbmMuchTrack", 100);
     ioman->Register("MuchTrack", "Much", fMuchTracks, IsOutputBranchPersistent("MuchTrack"));
-    LOG(INFO) << GetName() << ": Register MuchTrack branch";
+    LOG(info) << GetName() << ": Register MuchTrack branch";
   }
 
   // --- TrdTrack
   if (fDet.GetDet(ECbmModuleId::kTrd)) {
     fTrdTracks = new TClonesArray("CbmTrdTrack", 100);
     ioman->Register("TrdTrack", "Trd", fTrdTracks, IsOutputBranchPersistent("TrdTrack"));
-    LOG(INFO) << GetName() << ": Register TrdTrack branch";
+    LOG(info) << GetName() << ": Register TrdTrack branch";
   }
 
   // --- TofTrack
   if (fDet.GetDet(ECbmModuleId::kTof)) {
     fTofTracks = new TClonesArray("CbmTofTrack", 100);
     ioman->Register("TofTrack", "Tof", fTofTracks, IsOutputBranchPersistent("TofTrack"));
-    LOG(INFO) << GetName() << ": Register TofTrack branch";
+    LOG(info) << GetName() << ": Register TofTrack branch";
   }
 
   // --- GlobalTrack
   fGlobalTracks = new TClonesArray("CbmGlobalTrack", 100);
   ioman->Register("GlobalTrack", "Global", fGlobalTracks, IsOutputBranchPersistent("GlobalTrack"));
-  LOG(INFO) << GetName() << ": Register GlobalTrack branch";
+  LOG(info) << GetName() << ": Register GlobalTrack branch";
 }
 
 void CbmLitFindGlobalTracks::InitTrackReconstruction()

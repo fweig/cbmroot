@@ -73,7 +73,7 @@ try {
   InitContainers();
 }
 catch (InitTaskError& e) {
-  LOG(ERROR) << e.what();
+  LOG(error) << e.what();
   // Wrapper defined in CbmMQDefs.h to support different FairMQ versions
   cbm::mq::ChangeState(this, cbm::mq::Transition::ErrorFound);
 }
@@ -86,7 +86,7 @@ Bool_t CbmDeviceStsHitProducerIdeal::InitContainers()
   fvmcworkdir = fConfig->GetValue<string>("vmcworkdir");
   fMaxEvents  = fConfig->GetValue<uint64_t>("max-events");
 
-  LOG(INFO) << "Init parameter containers for CbmDeviceStsHitProducerIdeal.";
+  LOG(info) << "Init parameter containers for CbmDeviceStsHitProducerIdeal.";
 
 
   TList* fParCList = fAlgo->GetParList();
@@ -140,7 +140,7 @@ bool CbmDeviceStsHitProducerIdeal::HandleData(FairMQMessagePtr& msg, int /*index
 {
 
   fNumMessages++;
-  LOG(DEBUG) << "Received message number " << fNumMessages << " with size " << msg->GetSize();
+  LOG(debug) << "Received message number " << fNumMessages << " with size " << msg->GetSize();
 
 
   // Unpack the message into a vector of CbmStsPoints
@@ -159,7 +159,7 @@ bool CbmDeviceStsHitProducerIdeal::HandleData(FairMQMessagePtr& msg, int /*index
   LOG(info) << "Out of " << points.size() << " StsPoints, " << hits.size() << " Hits created.";
 
 
-  if (fNumMessages % 10000 == 0) LOG(INFO) << "Processed " << fNumMessages << " time slices";
+  if (fNumMessages % 10000 == 0) LOG(info) << "Processed " << fNumMessages << " time slices";
 
   // Send the data to a consumer
   SendData();

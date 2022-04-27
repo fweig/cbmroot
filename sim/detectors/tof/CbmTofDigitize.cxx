@@ -1072,7 +1072,7 @@ Bool_t CbmTofDigitize::MergeSameChanDigis()
             if (0 < iNbDigis) {
               CbmMatch* digiMatch;
               for (Int_t iDigi = 0; iDigi < iNbDigis; iDigi++) {  //store matches with digis
-                LOG(DEBUG) << Form(
+                LOG(debug) << Form(
                   " Create match for Digi %d(%d), addr 0x%08x; %d", iDigi, iNbDigis,
                   fStorDigi[iSmType][iSm * iNbRpc + iRpc][iNbSides * iCh + iSide][iDigi].first->GetAddress(),
                   fStorDigiMatch[iSmType][iSm * iNbRpc + iRpc][iNbSides * iCh + iSide][iDigi]);
@@ -1380,7 +1380,7 @@ Bool_t CbmTofDigitize::DigitizeDirectClusterSize()
     // Get a pointer to the TOF point
     pPoint = (CbmTofPoint*) fTofPointsColl->At(iPntInd);
     if (NULL == pPoint) {
-      LOG(WARNING) << "CbmTofDigitize::DigitizeDirectClusterSize => Be "
+      LOG(warning) << "CbmTofDigitize::DigitizeDirectClusterSize => Be "
                       "careful: hole in the CbmTofPoint TClonesArray!";
       continue;
     }  // if( pPoint )
@@ -1830,7 +1830,7 @@ Bool_t CbmTofDigitize::DigitizeFlatDisc()
     // Get a pointer to the TOF point
     pPoint = (CbmTofPoint*) fTofPointsColl->At(iPntInd);
     if (NULL == pPoint) {
-      LOG(WARNING) << "CbmTofDigitize::DigitizeFlatDisc => Be careful: hole in "
+      LOG(warning) << "CbmTofDigitize::DigitizeFlatDisc => Be careful: hole in "
                       "the CbmTofPoint TClonesArray!"
                    << endl;
       continue;
@@ -1943,7 +1943,7 @@ Bool_t CbmTofDigitize::DigitizeFlatDisc()
     pPoint->Position(vPntPos);
     fChannelInfo = fDigiPar->GetCell(iChanId);
     if (NULL == fChannelInfo) {
-      LOG(WARNING) << "CbmTofDigitize::DigitizeFlatDisc: No DigPar for iChanId = "
+      LOG(warning) << "CbmTofDigitize::DigitizeFlatDisc: No DigPar for iChanId = "
                    << Form("0x%08x, addr 0x%08x", iChanId, (unsigned int) iDetId);
       continue;
     }
@@ -2604,7 +2604,7 @@ Bool_t CbmTofDigitize::DigitizeGaussCharge()
     // Get a pointer to the TOF point
     pPoint = (CbmTofPoint*) fTofPointsColl->At(iPntInd);
     if (NULL == pPoint) {
-      LOG(WARNING) << "CbmTofDigitize::DigitizeGaussCharge => Be careful: hole "
+      LOG(warning) << "CbmTofDigitize::DigitizeGaussCharge => Be careful: hole "
                       "in the CbmTofPoint TClonesArray!"
                    << endl;
       continue;

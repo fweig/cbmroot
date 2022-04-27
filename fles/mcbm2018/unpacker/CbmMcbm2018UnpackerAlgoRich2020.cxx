@@ -189,8 +189,8 @@ void CbmMcbm2018UnpackerAlgoRich2020::AddMsComponentToList(size_t component, USh
 
   if (fvMsComponentsList.size() == 1) { fRICHcompIdx = component; }
   else {
-    LOG(WARN) << "fvMsComponentsList.size() > 1 for RICH. Unpacking may not "
-                 "work due to implementation limitations.";
+    LOG(warning) << "fvMsComponentsList.size() > 1 for RICH. Unpacking may not "
+                    "work due to implementation limitations.";
   }
 
   LOG(info) << "CbmMcbm2018UnpackerAlgoRich2020::AddMsComponentToList => Component " << component
@@ -559,18 +559,18 @@ Int_t CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBevent(size_t const size, uint8_
       }
     }
     else {
-      LOG(WARN) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr + offset) << "\t"
-                << "ok"
-                << "\t"
-                << "hub ID = 0x" << mRichSupport::GetHexRepresentation(2, ptr + offset) << "\t"
-                << "subevent size = " << SubEvSize << "\n"
-                << "This is not a valid Combiner Id!"
-                << "\n"
-                << "prev prev2:" << mRichSupport::GetWordHexRepr(ptr + offset - 12) << "\n"
-                << "prev prev: " << mRichSupport::GetWordHexRepr(ptr + offset - 8) << "\n"
-                << "prev:      " << mRichSupport::GetWordHexRepr(ptr + offset - 4) << "\n"
-                << "next:      " << mRichSupport::GetWordHexRepr(ptr + offset + 4) << "\n"
-                << "next next: " << mRichSupport::GetWordHexRepr(ptr + offset + 8) << "\n";
+      LOG(warning) << "[" << fGwordCnt << "]\t" << mRichSupport::GetWordHexRepr(ptr + offset) << "\t"
+                   << "ok"
+                   << "\t"
+                   << "hub ID = 0x" << mRichSupport::GetHexRepresentation(2, ptr + offset) << "\t"
+                   << "subevent size = " << SubEvSize << "\n"
+                   << "This is not a valid Combiner Id!"
+                   << "\n"
+                   << "prev prev2:" << mRichSupport::GetWordHexRepr(ptr + offset - 12) << "\n"
+                   << "prev prev: " << mRichSupport::GetWordHexRepr(ptr + offset - 8) << "\n"
+                   << "prev:      " << mRichSupport::GetWordHexRepr(ptr + offset - 4) << "\n"
+                   << "next:      " << mRichSupport::GetWordHexRepr(ptr + offset + 4) << "\n"
+                   << "next next: " << mRichSupport::GetWordHexRepr(ptr + offset + 8) << "\n";
       //////////////////////////////////////////////////////////////
       offset += (4 + SubEvSize * 4);
       //////////////////////////////////////////////////////////////
@@ -580,10 +580,10 @@ Int_t CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBevent(size_t const size, uint8_
   ////LOG(debug4) <<  "Done processing TRB event. offset=" << offset << "\tsize=" << size;
   //TODO implement checks
   if (size != static_cast<size_t>(offset)) {
-    LOG(WARN) << "CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBevent() warning:"
-              << "Number of processed bytes is not equal to the expected size. "
-                 "This should not happen. ("
-              << size << " VS " << offset << ")";
+    LOG(warning) << "CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBevent() warning:"
+                 << "Number of processed bytes is not equal to the expected size. "
+                    "This should not happen. ("
+                 << size << " VS " << offset << ")";
   }
 
   return size;  //TODO check
@@ -721,9 +721,9 @@ Int_t CbmMcbm2018UnpackerAlgoRich2020::ProcessSKIPsubevent(size_t const size, ui
   ////LOG(debug4) << "Done processing SKIP subevent. offset=" << offset << "\tsize=" << size;
   //TODO implement checks
   if (size != static_cast<size_t>(offset - 4)) {
-    LOG(WARN) << "CbmMcbm2018UnpackerAlgoRich2020::ProcessSKIPsubevent() warning:"
-              << "Number of processed bytes is not equal to the expected size. "
-                 "This should not happen.";
+    LOG(warning) << "CbmMcbm2018UnpackerAlgoRich2020::ProcessSKIPsubevent() warning:"
+                 << "Number of processed bytes is not equal to the expected size. "
+                    "This should not happen.";
   }
 
   return size;  //TODO check
@@ -805,9 +805,9 @@ Int_t CbmMcbm2018UnpackerAlgoRich2020::ProcessCTSsubevent(size_t const size, uin
   ////LOG(debug4) << "Done processing CTS subevent. offset-4=" << offset-4 << "\tsize=" << size;
   //TODO implement checks
   if (size != static_cast<size_t>(offset - 4)) {
-    LOG(WARN) << "CbmMcbm2018UnpackerAlgoRich2020::ProcessCTSsubevent() warning:"
-              << "Number of processed bytes is not equal to the expected size. "
-                 "This should not happen.";
+    LOG(warning) << "CbmMcbm2018UnpackerAlgoRich2020::ProcessCTSsubevent() warning:"
+                 << "Number of processed bytes is not equal to the expected size. "
+                    "This should not happen.";
   }
 
   return size;  //TODO check
@@ -896,9 +896,9 @@ Int_t CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBsubevent(size_t const size, uin
     fGwordCnt++;
 
     if (size + 4 < static_cast<size_t>(offset + 4 + SubSubEvSize * 4 - fTdcWordCorrectionCnt * 2)) {
-      LOG(WARN) << "CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBsubevent() warning:"
-                << "SubEvent out of bounds. This should not happen. (" << size << " VS "
-                << (offset + 4 + SubSubEvSize * 4 - fTdcWordCorrectionCnt * 2) << ")";
+      LOG(warning) << "CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBsubevent() warning:"
+                   << "SubEvent out of bounds. This should not happen. (" << size << " VS "
+                   << (offset + 4 + SubSubEvSize * 4 - fTdcWordCorrectionCnt * 2) << ")";
 
       /// Probably corrupted MS, stop there and skip remaining data
       //fSkipMs = kTRUE;
@@ -942,11 +942,11 @@ Int_t CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBsubevent(size_t const size, uin
 
   ////LOG(debug4) << "Done processing TRB subevent. offset-4=" << offset-4 << "\tsize=" << size;
   if (size != static_cast<size_t>(offset - 4)) {
-    LOG(WARN) << "CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBsubevent() warning:"
-              << "Number of processed bytes is not equal to the expected size. "
-                 "This should not happen. ("
-              << size << " VS " << (offset - 4) << ")"
-              << "  Correction: " << fTdcWordCorrectionCnt * 2 << "  fLastFeeOnHub:" << fLastFeeOnHub;
+    LOG(warning) << "CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBsubevent() warning:"
+                 << "Number of processed bytes is not equal to the expected size. "
+                    "This should not happen. ("
+                 << size << " VS " << (offset - 4) << ")"
+                 << "  Correction: " << fTdcWordCorrectionCnt * 2 << "  fLastFeeOnHub:" << fLastFeeOnHub;
 
     /// Probably corrupted MS, stop there and skip remaining data
     //fSkipMs = kTRUE;
@@ -1023,10 +1023,10 @@ Int_t CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBsubsubevent(size_t const size, 
   //if (size != static_cast<size_t>((WordCnt)*4) && fTdcWordCorrectionCnt == 0) {
   if (!((!break_flag && ((size) == static_cast<size_t>((WordCnt) *4)))
         || (break_flag && ((size - (fTdcWordCorrectionCnt * 2)) == static_cast<size_t>((WordCnt) *4))))) {
-    LOG(WARN) << "CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBsubsubevent() warning:"
-              << "Number of processed bytes is not equal to the expected size. "
-                 "This should not happen."
-              << static_cast<size_t>(WordCnt * 4) << "   " << size;
+    LOG(warning) << "CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBsubsubevent() warning:"
+                 << "Number of processed bytes is not equal to the expected size. "
+                    "This should not happen."
+                 << static_cast<size_t>(WordCnt * 4) << "   " << size;
     /// Probably corrupted MS, stop there and skip remaining data
     //fSkipMs = kTRUE;
   }
@@ -1837,7 +1837,7 @@ void CbmMcbm2018UnpackerAlgoRich2020::findTDCAlignmentError(uint8_t const* const
 
   //     mRichSupport::SwapBytes(4, ptr+size);
   //     if((((((Int_t*)(ptr+size))[0]) >> 28) & 0xF) != 0x0) {
-  //         LOG(WARN) << "CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBsubevent() warning:"
+  //         LOG(warning) << "CbmMcbm2018UnpackerAlgoRich2020::ProcessTRBsubevent() warning:"
   //                   << "End on Hub is not where expected. Is it a Buffer overflow?  LastWord: "<<mRichSupport::GetWordHexRepr(ptr+size);
   //     }
   //     mRichSupport::SwapBytes(4, ptr+size);

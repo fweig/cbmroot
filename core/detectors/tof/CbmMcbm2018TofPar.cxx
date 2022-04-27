@@ -332,7 +332,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapStar(UInt_t& uCh, UInt_t uGbtx)
             CbmTofAddress::GetUniqueAddress(fiModuleId[uGbtx], iRpcMap, iStrMap, fiRpcSide[uGbtx], fiRpcType[uGbtx]);
         else
           fviRpcChUId[uCh] = 0;
-        //  LOG(DEBUG)<<Form("Map Ch %d to Address 0x%08x",uCh,fviRpcChUId[uCh]);
+        //  LOG(debug)<<Form("Map Ch %d to Address 0x%08x",uCh,fviRpcChUId[uCh]);
         uCh += uChNext;
       }
     }

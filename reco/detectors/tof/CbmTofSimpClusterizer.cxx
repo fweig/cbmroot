@@ -1629,7 +1629,7 @@ pair<Int_t, Int_t> CbmTofSimpClusterizer::BuildClusters(CbmEvent* event)
                       // Save pointer on CbmTofPoint
                       //                                    vPtsRef.push_back( (CbmTofPoint*)(xDigiA->GetLinks()) );
                       // Save next digi address
-                      LOG(DEBUG4) << " Next fStor Digi " << iSmType << ", SR " << iSm * iNbRpc + iRpc << ", Ch" << iCh
+                      LOG(debug4) << " Next fStor Digi " << iSmType << ", SR " << iSm * iNbRpc + iRpc << ", Ch" << iCh
                                   << ", Dig0 " << (fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh][0]) << ", Dig1 "
                                   << (fStorDigiInd[iSmType][iSm * iNbRpc + iRpc][iCh][1]);
 
@@ -1861,7 +1861,7 @@ pair<Int_t, Int_t> CbmTofSimpClusterizer::BuildClusters(CbmEvent* event)
               vDigiIndRef.clear();
             }  // else of if( 1 == fDigiBdfPar->GetChanOrient( iSmType, iRpc ) )
           }    // if( 0 < iNbChanInHit)
-          LOG(DEBUG4) << " Fini-A " << Form(" %3d %3d %3d ", iSmType, iSm, iRpc);
+          LOG(debug4) << " Fini-A " << Form(" %3d %3d %3d ", iSmType, iSm, iRpc);
         }  // for each sm/rpc pair
       LOG(debug3) << " Fini-B " << Form(" %3d ", iSmType);
     }  // for( Int_t iSmType = 0; iSmType < iNbSmTypes; iSmType++ )

@@ -47,11 +47,11 @@ void CbmMCEventFilter::Exec(Option_t*)
   fNofEventsIn++;
   Bool_t test = SelectEvent();
   if (test) {
-    LOG(INFO) << GetName() << ": Current event " << fNofEventsIn << " selected for output";
+    LOG(info) << GetName() << ": Current event " << fNofEventsIn << " selected for output";
     fNofEventsOut++;
   }  //? Event selected
   else
-    LOG(INFO) << GetName() << ": Current event " << fNofEventsIn << " discarded for output";
+    LOG(info) << GetName() << ": Current event " << fNofEventsIn << " discarded for output";
   FairMCApplication::Instance()->SetSaveCurrentEvent(test);
 }
 // --------------------------------------------------------------------------
@@ -62,8 +62,8 @@ void CbmMCEventFilter::Finish()
 {
 
   cout << endl;
-  LOG(INFO) << GetName() << ": Number of input events  " << fNofEventsIn;
-  LOG(INFO) << GetName() << ": Number of output events " << fNofEventsOut << " = "
+  LOG(info) << GetName() << ": Number of input events  " << fNofEventsIn;
+  LOG(info) << GetName() << ": Number of output events " << fNofEventsOut << " = "
             << 100. * Double_t(fNofEventsOut) / Double_t(fNofEventsIn) << " %";
   cout << endl;
 }
@@ -98,7 +98,7 @@ void CbmMCEventFilter::GetBranch(ECbmDataType type)
   TString branchName = GetBranchName(type);
   if (!branchName.IsNull()) {
     fData[type] = dynamic_cast<TClonesArray*>(rm->GetObject(branchName));
-    if (fData.at(type)) { LOG(INFO) << GetName() << ": Add branch " << branchName; }
+    if (fData.at(type)) { LOG(info) << GetName() << ": Add branch " << branchName; }
   }
 }
 // --------------------------------------------------------------------------
@@ -130,11 +130,11 @@ TString CbmMCEventFilter::GetBranchName(ECbmDataType type) const
 Bool_t CbmMCEventFilter::SelectEvent() const
 {
 
-  LOG(INFO) << GetName() << ": " << Statistics();
+  LOG(info) << GetName() << ": " << Statistics();
   Bool_t check = kTRUE;
   for (auto cut : fMinNofData) {
     if (GetNofData(cut.first) < cut.second) {
-      LOG(INFO) << GetName() << ": Cut on branch " << GetBranchName(cut.first) << " not passed (number of data "
+      LOG(info) << GetName() << ": Cut on branch " << GetBranchName(cut.first) << " not passed (number of data "
                 << GetNofData(cut.first) << ", required " << cut.second << ")";
       check = kFALSE;
       break;

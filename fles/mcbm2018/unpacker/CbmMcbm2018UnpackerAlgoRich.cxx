@@ -88,7 +88,7 @@ void CbmMcbm2018UnpackerAlgoRich::AddMsComponentToList(size_t component, UShort_
 
   if (fvMsComponentsList.size() == 1) { fRICHcompIdx = component; }
   else {
-    LOG(WARN) << "fvMsComponentsList.size() > 1 for RICH. Unpacking may not work due to implementation limitations.";
+    LOG(warning) << "fvMsComponentsList.size() > 1 for RICH. Unpacking may not work due to implementation limitations.";
   }
 
   LOG(info) << "CbmMcbm2018UnpackerAlgoRich::AddMsComponentToList => Component " << component << " with detector ID 0x"
@@ -211,10 +211,10 @@ Bool_t CbmMcbm2018UnpackerAlgoRich::ProcessMs(const fles::Timeslice& ts, size_t 
   }
 
   uint32_t msIndexWord1 = reader.NextWord();
-  if (IsLog()) LOG(DEBUG4) << GetLogHeader(reader) << "Microslice Index 1:" << reader.GetWordAsHexString(msIndexWord1);
+  if (IsLog()) LOG(debug4) << GetLogHeader(reader) << "Microslice Index 1:" << reader.GetWordAsHexString(msIndexWord1);
 
   uint32_t msIndexWord2 = reader.NextWord();
-  if (IsLog()) LOG(DEBUG4) << GetLogHeader(reader) << "Microslice Index 2:" << reader.GetWordAsHexString(msIndexWord2);
+  if (IsLog()) LOG(debug4) << GetLogHeader(reader) << "Microslice Index 2:" << reader.GetWordAsHexString(msIndexWord2);
 
   return kTRUE;
 }

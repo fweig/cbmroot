@@ -120,28 +120,28 @@ InitStatus CbmAnaDimuonAnalysis::Init()
   // Get and check FairRootManager
   FairRootManager* fManager = FairRootManager::Instance();
   fMCTracks                 = (TClonesArray*) fManager->GetObject("MCTrack");
-  if (nullptr == fMCTracks) LOG(FATAL) << "No MCTrack in input";
+  if (nullptr == fMCTracks) LOG(fatal) << "No MCTrack in input";
 
   fStsTracks = (TClonesArray*) fManager->GetObject("StsTrack");
-  if (nullptr == fStsTracks) LOG(FATAL) << "No StsTrack in input";
+  if (nullptr == fStsTracks) LOG(fatal) << "No StsTrack in input";
 
   if (fUseMC) fStsTrackMatches = (TClonesArray*) fManager->GetObject("StsTrackMatch");
-  if (nullptr == fStsTrackMatches && fUseMC) LOG(FATAL) << "No StsTrackMatch in input";
+  if (nullptr == fStsTrackMatches && fUseMC) LOG(fatal) << "No StsTrackMatch in input";
 
   fMuchTracks = (TClonesArray*) fManager->GetObject("MuchTrack");
-  if (nullptr == fMuchTracks) LOG(FATAL) << "No MuchTrack in input";
+  if (nullptr == fMuchTracks) LOG(fatal) << "No MuchTrack in input";
 
   if (fUseMC) fMuchTrackMatches = (TClonesArray*) fManager->GetObject("MuchTrackMatch");
-  if (nullptr == fMuchTrackMatches && fUseMC) LOG(FATAL) << "No MuchTrackMatch in input";
+  if (nullptr == fMuchTrackMatches && fUseMC) LOG(fatal) << "No MuchTrackMatch in input";
 
   fGlobalTracks = (TClonesArray*) fManager->GetObject("GlobalTrack");
-  if (nullptr == fGlobalTracks) LOG(FATAL) << "No GlobalTrack in input";
+  if (nullptr == fGlobalTracks) LOG(fatal) << "No GlobalTrack in input";
 
   fTrdTracks = (TClonesArray*) fManager->GetObject("TrdTrack");
-  if (nullptr == fTrdTracks) LOG(FATAL) << "No TrdTrack in input";
+  if (nullptr == fTrdTracks) LOG(fatal) << "No TrdTrack in input";
 
   fTofHit = (TClonesArray*) fManager->GetObject("TofHit");
-  if (nullptr == fTofHit) LOG(FATAL) << "No TofHit in input";
+  if (nullptr == fTofHit) LOG(fatal) << "No TofHit in input";
 
   fVertex = dynamic_cast<CbmVertex*>(fManager->GetObject("PrimaryVertex."));
 
@@ -515,11 +515,11 @@ void CbmAnaDimuonAnalysis::Exec(Option_t* /*opt*/)
   Int_t nMuchTracks   = fMuchTracks->GetEntriesFast();
   Int_t nGlobalTracks = fGlobalTracks->GetEntriesFast();
 
-  LOG(DEBUG) << "------------------------";
-  LOG(DEBUG) << GetName() << ": Event " << fEvent;
-  LOG(DEBUG) << "Number of tracks: MC - " << nMCTracks << ", global - " << nGlobalTracks << ", STS - " << nStsTracks
+  LOG(debug) << "------------------------";
+  LOG(debug) << GetName() << ": Event " << fEvent;
+  LOG(debug) << "Number of tracks: MC - " << nMCTracks << ", global - " << nGlobalTracks << ", STS - " << nStsTracks
              << ", MUCH - " << nMuchTracks;
-  LOG(DEBUG) << "------------------------";
+  LOG(debug) << "------------------------";
 
   TLorentzVector pMC1, pMC2, M;
 

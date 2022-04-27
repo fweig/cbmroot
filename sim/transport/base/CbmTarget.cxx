@@ -101,16 +101,16 @@ void CbmTarget::ConstructGeometry()
   // --- Construct from ROOT file if specified
   if (fBuildFromFile) {
     if (!fgeoName.EndsWith(".geo.root")) {
-      LOG(INFO) << GetName() << ": geometry file is " << fgeoName;
-      LOG(FATAL) << GetName() << ": only ROOT geometry files are supported!";
+      LOG(info) << GetName() << ": geometry file is " << fgeoName;
+      LOG(fatal) << GetName() << ": only ROOT geometry files are supported!";
       return;
     }
-    LOG(INFO) << GetName() << ": Constructing geometry from " << fgeoName;
+    LOG(info) << GetName() << ": Constructing geometry from " << fgeoName;
     ConstructRootGeometry();
     return;
   }
 
-  LOG(INFO) << GetName() << ": Constructing geometry...";
+  LOG(info) << GetName() << ": Constructing geometry...";
 
   // --- Get TGeoManager instance
   TGeoManager* geoMan = gGeoManager;
@@ -121,26 +121,26 @@ void CbmTarget::ConstructGeometry()
   if (fZ) {
     targElem = geoMan->GetElementTable()->GetElement(fZ);
     if (!targElem) {
-      LOG(FATAL) << GetName() << ": Unknown element " << fZ;
+      LOG(fatal) << GetName() << ": Unknown element " << fZ;
       return;
     }
     fMaterial = targElem->GetTitle();
   }
   else if (!fMaterial.IsNull()) {
     targElem = geoMan->GetElementTable()->FindElement(fMaterial.Data());
-    if (!targElem) { LOG(FATAL) << GetName() << ": Unknown element " << fMaterial; }
+    if (!targElem) { LOG(fatal) << GetName() << ": Unknown element " << fMaterial; }
     fZ = targElem->Z();
   }
   else {
-    LOG(FATAL) << GetName() << ": Target material not specified!";
+    LOG(fatal) << GetName() << ": Target material not specified!";
     return;
   }
-  LOG(INFO) << GetName() << ": Use material " << fMaterial << ", z =  " << fZ;
+  LOG(info) << GetName() << ": Use material " << fMaterial << ", z =  " << fZ;
 
   // --- Get density, if not set through the constructor
   fDensity = fDensity > 0. ? fDensity : GetStandardDensity(fZ);
   if (fDensity < 0.) {
-    LOG(FATAL) << GetName() << ": No standard density for element " << fMaterial
+    LOG(fatal) << GetName() << ": No standard density for element " << fMaterial
                << " available: density must be set explicitly.";
     return;
   }
@@ -158,10 +158,10 @@ void CbmTarget::ConstructGeometry()
   // --- Get mother node
   TGeoNode* motherNode = geoMan->FindNode(fPosX, fPosY, fPosZ);
   if (!motherNode) {
-    LOG(FATAL) << GetName() << ": No mother node found at target position!";
+    LOG(fatal) << GetName() << ": No mother node found at target position!";
     return;
   }
-  LOG(INFO) << GetName() << ": Mother node is " << motherNode->GetName();
+  LOG(info) << GetName() << ": Mother node is " << motherNode->GetName();
 
   // Construct the transformation matrix for positioning of the target
   // in its mother volume. The matrix is the inverse of the global
@@ -181,7 +181,7 @@ void CbmTarget::ConstructGeometry()
 
   // --- Check the resulting transformation from target to global
   TGeoNode* testNode = geoMan->FindNode(fPosX, fPosY, fPosZ);
-  LOG(DEBUG) << GetName() << ": Test node is " << testNode->GetName();
+  LOG(debug) << GetName() << ": Test node is " << testNode->GetName();
   TGeoHMatrix* testMatrix = geoMan->GetCurrentMatrix();
   if (fair::Logger::Logging("DEBUG")) testMatrix->Print();
 
@@ -237,7 +237,7 @@ TVector3 CbmTarget::GetSurfaceCentreUp() const
 void CbmTarget::SetGeometryFileName(TString name, TString version)
 {
   fBuildFromFile = kTRUE;
-  LOG(INFO) << "Using target file name " << name;
+  LOG(info) << "Using target file name " << name;
   return FairModule::SetGeometryFileName(name, version);
 }
 // --------------------------------------------------------------------------

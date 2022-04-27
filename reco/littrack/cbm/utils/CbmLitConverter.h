@@ -223,7 +223,7 @@ public:
       if (litTrack->GetQuality() == kLITBAD) { continue; }
       if (litTrack->GetNofHits() < 1) { continue; }
       if (static_cast<size_t>(litTrack->GetNofHits()) != litTrack->GetFitNodes().size()) {
-        LOG(ERROR) << "CbmLitConverter::LitTrackVectorToGlobalTrackArray: "
+        LOG(error) << "CbmLitConverter::LitTrackVectorToGlobalTrackArray: "
                       "unequal number of hits and fit nodes"
                    << std::endl
                    << litTrack->ToString();

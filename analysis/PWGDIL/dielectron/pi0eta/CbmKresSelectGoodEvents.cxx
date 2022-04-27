@@ -128,7 +128,7 @@ void CbmKresSelectGoodEvents::Exec(Option_t*)
   cout << "CbmKresSelectGoodEvents, EtaConversion = " << EtaConversion << endl;
 
   // if (fApp && EtaConversion == 0) {
-  // 	LOG(WARNING) << "No double converted Eta";
+  // 	LOG(warning) << "No double converted Eta";
   // 	fApp->SetSaveCurrentEvent(kFALSE);
   // }
 }

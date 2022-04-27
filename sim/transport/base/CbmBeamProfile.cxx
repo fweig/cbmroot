@@ -39,10 +39,10 @@ Bool_t CbmBeamProfile::CheckWithTarget(const CbmTarget& target) const
   TVector3 sect1 = ExtrapolateToPlane(surf1, target.GetNormal());
   Double_t dist1 = (sect1 - surf1).Mag();
   if (dist1 > 0.5 * target.GetDiameter()) {
-    LOG(ERROR) << "EventGen: Average beam does not hit first target surface!";
-    LOG(ERROR) << "          Surface centre is (" << surf1.X() << ", " << surf1.Y() << ", " << surf1.Z() << ") cm";
-    LOG(ERROR) << "          Intersection point is (" << sect1.X() << ", " << sect1.Y() << ", " << sect1.Z() << ") cm";
-    LOG(ERROR) << "          Distance to target surface centre is " << dist1 << " cm, target radius is "
+    LOG(error) << "EventGen: Average beam does not hit first target surface!";
+    LOG(error) << "          Surface centre is (" << surf1.X() << ", " << surf1.Y() << ", " << surf1.Z() << ") cm";
+    LOG(error) << "          Intersection point is (" << sect1.X() << ", " << sect1.Y() << ", " << sect1.Z() << ") cm";
+    LOG(error) << "          Distance to target surface centre is " << dist1 << " cm, target radius is "
                << 0.5 * target.GetDiameter() << " cm";
     return kFALSE;
   }
@@ -52,10 +52,10 @@ Bool_t CbmBeamProfile::CheckWithTarget(const CbmTarget& target) const
   TVector3 sect2 = ExtrapolateToPlane(surf2, target.GetNormal());
   Double_t dist2 = (sect2 - surf2).Mag();
   if (dist2 > 0.5 * target.GetDiameter()) {
-    LOG(ERROR) << "EventGen: Average beam does not hit second target surface!";
-    LOG(ERROR) << "          Surface centre is (" << surf2.X() << ", " << surf2.Y() << ", " << surf2.Z() << ") cm";
-    LOG(ERROR) << "          Intersection point is (" << sect2.X() << ", " << sect2.Y() << ", " << sect2.Z() << ") cm";
-    LOG(ERROR) << "          Distance to target surface centre is " << dist2 << " cm, target radius is "
+    LOG(error) << "EventGen: Average beam does not hit second target surface!";
+    LOG(error) << "          Surface centre is (" << surf2.X() << ", " << surf2.Y() << ", " << surf2.Z() << ") cm";
+    LOG(error) << "          Intersection point is (" << sect2.X() << ", " << sect2.Y() << ", " << sect2.Z() << ") cm";
+    LOG(error) << "          Distance to target surface centre is " << dist2 << " cm, target radius is "
                << 0.5 * target.GetDiameter() << " cm";
     return kFALSE;
   }

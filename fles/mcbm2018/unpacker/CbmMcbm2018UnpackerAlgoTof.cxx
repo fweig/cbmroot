@@ -139,7 +139,7 @@ void CbmMcbm2018UnpackerAlgoTof::Finish()
 {
   /*
    /// Printout Goodbye message and stats
-  LOG(INFO)<<"<I> MS statistics - Good: " << fiMsGood <<", Bad: " << fiMsBad;
+  LOG(info)<<"<I> MS statistics - Good: " << fiMsGood <<", Bad: " << fiMsBad;
 */
   /// Write Output histos
 }
@@ -160,7 +160,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ReInitContainers()
 
   fUnpackPar = (CbmMcbm2018TofPar*) fParCList->FindObject("CbmMcbm2018TofPar");
   if (nullptr == fUnpackPar) {
-    LOG(ERROR) << " CbmMcbm2018TofPar not found ";
+    LOG(error) << " CbmMcbm2018TofPar not found ";
     return kFALSE;
   }
   Bool_t initOK = InitParameters();
@@ -177,7 +177,7 @@ TList* CbmMcbm2018UnpackerAlgoTof::GetParList()
 }
 Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters()
 {
-  LOG(INFO) << "InitParameters from " << fUnpackPar;
+  LOG(info) << "InitParameters from " << fUnpackPar;
   fdMsSizeInNs = fUnpackPar->GetSizeMsInNs();
 
   fuNrOfGdpbs = fUnpackPar->GetNrOfGdpbs();
@@ -277,7 +277,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters()
                                                                    fviRpcSide[iGbtx], fviRpcType[iGbtx]);
               else
                 fviRpcChUId[iCh] = 0;
-              //	 LOG(DEBUG)<<Form("Map Ch %d to Address 0x%08x",iCh,fviRpcChUId[iCh]);
+              //	 LOG(debug)<<Form("Map Ch %d to Address 0x%08x",iCh,fviRpcChUId[iCh]);
               iCh += iChNext;
             }
           }
@@ -534,7 +534,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::InitParameters()
 
   // Request masks
   /*
-   LOG(INFO) << " Load " << fUnpackPar->GetNrReqPattern() << " GET4 Request masks for " << fuNrOfGdpbs << " Gdpbs ";
+   LOG(info) << " Load " << fUnpackPar->GetNrReqPattern() << " GET4 Request masks for " << fuNrOfGdpbs << " Gdpbs ";
    if(fUnpackPar->GetNrReqPattern()>0){
      bGdpbOK.resize(fuNrOfGdpbs);
      Pat_Request.resize(fuNrOfGdpbs);
@@ -609,7 +609,7 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessTs(const fles::Timeslice& ts)
 {
   fulCurrentTsIdx = ts.index();
   fdTsStartTime   = static_cast<Double_t>(ts.descriptor(0, 0).idx);
-  LOG(DEBUG) << "ProcessTs " << fulCurrentTsIdx;
+  LOG(debug) << "ProcessTs " << fulCurrentTsIdx;
 
   /// Ignore First TS as first MS is typically corrupt
   if (0 == fulCurrentTsIdx) { return kTRUE; }  // if( 0 == fulCurrentTsIdx )
@@ -665,11 +665,11 @@ Bool_t CbmMcbm2018UnpackerAlgoTof::ProcessTs(const fles::Timeslice& ts)
   }  // if( fuTsMaxVectorSize < fDigiVect.size() )
      /*
    if(!bEnableOut) {
-     LOG(DEBUG) << "Ts  "<<   fulCurrentTsIdx << " removed ";
+     LOG(debug) << "Ts  "<<   fulCurrentTsIdx << " removed ";
      fiMsBad++;
      fDigiVect.clear();
    }else {
-     LOG(DEBUG) << "Ts  "<<   fulCurrentTsIdx << " accepted ";
+     LOG(debug) << "Ts  "<<   fulCurrentTsIdx << " accepted ";
      fiMsGood++;
    }
 */
@@ -1287,7 +1287,7 @@ void CbmMcbm2018UnpackerAlgoTof::ProcessPattern(const gdpbv100::FullMessage& mes
 	  TString Tok;
 	  if (bEnableOut) Tok="Ena";
 	  else  Tok="Dis";
-	  LOG(DEBUG) << Form( "Mismatch pat in TS %llu, MS %llu, Gdpb %u, T %u, Pattern 0x%08X %08X %08X %08X %08X %08X %08X %08X ",
+	  LOG(debug) << Form( "Mismatch pat in TS %llu, MS %llu, Gdpb %u, T %u, Pattern 0x%08X %08X %08X %08X %08X %08X %08X %08X ",
 			     fulCurrentTsIdx, fulCurrentMsIdx, fuCurrDpbIdx,  usType,
 			     pat_mess[0],  pat_mess[1],  pat_mess[2],  pat_mess[3],  pat_mess[4],  pat_mess[5],  pat_mess[6],  pat_mess[7]  )
 		    << Tok;

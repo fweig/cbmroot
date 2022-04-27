@@ -44,10 +44,10 @@ bool CbmRichUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
   }
 
   uint32_t msIndexWord1 = reader.NextWord();
-  if (isLog()) LOG(DEBUG4) << getLogHeader(reader) << "Microslice Index 1:" << reader.GetWordAsHexString(msIndexWord1);
+  if (isLog()) LOG(debug4) << getLogHeader(reader) << "Microslice Index 1:" << reader.GetWordAsHexString(msIndexWord1);
 
   uint32_t msIndexWord2 = reader.NextWord();
-  if (isLog()) LOG(DEBUG4) << getLogHeader(reader) << "Microslice Index 2:" << reader.GetWordAsHexString(msIndexWord2);
+  if (isLog()) LOG(debug4) << getLogHeader(reader) << "Microslice Index 2:" << reader.GetWordAsHexString(msIndexWord2);
 
 
   return true;

@@ -253,10 +253,10 @@ Bool_t CbmMcbm2018MonitorAlgoT0::ProcessMs(const fles::Timeslice& ts, size_t uMs
  * Should be only for first detected TS
  */
   if (fulCurrentTsIdx < 10 && 0 == uMsIdx) {
-    LOG(INFO) << "---------------------------------------------------------------";
-    LOG(INFO) << "Component " << uMsCompIdx << " TS Idx " << fulCurrentTsIdx;
-    LOG(INFO) << "hi hv eqid flag si sv idx/start        crc      size     offset";
-    LOG(INFO) << Form("%02x %02x %04x %04x %02x %02x %016lx %08x %08x %016lx",
+    LOG(info) << "---------------------------------------------------------------";
+    LOG(info) << "Component " << uMsCompIdx << " TS Idx " << fulCurrentTsIdx;
+    LOG(info) << "hi hv eqid flag si sv idx/start        crc      size     offset";
+    LOG(info) << Form("%02x %02x %04x %04x %02x %02x %016lx %08x %08x %016lx",
                       static_cast<unsigned int>(msDescriptor.hdr_id), static_cast<unsigned int>(msDescriptor.hdr_ver),
                       msDescriptor.eq_id, msDescriptor.flags, static_cast<unsigned int>(msDescriptor.sys_id),
                       static_cast<unsigned int>(msDescriptor.sys_ver), static_cast<unsigned long>(msDescriptor.idx),

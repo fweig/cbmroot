@@ -81,7 +81,7 @@ foreach(setup IN LISTS cbm_setup)
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
   	FIXTURES_REQUIRED reco_cleanup
-  	FIXTURES_SETUP fixt_tra_coll_${setup}
+  	FIXTURES_SETUP fixt_reco_tra_coll_${setup}
   	RESOURCE_LOCK collParDb_${setup}
   )
 
@@ -96,7 +96,7 @@ foreach(setup IN LISTS cbm_setup)
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
   	FIXTURES_REQUIRED reco_cleanup
-  	FIXTURES_SETUP fixt_tra_sign_${setup}
+  	FIXTURES_SETUP fixt_reco_tra_sign_${setup}
   	RESOURCE_LOCK signParDb_${setup}
   )
 
@@ -110,7 +110,7 @@ foreach(setup IN LISTS cbm_setup)
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
   	FIXTURES_REQUIRED reco_cleanup
-  	FIXTURES_SETUP fixt_tra_beam_${setup}
+  	FIXTURES_SETUP fixt_reco_tra_beam_${setup}
   	RESOURCE_LOCK beamParDb_${setup}
   )
 
@@ -126,8 +126,9 @@ foreach(setup IN LISTS cbm_setup)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
- 	FIXTURES_REQUIRED "fixt_tra_coll_${setup};fixt_tra_sign_${setup};fixt_tra_beam_${setup}"
-  	FIXTURES_SETUP fixt_digi_ts_${setup}
+ 	FIXTURES_REQUIRED
+  	"fixt_reco_tra_coll_${setup};fixt_reco_tra_sign_${setup};fixt_reco_tra_beam_${setup}"
+  	FIXTURES_SETUP fixt_reco_digi_ts_${setup}
  	RESOURCE_LOCK collParDb_${setup}
   )
 
@@ -139,8 +140,8 @@ foreach(setup IN LISTS cbm_setup)
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
-	FIXTURES_REQUIRED fixt_digi_ts_${setup}
-	FIXTURES_SETUP fixt_reco_sim_${setup}
+	FIXTURES_REQUIRED fixt_reco_digi_ts_${setup}
+	FIXTURES_SETUP fixt_reco_digi_${setup}
  	RESOURCE_LOCK collParDb_${setup}
   )
 

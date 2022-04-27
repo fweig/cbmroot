@@ -342,7 +342,7 @@ void CbmTofCreateDigiPar::FillCellMapRootGeometry()
       TObjArray* modarray = keep->GetNodes();
 
       if (nullptr == modarray) {
-        LOG(WARNING) << " No modules found in geometry ";
+        LOG(warning) << " No modules found in geometry ";
         return;
       }
       // Loop over the different found modules

@@ -488,7 +488,7 @@ Bool_t CbmDeviceUnpackTofMcbm2018::ReInitContainers()
                                                                    fviRpcSide[iGbtx], fviRpcType[iGbtx]);
               else
                 fviRpcChUId[iCh] = 0;
-              //	 LOG(DEBUG)<<Form("Map Ch %d to Address 0x%08x",iCh,fviRpcChUId[iCh]);
+              //	 LOG(debug)<<Form("Map Ch %d to Address 0x%08x",iCh,fviRpcChUId[iCh]);
               iCh += iChNext;
             }
           }

@@ -1387,7 +1387,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
     for (Int_t j = 0; j < nTofHits; j++) {
       TofHit = (CbmTofHit*) fTofHits->At(j);
       if (NULL == TofHit) continue;
-      LOG(DEBUG) << Form("TofHit %d, addr 0x%08x, x %6.1f, y %6.1f, z %6.1f, t %6.1f ", j, TofHit->GetAddress(),
+      LOG(debug) << Form("TofHit %d, addr 0x%08x, x %6.1f, y %6.1f, z %6.1f, t %6.1f ", j, TofHit->GetAddress(),
                          TofHit->GetX(), TofHit->GetY(), TofHit->GetZ(), TofHit->GetTime());
     }
   }
@@ -1411,7 +1411,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
     for (Int_t j = 0; j < nTofHits; j++) {
       TofHit = (CbmTofHit*) fTofHits->At(j);
       if (NULL == TofHit) continue;
-      LOG(DEBUG) << Form("TofHit %d, addr 0x%08x, x %6.1f, y %6.1f, z %6.1f, t %6.1f ", j, TofHit->GetAddress(),
+      LOG(debug) << Form("TofHit %d, addr 0x%08x, x %6.1f, y %6.1f, z %6.1f, t %6.1f ", j, TofHit->GetAddress(),
                          TofHit->GetX(), TofHit->GetY(), TofHit->GetZ(), TofHit->GetTime());
     }
   }
@@ -1746,7 +1746,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
   for (Int_t l = 0; l < nTofPoints; l++) {
     TofPoint = (CbmTofPoint*) fTofPoints->At(l);
     if (NULL == TofPoint) {
-      LOG(WARNING) << " Missing TofPoint at " << l << ", mul " << nTofPoints;
+      LOG(warning) << " Missing TofPoint at " << l << ", mul " << nTofPoints;
       continue;
     }
     Int_t k = TofPoint->GetTrackID();
@@ -2184,11 +2184,11 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
     //cout << Form("HadronAnalysis:: hit %d, poi %d, MCt %d, Eff %d ",j,lp,k,TrackP[k]) << endl;
     /*
       if(TofHit->GetX()<-90.) { //nh-debug
-	LOG(INFO)  << Form(" Invalid Hit in ev %d: %6.1f, %6.1f, %6.1f, poi: %6.1f, %6.1f, %6.1f, pdg: %d",
+	LOG(info)  << Form(" Invalid Hit in ev %d: %6.1f, %6.1f, %6.1f, poi: %6.1f, %6.1f, %6.1f, pdg: %d",
 			   fEvents,TofHit->GetX(),TofHit->GetY(),TofHit->GetZ(),
 			   TofPoint->GetX(),TofPoint->GetY(),TofPoint->GetZ(),
 			   pdgCode);
-	LOG(FATAL) << "<D-hit> j " << j << ", l " << l << ", k " << k << ", lp ";
+	LOG(fatal) << "<D-hit> j " << j << ", l " << l << ", k " << k << ", lp ";
       }
       */
     if (TrackP[k] == 0) {  // for efficiency
@@ -3705,7 +3705,7 @@ void CbmHadronAnalysis::ReconstructSecondaries()
   Int_t nTrdHits = 0;
   if (NULL != fTrdHits) nTrdHits = fTrdHits->GetEntriesFast();
 
-  LOG(DEBUG) << "Secondaries from " << nTofHits << " TofHits, " << nStsHits << " StsHits and " << nTrdHits
+  LOG(debug) << "Secondaries from " << nTofHits << " TofHits, " << nStsHits << " StsHits and " << nTrdHits
              << " TrdHits in event " << iCandEv;
 
   if (iCandEv == 0) {  //initialize
@@ -3946,7 +3946,7 @@ void CbmHadronAnalysis::ReconstructSecondaries()
       Double_t dDx       = pTofHit->GetX() - pStsHit->GetX();
       Double_t dDy       = pTofHit->GetY() - pStsHit->GetY();
       Double_t dDz       = pTofHit->GetZ() - pStsHit->GetZ();
-      LOG(DEBUG) << "Check for TRD hits between STS " << j << " and TOF " << i;
+      LOG(debug) << "Check for TRD hits between STS " << j << " and TOF " << i;
 
       for (Int_t l = 0; l < nTrdHits; l++) {
         CbmTrdHit* pTrdHit = (CbmTrdHit*) fTrdHits->At(l);
@@ -3956,7 +3956,7 @@ void CbmHadronAnalysis::ReconstructSecondaries()
         Double_t dDtrans =
           TMath::Sqrt(TMath::Power(dXexp - pTrdHit->GetX(), 2) + TMath::Power(dYexp - pTrdHit->GetY(), 2));
         UInt_t iTrdLayer = CbmTrdAddress::GetLayerId(pTrdHit->GetAddress());
-        LOG(DEBUG) << "Inspect TRD hit " << l << " in "
+        LOG(debug) << "Inspect TRD hit " << l << " in "
                    << Form("Module 0x%08x, layer %d", pTrdHit->GetAddress(),
                            CbmTrdAddress::GetLayerId(pTrdHit->GetAddress()))
                    << " at z= " << pTrdHit->GetZ() << " dD  = " << dDtrans << " < " << fdDistTRD;
@@ -3975,7 +3975,7 @@ void CbmHadronAnalysis::ReconstructSecondaries()
             iTRD[i].resize(iMul + 1);
             iTRD[i][iMul] = l;
           }
-          LOG(DEBUG) << "assign TrdHit " << l << " to TofHit " << i << " in layer " << iTrdLayer
+          LOG(debug) << "assign TrdHit " << l << " to TofHit " << i << " in layer " << iTrdLayer
                      << " with d = " << dDtrans << ", TrdMul" << iMul << ", dEdx = " << pTrdHit->GetELoss();
         }
       }
@@ -4039,7 +4039,7 @@ void CbmHadronAnalysis::ReconstructSecondaries()
 
   //4. secondary pion candidate
   for (Int_t i = 0; i < nTofHits; i++) {
-    LOG(DEBUG) << "Tof " << i << Form(" sec cand Min %6.3f > %6.3f ?", dStsDistMin[i], fdDistPrimLim);
+    LOG(debug) << "Tof " << i << Form(" sec cand Min %6.3f > %6.3f ?", dStsDistMin[i], fdDistPrimLim);
     if (dStsDistMin[i] > fdDistPrimLim) {  // Tof hit not in the primary class
       Double_t dDistMin  = 100.;
       Int_t jbest        = -1;
@@ -4122,7 +4122,7 @@ void CbmHadronAnalysis::ReconstructSecondaries()
                 iTRD[i].resize(iMul + 1);
                 iTRD[i][iMul] = l;
               }
-              LOG(DEBUG) << "assign TrdHit " << l << " to TofHit " << i << " in layer " << iTrdLayer
+              LOG(debug) << "assign TrdHit " << l << " to TofHit " << i << " in layer " << iTrdLayer
                          << " with d = " << dDtrans << ", TrdMul" << iMul << ", dEdx = " << pTrdHit->GetELoss();
             }
           }
@@ -4154,7 +4154,7 @@ void CbmHadronAnalysis::ReconstructSecondaries()
           Double_t E    = TMath::Sqrt(pmag * pmag + m * m);
           P[i].SetPxPyPzE(px, py, pz, E);
           X[i].SetXYZT(pTofHit->GetX(), pTofHit->GetY(), pTofHit->GetZ(), pTofHit->GetTime());
-          LOG(DEBUG) << "Init pion LV at ind " << i << " with beta = " << bet << ", minv = " << P[i].M() << ", tof "
+          LOG(debug) << "Init pion LV at ind " << i << " with beta = " << bet << ", minv = " << P[i].M() << ", tof "
                      << X[i].T() << ", TRDHmul " << iTRD[i].size();
           X0[i].SetXYZ(pSts2Hit->GetX(), pSts2Hit->GetY(), pSts2Hit->GetZ());
           DX[i].SetXYZ(dDx, dDy, dDz);
@@ -4163,9 +4163,9 @@ void CbmHadronAnalysis::ReconstructSecondaries()
       }
     }  //if( dStsDistMin[i] > dDistPrimLim) {  // Sts hit not in the primary class
   }    //for (Int_t i=0; i<nTofHits; i++)
-  LOG(DEBUG) << " Ev " << iCandEv << " has " << proton_cand << " protons and " << pion_cand << " pion candidates";
+  LOG(debug) << " Ev " << iCandEv << " has " << proton_cand << " protons and " << pion_cand << " pion candidates";
   if (proton_cand > 0 && pion_cand > 0) {
-    LOG(DEBUG) << "add event " << iCandEv << " to mixing class " << iMixClass << " of size " << fvP[iMixClass].size();
+    LOG(debug) << "add event " << iCandEv << " to mixing class " << iMixClass << " of size " << fvP[iMixClass].size();
 
     fvP[iMixClass].push_front(P);    //insert to mixed event vector
     fvX[iMixClass].push_front(X);    //insert to mixed event vector

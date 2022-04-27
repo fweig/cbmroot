@@ -307,7 +307,7 @@ double CbmTofTracklet::UpdateTt()
     }
   }
   if (iNt == 0) {
-    LOG(WARNING) << "No valid hit pair ";
+    LOG(warning) << "No valid hit pair ";
     return fTt;
   }
   fTt = dTt / (double) iNt;

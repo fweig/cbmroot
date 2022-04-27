@@ -742,7 +742,7 @@ Int_t CbmTofTrackFinderNN::HitUsed(Int_t iHit)
   Int_t iUsed = 0;
 
   //  LOG(debug1)<<"CbmTofTrackFinderNN::HitUsed of Hind "<<iHit<<", TrkMap.size "<<fvTrkMap[iHit].size()
-  LOG(DEBUG4) << "CbmTofTrackFinderNN::HitUsed of Hind " << iHit << ", TrkVec.size " << fvTrkVec[iHit].size();
+  LOG(debug4) << "CbmTofTrackFinderNN::HitUsed of Hind " << iHit << ", TrkVec.size " << fvTrkVec[iHit].size();
   /*
   for ( std::map<CbmTofTracklet*,Int_t>::iterator it=fvTrkMap[iHit].begin(); it != fvTrkMap[iHit].end(); it++){
     if(it->first->GetNofHits() > 2) return iUsed=1;
