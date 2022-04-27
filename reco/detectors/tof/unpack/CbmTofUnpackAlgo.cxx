@@ -116,7 +116,10 @@ Bool_t CbmTofUnpackAlgo::initParSet(CbmMcbm2018TofPar* parset)
   TString sPrintout = "";
   for (UInt_t uCh = 0; uCh < uNrOfChannels; ++uCh) {
     if (0 == uCh % 8) sPrintout += "\n";
-    if (0 == uCh % fuNrOfChannelsPerGdpb) sPrintout += Form("\n Gdpb %u\n", uCh / fuNrOfChannelsPerGdpb);
+    if (0 == uCh % fuNrOfChannelsPerGdpb) {
+      uint32_t uGdpbIdx = uCh / fuNrOfChannelsPerGdpb;
+      sPrintout += Form("\n Gdpb %u (0x%x)\n", uGdpbIdx, parset->GetGdpbId(uGdpbIdx));
+    }
     if (0 == fviRpcChUId[uCh]) {
       /// Tricking clang to avoid one liner
       sPrintout += " ----------";
@@ -125,7 +128,7 @@ Bool_t CbmTofUnpackAlgo::initParSet(CbmMcbm2018TofPar* parset)
       sPrintout += Form(" 0x%08x", fviRpcChUId[uCh]);
     }
   }  // for( UInt_t i = 0; i < uNrOfChannels; ++i)
-  LOG(info) << sPrintout;
+  LOG(debug) << sPrintout;
 
   LOG(info) << fName << "::initParSetTofMcbm2018 - Successfully initialized TOF settings";
 

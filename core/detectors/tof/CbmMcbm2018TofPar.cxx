@@ -279,7 +279,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMap()
         LOG(error) << "Invalid Tof Type specifier for GBTx " << std::setw(2) << uGbtx << ": " << fiRpcType[uGbtx];
       }
     }  // switch (fiRpcType[uGbtx])
-    if (uCh - uCh0 != fiNrOfFeesPerGdpb * fiNrOfGet4PerFee * fiNrOfChannelsPerGet4 / 2) {
+    if ((int32_t)(uCh - uCh0) != fiNrOfFeesPerGdpb * fiNrOfGet4PerFee * fiNrOfChannelsPerGet4 / 2) {
       LOG(fatal) << "Tof mapping error for Gbtx " << uGbtx << ",  diff = " << uCh - uCh0;
     }
   }    // for (UInt_t uGbtx = 0; uGbtx < uNrOfGbtx; ++uGbtx)
@@ -379,13 +379,15 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapT0_2022(UInt_t& uCh, UInt_t uGbtx)
   for (UInt_t uGet4 = 0; uGet4 < kuNbGet4PerGbtx; ++uGet4) {
     for (UInt_t uGet4Ch = 0; uGet4Ch < kuNbChannelsPerGet4; ++uGet4Ch) {
       /// Mapping for the 2022 beamtime
-      if (0 == uGet4 % 4 && 0 == uGet4Ch && -1 < fiModuleId[uGbtx]) {
-        UInt_t uChannelT0 = uGet4 / 8;  // + 4 * fiRpcSide[uGbtx];
+      if (-1 < fiModuleId[uGbtx] && uGet4 < 32 && 0 == uGet4 % 4 && 0 == uGet4Ch) {
+        /// 1 channel per physical GET4, 2 links per physical GET4, 4 physical GET4s per GBTx, 1 GBTx per comp.
+        /// 8 channels for one side, 8 for the other
+        UInt_t uChannelT0 = (uGet4 / 8 + 4 * (uGbtx / 2)) % 8;
         /// Type hard-coded to allow different parameter values to separate 2022 T0 and pre-2022 T0
-        fviRpcChUId[uCh] = CbmTofAddress::GetUniqueAddress(fiModuleId[uGbtx], 0, uChannelT0, 0, 5);
-        LOG(info) << Form("  T0 channel: %u from GBTx %2u, "
+        fviRpcChUId[uCh] = CbmTofAddress::GetUniqueAddress(fiModuleId[uGbtx], 0, uChannelT0, fiRpcSide[uGbtx], 5);
+        LOG(info) << Form("  Bmon channel: %u side %u from GBTx %2u, "
                           "indx %d address %08x",
-                          uChannelT0, uGbtx, uCh, fviRpcChUId[uCh]);
+                          uChannelT0, fiRpcSide[uGbtx], uGbtx, uCh, fviRpcChUId[uCh]);
       }  // Valid T0 channel
       else {
         fviRpcChUId[uCh] = 0;
@@ -541,12 +543,21 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapBuc(UInt_t& uCh, UInt_t uGbtx)
 
         case 7: {
           // clang-format off
+          /*
           const Int_t iChMap[160]={
           127, 126, 125, 124,  12,  13,  14,  15,   7,   6,   5,   4,  28,  29,  30,  31, 123, 122, 121, 120,   8,   9,  10,  11, 107, 106, 105, 104, 108, 109, 110, 111,
            39,  38,  37,  36,  52,  53,  54,  55,  63,  62,  61,  60, 128, 129, 130, 131,  43,  42,  41,  40, 148, 149, 150, 151,  59,  58,  57,  56, 132, 133, 134, 135,
           139, 138, 137, 136, 140, 141, 142, 143,  99,  98,  97,  96,  64,  65,  66,  67, 103, 102, 101, 100,  84,  85,  86,  87, 155, 154, 153, 152,  68,  69,  70,  71,
           159, 158, 157, 156, 144, 145, 146, 147,  47,  46,  45,  44,  76,  77,  78,  79,  51,  50,  49,  48,  20,  21,  22,  23,  35,  34,  33,  32, 116, 117, 118, 119,
            75,  74,  73,  72,  92,  93,  94,  95,  19,  18,  17,  16,  80,  81,  82,  83, 115, 114, 113, 112,  24,  25,  26,  27,  91,  90,  89,  88,   0,   1,   2,   3
+          };
+          */
+          const Int_t iChMap[160]={
+          124, 125, 126, 127,  12,  13,  14,  15,   4,   5,   6,   7,  28,  29,  30,  31, 120, 121, 122, 123,   8,  9,   10,  11, 104, 105, 106, 107, 108, 109, 110, 111,
+           36,  37,  38,  39,  52,  53,  54,  55,  60,  61,  62,  63, 128, 129, 130, 131,  40,  41,  42,  43, 148, 149, 150, 151,  56,  57,  58,  59, 132, 133, 134, 135,
+          136, 137, 138, 139, 140, 141, 142, 143,  96,  97,  98,  99,  64,  65,  66,  67, 100, 101, 102, 103,  84,  85,  86,  87, 152, 153, 154, 155,  68,  69,  70,  71,
+          156, 157, 158, 159, 144, 145, 146, 147,  44,  45,  46,  47,  76,  77,  78,  79,  48,  49,  50,  51,  20,  21,  22,  23,  32,  33,  34,  35, 116, 117, 118, 119,
+           75,  74,  73,  72,  92,  93,  94,  95,  16,  17,  18,  19,  80,  81,  82,  83, 115, 114, 113, 112,  24,  25,  26,  27,  88,  89,  90,  91,   0,   1,   2,   3
           };
           // clang-format on
           Int_t iInd = iFeet * 32 + iStr;
@@ -555,7 +566,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapBuc(UInt_t& uCh, UInt_t uGbtx)
             if (iInd == iChMap[i]) break;
           iStrMap        = i % 32;
           Int_t iFeetInd = (i - iStrMap) / 32;
-          switch (iFeet) {
+          switch (iFeetInd) {
             case 0:
               iRpcMap  = 0;
               iSideMap = 1;
@@ -565,11 +576,11 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapBuc(UInt_t& uCh, UInt_t uGbtx)
               iSideMap = 1;
               break;
             case 2:
-              iRpcMap  = 0;
+              iRpcMap  = 1;
               iSideMap = 0;
               break;
             case 3:
-              iRpcMap  = 1;
+              iRpcMap  = 0;
               iSideMap = 0;
               break;
             case 4: iSideMap = -1; break;
