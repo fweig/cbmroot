@@ -276,7 +276,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     trdfasp2dconfig->SetParFilesBasePath(parfilesbasepathTrdfasp2d);
     trdfasp2dconfig->SetSystemTimeOffset(-1800);  // [ns] value to be updated
     if (2160 <= runid) {
-      trdfasp2dconfig->SetSystemTimeOffset(-680);  // [ns] value to be updated
+      trdfasp2dconfig->SetSystemTimeOffset(-570);  // [ns] value to be updated
     }
     // trdfasp2dconfig->SetMonitor(dynamic_pointer_cast<CbmTrdUnpackFaspMonitor>(GetTrdMonitor(outfilename, 1)));
   }
