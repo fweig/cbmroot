@@ -230,6 +230,10 @@ Bool_t CbmDeviceUnpack::InitContainers()
       muchconfig->SetDoWriteOptOutA("MuchDigiPulser");
       std::string parfilesbasepathMuch = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
       muchconfig->SetParFilesBasePath(parfilesbasepathMuch);
+      if (2060 <= fuRunId && fuRunId <= 2162) {
+        /// Starting to use CRI Based MUCH setup with 2GEM and 1 RPC since 09/03/2022 Carbon run
+        muchconfig->SetParFileName("mMuchParUpto26032022.par");
+      }
       /// Enable duplicates rejection, Ignores the ADC for duplicates check
       muchconfig->SetDuplicatesRejection(true, true);
       /// Enable Monitor plots
@@ -303,11 +307,26 @@ Bool_t CbmDeviceUnpack::InitContainers()
       tofconfig->SetDoWriteOutput();
       // tofconfig->SetDoWriteOptOutA("CbmTofErrors");
       std::string parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+      std::string parFileNameTof      = "mTofCriPar.par";
       if (2060 <= fuRunId) {
         /// Additional modules added just before the 10/03/2022 Carbon run
         parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
+        /// Setup changed multiple times between the 2022 carbon and uranium runs
+        if (fuRunId <= 2065) {
+          /// Carbon runs: 2060 - 2065
+          parFileNameTof = "mTofCriParCarbon.par";
+        }
+        else if (2150 <= fuRunId && fuRunId <= 2160) {
+          /// Iron runs: 2150 - 2160
+          parFileNameTof = "mTofCriParIron.par";
+        }
+        else if (2176 <= fuRunId && fuRunId <= 2310) {
+          /// Uranium runs: 2176 - 2310
+          parFileNameTof = "mTofCriParUranium.par";
+        }
       }
       tofconfig->SetParFilesBasePath(parfilesbasepathTof);
+      tofconfig->SetParFileName(parFileNameTof);
       tofconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
       if (fuRunId <= 1659) {
         /// Switch ON the -4 offset in epoch count (hack for Spring-Summer 2021)

@@ -295,11 +295,26 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     tofconfig->SetDoWriteOutput();
     // tofconfig->SetDoWriteOptOutA("CbmTofErrors");
     std::string parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+    std::string parFileNameTof      = "mTofCriPar.par";
     if (2060 <= runid) {
       /// Additional modules added just before the 10/03/2022 Carbon run
       parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
+      /// Setup changed multiple times between the 2022 carbon and uranium runs
+      if (runid <= 2065) {
+        /// Carbon runs: 2060 - 2065
+        parFileNameTof = "mTofCriParCarbon.par";
+      }
+      else if (2150 <= runid && runid <= 2160) {
+        /// Iron runs: 2150 - 2160
+        parFileNameTof = "mTofCriParIron.par";
+      }
+      else if (2176 <= runid && runid <= 2310) {
+        /// Uranium runs: 2176 - 2310
+        parFileNameTof = "mTofCriParUranium.par";
+      }
     }
     tofconfig->SetParFilesBasePath(parfilesbasepathTof);
+    tofconfig->SetParFileName(parFileNameTof);
     tofconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
     if (2160 <= runid) {
       tofconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
