@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Andrey Lebedev, David Emschermann, Volker Friese, Mohammad Al-Turany [committer], Florian Uhlig */
 
-void eventDisplay(TString dataset = "test")
+void eventDisplay(TString dataset = "data/test")
 {
   TString inFile  = dataset + ".tra.root";
   TString parFile = dataset + ".par.root";
