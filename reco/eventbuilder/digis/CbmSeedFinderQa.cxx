@@ -202,17 +202,21 @@ void CbmSeedFinderQa::FillQaMCInfo()
 
   for (uint32_t iSeed = 0; iSeed < fvEventMatchesPerTs.size(); iSeed++) {
     const CbmMatch eventMatch = fvEventMatchesPerTs.at(iSeed);
+    const CbmLink matchedLink = eventMatch.GetMatchedLink();
+    if (fEventList->GetEventIndex(matchedLink) == -1) { continue; }
+
     for (int32_t iLink = 0; iLink < eventMatch.GetNofLinks(); iLink++) {
       const CbmLink eventLink = eventMatch.GetLink(iLink);
       vLinkedTriggersPerMCEvent[fEventList->GetEventIndex(eventLink)]++;
     }
-    const CbmLink matchedLink = eventMatch.GetMatchedLink();
     vMatchedTriggersPerMCEvent[fEventList->GetEventIndex(matchedLink)]++;
   }
 
   for (uint32_t iSeed = 0; iSeed < fvEventMatchesPerTs.size(); iSeed++) {
     const CbmMatch eventMatch = fvEventMatchesPerTs.at(iSeed);
     const CbmLink matchedLink = eventMatch.GetMatchedLink();
+    if (fEventList->GetEventIndex(matchedLink) == -1) { continue; }
+
     if (vMatchedTriggersPerMCEvent[fEventList->GetEventIndex(matchedLink)] == 1) {
       const double seedTime = fvSeedTimesPerTs[iSeed];
       const double timeDiff = seedTime - fEventList->GetEventTime(matchedLink.GetEntry(), matchedLink.GetFile());
