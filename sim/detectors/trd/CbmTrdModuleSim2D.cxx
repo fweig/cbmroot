@@ -314,8 +314,9 @@ Bool_t CbmTrdModuleSim2D::ScanPadPlane(const Double_t* point, Double_t DX, Doubl
   Int_t sec(-1), col(-1), row(-1);
   fDigiPar->GetPadInfo(point, sec, col, row);
   if (sec < 0 || col < 0 || row < 0) {
-    LOG(error) << "CbmTrdModuleSim2D::ScanPadPlane: Hit to pad matching failed for [" << std::setprecision(5) << point[0]
-               << ", " << std::setprecision(5) << point[1] << ", " << std::setprecision(5) << point[2] << "].";
+    LOG(error) << "CbmTrdModuleSim2D::ScanPadPlane: Hit to pad matching failed for [" << std::setprecision(5)
+               << point[0] << ", " << std::setprecision(5) << point[1] << ", " << std::setprecision(5) << point[2]
+               << "].";
     return kFALSE;
   }
   for (Int_t is(0); is < sec; is++)
