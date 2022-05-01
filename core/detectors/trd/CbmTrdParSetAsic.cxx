@@ -56,7 +56,7 @@ void CbmTrdParSetAsic::addParam(CbmTrdParMod* mod)
 //_______________________________________________________________________________
 Bool_t CbmTrdParSetAsic::getParams(FairParamList* l)
 {
-  //LOG(info) << GetName() << "::getParams(FairParamList*)";
+  // LOG(info) << GetName() << "::getParams(FairParamList*)";
   if (!l) return kFALSE;
   if (!l->fill("NrOfModules", &fNrOfModules)) return kFALSE;
   TArrayI moduleId(fNrOfModules);
@@ -121,7 +121,7 @@ Bool_t CbmTrdParSetAsic::getParams(FairParamList* l)
 void CbmTrdParSetAsic::putParams(FairParamList* l)
 {
   if (!l) return;
-  //LOG(info) << GetName() << "::putParams(FairParamList*)";
+  // LOG(info) << GetName() << "::putParams(FairParamList*)";
 
   Int_t idx(0);
   TArrayI moduleId(fNrOfModules), nAsic(fNrOfModules), typeAsic(fNrOfModules);
@@ -186,20 +186,21 @@ void CbmTrdParSetAsic::putParams(FairParamList* l)
       for (auto iModuleIt : mod->fModuleMap) {
         int offset       = iAsicNr * sizePerFasp;
         asicInfo[offset] = iModuleIt.first;
-        Int_t nchannels(((CbmTrdParAsic*) iModuleIt.second)->GetNchannels());
-        CbmTrdParFasp* fasp = (CbmTrdParFasp*) iModuleIt.second;
 
-        for (Int_t ich(0); ich < nchannels; ich++) {
-          Int_t faspAddress              = fasp->GetChannelAddress(ich);
-          asicInfo[offset + 1 + ich]     = faspAddress;
+        CbmTrdParFasp* fasp = (CbmTrdParFasp*) iModuleIt.second;
+        Int_t ich(0);
+        for (auto chAddress : fasp->GetChannelAddresses()) {
+          asicInfo[offset + 1 + ich]     = chAddress;
           const CbmTrdParFaspChannel* ch = fasp->GetChannel(ich);
           if (!ch) {
-            LOG(info) << "Missing calib for Fasp[" << offset << "] pad " << faspAddress;
+            LOG(info) << "Missing calib for Fasp[" << offset << "] pad " << chAddress;
+            ich++;
             continue;
           }
           asicInfo[offset + 1 + (1 * NFASPCH) + ich] = ch->GetPileUpTime();
           asicInfo[offset + 1 + (2 * NFASPCH) + ich] = ch->GetThreshold();
           asicInfo[offset + 1 + (3 * NFASPCH) + ich] = ch->GetMinDelaySignal();
+          ich++;
         }
         iAsicNr++;
       }

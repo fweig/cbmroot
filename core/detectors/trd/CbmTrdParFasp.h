@@ -74,7 +74,7 @@ public:
   const CbmTrdParFaspChannel* GetChannel(Int_t ch_address) const;
   virtual Int_t GetNchannels() const { return NFASPCH; };
 
-  Int_t GetChannelAddress(Int_t ich) const
+  Int_t GetPadAddress(Int_t ich) const
   {
     return ((ich < 0 || ich >= GetNchannels()) ? 0 : 0.5 * fChannelAddresses[ich]);
   }

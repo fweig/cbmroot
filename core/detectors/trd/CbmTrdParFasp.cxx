@@ -113,7 +113,7 @@ void CbmTrdParFasp::Print(Option_t* opt) const
   CbmTrdParAsic::Print("TrdParFasp");
   printf("  Nchannels[%2d]\n", (Int_t) fChannelAddresses.size());
   for (Int_t ich(0); ich < TMath::Min((Int_t) GetNchannels(), (Int_t) fChannelAddresses.size()); ich++) {
-    printf("  %2d pad_addr[%4d]", ich, GetChannelAddress(ich));
+    printf("  %2d pad_addr[%4d]", ich, GetPadAddress(ich));
     fCalib[ich].Print(opt);
   }
 }
