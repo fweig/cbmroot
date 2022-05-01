@@ -1223,15 +1223,15 @@ void CbmL1::TrackFitPerformance()
       if (mcTrack.IsPrimary()) {
         PRes2DPrim->Fill(mcP.p, (1. / fabs(trPar.qp[0]) - mcP.p) / mcP.p * 100.);
 
-        if (abs(mcTrack.pdg == 211)) {
+        if (abs(mcTrack.pdg) == 211) {
           pion_res_p_fstt->Fill(mcP.p, dt * 1.e4);
           pion_res_pt_fstt->Fill(pt, dt * 1.e4);
         }
-        if (abs(mcTrack.pdg == 321)) {
+        if (abs(mcTrack.pdg) == 321) {
           kaon_res_p_fstt->Fill(mcP.p, dt * 1.e4);
           kaon_res_pt_fstt->Fill(pt, dt * 1.e4);
         }
-        if (abs(mcTrack.pdg == 2212)) {
+        if (abs(mcTrack.pdg) == 2212) {
           pton_res_p_fstt->Fill(mcP.p, dt * 1.e4);
           pton_res_pt_fstt->Fill(pt, dt * 1.e4);
         }
@@ -1487,15 +1487,15 @@ void CbmL1::TrackFitPerformance()
 
         double pt = sqrt(mc.px * mc.px + mc.py * mc.py);
 
-        if (abs(mc.pdg == 211)) {
+        if (abs(mc.pdg) == 211) {
           pion_res_p_vtxt->Fill(mc.p, dt * 1.e4);
           pion_res_pt_vtxt->Fill(pt, dt * 1.e4);
         }
-        if (abs(mc.pdg == 321)) {
+        if (abs(mc.pdg) == 321) {
           kaon_res_p_vtxt->Fill(mc.p, dt * 1.e4);
           kaon_res_pt_vtxt->Fill(pt, dt * 1.e4);
         }
-        if (abs(mc.pdg == 2212)) {
+        if (abs(mc.pdg) == 2212) {
           pton_res_p_vtxt->Fill(mc.p, dt * 1.e4);
           pton_res_pt_vtxt->Fill(pt, dt * 1.e4);
         }

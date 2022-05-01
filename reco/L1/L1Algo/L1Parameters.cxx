@@ -11,7 +11,7 @@
 
 #include <FairLogger.h>
 
-void L1Parameters::Print(int verbosityLevel) const
+void L1Parameters::Print(int /*verbosityLevel*/) const
 {
   LOG(info) << "--------------  L1Algo parameters ---------------";
   LOG(info) << ToString();
