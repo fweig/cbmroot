@@ -12,7 +12,7 @@
 #include "CbmTrdGeoHandler.h"
 #include "CbmTrdModuleSim.h"
 #include "CbmTrdModuleSimR.h"
-#include "CbmTrdModuleSimT.h"
+#include "CbmTrdModuleSim2D.h"
 #include "CbmTrdPads.h"
 #include "CbmTrdParAsic.h"
 #include "CbmTrdParModDigi.h"
@@ -308,7 +308,7 @@ CbmTrdModuleSim* CbmTrdDigitizer::AddModule(Int_t detId)
     if (moduleType == 10) SetUseFASP(kFALSE);
     else
       SetUseFASP();
-    module = fModuleMap[moduleAddress] = new CbmTrdModuleSimT(moduleAddress, lyId, orientation, UseFASP());
+    module = fModuleMap[moduleAddress] = new CbmTrdModuleSim2D(moduleAddress, lyId, orientation, UseFASP());
     Int_t rType(-1);
     if ((rType = geoHandler.GetRadiatorType(path)) >= 0) {
       if (!fRadiator2D) {  // strong TRD-2D entrance window
@@ -337,7 +337,7 @@ CbmTrdModuleSim* CbmTrdDigitizer::AddModule(Int_t detId)
       }
       module->SetRadiator(fRadiator2D);
     }
-    //((CbmTrdModuleSimT*)module)->SetLabMeasurement();
+    //((CbmTrdModuleSim2D*)module)->SetLabMeasurement();
   }
   else {
     module = fModuleMap[moduleAddress] = new CbmTrdModuleSimR(moduleAddress, lyId, orientation);

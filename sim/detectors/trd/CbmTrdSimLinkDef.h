@@ -15,7 +15,7 @@
 #pragma link C++ class CbmTrdDigitizer + ;
 #pragma link C++ class CbmTrdModuleSim + ;
 #pragma link C++ class CbmTrdModuleSimR + ;
-#pragma link C++ class CbmTrdModuleSimT + ;
+#pragma link C++ class CbmTrdModuleSim2D + ;
 #pragma link C++ class CbmTrdTrianglePRF + ;
 #pragma link C++ class CbmTrdRawToDigiR + ;
 #pragma link C++ class CbmTrdCheckUtil + ;

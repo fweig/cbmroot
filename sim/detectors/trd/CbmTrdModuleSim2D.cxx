@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Florian Uhlig [committer], Alexandru Bercuci */
 
-#include "CbmTrdModuleSimT.h"
+#include "CbmTrdModuleSim2D.h"
 
 #include "CbmDigitizeBase.h"
 #include "CbmMatch.h"
@@ -41,7 +41,7 @@ using std::pair;
 using namespace std;
 
 //_________________________________________________________________________________
-CbmTrdModuleSimT::CbmTrdModuleSimT(Int_t mod, Int_t ly, Int_t rot, Bool_t FASP)
+CbmTrdModuleSim2D::CbmTrdModuleSim2D(Int_t mod, Int_t ly, Int_t rot, Bool_t FASP)
   : CbmTrdModuleSim(mod, ly, rot)
   , fConfig(0)
   , fTriangleBinning(NULL)
@@ -54,14 +54,14 @@ CbmTrdModuleSimT::CbmTrdModuleSimT(Int_t mod, Int_t ly, Int_t rot, Bool_t FASP)
 }
 
 //_________________________________________________________________________________
-CbmTrdModuleSimT::~CbmTrdModuleSimT()
+CbmTrdModuleSim2D::~CbmTrdModuleSim2D()
 {
   if (fTriangleBinning) delete fTriangleBinning;
   if (fFASP) delete fFASP;
 }
 
 //_________________________________________________________________________________
-Bool_t CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
+Bool_t CbmTrdModuleSim2D::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
 {
   /**
   Steering routine for building digits out of the TRD hit for the triangular pad geometry.
@@ -72,7 +72,7 @@ Bool_t CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
 */
 
   if (VERBOSE) {
-    printf("CbmTrdModuleSimT::MakeDigi @ T[ns] = ev[%10.2f]+hit[%5.2f] ...\n", time, point->GetTime());
+    printf("CbmTrdModuleSim2D::MakeDigi @ T[ns] = ev[%10.2f]+hit[%5.2f] ...\n", time, point->GetTime());
     point->Print("");
   }
   Double_t gin[3]  = {point->GetXIn(), point->GetYIn(), point->GetZIn()},
@@ -103,7 +103,7 @@ Bool_t CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
       ;     //if (fRadiator) ELossTR = fRadiator->GetXray(mom)*1.e6; // keV
     }
     if (VERBOSE) {
-      printf("CbmTrdModuleSimT::MakeDigi for %s ...\n", (IsFeCalib() ? "55Fe" : "X-rays"));
+      printf("CbmTrdModuleSim2D::MakeDigi for %s ...\n", (IsFeCalib() ? "55Fe" : "X-rays"));
       if (ELossTR > 0) LOG(info) << "    Ex " << ELossTR << " keV";
     }
   }
@@ -295,7 +295,7 @@ Bool_t CbmTrdModuleSimT::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
 }
 
 //_________________________________________________________________________________
-Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point, Double_t DX, Double_t ELoss, Double_t toff)
+Bool_t CbmTrdModuleSim2D::ScanPadPlane(const Double_t* point, Double_t DX, Double_t ELoss, Double_t toff)
 {
   /**
   The hit is expressed in local chamber coordinates, localized as follows:
@@ -314,7 +314,7 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point, Double_t DX, Double
   Int_t sec(-1), col(-1), row(-1);
   fDigiPar->GetPadInfo(point, sec, col, row);
   if (sec < 0 || col < 0 || row < 0) {
-    LOG(error) << "CbmTrdModuleSimT::ScanPadPlane: Hit to pad matching failed for [" << std::setprecision(5) << point[0]
+    LOG(error) << "CbmTrdModuleSim2D::ScanPadPlane: Hit to pad matching failed for [" << std::setprecision(5) << point[0]
                << ", " << std::setprecision(5) << point[1] << ", " << std::setprecision(5) << point[2] << "].";
     return kFALSE;
   }
@@ -328,7 +328,7 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point, Double_t DX, Double
   // build binning if called for the first time. Don't care about sector information as Bucharest has only 1 type of pads
   if (!fTriangleBinning) fTriangleBinning = new CbmTrdTrianglePRF(fDigiPar->GetPadSizeX(1), fDigiPar->GetPadSizeY(1));
   if (!fTriangleBinning->SetOrigin(dx, dy)) {
-    LOG(warn) << "CbmTrdModuleSimT::ScanPadPlane: Hit outside integration limits [" << std::setprecision(5) << dx
+    LOG(warn) << "CbmTrdModuleSim2D::ScanPadPlane: Hit outside integration limits [" << std::setprecision(5) << dx
               << ", " << std::setprecision(5) << dy << "].";
     return kFALSE;
   }
@@ -353,7 +353,7 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point, Double_t DX, Double
       prf = fTriangleBinning->GetChargeFraction();
       fTriangleBinning->GetCurrentPad(colOff, rowOff, up);
       if (colOff < 0 || colOff >= nc || rowOff < 0 || rowOff >= nr) {
-        printf("CbmTrdModuleSimT::ScanPadPlane: Bin outside mapped array : "
+        printf("CbmTrdModuleSim2D::ScanPadPlane: Bin outside mapped array : "
                "col[%d] row[%d]\n",
                colOff, rowOff);
         break;
@@ -377,7 +377,7 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point, Double_t DX, Double
       prf = fTriangleBinning->GetChargeFraction();
       fTriangleBinning->GetCurrentPad(colOff, rowOff, up);
       if (colOff < 0 || colOff >= nc || rowOff < 0 || rowOff >= nr) {
-        printf("CbmTrdModuleSimT::ScanPadPlaneTriangleAB: Bin outside mapped "
+        printf("CbmTrdModuleSim2D::ScanPadPlaneTriangleAB: Bin outside mapped "
                "array : col[%d] row[%d]\n",
                colOff, rowOff);
         break;
@@ -408,7 +408,7 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point, Double_t DX, Double
         prf = fTriangleBinning->GetChargeFraction();
         fTriangleBinning->GetCurrentPad(colOff, rowOff, up);
         if (colOff < 0 || colOff >= nc || rowOff < 0 || rowOff >= nr) {
-          printf("CbmTrdModuleSimT::ScanPadPlane: Bin outside mapped array : "
+          printf("CbmTrdModuleSim2D::ScanPadPlane: Bin outside mapped array : "
                  "col[%d] row[%d]\n",
                  colOff, rowOff);
           break;
@@ -431,7 +431,7 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point, Double_t DX, Double
         prf = fTriangleBinning->GetChargeFraction();
         fTriangleBinning->GetCurrentPad(colOff, rowOff, up);
         if (colOff < 0 || colOff >= nc || rowOff < 0 || rowOff >= nr) {
-          printf("CbmTrdModuleSimT::ScanPadPlane: Bin outside mapped array : "
+          printf("CbmTrdModuleSim2D::ScanPadPlane: Bin outside mapped array : "
                  "col[%d] row[%d]\n",
                  colOff, rowOff);
           break;
@@ -532,7 +532,7 @@ Bool_t CbmTrdModuleSimT::ScanPadPlane(const Double_t* point, Double_t DX, Double
 }
 
 //_______________________________________________________________________________________________
-void CbmTrdModuleSimT::AddDigi(Int_t address, Double_t* charge, Double_t time /*, Double_t fTR*/)
+void CbmTrdModuleSim2D::AddDigi(Int_t address, Double_t* charge, Double_t time /*, Double_t fTR*/)
 {
   /**
  * Adding triangular digits to time slice buffer
@@ -576,7 +576,7 @@ void CbmTrdModuleSimT::AddDigi(Int_t address, Double_t* charge, Double_t time /*
 }
 
 //_______________________________________________________________________________________________
-Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time)
+Int_t CbmTrdModuleSim2D::FlushBuffer(ULong64_t time)
 {
   /** Flush time sorted digi buffer until requested moment in time. If time limit not specified flush all digits.
  *  Calculate timely interaction between digits which are produced either on different anode wires for the same particle or
@@ -603,7 +603,7 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time)
   fTimeOld = time;
 
   if (VERBOSE)
-    printf("CbmTrdModuleSimT::FlushBuffer(%llu) FASP start[%llu] end[%llu] "
+    printf("CbmTrdModuleSim2D::FlushBuffer(%llu) FASP start[%llu] end[%llu] "
            "closeTS[%c]\n",
            time, fFASP->GetStartTime(), fFASP->GetEndTime(), (closeTS ? 'y' : 'n'));
 
@@ -713,7 +713,7 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time)
         row = GetPadRowCol(localAddress, col);
         sec = fDigiPar->GetSector(row, srow);
         if (VERBOSE)
-          printf("CbmTrdModuleSimT::FlushBuffer : request ly[%d] mod[%d] "
+          printf("CbmTrdModuleSim2D::FlushBuffer : request ly[%d] mod[%d] "
                  "sec[%d] srow[%d] col[%d]\n",
                  fLayerId, CbmTrdAddress::GetModuleId(fModAddress), sec, srow, col);
         //address = CbmTrdAddress::GetAddress(fLayerId, CbmTrdAddress::GetModuleId(fModAddress), sec, srow, col);
@@ -737,7 +737,7 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time)
       it = fBuffer.erase(it);
   }
   if (VERBOSE)
-    printf("CbmTrdModuleSimT::FlushBuffer : write %d digis from %duns to "
+    printf("CbmTrdModuleSim2D::FlushBuffer : write %d digis from %duns to "
            "%duns. Digits still in buffer %d\n",
            n, TMath::Nint(timeMin), TMath::Nint(timeMax), nDigiLeft);
   fFASP->SetStartTime(newStartTime);
@@ -749,7 +749,7 @@ Int_t CbmTrdModuleSimT::FlushBuffer(ULong64_t time)
 }
 
 //_______________________________________________________________________________________________
-void CbmTrdModuleSimT::DumpBuffer() const
+void CbmTrdModuleSim2D::DumpBuffer() const
 {
   for (std::map<Int_t, std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>>::const_iterator it = fBuffer.begin();
        it != fBuffer.end(); it++) {
@@ -765,7 +765,7 @@ void CbmTrdModuleSimT::DumpBuffer() const
 
 
 //_______________________________________________________________________________
-void CbmTrdModuleSimT::SetAsicPar(CbmTrdParSetAsic* p)
+void CbmTrdModuleSim2D::SetAsicPar(CbmTrdParSetAsic* p)
 {
   /** Build local set of ASICs and perform initialization. Need a proper fDigiPar already defined.
  */
@@ -868,4 +868,4 @@ void CbmTrdModuleSimT::SetAsicPar(CbmTrdParSetAsic* p)
   //   //fAsicPar->Print();
 }
 
-ClassImp(CbmTrdModuleSimT)
+ClassImp(CbmTrdModuleSim2D)

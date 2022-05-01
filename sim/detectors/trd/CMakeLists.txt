@@ -41,7 +41,7 @@ CbmTrd.cxx
 CbmTrdDigitizer.cxx 
 CbmTrdModuleSim.cxx 
 CbmTrdModuleSimR.cxx 
-CbmTrdModuleSimT.cxx 
+CbmTrdModuleSim2D.cxx 
 CbmTrdTrianglePRF.cxx
 CbmTrdRawToDigiR.cxx
 CbmTrdCheckUtil.cxx

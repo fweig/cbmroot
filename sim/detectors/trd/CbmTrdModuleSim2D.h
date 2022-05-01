@@ -2,8 +2,8 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Alexandru Bercuci, Florian Uhlig [committer] */
 
-#ifndef CBMTRDMODULESIMT_H
-#define CBMTRDMODULESIMT_H
+#ifndef CBMTRDMODULESIM2D_H
+#define CBMTRDMODULESIM2D_H
 
 #include "CbmTrdModuleSim.h"
 
@@ -11,7 +11,7 @@ class CbmTimeSlice;
 class CbmTrdFASP;
 class CbmTrdTrianglePRF;
 class CbmTrdParSetAsic;
-/** @class CbmTrdModuleSimT
+/** @class CbmTrdModuleSim2D
  ** @brief Simulation module implementation for TRD-2D physics and FEE
  ** @author Alex Bercuci <abercuci@niham.nipne.ro>  
  ** @since 01.02.2019 
@@ -22,9 +22,9 @@ class CbmTrdParSetAsic;
  ** output but also simulate laboratory set-ups (\sa SetLabMeasurement()) like 
  ** 55Fe (\sa SetFeCalib()) or X-rays (\sa SetFeCalib(kFALSE))   
  **/
-class CbmTrdModuleSimT : public CbmTrdModuleSim {
+class CbmTrdModuleSim2D : public CbmTrdModuleSim {
 public:
-  enum ECbmTrdModuleSimT
+  enum ECbmTrdModuleSim2D
   {
     kMeasurement = 0  ///< default simulate setup interactions, if set simulate laboratory measurement, see kLab
       ,
@@ -32,8 +32,8 @@ public:
       ,
     kFEE  ///< FEE simulator. Default FASP otherwise SPADIC
   };
-  CbmTrdModuleSimT(Int_t mod, Int_t ly, Int_t rot, Bool_t FASP = kTRUE);
-  virtual ~CbmTrdModuleSimT();
+  CbmTrdModuleSim2D(Int_t mod, Int_t ly, Int_t rot, Bool_t FASP = kTRUE);
+  virtual ~CbmTrdModuleSim2D();
 
   Bool_t IsLabMeasurement() const { return TESTBIT(fConfig, kMeasurement); }
   Bool_t IsFeCalib() const { return TESTBIT(fConfig, kLab); }
@@ -73,8 +73,8 @@ public:
   Bool_t UseFasp() const { return TESTBIT(fConfig, kFEE); }
 
 private:
-  CbmTrdModuleSimT(const CbmTrdModuleSimT& ref);
-  const CbmTrdModuleSimT& operator=(const CbmTrdModuleSimT& ref);
+  CbmTrdModuleSim2D(const CbmTrdModuleSim2D& ref);
+  const CbmTrdModuleSim2D& operator=(const CbmTrdModuleSim2D& ref);
 
   /**
    * \brief Build digits for the triangular pad geometry
@@ -108,7 +108,7 @@ private:
   CbmTimeSlice* fTimeSlice;             ///< link to CBM time slice
   ULong64_t fTimeOld;                   ///< time [ns] of the last event processed (check CbmDaq)
 
-  ClassDef(CbmTrdModuleSimT, 1)
+  ClassDef(CbmTrdModuleSim2D, 1)
 };
 
 #endif
