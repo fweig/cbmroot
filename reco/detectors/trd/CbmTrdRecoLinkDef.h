@@ -27,6 +27,7 @@
 #pragma link C++ class CbmTrdQa + ;
 #pragma link C++ class CbmTrdRecoQa + ;
 #pragma link C++ class CbmTrdTracksPidQa + ;
+#pragma link C++ class CbmTrdHitMC + ;
 
 #pragma link C++ class std::vector<std::pair<unsigned long, unsigned long>> + ;
 #pragma link C++ class CbmTrdUnpackAlgoBaseR + ;

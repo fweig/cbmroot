@@ -22,6 +22,7 @@
 #include "CbmTrdCluster.h"
 #include "CbmTrdDigi.h"
 #include "CbmTrdHit.h"
+#include "CbmTrdHitMC.h"
 #include "CbmTrdParModDigi.h"  // for CbmTrdModule
 #include "CbmTrdParModGeo.h"
 #include "CbmTrdParSetDigi.h"  // for CbmTrdParSetDigi
@@ -118,6 +119,12 @@ void CbmTrackerInputQaTrd::DeInit()
 
   fhPointsPerHit.clear();
   fhHitsPerPoint.clear();
+
+  if (fHitsMc) {
+    fHitsMc->Clear("C");
+    fHitsMc->Delete();
+    delete fHitsMc;
+  }
 }
 // -------------------------------------------------------------------------
 
@@ -269,6 +276,10 @@ InitStatus CbmTrackerInputQaTrd::ReInit()
     LOG(error) << "can not count TRD tracking stations";
     return kERROR;
   }
+
+  // init output tree
+  fHitsMc = new TClonesArray("CbmTrdHitMC", 100);
+  manager->Register("TrdHitMC", "TRD", fHitsMc, IsOutputBranchPersistent("TrdHitMC"));
 
   // initialise histograms
   fOutFolder.SetOwner(false);
@@ -425,9 +436,10 @@ void CbmTrackerInputQaTrd::ResolutionQa()
   Int_t nDigis    = fDigiManager->GetNofDigis(ECbmModuleId::kTrd);
 
   int nMcEvents = fMcEventList->GetNofEvents();
+  int imc(0);  // index of hit->MC QA objects
+  fHitsMc->Delete();
 
   // Vector of integers parallel to mc points
-
   std::vector<std::vector<int>> pointNhits;
   pointNhits.resize(nMcEvents);
   for (int iE = 0; iE < nMcEvents; iE++) {
@@ -439,7 +451,7 @@ void CbmTrackerInputQaTrd::ResolutionQa()
 
   for (Int_t iHit = 0; iHit < nHits; iHit++) {
 
-    CbmTrdHit* hit = dynamic_cast<CbmTrdHit*>(fHits->At(iHit));
+    const CbmTrdHit* hit = dynamic_cast<const CbmTrdHit*>(fHits->At(iHit));
     if (!hit) {
       LOG(error) << "TRD hit N " << iHit << " doesn't exist";
       return;
@@ -553,6 +565,9 @@ void CbmTrackerInputQaTrd::ResolutionQa()
     // skip hits from the noise digis
     if (bestLink.GetIndex() < 0) { continue; }
 
+    // construct QA object
+    CbmTrdHitMC* hmc = new ((*fHitsMc)[imc++]) CbmTrdHitMC(*hit);
+
     CbmTrdPoint* p = dynamic_cast<CbmTrdPoint*>(fMcPoints->Get(bestLink));
     if (p == nullptr) {
       LOG(error) << "link points to a non-existing MC point";
@@ -631,15 +646,16 @@ void CbmTrackerInputQaTrd::ResolutionQa()
         mass = TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
       }
     }
+    hmc->AddPoint(p, t0, mass);
 
     constexpr double speedOfLight = 29.979246;  // cm/ns
     TVector3 mom3;
     p->Momentum(mom3);
     t += dz / (pz * speedOfLight) * sqrt(mass * mass + mom3.Mag2());
 
-    double du = hit->GetX() - x;
-    double dv = hit->GetY() - y;
-    double dt = hit->GetTime() - t;
+    double du = hmc->GetDx();  //hit->GetX() - x;
+    double dv = hmc->GetDy();  //hit->GetY() - y;
+    double dt = hmc->GetDt();  //hit->GetTime() - t;
     double su = hit->GetDx();
     double sv = hit->GetDy();
     double st = hit->GetTimeError();
@@ -673,7 +689,7 @@ void CbmTrackerInputQaTrd::ResolutionQa()
       fh1DpullT.Fill(dt / st);
     }
     else {
-      fh2DpullX.Fill(du / su);
+      fh2DpullX.Fill(6.2 * du / su);
       fh2DpullY.Fill(dv / sv);
       fh2DpullT.Fill(dt / st);
     }

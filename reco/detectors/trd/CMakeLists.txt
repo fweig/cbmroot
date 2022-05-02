@@ -5,6 +5,7 @@
 Set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/qa
+  ${CMAKE_CURRENT_SOURCE_DIR}/qa/data
   ${CMAKE_CURRENT_SOURCE_DIR}/pid
   ${CMAKE_CURRENT_SOURCE_DIR}/rawToDigiMethods
   ${CMAKE_CURRENT_SOURCE_DIR}/unpack
@@ -73,6 +74,8 @@ qa/CbmTrdOccupancyQa.cxx
 qa/CbmTrdQa.cxx
 qa/CbmTrdRecoQa.cxx
 qa/CbmTrdTracksPidQa.cxx
+
+qa/data/CbmTrdHitMC.cxx
 
 pid/CbmTrdElectronsTrainAnn.cxx
 pid/CbmTrdSetTracksPidWkn.cxx   
