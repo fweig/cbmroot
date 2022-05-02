@@ -336,7 +336,7 @@ bool CbmTrdUnpackAlgoR::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
   fMsStartTimeRelCC = (msdesc.idx - fTsStartTime) / fSpadic->GetClockCycle();
 
   // We only want to count on TS_MSB per Stream per TS_MSB package (each eLink sends its own TS_MSB frame) so we store the current TS_MSB and compare it to the incoming.
-  std::uint8_t currTsMsb = 0;
+  std::int8_t currTsMsb = 0;
 
   // Reset the TS_MSB counter for the new µSlice we unpack
   fNrTsMsbVec.clear();
@@ -364,6 +364,7 @@ bool CbmTrdUnpackAlgoR::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
 
   // Loop over all 64bit-Spadic-Words in the current µslice
   for (std::uint32_t istream = 0; istream < fStreamsPerWord; istream++) {
+    currTsMsb = -1;
     for (std::uint32_t iword = 0; iword < nwords; ++iword) {
       // Access the actual word from the pointer
       size_t word = static_cast<size_t>(mscontent[iword]);
