@@ -28,7 +28,7 @@ class L1AlgoDraw;
 
 #define LAST_ITERATION kAllSecIter
 #define FIND_GAPED_TRACKS  // use triplets with gaps
-#define USE_RL_TABLE
+// =====>dispatched<===== // #define USE_RL_TABLE
 #ifndef TRACKS_FROM_TRIPLETS
 #define EXTEND_TRACKS
 #endif

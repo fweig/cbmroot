@@ -323,11 +323,12 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 
 
     for (int ista = 0; ista <= istal - 1; ista++) {
-#ifdef USE_RL_TABLE
-      fit.L1AddMaterial(T, fRadThick[ista].GetRadThick(T.x, T.y), fMaxInvMom, 1);
-#else  // not USE_RL_TABLE
-      fit.L1AddMaterial(T, vStations[ista].materialInfo, fMaxInvMom, 1);
-#endif  // USE_RL_TABLE
+      if constexpr (L1Parameters::kIfUseRadLengthTable) {
+        fit.L1AddMaterial(T, fRadThick[ista].GetRadThick(T.x, T.y), fMaxInvMom, 1);
+      }
+      else {
+        fit.L1AddMaterial(T, vStations[ista].materialInfo, fMaxInvMom, 1);
+      }
       if (ista == NMvdStations - 1) fit.L1AddPipeMaterial(T, fMaxInvMom, 1);
     }
 
@@ -359,13 +360,14 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 #endif  // BEGIN_FROM_TARGET
 
 
-#ifdef USE_RL_TABLE
-    if (fTrackingMode != kMcbm) fit.L1AddMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), fMaxInvMom, 1);
-    if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
-      fit.L1AddThickMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), fMaxInvMom, 1, stal.materialInfo.thick, 1);
-#else  // not USE_RL_TABLE
-    fit.L1AddMaterial(T, stal.materialInfo, fMaxInvMom, 1);
-#endif  // USE_RL_TABLE
+    if constexpr (L1Parameters::kIfUseRadLengthTable) {
+      if (fTrackingMode != kMcbm) fit.L1AddMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), fMaxInvMom, 1);
+      if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
+        fit.L1AddThickMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), fMaxInvMom, 1, stal.materialInfo.thick, 1);
+    }
+    else {
+      fit.L1AddMaterial(T, stal.materialInfo, fMaxInvMom, 1);
+    }
     if ((istam >= NMvdStations) && (istal <= NMvdStations - 1)) { fit.L1AddPipeMaterial(T, fMaxInvMom, 1); }
 
     fvec dz = zstam - zl;
@@ -677,15 +679,17 @@ inline void L1Algo::f30(  // input
 
 
       FilterTime(T2, timeM, timeMEr, stam.timeInfo);
-#ifdef USE_RL_TABLE
-      if (fTrackingMode != kMcbm && fTrackingMode != kGlobal)
-        fit.L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1);
+      if constexpr (L1Parameters::kIfUseRadLengthTable) {
+        if (fTrackingMode != kMcbm && fTrackingMode != kGlobal)
+          fit.L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1);
 
-      if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
-        fit.L1AddThickMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), fMaxInvMom, 1, stam.materialInfo.thick, 1);
-#else  // not USE_RL_TABLE
-      fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, 1);
-#endif  // USE_RL_TABLE
+        if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
+          fit.L1AddThickMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), fMaxInvMom, 1, stam.materialInfo.thick,
+                                 1);
+      }
+      else {
+        fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, 1);
+      }
       if ((istar >= NMvdStations) && (istam <= NMvdStations - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
 
       fvec dz2 = star.z - T2.z;
@@ -1025,11 +1029,12 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
     // fit
     for (int ih = 1; ih < NHits; ++ih) {
       L1Extrapolate(T, z[ih], T.qp, fld);
-#ifdef USE_RL_TABLE
-      fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
-#else  // not USE_RL_TABLE
-      fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
-#endif  // USE_RL_TABLE
+      if constexpr (L1Parameters::kIfUseRadLengthTable) {
+        fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
+      }
+      else {
+        fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
+      }
       if (ista[ih] == NMvdStations - 1) fit.L1AddPipeMaterial(T, T.qp, 1);
 
       L1Filter(T, sta[ih].frontInfo, u[ih]);
@@ -1060,11 +1065,12 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
       //       L1Filter( T, sta[ih].backInfo,  v[ih] );
       for (ih = NHits - 2; ih >= 0; ih--) {
         L1Extrapolate(T, z[ih], T.qp, fld);
-#ifdef USE_RL_TABLE
-        fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
-#else  // not USE_RL_TABLE
-        fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
-#endif  // USE_RL_TABLE
+        if constexpr (L1Parameters::kIfUseRadLengthTable) {
+          fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
+        }
+        else {
+          fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
+        }
         if (ista[ih] == NMvdStations) fit.L1AddPipeMaterial(T, T.qp, 1);
 
         L1Filter(T, sta[ih].frontInfo, u[ih]);
@@ -1091,11 +1097,12 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
       //       L1Filter( T, sta[ih].backInfo,  v[ih] );
       for (ih = 1; ih < NHits; ++ih) {
         L1Extrapolate(T, z[ih], T.qp, fld);
-#ifdef USE_RL_TABLE
-        fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
-#else  // not USE_RL_TABLE
-        fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
-#endif  // USE_RL_TABLE
+        if constexpr (L1Parameters::kIfUseRadLengthTable) {
+          fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
+        }
+        else {
+          fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
+        }
         if (ista[ih] == NMvdStations + 1) fit.L1AddPipeMaterial(T, T.qp, 1);
 
         L1Filter(T, sta[ih].frontInfo, u[ih]);

@@ -36,7 +36,7 @@
 #include "TDatabasePDG.h"
 
 #include "KFParticleDatabase.h"
-#include "L1Algo.h"
+#include "L1Algo.h"  // Also defines L1Parameters
 #include "L1Extrapolation.h"
 #include "L1Filtration.h"
 #include "L1Fit.h"
@@ -262,12 +262,13 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
         fit.L1AddPipeMaterial(T, qp0, wIn);
         fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(-1.f), wIn);
       }
-#ifdef USE_RL_TABLE
-      fit.L1AddMaterial(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, wIn);
-      fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, -1, wIn);
-#else
-      fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
-#endif
+      if constexpr (L1Parameters::kIfUseRadLengthTable) {
+        fit.L1AddMaterial(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, wIn);
+        fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, -1, wIn);
+      }
+      else {
+        fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
+      }
       L1Filter(T, sta[i].frontInfo, u[i], w1);
       L1Filter(T, sta[i].backInfo, v[i], w1);
 
@@ -337,12 +338,13 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
         fit.L1AddPipeMaterial(T, qp0, wIn);
         fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(1.f), wIn);
       }
-#ifdef USE_RL_TABLE
-      fit.L1AddMaterial(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, wIn);
-      fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, 1, wIn);
-#else
-      fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
-#endif
+      if constexpr (L1Parameters::kIfUseRadLengthTable) {
+        fit.L1AddMaterial(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, wIn);
+        fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, 1, wIn);
+      }
+      else {
+        fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
+      }
       L1Filter(T, sta[i].frontInfo, u[i], w1);
       L1Filter(T, sta[i].backInfo, v[i], w1);
 

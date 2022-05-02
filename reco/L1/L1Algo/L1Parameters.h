@@ -20,9 +20,14 @@
 
 class L1Parameters {
 public:
-  //-------------------------------------------------------------------------------------------------------//
-  //    Compile time constants                                                                             //
-  //-------------------------------------------------------------------------------------------------------//
+  /////////////////////////////
+  // COMPILE TIME CONSTANTS //
+  ///////////////////////////
+
+  //
+  // Array sizes
+  //
+
   /// Amount of coefficients in field approximations
   static constexpr int kMaxNFieldApproxCoefficients {21};  // TODO: May be it is better to use the polynomial
                                                            // order instead of this?
@@ -40,6 +45,15 @@ public:
   static constexpr int kStandardIOWidth {15};  ///> Width of one output entry, passed to the std::setw()
 
   static constexpr int kAssertionLevel {0};  ///> Assertion level
+
+  //
+  // Compile control flags
+  //
+
+  /// Selector for the radiation length tables usage
+  /// true - Radiational tables will be used,
+  /// false - basic station material info is used
+  static constexpr bool kIfUseRadLengthTable {true};
 
 public:
   /// Default constructor
