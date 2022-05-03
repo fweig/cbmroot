@@ -497,13 +497,17 @@ void CbmTrackerInputQaTrd::ResolutionQa()
       return;
     }
 
+    // construct QA object
+    CbmTrdHitMC* hmc = new ((*fHitsMc)[imc++]) CbmTrdHitMC(*hit);
+    hmc->AddCluster(cluster);
+    uint64_t tdigi = 0;
+    
     // custom finder of the digi matches
-
     CbmMatch myHitMatch;
     for (Int_t iDigi = 0; iDigi < nClusterDigis; iDigi++) {
       Int_t digiIdx = cluster->GetDigi(iDigi);
       if (digiIdx < 0 || digiIdx >= nDigis) {
-        LOG(error) << "TRD cluster: digi index " << digiIdx << " out of range ";
+        LOG(fatal) << "TRD cluster: digi index " << digiIdx << " out of range ";
         return;
       }
       const CbmTrdDigi* digi = CbmDigiManager::Instance()->Get<CbmTrdDigi>(digiIdx);
@@ -513,9 +517,31 @@ void CbmTrackerInputQaTrd::ResolutionQa()
       }
 
       if (digi->GetAddressModule() != address) {
-        LOG(error) << "TRD hit address " << address << " differs from its digi address " << digi->GetAddressModule();
+        std::stringstream ss;
+        ss << "TRD hit address " << address << " differs from its digi address " << digi->GetAddressModule();
+        hmc->SetErrorMsg(ss.str());
+        LOG(error) << ss.str();
         return;
       }
+      switch (digi->GetType()) {
+        case CbmTrdDigi::eCbmTrdAsicType::kFASP:
+        {
+          int dt;
+          double t, r = digi->GetCharge(t, dt);
+          if (!tdigi) tdigi = digi->GetTimeDAQ();
+          if (t > 0) hmc->AddSignal(t, digi->GetTimeDAQ() - tdigi);
+          if (r > 0) hmc->AddSignal(r, digi->GetTimeDAQ() - tdigi + dt);
+          break;
+        }
+        case CbmTrdDigi::eCbmTrdAsicType::kSPADIC:
+          hmc->AddSignal(digi->GetCharge(), digi->GetTime());
+          break;
+        default:
+          LOG(fatal) << "TRD digi type neither SPADIC or FASP";           
+          return;
+      }
+      
+      
       const CbmMatch* match = dynamic_cast<const CbmMatch*>(fDigiManager->GetMatch(ECbmModuleId::kTrd, digiIdx));
       if (!match) {
         LOG(fatal) << "TRD digi match " << digiIdx << " not found";
@@ -529,11 +555,19 @@ void CbmTrackerInputQaTrd::ResolutionQa()
 
     {  // check if the hit match is correct
       CbmMatch* hitMatch = dynamic_cast<CbmMatch*>(fHitMatches->At(iHit));
-      if (hitMatch == nullptr) { LOG(error) << "hit match for TRD hit " << iHit << " doesn't exist"; }
+      if (hitMatch == nullptr) {
+        std::stringstream ss;
+        ss << "hit match for TRD hit " << iHit << " doesn't exist";
+        hmc->SetErrorMsg(ss.str());
+        LOG(error) << ss.str();
+      }
       else {
         const CbmLink& link = hitMatch->GetMatchedLink();
         if ((link != bestLink) && (link.GetWeight() != bestLink.GetWeight())) {
-          LOG(error) << "hit match for TRD hit " << iHit << " doesn't correspond to digi matches";
+          std::stringstream ss;
+          ss << "hit match for TRD hit " << iHit << " doesn't correspond to digi matches";
+          hmc->SetErrorMsg(ss.str());
+          LOG(error) << ss.str();
         }
       }
     }
@@ -547,11 +581,17 @@ void CbmTrackerInputQaTrd::ResolutionQa()
         nHitPoints++;
         int iE = fMcEventList->GetEventIndex(link);
         if (iE < 0 || iE >= nMcEvents) {
-          LOG(error) << "link points to a non-existing MC event";
+          std::stringstream ss;
+          ss << "link points to a non-existing MC event";
+          hmc->SetErrorMsg(ss.str());
+          LOG(error) << ss.str();
           return;
         }
         if (link.GetIndex() >= (int) pointNhits[iE].size()) {
-          LOG(error) << "link points to a non-existing MC point";
+          std::stringstream ss;
+          ss << "link points to a non-existing MC index";
+          hmc->SetErrorMsg(ss.str());
+          LOG(error) << ss.str();
           return;
         }
         pointNhits[iE][link.GetIndex()]++;
@@ -563,19 +603,27 @@ void CbmTrackerInputQaTrd::ResolutionQa()
     // take corresponding MC point
 
     // skip hits from the noise digis
-    if (bestLink.GetIndex() < 0) { continue; }
-
-    // construct QA object
-    CbmTrdHitMC* hmc = new ((*fHitsMc)[imc++]) CbmTrdHitMC(*hit);
-
+    if (bestLink.GetIndex() < 0) {           
+      std::stringstream ss;
+      ss << "hit from noise [INFO]";
+      hmc->SetErrorMsg(ss.str());
+      continue;       
+    }
+    
     CbmTrdPoint* p = dynamic_cast<CbmTrdPoint*>(fMcPoints->Get(bestLink));
     if (p == nullptr) {
-      LOG(error) << "link points to a non-existing MC point";
+      std::stringstream ss;
+      ss << "link points to a non-existing MC point";
+      hmc->SetErrorMsg(ss.str());
+      LOG(error) << ss.str();
       return;
     }
 
     if (p->GetModuleAddress() != (int) CbmTrdAddress::GetModuleAddress(address)) {
-      LOG(error) << "mc point module address differs from the hit module address";
+      std::stringstream ss;
+      ss << "mc point module address differs from the hit module address";
+      hmc->SetErrorMsg(ss.str());
+      LOG(error) << ss.str();
       return;
     }
 
@@ -593,25 +641,39 @@ void CbmTrackerInputQaTrd::ResolutionQa()
 
       double staZ = pGeo->GetZ();  // module->GetZ();  //+ 410;
       if ((staZ < p->GetZIn() - 1.) || (staZ > p->GetZOut() + 1.)) {
-        LOG(error) << "TRD station " << StationIndex << ": active material Z[" << p->GetZIn() << " cm," << p->GetZOut()
+        std::stringstream ss;
+        ss << "TRD station " << StationIndex << ": active material Z[" << p->GetZIn() << " cm," << p->GetZOut()
                    << " cm] is too far from the nominal station Z " << staZ << " cm";
+        hmc->SetErrorMsg(ss.str());
+        LOG(error) << ss.str();
         return;
       }
       // the cut of 1 cm is choosen arbitrary and can be changed
       if (fabs(hit->GetZ() - staZ) > 1.) {
-        LOG(error) << "TRD station " << StationIndex << ": hit Z " << hit->GetZ()
+        std::stringstream ss;
+        ss << "TRD station " << StationIndex << ": hit Z " << hit->GetZ()
                    << " cm, is too far from the nominal station Z " << staZ << " cm";
+        hmc->SetErrorMsg(ss.str());
+        LOG(error) << ss.str();
         return;
       }
     }
 
     // residual and pull
 
-    if (nHitPoints != 1) continue;  // only check residual for non-mixed hits
+    if (nHitPoints != 1) {
+      std::stringstream ss;
+      ss << "hit from mixed hit [INFO] nPoints=" << nHitPoints;
+      hmc->SetErrorMsg(ss.str());
+      continue;  // only check residual for non-mixed hits
+    }
 
     double t0 = fMcEventList->GetEventTime(bestLink);
     if (t0 < 0) {
-      LOG(error) << "MC event time doesn't exist for a TRD link";
+      std::stringstream ss;
+      ss << "MC event time doesn't exist for a TRD link";
+      hmc->SetErrorMsg(ss.str());
+      LOG(error) << ss.str();
       return;
     }
 
@@ -632,30 +694,35 @@ void CbmTrackerInputQaTrd::ResolutionQa()
     y += dz * py / pz;
 
     // get particle mass
+    Int_t pdg(0);
     double mass = 0;
     {
       CbmLink mcTrackLink = bestLink;
       mcTrackLink.SetIndex(p->GetTrackID());
       CbmMCTrack* mcTrack = dynamic_cast<CbmMCTrack*>(fMcTracks->Get(mcTrackLink));
       if (!mcTrack) {
-        LOG(error) << "MC track " << p->GetTrackID() << " doesn't exist";
+        std::stringstream ss;
+        ss << "MC track " << p->GetTrackID() << " doesn't exist";
+        hmc->SetErrorMsg(ss.str());
+        LOG(error) << ss.str();
         return;
       }
-      Int_t pdg = mcTrack->GetPdgCode();
+      pdg = mcTrack->GetPdgCode();
       if (pdg < 9999999 && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg))) {
         mass = TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
       }
     }
-    hmc->AddPoint(p, t0, mass);
-
+    hmc->AddPoint(p, t0, pdg);
+    //std::cout << hmc->ToString() << "\n";
+    
     constexpr double speedOfLight = 29.979246;  // cm/ns
     TVector3 mom3;
     p->Momentum(mom3);
     t += dz / (pz * speedOfLight) * sqrt(mass * mass + mom3.Mag2());
 
-    double du = hmc->GetDx();  //hit->GetX() - x;
-    double dv = hmc->GetDy();  //hit->GetY() - y;
-    double dt = hmc->GetDt();  //hit->GetTime() - t;
+    double du = hit->GetX() - x;  //hmc->GetDx();  //hit->GetX() - x;
+    double dv = hit->GetY() - y;  //hmc->GetDy();  //hit->GetY() - y;
+    double dt = hit->GetTime() - t;  // hmc->GetDt();  //hit->GetTime() - t;
     double su = hit->GetDx();
     double sv = hit->GetDy();
     double st = hit->GetTimeError();
@@ -678,8 +745,10 @@ void CbmTrackerInputQaTrd::ResolutionQa()
 
     // pulls
     if ((su < 1.e-5) || (sv < 1.e-5) || (st < 1.e-5)) {
-      LOG(error) << "TRD hit errors are not properly set: errX " << hit->GetDx() << " errY " << hit->GetDy() << " errT "
-                 << st;
+      std::stringstream ss;
+      ss << "TRD hit errors are not properly set: errX " << hit->GetDx() << " errY " << hit->GetDy() << " errT ";
+      hmc->SetErrorMsg(ss.str());
+      LOG(error) << ss.str();
       return;
     }
 

@@ -7,25 +7,36 @@
 
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
+#include "CbmTrdCluster.h"
 
-#include <vector>  // for vector
+#include <vector>  // for fTrdPoints
+#include <string>  // for ToString
 
 /** \class CbmTrdHitMC
  * \brief  TRD hit to MC point correlation class
  * \author Alexandru Bercuci <abercuci@niham.nipne.ro>
  * \date 02.05.2022
  * 
- * The class
+ * The class packs the whole history of a TrdHit from the set of MC points generating the signals, 
+ * to information on the digits structure in the cluster and the reconstructed observables.
+ * The class should be used to make error parametrization, pile-up estimations, etc. 
+ *
+ * To describe main functionality ... 
  */
 
 class CbmTrdHitMC : public CbmTrdHit {
 public:
   /** \brief Default constructor.*/
   CbmTrdHitMC();
+
   /** \brief Standard constructor.*/
   CbmTrdHitMC(const CbmTrdHit& hit);
+
   /** \brief Destructor. */
   virtual ~CbmTrdHitMC();
+
+  /** \brief Copy cluster details.*/
+  void AddCluster(const CbmTrdCluster* c);
 
   /** \brief Add MC points to the hit. The first time this function is called is for the best matched MC point
    * \param p: pointer to the point being added 
@@ -33,19 +44,33 @@ public:
    * \param m: mass of the particle producing the point  
    * \return the number of points in the list 
    */
-  size_t AddPoint(const CbmTrdPoint* p, double t, double m);
+  size_t AddPoint(const CbmTrdPoint* p, double t, int id);
+  /** \brief Add signal values in the increasing order of pad index
+   * \param s signal from ch/pad
+   * \param t relative time in the cluster
+   * \return the number of signals in the cluster 
+   */
+  size_t AddSignal(double s, int t);
 
-  /** \brief Retrieve a MC point
+  /** \brief Register a MC point
    * \param idx index of point being requested. by default the best fit is returned. 
    */
   const CbmTrdPoint* GetPoint(uint idx = 0) const;
 
   /** \brief Calculate residuals in the bending plane.*/
   double GetDx() const;
+
   /** \brief Calculate residuals for the azimuth direction.*/
   double GetDy() const;
+
   /** \brief Calculate residuals for time.*/
   double GetDt() const;
+
+  /** \brief Store error message.*/
+  void SetErrorMsg(std::string msg) { fErrMsg = msg; }
+  
+  /** \brief Verbosity functionality.**/
+  virtual std::string ToString() const;
 
 private:
   /** \brief Copy Constructor.*/
@@ -53,7 +78,10 @@ private:
   /** \brief Assignment operator.*/
   CbmTrdHitMC& operator=(const CbmTrdHitMC&) = default;
 
-  std::vector<std::tuple<CbmTrdPoint, double, double>> fTrdPoints = {};
+  std::string fErrMsg = "";  //< error message from the QA task
+  std::vector<std::pair<double, int>> fTrdSignals = {};  //< list of signal/time in cluster   
+  std::vector<std::tuple<CbmTrdPoint, double, int>> fTrdPoints = {};  //< list of MC points together with the event time and particle PDG code producing them
+  CbmTrdCluster fCluster;  //< data from the cluster 
   ClassDef(CbmTrdHitMC, 1)  // Hit to MC point data correlation
 };
 

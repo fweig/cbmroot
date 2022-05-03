@@ -4,7 +4,11 @@
 
 #include "CbmTrdHitMC.h"
 
+#include <TDatabasePDG.h>
+#include <TParticlePDG.h>
 #include <TVector3.h>
+
+#include <sstream>
 
 //_____________________________________________________________________
 CbmTrdHitMC::CbmTrdHitMC() : CbmTrdHit() {}
@@ -16,10 +20,24 @@ CbmTrdHitMC::CbmTrdHitMC(const CbmTrdHit& h) : CbmTrdHit(h) {}
 CbmTrdHitMC::~CbmTrdHitMC() {}
 
 //_____________________________________________________________________
-size_t CbmTrdHitMC::AddPoint(const CbmTrdPoint* p, double t, double m)
+void CbmTrdHitMC::AddCluster(const CbmTrdCluster* c)
 {
-  fTrdPoints.push_back(std::make_tuple(CbmTrdPoint(*p), t, m));
+  fCluster = *c;
+}
+
+//_____________________________________________________________________
+size_t CbmTrdHitMC::AddPoint(const CbmTrdPoint* p, double t, int id)
+{
+  fTrdPoints.push_back(std::make_tuple(CbmTrdPoint(*p), t, id));
   return fTrdPoints.size();
+}
+
+//_____________________________________________________________________
+size_t CbmTrdHitMC::AddSignal(double s, int t)
+{
+  printf("hit%dD : s(%f) t(%d)\n", (GetClassType() ? 2 : 1), s, t);
+  fTrdSignals.push_back(std::make_pair(s, t));
+  return fTrdSignals.size();
 }
 
 //_____________________________________________________________________
@@ -54,13 +72,39 @@ double CbmTrdHitMC::GetDt() const
   const CbmTrdPoint* p(nullptr);
   if (!(p = GetPoint())) return -999;
 
-  double t0(std::get<1>(fTrdPoints[0])), mass(std::get<2>(fTrdPoints[0]));
-  double dz(GetZ() - p->GetZ()), t(t0 + p->GetTime());
+  int pdg = std::get<2>(fTrdPoints[0]);
+  double t0(std::get<1>(fTrdPoints[0])), dz(GetZ() - p->GetZ()), t(t0 + p->GetTime()), mass(0);
 
+  TParticlePDG* pmc = (TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg);
+  if (pdg < 9999999 && pmc) mass = pmc->Mass();
+                       
   TVector3 mom3;
   p->Momentum(mom3);
   t += dz / (p->GetPz() * speedOfLight) * sqrt(mass * mass + mom3.Mag2());
   return GetTime() - t;
+}
+
+//_____________________________________________________________________
+std::string CbmTrdHitMC::ToString() const
+{ 
+  std::stringstream ss;
+  for (auto mcp : fTrdPoints) {
+    ss << "Event time(ns)=" << std::get<1>(mcp) << " partId=" << std::get<2>(mcp) << "\n"; 
+    ss << std::get<0>(mcp).ToString();
+  }
+
+  ss << "CbmTrdDigi: [" << fTrdSignals.size() << "] Signal / Relative Time\n           ";
+  for (auto sgn : fTrdSignals) {
+    ss << sgn.first << "/" << sgn.second << " ";
+  }
+  ss << "\n";
+
+  ss << fCluster.ToString();
+
+  ss << CbmTrdHit::ToString();
+
+  if (fErrMsg != "") ss << "Error : " << fErrMsg << "\n";
+  return ss.str();
 }
 
 ClassImp(CbmTrdHitMC)
