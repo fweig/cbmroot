@@ -25,6 +25,7 @@
 #include <TVector3.h>    // for TVector3
 
 #include <cstdint>
+#include <string>
 
 class CbmTrdPoint : public FairMCPoint {
 
@@ -55,8 +56,10 @@ public:
   /** Destructor **/
   virtual ~CbmTrdPoint();
 
-  /** Output to screen **/
+  /** \brief Output to screen **/
   virtual void Print(const Option_t* opt) const;
+  /** \brief Output to string.**/
+  virtual std::string ToString() const;
 
   /** Accessors **/
   double GetXIn() const { return fX; }

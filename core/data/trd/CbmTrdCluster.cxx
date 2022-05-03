@@ -198,8 +198,8 @@ string CbmTrdCluster::ToString() const
 {
   stringstream ss;
   ss << CbmCluster::ToString();
-  ss << "CbmTrdCluster: mod=" << GetAddress() << " t0=" << fStartTime << " row=" << (int32_t) GetRow() << " "
-     << (HasFaspDigis() ? "Fasp " : "Spadic ") << "Chs=";
+  ss << "CbmTrdCluster: mod=" << GetAddress() << " row=" << (int32_t) GetRow() << " "
+     << (HasFaspDigis() ? "Fasp_" : "Spadic_") << "Chs=";
   ss << (HasOpenStart() ? "/" : "|");
   for (int32_t i(0); i < fNCols; i++)
     ss << fStartCh + i << " ";

@@ -51,5 +51,19 @@ void CbmTrdPoint::Print(const Option_t* /*opt*/) const
 }
 // -------------------------------------------------------------------------
 
+// -----   Public method Print   -------------------------------------------
+std::string CbmTrdPoint::ToString() const
+{
+  std::stringstream ss;
+  ss << "CbmTrdPoint: Track " << fTrackID << " Detector " << fDetectorID << "\n";
+  ss << "    Position In (" << fX << ", " << fY << ", " << fZ << ") cm" << "\n";
+  ss << "    Momentum In (" << fPx << ", " << fPy << ", " << fPz << ") GeV" << "\n";
+  ss << "    Position Out (" << fX_out << ", " << fY_out << ", " << fZ_out << ") cm" << "\n";
+  ss << "    Momentum Out (" << fPx_out << ", " << fPy_out << ", " << fPz_out << ") GeV" << "\n";
+  ss << "    Time " << fTime << " ns,  Length " << fLength << " cm,  Energy loss " << fELoss * 1.0e06 << " keV" << "\n";
+  return ss.str();
+}
+// -------------------------------------------------------------------------
+
 
 ClassImp(CbmTrdPoint)
