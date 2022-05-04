@@ -71,12 +71,17 @@ If(FAIRLOGGER_FOUND)
      )
 EndIf()
 
-set(EXE_NAME TsaSampler)
-set(SRCS CbmMQTsaSampler.cxx runTsaSampler.cxx)
-set(DEPENDENCIES
+# Dependencies common to all executables
+set(DEPENDENCIES_ALL
   ${DEPENDENCIES}
   ${FAIR_LIBS}
   ${BOOST_LIBS}
+)
+
+set(EXE_NAME TsaSampler)
+set(SRCS CbmMQTsaSampler.cxx runTsaSampler.cxx)
+set(DEPENDENCIES
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmMQBase
 )
@@ -85,9 +90,7 @@ GENERATE_EXECUTABLE()
 set(EXE_NAME MultiTsaSampler)
 set(SRCS CbmMQTsaMultiSampler.cxx runTsaMultiSampler.cxx)
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmMQBase
   CbmFlibFlesTools
@@ -103,9 +106,7 @@ GENERATE_EXECUTABLE()
 set(EXE_NAME RepReqTsSampler)
 set(SRCS CbmMQTsSamplerRepReq.cxx runTsSamplerRepReq.cxx)
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmMQBase
   CbmFlibFlesTools
@@ -122,9 +123,7 @@ GENERATE_EXECUTABLE()
 set(EXE_NAME TsaSamplerTof)
 set(SRCS CbmMQTsaSamplerTof.cxx runTsaSamplerTof.cxx)
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmMQBase
 )
@@ -133,9 +132,7 @@ GENERATE_EXECUTABLE()
 set(EXE_NAME TsaMultiSamplerTof)
 set(SRCS CbmMQTsaMultiSamplerTof.cxx runTsaMultiSamplerTof.cxx)
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmMQBase
 )
@@ -144,9 +141,7 @@ GENERATE_EXECUTABLE()
 set(EXE_NAME TsaInfo)
 set(SRCS CbmMQTsaInfo.cxx runTsaInfo.cxx)
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmMQBase
 )
@@ -155,9 +150,7 @@ GENERATE_EXECUTABLE()
 set(EXE_NAME StsDigiSource)
 set(SRCS CbmStsDigiSource.cxx runStsDigiSource.cxx)
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   CbmBase
   Core
   CbmMQBase
@@ -167,9 +160,7 @@ GENERATE_EXECUTABLE()
 set(EXE_NAME MCPointSource)
 set(SRCS CbmMCPointSource.cxx runMCPointSource.cxx)
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   CbmBase
   Core
   CbmMQBase
@@ -179,9 +170,7 @@ GENERATE_EXECUTABLE()
 set(EXE_NAME TsConsumerReqExample)
 set(SRCS CbmTsConsumerReqDevExample.cxx runTsConsumerReqExample.cxx)
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmMQBase
   CbmFlibFlesTools

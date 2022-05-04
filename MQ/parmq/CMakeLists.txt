@@ -57,6 +57,13 @@ If(FAIRLOGGER_FOUND)
      )
 EndIf()
 
+# Dependencies common to all executables
+set(DEPENDENCIES_ALL
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+)
+
 Set(EXE_NAME parmq-server)
 Set(SRCS
   ParameterMQServer.cxx
@@ -65,9 +72,7 @@ Set(SRCS
 )
 
 Set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   Core
   Net
   Geom

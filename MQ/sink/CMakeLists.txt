@@ -54,12 +54,17 @@ If(FAIRLOGGER_FOUND)
      )
 EndIf()
 
-set(EXE_NAME DevNullSink)
-set(SRCS CbmDevNullSink.cxx runDevNullSink.cxx)
-set(DEPENDENCIES
+# Dependencies common to all executables
+set(DEPENDENCIES_ALL
   ${DEPENDENCIES}
   ${FAIR_LIBS}
   ${BOOST_LIBS}
+)
+
+set(EXE_NAME DevNullSink)
+set(SRCS CbmDevNullSink.cxx runDevNullSink.cxx)
+set(DEPENDENCIES
+  ${DEPENDENCIES_ALL}
   fles_ipc
 )
 GENERATE_EXECUTABLE()
@@ -67,9 +72,7 @@ GENERATE_EXECUTABLE()
 set(EXE_NAME TsaComponentSink)
 set(SRCS CbmTsaComponentSink.cxx runTsaComponentSink.cxx)
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
 )
 GENERATE_EXECUTABLE()

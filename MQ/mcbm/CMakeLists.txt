@@ -100,13 +100,18 @@ If(FAIRLOGGER_FOUND)
      )
 EndIf()
 
+# Dependencies common to all executables
+set(DEPENDENCIES_ALL
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+)
+
 set(EXE_NAME McbmUnpack)
 set(SRCS CbmDeviceMcbmUnpack.cxx runMcbmUnpack.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
@@ -124,9 +129,7 @@ set(EXE_NAME McbmMonitorPulser)
 set(SRCS CbmDeviceMcbmMonitorPulser.cxx runMcbmMonitorPulser.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
@@ -144,9 +147,7 @@ set(EXE_NAME BuildRawEvents)
 set(SRCS CbmDeviceBuildRawEvents.cxx runBuildRawEvents.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   KFParticle
   CbmFlibMcbm2018
@@ -171,9 +172,7 @@ set(EXE_NAME McbmEventBuilderWin)
 set(SRCS CbmDeviceMcbmEventBuilderWin.cxx runMcbmEvtBuilderWin.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
@@ -191,9 +190,7 @@ set(EXE_NAME McbmEventSink)
 set(SRCS CbmDeviceMcbmEventSink.cxx runMcbmEventSink.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
@@ -240,9 +237,7 @@ set(EXE_NAME BuildDigiEvents)
 set(SRCS CbmDeviceBuildDigiEvents.cxx runBuildDigiEvents.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   CbmFlibFlesTools
   CbmEventBuilder
   KF
@@ -263,9 +258,7 @@ set(EXE_NAME EventBuilder)
 set(SRCS CbmDeviceEventBuilder.cxx runEventBuilder.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   Algo
   CbmFlibFlesTools
   CbmEventBuilder
@@ -287,9 +280,7 @@ set(EXE_NAME DigiEventSink)
 set(SRCS CbmDeviceDigiEventSink.cxx runDigiEventSink.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
@@ -308,9 +299,7 @@ set(EXE_NAME EventSink)
 set(SRCS CbmDeviceEventSink.cxx runEventSink.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools

@@ -53,13 +53,18 @@ If(FAIRLOGGER_FOUND)
      )
 EndIf()
 
+# Dependencies common to all executables
+set(DEPENDENCIES_ALL
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+)
+
 set(EXE_NAME StsLocalReco)
 set(SRCS CbmDeviceStsLocalReco.cxx runStsLocalReco.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   CbmField
   CbmSts
   Core

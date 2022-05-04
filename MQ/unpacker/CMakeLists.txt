@@ -65,13 +65,18 @@ If(FAIRLOGGER_FOUND)
      )
 EndIf()
 
+# Dependencies common to all executables
+set(DEPENDENCIES_ALL
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+)
+
 set(EXE_NAME UnpackTofMcbm2018)
 set(SRCS CbmTbDaqBuffer.cxx CbmDeviceUnpackTofMcbm2018.cxx runUnpackTofMcbm2018.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmFlibMcbm2018
   CbmTofBase

@@ -31,9 +31,5 @@ add_subdirectory(mcbm)
 #add_subdirectory(sts)
 #add_subdirectory(test)
 
-# The following subdirectories contain files which do not compile with
-# FairRoot v18
-# Don't compile it for the time being
-# TODO: Fix the compilation problems
-  add_subdirectory(parmq)
-  add_subdirectory(hitbuilder)
+add_subdirectory(parmq)
+add_subdirectory(hitbuilder)

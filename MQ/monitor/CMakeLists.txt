@@ -73,15 +73,18 @@ If(FAIRLOGGER_FOUND)
      )
 EndIf()
 
-set(BASE_DEPENDENCIES ${DEPENDENCIES})
+# Dependencies common to all executables
+set(DEPENDENCIES_ALL
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+)
 
 set(EXE_NAME T0MonitorMcbm2018)
 set(SRCS CbmDeviceMonitorT0.cxx runMonitorT0.cxx)
 
 set(DEPENDENCIES
-  ${BASE_DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
@@ -99,9 +102,7 @@ set(EXE_NAME TofMonitorMcbm2018)
 set(SRCS CbmDeviceMonitorTof.cxx runMonitorTof.cxx)
 
 set(DEPENDENCIES
-  ${BASE_DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
@@ -119,9 +120,7 @@ set(EXE_NAME T0MonitorReqMcbm)
 set(SRCS CbmDeviceMonitorReqT0.cxx runMonitorReqT0.cxx)
 
 set(DEPENDENCIES
-  ${BASE_DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
@@ -139,9 +138,7 @@ set(EXE_NAME TofMonitorReqMcbm)
 set(SRCS CbmDeviceMonitorReqTof.cxx runMonitorReqTof.cxx)
 
 set(DEPENDENCIES
-  ${BASE_DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
@@ -159,9 +156,7 @@ set(EXE_NAME PsdMonitorMcbm2018)
 set(SRCS CbmDeviceMonitorPsd.cxx runMonitorPsd.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools

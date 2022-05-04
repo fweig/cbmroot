@@ -51,6 +51,7 @@ If(UNIX AND NOT APPLE)
   List(APPEND BOOST_LIBS pthread)
 EndIf()
 
+# Dependencies common to all executables
 set(DEPENDENCIES_ALL
   ${DEPENDENCIES}
   ${FAIR_LIBS}
@@ -66,7 +67,6 @@ set(EXE_NAME HistoServer)
 set(SRCS CbmHistoServer.cxx runCbmHistoServer.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  ${FAIR_LIBS}
   fles_ipc
   Core
   RIO
@@ -80,7 +80,6 @@ set(EXE_NAME MqHistoServer)
 set(SRCS CbmMqHistoServer.cxx runCbmMqHistoServer.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  ${FAIR_LIBS}
   CbmFlibFlesTools
   Core
   RIO

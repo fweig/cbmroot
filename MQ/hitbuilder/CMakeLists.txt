@@ -66,13 +66,17 @@ If(FAIRLOGGER_FOUND)
      )
 EndIf()
 
+# Dependencies common to all executables
+set(DEPENDENCIES_ALL
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+)
+
 set(EXE_NAME HitBuilderTof)
 set(SRCS CbmDeviceHitBuilderTof.cxx runHitBuilderTof.cxx)
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-#     FairMQ
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
 #    fles_ipc
   CbmBase
   CbmData

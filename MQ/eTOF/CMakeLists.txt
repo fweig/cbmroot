@@ -66,12 +66,17 @@ If(FAIRLOGGER_FOUND)
      )
 EndIf()
 
-set(EXE_NAME EventBuilderEtofStar2019)
-set(SRCS CbmDeviceEventBuilderEtofStar2019.cxx runEventBuilderEtofStar2019.cxx)
-set(DEPENDENCIES
+# Dependencies common to all executables
+set(DEPENDENCIES_ALL
   ${DEPENDENCIES}
   ${FAIR_LIBS}
   ${BOOST_LIBS}
+)
+
+set(EXE_NAME EventBuilderEtofStar2019)
+set(SRCS CbmDeviceEventBuilderEtofStar2019.cxx runEventBuilderEtofStar2019.cxx)
+set(DEPENDENCIES
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmFlibStar2019
   CbmFlibMcbm2018
@@ -94,9 +99,7 @@ Set(NO_DICT_SRCS
 # Mask warning from file provided by STAR
 SET_SOURCE_FILES_PROPERTIES(${CBMROOT_SOURCE_DIR}/fles/star2017/unpacker/star_rhicf.c PROPERTIES COMPILE_FLAGS -Wno-pointer-sign)
 set(DEPENDENCIES
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
+  ${DEPENDENCIES_ALL}
   fles_ipc
   CbmFlibStar2019
   CbmFlibMcbm2018
