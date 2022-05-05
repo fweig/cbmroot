@@ -5,12 +5,12 @@
 #ifndef CBMTRDHITMC_H
 #define CBMTRDHITMC_H
 
+#include "CbmTrdCluster.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
-#include "CbmTrdCluster.h"
 
-#include <vector>  // for fTrdPoints
 #include <string>  // for ToString
+#include <vector>  // for fTrdPoints
 
 /** \class CbmTrdHitMC
  * \brief  TRD hit to MC point correlation class
@@ -24,8 +24,17 @@
  * To describe main functionality ... 
  */
 
+class CbmTrdDigi;
 class CbmTrdHitMC : public CbmTrdHit {
 public:
+  enum eCbmTrdHitMCshape
+  {
+    kRT = 0,  // open left - open right shape
+    kRR,      // open left - closed right shape
+    kTT,      // closed left - open right shape
+    kTR       // closed left - closed right shape
+  };
+
   /** \brief Default constructor.*/
   CbmTrdHitMC();
 
@@ -46,29 +55,55 @@ public:
    */
   size_t AddPoint(const CbmTrdPoint* p, double t, int id);
   /** \brief Add signal values in the increasing order of pad index
-   * \param s signal from ch/pad
-   * \param t relative time in the cluster
+   * \param d digi from ch/pad
+   * \param t0 relative time in the cluster
    * \return the number of signals in the cluster 
    */
-  size_t AddSignal(double s, int t);
+  size_t AddSignal(const CbmTrdDigi* d, uint64_t t0);
+
+  /** \brief return MC pile-up size*/
+  std::string GetErrorMsg() const { return fErrMsg; }
 
   /** \brief Register a MC point
    * \param idx index of point being requested. by default the best fit is returned. 
    */
   const CbmTrdPoint* GetPoint(uint idx = 0) const;
 
+  /** \brief return signal at position
+   * \param idx index of signal counting from left to right looking upstream (from FEE). 
+   */
+  double GetSignal(uint idx = 0) const;
+
+  /** \brief return MC pile-up size*/
+  size_t GetNPoints() const { return fTrdPoints.size(); }
+
+  /** \brief return cluster size*/
+  size_t GetNSignals() const { return fTrdSignals.size(); }
+
+  /** \brief return cluster shape according to the eCbmTrdHitMCshape definitions*/
+  eCbmTrdHitMCshape GetClShape() const;
+
   /** \brief Calculate residuals in the bending plane.*/
   double GetDx() const;
 
+  /** \brief Calculate error in the bending plane.*/
+  double GetSx() const;
+
   /** \brief Calculate residuals for the azimuth direction.*/
   double GetDy() const;
+
+  /** \brief Calculate error for the azimuth direction.*/
+  double GetSy() const;
 
   /** \brief Calculate residuals for time.*/
   double GetDt() const;
 
   /** \brief Store error message.*/
   void SetErrorMsg(std::string msg) { fErrMsg = msg; }
-  
+
+  /** \brief Applies to TRD2D and remove 0 charges from the boundaries of the cluster.**/
+  size_t PurgeSignals();
+
   /** \brief Verbosity functionality.**/
   virtual std::string ToString() const;
 
@@ -78,10 +113,12 @@ private:
   /** \brief Assignment operator.*/
   CbmTrdHitMC& operator=(const CbmTrdHitMC&) = default;
 
-  std::string fErrMsg = "";  //< error message from the QA task
-  std::vector<std::pair<double, int>> fTrdSignals = {};  //< list of signal/time in cluster   
-  std::vector<std::tuple<CbmTrdPoint, double, int>> fTrdPoints = {};  //< list of MC points together with the event time and particle PDG code producing them
-  CbmTrdCluster fCluster;  //< data from the cluster 
+  std::string fErrMsg                             = "";  //< error message from the QA task
+  std::vector<std::pair<double, int>> fTrdSignals = {};  //< list of signal/time in cluster
+  std::vector<std::tuple<CbmTrdPoint, double, int>> fTrdPoints =
+    {};                     //< list of MC points together with the event time and particle PDG code producing them
+  CbmTrdCluster fCluster;   //< data from the cluster
+  static int fSx[5][2];     //< x error parametrization as function of cluster size and incident direction
   ClassDef(CbmTrdHitMC, 1)  // Hit to MC point data correlation
 };
 
