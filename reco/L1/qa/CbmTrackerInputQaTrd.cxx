@@ -501,7 +501,7 @@ void CbmTrackerInputQaTrd::ResolutionQa()
     CbmTrdHitMC* hmc = new ((*fHitsMc)[imc++]) CbmTrdHitMC(*hit);
     hmc->AddCluster(cluster);
     uint64_t tdigi = 0;
-    
+
     // custom finder of the digi matches
     CbmMatch myHitMatch;
     for (Int_t iDigi = 0; iDigi < nClusterDigis; iDigi++) {
@@ -525,23 +525,15 @@ void CbmTrackerInputQaTrd::ResolutionQa()
       }
       switch (digi->GetType()) {
         case CbmTrdDigi::eCbmTrdAsicType::kFASP:
-        {
-          int dt;
-          double t, r = digi->GetCharge(t, dt);
           if (!tdigi) tdigi = digi->GetTimeDAQ();
-          if (t > 0) hmc->AddSignal(t, digi->GetTimeDAQ() - tdigi);
-          if (r > 0) hmc->AddSignal(r, digi->GetTimeDAQ() - tdigi + dt);
           break;
-        }
         case CbmTrdDigi::eCbmTrdAsicType::kSPADIC:
-          hmc->AddSignal(digi->GetCharge(), digi->GetTime());
+          if (!tdigi) tdigi = digi->GetTime();
           break;
-        default:
-          LOG(fatal) << "TRD digi type neither SPADIC or FASP";           
-          return;
+        default: LOG(fatal) << "TRD digi type neither SPADIC or FASP"; return;
       }
-      
-      
+      hmc->AddSignal(digi, tdigi);
+
       const CbmMatch* match = dynamic_cast<const CbmMatch*>(fDigiManager->GetMatch(ECbmModuleId::kTrd, digiIdx));
       if (!match) {
         LOG(fatal) << "TRD digi match " << digiIdx << " not found";
@@ -549,6 +541,8 @@ void CbmTrackerInputQaTrd::ResolutionQa()
       }
       myHitMatch.AddLinks(*match);
     }
+    hmc->PurgeSignals();
+
     if (myHitMatch.GetNofLinks() == 0) { continue; }
 
     const CbmLink& bestLink = myHitMatch.GetMatchedLink();
@@ -603,13 +597,13 @@ void CbmTrackerInputQaTrd::ResolutionQa()
     // take corresponding MC point
 
     // skip hits from the noise digis
-    if (bestLink.GetIndex() < 0) {           
+    if (bestLink.GetIndex() < 0) {
       std::stringstream ss;
       ss << "hit from noise [INFO]";
       hmc->SetErrorMsg(ss.str());
-      continue;       
+      continue;
     }
-    
+
     CbmTrdPoint* p = dynamic_cast<CbmTrdPoint*>(fMcPoints->Get(bestLink));
     if (p == nullptr) {
       std::stringstream ss;
@@ -643,7 +637,7 @@ void CbmTrackerInputQaTrd::ResolutionQa()
       if ((staZ < p->GetZIn() - 1.) || (staZ > p->GetZOut() + 1.)) {
         std::stringstream ss;
         ss << "TRD station " << StationIndex << ": active material Z[" << p->GetZIn() << " cm," << p->GetZOut()
-                   << " cm] is too far from the nominal station Z " << staZ << " cm";
+           << " cm] is too far from the nominal station Z " << staZ << " cm";
         hmc->SetErrorMsg(ss.str());
         LOG(error) << ss.str();
         return;
@@ -652,7 +646,7 @@ void CbmTrackerInputQaTrd::ResolutionQa()
       if (fabs(hit->GetZ() - staZ) > 1.) {
         std::stringstream ss;
         ss << "TRD station " << StationIndex << ": hit Z " << hit->GetZ()
-                   << " cm, is too far from the nominal station Z " << staZ << " cm";
+           << " cm, is too far from the nominal station Z " << staZ << " cm";
         hmc->SetErrorMsg(ss.str());
         LOG(error) << ss.str();
         return;
@@ -714,16 +708,15 @@ void CbmTrackerInputQaTrd::ResolutionQa()
     }
     hmc->AddPoint(p, t0, pdg);
     //std::cout << hmc->ToString() << "\n";
-    
     constexpr double speedOfLight = 29.979246;  // cm/ns
     TVector3 mom3;
     p->Momentum(mom3);
     t += dz / (pz * speedOfLight) * sqrt(mass * mass + mom3.Mag2());
 
-    double du = hit->GetX() - x;  //hmc->GetDx();  //hit->GetX() - x;
-    double dv = hit->GetY() - y;  //hmc->GetDy();  //hit->GetY() - y;
+    double du = hmc->GetDx();        //hit->GetX() - x;
+    double dv = hit->GetY() - y;     //hmc->GetDy();  //hit->GetY() - y;
     double dt = hit->GetTime() - t;  // hmc->GetDt();  //hit->GetTime() - t;
-    double su = hit->GetDx();
+    double su = hmc->GetSx();
     double sv = hit->GetDy();
     double st = hit->GetTimeError();
 
@@ -758,7 +751,7 @@ void CbmTrackerInputQaTrd::ResolutionQa()
       fh1DpullT.Fill(dt / st);
     }
     else {
-      fh2DpullX.Fill(6.2 * du / su);
+      fh2DpullX.Fill(du / su);
       fh2DpullY.Fill(dv / sv);
       fh2DpullT.Fill(dt / st);
     }

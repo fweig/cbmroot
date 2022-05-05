@@ -43,7 +43,8 @@ std::string CbmTrdHit::ToString() const
 {
   stringstream ss;
   ss << CbmPixelHit::ToString();
-  ss << "CbmTrdHit" << (GetClassType() ? "2" : "1")<< "D: time[ns]=" << GetTime() << "+-" << GetTimeError() << " eloss=" << GetELoss();
+  ss << "CbmTrdHit" << (GetClassType() ? "2" : "1") << "D: time[ns]=" << GetTime() << "+-" << GetTimeError()
+     << " eloss=" << GetELoss();
   if (GetClassType()) ss << " Max=" << (GetMaxType() ? "T" : "R");
   ss << " RC=" << (IsRowCross() ? 'y' : 'n') << " Ovf=" << (HasOverFlow() ? 'y' : 'n') << endl;
   return ss.str();
