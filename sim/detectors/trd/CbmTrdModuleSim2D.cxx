@@ -67,7 +67,7 @@ Bool_t CbmTrdModuleSim2D::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
   Steering routine for building digits out of the TRD hit for the triangular pad geometry.
   1. Scan the amplification cells span by the track\n
   2. Build digits for each cell proportional with the projected energy on the cell\n
-    2.1 Continuous distribution for ionisation\n
+    2.1 Continuous distribution for ionization\n
     2.2 Exponential decay for TR with constant \lambda
 */
 
@@ -218,7 +218,7 @@ Bool_t CbmTrdModuleSim2D::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
     if (VERBOSE) printf("    %d ldx[%7.4f] ldy[%7.4f] xy[%7.4f] frac=%7.2f%%\n", icl, ldx, ldy, dxy, 1.e2 * dxy / txy);
 
     Double_t dEdx(dxy / txy),
-      cELoss(ELossdEdX * dEdx);  // continuos energy deposit
+      cELoss(ELossdEdX * dEdx);  // continuous energy deposit
     e += cELoss;
 
     if (VERBOSE)
@@ -235,10 +235,10 @@ Bool_t CbmTrdModuleSim2D::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
     pos[0] += 0.5 * ldx * sgnx;
     pos[1] += dw * sgny;
   }
-  if (TMath::Abs(lout[0] - pos[0]) > 1.e-3) {
-    LOG(warn) << GetName() << "::MakeDigi: Along wire coordinate error : x_sim=" << std::setprecision(5) << lout[0]
-              << " x_calc=" << std::setprecision(5) << pos[0];
-  }
+  //   if (TMath::Abs(lout[0] - pos[0]) > 1.e-3) {
+  //     LOG(warn) << GetName() << "::MakeDigi: Along wire coordinate error : x_sim=" << std::setprecision(5) << lout[0]
+  //               << " x_calc=" << std::setprecision(5) << pos[0];
+  //   }
   if (TMath::Abs(ELossdEdX - e) > 1.e-3) {
     LOG(warn) << GetName() << "::MakeDigi: dEdx partition to anode wires error : E[keV] = " << std::setprecision(5)
               << ELossdEdX * 1e6 << " Sum(Ei)[keV]=" << std::setprecision(5) << e * 1e6;
@@ -251,7 +251,7 @@ Bool_t CbmTrdModuleSim2D::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
     if (VERBOSE) printf("    %d PE effect @ %7.4fcm trackLength=%7.4fcm\n", ncls, dist, trackLength);
     if (dist > trackLength) return kTRUE;
 
-    // propgate to PE position
+    // propagate to PE position
     lin[0] += dd[0] * dist / trackLength;
     lin[1] += dd[1] * dist / trackLength;
     lin[2] += dd[2] * dist / trackLength;
@@ -295,14 +295,14 @@ Bool_t CbmTrdModuleSim2D::MakeDigi(CbmTrdPoint* point, Double_t time, Bool_t TR)
 }
 
 //_________________________________________________________________________________
-Bool_t CbmTrdModuleSim2D::ScanPadPlane(const Double_t* point, Double_t DX, Double_t ELoss, Double_t toff)
+Bool_t CbmTrdModuleSim2D::ScanPadPlane(Double_t* point, Double_t DX, Double_t ELoss, Double_t toff)
 {
   /**
   The hit is expressed in local chamber coordinates, localized as follows:
     - Along the wire in the middle of the track projection on the closest wire
     - Across the wire on the closest anode.
 
-  The physical uncertainty along wires is given by the projection span (dx) and the energy from ionisation is proportional to the track projection length in the local chamber x-y plane. For the TR energy the proportionality to the total TR is given by the integral over the amplification cell span of a decay law with decay constant ...
+  The physical uncertainty along wires is given by the projection span (dx) and the energy from ionization is proportional to the track projection length in the local chamber x-y plane. For the TR energy the proportionality to the total TR is given by the integral over the amplification cell span of a decay law with decay constant ...
 
   The class CbmTrdTrianglePRF is used to navigate the pad plane outward from the hit position until a threshold wrt to center is reached. The pad-row cross clusters are considered. Finally all digits are registered via AddDigi() function.
 */
@@ -310,6 +310,9 @@ Bool_t CbmTrdModuleSim2D::ScanPadPlane(const Double_t* point, Double_t DX, Doubl
     printf("        WirePlane : xy[%7.4f %7.4f] D[%7.4f] S[fC]=%7.4f "
            "time[ns]=%10.2f\n",
            point[0], point[1], DX, ELoss, toff);
+
+  // add x-position uncertainty from the track x-projection
+  point[0] += (gRandom->Rndm() - 0.5) * DX * 0.1;
 
   Int_t sec(-1), col(-1), row(-1);
   fDigiPar->GetPadInfo(point, sec, col, row);
@@ -724,6 +727,15 @@ Int_t CbmTrdModuleSim2D::FlushBuffer(ULong64_t time)
 
       if (VERBOSE) cout << "\t" << digi->ToString();
       digiMatch = iv->second;
+
+      // introduce FEE noise on the charge
+      int dt;
+      double t, r = digi->GetCharge(t, dt), noise[2];
+      gRandom->RndmArray(2, noise);
+      if (t > 1) t += (noise[0] - 0.5) * CbmTrdParFaspChannel::fgkSgmCh;
+      if (r > 1) r += (noise[1] - 0.5) * CbmTrdParFaspChannel::fgkSgmCh;
+      digi->SetCharge(t, r, dt);
+
       fDigitizer->SendData(digi->GetTime(), digi, digiMatch);
       n++;
       iv = fBuffer[localAddress].erase(iv);  // remove from saved buffer

@@ -84,7 +84,7 @@ private:
    * \sa CbmTrdTriangle CbmTrdRadiator AddDigi()
    * \author A.Bercuci <abercuci@niham.nipne.ro>
    **/
-  Bool_t ScanPadPlane(const Double_t* point, Double_t dx, Double_t E, Double_t tdrift);
+  Bool_t ScanPadPlane(Double_t* point, Double_t dx, Double_t E, Double_t tdrift);
   /**
    * \brief Adding triangular digits to time slice buffer
    * \param pointId The TRD hit in global coordinates beeing processed
