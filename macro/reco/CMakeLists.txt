@@ -6,7 +6,7 @@
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_tra_file.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_tra_beam.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_digi.C)
-GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/reco/reco_digi.C)
+GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/reco/reco_fairroot.C)
 # ============================================================================
 
 
@@ -85,7 +85,7 @@ foreach(setup IN LISTS cbm_setup)
   	RESOURCE_LOCK collParDb_${setup}
   )
 
-  # --- Test run_tra_sign
+  # --- Test reco_tra_sign
   # --- Transport run with signal events, using run_tra_file.C
   set(testname reco_tra_sign_${sname})
   set(input ${CBMROOT_SOURCE_DIR}/input/pluto.auau.8gev.omega.mpmm.0001.root)
@@ -100,7 +100,7 @@ foreach(setup IN LISTS cbm_setup)
   	RESOURCE_LOCK signParDb_${setup}
   )
 
-  # --- Test run_tra_beam
+  # --- Test reco_tra_beam
   # --- Transport run with beam events, using run_tra_beam.C
   set(testname reco_tra_beam_${sname})
   set(output ${datadir}/${sname}_beam)
@@ -114,7 +114,7 @@ foreach(setup IN LISTS cbm_setup)
   	RESOURCE_LOCK beamParDb_${setup}
   )
 
-  # --- Test run_digi_ts
+  # --- Test reco_digi
   # --- Detector response simulation, time-based, using run_digi.C
   set(testname reco_digi_${sname})
   set(eventrate 1.e7)
@@ -131,17 +131,16 @@ foreach(setup IN LISTS cbm_setup)
  	RESOURCE_LOCK collParDb_${setup}
   )
 
-  # --- Test reco_digi
+  # --- Test reco_reco_sim
   # --- Reconstruction from time-based simulation
-  set(testname reco_reco_digi_${sname})
-  add_test(${testname} ${MACRODIR}/reco_digi.sh
-  	\"${datadir}/${sname}\" -1 0 \"${datadir}/${sname}\" \"${setup}\"
-  	\"${datadir}/${sname}_coll\")
+  set(testname reco_reco_sim_${sname})
+  add_test(${testname} ${MACRODIR}/reco_fairroot.sh
+  	\"${datadir}/${sname}.raw.root\" \"${datadir}/${sname}.reco.root\")
   set_tests_properties(${testname} PROPERTIES
   	TIMEOUT ${timeOutTime}
   	PASS_REGULAR_EXPRESSION "Macro finished successfully"
 	FIXTURES_REQUIRED fixt_digi_ts_${setup}
-	FIXTURES_SETUP fixt_reco_digi_${setup}
+	FIXTURES_SETUP fixt_reco_sim_${setup}
  	RESOURCE_LOCK collParDb_${setup}
   )
 
@@ -150,7 +149,7 @@ endforeach(setup IN LISTS cbm_setup)
 
 # ============================================================================
 
-Install(FILES reco_digi.C
+Install(FILES reco_fairroot.C reco_unpack.C
         DESTINATION share/cbmroot/macro/reco
        )
 Install(CODE "FILE(MAKE_DIRECTORY \${CMAKE_INSTALL_PREFIX}/share/cbmroot/macro/reco/data)")

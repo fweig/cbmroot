@@ -18,27 +18,25 @@
 
 using std::string;
 
-/** @brief Macro for CBM reconstruction from FLES timeslices
+/** @brief Macro for CBM reconstruction from FLES timeslices or digi level
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since  12 March 2022
- ** @param tsaFile    Name of input file (w/o extension .tsa)
- ** @param outFile    Name of output file (w/o extension .digi.root)
+ ** @param tsaFile    Name of input file (.tsa or .root)
+ ** @param outFile    Name of output file
  ** @param numTs      Number of timeslices to process. If not specified, all available will be used.
  ** @param port       Port of http server. If 0, server will not be activated.
  **
- ** Reconstruction from timeslice level, making use of the steering class CbmReco.
+ ** Reconstruction from timeslice level with FairRoot, making use of the steering class CbmReco.
  ** Currently included stages:
- ** - Unpacking (STS only)
+ ** - Unpacking (STS only) (if from timeslice level)
  ** - Event trigger based on STS digis (CbmTaskDigiTrigger)
  ** - Event building (CbmTaskBuildEvents) (STS only)
  **
- ** If the tsaFile name is not specified, a default file from the repository will be used.
- ** If the outFile name is not specified, the input file name will be used, replacing
- ** the extension .tsa by .digi.root
+ ** If the input file name is left empty, a default file from the repository will be used.
  **/
 
-void reco_steer(TString tsaFile = "", TString outFile = "", int32_t numTs = std::numeric_limits<int32_t>::max(),
-                uint32_t port = 8080)
+void reco_fairroot(TString tsaFile, TString outFile, int32_t numTs = std::numeric_limits<int32_t>::max(),
+                   uint16_t port = 0)
 {
 
   // ========================================================================
@@ -74,21 +72,13 @@ void reco_steer(TString tsaFile = "", TString outFile = "", int32_t numTs = std:
 
 
   // -----   Environment   --------------------------------------------------
-  TString myName = "reco_steer";                   // this macro's name for screen output
+  TString myName = "reco_fairoot";                 // this macro's name for screen output
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
   // Tested with file 1588_node8_1_0000.tsa
   // TODO: Would need a small up-to-date default input file; the one distributed with
   // the code is outdated.
-
-
-  // ----- Default file names   ---------------------------------------------
-  if (tsaFile.IsNull()) tsaFile = srcDir + "/input/mcbm_run399_first20Ts";
-  TString inFile = tsaFile + ".tsa";
-  if (outFile.IsNull()) outFile = tsaFile;
-  outFile += ".digi.root";
-  // ------------------------------------------------------------------------
 
 
   // -----   Logger settings   ----------------------------------------------
@@ -100,7 +90,7 @@ void reco_steer(TString tsaFile = "", TString outFile = "", int32_t numTs = std:
   // -----   Run reconstruction   -------------------------------------------
   TStopwatch timer;
   timer.Start();
-  CbmReco run(inFile.Data(), outFile.Data(), numTs, config, port);
+  CbmReco run(tsaFile.Data(), outFile.Data(), numTs, config, port);
   run.Run();
   timer.Stop();
   // ------------------------------------------------------------------------

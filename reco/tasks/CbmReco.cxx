@@ -11,8 +11,10 @@
 #include "CbmTaskUnpack.h"
 #include "CbmTsEventHeader.h"
 
+#include <FairFileSource.h>
 #include <FairLogger.h>
 #include <FairRootFileSink.h>
+#include <FairRunAna.h>
 #include <FairRunOnline.h>
 
 #include <THttpServer.h>
@@ -130,12 +132,31 @@ int32_t CbmReco::Run()
   TStopwatch timer;
   timer.Start();
 
+  // --- Check if the input is a ROOT file. In that case, digis are already present and
+  // --- the unpacking stage must be skipped. The digis are in direct branches of the ROOT
+  // --- tree when coming from simulation, or in form of CbmDigiTimeslice if produced
+  // --- by a previous unpacking run. This variety is caught by the tasks and need not be
+  // --- considered here.
+  bool isRootInput =
+    fSourceNames.size() == 1 && fSourceNames.at(0).compare(fSourceNames.at(0).size() - 5, 5, ".root") == 0;
+
+  // --- Run instance
+  FairRunOnline run;
+
   // --- Input source
-  auto source = make_unique<CbmSourceTs>(fSourceNames);
-  if (source) LOG(info) << "Reco: Using sources " << ListSources();
+  if (isRootInput) {
+    auto source = make_unique<FairFileSource>(fSourceNames.at(0));
+    LOG(info) << "Reco: Using ROOT input " << fSourceNames.at(0);
+    run.SetSource(source.release());
+  }
   else {
-    LOG(error) << "Reco: Could not open sources " << ListSources() << "; aborting.";
-    return -1;
+    auto source = make_unique<CbmSourceTs>(fSourceNames);
+    if (source) LOG(info) << "Reco: Using sources " << ListSources();
+    else {
+      LOG(error) << "Reco: Could not open sources " << ListSources() << "; aborting.";
+      return -1;
+    }
+    run.SetSource(source.release());
   }
 
   // --- Output file
@@ -145,37 +166,36 @@ int32_t CbmReco::Run()
     LOG(error) << "Reco: Could not open output " << fOutputFileName.Data() << "; aborting.";
     return -1;
   }
+  run.SetSink(sink.release());
 
   // --- Event header
   auto header = make_unique<CbmTsEventHeader>();
+  run.SetEventHeader(header.release());
 
   // --- Unpacking
-  auto unpack = make_unique<CbmTaskUnpack>();
-  unpack->SetOutputBranchPersistent("DigiTimeslice.", fConfig.fStoreTimeslice);
+  if (!isRootInput) {
+    auto unpack = make_unique<CbmTaskUnpack>();
+    unpack->SetOutputBranchPersistent("DigiTimeslice.", fConfig.fStoreTimeslice);
+    run.AddTask(unpack.release());
+  }
 
   // --- Digi trigger
   auto trigger = make_unique<CbmTaskTriggerDigi>();
   trigger->AddSystem(fConfig.fTriggerDet);
   trigger->SetAlgoParams(fConfig.fTriggerWin, fConfig.fTriggerThreshold, fConfig.fTriggerDeadTime);
   trigger->SetOutputBranchPersistent("Trigger", fConfig.fStoreTrigger);
+  run.AddTask(trigger.release());
 
   // --- Event building
   auto evtBuild = make_unique<CbmTaskBuildEvents>();
   for (auto& entry : fConfig.fEvtbuildWindows)
     evtBuild->SetEventWindow(entry.first, entry.second.first, entry.second.second);
   evtBuild->SetOutputBranchPersistent("DigiEvent", fConfig.fStoreEvents);
+  run.AddTask(evtBuild.release());
 
   // --- Event QA
   auto evtQa = make_unique<CbmTaskDigiEventQa>();
   evtQa->Config(fConfig);
-
-  // --- Run configuration
-  FairRunOnline run(source.release());
-  run.SetSink(sink.release());
-  run.SetEventHeader(header.release());
-  run.AddTask(unpack.release());
-  run.AddTask(trigger.release());
-  run.AddTask(evtBuild.release());
   run.AddTask(evtQa.release());
 
   // ----- HttpServer for online monitoring
@@ -204,9 +224,13 @@ int32_t CbmReco::Run()
 
   // --- Run log
   std::cout << std::endl;
-  auto src = dynamic_cast<CbmSourceTs*>(run.GetSource());
-  assert(src);
-  size_t numTs     = src->GetNumTs();
+  size_t numTs = 1;
+  if (!isRootInput) {
+    auto src = dynamic_cast<CbmSourceTs*>(run.GetSource());
+    assert(src);
+    numTs = src->GetNumTs();
+  }
+  // TODO: Don't know how to get the number of processed timeslices for ROOT input.
   double timeTotal = timeSetup + timeInit + timeRun;
   LOG(info) << "=====================================";
   LOG(info) << "Reco: Run summary";
