@@ -90,15 +90,15 @@ Bool_t CbmMuchUnpackMonitor::CreateHistograms(CbmMuchUnpackPar* pUnpackPar)
   /// Hit rates evo per FEB in system
   sHistName               = "hMuchAllFebsHitRateEvo";
   title                   = "Hits per second & FEB; Time [s]; FEB []; Hits []";
-  fhMuchAllFebsHitRateEvo = new TH2I(sHistName, title, 5, 0, 5, uNbFebs, -0.5, uNbFebs - 0.5);
-  fhMuchAllFebsHitRateEvo->SetCanExtend(TH1::kAllAxes);
+  fhMuchAllFebsHitRateEvo = new TH2I(sHistName, title, 600, 0, 600, uNbFebs, -0.5, uNbFebs - 0.5);
+  // fhMuchAllFebsHitRateEvo->SetCanExtend(TH1::kAllAxes);
   AddHistoToVector(fhMuchAllFebsHitRateEvo, "");
 
   /// Hit rates evo per ASIC in system
   sHistName                = "hMuchAllAsicsHitRateEvo";
   title                    = "Hits per second & ASIC; Time [s]; ASIC []; Hits []";
-  fhMuchAllAsicsHitRateEvo = new TH2I(sHistName, title, 5, 0, 5, uNbAsics, -0.5, uNbAsics - 0.5);
-  fhMuchAllAsicsHitRateEvo->SetCanExtend(TH1::kAllAxes);
+  fhMuchAllAsicsHitRateEvo = new TH2I(sHistName, title, 600, 0, 600, uNbAsics, -0.5, uNbAsics - 0.5);
+  // fhMuchAllAsicsHitRateEvo->SetCanExtend(TH1::kAllAxes);
   AddHistoToVector(fhMuchAllAsicsHitRateEvo, "");
 
   /// Hit counts map in system
@@ -195,42 +195,46 @@ Bool_t CbmMuchUnpackMonitor::CreateHistograms(CbmMuchUnpackPar* pUnpackPar)
     title     = Form("Missed Evt flags per second & channel in FEB #%03u; Time "
                  "[s]; Channel []; Missed Evt flags []",
                  uFebIdx);
-    fvhMuchFebChanMissEvtEvo.push_back(new TH2I(sHistName, title, 5, 0, 5, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
-    fvhMuchFebChanMissEvtEvo.back()->SetCanExtend(TH1::kAllAxes);
+    fvhMuchFebChanMissEvtEvo.push_back(
+      new TH2I(sHistName, title, 600, 0, 600, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+    // fvhMuchFebChanMissEvtEvo.back()->SetCanExtend(TH1::kAllAxes);
 
     /// Missed event flag counts evolution
     sHistName = Form("hMuchFebAsicMissEvtEvo_%03u", uFebIdx);
     title     = Form("Missed Evt flags per second & StsXyter in FEB #%03u; Time "
                  "[s]; Asic []; Missed Evt flags []",
                  uFebIdx);
-    fvhMuchFebAsicMissEvtEvo.push_back(new TH2I(sHistName, title, 5, 0, 5, uNbAsicsPerFeb, -0.5, uNbAsicsPerFeb - 0.5));
-    fvhMuchFebAsicMissEvtEvo.back()->SetCanExtend(TH1::kAllAxes);
+    fvhMuchFebAsicMissEvtEvo.push_back(
+      new TH2I(sHistName, title, 600, 0, 600, uNbAsicsPerFeb, -0.5, uNbAsicsPerFeb - 0.5));
+    // fvhMuchFebAsicMissEvtEvo.back()->SetCanExtend(TH1::kAllAxes);
 
     /// Missed event flag counts evolution
     sHistName = Form("hMuchFebMissEvtEvo_%03u", uFebIdx);
     title     = Form("Missed Evt flags per second & channel in FEB #%03u; Time "
                  "[s]; Missed Evt flags []",
                  uFebIdx);
-    fvhMuchFebMissEvtEvo.push_back(new TH1I(sHistName, title, 5, 0, 5));
-    fvhMuchFebMissEvtEvo.back()->SetCanExtend(TH1::kAllAxes);
+    fvhMuchFebMissEvtEvo.push_back(new TH1I(sHistName, title, 600, 0, 600));
+    // fvhMuchFebMissEvtEvo.back()->SetCanExtend(TH1::kAllAxes);
 
     /// Hit rates evo per channel
     sHistName = Form("hMuchFebChanRateEvo_%03u", uFebIdx);
     title     = Form("Hits per second & channel in FEB #%03u; Time [s]; Channel []; Hits []", uFebIdx);
-    fvhMuchFebChanHitRateEvo.push_back(new TH2I(sHistName, title, 5, 0, 5, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
-    fvhMuchFebChanHitRateEvo.back()->SetCanExtend(TH1::kAllAxes);
+    fvhMuchFebChanHitRateEvo.push_back(
+      new TH2I(sHistName, title, 600, 0, 600, uNbChanPerFeb, -0.5, uNbChanPerFeb - 0.5));
+    // fvhMuchFebChanHitRateEvo.back()->SetCanExtend(TH1::kAllAxes);
 
     /// Hit rates evo per MuchXyter
     sHistName = Form("hMuchFebAsicRateEvo_%03u", uFebIdx);
     title     = Form("Hits per second & StsXyter in FEB #%03u; Time [s]; Asic []; Hits []", uFebIdx);
-    fvhMuchFebAsicHitRateEvo.push_back(new TH2I(sHistName, title, 5, 0, 5, uNbAsicsPerFeb, -0.5, uNbAsicsPerFeb - 0.5));
-    fvhMuchFebAsicHitRateEvo.back()->SetCanExtend(TH1::kAllAxes);
+    fvhMuchFebAsicHitRateEvo.push_back(
+      new TH2I(sHistName, title, 600, 0, 600, uNbAsicsPerFeb, -0.5, uNbAsicsPerFeb - 0.5));
+    // fvhMuchFebAsicHitRateEvo.back()->SetCanExtend(TH1::kAllAxes);
 
     /// Hit rates evo per FEB
     sHistName = Form("hMuchFebRateEvo_%03u", uFebIdx);
     title     = Form("Hits per second in FEB #%03u; Time [s]; Hits []", uFebIdx);
-    fvhMuchFebHitRateEvo.push_back(new TH1I(sHistName, title, 5, 0, 5));
-    fvhMuchFebHitRateEvo.back()->SetCanExtend(TH1::kAllAxes);
+    fvhMuchFebHitRateEvo.push_back(new TH1I(sHistName, title, 600, 0, 600));
+    // fvhMuchFebHitRateEvo.back()->SetCanExtend(TH1::kAllAxes);
 
     /// Hit rates evo per channel, 1 minute bins, 24h
     sHistName = Form("hMuchFebChanRateEvoLong_%03u", uFebIdx);
@@ -674,8 +678,13 @@ void CbmMuchUnpackMonitor::FillHitDebugMonitoringHistos(const UInt_t& uAsicIdx, 
 // -------------------------------------------------------------------------
 void CbmMuchUnpackMonitor::FillHitEvoMonitoringHistos(const UInt_t& uFebIdx, const UInt_t& uAsicIdx,
                                                       const UInt_t& uAsicInFeb, const UInt_t& uChanInFeb,
-                                                      const Double_t& dTimeSinceStartSec, const bool& isHitMissedEvts)
+                                                      const Double_t& dAbsTimeSec, const bool& isHitMissedEvts)
 {
+  // Check Starting point of histos with time as X axis
+  if (-1 == fdStartTime) { fdStartTime = dAbsTimeSec; }
+
+  Double_t dTimeSinceStartSec = dAbsTimeSec - fdStartTime;
+
   // Fill histos with time as X axis
   FillMuchFebAsicHitCounts(uFebIdx, uAsicInFeb);
   FillMuchFebChanHitRateEvo(uFebIdx, dTimeSinceStartSec, uChanInFeb);

@@ -202,7 +202,11 @@ public:
 
   //Fill Ms Component Size Histos
   void FillMsSize(UInt_t uMsComp, UInt_t uSize) { fvhMsSize[uMsComp]->Fill(uSize); }
-  void FillMsSizeTime(UInt_t uMsComp, Double_t dTime, UInt_t uSize) { fvhMsSizeTime[uMsComp]->Fill(dTime, uSize); }
+  void FillMsSizeTime(UInt_t uMsComp, Double_t dTime, UInt_t uSize)
+  {
+    if (fdStartTimeMsSz < 0) fdStartTimeMsSz = dTime;
+    fvhMsSizeTime[uMsComp]->Fill(dTime - fdStartTimeMsSz, uSize);
+  }
 
   void FillHitMonitoringHistos(const UInt_t& uFebIdx, const UShort_t& usChan, const UInt_t& uChanInFeb,
                                const UShort_t& usRawAdc, const Double_t& dCalAdc, const UShort_t& usRawTs,
@@ -212,8 +216,7 @@ public:
                                     const UShort_t& usRawTs, const bool& isHitMissedEvts);
 
   void FillHitEvoMonitoringHistos(const UInt_t& uFebIdx, const UInt_t& uAsicIdx, const UInt_t& uAsicInFeb,
-                                  const UInt_t& uChanInFeb, const Double_t& dTimeSinceStartSec,
-                                  const bool& isHitMissedEvts);
+                                  const UInt_t& uChanInFeb, const Double_t& dAbsTimeSec, const bool& isHitMissedEvts);
 
   void CountRawHit(uint32_t uFebIdx, uint32_t uChanInFeb)
   {
@@ -242,6 +245,8 @@ private:
 
   /// Rate evolution histos
   double_t dFirstTsStartTime = 0;
+  double fdStartTime         = -1;
+  double fdStartTimeMsSz     = -1;
   //Bool_t fbLongHistoEnable;
   UInt_t fuLongHistoNbSeconds  = 3600;
   UInt_t fuLongHistoBinSizeSec = 10;

@@ -545,21 +545,22 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
     }
   }
 
-  // Convert the Hit time in bins to Hit time in ns
-  const double dHitTimeNs = ulHitTime * stsxyter::kdClockCycleNs;
-
   if (fMonitor) {
-    // Check Starting point of histos with time as X axis
-    if (-1 == fdStartTime) { fdStartTime = dHitTimeNs; }
+    // Convert the Hit time in bins within the TS to Hit time in secondes within Unix frame (UTC or TAI)
+    const double dHitTimeAbsSec =
+      (static_cast<double_t>(ulHitTime) * stsxyter::kdClockCycleNs - fSystemTimeOffset + fTsStartTime) * 1e-9;
+
+    // Prepare monitoring values
+    const uint32_t uAsicInFeb       = uAsicIdx % fNrAsicsPerFeb;
+    const double dCalAdc            = fvdFebAdcOffs[uFebIdx] + (usRawAdc - 1) * fvdFebAdcGain[uFebIdx];
+
+    fMonitor->FillHitMonitoringHistos(uFebIdx, usChan, uChanInFeb, usRawAdc, dCalAdc, usRawTs, mess.IsHitMissedEvts());
+    fMonitor->FillHitEvoMonitoringHistos(uFebIdx, uAsicIdx, uAsicInFeb, uChanInFeb, dHitTimeAbsSec,
+                                         mess.IsHitMissedEvts());
+
     if (fMonitor->GetDebugMode()) {
       fMonitor->FillHitDebugMonitoringHistos(uAsicIdx, usChan, usRawAdc, usRawTs, mess.IsHitMissedEvts());
     }
-    const uint32_t uAsicInFeb       = uAsicIdx % fNrAsicsPerFeb;
-    const double dTimeSinceStartSec = (dHitTimeNs - fdStartTime) * 1e-9;
-    const double dCalAdc            = fvdFebAdcOffs[uFebIdx] + (usRawAdc - 1) * fvdFebAdcGain[uFebIdx];
-    fMonitor->FillHitMonitoringHistos(uFebIdx, usChan, uChanInFeb, usRawAdc, dCalAdc, usRawTs, mess.IsHitMissedEvts());
-    fMonitor->FillHitEvoMonitoringHistos(uFebIdx, uAsicIdx, uAsicInFeb, uChanInFeb, dTimeSinceStartSec,
-                                         mess.IsHitMissedEvts());
   }
 }
 
@@ -743,10 +744,9 @@ bool CbmStsUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
     if (fMonitor->GetDebugMode()) {
       const double dMsTime = (1e-9) * static_cast<double>(fMsStartTime);
       if (icomp < fMonitor->GetMaxNbFlibLinks()) {
-        if (fdStartTimeMsSz < 0) fdStartTimeMsSz = dMsTime;
         fMonitor->CreateMsComponentSizeHistos(icomp);
         fMonitor->FillMsSize(icomp, uSize);
-        fMonitor->FillMsSizeTime(icomp, dMsTime - fdStartTimeMsSz, uSize);
+        fMonitor->FillMsSizeTime(icomp, dMsTime, uSize);
       }
     }
 

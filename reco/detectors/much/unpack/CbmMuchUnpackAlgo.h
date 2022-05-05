@@ -324,12 +324,6 @@ protected:
   /** @brief TS MSB in TS of last hit message for each channel, [ AsicIdx ][ Chan ] */
   std::vector<std::vector<uint64_t>> fvvulLastTsMsbChan = {};  //!
 
-  /** @brief Time of first valid hit (TS_MSB available), used as reference for evolution plots @todo move this to the monitor the algo does not need it!*/
-  double fdStartTime = 0;
-
-  /** @brief Time of first microslice, used as reference for evolution plots @todo move this to the monitor the algo does not need it!*/
-  double fdStartTimeMsSz = 0;
-
   // Monitoring
   /** @brief Potential (online) monitor for the unpacking process */
   std::shared_ptr<CbmMuchUnpackMonitor> fMonitor = nullptr;
