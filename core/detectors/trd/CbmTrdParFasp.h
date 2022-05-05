@@ -1,6 +1,6 @@
 /* Copyright (C) 2018-2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Florian Uhlig [committer] */
+   Authors: Florian Uhlig [committer], Alexandru Bercuci*/
 
 #ifndef CBMTRDPARFASP_H
 #define CBMTRDPARFASP_H
@@ -24,6 +24,8 @@ class CbmTrdParFaspChannel : public TObject {
   friend class CbmTrdParFasp;
 
 public:
+  static constexpr double fgkSgmCh = 10;  ///< generic width of a pulser signal for FASP channels
+
   enum CbmTrdParFaspChannelDef
   {
     kPair = 0  //< pad pairing type definition see SetPairing()
