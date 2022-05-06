@@ -57,13 +57,14 @@ private:
 
   /// User settings parameters
   /// Algo enum settings
-  std::string fsEvtOverMode                = "NoOverlap";
-  std::string fsRefDet                     = "kT0";
-  std::vector<std::string> fvsAddDet       = {};
-  std::vector<std::string> fvsDelDet       = {};
-  std::vector<std::string> fvsSetTrigWin   = {};
-  std::vector<std::string> fvsSetTrigMinNb = {};
-  std::vector<std::string> fvsSetTrigMaxNb = {};
+  std::string fsEvtOverMode                      = "NoOverlap";
+  std::string fsRefDet                           = "kT0";
+  std::vector<std::string> fvsAddDet             = {};
+  std::vector<std::string> fvsDelDet             = {};
+  std::vector<std::string> fvsSetTrigWin         = {};
+  std::vector<std::string> fvsSetTrigMinNb       = {};
+  std::vector<std::string> fvsSetTrigMaxNb       = {};
+  std::vector<std::string> fvsSetTrigMinLayersNb = {};
   /// message queues
   std::string fsChannelNameDataInput   = "unpts_0";
   std::string fsChannelNameDataOutput  = "events";
@@ -119,7 +120,13 @@ private:
   /// Flag indicating whether the histograms and canvases configurations were already published
   bool fbConfigSent = false;
 
+  /// Check wether an MQ channel name is among those expected for this device
   bool IsChannelNameAllowed(std::string channelName);
+  /// Get detector event builder config from string containing name
+  RawEventBuilderDetector GetDetectorBuilderCfg(std::string detName);
+  /// Get detector type from string containing name
+  ECbmModuleId GetDetectorId(std::string detName);
+
   bool InitHistograms();
   void Finish();
   bool SendEvents(FairMQParts& partsIn);

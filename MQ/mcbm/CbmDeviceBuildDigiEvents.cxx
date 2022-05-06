@@ -61,13 +61,14 @@ try {
   fbFillHistos      = fConfig->GetValue<bool>("FillHistos");
   fbIgnoreTsOverlap = fConfig->GetValue<bool>("IgnOverMs");
 
-  fsEvtOverMode   = fConfig->GetValue<std::string>("EvtOverMode");
-  fsRefDet        = fConfig->GetValue<std::string>("RefDet");
-  fvsAddDet       = fConfig->GetValue<std::vector<std::string>>("AddDet");
-  fvsDelDet       = fConfig->GetValue<std::vector<std::string>>("DelDet");
-  fvsSetTrigWin   = fConfig->GetValue<std::vector<std::string>>("SetTrigWin");
-  fvsSetTrigMinNb = fConfig->GetValue<std::vector<std::string>>("SetTrigMinNb");
-  fvsSetTrigMaxNb = fConfig->GetValue<std::vector<std::string>>("SetTrigMaxNb");
+  fsEvtOverMode         = fConfig->GetValue<std::string>("EvtOverMode");
+  fsRefDet              = fConfig->GetValue<std::string>("RefDet");
+  fvsAddDet             = fConfig->GetValue<std::vector<std::string>>("AddDet");
+  fvsDelDet             = fConfig->GetValue<std::vector<std::string>>("DelDet");
+  fvsSetTrigWin         = fConfig->GetValue<std::vector<std::string>>("SetTrigWin");
+  fvsSetTrigMinNb       = fConfig->GetValue<std::vector<std::string>>("SetTrigMinNb");
+  fvsSetTrigMaxNb       = fConfig->GetValue<std::vector<std::string>>("SetTrigMaxNb");
+  fvsSetTrigMinLayersNb = fConfig->GetValue<std::vector<std::string>>("SetTrigMinLayersNb");
 
   fsChannelNameDataInput   = fConfig->GetValue<std::string>("TsNameIn");
   fsChannelNameDataOutput  = fConfig->GetValue<std::string>("EvtNameOut");
@@ -104,22 +105,13 @@ try {
   fpAlgo->SetFillHistos(fbFillHistos);
   fpAlgo->SetIgnoreTsOverlap(fbIgnoreTsOverlap);
   /// Extract Event Overlap Mode
-  EOverlapModeRaw mode =
-     ("NoOverlap"    == fsEvtOverMode ? EOverlapModeRaw::NoOverlap
-   : ("MergeOverlap" == fsEvtOverMode ? EOverlapModeRaw::MergeOverlap
-   : ("AllowOverlap" == fsEvtOverMode ? EOverlapModeRaw::AllowOverlap
-                                      : EOverlapModeRaw::NoOverlap)));
+  EOverlapModeRaw mode = ("NoOverlap"    == fsEvtOverMode ? EOverlapModeRaw::NoOverlap
+                       : ("MergeOverlap" == fsEvtOverMode ? EOverlapModeRaw::MergeOverlap
+                       : ("AllowOverlap" == fsEvtOverMode ? EOverlapModeRaw::AllowOverlap
+                                                          : EOverlapModeRaw::NoOverlap)));
   fpAlgo->SetEventOverlapMode(mode);
   /// Extract refdet
-  RawEventBuilderDetector refDet = ("kT0"    == fsRefDet ? kRawEventBuilderDetT0
-                                 : ("kSts"   == fsRefDet ? kRawEventBuilderDetSts
-                                 : ("kMuch"  == fsRefDet ? kRawEventBuilderDetMuch
-                                 : ("kTrd"   == fsRefDet ? kRawEventBuilderDetTrd
-                                 : ("kTrd2D" == fsRefDet ? kRawEventBuilderDetTrd2D
-                                 : ("kTof"   == fsRefDet ? kRawEventBuilderDetTof
-                                 : ("kRich"  == fsRefDet ? kRawEventBuilderDetRich
-                                 : ("kPsd"   == fsRefDet ? kRawEventBuilderDetPsd
-                                                         : kRawEventBuilderDetUndef))))))));
+  RawEventBuilderDetector refDet = GetDetectorBuilderCfg(fsRefDet);
   if (kRawEventBuilderDetUndef != refDet) {
     fpAlgo->SetReferenceDetector(refDet);
   }
@@ -133,15 +125,7 @@ try {
   for (std::vector<std::string>::iterator itStrAdd = fvsAddDet.begin();
        itStrAdd != fvsAddDet.end();
        ++itStrAdd) {
-    RawEventBuilderDetector addDet = ("kT0"    == *itStrAdd ? kRawEventBuilderDetT0
-                                   : ("kSts"   == *itStrAdd ? kRawEventBuilderDetSts
-                                   : ("kMuch"  == *itStrAdd ? kRawEventBuilderDetMuch
-                                   : ("kTrd"   == *itStrAdd ? kRawEventBuilderDetTrd
-                                   : ("kTrd2D" == *itStrAdd ? kRawEventBuilderDetTrd2D
-                                   : ("kTof"   == *itStrAdd ? kRawEventBuilderDetTof
-                                   : ("kRich"  == *itStrAdd ? kRawEventBuilderDetRich
-                                   : ("kPsd"   == *itStrAdd ? kRawEventBuilderDetPsd
-                                                            : kRawEventBuilderDetUndef))))))));
+    RawEventBuilderDetector addDet = GetDetectorBuilderCfg(*itStrAdd);
     if (kRawEventBuilderDetUndef != addDet) {
       fpAlgo->AddDetector(addDet);
     }
@@ -157,15 +141,7 @@ try {
   for (std::vector<std::string>::iterator itStrRem = fvsDelDet.begin();
        itStrRem != fvsDelDet.end();
        ++itStrRem) {
-    RawEventBuilderDetector remDet = ("kT0"    == *itStrRem ? kRawEventBuilderDetT0
-                                   : ("kSts"   == *itStrRem ? kRawEventBuilderDetSts
-                                   : ("kMuch"  == *itStrRem ? kRawEventBuilderDetMuch
-                                   : ("kTrd"   == *itStrRem ? kRawEventBuilderDetTrd
-                                   : ("kTrd2D" == *itStrRem ? kRawEventBuilderDetTrd2D
-                                   : ("kTof"   == *itStrRem ? kRawEventBuilderDetTof
-                                   : ("kRich"  == *itStrRem ? kRawEventBuilderDetRich
-                                   : ("kPsd"   == *itStrRem ? kRawEventBuilderDetPsd
-                                                           : kRawEventBuilderDetUndef))))))));
+    RawEventBuilderDetector remDet = GetDetectorBuilderCfg(*itStrRem);
     if (kRawEventBuilderDetUndef != remDet) {
       fpAlgo->RemoveDetector(remDet);
     }
@@ -192,15 +168,7 @@ try {
 
     /// Detector Enum Tag
     std::string sSelDet = (*itStrTrigWin).substr(0, charPosDel);
-    ECbmModuleId selDet = ("kT0"    == sSelDet ? ECbmModuleId::kT0
-                        : ("kSts"   == sSelDet ? ECbmModuleId::kSts
-                        : ("kMuch"  == sSelDet ? ECbmModuleId::kMuch
-                        : ("kTrd"   == sSelDet ? ECbmModuleId::kTrd
-                        : ("kTrd2D" == sSelDet ? ECbmModuleId::kTrd2d
-                        : ("kTof"   == sSelDet ? ECbmModuleId::kTof
-                        : ("kRich"  == sSelDet ? ECbmModuleId::kRich
-                        : ("kPsd"   == sSelDet ? ECbmModuleId::kPsd
-                                               : ECbmModuleId::kNotExist))))))));
+    ECbmModuleId selDet = GetDetectorId(sSelDet);
     if (ECbmModuleId::kNotExist == selDet) {
       LOG(info)
         << "CbmDeviceBuildDigiEvents::InitTask => "
@@ -229,6 +197,7 @@ try {
 
     fpAlgo->SetTriggerWindow(selDet, dWinBeg, dWinEnd);
   }
+
   /// Extract MinNb for trigger if any
   for (std::vector<std::string>::iterator itStrMinNb = fvsSetTrigMinNb.begin();
        itStrMinNb != fvsSetTrigMinNb.end();
@@ -245,15 +214,7 @@ try {
 
     /// Detector Enum Tag
     std::string sSelDet = (*itStrMinNb).substr(0, charPosDel);
-    ECbmModuleId selDet = ("kT0"    == sSelDet ? ECbmModuleId::kT0
-                        : ("kSts"   == sSelDet ? ECbmModuleId::kSts
-                        : ("kMuch"  == sSelDet ? ECbmModuleId::kMuch
-                        : ("kTrd"   == sSelDet ? ECbmModuleId::kTrd
-                        : ("kTrd2D" == sSelDet ? ECbmModuleId::kTrd2d
-                        : ("kTof"   == sSelDet ? ECbmModuleId::kTof
-                        : ("kRich"  == sSelDet ? ECbmModuleId::kRich
-                        : ("kPsd"   == sSelDet ? ECbmModuleId::kPsd
-                                               : ECbmModuleId::kNotExist))))))));
+    ECbmModuleId selDet = GetDetectorId(sSelDet);
     if (ECbmModuleId::kNotExist == selDet) {
       LOG(info)
         << "CbmDeviceBuildDigiEvents::InitTask => "
@@ -285,15 +246,7 @@ try {
 
     /// Detector Enum Tag
     std::string sSelDet = (*itStrMaxNb).substr(0, charPosDel);
-    ECbmModuleId selDet = ("kT0"    == sSelDet ? ECbmModuleId::kT0
-                        : ("kSts"   == sSelDet ? ECbmModuleId::kSts
-                        : ("kMuch"  == sSelDet ? ECbmModuleId::kMuch
-                        : ("kTrd"   == sSelDet ? ECbmModuleId::kTrd
-                        : ("kTrd2D" == sSelDet ? ECbmModuleId::kTrd2d
-                        : ("kTof"   == sSelDet ? ECbmModuleId::kTof
-                        : ("kRich"  == sSelDet ? ECbmModuleId::kRich
-                        : ("kPsd"   == sSelDet ? ECbmModuleId::kPsd
-                                               : ECbmModuleId::kNotExist))))))));
+    ECbmModuleId selDet = GetDetectorId(sSelDet);
     if (ECbmModuleId::kNotExist == selDet) {
       LOG(info)
         << "CbmDeviceBuildDigiEvents::InitTask => "
@@ -307,6 +260,38 @@ try {
     UInt_t uMaxNb = std::stoul((*itStrMaxNb).substr(charPosDel));
 
     fpAlgo->SetTriggerMaxNumber(selDet, uMaxNb);
+  }
+
+  /// Extract MinLayersNb for trigger if any
+  for (std::vector<std::string>::iterator itStrMinLayersNb = fvsSetTrigMinLayersNb.begin();
+       itStrMinLayersNb != fvsSetTrigMinLayersNb.end();
+       ++itStrMinLayersNb) {
+    size_t charPosDel = (*itStrMinLayersNb).find(',');
+    if (std::string::npos == charPosDel) {
+      LOG(info)
+        << "CbmDeviceBuildDigiEvents::InitTask => "
+        << "Trying to set trigger min layers Nb with invalid option pattern, ignored! "
+        << " (Should be ECbmModuleId,uMinLayersNb but instead found " << (*itStrMinLayersNb)
+        << " )";
+      continue;
+    }
+
+    /// Detector Enum Tag
+    std::string sSelDet = (*itStrMinLayersNb).substr(0, charPosDel);
+    ECbmModuleId selDet = GetDetectorId(sSelDet);
+    if (ECbmModuleId::kNotExist == selDet) {
+      LOG(info)
+        << "CbmDeviceBuildDigiEvents::InitTask => "
+        << "Trying to set trigger min layers Nb for unsupported detector, ignored! "
+        << sSelDet;
+      continue;
+    }
+
+    /// Min number
+    charPosDel++;
+    UInt_t uMinLayersNb = std::stoul((*itStrMinLayersNb).substr(charPosDel));
+
+    fpAlgo->SetTriggerMinLayersNumber(selDet, uMinLayersNb);
   }
 
   /// FIXME: Re-enable clang formatting after formatted lines
@@ -370,6 +355,42 @@ bool CbmDeviceBuildDigiEvents::IsChannelNameAllowed(std::string channelName)
   LOG(info) << "Channel name " << channelName << " not found in list of allowed channel names.";
   LOG(error) << "Stop device.";
   return false;
+}
+
+RawEventBuilderDetector CbmDeviceBuildDigiEvents::GetDetectorBuilderCfg(std::string detName)
+{
+  /// FIXME: Disable clang formatting for now as it corrupts all alignment
+  /* clang-format off */
+  RawEventBuilderDetector cfgDet = ("kT0"    == detName ? kRawEventBuilderDetT0
+                                 : ("kSts"   == detName ? kRawEventBuilderDetSts
+                                 : ("kMuch"  == detName ? kRawEventBuilderDetMuch
+                                 : ("kTrd"   == detName ? kRawEventBuilderDetTrd
+                                 : ("kTrd2D" == detName ? kRawEventBuilderDetTrd2D
+                                 : ("kTof"   == detName ? kRawEventBuilderDetTof
+                                 : ("kRich"  == detName ? kRawEventBuilderDetRich
+                                 : ("kPsd"   == detName ? kRawEventBuilderDetPsd
+                                                        : kRawEventBuilderDetUndef))))))));
+  return cfgDet;
+  /// FIXME: Re-enable clang formatting after formatted lines
+  /* clang-format on */
+}
+
+ECbmModuleId CbmDeviceBuildDigiEvents::GetDetectorId(std::string detName)
+{
+  /// FIXME: Disable clang formatting for now as it corrupts all alignment
+  /* clang-format off */
+  ECbmModuleId detId = ("kT0"    == detName ? ECbmModuleId::kT0
+                     : ("kSts"   == detName ? ECbmModuleId::kSts
+                     : ("kMuch"  == detName ? ECbmModuleId::kMuch
+                     : ("kTrd"   == detName ? ECbmModuleId::kTrd
+                     : ("kTrd2D" == detName ? ECbmModuleId::kTrd2d
+                     : ("kTof"   == detName ? ECbmModuleId::kTof
+                     : ("kRich"  == detName ? ECbmModuleId::kRich
+                     : ("kPsd"   == detName ? ECbmModuleId::kPsd
+                                            : ECbmModuleId::kNotExist))))))));
+  return detId;
+  /// FIXME: Re-enable clang formatting after formatted lines
+  /* clang-format on */
 }
 
 
