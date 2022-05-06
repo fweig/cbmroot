@@ -53,6 +53,25 @@ void L1AlgoInputData::SetData( const vector< L1Hit >      & StsHits_,
 
 */
 
+/****************************************************************************************************************/
+
+void L1AlgoInputData::Clear() 
+{
+  vStsHits.clear();
+  NStsStrips = 0;
+  fStripFlag.clear();
+  {
+    for (int i = 0; i < kMaxNStations + 1; ++i) {
+      StsHitsStartIndex[i] = 0;
+    }
+    for (int i = 0; i < kMaxNStations + 1; ++i) {
+      StsHitsStopIndex[i] = 0;
+    }
+  }
+}
+
+/****************************************************************************************************************/
+
 istream& L1AlgoInputData::eatwhite(istream& is)  // skip spaces
 {
   char c;
@@ -64,6 +83,8 @@ istream& L1AlgoInputData::eatwhite(istream& is)  // skip spaces
   }
   return is;
 }
+
+/****************************************************************************************************************/
 
 bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNEvent, const int iVerbose)
 {
@@ -142,7 +163,7 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
     for (int i = 0; i < n; i++) {
       int tmp;
       fadata >> tmp;
-      if (MaxNStations + 1 > i) StsHitsStartIndex[i] = tmp;
+      if (kMaxNStations + 1 > i) StsHitsStartIndex[i] = tmp;
       //   cout << " StsHitsStartIndex[i]"<< StsHitsStartIndex[i] << endl;
 
       //    cout << tmp<<  " tmp"<<endl;
@@ -150,7 +171,7 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
     for (int i = 0; i < n; i++) {
       int tmp;
       fadata >> tmp;
-      if (MaxNStations + 1 > i) StsHitsStopIndex[i] = tmp;
+      if (kMaxNStations + 1 > i) StsHitsStopIndex[i] = tmp;
       //   cout << " StsHitsStopIndex[i]"<< StsHitsStopIndex[i] << endl;
       //   cout << tmp<<  " tmp"<<endl;
     }
@@ -164,6 +185,8 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
   nEvent++;
   return 1;
 }  // void L1AlgoInputData::ReadStAPAlgoData()
+
+/****************************************************************************************************************/
 
 /*
 void L1AlgoInputData::PrintHits()

@@ -1061,7 +1061,10 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
   if (fVerbose >= 10) { cout << "ReadEvent: strips are read." << endl; }
 
-  // -- save hits --
+  /*
+   * Fill and then save vStsHits, vHitStore and vHitMCRef vectors as well as fData->vStsHits
+   */
+
   int nEffHits = 0;
 
   SortedIndex.reset(maxHitIndex + 1);
@@ -1072,14 +1075,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   vHitStore.reserve(nHits);
   vHitMCRef.reserve(nHits);
 
-  /*
-   * In this section the vStsHits, vHitStore and vHitMCRef vectors as well as fData->vStsHits are
-   * filled. 
-   */
   
-  L1_SHOW(vStsHits.size());
-  L1_SHOW(vHitStore.size());
-  L1_SHOW(vHitMCRef.size());
   for (int i = 0; i < nHits; i++) {
     TmpHit& th = tmpHits[i];
 
@@ -1147,10 +1143,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     vHitStore.push_back(s);
     vHitMCRef.push_back(th.iMC);
   }
-  L1_SHOW(&vStsHits);
-  L1_SHOW(vStsHits.size());
-  L1_SHOW(&(fData_->vStsHits));
-  L1_SHOW((fData_->vStsHits).size());
 
   for (int i = 0; i < NStation; i++) {
     if (fData_->StsHitsStartIndex[i] == static_cast<L1HitIndex_t>(-1)) {

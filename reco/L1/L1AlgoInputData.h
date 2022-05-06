@@ -12,67 +12,97 @@
 #include "L1Hit.h"
 #include "L1Vector.h"
 
-class L1AlgoInputData {
+///
+/// Class L1AlgoInputData implements a container for keeping a vector of L1Algo internal hit structures (the 
+/// L1Hit objects), used for track reconstruction procedure.
+///
+struct L1AlgoInputData {
+  /*
+   *  Funcitons
+   */
 
-public:
+  static constexpr int kMaxNStations {25};  ///> max number of stations to be passed to the L1AlgoInputData object
+  // TODO: Why is it different to the value used in L1Algo (L1Parameters::kMaxNstations)? (S.Zharko)
+
+  /// Default constructor
   L1AlgoInputData()  = default;
+  /// Default destructor
   ~L1AlgoInputData() = default;
 
-  L1Vector<L1Hit>& GetStsHits() { return vStsHits; }
+  /// Resets the object
+  /// For all the vectors the clear method is called, all other fields are set to zero
+  void Clear();
+  /// Gets number of the station strips
   int GetNStsStrips() const { return NStsStrips; }
+  /// Gives an access to the underlying vector of L1Hit objects
+  L1Vector<L1Hit>& GetStsHits() { return vStsHits; }
+  /// Gives an access to the vector of the strip flags
   L1Vector<unsigned char>& GetSFlag() { return fStripFlag; }
+  /// Gets an access of the start indexes for different stations 
+  /// \return pointer to the first element of the array over the stations
   const L1HitIndex_t* GetStsHitsStartIndex() const { return StsHitsStartIndex; }
+  /// Gets an access of the stop indexes for different stations 
+  /// \return pointer to the first element of the array over the stations
   const L1HitIndex_t* GetStsHitsStopIndex() const { return StsHitsStopIndex; }
 
-
+  /// Reads a vector of L1Hit object from file
+  /// The input text file must have the exactly "data_algo.txt" basename
+  /// \param  work_dir  path to the file data_algo.txt file, containing the L1Hit objects for different events
+  /// \param  maxNEvent max number of events to be read from the data_algo.txt file
+  /// \param  iVerbose  verbosity level
+  /// \return success flag: 
+  ///    true  - data was read and stored into this object
+  ///    false - data was not read for some reason
   bool ReadHitsFromFile(const char work_dir[100], const int maxNEvent, const int iVerbose);
+  // TODO: Is there any reason to pass string as an array of chars? It is dangerous, because if one can pass a 
+  //       string containing more then 100 symbols and thus cast a segmentation violation. So, I'd change it
+  //       to const char*, if there are no any specific reasons to keep the current signature. (S.Zharko)
+
   //  void PrintHits();
 
-  /// redefine new\delete for use alignment memmory
+  //
+  // Redefinitions of the new\delete operators for using the alignment memmory
+  //
+  /// Placement new operator for single element
   void* operator new(size_t size, void* ptr) { return ::operator new(size, ptr); }
+  /// Placement new operator for multiple elements
   void* operator new[](size_t size, void* ptr) { return ::operator new(size, ptr); }
+  /// New operator for single element
   void* operator new(size_t size) { return _mm_malloc(size, 16); }
+  /// New operator for multiple elements
   void* operator new[](size_t size) { return _mm_malloc(size, 16); }
+  /// Delete operator for single element
   void operator delete(void* ptr, size_t) { _mm_free(ptr); }
+  /// Delete operator for multiple elements 
   void operator delete[](void* ptr, size_t) { _mm_free(ptr); }
 
+  // TODO: Where are the definitions? (S.Zharko)
+  /// Copy constructor
   L1AlgoInputData(const L1AlgoInputData& a);
+  /// Copy assignment operator
   const L1AlgoInputData& operator=(const L1AlgoInputData& a);
 
-
-  void Clear()
-  {
-
-    vStsHits.clear();
-    NStsStrips = 0;
-    fStripFlag.clear();
-
-    {
-      for (int i = 0; i < MaxNStations + 1; ++i)
-        StsHitsStartIndex[i] = 0;
-      for (int i = 0; i < MaxNStations + 1; ++i)
-        StsHitsStopIndex[i] = 0;
-    }
-  }
-
-
   // private:
+  //
   // functionality
+  //
+  /// Skips spaces in the input stream (TODO: is it used somewhere? (S.Zharko))
   static std::istream& eatwhite(std::istream& is);  // skip spaces
                                                     /// read data from data_algo.txt
-  // data
-  enum
-  {
-    MaxNStations = 25
-  };
-  L1Vector<L1Hit> vStsHits {"L1AlgoInputData::vStsHits"};  // hits as a combination of front-, backstrips and z-position
-  int NStsStrips {0};                                      // Number of strips in sts
+  /*
+   *  Data fields (public)
+   */
+  /// hits as a combination of front-, backstrips and z-position
+  L1Vector<L1Hit> vStsHits {"L1AlgoInputData::vStsHits"};  
 
-  L1Vector<unsigned char> fStripFlag {
-    "L1AlgoInputData::fStripFlag"};  // information of hits station & used hits in tracks;
+  int NStsStrips {0};  ///> Number of strips in the station
+  /// information of hits station & used hits in tracks;
+  L1Vector<unsigned char> fStripFlag {"L1AlgoInputData::fStripFlag"};
 
-  L1HitIndex_t StsHitsStartIndex[MaxNStations + 1] {0};  // station-bounders in vStsHits array
-  L1HitIndex_t StsHitsStopIndex[MaxNStations + 1] {0};   // station-bounders in vStsHits array
+  /// Start indeces for a given station
+  L1HitIndex_t StsHitsStartIndex[kMaxNStations + 1] {0};
+  /// Stop indeces for a given station
+  L1HitIndex_t StsHitsStopIndex[kMaxNStations + 1] {0}; 
 
 } _fvecalignment;
 
