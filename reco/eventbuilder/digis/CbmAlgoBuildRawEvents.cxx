@@ -683,21 +683,21 @@ void CbmAlgoBuildRawEvents::CreateHistograms()
   outFolder = new TFolder("AlgoBuildRawEventsHist", " AlgoBuildRawEvents Histos");
   outFolder->Clear();
 
-  fhEventTime = new TH1F("hEventTime", "seed time of the events; Seed time [s]; Events", 1000, 0, 0.001);
-  fhEventTime->SetCanExtend(TH1::kAllAxes);
+  fhEventTime = new TH1F("hEventTime", "seed time of the events; Seed time within TS [s]; Events", 100000, 0, 0.2);
+  // fhEventTime->SetCanExtend(TH1::kAllAxes);  // Breaks the MQ histogram server as cannot be merged!
 
   fhEventDt =
-    new TH1F("fhEventDt", "interval in seed time of consecutive events; Seed time [s]; Events", 1000, 0, 0.0001);
-  fhEventDt->SetCanExtend(TH1::kAllAxes);
+    new TH1F("fhEventDt", "interval in seed time of consecutive events; Seed time dt [ns]; Events", 10000, 0, 100000);
+  // fhEventDt->SetCanExtend(TH1::kAllAxes);  // Breaks the MQ histogram server as cannot be merged!
 
-  fhEventSize = new TH1F("hEventSize", "nb of all  digis in the event; Nb Digis []; Events []", 1000, 0, 100);
-  fhEventSize->SetCanExtend(TH1::kAllAxes);
+  fhEventSize = new TH1F("hEventSize", "nb of all  digis in the event; Nb Digis []; Events []", 10000, 0, 10000);
+  // fhEventSize->SetCanExtend(TH1::kAllAxes);  // Breaks the MQ histogram server as cannot be merged!
 
   fhNbDigiPerEvtTime = new TH2I("hNbDigiPerEvtTime",
                                 "nb of all  digis per event vs seed time of the events; Seed time "
                                 "[s]; Nb Digis []; Events []",
-                                1000, 0, 0.001, 1000, 0, 100);
-  fhNbDigiPerEvtTime->SetCanExtend(TH2::kAllAxes);
+                                1000, 0, 0.1, 5000, 0, 5000);
+  // fhNbDigiPerEvtTime->SetCanExtend(TH2::kAllAxes);  // Breaks he MQ histogram server as cannot be merged!
 
   /// Loop on selection detectors
   for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
@@ -707,11 +707,11 @@ void CbmAlgoBuildRawEvents::CreateHistograms()
       continue;
     }
     TH2I* hNbDigiPerEvtTimeDet = new TH2I(Form("hNbDigiPerEvtTime%s", (*det).sName.data()),
-                                          Form("nb of %s digis per event vs seed time of the events; Seed time "
+                                          Form("nb of %s digis per event vs seed time of the events; Seed time in TS "
                                                "[s]; Nb Digis []; Events []",
                                                (*det).sName.data()),
-                                          1000, 0, 0.001, 1000, 0, 100);
-    hNbDigiPerEvtTimeDet->SetCanExtend(TH2::kAllAxes);
+                                          1000, 0, 0.1, 5000, 0, 5000);
+    // hNbDigiPerEvtTimeDet->SetCanExtend(TH2::kAllAxes);   // Breaks he MQ histogram server as cannot be merged!
     fvhNbDigiPerEvtTimeDet.push_back(hNbDigiPerEvtTimeDet);
   }
 
@@ -769,7 +769,7 @@ void CbmAlgoBuildRawEvents::ResetHistograms(Bool_t /*bResetTime*/)
    {
       /// Also reset the Start time for the evolution plots!
       fdStartTime = -1.0;
-   } 
+   }
    */
 }
 

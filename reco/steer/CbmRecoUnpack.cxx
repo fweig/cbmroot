@@ -106,7 +106,7 @@ Bool_t CbmRecoUnpack::Init()
     fMuchConfig->SetAlgo();
     initParContainers(fMuchConfig->GetParContainerRequest());  /// Framework bound work = kept in this Task
     fMuchConfig->InitAlgo();
-    initPerformanceMaps(fkFlesMuch, "RICH");
+    initPerformanceMaps(fkFlesMuch, "MUCH");
   }
 
 
