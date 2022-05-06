@@ -617,9 +617,49 @@ Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, RawEventBu
   if (0 < det.fuTriggerMinLayers) {
     switch (det.detId) {
       case ECbmModuleId::kSts: {
-        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => Fired layers check not implemented yet for "
-                   << det.sName;
-        return kFALSE;
+        /// check for requested number of different stations
+        /// loop over sts digis and check for
+        std::set<uint32_t> setStations;  // Use set instead of vector as search by value later
+        std::map<uint32_t, int> mModules;
+
+        for (int idigi = 0; idigi < iNbDigis; ++idigi) {
+          uint idx                = event->GetIndex(det.dataType, idigi);
+          const CbmStsDigi* pDigi = GetDigi<CbmStsDigi>(idx);
+          if (nullptr == pDigi) continue;
+
+          int iAddr = pDigi->GetAddress();
+          /// Module full address
+          int iModuleAddr = CbmStsAddress::GetMotherAddress(iAddr, EStsElementLevel::kStsModule);
+          /// Station index: station = unit in the mCBM addresses ?!?
+          int iStationAddr = CbmStsAddress::GetElementId(iAddr, EStsElementLevel::kStsUnit);
+          //int iStationAddr = CbmStsAddress::GetElementId(iAddr, EStsElementLevel::kStsUnit) / 2;
+
+          std::map<uint32_t, int>::iterator itModule = mModules.find(iModuleAddr);
+          if (itModule == mModules.end()) {
+            // LOG(info) << Form("Found new module 0x%08x, side %u", iModuleAddr,
+            //                   static_cast<uint32_t>(pDigi->GetChannel() / 1024));
+            mModules[iModuleAddr] = static_cast<int32_t>(pDigi->GetChannel() / 1024);  // extend map
+          }
+          else {
+            // LOG(info) << Form("Check side %u of module 0x%08x: %d ?",
+            //                   static_cast<int32_t>(pDigi->GetChannel() / 1024),
+            //                   iModuleAddr, itModule->second);
+            if (static_cast<int32_t>(pDigi->GetChannel() / 1024) == (1 - itModule->second)) {
+              /// Found other side => non-zero cluster chance, insert into stations set
+              auto itStation = setStations.find(iStationAddr);
+              if (itStation == setStations.end()) {
+                // LOG(info) << Form("Add station 0x%08x ", iStationAddr);
+                setStations.insert(iStationAddr);
+              }
+            }
+          }
+        }
+        // LOG(info) << "Found " << setStations.size() << " Sts stations, " << " in " << iNbDigis << " Sts digis";
+        if (setStations.size() < det.fuTriggerMinLayers) {
+          LOG(debug2) << "Event does not have enough layers fired: " << setStations.size() << " vs "
+                      << det.fuTriggerMinLayers << " for " << det.sName;
+          return kFALSE;
+        }
         break;
       }
       case ECbmModuleId::kMuch: {
@@ -640,7 +680,6 @@ Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, RawEventBu
         /// loop over tof digis and count different RPCs
         std::set<uint32_t> setRpcs;  // Use set instead of vector as search by value later
         std::map<uint32_t, int> mStrips;
-        std::map<uint32_t, int>::iterator it;
 
         for (int idigi = 0; idigi < iNbDigis; ++idigi) {
           uint idx                = event->GetIndex(det.dataType, idigi);
@@ -659,7 +698,7 @@ Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, RawEventBu
           else {
             // LOG(info) << Form("Check side %u of  strip 0x%08x: %d ?", pDigi->GetSide(), iStripAddr, itStrip->second);
             if ((int) pDigi->GetSide() == (1 - itStrip->second)) {
-              /// Found other end => full strip, insert into counter vector
+              /// Found other end => full strip, insert into counter set
               auto itRpc = setRpcs.find(iRpcAddr);
               if (itRpc == setRpcs.end()) {
                 // LOG(info) << Form("Add counter 0x%08x ", iRpcAddr);
