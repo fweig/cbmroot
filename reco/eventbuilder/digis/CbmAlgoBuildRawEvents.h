@@ -57,13 +57,15 @@ public:
   }
 
   RawEventBuilderDetector(ECbmModuleId detIdIn, ECbmDataType dataTypeIn, std::string sNameIn, UInt_t uTriggerMinDigisIn,
-                          Int_t iTriggerMaxDigisIn, Double_t fdTimeWinBegIn, Double_t fdTimeWinEndIn)
+                          Int_t iTriggerMaxDigisIn, Double_t fdTimeWinBegIn, Double_t fdTimeWinEndIn,
+                          UInt_t uTriggerMinLayersIn = 0)
     : RawEventBuilderDetector(detIdIn, dataTypeIn, sNameIn)
   {
-    fuTriggerMinDigis = uTriggerMinDigisIn;
-    fiTriggerMaxDigis = iTriggerMaxDigisIn;
-    fdTimeWinBeg      = fdTimeWinBegIn;
-    fdTimeWinEnd      = fdTimeWinEndIn;
+    fuTriggerMinDigis  = uTriggerMinDigisIn;
+    fiTriggerMaxDigis  = iTriggerMaxDigisIn;
+    fuTriggerMinLayers = uTriggerMinLayersIn;
+    fdTimeWinBeg       = fdTimeWinBegIn;
+    fdTimeWinEnd       = fdTimeWinEndIn;
   }
 
   bool operator==(const RawEventBuilderDetector& other) const { return (other.detId == this->detId); }
@@ -75,10 +77,12 @@ public:
   ECbmModuleId detId    = ECbmModuleId::kNotExist;
   ECbmDataType dataType = ECbmDataType::kUnknown;
   std::string sName     = "Invalid";
-  /// Minimum number of T0 digis needed to generate a trigger, 0 means don't use for trigger generation
+  /// Minimum number of digis per detector needed to generate an event, 0 means do not use for event selection
   UInt_t fuTriggerMinDigis = 0;
-  /// Maximum number of digis per detector to generate an event, -1 means no cut, 0 means anti-coinc trigger
+  /// Maximum number of digis per detector needed to generate an event, -1 means no cut, 0 means anti-coinc trigger
   Int_t fiTriggerMaxDigis = -1;
+  /// Minimum number of fired layers needed to generate an event, 0 means do not require for event selection
+  UInt_t fuTriggerMinLayers = 0;
   /// Selection Window
   Double_t fdTimeWinBeg = -100;
   Double_t fdTimeWinEnd = 100;
@@ -148,6 +152,7 @@ public:
 
   void SetTriggerMinNumber(ECbmModuleId selDet, UInt_t uVal);
   void SetTriggerMaxNumber(ECbmModuleId selDet, Int_t iVal);
+  void SetTriggerMinLayersNumber(ECbmModuleId selDet, UInt_t uVal);
   void SetTriggerWindow(ECbmModuleId selDet, Double_t dWinBeg, Double_t dWinEnd);
 
   void SetTsParameters(Double_t dTsStartTime, Double_t dTsLength, Double_t dTsOverLength)

@@ -31,3 +31,12 @@ const int32_t CbmTofAddress::fgkiModFullIdMask =
   (((1 << fgkSystemBits) - 1)) + (((1 << fgkSmIdBits) - 1) << fgkSmIdOffset)
   + (((1 << fgkSmTypeBits) - 1) << fgkSmTypeOffset) + (((1 << fgkRpcIdBits) - 1) << fgkRpcIdOffset)
   + (((1 << fgkRpcTypeBits) - 1) << fgkRpcTypeOffset);
+
+const int32_t CbmTofAddress::fgkiRpcFullIdMask =
+  (((1 << fgkSystemBits) - 1)) + (((1 << fgkSmIdBits) - 1) << fgkSmIdOffset)
+  + (((1 << fgkSmTypeBits) - 1) << fgkSmTypeOffset) + (((1 << fgkRpcIdBits) - 1) << fgkRpcIdOffset);
+
+const int32_t CbmTofAddress::fgkiStripFullIdMask =
+  (((1 << fgkSystemBits) - 1)) + (((1 << fgkSmIdBits) - 1) << fgkSmIdOffset)
+  + (((1 << fgkSmTypeBits) - 1) << fgkSmTypeOffset) + (((1 << fgkRpcIdBits) - 1) << fgkRpcIdOffset)
+  + (((1 << fgkChannelIdBits) - 1) << fgkChannelIdOffset);

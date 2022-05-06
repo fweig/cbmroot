@@ -374,6 +374,47 @@ void CbmAlgoBuildRawEvents::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx)
   CheckTriggerCondition(dSeedTime);
 }
 
+//----------------------------------------------------------------------
+/// Specialization of the GetDigi variants has to happen before first usage
+
+template<>
+const CbmStsDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
+  return &((*fStsDigis)[uDigi]);
+}
+template<>
+const CbmMuchBeamTimeDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
+  return &((*fMuchBeamTimeDigis)[uDigi]);
+}
+template<>
+const CbmMuchDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
+  return &((*fMuchDigis)[uDigi]);
+}
+template<>
+const CbmTrdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
+  return &((*fTrdDigis)[uDigi]);
+}
+template<>
+const CbmTofDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
+  return &((*fTofDigis)[uDigi]);
+}
+template<>
+const CbmRichDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
+  return &((*fRichDigis)[uDigi]);
+}
+template<>
+const CbmPsdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+{
+  return &((*fPsdDigis)[uDigi]);
+}
+
+//----------------------------------------------------------------------
+
 void CbmAlgoBuildRawEvents::SearchMatches(Double_t dSeedTime, RawEventBuilderDetector& detMatch)
 {
   switch (detMatch.detId) {
@@ -566,14 +607,104 @@ Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, RawEventBu
     return kFALSE;
   }
 
-  /// Check trigger rejection by maximal number
-  else if (0 < det.fiTriggerMaxDigis && det.fiTriggerMaxDigis < iNbDigis) {
+  /// Check trigger rejection by maximal number (if enabled)
+  if (0 < det.fiTriggerMaxDigis && det.fiTriggerMaxDigis < iNbDigis) {
     LOG(debug2) << "Event Has too many digis: " << iNbDigis << " vs " << det.fiTriggerMaxDigis << " for " << det.sName;
     return kFALSE;
   }
-  else {
-    return kTRUE;
+
+  /// Check trigger rejection by minimal number of fired layers (if enabled)
+  if (0 < det.fuTriggerMinLayers) {
+    switch (det.detId) {
+      case ECbmModuleId::kSts: {
+        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => Fired layers check not implemented yet for "
+                   << det.sName;
+        return kFALSE;
+        break;
+      }
+      case ECbmModuleId::kMuch: {
+        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => Fired layers check not implemented yet for "
+                   << det.sName;
+        return kFALSE;
+        break;
+      }
+      case ECbmModuleId::kTrd2d:  // Same data storage as trd 1d
+      case ECbmModuleId::kTrd: {
+        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => Fired layers check not implemented yet for "
+                   << det.sName;
+        return kFALSE;
+        break;
+      }
+      case ECbmModuleId::kTof: {
+        /// check for requested number of different counters
+        /// loop over tof digis and count different RPCs
+        std::set<uint32_t> setRpcs;  // Use set instead of vector as search by value later
+        std::map<uint32_t, int> mStrips;
+        std::map<uint32_t, int>::iterator it;
+
+        for (int idigi = 0; idigi < iNbDigis; ++idigi) {
+          uint idx                = event->GetIndex(det.dataType, idigi);
+          const CbmTofDigi* pDigi = GetDigi<CbmTofDigi>(idx);
+          if (nullptr == pDigi) continue;
+
+          int iAddr      = pDigi->GetAddress();
+          int iStripAddr = CbmTofAddress::GetStripFullId(iAddr);
+          int iRpcAddr   = CbmTofAddress::GetRpcFullId(iAddr);
+
+          std::map<uint32_t, int>::iterator itStrip = mStrips.find(iStripAddr);
+          if (itStrip == mStrips.end()) {
+            // LOG(info) << Form("Found new strip 0x%08x, side %u", iStripAddr, pDigi->GetSide());
+            mStrips[iStripAddr] = (int) pDigi->GetSide();  // extend map
+          }
+          else {
+            // LOG(info) << Form("Check side %u of  strip 0x%08x: %d ?", pDigi->GetSide(), iStripAddr, itStrip->second);
+            if ((int) pDigi->GetSide() == (1 - itStrip->second)) {
+              /// Found other end => full strip, insert into counter vector
+              auto itRpc = setRpcs.find(iRpcAddr);
+              if (itRpc == setRpcs.end()) {
+                // LOG(info) << Form("Add counter 0x%08x ", iRpcAddr);
+                setRpcs.insert(iRpcAddr);
+              }
+            }
+          }
+        }
+        // LOG(info) << "Found " << setRpcs.size() << " Tof RPCs, " << " in " << iNbDigis << " Tof digis";
+        if (setRpcs.size() < det.fuTriggerMinLayers) {
+          LOG(debug2) << "Event does not have enough RPCs fired: " << setRpcs.size() << " vs " << det.fuTriggerMinLayers
+                      << " for " << det.sName;
+          return kFALSE;
+        }
+        break;
+      }
+      case ECbmModuleId::kRich: {
+        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => Fired layers check not implemented yet for "
+                   << det.sName;
+        return kFALSE;
+        break;
+      }
+      case ECbmModuleId::kPsd: {
+        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => Fired layers check not implemented yet for "
+                   << det.sName;
+        return kFALSE;
+        break;
+      }
+      case ECbmModuleId::kT0: {
+        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => Fired layers check not implemented yet for "
+                   << det.sName;
+        return kFALSE;
+        break;
+      }
+      default: {
+        LOG(fatal) << "CbmAlgoBuildRawEvents::CheckDataAvailable => Fired layers check not implemented yet for "
+                   << det.sName;
+        return kFALSE;
+        break;
+      }
+    }
   }
+
+  /// All checks passed, event is good
+  return kTRUE;
 }
 
 //----------------------------------------------------------------------
@@ -657,42 +788,6 @@ UInt_t CbmAlgoBuildRawEvents::GetNofDigis(ECbmModuleId detId)
       return -1;
     }
   }
-}
-
-template<>
-const CbmStsDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
-{
-  return &((*fStsDigis)[uDigi]);
-}
-template<>
-const CbmMuchBeamTimeDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
-{
-  return &((*fMuchBeamTimeDigis)[uDigi]);
-}
-template<>
-const CbmMuchDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
-{
-  return &((*fMuchDigis)[uDigi]);
-}
-template<>
-const CbmTrdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
-{
-  return &((*fTrdDigis)[uDigi]);
-}
-template<>
-const CbmTofDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
-{
-  return &((*fTofDigis)[uDigi]);
-}
-template<>
-const CbmRichDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
-{
-  return &((*fRichDigis)[uDigi]);
-}
-template<>
-const CbmPsdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
-{
-  return &((*fPsdDigis)[uDigi]);
 }
 
 //----------------------------------------------------------------------
@@ -1090,7 +1185,7 @@ void CbmAlgoBuildRawEvents::SetReferenceDetector(RawEventBuilderDetector refDetI
   for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     if ((*det) == refDetIn) {
       LOG(warning) << "CbmAlgoBuildRawEvents::SetReferenceDetector => "
-                      "Reference detector already in selection detector list!"
+                      "Reference detector already in selection detector list! "
                    << refDetIn.sName;
       LOG(warning) << "                                                         => "
                       "It will be automatically removed from selection detector list!";
@@ -1112,7 +1207,7 @@ void CbmAlgoBuildRawEvents::SetReferenceDetector(RawEventBuilderDetector refDetI
     LOG(warning) << "                                                         => "
                     "You may want to use AddDetector after this command to add in "
                     "selection "
-                 << refDetIn.sName;
+                 << fRefDet.sName;
     LOG(warning) << "                                                         => "
                     "Please also remember to update the selection windows!";
   }
@@ -1205,6 +1300,28 @@ void CbmAlgoBuildRawEvents::SetTriggerMaxNumber(ECbmModuleId selDet, Int_t iVal)
     }
   }
   LOG(warning) << "CbmAlgoBuildRawEvents::SetTriggerMaxNumber => "
+                  "Doing nothing, detector neither reference nor in selection list!"
+               << selDet;
+}
+
+void CbmAlgoBuildRawEvents::SetTriggerMinLayersNumber(ECbmModuleId selDet, UInt_t uVal)
+{
+  /// Check first if reference detector
+  if (fRefDet.detId == selDet) {
+    fRefDet.fuTriggerMinLayers = uVal;
+    LOG(debug) << "Set Trigger min fired layers limit for " << fRefDet.sName << " to " << uVal;
+    return;
+  }
+
+  /// Loop on selection detectors
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
+    if ((*det).detId == selDet) {
+      (*det).fuTriggerMinLayers = uVal;
+      LOG(debug) << "Set Trigger min fired layers limit for " << (*det).sName << " to " << uVal;
+      return;
+    }
+  }
+  LOG(warning) << "CbmAlgoBuildRawEvents::SetTriggerMinLayersNumber => "
                   "Doing nothing, detector neither reference nor in selection list!"
                << selDet;
 }
