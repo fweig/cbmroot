@@ -931,7 +931,7 @@ InitStatus CbmL1::Init()
 
   //algo->SetParameters(fParameters);
 
-#ifdef FEATURING_L1ALGO_INIT
+
   /********************************************************************************************************************
    *                     EXPERIMENTAL FEATURE: usage of L1InitManager for L1Algo initialization                       *
    ********************************************************************************************************************/
@@ -1251,8 +1251,6 @@ InitStatus CbmL1::Init()
   /********************************************************************************************************************
    ********************************************************************************************************************/
 
-#endif  // FEATURING_L1ALGO_INIT
-
   algo->Init(geo, fUseHitErrors, fTrackingMode, fMissingHits);
   geo.clear();
 
@@ -1558,15 +1556,17 @@ void CbmL1::Exec(Option_t* /*option*/) {}
 
 void CbmL1::Reconstruct(CbmEvent* event)
 {
-
   static int nevent = 0;
   vFileEvent.clear();
 
   L1Vector<std::pair<double, int>> SortStsHits("CbmL1::SortStsHits");
   SortStsHits.reserve(listStsHits->GetEntriesFast());
 
+  L1_SHOW(listStsHits->GetEntriesFast());
+
   float start_t = 10000000000;
 
+  // TODO: move these values to CbmL1Parameters namespace (S.Zharko)
   bool areDataLeft = true;   // whole TS processed?
   float TsStart    = 0;      // starting time of sub-TS
   float TsLength   = 10000;  // length of sub-TS
@@ -1582,7 +1582,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
   }
 
   TsStart = start_t;  ///reco TS start time is set to smallest hit time
-
+  
+  L1_SHOW(TsStart);
 
   std::sort(SortStsHits.begin(), SortStsHits.end());
   StsIndex.clear();
@@ -1592,13 +1593,18 @@ void CbmL1::Reconstruct(CbmEvent* event)
     StsIndex.push_back(j);
   };
 
+  L1_SHOW(fLegacyEventMode);
+  L1_SHOW(TsStart);
+
   if (!fLegacyEventMode && fPerformance) {
 
     int nofEvents = fEventList->GetNofEvents();
+    L1_SHOW(fEventList->GetNofEvents());
     for (int iE = 0; iE < nofEvents; iE++) {
-
       int fileId  = fEventList->GetFileIdByIndex(iE);
       int eventId = fEventList->GetEventIdByIndex(iE);
+      L1_SHOW(fileId);
+      L1_SHOW(eventId);
       vFileEvent.insert(DFSET::value_type(fileId, eventId));
     }
   }
@@ -1608,14 +1614,15 @@ void CbmL1::Reconstruct(CbmEvent* event)
     vFileEvent.insert(DFSET::value_type(iFile, iEvent));
   }
 
-  if (fVerbose > 1) { cout << endl << "CbmL1::Exec event " << ++nevent << " ..." << endl << endl; }
+  if (fVerbose > 1) { cout << "\nCbmL1::Exec event " << ++nevent << " ...\n\n"; }
 #ifdef _OPENMP
   omp_set_num_threads(1);
 #endif
   // repack data
 
   L1Vector<CbmL1Track> vRTracksCur("CbmL1::vRTracksCur");  // reconstructed tracks
-
+  L1_SHOW(vRTracksCur.size());
+  L1_SHOW(vRTracksCur.capacity());
   {
     int nHits = 0;
     int nSta  = 1;
@@ -1629,11 +1636,15 @@ void CbmL1::Reconstruct(CbmEvent* event)
     }
     vRTracksCur.reserve(10 + (2 * nHits) / nSta);
   }
+  L1_SHOW(vRTracksCur.size());
+  L1_SHOW(vRTracksCur.capacity());
 
   fTrackingTime = 0;
 
-  while (areDataLeft) {
 
+  while (areDataLeft) {
+    
+    L1_SHOW(areDataLeft);
     fData->Clear();
 
     if (event) {
@@ -1647,6 +1658,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
       FstHitinTs  = 0;
     }
 
+    L1_SHOW(fSTAPDataMode);
     if (fSTAPDataMode >= 2) {  // 2,3
       fData->ReadHitsFromFile(fSTAPDataDir.Data(), 1, fVerbose);
 
@@ -2078,7 +2090,7 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
   // write algo data in file
   static int vNEvent = 1;
   std::fstream fadata;
-
+  
   TString fadata_name = fSTAPDataDir + "data_algo.txt";
   //    if ( vNEvent <= maxNEvent ) {
   if (1) {
@@ -2384,8 +2396,8 @@ void CbmL1::ReadSTAPAlgoData()
     for (int i = 0; i < n; i++) {
       L1Hit element;
       fadata >> element_f >> element_b >> element_n >> element.z >> element.u >> element.v >> element.t;
-      element.f = static_cast<THitI>(element_f);
-      element.b = static_cast<THitI>(element_b);
+      element.f = static_cast<L1HitIndex_t>(element_f);
+      element.b = static_cast<L1HitIndex_t>(element_b);
       algo->vStsHits->push_back(element);
     }
     if (fVerbose >= 4) {

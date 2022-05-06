@@ -29,8 +29,8 @@ void L1AlgoInputData::SetData( const vector< L1Hit >      & StsHits_,
                                    const vector< L1Strip >       & StsStripsB_,
                                    const vector< unsigned char > & SFlag_,
                                    const vector< unsigned char > & SFlagB_,
-                                   const THitI* StsHitsStartIndex_,
-                                   const THitI* StsHitsStopIndex_ )
+                                   const L1HitIndex_t* StsHitsStartIndex_,
+                                   const L1HitIndex_t* StsHitsStopIndex_ )
 {
   vStsHits.resize(StsHits_.size());
   vStsStrips.resize(StsStrips_.size());
@@ -126,8 +126,8 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
     for (int i = 0; i < n; i++) {
       L1Hit element;
       fadata >> element_f >> element_b >> element_n >> element.z >> element.u >> element.v >> element.t;
-      element.f = static_cast<THitI>(element_f);
-      element.b = static_cast<THitI>(element_b);
+      element.f = static_cast<L1HitIndex_t>(element_f);
+      element.b = static_cast<L1HitIndex_t>(element_b);
 #ifdef USE_EVENT_NUMBER
       element.n = static_cast<unsigned short int>(element_n);
 #endif

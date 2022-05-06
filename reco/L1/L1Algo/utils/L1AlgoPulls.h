@@ -83,8 +83,8 @@ public:
 
   void Init();
 
-  //     void AddVec(L1TrackPar& T, THitI ih);
-  void AddOne(L1TrackPar& T, int i, THitI ih);
+  //     void AddVec(L1TrackPar& T, L1HitIndex_t ih);
+  void AddOne(L1TrackPar& T, int i, L1HitIndex_t ih);
   void Print();  // fast method to see pulls :)
   void Build(bool draw = 1);
 

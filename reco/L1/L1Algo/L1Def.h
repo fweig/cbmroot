@@ -49,6 +49,8 @@ T finite(T x)
 #if defined(NDEBUG) || defined(L1_NO_ASSERT)
 #define L1_ASSERT(v, msg)
 #define L1_assert(v)
+// Prints expression value to the std::cout
+#define L1_SHOW(expr)
 #else
 #define L1_ASSERT(v, msg)                                                                                              \
   if (v) {}                                                                                                            \
@@ -58,9 +60,14 @@ T finite(T x)
     abort();                                                                                                           \
   }
 #define L1_assert(v) assert(v)
+#define L1_SHOW(expr)                                                                                                  \
+  std::cout << __FILE__ << ":" << __LINE__ << ": \033[01;38;5;208m" << (#expr) << "\033[0m = " << (expr) << "\n"
 #endif
 
 
 typedef int index_type;
+
+
+
 
 #endif

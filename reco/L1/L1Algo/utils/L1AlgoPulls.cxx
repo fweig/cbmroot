@@ -99,13 +99,13 @@ void L1AlgoPulls::Init()
   }
 };
 
-//  void L1AlgoPulls::AddVec(L1TrackPar& T_, THitI ih)
+//  void L1AlgoPulls::AddVec(L1TrackPar& T_, L1HitIndex_t ih)
 // {
 //   for (int i = 0; i < fvecLen; i++)
 //     AddOne(T_,i,ih);
 // }
 
-void L1AlgoPulls::AddOne(L1TrackPar& T_, int i, THitI ih)
+void L1AlgoPulls::AddOne(L1TrackPar& T_, int i, L1HitIndex_t ih)
 {
   fNAllPulls++;
   TL1TrackParameters T(T_, i);

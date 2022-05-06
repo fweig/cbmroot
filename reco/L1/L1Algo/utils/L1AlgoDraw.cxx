@@ -235,7 +235,7 @@ void L1AlgoDraw::DrawRecoTracks()
   //   CbmL1 &L1 = *CbmL1::Instance();
 
   int curRecoHit            = 0;
-  L1Vector<THitI>& recoHits = algo->fRecoHits;
+  L1Vector<L1HitIndex_t>& recoHits = algo->fRecoHits;
   for (vector<L1Track>::iterator it = algo->fTracks.begin(); it != algo->fTracks.end(); ++it) {
     L1Track& T = *it;
     int nHits  = T.NHits;
@@ -300,7 +300,7 @@ void L1AlgoDraw::DrawRecoTracks()
   XYZ->Update();
 }
 
-void L1AlgoDraw::DrawTriplets(vector<L1Triplet>& triplets, const THitI* realIHit)
+void L1AlgoDraw::DrawTriplets(vector<L1Triplet>& triplets, const L1HitIndex_t* realIHit)
 {
   //   vector <L1Triplet> triplets = algo->vTriplets;
   for (unsigned int iTrip = 0; iTrip < triplets.size(); iTrip++) {
@@ -364,14 +364,14 @@ void L1AlgoDraw::DrawTriplet(int il, int im, int ir)
   marker.DrawMarker(lx[nHits - 1], ly[nHits - 1]);
 }
 
-void L1AlgoDraw::DrawDoublets(vector<THitI>* Duplets_hits, map<THitI, THitI>* Duplets_start, const int /*MaxArrSize*/,
-                              THitI* StsRestHitsStartIndex, unsigned int* realIHit)
+void L1AlgoDraw::DrawDoublets(vector<L1HitIndex_t>* Duplets_hits, map<L1HitIndex_t, L1HitIndex_t>* Duplets_start, const int /*MaxArrSize*/,
+                              L1HitIndex_t* StsRestHitsStartIndex, unsigned int* realIHit)
 {
   for (int iSta = 0; iSta < NStations - 1; iSta++) {
     const int firstHitOnSta            = StsRestHitsStartIndex[iSta];
     const int firstHitOnNextSta        = StsRestHitsStartIndex[iSta + 1];
-    THitI* staDupletsHits              = &(Duplets_hits[iSta][0]);
-    map<THitI, THitI>& staDupletsStart = Duplets_start[iSta];
+    L1HitIndex_t* staDupletsHits              = &(Duplets_hits[iSta][0]);
+    map<L1HitIndex_t, L1HitIndex_t>& staDupletsStart = Duplets_start[iSta];
 
     for (int iRestLHit = firstHitOnSta; iRestLHit < firstHitOnNextSta; iRestLHit++) {
       const int ilh       = iRestLHit - firstHitOnSta;
@@ -397,13 +397,13 @@ void L1AlgoDraw::DrawDoublets(vector<THitI>* Duplets_hits, map<THitI, THitI>* Du
   YX->Update();
 };
 
-void L1AlgoDraw::DrawDoubletsOnSta(int iSta, THitI* Duplets_hits, THitI* Duplets_start, const int MaxArrSize,
-                                   THitI* StsRestHitsStartIndex, unsigned int* realIHit)
+void L1AlgoDraw::DrawDoubletsOnSta(int iSta, L1HitIndex_t* Duplets_hits, L1HitIndex_t* Duplets_start, const int MaxArrSize,
+                                   L1HitIndex_t* StsRestHitsStartIndex, unsigned int* realIHit)
 {
   const int firstHitOnSta     = StsRestHitsStartIndex[iSta];
   const int firstHitOnNextSta = StsRestHitsStartIndex[iSta + 1];
-  THitI* staDupletsHits       = Duplets_hits + MaxArrSize * iSta;
-  THitI* staDupletsStart      = Duplets_start + MaxArrSize * iSta;
+  L1HitIndex_t* staDupletsHits       = Duplets_hits + MaxArrSize * iSta;
+  L1HitIndex_t* staDupletsStart      = Duplets_start + MaxArrSize * iSta;
 
   for (int iRestLHit = firstHitOnSta; iRestLHit < firstHitOnNextSta; iRestLHit++) {
     const int ilh       = iRestLHit - firstHitOnSta;
@@ -659,7 +659,7 @@ void L1AlgoDraw::DrawInputHits()
 
 }  // DrawInputHits
 
-void L1AlgoDraw::DrawRestHits(THitI* StsRestHitsStartIndex, THitI* StsRestHitsStopIndex, unsigned int* realIHit)
+void L1AlgoDraw::DrawRestHits(L1HitIndex_t* StsRestHitsStartIndex, L1HitIndex_t* StsRestHitsStopIndex, unsigned int* realIHit)
 {
 
   TLatex latex;
@@ -687,7 +687,7 @@ void L1AlgoDraw::DrawRestHits(THitI* StsRestHitsStartIndex, THitI* StsRestHitsSt
     L1Station& st     = vStations[ista];
     Int_t n_poly      = 0;
     Int_t n_poly_fake = 0;
-    for (THitI iRestHit = StsRestHitsStartIndex[ista]; iRestHit < StsRestHitsStopIndex[ista]; iRestHit++) {
+    for (L1HitIndex_t iRestHit = StsRestHitsStartIndex[ista]; iRestHit < StsRestHitsStopIndex[ista]; iRestHit++) {
       int ih   = realIHit[iRestHit];
       L1Hit& h = vStsHits[ih];
       int iMC  = CbmL1::Instance()->vHitMCRef[ih];

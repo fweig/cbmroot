@@ -419,8 +419,8 @@ std::string L1BaseStationInfo::ToString(int verbosityLevel, int indentLevel) con
   std::string indent(indentLevel, indentChar);
 
   if (verbosityLevel == 0) {
-    aStream << indent << "L1BaseStationInfo object: {stationID, detectorID, address} = {" << fStationID << ", "
-            << static_cast<int>(fDetectorID) << ", " << this << '}';
+    aStream << indent << "L1BaseStationInfo object: {stationID, detectorID, z, address} = {" << fStationID << ", "
+            << static_cast<int>(fDetectorID) << ", " << fZPos << ", " << this << '}';
   }
   else if (verbosityLevel > 0) {
     aStream << indent << "L1BaseStationInfo object: at " << this << '\n';

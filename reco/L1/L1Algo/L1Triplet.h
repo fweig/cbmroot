@@ -46,9 +46,9 @@ public:
   void SetLevel(unsigned char Level) { fLevel = Level; }
   unsigned char GetLevel() const { return fLevel; }
 
-  THitI GetLHit() const { return fHitL; }
-  THitI GetMHit() const { return fHitM; }
-  THitI GetRHit() const { return fHitR; }
+  L1HitIndex_t GetLHit() const { return fHitL; }
+  L1HitIndex_t GetMHit() const { return fHitM; }
+  L1HitIndex_t GetRHit() const { return fHitR; }
 
   void SetNNeighbours(char n) { fNneighbours = n; }
   char GetNNeighbours() const { return fNneighbours; }
@@ -83,9 +83,9 @@ private:
   fscal fCty  = 0.f;  // RMS of ty
 
   unsigned int fFirstNeighbour = 0;  // ID of the first neighbouring triplet
-  THitI fHitL                  = 0;  // left hit index (16b) in vStsHits array
-  THitI fHitM                  = 0;  // middle hit index (16b)
-  THitI fHitR                  = 0;  // right hit index (16b)
+  L1HitIndex_t fHitL                  = 0;  // left hit index (16b) in vStsHits array
+  L1HitIndex_t fHitM                  = 0;  // middle hit index (16b)
+  L1HitIndex_t fHitR                  = 0;  // right hit index (16b)
   char fNneighbours            = 0;  // n of neighbouring triplets
   unsigned char fLevel         = 0;  // triplet level
                                      // == its possible position on the longest track candidate it belongs to.

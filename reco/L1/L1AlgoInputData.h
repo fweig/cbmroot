@@ -21,8 +21,8 @@ public:
   L1Vector<L1Hit>& GetStsHits() { return vStsHits; }
   int GetNStsStrips() const { return NStsStrips; }
   L1Vector<unsigned char>& GetSFlag() { return fStripFlag; }
-  const THitI* GetStsHitsStartIndex() const { return StsHitsStartIndex; }
-  const THitI* GetStsHitsStopIndex() const { return StsHitsStopIndex; }
+  const L1HitIndex_t* GetStsHitsStartIndex() const { return StsHitsStartIndex; }
+  const L1HitIndex_t* GetStsHitsStopIndex() const { return StsHitsStopIndex; }
 
 
   bool ReadHitsFromFile(const char work_dir[100], const int maxNEvent, const int iVerbose);
@@ -71,8 +71,8 @@ public:
   L1Vector<unsigned char> fStripFlag {
     "L1AlgoInputData::fStripFlag"};  // information of hits station & used hits in tracks;
 
-  THitI StsHitsStartIndex[MaxNStations + 1] {0};  // station-bounders in vStsHits array
-  THitI StsHitsStopIndex[MaxNStations + 1] {0};   // station-bounders in vStsHits array
+  L1HitIndex_t StsHitsStartIndex[MaxNStations + 1] {0};  // station-bounders in vStsHits array
+  L1HitIndex_t StsHitsStopIndex[MaxNStations + 1] {0};   // station-bounders in vStsHits array
 
 } _fvecalignment;
 

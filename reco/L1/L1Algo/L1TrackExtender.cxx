@@ -33,7 +33,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   fit.SetParticleMass(GetDefaultParticleMass());
 
   // get hits of current track
-  const L1Vector<THitI>& hits = t.fStsHits;  // array of indeses of hits of current track
+  const L1Vector<L1HitIndex_t>& hits = t.fStsHits;  // array of indeses of hits of current track
   const int nHits             = t.NHits;
 
   const signed short int step = -2 * static_cast<int>(dir) + 1;  // increment for station index
@@ -196,7 +196,7 @@ void L1Algo::BranchFitter(const L1Branch& t, L1TrackPar& T, const bool dir, cons
 void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
                           const fvec qp0)  // TODO take into account pipe
 {
-  L1Vector<THitI> newHits {"L1TrackExtender::newHits"};
+  L1Vector<L1HitIndex_t> newHits {"L1TrackExtender::newHits"};
   newHits.reserve(NStations);
   L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
@@ -275,7 +275,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
                        (sqrt(fPickGather * (T.C11 + sta.XYInfo.C11)) + fMaxDZ * fabs(T.ty))[0] * iz, T.t[0],
                        sqrt(T.C55[0]));
 
-    THitI ih = 0;
+    L1HitIndex_t ih = 0;
     while (area.GetNext(ih)) {
 
       ih += StsHitsUnusedStartIndex[ista];

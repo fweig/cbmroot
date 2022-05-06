@@ -37,7 +37,7 @@ inline void memset(T* dest, T i, size_t num)
 }
 
 
-void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<THitI>* indicesBuf, THitI* indices,
+void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<L1HitIndex_t>* indicesBuf, L1HitIndex_t* indices,
                             L1Vector<L1Hit>* hits2, L1Vector<L1HitPoint>* pointsBuf, L1HitPoint* points,
                             int& NHitsOnStation, char iS, L1Algo& Algo, const L1Vector<unsigned char>* vSFlag)
 {
@@ -50,14 +50,14 @@ void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<THitI>
 #ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic, 250) firstprivate(xs, ys)
 #endif
-  for (THitI x = 0; x < Nelements; x++) {
+  for (L1HitIndex_t x = 0; x < Nelements; x++) {
 
     const L1Hit& hit = hits[x];
 
     if (!L1Algo::GetFUsed((*vSFlag)[hit.f] | (*vSFlag)[hit.b])) {
       Algo.GetHitCoor(hit, xs, ys, iS);
 
-      const THitI& bin = GetBinBounded(xs, ys, hit.t);
+      const L1HitIndex_t& bin = GetBinBounded(xs, ys, hit.t);
 
       fHitsInBin[x] = fFirstHitInBin[bin + 1];
 #ifdef _OPENMP
@@ -93,18 +93,18 @@ void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<THitI>
 #ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic, 250) firstprivate(xs, ys)
 #endif
-  for (THitI x = 0; x < Nelements; x++) {
+  for (L1HitIndex_t x = 0; x < Nelements; x++) {
 
     const L1Hit& hit = hits[x];
     if (!L1Algo::GetFUsed((*vSFlag)[hit.f] | (*vSFlag)[hit.b])) {
       Algo.GetHitCoor(hit, xs, ys, iS);
 
 
-      const THitI& bin = GetBinBounded(xs, ys, hit.t);
+      const L1HitIndex_t& bin = GetBinBounded(xs, ys, hit.t);
 
       {
 
-        const THitI& index1 = fHitsInBin[x] + fFirstHitInBin[bin];
+        const L1HitIndex_t& index1 = fHitsInBin[x] + fFirstHitInBin[bin];
 
         (*hits2)[index1 + NHitsOnStation]      = hits[x];
         (*indicesBuf)[index1 + NHitsOnStation] = indices[x];
@@ -134,8 +134,8 @@ void L1Grid::AllocateMemory(int NThreads)
   //  {
   //  delete[] fFirstHitInBinArray[i];
   // delete[] fFirstHitInBin[i];
-  //   fFirstHitInBinArray[i] = new THitI[binsGrid];// TODO calculate safe number of bins
-  // fFirstHitInBin[i] = new THitI[binsGrid];
+  //   fFirstHitInBinArray[i] = new L1HitIndex_t[binsGrid];// TODO calculate safe number of bins
+  // fFirstHitInBin[i] = new L1HitIndex_t[binsGrid];
   //  }
   //  fOffsets.resize(fNThreads +1, 0);
   // fNumberHitsInBin.resize(binsGrid, 0);
@@ -165,8 +165,8 @@ void L1Grid::BuildBins(float yMin, float yMax, float zMin, float zMax, float tMi
 }
 
 
-void L1Grid::StoreHits(THitI nhits, const L1Hit* hits, char iS, L1Algo& Algo, THitI n, L1Hit* hitsBuf1,
-                       const L1Hit* hits1, THitI* indices1)
+void L1Grid::StoreHits(L1HitIndex_t nhits, const L1Hit* hits, char iS, L1Algo& Algo, L1HitIndex_t n, L1Hit* hitsBuf1,
+                       const L1Hit* hits1, L1HitIndex_t* indices1)
 {
 
   fscal xs = 0;
@@ -177,7 +177,7 @@ void L1Grid::StoreHits(THitI nhits, const L1Hit* hits, char iS, L1Algo& Algo, TH
 #ifdef _OPENMP
 #pragma omp parallel for firstprivate(xs, ys)
 #endif
-  for (THitI x = 0; x < nhits; x++) {
+  for (L1HitIndex_t x = 0; x < nhits; x++) {
     Algo.GetHitCoor((hits)[x], xs, ys, iS);
 
 
@@ -214,16 +214,16 @@ void L1Grid::StoreHits(THitI nhits, const L1Hit* hits, char iS, L1Algo& Algo, TH
 
 
 #pragma omp parallel for firstprivate(xs, ys)
-  for (THitI x = 0; x < nhits; x++) {
+  for (L1HitIndex_t x = 0; x < nhits; x++) {
 
     Algo.GetHitCoor((hits1)[x], xs, ys, iS);
 
 
-    const THitI& bin = GetBinBounded(xs, ys, (hits1)[x].t);
+    const L1HitIndex_t& bin = GetBinBounded(xs, ys, (hits1)[x].t);
 
     {
 
-      const THitI& index1 = fHitsInBin[x] + fFirstHitInBin[bin];
+      const L1HitIndex_t& index1 = fHitsInBin[x] + fFirstHitInBin[bin];
 
       (hitsBuf1)[index1] = hits[x];
 

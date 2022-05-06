@@ -49,7 +49,7 @@ template<int NHits>
 class L1RTracklet : public L1Tracklet<NHits> {
 public:
   L1RTracklet() = default;
-  L1RTracklet(THitI* ih_) : L1Tracklet<NHits>()
+  L1RTracklet(L1HitIndex_t* ih_) : L1Tracklet<NHits>()
   {
     for (int iih = 0; iih < NHits; iih++) {
       i[iih] = ih_[iih];
@@ -71,7 +71,7 @@ public:
   }
   bool operator!=(const L1RTracklet<NHits>& a) { return !operator==(a); }
 
-  THitI i[NHits] {0};  // indices of left, middle and right hits
+  L1HitIndex_t i[NHits] {0};  // indices of left, middle and right hits
 };
 
 // MC Tracklet
@@ -120,7 +120,7 @@ public:
   L1AlgoEfficiencyPerformance() = default;
   void Init();
 
-  bool AddOne(THitI* ih_);  // add one recoTracklets. Return is it reconstructed or not
+  bool AddOne(L1HitIndex_t* ih_);  // add one recoTracklets. Return is it reconstructed or not
   void CalculateEff();
   void Print();  // Print efficiencies
   void Print(TString title = "Triplets performance statistic",
@@ -215,7 +215,7 @@ void L1AlgoEfficiencyPerformance<NHits>::FillMC()
 
 
 template<int NHits>
-bool L1AlgoEfficiencyPerformance<NHits>::AddOne(THitI* iHits)
+bool L1AlgoEfficiencyPerformance<NHits>::AddOne(L1HitIndex_t* iHits)
 {
   L1RecoTracklet trlet(iHits);
 
@@ -264,7 +264,7 @@ bool L1AlgoEfficiencyPerformance<NHits>::AddOne(THitI* iHits)
   recoTracklets.push_back(trlet);
 
   return (trlet.mcTrackId >= 0);
-};  // inline bool L1AlgoEfficiencyPerformance::AddOne(THitI ihl, THitI ihm, THitI ihr)
+};  // inline bool L1AlgoEfficiencyPerformance::AddOne(L1HitIndex_t ihl, L1HitIndex_t ihm, L1HitIndex_t ihr)
 
 
 template<int NHits>

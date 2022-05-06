@@ -40,19 +40,19 @@ namespace tbb
     unsigned* portionStopIndex;
     L1TrackPar* T_g1;
     L1FieldRegion* fld_g1;
-    THitI* hitsl_g1;
+    L1HitIndex_t* hitsl_g1;
     // 	fvec *x_minusV_g1; fvec *x_plusV_g1; fvec *y_minusV_g1; fvec *y_plusV_g1;
     // output
-    THitI* Duplets_start;
-    THitI* Duplets_hits;
+    L1HitIndex_t* Duplets_start;
+    L1HitIndex_t* Duplets_hits;
 
     Tindex* n_g2;
-    THitI* i1_g2;
+    L1HitIndex_t* i1_g2;
     // 	L1TrackPar *T_g2;
     // 	L1FieldRegion *fld_g2;
     // 	fvec *u_front_g2; fvec *u_back_g2;
-    // 	THitI *hitsl_g2;
-    THitI* hitsm_g2;
+    // 	L1HitIndex_t *hitsl_g2;
+    L1HitIndex_t* hitsm_g2;
     // 	fvec *x_minusV_g2; fvec *x_plusV_g2; fvec *y_minusV_g2; fvec *y_plusV_g2;
 
   public:
@@ -65,17 +65,17 @@ namespace tbb
       double Pick_r_, double Pick_m_, double MaxInvMom_, fvec targX_, fvec targY_, fvec targZ_, L1FieldValue& targB_,
       L1XYMeasurementInfo& TargetXYInfo_,
 
-      Tindex* n_g1_, unsigned* portionStopIndex_, L1TrackPar* T_g1_, L1FieldRegion* fld_g1_, THitI* hitsl_g1_,
+      Tindex* n_g1_, unsigned* portionStopIndex_, L1TrackPar* T_g1_, L1FieldRegion* fld_g1_, L1HitIndex_t* hitsl_g1_,
       // 								fvec *x_minusV_g1_, fvec *x_plusV_g1_, fvec *y_minusV_g1_, fvec *y_plusV_g1_,
       // output
-      THitI* Duplets_start_, THitI* Duplets_hits_,
+      L1HitIndex_t* Duplets_start_, L1HitIndex_t* Duplets_hits_,
 
-      Tindex* n_g2_, THitI* i1_g2_,
+      Tindex* n_g2_, L1HitIndex_t* i1_g2_,
       // 								L1TrackPar *T_g2_,
       // 								L1FieldRegion *fld_g2_,
       // 								fvec *u_front_g2_, fvec *u_back_g2_,
-      // 								THitI *hitsl_g2_,
-      THitI* hitsm_g2_
+      // 								L1HitIndex_t *hitsl_g2_,
+      L1HitIndex_t* hitsm_g2_
       // 								fvec *x_minusV_g2_, fvec *x_plusV_g2_, fvec *y_minusV_g2_, fvec *y_plusV_g2_
       )
       : isec(isec_)
@@ -162,20 +162,20 @@ namespace tbb
     Tindex* n_g1;
     L1TrackPar* T_g1;
     L1FieldRegion* fld_g1;
-    THitI* hitsl_g1;
+    L1HitIndex_t* hitsl_g1;
 
     Tindex* n_g2;
     unsigned* portionStopIndex;
-    THitI* i1_g2;
+    L1HitIndex_t* i1_g2;
     /*	L1FieldRegion *fld_g2;
 	fvec *u_front_g2; fvec *u_back_g2;
 	L1TrackPar *T_g2;*/
-    // 	THitI *hitsl_g2;
-    THitI* hitsm_g2;
+    // 	L1HitIndex_t *hitsl_g2;
+    L1HitIndex_t* hitsm_g2;
     // 	fvec *x_minusV_g2; fvec *x_plusV_g2; fvec *y_minusV_g2; fvec *y_plusV_g2;
     // output
-    THitI* Duplets_start;
-    THitI* Duplets_hits;
+    L1HitIndex_t* Duplets_start;
+    L1HitIndex_t* Duplets_hits;
     std::vector<L1Triplet>* vTriplets_part;
     unsigned* TripStartIndexH;
     unsigned* TripStopIndexH;
@@ -188,17 +188,17 @@ namespace tbb
       int isec_, L1Station* vStations_, int NStations_, Tindex* StsHitsStartIndex_, Tindex* StsHitsStopIndex_,
       std::vector<L1HitPoint>& vStsHits_, double Pick_r_, double TRACK_CHI2_CUT_, double MaxInvMom_,
 
-      Tindex* n_g1_, L1TrackPar* T_g1_, L1FieldRegion* fld_g1_, THitI* hitsl_g1_,
+      Tindex* n_g1_, L1TrackPar* T_g1_, L1FieldRegion* fld_g1_, L1HitIndex_t* hitsl_g1_,
 
-      Tindex* n_g2_, unsigned* portionStopIndex_, THitI* i1_g2_,
+      Tindex* n_g2_, unsigned* portionStopIndex_, L1HitIndex_t* i1_g2_,
       /*L1FieldRegion *fld_g2_,
 								fvec *u_front_g2_, fvec *u_back_g2_,
 								L1TrackPar *T_g2_,*/
-      // 								THitI *hitsl_g2_,
-      THitI* hitsm_g2_,
+      // 								L1HitIndex_t *hitsl_g2_,
+      L1HitIndex_t* hitsm_g2_,
       // 								fvec *x_minusV_g2_, fvec *x_plusV_g2_, fvec *y_minusV_g2_, fvec *y_plusV_g2_,
       // output
-      THitI* Duplets_start_, THitI* Duplets_hits_, std::vector<L1Triplet>* vTriplets_part_, unsigned* TripStartIndexH_,
+      L1HitIndex_t* Duplets_start_, L1HitIndex_t* Duplets_hits_, std::vector<L1Triplet>* vTriplets_part_, unsigned* TripStartIndexH_,
       unsigned* TripStopIndexH_)
       :  // input
       isec(isec_)

@@ -65,10 +65,13 @@ std::string L1Station::ToString(int verbosityLevel, int indentLevel) const
     // TODO: probably we can have verbosity level and address for each underlying object (S.Zharko)
     aStream << indent << "Address: " << this << '\n';
   }
-  aStream << indent << "Station type ID:             " << std::setw(12) << std::setfill(' ') << type << '\n';
-  aStream << indent << "If time info used:           " << std::setw(12) << std::setfill(' ') << timeInfo << '\n';
-  aStream << indent << "z position [cm]:             " << std::setw(12) << std::setfill(' ') << z[0] << '\n';
-  if (verbosityLevel > 0) {
+  if (verbosityLevel == 0) {
+    aStream << indent << "- L1Station {z [cm], typeID} = " << std::setw(12) << std::setfill(' ') << z[0] << ", " << std::setw(4) << std::setfill(' ') << type;
+  }
+  else {
+    aStream << indent << "Station type ID:  " << std::setw(12) << std::setfill(' ') << type << '\n';
+    aStream << indent << "If time info used:           " << std::setw(12) << std::setfill(' ') << timeInfo << '\n';
+    aStream << indent << "z position [cm]:             " << std::setw(12) << std::setfill(' ') << z[0] << '\n';
     aStream << indent << "Rmin [cm]:                   " << std::setw(12) << std::setfill(' ') << Rmin[0] << '\n';
     aStream << indent << "Rmax [cm]:                   " << std::setw(12) << std::setfill(' ') << Rmax[0] << '\n';
     aStream << materialInfo.ToString(indentLevel) << '\n';

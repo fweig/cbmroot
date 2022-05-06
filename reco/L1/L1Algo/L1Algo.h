@@ -37,17 +37,6 @@ class L1AlgoDraw;
 //#define MERGE_CLONES
 
 
-/*********************************************************************************
- ************ TEMPORARY MACROS, SHOULD BE REMOVED (TODO!!, S. Zharko)  ***********
- *                                                                               */
-
-#define FEATURING_L1ALGO_INIT 1  // If defined, new initialization will be used, if not - the old one
-// Macro: 1 - new track finder loop, other - old track finder loop
-#define FEATURING_L1ALGO_CATRACKFINDER_ITERATIONLOOP 1
-
-/*                                                                               *
- *********************************************************************************/
-
 #include <array>
 #include <iomanip>
 #include <iostream>
@@ -100,19 +89,22 @@ public:
   L1Algo(const L1Algo&) = delete;
   L1Algo operator=(const L1Algo&) = delete;
 
-  /// set a default particle mass for the track fit
+  /// Sets a default particle mass for the track fit
   /// it is used during reconstruction
   /// for the multiple scattering and energy loss estimation
+  /// \param mass Default particle mass
   void SetDefaultParticleMass(float mass) { fDefaultMass = mass; }
 
-  /// get default particle mass
+  /// Gets default particle mass
+  /// \return particle mass
   float GetDefaultParticleMass() const { return fDefaultMass; }
 
-  /// get default particle mass squared
+  /// Gets default particle mass squared
+  /// \return particle mass squared
   float GetDefaultParticleMass2() const { return fDefaultMass * fDefaultMass; }
 
-  float fDefaultMass = 0.10565800;  // muon mass
-  // TODO: make fDefaultMass a private member (S.Zh.)
+  float fDefaultMass = 0.10565800;  // muon mass 
+  // TODO: make fDefaultMass a private member (S.Zharko)
 
   /// pack station, thread and triplet indices to an unique triplet ID
   static unsigned int PackTripletId(unsigned int Station, unsigned int Thread, unsigned int Triplet)
@@ -166,8 +158,8 @@ public:
   // vectors that are parallel to fTracks
   L1Vector<unsigned short> fMergerTrackFirstStation {"L1Algo::fMergerTrackFirstStation"};  // first station of a track
   L1Vector<unsigned short> fMergerTrackLastStation {"L1Algo::fMergerTrackLastStation"};    // last station of a track
-  L1Vector<THitI> fMergerTrackFirstHit {"L1Algo::fMergerTrackFirstHit"};  // index of the first tracks hit
-  L1Vector<THitI> fMergerTrackLastHit {"L1Algo::fMergerTrackLastHit"};    // index of the last tracks hit
+  L1Vector<L1HitIndex_t> fMergerTrackFirstHit {"L1Algo::fMergerTrackFirstHit"};  // index of the first tracks hit
+  L1Vector<L1HitIndex_t> fMergerTrackLastHit {"L1Algo::fMergerTrackLastHit"};    // index of the last tracks hit
   L1Vector<unsigned short> fMergerTrackNeighbour {
     "L1Algo::fMergerTrackNeighbour"};                             // track that can be merged with the given track
   L1Vector<float> fMergerTrackChi2 {"L1Algo::fMergerTrackChi2"};  // chi2 of the merge
@@ -176,7 +168,7 @@ public:
     "L1Algo::fMergerTrackIsDownstreamNeighbour"};  // is the track a downstream neighbor of another track
   // other vectors
   L1Vector<L1Track> fMergerTracksNew {"L1Algo::fMergerTracksNew"};    // vector of tracks after the merge
-  L1Vector<THitI> fMergerRecoHitsNew {"L1Algo::fMergerRecoHitsNew"};  // vector of track hits after the merge
+  L1Vector<L1HitIndex_t> fMergerRecoHitsNew {"L1Algo::fMergerRecoHitsNew"};  // vector of track hits after the merge
 
 
 #ifdef DRAW
@@ -194,7 +186,7 @@ public:
   void Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const TrackingMode mode, const bool MissingHits);
 
   void SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<unsigned char>& SFlag_,
-               const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_);
+               const L1HitIndex_t* StsHitsStartIndex_, const L1HitIndex_t* StsHitsStopIndex_);
 
   void PrintHits();
 
@@ -225,20 +217,20 @@ public:
   alignas(16) std::array<L1Station, L1Parameters::kMaxNstations> fStationsNew;
   L1Vector<L1Material> fRadThick {"fRadThick"};        // material for each station
 
-  int NStsStrips {0};                         // number of strips
-  L1Vector<L1Hit>* vStsHits {nullptr};        // hits as a combination of front-, backstrips and z-position
-  L1Grid vGrid[L1Parameters::kMaxNstations];  // hits as a combination of front-, backstrips and z-position
-  L1Grid vGridTime[L1Parameters::kMaxNstations];
+  int NStsStrips {0};                             ///> number of strips
+  L1Vector<L1Hit>* vStsHits {nullptr};            ///> hits as a combination of front-, backstrips and z-position
+  L1Grid vGrid[L1Parameters::kMaxNstations];      ///> hits as a combination of front-, backstrips and z-position
+  L1Grid vGridTime[L1Parameters::kMaxNstations];  ///>
 
   L1Vector<unsigned char>* fStripFlag {nullptr};  // information of hits station & using hits in tracks;
 
   double fCATime {0.};  // time of track finding
 
   L1Vector<L1Track> fTracks {"L1Algo::fTracks"};    // reconstructed tracks
-  L1Vector<THitI> fRecoHits {"L1Algo::fRecoHits"};  // packed hits of reconstructed tracks
+  L1Vector<L1HitIndex_t> fRecoHits {"L1Algo::fRecoHits"};  // packed hits of reconstructed tracks
 
-  const THitI* StsHitsStartIndex {nullptr};  // station-bounders in vStsHits array
-  const THitI* StsHitsStopIndex {nullptr};   // station-bounders in vStsHits array
+  const L1HitIndex_t* StsHitsStartIndex {nullptr};  // station-bounders in vStsHits array
+  const L1HitIndex_t* StsHitsStopIndex {nullptr};   // station-bounders in vStsHits array
 
 
   //  L1Branch* pointer;
@@ -251,11 +243,11 @@ public:
   L1Vector<L1HitPoint> vStsDontUsedHitsxy_buf {"L1Algo::vStsDontUsedHitsxy_buf"};
   L1Vector<L1HitPoint> vStsDontUsedHitsxy_B {"L1Algo::vStsDontUsedHitsxy_B"};
   L1Vector<L1Track> fTracks_local[L1Parameters::kMaxNthreads] {"L1Algo::fTracks_local"};
-  L1Vector<THitI> fRecoHits_local[L1Parameters::kMaxNthreads] {"L1Algo::fRecoHits_local"};
+  L1Vector<L1HitIndex_t> fRecoHits_local[L1Parameters::kMaxNthreads] {"L1Algo::fRecoHits_local"};
 
-  L1Vector<THitI> RealIHit_v {"L1Algo::RealIHit_v"};
-  L1Vector<THitI> RealIHit_v_buf {"L1Algo::RealIHit_v_buf"};
-  L1Vector<THitI> RealIHit_v_buf2 {"L1Algo::RealIHit_v_buf2"};
+  L1Vector<L1HitIndex_t> RealIHit_v {"L1Algo::RealIHit_v"};
+  L1Vector<L1HitIndex_t> RealIHit_v_buf {"L1Algo::RealIHit_v_buf"};
+  L1Vector<L1HitIndex_t> RealIHit_v_buf2 {"L1Algo::RealIHit_v_buf2"};
 
 #ifdef _OPENMP
   L1Vector<omp_lock_t> fHitToBestTrackF {"L1Algo::fHitToBestTrackF"};
@@ -299,15 +291,15 @@ public:
 
   int isec {0};  // iteration
   L1Vector<L1Hit>* vStsHitsUnused {nullptr};
-  L1Vector<THitI>* RealIHitP {nullptr};
-  L1Vector<THitI>* RealIHitPBuf {nullptr};
+  L1Vector<L1HitIndex_t>* RealIHitP {nullptr};
+  L1Vector<L1HitIndex_t>* RealIHitPBuf {nullptr};
   L1Vector<L1HitPoint>* vStsHitPointsUnused {nullptr};
-  THitI* RealIHit {nullptr};  // index in vStsHits indexed by index in vStsHitsUnused
+  L1HitIndex_t* RealIHit {nullptr};  // index in vStsHits indexed by index in vStsHitsUnused
 
-  THitI StsHitsUnusedStartIndex[L1Parameters::kMaxNstations + 1] {0};
-  THitI StsHitsUnusedStopIndex[L1Parameters::kMaxNstations + 1] {0};
-  THitI StsHitsUnusedStartIndexEnd[L1Parameters::kMaxNstations + 1] {0};
-  THitI StsHitsUnusedStopIndexEnd[L1Parameters::kMaxNstations + 1] {0};
+  L1HitIndex_t StsHitsUnusedStartIndex[L1Parameters::kMaxNstations + 1] {0};
+  L1HitIndex_t StsHitsUnusedStopIndex[L1Parameters::kMaxNstations + 1] {0};
+  L1HitIndex_t StsHitsUnusedStartIndexEnd[L1Parameters::kMaxNstations + 1] {0};
+  L1HitIndex_t StsHitsUnusedStopIndexEnd[L1Parameters::kMaxNstations + 1] {0};
 
 
   L1Vector<int> TripForHit[2] {"L1Algo::TripForHit"};  // TODO: what does '2' stand for?
@@ -319,9 +311,9 @@ public:
 
   nsL1::vector<L1TrackPar>::TSimd fT_3[L1Parameters::kMaxNthreads];
 
-  L1Vector<THitI> fhitsl_3[L1Parameters::kMaxNthreads] {"L1Algo::fhitsl_3"};
-  L1Vector<THitI> fhitsm_3[L1Parameters::kMaxNthreads] {"L1Algo::fhitsm_3"};
-  L1Vector<THitI> fhitsr_3[L1Parameters::kMaxNthreads] {"L1Algo::fhitsr_3"};
+  L1Vector<L1HitIndex_t> fhitsl_3[L1Parameters::kMaxNthreads] {"L1Algo::fhitsl_3"};
+  L1Vector<L1HitIndex_t> fhitsm_3[L1Parameters::kMaxNthreads] {"L1Algo::fhitsm_3"};
+  L1Vector<L1HitIndex_t> fhitsr_3[L1Parameters::kMaxNthreads] {"L1Algo::fhitsr_3"};
 
   nsL1::vector<fvec>::TSimd fu_front3[L1Parameters::kMaxNthreads];
   nsL1::vector<fvec>::TSimd fu_back3[L1Parameters::kMaxNthreads];
@@ -371,7 +363,9 @@ public:
 
 
   /// Sets L1Algo parameters object
+  /// \param other - reference to the L1Parameters object
   void SetParameters(const L1Parameters& other) { fParameters = other; }
+  // TODO: remove it (S.Zharko)
 
   /// Gets a pointer to the L1Algo parameters object
   L1Parameters* GetParameters() { return &fParameters; }
@@ -385,7 +379,9 @@ private:
   L1InitManager fInitManager {&fParameters};  ///< Object of L1Algo initialization manager class
 
 
-  /// =================================  FUNCTIONAL PART  =================================
+  /*********************************************************************************************//**
+   *                             ------  FUNCTIONAL PART ------
+   ************************************************************************************************/
 
   /// ----- Subroutines used by L1Algo::CATrackFinder() ------
 
@@ -394,28 +390,33 @@ private:
                    L1Branch* new_tr);
 
 
-  /// Fit track
-  /// t - track with hits
-  /// T - track params
-  /// dir - 0 - forward, 1 - backward
-  /// qp0 - momentum for extrapolation
-  /// initialize - should be params ititialized. 1 - yes.
+  /// Fits track
+  /// \param t - track with hits
+  /// \param T - track parameters
+  /// \param dir - false - forward, true - backward
+  /// \param qp0 - momentum for extrapolation
+  /// \param initParams - should be params ititialized. 1 - yes.
   void BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, const fvec qp0 = 0.,
                         const bool initParams = true);
 
-  /// Fit track. more precise than FitterFast
+  /// Fits track. more precise than FitterFast
+  /// \param t - track with hits
+  /// \param T - track parameters
+  /// \param dir - false - forward, true - backward
+  /// \param qp0 - momentum for extrapolation
+  /// \param initParams - should be params ititialized. 1 - yes.
   void BranchFitter(const L1Branch& t, L1TrackPar& T, const bool dir, const fvec qp0 = 0.,
                     const bool initParams = true);
 
-  /// Find additional hits for existing track
-  /// t - track with hits
-  /// T - track params
-  /// dir - 0 - forward, 1 - backward
-  /// qp0 - momentum for extrapolation
+  /// Finds additional hits for already found track
+  /// \param t - track with hits
+  /// \param T - track params
+  /// \param dir - 0 - forward, 1 - backward
+  /// \param qp0 - momentum for extrapolation
   void FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir, const fvec qp0 = 0.0);
 
   /// Find additional hits for existing track
-  /// return chi2
+  /// \return chi2
   fscal BranchExtender(L1Branch& t);
 
   /// ----- Subroutines used by L1Algo::CAMergeClones() ------
@@ -462,7 +463,7 @@ private:
   void f10(  // input
     Tindex start_lh, Tindex n1_l, L1HitPoint* StsHits_l,
     // output
-    fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, THitI* hitsl, fvec* HitTime_l, fvec* HitTimeEr, fvec* Event_l,
+    fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, L1HitIndex_t* hitsl, fvec* HitTime_l, fvec* HitTimeEr, fvec* Event_l,
     fvec* d_x, fvec* d_y, fvec* d_xy, fvec* d_u, fvec* d_v);
 
   /// Get the field approximation. Add the target to parameters estimation. Propagate to middle station.
@@ -475,29 +476,29 @@ private:
 
   /// Find the doublets. Reformat data in the portion of doublets.
   void f20(  // input
-    Tindex n1, L1Station& stal, L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1, THitI* hitsl_1,
+    Tindex n1, L1Station& stal, L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1, L1HitIndex_t* hitsl_1,
 
     // output
-    Tindex& n2, L1Vector<THitI>& i1_2,
+    Tindex& n2, L1Vector<L1HitIndex_t>& i1_2,
 
 #ifdef DOUB_PERFORMANCE
-    L1Vector<THitI>& hitsl_2,
+    L1Vector<L1HitIndex_t>& hitsl_2,
 #endif  // DOUB_PERFORMANCE
-    L1Vector<THitI>& hitsm_2, fvec* Event, L1Vector<char>& lmDuplets);
+    L1Vector<L1HitIndex_t>& hitsm_2, fvec* Event, L1Vector<char>& lmDuplets);
 
   /// Add the middle hits to parameters estimation. Propagate to right station.
   /// Find the triplets (right hit). Reformat data in the portion of triplets.
   void f30(  // input
     L1HitPoint* vStsHits_r, L1Station& stam, L1Station& star,
 
-    int istam, int istar, L1HitPoint* vStsHits_m, L1TrackPar* T_1, L1FieldRegion* fld_1, THitI* hitsl_1,
+    int istam, int istar, L1HitPoint* vStsHits_m, L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
 
-    Tindex n2, L1Vector<THitI>& hitsm_2, L1Vector<THitI>& i1_2,
+    Tindex n2, L1Vector<L1HitIndex_t>& hitsm_2, L1Vector<L1HitIndex_t>& i1_2,
 
     const L1Vector<char>& mrDuplets,
     // output
-    Tindex& n3, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<THitI>& hitsl_3, L1Vector<THitI>& hitsm_3,
-    L1Vector<THitI>& hitsr_3, nsL1::vector<fvec>::TSimd& u_front_3, nsL1::vector<fvec>::TSimd& u_back_3,
+    Tindex& n3, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
+    L1Vector<L1HitIndex_t>& hitsr_3, nsL1::vector<fvec>::TSimd& u_front_3, nsL1::vector<fvec>::TSimd& u_back_3,
     nsL1::vector<fvec>::TSimd& z_Pos_3,
     //    nsL1::vector<fvec>::TSimd& dx_,
     //    nsL1::vector<fvec>::TSimd& dy_,
@@ -517,15 +518,15 @@ private:
 
   /// Refit Triplets.
   void f32(  // input
-    Tindex n3, int istal, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<THitI>& hitsl_3, L1Vector<THitI>& hitsm_3,
-    L1Vector<THitI>& hitsr_3, int nIterations = 0);
+    Tindex n3, int istal, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
+    L1Vector<L1HitIndex_t>& hitsr_3, int nIterations = 0);
 
   /// Select triplets. Save them into vTriplets.
   void f4(  // input
-    Tindex n3, int istal, int istam, int istar, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<THitI>& hitsl_3,
-    L1Vector<THitI>& hitsm_3, L1Vector<THitI>& hitsr_3,
+    Tindex n3, int istal, int istam, int istar, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
+    L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3,
     // output
-    Tindex& nstaltriplets, L1Vector<THitI>* hitsn_3 = 0, L1Vector<THitI>* hitsr_5 = 0
+    Tindex& nstaltriplets, L1Vector<L1HitIndex_t>* hitsn_3 = 0, L1Vector<L1HitIndex_t>* hitsr_5 = 0
 
     // #ifdef XXX
     //                 ,unsigned int &stat_n_trip
@@ -544,18 +545,18 @@ private:
     int istal, int istam, Tindex ip, L1Vector<Tindex>& n_g, Tindex* portionStopIndex_,
 
     // output
-    L1TrackPar* T_1, L1FieldRegion* fld_1, THitI* hitsl_1,
+    L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
 
     L1Vector<char>& lmDuplets,
 
 
-    Tindex& n_2, L1Vector<THitI>& i1_2, L1Vector<THitI>& hitsm_2);
+    Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2);
 
   /// Find triplets on station
   void TripletsStaPort(  // input
-    int istal, int istam, int istar, Tindex& nstaltriplets, L1TrackPar* T_1, L1FieldRegion* fld_1, THitI* hitsl_1,
+    int istal, int istam, int istar, Tindex& nstaltriplets, L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
 
-    Tindex& n_2, L1Vector<THitI>& i1_2, L1Vector<THitI>& hitsm_2,
+    Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2,
 
     const L1Vector<char>& mrDuplets
 

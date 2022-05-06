@@ -19,7 +19,7 @@ public:
      * look up the next hit in the requested area.
      * Sets h to the coordinates and returns the index for the hit data
      */
-  bool GetNext(THitI& i);
+  bool GetNext(L1HitIndex_t& i);
 
 protected:
   const L1Grid& fGrid;
@@ -28,8 +28,8 @@ protected:
   unsigned short fBDY;    // Y distance of bin indexes
   unsigned int fIndYmin;  // minimum index for
   unsigned short fIz;     // current Z bin index (incremented while iterating)
-  THitI fHitYlst;         // last possible hit index in current z-line
-  THitI fIh;              // hit index iterating inside the bins
+  L1HitIndex_t fHitYlst;         // last possible hit index in current z-line
+  L1HitIndex_t fIh;              // hit index iterating inside the bins
   int fNy;                // Number of bins in Y direction
 };
 
@@ -64,7 +64,7 @@ inline L1HitArea::L1HitArea(const L1Grid& grid, float y, float z, float dy, floa
   fHitYlst = fGrid.FirstHitInBin(fIndYmin + fBDY);
 }
 
-inline bool L1HitArea::GetNext(THitI& i)
+inline bool L1HitArea::GetNext(L1HitIndex_t& i)
 {
   bool yIndexOutOfRange     = fIh >= fHitYlst;  // current y is not in the area
   bool nextZIndexOutOfRange = (fIz >= fBZmax);  // there isn't any new z-line
@@ -105,7 +105,7 @@ public:
      * look up the next hit in the requested area.
      * Sets h to the coordinates and returns the index for the hit data
      */
-  bool GetNext(THitI& i);
+  bool GetNext(L1HitIndex_t& i);
 
 protected:
   const L1Grid& fGrid;
@@ -114,8 +114,8 @@ protected:
   unsigned short fBDY;    // Y distance of bin indexes
   unsigned int fIndYmin;  // minimum index for
   unsigned short fIz;     // current Z bin index (incremented while iterating)
-  THitI fHitYlst;         // last possible hit index in current z-line
-  THitI fIh;              // hit index iterating inside the bins
+  L1HitIndex_t fHitYlst;         // last possible hit index in current z-line
+  L1HitIndex_t fIh;              // hit index iterating inside the bins
   int fNy;                // Number of bins in Y direction
   int fNz;
 
@@ -176,7 +176,7 @@ inline L1HitAreaTime::L1HitAreaTime(const L1Grid& grid, float y, float z, float 
   fHitYlst = fGrid.FirstHitInBin(fIndYmin + fBDY);
 }
 
-inline bool L1HitAreaTime::GetNext(THitI& i)
+inline bool L1HitAreaTime::GetNext(L1HitIndex_t& i)
 {
   bool yIndexOutOfRange     = fIh >= fHitYlst;  // current y is not in the area
   bool nextZIndexOutOfRange = (fIz >= fBZmax);  // there isn't any new z-line

@@ -43,21 +43,21 @@ public:
 
   ~L1Grid() = default;
 
-  void StoreHits(THitI nhits, const L1Hit* hits, char iS, L1Algo& Algo, THitI n, L1Hit* hitsBuf1, const L1Hit* hits1,
-                 THitI* indices1);
+  void StoreHits(L1HitIndex_t nhits, const L1Hit* hits, char iS, L1Algo& Algo, L1HitIndex_t n, L1Hit* hitsBuf1, const L1Hit* hits1,
+                 L1HitIndex_t* indices1);
 
   void CreatePar0(float yMin, float yMax, float zMin, float zMax, float sy, float sz);
   void BuildBins(float yMin, float yMax, float zMin, float zMax, float tMin, float tMax, float sy, float sz, float st);
 
-  void HitsSort(L1HitPoint* pointsBuf, L1Hit* hitsBuf, const L1Hit* hits, THitI* indices, THitI* indicesBuf,
-                L1HitPoint* points, THitI n, THitI nhits, char iS, L1Algo& Algo);
+  void HitsSort(L1HitPoint* pointsBuf, L1Hit* hitsBuf, const L1Hit* hits, L1HitIndex_t* indices, L1HitIndex_t* indicesBuf,
+                L1HitPoint* points, L1HitIndex_t n, L1HitIndex_t nhits, char iS, L1Algo& Algo);
 
   void Initial1(int NThreads);
   void AllocateMemory(int NThreads);
   void Create(float yMin, float yMax, float zMin, float zMax, float sy, float sz);
 
-  void Fill(const L1HitPoint* points, THitI n);  // call after sort
-  void FillPar(const L1HitPoint* points, THitI n);
+  void Fill(const L1HitPoint* points, L1HitIndex_t n);  // call after sort
+  void FillPar(const L1HitPoint* points, L1HitIndex_t n);
 
 
   int GetBin(float Y, float Z) const;
@@ -84,7 +84,7 @@ public:
   unsigned short Nz() const { return fNz; }
   unsigned short Nt() const { return fNt; }
 
-  THitI FirstHitInBin(unsigned int i) const
+  L1HitIndex_t FirstHitInBin(unsigned int i) const
   {
     if (i < (fN + 1)) return fFirstHitInBin[i];
     else
@@ -100,7 +100,7 @@ public:
   //     };
 
 
-  void UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<THitI>* indicesBuf, THitI* indices,
+  void UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<L1HitIndex_t>* indicesBuf, L1HitIndex_t* indices,
                       L1Vector<L1Hit>* hits2, L1Vector<L1HitPoint>* pointsBuf, L1HitPoint* points, int& NHitsOnStation,
                       char iS, L1Algo& Algo, const L1Vector<unsigned char>* vSFlag);
 
@@ -119,8 +119,8 @@ private:
   int fBinInGrid {0};
   unsigned short fNThreads {0};
 
-  L1Vector<THitI> fFirstHitInBin {"L1Grid::fFirstHitInBin"};
-  L1Vector<THitI> fHitsInBin {"L1Grid::fHitsInBin"};
+  L1Vector<L1HitIndex_t> fFirstHitInBin {"L1Grid::fFirstHitInBin"};
+  L1Vector<L1HitIndex_t> fHitsInBin {"L1Grid::fHitsInBin"};
 
   // vector <omp_lock_t> lock;
 };

@@ -188,7 +188,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
   for (int i = 0; i < NStation; i++) {
 
-    fData_->StsHitsStartIndex[i] = static_cast<THitI>(-1);
+    fData_->StsHitsStartIndex[i] = static_cast<L1HitIndex_t>(-1);
     fData_->StsHitsStopIndex[i]  = 0;
   }
 
@@ -1072,6 +1072,14 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   vHitStore.reserve(nHits);
   vHitMCRef.reserve(nHits);
 
+  /*
+   * In this section the vStsHits, vHitStore and vHitMCRef vectors as well as fData->vStsHits are
+   * filled. 
+   */
+  
+  L1_SHOW(vStsHits.size());
+  L1_SHOW(vHitStore.size());
+  L1_SHOW(vHitMCRef.size());
   for (int i = 0; i < nHits; i++) {
     TmpHit& th = tmpHits[i];
 
@@ -1114,7 +1122,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     h.z = th.z;
 
 
-    // save hit
+    // save hit  
     vStsHits.push_back(CbmL1Hit(fData->vStsHits.size(), th.ExtIndex, th.Det));
 
     vStsHits[vStsHits.size() - 1].x = th.x;
@@ -1131,7 +1139,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
     int sta = th.iStation;
 
-    if (fData_->StsHitsStartIndex[sta] == static_cast<THitI>(-1)) fData_->StsHitsStartIndex[sta] = nEffHits;
+    if (fData_->StsHitsStartIndex[sta] == static_cast<L1HitIndex_t>(-1)) fData_->StsHitsStartIndex[sta] = nEffHits;
     nEffHits++;
 
     fData_->StsHitsStopIndex[sta] = nEffHits;
@@ -1139,14 +1147,22 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     vHitStore.push_back(s);
     vHitMCRef.push_back(th.iMC);
   }
+  L1_SHOW(&vStsHits);
+  L1_SHOW(vStsHits.size());
+  L1_SHOW(&(fData_->vStsHits));
+  L1_SHOW((fData_->vStsHits).size());
 
   for (int i = 0; i < NStation; i++) {
-
-    if (fData_->StsHitsStartIndex[i] == static_cast<THitI>(-1))
+    if (fData_->StsHitsStartIndex[i] == static_cast<L1HitIndex_t>(-1)) {
       fData_->StsHitsStartIndex[i] = fData_->StsHitsStopIndex[i];
+    }
   }
 
   if (fVerbose >= 10) cout << "ReadEvent: mvd and sts are saved." << endl;
+
+  /*
+   * Translate gathered hits data to the L1Algo object. TODO: raplace it with L1DataManager functionality (S.Zharko)
+   */
 
   algo->SetData(fData_->GetStsHits(), fData_->GetNStsStrips(), fData_->GetSFlag(), fData_->GetStsHitsStartIndex(),
                 fData_->GetStsHitsStopIndex());

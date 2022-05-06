@@ -24,7 +24,7 @@ struct L1Branch {
   char NHits {0};
   fscal chi2 {0.};
   int CandIndex {0};
-  L1Vector<THitI> fStsHits {"L1Branch::fStsHits"};
+  L1Vector<L1HitIndex_t> fStsHits {"L1Branch::fStsHits"};
 
   //     static bool compareCand(const L1Branch *a, const L1Branch *b){
   //

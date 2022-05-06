@@ -31,15 +31,15 @@ public:
   void DrawMCTracks();
   void DrawRecoTracks();
 
-  void DrawTriplets(std::vector<L1Triplet>& triplets, const THitI* realIHit);
-  void DrawDoublets(std::vector<THitI>* Duplets_hits, std::map<THitI, THitI>* Duplets_start, const int MaxArrSize,
-                    THitI* StsHitsStartIndex, unsigned int* realIHit);
-  void DrawDoubletsOnSta(int iSta, THitI* Duplets_hits, THitI* Duplets_start, const int MaxArrSize,
-                         THitI* StsRestHitsStartIndex, unsigned int* realIHit);
+  void DrawTriplets(std::vector<L1Triplet>& triplets, const L1HitIndex_t* realIHit);
+  void DrawDoublets(std::vector<L1HitIndex_t>* Duplets_hits, std::map<L1HitIndex_t, L1HitIndex_t>* Duplets_start, const int MaxArrSize,
+                    L1HitIndex_t* StsHitsStartIndex, unsigned int* realIHit);
+  void DrawDoubletsOnSta(int iSta, L1HitIndex_t* Duplets_hits, L1HitIndex_t* Duplets_start, const int MaxArrSize,
+                         L1HitIndex_t* StsRestHitsStartIndex, unsigned int* realIHit);
 
   void DrawTarget();
   void DrawInputHits();  // draw all hits, which TF have gotten
-  void DrawRestHits(THitI* StsRestHitsStartIndex, THitI* StsRestHitsStopIndex,
+  void DrawRestHits(L1HitIndex_t* StsRestHitsStartIndex, L1HitIndex_t* StsRestHitsStopIndex,
                     unsigned int* realIHit);  // draw only hits which leave on current iteration.
 
   void DrawInfo();

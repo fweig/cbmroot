@@ -13,8 +13,8 @@
 
 using std::vector;
 
-L1HitsSortHelper::L1HitsSortHelper(vector<L1Hit>& hits, vector<L1HitPoint>& points, vector<THitI>& indices,
-                                   const L1Grid* grid, THitI* iStart, THitI* iStop, int nStations, int nDontUsedHits)
+L1HitsSortHelper::L1HitsSortHelper(vector<L1Hit>& hits, vector<L1HitPoint>& points, vector<L1HitIndex_t>& indices,
+                                   const L1Grid* grid, L1HitIndex_t* iStart, L1HitIndex_t* iStop, int nStations, int nDontUsedHits)
   : fD()
   , fHits(hits)
   , fPoints(points)
@@ -30,7 +30,7 @@ L1HitsSortHelper::L1HitsSortHelper(vector<L1Hit>& hits, vector<L1HitPoint>& poin
   fD.resize(NHits);
   //float x,y=0;
   for (int iS = 0; iS < fNStations; ++iS)
-    for (THitI i = fStsHitsUnusedStartIndex[iS]; i < fStsHitsUnusedStopIndex[iS]; i++) {
+    for (L1HitIndex_t i = fStsHitsUnusedStartIndex[iS]; i < fStsHitsUnusedStopIndex[iS]; i++) {
       fD[i].h = &(hits[i]);
       fD[i].p = &(points[i]);
       fD[i].i = indices[i];

@@ -273,15 +273,14 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   LOG(info) << "** Original L1Station array content **";
   int nStations = fInitManager.GetStationsNumber();
   for (int iSt = 0; iSt < nStations; ++iSt) {
-    LOG(info) << "Station Global No: " << iSt;
-    LOG(info) << '\n' << vStations[iSt].ToString(/*verbosity = */ 3);
+    LOG(info) << "Station Global No: " << iSt << ' ' << vStations[iSt].ToString(/*verbosity = */ 0);
   }
-  LOG(info) << "** New L1Station array content **";
-  nStations = fInitManager.GetStationsNumber();
-  for (int iSt = 0; iSt < nStations; ++iSt) {
-    LOG(info) << "Station Global No: " << iSt;
-    LOG(info) << '\n' << fStationsNew[iSt].ToString(/*verbosity = */ 3);
-  }
+  //LOG(info) << "** New L1Station array content **";
+  //nStations = fInitManager.GetStationsNumber();
+  //for (int iSt = 0; iSt < nStations; ++iSt) {
+  //  LOG(info) << "Station Global No: " << iSt;
+  //  LOG(info) << '\n' << fStationsNew[iSt].ToString(/*verbosity = */ 0);
+  //}
 
   // Print L1Parameters
   fParameters.Print(/*verbosity=*/0);
@@ -289,7 +288,7 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
 
 
 void L1Algo::SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<unsigned char>& SFlag_,
-                     const THitI* StsHitsStartIndex_, const THitI* StsHitsStopIndex_)
+                     const L1HitIndex_t* StsHitsStartIndex_, const L1HitIndex_t* StsHitsStopIndex_)
 {
 
   vStsHits   = &StsHits_;

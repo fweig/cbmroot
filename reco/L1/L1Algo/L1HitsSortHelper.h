@@ -18,7 +18,7 @@ struct L1HitsSortHelperData {
   L1Hit* h;
   L1HitPoint* p;
   unsigned int bin;
-  THitI i;
+  L1HitIndex_t i;
 
   static bool compare(const L1HitsSortHelperData& a, const L1HitsSortHelperData& b)
   {
@@ -28,8 +28,8 @@ struct L1HitsSortHelperData {
 
 class L1HitsSortHelper {
 public:
-  L1HitsSortHelper(vector<L1Hit>& hits, vector<L1HitPoint>& points, vector<THitI>& indices, const L1Grid* grid,
-                   THitI* iStart, THitI* iStop, int nStations, int nDontUsedHits);
+  L1HitsSortHelper(vector<L1Hit>& hits, vector<L1HitPoint>& points, vector<L1HitIndex_t>& indices, const L1Grid* grid,
+                   L1HitIndex_t* iStart, L1HitIndex_t* iStop, int nStations, int nDontUsedHits);
 
   void Sort();
 
@@ -37,9 +37,9 @@ private:
   vector<L1HitsSortHelperData> fD;
   vector<L1Hit>& fHits;
   vector<L1HitPoint>& fPoints;
-  vector<THitI>& fIndices;
+  vector<L1HitIndex_t>& fIndices;
   const L1Grid* fGrid;
-  THitI *fStsHitsUnusedStartIndex, *fStsHitsUnusedStopIndex;
+  L1HitIndex_t *fStsHitsUnusedStartIndex, *fStsHitsUnusedStopIndex;
   int fNStations;
   int fnDontUsedHits;
 

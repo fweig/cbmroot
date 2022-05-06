@@ -204,8 +204,8 @@ void L1Algo::CAMergeClones()
 
   L1Vector<unsigned short>& firstStation = fMergerTrackFirstStation;
   L1Vector<unsigned short>& lastStation  = fMergerTrackLastStation;
-  L1Vector<THitI>& firstHit              = fMergerTrackFirstHit;
-  L1Vector<THitI>& lastHit               = fMergerTrackLastHit;
+  L1Vector<L1HitIndex_t>& firstHit              = fMergerTrackFirstHit;
+  L1Vector<L1HitIndex_t>& lastHit               = fMergerTrackLastHit;
   L1Vector<unsigned short>& neighbour    = fMergerTrackNeighbour;
   L1Vector<float>& trackChi2             = fMergerTrackChi2;
   L1Vector<char>& isStored               = fMergerTrackIsStored;
@@ -220,7 +220,7 @@ void L1Algo::CAMergeClones()
   //  vector< L1Track > vTracksNew;
   fMergerTracksNew.clear();
   fMergerTracksNew.reserve(nTracks);
-  //  vector< THitI > fRecoHitsNew;
+  //  vector< L1HitIndex_t > fRecoHitsNew;
   fMergerRecoHitsNew.clear();
   fMergerRecoHitsNew.reserve(fRecoHits.size());
 
@@ -233,7 +233,7 @@ void L1Algo::CAMergeClones()
   neighbour.reset(nTracks);
   isDownstreamNeighbour.reset(nTracks);
 
-  THitI start_hit = 0;
+  L1HitIndex_t start_hit = 0;
 
 #ifdef OMP
 #pragma omp parallel for
@@ -397,7 +397,7 @@ void L1Algo::CAMergeClones()
 
     fMergerTracksNew.push_back(fTracks[iTr]);
     if (!isDownstreamNeighbour[iTr]) {
-      for (THitI HI = firstHit[iTr]; HI <= lastHit[iTr]; HI++) {
+      for (L1HitIndex_t HI = firstHit[iTr]; HI <= lastHit[iTr]; HI++) {
         fMergerRecoHitsNew.push_back(fRecoHits[HI]);
       }
     }
@@ -405,12 +405,12 @@ void L1Algo::CAMergeClones()
     if (neighbour[iTr] < kNoNeighbour) {
       isStored[neighbour[iTr]] = true;
       fMergerTracksNew.back().NHits += fTracks[neighbour[iTr]].NHits;
-      for (THitI HI = firstHit[neighbour[iTr]]; HI <= lastHit[neighbour[iTr]]; HI++)
+      for (L1HitIndex_t HI = firstHit[neighbour[iTr]]; HI <= lastHit[neighbour[iTr]]; HI++)
         fMergerRecoHitsNew.push_back(fRecoHits[HI]);
     }
 
     if (isDownstreamNeighbour[iTr]) {
-      for (THitI HI = firstHit[iTr]; HI <= lastHit[iTr]; HI++) {
+      for (L1HitIndex_t HI = firstHit[iTr]; HI <= lastHit[iTr]; HI++) {
         fMergerRecoHitsNew.push_back(fRecoHits[HI]);
       }
     }
@@ -423,7 +423,7 @@ void L1Algo::CAMergeClones()
 
   assert(fRecoHits.size() == fMergerRecoHitsNew.size());
   fRecoHits.reset(fMergerRecoHitsNew.size());
-  for (THitI iHi = 0; iHi < fMergerRecoHitsNew.size(); iHi++) {
+  for (L1HitIndex_t iHi = 0; iHi < fMergerRecoHitsNew.size(); iHi++) {
     fRecoHits[iHi] = fMergerRecoHitsNew[iHi];
   }
 

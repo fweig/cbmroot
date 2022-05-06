@@ -250,7 +250,7 @@ public:
   bool fMissingHits {false};
   L1Algo::TrackingMode fTrackingMode {L1Algo::TrackingMode::kSts};
 
-  L1Vector<CbmL1Track> vRTracks {"CbmL1::vRTracks"};  // reconstructed tracks
+  L1Vector<CbmL1Track> vRTracks {"CbmL1::vRTracks"};  ///> reconstructed tracks
   DFSET vFileEvent {};
 
   L1Vector<CbmL1HitStore> vHitStore {"CbmL1::vHitStore"};  // diff hit information
