@@ -119,6 +119,9 @@ private:
   std::deque<std::unique_ptr<fles::Timeslice>> fdpTimesliceBuffer = {};
   std::deque<std::vector<bool>> fdbCompSentFlags                  = {};
 
+  /// Flag indicating the EOF was reached to avoid sending an emergency STOP
+  bool fbEofFound = false;
+
   std::string fsChannelNameMissedTs = "";
   std::string fsChannelNameCommands = "";
 

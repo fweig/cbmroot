@@ -498,6 +498,13 @@ bool CbmDeviceEventSink::SendHistoConfAndData()
     partsOut.AddPart(std::move(messageHist));
   }  // for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto)
 
+  /// Catch case where no histos are registered!
+  /// => Add empty message
+  if (0 == fvpsHistosFolder.size()) {
+    FairMQMessagePtr messageHist(NewMessage());
+    partsOut.AddPart(std::move(messageHist));
+  }
+
   for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv) {
     /// Serialize the vector of canvas config into a single MQ message
     FairMQMessagePtr messageCan(NewMessage());
@@ -506,6 +513,13 @@ bool CbmDeviceEventSink::SendHistoConfAndData()
 
     partsOut.AddPart(std::move(messageCan));
   }  // for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv)
+
+  /// Catch case where no Canvases are registered!
+  /// => Add empty message
+  if (0 == fvpsCanvasConfig.size()) {
+    FairMQMessagePtr messageHist(NewMessage());
+    partsOut.AddPart(std::move(messageHist));
+  }
 
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr msgHistos(NewMessage());

@@ -38,7 +38,7 @@ CbmMqHistoServer::CbmMqHistoServer()
   , fsChannelNameHistosInput("histogram-in")
   , fsChannelNameHistosConfig("histo-conf")
   , fsChannelNameCanvasConfig("canvas-conf")
-  , fsHistoFileName("HistosMonitorPulser.root")
+  , fsHistoFileName("MqHistos.root")
   , fuHttpServerPort(8098)
   , fArrayHisto()
   , fvpsHistosFolder()
@@ -87,6 +87,7 @@ void CbmMqHistoServer::InitTask()
 
 bool CbmMqHistoServer::ReceiveData(FairMQMessagePtr& msg, int /*index*/)
 {
+  LOG(debug) << "CbmMqHistoServer::ReceiveData => Processing histograms update";
   TObject* tempObject = nullptr;
 
   //  Deserialize<RootSerializer>(*msg, tempObject);
@@ -111,12 +112,14 @@ bool CbmMqHistoServer::ReceiveData(FairMQMessagePtr& msg, int /*index*/)
         LOG(warning) << "Unsupported object type for " << pObj->GetName();
     }  // for (Int_t i = 0; i < arrayHisto->GetEntriesFast(); i++)
 
+    LOG(debug) << "CbmMqHistoServer::ReceiveData => Deleting array";
     /// Need to use Delete instead of Clear to avoid memory leak!!!
     arrayHisto->Delete();
 
     /// If new histos received, try to prepare as many canvases as possible
     /// Should be expensive on start and cheap afterward
     if (!fbAllCanvasReady) {
+      LOG(debug) << "CbmMqHistoServer::ReceiveData => Checking for canvases updates";
       for (uint32_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv) {
         /// Jump canvases already ready
         if (fvbCanvasReady[uCanv]) continue;
@@ -149,6 +152,8 @@ bool CbmMqHistoServer::ReceiveData(FairMQMessagePtr& msg, int /*index*/)
     bMqHistoServerSaveHistos = kFALSE;
   }  // if( bMqHistoServerSaveHistos )
 */
+  LOG(debug) << "CbmMqHistoServer::ReceiveData => Finished processing histograms update";
+
   return true;
 }
 
@@ -201,7 +206,7 @@ bool CbmMqHistoServer::ReceiveCanvasConfig(FairMQMessagePtr& msg, int /*index*/)
   }  // for( UInt_t uPrevCanv = 0; uPrevCanv < fvpsCanvasConfig.size(); ++uPrevCanv )
 
   if (uPrevCanv < fvpsCanvasConfig.size()) {
-    LOG(warning) << " Ignored new configuration for histo " << tempObject.first
+    LOG(warning) << " Ignored new configuration for Canvas " << tempObject.first
                  << " due to previously received one: " << tempObject.second;
     /// Not sure if we should return false here...
   }  // if( uPrevCanv < fvpsCanvasConfig.size() )
@@ -222,7 +227,7 @@ bool CbmMqHistoServer::ReceiveConfigAndData(FairMQParts& parts, int /*index*/)
   /// Reject anything but a at least Header + Histo Config + Canvas Config + Histo Data
   if (parts.Size() < 4) {
     if (1 == parts.Size()) {
-      /// PAL, 09/04/2021, Debug message catching missed method overlad/polymorphism:
+      /// PAL, 09/04/2021, Debug message catching missed method overload/polymorphism:
       /// contrary to my expectation, if 2 method bound to same channel, one with FairMQMessagePtr and one with
       /// FairMQParts, all messages go to multipart version and  FairMQMessagePtr is converted to size 1 FairMQParts
       LOG(debug) << "CbmMqHistoServer::ReceiveConfigAndData => only 1 parts found in input, "
@@ -243,9 +248,27 @@ bool CbmMqHistoServer::ReceiveConfigAndData(FairMQParts& parts, int /*index*/)
   LOG(info) << "CbmMqHistoServer::ReceiveConfigAndData => Received configuration for " << pairHeader.first
             << " histos and " << pairHeader.second << " canvases";
 
-  if (static_cast<size_t>(parts.Size()) != 1 + pairHeader.first + pairHeader.second + 1) {
+  uint32_t uOffsetHistoConfig = pairHeader.first;
+  if (0 == pairHeader.first) {
+    uOffsetHistoConfig = 1;
+    if (0 < (parts.At(uOffsetHistoConfig))->GetSize()) {
+      LOG(fatal) << "CbmMqHistoServer::ReceiveConfigAndData => No histo config expected but corresponding message is"
+                 << " not empty: " << (parts.At(uOffsetHistoConfig))->GetSize();
+    }
+  }
+
+  uint32_t uOffsetCanvasConfig = pairHeader.second;
+  if (0 == pairHeader.second) {
+    uOffsetCanvasConfig = 1;
+    if (0 < (parts.At(uOffsetHistoConfig + uOffsetCanvasConfig))->GetSize()) {
+      LOG(fatal) << "CbmMqHistoServer::ReceiveConfigAndData => No Canvas config expected but corresponding message is"
+                 << " not empty: " << (parts.At(uOffsetHistoConfig + uOffsetCanvasConfig))->GetSize();
+    }
+  }
+
+  if (static_cast<size_t>(parts.Size()) != 1 + uOffsetHistoConfig + uOffsetCanvasConfig + 1) {
     LOG(fatal) << "CbmMqHistoServer::ReceiveConfigAndData => Number of parts not matching header: " << parts.Size()
-               << " instead of " << 1 + pairHeader.first + pairHeader.second + 1;
+               << " instead of " << 1 + uOffsetHistoConfig + uOffsetCanvasConfig + 1;
   }  // if( parts.Size() != 1 + pairHeader.first + pairHeader.second )
 
   /// Decode parts for histograms configuration
@@ -255,11 +278,14 @@ bool CbmMqHistoServer::ReceiveConfigAndData(FairMQParts& parts, int /*index*/)
 
   /// Decode parts for histograms configuration
   for (uint32_t uCanv = 0; uCanv < pairHeader.second; ++uCanv) {
-    ReceiveCanvasConfig(parts.At(1 + pairHeader.first + uCanv), 0);
+    ReceiveCanvasConfig(parts.At(1 + uOffsetHistoConfig + uCanv), 0);
   }  // for (UInt_t uCanv = 0; uCanv < pairHeader.second; ++uCanv)
 
   /// Decode the histograms data now that the configuration is loaded
-  ReceiveData(parts.At(1 + pairHeader.first + pairHeader.second), 0);
+  ReceiveData(parts.At(1 + uOffsetHistoConfig + uOffsetCanvasConfig), 0);
+
+  LOG(info) << "CbmMqHistoServer::ReceiveConfigAndData => Finished processing  composed message with " << parts.Size()
+            << " parts";
 
   return true;
 }
@@ -357,6 +383,7 @@ bool CbmMqHistoServer::ResetHistograms()
 }
 bool CbmMqHistoServer::PrepareCanvas(uint32_t uCanvIdx)
 {
+  LOG(debug) << " Extracting configuration for canvas index " << uCanvIdx;
   CanvasConfig conf(ExtractCanvasConfigFromString(fvpsCanvasConfig[uCanvIdx].second));
 
   /// First check if all objects to be drawn are present
@@ -373,6 +400,8 @@ bool CbmMqHistoServer::PrepareCanvas(uint32_t uCanvIdx)
       }    // if( "nullptr" != sName )
     }      // for( uint32_t uObjIdx = 0; uObjIdx < uNbObj; ++uObjIdx )
   }        // for( uint32_t uPadIdx = 0; uPadIdx < uNbPads; ++uPadIdx )
+
+  LOG(info) << " All histos found for canvas " << conf.GetName().data() << ", now preparing it";
 
   /// Create new canvas and pads
   TCanvas* pNewCanv = new TCanvas(conf.GetName().data(), conf.GetTitle().data());
@@ -405,7 +434,10 @@ bool CbmMqHistoServer::PrepareCanvas(uint32_t uCanvIdx)
           dynamic_cast<TH1*>(pObj)->Draw(conf.GetOption(uPadIdx, uObjIdx).data());
         }  // if( nullptr != dynamic_cast< TH1 *>( pObj ) )
         else
-          LOG(warning) << "Unsupported object type for " << sName << " when preparing canvas " << conf.GetName();
+          LOG(warning) << "  Unsupported object type for " << sName << " when preparing canvas " << conf.GetName();
+
+        LOG(info) << "  Configured histo " << sName << " on pad " << (1 + uPadIdx) << " for canvas "
+                  << conf.GetName().data();
       }  // if( "nullptr" != sName )
     }    // for( uint32_t uObjIdx = 0; uObjIdx < uNbObj; ++uObjIdx )
   }      // for( uint32_t uPadIdx = 0; uPadIdx < uNbPads; ++uPadIdx )
@@ -414,7 +446,7 @@ bool CbmMqHistoServer::PrepareCanvas(uint32_t uCanvIdx)
   fServer->Register(Form("/%s", fvCanvas[uCanvIdx].second.data()), fvCanvas[uCanvIdx].first);
   fvbCanvasRegistered[uCanvIdx] = true;
 
-  LOG(info) << "registered canvas " << fvCanvas[uCanvIdx].first->GetName() << " in folder "
+  LOG(info) << " Registered canvas " << fvCanvas[uCanvIdx].first->GetName() << " in folder "
             << fvCanvas[uCanvIdx].second;
 
   /// Update flag telling whether all known canvases are registered

@@ -267,13 +267,13 @@ try {
   /* clang-format on */
 
   /// Create input vectors
-  fvDigiT0   = new std::vector<CbmTofDigi>();
-  fvDigiSts  = new std::vector<CbmStsDigi>();
-  fvDigiMuch = new std::vector<CbmMuchDigi>();
-  fvDigiTrd  = new std::vector<CbmTrdDigi>();
-  fvDigiTof  = new std::vector<CbmTofDigi>();
-  fvDigiRich = new std::vector<CbmRichDigi>();
-  fvDigiPsd  = new std::vector<CbmPsdDigi>();
+  fvDigiT0   = new std::vector<CbmTofDigi>(1000000);
+  fvDigiSts  = new std::vector<CbmStsDigi>(1000000);
+  fvDigiMuch = new std::vector<CbmMuchDigi>(1000000);
+  fvDigiTrd  = new std::vector<CbmTrdDigi>(1000000);
+  fvDigiTof  = new std::vector<CbmTofDigi>(1000000);
+  fvDigiRich = new std::vector<CbmRichDigi>(1000000);
+  fvDigiPsd  = new std::vector<CbmPsdDigi>(1000000);
 
   fCbmTsEventHeader = new CbmTsEventHeader();
 
@@ -565,6 +565,13 @@ bool CbmDeviceBuildDigiEvents::SendHistoConfAndData()
     partsOut.AddPart(std::move(messageHist));
   }  // for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto)
 
+  /// Catch case where no histos are registered!
+  /// => Add empty message
+  if (0 == fvpsHistosFolder.size()) {
+    FairMQMessagePtr messageHist(NewMessage());
+    partsOut.AddPart(std::move(messageHist));
+  }
+
   for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv) {
     /// Serialize the vector of canvas config into a single MQ message
     FairMQMessagePtr messageCan(NewMessage());
@@ -572,6 +579,13 @@ bool CbmDeviceBuildDigiEvents::SendHistoConfAndData()
     BoostSerializer<std::pair<std::string, std::string>>().Serialize(*messageCan, fvpsCanvasConfig[uCanv]);
     partsOut.AddPart(std::move(messageCan));
   }  // for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv)
+
+  /// Catch case where no Canvases are registered!
+  /// => Add empty message
+  if (0 == fvpsCanvasConfig.size()) {
+    FairMQMessagePtr messageHist(NewMessage());
+    partsOut.AddPart(std::move(messageHist));
+  }
 
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr msgHistos(NewMessage());

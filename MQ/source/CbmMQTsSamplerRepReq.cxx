@@ -354,9 +354,14 @@ bool CbmMQTsSamplerRepReq::HandleRequest(FairMQMessagePtr& msgReq, int)
   /// Initialize the histograms
   if (0 < fuPublishFreqTs && 0 == fulTsCounter) { InitHistograms(); }  // if( 0 < fuPublishFreqTs )
 
+  if (fbEofFound) {
+    /// Ignore all requests if EOS reached
+    return true;
+  }
+
   if (fbNoSplitTs) {
 
-    if (!CreateAndSendFullTs()) {
+    if (!CreateAndSendFullTs() && !fbEofFound) {
       /// If command channel defined, send command to all "slaves"
       if ("" != fsChannelNameCommands) {
         /// Wait 1 s before sending a STOP to let all slaves finish processing previous data
@@ -365,7 +370,7 @@ bool CbmMQTsSamplerRepReq::HandleRequest(FairMQMessagePtr& msgReq, int)
       }  // if( "" != fsChannelNameCommands )
 
       return false;
-    }  // if( !CreateAndSendFullTs( ts ) )
+    }  // if( !CreateAndSendFullTs( ts ) && !fbEofFound)
   }    // if( fbNoSplitTs )
   else if (fbSendTsPerSysId) {
     /// TODO: add support for alternative request with "system name" instead of "system ID"
@@ -375,7 +380,7 @@ bool CbmMQTsSamplerRepReq::HandleRequest(FairMQMessagePtr& msgReq, int)
 
     /// This assumes that the order of the components does NOT change after the first TS
     /// That should be the case as the component index correspond to a physical link idx
-    if (!CreateCombinedComponentsPerSysId(iSysId)) {
+    if (!CreateCombinedComponentsPerSysId(iSysId) && !fbEofFound) {
       /// If command channel defined, send command to all "slaves"
       if ("" != fsChannelNameCommands) {
         /// Wait 1 s before sending a STOP to let all slaves finish processing previous data
@@ -384,7 +389,7 @@ bool CbmMQTsSamplerRepReq::HandleRequest(FairMQMessagePtr& msgReq, int)
       }  // if( "" != fsChannelNameCommands )
 
       return false;
-    }  // if(!CreateAndCombineComponentsPerSysId(iSysId) )
+    }  // if(!CreateAndCombineComponentsPerSysId(iSysId) && !fbEofFound)
   }    // else if( fbSendTsPerSysId && fbSendTsPerSysId ) of if( fbNoSplitTs
   else if (fbSendTsPerBlock) {
     std::string reqStr(static_cast<char*>(msgReq->GetData()), msgReq->GetSize());
@@ -392,7 +397,7 @@ bool CbmMQTsSamplerRepReq::HandleRequest(FairMQMessagePtr& msgReq, int)
 
     /// This assumes that the order of the components does NOT change after the first TS
     /// That should be the case as the component index correspond to a physical link idx
-    if (!CreateCombinedComponentsPerBlock(reqStr)) {
+    if (!CreateCombinedComponentsPerBlock(reqStr) && !fbEofFound) {
       /// If command channel defined, send command to all "slaves"
       if ("" != fsChannelNameCommands) {
         /// Wait 1 s before sending a STOP to let all slaves finish processing previous data
@@ -401,7 +406,7 @@ bool CbmMQTsSamplerRepReq::HandleRequest(FairMQMessagePtr& msgReq, int)
       }  // if( "" != fsChannelNameCommands )
 
       return false;
-    }  // if( !CreateAndCombineComponentsPerChannel(reqStr) )
+    }  // if( !CreateAndCombineComponentsPerChannel(reqStr) && !fbEofFound)
   }    // else if( fbSendTsPerSysId && fbSendTsPerSysId ) of if( fbNoSplitTs )
 
   /// Send histograms each 100 time slices. Should be each ~1s
@@ -530,6 +535,8 @@ std::unique_ptr<fles::Timeslice> CbmMQTsSamplerRepReq::GetNewTs()
         SendCommand(sCmd);
       }  // if( "" != fsChannelNameCommands )
 
+      fbEofFound = true;
+
       return nullptr;
     }  // else of if (fulTsCounter < fulMaxTimeslices)
   }  // if (timeslice)
@@ -546,6 +553,8 @@ std::unique_ptr<fles::Timeslice> CbmMQTsSamplerRepReq::GetNewTs()
       sCmd += FormatDecPrintout(fulTsCounter);
       SendCommand(sCmd);
     }  // if( "" != fsChannelNameCommands )
+
+    fbEofFound = true;
 
     return nullptr;
   }  // else of if (timeslice)
@@ -915,6 +924,13 @@ bool CbmMQTsSamplerRepReq::SendHistoConfAndData()
     partsOut.AddPart(std::move(messageHist));
   }  // for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto)
 
+  /// Catch case where no histos are registered!
+  /// => Add empty message
+  if (0 == fvpsHistosFolder.size()) {
+    FairMQMessagePtr messageHist(NewMessage());
+    partsOut.AddPart(std::move(messageHist));
+  }
+
   for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv) {
     /// Serialize the vector of canvas config into a single MQ message
     FairMQMessagePtr messageCan(NewMessage());
@@ -923,6 +939,13 @@ bool CbmMQTsSamplerRepReq::SendHistoConfAndData()
 
     partsOut.AddPart(std::move(messageCan));
   }  // for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv)
+
+  /// Catch case where no Canvases are registered!
+  /// => Add empty message
+  if (0 == fvpsCanvasConfig.size()) {
+    FairMQMessagePtr messageHist(NewMessage());
+    partsOut.AddPart(std::move(messageHist));
+  }
 
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr msgHistos(NewMessage());
