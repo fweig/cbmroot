@@ -102,6 +102,7 @@ case $_TriggSet in
   _TofMin=1
   _T0Min=0
   _StsMin=0
+  _StsMinLay=0
   _MuchMin=0
   _Trd1dMin=0
   _Trd2dMin=0
@@ -115,6 +116,7 @@ case $_TriggSet in
   _TofMinLay=1
   _T0Min=1
   _StsMin=0
+  _StsMinLay=0
   _MuchMin=0
   _Trd1dMin=0
   _Trd2dMin=0
@@ -128,6 +130,7 @@ case $_TriggSet in
   _TofMinLay=4
   _T0Min=0
   _StsMin=0
+  _StsMinLay=0
   _MuchMin=0
   _Trd1dMin=0
   _Trd2dMin=0
@@ -141,6 +144,7 @@ case $_TriggSet in
   _TofMinLay=4
   _T0Min=1
   _StsMin=0
+  _StsMinLay=0
   _MuchMin=0
   _Trd1dMin=0
   _Trd2dMin=0
@@ -154,6 +158,7 @@ case $_TriggSet in
   _TofMinLay=4
   _T0Min=1
   _StsMin=2
+  _StsMinLay=0
   _MuchMin=0
   _Trd1dMin=0
   _Trd2dMin=0
@@ -167,6 +172,7 @@ case $_TriggSet in
   _TofMinLay=8  # PAL 07/04/2022: Not sure here if it should be 4 or 8 (2 tracks in same det. stack excluded?)
   _T0Min=1
   _StsMin=8
+  _StsMinLay=0
   _MuchMin=0
   _Trd1dMin=0
   _Trd2dMin=0
@@ -180,6 +186,7 @@ case $_TriggSet in
   _TofMinLay=4
   _T0Min=1
   _StsMin=4
+  _StsMinLay=0
   _MuchMin=2
   _Trd1dMin=2
   _Trd2dMin=0
@@ -360,6 +367,7 @@ while (( _iBranch < _nbbranch )); do
   EVTBUILDER+=" --SetTrigMinNb kTof,$_TofMin"
   EVTBUILDER+=" --SetTrigMinNb kRich,0"
   EVTBUILDER+=" --SetTrigMinLayersNb kTof,$_TofMinLay"
+  EVTBUILDER+=" --SetTrigMinLayersNb kSts,$_StsMinLay"
   EVTBUILDER+=" --TsNameIn unpts$_iBranch"
   EVTBUILDER+=" --EvtNameOut events"
   EVTBUILDER+=" --channel-config name=unpts$_iBranch,type=pull,method=connect,transport=zeromq,rcvBufSize=2,address=tcp://127.0.0.1:$_iPort,rateLogging=$_ratelog"
