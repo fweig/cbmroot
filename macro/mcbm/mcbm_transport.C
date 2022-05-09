@@ -21,14 +21,18 @@
 void SetTrack(CbmTransport*, Double_t, Int_t, Double_t, Double_t, Double_t);
 
 void mcbm_transport(Int_t nEvents = 10,
+                    //                  const char* setupName = "mcbm_beam_2022_08",
+                    //                  const char* setupName = "mcbm_beam_2022_07",
                     //                  const char* setupName = "mcbm_beam_2022_06",
                     //                  const char* setupName = "mcbm_beam_2022_05",
                     //                  const char* setupName = "mcbm_beam_2022_04",
                     //                  const char* setupName = "mcbm_beam_2022_03",
                     //                  const char* setupName = "mcbm_beam_2022_02",
                     //                  const char* setupName = "mcbm_beam_2022_01",
+                    const char* setupName = "mcbm_beam_2022_06_16_gold",
+                    //                  const char* setupName = "mcbm_beam_2022_05_23_nickel",
                     //                  const char* setupName = "mcbm_beam_2022_03_28_uranium",
-                    const char* setupName = "mcbm_beam_2022_03_27_iron",
+                    //                  const char* setupName = "mcbm_beam_2022_03_27_iron",
                     //                  const char* setupName = "mcbm_beam_2022_03_22_iron",
                     //                  const char* setupName = "mcbm_beam_2022_03_20_iron",
                     //                  const char* setupName = "mcbm_beam_2022_03_09_carbon",
@@ -202,7 +206,8 @@ void mcbm_transport(Int_t nEvents = 10,
                 targetRotY * TMath::DegToRad());
   run.SetBeamPosition(0., 0., 0.1, 0.1);  // Beam width 1 mm is assumed
   run.SetBeamAngle(beamRotY * TMath::DegToRad(), 0.);
-  run.StoreTrajectories();
+  if (nEvents <= 10)  // store only for small number of events
+    run.StoreTrajectories();
   run.Run(nEvents);
   // ------------------------------------------------------------------------
 
