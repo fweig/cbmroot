@@ -205,6 +205,12 @@ void CbmTrdUnpackMonitor::createHisto(eDigiHistos kHisto)
         newhisto->SetXTitle("ChannelId");
         newhisto->SetYTitle("#DeltaT(Digi(n)-Digi(n-1)) [ns]");
         break;
+      case eDigiHistos::kDigiNtCorr:
+        newhisto = std::make_shared<TH2I>(histoname.data(), histoname.data(), nchannels, -0.5, (nchannels - 0.5),
+                                          nchannels, -0.5, (nchannels - 0.5));
+        newhisto->SetXTitle("NT AddressChannel");
+        newhisto->SetYTitle("ST AddressChannel");
+        break;
         // default: return; break;
     }
     LOG(debug) << Class_Name() << "::CreateHisto() HistoDigi " << static_cast<size_t>(kHisto) << " Module " << moduleid
@@ -391,6 +397,7 @@ void CbmTrdUnpackMonitor::fillHisto(CbmTrdDigi* digi, eDigiHistos kHisto, std::u
       break;
     }
     case eDigiHistos::kDigiDeltaT: histo->Fill(digi->GetAddressChannel(), getDeltaT(digi)); break;
+    case eDigiHistos::kDigiNtCorr: fillNtCorrHisto(histo, digi); break;
 
     default: return; break;
   }
@@ -464,6 +471,33 @@ std::double_t CbmTrdUnpackMonitor::getDeltaT(CbmTrdDigi* digi)
   }
 }
 
+// ---- fillNtCorrHisto ----
+void CbmTrdUnpackMonitor::fillNtCorrHisto(std::shared_ptr<TH1> histo, CbmTrdDigi* digi)
+{
+  Double_t newDigiTime    = digi->GetTime();
+  Int_t newDigiAddrCh     = digi->GetAddressChannel();
+  Int_t newDigiAddrModule = digi->GetAddressModule();
+
+  int nTrdDigis = fDigiOutputVec->size();
+
+  for (int iDigi = nTrdDigis - 1; iDigi > 0; --iDigi) {
+    const CbmTrdDigi digiRef = fDigiOutputVec->at(iDigi);
+
+    Double_t refDigiTime = digiRef.GetTime();
+
+    if (digiRef.GetAddressModule() == newDigiAddrModule) {
+      if (digiRef.GetTriggerType() == static_cast<Int_t>(CbmTrdDigi::eTriggerType::kNeighbor)
+          && digi->GetTriggerType() == static_cast<Int_t>(CbmTrdDigi::eTriggerType::kSelf))
+        histo->Fill(digiRef.GetAddressChannel(), newDigiAddrCh);
+      else if (digiRef.GetTriggerType() == static_cast<Int_t>(CbmTrdDigi::eTriggerType::kSelf)
+               && digi->GetTriggerType() == static_cast<Int_t>(CbmTrdDigi::eTriggerType::kNeighbor))
+        histo->Fill(newDigiAddrCh, digiRef.GetAddressChannel());
+    }
+
+    if (refDigiTime < newDigiTime - 500 /*|| iDigi < nTrdDigis - 20*/) break;
+  }
+}
+
 // ---- getHistoName ----
 std::string CbmTrdUnpackMonitor::getHistoName(eDigiHistos kHisto)
 {
@@ -481,6 +515,7 @@ std::string CbmTrdUnpackMonitor::getHistoName(eDigiHistos kHisto)
     case eDigiHistos::kChannel_Nt: histoname += "Channel_Nt"; break;
     case eDigiHistos::kTriggerType: histoname += "TriggerType"; break;
     case eDigiHistos::kDigiDeltaT: histoname += "DigiDeltaT"; break;
+    case eDigiHistos::kDigiNtCorr: histoname += "DigiNtCorr"; break;
   }
   return histoname;
 }

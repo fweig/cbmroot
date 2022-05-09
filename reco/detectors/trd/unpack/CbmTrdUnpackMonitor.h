@@ -63,7 +63,8 @@ public:
     kCharge_St,
     kCharge_Nt,
     kTriggerType,
-    kDigiDeltaT
+    kDigiDeltaT,
+    kDigiNtCorr
   };
 
   /** @brief Enum for the predefined raw histograms. */
@@ -142,6 +143,9 @@ public:
     fOutfilename   = filename;
     fDoWriteToFile = true;
   }
+
+  /** @brief Set digi outpout vector (to make it usable for correlations) */
+  void SetDigiOutputVec(std::vector<CbmTrdDigi>* digiOutputVec) { fDigiOutputVec = digiOutputVec; }
 
 
 protected:
@@ -319,6 +323,9 @@ protected:
     return nhistos;
   }
 
+  /** @brief Fill the NeighborTrigger Checking Histogram */
+  void fillNtCorrHisto(std::shared_ptr<TH1> histo, CbmTrdDigi* digi);
+
   // Member variables
   /** @brief Digi histogram pointers stored in a map together with the module id */
   std::map<eDigiHistos, std::map<std::uint32_t, std::shared_ptr<TH1>>> fDigiHistoMap = {};
@@ -362,6 +369,9 @@ protected:
 
   /** @brief Map with the last digi time for each channel of a given module */
   std::map<std::uint32_t, std::vector<size_t>> fLastDigiTimeMap = {};
+
+  /** @brief Variable which holds a reference to the TRD digi output vector (for correlations) */
+  std::vector<CbmTrdDigi>* fDigiOutputVec = {};
 
   // All other parameters and containers
   std::shared_ptr<CbmTrdSpadic> fSpadic = nullptr;

@@ -120,6 +120,7 @@ Bool_t CbmTrdUnpackAlgoBaseR::initParSet(CbmTrdParSetDigi* parset)
       asics = static_cast<CbmTrdParSetAsic*>((pair.second).get());
     }
     initOk &= fMonitor->Init(parset, asics);
+    fMonitor->SetDigiOutputVec(&fOutputVec);
   }
 
   return initOk;
