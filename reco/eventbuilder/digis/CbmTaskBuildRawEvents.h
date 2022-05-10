@@ -92,6 +92,10 @@ public:
   {
     if (nullptr != fpAlgo) fpAlgo->SetTriggerMaxNumber(selDet, iVal);
   }
+  void SetTriggerMinLayersNumber(ECbmModuleId selDet, UInt_t uVal)
+  {
+    if (nullptr != fpAlgo) fpAlgo->SetTriggerMinLayersNumber(selDet, uVal);
+  }
   void SetTriggerWindow(ECbmModuleId det, Double_t dWinBeg, Double_t dWinEnd)
   {
     if (nullptr != fpAlgo) fpAlgo->SetTriggerWindow(det, dWinBeg, dWinEnd);
