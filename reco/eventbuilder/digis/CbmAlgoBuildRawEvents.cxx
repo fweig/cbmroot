@@ -720,7 +720,7 @@ Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, const RawE
   }
 
   /// Check trigger rejection by maximal number (if enabled)
-  if (0 < det.fiTriggerMaxDigis && det.fiTriggerMaxDigis < iNbDigis) {
+  if (0 <= det.fiTriggerMaxDigis && det.fiTriggerMaxDigis < iNbDigis) {
     LOG(debug2) << "Event Has too many digis: " << iNbDigis << " vs " << det.fiTriggerMaxDigis << " for " << det.sName;
     return kFALSE;
   }
