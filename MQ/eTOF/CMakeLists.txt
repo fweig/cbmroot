@@ -100,7 +100,6 @@ Set(NO_DICT_SRCS
 SET_SOURCE_FILES_PROPERTIES(${CBMROOT_SOURCE_DIR}/fles/star2017/unpacker/star_rhicf.c PROPERTIES COMPILE_FLAGS -Wno-pointer-sign)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
   external::fles_ipc
   CbmFlibStar2019
   CbmFlibMcbm2018

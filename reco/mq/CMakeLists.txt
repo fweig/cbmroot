@@ -87,7 +87,7 @@ set(DEPENDENCIES
   ${DEPENDENCIES}
   ${FAIR_LIBS}
   ${BOOST_LIBS}
-  fles_ipc
+  external::fles_ipc
   CbmFlibFlesTools
   Algo
   CbmBase

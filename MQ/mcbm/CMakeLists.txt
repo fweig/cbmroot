@@ -115,7 +115,6 @@ set(SRCS CbmDeviceMcbmUnpack.cxx runMcbmUnpack.cxx)
 
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
   external::fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
@@ -134,7 +133,6 @@ set(SRCS CbmDeviceMcbmMonitorPulser.cxx runMcbmMonitorPulser.cxx)
 
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-  fles_ipc
   external::fles_ipc
   CbmFlibMcbm2018
   CbmFlibFlesTools
