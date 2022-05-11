@@ -2,16 +2,23 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
+/***********************************************************************************************//**
+ * @file   L1CAIteration.cxx
+ * @brief  Definition of the L1CAIteration class methods
+ * @since  05.02.2022
+ * @author S.Zharko <s.zharko@gsi.de>
+ ***************************************************************************************************/
+
 #include "L1CAIteration.h"
 
 #include <FairLogger.h>
 
 #include <sstream>
-
+//
 //----------------------------------------------------------------------------------------------------------------------
 //
 L1CAIteration::L1CAIteration() noexcept { LOG(debug) << "L1CAIteration: Default constructor called for " << this; }
-
+//
 //----------------------------------------------------------------------------------------------------------------------
 //
 L1CAIteration::L1CAIteration(const L1CAIteration& other) noexcept
@@ -33,7 +40,7 @@ L1CAIteration::L1CAIteration(const L1CAIteration& other) noexcept
 {
   LOG(debug) << "L1CAIteration: Copy constructor called: " << &other << " was copied into " << this;
 }
-
+//
 //----------------------------------------------------------------------------------------------------------------------
 //
 L1CAIteration::L1CAIteration(L1CAIteration&& other) noexcept
@@ -41,18 +48,18 @@ L1CAIteration::L1CAIteration(L1CAIteration&& other) noexcept
   this->Swap(other);
   LOG(debug) << "L1CAIteration: Move constructor called: " << &other << " was moved into " << this;
 }
-
+//
 //----------------------------------------------------------------------------------------------------------------------
 //
 L1CAIteration::L1CAIteration(const std::string& name) noexcept : fName(name)
 {
   LOG(debug) << "L1CAIteration: Constructor from name called for " << this;
 }
-
+//
 //----------------------------------------------------------------------------------------------------------------------
 //
 L1CAIteration::~L1CAIteration() noexcept { LOG(debug) << "L1CAIteration: Destructor called for " << this; }
-
+//
 //----------------------------------------------------------------------------------------------------------------------
 //
 L1CAIteration& L1CAIteration::operator=(const L1CAIteration& other) noexcept
@@ -61,7 +68,7 @@ L1CAIteration& L1CAIteration::operator=(const L1CAIteration& other) noexcept
   LOG(debug) << "L1CAIteration: Copy operator= called: " << &other << " was copied into " << this;
   return *this;
 }
-
+//
 //----------------------------------------------------------------------------------------------------------------------
 //
 L1CAIteration& L1CAIteration::operator=(L1CAIteration&& other) noexcept
@@ -73,7 +80,7 @@ L1CAIteration& L1CAIteration::operator=(L1CAIteration&& other) noexcept
   LOG(debug) << "L1CAIteration: Move operator= called: " << &other << " was moved into " << this;
   return *this;
 }
-
+//
 //----------------------------------------------------------------------------------------------------------------------
 //
 void L1CAIteration::Print(int verbosityLevel) const
@@ -81,7 +88,7 @@ void L1CAIteration::Print(int verbosityLevel) const
   if (verbosityLevel == 0) { LOG(info) << "  - " << fName; }
   if (verbosityLevel > 0) { LOG(info) << ToString(0); }
 }
-
+//
 //----------------------------------------------------------------------------------------------------------------------
 //
 void L1CAIteration::SetTargetPosSigmaXY(float sigmaX, float sigmaY)
@@ -89,7 +96,7 @@ void L1CAIteration::SetTargetPosSigmaXY(float sigmaX, float sigmaY)
   fTargetPosSigmaX = sigmaX;
   fTargetPosSigmaY = sigmaY;
 }
-
+//
 //----------------------------------------------------------------------------------------------------------------------
 //
 void L1CAIteration::Swap(L1CAIteration& other) noexcept
@@ -110,7 +117,7 @@ void L1CAIteration::Swap(L1CAIteration& other) noexcept
   std::swap(fTargetPosSigmaX, other.fTargetPosSigmaX);
   std::swap(fTargetPosSigmaY, other.fTargetPosSigmaY);
 }
-
+//
 //----------------------------------------------------------------------------------------------------------------------
 //
 std::string L1CAIteration::ToString(int indentLevel) const

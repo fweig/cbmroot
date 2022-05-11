@@ -20,9 +20,9 @@
 
 class L1Parameters {
 public:
-  /////////////////////////////
-  // COMPILE TIME CONSTANTS //
-  ///////////////////////////
+  /**********************//**
+   * COMPILE TIME CONSTANTS *
+   **************************/
 
   //
   // Array sizes
@@ -50,10 +50,24 @@ public:
   // Compile control flags
   //
 
-  /// Selector for the radiation length tables usage
+  /// Flag for the radiation length tables usage
   /// true - Radiational tables will be used,
   /// false - basic station material info is used
   static constexpr bool kIfUseRadLengthTable {true};
+
+  /// Flag for calling the CAMergeClones procedure ... TODO
+  static constexpr bool kIfMergeClones {true};
+
+  /// Flag: debug mode for analyzing the doublets pergormance efficiencies
+  static constexpr bool kIfDebugDoubletsPerformance {false};
+  /// Flag: debug mode for analyzing the tiplets pergormance efficiencies
+  static constexpr bool kIfDebugTripletsPerformance {false};
+  /// Flag: debug mode for creating pools for triplets. 
+  /// NOTE: this feature will work only if the L1Parameters::kIfDebugTipletsPerformace is true!
+  static constexpr bool kIfCreateTipletPulls {false};
+
+
+
 
 public:
   /// Default constructor

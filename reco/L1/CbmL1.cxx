@@ -86,7 +86,7 @@ using std::ios;
 
 ClassImp(CbmL1)
 
-  static L1Algo algo_static _fvecalignment;
+  static L1Algo algo_static _fvecalignment; // TODO: gAlgo
 
 //L1AlgoInputData* fData_static _fvecalignment;
 
@@ -1556,13 +1556,12 @@ void CbmL1::Exec(Option_t* /*option*/) {}
 
 void CbmL1::Reconstruct(CbmEvent* event)
 {
+  fVerbose = 11; // TODO: Remove it (tmp)! (S.Zharko)
   static int nevent = 0;
   vFileEvent.clear();
 
   L1Vector<std::pair<double, int>> SortStsHits("CbmL1::SortStsHits");
   SortStsHits.reserve(listStsHits->GetEntriesFast());
-
-  L1_SHOW(listStsHits->GetEntriesFast());
 
   float start_t = 10000000000;
 
@@ -1582,8 +1581,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
   }
 
   TsStart = start_t;  ///reco TS start time is set to smallest hit time
-  
-  L1_SHOW(TsStart);
 
   std::sort(SortStsHits.begin(), SortStsHits.end());
   StsIndex.clear();
@@ -1593,18 +1590,13 @@ void CbmL1::Reconstruct(CbmEvent* event)
     StsIndex.push_back(j);
   };
 
-  L1_SHOW(fLegacyEventMode);
-  L1_SHOW(TsStart);
 
   if (!fLegacyEventMode && fPerformance) {
 
     int nofEvents = fEventList->GetNofEvents();
-    L1_SHOW(fEventList->GetNofEvents());
     for (int iE = 0; iE < nofEvents; iE++) {
       int fileId  = fEventList->GetFileIdByIndex(iE);
       int eventId = fEventList->GetEventIdByIndex(iE);
-      L1_SHOW(fileId);
-      L1_SHOW(eventId);
       vFileEvent.insert(DFSET::value_type(fileId, eventId));
     }
   }
@@ -1621,8 +1613,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
   // repack data
 
   L1Vector<CbmL1Track> vRTracksCur("CbmL1::vRTracksCur");  // reconstructed tracks
-  L1_SHOW(vRTracksCur.size());
-  L1_SHOW(vRTracksCur.capacity());
   {
     int nHits = 0;
     int nSta  = 1;
@@ -1636,15 +1626,11 @@ void CbmL1::Reconstruct(CbmEvent* event)
     }
     vRTracksCur.reserve(10 + (2 * nHits) / nSta);
   }
-  L1_SHOW(vRTracksCur.size());
-  L1_SHOW(vRTracksCur.capacity());
 
   fTrackingTime = 0;
 
 
   while (areDataLeft) {
-    
-    L1_SHOW(areDataLeft);
     fData->Clear();
 
     if (event) {
@@ -1658,7 +1644,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
       FstHitinTs  = 0;
     }
 
-    L1_SHOW(fSTAPDataMode);
     if (fSTAPDataMode >= 2) {  // 2,3
       fData->ReadHitsFromFile(fSTAPDataDir.Data(), 1, fVerbose);
 
@@ -1669,7 +1654,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
       ReadEvent(fData, TsStart, TsLength, TsOverlap, FstHitinTs, areDataLeft, event);
     }
 
-    if (0) {  // correct hits on MC // dbg
+    if constexpr (0) {  // correct hits on MC // dbg
       TRandom3 random;
       L1Vector<int> strips("CbmL1::strips");
       for (unsigned int iH = 0; iH < (*algo->vStsHits).size(); ++iH) {
@@ -1716,7 +1701,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
         h.z = mcp.z;
       }
     }
-
 
     if (fPerformance) {
       HitMatch();

@@ -19,14 +19,14 @@ class L1AlgoDraw;
 //#define XXX               // time debug
 //#define COUNTERS          // diff counters (hits, doublets, ... )
 
-#define MERGE_CLONES
+// =====>dispatched<===== // #define MERGE_CLONES
 // #define TRACKS_FROM_TRIPLETS_ITERATION kAllPrimIter
 
 //#define HitErrors
 //#define GLOBAL
 //#define mCBM
 
-#define LAST_ITERATION kAllSecIter
+// =====>dispatched<===== // #define LAST_ITERATION kAllSecIter
 #define FIND_GAPED_TRACKS  // use triplets with gaps
 // =====>dispatched<===== // #define USE_RL_TABLE
 #ifndef TRACKS_FROM_TRIPLETS
@@ -34,7 +34,6 @@ class L1AlgoDraw;
 #endif
 //#define USE_EVENT_NUMBER
 //#endif
-//#define MERGE_CLONES
 
 
 #include <array>
@@ -152,21 +151,35 @@ public:
   Tindex fDupletPortionStopIndex[L1Parameters::kMaxNstations] {0};     // end of the duplet portions for the station
   L1Vector<Tindex> fDupletPortionSize {"L1Algo::fDupletPortionSize"};  // N duplets in a portion
 
+  /********************************************************************************************//**
+   * Temporary vectors used by the clone merger 
+   * TODO: Probably, the subclass L1TrackMerger for clones merger would help to improve 
+   *       readability (S.Zharko)
+   ***********************************************************************************************/
+  
   //
-  // Temporary vectors used by the clone merger
+  // Vectors that are parallel to fTracks
   //
-  // vectors that are parallel to fTracks
-  L1Vector<unsigned short> fMergerTrackFirstStation {"L1Algo::fMergerTrackFirstStation"};  // first station of a track
-  L1Vector<unsigned short> fMergerTrackLastStation {"L1Algo::fMergerTrackLastStation"};    // last station of a track
-  L1Vector<L1HitIndex_t> fMergerTrackFirstHit {"L1Algo::fMergerTrackFirstHit"};  // index of the first tracks hit
-  L1Vector<L1HitIndex_t> fMergerTrackLastHit {"L1Algo::fMergerTrackLastHit"};    // index of the last tracks hit
-  L1Vector<unsigned short> fMergerTrackNeighbour {
-    "L1Algo::fMergerTrackNeighbour"};                             // track that can be merged with the given track
-  L1Vector<float> fMergerTrackChi2 {"L1Algo::fMergerTrackChi2"};  // chi2 of the merge
-  L1Vector<char> fMergerTrackIsStored {"L1Algo::fMergerTrackIsStored"};  // is the track already stored to the output
-  L1Vector<char> fMergerTrackIsDownstreamNeighbour {
-    "L1Algo::fMergerTrackIsDownstreamNeighbour"};  // is the track a downstream neighbor of another track
-  // other vectors
+  /// First station of a track
+  L1Vector<unsigned short> fMergerTrackFirstStation {"L1Algo::fMergerTrackFirstStation"};
+  /// Last station of a track
+  L1Vector<unsigned short> fMergerTrackLastStation {"L1Algo::fMergerTrackLastStation"};
+  /// Index of the first hit of a track
+  L1Vector<L1HitIndex_t> fMergerTrackFirstHit {"L1Algo::fMergerTrackFirstHit"};
+  /// Index of the last hit of a track
+  L1Vector<L1HitIndex_t> fMergerTrackLastHit {"L1Algo::fMergerTrackLastHit"};
+  /// Index (TODO:??) of a track that can be merge with the given track
+  L1Vector<unsigned short> fMergerTrackNeighbour { "L1Algo::fMergerTrackNeighbour"};
+  /// Chi2 value of the track merging procedure
+  L1Vector<float> fMergerTrackChi2 {"L1Algo::fMergerTrackChi2"};
+  /// Flag: is the given track already stored to the output
+  L1Vector<char> fMergerTrackIsStored {"L1Algo::fMergerTrackIsStored"};
+  /// Flag: is the track a downstream neighbour of another track
+  L1Vector<char> fMergerTrackIsDownstreamNeighbour {"L1Algo::fMergerTrackIsDownstreamNeighbour"};
+  //
+  // Utility vectors
+  //
+  /// Tracks after the merging procedure
   L1Vector<L1Track> fMergerTracksNew {"L1Algo::fMergerTracksNew"};    // vector of tracks after the merge
   L1Vector<L1HitIndex_t> fMergerRecoHitsNew {"L1Algo::fMergerRecoHitsNew"};  // vector of track hits after the merge
 
@@ -426,6 +439,7 @@ private:
   void MultiplySR(fvec const C[15], fvec const r_in[5], fvec r_out[5]);
   void FilterTracks(fvec const r[5], fvec const C[15], fvec const m[5], fvec const V[15], fvec R[5], fvec W[15],
                     fvec* chi2);
+  /// 
   void CAMergeClones();
 
 

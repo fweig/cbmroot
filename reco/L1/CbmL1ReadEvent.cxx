@@ -67,28 +67,48 @@ static bool compareZ(const int& a, const int& b)
   return l1->Get_Z_vMCPoint(a) < l1->Get_Z_vMCPoint(b);
 }
 
-struct TmpHit {  // used for sort Hits before writing in the normal arrays
-  int iStripF,
-    iStripB;  // indices of strips
-  int iStation;
-  int ExtIndex;            // index of hit in the TClonesArray array ( negative for MVD )
-  double u_front, u_back;  // positions of strips
-  double x, y, z;          // position of hit
-  double xmc, ymc, p;      // mc-position of hit, momentum
-  double tx, ty;           // mc-slope of mc point
-  double dx, dy, dxy;
-  double du, dv;
-  int iMC;  // index of MCPoint in the vMCPoints array
-  double time = 0., dt = 1.e10;
-  int Det;
+/// Local structure for a hit, containing both measured and MC information.
+/// The structure is used to sort hits before writing them into L1 input arrays
+///
+struct TmpHit {
+  int iStripF;             ///< index of front strip
+  int iStripB;             ///< index of back strip
+  int iStation;            ///< index of station
+  int ExtIndex;            ///< index of hit in the external TClonesArray array (NOTE: negative for MVD)
+  double u_front, u_back;  ///< positions of strips
+  double x, y, z;          ///< position of hit (Cortesian coordinates)
+  double xmc, ymc, p;      ///< mc position of hit, total momentum
+  double tx, ty;           ///< mc slopes of the mc point
+  double dx, dy, dxy;      ///< hit position errors in Cortesian coordinates
+  double du, dv;           ///< hit position errors in strips coordinates
+  int iMC;                 ///< index of MCPoint in the vMCPoints array
+  double time = 0.;        ///< time of the hit 
+  double dt = 1.e10;       ///< time error of the hit
+  int Det;                 
   int id;
   int track;
 
+  /// Provides comparison of two hits. 
+  /// If two hits belong to different stations,
+  /// the smallest hit belongs to the station with the smallest index. Otherwise, the smallest hit
+  /// has the smallest y coordinate
+  /// \param  a  Left hit
+  /// \param  b  Right hit
+  /// \return boolean: true - the left hit is smaller then the right one
   static bool Compare(const TmpHit& a, const TmpHit& b)
   {
     return (a.iStation < b.iStation) || ((a.iStation == b.iStation) && (a.y < b.y));
   }
 
+  /// Creates a hit from the CbmL1MCPoint object
+  /// \param point  constant reference to the input MC-point
+  /// \param det
+  /// \param nTmpHits
+  /// \param nStripF
+  /// \param ip
+  /// \param NStrips 
+  /// \param st       reference to the station info object
+  // TODO: Probably, L1Station& st parameter should be constant. Do we really want to modify a station here? (S.Zharko)
   void CreateHitFromPoint(const CbmL1MCPoint& point, int det, int nTmpHits, int nStripF, int ip, int& NStrips,
                           L1Station& st)
   {
@@ -130,6 +150,12 @@ struct TmpHit {  // used for sort Hits before writing in the normal arrays
     iMC     = ip;
   }
 
+  /// Sets randomized position and time of the hit 
+  /// The positions are smeared within predefined errors dx, dy, dt; z coordinate
+  /// of the hit is known precisely
+  /// \param point  constant reference to the input MC-point
+  /// \param st     reference to the station info object
+  // TODO: Probably, L1Station& st parameter should be constant. Do we really want to modify a station here? (S.Zharko)
   void SetHitFromPoint(const CbmL1MCPoint& point, L1Station& st)
   {
     x       = 0.5 * (point.xIn + point.xOut) + gRandom->Gaus(0, dx);
@@ -141,7 +167,6 @@ struct TmpHit {  // used for sort Hits before writing in the normal arrays
   }
 };
 
-/// Repack data from Clones Arrays to L1 arrays
 void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, float& /*TsOverlap*/, int& FstHitinTs,
                       bool& areDataLeft, CbmEvent* event)
 {
@@ -152,15 +177,15 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   fData_->Clear();
 
   // clear arrays for next event
-  vMCPoints.clear();
-  vMCPoints_in_Time_Slice.clear();
-  vMCTracks.clear();
-  vStsHits.clear();
-  vRTracks.clear();
-  vHitMCRef.clear();
-  vHitStore.clear();
-  dFEI2vMCPoints.clear();
-  dFEI2vMCTracks.clear();
+  vMCPoints.clear();                /* <CbmL1MCPoint> */
+  vMCPoints_in_Time_Slice.clear();  /* <int>          */
+  vMCTracks.clear();                /* <CbmL1MCTrack> */ 
+  vStsHits.clear();                 /* <CbmL1Hit>     */
+  vRTracks.clear();                 /* <CbmL1Track>   */
+  vHitMCRef.clear();                /* <int>: indexes of MC-points in vMCPoints (by index of algo->vStsHits) */
+  vHitStore.clear();                /* <CbmL1HitStore> */
+  dFEI2vMCPoints.clear();           /* dFEI vs MC-point index: dFEI = index * 10000 + fileID + eventID * 0.0001 */
+  dFEI2vMCTracks.clear();           /* dFEI vs MC-track index: dFEI = index * 10000 + fileID + eventID * 0.0001 */
 
   if (fVerbose >= 10) cout << "ReadEvent: clear is done." << endl;
 
@@ -212,8 +237,18 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   int firstMuchPoint = 0;
   int firstTofPoint  = 0;
 
+  /*
+   * MC hits and tracks gathering: START
+   *
+   * If performance is studied, i.e. fPerformanse > 0, MC-information is used for
+   * efficiencies calculation. Otherwise this 
+   */
+
   if (fPerformance) {
+    // Fill vMCTracks and dFEI2vMCTracks
     Fill_vMCTracks();
+
+    // Fill vMCPoints, vMCPoints_in_Time_Slice and dFEI2vMCPoints
     vMCPoints.clear();
     vMCPoints.reserve(5 * vMCTracks.size() * NStation);
     vMCPoints_in_Time_Slice.clear();
@@ -223,6 +258,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       Int_t iFile  = set_it->first;
       Int_t iEvent = set_it->second;
 
+      // TODO: Probably to put this code in L1Algo interfaces (S.Zharko)
       if (fMvdPoints) {
         Int_t nMvdPointsInEvent = fMvdPoints->Size(iFile, iEvent);
         double maxDeviation     = 0;
@@ -230,7 +266,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 1)) {
             MC.iStation     = -1;
-            L1Station* sta  = algo->vStations;
+            L1Station* sta  = algo->vStations; // TODO: Wrap it into interface algo->GetStations() (S.Zharko)
             double bestDist = 1.e20;
             for (Int_t iSt = 0; iSt < NMvdStations; iSt++) {
               // use z_in since z_out is sometimes very wrong
@@ -447,10 +483,23 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
   }  //fPerformance
 
+  /*
+   * MC hits and tracks gathering: END
+   */
+
+  /*
+   * Measured hits gathering: START
+   *
+   * In this section the measured hits from different detector subsystems are reformatted according to TmpHit structure
+   * (NOTE: independent from particular detector design) and then pushed to the tmpHit vector. In the performance study mode
+   * matching with MC points is done
+   */
+
   int NStrips = 0;
 
+  //
   // get MVD hits
-
+  //
   if (listMvdHits) {
 
     int firstDetStrip = NStrips;
@@ -532,6 +581,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     }
   }
 
+  //
+  // Get STS hits
+  //
   if (listStsHits && (2 != fStsUseMcHit)) {
 
     Int_t nEntSts = (event ? event->GetNofData(ECbmDataType::kStsHit) : listStsHits->GetEntriesFast());
@@ -667,6 +719,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     }  // for j
   }    // if listStsHits
 
+  //
+  // Get MuCh hits
+  //
   if ((2 == fMuchUseMcHit) && fUseMUCH) {  // SG!! create TRD hits from TRD points
     int firstDetStrip = NStrips;
 
@@ -791,8 +846,10 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       nTrdHits++;
     }
   }
-
-
+  
+  //
+  // Get TRD hits
+  //
   if (fUseTRD && listTrdHits && (2 != fTrdUseMcHit)) {
     int firstDetStrip = NStrips;
     vector<bool> mcUsed(nTrdPoints, 0);
@@ -912,6 +969,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     }  // for j
   }    // if listTrdHits
 
+  //
+  // Get ToF hits
+  //
   if ((2 == fTofUseMcHit) && fUseTOF) {  // SG!! create TRD hits from TRD points
     int firstDetStrip = NStrips;
 
@@ -1039,13 +1099,24 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
               << nTrdHits << " tof " << nTofHits << endl;
   }
 
-  // sort hits
+  // total number of hits
   int nHits = nMvdHits + nStsHits + nMuchHits + nTrdHits + nTofHits;
 
+  /*
+   * Measured hits gathering: END
+   */
 
+  /*
+   * Hits sorting
+   *
+   * Two hits are compared as follows. If the hits are measured with two different stations, the smallest hit has the smallest
+   * station ID. If the hits are measured within one station, the smallest hit has the smallest y position coordinate.
+   */
   sort(tmpHits.begin(), tmpHits.end(), TmpHit::Compare);
 
-  // save strips in L1Algo
+  /*
+   * Save strips into L1Algo
+   */
   fData_->NStsStrips = NStrips;
   fData_->fStripFlag.reset(NStrips, 0);
   int maxHitIndex = 0;
@@ -1056,15 +1127,13 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     fData_->fStripFlag[th.iStripF] = flag;
     fData_->fStripFlag[th.iStripB] = flag;
     if (maxHitIndex < th.id) { maxHitIndex = th.id; }
-
   }  // ih
 
   if (fVerbose >= 10) { cout << "ReadEvent: strips are read." << endl; }
 
   /*
-   * Fill and then save vStsHits, vHitStore and vHitMCRef vectors as well as fData->vStsHits
+   * Fill and save vStsHits, vHitStore and vHitMCRef vectors as well as fData->vStsHits
    */
-
   int nEffHits = 0;
 
   SortedIndex.reset(maxHitIndex + 1);
@@ -1160,20 +1229,19 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
                 fData_->GetStsHitsStopIndex());
 
   if (fPerformance) {
-
     if (fVerbose >= 10) cout << "HitMatch is done." << endl;
     if (fVerbose >= 10) cout << "MCPoints and MCTracks are saved." << endl;
   }
-
   if (fVerbose >= 10) cout << "ReadEvent is done." << endl;
-
-
 }  // void CbmL1::ReadEvent()
-
-
+//
+//--------------------------------------------------------------------------------------------------
+//
 void CbmL1::Fill_vMCTracks()
 {
   vMCTracks.clear();
+  
+  // Count the total number of tracks in this event and reserve memory
   {
     Int_t nMCTracks = 0;
     for (DFSET::iterator set_it = vFileEvent.begin(); set_it != vFileEvent.end(); ++set_it) {
@@ -1185,21 +1253,19 @@ void CbmL1::Fill_vMCTracks()
   }
 
   int fileEvent = 0;
+  /* Loop over MC event */
   for (DFSET::iterator set_it = vFileEvent.begin(); set_it != vFileEvent.end(); ++set_it, ++fileEvent) {
     Int_t iFile  = set_it->first;
     Int_t iEvent = set_it->second;
 
     auto header = dynamic_cast<FairMCEventHeader*>(fMcEventHeader->Get(iFile, iEvent));
     assert(header);
-    if (fVerbose > 2) {
-      LOG(info) << "mc event vertex at " << header->GetX() << " " << header->GetY() << " " << header->GetZ();
-    }
 
     Int_t nMCTrack = fMCTracks->Size(iFile, iEvent);
-
+    /* Loop over MC tracks */
     for (Int_t iMCTrack = 0; iMCTrack < nMCTrack; iMCTrack++) {
       CbmMCTrack* MCTrack = L1_DYNAMIC_CAST<CbmMCTrack*>(fMCTracks->Get(iFile, iEvent, iMCTrack));
-      if (!MCTrack) continue;
+      if (!MCTrack) { continue; }
 
       int mother_ID = MCTrack->GetMotherId();
 
@@ -1215,6 +1281,7 @@ void CbmL1::Fill_vMCTracks()
         q    = TDatabasePDG::Instance()->GetParticle(pdg)->Charge() / 3.0;
         mass = TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
       }
+
 
       Int_t IND_Track = vMCTracks.size();  //or iMCTrack?
       CbmL1MCTrack T(mass, q, vr, vp, IND_Track, mother_ID, pdg);
@@ -1232,12 +1299,16 @@ void CbmL1::Fill_vMCTracks()
   }    //Links
 
 }  //Fill_vMCTracks
-
+//
+//--------------------------------------------------------------------------------------------------
+//
+// TODO: Probably, we should reduce code here, rewriting this funciton as a template from CbmMvdPoint (S.Zharko)
 bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int MVD)
 {
   TVector3 xyzI, PI, xyzO, PO;
   Int_t mcID    = -1;
   Double_t time = 0.f;
+
   if (MVD == 1) {
     CbmMvdPoint* pt = L1_DYNAMIC_CAST<CbmMvdPoint*>(fMvdPoints->Get(file, event, iPoint));  // file, event, object
     //CbmMvdPoint *pt = L1_DYNAMIC_CAST<CbmMvdPoint*> (Point);
@@ -1388,12 +1459,13 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
 
   return 0;
 }
-
+//
+//--------------------------------------------------------------------------------------------------
+//
 bool CbmL1::ReadMCPoint(CbmL1MCPoint* /*MC*/, int /*iPoint*/, int /*MVD*/) { return 0; }
-
-/// Procedure for match hits and MCPoints.
-/// Read information about correspondence between hits and mcpoints and fill CbmL1MCPoint::hitIds and CbmL1Hit::mcPointIds arrays
-/// should be called after fill of algo
+//
+//--------------------------------------------------------------------------------------------------
+//
 void CbmL1::HitMatch()
 {
   const int NHits = vStsHits.size();

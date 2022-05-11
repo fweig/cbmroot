@@ -700,9 +700,9 @@ inline void L1Algo::f30(  // input
       if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
       // extrapolate to the right hit station
       {
-        if (istar <= fNfieldStations) L1Extrapolate(T2, star.z, T2.qp, f2);
+        if (istar <= fNfieldStations) L1Extrapolate(T2, star.z, T2.qp, f2); // Full extrapolation in the magnetic field
         else
-          L1ExtrapolateLine(T2, star.z);
+          L1ExtrapolateLine(T2, star.z); // Extrapolation with line ()
       }
       else
         L1Extrapolate(T2, star.z, T2.qp, f2);
@@ -715,7 +715,7 @@ inline void L1Algo::f30(  // input
         if (fabs(T2.tx[i2_4]) > fMaxSlope) continue;
         if (fabs(T2.ty[i2_4]) > fMaxSlope) continue;
 
-        const fvec Pick_r22    = (fTripletChi2Cut - T2.chi2);
+        const fvec Pick_r22    =  (fTripletChi2Cut - T2.chi2);
         const float& timeError = T2.C55[i2_4];
         const float& time      = T2.t[i2_4];
         // find first possible hit
@@ -746,7 +746,7 @@ inline void L1Algo::f30(  // input
           //for (int irh = 0; irh < ( StsHitsUnusedStopIndex[istar] - StsHitsUnusedStartIndex[istar] ); irh++){
           const L1HitPoint& hitr = vStsHits_r[irh];
 
-#ifdef USE_EVENT_NUMBER
+#ifdef USE_EVENT_NUMBER // NOTE: 
           if ((T2.n[i2_4] != hitr.n)) continue;
 #endif  // USE_EVENT_NUMBER
           const fscal zr = hitr.Z();
@@ -2519,9 +2519,9 @@ void L1Algo::CATrackFinder()
   c_timerG.Start();
 #endif
 
-#ifdef MERGE_CLONES
-  CAMergeClones();
-#endif
+  if constexpr (L1Parameters::kIfMergeClones) {
+    CAMergeClones();
+  }
 
 #ifdef XXX
   c_timerG.Stop();

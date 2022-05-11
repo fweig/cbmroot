@@ -142,7 +142,7 @@ public:
 
   ~CbmL1(/*if (targetFieldSlice) delete;*/);
 
-  /// Gets a pointer to L1InitManager (for access in run_reco.C)
+  /// Gets a pointer to L1InitManager (for an access in run_reco.C)
   L1InitManager* GetInitManager() { return fpInitManager; }
   /// Gets a set of active detectors used in tracking
   // TODO: think about return (value, reference or const reference?) (S.Zh.)
@@ -180,6 +180,8 @@ public:
   //   void SetGhostSuppression( Bool_t b ){ fGhostSuppression= b; }
   //   void SetDetectorEfficiency( Double_t eff ){ fDetectorEfficiency = eff; }
 
+  /// Reconstructs an event
+  /// \param event  Pointer to current CbmEvent object
   void Reconstruct(CbmEvent* event = NULL);
 
   //  bool ReadMCDataFromFile(const char work_dir[100], const int maxNEvent, const int iVerbose);
@@ -201,17 +203,49 @@ private:
 
   /// Read information about hits, mcPoints and mcTracks into L1 classes
 
+  /// Repacks data from the external TClonesArray objects to the internal L1 arrays
+  /// \param fData_       Pointer to the target object containig L1Algo internal arrays of hits
+  /// \param TsStart      Reference to the timeslice start time
+  /// \param TsLength     Reference to the timeslice length
+  /// \param TsOverlap    Reference to the timeslice overlap length (does not used at the moment)
+  /// \param FstHitinTs   Index of the first hit in the time-lice
+  /// \param areDataLeft  Flag: true - data were left after reading the sub-timeslice
+  /// \param event        Pointer to the current CbmEvent object
   void ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, float& TsOverlap, int& FstHitinTs,
                  bool& areDataLeft, CbmEvent* event = NULL);
 
+  /// Converts data from generic FairMCPoint based class to the CbmL1MCPoint (dummy method)
+  /// \param   MC       Pointer to a target CbmL1MCPoint object
+  /// \param   iPoint   Index of the point into the input MC points CbmMCDataArray object for the particular detector
+  /// \param   MVD      Index of the detector subsystem
+  /// \return  flag: false - success, true - some errors occured
   bool ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int MVD);  // help procedure
+  
+  /// Converts data from generic FairMCPoint based class to the CbmL1MCPoint
+  /// \param   MC       Pointer to a target CbmL1MCPoint object
+  /// \param   iPoint   Index of the point into the input MC points CbmMCDataArray object for the particular detector
+  /// \param   file     Index of the input file
+  /// \param   event    Index of the input event
+  /// \param   MVD      Index of the detector subsystem
+  /// \return  flag: false - success, true - some errors occured
+  // TODO: Probably, we should replace input parameter MVD with the template  (S.Zharko)
   bool ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int MVD);
+  
   //   static bool compareZ(const int &a, const int &b );
   //   bool compareZ(const int &a, const int &b );
+  
+  /// Fills the vMCTracks vector and the dFEI2vMCTracks set
   void Fill_vMCTracks();
 
-  /// Input Performance
-  void HitMatch();            // Procedure for match hits and MCPoints.
+  /*
+   * Input Performance
+   */
+
+  /// Procedure for match hits and MCPoints.
+  /// Reads information about correspondence between hits and mcpoints and fill CbmL1MCPoint::hitIds and CbmL1Hit::mcPointIds arrays
+  /// should be called after fill of algo
+  void HitMatch();
+
   void FieldApproxCheck();    // Build histos with difference between Field map and approximated field
   void FieldIntegralCheck();  // Build 2D histo: dependence of the field integral on phi and theta
   void InputPerformance();    // Build histos about input data, like hit pulls, etc.
