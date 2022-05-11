@@ -62,4 +62,15 @@ else()
   add_library(NICAFEMTO SHARED IMPORTED GLOBAL)
   add_library(KFPARTICLE SHARED IMPORTED GLOBAL)
   add_library(external::yaml-cpp STATIC IMPORTED GLOBAL)
+  set_target_properties(external::yaml-cpp PROPERTIES
+                        IMPORTED_LOCATION external::yaml-cpp-NOTFOUND
+             )
+  add_library(external::fles_ipc STATIC IMPORTED GLOBAL)
+  set_target_properties(external::fles_ipc PROPERTIES
+                        IMPORTED_LOCATION external::fles_ipc-NOTFOUND
+                       )
+  add_library(external::fles_logging STATIC IMPORTED GLOBAL)
+  set_target_properties(external::fles_logging PROPERTIES
+                        IMPORTED_LOCATION external::fles_logging-NOTFOUND
+             )
 endif()
