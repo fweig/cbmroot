@@ -3,9 +3,10 @@
 # The included libraries provide the interface to the experiment data in timeslices
 # both online and in timeslice archive (.tsa) files.
 
-set(FLESNET_VERSION b1b8c37d6db9a66122ee375bea608c6c6e848665) # 2022-02-24
+set(FLESNET_VERSION b503c3ce500c1b25894c393ff4bae2f5ba058a22) # 2022-06-10
 
 set(FLESNET_SRC_URL "https://github.com/cbm-fles/flesnet")
+
 set(FLESNET_DESTDIR "${PROJECT_BINARY_DIR}/external/flesnet-prefix")
 
 download_project_if_needed(
@@ -22,13 +23,24 @@ If(ProjectUpdated)
   Message("flesnet source directory was changed so build directory was deleted")
 EndIf()
 
+if(APPLE)
+  execute_process(COMMAND brew --prefix --installed openssl
+                  RESULT_VARIABLE OPENSSL_FOUND
+                  OUTPUT_VARIABLE OPENSSL_PATH
+                  OUTPUT_STRIP_TRAILING_WHITESPACE
+                 )
+endif()
+
 ExternalProject_Add(
   flesnet
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/flesnet
-  CMAKE_CACHE_ARGS -DINCLUDE_ZMQ:BOOL=TRUE -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+  CMAKE_CACHE_ARGS
+  -DINCLUDE_ZMQ:BOOL=TRUE
+  -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+  -DOPENSSL_ROOT_DIR:FILEPATH=${OPENSSL_PATH}
   BUILD_IN_SOURCE 0
   LOG_DOWNLOAD 1 LOG_CONFIGURE 1 LOG_BUILD 1 LOG_INSTALL 1
-  BUILD_COMMAND ${CMAKE_COMMAND} --build . --target logging fles_ipc
+  BUILD_COMMAND ${CMAKE_COMMAND} --build . -j 1 --target logging fles_ipc
   BUILD_BYPRODUCTS ${FLESNET_DESTDIR}/src/flesnet-build/lib/fles_ipc/${CMAKE_STATIC_LIBRARY_PREFIX}fles_ipc${CMAKE_STATIC_LIBRARY_SUFFIX}
   INSTALL_COMMAND ""
 )
@@ -50,7 +62,45 @@ target_compile_definitions(external::fles_logging
 
 add_library(external::fles_ipc STATIC IMPORTED GLOBAL)
 add_dependencies(external::fles_ipc flesnet external::fles_logging)
+
+set(dir_to_link
+    ${FLESNET_DESTDIR}/src/flesnet-build/src/zeromq-build/lib/${CMAKE_STATIC_LIBRARY_PREFIX}zmq${CMAKE_STATIC_LIBRARY_SUFFIX}
+   )
+find_package("GnuTLS" 3.6.7)
+if(GNUTLS_FOUND)
+  list(APPEND dir_to_link
+       ${GNUTLS_LIBRARIES}
+      )
+endif()
+list(APPEND dir_to_link
+     ${FLESNET_DESTDIR}/src/flesnet-build/lib/logging/${CMAKE_STATIC_LIBRARY_PREFIX}logging${CMAKE_STATIC_LIBRARY_SUFFIX}
+    )
+list(APPEND dir_to_link
+     ${Boost_LOG_LIBRARY}
+     ${Boost_FILESYSTEM_LIBRARY}
+     ${Boost_REGEX_LIBRARY}
+     ${Boost_SERIALIZATION_LIBRARY}     
+    )
+if(NOT APPLE)
+  list(APPEND dir_to_link ${Boost_THREAD_LIBRARY})
+endif()
+
 set_target_properties(external::fles_ipc PROPERTIES
   IMPORTED_LOCATION ${FLESNET_DESTDIR}/src/flesnet-build/lib/fles_ipc/${CMAKE_STATIC_LIBRARY_PREFIX}fles_ipc${CMAKE_STATIC_LIBRARY_SUFFIX}
   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/flesnet/lib/fles_ipc
+  IMPORTED_LINK_INTERFACE_LIBRARIES "${dir_to_link}"
 )
+
+
+
+Install(FILES ${FLESNET_DESTDIR}/src/flesnet-build/lib/fles_ipc/${CMAKE_STATIC_LIBRARY_PREFIX}fles_ipc${CMAKE_STATIC_LIBRARY_SUFFIX}
+              ${FLESNET_DESTDIR}/src/flesnet-build/lib/shm_ipc/${CMAKE_STATIC_LIBRARY_PREFIX}shm_ipc${CMAKE_STATIC_LIBRARY_SUFFIX}
+              ${FLESNET_DESTDIR}/src/flesnet-build/src/zeromq-build/lib/${CMAKE_STATIC_LIBRARY_PREFIX}zmq${CMAKE_STATIC_LIBRARY_SUFFIX}
+        DESTINATION lib
+       )
+
+file(GLOB LIB_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/flesnet/lib/fles_ipc/*.hpp)
+
+Install(FILES ${LIB_HEADERS}
+        DESTINATION include
+       )
