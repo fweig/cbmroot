@@ -1849,7 +1849,10 @@ void CbmL1::Finish()
 
   // Open output file and write histograms
   boost::filesystem::path p = (FairRunAna::Instance()->GetUserOutputFileName()).Data();
-  std::string histoOutName  = p.parent_path().string() + "/L1_histo_" + p.filename().string();
+  std::string dir           = p.parent_path().string();
+  if (dir.empty()) dir = ".";
+  std::string histoOutName = dir + "/L1_histo_" + p.filename().string();
+
   LOG(info) << "\033[31;1mHistograms will be saved to: \033[0m" << histoOutName;
 
   TFile* outfile = new TFile(histoOutName.c_str(), "RECREATE");
