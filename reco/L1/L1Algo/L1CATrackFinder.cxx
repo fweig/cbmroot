@@ -187,8 +187,8 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 
     // estimate field for singlet creation
     int istac = istal / 2;  // "center" station
-    //     if (istal >= NMvdStations) // to make it in the same way for both with and w\o mvd
-    //       istac = (istal-NMvdStations)/2+NMvdStations;
+    //     if (istal >= fNstationsBeforePipe) // to make it in the same way for both with and w\o mvd
+    //       istac = (istal - fNstationsBeforePipe) / 2 + fNstationsBeforePipe;
     L1Station& stac = fStations[istac];
     fvec zstac      = stac.z;
 
@@ -333,7 +333,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
       else {
         fit.L1AddMaterial(T, fStations[ista].materialInfo, fMaxInvMom, 1);
       }
-      if (ista == NMvdStations - 1) fit.L1AddPipeMaterial(T, fMaxInvMom, 1);
+      if (ista == fNstationsBeforePipe - 1) fit.L1AddPipeMaterial(T, fMaxInvMom, 1);
     }
 
     // add left hit
@@ -372,7 +372,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     else {
       fit.L1AddMaterial(T, stal.materialInfo, fMaxInvMom, 1);
     }
-    if ((istam >= NMvdStations) && (istal <= NMvdStations - 1)) { fit.L1AddPipeMaterial(T, fMaxInvMom, 1); }
+    if ((istam >= fNstationsBeforePipe) && (istal <= fNstationsBeforePipe - 1)) { fit.L1AddPipeMaterial(T, fMaxInvMom, 1); }
 
     fvec dz = zstam - zl;
     L1ExtrapolateTime(T, dz, stam.timeInfo);
@@ -694,7 +694,7 @@ inline void L1Algo::f30(  // input
       else {
         fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, 1);
       }
-      if ((istar >= NMvdStations) && (istam <= NMvdStations - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
+      if ((istar >= fNstationsBeforePipe) && (istam <= fNstationsBeforePipe - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
 
       fvec dz2 = star.z - T2.z;
       L1ExtrapolateTime(T2, dz2, stam.timeInfo);
@@ -1039,7 +1039,7 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
       else {
         fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
       }
-      if (ista[ih] == NMvdStations - 1) fit.L1AddPipeMaterial(T, T.qp, 1);
+      if (ista[ih] == fNstationsBeforePipe - 1) fit.L1AddPipeMaterial(T, T.qp, 1);
 
       L1Filter(T, sta[ih].frontInfo, u[ih]);
       L1Filter(T, sta[ih].backInfo, v[ih]);
@@ -1075,7 +1075,7 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
         else {
           fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
         }
-        if (ista[ih] == NMvdStations) fit.L1AddPipeMaterial(T, T.qp, 1);
+        if (ista[ih] == fNstationsBeforePipe) fit.L1AddPipeMaterial(T, T.qp, 1);
 
         L1Filter(T, sta[ih].frontInfo, u[ih]);
         L1Filter(T, sta[ih].backInfo, v[ih]);
@@ -1107,7 +1107,7 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
         else {
           fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
         }
-        if (ista[ih] == NMvdStations + 1) fit.L1AddPipeMaterial(T, T.qp, 1);
+        if (ista[ih] == fNstationsBeforePipe + 1) fit.L1AddPipeMaterial(T, T.qp, 1);
 
         L1Filter(T, sta[ih].frontInfo, u[ih]);
         L1Filter(T, sta[ih].backInfo, v[ih]);
@@ -1894,8 +1894,8 @@ void L1Algo::CATrackFinder()
         float SigmaTargetX = caIteration.GetTargetPosSigmaX();
         float SigmaTargetY = caIteration.GetTargetPosSigmaY();  // target constraint [cm]
 
-        // Select magnetic field. For primary tracks - vtxFieldValue, for secondary tracks - st.fieldSlice
-        if (caIteration.IsPrimary()) { fTargB = vtxFieldValue; }
+        // Select magnetic field. For primary tracks - fVtxFieldValue, for secondary tracks - st.fieldSlice
+        if (caIteration.IsPrimary()) { fTargB = fVtxFieldValue; }
         else {
           fStations[0].fieldSlice.GetFieldValue(0, 0, fTargB);
         }  // NOTE: calculates field fTargB in the center of 0th station
@@ -1903,7 +1903,7 @@ void L1Algo::CATrackFinder()
 
         //if ((isec == kFastPrimIter) || (isec == kFastPrimIter2) || (isec == kFastPrimJumpIter) || (isec == kAllPrimIter)
         //    || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter)) {  // target
-        //  fTargB = vtxFieldValue;
+        //  fTargB = fVtxFieldValue;
         //  if ((isec == kFastPrimIter) || (isec == kAllPrimIter) || (isec == kAllPrimEIter))
         //    SigmaTargetX = SigmaTargetY = 1;  // target
         //  else

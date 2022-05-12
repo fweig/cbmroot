@@ -954,7 +954,10 @@ InitStatus CbmL1::Init()
 
     // Step 4: initialize IDs of detectors active in tracking
     // TODO: temporary for tests, must be initialized somewhere in run_reco.C or similar (S.Zh.)
-    fActiveTrackingDetectorIDs = {L1DetectorID::kMvd, L1DetectorID::kSts};
+    if (fUseMVD)  { fActiveTrackingDetectorIDs.insert(L1DetectorID::kMvd); }
+    if (fUseMUCH) { fActiveTrackingDetectorIDs.insert(L1DetectorID::kMuch); }
+    if (fUseTRD)  { fActiveTrackingDetectorIDs.insert(L1DetectorID::kTrd); }
+    if (fUseTOF)  { fActiveTrackingDetectorIDs.insert(L1DetectorID::kTof); }
     fpInitManager->SetActiveDetectorIDs(fActiveTrackingDetectorIDs);
 
     constexpr double PI = 3.14159265358;  // TODO: why cmath is not used? (S.Zh.)
@@ -1265,7 +1268,7 @@ InitStatus CbmL1::Init()
       TDirectory* oldDir = gDirectory;
       TFile* rlFile      = new TFile(fMvdMatBudgetFileName);
       cout << "MVD Material budget file is " << fMvdMatBudgetFileName << ".\n";
-      for (int j = 0, iSta = 0; iSta < algo->NMvdStations; iSta++, j++) {
+      for (int j = 0, iSta = 0; iSta < algo->GetNstationsBeforePipe(); iSta++, j++) {
         TString stationNameMvd = stationName;
         stationNameMvd += j;
         TProfile2D* hStaRadLen = (TProfile2D*) rlFile->Get(stationNameMvd);
@@ -1305,7 +1308,7 @@ InitStatus CbmL1::Init()
     else {
       LOG(warn) << "No MVD material budget file is found. Homogenious budget "
                    "will be used";
-      for (int iSta = 0; iSta < algo->NMvdStations; iSta++) {
+      for (int iSta = 0; iSta < algo->GetNstationsBeforePipe(); iSta++) {
         algo->fRadThick[iSta].SetBins(1,
                                       100);  // mvd should be in +-100 cm square
         algo->fRadThick[iSta].table.resize(1);
@@ -1320,7 +1323,7 @@ InitStatus CbmL1::Init()
     TDirectory* oldDir = gDirectory;
     TFile* rlFile      = new TFile(fStsMatBudgetFileName);
     cout << "STS Material budget file is " << fStsMatBudgetFileName << ".\n";
-    for (int j = 1, iSta = algo->NMvdStations; iSta < (algo->NMvdStations + NStsStations); iSta++, j++) {
+    for (int j = 1, iSta = algo->GetNstationsBeforePipe(); iSta < (algo->GetNstationsBeforePipe() + NStsStations); iSta++, j++) {
       TString stationNameSts = stationName;
       stationNameSts += j;
       TProfile2D* hStaRadLen = (TProfile2D*) rlFile->Get(stationNameSts);
@@ -1355,7 +1358,7 @@ InitStatus CbmL1::Init()
   else {
     LOG(warn) << "No STS material budget file is found. Homogenious budget "
                  "will be used";
-    for (int iSta = algo->NMvdStations; iSta < (algo->NMvdStations + NStsStations); iSta++) {
+    for (int iSta = algo->GetNstationsBeforePipe(); iSta < (algo->GetNstationsBeforePipe() + NStsStations); iSta++) {
       algo->fRadThick[iSta].SetBins(1, 100);
       algo->fRadThick[iSta].table.resize(1);
       algo->fRadThick[iSta].table[0].resize(1);
@@ -1556,7 +1559,6 @@ void CbmL1::Exec(Option_t* /*option*/) {}
 
 void CbmL1::Reconstruct(CbmEvent* event)
 {
-  fVerbose = 11; // TODO: Remove it (tmp)! (S.Zharko)
   static int nevent = 0;
   vFileEvent.clear();
 

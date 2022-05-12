@@ -94,8 +94,8 @@ enum class L1DetectorID
   kMvd,
   kSts,
   kMuch,
-  kTof,
-  kTrd
+  kTrd,
+  kTof
 };
 
 // TODO: insert documentation! (S.Zh.)
@@ -294,8 +294,7 @@ private:
 
   L1InitManager* fpInitManager {nullptr};  ///< Pointer to L1InitManager object of L1 algorithm core
 
-  std::set<L1DetectorID> fActiveTrackingDetectorIDs {L1DetectorID::kMvd,
-                                                     L1DetectorID::kSts};  ///< Set of detectors active in tracking
+  std::set<L1DetectorID> fActiveTrackingDetectorIDs {L1DetectorID::kSts};  ///< Set of detectors active in tracking
 
   L1AlgoInputData* fData {nullptr};
 

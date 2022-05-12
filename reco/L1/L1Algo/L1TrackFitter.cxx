@@ -142,7 +142,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
             fit.L1AddMaterial(T, sta.materialInfo, qp0, ONE);
           }
 
-          //         if (ista==NMvdStations-1) fit.L1AddPipeMaterial( T, qp0, 1);
+          //         if (ista == fNstationsBeforePipe - 1) fit.L1AddPipeMaterial( T, qp0, 1);
 
           fvec u = hit.u;
           fvec v = hit.v;
@@ -280,7 +280,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
           else {
             fit.L1AddMaterial(T, sta.materialInfo, qp0, ONE);
           }
-          //           if (ista==NMvdStations) fit.L1AddPipeMaterial( T, qp0, 1);
+          //           if (ista == fNstationsBeforePipe) fit.L1AddPipeMaterial( T, qp0, 1);
           L1Filter(T, sta.frontInfo, u);
           L1Filter(T, sta.backInfo, v);
 
@@ -394,7 +394,7 @@ void L1Algo::L1KFTrackFitter()
         const int ista   = (*fStripFlag)[hit.f] / 4;
         iSta[i]          = ista;
         w[ista][iVec]    = 1.;
-        if (ista > NMvdStations) w_time[ista][iVec] = 1.;
+        if (ista > fNstationsBeforePipe) w_time[ista][iVec] = 1.;
 
         u[ista][iVec]   = hit.u;
         v[ista][iVec]   = hit.v;
@@ -512,7 +512,7 @@ void L1Algo::L1KFTrackFitter()
 
         L1Extrapolate(T, z[i], qp0, fld, &w1);
 
-        if (i == NMvdStations - 1) {
+        if (i == fNstationsBeforePipe - 1) {
 
           fit.L1AddPipeMaterial(T, qp0, wIn);
           fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(1.f), wIn);
@@ -674,7 +674,7 @@ void L1Algo::L1KFTrackFitter()
 
         // T1.ExtrapolateLine( z[i]);
 
-        if (i == NMvdStations) {
+        if (i == fNstationsBeforePipe) {
           fit.L1AddPipeMaterial(T, qp0, wIn);
           fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(-1.f), wIn);
 
@@ -952,7 +952,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
           T1.Extrapolate(z[i], qp01, fld, &w1);
 
-          if (i == NMvdStations) {
+          if (i == fNstationsBeforePipe) {
             fit.L1AddPipeMaterial(T, qp0, wIn);
             fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(-1.f), wIn);
 

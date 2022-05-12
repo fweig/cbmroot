@@ -140,8 +140,8 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
     L1ExtrapolateTime(T, dz);
 
     fit.L1AddMaterial(T, sta.materialInfo, qp0, 1);
-    if ((step * ista <= step * (NMvdStations + (step + 1) / 2 - 1))
-        && (step * ista_prev >= step * (NMvdStations + (step + 1) / 2 - 1 - step)))
+    if ((step * ista <= step * (fNstationsBeforePipe + (step + 1) / 2 - 1))
+        && (step * ista_prev >= step * (fNstationsBeforePipe + (step + 1) / 2 - 1 - step)))
       fit.L1AddPipeMaterial(T, qp0, 1);
 
     fvec u = hit.u;

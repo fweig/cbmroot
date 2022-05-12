@@ -221,7 +221,7 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
     mc_length_hits.counters[index] += _mc_length_hits;
   };
 
-  void PrintEff(const std::string& nameOfTable = "efficiency_table")
+  void PrintEff(bool ifPrintTableToLog = false, const std::string& nameOfTable = "efficiency_table")
   {
     L1_assert(nEvents != 0);
 
@@ -272,7 +272,9 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
       aTable->SetCell(iC, 7, mc_length_hits.counters[iC] / double(mc.counters[iC]));
       aTable->SetCell(iC, 8, mc_length.counters[iC] / double(mc.counters[iC]));
     }
-    cout << *aTable;  // print a table to log
+    if (ifPrintTableToLog) {
+      cout << *aTable;  // print a table to log
+    }
     cout << "Ghost     probability  : " << ratio_ghosts << "  | " << ghosts << endl;
 
     gDirectory = curdir;
@@ -464,7 +466,7 @@ void CbmL1::EfficienciesPerformance()
     }  // fVerbose > 1
     cout << endl;
     cout << "L1 ACCUMULATED STAT    : " << L1_NEVENTS << " EVENTS " << endl << endl;
-    L1_NTRA.PrintEff();
+    L1_NTRA.PrintEff(/*ifPrintTableToLog = */ true);
     cout << "MC tracks/event found  : "
          << int(double(L1_NTRA.reco.counters[L1_NTRA.indices["total"]]) / double(L1_NEVENTS)) << endl;
     cout << endl;
@@ -1200,7 +1202,7 @@ void CbmL1::TrackFitPerformance()
       }
       if (ih < 3) continue;
       CbmL1MCPoint& mcP = vMCPoints[mc.Points[0]];
-      targB             = algo->vtxFieldValue;
+      targB             = algo->GetVtxFieldValue();
       fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
       L1Extrapolate(trPar, mcP.zIn, trPar.qp, fld);
 
@@ -1311,7 +1313,7 @@ void CbmL1::TrackFitPerformance()
       }
       if (ih < 3) continue;
       CbmL1MCPoint& mcP = vMCPoints[iMC];
-      targB             = algo->vtxFieldValue;
+      targB             = algo->GetVtxFieldValue();
       fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
       L1Extrapolate(trPar, mcP.zOut, trPar.qp, fld);
 
@@ -1431,7 +1433,7 @@ void CbmL1::TrackFitPerformance()
           L1FieldValue B[3], targB _fvecalignment;
           float z[3];
 
-          targB = algo->vtxFieldValue;
+          targB = algo->GetVtxFieldValue();
 
           int ih = 1;
           for (unsigned int iHit = 0; iHit < it->StsHits.size(); iHit++) {

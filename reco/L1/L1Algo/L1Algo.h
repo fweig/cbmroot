@@ -79,10 +79,13 @@ class L1AlgoEfficiencyPerformance;
 #endif
 typedef int Tindex;
 
+using L1StationsArray_t = std::array<L1Station, L1Parameters::kMaxNstations>;
+
 /// Central class of L1 tracking
 ///
 class L1Algo {
 public:
+
   L1Algo(unsigned int nThreads = 1);
 
   L1Algo(const L1Algo&) = delete;
@@ -220,24 +223,22 @@ public:
   void SetNThreads(unsigned int n);
 
 private:
-  int fNstations {0};        ///< number of all detector stations
+  int fNstations {0};                      ///< number of all detector stations
+  int fNstationsBeforePipe {0};            ///< number of stations before pipe (MVD stations in CBM)
+  int fNfieldStations {0};                 ///< number of stations in the field region
+  alignas(16) L1StationsArray_t fStations; ///< array of L1Station objects
+
 public:
-  
+  /// Gets total number of stations used in tracking
   int GetNstations() const { return fNstations; } 
+  /// Gets number of stations before the pipe (MVD stations in CBM)
+  int GetNstationsBeforePipe() const { return fNstationsBeforePipe; }
+  /// Gets number of stations situated in field region (MVD + STS in CBM)
+  int GetNfieldStations() const { return fNfieldStations;}
+  /// Gets reference to the stations array
+  const L1StationsArray_t& GetStations() const { return fStations; }
 
-  int NMvdStations {0};     ///< number of mvd stations
-  int NStsStations {0};     ///< number of sts stations
-  int fNfieldStations {0};  ///< number of stations in the field region
-
-
-
-  // TODO: Replace _fvecalignment with C++11 alignas(16) attibute, see vStationsNew (S.Zh.)
-  //L1Station vStations[L1Parameters::kMaxNstations] _fvecalignment;  // station info
-
-private:
-  alignas(16) std::array<L1Station, L1Parameters::kMaxNstations> fStations;
 public:
-  const std::array<L1Station, L1Parameters::kMaxNstations>& GetStations() const { return fStations; }
   
   
   L1Vector<L1Material> fRadThick {"fRadThick"};        // material for each station
@@ -357,8 +358,8 @@ public:
 
   friend class CbmL1;
 
-  const L1FieldValue& GetVtxFieldValue() const { return vtxFieldValue; }
-  const L1FieldRegion& GetVtxFieldRegion() const { return vtxFieldRegion; }
+  const L1FieldValue& GetVtxFieldValue() const { return fVtxFieldValue; }
+  const L1FieldRegion& GetVtxFieldRegion() const { return fVtxFieldRegion; }
   /// ----- Hit-point-strips conversion routines ------
 
   void GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta);
@@ -702,14 +703,14 @@ private:
   L1XYMeasurementInfo TargetXYInfo _fvecalignment {};  // target constraint  [cm]
 
 
-  L1FieldRegion vtxFieldRegion _fvecalignment {};  // really doesn't used
-  L1FieldValue vtxFieldValue _fvecalignment {};    // field at teh vertex position.
+  L1FieldRegion fVtxFieldRegion _fvecalignment {};  // really doesn't used
+  L1FieldValue fVtxFieldValue _fvecalignment {};    // field at teh vertex position.
 
   //  int TripNumThread;
 
-  int fTrackingLevel {0};     // currently not used
-  int fGhostSuppression {0};  // currently not used
-  float fMomentumCutOff {0};  // currently not used
+  int fTrackingLevel    {2};  // currently not used
+  int fGhostSuppression {1};  // currently not used
+  float fMomentumCutOff {0.2};  // currently not used
 
   /// ----- Debug features -----
 #ifdef PULLS

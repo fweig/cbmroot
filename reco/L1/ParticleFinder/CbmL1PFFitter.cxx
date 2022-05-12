@@ -93,7 +93,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
 
   FairRootManager* fManger  = FairRootManager::Instance();
   TClonesArray* listStsHits = (TClonesArray*) fManger->GetObject("StsHit");
-  int NMvdStations          = CbmL1::Instance()->algo->NMvdStations;
+  int NMvdStations          = CbmL1::Instance()->algo->GetNstationsBeforePipe();
   TClonesArray* listMvdHits = 0;
   if (NMvdStations > 0.) listMvdHits = (TClonesArray*) fManger->GetObject("MvdHit");
 
@@ -406,7 +406,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
   CbmStsTrack* t[fvecLen];
 
   int nStations    = CbmL1::Instance()->algo->GetNstations();
-  int NMvdStations = CbmL1::Instance()->algo->NMvdStations;
+  int NMvdStations = CbmL1::Instance()->algo->GetNstationsBeforePipe();
   const L1Station* sta   = CbmL1::Instance()->algo->GetStations().begin();
   fvec* zSta       = new fvec[nStations];
   for (int iSta = 0; iSta < nStations; iSta++)
@@ -572,7 +572,7 @@ void CbmL1PFFitter::CalculateFieldRegion(vector<CbmStsTrack>& Tracks, vector<L1F
   FairRootManager* fManger  = FairRootManager::Instance();
   TClonesArray* listStsHits = (TClonesArray*) fManger->GetObject("StsHit");
   TClonesArray* listMvdHits = 0;
-  int NMvdStations          = CbmL1::Instance()->algo->NMvdStations;
+  int NMvdStations          = CbmL1::Instance()->algo->GetNstationsBeforePipe();
   if (NMvdStations > 0.) listMvdHits = (TClonesArray*) fManger->GetObject("MvdHit");
 
   int nTracks_SIMD = fvecLen;
@@ -644,7 +644,7 @@ void CbmL1PFFitter::CalculateFieldRegionAtLastPoint(vector<CbmStsTrack>& Tracks,
   FairRootManager* fManger  = FairRootManager::Instance();
   TClonesArray* listStsHits = (TClonesArray*) fManger->GetObject("StsHit");
   TClonesArray* listMvdHits = 0;
-  int NMvdStations          = CbmL1::Instance()->algo->NMvdStations;
+  int NMvdStations          = CbmL1::Instance()->algo->GetNstationsBeforePipe();
   if (NMvdStations > 0.) listMvdHits = (TClonesArray*) fManger->GetObject("MvdHit");
 
   int nTracks_SIMD = fvecLen;
