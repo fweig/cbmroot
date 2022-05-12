@@ -37,6 +37,7 @@ L1CAIteration::L1CAIteration(const L1CAIteration& other) noexcept
   , fMaxDZ(other.fMaxDZ)
   , fTargetPosSigmaX(other.fTargetPosSigmaX)
   , fTargetPosSigmaY(other.fTargetPosSigmaY)
+  , fMinLevelTripletStart(other.fMinLevelTripletStart)
 {
   LOG(debug) << "L1CAIteration: Copy constructor called: " << &other << " was copied into " << this;
 }
@@ -116,6 +117,7 @@ void L1CAIteration::Swap(L1CAIteration& other) noexcept
   std::swap(fMaxDZ, other.fMaxDZ);
   std::swap(fTargetPosSigmaX, other.fTargetPosSigmaX);
   std::swap(fTargetPosSigmaY, other.fTargetPosSigmaY);
+  std::swap(fMinLevelTripletStart, other.fMinLevelTripletStart);
 }
 //
 //----------------------------------------------------------------------------------------------------------------------
@@ -138,7 +140,8 @@ std::string L1CAIteration::ToString(int indentLevel) const
   aStream << indent << indentChar << "Max slope:                    " << fMaxSlope << '\n';
   aStream << indent << indentChar << "Max DZ:                       " << fMaxDZ << '\n';
   aStream << indent << indentChar << "Target position sigma X [cm]: " << fTargetPosSigmaX << '\n';
-  aStream << indent << indentChar << "Target position sigma Y [cm]: " << fTargetPosSigmaY;
+  aStream << indent << indentChar << "Target position sigma Y [cm]: " << fTargetPosSigmaY << '\n';
+  aStream << indent << indentChar << "Min level for triplet start:  " << fMinLevelTripletStart;
 
   return aStream.str();
 }

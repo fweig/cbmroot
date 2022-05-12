@@ -325,7 +325,6 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     else
       L1Extrapolate0(T, zl, fld0);
 
-
     for (int ista = 0; ista <= istal - 1; ista++) {
       if constexpr (L1Parameters::kIfUseRadLengthTable) {
         fit.L1AddMaterial(T, fRadThick[ista].GetRadThick(T.x, T.y), fMaxInvMom, 1);
@@ -1775,7 +1774,6 @@ void L1Algo::CATrackFinder()
   // ---- Loop over Track Finder iterations ----------------------------------------------------------------//
   L1ASSERT(0, fNFindIterations == fParameters.CAIterationsContainer().size());
   isec = 0;  // TODO: temporary! (S.Zharko)
-  std::cout << "\033[1;31mfNThreads\033[0m = " << fNThreads << '\n';
   for (const auto& caIteration : fParameters.CAIterationsContainer())  // all finder
   {
     std::cout << "CA Track Finder Iteration!!" << isec << '\n';
@@ -2125,12 +2123,13 @@ void L1Algo::CATrackFinder()
     //     cout<<"---- Collect track candidates. ----"<<endl;
     // #endif
 
-    int min_level = 0;  // min level for start triplet. So min track length = min_level+3.
+    int min_level = caIteration.GetMinLevelTripletStart();  // min level for start triplet. So min track length = min_level+3.
     //    if (isec == kFastPrimJumpIter) min_level = 1;
-    if ((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
-      min_level = 1;  // only the long low momentum tracks
+    //if ((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
+    //  min_level = 1;  // only the long low momentum tracks
 
 #ifdef TRACKS_FROM_TRIPLETS
+    LOG(FATAL) << "L1CATrackFinder: min_level undefined in " << __FILE__ << " : " << __LINE__;
     if (isec == TRACKS_FROM_TRIPLETS_ITERATION) min_level = 0;
 #endif
 

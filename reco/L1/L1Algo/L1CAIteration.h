@@ -15,6 +15,8 @@
 #include <bitset>
 #include <string>
 
+// TODO: discuss the border conditions for the parameters. Implement them (S.Zharko)
+//       Implementation: use tuples for boundary conditions of the parameters
 /// Class L1CAIteration describes L1 Track finder iteration. 
 /// Each iteration utilizes special physics cuts and run condition to find tracks of a particular 
 /// class (e.g., fast primary tracks or secondary electron tracks). Hits associated with tracks
@@ -57,6 +59,8 @@ public:
   float GetMaxSlope() const { return fMaxSlope; }
   /// Gets max slope (tx\ty) in primary vertex
   float GetMaxSlopePV() const { return fMaxSlopePV; }
+  /// Gets min level of the triplet start
+  int GetMinLevelTripletStart() const { return fMinLevelTripletStart; }
   /// Gets the name of the iteration
   const std::string& GetName() const { return fName; }
   /// Gets size of region [TODO: units??] to attach new hits to the created track
@@ -88,6 +92,8 @@ public:
   void SetMaxSlope(float input) { fMaxSlope = input; }
   /// Sets max slope (tx\ty) in primary vertex
   void SetMaxSlopePV(float input) { fMaxSlopePV = input; }
+  /// Sets min level of the triplet start
+  void SetMinLevelTripletStart(int input) { fMinLevelTripletStart = input; }
   /// Sets name of the iteration
   void SetName(const std::string& name) { fName = name; }
   /// Sets size of region [TODO: units??] to attach new hits to the created track
@@ -121,17 +127,19 @@ private:
   // NOTE: For each new cut one should not forget to create a setter and a getter, insert the value
   //       initialization in the copy constructor and the Swap operator as well as a string repre-
   //       sentation to the ToString method (S.Zharko)
-  float fTrackChi2Cut {10.f};                   ///> track chi2 upper cut
-  float fTripletChi2Cut {21.1075f};             ///> triplet chi2 upper cut
-  float fDoubletChi2Cut {11.3449 * 2.f / 3.f};  ///> doublet chi2 upper cut
-  float fPickGather {3.0};                      ///> size of region to attach new hits to the created track [TODO: units??]
-  float fPickNeighbour {5.0};                   ///> min value of dp/dp_error, for which two tiplets are neighbours
-  float fMaxInvMom {1.0 / 0.5};                 ///> max considered q/p for tracks 
-  float fMaxSlopePV {1.1};                      ///> max slope (tx\ty) in primary vertex
-  float fMaxSlope {2.748};                      ///> max slope (tx\ty) in 3D hit position of a triplet 
+  float fTrackChi2Cut {10.f};                   ///> Track chi2 upper cut
+  float fTripletChi2Cut {21.1075f};             ///> Triplet chi2 upper cut
+  float fDoubletChi2Cut {11.3449 * 2.f / 3.f};  ///> Doublet chi2 upper cut
+  float fPickGather {3.0};                      ///> Size of region to attach new hits to the created track [TODO: units??]
+  float fPickNeighbour {5.0};                   ///> Min value of dp/dp_error, for which two tiplets are neighbours
+  float fMaxInvMom {1.0 / 0.5};                 ///> Max considered q/p for tracks 
+  float fMaxSlopePV {1.1};                      ///> Max slope (tx\ty) in primary vertex
+  float fMaxSlope {2.748};                      ///> Max slope (tx\ty) in 3D hit position of a triplet 
   float fMaxDZ {0.f};                           ///> Correction for accounting overlaping and iff z [TODO: units??]
   float fTargetPosSigmaX {0};                   ///> Constraint on target position in X direction [cm]
   float fTargetPosSigmaY {0};                   ///> Constraint on target position in Y direction [cm]
+  int fMinLevelTripletStart {0};                ///> Min level for starting a triplet. Track length = fMinLevelTripletStart + 3
+  // ^ TODO: invent more proper name
 };
 
 #endif  // L1CAIteration_h

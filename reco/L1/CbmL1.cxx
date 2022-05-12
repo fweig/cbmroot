@@ -1117,6 +1117,7 @@ InitStatus CbmL1::Init()
       trackingIterFastPrim.SetMaxSlope(2.748f);
       trackingIterFastPrim.SetMaxDZ(0);
       trackingIterFastPrim.SetTargetPosSigmaXY(1, 1);
+      trackingIterFastPrim.SetMinLevelTripletStart(0);
       trackingIterFastPrim.SetPrimary(true);
 
       auto trackingIterAllPrim = L1CAIteration("AllPrimIter");
@@ -1130,6 +1131,7 @@ InitStatus CbmL1::Init()
       trackingIterAllPrim.SetMaxSlope(2.748f);
       trackingIterAllPrim.SetMaxDZ(0.1);
       trackingIterAllPrim.SetTargetPosSigmaXY(1, 1);
+      trackingIterAllPrim.SetMinLevelTripletStart(0);
       trackingIterAllPrim.SetPrimary(true);
 
       auto trackingIterFastPrim2 = L1CAIteration("FastPrim2Iter");
@@ -1143,6 +1145,7 @@ InitStatus CbmL1::Init()
       trackingIterFastPrim2.SetMaxSlope(2.748f);
       trackingIterFastPrim2.SetMaxDZ(0);
       trackingIterFastPrim2.SetTargetPosSigmaXY(5, 5);
+      trackingIterFastPrim2.SetMinLevelTripletStart(0);
       trackingIterFastPrim2.SetPrimary(true);
 
       auto trackingIterAllSec = L1CAIteration("AllSecIter");
@@ -1156,6 +1159,7 @@ InitStatus CbmL1::Init()
       trackingIterAllSec.SetMaxSlope(2.748f);
       trackingIterAllSec.SetMaxDZ(0.1);
       trackingIterAllSec.SetTargetPosSigmaXY(10, 10);
+      trackingIterAllSec.SetMinLevelTripletStart(1);
       trackingIterAllSec.SetPrimary(false);
 
       auto trackingIterFastPrimJump = L1CAIteration("FastPrimJumpIter");
@@ -1169,6 +1173,7 @@ InitStatus CbmL1::Init()
       trackingIterFastPrimJump.SetMaxSlope(2.748f);
       trackingIterFastPrimJump.SetMaxDZ(0);
       trackingIterFastPrimJump.SetTargetPosSigmaXY(5, 5);
+      trackingIterFastPrimJump.SetMinLevelTripletStart(0);
       trackingIterFastPrimJump.SetPrimary(true);
 
       auto trackingIterAllPrimJump = L1CAIteration("AllPrimJumpIter");
@@ -1182,6 +1187,7 @@ InitStatus CbmL1::Init()
       trackingIterAllPrimJump.SetMaxSlope(2.748f);
       trackingIterAllPrimJump.SetMaxDZ(0.1);
       trackingIterAllPrimJump.SetTargetPosSigmaXY(5, 5);
+      trackingIterAllPrimJump.SetMinLevelTripletStart(0);
       trackingIterAllPrimJump.SetPrimary(true);
 
       auto trackingIterAllSecJump = L1CAIteration("AllSecJumpIter");
@@ -1194,6 +1200,7 @@ InitStatus CbmL1::Init()
       trackingIterAllSecJump.SetMaxSlopePV(1.5f);
       trackingIterAllSecJump.SetMaxSlope(2.748f);
       trackingIterAllSecJump.SetMaxDZ(0.1);
+      trackingIterAllSecJump.SetMinLevelTripletStart(1);
       trackingIterAllSecJump.SetTargetPosSigmaXY(10, 10);
 
       auto trackingIterAllPrimE = L1CAIteration("AllPrimEIter");
@@ -1207,6 +1214,7 @@ InitStatus CbmL1::Init()
       trackingIterAllPrimE.SetMaxSlope(2.748f);
       trackingIterAllPrimE.SetMaxDZ(0.1);
       trackingIterAllPrimE.SetTargetPosSigmaXY(1, 1);
+      trackingIterAllPrimE.SetMinLevelTripletStart(0);
       trackingIterAllPrimE.SetPrimary(true);
 
       auto trackingIterAllSecE = L1CAIteration("AllSecEIter");
@@ -1219,6 +1227,7 @@ InitStatus CbmL1::Init()
       trackingIterAllSecE.SetMaxSlopePV(1.5f);
       trackingIterAllSecE.SetMaxSlope(2.748f);
       trackingIterAllSecE.SetMaxDZ(0.1);
+      trackingIterAllSecE.SetMinLevelTripletStart(1);
       trackingIterAllSecE.SetTargetPosSigmaXY(10, 10);
 
       // Select default track finder
