@@ -57,6 +57,7 @@ enum class L1DetectorID;
 ///
 /// 4. Initialize each station using L1BaseStationInfo:
 ///
+// TODO: Implement mechanism of reinitialization (S.Zharko)
 class L1InitManager {
 private:
   enum class InitKey
@@ -71,7 +72,10 @@ private:
     keStationsInfo,                  ///< 5) If all the planned stations were added to the manager
     keCAIterationsNumberCrosscheck,  ///< 6) If the number of CA track finder is initialized
     keCAIterations,                  ///< 7) If the CA track finder iterations were initialized
-    keEnd                            ///< 8 - number of entries in the enum
+    keTrackingLevel,                 ///< 8)
+    keGhostSuppression,              ///< 9)
+    keMomentumCutOff,                ///< 10) 
+    keEnd                            ///< 11) [technical] number of entries in the enum
   };
 
   using L1DetectorIDIntMap_t     = std::unordered_map<L1DetectorID, int, L1Utils::EnumClassHash>;
@@ -118,6 +122,10 @@ public:
   //
   /// Gets a set of actie detectors for this analysis
   const L1DetectorIDSet_t& GetActiveDetectorIDs() const { return fActiveDetectorIDs; }
+  /// Gets ghost suppression flag
+  int GetGhostSuppression() const { return fGhostSuppression; }
+  /// Gets momentum cutoff
+  float GetMomentumCutOff() const { return fMomentumCutOff; }
   /// Gets a const reference to L1ObjectInitController
   const L1ObjectInitController_t& GetInitController() const { return fInitController; }
   /// Gets a pointer to L1Parameters instance with a posibility of its fields modification
@@ -133,6 +141,8 @@ public:
   const L1FieldValue& GetTargetFieldValue() const { return fTargetFieldValue; }
   /// Gets a target position
   const std::array<double, 3>& GetTargetPosition() const { return fTargetPos; }
+  /// Gets tracking level
+  int GetTrackingLevel() const { return fTrackingLevel; }
 
   /// Calculates L1FieldValue and L1FieldReference values for a selected step in z coordinate from the target position
   /// \param zStep step between nodal points
@@ -160,6 +170,12 @@ public:
   void SetCAIterationsNumberCrosscheck(int nIterations);
   /// Sets a magnetic field function, which will be applied for all the stations
   void SetFieldFunction(const L1FieldFunction_t& fieldFcn);
+  ///
+  void SetGhostSuppression(int ghostSuppression);
+  ///
+  void SetMomentumCutOff(float momentumCutOff);
+  ///
+  void SetTrackingLevel(int trackingLevel);
   /// Sets a number of stations for a particular tracking detector ID to provide initialization cross-check
   void SetStationsNumberCrosscheck(L1DetectorID detectorID, int nStations);
   /// Sets target poisition
@@ -199,17 +215,24 @@ private:
 
   /* Vertex related fields */
 
-  L1FieldValue fTargetFieldValue {};    ///> L1FieldValue object at target
-  L1FieldRegion fTargetFieldRegion {};  ///> L1FieldRegion object at target
+  L1FieldValue fTargetFieldValue {};    ///< L1FieldValue object at target
+  L1FieldRegion fTargetFieldRegion {};  ///< L1FieldRegion object at target
 
   /* CA track finder iterations related */
 
-  //L1Vector<L1CAIteration> fCAIterationsContainer {};  ///> Container for CA track finder iterations
-  int fCAIterationsNumberCrosscheck {-1};  ///> Number of iterations to be passed (must be used for cross-checks)
+  //L1Vector<L1CAIteration> fCAIterationsContainer {};  ///< Container for CA track finder iterations
+  int fCAIterationsNumberCrosscheck {-1};  ///< Number of iterations to be passed (must be used for cross-checks)
 
   /// Pointer to L1Parameters object
   // NOTE: Owner of the object is L1Algo instance
   L1Parameters* fpParameters {nullptr};
+
+  int fTrackingLevel    {0};  ///< tracking level
+  int fGhostSuppression {0};  ///< flag: if true, ghost tracks are suppressed
+  float fMomentumCutOff {0};  ///< minimum momentum of tracks TODO: ?
+  
+ 
+
 };
 
 #endif

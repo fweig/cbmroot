@@ -197,6 +197,30 @@ void L1InitManager::SetFieldFunction(const L1FieldFunction_t& fieldFunction)
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
+void L1InitManager::SetGhostSuppression(int ghostSuppression)
+{
+  if (fInitController.GetFlag(InitKey::keGhostSuppression)) {
+    LOG(warn) << "L1InitManager::SetGhostSuppression: attempt of reinitializating the ghost suppresion flag. Ignore";
+    return;
+  }
+  fGhostSuppression = ghostSuppression;
+  fInitController.SetFlag(InitKey::keGhostSuppression);
+}
+
+//-----------------------------------------------------------------------------------------------------------------------
+//
+void L1InitManager::SetMomentumCutOff(float momentumCutOff)
+{
+  if (fInitController.GetFlag(InitKey::keMomentumCutOff)) {
+    LOG(warn) << "L1InitManager::SetMomentumCutOff: attempt of reinitializating the momentum cutoff value. Ignore";
+    return;
+  }
+  fMomentumCutOff = momentumCutOff;
+  fInitController.SetFlag(InitKey::keMomentumCutOff);
+}
+
+//-----------------------------------------------------------------------------------------------------------------------
+//
 void L1InitManager::SetStationsNumberCrosscheck(L1DetectorID detectorID, int nStations)
 {
   // NOTE: We add and check only those detectors which will be active (?)
@@ -233,6 +257,18 @@ void L1InitManager::SetTargetPosition(double x, double y, double z)
   fTargetPos[1] = y;
   fTargetPos[2] = z;
   fInitController.SetFlag(InitKey::keTargetPos);
+}
+
+//-----------------------------------------------------------------------------------------------------------------------
+//
+void L1InitManager::SetTrackingLevel(int trackingLevel)
+{
+  if (fInitController.GetFlag(InitKey::keTrackingLevel)) {
+    LOG(warn) << "L1InitManager::SetTrackingLevel: attempt of reinitialization the tracking level. Ignore";
+    return;
+  }
+  fTrackingLevel = trackingLevel;
+  fInitController.SetFlag(InitKey::keTrackingLevel);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------

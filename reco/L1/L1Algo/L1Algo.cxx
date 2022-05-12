@@ -255,6 +255,10 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
 
   // Fill L1Station array
   fInitManager.TransferL1StationArray(fStations);
+  
+  fTrackingLevel = fInitManager.GetTrackingLevel();
+  fGhostSuppression = fInitManager.GetGhostSuppression();
+  fMomentumCutOff = fInitManager.GetMomentumCutOff();
 
   LOG(info) << "  ***********************";
   LOG(info) << "  *  L1Algo parameters  *";

@@ -913,6 +913,7 @@ InitStatus CbmL1::Init()
 
   {
     if (fSTAPDataMode % 2 == 1) {  // 1,3
+      // TODO: Rewrite parameters i/o into L1InitManager (S.Zharko, 12.05.2022)
       WriteSTAPGeoData(geo);
     };
     //if(fSTAPDataMode >= 2){ // 2,3
@@ -923,6 +924,7 @@ InitStatus CbmL1::Init()
   }
 
   if (fSTAPDataMode >= 2) {  // 2,3
+    // TODO: Rewrite parameters i/o into L1InitManager (S.Zharko, 12.05.2022)
     int ind2, ind = geo.size();
     ReadSTAPGeoData(geo, ind2);
     if (ind2 != ind)
@@ -1249,6 +1251,9 @@ InitStatus CbmL1::Init()
       }
 
       // Set special cuts
+      fpInitManager->SetGhostSuppression(fGhostSuppression);
+      fpInitManager->SetTrackingLevel(fTrackingLevel);
+      fpInitManager->SetMomentumCutOff(fMomentumCutOff);
     }
   }  // L1Algo new init: end
   /********************************************************************************************************************
