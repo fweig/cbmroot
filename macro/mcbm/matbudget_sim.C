@@ -20,10 +20,8 @@
 // determined with the macro matbudget_ana.C
 // --------------------------------------------------------------------------
 
-void SetTrack(CbmTransport*, Double_t, Int_t, Double_t, Double_t, Double_t);
-
-void matbudget_sim(const char* inGeo = "", const char* output = "matbudget", const char* inputFile = "",
-                   const char* setupName = "mcbm_beam_2022_07", Int_t nEvents = 1000000)
+void matbudget_sim(const char* setupName = "mcbm_beam_2022_07", const char* output = "matbudget",
+                   Int_t nEvents = 1000000)
 {
   // --- Define the beam angle ----------------------------------------------
   Double_t beamRotY = 25.;
@@ -71,7 +69,7 @@ void matbudget_sim(const char* inGeo = "", const char* output = "matbudget", con
   TString parFile = dataset + ".par.root";
   TString geoFile = dataset + ".geo.root";
   std::cout << std::endl;
-}
+
 // ------------------------------------------------------------------------
 
 
@@ -94,7 +92,9 @@ FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
 // starting at z = 0.
 // The starting points in x and y are chosen such as to illuminate the STS.
 FairBoxGenerator* boxGen = new FairBoxGenerator(0, 1);
-boxGen->SetBoxXYZ(-100., -100., 100., 100., 0.);  // STS SIS100
+//boxGen->SetBoxXYZ(-100., -100., 100., 100., 0.);  // STS SIS100
+boxGen->SetBoxXYZ(-500., -500., 500., 500., 0.);  // TRD
+
 //boxGen->SetBoxXYZ(-15., -15., 15., 15., 0.);  // STS mCBM
 boxGen->SetPRange(0.1, 0.5);
 boxGen->SetThetaRange(0., 0.);
@@ -148,15 +148,4 @@ std::cout << "</DartMeasurement>" << std::endl;
 std::cout << " Test passed" << std::endl;
 std::cout << " All ok " << std::endl;
 // ------------------------------------------------------------------------
-}
-
-
-void SetTrack(CbmTransport* run, Double_t beamRotY, Int_t pdgid, Double_t x, Double_t y, Double_t z)
-{
-  TVector3 v;
-  v.SetXYZ(x, y, z);
-  v.RotateY(-beamRotY * acos(-1.) / 180.);
-  cout << "X " << v.X() << " Y " << v.Y() << " Z " << v.Z() << endl;
-
-  run->AddInput(new FairParticleGenerator(pdgid, 1, v.X(), v.Y(), v.Z()));  // single electron along beam axis
 }

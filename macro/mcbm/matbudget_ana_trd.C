@@ -31,21 +31,37 @@ using std::vector;
 // .include $FAIRROOTPATH/include
 // .x 'matbudget_ana_mcbm_sts.C++("sts_v18e")'
 
-Int_t matbudget_ana_mcbm_trd(const char* inGeo = " ", Int_t nEvents = 1000000)
+Int_t matbudget_ana_trd(const TString geoVersion = "", const TString inFile = "matbudget", Int_t nEvents = -1)
 {
 
+  // TRD stations Z and thickness
+
+  const std::vector<double> trdZ = {441.6, 486.6, 531.6, 576.6};
+
+  double trdZthick = 20;  // station material is collected at trdZ +/- trdZthick
+
+  const int nBins = 300;  // number of bins in histograms (in both x and y)
+  const int maxXY = 500;  // +/- X and Y size for histograms (must be the same for X and Y)
+
+  const int nStations = trdZ.size();  // number of stations
+
+  for (int i = 1; i < nStations; i++) {
+    if (trdZ[i] - trdZthick <= trdZ[i - 1] + trdZthick) {
+      cerr << "Error:: TRD stations are not ordered in Z !!! " << endl;
+      exit(-1);
+    }
+  }
+
   // Input file (MC)
-  TString geoVersion(inGeo);
-  TString inFile = "matbudget.tra.root";
-  TFile* input   = new TFile(inFile);
+  TFile* input = new TFile(inFile + ".tra.root");
   if (!input) {  // this is not checked in compiled mode
     cout << "*** matbudget_ana: Input file " << inFile << " not found!\n"
          << "Be sure to run matbudget_mc.C before for the respective " + geoVersion + " geometry!" << endl;
-    exit;
+    exit(-1);
   }
 
   // Output file (material maps)
-  TString outFile = geoVersion + "_matbudget.root";
+  TString outFile = "trd_matbudget_" + geoVersion + ".root";
 
   // Input tree and branch
   TTree* tree          = (TTree*) input->Get("cbmsim");
@@ -53,42 +69,33 @@ Int_t matbudget_ana_mcbm_trd(const char* inGeo = " ", Int_t nEvents = 1000000)
   tree->SetBranchAddress("RadLen", &points);
 
   // Create output histograms
-  TH1D* hisRadLen = new TH1D("hisRadLen", "Radiation Length", 1000, 0, 100);
-  //  const int nStations = 8;       // number of STS stations
-  //  const int nBins     = 1000;    // number of bins in histograms (in both x and y)
-  //  const int rMax      = 55;      // maximal radius for histograms (for both x and y)
-  const int nStations = 2;    // number of STS stations
-  const int nBins     = 300;  // number of bins in histograms (in both x and y)
-  const int rMax      = 100;  // maximal radius for histograms (for both x and y)
+
   TProfile2D* hStaRadLen[nStations];
   for (int i = 0; i < nStations; ++i) {
-    TString name = "Radiation Thickness [%],";
-    name += " Station";
+    TString name = "Radiation Thickness [%], Station";
     name += i + 1;
-    hStaRadLen[i] = new TProfile2D(name, name, nBins, -rMax, rMax, nBins, -rMax, rMax);
+    hStaRadLen[i] = new TProfile2D(name, name, nBins, -maxXY, maxXY, nBins, -maxXY, maxXY);
   }
 
-  // Auxiliary variables
-  TVector3 vecs, veco;
-  std::map<int, int> trackHitMap;
-
-
   // Event loop
-  int firstEvent = 0;
-  for (Int_t event = firstEvent; event < (firstEvent + nEvents) && event < tree->GetEntriesFast(); event++) {
+  if (nEvents < 0 || nEvents > tree->GetEntriesFast()) { nEvents = tree->GetEntriesFast(); }
+
+  vector<double> RadThick(nStations, 0.);
+
+  for (Int_t event = 0; event < nEvents; event++) {
+    if (0 == event % 100000) { std::cout << "*** Processing event " << event << std::endl; }
     tree->GetEntry(event);
-    if (0 == event % 100000) cout << "*** Processing event " << event << endl;
 
-    const int nTracks = 1;
-    std::vector<double> RadLengthOnTrack(nTracks, 0.0);  //trackID, vector with points on track
-    std::vector<double> TrackLength(nTracks, 0.0);       //trackID, vector with points on track
-
-    vector<double> RadThick(nStations, 0);
-    double x, y;
+    RadThick.assign(nStations, 0.);
 
     // For this implementation to be correct, there should be only one MCTrack per event.
 
-    // Point loop
+    // Point loop. all points must xave the same (x,y) coordinates
+
+    double x    = 2 * maxXY;
+    double y    = 2 * maxXY;
+    int trackID = -1;
+
     for (Int_t iPoint = 0; iPoint < points->GetEntriesFast(); iPoint++) {
       FairRadLenPoint* point = (FairRadLenPoint*) points->At(iPoint);
 
@@ -99,51 +106,54 @@ Int_t matbudget_ana_mcbm_trd(const char* inGeo = " ", Int_t nEvents = 1000000)
       posDif = 0.5 * (posOut - posIn);
 
       // Midpoint between in and out
-      const TVector3 middle = (posOut + posIn);
-      x                     = middle.X() / 2;
-      y                     = middle.Y() / 2;
-      const double z        = middle.Z() / 2;
+      const TVector3 middle = 0.5 * (posOut + posIn);
+      const double xp       = middle.X();
+      const double yp       = middle.Y();
+      const double zp       = middle.Z();
+      const int idp         = point->GetTrackID();
+
+      if (iPoint == 0) {
+        trackID = idp;
+        x       = xp;
+        y       = yp;
+      }
+
+      if (fabs(xp - x) > 1.e8 || fabs(yp - y) > 1.e8) {
+        cerr << "Error:  the track is not horisontal xy old: " << x << " " << y << " xy new: " << x << " " << y << endl;
+        exit(-1);
+      }
+      if (idp != trackID) {
+        cerr << "Error: more than one MC track in event" << endl;
+        exit(-1);
+      }
 
       // Material budget per unit length
       const double radThick = posDif.Mag() / point->GetRadLength();
-      RadLengthOnTrack[point->GetTrackID()] += radThick;
-      TrackLength[point->GetTrackID()] += posDif.Mag();
-
 
       // Determine station number
-      int iStation    = -1;  //posIn.Z() / 10 - 3 + 0.5;  // suppose equidistant stations at 30-100 cm
-      int iStationOut = -1;  //posOut.Z() / 10 - 3 + 0.5;
+      int iStationIn  = -1;
+      int iStationOut = -1;
 
+      double zIn  = posIn.Z();
+      double zOut = posOut.Z();
 
-      float zIn = posIn.Z();
-      int ista  = -1;
+      for (int i = 0; i < nStations; i++) {
+        if (zIn > trdZ[i] - trdZthick) iStationIn = i;
+        if (zOut > trdZ[i] - trdZthick) iStationOut = i;
+      }
+      if (zIn > trdZ[nStations - 1] + trdZthick) iStationIn = -1;
+      if (zOut > trdZ[nStations - 1] + trdZthick) iStationOut = -1;
 
-      if (zIn > 110) ista = 0;
-      if (zIn > 147) ista = 1;
-      if (zIn > 160) ista = -1;
+      if (iStationOut != iStationIn || iStationIn < 0) continue;
+      assert(iStationIn >= nStations);
 
-      iStation = ista;
-
-      zIn  = posOut.Z();
-      ista = -1;
-
-      if (zIn > 110) ista = 0;
-      if (zIn > 147) ista = 1;
-      if (zIn > 160) ista = -1;
-      iStationOut = ista;
-
-      if (iStationOut != iStation) continue;
-      if (iStation >= nStations || iStation < 0) continue;
-      RadThick[iStation] += radThick;
+      RadThick[iStationIn] += radThick;
     }
 
-    // Fill material budget map for each station
-    for (int i = 0; i < nStations; ++i)
+    // Fill material budget map for each station in [%] of the radiation length
+    for (int i = 0; i < nStations; ++i) {
       hStaRadLen[i]->Fill(x, y, RadThick[i] * 100);
-
-    for (int k = 0; k < RadLengthOnTrack.size(); k++)
-      if (RadLengthOnTrack[k] > 0) hisRadLen->Fill(RadLengthOnTrack[k]);
-
+    }
   }  // event loop
 
 
@@ -157,14 +167,14 @@ Int_t matbudget_ana_mcbm_trd(const char* inGeo = " ", Int_t nEvents = 1000000)
   // Open output file
   TFile* output = new TFile(outFile, "RECREATE");
   output->cd();
-
   for (int iStation = 0; iStation < nStations; iStation++) {
     can1->cd(iStation + 1);
     hStaRadLen[iStation]->GetXaxis()->SetTitle("x [cm]");
     hStaRadLen[iStation]->GetYaxis()->SetTitle("y [cm]");
     //hStaRadLen[i]->GetZaxis()->SetTitle("radiation thickness [%]");
-    hStaRadLen[iStation]->SetAxisRange(0, 2, "Z");
-    hStaRadLen[iStation]->Draw("colz");
+    hStaRadLen[iStation]->SetAxisRange(0, 5, "Z");
+    hStaRadLen[iStation]->DrawCopy("colz");
+    output->cd();
     hStaRadLen[iStation]->Write();
   }
 
