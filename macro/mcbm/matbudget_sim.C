@@ -20,7 +20,7 @@
 // determined with the macro matbudget_ana.C
 // --------------------------------------------------------------------------
 
-void matbudget_sim(const char* setupName = "mcbm_beam_2022_07", const char* output = "matbudget",
+void matbudget_sim(const char* setupName = "mcbm_beam_2022_08", const char* output = "matbudget",
                    Int_t nEvents = 1000000)
 {
   // --- Define the beam angle ----------------------------------------------
@@ -69,83 +69,81 @@ void matbudget_sim(const char* setupName = "mcbm_beam_2022_07", const char* outp
   TString parFile = dataset + ".par.root";
   TString geoFile = dataset + ".geo.root";
   std::cout << std::endl;
-
-// ------------------------------------------------------------------------
-
-
-// -----   Timer   --------------------------------------------------------
-TStopwatch timer;
-timer.Start();
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
 
-// --- Transport run   ----------------------------------------------------
-CbmTransport run;
+  // -----   Timer   --------------------------------------------------------
+  TStopwatch timer;
+  timer.Start();
+  // ------------------------------------------------------------------------
 
 
-// -----   Create PrimaryGenerator   --------------------------------------
-FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
-// run.SetGenerator(primGen);
-
-// --- Primary particles
-// Generated are ROOTinos (PDG=0) in z direction (one per event),
-// starting at z = 0.
-// The starting points in x and y are chosen such as to illuminate the STS.
-FairBoxGenerator* boxGen = new FairBoxGenerator(0, 1);
-//boxGen->SetBoxXYZ(-100., -100., 100., 100., 0.);  // STS SIS100
-boxGen->SetBoxXYZ(-500., -500., 500., 500., 0.);  // TRD
-
-//boxGen->SetBoxXYZ(-15., -15., 15., 15., 0.);  // STS mCBM
-boxGen->SetPRange(0.1, 0.5);
-boxGen->SetThetaRange(0., 0.);
-boxGen->SetPhiRange(0., 360.);
-
-primGen->AddGenerator(boxGen);
-
-run.RegisterRadLength(kTRUE);
-
-// comment the following line to remove target interaction
-run.AddInput(boxGen);
-run.SetOutFileName(outFile);
-run.SetParFileName(parFile);
-run.SetGeoFileName(geoFile);
-run.LoadSetup(setupName);
-run.SetField(new CbmFieldConst());
-// run.SetTarget(targetElement, targetThickness, targetDiameter, targetPosX, targetPosY, targetPosZ,
-//             targetRotY * TMath::DegToRad());
-//run.SetBeamPosition(0., 0., 0.1, 0.1);  // Beam width 1 mm is assumed
-// run.SetBeamAngle(beamRotY * TMath::DegToRad(), 0.);
-//run.StoreTrajectories();
-run.Run(nEvents);
-// ------------------------------------------------------------------------
+  // --- Transport run   ----------------------------------------------------
+  CbmTransport run;
 
 
-// -----   Finish   -------------------------------------------------------
-timer.Stop();
-Double_t rtime = timer.RealTime();
-Double_t ctime = timer.CpuTime();
-std::cout << std::endl << std::endl;
-std::cout << "Macro finished successfully." << std::endl;
-std::cout << "Output file is " << outFile << std::endl;
-std::cout << "Parameter file is " << parFile << std::endl;
-std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
-// ------------------------------------------------------------------------
+  // -----   Create PrimaryGenerator   --------------------------------------
+  FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
+  // run.SetGenerator(primGen);
+
+  // --- Primary particles
+  // Generated are ROOTinos (PDG=0) in z direction (one per event),
+  // starting at z = 0.
+  // The starting points in x and y are chosen such as to illuminate the STS.
+  FairBoxGenerator* boxGen = new FairBoxGenerator(0, 1);
+  //boxGen->SetBoxXYZ(-100., -100., 100., 100., 0.);  // STS SIS100
+  boxGen->SetBoxXYZ(-500., -500., 500., 500., 0.);  // TRD
+  //boxGen->SetBoxXYZ(-15., -15., 15., 15., 0.);  // STS mCBM
+  boxGen->SetPRange(0.1, 0.5);
+  boxGen->SetThetaRange(0., 0.);
+  boxGen->SetPhiRange(0., 360.);
+
+  primGen->AddGenerator(boxGen);
+
+  run.RegisterRadLength(kTRUE);
+
+  // comment the following line to remove target interaction
+  run.AddInput(boxGen);
+  run.SetOutFileName(outFile);
+  run.SetParFileName(parFile);
+  run.SetGeoFileName(geoFile);
+  run.LoadSetup(setupName);
+  run.SetField(new CbmFieldConst());
+  // run.SetTarget(targetElement, targetThickness, targetDiameter, targetPosX, targetPosY, targetPosZ,
+  //             targetRotY * TMath::DegToRad());
+  //run.SetBeamPosition(0., 0., 0.1, 0.1);  // Beam width 1 mm is assumed
+  // run.SetBeamAngle(beamRotY * TMath::DegToRad(), 0.);
+  //run.StoreTrajectories();
+  run.Run(nEvents);
+  // ------------------------------------------------------------------------
 
 
-// -----   Resource monitoring   ------------------------------------------
-FairSystemInfo sysInfo;
-Float_t maxMemory = sysInfo.GetMaxMemory();
-std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
-std::cout << maxMemory;
-std::cout << "</DartMeasurement>" << std::endl;
+  // -----   Finish   -------------------------------------------------------
+  timer.Stop();
+  Double_t rtime = timer.RealTime();
+  Double_t ctime = timer.CpuTime();
+  std::cout << std::endl << std::endl;
+  std::cout << "Macro finished successfully." << std::endl;
+  std::cout << "Output file is " << outFile << std::endl;
+  std::cout << "Parameter file is " << parFile << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << std::endl << std::endl;
+  // ------------------------------------------------------------------------
 
-Float_t cpuUsage = ctime / rtime;
-std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
-std::cout << cpuUsage;
-std::cout << "</DartMeasurement>" << std::endl;
+
+  // -----   Resource monitoring   ------------------------------------------
+  FairSystemInfo sysInfo;
+  Float_t maxMemory = sysInfo.GetMaxMemory();
+  std::cout << "<DartMeasurement name=\"MaxMemory\" type=\"numeric/double\">";
+  std::cout << maxMemory;
+  std::cout << "</DartMeasurement>" << std::endl;
+
+  Float_t cpuUsage = ctime / rtime;
+  std::cout << "<DartMeasurement name=\"CpuLoad\" type=\"numeric/double\">";
+  std::cout << cpuUsage;
+  std::cout << "</DartMeasurement>" << std::endl;
 
 
-std::cout << " Test passed" << std::endl;
-std::cout << " All ok " << std::endl;
-// ------------------------------------------------------------------------
+  std::cout << " Test passed" << std::endl;
+  std::cout << " All ok " << std::endl;
+  // ------------------------------------------------------------------------
 }
