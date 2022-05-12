@@ -103,6 +103,13 @@ public:
     */
   void applyToTCut() { fDoToT = true; }
 
+
+  /**
+    * Apply correction of the inter channel delay (ICD)
+    */
+  void applyICDCorrection(bool val = true) { fDoICD = val; }
+
+
   /**
     * Apply restriction to Mar2019 mRICH Acceptance (for Simulations)
     */
@@ -119,6 +126,7 @@ private:
   TClonesArray* fRichHits;                      // RICH hits
   TClonesArray* fCbmEvents          = nullptr;  // CbmEvent for time-based simulations
   bool fDoToT                       = false;
+  bool fDoICD                       = false;
   bool fRestrictToAcc               = false;
   bool fRestrictToFullAcc           = false;
   bool fRestrictToAerogelAccDec2019 = false;
@@ -134,6 +142,8 @@ private:
   Double_t fHitError;
 
   std::string fMappingFile;
+
+  std::array<Double_t, 2304> fICD_offset_read;
 
   void InitMapping();
 
@@ -153,6 +163,12 @@ private:
      */
 
   void AddHit(CbmEvent* event, TVector3& posHit, const CbmRichDigi* digi, Int_t index, Int_t PmtId);
+
+  /**
+     * function for loading of a created inter channel delay correction file.
+     */
+  void read_ICD(std::array<Double_t, 2304>& offsets, unsigned int iteration);
+
 
   /**
      * \brief Copy constructor.

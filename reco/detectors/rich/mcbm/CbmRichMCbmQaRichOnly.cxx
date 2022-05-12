@@ -167,10 +167,14 @@ void CbmRichMCbmQaRichOnly::InitHistograms()
   fHM->Create2<TH2D>("fhRichRingRadiusChi2", "fhRichRingRadiusChi2; Ring Radius   [cm];\\Chi^2 ;;Entries", 70, -0.05,
                      6.95, 101, 0.0, 10.1);
 
+  fHM->Create1<TH1D>("fhHitTimeEvent", "fhHitTimeEvent;time [ns];Entries", 400, -100., 300);
 
   // Digis
-  fHM->Create2<TH2D>("fhDigisInChnl", "fhDigisInChnl;channel;#Digis;", 2304, -0.5, 2303.5, 50, -0.5, 49.5);
-  fHM->Create2<TH2D>("fhDigisInDiRICH", "fhDigisInDiRICH;DiRICH;#Digis;", 72, -0.5, 71.5, 300, -0.5, 299.5);
+  fHM->Create2<TH2D>("fhDigisInChnl", "fhDigisInChnl;channel;#Digis;", 2304, -0.5, 2303.5, 500, -0.5, 499.5);
+  fHM->Create2<TH2D>("fhDigisInDiRICH", "fhDigisInDiRICH;DiRICH;#Digis;", 72, -0.5, 71.5, 3000, -0.5, 2999.5);
+
+  //fHM->Create2<TH2D>("fhDigisTimeTot", "fhDigisTimeTot;LE [ns]; ToT [ns];#Digis;", 200, -50., 150., 300, 15.0, 30.0);
+  fHM->Create2<TH2D>("fhHitsTimeTot", "fhHitsTimeTot;LE [ns]; ToT [ns];#Digis;", 200, -50., 150., 300, 15.0, 30.0);
 }
 
 
@@ -187,7 +191,6 @@ void CbmRichMCbmQaRichOnly::Exec(Option_t* /*option*/)
   for (int i = 0; i < fDigiMan->GetNofDigis(ECbmModuleId::kRich); i++) {
     const CbmRichDigi* richDigi = fDigiMan->Get<CbmRichDigi>(i);
     fHM->H1("fhRichDigisToT")->Fill(richDigi->GetToT());
-
     uint16_t addrDiRICH = (richDigi->GetAddress() >> 16) & 0xFFFF;
     uint16_t addrChnl   = richDigi->GetAddress() & 0xFFFF;
     uint16_t dirichNmbr = ((addrDiRICH >> 8) & 0xF) * 18 + ((addrDiRICH >> 4) & 0xF) * 2 + ((addrDiRICH >> 0) & 0xF);
@@ -237,6 +240,9 @@ void CbmRichMCbmQaRichOnly::Exec(Option_t* /*option*/)
       auto iRichHit = ev->GetIndex(ECbmDataType::kRichHit, j);
       evRichHitIndx.push_back(iRichHit);
       CbmRichHit* richHit = static_cast<CbmRichHit*>(fRichHits->At(iRichHit));
+
+      fHM->H1("fhHitTimeEvent")->Fill(richHit->GetTime() - ev->GetStartTime());
+      fHM->H2("fhHitsTimeTot")->Fill(richHit->GetTime() - ev->GetStartTime(), richHit->GetToT());
 
       uint32_t pmtId = (((richHit->GetAddress()) >> 20) & 0xF) + (((richHit->GetAddress()) >> 24) & 0xF) * 9;
       pmtHits[pmtId]++;
@@ -393,11 +399,25 @@ void CbmRichMCbmQaRichOnly::DrawHist()
     DrawH2(fHM->H2("fhDigisInChnl"));
   }
 
+  //   {
+  //     fHM->CreateCanvas("DigisTimeTot", "DigisTimeTot", 600, 600);
+  //     DrawH2(fHM->H2("fhDigisTimeTot"));
+  //   }
+
+  {
+    fHM->CreateCanvas("HitsTimeTot", "HitsTimeTot", 600, 600);
+    DrawH2(fHM->H2("fhHitsTimeTot"));
+  }
+
   {
     fHM->CreateCanvas("DigisInDiRICH", "DigisInDiRICH", 1200, 600);
     DrawH2(fHM->H2("fhDigisInDiRICH"));
   }
 
+  {
+    fHM->CreateCanvas("HitTimeEvent", "HitTimeEvent", 1200, 1200);
+    DrawH1(fHM->H1("fhHitTimeEvent"));
+  }
 
   {
     TCanvas* c = fHM->CreateCanvas("rich_Hits", "rich_Hits", 1200, 1200);
@@ -575,7 +595,8 @@ void CbmRichMCbmQaRichOnly::Finish()
     }
     ICD_offset.at(i) += ICD_offset_read.at(i);
   }
-  save_ICD(ICD_offset, 0);
+
+  if (fGenerateICD) save_ICD(ICD_offset, 0);
 
   //std::cout<<"Address: "<<InterChannel[0].first << std::endl;
   //std::cout<<"Tracks:  "<< fTofTracks->GetEntriesFast() <<std::endl;

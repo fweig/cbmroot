@@ -30,6 +30,7 @@ CbmRichMCbmHitProducer::CbmRichMCbmHitProducer()
   ,
   //fMappingFile("mRICH_Mapping_vert_20190318.geo")
   fMappingFile("mRICH_Mapping_vert_20190318_elView.geo")
+  , fICD_offset_read()
 {
 }
 
@@ -59,6 +60,10 @@ InitStatus CbmRichMCbmHitProducer::Init()
   manager->Register("RichHit", "RICH", fRichHits, IsOutputBranchPersistent("RichHit"));
 
   InitMapping();
+
+  for (auto& a : fICD_offset_read)
+    a = 0.;
+  if (fDoICD) read_ICD(fICD_offset_read, 0);
 
   return kSUCCESS;
 }
@@ -121,7 +126,7 @@ void CbmRichMCbmHitProducer::Exec(Option_t* /*option*/)
 void CbmRichMCbmHitProducer::ProcessData(CbmEvent* event)
 {
   if (event != NULL) {
-    LOG(info) << "CbmRichMCbmHitProducer CbmEvent mode. CbmEvent # " << event->GetNumber();
+    LOG(debug) << "CbmRichMCbmHitProducer CbmEvent mode. CbmEvent # " << event->GetNumber();
     Int_t nofDigis = event->GetNofData(ECbmDataType::kRichDigi);
     //LOG(info) << "nofDigis: " << nofDigis;
 
@@ -130,8 +135,8 @@ void CbmRichMCbmHitProducer::ProcessData(CbmEvent* event)
       Int_t digiIndex = event->GetIndex(ECbmDataType::kRichDigi, iDigi);
       ProcessDigi(event, digiIndex);
     }
-    LOG(info) << "nofDigis: " << nofDigis << "\t\t "
-              << "nofHits : " << fNofHits;
+    LOG(debug) << "nofDigis: " << nofDigis << "\t\t "
+               << "nofHits : " << fNofHits;
     fNofHits = 0;
   }
   else {
@@ -176,13 +181,22 @@ void CbmRichMCbmHitProducer::AddHit(CbmEvent* event, TVector3& posHit, const Cbm
                                     Int_t PmtId)
 {
   Int_t nofHits = fRichHits->GetEntriesFast();
+
+  int32_t DiRICH_Addr = digi->GetAddress();
+  unsigned int addr   = (((DiRICH_Addr >> 24) & 0xF) * 18 * 32) + (((DiRICH_Addr >> 20) & 0xF) * 2 * 32)
+                      + (((DiRICH_Addr >> 16) & 0xF) * 32) + ((DiRICH_Addr & 0xFFFF) - 0x1);
+
   new ((*fRichHits)[nofHits]) CbmRichHit();
   CbmRichHit* hit = (CbmRichHit*) fRichHits->At(nofHits);
   hit->SetPosition(posHit);
   hit->SetDx(fHitError);
   hit->SetDy(fHitError);
   hit->SetRefId(index);
-  hit->SetTime(digi->GetTime());
+  if (fDoICD) { hit->SetTime(digi->GetTime() - fICD_offset_read.at(addr)); }
+  else {
+    hit->SetTime(digi->GetTime());
+  }
+
   hit->SetToT(digi->GetToT());
   hit->SetAddress(digi->GetAddress());
   hit->SetPmtId(PmtId);
@@ -271,6 +285,32 @@ bool CbmRichMCbmHitProducer::RestrictToAerogelAccDec2019(Double_t x, Double_t y)
   if (y > 8.0 && x < 12.5) return false;
 
   return true;
+}
+
+void CbmRichMCbmHitProducer::read_ICD(std::array<Double_t, 2304>& ICD_offsets, unsigned int iteration)
+{
+  std::string line;
+  std::ifstream icd_file(Form("icd_offset_it_%u.data", iteration));
+  unsigned int lineCnt = 0;
+  if (icd_file.is_open()) {
+    while (getline(icd_file, line)) {
+      if (line[0] == '#') continue;  // just a comment
+      std::istringstream iss(line);
+      unsigned int addr = 0;
+      Double_t value;
+      if (!(iss >> addr >> value)) {
+        LOG(info) << "A Problem accured in line " << lineCnt << "\n";
+        break;
+      }  // error
+      lineCnt++;
+      ICD_offsets.at(addr) += value;
+    }
+    icd_file.close();
+    LOG(info) << "Loaded inter channel delay file icd_offset_it_" << iteration << ".data for RICH.\n";
+  }
+  else {
+    LOG(info) << "Unable to open inter channel delay file icd_offset_it_" << iteration << ".data\n";
+  }
 }
 
 ClassImp(CbmRichMCbmHitProducer)

@@ -104,6 +104,12 @@ public:
     */
   void SetTriggerRichHits(Int_t val = 0) { fTriggerRichHits = val; }
 
+  /**
+    * activate the generation of new ICD correction iterations
+    */
+  void SetIcdGeneration(bool val = true) { fGenerateICD = val; }
+
+
 private:
   CbmDigiManager* fDigiMan = nullptr;
 
@@ -137,6 +143,8 @@ private:
 
   bool fDoWriteHistToFile = true;
   bool fDoDrawCanvas      = true;
+
+  bool fGenerateICD = false;
 
   std::array<Double_t, 2304> ICD_offset_read;
   std::array<Double_t, 2304> ICD_offset;
