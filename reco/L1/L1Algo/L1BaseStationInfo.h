@@ -38,6 +38,7 @@ public:
     // L1Station initialization
     keType,               ///< station type
     keTimeInfo,           ///< if time info is used (flag)
+    keFieldStatus,        ///< if station is placed in field (flag)
     keZ,                  ///< z coordinate of the station position
     keRmin,               ///< internal radius of station (gap size)
     keRmax,               ///< exteranl radius of station
@@ -99,6 +100,8 @@ public:
   const fvec* GetFieldSliceCy() const { return fL1Station.fieldSlice.cy; }
   /// Gets array of the coefficients for the field z-component approximation
   const fvec* GetFieldSliceCz() const { return fL1Station.fieldSlice.cz; }
+  /// Gets field status: 0 - station is outside the field, 1 - station is inside the field
+  int GetFieldStatus() const { return fL1Station.fieldStatus; }
   /// Gets a const reference to the L1ObjectInitController object
   const L1ObjectInitController_t& GetInitController() const { return fInitController; }
   /// Gets a reference to L1Station info field of the L1BaseStation info
@@ -141,6 +144,8 @@ public:
   //
   /// Sets detector ID
   void SetDetectorID(L1DetectorID inID);
+  /// Sets flag: true - station is placed in field, false - station is placed outside the field
+  void SetFieldStatus(int fieldStatus);
   /// Sets field approximation at the station plain
   /// \param Cx Array of approximation coefficients for x field component
   /// \param Cy Array of approximation coefficients for y field component

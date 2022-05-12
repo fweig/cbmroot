@@ -983,6 +983,7 @@ InitStatus CbmL1::Init()
       stationInfo.SetStationType(1);
       // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
       stationInfo.SetTimeInfo(0);
+      stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
       stationInfo.SetZ(t.z);
       stationInfo.SetMaterial(t.dz, t.RadLength);
       stationInfo.SetXmax(t.R);
@@ -1005,7 +1006,7 @@ InitStatus CbmL1::Init()
       // auto stsStation = std::make_unique<L1BaseStationInfo>(L1DetectorID::kSts, iSt);
       stationInfo->SetStationType(0);  // STS
       stationInfo->SetTimeInfo(1);
-
+      stationInfo->SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
       // Setup station geometry and material
       stationInfo->SetZ(cbmSts->GetZ());
       double stsXmax = cbmSts->GetXmax();
@@ -1036,6 +1037,7 @@ InitStatus CbmL1::Init()
       stationInfo.SetStationType(2);
       // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
       stationInfo.SetTimeInfo(1);
+      stationInfo.SetFieldStatus(0);
       stationInfo.SetZ(layer->GetZ());
       stationInfo.SetMaterial(layer->GetDz(), 10);  // TODO: Why rad len is 0????? (S.Zh.)
       stationInfo.SetXmax(100.);
@@ -1062,6 +1064,7 @@ InitStatus CbmL1::Init()
       int stationType          = (iSt == 1 || iSt == 3) ? 6 : 3;
       stationInfo.SetStationType(stationType);
       stationInfo.SetTimeInfo(1);
+      stationInfo.SetFieldStatus(0);
       stationInfo.SetZ(module->GetZ());
       stationInfo.SetMaterial(2. * module->GetSizeZ(), 10.);
       stationInfo.SetXmax(module->GetSizeX());
@@ -1081,6 +1084,7 @@ InitStatus CbmL1::Init()
       auto stationInfo = L1BaseStationInfo(L1DetectorID::kTof, iSt);
       stationInfo.SetStationType(4);
       stationInfo.SetTimeInfo(1);
+      stationInfo.SetFieldStatus(0);
       stationInfo.SetZ(TofStationZ[iSt]);
       stationInfo.SetMaterial(10., 10.);  // TODO: add Tof width dz and rad. len
       stationInfo.SetXmax(20.);

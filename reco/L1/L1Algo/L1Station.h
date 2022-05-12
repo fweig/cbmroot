@@ -12,20 +12,16 @@
 #include "L1UMeasurementInfo.h"
 #include "L1XYMeasurementInfo.h"
 
-class L1Station {
-public:
-  // TODO: test this constructors
-  //L1Station(const L1Station &) = default;
-  //L1Station & operator=(const L1Station &) = default;
-  //L1Station(L1Station &&) = default;
-  //L1Station & operator=(L1Station &&) = default;
-
+/// Structure L1Station
+/// Contains a set of geometry parameters for a particular station
+///
+struct L1Station {
   int type {0};
-  int timeInfo {0};  ///< flag: if time information can be used
-  fvec z {0};        ///< z position of station
-  fvec Rmin {0};     ///< min radius of the station
-  fvec Rmax {0};     ///< max radius of the station
-  //fvec Sy {0};  // commented because is not used in the code (S.Zharko)
+  int timeInfo {0};   ///< flag: if time information can be used 
+  int fieldStatus {0};  ///< flag: 1 - station is INSIDE the field, 0 - station is OUTSIDE the field
+  fvec z {0};         ///< z position of station
+  fvec Rmin {0};      ///< min radius of the station
+  fvec Rmax {0};      ///< max radius of the station
   fvec dt {0};
   L1MaterialInfo materialInfo {};
   L1FieldSlice fieldSlice {};
@@ -36,9 +32,11 @@ public:
   L1XYMeasurementInfo XYInfo {};
 
   /// Prints object fields
+  /// \param verbosity  Verbosity level of the output
   void Print(int verbosity = 0) const;
   /// String representation of class contents
-  /// \param indentLevel    number of indent characters in the output
+  /// \param verbosityLevel  Verbosity level of the output
+  /// \param indentLevel     Number of indent characters in the output
   std::string ToString(int verbosityLevel = 0, int indentLevel = 0) const;
 
 } _fvecalignment;

@@ -286,6 +286,14 @@ void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xy
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
+void L1BaseStationInfo::SetFieldStatus(int fieldStatus)
+{
+  fL1Station.fieldStatus = fieldStatus;
+  fInitController.SetFlag(InitKey::keFieldStatus);
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+//
 void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double frontSigma, double backPhi, double backSigma)
 {
   //----- Original code from L1Algo ---------------------------------------------------------------------//
