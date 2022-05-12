@@ -1254,7 +1254,7 @@ InitStatus CbmL1::Init()
   algo->Init(geo, fUseHitErrors, fTrackingMode, fMissingHits);
   geo.clear();
 
-  algo->fRadThick.reset(algo->NStations);
+  algo->fRadThick.reset(algo->GetNstations());
 
   // Read STS  MVD TRD MuCh ToF Radiation Thickness table
   TString stationName = "Radiation Thickness [%], Station";
@@ -1283,13 +1283,13 @@ InitStatus CbmL1::Init()
           for (int iB2 = 0; iB2 < NBins; iB2++) {
             algo->fRadThick[iSta].table[iB][iB2] = 0.01 * hStaRadLen->GetBinContent(iB, iB2);
             // Correction for holes in material map
-            if (algo->fRadThick[iSta].table[iB][iB2] < algo->vStations[iSta].materialInfo.RadThick[0])
+            if (algo->fRadThick[iSta].table[iB][iB2] < algo->GetStations()[iSta].materialInfo.RadThick[0])
               if (iB2 > 0 && iB2 < NBins - 1)
                 algo->fRadThick[iSta].table[iB][iB2] = TMath::Min(0.01 * hStaRadLen->GetBinContent(iB, iB2 - 1),
                                                                   0.01 * hStaRadLen->GetBinContent(iB, iB2 + 1));
             // Correction for the incorrect harcoded value of RadThick of MVD stations
             if (algo->fRadThick[iSta].table[iB][iB2] < 0.0015) algo->fRadThick[iSta].table[iB][iB2] = 0.0015;
-            //              algo->fRadThick[iSta].table[iB][iB2] = algo->vStations[iSta].materialInfo.RadThick[0];
+            //              algo->fRadThick[iSta].table[iB][iB2] = algo->GetStations()[iSta].materialInfo.RadThick[0];
             sumRF += algo->fRadThick[iSta].table[iB][iB2];
             nRF++;
           }
@@ -1310,7 +1310,7 @@ InitStatus CbmL1::Init()
                                       100);  // mvd should be in +-100 cm square
         algo->fRadThick[iSta].table.resize(1);
         algo->fRadThick[iSta].table[0].resize(1);
-        algo->fRadThick[iSta].table[0][0] = algo->vStations[iSta].materialInfo.RadThick[0];
+        algo->fRadThick[iSta].table[0][0] = algo->GetStations()[iSta].materialInfo.RadThick[0];
       }
     }
   }
@@ -1337,8 +1337,8 @@ InitStatus CbmL1::Init()
         algo->fRadThick[iSta].table[iB].resize(NBins);
         for (int iB2 = 0; iB2 < NBins; iB2++) {
           algo->fRadThick[iSta].table[iB][iB2] = 0.01 * hStaRadLen->GetBinContent(iB, iB2);
-          if (algo->fRadThick[iSta].table[iB][iB2] < algo->vStations[iSta].materialInfo.RadThick[0])
-            algo->fRadThick[iSta].table[iB][iB2] = algo->vStations[iSta].materialInfo.RadThick[0];
+          if (algo->fRadThick[iSta].table[iB][iB2] < algo->GetStations()[iSta].materialInfo.RadThick[0])
+            algo->fRadThick[iSta].table[iB][iB2] = algo->GetStations()[iSta].materialInfo.RadThick[0];
           // cout << " iSta " << iSta << " iB " << iB << "iB2 " << iB2 << " RadThick " << algo->fRadThick[iSta].table[iB][iB2] << endl;
           sumRF += algo->fRadThick[iSta].table[iB][iB2];
           nRF++;
@@ -1359,7 +1359,7 @@ InitStatus CbmL1::Init()
       algo->fRadThick[iSta].SetBins(1, 100);
       algo->fRadThick[iSta].table.resize(1);
       algo->fRadThick[iSta].table[0].resize(1);
-      algo->fRadThick[iSta].table[0][0] = algo->vStations[iSta].materialInfo.RadThick[0];
+      algo->fRadThick[iSta].table[0][0] = algo->GetStations()[iSta].materialInfo.RadThick[0];
     }
   }
 
@@ -1393,7 +1393,7 @@ InitStatus CbmL1::Init()
           for (int iB2 = 0; iB2 < NBins; iB2++) {
             algo->fRadThick[iSta].table[iB][iB2] = 0.01 * hStaRadLen->GetBinContent(iB, iB2);
             // Correction for holes in material map
-            //if(algo->fRadThick[iSta].table[iB][iB2] < algo->vStations[iSta].materialInfo.RadThick[0])
+            //if(algo->fRadThick[iSta].table[iB][iB2] < algo->GetStations()[iSta].materialInfo.RadThick[0])
 
             if (iB2 > 0 && iB2 < NBins - 1)
               algo->fRadThick[iSta].table[iB][iB2] = TMath::Min(0.01 * hStaRadLen->GetBinContent(iB, iB2 - 1),
@@ -1402,7 +1402,7 @@ InitStatus CbmL1::Init()
 
             if (algo->fRadThick[iSta].table[iB][iB2] > 0.0015) hole = algo->fRadThick[iSta].table[iB][iB2];
             if (algo->fRadThick[iSta].table[iB][iB2] < 0.0015) algo->fRadThick[iSta].table[iB][iB2] = hole;
-            //              algo->fRadThick[iSta].table[iB][iB2] = algo->vStations[iSta].materialInfo.RadThick[0];
+            //              algo->fRadThick[iSta].table[iB][iB2] = algo->GetStations()[iSta].materialInfo.RadThick[0];
           }
         }
       }
@@ -1419,7 +1419,7 @@ InitStatus CbmL1::Init()
         algo->fRadThick[iSta].SetBins(1, 100);
         algo->fRadThick[iSta].table.resize(1);
         algo->fRadThick[iSta].table[0].resize(1);
-        algo->fRadThick[iSta].table[0][0] = algo->vStations[iSta].materialInfo.RadThick[0];
+        algo->fRadThick[iSta].table[0][0] = algo->GetStations()[iSta].materialInfo.RadThick[0];
       }
     }
 
@@ -1457,7 +1457,7 @@ InitStatus CbmL1::Init()
           for (int iB2 = 0; iB2 < NBins; iB2++) {
             algo->fRadThick[iSta].table[iB][iB2] = 0.01 * hStaRadLen->GetBinContent(iB, iB2);
             // Correction for holes in material map
-            //if(algo->fRadThick[iSta].table[iB][iB2] < algo->vStations[iSta].materialInfo.RadThick[0])
+            //if(algo->fRadThick[iSta].table[iB][iB2] < algo->GetStations()[iSta].materialInfo.RadThick[0])
 
             if (iB2 > 0 && iB2 < NBins - 1)
               algo->fRadThick[iSta].table[iB][iB2] = TMath::Min(0.01 * hStaRadLen->GetBinContent(iB, iB2 - 1),
@@ -1466,7 +1466,7 @@ InitStatus CbmL1::Init()
 
             if (algo->fRadThick[iSta].table[iB][iB2] > 0.0015) hole = algo->fRadThick[iSta].table[iB][iB2];
             if (algo->fRadThick[iSta].table[iB][iB2] < 0.0015) algo->fRadThick[iSta].table[iB][iB2] = hole;
-            //              algo->fRadThick[iSta].table[iB][iB2] = algo->vStations[iSta].materialInfo.RadThick[0];
+            //              algo->fRadThick[iSta].table[iB][iB2] = algo->GetStations()[iSta].materialInfo.RadThick[0];
           }
         }
       }
@@ -1484,8 +1484,8 @@ InitStatus CbmL1::Init()
         algo->fRadThick[iSta].SetBins(1, 100);
         algo->fRadThick[iSta].table.resize(1);
         algo->fRadThick[iSta].table[0].resize(1);
-        algo->fRadThick[iSta].table[0][0] = algo->vStations[iSta].materialInfo.RadThick[0];
-        cout << "TRD material: " << algo->vStations[iSta].materialInfo.RadThick[0] << endl;
+        algo->fRadThick[iSta].table[0][0] = algo->GetStations()[iSta].materialInfo.RadThick[0];
+        cout << "TRD material: " << algo->GetStations()[iSta].materialInfo.RadThick[0] << endl;
       }
     }
 
@@ -1518,7 +1518,7 @@ InitStatus CbmL1::Init()
           for (int iB2 = 0; iB2 < NBins; iB2++) {
             algo->fRadThick[iSta].table[iB][iB2] = 0.01 * hStaRadLen->GetBinContent(iB, iB2);
             // Correction for holes in material map
-            //if(algo->fRadThick[iSta].table[iB][iB2] < algo->vStations[iSta].materialInfo.RadThick[0])
+            //if(algo->fRadThick[iSta].table[iB][iB2] < algo->GetStations()[iSta].materialInfo.RadThick[0])
 
             if (iB2 > 0 && iB2 < NBins - 1)
               algo->fRadThick[iSta].table[iB][iB2] = TMath::Min(0.01 * hStaRadLen->GetBinContent(iB, iB2 - 1),
@@ -1527,7 +1527,7 @@ InitStatus CbmL1::Init()
 
             if (algo->fRadThick[iSta].table[iB][iB2] > 0.0015) hole = algo->fRadThick[iSta].table[iB][iB2];
             if (algo->fRadThick[iSta].table[iB][iB2] < 0.0015) algo->fRadThick[iSta].table[iB][iB2] = hole;
-            //              algo->fRadThick[iSta].table[iB][iB2] = algo->vStations[iSta].materialInfo.RadThick[0];
+            //              algo->fRadThick[iSta].table[iB][iB2] = algo->GetStations()[iSta].materialInfo.RadThick[0];
           }
         }
       }
@@ -1545,7 +1545,7 @@ InitStatus CbmL1::Init()
         algo->fRadThick[iSta].SetBins(1, 100);
         algo->fRadThick[iSta].table.resize(1);
         algo->fRadThick[iSta].table[0].resize(1);
-        algo->fRadThick[iSta].table[0][0] = algo->vStations[iSta].materialInfo.RadThick[0];
+        algo->fRadThick[iSta].table[0][0] = algo->GetStations()[iSta].materialInfo.RadThick[0];
       }
     }
   return kSUCCESS;
@@ -1670,7 +1670,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
         h.n = mcp.event;
 #endif
         const int ista       = (*algo->fStripFlag)[h.f] / 4;
-        const L1Station& sta = algo->vStations[ista];
+        const L1Station& sta = algo->GetStations()[ista];
         if (std::find(strips.begin(), strips.end(), h.f) != strips.end()) {  // separate strips
 
           (*algo->fStripFlag).push_back((*algo->fStripFlag)[h.f]);
@@ -2008,7 +2008,7 @@ void CbmL1::IdealTrackFinder()
     L1Track algoTr;
     algoTr.NHits = 0;
 
-    L1Vector<int> hitIndices("CbmL1::hitIndices", algo->NStations, -1);
+    L1Vector<int> hitIndices("CbmL1::hitIndices", algo->GetNstations(), -1);
 
     for (unsigned int iH = 0; iH < MC.StsHits.size(); iH++) {
       const int hitI      = MC.StsHits[iH];
@@ -2020,7 +2020,7 @@ void CbmL1::IdealTrackFinder()
     }
 
 
-    for (int iH = 0; iH < algo->NStations; iH++) {
+    for (int iH = 0; iH < algo->GetNstations(); iH++) {
       const int hitI = hitIndices[iH];
       if (hitI < 0) continue;
 
@@ -2031,7 +2031,7 @@ void CbmL1::IdealTrackFinder()
 
     if (algoTr.NHits < 3) continue;
 
-    for (int iH = 0; iH < algo->NStations; iH++) {
+    for (int iH = 0; iH < algo->GetNstations(); iH++) {
       const int hitI = hitIndices[iH];
       if (hitI < 0) continue;
       algo->fRecoHits.push_back(hitI);

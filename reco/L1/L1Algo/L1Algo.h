@@ -219,15 +219,27 @@ public:
 
   void SetNThreads(unsigned int n);
 
-  int NStations {0};        ///< number of all detector stations
+private:
+  int fNstations {0};        ///< number of all detector stations
+public:
+  
+  int GetNstations() const { return fNstations; } 
+
   int NMvdStations {0};     ///< number of mvd stations
   int NStsStations {0};     ///< number of sts stations
   int fNfieldStations {0};  ///< number of stations in the field region
 
 
+
   // TODO: Replace _fvecalignment with C++11 alignas(16) attibute, see vStationsNew (S.Zh.)
-  L1Station vStations[L1Parameters::kMaxNstations] _fvecalignment;  // station info
-  alignas(16) std::array<L1Station, L1Parameters::kMaxNstations> fStationsNew;
+  //L1Station vStations[L1Parameters::kMaxNstations] _fvecalignment;  // station info
+
+private:
+  alignas(16) std::array<L1Station, L1Parameters::kMaxNstations> fStations;
+public:
+  const std::array<L1Station, L1Parameters::kMaxNstations>& GetStations() const { return fStations; }
+  
+  
   L1Vector<L1Material> fRadThick {"fRadThick"};        // material for each station
 
   int NStsStrips {0};                             ///> number of strips

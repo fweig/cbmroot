@@ -35,7 +35,7 @@ void CbmL1::TrackFitter(vector<CbmL1Track>& Tracks, CbmL1Vtx* V)
 {
   TStopwatch timer;
   timer.Start();
-  /*
+  /* NOTE: algo->vStations is deprecated; one have to change it with algo->GetStations() (see L1Algo.h for documentation) (S.Zharko)
   //int nt=0;
   for( vector<CbmL1Track>::iterator i = Tracks.begin(); i!=Tracks.end(); ++i)
     {

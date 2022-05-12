@@ -97,7 +97,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
   TClonesArray* listMvdHits = 0;
   if (NMvdStations > 0.) listMvdHits = (TClonesArray*) fManger->GetObject("MvdHit");
 
-  static int nHits = CbmL1::Instance()->algo->NStations;
+  static int nHits = CbmL1::Instance()->algo->GetNstations();
   int iVec = 0, i = 0;
   int nTracks_SIMD = fvecLen;
   L1TrackPar T;  // fitting parametr coresponding to current track
@@ -108,7 +108,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
   CbmStsTrack* t[fvecLen];
 
   int ista;
-  L1Station* sta = CbmL1::Instance()->algo->vStations;
+  const L1Station* sta = CbmL1::Instance()->algo->GetStations().begin();
   L1Station staFirst, staLast;
   fvec* x = new fvec[nHits];
   fvec* u = new fvec[nHits];
@@ -405,9 +405,9 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
 
   CbmStsTrack* t[fvecLen];
 
-  int nStations    = CbmL1::Instance()->algo->NStations;
+  int nStations    = CbmL1::Instance()->algo->GetNstations();
   int NMvdStations = CbmL1::Instance()->algo->NMvdStations;
-  L1Station* sta   = CbmL1::Instance()->algo->vStations;
+  const L1Station* sta   = CbmL1::Instance()->algo->GetStations().begin();
   fvec* zSta       = new fvec[nStations];
   for (int iSta = 0; iSta < nStations; iSta++)
     zSta[iSta] = sta[iSta].z;
@@ -581,7 +581,7 @@ void CbmL1PFFitter::CalculateFieldRegion(vector<CbmStsTrack>& Tracks, vector<L1F
   CbmStsTrack* t[fvecLen];
 
   int ista;
-  L1Station* sta = CbmL1::Instance()->algo->vStations;
+  const L1Station* sta = CbmL1::Instance()->algo->GetStations().begin();
   L1FieldValue fB[3], fB_temp _fvecalignment;
   fvec zField[3];
 
@@ -653,7 +653,7 @@ void CbmL1PFFitter::CalculateFieldRegionAtLastPoint(vector<CbmStsTrack>& Tracks,
   CbmStsTrack* t[fvecLen];
 
   int ista;
-  L1Station* sta = CbmL1::Instance()->algo->vStations;
+  const L1Station* sta = CbmL1::Instance()->algo->GetStations().begin();
   L1FieldValue fB[3], fB_temp _fvecalignment;
   fvec zField[3];
 

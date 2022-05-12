@@ -48,9 +48,9 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   int ista1 = GetFStation((*fStripFlag)[hit1.f]);
   int ista2 = GetFStation((*fStripFlag)[hit2.f]);
 
-  L1Station& sta0 = vStations[ista0];
-  L1Station& sta1 = vStations[ista1];
-  L1Station& sta2 = vStations[ista2];
+  L1Station& sta0 = fStations[ista0];
+  L1Station& sta1 = fStations[ista1];
+  L1Station& sta2 = fStations[ista2];
 
   fvec u0 = hit0.u;
   fvec v0 = hit0.v;
@@ -126,7 +126,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
     ista_prev        = ista;
     ista             = GetFStation((*fStripFlag)[hit.f]);
 
-    L1Station& sta = vStations[ista];
+    L1Station& sta = fStations[ista];
 
     float z_sta = hit.z;
 
@@ -197,7 +197,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
                           const fvec qp0)  // TODO take into account pipe
 {
   L1Vector<L1HitIndex_t> newHits {"L1TrackExtender::newHits"};
-  newHits.reserve(NStations);
+  newHits.reserve(fNstations);
   L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
 
@@ -213,9 +213,9 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
   const int ista1 = GetFStation((*fStripFlag)[hit1.f]);
   const int ista2 = GetFStation((*fStripFlag)[hit2.f]);
 
-  const L1Station& sta0 = vStations[ista0];
-  const L1Station& sta1 = vStations[ista1];
-  const L1Station& sta2 = vStations[ista2];
+  const L1Station& sta0 = fStations[ista0];
+  const L1Station& sta1 = fStations[ista1];
+  const L1Station& sta2 = fStations[ista2];
 
   fvec u0 = hit0.u;
   fvec v0 = hit0.v;
@@ -250,9 +250,9 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
   const fvec pickGather2 = fPickGather * fPickGather;
 
-  for (; (ista < NStations) && (ista >= 0); ista += step) {  // CHECKME why ista2?
+  for (; (ista < fNstations) && (ista >= 0); ista += step) {  // CHECKME why ista2?
 
-    L1Station& sta = vStations[ista];
+    L1Station& sta = fStations[ista];
 
     fvec dz = sta.z - T.z;
 

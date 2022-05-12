@@ -64,12 +64,12 @@ public:
 
   void L1AddMaterial(L1TrackPar& T, fvec radThick, fvec qp0, fvec w);
 
-  void L1AddMaterial(L1TrackPar& T, L1MaterialInfo& info, fvec qp0, fvec w);
+  void L1AddMaterial(L1TrackPar& T, const L1MaterialInfo& info, fvec qp0, fvec w);
 
 
   void L1AddThickMaterial(L1TrackPar& T, fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream);
 
-  void L1AddHalfMaterial(L1TrackPar& T, L1MaterialInfo& info, fvec qp0);
+  void L1AddHalfMaterial(L1TrackPar& T, const L1MaterialInfo& info, fvec qp0);
 
   void L1AddPipeMaterial(L1TrackPar& T, fvec qp0, fvec w);
 

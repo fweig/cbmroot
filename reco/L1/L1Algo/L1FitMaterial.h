@@ -533,7 +533,7 @@ inline void L1Fit::L1AddMaterial(L1TrackPar& T, fvec radThick, fvec qp0, fvec w)
   T.C33 += w * (ONE + tyty) * a;
 }
 
-inline void L1Fit::L1AddMaterial(L1TrackPar& T, L1MaterialInfo& info, fvec qp0, fvec w)
+inline void L1Fit::L1AddMaterial(L1TrackPar& T, const L1MaterialInfo& info, fvec qp0, fvec w)
 {
   cnst ONE = 1.f;
 
@@ -640,7 +640,7 @@ inline void L1Fit::L1AddThickMaterial(L1TrackPar& T, fvec radThick, fvec qp0, fv
 }
 
 
-inline void L1Fit::L1AddHalfMaterial(L1TrackPar& T, L1MaterialInfo& info, fvec qp0)
+inline void L1Fit::L1AddHalfMaterial(L1TrackPar& T, const L1MaterialInfo& info, fvec qp0)
 {
   cnst ONE   = 1.f;
   fvec tx    = T.tx;

@@ -260,7 +260,7 @@ void L1Algo::CAMergeClones()
   L1FieldValue fBm, fBb, fBf _fvecalignment;
   L1FieldRegion fld _fvecalignment;
 
-  unsigned char maxLengthForMerge = static_cast<unsigned char>(NStations - 3);  // max length for merge
+  unsigned char maxLengthForMerge = static_cast<unsigned char>(fNstations - 3);  // max length for merge
 
 #ifdef OMP
 #pragma omp parallel for
@@ -347,8 +347,8 @@ void L1Algo::CAMergeClones()
       // if (fabs (Tf.time[0] - Tb.time[0]) > 500000) continue;
       unsigned short stam;
 
-      vStations[staf].fieldSlice.GetFieldValue(Tf.x, Tf.y, fBf);
-      vStations[stab].fieldSlice.GetFieldValue(Tb.x, Tb.y, fBb);
+      fStations[staf].fieldSlice.GetFieldValue(Tf.x, Tf.y, fBf);
+      fStations[stab].fieldSlice.GetFieldValue(Tb.x, Tb.y, fBb);
 
       unsigned short dist = firstStation[iTr] - lastStation[jTr];
 
@@ -356,10 +356,10 @@ void L1Algo::CAMergeClones()
       else
         stam = staf - 1;
 
-      fvec zm = vStations[stam].z;
+      fvec zm = fStations[stam].z;
       fvec xm = 0.5 * (Tf.x + Tf.tx * (zm - Tf.z) + Tb.x + Tb.tx * (zm - Tb.z));
       fvec ym = 0.5 * (Tf.y + Tf.ty * (zm - Tf.z) + Tb.y + Tb.ty * (zm - Tb.z));
-      vStations[stam].fieldSlice.GetFieldValue(xm, ym, fBm);
+      fStations[stam].fieldSlice.GetFieldValue(xm, ym, fBm);
       fld.Set(fBb, Tb.z, fBm, zm, fBf, Tf.z);
 
       fvec zMiddle = 0.5 * (Tb.z + Tf.z);

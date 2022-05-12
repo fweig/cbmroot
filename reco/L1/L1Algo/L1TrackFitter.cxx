@@ -61,9 +61,9 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         int ista2 = (*fStripFlag)[hit2.f] / 4;
 
         //cout<<"back: ista012="<<ista0<<" "<<ista1<<" "<<ista2<<endl;
-        L1Station& sta0 = vStations[ista0];
-        L1Station& sta1 = vStations[ista1];
-        L1Station& sta2 = vStations[ista2];
+        L1Station& sta0 = fStations[ista0];
+        L1Station& sta1 = fStations[ista1];
+        L1Station& sta2 = fStations[ista2];
 
         fvec u0 = hit0.u;
         fvec v0 = hit0.v;
@@ -129,7 +129,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
           const L1Hit& hit = (*vStsHits)[hits[i]];
           ista             = (*fStripFlag)[hit.f] / 4;
 
-          L1Station& sta = vStations[ista];
+          L1Station& sta = fStations[ista];
 
           //    L1Extrapolate( T, hit.z, qp0, fld );
           L1ExtrapolateLine(T, hit.z);
@@ -202,9 +202,9 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         int ista1 = GetFStation((*fStripFlag)[hit1.f]);
         int ista2 = GetFStation((*fStripFlag)[hit2.f]);
 
-        L1Station& sta0 = vStations[ista0];
-        L1Station& sta1 = vStations[ista1];
-        L1Station& sta2 = vStations[ista2];
+        L1Station& sta0 = fStations[ista0];
+        L1Station& sta1 = fStations[ista1];
+        L1Station& sta2 = fStations[ista2];
 
         fvec u0 = hit0.u;
         fvec v0 = hit0.v;
@@ -264,7 +264,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         for (int i = 1; i < nHits; i++) {
           const L1Hit& hit = (*vStsHits)[hits[i]];
           ista             = (*fStripFlag)[hit.f] / 4;
-          L1Station& sta   = vStations[ista];
+          L1Station& sta   = fStations[ista];
           fvec u           = hit.u;
           fvec v           = hit.v;
           fvec x, y;
@@ -339,7 +339,7 @@ void L1Algo::L1KFTrackFitter()
   L1FieldValue fldB01, fldB11, fldB21 _fvecalignment;
   L1FieldRegion fld1 _fvecalignment;
 
-  const int nHits = NStations;
+  const int nHits = fNstations;
   int iVec = 0, i = 0;
   int nTracks_SIMD = fvecLen;
   L1TrackPar T;  // fitting parametr coresponding to current track
@@ -352,7 +352,7 @@ void L1Algo::L1KFTrackFitter()
 
   L1Track* t[fvecLen];
 
-  L1Station* sta = vStations;
+  L1Station* sta = fStations.begin();
   L1Station staFirst, staLast;
   fvec x[L1Parameters::kMaxNstations], u[L1Parameters::kMaxNstations], v[L1Parameters::kMaxNstations],
     y[L1Parameters::kMaxNstations], time[L1Parameters::kMaxNstations], timeEr[L1Parameters::kMaxNstations],
@@ -445,7 +445,7 @@ void L1Algo::L1KFTrackFitter()
       fscal cursy = 0., curSy = 0.;
       for (i = nHitsTrack - 1; i >= 0; i--) {
         const int ista   = iSta[i];
-        L1Station& st    = vStations[ista];
+        L1Station& st    = fStations[ista];
         const fscal curZ = z[ista][iVec];
         fscal dZ         = curZ - prevZ;
         fscal By         = st.fieldSlice.cy[0][0];
@@ -765,7 +765,7 @@ void L1Algo::L1KFTrackFitterMuch()
   L1FieldValue fldB01, fldB11, fldB21 _fvecalignment;
   L1FieldRegion fld1 _fvecalignment;
 
-  const int nHits = NStations;
+  const int nHits = fNstations;
   int iVec = 0, i = 0;
   int nTracks_SIMD = fvecLen;
   L1TrackPar T;  // fitting parametr coresponding to current track
@@ -778,7 +778,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
   L1Track* t[fvecLen];
 
-  L1Station* sta = vStations;
+  L1Station* sta = fStations.begin();
   L1Station staFirst, staLast;
   fvec x[L1Parameters::kMaxNstations], u[L1Parameters::kMaxNstations], v[L1Parameters::kMaxNstations],
     y[L1Parameters::kMaxNstations], time[L1Parameters::kMaxNstations], timeEr[L1Parameters::kMaxNstations],
@@ -813,7 +813,7 @@ void L1Algo::L1KFTrackFitterMuch()
     }
 
     for (iVec = 0; iVec < nTracks_SIMD; iVec++) {
-      for (i = 0; i < NStations; i++) {
+      for (i = 0; i < fNstations; i++) {
         d_x[i][iVec] = 0;
         d_y[i][iVec] = 0;
       }
@@ -884,7 +884,7 @@ void L1Algo::L1KFTrackFitterMuch()
       //   for(i = nHitsTrack - 1; i >= 0; i-- ){
       for (i = 0; i < nHitsTrackSts; i++) {
         const int ista   = iSta[i];
-        L1Station& st    = vStations[ista];
+        L1Station& st    = fStations[ista];
         const fscal curZ = z[ista][iVec];
         fscal dZ         = curZ - prevZ;
         fscal By         = st.fieldSlice.cy[0][0];

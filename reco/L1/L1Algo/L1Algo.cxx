@@ -100,7 +100,8 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
     vtxFieldValue = B[0];
   }
   //vStations.clear();
-  NStations    = static_cast<int>(geo[ind++]);
+  L1Station vStations[L1Parameters::kMaxNstations] _fvecalignment;
+  int NStations    = static_cast<int>(geo[ind++]);
   NMvdStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NMbdStations (S. Zh.)
   NStsStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NStsStations (S. Zh.)
 
@@ -241,12 +242,14 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   int nStsStationsNew   = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(1));
   int nFieldStationsNew = nMvdStationsNew + nStsStationsNew;
 
+  fNstations = fInitManager.GetStationsNumber();
+
   // Get field near target
   L1FieldValue vtxFieldValueNew   = fInitManager.GetTargetFieldValue();
   L1FieldRegion vtxFieldRegionNew = fInitManager.GetTargetFieldRegion();
 
   // Fill L1Station array
-  fInitManager.TransferL1StationArray(fStationsNew);
+  fInitManager.TransferL1StationArray(fStations);
 
   LOG(info) << "**********************************************************************";
   LOG(info) << "*  New L1Algo initialization cross check  (tmp log, to be removed!)  *";
@@ -257,7 +260,7 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   LOG(info) << "\tSTS:   " << NStsStations;
   LOG(info) << "\tField: " << fNfieldStations;
   LOG(info) << "** Number of stations (new) **";
-  LOG(info) << "\tTotal: " << nStationsNew;
+  LOG(info) << "\tTotal: " << fNstations;
   LOG(info) << "\tMVD:   " << nMvdStationsNew;
   LOG(info) << "\tSTS:   " << nStsStationsNew;
   LOG(info) << "\tField: " << nFieldStationsNew;
@@ -272,15 +275,14 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
 
   LOG(info) << "** Original L1Station array content **";
   int nStations = fInitManager.GetStationsNumber();
-  for (int iSt = 0; iSt < nStations; ++iSt) {
+  for (int iSt = 0; iSt < NStations; ++iSt) {
     LOG(info) << "Station Global No: " << iSt << ' ' << vStations[iSt].ToString(/*verbosity = */ 0);
   }
-  //LOG(info) << "** New L1Station array content **";
-  //nStations = fInitManager.GetStationsNumber();
-  //for (int iSt = 0; iSt < nStations; ++iSt) {
-  //  LOG(info) << "Station Global No: " << iSt;
-  //  LOG(info) << '\n' << fStationsNew[iSt].ToString(/*verbosity = */ 0);
-  //}
+  LOG(info) << "** New L1Station array content **";
+  for (int iSt = 0; iSt < fNstations; ++iSt) {
+    LOG(info) << "Station Global No: " << iSt;
+    LOG(info) << '\n' << fStations[iSt].ToString(/*verbosity = */ 0);
+  }
 
   // Print L1Parameters
   fParameters.Print(/*verbosity=*/0);
@@ -352,7 +354,7 @@ void L1Algo::SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<unsign
 
 void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, char iS)
 {
-  L1Station& sta = vStations[int(iS)];
+  L1Station& sta = fStations[int(iS)];
   fscal u        = _h.u;
   fscal v        = _h.v;
   _x             = (sta.xInfo.sin_phi[0] * u + sta.xInfo.cos_phi[0] * v) / (_h.z - fCbmTargetZ[0]);

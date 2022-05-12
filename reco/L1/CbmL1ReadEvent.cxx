@@ -110,7 +110,7 @@ struct TmpHit {
   /// \param st       reference to the station info object
   // TODO: Probably, L1Station& st parameter should be constant. Do we really want to modify a station here? (S.Zharko)
   void CreateHitFromPoint(const CbmL1MCPoint& point, int det, int nTmpHits, int nStripF, int ip, int& NStrips,
-                          L1Station& st)
+                          const L1Station& st)
   {
     ExtIndex = 0;
     Det      = det;
@@ -156,7 +156,7 @@ struct TmpHit {
   /// \param point  constant reference to the input MC-point
   /// \param st     reference to the station info object
   // TODO: Probably, L1Station& st parameter should be constant. Do we really want to modify a station here? (S.Zharko)
-  void SetHitFromPoint(const CbmL1MCPoint& point, L1Station& st)
+  void SetHitFromPoint(const CbmL1MCPoint& point, const L1Station& st)
   {
     x       = 0.5 * (point.xIn + point.xOut) + gRandom->Gaus(0, dx);
     y       = 0.5 * (point.yIn + point.yOut) + gRandom->Gaus(0, dy);
@@ -266,7 +266,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 1)) {
             MC.iStation     = -1;
-            L1Station* sta  = algo->vStations; // TODO: Wrap it into interface algo->GetStations() (S.Zharko)
+            const L1Station* sta  = algo->GetStations().begin(); 
             double bestDist = 1.e20;
             for (Int_t iSt = 0; iSt < NMvdStations; iSt++) {
               // use z_in since z_out is sometimes very wrong
@@ -303,7 +303,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 0)) {
             MC.iStation     = -1;
-            L1Station* sta  = algo->vStations + NMvdStations;
+            const L1Station* sta  = algo->GetStations().begin() + NMvdStations;
             double bestDist = 1.e20;
             for (Int_t iSt = 0; iSt < NStsStations; iSt++) {
               // use z_in since z_out is sometimes very wrong
@@ -339,7 +339,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 2)) {
             MC.iStation    = -1;
-            L1Station* sta = algo->vStations + NMvdStations + NStsStations;
+            const L1Station* sta = algo->GetStations().begin() + NMvdStations + NStsStations;
             for (Int_t iSt = 0; iSt < NMuchStations; iSt++) {
               if (MC.z > sta[iSt].z[0] - 2.5) { MC.iStation = NMvdStations + NStsStations + iSt; }
             }
@@ -364,7 +364,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 3)) {
             MC.iStation    = -1;
-            L1Station* sta = algo->vStations + NMvdStations + NStsStations + NMuchStations;
+            const L1Station* sta = algo->GetStations().begin() + NMvdStations + NStsStations + NMuchStations;
             for (Int_t iSt = 0; iSt < NTrdStations; iSt++) {
               if (MC.z > sta[iSt].z[0] - 4.0) { MC.iStation = NMvdStations + NStsStations + NMuchStations + iSt; }
             }
@@ -416,7 +416,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             Int_t IND_Track = trk_it->second;
 
             MC.iStation    = -1;
-            L1Station* sta = algo->vStations + NMvdStations + NStsStations + NMuchStations + NTrdStations;
+            const L1Station* sta = algo->GetStations().begin() + NMvdStations + NStsStations + NMuchStations + NTrdStations;
             for (Int_t iSt = 0; iSt < NTOFStation; iSt++)
               MC.iStation = (MC.z > sta[iSt].z[0] - 15)
                               ? (NMvdStations + NStsStations + NMuchStations + NTrdStations + iSt)
@@ -443,7 +443,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             if (!ReadMCPoint(&MC, TofPointToTrack[iTofSta][iMC], iFile, iEvent, 4)) {
 
               MC.iStation    = -1;
-              L1Station* sta = algo->vStations + NMvdStations + NStsStations + NMuchStations + NTrdStations;
+              const L1Station* sta = algo->GetStations().begin() + NMvdStations + NStsStations + NMuchStations + NTrdStations;
               for (Int_t iSt = 0; iSt < NTOFStation; iSt++)
                 MC.iStation = (MC.z > sta[iSt].z[0] - 15)
                                 ? (NMvdStations + NStsStations + NMuchStations + NTrdStations + iSt)
@@ -534,7 +534,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.y = pos.Y();
         th.z = pos.Z();
 
-        L1Station& st = algo->vStations[th.iStation];
+        const L1Station& st = algo->GetStations()[th.iStation];
         th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
         th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
@@ -575,7 +575,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       //            << p.time << " mc " << p.ID << " p " << p.p << endl;
       TmpHit th;
       int DetId = 1;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->vStations[p.iStation]);
+      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetStations()[p.iStation]);
       tmpHits.push_back(th);
       nStsHits++;
     }
@@ -652,7 +652,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.du = mh->GetDu();
         th.dv = mh->GetDv();
 
-        L1Station& st = algo->vStations[th.iStation];
+        const L1Station& st = algo->GetStations()[th.iStation];
         th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
         th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
@@ -736,7 +736,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       TmpHit th;
       int DetId = 2;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->vStations[p.iStation]);
+      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetStations()[p.iStation]);
 
       tmpHits.push_back(th);
       nMuchHits++;
@@ -791,7 +791,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.dv = mh->GetDy();
 
 
-        L1Station& st = algo->vStations[th.iStation];
+        const L1Station& st = algo->GetStations()[th.iStation];
         th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
         th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
@@ -817,7 +817,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
               if (trk_it == dFEI2vMCPoints.end()) continue;
               th.iMC = trk_it->second;
               if ((1 == fMuchUseMcHit) && (th.iMC > -1))
-                th.SetHitFromPoint(vMCPoints[th.iMC], algo->vStations[th.iStation]);
+                th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetStations()[th.iStation]);
             }
           }
         }
@@ -841,7 +841,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       TmpHit th;
       int DetId = 3;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->vStations[p.iStation]);
+      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetStations()[p.iStation]);
       tmpHits.push_back(th);
       nTrdHits++;
     }
@@ -902,7 +902,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       th.du = fabs(mh->GetDx());
       th.dv = fabs(mh->GetDy());
 
-      L1Station& st = algo->vStations[th.iStation];
+      const L1Station& st = algo->GetStations()[th.iStation];
       th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
       th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
 
@@ -921,7 +921,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
             if ((1 == fTrdUseMcHit) && (th.iMC > -1))  //SG!!! replace hits by MC points
 
-              th.SetHitFromPoint(vMCPoints[th.iMC], algo->vStations[th.iStation]);
+              th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetStations()[th.iStation]);
 
             if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {  //SG!!! replace hits by MC points
 
@@ -987,7 +987,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       TmpHit th;
 
       int DetId = 4;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->vStations[p.iStation]);
+      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetStations()[p.iStation]);
       tmpHits.push_back(th);
 
       nTofHits++;
@@ -1058,7 +1058,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       if (stIdx == -1) continue;
       th.iStation = stIdx;
 
-      L1Station& st = algo->vStations[th.iStation];
+      const L1Station& st = algo->GetStations()[th.iStation];
       th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
       th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
 
@@ -1082,7 +1082,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           Double_t dtrck          = dFEI(iFile, iEvent, pt->GetTrackID());
           DFEI2I::iterator trk_it = dFEI2vMCPoints.find(dtrck);
           if (trk_it != dFEI2vMCPoints.end()) th.iMC = TofPointToTrack[sttof][trk_it->second];
-          if ((1 == fTofUseMcHit) && (th.iMC > -1)) th.SetHitFromPoint(vMCPoints[th.iMC], algo->vStations[th.iStation]);
+          if ((1 == fTofUseMcHit) && (th.iMC > -1)) th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetStations()[th.iStation]);
         }
       }
 

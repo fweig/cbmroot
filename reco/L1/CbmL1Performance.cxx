@@ -318,9 +318,9 @@ void CbmL1::EfficienciesPerformance()
     //     }
   }
 
-  int sta_nhits[algo->NStations], sta_nfakes[algo->NStations];
+  int sta_nhits[algo->GetNstations()], sta_nfakes[algo->GetNstations()];
 
-  for (int i = 0; i < algo->NStations; i++) {
+  for (int i = 0; i < algo->GetNstations(); i++) {
     sta_nhits[i]  = 0;
     sta_nfakes[i] = 0;
   }
@@ -457,7 +457,7 @@ void CbmL1::EfficienciesPerformance()
     if (fVerbose > 1) {
       ntra.PrintEff();
       cout << "Number of true and fake hits in stations: " << endl;
-      for (int i = 0; i < algo->NStations; i++) {
+      for (int i = 0; i < algo->GetNstations(); i++) {
         cout << sta_nhits[i] - sta_nfakes[i] << "+" << sta_nfakes[i] << "   ";
       }
       cout << endl;
@@ -798,8 +798,8 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
       CbmL1HitStore& h2 = vHitStore[prtra->StsHits[1]];
       h_ghost_fstation->Fill(h1.iStation);
       h_ghost_r->Fill(sqrt(fabs(h1.x * h1.x + h1.y * h1.y)));
-      double z1 = algo->vStations[h1.iStation].z[0];
-      double z2 = algo->vStations[h2.iStation].z[0];
+      double z1 = algo->GetStations()[h1.iStation].z[0];
+      double z2 = algo->GetStations()[h2.iStation].z[0];
       if (fabs(z2 - z1) > 1.e-4) {
         h_ghost_tx->Fill((h2.x - h1.x) / (z2 - z1));
         h_ghost_ty->Fill((h2.y - h1.y) / (z2 - z1));
@@ -990,8 +990,8 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
       //      CbmL1HitStore &ph21 = vHitStore[mtra.StsHits[0]];
       //      CbmL1HitStore &ph22 = vHitStore[mtra.StsHits[1]];
 
-      //      double z21 = algo->vStations[ph21.iStation].z[0];
-      //      double z22 = algo->vStations[ph22.iStation].z[0];
+      //      double z21 = algo->GetStations()[ph21.iStation].z[0];
+      //      double z22 = algo->GetStations()[ph22.iStation].z[0];
       //      if( fabs(z22-z21)>1.e-4 ){
       //        h_notfound_tx->Fill((ph22.x-ph21.x)/(z22-z21));
       //        h_notfound_ty->Fill((ph22.y-ph21.y)/(z22-z21));
@@ -1191,7 +1191,7 @@ void CbmL1::TrackFitPerformance()
       for (unsigned int iMCPoint = 0; iMCPoint < mc.Points.size(); iMCPoint++) {
         const int iMCP    = mc.Points[iMCPoint];
         CbmL1MCPoint& mcP = vMCPoints[iMCP];
-        L1Station& st     = algo->vStations[mcP.iStation];
+        const L1Station& st     = algo->GetStations()[mcP.iStation];
         z[ih]             = st.z[0];
         if (ih > 0 && (z[ih] - z[ih - 1]) < 0.1) continue;
         st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
@@ -1302,7 +1302,7 @@ void CbmL1::TrackFitPerformance()
       for (unsigned int iMCPoint = 0; iMCPoint < mc.Points.size(); iMCPoint++) {
         const int iMCP    = mc.Points[iMCPoint];
         CbmL1MCPoint& mcP = vMCPoints[iMCP];
-        L1Station& st     = algo->vStations[mcP.iStation];
+        const L1Station& st     = algo->GetStations()[mcP.iStation];
         z[ih]             = st.z[0];
         if (ih > 0 && (z[ih] - z[ih - 1]) < 0.1) continue;
         st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
@@ -1373,7 +1373,7 @@ void CbmL1::TrackFitPerformance()
             if (ih >= mc.Points.size()) continue;  //If nofMCPoints in track < 3
             const int iMCP    = mc.Points[ih];
             CbmL1MCPoint& mcP = vMCPoints[iMCP];
-            L1Station& st     = algo->vStations[mcP.iStation];
+            const L1Station& st     = algo->GetStations()[mcP.iStation];
             z[ih]             = st.z[0];
             st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
           };
@@ -1382,12 +1382,12 @@ void CbmL1::TrackFitPerformance()
           L1Extrapolate(trPar, mc.z, trPar.qp, fld);
           // add material
           const int fSta = vHitStore[it->StsHits[0]].iStation;
-          const int dir  = int((mc.z - algo->vStations[fSta].z[0]) / fabs(mc.z - algo->vStations[fSta].z[0]));
-          //         if (abs(mc.z - algo->vStations[fSta].z[0]) > 10.) continue; // can't extrapolate on large distance
+          const int dir  = int((mc.z - algo->GetStations()[fSta].z[0]) / fabs(mc.z - algo->GetStations()[fSta].z[0]));
+          //         if (abs(mc.z - algo->GetStations()[fSta].z[0]) > 10.) continue; // can't extrapolate on large distance
           for (int iSta = fSta /*+dir*/;
-               (iSta >= 0) && (iSta < NStation) && (dir * (mc.z - algo->vStations[iSta].z[0]) > 0); iSta += dir) {
+               (iSta >= 0) && (iSta < NStation) && (dir * (mc.z - algo->GetStations()[iSta].z[0]) > 0); iSta += dir) {
             //           cout << iSta << " " << dir << endl;
-            fit.L1AddMaterial(trPar, algo->vStations[iSta].materialInfo, trPar.qp, 1);
+            fit.L1AddMaterial(trPar, algo->GetStations()[iSta].materialInfo, trPar.qp, 1);
             if (iSta + dir == NMvdStations - 1) fit.L1AddPipeMaterial(trPar, trPar.qp, 1);
           }
         }
@@ -1436,7 +1436,7 @@ void CbmL1::TrackFitPerformance()
           int ih = 1;
           for (unsigned int iHit = 0; iHit < it->StsHits.size(); iHit++) {
             const int iStation = vHitStore[it->StsHits[iHit]].iStation;
-            L1Station& st      = algo->vStations[iStation];
+            const L1Station& st      = algo->GetStations()[iStation];
             z[ih]              = st.z[0];
             st.fieldSlice.GetFieldValue(vHitStore[it->StsHits[iHit]].x, vHitStore[it->StsHits[iHit]].y, B[ih]);
             ih++;
@@ -1447,18 +1447,18 @@ void CbmL1::TrackFitPerformance()
           // add material
           const int fSta = vHitStore[it->StsHits[0]].iStation;
 
-          const int dir = (mc.z - algo->vStations[fSta].z[0]) / abs(mc.z - algo->vStations[fSta].z[0]);
-          //         if (abs(mc.z - algo->vStations[fSta].z[0]) > 10.) continue; // can't extrapolate on large distance
+          const int dir = (mc.z - algo->GetStations()[fSta].z[0]) / abs(mc.z - algo->GetStations()[fSta].z[0]);
+          //         if (abs(mc.z - algo->GetStations()[fSta].z[0]) > 10.) continue; // can't extrapolate on large distance
 
           for (int iSta = fSta + dir;
-               (iSta >= 0) && (iSta < NStation) && (dir * (mc.z - algo->vStations[iSta].z[0]) > 0); iSta += dir) {
+               (iSta >= 0) && (iSta < NStation) && (dir * (mc.z - algo->GetStations()[iSta].z[0]) > 0); iSta += dir) {
 
-            z[0]     = algo->vStations[iSta].z[0];
+            z[0]     = algo->GetStations()[iSta].z[0];
             float dz = z[1] - z[0];
-            algo->vStations[iSta].fieldSlice.GetFieldValue(trPar.x - trPar.tx * dz, trPar.y - trPar.ty * dz, B[0]);
+            algo->GetStations()[iSta].fieldSlice.GetFieldValue(trPar.x - trPar.tx * dz, trPar.y - trPar.ty * dz, B[0]);
             fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
 
-            L1Extrapolate(trPar, algo->vStations[iSta].z[0], trPar.qp, fld);
+            L1Extrapolate(trPar, algo->GetStations()[iSta].z[0], trPar.qp, fld);
             fit.L1AddMaterial(trPar, algo->fRadThick[iSta].GetRadThick(trPar.x, trPar.y), trPar.qp, 1);
             fit.EnergyLossCorrection(trPar, algo->fRadThick[iSta].GetRadThick(trPar.x, trPar.y), trPar.qp, fvec(1.f),
                                      fvec(1.f));
@@ -1613,7 +1613,7 @@ void CbmL1::FieldApproxCheck()
 
     const int M   = 5;  // polinom order
     const int N   = (M + 1) * (M + 2) / 2;
-    L1Station& st = algo->vStations[ist];
+    const L1Station& st = algo->GetStations()[ist];
     for (int i = 0; i < N; i++) {
       FSl.cx[i] = st.fieldSlice.cx[i][0];
       FSl.cy[i] = st.fieldSlice.cy[i][0];
@@ -1982,8 +1982,8 @@ void CbmL1::InputPerformance()
           pullTsts->Fill((sh->GetTime() - mcTime) / sh->GetTimeError());
         }
         else {  // errors used in TF
-          pullXsts->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
-          pullYsts->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->vStations[NMvdStations].XYInfo.C11[0]));
+          pullXsts->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->GetStations()[NMvdStations].XYInfo.C00[0]));
+          pullYsts->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->GetStations()[NMvdStations].XYInfo.C11[0]));
         }
 
         resXsts->Fill((hitPos.X() - mcPos.X()) * 10 * 1000);
@@ -2028,8 +2028,8 @@ void CbmL1::InputPerformance()
       //       if (hitErr.X() != 0) pullX->Fill( (hitPos.X() - mcPos.X()) / sh->GetDx() ); // qa errors
       //       if (hitErr.Y() != 0) pullY->Fill( (hitPos.Y() - mcPos.Y()) / sh->GetDy() );
       if (hitErr.X() != 0)
-        pullXmvd->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->vStations[0].XYInfo.C00[0]));  // errors used in TF
-      if (hitErr.Y() != 0) pullYmvd->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->vStations[0].XYInfo.C11[0]));
+        pullXmvd->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->GetStations()[0].XYInfo.C00[0]));  // errors used in TF
+      if (hitErr.Y() != 0) pullYmvd->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->GetStations()[0].XYInfo.C11[0]));
 
       resXmvd->Fill((hitPos.X() - mcPos.X()) * 10 * 1000);
       resYmvd->Fill((hitPos.Y() - mcPos.Y()) * 10 * 1000);
@@ -2095,8 +2095,8 @@ void CbmL1::InputPerformance()
         pullTmuch->Fill((h.t - mcTime) / sh->GetTimeError());
       }
       else {  // errors used in TF
-        pullXmuch->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
-        pullYmuch->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->vStations[NMvdStations].XYInfo.C11[0]));
+        pullXmuch->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->GetStations()[NMvdStations].XYInfo.C00[0]));
+        pullYmuch->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->GetStations()[NMvdStations].XYInfo.C11[0]));
       }
 
       resXmuch->Fill((h.x - mcPos.X()) * 10 * 1000);
@@ -2162,8 +2162,8 @@ void CbmL1::InputPerformance()
         pullTtrd->Fill((h.t - mcTime) / sh->GetTimeError());
       }
       else {  // errors used in TF
-        pullXtrd->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
-        pullYtrd->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->vStations[NMvdStations].XYInfo.C11[0]));
+        pullXtrd->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->GetStations()[NMvdStations].XYInfo.C00[0]));
+        pullYtrd->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->GetStations()[NMvdStations].XYInfo.C11[0]));
       }
 
       resXtrd->Fill((h.x - mcPos.X()) * 10 * 1000);
@@ -2230,8 +2230,8 @@ void CbmL1::InputPerformance()
         pullTtof->Fill((sh->GetTime() - mcTime) / sh->GetTimeError());
       }
       else {  // errors used in TF
-        pullXtof->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->vStations[NMvdStations].XYInfo.C00[0]));
-        pullYtof->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->vStations[NMvdStations].XYInfo.C11[0]));
+        pullXtof->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->GetStations()[NMvdStations].XYInfo.C00[0]));
+        pullYtof->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->GetStations()[NMvdStations].XYInfo.C11[0]));
       }
 
       resXtof->Fill((h.x - mcPos.X()) * 10 * 1000);
