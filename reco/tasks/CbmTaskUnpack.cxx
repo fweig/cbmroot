@@ -22,7 +22,9 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#ifdef WITH_EXECUTION
 #include <execution>
+#endif
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -71,7 +73,7 @@ void CbmTaskUnpack::Exec(Option_t*)
   uint64_t numCompUsed = 0;
 
   // ---  Component loop
-#pragma omp parallel for schedule(dynamic) default(none) shared(timeslice) reduction(+: numMs, numBytes, numDigis, numCompUsed)
+#pragma omp parallel for schedule(dynamic) shared(timeslice) reduction(+ : numMs, numBytes, numDigis, numCompUsed)
   for (uint64_t comp = 0; comp < timeslice->num_components(); comp++) {
 
     auto systemId = static_cast<fles::SubsystemIdentifier>(timeslice->descriptor(comp, 0).sys_id);
@@ -124,9 +126,13 @@ void CbmTaskUnpack::Exec(Option_t*)
   }  //# component
 
   // --- Sorting of output digis. Is required by both digi trigger and event builder.
+#ifdef WITH_EXECUTION
   std::sort(std::execution::par_unseq, fTimeslice->fData.fSts.fDigis.begin(), fTimeslice->fData.fSts.fDigis.end(),
             [](CbmStsDigi digi1, CbmStsDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
-
+#else
+  std::sort(fTimeslice->fData.fSts.fDigis.begin(), fTimeslice->fData.fSts.fDigis.end(),
+            [](CbmStsDigi digi1, CbmStsDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
+#endif
 
   // --- Timeslice log
   timer.Stop();

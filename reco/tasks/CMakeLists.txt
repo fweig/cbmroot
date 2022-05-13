@@ -2,7 +2,6 @@
 # V. Friese,     2 June 2021
 
 
-
 # -----   Library name   ----------------------------------
 Set(LIBRARY_NAME CbmRecoTasks)
 # ---------------------------------------------------------
@@ -81,6 +80,25 @@ endif()
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
 # ---------------------------------------------------------
 
+# Check if the compiler supports std::execution in the respective STL
+# library
+CHECK_CXX_SOURCE_COMPILES("
+#include <numeric>
+#include <vector>
+#include <execution>
+
+int main(int argc, char *argv[])
+{
+    std::vector<double> v(10, 1);
+
+    auto result = std::reduce(std::execution::par, v.begin(), v.end());
+    return 0;
+}" HAS_STD_EXECUTION)
+
+if (HAS_STD_EXECUTION)
+  message("Execution is available in STL")
+  add_definitions(-DWITH_EXECUTION)
+endif()
 
 # -----  Let cmake do the job   ---------------------------
 include_directories( ${INCLUDE_DIRECTORIES})
