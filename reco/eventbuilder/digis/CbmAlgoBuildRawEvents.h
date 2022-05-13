@@ -97,9 +97,9 @@ static const RawEventBuilderDetector kRawEventBuilderDetSts =
 static const RawEventBuilderDetector kRawEventBuilderDetMuch =
   RawEventBuilderDetector(ECbmModuleId::kMuch, ECbmDataType::kMuchDigi, "Much");
 static const RawEventBuilderDetector kRawEventBuilderDetTrd =
-  RawEventBuilderDetector(ECbmModuleId::kTrd, ECbmDataType::kTrdDigi, "Trd");
+  RawEventBuilderDetector(ECbmModuleId::kTrd, ECbmDataType::kTrdDigi, "Trd1D");
 static const RawEventBuilderDetector kRawEventBuilderDetTrd2D =
-  RawEventBuilderDetector(ECbmModuleId::kTrd2d, ECbmDataType::kTrdDigi, "kTrd2D");
+  RawEventBuilderDetector(ECbmModuleId::kTrd2d, ECbmDataType::kTrdDigi, "Trd2D");
 static const RawEventBuilderDetector kRawEventBuilderDetTof =
   RawEventBuilderDetector(ECbmModuleId::kTof, ECbmDataType::kTofDigi, "Tof");
 static const RawEventBuilderDetector kRawEventBuilderDetRich =
@@ -268,15 +268,10 @@ private:
 
   TStopwatch* fTimer = nullptr;  //! is create when fbGetTimings is set before init
 
-  RawEventBuilderDetector fRefDet             = RawEventBuilderDetector(ECbmModuleId::kT0, ECbmDataType::kT0Digi, "T0");
+  RawEventBuilderDetector fRefDet             = kRawEventBuilderDetT0;
   std::vector<RawEventBuilderDetector> fvDets = {
-    RawEventBuilderDetector(ECbmModuleId::kSts, ECbmDataType::kStsDigi, "kSts"),
-    RawEventBuilderDetector(ECbmModuleId::kMuch, ECbmDataType::kMuchDigi, "kMuch"),
-    RawEventBuilderDetector(ECbmModuleId::kTrd, ECbmDataType::kTrdDigi, "kTrd"),
-    RawEventBuilderDetector(ECbmModuleId::kTrd2d, ECbmDataType::kTrdDigi, "kTrd2D"),
-    RawEventBuilderDetector(ECbmModuleId::kTof, ECbmDataType::kTofDigi, "kTof"),
-    RawEventBuilderDetector(ECbmModuleId::kRich, ECbmDataType::kRichDigi, "kRich"),
-    RawEventBuilderDetector(ECbmModuleId::kPsd, ECbmDataType::kPsdDigi, "kPsd")};
+    kRawEventBuilderDetSts, kRawEventBuilderDetMuch, kRawEventBuilderDetTrd, kRawEventBuilderDetTrd2D,
+    kRawEventBuilderDetTof, kRawEventBuilderDetRich, kRawEventBuilderDetPsd};
 
   Double_t fdEarliestTimeWinBeg = kdDefaultTimeWinBeg;
   Double_t fdLatestTimeWinEnd   = kdDefaultTimeWinEnd;

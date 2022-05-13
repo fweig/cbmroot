@@ -1217,11 +1217,11 @@ void CbmAlgoBuildRawEvents::FillHistos()
             if (nullptr == pDigi) continue;
             dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
             if (pDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kSPADIC) {
-              if (fvDets[uDetIdx].sName == "kTrd2D") continue;
+              if (fvDets[uDetIdx].sName == "Trd2D") continue;
               ++uNbDataTrd1d;
             }
             else if (pDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kFASP) {
-              if (fvDets[uDetIdx].sName == "kTrd") continue;
+              if (fvDets[uDetIdx].sName == "Trd1D") continue;
               ++uNbDataTrd2d;
             }
             break;
@@ -1331,11 +1331,11 @@ void CbmAlgoBuildRawEvents::FillHistos()
               if (nullptr == pDigi) continue;
               dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
               if (pDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kSPADIC) {
-                if (fRefDet.sName == "kTrd2D") continue;
+                if (fRefDet.sName == "Trd2D") continue;
                 ++uNbDataTrd1d;
               }
               else if (pDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kFASP) {
-                if (fRefDet.sName == "kTrd") continue;
+                if (fRefDet.sName == "Trd1D") continue;
                 ++uNbDataTrd2d;
               }
               break;
@@ -1381,11 +1381,11 @@ void CbmAlgoBuildRawEvents::FillHistos()
         fvhNbDigiPerEvtDet[uDetIdx]->Fill(uNbDataTof);
         fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTof);
       }
-      else if (fvDets[uDetIdx].sName == "kTrd") {
+      else if (fvDets[uDetIdx].sName == "Trd1D") {
         fvhNbDigiPerEvtDet[uDetIdx]->Fill(uNbDataTrd1d);
         fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTrd1d);
       }
-      else if (fvDets[uDetIdx].sName == "kTrd2D") {
+      else if (fvDets[uDetIdx].sName == "Trd2D") {
         fvhNbDigiPerEvtDet[uDetIdx]->Fill(uNbDataTrd2d);
         fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTrd2d);
       }
@@ -1406,11 +1406,11 @@ void CbmAlgoBuildRawEvents::FillHistos()
       fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTof);
       fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTof);
     }
-    else if (fRefDet.sName == "kTrd") {
+    else if (fRefDet.sName == "Trd1D") {
       fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTrd1d);
       fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTrd1d);
     }
-    else if (fRefDet.sName == "kTrd2D") {
+    else if (fRefDet.sName == "Trd2D") {
       fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTrd2d);
       fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTrd2d);
     }
