@@ -331,6 +331,8 @@ bool CbmTrdUnpackAlgoR::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
 {
   bool unpackOk = true;
 
+  if (fMonitor) fMonitor->SetCurrentTimesliceStartTime(fTsStartTime);
+
   auto msdesc = ts->descriptor(icomp, imslice);
 
   // Get the µSlice starttime relative to the timeslice starttime.

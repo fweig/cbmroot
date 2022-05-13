@@ -80,14 +80,21 @@ public:
     kSampleDistStdDev,
     kSample0perChannel,
     kHitType,
+    kRawRate,
   };
 
   /** @brief Enum for the predefined other histograms. */
   enum class eOtherHistos : size_t
   {
     kSpadic_Info_Types = 0,
-    kMs_Flags
+    kMs_Flags,
+    kBomRate,
+    kBufRate,
+    kBomPerRawRate
   };
+
+  /** @brief Constant which defines the lenght of the time axis in seconds of plots which display a quantity over time. */
+  static const std::uint32_t kTimeplotLenghtSeconds = 600;  // 10 minuntes
 
   /** @brief Create the Cbm Trd Unpack AlgoBase object */
   CbmTrdUnpackMonitor(/* args */);
@@ -146,6 +153,9 @@ public:
 
   /** @brief Set digi outpout vector (to make it usable for correlations) */
   void SetDigiOutputVec(std::vector<CbmTrdDigi>* digiOutputVec) { fDigiOutputVec = digiOutputVec; }
+
+  /** @brief Set the start time of the current timeslice in ns */
+  void SetCurrentTimesliceStartTime(std::uint64_t time) { fCurrentTimesliceStartTimeNs = time; };
 
 
 protected:
@@ -326,6 +336,12 @@ protected:
   /** @brief Fill the NeighborTrigger Checking Histogram */
   void fillNtCorrHisto(std::shared_ptr<TH1> histo, CbmTrdDigi* digi);
 
+  /** @brief Reset the contents of all timeplots */
+  void resetTimeplots();
+
+  /** @brief Adjust the boundaries of all timeplots to contain newtime */
+  void adjustTimeplots(std::uint64_t newtime);
+
   // Member variables
   /** @brief Digi histogram pointers stored in a map together with the module id */
   std::map<eDigiHistos, std::map<std::uint32_t, std::shared_ptr<TH1>>> fDigiHistoMap = {};
@@ -375,6 +391,15 @@ protected:
 
   // All other parameters and containers
   std::shared_ptr<CbmTrdSpadic> fSpadic = nullptr;
+
+  /** @brief Variable which holds the start time in ns of the current time axis of plots which display a quantity over time */
+  std::uint64_t fCurrentTimeplotStartNs = 0;
+
+  /** @brief Variable which holds the start time in ns of the current timeslice */
+  std::uint64_t fCurrentTimesliceStartTimeNs = 0;
+
+  /** @brief Variable which holds the time in ns of the last processed raw message */
+  std::uint64_t fLastRawTime = 0;
 
 private:
   ClassDef(CbmTrdUnpackMonitor, 2)

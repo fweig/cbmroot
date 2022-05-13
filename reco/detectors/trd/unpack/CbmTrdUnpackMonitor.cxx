@@ -52,18 +52,62 @@ void CbmTrdUnpackMonitor::FillHistos(CbmTrdDigi* digi, CbmTrdRawMessageSpadic* r
       auto histo      = modulepair->second;
       fillHisto(raw, pair.first, histo, digi);
     }
+
+    /* Always save the time of the last processed raw message to use it as time
+       for BUF/BOM messages which have no time information themselves.
+       raw->GetTime() is relative to TS start only, so one needs to add fCurrentTimesliceStartTimeNs to it.
+    */
+    fLastRawTime = fCurrentTimesliceStartTimeNs + raw->GetTime();
   }
 }
 
 // ---- FillHistos ----
 void CbmTrdUnpackMonitor::FillHisto(Spadic::MsInfoType type, std::uint32_t moduleid)
 {
-  auto pair = fOtherHistoMap.find(eOtherHistos::kSpadic_Info_Types);
-  if (pair == fOtherHistoMap.end()) return;
+  //kSpadic_Info_Types
+  {
+    auto pair = fOtherHistoMap.find(eOtherHistos::kSpadic_Info_Types);
+    if (pair != fOtherHistoMap.end()) {
+      auto histo = pair->second.find(moduleid)->second;
+      histo->Fill(static_cast<std::uint32_t>(type));
+    }
+  }
 
-  auto histo = pair->second.find(moduleid)->second;
+  //kBomRate
+  if (type == Spadic::MsInfoType::kBOM) {
+    auto pair = fOtherHistoMap.find(eOtherHistos::kBomRate);
+    if (pair != fOtherHistoMap.end()) {
+      auto histo = pair->second.find(moduleid)->second;
+      histo->Fill((fLastRawTime - fCurrentTimeplotStartNs) * 1.0 / 1E9, 10);
+    }
+  }
 
-  histo->Fill(static_cast<std::uint32_t>(type));
+  //kBufRate
+  if (type == Spadic::MsInfoType::kBUF) {
+    auto pair = fOtherHistoMap.find(eOtherHistos::kBufRate);
+    if (pair != fOtherHistoMap.end()) {
+      auto histo = pair->second.find(moduleid)->second;
+      histo->Fill((fLastRawTime - fCurrentTimeplotStartNs) * 1.0 / 1E9, 10);
+    }
+  }
+
+  //kBomPerRawRate
+  if (type == Spadic::MsInfoType::kBOM) {
+    auto pairBomPerRawRate = fOtherHistoMap.find(eOtherHistos::kBomPerRawRate);
+    auto pairBomRate       = fOtherHistoMap.find(eOtherHistos::kBomRate);
+    auto pairRawRate       = fRawHistoMap.find(eRawHistos::kRawRate);
+    if (pairBomPerRawRate != fOtherHistoMap.end() && pairBomRate != fOtherHistoMap.end()
+        && pairRawRate != fRawHistoMap.end()) {
+      auto histoBomPerRawRate = pairBomPerRawRate->second.find(moduleid)->second;
+      auto histoBomRate       = pairBomRate->second.find(moduleid)->second;
+      auto histoRawRate       = pairRawRate->second.find(moduleid)->second;
+
+      Int_t modifiedBin = histoBomRate->FindBin((fLastRawTime - fCurrentTimeplotStartNs) * 1.0 / 1E9);
+      if (histoRawRate->GetBinContent(modifiedBin) != 0)
+        histoBomPerRawRate->SetBinContent(modifiedBin, histoBomRate->GetBinContent(modifiedBin)
+                                                         / histoRawRate->GetBinContent(modifiedBin));
+    }
+  }
 }
 
 // ---- FillHistos ----
@@ -271,6 +315,12 @@ void CbmTrdUnpackMonitor::createHisto(eRawHistos kHisto)
         newhisto->SetXTitle("Spadic::eTriggerType");
         newhisto->SetYTitle("Counts");
         break;
+      case eRawHistos::kRawRate:
+        newhisto = std::make_shared<TH1D>(histoname.data(), histoname.data(), kTimeplotLenghtSeconds * 10 + 1, -0.05,
+                                          kTimeplotLenghtSeconds + 0.05);
+        newhisto->SetXTitle("Time t [s]");
+        newhisto->SetYTitle("Rate [Hz]");
+        break;
       default: return; break;
     }
     LOG(debug) << Class_Name() << "::CreateHisto() HistoRaw " << static_cast<size_t>(kHisto) << " Module " << moduleid
@@ -316,6 +366,15 @@ void CbmTrdUnpackMonitor::createHisto(eOtherHistos kHisto)
         newhisto->GetXaxis()->SetBinLabel((static_cast<int>(fles::MicrosliceFlags::OverflowFlim) + 1), "OverflowFlim");
         newhisto->GetXaxis()->SetBinLabel((static_cast<int>(fles::MicrosliceFlags::OverflowUser) + 1), "OverflowUser");
         newhisto->GetXaxis()->SetBinLabel((static_cast<int>(fles::MicrosliceFlags::DataError) + 1), "DataError");
+        break;
+      }
+      case eOtherHistos::kBomRate:
+      case eOtherHistos::kBufRate:
+      case eOtherHistos::kBomPerRawRate: {
+        newhisto = std::make_shared<TH1D>(histoname.data(), histoname.data(), kTimeplotLenghtSeconds * 10 + 1, -0.05,
+                                          kTimeplotLenghtSeconds + 0.05);
+        newhisto->SetXTitle("Time t [s]");
+        newhisto->SetYTitle("Rate [Hz]");
         break;
       }
       default: return; break;
@@ -435,6 +494,12 @@ void CbmTrdUnpackMonitor::fillHisto(CbmTrdRawMessageSpadic* raw, eRawHistos kHis
       break;
     }
     case eRawHistos::kHitType: histo->Fill(static_cast<int>(raw->GetHitType())); break;
+    case eRawHistos::kRawRate:
+      //raw->GetTime() is relative to TS start only, so one needs to add fCurrentTimesliceStartTimeNs to it
+      adjustTimeplots(fCurrentTimesliceStartTimeNs + raw->GetTime());
+      histo->Fill((fCurrentTimesliceStartTimeNs + (std::uint64_t) raw->GetTime() - fCurrentTimeplotStartNs) * 1.0 / 1E9,
+                  10);
+      break;
     default: return; break;
   }
 }
@@ -536,6 +601,7 @@ std::string CbmTrdUnpackMonitor::getHistoName(eRawHistos kHisto)
     case eRawHistos::kSampleDistStdDev: histoname += "SampleDistStdDev"; break;
     case eRawHistos::kSample0perChannel: histoname += "Sample0perChannel"; break;
     case eRawHistos::kHitType: histoname += "HitType"; break;
+    case eRawHistos::kRawRate: histoname += "RawRate"; break;
   }
   return histoname;
 }
@@ -548,6 +614,9 @@ std::string CbmTrdUnpackMonitor::getHistoName(eOtherHistos kHisto)
   switch (kHisto) {
     case eOtherHistos::kSpadic_Info_Types: histoname += "Spadic_Info_Types"; break;
     case eOtherHistos::kMs_Flags: histoname += "Ms_Flags"; break;
+    case eOtherHistos::kBomRate: histoname += "BomRate"; break;
+    case eOtherHistos::kBufRate: histoname += "BufRate"; break;
+    case eOtherHistos::kBomPerRawRate: histoname += "BomPerRawRate"; break;
   }
   return histoname;
 }
@@ -603,6 +672,46 @@ std::float_t CbmTrdUnpackMonitor::getSamplesStdDev(CbmTrdRawMessageSpadic* raw)
     dev += (sample - mean) * (sample - mean);
   }
   return std::sqrt(1.0 / raw->GetNrSamples() * dev);
+}
+
+// ---- resetTimeplots ----
+void CbmTrdUnpackMonitor::resetTimeplots()
+{
+  for (auto typemappair : fRawHistoMap) {
+    switch (typemappair.first) {
+      case eRawHistos::kRawRate:
+        for (auto histopair : typemappair.second) {
+          histopair.second->Reset("ICESM");
+        }
+        break;
+      default: break;
+    }
+  }
+  for (auto typemappair : fOtherHistoMap) {
+    switch (typemappair.first) {
+      case eOtherHistos::kBomRate:
+      case eOtherHistos::kBufRate:
+      case eOtherHistos::kBomPerRawRate:
+        for (auto histopair : typemappair.second) {
+          histopair.second->Reset("ICESM");
+        }
+        break;
+      default: break;
+    }
+  }
+}
+
+// ---- adjustTimeplots ----
+void CbmTrdUnpackMonitor::adjustTimeplots(std::uint64_t newtime)
+{
+  if (fCurrentTimeplotStartNs == 0) fCurrentTimeplotStartNs = newtime;
+
+  // shift timeplot start offset until the new time lies within the plot time boundaries
+  while (newtime > fCurrentTimeplotStartNs + kTimeplotLenghtSeconds * 1E9) {
+    fCurrentTimeplotStartNs += kTimeplotLenghtSeconds * 1E9;
+    std::cout << "adjusting timeplot start to " << fCurrentTimeplotStartNs << " ns" << std::endl;
+    resetTimeplots();
+  }
 }
 
 ClassImp(CbmTrdUnpackMonitor)
