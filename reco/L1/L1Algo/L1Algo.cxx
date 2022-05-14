@@ -93,7 +93,13 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
 
   // Print out the bits of the init manager
   LOG(info) << "InitManager " << fInitManager.GetInitController().ToString();
-  
+ 
+  // Get real target position
+  fRealTargetX = fInitManager.GetTargetPosition()[0];
+  fRealTargetY = fInitManager.GetTargetPosition()[1];
+  fRealTargetZ = fInitManager.GetTargetPosition()[2];
+
+  // Get number of station
   fNstations = fInitManager.GetStationsNumber();
 
   // Get field near target
@@ -111,6 +117,11 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
   LOG(info) << "  *  L1Algo parameters  *";
   LOG(info) << "  ***********************";
   LOG(info) << "";
+
+  LOG(info) << "----- Nominal target position -----";
+  LOG(info) << "\t target X = " << fRealTargetX;
+  LOG(info) << "\t target Y = " << fRealTargetY;
+  LOG(info) << "\t target Z = " << fRealTargetZ;
 
   LOG(info) << "----- Number of stations -----";
   LOG(info) << "\tTotal stations:           " << fNstations;
@@ -199,8 +210,8 @@ void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, char iS)
   L1Station& sta = fStations[int(iS)];
   fscal u        = _h.u;
   fscal v        = _h.v;
-  _x             = (sta.xInfo.sin_phi[0] * u + sta.xInfo.cos_phi[0] * v) / (_h.z - fCbmTargetZ[0]);
-  _y             = (sta.yInfo.cos_phi[0] * u + sta.yInfo.sin_phi[0] * v) / (_h.z - fCbmTargetZ[0]);
+  _x             = (sta.xInfo.sin_phi[0] * u + sta.xInfo.cos_phi[0] * v) / (_h.z - fRealTargetZ[0]);
+  _y             = (sta.yInfo.cos_phi[0] * u + sta.yInfo.sin_phi[0] * v) / (_h.z - fRealTargetZ[0]);
 }
 
 void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta)

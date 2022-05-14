@@ -416,7 +416,7 @@ inline void L1Algo::f20(
     // Pick_m22 is not used, search for mean squared, 2nd version
 
     // -- collect possible doublets --
-    const fscal iz         = 1.f / (T1.z[i1_4] - fCbmTargetZ[0]);
+    const fscal iz         = 1.f / (T1.z[i1_4] - fRealTargetZ[0]);
     const float& timeError = T1.C55[i1_4];
     const float& time      = T1.t[i1_4];
 
@@ -726,7 +726,7 @@ inline void L1Algo::f30(  // input
 #ifdef DO_NOT_SELECT_TRIPLETS
         if (isec == TRACKS_FROM_TRIPLETS_ITERATION) Pick_r22 = Pick_r2 + 1;
 #endif  // DO_NOT_SELECT_TRIPLETS
-        const fscal iz = 1.f / (T2.z[i2_4] - fCbmTargetZ[0]);
+        const fscal iz = 1.f / (T2.z[i2_4] - fRealTargetZ[0]);
         L1HitAreaTime area(vGridTime[&star - fStations.begin()], T2.x[i2_4] * iz, T2.y[i2_4] * iz,
                            (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + fMaxDZ * fabs(T2.tx))[i2_4] * iz,
                            (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + fMaxDZ * fabs(T2.ty))[i2_4] * iz, time,
@@ -1885,9 +1885,9 @@ void L1Algo::CATrackFinder()
         //fMaxSlope = 2.748;  // corresponds to 70 grad
 
         // define the target
-        fTargX = fCbmTargetX;
-        fTargY = fCbmTargetY;
-        fTargZ = fCbmTargetZ;
+        fTargX = fRealTargetX;
+        fTargY = fRealTargetY;
+        fTargZ = fRealTargetZ;
 
         float SigmaTargetX = caIteration.GetTargetPosSigmaX();
         float SigmaTargetY = caIteration.GetTargetPosSigmaY();  // target constraint [cm]
@@ -1911,7 +1911,7 @@ void L1Algo::CATrackFinder()
         //    || (isec == kAllSecJumpIter)) {  //use outer radius of the 1st station as a constraint // ?
         //  L1Station& st = fStations[0];
         //  SigmaTargetX = SigmaTargetY = 10;  //st.Rmax[0];
-        //  fTargZ                      = fCbmTargetZ;  // fCbmTargetZ-1.;
+        //  fTargZ                      = fRealTargetZ;  // fRealTargetZ-1.;
         //  st.fieldSlice.GetFieldValue(0, 0, fTargB);
         //}
 
@@ -2395,7 +2395,7 @@ void L1Algo::CATrackFinder()
                 float xcoor, ycoor = 0;
                 L1Station stah = fStations[0];
                 StripsToCoor(tempPoint.U(), tempPoint.V(), xcoor, ycoor, stah);
-                float zcoor = tempPoint.Z() - fCbmTargetZ[0];
+                float zcoor = tempPoint.Z() - fRealTargetZ[0];
 
                 float timeFlight = sqrt(xcoor * xcoor + ycoor * ycoor + zcoor * zcoor) / 30.f;  // c = 30[cm/ns]
                 sumTime += (hit.t - timeFlight);

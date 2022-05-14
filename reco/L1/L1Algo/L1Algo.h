@@ -398,7 +398,7 @@ public:
   /// Gets a pointer to the L1Algo initialization object
   L1InitManager* GetInitManager() { return &fInitManager; }
 
-  fvec GetCbmTargetZ() const { return fCbmTargetZ; }
+  fvec GetTargetZ() const { return fRealTargetZ; }
 
 private:
   L1Parameters fParameters {};                ///< Object of L1Algo parameters class
@@ -687,17 +687,17 @@ private:
 
   /// parameters which are different for different iterations. Set in the begin of CAL1TrackFinder
 
-  float fPickGather {L1Utils::kNaN};     // same for attaching additional hits to track
-  float fPickNeighbour {L1Utils::kNaN};  // (fPickNeighbour < dp/dp_error)  =>  triplets are neighbours
-  fvec fMaxInvMom {L1Utils::kNaN};       // max considered q/p for tracks
-  fvec fMaxSlopePV {L1Utils::kNaN};      // max slope (tx\ty) in prim vertex
-  float fMaxSlope {L1Utils::kNaN};       // max slope (tx\ty) in 3d hit position of a triplet
-  fvec fCbmTargetX {L1Utils::kNaN};      // target position
-  fvec fCbmTargetY {L1Utils::kNaN};
-  fvec fCbmTargetZ {L1Utils::kNaN};
-  fvec fTargX {L1Utils::kNaN};  // target position for the current iteration
-  fvec fTargY {L1Utils::kNaN};
-  fvec fTargZ {L1Utils::kNaN};
+  float fPickGather {L1Utils::kNaN};     ///< same for attaching additional hits to track
+  float fPickNeighbour {L1Utils::kNaN};  ///< (fPickNeighbour < dp/dp_error)  =>  triplets are neighbours
+  fvec fMaxInvMom {L1Utils::kNaN};       ///< max considered q/p for tracks
+  fvec fMaxSlopePV {L1Utils::kNaN};      ///< max slope (tx\ty) in prim vertex
+  float fMaxSlope {L1Utils::kNaN};       ///< max slope (tx\ty) in 3d hit position of a triplet
+  fvec fRealTargetX {L1Utils::kNaN};      ///< real target position x coordinate
+  fvec fRealTargetY {L1Utils::kNaN};      ///< real target position y coordinate
+  fvec fRealTargetZ {L1Utils::kNaN};      ///< real target position z coordinate
+  fvec fTargX {L1Utils::kNaN};           ///< target position x coordinate for the current iteration (modifiable)
+  fvec fTargY {L1Utils::kNaN};           ///< target position y coordinate for the current iteration (modifiable)
+  fvec fTargZ {L1Utils::kNaN};           ///< target position z coordinate for the current iteration (modifiable)
 
   L1FieldValue fTargB _fvecalignment {};               // field in the target point
   L1XYMeasurementInfo TargetXYInfo _fvecalignment {};  // target constraint  [cm]

@@ -399,9 +399,6 @@ InitStatus CbmL1::Init()
   {  // initialize field in the target region
     assert(CbmKF::Instance()->vTargets.size() > 0);
     auto& target      = CbmKF::Instance()->vTargets[0];
-    algo->fCbmTargetX = target.x;
-    algo->fCbmTargetY = target.y;
-    algo->fCbmTargetZ = target.z;
 
     for (int i = 0; i < 3; i++) {
       Double_t point[3] = {0., 0., target.z + 2.5 * i};
