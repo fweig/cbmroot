@@ -336,7 +336,7 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
 //
 void L1BaseStationInfo::SetMaterial(double inThickness, double inRL)
 {
-  L1MASSERT(0, inRL, "Attempt of entering zero inRL (radiational length) value");
+  //L1MASSERT(0, inRL, "Attempt of entering zero inRL (radiational length) value");
 
   fL1Station.materialInfo.thick       = inThickness;
   fL1Station.materialInfo.RL          = inRL;
@@ -394,6 +394,14 @@ void L1BaseStationInfo::SetTimeInfo(int inTimeInfo)
 {
   fL1Station.timeInfo = inTimeInfo;
   fInitController.SetFlag(InitKey::keTimeInfo);
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+//
+void L1BaseStationInfo::SetTimeResolution(double dt)
+{
+  fL1Station.dt = dt;
+  fInitController.SetFlag(InitKey::keTimeResolution);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//

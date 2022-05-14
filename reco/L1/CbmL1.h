@@ -88,6 +88,8 @@ public:
 
 
 /// Enumeration for the detector subsystems used in L1 tracking
+/// It is important for the subsystems to be specified in the actual order. The order is used
+/// for the L1Station array filling.
 /// Note: L1DetectorID has a forward declaration in L1InitManager.h and L1BaseStationInfo.h
 enum class L1DetectorID
 {
@@ -294,7 +296,7 @@ private:
 
   L1InitManager* fpInitManager {nullptr};  ///< Pointer to L1InitManager object of L1 algorithm core
 
-  std::set<L1DetectorID> fActiveTrackingDetectorIDs {L1DetectorID::kSts};  ///< Set of detectors active in tracking
+  std::set<L1DetectorID> fActiveTrackingDetectorIDs {};  ///< Set of detectors active in tracking
 
   L1AlgoInputData* fData {nullptr};
 

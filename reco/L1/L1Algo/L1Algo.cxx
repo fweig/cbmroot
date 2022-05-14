@@ -59,7 +59,7 @@ void L1Algo::SetNThreads(unsigned int n)
 }
 
 
-void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const TrackingMode mode, const bool MissingHits)
+void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool MissingHits)
 {
   for (int iProc = 0; iProc < 4; iProc++) {
     for (int i = 0; i < 8; i++) {
@@ -76,32 +76,6 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   fTrackingMode = mode;
   fMissingHits  = MissingHits;
 
-  //lxir039
-  //  for (int i=0; i<8; i++){
-  //     threadNumberToCpuMap[2*i+0] = 15-i;
-  //     threadNumberToCpuMap[2*i+1] = 15-(i+8);
-  //   }
-
-  //int ind = 0;
-  //{
-  //  L1FieldValue B[3];
-  //  fvec z[3];
-  //  for (int i = 0; i < 3; i++) {
-  //    z[i]   = geo[ind++];
-  //    B[i].x = geo[ind++];
-  //    B[i].y = geo[ind++];
-  //    B[i].z = geo[ind++];
-//#ifndef TBB2
-  //    std::cout << "L1Algo Input Magnetic field:" << z[i][0] << " " << B[i].x[0] << " " << B[i].y[0] << " " << B[i].z[0]
-  //              << std::endl;
-//#endif  // TBB2
-  //  }
-  //  //fVtxFieldRegion.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
-  //  //fVtxFieldValue = B[0];
-  //}
-  //vStations.clear();
-  //L1Station vStations[L1Parameters::kMaxNstations] _fvecalignment;
-  //int NStations    = static_cast<int>(geo[ind++]);
   
   //int NMvdStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NMbdStations (S. Zh.)
   int nStationsSts     = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(1));
@@ -113,140 +87,13 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   if (fTrackingMode == kMcbm) { fNfieldStations = -1; }
 
 
-  // cout << "N MVD & STS stations: " << NMvdStations << " " << NStations-NMvdStations << endl;
-//#ifndef TBB2
-  //std::cout << "L1Algo Input " << NStations << " Stations:" << std::endl;
-//#endif  // TBB2
- // for (int i = 0; i < NStations; i++) {
- //   L1Station& st = vStations[i];
- //   st.type       = geo[ind++];
- //   st.timeInfo   = 1;
- //   if (st.type == 1) st.timeInfo = 0;
- //   st.z                        = geo[ind++];
- //   st.materialInfo.thick       = geo[ind++];
- //   st.Rmin                     = geo[ind++];
- //   st.Rmax                     = geo[ind++];
- //   st.materialInfo.RL          = geo[ind++];
- //   st.materialInfo.RadThick    = st.materialInfo.thick / st.materialInfo.RL;
- //   st.materialInfo.logRadThick = log(st.materialInfo.RadThick);
-
- //   double f_phi   = geo[ind++];
- //   double f_sigma = geo[ind++];
- //   double b_phi   = geo[ind++];
- //   double b_sigma = geo[ind++];
- //   double dt      = geo[ind++];  //TODO: Add this field to L1BaseStationInfo and to ToString fcn (S.Zharko)
- //   double c_f     = cos(f_phi);
- //   double s_f     = sin(f_phi);
- //   double c_b     = cos(b_phi);
- //   double s_b     = sin(b_phi);
-
- //   st.frontInfo.cos_phi = c_f;
- //   st.frontInfo.sin_phi = s_f;
- //   st.frontInfo.sigma2  = f_sigma * f_sigma;
-
- //   st.backInfo.cos_phi = c_b;
- //   st.backInfo.sin_phi = s_b;
- //   st.backInfo.sigma2  = b_sigma * b_sigma;
- //   st.dt               = dt;
-
- //   if (fabs(b_phi - f_phi) < .1) {
- //     double th  = b_phi - f_phi;
- //     double det = cos(th);
- //     det *= det;
- //     st.XYInfo.C00 = (s_b * s_b * f_sigma * f_sigma + s_f * s_f * b_sigma * b_sigma) / det;
- //     st.XYInfo.C10 = -(s_b * c_b * f_sigma * f_sigma + s_f * c_f * b_sigma * b_sigma) / det;
- //     st.XYInfo.C11 = (c_b * c_b * f_sigma * f_sigma + c_f * c_f * b_sigma * b_sigma) / det;
- //     //std::cout << "!!!   det  "<< det<<std::endl;
- //   }
- //   else {
- //     double det = c_f * s_b - s_f * c_b;
- //     det *= det;
- //     st.XYInfo.C00 = (s_b * s_b * f_sigma * f_sigma + s_f * s_f * b_sigma * b_sigma) / det;
- //     st.XYInfo.C10 = -(s_b * c_b * f_sigma * f_sigma + s_f * c_f * b_sigma * b_sigma) / det;
- //     st.XYInfo.C11 = (c_b * c_b * f_sigma * f_sigma + c_f * c_f * b_sigma * b_sigma) / det;
- //     //std::cout << "!!!   det  "<< det<<std::endl;
- //   }
- //   //std::cout.precision(10);
- //   //std::cout << "Station  "<<i<<"  " << st.XYInfo.C00[0]<<"  "<<st.XYInfo.C11[0]<<"  "<<st.XYInfo.C10[0]<<std::endl;
- //   //std::cout << "         "<< i<<"   fsigma " << f_sigma<<" bsigma "<<b_sigma<<std::endl;
-
- //   //    st.xInfo.cos_phi = c_f/(c_f*s_b - c_b*s_f);
- //   //    st.xInfo.sin_phi =-c_b/(c_f*s_b - c_b*s_f);
- //   st.xInfo.cos_phi = -s_f / (c_f * s_b - c_b * s_f);
- //   st.xInfo.sin_phi = s_b / (c_f * s_b - c_b * s_f);
- //   st.xInfo.sigma2  = st.XYInfo.C00;
-
- //   st.yInfo.cos_phi = c_b / (c_b * s_f - c_f * s_b);
- //   st.yInfo.sin_phi = -c_f / (c_b * s_f - c_f * s_b);
- //   st.yInfo.sigma2  = st.XYInfo.C11;
- //   //std::cout << "st.xInfo.cos_phi "<<st.xInfo.cos_phi<< " st.yInfo.cos_phi " << st.yInfo.cos_phi << std::endl;
- //   //std::cout << "st.xInfo.sin_phi "<<st.xInfo.sin_phi<< " st.yInfo.sin_phi " << st.yInfo.sin_phi << std::endl;
-
- //   //std::cout << "cos_b "<<c_b<< " sin_b " << s_b << std::endl;
- //   //std::cout << "cos_f "<<c_f<< " sin_f " << s_f << std::endl;
-
-
- //   int N = static_cast<int>(geo[ind++]);
- //   for (int iC = 0; iC < N; iC++)
- //     st.fieldSlice.cx[iC] = geo[ind++];
- //   for (int iC = 0; iC < N; iC++)
- //     st.fieldSlice.cy[iC] = geo[ind++];
- //   for (int iC = 0; iC < N; iC++)
- //     st.fieldSlice.cz[iC] = geo[ind++];
-//#ifndef TBB2
-//    std::cout << "    " << st.z[0] << " " << st.materialInfo.thick[0] << " " << st.materialInfo.RL[0] << ", " << N
-//              << " field coeff." << std::endl;
-//    std::cout << "       " << f_phi << " " << f_sigma << " " << b_phi << " " << b_sigma << std::endl;
-//#endif  // TBB2
-  //}
-
-  //fTrackingLevel    = static_cast<int>(geo[ind++]);
-  //fMomentumCutOff   = geo[ind++];
-  //fGhostSuppression = static_cast<int>(geo[ind++]);
-
-  //{
-  //  //   fvec By0 = vStations[NStations-1].fieldSlice.cy[0];
-  //  fvec z0 = vStations[NStations - 1].z;
-  //  fvec sy = 0., Sy = 0.;
-  //  for (int i = NStations - 1; i >= 0; i--) {
-  //    L1Station& st = vStations[i];
-  //    fvec dz       = st.z - z0;
-  //    fvec By       = vStations[i].fieldSlice.cy[0];
-  //    Sy += dz * sy + dz * dz * By / 2.;
-  //    sy += dz * By;
-  //    //st.Sy = Sy; // commented, because is not used in the code (S.Zharko)
-  //    z0    = st.z;
-  //  }
-  //}
-  //    for( int iS = 0; iS < NStations; ++iS ) {     /// Grid is created for each station with the same step: xStep,yStep
-  //       L1Grid &grid = vGrid[iS];
-  //
-  //      // grid.Create(-1,1,-0.6,0.6,xStep,yStep);
-  //       grid.Create(-1,1,-0.6,0.6,0.00317899,0.00105966);
-  //     }
-
-//#ifndef TBB2
-  //std::cout << "L1Algo initialized" << std::endl;
-//#endif  // TBB2
-
-  //
-  // NEW INITIALIZATION (BETA)
-  //
-
-  // Final init checks (the function provides purity of fields initialization and turn on the last bits of
+  // Final init checks (the function provides purity of fields initialization and turns on the last bit of
   // the L1ObjectInitController):
   fInitManager.CheckInit();  // NOTE: after passing this frontier L1Algo is (will be) accounted as initialized
 
-  // Check initialization
+  // Print out the bits of the init manager
   LOG(info) << "InitManager " << fInitManager.GetInitController().ToString();
-
-  // Get number of stations
-  //int nStationsNew = fInitManager.GetStationsNumber();
-  // TODO: we must to get rid of station specification in the L1Algo (S.Zh.)
-  //int nMvdStationsNew   = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(0));
-  //int nStsStationsNew   = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(1));
-  //int nFieldStationsNew = nMvdStationsNew + nStsStationsNew;
-
+  
   fNstations = fInitManager.GetStationsNumber();
 
   // Get field near target
@@ -265,16 +112,16 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
   LOG(info) << "  ***********************";
   LOG(info) << "";
 
-  LOG(info) << "** Number of stations (new) **";
+  LOG(info) << "----- Number of stations -----";
   LOG(info) << "\tTotal stations:           " << fNstations;
   LOG(info) << "\tStations before pipe:     " << fNstationsBeforePipe;
   LOG(info) << "\tStations in field region: " << fNfieldStations;
 
-  LOG(info) << "** Magnetic field near target **";
+  LOG(info) << "----- Magnetic field near target -----";
   LOG(info) << "\tField Value:  " << '\n' << fVtxFieldValue.ToString(/*indent = */ 1) << '\n';
   LOG(info) << "\tField Region: " << '\n' << fVtxFieldRegion.ToString(/*indent = */ 1) << '\n';
 
-  LOG(info) << "** L1 active stations list **";
+  LOG(info) << "----- L1 active stations list -----";
   for (int iSt = 0; iSt < fNstations; ++iSt) {
     LOG(info) << " #" << iSt << " " << fStations[iSt].ToString(/*verbosity = */ 0);
   }

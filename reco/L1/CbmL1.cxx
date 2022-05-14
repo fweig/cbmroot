@@ -954,8 +954,11 @@ InitStatus CbmL1::Init()
     fpInitManager->InitTargetField(2.5);
 
 
-    // Step 4: initialize IDs of detectors active in tracking
-    // TODO: temporary for tests, must be initialized somewhere in run_reco.C or similar (S.Zh.)
+    /*
+     * Step 4: initialize IDs of detectors active in tracking. The order of the tracking 
+     * detectors is defined in the L1DetectorID enumeration
+     */
+    fActiveTrackingDetectorIDs.insert(L1DetectorID::kSts);
     if (fUseMVD)  { fActiveTrackingDetectorIDs.insert(L1DetectorID::kMvd); }
     if (fUseMUCH) { fActiveTrackingDetectorIDs.insert(L1DetectorID::kMuch); }
     if (fUseTRD)  { fActiveTrackingDetectorIDs.insert(L1DetectorID::kTrd); }
@@ -983,6 +986,7 @@ InitStatus CbmL1::Init()
       stationInfo.SetStationType(1);
       // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
       stationInfo.SetTimeInfo(0);
+      stationInfo.SetTimeResolution(1000.);
       stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
       stationInfo.SetZ(t.z);
       stationInfo.SetMaterial(t.dz, t.RadLength);
@@ -991,7 +995,7 @@ InitStatus CbmL1::Init()
       stationInfo.SetRmin(t.r);
       stationInfo.SetRmax(t.R);
       fscal mvdFrontPhi   = 0;
-      fscal mvdBackPhi    = PI / 2.;
+      fscal mvdBackPhi    = TMath::Pi() / 2.;
       fscal mvdFrontSigma = mvdStationPar->GetXRes(iSt) / 10000;
       fscal mvdBackSigma  = mvdStationPar->GetYRes(iSt) / 10000;
       stationInfo.SetFrontBackStripsGeometry(mvdFrontPhi, mvdFrontSigma, mvdBackPhi, mvdBackSigma);
@@ -1001,28 +1005,27 @@ InitStatus CbmL1::Init()
     // Setup STS stations info
     for (int iSt = 0; iSt < NStsStations; ++iSt) {  // NOTE: example using smart pointers
       auto cbmSts = CbmStsSetup::Instance()->GetStation(iSt);
-      std::unique_ptr<L1BaseStationInfo> stationInfo(new L1BaseStationInfo(L1DetectorID::kSts, iSt));
-      // TODO: replace with std::make_unique, when C++14 is avaliable!!!! (S.Zh.)
-      // auto stsStation = std::make_unique<L1BaseStationInfo>(L1DetectorID::kSts, iSt);
-      stationInfo->SetStationType(0);  // STS
-      stationInfo->SetTimeInfo(1);
-      stationInfo->SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
+      auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
+      stationInfo.SetStationType(0);  // STS
+      stationInfo.SetTimeInfo(1);
+      stationInfo.SetTimeResolution(5.);
+      stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
       // Setup station geometry and material
-      stationInfo->SetZ(cbmSts->GetZ());
+      stationInfo.SetZ(cbmSts->GetZ());
       double stsXmax = cbmSts->GetXmax();
       double stsYmax = cbmSts->GetYmax();
-      stationInfo->SetXmax(stsXmax);
-      stationInfo->SetYmax(stsYmax);
-      stationInfo->SetRmin(0);
-      stationInfo->SetRmax(stsXmax > stsYmax ? stsXmax : stsYmax);
-      stationInfo->SetMaterial(cbmSts->GetSensorD(), cbmSts->GetRadLength());
+      stationInfo.SetXmax(stsXmax);
+      stationInfo.SetYmax(stsYmax);
+      stationInfo.SetRmin(0);
+      stationInfo.SetRmax(stsXmax > stsYmax ? stsXmax : stsYmax);
+      stationInfo.SetMaterial(cbmSts->GetSensorD(), cbmSts->GetRadLength());
 
       // Setup strips geometry
       fscal stsFrontPhi   = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(0) * PI / 180.;
       fscal stsBackPhi    = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(1) * PI / 180.;
       fscal stsFrontSigma = cbmSts->GetSensorPitch(0) / sqrt(12);
       fscal stsBackSigma  = stsFrontSigma;
-      stationInfo->SetFrontBackStripsGeometry(stsFrontPhi, stsFrontSigma, stsBackPhi, stsBackSigma);
+      stationInfo.SetFrontBackStripsGeometry(stsFrontPhi, stsFrontSigma, stsBackPhi, stsBackSigma);
       fpInitManager->AddStation(stationInfo);
     }
 
@@ -1037,17 +1040,18 @@ InitStatus CbmL1::Init()
       stationInfo.SetStationType(2);
       // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
       stationInfo.SetTimeInfo(1);
+      stationInfo.SetTimeResolution(3.9);
       stationInfo.SetFieldStatus(0);
       stationInfo.SetZ(layer->GetZ());
-      stationInfo.SetMaterial(layer->GetDz(), 10);  // TODO: Why rad len is 0????? (S.Zh.)
+      stationInfo.SetMaterial(layer->GetDz(), 0);  // TODO: Why rad len is 0????? (S.Zh.)
       stationInfo.SetXmax(100.);
       stationInfo.SetYmax(100.);
-      stationInfo.SetRmin(0.);
+      stationInfo.SetRmin(10.);
       stationInfo.SetRmax(100.);
       fscal muchFrontPhi   = 0;
-      fscal muchBackPhi    = PI / 2.;
-      fscal muchFrontSigma = 0.1;
-      fscal muchBackSigma  = 0.1;
+      fscal muchBackPhi    = TMath::Pi() / 2.;
+      fscal muchFrontSigma = 0.35;
+      fscal muchBackSigma  = 0.35;
       stationInfo.SetFrontBackStripsGeometry(muchFrontPhi, muchFrontSigma, muchBackPhi, muchBackSigma);
       fpInitManager->AddStation(stationInfo);
     }
@@ -1064,17 +1068,18 @@ InitStatus CbmL1::Init()
       int stationType          = (iSt == 1 || iSt == 3) ? 6 : 3;
       stationInfo.SetStationType(stationType);
       stationInfo.SetTimeInfo(1);
+      stationInfo.SetTimeResolution(10.);
       stationInfo.SetFieldStatus(0);
       stationInfo.SetZ(module->GetZ());
-      stationInfo.SetMaterial(2. * module->GetSizeZ(), 10.);
+      stationInfo.SetMaterial(2. * module->GetSizeZ(), 1.6);
       stationInfo.SetXmax(module->GetSizeX());
       stationInfo.SetYmax(module->GetSizeY());
       stationInfo.SetRmin(0.);
       stationInfo.SetRmax(2. * module->GetSizeX());  // TODO: Why multiplied with 2.?
       fscal trdFrontPhi   = 0;
-      fscal trdBackPhi    = PI / 2.;
-      fscal trdFrontSigma = 1.;
-      fscal trdBackSigma  = 1.;
+      fscal trdBackPhi    = TMath::Pi() / 2.;
+      fscal trdFrontSigma = 0.15;
+      fscal trdBackSigma  = 0.15;
       stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdFrontSigma, trdBackPhi, trdBackSigma);
       fpInitManager->AddStation(stationInfo);
     }
@@ -1084,17 +1089,18 @@ InitStatus CbmL1::Init()
       auto stationInfo = L1BaseStationInfo(L1DetectorID::kTof, iSt);
       stationInfo.SetStationType(4);
       stationInfo.SetTimeInfo(1);
+      stationInfo.SetTimeResolution(0.075);
       stationInfo.SetFieldStatus(0);
       stationInfo.SetZ(TofStationZ[iSt]);
-      stationInfo.SetMaterial(10., 10.);  // TODO: add Tof width dz and rad. len
+      stationInfo.SetMaterial(10., 2.);  // TODO: add Tof width dz and rad. len
       stationInfo.SetXmax(20.);
       stationInfo.SetYmax(20.);
       stationInfo.SetRmin(0.);
       stationInfo.SetRmax(150.);
       fscal tofFrontPhi   = 0;
-      fscal tofBackPhi    = PI / 2.;
-      fscal tofFrontSigma = 1.;
-      fscal tofBackSigma  = 1.;
+      fscal tofBackPhi    = TMath::Pi() / 2.;
+      fscal tofFrontSigma = 0.42;
+      fscal tofBackSigma  = 0.23;
       stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofFrontSigma, tofBackPhi, tofBackSigma);
       fpInitManager->AddStation(stationInfo);
     }
@@ -1272,7 +1278,7 @@ InitStatus CbmL1::Init()
   /********************************************************************************************************************
    ********************************************************************************************************************/
 
-  algo->Init(geo, fUseHitErrors, fTrackingMode, fMissingHits);
+  algo->Init(fUseHitErrors, fTrackingMode, fMissingHits);
   geo.clear();
 
   algo->fRadThick.reset(algo->GetNstations());

@@ -49,6 +49,7 @@ public:
     keStripsFrontSigma,   ///<
     keStripsBackPhi,      ///<
     keStripsBackSigma,    ///<
+    keTimeResolution,     ///< time resolution
     // The last item is equal to the number of bits in fInitFlags
     keEnd
   };
@@ -122,6 +123,8 @@ public:
   int GetStationID() const { return fStationID; }
   /// Gets station type
   int GetStationType() const { return fL1Station.type; }
+  /// Gets time resolution
+  fvec GetTimeResolution() const { return fL1Station.dt; }
   /// Gets maximum distance between station center and its edge in x direction
   double GetXmax() const { return fXmax; }
   /// Gets maximum distance between station center and its edge in y direction
@@ -176,6 +179,8 @@ public:
   /// Sets flag: 0 - time information is not provided by this detector type
   ///            1 - time information is provided by the detector and can be used in tracking
   void SetTimeInfo(int inTimeInfo);
+  /// Sets time resolution
+  void SetTimeResolution(double dt);
   /// Sets maximum distance between station center and its edge in x direction
   void SetXmax(double aSize);
   /// Sets maximum distance between station center and its edge in y direction

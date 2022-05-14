@@ -199,7 +199,7 @@ public:
     kMcbm
   };
 
-  void Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const TrackingMode mode, const bool MissingHits);
+  void Init(const bool UseHitErrors, const TrackingMode mode, const bool MissingHits);
 
   void SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<unsigned char>& SFlag_,
                const L1HitIndex_t* StsHitsStartIndex_, const L1HitIndex_t* StsHitsStopIndex_);
