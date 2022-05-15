@@ -235,7 +235,6 @@ InitStatus CbmL1::Init()
     fUseTOF  = 1;
   }
 
-
   if (fTrackingMode == L1Algo::TrackingMode::kGlobal) {
     fUseMUCH = 0;
     fUseTRD  = 1;
@@ -244,14 +243,12 @@ InitStatus CbmL1::Init()
 
   CheckDetectorPresence();
 
-
   fStsPoints  = 0;
   fMvdPoints  = 0;
   fMuchPoints = 0;
   fTrdPoints  = 0;
   fTofPoints  = 0;
   fMCTracks   = 0;
-
 
   listMvdHitMatches  = 0;
   fTrdHitMatches     = 0;
@@ -261,7 +258,6 @@ InitStatus CbmL1::Init()
   listStsClusters = 0;
 
   vFileEvent.clear();
-
 
   if (!fLegacyEventMode) {  //  Time-slice mode selected
     LOG(info) << GetName() << ": running in time-slice mode.";
@@ -392,28 +388,54 @@ InitStatus CbmL1::Init()
   // TODO: Replace algo initialization in the constructor (S.Zharko)
   algo = &algo_static;
 
+  /**********************//**
+   ** Field initialization **
+   **************************/
 
-  L1Vector<fscal> geo("geo");
-  geo.reserve(10000);
+  auto fieldGetterFcn = [](const double(&inPos)[3], double(&outB)[3]) {
+    CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);
+  };
+  fpInitManager->SetFieldFunction(fieldGetterFcn);
 
-  {  // initialize field in the target region
-    assert(CbmKF::Instance()->vTargets.size() > 0);
-    auto& target      = CbmKF::Instance()->vTargets[0];
+  /***********************//**
+   ** Target initialization **
+   ***************************/
 
-    for (int i = 0; i < 3; i++) {
-      Double_t point[3] = {0., 0., target.z + 2.5 * i};
-      Double_t B[3]     = {0., 0., 0.};
-      if (CbmKF::Instance()->GetMagneticField()) { CbmKF::Instance()->GetMagneticField()->GetFieldValue(point, B); }
-      geo.push_back(point[2]);
-      geo.push_back(B[0]);
-      geo.push_back(B[1]);
-      geo.push_back(B[2]);
-    }
-  }
+  auto& target = CbmKF::Instance()->vTargets[0];
+  fpInitManager->SetTargetPosition(target.x, target.y, target.z);
 
+  /*****************************//**
+   ** Target field initialization **
+   *********************************/
+
+  fpInitManager->InitTargetField(2.5);
+
+
+  /**********************************//**
+   **                                  **
+   ** STATIONS GEOMETRY INITIALIZATION **
+   **                                  **
+   **************************************/
+
+
+  /***********************************************//**
+   ** Active tracking detector subsystems selection **
+   ***************************************************/
+
+  fActiveTrackingDetectorIDs.insert(L1DetectorID::kSts);
+  if (fUseMVD)  { fActiveTrackingDetectorIDs.insert(L1DetectorID::kMvd); }
+  if (fUseMUCH) { fActiveTrackingDetectorIDs.insert(L1DetectorID::kMuch); }
+  if (fUseTRD)  { fActiveTrackingDetectorIDs.insert(L1DetectorID::kTrd); }
+  if (fUseTOF)  { fActiveTrackingDetectorIDs.insert(L1DetectorID::kTof); }
+  fpInitManager->SetActiveDetectorIDs(fActiveTrackingDetectorIDs);
+
+  /*****************************************************************//**
+   ** Counting numbers of stations for different detector subsystems  **
+   *********************************************************************/
 
   CbmMuchGeoScheme* fGeoScheme = CbmMuchGeoScheme::Instance();
-
+  
+  /*** MuCh ***/
   if (fUseMUCH) {
     /// Save old global file and folder pointer to avoid messing with FairRoot
     TFile* oldFile     = gFile;
@@ -433,7 +455,7 @@ InitStatus CbmL1::Init()
     gDirectory = oldDir;
   }
 
-  // count TRD stations
+  /*** TRD ***/
   if (fUseTRD) {
     Int_t layerCounter  = 0;
     TObjArray* topNodes = gGeoManager->GetTopNode()->GetNodes();
@@ -452,6 +474,7 @@ InitStatus CbmL1::Init()
     if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) { NTrdStations = NTrdStations - 1; }
   }
 
+  /*** ToF ***/
   vector<float> TofStationZ;
   vector<int> TofStationN;
   if (fUseTOF) {
@@ -485,6 +508,7 @@ InitStatus CbmL1::Init()
       TofStationZ[i] = TofStationZ[i] / TofStationN[i];
   }
 
+  /*** MVD and STS ***/
   CbmStsSetup* stsSetup = CbmStsSetup::Instance();
   if (!stsSetup->IsInit()) { stsSetup->Init(nullptr); }
   if (!stsSetup->IsModuleParsInit()) { stsSetup->SetModuleParameters(fStsParSetModule); }
@@ -908,10 +932,18 @@ InitStatus CbmL1::Init()
   geo.push_back(fMomentumCutOff);
   geo.push_back(fGhostSuppression);
 
+  // Provide crosscheck number of stations for the fpInitManager
+  fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kMvd, NMvdStations);
+  fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kSts, NStsStations);
+  fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kMuch, NMuchStations);
+  fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kTrd, NTrdStations);
+  fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kTof, NTOFStation);
+  
   {
     if (fSTAPDataMode % 2 == 1) {  // 1,3
+      LOG(warn) << "CbmL1::Init: geo vector was removed, currently data cannot be written to a text-file";
       // TODO: Rewrite parameters i/o into L1InitManager (S.Zharko, 12.05.2022)
-      WriteSTAPGeoData(geo);
+      //WriteSTAPGeoData(geo);
     };
     //if(fSTAPDataMode >= 2){ // 2,3
     //  int ind2, ind = geo.size();
@@ -921,363 +953,343 @@ InitStatus CbmL1::Init()
   }
 
   if (fSTAPDataMode >= 2) {  // 2,3
+    LOG(fatal) << "CbmL1::Init: geo vector was removed, currently data cannot be read from a text-file. "
+               << "Please, run CbmL1 task with STAPDataMode option < 2";
     // TODO: Rewrite parameters i/o into L1InitManager (S.Zharko, 12.05.2022)
-    int ind2, ind = geo.size();
-    ReadSTAPGeoData(geo, ind2);
-    if (ind2 != ind)
-      LOG(error) << "-E- CbmL1: Read geometry from file " << fSTAPDataDir + "geo_algo.txt was NOT successful.";
+    //int ind2, ind = geo.size();
+    //ReadSTAPGeoData(geo, ind2);
+    //if (ind2 != ind)
+    //  LOG(error) << "-E- CbmL1: Read geometry from file " << fSTAPDataDir + "geo_algo.txt was NOT successful.";
+  }
+  
+  /***********************************//**
+   ** Stations geometry initialization  **
+   ***************************************/
+
+  /*** MVD stations info ***/
+  for (int iSt = 0; iSt < NMvdStations; ++iSt) {  // NOTE: example using in-stack defined objects
+    CbmMvdDetector* mvdDetector     = CbmMvdDetector::Instance();
+    CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();
+
+    CbmKFTube& t     = CbmKF::Instance()->vMvdMaterial[iSt];
+    auto stationInfo = L1BaseStationInfo(L1DetectorID::kMvd, iSt);
+    stationInfo.SetStationType(1);
+    // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
+    stationInfo.SetTimeInfo(0);
+    stationInfo.SetTimeResolution(1000.);
+    stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
+    stationInfo.SetZ(t.z);
+    auto thickness = t.dz;
+    auto radLength = t.RadLength;
+    stationInfo.SetMaterial(thickness, radLength);
+    stationInfo.SetXmax(t.R);
+    stationInfo.SetYmax(t.R);
+    stationInfo.SetRmin(t.r);
+    stationInfo.SetRmax(t.R);
+    fscal mvdFrontPhi   = 0;
+    fscal mvdBackPhi    = TMath::Pi() / 2.;
+    fscal mvdFrontSigma = mvdStationPar->GetXRes(iSt) / 10000;
+    fscal mvdBackSigma  = mvdStationPar->GetYRes(iSt) / 10000;
+    stationInfo.SetFrontBackStripsGeometry(mvdFrontPhi, mvdFrontSigma, mvdBackPhi, mvdBackSigma);
+    fpInitManager->AddStation(stationInfo);
+    LOG(info) << "- MVD station " << iSt << " at z = " << stationInfo.GetZdouble();
   }
 
-  //algo->SetParameters(fParameters);
+  /*** STS stations info ***/
+  for (int iSt = 0; iSt < NStsStations; ++iSt) {  // NOTE: example using smart pointers
+    auto cbmSts = CbmStsSetup::Instance()->GetStation(iSt);
+    auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
+    stationInfo.SetStationType(0);  // STS
+    stationInfo.SetTimeInfo(1);
+    stationInfo.SetTimeResolution(5.);
+    stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
+    // Setup station geometry and material
+    stationInfo.SetZ(cbmSts->GetZ());
+    double stsXmax = cbmSts->GetXmax();
+    double stsYmax = cbmSts->GetYmax();
+    stationInfo.SetXmax(stsXmax);
+    stationInfo.SetYmax(stsYmax);
+    stationInfo.SetRmin(0);
+    stationInfo.SetRmax(stsXmax > stsYmax ? stsXmax : stsYmax);
+    auto thickness = cbmSts->GetSensorD();
+    auto radLength = cbmSts->GetRadLength();
+    stationInfo.SetMaterial(thickness, radLength);
+    // Setup strips geometry
+    fscal stsFrontPhi   = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(0) * TMath::Pi() / 180.;
+    fscal stsBackPhi    = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(1) * TMath::Pi() / 180.;
+    fscal stsFrontSigma = cbmSts->GetSensorPitch(0) / sqrt(12);
+    fscal stsBackSigma  = stsFrontSigma;
+    stationInfo.SetFrontBackStripsGeometry(stsFrontPhi, stsFrontSigma, stsBackPhi, stsBackSigma);
+    fpInitManager->AddStation(stationInfo);
+    LOG(info) << "- STS station " << iSt << " at z = " << stationInfo.GetZdouble();
+  }
 
+  /*** MuCh stations info ***/
+  for (int iSt = 0; iSt < NMuchStations; ++iSt) {
+    int muchStationID       = iSt / 3;
+    int muchLayerID         = iSt % 3;
+    CbmMuchStation* station = (CbmMuchStation*) fGeoScheme->GetStation(muchStationID);
+    CbmMuchLayer* layer     = station->GetLayer(muchLayerID);
 
-  /********************************************************************************************************************
-   *                     EXPERIMENTAL FEATURE: usage of L1InitManager for L1Algo initialization                       *
-   ********************************************************************************************************************/
-  {  //L1Algo new init start
+    auto stationInfo = L1BaseStationInfo(L1DetectorID::kMuch, iSt);
+    stationInfo.SetStationType(2);
+    stationInfo.SetTimeInfo(1);
+    stationInfo.SetTimeResolution(3.9);
+    stationInfo.SetFieldStatus(0);
+    stationInfo.SetZ(layer->GetZ());
+    auto thickness = layer->GetDz();
+    auto radLength = 0.; // Why 0??? (S.Zharko)
+    stationInfo.SetMaterial(thickness, radLength);
+    stationInfo.SetXmax(100.);
+    stationInfo.SetYmax(100.);
+    stationInfo.SetRmin(10.);
+    stationInfo.SetRmax(100.);
+    fscal muchFrontPhi   = 0;
+    fscal muchBackPhi    = TMath::Pi() / 2.;
+    fscal muchFrontSigma = 0.35;
+    fscal muchBackSigma  = 0.35;
+    stationInfo.SetFrontBackStripsGeometry(muchFrontPhi, muchFrontSigma, muchBackPhi, muchBackSigma);
+    fpInitManager->AddStation(stationInfo);
+    LOG(info) << "- MuCh station " << iSt << " at z = " << stationInfo.GetZdouble();
+  }
 
-    // Step 1: Initialize magnetic field function
-    // Set magnetic field slices
-    auto fieldGetterFcn = [](const double(&inPos)[3], double(&outB)[3]) {
-      CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);
-    };
-    fpInitManager->SetFieldFunction(fieldGetterFcn);
-
-    // Step 2: Initialize target
-    auto& target = CbmKF::Instance()->vTargets[0];
-    fpInitManager->SetTargetPosition(target.x, target.y, target.z);
-
-    // Step 3: Initialize primary vertex field
-    fpInitManager->InitTargetField(2.5);
-
-
-    /*
-     * Step 4: initialize IDs of detectors active in tracking. The order of the tracking 
-     * detectors is defined in the L1DetectorID enumeration
-     */
-    fActiveTrackingDetectorIDs.insert(L1DetectorID::kSts);
-    if (fUseMVD)  { fActiveTrackingDetectorIDs.insert(L1DetectorID::kMvd); }
-    if (fUseMUCH) { fActiveTrackingDetectorIDs.insert(L1DetectorID::kMuch); }
-    if (fUseTRD)  { fActiveTrackingDetectorIDs.insert(L1DetectorID::kTrd); }
-    if (fUseTOF)  { fActiveTrackingDetectorIDs.insert(L1DetectorID::kTof); }
-    fpInitManager->SetActiveDetectorIDs(fActiveTrackingDetectorIDs);
-
-    constexpr double PI = 3.14159265358;  // TODO: why cmath is not used? (S.Zh.)
-
-    // Step 5: initialize number of stations for each detector ID
-    fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kMvd, NMvdStations);
-    fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kSts, NStsStations);
-    fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kMuch, NMuchStations);
-    fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kTrd, NTrdStations);
-    fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kTof, NTOFStation);
-
-    // Step 6: setup station info
-
-    /*** Setup MVD stations info ***/
-    for (int iSt = 0; iSt < NMvdStations; ++iSt) {  // NOTE: example using in-stack defined objects
-      CbmMvdDetector* mvdDetector     = CbmMvdDetector::Instance();
-      CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();
-
-      CbmKFTube& t     = CbmKF::Instance()->vMvdMaterial[iSt];
-      auto stationInfo = L1BaseStationInfo(L1DetectorID::kMvd, iSt);
-      stationInfo.SetStationType(1);
-      // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
-      stationInfo.SetTimeInfo(0);
-      stationInfo.SetTimeResolution(1000.);
-      stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
-      stationInfo.SetZ(t.z);
-      stationInfo.SetMaterial(t.dz, t.RadLength);
-      stationInfo.SetXmax(t.R);
-      stationInfo.SetYmax(t.R);
-      stationInfo.SetRmin(t.r);
-      stationInfo.SetRmax(t.R);
-      fscal mvdFrontPhi   = 0;
-      fscal mvdBackPhi    = TMath::Pi() / 2.;
-      fscal mvdFrontSigma = mvdStationPar->GetXRes(iSt) / 10000;
-      fscal mvdBackSigma  = mvdStationPar->GetYRes(iSt) / 10000;
-      stationInfo.SetFrontBackStripsGeometry(mvdFrontPhi, mvdFrontSigma, mvdBackPhi, mvdBackSigma);
-      fpInitManager->AddStation(stationInfo);
+  /*** TRD stations info ***/
+  for (int iSt = 0; iSt < NTrdStations; ++iSt) {
+    int skip = iSt;  // temporary solution to remove TRD with id == 1 wrom mCBM
+    if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) {
+      if (iSt > 0) { skip++; }
     }
+    int trdModuleID          = fTrdDigiPar->GetModuleId(skip);
+    CbmTrdParModDigi* module = (CbmTrdParModDigi*) fTrdDigiPar->GetModulePar(trdModuleID);
+    auto stationInfo         = L1BaseStationInfo(L1DetectorID::kTrd, skip);
+    int stationType          = (iSt == 1 || iSt == 3) ? 6 : 3;
+    stationInfo.SetStationType(stationType);
+    stationInfo.SetTimeInfo(1);
+    stationInfo.SetTimeResolution(10.);
+    stationInfo.SetFieldStatus(0);
+    stationInfo.SetZ(module->GetZ());
+    auto thickness = 2. * module->GetSizeZ();
+    auto radLength = 1.6;
+    stationInfo.SetMaterial(thickness, radLength);
+    stationInfo.SetXmax(module->GetSizeX());
+    stationInfo.SetYmax(module->GetSizeY());
+    stationInfo.SetRmin(0.);
+    stationInfo.SetRmax(2. * module->GetSizeX());  // TODO: Why multiplied with 2.?
+    fscal trdFrontPhi   = 0;
+    fscal trdBackPhi    = TMath::Pi() / 2.;
+    fscal trdFrontSigma = 0.15;
+    fscal trdBackSigma  = 0.15;
+    stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdFrontSigma, trdBackPhi, trdBackSigma);
+    fpInitManager->AddStation(stationInfo);
+    LOG(info) << "- TRD station " << iSt << " at z = " << stationInfo.GetZdouble();
+  }
 
-    // Setup STS stations info
-    for (int iSt = 0; iSt < NStsStations; ++iSt) {  // NOTE: example using smart pointers
-      auto cbmSts = CbmStsSetup::Instance()->GetStation(iSt);
-      auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
-      stationInfo.SetStationType(0);  // STS
-      stationInfo.SetTimeInfo(1);
-      stationInfo.SetTimeResolution(5.);
-      stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
-      // Setup station geometry and material
-      stationInfo.SetZ(cbmSts->GetZ());
-      double stsXmax = cbmSts->GetXmax();
-      double stsYmax = cbmSts->GetYmax();
-      stationInfo.SetXmax(stsXmax);
-      stationInfo.SetYmax(stsYmax);
-      stationInfo.SetRmin(0);
-      stationInfo.SetRmax(stsXmax > stsYmax ? stsXmax : stsYmax);
-      stationInfo.SetMaterial(cbmSts->GetSensorD(), cbmSts->GetRadLength());
+  /*** TOF stations info ***/
+  for (int iSt = 0; iSt < NTOFStation; ++iSt) {
+    auto stationInfo = L1BaseStationInfo(L1DetectorID::kTof, iSt);
+    stationInfo.SetStationType(4);
+    stationInfo.SetTimeInfo(1);
+    stationInfo.SetTimeResolution(0.075);
+    stationInfo.SetFieldStatus(0);
+    stationInfo.SetZ(TofStationZ[iSt]);
+    auto thickness = 10.;
+    auto radLength = 2.;
+    stationInfo.SetMaterial(thickness, radLength);
+    stationInfo.SetXmax(20.);
+    stationInfo.SetYmax(20.);
+    stationInfo.SetRmin(0.);
+    stationInfo.SetRmax(150.);
+    fscal tofFrontPhi   = 0;
+    fscal tofBackPhi    = TMath::Pi() / 2.;
+    fscal tofFrontSigma = 0.42;
+    fscal tofBackSigma  = 0.23;
+    stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofFrontSigma, tofBackPhi, tofBackSigma);
+    fpInitManager->AddStation(stationInfo);
+    LOG(info) << "- TOF station " << iSt << " at z = " << stationInfo.GetZdouble();
+  }
 
-      // Setup strips geometry
-      fscal stsFrontPhi   = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(0) * PI / 180.;
-      fscal stsBackPhi    = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(1) * PI / 180.;
-      fscal stsFrontSigma = cbmSts->GetSensorPitch(0) / sqrt(12);
-      fscal stsBackSigma  = stsFrontSigma;
-      stationInfo.SetFrontBackStripsGeometry(stsFrontPhi, stsFrontSigma, stsBackPhi, stsBackSigma);
-      fpInitManager->AddStation(stationInfo);
-    }
+  /************************************//**
+   **                                    **
+   ** TRACKING ITERATIONS INITIALIZATION **
+   **                                    **
+   ****************************************/
 
-    // Setup MuCh stations info
-    for (int iSt = 0; iSt < NMuchStations; ++iSt) {
-      int muchStationID       = iSt / 3;
-      int muchLayerID         = iSt % 3;
-      CbmMuchStation* station = (CbmMuchStation*) fGeoScheme->GetStation(muchStationID);
-      CbmMuchLayer* layer     = station->GetLayer(muchLayerID);
+  // TODO: Need to provide a selection: default iterations input (these hardcoded ones), input from file or input
+  //       from runing macro (S.Zharko)
+  auto trackingIterFastPrim = L1CAIteration("FastPrimIter");
+  trackingIterFastPrim.SetTrackChi2Cut(10.f);
+  trackingIterFastPrim.SetTripletChi2Cut(23.4450f);  // = 7.815 * 3;  // prob = 0.05
+  trackingIterFastPrim.SetDoubletChi2Cut(7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
+  trackingIterFastPrim.SetPickGather(3.0f);
+  trackingIterFastPrim.SetPickNeighbour(5.0f);
+  trackingIterFastPrim.SetMaxInvMom(1.0 / 0.5);
+  trackingIterFastPrim.SetMaxSlopePV(1.1f);
+  trackingIterFastPrim.SetMaxSlope(2.748f);
+  trackingIterFastPrim.SetMaxDZ(0);
+  trackingIterFastPrim.SetTargetPosSigmaXY(1, 1);
+  trackingIterFastPrim.SetMinLevelTripletStart(0);
+  trackingIterFastPrim.SetPrimary(true);
 
-      auto stationInfo = L1BaseStationInfo(L1DetectorID::kMuch, iSt);
-      stationInfo.SetStationType(2);
-      // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
-      stationInfo.SetTimeInfo(1);
-      stationInfo.SetTimeResolution(3.9);
-      stationInfo.SetFieldStatus(0);
-      stationInfo.SetZ(layer->GetZ());
-      stationInfo.SetMaterial(layer->GetDz(), 0);  // TODO: Why rad len is 0????? (S.Zh.)
-      stationInfo.SetXmax(100.);
-      stationInfo.SetYmax(100.);
-      stationInfo.SetRmin(10.);
-      stationInfo.SetRmax(100.);
-      fscal muchFrontPhi   = 0;
-      fscal muchBackPhi    = TMath::Pi() / 2.;
-      fscal muchFrontSigma = 0.35;
-      fscal muchBackSigma  = 0.35;
-      stationInfo.SetFrontBackStripsGeometry(muchFrontPhi, muchFrontSigma, muchBackPhi, muchBackSigma);
-      fpInitManager->AddStation(stationInfo);
-    }
+  auto trackingIterAllPrim = L1CAIteration("AllPrimIter");
+  trackingIterAllPrim.SetTrackChi2Cut(10.f);
+  trackingIterAllPrim.SetTripletChi2Cut(23.4450f);
+  trackingIterAllPrim.SetDoubletChi2Cut(7.56327f);
+  trackingIterAllPrim.SetPickGather(4.0f);
+  trackingIterAllPrim.SetPickNeighbour(5.0f);
+  trackingIterAllPrim.SetMaxInvMom(1.0 / 0.05);
+  trackingIterAllPrim.SetMaxSlopePV(1.1f);
+  trackingIterAllPrim.SetMaxSlope(2.748f);
+  trackingIterAllPrim.SetMaxDZ(0.1);
+  trackingIterAllPrim.SetTargetPosSigmaXY(1, 1);
+  trackingIterAllPrim.SetMinLevelTripletStart(0);
+  trackingIterAllPrim.SetPrimary(true);
 
-    // Setup TRD stations info
-    for (int iSt = 0; iSt < NTrdStations; ++iSt) {
-      int skip = iSt;  // temporary solution to remove TRD with id == 1 wrom mCBM
-      if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) {
-        if (iSt > 0) { skip++; }
-      }
-      int trdModuleID          = fTrdDigiPar->GetModuleId(skip);
-      CbmTrdParModDigi* module = (CbmTrdParModDigi*) fTrdDigiPar->GetModulePar(trdModuleID);
-      auto stationInfo         = L1BaseStationInfo(L1DetectorID::kTrd, skip);
-      int stationType          = (iSt == 1 || iSt == 3) ? 6 : 3;
-      stationInfo.SetStationType(stationType);
-      stationInfo.SetTimeInfo(1);
-      stationInfo.SetTimeResolution(10.);
-      stationInfo.SetFieldStatus(0);
-      stationInfo.SetZ(module->GetZ());
-      stationInfo.SetMaterial(2. * module->GetSizeZ(), 1.6);
-      stationInfo.SetXmax(module->GetSizeX());
-      stationInfo.SetYmax(module->GetSizeY());
-      stationInfo.SetRmin(0.);
-      stationInfo.SetRmax(2. * module->GetSizeX());  // TODO: Why multiplied with 2.?
-      fscal trdFrontPhi   = 0;
-      fscal trdBackPhi    = TMath::Pi() / 2.;
-      fscal trdFrontSigma = 0.15;
-      fscal trdBackSigma  = 0.15;
-      stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdFrontSigma, trdBackPhi, trdBackSigma);
-      fpInitManager->AddStation(stationInfo);
-    }
+  auto trackingIterFastPrim2 = L1CAIteration("FastPrim2Iter");
+  trackingIterFastPrim2.SetTrackChi2Cut(10.f);
+  trackingIterFastPrim2.SetTripletChi2Cut(21.1075f);
+  trackingIterFastPrim2.SetDoubletChi2Cut(7.56327f);
+  trackingIterFastPrim2.SetPickGather(3.0f);
+  trackingIterFastPrim2.SetPickNeighbour(5.0f);
+  trackingIterFastPrim2.SetMaxInvMom(1.0 / 0.5);
+  trackingIterFastPrim2.SetMaxSlopePV(1.1f);
+  trackingIterFastPrim2.SetMaxSlope(2.748f);
+  trackingIterFastPrim2.SetMaxDZ(0);
+  trackingIterFastPrim2.SetTargetPosSigmaXY(5, 5);
+  trackingIterFastPrim2.SetMinLevelTripletStart(0);
+  trackingIterFastPrim2.SetPrimary(true);
 
-    // Setup TOF stations info
-    for (int iSt = 0; iSt < NTOFStation; ++iSt) {
-      auto stationInfo = L1BaseStationInfo(L1DetectorID::kTof, iSt);
-      stationInfo.SetStationType(4);
-      stationInfo.SetTimeInfo(1);
-      stationInfo.SetTimeResolution(0.075);
-      stationInfo.SetFieldStatus(0);
-      stationInfo.SetZ(TofStationZ[iSt]);
-      stationInfo.SetMaterial(10., 2.);  // TODO: add Tof width dz and rad. len
-      stationInfo.SetXmax(20.);
-      stationInfo.SetYmax(20.);
-      stationInfo.SetRmin(0.);
-      stationInfo.SetRmax(150.);
-      fscal tofFrontPhi   = 0;
-      fscal tofBackPhi    = TMath::Pi() / 2.;
-      fscal tofFrontSigma = 0.42;
-      fscal tofBackSigma  = 0.23;
-      stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofFrontSigma, tofBackPhi, tofBackSigma);
-      fpInitManager->AddStation(stationInfo);
-    }
-    //initMan->PrintStations(/*vebosity = */ 1);
+  auto trackingIterAllSec = L1CAIteration("AllSecIter");
+  trackingIterAllSec.SetTrackChi2Cut(10.f);
+  trackingIterAllSec.SetTripletChi2Cut(18.7560f);  // = 6.252 * 3;  // prob = 0.1
+  trackingIterAllSec.SetDoubletChi2Cut(7.56327f);
+  trackingIterAllSec.SetPickGather(4.0f);
+  trackingIterAllSec.SetPickNeighbour(5.0f);
+  trackingIterAllSec.SetMaxInvMom(1.0 / 0.1);
+  trackingIterAllSec.SetMaxSlopePV(1.5f);
+  trackingIterAllSec.SetMaxSlope(2.748f);
+  trackingIterAllSec.SetMaxDZ(0.1);
+  trackingIterAllSec.SetTargetPosSigmaXY(10, 10);
+  trackingIterAllSec.SetMinLevelTripletStart(1);
+  trackingIterAllSec.SetPrimary(false);
 
-    // Step 7: initialize iterations and form a vector of them
-    {
-      // TODO: Possible, it will be more convenient to create a vector of these iterations, access its elements
-      //       by the enumeration item
-      // TODO: Need to provide a selection: default iterations input (these hardcoded ones), input from file or input
-      //       from runing macro
-      auto trackingIterFastPrim = L1CAIteration("FastPrimIter");
-      trackingIterFastPrim.SetTrackChi2Cut(10.f);
-      trackingIterFastPrim.SetTripletChi2Cut(23.4450f);  // = 7.815 * 3;  // prob = 0.05
-      trackingIterFastPrim.SetDoubletChi2Cut(7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
-      trackingIterFastPrim.SetPickGather(3.0f);
-      trackingIterFastPrim.SetPickNeighbour(5.0f);
-      trackingIterFastPrim.SetMaxInvMom(1.0 / 0.5);
-      trackingIterFastPrim.SetMaxSlopePV(1.1f);
-      trackingIterFastPrim.SetMaxSlope(2.748f);
-      trackingIterFastPrim.SetMaxDZ(0);
-      trackingIterFastPrim.SetTargetPosSigmaXY(1, 1);
-      trackingIterFastPrim.SetMinLevelTripletStart(0);
-      trackingIterFastPrim.SetPrimary(true);
+  auto trackingIterFastPrimJump = L1CAIteration("FastPrimJumpIter");
+  trackingIterFastPrimJump.SetTrackChi2Cut(10.f);
+  trackingIterFastPrimJump.SetTripletChi2Cut(21.1075f);  // prob = 0.01
+  trackingIterFastPrimJump.SetDoubletChi2Cut(7.56327f);
+  trackingIterFastPrimJump.SetPickGather(3.0f);
+  trackingIterFastPrimJump.SetPickNeighbour(5.0f);
+  trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.5);
+  trackingIterFastPrimJump.SetMaxSlopePV(1.1f);
+  trackingIterFastPrimJump.SetMaxSlope(2.748f);
+  trackingIterFastPrimJump.SetMaxDZ(0);
+  trackingIterFastPrimJump.SetTargetPosSigmaXY(5, 5);
+  trackingIterFastPrimJump.SetMinLevelTripletStart(0);
+  trackingIterFastPrimJump.SetPrimary(true);
 
-      auto trackingIterAllPrim = L1CAIteration("AllPrimIter");
-      trackingIterAllPrim.SetTrackChi2Cut(10.f);
-      trackingIterAllPrim.SetTripletChi2Cut(23.4450f);
-      trackingIterAllPrim.SetDoubletChi2Cut(7.56327f);
-      trackingIterAllPrim.SetPickGather(4.0f);
-      trackingIterAllPrim.SetPickNeighbour(5.0f);
-      trackingIterAllPrim.SetMaxInvMom(1.0 / 0.05);
-      trackingIterAllPrim.SetMaxSlopePV(1.1f);
-      trackingIterAllPrim.SetMaxSlope(2.748f);
-      trackingIterAllPrim.SetMaxDZ(0.1);
-      trackingIterAllPrim.SetTargetPosSigmaXY(1, 1);
-      trackingIterAllPrim.SetMinLevelTripletStart(0);
-      trackingIterAllPrim.SetPrimary(true);
+  auto trackingIterAllPrimJump = L1CAIteration("AllPrimJumpIter");
+  trackingIterAllPrimJump.SetTrackChi2Cut(10.f);
+  trackingIterAllPrimJump.SetTripletChi2Cut(18.7560f);
+  trackingIterAllPrimJump.SetDoubletChi2Cut(7.56327f);
+  trackingIterAllPrimJump.SetPickGather(4.0f);
+  trackingIterAllPrimJump.SetPickNeighbour(5.0f);
+  trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.1);
+  trackingIterAllPrimJump.SetMaxSlopePV(1.1f);
+  trackingIterAllPrimJump.SetMaxSlope(2.748f);
+  trackingIterAllPrimJump.SetMaxDZ(0.1);
+  trackingIterAllPrimJump.SetTargetPosSigmaXY(5, 5);
+  trackingIterAllPrimJump.SetMinLevelTripletStart(0);
+  trackingIterAllPrimJump.SetPrimary(true);
 
-      auto trackingIterFastPrim2 = L1CAIteration("FastPrim2Iter");
-      trackingIterFastPrim2.SetTrackChi2Cut(10.f);
-      trackingIterFastPrim2.SetTripletChi2Cut(21.1075f);
-      trackingIterFastPrim2.SetDoubletChi2Cut(7.56327f);
-      trackingIterFastPrim2.SetPickGather(3.0f);
-      trackingIterFastPrim2.SetPickNeighbour(5.0f);
-      trackingIterFastPrim2.SetMaxInvMom(1.0 / 0.5);
-      trackingIterFastPrim2.SetMaxSlopePV(1.1f);
-      trackingIterFastPrim2.SetMaxSlope(2.748f);
-      trackingIterFastPrim2.SetMaxDZ(0);
-      trackingIterFastPrim2.SetTargetPosSigmaXY(5, 5);
-      trackingIterFastPrim2.SetMinLevelTripletStart(0);
-      trackingIterFastPrim2.SetPrimary(true);
+  auto trackingIterAllSecJump = L1CAIteration("AllSecJumpIter");
+  trackingIterAllSecJump.SetTrackChi2Cut(10.f);
+  trackingIterAllSecJump.SetTripletChi2Cut(21.1075f);
+  trackingIterAllSecJump.SetDoubletChi2Cut(7.56327f);
+  trackingIterAllSecJump.SetPickGather(4.0f);
+  trackingIterAllSecJump.SetPickNeighbour(5.0f);
+  trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.1);
+  trackingIterAllSecJump.SetMaxSlopePV(1.5f);
+  trackingIterAllSecJump.SetMaxSlope(2.748f);
+  trackingIterAllSecJump.SetMaxDZ(0.1);
+  trackingIterAllSecJump.SetMinLevelTripletStart(1);
+  trackingIterAllSecJump.SetTargetPosSigmaXY(10, 10);
 
-      auto trackingIterAllSec = L1CAIteration("AllSecIter");
-      trackingIterAllSec.SetTrackChi2Cut(10.f);
-      trackingIterAllSec.SetTripletChi2Cut(18.7560f);  // = 6.252 * 3;  // prob = 0.1
-      trackingIterAllSec.SetDoubletChi2Cut(7.56327f);
-      trackingIterAllSec.SetPickGather(4.0f);
-      trackingIterAllSec.SetPickNeighbour(5.0f);
-      trackingIterAllSec.SetMaxInvMom(1.0 / 0.1);
-      trackingIterAllSec.SetMaxSlopePV(1.5f);
-      trackingIterAllSec.SetMaxSlope(2.748f);
-      trackingIterAllSec.SetMaxDZ(0.1);
-      trackingIterAllSec.SetTargetPosSigmaXY(10, 10);
-      trackingIterAllSec.SetMinLevelTripletStart(1);
-      trackingIterAllSec.SetPrimary(false);
+  auto trackingIterAllPrimE = L1CAIteration("AllPrimEIter");
+  trackingIterAllPrimE.SetTrackChi2Cut(10.f);
+  trackingIterAllPrimE.SetTripletChi2Cut(23.4450f);
+  trackingIterAllPrimE.SetDoubletChi2Cut(7.56327f);
+  trackingIterAllPrimE.SetPickGather(4.0f);
+  trackingIterAllPrimE.SetPickNeighbour(5.0f);
+  trackingIterAllPrimE.SetMaxInvMom(1.0 / 0.05);
+  trackingIterAllPrimE.SetMaxSlopePV(1.1f);
+  trackingIterAllPrimE.SetMaxSlope(2.748f);
+  trackingIterAllPrimE.SetMaxDZ(0.1);
+  trackingIterAllPrimE.SetTargetPosSigmaXY(1, 1);
+  trackingIterAllPrimE.SetMinLevelTripletStart(0);
+  trackingIterAllPrimE.SetPrimary(true);
 
-      auto trackingIterFastPrimJump = L1CAIteration("FastPrimJumpIter");
-      trackingIterFastPrimJump.SetTrackChi2Cut(10.f);
-      trackingIterFastPrimJump.SetTripletChi2Cut(21.1075f);  // prob = 0.01
-      trackingIterFastPrimJump.SetDoubletChi2Cut(7.56327f);
-      trackingIterFastPrimJump.SetPickGather(3.0f);
-      trackingIterFastPrimJump.SetPickNeighbour(5.0f);
-      trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.5);
-      trackingIterFastPrimJump.SetMaxSlopePV(1.1f);
-      trackingIterFastPrimJump.SetMaxSlope(2.748f);
-      trackingIterFastPrimJump.SetMaxDZ(0);
-      trackingIterFastPrimJump.SetTargetPosSigmaXY(5, 5);
-      trackingIterFastPrimJump.SetMinLevelTripletStart(0);
-      trackingIterFastPrimJump.SetPrimary(true);
+  auto trackingIterAllSecE = L1CAIteration("AllSecEIter");
+  trackingIterAllSecE.SetTrackChi2Cut(10.f);
+  trackingIterAllSecE.SetTripletChi2Cut(18.7560f);
+  trackingIterAllSecE.SetDoubletChi2Cut(7.56327f);
+  trackingIterAllSecE.SetPickGather(4.0f);
+  trackingIterAllSecE.SetPickNeighbour(5.0f);
+  trackingIterAllSecE.SetMaxInvMom(1.0 / 0.05);
+  trackingIterAllSecE.SetMaxSlopePV(1.5f);
+  trackingIterAllSecE.SetMaxSlope(2.748f);
+  trackingIterAllSecE.SetMaxDZ(0.1);
+  trackingIterAllSecE.SetMinLevelTripletStart(1);
+  trackingIterAllSecE.SetTargetPosSigmaXY(10, 10);
 
-      auto trackingIterAllPrimJump = L1CAIteration("AllPrimJumpIter");
-      trackingIterAllPrimJump.SetTrackChi2Cut(10.f);
-      trackingIterAllPrimJump.SetTripletChi2Cut(18.7560f);
-      trackingIterAllPrimJump.SetDoubletChi2Cut(7.56327f);
-      trackingIterAllPrimJump.SetPickGather(4.0f);
-      trackingIterAllPrimJump.SetPickNeighbour(5.0f);
-      trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.1);
-      trackingIterAllPrimJump.SetMaxSlopePV(1.1f);
-      trackingIterAllPrimJump.SetMaxSlope(2.748f);
-      trackingIterAllPrimJump.SetMaxDZ(0.1);
-      trackingIterAllPrimJump.SetTargetPosSigmaXY(5, 5);
-      trackingIterAllPrimJump.SetMinLevelTripletStart(0);
-      trackingIterAllPrimJump.SetPrimary(true);
+  // Select default track finder
+  if (fTrackingMode == L1Algo::TrackingMode::kMcbm) {
+    trackingIterAllPrim.SetMaxInvMom(1. / 0.1);
+    trackingIterAllPrimE.SetMaxInvMom(1. / 0.1);
+    trackingIterAllSecE.SetMaxInvMom(1. / 0.1);
 
-      auto trackingIterAllSecJump = L1CAIteration("AllSecJumpIter");
-      trackingIterAllSecJump.SetTrackChi2Cut(10.f);
-      trackingIterAllSecJump.SetTripletChi2Cut(21.1075f);
-      trackingIterAllSecJump.SetDoubletChi2Cut(7.56327f);
-      trackingIterAllSecJump.SetPickGather(4.0f);
-      trackingIterAllSecJump.SetPickNeighbour(5.0f);
-      trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.1);
-      trackingIterAllSecJump.SetMaxSlopePV(1.5f);
-      trackingIterAllSecJump.SetMaxSlope(2.748f);
-      trackingIterAllSecJump.SetMaxDZ(0.1);
-      trackingIterAllSecJump.SetMinLevelTripletStart(1);
-      trackingIterAllSecJump.SetTargetPosSigmaXY(10, 10);
+    trackingIterFastPrim.SetMaxInvMom(1.0 / 0.3);
+    trackingIterAllSec.SetMaxInvMom(1.0 / 0.3);
+    trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.3);
+    trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.3);
+    trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.3);
 
-      auto trackingIterAllPrimE = L1CAIteration("AllPrimEIter");
-      trackingIterAllPrimE.SetTrackChi2Cut(10.f);
-      trackingIterAllPrimE.SetTripletChi2Cut(23.4450f);
-      trackingIterAllPrimE.SetDoubletChi2Cut(7.56327f);
-      trackingIterAllPrimE.SetPickGather(4.0f);
-      trackingIterAllPrimE.SetPickNeighbour(5.0f);
-      trackingIterAllPrimE.SetMaxInvMom(1.0 / 0.05);
-      trackingIterAllPrimE.SetMaxSlopePV(1.1f);
-      trackingIterAllPrimE.SetMaxSlope(2.748f);
-      trackingIterAllPrimE.SetMaxDZ(0.1);
-      trackingIterAllPrimE.SetTargetPosSigmaXY(1, 1);
-      trackingIterAllPrimE.SetMinLevelTripletStart(0);
-      trackingIterAllPrimE.SetPrimary(true);
+    fpInitManager->SetCAIterationsNumberCrosscheck(4);
+    // Initialize CA track finder iterations sequence
+    fpInitManager->PushBackCAIteration(trackingIterFastPrim);
+    fpInitManager->PushBackCAIteration(trackingIterAllPrim);
+    fpInitManager->PushBackCAIteration(trackingIterAllPrimJump);
+    fpInitManager->PushBackCAIteration(trackingIterAllSec);
+  }
+  else {
+    fpInitManager->SetCAIterationsNumberCrosscheck(4);
+    // Initialize CA track finder iterations sequence
+    fpInitManager->PushBackCAIteration(trackingIterFastPrim);
+    fpInitManager->PushBackCAIteration(trackingIterAllPrim);
+    fpInitManager->PushBackCAIteration(trackingIterAllPrimJump);
+    fpInitManager->PushBackCAIteration(trackingIterAllSec);
+    //fpInitManager->PushBackCAIteration(trackingIterAllPrimE);
+    //fpInitManager->PushBackCAIteration(trackingIterAllSecE);
+    //fpInitManager->PushBackCAIteration(trackingIterFastPrimJump);
+    //fpInitManager->PushBackCAIteration(trackingIterFastPrim2);
+    //fpInitManager->PushBackCAIteration(trackingIterAllSecJump);
+  }
 
-      auto trackingIterAllSecE = L1CAIteration("AllSecEIter");
-      trackingIterAllSecE.SetTrackChi2Cut(10.f);
-      trackingIterAllSecE.SetTripletChi2Cut(18.7560f);
-      trackingIterAllSecE.SetDoubletChi2Cut(7.56327f);
-      trackingIterAllSecE.SetPickGather(4.0f);
-      trackingIterAllSecE.SetPickNeighbour(5.0f);
-      trackingIterAllSecE.SetMaxInvMom(1.0 / 0.05);
-      trackingIterAllSecE.SetMaxSlopePV(1.5f);
-      trackingIterAllSecE.SetMaxSlope(2.748f);
-      trackingIterAllSecE.SetMaxDZ(0.1);
-      trackingIterAllSecE.SetMinLevelTripletStart(1);
-      trackingIterAllSecE.SetTargetPosSigmaXY(10, 10);
+  /******************//**
+   ** Set special cuts **
+   **********************/
+      
+  fpInitManager->SetGhostSuppression(fGhostSuppression);
+  fpInitManager->SetTrackingLevel(fTrackingLevel);
+  fpInitManager->SetMomentumCutOff(fMomentumCutOff);
 
-      // Select default track finder
-      if (fTrackingMode == L1Algo::TrackingMode::kMcbm) {
-        trackingIterAllPrim.SetMaxInvMom(1. / 0.1);
-        trackingIterAllPrimE.SetMaxInvMom(1. / 0.1);
-        trackingIterAllSecE.SetMaxInvMom(1. / 0.1);
-
-        trackingIterFastPrim.SetMaxInvMom(1.0 / 0.3);
-        trackingIterAllSec.SetMaxInvMom(1.0 / 0.3);
-        trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.3);
-        trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.3);
-        trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.3);
-
-        fpInitManager->SetCAIterationsNumberCrosscheck(4);
-        // Initialize CA track finder iterations sequence
-        fpInitManager->PushBackCAIteration(trackingIterFastPrim);
-        fpInitManager->PushBackCAIteration(trackingIterAllPrim);
-        fpInitManager->PushBackCAIteration(trackingIterAllPrimJump);
-        fpInitManager->PushBackCAIteration(trackingIterAllSec);
-      }
-      else {
-        fpInitManager->SetCAIterationsNumberCrosscheck(4);
-        // Initialize CA track finder iterations sequence
-        fpInitManager->PushBackCAIteration(trackingIterFastPrim);
-        fpInitManager->PushBackCAIteration(trackingIterAllPrim);
-        fpInitManager->PushBackCAIteration(trackingIterAllPrimJump);
-        fpInitManager->PushBackCAIteration(trackingIterAllSec);
-        //fpInitManager->PushBackCAIteration(trackingIterAllPrimE);
-        //fpInitManager->PushBackCAIteration(trackingIterAllSecE);
-        //fpInitManager->PushBackCAIteration(trackingIterFastPrimJump);
-        //fpInitManager->PushBackCAIteration(trackingIterFastPrim2);
-        //fpInitManager->PushBackCAIteration(trackingIterAllSecJump);
-      }
-
-      // Set special cuts
-      fpInitManager->SetGhostSuppression(fGhostSuppression);
-      fpInitManager->SetTrackingLevel(fTrackingLevel);
-      fpInitManager->SetMomentumCutOff(fMomentumCutOff);
-    }
-  }  // L1Algo new init: end
-  /********************************************************************************************************************
-   ********************************************************************************************************************/
+  /**********************/
 
   algo->Init(fUseHitErrors, fTrackingMode, fMissingHits);
-  geo.clear();
 
+  /*****************************//**
+   ** Material map initialization **
+   *********************************/
+
+  // TODO: Move it to the L1InitManager (S.Zharko, 15.05.2022)
   algo->fRadThick.reset(algo->GetNstations());
 
   // Read STS  MVD TRD MuCh ToF Radiation Thickness table
