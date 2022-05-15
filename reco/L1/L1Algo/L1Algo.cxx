@@ -76,13 +76,13 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
   fTrackingMode = mode;
   fMissingHits  = MissingHits;
 
-  
+
   //int NMvdStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NMbdStations (S. Zh.)
   int nStationsSts     = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(1));
   fNstationsBeforePipe = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(0));
   //int NStsStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NStsStations (S. Zh.)
 
-  fNfieldStations = nStationsSts + fNstationsBeforePipe; // TODO: Provide special getter for it (S.Zharko, 12.05.2022)
+  fNfieldStations = nStationsSts + fNstationsBeforePipe;  // TODO: Provide special getter for it (S.Zharko, 12.05.2022)
 
   if (fTrackingMode == kMcbm) { fNfieldStations = -1; }
 
@@ -93,7 +93,7 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
 
   // Print out the bits of the init manager
   LOG(info) << "InitManager " << fInitManager.GetInitController().ToString();
- 
+
   // Get real target position
   fRealTargetX = fInitManager.GetTargetPosition()[0];
   fRealTargetY = fInitManager.GetTargetPosition()[1];
@@ -103,15 +103,15 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
   fNstations = fInitManager.GetStationsNumber();
 
   // Get field near target
-  fVtxFieldValue   = fInitManager.GetTargetFieldValue();
+  fVtxFieldValue  = fInitManager.GetTargetFieldValue();
   fVtxFieldRegion = fInitManager.GetTargetFieldRegion();
 
   // Fill L1Station array
   fInitManager.TransferL1StationArray(fStations);
-  
-  fTrackingLevel = fInitManager.GetTrackingLevel();
+
+  fTrackingLevel    = fInitManager.GetTrackingLevel();
   fGhostSuppression = fInitManager.GetGhostSuppression();
-  fMomentumCutOff = fInitManager.GetMomentumCutOff();
+  fMomentumCutOff   = fInitManager.GetMomentumCutOff();
 
   LOG(info) << "  ***********************";
   LOG(info) << "  *  L1Algo parameters  *";

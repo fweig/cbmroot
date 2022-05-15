@@ -1193,7 +1193,7 @@ void CbmL1::TrackFitPerformance()
       for (unsigned int iMCPoint = 0; iMCPoint < mc.Points.size(); iMCPoint++) {
         const int iMCP    = mc.Points[iMCPoint];
         CbmL1MCPoint& mcP = vMCPoints[iMCP];
-        const L1Station& st     = algo->GetStations()[mcP.iStation];
+        const L1Station& st = algo->GetStations()[mcP.iStation];
         z[ih]             = st.z[0];
         if (ih > 0 && (z[ih] - z[ih - 1]) < 0.1) continue;
         st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
@@ -1304,7 +1304,7 @@ void CbmL1::TrackFitPerformance()
       for (unsigned int iMCPoint = 0; iMCPoint < mc.Points.size(); iMCPoint++) {
         const int iMCP    = mc.Points[iMCPoint];
         CbmL1MCPoint& mcP = vMCPoints[iMCP];
-        const L1Station& st     = algo->GetStations()[mcP.iStation];
+        const L1Station& st = algo->GetStations()[mcP.iStation];
         z[ih]             = st.z[0];
         if (ih > 0 && (z[ih] - z[ih - 1]) < 0.1) continue;
         st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
@@ -1375,7 +1375,7 @@ void CbmL1::TrackFitPerformance()
             if (ih >= mc.Points.size()) continue;  //If nofMCPoints in track < 3
             const int iMCP    = mc.Points[ih];
             CbmL1MCPoint& mcP = vMCPoints[iMCP];
-            const L1Station& st     = algo->GetStations()[mcP.iStation];
+            const L1Station& st = algo->GetStations()[mcP.iStation];
             z[ih]             = st.z[0];
             st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
           };
@@ -1438,7 +1438,7 @@ void CbmL1::TrackFitPerformance()
           int ih = 1;
           for (unsigned int iHit = 0; iHit < it->StsHits.size(); iHit++) {
             const int iStation = vHitStore[it->StsHits[iHit]].iStation;
-            const L1Station& st      = algo->GetStations()[iStation];
+            const L1Station& st = algo->GetStations()[iStation];
             z[ih]              = st.z[0];
             st.fieldSlice.GetFieldValue(vHitStore[it->StsHits[iHit]].x, vHitStore[it->StsHits[iHit]].y, B[ih]);
             ih++;

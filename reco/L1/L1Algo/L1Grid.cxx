@@ -37,9 +37,10 @@ inline void memset(T* dest, T i, size_t num)
 }
 
 
-void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<L1HitIndex_t>* indicesBuf, L1HitIndex_t* indices,
-                            L1Vector<L1Hit>* hits2, L1Vector<L1HitPoint>* pointsBuf, L1HitPoint* points,
-                            int& NHitsOnStation, char iS, L1Algo& Algo, const L1Vector<unsigned char>* vSFlag)
+void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<L1HitIndex_t>* indicesBuf,
+                            L1HitIndex_t* indices, L1Vector<L1Hit>* hits2, L1Vector<L1HitPoint>* pointsBuf,
+                            L1HitPoint* points, int& NHitsOnStation, char iS, L1Algo& Algo,
+                            const L1Vector<unsigned char>* vSFlag)
 {
 
   fFirstHitInBin.reset(fN + 2, 0);

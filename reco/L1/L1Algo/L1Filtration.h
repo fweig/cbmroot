@@ -265,7 +265,8 @@ inline void L1FilterChi2XYC00C10C11(const L1UMeasurementInfo& info, fvec& x, fve
   C11 -= K1 * F1;
 }
 
-inline void L1FilterVtx(L1TrackPar& T, fvec x, fvec y, const L1XYMeasurementInfo& info, fvec extrDx, fvec extrDy, fvec J[])
+inline void L1FilterVtx(L1TrackPar& T, fvec x, fvec y, const L1XYMeasurementInfo& info, fvec extrDx, fvec extrDy,
+                        fvec J[])
 {
   cnst TWO = 2.;
 

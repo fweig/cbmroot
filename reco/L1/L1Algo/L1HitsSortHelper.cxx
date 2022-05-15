@@ -14,7 +14,8 @@
 using std::vector;
 
 L1HitsSortHelper::L1HitsSortHelper(vector<L1Hit>& hits, vector<L1HitPoint>& points, vector<L1HitIndex_t>& indices,
-                                   const L1Grid* grid, L1HitIndex_t* iStart, L1HitIndex_t* iStop, int nStations, int nDontUsedHits)
+                                   const L1Grid* grid, L1HitIndex_t* iStart, L1HitIndex_t* iStop, int nStations,
+                                   int nDontUsedHits)
   : fD()
   , fHits(hits)
   , fPoints(points)

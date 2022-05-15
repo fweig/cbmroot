@@ -222,7 +222,7 @@ private:
   /// \param   MVD      Index of the detector subsystem
   /// \return  flag: false - success, true - some errors occured
   bool ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int MVD);  // help procedure
-  
+
   /// Converts data from generic FairMCPoint based class to the CbmL1MCPoint
   /// \param   MC       Pointer to a target CbmL1MCPoint object
   /// \param   iPoint   Index of the point into the input MC points CbmMCDataArray object for the particular detector
@@ -232,10 +232,10 @@ private:
   /// \return  flag: false - success, true - some errors occured
   // TODO: Probably, we should replace input parameter MVD with the template  (S.Zharko)
   bool ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int MVD);
-  
+
   //   static bool compareZ(const int &a, const int &b );
   //   bool compareZ(const int &a, const int &b );
-  
+
   /// Fills the vMCTracks vector and the dFEI2vMCTracks set
   void Fill_vMCTracks();
 

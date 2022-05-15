@@ -68,6 +68,4 @@ T finite(T x)
 typedef int index_type;
 
 
-
-
 #endif

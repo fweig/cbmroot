@@ -85,7 +85,6 @@ using L1StationsArray_t = std::array<L1Station, L1Parameters::kMaxNstations>;
 ///
 class L1Algo {
 public:
-
   L1Algo(unsigned int nThreads = 1);
 
   L1Algo(const L1Algo&) = delete;
@@ -105,7 +104,7 @@ public:
   /// \return particle mass squared
   float GetDefaultParticleMass2() const { return fDefaultMass * fDefaultMass; }
 
-  float fDefaultMass = 0.10565800;  // muon mass 
+  float fDefaultMass = 0.10565800;  // muon mass
   // TODO: make fDefaultMass a private member (S.Zharko)
 
   /// pack station, thread and triplet indices to an unique triplet ID
@@ -154,12 +153,12 @@ public:
   Tindex fDupletPortionStopIndex[L1Parameters::kMaxNstations] {0};     // end of the duplet portions for the station
   L1Vector<Tindex> fDupletPortionSize {"L1Algo::fDupletPortionSize"};  // N duplets in a portion
 
-  /********************************************************************************************//**
+  /********************************************************************************************/ /**
    * Temporary vectors used by the clone merger 
    * TODO: Probably, the subclass L1TrackMerger for clones merger would help to improve 
    *       readability (S.Zharko)
    ***********************************************************************************************/
-  
+
   //
   // Vectors that are parallel to fTracks
   //
@@ -172,7 +171,7 @@ public:
   /// Index of the last hit of a track
   L1Vector<L1HitIndex_t> fMergerTrackLastHit {"L1Algo::fMergerTrackLastHit"};
   /// Index (TODO:??) of a track that can be merge with the given track
-  L1Vector<unsigned short> fMergerTrackNeighbour { "L1Algo::fMergerTrackNeighbour"};
+  L1Vector<unsigned short> fMergerTrackNeighbour {"L1Algo::fMergerTrackNeighbour"};
   /// Chi2 value of the track merging procedure
   L1Vector<float> fMergerTrackChi2 {"L1Algo::fMergerTrackChi2"};
   /// Flag: is the given track already stored to the output
@@ -223,24 +222,22 @@ public:
   void SetNThreads(unsigned int n);
 
 private:
-  int fNstations {0};                      ///< number of all detector stations
-  int fNstationsBeforePipe {0};            ///< number of stations before pipe (MVD stations in CBM)
-  int fNfieldStations {0};                 ///< number of stations in the field region
-  alignas(16) L1StationsArray_t fStations; ///< array of L1Station objects
+  int fNstations {0};                       ///< number of all detector stations
+  int fNstationsBeforePipe {0};             ///< number of stations before pipe (MVD stations in CBM)
+  int fNfieldStations {0};                  ///< number of stations in the field region
+  alignas(16) L1StationsArray_t fStations;  ///< array of L1Station objects
 
 public:
   /// Gets total number of stations used in tracking
-  int GetNstations() const { return fNstations; } 
+  int GetNstations() const { return fNstations; }
   /// Gets number of stations before the pipe (MVD stations in CBM)
   int GetNstationsBeforePipe() const { return fNstationsBeforePipe; }
   /// Gets number of stations situated in field region (MVD + STS in CBM)
-  int GetNfieldStations() const { return fNfieldStations;}
+  int GetNfieldStations() const { return fNfieldStations; }
   /// Gets reference to the stations array
   const L1StationsArray_t& GetStations() const { return fStations; }
 
 public:
-  
-  
   L1Vector<L1Material> fRadThick {"fRadThick"};        // material for each station
 
   int NStsStrips {0};                             ///> number of strips
@@ -285,7 +282,7 @@ public:
 
   int fNThreads {0};
   bool fUseHitErrors {true};
-  bool fMissingHits {0}; ///< TODO ???
+  bool fMissingHits {0};  ///< TODO ???
   TrackingMode fTrackingMode {kSts};
 
   fvec EventTime[L1Parameters::kMaxNthreads][L1Parameters::kMaxNthreads] {{0}};
@@ -405,7 +402,7 @@ private:
   L1InitManager fInitManager {&fParameters};  ///< Object of L1Algo initialization manager class
 
 
-  /*********************************************************************************************//**
+  /*********************************************************************************************/ /**
    *                             ------  FUNCTIONAL PART ------
    ************************************************************************************************/
 
@@ -452,7 +449,7 @@ private:
   void MultiplySR(fvec const C[15], fvec const r_in[5], fvec r_out[5]);
   void FilterTracks(fvec const r[5], fvec const C[15], fvec const m[5], fvec const V[15], fvec R[5], fvec W[15],
                     fvec* chi2);
-  /// 
+  ///
   void CAMergeClones();
 
 
@@ -545,8 +542,8 @@ private:
 
   /// Refit Triplets.
   void f32(  // input
-    Tindex n3, int istal, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
-    L1Vector<L1HitIndex_t>& hitsr_3, int nIterations = 0);
+    Tindex n3, int istal, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
+    L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3, int nIterations = 0);
 
   /// Select triplets. Save them into vTriplets.
   void f4(  // input
@@ -581,7 +578,8 @@ private:
 
   /// Find triplets on station
   void TripletsStaPort(  // input
-    int istal, int istam, int istar, Tindex& nstaltriplets, L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
+    int istal, int istam, int istar, Tindex& nstaltriplets, L1TrackPar* T_1, L1FieldRegion* fld_1,
+    L1HitIndex_t* hitsl_1,
 
     Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2,
 
@@ -692,9 +690,9 @@ private:
   fvec fMaxInvMom {L1Utils::kNaN};       ///< max considered q/p for tracks
   fvec fMaxSlopePV {L1Utils::kNaN};      ///< max slope (tx\ty) in prim vertex
   float fMaxSlope {L1Utils::kNaN};       ///< max slope (tx\ty) in 3d hit position of a triplet
-  fvec fRealTargetX {L1Utils::kNaN};      ///< real target position x coordinate
-  fvec fRealTargetY {L1Utils::kNaN};      ///< real target position y coordinate
-  fvec fRealTargetZ {L1Utils::kNaN};      ///< real target position z coordinate
+  fvec fRealTargetX {L1Utils::kNaN};     ///< real target position x coordinate
+  fvec fRealTargetY {L1Utils::kNaN};     ///< real target position y coordinate
+  fvec fRealTargetZ {L1Utils::kNaN};     ///< real target position z coordinate
   fvec fTargX {L1Utils::kNaN};           ///< target position x coordinate for the current iteration (modifiable)
   fvec fTargY {L1Utils::kNaN};           ///< target position y coordinate for the current iteration (modifiable)
   fvec fTargZ {L1Utils::kNaN};           ///< target position z coordinate for the current iteration (modifiable)
@@ -708,8 +706,8 @@ private:
 
   //  int TripNumThread;
 
-  int fTrackingLevel    {2};  // currently not used
-  int fGhostSuppression {1};  // currently not used
+  int fTrackingLevel {2};       // currently not used
+  int fGhostSuppression {1};    // currently not used
   float fMomentumCutOff {0.2};  // currently not used
 
   /// ----- Debug features -----

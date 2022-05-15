@@ -17,11 +17,11 @@
 ///
 struct L1Station {
   int type {0};
-  int timeInfo {0};   ///< flag: if time information can be used 
+  int timeInfo {0};     ///< flag: if time information can be used
   int fieldStatus {0};  ///< flag: 1 - station is INSIDE the field, 0 - station is OUTSIDE the field
-  fvec z {0};         ///< z position of station
-  fvec Rmin {0};      ///< min radius of the station
-  fvec Rmax {0};      ///< max radius of the station
+  fvec z {0};           ///< z position of station
+  fvec Rmin {0};        ///< min radius of the station
+  fvec Rmax {0};        ///< max radius of the station
   fvec dt {0};
   L1MaterialInfo materialInfo {};
   L1FieldSlice fieldSlice {};

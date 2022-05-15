@@ -364,13 +364,13 @@ void L1AlgoDraw::DrawTriplet(int il, int im, int ir)
   marker.DrawMarker(lx[nHits - 1], ly[nHits - 1]);
 }
 
-void L1AlgoDraw::DrawDoublets(vector<L1HitIndex_t>* Duplets_hits, map<L1HitIndex_t, L1HitIndex_t>* Duplets_start, const int /*MaxArrSize*/,
-                              L1HitIndex_t* StsRestHitsStartIndex, unsigned int* realIHit)
+void L1AlgoDraw::DrawDoublets(vector<L1HitIndex_t>* Duplets_hits, map<L1HitIndex_t, L1HitIndex_t>* Duplets_start,
+                              const int /*MaxArrSize*/, L1HitIndex_t* StsRestHitsStartIndex, unsigned int* realIHit)
 {
   for (int iSta = 0; iSta < NStations - 1; iSta++) {
     const int firstHitOnSta            = StsRestHitsStartIndex[iSta];
     const int firstHitOnNextSta        = StsRestHitsStartIndex[iSta + 1];
-    L1HitIndex_t* staDupletsHits              = &(Duplets_hits[iSta][0]);
+    L1HitIndex_t* staDupletsHits                     = &(Duplets_hits[iSta][0]);
     map<L1HitIndex_t, L1HitIndex_t>& staDupletsStart = Duplets_start[iSta];
 
     for (int iRestLHit = firstHitOnSta; iRestLHit < firstHitOnNextSta; iRestLHit++) {
@@ -397,13 +397,13 @@ void L1AlgoDraw::DrawDoublets(vector<L1HitIndex_t>* Duplets_hits, map<L1HitIndex
   YX->Update();
 };
 
-void L1AlgoDraw::DrawDoubletsOnSta(int iSta, L1HitIndex_t* Duplets_hits, L1HitIndex_t* Duplets_start, const int MaxArrSize,
-                                   L1HitIndex_t* StsRestHitsStartIndex, unsigned int* realIHit)
+void L1AlgoDraw::DrawDoubletsOnSta(int iSta, L1HitIndex_t* Duplets_hits, L1HitIndex_t* Duplets_start,
+                                   const int MaxArrSize, L1HitIndex_t* StsRestHitsStartIndex, unsigned int* realIHit)
 {
   const int firstHitOnSta     = StsRestHitsStartIndex[iSta];
   const int firstHitOnNextSta = StsRestHitsStartIndex[iSta + 1];
-  L1HitIndex_t* staDupletsHits       = Duplets_hits + MaxArrSize * iSta;
-  L1HitIndex_t* staDupletsStart      = Duplets_start + MaxArrSize * iSta;
+  L1HitIndex_t* staDupletsHits  = Duplets_hits + MaxArrSize * iSta;
+  L1HitIndex_t* staDupletsStart = Duplets_start + MaxArrSize * iSta;
 
   for (int iRestLHit = firstHitOnSta; iRestLHit < firstHitOnNextSta; iRestLHit++) {
     const int ilh       = iRestLHit - firstHitOnSta;
@@ -659,7 +659,8 @@ void L1AlgoDraw::DrawInputHits()
 
 }  // DrawInputHits
 
-void L1AlgoDraw::DrawRestHits(L1HitIndex_t* StsRestHitsStartIndex, L1HitIndex_t* StsRestHitsStopIndex, unsigned int* realIHit)
+void L1AlgoDraw::DrawRestHits(L1HitIndex_t* StsRestHitsStartIndex, L1HitIndex_t* StsRestHitsStopIndex,
+                              unsigned int* realIHit)
 {
 
   TLatex latex;

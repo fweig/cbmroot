@@ -74,7 +74,7 @@ private:
     keCAIterations,                  ///< 7) If the CA track finder iterations were initialized
     keTrackingLevel,                 ///< 8)
     keGhostSuppression,              ///< 9)
-    keMomentumCutOff,                ///< 10) 
+    keMomentumCutOff,                ///< 10)
     keEnd                            ///< 11) [technical] number of entries in the enum
   };
 
@@ -227,12 +227,9 @@ private:
   // NOTE: Owner of the object is L1Algo instance
   L1Parameters* fpParameters {nullptr};
 
-  int fTrackingLevel    {0};  ///< tracking level
+  int fTrackingLevel {0};     ///< tracking level
   int fGhostSuppression {0};  ///< flag: if true, ghost tracks are suppressed
   float fMomentumCutOff {0};  ///< minimum momentum of tracks TODO: ?
-  
- 
-
 };
 
 #endif

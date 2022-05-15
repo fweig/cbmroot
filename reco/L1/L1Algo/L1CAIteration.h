@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
-/***********************************************************************************************//**
+/***************************************************************************************************
  * @file   L1CAIteration.h
  * @brief  Declaration of the L1CAIteration class 
  * @since  05.02.2022
@@ -17,8 +17,8 @@
 
 // TODO: discuss the border conditions for the parameters. Implement them (S.Zharko)
 //       Implementation: use tuples for boundary conditions of the parameters
-/// Class L1CAIteration describes L1 Track finder iteration. 
-/// Each iteration utilizes special physics cuts and run condition to find tracks of a particular 
+/// Class L1CAIteration describes L1 Track finder iteration.
+/// Each iteration utilizes special physics cuts and run condition to find tracks of a particular
 /// class (e.g., fast primary tracks or secondary electron tracks). Hits associated with tracks
 /// reconstructed during current iteration are removed from the further iterations.
 ///
@@ -130,15 +130,15 @@ private:
   float fTrackChi2Cut {10.f};                   ///> Track chi2 upper cut
   float fTripletChi2Cut {21.1075f};             ///> Triplet chi2 upper cut
   float fDoubletChi2Cut {11.3449 * 2.f / 3.f};  ///> Doublet chi2 upper cut
-  float fPickGather {3.0};                      ///> Size of region to attach new hits to the created track [TODO: units??]
-  float fPickNeighbour {5.0};                   ///> Min value of dp/dp_error, for which two tiplets are neighbours
-  float fMaxInvMom {1.0 / 0.5};                 ///> Max considered q/p for tracks 
-  float fMaxSlopePV {1.1};                      ///> Max slope (tx\ty) in primary vertex
-  float fMaxSlope {2.748};                      ///> Max slope (tx\ty) in 3D hit position of a triplet 
-  float fMaxDZ {0.f};                           ///> Correction for accounting overlaping and iff z [TODO: units??]
+  float fPickGather {3.0};       ///> Size of region to attach new hits to the created track [TODO: units??]
+  float fPickNeighbour {5.0};    ///> Min value of dp/dp_error, for which two tiplets are neighbours
+  float fMaxInvMom {1.0 / 0.5};  ///> Max considered q/p for tracks
+  float fMaxSlopePV {1.1};       ///> Max slope (tx\ty) in primary vertex
+  float fMaxSlope {2.748};       ///> Max slope (tx\ty) in 3D hit position of a triplet
+  float fMaxDZ {0.f};            ///> Correction for accounting overlaping and iff z [TODO: units??]
   float fTargetPosSigmaX {0};                   ///> Constraint on target position in X direction [cm]
   float fTargetPosSigmaY {0};                   ///> Constraint on target position in Y direction [cm]
-  int fMinLevelTripletStart {0};                ///> Min level for starting a triplet. Track length = fMinLevelTripletStart + 3
+  int fMinLevelTripletStart {0};  ///> Min level for starting a triplet. Track length = fMinLevelTripletStart + 3
   // ^ TODO: invent more proper name
 };
 

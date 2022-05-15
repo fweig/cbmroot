@@ -86,7 +86,7 @@ using std::ios;
 
 ClassImp(CbmL1)
 
-  static L1Algo algo_static _fvecalignment; // TODO: gAlgo
+  static L1Algo algo_static _fvecalignment;  // TODO: gAlgo
 
 //L1AlgoInputData* fData_static _fvecalignment;
 
@@ -388,7 +388,7 @@ InitStatus CbmL1::Init()
   // TODO: Replace algo initialization in the constructor (S.Zharko)
   algo = &algo_static;
 
-  /**********************//**
+  /**************************
    ** Field initialization **
    **************************/
 
@@ -397,44 +397,44 @@ InitStatus CbmL1::Init()
   };
   fpInitManager->SetFieldFunction(fieldGetterFcn);
 
-  /***********************//**
+  /***************************
    ** Target initialization **
    ***************************/
 
   auto& target = CbmKF::Instance()->vTargets[0];
   fpInitManager->SetTargetPosition(target.x, target.y, target.z);
 
-  /*****************************//**
+  /*********************************
    ** Target field initialization **
    *********************************/
 
   fpInitManager->InitTargetField(2.5);
 
 
-  /**********************************//**
+  /**************************************
    **                                  **
    ** STATIONS GEOMETRY INITIALIZATION **
    **                                  **
    **************************************/
 
 
-  /***********************************************//**
+  /***************************************************
    ** Active tracking detector subsystems selection **
    ***************************************************/
 
   fActiveTrackingDetectorIDs.insert(L1DetectorID::kSts);
-  if (fUseMVD)  { fActiveTrackingDetectorIDs.insert(L1DetectorID::kMvd); }
+  if (fUseMVD) { fActiveTrackingDetectorIDs.insert(L1DetectorID::kMvd); }
   if (fUseMUCH) { fActiveTrackingDetectorIDs.insert(L1DetectorID::kMuch); }
-  if (fUseTRD)  { fActiveTrackingDetectorIDs.insert(L1DetectorID::kTrd); }
-  if (fUseTOF)  { fActiveTrackingDetectorIDs.insert(L1DetectorID::kTof); }
+  if (fUseTRD) { fActiveTrackingDetectorIDs.insert(L1DetectorID::kTrd); }
+  if (fUseTOF) { fActiveTrackingDetectorIDs.insert(L1DetectorID::kTof); }
   fpInitManager->SetActiveDetectorIDs(fActiveTrackingDetectorIDs);
 
-  /*****************************************************************//**
+  /*********************************************************************
    ** Counting numbers of stations for different detector subsystems  **
    *********************************************************************/
 
   CbmMuchGeoScheme* fGeoScheme = CbmMuchGeoScheme::Instance();
-  
+
   /*** MuCh ***/
   if (fUseMUCH) {
     /// Save old global file and folder pointer to avoid messing with FairRoot
@@ -938,7 +938,7 @@ InitStatus CbmL1::Init()
   fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kMuch, NMuchStations);
   fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kTrd, NTrdStations);
   fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kTof, NTOFStation);
-  
+
   {
     if (fSTAPDataMode % 2 == 1) {  // 1,3
       LOG(warn) << "CbmL1::Init: geo vector was removed, currently data cannot be written to a text-file";
@@ -961,8 +961,8 @@ InitStatus CbmL1::Init()
     //if (ind2 != ind)
     //  LOG(error) << "-E- CbmL1: Read geometry from file " << fSTAPDataDir + "geo_algo.txt was NOT successful.";
   }
-  
-  /***********************************//**
+
+  /***************************************
    ** Stations geometry initialization  **
    ***************************************/
 
@@ -997,7 +997,7 @@ InitStatus CbmL1::Init()
 
   /*** STS stations info ***/
   for (int iSt = 0; iSt < NStsStations; ++iSt) {  // NOTE: example using smart pointers
-    auto cbmSts = CbmStsSetup::Instance()->GetStation(iSt);
+    auto cbmSts      = CbmStsSetup::Instance()->GetStation(iSt);
     auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
     stationInfo.SetStationType(0);  // STS
     stationInfo.SetTimeInfo(1);
@@ -1038,7 +1038,7 @@ InitStatus CbmL1::Init()
     stationInfo.SetFieldStatus(0);
     stationInfo.SetZ(layer->GetZ());
     auto thickness = layer->GetDz();
-    auto radLength = 0.; // Why 0??? (S.Zharko)
+    auto radLength = 0.;  // Why 0??? (S.Zharko)
     stationInfo.SetMaterial(thickness, radLength);
     stationInfo.SetXmax(100.);
     stationInfo.SetYmax(100.);
@@ -1108,7 +1108,7 @@ InitStatus CbmL1::Init()
     LOG(info) << "- TOF station " << iSt << " at z = " << stationInfo.GetZdouble();
   }
 
-  /************************************//**
+  /****************************************
    **                                    **
    ** TRACKING ITERATIONS INITIALIZATION **
    **                                    **
@@ -1273,10 +1273,10 @@ InitStatus CbmL1::Init()
     //fpInitManager->PushBackCAIteration(trackingIterAllSecJump);
   }
 
-  /******************//**
+  /**********************
    ** Set special cuts **
    **********************/
-      
+
   fpInitManager->SetGhostSuppression(fGhostSuppression);
   fpInitManager->SetTrackingLevel(fTrackingLevel);
   fpInitManager->SetMomentumCutOff(fMomentumCutOff);
@@ -1285,7 +1285,7 @@ InitStatus CbmL1::Init()
 
   algo->Init(fUseHitErrors, fTrackingMode, fMissingHits);
 
-  /*****************************//**
+  /*********************************
    ** Material map initialization **
    *********************************/
 
@@ -1356,7 +1356,8 @@ InitStatus CbmL1::Init()
     TDirectory* oldDir = gDirectory;
     TFile* rlFile      = new TFile(fStsMatBudgetFileName);
     cout << "STS Material budget file is " << fStsMatBudgetFileName << ".\n";
-    for (int j = 1, iSta = algo->GetNstationsBeforePipe(); iSta < (algo->GetNstationsBeforePipe() + NStsStations); iSta++, j++) {
+    for (int j = 1, iSta = algo->GetNstationsBeforePipe(); iSta < (algo->GetNstationsBeforePipe() + NStsStations);
+         iSta++, j++) {
       TString stationNameSts = stationName;
       stationNameSts += j;
       TProfile2D* hStaRadLen = (TProfile2D*) rlFile->Get(stationNameSts);
@@ -2109,7 +2110,7 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
   // write algo data in file
   static int vNEvent = 1;
   std::fstream fadata;
-  
+
   TString fadata_name = fSTAPDataDir + "data_algo.txt";
   //    if ( vNEvent <= maxNEvent ) {
   if (1) {

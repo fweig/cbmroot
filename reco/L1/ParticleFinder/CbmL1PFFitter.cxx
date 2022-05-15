@@ -405,9 +405,9 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
 
   CbmStsTrack* t[fvecLen];
 
-  int nStations    = CbmL1::Instance()->algo->GetNstations();
-  int NMvdStations = CbmL1::Instance()->algo->GetNstationsBeforePipe();
-  const L1Station* sta   = CbmL1::Instance()->algo->GetStations().begin();
+  int nStations        = CbmL1::Instance()->algo->GetNstations();
+  int NMvdStations     = CbmL1::Instance()->algo->GetNstationsBeforePipe();
+  const L1Station* sta = CbmL1::Instance()->algo->GetStations().begin();
   fvec* zSta       = new fvec[nStations];
   for (int iSta = 0; iSta < nStations; iSta++)
     zSta[iSta] = sta[iSta].z;

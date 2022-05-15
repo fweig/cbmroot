@@ -204,8 +204,8 @@ void L1Algo::CAMergeClones()
 
   L1Vector<unsigned short>& firstStation = fMergerTrackFirstStation;
   L1Vector<unsigned short>& lastStation  = fMergerTrackLastStation;
-  L1Vector<L1HitIndex_t>& firstHit              = fMergerTrackFirstHit;
-  L1Vector<L1HitIndex_t>& lastHit               = fMergerTrackLastHit;
+  L1Vector<L1HitIndex_t>& firstHit       = fMergerTrackFirstHit;
+  L1Vector<L1HitIndex_t>& lastHit        = fMergerTrackLastHit;
   L1Vector<unsigned short>& neighbour    = fMergerTrackNeighbour;
   L1Vector<float>& trackChi2             = fMergerTrackChi2;
   L1Vector<char>& isStored               = fMergerTrackIsStored;

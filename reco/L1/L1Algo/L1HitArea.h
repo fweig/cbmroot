@@ -28,8 +28,8 @@ protected:
   unsigned short fBDY;    // Y distance of bin indexes
   unsigned int fIndYmin;  // minimum index for
   unsigned short fIz;     // current Z bin index (incremented while iterating)
-  L1HitIndex_t fHitYlst;         // last possible hit index in current z-line
-  L1HitIndex_t fIh;              // hit index iterating inside the bins
+  L1HitIndex_t fHitYlst;  // last possible hit index in current z-line
+  L1HitIndex_t fIh;       // hit index iterating inside the bins
   int fNy;                // Number of bins in Y direction
 };
 
@@ -114,8 +114,8 @@ protected:
   unsigned short fBDY;    // Y distance of bin indexes
   unsigned int fIndYmin;  // minimum index for
   unsigned short fIz;     // current Z bin index (incremented while iterating)
-  L1HitIndex_t fHitYlst;         // last possible hit index in current z-line
-  L1HitIndex_t fIh;              // hit index iterating inside the bins
+  L1HitIndex_t fHitYlst;  // last possible hit index in current z-line
+  L1HitIndex_t fIh;       // hit index iterating inside the bins
   int fNy;                // Number of bins in Y direction
   int fNz;
 

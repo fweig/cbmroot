@@ -52,15 +52,11 @@ public:
 
   /// Provides comparison of two L1Track objects
   /// If two tracks have different number of hits, the smallest track has the largest number of hits.
-  /// If two tracks have the same numbers of hits and ... 
+  /// If two tracks have the same numbers of hits and ...
   static bool compareCand(const L1Track& a, const L1Track& b)
   {
-    if (a.NHits != b.NHits) {
-      return (a.NHits > b.NHits);
-    }
-    if (a.ista != b.ista) {
-      return (a.ista < b.ista);
-    }
+    if (a.NHits != b.NHits) { return (a.NHits > b.NHits); }
+    if (a.ista != b.ista) { return (a.ista < b.ista); }
     else {
       return (a.chi2 < b.chi2);
     }
@@ -77,4 +73,4 @@ public:
 //      else return false;
 //   }
 
-#endif // L1Track_H
+#endif  // L1Track_H

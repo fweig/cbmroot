@@ -83,9 +83,9 @@ private:
   fscal fCty  = 0.f;  // RMS of ty
 
   unsigned int fFirstNeighbour = 0;  // ID of the first neighbouring triplet
-  L1HitIndex_t fHitL                  = 0;  // left hit index (16b) in vStsHits array
-  L1HitIndex_t fHitM                  = 0;  // middle hit index (16b)
-  L1HitIndex_t fHitR                  = 0;  // right hit index (16b)
+  L1HitIndex_t fHitL           = 0;  // left hit index (16b) in vStsHits array
+  L1HitIndex_t fHitM           = 0;  // middle hit index (16b)
+  L1HitIndex_t fHitR           = 0;  // right hit index (16b)
   char fNneighbours            = 0;  // n of neighbouring triplets
   unsigned char fLevel         = 0;  // triplet level
                                      // == its possible position on the longest track candidate it belongs to.

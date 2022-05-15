@@ -88,7 +88,7 @@ struct TmpHit {
   int id;
   int track;
 
-  /// Provides comparison of two hits. 
+  /// Provides comparison of two hits.
   /// If two hits belong to different stations,
   /// the smallest hit belongs to the station with the smallest index. Otherwise, the smallest hit
   /// has the smallest y coordinate
@@ -106,7 +106,7 @@ struct TmpHit {
   /// \param nTmpHits
   /// \param nStripF
   /// \param ip
-  /// \param NStrips 
+  /// \param NStrips
   /// \param st       reference to the station info object
   // TODO: Probably, L1Station& st parameter should be constant. Do we really want to modify a station here? (S.Zharko)
   void CreateHitFromPoint(const CbmL1MCPoint& point, int det, int nTmpHits, int nStripF, int ip, int& NStrips,
@@ -150,7 +150,7 @@ struct TmpHit {
     iMC     = ip;
   }
 
-  /// Sets randomized position and time of the hit 
+  /// Sets randomized position and time of the hit
   /// The positions are smeared within predefined errors dx, dy, dt; z coordinate
   /// of the hit is known precisely
   /// \param point  constant reference to the input MC-point
@@ -177,15 +177,15 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   fData_->Clear();
 
   // clear arrays for next event
-  vMCPoints.clear();                /* <CbmL1MCPoint> */
-  vMCPoints_in_Time_Slice.clear();  /* <int>          */
-  vMCTracks.clear();                /* <CbmL1MCTrack> */ 
-  vStsHits.clear();                 /* <CbmL1Hit>     */
-  vRTracks.clear();                 /* <CbmL1Track>   */
-  vHitMCRef.clear();                /* <int>: indexes of MC-points in vMCPoints (by index of algo->vStsHits) */
-  vHitStore.clear();                /* <CbmL1HitStore> */
-  dFEI2vMCPoints.clear();           /* dFEI vs MC-point index: dFEI = index * 10000 + fileID + eventID * 0.0001 */
-  dFEI2vMCTracks.clear();           /* dFEI vs MC-track index: dFEI = index * 10000 + fileID + eventID * 0.0001 */
+  vMCPoints.clear();               /* <CbmL1MCPoint> */
+  vMCPoints_in_Time_Slice.clear(); /* <int>          */
+  vMCTracks.clear();               /* <CbmL1MCTrack> */
+  vStsHits.clear();                /* <CbmL1Hit>     */
+  vRTracks.clear();                /* <CbmL1Track>   */
+  vHitMCRef.clear();               /* <int>: indexes of MC-points in vMCPoints (by index of algo->vStsHits) */
+  vHitStore.clear();               /* <CbmL1HitStore> */
+  dFEI2vMCPoints.clear();          /* dFEI vs MC-point index: dFEI = index * 10000 + fileID + eventID * 0.0001 */
+  dFEI2vMCTracks.clear();          /* dFEI vs MC-track index: dFEI = index * 10000 + fileID + eventID * 0.0001 */
 
   if (fVerbose >= 10) cout << "ReadEvent: clear is done." << endl;
 
@@ -266,7 +266,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 1)) {
             MC.iStation     = -1;
-            const L1Station* sta  = algo->GetStations().begin(); 
+            const L1Station* sta = algo->GetStations().begin();
             double bestDist = 1.e20;
             for (Int_t iSt = 0; iSt < NMvdStations; iSt++) {
               // use z_in since z_out is sometimes very wrong
@@ -303,7 +303,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 0)) {
             MC.iStation     = -1;
-            const L1Station* sta  = algo->GetStations().begin() + NMvdStations;
+            const L1Station* sta = algo->GetStations().begin() + NMvdStations;
             double bestDist = 1.e20;
             for (Int_t iSt = 0; iSt < NStsStations; iSt++) {
               // use z_in since z_out is sometimes very wrong
@@ -416,7 +416,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             Int_t IND_Track = trk_it->second;
 
             MC.iStation    = -1;
-            const L1Station* sta = algo->GetStations().begin() + NMvdStations + NStsStations + NMuchStations + NTrdStations;
+            const L1Station* sta =
+              algo->GetStations().begin() + NMvdStations + NStsStations + NMuchStations + NTrdStations;
             for (Int_t iSt = 0; iSt < NTOFStation; iSt++)
               MC.iStation = (MC.z > sta[iSt].z[0] - 15)
                               ? (NMvdStations + NStsStations + NMuchStations + NTrdStations + iSt)
@@ -443,7 +444,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             if (!ReadMCPoint(&MC, TofPointToTrack[iTofSta][iMC], iFile, iEvent, 4)) {
 
               MC.iStation    = -1;
-              const L1Station* sta = algo->GetStations().begin() + NMvdStations + NStsStations + NMuchStations + NTrdStations;
+              const L1Station* sta =
+                algo->GetStations().begin() + NMvdStations + NStsStations + NMuchStations + NTrdStations;
               for (Int_t iSt = 0; iSt < NTOFStation; iSt++)
                 MC.iStation = (MC.z > sta[iSt].z[0] - 15)
                                 ? (NMvdStations + NStsStations + NMuchStations + NTrdStations + iSt)
@@ -846,7 +848,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       nTrdHits++;
     }
   }
-  
+
   //
   // Get TRD hits
   //
@@ -1082,7 +1084,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           Double_t dtrck          = dFEI(iFile, iEvent, pt->GetTrackID());
           DFEI2I::iterator trk_it = dFEI2vMCPoints.find(dtrck);
           if (trk_it != dFEI2vMCPoints.end()) th.iMC = TofPointToTrack[sttof][trk_it->second];
-          if ((1 == fTofUseMcHit) && (th.iMC > -1)) th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetStations()[th.iStation]);
+          if ((1 == fTofUseMcHit) && (th.iMC > -1))
+            th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetStations()[th.iStation]);
         }
       }
 
@@ -1144,7 +1147,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   vHitStore.reserve(nHits);
   vHitMCRef.reserve(nHits);
 
-  
+
   for (int i = 0; i < nHits; i++) {
     TmpHit& th = tmpHits[i];
 
@@ -1187,7 +1190,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     h.z = th.z;
 
 
-    // save hit  
+    // save hit
     vStsHits.push_back(CbmL1Hit(fData->vStsHits.size(), th.ExtIndex, th.Det));
 
     vStsHits[vStsHits.size() - 1].x = th.x;
@@ -1240,7 +1243,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 void CbmL1::Fill_vMCTracks()
 {
   vMCTracks.clear();
-  
+
   // Count the total number of tracks in this event and reserve memory
   {
     Int_t nMCTracks = 0;

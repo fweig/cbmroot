@@ -198,7 +198,8 @@ namespace tbb
       L1HitIndex_t* hitsm_g2_,
       // 								fvec *x_minusV_g2_, fvec *x_plusV_g2_, fvec *y_minusV_g2_, fvec *y_plusV_g2_,
       // output
-      L1HitIndex_t* Duplets_start_, L1HitIndex_t* Duplets_hits_, std::vector<L1Triplet>* vTriplets_part_, unsigned* TripStartIndexH_,
+      L1HitIndex_t* Duplets_start_, L1HitIndex_t* Duplets_hits_, std::vector<L1Triplet>* vTriplets_part_,
+      unsigned* TripStartIndexH_,
       unsigned* TripStopIndexH_)
       :  // input
       isec(isec_)

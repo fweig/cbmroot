@@ -20,7 +20,7 @@
 
 class L1Parameters {
 public:
-  /**********************//**
+  /**********************/ /**
    * COMPILE TIME CONSTANTS *
    **************************/
 
@@ -62,11 +62,9 @@ public:
   static constexpr bool kIfDebugDoubletsPerformance {false};
   /// Flag: debug mode for analyzing the tiplets pergormance efficiencies
   static constexpr bool kIfDebugTripletsPerformance {false};
-  /// Flag: debug mode for creating pools for triplets. 
+  /// Flag: debug mode for creating pools for triplets.
   /// NOTE: this feature will work only if the L1Parameters::kIfDebugTipletsPerformace is true!
   static constexpr bool kIfCreateTipletPulls {false};
-
-
 
 
 public:

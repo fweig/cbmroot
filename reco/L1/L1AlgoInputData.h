@@ -13,7 +13,7 @@
 #include "L1Vector.h"
 
 ///
-/// Class L1AlgoInputData implements a container for keeping a vector of L1Algo internal hit structures (the 
+/// Class L1AlgoInputData implements a container for keeping a vector of L1Algo internal hit structures (the
 /// L1Hit objects), used for track reconstruction procedure.
 ///
 struct L1AlgoInputData {
@@ -38,10 +38,10 @@ struct L1AlgoInputData {
   L1Vector<L1Hit>& GetStsHits() { return vStsHits; }
   /// Gives an access to the vector of the strip flags
   L1Vector<unsigned char>& GetSFlag() { return fStripFlag; }
-  /// Gets an access of the start indexes for different stations 
+  /// Gets an access of the start indexes for different stations
   /// \return pointer to the first element of the array over the stations
   const L1HitIndex_t* GetStsHitsStartIndex() const { return StsHitsStartIndex; }
-  /// Gets an access of the stop indexes for different stations 
+  /// Gets an access of the stop indexes for different stations
   /// \return pointer to the first element of the array over the stations
   const L1HitIndex_t* GetStsHitsStopIndex() const { return StsHitsStopIndex; }
 
@@ -50,11 +50,11 @@ struct L1AlgoInputData {
   /// \param  work_dir  path to the file data_algo.txt file, containing the L1Hit objects for different events
   /// \param  maxNEvent max number of events to be read from the data_algo.txt file
   /// \param  iVerbose  verbosity level
-  /// \return success flag: 
+  /// \return success flag:
   ///    true  - data was read and stored into this object
   ///    false - data was not read for some reason
   bool ReadHitsFromFile(const char work_dir[100], const int maxNEvent, const int iVerbose);
-  // TODO: Is there any reason to pass string as an array of chars? It is dangerous, because if one can pass a 
+  // TODO: Is there any reason to pass string as an array of chars? It is dangerous, because if one can pass a
   //       string containing more then 100 symbols and thus cast a segmentation violation. So, I'd change it
   //       to const char*, if there are no any specific reasons to keep the current signature. (S.Zharko)
 
@@ -73,7 +73,7 @@ struct L1AlgoInputData {
   void* operator new[](size_t size) { return _mm_malloc(size, 16); }
   /// Delete operator for single element
   void operator delete(void* ptr, size_t) { _mm_free(ptr); }
-  /// Delete operator for multiple elements 
+  /// Delete operator for multiple elements
   void operator delete[](void* ptr, size_t) { _mm_free(ptr); }
 
   // TODO: Where are the definitions? (S.Zharko)
@@ -93,7 +93,7 @@ struct L1AlgoInputData {
    *  Data fields (public)
    */
   /// hits as a combination of front-, backstrips and z-position
-  L1Vector<L1Hit> vStsHits {"L1AlgoInputData::vStsHits"};  
+  L1Vector<L1Hit> vStsHits {"L1AlgoInputData::vStsHits"};
 
   int NStsStrips {0};  ///> Number of strips in the station
   /// information of hits station & used hits in tracks;
@@ -102,7 +102,7 @@ struct L1AlgoInputData {
   /// Start indeces for a given station
   L1HitIndex_t StsHitsStartIndex[kMaxNStations + 1] {0};
   /// Stop indeces for a given station
-  L1HitIndex_t StsHitsStopIndex[kMaxNStations + 1] {0}; 
+  L1HitIndex_t StsHitsStopIndex[kMaxNStations + 1] {0};
 
 } _fvecalignment;
 

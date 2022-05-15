@@ -55,7 +55,7 @@ void L1AlgoInputData::SetData( const vector< L1Hit >      & StsHits_,
 
 /****************************************************************************************************************/
 
-void L1AlgoInputData::Clear() 
+void L1AlgoInputData::Clear()
 {
   vStsHits.clear();
   NStsStrips = 0;

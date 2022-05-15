@@ -10,10 +10,7 @@
 #include <sstream>
 
 // TODO: Improve log style (S.Zh.)
-void L1Station::Print(int verbosity) const
-{
-  LOG(info) << ToString(verbosity); 
-}
+void L1Station::Print(int verbosity) const { LOG(info) << ToString(verbosity); }
 
 std::string L1Station::ToString(int verbosityLevel, int indentLevel) const
 {
@@ -25,7 +22,8 @@ std::string L1Station::ToString(int verbosityLevel, int indentLevel) const
     aStream << '\n' << indent << "Address: " << this << '\n';
   }
   if (verbosityLevel == 0) {
-    aStream << indent << "- <z [cm], typeID> = " << std::setw(12) << std::setfill(' ') << z[0] << ", " << std::setw(4) << std::setfill(' ') << type;
+    aStream << indent << "- <z [cm], typeID> = " << std::setw(12) << std::setfill(' ') << z[0] << ", " << std::setw(4)
+            << std::setfill(' ') << type;
   }
   else {
     aStream << indent << "Station type ID:  " << std::setw(12) << std::setfill(' ') << type << '\n';
