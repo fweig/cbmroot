@@ -186,7 +186,9 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
           posx = hit->GetX();
           posy = hit->GetY();
           posz = hit->GetZ();
-          ista = hit->GetStationNr();
+          // ista = hit->GetStationNr();
+          ista = CbmL1::Instance()->StationIdxReverseConverter[hit->GetStationNr()];
+          if (ista == -1) continue;
         }
         else {
           if (!listStsHits) continue;
@@ -196,8 +198,12 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
           posx = hit->GetX();
           posy = hit->GetY();
           posz = hit->GetZ();
-          ista = CbmStsSetup::Instance()->GetStationNumber(hit->GetAddress())
-                 + NMvdStations;  //hit->GetStationNr() - 1 + NMvdStations;
+          //  ista = CbmStsSetup::Instance()->GetStationNumber(hit->GetAddress())
+          //       + NMvdStations;  //hit->GetStationNr() - 1 + NMvdStations;
+          ista =
+            CbmL1::Instance()->StationIdxReverseConverter[CbmStsSetup::Instance()->GetStationNumber(hit->GetAddress())
+                                                          + CbmL1::Instance()->NMvdStationsGeom];
+          if (ista == -1) continue;
         }
         w[ista][iVec] = 1.f;
 
@@ -409,7 +415,6 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
   L1FieldRegion fld _fvecalignment;
   L1FieldValue fB[3], fB_temp _fvecalignment;
   fvec zField[3];
-
   FairRootManager* fManger  = FairRootManager::Instance();
   TClonesArray* listStsHits = (TClonesArray*) fManger->GetObject("StsHit");
   TClonesArray* listMvdHits = 0;
@@ -519,7 +524,6 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
     fvec chi    = sqrt(fabs(0.5 * (dx * dx * c[0] - 2 * dx * dy * c[1] + dy * dy * c[2]) / d));
     fvec isNull = fvec(fabs(d) < 1.e-20);
     chi         = fvec(fvec(!isNull) & chi) + fvec(isNull & fvec(0));
-
     for (int iVec = 0; iVec < nTracks_SIMD; iVec++)
       chiToVtx.push_back(chi[iVec]);
 

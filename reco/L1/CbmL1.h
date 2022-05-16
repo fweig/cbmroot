@@ -275,6 +275,15 @@ private:
   int NMuchStations {0};  ///< number of much stations
   int NTrdStations {0};   ///< number of trd stations
   int NTOFStation {0};    ///< number of tof stations
+  ///
+  int NMvdStationsGeom;
+  int NStsStationsGeom;
+  int NTrdStationsGeom;
+  int NMuchStationsGeom;
+  int NTOFStationGeom;
+  int NStationGeom;
+
+  vector<int> StationIdxReverseConverter;
 
   Int_t fPerformance {0};     // 0 - w\o perf. 1 - L1-Efficiency definition. 2 - QA-Eff.definition
   double fTrackingTime {0.};  // time of track finding

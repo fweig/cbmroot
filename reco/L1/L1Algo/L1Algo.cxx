@@ -180,8 +180,6 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
 
     //std::cout << "cos_b "<<c_b<< " sin_b " << s_b << std::endl;
     //std::cout << "cos_f "<<c_f<< " sin_f " << s_f << std::endl;
-
-
     int N = static_cast<int>(geo[ind++]);
     for (int iC = 0; iC < N; iC++)
       st.fieldSlice.cx[iC] = geo[ind++];
@@ -211,7 +209,7 @@ void L1Algo::Init(const L1Vector<fscal>& geo, const bool UseHitErrors, const Tra
       Sy += dz * sy + dz * dz * By / 2.;
       sy += dz * By;
       //st.Sy = Sy; // commented, because is not used in the code (S.Zharko)
-      z0    = st.z;
+      z0 = st.z;
     }
   }
   //    for( int iS = 0; iS < NStations; ++iS ) {     /// Grid is created for each station with the same step: xStep,yStep

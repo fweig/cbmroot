@@ -223,7 +223,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       Int_t iFile  = set_it->first;
       Int_t iEvent = set_it->second;
 
-
       if (fMvdPoints) {
         Int_t nMvdPointsInEvent = fMvdPoints->Size(iFile, iEvent);
         double maxDeviation     = 0;
@@ -463,8 +462,12 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.ExtIndex   = -(1 + j);
         th.id         = tmpHits.size();
         th.iStation   = mh->GetStationNr();
-        th.iStripF    = firstDetStrip + j;
-        th.iStripB    = th.iStripF;
+
+        int stIdx = StationIdxReverseConverter[mh->GetStationNr()];
+        if (stIdx == -1) continue;
+        th.iStation = stIdx;  //mh->GetStationNr() - 1;
+        th.iStripF  = firstDetStrip + j;
+        th.iStripB  = th.iStripF;
         if (NStrips <= th.iStripF) { NStrips = th.iStripF + 1; }
 
         TVector3 pos, err;
@@ -553,10 +556,15 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         CbmStsHit* mh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(hitIndexSort));
         th.ExtIndex   = hitIndexSort;
         th.Det        = 1;
-        th.iStation =
-          NMvdStations + CbmStsSetup::Instance()->GetStationNumber(mh->GetAddress());  //mh->GetStationNr() - 1;
-        th.iStripF = firstDetStrip + mh->GetFrontClusterId();
-        th.iStripB = firstDetStrip + mh->GetBackClusterId();
+        int stIdx =
+          StationIdxReverseConverter[CbmStsSetup::Instance()->GetStationNumber(mh->GetAddress()) + NMvdStationsGeom];
+
+        if (stIdx == -1) continue;
+
+
+        th.iStation = stIdx;  //mh->GetStationNr() - 1;
+        th.iStripF  = firstDetStrip + mh->GetFrontClusterId();
+        th.iStripB  = firstDetStrip + mh->GetBackClusterId();
 
         if (NStrips <= th.iStripF) { NStrips = th.iStripF + 1; }
         if (NStrips <= th.iStripB) { NStrips = th.iStripB + 1; }
@@ -702,8 +710,10 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
         int DetId = stationNumber * 3 + layerNumber;
 
+        int stIdx = StationIdxReverseConverter[DetId + NMvdStationsGeom + NStsStationsGeom];
+        if (stIdx == -1) continue;
+        th.iStation = stIdx;  //mh->GetStationNr() - 1;
 
-        th.iStation = DetId + NMvdStations + NStsStations;
         //Get time
         th.time = mh->GetTime() - 14.5;
         th.dt   = mh->GetTimeError();
@@ -798,9 +808,13 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       int sta = mh->GetPlaneId();
 
+      int stIdx =
+        StationIdxReverseConverter[mh->GetPlaneId() + NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom];
+      if (stIdx == -1) continue;
+
       if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (sta > 1) && (fMissingHits)) { sta = sta - 1; }
 
-      th.iStation = NMvdStations + sta + NStsStations + NMuchStations;
+      th.iStation = stIdx;
 
       //  if (mh->GetPlaneId()==0) continue;
       //  if (mh->GetPlaneId()==1) continue;
@@ -979,7 +993,10 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         if ((th.x > 20) && (th.z > 270) && (fTofDigiBdfPar->GetTrackingStation(mh) == 1)) sttof = 2;
       if (th.z > 400) continue;
 
-      th.iStation = sttof + NMvdStations + NStsStations + NMuchStations + NTrdStations;
+      int stIdx =
+        StationIdxReverseConverter[sttof + NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom + NTrdStationsGeom];
+      if (stIdx == -1) continue;
+      th.iStation = stIdx;
 
       L1Station& st = algo->vStations[th.iStation];
       th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
@@ -1427,6 +1444,7 @@ void CbmL1::HitMatch()
           Int_t iEvent        = link.GetEntry();
           Int_t iIndex        = link.GetIndex();
 
+
           if (fLegacyEventMode) {
             iFile  = vFileEvent.begin()->first;
             iEvent = vFileEvent.begin()->second;
@@ -1434,6 +1452,7 @@ void CbmL1::HitMatch()
 
           Double_t dpnt           = dFEI(iFile, iEvent, nMvdPoints + iIndex);
           DFEI2I::iterator pnt_it = dFEI2vMCPoints.find(dpnt);
+
 
           assert(pnt_it != dFEI2vMCPoints.end());
 
