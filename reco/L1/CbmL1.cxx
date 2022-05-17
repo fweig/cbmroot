@@ -933,11 +933,11 @@ InitStatus CbmL1::Init()
   geo.push_back(fGhostSuppression);
 
   // Provide crosscheck number of stations for the fpInitManager
-  fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kMvd, NMvdStations);
-  fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kSts, NStsStations);
-  fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kMuch, NMuchStations);
-  fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kTrd, NTrdStations);
-  fpInitManager->SetStationsNumberCrosscheck(L1DetectorID::kTof, NTOFStation);
+  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kMvd, NMvdStations);
+  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kSts, NStsStations);
+  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kMuch, NMuchStations);
+  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kTrd, NTrdStations);
+  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kTof, NTOFStation);
 
   {
     if (fSTAPDataMode % 2 == 1) {  // 1,3
@@ -991,6 +991,7 @@ InitStatus CbmL1::Init()
     fscal mvdFrontSigma = mvdStationPar->GetXRes(iSt) / 10000;
     fscal mvdBackSigma  = mvdStationPar->GetYRes(iSt) / 10000;
     stationInfo.SetFrontBackStripsGeometry(mvdFrontPhi, mvdFrontSigma, mvdBackPhi, mvdBackSigma);
+    stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
     fpInitManager->AddStation(stationInfo);
     LOG(info) << "- MVD station " << iSt << " at z = " << stationInfo.GetZdouble();
   }
@@ -1020,6 +1021,7 @@ InitStatus CbmL1::Init()
     fscal stsFrontSigma = cbmSts->GetSensorPitch(0) / sqrt(12);
     fscal stsBackSigma  = stsFrontSigma;
     stationInfo.SetFrontBackStripsGeometry(stsFrontPhi, stsFrontSigma, stsBackPhi, stsBackSigma);
+    stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
     fpInitManager->AddStation(stationInfo);
     LOG(info) << "- STS station " << iSt << " at z = " << stationInfo.GetZdouble();
   }
@@ -1049,6 +1051,7 @@ InitStatus CbmL1::Init()
     fscal muchFrontSigma = 0.35;
     fscal muchBackSigma  = 0.35;
     stationInfo.SetFrontBackStripsGeometry(muchFrontPhi, muchFrontSigma, muchBackPhi, muchBackSigma);
+    stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
     fpInitManager->AddStation(stationInfo);
     LOG(info) << "- MuCh station " << iSt << " at z = " << stationInfo.GetZdouble();
   }
@@ -1080,6 +1083,7 @@ InitStatus CbmL1::Init()
     fscal trdFrontSigma = 0.15;
     fscal trdBackSigma  = 0.15;
     stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdFrontSigma, trdBackPhi, trdBackSigma);
+    stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
     fpInitManager->AddStation(stationInfo);
     LOG(info) << "- TRD station " << iSt << " at z = " << stationInfo.GetZdouble();
   }
@@ -1104,9 +1108,17 @@ InitStatus CbmL1::Init()
     fscal tofFrontSigma = 0.42;
     fscal tofBackSigma  = 0.23;
     stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofFrontSigma, tofBackPhi, tofBackSigma);
+    stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
     fpInitManager->AddStation(stationInfo);
     LOG(info) << "- TOF station " << iSt << " at z = " << stationInfo.GetZdouble();
   }
+
+  //fpInitManager->PrintStations(/*verbosity = */2);
+  //std::cout  << "Active stations map: ";
+  //for (auto index: fpInitManager->GetActiveStationsIndexMap()) {
+  //  std::cout << index << ' ';
+  //}
+  //std::cout << '\n';
 
   /****************************************
    **                                    **

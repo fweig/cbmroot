@@ -78,8 +78,8 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
 
 
   //int NMvdStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NMbdStations (S. Zh.)
-  int nStationsSts     = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(1));
-  fNstationsBeforePipe = fInitManager.GetStationsNumber(static_cast<L1DetectorID>(0));
+  int nStationsSts     = fInitManager.GetNstations(static_cast<L1DetectorID>(1));
+  fNstationsBeforePipe = fInitManager.GetNstations(static_cast<L1DetectorID>(0));
   //int NStsStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NStsStations (S. Zh.)
 
   fNfieldStations = nStationsSts + fNstationsBeforePipe;  // TODO: Provide special getter for it (S.Zharko, 12.05.2022)
@@ -100,7 +100,7 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
   fRealTargetZ = fInitManager.GetTargetPosition()[2];
 
   // Get number of station
-  fNstations = fInitManager.GetStationsNumber();
+  fNstations = fInitManager.GetNstations();
 
   // Get field near target
   fVtxFieldValue  = fInitManager.GetTargetFieldValue();

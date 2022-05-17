@@ -44,8 +44,8 @@ L1BaseStationInfo::L1BaseStationInfo(L1DetectorID detectorID, int stationID) noe
   , fStationID(stationID)
 {
   LOG(debug) << "L1BaseStationInfo: Constructor (detectorID, stationID) called for " << this << '\n';  // Temporary
-  fInitController.SetFlag(InitKey::keDetectorID);
-  fInitController.SetFlag(InitKey::keStationID);
+  fInitController.SetFlag(EInitKey::kDetectorID);
+  fInitController.SetFlag(EInitKey::kStationID);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -60,6 +60,7 @@ L1BaseStationInfo::~L1BaseStationInfo() noexcept
 L1BaseStationInfo::L1BaseStationInfo(const L1BaseStationInfo& other) noexcept
   : fDetectorID(other.fDetectorID)
   , fStationID(other.fStationID)
+  , fTrackingStatus(other.fTrackingStatus)
   , fXmax(other.fXmax)
   , fYmax(other.fYmax)
   , fZPos(other.fZPos)
@@ -115,6 +116,8 @@ void L1BaseStationInfo::Print(int verbosity) const
     LOG(info) << "L1BaseStationInfo object: at " << this;
     LOG(info) << "\tStation ID:              " << fStationID;
     LOG(info) << "\tDetector ID:             " << static_cast<int>(fDetectorID);
+    LOG(info) << "\tStation z position:      " << fZPos;
+    LOG(info) << "\tTracking status:         " << fTrackingStatus;
     fL1Station.Print(verbosity - 1);
     LOG(info) << "\tAdditional fields:";
     LOG(info) << "\t\tXmax:                    " << fXmax;
@@ -153,9 +156,9 @@ const L1Station& L1BaseStationInfo::GetL1Station() const
 //
 void L1BaseStationInfo::SetDetectorID(L1DetectorID inID)
 {
-  if (!fInitController.GetFlag(InitKey::keDetectorID)) {
+  if (!fInitController.GetFlag(EInitKey::kDetectorID)) {
     fDetectorID = inID;
-    fInitController.SetFlag(InitKey::keDetectorID);
+    fInitController.SetFlag(EInitKey::kDetectorID);
   }
   else {
     LOG(warn) << "L1BaseStationInfo::SetDetectorID: Attempt of detector ID redifinition";
@@ -167,7 +170,7 @@ void L1BaseStationInfo::SetDetectorID(L1DetectorID inID)
 void L1BaseStationInfo::SetRmax(double inRmax)
 {
   fL1Station.Rmax = inRmax;
-  fInitController.SetFlag(InitKey::keRmax);
+  fInitController.SetFlag(EInitKey::kRmax);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -175,14 +178,14 @@ void L1BaseStationInfo::SetRmax(double inRmax)
 void L1BaseStationInfo::SetRmin(double inRmin)
 {
   fL1Station.Rmin = inRmin;
-  fInitController.SetFlag(InitKey::keRmin);
+  fInitController.SetFlag(EInitKey::kRmin);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
 void L1BaseStationInfo::SetFieldSlice(const double* Cx, const double* Cy, const double* Cz)
 {
-  if (fInitController.GetFlag(InitKey::keFieldSlice)) {
+  if (fInitController.GetFlag(EInitKey::kFieldSlice)) {
     LOG(warn) << "L1BaseStationInfo::SetFieldSlice: Attempt to redifine field slice for station with detectorID = "
               << static_cast<int>(fDetectorID) << " and stationID = " << fStationID << ". Redifinition ignored";
     return;
@@ -194,24 +197,24 @@ void L1BaseStationInfo::SetFieldSlice(const double* Cx, const double* Cy, const 
     fL1Station.fieldSlice.cz[idx] = Cz[idx];
   }
 
-  fInitController.SetFlag(InitKey::keFieldSlice);
+  fInitController.SetFlag(EInitKey::kFieldSlice);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
 void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xyz)[3], double (&B)[3])>& getFieldValue)
 {
-  if (fInitController.GetFlag(InitKey::keFieldSlice)) {
+  if (fInitController.GetFlag(EInitKey::kFieldSlice)) {
     LOG(warn) << "L1BaseStationInfo::SetFieldSlice: Attempt to redifine field slice for station with detectorID = "
               << static_cast<int>(fDetectorID) << " and stationID = " << fStationID << ". Redifinition ignored";
     return;
   }
 
-  L1MASSERT(0, fInitController.GetFlag(InitKey::keZ),
+  L1MASSERT(0, fInitController.GetFlag(EInitKey::kZ),
             "Attempt to set magnetic field slice before setting z position of the station");
-  L1MASSERT(0, fInitController.GetFlag(InitKey::keXmax),
+  L1MASSERT(0, fInitController.GetFlag(EInitKey::kXmax),
             "Attempt to set magnetic field slice before Xmax size of the station");
-  L1MASSERT(0, fInitController.GetFlag(InitKey::keYmax),
+  L1MASSERT(0, fInitController.GetFlag(EInitKey::kYmax),
             "Attempt to set magnetic field slice before Ymax size of the station");
   // TODO: Change names of variables according to convention (S.Zh.)
   constexpr int M = L1Parameters::kMaxFieldApproxPolynomialOrder;
@@ -281,7 +284,7 @@ void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xy
     fL1Station.fieldSlice.cz[j] = A[j][N + 2] / A[j][j];
   }
 
-  fInitController.SetFlag(InitKey::keFieldSlice);
+  fInitController.SetFlag(EInitKey::kFieldSlice);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -289,7 +292,7 @@ void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xy
 void L1BaseStationInfo::SetFieldStatus(int fieldStatus)
 {
   fL1Station.fieldStatus = fieldStatus;
-  fInitController.SetFlag(InitKey::keFieldStatus);
+  fInitController.SetFlag(EInitKey::kFieldStatus);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -326,10 +329,10 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
   fL1Station.yInfo.sigma2  = fL1Station.XYInfo.C11;
   //-----------------------------------------------------------------------------------------------------//
 
-  fInitController.SetFlag(InitKey::keStripsFrontPhi);
-  fInitController.SetFlag(InitKey::keStripsFrontSigma);
-  fInitController.SetFlag(InitKey::keStripsBackPhi);
-  fInitController.SetFlag(InitKey::keStripsBackSigma);
+  fInitController.SetFlag(EInitKey::kStripsFrontPhi);
+  fInitController.SetFlag(EInitKey::kStripsFrontSigma);
+  fInitController.SetFlag(EInitKey::kStripsBackPhi);
+  fInitController.SetFlag(EInitKey::kStripsBackSigma);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -342,17 +345,17 @@ void L1BaseStationInfo::SetMaterial(double inThickness, double inRL)
   fL1Station.materialInfo.RL          = inRL;
   fL1Station.materialInfo.RadThick    = fL1Station.materialInfo.thick / fL1Station.materialInfo.RL;
   fL1Station.materialInfo.logRadThick = log(fL1Station.materialInfo.RadThick);
-  fInitController.SetFlag(InitKey::keMaterialInfoThick);
-  fInitController.SetFlag(InitKey::keMaterialInfoRL);
+  fInitController.SetFlag(EInitKey::kMaterialInfoThick);
+  fInitController.SetFlag(EInitKey::kMaterialInfoRL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
 //
 void L1BaseStationInfo::SetStationID(int inID)
 {
-  if (!fInitController.GetFlag(InitKey::keStationID)) {
+  if (!fInitController.GetFlag(EInitKey::kStationID)) {
     fStationID = inID;
-    fInitController.SetFlag(InitKey::keStationID);
+    fInitController.SetFlag(EInitKey::kStationID);
   }
   else {
     LOG(warn) << "L1BaseStationInfo::SetStationID: Attempt of station ID redifinition";
@@ -363,9 +366,9 @@ void L1BaseStationInfo::SetStationID(int inID)
 //
 void L1BaseStationInfo::SetStationType(int inType)
 {
-  if (!fInitController.GetFlag(InitKey::keType)) {
+  if (!fInitController.GetFlag(EInitKey::kType)) {
     fL1Station.type = inType;
-    fInitController.SetFlag(InitKey::keType);
+    fInitController.SetFlag(EInitKey::kType);
   }
   else {
     LOG(warn) << "L1BaseStationInfo::SetStationType: Attempt of station type redifinition";
@@ -377,7 +380,7 @@ void L1BaseStationInfo::SetStationType(int inType)
 void L1BaseStationInfo::SetXmax(double aSize)
 {
   fXmax = aSize;
-  fInitController.SetFlag(InitKey::keXmax);
+  fInitController.SetFlag(EInitKey::kXmax);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -385,7 +388,7 @@ void L1BaseStationInfo::SetXmax(double aSize)
 void L1BaseStationInfo::SetYmax(double aSize)
 {
   fYmax = aSize;
-  fInitController.SetFlag(InitKey::keYmax);
+  fInitController.SetFlag(EInitKey::kYmax);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -393,7 +396,7 @@ void L1BaseStationInfo::SetYmax(double aSize)
 void L1BaseStationInfo::SetTimeInfo(int inTimeInfo)
 {
   fL1Station.timeInfo = inTimeInfo;
-  fInitController.SetFlag(InitKey::keTimeInfo);
+  fInitController.SetFlag(EInitKey::kTimeInfo);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -401,7 +404,15 @@ void L1BaseStationInfo::SetTimeInfo(int inTimeInfo)
 void L1BaseStationInfo::SetTimeResolution(double dt)
 {
   fL1Station.dt = dt;
-  fInitController.SetFlag(InitKey::keTimeResolution);
+  fInitController.SetFlag(EInitKey::kTimeResolution);
+}
+
+//----------------------------------------------------------------------------------------------------------------------//
+//
+void L1BaseStationInfo::SetTrackingStatus(bool flag)
+{
+  fTrackingStatus = flag;
+  fInitController.SetFlag(EInitKey::kTrackingStatus);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -410,7 +421,7 @@ void L1BaseStationInfo::SetZ(double inZ)
 {
   fL1Station.z = inZ;  // setting simd vector of single-precision floats, which is passed to high performanced L1Algo
   fZPos        = inZ;  // setting precised value to use in field approximation etc
-  fInitController.SetFlag(InitKey::keZ);
+  fInitController.SetFlag(EInitKey::kZ);
 }
 
 //----------------------------------------------------------------------------------------------------------------------//
@@ -419,6 +430,7 @@ void L1BaseStationInfo::Swap(L1BaseStationInfo& other) noexcept
 {
   std::swap(fDetectorID, other.fDetectorID);
   std::swap(fStationID, other.fStationID);
+  std::swap(fTrackingStatus, other.fTrackingStatus);
   std::swap(fXmax, other.fXmax);
   std::swap(fYmax, other.fYmax);
   std::swap(fZPos, other.fZPos);

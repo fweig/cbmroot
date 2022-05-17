@@ -16,6 +16,7 @@
 #include "L1ObjectInitController.h"
 #include "L1Parameters.h"
 #include "L1Utils.h"
+#include "L1Vector.h"
 
 //#include <string>
 #include <bitset>
@@ -52,36 +53,36 @@ enum class L1DetectorID;
 ///
 /// 3. Initialize number of stations for each detector:
 ///
-///    initMan->SetStationsNumberCrosscheck(L1DetectorID::kMvd, NMvdStations)
-///    initMan->SetStationsNumberCrosscheck(L1DetectorID::kMvd, NStsStations);
+///    initMan->SetNstationsCrosscheck(L1DetectorID::kMvd, NMvdStations)
+///    initMan->SetNstationsCrosscheck(L1DetectorID::kSts, NStsStations);
 ///
 /// 4. Initialize each station using L1BaseStationInfo:
 ///
 // TODO: Implement mechanism of reinitialization (S.Zharko)
 class L1InitManager {
 private:
-  enum class InitKey
+  enum class EInitKey
   {
     // NOTE: Please, keep the numbers of enum items in the existing order: it helps to debug the initialization with
     //       this->GetObjectInitController().ToString() method call (S.Zharko)
-    keActiveDetectorIDs,             ///< 0) If the detector sequence is set
-    keStationsNumberCrosscheck,      ///< 1) If the crosscheck station numbers were setup
-    keFieldFunction,                 ///< 2) If magnetic field getter funciton is set
-    keTargetPos,                     ///< 3) If target position was defined
-    kePrimaryVertexField,            ///< 4) If magnetic field value and region defined at primary vertex
-    keStationsInfo,                  ///< 5) If all the planned stations were added to the manager
-    keCAIterationsNumberCrosscheck,  ///< 6) If the number of CA track finder is initialized
-    keCAIterations,                  ///< 7) If the CA track finder iterations were initialized
-    keTrackingLevel,                 ///< 8)
-    keGhostSuppression,              ///< 9)
-    keMomentumCutOff,                ///< 10)
-    keEnd                            ///< 11) [technical] number of entries in the enum
+    kActiveDetectorIDs,             ///< 0) If the detector sequence is set
+    kStationsNumberCrosscheck,      ///< 1) If the crosscheck station numbers were setup
+    kFieldFunction,                 ///< 2) If magnetic field getter funciton is set
+    kTargetPos,                     ///< 3) If target position was defined
+    kPrimaryVertexField,            ///< 4) If magnetic field value and region defined at primary vertex
+    kStationsInfo,                  ///< 5) If all the planned stations were added to the manager
+    kCAIterationsNumberCrosscheck,  ///< 6) If the number of CA track finder is initialized
+    kCAIterations,                  ///< 7) If the CA track finder iterations were initialized
+    kTrackingLevel,                 ///< 8)
+    kGhostSuppression,              ///< 9)
+    kMomentumCutOff,                ///< 10)
+    kEnd                            ///< 11) [technical] number of entries in the enum
   };
 
   using L1DetectorIDIntMap_t     = std::unordered_map<L1DetectorID, int, L1Utils::EnumClassHash>;
   using L1DetectorIDSet_t        = std::set<L1DetectorID>;
   using L1FieldFunction_t        = std::function<void(const double (&xyz)[3], double (&B)[3])>;
-  using L1ObjectInitController_t = L1ObjectInitController<static_cast<int>(InitKey::keEnd), InitKey>;
+  using L1ObjectInitController_t = L1ObjectInitController<static_cast<int>(EInitKey::kEnd), EInitKey>;
 
 public:
   //
@@ -120,8 +121,10 @@ public:
   //
   // GETTERS
   //
-  /// Gets a set of actie detectors for this analysis
+  /// Gets a set of active detectors for this analysis
   const L1DetectorIDSet_t& GetActiveDetectorIDs() const { return fActiveDetectorIDs; }
+  /// Gets a vector of active stations indeces. If the station is inactive, it's index equals -1
+  const L1Vector<int>& GetActiveStationsIndexMap() const { return fActiveStationsIndexMap; }
   /// Gets ghost suppression flag
   int GetGhostSuppression() const { return fGhostSuppression; }
   /// Gets momentum cutoff
@@ -131,9 +134,9 @@ public:
   /// Gets a pointer to L1Parameters instance with a posibility of its fields modification
   const L1Parameters* GetParameters() const { return fpParameters; }
   /// Gets a total number of stations (NOTE: this number includes both active and unactive stations!)
-  int GetStationsNumber() const { return static_cast<int>(fStationsInfo.size()); }
+  int GetNstations() const { return static_cast<int>(fStationsInfo.size()); }
   /// Gets a number of stations for a particualr detector ID
-  int GetStationsNumber(L1DetectorID detectorID) const;
+  int GetNstations(L1DetectorID detectorID) const;
   // TODO: define enum of dimensions.... (S.Zh.)
   /// Gets a L1FieldRegion object at primary vertex
   const L1FieldRegion& GetTargetFieldRegion() const { return fTargetFieldRegion; }
@@ -176,8 +179,8 @@ public:
   void SetMomentumCutOff(float momentumCutOff);
   ///
   void SetTrackingLevel(int trackingLevel);
-  /// Sets a number of stations for a particular tracking detector ID to provide initialization cross-check
-  void SetStationsNumberCrosscheck(L1DetectorID detectorID, int nStations);
+  /// Sets a number of actual stations for a particular tracking detector ID to provide initialization cross-check
+  void SetNstationsCrosscheck(L1DetectorID detectorID, int nStations);
   /// Sets target poisition
   void SetTargetPosition(double x, double y, double z);
 
@@ -186,10 +189,10 @@ public:
 
 
 private:
-  /// Checker for L1CAIteration container initialization (sets InitKey::keCAIterations)
+  /// Checker for L1CAIteration container initialization (sets EInitKey::kCAIterations)
   /// \return true If all L1CAIteration objects were initialized properly
   void CheckCAIterationsInit();
-  /// Checker for L1BaseStationInfo set initialization (sets InitKey::keStationsInfo)
+  /// Checker for L1BaseStationInfo set initialization (sets EInitKey::kStationsInfo)
   /// \return true If all L1BaseStationInfo objects were initialized properly. Similar effect can be achieved by
   void CheckStationsInfoInit();
 
@@ -206,8 +209,17 @@ private:
 
   std::set<L1BaseStationInfo> fStationsInfo {};  ///< Set of L1BaseStationInfo objects
 
-  /// Map of station numbers used for initialization crosscheck
-  L1DetectorIDIntMap_t fStationsNumberCrosscheck {};
+  /// Map of the actual detector indeces to the active detector indeces
+  /// The vector maps actual station index (which is defined by ) to the index of station in tracking. If the station is inactive, its index is equal to -1.
+  /// Example: let stations 1 and 4 be inactive. Then:
+  ///   actual index:  0  1  2  3  4  5  6  7  8  9
+  ///   active index:  0 -1  1  2 -1  3  4  5  6  7
+  L1Vector<int> fActiveStationsIndexMap {};
+
+  /// Actual number of stations in the setup
+  L1DetectorIDIntMap_t fNstationsActualCrosscheck {};
+  /// Number of stations active in tracking
+  L1DetectorIDIntMap_t fNstationsActiveCrosscheck {};
   /// A function which returns magnetic field vector B in a radius-vector xyz
   L1FieldFunction_t fFieldFunction {[](const double (&)[3], double (&)[3]) {}};
   // NOTE: Stations of daetectors which will not be assigned as active, will not be included in the tracking!!!!!!!

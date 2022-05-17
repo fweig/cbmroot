@@ -1810,7 +1810,7 @@ void L1Algo::CATrackFinder()
       vStsHitPointsUnused                        = vStsHitPointsUnused_buf;
       vStsHitPointsUnused_buf                    = vStsHitsUnused_temp2;
     }
-    // TODO: Replace NStations with fInitManager.GetStationsNumber() (S.Zharko)
+    // TODO: Replace NStations with fInitManager.GetNstationsGeom() (S.Zharko)
     for (int ist = 0; ist < fNstations; ++ist) {
       for (L1HitIndex_t ih = StsHitsUnusedStartIndex[ist]; ih < StsHitsUnusedStopIndex[ist]; ++ih) {
         //SG!!

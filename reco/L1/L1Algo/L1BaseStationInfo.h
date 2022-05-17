@@ -28,33 +28,34 @@ enum class L1DetectorID;
 class L1BaseStationInfo {
 public:
   /// Enumeration of fields, which must be initialized so the object can pass the threshold
-  enum class InitKey
+  enum class EInitKey
   {
     // Basic fields initialization
-    keDetectorID,  ///< detector ID
-    keStationID,   ///< station ID
-    keXmax,        ///< max size in X direction
-    keYmax,        ///< max size in Y direction
+    kDetectorID,      ///< detector ID
+    kStationID,       ///< station ID
+    kTrackingStatus,  ///< flag, if station is used in tracking or not
+    kXmax,            ///< max size in X direction
+    kYmax,            ///< max size in Y direction
     // L1Station initialization
-    keType,               ///< station type
-    keTimeInfo,           ///< if time info is used (flag)
-    keFieldStatus,        ///< if station is placed in field (flag)
-    keZ,                  ///< z coordinate of the station position
-    keRmin,               ///< internal radius of station (gap size)
-    keRmax,               ///< exteranl radius of station
-    keMaterialInfoThick,  ///< thickness of the station
-    keMaterialInfoRL,     ///< rad length of the station
-    keFieldSlice,         ///< L1Station.L1FieldSlice object initialization
-    keStripsFrontPhi,     ///< strips geometry initialization
-    keStripsFrontSigma,   ///<
-    keStripsBackPhi,      ///<
-    keStripsBackSigma,    ///<
-    keTimeResolution,     ///< time resolution
+    kType,               ///< station type
+    kTimeInfo,           ///< if time info is used (flag)
+    kFieldStatus,        ///< if station is placed in field (flag)
+    kZ,                  ///< z coordinate of the station position
+    kRmin,               ///< internal radius of station (gap size)
+    kRmax,               ///< exteranl radius of station
+    kMaterialInfoThick,  ///< thickness of the station
+    kMaterialInfoRL,     ///< rad length of the station
+    kFieldSlice,         ///< L1Station.L1FieldSlice object initialization
+    kStripsFrontPhi,     ///< strips geometry initialization
+    kStripsFrontSigma,   ///<
+    kStripsBackPhi,      ///<
+    kStripsBackSigma,    ///<
+    kTimeResolution,     ///< time resolution
     // The last item is equal to the number of bits in fInitFlags
-    keEnd
+    kEnd
   };
 
-  using L1ObjectInitController_t = L1ObjectInitController<static_cast<int>(InitKey::keEnd), InitKey>;
+  using L1ObjectInitController_t = L1ObjectInitController<static_cast<int>(EInitKey::kEnd), EInitKey>;
 
   //
   // CONSTRUCTORS AND DESTRUCTORS
@@ -125,6 +126,8 @@ public:
   int GetStationType() const { return fL1Station.type; }
   /// Gets time resolution
   fvec GetTimeResolution() const { return fL1Station.dt; }
+  /// Gets tracking status: true - station is active for tracking, false - station exists, but not used in tracking
+  bool GetTrackingStatus() const { return fTrackingStatus; }
   /// Gets maximum distance between station center and its edge in x direction
   double GetXmax() const { return fXmax; }
   /// Gets maximum distance between station center and its edge in y direction
@@ -181,6 +184,8 @@ public:
   void SetTimeInfo(int inTimeInfo);
   /// Sets time resolution
   void SetTimeResolution(double dt);
+  /// Sets tracking status: true - station is active for tracking, false - station exists, but not used in tracking
+  void SetTrackingStatus(bool flag);
   /// Sets maximum distance between station center and its edge in x direction
   void SetXmax(double aSize);
   /// Sets maximum distance between station center and its edge in y direction
@@ -198,6 +203,7 @@ public:
 private:
   L1DetectorID fDetectorID {static_cast<L1DetectorID>(0)};  ///< Detector ID
   int fStationID {-1};                                      ///< Station ID
+  bool fTrackingStatus {false};                             ///< Tracking status: true - station is used for tracking
   double fXmax {0};         ///< Maximum distance between station center and its edge in x direction
   double fYmax {0};         ///< Maximum distance between station center and its edge in y direction
   double fZPos {0};         ///< z position of the station in double precision, used in field approximation
