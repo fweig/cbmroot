@@ -69,6 +69,7 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
   }
   else {
     fActiveStationsIndexMap.push_back(-1);
+    fNstationsActiveCrosscheck[inStation.GetDetectorID()]--;
   }
   LOG(debug) << "L1InitManager: adding a station with stationID = " << inStation.GetStationID()
              << " and detectorID = " << static_cast<int>(inStation.GetDetectorID())
@@ -228,11 +229,14 @@ void L1InitManager::SetMomentumCutOff(float momentumCutOff)
 //
 void L1InitManager::SetNstationsCrosscheck(L1DetectorID detectorID, int nStations)
 {
+  L1MASSERT(0, fInitController.GetFlag(EInitKey::kActiveDetectorIDs),
+            "Attempt to set crosscheck number of stations before the active detetors set had been initialized");
   // NOTE: We add and check only those detectors which will be active (?)
   // For INACTIVE detectors the initialization code for it inside CbmL1/BmnL1 can (and must) be still in,
   // but it will be ignored inside L1InitManager.
   if (fActiveDetectorIDs.find(detectorID) != fActiveDetectorIDs.end()) {
     fNstationsActualCrosscheck[detectorID] = nStations;
+    fNstationsActiveCrosscheck[detectorID] = nStations;
   }
 
   // Check if all the station numbers for active detectors are initialized now:
@@ -350,12 +354,12 @@ void L1InitManager::CheckStationsInfoInit()
     //
     // loop over active detectors
     for (const auto& itemDetector : fActiveDetectorIDs) {
-      int nStationsActual   = GetNstations(itemDetector);
-      int nStationsExpected = fNstationsActualCrosscheck.at(itemDetector);
-      if (nStationsActual != nStationsExpected) {
-        LOG(error) << "L1InitManager::IsStationsInfoInitialized: Incorrect number of L1BaseStationInfo objects passed"
-                   << " to the L1Manager for L1DetectorID = " << static_cast<int>(itemDetector) << ": "
-                   << nStationsActual << " of " << nStationsExpected << " expected";
+      int nStations         = GetNstations(itemDetector);
+      int nStationsExpected = fNstationsActiveCrosscheck.at(itemDetector);
+      if (nStations != nStationsExpected) {
+        LOG(error) << "L1InitManager::CheckStationsInfoInit: Incorrect number of L1BaseStationInfo objects passed"
+                   << " to the L1Manager for L1DetectorID = " << static_cast<int>(itemDetector) << ": " << nStations
+                   << " of " << nStationsExpected << " expected";
         ifInitPassed = false;
       }
     }  // loop over active detectors: end

@@ -133,11 +133,10 @@ public:
   const L1ObjectInitController_t& GetInitController() const { return fInitController; }
   /// Gets a pointer to L1Parameters instance with a posibility of its fields modification
   const L1Parameters* GetParameters() const { return fpParameters; }
-  /// Gets a total number of stations (NOTE: this number includes both active and unactive stations!)
+  /// Gets a total number of active stations
   int GetNstations() const { return static_cast<int>(fStationsInfo.size()); }
-  /// Gets a number of stations for a particualr detector ID
+  /// Gets a number of active stations for a particualr detector ID
   int GetNstations(L1DetectorID detectorID) const;
-  // TODO: define enum of dimensions.... (S.Zh.)
   /// Gets a L1FieldRegion object at primary vertex
   const L1FieldRegion& GetTargetFieldRegion() const { return fTargetFieldRegion; }
   /// Gets a L1FieldValue object at primary vertex

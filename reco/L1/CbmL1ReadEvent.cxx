@@ -82,9 +82,9 @@ struct TmpHit {
   double dx, dy, dxy;      ///< hit position errors in Cortesian coordinates
   double du, dv;           ///< hit position errors in strips coordinates
   int iMC;                 ///< index of MCPoint in the vMCPoints array
-  double time = 0.;        ///< time of the hit 
-  double dt = 1.e10;       ///< time error of the hit
-  int Det;                 
+  double time = 0.;        ///< time of the hit
+  double dt   = 1.e10;     ///< time error of the hit
+  int Det;
   int id;
   int track;
 
@@ -514,7 +514,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.id         = tmpHits.size();
         th.iStation   = mh->GetStationNr();
 
-        int stIdx = StationIdxReverseConverter[mh->GetStationNr()];
+        int stIdx = algo->GetInitManager()->GetActiveStationsIndexMap()[mh->GetStationNr()];
         if (stIdx == -1) continue;
         th.iStation = stIdx;  //mh->GetStationNr() - 1;
         th.iStripF  = firstDetStrip + j;
@@ -610,8 +610,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         CbmStsHit* mh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(hitIndexSort));
         th.ExtIndex   = hitIndexSort;
         th.Det        = 1;
-        int stIdx =
-          StationIdxReverseConverter[CbmStsSetup::Instance()->GetStationNumber(mh->GetAddress()) + NMvdStationsGeom];
+        int stIdx     = algo->GetInitManager()
+                      ->GetActiveStationsIndexMap()[CbmStsSetup::Instance()->GetStationNumber(mh->GetAddress())
+                                                    + NMvdStationsGeom];
 
         if (stIdx == -1) continue;
 
@@ -767,7 +768,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
         int DetId = stationNumber * 3 + layerNumber;
 
-        int stIdx = StationIdxReverseConverter[DetId + NMvdStationsGeom + NStsStationsGeom];
+        int stIdx = algo->GetInitManager()->GetActiveStationsIndexMap()[DetId + NMvdStationsGeom + NStsStationsGeom];
         if (stIdx == -1) continue;
         th.iStation = stIdx;  //mh->GetStationNr() - 1;
 
@@ -868,7 +869,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       int sta = mh->GetPlaneId();
 
       int stIdx =
-        StationIdxReverseConverter[mh->GetPlaneId() + NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom];
+        algo->GetInitManager()
+          ->GetActiveStationsIndexMap()[mh->GetPlaneId() + NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom];
       if (stIdx == -1) continue;
 
       if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (sta > 1) && (fMissingHits)) { sta = sta - 1; }
@@ -1055,8 +1057,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         if ((th.x > 20) && (th.z > 270) && (fTofDigiBdfPar->GetTrackingStation(mh) == 1)) sttof = 2;
       if (th.z > 400) continue;
 
-      int stIdx =
-        StationIdxReverseConverter[sttof + NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom + NTrdStationsGeom];
+      int stIdx = algo->GetInitManager()->GetActiveStationsIndexMap()[sttof + NMvdStationsGeom + NStsStationsGeom
+                                                                      + NMuchStationsGeom + NTrdStationsGeom];
       if (stIdx == -1) continue;
       th.iStation = stIdx;
 

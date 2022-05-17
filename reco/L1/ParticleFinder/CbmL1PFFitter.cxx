@@ -187,7 +187,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
           posy = hit->GetY();
           posz = hit->GetZ();
           // ista = hit->GetStationNr();
-          ista = CbmL1::Instance()->StationIdxReverseConverter[hit->GetStationNr()];
+          ista = CbmL1::Instance()->algo->GetInitManager()->GetActiveStationsIndexMap()[hit->GetStationNr()];
           if (ista == -1) continue;
         }
         else {
@@ -200,9 +200,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
           posz = hit->GetZ();
           //  ista = CbmStsSetup::Instance()->GetStationNumber(hit->GetAddress())
           //       + NMvdStations;  //hit->GetStationNr() - 1 + NMvdStations;
-          ista =
-            CbmL1::Instance()->StationIdxReverseConverter[CbmStsSetup::Instance()->GetStationNumber(hit->GetAddress())
-                                                          + CbmL1::Instance()->NMvdStationsGeom];
+          ista = CbmL1::Instance()->algo->GetInitManager()->GetActiveStationsIndexMap()
+                   [CbmStsSetup::Instance()->GetStationNumber(hit->GetAddress()) + CbmL1::Instance()->NMvdStationsGeom];
           if (ista == -1) continue;
         }
         w[ista][iVec] = 1.f;

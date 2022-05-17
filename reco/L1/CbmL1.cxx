@@ -378,12 +378,12 @@ InitStatus CbmL1::Init()
     listMvdHits = L1_DYNAMIC_CAST<TClonesArray*>(fManger->GetObject("MvdHit"));
   }
 
-  NMvdStations  = 0;
-  NStsStations  = 0;
-  NMuchStations = 0;
-  NTrdStations  = 0;
-  NTOFStation   = 0;
-  NStation      = 0;
+  NMvdStationsGeom  = 0;
+  NStsStationsGeom  = 0;
+  NMuchStationsGeom = 0;
+  NTrdStationsGeom  = 0;
+  NTOFStationGeom   = 0;
+  NStationGeom      = 0;
 
   // TODO: Replace algo initialization in the constructor (S.Zharko)
   algo = &algo_static;
@@ -447,7 +447,7 @@ InitStatus CbmL1::Init()
     for (int iStation = 0; iStation < fGeoScheme->GetNStations(); iStation++) {
       const CbmMuchStation* station = fGeoScheme->GetStation(iStation);
       int nLayers                   = station->GetNLayers();
-      NMuchStations += nLayers;
+      NMuchStationsGeom += nLayers;
     }
 
     /// Restore old global file and folder pointer to avoid messing with FairRoot
@@ -469,9 +469,9 @@ InitStatus CbmL1::Init()
         }
       }
     }
-    NTrdStations = layerCounter;
+    NTrdStationsGeom = layerCounter;
 
-    if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) { NTrdStations = NTrdStations - 1; }
+    if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) { NTrdStationsGeom = NTrdStationsGeom - 1; }
   }
 
   /*** ToF ***/
@@ -515,429 +515,16 @@ InitStatus CbmL1::Init()
   if (!stsSetup->IsSensorParsInit()) { stsSetup->SetSensorParameters(fStsParSetSensor); }
   if (!stsSetup->IsSensorCondInit()) { stsSetup->SetSensorConditions(fStsParSetSensorCond); }
 
-  NMvdStations = (fUseMVD) ? CbmKF::Instance()->vMvdMaterial.size() : 0;
-  NStsStations = CbmStsSetup::Instance()->GetNofStations();
-  NStation     = NMvdStations + NStsStations + NMuchStations + NTrdStations + NTOFStation;
-
-
-  // field
-  const int M = 5;   // polinom order
-  const int N = 21;  //(M+1)*(M+2)/2;
-
-  //   { // field at the z=0 plane
-  //     const double Xmax = 10, Ymax = 10;
-  //     const double z = 0.;
-  //     double dx = 1.; // step for the field approximation
-  //     double dy = 1.;
-  //     if( dx > Xmax/N/2 ) dx = Xmax/N/4.;
-  //     if( dy > Ymax/N/2 ) dy = Ymax/N/4.;
-  //
-  //     TMatrixD A(N,N);
-  //     TVectorD b0(N), b1(N), b2(N);
-  //     for( int i=0; i<N; i++){
-  //       for( int j=0; j<N; j++) A(i,j)==0.;
-  //       b0(i)=b1(i)=b2(i) = 0.;
-  //     }
-  //     for( double x=-Xmax; x<=Xmax; x+=dx )
-  //       for( double y=-Ymax; y<=Ymax; y+=dy )
-  //     {
-  //       double r = sqrt(fabs(x*x/Xmax/Xmax+y/Ymax*y/Ymax));
-  //       if( r>1. ) continue;
-  //       Double_t w = 1./(r*r+1);
-  //       Double_t p[3] = { x, y, z};
-  //       Double_t B[3] = {0.,0.,0.};
-  //       CbmKF::Instance()->GetMagneticField()->GetFieldValue(p, B);
-  //       TVectorD m(N);
-  //       m(0)=1;
-  //       for( int i=1; i<=M; i++){
-  //         int k = (i-1)*(i)/2;
-  //         int l = i*(i+1)/2;
-  //         for( int j=0; j<i; j++ ) m(l+j) = x*m(k+j);
-  //         m(l+i) = y*m(k+i-1);
-  //       }
-  //
-  //       TVectorD mt = m;
-  //       for( int i=0; i<N; i++){
-  //         for( int j=0; j<N;j++) A(i,j)+=w*m(i)*m(j);
-  //         b0(i)+=w*B[0]*m(i);
-  //         b1(i)+=w*B[1]*m(i);
-  //         b2(i)+=w*B[2]*m(i);
-  //       }
-  //     }
-  //     double det;
-  //     A.Invert(&det);
-  //     TVectorD c0 = A*b0, c1 = A*b1, c2 = A*b2;
-  //
-  //     targetFieldSlice = new L1FieldSlice;
-  //     for(int i=0; i<N; i++){
-  //       targetFieldSlice->cx[i] = c0(i);
-  //       targetFieldSlice->cy[i] = c1(i);
-  //       targetFieldSlice->cz[i] = c2(i);
-  //     }
-  //
-  //   } // target field
-
-  int NMvdStationsTemp  = NMvdStations;
-  int NStsStationsTemp  = NStsStations;
-  int NTrdStationsTemp  = NTrdStations;
-  int NMuchStationsTemp = NMuchStations;
-  int NTOFStationTemp   = NTOFStation;
-  int NStationTemp      = NStation;
-
-  vector<int> StationIdxConverter;
-
-  auto& target = CbmKF::Instance()->vTargets[0];
-
-  for (Int_t ist = 0; ist < NStation; ist++) {
-    if (ist < NMvdStations) {
-      CbmMvdDetector* mvdDetector     = CbmMvdDetector::Instance();
-      CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();
-      CbmKFTube& t                    = CbmKF::Instance()->vMvdMaterial[ist];
-
-      if (target.z < t.z) {
-        StationIdxConverter.push_back(ist);
-        StationIdxReverseConverter.push_back(StationIdxConverter.size() - 1);
-      }
-      else {
-        NMvdStationsTemp--;
-        NStationTemp--;
-        StationIdxReverseConverter.push_back(-1);
-      }
-    }
-
-    if (ist >= NMvdStations && ist < (NMvdStations + NStsStations)) {
-      CbmStsStation* station = CbmStsSetup::Instance()->GetStation(ist - NMvdStations);
-      if (target.z < station->GetZ()) {
-        StationIdxConverter.push_back(ist);
-        StationIdxReverseConverter.push_back(StationIdxConverter.size() - 1);
-      }
-      else {
-        NStsStationsTemp--;
-        NStationTemp--;
-        StationIdxReverseConverter.push_back(-1);
-      }
-    }
-
-    if ((ist < (NMvdStations + NStsStations + NMuchStations)) && (ist >= (NMvdStations + NStsStations))) {
-
-      int iStation            = (ist - NMvdStations - NStsStations) / 3;
-      CbmMuchStation* station = (CbmMuchStation*) fGeoScheme->GetStation(iStation);
-      CbmMuchLayer* layer     = station->GetLayer((ist - NMvdStations - NStsStations) % 3);
-      if (target.z < layer->GetZ()) {
-        StationIdxConverter.push_back(ist);
-        StationIdxReverseConverter.push_back(StationIdxConverter.size() - 1);
-      }
-      else {
-        NTrdStationsTemp--;
-        NStationTemp--;
-        StationIdxReverseConverter.push_back(-1);
-      }
-    }
-
-    if ((ist < (NMvdStations + NStsStations + NTrdStations + NMuchStations))
-        && (ist >= (NMvdStations + NStsStations + NMuchStations))) {
-
-      int num  = ist - NMvdStations - NStsStations - NMuchStations;
-      int skip = num;
-
-      if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits))
-        if (num > 0) skip++;
-      int ModuleId = fTrdDigiPar->GetModuleId(skip);
-
-      CbmTrdParModDigi* module = (CbmTrdParModDigi*) fTrdDigiPar->GetModulePar(ModuleId);
-
-      if (target.z < module->GetZ()) {
-        StationIdxConverter.push_back(ist);
-        StationIdxReverseConverter.push_back(StationIdxConverter.size() - 1);
-      }
-      else {
-        NMuchStationsTemp--;
-        NStationTemp--;
-        StationIdxReverseConverter.push_back(-1);
-      }
-    }
-
-    if ((ist < (NMvdStations + NStsStations + NTrdStations + NMuchStations + NTOFStation))
-        && (ist >= (NMvdStations + NStsStations + NMuchStations + NTrdStations))) {
-
-      int num = ist - (NMvdStations + NStsStations + NTrdStations + NMuchStations);
-
-      if (target.z < TofStationZ[num]) {
-        StationIdxConverter.push_back(ist);
-        StationIdxReverseConverter.push_back(StationIdxConverter.size() - 1);
-      }
-      else {
-        NTOFStationTemp--;
-        NStationTemp--;
-        StationIdxReverseConverter.push_back(-1);
-      }
-    }
-  }
-
-  NMvdStationsGeom  = NMvdStations;
-  NStsStationsGeom  = NStsStations;
-  NTrdStationsGeom  = NTrdStations;
-  NMuchStationsGeom = NMuchStations;
-  NTOFStationGeom   = NTOFStation;
-  NStationGeom      = NStation;
-
-  NMvdStations  = NMvdStationsTemp;
-  NStsStations  = NStsStationsTemp;
-  NTrdStations  = NTrdStationsTemp;
-  NMuchStations = NMuchStationsTemp;
-  NTOFStation   = NTOFStationTemp;
-  NStation      = NStationTemp;
-
-  geo.push_back(NStation);
-  geo.push_back(NMvdStations);
-  geo.push_back(NStsStations);
-
-
-  for (Int_t ist = 0; ist < NStation; ist++) {
-
-    double z    = 0;
-    double Xmax = 0, Ymax = 0;
-    if (ist < NMvdStations) {
-
-      CbmMvdDetector* mvdDetector     = CbmMvdDetector::Instance();
-      CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();
-
-      CbmKFTube& t = CbmKF::Instance()->vMvdMaterial[StationIdxConverter[ist]];
-      geo.push_back(1);
-      geo.push_back(t.z);
-      geo.push_back(t.dz);
-      geo.push_back(t.r);
-      geo.push_back(t.R);
-      geo.push_back(t.RadLength);
-
-      fscal f_phi = 0, f_sigma = mvdStationPar->GetXRes(ist) / 10000, b_phi = 3.14159265358 / 2.,
-            b_sigma = mvdStationPar->GetYRes(ist) / 10000, dt = 1000;
-      geo.push_back(f_phi);
-      geo.push_back(f_sigma);
-      geo.push_back(b_phi);
-      geo.push_back(b_sigma);
-      geo.push_back(dt);
-      z    = t.z;
-      Xmax = Ymax = t.R;
-
-      LOG(info) << "L1: Mvd station " << ist << " at z " << t.z;
-    }
-
-
-    if (ist >= NMvdStations && ist < (NMvdStations + NStsStations)) {
-
-      CbmStsStation* station = CbmStsSetup::Instance()->GetStation(StationIdxConverter[ist] - NMvdStationsGeom);
-      geo.push_back(0);
-      geo.push_back(station->GetZ());
-      geo.push_back(station->GetSensorD());
-      geo.push_back(0);
-      geo.push_back(station->GetYmax() < station->GetXmax() ? station->GetXmax() : station->GetYmax());
-      geo.push_back(station->GetRadLength());
-
-      double Pi = 3.14159265358;
-
-      fscal f_phi, f_sigma, b_phi, b_sigma;  // angle and sigma front/back  side
-      f_phi = station->GetSensorRotation();
-      b_phi = f_phi;
-      f_phi += station->GetSensorStereoAngle(0) * Pi / 180.;
-      b_phi += station->GetSensorStereoAngle(1) * Pi / 180.;
-      f_sigma  = station->GetSensorPitch(0) / TMath::Sqrt(12);
-      b_sigma  = f_sigma;
-      fscal dt = 5;
-      //f_sigma *= cos(f_phi);  // TODO: think about this
-      //b_sigma *= cos(b_phi);
-
-      geo.push_back(f_phi);
-      geo.push_back(f_sigma);
-      geo.push_back(b_phi);
-      geo.push_back(b_sigma);
-      geo.push_back(dt);
-      z = station->GetZ();
-
-      Xmax = station->GetXmax();
-      Ymax = station->GetYmax();
-
-      LOG(info) << "L1: Sts station " << ist - NMvdStations << " at z " << station->GetZ();
-    }
-
-    if ((ist < (NMvdStations + NStsStations + NMuchStations)) && (ist >= (NMvdStations + NStsStations))) {
-
-      int iStation = (StationIdxConverter[ist] - NMvdStationsGeom - NStsStationsGeom) / 3;
-
-
-      CbmMuchStation* station = (CbmMuchStation*) fGeoScheme->GetStation(iStation);
-
-      CbmMuchLayer* layer = station->GetLayer((StationIdxConverter[ist] - NMvdStationsGeom - NStsStationsGeom) % 3);
-
-      z = layer->GetZ();
-
-      geo.push_back(2);
-      geo.push_back(z);
-      geo.push_back(layer->GetDz());
-      geo.push_back(10);
-      geo.push_back(100);  //station->GetRmax()
-      geo.push_back(0);
-
-      // fscal f_phi = 0, f_sigma = 0.1, b_phi = 3.14159265358 / 2., b_sigma = 0.1;
-      fscal f_phi = 0, f_sigma = 0.35, b_phi = 3.14159265358 / 2., b_sigma = 0.35, dt = 3.9;
-      geo.push_back(f_phi);
-      geo.push_back(f_sigma);
-      geo.push_back(b_phi);
-      geo.push_back(b_sigma);
-      geo.push_back(dt);
-
-
-      Xmax = 100;  //station->GetRmax();
-      Ymax = 100;  //station->GetRmax();
-
-      LOG(info) << "L1: Much station " << iStation << " at z " << z << endl;
-    }
-
-    //     int num = 0;
-
-    if ((ist < (NMvdStations + NStsStations + NTrdStations + NMuchStations))
-        && (ist >= (NMvdStations + NStsStations + NMuchStations))) {
-
-      int num = StationIdxConverter[ist] - NMvdStationsGeom - NStsStationsGeom - NMuchStationsGeom;
-
-      int skip = num;
-
-      if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits))
-        if (num > 0) skip++;
-      int ModuleId = fTrdDigiPar->GetModuleId(skip);
-
-      CbmTrdParModDigi* module = (CbmTrdParModDigi*) fTrdDigiPar->GetModulePar(ModuleId);
-
-      //   if (!true_station[ist]) continue;
-
-      if (num == 0 || num == 2 || num == 4) geo.push_back(3);
-      if (num == 1 || num == 3) geo.push_back(6);
-
-      float stationZ = module->GetZ();
-
-      geo.push_back(stationZ);
-
-      geo.push_back(2 * module->GetSizeZ());
-      geo.push_back(0);
-      geo.push_back(2 * module->GetSizeX());
-      geo.push_back(1.6);
-
-      //  fscal f_phi = 0, f_sigma = 1., b_phi = 3.14159265358 / 2., b_sigma = 1.;
-      fscal f_phi = 0, f_sigma = 0.15, b_phi = 3.14159265358 / 2., b_sigma = 0.15, dt = 10;
-      geo.push_back(f_phi);
-      geo.push_back(f_sigma);
-      geo.push_back(b_phi);
-      geo.push_back(b_sigma);
-      geo.push_back(dt);
-      Xmax = module->GetSizeX();
-      Ymax = module->GetSizeY();
-      LOG(info) << "L1: Trd station " << num << " at z " << stationZ << endl;
-    }
-
-
-    if ((ist < (NMvdStations + NStsStations + NTrdStations + NMuchStations + NTOFStation))
-        && (ist >= (NMvdStations + NStsStations + NMuchStations + NTrdStations))) {
-
-      geo.push_back(4);
-
-      int num = StationIdxConverter[ist] - (NMvdStationsGeom + NStsStationsGeom + NTrdStationsGeom + NMuchStationsGeom);
-
-      geo.push_back(TofStationZ[num]);
-
-      geo.push_back(10);   /// materialInfo.thick
-      geo.push_back(0);    /// Rmin
-      geo.push_back(150);  /// Rmax
-      geo.push_back(2);    /// materialInfo.RL
-
-      // fscal f_phi = 0, f_sigma = 1 / 10000, b_phi = 3.14159265358 / 2., b_sigma = 1 / 10000;
-      fscal f_phi = 0, f_sigma = 0.42, b_phi = 3.14159265358 / 2., b_sigma = 0.23, dt = 0.075;
-      geo.push_back(f_phi);
-      geo.push_back(f_sigma);
-      geo.push_back(b_phi);
-      geo.push_back(b_sigma);
-      geo.push_back(dt);
-      Xmax = Ymax = 20;
-      LOG(info) << "L1: Tof station " << num << " at z " << z << endl;
-    }
-
-
-    double dx = 1.;  // step for the field approximation
-    double dy = 1.;
-
-    if (dx > Xmax / N / 2) dx = Xmax / N / 4.;
-    if (dy > Ymax / N / 2) dy = Ymax / N / 4.;
-
-    double C[3][N];
-    for (int i = 0; i < 3; i++)
-      for (int k = 0; k < N; k++)
-        C[i][k] = 0;
-    TMatrixD A(N, N);
-    TVectorD b0(N), b1(N), b2(N);
-    for (int i = 0; i < N; i++) {
-      for (int j = 0; j < N; j++)
-        A(i, j) = 0.;
-      b0(i) = b1(i) = b2(i) = 0.;
-    }
-
-
-    if (CbmKF::Instance()->GetMagneticField()) {
-      for (double x = -Xmax; x <= Xmax; x += dx)
-        for (double y = -Ymax; y <= Ymax; y += dy) {
-          double r = sqrt(fabs(x * x / Xmax / Xmax + y / Ymax * y / Ymax));
-          if (r > 1.) continue;
-          Double_t w    = 1. / (r * r + 1);
-          Double_t p[3] = {x, y, z};
-          Double_t B[3] = {0., 0., 0.};
-          CbmKF::Instance()->GetMagneticField()->GetFieldValue(p, B);
-          TVectorD m(N);
-          m(0) = 1;
-          for (int i = 1; i <= M; i++) {
-            int k = (i - 1) * (i) / 2;
-            int l = i * (i + 1) / 2;
-            for (int j = 0; j < i; j++)
-              m(l + j) = x * m(k + j);
-            m(l + i) = y * m(k + i - 1);
-          }
-
-          TVectorD mt = m;
-          for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++)
-              A(i, j) += w * m(i) * m(j);
-            b0(i) += w * B[0] * m(i);
-            b1(i) += w * B[1] * m(i);
-            b2(i) += w * B[2] * m(i);
-          }
-        }
-
-      double det;
-      A.Invert(&det);
-      TVectorD c0 = A * b0, c1 = A * b1, c2 = A * b2;
-      for (int i = 0; i < N; i++) {
-        C[0][i] = c0(i);
-        C[1][i] = c1(i);
-        C[2][i] = c2(i);
-      }
-    }
-
-    geo.push_back(N);
-    for (int k = 0; k < 3; k++) {
-      for (int j = 0; j < N; j++) {
-        geo.push_back(C[k][j]);
-      }
-    }
-  }
-
-  // TODO: replace these values to L1Parameters (S.Zh.)
-  geo.push_back(fTrackingLevel);
-  geo.push_back(fMomentumCutOff);
-  geo.push_back(fGhostSuppression);
-
-  // Provide crosscheck number of stations for the fpInitManager
-  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kMvd, NMvdStations);
-  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kSts, NStsStations);
-  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kMuch, NMuchStations);
-  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kTrd, NTrdStations);
-  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kTof, NTOFStation);
+  NMvdStationsGeom = (fUseMVD) ? CbmKF::Instance()->vMvdMaterial.size() : 0;
+  NStsStationsGeom = CbmStsSetup::Instance()->GetNofStations();
+  NStationGeom     = NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom + NTrdStationsGeom + NTOFStationGeom;
+
+  // Provide crosscheck number of stations for the fpInitManagera
+  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kMvd, NMvdStationsGeom);
+  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kSts, NStsStationsGeom);
+  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kMuch, NMuchStationsGeom);
+  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kTrd, NTrdStationsGeom);
+  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kTof, NTOFStationGeom);
 
   {
     if (fSTAPDataMode % 2 == 1) {  // 1,3
@@ -966,8 +553,9 @@ InitStatus CbmL1::Init()
    ** Stations geometry initialization  **
    ***************************************/
 
+
   /*** MVD stations info ***/
-  for (int iSt = 0; iSt < NMvdStations; ++iSt) {  // NOTE: example using in-stack defined objects
+  for (int iSt = 0; iSt < NMvdStationsGeom; ++iSt) {  // NOTE: example using in-stack defined objects
     CbmMvdDetector* mvdDetector     = CbmMvdDetector::Instance();
     CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();
 
@@ -997,7 +585,7 @@ InitStatus CbmL1::Init()
   }
 
   /*** STS stations info ***/
-  for (int iSt = 0; iSt < NStsStations; ++iSt) {  // NOTE: example using smart pointers
+  for (int iSt = 0; iSt < NStsStationsGeom; ++iSt) {  // NOTE: example using smart pointers
     auto cbmSts      = CbmStsSetup::Instance()->GetStation(iSt);
     auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
     stationInfo.SetStationType(0);  // STS
@@ -1027,7 +615,7 @@ InitStatus CbmL1::Init()
   }
 
   /*** MuCh stations info ***/
-  for (int iSt = 0; iSt < NMuchStations; ++iSt) {
+  for (int iSt = 0; iSt < NMuchStationsGeom; ++iSt) {
     int muchStationID       = iSt / 3;
     int muchLayerID         = iSt % 3;
     CbmMuchStation* station = (CbmMuchStation*) fGeoScheme->GetStation(muchStationID);
@@ -1057,7 +645,7 @@ InitStatus CbmL1::Init()
   }
 
   /*** TRD stations info ***/
-  for (int iSt = 0; iSt < NTrdStations; ++iSt) {
+  for (int iSt = 0; iSt < NTrdStationsGeom; ++iSt) {
     int skip = iSt;  // temporary solution to remove TRD with id == 1 wrom mCBM
     if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) {
       if (iSt > 0) { skip++; }
@@ -1089,7 +677,7 @@ InitStatus CbmL1::Init()
   }
 
   /*** TOF stations info ***/
-  for (int iSt = 0; iSt < NTOFStation; ++iSt) {
+  for (int iSt = 0; iSt < NTOFStationGeom; ++iSt) {
     auto stationInfo = L1BaseStationInfo(L1DetectorID::kTof, iSt);
     stationInfo.SetStationType(4);
     stationInfo.SetTimeInfo(1);
@@ -1113,6 +701,21 @@ InitStatus CbmL1::Init()
     LOG(info) << "- TOF station " << iSt << " at z = " << stationInfo.GetZdouble();
   }
 
+  /*** Get numbers of active stations ***/
+
+  NMvdStations  = fpInitManager->GetNstations(L1DetectorID::kMvd);
+  NStsStations  = fpInitManager->GetNstations(L1DetectorID::kSts);
+  NTrdStations  = fpInitManager->GetNstations(L1DetectorID::kTrd);
+  NMuchStations = fpInitManager->GetNstations(L1DetectorID::kMuch);
+  NTOFStation   = fpInitManager->GetNstations(L1DetectorID::kTof);
+  NStation      = fpInitManager->GetNstations();
+
+  L1_SHOW(NMvdStations);
+  L1_SHOW(NStsStations);
+  L1_SHOW(NTrdStations);
+  L1_SHOW(NMuchStations);
+  L1_SHOW(NTOFStation);
+  L1_SHOW(NStation);
   //fpInitManager->PrintStations(/*verbosity = */2);
   //std::cout  << "Active stations map: ";
   //for (auto index: fpInitManager->GetActiveStationsIndexMap()) {
