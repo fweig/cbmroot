@@ -478,9 +478,9 @@ InitStatus CbmL1::Init()
   vector<float> TofStationZ;
   vector<int> TofStationN;
   if (fUseTOF) {
-    NTOFStation = fTofDigiBdfPar->GetNbTrackingStations();
-    TofStationZ.resize(NTOFStation, 0);
-    TofStationN.resize(NTOFStation, 0);
+    NTOFStationGeom = fTofDigiBdfPar->GetNbTrackingStations();
+    TofStationZ.resize(NTOFStationGeom, 0);
+    TofStationN.resize(NTOFStationGeom, 0);
 
     for (int iSmType = 0; iSmType < fTofDigiBdfPar->GetNbSmTypes(); iSmType++) {
       for (int iSm = 0; iSm < fTofDigiBdfPar->GetNbSm(iSmType); iSm++) {
@@ -504,7 +504,7 @@ InitStatus CbmL1::Init()
         }
       }
     }
-    for (Int_t i = 0; i < NTOFStation; i++)
+    for (Int_t i = 0; i < NTOFStationGeom; i++)
       TofStationZ[i] = TofStationZ[i] / TofStationN[i];
   }
 
@@ -709,19 +709,6 @@ InitStatus CbmL1::Init()
   NMuchStations = fpInitManager->GetNstations(L1DetectorID::kMuch);
   NTOFStation   = fpInitManager->GetNstations(L1DetectorID::kTof);
   NStation      = fpInitManager->GetNstations();
-
-  L1_SHOW(NMvdStations);
-  L1_SHOW(NStsStations);
-  L1_SHOW(NTrdStations);
-  L1_SHOW(NMuchStations);
-  L1_SHOW(NTOFStation);
-  L1_SHOW(NStation);
-  //fpInitManager->PrintStations(/*verbosity = */2);
-  //std::cout  << "Active stations map: ";
-  //for (auto index: fpInitManager->GetActiveStationsIndexMap()) {
-  //  std::cout << index << ' ';
-  //}
-  //std::cout << '\n';
 
   /****************************************
    **                                    **

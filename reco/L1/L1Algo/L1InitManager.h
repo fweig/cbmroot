@@ -213,7 +213,7 @@ private:
   /// Example: let stations 1 and 4 be inactive. Then:
   ///   actual index:  0  1  2  3  4  5  6  7  8  9
   ///   active index:  0 -1  1  2 -1  3  4  5  6  7
-  L1Vector<int> fActiveStationsIndexMap {};
+  L1Vector<int> fActiveStationsIndexMap {"L1InitManager::fActiveStationsIndexMap"};
 
   /// Actual number of stations in the setup
   L1DetectorIDIntMap_t fNstationsActualCrosscheck {};
