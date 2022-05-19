@@ -19,18 +19,19 @@
 #include "L1Vector.h"
 
 //#include <string>
+#include <type_traits>
+
 #include <array>
 #include <bitset>
 #include <memory>  //unique_ptr
 #include <numeric>
 #include <set>
-#include <type_traits>
 
 /// Forward declaration of the tracking detectors scoped enumeration. Concrete realization of this enumeration must be
 /// determined in the concrete setup class (i.e. CbmL1/BmnL1)
 enum class L1DetectorID;
 
-/// Underlying 
+/// Underlying
 using L1DetectorID_t = std::underlying_type_t<L1DetectorID>;
 
 /// Initialization manager for L1Algo
@@ -141,17 +142,25 @@ public:
   /// Gets total number of active stations
   int GetNstationsActive() const { return fNstationsActive[fNstationsActive.size() - 1]; }
   /// Gets number of active stations for given detector ID
-  int GetNstationsActive(L1DetectorID detectorID) const { return fNstationsActive[static_cast<L1DetectorID_t>(detectorID)]; }
+  int GetNstationsActive(L1DetectorID detectorID) const
+  {
+    return fNstationsActive[static_cast<L1DetectorID_t>(detectorID)];
+  }
   /// Gets total number of stations, provided by setup geometry
   int GetNstationsGeometry() const { return fNstationsGeometry[fNstationsGeometry.size() - 1]; }
   /// Gets number of stations, provided by setup geometry for given detector ID
-  int GetNstationsGeometry(L1DetectorID detectorID) const { return fNstationsGeometry[static_cast<L1DetectorID_t>(detectorID)]; }
+  int GetNstationsGeometry(L1DetectorID detectorID) const
+  {
+    return fNstationsGeometry[static_cast<L1DetectorID_t>(detectorID)];
+  }
   /// Calculates global index of station among geometry (accounts for inactive stations)
   /// \param localIndex  index of the detector subsystem module/station/layer provided by detector subsystem experts
   /// \param detectorID  ID of the detector subsystem
-  __attribute__((always_inline)) int GetStationIndexGeometry(int localIndex, L1DetectorID detectorID) const 
+  __attribute__((always_inline)) int GetStationIndexGeometry(int localIndex, L1DetectorID detectorID) const
   {
-    return localIndex + std::accumulate(fNstationsGeometry.cbegin(), fNstationsGeometry.cbegin() + static_cast<int>(detectorID), 0);
+    return localIndex
+           + std::accumulate(fNstationsGeometry.cbegin(), fNstationsGeometry.cbegin() + static_cast<int>(detectorID),
+                             0);
   }
   /// Calculates global index of station used by track finder
   /// \param localIndex  index of the detector subsystem module/station/layer provided by detector subsystem experts
@@ -231,7 +240,7 @@ private:
   /* Stations related fields */
 
   std::set<L1BaseStationInfo> fStationsInfo {};  ///< Set of L1BaseStationInfo objects
-  
+
   /// Numbers of stations, which are active in tracking. Index of an array element (except the last one) corresponds to a given
   /// L1DetectorID of the detector subystem. The last array element corresponds to the total number of stations.
   std::array<int, L1Parameters::kMaxNdetectors + 1> fNstationsActive {};
@@ -239,12 +248,12 @@ private:
   /// L1DetectorID of the detector subystem. The last array element corresponds to the total number of stations.
   std::array<int, L1Parameters::kMaxNdetectors + 1> fNstationsGeometry {};
   /// Map of the actual detector indeces to the active detector indeces
-  /// The vector maps actual station index (which is defined by ) to the index of station in tracking. If the station is inactive, 
+  /// The vector maps actual station index (which is defined by ) to the index of station in tracking. If the station is inactive,
   /// its index is equal to -1. Example: let stations 1 and 4 be inactive. Then:
   ///   actual index:  0  1  2  3  4  5  6  7  8  9  0  0  0  0
-  ///   active index:  0 -1  1  2 -1  3  4  5  6  7  0  0  0  0 
-  std::array<int, L1Parameters::kMaxNstations>      fActiveStationGlobalIDs {}; 
-  
+  ///   active index:  0 -1  1  2 -1  3  4  5  6  7  0  0  0  0
+  std::array<int, L1Parameters::kMaxNstations> fActiveStationGlobalIDs {};
+
   /// A function which returns magnetic field vector B in a radius-vector xyz
   L1FieldFunction_t fFieldFunction {[](const double (&)[3], double (&)[3]) {}};
   // NOTE: Stations of daetectors which will not be assigned as active, will not be included in the tracking!!!!!!!

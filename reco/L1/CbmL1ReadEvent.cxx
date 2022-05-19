@@ -610,8 +610,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         CbmStsHit* mh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(hitIndexSort));
         th.ExtIndex   = hitIndexSort;
         th.Det        = 1;
-        int stIdx     = algo->GetInitManager()
-                      ->GetStationIndexActive(CbmStsSetup::Instance()->GetStationNumber(mh->GetAddress()), L1DetectorID::kSts);
+        int stIdx     = algo->GetInitManager()->GetStationIndexActive(
+          CbmStsSetup::Instance()->GetStationNumber(mh->GetAddress()), L1DetectorID::kSts);
 
         if (stIdx == -1) continue;
 

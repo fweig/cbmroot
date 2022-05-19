@@ -64,13 +64,13 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
               << ")";
       L1MASSERT(0, insertionResult.second, aStream.str().c_str());
     }
-    int index = fStationsInfo.size() - 1 + 
-      (fNstationsGeometry[fNstationsGeometry.size() - 1] - fNstationsActive[fNstationsActive.size() - 1]);
+    int index = fStationsInfo.size() - 1
+                + (fNstationsGeometry[fNstationsGeometry.size() - 1] - fNstationsActive[fNstationsActive.size() - 1]);
     fActiveStationGlobalIDs[index] = fStationsInfo.size() - 1;
   }
   else {
-    int index = fStationsInfo.size() + 
-      (fNstationsGeometry[fNstationsGeometry.size() - 1] - fNstationsActive[fNstationsActive.size() - 1]);
+    int index = fStationsInfo.size()
+                + (fNstationsGeometry[fNstationsGeometry.size() - 1] - fNstationsActive[fNstationsActive.size() - 1]);
     fActiveStationGlobalIDs[index] = -1;
     fNstationsActive[static_cast<L1DetectorID_t>(inStation.GetDetectorID())]--;
     fNstationsActive[fNstationsActive.size() - 1]--;
@@ -233,11 +233,11 @@ void L1InitManager::SetNstations(L1DetectorID detectorID, int nStations)
     if (nStations) {
       fNstationsGeometry[static_cast<L1DetectorID_t>(detectorID)] = nStations;
       fNstationsActive[static_cast<L1DetectorID_t>(detectorID)]   = nStations;
-    } 
+    }
     else {
       // TODO: Probably it is better to replace fatal with warn and remove the detectorID from active detectors (S.Zharko)
-      LOG(fatal) << "L1InitManager::SetNstations: attempt to initialize zero stations for active detector: " 
-        << static_cast<L1DetectorID_t>(detectorID);
+      LOG(fatal) << "L1InitManager::SetNstations: attempt to initialize zero stations for active detector: "
+                 << static_cast<L1DetectorID_t>(detectorID);
     }
   }
 
@@ -254,7 +254,8 @@ void L1InitManager::SetNstations(L1DetectorID detectorID, int nStations)
     fInitController.SetFlag(EInitKey::kStationsNumberCrosscheck, ifInitialized);
   }
   if (fInitController.GetFlag(EInitKey::kStationsNumberCrosscheck)) {
-    fNstationsGeometry[L1Parameters::kMaxNdetectors] = std::accumulate(fNstationsGeometry.begin(), fNstationsGeometry.end() - 1, 0);
+    fNstationsGeometry[L1Parameters::kMaxNdetectors] =
+      std::accumulate(fNstationsGeometry.begin(), fNstationsGeometry.end() - 1, 0);
     fNstationsActive[L1Parameters::kMaxNdetectors] = fNstationsGeometry[L1Parameters::kMaxNdetectors];
   }
 }
@@ -353,8 +354,8 @@ void L1InitManager::CheckStationsInfoInit()
     //
     // loop over active detectors
     for (auto itemDetector : fActiveDetectorIDs) {
-      auto selectDetector = [&itemDetector](const L1BaseStationInfo& station) { 
-        return station.GetDetectorID() == itemDetector;   
+      auto selectDetector = [&itemDetector](const L1BaseStationInfo& station) {
+        return station.GetDetectorID() == itemDetector;
       };
       int nStationsExpected = GetNstationsActive(itemDetector);
       int nStations         = std::count_if(fStationsInfo.begin(), fStationsInfo.end(), selectDetector);
@@ -373,8 +374,9 @@ void L1InitManager::CheckStationsInfoInit()
     int nStationsTotal = fNstationsGeometry[fNstationsGeometry.size() - 1];
     if (nStationsTotal > L1Parameters::kMaxNstations) {
       std::stringstream aStream;
-      aStream << "Actual total number of registered stations in geometry (" << nStationsTotal << ") is larger then possible ("
-              << L1Parameters::kMaxNstations << "). Please, select another set of active tracking detectors or recompile the code with enlarged"
+      aStream << "Actual total number of registered stations in geometry (" << nStationsTotal
+              << ") is larger then possible (" << L1Parameters::kMaxNstations
+              << "). Please, select another set of active tracking detectors or recompile the code with enlarged"
               << " L1Parameters::kMaxNstations value";
       // TODO: We have to provide an instruction of how to increase the kMaxNstations
       //       number keeping the code consistent (S.Zharko)
