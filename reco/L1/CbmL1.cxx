@@ -520,11 +520,11 @@ InitStatus CbmL1::Init()
   NStationGeom     = NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom + NTrdStationsGeom + NTOFStationGeom;
 
   // Provide crosscheck number of stations for the fpInitManagera
-  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kMvd, NMvdStationsGeom);
-  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kSts, NStsStationsGeom);
-  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kMuch, NMuchStationsGeom);
-  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kTrd, NTrdStationsGeom);
-  fpInitManager->SetNstationsCrosscheck(L1DetectorID::kTof, NTOFStationGeom);
+  fpInitManager->SetNstations(L1DetectorID::kMvd, NMvdStationsGeom);
+  fpInitManager->SetNstations(L1DetectorID::kSts, NStsStationsGeom);
+  fpInitManager->SetNstations(L1DetectorID::kMuch, NMuchStationsGeom);
+  fpInitManager->SetNstations(L1DetectorID::kTrd, NTrdStationsGeom);
+  fpInitManager->SetNstations(L1DetectorID::kTof, NTOFStationGeom);
 
   {
     if (fSTAPDataMode % 2 == 1) {  // 1,3
@@ -703,12 +703,20 @@ InitStatus CbmL1::Init()
 
   /*** Get numbers of active stations ***/
 
-  NMvdStations  = fpInitManager->GetNstations(L1DetectorID::kMvd);
-  NStsStations  = fpInitManager->GetNstations(L1DetectorID::kSts);
-  NTrdStations  = fpInitManager->GetNstations(L1DetectorID::kTrd);
-  NMuchStations = fpInitManager->GetNstations(L1DetectorID::kMuch);
-  NTOFStation   = fpInitManager->GetNstations(L1DetectorID::kTof);
-  NStation      = fpInitManager->GetNstations();
+  NMvdStations  = fpInitManager->GetNstationsActive(L1DetectorID::kMvd);
+  NStsStations  = fpInitManager->GetNstationsActive(L1DetectorID::kSts);
+  NTrdStations  = fpInitManager->GetNstationsActive(L1DetectorID::kTrd);
+  NMuchStations = fpInitManager->GetNstationsActive(L1DetectorID::kMuch);
+  NTOFStation   = fpInitManager->GetNstationsActive(L1DetectorID::kTof);
+  NStation      = fpInitManager->GetNstationsActive();
+
+  LOG(info) << "----- Numbers of stations active in tracking -----";
+  LOG(info) << "  MVD:    " << NMvdStations;
+  LOG(info) << "  STS:    " << NStsStations;
+  LOG(info) << "  MuCh:   " << NTrdStations;
+  LOG(info) << "  TRD:    " << NTrdStations;
+  LOG(info) << "  ToF:    " << NTOFStation;
+  LOG(info) << "  Total:  " << NStation;
 
   /****************************************
    **                                    **

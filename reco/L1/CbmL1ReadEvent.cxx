@@ -514,7 +514,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.id         = tmpHits.size();
         th.iStation   = mh->GetStationNr();
 
-        int stIdx = algo->GetInitManager()->GetActiveStationsIndexMap()[mh->GetStationNr()];
+        int stIdx = algo->GetInitManager()->GetStationIndexActive(mh->GetStationNr(), L1DetectorID::kMvd);
         if (stIdx == -1) continue;
         th.iStation = stIdx;  //mh->GetStationNr() - 1;
         th.iStripF  = firstDetStrip + j;
@@ -611,8 +611,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.ExtIndex   = hitIndexSort;
         th.Det        = 1;
         int stIdx     = algo->GetInitManager()
-                      ->GetActiveStationsIndexMap()[CbmStsSetup::Instance()->GetStationNumber(mh->GetAddress())
-                                                    + NMvdStationsGeom];
+                      ->GetStationIndexActive(CbmStsSetup::Instance()->GetStationNumber(mh->GetAddress()), L1DetectorID::kSts);
 
         if (stIdx == -1) continue;
 
@@ -768,7 +767,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
         int DetId = stationNumber * 3 + layerNumber;
 
-        int stIdx = algo->GetInitManager()->GetActiveStationsIndexMap()[DetId + NMvdStationsGeom + NStsStationsGeom];
+        int stIdx = algo->GetInitManager()->GetStationIndexActive(DetId, L1DetectorID::kMuch);
         if (stIdx == -1) continue;
         th.iStation = stIdx;  //mh->GetStationNr() - 1;
 
@@ -868,9 +867,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       int sta = mh->GetPlaneId();
 
-      int stIdx =
-        algo->GetInitManager()
-          ->GetActiveStationsIndexMap()[mh->GetPlaneId() + NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom];
+      int stIdx = algo->GetInitManager()->GetStationIndexActive(mh->GetPlaneId(), L1DetectorID::kTrd);
       if (stIdx == -1) continue;
 
       if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (sta > 1) && (fMissingHits)) { sta = sta - 1; }
@@ -1057,8 +1054,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         if ((th.x > 20) && (th.z > 270) && (fTofDigiBdfPar->GetTrackingStation(mh) == 1)) sttof = 2;
       if (th.z > 400) continue;
 
-      int stIdx = algo->GetInitManager()->GetActiveStationsIndexMap()[sttof + NMvdStationsGeom + NStsStationsGeom
-                                                                      + NMuchStationsGeom + NTrdStationsGeom];
+      int stIdx = algo->GetInitManager()->GetStationIndexActive(sttof, L1DetectorID::kTof);
       if (stIdx == -1) continue;
       th.iStation = stIdx;
 

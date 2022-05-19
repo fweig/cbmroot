@@ -24,7 +24,6 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
 {
   // Check if other fields were defined already
   // Active detector IDs
-
   L1MASSERT(0, fInitController.GetFlag(EInitKey::kActiveDetectorIDs),
             "Attempt to add a station info before the active detetors set had been initialized");
 
@@ -65,11 +64,16 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
               << ")";
       L1MASSERT(0, insertionResult.second, aStream.str().c_str());
     }
-    fActiveStationsIndexMap.push_back(fStationsInfo.size() - 1);
+    int index = fStationsInfo.size() - 1 + 
+      (fNstationsGeometry[fNstationsGeometry.size() - 1] - fNstationsActive[fNstationsActive.size() - 1]);
+    fActiveStationGlobalIDs[index] = fStationsInfo.size() - 1;
   }
   else {
-    fActiveStationsIndexMap.push_back(-1);
-    fNstationsActiveCrosscheck[inStation.GetDetectorID()]--;
+    int index = fStationsInfo.size() + 
+      (fNstationsGeometry[fNstationsGeometry.size() - 1] - fNstationsActive[fNstationsActive.size() - 1]);
+    fActiveStationGlobalIDs[index] = -1;
+    fNstationsActive[static_cast<L1DetectorID_t>(inStation.GetDetectorID())]--;
+    fNstationsActive[fNstationsActive.size() - 1]--;
   }
   LOG(debug) << "L1InitManager: adding a station with stationID = " << inStation.GetStationID()
              << " and detectorID = " << static_cast<int>(inStation.GetDetectorID())
@@ -82,16 +86,6 @@ void L1InitManager::CheckInit()
 {
   this->CheckCAIterationsInit();
   this->CheckStationsInfoInit();
-}
-
-//-----------------------------------------------------------------------------------------------------------------------
-//
-int L1InitManager::GetNstations(L1DetectorID detectorID) const
-{
-  auto ifDetectorIdDesired = [&detectorID](const L1BaseStationInfo& station) {
-    return station.GetDetectorID() == detectorID;
-  };
-  return std::count_if(fStationsInfo.begin(), fStationsInfo.end(), ifDetectorIdDesired);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
@@ -227,24 +221,32 @@ void L1InitManager::SetMomentumCutOff(float momentumCutOff)
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
-void L1InitManager::SetNstationsCrosscheck(L1DetectorID detectorID, int nStations)
+void L1InitManager::SetNstations(L1DetectorID detectorID, int nStations)
 {
   L1MASSERT(0, fInitController.GetFlag(EInitKey::kActiveDetectorIDs),
             "Attempt to set crosscheck number of stations before the active detetors set had been initialized");
+
   // NOTE: We add and check only those detectors which will be active (?)
   // For INACTIVE detectors the initialization code for it inside CbmL1/BmnL1 can (and must) be still in,
   // but it will be ignored inside L1InitManager.
   if (fActiveDetectorIDs.find(detectorID) != fActiveDetectorIDs.end()) {
-    fNstationsActualCrosscheck[detectorID] = nStations;
-    fNstationsActiveCrosscheck[detectorID] = nStations;
+    if (nStations) {
+      fNstationsGeometry[static_cast<L1DetectorID_t>(detectorID)] = nStations;
+      fNstationsActive[static_cast<L1DetectorID_t>(detectorID)]   = nStations;
+    } 
+    else {
+      // TODO: Probably it is better to replace fatal with warn and remove the detectorID from active detectors (S.Zharko)
+      LOG(fatal) << "L1InitManager::SetNstations: attempt to initialize zero stations for active detector: " 
+        << static_cast<L1DetectorID_t>(detectorID);
+    }
   }
 
   // Check if all the station numbers for active detectors are initialized now:
-  LOG(debug) << "SetNstationsCrosscheck called for detectorID = " << static_cast<int>(detectorID);
+  LOG(debug) << "L1InitManager::SetNstations called for detectorID = " << static_cast<int>(detectorID);
   if (!fInitController.GetFlag(EInitKey::kStationsNumberCrosscheck)) {
     bool ifInitialized = true;
     for (auto item : fActiveDetectorIDs) {
-      if (fNstationsActualCrosscheck.find(item) == fNstationsActualCrosscheck.end()) {
+      if (fNstationsGeometry[static_cast<L1DetectorID_t>(item)] == 0) {
         ifInitialized = false;
         break;
       }
@@ -252,11 +254,8 @@ void L1InitManager::SetNstationsCrosscheck(L1DetectorID detectorID, int nStation
     fInitController.SetFlag(EInitKey::kStationsNumberCrosscheck, ifInitialized);
   }
   if (fInitController.GetFlag(EInitKey::kStationsNumberCrosscheck)) {
-    int nStationsExpected = 0;
-    for (auto item : fNstationsActualCrosscheck) {
-      nStationsExpected += item.second;
-    }
-    fActiveStationsIndexMap.reserve(nStationsExpected);
+    fNstationsGeometry[L1Parameters::kMaxNdetectors] = std::accumulate(fNstationsGeometry.begin(), fNstationsGeometry.end() - 1, 0);
+    fNstationsActive[L1Parameters::kMaxNdetectors] = fNstationsGeometry[L1Parameters::kMaxNdetectors];
   }
 }
 
@@ -304,7 +303,7 @@ void L1InitManager::TransferL1StationArray(std::array<L1Station, L1Parameters::k
   // 2) Check, if destinationArraySize is enough for the transfer
   //
   {
-    int nStationsTotal = this->GetNstations();
+    int nStationsTotal = this->GetNstationsActive();
     std::stringstream aStream;
     aStream << "Destination array size (" << destinationArray.size()
             << ") is smaller then the actual number of active tracking stations (" << nStationsTotal << ")";
@@ -353,9 +352,12 @@ void L1InitManager::CheckStationsInfoInit()
     // 1) Check numbers of stations passed
     //
     // loop over active detectors
-    for (const auto& itemDetector : fActiveDetectorIDs) {
-      int nStations         = GetNstations(itemDetector);
-      int nStationsExpected = fNstationsActiveCrosscheck.at(itemDetector);
+    for (auto itemDetector : fActiveDetectorIDs) {
+      auto selectDetector = [&itemDetector](const L1BaseStationInfo& station) { 
+        return station.GetDetectorID() == itemDetector;   
+      };
+      int nStationsExpected = GetNstationsActive(itemDetector);
+      int nStations         = std::count_if(fStationsInfo.begin(), fStationsInfo.end(), selectDetector);
       if (nStations != nStationsExpected) {
         LOG(error) << "L1InitManager::CheckStationsInfoInit: Incorrect number of L1BaseStationInfo objects passed"
                    << " to the L1Manager for L1DetectorID = " << static_cast<int>(itemDetector) << ": " << nStations
@@ -368,11 +370,12 @@ void L1InitManager::CheckStationsInfoInit()
     //
     // 2) Check for maximum allowed number of stations
     //
-    int nStationsTotal = GetNstations();
+    int nStationsTotal = fNstationsGeometry[fNstationsGeometry.size() - 1];
     if (nStationsTotal > L1Parameters::kMaxNstations) {
       std::stringstream aStream;
-      aStream << "Actual total number of registered stations (" << nStationsTotal << ") is larger then designed one ("
-              << L1Parameters::kMaxNstations << "). Please, select another set of active tracking detectors";
+      aStream << "Actual total number of registered stations in geometry (" << nStationsTotal << ") is larger then possible ("
+              << L1Parameters::kMaxNstations << "). Please, select another set of active tracking detectors or recompile the code with enlarged"
+              << " L1Parameters::kMaxNstations value";
       // TODO: We have to provide an instruction of how to increase the kMaxNstations
       //       number keeping the code consistent (S.Zharko)
       ifInitPassed = false;

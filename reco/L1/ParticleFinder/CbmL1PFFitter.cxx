@@ -46,7 +46,6 @@
 
 using std::vector;
 
-
 namespace NS_L1TrackFitter
 {
   const fvec c_light = 0.000299792458, c_light_i = 1. / c_light;
@@ -187,7 +186,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
           posy = hit->GetY();
           posz = hit->GetZ();
           // ista = hit->GetStationNr();
-          ista = CbmL1::Instance()->algo->GetInitManager()->GetActiveStationsIndexMap()[hit->GetStationNr()];
+          ista = CbmL1::Instance()->algo->GetInitManager()->GetStationIndexActive(hit->GetStationNr(), L1DetectorID::kMvd);
           if (ista == -1) continue;
         }
         else {
@@ -200,8 +199,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
           posz = hit->GetZ();
           //  ista = CbmStsSetup::Instance()->GetStationNumber(hit->GetAddress())
           //       + NMvdStations;  //hit->GetStationNr() - 1 + NMvdStations;
-          ista = CbmL1::Instance()->algo->GetInitManager()->GetActiveStationsIndexMap()
-                   [CbmStsSetup::Instance()->GetStationNumber(hit->GetAddress()) + CbmL1::Instance()->NMvdStationsGeom];
+          ista = CbmL1::Instance()->algo->GetInitManager()->GetStationIndexActive(CbmStsSetup::Instance()->GetStationNumber(hit->GetAddress()), L1DetectorID::kSts);
           if (ista == -1) continue;
         }
         w[ista][iVec] = 1.f;
