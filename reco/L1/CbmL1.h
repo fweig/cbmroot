@@ -160,12 +160,34 @@ public:
     fTofUseMcHit  = TofUseMcHit;
   }
 
+  /* Material budget setters */
+  void SetMvdMaterialBudgetFileName(const TString& fileName) { if (fileName != "") fMatBudgetFileName[L1DetectorID::kMvd] = fileName; }
+  void SetStsMaterialBudgetFileName(const TString& fileName) { if (fileName != "") fMatBudgetFileName[L1DetectorID::kSts] = fileName; }
+  void SetMuchMaterialBudgetFileName(const TString& fileName) { if (fileName != "") fMatBudgetFileName[L1DetectorID::kMuch] = fileName; }
+  void SetTrdMaterialBudgetFileName(const TString& fileName) { if (fileName != "") fMatBudgetFileName[L1DetectorID::kTrd] = fileName; }
+  void SetTofMaterialBudgetFileName(const TString& fileName) { if (fileName != "") fMatBudgetFileName[L1DetectorID::kTof] = fileName; }
 
-  void SetStsMaterialBudgetFileName(TString fileName) { fStsMatBudgetFileName = fileName; }
-  void SetMvdMaterialBudgetFileName(TString fileName) { fMvdMatBudgetFileName = fileName; }
-  void SetMuchMaterialBudgetFileName(TString fileName) { fMuchMatBudgetFileName = fileName; }
-  void SetTrdMaterialBudgetFileName(TString fileName) { fTrdMatBudgetFileName = fileName; }
-  void SetTofMaterialBudgetFileName(TString fileName) { fTofMatBudgetFileName = fileName; }
+  /// Utility to map the L1DetectorID items into detector names
+  constexpr const char* GetDetectorName(L1DetectorID detectorID)
+  {
+    switch(detectorID)
+    {
+      case L1DetectorID::kMvd:  return "MVD";
+      case L1DetectorID::kSts:  return "STS";
+      case L1DetectorID::kMuch: return "MuCh";
+      case L1DetectorID::kTrd:  return "TRD";
+      case L1DetectorID::kTof:  return "TOF";
+    }
+    // TODO: Probably, we should provide default with throwing exception here... (S.Zharko)
+    return "";
+  }
+
+  /// Reads radiation length table from material budget file
+  /// \param detectorID  ID of a detector subsystem
+  void ReadMaterialTables(L1DetectorID detectorID);
+  
+  
+  
   void SetExtrapolateToTheEndOfSTS(bool b) { fExtrapolateToTheEndOfSTS = b; }
   void SetLegacyEventMode(bool b) { fLegacyEventMode = b; }
   void SetMuchPar(TString fileName) { fMuchDigiFile = fileName; }
@@ -318,7 +340,6 @@ private:
   int NTOFStationGeom;
   int NStationGeom;
 
-  vector<int> StationIdxReverseConverter;
 
   Int_t fPerformance {0};     // 0 - w\o perf. 1 - L1-Efficiency definition. 2 - QA-Eff.definition
   double fTrackingTime {0.};  // time of track finding
@@ -414,11 +435,9 @@ private:
                                // 2 - run, MC particle is reco-able if created from reco-able tracks
                                // 3 - run, MC particle is reco-able if created from reconstructed tracks
 
-  TString fStsMatBudgetFileName {};
-  TString fMvdMatBudgetFileName {};
-  TString fMuchMatBudgetFileName {};
-  TString fTrdMatBudgetFileName {};
-  TString fTofMatBudgetFileName {};
+
+  std::unordered_map<L1DetectorID, TString> fMatBudgetFileName {};  ///< Map for material budget file names vs. detectorID
+
   bool fExtrapolateToTheEndOfSTS {false};
   bool fLegacyEventMode {false};
 
