@@ -22,7 +22,6 @@
 #include "CbmTrdCluster.h"
 #include "CbmTrdDigi.h"
 #include "CbmTrdHit.h"
-#include "CbmTrdHitMC.h"
 #include "CbmTrdParModDigi.h"  // for CbmTrdModule
 #include "CbmTrdParModGeo.h"
 #include "CbmTrdParSetDigi.h"  // for CbmTrdParSetDigi
@@ -119,12 +118,6 @@ void CbmTrackerInputQaTrd::DeInit()
 
   fhPointsPerHit.clear();
   fhHitsPerPoint.clear();
-
-  if (fHitsMc) {
-    fHitsMc->Clear("C");
-    fHitsMc->Delete();
-    delete fHitsMc;
-  }
 }
 // -------------------------------------------------------------------------
 
@@ -276,10 +269,6 @@ InitStatus CbmTrackerInputQaTrd::ReInit()
     LOG(error) << "can not count TRD tracking stations";
     return kERROR;
   }
-
-  // init output tree
-  fHitsMc = new TClonesArray("CbmTrdHitMC", 100);
-  manager->Register("TrdHitMC", "TRD", fHitsMc, IsOutputBranchPersistent("TrdHitMC"));
 
   // initialise histograms
   fOutFolder.SetOwner(false);
@@ -436,10 +425,9 @@ void CbmTrackerInputQaTrd::ResolutionQa()
   Int_t nDigis    = fDigiManager->GetNofDigis(ECbmModuleId::kTrd);
 
   int nMcEvents = fMcEventList->GetNofEvents();
-  int imc(0);  // index of hit->MC QA objects
-  fHitsMc->Delete();
 
   // Vector of integers parallel to mc points
+
   std::vector<std::vector<int>> pointNhits;
   pointNhits.resize(nMcEvents);
   for (int iE = 0; iE < nMcEvents; iE++) {
@@ -451,7 +439,7 @@ void CbmTrackerInputQaTrd::ResolutionQa()
 
   for (Int_t iHit = 0; iHit < nHits; iHit++) {
 
-    const CbmTrdHit* hit = dynamic_cast<const CbmTrdHit*>(fHits->At(iHit));
+    CbmTrdHit* hit = dynamic_cast<CbmTrdHit*>(fHits->At(iHit));
     if (!hit) {
       LOG(error) << "TRD hit N " << iHit << " doesn't exist";
       return;
@@ -497,17 +485,13 @@ void CbmTrackerInputQaTrd::ResolutionQa()
       return;
     }
 
-    // construct QA object
-    CbmTrdHitMC* hmc = new ((*fHitsMc)[imc++]) CbmTrdHitMC(*hit);
-    hmc->AddCluster(cluster);
-    uint64_t tdigi = 0;
-
     // custom finder of the digi matches
+
     CbmMatch myHitMatch;
     for (Int_t iDigi = 0; iDigi < nClusterDigis; iDigi++) {
       Int_t digiIdx = cluster->GetDigi(iDigi);
       if (digiIdx < 0 || digiIdx >= nDigis) {
-        LOG(fatal) << "TRD cluster: digi index " << digiIdx << " out of range ";
+        LOG(error) << "TRD cluster: digi index " << digiIdx << " out of range ";
         return;
       }
       const CbmTrdDigi* digi = CbmDigiManager::Instance()->Get<CbmTrdDigi>(digiIdx);
@@ -517,23 +501,9 @@ void CbmTrackerInputQaTrd::ResolutionQa()
       }
 
       if (digi->GetAddressModule() != address) {
-        std::stringstream ss;
-        ss << "TRD hit address " << address << " differs from its digi address " << digi->GetAddressModule();
-        hmc->SetErrorMsg(ss.str());
-        LOG(error) << ss.str();
+        LOG(error) << "TRD hit address " << address << " differs from its digi address " << digi->GetAddressModule();
         return;
       }
-      switch (digi->GetType()) {
-        case CbmTrdDigi::eCbmTrdAsicType::kFASP:
-          if (!tdigi) tdigi = digi->GetTimeDAQ();
-          break;
-        case CbmTrdDigi::eCbmTrdAsicType::kSPADIC:
-          if (!tdigi) tdigi = digi->GetTime();
-          break;
-        default: LOG(fatal) << "TRD digi type neither SPADIC or FASP"; return;
-      }
-      hmc->AddSignal(digi, tdigi);
-
       const CbmMatch* match = dynamic_cast<const CbmMatch*>(fDigiManager->GetMatch(ECbmModuleId::kTrd, digiIdx));
       if (!match) {
         LOG(fatal) << "TRD digi match " << digiIdx << " not found";
@@ -541,27 +511,17 @@ void CbmTrackerInputQaTrd::ResolutionQa()
       }
       myHitMatch.AddLinks(*match);
     }
-    hmc->PurgeSignals();
-
     if (myHitMatch.GetNofLinks() == 0) { continue; }
 
     const CbmLink& bestLink = myHitMatch.GetMatchedLink();
 
     {  // check if the hit match is correct
       CbmMatch* hitMatch = dynamic_cast<CbmMatch*>(fHitMatches->At(iHit));
-      if (hitMatch == nullptr) {
-        std::stringstream ss;
-        ss << "hit match for TRD hit " << iHit << " doesn't exist";
-        hmc->SetErrorMsg(ss.str());
-        LOG(error) << ss.str();
-      }
+      if (hitMatch == nullptr) { LOG(error) << "hit match for TRD hit " << iHit << " doesn't exist"; }
       else {
         const CbmLink& link = hitMatch->GetMatchedLink();
         if ((link != bestLink) && (link.GetWeight() != bestLink.GetWeight())) {
-          std::stringstream ss;
-          ss << "hit match for TRD hit " << iHit << " doesn't correspond to digi matches";
-          hmc->SetErrorMsg(ss.str());
-          LOG(error) << ss.str();
+          LOG(error) << "hit match for TRD hit " << iHit << " doesn't correspond to digi matches";
         }
       }
     }
@@ -575,17 +535,11 @@ void CbmTrackerInputQaTrd::ResolutionQa()
         nHitPoints++;
         int iE = fMcEventList->GetEventIndex(link);
         if (iE < 0 || iE >= nMcEvents) {
-          std::stringstream ss;
-          ss << "link points to a non-existing MC event";
-          hmc->SetErrorMsg(ss.str());
-          LOG(error) << ss.str();
+          LOG(error) << "link points to a non-existing MC event";
           return;
         }
         if (link.GetIndex() >= (int) pointNhits[iE].size()) {
-          std::stringstream ss;
-          ss << "link points to a non-existing MC index";
-          hmc->SetErrorMsg(ss.str());
-          LOG(error) << ss.str();
+          LOG(error) << "link points to a non-existing MC point";
           return;
         }
         pointNhits[iE][link.GetIndex()]++;
@@ -597,27 +551,16 @@ void CbmTrackerInputQaTrd::ResolutionQa()
     // take corresponding MC point
 
     // skip hits from the noise digis
-    if (bestLink.GetIndex() < 0) {
-      std::stringstream ss;
-      ss << "hit from noise [INFO]";
-      hmc->SetErrorMsg(ss.str());
-      continue;
-    }
+    if (bestLink.GetIndex() < 0) { continue; }
 
     CbmTrdPoint* p = dynamic_cast<CbmTrdPoint*>(fMcPoints->Get(bestLink));
     if (p == nullptr) {
-      std::stringstream ss;
-      ss << "link points to a non-existing MC point";
-      hmc->SetErrorMsg(ss.str());
-      LOG(error) << ss.str();
+      LOG(error) << "link points to a non-existing MC point";
       return;
     }
 
     if (p->GetModuleAddress() != (int) CbmTrdAddress::GetModuleAddress(address)) {
-      std::stringstream ss;
-      ss << "mc point module address differs from the hit module address";
-      hmc->SetErrorMsg(ss.str());
-      LOG(error) << ss.str();
+      LOG(error) << "mc point module address differs from the hit module address";
       return;
     }
 
@@ -635,39 +578,25 @@ void CbmTrackerInputQaTrd::ResolutionQa()
 
       double staZ = pGeo->GetZ();  // module->GetZ();  //+ 410;
       if ((staZ < p->GetZIn() - 1.) || (staZ > p->GetZOut() + 1.)) {
-        std::stringstream ss;
-        ss << "TRD station " << StationIndex << ": active material Z[" << p->GetZIn() << " cm," << p->GetZOut()
-           << " cm] is too far from the nominal station Z " << staZ << " cm";
-        hmc->SetErrorMsg(ss.str());
-        LOG(error) << ss.str();
+        LOG(error) << "TRD station " << StationIndex << ": active material Z[" << p->GetZIn() << " cm," << p->GetZOut()
+                   << " cm] is too far from the nominal station Z " << staZ << " cm";
         return;
       }
       // the cut of 1 cm is choosen arbitrary and can be changed
       if (fabs(hit->GetZ() - staZ) > 1.) {
-        std::stringstream ss;
-        ss << "TRD station " << StationIndex << ": hit Z " << hit->GetZ()
-           << " cm, is too far from the nominal station Z " << staZ << " cm";
-        hmc->SetErrorMsg(ss.str());
-        LOG(error) << ss.str();
+        LOG(error) << "TRD station " << StationIndex << ": hit Z " << hit->GetZ()
+                   << " cm, is too far from the nominal station Z " << staZ << " cm";
         return;
       }
     }
 
     // residual and pull
 
-    if (nHitPoints != 1) {
-      std::stringstream ss;
-      ss << "hit from mixed hit [INFO] nPoints=" << nHitPoints;
-      hmc->SetErrorMsg(ss.str());
-      continue;  // only check residual for non-mixed hits
-    }
+    if (nHitPoints != 1) continue;  // only check residual for non-mixed hits
 
     double t0 = fMcEventList->GetEventTime(bestLink);
     if (t0 < 0) {
-      std::stringstream ss;
-      ss << "MC event time doesn't exist for a TRD link";
-      hmc->SetErrorMsg(ss.str());
-      LOG(error) << ss.str();
+      LOG(error) << "MC event time doesn't exist for a TRD link";
       return;
     }
 
@@ -688,35 +617,30 @@ void CbmTrackerInputQaTrd::ResolutionQa()
     y += dz * py / pz;
 
     // get particle mass
-    Int_t pdg(0);
     double mass = 0;
     {
       CbmLink mcTrackLink = bestLink;
       mcTrackLink.SetIndex(p->GetTrackID());
       CbmMCTrack* mcTrack = dynamic_cast<CbmMCTrack*>(fMcTracks->Get(mcTrackLink));
       if (!mcTrack) {
-        std::stringstream ss;
-        ss << "MC track " << p->GetTrackID() << " doesn't exist";
-        hmc->SetErrorMsg(ss.str());
-        LOG(error) << ss.str();
+        LOG(error) << "MC track " << p->GetTrackID() << " doesn't exist";
         return;
       }
-      pdg = mcTrack->GetPdgCode();
+      Int_t pdg = mcTrack->GetPdgCode();
       if (pdg < 9999999 && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg))) {
         mass = TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
       }
     }
-    hmc->AddPoint(p, t0, pdg);
-    //std::cout << hmc->ToString() << "\n";
+
     constexpr double speedOfLight = 29.979246;  // cm/ns
     TVector3 mom3;
     p->Momentum(mom3);
     t += dz / (pz * speedOfLight) * sqrt(mass * mass + mom3.Mag2());
 
-    double du = hmc->GetDx();        //hit->GetX() - x;
-    double dv = hit->GetY() - y;     //hmc->GetDy();  //hit->GetY() - y;
-    double dt = hit->GetTime() - t;  // hmc->GetDt();  //hit->GetTime() - t;
-    double su = hmc->GetSx();
+    double du = hit->GetX() - x;
+    double dv = hit->GetY() - y;
+    double dt = hit->GetTime() - t;
+    double su = hit->GetDx();
     double sv = hit->GetDy();
     double st = hit->GetTimeError();
 
@@ -738,10 +662,8 @@ void CbmTrackerInputQaTrd::ResolutionQa()
 
     // pulls
     if ((su < 1.e-5) || (sv < 1.e-5) || (st < 1.e-5)) {
-      std::stringstream ss;
-      ss << "TRD hit errors are not properly set: errX " << hit->GetDx() << " errY " << hit->GetDy() << " errT ";
-      hmc->SetErrorMsg(ss.str());
-      LOG(error) << ss.str();
+      LOG(error) << "TRD hit errors are not properly set: errX " << hit->GetDx() << " errY " << hit->GetDy() << " errT "
+                 << st;
       return;
     }
 

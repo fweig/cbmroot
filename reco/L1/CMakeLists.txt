@@ -21,7 +21,6 @@ ${CBMROOT_SOURCE_DIR}/reco/base
 ${CBMROOT_SOURCE_DIR}/reco/detectors/sts
 ${CBMROOT_SOURCE_DIR}/reco/detectors/rich
 ${CBMROOT_SOURCE_DIR}/reco/detectors/rich/fitter
-${CBMROOT_SOURCE_DIR}/reco/detectors/trd/qa/data
 ${CBMBASE_DIR} 
 
 ${CBMDATA_DIR}
@@ -241,7 +240,6 @@ Set(DEPENDENCIES
 #    CbmGeoSetup
     CbmMuchBase
     CbmTrdBase
-    CbmTrdReco
     CbmTofBase
     CbmStsBase
     CbmRecoBase

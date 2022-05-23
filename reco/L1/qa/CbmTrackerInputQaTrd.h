@@ -106,7 +106,6 @@ private:
   TClonesArray* fHitMatches {nullptr};
 
   /// Output
-  TClonesArray* fHitsMc {nullptr};
 
 
   TFolder fOutFolder {"TrackerInputQaTrd", "TrackerInputQaTrd"};  /// output folder with histos and canvases
@@ -119,9 +118,9 @@ private:
   CbmQaHist<TH1D> fh1DresidualV {"h1DresidualV", "Trd1D: Residual V;(V_{reco} - V_{MC})(cm)", 100, -10, 10};
   CbmQaHist<TH1D> fh1DresidualT {"h1DresidualT", "Trd1D: Residual T;(T_{reco} - T_{MC})(ns)", 100, -50, 50};
 
-  CbmQaHist<TH1D> fh2DresidualX {"h2DresidualX", "Trd2D: Residual X;(X_{reco} - X_{MC})(cm)", 100, -0.05, 0.05};
-  CbmQaHist<TH1D> fh2DresidualY {"h2DresidualY", "Trd2D: Residual Y;(Y_{reco} - Y_{MC})(cm)", 1000, -2, 2};
-  CbmQaHist<TH1D> fh2DresidualT {"h2DresidualT", "Trd2D: Residual T;(T_{reco} - T_{MC})(ns)", 100, -100, 100};
+  CbmQaHist<TH1D> fh2DresidualX {"h2DresidualX", "Trd2D: Residual X;(X_{reco} - X_{MC})(cm)", 100, -5, 5};
+  CbmQaHist<TH1D> fh2DresidualY {"h2DresidualY", "Trd2D: Residual Y;(Y_{reco} - Y_{MC})(cm)", 100, -5, 5};
+  CbmQaHist<TH1D> fh2DresidualT {"h2DresidualT", "Trd2D: Residual T;(T_{reco} - T_{MC})(ns)", 100, -1000, 1000};
 
   /// Histogram for PULL Distribution
   CbmQaHist<TH1D> fh1DpullU {"h1DpullU", "Trd1D: Pull U;(U_{reco} - U_{MC}) / #sigmaU_{reco}", 100, -5, 5};
