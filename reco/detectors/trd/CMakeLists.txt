@@ -75,6 +75,7 @@ qa/CbmTrdQa.cxx
 qa/CbmTrdRecoQa.cxx
 qa/CbmTrdTracksPidQa.cxx
 
+qa/CbmTrdCalibTracker.cxx
 qa/data/CbmTrdHitMC.cxx
 
 pid/CbmTrdElectronsTrainAnn.cxx

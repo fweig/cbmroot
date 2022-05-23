@@ -177,6 +177,7 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
     //run->AddTask(new CbmTrdDigitizerPRFQa()); //works put currently doesn't do anything
     //run->AddTask(new CbmTrdHitRateFastQa());  //opens lots of windows
     run->AddTask(new CbmTrdHitProducerQa());
+    run->AddTask(new CbmTrdCalibTracker());
     run->AddTask(new CbmTrackerInputQaTrd());  // Tracker requirements to TRD
   }
   // ------------------------------------------------------------------------
