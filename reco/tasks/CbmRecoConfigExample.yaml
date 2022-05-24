@@ -10,3 +10,5 @@ store:
   timeslice: false
   triggers: false
   events: true
+qa:
+  refreshrate: 100

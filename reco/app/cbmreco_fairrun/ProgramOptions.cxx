@@ -49,6 +49,8 @@ void ProgramOptions::ParseOptions(int argc, char* argv[])
              "save configuration to yaml file (mostly for debugging)");
   config_add("max-timeslice-number,n", po::value<int32_t>(&fMaxNumTs)->value_name("<n>"),
              "quit after processing given number of timeslices (default: unlimited)");
+  config_add("http-server-port,p", po::value<uint16_t>(&fHttpServerPort)->value_name("<n>"),
+             "port number for the HTTP server. If 0, server will not be activated (default)");
 
   po::options_description cmdline_options("Allowed options");
   cmdline_options.add(generic).add(config);

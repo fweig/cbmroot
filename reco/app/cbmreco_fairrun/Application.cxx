@@ -10,7 +10,8 @@ Application::Application(ProgramOptions const& opt) : fOpt(opt)
   config.LoadYaml(fOpt.ConfigYamlFile());
   if (!fOpt.SaveConfigYamlFile().empty()) { config.SaveYaml(fOpt.SaveConfigYamlFile()); }
 
-  fCbmReco = std::make_unique<CbmReco>(fOpt.InputUri(), fOpt.OutputRootFile(), fOpt.MaxNumTs(), config);
+  fCbmReco =
+    std::make_unique<CbmReco>(fOpt.InputUri(), fOpt.OutputRootFile(), fOpt.MaxNumTs(), config, fOpt.HttpServerPort());
 }
 
 void Application::Run() { fCbmReco->Run(); }

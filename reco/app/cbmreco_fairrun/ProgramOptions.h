@@ -51,6 +51,9 @@ public:
   /** @brief Get maximum number of timeslices to process **/
   [[nodiscard]] int32_t MaxNumTs() const { return fMaxNumTs; }
 
+  /** @brief Get the port number for the HTTP server **/
+  [[nodiscard]] uint16_t HttpServerPort() const { return fHttpServerPort; }
+
 private:
   /** @brief Parse command line arguments using boost program_options **/
   void ParseOptions(int argc, char* argv[]);
@@ -59,7 +62,8 @@ private:
   std::string fOutputRootFile = "/dev/null";  ///< Output file name (.root format)
   std::string fConfigYamlFile;                ///< Configuration file name (.yaml format)
   std::string fSaveConfigYamlFile;            ///< Save configuration file name (.yaml format)
-  int32_t fMaxNumTs = INT32_MAX;              ///< Maximum number of timeslices to process
+  int32_t fMaxNumTs        = INT32_MAX;       ///< Maximum number of timeslices to process
+  uint16_t fHttpServerPort = 0;               ///< Port number for the HTTP server. If 0, server will not be activated.
 };
 
 #endif /* APP_CBMRECO_PROGRAMOPTIONS_H */

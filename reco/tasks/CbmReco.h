@@ -32,6 +32,8 @@ public:
   bool fStoreTimeslice = false;
   bool fStoreTrigger   = false;
   bool fStoreEvents    = false;
+  // --- QA publishing
+  int32_t fHttpServerRefreshRate = 100;
   // --- Load/save using yaml-cpp
   void LoadYaml(const std::string& filename);
   void SaveYaml(const std::string& filename);

@@ -56,6 +56,8 @@ void CbmRecoConfig::LoadYaml(const std::string& filename)
   fStoreTimeslice = config["store"]["timeslice"].as<bool>();
   fStoreTrigger   = config["store"]["triggers"].as<bool>();
   fStoreEvents    = config["store"]["events"].as<bool>();
+  // --- QA publishing
+  fHttpServerRefreshRate = config["qa"]["refreshrate"].as<int32_t>(fHttpServerRefreshRate);
 }
 // ----------------------------------------------------------------------------
 
@@ -79,6 +81,8 @@ void CbmRecoConfig::SaveYaml(const std::string& filename)
   config["store"]["timeslice"] = fStoreTimeslice;
   config["store"]["triggers"]  = fStoreTrigger;
   config["store"]["events"]    = fStoreEvents;
+  // --- QA publishing
+  config["qa"]["refreshrate"] = fHttpServerRefreshRate;
   // ---
   std::ofstream fout(filename);
   fout << config;
@@ -200,8 +204,7 @@ int32_t CbmReco::Run()
 
   // ----- HttpServer for online monitoring
   if (fHttpServerPort) {
-    Int_t serverRefreshRate = 100;  // timeslices
-    run.ActivateHttpServer(serverRefreshRate, fHttpServerPort);
+    run.ActivateHttpServer(fConfig.fHttpServerRefreshRate, fHttpServerPort);
     run.GetHttpServer()->GetSniffer()->SetScanGlobalDir(kFALSE);
   }
 
