@@ -126,7 +126,7 @@ TEST(_GTestCbmTrdHit, CheckToString)
 
 
   EXPECT_STREQ("CbmPixelHit: address=12345 pos=(-3,5.777,123.765) "
-               "err=(0.77,0.88,0.99) dxy=1.2 refId=6\nCbmTrdHit: "
+               "err=(0.77,0.88,0.99) dxy=1.2 refId=6\nCbmTrdHit1D: "
                "time[ns]=456+-1.34 eloss=123 typ[R] RC=n Ovf=n\n",
                test.ToString().c_str());
 }
