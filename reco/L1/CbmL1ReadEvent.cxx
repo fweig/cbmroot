@@ -268,13 +268,15 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             MC.iStation     = -1;
             const L1Station* sta = algo->GetStations().begin();
             double bestDist = 1.e20;
-            for (Int_t iSt = 0; iSt < NMvdStations; iSt++) {
+            for (Int_t iSt = 0; iSt < NMvdStationsGeom; iSt++) {
               // use z_in since z_out is sometimes very wrong
               // due to a problem in transport
-              double d = (MC.zIn - sta[iSt].z[0]);
+              int iStActive = fpInitManager->GetStationIndexActive(iSt, L1DetectorID::kMvd);
+              if (iStActive == -1) { continue; }
+              double d = (MC.zIn - sta[iStActive].z[0]);
               if (fabs(d) < fabs(bestDist)) {
                 bestDist    = d;
-                MC.iStation = iSt;
+                MC.iStation = iStActive;
               }
             }
             assert(MC.iStation >= 0);
@@ -293,7 +295,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         if (fVerbose > 2) { LOG(info) << "CbmL1ReadEvent: max deviation of Mvd points " << maxDeviation; }
         // ensure that the nominal station positions are not far from the sensors
         // assert(fabs(maxDeviation) < 1.);
-      }
+      } // fMvdPoints
 
       firstStsPoint = vMCPoints.size();
       if (fStsPoints) {
@@ -303,15 +305,17 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 0)) {
             MC.iStation     = -1;
-            const L1Station* sta = algo->GetStations().begin() + NMvdStations;
+            const L1Station* sta = algo->GetStations().begin();
             double bestDist = 1.e20;
-            for (Int_t iSt = 0; iSt < NStsStations; iSt++) {
+            for (Int_t iSt = 0; iSt < NStsStationsGeom; iSt++) {
+              int iStActive = fpInitManager->GetStationIndexActive(iSt, L1DetectorID::kSts);
+              if (iStActive == -1) { continue; }
               // use z_in since z_out is sometimes very wrong
               // due to a problem in transport
-              double d = (MC.zIn - sta[iSt].z[0]);
+              double d = (MC.zIn - sta[iStActive].z[0]);
               if (fabs(d) < fabs(bestDist)) {
                 bestDist    = d;
-                MC.iStation = NMvdStations + iSt;
+                MC.iStation = iStActive;
               }
             }
             assert(MC.iStation >= 0);
@@ -330,7 +334,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         if (fVerbose > 2) { LOG(info) << "CbmL1ReadEvent: max deviation of Sts points " << maxDeviation; }
         // ensure that the nominal station positions are not far from the sensors
         //  assert(fabs(maxDeviation) < 1.);
-      }
+      }  // fStsPoints
 
       firstMuchPoint = vMCPoints.size();
       if (fMuchPoints) {
@@ -339,9 +343,11 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 2)) {
             MC.iStation    = -1;
-            const L1Station* sta = algo->GetStations().begin() + NMvdStations + NStsStations;
-            for (Int_t iSt = 0; iSt < NMuchStations; iSt++) {
-              if (MC.z > sta[iSt].z[0] - 2.5) { MC.iStation = NMvdStations + NStsStations + iSt; }
+            const L1Station* sta = algo->GetStations().begin();
+            for (Int_t iSt = 0; iSt < NMuchStationsGeom; iSt++) {
+              int iStActive = fpInitManager->GetStationIndexActive(iSt, L1DetectorID::kMuch);
+              if (iStActive == -1) { continue; }
+              if (MC.z > sta[iStActive].z[0] - 2.5) { MC.iStation = iStActive; }
             }
             assert(MC.iStation >= 0);
             Double_t dtrck          = dFEI(iFile, iEvent, MC.ID);
@@ -356,17 +362,19 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             nMuchPoints++;
           }
         }
-      }
+      } // fMuchPoints
 
       firstTrdPoint = vMCPoints.size();
-      if (fTrdPoints)
+      if (fTrdPoints) {
         for (Int_t iMC = 0; iMC < fTrdPoints->Size(iFile, iEvent); iMC++) {
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 3)) {
             MC.iStation    = -1;
-            const L1Station* sta = algo->GetStations().begin() + NMvdStations + NStsStations + NMuchStations;
-            for (Int_t iSt = 0; iSt < NTrdStations; iSt++) {
-              if (MC.z > sta[iSt].z[0] - 4.0) { MC.iStation = NMvdStations + NStsStations + NMuchStations + iSt; }
+            const L1Station* sta = algo->GetStations().begin();
+            for (Int_t iSt = 0; iSt < NTrdStationsGeom; iSt++) {
+              int iStActive = fpInitManager->GetStationIndexActive(iSt, L1DetectorID::kTrd);
+              if (iStActive == -1) { continue; }
+              if (MC.z > sta[iStActive].z[0] - 4.0) { MC.iStation = iStActive; }
             }
             if (MC.iStation < 0) continue;
             assert(MC.iStation >= 0);
@@ -382,11 +390,12 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             nTrdPoints++;
           }
         }
+      } // fTrdPoints
 
 
       firstTofPoint = vMCPoints.size();
       if (fTofPoints) {
-
+      
         vector<float> TofPointToTrackdZ[NTOFStation];
 
         TofPointToTrack.resize(NTOFStation);
@@ -405,10 +414,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
 
         for (Int_t iMC = 0; iMC < fTofPoints->Size(iFile, iEvent); iMC++) {
-
           CbmL1MCPoint MC;
-
-
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 4)) {
             Double_t dtrck          = dFEI(iFile, iEvent, MC.ID);
             DFEI2I::iterator trk_it = dFEI2vMCTracks.find(dtrck);
@@ -416,12 +422,12 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             Int_t IND_Track = trk_it->second;
 
             MC.iStation    = -1;
-            const L1Station* sta =
-              algo->GetStations().begin() + NMvdStations + NStsStations + NMuchStations + NTrdStations;
-            for (Int_t iSt = 0; iSt < NTOFStation; iSt++)
-              MC.iStation = (MC.z > sta[iSt].z[0] - 15)
-                              ? (NMvdStations + NStsStations + NMuchStations + NTrdStations + iSt)
-                              : MC.iStation;
+            const L1Station* sta = algo->GetStations().begin();
+            for (Int_t iSt = 0; iSt < NTOFStationGeom; iSt++) {
+              int iStActive = fpInitManager->GetStationIndexActive(iSt, L1DetectorID::kTof);
+              if (iStActive == -1) { continue; }
+              MC.iStation = (MC.z > sta[iStActive].z[0] - 15) ? iStActive : MC.iStation;
+            }
             if (MC.iStation < 0) continue;
             assert(MC.iStation >= 0);
             int iTofSta = MC.iStation - (NMvdStations + NStsStations + NMuchStations + NTrdStations);
@@ -444,13 +450,12 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             if (!ReadMCPoint(&MC, TofPointToTrack[iTofSta][iMC], iFile, iEvent, 4)) {
 
               MC.iStation    = -1;
-              const L1Station* sta =
-                algo->GetStations().begin() + NMvdStations + NStsStations + NMuchStations + NTrdStations;
-              for (Int_t iSt = 0; iSt < NTOFStation; iSt++)
-                MC.iStation = (MC.z > sta[iSt].z[0] - 15)
-                                ? (NMvdStations + NStsStations + NMuchStations + NTrdStations + iSt)
-                                : MC.iStation;
-
+              const L1Station* sta = algo->GetStations().begin();
+              for (Int_t iSt = 0; iSt < NTOFStation; iSt++) {
+                int iStActive = fpInitManager->GetStationIndexActive(iSt, L1DetectorID::kTof);
+                if (iStActive == -1) { continue; }
+                MC.iStation = (MC.z > sta[iStActive].z[0] - 15) ? iStActive : MC.iStation;
+              }
               if (MC.iStation < 0) continue;
               TofPointToTrack[iTofSta][iMC] = vMCPoints.size();
               vMCTracks[iMC].Points.push_back_no_warning(vMCPoints.size());
@@ -865,12 +870,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       th.id = tmpHits.size();
 
-      int sta = mh->GetPlaneId();
-
       int stIdx = algo->GetInitManager()->GetStationIndexActive(mh->GetPlaneId(), L1DetectorID::kTrd);
       if (stIdx == -1) continue;
-
-      if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (sta > 1) && (fMissingHits)) { sta = sta - 1; }
 
       th.iStation = stIdx;
 
@@ -1203,12 +1204,12 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
     fData_->vStsHits.push_back(h);
 
-    int sta = th.iStation;
+    int iSt = th.iStation;
 
-    if (fData_->StsHitsStartIndex[sta] == static_cast<L1HitIndex_t>(-1)) fData_->StsHitsStartIndex[sta] = nEffHits;
+    if (fData_->StsHitsStartIndex[iSt] == static_cast<L1HitIndex_t>(-1)) fData_->StsHitsStartIndex[iSt] = nEffHits;
     nEffHits++;
 
-    fData_->StsHitsStopIndex[sta] = nEffHits;
+    fData_->StsHitsStopIndex[iSt] = nEffHits;
 
     vHitStore.push_back(s);
     vHitMCRef.push_back(th.iMC);

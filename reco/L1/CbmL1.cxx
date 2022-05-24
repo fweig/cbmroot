@@ -469,7 +469,7 @@ InitStatus CbmL1::Init()
     }
     NTrdStationsGeom = layerCounter;
 
-    if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) { NTrdStationsGeom = NTrdStationsGeom - 1; }
+    //if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) { NTrdStationsGeom = NTrdStationsGeom - 1; }
   }
 
   /*** ToF ***/
@@ -644,14 +644,10 @@ InitStatus CbmL1::Init()
 
   /*** TRD stations info ***/
   for (int iSt = 0; iSt < NTrdStationsGeom; ++iSt) {
-    int skip = iSt;  // temporary solution to remove TRD with id == 1 wrom mCBM
-    if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) {
-      if (iSt > 0) { skip++; }
-    }
-    int trdModuleID          = fTrdDigiPar->GetModuleId(skip);
+    int trdModuleID          = fTrdDigiPar->GetModuleId(iSt);
     CbmTrdParModDigi* module = (CbmTrdParModDigi*) fTrdDigiPar->GetModulePar(trdModuleID);
-    auto stationInfo         = L1BaseStationInfo(L1DetectorID::kTrd, skip);
-    int stationType          = (iSt == 1 || iSt == 3) ? 6 : 3;
+    auto stationInfo         = L1BaseStationInfo(L1DetectorID::kTrd, iSt);
+    int stationType          = (iSt == 2 || iSt == 4) ? 6 : 3; // Is used somewhere??
     stationInfo.SetStationType(stationType);
     stationInfo.SetTimeInfo(1);
     stationInfo.SetTimeResolution(10.);
@@ -670,9 +666,9 @@ InitStatus CbmL1::Init()
     fscal trdBackSigma  = 0.15;
     stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdFrontSigma, trdBackPhi, trdBackSigma);
     stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-    //if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) {
-    //  stationInfo.SetTrackingStatus(false);
-    //}
+    if (iSt == 1 && fTrackingMode == L1Algo::TrackingMode::kMcbm && fMissingHits) {
+      stationInfo.SetTrackingStatus(false);
+    }
     fpInitManager->AddStation(stationInfo);
     LOG(info) << "- TRD station " << iSt << " at z = " << stationInfo.GetZdouble();
   }
