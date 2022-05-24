@@ -55,13 +55,14 @@ void LmvmDraw::DrawHistFromFile(const string& fileName, const string& outputDir,
 
   fH.fHM.ScaleByPattern(".*", 1. / fNofEvents);
   RebinMinvHist();
+
   //DrawAnaStepMany("pair_pty", [this](ELmvmAnaStep step) { DrawPtY(step); });
   DrawAnaStepMany("pty_pair_signal", [this](ELmvmAnaStep step) { DrawPtY("hPtYPairSignal", step); });
   DrawAnaStepMany("pty_cand", [this](ELmvmAnaStep step) { DrawPtY("hPtYCandidate", step); });
   DrawAnaStepMany("pair_rapidity", [this](ELmvmAnaStep step) { DrawRapidity(step); });
   //DrawAnaStepMany("pair_pty_efficiency", [this](ELmvmAnaStep step) { DrawPtYEfficiency(step); });  // TODO: causes segmentation violation error
   DrawAnaStepMany("minv_sbg", [this](ELmvmAnaStep step) { DrawMinvSBg(step); });
-  //DrawAnaStepMany("minv_bgPairSrc", [this](ELmvmAnaStep step) { DrawMinvBgPairSrc(step); });	      // TODO: causes segmentation violation error
+  //DrawAnaStepMany("minv_bgPairSrc", [this](ELmvmAnaStep step) { DrawMinvBgPairSrc(step); });	     // TODO: causes segmentation violation error
   //DrawAnaStepMany("minv_matching", [this](ELmvmAnaStep step) { DrawMinvMatching(step); });         // TODO: causes segmentation violation error
   DrawAnaStepMany("minv_pt", [this](ELmvmAnaStep step) { DrawMinvPt(step); });
   DrawAnaStepMany("anglePair", [this](ELmvmAnaStep step) { DrawSrcAnaStepH1("hAnglePair", step); });
@@ -72,7 +73,6 @@ void LmvmDraw::DrawHistFromFile(const string& fileName, const string& outputDir,
     DrawAnaStepMany(hName + "EpEm", [this, hName](ELmvmAnaStep step) { DrawSrcAnaStepEpEmH1(hName, step); });
   }
   DrawElPurity();
-  DrawCombinatorialPairs();
   DrawMisc();
   DrawGammaVertex();
   DrawCuts();
@@ -85,6 +85,7 @@ void LmvmDraw::DrawHistFromFile(const string& fileName, const string& outputDir,
   DrawAccRecMom();
   DrawPmtXY();
   DrawMinvBg();   // TODO: do not extra method
+  DrawCombinatorialPairs();
   SaveCanvasToImage();
 
   /// Restore old global file and folder pointer to avoid messing with FairRoot
@@ -100,16 +101,19 @@ bool LmvmDraw::SkipMvd(ELmvmAnaStep step)
 void LmvmDraw::RebinMinvHist()
 {
   int nGroup      = 20;
-  int nGroupCB    = 100;  // rebin for CB histos
+  int nGroupCB    = 50;  // rebin for CB histos
   int nGroupMatch = 50;
   int nGroupBgSrc = 50;
   fH.Rebin("hMinv", fH.fSrcNames, fH.fAnaStepNames, nGroup);
   fH.Rebin("hMinvCombPM", {"sameEv", "mixedEv"}, fH.fAnaStepNames, nGroupCB);
   fH.Rebin("hMinvCombPP", {"sameEv", "mixedEv"}, fH.fAnaStepNames, nGroupCB);
   fH.Rebin("hMinvCombMM", {"sameEv", "mixedEv"}, fH.fAnaStepNames, nGroupCB);
-  fH.Rebin("hMinvCombPM", {"pluto", "urqmd"}, fH.fAnaStepNames, nGroupCB);
-  fH.Rebin("hMinvCombPP", {"pluto", "urqmd"}, fH.fAnaStepNames, nGroupCB);
-  fH.Rebin("hMinvCombMM", {"pluto", "urqmd"}, fH.fAnaStepNames, nGroupCB);
+  fH.Rebin("hMinvCombPM_pluto", {"sameEv", "mixedEv"}, fH.fAnaStepNames, nGroupCB);
+  fH.Rebin("hMinvCombPP_pluto", {"sameEv", "mixedEv"}, fH.fAnaStepNames, nGroupCB);
+  fH.Rebin("hMinvCombMM_pluto", {"sameEv", "mixedEv"}, fH.fAnaStepNames, nGroupCB);
+  fH.Rebin("hMinvCombPM_urqmd", {"sameEv", "mixedEv"}, fH.fAnaStepNames, nGroupCB);
+  fH.Rebin("hMinvCombPP_urqmd", {"sameEv", "mixedEv"}, fH.fAnaStepNames, nGroupCB);
+  fH.Rebin("hMinvCombMM_urqmd", {"sameEv", "mixedEv"}, fH.fAnaStepNames, nGroupCB);
   fH.Rebin("hMinvBgMatch", {"trueMatch", "trueMatchEl", "trueMatchNotEl", "mismatch"}, fH.fAnaStepNames, nGroupMatch);
   fH.Rebin("hMinvBgSource", fH.fBgPairSrcNames, fH.fAnaStepNames, nGroupBgSrc);
 }
@@ -295,41 +299,95 @@ void LmvmDraw::DrawMisc()
 
 void LmvmDraw::DrawCombinatorialPairs()
 {
-  // Draw same sign pairs, geometric mean and k factor seperate for PLUTO and UrQMD
-  for (const string& type :{"pluto", "urqmd"}) {  
-    TH1* pm = fH.H1Clone("hMinvCombPM_" + type + "_ttcut");
-    TH1* pp = fH.H1Clone("hMinvCombPP_" + type + "_ttcut");
-    TH1* mm = fH.H1Clone("hMinvCombMM_" + type + "_ttcut");
+  // Draw pair yields // TODO: scale to bin width
+  string cbName = "CombPairsPluto/";
+ 
+  {
+    TCanvas* c3  = fH.fHM.CreateCanvas((cbName + "pairYields_steps").c_str(), (cbName + "pairYields_steps").c_str(), 1800, 600);
+    c3->Divide(3, 1);
+    c3->cd(1);
+    DrawAnaStepH1("hMinvCombPM_pluto_mixedEv", true);
+    DrawTextOnPad("e^{+}e^{-} pairs ", 0.35, 0.9, 0.65, 0.99);
+    c3->cd(2);
+    DrawAnaStepH1("hMinvCombPP_pluto_mixedEv", true);
+    DrawTextOnPad("e^{+}e^{+} pairs ", 0.35, 0.9, 0.65, 0.99);
+    c3->cd(3);
+    DrawAnaStepH1("hMinvCombMM_pluto_mixedEv", true);
+    DrawTextOnPad("e^{-}e^{-} pairs ", 0.35, 0.9, 0.65, 0.99);
+  }
 
-    TH1* rat = fH.H1Clone("hMinvCombPP_" + type + "_ttcut");
-    rat->Divide(mm);    
-    
-    fH.fHM.CreateCanvas("CombPairs/pairs_" + type, "CombPairs/pairs_" + type, 800, 800);
-    DrawH1({pm, pp, mm}, {"e^{+}e^{-} pairs", "e^{+}e^{+} pairs", "e^{-}e^{-} pairs"}, kLinear, kLog, true, 0.7, 0.7, 0.99, 0.99, "hist");
-    DrawTextOnPad(type, 0.4, 0.87, 0.6, 0.97);
-
-    fH.fHM.CreateCanvas("CombPairs/ratio_ppmm_" + type, "CombPairs/ratio_ppmm_" + type, 800, 800);
-    DrawH1(rat, kLinear, kLinear, "hist");
-    DrawTextOnPad(type, 0.4, 0.87, 0.6, 0.97);
-
-    TH1* gm = fH.H1Clone("hMinvCombPP_" + type + "_ttcut");
-
-    for (int i = 1; i <= gm->GetNbinsX(); i++) {
-      double con = std::sqrt(pp->GetBinContent(i) * mm->GetBinContent(i));
-      gm->SetBinContent(i, con);
+  {
+    TCanvas* c =  fH.fHM.CreateCanvas((cbName + "pairYields").c_str(), (cbName + "pairYields").c_str(), 1800, 1800);
+    c->Divide(3,3);
+    int i = 1;
+    for (auto step : fH.fAnaSteps) {  
+      if (step < ELmvmAnaStep::ElId) continue;
+      c->cd(i++);
+      TH1* pm = fH.H1Clone("hMinvCombPM_pluto_mixedEv", step);
+      TH1* pp = fH.H1Clone("hMinvCombPP_pluto_mixedEv", step);
+      TH1* mm = fH.H1Clone("hMinvCombMM_pluto_mixedEv", step);
+      DrawH1({pm, pp, mm}, {"e^{+}e^{-} pairs (mixed ev.)", "e^{+}e^{+} pairs (mixed ev.)", "e^{-}e^{-} pairs (mixed ev.)"}, kLinear, kLog, true, 0.57, 0.79, 0.99, 0.99, "hist");
+      fH.DrawAnaStepOnPad(step);
     }
+  }
 
-    TH1D* hK = (TH1D*) pm->Clone("hK");
-    hK->Divide(gm);
-    hK->Scale(0.5);
-  
-    fH.fHM.CreateCanvas("CombPairs/kFactor_" + type, "CombPairs/kFactor_" + type, 800, 800);
-    DrawH1(hK, kLinear, kLinear, "p");
-    DrawTextOnPad(type, 0.4, 0.87, 0.6, 0.97);
+  // Draw ratio of e+e+/e-e- pairs
+  { 
+    TCanvas* c =  fH.fHM.CreateCanvas((cbName + "ratio_PPMM").c_str(), (cbName + "ratio_PPMM").c_str(), 1800, 1800);
+    c->Divide(3,3);
+    int i = 1;
+    for (auto step : fH.fAnaSteps) {
+      if (step < ELmvmAnaStep::ElId) continue;
+      c->cd(i++);
+      TH1* rat = fH.H1Clone("hMinvCombPP_pluto_mixedEv", step);
+      rat->Divide(fH.H1("hMinvCombMM_pluto_mixedEv", step));
+      rat->GetYaxis()->SetTitle("Ratio");
+      DrawH1(rat, kLinear, kLinear, "hist");
+      fH.DrawAnaStepOnPad(step);
+      DrawTextOnPad("Ratio e^{+}e^{+} / e^{-}e^{-} ", 0.4, 0.80, 0.89, 0.89);
+    }
+  }
 
-    fH.fHM.CreateCanvas("CombPairs/geomMean_" + type, "CombPairs/geomMean_" + type, 800, 800);
-    DrawH1(gm, kLinear, kLog, "hist");
-    DrawTextOnPad(type, 0.4, 0.87, 0.6, 0.97);
+  // Draw geometric mean
+  {
+    TCanvas* c =  fH.fHM.CreateCanvas((cbName + "geomMean").c_str(), (cbName + "geomMean").c_str(), 1800, 1800);
+    c->Divide(3,3);
+    int i = 1;
+    for (auto step : fH.fAnaSteps) {
+      if (step < ELmvmAnaStep::ElId) continue;
+      c->cd(i++);
+      TH1* gm = fH.H1Clone("hMinvCombPP_pluto_mixedEv", step);
+      for (int iB = 1; iB <= gm->GetNbinsX(); iB++) {
+        double pp  = fH.H1("hMinvCombPP_pluto_mixedEv", step)->GetBinContent(iB);
+        double mm  = fH.H1("hMinvCombMM_pluto_mixedEv", step)->GetBinContent(iB);
+        double con = std::sqrt(pp * mm);
+        gm->SetBinContent(iB, con);
+      }
+      DrawH1(gm, kLinear, kLog, "hist");
+      fH.DrawAnaStepOnPad(step);
+    }
+  }
+
+  // draw k Factor
+  {  
+    TCanvas* c =  fH.fHM.CreateCanvas((cbName + "kFactor").c_str(), (cbName + "kFactor").c_str(), 1800, 1800);
+    c->Divide(3,3);
+    int i = 1;
+    for (auto step : fH.fAnaSteps) {
+      if (step < ELmvmAnaStep::ElId) continue;
+      c->cd(i++);
+      TH1* k  = fH.H1Clone("hMinvCombPM_pluto_mixedEv", step);
+      TH1* gm = fH.H1Clone("hMinvCombPP_pluto_mixedEv", step);
+      for (int iB = 1; iB <= k->GetNbinsX(); iB++) {
+        double con = std::sqrt(fH.H1("hMinvCombPP_pluto_mixedEv", step)->GetBinContent(iB) * fH.H1("hMinvCombMM_pluto_mixedEv", step)->GetBinContent(iB));
+        gm->SetBinContent(iB, con);
+      }
+      k->Divide(gm);
+      k->Scale(0.5);
+      k->GetYaxis()->SetTitle("k Factor");
+      DrawH1(k, kLinear, kLinear, "p");
+      fH.DrawAnaStepOnPad(step);
+    }
   }
 }
 
@@ -729,21 +787,6 @@ void LmvmDraw::DrawMinvAll()
   DrawAnaStepH1(fH.GetName("hMinv", ELmvmSrc::Eta), true);
   c2->cd(3);
   DrawAnaStepH1(fH.GetName("hMinv", ELmvmSrc::Gamma), true);
-
-  for (const string& name : {"sameEv", "mixedEv"}) {
-    string cName = "minv_combPairs_" + name;
-    TCanvas* c3  = fH.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 1800, 600);
-    c3->Divide(3, 1);
-    c3->cd(1);
-    DrawAnaStepH1("hMinvCombPM_" + name, true);
-    DrawTextOnPad("e^{+}e^{-} pairs " + name, 0.35, 0.9, 0.65, 0.99);
-    c3->cd(2);
-    DrawAnaStepH1("hMinvCombPP_" + name, true);
-    DrawTextOnPad("e^{+}e^{+} pairs " + name, 0.35, 0.9, 0.65, 0.99);
-    c3->cd(3);
-    DrawAnaStepH1("hMinvCombMM_" + name, true);
-    DrawTextOnPad("e^{-}e^{-} pairs " + name, 0.35, 0.9, 0.65, 0.99);
-  }
 }
 
 void LmvmDraw::DrawMinvSBg(ELmvmAnaStep step)

@@ -59,6 +59,7 @@ LmvmTask::~LmvmTask() {}
 void LmvmTask::InitHists()
 {
   string ax = "Yield";
+  string axMinv = "Yield"; // "dN/dM_{ee}/N [GeV/c^{2}]^{-1}"; TODO: when in Draw.cxx the scaling to bin width is implemented this can be changed back to "dN/dM..."
 
   fH.CreateH2("hMomVsAnglePairSignalMc", "#sqrt{P_{e^{#pm}} P_{e^{#mp}}} [GeV/c]", "#theta_{e^{+},e^{-}} [deg]",
               "Counter", 100, 0., 5., 1000, 0., 50.);
@@ -124,19 +125,25 @@ void LmvmTask::InitHists()
               2.);  // [0.5]-correct, [1.5]-wrong
   fH.CreateH1("hMvdMcDist", {"1", "2"}, fH.fSrcNames, "Track-Hit distance [cm]", ax, 100, 0., 10.);
 
-  fH.CreateH1("hMinv", fH.fSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", ax, 2500, 0., 2.5);
-  fH.CreateH1("hMinvCombPM", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", ax, 2500, 0., 2.5);
-  fH.CreateH1("hMinvCombPP", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", ax, 2500, 0., 2.5);
-  fH.CreateH1("hMinvCombMM", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", ax, 2500, 0., 2.5);
+  fH.CreateH1("hMinv", fH.fSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 2500, 0., 2.5);
 
-  fH.CreateH1("hMinvCombPM", {"pluto", "urqmd"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", ax, 2500, 0, 2.5); // mind: changed (18.05.22); was '"hMinvCombPM_elid", {"pluto", "urqmd"}' before
-  fH.CreateH1("hMinvCombPP", {"pluto", "urqmd"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", ax, 2500, 0, 2.5);
-  fH.CreateH1("hMinvCombMM", {"pluto", "urqmd"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", ax, 2500, 0, 2.5);
+  // Combinatorial BG histograms
+  fH.CreateH1("hMinvCombPM", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 2500, 0., 2.5);
+  fH.CreateH1("hMinvCombPP", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 2500, 0., 2.5);
+  fH.CreateH1("hMinvCombMM", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 2500, 0., 2.5);
+
+  // Combinatorial BG histograms to distinguish between PLUTO and UrQMD particles
+  fH.CreateH1("hMinvCombPM_pluto", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 2500, 0, 2.5);
+  fH.CreateH1("hMinvCombPP_pluto", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 2500, 0, 2.5);
+  fH.CreateH1("hMinvCombMM_pluto", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 2500, 0, 2.5);
+  fH.CreateH1("hMinvCombPM_urqmd", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 2500, 0, 2.5);
+  fH.CreateH1("hMinvCombPP_urqmd", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 2500, 0, 2.5);
+  fH.CreateH1("hMinvCombMM_urqmd", {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 2500, 0, 2.5);
 
   fH.CreateH1("hMinvBgMatch", {"trueMatch", "trueMatchEl", "trueMatchNotEl", "mismatch"}, fH.fAnaStepNames,
               "M_{ee} [GeV/c^{2}]", ax, 2000, 0., 2.5);
-  fH.CreateH1("hMinvBgSource", fH.fBgPairSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", ax, 2500, 0., 2.5);
-  fH.CreateH1("hMinvBgSource2_elid", {"gg", "pipi", "pi0pi0", "oo", "gpi", "gpi0", "go", "pipi0", "pio", "pi0o"}, "M_{ee} [GeV/c^{2}]", ax, 2500, 0., 2.5);  // "pi" are misid. charged pions
+  fH.CreateH1("hMinvBgSource", fH.fBgPairSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 2500, 0., 2.5);
+  fH.CreateH1("hMinvBgSource2_elid", {"gg", "pipi", "pi0pi0", "oo", "gpi", "gpi0", "go", "pipi0", "pio", "pi0o"}, "M_{ee} [GeV/c^{2}]", axMinv, 2500, 0., 2.5);  // "pi" are misid. charged pions
   
   fH.CreateH2("hMinvPt", fH.fSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", "P_{t} [GeV/c]", ax, 100, 0., 2., 25, 0.,
               2.5);
@@ -337,7 +344,7 @@ void LmvmTask::DoMcPair()
     ELmvmSrc src     = LmvmUtils::GetMcSrc(mct1, fMCTracks);
     // To speed up: select only signal, eta and pi0 electrons
 
-    if (!(src == ELmvmSrc::Signal || src == ELmvmSrc::Pi0 || src == ELmvmSrc::Eta)) continue;  // TODO: un-/comment?
+    if (!(src == ELmvmSrc::Signal || src == ELmvmSrc::Pi0 || src == ELmvmSrc::Eta)) continue;
 
     bool isAcc1 = IsMcTrackAccepted(iMc1);
     for (int iMc2 = iMc1 + 1; iMc2 < nMcTracks; iMc2++) {
@@ -613,50 +620,62 @@ void LmvmTask::CombinatorialPairs()
     const auto& cand1 = fCandsTotal[iC1];
 
     for (size_t iC2 = iC1 + 1; iC2 < nCand; iC2++) {
-      const auto& cand2 = fCandsTotal[iC2];
-      if (cand1.IsMcSignal() or cand2.IsMcSignal()) continue; // TODO: 'OR' or 'XOR'?
+      const auto& cand2 = fCandsTotal[iC2];      
       LmvmKinePar pRec = LmvmKinePar::Create(&cand1, &cand2);
       double w         = (cand1.IsMcSignal() && cand2.IsMcSignal()) ? fW : 1.;
       bool isSameEvent = (cand1.fEventNumber == cand2.fEventNumber);
-      for (auto step : fH.fAnaSteps) {
-        if (step == ELmvmAnaStep::Mc || step == ELmvmAnaStep::Acc) continue;
-        
-        // seperate PLUTO and UrQMD candidates
+      
+      for (auto step : fH.fAnaSteps) {        
+        // seperate PLUTO and UrQMD electrons
         if (cand1.IsCutTill(step) && cand2.IsCutTill(step) && std::abs(cand1.fMcPdg) == 11 && std::abs(cand2.fMcPdg) == 11) {
-          // only PLUTO
-          if (cand1.IsMcSignal()) {
-            if (cand1.fCharge * cand2.fCharge < 0) fH.FillH1("hMinvCombPM_pluto", step, pRec.fMinv, w);
-            else if (cand1.fCharge < 0 && cand2.fCharge < 0) fH.FillH1("hMinvCombMM_pluto", step, pRec.fMinv, w);
-            else if (cand1.fCharge > 0 && cand2.fCharge > 0) fH.FillH1("hMinvCombPP_pluto", step, pRec.fMinv, w);
+          // only PLUTO electrons
+          if (cand1.IsMcSignal() && cand2.IsMcSignal()) {
+            if (isSameEvent) {
+              if (cand1.fCharge * cand2.fCharge < 0) fH.FillH1("hMinvCombPM_pluto_sameEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge < 0 && cand2.fCharge < 0) fH.FillH1("hMinvCombMM_pluto_sameEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge > 0 && cand2.fCharge > 0) fH.FillH1("hMinvCombPP_pluto_sameEv", step, pRec.fMinv, w);
+            }
+            else {
+              if (cand1.fCharge * cand2.fCharge < 0) fH.FillH1("hMinvCombPM_pluto_mixedEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge < 0 && cand2.fCharge < 0) fH.FillH1("hMinvCombMM_pluto_mixedEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge > 0 && cand2.fCharge > 0) fH.FillH1("hMinvCombPP_pluto_mixedEv", step, pRec.fMinv, w);
+            }
           }
-          // only UrQMD 
-          else if (!cand1.IsMcSignal()) {
-            if (cand1.fCharge * cand2.fCharge < 0) fH.FillH1("hMinvCombPM_urqmd", step, pRec.fMinv, w);
-            else if (cand1.fCharge < 0 && cand2.fCharge < 0) fH.FillH1("hMinvCombMM_urqmd", step, pRec.fMinv, w);
-            else if (cand1.fCharge > 0 && cand2.fCharge > 0) fH.FillH1("hMinvCombPP_urqmd", step, pRec.fMinv, w);
+          // only UrQMD electrons
+          else if (!cand1.IsMcSignal() && !cand2.IsMcSignal()) {
+            if (isSameEvent) {
+              if (cand1.fCharge * cand2.fCharge < 0) fH.FillH1("hMinvCombPM_urqmd_sameEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge < 0 && cand2.fCharge < 0) fH.FillH1("hMinvCombMM_urqmd_sameEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge > 0 && cand2.fCharge > 0) fH.FillH1("hMinvCombPP_urqmd_sameEv", step, pRec.fMinv, w);
+            }
+            else {
+              if (cand1.fCharge * cand2.fCharge < 0) fH.FillH1("hMinvCombPM_urqmd_mixedEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge < 0 && cand2.fCharge < 0) fH.FillH1("hMinvCombMM_urqmd_mixedEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge > 0 && cand2.fCharge > 0) fH.FillH1("hMinvCombPP_urqmd_mixedEv", step, pRec.fMinv, w);
+            }
           }
         }
-
+      
+        // for common CB, don't use PLUTO signals
+        if (cand1.IsMcSignal() or cand2.IsMcSignal()) continue;  
+        if (step == ELmvmAnaStep::Mc || step == ELmvmAnaStep::Acc) continue;
         if (cand1.IsCutTill(step) && cand2.IsCutTill(step)) {
           if (cand1.fCharge * cand2.fCharge < 0) {
             if (isSameEvent) fH.FillH1("hMinvCombPM_sameEv", step, pRec.fMinv, w);
-            else
-              fH.FillH1("hMinvCombPM_mixedEv", step, pRec.fMinv, w);
+            else fH.FillH1("hMinvCombPM_mixedEv", step, pRec.fMinv, w);
           }
           if (cand1.fCharge < 0 && cand2.fCharge < 0) {
             if (isSameEvent) fH.FillH1("hMinvCombMM_sameEv", step, pRec.fMinv, w);
-            else
-              fH.FillH1("hMinvCombMM_mixedEv", step, pRec.fMinv, w);
+            else fH.FillH1("hMinvCombMM_mixedEv", step, pRec.fMinv, w);
           }
           if (cand1.fCharge > 0 && cand2.fCharge > 0) {
             if (isSameEvent) fH.FillH1("hMinvCombPP_sameEv", step, pRec.fMinv, w);
-            else
-              fH.FillH1("hMinvCombPP_mixedEv", step, pRec.fMinv, w);
+            else fH.FillH1("hMinvCombPP_mixedEv", step, pRec.fMinv, w);
           }
         }
-      }
-    }
-  }
+      } // steps
+    } // cand2
+  } // cand1
 }
 
 void LmvmTask::AssignMcToCands(vector<LmvmCand>& cands)
@@ -885,7 +904,6 @@ void LmvmTask::SignalAndBgReco()
   CheckTopologyCut(ELmvmTopologyCut::TT, "hTtCut");
   CheckTopologyCut(ELmvmTopologyCut::RT, "hRtCut");
   if (fUseMvd) {
-    cout << "I am in LmvmTask::SignalAndBgReco() -> fUseMvd" << endl; // TODO: delete this line
     CheckClosestMvdHit(1, "hMvdCut_1", "hMvdCutQa_1");
     CheckClosestMvdHit(2, "hMvdCut_2", "hMvdCutQa_2");
   }

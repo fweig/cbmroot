@@ -40,7 +40,7 @@ def main():
   allOmegaD = dataDir + "/omegadalitz/analysis.all.root"
   resultDirAll = resultDir + "/all/"
 
-  os.system(('root -l -b -q {}/draw_analysis_all.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\"\)').format(macroDir, allInmed, allQgp, allOmega, allPhi, allOmegaD, resultDirAll, useMvd))
+ #os.system(('root -l -b -q {}/draw_analysis_all.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\"\)').format(macroDir, allInmed, allQgp, allOmega, allPhi, allOmegaD, resultDirAll, useMvd))
 
 if __name__ == '__main__':
   main()

@@ -64,7 +64,7 @@ private:
      * \brief Draw invariant mass spectra for all signal types for specified analysis step with BG reduced by combinatorial BG.
      * \param[in] step Analysis step.
      */
-  void DrawMinvCombSignalAndBg();
+  void DrawMinvCombBgAndSignal();
 
   template<class T>
   void CreateMeanHist(const std::string& name, int nofEvents, int nofRebins = -1);  // if nRebin = -1, no rebin
