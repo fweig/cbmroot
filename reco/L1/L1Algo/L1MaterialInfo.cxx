@@ -65,10 +65,7 @@ L1Material& L1Material::operator=(const L1Material& other)
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
-L1Material::L1Material(L1Material&& other) noexcept
-{
-  this->Swap(other);
-}
+L1Material::L1Material(L1Material&& other) noexcept { this->Swap(other); }
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //

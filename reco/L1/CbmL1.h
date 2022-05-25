@@ -187,9 +187,7 @@ public:
   void ApplyCorrectionToMaterialMap(L1Material& material, const L1MaterialInfo& homogenious)
   {
     float hole = 0.;
-    if constexpr (detID == L1DetectorID::kMuch || detID == L1DetectorID::kTrd) {
-      hole = 0.15f;
-    }
+    if constexpr (detID == L1DetectorID::kMuch || detID == L1DetectorID::kTrd) { hole = 0.15f; }
     else if constexpr (detID == L1DetectorID::kTof) {
       hole = 0.0015f;
     }
