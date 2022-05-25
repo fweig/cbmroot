@@ -250,10 +250,8 @@ public:
     return "";
   }
 
-  /// Reads radiation length table from material budget file
+  /// Reads material budget information: station thickness in units of radiation length vs. point at the XY plane
   /// \param detectorID  ID of a detector subsystem
-  void ReadMaterialTables(L1DetectorID detectorID);
-
   std::vector<L1Material> ReadMaterialBudget(L1DetectorID detectorID);
 
 
