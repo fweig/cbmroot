@@ -1,9 +1,10 @@
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQMcbmPulserMonitor2020.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQMcbmPulserMonitor2020.sh)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQMcbmEvtBuilderWin2020.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQMcbmEvtBuilderWin2020.sh)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQBuildRawEvents.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQBuildRawEvents.sh)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBuildRawEvents2021.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBuildRawEvents2021.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQMcbmPulserMonitor2020.sh.in   ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQMcbmPulserMonitor2020.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQMcbmEvtBuilderWin2020.sh.in   ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQMcbmEvtBuilderWin2020.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQBuildRawEvents.sh.in          ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQBuildRawEvents.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBuildRawEvents2021.sh.in        ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBuildRawEvents2021.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBuildRawEventsCosmics2021.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBuildRawEventsCosmics2021.sh)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBuildRawEvents2022.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBuildRawEvents2022.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBuildRawEvents2022.sh.in        ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBuildRawEvents2022.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBmonMoni2022.sh.in              ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBmonMoni2022.sh)
 
 set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -273,6 +274,35 @@ set(DEPENDENCIES
 )
 GENERATE_EXECUTABLE()
 
+
+set(EXE_NAME BmonMonitor)
+set(SRCS CbmDeviceBmonMonitor.cxx runBmonMonitor.cxx)
+
+set(DEPENDENCIES
+  ${DEPENDENCIES}
+  ${FAIR_LIBS}
+  ParBase
+  ${BOOST_LIBS}
+  external::fles_ipc
+  CbmFlibFlesTools
+  CbmBase
+  CbmRecoBase
+  CbmMuchReco
+  CbmPsdReco
+  CbmRichReco
+  CbmRecoSts
+  CbmTofReco
+  CbmTrdReco
+  CbmData
+  CbmSimSteer # for CbmSetup!
+  Core
+  RIO
+  Net
+  Hist
+  RHTTP
+)
+GENERATE_EXECUTABLE()
+
 # Set the correct variables for the installation
 set(VMCWORKDIR ${CMAKE_INSTALL_PREFIX}/share/cbmroot)
 
@@ -288,6 +318,7 @@ configure_file(${MY_SOURCE_DIR}/startMQMcbmEvtBuilderWin2020.sh.in   ${TMPDIR}/b
 configure_file(${MY_SOURCE_DIR}/startMQBuildRawEvents.sh.in          ${TMPDIR}/bin/MQ/topologies/install/startMQBuildRawEvents.sh)
 configure_file(${MY_SOURCE_DIR}/startBuildRawEvents2021.sh.in        ${TMPDIR}/bin/MQ/topologies/install/startBuildRawEvents2021.sh)
 configure_file(${MY_SOURCE_DIR}/startBuildRawEventsCosmics2021.sh.in ${TMPDIR}/bin/MQ/topologies/install/startBuildRawEventsCosmics2021.sh)
+configure_file(${MY_SOURCE_DIR}/startBmonMoni2022.sh.in              ${TMPDIR}/bin/MQ/topologies/install/startBmonMoni2022.sh)
 
 install(PROGRAMS ${TMPDIR}/bin/MQ/topologies/install/startMQMcbmPulserMonitor2020.sh
                  ${TMPDIR}/bin/MQ/topologies/install/startMQMcbmEvtBuilderWin2020.sh

@@ -59,6 +59,7 @@ protected:
   double_t fdMinPublishTime            = 0.5;
   double_t fdMaxPublishTime            = 5;
 
+  uint64_t fulFirstTsIndex   = 0;
   uint64_t fulPrevTsIndex    = 0;
   uint64_t fulTsCounter      = 0;
   uint64_t fulMessageCounter = 0;
@@ -80,6 +81,7 @@ private:
   bool PrepareCompListPerBlock();
   bool CreateCombinedComponentsPerBlock(std::string sBlockName);
 
+  bool SendFirstTsIndex();
   bool SendData(const fles::StorableTimeslice& component);
   bool SendMissedTsIdx(std::vector<uint64_t> vIndices);
   bool SendCommand(std::string sCommand);

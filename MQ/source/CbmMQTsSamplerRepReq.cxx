@@ -359,6 +359,18 @@ bool CbmMQTsSamplerRepReq::HandleRequest(FairMQMessagePtr& msgReq, int)
     return true;
   }
 
+  /// TODO: add support for alternative request with "system name" instead of "system ID"
+  std::string reqStr(static_cast<char*>(msgReq->GetData()), msgReq->GetSize());
+  if ("SendFirstTimesliceIndex" == reqStr) {
+    if (0 == fulFirstTsIndex) {  //
+      GetNewTs();
+    }
+    if (!SendFirstTsIndex() && !fbEofFound) {  //
+      return false;
+    }
+    return true;
+  }
+
   if (fbNoSplitTs) {
 
     if (!CreateAndSendFullTs() && !fbEofFound) {
@@ -374,7 +386,6 @@ bool CbmMQTsSamplerRepReq::HandleRequest(FairMQMessagePtr& msgReq, int)
   }    // if( fbNoSplitTs )
   else if (fbSendTsPerSysId) {
     /// TODO: add support for alternative request with "system name" instead of "system ID"
-    std::string reqStr(static_cast<char*>(msgReq->GetData()), msgReq->GetSize());
     int iSysId = std::stoi(reqStr);
     LOG(debug) << "Received TS SysId component request from client: 0x" << std::hex << iSysId << std::dec;
 
@@ -392,7 +403,6 @@ bool CbmMQTsSamplerRepReq::HandleRequest(FairMQMessagePtr& msgReq, int)
     }  // if(!CreateAndCombineComponentsPerSysId(iSysId) && !fbEofFound)
   }    // else if( fbSendTsPerSysId && fbSendTsPerSysId ) of if( fbNoSplitTs
   else if (fbSendTsPerBlock) {
-    std::string reqStr(static_cast<char*>(msgReq->GetData()), msgReq->GetSize());
     LOG(debug) << "Received TS components block request from client: " << reqStr;
 
     /// This assumes that the order of the components does NOT change after the first TS
@@ -443,9 +453,15 @@ std::unique_ptr<fles::Timeslice> CbmMQTsSamplerRepReq::GetNewTs()
       const fles::Timeslice& ts = *timeslice;
       uint64_t uTsIndex         = ts.index();
 
+      if (0 == fulFirstTsIndex) {  //
+        fulFirstTsIndex = ts.descriptor(0, 0).idx;
+      }
+
       if (0 < fuPublishFreqTs) {
         uint64_t uTsTime = ts.descriptor(0, 0).idx;
-        if (0 == fuStartTime) { fuStartTime = uTsTime; }  // if( 0 == fuStartTime )
+        if (0 == fuStartTime) {  //
+          fuStartTime = uTsTime;
+        }  // if( 0 == fuStartTime )
         fdTimeToStart    = static_cast<double_t>(uTsTime - fuStartTime) / 1e9;
         uint64_t uSizeMb = 0;
 
@@ -819,6 +835,36 @@ bool CbmMQTsSamplerRepReq::CreateCombinedComponentsPerBlock(std::string sBlockNa
   return false;
 }
 
+bool CbmMQTsSamplerRepReq::SendFirstTsIndex()
+{
+  // create the message with the first timeslice index
+  std::string sIndex = FormatDecPrintout(fulFirstTsIndex);
+  // serialize the vector and create the message
+  std::stringstream oss;
+  boost::archive::binary_oarchive oa(oss);
+  oa << sIndex;
+  std::string* strMsg = new std::string(oss.str());
+
+  FairMQMessagePtr msg(NewMessage(
+    const_cast<char*>(strMsg->c_str()),  // data
+    strMsg->length(),                    // size
+    [](void* /*data*/, void* object) { delete static_cast<std::string*>(object); },
+    strMsg));  // object that manages the data
+
+  // in case of error or transfer interruption,
+  // return false to go to IDLE state
+  // successfull transfer will return number of bytes
+  // transfered (can be 0 if sending an empty message).
+  if (Send(msg, fsChannelNameTsRequest) < 0) {
+    LOG(error) << "Problem sending reply with first TS index";
+    return false;
+  }
+
+  fulMessageCounter++;
+  LOG(debug) << "Send message " << fulMessageCounter << " with a size of " << msg->GetSize();
+
+  return true;
+}
 bool CbmMQTsSamplerRepReq::SendData(const fles::StorableTimeslice& component)
 {
   // serialize the timeslice and create the message
