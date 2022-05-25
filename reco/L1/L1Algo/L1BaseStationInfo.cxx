@@ -30,14 +30,14 @@
 // CONSTRUCTORS AND DESTRUCTOR
 //
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 L1BaseStationInfo::L1BaseStationInfo() noexcept
 {
   LOG(debug) << "L1BaseStationInfo: Default constructor called for " << this << '\n';  // Temporary
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 L1BaseStationInfo::L1BaseStationInfo(L1DetectorID detectorID, int stationID) noexcept
   : fDetectorID(detectorID)
@@ -48,14 +48,14 @@ L1BaseStationInfo::L1BaseStationInfo(L1DetectorID detectorID, int stationID) noe
   fInitController.SetFlag(EInitKey::kStationID);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 L1BaseStationInfo::~L1BaseStationInfo() noexcept
 {
   LOG(debug) << "L1BaseStationInfo: Destructor called for " << this << '\n';  // Temporary
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 L1BaseStationInfo::L1BaseStationInfo(const L1BaseStationInfo& other) noexcept
   : fDetectorID(other.fDetectorID)
@@ -65,12 +65,13 @@ L1BaseStationInfo::L1BaseStationInfo(const L1BaseStationInfo& other) noexcept
   , fYmax(other.fYmax)
   , fZPos(other.fZPos)
   , fL1Station(other.fL1Station)
+  , fThicknessMap(other.fThicknessMap)
   , fInitController(other.fInitController)
 {
   LOG(debug) << "L1BaseStationInfo: Copy constructor called: " << &other << " was copied into " << this;
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 L1BaseStationInfo::L1BaseStationInfo(L1BaseStationInfo&& other) noexcept
 {
@@ -78,7 +79,7 @@ L1BaseStationInfo::L1BaseStationInfo(L1BaseStationInfo&& other) noexcept
   this->Swap(other);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 L1BaseStationInfo& L1BaseStationInfo::operator=(const L1BaseStationInfo& other) noexcept
 {
@@ -87,7 +88,7 @@ L1BaseStationInfo& L1BaseStationInfo::operator=(const L1BaseStationInfo& other) 
   return *this;
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 L1BaseStationInfo& L1BaseStationInfo::operator=(L1BaseStationInfo&& other) noexcept
 {
@@ -104,7 +105,7 @@ L1BaseStationInfo& L1BaseStationInfo::operator=(L1BaseStationInfo&& other) noexc
 // BASIC METHODS
 //
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::Print(int verbosity) const
 {
@@ -125,7 +126,7 @@ void L1BaseStationInfo::Print(int verbosity) const
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::Reset()
 {
@@ -133,11 +134,7 @@ void L1BaseStationInfo::Reset()
   this->Swap(other);
 }
 
-
-//
-// GETTERS
-//
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 const L1Station& L1BaseStationInfo::GetL1Station() const
 {
@@ -148,11 +145,27 @@ const L1Station& L1BaseStationInfo::GetL1Station() const
   return fL1Station;
 }
 
+//------------------------------------------------------------------------------------------------------------------------
 //
-// SETTERS
-//
+const L1Material& L1BaseStationInfo::GetMaterialMap() const
+{
+  if (!fInitController.IsFinalized()) {
+    LOG(fatal) << "L1BaseStationInfo::GetMaterialMap: attempt of getting the material map object from uninitialized "
+                  "L1BaseStation class (detectorID = "
+               << static_cast<int>(fDetectorID) << ", stationID = " << fStationID << ")";
+  }
 
-//----------------------------------------------------------------------------------------------------------------------//
+  if (fManagementFlags[static_cast<int>(EManagementFlag::kThicknessMapMoved)]) {
+    LOG(fatal) << "L1BaseStationInfo::GetMaterialMap: attempt of getting the material map, which has been moved. The "
+                  "thickness map instance have been "
+               << "already took from the L1BaseStationInfo object (detectorID = " << static_cast<int>(fDetectorID)
+               << ", stationID = " << fStationID << ")";
+  }
+
+  return fThicknessMap;
+}
+
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::SetDetectorID(L1DetectorID inID)
 {
@@ -165,7 +178,7 @@ void L1BaseStationInfo::SetDetectorID(L1DetectorID inID)
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::SetRmax(double inRmax)
 {
@@ -173,7 +186,7 @@ void L1BaseStationInfo::SetRmax(double inRmax)
   fInitController.SetFlag(EInitKey::kRmax);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::SetRmin(double inRmin)
 {
@@ -181,28 +194,10 @@ void L1BaseStationInfo::SetRmin(double inRmin)
   fInitController.SetFlag(EInitKey::kRmin);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
-void L1BaseStationInfo::SetFieldSlice(const double* Cx, const double* Cy, const double* Cz)
-{
-  if (fInitController.GetFlag(EInitKey::kFieldSlice)) {
-    LOG(warn) << "L1BaseStationInfo::SetFieldSlice: Attempt to redifine field slice for station with detectorID = "
-              << static_cast<int>(fDetectorID) << " and stationID = " << fStationID << ". Redifinition ignored";
-    return;
-  }
-
-  for (int idx = 0; idx < L1Parameters::kMaxNFieldApproxCoefficients; ++idx) {
-    fL1Station.fieldSlice.cx[idx] = Cx[idx];
-    fL1Station.fieldSlice.cy[idx] = Cy[idx];
-    fL1Station.fieldSlice.cz[idx] = Cz[idx];
-  }
-
-  fInitController.SetFlag(EInitKey::kFieldSlice);
-}
-
-//----------------------------------------------------------------------------------------------------------------------//
-//
-void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xyz)[3], double (&B)[3])>& getFieldValue)
+void L1BaseStationInfo::SetFieldFunction(
+  const std::function<void(const double (&xyz)[3], double (&B)[3])>& getFieldValue)
 {
   if (fInitController.GetFlag(EInitKey::kFieldSlice)) {
     LOG(warn) << "L1BaseStationInfo::SetFieldSlice: Attempt to redifine field slice for station with detectorID = "
@@ -287,7 +282,7 @@ void L1BaseStationInfo::SetFieldSlice(const std::function<void(const double (&xy
   fInitController.SetFlag(EInitKey::kFieldSlice);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::SetFieldStatus(int fieldStatus)
 {
@@ -295,11 +290,11 @@ void L1BaseStationInfo::SetFieldStatus(int fieldStatus)
   fInitController.SetFlag(EInitKey::kFieldStatus);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double frontSigma, double backPhi, double backSigma)
 {
-  //----- Original code from L1Algo ---------------------------------------------------------------------//
+  //----- Original code from L1Algo -----------------------------------------------------------------------
   double cFront = cos(frontPhi);
   double sFront = sin(frontPhi);
   double cBack  = cos(backPhi);
@@ -327,7 +322,7 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
   fL1Station.yInfo.cos_phi = cBack / (cBack * sFront - cFront * sBack);
   fL1Station.yInfo.sin_phi = -cFront / (cBack * sFront - cFront * sBack);
   fL1Station.yInfo.sigma2  = fL1Station.XYInfo.C11;
-  //-----------------------------------------------------------------------------------------------------//
+  //-------------------------------------------------------------------------------------------------------
 
   fInitController.SetFlag(EInitKey::kStripsFrontPhi);
   fInitController.SetFlag(EInitKey::kStripsFrontSigma);
@@ -335,9 +330,9 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
   fInitController.SetFlag(EInitKey::kStripsBackSigma);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
-void L1BaseStationInfo::SetMaterial(double inThickness, double inRL)
+void L1BaseStationInfo::SetMaterialSimple(double inThickness, double inRL)
 {
   //L1MASSERT(0, inRL, "Attempt of entering zero inRL (radiational length) value");
 
@@ -345,11 +340,90 @@ void L1BaseStationInfo::SetMaterial(double inThickness, double inRL)
   fL1Station.materialInfo.RL          = inRL;
   fL1Station.materialInfo.RadThick    = fL1Station.materialInfo.thick / fL1Station.materialInfo.RL;
   fL1Station.materialInfo.logRadThick = log(fL1Station.materialInfo.RadThick);
-  fInitController.SetFlag(EInitKey::kMaterialInfoThick);
-  fInitController.SetFlag(EInitKey::kMaterialInfoRL);
+  fInitController.SetFlag(EInitKey::kMaterialInfo);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
+//
+void L1BaseStationInfo::SetMaterialMap(const L1Material& thicknessMap,
+                                       const std::function<void(L1Material& thicknessMap)>& correction)
+{
+  if (!fInitController.GetFlag(EInitKey::kThicknessMap)) {
+    fThicknessMap = thicknessMap;
+    if (correction) { correction(fThicknessMap); }
+    fInitController.SetFlag(EInitKey::kThicknessMap);
+  }
+  else {
+    LOG(warn) << "L1BaseStationInfo::SetMaterialMap: attempt to reinitialize the material map";
+  }
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+//
+void L1BaseStationInfo::SetMaterialMap(
+  const L1Material& thicknessMap,
+  const std::function<void(L1Material& thicknessMap, const L1MaterialInfo& homogenious)>& correction)
+{
+  if (!fInitController.GetFlag(EInitKey::kMaterialInfo)) {
+    LOG(fatal)
+      << "L1BaseStationInfo::SetMaterialMap: It is impossible to setup the station material thickness map with a "
+      << "correction, which utilizes information on the average station thickness and radiation length. Please, insure "
+         "to "
+      << "set material info with the L1BaseStationInfo::SetMaterialSimple method before setting the thickness map or "
+      << "use correction without the information on average station thickness and radiation length.";
+  }
+
+  if (!fInitController.GetFlag(EInitKey::kThicknessMap)) {
+    fThicknessMap = thicknessMap;
+    correction(fThicknessMap, fL1Station.materialInfo);
+    fInitController.SetFlag(EInitKey::kThicknessMap);
+  }
+  else {
+    LOG(warn) << "L1BaseStationInfo::SetMaterialMap: attempt to reinitialize the material map";
+  }
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+//
+void L1BaseStationInfo::SetMaterialMap(L1Material&& thicknessMap,
+                                       const std::function<void(L1Material& thicknessMap)>& correction) noexcept
+{
+  if (!fInitController.GetFlag(EInitKey::kThicknessMap)) {
+    fThicknessMap = std::move(thicknessMap);
+    if (correction) { correction(fThicknessMap); }
+    fInitController.SetFlag(EInitKey::kThicknessMap);
+  }
+  else {
+    LOG(warn) << "L1BaseStationInfo::SetMaterialMap: attempt to reinitialize the material map";
+  }
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+//
+void L1BaseStationInfo::SetMaterialMap(
+  L1Material&& thicknessMap,
+  const std::function<void(L1Material& thicknessMap, const L1MaterialInfo& homogenious)>& correction) noexcept
+{
+  if (!fInitController.GetFlag(EInitKey::kMaterialInfo)) {
+    LOG(fatal)
+      << "L1BaseStationInfo::SetMaterialMap: It is impossible to setup the station material thickness map with a "
+      << "correction, which utilizes information on the average station thickness and radiation length. Please, insure "
+         "to "
+      << "set material info with the L1BaseStationInfo::SetMaterialSimple method before setting the thickness map or "
+      << "use correction without the information on average station thickness and radiation length.";
+  }
+
+  if (!fInitController.GetFlag(EInitKey::kThicknessMap)) {
+    fThicknessMap = std::move(thicknessMap);
+    correction(fThicknessMap, fL1Station.materialInfo);
+    fInitController.SetFlag(EInitKey::kThicknessMap);
+  }
+  else {
+    LOG(warn) << "L1BaseStationInfo::SetMaterialMap: attempt to reinitialize the material map";
+  }
+}
+
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::SetStationID(int inID)
 {
@@ -362,7 +436,7 @@ void L1BaseStationInfo::SetStationID(int inID)
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::SetStationType(int inType)
 {
@@ -375,7 +449,7 @@ void L1BaseStationInfo::SetStationType(int inType)
   }
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::SetXmax(double aSize)
 {
@@ -383,7 +457,7 @@ void L1BaseStationInfo::SetXmax(double aSize)
   fInitController.SetFlag(EInitKey::kXmax);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::SetYmax(double aSize)
 {
@@ -391,7 +465,7 @@ void L1BaseStationInfo::SetYmax(double aSize)
   fInitController.SetFlag(EInitKey::kYmax);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::SetTimeInfo(int inTimeInfo)
 {
@@ -399,7 +473,7 @@ void L1BaseStationInfo::SetTimeInfo(int inTimeInfo)
   fInitController.SetFlag(EInitKey::kTimeInfo);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::SetTimeResolution(double dt)
 {
@@ -407,7 +481,7 @@ void L1BaseStationInfo::SetTimeResolution(double dt)
   fInitController.SetFlag(EInitKey::kTimeResolution);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::SetTrackingStatus(bool flag)
 {
@@ -415,7 +489,7 @@ void L1BaseStationInfo::SetTrackingStatus(bool flag)
   fInitController.SetFlag(EInitKey::kTrackingStatus);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::SetZ(double inZ)
 {
@@ -424,7 +498,7 @@ void L1BaseStationInfo::SetZ(double inZ)
   fInitController.SetFlag(EInitKey::kZ);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
 //
 void L1BaseStationInfo::Swap(L1BaseStationInfo& other) noexcept
 {
@@ -435,10 +509,34 @@ void L1BaseStationInfo::Swap(L1BaseStationInfo& other) noexcept
   std::swap(fYmax, other.fYmax);
   std::swap(fZPos, other.fZPos);
   std::swap(fL1Station, other.fL1Station);
+  std::swap(fThicknessMap, other.fThicknessMap);
   std::swap(fInitController, other.fInitController);
 }
 
-//----------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------------------------------------
+//
+L1Material&& L1BaseStationInfo::TakeMaterialMap()
+{
+  if (!fInitController.IsFinalized()) {
+    LOG(fatal) << "L1BaseStationInfo::GetMaterialMap: attempt of getting the material map object from uninitialized "
+                  "L1BaseStation class (detectorID = "
+               << static_cast<int>(fDetectorID) << ", stationID = " << fStationID << ")";
+  }
+
+  if (fManagementFlags[static_cast<int>(EManagementFlag::kThicknessMapMoved)]) {
+    LOG(fatal) << "L1BaseStationInfo::GetMaterialMap: attempt of taking the material map, which has been  moved. The "
+                  "thickness map instance have been "
+               << "already took from the L1BaseStationInfo object (detectorID = " << static_cast<int>(fDetectorID)
+               << ", stationID = " << fStationID << ")";
+  }
+  else {
+    fManagementFlags[static_cast<int>(EManagementFlag::kThicknessMapMoved)] = true;
+  }
+
+  return std::move(fThicknessMap);
+}
+
+//------------------------------------------------------------------------------------------------------------------------
 //
 std::string L1BaseStationInfo::ToString(int verbosityLevel, int indentLevel) const
 {

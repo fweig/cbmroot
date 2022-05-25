@@ -227,18 +227,40 @@ private:
   int fNfieldStations {0};                  ///< number of stations in the field region
   alignas(16) L1StationsArray_t fStations;  ///< array of L1Station objects
 
+  L1Vector<L1Material> fRadThick {"fRadThick"};  // material for each station
+
 public:
   /// Gets total number of stations used in tracking
   int GetNstations() const { return fNstations; }
+
   /// Gets number of stations before the pipe (MVD stations in CBM)
   int GetNstationsBeforePipe() const { return fNstationsBeforePipe; }
+
   /// Gets number of stations situated in field region (MVD + STS in CBM)
   int GetNfieldStations() const { return fNfieldStations; }
+
   /// Gets reference to the stations array
   const L1StationsArray_t& GetStations() const { return fStations; }
 
+  /// Gets material thickness in units of radiation length in a point on the XY plane for a selected station
+  /// \param iStActive  Global index of an active station
+  /// \param xPos       Position of the point in X dimension [cm]
+  /// \param yPos       Position of the point in Y dimension [cm]
+  float GetMaterialThickness(int iStActive, float xPos, float yPos) const
+  {
+    return fRadThick[iStActive].GetRadThick(xPos, yPos);
+  }
+
+  /// Gets material thickness in units of radiation length in a point on the XY plane for a selected station
+  /// \param iStActive  Global index of an active station
+  /// \param xPos       Position of the point in X dimension [cm] (SIMDized vector)
+  /// \param yPos       Position of the point in Y dimension [cm] (SIMDized vector)
+  fvec GetMaterialThickness(int iStActive, fvec xPos, fvec yPos) const
+  {
+    return fRadThick[iStActive].GetRadThick(xPos, yPos);
+  }
+
 public:
-  L1Vector<L1Material> fRadThick {"fRadThick"};        // material for each station
 
   int NStsStrips {0};                             ///> number of strips
   L1Vector<L1Hit>* vStsHits {nullptr};            ///> hits as a combination of front-, backstrips and z-position

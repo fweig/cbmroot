@@ -200,6 +200,8 @@ public:
   /// \param detectorID  ID of a detector subsystem
   void ReadMaterialTables(L1DetectorID detectorID);
 
+  std::vector<L1Material> ReadMaterialBudget(L1DetectorID detectorID);
+
 
   void SetExtrapolateToTheEndOfSTS(bool b) { fExtrapolateToTheEndOfSTS = b; }
   void SetLegacyEventMode(bool b) { fLegacyEventMode = b; }

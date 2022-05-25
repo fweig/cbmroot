@@ -41,7 +41,19 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
   if (isStationActive) {
     // initialize magnetic field slice
     L1BaseStationInfo inStationCopy = L1BaseStationInfo(inStation);  // make a copy of station so it can be initialized
-    inStationCopy.SetFieldSlice(fFieldFunction);
+    inStationCopy.SetFieldFunction(fFieldFunction);
+
+    // check, if material map is used
+    if (!inStationCopy.GetInitController().GetFlag(L1BaseStationInfo::EInitKey::kThicknessMap)) {
+      LOG(warn) << "Station material map was not set for detectorID = "
+                << static_cast<int>(inStationCopy.GetDetectorID()) << ", stationID = " << inStationCopy.GetStationID()
+                << ". Homogenious material budget will be used: " << inStationCopy.GetRadThick()[0];
+      L1Material material;
+      material.SetBins(1, 100);
+      material.SetRadThick(0, 0, inStationCopy.GetRadThick()[0]);
+      inStationCopy.SetMaterialMap(std::move(material));
+    }
+
     // Check station init
     {
       LOG(debug) << "L1InitManager::AddStation:(original) L1BaseStationInfo "
@@ -313,11 +325,46 @@ void L1InitManager::TransferL1StationArray(std::array<L1Station, L1Parameters::k
 
   auto destinationArrayIterator = destinationArray.begin();
   for (const auto& item : fStationsInfo) {
-    *destinationArrayIterator = std::move(item.GetL1Station());
+    *destinationArrayIterator = item.GetL1Station();
     ++destinationArrayIterator;
   }
-  LOG(info) << "L1InitManager: L1Station vector was successfully transfered to L1Algo core :)";
+  LOG(info) << "L1InitManager: L1Station vector was successfully transfered to L1Algo core";
 }
+
+//-----------------------------------------------------------------------------------------------------------------------
+//
+void L1InitManager::TransferL1MaterialArray(L1Vector<L1Material>& destinationArray)
+{
+  //
+  // 1) Check, if all fields of this were initialized
+  //
+  {
+    std::stringstream aStream;
+    aStream << "Attempt to pass L1Station array to L1Algo core before all necessary fields initialization\n"
+            << "L1InitManager " << fInitController.ToString();
+    L1MASSERT(0, fInitController.IsFinalized(), aStream.str().c_str());
+  }
+  //
+  // 2) Check, if destinationArraySize is enough for the transfer
+  //
+  {
+    int nStationsTotal = this->GetNstationsActive();
+    std::stringstream aStream;
+    aStream << "Destination array size (" << destinationArray.capacity()
+            << ") is smaller then the actual number of active tracking stations (" << nStationsTotal << ")";
+    L1MASSERT(0, nStationsTotal <= static_cast<int>(destinationArray.capacity()), aStream.str().c_str());
+  }
+
+  auto destinationArrayIterator = destinationArray.begin();
+  for (auto it = fStationsInfo.begin(); it != fStationsInfo.end(); ++it) {
+    auto node                 = fStationsInfo.extract(it);
+    *destinationArrayIterator = std::move(node.value().TakeMaterialMap());
+    fStationsInfo.insert(std::move(node));
+    ++destinationArrayIterator;
+  }
+  LOG(info) << "L1InitManager: L1Material vector was successfully transfered to L1Algo core";
+}
+
 
 //
 // INIT CHECKERS

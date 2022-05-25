@@ -257,13 +257,13 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       fvec wIn         = (ONE & (initialised));
 
       L1Extrapolate(T, z[i], qp0, fld, &w1);
-      if (i == NMvdStations) {
+      if (i == NMvdStations) {  // TODO: How a hit can be also a station? (S.Zharko)
         fit.L1AddPipeMaterial(T, qp0, wIn);
         fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(-1.f), wIn);
       }
       if constexpr (L1Parameters::kIfUseRadLengthTable) {
-        fit.L1AddMaterial(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, wIn);
-        fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, -1, wIn);
+        fit.L1AddMaterial(T, CbmL1::Instance()->algo->GetMaterialThickness(i, T.x, T.y), qp0, wIn);
+        fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->GetMaterialThickness(i, T.x, T.y), qp0, -1, wIn);
       }
       else {
         fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
@@ -338,8 +338,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
         fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(1.f), wIn);
       }
       if constexpr (L1Parameters::kIfUseRadLengthTable) {
-        fit.L1AddMaterial(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, wIn);
-        fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->fRadThick[i].GetRadThick(T.x, T.y), qp0, 1, wIn);
+        fit.L1AddMaterial(T, CbmL1::Instance()->algo->GetMaterialThickness(i, T.x, T.y), qp0, wIn);
+        fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->GetMaterialThickness(i, T.x, T.y), qp0, 1, wIn);
       }
       else {
         fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
@@ -503,8 +503,8 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
         fit.L1AddPipeMaterial(T, T.qp, w);
         fit.EnergyLossCorrection(T, fit.PipeRadThick, T.qp, fvec(1.f), w);
       }
-      fit.L1AddMaterial(T, CbmL1::Instance()->algo->fRadThick[iSt].GetRadThick(T.x, T.y), T.qp, w);
-      fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->fRadThick[iSt].GetRadThick(T.x, T.y), T.qp, fvec(1.f), w);
+      fit.L1AddMaterial(T, CbmL1::Instance()->algo->GetMaterialThickness(iSt, T.x, T.y), T.qp, w);
+      fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->GetMaterialThickness(iSt, T.x, T.y), T.qp, fvec(1.f), w);
     }
     if (NMvdStations <= 0) {
       fit.L1AddPipeMaterial(T, T.qp, ONE);
