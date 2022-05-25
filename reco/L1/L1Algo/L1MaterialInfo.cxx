@@ -43,7 +43,6 @@ L1Material::L1Material(const L1Material& other)
   , fFactor(other.fFactor)
   , fTable(other.fTable)
 {
-  std::cout << "L1Material copy constructor was called\n";
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -51,7 +50,6 @@ L1Material::L1Material(const L1Material& other)
 
 L1Material& L1Material::operator=(const L1Material& other)
 {
-  std::cout << "L1Material copy assignment operator was called\n";
   if (this != &other) {
     fNbins  = other.fNbins;
     fRmax   = other.fRmax;
@@ -69,7 +67,6 @@ L1Material& L1Material::operator=(const L1Material& other)
 //
 L1Material::L1Material(L1Material&& other) noexcept
 {
-  std::cout << "L1Material move constructor was called\n";
   this->Swap(other);
 }
 
@@ -77,7 +74,6 @@ L1Material::L1Material(L1Material&& other) noexcept
 //
 L1Material& L1Material::operator=(L1Material&& other) noexcept
 {
-  std::cout << "L1Material move assignment operator was called\n";
   if (this != &other) {
     L1Material tmp(std::move(other));
     this->Swap(tmp);

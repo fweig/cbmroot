@@ -333,7 +333,7 @@ void L1InitManager::TransferL1StationArray(std::array<L1Station, L1Parameters::k
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
-void L1InitManager::TransferL1MaterialArray(L1Vector<L1Material>& destinationArray)
+void L1InitManager::TransferL1MaterialArray(std::array<L1Material, L1Parameters::kMaxNstations>& destinationArray)
 {
   //
   // 1) Check, if all fields of this were initialized
@@ -350,9 +350,9 @@ void L1InitManager::TransferL1MaterialArray(L1Vector<L1Material>& destinationArr
   {
     int nStationsTotal = this->GetNstationsActive();
     std::stringstream aStream;
-    aStream << "Destination array size (" << destinationArray.capacity()
+    aStream << "Destination array size (" << destinationArray.size()
             << ") is smaller then the actual number of active tracking stations (" << nStationsTotal << ")";
-    L1MASSERT(0, nStationsTotal <= static_cast<int>(destinationArray.capacity()), aStream.str().c_str());
+    L1MASSERT(0, nStationsTotal <= static_cast<int>(destinationArray.size()), aStream.str().c_str());
   }
 
   auto destinationArrayIterator = destinationArray.begin();

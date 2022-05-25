@@ -234,10 +234,12 @@ public:
   void SetTargetPosition(double x, double y, double z);
 
   /// Transfers an array of L1Stations formed inside a set of L1BaseStationInfo to a destination std::array
+  /// \param destinationArray  Reference to the destination array of L1Station objects in the L1Algo core
   void TransferL1StationArray(std::array<L1Station, L1Parameters::kMaxNstations>& destinationArray);
 
   /// Transfers an array of L1Material tables formed inside a set of L1BaseStationInfo to a destination std::array
-  void TransferL1MaterialArray(L1Vector<L1Material>& destinationVector);
+  /// \param destinationArray  Reference to the destination array of L1Material objects in the L1Algo core
+  void TransferL1MaterialArray(std::array<L1Material, L1Parameters::kMaxNstations>& destinationArray);
 
 
 private:

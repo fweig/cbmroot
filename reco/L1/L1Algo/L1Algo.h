@@ -80,6 +80,7 @@ class L1AlgoEfficiencyPerformance;
 typedef int Tindex;
 
 using L1StationsArray_t = std::array<L1Station, L1Parameters::kMaxNstations>;
+using L1MaterialArray_t = std::array<L1Material, L1Parameters::kMaxNstations>;
 
 /// Central class of L1 tracking
 ///
@@ -222,12 +223,11 @@ public:
   void SetNThreads(unsigned int n);
 
 private:
-  int fNstations {0};                       ///< number of all detector stations
-  int fNstationsBeforePipe {0};             ///< number of stations before pipe (MVD stations in CBM)
-  int fNfieldStations {0};                  ///< number of stations in the field region
-  alignas(16) L1StationsArray_t fStations;  ///< array of L1Station objects
-
-  L1Vector<L1Material> fRadThick {"fRadThick"};  // material for each station
+  int fNstations {0};                          ///< number of all detector stations
+  int fNstationsBeforePipe {0};                ///< number of stations before pipe (MVD stations in CBM)
+  int fNfieldStations {0};                     ///< number of stations in the field region
+  alignas(16) L1StationsArray_t fStations {};  ///< array of L1Station objects
+  alignas(16) L1MaterialArray_t fRadThick {};  ///< material for each station
 
 public:
   /// Gets total number of stations used in tracking

@@ -108,7 +108,6 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
 
   // Fill L1Station array
   fInitManager.TransferL1StationArray(fStations);
-  fRadThick.reset(fNstations);
   fInitManager.TransferL1MaterialArray(fRadThick);
 
   fTrackingLevel    = fInitManager.GetTrackingLevel();
