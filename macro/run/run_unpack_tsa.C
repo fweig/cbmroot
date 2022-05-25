@@ -37,7 +37,8 @@ std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, boo
 const char* defaultSetupName = "mcbm_beam_2021_07_surveyed";
 
 void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid = 0,
-                    const char* setupName = defaultSetupName, std::int32_t nevents = -1, std::string outpath = "data/")
+                    const char* setupName = defaultSetupName, std::int32_t nevents = -1, bool bBmoninTof = false,
+                    std::string outpath = "data/")
 {
 
   // ========================================================================
@@ -70,7 +71,12 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
   if (filename.find(";") != infile[0].npos) filename = std::to_string(runid) + "_merged" + ".tsa";
   if (outpath.empty()) { outpath = infile[0].substr(0, filenamepos); }
   outfilename = outpath + filename;
-  outfilename.replace(outfilename.find(".tsa"), 4, ".digi.root");
+  if (bBmoninTof) {  //
+    outfilename.replace(outfilename.find(".tsa"), 4, "_bmonintof.digi.root");
+  }
+  else {
+    outfilename.replace(outfilename.find(".tsa"), 4, ".digi.root");
+  }
   std::cout << "-I- " << myName << ": Output file will be " << outfilename << std::endl;
   // ------------------------------------------------------------------------
 
@@ -231,6 +237,15 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
       /// Starting to use CRI Based MUCH setup with 2GEM and 1 RPC since 09/03/2022 Carbon run
       muchconfig->SetParFileName("mMuchParUpto26032022.par");
     }
+    else if (2350 <= runid && runid <= 2367) {
+      /// First nickel runs
+      muchconfig->SetParFileName("mMuchParNickel_23052022.par");
+    }
+    else if (2367 < runid) {
+      /// Starting to use GEM 2 moved to CRI 0 on 24/05/2022
+      muchconfig->SetParFileName("mMuchParNickel_25052022.par");
+    }
+
     /// Enable duplicates rejection, Ignores the ADC for duplicates check
     muchconfig->SetDuplicatesRejection(true, true);
     /// Enable Monitor plots
@@ -344,10 +359,22 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
       else if (2150 <= runid && runid <= 2160) {
         /// Iron runs: 2150 - 2160
         parFileNameTof = "mTofCriParIron.par";
+        if (bBmoninTof) {
+          /// Map the BMon components in the TOF par file
+          parFileNameTof = "mTofCriParIron_withBmon.par";
+        }
       }
       else if (2176 <= runid && runid <= 2310) {
         /// Uranium runs: 2176 - 2310
         parFileNameTof = "mTofCriParUranium.par";
+      }
+      else if (2335 <= runid) {
+        /// Uranium runs: 2176 - 2310
+        parFileNameTof = "mTofCriParNickel.par";
+        if (bBmoninTof) {
+          /// Map the BMon components in the TOF par file
+          parFileNameTof = "mTofCriParNickel_withBmon.par";
+        }
       }
     }
     tofconfig->SetParFilesBasePath(parfilesbasepathTof);
@@ -367,21 +394,22 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
 
   // ---- BMON ----
   std::shared_ptr<CbmBmonUnpackConfig> bmonconfig = nullptr;
-
-  bmonconfig = std::make_shared<CbmBmonUnpackConfig>("", runid);
-  if (bmonconfig) {
-    // bmonconfig->SetDebugState();
-    bmonconfig->SetDoWriteOutput();
-    // bmonconfig->SetDoWriteOptOutA("CbmBmonErrors");
-    std::string parfilesbasepathBmon = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
-    bmonconfig->SetParFilesBasePath(parfilesbasepathBmon);
-    bmonconfig->SetParFileName("mBmonCriPar.par");
-    bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
-    if (2160 <= runid) {
-      bmonconfig->SetSystemTimeOffset(-80);  // [ns] value to be updated
+  if (!bBmoninTof) {
+    bmonconfig = std::make_shared<CbmBmonUnpackConfig>("", runid);
+    if (bmonconfig) {
+      // bmonconfig->SetDebugState();
+      bmonconfig->SetDoWriteOutput();
+      // bmonconfig->SetDoWriteOptOutA("CbmBmonErrors");
+      std::string parfilesbasepathBmon = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
+      bmonconfig->SetParFilesBasePath(parfilesbasepathBmon);
+      bmonconfig->SetParFileName("mBmonCriPar.par");
+      bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+      if (2160 <= runid) {
+        bmonconfig->SetSystemTimeOffset(-80);  // [ns] value to be updated
+      }
+      /// Enable Monitor plots
+      // bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));
     }
-    /// Enable Monitor plots
-    // bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));
   }
   // -------------
 
@@ -685,8 +713,8 @@ std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, boo
 }
 
 void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const char* setupName = defaultSetupName,
-                    std::int32_t nevents = -1, std::string outpath = "data/")
+                    std::int32_t nevents = -1, bool bBmoninTof = false, std::string outpath = "data/")
 {
   std::vector<std::string> vInFile = {infile};
-  return run_unpack_tsa(vInFile, runid, setupName, nevents, outpath);
+  return run_unpack_tsa(vInFile, runid, setupName, nevents, bBmoninTof, outpath);
 }

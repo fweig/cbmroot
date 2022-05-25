@@ -40,7 +40,7 @@ const char* defaultSetupName = "mcbm_beam_2021_07_surveyed";
 
 void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:5556"}, Int_t serverHttpPort = 8080,
                        Int_t serverRefreshRate = 100, std::int32_t nevents = -1, UInt_t runid = 1905,
-                       const char* setupName = defaultSetupName, std::string outpath = "data/")
+                       const char* setupName = defaultSetupName, bool bBmoninTof = false, std::string outpath = "data/")
 {
 
   // ========================================================================
@@ -57,7 +57,7 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
   // ------------------------------------------------------------------------
 
   // -----   Output filename   ----------------------------------------------
-  std::string filename    = Form("online_%05d.digi.root", runid);
+  std::string filename    = Form("online_%05d%s.digi.root", runid, (bBmoninTof ? "_bmonintof" : ""));
   std::string outfilename = outpath + filename;
   std::cout << "-I- " << myName << ": Output file will be " << outfilename << std::endl;
   // ------------------------------------------------------------------------
@@ -209,11 +209,27 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     muchconfig->SetDoWriteOptOutA("MuchDigiPulser");
     std::string parfilesbasepathMuch = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
     muchconfig->SetParFilesBasePath(parfilesbasepathMuch);
+    if (2060 <= runid && runid <= 2162) {
+      /// Starting to use CRI Based MUCH setup with 2GEM and 1 RPC since 09/03/2022 Carbon run
+      muchconfig->SetParFileName("mMuchParUpto26032022.par");
+    }
+    else if (2350 <= runid && runid <= 2367) {
+      /// First nickel runs
+      muchconfig->SetParFileName("mMuchPar.par");
+    }
+    else if (2367 < runid) {
+      /// Starting to use GEM 2 moved to CRI 0 on 24/05/2022
+      muchconfig->SetParFileName("mMuchPar.par");
+    }
+
     /// Enable duplicates rejection, Ignores the ADC for duplicates check
     muchconfig->SetDuplicatesRejection(true, true);
     /// Enable Monitor plots
     muchconfig->SetMonitor(GetMuchMonitor(outfilename, false));
     muchconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
+    if (2160 <= runid) {
+      muchconfig->SetSystemTimeOffset(-1020);  // [ns] value to be updated
+    }
 
     // muchconfig->SetMinAdcCut(1, 1);
 
@@ -304,6 +320,31 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     if (2060 <= runid) {
       /// Additional modules added just before the 10/03/2022 Carbon run
       parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
+      /// Setup changed multiple times between the 2022 carbon and uranium runs
+      if (runid <= 2065) {
+        /// Carbon runs: 2060 - 2065
+        parFileNameTof = "mTofCriParCarbon.par";
+      }
+      else if (2150 <= runid && runid <= 2160) {
+        /// Iron runs: 2150 - 2160
+        parFileNameTof = "mTofCriParIron.par";
+        if (bBmoninTof) {
+          /// Map the BMon components in the TOF par file
+          parFileNameTof = "mTofCriParIron_withBmon.par";
+        }
+      }
+      else if (2176 <= runid && runid <= 2310) {
+        /// Uranium runs: 2176 - 2310
+        parFileNameTof = "mTofCriParUranium.par";
+      }
+      else if (2335 <= runid) {
+        /// Uranium runs: 2176 - 2310
+        parFileNameTof = "mTofCriParNickel.par";
+        if (bBmoninTof) {
+          /// Map the BMon components in the TOF par file
+          parFileNameTof = "mTofCriParNickel_withBmon.par";
+        }
+      }
     }
     tofconfig->SetParFilesBasePath(parfilesbasepathTof);
     tofconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
@@ -318,18 +359,19 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
 
   // ---- BMON ----
   std::shared_ptr<CbmBmonUnpackConfig> bmonconfig = nullptr;
-
-  bmonconfig = std::make_shared<CbmBmonUnpackConfig>("", runid);
-  if (bmonconfig) {
-    // bmonconfig->SetDebugState();
-    bmonconfig->SetDoWriteOutput();
-    // bmonconfig->SetDoWriteOptOutA("CbmBmonErrors");
-    std::string parfilesbasepathBmon = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
-    bmonconfig->SetParFilesBasePath(parfilesbasepathBmon);
-    bmonconfig->SetParFileName("mBmonCriPar.par");
-    bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
-    /// Enable Monitor plots
-    bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));
+  if (!bBmoninTof) {
+    bmonconfig = std::make_shared<CbmBmonUnpackConfig>("", runid);
+    if (bmonconfig) {
+      // bmonconfig->SetDebugState();
+      bmonconfig->SetDoWriteOutput();
+      // bmonconfig->SetDoWriteOptOutA("CbmBmonErrors");
+      std::string parfilesbasepathBmon = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
+      bmonconfig->SetParFilesBasePath(parfilesbasepathBmon);
+      bmonconfig->SetParFileName("mBmonCriPar.par");
+      bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+      /// Enable Monitor plots
+      bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));
+    }
   }
   // -------------
 
@@ -642,8 +684,9 @@ std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, boo
 
 void run_unpack_online(std::string publisher = "tcp://localhost:5556", Int_t serverHttpPort = 8080,
                        Int_t serverRefreshRate = 100, std::int32_t nevents = -1, UInt_t runid = 1905,
-                       const char* setupName = defaultSetupName, std::string outpath = "data/")
+                       const char* setupName = defaultSetupName, bool bBmoninTof = false, std::string outpath = "data/")
 {
   std::vector<std::string> vPublisher = {publisher};
-  return run_unpack_online(vPublisher, serverHttpPort, serverRefreshRate, nevents, runid, setupName, outpath);
+  return run_unpack_online(vPublisher, serverHttpPort, serverRefreshRate, nevents, runid, setupName, bBmoninTof,
+                           outpath);
 }
