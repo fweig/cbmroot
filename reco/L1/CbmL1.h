@@ -161,22 +161,36 @@ public:
   }
 
   /* Material budget setters */
-  void SetMvdMaterialBudgetFileName(const TString& fileName) { if (fileName != "") fMatBudgetFileName[L1DetectorID::kMvd] = fileName; }
-  void SetStsMaterialBudgetFileName(const TString& fileName) { if (fileName != "") fMatBudgetFileName[L1DetectorID::kSts] = fileName; }
-  void SetMuchMaterialBudgetFileName(const TString& fileName) { if (fileName != "") fMatBudgetFileName[L1DetectorID::kMuch] = fileName; }
-  void SetTrdMaterialBudgetFileName(const TString& fileName) { if (fileName != "") fMatBudgetFileName[L1DetectorID::kTrd] = fileName; }
-  void SetTofMaterialBudgetFileName(const TString& fileName) { if (fileName != "") fMatBudgetFileName[L1DetectorID::kTof] = fileName; }
+  void SetMvdMaterialBudgetFileName(const TString& fileName)
+  {
+    if (fileName != "") fMatBudgetFileName[L1DetectorID::kMvd] = fileName;
+  }
+  void SetStsMaterialBudgetFileName(const TString& fileName)
+  {
+    if (fileName != "") fMatBudgetFileName[L1DetectorID::kSts] = fileName;
+  }
+  void SetMuchMaterialBudgetFileName(const TString& fileName)
+  {
+    if (fileName != "") fMatBudgetFileName[L1DetectorID::kMuch] = fileName;
+  }
+  void SetTrdMaterialBudgetFileName(const TString& fileName)
+  {
+    if (fileName != "") fMatBudgetFileName[L1DetectorID::kTrd] = fileName;
+  }
+  void SetTofMaterialBudgetFileName(const TString& fileName)
+  {
+    if (fileName != "") fMatBudgetFileName[L1DetectorID::kTof] = fileName;
+  }
 
   /// Utility to map the L1DetectorID items into detector names
   constexpr const char* GetDetectorName(L1DetectorID detectorID)
   {
-    switch(detectorID)
-    {
-      case L1DetectorID::kMvd:  return "MVD";
-      case L1DetectorID::kSts:  return "STS";
+    switch (detectorID) {
+      case L1DetectorID::kMvd: return "MVD";
+      case L1DetectorID::kSts: return "STS";
       case L1DetectorID::kMuch: return "MuCh";
-      case L1DetectorID::kTrd:  return "TRD";
-      case L1DetectorID::kTof:  return "TOF";
+      case L1DetectorID::kTrd: return "TRD";
+      case L1DetectorID::kTof: return "TOF";
     }
     // TODO: Probably, we should provide default with throwing exception here... (S.Zharko)
     return "";
@@ -185,9 +199,8 @@ public:
   /// Reads radiation length table from material budget file
   /// \param detectorID  ID of a detector subsystem
   void ReadMaterialTables(L1DetectorID detectorID);
-  
-  
-  
+
+
   void SetExtrapolateToTheEndOfSTS(bool b) { fExtrapolateToTheEndOfSTS = b; }
   void SetLegacyEventMode(bool b) { fLegacyEventMode = b; }
   void SetMuchPar(TString fileName) { fMuchDigiFile = fileName; }
@@ -436,7 +449,8 @@ private:
                                // 3 - run, MC particle is reco-able if created from reconstructed tracks
 
 
-  std::unordered_map<L1DetectorID, TString> fMatBudgetFileName {};  ///< Map for material budget file names vs. detectorID
+  std::unordered_map<L1DetectorID, TString>
+    fMatBudgetFileName {};  ///< Map for material budget file names vs. detectorID
 
   bool fExtrapolateToTheEndOfSTS {false};
   bool fLegacyEventMode {false};

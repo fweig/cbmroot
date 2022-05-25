@@ -647,7 +647,7 @@ InitStatus CbmL1::Init()
     int trdModuleID          = fTrdDigiPar->GetModuleId(iSt);
     CbmTrdParModDigi* module = (CbmTrdParModDigi*) fTrdDigiPar->GetModulePar(trdModuleID);
     auto stationInfo         = L1BaseStationInfo(L1DetectorID::kTrd, iSt);
-    int stationType          = (iSt == 2 || iSt == 4) ? 6 : 3; // Is used somewhere??
+    int stationType          = (iSt == 2 || iSt == 4) ? 6 : 3;  // Is used somewhere??
     stationInfo.SetStationType(stationType);
     stationInfo.SetTimeInfo(1);
     stationInfo.SetTimeResolution(10.);
@@ -899,12 +899,12 @@ InitStatus CbmL1::Init()
   // TODO: Move it to the L1InitManager (S.Zharko, 15.05.2022)
   algo->fRadThick.reset(algo->GetNstations());
 
-  if (fUseMVD)  { ReadMaterialTables(L1DetectorID::kMvd); }
+  if (fUseMVD) { ReadMaterialTables(L1DetectorID::kMvd); }
   ReadMaterialTables(L1DetectorID::kSts);
   if (fUseMUCH) { ReadMaterialTables(L1DetectorID::kMuch); }
-  if (fUseTRD)  { ReadMaterialTables(L1DetectorID::kTrd); }
-  if (fUseTOF)  { ReadMaterialTables(L1DetectorID::kTof); }
-  
+  if (fUseTRD) { ReadMaterialTables(L1DetectorID::kTrd); }
+  if (fUseTOF) { ReadMaterialTables(L1DetectorID::kTof); }
+
   return kSUCCESS;
 }
 
@@ -2198,41 +2198,41 @@ void CbmL1::ReadMaterialTables(L1DetectorID detectorID)
   if (fMatBudgetFileName.find(detectorID) != fMatBudgetFileName.end()) {
     auto* oldFile = gFile;
     auto* oldDir  = gDirectory;
-    
+
     TString stationNamePrefix = "Radiation Thickness [%], Station";
-    auto rlFile = TFile(fMatBudgetFileName.at(detectorID));
-    if (rlFile.IsZombie()) {
-      LOG(fatal) << "File " << fMatBudgetFileName.at(detectorID) << " is zombie!";
-    }
-    LOG(info) << "Reading material budget for " << GetDetectorName(detectorID) << " from file " << fMatBudgetFileName.at(detectorID);
-    
+    auto rlFile               = TFile(fMatBudgetFileName.at(detectorID));
+    if (rlFile.IsZombie()) { LOG(fatal) << "File " << fMatBudgetFileName.at(detectorID) << " is zombie!"; }
+    LOG(info) << "Reading material budget for " << GetDetectorName(detectorID) << " from file "
+              << fMatBudgetFileName.at(detectorID);
+
     for (int iSt = 0; iSt < fpInitManager->GetNstationsGeometry(detectorID); ++iSt) {
       int iStActive = fpInitManager->GetStationIndexActive(iSt, detectorID);
       if (iStActive == -1) { continue; }
       // TODO: Unify material table names (S.Zharko)
-      TString stationName = stationNamePrefix + ( detectorID == L1DetectorID::kMvd ? iSt : iSt + 1);
-      auto* hStaRadLen = dynamic_cast<TProfile2D*>(rlFile.Get(stationName));
+      TString stationName = stationNamePrefix + (detectorID == L1DetectorID::kMvd ? iSt : iSt + 1);
+      auto* hStaRadLen    = dynamic_cast<TProfile2D*>(rlFile.Get(stationName));
       if (!hStaRadLen) {
-        LOG(fatal) << "CbmL1: material budget profile " << stationName << " does not exist in file " << fMatBudgetFileName.at(detectorID);
+        LOG(fatal) << "CbmL1: material budget profile " << stationName << " does not exist in file "
+                   << fMatBudgetFileName.at(detectorID);
       }
       int nBins  = hStaRadLen->GetNbinsX();
-      float rMax = hStaRadLen->GetXaxis()->GetXmax(); 
+      float rMax = hStaRadLen->GetXaxis()->GetXmax();
       algo->fRadThick[iStActive].SetBins(nBins, rMax);
       algo->fRadThick[iStActive].table.resize(nBins);
 
       float hole = 0.f;
       switch (detectorID) {
-        case L1DetectorID::kMvd:  hole = 0.f; break;
-        case L1DetectorID::kSts:  hole = 0.f; break;
+        case L1DetectorID::kMvd: hole = 0.f; break;
+        case L1DetectorID::kSts: hole = 0.f; break;
         case L1DetectorID::kMuch: hole = 0.15f; break;
-        case L1DetectorID::kTrd:  hole = 0.15f; break;
-        case L1DetectorID::kTof:  hole = 0.0015f; break;
+        case L1DetectorID::kTrd: hole = 0.15f; break;
+        case L1DetectorID::kTof: hole = 0.0015f; break;
       }
       double averageRadThick = 0.;
-      double counter        = 0.;
+      double counter         = 0.;
       for (int iBinX = 0; iBinX < nBins; ++iBinX) {
         algo->fRadThick[iStActive].table[iBinX].resize(nBins);
-        if (detectorID == L1DetectorID::kTof) { hole = 0.0015f; } // TODO: Why? (S.Zharko)
+        if (detectorID == L1DetectorID::kTof) { hole = 0.0015f; }  // TODO: Why? (S.Zharko)
         for (int iBinY = 0; iBinY < nBins; ++iBinY) {
           algo->fRadThick[iStActive].table[iBinX][iBinY] = 0.01 * hStaRadLen->GetBinContent(iBinX, iBinY);
 
@@ -2240,18 +2240,25 @@ void CbmL1::ReadMaterialTables(L1DetectorID detectorID)
           switch (detectorID) {
             case L1DetectorID::kMvd:
               // Correction for holes in the material map
-              if (algo->fRadThick[iStActive].table[iBinX][iBinY] < algo->GetStations()[iStActive].materialInfo.RadThick[0]) {
+              if (algo->fRadThick[iStActive].table[iBinX][iBinY]
+                  < algo->GetStations()[iStActive].materialInfo.RadThick[0]) {
                 if (iBinY > 0 && iBinY < nBins - 1) {
                   algo->fRadThick[iStActive].table[iBinX][iBinY] =
-                    0.01 * TMath::Min(hStaRadLen->GetBinContent(iBinX, iBinY - 1), hStaRadLen->GetBinContent(iBinX, iBinY + 1));
+                    0.01
+                    * TMath::Min(hStaRadLen->GetBinContent(iBinX, iBinY - 1),
+                                 hStaRadLen->GetBinContent(iBinX, iBinY + 1));
                 }
               }
               // Correction for the hardcodded value of RadThick of MVD stations
-              if (algo->fRadThick[iStActive].table[iBinX][iBinY] < 0.0015) { algo->fRadThick[iStActive].table[iBinX][iBinY] = 0.0015; }
+              if (algo->fRadThick[iStActive].table[iBinX][iBinY] < 0.0015) {
+                algo->fRadThick[iStActive].table[iBinX][iBinY] = 0.0015;
+              }
               break;
             case L1DetectorID::kSts:
-              if (algo->fRadThick[iStActive].table[iBinX][iBinY] < algo->GetStations()[iStActive].materialInfo.RadThick[0]) {
-                algo->fRadThick[iStActive].table[iBinX][iBinY] = algo->GetStations()[iStActive].materialInfo.RadThick[0];
+              if (algo->fRadThick[iStActive].table[iBinX][iBinY]
+                  < algo->GetStations()[iStActive].materialInfo.RadThick[0]) {
+                algo->fRadThick[iStActive].table[iBinX][iBinY] =
+                  algo->GetStations()[iStActive].materialInfo.RadThick[0];
               }
               break;
             case L1DetectorID::kMuch:
@@ -2260,27 +2267,35 @@ void CbmL1::ReadMaterialTables(L1DetectorID detectorID)
               // Correction for holes in the material map
               if (iBinY > 0 && iBinY < nBins - 1) {
                 algo->fRadThick[iStActive].table[iBinX][iBinY] =
-                  0.01 * TMath::Min(hStaRadLen->GetBinContent(iBinX, iBinY - 1), hStaRadLen->GetBinContent(iBinX, iBinY + 1));
+                  0.01
+                  * TMath::Min(hStaRadLen->GetBinContent(iBinX, iBinY - 1),
+                               hStaRadLen->GetBinContent(iBinX, iBinY + 1));
               }
               // Correction for the hardcodded value of RadThick of MVD stations
-              if (algo->fRadThick[iStActive].table[iBinX][iBinY] > 0.0015) { hole = algo->fRadThick[iStActive].table[iBinX][iBinY]; }
-              if (algo->fRadThick[iStActive].table[iBinX][iBinY] < 0.0015) { algo->fRadThick[iStActive].table[iBinX][iBinY] = hole; }
+              if (algo->fRadThick[iStActive].table[iBinX][iBinY] > 0.0015) {
+                hole = algo->fRadThick[iStActive].table[iBinX][iBinY];
+              }
+              if (algo->fRadThick[iStActive].table[iBinX][iBinY] < 0.0015) {
+                algo->fRadThick[iStActive].table[iBinX][iBinY] = hole;
+              }
               break;
-          } // switch (detectorID)
+          }  // switch (detectorID)
           averageRadThick += algo->fRadThick[iStActive].table[iBinX][iBinY];
           ++counter;
-        } // iBinY
-      } // iBinX
+        }  // iBinY
+      }    // iBinX
       //averageRadThick /= static_cast<float>(counter);
       averageRadThick /= counter;
-      LOG(info) << " - station " << iSt << " (global id is " << iStActive << "), average X/X0 is " << averageRadThick << '\n';
-    } // iSt
+      LOG(info) << " - station " << iSt << " (global id is " << iStActive << "), average X/X0 is " << averageRadThick
+                << '\n';
+    }  // iSt
 
     gFile      = oldFile;
     gDirectory = oldDir;
   }
   else {
-    LOG(warn) << "No material budget file is found for " << GetDetectorName(detectorID) << ". Homogenious material budget will be used";
+    LOG(warn) << "No material budget file is found for " << GetDetectorName(detectorID)
+              << ". Homogenious material budget will be used";
     for (int iSt = 0; iSt < fpInitManager->GetNstationsGeometry(detectorID); ++iSt) {
       int iStActive = fpInitManager->GetStationIndexActive(iSt, detectorID);
       if (iStActive == -1) { continue; }
@@ -2288,8 +2303,8 @@ void CbmL1::ReadMaterialTables(L1DetectorID detectorID)
       algo->fRadThick[iStActive].table.resize(1);
       algo->fRadThick[iStActive].table[0].resize(1);
       algo->fRadThick[iStActive].table[0][0] = algo->GetStations()[iStActive].materialInfo.RadThick[0];
-      LOG(info) << " Material for " << GetDetectorName(detectorID) << ": " << algo->GetStations()[iStActive].materialInfo.RadThick[0];
-    } // iSt
+      LOG(info) << " Material for " << GetDetectorName(detectorID) << ": "
+                << algo->GetStations()[iStActive].materialInfo.RadThick[0];
+    }  // iSt
   }
 }
-

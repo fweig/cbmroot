@@ -295,7 +295,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         if (fVerbose > 2) { LOG(info) << "CbmL1ReadEvent: max deviation of Mvd points " << maxDeviation; }
         // ensure that the nominal station positions are not far from the sensors
         // assert(fabs(maxDeviation) < 1.);
-      } // fMvdPoints
+      }  // fMvdPoints
 
       firstStsPoint = vMCPoints.size();
       if (fStsPoints) {
@@ -362,7 +362,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             nMuchPoints++;
           }
         }
-      } // fMuchPoints
+      }  // fMuchPoints
 
       firstTrdPoint = vMCPoints.size();
       if (fTrdPoints) {
@@ -390,12 +390,12 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             nTrdPoints++;
           }
         }
-      } // fTrdPoints
+      }  // fTrdPoints
 
 
       firstTofPoint = vMCPoints.size();
       if (fTofPoints) {
-      
+
         vector<float> TofPointToTrackdZ[NTOFStation];
 
         TofPointToTrack.resize(NTOFStation);
