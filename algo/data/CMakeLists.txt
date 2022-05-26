@@ -54,3 +54,5 @@ target_link_directories(OnlineData
 
 target_compile_definitions(OnlineData PUBLIC NO_ROOT)
 target_link_libraries(OnlineData FairLogger)
+
+install(TARGETS OnlineData DESTINATION lib)

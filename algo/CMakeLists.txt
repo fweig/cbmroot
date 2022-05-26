@@ -34,3 +34,4 @@ target_link_libraries(Algo OnlineData)
 
 target_compile_definitions(Algo PUBLIC NO_ROOT)
 
+install(TARGETS Algo DESTINATION lib)
