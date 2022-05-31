@@ -39,6 +39,7 @@
 #include "CbmTofSimpClusterizer.h"
 #include "CbmTrdClusterFinder.h"
 #include "CbmTrdHitProducer.h"
+#include "CbmTrackerDetInitializer.h"
 
 #include <FairFileSource.h>
 #include <FairMonitor.h>
@@ -367,6 +368,10 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
   if (useMvd || useSts) {
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
+    
+    // Initialize tracker detector interfaces used in CbmL1
+    run->AddTask(new CbmTrackerDetInitializer());
+
     CbmL1* l1 = 0;
     if (debugWithMC) { l1 = new CbmL1("L1", 2, 3); }
     else {

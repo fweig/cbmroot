@@ -189,7 +189,7 @@ public:
   /// Gets tracking level
   int GetTrackingLevel() const { return fTrackingLevel; }
 
-  /// Calculates L1FieldValue and L1FieldReference values for a selected step in z coordinate from the target position
+  /// Calculates L1FieldValue and L1FieldReference values for a selected step in z-axis from the target position
   /// \param zStep step between nodal points
   // TODO: Consider posibility for linear approximation (S.Zh.)
   void InitTargetField(double zStep);

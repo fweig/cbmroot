@@ -63,9 +63,6 @@ class KFTopoPerformance;
 class CbmMCDataObject;
 
 class CbmEvent;
-class CbmStsParSetSensor;
-class CbmStsParSetSensorCond;
-class CbmStsParSetModule;
 class CbmTofDigiBdfPar;
 
 class CbmTrdParSetDigi;
@@ -521,10 +518,6 @@ private:
 
   KFTopoPerformance* fTopoPerformance {nullptr};
   L1EventEfficiencies fEventEfficiency {};  // average efficiencies
-
-  CbmStsParSetSensor* fStsParSetSensor {nullptr};
-  CbmStsParSetSensorCond* fStsParSetSensorCond {nullptr};
-  CbmStsParSetModule* fStsParSetModule {nullptr};
 
   ClassDef(CbmL1, 0);
 };

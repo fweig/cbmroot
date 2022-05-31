@@ -30,7 +30,9 @@
 #include "CbmMuchStation.h"
 #include "CbmMvdDetector.h"
 #include "CbmMvdStationPar.h"
-#include "CbmSetup.h"
+#include "CbmSetup.h" // TODO: To be replaced to the CbmTrackerInterfaceSts !! (S.Zharko)
+#include "CbmTrackerInterfaceMvd.h"
+#include "CbmTrackerInterfaceSts.h"
 
 #include <boost/filesystem.hpp>
 // TODO: include of CbmSetup.h creates problems on Mac
@@ -38,16 +40,12 @@
 #include "CbmMCDataObject.h"
 #include "CbmStsFindTracks.h"
 #include "CbmStsHit.h"
-#include "CbmStsParSetModule.h"
-#include "CbmStsParSetSensor.h"
-#include "CbmStsParSetSensorCond.h"
-#include "CbmStsSetup.h"
-#include "CbmStsStation.h"
 #include "CbmTofCell.h"
 #include "CbmTofDigiBdfPar.h"
 #include "CbmTofDigiPar.h"     // in tof/TofParam
 #include "CbmTrdParModDigi.h"  // for CbmTrdModule
 #include "CbmTrdParSetDigi.h"  // for CbmTrdParSetDigi
+#include "CbmTrackerDetInitializer.h"
 
 #include "FairEventHeader.h"
 #include "FairRunAna.h"
@@ -93,14 +91,16 @@ ClassImp(CbmL1)
 CbmL1* CbmL1::fInstance = 0;
 
 
-CbmL1::CbmL1() : FairTask("L1")
-{
-  if (!fInstance) fInstance = this;
-  if (!fpInitManager) { fpInitManager = algo_static.GetInitManager(); }
-}
+CbmL1::CbmL1(): CbmL1("L1") {}
 
-CbmL1::CbmL1(const char* name, Int_t iVerbose, Int_t _fPerformance, int fSTAPDataMode_, TString fSTAPDataDir_,
-             int findParticleMode_)
+
+CbmL1::CbmL1(
+    const char* name, 
+    Int_t iVerbose,
+    Int_t _fPerformance, 
+    int fSTAPDataMode_, 
+    TString fSTAPDataDir_,         
+    int findParticleMode_)
   : FairTask(name, iVerbose)
   , fPerformance(_fPerformance)
   , fSTAPDataMode(fSTAPDataMode_)
@@ -109,6 +109,10 @@ CbmL1::CbmL1(const char* name, Int_t iVerbose, Int_t _fPerformance, int fSTAPDat
 {
   if (!fInstance) fInstance = this;
   if (!fpInitManager) { fpInitManager = algo_static.GetInitManager(); }
+  
+  if (!CbmTrackerDetInitializer::Instance()) {
+    LOG(fatal) << "CbmL1: CbmTrackerDetInitializer instance was not found. Please, add it as a task to your reco macro";
+  }
 }
 
 CbmL1::~CbmL1()
@@ -128,18 +132,13 @@ void CbmL1::CheckDetectorPresence()
 
 void CbmL1::SetParContainers()
 {
+  LOG(warn) << "(!) \033[1;32mCALL CbmL1::SetParContainers\033[0m";
   FairRunAna* ana     = FairRunAna::Instance();
   FairRuntimeDb* rtdb = ana->GetRuntimeDb();
   fDigiPar            = (CbmTofDigiPar*) (rtdb->getContainer("CbmTofDigiPar"));
   //  fTrdDigiPar = (CbmTrdDigiPar*)(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdDigiPar"));
   fTrdDigiPar = (CbmTrdParSetDigi*) (rtdb->getContainer("CbmTrdParSetDigi"));
 
-  // Trigger loading of STS parameters
-  // If L1 runs standalone the parameters are not required by any STS task
-  // but they are needed by CbmStsSetup
-  fStsParSetModule     = dynamic_cast<CbmStsParSetModule*>(rtdb->getContainer("CbmStsParSetModule"));
-  fStsParSetSensor     = dynamic_cast<CbmStsParSetSensor*>(rtdb->getContainer("CbmStsParSetSensor"));
-  fStsParSetSensorCond = dynamic_cast<CbmStsParSetSensorCond*>(rtdb->getContainer("CbmStsParSetSensorCond"));
 
   fTofDigiBdfPar = (CbmTofDigiBdfPar*) (rtdb->getContainer("CbmTofDigiBdfPar"));
   rtdb->initContainers(ana->GetRunId());  // needed to get tracking stations for ToF hits
@@ -154,6 +153,7 @@ InitStatus CbmL1::ReInit()
 
 InitStatus CbmL1::Init()
 {
+  
   fData = new L1AlgoInputData();
 
   if (fVerbose > 1) {
@@ -386,7 +386,7 @@ InitStatus CbmL1::Init()
    ** Target field initialization **
    *********************************/
 
-  fpInitManager->InitTargetField(2.5);
+  fpInitManager->InitTargetField(/*zStep = */ 2.5 /*cm*/); // Replace zStep -> sizeZfieldRegion = 2 * zStep (TODO)
 
   /**************************************
    **                                  **
@@ -489,6 +489,7 @@ InitStatus CbmL1::Init()
       TofStationZ[i] = TofStationZ[i] / TofStationN[i];
   }
 
+
   /*** MVD and STS ***/
   CbmStsSetup* stsSetup = CbmStsSetup::Instance();
   if (!stsSetup->IsInit()) { stsSetup->Init(nullptr); }
@@ -505,7 +506,13 @@ InitStatus CbmL1::Init()
       NMvdStationsGeom = mvdStationPar->GetStationCount();
     }
   }
-  NStsStationsGeom = (fUseSTS) ? CbmStsSetup::Instance()->GetNofStations() : 0;
+  //NStsStationsGeom = (fUseSTS) ? CbmStsSetup::Instance()->GetNofStations() : 0;
+  
+  auto mvdInterface = CbmTrackerInterfaceMvd::Instance();
+  auto stsInterface = CbmTrackerInterfaceSts::Instance();
+
+  //NMvdStationsGeom = mvdInterface->GetNstations();
+  NStsStationsGeom = stsInterface->GetNstations();
   NStationGeom     = NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom + NTrdStationsGeom + NTOFStationGeom;
 
   // Provide crosscheck number of stations for the fpInitManagera
@@ -517,7 +524,7 @@ InitStatus CbmL1::Init()
 
   {
     if (fSTAPDataMode % 2 == 1) {  // 1,3
-      LOG(warn) << "CbmL1::Init: geo vector was removed, currently data cannot be written to a text-file";
+      LOG(fatal) << "CbmL1::Init: geo vector was removed, currently data cannot be written to a text-file";
       // TODO: Rewrite parameters i/o into L1InitManager (S.Zharko, 12.05.2022)
       //WriteSTAPGeoData(geo);
     };
@@ -574,61 +581,52 @@ InitStatus CbmL1::Init()
 
   /*** MVD stations info ***/
   for (int iSt = 0; iSt < NMvdStationsGeom; ++iSt) {  // NOTE: example using in-stack defined objects
-    CbmMvdDetector* mvdDetector     = CbmMvdDetector::Instance();
-    CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();
-
-    CbmKFTube& t     = CbmKF::Instance()->vMvdMaterial[iSt];
     auto stationInfo = L1BaseStationInfo(L1DetectorID::kMvd, iSt);
-    stationInfo.SetStationType(1);
-    // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
-    stationInfo.SetTimeInfo(0);
-    stationInfo.SetTimeResolution(1000.);
-    stationInfo.SetFieldStatus(L1Algo::TrackingMode::kMcbm == fTrackingMode ? 0 : 1);
-    stationInfo.SetZ(t.z);
-    auto thickness = t.dz;
-    auto radLength = t.RadLength;
-    stationInfo.SetMaterialSimple(thickness, radLength);
+    stationInfo.SetStationType(1);  // MVD
+    stationInfo.SetTimeInfo(mvdInterface->IsTimeInfoProvided(iSt));
+    stationInfo.SetTimeResolution(mvdInterface->GetTimeResolution(iSt));
+    stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
+    stationInfo.SetZ(mvdInterface->GetZ(iSt));
+    stationInfo.SetXmax(mvdInterface->GetXmax(iSt));
+    stationInfo.SetYmax(mvdInterface->GetYmax(iSt));
+    stationInfo.SetRmin(mvdInterface->GetRmin(iSt));
+    stationInfo.SetRmax(mvdInterface->GetRmax(iSt));
+    stationInfo.SetMaterialSimple(mvdInterface->GetThickness(iSt), mvdInterface->GetRadLength(iSt));
     stationInfo.SetMaterialMap(std::move(materialTableMvd[iSt]), correctionMvd);
-    stationInfo.SetXmax(t.R);
-    stationInfo.SetYmax(t.R);
-    stationInfo.SetRmin(t.r);
-    stationInfo.SetRmax(t.R);
-    fscal mvdFrontPhi   = 0;
-    fscal mvdBackPhi    = TMath::Pi() / 2.;
-    fscal mvdFrontSigma = mvdStationPar->GetXRes(iSt) / 10000;
-    fscal mvdBackSigma  = mvdStationPar->GetYRes(iSt) / 10000;
-    stationInfo.SetFrontBackStripsGeometry(mvdFrontPhi, mvdFrontSigma, mvdBackPhi, mvdBackSigma);
+    // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
+    stationInfo.SetFrontBackStripsGeometry(
+      (fscal) mvdInterface->GetStripsStereoAngleFront(iSt),
+      (fscal) mvdInterface->GetStripsSpatialRmsFront(iSt),
+      (fscal) mvdInterface->GetStripsStereoAngleBack(iSt),
+      (fscal) mvdInterface->GetStripsSpatialRmsBack(iSt)
+    );
     stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
     fpInitManager->AddStation(stationInfo);
     LOG(info) << "- MVD station " << iSt << " at z = " << stationInfo.GetZdouble();
   }
 
+
   /*** STS stations info ***/
   for (int iSt = 0; iSt < NStsStationsGeom; ++iSt) {  // NOTE: example using smart pointers
-    auto cbmSts      = CbmStsSetup::Instance()->GetStation(iSt);
     auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
     stationInfo.SetStationType(0);  // STS
-    stationInfo.SetTimeInfo(1);
-    stationInfo.SetTimeResolution(5.);
-    stationInfo.SetFieldStatus(L1Algo::TrackingMode::kMcbm == fTrackingMode ? 0 : 1);
-    // Setup station geometry and material
-    stationInfo.SetZ(cbmSts->GetZ());
-    double stsXmax = cbmSts->GetXmax();
-    double stsYmax = cbmSts->GetYmax();
-    stationInfo.SetXmax(stsXmax);
-    stationInfo.SetYmax(stsYmax);
-    stationInfo.SetRmin(0);
-    stationInfo.SetRmax(stsXmax > stsYmax ? stsXmax : stsYmax);
-    auto thickness = cbmSts->GetSensorD();
-    auto radLength = cbmSts->GetRadLength();
-    stationInfo.SetMaterialSimple(thickness, radLength);
+    stationInfo.SetTimeInfo(stsInterface->IsTimeInfoProvided(iSt));
+    stationInfo.SetTimeResolution(stsInterface->GetTimeResolution(iSt));
+    stationInfo.SetFieldStatus(L1Algo::TrackingMode::kMcbm == fTrackingMode? 0 : 1);
+    stationInfo.SetZ(stsInterface->GetZ(iSt));
+    stationInfo.SetXmax(stsInterface->GetXmax(iSt));
+    stationInfo.SetYmax(stsInterface->GetYmax(iSt));
+    stationInfo.SetRmin(stsInterface->GetRmin(iSt));
+    stationInfo.SetRmax(stsInterface->GetRmax(iSt));
+    stationInfo.SetMaterialSimple(stsInterface->GetThickness(iSt), stsInterface->GetRadLength(iSt));
     stationInfo.SetMaterialMap(std::move(materialTableSts[iSt]), correctionSts);
-    // Setup strips geometry
-    fscal stsFrontPhi   = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(0) * TMath::Pi() / 180.;
-    fscal stsBackPhi    = cbmSts->GetSensorRotation() + cbmSts->GetSensorStereoAngle(1) * TMath::Pi() / 180.;
-    fscal stsFrontSigma = cbmSts->GetSensorPitch(0) / sqrt(12);
-    fscal stsBackSigma  = stsFrontSigma;
-    stationInfo.SetFrontBackStripsGeometry(stsFrontPhi, stsFrontSigma, stsBackPhi, stsBackSigma);
+    // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
+    stationInfo.SetFrontBackStripsGeometry(
+      (fscal) stsInterface->GetStripsStereoAngleFront(iSt),
+      (fscal) stsInterface->GetStripsSpatialRmsFront(iSt),
+      (fscal) stsInterface->GetStripsStereoAngleBack(iSt),
+      (fscal) stsInterface->GetStripsSpatialRmsBack(iSt)
+    );
     stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
     fpInitManager->AddStation(stationInfo);
     LOG(info) << "- STS station " << iSt << " at z = " << stationInfo.GetZdouble();
@@ -1959,8 +1957,9 @@ void CbmL1::ReadSTAPPerfData()
 
 void CbmL1::WriteSIMDKFData()
 {
+  // TODO: Must be totally reimplemented (S.Zharko)
   static bool first = 1;
-
+#if 0
   /// Write geometry info
   if (first) {
     FairField* dMF = CbmKF::Instance()->GetMagneticField();
@@ -2125,7 +2124,7 @@ void CbmL1::WriteSIMDKFData()
     }
     FileGeo.close();
   }
-
+#endif 
   ///Write Tracks and MC Tracks
 
   static int TrNumber = 0;
@@ -2213,8 +2212,8 @@ std::vector<L1Material> CbmL1::ReadMaterialBudget(L1DetectorID detectorID)
 {
   std::vector<L1Material> result {};
   if (fMatBudgetFileName.find(detectorID) != fMatBudgetFileName.end()) {
-    TFile* oldFile     = gFile;
-    TDirectory* oldDir = gDirectory;
+    auto* oldFile     = gFile;
+    auto* oldDir = gDirectory;
 
     auto rlFile = TFile(fMatBudgetFileName.at(detectorID));
     if (rlFile.IsZombie()) { LOG(fatal) << "File " << fMatBudgetFileName.at(detectorID) << " is zombie!"; }

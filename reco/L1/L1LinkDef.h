@@ -30,6 +30,8 @@
 //#pragma link C++ class  CbmL1SttTrackFinder+;
 //#pragma link C++ class  CbmL1SttTrack+;
 #pragma link C++ class CbmTrackerInputQaTrd + ;
-
+#pragma link C++ class CbmTrackerDetInitializer + ;
+#pragma link C++ class CbmTrackerInterfaceMvd + ;
+#pragma link C++ class CbmTrackerInterfaceSts + ;
 
 #endif
