@@ -30,9 +30,9 @@
 #include "CbmMuchStation.h"
 #include "CbmMvdDetector.h"
 #include "CbmMvdStationPar.h"
-#include "CbmSetup.h" // TODO: To be replaced to the CbmTrackerInterfaceSts !! (S.Zharko)
-#include "CbmTrackerInterfaceMvd.h"
-#include "CbmTrackerInterfaceSts.h"
+#include "CbmSetup.h" // TODO: To be replaced to the CbmStsTrackerIF !! (S.Zharko)
+#include "CbmMvdTrackerIF.h"
+#include "CbmStsTrackerIF.h"
 
 #include <boost/filesystem.hpp>
 // TODO: include of CbmSetup.h creates problems on Mac
@@ -508,8 +508,8 @@ InitStatus CbmL1::Init()
   }
   //NStsStationsGeom = (fUseSTS) ? CbmStsSetup::Instance()->GetNofStations() : 0;
   
-  auto mvdInterface = CbmTrackerInterfaceMvd::Instance();
-  auto stsInterface = CbmTrackerInterfaceSts::Instance();
+  auto mvdInterface = CbmMvdTrackerIF::Instance();
+  auto stsInterface = CbmStsTrackerIF::Instance();
 
   //NMvdStationsGeom = mvdInterface->GetNstations();
   NStsStationsGeom = stsInterface->GetNstations();

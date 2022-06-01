@@ -3,35 +3,36 @@
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 /***************************************************************************************************
- * @file   CbmTrackerInterfaceSts.h
- * @brief  Input data and parameters interface from STS subsystem used in L1 tracker (declaration)
- * @since  27.05.2022
+ * @file   CbmMvdTrackerIF.h
+ * @brief  Input data and parameters interface from MVD subsystem used in L1 tracker (declaration)
+ * @since  31.05.2022
  * @author S.Zharko <s.zharko@gsi.de>
  ***************************************************************************************************/
 
-#ifndef CbmTrackerInterfaceSts_h
-#define CbmTrackerInterfaceSts_h 1
+#ifndef CbmMvdTrackerIF_h
+#define CbmMvdTrackerIF_h 1
 
-#include "CbmStsParSetModule.h"
-#include "CbmStsParSetSensor.h"
-#include "CbmStsParSetSensorCond.h"
-#include "CbmStsSetup.h"
 #include "L1TrackerInterfaceBase.h"
 #include "FairTask.h"
 
 #include <iostream>
+#include <vector>
 
 
-/// Class CbmTrackerInterfaceSts is a CbmL1 subtask, which provides necessary methods for L1 tracker
+class CbmMvdDetector;
+class CbmMvdStationPar;
+class CbmKFTube;
+
+/// Class CbmMvdTrackerIF is a CbmL1 subtask, which provides necessary methods for L1 tracker
 /// to access the geometry and dataflow settings.
 /// 
-class CbmTrackerInterfaceSts: public FairTask, public L1TrackerInterfaceBase {
+class CbmMvdTrackerIF: public FairTask, public L1TrackerInterfaceBase {
 public:
   /// Default constructor
-  CbmTrackerInterfaceSts();
+  CbmMvdTrackerIF();
 
   /// Destructor
-  ~CbmTrackerInterfaceSts();
+  ~CbmMvdTrackerIF();
 
   /// FairTask: Init method
   InitStatus Init();
@@ -39,8 +40,8 @@ public:
   /// FairTask: ReInit method
   InitStatus ReInit();
 
-  /// Gets pointer to the instance of the CbmTrackerInterfaceSts class
-  static CbmTrackerInterfaceSts* Instance() { return fpInstance; }
+  /// Gets pointer to the instance of the CbmMvdTrackerIF
+  static CbmMvdTrackerIF* Instance() { return fpInstance; }
 
   /// Gets actual number of stations, provided by the current geometry setup
   int GetNstations() const;
@@ -113,22 +114,19 @@ public:
   /// FairTask: sets parameter containers up
   void SetParContainers();
 
-  /// Copy and move constructers and assign operators are forbidden
-  CbmTrackerInterfaceSts(const CbmTrackerInterfaceSts&)            = delete;
-  CbmTrackerInterfaceSts(CbmTrackerInterfaceSts&&)                 = delete;
-  CbmTrackerInterfaceSts& operator=(const CbmTrackerInterfaceSts&) = delete;
-  CbmTrackerInterfaceSts& operator=(CbmTrackerInterfaceSts&&)      = delete;
+  /// Copy and move constructers and assign operators are prohibited
+  CbmMvdTrackerIF(const CbmMvdTrackerIF&)            = delete;
+  CbmMvdTrackerIF(CbmMvdTrackerIF&&)                 = delete;
+  CbmMvdTrackerIF& operator=(const CbmMvdTrackerIF&) = delete;
+  CbmMvdTrackerIF& operator=(CbmMvdTrackerIF&&)      = delete;
 
 private:
-  static CbmTrackerInterfaceSts* fpInstance;
+  static CbmMvdTrackerIF* fpInstance;  ///< Instance of the class
 
-  CbmStsParSetSensor*     fStsParSetSensor     {nullptr};  ///<
-  CbmStsParSetSensorCond* fStsParSetSensorCond {nullptr};  ///<
-  CbmStsParSetModule*     fStsParSetModule     {nullptr};  ///<
+  const std::vector<CbmKFTube> * fMvdMaterial {nullptr};    ///< Pointer to the MVD vector of CbmKFTube objects (owner: CbmKF)
+  const CbmMvdStationPar *       fMvdStationPar {nullptr};  ///< Pointer to the Mvd station parameters file
 
-  ClassDef(CbmTrackerInterfaceSts, 0);
-
-
+  ClassDef(CbmMvdTrackerIF, 0);
 };
 
-#endif // CbmTrackerInterfaceSts
+#endif // CbmMvdTrackerIF

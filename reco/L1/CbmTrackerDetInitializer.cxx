@@ -11,8 +11,8 @@
 
 #include "FairTask.h"
 #include "CbmTrackerDetInitializer.h"
-#include "CbmTrackerInterfaceSts.h"
-#include "CbmTrackerInterfaceMvd.h"
+#include "CbmStsTrackerIF.h"
+#include "CbmMvdTrackerIF.h"
 #include <FairLogger.h>
 
 ClassImp(CbmTrackerDetInitializer)
@@ -27,8 +27,8 @@ CbmTrackerDetInitializer::CbmTrackerDetInitializer(): FairTask("CbmTrackerDetIni
     fpInstance = this; 
     
     /** Add subtasks - tracker detector interfaces **/
-    this->Add(new CbmTrackerInterfaceMvd());
-    this->Add(new CbmTrackerInterfaceSts());
+    this->Add(new CbmMvdTrackerIF());
+    this->Add(new CbmStsTrackerIF());
   }
 }
 
