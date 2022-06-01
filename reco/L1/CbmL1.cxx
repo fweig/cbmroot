@@ -2217,8 +2217,8 @@ std::vector<L1Material> CbmL1::ReadMaterialBudget(L1DetectorID detectorID)
 {
   std::vector<L1Material> result {};
   if (fMatBudgetFileName.find(detectorID) != fMatBudgetFileName.end()) {
-    auto* oldFile = gFile;
-    auto* oldDir  = gDirectory;
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
 
     auto rlFile = TFile(fMatBudgetFileName.at(detectorID));
     if (rlFile.IsZombie()) { LOG(fatal) << "File " << fMatBudgetFileName.at(detectorID) << " is zombie!"; }
