@@ -240,7 +240,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     T.C40 = T.C41 = T.C42 = T.C43 = 0;
     T.C50 = T.C51 = T.C52 = T.C53 = T.C54 = 0;
     T.C22 = T.C33 = fMaxSlopePV * fMaxSlopePV / 9.;
-    if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) T.C22 = T.C33 = 10;
+    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) T.C22 = T.C33 = 10;
     T.C44 = fMaxInvMom / 3. * fMaxInvMom / 3.;
     T.C55 = timeEr * timeEr;
 
@@ -262,10 +262,8 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     }
 
 
-    if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
-    //  add the target
-    {
-
+    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
+      //  add the target
       if (istal < fNfieldStations) {
         fvec eX, eY, J04, J14;
         fvec dz;
@@ -315,15 +313,15 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     T.C00 = TargetXYInfo.C00;
     T.C10 = TargetXYInfo.C10;
     T.C11 = TargetXYInfo.C11;
-
-    if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)  // extrapolate to left hit
-    {
+    // extrapolate to left hit
+    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
       if (istal <= fNfieldStations) L1Extrapolate0(T, zl, fld0);
       else
         L1ExtrapolateLine(T, zl);
     }
-    else
+    else {
       L1Extrapolate0(T, zl, fld0);
+    }
 
     for (int ista = 0; ista <= istal - 1; ista++) {
       if constexpr (L1Parameters::kIfUseRadLengthTable) {
@@ -340,33 +338,39 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 
     if (fUseHitErrors) info.sigma2 = du1 * du1;
 
-    if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) {
+    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
       if (istal < fNfieldStations) L1Filter(T, info, u);
-      else
+      else {
         L1FilterNoField(T, info, u);
+      }
     }
-    else
+    else {
       L1Filter(T, info, u);
-
+    }
     info = stal.backInfo;
 
     if (fUseHitErrors) info.sigma2 = dv1 * dv1;
 
-    if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) {
+    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
       if (istal < fNfieldStations) L1Filter(T, info, v);
-      else
+      else {
         L1FilterNoField(T, info, v);
+      }
     }
-    else
+    else {
       L1Filter(T, info, v);
+    }
 
 #endif  // BEGIN_FROM_TARGET
 
 
     if constexpr (L1Parameters::kIfUseRadLengthTable) {
-      if (fTrackingMode != kMcbm) fit.L1AddMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), fMaxInvMom, 1);
-      if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
+      if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
         fit.L1AddThickMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), fMaxInvMom, 1, stal.materialInfo.thick, 1);
+      }
+      else {
+        fit.L1AddMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), fMaxInvMom, 1);
+      }
     }
     else {
       fit.L1AddMaterial(T, stal.materialInfo, fMaxInvMom, 1);
@@ -378,16 +382,16 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     fvec dz = zstam - zl;
     L1ExtrapolateTime(T, dz, stam.timeInfo);
 
-    if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
     // extrapolate to left hit
-    {
+    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
       if (istam < fNfieldStations) L1Extrapolate0(T, zstam, fld0);
-      else
+      else {
         L1ExtrapolateLine(T, zstam);  // TODO: fld1 doesn't work!
+      }
     }
-    else
+    else {
       L1Extrapolate0(T, zstam, fld0);  // TODO: fld1 doesn't work!
-
+    }
   }  // i1_V
 }
 
@@ -430,9 +434,9 @@ inline void L1Algo::f20(
 
 
     L1HitIndex_t imh = 0;
-    int irm1  = -1;
+    int irm1         = -1;
     while (true) {
-      if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) {
+      if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
         irm1++;
         if ((L1HitIndex_t) irm1
             >= (StsHitsUnusedStopIndex[&stam - fStations.begin()] - StsHitsUnusedStartIndex[&stam - fStations.begin()]))
@@ -442,8 +446,8 @@ inline void L1Algo::f20(
       else {
         if (!areaTime.GetNext(imh)) break;
       }
-      const L1HitPoint& hitm = vStsHits_m[imh];
 
+      const L1HitPoint& hitm = vStsHits_m[imh];
 
       // check y-boundaries
       if ((stam.timeInfo) && (stal.timeInfo))
@@ -663,35 +667,38 @@ inline void L1Algo::f30(  // input
 
       if (fUseHitErrors) info.sigma2 = du2 * du2;
 
-      if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) {
+      if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
         if (istam < fNfieldStations) L1Filter(T2, info, u_front_2);
-        else
+        else {
           L1FilterNoField(T2, info, u_front_2);
+        }
       }
-      else
+      else {
         L1Filter(T2, info, u_front_2);
-
+      }
 
       info = stam.backInfo;
       if (fUseHitErrors) info.sigma2 = dv2 * dv2;
 
-      if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) {
+      if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
         if (istam < fNfieldStations) L1Filter(T2, info, u_back_2);
-        else
+        else {
           L1FilterNoField(T2, info, u_back_2);
+        }
       }
-      else
+      else {
         L1Filter(T2, info, u_back_2);
-
+      }
 
       FilterTime(T2, timeM, timeMEr, stam.timeInfo);
       if constexpr (L1Parameters::kIfUseRadLengthTable) {
-        if (fTrackingMode != kMcbm && fTrackingMode != kGlobal)
-          fit.L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1);
-
-        if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
+        if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
           fit.L1AddThickMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), fMaxInvMom, 1, stam.materialInfo.thick,
                                  1);
+        }
+        else {
+          fit.L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1);
+        }
       }
       else {
         fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, 1);
@@ -705,19 +712,21 @@ inline void L1Algo::f30(  // input
 
       // extrapolate to the right hit station
 
-      if (fTrackingMode == kGlobal || fTrackingMode == kMcbm)
-      // extrapolate to the right hit station
-      {
-        if (istar <= fNfieldStations) L1Extrapolate(T2, star.z, T2.qp, f2);  // Full extrapolation in the magnetic field
-        else
+      if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
+        if (istar <= fNfieldStations) {
+          L1Extrapolate(T2, star.z, T2.qp, f2);  // Full extrapolation in the magnetic field
+        }
+        else {
           L1ExtrapolateLine(T2, star.z);  // Extrapolation with line ()
+        }
       }
-      else
+      else {
         L1Extrapolate(T2, star.z, T2.qp, f2);
+      }
 
       // ---- Find the triplets(right hit). Reformat data in the portion of triplets. ----
       for (Tindex i2_4 = 0; i2_4 < n2_4; ++i2_4) {
-        if (fTrackingMode == kSts && (T2.C44[i2_4] < 0)) { continue; }
+        if (kSts == fTrackingMode && (T2.C44[i2_4] < 0)) { continue; }
         if (T2.C00[i2_4] < 0 || T2.C11[i2_4] < 0 || T2.C22[i2_4] < 0 || T2.C33[i2_4] < 0 || T2.C55[i2_4] < 0) continue;
 
         if (fabs(T2.tx[i2_4]) > fMaxSlope) continue;
@@ -739,9 +748,9 @@ inline void L1Algo::f30(  // input
 
         L1HitIndex_t irh       = 0;
         L1HitIndex_t Ntriplets = 0;
-        int irh1        = -1;
+        int irh1               = -1;
         while (true) {
-          if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) {
+          if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
             irh1++;
             if ((L1HitIndex_t) irh1 >= (StsHitsUnusedStopIndex[istar] - StsHitsUnusedStartIndex[istar])) break;
             irh = irh1;
@@ -929,29 +938,26 @@ inline void L1Algo::f31(  // input
 
     if (fUseHitErrors) info.sigma2 = du_[i3_V] * du_[i3_V];
 
-    if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) {
-      if ((&star - fStations.begin()) < fNfieldStations) L1Filter(T_3[i3_V], info, u_front_[i3_V]);
-      else {
-        L1FilterNoField(T_3[i3_V], info, u_front_[i3_V]);
-      }
-    }
-    else
-      L1Filter(T_3[i3_V], info, u_front_[i3_V]);
+    bool noField =
+      (kGlobal == fTrackingMode || kMcbm == fTrackingMode) && (&star - fStations.begin() >= fNfieldStations);
 
+    if (noField) { L1FilterNoField(T_3[i3_V], info, u_front_[i3_V]); }
+    else {
+      L1Filter(T_3[i3_V], info, u_front_[i3_V]);
+    }
 
     info = star.backInfo;
 
     if (fUseHitErrors) info.sigma2 = dv_[i3_V] * dv_[i3_V];
 
-    if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) {
-      if ((&star - fStations.begin()) < fNfieldStations) L1Filter(T_3[i3_V], info, u_back_[i3_V]);
-      else
-        L1FilterNoField(T_3[i3_V], info, u_back_[i3_V]);
-    }
-    else
+    if (noField) { L1FilterNoField(T_3[i3_V], info, u_back_[i3_V]); }
+    else {
       L1Filter(T_3[i3_V], info, u_back_[i3_V]);
+    }
 
-    if (fTrackingMode != kMcbm) FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V], star.timeInfo);
+    if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
+      FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V], star.timeInfo);
+    }
 
     //  FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V]);
   }
@@ -1535,8 +1541,8 @@ L1Algo::TripletsStaPort(  /// creates triplets: input: @istal - start station nu
     L1HitIndex_t* RealIHitM = &((*RealIHitP)[StsHitsUnusedStartIndex[istam]]);
     L1HitIndex_t* RealIHitR = &((*RealIHitP)[StsHitsUnusedStartIndex[istar]]);
     for (Tindex i = 0; i < n3; ++i) {
-      Tindex i_4     = i % 4;
-      Tindex i_V     = i / 4;
+      Tindex i_4            = i % 4;
+      Tindex i_V            = i / 4;
       L1HitIndex_t iHits[3] = {RealIHitL[hitsl_3[i]], RealIHitM[hitsm_3[i]], RealIHitR[hitsr_3[i]]};
 #ifdef PULLS
       if (fL1Eff_triplets->AddOne(iHits)) fL1Pulls->AddOne(T_3[i_V], i_4, iHits[2]);
@@ -1659,8 +1665,8 @@ void L1Algo::CATrackFinder()
   static Tindex stat_nTriplets[fNFindIterations] = {0};
 
   static Tindex stat_nLevels[L1Parameters::kMaxNstations - 2][fNFindIterations] = {{0}};
-  static Tindex stat_nCalls[fNFindIterations]                      = {0};  // n calls of CAFindTrack
-  static Tindex stat_nTrCandidates[fNFindIterations]               = {0};
+  static Tindex stat_nCalls[fNFindIterations]                                   = {0};  // n calls of CAFindTrack
+  static Tindex stat_nTrCandidates[fNFindIterations]                            = {0};
 #endif
 
   /********************************/ /**
@@ -1778,7 +1784,7 @@ void L1Algo::CATrackFinder()
 
   // ---- Loop over Track Finder iterations ----------------------------------------------------------------//
   L1ASSERT(0, fNFindIterations == fParameters.CAIterationsContainer().size());
-  isec = 0;  // TODO: temporary! (S.Zharko)
+  isec = 0;                                                            // TODO: temporary! (S.Zharko)
   for (const auto& caIteration : fParameters.CAIterationsContainer())  // all finder
   {
     std::cout << "CA Track Finder Iteration!!" << isec << '\n';
@@ -1799,8 +1805,8 @@ void L1Algo::CATrackFinder()
 
     if (isec != 0) {
       L1Vector<L1HitIndex_t>* RealIHitPTmp = RealIHitP;
-      RealIHitP                     = RealIHitPBuf;
-      RealIHitPBuf                  = RealIHitPTmp;
+      RealIHitP                            = RealIHitPBuf;
+      RealIHitPBuf                         = RealIHitPTmp;
 
       L1Vector<L1Hit>* vStsHitsUnused_temp = vStsHitsUnused;
       vStsHitsUnused                       = vStsHitsUnused_buf;
@@ -1828,7 +1834,6 @@ void L1Algo::CATrackFinder()
         // --- SET PARAMETERS FOR THE ITERATION ---
 
         FIRSTCASTATION = 0;
-        if (fTrackingMode == kGlobal) { FIRSTCASTATION = 12; }
 
         // if ( (isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter) )
         //   FIRSTCASTATION = 2;
@@ -2214,9 +2219,10 @@ void L1Algo::CATrackFinder()
                   if (first_trip.GetLevel() == 0)
                     continue;  // ghost suppression // find track with 3 hits only if it was created from a chain of triplets, but not from only one triplet
 
-                if (fTrackingMode != kMcbm)
+                if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
                   if ((ilev == 0) && (GetFStation((*fStripFlag)[(*vStsHitsUnused)[first_trip.GetLHit()].f]) != 0))
                     continue;  // ghost supression // collect only MAPS tracks-triplets  CHECK!!!
+                }
               }
               if (first_trip.GetLevel() < ilev)
                 continue;  // try only triplets, which can start track with ilev+3 length. w\o it have more ghosts, but efficiency either
@@ -2360,7 +2366,10 @@ void L1Algo::CATrackFinder()
               }
             }
 
-            if (fTrackingMode == kMcbm) {
+            if (kMcbm == fTrackingMode) {
+              if (tr.NHits <= 3) { check = 0; }
+            }
+            else if (kGlobal == fTrackingMode) {
               if (tr.NHits <= 3) { check = 0; }
             }
             else {
@@ -2369,8 +2378,9 @@ void L1Algo::CATrackFinder()
 
             if (check) {
 #ifdef EXTEND_TRACKS
-              if (fTrackingMode != kMcbm)
+              if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
                 if (tr.NHits != fNstations) BranchExtender(tr);
+              }
 #endif
               float sumTime = 0;
 
@@ -2385,6 +2395,9 @@ void L1Algo::CATrackFinder()
 
 #endif
 
+              if (kGlobal == fTrackingMode) {  //SGtrd2d!!
+                if (tr.fStsHits.size() < 4) continue;
+              }
               for (L1Vector<L1HitIndex_t>::iterator phIt = tr.fStsHits.begin();  /// used strips are marked
                    phIt != tr.fStsHits.end(); ++phIt) {
                 L1Hit& h = (*vStsHits)[*phIt];
@@ -2467,11 +2480,11 @@ void L1Algo::CATrackFinder()
       int NHitsOnStation = 0;
 
       for (int ista = 0; ista < fNstations; ++ista) {
-        int start                = StsHitsUnusedStartIndex[ista];
-        int Nelements            = StsHitsUnusedStopIndex[ista] - start;
-        L1Hit* staHits           = nullptr;  // to avoid out-of-range error in ..[start]
+        int start                   = StsHitsUnusedStartIndex[ista];
+        int Nelements               = StsHitsUnusedStopIndex[ista] - start;
+        L1Hit* staHits              = nullptr;  // to avoid out-of-range error in ..[start]
         L1HitIndex_t* staHitIndices = nullptr;
-        L1HitPoint* staHitPoints = nullptr;
+        L1HitPoint* staHitPoints    = nullptr;
         if (Nelements > 0) {
           staHits       = &((*vStsHitsUnused)[start]);
           staHitIndices = &((*RealIHitP)[start]);
@@ -2723,7 +2736,7 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       fscal dqp       = fabs(qp1 - qp2);
       fscal Cqp       = curr_trip->GetCqp();
       Cqp += new_trip.GetCqp();
-      if (fTrackingMode != kMcbm) {
+      if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
         if (dqp > fPickNeighbour * Cqp) {
           continue;  // bad neighbour // CHECKME why do we need recheck it?? (it really change result)
         }
@@ -2741,9 +2754,14 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       fscal Cty = curr_trip->GetCty();
       Cty += new_trip.GetCty();
 
-      if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) {
+      if (kMcbm == fTrackingMode) {
         if (dty > 3 * Cty) continue;
         if (dtx > 3 * Ctx) continue;
+      }
+
+      if (kGlobal == fTrackingMode) {
+        if (dty > 6 * sqrt(Cty)) continue;  //SGtrd2d
+        if (dtx > 7 * sqrt(Ctx)) continue;
       }
 
       if (GetFUsed((*fStripFlag)[(*vStsHitsUnused)[new_trip.GetLHit()].f]
@@ -2770,17 +2788,29 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
 
         dqp = dqp / Cqp;
 
-        dtx = dtx / Ctx;  // TODO: SG: it must be /sqrt(Ctx);
-        dty = dty / Cty;  // TODO: SG: it must be /sqrt(Cty);
+        if (kGlobal == fTrackingMode) {  //SGtrd2d!!!
+          dtx = dtx / sqrt(Ctx);
+          dty = dty / sqrt(Cty);
+        }
+        else {
+          dtx = dtx / Ctx;  // TODO: SG: it must be /sqrt(Ctx);
+          dty = dty / Cty;  // TODO: SG: it must be /sqrt(Cty);
+        }
 
-        if (fTrackingMode == kGlobal || fTrackingMode == kMcbm) {
+        if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
           new_chi2 += dtx * dtx;
           new_chi2 += dty * dty;
         }
         else {
           new_chi2 += dqp * dqp;
         }
-        if (new_chi2 > fTrackChi2Cut * new_L) continue;  // TODO: SG: it must be  ( 2 * new_L )
+
+        if (kGlobal == fTrackingMode) {  //SGtrd2d!!!
+          if (new_chi2 > fTrackChi2Cut * 2 * new_L) continue;
+        }
+        else {
+          if (new_chi2 > fTrackChi2Cut * new_L) continue;  // TODO: SG: it must be  ( 2 * new_L )
+        }
         const int new_ista = ista + new_trip.GetMSta() - new_trip.GetLSta();
 
         CAFindTrack(new_ista, best_tr, best_L, best_chi2, &new_trip, new_tr[ista], new_L, new_chi2, min_best_l, new_tr);

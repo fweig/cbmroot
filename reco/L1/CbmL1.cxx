@@ -118,30 +118,11 @@ CbmL1::~CbmL1()
 
 void CbmL1::CheckDetectorPresence()
 {
-  Bool_t IsMuch = CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch);
-  Bool_t IsTrd  = CbmSetup::Instance()->IsActive(ECbmModuleId::kTrd);
-  Bool_t IsTof  = CbmSetup::Instance()->IsActive(ECbmModuleId::kTof);
-  //Bool_t IsSts        = CbmSetup::Instance()->IsActive(ECbmModuleId::kSts);
-  Bool_t IsMvd = CbmSetup::Instance()->IsActive(ECbmModuleId::kMvd);
-
-  /*
-  TObjArray* topNodes = gGeoManager->GetTopNode()->GetNodes();
-
-  for (Int_t iTopNode = 0; iTopNode < topNodes->GetEntriesFast(); iTopNode++) {
-    TGeoNode* topNode = static_cast<TGeoNode*>(topNodes->At(iTopNode));
-
-    if (TString(topNode->GetName()).Contains("much")) IsMuch = 1;
-    if (TString(topNode->GetName()).Contains("trd")) IsTrd = 1;
-    if (TString(topNode->GetName()).Contains("tof")) IsTof = 1;
-    //if (TString(topNode->GetName()).Contains("sts")) IsSts = 1;
-    if (TString(topNode->GetName()).Contains("mvd")) IsMvd = 1;
-  }
-  */
-
-  fUseMUCH = (fUseMUCH && IsMuch);
-  fUseTRD  = fUseTRD && IsTrd;
-  fUseTOF  = fUseTOF && IsTof;
-  fUseMVD  = fUseMVD && IsMvd;
+  fUseMVD  = fUseMVD && CbmSetup::Instance()->IsActive(ECbmModuleId::kMvd);
+  fUseSTS  = fUseSTS && CbmSetup::Instance()->IsActive(ECbmModuleId::kSts);
+  fUseMUCH = fUseMUCH && CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch);
+  fUseTRD  = fUseTRD && CbmSetup::Instance()->IsActive(ECbmModuleId::kTrd);
+  fUseTOF  = fUseTOF && CbmSetup::Instance()->IsActive(ECbmModuleId::kTof);
 }
 
 
@@ -207,35 +188,35 @@ InitStatus CbmL1::Init()
 #endif
   }
 
-  FairRootManager* fManger = FairRootManager::Instance();
-
-  FairRunAna* Run = FairRunAna::Instance();
-  {
-    fUseMVD                    = 1;
-    CbmStsFindTracks* FindTask = L1_DYNAMIC_CAST<CbmStsFindTracks*>(Run->GetTask("STSFindTracks"));
-    if (FindTask) fUseMVD = FindTask->MvdUsage();
-    // TODO: include of CbmSetup.h creates problems on Mac
-    // if (!CbmSetup::Instance()->IsActive(ECbmModuleId::kMvd)) { fUseMVD = false; }
-    // N Mvd stations is read from the KF material
-    if (CbmKF::Instance()->vMvdMaterial.size() == 0) { fUseMVD = false; }
-  }
-
   fHistoDir = gROOT->mkdir("L1");
-
 
   // turn on reconstruction in sub-detectors
 
+  fUseMVD  = 1;
+  fUseSTS  = 1;
   fUseMUCH = 0;
   fUseTRD  = 0;
   fUseTOF  = 0;
 
-  if (fTrackingMode == L1Algo::TrackingMode::kMcbm) {
+  FairRootManager* fairManager = FairRootManager::Instance();
+  {
+    CbmStsFindTracks* findTask = L1_DYNAMIC_CAST<CbmStsFindTracks*>(FairRunAna::Instance()->GetTask("STSFindTracks"));
+    if (findTask) fUseMVD = findTask->MvdUsage();
+    if (CbmKF::Instance()->vMvdMaterial.size() == 0) { fUseMVD = false; }
+  }
+
+
+  if (L1Algo::TrackingMode::kMcbm == fTrackingMode) {
     fUseMUCH = 1;
     fUseTRD  = 1;
     fUseTOF  = 1;
   }
 
-  if (fTrackingMode == L1Algo::TrackingMode::kGlobal) {
+
+  if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
+    //SGtrd2D!!
+    fUseMVD  = 0;
+    fUseSTS  = 0;
     fUseMUCH = 0;
     fUseTRD  = 1;
     fUseTOF  = 0;
@@ -262,7 +243,7 @@ InitStatus CbmL1::Init()
   if (!fLegacyEventMode) {  //  Time-slice mode selected
     LOG(info) << GetName() << ": running in time-slice mode.";
     fTimeSlice = NULL;
-    fTimeSlice = (CbmTimeSlice*) fManger->GetObject("TimeSlice.");
+    fTimeSlice = (CbmTimeSlice*) fairManager->GetObject("TimeSlice.");
     if (fTimeSlice == NULL) LOG(fatal) << GetName() << ": No time slice branch in the tree!";
 
   }  //? time-slice mode
@@ -271,11 +252,11 @@ InitStatus CbmL1::Init()
     LOG(info) << GetName() << ": running in event mode.";
 
 
-  listStsClusters     = L1_DYNAMIC_CAST<TClonesArray*>(fManger->GetObject("StsCluster"));
-  listStsHitMatch     = L1_DYNAMIC_CAST<TClonesArray*>(fManger->GetObject("StsHitMatch"));
-  listStsClusterMatch = L1_DYNAMIC_CAST<TClonesArray*>(fManger->GetObject("StsClusterMatch"));
+  listStsClusters     = L1_DYNAMIC_CAST<TClonesArray*>(fairManager->GetObject("StsCluster"));
+  listStsHitMatch     = L1_DYNAMIC_CAST<TClonesArray*>(fairManager->GetObject("StsHitMatch"));
+  listStsClusterMatch = L1_DYNAMIC_CAST<TClonesArray*>(fairManager->GetObject("StsClusterMatch"));
 
-  listStsHits = L1_DYNAMIC_CAST<TClonesArray*>(fManger->GetObject("StsHit"));
+  listStsHits = L1_DYNAMIC_CAST<TClonesArray*>(fairManager->GetObject("StsHit"));
 
   if (!fUseMUCH) {
     fMuchPixelHits = 0;
@@ -288,18 +269,16 @@ InitStatus CbmL1::Init()
     listMuchHitMatches = 0;
   }
   else {
-    fMuchPixelHits = (TClonesArray*) fManger->GetObject("MuchPixelHit");
+    fMuchPixelHits = (TClonesArray*) fairManager->GetObject("MuchPixelHit");
   }
 
   if (!fUseTRD) {
     fTrdPoints     = 0;
     fTrdHitMatches = 0;
-    fTrdPoints     = 0;
     listTrdHits    = 0;
   }
   else {
-
-    listTrdHits = L1_DYNAMIC_CAST<TClonesArray*>(fManger->GetObject("TrdHit"));
+    listTrdHits = L1_DYNAMIC_CAST<TClonesArray*>(fairManager->GetObject("TrdHit"));
   }
 
   if (!fUseTOF) {
@@ -308,42 +287,43 @@ InitStatus CbmL1::Init()
     fTofHits           = 0;
   }
   else {
-    fTofHits = (TClonesArray*) fManger->GetObject("TofHit");
+    fTofHits = (TClonesArray*) fairManager->GetObject("TofHit");
   }
 
   if (fPerformance) {
-    CbmMCDataManager* mcManager = (CbmMCDataManager*) fManger->GetObject("MCDataManager");
+    CbmMCDataManager* mcManager = (CbmMCDataManager*) fairManager->GetObject("MCDataManager");
     if (NULL == mcManager) LOG(fatal) << GetName() << ": No CbmMCDataManager!";
-
-    fStsPoints = mcManager->InitBranch("StsPoint");
 
     fMcEventHeader = mcManager->GetObject("MCEventHeader.");
 
     fMCTracks = mcManager->InitBranch("MCTrack");
 
-    if (NULL == fStsPoints) LOG(fatal) << GetName() << ": No StsPoint data!";
     if (NULL == fMCTracks) LOG(fatal) << GetName() << ": No MCTrack data!";
     if (NULL == fMcEventHeader) LOG(fatal) << GetName() << ": No MC event header data!";
 
     if (!fLegacyEventMode) {
-      fEventList = (CbmMCEventList*) fManger->GetObject("MCEventList.");
+      fEventList = (CbmMCEventList*) fairManager->GetObject("MCEventList.");
       if (NULL == fEventList) LOG(fatal) << GetName() << ": No MCEventList data!";
     }
 
     if (fUseMVD) {
       fMvdPoints         = mcManager->InitBranch("MvdPoint");
-      listMvdDigiMatches = L1_DYNAMIC_CAST<TClonesArray*>(fManger->GetObject("MvdDigiMatch"));
-      listMvdHitMatches  = L1_DYNAMIC_CAST<TClonesArray*>(fManger->GetObject("MvdHitMatch"));
+      listMvdDigiMatches = L1_DYNAMIC_CAST<TClonesArray*>(fairManager->GetObject("MvdDigiMatch"));
+      listMvdHitMatches  = L1_DYNAMIC_CAST<TClonesArray*>(fairManager->GetObject("MvdHitMatch"));
       if (!listMvdHitMatches) { LOG(error) << "No listMvdHitMatches provided, performance is not done correctly"; }
+    }
+
+    if (fUseSTS) {
+      fStsPoints = mcManager->InitBranch("StsPoint");
+      if (NULL == fStsPoints) LOG(fatal) << GetName() << ": No StsPoint data!";
     }
 
     if (!fUseTRD) {
       fTrdPoints     = 0;
       fTrdHitMatches = 0;
-      fTrdPoints     = 0;
     }
     else {
-      fTrdHitMatches = (TClonesArray*) fManger->GetObject("TrdHitMatch");
+      fTrdHitMatches = (TClonesArray*) fairManager->GetObject("TrdHitMatch");
       fTrdPoints     = mcManager->InitBranch("TrdPoint");
     }
 
@@ -353,11 +333,11 @@ InitStatus CbmL1::Init()
     }
     else {
 
-      fDigisMuch         = (TClonesArray*) fManger->GetObject("MuchDigi");
-      fDigiMatchesMuch   = (TClonesArray*) fManger->GetObject("MuchDigiMatch");
-      fClustersMuch      = (TClonesArray*) fManger->GetObject("MuchCluster");
+      fDigisMuch         = (TClonesArray*) fairManager->GetObject("MuchDigi");
+      fDigiMatchesMuch   = (TClonesArray*) fairManager->GetObject("MuchDigiMatch");
+      fClustersMuch      = (TClonesArray*) fairManager->GetObject("MuchCluster");
       fMuchPoints        = mcManager->InitBranch("MuchPoint");
-      listMuchHitMatches = L1_DYNAMIC_CAST<TClonesArray*>(fManger->GetObject("MuchPixelHitMatch"));
+      listMuchHitMatches = L1_DYNAMIC_CAST<TClonesArray*>(fairManager->GetObject("MuchPixelHitMatch"));
     }
 
     if (!fUseTOF) {
@@ -366,14 +346,14 @@ InitStatus CbmL1::Init()
     }
     else {
       fTofPoints         = mcManager->InitBranch("TofPoint");
-      fTofHitDigiMatches = static_cast<TClonesArray*>(fManger->GetObject("TofHitMatch"));
+      fTofHitDigiMatches = static_cast<TClonesArray*>(fairManager->GetObject("TofHitMatch"));
     }
   }
   else {
   }
   if (!fUseMVD) { listMvdHits = 0; }
   else {
-    listMvdHits = L1_DYNAMIC_CAST<TClonesArray*>(fManger->GetObject("MvdHit"));
+    listMvdHits = L1_DYNAMIC_CAST<TClonesArray*>(fairManager->GetObject("MvdHit"));
   }
 
   NMvdStationsGeom  = 0;
@@ -408,7 +388,6 @@ InitStatus CbmL1::Init()
 
   fpInitManager->InitTargetField(2.5);
 
-
   /**************************************
    **                                  **
    ** STATIONS GEOMETRY INITIALIZATION **
@@ -420,8 +399,10 @@ InitStatus CbmL1::Init()
    ** Active tracking detector subsystems selection **
    ***************************************************/
 
-  fActiveTrackingDetectorIDs.insert(L1DetectorID::kSts);
+  fActiveTrackingDetectorIDs.clear();
+
   if (fUseMVD) { fActiveTrackingDetectorIDs.insert(L1DetectorID::kMvd); }
+  if (fUseSTS) { fActiveTrackingDetectorIDs.insert(L1DetectorID::kSts); }
   if (fUseMUCH) { fActiveTrackingDetectorIDs.insert(L1DetectorID::kMuch); }
   if (fUseTRD) { fActiveTrackingDetectorIDs.insert(L1DetectorID::kTrd); }
   if (fUseTOF) { fActiveTrackingDetectorIDs.insert(L1DetectorID::kTof); }
@@ -468,8 +449,8 @@ InitStatus CbmL1::Init()
       }
     }
     NTrdStationsGeom = layerCounter;
-
     //if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) { NTrdStationsGeom = NTrdStationsGeom - 1; }
+    LOG(info) << " NTrdStations " << NTrdStationsGeom;
   }
 
   /*** ToF ***/
@@ -513,8 +494,16 @@ InitStatus CbmL1::Init()
   if (!stsSetup->IsSensorParsInit()) { stsSetup->SetSensorParameters(fStsParSetSensor); }
   if (!stsSetup->IsSensorCondInit()) { stsSetup->SetSensorConditions(fStsParSetSensorCond); }
 
-  NMvdStationsGeom = (fUseMVD) ? CbmKF::Instance()->vMvdMaterial.size() : 0;
-  NStsStationsGeom = CbmStsSetup::Instance()->GetNofStations();
+  NMvdStationsGeom = 0;
+  if (fUseMVD) {
+    CbmMvdDetector* mvdDetector = CbmMvdDetector::Instance();
+    if (mvdDetector) {
+      CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();
+      assert(mvdStationPar);
+      NMvdStationsGeom = mvdStationPar->GetStationCount();
+    }
+  }
+  NStsStationsGeom = (fUseSTS) ? CbmStsSetup::Instance()->GetNofStations() : 0;
   NStationGeom     = NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom + NTrdStationsGeom + NTOFStationGeom;
 
   // Provide crosscheck number of stations for the fpInitManagera
@@ -592,7 +581,7 @@ InitStatus CbmL1::Init()
     // MVD // TODO: to be exchanged with specific flags (timeInfo, fieldInfo etc.) (S.Zh.)
     stationInfo.SetTimeInfo(0);
     stationInfo.SetTimeResolution(1000.);
-    stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
+    stationInfo.SetFieldStatus(L1Algo::TrackingMode::kMcbm == fTrackingMode ? 0 : 1);
     stationInfo.SetZ(t.z);
     auto thickness = t.dz;
     auto radLength = t.RadLength;
@@ -619,7 +608,7 @@ InitStatus CbmL1::Init()
     stationInfo.SetStationType(0);  // STS
     stationInfo.SetTimeInfo(1);
     stationInfo.SetTimeResolution(5.);
-    stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
+    stationInfo.SetFieldStatus(L1Algo::TrackingMode::kMcbm == fTrackingMode ? 0 : 1);
     // Setup station geometry and material
     stationInfo.SetZ(cbmSts->GetZ());
     double stsXmax = cbmSts->GetXmax();
@@ -697,9 +686,14 @@ InitStatus CbmL1::Init()
     fscal trdBackPhi    = TMath::Pi() / 2.;
     fscal trdFrontSigma = 0.15;
     fscal trdBackSigma  = 0.15;
+    if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {  //SGtrd2D!!
+      trdFrontSigma = 1.1;
+      trdBackSigma  = 1.1;
+      stationInfo.SetTimeResolution(1.e10);
+    }
     stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdFrontSigma, trdBackPhi, trdBackSigma);
     stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-    if (iSt == 1 && fTrackingMode == L1Algo::TrackingMode::kMcbm && fMissingHits) {
+    if (iSt == 1 && L1Algo::TrackingMode::kMcbm == fTrackingMode && fMissingHits) {
       stationInfo.SetTrackingStatus(false);
     }
     fpInitManager->AddStation(stationInfo);
@@ -882,7 +876,7 @@ InitStatus CbmL1::Init()
   trackingIterAllSecE.SetTargetPosSigmaXY(10, 10);
 
   // Select default track finder
-  if (fTrackingMode == L1Algo::TrackingMode::kMcbm) {
+  if (L1Algo::TrackingMode::kMcbm == fTrackingMode) {
     trackingIterAllPrim.SetMaxInvMom(1. / 0.1);
     trackingIterAllPrimE.SetMaxInvMom(1. / 0.1);
     trackingIterAllSecE.SetMaxInvMom(1. / 0.1);
@@ -936,9 +930,11 @@ void CbmL1::Reconstruct(CbmEvent* event)
 {
   static int nevent = 0;
   vFileEvent.clear();
+  int nStsHits = 0;
+  if (fUseSTS && listStsHits) { nStsHits = listStsHits->GetEntriesFast(); }
 
   L1Vector<std::pair<double, int>> SortStsHits("CbmL1::SortStsHits");
-  SortStsHits.reserve(listStsHits->GetEntriesFast());
+  SortStsHits.reserve(nStsHits);
 
   float start_t = 10000000000;
 
@@ -950,7 +946,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
   int FstHitinTs   = 0;      // 1st hit index in TS
 
   /// sort input hits by time
-  for (Int_t j = 0; j < listStsHits->GetEntriesFast(); j++) {
+  for (Int_t j = 0; j < nStsHits; j++) {
     CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(j));
     double t      = sh->GetTime();
     if (t < start_t) start_t = t;
@@ -993,11 +989,11 @@ void CbmL1::Reconstruct(CbmEvent* event)
   {
     int nHits = 0;
     int nSta  = 1;
-    if (listMvdHits) {
+    if (fUseMVD && listMvdHits) {
       nHits += listMvdHits->GetEntriesFast();
       nSta += NMvdStations;
     }
-    if (listStsHits) {
+    if (fUseSTS && listStsHits) {
       nHits += listStsHits->GetEntriesFast();
       nSta += NStsStations;
     }
@@ -1128,7 +1124,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
         algo->KFTrackFitter_simple();
       }
       else {
-        if (fTrackingMode == L1Algo::TrackingMode::kGlobal || fTrackingMode == L1Algo::TrackingMode::kMcbm) {
+        if (L1Algo::TrackingMode::kGlobal == fTrackingMode || L1Algo::TrackingMode::kMcbm == fTrackingMode) {
           algo->L1KFTrackFitterMuch();
         }
         else {
@@ -1227,8 +1223,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
       vRTracksCur.push_back(t);
     }
 
-
-    for (int i = 0; i < listStsHits->GetEntriesFast(); i++) {
+    for (int i = 0; i < nStsHits; i++) {
 
       CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(StsIndex[i]));
       float time    = sh->GetTime();
@@ -1237,7 +1232,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
         FstHitinTs = i;
         break;
       }
-    };
+    }
 
     if (!fLegacyEventMode) TsStart = TsStart_new;  ///Set new TS strat to earliest discarted track
 
@@ -1338,7 +1333,6 @@ void CbmL1::Finish()
   std::string dir           = p.parent_path().string();
   if (dir.empty()) dir = ".";
   std::string histoOutName = dir + "/L1_histo_" + p.filename().string();
-
   LOG(info) << "\033[31;1mHistograms will be saved to: \033[0m" << histoOutName;
 
   TFile* outfile = new TFile(histoOutName.c_str(), "RECREATE");

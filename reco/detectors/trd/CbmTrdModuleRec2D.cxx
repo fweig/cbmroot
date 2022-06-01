@@ -1022,7 +1022,7 @@ Int_t CbmTrdModuleRec2D::LoadDigis(vector<const CbmTrdDigi*>* din, Int_t cid)
       //row =
       GetPadRowCol(dgR->GetAddressChannel(), colR);
     }
-    if (colR == colT) {
+    if (colR == colT && dgR != NULL) {
       fDigis[cid].push_back(new CbmTrdDigiRec(*dgT, *dgR));
       j = din->erase(j);
     }

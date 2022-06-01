@@ -63,7 +63,6 @@ void CbmL1StsTrackFinder::Init() {}
 // -----   Copy tracks to output array   -----------------------------------
 Int_t CbmL1StsTrackFinder::CopyL1Tracks(CbmEvent* event)
 {
-
   CbmL1* L1 = CbmL1::Instance();
   if (!L1) return 0;
 
@@ -91,6 +90,9 @@ Int_t CbmL1StsTrackFinder::CopyL1Tracks(CbmEvent* event)
     for (vector<int>::iterator ih = it->StsHits.begin(); ih != it->StsHits.end(); ++ih) {
       CbmL1HitStore& h = L1->vHitStore[*ih];
       // 	  double zref = L1->algo->vStations[h.iStation].z[0];
+      if (h.Det > 1) {  // not MVD or STS hit
+        continue;
+      }
       if (h.ExtIndex < 0) {
         // CbmMvdHit tmp;
         // tmp.SetZ(zref);
