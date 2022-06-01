@@ -379,6 +379,20 @@ void PairAnalysisCutQa::Fill(UInt_t mask, TObject* obj, UInt_t addIdx)
       if (idx == static_cast<Int_t>(ETypes::kTrack) || idx == static_cast<Int_t>(ETypes::kTrack2)) {
         TProfile2D* detQA    = static_cast<TProfile2D*>(histos->FindObject(Form("%sMatchEff", fTypeKeys[idx])));
         PairAnalysisTrack* t = static_cast<PairAnalysisTrack*>(obj);
+#if (ROOT_VERSION_CODE >= ROOT_VERSION(6, 26, 0))
+        detQA->Fill(cutstep, PairAnalysisHelper::GetDetName(ECbmModuleId::kMvd),
+                    t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kMvd))), 1.);
+        detQA->Fill(cutstep, PairAnalysisHelper::GetDetName(ECbmModuleId::kSts),
+                    t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kSts))), 1.);
+        detQA->Fill(cutstep, PairAnalysisHelper::GetDetName(ECbmModuleId::kRich),
+                    t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kRich))), 1.);
+        detQA->Fill(cutstep, PairAnalysisHelper::GetDetName(ECbmModuleId::kTrd),
+                    t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kTrd))), 1.);
+        detQA->Fill(cutstep, PairAnalysisHelper::GetDetName(ECbmModuleId::kTof),
+                    t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kTof))), 1.);
+        detQA->Fill(cutstep, PairAnalysisHelper::GetDetName(ECbmModuleId::kMuch),
+                    t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kMuch))), 1.);
+#else
         detQA->Fill(cutstep, PairAnalysisHelper::GetDetName(ECbmModuleId::kMvd),
                     t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kMvd))));
         detQA->Fill(cutstep, PairAnalysisHelper::GetDetName(ECbmModuleId::kSts),
@@ -391,6 +405,7 @@ void PairAnalysisCutQa::Fill(UInt_t mask, TObject* obj, UInt_t addIdx)
                     t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kTof))));
         detQA->Fill(cutstep, PairAnalysisHelper::GetDetName(ECbmModuleId::kMuch),
                     t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kMuch))));
+#endif
       }
 
       ++cutstep;
@@ -440,6 +455,20 @@ void PairAnalysisCutQa::FillAll(TObject* obj, UInt_t addIdx)
   if (idx == static_cast<Int_t>(ETypes::kTrack) || idx == static_cast<Int_t>(ETypes::kTrack2)) {
     TProfile2D* detQA    = static_cast<TProfile2D*>(histos->FindObject(Form("%sMatchEff", fTypeKeys[idx])));
     PairAnalysisTrack* t = static_cast<PairAnalysisTrack*>(obj);
+#if (ROOT_VERSION_CODE >= ROOT_VERSION(6, 26, 0))
+    detQA->Fill(0., PairAnalysisHelper::GetDetName(ECbmModuleId::kMvd),
+                t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kMvd))), 1.);
+    detQA->Fill(0., PairAnalysisHelper::GetDetName(ECbmModuleId::kSts),
+                t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kSts))), 1.);
+    detQA->Fill(0., PairAnalysisHelper::GetDetName(ECbmModuleId::kRich),
+                t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kRich))), 1.);
+    detQA->Fill(0., PairAnalysisHelper::GetDetName(ECbmModuleId::kTrd),
+                t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kTrd))), 1.);
+    detQA->Fill(0., PairAnalysisHelper::GetDetName(ECbmModuleId::kTof),
+                t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kTof))), 1.);
+    detQA->Fill(0., PairAnalysisHelper::GetDetName(ECbmModuleId::kMuch),
+                t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kMuch))), 1.);
+#else
     detQA->Fill(0., PairAnalysisHelper::GetDetName(ECbmModuleId::kMvd),
                 t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kMvd))));
     detQA->Fill(0., PairAnalysisHelper::GetDetName(ECbmModuleId::kSts),
@@ -452,6 +481,7 @@ void PairAnalysisCutQa::FillAll(TObject* obj, UInt_t addIdx)
                 t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kTof))));
     detQA->Fill(0., PairAnalysisHelper::GetDetName(ECbmModuleId::kMuch),
                 t->TestBit(BIT(14 + ToIntegralType(ECbmModuleId::kMuch))));
+#endif
   }
 }
 
