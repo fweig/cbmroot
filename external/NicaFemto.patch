@@ -1,12 +1,44 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 60ab7e6..b70ab36 100644
+index 60ab7e6..9cf7543 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -52,7 +52,11 @@ if(NOT DEFINED NICAFEMTO_SUBDIR_BUILD)
- 	If(NOT _HAS_CXX11_FLAG)
- 	  Message(FATAL_ERROR "The used C++ compiler (${CMAKE_CXX_COMPILER}) does not support C++11. NicaFemto can only be compiled with compilers supporting C++11. Please install such an compiler.")
- 	EndIf()
+@@ -27,11 +27,11 @@ if(NOT DEFINED NICAFEMTO_SUBDIR_BUILD)
+ 	set(CMAKE_MODULE_PATH "$ENV{FAIRROOTPATH}/share/fairbase/cmake/modules_old" ${CMAKE_MODULE_PATH})
+ 	set(CMAKE_MODULE_PATH "$ENV{FAIRROOTPATH}/share/fairbase/cmake/modules"  ${CMAKE_MODULE_PATH})
+ 	set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules"  ${CMAKE_MODULE_PATH})
+-	IF(FAIRROOTPATH)
+-	  Set(CheckSrcDir "${FAIRROOTPATH}/share/fairbase/cmake/checks")
+-	ELSE(FAIRROOTPATH)
+-	  Set(CheckSrcDir "${CMAKE_SOURCE_DIR}/cmake/checks")
+-	ENDIF(FAIRROOTPATH)
++#	IF(FAIRROOTPATH)
++#	  Set(CheckSrcDir "${FAIRROOTPATH}/share/fairbase/cmake/checks")
++#	ELSE(FAIRROOTPATH)
++#	  Set(CheckSrcDir "${CMAKE_SOURCE_DIR}/cmake/checks")
++#	ENDIF(FAIRROOTPATH)
+ 	
+ 	if(FAIRROOTPATH)
+ 	  find_package(FairRoot)
+@@ -41,7 +41,7 @@ if(NOT DEFINED NICAFEMTO_SUBDIR_BUILD)
+ 	  EndIf(CMAKE_INSTALL_PREFIX)
+ 	endif(FAIRROOTPATH)
+ 	
+-	include(CheckCXX11Features)
++#	include(CheckCXX11Features)
+ 	
+ 	
+ 	include(FairMacros)
+@@ -49,10 +49,14 @@ if(NOT DEFINED NICAFEMTO_SUBDIR_BUILD)
+ 	include(CheckCompiler)
+ 	include(WriteConfig)
+ 	
+-	If(NOT _HAS_CXX11_FLAG)
+-	  Message(FATAL_ERROR "The used C++ compiler (${CMAKE_CXX_COMPILER}) does not support C++11. NicaFemto can only be compiled with compilers supporting C++11. Please install such an compiler.")
+-	EndIf()
 -	
++#	If(NOT _HAS_CXX11_FLAG)
++#	  Message(FATAL_ERROR "The used C++ compiler (${CMAKE_CXX_COMPILER}) does not support C++11. NicaFemto can only be compiled with compilers supporting C++11. Please install such an compiler.")
++#	EndIf()
 +
 +        if(APPLE)
 +          SET(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -single_module -undefined dynamic_lookup")
@@ -15,7 +47,37 @@ index 60ab7e6..b70ab36 100644
          Execute_process(COMMAND $ENV{SIMPATH}/bin/fairsoft-config --cxxflags OUTPUT_VARIABLE _res_fairsoft_config OUTPUT_STRIP_TRAILING_WHITESPACE)
          String(FIND ${_res_fairsoft_config} "-std=c++11" POS_C++11)
          If(${POS_C++11} EQUAL -1)
-@@ -131,7 +135,7 @@ if(NOT DEFINED NICAFEMTO_SUBDIR_BUILD)
+@@ -94,16 +98,24 @@ if(NOT DEFINED NICAFEMTO_SUBDIR_BUILD)
+ 	
+         find_package(ROOT 6.00.00 REQUIRED)
+         if("${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR}" VERSION_GREATER 6.16)
+-          Execute_Process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --has-vmc
+-                          OUTPUT_VARIABLE ROOT_vmc_FOUND
+-                         )
+-          String(STRIP ${ROOT_vmc_FOUND} ROOT_vmc_FOUND)
+-          If(NOT ROOT_vmc_FOUND)
++          if("${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR}" VERSION_LESS 6.26)
++            Execute_Process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --has-vmc
++                            OUTPUT_VARIABLE ROOT_vmc_FOUND
++                           )
++
++            String(STRIP ${ROOT_vmc_FOUND} ROOT_vmc_FOUND)
++            If(NOT ROOT_vmc_FOUND)
++              set(CMAKE_PREFIX_PATH $ENV{SIMPATH} ${CMAKE_PREFIX_PATH})
++              find_package2(PUBLIC VMC REQUIRED)
++              set(VMCLIB VMCLibrary)
++            endif()
++          else()
+             set(CMAKE_PREFIX_PATH $ENV{SIMPATH} ${CMAKE_PREFIX_PATH})
+             find_package2(PUBLIC VMC REQUIRED)
+             set(VMCLIB VMCLibrary)
+           endif()
+         endif()
++
+ 	Set(SIMPATH $ENV{SIMPATH})
+ 	Set(Boost_NO_SYSTEM_PATHS TRUE)
+ 	Set(Boost_NO_BOOST_CMAKE TRUE)
+@@ -131,7 +143,7 @@ if(NOT DEFINED NICAFEMTO_SUBDIR_BUILD)
            if(APPLE)
              set(GSL_DIR /usr/local)
            else()
@@ -24,6 +86,8 @@ index 60ab7e6..b70ab36 100644
            endif()
            find_package(GSL REQUIRED)
          endif()
+diff --git a/dataformat/NicaDataFormatManager.h b/dataformat/NicaDataFormatManager.h
+index 4ecb407..a739199 100644
 diff --git a/cuts/CMakeLists.txt b/cuts/CMakeLists.txt
 index 1d1c4f0..e5676ba 100755
 --- a/cuts/CMakeLists.txt
@@ -50,6 +114,19 @@ index b8576ab..b3fc335 100644
  
  GENERATE_LIBRARY()
  
+--- a/dataformat/NicaDataFormatManager.h
++++ b/dataformat/NicaDataFormatManager.h
+@@ -13,9 +13,9 @@
+ #include <TObject.h>
+ 
+ #include "NicaStd.h"
++#include "NicaTrack.h"
+ 
+ class NicaEvent;
+-class NicaTrack;
+ 
+ /**
+  * manager of formats
 diff --git a/features/NicaHelixBase.cxx b/features/NicaHelixBase.cxx
 index e248f54..7317950 100644
 --- a/features/NicaHelixBase.cxx
@@ -60,5 +137,5 @@ index e248f54..7317950 100644
  #include <TMath.h>
 +#include <TString.h>
  #include <iostream>
-
+ 
  Double_t NicaHelixBase::fgHelixBz = 0.5;

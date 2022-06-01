@@ -233,13 +233,20 @@ if(CBMROOT_MINIMAL)
 else(CBMROOT_MINIMAL)
   find_package(ROOT 6.00.00 REQUIRED)
   if("${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR}" VERSION_GREATER 6.16)
-    Execute_Process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --has-vmc
-                    OUTPUT_VARIABLE ROOT_vmc_FOUND
-                   )
-    String(STRIP ${ROOT_vmc_FOUND} ROOT_vmc_FOUND)
-    If(NOT ROOT_vmc_FOUND)
+    if("${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR}" VERSION_LESS 6.26)
+      Execute_Process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --has-vmc
+                       OUTPUT_VARIABLE ROOT_vmc_FOUND
+                      )
+
+      String(STRIP ${ROOT_vmc_FOUND} ROOT_vmc_FOUND)
+      If(NOT ROOT_vmc_FOUND)
+        set(CMAKE_PREFIX_PATH $ENV{SIMPATH} ${CMAKE_PREFIX_PATH})
+        find_package2(PUBLIC VMC REQUIRED)
+        set(VMCLIB VMCLibrary)
+      endif()
+    else()
+      set(CMAKE_PREFIX_PATH $ENV{SIMPATH} ${CMAKE_PREFIX_PATH})
       find_package2(PUBLIC VMC REQUIRED)
-      message("VMC_INCLUDE_DIRS: ${VMC_INCLUDE_DIRS}")
       set(VMCLIB VMCLibrary)
     endif()
   endif()
