@@ -135,7 +135,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
           L1ExtrapolateLine(T, hit.z);
 //           T.L1Extrapolate( sta.z, qp0, fld );
 //         L1Extrapolate( T, hit.z, qp0, fld );
-          if constexpr (L1Parameters::kIfUseRadLengthTable) {
+          if constexpr (L1Constants::control::kIfUseRadLengthTable) {
             fit.L1AddMaterial(T, fRadThick[i].GetRadThick(T.x, T.y), qp0, ONE);
           }
           else {
@@ -274,7 +274,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
           L1ExtrapolateLine(T, hit.z);
 //           T.L1Extrapolate( sta.z, qp0, fld );
 //           L1Extrapolate( T, hit.z, qp0, fld );
-          if constexpr (L1Parameters::kIfUseRadLengthTable) {
+          if constexpr (L1Constants::control::kIfUseRadLengthTable) {
             fit.L1AddMaterial(T, fRadThick[i].GetRadThick(T.x, T.y), qp0, ONE);
           }
           else {
@@ -354,19 +354,19 @@ void L1Algo::L1KFTrackFitter()
 
   L1Station* sta = fStations.begin();
   L1Station staFirst, staLast;
-  fvec x[L1Parameters::kMaxNstations], u[L1Parameters::kMaxNstations], v[L1Parameters::kMaxNstations],
-    y[L1Parameters::kMaxNstations], time[L1Parameters::kMaxNstations], timeEr[L1Parameters::kMaxNstations],
-    z[L1Parameters::kMaxNstations];
-  fvec d_x[L1Parameters::kMaxNstations], d_y[L1Parameters::kMaxNstations], d_xy[L1Parameters::kMaxNstations],
-    d_u[L1Parameters::kMaxNstations], d_v[L1Parameters::kMaxNstations];
+  fvec x[L1Constants::size::kMaxNstations], u[L1Constants::size::kMaxNstations], v[L1Constants::size::kMaxNstations],
+    y[L1Constants::size::kMaxNstations], time[L1Constants::size::kMaxNstations], timeEr[L1Constants::size::kMaxNstations],
+    z[L1Constants::size::kMaxNstations];
+  fvec d_x[L1Constants::size::kMaxNstations], d_y[L1Constants::size::kMaxNstations], d_xy[L1Constants::size::kMaxNstations],
+    d_u[L1Constants::size::kMaxNstations], d_v[L1Constants::size::kMaxNstations];
   fvec x_first, y_first, time_first, x_last, y_last, time_last, time_er_first, time_er_last, d_x_fst, d_y_fst, d_xy_fst,
     time_er_lst, d_x_lst, d_y_lst, d_xy_lst;
-  fvec Sy[L1Parameters::kMaxNstations], w[L1Parameters::kMaxNstations], w_time[L1Parameters::kMaxNstations];
+  fvec Sy[L1Constants::size::kMaxNstations], w[L1Constants::size::kMaxNstations], w_time[L1Constants::size::kMaxNstations];
   fvec y_temp, x_temp;
   fvec fldZ0, fldZ1, fldZ2, z_start, z_end;
-  L1FieldValue fB[L1Parameters::kMaxNstations], fB_temp _fvecalignment;
+  L1FieldValue fB[L1Constants::size::kMaxNstations], fB_temp _fvecalignment;
 
-  fvec ZSta[L1Parameters::kMaxNstations];
+  fvec ZSta[L1Constants::size::kMaxNstations];
   for (int iHit = 0; iHit < nHits; iHit++) {
     ZSta[iHit] = sta[iHit].z;
   }
@@ -388,7 +388,7 @@ void L1Algo::L1KFTrackFitter()
 
     for (iVec = 0; iVec < nTracks_SIMD; iVec++) {
       int nHitsTrack = t[iVec]->NHits;
-      int iSta[L1Parameters::kMaxNstations];
+      int iSta[L1Constants::size::kMaxNstations];
       for (i = 0; i < nHitsTrack; i++) {
         const L1Hit& hit = (*vStsHits)[fRecoHits[start_hit++]];
         const int ista   = (*fStripFlag)[hit.f] / 4;
@@ -521,7 +521,7 @@ void L1Algo::L1KFTrackFitter()
           T1.L1AddPipeMaterial(qp01, wIn);
           T1.EnergyLossCorrection(fit.PipeRadThick, qp01, fvec(1.f), wIn);
         }
-        if constexpr (L1Parameters::kIfUseRadLengthTable) {
+        if constexpr (L1Constants::control::kIfUseRadLengthTable) {
           fit.L1AddMaterial(T, fRadThick[i].GetRadThick(T.x, T.y), qp0, wIn);
           fit.EnergyLossCorrection(T, fRadThick[i].GetRadThick(T.x, T.y), qp0, fvec(1.f), wIn);
 
@@ -681,7 +681,7 @@ void L1Algo::L1KFTrackFitter()
           T1.L1AddPipeMaterial(qp01, wIn);
           T1.EnergyLossCorrection(fit.PipeRadThick, qp01, fvec(-1.f), wIn);
         }
-        if constexpr (L1Parameters::kIfUseRadLengthTable) {
+        if constexpr (L1Constants::control::kIfUseRadLengthTable) {
           fit.L1AddMaterial(T, fRadThick[i].GetRadThick(T.x, T.y), qp0, wIn);
           fit.EnergyLossCorrection(T, fRadThick[i].GetRadThick(T.x, T.y), qp0, fvec(-1.f), wIn);
 
@@ -780,20 +780,20 @@ void L1Algo::L1KFTrackFitterMuch()
 
   L1Station* sta = fStations.begin();
   L1Station staFirst, staLast;
-  fvec x[L1Parameters::kMaxNstations], u[L1Parameters::kMaxNstations], v[L1Parameters::kMaxNstations],
-    y[L1Parameters::kMaxNstations], time[L1Parameters::kMaxNstations], timeEr[L1Parameters::kMaxNstations],
-    z[L1Parameters::kMaxNstations];
-  fvec d_x[L1Parameters::kMaxNstations], d_y[L1Parameters::kMaxNstations], d_xy[L1Parameters::kMaxNstations],
-    d_u[L1Parameters::kMaxNstations], d_v[L1Parameters::kMaxNstations];
+  fvec x[L1Constants::size::kMaxNstations], u[L1Constants::size::kMaxNstations], v[L1Constants::size::kMaxNstations],
+    y[L1Constants::size::kMaxNstations], time[L1Constants::size::kMaxNstations], timeEr[L1Constants::size::kMaxNstations],
+    z[L1Constants::size::kMaxNstations];
+  fvec d_x[L1Constants::size::kMaxNstations], d_y[L1Constants::size::kMaxNstations], d_xy[L1Constants::size::kMaxNstations],
+    d_u[L1Constants::size::kMaxNstations], d_v[L1Constants::size::kMaxNstations];
   fvec x_first, y_first, time_first, x_last, y_last, time_last, time_er_fst, d_x_fst, d_y_fst, d_xy_fst, time_er_lst,
     d_x_lst, d_y_lst, d_xy_lst, dz;
-  int iSta[L1Parameters::kMaxNstations];
-  fvec Sy[L1Parameters::kMaxNstations], w[L1Parameters::kMaxNstations];
+  int iSta[L1Constants::size::kMaxNstations];
+  fvec Sy[L1Constants::size::kMaxNstations], w[L1Constants::size::kMaxNstations];
   fvec y_temp, x_temp;
   fvec fldZ0, fldZ1, fldZ2, z_start, z_end;
-  L1FieldValue fB[L1Parameters::kMaxNstations], fB_temp _fvecalignment;
+  L1FieldValue fB[L1Constants::size::kMaxNstations], fB_temp _fvecalignment;
 
-  fvec ZSta[L1Parameters::kMaxNstations];
+  fvec ZSta[L1Constants::size::kMaxNstations];
   for (int iHit = 0; iHit < nHits; iHit++) {
     ZSta[iHit] = sta[iHit].z;
   }
@@ -965,7 +965,7 @@ void L1Algo::L1KFTrackFitterMuch()
           fldB1 = fldB0;
           fldZ1 = fldZ0;
 
-          if constexpr (L1Parameters::kIfUseRadLengthTable) {
+          if constexpr (L1Constants::control::kIfUseRadLengthTable) {
             T1.EnergyLossCorrection(fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, fvec(-1.f), wIn);
 
             T1.L1AddThickMaterial(fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, wIn, sta[i].materialInfo.thick, 1);
@@ -1039,7 +1039,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
 //          T1.ExtrapolateLine( z_last, &w1);
 //          L1ExtrapolateLine( T, z_last);
-            if constexpr (L1Parameters::kIfUseRadLengthTable) {
+            if constexpr (L1Constants::control::kIfUseRadLengthTable) {
               if (i == 11 || i == 14 || i == 17)
                 T1.EnergyLossCorrectionIron(fRadThick[i].GetRadThick(T1.fx, T1.fy) / (nofSteps + 1), qp01, fvec(-1.f),
                                             wIn);
@@ -1180,7 +1180,7 @@ void L1Algo::L1KFTrackFitterMuch()
             T1.ExtrapolateLine(z_cur, &w2);
             nofSteps1 = nofSteps1 + (one - mask1);
 
-            if constexpr (L1Parameters::kIfUseRadLengthTable) {
+            if constexpr (L1Constants::control::kIfUseRadLengthTable) {
               if (i == 11 || i == 14 || i == 17)
                 T1.EnergyLossCorrectionIron(fRadThick[i].GetRadThick(T1.fx, T1.fy) / (nofSteps + 1), qp01, fvec(1.f),
                                             w2);
@@ -1254,7 +1254,7 @@ void L1Algo::L1KFTrackFitterMuch()
           //          L1Extrapolate( T, z[i], qp0, fld,&w1 );
 
 
-          if constexpr (L1Parameters::kIfUseRadLengthTable) {
+          if constexpr (L1Constants::control::kIfUseRadLengthTable) {
             T1.EnergyLossCorrection(fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, fvec(1.f), wIn);
             T1.L1AddThickMaterial(fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, wIn, sta[i].materialInfo.thick, 0);
           }

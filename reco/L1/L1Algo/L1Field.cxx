@@ -27,7 +27,6 @@ void L1FieldValue::Combine(L1FieldValue& B, fvec w)
 std::string L1FieldValue::ToString(int indentLevel) const
 {
   std::stringstream aStream {};
-  // TODO: possibly it is better to place the indentChar into L1Parameters (S.Zharko)
   constexpr char indentChar = '\t';
   std::string indent(indentLevel, indentChar);
   aStream << indent << "Bx [kG]: " << std::setw(12) << std::setfill(' ') << x[0] << '\n';
@@ -49,7 +48,7 @@ std::ostream& operator<<(std::ostream& out, const L1FieldValue& B)
 //
 L1FieldSlice::L1FieldSlice() noexcept
 {
-  for (int i = 0; i < L1Parameters::kMaxNFieldApproxCoefficients; ++i) {
+  for (int i = 0; i < L1Constants::size::kMaxNFieldApproxCoefficients; ++i) {
     cx[i] = 0.f;
     cy[i] = 0.f;
     cz[i] = 0.f;
@@ -104,7 +103,7 @@ std::string L1FieldSlice::ToString(int indentLevel) const
   constexpr char indentChar = '\t';
   std::string indent(indentLevel, indentChar);
   aStream << indent << "idx           CX           CY           CZ";
-  for (int i = 0; i < L1Parameters::kMaxNFieldApproxCoefficients; ++i) {
+  for (int i = 0; i < L1Constants::size::kMaxNFieldApproxCoefficients; ++i) {
     aStream << '\n' << indent;
     aStream << std::setw(3) << std::setfill(' ') << i << ' ';
     aStream << std::setw(12) << std::setfill(' ') << cx[i][0] << ' ';

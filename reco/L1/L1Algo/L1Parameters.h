@@ -14,71 +14,32 @@
 
 
 #include "L1CAIteration.h"
+#include "L1Constants.h"
 #include "L1Vector.h"
+
 //#include "utils/L1AlgoFunctions.h"
 
-
+/// Class L1Parameters represents a container for all external parameters of the L1 tracking algorithm,
+/// including geometry parameters and physics cuts. The instance of the L1Parameters is constructed inside
+/// L1InitManager class and then moved to the L1Algo instance.
 class L1Parameters {
 public:
-  /**********************/ /**
-   * COMPILE TIME CONSTANTS *
-   **************************/
 
-  //
-  // Array sizes
-  //
-
-  /// Amount of coefficients in field approximations
-  static constexpr int kMaxNFieldApproxCoefficients {21};  // TODO: May be it is better to use the polynomial
-                                                           // order instead of this?
-  /// Order of polynomial to approximate field in the vicinity of station plane
-  static constexpr int kMaxFieldApproxPolynomialOrder {5};
-
-  static constexpr unsigned int kStationBits {6u};  ///< Amount of bits to code one station
-  static constexpr unsigned int kThreadBits {6u};   ///< Amount of bits to code one thread
-  static constexpr unsigned int kTripletBits {32u - kStationBits - kThreadBits};  ///< Amount of bits to code one triple
-
-  static constexpr int kMaxNdetectors {5};                  ///< Max number of tracking detectors
-  static constexpr int kMaxNstations {1u << kStationBits};  ///< Max number of stations, 2^6  = 64
-  static constexpr int kMaxNthreads {1u << kThreadBits};    ///< Max number of threads, 2^6  = 64
-  static constexpr int kMaxNtriplets {1u << kTripletBits};  ///< Max number of triplets, 2^20 = 1,048,576
-
-  static constexpr int kStandardIOWidth {15};  ///< Width of one output entry, passed to the std::setw()
-
-  static constexpr int kAssertionLevel {0};  ///< Assertion level
-
-  //
-  // Compile control flags
-  //
-
-  /// Flag for the radiation length tables usage
-  /// true - Radiational tables will be used,
-  /// false - basic station material info is used
-  static constexpr bool kIfUseRadLengthTable {true};
-
-  /// Flag for calling the CAMergeClones procedure ... TODO
-  static constexpr bool kIfMergeClones {true};
-
-  /// Flag: debug mode for analyzing the doublets pergormance efficiencies
-  static constexpr bool kIfDebugDoubletsPerformance {false};
-  /// Flag: debug mode for analyzing the tiplets pergormance efficiencies
-  static constexpr bool kIfDebugTripletsPerformance {false};
-  /// Flag: debug mode for creating pools for triplets.
-  /// NOTE: this feature will work only if the L1Parameters::kIfDebugTipletsPerformace is true!
-  static constexpr bool kIfCreateTipletPulls {false};
-
-
-public:
   /// Default constructor
   L1Parameters() = default;
+  
   /// Destructor
   ~L1Parameters() = default;
+  
   /// Copy constructor
   L1Parameters(const L1Parameters& other) = default;
+  
   /// Copy assignment operator
   L1Parameters& operator=(const L1Parameters& other) = default;
+  
   /// Move constructor
   L1Parameters(L1Parameters&& other) = default;
+  
   /// Move assignment operator
   L1Parameters& operator=(L1Parameters&& other) = default;
 

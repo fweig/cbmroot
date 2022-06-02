@@ -10,6 +10,7 @@
 
 #include "L1InitManager.h"
 
+
 #include <algorithm>
 #include <sstream>
 
@@ -266,9 +267,9 @@ void L1InitManager::SetNstations(L1DetectorID detectorID, int nStations)
     fInitController.SetFlag(EInitKey::kStationsNumberCrosscheck, ifInitialized);
   }
   if (fInitController.GetFlag(EInitKey::kStationsNumberCrosscheck)) {
-    fNstationsGeometry[L1Parameters::kMaxNdetectors] =
+    fNstationsGeometry[L1Constants::size::kMaxNdetectors] =
       std::accumulate(fNstationsGeometry.begin(), fNstationsGeometry.end() - 1, 0);
-    fNstationsActive[L1Parameters::kMaxNdetectors] = fNstationsGeometry[L1Parameters::kMaxNdetectors];
+    fNstationsActive[L1Constants::size::kMaxNdetectors] = fNstationsGeometry[L1Constants::size::kMaxNdetectors];
   }
 }
 
@@ -301,7 +302,7 @@ void L1InitManager::SetTrackingLevel(int trackingLevel)
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
-void L1InitManager::TransferL1StationArray(std::array<L1Station, L1Parameters::kMaxNstations>& destinationArray)
+void L1InitManager::TransferL1StationArray(std::array<L1Station, L1Constants::size::kMaxNstations>& destinationArray)
 {
   //
   // 1) Check, if all fields of this were initialized
@@ -333,7 +334,7 @@ void L1InitManager::TransferL1StationArray(std::array<L1Station, L1Parameters::k
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
-void L1InitManager::TransferL1MaterialArray(std::array<L1Material, L1Parameters::kMaxNstations>& destinationArray)
+void L1InitManager::TransferL1MaterialArray(std::array<L1Material, L1Constants::size::kMaxNstations>& destinationArray)
 {
   //
   // 1) Check, if all fields of this were initialized
@@ -419,12 +420,12 @@ void L1InitManager::CheckStationsInfoInit()
     // 2) Check for maximum allowed number of stations
     //
     int nStationsTotal = fNstationsGeometry[fNstationsGeometry.size() - 1];
-    if (nStationsTotal > L1Parameters::kMaxNstations) {
+    if (nStationsTotal > L1Constants::size::kMaxNstations) {
       std::stringstream aStream;
       aStream << "Actual total number of registered stations in geometry (" << nStationsTotal
-              << ") is larger then possible (" << L1Parameters::kMaxNstations
+              << ") is larger then possible (" << L1Constants::size::kMaxNstations
               << "). Please, select another set of active tracking detectors or recompile the code with enlarged"
-              << " L1Parameters::kMaxNstations value";
+              << " L1Constants::size::kMaxNstations value";
       // TODO: We have to provide an instruction of how to increase the kMaxNstations
       //       number keeping the code consistent (S.Zharko)
       ifInitPassed = false;

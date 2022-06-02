@@ -10,16 +10,16 @@
 L1Algo::L1Algo(unsigned int nThreads)
 {
   SetNThreads(nThreads);
-  for (unsigned int i = 0; i < L1Parameters::kMaxNstations; i++) {
+  for (unsigned int i = 0; i < L1Constants::size::kMaxNstations; i++) {
     vGridTime[i].AllocateMemory(fNThreads);
   }
 }
 
 void L1Algo::SetNThreads(unsigned int n)
 {
-  if (n > static_cast<unsigned int>(L1Parameters::kMaxNthreads)) {
+  if (n > static_cast<unsigned int>(L1Constants::size::kMaxNthreads)) {
     LOG(fatal) << "L1Algo: n threads " << n << " is greater than the maximum "
-               << static_cast<unsigned int>(L1Parameters::kMaxNthreads);
+               << static_cast<unsigned int>(L1Constants::size::kMaxNthreads);
   }
   fNThreads = n;
 
@@ -52,7 +52,7 @@ void L1Algo::SetNThreads(unsigned int n)
     du[i].reserve(MaxPortionTriplets / fvecLen);
     dv[i].reserve(MaxPortionTriplets / fvecLen);
 
-    for (unsigned int j = 0; j < L1Parameters::kMaxNstations; j++) {
+    for (unsigned int j = 0; j < L1Constants::size::kMaxNstations; j++) {
       fTriplets[j][i].SetName(std::stringstream() << "L1Algo::fTriplets[" << i << "][" << j << "]");
     }
   }
@@ -198,7 +198,7 @@ void L1Algo::SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<unsign
     fRecoHits_local[i].reserve(nHits);
     fTrackCandidates[i].clear();
     fTrackCandidates[i].reserve(nHits / 10);
-    for (unsigned int j = 0; j < L1Parameters::kMaxNstations; j++) {
+    for (unsigned int j = 0; j < L1Constants::size::kMaxNstations; j++) {
       fTriplets[j][i].clear();
       fTriplets[j][i].reserve(2 * nHits);
     }

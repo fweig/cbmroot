@@ -79,8 +79,8 @@ class L1AlgoEfficiencyPerformance;
 #endif
 typedef int Tindex;
 
-using L1StationsArray_t = std::array<L1Station, L1Parameters::kMaxNstations>;
-using L1MaterialArray_t = std::array<L1Material, L1Parameters::kMaxNstations>;
+using L1StationsArray_t = std::array<L1Station, L1Constants::size::kMaxNstations>;
+using L1MaterialArray_t = std::array<L1Material, L1Constants::size::kMaxNstations>;
 
 /// Central class of L1 tracking
 ///
@@ -112,46 +112,46 @@ public:
   static unsigned int PackTripletId(unsigned int Station, unsigned int Thread, unsigned int Triplet)
   {
 #ifndef FAST_CODE
-    assert(Station < L1Parameters::kMaxNstations);
-    assert(Thread < L1Parameters::kMaxNthreads);
-    assert(Triplet < L1Parameters::kMaxNtriplets);
+    assert(Station < L1Constants::size::kMaxNstations);
+    assert(Thread < L1Constants::size::kMaxNthreads);
+    assert(Triplet < L1Constants::size::kMaxNtriplets);
 #endif
-    constexpr unsigned int kMoveThread  = L1Parameters::kTripletBits;
-    constexpr unsigned int kMoveStation = L1Parameters::kTripletBits + L1Parameters::kThreadBits;
+    constexpr unsigned int kMoveThread  = L1Constants::size::kTripletBits;
+    constexpr unsigned int kMoveStation = L1Constants::size::kTripletBits + L1Constants::size::kThreadBits;
     return (Station << kMoveStation) + (Thread << kMoveThread) + Triplet;
   }
 
   /// unpack the triplet ID to its station index
   static unsigned int TripletId2Station(unsigned int ID)
   {
-    constexpr unsigned int kMoveStation = L1Parameters::kTripletBits + L1Parameters::kThreadBits;
+    constexpr unsigned int kMoveStation = L1Constants::size::kTripletBits + L1Constants::size::kThreadBits;
     return ID >> kMoveStation;
   }
 
   /// unpack the triplet ID to its thread index
   static unsigned int TripletId2Thread(unsigned int ID)
   {
-    constexpr unsigned int kMoveThread = L1Parameters::kTripletBits;
-    constexpr unsigned int kThreadMask = (1u << L1Parameters::kThreadBits) - 1u;
+    constexpr unsigned int kMoveThread = L1Constants::size::kTripletBits;
+    constexpr unsigned int kThreadMask = (1u << L1Constants::size::kThreadBits) - 1u;
     return (ID >> kMoveThread) & kThreadMask;
   }
 
   /// unpack the triplet ID to its triplet index
   static unsigned int TripletId2Triplet(unsigned int ID)
   {
-    constexpr unsigned int kTripletMask = (1u << L1Parameters::kTripletBits) - 1u;
+    constexpr unsigned int kTripletMask = (1u << L1Constants::size::kTripletBits) - 1u;
     return ID & kTripletMask;
   }
 
 
-  L1Vector<L1Triplet> fTriplets[L1Parameters::kMaxNstations][L1Parameters::kMaxNthreads] {
+  L1Vector<L1Triplet> fTriplets[L1Constants::size::kMaxNstations][L1Constants::size::kMaxNthreads] {
     {"L1Algo::fTriplets"}};  // created triplets at station + thread
 
   // Track candidates created out of adjacent triplets before the final track selection.
   // The candidates may share any amount of hits.
-  L1Vector<L1Branch> fTrackCandidates[L1Parameters::kMaxNthreads] {"L1Algo::fTrackCandidates"};
+  L1Vector<L1Branch> fTrackCandidates[L1Constants::size::kMaxNthreads] {"L1Algo::fTrackCandidates"};
 
-  Tindex fDupletPortionStopIndex[L1Parameters::kMaxNstations] {0};     // end of the duplet portions for the station
+  Tindex fDupletPortionStopIndex[L1Constants::size::kMaxNstations] {0};     // end of the duplet portions for the station
   L1Vector<Tindex> fDupletPortionSize {"L1Algo::fDupletPortionSize"};  // N duplets in a portion
 
   /********************************************************************************************/ /**
@@ -264,8 +264,8 @@ public:
 
   int NStsStrips {0};                             ///> number of strips
   L1Vector<L1Hit>* vStsHits {nullptr};            ///> hits as a combination of front-, backstrips and z-position
-  L1Grid vGrid[L1Parameters::kMaxNstations];      ///> hits as a combination of front-, backstrips and z-position
-  L1Grid vGridTime[L1Parameters::kMaxNstations];  ///>
+  L1Grid vGrid[L1Constants::size::kMaxNstations];      ///> hits as a combination of front-, backstrips and z-position
+  L1Grid vGridTime[L1Constants::size::kMaxNstations];  ///>
 
   L1Vector<unsigned char>* fStripFlag {nullptr};  // information of hits station & using hits in tracks;
 
@@ -287,8 +287,8 @@ public:
   L1Vector<L1HitPoint> vStsDontUsedHitsxy_A {"L1Algo::vStsDontUsedHitsxy_A"};
   L1Vector<L1HitPoint> vStsDontUsedHitsxy_buf {"L1Algo::vStsDontUsedHitsxy_buf"};
   L1Vector<L1HitPoint> vStsDontUsedHitsxy_B {"L1Algo::vStsDontUsedHitsxy_B"};
-  L1Vector<L1Track> fTracks_local[L1Parameters::kMaxNthreads] {"L1Algo::fTracks_local"};
-  L1Vector<L1HitIndex_t> fRecoHits_local[L1Parameters::kMaxNthreads] {"L1Algo::fRecoHits_local"};
+  L1Vector<L1Track> fTracks_local[L1Constants::size::kMaxNthreads] {"L1Algo::fTracks_local"};
+  L1Vector<L1HitIndex_t> fRecoHits_local[L1Constants::size::kMaxNthreads] {"L1Algo::fRecoHits_local"};
 
   L1Vector<L1HitIndex_t> RealIHit_v {"L1Algo::RealIHit_v"};
   L1Vector<L1HitIndex_t> RealIHit_v_buf {"L1Algo::RealIHit_v_buf"};
@@ -307,8 +307,8 @@ public:
   bool fMissingHits {0};  ///< TODO ???
   TrackingMode fTrackingMode {kSts};
 
-  fvec EventTime[L1Parameters::kMaxNthreads][L1Parameters::kMaxNthreads] {{0}};
-  fvec Err[L1Parameters::kMaxNthreads][L1Parameters::kMaxNthreads] {{0}};
+  fvec EventTime[L1Constants::size::kMaxNthreads][L1Constants::size::kMaxNthreads] {{0}};
+  fvec Err[L1Constants::size::kMaxNthreads][L1Constants::size::kMaxNthreads] {{0}};
 
 
   /// standard sizes of the arrays
@@ -326,9 +326,8 @@ public:
     MaxNPortion        = 40 * coeff / multiCoeff,
 
 
-    MaxArrSize = MaxNPortion * MaxPortionDoublets
-                 / L1Parameters::
-                   kMaxNstations  //200000,  // standart size of big arrays  // mas be 40000 for normal work in cbmroot!
+    MaxArrSize = MaxNPortion * MaxPortionDoublets / L1Constants::size::kMaxNstations  
+                   //200000,  // standart size of big arrays  // mas be 40000 for normal work in cbmroot!
   };
 
 
@@ -341,10 +340,10 @@ public:
   L1Vector<L1HitPoint>* vStsHitPointsUnused {nullptr};
   L1HitIndex_t* RealIHit {nullptr};  // index in vStsHits indexed by index in vStsHitsUnused
 
-  L1HitIndex_t StsHitsUnusedStartIndex[L1Parameters::kMaxNstations + 1] {0};
-  L1HitIndex_t StsHitsUnusedStopIndex[L1Parameters::kMaxNstations + 1] {0};
-  L1HitIndex_t StsHitsUnusedStartIndexEnd[L1Parameters::kMaxNstations + 1] {0};
-  L1HitIndex_t StsHitsUnusedStopIndexEnd[L1Parameters::kMaxNstations + 1] {0};
+  L1HitIndex_t StsHitsUnusedStartIndex[L1Constants::size::kMaxNstations + 1] {0};
+  L1HitIndex_t StsHitsUnusedStopIndex[L1Constants::size::kMaxNstations + 1] {0};
+  L1HitIndex_t StsHitsUnusedStartIndexEnd[L1Constants::size::kMaxNstations + 1] {0};
+  L1HitIndex_t StsHitsUnusedStopIndexEnd[L1Constants::size::kMaxNstations + 1] {0};
 
 
   L1Vector<int> TripForHit[2] {"L1Algo::TripForHit"};  // TODO: what does '2' stand for?
@@ -354,25 +353,25 @@ public:
   //  fvec zPos[Portion/fvecLen];
   //  fvec fHitTime[Portion/fvecLen];
 
-  nsL1::vector<L1TrackPar>::TSimd fT_3[L1Parameters::kMaxNthreads];
+  nsL1::vector<L1TrackPar>::TSimd fT_3[L1Constants::size::kMaxNthreads];
 
-  L1Vector<L1HitIndex_t> fhitsl_3[L1Parameters::kMaxNthreads] {"L1Algo::fhitsl_3"};
-  L1Vector<L1HitIndex_t> fhitsm_3[L1Parameters::kMaxNthreads] {"L1Algo::fhitsm_3"};
-  L1Vector<L1HitIndex_t> fhitsr_3[L1Parameters::kMaxNthreads] {"L1Algo::fhitsr_3"};
+  L1Vector<L1HitIndex_t> fhitsl_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsl_3"};
+  L1Vector<L1HitIndex_t> fhitsm_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsm_3"};
+  L1Vector<L1HitIndex_t> fhitsr_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsr_3"};
 
-  nsL1::vector<fvec>::TSimd fu_front3[L1Parameters::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd fu_back3[L1Parameters::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd fz_pos3[L1Parameters::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd fTimeR[L1Parameters::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd fTimeER[L1Parameters::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd dx[L1Parameters::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd dy[L1Parameters::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd du[L1Parameters::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd dv[L1Parameters::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd fu_front3[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd fu_back3[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd fz_pos3[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd fTimeR[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd fTimeER[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd dx[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd dy[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd du[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd dv[L1Constants::size::kMaxNthreads];
 
 
-  //   Tindex NHits_l[L1Parameters::kMaxNstations];
-  //   Tindex NHits_l_P[L1Parameters::kMaxNstations];
+  //   Tindex NHits_l[L1Constants::size::kMaxNstations];
+  //   Tindex NHits_l_P[L1Constants::size::kMaxNstations];
   /// ----- Output data -----
 
   friend class CbmL1;

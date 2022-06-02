@@ -261,7 +261,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
         fit.L1AddPipeMaterial(T, qp0, wIn);
         fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(-1.f), wIn);
       }
-      if constexpr (L1Parameters::kIfUseRadLengthTable) {
+      if constexpr (L1Constants::control::kIfUseRadLengthTable) {
         fit.L1AddMaterial(T, CbmL1::Instance()->algo->GetMaterialThickness(i, T.x, T.y), qp0, wIn);
         fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->GetMaterialThickness(i, T.x, T.y), qp0, -1, wIn);
       }
@@ -337,7 +337,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
         fit.L1AddPipeMaterial(T, qp0, wIn);
         fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(1.f), wIn);
       }
-      if constexpr (L1Parameters::kIfUseRadLengthTable) {
+      if constexpr (L1Constants::control::kIfUseRadLengthTable) {
         fit.L1AddMaterial(T, CbmL1::Instance()->algo->GetMaterialThickness(i, T.x, T.y), qp0, wIn);
         fit.EnergyLossCorrection(T, CbmL1::Instance()->algo->GetMaterialThickness(i, T.x, T.y), qp0, 1, wIn);
       }

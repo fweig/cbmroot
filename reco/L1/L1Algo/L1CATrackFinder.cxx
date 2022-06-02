@@ -324,7 +324,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     }
 
     for (int ista = 0; ista <= istal - 1; ista++) {
-      if constexpr (L1Parameters::kIfUseRadLengthTable) {
+      if constexpr (L1Constants::control::kIfUseRadLengthTable) {
         fit.L1AddMaterial(T, fRadThick[ista].GetRadThick(T.x, T.y), fMaxInvMom, 1);
       }
       else {
@@ -364,7 +364,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 #endif  // BEGIN_FROM_TARGET
 
 
-    if constexpr (L1Parameters::kIfUseRadLengthTable) {
+    if constexpr (L1Constants::control::kIfUseRadLengthTable) {
       if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
         fit.L1AddThickMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), fMaxInvMom, 1, stal.materialInfo.thick, 1);
       }
@@ -691,7 +691,7 @@ inline void L1Algo::f30(  // input
       }
 
       FilterTime(T2, timeM, timeMEr, stam.timeInfo);
-      if constexpr (L1Parameters::kIfUseRadLengthTable) {
+      if constexpr (L1Constants::control::kIfUseRadLengthTable) {
         if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
           fit.L1AddThickMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), fMaxInvMom, 1, stam.materialInfo.thick,
                                  1);
@@ -1043,7 +1043,7 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
     // fit
     for (int ih = 1; ih < NHits; ++ih) {
       L1Extrapolate(T, z[ih], T.qp, fld);
-      if constexpr (L1Parameters::kIfUseRadLengthTable) {
+      if constexpr (L1Constants::control::kIfUseRadLengthTable) {
         fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
       }
       else {
@@ -1079,7 +1079,7 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
       //       L1Filter( T, sta[ih].backInfo,  v[ih] );
       for (ih = NHits - 2; ih >= 0; ih--) {
         L1Extrapolate(T, z[ih], T.qp, fld);
-        if constexpr (L1Parameters::kIfUseRadLengthTable) {
+        if constexpr (L1Constants::control::kIfUseRadLengthTable) {
           fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
         }
         else {
@@ -1111,7 +1111,7 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
       //       L1Filter( T, sta[ih].backInfo,  v[ih] );
       for (ih = 1; ih < NHits; ++ih) {
         L1Extrapolate(T, z[ih], T.qp, fld);
-        if constexpr (L1Parameters::kIfUseRadLengthTable) {
+        if constexpr (L1Constants::control::kIfUseRadLengthTable) {
           fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
         }
         else {
@@ -1664,9 +1664,9 @@ void L1Algo::CATrackFinder()
   //  static Tindex stat_nDoublets[fNFindIterations] = {0};
   static Tindex stat_nTriplets[fNFindIterations] = {0};
 
-  static Tindex stat_nLevels[L1Parameters::kMaxNstations - 2][fNFindIterations] = {{0}};
-  static Tindex stat_nCalls[fNFindIterations]                                   = {0};  // n calls of CAFindTrack
-  static Tindex stat_nTrCandidates[fNFindIterations]                            = {0};
+  static Tindex stat_nLevels[L1Constants::size::kMaxNstations - 2][fNFindIterations] = {{0}};
+  static Tindex stat_nCalls[fNFindIterations]                      = {0};  // n calls of CAFindTrack
+  static Tindex stat_nTrCandidates[fNFindIterations]               = {0};
 #endif
 
   /********************************/ /**
@@ -1939,7 +1939,7 @@ void L1Algo::CATrackFinder()
         //  fMaxDZ = 0.1;
 
         // TODO: to be removed, because this condition is checked in L1InitManager (S.Zharko)
-        if (fNstations > (int) L1Parameters::kMaxNstations) cout << " CATrackFinder: Error: Too many Stations" << endl;
+        if (fNstations > (int) L1Constants::size::kMaxNstations) cout << " CATrackFinder: Error: Too many Stations" << endl;
       }
 
 #ifndef L1_NO_ASSERT
@@ -2025,9 +2025,9 @@ void L1Algo::CATrackFinder()
       "L1CATrackFinder::hitsmG_2");  /// middle hits indexed by number of doublets in portion(i2)
     L1Vector<L1HitIndex_t> i1G_2(
       "L1CATrackFinder::i1G_2");  /// index in portion of singlets(i1) indexed by index in portion of doublets(i2)
-    L1Vector<char> lmDuplets[L1Parameters::kMaxNstations] {
+    L1Vector<char> lmDuplets[L1Constants::size::kMaxNstations] {
       "L1CATrackFinder::lmDuplets"};  // is exist a doublet started from indexed by left hit
-    L1Vector<char> lmDupletsG[L1Parameters::kMaxNstations] {
+    L1Vector<char> lmDupletsG[L1Constants::size::kMaxNstations] {
       "L1CATrackFinder::lmDupletsG"};  // is exist a doublet started from indexed by left hit
 
     for (int i = 0; i < fNstations; i++) {
@@ -2110,7 +2110,7 @@ void L1Algo::CATrackFinder()
       }  //
     }
 
-    //     int nlevels[L1Parameters::kMaxNstations];  // number of triplets with some number of neighbours.
+    //     int nlevels[L1Constants::size::kMaxNstations];  // number of triplets with some number of neighbours.
     //     for (int il = 0; il < fNstations; ++il) nlevels[il] = 0;
     //
     //      f5(   // input
@@ -2153,7 +2153,7 @@ void L1Algo::CATrackFinder()
 
 
     L1Branch curr_tr;
-    L1Branch new_tr[L1Parameters::kMaxNstations];
+    L1Branch new_tr[L1Constants::size::kMaxNstations];
     L1Branch best_tr;
     fscal curr_chi2 = 0;
 
@@ -2543,7 +2543,7 @@ void L1Algo::CATrackFinder()
   c_timerG.Start();
 #endif
 
-  if constexpr (L1Parameters::kIfMergeClones) { CAMergeClones(); }
+  if constexpr (L1Constants::control::kIfMergeClones) { CAMergeClones(); }
 
 #ifdef XXX
   c_timerG.Stop();

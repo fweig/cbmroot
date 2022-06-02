@@ -20,7 +20,7 @@
 #include "L1Assert.h"
 #include "L1BaseStationInfo.h"
 #include "L1Def.h"
-#include "L1Parameters.h"
+#include "L1Constants.h"
 // C++ STL
 #include <iomanip>
 #include <sstream>
@@ -212,8 +212,8 @@ void L1BaseStationInfo::SetFieldFunction(
   L1MASSERT(0, fInitController.GetFlag(EInitKey::kYmax),
             "Attempt to set magnetic field slice before Ymax size of the station");
   // TODO: Change names of variables according to convention (S.Zh.)
-  constexpr int M = L1Parameters::kMaxFieldApproxPolynomialOrder;
-  constexpr int N = L1Parameters::kMaxNFieldApproxCoefficients;
+  constexpr int M = L1Constants::size::kMaxFieldApproxPolynomialOrder;
+  constexpr int N = L1Constants::size::kMaxNFieldApproxCoefficients;
   constexpr int D = 3;  ///> number of dimensions
 
   // SLE initialization

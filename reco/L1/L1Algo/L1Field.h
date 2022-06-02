@@ -8,7 +8,7 @@
 #include <string>
 
 #include "L1Def.h"
-#include "L1Parameters.h"
+#include "L1Constants.h"
 
 class L1FieldValue {
 public:
@@ -47,9 +47,9 @@ public:
   // NOTE: We don't use an initialization of arrays here because we cannot be sure
   //       if the underlying type (fvec) has a default constructor, but
   //       we are sure, that it can be initialized with a float. (S.Zharko)
-  fvec cx[L1Parameters::kMaxNFieldApproxCoefficients];  ///< Polynomial coefficients for x-component of the field value
-  fvec cy[L1Parameters::kMaxNFieldApproxCoefficients];  ///< Polynomial coefficients for y-component of the field value
-  fvec cz[L1Parameters::kMaxNFieldApproxCoefficients];  ///< Polynomial coefficients for z-component of the field value
+  fvec cx[L1Constants::size::kMaxNFieldApproxCoefficients];  ///< Polynomial coefficients for x-component of the field value
+  fvec cy[L1Constants::size::kMaxNFieldApproxCoefficients];  ///< Polynomial coefficients for y-component of the field value
+  fvec cz[L1Constants::size::kMaxNFieldApproxCoefficients];  ///< Polynomial coefficients for z-component of the field value
 } _fvecalignment;
 
 

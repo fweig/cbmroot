@@ -22,7 +22,7 @@ struct L1AlgoInputData {
    */
 
   static constexpr int kMaxNStations {25};  ///> max number of stations to be passed to the L1AlgoInputData object
-  // TODO: Why is it different to the value used in L1Algo (L1Parameters::kMaxNstations)? (S.Zharko)
+  // TODO: Why is it different to the value used in L1Algo (L1Constants::size::kMaxNstations)? (S.Zharko)
 
   /// Default constructor
   L1AlgoInputData()  = default;

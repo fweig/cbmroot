@@ -12,6 +12,7 @@
 
 #include "L1BaseStationInfo.h"
 #include "L1CAIteration.h"
+#include "L1Constants.h"
 #include "L1Field.h"
 #include "L1ObjectInitController.h"
 #include "L1Parameters.h"
@@ -235,11 +236,11 @@ public:
 
   /// Transfers an array of L1Stations formed inside a set of L1BaseStationInfo to a destination std::array
   /// \param destinationArray  Reference to the destination array of L1Station objects in the L1Algo core
-  void TransferL1StationArray(std::array<L1Station, L1Parameters::kMaxNstations>& destinationArray);
+  void TransferL1StationArray(std::array<L1Station, L1Constants::size::kMaxNstations>& destinationArray);
 
   /// Transfers an array of L1Material tables formed inside a set of L1BaseStationInfo to a destination std::array
   /// \param destinationArray  Reference to the destination array of L1Material objects in the L1Algo core
-  void TransferL1MaterialArray(std::array<L1Material, L1Parameters::kMaxNstations>& destinationArray);
+  void TransferL1MaterialArray(std::array<L1Material, L1Constants::size::kMaxNstations>& destinationArray);
 
 
 private:
@@ -266,18 +267,18 @@ private:
 
   /// Numbers of stations, which are active in tracking. Index of an array element (except the last one) corresponds to a given
   /// L1DetectorID of the detector subystem. The last array element corresponds to the total number of stations.
-  std::array<int, L1Parameters::kMaxNdetectors + 1> fNstationsActive {};
+  std::array<int, L1Constants::size::kMaxNdetectors + 1> fNstationsActive {};
 
   /// Actual numbers of stations, provided by geometry. Index of an array element (except the last one) corresponds to a given
   /// L1DetectorID of the detector subystem. The last array element corresponds to the total number of stations.
-  std::array<int, L1Parameters::kMaxNdetectors + 1> fNstationsGeometry {};
+  std::array<int, L1Constants::size::kMaxNdetectors + 1> fNstationsGeometry {};
 
   /// Map of the actual detector indeces to the active detector indeces
   /// The vector maps actual station index (which is defined by ) to the index of station in tracking. If the station is inactive,
   /// its index is equal to -1. Example: let stations 1 and 4 be inactive. Then:
   ///   actual index:  0  1  2  3  4  5  6  7  8  9  0  0  0  0
   ///   active index:  0 -1  1  2 -1  3  4  5  6  7  0  0  0  0
-  std::array<int, L1Parameters::kMaxNstations> fActiveStationGlobalIDs {};
+  std::array<int, L1Constants::size::kMaxNstations> fActiveStationGlobalIDs {};
 
   /// A function which returns magnetic field vector B in a radius-vector xyz
   L1FieldFunction_t fFieldFunction {[](const double (&)[3], double (&)[3]) {}};
