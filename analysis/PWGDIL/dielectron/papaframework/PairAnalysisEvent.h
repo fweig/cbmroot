@@ -16,7 +16,9 @@
 //#############################################################
 #include "CbmDefs.h"
 #include "CbmVertex.h"
+
 #include "FairEventHeader.h"
+
 #include <TClonesArray.h>
 #include <TNamed.h>
 #include <TObjArray.h>
@@ -48,7 +50,7 @@ public:
   Int_t GetNumberOfHits(ECbmModuleId det) const;
   Int_t GetNumberOfHitMatches(ECbmModuleId det) const;
   Int_t GetNumberOfPoints(ECbmModuleId det) const;
-  Double_t GetEvStartTime() const {return fEvHeader->GetEventTime();}
+  Double_t GetEvStartTime() const { return fEvHeader->GetEventTime(); }
 
   TClonesArray* GetHits(ECbmModuleId det) const;
   TClonesArray* GetHitMatches(ECbmModuleId det) const;
@@ -68,7 +70,7 @@ protected:
 
 private:
   FairMCEventHeader* fMCHeader = NULL;  // mc header
-  FairEventHeader* fEvHeader = NULL;  // rec header
+  FairEventHeader* fEvHeader   = NULL;  // rec header
   TClonesArray* fMCTracks      = NULL;  // mc tracks
   TClonesArray* fStsMatches    = NULL;  // STS matches
   TClonesArray* fMuchMatches   = NULL;  // MUCH matches

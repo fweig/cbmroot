@@ -33,8 +33,8 @@
 #include <CbmTrdTrack.h>
 #include <CbmVertex.h>
 
-#include <FairMCEventHeader.h>
 #include <FairEventHeader.h>
+#include <FairMCEventHeader.h>
 #include <FairMCPoint.h>
 #include <FairRootManager.h>
 #include <FairTrackParam.h>
@@ -614,8 +614,7 @@ inline void PairAnalysisVarManager::FillVarPairAnalysisEvent(const PairAnalysisE
 
   // Set header information
   FillVarMCHeader(event->GetMCHeader(), values);
-  values[kEvStartTime]=event->GetEvStartTime();
-
+  values[kEvStartTime] = event->GetEvStartTime();
 }
 
 inline void PairAnalysisVarManager::FillVarMCHeader(const FairMCEventHeader* header, Double_t* const values)
@@ -1784,7 +1783,7 @@ inline void PairAnalysisVarManager::FillVarTofHit(const CbmTofHit* hit, Double_t
   FillVarPixelHit(hit, values);
 
   // Set
-  values[kBeta] = values[kTrackLength] / 100 / ((hit->GetTime()- values[kEvStartTime]) * 1e-9) / TMath::C();
+  values[kBeta] = values[kTrackLength] / 100 / ((hit->GetTime() - values[kEvStartTime]) * 1e-9) / TMath::C();
   // PID value detla beta
   values[kTofPidDeltaBetaEL] =
     values[kBeta] - (values[kP] / TMath::Sqrt(values[kMEL] * values[kMEL] + values[kP] * values[kP]));
