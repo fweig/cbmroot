@@ -615,7 +615,6 @@ inline void PairAnalysisVarManager::FillVarPairAnalysisEvent(const PairAnalysisE
   // Set header information
   FillVarMCHeader(event->GetMCHeader(), values);
   values[kEvStartTime]=event->GetEvStartTime();
-  std::cout<< "Event Time: " << values[kEvStartTime] <<std::endl;
 
 }
 
