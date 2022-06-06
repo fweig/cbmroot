@@ -82,7 +82,7 @@ void L1AlgoDraw::InitL1Draw(L1Algo* algo_)
   for (int i = 0; i < NStations; i++) {
     StsHitsStartIndex[i] = algo->StsHitsStartIndex[i];
     StsHitsStopIndex[i]  = algo->StsHitsStopIndex[i];
-    vStations[i]         = algo->GetStations()[i];
+    vStations[i]         = algo->GetParameters()->GetStation(i);
   }
 }
 

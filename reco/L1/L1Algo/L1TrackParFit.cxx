@@ -808,7 +808,7 @@ void L1TrackParFit::L1AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thi
 }
 
 
-void L1TrackParFit::L1AddMaterial(L1MaterialInfo& info, fvec qp0, fvec w)
+void L1TrackParFit::L1AddMaterial(const L1MaterialInfo& info, fvec qp0, fvec w)
 {
   cnst ONE = 1.f;
 

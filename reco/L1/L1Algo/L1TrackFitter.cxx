@@ -61,9 +61,9 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         int ista2 = (*fStripFlag)[hit2.f] / 4;
 
         //cout<<"back: ista012="<<ista0<<" "<<ista1<<" "<<ista2<<endl;
-        L1Station& sta0 = fStations[ista0];
-        L1Station& sta1 = fStations[ista1];
-        L1Station& sta2 = fStations[ista2];
+        const L1Station& sta0 = fParameters.GetStation(ista0);
+        const L1Station& sta1 = fParameters.GetStation(ista1);
+        const L1Station& sta2 = fParameters.GetStation(ista2);
 
         fvec u0 = hit0.u;
         fvec v0 = hit0.v;
@@ -129,14 +129,14 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
           const L1Hit& hit = (*vStsHits)[hits[i]];
           ista             = (*fStripFlag)[hit.f] / 4;
 
-          L1Station& sta = fStations[ista];
+          const L1Station& sta = fParameters.GetStation(ista);
 
           //    L1Extrapolate( T, hit.z, qp0, fld );
           L1ExtrapolateLine(T, hit.z);
 //           T.L1Extrapolate( sta.z, qp0, fld );
 //         L1Extrapolate( T, hit.z, qp0, fld );
           if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-            fit.L1AddMaterial(T, fRadThick[i].GetRadThick(T.x, T.y), qp0, ONE);
+            fit.L1AddMaterial(T, fParameters.GetMaterialThickness(i, T.x, T.y), qp0, ONE);
           }
           else {
             fit.L1AddMaterial(T, sta.materialInfo, qp0, ONE);
@@ -202,9 +202,9 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         int ista1 = GetFStation((*fStripFlag)[hit1.f]);
         int ista2 = GetFStation((*fStripFlag)[hit2.f]);
 
-        L1Station& sta0 = fStations[ista0];
-        L1Station& sta1 = fStations[ista1];
-        L1Station& sta2 = fStations[ista2];
+        const L1Station& sta0 = fParameters.GetStation(ista0);
+        const L1Station& sta1 = fParameters.GetStation(ista1);
+        const L1Station& sta2 = fParameters.GetStation(ista2);
 
         fvec u0 = hit0.u;
         fvec v0 = hit0.v;
@@ -264,7 +264,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         for (int i = 1; i < nHits; i++) {
           const L1Hit& hit = (*vStsHits)[hits[i]];
           ista             = (*fStripFlag)[hit.f] / 4;
-          L1Station& sta   = fStations[ista];
+          const L1Station& sta   = fParameters.GetStation(ista);
           fvec u           = hit.u;
           fvec v           = hit.v;
           fvec x, y;
@@ -275,7 +275,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
 //           T.L1Extrapolate( sta.z, qp0, fld );
 //           L1Extrapolate( T, hit.z, qp0, fld );
           if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-            fit.L1AddMaterial(T, fRadThick[i].GetRadThick(T.x, T.y), qp0, ONE);
+            fit.L1AddMaterial(T, fParameters.GetMaterialThickness(i, T.x, T.y), qp0, ONE);
           }
           else {
             fit.L1AddMaterial(T, sta.materialInfo, qp0, ONE);
@@ -352,7 +352,7 @@ void L1Algo::L1KFTrackFitter()
 
   L1Track* t[fvecLen];
 
-  L1Station* sta = fStations.begin();
+  const L1Station* sta = fParameters.GetStations().begin();
   L1Station staFirst, staLast;
   fvec x[L1Constants::size::kMaxNstations], u[L1Constants::size::kMaxNstations], v[L1Constants::size::kMaxNstations],
     y[L1Constants::size::kMaxNstations], time[L1Constants::size::kMaxNstations], timeEr[L1Constants::size::kMaxNstations],
@@ -445,7 +445,7 @@ void L1Algo::L1KFTrackFitter()
       fscal cursy = 0., curSy = 0.;
       for (i = nHitsTrack - 1; i >= 0; i--) {
         const int ista   = iSta[i];
-        L1Station& st    = fStations[ista];
+        const L1Station& st    = fParameters.GetStation(ista);
         const fscal curZ = z[ista][iVec];
         fscal dZ         = curZ - prevZ;
         fscal By         = st.fieldSlice.cy[0][0];
@@ -522,11 +522,11 @@ void L1Algo::L1KFTrackFitter()
           T1.EnergyLossCorrection(fit.PipeRadThick, qp01, fvec(1.f), wIn);
         }
         if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-          fit.L1AddMaterial(T, fRadThick[i].GetRadThick(T.x, T.y), qp0, wIn);
-          fit.EnergyLossCorrection(T, fRadThick[i].GetRadThick(T.x, T.y), qp0, fvec(1.f), wIn);
+          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(i, T.x, T.y), qp0, wIn);
+          fit.EnergyLossCorrection(T, fParameters.GetMaterialThickness(i, T.x, T.y), qp0, fvec(1.f), wIn);
 
-          T1.L1AddMaterial(fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, wIn);
-          T1.EnergyLossCorrection(fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, fvec(1.f), wIn);
+          T1.L1AddMaterial(fParameters.GetMaterialThickness(i, T1.fx, T1.fy), qp01, wIn);
+          T1.EnergyLossCorrection(fParameters.GetMaterialThickness(i, T1.fx, T1.fy), qp01, fvec(1.f), wIn);
         }
         else {
           fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
@@ -682,11 +682,11 @@ void L1Algo::L1KFTrackFitter()
           T1.EnergyLossCorrection(fit.PipeRadThick, qp01, fvec(-1.f), wIn);
         }
         if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-          fit.L1AddMaterial(T, fRadThick[i].GetRadThick(T.x, T.y), qp0, wIn);
-          fit.EnergyLossCorrection(T, fRadThick[i].GetRadThick(T.x, T.y), qp0, fvec(-1.f), wIn);
+          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(i, T.x, T.y), qp0, wIn);
+          fit.EnergyLossCorrection(T, fParameters.GetMaterialThickness(i, T.x, T.y), qp0, fvec(-1.f), wIn);
 
-          T1.L1AddMaterial(fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, wIn);
-          T1.EnergyLossCorrection(fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, fvec(-1.f), wIn);
+          T1.L1AddMaterial(fParameters.GetMaterialThickness(i, T1.fx, T1.fy), qp01, wIn);
+          T1.EnergyLossCorrection(fParameters.GetMaterialThickness(i, T1.fx, T1.fy), qp01, fvec(-1.f), wIn);
         }
         else {
           fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
@@ -778,7 +778,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
   L1Track* t[fvecLen];
 
-  L1Station* sta = fStations.begin();
+  const L1Station* sta = fParameters.GetStations().begin();
   L1Station staFirst, staLast;
   fvec x[L1Constants::size::kMaxNstations], u[L1Constants::size::kMaxNstations], v[L1Constants::size::kMaxNstations],
     y[L1Constants::size::kMaxNstations], time[L1Constants::size::kMaxNstations], timeEr[L1Constants::size::kMaxNstations],
@@ -884,7 +884,7 @@ void L1Algo::L1KFTrackFitterMuch()
       //   for(i = nHitsTrack - 1; i >= 0; i-- ){
       for (i = 0; i < nHitsTrackSts; i++) {
         const int ista   = iSta[i];
-        L1Station& st    = fStations[ista];
+        const L1Station& st    = fParameters.GetStation(ista);
         const fscal curZ = z[ista][iVec];
         fscal dZ         = curZ - prevZ;
         fscal By         = st.fieldSlice.cy[0][0];
@@ -966,9 +966,9 @@ void L1Algo::L1KFTrackFitterMuch()
           fldZ1 = fldZ0;
 
           if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-            T1.EnergyLossCorrection(fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, fvec(-1.f), wIn);
+            T1.EnergyLossCorrection(fParameters.GetMaterialThickness(i, T1.fx, T1.fy), qp01, fvec(-1.f), wIn);
 
-            T1.L1AddThickMaterial(fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, wIn, sta[i].materialInfo.thick, 1);
+            T1.L1AddThickMaterial(fParameters.GetMaterialThickness(i, T1.fx, T1.fy), qp01, wIn, sta[i].materialInfo.thick, 1);
           }
           else {
             //         L1AddMaterial( T, sta[i].materialInfo, qp0, wIn );
@@ -1039,18 +1039,19 @@ void L1Algo::L1KFTrackFitterMuch()
 
 //          T1.ExtrapolateLine( z_last, &w1);
 //          L1ExtrapolateLine( T, z_last);
+//          TODO: Unify energy loss corrections (S.Zharko)
             if constexpr (L1Constants::control::kIfUseRadLengthTable) {
               if (i == 11 || i == 14 || i == 17)
-                T1.EnergyLossCorrectionIron(fRadThick[i].GetRadThick(T1.fx, T1.fy) / (nofSteps + 1), qp01, fvec(-1.f),
+                T1.EnergyLossCorrectionIron(fParameters.GetMaterialThickness(i, T1.fx, T1.fy) / (nofSteps + 1), qp01, fvec(-1.f),
                                             wIn);
               if (i == 8)
-                T1.EnergyLossCorrectionCarbon(fRadThick[i].GetRadThick(T1.fx, T1.fy) / (nofSteps + 1), qp01, fvec(-1.f),
+                T1.EnergyLossCorrectionCarbon(fParameters.GetMaterialThickness(i, T1.fx, T1.fy) / (nofSteps + 1), qp01, fvec(-1.f),
                                               wIn);
               if (i == 9 || i == 10 || i == 12 || i == 13 || i == 15 || i == 16 || i == 18 || i == 19)
-                T1.EnergyLossCorrectionAl(fRadThick[i].GetRadThick(T1.fx, T1.fy) / (nofSteps + 1), qp01, fvec(-1.f),
+                T1.EnergyLossCorrectionAl(fParameters.GetMaterialThickness(i, T1.fx, T1.fy) / (nofSteps + 1), qp01, fvec(-1.f),
                                           wIn);
 
-              T1.L1AddThickMaterial(fRadThick[i].GetRadThick(T1.fx, T1.fy) / (nofSteps + fvec(1)), qp01, wIn,
+              T1.L1AddThickMaterial(fParameters.GetMaterialThickness(i, T1.fx, T1.fy) / (nofSteps + fvec(1)), qp01, wIn,
                                     sta[i].materialInfo.thick / (nofSteps + fvec(1)), 1);
 
               wIn = wIn & (one - mask1);
@@ -1130,9 +1131,9 @@ void L1Algo::L1KFTrackFitterMuch()
       //       fvec initialised = fvec(z[i] < z_end) & fvec(z_start <= z[i]);
       //       fvec wIn = (ONE  & (initialised));
 
-      //       T1.EnergyLossCorrectionAl( fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, fvec(1.f), wIn);
+      //       T1.EnergyLossCorrectionAl( fParameters.GetMaterialThickness(i, T1.fx, T1.fy), qp01, fvec(1.f), wIn);
       //
-      //       T1.L1AddThickMaterial(fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, ONE, sta[i].materialInfo.thick, 0);
+      //       T1.L1AddThickMaterial(fParameters.GetMaterialThickness(i, T1.fx, T1.fy), qp01, ONE, sta[i].materialInfo.thick, 0);
 
       for (--i; i >= 0; i--) {
 
@@ -1179,18 +1180,18 @@ void L1Algo::L1KFTrackFitterMuch()
 
             T1.ExtrapolateLine(z_cur, &w2);
             nofSteps1 = nofSteps1 + (one - mask1);
-
+            // TODO: Unify the selection of energy loss correction! (S.Zharko)
             if constexpr (L1Constants::control::kIfUseRadLengthTable) {
               if (i == 11 || i == 14 || i == 17)
-                T1.EnergyLossCorrectionIron(fRadThick[i].GetRadThick(T1.fx, T1.fy) / (nofSteps + 1), qp01, fvec(1.f),
+                T1.EnergyLossCorrectionIron(fParameters.GetMaterialThickness(i, T1.fx, T1.fy) / (nofSteps + 1), qp01, fvec(1.f),
                                             w2);
               if (i == 8)
-                T1.EnergyLossCorrectionCarbon(fRadThick[i].GetRadThick(T1.fx, T1.fy) / (nofSteps + 1), qp01, fvec(1.f),
+                T1.EnergyLossCorrectionCarbon(fParameters.GetMaterialThickness(i, T1.fx, T1.fy) / (nofSteps + 1), qp01, fvec(1.f),
                                               w2);
               if (i == 9 || i == 10 || i == 12 || i == 13 || i == 15 || i == 16 || i == 18)
-                T1.EnergyLossCorrectionAl(fRadThick[i].GetRadThick(T1.fx, T1.fy) / (nofSteps + 1), qp01, fvec(1.f), w2);
+                T1.EnergyLossCorrectionAl(fParameters.GetMaterialThickness(i, T1.fx, T1.fy) / (nofSteps + 1), qp01, fvec(1.f), w2);
 
-              T1.L1AddThickMaterial(fRadThick[i].GetRadThick(T1.fx, T1.fy) / (nofSteps + fvec(1)), qp01, w2,
+              T1.L1AddThickMaterial(fParameters.GetMaterialThickness(i, T1.fx, T1.fy) / (nofSteps + fvec(1)), qp01, w2,
                                     sta[i].materialInfo.thick / (nofSteps + fvec(1)), 0);
 
               w2 = w2 & (one - mask1);
@@ -1255,8 +1256,8 @@ void L1Algo::L1KFTrackFitterMuch()
 
 
           if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-            T1.EnergyLossCorrection(fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, fvec(1.f), wIn);
-            T1.L1AddThickMaterial(fRadThick[i].GetRadThick(T1.fx, T1.fy), qp01, wIn, sta[i].materialInfo.thick, 0);
+            T1.EnergyLossCorrection(fParameters.GetMaterialThickness(i, T1.fx, T1.fy), qp01, fvec(1.f), wIn);
+            T1.L1AddThickMaterial(fParameters.GetMaterialThickness(i, T1.fx, T1.fy), qp01, wIn, sta[i].materialInfo.thick, 0);
           }
           else {
             fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);

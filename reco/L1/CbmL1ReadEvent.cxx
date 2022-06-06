@@ -265,12 +265,12 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 1)) {
             MC.iStation     = -1;
-            const L1Station* sta = algo->GetStations().begin();
+            const L1Station* sta = algo->GetParameters()->GetStations().begin();
             double bestDist = 1.e20;
             for (Int_t iSt = 0; iSt < NMvdStationsGeom; iSt++) {
               // use z_in since z_out is sometimes very wrong
               // due to a problem in transport
-              int iStActive = fpInitManager->GetStationIndexActive(iSt, L1DetectorID::kMvd);
+              int iStActive = algo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kMvd);
               if (iStActive == -1) { continue; }
               double d = (MC.zIn - sta[iStActive].z[0]);
               if (fabs(d) < fabs(bestDist)) {
@@ -304,10 +304,10 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 0)) {
             MC.iStation     = -1;
-            const L1Station* sta = algo->GetStations().begin();
+            const L1Station* sta = algo->GetParameters()->GetStations().begin();
             double bestDist = 1.e20;
             for (Int_t iSt = 0; iSt < NStsStationsGeom; iSt++) {
-              int iStActive = fpInitManager->GetStationIndexActive(iSt, L1DetectorID::kSts);
+              int iStActive = algo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kSts);
               if (iStActive == -1) { continue; }
               // use z_in since z_out is sometimes very wrong
               // due to a problem in transport
@@ -342,9 +342,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 2)) {
             MC.iStation    = -1;
-            const L1Station* sta = algo->GetStations().begin();
+            const L1Station* sta = algo->GetParameters()->GetStations().begin();
             for (Int_t iSt = 0; iSt < NMuchStationsGeom; iSt++) {
-              int iStActive = fpInitManager->GetStationIndexActive(iSt, L1DetectorID::kMuch);
+              int iStActive = algo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kMuch);
               if (iStActive == -1) { continue; }
               if (MC.z > sta[iStActive].z[0] - 2.5) { MC.iStation = iStActive; }
             }
@@ -370,9 +370,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 3)) {
             MC.iStation    = -1;
-            const L1Station* sta = algo->GetStations().begin();
+            const L1Station* sta = algo->GetParameters()->GetStations().begin();
             for (Int_t iSt = 0; iSt < NTrdStationsGeom; iSt++) {
-              int iStActive = fpInitManager->GetStationIndexActive(iSt, L1DetectorID::kTrd);
+              int iStActive = algo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kTrd);
               if (iStActive == -1) { continue; }
               if (MC.z > sta[iStActive].z[0] - 4.0) { MC.iStation = iStActive; }
             }
@@ -422,9 +422,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             Int_t IND_Track = trk_it->second;
 
             MC.iStation    = -1;
-            const L1Station* sta = algo->GetStations().begin();
+            const L1Station* sta = algo->GetParameters()->GetStations().begin();
             for (Int_t iSt = 0; iSt < NTOFStationGeom; iSt++) {
-              int iStActive = fpInitManager->GetStationIndexActive(iSt, L1DetectorID::kTof);
+              int iStActive = algo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kTof);
               if (iStActive == -1) { continue; }
               MC.iStation = (MC.z > sta[iStActive].z[0] - 15) ? iStActive : MC.iStation;
             }
@@ -450,9 +450,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             if (!ReadMCPoint(&MC, TofPointToTrack[iTofSta][iMC], iFile, iEvent, 4)) {
 
               MC.iStation    = -1;
-              const L1Station* sta = algo->GetStations().begin();
+              const L1Station* sta = algo->GetParameters()->GetStations().begin();
               for (Int_t iSt = 0; iSt < NTOFStation; iSt++) {
-                int iStActive = fpInitManager->GetStationIndexActive(iSt, L1DetectorID::kTof);
+                int iStActive = algo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kTof);
                 if (iStActive == -1) { continue; }
                 MC.iStation = (MC.z > sta[iStActive].z[0] - 15) ? iStActive : MC.iStation;
               }
@@ -519,7 +519,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.id         = tmpHits.size();
         th.iStation   = mh->GetStationNr();
 
-        int stIdx = algo->GetInitManager()->GetStationIndexActive(mh->GetStationNr(), L1DetectorID::kMvd);
+        int stIdx = algo->GetParameters()->GetStationIndexActive(mh->GetStationNr(), L1DetectorID::kMvd);
         if (stIdx == -1) continue;
         th.iStation = stIdx;  //mh->GetStationNr() - 1;
         th.iStripF  = firstDetStrip + j;
@@ -541,7 +541,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.y = pos.Y();
         th.z = pos.Z();
 
-        const L1Station& st = algo->GetStations()[th.iStation];
+        const L1Station& st = algo->GetParameters()->GetStation(th.iStation);
         th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
         th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
@@ -582,7 +582,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       //            << p.time << " mc " << p.ID << " p " << p.p << endl;
       TmpHit th;
       int DetId = 1;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetStations()[p.iStation]);
+      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetParameters()->GetStation(p.iStation));
       tmpHits.push_back(th);
       nStsHits++;
     }
@@ -615,7 +615,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         CbmStsHit* mh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(hitIndexSort));
         th.ExtIndex   = hitIndexSort;
         th.Det        = 1;
-        int stIdx     = algo->GetInitManager()->GetStationIndexActive(
+        int stIdx     = algo->GetParameters()->GetStationIndexActive(
           CbmStsSetup::Instance()->GetStationNumber(mh->GetAddress()), L1DetectorID::kSts);
 
         if (stIdx == -1) continue;
@@ -659,7 +659,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.du = mh->GetDu();
         th.dv = mh->GetDv();
 
-        const L1Station& st = algo->GetStations()[th.iStation];
+        const L1Station& st = algo->GetParameters()->GetStation(th.iStation);
         th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
         th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
@@ -743,7 +743,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       TmpHit th;
       int DetId = 2;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetStations()[p.iStation]);
+      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetParameters()->GetStation(p.iStation));
 
       tmpHits.push_back(th);
       nMuchHits++;
@@ -772,7 +772,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
         int DetId = stationNumber * 3 + layerNumber;
 
-        int stIdx = algo->GetInitManager()->GetStationIndexActive(DetId, L1DetectorID::kMuch);
+        int stIdx = algo->GetParameters()->GetStationIndexActive(DetId, L1DetectorID::kMuch);
         if (stIdx == -1) continue;
         th.iStation = stIdx;  //mh->GetStationNr() - 1;
 
@@ -798,7 +798,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.dv = mh->GetDy();
 
 
-        const L1Station& st = algo->GetStations()[th.iStation];
+        const L1Station& st = algo->GetParameters()->GetStation(th.iStation);
         th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
         th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
@@ -824,7 +824,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
               if (trk_it == dFEI2vMCPoints.end()) continue;
               th.iMC = trk_it->second;
               if ((1 == fMuchUseMcHit) && (th.iMC > -1))
-                th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetStations()[th.iStation]);
+                th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetParameters()->GetStation(th.iStation));
             }
           }
         }
@@ -848,7 +848,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       TmpHit th;
       int DetId = 3;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetStations()[p.iStation]);
+      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetParameters()->GetStation(p.iStation));
       tmpHits.push_back(th);
       nTrdHits++;
     }
@@ -873,7 +873,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       th.id = tmpHits.size();
 
-      int stIdx = algo->GetInitManager()->GetStationIndexActive(mh->GetPlaneId(), L1DetectorID::kTrd);
+      int stIdx = algo->GetParameters()->GetStationIndexActive(mh->GetPlaneId(), L1DetectorID::kTrd);
       if (stIdx == -1) continue;
 
       th.iStation = stIdx;
@@ -907,7 +907,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       th.du = fabs(mh->GetDx());
       th.dv = fabs(mh->GetDy());
 
-      const L1Station& st = algo->GetStations()[th.iStation];
+      const L1Station& st = algo->GetParameters()->GetStation(th.iStation);
       th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
       th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
 
@@ -934,7 +934,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
               th.dy = 0.;
               th.dt = 0.;
             }
-            th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetStations()[th.iStation]);
+            th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetParameters()->GetStation(th.iStation));
             /*
               CbmTrdPoint* pt =
                 (CbmTrdPoint*) fTrdPoints->Get(trdHitMatch->GetLink(0).GetFile(), trdHitMatch->GetLink(0).GetEntry(),
@@ -990,7 +990,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       TmpHit th;
 
       int DetId = 4;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetStations()[p.iStation]);
+      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetParameters()->GetStation(p.iStation));
       tmpHits.push_back(th);
 
       nTofHits++;
@@ -1056,11 +1056,11 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         if ((th.x > 20) && (th.z > 270) && (fTofDigiBdfPar->GetTrackingStation(mh) == 1)) sttof = 2;
       if (th.z > 400) continue;
 
-      int stIdx = algo->GetInitManager()->GetStationIndexActive(sttof, L1DetectorID::kTof);
+      int stIdx = algo->GetParameters()->GetStationIndexActive(sttof, L1DetectorID::kTof);
       if (stIdx == -1) continue;
       th.iStation = stIdx;
 
-      const L1Station& st = algo->GetStations()[th.iStation];
+      const L1Station& st = algo->GetParameters()->GetStation(th.iStation);
       th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
       th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
 
@@ -1085,7 +1085,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
           DFEI2I::iterator trk_it = dFEI2vMCPoints.find(dtrck);
           if (trk_it != dFEI2vMCPoints.end()) th.iMC = TofPointToTrack[sttof][trk_it->second];
           if ((1 == fTofUseMcHit) && (th.iMC > -1))
-            th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetStations()[th.iStation]);
+            th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetParameters()->GetStation(th.iStation));
         }
       }
 

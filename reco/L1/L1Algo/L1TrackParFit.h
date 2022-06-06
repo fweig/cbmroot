@@ -113,7 +113,7 @@ public:
   void ExtrapolateLine1(fvec z_out, fvec* w = 0, fvec v = 0);
   void Compare(L1TrackPar& T);
   void EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
-  void L1AddMaterial(L1MaterialInfo& info, fvec qp0, fvec w = 1);
+  void L1AddMaterial(const L1MaterialInfo& info, fvec qp0, fvec w = 1);
 
   void L1AddMaterial(fvec radThick, fvec qp0, fvec w = 1);
 

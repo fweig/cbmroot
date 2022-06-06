@@ -347,8 +347,8 @@ void L1Algo::CAMergeClones()
       // if (fabs (Tf.time[0] - Tb.time[0]) > 500000) continue;
       unsigned short stam;
 
-      fStations[staf].fieldSlice.GetFieldValue(Tf.x, Tf.y, fBf);
-      fStations[stab].fieldSlice.GetFieldValue(Tb.x, Tb.y, fBb);
+      fParameters.GetStation(staf).fieldSlice.GetFieldValue(Tf.x, Tf.y, fBf);
+      fParameters.GetStation(stab).fieldSlice.GetFieldValue(Tb.x, Tb.y, fBb);
 
       unsigned short dist = firstStation[iTr] - lastStation[jTr];
 
@@ -356,10 +356,10 @@ void L1Algo::CAMergeClones()
       else
         stam = staf - 1;
 
-      fvec zm = fStations[stam].z;
+      fvec zm = fParameters.GetStation(stam).z;
       fvec xm = 0.5 * (Tf.x + Tf.tx * (zm - Tf.z) + Tb.x + Tb.tx * (zm - Tb.z));
       fvec ym = 0.5 * (Tf.y + Tf.ty * (zm - Tf.z) + Tb.y + Tb.ty * (zm - Tb.z));
-      fStations[stam].fieldSlice.GetFieldValue(xm, ym, fBm);
+      fParameters.GetStation(stam).fieldSlice.GetFieldValue(xm, ym, fBm);
       fld.Set(fBb, Tb.z, fBm, zm, fBf, Tf.z);
 
       fvec zMiddle = 0.5 * (Tb.z + Tf.z);

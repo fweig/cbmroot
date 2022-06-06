@@ -129,7 +129,7 @@ public:
   void CheckInit();
   // NOTE: This method calls checkers of large fields initializations like a station or an iteration. The method must be
   //       called in the L1Algo class. (S.Zharko)
-
+  
   /// Gets ghost suppression flag
   int GetGhostSuppression() const { return fGhostSuppression; }
 
@@ -140,7 +140,7 @@ public:
   const InitController_t& GetInitController() const { return fInitController; }
 
   /// Gets a pointer to L1Parameters instance with a posibility of its fields modification
-  const L1Parameters* GetParameters() const { return fpParameters; }
+  //const L1Parameters* GetParameters() const { return fpParameters; }
 
   /// Gets total number of active stations
   int GetNstationsActive() const { return fNstationsActive[fNstationsActive.size() - 1]; }
@@ -159,33 +159,6 @@ public:
   {
     return fNstationsGeometry[static_cast<L1DetectorID_t>(detectorID)];
   }
-
-  /// Calculates global index of station among geometry (accounts for inactive stations)
-  /// \param localIndex  index of the detector subsystem module/station/layer provided by detector subsystem experts
-  /// \param detectorID  ID of the detector subsystem
-  __attribute__((always_inline)) int GetStationIndexGeometry(int localIndex, L1DetectorID detectorID) const
-  {
-    return localIndex
-           + std::accumulate(fNstationsGeometry.cbegin(), fNstationsGeometry.cbegin() + static_cast<int>(detectorID),
-                             0);
-  }
-
-  /// Calculates global index of station used by track finder
-  /// \param localIndex  index of the detector subsystem module/station/layer provided by detector subsystem experts
-  /// \param detectorID  ID of the detector subsystem
-  __attribute__((always_inline)) int GetStationIndexActive(int localIndex, L1DetectorID detectorID) const
-  {
-    return fActiveStationGlobalIDs[GetStationIndexGeometry(localIndex, detectorID)];
-  }
-
-  /// Gets L1FieldRegion object at primary vertex
-  const L1FieldRegion& GetTargetFieldRegion() const { return fTargetFieldRegion; }
-
-  /// Gets L1FieldValue object at primary vertex
-  const L1FieldValue& GetTargetFieldValue() const { return fTargetFieldValue; }
-
-  /// Gets a target position
-  const std::array<double, 3>& GetTargetPosition() const { return fTargetPos; }
 
   /// Gets tracking level
   int GetTrackingLevel() const { return fTrackingLevel; }
@@ -234,14 +207,8 @@ public:
   /// Sets target poisition
   void SetTargetPosition(double x, double y, double z);
 
-  /// Transfers an array of L1Stations formed inside a set of L1BaseStationInfo to a destination std::array
-  /// \param destinationArray  Reference to the destination array of L1Station objects in the L1Algo core
-  void TransferL1StationArray(std::array<L1Station, L1Constants::size::kMaxNstations>& destinationArray);
-
-  /// Transfers an array of L1Material tables formed inside a set of L1BaseStationInfo to a destination std::array
-  /// \param destinationArray  Reference to the destination array of L1Material objects in the L1Algo core
-  void TransferL1MaterialArray(std::array<L1Material, L1Constants::size::kMaxNstations>& destinationArray);
-
+  /// Transfers L1Parameters object to the destination
+  void TransferParametersContainer(L1Parameters& destination);
 
 private:
   /// Checker for L1CAIteration container initialization (sets EInitKey::kCAIterations)
@@ -251,6 +218,9 @@ private:
   /// Checker for L1BaseStationInfo set initialization (sets EInitKey::kStationsInfo)
   /// \return true If all L1BaseStationInfo objects were initialized properly. Similar effect can be achieved by
   void CheckStationsInfoInit();
+ 
+  /// Forms parameters container
+  void FormParametersContainer();
 
   /* Basic fields */
 
@@ -259,7 +229,7 @@ private:
 
   /* Target fields */
 
-  std::array<double, /*nDimensions=*/3> fTargetPos {};  ///< Nominal target position coordinates [cm]
+  double fTargetZ {0.};  ///< Target position z component in double precision
 
   /* Stations related fields */
 
@@ -273,29 +243,15 @@ private:
   /// L1DetectorID of the detector subystem. The last array element corresponds to the total number of stations.
   std::array<int, L1Constants::size::kMaxNdetectors + 1> fNstationsGeometry {};
 
-  /// Map of the actual detector indeces to the active detector indeces
-  /// The vector maps actual station index (which is defined by ) to the index of station in tracking. If the station is inactive,
-  /// its index is equal to -1. Example: let stations 1 and 4 be inactive. Then:
-  ///   actual index:  0  1  2  3  4  5  6  7  8  9  0  0  0  0
-  ///   active index:  0 -1  1  2 -1  3  4  5  6  7  0  0  0  0
-  std::array<int, L1Constants::size::kMaxNstations> fActiveStationGlobalIDs {};
-
   /// A function which returns magnetic field vector B in a radius-vector xyz
   L1FieldFunction_t fFieldFunction {[](const double (&)[3], double (&)[3]) {}};
   // NOTE: Stations of daetectors which will not be assigned as active, will not be included in the tracking!
-
-  /* Vertex related fields */
-
-  L1FieldValue fTargetFieldValue {};    ///< L1FieldValue object at target
-  L1FieldRegion fTargetFieldRegion {};  ///< L1FieldRegion object at target
 
   /* CA track finder iterations related */
 
   int fCAIterationsNumberCrosscheck {-1};  ///< Number of iterations to be passed (must be used for cross-checks)
 
-
-  L1Parameters* fpParameters {
-    nullptr};  ///< Pointer to L1Parameters object. NOTE: Owner of the object is L1Algo instance
+  L1Parameters fParameters {}; ///< L1Algo parameters object
 
   int fTrackingLevel {0};     ///< tracking level
   int fGhostSuppression {0};  ///< flag: if true, ghost tracks are suppressed

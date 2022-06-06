@@ -128,19 +128,15 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
   // comment unused parameters, FU, 18.01.21
   fvec* /*d_x*/, fvec* /*d_y*/, fvec* /*d_xy*/, fvec* d_u, fvec* d_v)
 {
-  L1Station& stal = fStations[istal];
-  L1Station& stam = fStations[istam];
+  const L1Station& stal = fParameters.GetStation(istal);
+  const L1Station& stam = fParameters.GetStation(istam);
   fvec zstal      = stal.z;
   fvec zstam      = stam.z;
 
-  //L1Station& stal_CHECK = fStations[istal];
-  //std::cout << "\033[1;34m>>>>>>>>>>>>\033[0m " << istal << ' ' << &stal_CHECK << ' ' << fStations.begin() << ' ' << &stal_CHECK - fStations.begin() << '\n';
-
-
   int istal_global       = 5;  //TODO: SG: what are these stations? Should the numbers depend on the presence of mvd?
   int istam_global       = 6;
-  L1Station& stal_global = fStations[istal_global];
-  L1Station& stam_global = fStations[istam_global];
+  const L1Station& stal_global = fParameters.GetStation(istal_global);
+  const L1Station& stam_global = fParameters.GetStation(istam_global);
   fvec zstal_global      = stal_global.z;
   fvec zstam_global      = stam_global.z;
 
@@ -189,12 +185,12 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     int istac = istal / 2;  // "center" station
     //     if (istal >= fNstationsBeforePipe) // to make it in the same way for both with and w\o mvd
     //       istac = (istal - fNstationsBeforePipe) / 2 + fNstationsBeforePipe;
-    L1Station& stac = fStations[istac];
+    const L1Station& stac = fParameters.GetStation(istac);
     fvec zstac      = stac.z;
 
     int istac_global = istal_global / 2;  // "center" station
 
-    L1Station& stac_global = fStations[istac_global];
+    const L1Station& stac_global = fParameters.GetStation(istac_global);
     fvec zstac_global      = stac.z;
 
     stac.fieldSlice.GetFieldValue(fTargX + tx * (zstac - fTargZ), fTargY + ty * (zstac - fTargZ), centB);
@@ -219,7 +215,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
       fld1.Set(m_B, zstam, l_B, zstal, fTargB, fTargZ);
 #else  // if USE_3HITS  // the best now
     L1FieldValue r_B _fvecalignment;
-    L1Station& star = fStations[istam + 1];
+    const L1Station& star = fParameters.GetStation(istam + 1);
     fvec zstar      = star.z;
     star.fieldSlice.GetFieldValue(fTargX + tx * (zstar - fTargZ), fTargY + ty * (zstar - fTargZ), r_B);
     fld1.Set(r_B, zstar, m_B, zstam, l_B, zstal);
@@ -325,10 +321,10 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 
     for (int ista = 0; ista <= istal - 1; ista++) {
       if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-        fit.L1AddMaterial(T, fRadThick[ista].GetRadThick(T.x, T.y), fMaxInvMom, 1);
+        fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista, T.x, T.y), fMaxInvMom, 1);
       }
       else {
-        fit.L1AddMaterial(T, fStations[ista].materialInfo, fMaxInvMom, 1);
+        fit.L1AddMaterial(T, fParameters.GetStation(ista).materialInfo, fMaxInvMom, 1);
       }
       if (ista == fNstationsBeforePipe - 1) fit.L1AddPipeMaterial(T, fMaxInvMom, 1);
     }
@@ -366,10 +362,10 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 
     if constexpr (L1Constants::control::kIfUseRadLengthTable) {
       if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
-        fit.L1AddThickMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), fMaxInvMom, 1, stal.materialInfo.thick, 1);
+        fit.L1AddThickMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, 1, stal.materialInfo.thick, 1);
       }
       else {
-        fit.L1AddMaterial(T, fRadThick[istal].GetRadThick(T.x, T.y), fMaxInvMom, 1);
+        fit.L1AddMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, 1);
       }
     }
     else {
@@ -399,7 +395,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 /// Find the doublets. Reformat data in the portion of doublets.
 inline void L1Algo::f20(
   /// input
-  Tindex n1, L1Station& stal, L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1, L1HitIndex_t* hitsl_1,
+  Tindex n1, const L1Station& stal, const L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1, L1HitIndex_t* hitsl_1,
   /// output
   Tindex& n2, L1Vector<L1HitIndex_t>& i1_2,
 #ifdef DOUB_PERFORMANCE
@@ -422,12 +418,12 @@ inline void L1Algo::f20(
     // Pick_m22 is not used, search for mean squared, 2nd version
 
     // -- collect possible doublets --
-    const fscal iz         = 1.f / (T1.z[i1_4] - fRealTargetZ[0]);
+    const fscal iz         = 1.f / (T1.z[i1_4] - fParameters.GetTargetPositionZ()[0]);
     const float& timeError = T1.C55[i1_4];
     const float& time      = T1.t[i1_4];
 
 
-    L1HitAreaTime areaTime(vGridTime[&stam - fStations.begin()], T1.x[i1_4] * iz, T1.y[i1_4] * iz,
+    L1HitAreaTime areaTime(vGridTime[&stam - fParameters.GetStations().begin()], T1.x[i1_4] * iz, T1.y[i1_4] * iz,
                            (sqrt(Pick_m22 * (T1.C00 + stam.XYInfo.C00)) + fMaxDZ * fabs(T1.tx))[i1_4] * iz,
                            (sqrt(Pick_m22 * (T1.C11 + stam.XYInfo.C11)) + fMaxDZ * fabs(T1.ty))[i1_4] * iz, time,
                            sqrt(timeError) * 5);
@@ -439,7 +435,7 @@ inline void L1Algo::f20(
       if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
         irm1++;
         if ((L1HitIndex_t) irm1
-            >= (StsHitsUnusedStopIndex[&stam - fStations.begin()] - StsHitsUnusedStartIndex[&stam - fStations.begin()]))
+            >= (StsHitsUnusedStopIndex[&stam - fParameters.GetStations().begin()] - StsHitsUnusedStartIndex[&stam - fParameters.GetStations().begin()]))
           break;
         imh = irm1;
       }
@@ -570,7 +566,7 @@ inline void L1Algo::f20(
 /// Add the middle hits to parameters estimation. Propagate to right station.
 /// Find the triplets(right hit). Reformat data in the portion of triplets.
 inline void L1Algo::f30(  // input
-  L1HitPoint* vStsHits_r, L1Station& stam, L1Station& star, int istam, int istar, L1HitPoint* vStsHits_m,
+  L1HitPoint* vStsHits_r, const L1Station& stam, const L1Station& star, int istam, int istar, L1HitPoint* vStsHits_m,
   L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1, Tindex n2, L1Vector<L1HitIndex_t>& hitsm_2,
   L1Vector<L1HitIndex_t>& i1_2, const L1Vector<char>& /*mrDuplets*/,
   // output
@@ -693,11 +689,11 @@ inline void L1Algo::f30(  // input
       FilterTime(T2, timeM, timeMEr, stam.timeInfo);
       if constexpr (L1Constants::control::kIfUseRadLengthTable) {
         if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
-          fit.L1AddThickMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), fMaxInvMom, 1, stam.materialInfo.thick,
+          fit.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, 1, stam.materialInfo.thick,
                                  1);
         }
         else {
-          fit.L1AddMaterial(T2, fRadThick[istam].GetRadThick(T2.x, T2.y), T2.qp, 1);
+          fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), T2.qp, 1);
         }
       }
       else {
@@ -740,8 +736,8 @@ inline void L1Algo::f30(  // input
 #ifdef DO_NOT_SELECT_TRIPLETS
         if (isec == TRACKS_FROM_TRIPLETS_ITERATION) Pick_r22 = Pick_r2 + 1;
 #endif  // DO_NOT_SELECT_TRIPLETS
-        const fscal iz = 1.f / (T2.z[i2_4] - fRealTargetZ[0]);
-        L1HitAreaTime area(vGridTime[&star - fStations.begin()], T2.x[i2_4] * iz, T2.y[i2_4] * iz,
+        const fscal iz = 1.f / (T2.z[i2_4] - fParameters.GetTargetPositionZ()[0]);
+        L1HitAreaTime area(vGridTime[&star - fParameters.GetStations().begin()], T2.x[i2_4] * iz, T2.y[i2_4] * iz,
                            (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + fMaxDZ * fabs(T2.tx))[i2_4] * iz,
                            (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + fMaxDZ * fabs(T2.ty))[i2_4] * iz, time,
                            sqrt(timeError) * 5);
@@ -916,7 +912,7 @@ inline void L1Algo::f30(  // input
 
 /// Add the right hits to parameters estimation.
 inline void L1Algo::f31(  // input
-  Tindex n3_V, L1Station& star, nsL1::vector<fvec>::TSimd& u_front_, nsL1::vector<fvec>::TSimd& u_back_,
+  Tindex n3_V, const L1Station& star, nsL1::vector<fvec>::TSimd& u_front_, nsL1::vector<fvec>::TSimd& u_back_,
   nsL1::vector<fvec>::TSimd& z_Pos,
   //  nsL1::vector<fvec>::TSimd& dx_,
   //  nsL1::vector<fvec>::TSimd& dy_,
@@ -939,7 +935,7 @@ inline void L1Algo::f31(  // input
     if (fUseHitErrors) info.sigma2 = du_[i3_V] * du_[i3_V];
 
     bool noField =
-      (kGlobal == fTrackingMode || kMcbm == fTrackingMode) && (&star - fStations.begin() >= fNfieldStations);
+      (kGlobal == fTrackingMode || kMcbm == fTrackingMode) && (&star - fParameters.GetStations().begin() >= fNfieldStations);
 
     if (noField) { L1FilterNoField(T_3[i3_V], info, u_front_[i3_V]); }
     else {
@@ -979,7 +975,7 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
 
   L1Station sta[3];
   for (int is = 0; is < NHits; ++is) {
-    sta[is] = fStations[ista[is]];
+    sta[is] = fParameters.GetStation(ista[is]);
   };
 
   for (int i3 = 0; i3 < n3; ++i3) {
@@ -1044,7 +1040,7 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
     for (int ih = 1; ih < NHits; ++ih) {
       L1Extrapolate(T, z[ih], T.qp, fld);
       if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-        fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
+        fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista[ih], T.x, T.y), T.qp, 1);
       }
       else {
         fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
@@ -1080,7 +1076,7 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
       for (ih = NHits - 2; ih >= 0; ih--) {
         L1Extrapolate(T, z[ih], T.qp, fld);
         if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-          fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
+          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista[ih], T.x, T.y), T.qp, 1);
         }
         else {
           fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
@@ -1112,7 +1108,7 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
       for (ih = 1; ih < NHits; ++ih) {
         L1Extrapolate(T, z[ih], T.qp, fld);
         if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-          fit.L1AddMaterial(T, fRadThick[ista[ih]].GetRadThick(T.x, T.y), T.qp, 1);
+          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista[ih], T.x, T.y), T.qp, 1);
         }
         else {
           fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
@@ -1354,8 +1350,8 @@ inline void L1Algo::DupletsStaPort(
   ///   @&hitsm_2 - index of middle hit in hits array indexed by doublet index
 
   if (istam < fNstations) {
-    L1Station& stal = fStations[istal];
-    L1Station& stam = fStations[istam];
+    const L1Station& stal = fParameters.GetStation(istal);
+    const L1Station& stam = fParameters.GetStation(istam);
 
     // prepare data
     L1HitPoint* vStsHits_l = &((*vStsHitPointsUnused)[0]) + StsHitsUnusedStartIndex[istal];
@@ -1447,8 +1443,8 @@ L1Algo::TripletsStaPort(  /// creates triplets: input: @istal - start station nu
 {
   if (istar < fNstations) {
     // prepare data
-    L1Station& stam = fStations[istam];
-    L1Station& star = fStations[istar];
+    const L1Station& stam = fParameters.GetStation(istam);
+    const L1Station& star = fParameters.GetStation(istar);
 
     L1HitPoint* vStsHits_m = &((*vStsHitPointsUnused)[0]) + StsHitsUnusedStartIndex[istam];
 
@@ -1783,9 +1779,9 @@ void L1Algo::CATrackFinder()
 
 
   // ---- Loop over Track Finder iterations ----------------------------------------------------------------//
-  L1ASSERT(0, fNFindIterations == fParameters.CAIterationsContainer().size());
-  isec = 0;                                                            // TODO: temporary! (S.Zharko)
-  for (const auto& caIteration : fParameters.CAIterationsContainer())  // all finder
+  L1ASSERT(0, fNFindIterations == fParameters.GetCAIterations().size());
+  isec = 0;  // TODO: temporary! (S.Zharko)
+  for (const auto& caIteration : fParameters.GetCAIterations())  // all finder
   {
     std::cout << "CA Track Finder Iteration!!" << isec << '\n';
     //if (fTrackingMode == kMcbm) {
@@ -1895,17 +1891,17 @@ void L1Algo::CATrackFinder()
         //fMaxSlope = 2.748;  // corresponds to 70 grad
 
         // define the target
-        fTargX = fRealTargetX;
-        fTargY = fRealTargetY;
-        fTargZ = fRealTargetZ;
+        fTargX = fParameters.GetTargetPositionX();
+        fTargY = fParameters.GetTargetPositionY();
+        fTargZ = fParameters.GetTargetPositionZ();
 
         float SigmaTargetX = caIteration.GetTargetPosSigmaX();
         float SigmaTargetY = caIteration.GetTargetPosSigmaY();  // target constraint [cm]
 
         // Select magnetic field. For primary tracks - fVtxFieldValue, for secondary tracks - st.fieldSlice
-        if (caIteration.IsPrimary()) { fTargB = fVtxFieldValue; }
+        if (caIteration.IsPrimary()) { fTargB = fParameters.GetVertexFieldValue(); }
         else {
-          fStations[0].fieldSlice.GetFieldValue(0, 0, fTargB);
+          fParameters.GetStation(0).fieldSlice.GetFieldValue(0, 0, fTargB);
         }  // NOTE: calculates field fTargB in the center of 0th station
 
 
@@ -1919,9 +1915,9 @@ void L1Algo::CATrackFinder()
         //}
         //if ((isec == kAllSecIter) || (isec == kAllSecEIter)
         //    || (isec == kAllSecJumpIter)) {  //use outer radius of the 1st station as a constraint // ?
-        //  L1Station& st = fStations[0];
+        //  L1Station& st = fParameters.GetStation(0);
         //  SigmaTargetX = SigmaTargetY = 10;  //st.Rmax[0];
-        //  fTargZ                      = fRealTargetZ;  // fRealTargetZ-1.;
+        //  fTargZ                      = fParameters.GetTargetPositionZ();  // fParameters.GetTargetPositionZ()-1.;
         //  st.fieldSlice.GetFieldValue(0, 0, fTargB);
         //}
 
@@ -2414,9 +2410,9 @@ void L1Algo::CATrackFinder()
                 L1HitPoint tempPoint = CreateHitPoint(hit);  //TODO take number of station from hit
 
                 float xcoor, ycoor = 0;
-                L1Station stah = fStations[0];
+                L1Station stah = fParameters.GetStation(0); // TODO: Why is it a copy?
                 StripsToCoor(tempPoint.U(), tempPoint.V(), xcoor, ycoor, stah);
-                float zcoor = tempPoint.Z() - fRealTargetZ[0];
+                float zcoor = tempPoint.Z() - fParameters.GetTargetPositionZ()[0];
 
                 float timeFlight = sqrt(xcoor * xcoor + ycoor * ycoor + zcoor * zcoor) / 30.f;  // c = 30[cm/ns]
                 sumTime += (hit.t - timeFlight);

@@ -48,9 +48,9 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   int ista1 = GetFStation((*fStripFlag)[hit1.f]);
   int ista2 = GetFStation((*fStripFlag)[hit2.f]);
 
-  L1Station& sta0 = fStations[ista0];
-  L1Station& sta1 = fStations[ista1];
-  L1Station& sta2 = fStations[ista2];
+  const L1Station& sta0 = fParameters.GetStation(ista0);
+  const L1Station& sta1 = fParameters.GetStation(ista1);
+  const L1Station& sta2 = fParameters.GetStation(ista2);
 
   fvec u0 = hit0.u;
   fvec v0 = hit0.v;
@@ -126,7 +126,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
     ista_prev        = ista;
     ista             = GetFStation((*fStripFlag)[hit.f]);
 
-    L1Station& sta = fStations[ista];
+    const L1Station& sta = fParameters.GetStation(ista);
 
     float z_sta = hit.z;
 
@@ -213,9 +213,9 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
   const int ista1 = GetFStation((*fStripFlag)[hit1.f]);
   const int ista2 = GetFStation((*fStripFlag)[hit2.f]);
 
-  const L1Station& sta0 = fStations[ista0];
-  const L1Station& sta1 = fStations[ista1];
-  const L1Station& sta2 = fStations[ista2];
+  const L1Station& sta0 = fParameters.GetStation(ista0);
+  const L1Station& sta1 = fParameters.GetStation(ista1);
+  const L1Station& sta2 = fParameters.GetStation(ista2);
 
   fvec u0 = hit0.u;
   fvec v0 = hit0.v;
@@ -252,7 +252,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
   for (; (ista < fNstations) && (ista >= 0); ista += step) {  // CHECKME why ista2?
 
-    L1Station& sta = fStations[ista];
+    const L1Station& sta = fParameters.GetStation(ista);
 
     fvec dz = sta.z - T.z;
 
@@ -267,7 +267,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
     fscal r2_best = 1e8;  // best distance to hit
     int iHit_best = -1;   // index of the best hit
 
-    const fscal iz = 1.f / (T.z[0] - fRealTargetZ[0]);
+    const fscal iz = 1.f / (T.z[0] - fParameters.GetTargetPositionZ()[0]);
 
 
     L1HitAreaTime area(vGridTime[ista], T.x[0] * iz, T.y[0] * iz,

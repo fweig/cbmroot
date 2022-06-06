@@ -226,8 +226,8 @@ private:
   int fNstations {0};                          ///< number of all detector stations
   int fNstationsBeforePipe {0};                ///< number of stations before pipe (MVD stations in CBM)
   int fNfieldStations {0};                     ///< number of stations in the field region
-  alignas(16) L1StationsArray_t fStations {};  ///< array of L1Station objects
-  alignas(16) L1MaterialArray_t fRadThick {};  ///< material for each station
+  //alignas(16) L1StationsArray_t fStations {};  ///< array of L1Station objects
+  //alignas(16) L1MaterialArray_t fRadThick {};  ///< material for each station
 
 public:
   /// Gets total number of stations used in tracking
@@ -238,27 +238,6 @@ public:
 
   /// Gets number of stations situated in field region (MVD + STS in CBM)
   int GetNfieldStations() const { return fNfieldStations; }
-
-  /// Gets reference to the stations array
-  const L1StationsArray_t& GetStations() const { return fStations; }
-
-  /// Gets material thickness in units of radiation length in a point on the XY plane for a selected station
-  /// \param iStActive  Global index of an active station
-  /// \param xPos       Position of the point in X dimension [cm]
-  /// \param yPos       Position of the point in Y dimension [cm]
-  float GetMaterialThickness(int iStActive, float xPos, float yPos) const
-  {
-    return fRadThick[iStActive].GetRadThick(xPos, yPos);
-  }
-
-  /// Gets material thickness in units of radiation length in a point on the XY plane for a selected station
-  /// \param iStActive  Global index of an active station
-  /// \param xPos       Position of the point in X dimension [cm] (SIMDized vector)
-  /// \param yPos       Position of the point in Y dimension [cm] (SIMDized vector)
-  fvec GetMaterialThickness(int iStActive, fvec xPos, fvec yPos) const
-  {
-    return fRadThick[iStActive].GetRadThick(xPos, yPos);
-  }
 
 public:
 
@@ -376,8 +355,6 @@ public:
 
   friend class CbmL1;
 
-  const L1FieldValue& GetVtxFieldValue() const { return fVtxFieldValue; }
-  const L1FieldRegion& GetVtxFieldRegion() const { return fVtxFieldRegion; }
   /// ----- Hit-point-strips conversion routines ------
 
   void GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta);
@@ -412,11 +389,10 @@ public:
   // TODO: remove it (S.Zharko)
 
   /// Gets a pointer to the L1Algo parameters object
-  L1Parameters* GetParameters() { return &fParameters; }
+  const L1Parameters* GetParameters() { return &fParameters; }
+
   /// Gets a pointer to the L1Algo initialization object
   L1InitManager* GetInitManager() { return &fInitManager; }
-
-  fvec GetTargetZ() const { return fRealTargetZ; }
 
 private:
   L1Parameters fParameters {};                ///< Object of L1Algo parameters class
@@ -521,7 +497,7 @@ private:
 
   /// Find the doublets. Reformat data in the portion of doublets.
   void f20(  // input
-    Tindex n1, L1Station& stal, L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1, L1HitIndex_t* hitsl_1,
+    Tindex n1, const L1Station& stal, const L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1, L1HitIndex_t* hitsl_1,
 
     // output
     Tindex& n2, L1Vector<L1HitIndex_t>& i1_2,
@@ -534,7 +510,7 @@ private:
   /// Add the middle hits to parameters estimation. Propagate to right station.
   /// Find the triplets (right hit). Reformat data in the portion of triplets.
   void f30(  // input
-    L1HitPoint* vStsHits_r, L1Station& stam, L1Station& star,
+    L1HitPoint* vStsHits_r, const L1Station& stam, const L1Station& star,
 
     int istam, int istar, L1HitPoint* vStsHits_m, L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
 
@@ -552,7 +528,7 @@ private:
 
   /// Add the right hits to parameters estimation.
   void f31(  // input
-    Tindex n3_V, L1Station& star, nsL1::vector<fvec>::TSimd& u_front_3, nsL1::vector<fvec>::TSimd& u_back_3,
+    Tindex n3_V, const L1Station& star, nsL1::vector<fvec>::TSimd& u_front_3, nsL1::vector<fvec>::TSimd& u_back_3,
     nsL1::vector<fvec>::TSimd& z_Pos_3,
     //    nsL1::vector<fvec>::TSimd& dx_,
     //    nsL1::vector<fvec>::TSimd& dy_,
@@ -711,19 +687,14 @@ private:
   fvec fMaxInvMom {L1Utils::kNaN};       ///< max considered q/p for tracks
   fvec fMaxSlopePV {L1Utils::kNaN};      ///< max slope (tx\ty) in prim vertex
   float fMaxSlope {L1Utils::kNaN};       ///< max slope (tx\ty) in 3d hit position of a triplet
-  fvec fRealTargetX {L1Utils::kNaN};     ///< real target position x coordinate
-  fvec fRealTargetY {L1Utils::kNaN};     ///< real target position y coordinate
-  fvec fRealTargetZ {L1Utils::kNaN};     ///< real target position z coordinate
+  
   fvec fTargX {L1Utils::kNaN};           ///< target position x coordinate for the current iteration (modifiable)
   fvec fTargY {L1Utils::kNaN};           ///< target position y coordinate for the current iteration (modifiable)
   fvec fTargZ {L1Utils::kNaN};           ///< target position z coordinate for the current iteration (modifiable)
 
-  L1FieldValue fTargB _fvecalignment {};               // field in the target point
+  L1FieldValue fTargB _fvecalignment {};               // field in the target point (modifiable, do not touch!!)
   L1XYMeasurementInfo TargetXYInfo _fvecalignment {};  // target constraint  [cm]
 
-
-  L1FieldRegion fVtxFieldRegion _fvecalignment {};  // really doesn't used
-  L1FieldValue fVtxFieldValue _fvecalignment {};    // field at teh vertex position.
 
   //  int TripNumThread;
 

@@ -89,57 +89,24 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
 
   // Final init checks (the function provides purity of fields initialization and turns on the last bit of
   // the L1ObjectInitController):
-  fInitManager.CheckInit();  // NOTE: after passing this frontier L1Algo is (will be) accounted as initialized
+  //fInitManager.CheckInit();  // NOTE: after passing this frontier L1Algo is (will be) accounted as initialized
 
   // Print out the bits of the init manager
-  LOG(info) << "InitManager " << fInitManager.GetInitController().ToString();
+  //LOG(info) << "InitManager " << fInitManager.GetInitController().ToString();
 
-  // Get real target position
-  fRealTargetX = fInitManager.GetTargetPosition()[0];
-  fRealTargetY = fInitManager.GetTargetPosition()[1];
-  fRealTargetZ = fInitManager.GetTargetPosition()[2];
-
+  LOG(info) << "\033[1;34m ------ Parameters (before) -------------------------------------------------------------------\033[0m";
+  LOG(info) << fParameters.ToString();
+  fInitManager.TransferParametersContainer(fParameters);
+  LOG(info) << "\033[1;34m ------ Parameters (after) --------------------------------------------------------------------\033[0m";
+  LOG(info) << fParameters.ToString();
+  
   // Get number of station
   fNstations = fInitManager.GetNstationsActive();
-
-  // Get field near target
-  fVtxFieldValue  = fInitManager.GetTargetFieldValue();
-  fVtxFieldRegion = fInitManager.GetTargetFieldRegion();
-
-  // Fill L1Station array
-  fInitManager.TransferL1StationArray(fStations);
-  fInitManager.TransferL1MaterialArray(fRadThick);
 
   fTrackingLevel    = fInitManager.GetTrackingLevel();
   fGhostSuppression = fInitManager.GetGhostSuppression();
   fMomentumCutOff   = fInitManager.GetMomentumCutOff();
 
-  LOG(info) << "  ***********************";
-  LOG(info) << "  *  L1Algo parameters  *";
-  LOG(info) << "  ***********************";
-  LOG(info) << "";
-
-  LOG(info) << "----- Nominal target position -----";
-  LOG(info) << "\t target X = " << fRealTargetX;
-  LOG(info) << "\t target Y = " << fRealTargetY;
-  LOG(info) << "\t target Z = " << fRealTargetZ;
-
-  LOG(info) << "----- Number of stations -----";
-  LOG(info) << "\tTotal stations:           " << fNstations;
-  LOG(info) << "\tStations before pipe:     " << fNstationsBeforePipe;
-  LOG(info) << "\tStations in field region: " << fNfieldStations;
-
-  LOG(info) << "----- Magnetic field near target -----";
-  LOG(info) << "\tField Value:  " << '\n' << fVtxFieldValue.ToString(/*indent = */ 1) << '\n';
-  LOG(info) << "\tField Region: " << '\n' << fVtxFieldRegion.ToString(/*indent = */ 1) << '\n';
-
-  LOG(info) << "----- L1 active stations list -----";
-  for (int iSt = 0; iSt < fNstations; ++iSt) {
-    LOG(info) << " #" << iSt << " " << fStations[iSt].ToString(/*verbosity = */ 0);
-  }
-
-  // Print L1Parameters
-  fParameters.Print(/*verbosity=*/0);
 }
 
 
@@ -208,11 +175,11 @@ void L1Algo::SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<unsign
 
 void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, char iS)
 {
-  L1Station& sta = fStations[int(iS)];
+  const L1Station& sta = fParameters.GetStation(int(iS));
   fscal u        = _h.u;
   fscal v        = _h.v;
-  _x             = (sta.xInfo.sin_phi[0] * u + sta.xInfo.cos_phi[0] * v) / (_h.z - fRealTargetZ[0]);
-  _y             = (sta.yInfo.cos_phi[0] * u + sta.yInfo.sin_phi[0] * v) / (_h.z - fRealTargetZ[0]);
+  _x             = (sta.xInfo.sin_phi[0] * u + sta.xInfo.cos_phi[0] * v) / (_h.z - fParameters.GetTargetPositionZ()[0]);
+  _y             = (sta.yInfo.cos_phi[0] * u + sta.yInfo.sin_phi[0] * v) / (_h.z - fParameters.GetTargetPositionZ()[0]);
 }
 
 void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta)

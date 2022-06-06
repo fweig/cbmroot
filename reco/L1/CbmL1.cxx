@@ -726,23 +726,6 @@ InitStatus CbmL1::Init()
     LOG(info) << "- TOF station " << iSt << " at z = " << stationInfo.GetZdouble();
   }
 
-  /*** Get numbers of active stations ***/
-
-  NMvdStations  = fpInitManager->GetNstationsActive(L1DetectorID::kMvd);
-  NStsStations  = fpInitManager->GetNstationsActive(L1DetectorID::kSts);
-  NTrdStations  = fpInitManager->GetNstationsActive(L1DetectorID::kTrd);
-  NMuchStations = fpInitManager->GetNstationsActive(L1DetectorID::kMuch);
-  NTOFStation   = fpInitManager->GetNstationsActive(L1DetectorID::kTof);
-  NStation      = fpInitManager->GetNstationsActive();
-
-  LOG(info) << "----- Numbers of stations active in tracking -----";
-  LOG(info) << "  MVD:    " << NMvdStations;
-  LOG(info) << "  STS:    " << NStsStations;
-  LOG(info) << "  MuCh:   " << NMuchStations;
-  LOG(info) << "  TRD:    " << NTrdStations;
-  LOG(info) << "  ToF:    " << NTOFStation;
-  LOG(info) << "  Total:  " << NStation;
-
   /****************************************
    **                                    **
    ** TRACKING ITERATIONS INITIALIZATION **
@@ -919,6 +902,24 @@ InitStatus CbmL1::Init()
   /**********************/
 
   algo->Init(fUseHitErrors, fTrackingMode, fMissingHits);
+  
+  /*** Get numbers of active stations ***/
+
+  NMvdStations  = fpInitManager->GetNstationsActive(L1DetectorID::kMvd);
+  NStsStations  = fpInitManager->GetNstationsActive(L1DetectorID::kSts);
+  NTrdStations  = fpInitManager->GetNstationsActive(L1DetectorID::kTrd);
+  NMuchStations = fpInitManager->GetNstationsActive(L1DetectorID::kMuch);
+  NTOFStation   = fpInitManager->GetNstationsActive(L1DetectorID::kTof);
+  NStation      = fpInitManager->GetNstationsActive();
+
+  LOG(info) << "----- Numbers of stations active in tracking -----";
+  LOG(info) << "  MVD:    " << NMvdStations;
+  LOG(info) << "  STS:    " << NStsStations;
+  LOG(info) << "  MuCh:   " << NMuchStations;
+  LOG(info) << "  TRD:    " << NTrdStations;
+  LOG(info) << "  ToF:    " << NTOFStation;
+  LOG(info) << "  Total:  " << NStation;
+
 
   return kSUCCESS;
 }
@@ -1043,7 +1044,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
         h.n = mcp.event;
 #endif
         const int ista       = (*algo->fStripFlag)[h.f] / 4;
-        const L1Station& sta = algo->GetStations()[ista];
+        const L1Station& sta = algo->GetParameters()->GetStation(ista);
         if (std::find(strips.begin(), strips.end(), h.f) != strips.end()) {  // separate strips
 
           (*algo->fStripFlag).push_back((*algo->fStripFlag)[h.f]);
@@ -1118,7 +1119,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
     //  algo->L1KFTrackFitter( fExtrapolateToTheEndOfSTS );
 
     {  // track fit
-      L1FieldValue b = algo->GetVtxFieldValue();
+      L1FieldValue b = algo->GetParameters()->GetVertexFieldValue();
 
       if ((fabs(b.x[0]) < 0.0000001) && (fabs(b.y[0]) < 0.0000001) && (fabs(b.z[0]) < 0.0000001)) {
         algo->KFTrackFitter_simple();

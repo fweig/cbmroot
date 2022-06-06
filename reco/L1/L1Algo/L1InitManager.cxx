@@ -17,7 +17,7 @@
 #include "L1Assert.h"
 //-----------------------------------------------------------------------------------------------------------------------
 //
-L1InitManager::L1InitManager(L1Parameters* pParameters) : fpParameters(pParameters) {}
+L1InitManager::L1InitManager(L1Parameters* pParameters) {}
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
@@ -56,35 +56,31 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
     }
 
     // Check station init
-    {
-      LOG(debug) << "L1InitManager::AddStation:(original) L1BaseStationInfo "
-                 << inStation.GetInitController().ToString();
-      LOG(debug) << "L1InitManager::AddStation:(copy)     L1BaseStationInfo "
-                 << inStation.GetInitController().ToString();
-      std::stringstream aStream;
-      aStream << "Attempt to add an incompletely initialized station info object (detectorID = "
-              << static_cast<int>(inStationCopy.GetDetectorID()) << ", stationID = " << inStationCopy.GetStationID()
-              << ")";
-      L1MASSERT(0, inStationCopy.GetInitController().IsFinalized(), aStream.str().c_str());
+    LOG(debug) << "L1InitManager::AddStation:(original) L1BaseStationInfo "
+               << inStation.GetInitController().ToString();
+    LOG(debug) << "L1InitManager::AddStation:(copy)     L1BaseStationInfo "
+               << inStation.GetInitController().ToString();
+    if (!inStationCopy.GetInitController().IsFinalized()) {
+      LOG(fatal) << "Attempt to add an incompletely initialized station info object (detectorID = "
+                 << static_cast<int>(inStationCopy.GetDetectorID()) << ", stationID = " << inStationCopy.GetStationID()
+                 << ")";
     }
     // insert the station in a set
     auto insertionResult = fStationsInfo.insert(std::move(inStationCopy));
-    // Check insertion
-    {
-      std::stringstream aStream;
-      aStream << "Attempt to add a dublicating station info object (detectorID = "
-              << static_cast<int>(inStationCopy.GetDetectorID()) << ", stationID = " << inStationCopy.GetStationID()
-              << ")";
-      L1MASSERT(0, insertionResult.second, aStream.str().c_str());
+    if (!insertionResult.second) {
+      LOG(fatal) << "Attempt to add a dublicating station info object (detectorID = "
+                 << static_cast<int>(inStationCopy.GetDetectorID()) << ", stationID = " << inStationCopy.GetStationID()
+                 << ")";
     }
+
     int index = fStationsInfo.size() - 1
                 + (fNstationsGeometry[fNstationsGeometry.size() - 1] - fNstationsActive[fNstationsActive.size() - 1]);
-    fActiveStationGlobalIDs[index] = fStationsInfo.size() - 1;
+    fParameters.fActiveStationGlobalIDs[index] = fStationsInfo.size() - 1;
   }
   else {
     int index = fStationsInfo.size()
                 + (fNstationsGeometry[fNstationsGeometry.size() - 1] - fNstationsActive[fNstationsActive.size() - 1]);
-    fActiveStationGlobalIDs[index] = -1;
+    fParameters.fActiveStationGlobalIDs[index] = -1;
     fNstationsActive[static_cast<L1DetectorID_t>(inStation.GetDetectorID())]--;
     fNstationsActive[fNstationsActive.size() - 1]--;
   }
@@ -99,6 +95,40 @@ void L1InitManager::CheckInit()
 {
   this->CheckCAIterationsInit();
   this->CheckStationsInfoInit();
+}
+
+//-----------------------------------------------------------------------------------------------------------------------
+// NOTE: this function should be called once in the TransferParametersContainer
+void L1InitManager::FormParametersContainer()
+{
+  // Check initialization
+  this->CheckInit();
+   
+  if (!fInitController.IsFinalized()) {
+    LOG(fatal) << "Attempt to form parameters container before all necessary fields were initialized"
+               << fInitController.ToString();
+  }
+
+  // Copy station numbers
+  std::copy(fNstationsActive.begin(), fNstationsActive.end(), fParameters.fNstationsActive.begin());
+  std::copy(fNstationsGeometry.begin(), fNstationsGeometry.end(), fParameters.fNstationsGeometry.begin());
+
+  // Form array of stations
+  auto destinationArrayIterator = fParameters.fStations.begin();
+  for (const auto& item : fStationsInfo) {
+    *destinationArrayIterator = item.GetL1Station();
+    ++destinationArrayIterator;
+  }
+
+  // Form array of material map
+  auto thickMapIt = fParameters.fThickMap.begin();
+  for (auto it = fStationsInfo.begin(); it != fStationsInfo.end(); ++it) {
+    auto node                 = fStationsInfo.extract(it);
+    *thickMapIt = std::move(node.value().TakeMaterialMap());
+    fStationsInfo.insert(std::move(node));
+    ++thickMapIt;
+  }
+  //LOG(info) << "L1InitManager: L1Material vector was successfully transfered to L1Algo core";
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
@@ -123,7 +153,7 @@ void L1InitManager::InitTargetField(double zStep)
   constexpr int nDimensions {3};
   constexpr int nPointsNodal {3};
 
-  std::array<double, nPointsNodal> inputNodalZ {fTargetPos[2], fTargetPos[2] + zStep, fTargetPos[2] + 2. * zStep};
+  std::array<double, nPointsNodal> inputNodalZ {fTargetZ, fTargetZ + zStep, fTargetZ + 2. * zStep};
   std::array<L1FieldValue, nPointsNodal> B {};
   std::array<fvec, nPointsNodal> z {};
   // loop over nodal points
@@ -136,8 +166,8 @@ void L1InitManager::InitTargetField(double zStep)
     B[idx].y = field[1];
     B[idx].z = field[2];
   }  // loop over nodal points: end
-  fTargetFieldRegion.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
-  fTargetFieldValue = B[0];
+  fParameters.fVertexFieldRegion.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
+  fParameters.fVertexFieldValue = B[0];
 
   fInitController.SetFlag(EInitKey::kPrimaryVertexField);
 }
@@ -146,7 +176,7 @@ void L1InitManager::InitTargetField(double zStep)
 //
 void L1InitManager::PrintCAIterations(int verbosityLevel) const
 {
-  for (const auto& iteration : fpParameters->CAIterationsContainer()) {
+  for (const auto& iteration : fParameters.fCAIterations) {
     iteration.Print(verbosityLevel);
   }
 }
@@ -170,8 +200,7 @@ void L1InitManager::PushBackCAIteration(const L1CAIteration& iteration)
   L1MASSERT(0, control,  //fInitController.GetFlag(EInitKey::kCAIterationsNumberCrosscheck),
             "Attempt to push back a CA track finder iteration before the number of iterations was defined");
 
-  L1Vector<L1CAIteration>& iterationsContainer = fpParameters->CAIterationsContainer();
-  iterationsContainer.push_back(iteration);
+  fParameters.fCAIterations.push_back(iteration);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
@@ -188,7 +217,7 @@ void L1InitManager::SetActiveDetectorIDs(const L1DetectorIDSet_t& detectorIDs)
 void L1InitManager::SetCAIterationsNumberCrosscheck(int nIterations)
 {
   fCAIterationsNumberCrosscheck                = nIterations;
-  L1Vector<L1CAIteration>& iterationsContainer = fpParameters->CAIterationsContainer();
+  L1Vector<L1CAIteration>& iterationsContainer = fParameters.fCAIterations;
 
   // NOTE: should be called to prevent multiple copyings of objects between the memory realocations
   iterationsContainer.reserve(nIterations);
@@ -282,9 +311,12 @@ void L1InitManager::SetTargetPosition(double x, double y, double z)
     return;
   }
 
-  fTargetPos[0] = x;
-  fTargetPos[1] = y;
-  fTargetPos[2] = z;
+  /// Fill fvec target fields 
+  fParameters.fTargetPos[0] = x;
+  fParameters.fTargetPos[1] = y;
+  fParameters.fTargetPos[2] = z;
+  /// Set additional field for z component in double precision
+  fTargetZ = z; 
   fInitController.SetFlag(EInitKey::kTargetPos);
 }
 
@@ -302,70 +334,11 @@ void L1InitManager::SetTrackingLevel(int trackingLevel)
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
-void L1InitManager::TransferL1StationArray(std::array<L1Station, L1Constants::size::kMaxNstations>& destinationArray)
-{
-  //
-  // 1) Check, if all fields of this were initialized
-  //
-  {
-    std::stringstream aStream;
-    aStream << "Attempt to pass L1Station array to L1Algo core before all necessary fields initialization\n"
-            << "L1InitManager " << fInitController.ToString();
-    L1MASSERT(0, fInitController.IsFinalized(), aStream.str().c_str());
-  }
-  //
-  // 2) Check, if destinationArraySize is enough for the transfer
-  //
-  {
-    int nStationsTotal = this->GetNstationsActive();
-    std::stringstream aStream;
-    aStream << "Destination array size (" << destinationArray.size()
-            << ") is smaller then the actual number of active tracking stations (" << nStationsTotal << ")";
-    L1MASSERT(0, nStationsTotal <= static_cast<int>(destinationArray.size()), aStream.str().c_str());
-  }
-
-  auto destinationArrayIterator = destinationArray.begin();
-  for (const auto& item : fStationsInfo) {
-    *destinationArrayIterator = item.GetL1Station();
-    ++destinationArrayIterator;
-  }
-  LOG(info) << "L1InitManager: L1Station vector was successfully transfered to L1Algo core";
+void L1InitManager::TransferParametersContainer(L1Parameters& destination) {
+  this->FormParametersContainer();
+  destination = std::move(fParameters);
+  LOG(info) << "Parameters object transfered to L1Algo core";
 }
-
-//-----------------------------------------------------------------------------------------------------------------------
-//
-void L1InitManager::TransferL1MaterialArray(std::array<L1Material, L1Constants::size::kMaxNstations>& destinationArray)
-{
-  //
-  // 1) Check, if all fields of this were initialized
-  //
-  {
-    std::stringstream aStream;
-    aStream << "Attempt to pass L1Station array to L1Algo core before all necessary fields initialization\n"
-            << "L1InitManager " << fInitController.ToString();
-    L1MASSERT(0, fInitController.IsFinalized(), aStream.str().c_str());
-  }
-  //
-  // 2) Check, if destinationArraySize is enough for the transfer
-  //
-  {
-    int nStationsTotal = this->GetNstationsActive();
-    std::stringstream aStream;
-    aStream << "Destination array size (" << destinationArray.size()
-            << ") is smaller then the actual number of active tracking stations (" << nStationsTotal << ")";
-    L1MASSERT(0, nStationsTotal <= static_cast<int>(destinationArray.size()), aStream.str().c_str());
-  }
-
-  auto destinationArrayIterator = destinationArray.begin();
-  for (auto it = fStationsInfo.begin(); it != fStationsInfo.end(); ++it) {
-    auto node                 = fStationsInfo.extract(it);
-    *destinationArrayIterator = std::move(node.value().TakeMaterialMap());
-    fStationsInfo.insert(std::move(node));
-    ++destinationArrayIterator;
-  }
-  LOG(info) << "L1InitManager: L1Material vector was successfully transfered to L1Algo core";
-}
-
 
 //
 // INIT CHECKERS
@@ -380,7 +353,7 @@ void L1InitManager::CheckCAIterationsInit()
   //
   bool ifInitPassed = true;
   if (!fInitController.GetFlag(EInitKey::kCAIterations)) {
-    int nIterationsActual   = fpParameters->CAIterationsContainer().size();
+    int nIterationsActual   = fParameters.fCAIterations.size();
     int nIterationsExpected = fCAIterationsNumberCrosscheck;
     if (nIterationsActual != nIterationsExpected) {
       LOG(warn) << "L1InitManager::CheckCAIterations: incorrect number of iterations registered: " << nIterationsActual
@@ -421,16 +394,12 @@ void L1InitManager::CheckStationsInfoInit()
     //
     int nStationsTotal = fNstationsGeometry[fNstationsGeometry.size() - 1];
     if (nStationsTotal > L1Constants::size::kMaxNstations) {
-      std::stringstream aStream;
-      aStream << "Actual total number of registered stations in geometry (" << nStationsTotal
-              << ") is larger then possible (" << L1Constants::size::kMaxNstations
-              << "). Please, select another set of active tracking detectors or recompile the code with enlarged"
-              << " L1Constants::size::kMaxNstations value";
-      // TODO: We have to provide an instruction of how to increase the kMaxNstations
-      //       number keeping the code consistent (S.Zharko)
-      ifInitPassed = false;
-      L1MASSERT(0, false, aStream.str().c_str());
+      LOG(fatal) << "Actual total number of registered stations in geometry (" << nStationsTotal
+                 << ") is larger then possible (" << L1Constants::size::kMaxNstations
+                 << "). Please, select another set of active tracking detectors or recompile the code with enlarged"
+                 << " L1Constants::size::kMaxNstations value";
     }
   }
+
   fInitController.SetFlag(EInitKey::kStationsInfo, ifInitPassed);
 }

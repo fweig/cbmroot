@@ -53,12 +53,13 @@ namespace L1Constants {
     /// Flag: debug mode for creating pools for triplets.
     /// NOTE: this feature will work only if the L1Parameters::kIfDebugTipletsPerformace is true!
     //constexpr bool kIfCreateTripletPulls {false};
-  }
+  } // end namespace control
   
   /// Miscellaneous constants
   namespace misc {
     constexpr int kAssertionLevel {0};  ///< Assertion level
-  } // end namespace control
+    constexpr int kAlignment {16};
+  } // end namespace misc
 } // end namespace L1Constants
 
 
