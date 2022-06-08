@@ -35,9 +35,9 @@ using namespace std;
 
 CbmTrdUnpackFaspAlgo::CbmTrdUnpackFaspAlgo()
   : CbmRecoUnpackAlgo("CbmTrdUnpackFaspAlgo")
+  , fTime(0)
   , fModuleId()
   , fAsicPar()
-  , fTime(0)
 {
 }
 
@@ -218,12 +218,11 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
   UChar_t lFasp(0xff);
   UShort_t lchR, lchT;
   Double_t r, t;
-  Int_t dt, dtime, ch, pad, row;
-  ULong64_t tlab, tdaqOffset(0);
+  Int_t dt, dtime, ch, pad;
+  ULong64_t lTime, tdaqOffset(0);
   CbmTrdParFasp* faspPar(nullptr);
   const CbmTrdParFaspChannel* chCalib(nullptr);
   CbmTrdParModDigi* digiPar(nullptr);
-  vector<CbmTrdDigi*> digis;
   for (auto imess : messes) {
     if (lFasp == 0xff) {
       lFasp = messes[0]->fasp;
@@ -237,67 +236,99 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
         LOG(error) << GetName() << "::pushDigis - DIGI par for module " << imess->mod << " missing. Skip.";
         return false;
       }
-      if (VERBOSE) faspPar->Print();
-      pad     = faspPar->GetChannelAddress(imess->ch);
-      chCalib = faspPar->GetChannel(imess->ch);
-      ch      = 2 * pad + chCalib->HasPairingR();
-      row     = digiPar->GetPadRow(pad);
-      if (row % 2) tdaqOffset = 3;
-      if (VERBOSE)
-        printf("fasp[%2d] ch[%4d / %2d] pad[%4d] row[%2d] col[%2d] tilt[%d]\n", lFasp, ch, imess->ch, pad, row,
-               digiPar->GetPadColumn(pad), chCalib->HasPairingT());
-    }
+      // TODO temporary add DAQ time calibration for FASPRO.
+      // Should be absorbed in the ASIC parameter definition
+      if (digiPar->GetPadRow(faspPar->GetChannelAddress(imess->ch)) % 2) tdaqOffset = 3;
 
+      if (VERBOSE) faspPar->Print();
+    }
     if (VERBOSE) mess_prt(imess);
 
+    pad     = faspPar->GetChannelAddress(imess->ch);
+    chCalib = faspPar->GetChannel(imess->ch);
+    ch      = 2 * pad + chCalib->HasPairingR();
+    lTime   = fTime + tdaqOffset + imess->tlab;
     lchR    = 0;
     lchT    = 0;
-    chCalib = faspPar->GetChannel(imess->ch);
     if (chCalib->HasPairingR()) lchR = imess->data;
     else
       lchT = imess->data;
-    pad = faspPar->GetChannelAddress(imess->ch);
+    if (VERBOSE)
+      printf("fasp[%2d] ch[%4d / %2d] pad[%4d] row[%2d] col[%2d] %c[%4d]\n", lFasp, ch, imess->ch, pad,
+             digiPar->GetPadRow(pad), digiPar->GetPadColumn(pad), (chCalib->HasPairingT() ? 'T' : 'R'),
+             lchT > 0 ? lchT : lchR);
 
-    bool use(false);
-    for (auto id : digis) {
-      if (id->GetAddressChannel() != pad) continue;
-      dtime = id->GetTimeDAQ() - imess->tlab;
-      if (TMath::Abs(dtime) < 5) {
-        r = id->GetCharge(t, dt);
-        if (lchR && !int(r)) {
-          id->SetCharge(t, lchR, -dtime);
+    if (fDigiBuffer.find(pad) != fDigiBuffer.end()) {
+      // check if last digi has both R/T message components. Update if not and is within time window
+      auto id = fDigiBuffer[pad].rbegin();
+      dtime   = (*id)->GetTimeDAQ() - lTime;
+      bool use(false);
+      if (TMath::Abs(dtime) < 5) {  // test message part of (last) digi
+        r = (*id)->GetCharge(t, dt);
+        if (lchR && r < 0.1) {  // set R charge on an empty slot
+          (*id)->SetCharge(t, lchR, -dtime);
           use = true;
-          break;
         }
-        else if (lchT && !int(t)) {
-          tlab = id->GetTimeDAQ();
-          id->SetCharge(lchT, r, +dtime);
-          id->SetTimeDAQ(ULong64_t(tlab - dtime));
+        else if (lchT && t < 0.1) {  // set T charge on an empty slot
+          (*id)->SetCharge(lchT, r, +dtime);
+          (*id)->SetTimeDAQ(ULong64_t((*id)->GetTimeDAQ() - dtime));
           use = true;
-          break;
         }
       }
-    }
 
-    if (!use) {
-      CbmTrdDigi* digi = new CbmTrdDigi(pad, lchT, lchR, imess->tlab);
+      // build digi for message when update failed
+      if (!use) {
+        CbmTrdDigi* digi = new CbmTrdDigi(pad, lchT, lchR, lTime);
+        digi->SetAddressModule(imess->mod);
+        fDigiBuffer[pad].push_back(digi);
+        id = fDigiBuffer[pad].rbegin();
+      }
+
+      if (id != fDigiBuffer[pad].rend()) id++;
+
+      // update charge for previously allocated digis to account for FASPRO ADC buffering and read-out problem
+      use = false;
+      for (; id != fDigiBuffer[pad].rend(); ++id) {
+        r = (*id)->GetCharge(t, dt);
+        if (lchR && int(r)) {  // update R charge and mark on digi
+          (*id)->SetCharge(t, lchR, dt);
+          (*id)->SetFlag(1);
+          use = true;
+        }
+        else if (lchT && int(t)) {  // update T charge and mark on digi
+          (*id)->SetCharge(lchT, r, dt);
+          (*id)->SetFlag(0);
+          use = true;
+        }
+        if (use) break;
+      }
+    }
+    else {  // init pad position in map and build digi for message
+      CbmTrdDigi* digi = new CbmTrdDigi(pad, lchT, lchR, lTime);
       digi->SetAddressModule(imess->mod);
-      digis.push_back(digi);
+      fDigiBuffer[pad].push_back(digi);
     }
     delete imess;
   }
 
   // push finalized digits to the next level
-  for (vector<CbmTrdDigi*>::iterator id = digis.begin(); id != digis.end(); id++) {
-    // TODO temporary add DAQ time calibration for FASPRO.
-    // Should be absorbed in the ASIC parameter definition
-    (*id)->SetTimeDAQ(fTime + (*id)->GetTimeDAQ() + tdaqOffset);
-    fOutputVec.emplace_back(*std::move(*id));
-    if (fMonitor) fMonitor->FillHistos((*id));
-    if (VERBOSE) cout << (*id)->ToString();
-  }
+  for (int jd(0); jd < NFASPCH; jd += 2) {
+    int ipad(faspPar->GetChannelAddress(jd));
+    if (fDigiBuffer.find(ipad) == fDigiBuffer.end()) continue;
 
-  digis.clear();
+    for (auto id = fDigiBuffer[ipad].begin(); id != fDigiBuffer[ipad].end(); id++) {
+      r = (*id)->GetCharge(t, dt);
+      // check if digi has all signals CORRECTED
+      if (((t > 0) != (*id)->IsFlagged(0)) || ((r > 0) != (*id)->IsFlagged(1))) continue;
+      if (fMonitor) fMonitor->FillHistos(((*id)));
+      // reset flags as they were used only to mark the correctly setting of the charge/digi
+      (*id)->SetFlag(0, false);
+      (*id)->SetFlag(1, false);
+      fOutputVec.emplace_back(*std::move((*id)));
+      // clear digi buffer wrt the digi which was forwarded to higher structures
+      id = fDigiBuffer[ipad].erase(id);
+    }
+  }
   messes.clear();
 
   return true;
@@ -366,14 +397,15 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
     // std::cout<<"fasp_id="<<static_cast<unsigned int>(fasp_id)<<" ch_id="<<static_cast<unsigned int>(ch_id)<<" isaux="<<static_cast<unsigned int>(isaux)<<std::endl;
     if (isaux) {
       if (!ch_id) {
+        // clear buffer
+        if (vDigi.size()) { pushDigis(vDigi); }
+        vDigi.clear();
+
         if (VERBOSE)
           cout << boost::format("    EE : fasp_id=%02d ch_id=%02d epoch=%03d\n") % static_cast<unsigned int>(fasp_id)
                     % static_cast<unsigned int>(ch_id) % static_cast<unsigned int>(epoch);
 
-        if (vDigi.size()) { pushDigis(vDigi); }
-        vDigi.clear();
         lFaspOld = 0xff;
-
         fTime += FASP_EPOCH_LENGTH;
       }
       else if (ch_id == 1) {
@@ -403,7 +435,7 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
       }
       mess       = new CbmTrdFaspContent;
       mess->ch   = ch_id;
-      mess->type = 1;
+      mess->type = kData;
       mess->tlab = slice;
       mess->data = data >> 1;
       mess->fasp = lFaspOld;

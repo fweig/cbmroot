@@ -196,6 +196,7 @@ private:
   void prt_wd(uint32_t w);
   std::map<uint32_t, uint8_t[NFASPMOD]>* fFaspMap  = nullptr;  ///> FASP mapping update wrt the default setting
   std::map<uint32_t, uint16_t[NCROBMOD]>* fCrobMap = nullptr;  ///> CRI mapping setting
+  std::map<uint32_t, std::vector<CbmTrdDigi*>> fDigiBuffer;    ///> Map of buffered digi per pad
   /** @brief Potential (online) monitor for the unpacking process */
   std::shared_ptr<CbmTrdUnpackFaspMonitor> fMonitor = nullptr;
   std::vector<Int_t> fModuleId;
