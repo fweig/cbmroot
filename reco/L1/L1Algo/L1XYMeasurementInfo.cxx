@@ -3,9 +3,17 @@
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 #include "L1XYMeasurementInfo.h"
-
+#include "L1Utils.h"
 #include <iomanip>
 #include <sstream>  // for stringstream
+
+void L1XYMeasurementInfo::CheckConsistency() const
+{
+  /* (i) Checks for the horizontal equality of SIMD vector elements */
+  L1Utils::CheckSimdVectorEquality(C00, "L1XYMeasurementsInfo::C00");
+  L1Utils::CheckSimdVectorEquality(C10, "L1XYMeasurementsInfo::C10");
+  L1Utils::CheckSimdVectorEquality(C11, "L1XYMeasurementsInfo::C11");
+}
 
 std::string L1XYMeasurementInfo::ToString(int indentLevel) const
 {

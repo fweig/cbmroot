@@ -155,6 +155,8 @@ public:
   /// Gets L1FieldValue object at primary vertex
   const L1FieldValue& GetVertexFieldValue() const { return fVertexFieldValue; }
 
+  /// Class invariant checker
+  void CheckConsistency() const;
 
 private:
   
@@ -172,7 +174,7 @@ private:
   /// Field value object at primary vertex (between target and the first station)
   alignas(L1Constants::misc::kAlignment) L1FieldValue fVertexFieldValue {};
   
-  /// Field value object at primary vertex (between target and the first station)
+  /// Field region object at primary vertex (between target and the first station)
   alignas(L1Constants::misc::kAlignment) L1FieldRegion fVertexFieldRegion {};
 
   /// Array of stations 

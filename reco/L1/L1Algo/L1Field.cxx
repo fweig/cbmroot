@@ -3,6 +3,7 @@
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 #include "L1Field.h"
+#include "L1Utils.h"
 
 #include <iomanip>
 #include <iostream>
@@ -12,14 +13,16 @@
 // L1FieldValue methods
 //
 
-
 //----------------------------------------------------------------------------------------------------------------------
-// TODO: Should it be inline? (S.Zharko)
-void L1FieldValue::Combine(L1FieldValue& B, fvec w)
+//
+void L1FieldValue::CheckConsistency() const
 {
-  x += w * (B.x - x);
-  y += w * (B.y - y);
-  z += w * (B.z - z);
+  /* Check SIMD data vectors for consistent initialization */
+  L1Utils::CheckSimdVectorEquality(x, "L1FieldValue::x");
+  L1Utils::CheckSimdVectorEquality(y, "L1FieldValue::y");
+  L1Utils::CheckSimdVectorEquality(z, "L1FieldValue::z");
+
+  // TODO: Any other checks? (S.Zharko)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -35,6 +38,8 @@ std::string L1FieldValue::ToString(int indentLevel) const
   return aStream.str();
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+//
 std::ostream& operator<<(std::ostream& out, const L1FieldValue& B)
 {
   return out << B.x[0] << " | " << B.y[0] << " | " << B.z[0];
@@ -46,12 +51,38 @@ std::ostream& operator<<(std::ostream& out, const L1FieldValue& B)
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-L1FieldSlice::L1FieldSlice() noexcept
+L1FieldSlice::L1FieldSlice()
 {
   for (int i = 0; i < L1Constants::size::kMaxNFieldApproxCoefficients; ++i) {
-    cx[i] = 0.f;
-    cy[i] = 0.f;
-    cz[i] = 0.f;
+    cx[i] = L1Utils::kNaN;
+    cy[i] = L1Utils::kNaN;
+    cz[i] = L1Utils::kNaN;
+  }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+void L1FieldSlice::CheckConsistency() const
+{
+  /* Check SIMD data vectors for consistent initialization */
+  for (int i = 0; i < L1Constants::size::kMaxNFieldApproxCoefficients; ++i) {
+    if (!cx[i].IsHorizontallyEqual()) {
+      std::stringstream msg;
+      msg << "L1FieldSlice: \"cx[" << i << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cx[i];
+      throw std::logic_error(msg.str());
+    }
+
+    if (!cy[i].IsHorizontallyEqual()) {
+      std::stringstream msg;
+      msg << "L1FieldSlice: \"cy[" << i << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cy[i];
+      throw std::logic_error(msg.str());
+    }
+
+    if (!cz[i].IsHorizontallyEqual()) {
+      std::stringstream msg;
+      msg << "L1FieldSlice: \"cz[" << i << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cz[i];
+      throw std::logic_error(msg.str());
+    }
   }
 }
 
@@ -131,6 +162,24 @@ L1FieldRegion::L1FieldRegion(float reg[10]) noexcept
   , cz2(reg[8])
   , z0(reg[9])
 {
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+void L1FieldRegion::CheckConsistency() const
+{
+  /* Check SIMD data vectors for consistent initialization */
+  L1Utils::CheckSimdVectorEquality(cx0, "L1FieldRegion::cx0");
+  L1Utils::CheckSimdVectorEquality(cx1, "L1FieldRegion::cx1");
+  L1Utils::CheckSimdVectorEquality(cx2, "L1FieldRegion::cx2");
+  L1Utils::CheckSimdVectorEquality(cy0, "L1FieldRegion::cy0");
+  L1Utils::CheckSimdVectorEquality(cy1, "L1FieldRegion::cy1");
+  L1Utils::CheckSimdVectorEquality(cy2, "L1FieldRegion::cy2");
+  L1Utils::CheckSimdVectorEquality(cz0, "L1FieldRegion::cz0");
+  L1Utils::CheckSimdVectorEquality(cz1, "L1FieldRegion::cz1");
+  L1Utils::CheckSimdVectorEquality(cz2, "L1FieldRegion::cz2");
+  L1Utils::CheckSimdVectorEquality(z0, "L1FieldRegion::z0");
+  // TODO: Any other checks? (S.Zharko)
 }
 
 //----------------------------------------------------------------------------------------------------------------------

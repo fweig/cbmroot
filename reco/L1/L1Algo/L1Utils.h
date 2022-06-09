@@ -13,15 +13,40 @@
 #include <iomanip>
 #include <limits>
 #include <map>
+#include <cmath>
 #include <sstream>
 #include <string>
 #include <unordered_map>
 
+#include "vectors/P4_F32vec4.h"
+
 /// Class contains some utility functions for L1Algo
 struct L1Utils {
 
-  /// Some constants
+  /// NaN value for float
   static constexpr float kNaN {std::numeric_limits<float>::signaling_NaN()};
+
+  /// Comparison method for floats
+  /// \param  lhs  Left floating point to compare
+  /// \param  rhs  Right floating point to compare
+  /// \return      Comparison result: true - equals within epsilon 
+  template <typename T> 
+  static bool CmpFloats(T lhs, T rhs)
+  {
+    static_assert(!std::numeric_limits<T>::is_integer, "L1Utils::CmpFloatingPoint does not work with integers");
+    return fabs(lhs - rhs) < 2. * std::numeric_limits<T>::epsilon() * fabs(lhs + rhs) 
+           || fabs(lhs - rhs) < std::numeric_limits<T>::min();
+  }
+
+
+  static __attribute__((always_inline)) void CheckSimdVectorEquality(fvec v, const char* name)
+  {
+    if (!v.IsHorizontallyEqual()) {
+      std::stringstream msg;
+      msg << name << " SIMD vector is inconsistent, not all of the words are equal each other: " << v;
+      throw std::logic_error(msg.str());
+    }
+  }
 
   /// Hash for unordered_map with enum class keys
   struct EnumClassHash {

@@ -21,6 +21,9 @@ public:
   /// \param w  weight from 0 to 1 // TODO: Do we need any checks here? (S.Zharko)
   void Combine(L1FieldValue& B, fvec w);  // TODO: Shouldn't the B parameter be const? (S.Zharko)
   
+  /// Consistency checker
+  void CheckConsistency() const;
+  
   /// Operator << overloading
   friend std::ostream& operator<<(std::ostream& out, const L1FieldValue& B);
   
@@ -29,18 +32,30 @@ public:
   std::string ToString(int indentLevel) const;
 } _fvecalignment;
 
+inline __attribute__((always_inline)) void L1FieldValue::Combine(L1FieldValue& B, fvec w)
+{
+  x += w * (B.x - x);
+  y += w * (B.y - y);
+  z += w * (B.z - z);
+}
 
 /// Class represents a set of magnetic field approximation coefficients
 ///
 // TODO: Crosscheck the default content (S.Zharko)
 class L1FieldSlice {
 public:
-  L1FieldSlice() noexcept;
+  /// Default constructor
+  L1FieldSlice();
+  
+  /// Consistency checker
+  void CheckConsistency() const;
+
   /// Gets field value from (x, y) fvec point
   /// \param x  x-coordinate of input
   /// \param y  y-coordinate of input
   /// \param B  the L1FieldValue output
   void GetFieldValue(const fvec& x, const fvec& y, L1FieldValue& B) const;
+  
   /// String representation of class contents
   /// \param indentLevel      number of indent characters in the output
   std::string ToString(int indentLevel = 0) const;
@@ -61,7 +76,10 @@ public:
   L1FieldRegion() = default;
   
   L1FieldRegion(float reg[10]) noexcept;
-
+  
+  /// Consistency checker
+  void CheckConsistency() const;
+  
   /// Gets the field vector at z
   // TODO: Probably we need a const specifier here, because the method does not change the fields
   L1FieldValue Get(const fvec z);

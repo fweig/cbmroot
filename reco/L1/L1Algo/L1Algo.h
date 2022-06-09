@@ -395,8 +395,8 @@ public:
   L1InitManager* GetInitManager() { return &fInitManager; }
 
 private:
-  L1Parameters fParameters {};                ///< Object of L1Algo parameters class
-  L1InitManager fInitManager {&fParameters};  ///< Object of L1Algo initialization manager class
+  L1Parameters  fParameters {};                ///< Object of L1Algo parameters class
+  L1InitManager fInitManager {};  ///< Object of L1Algo initialization manager class
 
 
   /*********************************************************************************************/ /**

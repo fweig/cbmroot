@@ -11,15 +11,19 @@
 #include <vector>
 
 #include "L1Def.h"
+#include "L1Utils.h"
 
 /// Class L1MaterialInfo contains SIMDized vector fields of the
 /// The fields of the structure should ONLY be initialized within L1BaseStationInfo::SetMaterial(double, double) method, when the
 /// stations sequence is initialized
 struct L1MaterialInfo {
-  fvec thick {0};     ///< Average thickness of the station in arbitary length units
-  fvec RL {0};        ///< Average radiation length (X0) of the station material in THE SAME UNITS as the thickness
-  fvec RadThick {0};  ///< Average thickness in units of radiation length (X/X0)
-  fvec logRadThick {0};
+  fvec thick {L1Utils::kNaN};     ///< Average thickness of the station in arbitary length units
+  fvec RL {L1Utils::kNaN};        ///< Average radiation length (X0) of the station material in THE SAME UNITS as the thickness
+  fvec RadThick {L1Utils::kNaN};  ///< Average thickness in units of radiation length (X/X0)
+  fvec logRadThick {L1Utils::kNaN};
+  
+  /// Verifies class invariant consistency
+  void CheckConsistency() const;
 
   /// String representation of class contents
   /// \param indentLevel    number of indent characters in the output
@@ -29,7 +33,9 @@ struct L1MaterialInfo {
 /// Class L1Material describes a map of station thickness in units of radiation length (X0) to the specific point in XY plane
 class L1Material {
 public:
-  /// Default constructor
+  /// Constructor
+  /// \param  nBins        Number of rows or columns
+  /// \param  stationSize  Size of station in x and y dimensions [cm]
   L1Material();
 
   /// Copy constructor
@@ -64,6 +70,9 @@ public:
   /// \param x  X coordinate of the point [cm] (SIMDized vector)
   /// \param y  Y coordinate of the point [cm] (SIMDized veotor)
   fvec GetRadThick(fvec x, fvec y) const;
+  
+  /// Verifies class invariant consistency
+  void CheckConsistency() const;
 
   /// Sets value of material thickness in units of X0 for a given cell of the material table
   /// WARNING: Indeces of rows and columns in the table runs from 0 to nBins-1 inclusively, where nBins is the number both of rows
@@ -83,9 +92,9 @@ public:
   void Swap(L1Material& other) noexcept;
 
 private:
-  int fNbins {0};                ///< Number of rows (columns) in the material budget table
-  float fRmax {0.f};             ///< Size of the station in x and y dimensions [cm]
-  float fFactor {0.f};           ///< Factor used in the recalculation of point coordinates to row/column id
+  int fNbins {-1};                ///< Number of rows (columns) in the material budget table
+  float fRmax {L1Utils::kNaN};             ///< Size of the station in x and y dimensions [cm]
+  float fFactor {L1Utils::kNaN};           ///< Factor used in the recalculation of point coordinates to row/column id
   std::vector<float> fTable {};  ///< Material budget table
 } _fvecalignment;
 

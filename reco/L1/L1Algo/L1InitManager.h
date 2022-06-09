@@ -94,10 +94,7 @@ private:
 
 public:
   /// Default constructor
-  L1InitManager() = delete;
-
-  /// Constructor from ptr to L1Paramters object
-  L1InitManager(L1Parameters* pParameters);
+  L1InitManager() = default;
 
   /// Destructor
   ~L1InitManager() = default;

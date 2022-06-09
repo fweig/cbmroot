@@ -28,8 +28,6 @@
 #include "CbmMuchModuleGem.h"
 #include "CbmMuchPad.h"
 #include "CbmMuchStation.h"
-#include "CbmMvdDetector.h"
-#include "CbmMvdStationPar.h"
 #include "CbmSetup.h" // TODO: To be replaced to the CbmStsTrackerIF !! (S.Zharko)
 #include "CbmMvdTrackerIF.h"
 #include "CbmStsTrackerIF.h"
@@ -491,28 +489,11 @@ InitStatus CbmL1::Init()
 
 
   /*** MVD and STS ***/
-  CbmStsSetup* stsSetup = CbmStsSetup::Instance();
-  if (!stsSetup->IsInit()) { stsSetup->Init(nullptr); }
-  if (!stsSetup->IsModuleParsInit()) { stsSetup->SetModuleParameters(fStsParSetModule); }
-  if (!stsSetup->IsSensorParsInit()) { stsSetup->SetSensorParameters(fStsParSetSensor); }
-  if (!stsSetup->IsSensorCondInit()) { stsSetup->SetSensorConditions(fStsParSetSensorCond); }
-
-  NMvdStationsGeom = 0;
-  if (fUseMVD) {
-    CbmMvdDetector* mvdDetector = CbmMvdDetector::Instance();
-    if (mvdDetector) {
-      CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();
-      assert(mvdStationPar);
-      NMvdStationsGeom = mvdStationPar->GetStationCount();
-    }
-  }
-  //NStsStationsGeom = (fUseSTS) ? CbmStsSetup::Instance()->GetNofStations() : 0;
-  
   auto mvdInterface = CbmMvdTrackerIF::Instance();
   auto stsInterface = CbmStsTrackerIF::Instance();
 
-  //NMvdStationsGeom = mvdInterface->GetNstations();
-  NStsStationsGeom = stsInterface->GetNstations();
+  NMvdStationsGeom = (fUseMVD) ? mvdInterface->GetNstations() : 0;
+  NStsStationsGeom = (fUseSTS) ? stsInterface->GetNstations() : 0;
   NStationGeom     = NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom + NTrdStationsGeom + NTOFStationGeom;
 
   // Provide crosscheck number of stations for the fpInitManagera

@@ -15,9 +15,6 @@
 #include <sstream>
 
 #include "L1Assert.h"
-//-----------------------------------------------------------------------------------------------------------------------
-//
-L1InitManager::L1InitManager(L1Parameters* pParameters) {}
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
@@ -128,7 +125,9 @@ void L1InitManager::FormParametersContainer()
     fStationsInfo.insert(std::move(node));
     ++thickMapIt;
   }
-  //LOG(info) << "L1InitManager: L1Material vector was successfully transfered to L1Algo core";
+  
+  // Check the consistency of the parameters object. If object inconsistent, it throws std::logic_error
+  fParameters.CheckConsistency();
 }
 
 //-----------------------------------------------------------------------------------------------------------------------

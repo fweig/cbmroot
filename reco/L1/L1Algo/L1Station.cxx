@@ -9,9 +9,87 @@
 #include <iomanip>
 #include <sstream>
 
+//------------------------------------------------------------------------------------------------------------------------------------
+//
+void L1Station::CheckConsistency() const
+{
+  /*
+   * Integer fields initialization checks
+   */
+
+  if (type < 0) {
+    std::stringstream msg;
+    msg << "L1Station: station type was not initialized (type = " << type << ", type > 0)";
+    throw std::logic_error(msg.str());
+  }
+
+  if (timeInfo != 0 && timeInfo != 1) {
+    std::stringstream msg;
+    msg << "L1Station: illegal time information flag (timeInfo = " << timeInfo << ", " 
+        << "0 [time information is not used] or 1 [time information is used] expected)";
+    throw std::logic_error(msg.str());
+  }
+
+  if (fieldStatus != 0 && fieldStatus != 1) {
+    std::stringstream msg;
+    msg << "L1Station: illegal field status flag (fieldStatus = " << fieldStatus << ", "
+        << "0 [station is outside the field] or 1 [station is inside the field] expected";
+    throw std::logic_error(msg.str());
+  }
+  
+  /*
+   * SIMD vector checks: all the words in a SIMD vector must be equal
+   */
+
+  L1Utils::CheckSimdVectorEquality(z, "L1Station::z");
+  L1Utils::CheckSimdVectorEquality(Rmin, "L1Station::Rmin");
+  L1Utils::CheckSimdVectorEquality(Rmax, "L1Station::Rmax");
+  L1Utils::CheckSimdVectorEquality(dt, "L1Station::dt");
+  
+  /*
+   * Inner and outer radia checks:
+   *  (i)  both Rmin and Rmax must be >= 0
+   *  (ii) Rmax cannot be smaller or equal to Rmin
+   */
+
+  if (Rmin[0] < 0 || L1Utils::CmpFloats(Rmin[0], Rmax[0]) || Rmax[0] < Rmin[0]) {
+    std::stringstream msg;
+    msg << "L1Station: " << this->ToString() << " has incorrect radia values: "
+        << "Rmin = " << Rmin[0] << " [cm], Rmax = " << Rmax[0] << " [cm] (0 <= Rmin < Rmax expected)";
+    throw std::logic_error(msg.str());
+  }
+
+  /*
+   * Time resolution cannot be smaller then 0
+   */
+    
+  if (dt[0] < 0) {
+    std::stringstream msg;
+    msg << "L1Station: " << this->ToString() << " has incorrect time resolution value: "
+        << "dt = " << Rmin[0] << " [ns], Rmax = " << Rmax[0] << " [cm] (0 <= Rmin < Rmax expected)";
+    throw std::logic_error(msg.str());
+  }
+
+  /*
+   * Check consistency of other members
+   */
+  
+  materialInfo.CheckConsistency();
+  fieldSlice.CheckConsistency();
+  frontInfo.CheckConsistency();
+  backInfo.CheckConsistency();
+  xInfo.CheckConsistency();
+  yInfo.CheckConsistency();
+  XYInfo.CheckConsistency();
+}
+
 // TODO: Improve log style (S.Zh.)
+//------------------------------------------------------------------------------------------------------------------------------------
+//
 void L1Station::Print(int verbosity) const { LOG(info) << ToString(verbosity); }
 
+//------------------------------------------------------------------------------------------------------------------------------------
+//
 std::string L1Station::ToString(int verbosityLevel, int indentLevel) const
 {
   std::stringstream aStream {};
@@ -19,13 +97,12 @@ std::string L1Station::ToString(int verbosityLevel, int indentLevel) const
   std::string indent(indentLevel, indentChar);
   if (verbosityLevel > 1) {
     // TODO: probably we can have verbosity level and address for each underlying object (S.Zharko)
-    aStream << '\n' << indent << "Address: " << this << '\n';
   }
   if (verbosityLevel == 0) {
-    aStream << indent << "- <z [cm], typeID> = " << std::setw(12) << std::setfill(' ') << z[0] << ", " << std::setw(4)
-            << std::setfill(' ') << type;
+    aStream << "L1Station at z = " << z[0] << " [cm]" ;
   }
   else {
+    aStream << '\n' << indent << "Address: " << this << '\n';
     aStream << indent << "Station type ID:  " << std::setw(12) << std::setfill(' ') << type << '\n';
     aStream << indent << "Is time info used:           " << std::setw(12) << std::setfill(' ') << timeInfo << '\n';
     aStream << indent << "Is station placed in field:  " << std::setw(12) << std::setfill(' ') << fieldStatus << '\n';

@@ -14,7 +14,10 @@
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
-L1Parameters::L1Parameters() {}
+L1Parameters::L1Parameters() 
+{
+  fActiveStationGlobalIDs.fill(-1); // by default, all stations are inactive, thus all the IDs must be -1
+}
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
@@ -77,25 +80,117 @@ void L1Parameters::Swap(L1Parameters& other) noexcept
   std::swap(fNstationsActive, other.fNstationsActive);
   std::swap(fNstationsGeometry, other.fNstationsGeometry);
   std::swap(fActiveStationGlobalIDs, other.fActiveStationGlobalIDs);
-
-  //for (int i = 0; i < int(L1Constants::size::kMaxNstations); ++i) {
-  //  int tmp = fActiveStationGlobalIDs[i];
-  //  fActiveStationGlobalIDs[i] = other.fActiveStationGlobalIDs[i];
-  //  other.fActiveStationGlobalIDs[i] = tmp;
-  //}
-
-  //for (int i = 0; i < int(L1Constants::size::kMaxNdetectors + 1); ++i) {
-  //  int tmp = fNstationsGeometry[i];
-  //  fNstationsGeometry[i] = other.fNstationsGeometry[i];
-  //  other.fNstationsGeometry[i] = tmp;
-  //}
-
-  //for (int i = 0; i < int(L1Constants::size::kMaxNdetectors + 1); ++i) {
-  //  int tmp = fNstationsActive[i];
-  //  fNstationsActive[i] = other.fNstationsActive[i];
-  //  other.fNstationsActive[i] = tmp;
-  //}
 }
+
+//------------------------------------------------------------------------------------------------------------------------------------
+//
+void L1Parameters::CheckConsistency() const {
+  LOG(info) << "Consistency test for L1 parameters object... ";
+  /*
+   * Arrays containing numbers of stations
+   *
+   * In the fNstationsActive and fNstationsGeometry array first L1Constants::size::kMaxNdetectors elements are the numbers of stations
+   * in particular detector subsystem. The last element in both arrays corresponds to the total number of stations (geometry or 
+   * active). This fact applies restriction on the arrays: the last element must be equal to the sum of all previous elements.
+   *
+   */
+  
+  if (std::accumulate(fNstationsGeometry.cbegin(), fNstationsGeometry.cend() - 1, 0) != *(fNstationsGeometry.cend() - 1)) { 
+    throw std::logic_error("L1Parameters: invalid object condition: total number of stations provided by geometry "
+                           "differs from the sum of the station numbers for individual detector subsystems");
+  };
+  
+  if (std::accumulate(fNstationsActive.cbegin(), fNstationsActive.cend() - 1, 0) != *(fNstationsActive.cend() - 1)) { 
+    throw std::logic_error("L1Parameters: invalid object condition: total number of stations active in tracking "
+                           "differs from the sum of the station numbers for individual detector subsystems");
+  };
+
+  /*
+   * Array of active station IDs
+   *
+   * In the array of active station IDs, 
+   *   (i)   sum of elements, which are not equal -1, must be equal the number of stations,
+   *   (ii)  subsequence of all the elements, which are not equal -1, must be a gapless subset of integer numbers starting with 0
+   */
+
+  auto filterInactiveStationIDs = [](int x) {return x != -1;};
+  int nStationsCheck = std::count_if(fActiveStationGlobalIDs.cbegin(), fActiveStationGlobalIDs.cend(), filterInactiveStationIDs);
+  if (nStationsCheck != *(fNstationsActive.cend() - 1)) {
+    std::stringstream msg;
+    msg << "L1Parameters: invalid object condition: array of active station IDs is not consistent "
+        << "with the total number of stations (" << nStationsCheck << " vs. " << *(fNstationsActive.cend() - 1) << ' '
+        << "expected)";
+    throw std::logic_error(msg.str());
+  }
+
+  // Check, if the subsequence of all the elements, which are not equal -1, must be a gapless subset of integer numbers 
+  // starting from 0. If it is, the testValue in the end must be equal the number of non -1 elements
+
+  std::vector<int> idsCheck(nStationsCheck); // temporary vector containing a sequence of active station IDs without -1 elements
+  std::copy_if(fActiveStationGlobalIDs.cbegin(), fActiveStationGlobalIDs.cend(), idsCheck.begin(), filterInactiveStationIDs);
+  bool isStationIDsOk = true;
+  for (int id = 0; id < nStationsCheck; ++id) { 
+    isStationIDsOk = isStationIDsOk && idsCheck[id] == id; 
+  }
+  if (!isStationIDsOk) {
+    std::stringstream msg;
+    msg << "L1Parameters: invalid object condition: array of active station IDs is not a gapless subset "
+        << "of integer numbers starting from 0:\n\t";
+    for (auto id: fActiveStationGlobalIDs) { 
+      msg << std::setw(3) << std::setfill(' ') << id << ' '; 
+    }
+    throw std::logic_error(msg.str());
+  }
+
+  /*
+   * Check target position SIMD vector
+   */
+
+  L1Utils::CheckSimdVectorEquality(fTargetPos[0], "L1Parameters: target position x");
+  L1Utils::CheckSimdVectorEquality(fTargetPos[1], "L1Parameters: target position y");
+  L1Utils::CheckSimdVectorEquality(fTargetPos[2], "L1Parameters: target position z");
+  
+  /*
+   * Check vertex field region and value objects at primary vertex
+   */
+
+  fVertexFieldValue.CheckConsistency();
+  fVertexFieldRegion.CheckConsistency();
+
+
+  /*
+   * Check if each station object is consistent itself, and if all of them are placed after the target
+   * NOTE: If a station was not set up, it is accounted inconsistent (uninitialized). In the array of stations there are uninitialized
+   *       stations possible (with id > NstationsActiveTotal), thus one should NOT run the loop above over all the stations in array
+   *       but only until *(fNstationsActive.cend() - 1) (== NstationsActiveTotal).
+   * TODO: Probably, we should introduce methods, which check the consistency of fully initialized objects such as L1Station,
+   *       L1MaterialInfo, etc. (S.Zharko)
+   */
+
+  for (int iSt = 0; iSt < *(fNstationsActive.cend() - 1); ++iSt) {
+    fStations[iSt].CheckConsistency();
+    if (fStations[iSt].z[0] < fTargetPos[2][0]) {
+      std::stringstream msg;
+      msg << "L1Parameters: station with global ID = " << iSt << " is placed before target "
+          << "(z_st = " << fStations[iSt].z[0] << " [cm] < z_targ = " << fTargetPos[2][0] << " [cm])";
+      throw std::logic_error(msg.str());
+    }
+  }
+  
+  /*
+   * Check thickness maps
+   * NOTE: If a L1Material map was not set up, it is accounted inconsistent (uninitialized). In the array of thickness maps for each 
+   *       there are uninitialized elements possible (with id > NstationsActiveTotal), thus one should NOT run the loop above over 
+   *       all the stations in array but only until *(fNstationsActive.cend() - 1) (== NstationsActiveTotal).
+   */
+
+  for (int iSt = 0; iSt < *(fNstationsActive.cend() - 1); ++iSt) {
+    fThickMap[iSt].CheckConsistency();
+  }
+
+  LOG(info) << "Consistency test for L1 parameters object... \033[1;32mpassed\033[0m";
+}
+
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
@@ -130,26 +225,25 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
   aStream << indent << "GEOMETRY:\n";
   
   aStream << indent << indentChar << "TARGET:\n";
-  aStream << indent << indentChar << indentChar << "Position (x [cm], y [cm], z[cm]): ";
+  aStream << indent << indentChar << indentChar << "Position:\n";
   for (int dim = 0; dim < 3 /*nDimensions*/; ++dim ) {
-    aStream << std::setw(12) << std::setfill(' ') << fTargetPos[dim][0] << ' ';
+    aStream << indent << indentChar << indentChar << indentChar << char(120 + dim) << " = " << fTargetPos[dim][0] << " [cm]\n";
   }
-  aStream << '\n';
   
   aStream << indent << indentChar << "NUMBER OF STATIONS:\n";
   aStream << indent << indentChar << indentChar << "Number of stations (Geometry): ";
   for (int idx = 0; idx < int(fNstationsGeometry.size()); ++idx ) {
-    if (int(fNstationsGeometry.size() - 2) == idx) { aStream << " | total = "; }
+    if (int(fNstationsGeometry.size() - 1) == idx) { aStream << " | total = "; }
     aStream << std::setw(2) << std::setfill(' ') << fNstationsGeometry[idx] << ' ';
   }
   aStream << '\n';
-  aStream << indent << indentChar << indentChar << "Number of stations (Active): ";
+  aStream << indent << indentChar << indentChar << "Number of stations (Active):   ";
   for (int idx = 0; idx < int(fNstationsActive.size()); ++idx ) {
-    if (int(fNstationsActive.size() - 2) == idx) { aStream << " | total = "; }
+    if (int(fNstationsActive.size() - 1) == idx) { aStream << " | total = "; }
     aStream << std::setw(2) << std::setfill(' ') << fNstationsActive[idx] << ' ';
   }
   aStream << '\n';
-  aStream << indent << indentChar << indentChar << "Active station index: ";
+  aStream << indent << indentChar << indentChar << "Active station indeces: ";
   for (int idx = 0; idx < *(fNstationsActive.end() - 1); ++idx ) {
     aStream << std::setw(3) << std::setfill(' ') << fActiveStationGlobalIDs[idx] << ' ';
   }

@@ -81,7 +81,7 @@ double CbmMvdTrackerIF::GetRmax(int stationId) const
 //
 int CbmMvdTrackerIF::GetNstations() const 
 { 
-  return fMvdMaterial->size(); 
+  return fMvdStationPar->GetStationCount(); 
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ InitStatus CbmMvdTrackerIF::Init()
   
   fMvdMaterial = &(CbmKF::Instance()->vMvdMaterial);
   fMvdStationPar = CbmMvdDetector::Instance()->GetParameterFile();
-
+  
   if (!fMvdMaterial) { return kFATAL; }
   if (!fMvdStationPar) { return kFATAL; }
 
