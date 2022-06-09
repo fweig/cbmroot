@@ -117,7 +117,7 @@ private:
   void DrawMinvBg();
 
   void DrawSource2D(const std::string& cName, const std::string& hName, const std::vector<std::string>& yLabels,
-                      double scale, const std::string& zTitle);
+                    double scale, const std::string& zTitle);
 
 
   void DrawBgSourceTracks();

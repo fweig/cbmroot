@@ -57,11 +57,14 @@ public:
     double cutD = (stationNum == 1) ? fMvd1CutD : fMvd2CutD;
     double cutP = (stationNum == 1) ? fMvd1CutP : fMvd2CutP;
     double val  = -1. * (cutP / cutD) * dmvd + cutP;
-    if (!(dmvd < cutD && val > mom)) {LOG(info) << "MVD cut passed."; return true;} // TODO: delete cout
-    else {	// TODO: delete cout and set back 'return' without else bracket
+    if (!(dmvd < cutD && val > mom)) {
+      LOG(info) << "MVD cut passed.";
+      return true;
+    }       // TODO: delete cout
+    else {  // TODO: delete cout and set back 'return' without else bracket
       LOG(info) << "MVD cut not passed.";
       return false;
-   }
+    }
   }
 
   std::string ToString()

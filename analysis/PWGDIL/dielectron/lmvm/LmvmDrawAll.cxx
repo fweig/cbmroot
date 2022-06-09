@@ -168,7 +168,7 @@ T* LmvmDrawAll::GetCocktailMinv(const string& name, ELmvmAnaStep step)
 void LmvmDrawAll::DrawMinvAll()
 {
   for (const ELmvmAnaStep step : fHMean.fAnaSteps) {
-    if (step < ELmvmAnaStep::ElId) continue; // TODO: activate also earlier histos in Task.cxx
+    if (step < ELmvmAnaStep::ElId) continue;  // TODO: activate also earlier histos in Task.cxx
     string name = fHMean.GetName("lmvmAll_minv_", step);
     fHMean.fHM.CreateCanvas(name.c_str(), name.c_str(), 1000, 1000);
     DrawMinv(step);
@@ -184,9 +184,9 @@ void LmvmDrawAll::DrawMinv(ELmvmAnaStep step)
   TH1D* sbg      = static_cast<TH1D*>(bg->Clone());
   sbg->Add(cocktail);
   TH1D* cb        = fHMean.H1Clone("hMinvCombBg", step);
-  TH1D* cbSig 	  = fHMean.H1Clone("hMinvCombSignalMc", step);
+  TH1D* cbSig     = fHMean.H1Clone("hMinvCombSignalMc", step);
   TH1D* cbU       = fHMean.H1Clone("hMinvCombBg_urqmd", step);
-  TH1D* cbSigU	  = fHMean.H1Clone("hMinvCombSignalMc_urqmd", step);
+  TH1D* cbSigU    = fHMean.H1Clone("hMinvCombSignalMc_urqmd", step);
   double binWidth = bg->GetBinWidth(1);
 
   vector<TH1D*> sHists(fHMean.fNofSignals);
@@ -252,7 +252,7 @@ void LmvmDrawAll::DrawMinv(ELmvmAnaStep step)
 }
 
 void LmvmDrawAll::DrawMinvBgSourcesAll()
-{  
+{
   TH1D* gg     = fHMean.H1Clone("hMinvBgSource2_elid_gg");
   TH1D* pipi   = fHMean.H1Clone("hMinvBgSource2_elid_pipi");
   TH1D* pi0pi0 = fHMean.H1Clone("hMinvBgSource2_elid_pi0pi0");
@@ -267,7 +267,7 @@ void LmvmDrawAll::DrawMinvBgSourcesAll()
   TH1D* physBg = fHMean.H1Clone("hMinvBgSource2_elid_gg");
   physBg->Add(fHMean.H1("hMinvBgSource2_elid_gpi0"));
   physBg->Add(fHMean.H1("hMinvBgSource2_elid_pi0pi0"));
-  
+
   TH1D* cPi = fHMean.H1Clone("hMinvBgSource2_elid_pipi");
   cPi->Add(fHMean.H1Clone("hMinvBgSource2_elid_gpi"));
   cPi->Add(fHMean.H1Clone("hMinvBgSource2_elid_pipi0"));
@@ -276,7 +276,7 @@ void LmvmDrawAll::DrawMinvBgSourcesAll()
   TH1D* rest = fHMean.H1Clone("hMinvBgSource2_elid_oo");
   rest->Add(fHMean.H1Clone("hMinvBgSource2_elid_go"));
   rest->Add(fHMean.H1Clone("hMinvBgSource2_elid_pi0o"));
-  
+
 
   //physBg->SetMinimum(1e-6);
   //physBg->SetMaximum(1e-2);
@@ -286,7 +286,7 @@ void LmvmDrawAll::DrawMinvBgSourcesAll()
   drawData.emplace_back(gpi0, kBlack, kBlack, 1, -1, "#gamma - #pi^{0}");
   drawData.emplace_back(pi0pi0, kGray + 1, kGray + 1, 1, -1, "#pi^{0} - #pi^{0}");
   drawData.emplace_back(gg, kCyan + 2, kCyan + 4, 2, -1, "#gamma - #gamma");
-  drawData.emplace_back(pipi0, kGreen -3 , kGreen + 3, 2, -1, "#pi^{#pm}_{misid} - #pi^{0}");
+  drawData.emplace_back(pipi0, kGreen - 3, kGreen + 3, 2, -1, "#pi^{#pm}_{misid} - #pi^{0}");
   drawData.emplace_back(pi0o, kRed - 4, kRed + 2, 1, -1, "#pi^{0} - o.");
   drawData.emplace_back(gpi, kOrange + 7, kOrange + 4, 2, -1, "#gamma - #pi^{#pm}_{misid}");
   drawData.emplace_back(go, kAzure + 2, kAzure + 3, 2, -1, "#gamma - o.");
@@ -297,8 +297,8 @@ void LmvmDrawAll::DrawMinvBgSourcesAll()
   string cName = "minvBgSrc/minvBgSrc";
   fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 1000, 1000);
 
-  TH1D* h0 = nullptr;
-  TLegend* leg    = new TLegend(0.65, 0.55, 0.95, 0.95);
+  TH1D* h0     = nullptr;
+  TLegend* leg = new TLegend(0.65, 0.55, 0.95, 0.95);
   for (size_t i = 0; i < drawData.size(); i++) {
     const auto& d = drawData[i];
     d.fH->GetYaxis()->SetLabelSize(0.05);
@@ -315,17 +315,19 @@ void LmvmDrawAll::DrawMinvBgSourcesAll()
   gPad->SetLogy(true);
 
   fHMean.fHM.CreateCanvas((cName + "_misidPi").c_str(), (cName + "_misidPi").c_str(), 1000, 1000);
-  DrawH1({physBg, cPi, rest}, {"Phys. BG", "BG w. misid. #pi^{#pm}", "Rest"}, kLinear, kLog, true, 0.7, 0.8, 0.95, 0.91, "p");
+  DrawH1({physBg, cPi, rest}, {"Phys. BG", "BG w. misid. #pi^{#pm}", "Rest"}, kLinear, kLog, true, 0.7, 0.8, 0.95, 0.91,
+         "p");
 
-  
+
   //check if all bg pair combinations are considered
   TH1D* bgRat = static_cast<TH1D*>(physBg->Clone());
   bgRat->Add(cPi);
   bgRat->Add(rest);
-  
+
   int nBins = bgRat->GetNbinsX();
   for (int i = 1; i <= nBins; i++) {
-    if (fHMean.H1("hMinv", ELmvmSrc::Bg, ELmvmAnaStep::ElId)->GetBinContent(i) == 0 && bgRat->GetBinContent(i) == 0) bgRat->SetBinContent(i, 1);
+    if (fHMean.H1("hMinv", ELmvmSrc::Bg, ELmvmAnaStep::ElId)->GetBinContent(i) == 0 && bgRat->GetBinContent(i) == 0)
+      bgRat->SetBinContent(i, 1);
     else {
       double r = bgRat->GetBinContent(i) / fHMean.H1("hMinv", ELmvmSrc::Bg, ELmvmAnaStep::ElId)->GetBinContent(i);
       bgRat->SetBinContent(i, r);
@@ -413,7 +415,9 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
         mixed->Scale(scale);
         mixedU->Scale(scaleU);
         same->SetMinimum(1e-8);
-        DrawH1({same, mixed, sameU, mixedU}, {"Same " + comb, "Mixed " + comb, "Same " + comb + " (UrQMD-El)", "Mixed " + comb + " (UrQMD-El)"}, kLinear, kLog, true, 0.65, 0.7, 0.99, 0.99, "p");
+        DrawH1({same, mixed, sameU, mixedU},
+               {"Same " + comb, "Mixed " + comb, "Same " + comb + " (UrQMD-El)", "Mixed " + comb + " (UrQMD-El)"},
+               kLinear, kLog, true, 0.65, 0.7, 0.99, 0.99, "p");
         fHMean.DrawAnaStepOnPad(step);
       }
     }
@@ -429,7 +433,8 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
       for (auto step : fHMean.fAnaSteps) {
         if (step < ELmvmAnaStep::ElId) continue;
         c->cd(i++);
-        TH1D* same          = fHMean.H1Clone("hMinvComb" + comb + "_sameEv", step); // TODO: check if this does not change origin histo
+        TH1D* same =
+          fHMean.H1Clone("hMinvComb" + comb + "_sameEv", step);  // TODO: check if this does not change origin histo
         TH1D* mixedOverSame = fHMean.H1Clone("hMinvComb" + comb + "_mixedEv", step);
         mixedOverSame->Divide(mixedOverSame, same, 1., 1., "B");
         DrawH1(mixedOverSame, kLinear, kLog, "hist");
@@ -480,7 +485,9 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
       same->GetXaxis()->SetTitle("M_{ee}");
       same->SetMinimum(1e-8);
       mixed->SetMinimum(1e-8);
-      DrawH1({same, mixed, sameU, mixedU}, {"geom. mean (same)", "geom. mean (mixed)", "geom. mean (same, UrQMD-El)", "geom. mean (mixed, UrQMD-El)"}, kLinear, kLog, true, 0.52, 0.8, 0.99, 0.99, "p");
+      DrawH1({same, mixed, sameU, mixedU},
+             {"geom. mean (same)", "geom. mean (mixed)", "geom. mean (same, UrQMD-El)", "geom. mean (mixed, UrQMD-El)"},
+             kLinear, kLog, true, 0.52, 0.8, 0.99, 0.99, "p");
       fHMean.DrawAnaStepOnPad(step);
     }
   }
@@ -493,8 +500,8 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
     for (auto step : fHMean.fAnaSteps) {
       if (step < ELmvmAnaStep::ElId) continue;
       c->cd(i++);
-      TH1D* k   = fHMean.H1Clone("hMinvCombK", step);
-      TH1D* kU = fHMean.H1Clone("hMinvCombK_urqmd", step);
+      TH1D* k    = fHMean.H1Clone("hMinvCombK", step);
+      TH1D* kU   = fHMean.H1Clone("hMinvCombK_urqmd", step);
       double min = 0.6;
       double max = 1.4;
       k->SetMinimum(min);
@@ -505,7 +512,7 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
       fHMean.DrawAnaStepOnPad(step);
     }
   }
-  
+
   // Draw CB vs MC-BG
   {
     TCanvas* c = fHMean.fHM.CreateCanvas("cb/cbVsMcBg", "cb/cbVsMcBg", 1800, 1800);
@@ -529,8 +536,8 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
     for (auto step : fHMean.fAnaSteps) {
       if (step < ELmvmAnaStep::ElId) continue;
       c->cd(i++);
-      TH1D* cb = fHMean.H1Clone("hMinvCombBg", step);
-      TH1D* bg = fHMean.H1Clone("hMinv", ELmvmSrc::Bg, step);     
+      TH1D* cb    = fHMean.H1Clone("hMinvCombBg", step);
+      TH1D* bg    = fHMean.H1Clone("hMinv", ELmvmSrc::Bg, step);
       TH1D* ratio = static_cast<TH1D*>(bg->Clone());
       ratio->Divide(cb);
       DrawH1({ratio}, {"BG_{MC}/B_{C}"}, kLinear, kLinear, true, 0.65, 0.75, 0.92, 0.9, "hist");
@@ -568,8 +575,8 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
       pmSame->SetMaximum(1e-2);
       pmSame->SetMinimum(4e-9);
       DrawH1({pmSame, combBg, combSignalNpm, cocktail},
-             {"N_{same}^{+-}", "B_{c}", "Signal (N_{same}^{+-} - B_{c})", "Cocktail"}, kLinear, kLog, true, 0.53,
-             0.75, 0.99, 0.92, "hist");
+             {"N_{same}^{+-}", "B_{c}", "Signal (N_{same}^{+-} - B_{c})", "Cocktail"}, kLinear, kLog, true, 0.53, 0.75,
+             0.99, 0.92, "hist");
       fHMean.DrawAnaStepOnPad(step);
     }
   }
@@ -589,9 +596,8 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
       sbg2->SetMaximum(2e-2);
       sbg2->SetMinimum(4e-9);
       TH1D* cocktail     = GetCocktailMinvH1(step);
-      DrawH1({sbg2, combBg, sBgSignal, cocktail},
-             {"Cocktail + BG", "B_{C}", "Signal (Cock+BG - B_{C})", "Cocktail"}, kLinear, kLog, true, 0.53,
-             0.72, 0.99, 0.92, "p");
+      DrawH1({sbg2, combBg, sBgSignal, cocktail}, {"Cocktail + BG", "B_{C}", "Signal (Cock+BG - B_{C})", "Cocktail"},
+             kLinear, kLog, true, 0.53, 0.72, 0.99, 0.92, "p");
       fHMean.DrawAnaStepOnPad(step);
     }
   }
@@ -618,18 +624,19 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
     for (auto step : fHMean.fAnaSteps) {
       if (step < ELmvmAnaStep::ElId) continue;
       string name = fHMean.GetName("cb/cbAndSignal_urqmd", step);
-      TCanvas* c = fHMean.fHM.CreateCanvas(name.c_str(), name.c_str(), 1800, 900);
-      TH1D* cb   = fHMean.H1Clone("hMinvCombBg", step);
-      TH1D* cbU  = fHMean.H1Clone("hMinvCombBg_urqmd", step);
-      TH1D* sig  = fHMean.H1Clone("hMinvCombSignalMc", step);
-      TH1D* sigU = fHMean.H1Clone("hMinvCombSignalMc_urqmd", step);
+      TCanvas* c  = fHMean.fHM.CreateCanvas(name.c_str(), name.c_str(), 1800, 900);
+      TH1D* cb    = fHMean.H1Clone("hMinvCombBg", step);
+      TH1D* cbU   = fHMean.H1Clone("hMinvCombBg_urqmd", step);
+      TH1D* sig   = fHMean.H1Clone("hMinvCombSignalMc", step);
+      TH1D* sigU  = fHMean.H1Clone("hMinvCombSignalMc_urqmd", step);
       cb->SetMinimum(1e-8);
       c->Divide(2, 1);
       c->cd(1);
       DrawH1({cb, cbU}, {"B_{C}", "B_{C} (UrQMD electrons)"}, kLinear, kLog, true, 0.6, 0.85, 0.95, 0.95, "p");
       fHMean.DrawAnaStepOnPad(step);
       c->cd(2);
-      DrawH1({sig, sigU}, {"Signal (BG+Coc - B_{C})", "Signal (UrQMD electrons)"}, kLinear, kLog, true, 0.55, 0.85, 0.95, 0.95, "p");
+      DrawH1({sig, sigU}, {"Signal (BG+Coc - B_{C})", "Signal (UrQMD electrons)"}, kLinear, kLog, true, 0.55, 0.85,
+             0.95, 0.95, "p");
       fHMean.DrawAnaStepOnPad(step);
     }
   }
@@ -664,9 +671,9 @@ void LmvmDrawAll::SaveHist()
 void LmvmDrawAll::CalcCombBGHistos()
 {
   for (ELmvmAnaStep step : fHMean.fAnaSteps) {
-    for (const string& cat : {"", "_urqmd"}) { // common CB or from pure UrQMD electrons
+    for (const string& cat : {"", "_urqmd"}) {  // common CB or from pure UrQMD electrons
       if (step < ELmvmAnaStep::ElId) continue;
-    
+
       // Geometrical mean
       for (const string& ev : {"_sameEv", "_mixedEv"}) {
         TH1D* pp   = fHMean.H1Clone("hMinvCombPP" + cat + ev, step);
@@ -685,38 +692,38 @@ void LmvmDrawAll::CalcCombBGHistos()
       TH1D* k = fHMean.CreateHByClone<TH1D>("hMinvCombPM" + cat + "_mixedEv", "hMinvCombK" + cat, step);
       k->Divide(fHMean.H1("hMinvCombGeom" + cat + "_mixedEv", step));
       k->Scale(0.5);
-          
+
       // calculate combinatorial BG from same (<= 0.3 GeV) and mixed (> 0.3 GeV) events data
-        // at first, calculate norm. factor between same and mixed events in 300 - 1000 MeV/c2 interval
+      // at first, calculate norm. factor between same and mixed events in 300 - 1000 MeV/c2 interval
       TH1D* hGeomSame  = fHMean.H1("hMinvCombGeom" + cat + "_sameEv", step);
       TH1D* hGeomMixed = fHMean.H1("hMinvCombGeom" + cat + "_mixedEv", step);
       int minBin       = hGeomSame->FindBin(0.3);
       int maxBin       = hGeomSame->FindBin(1.0);
       double normGM    = hGeomSame->Integral(minBin, maxBin) / hGeomMixed->Integral(minBin, maxBin);
 
-        // combinatorial BG
-      TH1D* hBc =  fHMean.CreateHByClone<TH1D>("hMinvCombGeom" + cat + "_sameEv", "hMinvCombBg" + cat, step);
+      // combinatorial BG
+      TH1D* hBc = fHMean.CreateHByClone<TH1D>("hMinvCombGeom" + cat + "_sameEv", "hMinvCombBg" + cat, step);
       for (int i = 0; i <= hBc->GetNbinsX(); i++) {
-        double val = (i <= minBin) ? 2 * fHMean.H1("hMinvCombK" + cat, step)->GetBinContent(i) 
-            * fHMean.H1("hMinvCombGeom" + cat + "_sameEv", step)->GetBinContent(i) 
-                : normGM * fHMean.H1("hMinvCombPM" + cat + "_mixedEv", step)->GetBinContent(i);
+        double val = (i <= minBin) ? 2 * fHMean.H1("hMinvCombK" + cat, step)->GetBinContent(i)
+                                       * fHMean.H1("hMinvCombGeom" + cat + "_sameEv", step)->GetBinContent(i)
+                                   : normGM * fHMean.H1("hMinvCombPM" + cat + "_mixedEv", step)->GetBinContent(i);
         hBc->SetBinContent(i, val);
       }
-    
+
       // calculate signal from CB subtraction
-        // from 'N+-same': Signal = N+-same - B_{C}
+      // from 'N+-same': Signal = N+-same - B_{C}
       TH1D* hSigNpm = fHMean.CreateHByClone<TH1D>("hMinvCombPM" + cat + "_sameEv", "hMinvCombSignalNpm" + cat, step);
       hSigNpm->Add(fHMean.H1("hMinvCombBg" + cat, step), -1.);
 
-        // from MC 'Cocktail + BG': Signal = Coc+BG - B_{C}
+      // from MC 'Cocktail + BG': Signal = Coc+BG - B_{C}
       TH1D* hSigCoc = fHMean.CreateHByClone<TH1D>("hMinv_bg", "hMinvCombSignalMc" + cat, step);
       hSigCoc->Add(GetCocktailMinvH1(step));
       hSigCoc->Add(fHMean.H1("hMinvCombBg" + cat, step), -1.);
 
       // calculate errors via error propagation formula
       int nofEvents = GetNofTotalEvents();
-      double bW = fHMean.H1("hMinvCombPM" + cat + "_sameEv", step)->GetBinWidth(1);
-      int nofBins = fHMean.H1("hMinvCombPM" + cat + "_sameEv", step)->GetNbinsX();
+      double bW     = fHMean.H1("hMinvCombPM" + cat + "_sameEv", step)->GetBinWidth(1);
+      int nofBins   = fHMean.H1("hMinvCombPM" + cat + "_sameEv", step)->GetNbinsX();
       for (int i = 1; i <= nofBins; i++) {
         //s_ for same, m_ for mixed
         double s_pm = fHMean.H1("hMinvCombPM" + cat + "_sameEv", step)->GetBinContent(i) * nofEvents * bW;
@@ -725,36 +732,36 @@ void LmvmDrawAll::CalcCombBGHistos()
         double m_pm = fHMean.H1("hMinvCombPM" + cat + "_mixedEv", step)->GetBinContent(i) * nofEvents * bW;
         double m_pp = fHMean.H1("hMinvCombPP" + cat + "_mixedEv", step)->GetBinContent(i) * nofEvents * bW;
         double m_mm = fHMean.H1("hMinvCombMM" + cat + "_mixedEv", step)->GetBinContent(i) * nofEvents * bW;
-        
-	      // derivatives of B_{C} w.r. to according value
+
+        // derivatives of B_{C} w.r. to according value
         double d_m_pm = std::sqrt(s_pp * s_mm / (m_pp * m_mm));
         double d_m_pp = -0.5 * m_pm * m_mm * std::sqrt(s_pp * s_mm) / (std::pow(std::sqrt(m_pp * m_mm), 3));
         double d_m_mm = -0.5 * m_pm * m_pp * std::sqrt(s_pp * s_mm) / (std::pow(std::sqrt(m_pp * m_mm), 3));
-        double d_s_pp =  0.5 * m_pm * s_mm / std::sqrt(m_pp * m_mm * s_pp * s_mm);
-        double d_s_mm =  0.5 * m_pm * s_pp / std::sqrt(m_pp * m_mm * s_pp * s_mm);
+        double d_s_pp = 0.5 * m_pm * s_mm / std::sqrt(m_pp * m_mm * s_pp * s_mm);
+        double d_s_mm = 0.5 * m_pm * s_pp / std::sqrt(m_pp * m_mm * s_pp * s_mm);
 
-	      // contributions to error propagation
+        // contributions to error propagation
         double f_m_pm = std::pow(d_m_pm * std::sqrt(m_pm), 2);
         double f_m_pp = std::pow(d_m_pp * std::sqrt(m_pp), 2);
         double f_m_mm = std::pow(d_m_mm * std::sqrt(m_mm), 2);
         double f_s_pp = std::pow(d_s_pp * std::sqrt(s_pp), 2);
         double f_s_mm = std::pow(d_s_mm * std::sqrt(s_mm), 2);
 
-	      // final error propagation values
+        // final error propagation values
         double errorBc   = std::sqrt(f_m_pm + f_m_pp + f_m_mm + f_s_pp + f_s_mm) / (nofEvents * bW);
         double errorBc2  = normGM * std::sqrt(m_pm) / (nofEvents * bW);  // for range > 0.3 GeV
         double errorSig  = std::sqrt(s_pm + std::pow(errorBc, 2)) / (nofEvents * bW);
         double errorSig2 = std::sqrt(s_pm + std::pow(errorBc2, 2)) / (nofEvents * bW);
 
         if (i <= minBin) fHMean.H1("hMinvCombBg" + cat, step)->SetBinError(i, errorBc);
-        if (i >  minBin) fHMean.H1("hMinvCombBg" + cat, step)->SetBinError(i, errorBc2);
+        if (i > minBin) fHMean.H1("hMinvCombBg" + cat, step)->SetBinError(i, errorBc2);
         if (i <= minBin) fHMean.H1("hMinvCombSignalNpm" + cat, step)->SetBinError(i, errorSig);
-        if (i >  minBin) fHMean.H1("hMinvCombSignalNpm" + cat, step)->SetBinError(i, errorSig2);
+        if (i > minBin) fHMean.H1("hMinvCombSignalNpm" + cat, step)->SetBinError(i, errorSig2);
         if (i <= minBin) fHMean.H1("hMinvCombSignalMc" + cat, step)->SetBinError(i, errorSig);
-        if (i >  minBin) fHMean.H1("hMinvCombSignalMc" + cat, step)->SetBinError(i, errorSig2);
+        if (i > minBin) fHMean.H1("hMinvCombSignalMc" + cat, step)->SetBinError(i, errorSig2);
       }  // error calculation
-    }  // cat ("" or "_urqmd")
-  } // steps
+    }    // cat ("" or "_urqmd")
+  }      // steps
 }
 
 void LmvmDrawAll::CalcCutEffRange(double minMinv, double maxMinv)

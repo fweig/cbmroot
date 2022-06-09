@@ -241,13 +241,13 @@ void LmvmUtils::IsElectron(int globalTrackIndex, double momentum, double momentu
 {
   bool richEl    = CbmLitGlobalElectronId::GetInstance().IsRichElectron(globalTrackIndex, momentum);
   cand->fRichAnn = CbmLitGlobalElectronId::GetInstance().GetRichAnn(globalTrackIndex, momentum);
-  
-  bool trdEl     = (momentum < 1.) ? true : CbmLitGlobalElectronId::GetInstance().IsTrdElectron(globalTrackIndex, momentum);
+
+  bool trdEl = (momentum < 1.) ? true : CbmLitGlobalElectronId::GetInstance().IsTrdElectron(globalTrackIndex, momentum);
   //bool trdEl     = CbmLitGlobalElectronId::GetInstance().IsTrdElectron(globalTrackIndex, momentum);
-  
+
   //cand->fTrdAnn  = CbmLitGlobalElectronId::GetInstance().GetTrdAnn(globalTrackIndex, momentum); //TODO: uncomment this and delete next line when TrdAnn is working again
   cand->fTrdLikeEl = CbmLitGlobalElectronId::GetInstance().GetTrdAnn(globalTrackIndex, momentum);
-  
+
   bool tofEl     = CbmLitGlobalElectronId::GetInstance().IsTofElectron(globalTrackIndex, momentum);
   cand->fMass2   = CbmLitGlobalElectronId::GetInstance().GetTofM2(globalTrackIndex, momentum);
   bool isMomCut  = (momentumCut > 0.) ? (momentum < momentumCut) : true;
