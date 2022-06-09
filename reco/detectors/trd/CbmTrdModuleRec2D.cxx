@@ -522,9 +522,9 @@ Bool_t CbmTrdModuleRec2D::MergeHits(CbmTrdHit* h, Int_t a0)
   h->SetDxy(0.);
   h->SetTime(CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP) * (vt0 + time) - tdrift + 30.29, edt);
   h->SetELoss(e);
-  // hit->SetClassType();
-  // hit->SetMaxType(tM);
-  // if(ovf) hit->SetOverFlow();
+  h->SetClassType();
+  h->SetMaxType(IsMaxTilt());
+  h->SetOverFlow(HasOvf());
 
   if (CWRITE()) {
     printf("-> loc[%6.2f %6.2f %6.2f] err[%6.2f %6.2f %6.2f]\n", local_pad[0], local_pad[1], local_pad[2],
