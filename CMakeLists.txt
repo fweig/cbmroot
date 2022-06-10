@@ -8,9 +8,9 @@
 
 # Check if cmake has the required version
 # For the CTest fixtures at least CMake 3.7.2 is needed.
-# Since NicaFempto requires 3.11.0 we should be consistent while we
+# Since flesnet requires 3.14.0 we should be consistent while we
 # build it in the CbmRoot context
-CMAKE_MINIMUM_REQUIRED(VERSION 3.11.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14)
 
 # Set name of our project to "CBMROOT". Has to be done
 # after check of cmake version

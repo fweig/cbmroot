@@ -248,7 +248,7 @@ FileLicenceCheck:
     BASE_PATH: "/cvmfs/fairsoft.gsi.de/debian10"
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
-
+    EXTRA_PATH: "${SIMPATH}/bin"
 
 .macosx_tag: &macosx_tag
   stage: build
