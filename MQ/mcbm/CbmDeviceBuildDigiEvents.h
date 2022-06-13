@@ -65,6 +65,8 @@ private:
   std::vector<std::string> fvsSetTrigMinNb       = {};
   std::vector<std::string> fvsSetTrigMaxNb       = {};
   std::vector<std::string> fvsSetTrigMinLayersNb = {};
+  /// I/O control
+  bool fbDoNotSend = false;
   /// message queues
   std::string fsChannelNameDataInput   = "unpts_0";
   std::string fsChannelNameDataOutput  = "events";

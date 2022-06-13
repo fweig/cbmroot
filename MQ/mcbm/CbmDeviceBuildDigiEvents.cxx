@@ -70,6 +70,7 @@ try {
   fvsSetTrigMaxNb       = fConfig->GetValue<std::vector<std::string>>("SetTrigMaxNb");
   fvsSetTrigMinLayersNb = fConfig->GetValue<std::vector<std::string>>("SetTrigMinLayersNb");
 
+  fbDoNotSend              = fConfig->GetValue<bool>("DoNotSend");
   fsChannelNameDataInput   = fConfig->GetValue<std::string>("TsNameIn");
   fsChannelNameDataOutput  = fConfig->GetValue<std::string>("EvtNameOut");
   fsChannelNameHistosInput = fConfig->GetValue<std::string>("ChNameIn");
@@ -137,7 +138,7 @@ try {
     }
   }
 
-     /// Extract detector to remove if any
+  /// Extract detector to remove if any
   for (std::vector<std::string>::iterator itStrRem = fvsDelDet.begin();
        itStrRem != fvsDelDet.end();
        ++itStrRem) {
@@ -152,7 +153,8 @@ try {
       continue;
     }
   }
-     /// Extract Trigger window to add if any
+
+  /// Extract Trigger window to add if any
   for (std::vector<std::string>::iterator itStrTrigWin = fvsSetTrigWin.begin();
        itStrTrigWin != fvsSetTrigWin.end();
        ++itStrTrigWin) {
@@ -257,9 +259,9 @@ try {
 
     /// Max number
     charPosDel++;
-    UInt_t uMaxNb = std::stoul((*itStrMaxNb).substr(charPosDel));
+    Int_t iMaxNb = std::stol((*itStrMaxNb).substr(charPosDel));
 
-    fpAlgo->SetTriggerMaxNumber(selDet, uMaxNb);
+    fpAlgo->SetTriggerMaxNumber(selDet, iMaxNb);
   }
 
   /// Extract MinLayersNb for trigger if any
@@ -541,7 +543,7 @@ bool CbmDeviceBuildDigiEvents::HandleData(FairMQParts& parts, int /*index*/)
   fpAlgo->ProcessTs();
 
   /// Send events vector to ouput
-  if (!SendEvents(parts)) return false;
+  if (!fbDoNotSend && !SendEvents(parts)) return false;
 
   /// Clear metadata
   fTimeSliceMetaDataArray->Clear();
@@ -707,23 +709,25 @@ bool CbmDeviceBuildDigiEvents::SendHistograms()
 CbmDeviceBuildDigiEvents::~CbmDeviceBuildDigiEvents()
 {
   /// Clear metadata
-  delete fCbmTsEventHeader;
+  if (fCbmTsEventHeader) delete fCbmTsEventHeader;
 
   /// Clear vectors
-  fvDigiT0->clear();
-  fvDigiSts->clear();
-  fvDigiMuch->clear();
-  fvDigiTrd->clear();
-  fvDigiTof->clear();
-  fvDigiRich->clear();
-  fvDigiPsd->clear();
+  if (fvDigiT0) fvDigiT0->clear();
+  if (fvDigiSts) fvDigiSts->clear();
+  if (fvDigiMuch) fvDigiMuch->clear();
+  if (fvDigiTrd) fvDigiTrd->clear();
+  if (fvDigiTof) fvDigiTof->clear();
+  if (fvDigiRich) fvDigiRich->clear();
+  if (fvDigiPsd) fvDigiPsd->clear();
 
   /// Clear metadata
-  fTimeSliceMetaDataArray->Clear();
-  delete fTsMetaData;
+  if (fTimeSliceMetaDataArray) {
+    fTimeSliceMetaDataArray->Clear();
+    delete fTsMetaData;
 
-  delete fTimeSliceMetaDataArray;
-  delete fpAlgo;
+    delete fTimeSliceMetaDataArray;
+  }
+  if (fpAlgo) delete fpAlgo;
 }
 
 void CbmDeviceBuildDigiEvents::Finish() {}
