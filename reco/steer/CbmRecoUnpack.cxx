@@ -19,6 +19,7 @@
 
 #include <RtypesCore.h>
 #include <TH1.h>
+#include <TStopwatch.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -161,6 +162,23 @@ Bool_t CbmRecoUnpack::Init()
     initPerformanceMaps(fkFlesBmon, "Bmon");
   }
 
+  if (fDoPerfProfPerTs) {
+    /// Timer for complete processing and histograming perTS
+    fTimerTs = new TStopwatch();
+
+    fhCpuTimePerTs  = new TH1D("hCpuTimePerTs", "CPU Processing time of TS vs TS; Ts; CPU time [ms]", 6000, 0, 6000);
+    fhRealTimePerTs = new TH1D("hRealTimePerTs", "Real Processing time of TS vs TS; Ts; Real time [ms]", 6000, 0, 6000);
+
+    fhCpuTimePerTsHist =
+      new TH1D("hCpuTimePerTsHist", "CPU Histo filling time of TS vs TS; Ts; CPU time [ms]", 6000, 0, 6000);
+    fhRealTimePerTsHist =
+      new TH1D("hRealTimePerTsHist", "Real Histo filling time of TS vs TS; Ts; Real time [ms]", 6000, 0, 6000);
+
+    fhUnpackingRatioPerTs =
+      new TH1D("hUnpackingRatioPerTs", "ratio of tot. unp. digi size to tot. input raw size vs TS; TS; Size Ratio []",
+               6000, 0, 6000);
+  }
+
   return kTRUE;
 }
 // ----------------------------------------------------------------------------
@@ -173,6 +191,27 @@ void CbmRecoUnpack::initPerformanceMaps(std::uint16_t subsysid, std::string name
     fNameMap.emplace(std::make_pair(subsysid, std::make_pair(name, 0)));
     fTimeMap.emplace(std::make_pair(subsysid, std::make_pair(0, 0)));
     fDataSizeMap.emplace(std::make_pair(subsysid, std::make_pair(0, 0)));
+  }
+  if (fDoPerfProfPerTs) {
+    fNameMapPerTs.emplace(std::make_pair(subsysid, std::make_pair(name, 0)));
+    fTimeMapPerTs.emplace(std::make_pair(subsysid, std::make_pair(0, 0)));
+    fDataSizeMapPerTs.emplace(std::make_pair(subsysid, std::make_pair(0, 0)));
+
+    fvhInpRatioPerTs.emplace(std::make_pair(
+      subsysid,
+      new TH1D(Form("hInpRatioPerTs%s", name.c_str()),
+               Form("ratio of input data size in total input data size vs TS for %s; TS; Size Ratio []", name.c_str()),
+               6000, 0, 6000)));
+    fvhOutRatioPerTs.emplace(std::make_pair(
+      subsysid,
+      new TH1D(Form("hOutRatioPerTs%s", name.c_str()),
+               Form("ratio of unpacked digi size in total output size vs TS for %s; TS; Size Ratio []", name.c_str()),
+               6000, 0, 6000)));
+    fvhUnpRatioPerTs.emplace(std::make_pair(
+      subsysid,
+      new TH1D(Form("hUnpRatioPerTs%s", name.c_str()),
+               Form("ratio of unpacked digi size to raw data size vs TS for %s; TS; O/I Size Ratio []", name.c_str()),
+               6000, 0, 6000)));
   }
 }
 // ----------------------------------------------------------------------------
@@ -250,12 +289,71 @@ void CbmRecoUnpack::performanceProfiling()
   hSpeedPerf->Write();
   hDataPerf->Write();
 
+  if (fDoPerfProfPerTs) {
+    fhCpuTimePerTs->Write();
+    fhRealTimePerTs->Write();
+    fhCpuTimePerTsHist->Write();
+    fhRealTimePerTsHist->Write();
+    for (auto detHist : fvhInpRatioPerTs) {
+      fvhInpRatioPerTs[detHist.first]->Write();
+      fvhOutRatioPerTs[detHist.first]->Write();
+      fvhUnpRatioPerTs[detHist.first]->Write();
+    }
+    fhUnpackingRatioPerTs->Write();
+  }
+
   /// Restore old global file and folder pointer to avoid messing with FairRoot
   gFile      = oldFile;
   gDirectory = oldDir;
 
   // histofile->Close();
   histofile.Close();
+}
+void CbmRecoUnpack::performanceProfilingPerTs()
+{
+  /// Speed performance
+  double dTotalCpuTime  = fTimerTs->CpuTime() * 1000.;
+  double dTotalRealTime = fTimerTs->RealTime() * 1000.;
+  fTimerTs->Start();
+
+  /*
+  for (auto timeit : fTimeMapPerTs) {
+    // Speed performance
+    dTotalCpuTime     += timeit->second.first
+    dTotalRealTime    += timeit->second.second
+  }
+  */
+
+  double dTotalDataSizeIn  = 0.0;
+  double dTotalDataSizeOut = 0.0;
+
+  /// Data performance
+  for (auto datait : fDataSizeMapPerTs) {
+    dTotalDataSizeIn += datait.second.first;
+    dTotalDataSizeOut += datait.second.second;
+  }
+  for (auto datait : fDataSizeMapPerTs) {
+    fvhInpRatioPerTs[datait.first]->Fill(fCbmTsEventHeader->GetTsIndex(), datait.second.first / dTotalDataSizeIn);
+    fvhOutRatioPerTs[datait.first]->Fill(fCbmTsEventHeader->GetTsIndex(), datait.second.second / dTotalDataSizeOut);
+    fvhUnpRatioPerTs[datait.first]->Fill(fCbmTsEventHeader->GetTsIndex(), datait.second.second / datait.second.first);
+  }
+  fhUnpackingRatioPerTs->Fill(fCbmTsEventHeader->GetTsIndex(), dTotalDataSizeOut / dTotalDataSizeIn);
+  fhCpuTimePerTs->Fill(fCbmTsEventHeader->GetTsIndex(), dTotalCpuTime);
+  fhRealTimePerTs->Fill(fCbmTsEventHeader->GetTsIndex(), dTotalRealTime);
+
+  for (auto timeit = fTimeMapPerTs.begin(); timeit != fTimeMapPerTs.end(); ++timeit) {
+    // Speed performance
+    timeit->second.first  = 0.0;
+    timeit->second.second = 0.0;
+  }
+  for (auto datait = fDataSizeMapPerTs.begin(); datait != fDataSizeMapPerTs.end(); ++datait) {
+    datait->second.first  = 0.0;
+    datait->second.second = 0.0;
+  }
+
+  fTimerTs->Stop();
+  fhCpuTimePerTsHist->Fill(fCbmTsEventHeader->GetTsIndex(), fTimerTs->CpuTime() * 1000.);
+  fhRealTimePerTsHist->Fill(fCbmTsEventHeader->GetTsIndex(), fTimerTs->RealTime() * 1000.);
 }
 // ----------------------------------------------------------------------------
 
@@ -290,6 +388,11 @@ void CbmRecoUnpack::Reset()
 // -----   Unpacking   --------------------------------------------------------
 void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
 {
+  if (fDoPerfProfPerTs) {
+    /// Start time for complete processing perTS
+    fTimerTs->Start();
+  }
+
   // Prepare timeslice
   const fles::Timeslice& timeslice = *ts;
 
@@ -393,6 +496,11 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
     if (fTrd1DConfig && fTrd1DConfig->GetOptOutAVec()) { timesort(fTrd1DConfig->GetOptOutAVec()); }
     if (fTrd2DConfig && fTrd2DConfig->GetOptOutAVec()) { timesort(fTrd2DConfig->GetOptOutAVec()); }
     if (fBmonConfig && fBmonConfig->GetOptOutAVec()) { timesort(fBmonConfig->GetOptOutAVec()); }
+  }
+
+  if (fDoPerfProfPerTs) {
+    fTimerTs->Stop();
+    performanceProfilingPerTs();
   }
 }
 // ----------------------------------------------------------------------------

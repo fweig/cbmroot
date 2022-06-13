@@ -41,6 +41,8 @@
 #include <utility>
 #include <vector>
 
+class TH1;
+class TStopwatch;
 
 /** @class CbmRecoUnpack
  ** @brief Main steering class for unpacking in cbmroot
@@ -89,6 +91,17 @@ public:
    * @param value
   */
   void SetDoPerfProfiling(bool value = true) { fDoPerfProf = value; }
+
+  /**
+   * @brief (De)Activate the performance profiling based on histograms for each TS
+   *
+   * @param value
+  */
+  void SetDoPerfProfilingPerTs(bool value = true)
+  {
+    if (value) fDoPerfProf = value;
+    fDoPerfProfPerTs = value;
+  }
 
   /**
    * @brief Set the performance profiling Output Filename
@@ -158,6 +171,9 @@ private:
   /** @brief Flag if performance profiling should be activated or not.*/
   bool fDoPerfProf = false;  //!
 
+  /** @brief Flag if performance profiling per TS should be activated or not.*/
+  bool fDoPerfProfPerTs = false;  //!
+
   /** @brief Map to store a name for the unpackers and the processed amount of digis, key = fkFlesId*/
   std::map<std::uint16_t, std::pair<std::string, size_t>> fNameMap = {};  //!
 
@@ -167,8 +183,30 @@ private:
   /** @brief Map to store the in and out data amount, key = fkFlesId*/
   std::map<std::uint16_t, std::pair<double, double>> fDataSizeMap = {};  //!
 
+  /** @brief Map to store a name for the unpackers and the processed amount of digis for a single TS, key = fkFlesId*/
+  std::map<std::uint16_t, std::pair<std::string, size_t>> fNameMapPerTs = {};  //!
+
+  /** @brief Map to store the cpu and wall time for a single TS, key = fkFlesId*/
+  std::map<std::uint16_t, std::pair<double, double>> fTimeMapPerTs = {};  //!
+
+  /** @brief Map to store the in and out data amount for a single TS, key = fkFlesId*/
+  std::map<std::uint16_t, std::pair<double, double>> fDataSizeMapPerTs = {};  //!
+
+  TStopwatch* fTimerTs                           = nullptr;
+  TH1* fhCpuTimePerTs                            = nullptr;  /// Processing time per TS
+  TH1* fhRealTimePerTs                           = nullptr;  /// Processing time per TS
+  TH1* fhCpuTimePerTsHist                        = nullptr;  /// Plotting time per TS
+  TH1* fhRealTimePerTsHist                       = nullptr;  /// Plotting time per TS
+  std::map<std::uint16_t, TH1*> fvhInpRatioPerTs = {};       /// ratio of system data in total input size vs TS in run
+  std::map<std::uint16_t, TH1*> fvhOutRatioPerTs = {};  /// ratio of system digi size in total output size vs TS in run
+  std::map<std::uint16_t, TH1*> fvhUnpRatioPerTs = {};  /// ratio of selected digi vs TS in run
+  TH1* fhUnpackingRatioPerTs                     = nullptr;  /// ratio of total unpacked size to input size vs TS in run
+
   /** @brief Run the performance profiling based on the fTimeMap and fDataSizeMap members. */
   void performanceProfiling();
+
+  /** @brief Run the performance profiling for a single TS based on the fTimeMapPerTs and fDataSizeMapPerTs members. */
+  void performanceProfilingPerTs();
 
   /**
    * @brief Init the performance profiling maps for a given unpacker
@@ -347,6 +385,18 @@ private:
       datait->second.second += nDigis * algo->GetOutputObjSize() / 1.0e6;
 
       fNameMap.find(subsysid)->second.second += nDigis;
+    }
+
+    if (fDoPerfProfPerTs) {
+      auto timeit = fTimeMapPerTs.find(subsysid);
+      timeit->second.first += cputime;
+      timeit->second.second += walltime;
+
+      auto datait = fDataSizeMapPerTs.find(subsysid);
+      datait->second.first += ts->size_component(icomp) / 1.0e6;
+      datait->second.second += nDigis * algo->GetOutputObjSize() / 1.0e6;
+
+      fNameMapPerTs.find(subsysid)->second.second += nDigis;
     }
 
     return nDigis;
