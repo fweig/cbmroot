@@ -305,6 +305,7 @@ private:
   UInt_t GetNofDigis(ECbmModuleId detId);
   template<class Digi>
   const Digi* GetDigi(UInt_t uDigi);
+  uint64_t GetSizeFromDigisNb(ECbmModuleId detId, uint64_t ulNbDigis);
 
   Double_t GetSeedTimeWinRange();
 
@@ -332,10 +333,21 @@ private:
   TH1* fhEventDt          = nullptr;  //! histogram with the interval in seed time of consecutive events
   TH1* fhEventSize        = nullptr;  //! histogram with the nb of all  digis in the event
   TH2* fhNbDigiPerEvtTime = nullptr;  //! histogram with the nb of all  digis per event vs seed time of the events
+  TH1* fhCpuTimePerTs     = nullptr;  /// Processing time per TS
+  TH1* fhRealTimePerTs    = nullptr;  /// Processing time per TS
+
+  TH1* fhCpuTimePerTsHist  = nullptr;  /// Plotting time per TS
+  TH1* fhRealTimePerTsHist = nullptr;  /// Plotting time per TS
+
   std::vector<TH2*> fvhNbDigiPerEvtTimeDet =
     {};  //! histograms with the nb of digis in each detector per event vs seed time of the events
   std::vector<TH1*> fvhNbDigiPerEvtDet = {};  //! histograms with the nb of digis in each detector per event
   std::vector<TH1*> fvhTDiff           = {};  // digi time difference to seed
+
+  std::vector<TH1*> fvhSelRatioPerTsNb = {};       /// ratio of selected/input digi vs TS in run
+  std::vector<TH1*> fvhInpRatioPerTsSz = {};       /// ratio of input digi size in total input size vs TS in run
+  std::vector<TH1*> fvhOutRatioPerTsSz = {};       /// ratio of selected digi size in total event size vs TS in run
+  TH1* fhSizeReductionPerTs            = nullptr;  /// ratio of total selected size to input size selected vs TS in run
 
   /// Internal state variables
   UInt_t fuCurEv            = 0;   //! Event Counter

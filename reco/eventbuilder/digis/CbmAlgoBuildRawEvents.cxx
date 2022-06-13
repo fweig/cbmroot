@@ -129,6 +129,9 @@ void CbmAlgoBuildRawEvents::ClearEventVector()
 void CbmAlgoBuildRawEvents::ProcessTs()
 {
   LOG_IF(info, fuNrTs % 1000 == 0) << "Begin of TS " << fuNrTs;
+  TStopwatch timerTs;
+  timerTs.Start();
+
   if (fTimer != nullptr) { fTimer->Start(kFALSE); }
   InitTs();
   InitSeedWindow();
@@ -146,9 +149,22 @@ void CbmAlgoBuildRawEvents::ProcessTs()
     fCurrentEvent = nullptr;
   }
 
+  if (fbFillHistos) {
+    timerTs.Stop();
+    fhCpuTimePerTs->Fill(fuNrTs, timerTs.CpuTime() * 1000.);
+    fhRealTimePerTs->Fill(fuNrTs, timerTs.RealTime() * 1000.);
+    timerTs.Start();
+  }
+
   LOG(debug) << "Found " << fEventVector.size() << " triggered events";
   if (fbFillHistos) { FillHistos(); }
   if (fTimer != nullptr) { fTimer->Stop(); }
+
+  if (fbFillHistos) {
+    timerTs.Stop();
+    fhCpuTimePerTsHist->Fill(fuNrTs, timerTs.CpuTime() * 1000.);
+    fhRealTimePerTsHist->Fill(fuNrTs, timerTs.RealTime() * 1000.);
+  }
 
   fuNrTs++;
 }
@@ -991,6 +1007,41 @@ UInt_t CbmAlgoBuildRawEvents::GetNofDigis(ECbmModuleId detId)
     }
   }
 }
+uint64_t CbmAlgoBuildRawEvents::GetSizeFromDigisNb(ECbmModuleId detId, uint64_t ulNbDigis)
+{
+  switch (detId) {
+    case ECbmModuleId::kSts: {
+      return ulNbDigis * sizeof(CbmStsDigi);
+    }
+    case ECbmModuleId::kMuch: {
+      if (fbUseMuchBeamtimeDigi) { return ulNbDigis * sizeof(CbmMuchBeamTimeDigi); }
+      else {
+        return ulNbDigis * sizeof(CbmMuchDigi);
+      }
+    }
+    case ECbmModuleId::kTrd2d:  // Same data storage as trd 1d
+    case ECbmModuleId::kTrd: {
+      return ulNbDigis * sizeof(CbmTrdDigi);
+    }
+    case ECbmModuleId::kTof: {
+      return ulNbDigis * sizeof(CbmTofDigi);
+    }
+    case ECbmModuleId::kRich: {
+      return ulNbDigis * sizeof(CbmRichDigi);
+    }
+    case ECbmModuleId::kPsd: {
+      return ulNbDigis * sizeof(CbmPsdDigi);
+    }
+    case ECbmModuleId::kT0: {
+      return ulNbDigis * sizeof(CbmTofDigi);
+    }
+    default: {
+      LOG(fatal) << "CbmAlgoBuildRawEvents::GetSizeFromDigisNb => "
+                 << "Trying to get digi number with unsupported detector.";
+      return -1;
+    }
+  }
+}
 
 //----------------------------------------------------------------------
 void CbmAlgoBuildRawEvents::CreateHistograms()
@@ -1014,14 +1065,30 @@ void CbmAlgoBuildRawEvents::CreateHistograms()
                                 1000, 0, 0.2, 5000, 0, 5000);
   // fhNbDigiPerEvtTime->SetCanExtend(TH2::kAllAxes);  // Breaks he MQ histogram server as cannot be merged!
 
+  fhCpuTimePerTs  = new TH1D("hCpuTimePerTs", "CPU Processing time of TS vs TS; Ts; CPU time [ms]", 6000, 0, 6000);
+  fhRealTimePerTs = new TH1D("hRealTimePerTs", "Real Processing time of TS vs TS; Ts; Real time [ms]", 6000, 0, 6000);
+
+  fhCpuTimePerTsHist =
+    new TH1D("hCpuTimePerTsHist", "CPU Histo filling time of TS vs TS; Ts; CPU time [ms]", 6000, 0, 6000);
+  fhRealTimePerTsHist =
+    new TH1D("hRealTimePerTsHist", "Real Histo filling time of TS vs TS; Ts; Real time [ms]", 6000, 0, 6000);
+
   AddHistoToVector(fhEventTime, "evtbuild");
   AddHistoToVector(fhEventDt, "evtbuild");
   AddHistoToVector(fhEventSize, "evtbuild");
   AddHistoToVector(fhNbDigiPerEvtTime, "evtbuild");
+  AddHistoToVector(fhCpuTimePerTs, "evtbuild-eff");
+  AddHistoToVector(fhRealTimePerTs, "evtbuild-eff");
+  AddHistoToVector(fhCpuTimePerTsHist, "evtbuild-eff");
+  AddHistoToVector(fhRealTimePerTsHist, "evtbuild-eff");
   outFolder->Add(fhEventTime);
   outFolder->Add(fhEventDt);
   outFolder->Add(fhEventSize);
   outFolder->Add(fhNbDigiPerEvtTime);
+  outFolder->Add(fhCpuTimePerTs);
+  outFolder->Add(fhRealTimePerTs);
+  outFolder->Add(fhCpuTimePerTsHist);
+  outFolder->Add(fhRealTimePerTsHist);
 
   /// Loop on selection detectors
   for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
@@ -1039,16 +1106,43 @@ void CbmAlgoBuildRawEvents::CreateHistograms()
     // hNbDigiPerEvtTimeDet->SetCanExtend(TH2::kAllAxes);   // Breaks he MQ histogram server as cannot be merged!
     fvhNbDigiPerEvtTimeDet.push_back(hNbDigiPerEvtTimeDet);
 
-    TH1I* hNbDigiPerEvtDet =
+    TH1* hNbDigiPerEvtDet =
       new TH1I(Form("hNbDigiPerEvt%s", (*det).sName.data()),
                Form("nb of %s digis per event; Nb Digis []", (*det).sName.data()), 10000, 0, 10000);
     fvhNbDigiPerEvtDet.push_back(hNbDigiPerEvtDet);
 
-    TH1I* hTDiff =
+    TH1* hTDiff =
       new TH1I(Form("hTDiff%s", (*det).sName.data()),
                Form("#DeltaT of %s digis to seed time of event;#DeltaT (ns); Counts []", (*det).sName.data()), 200,
                (*det).fdTimeWinBeg, (*det).fdTimeWinEnd);
     fvhTDiff.push_back(hTDiff);
+
+    // clang-format off
+    TH1* hSelRatioPerTsNb = new TH1D(Form("hSelRatioPerTsNb%s", (*det).sName.data()),
+                                     Form("ratio of sel digis per TS vs TS for %s; TS; Sel Digis Ratio []",
+                                          (*det).sName.data()),
+                                     6000, 0, 6000);
+    TH1* hInpRatioPerTsSz = new TH1D(Form("hInpRatioPerTsSz%s", (*det).sName.data()),
+                                     Form("ratio of input digi size in total input size vs TS for %s; TS; Size Ratio []",
+                                          (*det).sName.data()),
+                                     6000, 0, 6000);
+    TH1* hOutRatioPerTsSz = new TH1D(Form("hOutRatioPerTsSz%s", (*det).sName.data()),
+                                     Form("ratio of selected digi size in event size vs TS for %s; TS; Size Ratio []",
+                                          (*det).sName.data()),
+                                     6000, 0, 6000);
+    // clang-format on
+
+    fvhSelRatioPerTsNb.push_back(hSelRatioPerTsNb);
+    fvhInpRatioPerTsSz.push_back(hInpRatioPerTsSz);
+    fvhOutRatioPerTsSz.push_back(hOutRatioPerTsSz);
+
+    AddHistoToVector(hSelRatioPerTsNb, "evtbuild-eff");
+    AddHistoToVector(hInpRatioPerTsSz, "evtbuild-eff");
+    AddHistoToVector(hOutRatioPerTsSz, "evtbuild-eff");
+
+    outFolder->Add(hSelRatioPerTsNb);
+    outFolder->Add(hInpRatioPerTsSz);
+    outFolder->Add(hOutRatioPerTsSz);
   }
 
   /// Same plots for the reference detector
@@ -1069,6 +1163,39 @@ void CbmAlgoBuildRawEvents::CreateHistograms()
              Form("#DeltaT of %s digis to seed time of event;#DeltaT (ns); Counts []", fRefDet.sName.data()), 200,
              fRefDet.fdTimeWinBeg, fRefDet.fdTimeWinEnd);  // FIXME, adjust to configured window
   fvhTDiff.push_back(hTDiff);
+
+  // clang-format off
+  TH1* hSelRatioPerTsNb = new TH1D(Form("hSelRatioPerTsNb%s", fRefDet.sName.data()),
+                                   Form("ratio of sel digis per TS vs TS for %s; TS; Sel Digis Ratio []",
+                                        fRefDet.sName.data()),
+                                   6000, 0, 6000);
+  TH1* hInpRatioPerTsSz = new TH1D(Form("hInpRatioPerTsSz%s", fRefDet.sName.data()),
+                                   Form("ratio of input digi size in total input size vs TS for %s; TS; Size Ratio []",
+                                        fRefDet.sName.data()),
+                                   6000, 0, 6000);
+  TH1* hOutRatioPerTsSz = new TH1D(Form("hOutRatioPerTsSz%s", fRefDet.sName.data()),
+                                   Form("ratio of selected digi size in event size vs TS for %s; TS; Size Ratio []",
+                                        fRefDet.sName.data()),
+                                   6000, 0, 6000);
+  // clang-format on
+
+  fvhSelRatioPerTsNb.push_back(hSelRatioPerTsNb);
+  fvhInpRatioPerTsSz.push_back(hInpRatioPerTsSz);
+  fvhOutRatioPerTsSz.push_back(hOutRatioPerTsSz);
+
+  AddHistoToVector(hSelRatioPerTsNb, "evtbuild-eff");
+  AddHistoToVector(hInpRatioPerTsSz, "evtbuild-eff");
+  AddHistoToVector(hOutRatioPerTsSz, "evtbuild-eff");
+
+  outFolder->Add(hSelRatioPerTsNb);
+  outFolder->Add(hInpRatioPerTsSz);
+  outFolder->Add(hOutRatioPerTsSz);
+
+  fhSizeReductionPerTs =
+    new TH1D("hSizeReductionPerTs", "ratio of tot. sel. digi size to tot. input digi size vs TS; TS; Size Ratio []",
+             6000, 0, 6000);
+  AddHistoToVector(fhSizeReductionPerTs, "evtbuild-eff");
+  outFolder->Add(fhSizeReductionPerTs);
 
   for (std::vector<TH2*>::iterator itHist = fvhNbDigiPerEvtTimeDet.begin(); itHist != fvhNbDigiPerEvtTimeDet.end();
        ++itHist) {
@@ -1169,6 +1296,14 @@ void CbmAlgoBuildRawEvents::CreateHistograms()
 
 void CbmAlgoBuildRawEvents::FillHistos()
 {
+  /// I/O monitoring
+  uint32_t uRefDetIdx        = fvDets.size();
+  uint64_t ulTotalInputSize  = 0;
+  uint64_t ulTotalOutputSize = 0;
+  std::vector<uint64_t> vulTotalInputSizeDet(fvDets.size() + 1, 0);
+  std::vector<uint64_t> vulTotalOutputSizeDet(fvDets.size() + 1, 0);
+
+  /// Output monitoring
   Double_t dPreEvtTime = -1.0;
   for (CbmEvent* evt : fEventVector) {
     fhEventTime->Fill(evt->GetStartTime() * 1e-9);
@@ -1427,10 +1562,26 @@ void CbmAlgoBuildRawEvents::FillHistos()
         // filter T0 digis from Tof (remove this block if T0 properly implemented)
         fvhNbDigiPerEvtDet[uDetIdx]->Fill(uNbDataTof);
         fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTof);
+
+        if (0 < GetNofDigis(fvDets[uDetIdx].detId)) {
+          /// Selection ratio
+          uint64_t ulDigiSizeOut = GetSizeFromDigisNb(fvDets[uDetIdx].detId, uNbDataT0 + uNbDataTof);
+
+          ulTotalOutputSize += ulDigiSizeOut;
+          vulTotalOutputSizeDet[uDetIdx] += ulDigiSizeOut;
+        }
       }
       else if (fvDets[uDetIdx].sName == "Trd1D") {
         fvhNbDigiPerEvtDet[uDetIdx]->Fill(uNbDataTrd1d);
         fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTrd1d);
+
+        if (0 < GetNofDigis(fvDets[uDetIdx].detId)) {
+          /// Selection ratio
+          uint64_t ulDigiSizeOut = GetSizeFromDigisNb(fvDets[uDetIdx].detId, uNbDataTrd1d + uNbDataTrd2d);
+
+          ulTotalOutputSize += ulDigiSizeOut;
+          vulTotalOutputSizeDet[uDetIdx] += ulDigiSizeOut;
+        }
       }
       else if (fvDets[uDetIdx].sName == "Trd2D") {
         fvhNbDigiPerEvtDet[uDetIdx]->Fill(uNbDataTrd2d);
@@ -1440,6 +1591,15 @@ void CbmAlgoBuildRawEvents::FillHistos()
         fvhNbDigiPerEvtDet[uDetIdx]->Fill(TMath::Max(0, evt->GetNofData(fvDets[uDetIdx].dataType)));
         fvhNbDigiPerEvtTimeDet[uDetIdx]->Fill(evt->GetStartTime() * 1e-9,
                                               TMath::Max(0, evt->GetNofData(fvDets[uDetIdx].dataType)));
+
+        if (0 < GetNofDigis(fvDets[uDetIdx].detId)) {
+          /// Selection ratio
+          uint64_t ulDigiSizeOut =
+            GetSizeFromDigisNb(fvDets[uDetIdx].detId, TMath::Max(0, evt->GetNofData(fvDets[uDetIdx].dataType)));
+
+          ulTotalOutputSize += ulDigiSizeOut;
+          vulTotalOutputSizeDet[uDetIdx] += ulDigiSizeOut;
+        }
       }
     }
     /// Same for the reference detector
@@ -1452,10 +1612,26 @@ void CbmAlgoBuildRawEvents::FillHistos()
       // filter T0 digis from Tof (remove this block if T0 properly implemented)
       fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTof);
       fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTof);
+
+      if (0 < GetNofDigis(fRefDet.detId)) {
+        /// Selection ratio
+        uint64_t ulDigiSizeOut = GetSizeFromDigisNb(fRefDet.detId, uNbDataT0 + uNbDataTof);
+
+        ulTotalOutputSize += ulDigiSizeOut;
+        vulTotalOutputSizeDet[uRefDetIdx] += ulDigiSizeOut;
+      }
     }
     else if (fRefDet.sName == "Trd1D") {
       fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTrd1d);
       fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTrd1d);
+
+      if (0 < GetNofDigis(fRefDet.detId)) {
+        /// Selection ratio
+        uint64_t ulDigiSizeOut = GetSizeFromDigisNb(fRefDet.detId, uNbDataTrd1d + uNbDataTrd2d);
+
+        ulTotalOutputSize += ulDigiSizeOut;
+        vulTotalOutputSizeDet[uRefDetIdx] += ulDigiSizeOut;
+      }
     }
     else if (fRefDet.sName == "Trd2D") {
       fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTrd2d);
@@ -1465,10 +1641,54 @@ void CbmAlgoBuildRawEvents::FillHistos()
       fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(TMath::Max(0, evt->GetNofData(fRefDet.dataType)));
       fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9,
                                                TMath::Max(0, evt->GetNofData(fRefDet.dataType)));
+
+      if (0 < GetNofDigis(fRefDet.detId)) {
+        /// Selection ratio
+        uint64_t ulDigiSizeOut = GetSizeFromDigisNb(fRefDet.detId, TMath::Max(0, evt->GetNofData(fRefDet.dataType)));
+
+        ulTotalOutputSize += ulDigiSizeOut;
+        vulTotalOutputSizeDet[uRefDetIdx] += ulDigiSizeOut;
+      }
     }
 
     dPreEvtTime = evt->GetStartTime();
   }
+
+  /// Loop on selection detectors to count input data
+  for (UInt_t uDetIdx = 0; uDetIdx < fvDets.size(); ++uDetIdx) {
+    uint64_t ulDigiSizeIn = GetSizeFromDigisNb(fvDets[uDetIdx].detId, GetNofDigis(fvDets[uDetIdx].detId));
+    ulTotalInputSize += ulDigiSizeIn;
+    vulTotalInputSizeDet[uDetIdx] += ulDigiSizeIn;
+  }
+  uint64_t ulDigiSizeIn = GetSizeFromDigisNb(fRefDet.detId, GetNofDigis(fRefDet.detId));
+  ulTotalInputSize += ulDigiSizeIn;
+  vulTotalInputSizeDet[uRefDetIdx] += ulDigiSizeIn;
+
+  /// Re-Loop on selection detectors to fill global TS ratios
+  for (UInt_t uDetIdx = 0; uDetIdx < fvDets.size(); ++uDetIdx) {
+    if (0 != vulTotalInputSizeDet[uDetIdx]) {  //
+      fvhSelRatioPerTsNb[uDetIdx]->Fill(fuNrTs, vulTotalOutputSizeDet[uDetIdx] * 1.0 / vulTotalInputSizeDet[uDetIdx]);
+    }
+    if (0 != ulTotalInputSize) {  //
+      fvhInpRatioPerTsSz[uDetIdx]->Fill(fuNrTs, vulTotalInputSizeDet[uDetIdx] * 1.0 / ulTotalInputSize);
+    }
+    if (0 != ulTotalOutputSize) {  //
+      fvhOutRatioPerTsSz[uDetIdx]->Fill(fuNrTs, vulTotalOutputSizeDet[uDetIdx] * 1.0 / ulTotalOutputSize);
+    }
+  }
+  /// Same for the reference detector
+  if (0 != vulTotalInputSizeDet[uRefDetIdx]) {  //
+    fvhSelRatioPerTsNb[uRefDetIdx]->Fill(fuNrTs,
+                                         vulTotalOutputSizeDet[uRefDetIdx] * 1.0 / vulTotalInputSizeDet[uRefDetIdx]);
+  }
+  if (0 != ulTotalInputSize) {  //
+    fvhInpRatioPerTsSz[uRefDetIdx]->Fill(fuNrTs, vulTotalInputSizeDet[uRefDetIdx] * 1.0 / ulTotalInputSize);
+    fhSizeReductionPerTs->Fill(fuNrTs, ulTotalOutputSize * 1.0 / ulTotalInputSize);
+  }
+  if (0 != ulTotalOutputSize) {  //
+    fvhOutRatioPerTsSz[uRefDetIdx]->Fill(fuNrTs, vulTotalOutputSizeDet[uRefDetIdx] * 1.0 / ulTotalOutputSize);
+  }
+  LOG(debug) << "I/O Size ratio: " << (ulTotalOutputSize * 1.0 / ulTotalInputSize);
 }
 
 void CbmAlgoBuildRawEvents::ResetHistograms(Bool_t /*bResetTime*/)
