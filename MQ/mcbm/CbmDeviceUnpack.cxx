@@ -139,6 +139,12 @@ Bool_t CbmDeviceUnpack::InitContainers()
       bmonconfig->SetParFilesBasePath(parfilesbasepathBmon);
       bmonconfig->SetParFileName("mBmonCriPar.par");
       bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+      if (2160 <= fuRunId) {
+        bmonconfig->SetSystemTimeOffset(-80);  // [ns] value to be updated
+      }
+      if (2350 <= fuRunId) {
+        bmonconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+      }
       /// Enable Monitor plots
       // bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));  // FIXME: Unsupported for now
     }
@@ -166,6 +172,12 @@ Bool_t CbmDeviceUnpack::InitContainers()
       /// Enable Monitor plots
       //      stsconfig->SetMonitor(GetStsMonitor(outfilename, true)); // FIXME: Unsupported for now
       stsconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
+      if (2160 <= fuRunId) {
+        stsconfig->SetSystemTimeOffset(-1075);  // [ns] value to be updated
+      }
+      if (2350 <= fuRunId) {
+        stsconfig->SetSystemTimeOffset(-970);  // [ns] value to be updated
+      }
 
       stsconfig->SetMinAdcCut(1, 1);
       stsconfig->SetMinAdcCut(2, 1);
@@ -234,11 +246,34 @@ Bool_t CbmDeviceUnpack::InitContainers()
         /// Starting to use CRI Based MUCH setup with 2GEM and 1 RPC since 09/03/2022 Carbon run
         muchconfig->SetParFileName("mMuchParUpto26032022.par");
       }
+      else if (2163 <= fuRunId && fuRunId <= 2291) {
+        /// First nickel runs
+        muchconfig->SetParFileName("mMuchParUpto03042022.par");
+      }
+      else if (2311 <= fuRunId && fuRunId <= 2315) {
+        ///
+        muchconfig->SetParFileName("mMuchParUpto10042022.par");
+      }
+      else if (2316 <= fuRunId && fuRunId <= 2366) {
+        ///
+        muchconfig->SetParFileName("mMuchParUpto23052022.par");
+      }
+      else if (2367 <= fuRunId && fuRunId <= 2397) {
+        /// Starting to use GEM 2 moved to CRI 0 on 24/05/2022
+        muchconfig->SetParFileName("mMuchParUpto26052022.par");
+      }
+
       /// Enable duplicates rejection, Ignores the ADC for duplicates check
       muchconfig->SetDuplicatesRejection(true, true);
       /// Enable Monitor plots
       //muchconfig->SetMonitor(GetMuchMonitor(outfilename, true));
       muchconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
+      if (2160 <= fuRunId) {
+        muchconfig->SetSystemTimeOffset(-1020);  // [ns] value to be updated
+      }
+      if (2350 <= fuRunId) {
+        muchconfig->SetSystemTimeOffset(-980);  // [ns] value to be updated
+      }
 
       // muchconfig->SetMinAdcCut(1, 1);
 
@@ -267,31 +302,65 @@ Bool_t CbmDeviceUnpack::InitContainers()
       // Get the spadic configuration true = avg baseline active / false plain sample 0
       trd1Dconfig->SetSpadicObject(GetTrdSpadic(true));
       trd1Dconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+      if (2160 <= fuRunId) {
+        trd1Dconfig->SetSystemTimeOffset(1140);  // [ns] value to be updated
+      }
+      if (2350 <= fuRunId) {
+        trd1Dconfig->SetSystemTimeOffset(1300);  // [ns] value to be updated
+      }
     }
   }  // if ("" != trdsetuptag)
   // -------------
   // ---- TRDFASP2D ----
   std::shared_ptr<CbmTrdUnpackFaspConfig> trdfasp2dconfig = nullptr;
   if ("" != trdsetuptag && fbUnpTrd2D) {
-    trdfasp2dconfig = std::make_shared<CbmTrdUnpackFaspConfig>(trdsetuptag.Data(), 3);
+    trdfasp2dconfig = std::make_shared<CbmTrdUnpackFaspConfig>(trdsetuptag.Data());
     if (trdfasp2dconfig) {
       // trdfasp2dconfig->SetDebugState();
       trdfasp2dconfig->SetDoWriteOutput();
       // Activate the line below to write Trd1D digis to a separate "TrdFaspDigi" branch. Can be used to separate between Fasp and Spadic digis
       //trdfasp2dconfig->SetOutputBranchName("TrdFaspDigi");
+      uint8_t map[NFASPMOD];
+      uint16_t crob_map[NCROBMOD];
+      for (int i(0); i < NFASPMOD; i++)
+        map[i] = i;
+      if (fuRunId <= 1588) {
+        const size_t nfasps = 12;
+        uint8_t map21[] = {9, 2, 3, 11, 10, 7, 8, 0, 1, 4, 6, 5};
+        for (int i(0); i < nfasps; i++)
+          map[i] = map21[i];
+        uint16_t crob_map21[] = {0x00f0, 0, 0, 0, 0};
+        for (int i(0); i < NCROBMOD; i++)
+          crob_map[i] = crob_map21[i];
+      }
+      else if (fuRunId >= 2335) {
+        const size_t nfasp0 = 72;
+        const size_t nfasps = 36;
+        uint8_t map22[]     = {
+          84,  85,  86,  87,  88,  89,   // FEB14/0xffc1
+          90,  91,  92,  93,  94,  95,   // FEB17/0xffc1
+          96,  97,  98,  99,  100, 101,  // FEB18/0xffc1
+          102, 103, 104, 105, 106, 107,  // FEB16/0xffc1
+          72,  73,  74,  75,  76,  77,   // FEB9/0xffc1
+          78,  79,  80,  81,  82,  83    // FEB8/0xffc1
+        };
+        for (int i(0); i < nfasps; i++)
+          map[i + nfasp0] = map22[i];
+        uint16_t crob_map22[] = {0xffc2, 0xffc5, 0xffc1, 0, 0};
+        for (int i(0); i < NCROBMOD; i++)
+          crob_map[i] = crob_map22[i];
+      }
+      trdfasp2dconfig->SetFaspMapping(5, map);
+      trdfasp2dconfig->SetCrobMapping(5, crob_map);
       std::string parfilesbasepathTrdfasp2d = Form("%s/parameters/trd", srcDir.Data());
       trdfasp2dconfig->SetParFilesBasePath(parfilesbasepathTrdfasp2d);
       trdfasp2dconfig->SetSystemTimeOffset(-1800);  // [ns] value to be updated
-      uint8_t map[NFASPMOD];
-      if (fuRunId <= 1588) {
-        uint8_t map21[] = {9, 2, 3, 11, 10, 7, 8, 0, 1, 4, 6, 5};
-        for (int i(0); i < NFASPMOD; i++)
-          map[i] = (i < 12 ? map21[i] : i);
+      if (2160 <= fuRunId) {
+        trdfasp2dconfig->SetSystemTimeOffset(-570);  // [ns] value to be updated
       }
-      else
-        for (int i(0); i < NFASPMOD; i++)
-          map[i] = i;
-      trdfasp2dconfig->SetFaspMapping(5, map);
+      if (2350 <= fuRunId) {
+        trdfasp2dconfig->SetSystemTimeOffset(-510);  // [ns] value to be updated
+      }
     }
   }  // if ("" != trdsetuptag)
   // -------------
@@ -324,10 +393,21 @@ Bool_t CbmDeviceUnpack::InitContainers()
           /// Uranium runs: 2176 - 2310
           parFileNameTof = "mTofCriParUranium.par";
         }
+        else if (2335 <= fuRunId) {
+          /// Nickel runs: 2335 - 2397
+          /// Gold runs: 2400 - xxxx
+          parFileNameTof = "mTofCriParNickel.par";
+        }
       }
       tofconfig->SetParFilesBasePath(parfilesbasepathTof);
       tofconfig->SetParFileName(parFileNameTof);
       tofconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+      if (2160 <= fuRunId) {
+        tofconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+      }
+      if (2350 <= fuRunId) {
+        tofconfig->SetSystemTimeOffset(45);  // [ns] value to be updated
+      }
       if (fuRunId <= 1659) {
         /// Switch ON the -4 offset in epoch count (hack for Spring-Summer 2021)
         tofconfig->SetFlagEpochCountHack2021();
@@ -354,6 +434,12 @@ Bool_t CbmDeviceUnpack::InitContainers()
       richconfig->SetParFilesBasePath(parfilesbasepathRich);
       richconfig->SetSystemTimeOffset(256000 - 1200);  // [ns] 1 MS and additional correction
       if (1904 < fuRunId) richconfig->SetSystemTimeOffset(-1200);
+      if (2160 <= fuRunId) {
+        richconfig->SetSystemTimeOffset(50);  // [ns] value to be updated
+      }
+      if (2350 <= fuRunId) {
+        richconfig->SetSystemTimeOffset(100);  // [ns] value to be updated
+      }
       if (1588 == fuRunId) richconfig->MaskDiRICH(0x7150);
     }
   }  // if ("" != richSetupTag)
