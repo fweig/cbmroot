@@ -13,6 +13,9 @@
 #define CbmTrackerDetInitializer_h 1
 
 class FairTask;
+class CbmMvdTrackerIF;
+class CbmStsTrackerIF;
+class CbmMuchTrackerIF;
 
 /// Class CbmTrackerDetInitializer implements a task for the tracking detector interfaces initialization.
 /// The tracking detector interfaces are added as subtasks. The CbmTrackerDetInitializer class instance is to
@@ -20,7 +23,7 @@ class FairTask;
 ///
 class CbmTrackerDetInitializer: public FairTask {
 public:
-  /// Default constructor: only STS is initialized (TODO: try delete)
+  /// Default constructor (only sts and mvd will be initialized)
   CbmTrackerDetInitializer();
   
   /// Destructor 
@@ -35,8 +38,17 @@ public:
   CbmTrackerDetInitializer& operator=(const CbmTrackerDetInitializer&) = delete;
   CbmTrackerDetInitializer& operator=(CbmTrackerDetInitializer&&) = delete;
 
+  // Accessors for the tracker interfaces
+  CbmMvdTrackerIF* GetMvdTrackerIF() { return fpMvdTrackerIF; }
+  CbmStsTrackerIF* GetStsTrackerIF() { return fpStsTrackerIF; }
+  CbmMuchTrackerIF* GetMuchTrackerIF() { return fpMuchTrackerIF; }
+
 private:
   static CbmTrackerDetInitializer* fpInstance;  ///< Instance of the class
+
+  CbmMvdTrackerIF* fpMvdTrackerIF {nullptr};  ///< Instance of the MVD tracker interface
+  CbmStsTrackerIF* fpStsTrackerIF {nullptr};  ///< Instance of the STS tracker interface
+  CbmMuchTrackerIF* fpMuchTrackerIF {nullptr};  ///< Instance of the MuCh tracker interface
 
   ClassDef(CbmTrackerDetInitializer, 0);
 };

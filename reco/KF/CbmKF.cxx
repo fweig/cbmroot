@@ -9,10 +9,9 @@
 #include "CbmKFFieldMath.h"
 #include "CbmKFHit.h"
 #include "CbmKFMath.h"
-#include "CbmMvdDetector.h"
-#include "CbmMvdStationPar.h"
-#include "CbmStsSetup.h"
-#include "CbmStsStation.h"
+#include "CbmTrackerDetInitializer.h"
+#include "CbmMvdTrackerIF.h"
+#include "CbmStsTrackerIF.h"
 
 #include "FairBaseParSet.h"
 #include "FairField.h"
@@ -81,6 +80,11 @@ CbmKF::CbmKF(const char* name, Int_t iVerbose)
   , fMaterialID2IndexMap()
 {
   if (!fInstance) fInstance = this;
+
+  if (!CbmTrackerDetInitializer::Instance()) {
+    LOG(fatal) << "CbmL1: CbmTrackerDetInitializer instance was not found. Please, add it as a task to your reco macro before the KF and L1 tasks:\n"
+               << "\033[1;30mrun->AddTask(new CbmTrackerDetInitializer());\033[0m";
+  }
 }
 
 CbmKF::~CbmKF() { fInstance = 0; }
@@ -97,9 +101,6 @@ InitStatus CbmKF::ReInit() { return Init(); }
 
 InitStatus CbmKF::Init()
 {
-  if (!CbmStsSetup::Instance()->IsInit())  //TODO remove initialisation when the problem will be resolved globaly
-    CbmStsSetup::Instance()->Init();
-
   fMagneticField = 0;
 
   vMvdMaterial.clear();
@@ -143,39 +144,35 @@ InitStatus CbmKF::Init()
   digiMan->Init();
   Bool_t useMVD = CbmDigiManager::IsPresent(ECbmModuleId::kMvd);
   if (useMVD) {
-    CbmMvdDetector* mvdDetector = CbmMvdDetector::Instance();
-    if (mvdDetector) {
-      CbmMvdStationPar* mvdStationPar = mvdDetector->GetParameterFile();
-      assert(mvdStationPar);
+    auto mvdInterface = CbmMvdTrackerIF::Instance();
 
-      if (fVerbose) cout << "KALMAN FILTER : === READ MVD MATERIAL ===" << endl;
+    if (fVerbose) cout << "KALMAN FILTER : === READ MVD MATERIAL ===" << endl;
 
-      int NStations = mvdStationPar->GetStationCount();
+    int NStations = mvdInterface->GetNtrackingStations();
 
-      for (Int_t ist = 0; ist < NStations; ist++) {
-        CbmKFTube tube;
+    for (Int_t ist = 0; ist < NStations; ist++) {
+      CbmKFTube tube;
 
-        tube.ID = 1101 + ist;
-        //   tube.F = 1.;
-        tube.z          = mvdStationPar->GetZPosition(ist);
-        tube.dz         = mvdStationPar->GetZThickness(ist);
-        // TODO: verify the thickness of MVD stations
-        tube.RadLength  = tube.dz / (10. * mvdStationPar->GetZRadThickness(ist));
-        tube.r          = std::min(mvdStationPar->GetBeamHeight(ist), mvdStationPar->GetBeamWidth(ist));
-        tube.R          = std::max(mvdStationPar->GetHeight(ist), mvdStationPar->GetWidth(ist));
-        tube.rr         = tube.r * tube.r;
-        tube.RR         = tube.R * tube.R;
-        tube.ZThickness = tube.dz;
-        tube.ZReference = tube.z;
+      tube.ID = 1101 + ist;
+      //   tube.F = 1.;
+      tube.z          = mvdInterface->GetZ(ist);
+      tube.dz         = mvdInterface->GetThickness(ist);
+      // TODO: verify the thickness of MVD stations
+      tube.RadLength  = mvdInterface->GetRadLength(ist);
+      tube.r          = mvdInterface->GetRmin(ist);
+      tube.R          = mvdInterface->GetRmax(ist);
+      tube.rr         = tube.r * tube.r;
+      tube.RR         = tube.R * tube.R;
+      tube.ZThickness = tube.dz;
+      tube.ZReference = tube.z;
 
-        vMvdMaterial.push_back(tube);
-        MvdStationIDMap.insert(pair<Int_t, Int_t>(tube.ID, ist));
+      vMvdMaterial.push_back(tube);
+      MvdStationIDMap.insert(pair<Int_t, Int_t>(tube.ID, ist));
 
-        if (fVerbose)
-          cout << " Mvd material ( id, z, dz, r, R, RadL, dz/RadL )= ( " << tube.ID << ", " << tube.z << ", " << tube.dz
-               << ", " << tube.r << ", " << tube.R << ", " << tube.RadLength << ", " << tube.dz / tube.RadLength << " )"
-               << endl;
-      }
+      if (fVerbose)
+        cout << " Mvd material ( id, z, dz, r, R, RadL, dz/RadL )= ( " << tube.ID << ", " << tube.z << ", " << tube.dz
+             << ", " << tube.r << ", " << tube.R << ", " << tube.RadLength << ", " << tube.dz / tube.RadLength << " )"
+             << endl;
     }
   }
 
@@ -184,22 +181,19 @@ InitStatus CbmKF::Init()
 
   if (fVerbose) cout << "KALMAN FILTER : === READ STS MATERIAL ===" << endl;
 
-  int NStations = CbmStsSetup::Instance()->GetNofDaughters();
+  auto stsInterface = CbmStsTrackerIF::Instance();
+  int NStations = stsInterface->GetNtrackingStations();
 
   for (Int_t ist = 0; ist < NStations; ist++) {
-    CbmStsStation* station = CbmStsSetup::Instance()->GetStation(ist);
-
-    if (!station) continue;
-
     CbmKFTube tube;
 
     tube.ID         = 1000 + ist;
     tube.F          = 1.;
-    tube.z          = station->GetZ();
-    tube.dz         = station->GetSensorD();
-    tube.RadLength  = station->GetRadLength();
-    tube.r          = 0;
-    tube.R          = station->GetYmax() < station->GetXmax() ? station->GetXmax() : station->GetYmax();
+    tube.z          = stsInterface->GetZ(ist);
+    tube.dz         = stsInterface->GetThickness(ist);
+    tube.RadLength  = stsInterface->GetRadLength(ist);
+    tube.r          = stsInterface->GetRmin(ist);
+    tube.R          = stsInterface->GetRmax(ist);
     tube.rr         = tube.r * tube.r;
     tube.RR         = tube.R * tube.R;
     tube.ZThickness = tube.dz;

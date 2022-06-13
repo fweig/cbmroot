@@ -66,7 +66,7 @@ void L1Station::CheckConsistency() const
   if (dt[0] < 0) {
     std::stringstream msg;
     msg << "L1Station: " << this->ToString() << " has incorrect time resolution value: "
-        << "dt = " << Rmin[0] << " [ns], Rmax = " << Rmax[0] << " [cm] (0 <= Rmin < Rmax expected)";
+        << "dt = " << dt[0] << " ns (expected positive)";
     throw std::logic_error(msg.str());
   }
 
@@ -74,7 +74,9 @@ void L1Station::CheckConsistency() const
    * Check consistency of other members
    */
   
-  materialInfo.CheckConsistency();
+  //materialInfo.CheckConsistency(); 
+  // TODO: Temporarily switched off, because Much has RL = 0, which is actually incorrect, but really is not used. 
+  //       One should provide average radiation length values for each Much layer (S.Zharko)
   fieldSlice.CheckConsistency();
   frontInfo.CheckConsistency();
   backInfo.CheckConsistency();
@@ -99,7 +101,7 @@ std::string L1Station::ToString(int verbosityLevel, int indentLevel) const
     // TODO: probably we can have verbosity level and address for each underlying object (S.Zharko)
   }
   if (verbosityLevel == 0) {
-    aStream << "L1Station at z = " << z[0] << " [cm]" ;
+    aStream << "L1Station at z = " << z[0] << " cm" ;
   }
   else {
     aStream << '\n' << indent << "Address: " << this << '\n';

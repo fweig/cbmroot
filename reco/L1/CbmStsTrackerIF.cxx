@@ -73,7 +73,7 @@ double CbmStsTrackerIF::GetRmax(int stationId) const
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-int CbmStsTrackerIF::GetNstations() const 
+int CbmStsTrackerIF::GetNtrackingStations() const 
 { 
   return CbmStsSetup::Instance()->GetNofStations(); 
 }

@@ -33,5 +33,6 @@
 #pragma link C++ class CbmTrackerDetInitializer + ;
 #pragma link C++ class CbmMvdTrackerIF + ;
 #pragma link C++ class CbmStsTrackerIF + ;
+#pragma link C++ class CbmMuchTrackerIF + ;
 
 #endif

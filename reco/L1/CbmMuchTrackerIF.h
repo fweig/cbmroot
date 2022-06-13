@@ -3,35 +3,36 @@
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 /***************************************************************************************************
- * @file   CbmStsTrackerIF.h
- * @brief  Input data and parameters interface from STS subsystem used in L1 tracker (declaration)
- * @since  27.05.2022
+ * @file   CbmMuchTrackerIF.h
+ * @brief  Input data and parameters interface from MVD subsystem used in L1 tracker (declaration)
+ * @since  31.05.2022
  * @author S.Zharko <s.zharko@gsi.de>
  ***************************************************************************************************/
 
-#ifndef CbmStsTrackerIF_h
-#define CbmStsTrackerIF_h 1
+#ifndef CbmMuchTrackerIF_h
+#define CbmMuchTrackerIF_h 1
 
-#include "CbmStsParSetModule.h"
-#include "CbmStsParSetSensor.h"
-#include "CbmStsParSetSensorCond.h"
-#include "CbmStsSetup.h"
 #include "L1TrackerInterfaceBase.h"
 #include "FairTask.h"
 
 #include <iostream>
+#include <vector>
+#include "TString.h"
 
+class CbmMuchGeoScheme;
 
-/// Class CbmStsTrackerIF is a CbmL1 subtask, which provides necessary methods for L1 tracker
+/// Class CbmMuchTrackerIF is a CbmL1 subtask, which provides necessary methods for L1 tracker
 /// to access the geometry and dataflow settings.
-/// 
-class CbmStsTrackerIF: public FairTask, public L1TrackerInterfaceBase {
+///
+/// NOTE: For MuCh one tracking station is a MuCh layer!
+///
+class CbmMuchTrackerIF: public FairTask, public L1TrackerInterfaceBase {
 public:
   /// Default constructor
-  CbmStsTrackerIF();
+  CbmMuchTrackerIF();
 
   /// Destructor
-  ~CbmStsTrackerIF();
+  ~CbmMuchTrackerIF();
 
   /// FairTask: Init method
   InitStatus Init();
@@ -39,10 +40,10 @@ public:
   /// FairTask: ReInit method
   InitStatus ReInit();
 
-  /// Gets pointer to the instance of the CbmStsTrackerIF class
-  static CbmStsTrackerIF* Instance() { return fpInstance; }
+  /// Gets pointer to the instance of the CbmMuchTrackerIF
+  static CbmMuchTrackerIF* Instance() { return fpInstance; }
 
-  /// Gets actual number of the tracking stations, provided by the current geometry setup
+  /// Gets actual number of tracking stations, provided by the current geometry setup
   int GetNtrackingStations() const;
 
   /// Gets time resolution for a station
@@ -113,22 +114,25 @@ public:
   /// FairTask: sets parameter containers up
   void SetParContainers();
 
-  /// Copy and move constructers and assign operators are forbidden
-  CbmStsTrackerIF(const CbmStsTrackerIF&)            = delete;
-  CbmStsTrackerIF(CbmStsTrackerIF&&)                 = delete;
-  CbmStsTrackerIF& operator=(const CbmStsTrackerIF&) = delete;
-  CbmStsTrackerIF& operator=(CbmStsTrackerIF&&)      = delete;
+  /// Copy and move constructers and assign operators are prohibited
+  CbmMuchTrackerIF(const CbmMuchTrackerIF&)            = delete;
+  CbmMuchTrackerIF(CbmMuchTrackerIF&&)                 = delete;
+  CbmMuchTrackerIF& operator=(const CbmMuchTrackerIF&) = delete;
+  CbmMuchTrackerIF& operator=(CbmMuchTrackerIF&&)      = delete;
 
 private:
-  static CbmStsTrackerIF* fpInstance;
+  /// Calculates MuCh station ID from tracker station ID
+  __attribute__((always_inline)) int GetMuchStationId(int stationId) const { return stationId / 3; }
 
-  CbmStsParSetSensor*     fStsParSetSensor     {nullptr};  ///<
-  CbmStsParSetSensorCond* fStsParSetSensorCond {nullptr};  ///<
-  CbmStsParSetModule*     fStsParSetModule     {nullptr};  ///<
-
-  ClassDef(CbmStsTrackerIF, 0);
+  /// Calculates MuCh layer ID from tracker station ID
+  __attribute__((always_inline)) int GetMuchLayerId(int stationId) const { return stationId % 3; }
 
 
+  static CbmMuchTrackerIF* fpInstance;  ///< Instance of the class
+
+  CbmMuchGeoScheme* fGeoScheme {nullptr};  ///< MuCh geometry scheme instance
+
+  ClassDef(CbmMuchTrackerIF, 0);
 };
 
-#endif // CbmStsTrackerIF
+#endif // CbmMuchTrackerIF

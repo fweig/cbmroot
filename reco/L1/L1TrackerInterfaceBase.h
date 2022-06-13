@@ -20,7 +20,7 @@ public:
   virtual ~L1TrackerInterfaceBase() {}
 
   /// Gets actual number of stations, provided by the current geometry setup
-  virtual int GetNstations() const = 0;
+  virtual int GetNtrackingStations() const = 0;
 
   /// Gets time resolution for a station
   /// \param  stationId  Station ID in the setup (NOTE: must be in range [0..GetNstations()-1])

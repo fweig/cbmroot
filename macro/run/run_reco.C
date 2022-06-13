@@ -261,9 +261,10 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
   // ------------------------------------------------------------------------
 
 
+  
+
   // -----   Local reconstruction in MVD   ----------------------------------
   if (useMvd) {
-
     CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Cluster Finder", 0, 0);
     run->AddTask(mvdCluster);
     std::cout << "-I- : Added task " << mvdCluster->GetName() << std::endl;
@@ -305,6 +306,12 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
     TString parFile = gSystem->Getenv("VMCWORKDIR");
     parFile += "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
     std::cout << "Using parameter file " << parFile << std::endl;
+
+    // --- Initialization of the digi scheme
+    auto muchGeoScheme = CbmMuchGeoScheme::Instance();
+    if (!muchGeoScheme->IsInitialized()) {
+      muchGeoScheme->Init(parFile, muchFlag);
+    }
 
     // --- Hit finder for GEMs
     FairTask* muchReco = new CbmMuchFindHitsGem(parFile.Data(), muchFlag);
@@ -366,17 +373,14 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
 
   // -----   Track finding in STS (+ MVD)    --------------------------------
   if (useMvd || useSts) {
-    CbmKF* kalman = new CbmKF();
-    run->AddTask(kalman);
+    // Geometry interface initializer for tracker
+    auto trackerIF = new CbmTrackerDetInitializer();
     
-    // Initialize tracker detector interfaces used in CbmL1
-    run->AddTask(new CbmTrackerDetInitializer());
-
-    CbmL1* l1 = 0;
-    if (debugWithMC) { l1 = new CbmL1("L1", 2, 3); }
-    else {
-      l1 = new CbmL1("L1", 0);
-    }
+    // Kalman filter
+    auto kalman = new CbmKF();
+    
+    // L1 tracking
+    auto l1 = (debugWithMC) ? new CbmL1("L1", 2, 3) : new CbmL1("L1", 0);
 
     // --- Material budget file names
     TString mvdGeoTag;
@@ -394,6 +398,8 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
       l1->SetStsMaterialBudgetFileName(parFile.Data());
     }
 
+    run->AddTask(trackerIF);
+    run->AddTask(kalman);
     run->AddTask(l1);
     std::cout << "-I- " << myName << ": Added task " << l1->GetName() << std::endl;
 

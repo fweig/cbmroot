@@ -10,9 +10,11 @@
  ***************************************************************************************************/
 
 #include "FairTask.h"
-#include "CbmTrackerDetInitializer.h"
-#include "CbmStsTrackerIF.h"
+#include "CbmMuchTrackerIF.h"
 #include "CbmMvdTrackerIF.h"
+#include "CbmSetup.h"
+#include "CbmStsTrackerIF.h"
+#include "CbmTrackerDetInitializer.h"
 #include <FairLogger.h>
 
 ClassImp(CbmTrackerDetInitializer)
@@ -21,14 +23,28 @@ CbmTrackerDetInitializer* CbmTrackerDetInitializer::fpInstance = nullptr;
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-CbmTrackerDetInitializer::CbmTrackerDetInitializer(): FairTask("CbmTrackerDetInitializer")
+CbmTrackerDetInitializer::CbmTrackerDetInitializer()
+: FairTask("CbmTrackerDetInitializer")
 {
   if (!fpInstance) { 
     fpInstance = this; 
     
+    /** Check presence of the desired detectors **/
+    bool useMvd  = CbmSetup::Instance()->IsActive(ECbmModuleId::kMvd);
+    bool useSts  = CbmSetup::Instance()->IsActive(ECbmModuleId::kSts);
+    bool useMuch = CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch);
+    bool useTrd  = CbmSetup::Instance()->IsActive(ECbmModuleId::kTrd);
+    bool useTof  = CbmSetup::Instance()->IsActive(ECbmModuleId::kTof);
+
+    /** Invoke the detector interfaces **/
+    if (useMvd)  { fpMvdTrackerIF  = new CbmMvdTrackerIF(); }
+    if (useSts)  { fpStsTrackerIF  = new CbmStsTrackerIF(); }
+    if (useMuch) { fpMuchTrackerIF = new CbmMuchTrackerIF(); }
+
     /** Add subtasks - tracker detector interfaces **/
-    this->Add(new CbmMvdTrackerIF());
-    this->Add(new CbmStsTrackerIF());
+    if (useMvd)  { this->Add(fpMvdTrackerIF); }
+    if (useSts)  { this->Add(fpStsTrackerIF); }
+    if (useMuch) { this->Add(fpMuchTrackerIF); }
   }
 }
 

@@ -87,17 +87,7 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
   if (fTrackingMode == kMcbm) { fNfieldStations = -1; }
 
 
-  // Final init checks (the function provides purity of fields initialization and turns on the last bit of
-  // the L1ObjectInitController):
-  //fInitManager.CheckInit();  // NOTE: after passing this frontier L1Algo is (will be) accounted as initialized
-
-  // Print out the bits of the init manager
-  //LOG(info) << "InitManager " << fInitManager.GetInitController().ToString();
-
-  LOG(info) << "\033[1;34m ------ Parameters (before) -------------------------------------------------------------------\033[0m";
-  LOG(info) << fParameters.ToString();
   fInitManager.TransferParametersContainer(fParameters);
-  LOG(info) << "\033[1;34m ------ Parameters (after) --------------------------------------------------------------------\033[0m";
   LOG(info) << fParameters.ToString();
   
   // Get number of station

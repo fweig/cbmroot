@@ -1783,7 +1783,6 @@ void L1Algo::CATrackFinder()
   isec = 0;  // TODO: temporary! (S.Zharko)
   for (const auto& caIteration : fParameters.GetCAIterations())  // all finder
   {
-    std::cout << "CA Track Finder Iteration!!" << isec << '\n';
     //if (fTrackingMode == kMcbm) {
     //  if (isec > 3) { continue; }
     //}

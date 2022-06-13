@@ -208,6 +208,9 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
   constexpr char indentChar = '\t';
   std::string indent(indentLevel, indentChar);
   aStream << '\n';
+  aStream << indent << "--------------------------------------------------------------------------------\n";
+  aStream << indent << "                              L1 parameters list\n";
+  aStream << indent << "--------------------------------------------------------------------------------\n";
   aStream << indent << "COMPILE TIME CONSTANTS:\n";
   aStream << indent << indentChar << "Bits to code one station:           " <<L1Constants::size::kStationBits << '\n';
   aStream << indent << indentChar << "Bits to code one thread:            " <<L1Constants::size::kThreadBits << '\n';
@@ -227,7 +230,7 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
   aStream << indent << indentChar << "TARGET:\n";
   aStream << indent << indentChar << indentChar << "Position:\n";
   for (int dim = 0; dim < 3 /*nDimensions*/; ++dim ) {
-    aStream << indent << indentChar << indentChar << indentChar << char(120 + dim) << " = " << fTargetPos[dim][0] << " [cm]\n";
+    aStream << indent << indentChar << indentChar << indentChar << char(120 + dim) << " = " << fTargetPos[dim][0] << " cm\n";
   }
   
   aStream << indent << indentChar << "NUMBER OF STATIONS:\n";
@@ -253,6 +256,6 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
   for (int idx = 0; idx < *(fNstationsActive.end() - 1); ++idx) {
     aStream << indent << indentChar << indentChar << fStations[idx].ToString(verbosity) << '\n';
   }
-
+  aStream << indent << "--------------------------------------------------------------------------------\n";
   return aStream.str();
 }

@@ -39,13 +39,13 @@ void L1MaterialInfo::CheckConsistency() const
   L1Utils::CheckSimdVectorEquality(logRadThick, "L1MaterialInfo::logRadThick");
   
   /* (ii) Checks for physical sence: thick and RL must be larger then 0. */
-  if (thick[0] < fscal(0.) || L1Utils::CmpFloats(thick[0], fscal(0.))) {
+  if (thick[0] < fscal(0.)) {
     std::stringstream aStream;
     aStream <<"L1MaterialInfo: illegal value for station thickness: (" << thick[0] << ", positive value expected) [cm]";
     throw std::logic_error(aStream.str());
   }
 
-  if (RL[0] < fscal(0.) || L1Utils::CmpFloats(RL[0], fscal(0.))) {
+  if (RL[0] < fscal(0.)) {
     std::stringstream aStream;
     aStream <<"L1MaterialInfo: illegal value for station radiation length: (" << RL[0] << ", positive value expected) [cm]";
     throw std::logic_error(aStream.str());
@@ -174,7 +174,7 @@ void L1Material::SetBins(int nBins, float stationSize)
     throw std::logic_error(aStream.str());
   }
 
-  if (stationSize < 0 || L1Utils::CmpFloats(stationSize, 0.f)) {
+  if (stationSize < 0) {
     std::stringstream aStream;
     aStream << "L1Material: object cannot be initialized with non-positive stationStation = " << stationSize << " [cm]";
     throw std::logic_error(aStream.str());

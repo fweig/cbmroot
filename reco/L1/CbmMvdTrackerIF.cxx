@@ -10,8 +10,6 @@
  ***************************************************************************************************/
 
 #include "CbmMvdTrackerIF.h"
-#include "CbmKF.h"
-#include "CbmKFMaterial.h" // for CbmKFTube
 #include "CbmMvdDetector.h"
 #include "CbmMvdStationPar.h"
 #include "FairDetector.h"
@@ -46,40 +44,40 @@ double CbmMvdTrackerIF::GetTimeResolution(int /*stationId*/) const { return 1000
 //
 double CbmMvdTrackerIF::GetZ(int stationId) const
 { 
-  return (fMvdMaterial->at(stationId)).z; 
+  return fMvdStationPar->GetZPosition(stationId); 
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
 double CbmMvdTrackerIF::GetXmax(int stationId) const 
 { 
-  return (fMvdMaterial->at(stationId)).R; 
+  return this->GetRmax(stationId);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
 double CbmMvdTrackerIF::GetYmax(int stationId) const 
 { 
-  return (fMvdMaterial->at(stationId)).R; 
+  return this->GetRmax(stationId); 
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
 double CbmMvdTrackerIF::GetRmin(int stationId) const
 { 
-  return (fMvdMaterial->at(stationId)).r; 
+  return std::min(fMvdStationPar->GetBeamHeight(stationId), fMvdStationPar->GetBeamWidth(stationId)); 
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
 double CbmMvdTrackerIF::GetRmax(int stationId) const 
 { 
-  return (fMvdMaterial->at(stationId)).R; 
+  return std::max(fMvdStationPar->GetHeight(stationId), fMvdStationPar->GetWidth(stationId)); 
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-int CbmMvdTrackerIF::GetNstations() const 
+int CbmMvdTrackerIF::GetNtrackingStations() const 
 { 
   return fMvdStationPar->GetStationCount(); 
 }
@@ -88,14 +86,15 @@ int CbmMvdTrackerIF::GetNstations() const
 //
 double CbmMvdTrackerIF::GetThickness(int stationId) const 
 { 
-  return (fMvdMaterial->at(stationId)).dz; 
+  return fMvdStationPar->GetZThickness(stationId); 
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
 double CbmMvdTrackerIF::GetRadLength(int stationId) const 
 { 
-  return (fMvdMaterial->at(stationId)).RadLength; 
+  // NOTE: Taken from CbmKF::Init() (S.Zharko)
+  return fMvdStationPar->GetZThickness(stationId) / (10. * fMvdStationPar->GetZRadThickness(stationId));
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
@@ -138,10 +137,8 @@ InitStatus CbmMvdTrackerIF::Init()
 {
   LOG(info) << "\033[1;33mCALL CbmMvdTrackerIF::Init()\033[0m";
   
-  fMvdMaterial = &(CbmKF::Instance()->vMvdMaterial);
   fMvdStationPar = CbmMvdDetector::Instance()->GetParameterFile();
   
-  if (!fMvdMaterial) { return kFATAL; }
   if (!fMvdStationPar) { return kFATAL; }
 
   return kSUCCESS;

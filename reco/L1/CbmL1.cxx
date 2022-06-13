@@ -28,9 +28,10 @@
 #include "CbmMuchModuleGem.h"
 #include "CbmMuchPad.h"
 #include "CbmMuchStation.h"
-#include "CbmSetup.h" // TODO: To be replaced to the CbmStsTrackerIF !! (S.Zharko)
+#include "CbmSetup.h"
 #include "CbmMvdTrackerIF.h"
 #include "CbmStsTrackerIF.h"
+#include "CbmMuchTrackerIF.h"
 
 #include <boost/filesystem.hpp>
 // TODO: include of CbmSetup.h creates problems on Mac
@@ -109,7 +110,8 @@ CbmL1::CbmL1(
   if (!fpInitManager) { fpInitManager = algo_static.GetInitManager(); }
   
   if (!CbmTrackerDetInitializer::Instance()) {
-    LOG(fatal) << "CbmL1: CbmTrackerDetInitializer instance was not found. Please, add it as a task to your reco macro";
+    LOG(fatal) << "CbmL1: CbmTrackerDetInitializer instance was not found. Please, add it as a task to your reco macro before the KF and L1 task:\n"
+               << "\033[1;30mrun->AddTask(new CbmTrackerDetInitializer());\033[0m";
   }
 }
 
@@ -368,10 +370,9 @@ InitStatus CbmL1::Init()
    ** Field initialization **
    **************************/
 
-  auto fieldGetterFcn = [](const double(&inPos)[3], double(&outB)[3]) {
+  fpInitManager->SetFieldFunction([](const double(&inPos)[3], double(&outB)[3]) {
     CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);
-  };
-  fpInitManager->SetFieldFunction(fieldGetterFcn);
+  });
 
   /***************************
    ** Target initialization **
@@ -410,29 +411,19 @@ InitStatus CbmL1::Init()
    ** Counting numbers of stations for different detector subsystems  **
    *********************************************************************/
 
-  CbmMuchGeoScheme* fGeoScheme = CbmMuchGeoScheme::Instance();
+  //CbmMuchGeoScheme* fGeoScheme = CbmMuchGeoScheme::Instance();
 
   /*** MuCh ***/
-  if (fUseMUCH) {
-    /// Save old global file and folder pointer to avoid messing with FairRoot
-    TFile* oldFile     = gFile;
-    TDirectory* oldDir = gDirectory;
-
-    TFile* file         = new TFile(fMuchDigiFile, "READ");
-    LOG_IF(fatal, !file) << "Could not open file " << fMuchDigiFile;
-    TObjArray* stations = file->Get<TObjArray>("stations");
-    LOG_IF(fatal, !stations) << "No TObjArray stations in file " << fMuchDigiFile;
-    fGeoScheme->Init(stations, 0);
-    for (int iStation = 0; iStation < fGeoScheme->GetNStations(); iStation++) {
-      const CbmMuchStation* station = fGeoScheme->GetStation(iStation);
-      int nLayers                   = station->GetNLayers();
-      NMuchStationsGeom += nLayers;
-    }
-
-    /// Restore old global file and folder pointer to avoid messing with FairRoot
-    gFile      = oldFile;
-    gDirectory = oldDir;
-  }
+  //if (fUseMUCH) {
+  //  /// Save old global file and folder pointer to avoid messing with FairRoot
+  //  fGeoScheme->Init(fMuchDigiFile, 0);
+  //  for (int iStation = 0; iStation < fGeoScheme->GetNStations(); iStation++) {
+  //    const CbmMuchStation* station = fGeoScheme->GetStation(iStation);
+  //    int nLayers                   = station->GetNLayers();
+  //    NMuchStationsGeom += nLayers;
+  //    std::cout << "\033[1;31mMUCH: station " << iStation << " layer\033[0m\n"; 
+  //  }
+  //}
 
   /*** TRD ***/
   if (fUseTRD) {
@@ -491,9 +482,11 @@ InitStatus CbmL1::Init()
   /*** MVD and STS ***/
   auto mvdInterface = CbmMvdTrackerIF::Instance();
   auto stsInterface = CbmStsTrackerIF::Instance();
+  auto muchInterface = CbmMuchTrackerIF::Instance();
 
-  NMvdStationsGeom = (fUseMVD) ? mvdInterface->GetNstations() : 0;
-  NStsStationsGeom = (fUseSTS) ? stsInterface->GetNstations() : 0;
+  NMvdStationsGeom = (fUseMVD) ? mvdInterface->GetNtrackingStations() : 0;
+  NStsStationsGeom = (fUseSTS) ? stsInterface->GetNtrackingStations() : 0;
+  NMuchStationsGeom = (fUseMUCH) ? muchInterface->GetNtrackingStations() : 0;
   NStationGeom     = NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom + NTrdStationsGeom + NTOFStationGeom;
 
   // Provide crosscheck number of stations for the fpInitManagera
@@ -561,150 +554,154 @@ InitStatus CbmL1::Init()
    ***************************************/
 
   /*** MVD stations info ***/
-  for (int iSt = 0; iSt < NMvdStationsGeom; ++iSt) {  // NOTE: example using in-stack defined objects
-    auto stationInfo = L1BaseStationInfo(L1DetectorID::kMvd, iSt);
-    stationInfo.SetStationType(1);  // MVD
-    stationInfo.SetTimeInfo(mvdInterface->IsTimeInfoProvided(iSt));
-    stationInfo.SetTimeResolution(mvdInterface->GetTimeResolution(iSt));
-    stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
-    stationInfo.SetZ(mvdInterface->GetZ(iSt));
-    stationInfo.SetXmax(mvdInterface->GetXmax(iSt));
-    stationInfo.SetYmax(mvdInterface->GetYmax(iSt));
-    stationInfo.SetRmin(mvdInterface->GetRmin(iSt));
-    stationInfo.SetRmax(mvdInterface->GetRmax(iSt));
-    stationInfo.SetMaterialSimple(mvdInterface->GetThickness(iSt), mvdInterface->GetRadLength(iSt));
-    stationInfo.SetMaterialMap(std::move(materialTableMvd[iSt]), correctionMvd);
-    // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
-    stationInfo.SetFrontBackStripsGeometry(
-      (fscal) mvdInterface->GetStripsStereoAngleFront(iSt),
-      (fscal) mvdInterface->GetStripsSpatialRmsFront(iSt),
-      (fscal) mvdInterface->GetStripsStereoAngleBack(iSt),
-      (fscal) mvdInterface->GetStripsSpatialRmsBack(iSt)
-    );
-    stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-    fpInitManager->AddStation(stationInfo);
-    LOG(info) << "- MVD station " << iSt << " at z = " << stationInfo.GetZdouble();
+  if (fUseMVD) {
+    for (int iSt = 0; iSt < NMvdStationsGeom; ++iSt) {
+      auto stationInfo = L1BaseStationInfo(L1DetectorID::kMvd, iSt);
+      stationInfo.SetStationType(1);  // MVD
+      stationInfo.SetTimeInfo(mvdInterface->IsTimeInfoProvided(iSt));
+      stationInfo.SetTimeResolution(mvdInterface->GetTimeResolution(iSt));
+      stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
+      stationInfo.SetZ(mvdInterface->GetZ(iSt));
+      stationInfo.SetXmax(mvdInterface->GetXmax(iSt));
+      stationInfo.SetYmax(mvdInterface->GetYmax(iSt));
+      stationInfo.SetRmin(mvdInterface->GetRmin(iSt));
+      stationInfo.SetRmax(mvdInterface->GetRmax(iSt));
+      stationInfo.SetMaterialSimple(mvdInterface->GetThickness(iSt), mvdInterface->GetRadLength(iSt));
+      stationInfo.SetMaterialMap(std::move(materialTableMvd[iSt]), correctionMvd);
+      // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
+      stationInfo.SetFrontBackStripsGeometry(
+        (fscal) mvdInterface->GetStripsStereoAngleFront(iSt),
+        (fscal) mvdInterface->GetStripsSpatialRmsFront(iSt),
+        (fscal) mvdInterface->GetStripsStereoAngleBack(iSt),
+        (fscal) mvdInterface->GetStripsSpatialRmsBack(iSt)
+      );
+      stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
+      fpInitManager->AddStation(stationInfo);
+      LOG(info) << "- MVD station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
+    }
   }
 
-
   /*** STS stations info ***/
-  for (int iSt = 0; iSt < NStsStationsGeom; ++iSt) {  // NOTE: example using smart pointers
-    auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
-    stationInfo.SetStationType(0);  // STS
-    stationInfo.SetTimeInfo(stsInterface->IsTimeInfoProvided(iSt));
-    stationInfo.SetTimeResolution(stsInterface->GetTimeResolution(iSt));
-    stationInfo.SetFieldStatus(L1Algo::TrackingMode::kMcbm == fTrackingMode? 0 : 1);
-    stationInfo.SetZ(stsInterface->GetZ(iSt));
-    stationInfo.SetXmax(stsInterface->GetXmax(iSt));
-    stationInfo.SetYmax(stsInterface->GetYmax(iSt));
-    stationInfo.SetRmin(stsInterface->GetRmin(iSt));
-    stationInfo.SetRmax(stsInterface->GetRmax(iSt));
-    stationInfo.SetMaterialSimple(stsInterface->GetThickness(iSt), stsInterface->GetRadLength(iSt));
-    stationInfo.SetMaterialMap(std::move(materialTableSts[iSt]), correctionSts);
-    // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
-    stationInfo.SetFrontBackStripsGeometry(
-      (fscal) stsInterface->GetStripsStereoAngleFront(iSt),
-      (fscal) stsInterface->GetStripsSpatialRmsFront(iSt),
-      (fscal) stsInterface->GetStripsStereoAngleBack(iSt),
-      (fscal) stsInterface->GetStripsSpatialRmsBack(iSt)
-    );
-    stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-    fpInitManager->AddStation(stationInfo);
-    LOG(info) << "- STS station " << iSt << " at z = " << stationInfo.GetZdouble();
+  if (fUseSTS) {
+    for (int iSt = 0; iSt < NStsStationsGeom; ++iSt) {
+      auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
+      stationInfo.SetStationType(0);  // STS
+      stationInfo.SetTimeInfo(stsInterface->IsTimeInfoProvided(iSt));
+      stationInfo.SetTimeResolution(stsInterface->GetTimeResolution(iSt));
+      stationInfo.SetFieldStatus(L1Algo::TrackingMode::kMcbm == fTrackingMode? 0 : 1);
+      stationInfo.SetZ(stsInterface->GetZ(iSt));
+      stationInfo.SetXmax(stsInterface->GetXmax(iSt));
+      stationInfo.SetYmax(stsInterface->GetYmax(iSt));
+      stationInfo.SetRmin(stsInterface->GetRmin(iSt));
+      stationInfo.SetRmax(stsInterface->GetRmax(iSt));
+      stationInfo.SetMaterialSimple(stsInterface->GetThickness(iSt), stsInterface->GetRadLength(iSt));
+      stationInfo.SetMaterialMap(std::move(materialTableSts[iSt]), correctionSts);
+      // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
+      stationInfo.SetFrontBackStripsGeometry(
+        (fscal) stsInterface->GetStripsStereoAngleFront(iSt),
+        (fscal) stsInterface->GetStripsSpatialRmsFront(iSt),
+        (fscal) stsInterface->GetStripsStereoAngleBack(iSt),
+        (fscal) stsInterface->GetStripsSpatialRmsBack(iSt)
+      );
+      stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
+      fpInitManager->AddStation(stationInfo);
+      LOG(info) << "- STS station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
+    }
   }
 
   /*** MuCh stations info ***/
-  for (int iSt = 0; iSt < NMuchStationsGeom; ++iSt) {
-    int muchStationID       = iSt / 3;
-    int muchLayerID         = iSt % 3;
-    CbmMuchStation* station = (CbmMuchStation*) fGeoScheme->GetStation(muchStationID);
-    CbmMuchLayer* layer     = station->GetLayer(muchLayerID);
-
-    auto stationInfo = L1BaseStationInfo(L1DetectorID::kMuch, iSt);
-    stationInfo.SetStationType(2);
-    stationInfo.SetTimeInfo(1);
-    stationInfo.SetTimeResolution(3.9);
-    stationInfo.SetFieldStatus(0);
-    stationInfo.SetZ(layer->GetZ());
-    auto thickness = layer->GetDz();
-    auto radLength = 0.;  // Why 0??? (S.Zharko)
-    stationInfo.SetMaterialSimple(thickness, radLength);
-    stationInfo.SetMaterialMap(std::move(materialTableMuch[iSt]), correctionMuch);
-    stationInfo.SetXmax(100.);
-    stationInfo.SetYmax(100.);
-    stationInfo.SetRmin(10.);
-    stationInfo.SetRmax(100.);
-    fscal muchFrontPhi   = 0;
-    fscal muchBackPhi    = TMath::Pi() / 2.;
-    fscal muchFrontSigma = 0.35;
-    fscal muchBackSigma  = 0.35;
-    stationInfo.SetFrontBackStripsGeometry(muchFrontPhi, muchFrontSigma, muchBackPhi, muchBackSigma);
-    stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-    fpInitManager->AddStation(stationInfo);
-    LOG(info) << "- MuCh station " << iSt << " at z = " << stationInfo.GetZdouble();
+  if (fUseMUCH) {
+    for (int iSt = 0; iSt < NMuchStationsGeom; ++iSt) {
+      auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
+      stationInfo.SetStationType(2);  // MuCh
+      stationInfo.SetTimeInfo(muchInterface->IsTimeInfoProvided(iSt));
+      stationInfo.SetTimeResolution(muchInterface->GetTimeResolution(iSt));
+      stationInfo.SetFieldStatus(L1Algo::TrackingMode::kMcbm == fTrackingMode? 0 : 1);
+      stationInfo.SetZ(muchInterface->GetZ(iSt));
+      stationInfo.SetXmax(muchInterface->GetXmax(iSt));
+      stationInfo.SetYmax(muchInterface->GetYmax(iSt));
+      stationInfo.SetRmin(muchInterface->GetRmin(iSt));
+      stationInfo.SetRmax(muchInterface->GetRmax(iSt));
+      stationInfo.SetMaterialSimple(muchInterface->GetThickness(iSt), muchInterface->GetRadLength(iSt));
+      stationInfo.SetMaterialMap(std::move(materialTableMuch[iSt]), correctionMuch);
+      // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
+      stationInfo.SetFrontBackStripsGeometry(
+        (fscal) muchInterface->GetStripsStereoAngleFront(iSt),
+        (fscal) muchInterface->GetStripsSpatialRmsFront(iSt),
+        (fscal) muchInterface->GetStripsStereoAngleBack(iSt),
+        (fscal) muchInterface->GetStripsSpatialRmsBack(iSt)
+      );
+      stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
+      fpInitManager->AddStation(stationInfo);
+      LOG(info) << "- MuCh station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
+    }
   }
 
   /*** TRD stations info ***/
-  for (int iSt = 0; iSt < NTrdStationsGeom; ++iSt) {
-    int trdModuleID          = fTrdDigiPar->GetModuleId(iSt);
-    CbmTrdParModDigi* module = (CbmTrdParModDigi*) fTrdDigiPar->GetModulePar(trdModuleID);
-    auto stationInfo         = L1BaseStationInfo(L1DetectorID::kTrd, iSt);
-    int stationType          = (iSt == 1 || iSt == 3) ? 6 : 3;  // Is used somewhere??
-    stationInfo.SetStationType(stationType);
-    stationInfo.SetTimeInfo(1);
-    stationInfo.SetTimeResolution(10.);
-    stationInfo.SetFieldStatus(0);
-    stationInfo.SetZ(module->GetZ());
-    auto thickness = 2. * module->GetSizeZ();
-    auto radLength = 1.6;
-    stationInfo.SetMaterialSimple(thickness, radLength);
-    stationInfo.SetMaterialMap(std::move(materialTableTrd[iSt]), correctionTrd);
-    stationInfo.SetXmax(module->GetSizeX());
-    stationInfo.SetYmax(module->GetSizeY());
-    stationInfo.SetRmin(0.);
-    stationInfo.SetRmax(2. * module->GetSizeX());  // TODO: Why multiplied with 2.?
-    fscal trdFrontPhi   = 0;
-    fscal trdBackPhi    = TMath::Pi() / 2.;
-    fscal trdFrontSigma = 0.15;
-    fscal trdBackSigma  = 0.15;
-    if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {  //SGtrd2D!!
-      trdFrontSigma = 1.1;
-      trdBackSigma  = 1.1;
-      stationInfo.SetTimeResolution(1.e10);
+  if (fUseTRD) {
+    for (int iSt = 0; iSt < NTrdStationsGeom; ++iSt) {
+      int trdModuleID          = fTrdDigiPar->GetModuleId(iSt);
+      CbmTrdParModDigi* module = (CbmTrdParModDigi*) fTrdDigiPar->GetModulePar(trdModuleID);
+      auto stationInfo         = L1BaseStationInfo(L1DetectorID::kTrd, iSt);
+      int stationType          = (iSt == 1 || iSt == 3) ? 6 : 3;  // Is used somewhere??
+      stationInfo.SetStationType(stationType);
+      stationInfo.SetTimeInfo(1);
+      stationInfo.SetTimeResolution(10.);
+      stationInfo.SetFieldStatus(0);
+      stationInfo.SetZ(module->GetZ());
+      auto thickness = 2. * module->GetSizeZ();
+      auto radLength = 1.6;
+      stationInfo.SetMaterialSimple(thickness, radLength);
+      stationInfo.SetMaterialMap(std::move(materialTableTrd[iSt]), correctionTrd);
+      stationInfo.SetXmax(module->GetSizeX());
+      stationInfo.SetYmax(module->GetSizeY());
+      stationInfo.SetRmin(0.);
+      stationInfo.SetRmax(2. * module->GetSizeX());  // TODO: Why multiplied with 2.?
+      fscal trdFrontPhi   = 0;
+      fscal trdBackPhi    = TMath::Pi() / 2.;
+      fscal trdFrontSigma = 0.15;
+      fscal trdBackSigma  = 0.15;
+      if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {  //SGtrd2D!!
+        trdFrontSigma = 1.1;
+        trdBackSigma  = 1.1;
+        stationInfo.SetTimeResolution(1.e10);
+      }
+      stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdFrontSigma, trdBackPhi, trdBackSigma);
+      stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
+      if (iSt == 1 && L1Algo::TrackingMode::kMcbm == fTrackingMode && fMissingHits) {
+        stationInfo.SetTrackingStatus(false);
+      }
+      fpInitManager->AddStation(stationInfo);
+      LOG(info) << "- TRD station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
     }
-    stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdFrontSigma, trdBackPhi, trdBackSigma);
-    stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-    if (iSt == 1 && L1Algo::TrackingMode::kMcbm == fTrackingMode && fMissingHits) {
-      stationInfo.SetTrackingStatus(false);
-    }
-    fpInitManager->AddStation(stationInfo);
-    LOG(info) << "- TRD station " << iSt << " at z = " << stationInfo.GetZdouble();
   }
 
   /*** TOF stations info ***/
-  for (int iSt = 0; iSt < NTOFStationGeom; ++iSt) {
-    auto stationInfo = L1BaseStationInfo(L1DetectorID::kTof, iSt);
-    stationInfo.SetStationType(4);
-    stationInfo.SetTimeInfo(1);
-    stationInfo.SetTimeResolution(0.075);
-    stationInfo.SetFieldStatus(0);
-    stationInfo.SetZ(TofStationZ[iSt]);
-    auto thickness = 10.;
-    auto radLength = 2.;
-    stationInfo.SetMaterialSimple(thickness, radLength);
-    stationInfo.SetMaterialMap(std::move(materialTableTof[iSt]), correctionTof);
-    stationInfo.SetXmax(20.);
-    stationInfo.SetYmax(20.);
-    stationInfo.SetRmin(0.);
-    stationInfo.SetRmax(150.);
-    fscal tofFrontPhi   = 0;
-    fscal tofBackPhi    = TMath::Pi() / 2.;
-    fscal tofFrontSigma = 0.42;
-    fscal tofBackSigma  = 0.23;
-    stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofFrontSigma, tofBackPhi, tofBackSigma);
-    stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-    fpInitManager->AddStation(stationInfo);
-    LOG(info) << "- TOF station " << iSt << " at z = " << stationInfo.GetZdouble();
+  if (fUseTOF) {
+    for (int iSt = 0; iSt < NTOFStationGeom; ++iSt) {
+      auto stationInfo = L1BaseStationInfo(L1DetectorID::kTof, iSt);
+      stationInfo.SetStationType(4);
+      stationInfo.SetTimeInfo(1);
+      stationInfo.SetTimeResolution(0.075);
+      stationInfo.SetFieldStatus(0);
+      stationInfo.SetZ(TofStationZ[iSt]);
+      auto thickness = 10.;
+      auto radLength = 2.;
+      stationInfo.SetMaterialSimple(thickness, radLength);
+      stationInfo.SetMaterialMap(std::move(materialTableTof[iSt]), correctionTof);
+      stationInfo.SetXmax(20.);
+      stationInfo.SetYmax(20.);
+      stationInfo.SetRmin(0.);
+      stationInfo.SetRmax(150.);
+      fscal tofFrontPhi   = 0;
+      fscal tofBackPhi    = TMath::Pi() / 2.;
+      fscal tofFrontSigma = 0.42;
+      fscal tofBackSigma  = 0.23;
+      stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofFrontSigma, tofBackPhi, tofBackSigma);
+      stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
+      fpInitManager->AddStation(stationInfo);
+      LOG(info) << "- TOF station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
+    }
   }
 
   /****************************************
