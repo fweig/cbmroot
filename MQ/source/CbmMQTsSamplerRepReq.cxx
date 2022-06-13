@@ -203,7 +203,7 @@ try {
     //std::string connector = "tcp://" + fsHost + ":" + std::to_string(fusPort);
     std::string connector = fsHost + ":" + std::to_string(fusPort);
     LOG(info) << "Open TSPublisher at " << connector;
-    fSource = new fles::TimesliceMultiSubscriber(connector);
+    fSource = new fles::TimesliceMultiSubscriber(connector, fulHighWaterMark);
   }
   else if (0 == fsFileName.size() && 0 != fsHost.size()) {
     std::string connector = fsHost;
@@ -491,8 +491,8 @@ std::unique_ptr<fles::Timeslice> CbmMQTsSamplerRepReq::GetNewTs()
 
       /// Missed TS detection (only if output channel name defined by user)
       if ((uTsIndex != (fulPrevTsIndex + 1)) && !(0 == fulPrevTsIndex && 0 == uTsIndex && 0 == fulTsCounter)) {
-        LOG(info) << "Missed Timeslices. Old TS Index was " << fulPrevTsIndex << " New TS Index is " << uTsIndex
-                  << " diff is " << uTsIndex - fulPrevTsIndex << " Missing are " << uTsIndex - fulPrevTsIndex - 1;
+        LOG(debug) << "Missed Timeslices. Old TS Index was " << fulPrevTsIndex << " New TS Index is " << uTsIndex
+                   << " diff is " << uTsIndex - fulPrevTsIndex << " Missing are " << uTsIndex - fulPrevTsIndex - 1;
 
         if ("" != fsChannelNameMissedTs) {
           /// Add missing TS indices to a vector and send it in appropriate channel
