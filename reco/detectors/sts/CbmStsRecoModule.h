@@ -51,6 +51,13 @@ class CbmStsParSensorCond;
 class CbmStsRecoModule : public TNamed {
 
 public:
+  struct Timings {
+    double timeSortDigi    = 0;
+    double timeCluster     = 0;
+    double timeSortCluster = 0;
+    double timeHits        = 0;
+  };
+
   /** @brief Default constructor **/
   CbmStsRecoModule();
 
@@ -105,6 +112,10 @@ public:
      **/
   const std::vector<CbmStsHit>& GetHits() const { return fHits; }
 
+  /** @brief Time measurements
+   **/
+  Timings GetTimings() const { return fTimings; }
+
 
   /** @brief Perform reconstruction **/
   void Reconstruct();
@@ -112,6 +123,9 @@ public:
 
   /** @brief Clear input queue **/
   void Reset();
+
+
+  TGeoHMatrix* getMatrix() { return fMatrix; }
 
 
   /** @brief Info to string **/
@@ -200,6 +214,9 @@ private:
   Double_t fTimeCutClustersAbs = -1.;     ///< Time cut for hit finding (in sigma)
   Bool_t fConnectEdgeFront    = kFALSE;  ///< Round-the edge clustering front side
   Bool_t fConnectEdgeBack     = kFALSE;  ///< Round-the edge clustering back side
+
+  // --- Time measurement
+  Timings fTimings;
 
 
   ClassDef(CbmStsRecoModule, 1);

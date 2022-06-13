@@ -16,9 +16,12 @@
 #include "CbmDefs.h"  // for ECbmModuleId::kSts
 #include "CbmStsAddress.h"
 
+#include <xpu/defines.h>  // for XPU_D
+
 #ifndef NO_ROOT
 #include <Rtypes.h>  // for ClassDef
 #endif
+
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -38,9 +41,10 @@ class CbmStsDigi {
 
 public:
   /** Default constructor **/
-  CbmStsDigi() {}
+  CbmStsDigi() = default;
 
 
+#if XPU_IS_CPU
   /** Standard constructor
    ** @param  address  Unique element address
    ** @param  channel  Channel number
@@ -56,10 +60,10 @@ public:
     PackAddressAndTime(address, time);
     PackChannelAndCharge(channel, charge);
   }
-
+#endif
 
   /** Destructor **/
-  ~CbmStsDigi() {};
+  ~CbmStsDigi() = default;
 
   /** Unique detector element address  (see CbmStsAddress)
    ** @value Unique address of readout channel
@@ -76,7 +80,7 @@ public:
   /** @brief Channel number in module
    ** @value Channel number
    **/
-  uint16_t GetChannel() const { return UnpackChannel(); }
+  XPU_D uint16_t GetChannel() const { return UnpackChannel(); }
 
 
   /** @brief Class name (static)
@@ -84,11 +88,14 @@ public:
    **/
   static const char* GetClassName() { return "CbmStsDigi"; }
 
-
+#if XPU_IS_CPU
   /** Charge
    ** @value Charge [ADC units]
    **/
   double GetCharge() const { return static_cast<double>(UnpackCharge()); }
+#endif
+
+  XPU_D uint16_t GetChargeU16() const { return UnpackCharge(); }
 
 
   /** System ID (static)
@@ -96,11 +103,14 @@ public:
   **/
   static ECbmModuleId GetSystem() { return ECbmModuleId::kSts; }
 
-
+#if XPU_IS_CPU
   /** Time of measurement
    ** @value Time [ns]
    **/
   double GetTime() const { return static_cast<double>(UnpackTime()); }
+#endif
+
+  XPU_D uint32_t GetTimeU32() const { return UnpackTime(); }
 
 
   template<class Archive>
@@ -115,7 +125,7 @@ public:
   /** Update Time of measurement
    ** @param New Time [ns]
    **/
-  void SetTime(double dNewTime)
+  XPU_D void SetTime(double dNewTime)
   {
     // StsDigi is not able to store negative timestamps.
     assert(dNewTime >= 0);
@@ -124,18 +134,20 @@ public:
     PackTime(dNewTime);
   }
 
-  void SetChannel(uint16_t channel) { PackChannelAndCharge(channel, UnpackCharge()); }
+  XPU_D void SetChannel(uint16_t channel) { PackChannelAndCharge(channel, UnpackCharge()); }
 
-  void SetCharge(uint16_t charge) { PackChannelAndCharge(UnpackChannel(), charge); }
+  XPU_D void SetCharge(uint16_t charge) { PackChannelAndCharge(UnpackChannel(), charge); }
 
+#if XPU_IS_CPU
   void SetAddress(int32_t address) { PackAddressAndTime(address, UnpackTime()); }
+#endif
 
 
   /** Set new channel and charge.
    **
    ** Slightly more efficient than calling both individual setters.
    **/
-  void SetChannelAndCharge(uint16_t channel, uint16_t charge) { PackChannelAndCharge(channel, charge); }
+  XPU_D void SetChannelAndCharge(uint16_t channel, uint16_t charge) { PackChannelAndCharge(channel, charge); }
 
   /** Set new address and time at once.
    **
@@ -160,23 +172,32 @@ private:
   static constexpr uint32_t kMaxTimestamp       = kTimestampMask;
   static constexpr uint32_t kTimeAddressBitMask = ~kTimestampMask;
 
-  uint32_t fTime             = 0;  ///< Time [ns] in lower 31 bits, highest bit is the 17th address bit.
-  uint16_t fChannelAndCharge = 0;  ///< Channel number (lower 11 bits) and charge [ADC Units] in upper 5 bits.
-  uint16_t fAddress          = 0;  ///< Unique element address (lower 16 bits of 17)
+// CUDA requires types in shared memory to have trivial constructors / destructors
+#if XPU_IS_HIP_CUDA
+#define CPU_ONLY(x)
+#else
+#define CPU_ONLY(x) x
+#endif
+
+  uint32_t fTime CPU_ONLY(= 0);              ///< Time [ns] in lower 31 bits, highest bit is the 17th address bit.
+  uint16_t fChannelAndCharge CPU_ONLY(= 0);  ///< Channel number (lower 11 bits) and charge [ADC Units] in upper 5 bits.
+  uint16_t fAddress CPU_ONLY(= 0);           ///< Unique element address (lower 16 bits of 17)
+
+#undef CPU_ONLY
 
 
-  void PackTime(uint32_t newTime) { fTime = (fTime & kTimeAddressBitMask) | (newTime & kTimestampMask); }
-  uint32_t UnpackTime() const { return fTime & kTimestampMask; }
+  XPU_D void PackTime(uint32_t newTime) { fTime = (fTime & kTimeAddressBitMask) | (newTime & kTimestampMask); }
+  XPU_D uint32_t UnpackTime() const { return fTime & kTimestampMask; }
 
 
-  void PackChannelAndCharge(uint16_t channel, uint16_t charge)
+  XPU_D void PackChannelAndCharge(uint16_t channel, uint16_t charge)
   {
     fChannelAndCharge = (channel << kNumAdcBits) | charge;
   }
-  uint16_t UnpackChannel() const { return fChannelAndCharge >> kNumAdcBits; }
-  uint16_t UnpackCharge() const { return fChannelAndCharge & kAdcMask; }
+  XPU_D uint16_t UnpackChannel() const { return fChannelAndCharge >> kNumAdcBits; }
+  XPU_D uint16_t UnpackCharge() const { return fChannelAndCharge & kAdcMask; }
 
-
+  // Packing / Unpacking address not available on GPU for now...
   void PackAddressAndTime(int32_t address, uint32_t time);
   int32_t UnpackAddress() const;
 

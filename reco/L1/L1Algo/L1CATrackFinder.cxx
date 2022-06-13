@@ -1543,7 +1543,7 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
 
 
 /***********************************************************************************************/ /**
- *                                                                                                * 
+ *                                                                                                *
  *                            ------ CATrackFinder procedure ------                               *
  *                                                                                                *
  **************************************************************************************************/
@@ -1868,21 +1868,21 @@ void L1Algo::CATrackFinder()
          /// possible left hits of triplets are splited in portions of 16 (4 SIMDs) to use memory faster
          fDupletPortionStopIndex[fNstations-1] = 0;
          unsigned int ip = 0;  //index of curent portion
-         
+
          for (int istal = fNstations-2; istal >= fFirstCAstation; istal--)  //start downstream chambers
          {
          int nHits = HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal];
-         
+
          int NHits_P = nHits/Portion;
-         
+
          for( int ipp = 0; ipp < NHits_P; ipp++ )
          {
          n_g1[ip] = Portion;
          ip++;
          } // start_lh - portion of left hits
-         
+
          n_g1[ip] = nHits - NHits_P*Portion;
-         
+
          ip++;
          fDupletPortionStopIndex[istal] = ip;
          }// lstations
@@ -2475,7 +2475,7 @@ void L1Algo::CATrackFinder()
 #if 0
         static long int NTimes =0, NHits=0, HitSize =0, NStrips=0, StripSize =0, NStripsB=0, StripSizeB =0,
         NDup=0, DupSize=0, NTrip=0, TripSize=0, NBranches=0, BranchSize=0, NTracks=0, TrackSize=0 ;
-        
+
         NTimes++;
         NHits += vHitsUnused->size();
         HitSize += vHitsUnused->size()*sizeof(L1Hit);
@@ -2487,13 +2487,13 @@ void L1Algo::CATrackFinder()
         DupSize += stat_max_n_dup*sizeof(/*short*/ int);
         NTrip += stat_max_n_trip;
         TripSize += stat_max_trip_size;
-        
+
         NBranches += stat_max_n_branches;
         BranchSize += stat_max_BranchSize;
         NTracks += fTracks.size();
         TrackSize += sizeof(L1Track)*fTracks.size() + sizeof(L1HitIndex_t)*fRecoHits.size();
         int k = 1024*NTimes;
-        
+
         cout<<"L1 Event size: \n"
         <<HitSize/k<<"kB for "<<NHits/NTimes<<" hits, \n"
         <<StripSize/k<<"kB for "<<NStrips/NTimes<<" strips, \n"

@@ -210,6 +210,11 @@ endif()
 # Must be the first subdirectory since the defined targets are needed by
 # following targets
 add_subdirectory (external)
+set (BASE_INCLUDE_DIRECTORIES
+${BASE_INCLUDE_DIRECTORIES}
+${XPU_INCLUDE_DIRECTORY} # Required for XPU_D macro in base data types
+)
+
 
 ### Base directories
 add_subdirectory (core)

@@ -25,9 +25,9 @@
 #include <TGeoBBox.h>
 #include <TGeoPhysicalNode.h>
 #include <TMath.h>
+#include <TStopwatch.h>
 
 using std::pair;
-
 
 ClassImp(CbmStsRecoModule)
 
@@ -77,6 +77,10 @@ void CbmStsRecoModule::AddDigiToQueue(const CbmStsDigi* digi, Int_t digiIndex)
 void CbmStsRecoModule::Reconstruct()
 {
 
+  // return;
+  TStopwatch timer;
+
+  timer.Start();
   // --- Sort the digi queues by digi time stamp
   std::sort(fDigisF.begin(), fDigisF.end(),
             [](pair<const CbmStsDigi*, Int_t> digi1, pair<const CbmStsDigi*, Int_t> digi2) {
@@ -86,8 +90,11 @@ void CbmStsRecoModule::Reconstruct()
             [](pair<const CbmStsDigi*, Int_t> digi1, pair<const CbmStsDigi*, Int_t> digi2) {
               return digi1.first->GetTime() < digi2.first->GetTime();
             });
+  timer.Stop();
+  fTimings.timeSortDigi = timer.RealTime();
 
   // --- Perform cluster finding
+  timer.Start();
   fClusterFinder->Exec(fDigisF, fClustersF, fSetupModule->GetAddress(), fNofStripsF, 0, fTimeCutDigisSig,
                        fTimeCutDigisAbs, fConnectEdgeFront, fParModule);
   fClusterFinder->Exec(fDigisB, fClustersB, fSetupModule->GetAddress(), fNofStripsB, fNofStripsF, fTimeCutDigisSig,
@@ -99,15 +106,22 @@ void CbmStsRecoModule::Reconstruct()
   for (auto& cluster : fClustersB)
     fClusterAna->Exec(cluster, fParModule);
 
+  timer.Stop();
+  fTimings.timeCluster = timer.RealTime();
+
   // --- Sort clusters by time
+  timer.Start();
   std::sort(fClustersF.begin(), fClustersF.end(), [](const CbmStsCluster& cluster1, const CbmStsCluster& cluster2) {
     return (cluster1.GetTime() < cluster2.GetTime());
   });
   std::sort(fClustersB.begin(), fClustersB.end(), [](const CbmStsCluster& cluster1, const CbmStsCluster& cluster2) {
     return (cluster1.GetTime() < cluster2.GetTime());
   });
+  timer.Stop();
+  fTimings.timeSortCluster = timer.RealTime();
 
   // --- Perform hit finding
+  timer.Start();
   if (fHitFinder)
     fHitFinder->Exec(fClustersF, fClustersB, fHits, fSetupModule->GetAddress(), fTimeCutClustersSig,
                      fTimeCutClustersAbs, fDyActive, fNofStripsF, fStripPitchF, fStereoFront, fStereoBack,
@@ -116,6 +130,8 @@ void CbmStsRecoModule::Reconstruct()
     fHitFinderOrtho->Exec(fClustersF, fClustersB, fHits, fSetupModule->GetAddress(), fTimeCutClustersSig,
                           fTimeCutClustersAbs, fNofStripsF, fNofStripsB, fStripPitchF, fStripPitchB, fLorentzShiftF,
                           fLorentzShiftB, fMatrix);
+  timer.Stop();
+  fTimings.timeHits = timer.RealTime();
 }
 // -------------------------------------------------------------------------
 

@@ -11,11 +11,11 @@
 #ifndef CBMRECOSTS_H
 #define CBMRECOSTS_H 1
 
+#include "CbmGpuRecoSts.h"
 
 #include <FairTask.h>
 
 #include <TStopwatch.h>
-
 
 class CbmDigiManager;
 class CbmEvent;
@@ -64,7 +64,7 @@ class CbmRecoSts : public FairTask {
 
 public:
   /** @brief Constructor **/
-  CbmRecoSts(ECbmRecoMode mode = kCbmRecoTimeslice, Bool_t writeClusters = kFALSE, Bool_t runParallel = kFALSE);
+  CbmRecoSts(ECbmRecoMode mode = kCbmRecoTimeslice, Bool_t writeClusters = kFALSE);
 
 
   /** @brief Copy constructor (disabled) **/
@@ -116,6 +116,8 @@ public:
      ** branch are processed one after the other.
      **/
   void SetMode(ECbmRecoMode mode) { fMode = mode; }
+
+  void SetUseGpuReco(bool useGpu) { fUseGpuReco = useGpu; }
 
 
   /** @brief Define the needed parameter containers **/
@@ -254,6 +256,12 @@ private:
      **/
   void ProcessData(CbmEvent* event = nullptr);
 
+  void ProcessDataGpu();
+
+  void DumpNewHits();
+
+  void DumpOldHits();
+
 
 private:
   // --- I/O
@@ -287,7 +295,6 @@ private:
   Double_t fTimeCutClustersSig = 4.;             ///< Time cut for hit finding
   Double_t fTimeCutClustersAbs = -1.;            ///< Time cut for hit finding [ns]
   Bool_t fWriteClusters        = kFALSE;         ///< Write clusters to tree
-  Bool_t fRunParallel          = kFALSE;         ///< Use OpenMP multithreading
 
   // --- Timeslice counters
   Long64_t fNofDigis        = 0;   ///< Total number of digis processed
@@ -321,6 +328,8 @@ private:
   std::map<UInt_t, CbmStsRecoModule*> fModules {};  //!
   std::vector<CbmStsRecoModule*> fModuleIndex {};   //!
 
+  bool fUseGpuReco = false;
+  ::experimental::CbmGpuRecoSts fGpuReco;
 
   ClassDef(CbmRecoSts, 1);
 };

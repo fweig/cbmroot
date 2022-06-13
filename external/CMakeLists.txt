@@ -35,14 +35,15 @@ if(DOWNLOAD_EXTERNALS)
   endif()
 
   download_project_if_needed(PROJECT           xpu
-    GIT_REPOSITORY    "https://git.cbm.gsi.de/fweig/xpu.git"
-    GIT_TAG           "v0.6.4"
-    SOURCE_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/xpu
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND     ""
-    INSTALL_COMMAND   ""
+                             GIT_REPOSITORY    "https://github.com/fweig/xpu"
+                             GIT_TAG           "v0.7.2"
+                             SOURCE_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/xpu
+                             CONFIGURE_COMMAND ""
+                             BUILD_COMMAND     ""
+                             INSTALL_COMMAND   ""
   )
   Add_Subdirectory(xpu)
+  Set(XPU_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/xpu/src PARENT_SCOPE)
 
   Include(InstallKFParticle.cmake)
   Include(InstallNicaFemto.cmake)
@@ -76,7 +77,7 @@ else()
 
   # Define an empty macro such that ctest is happy when no externals are
   # available
-  # This is needed since to speed up the execution of the code format check 
+  # This is needed since to speed up the execution of the code format check
   # no externals are downloaded
   macro(xpu_attach)
   endmacro()

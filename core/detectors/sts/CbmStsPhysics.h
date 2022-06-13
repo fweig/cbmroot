@@ -88,6 +88,8 @@ public:
      **/
   Double_t LandauWidth(Double_t mostProbableCharge);
 
+  std::map<Double_t, Double_t> GetLandauWidthTable() const { return fLandauWidth; }
+
 
   /** @brief Energy for electron-hole pair creation in silicon
      ** @return Pair creation energy [GeV]

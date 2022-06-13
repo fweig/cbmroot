@@ -1,6 +1,9 @@
 # CMakeList file for libraries CbmRecoXXXXX
 # P.-A. Loizeau, 7 February 2020
 
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+# set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=address")
+
 add_subdirectory(base)
 add_subdirectory(calibration)
 add_subdirectory(detectors)

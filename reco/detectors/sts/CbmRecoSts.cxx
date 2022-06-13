@@ -13,11 +13,13 @@
 #include "CbmDigiManager.h"
 #include "CbmEvent.h"
 #include "CbmStsDigi.h"
+#include "CbmStsGpuHitFinder.h"
 #include "CbmStsModule.h"
 #include "CbmStsParSetModule.h"
 #include "CbmStsParSetSensor.h"
 #include "CbmStsParSetSensorCond.h"
 #include "CbmStsParSim.h"
+#include "CbmStsPhysics.h"
 #include "CbmStsRecoModule.h"
 #include "CbmStsSetup.h"
 
@@ -31,6 +33,10 @@
 
 #include <iomanip>
 
+#if __has_include(<omp.h>)
+#include <omp.h>
+#endif
+
 using std::fixed;
 using std::left;
 using std::right;
@@ -40,15 +46,13 @@ using std::stringstream;
 using std::vector;
 
 
-ClassImp(CbmRecoSts)
+ClassImp(CbmRecoSts);
 
-
-  // -----   Constructor   ---------------------------------------------------
-  CbmRecoSts::CbmRecoSts(ECbmRecoMode mode, Bool_t writeClusters, Bool_t runParallel)
+// -----   Constructor   ---------------------------------------------------
+CbmRecoSts::CbmRecoSts(ECbmRecoMode mode, Bool_t writeClusters)
   : FairTask("RecoSts", 1)
   , fMode(mode)
   , fWriteClusters(writeClusters)
-  , fRunParallel(runParallel)
 {
 }
 // -------------------------------------------------------------------------
@@ -64,6 +68,11 @@ UInt_t CbmRecoSts::CreateModules()
 {
 
   assert(fSetup);
+
+  std::vector<CbmStsParModule> gpuModules;  // for gpu reco
+  std::vector<int> moduleAddrs;
+  std::vector<experimental::CbmStsHitFinderConfig> hfCfg;
+
   for (Int_t iModule = 0; iModule < fSetup->GetNofModules(); iModule++) {
 
     // --- Setup module and sensor
@@ -79,6 +88,9 @@ UInt_t CbmRecoSts::CreateModules()
     const CbmStsParModule& modPar       = fParSetModule->GetParModule(moduleAddress);
     const CbmStsParSensor& sensPar      = fParSetSensor->GetParSensor(sensorAddress);
     const CbmStsParSensorCond& sensCond = fParSetCond->GetParSensor(sensorAddress);
+
+    gpuModules.push_back(modPar);
+    moduleAddrs.push_back(moduleAddress);
 
     // --- Calculate and set average Lorentz shift
     // --- This will be used in hit finding for correcting the position.
@@ -120,7 +132,25 @@ UInt_t CbmRecoSts::CreateModules()
     auto result = fModules.insert({moduleAddress, recoModule});
     assert(result.second);
     fModuleIndex.push_back(recoModule);
+    hfCfg.push_back({
+      .dY       = sensPar.GetPar(3),
+      .pitch    = sensPar.GetPar(6),
+      .stereoF  = sensPar.GetPar(8),
+      .stereoB  = sensPar.GetPar(9),
+      .lorentzF = float(lorentzF),
+      .lorentzB = float(lorentzB),
+    });
   }
+
+  // Gpu hitfinder
+  experimental::CbmGpuRecoSts::Config gpuConfig {
+    .parModules   = gpuModules,
+    .recoModules  = fModuleIndex,
+    .moduleAddrs  = moduleAddrs,
+    .hitfinderCfg = hfCfg,
+    .physics      = CbmStsPhysics::Instance(),
+  };
+  fGpuReco.SetConfig(gpuConfig);
 
   return fModules.size();
 }
@@ -156,9 +186,23 @@ void CbmRecoSts::Exec(Option_t*)
   CbmEvent* event  = nullptr;
 
   // --- Time-slice mode: process entire array
-  if (fMode == kCbmRecoTimeslice) ProcessData(nullptr);
 
-  // --- Event mode: loop over events
+  if (fUseGpuReco) {
+
+    ProcessDataGpu();
+    fNofDigis     = fGpuReco.nDigis;
+    fNofDigisUsed = fGpuReco.nDigisUsed;
+    fNofClusters  = fGpuReco.nCluster;
+    fNofHits      = fGpuReco.nHits;
+
+    // Old reco in time based mode
+  }
+  else if (fMode == kCbmRecoTimeslice) {
+
+    ProcessData(nullptr);
+
+    // --- Event mode: loop over events
+  }
   else {
     assert(fEvents);
     nEvents = fEvents->GetEntriesFast();
@@ -194,6 +238,8 @@ void CbmRecoSts::Exec(Option_t*)
   fTime2Run += fTime2;
   fTime3Run += fTime3;
   fTime4Run += fTime4;
+
+  // allDigis = fNofDigisUsed;
 }
 // -------------------------------------------------------------------------
 
@@ -201,12 +247,20 @@ void CbmRecoSts::Exec(Option_t*)
 // -----   End-of-run action   ---------------------------------------------
 void CbmRecoSts::Finish()
 {
+  int ompThreads = -1;
+#ifdef _OPENMP
+  ompThreads = omp_get_max_threads();
+#endif
 
-  std::cout << std::endl;
   Double_t digiCluster = Double_t(fNofDigisUsed) / Double_t(fNofClusters);
   Double_t clusterHit  = Double_t(fNofClusters) / Double_t(fNofHits);
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
+  if (fUseGpuReco) LOG(info) << "Ran new GPU STS reconstruction.";
+  else if (ompThreads < 0)
+    LOG(info) << "STS reconstruction ran single threaded (No OpenMP).";
+  else
+    LOG(info) << "STS reconstruction ran multithreaded with OpenMP (nthreads = " << ompThreads << ")";
   LOG(info) << "Time slices            : " << fNofTs;
   if (fMode == kCbmRecoEvent) LOG(info) << "Events                 : " << fNofEvents;
   LOG(info) << "Digis / TSlice         : " << fixed << setprecision(2) << fNofDigisRun / Double_t(fNofTs);
@@ -218,19 +272,54 @@ void CbmRecoSts::Finish()
   LOG(info) << "Clusters per hit       : " << fixed << setprecision(2) << clusterHit;
   LOG(info) << "Time per TSlice        : " << fixed << setprecision(2) << 1000. * fTimeRun / Double_t(fNofTs) << " ms ";
 
-  fTimeRun /= Double_t(fNofEvents);
-  fTime1Run /= Double_t(fNofEvents);
-  fTime2Run /= Double_t(fNofEvents);
-  fTime3Run /= Double_t(fNofEvents);
-  fTime4Run /= Double_t(fNofEvents);
-  LOG(info) << "Time Reset       : " << fixed << setprecision(1) << setw(6) << 1000. * fTime1Run << " ms ("
-            << setprecision(1) << setw(4) << 100. * fTime1Run / fTimeRun << " %)";
-  LOG(info) << "Time Distribute  : " << fixed << setprecision(1) << setw(6) << 1000. * fTime2Run << " ms ("
-            << setprecision(1) << 100. * fTime2Run / fTimeRun << " %)";
-  LOG(info) << "Time Reconstruct : " << fixed << setprecision(1) << setw(6) << 1000. * fTime3Run << " ms ("
-            << setprecision(1) << setw(4) << 100. * fTime3Run / fTimeRun << " %)";
-  LOG(info) << "Time Output      : " << fixed << setprecision(1) << setw(6) << 1000. * fTime4Run << " ms ("
-            << setprecision(1) << setw(4) << 100. * fTime4Run / fTimeRun << " %)";
+
+  // Aggregate times for substeps of reconstruction
+  // Note: These times are meaningless when reconstruction runs with > 1 thread.
+  CbmStsRecoModule::Timings timingsTotal;
+  for (const auto* m : fModuleIndex) {
+    auto moduleTime = m->GetTimings();
+    timingsTotal.timeSortDigi += moduleTime.timeSortDigi;
+    timingsTotal.timeCluster += moduleTime.timeCluster;
+    timingsTotal.timeSortCluster += moduleTime.timeSortCluster;
+    timingsTotal.timeHits += moduleTime.timeHits;
+  }
+
+  // Avoid division by zero if no events present
+  double nEvent = std::max(fNofEvents, 1);
+
+  fTimeTot /= nEvent;
+  fTime1 /= nEvent;
+  fTime2 /= nEvent;
+  fTime3 /= nEvent;
+  fTime4 /= nEvent;
+
+  if (not fUseGpuReco) {
+    LOG(info) << "NofEvents        : " << fNofEvents;
+    LOG(info) << "Time Reset       : " << fixed << setprecision(1) << setw(6) << 1000. * fTime1 << " ms ("
+              << setprecision(1) << setw(4) << 100. * fTime1 / fTimeTot << " %)";
+    LOG(info) << "Time Distribute  : " << fixed << setprecision(1) << setw(6) << 1000. * fTime2 << " ms ("
+              << setprecision(1) << 100. * fTime2 / fTimeTot << " %)";
+    LOG(info) << "Time Reconstruct: " << fixed << setprecision(1) << setw(6) << 1000. * fTime3 << " ms ("
+              << setprecision(1) << setw(4) << 100. * fTime3 / fTimeTot << " %)";
+    LOG(info) << "Time by step:\n"
+              << "  Sort Digi   : " << fixed << setprecision(1) << setw(6) << 1000. * timingsTotal.timeSortDigi
+              << " ms\n"
+              << "  Find Cluster: " << fixed << setprecision(1) << setw(6) << 1000. * timingsTotal.timeCluster
+              << " ms\n"
+              << "  Sort Cluster: " << fixed << setprecision(1) << setw(6) << 1000. * timingsTotal.timeSortCluster
+              << " ms\n"
+              << "  Find Hits   : " << fixed << setprecision(1) << setw(6) << 1000. * timingsTotal.timeHits << " ms\n";
+  }
+  else {
+    double gpuHitfinderTimeTotal =
+      fGpuReco.timeSortDigi + fGpuReco.timeCluster + fGpuReco.timeSortCluster + fGpuReco.timeHits;
+    LOG(info) << "Time Reconstruct (GPU) : " << fixed << setprecision(1) << setw(6) << gpuHitfinderTimeTotal << " ms";
+    LOG(info) << "Time by step:\n"
+              << "  Sort Digi   : " << fixed << setprecision(1) << setw(6) << fGpuReco.timeSortDigi << " ms\n"
+              << "  Find Cluster: " << fixed << setprecision(1) << setw(6) << fGpuReco.timeCluster << " ms\n"
+              << "  Sort Cluster: " << fixed << setprecision(1) << setw(6) << fGpuReco.timeSortCluster << " ms\n"
+              << "  Find Hits   : " << fixed << setprecision(1) << setw(6) << fGpuReco.timeHits << " ms";
+  }
   LOG(info) << "=====================================";
 }
 // -------------------------------------------------------------------------
@@ -406,7 +495,9 @@ void CbmRecoSts::ProcessData(CbmEvent* event)
   Int_t nClusters     = 0;
   Int_t nHits         = 0;
 
-  //  #pragma omp parallel for schedule(static) if(fParallelism_enabled)
+#ifdef _OPENMP
+#pragma omp parallel for schedule(static)
+#endif
   for (UInt_t it = 0; it < fModuleIndex.size(); it++) {
     fModuleIndex[it]->Reset();
   }
@@ -450,14 +541,15 @@ void CbmRecoSts::ProcessData(CbmEvent* event)
 
   // --- Execute reconstruction in the modules
   fTimer.Start();
-  //  #pragma omp parallel for schedule(static) if(fParallelism_enabled)
+#ifdef _OPENMP
+#pragma omp parallel for schedule(static)
+#endif
   for (UInt_t it = 0; it < fModuleIndex.size(); it++) {
     assert(fModuleIndex[it]);
     fModuleIndex[it]->Reconstruct();
   }
   fTimer.Stop();
   Double_t time3 = fTimer.RealTime();  // Time for reconstruction
-
 
   // --- Collect clusters and hits from modules
   // Here, the hits (and optionally clusters) are copied to the
@@ -471,7 +563,8 @@ void CbmRecoSts::ProcessData(CbmEvent* event)
   for (UInt_t it = 0; it < fModuleIndex.size(); it++) {
 
     const vector<CbmStsCluster>& moduleClustersF = fModuleIndex[it]->GetClustersF();
-    offsetClustersF                              = fClusters->GetEntriesFast();
+
+    offsetClustersF = fClusters->GetEntriesFast();
     for (auto& cluster : moduleClustersF) {
       UInt_t index = fClusters->GetEntriesFast();
       new ((*fClusters)[index]) CbmStsCluster(cluster);
@@ -480,7 +573,8 @@ void CbmRecoSts::ProcessData(CbmEvent* event)
     }  //# front-side clusters in module
 
     const vector<CbmStsCluster>& moduleClustersB = fModuleIndex[it]->GetClustersB();
-    offsetClustersB                              = fClusters->GetEntriesFast();
+
+    offsetClustersB = fClusters->GetEntriesFast();
     for (auto& cluster : moduleClustersB) {
       UInt_t index = fClusters->GetEntriesFast();
       new ((*fClusters)[index]) CbmStsCluster(cluster);
@@ -528,6 +622,14 @@ void CbmRecoSts::ProcessData(CbmEvent* event)
 }
 // -------------------------------------------------------------------------
 
+void CbmRecoSts::ProcessDataGpu()
+{
+  if (fMode == kCbmRecoEvent) throw std::runtime_error("STS GPU Reco does not yet support event-by-event mode.");
+
+  fGpuReco.RunHitFinder();
+  fGpuReco.ForwardClustersAndHits(fClusters, fHits);
+}
+
 
 // -----   Connect parameter container   -----------------------------------
 void CbmRecoSts::SetParContainers()
@@ -539,3 +641,36 @@ void CbmRecoSts::SetParContainers()
   fParSetCond       = dynamic_cast<CbmStsParSetSensorCond*>(db->getContainer("CbmStsParSetSensorCond"));
 }
 // -------------------------------------------------------------------------
+
+void CbmRecoSts::DumpNewHits()
+{
+  std::ofstream out {"newHits.csv"};
+
+  out << "module, x, y, z, deltaX, deltaY, deltaZ, deltaXY, time, timeError, deltaU, deltaV" << std::endl;
+
+  for (size_t m = 0; m < fModuleIndex.size(); m++) {
+    auto hits = fGpuReco.GetHits(m);
+
+    for (const auto& h : hits) {
+      out << m << ", " << h.fX << ", " << h.fY << ", " << h.fZ << ", " << h.fDx << ", " << h.fDy << ", " << h.fDz
+          << ", " << h.fDxy << ", " << h.fTime << ", " << h.fTimeError << ", " << h.fDu << ", " << h.fDv << std::endl;
+    }
+  }
+}
+
+void CbmRecoSts::DumpOldHits()
+{
+  std::ofstream out {"oldHits.csv"};
+
+  out << "module, x, y, z, deltaX, deltaY, deltaZ, deltaXY, time, timeError, deltaU, deltaV" << std::endl;
+
+  for (size_t m = 0; m < fModuleIndex.size(); m++) {
+    const auto& hits = fModuleIndex[m]->GetHits();
+
+    for (const auto& h : hits) {
+      out << m << ", " << h.GetX() << ", " << h.GetY() << ", " << h.GetZ() << ", " << h.GetDx() << ", " << h.GetDy()
+          << ", " << h.GetDz() << ", " << h.GetDxy() << ", " << h.GetTime() << ", " << h.GetTimeError() << ", "
+          << h.GetDu() << ", " << h.GetDv() << std::endl;
+    }
+  }
+}

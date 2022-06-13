@@ -75,7 +75,7 @@
  ** selects the ideal raw event builder, which associates digis to events
  ** based on the MC truth. The option "Real" selects a real raw event builder
  ** (latest version, for older versions use "Real2018" or "Real2019").
- ** 
+ **
  **
  ** The file names must be specified without extensions. The convention is
  ** that the raw (input) file is [input].raw.root. The output file
@@ -106,6 +106,8 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
   TString srcDir = gSystem->Getenv("VMCWORKDIR");  // top source directory
   // ------------------------------------------------------------------------
 
+  // Other settings
+  bool stsRecoUseGpu = false;
 
   // -----   In- and output file names   ------------------------------------
   if (input.IsNull()) input = "test";
@@ -278,6 +280,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
   // -----   Local reconstruction in STS   ----------------------------------
   if (useSts) {
     CbmRecoSts* stsReco = new CbmRecoSts(ECbmRecoMode::kCbmRecoTimeslice);
+    stsReco->SetUseGpuReco(stsRecoUseGpu);
     if (eventBased) stsReco->SetMode(ECbmRecoMode::kCbmRecoEvent);
     run->AddTask(stsReco);
     std::cout << "-I- " << myName << ": Added task " << stsReco->GetName() << std::endl;
@@ -464,7 +467,6 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
     // ----------------------------------------------------------------------
 
   }  //? time-based reco
-
 
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;

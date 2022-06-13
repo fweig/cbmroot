@@ -46,6 +46,7 @@ target_include_directories(OnlineData
 target_include_directories(OnlineData SYSTEM
   PUBLIC ${Boost_INCLUDE_DIR}
   PUBLIC ${FAIRLOGGER_INCLUDE_DIR}
+  PUBLIC ${XPU_INCLUDE_DIRECTORY}
 )
 
 target_link_directories(OnlineData

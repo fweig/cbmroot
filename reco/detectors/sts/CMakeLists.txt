@@ -28,6 +28,16 @@ unpack/CbmStsUnpackMonitor.cxx
 
 qa/CbmStsFindTracksQa.cxx
 )
+
+set(DEVICE_SRCS
+experimental/CbmStsGpuRecoDevice.cxx
+experimental/CbmStsGpuHitFinder.cxx
+)
+
+set(NO_DICT_SRCS
+${DEVICE_SRCS}
+experimental/CbmGpuRecoSts.cxx
+)
 # -----  End of sources   ---------------------------------
 
 
@@ -39,6 +49,10 @@ set(INCLUDE_DIRECTORIES
 ${CBMROOT_SOURCE_DIR}/reco/detectors/sts
 ${CBMROOT_SOURCE_DIR}/reco/detectors/sts/unpack
 ${CBMROOT_SOURCE_DIR}/reco/detectors/sts/qa
+${CBMROOT_SOURCE_DIR}/reco/detectors/sts/experimental
+
+# external
+${CBMROOT_SOURCE_DIR}/external/xpu/src
 
 # Reco
 ${CBMROOT_SOURCE_DIR}/reco/base
@@ -82,7 +96,7 @@ ${Boost_LIBRARY_DIRS}
 
 # -----   Specify library dependences   -------------------
 Set(DEPENDENCIES
-    CbmBase CbmData CbmQaBase CbmMvd CbmRecoBase CbmStsBase
+    CbmBase CbmData CbmQaBase CbmMvd CbmRecoBase CbmStsBase xpu
 )
 # ---------------------------------------------------------
 
@@ -94,10 +108,11 @@ set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
 
 # ---- Enable OpenMP  -------------------------------------
 # Comented since the OpenMP code is also commented in the moment
-#if (OPENMP_FOUND)
+# if (OPENMP_FOUND)
+#  message(STATUS "OPENMP_FOUND = TRUE")
 #  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 #  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-#endif()
+# endif()
 # ---------------------------------------------------------
 
 
@@ -106,4 +121,10 @@ include_directories( ${INCLUDE_DIRECTORIES})
 include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 link_directories( ${LINK_DIRECTORIES})
 GENERATE_LIBRARY()
+xpu_attach(CbmRecoSts ${DEVICE_SRCS})
+
+# FIXME: Why is this needed to install headers in subfolder?
+install(DIRECTORY experimental/ TYPE INCLUDE
+    FILES_MATCHING PATTERN "*.h"
+)
 # ---------------------------------------------------------

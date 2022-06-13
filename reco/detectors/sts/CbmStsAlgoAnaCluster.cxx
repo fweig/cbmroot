@@ -19,7 +19,6 @@
 
 using std::unique_ptr;
 
-
 ClassImp(CbmStsAlgoAnaCluster)
 
 
@@ -40,6 +39,10 @@ void CbmStsAlgoAnaCluster::AnaSize1(CbmStsCluster& cluster, const CbmStsParModul
   Int_t index            = cluster.GetDigi(0);
   const CbmStsDigi* digi = fDigiMan->Get<CbmStsDigi>(index);
   assert(digi);
+  // printf("BEGIN CLUSTER CALC 1\n");
+  // printf("Digi %d: channel=%d, time=%d, charge=%d\n", index, digi->GetChannel(), digi->GetTimeU32(), digi->GetChargeU16());
+  // printf("END CLUSTER CALC\n");
+
   auto& asic         = module->GetParAsic(digi->GetChannel());
   Double_t x         = Double_t(digi->GetChannel());
   Double_t time      = digi->GetTime();
@@ -118,6 +121,7 @@ void CbmStsAlgoAnaCluster::AnaSize2(CbmStsCluster& cluster, const CbmStsParModul
   }
   Double_t xError = TMath::Sqrt(ex0sq + ex1sq + ex2sq);
 
+
   // Cluster charge
   Double_t charge = q1 + q2;
 
@@ -147,9 +151,11 @@ void CbmStsAlgoAnaCluster::AnaSizeN(CbmStsCluster& cluster, const CbmStsParModul
 
     Int_t index            = cluster.GetDigi(iDigi);
     const CbmStsDigi* digi = fDigiMan->Get<CbmStsDigi>(index);
+
     assert(digi);
     Int_t channel = digi->GetChannel();
     auto& asic    = modPar->GetParAsic(channel);
+
 
     // --- Uncertainties of the charge measurements
     Double_t eNoiseSq     = asic.GetNoise() * asic.GetNoise();
@@ -182,6 +188,7 @@ void CbmStsAlgoAnaCluster::AnaSizeN(CbmStsCluster& cluster, const CbmStsParModul
     }
 
   }  //# digis in cluster
+
 
   // Periodic channel position for clusters round the edge
   if (chanF > chanL) chanF -= modPar->GetNofChannels() / 2;

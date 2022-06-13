@@ -23,7 +23,6 @@
 using std::pair;
 using std::vector;
 
-
 // -----   Constructor   ---------------------------------------------------
 CbmStsAlgoFindHits::CbmStsAlgoFindHits() {}
 // -------------------------------------------------------------------------
@@ -124,6 +123,7 @@ Long64_t CbmStsAlgoFindHits::Exec(const vector<CbmStsCluster>& clustersF, const 
       const CbmStsCluster& clusterB = clustersB[iClusterB];
 
       Double_t timeDiff = tF - clusterB.GetTime();
+
       if ((timeDiff > 0) && (timeDiff > max_sigma_both)) {
         startB++;
         continue;

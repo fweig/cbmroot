@@ -178,8 +178,8 @@ InitStatus CbmStsFindTracks::Init()
     else if (fVerbose >  2) fDigiScheme->Print(kTRUE);
     cout << "-I- "
 	 << "STS digitisation scheme succesfully initialised" << endl;
-    cout << "    Stations: " << fDigiScheme->GetNStations() 
-	 << ", Sectors: " << fDigiScheme->GetNSectors() << ", Channels: " 
+    cout << "    Stations: " << fDigiScheme->GetNStations()
+	 << ", Sectors: " << fDigiScheme->GetNSectors() << ", Channels: "
 	 << fDigiScheme->GetNChannels() << endl;
   }
 	 */
