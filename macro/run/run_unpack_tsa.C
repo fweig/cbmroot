@@ -34,10 +34,10 @@ std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename, boo
 std::shared_ptr<CbmMuchUnpackMonitor> GetMuchMonitor(std::string treefilename, bool bDebugMode = false);
 std::shared_ptr<CbmRichUnpackMonitor> GetRichMonitor(std::string treefilename, bool bDebugMode = false);
 std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, bool bBmonMode = false);
-const char* defaultSetupName = "mcbm_beam_2021_07_surveyed";
+std::string defaultSetupName = "mcbm_beam_2021_07_surveyed";
 
 void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid = 0,
-                    const char* setupName = defaultSetupName, std::int32_t nevents = -1, bool bBmoninTof = false,
+                    std::string setupName = defaultSetupName, std::int32_t nevents = -1, bool bBmoninTof = false,
                     std::string outpath = "data/")
 {
 
@@ -105,9 +105,16 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
       /// Uranium runs: 2176 - 2310 = 30/03/2022 - 01/04/2022
       setupName = "mcbm_beam_2022_03_28_uranium";
     }
+    else if (2350 <= runid && runid <= 2397) {
+      /// Nickel runs: 2350 - 2397 = 23/05/2022 - 25/05/2022
+      setupName = "mcbm_beam_2022_05_23_nickel";
+    }
+    if (defaultSetupName != setupName) {
+      std::cout << "Automatic setup choice for run " << runid << ": " << setupName << std::endl;
+    }
   }
   auto cbmsetup = CbmSetup::Instance();
-  cbmsetup->LoadSetup(setupName);
+  cbmsetup->LoadSetup(setupName.c_str());
   // ------------------------------------------------------------------------
 
   // -----   UnpackerConfigs   ----------------------------------------------
@@ -147,6 +154,9 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     if (2160 <= runid) {
       richconfig->SetSystemTimeOffset(50);  // [ns] value to be updated
     }
+    if (2350 <= runid) {
+      richconfig->SetSystemTimeOffset(100);  // [ns] value to be updated
+    }
     if (runid == 1588) richconfig->MaskDiRICH(0x7150);
   }
   // -------------
@@ -172,6 +182,9 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     stsconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
     if (2160 <= runid) {
       stsconfig->SetSystemTimeOffset(-1075);  // [ns] value to be updated
+    }
+    if (2350 <= runid) {
+      stsconfig->SetSystemTimeOffset(-970);  // [ns] value to be updated
     }
 
     stsconfig->SetMinAdcCut(1, 1);
@@ -254,6 +267,9 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     if (2160 <= runid) {
       muchconfig->SetSystemTimeOffset(-1020);  // [ns] value to be updated
     }
+    if (2350 <= runid) {
+      muchconfig->SetSystemTimeOffset(-980);  // [ns] value to be updated
+    }
 
     // muchconfig->SetMinAdcCut(1, 1);
 
@@ -283,6 +299,9 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     trd1Dconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
     if (2160 <= runid) {
       trd1Dconfig->SetSystemTimeOffset(1140);  // [ns] value to be updated
+    }
+    if (2350 <= runid) {
+      trd1Dconfig->SetSystemTimeOffset(1300);  // [ns] value to be updated
     }
   }
   // -------------
@@ -334,6 +353,9 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     if (2160 <= runid) {
       trdfasp2dconfig->SetSystemTimeOffset(-570);  // [ns] value to be updated
     }
+    if (2350 <= runid) {
+      trdfasp2dconfig->SetSystemTimeOffset(-510);  // [ns] value to be updated
+    }
     // trdfasp2dconfig->SetMonitor(dynamic_pointer_cast<CbmTrdUnpackFaspMonitor>(GetTrdMonitor(outfilename, 1)));
   }
   // -------------
@@ -369,7 +391,8 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
         parFileNameTof = "mTofCriParUranium.par";
       }
       else if (2335 <= runid) {
-        /// Uranium runs: 2176 - 2310
+        /// Nickel runs: 2335 - 2397
+        /// Gold runs: 2400 - xxxx
         parFileNameTof = "mTofCriParNickel.par";
         if (bBmoninTof) {
           /// Map the BMon components in the TOF par file
@@ -382,6 +405,9 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     tofconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
     if (2160 <= runid) {
       tofconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+    }
+    if (2350 <= runid) {
+      tofconfig->SetSystemTimeOffset(40);  // [ns] value to be updated
     }
     if (runid <= 1659) {
       /// Switch ON the -4 offset in epoch count (hack for Spring-Summer 2021)
@@ -406,6 +432,9 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
       bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
       if (2160 <= runid) {
         bmonconfig->SetSystemTimeOffset(-80);  // [ns] value to be updated
+      }
+      if (2350 <= runid) {
+        bmonconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
       }
       /// Enable Monitor plots
       // bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));
@@ -712,7 +741,7 @@ std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, boo
   return monitor;
 }
 
-void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, const char* setupName = defaultSetupName,
+void run_unpack_tsa(std::string infile = "test.tsa", UInt_t runid = 0, std::string setupName = defaultSetupName,
                     std::int32_t nevents = -1, bool bBmoninTof = false, std::string outpath = "data/")
 {
   std::vector<std::string> vInFile = {infile};

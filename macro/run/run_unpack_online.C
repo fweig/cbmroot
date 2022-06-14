@@ -36,11 +36,11 @@ std::shared_ptr<CbmStsUnpackMonitor> GetStsMonitor(std::string treefilename, boo
 std::shared_ptr<CbmMuchUnpackMonitor> GetMuchMonitor(std::string treefilename, bool bDebugMode = false);
 std::shared_ptr<CbmRichUnpackMonitor> GetRichMonitor(std::string treefilename, bool bDebugMode = false);
 std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, bool bBmonMode = false);
-const char* defaultSetupName = "mcbm_beam_2021_07_surveyed";
+std::string defaultSetupName = "mcbm_beam_2021_07_surveyed";
 
 void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:5556"}, Int_t serverHttpPort = 8080,
                        Int_t serverRefreshRate = 100, std::int32_t nevents = -1, UInt_t runid = 1905,
-                       const char* setupName = defaultSetupName, bool bBmoninTof = false, std::string outpath = "data/")
+                       std::string setupName = defaultSetupName, bool bBmoninTof = false, std::string outpath = "data/")
 {
 
   // ========================================================================
@@ -87,9 +87,16 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
       /// Uranium runs: 2176 - 2310 = 30/03/2022 - 01/04/2022
       setupName = "mcbm_beam_2022_03_28_uranium";
     }
+    else if (2350 <= runid && runid <= 2397) {
+      /// Nickel runs: 2350 - 2397 = 23/05/2022 - 25/05/2022
+      setupName = "mcbm_beam_2022_05_23_nickel";
+    }
+    if (defaultSetupName != setupName) {
+      std::cout << "Automatic setup choice for run " << runid << ": " << setupName << std::endl;
+    }
   }
   auto cbmsetup = CbmSetup::Instance();
-  cbmsetup->LoadSetup(setupName);
+  cbmsetup->LoadSetup(setupName.c_str());
   // ------------------------------------------------------------------------
 
   // -----   UnpackerConfigs   ----------------------------------------------
@@ -126,6 +133,12 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     richconfig->SetParFilesBasePath(parfilesbasepathRich);
     richconfig->SetSystemTimeOffset(256000 - 1200);  // [ns] 1 MS and additional correction
     if (1904 < runid) richconfig->SetSystemTimeOffset(-1200);
+    if (2160 <= runid) {
+      richconfig->SetSystemTimeOffset(50);  // [ns] value to be updated
+    }
+    if (2350 <= uRunId) {
+      richconfig->SetSystemTimeOffset(100);  // [ns] value to be updated
+    }
     if (runid == 1588) richconfig->MaskDiRICH(0x7150);
   }
   // -------------
@@ -149,6 +162,12 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     /// Enable Monitor plots
     stsconfig->SetMonitor(GetStsMonitor(outfilename, false));
     stsconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
+    if (2160 <= runid) {
+      stsconfig->SetSystemTimeOffset(-1075);  // [ns] value to be updated
+    }
+    if (2350 <= uRunId) {
+      stsconfig->SetSystemTimeOffset(-970);  // [ns] value to be updated
+    }
 
     stsconfig->SetMinAdcCut(1, 1);
     stsconfig->SetMinAdcCut(2, 1);
@@ -215,11 +234,11 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     }
     else if (2350 <= runid && runid <= 2367) {
       /// First nickel runs
-      muchconfig->SetParFileName("mMuchPar.par");
+      muchconfig->SetParFileName("mMuchParNickel_23052022.par");
     }
     else if (2367 < runid) {
       /// Starting to use GEM 2 moved to CRI 0 on 24/05/2022
-      muchconfig->SetParFileName("mMuchPar.par");
+      muchconfig->SetParFileName("mMuchParNickel_25052022.par");
     }
 
     /// Enable duplicates rejection, Ignores the ADC for duplicates check
@@ -229,6 +248,9 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     muchconfig->SetSystemTimeOffset(-2221);  // [ns] value to be updated
     if (2160 <= runid) {
       muchconfig->SetSystemTimeOffset(-1020);  // [ns] value to be updated
+    }
+    if (2350 <= uRunId) {
+      muchconfig->SetSystemTimeOffset(-980);  // [ns] value to be updated
     }
 
     // muchconfig->SetMinAdcCut(1, 1);
@@ -257,6 +279,12 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     // Get the spadic configuration true = avg baseline active / false plain sample 0
     trd1Dconfig->SetSpadicObject(GetTrdSpadic(true));
     trd1Dconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+    if (2160 <= runid) {
+      trd1Dconfig->SetSystemTimeOffset(1140);  // [ns] value to be updated
+    }
+    if (2350 <= uRunId) {
+      trd1Dconfig->SetSystemTimeOffset(1300);  // [ns] value to be updated
+    }
   }
   // -------------
 
@@ -304,6 +332,12 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     std::string parfilesbasepathTrdfasp2d = Form("%s/parameters/trd", srcDir.Data());
     trdfasp2dconfig->SetParFilesBasePath(parfilesbasepathTrdfasp2d);
     trdfasp2dconfig->SetSystemTimeOffset(-1800);  // [ns] value to be updated
+    if (2160 <= runid) {
+      trdfasp2dconfig->SetSystemTimeOffset(-570);  // [ns] value to be updated
+    }
+    if (2350 <= uRunId) {
+      trdfasp2dconfig->SetSystemTimeOffset(-510);  // [ns] value to be updated
+    }
     trdfasp2dconfig->SetMonitor(dynamic_pointer_cast<CbmTrdUnpackFaspMonitor>(GetTrdMonitor(outfilename, 1)));
   }
   // -------------
@@ -317,6 +351,7 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     tofconfig->SetDoWriteOutput();
     // tofconfig->SetDoWriteOptOutA("CbmTofErrors");
     std::string parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+    std::string parFileNameTof      = "mTofCriPar.par";
     if (2060 <= runid) {
       /// Additional modules added just before the 10/03/2022 Carbon run
       parfilesbasepathTof = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
@@ -338,7 +373,8 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
         parFileNameTof = "mTofCriParUranium.par";
       }
       else if (2335 <= runid) {
-        /// Uranium runs: 2176 - 2310
+        /// Nickel runs: 2335 - 2397
+        /// Gold runs: 2400 - xxxx
         parFileNameTof = "mTofCriParNickel.par";
         if (bBmoninTof) {
           /// Map the BMon components in the TOF par file
@@ -347,7 +383,14 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
       }
     }
     tofconfig->SetParFilesBasePath(parfilesbasepathTof);
+    tofconfig->SetParFileName(parFileNameTof);
     tofconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+    if (2160 <= runid) {
+      tofconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+    }
+    if (2350 <= uRunId) {
+      tofconfig->SetSystemTimeOffset(40);  // [ns] value to be updated
+    }
     if (runid <= 1659) {
       /// Switch ON the -4 offset in epoch count (hack for Spring-Summer 2021)
       tofconfig->SetFlagEpochCountHack2021();
@@ -369,6 +412,12 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
       bmonconfig->SetParFilesBasePath(parfilesbasepathBmon);
       bmonconfig->SetParFileName("mBmonCriPar.par");
       bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+      if (2160 <= runid) {
+        bmonconfig->SetSystemTimeOffset(-80);  // [ns] value to be updated
+      }
+      if (2350 <= uRunId) {
+        bmonconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+      }
       /// Enable Monitor plots
       bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));
     }
@@ -684,7 +733,7 @@ std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, boo
 
 void run_unpack_online(std::string publisher = "tcp://localhost:5556", Int_t serverHttpPort = 8080,
                        Int_t serverRefreshRate = 100, std::int32_t nevents = -1, UInt_t runid = 1905,
-                       const char* setupName = defaultSetupName, bool bBmoninTof = false, std::string outpath = "data/")
+                       std::string setupName = defaultSetupName, bool bBmoninTof = false, std::string outpath = "data/")
 {
   std::vector<std::string> vPublisher = {publisher};
   return run_unpack_online(vPublisher, serverHttpPort, serverRefreshRate, nevents, runid, setupName, bBmoninTof,

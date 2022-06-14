@@ -26,10 +26,10 @@
 #endif
 
 std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, bool bBmonMode = false);
-const char* defaultSetupName = "mcbm_beam_2022_03_09_carbon";
+std::string defaultSetupName = "mcbm_beam_2022_03_09_carbon";
 
 void run_unpack_tsa_bmon(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid = 0,
-                         const char* setupName = defaultSetupName, std::int32_t nevents = -1,
+                         std::string setupName = defaultSetupName, std::int32_t nevents = -1,
                          std::string outpath = "data/")
 {
 
@@ -92,9 +92,16 @@ void run_unpack_tsa_bmon(std::vector<std::string> infile = {"test.tsa"}, UInt_t 
       /// Uranium runs: 2176 - 2310 = 30/03/2022 - 01/04/2022
       setupName = "mcbm_beam_2022_03_28_uranium";
     }
+    else if (2350 <= runid && runid <= 2397) {
+      /// Nickel runs: 2350 - 2397 = 23/05/2022 - 25/05/2022
+      setupName = "mcbm_beam_2022_05_23_nickel";
+    }
+    if (defaultSetupName != setupName) {
+      std::cout << "Automatic setup choice for run " << runid << ": " << setupName << std::endl;
+    }
   }
   auto cbmsetup = CbmSetup::Instance();
-  cbmsetup->LoadSetup(setupName);
+  cbmsetup->LoadSetup(setupName.c_str());
   // ------------------------------------------------------------------------
 
   // -----   UnpackerConfigs   ----------------------------------------------
@@ -226,7 +233,7 @@ std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, boo
   return monitor;
 }
 
-void run_unpack_tsa_bmon(std::string infile = "test.tsa", UInt_t runid = 0, const char* setupName = defaultSetupName,
+void run_unpack_tsa_bmon(std::string infile = "test.tsa", UInt_t runid = 0, std::string setupName = defaultSetupName,
                          std::int32_t nevents = -1, std::string outpath = "data/")
 {
   std::vector<std::string> vInFile = {infile};

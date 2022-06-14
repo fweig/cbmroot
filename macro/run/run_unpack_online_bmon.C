@@ -28,11 +28,11 @@
 #endif
 
 std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, bool bBmonMode = false);
-const char* defaultSetupName = "mcbm_beam_2022_03_09_carbon";
+std::string defaultSetupName = "mcbm_beam_2022_03_09_carbon";
 
 void run_unpack_online_bmon(std::vector<std::string> publisher = {"tcp://localhost:5556"}, Int_t serverHttpPort = 8080,
                             Int_t serverRefreshRate = 100, std::int32_t nevents = -1, UInt_t runid = 1905,
-                            const char* setupName = defaultSetupName, std::string outpath = "data/")
+                            std::string setupName = defaultSetupName, std::string outpath = "data/")
 {
 
   // ========================================================================
@@ -79,9 +79,16 @@ void run_unpack_online_bmon(std::vector<std::string> publisher = {"tcp://localho
       /// Uranium runs: 2176 - 2310 = 30/03/2022 - 01/04/2022
       setupName = "mcbm_beam_2022_03_28_uranium";
     }
+    else if (2350 <= runid && runid <= 2397) {
+      /// Nickel runs: 2350 - 2397 = 23/05/2022 - 25/05/2022
+      setupName = "mcbm_beam_2022_05_23_nickel";
+    }
+    if (defaultSetupName != setupName) {
+      std::cout << "Automatic setup choice for run " << runid << ": " << setupName << std::endl;
+    }
   }
   auto cbmsetup = CbmSetup::Instance();
-  cbmsetup->LoadSetup(setupName);
+  cbmsetup->LoadSetup(setupName.c_str());
   // ------------------------------------------------------------------------
 
   // -----   UnpackerConfigs   ----------------------------------------------
@@ -223,7 +230,7 @@ std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, boo
 
 void run_unpack_online_bmon(std::string publisher = "tcp://localhost:5556", UInt_t runid = 1905,
                             Int_t serverHttpPort = 8080, Int_t serverRefreshRate = 10, std::int32_t nevents = -1,
-                            const char* setupName = defaultSetupName, std::string outpath = "data/")
+                            std::string setupName = defaultSetupName, std::string outpath = "data/")
 {
   std::vector<std::string> vPublisher = {publisher};
   return run_unpack_online_bmon(vPublisher, serverHttpPort, serverRefreshRate, nevents, runid, setupName, outpath);
