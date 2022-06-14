@@ -73,4 +73,11 @@ else()
   set_target_properties(external::fles_logging PROPERTIES
                         IMPORTED_LOCATION external::fles_logging-NOTFOUND
              )
+
+  # Define an empty macro such that ctest is happy when no externals are
+  # available
+  # This is needed since to speed up the execution of the code format check 
+  # no externals are downloaded
+  macro(xpu_attach)
+  endmacro()
 endif()
