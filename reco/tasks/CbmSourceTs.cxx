@@ -61,6 +61,7 @@ Int_t CbmSourceTs::ReadEvent(UInt_t)
   std::cout << std::endl;
   if (fNumCalls == 0) LOG(info) << "SourceTs: Init call to ReadEvent";
   else {
+    fFlesTs = nullptr;
     fFlesTs = fFlesSource->get();
     if (!fFlesTs) {
       LOG(info) << "SourceTs: End of archive reached; stopping run.";
