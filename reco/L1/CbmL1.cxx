@@ -421,7 +421,9 @@ InitStatus CbmL1::Init()
     TDirectory* oldDir = gDirectory;
 
     TFile* file         = new TFile(fMuchDigiFile, "READ");
-    TObjArray* stations = (TObjArray*) file->Get("stations");
+    LOG_IF(fatal, !file) << "Could not open file " << fMuchDigiFile;
+    TObjArray* stations = file->Get<TObjArray>("stations");
+    LOG_IF(fatal, !stations) << "No TObjArray stations in file " << fMuchDigiFile;
     fGeoScheme->Init(stations, 0);
     for (int iStation = 0; iStation < fGeoScheme->GetNStations(); iStation++) {
       const CbmMuchStation* station = fGeoScheme->GetStation(iStation);
@@ -2228,11 +2230,9 @@ std::vector<L1Material> CbmL1::ReadMaterialBudget(L1DetectorID detectorID)
     for (int iSt = 0; iSt < fpInitManager->GetNstationsGeometry(detectorID); ++iSt) {
       // TODO: Unify material table names (S.Zharko)
       TString stationName = stationNamePrefix + (detectorID == L1DetectorID::kMvd ? iSt : iSt + 1);
-      auto* hStaRadLen    = dynamic_cast<TProfile2D*>(rlFile.Get(stationName));
-      if (!hStaRadLen) {
-        LOG(fatal) << "CbmL1: material budget profile " << stationName << " does not exist in file "
-                   << fMatBudgetFileName.at(detectorID);
-      }
+      auto* hStaRadLen    = rlFile.Get<TProfile2D>(stationName);
+      LOG_IF(fatal, !hStaRadLen) << "CbmL1: material budget profile " << stationName << " does not exist in file "
+                                 << fMatBudgetFileName.at(detectorID);
       int nBins  = hStaRadLen->GetNbinsX();
       float rMax = hStaRadLen->GetXaxis()->GetXmax();
       result[iSt].SetBins(nBins, rMax);

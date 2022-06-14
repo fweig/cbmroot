@@ -8,6 +8,8 @@
 // -------------------------------------------------------------------------
 #include "CbmMvdPileupManager.h"
 
+#include <Logger.h>
+
 #include "TClonesArray.h"
 #include "TFile.h"
 #include "TObjArray.h"
@@ -83,16 +85,17 @@ Int_t CbmMvdPileupManager::FillBuffer(TString fileName, TString branchName, Int_
 
   TFile* bgfile = new TFile(fileName);
   if (!bgfile) {
-    cout << "-W- CbmMvdPileupManager::FillBuffer:  Background file " << fileName << " could noy be opened! " << endl;
+    LOG(warning) << "CbmMvdPileupManager::FillBuffer:  Background file " << fileName << " could noy be opened! "
+                 << endl;
     return 0;
   }
   cout << "-I- CbmMvdPileupManager::FillBuffer: Opening file " << endl;
   cout << fileName << endl;
 
-  TTree* bgtree = (TTree*) bgfile->Get("cbmsim");
+  TTree* bgtree = bgfile->Get<TTree>("cbmsim");
   if (!bgtree) {
-    cout << "-W- CbmMvdPileupManager::FillBuffer:  "
-         << "Could not find cbmsim tree in background file " << endl;
+    LOG(warning) << "CbmMvdPileupManager::FillBuffer:  "
+                 << "Could not find cbmsim tree in background file ";
     return 0;
   }
 

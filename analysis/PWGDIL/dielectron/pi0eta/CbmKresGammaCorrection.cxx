@@ -20,6 +20,8 @@
 
 #include "CbmKresGammaCorrection.h"
 
+#include <Logger.h>
+
 #include "TFile.h"
 #include "TH2D.h"
 #include "TMath.h"
@@ -58,10 +60,20 @@ void CbmKresGammaCorrection::Init(std::vector<std::vector<double>>& vect_all,
   TFile* fcorrection = new TFile(
     Correction_path.c_str());  // file with almost ?? Mio photons, homogeneously distributed over interested region
   // rapidity graphs
-  TH2D* mc     = (TH2D*) fcorrection->Get("conversionKres/General/MC_info/MC_Direct_photons_Pt_vs_rap_est");
-  TH2D* all    = (TH2D*) fcorrection->Get("conversionKres/direct photons/Both/all/Ph_pt_vs_rap_est_all_Both");
-  TH2D* two    = (TH2D*) fcorrection->Get("conversionKres/direct photons/Both/two/Ph_pt_vs_rap_est_two_Both");
-  TH2D* onetwo = (TH2D*) fcorrection->Get("conversionKres/direct photons/Both/onetwo/Ph_pt_vs_rap_est_onetwo_Both");
+  LOG_IF(fatal, !fcorrection) << "Could not open file " << Correction_path.c_str();
+  TH2D* mc = fcorrection->Get<TH2D>("conversionKres/General/MC_info/MC_Direct_photons_Pt_vs_rap_est");
+  LOG_IF(fatal, !mc) << "Could not read histogram MC_Direct_photons_Pt_vs_rap_est from file "
+                     << Correction_path.c_str();
+
+  TH2D* all = fcorrection->Get<TH2D>("conversionKres/direct photons/Both/all/Ph_pt_vs_rap_est_all_Both");
+  LOG_IF(fatal, !all) << "Could not read histogram Ph_pt_vs_rap_est_all_Both from file " << Correction_path.c_str();
+
+  TH2D* two = fcorrection->Get<TH2D>("conversionKres/direct photons/Both/two/Ph_pt_vs_rap_est_two_Both");
+  LOG_IF(fatal, !two) << "Could not read histogram Ph_pt_vs_rap_est_two_Both from file " << Correction_path.c_str();
+
+  TH2D* onetwo = fcorrection->Get<TH2D>("conversionKres/direct photons/Both/onetwo/Ph_pt_vs_rap_est_onetwo_Both");
+  LOG_IF(fatal, !onetwo) << "Could not read histogram Ph_pt_vs_rap_est_onetwo_Both from file "
+                         << Correction_path.c_str();
 
   std::vector<double> rapidity_column;
 

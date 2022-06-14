@@ -211,8 +211,13 @@ void CbmTrdElectronsTrainAnn::FillElossVectorReal()
   TDirectory* oldDir = gDirectory;
 
   TFile* file     = new TFile(fBeamDataFile.c_str(), "READ");
-  TH1F* hPion     = (TH1F*) file->Get(fBeamDataPiHist.c_str())->Clone();
-  TH1F* hElectron = (TH1F*) file->Get(fBeamDataElHist.c_str())->Clone();
+  LOG_IF(fatal, !file) << "Could not open file " << fBeamDataFile;
+
+  TH1F* hPion = static_cast<TH1F*>(file->Get<TH1F>(fBeamDataPiHist.c_str())->Clone());
+  LOG_IF(fatal, !hPion) << "Histogram " << fBeamDataPiHist << " not found in file " << fBeamDataFile;
+
+  TH1F* hElectron = static_cast<TH1F*>(file->Get<TH1F>(fBeamDataElHist.c_str())->Clone());
+  LOG_IF(fatal, !hElectron) << "Histogram " << fBeamDataElHist << " not found in file " << fBeamDataFile;
 
   double scaleX =
     fhEloss[0]->GetXaxis()->GetBinUpEdge(fhEloss[0]->GetNbinsX()) / hPion->GetXaxis()->GetBinUpEdge(hPion->GetNbinsX());

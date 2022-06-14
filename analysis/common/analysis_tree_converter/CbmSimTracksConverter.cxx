@@ -48,10 +48,10 @@ ClassImp(CbmSimTracksConverter)
     fFile = new TFile(fUnigenFile, "READ");
     fFile->Print();
     if (fFile->IsOpen()) {
-      fTree = (TTree*) fFile->Get("events");
+      fTree = fFile->Get<TTree>("events");
       if (fTree) fUseUnigen = kTRUE;
       fTree->SetBranchAddress("event", &fUnigenEvent);
-      URun* run = dynamic_cast<URun*>(fFile->Get("run"));
+      URun* run = fFile->Get<URun>("run");
       if (run == nullptr) {
         LOG(error) << "CbmSimTracksConverter: No run description in urqmd file!";
         delete fFile;

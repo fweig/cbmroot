@@ -164,12 +164,14 @@ InitStatus CbmMuchHitFinderQa::Init()
   TDirectory* oldDir = gDirectory;
 
   TFile* f = new TFile(fGeoFileName, "R");
+  LOG_IF(fatal, !f) << "Could not open file " << fGeoFileName;
 
   /// Restore old global file and folder pointer to avoid messing with FairRoot
   gFile      = oldFile;
   gDirectory = oldDir;
 
-  TObjArray* stations = (TObjArray*) f->Get("stations");
+  TObjArray* stations = f->Get<TObjArray>("stations");
+  LOG_IF(fatal, !stations) << "TObjArray stations not found in file " << fGeoFileName;
   fGeoScheme->Init(stations, fFlag);
 
   if (!fManager) {

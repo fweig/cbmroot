@@ -119,8 +119,11 @@ void CbmAnaTreeSource::LoadConf(TString name)
   TDirectory* oldDir = gDirectory;
 
   TFile* f = new TFile(name);
-  // TTree *tree = (TTree*)f->Get("aTree");
-  AnalysisTree::Configuration* conf = (AnalysisTree::Configuration*) f->Get("Configuration");
+  LOG_IF(fatal, !f) << "Could not open file " << name;
+  // TTree *tree = f->Get<TTree>("aTree");
+  //  AnalysisTree::Configuration* conf = (AnalysisTree::Configuration*) f->Get("Configuration");
+  AnalysisTree::Configuration* conf = f->Get<AnalysisTree::Configuration>("Configuration");
+  LOG_IF(fatal, !conf) << "Could not read AnalysisTree configuration from file " << name;
   if (fContainerReco) {
     fContainerReco->GetFieldIds().vtx_px   = conf->GetBranchConfig("VtxTracks").GetFieldId("px");
     fContainerReco->GetFieldIds().vtx_py   = conf->GetBranchConfig("VtxTracks").GetFieldId("py");

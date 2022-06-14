@@ -371,7 +371,7 @@ void LxTrackAnaTriplet::FinishTask()
   if (buildBgrInvMass) {
     if (joinData) {
       TFile fh("tracks_tree.root");
-      superEventTracks = static_cast<TTree*>(fh.Get("SuperEventTracks"));
+      superEventTracks = fh.Get<TTree>("SuperEventTracks");
       //LxSimpleTrack st(0, 0, 0, 0, 0, 0, 0, 0);
       //superEventTracks->SetBranchAddress("tracks", &st.px);
       CbmStsTrack* st = new CbmStsTrack;

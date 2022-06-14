@@ -55,9 +55,9 @@ static Double_t GetRMS(const char* name)
   TFile* f = new TFile(fileName);
 
   if (!f->IsZombie()) {
-    TH1F* h = static_cast<TH1F*>(f->Get(name));
+    TH1F* h = f->Get<TH1F>(name);
 
-    if (0 != h) result = h->GetRMS();
+    if (h) result = h->GetRMS();
   }
 
   delete f;

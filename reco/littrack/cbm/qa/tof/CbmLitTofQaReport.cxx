@@ -80,8 +80,8 @@ void CbmLitTofQaReport::FitHistograms()
     TH2* hist       = HM()->H2(histName);
     DrawH2(hist);
     hist->FitSlicesY();
-    TH1* meanHist   = (TH1*) gDirectory->Get(string(histName + "_1").c_str());  // mean
-    TH1* sigmaHist  = (TH1*) gDirectory->Get(string(histName + "_2").c_str());  // sigma
+    TH1* meanHist   = gDirectory->Get<TH1>(string(histName + "_1").c_str());  // mean
+    TH1* sigmaHist  = gDirectory->Get<TH1>(string(histName + "_2").c_str());  // sigma
     Int_t nofBins   = meanHist->GetNbinsX();
     TGraph* upGraph = new TGraph(nofBins);
     upGraph->GetXaxis()->SetRangeUser(meanHist->GetXaxis()->GetXmin(), meanHist->GetXaxis()->GetXmax());

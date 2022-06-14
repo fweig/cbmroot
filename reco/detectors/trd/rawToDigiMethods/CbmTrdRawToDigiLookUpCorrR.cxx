@@ -97,20 +97,19 @@ void CbmTrdRawToDigiLookUpCorrR::loadLookUpTables(std::string infile)
   TFile file(infile.data(), "READ");
   if (file.IsOpen()) {
     std::string hname  = Form("Timeshift_Map_Fst%d_Snd%d", fFirstLookUpSamplePos, fSecondLookUpSamplePos);
-    TH2* hTimeshiftMap = (TH2*) file.Get(hname.data());
-    if (!hTimeshiftMap)
-      LOG(fatal) << "CbmTrdRawToDigiLookUpCorrR::loadLookUpTables: Look up mode that reqiures Timeshift Map "
-                    "histogram requested, but the map "
-                 << hname << " was not found in the given file(" << infile << ")!";
+    TH2* hTimeshiftMap = file.Get<TH2>(hname.data());
+    LOG_IF(fatal, !hTimeshiftMap)
+      << "CbmTrdRawToDigiLookUpCorrR::loadLookUpTables: Look up mode that reqiures Timeshift Map "
+         "histogram requested, but the map "
+      << hname << " was not found in the given file(" << infile << ")!";
     hname           = Form("MaxAdc_Map_Fst%d_Snd%d", fFirstLookUpSamplePos, fSecondLookUpSamplePos);
-    TH2* hMaxAdcMap = (TH2*) file.Get(hname.data());
-    if (!hMaxAdcMap)
-      LOG(fatal) << "CbmTrdRawToDigiLookUpCorrR::loadLookUpTables: Look up mode that reqiures MaxAdc Map "
-                    "histogram requested, but the map "
-                 << hname << " was not found in the given file(" << infile << ")!";
+    TH2* hMaxAdcMap = file.Get<TH2>(hname.data());
+    LOG_IF(fatal, !hMaxAdcMap) << "CbmTrdRawToDigiLookUpCorrR::loadLookUpTables: Look up mode that reqiures MaxAdc Map "
+                                  "histogram requested, but the map "
+                               << hname << " was not found in the given file(" << infile << ")!";
 
-    // TH2* hMaxAdcMap = (TH2*) file.Get("MAX ADC");
-    // TH2* hAsymMap   = (TH2*) file.Get("ASYM MAP");
+    // TH2* hMaxAdcMap = file.Get<TH2>("MAX ADC");
+    // TH2* hAsymMap   = file.Get<TH2>("ASYM MAP");
 
     if (hMaxAdcMap && hTimeshiftMap) {
       auto h = hMaxAdcMap;

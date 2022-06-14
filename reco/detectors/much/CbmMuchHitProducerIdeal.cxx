@@ -55,7 +55,9 @@ InitStatus CbmMuchHitProducerIdeal::Init()
   TDirectory* oldDir = gDirectory;
 
   TFile* file         = new TFile(fDigiFile);
-  TObjArray* stations = (TObjArray*) file->Get("stations");
+  LOG_IF(fatal, !file) << "Could not open file " << fDigiFile;
+  TObjArray* stations = file->Get<TObjArray>("stations");
+  LOG_IF(fatal, !stations) << "TObjArray stations not found in file " << fDigiFile;
   file->Close();
   file->Delete();
   /// Restore old global file and folder pointer to avoid messing with FairRoot

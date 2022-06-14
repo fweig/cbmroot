@@ -1650,7 +1650,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
     phirp1 = atan2(Qy1, Qx1);
     phirp2 = atan2(Qy2, Qx2);
     if (fflowFile != NULL) {  // subevent RP flattening
-      TH1F* phirp_gen_fpar = (TH1F*) fflowFile->Get("phirps_gen_fpar");
+      TH1F* phirp_gen_fpar = fflowFile->Get<TH1F>("phirps_gen_fpar");
       Float_t dphir        = 0.;
       for (int j = 0; j < 4; j++) {
         Float_t i = (float) (j + 1);
@@ -1694,7 +1694,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
       phirp -= 360.;
     }
     if (fflowFile != NULL) {  // RP flattening
-      TH1F* phirp_gen_fpar = (TH1F*) fflowFile->Get("phirp_gen_fpar");
+      TH1F* phirp_gen_fpar = fflowFile->Get<TH1F>("phirp_gen_fpar");
       Float_t dphir        = 0.;
       for (int j = 0; j < 4; j++) {
         Float_t i = (float) (j + 1);
@@ -1950,7 +1950,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
     phirp1 = atan2(Qy1, Qx1);
     phirp2 = atan2(Qy2, Qx2);
     if (fflowFile != NULL) {  // subevent RP flattening
-      TH1F* phirp_poi_fpar = (TH1F*) fflowFile->Get("phirps_poi_fpar");
+      TH1F* phirp_poi_fpar = fflowFile->Get<TH1F>("phirps_poi_fpar");
       Float_t dphir        = 0.;
       for (int j = 0; j < 4; j++) {
         Float_t i = (float) (j + 1);
@@ -1990,7 +1990,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
     phirp -= 360.;
   }
   if (fflowFile != NULL) {  // RP flattening
-    TH1F* phirp_poi_fpar = (TH1F*) fflowFile->Get("phirp_poi_fpar");
+    TH1F* phirp_poi_fpar = fflowFile->Get<TH1F>("phirp_poi_fpar");
     Float_t dphir        = 0.;
     for (int j = 0; j < 4; j++) {
       Float_t i = (float) (j + 1);
@@ -2449,7 +2449,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
     phirp1 = atan2(Qy1, Qx1);
     phirp2 = atan2(Qy2, Qx2);
     if (fflowFile != NULL) {  // subevent RP flattening
-      TH1F* phirp_hit_fpar = (TH1F*) fflowFile->Get("phirps_hit_fpar");
+      TH1F* phirp_hit_fpar = fflowFile->Get<TH1F>("phirps_hit_fpar");
       Float_t dphir        = 0.;
       for (int j = 0; j < 4; j++) {
         Float_t i = (float) (j + 1);
@@ -2490,7 +2490,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
     phirp -= 360.;
   }
   if (fflowFile != NULL) {  // RP flattening
-    TH1F* phirp_hit_fpar = (TH1F*) fflowFile->Get("phirp_hit_fpar");
+    TH1F* phirp_hit_fpar = fflowFile->Get<TH1F>("phirp_hit_fpar");
     Float_t dphir        = 0.;
     for (int j = 0; j < 4; j++) {
       Float_t i = (float) (j + 1);
@@ -3499,7 +3499,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
     phirp1 = atan2(Qy1, Qx1);
     phirp2 = atan2(Qy2, Qx2);
     if (fflowFile != NULL) {  // subevent RP flattening
-      TH1F* phirp_glo_fpar = (TH1F*) fflowFile->Get("phirps_glo_fpar");
+      TH1F* phirp_glo_fpar = fflowFile->Get<TH1F>("phirps_glo_fpar");
       Float_t dphir        = 0.;
       for (int j = 0; j < 4; j++) {
         Float_t i = (float) (j + 1);
@@ -3537,7 +3537,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
       phirp -= 360.;
     }
     if (fflowFile != NULL) {  // RP flattening
-      TH1F* phirp_glo_fpar = (TH1F*) fflowFile->Get("phirp_glo_fpar");
+      TH1F* phirp_glo_fpar = fflowFile->Get<TH1F>("phirp_glo_fpar");
       Float_t dphir        = 0.;
       for (int j = 0; j < 4; j++) {
         Float_t i = (float) (j + 1);

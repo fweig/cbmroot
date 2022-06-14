@@ -50,6 +50,7 @@ void CbmAnaLmvmDrawStudy::DrawFromFile(const vector<string>& fileNames, const ve
   for (int i = 0; i < fNofStudies; i++) {
     fHM[i]      = new CbmHistManager();
     TFile* file = new TFile(fileNames[i].c_str());
+    LOG_IF(fatal, !file) << "Could not open file " << fileNames[i].c_str();
     fHM[i]->ReadFromFile(file);
   }
 
@@ -89,11 +90,17 @@ void CbmAnaLmvmDrawStudy::DrawMinv()
   int nRebin = 20;
   for (unsigned int i = 0; i < fMeanFiles.size(); i++) {
     TFile* f = new TFile(fMeanFiles[i].c_str(), "READ");
+    LOG_IF(fatal, !f) << "Could not open file " << fMeanFiles[i].c_str();
 
-    hPtCut[i] = (TH1D*) f->Get("fh_bg_minv_ptcut")->Clone();
+    hPtCut[i] = f->Get<TH1D>("fh_bg_minv_ptcut")->Clone();
+    LOG_IF(fatal, !hPtCut[i]) << "Could not get histogram " << hPtCut[i]->GetName() << "from file "
+                              << fMeanFiles[i].c_str();
     hPtCut[i]->Rebin(nRebin);
     hPtCut[i]->SetMinimum(1e-6);
-    hTtCut[i] = (TH1D*) f->Get("fh_bg_minv_ttcut")->Clone();
+
+    hTtCut[i] = f->Get<TH1D>("fh_bg_minv_ttcut")->Clone();
+    LOG_IF(fatal, !hTtCut[i]) << "Could not get histogram " << hTtCut[i]->GetName() << "from file "
+                              << fMeanFiles[i].c_str();
     hTtCut[i]->Rebin(nRebin);
     hPtCut[i]->SetMinimum(1e-6);
     //f->Close();

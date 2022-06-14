@@ -509,7 +509,7 @@ void CbmKFParticleFinderQa::CheckDecayQA()
   //compare with the reference results
   TFile* referenceFile = new TFile(referenceFileName.Data(), "READ");
   if (referenceFile->IsOpen()) {
-    TH1F* referenceHisto = (TH1F*) referenceFile->Get(qaHistoName);
+    TH1F* referenceHisto = referenceFile->Get<TH1F>(qaHistoName);
     if (referenceHisto) {
       fTestOk = true;
       for (int iBin = 1; iBin <= 7; iBin++)
@@ -527,6 +527,9 @@ void CbmKFParticleFinderQa::CheckDecayQA()
     }
     referenceFile->Close();
     referenceFile->Delete();
+  }
+  else {
+    LOG(error) << "Could not open file " << referenceFileName << " with reference histograms";
   }
 
   if (qaFile) {

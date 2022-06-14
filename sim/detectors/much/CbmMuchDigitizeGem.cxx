@@ -381,8 +381,9 @@ InitStatus CbmMuchDigitizeGem::Init()
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
   TFile* file        = new TFile(fDigiFile);
-  if (!file->IsOpen()) LOG(fatal) << fName << ": parameter file " << fDigiFile << " does not exist!";
-  TObjArray* stations = (TObjArray*) file->Get("stations");
+  LOG_IF(fatal, !file->IsOpen()) << fName << ": parameter file " << fDigiFile << " does not exist!";
+  TObjArray* stations = file->Get<TObjArray>("stations");
+  LOG_IF(fatal, !stations) << "No TObjArray stations found in file " << fDigiFile;
   file->Close();
   file->Delete();
   /// Restore old global file and folder pointer to avoid messing with FairRoot

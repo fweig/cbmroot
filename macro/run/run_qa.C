@@ -88,13 +88,14 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
   TString geoTag;
 
   // - MUCH digitisation parameters
+  TString muchParFile {};
   if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kMuch, geoTag)) {
     bool mcbmFlag   = geoTag.Contains("mcbm", TString::kIgnoreCase);
-    TString parFile = srcDir + "/parameters/much/much_";
-    parFile += (mcbmFlag) ? geoTag : geoTag(0, 4);
-    parFile += "_digi_sector.root";
+    muchParFile     = srcDir + "/parameters/much/much_";
+    muchParFile += (mcbmFlag) ? geoTag : geoTag(0, 4);
+    muchParFile += "_digi_sector.root";
     {  // init geometry from the file
-      TFile* f            = new TFile(parFile, "R");
+      TFile* f            = new TFile(muchParFile, "R");
       TObjArray* stations = (TObjArray*) f->Get("stations");
       CbmMuchGeoScheme::Instance()->Init(stations, mcbmFlag);
     }
@@ -167,7 +168,9 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
   if (CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch)) {
     run->AddTask(new CbmMuchTransportQa());
     run->AddTask(new CbmMuchDigitizerQa());
-    run->AddTask(new CbmMuchHitFinderQa());
+    CbmMuchHitFinderQa* muchHitFinderQa = new CbmMuchHitFinderQa();
+    muchHitFinderQa->SetGeoFileName(muchParFile);
+    run->AddTask(muchHitFinderQa);
   }
 
   // ----- TRD QA  ---------------------------------

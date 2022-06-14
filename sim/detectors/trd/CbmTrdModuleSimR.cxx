@@ -98,7 +98,9 @@ CbmTrdModuleSimR::CbmTrdModuleSimR(Int_t mod, Int_t ly, Int_t rot)
   TString dir      = getenv("VMCWORKDIR");
   TString filename = dir + "/parameters/trd/FeatureExtractionLookup.root";
   TFile* f         = new TFile(filename, "OPEN");
-  fDriftTime       = (TH2D*) f->Get("Drift");
+  LOG_IF(fatal, !f->IsOpen()) << "parameter file " << filename << " does not exist!";
+  fDriftTime = f->Get<TH2D>("Drift");
+  LOG_IF(fatal, !fDriftTime) << "No histogram Drift founfd in file " << filename;
   fDriftTime->SetDirectory(0);
   f->Close();
 

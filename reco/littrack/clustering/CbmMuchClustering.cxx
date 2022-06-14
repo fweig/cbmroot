@@ -87,7 +87,9 @@ InitStatus CbmMuchClustering::Init()
   TDirectory* oldDir = gDirectory;
 
   TFile* file         = new TFile(fDigiFile);
-  TObjArray* stations = (TObjArray*) file->Get("stations");
+  LOG_IF(fatal, !file) << "Could not open file " << fDigiFile;
+  TObjArray* stations = file->Get<TObjArray>("stations");
+  LOG_IF(fatal, !stations) << "TObjArray stations could not be read from file " << fDigiFile;
   file->Close();
   file->Delete();
 

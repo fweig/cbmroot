@@ -190,10 +190,9 @@ double CbmMcbm2020TrdTshiftPar::GetNEvents(std::shared_ptr<TFile> mcbmanafile)
   // histo = CTAH::GetHistoFromFile(varvec, fillstation, htype, mcbmanafile, weight);
 
   std::string hpath = "FillStation-RunInfo/FullTrd/RunId_wNEvents-RunInfo";
-  histo             = (TH1*) mcbmanafile->Get(hpath.data());
-  if (!histo) {
-    LOG(fatal) << " CbmMcbm2020TrdTshiftPar::GetNEvents " << hpath.data() << " not found in the file" << std::endl;
-  }
+  histo             = mcbmanafile->Get<TH1>(hpath.data());
+  LOG_IF(fatal, !histo) << " CbmMcbm2020TrdTshiftPar::GetNEvents " << hpath.data() << " not found in the file"
+                        << std::endl;
   double nevents = histo->GetBinContent(histo->GetMaximumBin());
   return nevents;
 }
@@ -212,11 +211,10 @@ std::shared_ptr<TH3> CbmMcbm2020TrdTshiftPar::GetCalibHisto(std::shared_ptr<TFil
 
   std::string hpath = "FillStation-TrdT0Digi/FullTrd/"
                       "TsSourceTsIndex_DigiTrdChannel_DigiDtCorrSlice-TrdT0Digi";
-  hsparse = (THnSparse*) mcbmanafile->Get(hpath.data());
+  hsparse = mcbmanafile->Get<THnSparse>(hpath.data());
 
-  if (!hsparse) {
-    LOG(fatal) << " CbmMcbm2020TrdTshiftPar::GetCalibHisto " << hpath.data() << " not found in the file" << std::endl;
-  }
+  LOG_IF(fatal, !hsparse) << " CbmMcbm2020TrdTshiftPar::GetCalibHisto " << hpath.data() << " not found in the file"
+                          << std::endl;
 
   auto nevents = GetNEvents(mcbmanafile);
 

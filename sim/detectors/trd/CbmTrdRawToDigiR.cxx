@@ -353,8 +353,10 @@ void CbmTrdRawToDigiR::ReadMaps(std::string file)
 {
   if (fLookUp == 3) {
     TFile f(file.data(), "OPEN");
+    LOG_IF(fatal, !f.IsOpen()) << "parameter file " << file << " does not exist!";
     TProfile2D* h;
-    h = (TProfile2D*) f.Get("MAX ADC");
+    h = f.Get<TProfile2D>("MAX ADC");
+    LOG_IF(fatal, !h) << "No histogram MAX ADC found in file " << file;
     for (Int_t x = 1; x <= h->GetNbinsX(); x++) {
       for (Int_t y = 1; y <= h->GetNbinsY(); y++) {
         fElookupSmall[h->GetXaxis()->GetBinCenter(x)][h->GetYaxis()->GetBinCenter(y)] = h->GetBinContent(x, y);
@@ -364,7 +366,8 @@ void CbmTrdRawToDigiR::ReadMaps(std::string file)
                     h->GetBinContent(x, y));
       }
     }
-    h = (TProfile2D*) f.Get("ASYM MAP");
+    h = f.Get<TProfile2D>("ASYM MAP");
+    LOG_IF(fatal, !h) << "No histogram ASYM MAP found in file " << file;
     for (Int_t x = 1; x <= h->GetNbinsX(); x++) {
       for (Int_t y = 1; y <= h->GetNbinsY(); y++) {
         fElookupA[h->GetXaxis()->GetBinCenter(x)][h->GetYaxis()->GetBinCenter(y)] = h->GetBinContent(x, y);
@@ -378,8 +381,10 @@ void CbmTrdRawToDigiR::ReadMaps(std::string file)
   }
   if (fLookUp == 4) {
     TFile f(file.data(), "OPEN");
+    LOG_IF(fatal, !f.IsOpen()) << "parameter file " << file << " does not exist!";
     TProfile2D* h;
-    h = (TProfile2D*) f.Get("MAX ADC");
+    h = f.Get<TProfile2D>("MAX ADC");
+    LOG_IF(fatal, !h) << "No histogram MAX ADC found in file " << file;
     for (Int_t x = 1; x <= h->GetNbinsX(); x++) {
       for (Int_t y = 1; y <= h->GetNbinsY(); y++) {
         fElookupSmall[h->GetXaxis()->GetBinCenter(x)][h->GetYaxis()->GetBinCenter(y)] = h->GetBinContent(x, y);
@@ -389,7 +394,8 @@ void CbmTrdRawToDigiR::ReadMaps(std::string file)
                     h->GetBinContent(x, y));
       }
     }
-    h = (TProfile2D*) f.Get("ASYM MAP");
+    h = f.Get<TProfile2D>("ASYM MAP");
+    LOG_IF(fatal, !h) << "No histogram ASYM MAP found in file " << file;
     for (Int_t x = 1; x <= h->GetNbinsX(); x++) {
       for (Int_t y = 1; y <= h->GetNbinsY(); y++) {
         fElookupA[h->GetXaxis()->GetBinCenter(x)][h->GetYaxis()->GetBinCenter(y)] = h->GetBinContent(x, y);

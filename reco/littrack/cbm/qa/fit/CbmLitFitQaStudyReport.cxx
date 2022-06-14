@@ -76,7 +76,7 @@ void CbmLitFitQaStudyReport::DrawTrackParamsAtVertex()
   vector<TH1*> histos2(nofStudies);
   for (Int_t iStudy = 0; iStudy < nofStudies; iStudy++) {
     HM()[iStudy]->H2("htf_MomRes_Mom")->FitSlicesY();
-    histos2[iStudy] = (TH1*) gDirectory->Get("htf_MomRes_Mom_2");
+    histos2[iStudy] = gDirectory->Get<TH1>("htf_MomRes_Mom_2");
     histos2[iStudy]->SetName(string("htf_MomRes_Mom_2_" + NumberToString<Int_t>(iStudy)).c_str());
     histos2[iStudy]->GetXaxis()->SetTitle("P [GeV/c]");
     histos2[iStudy]->GetYaxis()->SetTitle("dP/P, #sigma [%]");

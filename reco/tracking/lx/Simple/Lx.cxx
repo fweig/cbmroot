@@ -302,9 +302,11 @@ static bool GetHistoRMS(const char* histoNameBase, Int_t histoNumber, scaltype& 
       else
         sprintf(name, "%s_%d", histoNameBase, histoNumber);
 
-      TH1F* h = static_cast<TH1F*>(f->Get(name));
-      retVal  = h->GetRMS();
-      result  = true;
+      TH1F* h = f->Get<TH1F>(name);
+      if (h) {
+        retVal = h->GetRMS();
+        result = true;
+      }
     }
 
     delete f;
@@ -336,9 +338,11 @@ static bool GetHistoCOV(const char* histoNameBase, Int_t histoNumber, Int_t axis
 
     if (!f->IsZombie()) {
       sprintf(name, "%s_%d", histoNameBase, histoNumber);
-      TH2F* h = static_cast<TH2F*>(f->Get(name));
-      retVal  = h->GetCovariance(axis1, axis2);
-      result  = true;
+      TH2F* h = f->Get<TH2F>(name);
+      if (h) {
+        retVal = h->GetCovariance(axis1, axis2);
+        result = true;
+      }
     }
 
     delete f;

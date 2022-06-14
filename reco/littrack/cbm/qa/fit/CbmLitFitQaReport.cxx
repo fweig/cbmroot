@@ -224,7 +224,7 @@ void CbmLitFitQaReport::DrawTrackParamsAtVertex()
   TCanvas* canvas3 = CreateCanvas("fit_qa_momentum_momres_mom_sigma", "fit_qa_momentum_momres_mom_sigma", 600, 600);
   canvas3->cd(1);
   HM()->H2("htf_MomRes_Mom")->FitSlicesY();
-  TH1* momslice = (TH1*) gDirectory->Get("htf_MomRes_Mom_2");
+  TH1* momslice = gDirectory->Get<TH1>("htf_MomRes_Mom_2");
   momslice->GetXaxis()->SetTitle("P [GeV/c]");
   momslice->GetYaxis()->SetTitle("dP/P, #sigma [%]");
   momslice->SetMinimum(0.);

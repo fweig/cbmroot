@@ -1128,17 +1128,17 @@ void CbmRichCorrectionVector::DrawFit(vector<Double_t>& outputFit, Int_t thresh)
   // -------------------- FIT SLICES AND FIT THE MEAN OF THE RESULT TO A SIN FUNCTION -------------------- //
   CloneArr_2->FitSlicesY(0, 0, -1, 1);
   c3->cd(3);
-  TH1D* histo_0 = (TH1D*) gDirectory->Get("fHCherenkovHitsDistribReduced_0");
+  TH1D* histo_0 = gDirectory->Get<TH1D>("fHCherenkovHitsDistribReduced_0");
   histo_0->Draw();
   c3->cd(4);
-  TH1D* histo_1 = (TH1D*) gDirectory->Get("fHCherenkovHitsDistribReduced_1");
+  TH1D* histo_1 = gDirectory->Get<TH1D>("fHCherenkovHitsDistribReduced_1");
   //histo_1->GetYaxis()->SetRangeUser(-2.5, 2.5);
   histo_1->Draw();
   c3->cd(5);
-  TH1D* histo_2 = (TH1D*) gDirectory->Get("fHCherenkovHitsDistribReduced_2");
+  TH1D* histo_2 = gDirectory->Get<TH1D>("fHCherenkovHitsDistribReduced_2");
   histo_2->Draw();
   c3->cd(6);
-  TH1D* histo_chi2 = (TH1D*) gDirectory->Get("fHCherenkovHitsDistribReduced_chi2");
+  TH1D* histo_chi2 = gDirectory->Get<TH1D>("fHCherenkovHitsDistribReduced_chi2");
   histo_chi2->Draw();
 
   c3->cd(7);
@@ -1357,6 +1357,8 @@ void CbmRichCorrectionVector::DrawHistFromFile(TString fileName)
 
   fHM         = new CbmHistManager();
   TFile* file = new TFile(fileName, "READ");
+  LOG_IF(fatal, !file) << "Could not open file " << fileName;
+
   fHM->ReadFromFile(file);
   DrawHistMapping();
 

@@ -125,7 +125,7 @@ Int_t CbmDigitization::CheckInput()
   assert(input);
   TFile* file = input->GetChain()->GetFile();
   assert(file);
-  TTree* tree = dynamic_cast<TTree*>(file->Get("cbmsim"));
+  TTree* tree = file->Get<TTree>("cbmsim");
   assert(tree);
   FairMCEventHeader* header = new FairMCEventHeader();
   tree->SetBranchAddress("MCEventHeader.", &header);

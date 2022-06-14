@@ -371,8 +371,8 @@ void CbmLitTofQa::ProcessTofTracks()
 void CbmLitTofQa::FitHistograms()
 {
   fHM->H2("hmp_Tof_RecoMCID_Pion_m2p")->FitSlicesY();
-  TH1* meanHist  = (TH1*) gDirectory->Get("hmp_Tof_RecoMCID_Pion_m2p_1");  // mean
-  TH1* sigmaHist = (TH1*) gDirectory->Get("hmp_Tof_RecoMCID_Pion_m2p_2");  // sigma
+  TH1* meanHist  = gDirectory->Get<TH1>("hmp_Tof_RecoMCID_Pion_m2p_1");  // mean
+  TH1* sigmaHist = gDirectory->Get<TH1>("hmp_Tof_RecoMCID_Pion_m2p_2");  // sigma
   Int_t nofBins  = meanHist->GetNbinsX();
   for (Int_t iBin = 0; iBin <= nofBins; iBin++) {
     Double_t mean  = meanHist->GetBinContent(iBin);

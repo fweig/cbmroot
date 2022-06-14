@@ -156,7 +156,7 @@ Bool_t CbmUnigenGenerator::Init()
   LOG(info) << GetName() << ": Open input file " << fFileName;
 
   // --- Get and print run description
-  URun* run = dynamic_cast<URun*>(fFile->Get("run"));
+  URun* run = fFile->Get<URun>("run");
   if (run == nullptr) {
     LOG(error) << GetName() << ": No run description in input file!";
     fFile->Close();
@@ -179,7 +179,7 @@ Bool_t CbmUnigenGenerator::Init()
             << " beta " << fBetaCM << ", gamma " << fGammaCM;
 
   // --- Get input tree and connect event object to its branch
-  fTree = dynamic_cast<TTree*>(fFile->Get("events"));
+  fTree = fFile->Get<TTree>("events");
   if (fTree == nullptr) {
     LOG(error) << GetName() << ": No event tree in input file!";
     fFile->Close();

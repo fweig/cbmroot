@@ -414,7 +414,7 @@ void CbmTrdHitDensityQa::Finish()
     tempFile = new TFile(newpath, "recreate");
   gDirectory->pwd();
 
-  if (fPlotResults) fEventCounter = (TH1I*) tempFile->Get("fEventCounter");
+  if (fPlotResults) fEventCounter = tempFile->Get<TH1I>("fEventCounter");
   else
     fEventCounter->Write("", TObject::kOverwrite);
   if (!gDirectory->Cd("TrdHitDensityQa")) gDirectory->mkdir("TrdHitDensityQa");
@@ -429,18 +429,18 @@ void CbmTrdHitDensityQa::Finish()
     //cout << histName << endl;
     if (fPlotResults) {
       if (fRatioTwoFiles) {
-        fModuleHitMapIt->second =
-          (TH2I*) tempFileNumerator->Get("TrdHitDensityQa/Module/" + histName)->Clone(histName + "_numerator");
+        fModuleHitMapIt->second = static_cast<TH2I*>(
+          tempFileNumerator->Get<TH2I>("TrdHitDensityQa/Module/" + histName)->Clone(histName + "_numerator"));
         // 	if (NULL == fModuleHitMapIt->second)
         // 	  LOG(error) << "CbmTrdHitRateFastQa:: data/result_Numerator.root " << histName.Data() << " not found";
         fModuleHitMapIt->second->Scale(100);
         // 	//	fModuleHitMapIt->second->Scale(2);
-        fModuleHitMapIt->second->Divide(
-          (TH2I*) tempFileDenominator->Get("TrdHitDensityQa/Module/" + histName)->Clone(histName + "_denominator"));
+        fModuleHitMapIt->second->Divide(static_cast<TH2I*>(
+          tempFileDenominator->Get<TH2I>("TrdHitDensityQa/Module/" + histName)->Clone(histName + "_denominator")));
 
         //	fModuleHitMapIt->second->Divide(
-        //					(TH2I*)tempFileNumerator->Get("TrdHitDensityQa/Module/" + histName)->Clone(histName+"_numerator"),
-        //					(TH2I*)tempFileDenominator->Get("TrdHitDensityQa/Module/" + histName)->Clone(histName+"_denominator"),
+        //					tempFileNumerator->Get<TH2I>("TrdHitDensityQa/Module/" + histName)->Clone(histName+"_numerator"),
+        //					tempFileDenominator->Get<TH2I>("TrdHitDensityQa/Module/" + histName)->Clone(histName+"_denominator"),
         //					1.,1.);  // need to be in the kHz range, therefore 100 * 1000
         //					1000.,1.);  // need to be in the kHz range, therefore 100 * 1000
 
@@ -451,7 +451,7 @@ void CbmTrdHitDensityQa::Finish()
         //	  LOG(error) << "CbmTrdHitRateFastQa:: data/result_Denominator.root " << histName.Data() << " not found";
       }
       else
-        fModuleHitMapIt->second = (TH2I*) tempFile->Get("TrdHitDensityQa/Module/" + histName);
+        fModuleHitMapIt->second = tempFile->Get<TH2I>("TrdHitDensityQa/Module/" + histName);
     }
     else
       fModuleHitMapIt->second->Write("", TObject::kOverwrite);

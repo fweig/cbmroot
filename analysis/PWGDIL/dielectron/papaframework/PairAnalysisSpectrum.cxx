@@ -482,7 +482,7 @@ void PairAnalysisSpectrum::DrawSpectrum(const char* varexp, const char* selectio
       delete carr;
       return;
     }
-    TEventList* elist = (TEventList*) gDirectory->Get("elist");
+    TEventList* elist = gDirectory->Get<TEventList>("elist");
     if (elist) {
       elist->SetReapplyCut(kTRUE);  // important!
       //	elist->Print("all");

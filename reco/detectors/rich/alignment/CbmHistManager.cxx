@@ -153,7 +153,7 @@ void CbmHistManager::ReadFromFile(TFile* file)
     if (obj->IsA()->InheritsFrom(TH1::Class()) || obj->IsA()->InheritsFrom(TGraph::Class())
         || obj->IsA()->InheritsFrom(TGraph2D::Class())) {
       TNamed* h  = (TNamed*) obj;
-      TNamed* h1 = (TNamed*) file->Get(h->GetName());
+      TNamed* h1 = file->Get<TNamed>(h->GetName());
       Add(string(h->GetName()), h1);
       //LOG(info) << c++ << " " << h->GetName();
     }

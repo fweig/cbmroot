@@ -79,7 +79,7 @@ static bool GetHistoRMS(const char* histoNameBase, Int_t histoNumber, Double_t& 
 
   if (!f->IsZombie()) {
     sprintf(name, "%s_%d", histoNameBase, histoNumber);
-    TH1F* h = static_cast<TH1F*>(f->Get(name));
+    TH1F* h = f->Get<TH1F>(name);
     retVal  = h->GetRMS();
     result  = true;
   }

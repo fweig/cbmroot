@@ -124,13 +124,13 @@ void CbmTrdParSetGas::putParams(FairParamList* l)
 TH2F* CbmTrdParSetGas::GetDriftMap(const Char_t* g, const Int_t ua, const Int_t ud)
 {
   TString smap = Form("%s_%4d_%3d", g, ua, ud);
-  TH2F* hm     = (TH2F*) gFile->Get(smap.Data());
+  TH2F* hm     = gFile->Get<TH2F>(smap.Data());
   if (hm) return hm;
 
   LOG(debug) << GetName() << "::GetDriftMap() : Interpolate drift map for " << g << " Ua[" << ua << "]"
              << " Ud[" << ud << "]";
 
-  return (TH2F*) gFile->Get(Form("%s_1500_300", g));
+  return gFile->Get<TH2F>(Form("%s_1500_300", g));
 }
 
 ClassImp(CbmTrdParSetGas)

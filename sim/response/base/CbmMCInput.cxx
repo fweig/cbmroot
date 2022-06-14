@@ -90,7 +90,7 @@ UInt_t CbmMCInput::ReadBranches()
 {
 
   fBranches.clear();
-  TList* listFile = dynamic_cast<TList*>(fChain->GetFile()->Get("BranchList"));
+  TList* listFile = fChain->GetFile()->Get<TList>("BranchList");
   assert(listFile);
   TObjString* branchName = nullptr;
   for (Int_t entry = 0; entry < listFile->GetEntries(); entry++) {

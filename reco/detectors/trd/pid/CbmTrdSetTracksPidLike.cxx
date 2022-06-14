@@ -75,11 +75,11 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
   // Open ROOT file with the histograms
   TFile* histFile = new TFile(fFileName, "READ");
   if (!histFile || !histFile->IsOpen()) {
-    Error("ReadData", "Could not open input file: %s", fFileName.Data());
+    LOG(error) << "Could not open input file: " << fFileName;
     return kFALSE;
   }
   else {
-    Info("ReadData", "input file %s opened", fFileName.Data());
+    LOG(info) << "Input file " << fFileName << " open";
   }
 
   gROOT->cd();
@@ -93,9 +93,9 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
                                       "MC_muon_p_eloss"};
       inArr = new TObjArray(histnames.size());
       for (size_t i = 0; i < histnames.size(); i++) {
-        h[i] = (TH2D*) histFile->Get(histnames[i]);
+        h[i] = histFile->Get<TH2D>(histnames[i]);
         if (!h[i]) {
-          Info("ReadData", "no input histogram %s", histnames[i].Data());
+          LOG(info) << "No input histogram " << histnames[i].Data();
           continue;
         }
 
@@ -119,9 +119,9 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
                                       "MC_muon_eloss"};
       inArr = new TObjArray(histnames.size());
       for (size_t i = 0; i < histnames.size(); i++) {
-        h[i] = (TH2D*) histFile->Get(histnames[i]);
+        h[i] = histFile->Get<TH2D>(histnames[i]);
         if (!h[i]) {
-          Info("ReadData", "no input histogram %s", histnames[i].Data());
+          LOG(info) << "No input histogram " << histnames[i].Data();
           continue;
         }
 
@@ -141,10 +141,10 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
                                       "ELE_proton_p_eloss", "ELE_muon_p_eloss"};
       inArr = new TObjArray(histnames.size());
       for (size_t i = 0; i < histnames.size(); i++) {
-        h[i] = (TH2D*) histFile->Get(histnames[i]);
+        h[i] = histFile->Get<TH2D>(histnames[i]);
         h[i]->SetNameTitle(histnames[i], histnames[i]);
         if (!h[i]) {
-          Info("ReadData", "no input histogram %s", histnames[i].Data());
+          LOG(info) << "No input histogram " << histnames[i].Data();
           continue;
         }
 
@@ -168,9 +168,9 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
                                       "ELE_muon_eloss"};
       inArr = new TObjArray(histnames.size());
       for (size_t i = 0; i < histnames.size(); i++) {
-        h[i] = (TH2D*) histFile->Get(histnames[i]);
+        h[i] = histFile->Get<TH2D>(histnames[i]);
         if (!h[i]) {
-          Info("ReadData", "no input histogram %s", histnames[i].Data());
+          LOG(info) << "No input histogram " << histnames[i].Data();
           continue;
         }
 
@@ -191,7 +191,7 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
     TH1* hist    = (TH1*) inArr->At(i)->Clone();
     TString name = hist->GetTitle();
 
-    if (hist->GetEntries() < 1000) Info("ReadData", "input histogram is almost empty for %s", name.Data());
+    LOG_IF(info, hist->GetEntries() < 1000) << "Input histogram is almost empty for" << name.Data();
 
     // check particles
     if (name.Contains("electron")) particle = CbmTrdSetTracksPidLike::kElectron;
@@ -207,7 +207,7 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
       continue;
 
     // add to hist array
-    Info("ReadData", "particle histogram %s added to array at %d", name.Data(), particle);
+    LOG(info) << "Particle histogram " << name.Data() << " added to array at " << particle;
 
     fHistdEdx->AddAt(hist, particle);
   }

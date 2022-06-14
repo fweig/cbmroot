@@ -151,7 +151,7 @@ static bool GetHistoRMS(const char* name, Double_t& retVal)
   TFile* f = new TFile(fileName);
 
   if (!f->IsZombie()) {
-    TH1F* h = static_cast<TH1F*>(f->Get(name));
+    TH1F* h = f->Get<TH1F>(name);
     retVal  = h->GetRMS();
     result  = true;
   }

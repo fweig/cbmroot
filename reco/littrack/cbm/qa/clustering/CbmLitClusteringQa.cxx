@@ -155,7 +155,9 @@ void CbmLitClusteringQa::InitMuchGeoScheme(const string& digiFileName)
     TDirectory* oldDir = gDirectory;
 
     TFile* file         = new TFile(digiFileName.c_str());
-    TObjArray* stations = (TObjArray*) file->Get("stations");
+    LOG_IF(fatal, !file) << "Could not open file " << digiFileName;
+    TObjArray* stations = file->Get<TObjArray>("stations");
+    LOG_IF(fatal, !stations) << "TObjArray stations could not be read from file " << digiFileName;
     file->Close();
     file->Delete();
 

@@ -68,7 +68,7 @@ Bool_t CbmHaddBase::CheckFile(TFile* file, Int_t fileSizeLimit, Int_t nofEvents)
 {
   if (file == NULL) return false;
   if (file->GetEND() < fileSizeLimit) return false;
-  TTree* tree = (TTree*) file->Get("cbmsim");
+  TTree* tree = file->Get<TTree>("cbmsim");
   if (tree == NULL) return false;
   Long64_t treeSizeAna = tree->GetEntriesFast();
   if (treeSizeAna == nofEvents) return true;

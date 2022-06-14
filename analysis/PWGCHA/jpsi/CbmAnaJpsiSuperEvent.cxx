@@ -160,8 +160,9 @@ void CbmAnaJpsiSuperEvent::ReadCandidates()
   for (UInt_t iFile = 0; iFile < fFileNames.size(); iFile++) {
     cout << "-I- Reading file No " << iFile << " path:" << fFileNames[iFile] << endl;
     TFile* f    = new TFile(fFileNames[iFile].c_str(), "R");
-    TTree* t    = (TTree*) f->Get("cbmsim");
-    TFolder* fd = (TFolder*) f->Get("cbmout");
+    LOG_IF(fatal, !f) << "Could not open file " << fFileNames[iFile].c_str();
+    TTree* t    = f->Get<TTree>("cbmsim");
+    TFolder* fd = f->Get<TFolder>("cbmout");
     if (fd == NULL) continue;
     TClonesArray* candidates = (TClonesArray*) fd->FindObjectAny("JpsiCandidates");
     t->SetBranchAddress(candidates->GetName(), &candidates);

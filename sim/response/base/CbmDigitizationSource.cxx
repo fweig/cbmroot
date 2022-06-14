@@ -230,7 +230,8 @@ Bool_t CbmDigitizationSource::Init()
   // Get folder from first input file and register it to FairRootManager
   CbmMCInput* input = fInputSets.front()->GetFirstInput().second;
   TFile* file       = input->GetChain()->GetFile();
-  TFolder* folder   = dynamic_cast<TFolder*>(file->Get("cbmroot"));
+  assert(file);
+  TFolder* folder = file->Get<TFolder>("cbmroot");
   assert(folder);
   gROOT->GetListOfBrowsables()->Add(folder);
   fListOfFolders->Add(folder);

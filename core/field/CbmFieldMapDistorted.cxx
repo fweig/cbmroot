@@ -250,12 +250,18 @@ void CbmFieldMapDistorted::ReadDistortionInformation(const char* filename)
       else {
         TFile* f = new TFile(fDistortionFilename + ".root");
         if (f) {
-          fBxDistortionFormulaMult = (TFormula*) f->Get("BxDistortionFormulaMult");
-          fBxDistortionFormulaAdd  = (TFormula*) f->Get("BxDistortionFormulaAdd");
-          fByDistortionFormulaMult = (TFormula*) f->Get("ByDistortionFormulaMult");
-          fByDistortionFormulaAdd  = (TFormula*) f->Get("ByDistortionFormulaAdd");
-          fBzDistortionFormulaMult = (TFormula*) f->Get("BzDistortionFormulaMult");
-          fBzDistortionFormulaAdd  = (TFormula*) f->Get("BzDistortionFormulaAdd");
+          fBxDistortionFormulaMult = f->Get<TFormula>("BxDistortionFormulaMult");
+          LOG_IF(fatal, !fBxDistortionFormulaMult) << "fBxDistortionFormulaMult not found in file " << f->GetName();
+          fBxDistortionFormulaAdd = f->Get<TFormula>("BxDistortionFormulaAdd");
+          LOG_IF(fatal, !fBxDistortionFormulaAdd) << "fBxDistortionFormulaAdd not found in file " << f->GetName();
+          fByDistortionFormulaMult = f->Get<TFormula>("ByDistortionFormulaMult");
+          LOG_IF(fatal, !fByDistortionFormulaMult) << "fByDistortionFormulaMult not found in file " << f->GetName();
+          fByDistortionFormulaAdd = f->Get<TFormula>("ByDistortionFormulaAdd");
+          LOG_IF(fatal, !fByDistortionFormulaAdd) << "fByDistortionFormulaAdd not found in file " << f->GetName();
+          fBzDistortionFormulaMult = f->Get<TFormula>("BzDistortionFormulaMult");
+          LOG_IF(fatal, !fBzDistortionFormulaMult) << "fBzDistortionFormulaMult not found in file " << f->GetName();
+          fBzDistortionFormulaAdd = f->Get<TFormula>("BzDistortionFormulaAdd");
+          LOG_IF(fatal, !fBzDistortionFormulaAdd) << "fBzDistortionFormulaAdd not found in file " << f->GetName();
           f->Close();
         }
         else {

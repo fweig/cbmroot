@@ -148,7 +148,9 @@ void CbmMuchGeoScheme::Init(TString digiFileName, Int_t flag)
   TDirectory* oldDir = gDirectory;
 
   TFile* file         = new TFile(digiFileName);
-  TObjArray* stations = (TObjArray*) file->Get("stations");
+  LOG_IF(fatal, !file) << "File " << digiFileName << " does not exist";
+  TObjArray* stations = file->Get<TObjArray>("stations");
+  LOG_IF(fatal, !stations) << "No TObjArray stations found in file " << digiFileName;
   file->Close();
   file->Delete();
 

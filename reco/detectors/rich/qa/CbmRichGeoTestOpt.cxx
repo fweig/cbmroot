@@ -78,7 +78,7 @@ pair<double, double> CbmRichGeoTestOpt::H1MeanRms(CbmRichGeoTestOptFileEnum file
 
   TFile* file = new TFile(path.c_str(), "READ");
   if (file == nullptr) return make_pair(0., 0.);
-  TH1D* hist = (TH1D*) file->Get(histName.c_str());
+  TH1D* hist = file->Get<TH1D>(histName.c_str());
   if (hist == nullptr) return make_pair(0., 0.);
   double mean = hist->GetMean();
   double rms  = hist->GetRMS();
@@ -104,7 +104,7 @@ pair<double, double> CbmRichGeoTestOpt::H2ProjYMeanRms(CbmRichGeoTestOptFileEnum
 
   TFile* file = new TFile(path.c_str(), "READ");
   if (file == nullptr) return make_pair(0., 0.);
-  TH2D* hist = (TH2D*) file->Get(histName.c_str());
+  TH2D* hist = file->Get<TH2D>(histName.c_str());
   if (hist == nullptr) return make_pair(0., 0.);
   TH1D* py    = hist->ProjectionY((histName + to_string(iFile) + "_py").c_str());
   double mean = py->GetMean();
@@ -130,7 +130,7 @@ double CbmRichGeoTestOpt::HEntries(CbmRichGeoTestOptFileEnum fileEnum, int iFile
 
   TFile* file = new TFile(path.c_str(), "READ");
   if (file == nullptr) return 0.;
-  TH1* hist = (TH1*) file->Get(histName.c_str());
+  TH1* hist = file->Get<TH1>(histName.c_str());
   if (hist == nullptr) return 0.;
   double entries = hist->GetEntries();  //hist->Integral();
 

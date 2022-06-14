@@ -191,7 +191,7 @@ void CbmTrdOccupancyQa::Exec(Option_t*)
     fLayerDummy = new TH2I("LayerDummy","",1200,-600,600,1000,-500,500);
     fLayerDummy->SetXTitle("x-coordinate [cm]");
     fLayerDummy->SetYTitle("y-coordinate [cm]");
-    //fDigiChargeSpectrum = (TH1I*)outFile->Get("DigiChargeSpectrum");
+    //fDigiChargeSpectrum = outFile->Get<TH1I>("DigiChargeSpectrum");
     //if (!fDigiChargeSpectrum)
     fDigiChargeSpectrum = new TH1I("DigiChargeSpectrum","DigiChargeSpectrum",1e6,0,1e-3);
   */
@@ -221,7 +221,7 @@ void CbmTrdOccupancyQa::Exec(Option_t*)
         Int_t nCols                   = fModuleInfo->GetNofColumns();
         if (fModuleOccupancyMap.find(moduleAddress) == fModuleOccupancyMap.end()) {
           title.Form("Module_%i", moduleAddress);
-          //fModuleOccupancyMap[moduleAddress] = (TH2F*)outFile->Get(title);
+          //fModuleOccupancyMap[moduleAddress] = outFile->Get<TH2F>(title);
           //if (!fModuleOccupancyMap[moduleAddress])
           fModuleOccupancyMap[moduleAddress] =
             new TH2I(title, title, nCols, -0.5, nCols - 0.5, nRows, -0.5, nRows - 0.5);
@@ -281,7 +281,7 @@ void CbmTrdOccupancyQa::Exec(Option_t*)
         digiCounter++;
         if (fModuleOccupancyMap.find(moduleAddress) == fModuleOccupancyMap.end()) {
           title.Form("Module_%i", moduleAddress);
-          //fModuleOccupancyMap[moduleAddress] = (TH2F*)outFile->Get(title);
+          //fModuleOccupancyMap[moduleAddress] = outFile->Get<TH2F>(title);
           //if (!fModuleOccupancyMap[moduleAddress])
           fModuleOccupancyMap[moduleAddress] =
             new TH2I(title, title, nCols, -0.5, nCols - 0.5, nRows, -0.5, nRows - 0.5);
@@ -411,7 +411,7 @@ void CbmTrdOccupancyQa::SwitchToMergedFile()
       std::cout << histName << std::endl;
       ;
       fModuleOccupancyMap[fModuleOccupancyMapIt->first] =
-        (TH2I*) Target->Get("TrdOccupancy/Module/" + histName)->Clone(histName + "_result");
+        static_cast<TH2I*>(Target->Get<TH2I>("TrdOccupancy/Module/" + histName)->Clone(histName + "_result"));
     }
   }
   else {

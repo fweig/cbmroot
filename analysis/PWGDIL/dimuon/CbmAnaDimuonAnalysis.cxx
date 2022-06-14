@@ -178,7 +178,9 @@ InitStatus CbmAnaDimuonAnalysis::Init()
       TDirectory* oldDir = gDirectory;
 
       fPlutoFile = new TFile(fPlutoFileName.Data());
-      fInputTree = (TTree*) fPlutoFile->Get("data");
+      LOG_IF(fatal, !fPlutoFile) << "Could not open file " << fPlutoFileName;
+      fInputTree = fPlutoFile->Get<TTree>("data");
+      LOG_IF(fatal, !fInputTree) << "Could not read data tree from file " << fPlutoFileName;
       fInputTree->SetBranchAddress("Particles", &fParticles);
       for (int iEvent = 0; iEvent < fInputTree->GetEntries(); iEvent++) {
         fInputTree->GetEntry(iEvent);
@@ -464,14 +466,18 @@ InitStatus CbmAnaDimuonAnalysis::Init()
   TDirectory* oldDir = gDirectory;
 
   TFile* FF = new TFile(name);
+  LOG_IF(fatal, !FF) << "Could not open file " << name;
 
-  TTree* MinParamMu = (TTree*) FF->Get("MinParam");
+
+  TTree* MinParamMu = FF->Get<TTree>("MinParam");
+  LOG_IF(fatal, !MinParamMu) << "Could not read MinParam tree from file " << name;
   MinParamMu->SetBranchAddress("p0", &p0min);
   MinParamMu->SetBranchAddress("p1", &p1min);
   MinParamMu->SetBranchAddress("p2", &p2min);
   MinParamMu->GetEntry(0);
 
-  TTree* MaxParamMu = (TTree*) FF->Get("MaxParam");
+  TTree* MaxParamMu = FF->Get<TTree>("MaxParam");
+  LOG_IF(fatal, !MaxParamMu) << "Could not read MaxParam tree from file " << name;
   MaxParamMu->SetBranchAddress("p0", &p0max);
   MaxParamMu->SetBranchAddress("p1", &p1max);
   MaxParamMu->SetBranchAddress("p2", &p2max);

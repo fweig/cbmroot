@@ -578,7 +578,7 @@ void CbmRichMirrorSortingAlignment::DrawFitAndExtractAngles(std::map<string, vec
       can->cd(2);
       string histoName = "CherenkovHitsDistribReduced_" + it->first + "_1";
       //cout << "HistoName: " << histoName << endl;
-      TH1D* histo_1 = (TH1D*) gDirectory->Get((histoName).c_str());
+      TH1D* histo_1 = gDirectory->Get<TH1D>((histoName).c_str());
       histo_1->GetXaxis()->SetTitle("#Phi_{Ch} [rad]");
       histo_1->GetYaxis()->SetTitle("#theta_{Ch}-#theta_{0} [cm]");
       histo_1->GetXaxis()->SetTitleSize(0.05);
