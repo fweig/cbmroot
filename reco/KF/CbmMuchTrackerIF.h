@@ -13,13 +13,14 @@
 #define CbmMuchTrackerIF_h 1
 
 #include "L1TrackerInterfaceBase.h"
+#include "CbmMuchGeoScheme.h"
 #include "FairTask.h"
 
 #include <iostream>
 #include <vector>
 #include "TString.h"
 
-class CbmMuchGeoScheme;
+class CbmMuchLayer;
 
 /// Class CbmMuchTrackerIF is a CbmL1 subtask, which provides necessary methods for L1 tracker
 /// to access the geometry and dataflow settings.
@@ -127,6 +128,12 @@ private:
   /// Calculates MuCh layer ID from tracker station ID
   __attribute__((always_inline)) int GetMuchLayerId(int stationId) const { return stationId % 3; }
 
+  /// Gets pointer to the TRD module
+  /// \param  stationId  Tracking staton ID
+  /// \return Pointer to the particular CbmTrdParModDigi object
+  __attribute__((always_inline)) CbmMuchLayer* GetMuchLayer(int stationId) const { 
+    return fGeoScheme->GetLayer(GetMuchStationId(stationId), GetMuchLayerId(stationId));
+  }
 
   static CbmMuchTrackerIF* fpInstance;  ///< Instance of the class
 

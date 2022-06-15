@@ -110,10 +110,6 @@ CbmL1.cxx
 #CbmL1TrdTrackFinderSts.cxx 
 CbmL1TrackMerger.cxx 
 CbmL1TofMerger.cxx
-CbmStsTrackerIF.cxx # TMP: Should be placed to the detector directory!
-CbmMvdTrackerIF.cxx # TMP: Should be placed to the detector directory!
-CbmMuchTrackerIF.cxx # TMP: Should be placed to the detector directory!
-CbmTrackerDetInitializer.cxx
 L1AlgoInputData.cxx
 OffLineInterface/CbmL1RichENNRingFinder.cxx
 OffLineInterface/CbmL1RichENNRingFinderParallel.cxx 
@@ -175,11 +171,6 @@ CbmL1TrackMerger.h
 CbmL1TrackPar.h
 CbmL1TrdHit.h
 #CbmL1TrdTrackFinderSts.h
-L1TrackerInterfaceBase.h # TMP: Should be placed to the detector directory!
-CbmStsTrackerIF.h # TMP: Should be placed to the detector directory!
-CbmMvdTrackerIF.h # TMP: Should be placed to the detector directory!
-CbmMuchTrackerIF.h # TMP: Should be placed to the detector directory!
-CbmTrackerDetInitializer.h
 CbmL1TrdTracklet4.h
 CbmL1TrdTracklet.h
 CbmL1Vtx.h
@@ -197,7 +188,6 @@ OffLineInterface/CbmL1GlobalFindTracksEvents.h
 #OffLineInterface / CbmL1SttTrack.h
 L1Algo/L1Def.h
 L1Algo/L1Vector.h
-
 qa/CbmTrackerInputQaTrd.h
 )
 

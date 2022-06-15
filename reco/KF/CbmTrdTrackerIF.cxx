@@ -3,172 +3,176 @@
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 /***************************************************************************************************
- * @file   CbmStsTrackerIF.cxx
+ * @file   CbmTrdTrackerIF.cxx
  * @brief  Input data and parameters interface from STS subsystem used in L1 tracker (definition)
- * @since  27.05.2022
+ * @since  31.05.2022
  * @author S.Zharko <s.zharko@gsi.de>
  ***************************************************************************************************/
 
-#include "CbmStsTrackerIF.h"
-#include "CbmStsStation.h"
+#include "CbmTrdTrackerIF.h"
 #include "FairDetector.h"
 #include "FairRunAna.h"
 #include <FairLogger.h>
 #include "TMath.h"
-#include "L1Def.h"
+#include "TFile.h"
+#include "TGeoManager.h"
+#include "TString.h"
 
-ClassImp(CbmStsTrackerIF)
+ClassImp(CbmTrdTrackerIF)
 
-CbmStsTrackerIF* CbmStsTrackerIF::fpInstance = nullptr;
+CbmTrdTrackerIF* CbmTrdTrackerIF::fpInstance = nullptr;
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-CbmStsTrackerIF::CbmStsTrackerIF() : FairTask("CbmStsTrackerIF")
+CbmTrdTrackerIF::CbmTrdTrackerIF() : FairTask("CbmTrdTrackerIF")
 {
   if (!fpInstance) { fpInstance = this; }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-CbmStsTrackerIF::~CbmStsTrackerIF()
+CbmTrdTrackerIF::~CbmTrdTrackerIF()
 {
   if (fpInstance == this) { fpInstance = nullptr; }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetTimeResolution(int /*stationId*/) const { return 5.; }
+double CbmTrdTrackerIF::GetTimeResolution(int /*stationId*/) const { return 10.; }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetZ(int stationId) const
+double CbmTrdTrackerIF::GetZ(int stationId) const
 { 
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetZ(); 
+  return GetTrdModulePar(stationId)->GetZ(); 
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetXmax(int stationId) const 
+double CbmTrdTrackerIF::GetXmax(int stationId) const 
 { 
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetXmax(); 
+  return GetTrdModulePar(stationId)->GetSizeX(); 
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetYmax(int stationId) const 
+double CbmTrdTrackerIF::GetYmax(int stationId) const 
 { 
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetYmax(); 
+  return GetTrdModulePar(stationId)->GetSizeY(); 
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetRmin(int /*stationId*/) const { return 0.; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmStsTrackerIF::GetRmax(int stationId) const 
+double CbmTrdTrackerIF::GetRmin(int /*stationId*/) const
 { 
-  return GetXmax(stationId) > GetYmax(stationId) ? GetXmax(stationId) : GetYmax(stationId); 
+  return 0.; 
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-int CbmStsTrackerIF::GetNtrackingStations() const 
+double CbmTrdTrackerIF::GetRmax(int stationId) const 
 { 
-  return CbmStsSetup::Instance()->GetNofStations(); 
+  return 2. * this->GetXmax(stationId);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetThickness(int stationId) const 
-{ 
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetSensorD(); 
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmStsTrackerIF::GetRadLength(int stationId) const 
-{ 
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetRadLength(); 
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmStsTrackerIF::GetStripsStereoAngleFront(int stationId) const 
-{ 
-  auto station = CbmStsSetup::Instance()->GetStation(stationId);
-  return station->GetSensorRotation() + station->GetSensorStereoAngle(0) * TMath::Pi() / 180.;
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmStsTrackerIF::GetStripsStereoAngleBack(int stationId) const 
-{ 
-  auto station = CbmStsSetup::Instance()->GetStation(stationId);
-  return station->GetSensorRotation() + station->GetSensorStereoAngle(1) * TMath::Pi() / 180.;
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmStsTrackerIF::GetStripsSpatialRmsFront(int stationId) const
+int CbmTrdTrackerIF::GetNtrackingStations() const 
 {
-  auto station = CbmStsSetup::Instance()->GetStation(stationId);
-  return station->GetSensorPitch(0) / TMath::Sqrt(12.);
+  // NOTE: For TRD detector subsystem, a TRD layer is assigned as a tracking station:
+  int nTrdLayers = 0;
+  auto topNodes = gGeoManager->GetTopNode()->GetNodes();
+  for (int iTopNode = 0; iTopNode < topNodes->GetEntriesFast(); ++iTopNode) {
+    auto topNode = static_cast<TGeoNode*>(topNodes->At(iTopNode));
+    if (TString(topNode->GetName()).Contains("trd")) {
+      auto layers = topNode->GetNodes();
+      for (int iLayer = 0; iLayer < layers->GetEntriesFast(); ++iLayer) {
+        auto layer = static_cast<TGeoNode*>(layers->At(iLayer));
+        if (TString(layer->GetName()).Contains("layer")) { ++nTrdLayers; }
+      }
+    }
+  }
+  return nTrdLayers;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------
+//
+double CbmTrdTrackerIF::GetThickness(int stationId) const 
+{ 
+  return 2. * GetTrdModulePar(stationId)->GetSizeZ(); 
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------
+//
+double CbmTrdTrackerIF::GetRadLength(int /*stationId*/) const 
+{ 
+  return 1.6;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------
+//
+double CbmTrdTrackerIF::GetStripsStereoAngleFront(int /*stationId*/) const 
+{ 
+  return 0.;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------
+//
+double CbmTrdTrackerIF::GetStripsStereoAngleBack(int /*stationId*/) const 
+{ 
+  return TMath::Pi() / 2.;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------
+//
+double CbmTrdTrackerIF::GetStripsSpatialRmsFront(int /*stationId*/) const
+{
+  return 0.15;
 }
 
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetStripsSpatialRmsBack(int stationId) const
+double CbmTrdTrackerIF::GetStripsSpatialRmsBack(int /*stationId*/) const
 {
-  auto station = CbmStsSetup::Instance()->GetStation(stationId);
-  return station->GetSensorPitch(0) / TMath::Sqrt(12.);
+  return 0.15;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-bool CbmStsTrackerIF::IsTimeInfoProvided(int /*stationId*/) const { return true; }
+bool CbmTrdTrackerIF::IsTimeInfoProvided(int /*stationId*/) const { return true; }
 
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-InitStatus CbmStsTrackerIF::Init()
+InitStatus CbmTrdTrackerIF::Init()
 {
-  LOG(info) << "\033[1;33mCALL CbmStsTrackerIF::Init()\033[0m";
+  // Check access to TRD modules 
+  for (int iSt = 0; iSt < this->GetNtrackingStations(); ++iSt) {
+    if (!dynamic_cast<CbmTrdParModDigi*>(fTrdDigiPar->GetModulePar(fTrdDigiPar->GetModuleId(iSt)))) {
+      LOG(fatal) << "CbmTrdTrackerIF::Init: error accessing the TRD tracking station " << iSt
+                 << " (failed dynamic cast to CbmTrdParModDigi)"; 
+   }
+  }
 
-  // Check, if all the necessary parameter containers were found
-  if (!fStsParSetModule) { return kFATAL; }
-  if (!fStsParSetSensor) { return kFATAL; }
-  if (!fStsParSetSensorCond) { return kFATAL; }
-  
-  // Initialize CbmStsSetup instance
-  auto stsSetup = CbmStsSetup::Instance();
-  if (!stsSetup->IsInit()) { stsSetup->Init(nullptr); }
-  if (!stsSetup->IsModuleParsInit()) { stsSetup->SetModuleParameters(fStsParSetModule); }
-  if (!stsSetup->IsSensorParsInit()) { stsSetup->SetSensorParameters(fStsParSetSensor); }
-  if (!stsSetup->IsSensorCondInit()) { stsSetup->SetSensorConditions(fStsParSetSensorCond); }
-  
   return kSUCCESS;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-InitStatus CbmStsTrackerIF::ReInit()
+InitStatus CbmTrdTrackerIF::ReInit()
 {
-  LOG(info) << "\033[1;33mCALL CbmStsTrackerIF::ReInit()\033[0m";
   this->SetParContainers();
   return Init();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-void CbmStsTrackerIF::SetParContainers()
+void CbmTrdTrackerIF::SetParContainers()
 {
-  LOG(info) << "\033[1;33mCALL CbmStsTrackerIF::SetParContainer()\033[0m";
   auto runtimeDb = FairRunAna::Instance()->GetRuntimeDb();
-  fStsParSetModule     = dynamic_cast<CbmStsParSetModule*>(runtimeDb->getContainer("CbmStsParSetModule"));
-  fStsParSetSensor     = dynamic_cast<CbmStsParSetSensor*>(runtimeDb->getContainer("CbmStsParSetSensor"));
-  fStsParSetSensorCond = dynamic_cast<CbmStsParSetSensorCond*>(runtimeDb->getContainer("CbmStsParSetSensorCond"));
+  fTrdDigiPar = dynamic_cast<CbmTrdParSetDigi*>(runtimeDb->getContainer("CbmTrdParSetDigi"));
+  if (!fTrdDigiPar) { LOG(fatal) << "CbmTrdTrackerIF::SetParContainers: error accessing to CbmTrdParSetDigi container"; }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------

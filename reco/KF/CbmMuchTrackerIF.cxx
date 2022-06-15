@@ -10,7 +10,6 @@
  ***************************************************************************************************/
 
 #include "CbmMuchTrackerIF.h"
-#include "CbmMuchGeoScheme.h"
 #include "CbmMuchModuleGem.h"
 #include "CbmMuchPad.h"
 #include "CbmMuchStation.h"
@@ -46,7 +45,7 @@ double CbmMuchTrackerIF::GetTimeResolution(int /*stationId*/) const { return 3.9
 //
 double CbmMuchTrackerIF::GetZ(int stationId) const
 { 
-  return fGeoScheme->GetStation(GetMuchStationId(stationId))->GetLayer(GetMuchLayerId(stationId))->GetZ(); 
+  return GetMuchLayer(stationId)->GetZ(); 
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
@@ -94,7 +93,7 @@ int CbmMuchTrackerIF::GetNtrackingStations() const
 //
 double CbmMuchTrackerIF::GetThickness(int stationId) const 
 { 
-  return fGeoScheme->GetStation(GetMuchStationId(stationId))->GetLayer(GetMuchLayerId(stationId))->GetDz(); 
+  return GetMuchLayer(stationId)->GetDz(); 
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------

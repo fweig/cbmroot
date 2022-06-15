@@ -18,7 +18,8 @@
 
 
 void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
-                     const char* setupName = "mcbm_beam_2022_03_09_carbon")
+                     const char* setupName = "mcbm_beam_2022_03_09_carbon",
+                     Bool_t debugWithMC = false)
 {
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -39,10 +40,13 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
   TString rawFile = dataset + ".event.raw.root";
   TString parFile = dataset + ".par.root";
   TString recFile = dataset + ".rec.root";
+  TString traFile = dataset + ".tra.root";
   // ------------------------------------------------------------------------
 
   Int_t iTofCluMode = 1;
-
+  if (debugWithMC) {
+    Int_t iTrackMode = 1;
+  }
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
   TString setupFile  = srcDir + "/geometry/setup/setup_" + setupName + ".C";
@@ -102,6 +106,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
   FairRunAna* run = new FairRunAna();
 
   FairFileSource* inputSource = new FairFileSource(rawFile);
+  if (debugWithMC) { inputSource->AddFriend(traFile); }
 
   run->SetSource(inputSource);
 
@@ -109,6 +114,14 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
   run->SetGenerateRunInfo(kTRUE);
   Bool_t hasFairMonitor = kFALSE;  //Has_Fair_Monitor();
   if (hasFairMonitor) FairMonitor::GetMonitor()->EnableMonitor(kTRUE);
+  // ------------------------------------------------------------------------
+  
+  // -----   MCDataManager  -------------------------------------------------
+  if (debugWithMC) {
+    CbmMCDataManager* mcManager = new CbmMCDataManager("MCDataManager", 1);
+    mcManager->AddFile(traFile);
+    run->AddTask(mcManager);
+  }
   // ------------------------------------------------------------------------
 
   // -----   Logger settings   ----------------------------------------------
@@ -164,6 +177,11 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
       std::cout << "Using parameter file " << parFile << std::endl;
     }
 
+    // --- Initialization of the digi scheme
+    auto muchGeoScheme = CbmMuchGeoScheme::Instance();
+    if (!muchGeoScheme->IsInitialized()) {
+      muchGeoScheme->Init(parFile, muchFlag);
+    }
 
     // --- Hit finder for GEMs
     FairTask* muchHitGem = new CbmMuchFindHitsGem(parFile.Data(), muchFlag);
@@ -346,14 +364,22 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
   // run->AddTask(tofFindTracks);
 
   // ------------------------------------------------------------------------
-
+  if (debugWithMC) {
+    CbmMatchRecoToMC* match1 = new CbmMatchRecoToMC();
+    run->AddTask(match1);
+  }
 
   // ------------------------------------------------------------------------
   // --------   L1 CA Track Finder    ---------------------------------------
 
-  CbmKF* kalman = new CbmKF();
-  run->AddTask(kalman);
-  CbmL1* l1 = new CbmL1();
+  // Geometry interface initializer for tracker
+  auto trackerIF = new CbmTrackerDetInitializer();
+
+  // Kalman filter
+  auto kalman = new CbmKF();
+  
+  // L1 tracking
+  auto l1 = (debugWithMC) ? new CbmL1("L1", 1, 3) : new CbmL1();
   l1->SetLegacyEventMode(1);
   l1->SetMcbmMode();
   l1->SetUseHitErrors(1);
@@ -412,6 +438,8 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
     l1->SetTofMaterialBudgetFileName(parFile.Data());
   }
 
+  run->AddTask(trackerIF);
+  run->AddTask(kalman);
   run->AddTask(l1);
 
   CbmL1GlobalTrackFinder* globalTrackFinder = new CbmL1GlobalTrackFinder();

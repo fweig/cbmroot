@@ -28,6 +28,11 @@ ${CBMDETECTORBASE_DIR}/sts
 #${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder
 
 ${CBMROOT_SOURCE_DIR}/mvd 
+
+${CBMDETECTORBASE_DIR}/much # TMP for tracker interface
+${CBMDETECTORBASE_DIR}/trd # TMP for tracker interface
+${CBMROOT_SOURCE_DIR}/sim/transport/steer # TMP for tracker interface
+${CBMROOT_SOURCE_DIR}/sim/transport/geosetup # TMP for tracker interface
 )
 
 Include_Directories( ${INCLUDE_DIRECTORIES})
@@ -60,6 +65,15 @@ CbmKFSecondaryVertexFinder.cxx
 CbmKFTrackInterface.cxx 
 CbmKFUMeasurement.cxx 
 CbmKFVertexInterface.cxx 
+
+#### Tracker interfaces (will be moved to core/detector/*) ################
+CbmStsTrackerIF.cxx # TMP: Should be placed to the detector directory!
+CbmMvdTrackerIF.cxx # TMP: Should be placed to the detector directory!
+CbmMuchTrackerIF.cxx # TMP: Should be placed to the detector directory!
+CbmTrdTrackerIF.cxx # TMP: Should be placed to the detector directory!
+CbmTrackerDetInitializer.cxx
+###########################################################################
+
 #Interface/CbmEcalTrackExtrapolationKF.cxx
 Interface/CbmKFStsHit.cxx 
 Interface/CbmKFTrack.cxx 
@@ -98,6 +112,16 @@ CbmKFSecondaryVertexFinder.h
 CbmKFTrackInterface.h
 CbmKFUMeasurement.h 
 CbmKFVertexInterface.h
+
+#### Tracker interfaces (will be moved to core/detector/*) ################
+CbmStsTrackerIF.h # TMP: Should be placed to the detector directory!
+CbmMvdTrackerIF.h # TMP: Should be placed to the detector directory!
+CbmMuchTrackerIF.h # TMP: Should be placed to the detector directory!
+CbmTrdTrackerIF.h # TMP: Should be placed to the detector directory!
+CbmTrackerDetInitializer.h
+L1TrackerInterfaceBase.h # TMP: Should be placed to the detector directory!
+###########################################################################
+
 #Interface/CbmEcalTrackExtrapolationKF.h
 Interface/CbmKFStsHit.h
 Interface/CbmKFTrack.h 
@@ -159,7 +183,7 @@ ENDIF (SSE_FOUND)
 set(LINKDEF KFLinkDef.h)
 Set(LIBRARY_NAME KF)
 Set(DEPENDENCIES
-    CbmStsBase CbmMvd CbmBase CbmRecoBase CbmData Base Vc.a Minuit2
+  CbmStsBase CbmMvd CbmBase CbmRecoBase CbmMuchBase CbmData Base Vc.a Minuit2
 )
 Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 

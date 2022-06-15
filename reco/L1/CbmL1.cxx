@@ -24,14 +24,11 @@
 #include "CbmKFVertex.h"
 #include "CbmL1PFFitter.h"
 #include "CbmMCDataManager.h"
-#include "CbmMuchGeoScheme.h"
-#include "CbmMuchModuleGem.h"
-#include "CbmMuchPad.h"
-#include "CbmMuchStation.h"
 #include "CbmSetup.h"
 #include "CbmMvdTrackerIF.h"
 #include "CbmStsTrackerIF.h"
 #include "CbmMuchTrackerIF.h"
+#include "CbmTrdTrackerIF.h"
 
 #include <boost/filesystem.hpp>
 // TODO: include of CbmSetup.h creates problems on Mac
@@ -42,8 +39,6 @@
 #include "CbmTofCell.h"
 #include "CbmTofDigiBdfPar.h"
 #include "CbmTofDigiPar.h"     // in tof/TofParam
-#include "CbmTrdParModDigi.h"  // for CbmTrdModule
-#include "CbmTrdParSetDigi.h"  // for CbmTrdParSetDigi
 #include "CbmTrackerDetInitializer.h"
 
 #include "FairEventHeader.h"
@@ -137,8 +132,6 @@ void CbmL1::SetParContainers()
   FairRuntimeDb* rtdb = ana->GetRuntimeDb();
   fDigiPar            = (CbmTofDigiPar*) (rtdb->getContainer("CbmTofDigiPar"));
   //  fTrdDigiPar = (CbmTrdDigiPar*)(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdDigiPar"));
-  fTrdDigiPar = (CbmTrdParSetDigi*) (rtdb->getContainer("CbmTrdParSetDigi"));
-
 
   fTofDigiBdfPar = (CbmTofDigiBdfPar*) (rtdb->getContainer("CbmTofDigiBdfPar"));
   rtdb->initContainers(ana->GetRunId());  // needed to get tracking stations for ToF hits
@@ -426,23 +419,23 @@ InitStatus CbmL1::Init()
   //}
 
   /*** TRD ***/
-  if (fUseTRD) {
-    Int_t layerCounter  = 0;
-    TObjArray* topNodes = gGeoManager->GetTopNode()->GetNodes();
-    for (Int_t iTopNode = 0; iTopNode < topNodes->GetEntriesFast(); iTopNode++) {
-      TGeoNode* topNode = static_cast<TGeoNode*>(topNodes->At(iTopNode));
-      if (TString(topNode->GetName()).Contains("trd")) {
-        TObjArray* layers = topNode->GetNodes();
-        for (Int_t iLayer = 0; iLayer < layers->GetEntriesFast(); iLayer++) {
-          TGeoNode* layer = static_cast<TGeoNode*>(layers->At(iLayer));
-          if (TString(layer->GetName()).Contains("layer")) { layerCounter++; }
-        }
-      }
-    }
-    NTrdStationsGeom = layerCounter;
-    //if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) { NTrdStationsGeom = NTrdStationsGeom - 1; }
-    LOG(info) << " NTrdStations " << NTrdStationsGeom;
-  }
+  //if (fUseTRD) {
+  //  Int_t layerCounter  = 0;
+  //  TObjArray* topNodes = gGeoManager->GetTopNode()->GetNodes();
+  //  for (Int_t iTopNode = 0; iTopNode < topNodes->GetEntriesFast(); iTopNode++) {
+  //    TGeoNode* topNode = static_cast<TGeoNode*>(topNodes->At(iTopNode));
+  //    if (TString(topNode->GetName()).Contains("trd")) {
+  //      TObjArray* layers = topNode->GetNodes();
+  //      for (Int_t iLayer = 0; iLayer < layers->GetEntriesFast(); iLayer++) {
+  //        TGeoNode* layer = static_cast<TGeoNode*>(layers->At(iLayer));
+  //        if (TString(layer->GetName()).Contains("layer")) { layerCounter++; }
+  //      }
+  //    }
+  //  }
+  //  NTrdStationsGeom = layerCounter;
+  //  //if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) { NTrdStationsGeom = NTrdStationsGeom - 1; }
+  //  LOG(info) << " NTrdStations " << NTrdStationsGeom;
+  //}
 
   /*** ToF ***/
   vector<float> TofStationZ;
@@ -480,14 +473,16 @@ InitStatus CbmL1::Init()
 
 
   /*** MVD and STS ***/
-  auto mvdInterface = CbmMvdTrackerIF::Instance();
-  auto stsInterface = CbmStsTrackerIF::Instance();
+  auto mvdInterface  = CbmMvdTrackerIF::Instance();
+  auto stsInterface  = CbmStsTrackerIF::Instance();
   auto muchInterface = CbmMuchTrackerIF::Instance();
+  auto trdInterface  = CbmTrdTrackerIF::Instance();
 
-  NMvdStationsGeom = (fUseMVD) ? mvdInterface->GetNtrackingStations() : 0;
-  NStsStationsGeom = (fUseSTS) ? stsInterface->GetNtrackingStations() : 0;
+  NMvdStationsGeom  = (fUseMVD) ? mvdInterface->GetNtrackingStations() : 0;
+  NStsStationsGeom  = (fUseSTS) ? stsInterface->GetNtrackingStations() : 0;
   NMuchStationsGeom = (fUseMUCH) ? muchInterface->GetNtrackingStations() : 0;
-  NStationGeom     = NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom + NTrdStationsGeom + NTOFStationGeom;
+  NTrdStationsGeom  = (fUseTRD) ? trdInterface->GetNtrackingStations() : 0;
+  NStationGeom      = NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom + NTrdStationsGeom + NTOFStationGeom;
 
   // Provide crosscheck number of stations for the fpInitManagera
   fpInitManager->SetNstations(L1DetectorID::kMvd, NMvdStationsGeom);
@@ -612,11 +607,11 @@ InitStatus CbmL1::Init()
   /*** MuCh stations info ***/
   if (fUseMUCH) {
     for (int iSt = 0; iSt < NMuchStationsGeom; ++iSt) {
-      auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
+      auto stationInfo = L1BaseStationInfo(L1DetectorID::kMuch, iSt);
       stationInfo.SetStationType(2);  // MuCh
       stationInfo.SetTimeInfo(muchInterface->IsTimeInfoProvided(iSt));
       stationInfo.SetTimeResolution(muchInterface->GetTimeResolution(iSt));
-      stationInfo.SetFieldStatus(L1Algo::TrackingMode::kMcbm == fTrackingMode? 0 : 1);
+      stationInfo.SetFieldStatus(0);
       stationInfo.SetZ(muchInterface->GetZ(iSt));
       stationInfo.SetXmax(muchInterface->GetXmax(iSt));
       stationInfo.SetYmax(muchInterface->GetYmax(iSt));
@@ -640,27 +635,22 @@ InitStatus CbmL1::Init()
   /*** TRD stations info ***/
   if (fUseTRD) {
     for (int iSt = 0; iSt < NTrdStationsGeom; ++iSt) {
-      int trdModuleID          = fTrdDigiPar->GetModuleId(iSt);
-      CbmTrdParModDigi* module = (CbmTrdParModDigi*) fTrdDigiPar->GetModulePar(trdModuleID);
-      auto stationInfo         = L1BaseStationInfo(L1DetectorID::kTrd, iSt);
-      int stationType          = (iSt == 1 || iSt == 3) ? 6 : 3;  // Is used somewhere??
-      stationInfo.SetStationType(stationType);
-      stationInfo.SetTimeInfo(1);
-      stationInfo.SetTimeResolution(10.);
+      auto stationInfo = L1BaseStationInfo(L1DetectorID::kTrd, iSt);
+      stationInfo.SetStationType((iSt == 1 || iSt == 3) ? 6 : 3);  // MuCh
+      stationInfo.SetTimeInfo(trdInterface->IsTimeInfoProvided(iSt));
+      stationInfo.SetTimeResolution(trdInterface->GetTimeResolution(iSt));
       stationInfo.SetFieldStatus(0);
-      stationInfo.SetZ(module->GetZ());
-      auto thickness = 2. * module->GetSizeZ();
-      auto radLength = 1.6;
-      stationInfo.SetMaterialSimple(thickness, radLength);
+      stationInfo.SetZ(trdInterface->GetZ(iSt));
+      stationInfo.SetXmax(trdInterface->GetXmax(iSt));
+      stationInfo.SetYmax(trdInterface->GetYmax(iSt));
+      stationInfo.SetRmin(trdInterface->GetRmin(iSt));
+      stationInfo.SetRmax(trdInterface->GetRmax(iSt));
+      stationInfo.SetMaterialSimple(trdInterface->GetThickness(iSt), trdInterface->GetRadLength(iSt));
       stationInfo.SetMaterialMap(std::move(materialTableTrd[iSt]), correctionTrd);
-      stationInfo.SetXmax(module->GetSizeX());
-      stationInfo.SetYmax(module->GetSizeY());
-      stationInfo.SetRmin(0.);
-      stationInfo.SetRmax(2. * module->GetSizeX());  // TODO: Why multiplied with 2.?
-      fscal trdFrontPhi   = 0;
-      fscal trdBackPhi    = TMath::Pi() / 2.;
-      fscal trdFrontSigma = 0.15;
-      fscal trdBackSigma  = 0.15;
+      fscal trdFrontPhi   = trdInterface->GetStripsStereoAngleFront(iSt);
+      fscal trdBackPhi    = trdInterface->GetStripsStereoAngleBack(iSt);
+      fscal trdFrontSigma = trdInterface->GetStripsSpatialRmsFront(iSt);
+      fscal trdBackSigma  = trdInterface->GetStripsSpatialRmsBack(iSt);
       if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {  //SGtrd2D!!
         trdFrontSigma = 1.1;
         trdBackSigma  = 1.1;

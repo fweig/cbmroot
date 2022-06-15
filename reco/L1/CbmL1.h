@@ -65,8 +65,6 @@ class CbmMCDataObject;
 class CbmEvent;
 class CbmTofDigiBdfPar;
 
-class CbmTrdParSetDigi;
-class CbmTrdParModDigi;
 class CbmTofDigiPar;
 class TProfile2D;
 
@@ -466,9 +464,6 @@ private:
   TClonesArray* fDigisMuch {nullptr};
 
   //TRD
-
-  CbmTrdParSetDigi* fTrdDigiPar {nullptr};     //!
-  CbmTrdParModDigi* fTrdModuleInfo {nullptr};  //!
 
   CbmMCDataArray* fTrdPoints {nullptr};
   TClonesArray* listTrdHits {nullptr};

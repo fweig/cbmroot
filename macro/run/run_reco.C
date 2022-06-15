@@ -374,10 +374,11 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
   // -----   Track finding in STS (+ MVD)    --------------------------------
   if (useMvd || useSts) {
     // Geometry interface initializer for tracker
-    auto trackerIF = new CbmTrackerDetInitializer();
+    run->AddTask(new CbmTrackerDetInitializer());
     
     // Kalman filter
     auto kalman = new CbmKF();
+    run->AddTask(kalman);
     
     // L1 tracking
     auto l1 = (debugWithMC) ? new CbmL1("L1", 2, 3) : new CbmL1("L1", 0);
@@ -398,8 +399,6 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
       l1->SetStsMaterialBudgetFileName(parFile.Data());
     }
 
-    run->AddTask(trackerIF);
-    run->AddTask(kalman);
     run->AddTask(l1);
     std::cout << "-I- " << myName << ": Added task " << l1->GetName() << std::endl;
 

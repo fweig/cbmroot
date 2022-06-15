@@ -15,6 +15,7 @@
 #include "CbmSetup.h"
 #include "CbmStsTrackerIF.h"
 #include "CbmTrackerDetInitializer.h"
+#include "CbmTrdTrackerIF.h"
 #include <FairLogger.h>
 
 ClassImp(CbmTrackerDetInitializer)
@@ -40,11 +41,13 @@ CbmTrackerDetInitializer::CbmTrackerDetInitializer()
     if (useMvd)  { fpMvdTrackerIF  = new CbmMvdTrackerIF(); }
     if (useSts)  { fpStsTrackerIF  = new CbmStsTrackerIF(); }
     if (useMuch) { fpMuchTrackerIF = new CbmMuchTrackerIF(); }
+    if (useTrd)  { fpTrdTrackerIF  = new CbmTrdTrackerIF(); }
 
     /** Add subtasks - tracker detector interfaces **/
     if (useMvd)  { this->Add(fpMvdTrackerIF); }
     if (useSts)  { this->Add(fpStsTrackerIF); }
     if (useMuch) { this->Add(fpMuchTrackerIF); }
+    if (useTrd)  { this->Add(fpTrdTrackerIF); }
   }
 }
 
