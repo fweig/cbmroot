@@ -115,6 +115,8 @@ void run_analysis(Int_t nEvents = 2, TString setupName = "sis100_electron", cons
   CbmFindPrimaryVertex* findVertex = new CbmFindPrimaryVertex(pvFinder);
   run->AddTask(findVertex);
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
+
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
 

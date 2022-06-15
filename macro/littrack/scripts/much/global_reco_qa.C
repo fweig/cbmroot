@@ -86,6 +86,7 @@ void global_reco_qa(Int_t nEvents = 10000)
   run->SetOutputFile(qaFile);
   // ------------------------------------------------------------------------
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();

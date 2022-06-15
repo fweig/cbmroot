@@ -171,6 +171,7 @@ void sts_reco_all(Int_t nEvents, Float_t energy, Int_t index)
 
 
   // -----   STS track finding   --------------------------------------------
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1("L1", 1, 3, 0);

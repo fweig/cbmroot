@@ -290,6 +290,7 @@ void run_reco(int index = -1)
   }
 
   // -----   Track finding in (MVD+) STS    -----------------------------------------
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();

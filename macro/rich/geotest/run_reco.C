@@ -44,6 +44,7 @@ void run_reco(const string& testType,  // "geoTest" or "urqmdTest"
     CbmRecoSts* stsReco = new CbmRecoSts(kCbmRecoTimeslice);
     run->AddTask(stsReco);
 
+    run->AddTask(new CbmTrackingDetectorInterfaceInit());
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
     CbmL1* l1 = new CbmL1("L1", 0);

@@ -153,6 +153,7 @@ void PairSelectionSE(Int_t nEvents = 10, Int_t ProcID = 1, bool PileUp = false, 
   fRun->SetOutputFile(outFile);
   // -------------------------------------------------------------------------
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* KF = new CbmKF();
   fRun->AddTask(KF);
 

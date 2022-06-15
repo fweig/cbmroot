@@ -169,6 +169,7 @@ Bool_t reconstruct(Bool_t useMC = kFALSE, Bool_t searchPV = kTRUE)
 
 
   // -----   Track finding in (MVD+) STS    ----------------------------------
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = nullptr;

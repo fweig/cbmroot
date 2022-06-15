@@ -179,6 +179,7 @@ void recoSignal(Int_t nEvents = 1000, const char* setupName = "sis100_electron")
   // -------------------------------------------------------------------------
 
   // ---  STS track finding   ------------------------------------------------
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1      = new CbmL1("CbmL1", 1, 3);

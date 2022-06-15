@@ -85,6 +85,7 @@ void global_reco_ideal(Int_t nEvents = 5000)
   FairTask* stsMatchHits = new CbmStsIdealMatchHits("STSMatchHits", iVerbose);
   run->AddTask(stsMatchHits);
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   FairTask* kalman = new CbmKF();
   run->AddTask(kalman);
   FairTask* l1 = new CbmL1();

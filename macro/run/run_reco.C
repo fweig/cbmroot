@@ -369,8 +369,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
 
   // -----   Track finding in STS (+ MVD)    --------------------------------
   if (useMvd || useSts) {
-    // Geometry interface initializer for tracker
-    run->AddTask(new CbmTrackingDetectorInterfaceInit());
+    run->AddTask(new CbmTrackingDetectorInterfaceInit()); // Geometry interface initializer for tracker
 
     // Kalman filter
     auto kalman = new CbmKF();

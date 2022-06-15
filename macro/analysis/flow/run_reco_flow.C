@@ -201,6 +201,7 @@ void run_reco_flow(Double_t En = 10, Int_t nEvents = 2, Int_t fileNum = 5)
 
 
   // ---  STS track finding   ------------------------------------------------
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
 

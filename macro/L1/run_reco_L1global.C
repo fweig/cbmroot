@@ -39,6 +39,7 @@
 #include "CbmTofSimpClusterizer.h"
 #include "CbmTrdClusterFinder.h"
 #include "CbmTrdHitProducer.h"
+#include "CbmTrackingDetectorInterfaceInit.h"
 
 #include <FairFileSource.h>
 #include <FairMonitor.h>
@@ -349,6 +350,7 @@ void run_reco_L1global(TString input = "", Int_t nTimeSlices = -1, Int_t firstTi
 
   // -----   Track finding in STS (+ MVD)    --------------------------------
   if (useMvd || useSts) {
+    run->AddTask(new CbmTrackingDetectorInterfaceInit());
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
     CbmL1* l1 = 0;

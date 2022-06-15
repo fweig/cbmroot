@@ -127,6 +127,7 @@ void run_reco(const string& traFile, const string& parFile, const string& digiFi
 
 
   if (useMvd || useSts) {
+    run->AddTask(new CbmTrackingDetectorInterfaceInit());
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
     CbmL1* l1 = 0;

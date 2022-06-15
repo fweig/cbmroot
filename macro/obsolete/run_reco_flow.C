@@ -140,6 +140,7 @@ void run_reco_flow(Int_t nEvents = 2, Int_t En = 10, const char* setup = "sis300
   // -------------------------------------------------------------------------
 
   // ---  STS track finding   ------------------------------------------------
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
 

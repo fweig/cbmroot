@@ -270,6 +270,8 @@ void run_reco_occupancy(Int_t nEvents = 1000, const char* setup = "sis100_electr
 
 
   // ---  STS track finding   ------------------------------------------------
+  // Geometry interface initializer for tracking
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();

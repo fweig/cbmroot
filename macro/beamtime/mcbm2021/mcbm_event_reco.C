@@ -804,6 +804,7 @@ Bool_t mcbm_event_reco(UInt_t uRunId                   = 1588,
   // ===                             L1                                    ===
   // =========================================================================
 
+  //   run->AddTask(new CbmTrackingDetectorInterfaceInit());
   //   CbmKF* kalman = new CbmKF();
   //   run->AddTask(kalman);
   //   CbmL1* l1 = new CbmL1();

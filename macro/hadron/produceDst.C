@@ -79,6 +79,7 @@ centr/urqmd.auau.%1.0fgev.centr.%4d.reco.root",
 
   // -----  Produce DST  ----------------------------------------------------
   CbmKF* kalman = new CbmKF();
+  fRun->AddTask(new CbmTrackingDetectorInterfaceInit());
   fRun->AddTask(kalman);
 
   CbmGlobalTrackFitterKF* globalTrackFitter = new CbmGlobalTrackFitterKF();

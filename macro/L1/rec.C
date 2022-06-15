@@ -68,6 +68,8 @@ void rec()
 
   // Kalman Filter
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
+
   CbmKF* KF = new CbmKF();
   fRun->AddTask(KF);
 

@@ -230,6 +230,8 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
 
 
   // ---  STS track finding   ------------------------------------------------
+  // Geometry interface initializer for tracking
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();
@@ -577,6 +579,7 @@ void run_reco_pi0(Int_t nEvents = 1, Int_t urqmd = 0)
   // Create and add users tasks
 
   // CbmKF is needed for Extrapolation
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kf = new CbmKF();
   run->AddTask(kf);
            

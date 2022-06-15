@@ -230,6 +230,7 @@ void dis_digi(Int_t nEvents = 100000, Int_t calMode = 0, Int_t calSel = -1, Int_
   // ===                       Tracking                                    ===
   // =========================================================================
   CbmStsDigitize* stsDigitize = new CbmStsDigitize();  //necessary for kalman !!
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman               = new CbmKF();
 
   CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();

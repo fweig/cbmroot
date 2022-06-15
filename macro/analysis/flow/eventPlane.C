@@ -89,6 +89,7 @@ void eventPlane(Double_t En = 10, Int_t nEvents = 2, Int_t fQcorr = 0, Int_t fBa
   fRun->SetOutputFile(outfilename);
 
   //=== important for extrapolation to PV in B-field
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* KF = new CbmKF();
   fRun->AddTask(KF);
 

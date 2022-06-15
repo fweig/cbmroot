@@ -422,6 +422,7 @@ void mcbm_reco(Int_t nEvents = 10, TString dataset = "data/test", TString sEvBui
 
   if (strcmp(setupName, "mcbm_beam_2020_03") == 0) {
 
+    run->AddTask(new CbmTrackingDetectorInterfaceInit());
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
     CbmL1* l1 = new CbmL1();

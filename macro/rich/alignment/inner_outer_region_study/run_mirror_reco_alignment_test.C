@@ -131,6 +131,7 @@ void run_mirror_reco_alignment_test(Int_t nEvents = 5000, TString tile = "", TSt
   FairTask* stsFindHits = new CbmStsFindHits();
   run->AddTask(stsFindHits);
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();

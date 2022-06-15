@@ -107,7 +107,9 @@ void sts_reco(Int_t nEvents = 1)
   run->AddTask(findHits);
 
   // -----   STS track finding   --------------------------------------------
-  /*FairTask* kalman= new CbmKF();
+  /*
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
+  FairTask* kalman= new CbmKF();
   run->AddTask(kalman);
   FairTask* l1 = new CbmL1();
   run->AddTask(l1);

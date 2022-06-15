@@ -200,6 +200,7 @@ void run_reco(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim
 
 
   if (useMvd || useSts) {
+    run->AddTask(new CbmTrackingDetectorInterfaceInit());
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
     CbmL1* l1 = 0;

@@ -225,6 +225,8 @@ void run_reco_qa(Int_t nEvents = 100, const char* setup = "sis100_electron")
 
 
   // ---  STS track finding   ------------------------------------------------
+  // Geometry interface initializer for tracking
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();

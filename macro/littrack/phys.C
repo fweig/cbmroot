@@ -40,6 +40,7 @@ void phys(Int_t nEvents = 100)
   run->SetOutputFile(analysisFile);
   // ------------------------------------------------------------------------
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* KF = new CbmKF();
   run->AddTask(KF);
 

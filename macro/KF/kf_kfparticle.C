@@ -127,6 +127,7 @@ void kf_kfparticle(Int_t nEvents = 2, const TString setupName = "sis100_electron
   // ------------------------------------------------------------------------
 
   // ----- KF and L1 are needed for field and material   --------------------
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* KF = new CbmKF();
   run->AddTask(KF);
   CbmL1* l1 = new CbmL1("CbmL1", 1, 3);

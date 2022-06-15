@@ -99,6 +99,7 @@ void global_reco(Int_t nEvents = 100, Int_t seed = 555)
   FairTask* stsMatchHits = new CbmStsMatchHits("STS Hit Matcher", iVerbose);
   run->AddTask(stsMatchHits);
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   FairTask* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();

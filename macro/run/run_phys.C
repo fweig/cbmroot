@@ -60,6 +60,8 @@ void run_phys(Int_t nEvents = 2, TString dataset = "test", TString setupName = "
   mcManager->AddFile(inFile);
   run->AddTask(mcManager);
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
+
   //          Adjust this part according to your requirements
   CbmKF* KF = new CbmKF();
   run->AddTask(KF);

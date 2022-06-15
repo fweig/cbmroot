@@ -107,6 +107,7 @@ void mvd_reco(Int_t nEvents = 10)
   run->AddTask(stsFindHits);
   }
   
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   FairTask* kalman = new CbmKF();
   run->AddTask(kalman);
   FairTask* l1 = new CbmL1();

@@ -121,6 +121,7 @@ void run_mirror_reco_correction(Int_t nEvents = 2000)
   FairTask* stsFindHits = new CbmStsFindHits();
   run->AddTask(stsFindHits);
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();

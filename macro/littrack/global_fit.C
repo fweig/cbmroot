@@ -66,6 +66,7 @@ void global_fit(Int_t nEvents = 100)
   run->AddFriend(globalRecoFile);
   run->SetOutputFile(globalFitFile);
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   FairTask* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();

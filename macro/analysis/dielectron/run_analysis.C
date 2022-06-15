@@ -36,7 +36,7 @@ void run_analysis(const std::string& traFile, const std::string& parFile, const 
   CbmMCDataManager* mcManager = new CbmMCDataManager("MCManager", 1);
   mcManager->AddFile(traFile.c_str());
   run->AddTask(mcManager);
-
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();

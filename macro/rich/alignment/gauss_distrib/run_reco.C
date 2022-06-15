@@ -217,6 +217,7 @@ void run_reco(Int_t nEvents = 50000, Int_t studyName = 0, Int_t corrFlag = 0)
   // -------------------------------------------------------------------------
 
   // ---  STS track finding   ------------------------------------------------
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();

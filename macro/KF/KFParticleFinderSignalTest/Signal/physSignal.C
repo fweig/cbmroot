@@ -90,6 +90,7 @@ void physSignal(Int_t nEvents = 1000, const char* setupName = "sis100_electron")
 
   // ------------------------------------------------------------------------
   //          Adjust this part according to your requirements
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* KF = new CbmKF();
   run->AddTask(KF);
   CbmL1* l1 = new CbmL1("CbmL1", 1, 3);

@@ -71,6 +71,7 @@ void run_analysis_jpsi(Int_t nEvents = 1000)
   if (recoFile != "") run->SetOutputFile(anaFile);
 
   //CbmKF is needed for Extrapolation
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kf = new CbmKF();
   run->AddTask(kf);
 

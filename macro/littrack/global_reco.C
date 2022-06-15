@@ -177,6 +177,7 @@ void global_reco(Int_t nEvents = 10,  // number of events
       // -------------------------------------------------------------------------
     }
 
+    run->AddTask(new CbmTrackingDetectorInterfaceInit());
     FairTask* kalman = new CbmKF();
     run->AddTask(kalman);
     CbmL1* l1 = new CbmL1();
@@ -291,6 +292,7 @@ void global_reco(Int_t nEvents = 10,  // number of events
   if (opt == "all" || opt == "tracking") {
     if (IsRich(parFile)) {
       if (opt == "tracking") {
+        run->AddTask(new CbmTrackingDetectorInterfaceInit());
         FairTask* kalman = new CbmKF();
         run->AddTask(kalman);
         FairTask* l1 = new CbmL1();
@@ -313,6 +315,7 @@ void global_reco(Int_t nEvents = 10,  // number of events
 
   if (opt == "all" || opt == "tracking") {
     if (opt == "tracking") {
+      run->AddTask(new CbmTrackingDetectorInterfaceInit());
       FairTask* kalman = new CbmKF();
       run->AddTask(kalman);
       FairTask* l1 = new CbmL1();

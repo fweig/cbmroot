@@ -85,6 +85,7 @@
   // ------------------------------------------------------------------------
 
   // ---  Now choose concrete engines for the different tasks   -------------
+  auto*  trackingDet                = new CbmTrackingDetectorInterfaceInit();
   CbmKF* kalman                     = new CbmKF();
   CbmL1* l1                         = new CbmL1();
   CbmStsTrackFinder* stsTrackFinder = new CbmL1StsTrackFinder();
@@ -141,6 +142,7 @@
 
   // -----   STS track finding   --------------------------------------------
   CbmStsFindTracks* stsFindTracks = new CbmStsFindTracks("Track Finder", "FairTask", stsTrackFinder);
+  fRun->AddTask(trackingDet);
   fRun->AddTask(kalman);
   fRun->AddTask(l1);
   fRun->AddTask(stsFindTracks);

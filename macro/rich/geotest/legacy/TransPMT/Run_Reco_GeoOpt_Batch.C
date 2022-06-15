@@ -70,6 +70,8 @@ void Run_Reco_GeoOpt_Batch(Int_t nEvents = 10, int PMTtransY = 0, int PMTtransZ 
   run->SetInputFile(SimFile);
   run->SetOutputFile(RecFile);
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
+  
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
 

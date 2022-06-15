@@ -186,6 +186,8 @@ void run_reco_clusterizerFast(Int_t nEvents = 1)
 
 
   // ---  STS track finding   ------------------------------------------------
+  // Geometry interface initializer for tracking
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();

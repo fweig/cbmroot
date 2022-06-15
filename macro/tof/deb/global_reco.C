@@ -105,6 +105,7 @@ void global_reco(Int_t nEvents = 100,  // number of events
   FairTask* stsMatchHits = new CbmStsMatchHits("STS Hit Matcher", iVerbose);
   run->AddTask(stsMatchHits);
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
 
   FairTask* kalman = new CbmKF();
   run->AddTask(kalman);

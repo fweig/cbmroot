@@ -43,6 +43,8 @@ void global_phys(Int_t nEvents = 10, Int_t seed = 555)
   run->SetOutputFile(analysisFile);
   // ------------------------------------------------------------------------
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
+
   CbmKF* KF = new CbmKF();
   run->AddTask(KF);
 

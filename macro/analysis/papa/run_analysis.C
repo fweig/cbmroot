@@ -100,6 +100,7 @@ void run_analysis(Int_t nEvents = 0)
   std::cout << std::endl;
   std::cout << "-I- " << myName << ": Loading tasks " << std::endl;
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   //CbmKF is needed for Extrapolation
   CbmKF* kf = new CbmKF();
   run->AddTask(kf);

@@ -50,6 +50,7 @@ void much_ana(Int_t nEvents = 1000)
   ana->SetStsPointsAccQuota(4);
   ana->SetStsTrueHitQuota(0.7);
 
+  fRun->AddTask(new CbmTrackingDetectorInterfaceInit());
   fRun->AddTask(kf);
   fRun->AddTask(ana);
   fRun->Init();

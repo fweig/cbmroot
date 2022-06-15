@@ -70,6 +70,7 @@ void run_litqa_jpsi(Int_t nEvents = 1000)
   if (recoFile != "") run->AddFriend(recoFile);
   if (qaFile != "") run->SetOutputFile(qaFile);
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1 = new CbmL1();

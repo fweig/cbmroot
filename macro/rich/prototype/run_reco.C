@@ -48,6 +48,7 @@ void run_reco(Int_t nEvents = 100000)
   run->SetInputFile(inFile);
   run->SetOutputFile(outFile);
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
 

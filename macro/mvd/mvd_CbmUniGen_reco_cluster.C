@@ -204,6 +204,7 @@ void mvd_CbmUniGen_reco_cluster(TString input = "auau.25gev", TString system = "
   run->AddTask(stsFindHits);
   // -------------------------------------------------------------------------
   // -----   STS track finding   --------------------------------------------
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1                    = new CbmL1();

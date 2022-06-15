@@ -49,6 +49,7 @@ void run_ana(Int_t nEvents = 1000, TString dataSet = "muons", TString setup = "s
 
 
   // ------------------------------------------------------------------------
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kf = new CbmKF();
   run->AddTask(kf);
 

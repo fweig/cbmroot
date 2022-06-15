@@ -121,6 +121,7 @@ void TrackSelection(Int_t nEvents = 10, Int_t ProcID = 1, bool PileUp = false, I
   fRun->AddFriend(rcFile);
   fRun->SetOutputFile(outFile);
   // ========================================================================
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
 
   CbmKF* KF = new CbmKF();
   fRun->AddTask(KF);

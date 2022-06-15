@@ -212,6 +212,7 @@ void opencharm_reco(Int_t nEvents = 10, Int_t ProcID = 1, bool PileUp = false)
   // -------------------------------------------------------------------------
 
   // -----   STS track finding   --------------------------------------------
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kalman = new CbmKF();
   run->AddTask(kalman);
   CbmL1* l1                    = new CbmL1();

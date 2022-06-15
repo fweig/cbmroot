@@ -81,11 +81,6 @@ CbmKF::CbmKF(const char* name, Int_t iVerbose)
 {
   if (!fInstance) fInstance = this;
 
-  if (!CbmTrackingDetectorInterfaceInit::Instance()) {
-    LOG(fatal) << "CbmL1: CbmTrackingDetectorInterfaceInit instance was not found. Please, add it as a task to your "
-                  "reco macro before the KF and L1 tasks:\n"
-               << "\033[1;30mrun->AddTask(new CbmTrackingDetectorInterfaceInit());\033[0m";
-  }
 }
 
 CbmKF::~CbmKF() { fInstance = 0; }
@@ -102,6 +97,12 @@ InitStatus CbmKF::ReInit() { return Init(); }
 
 InitStatus CbmKF::Init()
 {
+  if (!CbmTrackingDetectorInterfaceInit::Instance()) {
+    LOG(fatal) << "CbmKF::Init(): CbmTrackingDetectorInterfaceInit instance was not found. Please, add it as a task to your "
+                  "reco macro before the KF and L1 tasks:\n"
+               << "\033[1;30mrun->AddTask(new CbmTrackingDetectorInterfaceInit());\033[0m";
+  }
+
   fMagneticField = 0;
 
   vMvdMaterial.clear();

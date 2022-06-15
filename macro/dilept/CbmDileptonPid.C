@@ -67,6 +67,7 @@ void CbmDileptonPid(const char* inputFileNameMC, const char* inputFileNameRec, c
   // Create and add users tasks
 
   // CbmKF is needed for Extrapolation
+  fRun->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kf = new CbmKF();
   fRun->AddTask(kf);
 

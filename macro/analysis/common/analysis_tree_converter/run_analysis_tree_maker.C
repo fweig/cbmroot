@@ -78,7 +78,7 @@ void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setu
   auto* matchTask = new CbmMatchRecoToMC();
   run->AddTask(matchTask);
   // ------------------------------------------------------------------------
-
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   auto* KF = new CbmKF();
   run->AddTask(KF);
   // needed for tracks extrapolation

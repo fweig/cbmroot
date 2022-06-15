@@ -129,6 +129,7 @@ void anaFlow(Int_t mode = 7, Double_t En = 10., Int_t nEvents = 200, Int_t fileN
     anaFlow->setFileName_gen(infilename_gen);
 
     //=== important for reco info -> STS mult
+    run->AddTask(new CbmTrackingDetectorInterfaceInit());
     CbmKF* KF = new CbmKF();
     fRun->AddTask(KF);
 
@@ -168,6 +169,7 @@ void anaFlow(Int_t mode = 7, Double_t En = 10., Int_t nEvents = 200, Int_t fileN
     fRun->SetOutputFile(outfilename);
 
     //=== important for extrapolation to PV -> B-field
+    run->AddTask(new CbmTrackingDetectorInterfaceInit());
     CbmKF* KF = new CbmKF();
     fRun->AddTask(KF);
 

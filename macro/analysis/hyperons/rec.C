@@ -57,6 +57,7 @@ void rec(Int_t file_nr = 0, Int_t nEvents = 1, Int_t s = 0)
 
 
   // -----   STS track finding   --------------------------------------------
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
   FairTask* kalman = new CbmKF();
   run->AddTask(kalman);
   FairTask* l1 = new CbmL1();
