@@ -4,10 +4,11 @@
 
 #include "L1MaterialInfo.h"
 
+#include <FairLogger.h>
+
 #include <iomanip>
 #include <sstream>
 #include <vector>
-#include <FairLogger.h>
 
 /************************
  * L1MaterialInfo class *
@@ -27,7 +28,6 @@ std::string L1MaterialInfo::ToString(int indentLevel) const
 }
 
 
-
 //------------------------------------------------------------------------------------------------------------------------------------
 //
 void L1MaterialInfo::CheckConsistency() const
@@ -37,23 +37,26 @@ void L1MaterialInfo::CheckConsistency() const
   L1Utils::CheckSimdVectorEquality(RL, "L1MaterialInfo::RL");
   L1Utils::CheckSimdVectorEquality(RadThick, "L1MaterialInfo::RadThick");
   L1Utils::CheckSimdVectorEquality(logRadThick, "L1MaterialInfo::logRadThick");
-  
+
   /* (ii) Checks for physical sence: thick and RL must be larger then 0. */
   if (thick[0] < fscal(0.)) {
     std::stringstream aStream;
-    aStream <<"L1MaterialInfo: illegal value for station thickness: (" << thick[0] << ", positive value expected) [cm]";
+    aStream << "L1MaterialInfo: illegal value for station thickness: (" << thick[0]
+            << ", positive value expected) [cm]";
     throw std::logic_error(aStream.str());
   }
 
   if (RL[0] < fscal(0.)) {
     std::stringstream aStream;
-    aStream <<"L1MaterialInfo: illegal value for station radiation length: (" << RL[0] << ", positive value expected) [cm]";
+    aStream << "L1MaterialInfo: illegal value for station radiation length: (" << RL[0]
+            << ", positive value expected) [cm]";
     throw std::logic_error(aStream.str());
   }
 
   /* (iii) Checks for RadThick and logRadThick */
   if (!L1Utils::CmpFloats(RadThick[0] * RL[0], thick[0])) {
-    throw std::logic_error("L1MaterialInfo: illegal relation between thickness, radiation length and their ratio (RadThick)");
+    throw std::logic_error(
+      "L1MaterialInfo: illegal relation between thickness, radiation length and their ratio (RadThick)");
   }
 
   if (!L1Utils::CmpFloats(std::exp(logRadThick[0]), RadThick[0])) {
@@ -70,8 +73,7 @@ L1Material::L1Material() {}
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
-L1Material::~L1Material()
-{}
+L1Material::~L1Material() {}
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
@@ -145,20 +147,20 @@ fvec L1Material::GetRadThick(fvec x, fvec y) const
 void L1Material::CheckConsistency() const
 {
   /* (i) Check, if the object was initialized */
-  if (fNbins < 1 || std::isnan(fRmax)) {
-    throw std::logic_error("L1Material: class was not initialized");
-  }
+  if (fNbins < 1 || std::isnan(fRmax)) { throw std::logic_error("L1Material: class was not initialized"); }
 
   /* (ii) Check if the thickness values correct (non-negative) */
   bool isThicknessOk = true;
   for (int i = 0; i < int(fTable.size()); ++i) {
     if (fTable[i] < 0) {
       isThicknessOk = false;
-      LOG(error) << "L1Material: found illegal negative station thickness value " << fTable[i] << " at iBinX = " << (i % fNbins) 
-                 << ", iBin = " << (i / fNbins);
+      LOG(error) << "L1Material: found illegal negative station thickness value " << fTable[i]
+                 << " at iBinX = " << (i % fNbins) << ", iBin = " << (i / fNbins);
     }
   }
-  if (!isThicknessOk) { throw std::logic_error("L1Material: incorrect station thickness values found in the thickness map"); }
+  if (!isThicknessOk) {
+    throw std::logic_error("L1Material: incorrect station thickness values found in the thickness map");
+  }
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -167,10 +169,10 @@ void L1Material::SetBins(int nBins, float stationSize)
 {
   fNbins  = nBins;
   fRmax   = stationSize;
-  
+
   if (fNbins < 1) {
     std::stringstream aStream;
-    aStream <<"L1Material: object cannot be initialized with non-positive nBins = " << nBins;
+    aStream << "L1Material: object cannot be initialized with non-positive nBins = " << nBins;
     throw std::logic_error(aStream.str());
   }
 

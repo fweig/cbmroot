@@ -10,7 +10,6 @@
 
 #include "L1InitManager.h"
 
-
 #include <algorithm>
 #include <sstream>
 
@@ -53,10 +52,8 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
     }
 
     // Check station init
-    LOG(debug) << "L1InitManager::AddStation:(original) L1BaseStationInfo "
-               << inStation.GetInitController().ToString();
-    LOG(debug) << "L1InitManager::AddStation:(copy)     L1BaseStationInfo "
-               << inStation.GetInitController().ToString();
+    LOG(debug) << "L1InitManager::AddStation:(original) L1BaseStationInfo " << inStation.GetInitController().ToString();
+    LOG(debug) << "L1InitManager::AddStation:(copy)     L1BaseStationInfo " << inStation.GetInitController().ToString();
     if (!inStationCopy.GetInitController().IsFinalized()) {
       LOG(fatal) << "Attempt to add an incompletely initialized station info object (detectorID = "
                  << static_cast<int>(inStationCopy.GetDetectorID()) << ", stationID = " << inStationCopy.GetStationID()
@@ -100,7 +97,7 @@ void L1InitManager::FormParametersContainer()
 {
   // Check initialization
   this->CheckInit();
-   
+
   if (!fInitController.IsFinalized()) {
     LOG(fatal) << "Attempt to form parameters container before all necessary fields were initialized"
                << fInitController.ToString();
@@ -120,12 +117,12 @@ void L1InitManager::FormParametersContainer()
   // Form array of material map
   auto thickMapIt = fParameters.fThickMap.begin();
   for (auto it = fStationsInfo.begin(); it != fStationsInfo.end(); ++it) {
-    auto node                 = fStationsInfo.extract(it);
+    auto node   = fStationsInfo.extract(it);
     *thickMapIt = std::move(node.value().TakeMaterialMap());
     fStationsInfo.insert(std::move(node));
     ++thickMapIt;
   }
-  
+
   // Check the consistency of the parameters object. If object inconsistent, it throws std::logic_error
   fParameters.CheckConsistency();
 }
@@ -310,12 +307,12 @@ void L1InitManager::SetTargetPosition(double x, double y, double z)
     return;
   }
 
-  /// Fill fvec target fields 
+  /// Fill fvec target fields
   fParameters.fTargetPos[0] = x;
   fParameters.fTargetPos[1] = y;
   fParameters.fTargetPos[2] = z;
   /// Set additional field for z component in double precision
-  fTargetZ = z; 
+  fTargetZ = z;
   fInitController.SetFlag(EInitKey::kTargetPos);
 }
 
@@ -333,7 +330,8 @@ void L1InitManager::SetTrackingLevel(int trackingLevel)
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
-void L1InitManager::TransferParametersContainer(L1Parameters& destination) {
+void L1InitManager::TransferParametersContainer(L1Parameters& destination)
+{
   this->FormParametersContainer();
   destination = std::move(fParameters);
   LOG(info) << "Parameters object transfered to L1Algo core";

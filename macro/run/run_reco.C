@@ -37,9 +37,9 @@
 #include "CbmStsTrackFinder.h"
 #include "CbmTaskBuildRawEvents.h"
 #include "CbmTofSimpClusterizer.h"
+#include "CbmTrackerDetInitializer.h"
 #include "CbmTrdClusterFinder.h"
 #include "CbmTrdHitProducer.h"
-#include "CbmTrackerDetInitializer.h"
 
 #include <FairFileSource.h>
 #include <FairMonitor.h>
@@ -261,8 +261,6 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
   // ------------------------------------------------------------------------
 
 
-  
-
   // -----   Local reconstruction in MVD   ----------------------------------
   if (useMvd) {
     CbmMvdClusterfinder* mvdCluster = new CbmMvdClusterfinder("MVD Cluster Finder", 0, 0);
@@ -309,9 +307,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
 
     // --- Initialization of the digi scheme
     auto muchGeoScheme = CbmMuchGeoScheme::Instance();
-    if (!muchGeoScheme->IsInitialized()) {
-      muchGeoScheme->Init(parFile, muchFlag);
-    }
+    if (!muchGeoScheme->IsInitialized()) { muchGeoScheme->Init(parFile, muchFlag); }
 
     // --- Hit finder for GEMs
     FairTask* muchReco = new CbmMuchFindHitsGem(parFile.Data(), muchFlag);
@@ -374,12 +370,12 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
   // -----   Track finding in STS (+ MVD)    --------------------------------
   if (useMvd || useSts) {
     // Geometry interface initializer for tracker
-    run->AddTask(new CbmTrackerDetInitializer());
-    
+    run->AddTask(new CbmTrackingDetectorInterfaceInit());
+
     // Kalman filter
     auto kalman = new CbmKF();
     run->AddTask(kalman);
-    
+
     // L1 tracking
     auto l1 = (debugWithMC) ? new CbmL1("L1", 2, 3) : new CbmL1("L1", 0);
 

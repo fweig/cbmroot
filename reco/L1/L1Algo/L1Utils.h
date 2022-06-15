@@ -13,10 +13,11 @@
 #include <iomanip>
 #include <limits>
 #include <map>
-#include <cmath>
 #include <sstream>
 #include <string>
 #include <unordered_map>
+
+#include <cmath>
 
 #include "vectors/P4_F32vec4.h"
 
@@ -29,12 +30,12 @@ struct L1Utils {
   /// Comparison method for floats
   /// \param  lhs  Left floating point to compare
   /// \param  rhs  Right floating point to compare
-  /// \return      Comparison result: true - equals within epsilon 
-  template <typename T> 
+  /// \return      Comparison result: true - equals within epsilon
+  template<typename T>
   static bool CmpFloats(T lhs, T rhs)
   {
     static_assert(!std::numeric_limits<T>::is_integer, "L1Utils::CmpFloatingPoint does not work with integers");
-    return fabs(lhs - rhs) < 2. * std::numeric_limits<T>::epsilon() * fabs(lhs + rhs) 
+    return fabs(lhs - rhs) < 2. * std::numeric_limits<T>::epsilon() * fabs(lhs + rhs)
            || fabs(lhs - rhs) < std::numeric_limits<T>::min();
   }
 

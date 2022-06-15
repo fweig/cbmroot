@@ -126,7 +126,7 @@ public:
   void CheckInit();
   // NOTE: This method calls checkers of large fields initializations like a station or an iteration. The method must be
   //       called in the L1Algo class. (S.Zharko)
-  
+
   /// Gets ghost suppression flag
   int GetGhostSuppression() const { return fGhostSuppression; }
 
@@ -215,7 +215,7 @@ private:
   /// Checker for L1BaseStationInfo set initialization (sets EInitKey::kStationsInfo)
   /// \return true If all L1BaseStationInfo objects were initialized properly. Similar effect can be achieved by
   void CheckStationsInfoInit();
- 
+
   /// Forms parameters container
   void FormParametersContainer();
 
@@ -248,7 +248,7 @@ private:
 
   int fCAIterationsNumberCrosscheck {-1};  ///< Number of iterations to be passed (must be used for cross-checks)
 
-  L1Parameters fParameters {}; ///< L1Algo parameters object
+  L1Parameters fParameters {};  ///< L1Algo parameters object
 
   int fTrackingLevel {0};     ///< tracking level
   int fGhostSuppression {0};  ///< flag: if true, ghost tracks are suppressed

@@ -19,8 +19,8 @@
 // L1Algo core
 #include "L1Assert.h"
 #include "L1BaseStationInfo.h"
-#include "L1Def.h"
 #include "L1Constants.h"
+#include "L1Def.h"
 // C++ STL
 #include <iomanip>
 #include <sstream>

@@ -3,37 +3,36 @@
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 /***************************************************************************************************
- * @file   CbmMuchTrackerIF.h
- * @brief  Input data and parameters interface from MVD subsystem used in L1 tracker (declaration)
- * @since  31.05.2022
+ * @file   CbmStsTrackingInterface.h
+ * @brief  Input data and parameters interface from STS subsystem used in L1 tracker (declaration)
+ * @since  27.05.2022
  * @author S.Zharko <s.zharko@gsi.de>
  ***************************************************************************************************/
 
-#ifndef CbmMuchTrackerIF_h
-#define CbmMuchTrackerIF_h 1
+#ifndef CbmStsTrackingInterface_h
+#define CbmStsTrackingInterface_h 1
 
-#include "L1TrackerInterfaceBase.h"
-#include "CbmMuchGeoScheme.h"
+#include "CbmStsParSetModule.h"
+#include "CbmStsParSetSensor.h"
+#include "CbmStsParSetSensorCond.h"
+#include "CbmStsSetup.h"
+#include "CbmTrackingDetectorInterfaceBase.h"
+
 #include "FairTask.h"
 
 #include <iostream>
-#include <vector>
-#include "TString.h"
 
-class CbmMuchLayer;
 
-/// Class CbmMuchTrackerIF is a CbmL1 subtask, which provides necessary methods for L1 tracker
+/// Class CbmStsTrackingInterface is a CbmL1 subtask, which provides necessary methods for L1 tracker
 /// to access the geometry and dataflow settings.
 ///
-/// NOTE: For MuCh one tracking station is a MuCh layer!
-///
-class CbmMuchTrackerIF: public FairTask, public L1TrackerInterfaceBase {
+class CbmStsTrackingInterface : public FairTask, public CbmTrackingDetectorInterfaceBase {
 public:
   /// Default constructor
-  CbmMuchTrackerIF();
+  CbmStsTrackingInterface();
 
   /// Destructor
-  ~CbmMuchTrackerIF();
+  ~CbmStsTrackingInterface();
 
   /// FairTask: Init method
   InitStatus Init();
@@ -41,10 +40,10 @@ public:
   /// FairTask: ReInit method
   InitStatus ReInit();
 
-  /// Gets pointer to the instance of the CbmMuchTrackerIF
-  static CbmMuchTrackerIF* Instance() { return fpInstance; }
+  /// Gets pointer to the instance of the CbmStsTrackingInterface class
+  static CbmStsTrackingInterface* Instance() { return fpInstance; }
 
-  /// Gets actual number of tracking stations, provided by the current geometry setup
+  /// Gets actual number of the tracking stations, provided by the current geometry setup
   int GetNtrackingStations() const;
 
   /// Gets time resolution for a station
@@ -61,7 +60,7 @@ public:
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Size of station along the X-axis [cm]
   double GetXmax(int stationId) const;
-  
+
   /// Gets max size of a station along the Y-axis
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Size of station along the Y-axis [cm]
@@ -90,12 +89,12 @@ public:
   /// Gets front strips stereo angle
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Absolute stereo angle for front strips [rad]
-  double GetStripsStereoAngleFront(int stationId) const; 
+  double GetStripsStereoAngleFront(int stationId) const;
 
   /// Gets back strips stereo angle
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Absolute stereo angle for back strips [rad]
-  double GetStripsStereoAngleBack(int stationId) const; 
+  double GetStripsStereoAngleBack(int stationId) const;
 
   /// Gets spatial resolution (RMS) for front strips
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
@@ -111,35 +110,24 @@ public:
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Flag: true - station provides time measurements, false - station does not provide time measurements
   bool IsTimeInfoProvided(int stationId) const;
-  
+
   /// FairTask: sets parameter containers up
   void SetParContainers();
 
-  /// Copy and move constructers and assign operators are prohibited
-  CbmMuchTrackerIF(const CbmMuchTrackerIF&)            = delete;
-  CbmMuchTrackerIF(CbmMuchTrackerIF&&)                 = delete;
-  CbmMuchTrackerIF& operator=(const CbmMuchTrackerIF&) = delete;
-  CbmMuchTrackerIF& operator=(CbmMuchTrackerIF&&)      = delete;
+  /// Copy and move constructers and assign operators are forbidden
+  CbmStsTrackingInterface(const CbmStsTrackingInterface&) = delete;
+  CbmStsTrackingInterface(CbmStsTrackingInterface&&)      = delete;
+  CbmStsTrackingInterface& operator=(const CbmStsTrackingInterface&) = delete;
+  CbmStsTrackingInterface& operator=(CbmStsTrackingInterface&&) = delete;
 
 private:
-  /// Calculates MuCh station ID from tracker station ID
-  __attribute__((always_inline)) int GetMuchStationId(int stationId) const { return stationId / 3; }
+  static CbmStsTrackingInterface* fpInstance;
 
-  /// Calculates MuCh layer ID from tracker station ID
-  __attribute__((always_inline)) int GetMuchLayerId(int stationId) const { return stationId % 3; }
+  CbmStsParSetSensor* fStsParSetSensor {nullptr};          ///<
+  CbmStsParSetSensorCond* fStsParSetSensorCond {nullptr};  ///<
+  CbmStsParSetModule* fStsParSetModule {nullptr};          ///<
 
-  /// Gets pointer to the TRD module
-  /// \param  stationId  Tracking staton ID
-  /// \return Pointer to the particular CbmTrdParModDigi object
-  __attribute__((always_inline)) CbmMuchLayer* GetMuchLayer(int stationId) const { 
-    return fGeoScheme->GetLayer(GetMuchStationId(stationId), GetMuchLayerId(stationId));
-  }
-
-  static CbmMuchTrackerIF* fpInstance;  ///< Instance of the class
-
-  CbmMuchGeoScheme* fGeoScheme {nullptr};  ///< MuCh geometry scheme instance
-
-  ClassDef(CbmMuchTrackerIF, 0);
+  ClassDef(CbmStsTrackingInterface, 0);
 };
 
-#endif // CbmMuchTrackerIF
+#endif  // CbmStsTrackingInterface

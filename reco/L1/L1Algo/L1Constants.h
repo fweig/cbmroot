@@ -13,29 +13,32 @@
 #define L1Constants_h 1
 
 /// Namespace contains compile-time constants definition for the L1 tracking algorithm
-namespace L1Constants {
-  
+namespace L1Constants
+{
+
   /// Array sizes
-  namespace size {
+  namespace size
+  {
     /// Amount of coefficients in field approximations
     constexpr int kMaxNFieldApproxCoefficients {21};  // TODO: May be it is better to use the polynomial
-                                                             // order instead of this?
+                                                      // order instead of this?
     /// Order of polynomial to approximate field in the vicinity of station plane
     constexpr int kMaxFieldApproxPolynomialOrder {5};
-  
+
     /// Amount of bits to code a station, thread or triplet. This values determine the ma
-    constexpr unsigned int kStationBits {6u};  ///< Amount of bits to code one station
-    constexpr unsigned int kThreadBits {6u};   ///< Amount of bits to code one thread
+    constexpr unsigned int kStationBits {6u};                                ///< Amount of bits to code one station
+    constexpr unsigned int kThreadBits {6u};                                 ///< Amount of bits to code one thread
     constexpr unsigned int kTripletBits {32u - kStationBits - kThreadBits};  ///< Amount of bits to code one triplet
-  
+
     constexpr int kMaxNdetectors {5};                  ///< Max number of tracking detectors
     constexpr int kMaxNstations {1u << kStationBits};  ///< Max number of stations, 2^6  = 64
     constexpr int kMaxNthreads {1u << kThreadBits};    ///< Max number of threads, 2^6  = 64
     constexpr int kMaxNtriplets {1u << kTripletBits};  ///< Max number of triplets, 2^20 = 1,048,576
-  } // end namespace size
+  }                                                    // end namespace size
 
   /// Control flags
-  namespace control {
+  namespace control
+  {
     /// Flag for the radiation length tables usage
     /// true - Radiational tables will be used,
     /// false - basic station material info is used
@@ -46,21 +49,22 @@ namespace L1Constants {
 
     /// Flag: debug mode for analyzing the doublets pergormance efficiencies
     //constexpr bool kIfDebugDoubletsPerformance {false};
-    
+
     /// Flag: debug mode for analyzing the tiplets pergormance efficiencies
     //constexpr bool kIfDebugTripletsPerformance {false};
-    
+
     /// Flag: debug mode for creating pools for triplets.
     /// NOTE: this feature will work only if the L1Parameters::kIfDebugTipletsPerformace is true!
     //constexpr bool kIfCreateTripletPulls {false};
-  } // end namespace control
-  
+  }  // end namespace control
+
   /// Miscellaneous constants
-  namespace misc {
+  namespace misc
+  {
     constexpr int kAssertionLevel {0};  ///< Assertion level
     constexpr int kAlignment {16};
-  } // end namespace misc
-} // end namespace L1Constants
+  }  // end namespace misc
+}  // end namespace L1Constants
 
 
-#endif // L1Constants_h
+#endif  // L1Constants_h

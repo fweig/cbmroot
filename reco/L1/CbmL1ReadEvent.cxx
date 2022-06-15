@@ -582,7 +582,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       //            << p.time << " mc " << p.ID << " p " << p.p << endl;
       TmpHit th;
       int DetId = 1;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetParameters()->GetStation(p.iStation));
+      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips,
+                            algo->GetParameters()->GetStation(p.iStation));
       tmpHits.push_back(th);
       nStsHits++;
     }
@@ -743,7 +744,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       TmpHit th;
       int DetId = 2;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetParameters()->GetStation(p.iStation));
+      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips,
+                            algo->GetParameters()->GetStation(p.iStation));
 
       tmpHits.push_back(th);
       nMuchHits++;
@@ -848,7 +850,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       TmpHit th;
       int DetId = 3;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetParameters()->GetStation(p.iStation));
+      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips,
+                            algo->GetParameters()->GetStation(p.iStation));
       tmpHits.push_back(th);
       nTrdHits++;
     }
@@ -990,7 +993,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       TmpHit th;
 
       int DetId = 4;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips, algo->GetParameters()->GetStation(p.iStation));
+      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips,
+                            algo->GetParameters()->GetStation(p.iStation));
       tmpHits.push_back(th);
 
       nTofHits++;

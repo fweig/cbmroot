@@ -18,8 +18,7 @@
 
 
 void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
-                     const char* setupName = "mcbm_beam_2022_03_09_carbon",
-                     Bool_t debugWithMC = false)
+                     const char* setupName = "mcbm_beam_2022_03_09_carbon", Bool_t debugWithMC = false)
 {
   // ========================================================================
   //          Adjust this part according to your requirements
@@ -44,9 +43,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
   // ------------------------------------------------------------------------
 
   Int_t iTofCluMode = 1;
-  if (debugWithMC) {
-    Int_t iTrackMode = 1;
-  }
+  if (debugWithMC) { Int_t iTrackMode = 1; }
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
   TString setupFile  = srcDir + "/geometry/setup/setup_" + setupName + ".C";
@@ -115,7 +112,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
   Bool_t hasFairMonitor = kFALSE;  //Has_Fair_Monitor();
   if (hasFairMonitor) FairMonitor::GetMonitor()->EnableMonitor(kTRUE);
   // ------------------------------------------------------------------------
-  
+
   // -----   MCDataManager  -------------------------------------------------
   if (debugWithMC) {
     CbmMCDataManager* mcManager = new CbmMCDataManager("MCDataManager", 1);
@@ -179,9 +176,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
 
     // --- Initialization of the digi scheme
     auto muchGeoScheme = CbmMuchGeoScheme::Instance();
-    if (!muchGeoScheme->IsInitialized()) {
-      muchGeoScheme->Init(parFile, muchFlag);
-    }
+    if (!muchGeoScheme->IsInitialized()) { muchGeoScheme->Init(parFile, muchFlag); }
 
     // --- Hit finder for GEMs
     FairTask* muchHitGem = new CbmMuchFindHitsGem(parFile.Data(), muchFlag);
@@ -373,11 +368,12 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
   // --------   L1 CA Track Finder    ---------------------------------------
 
   // Geometry interface initializer for tracker
-  auto trackerIF = new CbmTrackerDetInitializer();
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
 
   // Kalman filter
   auto kalman = new CbmKF();
-  
+  run->AddTask(kalman);
+
   // L1 tracking
   auto l1 = (debugWithMC) ? new CbmL1("L1", 1, 3) : new CbmL1();
   l1->SetLegacyEventMode(1);
@@ -438,8 +434,6 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
     l1->SetTofMaterialBudgetFileName(parFile.Data());
   }
 
-  run->AddTask(trackerIF);
-  run->AddTask(kalman);
   run->AddTask(l1);
 
   CbmL1GlobalTrackFinder* globalTrackFinder = new CbmL1GlobalTrackFinder();

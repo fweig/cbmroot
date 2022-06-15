@@ -3,36 +3,38 @@
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 /***************************************************************************************************
- * @file   CbmTrdTrackerIF.h
+ * @file   CbmTrdTrackingInterface.h
  * @brief  Input data and parameters interface from MVD subsystem used in L1 tracker (declaration)
  * @since  31.05.2022
  * @author S.Zharko <s.zharko@gsi.de>
  ***************************************************************************************************/
 
-#ifndef CbmTrdTrackerIF_h
-#define CbmTrdTrackerIF_h 1
+#ifndef CbmTrdTrackingInterface_h
+#define CbmTrdTrackingInterface_h 1
 
+#include "CbmTrackingDetectorInterfaceBase.h"
 #include "CbmTrdParModDigi.h"
 #include "CbmTrdParSetDigi.h"
-#include "L1TrackerInterfaceBase.h"
+
 #include "FairTask.h"
+
+#include "TString.h"
 
 #include <iostream>
 #include <vector>
-#include "TString.h"
 
-/// Class CbmTrdTrackerIF is a CbmL1 subtask, which provides necessary methods for L1 tracker
+/// Class CbmTrdTrackingInterface is a CbmL1 subtask, which provides necessary methods for L1 tracker
 /// to access the geometry and dataflow settings.
 ///
 /// NOTE: For TRD one tracking station is a TRD module!
 ///
-class CbmTrdTrackerIF: public FairTask, public L1TrackerInterfaceBase {
+class CbmTrdTrackingInterface : public FairTask, public CbmTrackingDetectorInterfaceBase {
 public:
   /// Default constructor
-  CbmTrdTrackerIF();
+  CbmTrdTrackingInterface();
 
   /// Destructor
-  ~CbmTrdTrackerIF();
+  ~CbmTrdTrackingInterface();
 
   /// FairTask: Init method
   InitStatus Init();
@@ -40,8 +42,8 @@ public:
   /// FairTask: ReInit method
   InitStatus ReInit();
 
-  /// Gets pointer to the instance of the CbmTrdTrackerIF
-  static CbmTrdTrackerIF* Instance() { return fpInstance; }
+  /// Gets pointer to the instance of the CbmTrdTrackingInterface
+  static CbmTrdTrackingInterface* Instance() { return fpInstance; }
 
   /// Gets actual number of tracking stations, provided by the current geometry setup
   int GetNtrackingStations() const;
@@ -60,7 +62,7 @@ public:
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Size of station along the X-axis [cm]
   double GetXmax(int stationId) const;
-  
+
   /// Gets max size of a station along the Y-axis
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Size of station along the Y-axis [cm]
@@ -89,12 +91,12 @@ public:
   /// Gets front strips stereo angle
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Absolute stereo angle for front strips [rad]
-  double GetStripsStereoAngleFront(int stationId) const; 
+  double GetStripsStereoAngleFront(int stationId) const;
 
   /// Gets back strips stereo angle
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Absolute stereo angle for back strips [rad]
-  double GetStripsStereoAngleBack(int stationId) const; 
+  double GetStripsStereoAngleBack(int stationId) const;
 
   /// Gets spatial resolution (RMS) for front strips
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
@@ -110,30 +112,31 @@ public:
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Flag: true - station provides time measurements, false - station does not provide time measurements
   bool IsTimeInfoProvided(int stationId) const;
-  
+
   /// FairTask: sets parameter containers up
   void SetParContainers();
 
   /// Copy and move constructers and assign operators are prohibited
-  CbmTrdTrackerIF(const CbmTrdTrackerIF&)            = delete;
-  CbmTrdTrackerIF(CbmTrdTrackerIF&&)                 = delete;
-  CbmTrdTrackerIF& operator=(const CbmTrdTrackerIF&) = delete;
-  CbmTrdTrackerIF& operator=(CbmTrdTrackerIF&&)      = delete;
+  CbmTrdTrackingInterface(const CbmTrdTrackingInterface&) = delete;
+  CbmTrdTrackingInterface(CbmTrdTrackingInterface&&)      = delete;
+  CbmTrdTrackingInterface& operator=(const CbmTrdTrackingInterface&) = delete;
+  CbmTrdTrackingInterface& operator=(CbmTrdTrackingInterface&&) = delete;
 
 private:
   /// Gets pointer to the TRD module
   /// \param  moduleId  Id of the Trd module
   /// \return Pointer to the particular CbmTrdParModDigi object
-  __attribute__((always_inline)) CbmTrdParModDigi* GetTrdModulePar(int moduleId) const { 
-    return static_cast<CbmTrdParModDigi*>(fTrdDigiPar->GetModulePar(fTrdDigiPar->GetModuleId(moduleId))); 
+  __attribute__((always_inline)) CbmTrdParModDigi* GetTrdModulePar(int moduleId) const
+  {
+    return static_cast<CbmTrdParModDigi*>(fTrdDigiPar->GetModulePar(fTrdDigiPar->GetModuleId(moduleId)));
   }
 
-  static CbmTrdTrackerIF* fpInstance;  ///< Instance of the class
+  static CbmTrdTrackingInterface* fpInstance;  ///< Instance of the class
 
   CbmTrdParSetDigi* fTrdDigiPar {nullptr};
   //CbmTrdParModDigi* fTrdModuleInfo {nullptr};
 
-  ClassDef(CbmTrdTrackerIF, 0);
+  ClassDef(CbmTrdTrackingInterface, 0);
 };
 
-#endif // CbmTrdTrackerIF
+#endif  // CbmTrdTrackingInterface

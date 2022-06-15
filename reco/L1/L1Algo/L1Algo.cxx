@@ -89,7 +89,7 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
 
   fInitManager.TransferParametersContainer(fParameters);
   LOG(info) << fParameters.ToString();
-  
+
   // Get number of station
   fNstations = fInitManager.GetNstationsActive();
 
@@ -168,8 +168,8 @@ void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, char iS)
   const L1Station& sta = fParameters.GetStation(int(iS));
   fscal u        = _h.u;
   fscal v        = _h.v;
-  _x             = (sta.xInfo.sin_phi[0] * u + sta.xInfo.cos_phi[0] * v) / (_h.z - fParameters.GetTargetPositionZ()[0]);
-  _y             = (sta.yInfo.cos_phi[0] * u + sta.yInfo.sin_phi[0] * v) / (_h.z - fParameters.GetTargetPositionZ()[0]);
+  _x = (sta.xInfo.sin_phi[0] * u + sta.xInfo.cos_phi[0] * v) / (_h.z - fParameters.GetTargetPositionZ()[0]);
+  _y = (sta.yInfo.cos_phi[0] * u + sta.yInfo.sin_phi[0] * v) / (_h.z - fParameters.GetTargetPositionZ()[0]);
 }
 
 void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta)

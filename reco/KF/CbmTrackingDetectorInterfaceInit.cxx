@@ -3,33 +3,34 @@
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 /***************************************************************************************************
- * @file   CbmTrackerDetInitializer.cxx
+ * @file   CbmTrackingDetectorInterfaceInit.cxx
  * @brief  FairTask for the tracker detector interfaces initialization (implementation)
  * @since  31.05.2022
  * @author S.Zharko <s.zharko@gsi.de>
  ***************************************************************************************************/
 
-#include "FairTask.h"
-#include "CbmMuchTrackerIF.h"
-#include "CbmMvdTrackerIF.h"
+#include "CbmTrackingDetectorInterfaceInit.h"
+
+#include "CbmMuchTrackingInterface.h"
+#include "CbmMvdTrackingInterface.h"
 #include "CbmSetup.h"
-#include "CbmStsTrackerIF.h"
-#include "CbmTrackerDetInitializer.h"
-#include "CbmTrdTrackerIF.h"
+#include "CbmStsTrackingInterface.h"
+#include "CbmTrdTrackingInterface.h"
+
+#include "FairTask.h"
 #include <FairLogger.h>
 
-ClassImp(CbmTrackerDetInitializer)
+ClassImp(CbmTrackingDetectorInterfaceInit)
 
-CbmTrackerDetInitializer* CbmTrackerDetInitializer::fpInstance = nullptr;
+  CbmTrackingDetectorInterfaceInit* CbmTrackingDetectorInterfaceInit::fpInstance = nullptr;
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-CbmTrackerDetInitializer::CbmTrackerDetInitializer()
-: FairTask("CbmTrackerDetInitializer")
+CbmTrackingDetectorInterfaceInit::CbmTrackingDetectorInterfaceInit() : FairTask("CbmTrackingDetectorInterfaceInit")
 {
-  if (!fpInstance) { 
-    fpInstance = this; 
-    
+  if (!fpInstance) {
+    fpInstance = this;
+
     /** Check presence of the desired detectors **/
     bool useMvd  = CbmSetup::Instance()->IsActive(ECbmModuleId::kMvd);
     bool useSts  = CbmSetup::Instance()->IsActive(ECbmModuleId::kSts);
@@ -38,26 +39,25 @@ CbmTrackerDetInitializer::CbmTrackerDetInitializer()
     bool useTof  = CbmSetup::Instance()->IsActive(ECbmModuleId::kTof);
 
     /** Invoke the detector interfaces **/
-    if (useMvd)  { fpMvdTrackerIF  = new CbmMvdTrackerIF(); }
-    if (useSts)  { fpStsTrackerIF  = new CbmStsTrackerIF(); }
-    if (useMuch) { fpMuchTrackerIF = new CbmMuchTrackerIF(); }
-    if (useTrd)  { fpTrdTrackerIF  = new CbmTrdTrackerIF(); }
+    if (useMvd) { fpMvdTrackingInterface = new CbmMvdTrackingInterface(); }
+    if (useSts) { fpStsTrackingInterface = new CbmStsTrackingInterface(); }
+    if (useMuch) { fpMuchTrackingInterface = new CbmMuchTrackingInterface(); }
+    if (useTrd) { fpTrdTrackingInterface = new CbmTrdTrackingInterface(); }
 
     /** Add subtasks - tracker detector interfaces **/
-    if (useMvd)  { this->Add(fpMvdTrackerIF); }
-    if (useSts)  { this->Add(fpStsTrackerIF); }
-    if (useMuch) { this->Add(fpMuchTrackerIF); }
-    if (useTrd)  { this->Add(fpTrdTrackerIF); }
+    if (useMvd) { this->Add(fpMvdTrackingInterface); }
+    if (useSts) { this->Add(fpStsTrackingInterface); }
+    if (useMuch) { this->Add(fpMuchTrackingInterface); }
+    if (useTrd) { this->Add(fpTrdTrackingInterface); }
   }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-CbmTrackerDetInitializer::~CbmTrackerDetInitializer()
+CbmTrackingDetectorInterfaceInit::~CbmTrackingDetectorInterfaceInit()
 {
   if (fpInstance == this) { fpInstance = nullptr; }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-

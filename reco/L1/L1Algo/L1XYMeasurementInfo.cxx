@@ -3,9 +3,11 @@
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 #include "L1XYMeasurementInfo.h"
-#include "L1Utils.h"
+
 #include <iomanip>
 #include <sstream>  // for stringstream
+
+#include "L1Utils.h"
 
 void L1XYMeasurementInfo::CheckConsistency() const
 {

@@ -51,7 +51,7 @@ T finite(T x)
 #define L1_assert(v)
 // Prints expression value to the std::cout
 #define L1_SHOW(expr)
-// Prints file and line information to the std::cout 
+// Prints file and line information to the std::cout
 #define L1_SHOWF(msg)
 #else
 #define L1_ASSERT(v, msg)                                                                                              \
@@ -65,7 +65,7 @@ T finite(T x)
 #define L1_SHOW(expr)                                                                                                  \
   std::cout << __FILE__ << ":" << __LINE__ << ": \033[01;38;5;208m" << (#expr) << "\033[0m = " << (expr) << "\n"
 #define L1_SHOWF(msg)                                                                                                  \
-  std::cout << "(!) " <<  __FILE__ << ":" << __LINE__ << ": \033[01;38;5;208m" << (#msg) << "\033[0m\n"
+  std::cout << "(!) " << __FILE__ << ":" << __LINE__ << ": \033[01;38;5;208m" << (#msg) << "\033[0m\n"
 #endif
 
 

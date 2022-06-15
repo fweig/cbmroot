@@ -15,7 +15,7 @@ public:
   fvec C00 {0};
   fvec C10 {0};
   fvec C11 {0};
-  
+
   /// Consistency checker
   void CheckConsistency() const;
 

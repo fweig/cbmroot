@@ -1384,10 +1384,12 @@ void CbmL1::TrackFitPerformance()
           L1Extrapolate(trPar, mc.z, trPar.qp, fld);
           // add material
           const int fSta = vHitStore[it->StsHits[0]].iStation;
-          const int dir  = int((mc.z - algo->GetParameters()->GetStation(fSta).z[0]) / fabs(mc.z - algo->GetParameters()->GetStation(fSta).z[0]));
+          const int dir  = int((mc.z - algo->GetParameters()->GetStation(fSta).z[0])
+                              / fabs(mc.z - algo->GetParameters()->GetStation(fSta).z[0]));
           //         if (abs(mc.z - algo->GetParameters()->GetStation(fSta).z[0]) > 10.) continue; // can't extrapolate on large distance
           for (int iSta = fSta /*+dir*/;
-               (iSta >= 0) && (iSta < NStation) && (dir * (mc.z - algo->GetParameters()->GetStation(iSta).z[0]) > 0); iSta += dir) {
+               (iSta >= 0) && (iSta < NStation) && (dir * (mc.z - algo->GetParameters()->GetStation(iSta).z[0]) > 0);
+               iSta += dir) {
             //           cout << iSta << " " << dir << endl;
             fit.L1AddMaterial(trPar, algo->GetParameters()->GetStation(iSta).materialInfo, trPar.qp, 1);
             if (iSta + dir == NMvdStations - 1) fit.L1AddPipeMaterial(trPar, trPar.qp, 1);
@@ -1449,21 +1451,24 @@ void CbmL1::TrackFitPerformance()
           // add material
           const int fSta = vHitStore[it->StsHits[0]].iStation;
 
-          const int dir = (mc.z - algo->GetParameters()->GetStation(fSta).z[0]) / abs(mc.z - algo->GetParameters()->GetStation(fSta).z[0]);
+          const int dir = (mc.z - algo->GetParameters()->GetStation(fSta).z[0])
+                          / abs(mc.z - algo->GetParameters()->GetStation(fSta).z[0]);
           //         if (abs(mc.z - algo->GetParameters()->GetStation(fSta].z[0]) > 10.) continue; // can't extrapolate on large distance
 
           for (int iSta = fSta + dir;
-               (iSta >= 0) && (iSta < NStation) && (dir * (mc.z - algo->GetParameters()->GetStation(iSta).z[0]) > 0); iSta += dir) {
+               (iSta >= 0) && (iSta < NStation) && (dir * (mc.z - algo->GetParameters()->GetStation(iSta).z[0]) > 0);
+               iSta += dir) {
 
             z[0]     = algo->GetParameters()->GetStation(iSta).z[0];
             float dz = z[1] - z[0];
-            algo->GetParameters()->GetStation(iSta).fieldSlice.GetFieldValue(trPar.x - trPar.tx * dz, trPar.y - trPar.ty * dz, B[0]);
+            algo->GetParameters()->GetStation(iSta).fieldSlice.GetFieldValue(trPar.x - trPar.tx * dz,
+                                                                             trPar.y - trPar.ty * dz, B[0]);
             fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
 
             L1Extrapolate(trPar, algo->GetParameters()->GetStation(iSta).z[0], trPar.qp, fld);
             fit.L1AddMaterial(trPar, algo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y), trPar.qp, 1);
-            fit.EnergyLossCorrection(trPar, algo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y), trPar.qp, fvec(1.f),
-                                     fvec(1.f));
+            fit.EnergyLossCorrection(trPar, algo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y),
+                                     trPar.qp, fvec(1.f), fvec(1.f));
             if (iSta + dir == NMvdStations - 1) {
               fit.L1AddPipeMaterial(trPar, trPar.qp, 1);
               fit.EnergyLossCorrection(trPar, fit.PipeRadThick, trPar.qp, fvec(1.f), fvec(1.f));
@@ -1984,8 +1989,10 @@ void CbmL1::InputPerformance()
           pullTsts->Fill((sh->GetTime() - mcTime) / sh->GetTimeError());
         }
         else {  // errors used in TF
-          pullXsts->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->GetParameters()->GetStation(NMvdStations).XYInfo.C00[0]));
-          pullYsts->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->GetParameters()->GetStation(NMvdStations).XYInfo.C11[0]));
+          pullXsts->Fill((hitPos.X() - mcPos.X())
+                         / sqrt(algo->GetParameters()->GetStation(NMvdStations).XYInfo.C00[0]));
+          pullYsts->Fill((hitPos.Y() - mcPos.Y())
+                         / sqrt(algo->GetParameters()->GetStation(NMvdStations).XYInfo.C11[0]));
         }
 
         resXsts->Fill((hitPos.X() - mcPos.X()) * 10 * 1000);
@@ -2030,8 +2037,10 @@ void CbmL1::InputPerformance()
       //       if (hitErr.X() != 0) pullX->Fill( (hitPos.X() - mcPos.X()) / sh->GetDx() ); // qa errors
       //       if (hitErr.Y() != 0) pullY->Fill( (hitPos.Y() - mcPos.Y()) / sh->GetDy() );
       if (hitErr.X() != 0)
-        pullXmvd->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->GetParameters()->GetStation(0).XYInfo.C00[0]));  // errors used in TF
-      if (hitErr.Y() != 0) pullYmvd->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->GetParameters()->GetStation(0).XYInfo.C11[0]));
+        pullXmvd->Fill((hitPos.X() - mcPos.X())
+                       / sqrt(algo->GetParameters()->GetStation(0).XYInfo.C00[0]));  // errors used in TF
+      if (hitErr.Y() != 0)
+        pullYmvd->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->GetParameters()->GetStation(0).XYInfo.C11[0]));
 
       resXmvd->Fill((hitPos.X() - mcPos.X()) * 10 * 1000);
       resYmvd->Fill((hitPos.Y() - mcPos.Y()) * 10 * 1000);

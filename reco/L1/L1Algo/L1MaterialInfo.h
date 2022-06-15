@@ -17,11 +17,12 @@
 /// The fields of the structure should ONLY be initialized within L1BaseStationInfo::SetMaterial(double, double) method, when the
 /// stations sequence is initialized
 struct L1MaterialInfo {
-  fvec thick {L1Utils::kNaN};     ///< Average thickness of the station in arbitary length units
-  fvec RL {L1Utils::kNaN};        ///< Average radiation length (X0) of the station material in THE SAME UNITS as the thickness
+  fvec thick {L1Utils::kNaN};  ///< Average thickness of the station in arbitary length units
+  fvec RL {
+    L1Utils::kNaN};  ///< Average radiation length (X0) of the station material in THE SAME UNITS as the thickness
   fvec RadThick {L1Utils::kNaN};  ///< Average thickness in units of radiation length (X/X0)
   fvec logRadThick {L1Utils::kNaN};
-  
+
   /// Verifies class invariant consistency
   void CheckConsistency() const;
 
@@ -70,7 +71,7 @@ public:
   /// \param x  X coordinate of the point [cm] (SIMDized vector)
   /// \param y  Y coordinate of the point [cm] (SIMDized veotor)
   fvec GetRadThick(fvec x, fvec y) const;
-  
+
   /// Verifies class invariant consistency
   void CheckConsistency() const;
 
@@ -93,8 +94,8 @@ public:
 
 private:
   int fNbins {-1};                ///< Number of rows (columns) in the material budget table
-  float fRmax {L1Utils::kNaN};             ///< Size of the station in x and y dimensions [cm]
-  float fFactor {L1Utils::kNaN};           ///< Factor used in the recalculation of point coordinates to row/column id
+  float fRmax {L1Utils::kNaN};    ///< Size of the station in x and y dimensions [cm]
+  float fFactor {L1Utils::kNaN};  ///< Factor used in the recalculation of point coordinates to row/column id
   std::vector<float> fTable {};  ///< Material budget table
 } _fvecalignment;
 

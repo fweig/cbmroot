@@ -3,11 +3,12 @@
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 #include "L1Field.h"
-#include "L1Utils.h"
 
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+
+#include "L1Utils.h"
 
 //
 // L1FieldValue methods
@@ -68,19 +69,22 @@ void L1FieldSlice::CheckConsistency() const
   for (int i = 0; i < L1Constants::size::kMaxNFieldApproxCoefficients; ++i) {
     if (!cx[i].IsHorizontallyEqual()) {
       std::stringstream msg;
-      msg << "L1FieldSlice: \"cx[" << i << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cx[i];
+      msg << "L1FieldSlice: \"cx[" << i
+          << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cx[i];
       throw std::logic_error(msg.str());
     }
 
     if (!cy[i].IsHorizontallyEqual()) {
       std::stringstream msg;
-      msg << "L1FieldSlice: \"cy[" << i << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cy[i];
+      msg << "L1FieldSlice: \"cy[" << i
+          << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cy[i];
       throw std::logic_error(msg.str());
     }
 
     if (!cz[i].IsHorizontallyEqual()) {
       std::stringstream msg;
-      msg << "L1FieldSlice: \"cz[" << i << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cz[i];
+      msg << "L1FieldSlice: \"cz[" << i
+          << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cz[i];
       throw std::logic_error(msg.str());
     }
   }

@@ -362,7 +362,8 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 
     if constexpr (L1Constants::control::kIfUseRadLengthTable) {
       if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
-        fit.L1AddThickMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, 1, stal.materialInfo.thick, 1);
+        fit.L1AddThickMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, 1,
+                               stal.materialInfo.thick, 1);
       }
       else {
         fit.L1AddMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, 1);
@@ -395,7 +396,8 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 /// Find the doublets. Reformat data in the portion of doublets.
 inline void L1Algo::f20(
   /// input
-  Tindex n1, const L1Station& stal, const L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1, L1HitIndex_t* hitsl_1,
+  Tindex n1, const L1Station& stal, const L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1,
+  L1HitIndex_t* hitsl_1,
   /// output
   Tindex& n2, L1Vector<L1HitIndex_t>& i1_2,
 #ifdef DOUB_PERFORMANCE
@@ -434,8 +436,8 @@ inline void L1Algo::f20(
     while (true) {
       if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
         irm1++;
-        if ((L1HitIndex_t) irm1
-            >= (StsHitsUnusedStopIndex[&stam - fParameters.GetStations().begin()] - StsHitsUnusedStartIndex[&stam - fParameters.GetStations().begin()]))
+        if ((L1HitIndex_t) irm1 >= (StsHitsUnusedStopIndex[&stam - fParameters.GetStations().begin()]
+                                    - StsHitsUnusedStartIndex[&stam - fParameters.GetStations().begin()]))
           break;
         imh = irm1;
       }
@@ -689,8 +691,8 @@ inline void L1Algo::f30(  // input
       FilterTime(T2, timeM, timeMEr, stam.timeInfo);
       if constexpr (L1Constants::control::kIfUseRadLengthTable) {
         if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
-          fit.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, 1, stam.materialInfo.thick,
-                                 1);
+          fit.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, 1,
+                                 stam.materialInfo.thick, 1);
         }
         else {
           fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), T2.qp, 1);
@@ -934,8 +936,8 @@ inline void L1Algo::f31(  // input
 
     if (fUseHitErrors) info.sigma2 = du_[i3_V] * du_[i3_V];
 
-    bool noField =
-      (kGlobal == fTrackingMode || kMcbm == fTrackingMode) && (&star - fParameters.GetStations().begin() >= fNfieldStations);
+    bool noField = (kGlobal == fTrackingMode || kMcbm == fTrackingMode)
+                   && (&star - fParameters.GetStations().begin() >= fNfieldStations);
 
     if (noField) { L1FilterNoField(T_3[i3_V], info, u_front_[i3_V]); }
     else {
@@ -1661,8 +1663,8 @@ void L1Algo::CATrackFinder()
   static Tindex stat_nTriplets[fNFindIterations] = {0};
 
   static Tindex stat_nLevels[L1Constants::size::kMaxNstations - 2][fNFindIterations] = {{0}};
-  static Tindex stat_nCalls[fNFindIterations]                      = {0};  // n calls of CAFindTrack
-  static Tindex stat_nTrCandidates[fNFindIterations]               = {0};
+  static Tindex stat_nCalls[fNFindIterations]                                        = {0};  // n calls of CAFindTrack
+  static Tindex stat_nTrCandidates[fNFindIterations]                                 = {0};
 #endif
 
   /********************************/ /**
@@ -1780,7 +1782,7 @@ void L1Algo::CATrackFinder()
 
   // ---- Loop over Track Finder iterations ----------------------------------------------------------------//
   L1ASSERT(0, fNFindIterations == fParameters.GetCAIterations().size());
-  isec = 0;  // TODO: temporary! (S.Zharko)
+  isec = 0;                                                      // TODO: temporary! (S.Zharko)
   for (const auto& caIteration : fParameters.GetCAIterations())  // all finder
   {
     //if (fTrackingMode == kMcbm) {
@@ -1934,7 +1936,8 @@ void L1Algo::CATrackFinder()
         //  fMaxDZ = 0.1;
 
         // TODO: to be removed, because this condition is checked in L1InitManager (S.Zharko)
-        if (fNstations > (int) L1Constants::size::kMaxNstations) cout << " CATrackFinder: Error: Too many Stations" << endl;
+        if (fNstations > (int) L1Constants::size::kMaxNstations)
+          cout << " CATrackFinder: Error: Too many Stations" << endl;
       }
 
 #ifndef L1_NO_ASSERT
@@ -2409,7 +2412,7 @@ void L1Algo::CATrackFinder()
                 L1HitPoint tempPoint = CreateHitPoint(hit);  //TODO take number of station from hit
 
                 float xcoor, ycoor = 0;
-                L1Station stah = fParameters.GetStation(0); // TODO: Why is it a copy?
+                L1Station stah = fParameters.GetStation(0);  // TODO: Why is it a copy?
                 StripsToCoor(tempPoint.U(), tempPoint.V(), xcoor, ycoor, stah);
                 float zcoor = tempPoint.Z() - fParameters.GetTargetPositionZ()[0];
 

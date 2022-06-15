@@ -14,9 +14,9 @@
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
-L1Parameters::L1Parameters() 
+L1Parameters::L1Parameters()
 {
-  fActiveStationGlobalIDs.fill(-1); // by default, all stations are inactive, thus all the IDs must be -1
+  fActiveStationGlobalIDs.fill(-1);  // by default, all stations are inactive, thus all the IDs must be -1
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -26,18 +26,19 @@ L1Parameters::~L1Parameters() noexcept {}
 //------------------------------------------------------------------------------------------------------------------------------------
 //
 L1Parameters::L1Parameters(const L1Parameters& other) noexcept
-: fMaxDoubletsPerSinglet(other.fMaxDoubletsPerSinglet),
-  fMaxTripletPerDoublets(other.fMaxTripletPerDoublets),
-  fCAIterations(other.fCAIterations),
-  fTargetPos(other.fTargetPos),
-  fVertexFieldValue(other.fVertexFieldValue),
-  fVertexFieldRegion(other.fVertexFieldRegion),
-  fStations(other.fStations),
-  fThickMap(other.fThickMap),
-  fNstationsActive(other.fNstationsActive),
-  fNstationsGeometry(other.fNstationsGeometry),
-  fActiveStationGlobalIDs(other.fActiveStationGlobalIDs)
-{}
+  : fMaxDoubletsPerSinglet(other.fMaxDoubletsPerSinglet)
+  , fMaxTripletPerDoublets(other.fMaxTripletPerDoublets)
+  , fCAIterations(other.fCAIterations)
+  , fTargetPos(other.fTargetPos)
+  , fVertexFieldValue(other.fVertexFieldValue)
+  , fVertexFieldRegion(other.fVertexFieldRegion)
+  , fStations(other.fStations)
+  , fThickMap(other.fThickMap)
+  , fNstationsActive(other.fNstationsActive)
+  , fNstationsGeometry(other.fNstationsGeometry)
+  , fActiveStationGlobalIDs(other.fActiveStationGlobalIDs)
+{
+}
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
@@ -49,10 +50,7 @@ L1Parameters& L1Parameters::operator=(const L1Parameters& other) noexcept
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
-L1Parameters::L1Parameters(L1Parameters&& other) noexcept
-{
-  this->Swap(other);
-}
+L1Parameters::L1Parameters(L1Parameters&& other) noexcept { this->Swap(other); }
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
@@ -84,7 +82,8 @@ void L1Parameters::Swap(L1Parameters& other) noexcept
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
-void L1Parameters::CheckConsistency() const {
+void L1Parameters::CheckConsistency() const
+{
   LOG(info) << "Consistency test for L1 parameters object... ";
   /*
    * Arrays containing numbers of stations
@@ -94,13 +93,14 @@ void L1Parameters::CheckConsistency() const {
    * active). This fact applies restriction on the arrays: the last element must be equal to the sum of all previous elements.
    *
    */
-  
-  if (std::accumulate(fNstationsGeometry.cbegin(), fNstationsGeometry.cend() - 1, 0) != *(fNstationsGeometry.cend() - 1)) { 
+
+  if (std::accumulate(fNstationsGeometry.cbegin(), fNstationsGeometry.cend() - 1, 0)
+      != *(fNstationsGeometry.cend() - 1)) {
     throw std::logic_error("L1Parameters: invalid object condition: total number of stations provided by geometry "
                            "differs from the sum of the station numbers for individual detector subsystems");
   };
-  
-  if (std::accumulate(fNstationsActive.cbegin(), fNstationsActive.cend() - 1, 0) != *(fNstationsActive.cend() - 1)) { 
+
+  if (std::accumulate(fNstationsActive.cbegin(), fNstationsActive.cend() - 1, 0) != *(fNstationsActive.cend() - 1)) {
     throw std::logic_error("L1Parameters: invalid object condition: total number of stations active in tracking "
                            "differs from the sum of the station numbers for individual detector subsystems");
   };
@@ -113,8 +113,9 @@ void L1Parameters::CheckConsistency() const {
    *   (ii)  subsequence of all the elements, which are not equal -1, must be a gapless subset of integer numbers starting with 0
    */
 
-  auto filterInactiveStationIDs = [](int x) {return x != -1;};
-  int nStationsCheck = std::count_if(fActiveStationGlobalIDs.cbegin(), fActiveStationGlobalIDs.cend(), filterInactiveStationIDs);
+  auto filterInactiveStationIDs = [](int x) { return x != -1; };
+  int nStationsCheck =
+    std::count_if(fActiveStationGlobalIDs.cbegin(), fActiveStationGlobalIDs.cend(), filterInactiveStationIDs);
   if (nStationsCheck != *(fNstationsActive.cend() - 1)) {
     std::stringstream msg;
     msg << "L1Parameters: invalid object condition: array of active station IDs is not consistent "
@@ -123,21 +124,23 @@ void L1Parameters::CheckConsistency() const {
     throw std::logic_error(msg.str());
   }
 
-  // Check, if the subsequence of all the elements, which are not equal -1, must be a gapless subset of integer numbers 
+  // Check, if the subsequence of all the elements, which are not equal -1, must be a gapless subset of integer numbers
   // starting from 0. If it is, the testValue in the end must be equal the number of non -1 elements
 
-  std::vector<int> idsCheck(nStationsCheck); // temporary vector containing a sequence of active station IDs without -1 elements
-  std::copy_if(fActiveStationGlobalIDs.cbegin(), fActiveStationGlobalIDs.cend(), idsCheck.begin(), filterInactiveStationIDs);
+  std::vector<int> idsCheck(
+    nStationsCheck);  // temporary vector containing a sequence of active station IDs without -1 elements
+  std::copy_if(fActiveStationGlobalIDs.cbegin(), fActiveStationGlobalIDs.cend(), idsCheck.begin(),
+               filterInactiveStationIDs);
   bool isStationIDsOk = true;
-  for (int id = 0; id < nStationsCheck; ++id) { 
-    isStationIDsOk = isStationIDsOk && idsCheck[id] == id; 
+  for (int id = 0; id < nStationsCheck; ++id) {
+    isStationIDsOk = isStationIDsOk && idsCheck[id] == id;
   }
   if (!isStationIDsOk) {
     std::stringstream msg;
     msg << "L1Parameters: invalid object condition: array of active station IDs is not a gapless subset "
         << "of integer numbers starting from 0:\n\t";
-    for (auto id: fActiveStationGlobalIDs) { 
-      msg << std::setw(3) << std::setfill(' ') << id << ' '; 
+    for (auto id : fActiveStationGlobalIDs) {
+      msg << std::setw(3) << std::setfill(' ') << id << ' ';
     }
     throw std::logic_error(msg.str());
   }
@@ -149,7 +152,7 @@ void L1Parameters::CheckConsistency() const {
   L1Utils::CheckSimdVectorEquality(fTargetPos[0], "L1Parameters: target position x");
   L1Utils::CheckSimdVectorEquality(fTargetPos[1], "L1Parameters: target position y");
   L1Utils::CheckSimdVectorEquality(fTargetPos[2], "L1Parameters: target position z");
-  
+
   /*
    * Check vertex field region and value objects at primary vertex
    */
@@ -176,7 +179,7 @@ void L1Parameters::CheckConsistency() const {
       throw std::logic_error(msg.str());
     }
   }
-  
+
   /*
    * Check thickness maps
    * NOTE: If a L1Material map was not set up, it is accounted inconsistent (uninitialized). In the array of thickness maps for each 
@@ -212,12 +215,12 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
   aStream << indent << "                              L1 parameters list\n";
   aStream << indent << "--------------------------------------------------------------------------------\n";
   aStream << indent << "COMPILE TIME CONSTANTS:\n";
-  aStream << indent << indentChar << "Bits to code one station:           " <<L1Constants::size::kStationBits << '\n';
-  aStream << indent << indentChar << "Bits to code one thread:            " <<L1Constants::size::kThreadBits << '\n';
-  aStream << indent << indentChar << "Bits to code one triplet:           " <<L1Constants::size::kTripletBits << '\n';
-  aStream << indent << indentChar << "Max number of stations:             " <<L1Constants::size::kMaxNstations << '\n';
-  aStream << indent << indentChar << "Max number of threads:              " <<L1Constants::size::kMaxNthreads << '\n';
-  aStream << indent << indentChar << "Max number of triplets:             " <<L1Constants::size::kMaxNtriplets << '\n';
+  aStream << indent << indentChar << "Bits to code one station:           " << L1Constants::size::kStationBits << '\n';
+  aStream << indent << indentChar << "Bits to code one thread:            " << L1Constants::size::kThreadBits << '\n';
+  aStream << indent << indentChar << "Bits to code one triplet:           " << L1Constants::size::kTripletBits << '\n';
+  aStream << indent << indentChar << "Max number of stations:             " << L1Constants::size::kMaxNstations << '\n';
+  aStream << indent << indentChar << "Max number of threads:              " << L1Constants::size::kMaxNthreads << '\n';
+  aStream << indent << indentChar << "Max number of triplets:             " << L1Constants::size::kMaxNtriplets << '\n';
   aStream << indent << "RUNTIME CONSTANTS:\n";
   aStream << indent << indentChar << "Max number of doublets per singlet: " << fMaxDoubletsPerSinglet << '\n';
   aStream << indent << indentChar << "Max number of triplets per doublet: " << fMaxTripletPerDoublets << '\n';
@@ -226,32 +229,33 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
     aStream << idx << ") " << fCAIterations[idx].ToString(indentLevel + 1) << '\n';
   }
   aStream << indent << "GEOMETRY:\n";
-  
+
   aStream << indent << indentChar << "TARGET:\n";
   aStream << indent << indentChar << indentChar << "Position:\n";
-  for (int dim = 0; dim < 3 /*nDimensions*/; ++dim ) {
-    aStream << indent << indentChar << indentChar << indentChar << char(120 + dim) << " = " << fTargetPos[dim][0] << " cm\n";
+  for (int dim = 0; dim < 3 /*nDimensions*/; ++dim) {
+    aStream << indent << indentChar << indentChar << indentChar << char(120 + dim) << " = " << fTargetPos[dim][0]
+            << " cm\n";
   }
-  
+
   aStream << indent << indentChar << "NUMBER OF STATIONS:\n";
   aStream << indent << indentChar << indentChar << "Number of stations (Geometry): ";
-  for (int idx = 0; idx < int(fNstationsGeometry.size()); ++idx ) {
+  for (int idx = 0; idx < int(fNstationsGeometry.size()); ++idx) {
     if (int(fNstationsGeometry.size() - 1) == idx) { aStream << " | total = "; }
     aStream << std::setw(2) << std::setfill(' ') << fNstationsGeometry[idx] << ' ';
   }
   aStream << '\n';
   aStream << indent << indentChar << indentChar << "Number of stations (Active):   ";
-  for (int idx = 0; idx < int(fNstationsActive.size()); ++idx ) {
+  for (int idx = 0; idx < int(fNstationsActive.size()); ++idx) {
     if (int(fNstationsActive.size() - 1) == idx) { aStream << " | total = "; }
     aStream << std::setw(2) << std::setfill(' ') << fNstationsActive[idx] << ' ';
   }
   aStream << '\n';
   aStream << indent << indentChar << indentChar << "Active station indeces: ";
-  for (int idx = 0; idx < *(fNstationsActive.end() - 1); ++idx ) {
+  for (int idx = 0; idx < *(fNstationsActive.end() - 1); ++idx) {
     aStream << std::setw(3) << std::setfill(' ') << fActiveStationGlobalIDs[idx] << ' ';
   }
   aStream << '\n';
-  
+
   aStream << indent << indentChar << "STATIONS:\n ";
   for (int idx = 0; idx < *(fNstationsActive.end() - 1); ++idx) {
     aStream << indent << indentChar << indentChar << fStations[idx].ToString(verbosity) << '\n';

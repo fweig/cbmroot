@@ -29,7 +29,7 @@ void L1UMeasurementInfo::CheckConsistency() const
   L1Utils::CheckSimdVectorEquality(cos_phi, "L1UMeasurementsInfo::cos_phi");
   L1Utils::CheckSimdVectorEquality(sin_phi, "L1UMeasurementsInfo::sin_phi");
   L1Utils::CheckSimdVectorEquality(sigma2, "L1UMeasurementsInfo::sigma2");
-  
+
   /*(ii) Sigma2 possible values*/
   if (sigma2[0] < 0) {
     std::stringstream msg;

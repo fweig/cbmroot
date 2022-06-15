@@ -3,114 +3,115 @@
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 /***************************************************************************************************
- * @file   CbmStsTrackerIF.cxx
+ * @file   CbmStsTrackingInterface.cxx
  * @brief  Input data and parameters interface from STS subsystem used in L1 tracker (definition)
  * @since  27.05.2022
  * @author S.Zharko <s.zharko@gsi.de>
  ***************************************************************************************************/
 
-#include "CbmStsTrackerIF.h"
+#include "CbmStsTrackingInterface.h"
+
 #include "CbmStsStation.h"
+
 #include "FairDetector.h"
 #include "FairRunAna.h"
 #include <FairLogger.h>
+
 #include "TMath.h"
+
 #include "L1Def.h"
 
-ClassImp(CbmStsTrackerIF)
+ClassImp(CbmStsTrackingInterface)
 
-CbmStsTrackerIF* CbmStsTrackerIF::fpInstance = nullptr;
+  CbmStsTrackingInterface* CbmStsTrackingInterface::fpInstance = nullptr;
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-CbmStsTrackerIF::CbmStsTrackerIF() : FairTask("CbmStsTrackerIF")
+CbmStsTrackingInterface::CbmStsTrackingInterface() : FairTask("CbmStsTrackingInterface")
 {
   if (!fpInstance) { fpInstance = this; }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-CbmStsTrackerIF::~CbmStsTrackerIF()
+CbmStsTrackingInterface::~CbmStsTrackingInterface()
 {
   if (fpInstance == this) { fpInstance = nullptr; }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetTimeResolution(int /*stationId*/) const { return 5.; }
+double CbmStsTrackingInterface::GetTimeResolution(int /*stationId*/) const { return 5.; }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetZ(int stationId) const
-{ 
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetZ(); 
+double CbmStsTrackingInterface::GetZ(int stationId) const
+{
+  return CbmStsSetup::Instance()->GetStation(stationId)->GetZ();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetXmax(int stationId) const 
-{ 
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetXmax(); 
+double CbmStsTrackingInterface::GetXmax(int stationId) const
+{
+  return CbmStsSetup::Instance()->GetStation(stationId)->GetXmax();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetYmax(int stationId) const 
-{ 
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetYmax(); 
+double CbmStsTrackingInterface::GetYmax(int stationId) const
+{
+  return CbmStsSetup::Instance()->GetStation(stationId)->GetYmax();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetRmin(int /*stationId*/) const { return 0.; }
+double CbmStsTrackingInterface::GetRmin(int /*stationId*/) const { return 0.; }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetRmax(int stationId) const 
-{ 
-  return GetXmax(stationId) > GetYmax(stationId) ? GetXmax(stationId) : GetYmax(stationId); 
+double CbmStsTrackingInterface::GetRmax(int stationId) const
+{
+  return GetXmax(stationId) > GetYmax(stationId) ? GetXmax(stationId) : GetYmax(stationId);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-int CbmStsTrackerIF::GetNtrackingStations() const 
-{ 
-  return CbmStsSetup::Instance()->GetNofStations(); 
+int CbmStsTrackingInterface::GetNtrackingStations() const { return CbmStsSetup::Instance()->GetNofStations(); }
+
+//-------------------------------------------------------------------------------------------------------------------------------------
+//
+double CbmStsTrackingInterface::GetThickness(int stationId) const
+{
+  return CbmStsSetup::Instance()->GetStation(stationId)->GetSensorD();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetThickness(int stationId) const 
-{ 
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetSensorD(); 
+double CbmStsTrackingInterface::GetRadLength(int stationId) const
+{
+  return CbmStsSetup::Instance()->GetStation(stationId)->GetRadLength();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetRadLength(int stationId) const 
-{ 
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetRadLength(); 
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmStsTrackerIF::GetStripsStereoAngleFront(int stationId) const 
-{ 
+double CbmStsTrackingInterface::GetStripsStereoAngleFront(int stationId) const
+{
   auto station = CbmStsSetup::Instance()->GetStation(stationId);
   return station->GetSensorRotation() + station->GetSensorStereoAngle(0) * TMath::Pi() / 180.;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetStripsStereoAngleBack(int stationId) const 
-{ 
+double CbmStsTrackingInterface::GetStripsStereoAngleBack(int stationId) const
+{
   auto station = CbmStsSetup::Instance()->GetStation(stationId);
   return station->GetSensorRotation() + station->GetSensorStereoAngle(1) * TMath::Pi() / 180.;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetStripsSpatialRmsFront(int stationId) const
+double CbmStsTrackingInterface::GetStripsSpatialRmsFront(int stationId) const
 {
   auto station = CbmStsSetup::Instance()->GetStation(stationId);
   return station->GetSensorPitch(0) / TMath::Sqrt(12.);
@@ -119,7 +120,7 @@ double CbmStsTrackerIF::GetStripsSpatialRmsFront(int stationId) const
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackerIF::GetStripsSpatialRmsBack(int stationId) const
+double CbmStsTrackingInterface::GetStripsSpatialRmsBack(int stationId) const
 {
   auto station = CbmStsSetup::Instance()->GetStation(stationId);
   return station->GetSensorPitch(0) / TMath::Sqrt(12.);
@@ -127,50 +128,56 @@ double CbmStsTrackerIF::GetStripsSpatialRmsBack(int stationId) const
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-bool CbmStsTrackerIF::IsTimeInfoProvided(int /*stationId*/) const { return true; }
+bool CbmStsTrackingInterface::IsTimeInfoProvided(int /*stationId*/) const { return true; }
 
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-InitStatus CbmStsTrackerIF::Init()
+InitStatus CbmStsTrackingInterface::Init()
 {
-  LOG(info) << "\033[1;33mCALL CbmStsTrackerIF::Init()\033[0m";
+  LOG(info) << "\033[1;33mCALL CbmStsTrackingInterface::Init()\033[0m";
 
   // Check, if all the necessary parameter containers were found
   if (!fStsParSetModule) { return kFATAL; }
   if (!fStsParSetSensor) { return kFATAL; }
   if (!fStsParSetSensorCond) { return kFATAL; }
-  
+
   // Initialize CbmStsSetup instance
   auto stsSetup = CbmStsSetup::Instance();
   if (!stsSetup->IsInit()) { stsSetup->Init(nullptr); }
   if (!stsSetup->IsModuleParsInit()) { stsSetup->SetModuleParameters(fStsParSetModule); }
   if (!stsSetup->IsSensorParsInit()) { stsSetup->SetSensorParameters(fStsParSetSensor); }
   if (!stsSetup->IsSensorCondInit()) { stsSetup->SetSensorConditions(fStsParSetSensorCond); }
-  
+
   return kSUCCESS;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-InitStatus CbmStsTrackerIF::ReInit()
+InitStatus CbmStsTrackingInterface::ReInit()
 {
-  LOG(info) << "\033[1;33mCALL CbmStsTrackerIF::ReInit()\033[0m";
+  LOG(info) << "\033[1;33mCALL CbmStsTrackingInterface::ReInit()\033[0m";
   this->SetParContainers();
   return Init();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-void CbmStsTrackerIF::SetParContainers()
+void CbmStsTrackingInterface::SetParContainers()
 {
-  auto runtimeDb = FairRunAna::Instance()->GetRuntimeDb();
+  auto runtimeDb       = FairRunAna::Instance()->GetRuntimeDb();
   fStsParSetModule     = dynamic_cast<CbmStsParSetModule*>(runtimeDb->getContainer("CbmStsParSetModule"));
   fStsParSetSensor     = dynamic_cast<CbmStsParSetSensor*>(runtimeDb->getContainer("CbmStsParSetSensor"));
   fStsParSetSensorCond = dynamic_cast<CbmStsParSetSensorCond*>(runtimeDb->getContainer("CbmStsParSetSensorCond"));
-  if (!fStsParSetModule) { LOG(fatal) << "CbmStsTrackerIF::SetParContainers: error accessing to CbmStsParSetModule container"; }
-  if (!fStsParSetSensor) { LOG(fatal) << "CbmStsTrackerIF::SetParContainers: error accessing to CbmStsParSetSensor container"; }
-  if (!fStsParSetSensorCond) { LOG(fatal) << "CbmStsTrackerIF::SetParContainers: error accessing to CbmStsParSetSensorCond container"; }
+  if (!fStsParSetModule) {
+    LOG(fatal) << "CbmStsTrackingInterface::SetParContainers: error accessing to CbmStsParSetModule container";
+  }
+  if (!fStsParSetSensor) {
+    LOG(fatal) << "CbmStsTrackingInterface::SetParContainers: error accessing to CbmStsParSetSensor container";
+  }
+  if (!fStsParSetSensorCond) {
+    LOG(fatal) << "CbmStsTrackingInterface::SetParContainers: error accessing to CbmStsParSetSensorCond container";
+  }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------

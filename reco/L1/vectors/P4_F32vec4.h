@@ -229,24 +229,15 @@ public:
   }
 
   /// Checks, if all bands are equal
-  /// NOTE: two values defined as signaling_NaN() are not equal, thus if there are all or one 
+  /// NOTE: two values defined as signaling_NaN() are not equal, thus if there are all or one
   /// of the words are kNaN, the function returns false
-  bool IsHorizontallyEqual() const
-  {
-    return v[0] == v[1] && v[1] == v[2] && v[2] == v[3];
-  }
+  bool IsHorizontallyEqual() const { return v[0] == v[1] && v[1] == v[2] && v[2] == v[3]; }
 
   /// Checks, if any of the bands is NaN
-  bool IsNanAny() const
-  {
-    return std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]) || std::isnan(v[3]);
-  }
+  bool IsNanAny() const { return std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]) || std::isnan(v[3]); }
 
   /// Checks, if all of the bands is NaN
-  bool IsNanAll() const
-  {
-    return std::isnan(v[0]) && std::isnan(v[1]) && std::isnan(v[2]) && std::isnan(v[3]);
-  }
+  bool IsNanAll() const { return std::isnan(v[0]) && std::isnan(v[1]) && std::isnan(v[2]) && std::isnan(v[3]); }
 
 } __attribute__((aligned(16)));
 

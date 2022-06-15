@@ -9,9 +9,9 @@
 #include "CbmKFFieldMath.h"
 #include "CbmKFHit.h"
 #include "CbmKFMath.h"
-#include "CbmTrackerDetInitializer.h"
-#include "CbmMvdTrackerIF.h"
-#include "CbmStsTrackerIF.h"
+#include "CbmMvdTrackingInterface.h"
+#include "CbmStsTrackingInterface.h"
+#include "CbmTrackingDetectorInterfaceInit.h"
 
 #include "FairBaseParSet.h"
 #include "FairField.h"
@@ -81,9 +81,10 @@ CbmKF::CbmKF(const char* name, Int_t iVerbose)
 {
   if (!fInstance) fInstance = this;
 
-  if (!CbmTrackerDetInitializer::Instance()) {
-    LOG(fatal) << "CbmL1: CbmTrackerDetInitializer instance was not found. Please, add it as a task to your reco macro before the KF and L1 tasks:\n"
-               << "\033[1;30mrun->AddTask(new CbmTrackerDetInitializer());\033[0m";
+  if (!CbmTrackingDetectorInterfaceInit::Instance()) {
+    LOG(fatal) << "CbmL1: CbmTrackingDetectorInterfaceInit instance was not found. Please, add it as a task to your "
+                  "reco macro before the KF and L1 tasks:\n"
+               << "\033[1;30mrun->AddTask(new CbmTrackingDetectorInterfaceInit());\033[0m";
   }
 }
 
@@ -144,7 +145,7 @@ InitStatus CbmKF::Init()
   digiMan->Init();
   Bool_t useMVD = CbmDigiManager::IsPresent(ECbmModuleId::kMvd);
   if (useMVD) {
-    auto mvdInterface = CbmMvdTrackerIF::Instance();
+    auto mvdInterface = CbmMvdTrackingInterface::Instance();
 
     if (fVerbose) cout << "KALMAN FILTER : === READ MVD MATERIAL ===" << endl;
 
@@ -155,8 +156,8 @@ InitStatus CbmKF::Init()
 
       tube.ID = 1101 + ist;
       //   tube.F = 1.;
-      tube.z          = mvdInterface->GetZ(ist);
-      tube.dz         = mvdInterface->GetThickness(ist);
+      tube.z  = mvdInterface->GetZ(ist);
+      tube.dz = mvdInterface->GetThickness(ist);
       // TODO: verify the thickness of MVD stations
       tube.RadLength  = mvdInterface->GetRadLength(ist);
       tube.r          = mvdInterface->GetRmin(ist);
@@ -181,8 +182,8 @@ InitStatus CbmKF::Init()
 
   if (fVerbose) cout << "KALMAN FILTER : === READ STS MATERIAL ===" << endl;
 
-  auto stsInterface = CbmStsTrackerIF::Instance();
-  int NStations = stsInterface->GetNtrackingStations();
+  auto stsInterface = CbmStsTrackingInterface::Instance();
+  int NStations     = stsInterface->GetNtrackingStations();
 
   for (Int_t ist = 0; ist < NStations; ist++) {
     CbmKFTube tube;

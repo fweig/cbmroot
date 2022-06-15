@@ -67,11 +67,11 @@ CbmKFUMeasurement.cxx
 CbmKFVertexInterface.cxx 
 
 #### Tracker interfaces (will be moved to core/detector/*) ################
-CbmStsTrackerIF.cxx # TMP: Should be placed to the detector directory!
-CbmMvdTrackerIF.cxx # TMP: Should be placed to the detector directory!
-CbmMuchTrackerIF.cxx # TMP: Should be placed to the detector directory!
-CbmTrdTrackerIF.cxx # TMP: Should be placed to the detector directory!
-CbmTrackerDetInitializer.cxx
+CbmStsTrackingInterface.cxx # TMP: Should be placed to the detector directory!
+CbmMvdTrackingInterface.cxx # TMP: Should be placed to the detector directory!
+CbmMuchTrackingInterface.cxx # TMP: Should be placed to the detector directory!
+CbmTrdTrackingInterface.cxx # TMP: Should be placed to the detector directory!
+CbmTrackingDetectorInterfaceInit.cxx
 ###########################################################################
 
 #Interface/CbmEcalTrackExtrapolationKF.cxx
@@ -114,12 +114,12 @@ CbmKFUMeasurement.h
 CbmKFVertexInterface.h
 
 #### Tracker interfaces (will be moved to core/detector/*) ################
-CbmStsTrackerIF.h # TMP: Should be placed to the detector directory!
-CbmMvdTrackerIF.h # TMP: Should be placed to the detector directory!
-CbmMuchTrackerIF.h # TMP: Should be placed to the detector directory!
-CbmTrdTrackerIF.h # TMP: Should be placed to the detector directory!
-CbmTrackerDetInitializer.h
-L1TrackerInterfaceBase.h # TMP: Should be placed to the detector directory!
+CbmStsTrackingInterface.h # TMP: Should be placed to the detector directory!
+CbmMvdTrackingInterface.h # TMP: Should be placed to the detector directory!
+CbmMuchTrackingInterface.h # TMP: Should be placed to the detector directory!
+CbmTrdTrackingInterface.h # TMP: Should be placed to the detector directory!
+CbmTrackingDetectorInterfaceBase.h
+CbmTrackingDetectorInterfaceInit.h
 ###########################################################################
 
 #Interface/CbmEcalTrackExtrapolationKF.h

@@ -151,7 +151,7 @@ public:
   // The candidates may share any amount of hits.
   L1Vector<L1Branch> fTrackCandidates[L1Constants::size::kMaxNthreads] {"L1Algo::fTrackCandidates"};
 
-  Tindex fDupletPortionStopIndex[L1Constants::size::kMaxNstations] {0};     // end of the duplet portions for the station
+  Tindex fDupletPortionStopIndex[L1Constants::size::kMaxNstations] {0};  // end of the duplet portions for the station
   L1Vector<Tindex> fDupletPortionSize {"L1Algo::fDupletPortionSize"};  // N duplets in a portion
 
   /********************************************************************************************/ /**
@@ -305,8 +305,8 @@ public:
     MaxNPortion        = 40 * coeff / multiCoeff,
 
 
-    MaxArrSize = MaxNPortion * MaxPortionDoublets / L1Constants::size::kMaxNstations  
-                   //200000,  // standart size of big arrays  // mas be 40000 for normal work in cbmroot!
+    MaxArrSize = MaxNPortion * MaxPortionDoublets / L1Constants::size::kMaxNstations
+    //200000,  // standart size of big arrays  // mas be 40000 for normal work in cbmroot!
   };
 
 
@@ -395,7 +395,7 @@ public:
   L1InitManager* GetInitManager() { return &fInitManager; }
 
 private:
-  L1Parameters  fParameters {};                ///< Object of L1Algo parameters class
+  L1Parameters fParameters {};    ///< Object of L1Algo parameters class
   L1InitManager fInitManager {};  ///< Object of L1Algo initialization manager class
 
 
@@ -497,7 +497,8 @@ private:
 
   /// Find the doublets. Reformat data in the portion of doublets.
   void f20(  // input
-    Tindex n1, const L1Station& stal, const L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1, L1HitIndex_t* hitsl_1,
+    Tindex n1, const L1Station& stal, const L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1,
+    L1HitIndex_t* hitsl_1,
 
     // output
     Tindex& n2, L1Vector<L1HitIndex_t>& i1_2,
@@ -687,7 +688,7 @@ private:
   fvec fMaxInvMom {L1Utils::kNaN};       ///< max considered q/p for tracks
   fvec fMaxSlopePV {L1Utils::kNaN};      ///< max slope (tx\ty) in prim vertex
   float fMaxSlope {L1Utils::kNaN};       ///< max slope (tx\ty) in 3d hit position of a triplet
-  
+
   fvec fTargX {L1Utils::kNaN};           ///< target position x coordinate for the current iteration (modifiable)
   fvec fTargY {L1Utils::kNaN};           ///< target position y coordinate for the current iteration (modifiable)
   fvec fTargZ {L1Utils::kNaN};           ///< target position z coordinate for the current iteration (modifiable)

@@ -25,7 +25,7 @@ void L1Station::CheckConsistency() const
 
   if (timeInfo != 0 && timeInfo != 1) {
     std::stringstream msg;
-    msg << "L1Station: illegal time information flag (timeInfo = " << timeInfo << ", " 
+    msg << "L1Station: illegal time information flag (timeInfo = " << timeInfo << ", "
         << "0 [time information is not used] or 1 [time information is used] expected)";
     throw std::logic_error(msg.str());
   }
@@ -36,7 +36,7 @@ void L1Station::CheckConsistency() const
         << "0 [station is outside the field] or 1 [station is inside the field] expected";
     throw std::logic_error(msg.str());
   }
-  
+
   /*
    * SIMD vector checks: all the words in a SIMD vector must be equal
    */
@@ -45,7 +45,7 @@ void L1Station::CheckConsistency() const
   L1Utils::CheckSimdVectorEquality(Rmin, "L1Station::Rmin");
   L1Utils::CheckSimdVectorEquality(Rmax, "L1Station::Rmax");
   L1Utils::CheckSimdVectorEquality(dt, "L1Station::dt");
-  
+
   /*
    * Inner and outer radia checks:
    *  (i)  both Rmin and Rmax must be >= 0
@@ -62,7 +62,7 @@ void L1Station::CheckConsistency() const
   /*
    * Time resolution cannot be smaller then 0
    */
-    
+
   if (dt[0] < 0) {
     std::stringstream msg;
     msg << "L1Station: " << this->ToString() << " has incorrect time resolution value: "
@@ -73,9 +73,9 @@ void L1Station::CheckConsistency() const
   /*
    * Check consistency of other members
    */
-  
-  //materialInfo.CheckConsistency(); 
-  // TODO: Temporarily switched off, because Much has RL = 0, which is actually incorrect, but really is not used. 
+
+  //materialInfo.CheckConsistency();
+  // TODO: Temporarily switched off, because Much has RL = 0, which is actually incorrect, but really is not used.
   //       One should provide average radiation length values for each Much layer (S.Zharko)
   fieldSlice.CheckConsistency();
   frontInfo.CheckConsistency();
@@ -100,9 +100,7 @@ std::string L1Station::ToString(int verbosityLevel, int indentLevel) const
   if (verbosityLevel > 1) {
     // TODO: probably we can have verbosity level and address for each underlying object (S.Zharko)
   }
-  if (verbosityLevel == 0) {
-    aStream << "L1Station at z = " << z[0] << " cm" ;
-  }
+  if (verbosityLevel == 0) { aStream << "L1Station at z = " << z[0] << " cm"; }
   else {
     aStream << '\n' << indent << "Address: " << this << '\n';
     aStream << indent << "Station type ID:  " << std::setw(12) << std::setfill(' ') << type << '\n';

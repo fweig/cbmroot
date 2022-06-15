@@ -12,24 +12,25 @@
 #ifndef L1Parameters_h
 #define L1Parameters_h 1
 
+#include <type_traits>
+
+#include <numeric>
+
 #include "L1CAIteration.h"
 #include "L1Constants.h"
-#include "L1Station.h"
 #include "L1MaterialInfo.h"
+#include "L1Station.h"
 #include "L1Utils.h"
 #include "L1Vector.h"
 
-#include <type_traits>
-#include <numeric>
-
-class L1InitManager; 
+class L1InitManager;
 enum class L1DetectorID;
 
 /// Type definitions for used containers
 using L1IterationsContainer_t = L1Vector<L1CAIteration>;
-using L1StationsContainer_t = std::array<L1Station, L1Constants::size::kMaxNstations>;
-using L1MaterialContainer_t = std::array<L1Material, L1Constants::size::kMaxNstations>;
-  
+using L1StationsContainer_t   = std::array<L1Station, L1Constants::size::kMaxNstations>;
+using L1MaterialContainer_t   = std::array<L1Material, L1Constants::size::kMaxNstations>;
+
 
 /// Class L1Parameters represents a container for all external parameters of the L1 tracking algorithm,
 /// including geometry parameters and physics cuts. The instance of the L1Parameters is constructed inside
@@ -37,22 +38,23 @@ using L1MaterialContainer_t = std::array<L1Material, L1Constants::size::kMaxNsta
 ///
 class alignas(L1Constants::misc::kAlignment) L1Parameters {
   using L1DetectorID_t = std::underlying_type_t<L1DetectorID>;
+
 public:
   /// Default constructor
   L1Parameters();
-  
+
   /// Destructor
   ~L1Parameters() noexcept;
-  
+
   /// Copy constructor
   L1Parameters(const L1Parameters& other) noexcept;
-  
+
   /// Copy assignment operator
   L1Parameters& operator=(const L1Parameters& other) noexcept;
-  
+
   /// Move constructor
   L1Parameters(L1Parameters&& other) noexcept;
-  
+
   /// Move assignment operator
   L1Parameters& operator=(L1Parameters&& other) noexcept;
 
@@ -67,16 +69,16 @@ public:
 
   /// Sets upper-bound cut on max number of doublets per one singlet
   void SetMaxDoubletsPerSinglet(unsigned int value) { fMaxDoubletsPerSinglet = value; }
-  
+
   /// Sets upper-bound cut on max number of triplets per one doublet
   void SetMaxTripletPerDoublets(unsigned int value) { fMaxTripletPerDoublets = value; }
 
   /// Gets upper-bound cut on max number of doublets per one singlet
   unsigned int GetMaxDoubletsPerSinglet() const { return fMaxDoubletsPerSinglet; }
-  
+
   /// Gets upper-bound cut on max number of triplets per one doublet
   unsigned int GetMaxTripletPerDoublets() const { return fMaxTripletPerDoublets; }
-  
+
   /// Gets total number of active stations
   int GetNstationsActive() const { return fNstationsActive[fNstationsActive.size() - 1]; }
 
@@ -101,7 +103,8 @@ public:
   __attribute__((always_inline)) int GetStationIndexGeometry(int localIndex, L1DetectorID detectorID) const
   {
     return localIndex
-           + std::accumulate(fNstationsGeometry.cbegin(), fNstationsGeometry.cbegin() + static_cast<int>(detectorID), 0);
+           + std::accumulate(fNstationsGeometry.cbegin(), fNstationsGeometry.cbegin() + static_cast<int>(detectorID),
+                             0);
   }
 
   /// Calculates global index of station used by track finder
@@ -111,20 +114,20 @@ public:
   {
     return fActiveStationGlobalIDs[GetStationIndexGeometry(localIndex, detectorID)];
   }
-  
+
   /// Provides access to L1CAIteration vector (const)
   const L1IterationsContainer_t& GetCAIterations() const { return fCAIterations; }
 
   /// Provides access to L1Stations container (const)
   const L1StationsContainer_t& GetStations() const { return fStations; }
-  
+
   /// Gets reference to the particular station
   /// \param iStation  Index of station in the active stations container
   const L1Station& GetStation(int iStation) const { return fStations[iStation]; }
 
   /// Gets reference to the array of station thickness map
   const L1MaterialContainer_t& GetThicknessMaps() const { return fThickMap; }
-  
+
   /// Gets material thickness in units of radiation length in a point on the XY plane for a selected station
   /// \param iStActive  Global index of an active station
   /// \param xPos       Position of the point in X dimension [cm]
@@ -148,7 +151,7 @@ public:
   fvec GetTargetPositionX() const { return fTargetPos[0]; }
   fvec GetTargetPositionY() const { return fTargetPos[1]; }
   fvec GetTargetPositionZ() const { return fTargetPos[2]; }
-  
+
   /// Gets L1FieldRegion object at primary vertex
   const L1FieldRegion& GetVertexFieldRegion() const { return fVertexFieldRegion; }
 
@@ -159,25 +162,26 @@ public:
   void CheckConsistency() const;
 
 private:
-  
   unsigned int fMaxDoubletsPerSinglet {150};  ///< Upper-bound cut on max number of doublets per one singlet
   unsigned int fMaxTripletPerDoublets {15};   ///< Upper-bound cut on max number of triplets per one doublet
 
-  alignas(L1Constants::misc::kAlignment) L1IterationsContainer_t fCAIterations {};  ///< L1 Track finder iterations vector
+  alignas(L1Constants::misc::kAlignment)
+    L1IterationsContainer_t fCAIterations {};  ///< L1 Track finder iterations vector
 
   /*************************
    ** Geometry parameters **
    *************************/
   /// Target position
-  alignas(L1Constants::misc::kAlignment) std::array<fvec, /*nDimensions*/3> fTargetPos {L1Utils::kNaN, L1Utils::kNaN, L1Utils::kNaN};
+  alignas(L1Constants::misc::kAlignment) std::array<fvec, /*nDimensions*/ 3> fTargetPos {L1Utils::kNaN, L1Utils::kNaN,
+                                                                                         L1Utils::kNaN};
 
   /// Field value object at primary vertex (between target and the first station)
   alignas(L1Constants::misc::kAlignment) L1FieldValue fVertexFieldValue {};
-  
+
   /// Field region object at primary vertex (between target and the first station)
   alignas(L1Constants::misc::kAlignment) L1FieldRegion fVertexFieldRegion {};
 
-  /// Array of stations 
+  /// Array of stations
   alignas(L1Constants::misc::kAlignment) L1StationsContainer_t fStations {};
 
   /// Array of station thickness map
@@ -197,7 +201,7 @@ private:
   ///   actual index:  0  1  2  3  4  5  6  7  8  9  0  0  0  0
   ///   active index:  0 -1  1  2 -1  3  4  5  6  7  0  0  0  0
   alignas(L1Constants::misc::kAlignment) std::array<int, L1Constants::size::kMaxNstations> fActiveStationGlobalIDs {};
- 
+
   /********************************
    ** Friend classes declaration **
    ********************************/
