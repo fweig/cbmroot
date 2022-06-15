@@ -98,7 +98,6 @@ void ana_hits(Int_t nEvents = 10, Int_t iSel = 1, Int_t iGenCor = 1, char* cFile
   // =========================================================================
   /*
    CbmStsDigitize* stsDigitize = new CbmStsDigitize(); //necessary for kalman !!
-   run->AddTask(new CbmTrackingDetectorInterfaceInit());
    CbmKF* kalman = new CbmKF();
 
    CbmTofTrackFinder* tofTrackFinder= new CbmTofTrackFinderNN();
