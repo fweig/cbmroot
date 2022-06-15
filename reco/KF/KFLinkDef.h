@@ -38,10 +38,6 @@
 #pragma link C++ class CbmGlobalTrackFitterKF + ;
 
 #pragma link C++ class CbmTrackingDetectorInterfaceInit + ;
-#pragma link C++ class CbmMvdTrackingInterface + ;
-#pragma link C++ class CbmStsTrackingInterface + ;
-#pragma link C++ class CbmMuchTrackingInterface + ;
-#pragma link C++ class CbmTrdTrackingInterface + ;
 //KFQA
 /*
 #pragma link C++ class CbmKFPartEfficiencies + ;

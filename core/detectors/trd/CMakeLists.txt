@@ -47,6 +47,7 @@ CbmTrdParModDigi.cxx
 CbmTrdParModGas.cxx
 CbmTrdParModGain.cxx
 CbmTrdParModGeo.cxx
+CbmTrdTrackingInterface.cxx
 #tools
 CbmTrdGeoHandler.cxx
 CbmTrdUtils.cxx

@@ -17,7 +17,6 @@
 #include "CbmStsTrackingInterface.h"
 #include "CbmTrdTrackingInterface.h"
 
-#include "FairTask.h"
 #include <FairLogger.h>
 
 ClassImp(CbmTrackingDetectorInterfaceInit)

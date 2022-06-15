@@ -24,6 +24,7 @@
 #pragma link C++ class CbmStsSensor + ;
 #pragma link C++ class CbmStsSetup + ;
 #pragma link C++ class CbmStsStation + ;
+#pragma link C++ class CbmStsTrackingInterface + ;
 
 #pragma link C++ enum CbmStsELoss;
 #pragma link C++ enum CbmStsSensorClass;

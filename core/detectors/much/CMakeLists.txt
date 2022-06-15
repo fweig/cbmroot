@@ -5,7 +5,7 @@
 
 Set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}
-
+  ${CBMBASE_DIR}
   ${CBMDATA_DIR}
   ${CBMDATA_DIR}/much
 )
@@ -50,6 +50,8 @@ CbmMuchStation.cxx
 CbmMuchSegmentAuto.cxx
 CbmMuchSegmentManual.cxx
 CbmMuchSegmentSector.cxx
+
+CbmMuchTrackingInterface.cxx
 )
 
 set(LINKDEF CbmMuchBaseLinkDef.h)

@@ -11,20 +11,14 @@
 
 #include "CbmMuchTrackingInterface.h"
 
-#include "CbmMuchModuleGem.h"
-#include "CbmMuchPad.h"
-#include "CbmMuchStation.h"
 
 #include "FairDetector.h"
 #include "FairRunAna.h"
 #include <FairLogger.h>
 
-#include "TFile.h"
-#include "TMath.h"
-
 ClassImp(CbmMuchTrackingInterface)
 
-  CbmMuchTrackingInterface* CbmMuchTrackingInterface::fpInstance = nullptr;
+CbmMuchTrackingInterface* CbmMuchTrackingInterface::fpInstance = nullptr;
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
@@ -42,30 +36,6 @@ CbmMuchTrackingInterface::~CbmMuchTrackingInterface()
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmMuchTrackingInterface::GetTimeResolution(int /*stationId*/) const { return 3.9; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmMuchTrackingInterface::GetZ(int stationId) const { return GetMuchLayer(stationId)->GetZ(); }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmMuchTrackingInterface::GetXmax(int /*stationId*/) const { return 100.; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmMuchTrackingInterface::GetYmax(int /*stationId*/) const { return 100.; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmMuchTrackingInterface::GetRmin(int /*stationId*/) const { return 10.; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmMuchTrackingInterface::GetRmax(int /*stationId*/) const { return 100.; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
 int CbmMuchTrackingInterface::GetNtrackingStations() const
 {
   // NOTE: For MuCh detector subsystem, a MuCh layer is assigned as a tracking station! Thus, we here separate names for MuCh stations:
@@ -76,39 +46,6 @@ int CbmMuchTrackingInterface::GetNtrackingStations() const
   }
   return nStations;
 }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmMuchTrackingInterface::GetThickness(int stationId) const { return GetMuchLayer(stationId)->GetDz(); }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmMuchTrackingInterface::GetRadLength(int /*stationId*/) const
-{
-  return 0;  // TODO: Replace with correct value
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmMuchTrackingInterface::GetStripsStereoAngleFront(int /*stationId*/) const { return 0.; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmMuchTrackingInterface::GetStripsStereoAngleBack(int /*stationId*/) const { return TMath::Pi() / 2.; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmMuchTrackingInterface::GetStripsSpatialRmsFront(int /*stationId*/) const { return 0.35; }
-
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmMuchTrackingInterface::GetStripsSpatialRmsBack(int /*stationId*/) const { return 0.35; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-bool CbmMuchTrackingInterface::IsTimeInfoProvided(int /*stationId*/) const { return true; }
-
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
@@ -145,7 +82,6 @@ InitStatus CbmMuchTrackingInterface::Init()
 //
 InitStatus CbmMuchTrackingInterface::ReInit()
 {
-  LOG(info) << "\033[1;33mCALL CbmMuchTrackingInterface::ReInit()\033[0m";
   this->SetParContainers();
   return Init();
 }

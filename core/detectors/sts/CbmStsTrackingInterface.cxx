@@ -11,19 +11,13 @@
 
 #include "CbmStsTrackingInterface.h"
 
-#include "CbmStsStation.h"
-
 #include "FairDetector.h"
 #include "FairRunAna.h"
 #include <FairLogger.h>
 
-#include "TMath.h"
-
-#include "L1Def.h"
-
 ClassImp(CbmStsTrackingInterface)
 
-  CbmStsTrackingInterface* CbmStsTrackingInterface::fpInstance = nullptr;
+CbmStsTrackingInterface* CbmStsTrackingInterface::fpInstance = nullptr;
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
@@ -41,63 +35,9 @@ CbmStsTrackingInterface::~CbmStsTrackingInterface()
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackingInterface::GetTimeResolution(int /*stationId*/) const { return 5.; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmStsTrackingInterface::GetZ(int stationId) const
-{
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetZ();
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmStsTrackingInterface::GetXmax(int stationId) const
-{
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetXmax();
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmStsTrackingInterface::GetYmax(int stationId) const
-{
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetYmax();
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmStsTrackingInterface::GetRmin(int /*stationId*/) const { return 0.; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmStsTrackingInterface::GetRmax(int stationId) const
-{
-  return GetXmax(stationId) > GetYmax(stationId) ? GetXmax(stationId) : GetYmax(stationId);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-int CbmStsTrackingInterface::GetNtrackingStations() const { return CbmStsSetup::Instance()->GetNofStations(); }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmStsTrackingInterface::GetThickness(int stationId) const
-{
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetSensorD();
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmStsTrackingInterface::GetRadLength(int stationId) const
-{
-  return CbmStsSetup::Instance()->GetStation(stationId)->GetRadLength();
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
 double CbmStsTrackingInterface::GetStripsStereoAngleFront(int stationId) const
 {
-  auto station = CbmStsSetup::Instance()->GetStation(stationId);
+  auto station = GetStsStation(stationId);
   return station->GetSensorRotation() + station->GetSensorStereoAngle(0) * TMath::Pi() / 180.;
 }
 
@@ -105,38 +45,14 @@ double CbmStsTrackingInterface::GetStripsStereoAngleFront(int stationId) const
 //
 double CbmStsTrackingInterface::GetStripsStereoAngleBack(int stationId) const
 {
-  auto station = CbmStsSetup::Instance()->GetStation(stationId);
+  auto station = GetStsStation(stationId);
   return station->GetSensorRotation() + station->GetSensorStereoAngle(1) * TMath::Pi() / 180.;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmStsTrackingInterface::GetStripsSpatialRmsFront(int stationId) const
-{
-  auto station = CbmStsSetup::Instance()->GetStation(stationId);
-  return station->GetSensorPitch(0) / TMath::Sqrt(12.);
-}
-
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmStsTrackingInterface::GetStripsSpatialRmsBack(int stationId) const
-{
-  auto station = CbmStsSetup::Instance()->GetStation(stationId);
-  return station->GetSensorPitch(0) / TMath::Sqrt(12.);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-bool CbmStsTrackingInterface::IsTimeInfoProvided(int /*stationId*/) const { return true; }
-
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
 InitStatus CbmStsTrackingInterface::Init()
 {
-  LOG(info) << "\033[1;33mCALL CbmStsTrackingInterface::Init()\033[0m";
-
   // Check, if all the necessary parameter containers were found
   if (!fStsParSetModule) { return kFATAL; }
   if (!fStsParSetSensor) { return kFATAL; }
@@ -156,7 +72,6 @@ InitStatus CbmStsTrackingInterface::Init()
 //
 InitStatus CbmStsTrackingInterface::ReInit()
 {
-  LOG(info) << "\033[1;33mCALL CbmStsTrackingInterface::ReInit()\033[0m";
   this->SetParContainers();
   return Init();
 }

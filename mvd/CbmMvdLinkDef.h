@@ -57,6 +57,7 @@
 #pragma link C++ class CbmMvdReadoutSimple + ;
 #pragma link C++ class CbmMvdReadoutCluster + ;
 
+#pragma link C++ class CbmMvdTrackingInterface + ;
 
 //#pragma link C++ class MyG4UniversalFluctuationForSi+;
 //#pragma link C++ class CbmMvdFindHits+;

@@ -13,15 +13,14 @@
 #define CbmMvdTrackingInterface_h 1
 
 #include "CbmTrackingDetectorInterfaceBase.h"
+#include "CbmMvdDetector.h"
+#include "CbmMvdStationPar.h"
+#include "TMath.h"
 
 #include "FairTask.h"
 
 #include <iostream>
 #include <vector>
-
-
-class CbmMvdDetector;
-class CbmMvdStationPar;
 
 /// Class CbmMvdTrackingInterface is a CbmL1 subtask, which provides necessary methods for L1 tracker
 /// to access the geometry and dataflow settings.
@@ -44,72 +43,84 @@ public:
   static CbmMvdTrackingInterface* Instance() { return fpInstance; }
 
   /// Gets actual number of tracking stations, provided by the current geometry setup
-  int GetNtrackingStations() const;
-
-  /// Gets time resolution for a tracking station
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Time resolution [ns]
-  double GetTimeResolution(int stationId) const;
-
-  /// Gets z component of the tracking station position
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Z position of station [cm]
-  double GetZ(int stationId) const;
-
-  /// Gets max size of a tracking station along the X-axis
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Size of station along the X-axis [cm]
-  double GetXmax(int stationId) const;
-
-  /// Gets max size of a tracking station along the Y-axis
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Size of station along the Y-axis [cm]
-  double GetYmax(int stationId) const;
-
-  /// Gets size of inner radius of a tracking station
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Size of station inner radius [cm]
-  double GetRmin(int stationId) const;
-
-  /// Gets size of outer radius of a tracking station
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Size of station outer radius [cm]
-  double GetRmax(int stationId) const;
-
-  /// Gets the tracking station thickness along the Z-axis
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Station thickness [cm]
-  double GetThickness(int stationId) const;
+  int GetNtrackingStations() const { return fMvdStationPar->GetStationCount(); }
 
   /// Gets the tracking station radiation length
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Radiation length [cm]
-  double GetRadLength(int stationId) const;
+  double GetRadLength(int stationId) const 
+  { 
+    return fMvdStationPar->GetZThickness(stationId) / (10. * fMvdStationPar->GetZRadThickness(stationId)); 
+  }
 
-  /// Gets front strips stereo angle
+  /// Gets size of outer radius of a tracking station
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Absolute stereo angle for front strips [rad]
-  double GetStripsStereoAngleFront(int stationId) const;
+  /// \return Size of station outer radius [cm]
+  double GetRmax(int stationId) const 
+  {
+    return std::max(fMvdStationPar->GetHeight(stationId), fMvdStationPar->GetWidth(stationId));
+  }
 
-  /// Gets back strips stereo angle
+  /// Gets size of inner radius of a tracking station
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Absolute stereo angle for back strips [rad]
-  double GetStripsStereoAngleBack(int stationId) const;
-
-  /// Gets spatial resolution (RMS) for front strips
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Spatial resolution (RMS) for front strips [cm]
-  double GetStripsSpatialRmsFront(int stationId) const;
+  /// \return Size of station inner radius [cm]
+  double GetRmin(int stationId) const 
+  { 
+    return std::min(fMvdStationPar->GetBeamHeight(stationId), fMvdStationPar->GetBeamWidth(stationId)); 
+  }
 
   /// Gets spatial resolution (RMS) for back strips
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Spatial resolution (RMS) for front strips [cm]
-  double GetStripsSpatialRmsBack(int stationId) const;
+  double GetStripsSpatialRmsBack(int stationId) const { return fMvdStationPar->GetYRes(stationId) / 10000.; }
+
+  /// Gets spatial resolution (RMS) for front strips
+  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
+  /// \return Spatial resolution (RMS) for front strips [cm]
+  double GetStripsSpatialRmsFront(int stationId) const { return fMvdStationPar->GetXRes(stationId) / 10000.; }
+
+  /// Gets back strips stereo angle
+  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
+  /// \return Absolute stereo angle for back strips [rad]
+  double GetStripsStereoAngleBack(int /*stationId*/) const { return TMath::Pi() / 2.; }
+
+  /// Gets front strips stereo angle
+  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
+  /// \return Absolute stereo angle for front strips [rad]
+  double GetStripsStereoAngleFront(int /*stationId*/) const { return 0.; }
+ 
+  /// Gets the tracking station thickness along the Z-axis
+  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
+  /// \return Station thickness [cm]
+  double GetThickness(int stationId) const 
+  {
+    return fMvdStationPar->GetZThickness(stationId);
+  }
+
+  /// Gets time resolution for a tracking station
+  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
+  /// \return Time resolution [ns]
+  double GetTimeResolution(int /*stationId*/) const { return 1000.; }
+
+  /// Gets max size of a tracking station along the X-axis
+  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
+  /// \return Size of station along the X-axis [cm]
+  double GetXmax(int stationId) const { return this->GetRmax(stationId); }
+
+  /// Gets max size of a tracking station along the Y-axis
+  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
+  /// \return Size of station along the Y-axis [cm]
+  double GetYmax(int stationId) const { return this->GetRmax(stationId); }
+
+  /// Gets z component of the tracking station position
+  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
+  /// \return Z position of station [cm]
+  double GetZ(int stationId) const { return fMvdStationPar->GetZPosition(stationId); }
 
   /// Check if the detector provides time measurements
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Flag: true - station provides time measurements, false - station does not provide time measurements
-  bool IsTimeInfoProvided(int stationId) const;
+  bool IsTimeInfoProvided(int /*stationId*/) const { return false; }
 
   /// FairTask: sets parameter containers up
   void SetParContainers();

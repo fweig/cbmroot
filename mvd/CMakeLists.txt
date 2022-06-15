@@ -72,6 +72,7 @@ set(SRCS
   CbmMvdSensor.cxx
   CbmMvdDigiToHit.cxx
   CbmMvdDigiToHitTB.cxx
+  CbmMvdTrackingInterface.cxx
 
 #OLD
   CbmMvdClusterfinder.cxx

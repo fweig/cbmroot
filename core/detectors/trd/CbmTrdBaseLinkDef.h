@@ -33,6 +33,7 @@
 #pragma link C++ class CbmTrdParModGain + ;
 #pragma link C++ class CbmTrdParModGeo + ;
 #pragma link C++ class CbmTrdParModDigi + ;
+#pragma link C++ class CbmTrdTrackingInterface + ;
 //tools
 #pragma link C++ class CbmTrdGeoHandler + ;
 #pragma link C++ class CbmTrddEdxUtils + ;

@@ -27,6 +27,7 @@
 #pragma link C++ class CbmMuchPadRadial + ;
 #pragma link C++ class CbmMuchPadRectangular + ;
 #pragma link C++ class CbmMuchStation + ;
+#pragma link C++ class CbmMuchTrackingInterface + ;
 
 #pragma link C++ class CbmMuchSegmentAuto + ;
 #pragma link C++ class CbmMuchSegmentManual + ;

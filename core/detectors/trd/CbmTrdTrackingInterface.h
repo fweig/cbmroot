@@ -15,10 +15,8 @@
 #include "CbmTrackingDetectorInterfaceBase.h"
 #include "CbmTrdParModDigi.h"
 #include "CbmTrdParSetDigi.h"
-
 #include "FairTask.h"
-
-#include "TString.h"
+#include "TMath.h"
 
 #include <iostream>
 #include <vector>
@@ -48,70 +46,70 @@ public:
   /// Gets actual number of tracking stations, provided by the current geometry setup
   int GetNtrackingStations() const;
 
-  /// Gets time resolution for a station
+  /// Gets station radiation length
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Time resolution [ns]
-  double GetTimeResolution(int stationId) const;
-
-  /// Gets z component of the station position
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Z position of station [cm]
-  double GetZ(int stationId) const;
-
-  /// Gets max size of a station along the X-axis
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Size of station along the X-axis [cm]
-  double GetXmax(int stationId) const;
-
-  /// Gets max size of a station along the Y-axis
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Size of station along the Y-axis [cm]
-  double GetYmax(int stationId) const;
-
-  /// Gets size of inner radius of station
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Size of station inner radius [cm]
-  double GetRmin(int stationId) const;
+  /// \return Radiation length [cm]
+  double GetRadLength(int /*stationId*/) const { return 1.6; }
 
   /// Gets size of outer radius of station
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Size of station outer radius [cm]
-  double GetRmax(int stationId) const;
+  double GetRmax(int stationId) const { return 2. * this->GetXmax(stationId); }
 
-  /// Gets station thickness along the Z-axis
+  /// Gets size of inner radius of station
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Station thickness [cm]
-  double GetThickness(int stationId) const;
-
-  /// Gets station radiation length
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Radiation length [cm]
-  double GetRadLength(int stationId) const;
-
-  /// Gets front strips stereo angle
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Absolute stereo angle for front strips [rad]
-  double GetStripsStereoAngleFront(int stationId) const;
+  /// \return Size of station inner radius [cm]
+  double GetRmin(int /*stationId*/) const { return 0.; }
 
   /// Gets back strips stereo angle
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Absolute stereo angle for back strips [rad]
-  double GetStripsStereoAngleBack(int stationId) const;
+  double GetStripsStereoAngleBack(int /*stationId*/) const { return 0.5 * TMath::Pi(); }
 
-  /// Gets spatial resolution (RMS) for front strips
+  /// Gets front strips stereo angle
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Spatial resolution (RMS) for front strips [cm]
-  double GetStripsSpatialRmsFront(int stationId) const;
+  /// \return Absolute stereo angle for front strips [rad]
+  double GetStripsStereoAngleFront(int /*stationId*/) const { return 0.; }
 
   /// Gets spatial resolution (RMS) for back strips
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Spatial resolution (RMS) for front strips [cm]
-  double GetStripsSpatialRmsBack(int stationId) const;
+  double GetStripsSpatialRmsBack(int /*stationId*/) const { return 0.15; }
 
+  /// Gets spatial resolution (RMS) for front strips
+  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
+  /// \return Spatial resolution (RMS) for front strips [cm]
+  double GetStripsSpatialRmsFront(int /*stationId*/) const { return 0.15; }
+
+  /// Gets station thickness along the Z-axis
+  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
+  /// \return Station thickness [cm]
+  double GetThickness(int stationId) const { return 2. * GetTrdModulePar(stationId)->GetSizeZ(); }
+
+  /// Gets time resolution for a station
+  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
+  /// \return Time resolution [ns]
+  double GetTimeResolution(int /*stationId*/) const { return 10.; }
+
+  /// Gets max size of a station along the X-axis
+  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
+  /// \return Size of station along the X-axis [cm]
+  double GetXmax(int stationId) const { return GetTrdModulePar(stationId)->GetSizeX(); }
+
+  /// Gets max size of a station along the Y-axis
+  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
+  /// \return Size of station along the Y-axis [cm]
+  double GetYmax(int stationId) const { return GetTrdModulePar(stationId)->GetSizeY(); }
+
+  /// Gets z component of the station position
+  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
+  /// \return Z position of station [cm]
+  double GetZ(int stationId) const { return GetTrdModulePar(stationId)->GetZ(); }
+ 
   /// Check if station provides time measurements
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Flag: true - station provides time measurements, false - station does not provide time measurements
-  bool IsTimeInfoProvided(int stationId) const;
+  bool IsTimeInfoProvided(int /*stationId*/) const { return true; }
 
   /// FairTask: sets parameter containers up
   void SetParContainers();

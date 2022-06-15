@@ -25,6 +25,7 @@ CbmStsPhysics.cxx
 CbmStsSensor.cxx
 CbmStsSetup.cxx
 CbmStsStation.cxx
+CbmStsTrackingInterface.cxx
 )
 # -----  End of sources   ---------------------------------
 
@@ -101,6 +102,7 @@ FILES CbmStsContFact.h
 	  CbmStsSensor.h
 	  CbmStsSetup.h
 	  CbmStsStation.h
+    CbmStsTrackingInterface.h
 DESTINATION include
 )
 # ---------------------------------------------------------

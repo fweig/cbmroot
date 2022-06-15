@@ -12,7 +12,8 @@
 #ifndef CbmTrackingDetectorInterfaceInit_h
 #define CbmTrackingDetectorInterfaceInit_h 1
 
-class FairTask;
+#include "FairTask.h"
+
 class CbmMvdTrackingInterface;
 class CbmStsTrackingInterface;
 class CbmMuchTrackingInterface;

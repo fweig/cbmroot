@@ -14,10 +14,7 @@
 #include "FairDetector.h"
 #include "FairRunAna.h"
 #include <FairLogger.h>
-
-#include "TFile.h"
 #include "TGeoManager.h"
-#include "TMath.h"
 #include "TString.h"
 
 ClassImp(CbmTrdTrackingInterface)
@@ -40,30 +37,6 @@ CbmTrdTrackingInterface::~CbmTrdTrackingInterface()
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
-double CbmTrdTrackingInterface::GetTimeResolution(int /*stationId*/) const { return 10.; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmTrdTrackingInterface::GetZ(int stationId) const { return GetTrdModulePar(stationId)->GetZ(); }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmTrdTrackingInterface::GetXmax(int stationId) const { return GetTrdModulePar(stationId)->GetSizeX(); }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmTrdTrackingInterface::GetYmax(int stationId) const { return GetTrdModulePar(stationId)->GetSizeY(); }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmTrdTrackingInterface::GetRmin(int /*stationId*/) const { return 0.; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmTrdTrackingInterface::GetRmax(int stationId) const { return 2. * this->GetXmax(stationId); }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
 int CbmTrdTrackingInterface::GetNtrackingStations() const
 {
   // NOTE: For TRD detector subsystem, a TRD layer is assigned as a tracking station:
@@ -81,39 +54,6 @@ int CbmTrdTrackingInterface::GetNtrackingStations() const
   }
   return nTrdLayers;
 }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmTrdTrackingInterface::GetThickness(int stationId) const
-{
-  return 2. * GetTrdModulePar(stationId)->GetSizeZ();
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmTrdTrackingInterface::GetRadLength(int /*stationId*/) const { return 1.6; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmTrdTrackingInterface::GetStripsStereoAngleFront(int /*stationId*/) const { return 0.; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmTrdTrackingInterface::GetStripsStereoAngleBack(int /*stationId*/) const { return TMath::Pi() / 2.; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmTrdTrackingInterface::GetStripsSpatialRmsFront(int /*stationId*/) const { return 0.15; }
-
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-double CbmTrdTrackingInterface::GetStripsSpatialRmsBack(int /*stationId*/) const { return 0.15; }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//
-bool CbmTrdTrackingInterface::IsTimeInfoProvided(int /*stationId*/) const { return true; }
-
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //
