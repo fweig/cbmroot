@@ -96,6 +96,20 @@ parse_command_line()
 		echo "*** FairRoot to be installed"
 		SETUP_FAIRROOT="1";
 		shift;;
+	-use_fairsoft|--use_fairsoft)
+	        shift
+	        export SIMPATH=$1
+		echo "*** Use FairSoft from $SIMPATH"
+		SETUP_FAIRSOFT="0";
+                USE_EXTERNAL_FAIRSOFT=1
+		shift;;
+	-use_fairroot|--use_fairroot)
+	        shift
+	        export FAIRROOTPATH=$1
+		echo "*** Use FairRoot from $FAIRROOTPATH"
+		SETUP_FAIRROOT="0";
+                USE_EXTERNAL_FAIRROOT=1
+		shift;;
 	-c|-cr|-cbmroot|--cbmroot)
 		echo "*** CbmRoot to be installed"
 		SETUP_CBMROOT="1";
@@ -179,6 +193,12 @@ parse_command_line()
 		echo "-fs, --fairsoft		Installation of FairSoft"
 		echo "-fr, --fairroot		Installation of FairRoot"
 		echo "-cr, --cbmroot		Installation of CbmRoot"
+                echo
+                echo "-use_fairsoft <PATH>      Take FairSoft installation from <PATH>"
+                echo "--use_fairsoft <PATH>     Take FairSoft installation from <PATH>"
+                echo "-use_fairroot <PATH>      Take FairRoot installation from <PATH>"
+                echo "--use_fairroot <PATH>     Take FairRoot installation from <PATH>"
+                echo
 		echo
                 echo "-nproc <number>		Use <number> of paralle processes for compilation"
 		echo
@@ -191,6 +211,10 @@ parse_command_line()
 		echo ""
 		echo "Example case to install only FairRoot and CbmRoot (and not FairSoft)"
 		echo "./autoinstall_framework.sh -fr -cr"
+                echo
+                echo "Example case to install only CbmRoot and use FairSoft/FairRoot from external installation"
+                echo "./autoinstall_framework.sh --use_fairsoft /cvmfs/cbm.gsi.de/debian11/fairsoft/apr21p2 \ "
+                echo "    --use_fairroot /cvmfs/cbm.gsi.de/debian11/fairroot/v18.6.7_apr21p2 -cr"
 		exit 0;;
     esac
   done
@@ -458,16 +482,20 @@ install_cbmroot()
   if [ ${SETUP_CBMROOT} -eq "1" ]; then
     echo "Setting up CbmRoot ..."
 
-    cd ..
     echo "SIMPATH	before: $SIMPATH"
-    cd fairsoft_${FSOFTVER}_root${ROOTVER}/installation/
-    export SIMPATH=`pwd`
+    if [[ -z $USE_EXTERNAL_FAIRSOFT ]]; then
+      cd ..
+      cd fairsoft_${FSOFTVER}_root${ROOTVER}/installation/
+      export SIMPATH=`pwd`
+    fi
     echo "SIMPATH	now   : $SIMPATH"
     cd $CBMSRCDIR
 
-    cd ..
-    cd fairroot_$FROOTVER-fairsoft_${FSOFTVER}_root${ROOTVER}
-    export FAIRROOTPATH=`pwd`
+    if [[ -z $USE_EXTERNAL_FAIRROOT ]]; then
+      cd ..
+      cd fairroot_$FROOTVER-fairsoft_${FSOFTVER}_root${ROOTVER}
+      export FAIRROOTPATH=`pwd`
+    fi  
     echo "FAIRROOTPATH: $FAIRROOTPATH"
     cd $CBMSRCDIR
 
@@ -477,6 +505,7 @@ install_cbmroot()
     cd ..
 
     cd $CBMSRCDIR
+  
     mkdir -p build
     cd build
     cmake \
