@@ -1,6 +1,6 @@
-/* Copyright (C) name="CpuLoad" CBM Collaboration, Darmstadt
+/* Copyright (C) 2020-2021 Physikalisches Institut, Eberhard Karls Universitaet Tuebingen, Tuebingen
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Viktor Klochkov, Viktor Klochkov */
+   Authors: Viktor Klochkov [committer] */
 
 void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setupName = "sis100_electron",
                              TString unigenFile = "")

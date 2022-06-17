@@ -1,4 +1,4 @@
-/* Copyright (C) 2009-2018 GSI/JINR-LIT
+/* Copyright (C) 2009-2018 GSI/JINR-LIT, Darmstadt/Dubna
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Florian Uhlig, Andrey Lebedev [committer] */
 

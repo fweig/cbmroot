@@ -1,6 +1,6 @@
-/* Copyright (C) 2011-2016 GSI/JINR-LIT
+/* Copyright (C) 2011-2016 GSI/JINR-LIT, Darmstadt/Dubna
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Andrey Lebedev, Florian Uhlig */
+   Authors: Andrey Lebedev [committer], Florian Uhlig */
 
 /**
  * \file mvd_reco.C
