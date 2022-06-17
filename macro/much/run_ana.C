@@ -50,17 +50,17 @@ void run_ana(Int_t nEvents = 1000, TString dataSet = "muons", TString setup = "s
 
   // ------------------------------------------------------------------------
   if (CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch)) {
-	  // Parameter file name
-	  TString geoTag;
-	  CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kMuch, geoTag);
-	  Int_t muchFlag  = (geoTag.Contains("mcbm") ? 1 : 0);
-	  TString parFile = gSystem->Getenv("VMCWORKDIR");
-	  parFile += "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
-	
-	  // Initialization of the geometry scheme
-	  auto muchGeoScheme = CbmMuchGeoScheme::Instance();
-	  if (!muchGeoScheme->IsInitialized()) { muchGeoScheme->Init(parFile, muchFlag); }
-	}
+    // Parameter file name
+    TString geoTag;
+    CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kMuch, geoTag);
+    Int_t muchFlag  = (geoTag.Contains("mcbm") ? 1 : 0);
+    TString parFile = gSystem->Getenv("VMCWORKDIR");
+    parFile += "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
+
+    // Initialization of the geometry scheme
+    auto muchGeoScheme = CbmMuchGeoScheme::Instance();
+    if (!muchGeoScheme->IsInitialized()) { muchGeoScheme->Init(parFile, muchFlag); }
+  }
 
   run->AddTask(new CbmTrackingDetectorInterfaceInit());
   CbmKF* kf = new CbmKF();
