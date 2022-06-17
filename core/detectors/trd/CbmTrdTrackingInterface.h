@@ -1,10 +1,10 @@
-/* Copyright (C) 2016-2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 /***************************************************************************************************
  * @file   CbmTrdTrackingInterface.h
- * @brief  Input data and parameters interface from MVD subsystem used in L1 tracker (declaration)
+ * @brief  Input data and parameters interface from TRD subsystem used in L1 tracker (declaration)
  * @since  31.05.2022
  * @author S.Zharko <s.zharko@gsi.de>
  ***************************************************************************************************/
@@ -15,7 +15,9 @@
 #include "CbmTrackingDetectorInterfaceBase.h"
 #include "CbmTrdParModDigi.h"
 #include "CbmTrdParSetDigi.h"
+
 #include "FairTask.h"
+
 #include "TMath.h"
 
 #include <iostream>
@@ -105,7 +107,7 @@ public:
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Z position of station [cm]
   double GetZ(int stationId) const { return GetTrdModulePar(stationId)->GetZ(); }
- 
+
   /// Check if station provides time measurements
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Flag: true - station provides time measurements, false - station does not provide time measurements

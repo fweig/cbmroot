@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
@@ -12,12 +12,13 @@
 #ifndef CbmMvdTrackingInterface_h
 #define CbmMvdTrackingInterface_h 1
 
-#include "CbmTrackingDetectorInterfaceBase.h"
 #include "CbmMvdDetector.h"
 #include "CbmMvdStationPar.h"
-#include "TMath.h"
+#include "CbmTrackingDetectorInterfaceBase.h"
 
 #include "FairTask.h"
+
+#include "TMath.h"
 
 #include <iostream>
 #include <vector>
@@ -48,15 +49,15 @@ public:
   /// Gets the tracking station radiation length
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Radiation length [cm]
-  double GetRadLength(int stationId) const 
-  { 
-    return fMvdStationPar->GetZThickness(stationId) / (10. * fMvdStationPar->GetZRadThickness(stationId)); 
+  double GetRadLength(int stationId) const
+  {
+    return fMvdStationPar->GetZThickness(stationId) / (10. * fMvdStationPar->GetZRadThickness(stationId));
   }
 
   /// Gets size of outer radius of a tracking station
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Size of station outer radius [cm]
-  double GetRmax(int stationId) const 
+  double GetRmax(int stationId) const
   {
     return std::max(fMvdStationPar->GetHeight(stationId), fMvdStationPar->GetWidth(stationId));
   }
@@ -64,9 +65,9 @@ public:
   /// Gets size of inner radius of a tracking station
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Size of station inner radius [cm]
-  double GetRmin(int stationId) const 
-  { 
-    return std::min(fMvdStationPar->GetBeamHeight(stationId), fMvdStationPar->GetBeamWidth(stationId)); 
+  double GetRmin(int stationId) const
+  {
+    return std::min(fMvdStationPar->GetBeamHeight(stationId), fMvdStationPar->GetBeamWidth(stationId));
   }
 
   /// Gets spatial resolution (RMS) for back strips
@@ -88,14 +89,11 @@ public:
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Absolute stereo angle for front strips [rad]
   double GetStripsStereoAngleFront(int /*stationId*/) const { return 0.; }
- 
+
   /// Gets the tracking station thickness along the Z-axis
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Station thickness [cm]
-  double GetThickness(int stationId) const 
-  {
-    return fMvdStationPar->GetZThickness(stationId);
-  }
+  double GetThickness(int stationId) const { return fMvdStationPar->GetZThickness(stationId); }
 
   /// Gets time resolution for a tracking station
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])

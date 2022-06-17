@@ -37,9 +37,9 @@
 #include "CbmStsTrackFinder.h"
 #include "CbmTaskBuildRawEvents.h"
 #include "CbmTofSimpClusterizer.h"
+#include "CbmTrackingDetectorInterfaceInit.h"
 #include "CbmTrdClusterFinder.h"
 #include "CbmTrdHitProducer.h"
-#include "CbmTrackingDetectorInterfaceInit.h"
 
 #include <FairFileSource.h>
 #include <FairMonitor.h>

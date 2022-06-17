@@ -1,16 +1,15 @@
-/* Copyright (C) 2016-2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 /***************************************************************************************************
  * @file   CbmMvdTrackingInterface.cxx
- * @brief  Input data and parameters interface from STS subsystem used in L1 tracker (definition)
+ * @brief  Input data and parameters interface from MVD subsystem used in L1 tracker (definition)
  * @since  31.05.2022
  * @author S.Zharko <s.zharko@gsi.de>
  ***************************************************************************************************/
 
 #include "CbmMvdTrackingInterface.h"
-
 
 #include "FairDetector.h"
 #include "FairRunAna.h"
@@ -18,7 +17,7 @@
 
 ClassImp(CbmMvdTrackingInterface)
 
-CbmMvdTrackingInterface* CbmMvdTrackingInterface::fpInstance = nullptr;
+  CbmMvdTrackingInterface* CbmMvdTrackingInterface::fpInstance = nullptr;
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //

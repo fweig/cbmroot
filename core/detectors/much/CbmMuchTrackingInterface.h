@@ -1,10 +1,10 @@
-/* Copyright (C) 2016-2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 /***************************************************************************************************
  * @file   CbmMuchTrackingInterface.h
- * @brief  Input data and parameters interface from MVD subsystem used in L1 tracker (declaration)
+ * @brief  Input data and parameters interface from MuCh subsystem used in L1 tracker (declaration)
  * @since  31.05.2022
  * @author S.Zharko <s.zharko@gsi.de>
  ***************************************************************************************************/
@@ -13,12 +13,14 @@
 #define CbmMuchTrackingInterface_h 1
 
 #include "CbmMuchGeoScheme.h"
-#include "CbmTrackingDetectorInterfaceBase.h"
 #include "CbmMuchModuleGem.h"
 #include "CbmMuchPad.h"
 #include "CbmMuchStation.h"
-#include "TMath.h"
+#include "CbmTrackingDetectorInterfaceBase.h"
+
 #include "FairTask.h"
+
+#include "TMath.h"
 #include "TString.h"
 
 #include <iostream>
@@ -54,12 +56,12 @@ public:
   /// Gets station radiation length
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Radiation length [cm]
-  double GetRadLength(int /*stationId*/) const { return 0; } // TODO: Replace with correct value
+  double GetRadLength(int /*stationId*/) const { return 0; }  // TODO: Replace with correct value
 
   /// Gets size of outer radius of station
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Size of station outer radius [cm]
-  double GetRmax(int /*stationId*/) const { return 100.; } 
+  double GetRmax(int /*stationId*/) const { return 100.; }
 
   /// Gets size of inner radius of station
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
@@ -133,7 +135,7 @@ private:
   {
     return fGeoScheme->GetLayer(GetMuchStationId(stationId), GetMuchLayerId(stationId));
   }
-  
+
   /// Calculates MuCh layer ID from tracker station ID
   __attribute__((always_inline)) int GetMuchLayerId(int stationId) const { return stationId % 3; }
 

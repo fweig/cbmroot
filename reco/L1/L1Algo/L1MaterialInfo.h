@@ -1,6 +1,6 @@
-/* Copyright (C) 2007-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2007-2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Igor Kulakov, Sergey Gorbunov [committer], Andrey Lebedev */
+   Authors: Igor Kulakov, Sergey Gorbunov [committer], Andrey Lebedev, Sergei Zharko */
 
 #ifndef L1MaterialInfo_h
 #define L1MaterialInfo_h

@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
@@ -17,7 +17,7 @@
 
 ClassImp(CbmStsTrackingInterface)
 
-CbmStsTrackingInterface* CbmStsTrackingInterface::fpInstance = nullptr;
+  CbmStsTrackingInterface* CbmStsTrackingInterface::fpInstance = nullptr;
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //

@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
@@ -20,6 +20,7 @@
 #include "CbmTrackingDetectorInterfaceBase.h"
 
 #include "FairTask.h"
+
 #include "TMath.h"
 
 #include <iostream>
@@ -47,7 +48,7 @@ public:
 
   /// Gets actual number of the tracking stations, provided by the current geometry setup
   int GetNtrackingStations() const { return CbmStsSetup::Instance()->GetNofStations(); }
- 
+
   /// Gets station radiation length
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Radiation length [cm]
@@ -57,28 +58,28 @@ public:
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Size of station outer radius [cm]
   double GetRmax(int stationId) const
-  { 
-    return GetXmax(stationId) > GetYmax(stationId) ? GetXmax(stationId) : GetYmax(stationId); 
+  {
+    return GetXmax(stationId) > GetYmax(stationId) ? GetXmax(stationId) : GetYmax(stationId);
   }
 
   /// Gets size of inner radius of station
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Size of station inner radius [cm]
   double GetRmin(int /*stationId*/) const { return 0.; }
- 
+
   /// Gets spatial resolution (RMS) for back strips
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Spatial resolution (RMS) for front strips [cm]
-  double GetStripsSpatialRmsBack(int stationId) const 
-  { 
+  double GetStripsSpatialRmsBack(int stationId) const
+  {
     return GetStsStation(stationId)->GetSensorPitch(0) / TMath::Sqrt(12.);
   }
-  
+
   /// Gets spatial resolution (RMS) for front strips
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Spatial resolution (RMS) for front strips [cm]
   double GetStripsSpatialRmsFront(int stationId) const
-  { 
+  {
     return GetStsStation(stationId)->GetSensorPitch(0) / TMath::Sqrt(12.);
   }
 
@@ -90,8 +91,8 @@ public:
   /// Gets front strips stereo angle
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Absolute stereo angle for front strips [rad]
-  double GetStripsStereoAngleFront(int stationId) const; 
- 
+  double GetStripsStereoAngleFront(int stationId) const;
+
   /// Gets station thickness along the Z-axis
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Station thickness [cm]
