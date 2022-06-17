@@ -21,6 +21,7 @@ target_link_directories(cbmreco_fairrun
 
 target_link_libraries(cbmreco_fairrun
   external::fles_logging
+  external::fles_monitoring
   CbmRecoTasks
   Core
   ${Boost_LIBRARIES}

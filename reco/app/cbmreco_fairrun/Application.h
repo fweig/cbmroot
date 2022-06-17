@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "Monitor.hpp"
 #include "ProgramOptions.h"
 #include "log.hpp"
 
@@ -32,12 +33,16 @@ public:
   /** @brief Assignment operator forbidden **/
   void operator=(const Application&) = delete;
 
+  /** @brief Destructor **/
+  ~Application();
+
   /** @brief Run the application **/
   void Run();
 
 private:
-  ProgramOptions const& fOpt;         ///< Program options object
-  std::unique_ptr<CbmReco> fCbmReco;  ///< CBM reconstruction steering class instance
+  std::unique_ptr<cbm::Monitor> fMonitor;  ///< The application's monitoring object
+  ProgramOptions const& fOpt;              ///< Program options object
+  std::unique_ptr<CbmReco> fCbmReco;       ///< CBM reconstruction steering class instance
 };
 
 #endif

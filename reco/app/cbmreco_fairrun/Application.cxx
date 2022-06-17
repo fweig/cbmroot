@@ -4,8 +4,15 @@
 
 #include "Application.h"
 
+#include <thread>
+
+#include <chrono>
+
 Application::Application(ProgramOptions const& opt) : fOpt(opt)
 {
+  // start up monitoring
+  if (!fOpt.MonitorUri().empty()) { fMonitor = std::make_unique<cbm::Monitor>(fOpt.MonitorUri()); }
+
   CbmRecoConfig config;
   config.LoadYaml(fOpt.ConfigYamlFile());
   if (!fOpt.SaveConfigYamlFile().empty()) { config.SaveYaml(fOpt.SaveConfigYamlFile()); }
@@ -15,3 +22,10 @@ Application::Application(ProgramOptions const& opt) : fOpt(opt)
 }
 
 void Application::Run() { fCbmReco->Run(); }
+
+Application::~Application()
+{
+  // delay to allow monitor to process pending messages
+  constexpr auto destruct_delay = std::chrono::milliseconds(200);
+  std::this_thread::sleep_for(destruct_delay);
+}

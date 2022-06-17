@@ -30,6 +30,11 @@ void ProgramOptions::ParseOptions(int argc, char* argv[])
   generic_add("log-file,L", po::value<std::string>(&log_file)->value_name("<filename>"), "write log output to file");
   generic_add("log-syslog,S", po::value<unsigned>(&log_syslog)->implicit_value(log_syslog)->value_name("<n>"),
               "enable logging to syslog at given log level");
+  generic_add(
+    "monitor,m",
+    po::value<std::string>(&fMonitorUri)->value_name("<uri>")->implicit_value("influx1:login:8086:tsclient_status"),
+    "publish program status to InfluxDB (or \"file:cout\" for "
+    "console output)");
   generic_add("help,h", "display this help and exit");
   generic_add("version,V", "output version information and exit");
 

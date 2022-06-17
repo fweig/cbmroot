@@ -36,6 +36,9 @@ public:
   /** @brief Assignment operator forbidden **/
   void operator=(const ProgramOptions&) = delete;
 
+  /** @brief Get URI specifying the monitoring server interface **/
+  [[nodiscard]] const std::string& MonitorUri() const { return fMonitorUri; }
+
   /** @brief Get URI specifying input timeslice stream source(s) **/
   [[nodiscard]] const std::vector<std::string>& InputUri() const { return fInputUri; }
 
@@ -57,6 +60,8 @@ public:
 private:
   /** @brief Parse command line arguments using boost program_options **/
   void ParseOptions(int argc, char* argv[]);
+
+  std::string fMonitorUri;  ///< URI specifying the monitoring server interface
 
   std::vector<std::string> fInputUri;         ///< URI(s) specifying input timeslice stream source(s)
   std::string fOutputRootFile = "/dev/null";  ///< Output file name (.root format)
