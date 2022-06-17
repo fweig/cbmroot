@@ -58,12 +58,13 @@ InitStatus CbmMuchTrackingInterface::Init()
   // Check initialization of the MuCh digi parameters file
   if (!fGeoScheme->IsInitialized()) {
     LOG(fatal) << "CbmMuchTrackingInterface::Init: MuCh digi parameters were not intialized\n"
-               << "\033[4;1;32mNOTE\033[0m: For the MuCh digi parameters initialization one can place the following "
-               << "code to the reconstruction macro:\n"
+               << "\033[4;1;32mNOTE\033[0m: For the MuCh digi parameters initialization please place the following "
+               << "code your macro:\n"
+               << "\n\t// ----- MuCh digi parameters initialization --------------------------------------"
                << "\n\tif (CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch)) {"
                << "\n\t  // Parameter file name"
                << "\n\t  TString geoTag;"
-               << "\n\t  geo->GetGeoTag(ECbmModuleId::kMuch, geoTag);"
+               << "\n\t  CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kMuch, geoTag);"
                << "\n\t  Int_t muchFlag  = (geoTag.Contains(\"mcbm\") ? 1 : 0);"
                << "\n\t  TString parFile = gSystem->Getenv(\"VMCWORKDIR\");"
                << "\n\t  parFile += \"/parameters/much/much_\" + geoTag(0, 4) + \"_digi_sector.root\";"
@@ -71,7 +72,8 @@ InitStatus CbmMuchTrackingInterface::Init()
                << "\n\t  // Initialization of the geometry scheme"
                << "\n\t  auto muchGeoScheme = CbmMuchGeoScheme::Instance();"
                << "\n\t  if (!muchGeoScheme->IsInitialized()) { muchGeoScheme->Init(parFile, muchFlag); }"
-               << "\n\t}";
+               << "\n\t}"
+               << "\n\t// --------------------------------------------------------------------------------";
   }
 
   return kSUCCESS;
