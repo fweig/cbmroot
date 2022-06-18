@@ -74,6 +74,10 @@ else()
   set_target_properties(external::fles_logging PROPERTIES
                         IMPORTED_LOCATION external::fles_logging-NOTFOUND
              )
+  add_library(external::fles_monitoring STATIC IMPORTED GLOBAL)
+  set_target_properties(external::fles_monitoring PROPERTIES
+                        IMPORTED_LOCATION external::fles_monitoring-NOTFOUND
+             )
 
   # Define an empty macro such that ctest is happy when no externals are
   # available
