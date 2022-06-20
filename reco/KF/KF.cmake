@@ -174,7 +174,7 @@ ENDIF (SSE_FOUND)
 set(LINKDEF KFLinkDef.h)
 Set(LIBRARY_NAME KF)
 Set(DEPENDENCIES
-  CbmStsBase CbmMvd CbmBase CbmRecoBase CbmMuchBase CbmData Base Vc.a Minuit2
+  CbmTrdBase CbmSimSteer CbmStsBase CbmMvd CbmBase CbmRecoBase CbmMuchBase CbmData Base Vc.a Minuit2
 )
 Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 
