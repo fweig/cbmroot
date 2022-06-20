@@ -69,6 +69,6 @@ Set(DEPENDENCIES
 
 GENERATE_LIBRARY()
 
-Install(FILES CbmDigitize.h report/CbmReportElement.h
+Install(FILES CbmDigitize.h CbmTrackingDetectorInterfaceBase.h report/CbmReportElement.h
         DESTINATION include
        )
