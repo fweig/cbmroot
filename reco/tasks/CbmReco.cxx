@@ -20,14 +20,11 @@
 #include <THttpServer.h>
 #include <TRootSniffer.h>
 
-#include <iostream>
 #include <memory>
 #include <string>
 
 #include <yaml-cpp/yaml.h>
 
-using std::cout;
-using std::endl;
 using std::make_unique;
 using std::string;
 
@@ -212,7 +209,6 @@ int32_t CbmReco::Run()
   timer.Stop();
   double timeSetup = timer.RealTime();
   timer.Start();
-  cout << endl << endl;
   LOG(info) << "Reco: Initialising...";
   run.Init();
   timer.Stop();
@@ -220,13 +216,11 @@ int32_t CbmReco::Run()
 
   // --- Start run
   timer.Start();
-  cout << endl << endl;
   run.Run(0, fNumTs);
   timer.Stop();
   double timeRun = timer.RealTime();
 
   // --- Run log
-  std::cout << std::endl;
   size_t numTs = 1;
   if (!isRootInput) {
     auto src = dynamic_cast<CbmSourceTs*>(run.GetSource());

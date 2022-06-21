@@ -15,7 +15,6 @@
 
 #include <cassert>
 #include <iomanip>
-#include <iostream>
 
 using namespace std;
 
@@ -177,7 +176,6 @@ void CbmTaskBuildEvents::Exec(Option_t*)
 // -----   End-of-timeslice action   ------------------------------------------
 void CbmTaskBuildEvents::Finish()
 {
-  std::cout << std::endl;
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
   LOG(info) << "Timeslices           : " << fNumTs;
@@ -227,7 +225,6 @@ InitStatus CbmTaskBuildEvents::Init()
   FairRootManager* ioman = FairRootManager::Instance();
   assert(ioman);
 
-  std::cout << std::endl;
   LOG(info) << "==================================================";
   LOG(info) << GetName() << ": Initialising...";
 
@@ -288,7 +285,6 @@ InitStatus CbmTaskBuildEvents::Init()
   }
 
   LOG(info) << "==================================================";
-  std::cout << std::endl;
 
   return kSUCCESS;
 }

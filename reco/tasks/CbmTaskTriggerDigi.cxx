@@ -22,7 +22,6 @@
 #include <algorithm>
 #include <cassert>
 #include <iomanip>
-#include <iostream>
 #include <vector>
 
 // -----   Constructor   -----------------------------------------------------
@@ -197,8 +196,6 @@ std::vector<double> CbmTaskTriggerDigi::GetDigiTimes(ECbmModuleId system)
 // -----   End-of-timeslice action   ------------------------------------------
 void CbmTaskTriggerDigi::Finish()
 {
-
-  std::cout << std::endl;
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
   LOG(info) << "Timeslices         : " << fNumTs;
@@ -222,7 +219,6 @@ InitStatus CbmTaskTriggerDigi::Init()
   FairRootManager* ioman = FairRootManager::Instance();
   assert(ioman);
 
-  std::cout << std::endl;
   LOG(info) << "==================================================";
   LOG(info) << GetName() << ": Initialising...";
 
@@ -259,7 +255,6 @@ InitStatus CbmTaskTriggerDigi::Init()
   LOG(info) << "--- Use algo TimeClusterTrigger with TriggerWin " << fTriggerWindow << " ns, threshold " << fMinNumDigis
             << ", dead time " << fDeadTime << " ns";
   LOG(info) << "==================================================";
-  std::cout << std::endl;
 
   return kSUCCESS;
 }

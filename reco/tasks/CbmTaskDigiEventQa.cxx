@@ -19,7 +19,6 @@
 
 #include <cassert>
 #include <iomanip>
-#include <iostream>
 
 using namespace std;
 
@@ -109,7 +108,6 @@ void CbmTaskDigiEventQa::Exec(Option_t*)
 // -----   End-of-timeslice action   ------------------------------------------
 void CbmTaskDigiEventQa::Finish()
 {
-  std::cout << std::endl;
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
   LOG(info) << "Timeslices : " << fNumTs;
@@ -132,7 +130,6 @@ InitStatus CbmTaskDigiEventQa::Init()
   FairRootManager* ioman = FairRootManager::Instance();
   assert(ioman);
 
-  std::cout << std::endl;
   LOG(info) << "==================================================";
   LOG(info) << GetName() << ": Initialising...";
 
@@ -154,7 +151,6 @@ InitStatus CbmTaskDigiEventQa::Init()
     LOG(info) << "--- No Http server present";
 
   LOG(info) << "==================================================";
-  std::cout << std::endl;
 
   return kSUCCESS;
 }

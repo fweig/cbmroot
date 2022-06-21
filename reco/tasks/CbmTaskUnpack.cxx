@@ -26,7 +26,6 @@
 #include <execution>
 #endif
 #include <iomanip>
-#include <iostream>
 #include <memory>
 #include <sstream>
 #include <vector>
@@ -197,7 +196,6 @@ void CbmTaskUnpack::Exec(Option_t*)
 // -----   End-of-run action   ------------------------------------------------
 void CbmTaskUnpack::Finish()
 {
-  std::cout << std::endl;
   double timePerTs = 1000. * fTime / double(fNumTs);  // in ms
   double rate      = fNumBytes / 1.e6 / fTime;        // in MB/s
   LOG(info) << "=====================================";
@@ -216,7 +214,6 @@ void CbmTaskUnpack::Finish()
 InitStatus CbmTaskUnpack::Init()
 {
 
-  std::cout << std::endl;
   LOG(info) << "==================================================";
   LOG(info) << GetName() << ": Initialising...";
 
@@ -289,7 +286,6 @@ InitStatus CbmTaskUnpack::Init()
   LOG(info) << "--- Configured " << fAlgoSts.size() << " unpacker algorithms for STS.";
   LOG(debug) << "Readout map:" << fStsConfig.PrintReadoutMap();
   LOG(info) << "==================================================";
-  std::cout << std::endl;
 
   return kSUCCESS;
 }

@@ -9,8 +9,6 @@
 #include <FairSource.h>
 #include <Logger.h>
 
-#include <iostream>
-
 
 using fles::Timeslice;
 using std::string;
@@ -58,7 +56,6 @@ Int_t CbmSourceTs::ReadEvent(UInt_t)
   // It appears that the first call to this method from FairRunOnline is in the
   // init stage. In order not to always lose the first timeslice, a call to
   // TimesliceSource::get is avoided in the first call.
-  std::cout << std::endl;
   if (fNumCalls == 0) LOG(info) << "SourceTs: Init call to ReadEvent";
   else {
     fFlesTs = nullptr;

@@ -16,7 +16,6 @@
 #include <algorithm>
 #include <cassert>
 #include <iomanip>
-#include <iostream>
 #include <vector>
 
 
@@ -109,8 +108,6 @@ void CbmTaskMakeRecoEvents::Exec(Option_t*)
 // -----   End-of-timeslice action   ------------------------------------------
 void CbmTaskMakeRecoEvents::Finish()
 {
-
-  std::cout << std::endl;
   LOG(info) << "=====================================";
   LOG(info) << GetName() << ": Run summary";
   LOG(info) << "Timeslices         : " << fNumTs;
@@ -190,7 +187,6 @@ InitStatus CbmTaskMakeRecoEvents::Init()
   }
 
   LOG(info) << "==================================================";
-  std::cout << std::endl;
 
   return kSUCCESS;
 }
