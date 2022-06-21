@@ -2,24 +2,25 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Semen Lebedev [committer] */
 
-void run_qa(const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/rich/reco/mc.00000.root",
-            const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/param.00000.root",
-            const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/digi.00000.root",
-            const string& recoFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/reco.00000.root",
-            const string& qaFile   = "/Users/slebedev/Development/cbm/data/sim/rich/reco/qa.00000.root",
-            const string& geoSetup = "sis100_electron", const string& resultDir = "results_recoqa_newqa/",
+void run_qa(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/tra.0.root",
+            const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/par.0.root",
+            const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/digi.0.root",
+            const string& recoFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/reco.0.root",
+            const string& qaFile   = "/Users/slebedev/Development/cbm/data/sim/rich/reco/qa.0.root",
+            const string& geoSetup = "sis100_electron", const string& resultDir = "results_recoqa_apr21plus/",
             int nEvents = 100)
 {
+
   TTree::SetMaxTreeSize(90000000000);
-
-  TString myName = "run_reco";
-  TString srcDir = gSystem->Getenv("VMCWORKDIR");
-
+  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
+  FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
   remove(qaFile.c_str());
 
-  CbmSetup::Instance()->LoadSetup(geoSetup.c_str());
+  TString srcDir = gSystem->Getenv("VMCWORKDIR");
 
-  std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
+  CbmSetup* geo = CbmSetup::Instance();
+  geo->LoadSetup(geoSetup.c_str());
+
   TList* parFileList = new TList();
   TString geoTag;
 
@@ -30,18 +31,13 @@ void run_qa(const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/r
     for (Int_t i(0); i < 4; i++) {
       trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "." + npar[i] + ".par");
       parFileList->Add(trdParFile);
-      std::cout << "-I- " << myName << ": Using parameter file " << trdParFile->GetString() << std::endl;
     }
   }
 
   // - TOF digitisation parameters
   if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
-    TObjString* tofFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digi.par");
-    parFileList->Add(tofFile);
-    std::cout << "-I- " << myName << ": Using parameter file " << tofFile->GetString() << std::endl;
     TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
 
   TStopwatch timer;
@@ -51,19 +47,14 @@ void run_qa(const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/r
 
   FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(digiFile.c_str());
-  inputSource->AddFriend(mcFile.c_str());
+  inputSource->AddFriend(traFile.c_str());
   inputSource->AddFriend(recoFile.c_str());
   run->SetSource(inputSource);
   run->SetOutputFile(qaFile.c_str());
   run->SetGenerateRunInfo(kTRUE);
 
-
-  FairLogger::GetLogger()->SetLogScreenLevel("INFO");
-  FairLogger::GetLogger()->SetLogVerbosityLevel("LOW");
-
-
   CbmMCDataManager* mcManager = new CbmMCDataManager("MCManager", 1);
-  mcManager->AddFile(mcFile.c_str());
+  mcManager->AddFile(traFile.c_str());
   run->AddTask(mcManager);
 
   //    // RICH reco QA
@@ -106,13 +97,13 @@ void run_qa(const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/r
 
   CbmLitClusteringQa* clusteringQa = new CbmLitClusteringQa();
   clusteringQa->SetOutputDir(resultDir);
-  run->AddTask(clusteringQa);
+  //run->AddTask(clusteringQa);
 
   CbmLitTofQa* tofQa = new CbmLitTofQa();
   tofQa->SetOutputDir(std::string(resultDir));
   //run->AddTask(tofQa);
 
-  std::cout << std::endl << std::endl << "-I- " << myName << ": Set runtime DB" << std::endl;
+
   FairRuntimeDb* rtdb        = run->GetRuntimeDb();
   FairParRootFileIo* parIo1  = new FairParRootFileIo();
   FairParAsciiFileIo* parIo2 = new FairParAsciiFileIo();
@@ -122,15 +113,12 @@ void run_qa(const string& mcFile   = "/Users/slebedev/Development/cbm/data/sim/r
     parIo2->open(parFileList, "in");
     rtdb->setSecondInput(parIo2);
   }
-
-  std::cout << std::endl << "-I- " << myName << ": Initialise run" << std::endl;
   run->Init();
 
   rtdb->setOutput(parIo1);
   rtdb->saveOutput();
   rtdb->print();
 
-  std::cout << "-I- " << myName << ": Starting run" << std::endl;
   run->Run(0, nEvents);
 
   timer.Stop();

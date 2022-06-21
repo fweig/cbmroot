@@ -27,17 +27,13 @@ class CbmRichRingFitterCOP;
 class CbmRichRingFitterEllipseTau;
 class CbmRichRing;
 class CbmRichRingLight;
-class TCanvas;
 class CbmHistManager;
-class TVector3;
 class CbmMCDataArray;
 class CbmMCEventList;
 class CbmDigiManager;
 
 #include <string>
 #include <vector>
-
-using namespace std;
 
 /**
  * \class CbmRichGeoTest
@@ -79,15 +75,15 @@ public:
      * \brief Set output directory where you want to write results (figures and json).
      * \param[in] dir Path to the output directory.
      */
-  void SetOutputDir(const string& dir) { fOutputDir = dir; }
+  void SetOutputDir(const std::string& dir) { fOutputDir = dir; }
 
   /**
      * \brief Draw histogram from file
      */
-  void DrawFromFile(const string& fileName, const string& outputDir);
+  void DrawFromFile(const std::string& fileName, const std::string& outputDir);
 
-  void SetDrawPmts(Bool_t draw) { fDrawPmts = draw; }
-  void SetDrawEventDisplay(Bool_t draw) { fDrawEventDisplay = draw; }
+  void SetDrawPmts(bool draw) { fDrawPmts = draw; }
+  void SetDrawEventDisplay(bool draw) { fDrawEventDisplay = draw; }
 
 private:
   /**
@@ -101,6 +97,8 @@ private:
      */
   void ProcessMc();
 
+  CbmRichRingLight CreateRingLightWithPoints(int fileId, int mcEventId, int mcTrackId);
+
   /**
      * \brief Loop over all rings in array and fill ring parameters histograms.
      */
@@ -112,7 +110,7 @@ private:
      * \param[in] ring Pointer to CbmRichRing to be fitted and filled in histograms.
      * \param[in] momentum MC momentum of particle produced ring.
      */
-  void FitAndFillHistEllipse(Int_t histIndex, CbmRichRingLight* ring, Double_t momentum);
+  void FitAndFillHistEllipse(int histIndex, CbmRichRingLight* ring, double momentum);
 
   /**
      * \brief Fit ring using circle fitter and fill histograms.
@@ -120,7 +118,7 @@ private:
      * \param[in] ring Pointer to CbmRichRingLight to be fitted and filled in histograms.
      * \param[in] momentum MC momentum of particle produced ring.
      */
-  void FitAndFillHistCircle(Int_t histIndex, CbmRichRingLight* ring, Double_t momentum);
+  void FitAndFillHistCircle(int histIndex, CbmRichRingLight* ring, double momentum);
 
   /**
      * \brief Calculate difference between ellipse parameters
@@ -164,21 +162,21 @@ private:
   void DrawRing(CbmRichRingLight* ringHit, CbmRichRingLight* ringPoint);
 
 
-  void DrawH2MeanRms(TH2* hist, const string& canvasName);
+  void DrawH2MeanRms(TH2* hist, const std::string& canvasName);
 
   /**
      * \brief DrawPmts
      */
   void DrawPmts();
 
-  void DrawPmtPoint(const string& coordinates, const vector<Int_t>& ids, Bool_t isDrawPixel);
+  void DrawPmtPoint(const std::string& coordOpt, const std::vector<int>& ids, bool isDrawPixel);
 
   /**
      * \brief Calculate efficiency.
      * \param[in] histRec
      * \param[in] histAcc
      */
-  string CalcEfficiency(TH1* histRec, TH1* histAcc);
+  std::string CalcEfficiency(TH1* histRec, TH1* histAcc);
 
   /**
      * \brief Copy constructor.
@@ -190,37 +188,37 @@ private:
      */
   CbmRichGeoTest& operator=(const CbmRichGeoTest&);
 
-  string fOutputDir;  // output directory for results
+  std::string fOutputDir = "";  // output directory for results
 
-  TClonesArray* fRichHits;
-  TClonesArray* fRichRings;
-  CbmMCDataArray* fRichRefPlanePoints;
-  CbmDigiManager* fDigiMan = nullptr;
-  CbmMCDataArray* fRichPoints;
-  CbmMCDataArray* fMcTracks;
-  TClonesArray* fRichRingMatches;
-  CbmMCEventList* fEventList;
+  TClonesArray* fRichHits             = nullptr;
+  TClonesArray* fRichRings            = nullptr;
+  CbmMCDataArray* fRichRefPlanePoints = nullptr;
+  CbmDigiManager* fDigiMan            = nullptr;
+  CbmMCDataArray* fRichPoints         = nullptr;
+  CbmMCDataArray* fMcTracks           = nullptr;
+  TClonesArray* fRichRingMatches      = nullptr;
+  CbmMCEventList* fEventList          = nullptr;
 
   // rings will be fitted on a fly
-  CbmRichRingFitterCOP* fCopFit;
-  CbmRichRingFitterEllipseTau* fTauFit;
+  CbmRichRingFitterCOP* fCopFit        = nullptr;
+  CbmRichRingFitterEllipseTau* fTauFit = nullptr;
 
-  CbmHistManager* fHM;  // Histogram manager
+  CbmHistManager* fHM = nullptr;  // Histogram manager
 
-  Int_t fEventNum;
-  Int_t fMinNofHits;  // Min number of hits in ring for detector acceptance calculation.
+  int fEventNum   = 0;
+  int fMinNofHits = 7;  // Min number of hits in ring for detector acceptance calculation.
 
   // fitting efficiency
-  Double_t fMinAaxis;
-  Double_t fMaxAaxis;
-  Double_t fMinBaxis;
-  Double_t fMaxBaxis;
-  Double_t fMinRadius;
-  Double_t fMaxRadius;
+  double fMinAaxis  = 3.;
+  double fMaxAaxis  = 7.;
+  double fMinBaxis  = 3.;
+  double fMaxBaxis  = 7.;
+  double fMinRadius = 3.;
+  double fMaxRadius = 7.;
 
-  Int_t fNofDrawnRings;  // store number of drawn rings
-  Bool_t fDrawPmts;      // draw pixels and PMTs to test rotation procedure
-  Bool_t fDrawEventDisplay;
+  int fNofDrawnRings     = 0;     // store number of drawn rings
+  bool fDrawPmts         = true;  // draw pixels and PMTs to test rotation procedure
+  bool fDrawEventDisplay = true;
 
   ClassDef(CbmRichGeoTest, 1)
 };

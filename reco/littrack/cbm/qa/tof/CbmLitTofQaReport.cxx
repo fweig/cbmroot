@@ -65,6 +65,11 @@ void CbmLitTofQaReport::Draw()
 
   DrawH1ByPattern("hmp_TofTrack_All_.+");
 
+  DrawH1ByPattern("hmp_TofTrack_Z");
+  gPad->SetLogy(true);
+  DrawH1ByPattern("hmp_Tof_Z");
+  gPad->SetLogy(true);
+
   FitHistograms();
 }
 

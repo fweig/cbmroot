@@ -94,6 +94,31 @@ vector<TProfile*> CbmHistManager::P1Vector(const string& pattern) const { return
 
 vector<TProfile2D*> CbmHistManager::P2Vector(const string& pattern) const { return ObjectVector<TProfile2D*>(pattern); }
 
+
+template<class T>
+vector<T> CbmHistManager::ObjectVector(const vector<string>& names) const
+{
+  vector<T> objects;
+  for (const string& name : names) {
+    objects.push_back(dynamic_cast<T>(fMap.find(name)->second));
+  }
+  return objects;
+}
+vector<TH1*> CbmHistManager::H1Vector(const vector<string>& names) const { return ObjectVector<TH1*>(names); }
+
+vector<TH2*> CbmHistManager::H2Vector(const vector<string>& names) const { return ObjectVector<TH2*>(names); }
+
+vector<TGraph*> CbmHistManager::G1Vector(const vector<string>& names) const { return ObjectVector<TGraph*>(names); }
+
+vector<TGraph2D*> CbmHistManager::G2Vector(const vector<string>& names) const { return ObjectVector<TGraph2D*>(names); }
+
+vector<TProfile*> CbmHistManager::P1Vector(const vector<string>& names) const { return ObjectVector<TProfile*>(names); }
+
+vector<TProfile2D*> CbmHistManager::P2Vector(const vector<string>& names) const
+{
+  return ObjectVector<TProfile2D*>(names);
+}
+
 void CbmHistManager::WriteToFile()
 {
   map<string, TNamed*>::iterator it;

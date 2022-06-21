@@ -7,8 +7,8 @@
 
 #include "FairTask.h"
 class TClonesArray;
+class CbmMCDataArray;
 class CbmRichRing;
-class TCanvas;
 class CbmHistManager;
 class TH1D;
 class TH2D;
@@ -16,11 +16,10 @@ class TH2;
 class TH3;
 class CbmMCTrack;
 class CbmDigiManager;
+class CbmMCEventList;
 
 #include <map>
 #include <vector>
-
-using namespace std;
 
 class CbmRichRecoQa : public FairTask {
 
@@ -50,20 +49,20 @@ public:
      */
   virtual void Finish();
 
-  static Bool_t IsMcPrimaryElectron(const CbmMCTrack* mctrack);
+  static bool IsMcPrimaryElectron(const CbmMCTrack* mctrack);
 
-  static Bool_t IsMcPion(const CbmMCTrack* mctrack);
+  static bool IsMcPion(const CbmMCTrack* mctrack);
 
   /**
      * \brief Set output directory where you want to write results (figures and json).
      * \param[in] dir Path to the output directory.
      */
-  void SetOutputDir(const string& dir) { fOutputDir = dir; }
+  void SetOutputDir(const std::string& dir) { fOutputDir = dir; }
 
   /**
          * \brief Draw histogram from file
          */
-  void DrawFromFile(const string& fileName, const string& outputDir);
+  void DrawFromFile(const std::string& fileName, const std::string& outputDir);
 
 private:
   /**
@@ -94,32 +93,32 @@ private:
   /**
      * \brief Return string with mean, RMS and overflow percent for input TH1.
      */
-  string GetMeanRmsOverflowString(TH1* h, Bool_t withOverflow = true);
+  std::string GetMeanRmsOverflowString(TH1* h, bool withOverflow = true);
 
   /**
      *  \brief Draw histograms related to ring-track distance for pions or electrons (+/-).
      */
-  void DrawRingTrackDistHistWithSuffix(const string& suffix);
+  void DrawRingTrackDist(const std::string& opt);
 
   /*
      * \brief Check that the ring with an input MCTrackId was found
      */
-  bool WasRingFound(Int_t mcTrackId);
+  bool WasRingFound(int mcTrackId);
 
   /*
      * \brief Check that the ring was matched with some global track
      */
-  bool WasRingMatched(Int_t mcTrackId);
+  bool WasRingMatched(int mcTrackId);
 
   /*
      * \brief Check that the Sts track projection was matched with RICH ring
      */
-  bool WasRichProjectionMatched(Int_t stsTrackId);
+  bool WasRichProjectionMatched(int stsTrackId);
 
   /*
      * Check that STS track has projection in the RICH
      */
-  bool HasRichProjection(Int_t stsTrackId);
+  bool HasRichProjection(int stsTrackId);
 
 
   /**
@@ -133,27 +132,26 @@ private:
   CbmRichRecoQa& operator=(const CbmRichRecoQa&);
 
 
-  CbmHistManager* fHM;
+  CbmHistManager* fHM = nullptr;
 
-  Int_t fEventNum;
+  int fEventNum = 0;
 
-  string fOutputDir;  // output dir for results
+  std::string fOutputDir = "";  // output dir for results
 
-  TClonesArray* fMCTracks;
-  TClonesArray* fRichPoints;
-  TClonesArray* fRichHits;
-  TClonesArray* fRichRings;
-  TClonesArray* fRichRingMatches;
-  TClonesArray* fGlobalTracks;
-  TClonesArray* fStsTracks;
-  TClonesArray* fStsTrackMatches;
-  TClonesArray* fRichProjections;
-  CbmDigiManager* fDigiMan;
+  CbmMCDataArray* fMcTracks      = nullptr;
+  CbmMCDataArray* fRichPoints    = nullptr;
+  TClonesArray* fRichHits        = nullptr;
+  TClonesArray* fRichRings       = nullptr;
+  TClonesArray* fRichRingMatches = nullptr;
+  TClonesArray* fGlobalTracks    = nullptr;
+  TClonesArray* fStsTracks       = nullptr;
+  TClonesArray* fStsTrackMatches = nullptr;
+  TClonesArray* fRichProjections = nullptr;
+  CbmDigiManager* fDigiMan       = nullptr;
+  CbmMCEventList* fEventList     = nullptr;
 
   // Number of hits in the MC RICH ring
-  std::map<Int_t, Int_t> fNofHitsInRingMap;
-
-  vector<TCanvas*> fCanvas;
+  std::map<std::pair<int, int>, int> fNofHitsInRingMap;
 
   ClassDef(CbmRichRecoQa, 1)
 };

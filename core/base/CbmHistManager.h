@@ -177,7 +177,7 @@ public:
 
   /**
     * \brief Return pointer to TH1 histogram.
-    * \param[in] name Name of histogram.
+    * \param[in] name Name of TH1 histogram.
     * \return pointer to TH1 histogram.
     */
   TH1* H1(const std::string& name) const
@@ -190,15 +190,30 @@ public:
   }
 
   /**
+    * \brief Return clone of TH1 histogram.
+    * \param[in] name Name of TH1 histogram.
+    * \return pointer of TH1 clone histogram.
+    */
+  TH1* H1Clone(const std::string& name) const { return static_cast<TH1*>(H1(name)->Clone()); }
+
+  /**
     * \brief Return vector of pointers to TH1 histogram.
-    * \param[in] pattern Regex for histogram name.
+    * \param[in] names Vector of TH1 histogram names.
+    * \return Vector of pointers to TH1 histogram.
+    */
+  std::vector<TH1*> H1Vector(const std::vector<std::string>& names) const;
+
+
+  /**
+    * \brief Return vector of pointers to TH1 histogram.
+    * \param[in] pattern Regex for TH1 histogram name.
     * \return Vector of pointers to TH1 histogram.
     */
   std::vector<TH1*> H1Vector(const std::string& pattern) const;
 
   /**
     * \brief Return pointer to TH2 histogram.
-    * \param[in] name Name of histogram.
+    * \param[in] name Name of TH2 histogram.
     * \return pointer to TH2 histogram.
     */
   TH2* H2(const std::string& name) const
@@ -211,15 +226,29 @@ public:
   }
 
   /**
+    * \brief Return clone of TH2 histogram.
+    * \param[in] name Name of TH2 histogram.
+    * \return pointer of TH2 clone histogram.
+    */
+  TH2* H2Clone(const std::string& name) const { return static_cast<TH2*>(H2(name)->Clone()); }
+
+  /**
     * \brief Return vector of pointers to TH2 histogram.
-    * \param[in] pattern Regex for histogram name.
+    * \param[in] names Vector of TH2 histogram names.
+    * \return Vector of pointers to TH2 histogram.
+    */
+  std::vector<TH2*> H2Vector(const std::vector<std::string>& names) const;
+
+  /**
+    * \brief Return vector of pointers to TH2 histogram.
+    * \param[in] pattern Regex for TH2 histogram name.
     * \return Vector of pointers to TH2 histogram.
     */
   std::vector<TH2*> H2Vector(const std::string& pattern) const;
 
   /**
     * \brief Return pointer to TH3 histogram.
-    * \param[in] name Name of histogram.
+    * \param[in] name Name of TH3 histogram.
     * \return pointer to TH3 histogram.
     */
   TH3* H3(const std::string& name) const
@@ -232,8 +261,15 @@ public:
   }
 
   /**
+    * \brief Return clone of TH3 histogram.
+    * \param[in] name Name of TH3 histogram.
+    * \return pointer of TH3 clone histogram.
+    */
+  TH3* H3Clone(const std::string& name) const { return static_cast<TH3*>(H3(name)->Clone()); }
+
+  /**
     * \brief Return pointer to TGraph.
-    * \param[in] name Name of graph.
+    * \param[in] name Name of TGraph.
     * \return pointer to TGraph.
     */
   TGraph* G1(const std::string& name) const
@@ -247,15 +283,22 @@ public:
 
   /**
     * \brief Return vector of pointers to TGraph.
-    * \param[in] pattern Regex for object name.
+    * \param[in] names Vector of TGraph names.
+    * \return Vector of pointers to TGraph.
+    */
+  std::vector<TGraph*> G1Vector(const std::vector<std::string>& names) const;
+
+  /**
+    * \brief Return vector of pointers to TGraph.
+    * \param[in] pattern Regex for TGraph name.
     * \return Vector of pointers to TGraph.
     */
   std::vector<TGraph*> G1Vector(const std::string& pattern) const;
 
   /**
     * \brief Return pointer to TGraph2D.
-    * \param[in] name Name of graph.
-    * \return pointer to TGraph.
+    * \param[in] name Name of TGraph2D.
+    * \return pointer to TGraph2D.
     */
   TGraph2D* G2(const std::string& name) const
   {
@@ -268,14 +311,21 @@ public:
 
   /**
     * \brief Return vector of pointers to TGraph2D.
-    * \param[in] pattern Regex for object name.
+    * \param[in] names Vector of TGraph2D names.
+    * \return Vector of pointers to TGraph2D.
+    */
+  std::vector<TGraph2D*> G2Vector(const std::vector<std::string>& names) const;
+
+  /**
+    * \brief Return vector of pointers to TGraph2D.
+    * \param[in] pattern Regex for TGraph2D name.
     * \return Vector of pointers to TGraph2D.
     */
   std::vector<TGraph2D*> G2Vector(const std::string& pattern) const;
 
   /**
     * \brief Return pointer to TProfile.
-    * \param[in] name Name of profile.
+    * \param[in] name Name of TProfile.
     * \return pointer to TProfile.
     */
   TProfile* P1(const std::string& name) const
@@ -289,15 +339,22 @@ public:
 
   /**
     * \brief Return vector of pointers to TProfile.
-    * \param[in] pattern Regex for profile name.
+    * \param[in] names Vector of TProfile names.
+    * \return Vector of pointers to TProfile.
+    */
+  std::vector<TProfile*> P1Vector(const std::vector<std::string>& names) const;
+
+  /**
+    * \brief Return vector of pointers to TProfile.
+    * \param[in] pattern Regex for TProfile name.
     * \return Vector of pointers to TProfile.
     */
   std::vector<TProfile*> P1Vector(const std::string& pattern) const;
 
   /**
-    * \brief Return pointer to TH2 histogram.
-    * \param[in] name Name of histogram.
-    * \return pointer to TH1 histogram.
+    * \brief Return pointer to TProfile2D.
+    * \param[in] name Name of TProfile2D.
+    * \return pointer to TProfile2D.
     */
   TProfile2D* P2(const std::string& name) const
   {
@@ -310,20 +367,27 @@ public:
 
   /**
     * \brief Return vector of pointers to TProfile2D.
-    * \param[in] pattern Regex for profile name.
+    * \param[in] names Vector of TProfile2D names.
+    * \return Vector of pointers to TProfile2D.
+    */
+  std::vector<TProfile2D*> P2Vector(const std::vector<std::string>& names) const;
+
+  /**
+    * \brief Return vector of pointers to TProfile2D.
+    * \param[in] pattern Regex for TProfile2D name.
     * \return Vector of pointers to TProfile2D.
     */
   std::vector<TProfile2D*> P2Vector(const std::string& pattern) const;
 
   /**
-    * \brief Check existence of histogram in manager.
-    * \param[in] name Name of histogram.
-    * \return True if histogram exists in manager.
+    * \brief Check existence of object in manager.
+    * \param[in] name Name of object.
+    * \return True if object exists in manager.
     */
   Bool_t Exists(const std::string& name) const { return (fMap.count(name) == 0) ? false : true; }
 
   /**
-    * \brief Write all histograms to current opened file.
+    * \brief Write all objects to current opened file.
     */
   void WriteToFile();
 
@@ -448,6 +512,9 @@ public:
 private:
   template<class T>
   std::vector<T> ObjectVector(const std::string& pattern) const;
+
+  template<class T>
+  std::vector<T> ObjectVector(const std::vector<std::string>& names) const;
 
   std::map<std::string, TNamed*> fMap;  // Map of histogram (graph) name to its pointer
   std::vector<TCanvas*> fCanvases;      // Pointers to all created canvases

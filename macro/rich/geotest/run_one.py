@@ -7,30 +7,32 @@ import argparse
 
 def main():
   runId = sys.argv[1]
-  energy = sys.argv[2]
+  testType = sys.argv[2] # geotest or urqmdtest
+
+  #runId = "0"
+  geoSetup = "sis100_electron"
+  nEvents = 3000 if testType == "geotest" else 100
+  targetZ = -44.0
+  energy = "10gev"
 
   cbmrootConfigPath = "/Users/slebedev/Development/cbm/git/build/config.sh"
   urqmdFile = ("/Users/slebedev/Development/cbm/data/urqmd/auau/{}/mbias/urqmd.auau.{}.mbias.00001.root").format(energy, energy)
-  plutoFile = ""
-  dataDir = "/Users/slebedev/Development/cbm/data/sim/rich/geotest/"
-  resultDir = "results_" + runId + "_"+ energy +"/" 
-  
-  #runId = "0"
-  geoSetup = "sis100_electron_APR21"
-  nEvents = 10
-  testType = "geoTest" # urqmdTest or geoTest
-
-  if testType == "geoTest":
+  if testType == "geotest":
     urqmdFile = ""
 
+  plutoFile = ""
+  dataDir = "/Users/slebedev/Development/cbm/data/sim/rich/" + testType
+  resultDir = "results_" + testType + "_" + runId + "_"+ energy +"/" 
+  
+
   traFile = dataDir + "/tra." + runId + ".root"  
-  parFile = dataDir + "/param." + runId + ".root"
+  parFile = dataDir + "/par." + runId + ".root"
   digiFile = dataDir + "/digi." + runId + ".root"
   recoFile = dataDir + "/reco." + runId + ".root"
   qaFile = dataDir + "/qa." + runId + ".root"
   geoSimFile = dataDir + "/geosim." + runId + ".root"
 
-  traCmd = ('root -l -b -q run_transport.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(urqmdFile, plutoFile, traFile, parFile, geoSimFile, geoSetup, nEvents)
+  traCmd = ('root -l -b -q run_transport.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{},{}\)').format(urqmdFile, plutoFile, traFile, parFile, geoSimFile, geoSetup, nEvents, targetZ)
   digiCmd = ('root -l -b -q run_digi.C\(\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(traFile, parFile, digiFile, nEvents)
   recoCmd = ('root -l -b -q run_reco.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(testType, traFile, parFile, digiFile, recoFile, geoSetup, nEvents)
   qaCmd = ('root -l -b -q run_qa.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{}\)').format(testType, traFile, parFile, digiFile, recoFile, qaFile, geoSetup, resultDir, nEvents)

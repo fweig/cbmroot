@@ -89,7 +89,7 @@ void CbmLitTofQa::Exec(Option_t* /*opt*/)
   nofEvents++;
   std::cout << "CbmLitTofQa::Exec: event=" << nofEvents << std::endl;
   ProcessMC(nofEvents - 1);
-  ProcessGlobalTracks();
+  //ProcessGlobalTracks();
   ProcessTofHits();
   ProcessTofTracks();
 }
@@ -198,6 +198,11 @@ void CbmLitTofQa::CreateHistograms()
   fHM->Add(name, new TH1F(name.c_str(), string(name + ";Number of tracks;Counter").c_str(), 100, 0., 100.));
   name = "hmp_Tof_Time_FirstTrack";
   fHM->Add(name, new TH1F(name.c_str(), string(name + ";Time [ns];Counter").c_str(), 2000, 0., 36.));
+
+  name = "hmp_Tof_Z";
+  fHM->Add(name, new TH1F(name.c_str(), string(name + ";Z [cm];Counter").c_str(), 200, 650, 900));
+  name = "hmp_TofTrack_Z";
+  fHM->Add(name, new TH1F(name.c_str(), string(name + ";Z [cm];Counter").c_str(), 200, 650, 900));
 }
 
 void CbmLitTofQa::ProcessMC(Int_t iEvent)
@@ -208,7 +213,7 @@ void CbmLitTofQa::ProcessMC(Int_t iEvent)
   Int_t nofHits = fTofHits->GetEntriesFast();
   for (Int_t iHit = 0; iHit < nofHits; iHit++) {
     //const CbmTofHit* tofHit = static_cast<const CbmTofHit*>(fTofHits->At(iHit));
-    CbmMatch* tofHitMatch   = static_cast<CbmMatch*>(fTofHitsMatches->At(iHit));
+    CbmMatch* tofHitMatch = static_cast<CbmMatch*>(fTofHitsMatches->At(iHit));
     if (tofHitMatch == NULL) { continue; }
     Int_t tofPointIndex         = tofHitMatch->GetMatchedLink().GetIndex();
     Int_t tofPointEventNo       = tofHitMatch->GetMatchedLink().GetEntry();
@@ -263,7 +268,7 @@ void CbmLitTofQa::ProcessGlobalTracks()
     Double_t ctCorrection = 0.0;
     Double_t ctReco       = 0.299792458 * tofHit->GetTime() + ctCorrection;  // ToF time in ns -> transfrom to ct in m
     //Double_t ctMC         = 0.299792458 * tofPoint->GetTime();               // mc time in ns -> transfrom to ct in m
-    Double_t trackLengthReco = globalTrack->GetLength() / 100.;              //global length
+    Double_t trackLengthReco = globalTrack->GetLength() / 100.;  //global length
     // Double_t trackLengthMC = tofPoint->GetLength() / 100.; //mc length
     Double_t preco     = (vtxTrack.GetQp() != 0) ? std::abs(1. / vtxTrack.GetQp()) : 0;
     Double_t t         = (trackLengthReco != 0) ? (ctReco / trackLengthReco) : 0;
@@ -325,6 +330,7 @@ void CbmLitTofQa::ProcessTofHits()
     //Int_t tofMCTrackId          = tofPoint->GetTrackID();
 
     fHM->H1("hmp_Tof_dTime")->Fill(1000 * (tofPoint->GetTime() - tofHit->GetTime()));
+    fHM->H1("hmp_Tof_Z")->Fill(tofHit->GetZ());
   }
 }
 
@@ -351,6 +357,8 @@ void CbmLitTofQa::ProcessTofTracks()
     Double_t dx               = par->GetX() - tofHit->GetX();
     Double_t dy               = par->GetY() - tofHit->GetY();
     Double_t distance         = sqrt(dx * dx + dy * dy);
+
+    fHM->H1("hmp_TofTrack_Z")->Fill(tofHit->GetZ());
 
     Int_t nofTrackCategories = fTrackCategories.size();
     for (Int_t iCat = 0; iCat < nofTrackCategories; iCat++) {

@@ -6,7 +6,7 @@
 void run_transport(const string& urqmdFile,  // only for "urqmdTest"
                    const string& plutoFile,  // only for "geoTest", if "", BoxGenerator is used
                    const string& traFile, const string& parFile, const string& geoFile, const string& geoSetup,
-                   int nEvents)
+                   int nEvents, double targetZ = -44.)
 {
   TTree::SetMaxTreeSize(90000000000);
 
@@ -27,6 +27,8 @@ void run_transport(const string& urqmdFile,  // only for "urqmdTest"
     boxGen1->SetPtRange(0., 3.);
     boxGen1->SetPhiRange(0., 360.);
     boxGen1->SetThetaRange(2.5, 25.);
+    //boxGen1->SetYRange(0., 4.);
+    //boxGen1->SetXYZ(0., 0., targetZ);
     boxGen1->SetCosTheta();
     boxGen1->Init();
     run.AddInput(boxGen1);
@@ -35,17 +37,18 @@ void run_transport(const string& urqmdFile,  // only for "urqmdTest"
     boxGen2->SetPtRange(0., 3.);
     boxGen2->SetPhiRange(0., 360.);
     boxGen2->SetThetaRange(2.5, 25.);
+    //boxGen2->SetYRange(0., 4.);
+    //boxGen2->SetXYZ(0., 0., targetZ);
     boxGen2->SetCosTheta();
     boxGen2->Init();
     run.AddInput(boxGen2);
   }
 
-
   run.SetOutFileName(traFile.c_str());
   run.SetParFileName(parFile.c_str());
   run.SetGeoFileName(geoFile.c_str());
   run.LoadSetup(geoSetup.c_str());
-  run.SetTarget("Gold", 0.025, 2.5);
+  run.SetTarget("Gold", 0.025, 2.5, 0, 0, targetZ);
   run.SetBeamPosition(0., 0., 0.1, 0.1);
   //run.SetEngine(kGeant4);
   //run.StoreTrajectories(true);

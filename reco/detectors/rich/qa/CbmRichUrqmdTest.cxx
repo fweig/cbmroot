@@ -46,7 +46,6 @@ CbmRichUrqmdTest::~CbmRichUrqmdTest() {}
 
 InitStatus CbmRichUrqmdTest::Init()
 {
-  cout << "CbmRichUrqmdTest::Init" << endl;
   fMcTracks        = InitOrFatalMc("MCTrack", "CbmRichUrqmdTest::Init");
   fRichPoints      = InitOrFatalMc("RichPoint", "CbmRichUrqmdTest::Init");
   fRichHits        = GetOrFatal<TClonesArray>("RichHit", "CbmRichUrqmdTest::Init");
@@ -86,94 +85,91 @@ void CbmRichUrqmdTest::InitHistograms()
 {
   fHM = new CbmHistManager();
 
-  fHM->Create1<TH1D>("fh_vertex_z", "fh_vertex_z;z [cm];# vertices/ev.", 350, -1., 350);
-  fHM->Create1<TH1D>("fh_vertex_z_sts", "fh_vertex_z_sts;z [cm];# vertices/ev.", 222, -1., 110.);
-  fHM->Create2<TH2D>("fh_vertex_xy", "fh_vertex_xy;x [cm];y [cm];# vertices/ev.", 100, -200., 200., 100, -200., 200.);
-  fHM->Create2<TH2D>("fh_vertex_zy", "fh_vertex_zy;z [cm];y [cm];# vertices/ev.", 350, -1., 350, 100, -200., 200.);
-  fHM->Create2<TH2D>("fh_vertex_zx", "fh_vertex_zx;z [cm];x [cm];# vertices/ev.", 350, -1., 350, 100, -200., 200.);
+  fHM->Create1<TH1D>("fh_vertex_z", "fh_vertex_z;Z [cm];# vertices/ev.", 400, -50., 350);
+  fHM->Create1<TH1D>("fh_vertex_z_sts", "fh_vertex_z_sts;Z [cm];# vertices/ev.", 320, -50., 110.);
+  fHM->Create2<TH2D>("fh_vertex_xy", "fh_vertex_xy;X [cm];Y [cm];# vertices/ev.", 100, -200., 200., 100, -200., 200.);
+  fHM->Create2<TH2D>("fh_vertex_zy", "fh_vertex_zy;Z [cm];Y [cm];# vertices/ev.", 400, -50., 350, 100, -200., 200.);
+  fHM->Create2<TH2D>("fh_vertex_zx", "fh_vertex_zx;Z [cm];X [cm];# vertices/ev.", 400, -50., 350, 100, -200., 200.);
 
-
-  fHM->Create2<TH2D>("fh_vertex_xy_z100_180", "fh_vertex_xy_z100_180;x [cm];y [cm];# vertices/ev.", 100, -200., 200.,
-                     100, -200., 200.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z180_370", "fh_vertex_xy_z180_370;x [cm];y [cm];# vertices/ev.", 100, -200., 200.,
-                     100, -200., 200.);
-  fHM->Create2<TH2D>("fh_vertex_xy_z180_230", "fh_vertex_xy_z180_230;x [cm];y [cm];# vertices/ev.", 100, -200., 200.,
-                     100, -200., 200.);
+  vector<string> vertexZTypes {"z60_140", "z140_330", "z140_190"};
+  for (const string& t : vertexZTypes) {
+    fHM->Create2<TH2D>("fh_vertex_xy_" + t, "fh_vertex_xy_" + t + ";X [cm];Y [cm];# vertices/ev.", 100, -200., 200.,
+                       100, -200., 200.);
+  }
 
   for (auto pair : fVertexZStsSlices) {
     string name = "fh_vertex_xy_z" + to_string(pair.first) + "_" + to_string(pair.second);
     fHM->Create2<TH2D>(name, name + ";x [cm];y [cm];# vertices/ev.", 100, -100., 100., 100, -100., 100.);
   }
 
-  fHM->Create1<TH1D>("fh_nof_rings_1hit", "fh_nof_rings_1hit;# detected particles/ev.;Yield", 250, -.5, 249.5);
-  fHM->Create1<TH1D>("fh_nof_rings_7hits", "fh_nof_rings_7hits;# detected particles/ev.;Yield", 250, -.5, 249.5);
-  fHM->Create1<TH1D>("fh_nof_rings_prim_1hit", "fh_nof_rings_prim_1hit;# detected particles/ev.;Yield", 50, -.5, 69.5);
-  fHM->Create1<TH1D>("fh_nof_rings_prim_7hits", "fh_nof_rings_prim_7hits;# detected particles/ev.;Yield", 50, -.5,
-                     69.5);
-  fHM->Create1<TH1D>("fh_nof_rings_target_1hit", "fh_nof_rings_target_1hit;# detected particles/ev.;Yield", 60, -.5,
-                     79.5);
-  fHM->Create1<TH1D>("fh_nof_rings_target_7hits", "fh_nof_rings_target_7hits;# detected particles/ev.;Yield", 60, -.5,
-                     79.5);
+  vector<string> nofRingsTypes {"1hit", "7hits", "prim_1hit", "prim_7hits", "target_1hit", "target_7hits"};
+  for (const string& t : nofRingsTypes) {
+    double nofBins = (t == "1hit" || t == "7hits") ? 30 : 100;
+    fHM->Create1<TH1D>("fh_nof_rings_" + t, "fh_nof_rings_" + t + ";# particles/ev.;Yield", nofBins, -.5,
+                       nofBins - 0.5);
+  }
 
-  fHM->Create1<TH1D>("fh_secel_mom", "fh_secel_mom;p [GeV/c];Number per event", 100, 0., 20);
-  fHM->Create1<TH1D>("fh_gamma_target_mom", "fh_gamma_target_mom;p [GeV/c];Number per event", 100, 0., 20);
-  fHM->Create1<TH1D>("fh_gamma_nontarget_mom", "fh_gamma_nontarget_mom;p [GeV/c];Number per event", 100, 0., 20);
-  fHM->Create1<TH1D>("fh_pi_mom", "fh_pi_mom;p [GeV/c];Number per event", 100, 0., 20);
-  fHM->Create1<TH1D>("fh_kaon_mom", "fh_kaon_mom;p [GeV/c];Number per event", 100, 0., 20);
-  fHM->Create1<TH1D>("fh_mu_mom", "fh_mu_mom;p [GeV/c];Number per event", 100, 0., 20);
+  vector<string> momP {"fh_secel_mom", "fh_gamma_target_mom", "fh_gamma_nontarget_mom",
+                       "fh_pi_mom",    "fh_kaon_mom",         "fh_mu_mom"};
+  for (const string& t : momP) {
+    fHM->Create1<TH1D>(t, t + ";P [GeV/c];Number per event", 100, 0., 20);
+  }
 
-  fHM->Create1<TH1D>("fh_nof_points_per_event", "fh_nof_points_per_event;Particle;# MC points/ev.", 7, .5, 7.5);
-  fHM->Create1<TH1D>("fh_nof_hits_per_event", "fh_nof_hits_per_event;# hits per event;Yield", 200, 0, 2000);
-  fHM->Create1<TH1D>("fh_nof_hits_per_pmt", "fh_nof_hits_per_pmt;# hits per PMT;% of total", 65, -0.5, 64.5);
+  fHM->Create1<TH1D>("fh_nof_points_per_event_src", "fh_nof_points_per_event_src;Particle;# MC points/ev.", 7, .5, 7.5);
+  fHM->Create1<TH1D>("fh_nof_hits_per_event", "fh_nof_hits_per_event;# hits/ev.;Yield", 200, 0, 2000);
+  fHM->Create1<TH1D>("fh_nof_points_per_event", "fh_nof_points_per_event;# points/ev.;Yield", 200, 0, 10000);
+  fHM->Create1<TH1D>("fh_nof_hits_per_pmt", "fh_nof_hits_per_pmt;# hits/PMT;% of total", 65, -0.5, 64.5);
 
   vector<double> xPmtBins = CbmRichUtil::GetPmtHistXbins();
   vector<double> yPmtBins = CbmRichUtil::GetPmtHistYbins();
 
-  // before drawing must be normalized by 1/64
+  // before drawing this histogram must be normalized by 1/64
   fHM->Create2<TH2D>("fh_hitrate_xy", "fh_hitrate_xy;X [cm];Y [cm];# hits/pixel/s", xPmtBins, yPmtBins);
-  fHM->Create2<TH2D>("fh_hits_xy", "fh_hits_xy;X [cm];Y [cm];# hits/PMT/ev.", xPmtBins, yPmtBins);
-  fHM->Create2<TH2D>("fh_points_xy", "fh_points_xy;X [cm];Y [cm];# MC points/PMT/ev.", xPmtBins, yPmtBins);
-  fHM->Create2<TH2D>("fh_points_xy_pions", "fh_points_xy_pions;X [cm];Y [cm];# MC points/PMT/ev.", xPmtBins, yPmtBins);
-  fHM->Create2<TH2D>("fh_points_xy_gamma_target", "fh_points_xy_gamma_target;X [cm];Y [cm];# MC points/PMT/ev.",
-                     xPmtBins, yPmtBins);
-  fHM->Create2<TH2D>("fh_points_xy_gamma_nontarget", "fh_points_xy_gamma_nontarget;X [cm];Y [cm];# MC points/PMT/ev.",
-                     xPmtBins, yPmtBins);
-  fHM->Create2<TH2D>("fh_skipped_pmt_10_xy", "fh_skipped_pmt_10_xy;X [cm];Y [cm];# skipped PMTs (>10 hits) [%]",
-                     xPmtBins, yPmtBins);
-  fHM->Create2<TH2D>("fh_skipped_pmt_20_xy", "fh_skipped_pmt_20_xy;X [cm];Y [cm];# skipped PMTs (>20 hits) [%]",
-                     xPmtBins, yPmtBins);
-  fHM->Create2<TH2D>("fh_skipped_pmt_30_xy", "fh_skipped_pmt_30_xy;X [cm];Y [cm];# skipped PMTs (>30 hits) [%]",
-                     xPmtBins, yPmtBins);
 
-  fHM->Create1<TH1D>("fh_nof_proj_per_event", "fh_nof_proj_per_event;# tracks/ev.;Yield", 50, 0, 1000);
+  fHM->Create2<TH2D>("fh_hits_xy", "fh_hits_xy;X [cm];Y [cm];# hits/PMT/ev.", xPmtBins, yPmtBins);
+
+  vector<string> pointXYTypes {"", "_pions", "_gamma_target", "_gamma_nontarget"};
+  for (const string& t : pointXYTypes) {
+    fHM->Create2<TH2D>("fh_points_xy" + t, "fh_points_xy" + t + ";X [cm];Y [cm];# MC points/PMT/ev.", xPmtBins,
+                       yPmtBins);
+  }
+
+  vector<string> skippedPmtTypes {"10", "20", "30"};
+  for (const string& t : skippedPmtTypes) {
+    fHM->Create2<TH2D>("fh_skipped_pmt_xy_" + t,
+                       "fh_skipped_pmt_xy_" + t + ";X [cm];Y [cm];# skipped PMTs (>" + t + " hits) [%]", xPmtBins,
+                       yPmtBins);
+  }
+
+  fHM->Create1<TH1D>("fh_nof_proj_per_event", "fh_nof_proj_per_event;# tracks/ev.;Yield", 600, -.5, 599.5);
   fHM->Create2<TH2D>("fh_proj_xy", "fh_proj_xy;X [cm];Y [cm];# tracks/cm^{2}/ev.", 240, -120, 120, 420, -210, 210);
 }
 
 void CbmRichUrqmdTest::NofRings()
 {
-  Int_t fileId   = 0;
-  Int_t nofRings = fRichRings->GetEntriesFast();
+  int fileId     = 0;
+  int nofRings   = fRichRings->GetEntriesFast();
   int nRings1hit = 0, nRings7hits = 0;
   int nRingsPrim1hit = 0, nRingsPrim7hits = 0;
   int nRingsTarget1hit = 0, nRingsTarget7hits = 0;
-  for (Int_t iR = 0; iR < nofRings; iR++) {
+  for (int iR = 0; iR < nofRings; iR++) {
     const CbmRichRing* ring = static_cast<CbmRichRing*>(fRichRings->At(iR));
-    if (NULL == ring) continue;
+    if (ring == nullptr) continue;
     const CbmTrackMatchNew* ringMatch = static_cast<CbmTrackMatchNew*>(fRichRingMatches->At(iR));
-    if (NULL == ringMatch) continue;
+    if (ringMatch == nullptr) continue;
 
-    Int_t mcEventId           = ringMatch->GetMatchedLink().GetEntry();
-    Int_t mcTrackId           = ringMatch->GetMatchedLink().GetIndex();
+    int mcEventId             = ringMatch->GetMatchedLink().GetEntry();
+    int mcTrackId             = ringMatch->GetMatchedLink().GetIndex();
     const CbmMCTrack* mcTrack = static_cast<CbmMCTrack*>(fMcTracks->Get(fileId, mcEventId, mcTrackId));
-    if (NULL == mcTrack) continue;
-    Int_t motherId = mcTrack->GetMotherId();
-    Int_t pdg      = TMath::Abs(mcTrack->GetPdgCode());
-    double mom     = mcTrack->GetP();
+    if (mcTrack == nullptr) continue;
+    int motherId = mcTrack->GetMotherId();
+    int pdgAbs   = std::abs(mcTrack->GetPdgCode());
+    double mom   = mcTrack->GetP();
     TVector3 vert;
     mcTrack->GetStartVertex(vert);
     double dZ = vert.Z();
 
-    if (motherId == -1 && pdg == 11) continue;  // do not calculate embedded electrons
+    if (motherId == -1 && pdgAbs == 11) continue;  // do not calculate embedded electrons
 
     int nofHits = ring->GetNofHits();
     if (nofHits >= 1) nRings1hit++;
@@ -189,19 +185,19 @@ void CbmRichUrqmdTest::NofRings()
       if (motherId != -1) {
         int motherPdg            = -1;
         const CbmMCTrack* mother = static_cast<CbmMCTrack*>(fMcTracks->Get(fileId, mcEventId, motherId));
-        if (NULL != mother) motherPdg = mother->GetPdgCode();
-        if (motherId != -1 && pdg == 11 && motherPdg != 22) fHM->H1("fh_secel_mom")->Fill(mom);
+        if (mother != nullptr) motherPdg = mother->GetPdgCode();
+        if (motherId != -1 && pdgAbs == 11 && motherPdg != 22) fHM->H1("fh_secel_mom")->Fill(mom);
 
-        if (motherId != -1 && pdg == 11 && motherPdg == 22) {
+        if (motherId != -1 && pdgAbs == 11 && motherPdg == 22) {
           if (dZ < 0.1) { fHM->H1("fh_gamma_target_mom")->Fill(mom); }
           else {
             fHM->H1("fh_gamma_nontarget_mom")->Fill(mom);
           }
         }
       }
-      if (pdg == 211) fHM->H1("fh_pi_mom")->Fill(mom);
-      if (pdg == 321) fHM->H1("fh_kaon_mom")->Fill(mom);
-      if (pdg == 13) fHM->H1("fh_mu_mom")->Fill(mom);
+      if (pdgAbs == 211) fHM->H1("fh_pi_mom")->Fill(mom);
+      if (pdgAbs == 321) fHM->H1("fh_kaon_mom")->Fill(mom);
+      if (pdgAbs == 13) fHM->H1("fh_mu_mom")->Fill(mom);
     }
   }
   fHM->H1("fh_nof_rings_1hit")->Fill(nRings1hit);
@@ -218,107 +214,108 @@ void CbmRichUrqmdTest::NofHitsAndPoints()
 {
   int nofHits = fRichHits->GetEntriesFast();
   fHM->H1("fh_nof_hits_per_event")->Fill(nofHits);
-  map<Int_t, Int_t> digisPerPmtMap;
+  map<int, int> digisPerPmtMap;
   for (int iH = 0; iH < nofHits; iH++) {
-    CbmRichHit* hit = static_cast<CbmRichHit*>(fRichHits->At(iH));
-    if (nullptr == hit) continue;
+    const CbmRichHit* hit = static_cast<CbmRichHit*>(fRichHits->At(iH));
+    if (hit == nullptr) continue;
     fHM->H2("fh_hits_xy")->Fill(hit->GetX(), hit->GetY());
     fHM->H2("fh_hitrate_xy")->Fill(hit->GetX(), hit->GetY());
 
-    Int_t digiInd               = hit->GetRefId();
+    int digiInd                 = hit->GetRefId();
     const CbmRichDigi* richDigi = fDigiMan->Get<CbmRichDigi>(digiInd);
-    if (nullptr == richDigi) continue;
+    if (richDigi == nullptr) continue;
     CbmRichPixelData* pixelData = CbmRichDigiMapManager::GetInstance().GetPixelDataByAddress(richDigi->GetAddress());
-    if (nullptr == pixelData) continue;
-    Int_t pmtId = pixelData->fPmtId;
+    if (pixelData == nullptr) continue;
+    int pmtId = pixelData->fPmtId;
     digisPerPmtMap[pmtId]++;
   }
 
   for (auto const& it : digisPerPmtMap) {
-    Int_t pmtId             = it.first;
-    Int_t nofDigis          = it.second;
+    int pmtId               = it.first;
+    int nofDigis            = it.second;
     CbmRichPmtData* pmtData = CbmRichDigiMapManager::GetInstance().GetPmtDataById(pmtId);
     TVector3 inPos(pmtData->fX, pmtData->fY, pmtData->fZ);
     TVector3 outPos;
     CbmRichGeoManager::GetInstance().RotatePoint(&inPos, &outPos);
-    if (nofDigis > 10) fHM->H2("fh_skipped_pmt_10_xy")->Fill(outPos.X(), outPos.Y());
-    if (nofDigis > 20) fHM->H2("fh_skipped_pmt_20_xy")->Fill(outPos.X(), outPos.Y());
-    if (nofDigis > 30) fHM->H2("fh_skipped_pmt_30_xy")->Fill(outPos.X(), outPos.Y());
+    if (nofDigis > 10) fHM->H2("fh_skipped_pmt_xy_10")->Fill(outPos.X(), outPos.Y());
+    if (nofDigis > 20) fHM->H2("fh_skipped_pmt_xy_20")->Fill(outPos.X(), outPos.Y());
+    if (nofDigis > 30) fHM->H2("fh_skipped_pmt_xy_30")->Fill(outPos.X(), outPos.Y());
   }
 
-  vector<Int_t> allPmtIds = CbmRichDigiMapManager::GetInstance().GetPmtIds();
-  for (Int_t pmtId : allPmtIds) {
+  vector<int> allPmtIds = CbmRichDigiMapManager::GetInstance().GetPmtIds();
+  for (int pmtId : allPmtIds) {
     fHM->H1("fh_nof_hits_per_pmt")->Fill(digisPerPmtMap[pmtId]);
   }
 
-  Int_t nofEvents = fEventList->GetNofEvents();
-  for (Int_t iE = 0; iE < nofEvents; iE++) {
-    Int_t fileId  = fEventList->GetFileIdByIndex(iE);
-    Int_t eventId = fEventList->GetEventIdByIndex(iE);
+  int nofEvents = fEventList->GetNofEvents();
+  for (int iE = 0; iE < nofEvents; iE++) {
+    int fileId    = fEventList->GetFileIdByIndex(iE);
+    int eventId   = fEventList->GetEventIdByIndex(iE);
     int nofPoints = fRichPoints->Size(fileId, eventId);
+    fHM->H1("fh_nof_points_per_event")->Fill(nofPoints);
     for (int i = 0; i < nofPoints; i++) {
       const CbmRichPoint* point = static_cast<CbmRichPoint*>(fRichPoints->Get(fileId, eventId, i));
-      if (NULL == point) continue;
-      fHM->H1("fh_nof_points_per_event")->Fill(1);
+      if (point == nullptr) continue;
+      fHM->H1("fh_nof_points_per_event_src")->Fill(1);
 
-      Int_t mcPhotonTrackId = point->GetTrackID();
+      int mcPhotonTrackId = point->GetTrackID();
       if (mcPhotonTrackId < 0) continue;
       const CbmMCTrack* mcPhotonTrack = static_cast<CbmMCTrack*>(fMcTracks->Get(fileId, eventId, mcPhotonTrackId));
-      if (NULL == mcPhotonTrack) continue;
-      Int_t motherPhotonId = mcPhotonTrack->GetMotherId();
+      if (mcPhotonTrack == nullptr) continue;
+      int motherPhotonId = mcPhotonTrack->GetMotherId();
       if (motherPhotonId < 0) continue;
       const CbmMCTrack* mcTrack = static_cast<CbmMCTrack*>(fMcTracks->Get(fileId, eventId, motherPhotonId));
-      if (NULL == mcTrack) continue;
-      Int_t motherId = mcTrack->GetMotherId();
+      if (mcTrack == nullptr) continue;
+      int motherId = mcTrack->GetMotherId();
 
-      Int_t pdg = TMath::Abs(mcTrack->GetPdgCode());
+      int pdgAbs = std::abs(mcTrack->GetPdgCode());
       TVector3 vert;
       mcTrack->GetStartVertex(vert);
       double dZ = vert.Z();
 
-      if (motherId == -1 && pdg == 11) continue;  // do not calculate embedded electrons
+      if (motherId == -1 && pdgAbs == 11) continue;  // do not calculate embedded electrons
 
       if (motherId != -1) {
         int motherPdg            = -1;
         const CbmMCTrack* mother = static_cast<CbmMCTrack*>(fMcTracks->Get(fileId, eventId, motherId));
-        if (NULL != mother) motherPdg = mother->GetPdgCode();
-        if (motherId != -1 && pdg == 11 && motherPdg != 22) fHM->H1("fh_nof_points_per_event")->Fill(2);
+        if (mother != nullptr) motherPdg = mother->GetPdgCode();
+        if (motherId != -1 && pdgAbs == 11 && motherPdg != 22) fHM->H1("fh_nof_points_per_event_src")->Fill(2);
 
-        if (motherId != -1 && pdg == 11 && motherPdg == 22) {
-          if (dZ < 0.1) { fHM->H1("fh_nof_points_per_event")->Fill(3); }
+        if (motherId != -1 && pdgAbs == 11 && motherPdg == 22) {
+          if (dZ < 0.1) { fHM->H1("fh_nof_points_per_event_src")->Fill(3); }
           else {
-            fHM->H1("fh_nof_points_per_event")->Fill(4);
+            fHM->H1("fh_nof_points_per_event_src")->Fill(4);
           }
         }
       }
-      if (pdg == 211) fHM->H1("fh_nof_points_per_event")->Fill(5);
-      if (pdg == 321) fHM->H1("fh_nof_points_per_event")->Fill(6);
-      if (pdg == 13) fHM->H1("fh_nof_points_per_event")->Fill(7);
+      if (pdgAbs == 211) fHM->H1("fh_nof_points_per_event_src")->Fill(5);
+      if (pdgAbs == 321) fHM->H1("fh_nof_points_per_event_src")->Fill(6);
+      if (pdgAbs == 13) fHM->H1("fh_nof_points_per_event_src")->Fill(7);
     }
   }
 }
 
 void CbmRichUrqmdTest::PmtXYSource()
 {
-  Int_t nofEvents = fEventList->GetNofEvents();
-  for (Int_t iE = 0; iE < nofEvents; iE++) {
-    Int_t fileId  = fEventList->GetFileIdByIndex(iE);
-    Int_t eventId = fEventList->GetEventIdByIndex(iE);
+  int nofEvents = fEventList->GetNofEvents();
+  for (int iE = 0; iE < nofEvents; iE++) {
+    int fileId    = fEventList->GetFileIdByIndex(iE);
+    int eventId   = fEventList->GetEventIdByIndex(iE);
     int nofPoints = fRichPoints->Size(fileId, eventId);
     for (int i = 0; i < nofPoints; i++) {
       const CbmRichPoint* point = static_cast<CbmRichPoint*>(fRichPoints->Get(fileId, eventId, i));
-      if (NULL == point) continue;
+      if (point == nullptr) continue;
 
-      Int_t iMCTrack          = point->GetTrackID();
+      int iMCTrack            = point->GetTrackID();
       const CbmMCTrack* track = static_cast<CbmMCTrack*>(fMcTracks->Get(fileId, eventId, iMCTrack));
-      if (NULL == track) continue;
+      if (track == nullptr) continue;
 
-      Int_t iMother = track->GetMotherId();
+      int iMother = track->GetMotherId();
       if (iMother == -1) continue;
 
       const CbmMCTrack* track2 = static_cast<CbmMCTrack*>(fMcTracks->Get(fileId, eventId, iMother));
-      if (NULL == track2) continue;
-      int pdg      = TMath::Abs(track2->GetPdgCode());
+      if (track2 == nullptr) continue;
+      int pdgAbs   = std::abs(track2->GetPdgCode());
       int motherId = track2->GetMotherId();
       TVector3 inPos(point->GetX(), point->GetY(), point->GetZ());
       TVector3 outPos;
@@ -328,29 +325,29 @@ void CbmRichUrqmdTest::PmtXYSource()
       if (motherId != -1) {
         int motherPdg            = -1;
         const CbmMCTrack* mother = static_cast<CbmMCTrack*>(fMcTracks->Get(fileId, eventId, motherId));
-        if (NULL != mother) motherPdg = mother->GetPdgCode();
+        if (mother != nullptr) motherPdg = mother->GetPdgCode();
         TVector3 vert;
         track2->GetStartVertex(vert);
-        if (motherId != -1 && pdg == 11 && motherPdg == 22) {
+        if (motherId != -1 && pdgAbs == 11 && motherPdg == 22) {
           if (vert.Z() < 0.1) { fHM->H2("fh_points_xy_gamma_target")->Fill(outPos.X(), outPos.Y()); }
           else {
             fHM->H2("fh_points_xy_gamma_nontarget")->Fill(outPos.X(), outPos.Y());
           }
         }
       }
-      if (pdg == 211) fHM->H2("fh_points_xy_pions")->Fill(outPos.X(), outPos.Y());
+      if (pdgAbs == 211) fHM->H2("fh_points_xy_pions")->Fill(outPos.X(), outPos.Y());
     }
   }
 }
 
 void CbmRichUrqmdTest::NofProjections()
 {
-  if (fRichProjections == NULL) return;
+  if (fRichProjections == nullptr) return;
   int nofProj     = fRichProjections->GetEntriesFast();
   int nofGoodProj = 0;
   for (int i = 0; i < nofProj; i++) {
     FairTrackParam* proj = (FairTrackParam*) fRichProjections->At(i);
-    if (NULL == proj) continue;
+    if (proj == nullptr) continue;
     fHM->H2("fh_proj_xy")->Fill(proj->GetX(), proj->GetY());
     if (proj->GetX() != 0 && proj->GetY() != 0) nofGoodProj++;
   }
@@ -359,15 +356,15 @@ void CbmRichUrqmdTest::NofProjections()
 
 void CbmRichUrqmdTest::Vertex()
 {
-  Int_t nofEvents = fEventList->GetNofEvents();
-  for (Int_t iE = 0; iE < nofEvents; iE++) {
-    Int_t fileId  = fEventList->GetFileIdByIndex(iE);
-    Int_t eventId = fEventList->GetEventIdByIndex(iE);
+  int nofEvents = fEventList->GetNofEvents();
+  for (int iE = 0; iE < nofEvents; iE++) {
+    int fileId  = fEventList->GetFileIdByIndex(iE);
+    int eventId = fEventList->GetEventIdByIndex(iE);
 
     int nMcTracks = fMcTracks->Size(fileId, eventId);
     for (int i = 0; i < nMcTracks; i++) {
       //At least one hit in RICH
-      pair<Int_t, Int_t> val = std::make_pair(eventId, i);
+      pair<int, int> val = std::make_pair(eventId, i);
       if (fNofHitsInRingMap[val] < 1) continue;
       const CbmMCTrack* mctrack = static_cast<CbmMCTrack*>(fMcTracks->Get(fileId, eventId, i));
       TVector3 v;
@@ -377,9 +374,9 @@ void CbmRichUrqmdTest::Vertex()
       fHM->H2("fh_vertex_xy")->Fill(v.X(), v.Y());
       fHM->H2("fh_vertex_zy")->Fill(v.Z(), v.Y());
       fHM->H2("fh_vertex_zx")->Fill(v.Z(), v.X());
-      if (v.Z() >= 100 && v.Z() <= 180) fHM->H2("fh_vertex_xy_z100_180")->Fill(v.X(), v.Y());
-      if (v.Z() >= 180 && v.Z() <= 370) fHM->H2("fh_vertex_xy_z180_370")->Fill(v.X(), v.Y());
-      if (v.Z() >= 180 && v.Z() <= 230) fHM->H2("fh_vertex_xy_z180_230")->Fill(v.X(), v.Y());
+      if (v.Z() >= 60 && v.Z() <= 140) fHM->H2("fh_vertex_xy_z60_140")->Fill(v.X(), v.Y());
+      if (v.Z() >= 140 && v.Z() <= 330) fHM->H2("fh_vertex_xy_z140_330")->Fill(v.X(), v.Y());
+      if (v.Z() >= 140 && v.Z() <= 190) fHM->H2("fh_vertex_xy_z140_190")->Fill(v.X(), v.Y());
 
       for (auto pair : fVertexZStsSlices) {
         string name = "fh_vertex_xy_z" + to_string(pair.first) + "_" + to_string(pair.second);
@@ -396,23 +393,23 @@ void CbmRichUrqmdTest::DrawHist()
   SetDefaultDrawStyle();
 
   {
-    fHM->H1("fh_vertex_z")->Scale(1. / fEventNum);
-    fHM->CreateCanvas("rich_urqmd_vertex_z", "rich_urqmd_vertex_z", 800, 800);
+    fHM->Scale("fh_vertex_z", 1. / fEventNum);
+    fHM->CreateCanvas("richurqmd_vertex_z", "richurqmd_vertex_z", 1000, 1000);
     DrawH1(fHM->H1("fh_vertex_z"), kLinear, kLog, "hist");
   }
 
   {
-    fHM->H1("fh_vertex_z_sts")->Scale(1. / fEventNum);
-    fHM->CreateCanvas("rich_urqmd_vertex_z_sts", "rich_urqmd_vertex_z_sts", 800, 800);
+    fHM->Scale("fh_vertex_z_sts", 1. / fEventNum);
+    fHM->CreateCanvas("richurqmd_vertex_z_sts", "richurqmd_vertex_z_sts", 1000, 1000);
     DrawH1(fHM->H1("fh_vertex_z_sts"), kLinear, kLog, "hist");
   }
 
 
   {
-    fHM->H2("fh_vertex_xy")->Scale(1. / fEventNum);
-    fHM->H2("fh_vertex_zy")->Scale(1. / fEventNum);
-    fHM->H2("fh_vertex_zx")->Scale(1. / fEventNum);
-    TCanvas* c = fHM->CreateCanvas("rich_urqmd_vertex_xyz", "rich_urqmd_vertex_xyz", 1500, 500);
+    fHM->Scale("fh_vertex_xy", 1. / fEventNum);
+    fHM->Scale("fh_vertex_zy", 1. / fEventNum);
+    fHM->Scale("fh_vertex_zx", 1. / fEventNum);
+    TCanvas* c = fHM->CreateCanvas("richurqmd_vertex_xyz", "richurqmd_vertex_xyz", 1800, 600);
     c->Divide(3, 1);
     c->cd(1);
     DrawH2(fHM->H2("fh_vertex_xy"), kLinear, kLinear, kLog);
@@ -425,12 +422,12 @@ void CbmRichUrqmdTest::DrawHist()
   {
     gStyle->SetOptTitle(1);
 
-    TCanvas* c = fHM->CreateCanvas("rich_urqmd_vertex_sts_xyz", "rich_urqmd_vertex_sts_xyz", 1600, 1200);
+    TCanvas* c = fHM->CreateCanvas("richurqmd_vertex_sts_xyz", "richurqmd_vertex_sts_xyz", 1600, 1200);
     c->Divide(4, 3);
     int i = 1;
     for (auto pair : fVertexZStsSlices) {
       string name = "fh_vertex_xy_z" + to_string(pair.first) + "_" + to_string(pair.second);
-      fHM->H2(name)->Scale(1. / fEventNum);
+      fHM->Scale(name, 1. / fEventNum);
       c->cd(i++);
       DrawH2(fHM->H2(name), kLinear, kLinear, kLog);
       DrawTextOnPad(to_string(pair.first) + " cm < Z < " + to_string(pair.second) + " cm", 0.3, 0.9, 0.7, 0.98);
@@ -439,27 +436,17 @@ void CbmRichUrqmdTest::DrawHist()
     gStyle->SetOptTitle(0);
   }
 
-  {
-    fHM->H2("fh_vertex_xy_z100_180")->Scale(1. / fEventNum);
-    fHM->CreateCanvas("rich_urqmd_vertex_xy_z100_180", "rich_urqmd_vertex_xy_z100_180", 800, 800);
-    DrawH2(fHM->H2("fh_vertex_xy_z100_180"));
+  vector<string> vertexZTypes {"z60_140", "z140_330", "z140_190"};
+  for (const string& t : vertexZTypes) {
+    string name = "richurqmd_vertex_xy_" + t;
+    fHM->Scale("fh_vertex_xy_" + t, 1. / fEventNum);
+    fHM->CreateCanvas(name, name, 1000, 1000);
+    DrawH2(fHM->H2("fh_vertex_xy_" + t));
   }
 
   {
-    fHM->H2("fh_vertex_xy_z180_370")->Scale(1. / fEventNum);
-    fHM->CreateCanvas("rich_urqmd_vertex_xy_z180_370", "rich_urqmd_vertex_xy_z180_370", 800, 800);
-    DrawH2(fHM->H2("fh_vertex_xy_z180_370"));
-  }
-
-  {
-    fHM->H2("fh_vertex_xy_z180_230")->Scale(1. / fEventNum);
-    fHM->CreateCanvas("rich_urqmd_vertex_xy_z180_230", "rich_urqmd_vertex_xy_z180_230", 800, 800);
-    DrawH2(fHM->H2("fh_vertex_xy_z180_230"));
-  }
-
-  {
-    fHM->H1("fh_nof_points_per_event")->Scale(1. / fEventNum);
-    fHM->CreateCanvas("rich_urqmd_nof_points_per_event", "rich_urqmd_nof_points_per_event", 800, 800);
+    fHM->Scale("fh_nof_points_per_event_src", 1. / fEventNum);
+    fHM->CreateCanvas("richurqmd_nof_points_per_event_src", "richurqmd_nof_points_per_event_src", 1000, 1000);
     //gStyle->SetPaintTextFormat("4.1f");
     string labels[7] = {"all",
                         "e^{#pm}_{sec} other",
@@ -468,55 +455,39 @@ void CbmRichUrqmdTest::DrawHist()
                         "#pi^{#pm}",
                         "K^{#pm}",
                         "#mu^{#pm}"};
-    for (Int_t i = 1; i <= 7; i++) {
-      fHM->H1("fh_nof_points_per_event")->GetXaxis()->SetBinLabel(i, labels[i - 1].c_str());
+    for (int i = 1; i <= 7; i++) {
+      fHM->H1("fh_nof_points_per_event_src")->GetXaxis()->SetBinLabel(i, labels[i - 1].c_str());
     }
-    fHM->H1("fh_nof_points_per_event")->GetXaxis()->SetLabelSize(0.05);
-    //fHM->H1("fh_nof_points_per_event")->SetMarkerSize(0.15);
-    DrawH1(fHM->H1("fh_nof_points_per_event"), kLinear, kLog, "hist text0");
+    fHM->H1("fh_nof_points_per_event_src")->GetXaxis()->SetLabelSize(0.05);
+    //fHM->H1("fh_nof_points_per_event_src")->SetMarkerSize(0.15);
+    DrawH1(fHM->H1("fh_nof_points_per_event_src"), kLinear, kLog, "hist text0");
   }
 
   {
-    fHM->CreateCanvas("rich_urqmd_nof_rings", "rich_urqmd_nof_rings", 800, 800);
-    fHM->H1("fh_nof_rings_1hit")->Scale(1. / fHM->H1("fh_nof_rings_1hit")->Integral());
-    fHM->H1("fh_nof_rings_7hits")->Scale(1. / fHM->H1("fh_nof_rings_7hits")->Integral());
-    stringstream ss1, ss2;
-    ss1 << "At least 1 hit detected (" << fHM->H1("fh_nof_rings_1hit")->GetMean() << ")";
-    ss2 << "At least 7 hits detected (" << fHM->H1("fh_nof_rings_7hits")->GetMean() << ")";
-    DrawH1({fHM->H1("fh_nof_rings_1hit"), fHM->H1("fh_nof_rings_7hits")}, {ss1.str(), ss2.str()}, kLinear, kLinear,
-           true, 0.3, 0.85, 0.99, 0.99, "hist");
+    vector<string> nofRingsTypes {"", "_prim", "_target"};
+    for (const string& t : nofRingsTypes) {
+      string cName  = "richurqmd_nof_rings" + t;
+      string h1Name = "fh_nof_rings" + t + "_1hit";
+      string h7Name = "fh_nof_rings" + t + "_7hits";
+      fHM->CreateCanvas(cName, cName, 1000, 1000);
+      fHM->NormalizeToIntegral(h1Name);
+      fHM->NormalizeToIntegral(h7Name);
+      stringstream ss1, ss2;
+      ss1 << "At least 1 hit (" << fHM->H1(h1Name)->GetMean() << ")";
+      ss2 << "At least 7 hits (" << fHM->H1(h7Name)->GetMean() << ")";
+      DrawH1({fHM->H1(h1Name), fHM->H1(h7Name)}, {ss1.str(), ss2.str()}, kLinear, kLinear, true, 0.4, 0.85, 0.99, 0.99,
+             "hist");
+    }
   }
 
   {
-    fHM->CreateCanvas("rich_urqmd_nof_rings_prim", "rich_urqmd_nof_rings_prim", 800, 800);
-    fHM->H1("fh_nof_rings_prim_1hit")->Scale(1. / fHM->H1("fh_nof_rings_prim_1hit")->Integral());
-    fHM->H1("fh_nof_rings_prim_7hits")->Scale(1. / fHM->H1("fh_nof_rings_prim_7hits")->Integral());
-    stringstream ss1, ss2;
-    ss1 << "At least 1 hit detected (" << fHM->H1("fh_nof_rings_prim_1hit")->GetMean() << ")";
-    ss2 << "At least 7 hits detected (" << fHM->H1("fh_nof_rings_prim_7hits")->GetMean() << ")";
-    DrawH1({fHM->H1("fh_nof_rings_prim_1hit"), fHM->H1("fh_nof_rings_prim_7hits")}, {ss1.str(), ss2.str()}, kLinear,
-           kLinear, true, 0.3, 0.85, 0.99, 0.99, "hist");
-  }
-
-  {
-    fHM->CreateCanvas("rich_urqmd_nof_rings_target", "rich_urqmd_nof_rings_target", 800, 800);
-    fHM->H1("fh_nof_rings_target_1hit")->Scale(1. / fHM->H1("fh_nof_rings_target_1hit")->Integral());
-    fHM->H1("fh_nof_rings_target_7hits")->Scale(1. / fHM->H1("fh_nof_rings_target_7hits")->Integral());
-    stringstream ss1, ss2;
-    ss1 << "At least 1 hit detected (" << fHM->H1("fh_nof_rings_target_1hit")->GetMean() << ")";
-    ss2 << "At least 7 hits detected (" << fHM->H1("fh_nof_rings_target_7hits")->GetMean() << ")";
-    DrawH1({fHM->H1("fh_nof_rings_target_1hit"), fHM->H1("fh_nof_rings_target_7hits")}, {ss1.str(), ss2.str()}, kLinear,
-           kLinear, true, 0.3, 0.85, 0.99, 0.99, "hist");
-  }
-
-  {
-    fHM->CreateCanvas("rich_urqmd_sources_mom", "rich_urqmd_sources_mom", 800, 800);
-    fHM->H1("fh_gamma_target_mom")->Scale(1. / fEventNum);
-    fHM->H1("fh_gamma_nontarget_mom")->Scale(1. / fEventNum);
-    fHM->H1("fh_secel_mom")->Scale(1. / fEventNum);
-    fHM->H1("fh_pi_mom")->Scale(1. / fEventNum);
-    fHM->H1("fh_kaon_mom")->Scale(1. / fEventNum);
-    fHM->H1("fh_mu_mom")->Scale(1. / fEventNum);
+    fHM->CreateCanvas("richurqmd_sources_mom", "richurqmd_sources_mom", 1000, 1000);
+    fHM->Scale("fh_gamma_target_mom", 1. / fEventNum);
+    fHM->Scale("fh_gamma_nontarget_mom", 1. / fEventNum);
+    fHM->Scale("fh_secel_mom", 1. / fEventNum);
+    fHM->Scale("fh_pi_mom", 1. / fEventNum);
+    fHM->Scale("fh_kaon_mom", 1. / fEventNum);
+    fHM->Scale("fh_mu_mom", 1. / fEventNum);
     stringstream ss1, ss2, ss3, ss4, ss5, ss6;
     ss1 << "e^{#pm}_{target} from #gamma (" << fHM->H1("fh_gamma_target_mom")->GetEntries() / fEventNum << ")";
     ss2 << "e^{#pm}_{not target} from #gamma (" << fHM->H1("fh_gamma_nontarget_mom")->GetEntries() / fEventNum << ")";
@@ -524,101 +495,88 @@ void CbmRichUrqmdTest::DrawHist()
     ss4 << "#pi^{#pm} (" << fHM->H1("fh_pi_mom")->GetEntries() / fEventNum << ")";
     ss5 << "K^{#pm} (" << fHM->H1("fh_kaon_mom")->GetEntries() / fEventNum << ")";
     ss6 << "#mu^{#pm} (" << fHM->H1("fh_mu_mom")->GetEntries() / fEventNum << ")";
-    DrawH1({fHM->H1("fh_gamma_target_mom"), fHM->H1("fh_gamma_nontarget_mom"), fHM->H1("fh_secel_mom"),
-            fHM->H1("fh_pi_mom"), fHM->H1("fh_kaon_mom"), fHM->H1("fh_mu_mom")},
+    DrawH1(fHM->H1Vector({"fh_gamma_target_mom", "fh_gamma_nontarget_mom", "fh_secel_mom", "fh_pi_mom", "fh_kaon_mom",
+                          "fh_mu_mom"}),
            {ss1.str(), ss2.str(), ss3.str(), ss4.str(), ss5.str(), ss6.str()}, kLinear, kLog, true, 0.5, 0.7, 0.99,
            0.99, "hist");
   }
 
   {
-    TCanvas* c  = fHM->CreateCanvas("rich_urqmd_hits_xy", "rich_urqmd_hits_xy", 800, 800);
-    TH2D* clone = (TH2D*) fHM->H2("fh_hits_xy")->Clone();
+    TCanvas* c = fHM->CreateCanvas("richurqmd_hits_xy", "richurqmd_hits_xy", 1000, 1000);
+    TH2* clone = fHM->H2Clone("fh_hits_xy");
     clone->Scale(1. / (fEventNum));
     CbmRichDraw::DrawPmtH2(clone, c, true);
   }
 
   {
-    TCanvas* c  = fHM->CreateCanvas("rich_urqmd_occupancy_xy", "rich_urqmd_occupancy_xy", 800, 800);
-    TH2D* clone = (TH2D*) fHM->H2("fh_hits_xy")->Clone();
+    TCanvas* c = fHM->CreateCanvas("richurqmd_occupancy_xy", "richurqmd_occupancy_xy", 1000, 1000);
+    TH2* clone = fHM->H2Clone("fh_hits_xy");
     clone->GetZaxis()->SetTitle("Occupancy:# hits/PMT/ev./64 [%]");
     clone->Scale(100. / (fEventNum * 64.));
     CbmRichDraw::DrawPmtH2(clone, c, true);
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas("rich_urqmd_skipped_pmt_10_xy", "rich_urqmd_skipped_pmt_10_xy", 800, 800);
-    fHM->H2("fh_skipped_pmt_10_xy")->Scale(100. / (fEventNum));
-    CbmRichDraw::DrawPmtH2(fHM->H2("fh_skipped_pmt_10_xy"), c, true);
+    vector<string> skippedPmtTypes {"10", "20", "30"};
+    for (const string& t : skippedPmtTypes) {
+      string name = "richurqmd_skipped_pmt_xy_" + t;
+      TCanvas* c  = fHM->CreateCanvas(name, name, 1000, 1000);
+      fHM->Scale("fh_skipped_pmt_xy_" + t, 100. / fEventNum);
+      CbmRichDraw::DrawPmtH2(fHM->H2("fh_skipped_pmt_xy_" + t), c, true);
+    }
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas("rich_urqmd_skipped_pmt_20_xy", "rich_urqmd_skipped_pmt_20_xy", 800, 800);
-    fHM->H2("fh_skipped_pmt_20_xy")->Scale(100. / (fEventNum));
-    CbmRichDraw::DrawPmtH2(fHM->H2("fh_skipped_pmt_20_xy"), c, true);
-  }
-
-  {
-    TCanvas* c = fHM->CreateCanvas("rich_urqmd_skipped_pmt_30_xy", "rich_urqmd_skipped_pmt_30_xy", 800, 800);
-    fHM->H2("fh_skipped_pmt_30_xy")->Scale(100. / (fEventNum));
-    CbmRichDraw::DrawPmtH2(fHM->H2("fh_skipped_pmt_30_xy"), c, true);
-  }
-
-  {
-    fHM->CreateCanvas("rich_urqmd_nof_hits_per_pmt", "rich_urqmd_nof_hits_per_pmt", 800, 800);
-    fHM->H1("fh_nof_hits_per_pmt")->Scale(100. / fHM->H1("fh_nof_hits_per_pmt")->Integral());
+    fHM->CreateCanvas("richurqmd_nof_hits_per_pmt", "richurqmd_nof_hits_per_pmt", 1000, 1000);
+    fHM->NormalizeToIntegral("fh_nof_hits_per_pmt");
     DrawH1(fHM->H1("fh_nof_hits_per_pmt"), kLinear, kLog, "hist");
+    fHM->H1("fh_nof_hits_per_pmt")->SetStats(true);
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas("rich_urqmd_points_xy", "rich_urqmd_points_xy", 800, 800);
-    fHM->H2("fh_points_xy")->Scale(1. / fEventNum);
-    CbmRichDraw::DrawPmtH2(fHM->H2("fh_points_xy"), c, true);
+    vector<string> pointXYTypes {"", "_pions", "_gamma_target", "_gamma_nontarget"};
+    for (const string& t : pointXYTypes) {
+      string name = "richurqmd_points_xy" + t;
+      TCanvas* c  = fHM->CreateCanvas(name, name, 1000, 1000);
+      fHM->Scale("fh_points_xy" + t, 1. / fEventNum);
+      CbmRichDraw::DrawPmtH2(fHM->H2("fh_points_xy" + t), c, true);
+    }
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas("rich_urqmd_points_xy_pions", "rich_urqmd_points_xy_pions", 800, 800);
-    fHM->H2("fh_points_xy_pions")->Scale(1. / fEventNum);
-    CbmRichDraw::DrawPmtH2(fHM->H2("fh_points_xy_pions"), c, true);
-  }
-
-  {
-    TCanvas* c = fHM->CreateCanvas("rich_urqmd_points_xy_gamma_target", "rich_urqmd_points_xy_gamma_target", 800, 800);
-    fHM->H2("fh_points_xy_gamma_target")->Scale(1. / fEventNum);
-    CbmRichDraw::DrawPmtH2(fHM->H2("fh_points_xy_gamma_target"), c, true);
-  }
-
-  {
-    TCanvas* c =
-      fHM->CreateCanvas("rich_urqmd_points_xy_gamma_nontarget", "rich_urqmd_points_xy_gamma_nontarget", 800, 800);
-    fHM->H2("fh_points_xy_gamma_nontarget")->Scale(1. / fEventNum);
-    CbmRichDraw::DrawPmtH2(fHM->H2("fh_points_xy_gamma_nontarget"), c, true);
-  }
-
-  {
-    fHM->CreateCanvas("rich_urqmd_nof_hits_per_event", "rich_urqmd_nof_hits_per_event", 800, 800);
-    fHM->H1("fh_nof_hits_per_event")->Scale(1. / fHM->H1("fh_nof_hits_per_event")->Integral());
+    fHM->CreateCanvas("richurqmd_nof_hits_per_event", "richurqmd_nof_hits_per_event", 1000, 1000);
+    fHM->NormalizeToIntegral("fh_nof_hits_per_event");
     DrawH1(fHM->H1("fh_nof_hits_per_event"), kLinear, kLinear, "hist");
     fHM->H1("fh_nof_hits_per_event")->SetStats(true);
     cout << "Mean number of hits per event = " << fHM->H1("fh_nof_hits_per_event")->GetMean() << endl;
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas("rich_urqmd_hitrate_xy", "rich_urqmd_hitrate_xy", 800, 800);
-    fHM->H2("fh_hitrate_xy")->Scale(1e7 / (fEventNum * 64.));
+    fHM->CreateCanvas("richurqmd_nof_points_per_event", "richurqmd_nof_points_per_event", 1000, 1000);
+    fHM->NormalizeToIntegral("fh_nof_points_per_event");
+    DrawH1(fHM->H1("fh_nof_points_per_event"), kLinear, kLinear, "hist");
+    fHM->H1("fh_nof_points_per_event")->SetStats(true);
+    cout << "Mean number of points per event = " << fHM->H1("fh_nof_points_per_event")->GetMean() << endl;
+  }
+
+  {
+    TCanvas* c = fHM->CreateCanvas("richurqmd_hitrate_xy", "richurqmd_hitrate_xy", 1000, 1000);
+    fHM->Scale("fh_hitrate_xy", 1e7 / (fEventNum * 64.));
     CbmRichDraw::DrawPmtH2(fHM->H2("fh_hitrate_xy"), c, true);
     //DrawH2(fHM->H2("fh_hitrate_xy"));
   }
 
   {
-    TCanvas* c = fHM->CreateCanvas("rich_urqmd_proj_xy", "rich_urqmd_proj_xy", 800, 800);
-    fHM->H2("fh_proj_xy")->Scale(1. / fEventNum);
+    TCanvas* c = fHM->CreateCanvas("richurqmd_proj_xy", "richurqmd_proj_xy", 1000, 1000);
+    fHM->Scale("fh_proj_xy", 1. / fEventNum);
     CbmRichDraw::DrawPmtH2(fHM->H2("fh_proj_xy"), c);
   }
 
   {
-    fHM->CreateCanvas("rich_urqmd_nof_proj_per_event", "rich_urqmd_nof_proj_per_event", 800, 800);
-    fHM->H1("fh_nof_proj_per_event")->Scale(1. / fEventNum);
-    DrawH1andFitGauss(fHM->H1("fh_nof_proj_per_event"));
+    fHM->CreateCanvas("richurqmd_nof_proj_per_event", "richurqmd_nof_proj_per_event", 1000, 1000);
+    fHM->Scale("fh_nof_proj_per_event", 1. / fEventNum);
+    DrawH1(fHM->H1("fh_nof_proj_per_event"), kLinear, kLinear, "hist");
+    fHM->H1("fh_nof_proj_per_event")->SetStats(true);
     cout << "Number of track projections per event = " << fHM->H1("fh_nof_proj_per_event")->GetMean() << endl;
   }
 }
@@ -629,7 +587,7 @@ void CbmRichUrqmdTest::Finish()
   fHM->SaveCanvasToImage(fOutputDir);
   TDirectory* oldir = gDirectory;
   TFile* outFile    = FairRootManager::Instance()->GetOutFile();
-  if (outFile != NULL) {
+  if (outFile != nullptr) {
     outFile->cd();
     fHM->WriteToFile();
   }

@@ -186,6 +186,7 @@ void CbmRichDigitizer::ProcessPoint(CbmRichPoint* point, Int_t pointId, Int_t ev
   Int_t address = CbmRichDigiMapManager::GetInstance().GetPixelAddressByPath(path);
 
   Int_t trackId = point->GetTrackID();
+  //LOG(info) << "address:" << address << " path:" << path << " trackId:" << trackId << "X:" << point->GetX() << " Y:" << point->GetY() << " Z:" << zNew;
   if (trackId < 0) return;
   CbmMCTrack* p = (CbmMCTrack*) fMcTracks->At(trackId);
   if (p == NULL) return;

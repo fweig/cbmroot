@@ -4,13 +4,13 @@
 
 void run_transport(const string& urqmdFile = "/Users/slebedev/Development/cbm/data/urqmd/auau/8gev/centr/"
                                              "urqmd.auau.8gev.centr.00001.root",  // if "", no urqmd
-                   const string& traFile   = "/Users/slebedev/Development/cbm/data/sim/rich/reco/tra.00000.root",
-                   const string& parFile   = "/Users/slebedev/Development/cbm/data/sim/rich/reco/par.00000.root",
-                   const string& geoFile   = "/Users/slebedev/Development/cbm/data/sim/rich/reco/geo.00000.root",
+                   const string& traFile   = "/Users/slebedev/Development/cbm/data/sim/rich/reco/tra.0.root",
+                   const string& parFile   = "/Users/slebedev/Development/cbm/data/sim/rich/reco/par.0.root",
+                   const string& geoFile   = "/Users/slebedev/Development/cbm/data/sim/rich/reco/geo.0.root",
                    int nofElectrons        = 5,   // number of e- to be generated, if <=0 no e- are embedded into event
                    int nofPositrons        = 5,   // number of e+ to be generated, if <=0 no e+ are embedded into event
                    const string& plutoFile = "",  // if "", no pluto particles are embedded into event
-                   const string& geoSetup = "sis100_electron", int nEvents = 3)
+                   const string& geoSetup = "sis100_electron", int nEvents = 2, double targetZ = -44.)
 {
 
   TTree::SetMaxTreeSize(90000000000);
@@ -33,6 +33,7 @@ void run_transport(const string& urqmdFile = "/Users/slebedev/Development/cbm/da
     boxGen1->SetPtRange(0., 3.);
     boxGen1->SetPhiRange(0., 360.);
     boxGen1->SetThetaRange(2.5, 25.);
+    //boxGen1->SetXYZ(0., 0., targetZ);
     boxGen1->SetCosTheta();
     boxGen1->Init();
     run.AddInput(boxGen1);
@@ -42,6 +43,7 @@ void run_transport(const string& urqmdFile = "/Users/slebedev/Development/cbm/da
     boxGen2->SetPtRange(0., 3.);
     boxGen2->SetPhiRange(0., 360.);
     boxGen2->SetThetaRange(2.5, 25.);
+    // boxGen2->SetXYZ(0., 0., targetZ);
     boxGen2->SetCosTheta();
     boxGen2->Init();
     run.AddInput(boxGen2);
@@ -53,9 +55,11 @@ void run_transport(const string& urqmdFile = "/Users/slebedev/Development/cbm/da
   run.SetParFileName(parFile.c_str());
   run.SetGeoFileName(geoFile.c_str());
   run.LoadSetup(geoSetup.c_str());
-  run.SetTarget("Gold", 0.025, 2.5);
+  run.SetTarget("Gold", 0.025, 2.5, 0, 0, targetZ);
   run.SetBeamPosition(0., 0., 0.1, 0.1);
-  run.SetRandomEventPlane();
+  //run.SetRandomEventPlane();
+  //run.SetEngine(kGeant4);
+  //run.StoreTrajectories(true);
   run.Run(nEvents);
 
 

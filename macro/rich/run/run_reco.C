@@ -2,12 +2,12 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Semen Lebedev [committer], Semen Lebedev [committer], Andrey Lebedev */
 
-void run_reco(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/tra.00000.root",
-              const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/par.00000.root",
-              const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/raw.00000.root",
-              const string& recoFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/reco.00000.root",
+void run_reco(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/tra.0.root",
+              const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/par.0.root",
+              const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/digi.0.root",
+              const string& recoFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/reco.0.root",
               const string& geoSetup = "sis100_electron", const string& resultDir = "results_recoqa_newqa/",
-              int nofTimeSlices = 3)
+              int nofTimeSlices = 100)
 {
 
   TTree::SetMaxTreeSize(90000000000);
@@ -42,8 +42,6 @@ void run_reco(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim
     for (Int_t i(0); i < 4; i++) {
       trdParFile = new TObjString(srcDir + "/parameters/trd/trd_" + geoTag + "." + npar[i] + ".par");
       parFileList->Add(trdParFile);
-      std::cout << "-I- "
-                << ": Using parameter file " << trdParFile->GetString() << std::endl;
     }
   }
 
@@ -51,8 +49,6 @@ void run_reco(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim
   if (CbmSetup::Instance()->GetGeoTag(ECbmModuleId::kTof, geoTag)) {
     TObjString* tofBdfFile = new TObjString(srcDir + "/parameters/tof/tof_" + geoTag + ".digibdf.par");
     parFileList->Add(tofBdfFile);
-    std::cout << "-I- "
-              << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
   }
 
   TStopwatch timer;
@@ -193,21 +189,11 @@ void run_reco(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim
   }
   // ------------------------------------------------------------------------
 
-  if (useMC) {
-    CbmMatchRecoToMC* match1 = new CbmMatchRecoToMC();
-    run->AddTask(match1);
-  }
-
-
   if (useMvd || useSts) {
     run->AddTask(new CbmTrackingDetectorInterfaceInit());
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
-    CbmL1* l1 = 0;
-    if (useMC) { l1 = new CbmL1("L1", 2, 3); }
-    else {
-      l1 = new CbmL1("L1", 0);
-    }
+    CbmL1* l1 = new CbmL1("L1", 0);
 
     // --- Material budget file names
     TString mvdGeoTag;
@@ -253,6 +239,15 @@ void run_reco(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim
   std::cout << "-I- : Added task " << finder->GetName() << std::endl;
   // ----------------------------------------------------------------------
 
+  // ---   Particle Id in TRD   -----------------------------------------
+  if (useTrd) {
+    CbmTrdSetTracksPidLike* trdLI = new CbmTrdSetTracksPidLike("TRDLikelihood", "TRDLikelihood");
+    trdLI->SetUseMCInfo(kTRUE);
+    trdLI->SetUseMomDependence(kTRUE);
+    run->AddTask(trdLI);
+    std::cout << "-I- : Added task " << trdLI->GetName() << std::endl;
+  }
+  // ------------------------------------------------------------------------
 
   // -----   RICH reconstruction   ----------------------------------------
   if (useRich) {
@@ -288,6 +283,9 @@ void run_reco(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim
     // ----------------------------------------------------------------------
 
   }  //? time-based reco
+
+  CbmMatchRecoToMC* match = new CbmMatchRecoToMC();
+  run->AddTask(match);
 
 
   // -----  Parameter database   --------------------------------------------

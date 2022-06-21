@@ -2,12 +2,12 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Semen Lebedev [committer] */
 
-void run_qa(const string& testType,  // "geoTest" or "urqmdTest"
+void run_qa(const string& testType,  // "geotest" or "urqmdtest"
             const string& traFile, const string& parFile, const string& digiFile, const string& recoFile,
             const string& qaFile, const string& geoSetup, const string& resultDir, int nEvents)
 {
-  if (testType != "urqmdTest" && testType != "geoTest") {
-    std::cout << "ERROR testType is not correct. It must be urqmdTest or geoTest" << std::endl;
+  if (testType != "urqmdtest" && testType != "geotest") {
+    std::cout << "ERROR testType is not correct. It must be urqmdtest or geotest" << std::endl;
     return;
   }
 
@@ -40,14 +40,14 @@ void run_qa(const string& testType,  // "geoTest" or "urqmdTest"
   mcManager->AddFile(traFile.c_str());
   run->AddTask(mcManager);
 
-  if (testType == "geoTest") {
+  if (testType == "geotest") {
     CbmRichGeoTest* geoTest = new CbmRichGeoTest();
     geoTest->SetDrawPmts(false);
     //geoTest->SetDrawEventDisplay(false);
     geoTest->SetOutputDir(resultDir);
     run->AddTask(geoTest);
   }
-  else if (testType == "urqmdTest") {
+  else if (testType == "urqmdtest") {
     CbmRichUrqmdTest* urqmdTest = new CbmRichUrqmdTest();
     urqmdTest->SetOutputDir(resultDir);
     run->AddTask(urqmdTest);

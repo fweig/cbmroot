@@ -68,10 +68,10 @@ private:
   CbmDigiManager* fDigiMan       = nullptr;
   CbmMCEventList* fEventList     = nullptr;
 
-  Int_t fEventNum   = 0;
-  Int_t fMinNofHits = 7;  // Min number of hits in ring for detector acceptance calculation.
+  int fEventNum   = 0;
+  int fMinNofHits = 7;  // Min number of hits in ring for detector acceptance calculation.
 
-  std::map<std::pair<Int_t, Int_t>, Int_t> fNofHitsInRingMap;  // Number of hits in the MC RICH ring
+  std::map<std::pair<int, int>, int> fNofHitsInRingMap;  // Number of hits in the MC RICH ring
 
   std::vector<std::pair<int, int>> fVertexZStsSlices;  // Slices (Zmin - Zmax) inside STS
 

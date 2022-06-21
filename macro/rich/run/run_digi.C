@@ -2,10 +2,10 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Semen Lebedev [committer], Andrey Lebedev, Semen Lebedev [committer] */
 
-void run_digi(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/tra.00000.root",
-              const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/par.00000.root",
-              const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/raw.00000.root",
-              int nEvents            = 3)
+void run_digi(const string& traFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/tra.0.root",
+              const string& parFile  = "/Users/slebedev/Development/cbm/data/sim/rich/reco/par.0.root",
+              const string& digiFile = "/Users/slebedev/Development/cbm/data/sim/rich/reco/digi.0.root",
+              int nEvents            = 100)
 {
   TTree::SetMaxTreeSize(90000000000);
   FairLogger::GetLogger()->SetLogScreenLevel("INFO");
