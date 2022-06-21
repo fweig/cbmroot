@@ -75,7 +75,7 @@ using std::endl;
 
 /// Prepare the portion of data of left hits of a triplet: all hits except the last and the second last station will be procesesed in the algorythm,
 /// the data is orginesed in order to be used by SIMD
-inline void L1Algo::f10(  // input
+inline void L1Algo::findSingletsStep0(  // input
   Tindex start_lh, Tindex n1_l, L1HitPoint* StsHits_l,
   // output
   fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, L1HitIndex_t* hitsl, fvec* HitTime_l, fvec* HitTimeEr,
@@ -116,7 +116,7 @@ inline void L1Algo::f10(  // input
 
 
 /// Get the field approximation. Add the target to parameters estimation. Propagaete to the middle station of a triplet.
-inline void L1Algo::f11(  /// input 1st stage of singlet search
+inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
   int istal,
   int istam,    /// indexes of left and middle stations of a triplet
   Tindex n1_V,  ///
@@ -350,7 +350,7 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 
 
 /// Find the doublets. Reformat data in the portion of doublets.
-inline void L1Algo::f20(
+inline void L1Algo::findDoubletsStep0(
   /// input
   Tindex n1, const L1Station& stal, const L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1,
   L1HitIndex_t* hitsl_1,
@@ -521,7 +521,7 @@ inline void L1Algo::f20(
 
 /// Add the middle hits to parameters estimation. Propagate to right station.
 /// Find the triplets(right hit). Reformat data in the portion of triplets.
-inline void L1Algo::f30(  // input
+inline void L1Algo::findTripletsStep0(  // input
   L1HitPoint* vStsHits_r, const L1Station& stam, const L1Station& star, int istam, int istar, L1HitPoint* vStsHits_m,
   L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1, Tindex n2, L1Vector<L1HitIndex_t>& hitsm_2,
   L1Vector<L1HitIndex_t>& i1_2, const L1Vector<char>& /*mrDuplets*/,
@@ -852,7 +852,7 @@ inline void L1Algo::f30(  // input
 }
 
 /// Add the right hits to parameters estimation.
-inline void L1Algo::f31(  // input
+inline void L1Algo::findTripletsStep1(  // input
   Tindex n3_V, const L1Station& star, nsL1::vector<fvec>::TSimd& u_front_, nsL1::vector<fvec>::TSimd& u_back_,
   nsL1::vector<fvec>::TSimd& z_Pos,
   //  nsL1::vector<fvec>::TSimd& dx_,
@@ -901,7 +901,7 @@ inline void L1Algo::f31(  // input
 
 
 /// Refit Triplets.
-inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
+inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps introduction
   Tindex n3, int istal, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
   L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3, int nIterations)
 {
@@ -1062,10 +1062,10 @@ inline void L1Algo::f32(  // input // TODO not updated after gaps introduction
 
     T3.SetOneEntry(i3_4, T, i3_4);
   }  //i3
-}  // f32
+}  // findTripletsStep2
 
 
-inline void L1Algo::f4(  // input
+inline void L1Algo::findTripletsStep3(  // input
   Tindex n3, int istal, int istam, int istar, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
   L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3,
   // output
@@ -1308,7 +1308,7 @@ inline void L1Algo::DupletsStaPort(
     /// prepare the portion of left hits data
     Tindex& n1 = n_g[ip];
 
-    f10(  // input
+    findSingletsStep0(  // input
       (ip - portionStopIndex_[istal + 1]) * Portion, n1, vStsHits_l,
       // output
       u_front, u_back, zPos, hitsl_1, HitTime, HitTimeEr, Event, dx0, dy0, dxy0, du0, dv0);
@@ -1321,11 +1321,11 @@ inline void L1Algo::DupletsStaPort(
 
     /// Get the field approximation. Add the target to parameters estimation. Propagaete to middle station.
 
-    f11(istal, istam, n1_V,
+    findSingletsStep1(istal, istam, n1_V,
 
-        u_front, u_back, zPos, HitTime, HitTimeEr,
-        // output
-        T_1, fld_1, dx0, dy0, dxy0, du0, dv0);
+                      u_front, u_back, zPos, HitTime, HitTimeEr,
+                      // output
+                      T_1, fld_1, dx0, dy0, dxy0, du0, dv0);
 
     /// Find the doublets. Reformat data in the portion of doublets.
 
@@ -1334,7 +1334,7 @@ inline void L1Algo::DupletsStaPort(
     L1Vector<L1HitIndex_t> hitsl_2("L1CATrackFinder::hitsl_2");
 #endif  // DOUB_PERFORMANCE
 
-    f20(  // input
+    findDoubletsStep0(  // input
       n1, stal, stam, vStsHits_m, T_1, hitsl_1,
       // output
       n_2, i1_2,
@@ -1433,7 +1433,7 @@ L1Algo::TripletsStaPort(  /// creates triplets: input: @istal - start station nu
     /// Find the triplets(right hit). Reformat data in the portion of triplets.
 
 
-    f30(  // input
+    findTripletsStep0(  // input
       vStsHits_r, stam, star,
 
       istam, istar, vStsHits_m, T_1, fld_1, hitsl_1,
@@ -1460,7 +1460,7 @@ L1Algo::TripletsStaPort(  /// creates triplets: input: @istal - start station nu
     //        if (n3 >= MaxPortionTriplets) cout << "isec: " << isec << " station: " << istal << " portion number: " << ip << " CATrackFinder: Warning: Too many Triplets created in portion" << endl;
 
     /// Add the right hits to parameters estimation.
-    f31(  // input
+    findTripletsStep1(  // input
       n3_V, star, u_front3, u_back3, z_pos3,
       //      dx3,
       //      dy3,
@@ -1470,7 +1470,7 @@ L1Algo::TripletsStaPort(  /// creates triplets: input: @istal - start station nu
 
 
     /// refit
-    //         f32(  n3, istal, _RealIHit,          T_3,         hitsl_3, hitsm_3, hitsr_3, 0 );
+    //         findTripletsStep2(  n3, istal, _RealIHit,          T_3,         hitsl_3, hitsm_3, hitsr_3, 0 );
 
 #ifdef TRIP_PERFORMANCE
     L1HitIndex_t* RealIHitL = &((*RealIHitP)[StsHitsUnusedStartIndex[istal]]);
@@ -1491,7 +1491,7 @@ L1Algo::TripletsStaPort(  /// creates triplets: input: @istal - start station nu
 
 
     /// Fill Triplets.
-    f4(  // input
+    findTripletsStep3(  // input
       n3, istal, istam, istar, T_3, hitsl_3, hitsm_3, hitsr_3,
       // output
       nstaltriplets

@@ -152,7 +152,7 @@ public:
   L1Vector<L1Branch> fTrackCandidates[L1Constants::size::kMaxNthreads] {"L1Algo::fTrackCandidates"};
 
   Tindex fDupletPortionStopIndex[L1Constants::size::kMaxNstations] {0};  // end of the duplet portions for the station
-  L1Vector<Tindex> fDupletPortionSize {"L1Algo::fDupletPortionSize"};  // N duplets in a portion
+  L1Vector<Tindex> fDupletPortionSize {"L1Algo::fDupletPortionSize"};    // N duplets in a portion
 
   /********************************************************************************************/ /**
    * Temporary vectors used by the clone merger 
@@ -183,7 +183,7 @@ public:
   // Utility vectors
   //
   /// Tracks after the merging procedure
-  L1Vector<L1Track> fMergerTracksNew {"L1Algo::fMergerTracksNew"};    // vector of tracks after the merge
+  L1Vector<L1Track> fMergerTracksNew {"L1Algo::fMergerTracksNew"};           // vector of tracks after the merge
   L1Vector<L1HitIndex_t> fMergerRecoHitsNew {"L1Algo::fMergerRecoHitsNew"};  // vector of track hits after the merge
 
 
@@ -223,9 +223,9 @@ public:
   void SetNThreads(unsigned int n);
 
 private:
-  int fNstations {0};                          ///< number of all detector stations
-  int fNstationsBeforePipe {0};                ///< number of stations before pipe (MVD stations in CBM)
-  int fNfieldStations {0};                     ///< number of stations in the field region
+  int fNstations {0};            ///< number of all detector stations
+  int fNstationsBeforePipe {0};  ///< number of stations before pipe (MVD stations in CBM)
+  int fNfieldStations {0};       ///< number of stations in the field region
   //alignas(16) L1StationsArray_t fStations {};  ///< array of L1Station objects
   //alignas(16) L1MaterialArray_t fRadThick {};  ///< material for each station
 
@@ -240,9 +240,8 @@ public:
   int GetNfieldStations() const { return fNfieldStations; }
 
 public:
-
-  int NStsStrips {0};                             ///> number of strips
-  L1Vector<L1Hit>* vStsHits {nullptr};            ///> hits as a combination of front-, backstrips and z-position
+  int NStsStrips {0};                                  ///> number of strips
+  L1Vector<L1Hit>* vStsHits {nullptr};                 ///> hits as a combination of front-, backstrips and z-position
   L1Grid vGrid[L1Constants::size::kMaxNstations];      ///> hits as a combination of front-, backstrips and z-position
   L1Grid vGridTime[L1Constants::size::kMaxNstations];  ///>
 
@@ -250,7 +249,7 @@ public:
 
   double fCATime {0.};  // time of track finding
 
-  L1Vector<L1Track> fTracks {"L1Algo::fTracks"};    // reconstructed tracks
+  L1Vector<L1Track> fTracks {"L1Algo::fTracks"};           // reconstructed tracks
   L1Vector<L1HitIndex_t> fRecoHits {"L1Algo::fRecoHits"};  // packed hits of reconstructed tracks
 
   const L1HitIndex_t* StsHitsStartIndex {nullptr};  // station-bounders in vStsHits array
@@ -481,14 +480,14 @@ private:
   //   void SetFUnUsedD ( unsigned char &flag ){ flag &= 0xFE; }
 
   /// Prepare the portion of left hits data
-  void f10(  // input
+  void findSingletsStep0(  // input
     Tindex start_lh, Tindex n1_l, L1HitPoint* StsHits_l,
     // output
     fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, L1HitIndex_t* hitsl, fvec* HitTime_l, fvec* HitTimeEr, fvec* Event_l,
     fvec* d_x, fvec* d_y, fvec* d_xy, fvec* d_u, fvec* d_v);
 
   /// Get the field approximation. Add the target to parameters estimation. Propagate to middle station.
-  void f11(  // input
+  void findSingletsStep1(  // input
     int istal, int istam, Tindex n1_V,
 
     fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, fvec* HitTime_l, fvec* HitTimeEr,
@@ -496,7 +495,7 @@ private:
     L1TrackPar* T_1, L1FieldRegion* fld_1, fvec* d_x, fvec* d_y, fvec* d_xy, fvec* d_u, fvec* d_v);
 
   /// Find the doublets. Reformat data in the portion of doublets.
-  void f20(  // input
+  void findDoubletsStep0(  // input
     Tindex n1, const L1Station& stal, const L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1,
     L1HitIndex_t* hitsl_1,
 
@@ -510,7 +509,7 @@ private:
 
   /// Add the middle hits to parameters estimation. Propagate to right station.
   /// Find the triplets (right hit). Reformat data in the portion of triplets.
-  void f30(  // input
+  void findTripletsStep0(  // input
     L1HitPoint* vStsHits_r, const L1Station& stam, const L1Station& star,
 
     int istam, int istar, L1HitPoint* vStsHits_m, L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
@@ -528,7 +527,7 @@ private:
     nsL1::vector<fvec>::TSimd& timeER);
 
   /// Add the right hits to parameters estimation.
-  void f31(  // input
+  void findTripletsStep1(  // input
     Tindex n3_V, const L1Station& star, nsL1::vector<fvec>::TSimd& u_front_3, nsL1::vector<fvec>::TSimd& u_back_3,
     nsL1::vector<fvec>::TSimd& z_Pos_3,
     //    nsL1::vector<fvec>::TSimd& dx_,
@@ -539,12 +538,12 @@ private:
     nsL1::vector<L1TrackPar>::TSimd& T_3);
 
   /// Refit Triplets.
-  void f32(  // input
+  void findTripletsStep2(  // input
     Tindex n3, int istal, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
     L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3, int nIterations = 0);
 
   /// Select triplets. Save them into vTriplets.
-  void f4(  // input
+  void findTripletsStep3(  // input
     Tindex n3, int istal, int istam, int istar, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
     L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3,
     // output
@@ -689,9 +688,9 @@ private:
   fvec fMaxSlopePV {L1Utils::kNaN};      ///< max slope (tx\ty) in prim vertex
   float fMaxSlope {L1Utils::kNaN};       ///< max slope (tx\ty) in 3d hit position of a triplet
 
-  fvec fTargX {L1Utils::kNaN};           ///< target position x coordinate for the current iteration (modifiable)
-  fvec fTargY {L1Utils::kNaN};           ///< target position y coordinate for the current iteration (modifiable)
-  fvec fTargZ {L1Utils::kNaN};           ///< target position z coordinate for the current iteration (modifiable)
+  fvec fTargX {L1Utils::kNaN};  ///< target position x coordinate for the current iteration (modifiable)
+  fvec fTargY {L1Utils::kNaN};  ///< target position y coordinate for the current iteration (modifiable)
+  fvec fTargZ {L1Utils::kNaN};  ///< target position z coordinate for the current iteration (modifiable)
 
   L1FieldValue fTargB _fvecalignment {};               // field in the target point (modifiable, do not touch!!)
   L1XYMeasurementInfo TargetXYInfo _fvecalignment {};  // target constraint  [cm]
