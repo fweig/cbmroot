@@ -105,8 +105,6 @@ public:
   /// \return particle mass squared
   float GetDefaultParticleMass2() const { return fDefaultMass * fDefaultMass; }
 
-  float fDefaultMass = 0.10565800;  // muon mass
-  // TODO: make fDefaultMass a private member (S.Zharko)
 
   /// pack station, thread and triplet indices to an unique triplet ID
   static unsigned int PackTripletId(unsigned int Station, unsigned int Thread, unsigned int Triplet)
@@ -228,6 +226,7 @@ private:
   int fNfieldStations {0};       ///< number of stations in the field region
   //alignas(16) L1StationsArray_t fStations {};  ///< array of L1Station objects
   //alignas(16) L1MaterialArray_t fRadThick {};  ///< material for each station
+  float fDefaultMass {L1Constants::phys::kMuonMass};  ///< mass of the propagated particle [GeV/c2]
 
 public:
   /// Gets total number of stations used in tracking
@@ -313,8 +312,9 @@ public:
 
 
   /// --- data used during finding iterations
+  int isec {0};  // iteration TODO: to be dispatched (S.Zharko, 21.06.2022)
+  const L1CAIteration* fpCurrentIteration {nullptr};  ///< pointer to the current CA track finder iteration
 
-  int isec {0};  // iteration
   L1Vector<L1Hit>* vHitsUnused {nullptr};
   L1Vector<L1HitIndex_t>* RealIHitP {nullptr};
   L1Vector<L1HitIndex_t>* RealIHitPBuf {nullptr};
@@ -625,7 +625,7 @@ private:
 
   /// ----- Different parameters of CATrackFinder -----
 
-  Tindex FIRSTCASTATION {0};  //first station used in CA
+  Tindex fFirstCAstation {0};  //first station used in CA
 
   // fNFindIterations - set number of interation for trackfinding
   // itetation of finding:

@@ -246,7 +246,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
   int ista = ista2 + 2 * step;  // skip one station. if there would be hit it has to be found on previous stap
 
-  if (ista2 == FIRSTCASTATION) ista = ista2 + step;
+  if (ista2 == fFirstCAstation) ista = ista2 + step;
 
   const fvec pickGather2 = fPickGather * fPickGather;
 

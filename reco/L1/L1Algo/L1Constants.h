@@ -58,6 +58,14 @@ namespace L1Constants
     //constexpr bool kIfCreateTripletPulls {false};
   }  // end namespace control
 
+  /// Physics constants
+  namespace phys
+  {
+    /* Particle masses used for track fit */
+    constexpr float kMuonMass     {0.10565800f};  ///< Muon mass     [GeV/c2]
+    constexpr float kElectronMass {0.000511f};    ///< Electron mass [GeV/c2]
+  }
+
   /// Miscellaneous constants
   namespace misc
   {

@@ -1,4 +1,4 @@
-/* Copyright (C) 2016-2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
@@ -24,7 +24,6 @@ L1CAIteration::L1CAIteration() noexcept { LOG(debug) << "L1CAIteration: Default 
 L1CAIteration::L1CAIteration(const L1CAIteration& other) noexcept
   // Basic fields
   : fName(other.fName)
-  , fControlFlags(other.fControlFlags)
   // Cuts
   , fTrackChi2Cut(other.fTrackChi2Cut)
   , fTripletChi2Cut(other.fTripletChi2Cut)
@@ -38,8 +37,10 @@ L1CAIteration::L1CAIteration(const L1CAIteration& other) noexcept
   , fTargetPosSigmaX(other.fTargetPosSigmaX)
   , fTargetPosSigmaY(other.fTargetPosSigmaY)
   , fMinLevelTripletStart(other.fMinLevelTripletStart)
+  , fFirstStationIndex(other.fFirstStationIndex)
+  , fIsPrimary(other.fIsPrimary)
+  , fIsElectron(other.fIsElectron)
 {
-  LOG(debug) << "L1CAIteration: Copy constructor called: " << &other << " was copied into " << this;
 }
 //
 //----------------------------------------------------------------------------------------------------------------------
@@ -47,26 +48,21 @@ L1CAIteration::L1CAIteration(const L1CAIteration& other) noexcept
 L1CAIteration::L1CAIteration(L1CAIteration&& other) noexcept
 {
   this->Swap(other);
-  LOG(debug) << "L1CAIteration: Move constructor called: " << &other << " was moved into " << this;
 }
 //
 //----------------------------------------------------------------------------------------------------------------------
 //
-L1CAIteration::L1CAIteration(const std::string& name) noexcept : fName(name)
-{
-  LOG(debug) << "L1CAIteration: Constructor from name called for " << this;
-}
+L1CAIteration::L1CAIteration(const std::string& name) noexcept : fName(name) {}
 //
 //----------------------------------------------------------------------------------------------------------------------
 //
-L1CAIteration::~L1CAIteration() noexcept { LOG(debug) << "L1CAIteration: Destructor called for " << this; }
+L1CAIteration::~L1CAIteration() noexcept {}
 //
 //----------------------------------------------------------------------------------------------------------------------
 //
 L1CAIteration& L1CAIteration::operator=(const L1CAIteration& other) noexcept
 {
   if (this != &other) { L1CAIteration(other).Swap(*this); }
-  LOG(debug) << "L1CAIteration: Copy operator= called: " << &other << " was copied into " << this;
   return *this;
 }
 //
@@ -78,7 +74,6 @@ L1CAIteration& L1CAIteration::operator=(L1CAIteration&& other) noexcept
     L1CAIteration tmp(std::move(other));
     this->Swap(tmp);
   }
-  LOG(debug) << "L1CAIteration: Move operator= called: " << &other << " was moved into " << this;
   return *this;
 }
 //
@@ -104,7 +99,6 @@ void L1CAIteration::Swap(L1CAIteration& other) noexcept
 {
   // Basic fields
   std::swap(fName, other.fName);
-  std::swap(fControlFlags, other.fControlFlags);
   // Cuts
   std::swap(fTrackChi2Cut, other.fTrackChi2Cut);
   std::swap(fTripletChi2Cut, other.fTripletChi2Cut);
@@ -118,6 +112,9 @@ void L1CAIteration::Swap(L1CAIteration& other) noexcept
   std::swap(fTargetPosSigmaX, other.fTargetPosSigmaX);
   std::swap(fTargetPosSigmaY, other.fTargetPosSigmaY);
   std::swap(fMinLevelTripletStart, other.fMinLevelTripletStart);
+  std::swap(fFirstStationIndex, other.fFirstStationIndex);
+  std::swap(fIsPrimary, other.fIsPrimary);
+  std::swap(fIsElectron, other.fIsElectron);
 }
 //
 //----------------------------------------------------------------------------------------------------------------------
@@ -128,8 +125,8 @@ std::string L1CAIteration::ToString(int indentLevel) const
   constexpr char indentChar = '\t';
   std::string indent(indentLevel, indentChar);
   aStream << indent << "L1CAIteration: " << fName << '\n';
-  aStream << indent << indentChar
-          << "Is primary:                   " << fControlFlags[static_cast<int>(ControlFlag::kePrimary)] << '\n';
+  aStream << indent << indentChar << "Is primary:   " << fIsPrimary << '\n';
+  aStream << indent << indentChar << "Is electron:  " << fIsElectron << '\n';
   aStream << indent << indentChar << "Track chi2 cut:               " << fTrackChi2Cut << '\n';
   aStream << indent << indentChar << "Triplet chi2 cut:             " << fTripletChi2Cut << '\n';
   aStream << indent << indentChar << "Doublet chi2 cut:             " << fDoubletChi2Cut << '\n';
@@ -141,7 +138,8 @@ std::string L1CAIteration::ToString(int indentLevel) const
   aStream << indent << indentChar << "Max DZ:                       " << fMaxDZ << '\n';
   aStream << indent << indentChar << "Target position sigma X [cm]: " << fTargetPosSigmaX << '\n';
   aStream << indent << indentChar << "Target position sigma Y [cm]: " << fTargetPosSigmaY << '\n';
-  aStream << indent << indentChar << "Min level for triplet start:  " << fMinLevelTripletStart;
+  aStream << indent << indentChar << "Min level for triplet start:  " << fMinLevelTripletStart << '\n';
+  aStream << indent << indentChar << "First tracking station index: " << fFirstStationIndex;
 
   return aStream.str();
 }
