@@ -158,6 +158,12 @@ public:
   /// Gets L1FieldValue object at primary vertex
   const L1FieldValue& GetVertexFieldValue() const { return fVertexFieldValue; }
 
+  /// Are the hit search areas ignored
+  bool IsIgnoreHitSearchAreas() const { return fIsIgnoreHitSearchAreas; }
+
+  /// Is singlets fit starts at the target
+  bool IsFitSingletsFromTarget() const { return fIsFitSingletsFromTarget; }
+
   /// Class invariant checker
   void CheckConsistency() const;
 
@@ -201,6 +207,14 @@ private:
   ///   actual index:  0  1  2  3  4  5  6  7  8  9  0  0  0  0
   ///   active index:  0 -1  1  2 -1  3  4  5  6  7  0  0  0  0
   alignas(L1Constants::misc::kAlignment) std::array<int, L1Constants::size::kMaxNstations> fActiveStationGlobalIDs {};
+
+  /// ***************************
+  /// ** Flags for development **
+  /// ***************************
+
+  bool fIsIgnoreHitSearchAreas {false};  ///< Process all hits on the station ignoring hit search area
+
+  bool fIsFitSingletsFromTarget {false};  ///< Fit singlet starting from the target with the KF
 
   /********************************
    ** Friend classes declaration **

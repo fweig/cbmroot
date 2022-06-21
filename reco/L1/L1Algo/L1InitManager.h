@@ -87,10 +87,10 @@ private:
     kEnd                            ///< 11) [technical] number of entries in the enum
   };
 
-  using L1DetectorIDIntMap_t     = std::unordered_map<L1DetectorID, int, L1Utils::EnumClassHash>;
-  using L1DetectorIDSet_t        = std::set<L1DetectorID>;
-  using L1FieldFunction_t        = std::function<void(const double (&xyz)[3], double (&B)[3])>;
-  using InitController_t         = L1ObjectInitController<static_cast<int>(EInitKey::kEnd), EInitKey>;
+  using L1DetectorIDIntMap_t = std::unordered_map<L1DetectorID, int, L1Utils::EnumClassHash>;
+  using L1DetectorIDSet_t    = std::set<L1DetectorID>;
+  using L1FieldFunction_t    = std::function<void(const double (&xyz)[3], double (&B)[3])>;
+  using InitController_t     = L1ObjectInitController<static_cast<int>(EInitKey::kEnd), EInitKey>;
 
 public:
   /// Default constructor
@@ -204,6 +204,16 @@ public:
   /// Sets target poisition
   void SetTargetPosition(double x, double y, double z);
 
+  /// ***************************
+  /// ** Flags for development **
+  /// ***************************
+
+  /// Ignopre hit search areas
+  void SetIgnoreHitSearchAreas(bool value = true) { fParameters.fIsIgnoreHitSearchAreas = value; }
+
+  /// Start singlets fit at the target
+  void SetFitSingletsFromTarget(bool value = true) { fParameters.fIsFitSingletsFromTarget = value; }
+
   /// Transfers L1Parameters object to the destination
   void TransferParametersContainer(L1Parameters& destination);
 
@@ -221,8 +231,8 @@ private:
 
   /* Basic fields */
 
-  InitController_t fInitController {};          ///< Initialization flags
-  L1DetectorIDSet_t fActiveDetectorIDs {};      ///< Set of tracking detectors, active during this analysis session
+  InitController_t fInitController {};      ///< Initialization flags
+  L1DetectorIDSet_t fActiveDetectorIDs {};  ///< Set of tracking detectors, active during this analysis session
 
   /* Target fields */
 

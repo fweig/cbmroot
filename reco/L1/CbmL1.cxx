@@ -38,7 +38,7 @@
 #include "CbmStsHit.h"
 #include "CbmTofCell.h"
 #include "CbmTofDigiBdfPar.h"
-#include "CbmTofDigiPar.h"     // in tof/TofParam
+#include "CbmTofDigiPar.h"  // in tof/TofParam
 #include "CbmTrackingDetectorInterfaceInit.h"
 
 #include "FairEventHeader.h"
@@ -199,6 +199,7 @@ InitStatus CbmL1::Init()
     fUseMUCH = 1;
     fUseTRD  = 1;
     fUseTOF  = 1;
+    fpInitManager->SetIgnoreHitSearchAreas(true);
   }
 
 
@@ -209,6 +210,8 @@ InitStatus CbmL1::Init()
     fUseMUCH = 0;
     fUseTRD  = 1;
     fUseTOF  = 0;
+    fpInitManager->SetIgnoreHitSearchAreas(true);
+    fpInitManager->SetFitSingletsFromTarget(true);
   }
 
   CheckDetectorPresence();
@@ -642,6 +645,7 @@ InitStatus CbmL1::Init()
         trdFrontSigma = 1.1;
         trdBackSigma  = 1.1;
         stationInfo.SetTimeResolution(1.e10);
+        stationInfo.SetTimeInfo(false);
       }
       stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdFrontSigma, trdBackPhi, trdBackSigma);
       stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
@@ -2168,8 +2172,8 @@ std::vector<L1Material> CbmL1::ReadMaterialBudget(L1DetectorID detectorID)
 {
   std::vector<L1Material> result {};
   if (fMatBudgetFileName.find(detectorID) != fMatBudgetFileName.end()) {
-    auto* oldFile = gFile;
-    auto* oldDir  = gDirectory;
+    TFile* oldFile     = gFile;
+    TDirectory* oldDir = gDirectory;
 
     auto rlFile = TFile(fMatBudgetFileName.at(detectorID));
     if (rlFile.IsZombie()) { LOG(fatal) << "File " << fMatBudgetFileName.at(detectorID) << " is zombie!"; }

@@ -130,15 +130,15 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
 {
   const L1Station& stal = fParameters.GetStation(istal);
   const L1Station& stam = fParameters.GetStation(istam);
-  fvec zstal      = stal.z;
-  fvec zstam      = stam.z;
+  fvec zstal            = stal.z;
+  fvec zstam            = stam.z;
 
-  int istal_global       = 5;  //TODO: SG: what are these stations? Should the numbers depend on the presence of mvd?
-  int istam_global       = 6;
+  int istal_global = 5;  //TODO: SG: what are these stations? Should the numbers depend on the presence of mvd?
+  int istam_global = 6;
   const L1Station& stal_global = fParameters.GetStation(istal_global);
   const L1Station& stam_global = fParameters.GetStation(istam_global);
-  fvec zstal_global      = stal_global.z;
-  fvec zstam_global      = stam_global.z;
+  fvec zstal_global            = stal_global.z;
+  fvec zstam_global            = stam_global.z;
 
   L1FieldRegion
     fld0;  // by  left   hit, target and "center" (station in-between). Used here for extrapolation to target and to middle hit
@@ -186,12 +186,12 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     //     if (istal >= fNstationsBeforePipe) // to make it in the same way for both with and w\o mvd
     //       istac = (istal - fNstationsBeforePipe) / 2 + fNstationsBeforePipe;
     const L1Station& stac = fParameters.GetStation(istac);
-    fvec zstac      = stac.z;
+    fvec zstac            = stac.z;
 
     int istac_global = istal_global / 2;  // "center" station
 
     const L1Station& stac_global = fParameters.GetStation(istac_global);
-    fvec zstac_global      = stac.z;
+    fvec zstac_global            = stac.z;
 
     stac.fieldSlice.GetFieldValue(fTargX + tx * (zstac - fTargZ), fTargY + ty * (zstac - fTargZ), centB);
     stal.fieldSlice.GetFieldValue(fTargX + tx * (zstal - fTargZ), fTargY + ty * (zstal - fTargZ), l_B);
@@ -213,10 +213,10 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     if (istac != istal) fld1.Set(m_B, zstam, l_B, zstal, centB, zstac);
     else
       fld1.Set(m_B, zstam, l_B, zstal, fTargB, fTargZ);
-#else  // if USE_3HITS  // the best now
+#else  // if USE_3HITS  -- the best now
     L1FieldValue r_B _fvecalignment;
     const L1Station& star = fParameters.GetStation(istam + 1);
-    fvec zstar      = star.z;
+    fvec zstar            = star.z;
     star.fieldSlice.GetFieldValue(fTargX + tx * (zstar - fTargZ), fTargY + ty * (zstar - fTargZ), r_B);
     fld1.Set(r_B, zstar, m_B, zstam, l_B, zstal);
     if ((istam + 1) >= fNfieldStations)
@@ -241,24 +241,65 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     T.C55 = timeEr * timeEr;
 
 
-    // #define BEGIN_FROM_TARGET
-#ifndef BEGIN_FROM_TARGET  // the best now
+    if (fParameters.IsFitSingletsFromTarget()) {  // TODO: doesn't work. Why?
 
-    T.x   = xl;
-    T.y   = yl;
-    T.z   = zl;
-    T.C00 = stal.XYInfo.C00;
-    T.C10 = stal.XYInfo.C10;
-    T.C11 = stal.XYInfo.C11;
+      T.x = fTargX;
+      T.y = fTargY;
 
-    if (fUseHitErrors) {
-      T.C00 = dx1 * dx1;
-      T.C10 = dxy1;
-      T.C11 = dy1 * dy1;
+      T.z   = fTargZ;
+      T.C00 = TargetXYInfo.C00;
+      T.C10 = TargetXYInfo.C10;
+      T.C11 = TargetXYInfo.C11;
+      // extrapolate to left hit
+
+      if (istal <= fNfieldStations) { L1Extrapolate0(T, zl, fld0); }
+      else {
+        L1ExtrapolateLine(T, zl);
+      }
+
+      for (int ista = 0; ista <= istal - 1; ista++) {
+        if constexpr (L1Constants::control::kIfUseRadLengthTable) {
+          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista, T.x, T.y), fMaxInvMom, 1);
+        }
+        else {
+          fit.L1AddMaterial(T, fParameters.GetStation(ista).materialInfo, fMaxInvMom, 1);
+        }
+        if (ista == fNstationsBeforePipe - 1) fit.L1AddPipeMaterial(T, fMaxInvMom, 1);
+      }
+
+      // add left hit
+      L1UMeasurementInfo info = stal.frontInfo;
+
+      if (fUseHitErrors) info.sigma2 = d_u[i1_V] * d_u[i1_V];
+
+      if (istal < fNfieldStations) L1Filter(T, info, u);
+      else {
+        L1FilterNoField(T, info, u);
+      }
+
+      info = stal.backInfo;
+
+      if (fUseHitErrors) { info.sigma2 = d_v[i1_V] * d_v[i1_V]; }
+
+      if (istal < fNfieldStations) { L1Filter(T, info, v); }
+      else {
+        L1FilterNoField(T, info, v);
+      }
     }
+    else {  // not BEGIN_FROM_TARGET  -- the best for now
+      T.x   = xl;
+      T.y   = yl;
+      T.z   = zl;
+      T.C00 = stal.XYInfo.C00;
+      T.C10 = stal.XYInfo.C10;
+      T.C11 = stal.XYInfo.C11;
 
+      if (fUseHitErrors) {
+        T.C00 = dx1 * dx1;
+        T.C10 = dxy1;
+        T.C11 = dy1 * dy1;
+      }
 
-    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
       //  add the target
       if (istal < fNfieldStations) {
         fvec eX, eY, J04, J14;
@@ -280,86 +321,6 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
       }
     }
 
-
-    else
-
-    //add the target
-    {
-      fvec eX, eY, J04, J14;
-      fvec dz;
-      dz = fTargZ - zl;
-      L1ExtrapolateJXY0(T.tx, T.ty, dz, fld0, eX, eY, J04, J14);
-      fvec J[6];
-      J[0] = dz;
-      J[1] = 0;
-      J[2] = J04;
-      J[3] = 0;
-      J[4] = dz;
-      J[5] = J14;
-      L1FilterVtx(T, fTargX, fTargY, TargetXYInfo, eX, eY, J);
-    }
-
-
-#else  // not BEGIN_FROM_TARGET // TODO: doesn't work. Why?
-
-    T.x = fTargX;
-    T.y = fTargY;
-
-    T.z   = fTargZ;
-    T.C00 = TargetXYInfo.C00;
-    T.C10 = TargetXYInfo.C10;
-    T.C11 = TargetXYInfo.C11;
-    // extrapolate to left hit
-    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
-      if (istal <= fNfieldStations) L1Extrapolate0(T, zl, fld0);
-      else
-        L1ExtrapolateLine(T, zl);
-    }
-    else {
-      L1Extrapolate0(T, zl, fld0);
-    }
-
-    for (int ista = 0; ista <= istal - 1; ista++) {
-      if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-        fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista, T.x, T.y), fMaxInvMom, 1);
-      }
-      else {
-        fit.L1AddMaterial(T, fParameters.GetStation(ista).materialInfo, fMaxInvMom, 1);
-      }
-      if (ista == fNstationsBeforePipe - 1) fit.L1AddPipeMaterial(T, fMaxInvMom, 1);
-    }
-
-    // add left hit
-    L1UMeasurementInfo info = stal.frontInfo;
-
-    if (fUseHitErrors) info.sigma2 = du1 * du1;
-
-    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
-      if (istal < fNfieldStations) L1Filter(T, info, u);
-      else {
-        L1FilterNoField(T, info, u);
-      }
-    }
-    else {
-      L1Filter(T, info, u);
-    }
-    info = stal.backInfo;
-
-    if (fUseHitErrors) info.sigma2 = dv1 * dv1;
-
-    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
-      if (istal < fNfieldStations) L1Filter(T, info, v);
-      else {
-        L1FilterNoField(T, info, v);
-      }
-    }
-    else {
-      L1Filter(T, info, v);
-    }
-
-#endif  // BEGIN_FROM_TARGET
-
-
     if constexpr (L1Constants::control::kIfUseRadLengthTable) {
       if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
         fit.L1AddThickMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, 1,
@@ -380,14 +341,9 @@ inline void L1Algo::f11(  /// input 1st stage of singlet search
     L1ExtrapolateTime(T, dz, stam.timeInfo);
 
     // extrapolate to left hit
-    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
-      if (istam < fNfieldStations) L1Extrapolate0(T, zstam, fld0);
-      else {
-        L1ExtrapolateLine(T, zstam);  // TODO: fld1 doesn't work!
-      }
-    }
+    if (istam < fNfieldStations) { L1Extrapolate0(T, zstam, fld0); }
     else {
-      L1Extrapolate0(T, zstam, fld0);  // TODO: fld1 doesn't work!
+      L1ExtrapolateLine(T, zstam);  // TODO: fld1 doesn't work!
     }
   }  // i1_V
 }
@@ -424,7 +380,6 @@ inline void L1Algo::f20(
     const float& timeError = T1.C55[i1_4];
     const float& time      = T1.t[i1_4];
 
-
     L1HitAreaTime areaTime(vGridTime[&stam - fParameters.GetStations().begin()], T1.x[i1_4] * iz, T1.y[i1_4] * iz,
                            (sqrt(Pick_m22 * (T1.C00 + stam.XYInfo.C00)) + fMaxDZ * fabs(T1.tx))[i1_4] * iz,
                            (sqrt(Pick_m22 * (T1.C11 + stam.XYInfo.C11)) + fMaxDZ * fabs(T1.ty))[i1_4] * iz, time,
@@ -434,7 +389,7 @@ inline void L1Algo::f20(
     L1HitIndex_t imh = 0;
     int irm1         = -1;
     while (true) {
-      if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
+      if (fParameters.IsIgnoreHitSearchAreas()) {
         irm1++;
         if ((L1HitIndex_t) irm1 >= (StsHitsUnusedStopIndex[&stam - fParameters.GetStations().begin()]
                                     - StsHitsUnusedStartIndex[&stam - fParameters.GetStations().begin()]))
@@ -468,7 +423,6 @@ inline void L1Algo::f20(
       //       const fscal dt_est2 = Pick_m22[i1_4] * fabs(T1_new.C55[i1_4] + hitm.timeEr*hitm.timeEr);
       //       const fscal dt = hitm.time - T1_new.t[i1_4];
       //       if ( dt*dt > dt_est2 && dt < 0  ) continue;
-
 
       fvec y, C11;
       L1ExtrapolateYC11Line(T1, zm, y, C11);
@@ -665,27 +619,17 @@ inline void L1Algo::f30(  // input
 
       if (fUseHitErrors) info.sigma2 = du2 * du2;
 
-      if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
-        if (istam < fNfieldStations) L1Filter(T2, info, u_front_2);
-        else {
-          L1FilterNoField(T2, info, u_front_2);
-        }
-      }
+      if (istam < fNfieldStations) { L1Filter(T2, info, u_front_2); }
       else {
-        L1Filter(T2, info, u_front_2);
+        L1FilterNoField(T2, info, u_front_2);
       }
 
       info = stam.backInfo;
       if (fUseHitErrors) info.sigma2 = dv2 * dv2;
 
-      if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
-        if (istam < fNfieldStations) L1Filter(T2, info, u_back_2);
-        else {
-          L1FilterNoField(T2, info, u_back_2);
-        }
-      }
+      if (istam < fNfieldStations) { L1Filter(T2, info, u_back_2); }
       else {
-        L1Filter(T2, info, u_back_2);
+        L1FilterNoField(T2, info, u_back_2);
       }
 
       FilterTime(T2, timeM, timeMEr, stam.timeInfo);
@@ -710,16 +654,11 @@ inline void L1Algo::f30(  // input
 
       // extrapolate to the right hit station
 
-      if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
-        if (istar <= fNfieldStations) {
-          L1Extrapolate(T2, star.z, T2.qp, f2);  // Full extrapolation in the magnetic field
-        }
-        else {
-          L1ExtrapolateLine(T2, star.z);  // Extrapolation with line ()
-        }
+      if (istar <= fNfieldStations) {
+        L1Extrapolate(T2, star.z, T2.qp, f2);  // Full extrapolation in the magnetic field
       }
       else {
-        L1Extrapolate(T2, star.z, T2.qp, f2);
+        L1ExtrapolateLine(T2, star.z);  // Extrapolation with line ()
       }
 
       // ---- Find the triplets(right hit). Reformat data in the portion of triplets. ----
@@ -748,7 +687,7 @@ inline void L1Algo::f30(  // input
         L1HitIndex_t Ntriplets = 0;
         int irh1               = -1;
         while (true) {
-          if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
+          if (fParameters.IsIgnoreHitSearchAreas()) {
             irh1++;
             if ((L1HitIndex_t) irh1 >= (StsHitsUnusedStopIndex[istar] - StsHitsUnusedStartIndex[istar])) break;
             irh = irh1;
@@ -936,8 +875,7 @@ inline void L1Algo::f31(  // input
 
     if (fUseHitErrors) info.sigma2 = du_[i3_V] * du_[i3_V];
 
-    bool noField = (kGlobal == fTrackingMode || kMcbm == fTrackingMode)
-                   && (&star - fParameters.GetStations().begin() >= fNfieldStations);
+    bool noField = (&star - fParameters.GetStations().begin() >= fNfieldStations);
 
     if (noField) { L1FilterNoField(T_3[i3_V], info, u_front_[i3_V]); }
     else {
