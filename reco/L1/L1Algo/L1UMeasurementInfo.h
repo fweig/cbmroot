@@ -8,14 +8,15 @@
 #include <string>
 
 #include "L1Def.h"
+#include "L1NaN.h"
 #include "L1Utils.h"
 
 class L1UMeasurementInfo {
 
 public:
-  fvec cos_phi {0.f};
-  fvec sin_phi {0.f};
-  fvec sigma2 {0.f};
+  fvec cos_phi {L1NaN::SetNaN<decltype(cos_phi)>()};
+  fvec sin_phi {L1NaN::SetNaN<decltype(sin_phi)>()};
+  fvec sigma2  {L1NaN::SetNaN<decltype(sigma2)>()};
 
   /// String representation of class contents
   /// \param indentLevel      number of indent characters in the output
@@ -24,6 +25,11 @@ public:
   /// Check consistency
   void CheckConsistency() const;
 
+  /// Checks, if the fields are NaN
+  bool IsNaN() const
+  {
+    return L1NaN::IsNaN(cos_phi) || L1NaN::IsNaN(sin_phi) || L1NaN::IsNaN(sigma2);
+  }
 } _fvecalignment;
 
 

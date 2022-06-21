@@ -280,6 +280,7 @@ Install(FILES CbmL1Counters.h
               L1Algo/L1Parameters.h
               L1Algo/L1Constants.h
               L1Algo/L1Utils.h
+              L1Algo/L1NaN.h
               vectors/vec_arithmetic.h
               vectors/std_alloc.h
         DESTINATION include

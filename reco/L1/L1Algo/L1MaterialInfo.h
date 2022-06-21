@@ -11,20 +11,26 @@
 #include <vector>
 
 #include "L1Def.h"
-#include "L1Utils.h"
+#include "L1NaN.h"
 
 /// Class L1MaterialInfo contains SIMDized vector fields of the
 /// The fields of the structure should ONLY be initialized within L1BaseStationInfo::SetMaterial(double, double) method, when the
 /// stations sequence is initialized
 struct L1MaterialInfo {
-  fvec thick {L1Utils::kNaN};  ///< Average thickness of the station in arbitary length units
-  fvec RL {
-    L1Utils::kNaN};  ///< Average radiation length (X0) of the station material in THE SAME UNITS as the thickness
-  fvec RadThick {L1Utils::kNaN};  ///< Average thickness in units of radiation length (X/X0)
-  fvec logRadThick {L1Utils::kNaN};
+  fvec thick {L1NaN::SetNaN<decltype(thick)>()};  ///< Average thickness of the station in arbitary length units
+  /// Average radiation length (X0) of the station material in THE SAME UNITS as the thickness
+  fvec RL {L1NaN::SetNaN<decltype(RL)>()};
+  fvec RadThick {L1NaN::SetNaN<decltype(RadThick)>()};       ///< Average thickness in units of radiation length (X/X0)
+  fvec logRadThick {L1NaN::SetNaN<decltype(logRadThick)>()}; ///< Log of average thickness in units of radiation length
 
   /// Verifies class invariant consistency
   void CheckConsistency() const;
+  
+  /// Checks, if the fields are NaN
+  bool IsNaN() const
+  {
+    return L1NaN::IsNaN(thick) || L1NaN::IsNaN(RL) || L1NaN::IsNaN(RadThick) || L1NaN::IsNaN(logRadThick);
+  }
 
   /// String representation of class contents
   /// \param indentLevel    number of indent characters in the output
@@ -71,6 +77,12 @@ public:
   /// \param x  X coordinate of the point [cm] (SIMDized vector)
   /// \param y  Y coordinate of the point [cm] (SIMDized veotor)
   fvec GetRadThick(fvec x, fvec y) const;
+  
+  /// Checks, if the fields are NaN
+  bool IsNaN() const
+  {
+    return L1NaN::IsNaN(fNbins) || L1NaN::IsNaN(fRmax) || L1NaN::IsNaN(fFactor);
+  }
 
   /// Verifies class invariant consistency
   void CheckConsistency() const;
@@ -93,9 +105,9 @@ public:
   void Swap(L1Material& other) noexcept;
 
 private:
-  int fNbins {-1};                ///< Number of rows (columns) in the material budget table
-  float fRmax {L1Utils::kNaN};    ///< Size of the station in x and y dimensions [cm]
-  float fFactor {L1Utils::kNaN};  ///< Factor used in the recalculation of point coordinates to row/column id
+  int fNbins    {L1NaN::SetNaN<decltype(fNbins)>()};   ///< Number of rows (columns) in the material budget table
+  float fRmax   {L1NaN::SetNaN<decltype(fRmax)>()};    ///< Size of the station in x and y dimensions [cm]
+  float fFactor {L1NaN::SetNaN<decltype(fFactor)>()};  ///< Factor used in the recalculation of point coordinates to row/column id
   std::vector<float> fTable {};  ///< Material budget table
 } _fvecalignment;
 

@@ -15,6 +15,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 
 #include <cmath>
@@ -31,10 +32,9 @@ struct L1Utils {
   /// \param  lhs  Left floating point to compare
   /// \param  rhs  Right floating point to compare
   /// \return      Comparison result: true - equals within epsilon
-  template<typename T>
+  template <typename T, typename std::enable_if<std::is_floating_point<T>::value, T>::type* = nullptr>
   static bool CmpFloats(T lhs, T rhs)
   {
-    static_assert(!std::numeric_limits<T>::is_integer, "L1Utils::CmpFloatingPoint does not work with integers");
     return fabs(lhs - rhs) < 2. * std::numeric_limits<T>::epsilon() * fabs(lhs + rhs)
            || fabs(lhs - rhs) < std::numeric_limits<T>::min();
   }

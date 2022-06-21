@@ -8,13 +8,14 @@
 #include <string>
 
 #include "L1Def.h"
+#include "L1NaN.h"
 
 class L1XYMeasurementInfo {
 
 public:
-  fvec C00 {0};
-  fvec C10 {0};
-  fvec C11 {0};
+  fvec C00 {L1NaN::SetNaN<decltype(C00)>()};
+  fvec C10 {L1NaN::SetNaN<decltype(C10)>()};
+  fvec C11 {L1NaN::SetNaN<decltype(C11)>()};
 
   /// Consistency checker
   void CheckConsistency() const;
@@ -22,6 +23,12 @@ public:
   /// String representation of class contents
   /// \param indentLevel      number of indent characters in the output
   std::string ToString(int indentLevel = 0) const;
+
+  /// Checks, if the fields are NaN
+  bool IsNaN() const
+  {
+    return L1NaN::IsNaN(C00) || L1NaN::IsNaN(C10) || L1NaN::IsNaN(C11);
+  }
 } _fvecalignment;
 
 

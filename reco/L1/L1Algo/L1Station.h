@@ -9,6 +9,7 @@
 
 #include "L1Field.h"
 #include "L1MaterialInfo.h"
+#include "L1NaN.h"
 #include "L1UMeasurementInfo.h"
 #include "L1Utils.h"
 #include "L1XYMeasurementInfo.h"
@@ -16,16 +17,17 @@
 /// Structure L1Station
 /// Contains a set of geometry parameters for a particular station
 ///
-struct L1Station {
-  int type {-1};
-  int timeInfo {-1};          ///< flag: if time information can be used
-  int fieldStatus {-1};       ///< flag: 1 - station is INSIDE the field, 0 - station is OUTSIDE the field
-  fvec z {L1Utils::kNaN};     ///< z position of station     [cm]
-  fvec Rmin {L1Utils::kNaN};  ///< min radius of the station [cm]
-  fvec Rmax {L1Utils::kNaN};  ///< max radius of the station [cm]
-  fvec dt {L1Utils::kNaN};    ///< time resolution [ns]
-  L1MaterialInfo
-    materialInfo {};  ///< structure containing station thickness(X), rad. length (X0), X/X0 and log(X/X0) values
+class L1Station {
+public:
+  int type        {L1NaN::SetNaN<decltype(type)>()};
+  int timeInfo    {L1NaN::SetNaN<decltype(timeInfo)>()};          ///< flag: if time information can be used
+  int fieldStatus {L1NaN::SetNaN<decltype(fieldStatus)>()};       ///< flag: 1 - station is INSIDE the field, 0 - station is OUTSIDE the field
+  fvec z          {L1NaN::SetNaN<decltype(z)>()};     ///< z position of station     [cm]
+  fvec Rmin       {L1NaN::SetNaN<decltype(Rmin)>()};  ///< min radius of the station [cm]
+  fvec Rmax       {L1NaN::SetNaN<decltype(Rmax)>()};  ///< max radius of the station [cm]
+  fvec dt         {L1NaN::SetNaN<decltype(dt)>()};    ///< time resolution [ns]
+  /// structure containing station thickness(X), rad. length (X0), X/X0 and log(X/X0) values
+  L1MaterialInfo materialInfo {};
   L1FieldSlice fieldSlice {};
   L1UMeasurementInfo frontInfo {};
   L1UMeasurementInfo backInfo {};
