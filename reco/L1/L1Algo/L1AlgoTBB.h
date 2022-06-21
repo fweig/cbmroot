@@ -22,11 +22,11 @@ namespace tbb
     int isec;
     L1Station* vStations;
     int NStations;
-    Tindex* StsHitsStartIndex;
-    Tindex* StsHitsStopIndex;
+    Tindex* HitsStartIndex;
+    Tindex* HitsStopIndex;
     vector<unsigned char>& vSFlag;
     vector<unsigned char>& vSFlagB;
-    std::vector<L1HitPoint>& vStsHits;
+    std::vector<L1HitPoint>& vHits;
     double Pick_r;
     double Pick_m;
     double MaxInvMom;
@@ -60,9 +60,9 @@ namespace tbb
 
     ParalleledDup(
       // input
-      int isec_, L1Station* vStations_, int NStations_, Tindex* StsHitsStartIndex_, Tindex* StsHitsStopIndex_,
-      vector<unsigned char>& vSFlag_, vector<unsigned char>& vSFlagB_, std::vector<L1HitPoint>& vStsHits_,
-      double Pick_r_, double Pick_m_, double MaxInvMom_, fvec targX_, fvec targY_, fvec targZ_, L1FieldValue& targB_,
+      int isec_, L1Station* vStations_, int NStations_, Tindex* HitsStartIndex_, Tindex* HitsStopIndex_,
+      vector<unsigned char>& vSFlag_, vector<unsigned char>& vSFlagB_, std::vector<L1HitPoint>& vHits_, double Pick_r_,
+      double Pick_m_, double MaxInvMom_, fvec targX_, fvec targY_, fvec targZ_, L1FieldValue& targB_,
       L1XYMeasurementInfo& TargetXYInfo_,
 
       Tindex* n_g1_, unsigned* portionStopIndex_, L1TrackPar* T_g1_, L1FieldRegion* fld_g1_, L1HitIndex_t* hitsl_g1_,
@@ -81,11 +81,11 @@ namespace tbb
       : isec(isec_)
       , vStations(vStations_)
       , NStations(NStations_)
-      , StsHitsStartIndex(StsHitsStartIndex_)
-      , StsHitsStopIndex(StsHitsStopIndex_)
+      , HitsStartIndex(HitsStartIndex_)
+      , HitsStopIndex(HitsStopIndex_)
       , vSFlag(vSFlag_)
       , vSFlagB(vSFlagB_)
-      , vStsHits(vStsHits_)
+      , vHits(vHits_)
       , Pick_r(Pick_r_)
       , Pick_m(Pick_m_)
       , MaxInvMom(MaxInvMom_)
@@ -128,7 +128,7 @@ namespace tbb
     for (Tindex istal = r.begin(); istal < (Tindex) r.end(); ++istal) {
       // 		cout<< " ParalleledDup::operator(). Station: " << istal << endl;
       DupletsStaPort(  // input
-        isec, istal, vStsHits, targX, targY, targZ, targB, TargetXYInfo,
+        isec, istal, vHits, targX, targY, targZ, targB, TargetXYInfo,
 
         n_g1, portionStopIndex, T_g1, fld_g1, hitsl_g1,
         // 											x_minusV_g1, x_plusV_g1, y_minusV_g1, y_plusV_g1,
@@ -152,9 +152,9 @@ namespace tbb
     int isec;
     L1Station* vStations;
     int NStations;
-    Tindex* StsHitsStartIndex;
-    Tindex* StsHitsStopIndex;
-    std::vector<L1HitPoint>& svStsHits;
+    Tindex* HitsStartIndex;
+    Tindex* HitsStopIndex;
+    std::vector<L1HitPoint>& svHits;
     double Pick_r;
     double TRACK_CHI2_CUT;
     double MaxInvMom;
@@ -185,8 +185,8 @@ namespace tbb
 
     ParalleledTrip(
       // input
-      int isec_, L1Station* vStations_, int NStations_, Tindex* StsHitsStartIndex_, Tindex* StsHitsStopIndex_,
-      std::vector<L1HitPoint>& vStsHits_, double Pick_r_, double TRACK_CHI2_CUT_, double MaxInvMom_,
+      int isec_, L1Station* vStations_, int NStations_, Tindex* HitsStartIndex_, Tindex* HitsStopIndex_,
+      std::vector<L1HitPoint>& vHits_, double Pick_r_, double TRACK_CHI2_CUT_, double MaxInvMom_,
 
       Tindex* n_g1_, L1TrackPar* T_g1_, L1FieldRegion* fld_g1_, L1HitIndex_t* hitsl_g1_,
 
@@ -205,9 +205,9 @@ namespace tbb
       isec(isec_)
       , vStations(vStations_)
       , NStations(NStations_)
-      , StsHitsStartIndex(StsHitsStartIndex_)
-      , StsHitsStopIndex(StsHitsStopIndex_)
-      , svStsHits(vStsHits_)
+      , HitsStartIndex(HitsStartIndex_)
+      , HitsStopIndex(HitsStopIndex_)
+      , svHits(vHits_)
       , Pick_r(Pick_r_)
       , TRACK_CHI2_CUT(TRACK_CHI2_CUT_)
       , MaxInvMom(MaxInvMom_)
@@ -246,7 +246,7 @@ namespace tbb
     for (Tindex istal = r.begin(); istal < (Tindex) r.end(); ++istal) {
       // 		cout<< " ParalleledTrip::operator(). Station: " << istal << endl;
       TripletsStaPort(  // input
-        isec, istal, svStsHits, n_g1, T_g1, fld_g1, hitsl_g1,
+        isec, istal, svHits, n_g1, T_g1, fld_g1, hitsl_g1,
 
         n_g2, portionStopIndex, i1_g2,
         /*											fld_g2,

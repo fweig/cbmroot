@@ -52,9 +52,9 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
     for (int iter = 0; iter < 3; iter++) {
       //cout<<" Back 1"<<endl;
       {  // fit backward
-        const L1Hit& hit0 = (*vStsHits)[hits[nHits - 1]];
-        const L1Hit& hit1 = (*vStsHits)[hits[nHits - 2]];
-        const L1Hit& hit2 = (*vStsHits)[hits[nHits - 3]];
+        const L1Hit& hit0 = (*vHits)[hits[nHits - 1]];
+        const L1Hit& hit1 = (*vHits)[hits[nHits - 2]];
+        const L1Hit& hit2 = (*vHits)[hits[nHits - 3]];
 
         int ista0 = (*fStripFlag)[hit0.f] / 4;
         int ista1 = (*fStripFlag)[hit1.f] / 4;
@@ -126,15 +126,15 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         //cout<<"\nfit, iter=:"<<iter<<endl;
         for (int i = nHits - 2; i >= 0; i--) {
           //  if( fabs(T.qp[0])>2. ) break;  // iklm. Don't know it need for
-          const L1Hit& hit = (*vStsHits)[hits[i]];
+          const L1Hit& hit = (*vHits)[hits[i]];
           ista             = (*fStripFlag)[hit.f] / 4;
 
           const L1Station& sta = fParameters.GetStation(ista);
 
           //    L1Extrapolate( T, hit.z, qp0, fld );
           L1ExtrapolateLine(T, hit.z);
-//           T.L1Extrapolate( sta.z, qp0, fld );
-//         L1Extrapolate( T, hit.z, qp0, fld );
+          //           T.L1Extrapolate( sta.z, qp0, fld );
+          //         L1Extrapolate( T, hit.z, qp0, fld );
           if constexpr (L1Constants::control::kIfUseRadLengthTable) {
             fit.L1AddMaterial(T, fParameters.GetMaterialThickness(i, T.x, T.y), qp0, ONE);
           }
@@ -194,9 +194,9 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
       {
         //T.qp = first_trip->GetQpOrig(MaxInvMom);
 
-        const L1Hit& hit0 = (*vStsHits)[hits[0]];
-        const L1Hit& hit1 = (*vStsHits)[hits[1]];
-        const L1Hit& hit2 = (*vStsHits)[hits[2]];
+        const L1Hit& hit0 = (*vHits)[hits[0]];
+        const L1Hit& hit1 = (*vHits)[hits[1]];
+        const L1Hit& hit2 = (*vHits)[hits[2]];
 
         int ista0 = GetFStation((*fStripFlag)[hit0.f]);
         int ista1 = GetFStation((*fStripFlag)[hit1.f]);
@@ -262,18 +262,18 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         int ista = ista2;
 
         for (int i = 1; i < nHits; i++) {
-          const L1Hit& hit = (*vStsHits)[hits[i]];
-          ista             = (*fStripFlag)[hit.f] / 4;
+          const L1Hit& hit     = (*vHits)[hits[i]];
+          ista                 = (*fStripFlag)[hit.f] / 4;
           const L1Station& sta = fParameters.GetStation(ista);
-          fvec u           = hit.u;
-          fvec v           = hit.v;
+          fvec u               = hit.u;
+          fvec v               = hit.v;
           fvec x, y;
           StripsToCoor(u, v, x, y, sta);
 
           //   L1Extrapolate( T, hit.z, qp0, fld );
           L1ExtrapolateLine(T, hit.z);
-//           T.L1Extrapolate( sta.z, qp0, fld );
-//           L1Extrapolate( T, hit.z, qp0, fld );
+          //           T.L1Extrapolate( sta.z, qp0, fld );
+          //           L1Extrapolate( T, hit.z, qp0, fld );
           if constexpr (L1Constants::control::kIfUseRadLengthTable) {
             fit.L1AddMaterial(T, fParameters.GetMaterialThickness(i, T.x, T.y), qp0, ONE);
           }
@@ -392,7 +392,7 @@ void L1Algo::L1KFTrackFitter()
       int nHitsTrack = t[iVec]->NHits;
       int iSta[L1Constants::size::kMaxNstations];
       for (i = 0; i < nHitsTrack; i++) {
-        const L1Hit& hit = (*vStsHits)[fRecoHits[start_hit++]];
+        const L1Hit& hit = (*vHits)[fRecoHits[start_hit++]];
         const int ista   = (*fStripFlag)[hit.f] / 4;
         iSta[i]          = ista;
         w[ista][iVec]    = 1.;
@@ -446,11 +446,11 @@ void L1Algo::L1KFTrackFitter()
       fscal prevZ = z_end[iVec];
       fscal cursy = 0., curSy = 0.;
       for (i = nHitsTrack - 1; i >= 0; i--) {
-        const int ista   = iSta[i];
+        const int ista      = iSta[i];
         const L1Station& st = fParameters.GetStation(ista);
-        const fscal curZ = z[ista][iVec];
-        fscal dZ         = curZ - prevZ;
-        fscal By         = st.fieldSlice.cy[0][0];
+        const fscal curZ    = z[ista][iVec];
+        fscal dZ            = curZ - prevZ;
+        fscal By            = st.fieldSlice.cy[0][0];
         curSy += dZ * cursy + dZ * dZ * By / 2.;
         cursy += dZ * By;
         Sy[ista][iVec] = curSy;
@@ -823,12 +823,12 @@ void L1Algo::L1KFTrackFitterMuch()
     }
 
     for (iVec = 0; iVec < nTracks_SIMD; iVec++) {
-      int nHitsTrack    = t[iVec]->NHits;
-      int nHitsTrackSts = 0;
+      int nHitsTrack      = t[iVec]->NHits;
+      int nHitsTrackField = 0;
       for (i = 0; i < nHitsTrack; i++) {
-        const L1Hit& hit = (*vStsHits)[fRecoHits[start_hit++]];
+        const L1Hit& hit = (*vHits)[fRecoHits[start_hit++]];
         const int ista   = (*fStripFlag)[hit.f] / 4;
-        if (ista < 8) nHitsTrackSts++;
+        if (ista < fNfieldStations) nHitsTrackField++;
         iSta[i]       = ista;
         w[ista][iVec] = 1.;
 
@@ -885,12 +885,12 @@ void L1Algo::L1KFTrackFitterMuch()
       fscal prevZ = z_start[iVec];
       fscal cursy = 0., curSy = 0.;
       //   for(i = nHitsTrack - 1; i >= 0; i-- ){
-      for (i = 0; i < nHitsTrackSts; i++) {
-        const int ista   = iSta[i];
+      for (i = 0; i < nHitsTrackField; i++) {
+        const int ista      = iSta[i];
         const L1Station& st = fParameters.GetStation(ista);
-        const fscal curZ = z[ista][iVec];
-        fscal dZ         = curZ - prevZ;
-        fscal By         = st.fieldSlice.cy[0][0];
+        const fscal curZ    = z[ista][iVec];
+        fscal dZ            = curZ - prevZ;
+        fscal By            = st.fieldSlice.cy[0][0];
         curSy += dZ * cursy + dZ * dZ * By / 2.;
         cursy += dZ * By;
         Sy[ista][iVec] = curSy;
@@ -900,15 +900,15 @@ void L1Algo::L1KFTrackFitterMuch()
 
     //fit backward
 
-    int nHitsSts = 0;
+    int nHitsField = 0;
 
     for (i = 0; i < nHits; i++)
-      if (iSta[i] < 8) nHitsSts++;
+      if (iSta[i] < fNfieldStations) nHitsField++;
 
-    GuessVec(T, x, y, z, Sy, w, nHitsSts, &z_start);
+    GuessVec(T, x, y, z, Sy, w, nHitsField, &z_start);
 
 
-    GuessVec(T1, x, y, z, Sy, w, nHitsSts, &z_start);
+    GuessVec(T1, x, y, z, Sy, w, nHitsField, &z_start);
 
 
     for (int iter = 0; iter < 2; iter++) {  // 1.5 iterations
@@ -1147,7 +1147,7 @@ void L1Algo::L1KFTrackFitterMuch()
         fvec wIn = (ONE & (initialised));
 
 
-        if (i >= 7) {
+        if (i >= fNfieldStations - 1) {
 
           fvec z_last = z[i];
 
@@ -1228,22 +1228,21 @@ void L1Algo::L1KFTrackFitterMuch()
           T1.Filter(time[i], timeEr[i], w1, sta[i].timeInfo);
         }
 
-        if (i < 7) {
+        if (i < fNfieldStations - 1) {
 
-          if (i == 6) {
+          if (i == fNfieldStations - 2) {  // next-to-last field station
 
-            T1.ExtrapolateLine(z[7]);
+            T1.ExtrapolateLine(z[i + 1]);
 
-            int i_sts = i + 1;
-            fldZ1     = z[i_sts];  //7
-            sta[i_sts].fieldSlice.GetFieldValue(T1.fx, T1.fy, fldB1);
-            fldB1.Combine(fB[i_sts], w[i_sts]);
+            fldZ1 = z[i + 1];
+            sta[i + 1].fieldSlice.GetFieldValue(T1.fx, T1.fy, fldB1);
+            fldB1.Combine(fB[i + 1], w[i + 1]);
 
-            fldZ2 = z[i_sts - 2];  //5
+            fldZ2 = z[i - 1];
             dz    = fldZ2 - fldZ1;
 
-            sta[i_sts].fieldSlice.GetFieldValue(T1.fx + T1.ftx * dz, T1.fy + T1.fty * dz, fldB2);
-            fldB2.Combine(fB[i_sts - 2], w[i_sts - 2]);
+            sta[i + 1].fieldSlice.GetFieldValue(T1.fx + T1.ftx * dz, T1.fy + T1.fty * dz, fldB2);
+            fldB2.Combine(fB[i - 1], w[i - 1]);
           }
 
 

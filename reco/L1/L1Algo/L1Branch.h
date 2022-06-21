@@ -17,14 +17,14 @@
 ///
 struct L1Branch {
   /// default constructor
-  L1Branch() { fStsHits.reserve(25); }
+  L1Branch() { fHits.reserve(25); }
 
   unsigned char ista {0};
   char Momentum {0};
   char NHits {0};
   fscal chi2 {0.};
   int CandIndex {0};
-  L1Vector<L1HitIndex_t> fStsHits {"L1Branch::fStsHits"};
+  L1Vector<L1HitIndex_t> fHits {"L1Branch::fHits"};
 
   //     static bool compareCand(const L1Branch *a, const L1Branch *b){
   //

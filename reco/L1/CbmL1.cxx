@@ -893,8 +893,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
   int nStsHits = 0;
   if (fUseSTS && listStsHits) { nStsHits = listStsHits->GetEntriesFast(); }
 
-  L1Vector<std::pair<double, int>> SortStsHits("CbmL1::SortStsHits");
-  SortStsHits.reserve(nStsHits);
+  L1Vector<std::pair<double, int>> SortHits("CbmL1::SortHits");
+  SortHits.reserve(nStsHits);
 
   float start_t = 10000000000;
 
@@ -910,16 +910,16 @@ void CbmL1::Reconstruct(CbmEvent* event)
     CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(j));
     double t      = sh->GetTime();
     if (t < start_t) start_t = t;
-    SortStsHits.push_back(std::pair<double, int>(t, j));
+    SortHits.push_back(std::pair<double, int>(t, j));
   }
 
   TsStart = start_t;  ///reco TS start time is set to smallest hit time
 
-  std::sort(SortStsHits.begin(), SortStsHits.end());
+  std::sort(SortHits.begin(), SortHits.end());
   StsIndex.clear();
-  StsIndex.reserve(SortStsHits.size());
-  for (unsigned int i = 0; i < SortStsHits.size(); i++) {
-    int j = SortStsHits[i].second;
+  StsIndex.reserve(SortHits.size());
+  for (unsigned int i = 0; i < SortHits.size(); i++) {
+    int j = SortHits[i].second;
     StsIndex.push_back(j);
   };
 
@@ -980,8 +980,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
     if (fSTAPDataMode >= 2) {  // 2,3
       fData->ReadHitsFromFile(fSTAPDataDir.Data(), 1, fVerbose);
 
-      algo->SetData(fData->GetStsHits(), fData->GetNStsStrips(), fData->GetSFlag(), fData->GetStsHitsStartIndex(),
-                    fData->GetStsHitsStopIndex());
+      algo->SetData(fData->GetHits(), fData->GetNstrips(), fData->GetSFlag(), fData->GetHitsStartIndex(),
+                    fData->GetHitsStopIndex());
     }
     else {
       ReadEvent(fData, TsStart, TsLength, TsOverlap, FstHitinTs, areDataLeft, event);
@@ -990,14 +990,14 @@ void CbmL1::Reconstruct(CbmEvent* event)
     if constexpr (0) {  // correct hits on MC // dbg
       TRandom3 random;
       L1Vector<int> strips("CbmL1::strips");
-      for (unsigned int iH = 0; iH < (*algo->vStsHits).size(); ++iH) {
-        L1Hit& h = const_cast<L1Hit&>((*algo->vStsHits)[iH]);
+      for (unsigned int iH = 0; iH < (*algo->vHits).size(); ++iH) {
+        L1Hit& h = const_cast<L1Hit&>((*algo->vHits)[iH]);
 #ifdef USE_EVENT_NUMBER
         h.n = -1;
 #endif
-        if (vStsHits[iH].mcPointIds.size() == 0) continue;
+        if (vHits[iH].mcPointIds.size() == 0) continue;
 
-        const CbmL1MCPoint& mcp = vMCPoints[vStsHits[iH].mcPointIds[0]];
+        const CbmL1MCPoint& mcp = vMCPoints[vHits[iH].mcPointIds[0]];
 
 #ifdef USE_EVENT_NUMBER
         h.n = mcp.event;
@@ -1008,14 +1008,14 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
           (*algo->fStripFlag).push_back((*algo->fStripFlag)[h.f]);
 
-          h.f = algo->NStsStrips;
-          algo->NStsStrips++;
+          h.f = algo->fNstrips;
+          algo->fNstrips++;
         }
         strips.push_back(h.f);
         if (std::find(strips.begin(), strips.end(), h.b) != strips.end()) {
           (*algo->fStripFlag).push_back((*algo->fStripFlag)[h.b]);
-          h.b = algo->NStsStrips;
-          algo->NStsStrips++;
+          h.b = algo->fNstrips;
+          algo->fNstrips++;
         }
         strips.push_back(h.b);
 
@@ -1057,14 +1057,14 @@ void CbmL1::Reconstruct(CbmEvent* event)
     //  FieldApproxCheck();
     //  FieldIntegralCheck();
 
-    for (unsigned int iH = 0; iH < (*algo->vStsHits).size(); ++iH) {
+    for (unsigned int iH = 0; iH < (*algo->vHits).size(); ++iH) {
 #ifdef USE_EVENT_NUMBER
-      L1Hit& h = const_cast<L1Hit&>((*algo->vStsHits)[iH]);
+      L1Hit& h = const_cast<L1Hit&>((*algo->vHits)[iH]);
       h.n      = -1;
 #endif
-      if (vStsHits[iH].mcPointIds.size() == 0) continue;
+      if (vHits[iH].mcPointIds.size() == 0) continue;
 #ifdef USE_EVENT_NUMBER
-      const CbmL1MCPoint& mcp = vMCPoints[vStsHits[iH].mcPointIds[0]];
+      const CbmL1MCPoint& mcp = vMCPoints[vHits[iH].mcPointIds[0]];
       h.n                     = mcp.event;
 #endif
     }
@@ -1119,22 +1119,22 @@ void CbmL1::Reconstruct(CbmEvent* event)
       t.chi2 = it->chi2;
       t.NDF  = it->NDF;
       //t.T[4] = it->Momentum;
-      t.StsHits.clear();
+      t.Hits.clear();
       t.fTrackTime = it->fTrackTime;
 
-      L1Vector<int> StsHitsLocal("CbmL1::StsHitsLocal");
-      StsHitsLocal.reserve(it->NHits);
+      L1Vector<int> HitsLocal("CbmL1::HitsLocal");
+      HitsLocal.reserve(it->NHits);
 
       for (int i = 0; i < it->NHits; i++) {
         int start_hit1 = start_hit;
-        if (algo->fRecoHits[start_hit1] > vStsHits.size() - 1) start_hit++;
+        if (algo->fRecoHits[start_hit1] > vHits.size() - 1) start_hit++;
         else if (!fLegacyEventMode) {
-          t.StsHits.push_back(((*algo->vStsHits)[algo->fRecoHits[start_hit]]).ID);
+          t.Hits.push_back(((*algo->vHits)[algo->fRecoHits[start_hit]]).ID);
         }
         else {
-          t.StsHits.push_back(algo->fRecoHits[start_hit]);
+          t.Hits.push_back(algo->fRecoHits[start_hit]);
         }
-        StsHitsLocal.push_back(algo->fRecoHits[start_hit++]);
+        HitsLocal.push_back(algo->fRecoHits[start_hit++]);
       }
 
       t.mass        = algo->fDefaultMass;  // pion mass
@@ -1147,20 +1147,20 @@ void CbmL1::Reconstruct(CbmEvent* event)
       bool isInOverlap = 0;
 
 
-      for (unsigned int i = 0; i < StsHitsLocal.size(); i++) {
-        //      if ((*ih) > int(vStsHits.size() - 1)) {
+      for (unsigned int i = 0; i < HitsLocal.size(); i++) {
+        //      if ((*ih) > int(vHits.size() - 1)) {
         //         indd = 1;
         //         break;
         //       }
 
-        if (vStsHits[StsHitsLocal[i]].t >= (TsStart + TsLength - TsOverlap)) {
+        if (vHits[HitsLocal[i]].t >= (TsStart + TsLength - TsOverlap)) {
           isInOverlap = 1;
-          if (TsStart_new > vStsHits[StsHitsLocal[i]].t) TsStart_new = vStsHits[StsHitsLocal[i]].t;
+          if (TsStart_new > vHits[HitsLocal[i]].t) TsStart_new = vHits[HitsLocal[i]].t;
         }
 
-        int nMCPoints = vStsHits[StsHitsLocal[i]].mcPointIds.size();
+        int nMCPoints = vHits[HitsLocal[i]].mcPointIds.size();
         for (int iP = 0; iP < nMCPoints; iP++) {
-          int iMC = vStsHits[StsHitsLocal[i]].mcPointIds[iP];
+          int iMC = vHits[HitsLocal[i]].mcPointIds[iP];
           if (iMC > int(vMCPoints.size() - 1)) {
             //           cout << " iMC " << iMC << " vMCPoints.size() " <<  vMCPoints.size() << endl;
             indd = 1;
@@ -1175,9 +1175,9 @@ void CbmL1::Reconstruct(CbmEvent* event)
         continue;  ///Discard tracks from overlap region
 
         /// set strips as unused
-        for (unsigned int i = 0; i < StsHitsLocal.size(); i++) {
-          algo->SetFUnUsed(const_cast<unsigned char&>((*algo->fStripFlag)[vStsHits[StsHitsLocal[i]].f]));
-          algo->SetFUnUsed(const_cast<unsigned char&>((*algo->fStripFlag)[vStsHits[StsHitsLocal[i]].b]));
+        for (unsigned int i = 0; i < HitsLocal.size(); i++) {
+          algo->SetFUnUsed(const_cast<unsigned char&>((*algo->fStripFlag)[vHits[HitsLocal[i]].f]));
+          algo->SetFUnUsed(const_cast<unsigned char&>((*algo->fStripFlag)[vHits[HitsLocal[i]].b]));
         }
       }
       vRTracksCur.push_back(t);
@@ -1229,8 +1229,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
   vRTracks.reserve(vRTracksCur.size());
   for (unsigned int iTrack = 0; iTrack < vRTracksCur.size(); iTrack++) {
 
-    for (unsigned int iHit = 0; iHit < vRTracksCur[iTrack].StsHits.size(); iHit++)
-      if (!fLegacyEventMode) vRTracksCur[iTrack].StsHits[iHit] = SortedIndex[vRTracksCur[iTrack].StsHits[iHit]];
+    for (unsigned int iHit = 0; iHit < vRTracksCur[iTrack].Hits.size(); iHit++)
+      if (!fLegacyEventMode) vRTracksCur[iTrack].Hits[iHit] = SortedIndex[vRTracksCur[iTrack].Hits[iHit]];
 
     vRTracks.push_back(vRTracksCur[iTrack]);
   }
@@ -1239,14 +1239,14 @@ void CbmL1::Reconstruct(CbmEvent* event)
   if ((fPerformance) && (fSTAPDataMode < 2)) { InputPerformance(); }
 
 
-  for (unsigned int iH = 0; iH < (*algo->vStsHits).size(); ++iH) {
+  for (unsigned int iH = 0; iH < (*algo->vHits).size(); ++iH) {
 #ifdef USE_EVENT_NUMBER
-    L1Hit& h = const_cast<L1Hit&>((*algo->vStsHits)[iH]);
+    L1Hit& h = const_cast<L1Hit&>((*algo->vHits)[iH]);
     h.n      = -1;
 #endif
-    if (vStsHits[iH].mcPointIds.size() == 0) continue;
+    if (vHits[iH].mcPointIds.size() == 0) continue;
 #ifdef USE_EVENT_NUMBER
-    const CbmL1MCPoint& mcp = vMCPoints[vStsHits[iH].mcPointIds[0]];
+    const CbmL1MCPoint& mcp = vMCPoints[vHits[iH].mcPointIds[0]];
     h.n                     = mcp.event;
 #endif
   }
@@ -1334,16 +1334,16 @@ void CbmL1::IdealTrackFinder()
     if (!MC.IsReconstructable()) continue;
     if (!(MC.ID >= 0)) continue;
 
-    if (MC.StsHits.size() < 4) continue;
+    if (MC.Hits.size() < 4) continue;
 
     L1Track algoTr;
     algoTr.NHits = 0;
 
     L1Vector<int> hitIndices("CbmL1::hitIndices", algo->GetNstations(), -1);
 
-    for (unsigned int iH = 0; iH < MC.StsHits.size(); iH++) {
-      const int hitI      = MC.StsHits[iH];
-      const CbmL1Hit& hit = vStsHits[hitI];
+    for (unsigned int iH = 0; iH < MC.Hits.size(); iH++) {
+      const int hitI      = MC.Hits[iH];
+      const CbmL1Hit& hit = vHits[hitI];
 
       const int iStation = vMCPoints[hit.mcPointIds[0]].iStation;
 
@@ -1417,11 +1417,11 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
     fadata << "Event:"
            << " ";
     fadata << vNEvent << endl;
-    // write vStsStrips
-    int n = algo->NStsStrips;
+    // write vStrips
+    int n = algo->fNstrips;
     fadata << n << endl;
     if (fVerbose >= 4) {
-      cout << "vStsStrips[" << n << "]"
+      cout << "vStrips[" << n << "]"
            << " have been written." << endl;
     }
     // write fStripFlag
@@ -1440,11 +1440,11 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
       cout << "fStripFlagB[" << n << "]"
            << " have been written." << endl;
     }
-    // write vStsHits
-    n = (*algo->vStsHits).size();
+    // write vHits
+    n = (*algo->vHits).size();
     fadata << n << endl;
     for (int i = 0; i < n; i++) {
-      const L1Hit& h = (*algo->vStsHits)[i];
+      const L1Hit& h = (*algo->vHits)[i];
       fadata << static_cast<int>(h.f) << " ";
       fadata << static_cast<int>(h.b) << " ";
 #ifdef USE_EVENT_NUMBER
@@ -1453,23 +1453,23 @@ void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
       fadata << h.z << " ";
       fadata << h.u << " ";
       fadata << h.v << " ";
-      // fadata  << (*algo->vStsHits)[i].time << endl;
+      // fadata  << (*algo->vHits)[i].time << endl;
       fadata << h.t << endl;
     };
     if (fVerbose >= 4) {
-      cout << "vStsHits[" << n << "]"
+      cout << "vHits[" << n << "]"
            << " have been written." << endl;
     }
-    // write StsHitsStartIndex and StsHitsStopIndex
+    // write HitsStartIndex and HitsStopIndex
     n = 20;
     for (int i = 0; i < n; i++) {
-      if (int(L1Constants::size::kMaxNstations) + 1 > i) { fadata << algo->StsHitsStartIndex[i] << endl; }
+      if (int(L1Constants::size::kMaxNstations) + 1 > i) { fadata << algo->HitsStartIndex[i] << endl; }
       else {
         fadata << 0 << endl;
       }
     };
     for (int i = 0; i < n; i++) {
-      if (int(L1Constants::size::kMaxNstations) + 1 > i) fadata << algo->StsHitsStopIndex[i] << endl;
+      if (int(L1Constants::size::kMaxNstations) + 1 > i) fadata << algo->HitsStopIndex[i] << endl;
       else
         fadata << 0 << endl;
     };
@@ -1558,10 +1558,10 @@ void CbmL1::WriteSTAPPerfData()  // must be called after ReadEvent
       fpdata << vMCTracks[i].ID << " ";
       fpdata << vMCTracks[i].mother_ID << endl;
 
-      int nhits = vMCTracks[i].StsHits.size();
+      int nhits = vMCTracks[i].Hits.size();
       fpdata << "   " << nhits << endl << "   ";
       for (int k = 0; k < nhits; k++) {
-        fpdata << vMCTracks[i].StsHits[k] << " ";
+        fpdata << vMCTracks[i].Hits[k] << " ";
       };
       fpdata << endl;
 
@@ -1607,22 +1607,22 @@ void CbmL1::WriteSTAPPerfData()  // must be called after ReadEvent
       cout << "vHitStore[" << n << "]"
            << " have been written." << endl;
     }
-    // write vStsHits
-    n = vStsHits.size();  // number of elements
+    // write vHits
+    n = vHits.size();  // number of elements
     fpdata << n << endl;
     for (int i = 0; i < n; i++) {
-      fpdata << vStsHits[i].hitId << " ";
-      fpdata << vStsHits[i].extIndex << endl;
+      fpdata << vHits[i].hitId << " ";
+      fpdata << vHits[i].extIndex << endl;
 
-      const int nPoints = vStsHits[i].mcPointIds.size();
+      const int nPoints = vHits[i].mcPointIds.size();
       fpdata << nPoints << endl << "   ";
       for (int k = 0; k < nPoints; k++) {
-        fpdata << vStsHits[i].mcPointIds[k] << " ";
+        fpdata << vHits[i].mcPointIds[k] << " ";
       };
       fpdata << endl;
     };
     if (fVerbose >= 4) {
-      cout << "vStsHits[" << n << "]"
+      cout << "vHits[" << n << "]"
            << " have been written." << endl;
     }
     fpdata.close();
@@ -1672,8 +1672,8 @@ void CbmL1::ReadSTAPAlgoData()
   if (1) {
     if (nEvent == 1) fadata.open(fadata_name, std::fstream::in);
 
-    if (algo->vStsHits) algo->vStsHits->clear();
-    algo->NStsStrips = 0;
+    if (algo->vHits) algo->vHits->clear();
+    algo->fNstrips = 0;
     if (algo->fStripFlag) algo->fStripFlag->clear();
 
     // check correct position in file
@@ -1684,12 +1684,12 @@ void CbmL1::ReadSTAPAlgoData()
     if (nEv != nEvent) cout << "-E- CbmL1: Can't read event number " << nEvent << " from file " << fadata_name << endl;
 
     int n;  // number of elements
-    // read algo->vStsStrips
+    // read algo->vStrips
     fadata >> n;
     cout << " n " << n << endl;
-    algo->NStsStrips = n;
+    algo->fNstrips = n;
     if (fVerbose >= 4) {
-      cout << "vStsStrips[" << n << "]"
+      cout << "vStrips[" << n << "]"
            << " have been read." << endl;
     }
     // read algo->fStripFlag
@@ -1703,7 +1703,7 @@ void CbmL1::ReadSTAPAlgoData()
       cout << "fStripFlag[" << n << "]"
            << " have been read." << endl;
     }
-    // read algo->vStsHits
+    // read algo->vHits
     fadata >> n;
     int element_f;  // for convert
     int element_b;
@@ -1713,23 +1713,23 @@ void CbmL1::ReadSTAPAlgoData()
       fadata >> element_f >> element_b >> element_n >> element.z >> element.u >> element.v >> element.t;
       element.f = static_cast<L1HitIndex_t>(element_f);
       element.b = static_cast<L1HitIndex_t>(element_b);
-      algo->vStsHits->push_back(element);
+      algo->vHits->push_back(element);
     }
     if (fVerbose >= 4) {
-      cout << "vStsHits[" << n << "]"
+      cout << "vHits[" << n << "]"
            << " have been read." << endl;
     }
-    // read StsHitsStartIndex and StsHitsStopIndex
+    // read HitsStartIndex and HitsStopIndex
     n = 20;  // TODO: Why 20? (S.Zh.)
     for (int i = 0; i < n; i++) {
       int tmp;
       fadata >> tmp;
-      if (int(L1Constants::size::kMaxNstations) + 1 > i) (const_cast<unsigned int&>(algo->StsHitsStartIndex[i]) = tmp);
+      if (int(L1Constants::size::kMaxNstations) + 1 > i) (const_cast<unsigned int&>(algo->HitsStartIndex[i]) = tmp);
     }
     for (int i = 0; i < n; i++) {
       int tmp;
       fadata >> tmp;
-      if (int(L1Constants::size::kMaxNstations) + 1 > i) (const_cast<unsigned int&>(algo->StsHitsStopIndex[i]) = tmp);
+      if (int(L1Constants::size::kMaxNstations) + 1 > i) (const_cast<unsigned int&>(algo->HitsStopIndex[i]) = tmp);
     }
 
     cout << "-I- CbmL1: CATrackFinder data for event " << nEvent << " has been read from file " << fadata_name
@@ -1751,7 +1751,7 @@ void CbmL1::ReadSTAPPerfData()
     vMCTracks.clear();
     vHitMCRef.clear();
     vHitStore.clear();
-    vStsHits.clear();
+    vHits.clear();
     dFEI2vMCPoints.clear();
     dFEI2vMCTracks.clear();
     // check if it is right position in file
@@ -1832,7 +1832,7 @@ void CbmL1::ReadSTAPPerfData()
       for (int k = 0; k < nhits; k++) {
         int helement;
         fpdata >> helement;
-        element.StsHits.push_back(helement);
+        element.Hits.push_back(helement);
       };
       fpdata >> nhits;
       for (int k = 0; k < nhits; k++) {
@@ -1883,7 +1883,7 @@ void CbmL1::ReadSTAPPerfData()
       cout << "vHitStore[" << n << "]"
            << " have been read." << endl;
     }
-    // vStsHits
+    // vHits
     fpdata >> n;
     for (int i = 0; i < n; i++) {
       CbmL1Hit element;
@@ -1897,10 +1897,10 @@ void CbmL1::ReadSTAPPerfData()
         fpdata >> id;
         element.mcPointIds.push_back(id);
       };
-      vStsHits.push_back(element);
+      vHits.push_back(element);
     };
     if (fVerbose >= 4) {
-      cout << "vStsHits[" << n << "]"
+      cout << "vHits[" << n << "]"
            << " have been read." << endl;
     }
 
@@ -2109,12 +2109,12 @@ void CbmL1::WriteSIMDKFData()
     CbmL1MCTrack* MCTrack = RecTrack->GetMCTrack();
     if (!(MCTrack->IsPrimary())) continue;
 
-    int NHits = (RecTrack->StsHits).size();
+    int NHits = (RecTrack->Hits).size();
     float x[20], y[20], z[20];
     int st[20];
     int jHit = 0;
     for (int iHit = 0; iHit < NHits; iHit++) {
-      CbmL1HitStore& h = vHitStore[RecTrack->StsHits[iHit]];
+      CbmL1HitStore& h = vHitStore[RecTrack->Hits[iHit]];
       st[jHit]         = h.iStation;
       if (h.ExtIndex < 0) {
         CbmMvdHit* MvdH = (CbmMvdHit*) listMvdHits->At(-h.ExtIndex - 1);

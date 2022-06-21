@@ -34,9 +34,9 @@ class CbmL1MCTrack;
 
 class CbmL1Track : public CbmL1TrackPar {
 public:
-  CbmL1Track() : StsHits(), nStations(0), index(0), fTrackTime(0.), hitMap(), mcTracks(), maxPurity(-1) {}
+  CbmL1Track() : Hits(), nStations(0), index(0), fTrackTime(0.), hitMap(), mcTracks(), maxPurity(-1) {}
 
-  int GetNOfHits() { return StsHits.size(); }
+  int GetNOfHits() { return Hits.size(); }
 
   void AddMCTrack(CbmL1MCTrack* mcTr) { mcTracks.push_back(mcTr); }
   vector<CbmL1MCTrack*>& GetMCTracks() { return mcTracks; }
@@ -55,7 +55,7 @@ public:
 
 
   double TLast[7], CLast[21];
-  vector<int> StsHits;
+  vector<int> Hits;
   int nStations;
   int index;
 

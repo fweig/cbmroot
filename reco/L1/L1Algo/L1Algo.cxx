@@ -100,36 +100,36 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
 }
 
 
-void L1Algo::SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<unsigned char>& SFlag_,
-                     const L1HitIndex_t* StsHitsStartIndex_, const L1HitIndex_t* StsHitsStopIndex_)
+void L1Algo::SetData(L1Vector<L1Hit>& Hits_, int nStrips_, L1Vector<unsigned char>& SFlag_,
+                     const L1HitIndex_t* HitsStartIndex_, const L1HitIndex_t* HitsStopIndex_)
 {
 
-  vStsHits   = &StsHits_;
-  NStsStrips = nStsStrips_;
+  vHits      = &Hits_;
+  fNstrips   = nStrips_;
   fStripFlag = &SFlag_;
 
-  StsHitsStartIndex = StsHitsStartIndex_;
-  StsHitsStopIndex  = StsHitsStopIndex_;
+  HitsStartIndex = HitsStartIndex_;
+  HitsStopIndex  = HitsStopIndex_;
 
   // TODO: maximal array sizes need to be adjusted
 
-  int nHits = vStsHits->size();
+  int nHits = vHits->size();
 
   NHitsIsecAll = nHits;
 
-  vStsDontUsedHits_A.reset(nHits);
-  vStsDontUsedHits_B.reset(nHits);
-  vStsDontUsedHits_Buf.reset(nHits);
-  vStsDontUsedHitsxy_A.reset(nHits);
-  vStsDontUsedHitsxy_buf.reset(nHits);
-  vStsDontUsedHitsxy_B.reset(nHits);
+  vDontUsedHits_A.reset(nHits);
+  vDontUsedHits_B.reset(nHits);
+  vDontUsedHits_Buf.reset(nHits);
+  vDontUsedHitsxy_A.reset(nHits);
+  vDontUsedHitsxy_buf.reset(nHits);
+  vDontUsedHitsxy_B.reset(nHits);
   RealIHit_v.reset(nHits);
   RealIHit_v_buf.reset(nHits);
   RealIHit_v_buf2.reset(nHits);
 
 #ifdef _OPENMP
-  fHitToBestTrackF.reset(NStsStrips);
-  fHitToBestTrackB.reset(NStsStrips);
+  fHitToBestTrackF.reset(fNstrips);
+  fHitToBestTrackB.reset(fNstrips);
   for (unsigned int j = 0; j < fHitToBestTrackB.size(); j++) {
     omp_init_lock(&fHitToBestTrackB[j]);
     omp_init_lock(&fHitToBestTrackF[j]);
@@ -137,10 +137,10 @@ void L1Algo::SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<unsign
 #endif
 
   fStripToTrack.clear();
-  fStripToTrack.reserve(NStsStrips);
+  fStripToTrack.reserve(fNstrips);
 
   fStripToTrackB.clear();
-  fStripToTrackB.reserve(NStsStrips);
+  fStripToTrackB.reserve(fNstrips);
 
   TripForHit[0].reset(nHits);
   TripForHit[1].reset(nHits);

@@ -74,14 +74,14 @@ void L1AlgoDraw::InitL1Draw(L1Algo* algo_)
   //   algo = CbmL1::Instance()->algo;
   algo = algo_;
 
-  vStsHits.reserve(algo->vStsHits->size());
-  for (unsigned int i = 0; i < algo->vStsHits->size(); i++) {
-    vStsHits.push_back((*algo->vStsHits)[i]);
+  vHits.reserve(algo->vHits->size());
+  for (unsigned int i = 0; i < algo->vHits->size(); i++) {
+    vHits.push_back((*algo->vHits)[i]);
   }
   NStations = algo->GetNstations();
   for (int i = 0; i < NStations; i++) {
-    StsHitsStartIndex[i] = algo->StsHitsStartIndex[i];
-    StsHitsStopIndex[i]  = algo->StsHitsStopIndex[i];
+    HitsStartIndex[i]    = algo->HitsStartIndex[i];
+    HitsStopIndex[i]     = algo->HitsStopIndex[i];
     vStations[i]         = algo->GetParameters()->GetStation(i);
   }
 }
@@ -136,8 +136,8 @@ void L1AlgoDraw::DrawMCTracks()
 
     if (fVerbose >= 4) {
       cout << "hits = ";
-      for (unsigned int ih = 0; ih < T.StsHits.size(); ih++)
-        cout << T.StsHits[ih] << " ";
+      for (unsigned int ih = 0; ih < T.Hits.size(); ih++)
+        cout << T.Hits[ih] << " ";
       cout << endl;
     }
     for (int ip = 0; ip < npoints; ip++) {
@@ -466,7 +466,7 @@ void L1AlgoDraw::DrawDoublet(int il, int ir)
 
 void L1AlgoDraw::DrawInfo()
 {
-  cout << " vStsHits.size = " << algo->vStsHits->size() << endl;
+  cout << " vHits.size = " << algo->vHits->size() << endl;
   cout << " vRecoHits.size = " << algo->fRecoHits.size() << endl;
   cout << " vTracks.size = " << algo->fTracks.size() << endl;
 }
@@ -544,7 +544,7 @@ void L1AlgoDraw::DrawInputHits()
   YX->Draw();
 
 
-  int nhits = vStsHits.size();
+  int nhits = vHits.size();
   Double_t x_poly[nhits], y_poly[nhits], z_poly[nhits];
   Double_t x_poly_fake[nhits], y_poly_fake[nhits], z_poly_fake[nhits];
   Double_t x_poly_turned[nhits], z_poly_turned[nhits];
@@ -555,8 +555,8 @@ void L1AlgoDraw::DrawInputHits()
     L1Station& st     = vStations[ista];
     Int_t n_poly      = 0;
     Int_t n_poly_fake = 0;
-    for (int ih = StsHitsStartIndex[ista]; ih < StsHitsStopIndex[ista]; ih++) {
-      L1Hit& h = vStsHits[ih];
+    for (int ih = HitsStartIndex[ista]; ih < HitsStopIndex[ista]; ih++) {
+      L1Hit& h = vHits[ih];
       int iMC  = CbmL1::Instance()->vHitMCRef[ih];
       //if( (vSFlag[h.f] | vSFlagB[h.b] )&0x02 ) continue; // if used
 
@@ -679,7 +679,7 @@ void L1AlgoDraw::DrawRestHits(L1HitIndex_t* StsRestHitsStartIndex, L1HitIndex_t*
   YX->Draw();
 
 
-  int nhits = vStsHits.size();
+  int nhits = vHits.size();
   Double_t x_poly[nhits], y_poly[nhits], z_poly[nhits];
   Double_t x_poly_fake[nhits], y_poly_fake[nhits], z_poly_fake[nhits];
 
@@ -690,7 +690,7 @@ void L1AlgoDraw::DrawRestHits(L1HitIndex_t* StsRestHitsStartIndex, L1HitIndex_t*
     Int_t n_poly_fake = 0;
     for (L1HitIndex_t iRestHit = StsRestHitsStartIndex[ista]; iRestHit < StsRestHitsStopIndex[ista]; iRestHit++) {
       int ih   = realIHit[iRestHit];
-      L1Hit& h = vStsHits[ih];
+      L1Hit& h = vHits[ih];
       int iMC  = CbmL1::Instance()->vHitMCRef[ih];
       //if( (vSFlag[h.f] | vSFlagB[h.b] )&0x02 ) continue; // if used
 
@@ -790,11 +790,11 @@ void L1AlgoDraw::ClearVeiw()
 
 L1AlgoDraw::Point L1AlgoDraw::GetHitCoor(int ih)
 {
-  L1Hit& hit = vStsHits[ih];
+  L1Hit& hit = vHits[ih];
   // find station
   int ista = 0;
   for (int i = 0; i < NStations; i++) {
-    if ((StsHitsStartIndex[i] <= ih) && (StsHitsStopIndex[i] > ih)) {
+    if ((HitsStartIndex[i] <= ih) && (HitsStopIndex[i] > ih)) {
       ista = i;
       break;
     }

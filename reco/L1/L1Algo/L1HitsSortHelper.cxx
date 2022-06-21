@@ -21,8 +21,8 @@ L1HitsSortHelper::L1HitsSortHelper(vector<L1Hit>& hits, vector<L1HitPoint>& poin
   , fPoints(points)
   , fIndices(indices)
   , fGrid(grid)
-  , fStsHitsUnusedStartIndex(iStart)
-  , fStsHitsUnusedStopIndex(iStop)
+  , fHitsUnusedStartIndex(iStart)
+  , fHitsUnusedStopIndex(iStop)
   , fNStations(nStations)
   , fnDontUsedHits(nDontUsedHits)
 {
@@ -31,7 +31,7 @@ L1HitsSortHelper::L1HitsSortHelper(vector<L1Hit>& hits, vector<L1HitPoint>& poin
   fD.resize(NHits);
   //float x,y=0;
   for (int iS = 0; iS < fNStations; ++iS)
-    for (L1HitIndex_t i = fStsHitsUnusedStartIndex[iS]; i < fStsHitsUnusedStopIndex[iS]; i++) {
+    for (L1HitIndex_t i = fHitsUnusedStartIndex[iS]; i < fHitsUnusedStopIndex[iS]; i++) {
       fD[i].h = &(hits[i]);
       fD[i].p = &(points[i]);
       fD[i].i = indices[i];
@@ -43,7 +43,7 @@ L1HitsSortHelper::L1HitsSortHelper(vector<L1Hit>& hits, vector<L1HitPoint>& poin
 void L1HitsSortHelper::Sort()
 {
   for (int iS = 0; iS < fNStations; ++iS) {
-    std::sort(fD.begin() + fStsHitsUnusedStartIndex[iS], fD.begin() + fStsHitsUnusedStopIndex[iS],
+    std::sort(fD.begin() + fHitsUnusedStartIndex[iS], fD.begin() + fHitsUnusedStopIndex[iS],
               L1HitsSortHelperData::compare);
   }
 

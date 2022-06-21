@@ -180,9 +180,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   vMCPoints.clear();               /* <CbmL1MCPoint> */
   vMCPoints_in_Time_Slice.clear(); /* <int>          */
   vMCTracks.clear();               /* <CbmL1MCTrack> */
-  vStsHits.clear();                /* <CbmL1Hit>     */
+  vHits.clear();                   /* <CbmL1Hit>     */
   vRTracks.clear();                /* <CbmL1Track>   */
-  vHitMCRef.clear();               /* <int>: indexes of MC-points in vMCPoints (by index of algo->vStsHits) */
+  vHitMCRef.clear();               /* <int>: indexes of MC-points in vMCPoints (by index of algo->vHits) */
   vHitStore.clear();               /* <CbmL1HitStore> */
   dFEI2vMCPoints.clear();          /* dFEI vs MC-point index: dFEI = index * 10000 + fileID + eventID * 0.0001 */
   dFEI2vMCTracks.clear();          /* dFEI vs MC-track index: dFEI = index * 10000 + fileID + eventID * 0.0001 */
@@ -213,8 +213,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
   for (int i = 0; i < NStation; i++) {
 
-    fData_->StsHitsStartIndex[i] = static_cast<L1HitIndex_t>(-1);
-    fData_->StsHitsStopIndex[i]  = 0;
+    fData_->HitsStartIndex[i] = static_cast<L1HitIndex_t>(-1);
+    fData_->HitsStopIndex[i]  = 0;
   }
 
 
@@ -1124,7 +1124,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   /*
    * Save strips into L1Algo
    */
-  fData_->NStsStrips = NStrips;
+  fData_->fNstrips = NStrips;
   fData_->fStripFlag.reset(NStrips, 0);
   int maxHitIndex = 0;
 
@@ -1139,14 +1139,14 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   if (fVerbose >= 10) { cout << "ReadEvent: strips are read." << endl; }
 
   /*
-   * Fill and save vStsHits, vHitStore and vHitMCRef vectors as well as fData->vStsHits
+   * Fill and save vHits, vHitStore and vHitMCRef vectors as well as fData->vHits
    */
   int nEffHits = 0;
 
   SortedIndex.reset(maxHitIndex + 1);
 
-  vStsHits.reserve(nHits);
-  fData_->vStsHits.reserve(nHits);
+  vHits.reserve(nHits);
+  fData_->vHits.reserve(nHits);
 
   vHitStore.reserve(nHits);
   vHitMCRef.reserve(nHits);
@@ -1195,34 +1195,34 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
 
     // save hit
-    vStsHits.push_back(CbmL1Hit(fData->vStsHits.size(), th.ExtIndex, th.Det));
+    vHits.push_back(CbmL1Hit(fData->vHits.size(), th.ExtIndex, th.Det));
 
-    vStsHits[vStsHits.size() - 1].x = th.x;
-    vStsHits[vStsHits.size() - 1].y = th.y;
-    vStsHits[vStsHits.size() - 1].t = th.time;
+    vHits[vHits.size() - 1].x = th.x;
+    vHits[vHits.size() - 1].y = th.y;
+    vHits[vHits.size() - 1].t = th.time;
 
-    vStsHits[vStsHits.size() - 1].ID = th.id;
+    vHits[vHits.size() - 1].ID = th.id;
 
-    vStsHits[vStsHits.size() - 1].f = th.iStripF;
-    vStsHits[vStsHits.size() - 1].b = th.iStripB;
+    vHits[vHits.size() - 1].f = th.iStripF;
+    vHits[vHits.size() - 1].b = th.iStripB;
 
 
-    fData_->vStsHits.push_back(h);
+    fData_->vHits.push_back(h);
 
     int iSt = th.iStation;
 
-    if (fData_->StsHitsStartIndex[iSt] == static_cast<L1HitIndex_t>(-1)) fData_->StsHitsStartIndex[iSt] = nEffHits;
+    if (fData_->HitsStartIndex[iSt] == static_cast<L1HitIndex_t>(-1)) fData_->HitsStartIndex[iSt] = nEffHits;
     nEffHits++;
 
-    fData_->StsHitsStopIndex[iSt] = nEffHits;
+    fData_->HitsStopIndex[iSt] = nEffHits;
 
     vHitStore.push_back(s);
     vHitMCRef.push_back(th.iMC);
   }
 
   for (int i = 0; i < NStation; i++) {
-    if (fData_->StsHitsStartIndex[i] == static_cast<L1HitIndex_t>(-1)) {
-      fData_->StsHitsStartIndex[i] = fData_->StsHitsStopIndex[i];
+    if (fData_->HitsStartIndex[i] == static_cast<L1HitIndex_t>(-1)) {
+      fData_->HitsStartIndex[i] = fData_->HitsStopIndex[i];
     }
   }
 
@@ -1232,8 +1232,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
    * Translate gathered hits data to the L1Algo object. TODO: raplace it with L1DataManager functionality (S.Zharko)
    */
 
-  algo->SetData(fData_->GetStsHits(), fData_->GetNStsStrips(), fData_->GetSFlag(), fData_->GetStsHitsStartIndex(),
-                fData_->GetStsHitsStopIndex());
+  algo->SetData(fData_->GetHits(), fData_->GetNstrips(), fData_->GetSFlag(), fData_->GetHitsStartIndex(),
+                fData_->GetHitsStopIndex());
 
   if (fPerformance) {
     if (fVerbose >= 10) cout << "HitMatch is done." << endl;
@@ -1475,12 +1475,12 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* /*MC*/, int /*iPoint*/, int /*MVD*/) { ret
 //
 void CbmL1::HitMatch()
 {
-  const int NHits = vStsHits.size();
+  const int NHits = vHits.size();
   for (int iH = 0; iH < NHits; iH++) {
-    CbmL1Hit& hit = vStsHits[iH];
+    CbmL1Hit& hit = vHits[iH];
 
     if ((hit.Det == 1) && (2 != fStsUseMcHit)) {
-      CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(vStsHits[iH].extIndex));
+      CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(vHits[iH].extIndex));
 
       int iP = -1;
 

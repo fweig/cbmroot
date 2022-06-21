@@ -33,16 +33,16 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   fit.SetParticleMass(GetDefaultParticleMass());
 
   // get hits of current track
-  const L1Vector<L1HitIndex_t>& hits = t.fStsHits;  // array of indeses of hits of current track
+  const L1Vector<L1HitIndex_t>& hits = t.fHits;  // array of indeses of hits of current track
   const int nHits             = t.NHits;
 
   const signed short int step = -2 * static_cast<int>(dir) + 1;  // increment for station index
   const int iFirstHit         = (dir) ? nHits - 1 : 0;
   const int iLastHit          = (dir) ? 0 : nHits - 1;
 
-  const L1Hit& hit0 = (*vStsHits)[hits[iFirstHit]];
-  const L1Hit& hit1 = (*vStsHits)[hits[iFirstHit + step]];
-  const L1Hit& hit2 = (*vStsHits)[hits[iFirstHit + 2 * step]];
+  const L1Hit& hit0 = (*vHits)[hits[iFirstHit]];
+  const L1Hit& hit1 = (*vHits)[hits[iFirstHit + step]];
+  const L1Hit& hit2 = (*vHits)[hits[iFirstHit + 2 * step]];
 
   int ista0 = GetFStation((*fStripFlag)[hit0.f]);
   int ista1 = GetFStation((*fStripFlag)[hit1.f]);
@@ -122,7 +122,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   int ista      = ista2;
 
   for (int i = iFirstHit + step; step * i <= step * iLastHit; i += step) {
-    const L1Hit& hit = (*vStsHits)[hits[i]];
+    const L1Hit& hit = (*vHits)[hits[i]];
     ista_prev        = ista;
     ista             = GetFStation((*fStripFlag)[hit.f]);
 
@@ -203,11 +203,11 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
   const signed short int step = -2 * static_cast<int>(dir) + 1;  // increment for station index
   const int iFirstHit         = (dir) ? 2 : t.NHits - 3;
-  //  int ista = GetFStation((*fStripFlag)[(*vStsHits)[t.StsHits[iFirstHit]].f]) + 2*step; // current station. set to the end of track
+  //  int ista = GetFStation((*fStripFlag)[(*vHits)[t.Hits[iFirstHit]].f]) + 2*step; // current station. set to the end of track
 
-  const L1Hit& hit0 = (*vStsHits)[t.fStsHits[iFirstHit]];  // optimize
-  const L1Hit& hit1 = (*vStsHits)[t.fStsHits[iFirstHit + step]];
-  const L1Hit& hit2 = (*vStsHits)[t.fStsHits[iFirstHit + 2 * step]];
+  const L1Hit& hit0 = (*vHits)[t.fHits[iFirstHit]];  // optimize
+  const L1Hit& hit1 = (*vHits)[t.fHits[iFirstHit + step]];
+  const L1Hit& hit2 = (*vHits)[t.fHits[iFirstHit + 2 * step]];
 
   const int ista0 = GetFStation((*fStripFlag)[hit0.f]);
   const int ista1 = GetFStation((*fStripFlag)[hit1.f]);
@@ -278,8 +278,8 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
     L1HitIndex_t ih = 0;
     while (area.GetNext(ih)) {
 
-      ih += StsHitsUnusedStartIndex[ista];
-      const L1Hit& hit = (*vStsHitsUnused)[ih];
+      ih += HitsUnusedStartIndex[ista];
+      const L1Hit& hit = (*vHitsUnused)[ih];
       //TODO: bug, it should be hit.dt*hit.dt
       if (fabs(hit.t - T.t[0]) > sqrt(T.C55[0] + hit.dt * hit.dt) * 5) continue;
 
@@ -313,7 +313,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
     newHits.push_back((*RealIHitP)[iHit_best]);
 
-    const L1Hit& hit = (*vStsHitsUnused)[iHit_best];
+    const L1Hit& hit = (*vHitsUnused)[iHit_best];
     fvec u           = hit.u;
     fvec v           = hit.v;
     fvec x, y, z;
@@ -355,20 +355,20 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
   // save hits
   const unsigned int NOldHits = t.NHits;
   const unsigned int NNewHits = newHits.size();
-  t.fStsHits.enlarge(NNewHits + NOldHits);
+  t.fHits.enlarge(NNewHits + NOldHits);
   t.NHits = (NNewHits + NOldHits);
 
   if (dir) {  // backward
     for (int i = NOldHits - 1; i >= 0; i--) {
-      t.fStsHits[NNewHits + i] = t.fStsHits[i];
+      t.fHits[NNewHits + i] = t.fHits[i];
     }
     for (unsigned int i = 0, ii = NNewHits - 1; i < NNewHits; i++, ii--) {
-      t.fStsHits[i] = newHits[ii];
+      t.fHits[i] = newHits[ii];
     }
   }
   else {  // forward
     for (unsigned int i = 0; i < newHits.size(); i++) {
-      t.fStsHits[NOldHits + i] = (newHits[i]);
+      t.fHits[NOldHits + i] = (newHits[i]);
     }
   }
 

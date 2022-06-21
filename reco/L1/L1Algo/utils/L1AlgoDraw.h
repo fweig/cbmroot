@@ -33,7 +33,7 @@ public:
 
   void DrawTriplets(std::vector<L1Triplet>& triplets, const L1HitIndex_t* realIHit);
   void DrawDoublets(std::vector<L1HitIndex_t>* Duplets_hits, std::map<L1HitIndex_t, L1HitIndex_t>* Duplets_start,
-                    const int MaxArrSize, L1HitIndex_t* StsHitsStartIndex, unsigned int* realIHit);
+                    const int MaxArrSize, L1HitIndex_t* HitsStartIndex, unsigned int* realIHit);
   void DrawDoubletsOnSta(int iSta, L1HitIndex_t* Duplets_hits, L1HitIndex_t* Duplets_start, const int MaxArrSize,
                          L1HitIndex_t* StsRestHitsStartIndex, unsigned int* realIHit);
 
@@ -58,9 +58,9 @@ private:
 
   L1Algo* algo {nullptr};
 
-  std::vector<L1Hit> vStsHits {};
-  int StsHitsStartIndex[20] {0};
-  int StsHitsStopIndex[20] {0};
+  std::vector<L1Hit> vHits {};
+  int HitsStartIndex[20] {0};
+  int HitsStopIndex[20] {0};
 
   int NStations {0};
   L1Station vStations[20] {};

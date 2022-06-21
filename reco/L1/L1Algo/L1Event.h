@@ -17,31 +17,31 @@ using std::vector;
 
 class L1Event {
 public:
-  L1Event() : fTopoReconstructor(), fKFPTrack(), fStsHit(0) {};
+  L1Event() : fTopoReconstructor(), fKFPTrack(), fHit(0) {};
 
   void Clear();
   void TopoReconstructor();
 
   const KFPTrackVector& getTracks() const { return fKFPTrack; }
   KFPTrackVector& getTracks() { return fKFPTrack; }
-  const vector<int>& getHits() const { return fStsHit; }
-  vector<int>& getHits() { return fStsHit; }
+  const vector<int>& getHits() const { return fHit; }
+  vector<int>& getHits() { return fHit; }
   const KFParticleTopoReconstructor* getTopoReconstructor() const { return &fTopoReconstructor; }
 
   L1Event(const L1Event& event)
     : fTopoReconstructor(event.fTopoReconstructor)
     , fKFPTrack(event.fKFPTrack)
-    , fStsHit(event.fStsHit)
+    , fHit(event.fHit)
   {
     fKFPTrack = event.fKFPTrack;
-    fStsHit   = event.fStsHit;
+    fHit      = event.fHit;
   }
 
   L1Event& operator=(const L1Event& event)
   {
     fTopoReconstructor = event.fTopoReconstructor;
     fKFPTrack          = event.fKFPTrack;
-    fStsHit            = event.fStsHit;
+    fHit               = event.fHit;
 
     return *this;
   }
@@ -50,7 +50,7 @@ private:
   KFParticleTopoReconstructor fTopoReconstructor;
 
   KFPTrackVector fKFPTrack;
-  vector<int> fStsHit;
+  vector<int> fHit;
 };
 
 #endif

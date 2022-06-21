@@ -82,15 +82,15 @@ void CbmL1::TrackMatch()
 
     //  cout<<iR<<" iR"<<endl;
 
-    int hitsum = prtra->StsHits.size();  // number of hits in track
+    int hitsum = prtra->Hits.size();  // number of hits in track
 
     // count how many hits from each mcTrack belong to current recoTrack
     map<int, int>& hitmap = prtra->hitMap;  // how many hits from each mcTrack belong to current recoTrack
-    for (vector<int>::iterator ih = (prtra->StsHits).begin(); ih != (prtra->StsHits).end(); ++ih) {
+    for (vector<int>::iterator ih = (prtra->Hits).begin(); ih != (prtra->Hits).end(); ++ih) {
 
-      const int nMCPoints = vStsHits[*ih].mcPointIds.size();
+      const int nMCPoints = vHits[*ih].mcPointIds.size();
       for (int iP = 0; iP < nMCPoints; iP++) {
-        int iMC = vStsHits[*ih].mcPointIds[iP];
+        int iMC = vHits[*ih].mcPointIds[iP];
 
         //     cout<<iMC<<" iMC"<<endl;
         int ID = -1;
@@ -359,7 +359,7 @@ void CbmL1::EfficienciesPerformance()
     if (reco) nclones = mtra.GetNClones();
     //     if (nclones){ // Debug. Look at clones
     //       for (int irt = 0; irt < rTracks.size(); irt++){
-    //         const int ista = vHitStore[rTracks[irt]->StsHits[0]].iStation;
+    //         const int ista = vHitStore[rTracks[irt]->Hits[0]].iStation;
     //         cout << rTracks[irt]->GetNOfHits() << "(" << ista << ") ";
     //       }
     //       cout << mtra.NStations() << endl;
@@ -761,11 +761,11 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
   //
   for (vector<CbmL1Track>::iterator rtraIt = vRTracks.begin(); rtraIt != vRTracks.end(); ++rtraIt) {
     CbmL1Track* prtra = &(*rtraIt);
-    if ((prtra->StsHits).size() < 1) continue;
+    if ((prtra->Hits).size() < 1) continue;
     {  // fill histos
       if (fabs(prtra->T[4]) > 1.e-10) h_reco_mom->Fill(fabs(1.0 / prtra->T[4]));
-      h_reco_nhits->Fill((prtra->StsHits).size());
-      CbmL1HitStore& mh = vHitStore[prtra->StsHits[0]];
+      h_reco_nhits->Fill((prtra->Hits).size());
+      CbmL1HitStore& mh = vHitStore[prtra->Hits[0]];
       h_reco_station->Fill(mh.iStation);
     }
 
@@ -795,9 +795,9 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
         h_ghost_mom->Fill(fabs(1.0 / prtra->T[4]));
         h_ghost_Rmom->Fill(fabs(1.0 / prtra->T[4]));
       }
-      h_ghost_nhits->Fill((prtra->StsHits).size());
-      CbmL1HitStore& h1 = vHitStore[prtra->StsHits[0]];
-      CbmL1HitStore& h2 = vHitStore[prtra->StsHits[1]];
+      h_ghost_nhits->Fill((prtra->Hits).size());
+      CbmL1HitStore& h1 = vHitStore[prtra->Hits[0]];
+      CbmL1HitStore& h2 = vHitStore[prtra->Hits[1]];
       h_ghost_fstation->Fill(h1.iStation);
       h_ghost_r->Fill(sqrt(fabs(h1.x * h1.x + h1.y * h1.y)));
       double z1 = algo->GetParameters()->GetStation(h1.iStation).z[0];
@@ -807,9 +807,9 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
         h_ghost_ty->Fill((h2.y - h1.y) / (z2 - z1));
       }
 
-      if (fabs(prtra->T[4]) > 1.e-10) h2_ghost_nhits_vs_mom->Fill(fabs(1.0 / prtra->T[4]), (prtra->StsHits).size());
-      CbmL1HitStore& hf = vHitStore[prtra->StsHits[0]];
-      CbmL1HitStore& hl = vHitStore[prtra->StsHits[(prtra->StsHits).size() - 1]];
+      if (fabs(prtra->T[4]) > 1.e-10) h2_ghost_nhits_vs_mom->Fill(fabs(1.0 / prtra->T[4]), (prtra->Hits).size());
+      CbmL1HitStore& hf = vHitStore[prtra->Hits[0]];
+      CbmL1HitStore& hl = vHitStore[prtra->Hits[(prtra->Hits).size() - 1]];
       if (fabs(prtra->T[4]) > 1.e-10) h2_ghost_fstation_vs_mom->Fill(fabs(1.0 / prtra->T[4]), hf.iStation + 1);
       if (hl.iStation >= hf.iStation) h2_ghost_lstation_vs_fstation->Fill(hf.iStation + 1, hl.iStation + 1);
     }
@@ -822,7 +822,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     //    if( !( mtra.pdg == -11 && mtra.mother_ID == -1 ) ) continue; // electrons only
 
     // No Sts hits?
-    int nmchits = mtra.StsHits.size();
+    int nmchits = mtra.Hits.size();
     if (nmchits == 0) continue;
 
     double momentum = mtra.p;
@@ -834,8 +834,8 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
 
     int nSta = mtra.NStations();
 
-    CbmL1HitStore& fh = vHitStore[*(mtra.StsHits.begin())];
-    CbmL1HitStore& lh = vHitStore[*(mtra.StsHits.rbegin())];
+    CbmL1HitStore& fh = vHitStore[*(mtra.Hits.begin())];
+    CbmL1HitStore& lh = vHitStore[*(mtra.Hits.rbegin())];
 
     h_reg_MCmom->Fill(momentum);
     if (mtra.IsPrimary()) {
@@ -896,7 +896,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     }
 
 
-    int iph           = mtra.StsHits[0];
+    int iph           = mtra.Hits[0];
     CbmL1HitStore& ph = vHitStore[iph];
 
     h_sec_r->Fill(sqrt(fabs(ph.x * ph.x + ph.y * ph.y)));
@@ -989,8 +989,8 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
         h_notfound_ty->Fill(pMC.py / pMC.pz);
       }
 
-      //      CbmL1HitStore &ph21 = vHitStore[mtra.StsHits[0]];
-      //      CbmL1HitStore &ph22 = vHitStore[mtra.StsHits[1]];
+      //      CbmL1HitStore &ph21 = vHitStore[mtra.Hits[0]];
+      //      CbmL1HitStore &ph22 = vHitStore[mtra.Hits[1]];
 
       //      double z21 = algo->GetParameters()->GetStation(ph21.iStation).z[0];
       //      double z22 = algo->GetParameters()->GetStation(ph22.iStation).z[0];
@@ -1013,17 +1013,17 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
   }  // for mcTracks
 
   int NFakes = 0;
-  for (unsigned int ih = 0; ih < algo->vStsHits->size(); ih++) {
+  for (unsigned int ih = 0; ih < algo->vHits->size(); ih++) {
     int iMC = vHitMCRef[ih];  // TODO2: adapt to linking
     if (iMC < 0) NFakes++;
   }
 
   h_reco_time->Fill(fTrackingTime);
   h_reco_timeNtr->Fill(mc_total, fTrackingTime);
-  h_reco_timeNhit->Fill(algo->vStsHits->size(), fTrackingTime);
+  h_reco_timeNhit->Fill(algo->vHits->size(), fTrackingTime);
 
   h_reco_fakeNtr->Fill(mc_total, NFakes);
-  h_reco_fakeNhit->Fill(algo->vStsHits->size() - NFakes, NFakes);
+  h_reco_fakeNhit->Fill(algo->vHits->size() - NFakes, NFakes);
 
 
   h_reg_MCmom->Scale(1.f / NEvents);
@@ -1182,7 +1182,7 @@ void CbmL1::TrackFitPerformance()
 #define L1FSTPARAMEXTRAPOLATE
 #ifdef L1FSTPARAMEXTRAPOLATE
 
-      const int last_station = vHitStore[it->StsHits.back()].iStation;
+      const int last_station = vHitStore[it->Hits.back()].iStation;
 
       CbmL1MCTrack mc = *(it->GetMCTracks()[0]);
       L1TrackPar trPar(it->T, it->C);
@@ -1256,7 +1256,7 @@ void CbmL1::TrackFitPerformance()
         if (finite(trPar.C55[0]) && trPar.C55[0] > 0) h_fit[13]->Fill((trPar.t[0] - mcP.time) / sqrt(trPar.C55[0]));
 
 #else
-      int iMC = vHitMCRef[it->StsHits.front()];  // TODO2: adapt to linking
+      int iMC = vHitMCRef[it->Hits.front()];  // TODO2: adapt to linking
       if (iMC < 0) continue;
       CbmL1MCPoint& mc = vMCPoints[iMC];
       //      if( !( mc.pdg == -11 && mc.mother_ID == -1 ) ) continue; // electrons only
@@ -1287,13 +1287,13 @@ void CbmL1::TrackFitPerformance()
 
 
     {                                           // last hit
-      int iMC = vHitMCRef[it->StsHits.back()];  // TODO2: adapt to linking
+      int iMC = vHitMCRef[it->Hits.back()];     // TODO2: adapt to linking
       if (iMC < 0) continue;
 
 #define L1FSTPARAMEXTRAPOLATE
 #ifdef L1FSTPARAMEXTRAPOLATE
 
-      const int last_station = vHitStore[it->StsHits.back()].iStation;
+      const int last_station = vHitStore[it->Hits.back()].iStation;
 
       CbmL1MCTrack mc = *(it->GetMCTracks()[0]);
       L1TrackPar trPar(it->TLast, it->CLast);
@@ -1383,7 +1383,7 @@ void CbmL1::TrackFitPerformance()
 
           L1Extrapolate(trPar, mc.z, trPar.qp, fld);
           // add material
-          const int fSta = vHitStore[it->StsHits[0]].iStation;
+          const int fSta = vHitStore[it->Hits[0]].iStation;
           const int dir  = int((mc.z - algo->GetParameters()->GetStation(fSta).z[0])
                               / fabs(mc.z - algo->GetParameters()->GetStation(fSta).z[0]));
           //         if (abs(mc.z - algo->GetParameters()->GetStation(fSta).z[0]) > 10.) continue; // can't extrapolate on large distance
@@ -1438,18 +1438,18 @@ void CbmL1::TrackFitPerformance()
           targB = algo->GetParameters()->GetVertexFieldValue();
 
           int ih = 1;
-          for (unsigned int iHit = 0; iHit < it->StsHits.size(); iHit++) {
-            const int iStation = vHitStore[it->StsHits[iHit]].iStation;
+          for (unsigned int iHit = 0; iHit < it->Hits.size(); iHit++) {
+            const int iStation  = vHitStore[it->Hits[iHit]].iStation;
             const L1Station& st = algo->GetParameters()->GetStation(iStation);
             z[ih]              = st.z[0];
-            st.fieldSlice.GetFieldValue(vHitStore[it->StsHits[iHit]].x, vHitStore[it->StsHits[iHit]].y, B[ih]);
+            st.fieldSlice.GetFieldValue(vHitStore[it->Hits[iHit]].x, vHitStore[it->Hits[iHit]].y, B[ih]);
             ih++;
             if (ih == 3) break;
           }
           if (ih < 3) continue;
 
           // add material
-          const int fSta = vHitStore[it->StsHits[0]].iStation;
+          const int fSta = vHitStore[it->Hits[0]].iStation;
 
           const int dir = (mc.z - algo->GetParameters()->GetStation(fSta).z[0])
                           / abs(mc.z - algo->GetParameters()->GetStation(fSta).z[0]);
@@ -1920,8 +1920,8 @@ void CbmL1::InputPerformance()
   map<unsigned int, unsigned int>::iterator it;
 
   if (listStsHits && listStsHitMatch) {
-    for (unsigned int iH = 0; iH < vStsHits.size(); iH++) {
-      const CbmL1Hit& h = vStsHits[iH];
+    for (unsigned int iH = 0; iH < vHits.size(); iH++) {
+      const CbmL1Hit& h = vHits[iH];
 
       if (h.Det != 1) continue;  // mvd hit
       const CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(h.extIndex));
@@ -2049,8 +2049,8 @@ void CbmL1::InputPerformance()
 
 
   if (fMuchPixelHits && listMuchHitMatches) {
-    for (unsigned int iH = 0; iH < vStsHits.size(); iH++) {
-      const CbmL1Hit& h = vStsHits[iH];
+    for (unsigned int iH = 0; iH < vHits.size(); iH++) {
+      const CbmL1Hit& h = vHits[iH];
 
       if (h.Det != 2) continue;  // mvd hit
 
@@ -2118,8 +2118,8 @@ void CbmL1::InputPerformance()
 
 
   if (listTrdHits && fTrdHitMatches) {
-    for (unsigned int iH = 0; iH < vStsHits.size(); iH++) {
-      const CbmL1Hit& h = vStsHits[iH];
+    for (unsigned int iH = 0; iH < vHits.size(); iH++) {
+      const CbmL1Hit& h = vHits[iH];
 
       if (h.Det != 3) continue;  // mvd hit
       const CbmTrdHit* sh = L1_DYNAMIC_CAST<CbmTrdHit*>(listTrdHits->At(h.extIndex));
@@ -2186,8 +2186,8 @@ void CbmL1::InputPerformance()
 
 
   if (fTofHits && fTofHitDigiMatches) {
-    for (unsigned int iH = 0; iH < vStsHits.size(); iH++) {
-      const CbmL1Hit& h = vStsHits[iH];
+    for (unsigned int iH = 0; iH < vHits.size(); iH++) {
+      const CbmL1Hit& h = vHits[iH];
 
       if (h.Det != 4) continue;  // mvd hit
 

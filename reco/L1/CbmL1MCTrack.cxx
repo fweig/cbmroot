@@ -61,13 +61,13 @@ CbmL1MCTrack::CbmL1MCTrack(double mass_, double q_, TVector3 vr, TLorentzVector 
 void CbmL1MCTrack::Init()
 {
   CbmL1* L1 = CbmL1::Instance();
-  // get stsHits
-  StsHits.clear();
+  // get Hits
+  Hits.clear();
   for (unsigned int iP = 0; iP < Points.size(); iP++) {
     CbmL1MCPoint* point = &(L1->vMCPoints[Points[iP]]);
     for (unsigned int iH = 0; iH < point->hitIds.size(); iH++) {
       const int iih = point->hitIds[iH];
-      if (std::find(StsHits.begin(), StsHits.end(), iih) == StsHits.end()) StsHits.push_back_no_warning(iih);
+      if (std::find(Hits.begin(), Hits.end(), iih) == Hits.end()) Hits.push_back_no_warning(iih);
     }
   }
 
@@ -118,13 +118,13 @@ void CbmL1MCTrack::CalculateHitCont()
   CbmL1* L1    = CbmL1::Instance();
   L1Algo* algo = L1->algo;
 
-  int nhits        = StsHits.size();
+  int nhits        = Hits.size();
   nHitContStations = 0;
   int istaold = -1, ncont = 0;
   {
     for (int ih = 0; ih < nhits; ih++) {
-      int jh         = StsHits[ih];
-      const L1Hit& h = (*algo->vStsHits)[jh];
+      int jh         = Hits[ih];
+      const L1Hit& h = (*algo->vHits)[jh];
       int ista       = (*algo->fStripFlag)[h.f] / 4;
 
       if (ista - istaold == 1) ncont++;
@@ -154,8 +154,8 @@ void CbmL1MCTrack::CalculateMaxNStaHits()
   nStations           = 0;
   int lastSta         = -1;
   int cur_maxNStaHits = 0;
-  for (unsigned int iH = 0; iH < StsHits.size(); iH++) {
-    CbmL1HitStore& sh = L1->vHitStore[StsHits[iH]];
+  for (unsigned int iH = 0; iH < Hits.size(); iH++) {
+    CbmL1HitStore& sh = L1->vHitStore[Hits[iH]];
     if (sh.iStation == lastSta) { cur_maxNStaHits++; }
     else {                             // new station
       if (!(sh.iStation > lastSta)) {  // tracks going in backward direction are not reconstructable
@@ -169,7 +169,7 @@ void CbmL1MCTrack::CalculateMaxNStaHits()
     }
   };
   if (cur_maxNStaHits > maxNStaHits) maxNStaHits = cur_maxNStaHits;
-  //   cout << pdg << " " << p << " " << StsHits.size() << " > " << maxNStaHits << endl;
+  //   cout << pdg << " " << p << " " << Hits.size() << " > " << maxNStaHits << endl;
 };  // void CbmL1MCTrack::CalculateHitCont()
 
 void CbmL1MCTrack::CalculateMaxNStaMC()

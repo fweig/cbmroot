@@ -487,14 +487,14 @@ private:
   TH1F* fGhostHisto[fNGhostHistos] {nullptr};
 
   /// Used data = Repacked input data
-  L1Vector<CbmL1Hit> vStsHits {"CbmL1::vStsHits"};  // hits with hit-mcpoint match information
+  L1Vector<CbmL1Hit> vHits {"CbmL1::vHits"};  // hits with hit-mcpoint match information
   L1Vector<int> SortedIndex {"CbmL1::SortedIndex"};
   L1Vector<int> StsIndex {"CbmL1::StsIndex"};
   L1Vector<CbmL1MCTrack> vMCTracks {"CbmL1::vMCTracks"};
   L1Vector<int> vHitMCRef {
-    "CbmL1::vHitMCRef"};  // indices of MCPoints in vMCPoints, indexed by index of hit in algo->vStsHits array. According to StsMatch. Used for IdealResponce
+    "CbmL1::vHitMCRef"};  // indices of MCPoints in vMCPoints, indexed by index of hit in algo->vHits array. According to StsMatch. Used for IdealResponce
                           //    L1Vector<int>          vHitMCRef1;
-                          //   CbmMatch stsHitMatch;
+                          //   CbmMatch HitMatch;
 
   DFEI2I dFEI2vMCPoints {};
   DFEI2I dFEI2vMCTracks {};

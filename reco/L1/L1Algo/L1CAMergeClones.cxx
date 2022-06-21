@@ -240,10 +240,10 @@ void L1Algo::CAMergeClones()
 #endif
   for (int iTr = 0; iTr < nTracks; iTr++) {
     firstHit[iTr]     = start_hit;
-    firstStation[iTr] = (*fStripFlag)[(*vStsHits)[fRecoHits[start_hit]].f] / 4;
+    firstStation[iTr] = (*fStripFlag)[(*vHits)[fRecoHits[start_hit]].f] / 4;
     start_hit += fTracks[iTr].NHits - 1;
     lastHit[iTr]     = start_hit;
-    lastStation[iTr] = (*fStripFlag)[(*vStsHits)[fRecoHits[start_hit]].f] / 4;
+    lastStation[iTr] = (*fStripFlag)[(*vHits)[fRecoHits[start_hit]].f] / 4;
     start_hit++;
 
     isStored[iTr]              = false;

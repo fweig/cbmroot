@@ -92,7 +92,7 @@ public:
   float p {0.f};           // momentum
   vector<int> recoIds {};  // indices of reco tracklets in sorted recoArray
 
-  vector<int> hitIds[NHits] {};  // indices of hits in L1::vStsHits. Separated by stations
+  vector<int> hitIds[NHits] {};  // indices of hits in L1::vHits. Separated by stations
 private:
   bool isReconstructable {false};  // is it reconstructed
 };
@@ -224,9 +224,9 @@ bool L1AlgoEfficiencyPerformance<NHits>::AddOne(L1HitIndex_t* iHits)
 
   // obtain mc data
   for (int iih = 0; iih < NHits; iih++) {
-    int nMC = fL1->vStsHits[iHits[iih]].mcPointIds.size();
+    int nMC = fL1->vHits[iHits[iih]].mcPointIds.size();
     for (int iMC = 0; iMC < nMC; iMC++) {
-      const int iMCP = fL1->vStsHits[iHits[iih]].mcPointIds[iMC];
+      const int iMCP = fL1->vHits[iHits[iih]].mcPointIds[iMC];
       int mcId       = fL1->vMCPoints[iMCP].ID;
       mcIds[iih].push_back(mcId);
     }  // for mcPoints
@@ -254,7 +254,7 @@ bool L1AlgoEfficiencyPerformance<NHits>::AddOne(L1HitIndex_t* iHits)
   for (unsigned int i = 0; i < mcsN.size(); i++) {
     if (mcsN[i] >= 0) {
       trlet.mcTrackId = mcsN[i];
-      trlet.iStation  = fL1->vMCPoints[fL1->vStsHits[iHits[0]].mcPointIds[0]].iStation;
+      trlet.iStation  = fL1->vMCPoints[fL1->vHits[iHits[0]].mcPointIds[0]].iStation;
       break;
     }
   }

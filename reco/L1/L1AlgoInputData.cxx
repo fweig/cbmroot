@@ -11,34 +11,34 @@ using std::ios;
 /*
 L1AlgoInputData::L1AlgoInputData( const L1AlgoInputData& a)
 {
-  SetData( a.GetStsHits(), a.GetStsStrips(), a.GetStsStripsB(),
-           a.GetSFlag(), a.GetSFlagB(), a.GetStsHitsStartIndex(), a.GetStsHitsStopIndex());
+  SetData( a.GetHits(), a.GetStsStrips(), a.GetStsStripsB(),
+           a.GetSFlag(), a.GetSFlagB(), a.GetHitsStartIndex(), a.GetHitsStopIndex());
 }
 
 
 const L1AlgoInputData& L1AlgoInputData::operator=( const L1AlgoInputData& a)
 {
-  SetData( a.GetStsHits(), a.GetStsStrips(), a.GetStsStripsB(),
-           a.GetSFlag(), a.GetSFlagB(), a.GetStsHitsStartIndex(), a.GetStsHitsStopIndex());
+  SetData( a.GetHits(), a.GetStsStrips(), a.GetStsStripsB(),
+           a.GetSFlag(), a.GetSFlagB(), a.GetHitsStartIndex(), a.GetHitsStopIndex());
   return a;
 }
 
 
-void L1AlgoInputData::SetData( const vector< L1Hit >      & StsHits_,
+void L1AlgoInputData::SetData( const vector< L1Hit >      & Hits_,
                                    const vector< L1Strip >       & StsStrips_,
                                    const vector< L1Strip >       & StsStripsB_,
                                    const vector< unsigned char > & SFlag_,
                                    const vector< unsigned char > & SFlagB_,
-                                   const L1HitIndex_t* StsHitsStartIndex_,
-                                   const L1HitIndex_t* StsHitsStopIndex_ )
+                                   const L1HitIndex_t* HitsStartIndex_,
+                                   const L1HitIndex_t* HitsStopIndex_ )
 {
-  vStsHits.resize(StsHits_.size());
+  vHits.resize(Hits_.size());
   vStsStrips.resize(StsStrips_.size());
   vStsStripsB.resize(StsStripsB_.size());
   fStripFlag.resize(SFlag_.size());
   fStripFlagB.resize(SFlagB_.size());
   
-  for(unsigned int i=0; i<StsHits_.size(); ++i ) {vStsHits[i] = StsHits_[i];
+  for(unsigned int i=0; i<Hits_.size(); ++i ) {vHits[i] = Hits_[i];
 
 }
   for(unsigned int i=0; i<StsStrips_.size(); ++i ) vStsStrips[i] = StsStrips_[i];
@@ -46,9 +46,9 @@ void L1AlgoInputData::SetData( const vector< L1Hit >      & StsHits_,
   for(unsigned int i=0; i<SFlag_.size(); ++i ) fStripFlag[i] = SFlag_[i];
   for(unsigned int i=0; i<SFlagB_.size(); ++i ) fStripFlagB[i] = SFlagB_[i];
 
-  for(unsigned int i=0; i<MaxNStations+1; ++i) StsHitsStartIndex[i] = StsHitsStartIndex_[i];
+  for(unsigned int i=0; i<MaxNStations+1; ++i) HitsStartIndex[i] = HitsStartIndex_[i];
  
-  for(unsigned int i=0; i<MaxNStations+1; ++i) StsHitsStopIndex[i]  = StsHitsStopIndex_[i];
+  for(unsigned int i=0; i<MaxNStations+1; ++i) HitsStopIndex[i]  = HitsStopIndex_[i];
 }
 
 */
@@ -57,15 +57,15 @@ void L1AlgoInputData::SetData( const vector< L1Hit >      & StsHits_,
 
 void L1AlgoInputData::Clear()
 {
-  vStsHits.clear();
-  NStsStrips = 0;
+  vHits.clear();
+  fNstrips = 0;
   fStripFlag.clear();
   {
     for (int i = 0; i < kMaxNStations + 1; ++i) {
-      StsHitsStartIndex[i] = 0;
+      HitsStartIndex[i] = 0;
     }
     for (int i = 0; i < kMaxNStations + 1; ++i) {
-      StsHitsStopIndex[i] = 0;
+      HitsStopIndex[i] = 0;
     }
   }
 }
@@ -101,8 +101,8 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
 
   if (nEvent <= maxNEvent) {
 
-    vStsHits.clear();
-    NStsStrips = 0;
+    vHits.clear();
+    fNstrips = 0;
 
     fStripFlag.clear();
 
@@ -120,7 +120,7 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
       // read algo->vStsStrips
     fadata >> n;
     //     cout << n<<  " vStsStrips"<<endl;
-    NStsStrips = n;
+    fNstrips = n;
     if (iVerbose >= 4) {
       cout << "vStsStrips[" << n << "]"
            << " have been read." << endl;
@@ -138,9 +138,9 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
       cout << "fStripFlag[" << n << "]"
            << " have been read." << endl;
     }
-    // read algo->vStsHits
+    // read algo->vHits
     fadata >> n;
-    //   cout << n<<  " vStsHits"<<endl;
+    //   cout << n<<  " vHits"<<endl;
     int element_f;  // for convert
     int element_b;
     int element_n;
@@ -152,27 +152,27 @@ bool L1AlgoInputData::ReadHitsFromFile(const char work_dir[100], const int maxNE
 #ifdef USE_EVENT_NUMBER
       element.n = static_cast<unsigned short int>(element_n);
 #endif
-      vStsHits.push_back(element);
+      vHits.push_back(element);
     }
     if (iVerbose >= 4) {
-      cout << "vStsHits[" << n << "]"
+      cout << "vHits[" << n << "]"
            << " have been read." << endl;
     }
-    // read StsHitsStartIndex and StsHitsStopIndex
+    // read HitsStartIndex and HitsStopIndex
     n = 20;
     for (int i = 0; i < n; i++) {
       int tmp;
       fadata >> tmp;
-      if (kMaxNStations + 1 > i) StsHitsStartIndex[i] = tmp;
-      //   cout << " StsHitsStartIndex[i]"<< StsHitsStartIndex[i] << endl;
+      if (kMaxNStations + 1 > i) HitsStartIndex[i] = tmp;
+      //   cout << " HitsStartIndex[i]"<< HitsStartIndex[i] << endl;
 
       //    cout << tmp<<  " tmp"<<endl;
     }
     for (int i = 0; i < n; i++) {
       int tmp;
       fadata >> tmp;
-      if (kMaxNStations + 1 > i) StsHitsStopIndex[i] = tmp;
-      //   cout << " StsHitsStopIndex[i]"<< StsHitsStopIndex[i] << endl;
+      if (kMaxNStations + 1 > i) HitsStopIndex[i] = tmp;
+      //   cout << " HitsStopIndex[i]"<< HitsStopIndex[i] << endl;
       //   cout << tmp<<  " tmp"<<endl;
     }
 
@@ -218,21 +218,21 @@ void L1AlgoInputData::PrintHits()
     std::cout << static_cast<int>(fStripFlagB[i]) << std::endl;
   }
 
-  n = vStsHits.size();
+  n = vHits.size();
   std::cout << n << std::endl;
   for (int i = 0; i < n; i++){
-    std::cout << static_cast<int>(vStsHits[i].f) << " ";
-    std::cout << static_cast<int>(vStsHits[i].b) << " ";
-    std::cout << (vStsHits[i].z) << std::endl;
+    std::cout << static_cast<int>(vHits[i].f) << " ";
+    std::cout << static_cast<int>(vHits[i].b) << " ";
+    std::cout << (vHits[i].z) << std::endl;
   }
 
   n = 20;
   for (int i = 0; i < n; i++){
-    if (MaxNStations+1 > i) std::cout << StsHitsStartIndex[i] <<std::endl;
+    if (MaxNStations+1 > i) std::cout << HitsStartIndex[i] <<std::endl;
     else std::cout << "0" <<std::endl;
   }
   for (int i = 0; i < n; i++){
-    if (MaxNStations+1 > i) std::cout << StsHitsStopIndex[i] <<std::endl;
+    if (MaxNStations+1 > i) std::cout << HitsStopIndex[i] <<std::endl;
     else std::cout << "0" <<std::endl;
   }
 

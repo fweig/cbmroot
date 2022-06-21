@@ -33,17 +33,17 @@ struct L1AlgoInputData {
   /// For all the vectors the clear method is called, all other fields are set to zero
   void Clear();
   /// Gets number of the station strips
-  int GetNStsStrips() const { return NStsStrips; }
+  int GetNstrips() const { return fNstrips; }
   /// Gives an access to the underlying vector of L1Hit objects
-  L1Vector<L1Hit>& GetStsHits() { return vStsHits; }
+  L1Vector<L1Hit>& GetHits() { return vHits; }
   /// Gives an access to the vector of the strip flags
   L1Vector<unsigned char>& GetSFlag() { return fStripFlag; }
   /// Gets an access of the start indexes for different stations
   /// \return pointer to the first element of the array over the stations
-  const L1HitIndex_t* GetStsHitsStartIndex() const { return StsHitsStartIndex; }
+  const L1HitIndex_t* GetHitsStartIndex() const { return HitsStartIndex; }
   /// Gets an access of the stop indexes for different stations
   /// \return pointer to the first element of the array over the stations
-  const L1HitIndex_t* GetStsHitsStopIndex() const { return StsHitsStopIndex; }
+  const L1HitIndex_t* GetHitsStopIndex() const { return HitsStopIndex; }
 
   /// Reads a vector of L1Hit object from file
   /// The input text file must have the exactly "data_algo.txt" basename
@@ -93,16 +93,16 @@ struct L1AlgoInputData {
    *  Data fields (public)
    */
   /// hits as a combination of front-, backstrips and z-position
-  L1Vector<L1Hit> vStsHits {"L1AlgoInputData::vStsHits"};
+  L1Vector<L1Hit> vHits {"L1AlgoInputData::vHits"};
 
-  int NStsStrips {0};  ///> Number of strips in the station
+  int fNstrips {0};  ///> Number of strips in the station
   /// information of hits station & used hits in tracks;
   L1Vector<unsigned char> fStripFlag {"L1AlgoInputData::fStripFlag"};
 
   /// Start indeces for a given station
-  L1HitIndex_t StsHitsStartIndex[kMaxNStations + 1] {0};
+  L1HitIndex_t HitsStartIndex[kMaxNStations + 1] {0};
   /// Stop indeces for a given station
-  L1HitIndex_t StsHitsStopIndex[kMaxNStations + 1] {0};
+  L1HitIndex_t HitsStopIndex[kMaxNStations + 1] {0};
 
 } _fvecalignment;
 

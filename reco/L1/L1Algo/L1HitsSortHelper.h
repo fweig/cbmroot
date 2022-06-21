@@ -39,7 +39,7 @@ private:
   vector<L1HitPoint>& fPoints;
   vector<L1HitIndex_t>& fIndices;
   const L1Grid* fGrid;
-  L1HitIndex_t *fStsHitsUnusedStartIndex, *fStsHitsUnusedStopIndex;
+  L1HitIndex_t *fHitsUnusedStartIndex, *fHitsUnusedStopIndex;
   int fNStations;
   int fnDontUsedHits;
 

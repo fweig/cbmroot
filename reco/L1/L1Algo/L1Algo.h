@@ -201,8 +201,8 @@ public:
 
   void Init(const bool UseHitErrors, const TrackingMode mode, const bool MissingHits);
 
-  void SetData(L1Vector<L1Hit>& StsHits_, int nStsStrips_, L1Vector<unsigned char>& SFlag_,
-               const L1HitIndex_t* StsHitsStartIndex_, const L1HitIndex_t* StsHitsStopIndex_);
+  void SetData(L1Vector<L1Hit>& Hits_, int nStrips_, L1Vector<unsigned char>& SFlag_,
+               const L1HitIndex_t* HitsStartIndex_, const L1HitIndex_t* HitsStopIndex_);
 
   void PrintHits();
 
@@ -240,8 +240,8 @@ public:
   int GetNfieldStations() const { return fNfieldStations; }
 
 public:
-  int NStsStrips {0};                                  ///> number of strips
-  L1Vector<L1Hit>* vStsHits {nullptr};                 ///> hits as a combination of front-, backstrips and z-position
+  int fNstrips {0};                                    ///> number of strips
+  L1Vector<L1Hit>* vHits {nullptr};                    ///> hits as a combination of front-, backstrips and z-position
   L1Grid vGrid[L1Constants::size::kMaxNstations];      ///> hits as a combination of front-, backstrips and z-position
   L1Grid vGridTime[L1Constants::size::kMaxNstations];  ///>
 
@@ -252,19 +252,19 @@ public:
   L1Vector<L1Track> fTracks {"L1Algo::fTracks"};           // reconstructed tracks
   L1Vector<L1HitIndex_t> fRecoHits {"L1Algo::fRecoHits"};  // packed hits of reconstructed tracks
 
-  const L1HitIndex_t* StsHitsStartIndex {nullptr};  // station-bounders in vStsHits array
-  const L1HitIndex_t* StsHitsStopIndex {nullptr};   // station-bounders in vStsHits array
+  const L1HitIndex_t* HitsStartIndex {nullptr};  // station-bounders in vHits array
+  const L1HitIndex_t* HitsStopIndex {nullptr};   // station-bounders in vHits array
 
 
   //  L1Branch* pointer;
   unsigned int NHitsIsecAll {0};
 
-  L1Vector<L1Hit> vStsDontUsedHits_A {"L1Algo::vStsDontUsedHits_A"};
-  L1Vector<L1Hit> vStsDontUsedHits_B {"L1Algo::vStsDontUsedHits_B"};
-  L1Vector<L1Hit> vStsDontUsedHits_Buf {"L1Algo::vStsDontUsedHits_Buf"};
-  L1Vector<L1HitPoint> vStsDontUsedHitsxy_A {"L1Algo::vStsDontUsedHitsxy_A"};
-  L1Vector<L1HitPoint> vStsDontUsedHitsxy_buf {"L1Algo::vStsDontUsedHitsxy_buf"};
-  L1Vector<L1HitPoint> vStsDontUsedHitsxy_B {"L1Algo::vStsDontUsedHitsxy_B"};
+  L1Vector<L1Hit> vDontUsedHits_A {"L1Algo::vDontUsedHits_A"};
+  L1Vector<L1Hit> vDontUsedHits_B {"L1Algo::vDontUsedHits_B"};
+  L1Vector<L1Hit> vDontUsedHits_Buf {"L1Algo::vDontUsedHits_Buf"};
+  L1Vector<L1HitPoint> vDontUsedHitsxy_A {"L1Algo::vDontUsedHitsxy_A"};
+  L1Vector<L1HitPoint> vDontUsedHitsxy_buf {"L1Algo::vDontUsedHitsxy_buf"};
+  L1Vector<L1HitPoint> vDontUsedHitsxy_B {"L1Algo::vDontUsedHitsxy_B"};
   L1Vector<L1Track> fTracks_local[L1Constants::size::kMaxNthreads] {"L1Algo::fTracks_local"};
   L1Vector<L1HitIndex_t> fRecoHits_local[L1Constants::size::kMaxNthreads] {"L1Algo::fRecoHits_local"};
 
@@ -312,16 +312,16 @@ public:
   /// --- data used during finding iterations
 
   int isec {0};  // iteration
-  L1Vector<L1Hit>* vStsHitsUnused {nullptr};
+  L1Vector<L1Hit>* vHitsUnused {nullptr};
   L1Vector<L1HitIndex_t>* RealIHitP {nullptr};
   L1Vector<L1HitIndex_t>* RealIHitPBuf {nullptr};
-  L1Vector<L1HitPoint>* vStsHitPointsUnused {nullptr};
-  L1HitIndex_t* RealIHit {nullptr};  // index in vStsHits indexed by index in vStsHitsUnused
+  L1Vector<L1HitPoint>* vHitPointsUnused {nullptr};
+  L1HitIndex_t* RealIHit {nullptr};  // index in vHits indexed by index in vHitsUnused
 
-  L1HitIndex_t StsHitsUnusedStartIndex[L1Constants::size::kMaxNstations + 1] {0};
-  L1HitIndex_t StsHitsUnusedStopIndex[L1Constants::size::kMaxNstations + 1] {0};
-  L1HitIndex_t StsHitsUnusedStartIndexEnd[L1Constants::size::kMaxNstations + 1] {0};
-  L1HitIndex_t StsHitsUnusedStopIndexEnd[L1Constants::size::kMaxNstations + 1] {0};
+  L1HitIndex_t HitsUnusedStartIndex[L1Constants::size::kMaxNstations + 1] {0};
+  L1HitIndex_t HitsUnusedStopIndex[L1Constants::size::kMaxNstations + 1] {0};
+  L1HitIndex_t HitsUnusedStartIndexEnd[L1Constants::size::kMaxNstations + 1] {0};
+  L1HitIndex_t HitsUnusedStopIndexEnd[L1Constants::size::kMaxNstations + 1] {0};
 
 
   L1Vector<int> TripForHit[2] {"L1Algo::TripForHit"};  // TODO: what does '2' stand for?
@@ -481,7 +481,7 @@ private:
 
   /// Prepare the portion of left hits data
   void findSingletsStep0(  // input
-    Tindex start_lh, Tindex n1_l, L1HitPoint* StsHits_l,
+    Tindex start_lh, Tindex n1_l, L1HitPoint* Hits_l,
     // output
     fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, L1HitIndex_t* hitsl, fvec* HitTime_l, fvec* HitTimeEr, fvec* Event_l,
     fvec* d_x, fvec* d_y, fvec* d_xy, fvec* d_u, fvec* d_v);
@@ -496,7 +496,7 @@ private:
 
   /// Find the doublets. Reformat data in the portion of doublets.
   void findDoubletsStep0(  // input
-    Tindex n1, const L1Station& stal, const L1Station& stam, L1HitPoint* vStsHits_m, L1TrackPar* T_1,
+    Tindex n1, const L1Station& stal, const L1Station& stam, L1HitPoint* vHits_m, L1TrackPar* T_1,
     L1HitIndex_t* hitsl_1,
 
     // output
@@ -510,9 +510,9 @@ private:
   /// Add the middle hits to parameters estimation. Propagate to right station.
   /// Find the triplets (right hit). Reformat data in the portion of triplets.
   void findTripletsStep0(  // input
-    L1HitPoint* vStsHits_r, const L1Station& stam, const L1Station& star,
+    L1HitPoint* vHits_r, const L1Station& stam, const L1Station& star,
 
-    int istam, int istar, L1HitPoint* vStsHits_m, L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
+    int istam, int istar, L1HitPoint* vHits_m, L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
 
     Tindex n2, L1Vector<L1HitIndex_t>& hitsm_2, L1Vector<L1HitIndex_t>& i1_2,
 

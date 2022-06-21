@@ -87,7 +87,7 @@ Int_t CbmL1StsTrackFinder::CopyL1Tracks(CbmEvent* event)
     t->SetTime(T.Tpv[6]);
     t->SetTimeError(T.Cpv[20]);
 
-    for (vector<int>::iterator ih = it->StsHits.begin(); ih != it->StsHits.end(); ++ih) {
+    for (vector<int>::iterator ih = it->Hits.begin(); ih != it->Hits.end(); ++ih) {
       CbmL1HitStore& h = L1->vHitStore[*ih];
       // 	  double zref = L1->algo->vStations[h.iStation].z[0];
       if (h.Det > 1) {  // not MVD or STS hit
