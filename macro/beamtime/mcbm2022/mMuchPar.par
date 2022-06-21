@@ -1,27 +1,28 @@
 ##############################################################################
-# Class:   CbmMcbmUnpackPar
+# Class:   CbmMuchUnpackPar
 # Context: For mMUCH testing
 ##############################################################################
 [CbmMuchUnpackPar]
 //----------------------------------------------------------------------------
 // Total number of MUCH DPBs in system
-NrOfDpbs: Int_t 6
+NrOfDpbs: Int_t 7 
 // Array to hold the unique IDs (equipment ID) for all MUCH DPBs, Array size has to match NrOfDpbs
 DbpIdArray: Int_t \
- 0x1001 0x1002 0x1003 0x1006 0x2002 0x2003
+ 0x2004 0x2005 0x2006 0x1006 0x2001 0x2002 0x2003
 // Array to hold the active flag for all CROBs, [ NbDpb * kuNbCrobPerDpb ] = [ NbDpb * 2 ]
 CrobActiveFlag: Int_t \
- 1 1 1 1 1 1
+ 1 1 1 1 1 1 1
 NrOfFebsInGemA: Int_t 27 
 nFebsIdsArrayA: Int_t \
   7  8 -1 10 17  9 14 11 -1 \ #Id for the connected FEB Position in DPB 1001 GEM Module A
  -1  5 -1 16 13 12 -1 15 -1 \ #Id for the connected FEB Position in DPB 1002 GEM Module A
  -1 -1 -1  4  3 -1 -1 -7 -1   #Id for the connected FEB Position in DPB 1003 GEM Module A (-7 is Pulser)
 // GEM2 Number of Febs and location of Febs
-NrOfFebsInGemB: Int_t 18
+NrOfFebsInGemB: Int_t 27
 nFebsIdsArrayB: Int_t \
-  6 16 -1 14  5  8  9  4 15 \ #Id for the connected FEB Position in DPB 2002 GEM Module B
- -1  3 -1 17 10 11 12  7 13  #Id for the connected FEB Position in  DPB 2003 GEM Module B
+  6  7 -1 -1 14  2 -1 -1  1 \ #Id for the connected FEB Position in DPB 2001 GEM Module B
+  0 16 -1 -1  5  8  9  4 15 \ #Id for the connected FEB Position in DPB 2002 GEM Module B
+ -1 10 -1 17 13 11 12 -1  3  #Id for the connected FEB Position in  DPB 2003 GEM Module B
 // RPC Number of Febs and location of Febs
 NrOfFebsInRpc: Int_t 9 
 nFebsIdsArrayRpc: Int_t \
@@ -720,7 +721,7 @@ ChannelsToPadYRpc: Int_t \
   0 14  2  1  4  3 13  5  6 12  8  7 10  9 13 11 \
  15 15 14 15  0 12  2  1  4  3 15  5  6 14  8  7 \
  \
- 10  9 14 16 13 16 11 12  1  0  3 17 15 16  2  4 \
+ 10  9 14 16 13 16 11 12  1  0  3  2 17 15 16  4 \
   5 16  7  6  9  8 16 10 17 17 18 17 15 17 17 16 \
  15 14 17 16 15 14 17 16 12 13 14 13 16 15 18 18 \
  18 18 18 18 19 18 11 19 12 11 13 19 19 17 19 19 \
@@ -739,7 +740,7 @@ ChannelsToPadYRpc: Int_t \
  -3 34 -3 35 36 36 -3 36 35 36 35 34 -3 -3 33 -3 \
  \
  37 36 36 38 36 36 36 36 37 37 37 39 37 37 37 37 \
- 37 37 38 38 40 38 38 38 38 38 38 38 39 39 39 39 \
+ 37 37 37 37 40 38 38 38 38 38 38 38 39 39 39 39 \
  39 39 39 39 40 39 40 40 40 40 40 40 40 40 41 41 \
  41 41 41 41 41 41 42 41 42 42 42 42 42 42 43 42 \
  43 43 43 43 43 43 43 41 44 42 44 44 44 44 44 44 \

@@ -37,7 +37,7 @@ void MonitorMuchBinning(TString inFile = "", TString sHostname = "en02", Int_t n
   TList* parFileList = new TList();
   TString paramDir   = srcDir + "/macro/beamtime/mcbm2022/";
 
-  TString paramFileHodo          = paramDir + "mMuchParMoni.par";
+  TString paramFileHodo          = paramDir + "mMuchPar.par";
   TObjString* tutDetDigiFileHodo = new TObjString(paramFileHodo);
   parFileList->Add(tutDetDigiFileHodo);
 

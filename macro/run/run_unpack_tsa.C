@@ -250,13 +250,21 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
       /// Starting to use CRI Based MUCH setup with 2GEM and 1 RPC since 09/03/2022 Carbon run
       muchconfig->SetParFileName("mMuchParUpto26032022.par");
     }
-    else if (2350 <= runid && runid <= 2367) {
-      /// First nickel runs
-      muchconfig->SetParFileName("mMuchParNickel_23052022.par");
+    else if (2163 <= runid && runid <= 2291) {
+      ///
+      muchconfig->SetParFileName("mMuchParUpto03042022.par");
     }
-    else if (2367 < runid) {
+    else if (2311 <= runid && runid <= 2315) {
+      ///
+      muchconfig->SetParFileName("mMuchParUpto10042022.par");
+    }
+    else if (2316 <= runid && runid <= 2366) {
+      ///
+      muchconfig->SetParFileName("mMuchParUpto23052022.par");
+    }
+    else if (2367 <= runid && runid <= 2397) {
       /// Starting to use GEM 2 moved to CRI 0 on 24/05/2022
-      muchconfig->SetParFileName("mMuchParNickel_25052022.par");
+      muchconfig->SetParFileName("mMuchParUpto26052022.par");
     }
 
     /// Enable duplicates rejection, Ignores the ADC for duplicates check

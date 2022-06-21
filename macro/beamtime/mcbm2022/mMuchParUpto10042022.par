@@ -12,18 +12,18 @@ DbpIdArray: Int_t \
 // Array to hold the active flag for all CROBs, [ NbDpb * kuNbCrobPerDpb ] = [ NbDpb * 2 ]
 CrobActiveFlag: Int_t \
  1 1 1 1 1 1
-NrOfFebsInGemA: Int_t 27
+NrOfFebsInGemA: Int_t 27 
 nFebsIdsArrayA: Int_t \
-  7  1 -1 10 17  9 -1 14 -1 \ #Id for the connected FEB Position in DPB 1001 GEM Module A
-  8  5 -1 16 13 12 -1 15 -1 \ #Id for the connected FEB Position in DPB 1002 GEM Module A
- 11  8 -1  4  3 -1 -1  0  2  #Id for the connected FEB Position in  DPB 1003 GEM Module A
+  7  8 -1 10 17  9 14 11 -1 \ #Id for the connected FEB Position in DPB 1001 GEM Module A
+ -1  5 -1 16 13 12 -1 15 -1 \ #Id for the connected FEB Position in DPB 1002 GEM Module A
+ -1 -1 -1  4  3 -1 -1 -7 -1   #Id for the connected FEB Position in DPB 1003 GEM Module A (-7 is Pulser)
 // GEM2 Number of Febs and location of Febs
 NrOfFebsInGemB: Int_t 18
 nFebsIdsArrayB: Int_t \
   6 16 -1 14  5  8  9  4 15 \ #Id for the connected FEB Position in DPB 2002 GEM Module B
- 10  3 -1 17 -1 11 12  7 13  #Id for the connected FEB Position in  DPB 2003 GEM Module B
+ -1  3 -1 17 10 11 12  7 13  #Id for the connected FEB Position in  DPB 2003 GEM Module B
 // RPC Number of Febs and location of Febs
-NrOfFebsInRpc: Int_t 9
+NrOfFebsInRpc: Int_t 9 
 nFebsIdsArrayRpc: Int_t \
   3 -1 -1  2  0 -1  1 -1 -1 #Id for the connected FEB Position in GEM Module B
 ChannelsToPadXA: Int_t \
