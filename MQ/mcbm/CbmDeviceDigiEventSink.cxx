@@ -71,6 +71,8 @@ try {
 
   fbBypassConsecutiveTs = fConfig->GetValue<bool>("BypassConsecutiveTs");
   fbWriteMissingTs      = fConfig->GetValue<bool>("WriteMissingTs");
+  fbDisableCompression  = fConfig->GetValue<bool>("DisableCompression");
+  fiTreeFileMaxSize     = fConfig->GetValue<int64_t>("TreeFileMaxSize");
 
   fbFillHistos             = fConfig->GetValue<bool>("FillHistos");
   fuPublishFreqTs          = fConfig->GetValue<uint32_t>("PubFreqTs");
@@ -119,11 +121,18 @@ try {
   /// Prepare root output
   if ("" != fsOutputFileName) {
     fpRun         = new FairRunOnline();
+    FairRootFileSink* pSink = new FairRootFileSink(fsOutputFileName);
     fpFairRootMgr = FairRootManager::Instance();
-    fpFairRootMgr->SetSink(new FairRootFileSink(fsOutputFileName));
+    fpFairRootMgr->SetSink(pSink);
     if (nullptr == fpFairRootMgr->GetOutFile()) {
       throw InitTaskError("Could not open root file");
     }  // if( nullptr == fpFairRootMgr->GetOutFile() )
+    if (fbDisableCompression) {
+      /// Completely disable the root file compression
+      pSink->GetRootFile()->SetCompressionLevel(0);
+    }
+    /// Set global size limit for all TTree in this process/Root instance
+    TTree::SetMaxTreeSize(fiTreeFileMaxSize);
   }    // if( "" != fsOutputFileName )
   else {
     throw InitTaskError("Empty output filename!");
@@ -651,9 +660,9 @@ CbmDeviceDigiEventSink::~CbmDeviceDigiEventSink()
 
 void CbmDeviceDigiEventSink::Finish()
 {
+  LOG(info) << "Performing clean close of the file";
   // Clean closure of output to root file
-  fpFairRootMgr->Write();
-  //   fpFairRootMgr->GetSource()->Close();
+  fpFairRootMgr->Write();  // Broken due to FileMaxSize?!?
   fpFairRootMgr->CloseSink();
   LOG(info) << "File closed after saving " << (fulTsCounter + fulMissedTsCounter) << " TS (" << fulTsCounter
             << " full ones and " << fulMissedTsCounter << " missed/empty ones)";
@@ -760,7 +769,7 @@ CbmEventTimeslice::CbmEventTimeslice(FairMQParts& parts)
   inputArchiveEvt >> fvEvents;
   ++uPartIdx;
   LOG(info) << "Input event array " << fvEvents.size();
-*/
+  */
   std::vector<CbmEvent>* pvOutEvents = nullptr;
   RootSerializer().Deserialize(*parts.At(uPartIdx), pvOutEvents);
   fvEvents = std::move(*pvOutEvents);

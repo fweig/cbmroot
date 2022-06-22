@@ -26,6 +26,11 @@ void addCustomOptions(bpo::options_description& options)
   options.add_options()("WriteMissingTs", bpo::value<bool>()->default_value(false),
                         "Write empty TS to file for the missing ones if true (irrelevant if bypass ON)");
 
+  options.add_options()("DisableCompression", bpo::value<bool>()->default_value(false),
+                        "Disable the root file compression if true");
+  options.add_options()("TreeFileMaxSize", bpo::value<int64_t>()->default_value(10000000000LL),
+                        "Set the maximum output tree size (~file size) in bytes");
+
   options.add_options()("FillHistos", bpo::value<bool>()->default_value(false),
                         "Fill histograms and send them to histo server if true");
 

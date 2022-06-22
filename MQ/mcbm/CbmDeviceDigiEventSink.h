@@ -85,6 +85,7 @@ private:
   bool fbStoreFullTs         = false;  //! If true, store digis vectors with full TS in addition to selected events
   bool fbBypassConsecutiveTs = false;  //! Switch ON/OFF the bypass of the consecutive TS buffer before writing to file
   bool fbWriteMissingTs      = false;  //! Switch ON/OFF writing of empty TS to file for the missing ones (if no bypass)
+  bool fbDisableCompression  = false;  //! Switch ON/OFF the ROOT file compression
   bool fbFillHistos          = false;  //! Switch ON/OFF filling of histograms
   bool fbInitDone            = false;  //! Keep track of whether the Init was already fully completed
   bool fbFinishDone          = false;  //! Keep track of whether the Finish was already called
@@ -97,6 +98,8 @@ private:
   std::string fsChannelNameDataInput   = "events";
   std::string fsChannelNameCommands    = "commands";
   std::string fsChannelNameHistosInput = "histogram-in";
+  /// Output file/tree management
+  int64_t fiTreeFileMaxSize = 10000000000LL;  //! Default value: ~10 GB
   /// Histograms management
   uint32_t fuPublishFreqTs  = 100;
   double_t fdMinPublishTime = 0.5;
