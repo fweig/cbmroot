@@ -20,8 +20,12 @@ void addCustomOptions(bpo::options_description& options)
                         "Name (full or relative path) of the output .root file ");
   options.add_options()("EvtNameIn", bpo::value<std::string>()->default_value("events"),
                         "MQ channel name for built events");
+
   options.add_options()("BypassConsecutiveTs", bpo::value<bool>()->default_value(false),
                         "Do not wait for having consecutive TS in buffer before writing to file if true");
+  options.add_options()("WriteMissingTs", bpo::value<bool>()->default_value(false),
+                        "Write empty TS to file for the missing ones if true (irrelevant if bypass ON)");
+
   options.add_options()("FillHistos", bpo::value<bool>()->default_value(false),
                         "Fill histograms and send them to histo server if true");
 

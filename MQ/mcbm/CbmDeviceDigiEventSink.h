@@ -84,6 +84,7 @@ private:
   /// Control flags
   bool fbStoreFullTs         = false;  //! If true, store digis vectors with full TS in addition to selected events
   bool fbBypassConsecutiveTs = false;  //! Switch ON/OFF the bypass of the consecutive TS buffer before writing to file
+  bool fbWriteMissingTs      = false;  //! Switch ON/OFF writing of empty TS to file for the missing ones (if no bypass)
   bool fbFillHistos          = false;  //! Switch ON/OFF filling of histograms
   bool fbInitDone            = false;  //! Keep track of whether the Init was already fully completed
   bool fbFinishDone          = false;  //! Keep track of whether the Finish was already called

@@ -70,6 +70,7 @@ try {
   fsAllowedChannels[0]   = fsChannelNameDataInput;
 
   fbBypassConsecutiveTs = fConfig->GetValue<bool>("BypassConsecutiveTs");
+  fbWriteMissingTs      = fConfig->GetValue<bool>("WriteMissingTs");
 
   fbFillHistos             = fConfig->GetValue<bool>("FillHistos");
   fuPublishFreqTs          = fConfig->GetValue<uint32_t>("PubFreqTs");
@@ -345,8 +346,6 @@ bool CbmDeviceDigiEventSink::HandleData(FairMQParts& parts, int /*index*/)
              << " full ones and " << fulMissedTsCounter << " missed/empty ones)";
   LOG(debug) << "Buffers are " << fmFullTsStorage.size() << " full TS and " << fvulMissedTsIndices.size()
              << " missed/empty ones)";
-  LOG(debug) << "Buffers are " << fmFullTsStorage.size() << " full TS and " << fvulMissedTsIndices.size()
-             << " missed/empty ones)";
 
   return true;
 }
@@ -445,12 +444,14 @@ void CbmDeviceDigiEventSink::CheckTsQueues()
         && ((0 == fuPrevTsIndex && fuPrevTsIndex == (*itMissTs))
             || ((0 < fulTsCounter || 0 < fulMissedTsCounter) && fuPrevTsIndex + 1 == (*itMissTs)))) {
 
-      /// Prepare entry with only dummy TS metadata and empty storage variables
-      new ((*fTimeSliceMetaDataArray)[fTimeSliceMetaDataArray->GetEntriesFast()])
-        TimesliceMetaData(0, 0, 0, (*itMissTs));
+      if (fbWriteMissingTs) {
+        /// Prepare entry with only dummy TS metadata and empty storage variables
+        new ((*fTimeSliceMetaDataArray)[fTimeSliceMetaDataArray->GetEntriesFast()])
+          TimesliceMetaData(0, 0, 0, (*itMissTs));
 
-      /// Trigger FairRoot manager to dump Tree entry
-      DumpTreeEntry();
+        /// Trigger FairRoot manager to dump Tree entry
+        DumpTreeEntry();
+      }
 
       /// Update counters
       fuPrevTsIndex = (*itMissTs);
