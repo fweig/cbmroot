@@ -73,8 +73,6 @@ using std::cout;
 using std::endl;
 
 
-/// Prepare the portion of data of left hits of a triplet: all hits except the last and the second last station will be procesesed in the algorythm,
-/// the data is orginesed in order to be used by SIMD
 inline void L1Algo::findSingletsStep0(  // input
   Tindex start_lh, Tindex n1_l, L1HitPoint* Hits_l,
   // output
@@ -82,6 +80,11 @@ inline void L1Algo::findSingletsStep0(  // input
   // comment unused parameters, FU, 18.01.21
   fvec* /*Event_l*/, fvec* /*d_x*/, fvec* /*d_y*/, fvec* /*d_xy*/, fvec* d_u, fvec* d_v)
 {
+
+  /// Prepare the portion of data of left hits of a triplet:
+  /// all hits except the last and the second last station will be procesesed in the algorithm,
+  /// the data is orginesed in order to be used by SIMD
+
   const Tindex end_lh = start_lh + n1_l;
 
 
@@ -115,7 +118,6 @@ inline void L1Algo::findSingletsStep0(  // input
 }
 
 
-/// Get the field approximation. Add the target to parameters estimation. Propagaete to the middle station of a triplet.
 inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
   int istal,
   int istam,    /// indexes of left and middle stations of a triplet
@@ -128,6 +130,10 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
   // comment unused parameters, FU, 18.01.21
   fvec* /*d_x*/, fvec* /*d_y*/, fvec* /*d_xy*/, fvec* d_u, fvec* d_v)
 {
+
+  /// Get the field approximation. Add the target to parameters estimation.
+  /// Propagaete to the middle station of a triplet.
+
   const L1Station& stal = fParameters.GetStation(istal);
   const L1Station& stam = fParameters.GetStation(istam);
   fvec zstal            = stal.z;
@@ -241,7 +247,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     T.C55 = timeEr * timeEr;
 
 
-    if (fParameters.IsFitSingletsFromTarget()) {  // TODO: doesn't work. Why?
+    if (fParameters.DevIsFitSingletsFromTarget()) {  // TODO: doesn't work. Why?
 
       T.x = fTargX;
       T.y = fTargY;
@@ -349,7 +355,6 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 }
 
 
-/// Find the doublets. Reformat data in the portion of doublets.
 inline void L1Algo::findDoubletsStep0(
   /// input
   Tindex n1, const L1Station& stal, const L1Station& stam, L1HitPoint* vHits_m, L1TrackPar* T_1, L1HitIndex_t* hitsl_1,
@@ -360,6 +365,11 @@ inline void L1Algo::findDoubletsStep0(
 #endif  // DOUB_PERFORMANCE
   L1Vector<L1HitIndex_t>& hitsm_2, fvec* /*Event*/, L1Vector<char>& lmDuplets)
 {
+  /// Find the doublets. Reformat data in the portion of doublets.
+
+  int iStaL = &stal - fParameters.GetStations().begin();
+  int iStaM = &stam - fParameters.GetStations().begin();
+
   n2 = 0;                             // number of doublet
   for (Tindex i1 = 0; i1 < n1; ++i1)  // for each singlet
   {
@@ -370,8 +380,8 @@ inline void L1Algo::findDoubletsStep0(
 
     const int n2Saved = n2;
 
-    const fvec Pick_m22 =
-      (fDoubletChi2Cut - T1.chi2);  // if make it bigger the found hits will be rejected later because of the chi2 cut.
+    const fvec Pick_m22 = (fDoubletChi2Cut - T1.chi2);
+    // if make it bigger the found hits will be rejected later because of the chi2 cut.
     // Pick_m22 is not used, search for mean squared, 2nd version
 
     // -- collect possible doublets --
@@ -379,7 +389,7 @@ inline void L1Algo::findDoubletsStep0(
     const float& timeError = T1.C55[i1_4];
     const float& time      = T1.t[i1_4];
 
-    L1HitAreaTime areaTime(vGridTime[&stam - fParameters.GetStations().begin()], T1.x[i1_4] * iz, T1.y[i1_4] * iz,
+    L1HitAreaTime areaTime(vGridTime[iStaM], T1.x[i1_4] * iz, T1.y[i1_4] * iz,
                            (sqrt(Pick_m22 * (T1.C00 + stam.XYInfo.C00)) + fMaxDZ * fabs(T1.tx))[i1_4] * iz,
                            (sqrt(Pick_m22 * (T1.C11 + stam.XYInfo.C11)) + fMaxDZ * fabs(T1.ty))[i1_4] * iz, time,
                            sqrt(timeError) * 5);
@@ -388,11 +398,9 @@ inline void L1Algo::findDoubletsStep0(
     L1HitIndex_t imh = 0;
     int irm1         = -1;
     while (true) {
-      if (fParameters.IsIgnoreHitSearchAreas()) {
+      if (fParameters.DevIsIgnoreHitSearchAreas()) {
         irm1++;
-        if ((L1HitIndex_t) irm1 >= (HitsUnusedStopIndex[&stam - fParameters.GetStations().begin()]
-                                    - HitsUnusedStartIndex[&stam - fParameters.GetStations().begin()]))
-          break;
+        if ((L1HitIndex_t) irm1 >= (HitsUnusedStopIndex[iStaM] - HitsUnusedStartIndex[iStaM])) break;
         imh = irm1;
       }
       else {
@@ -401,11 +409,17 @@ inline void L1Algo::findDoubletsStep0(
 
       const L1HitPoint& hitm = vHits_m[imh];
 
+      if (fParameters.DevIsMatchDoubletsViaMc()) {  // trd2d
+        int indL = HitsUnusedStartIndex[iStaL] + hitsl_1[i1];
+        int indM = HitsUnusedStartIndex[iStaM] + imh;
+        if (GetMcTrackIdForHit(indL) != GetMcTrackIdForHit(indM)) { continue; }
+      }
+
       // check y-boundaries
-      if ((stam.timeInfo) && (stal.timeInfo))
+      if ((stam.timeInfo) && (stal.timeInfo)) {
         if (fabs(time - hitm.time) > sqrt(timeError + hitm.timeEr * hitm.timeEr) * 5) continue;
-      if ((stam.timeInfo) && (stal.timeInfo))
         if (fabs(time - hitm.time) > 30) continue;
+      }
 
 #ifdef USE_EVENT_NUMBER
       if ((Event[i1_V][i1_4] != hitm.n)) continue;
@@ -686,7 +700,7 @@ inline void L1Algo::findTripletsStep0(  // input
         L1HitIndex_t Ntriplets = 0;
         int irh1               = -1;
         while (true) {
-          if (fParameters.IsIgnoreHitSearchAreas()) {
+          if (fParameters.DevIsIgnoreHitSearchAreas()) {
             irh1++;
             if ((L1HitIndex_t) irh1 >= (HitsUnusedStopIndex[istar] - HitsUnusedStartIndex[istar])) break;
             irh = irh1;
@@ -1608,10 +1622,10 @@ void L1Algo::CATrackFinder()
    * CATrackFinder routine setting
    ***********************************/
 
-  RealIHitP                           = &RealIHit_v;
-  RealIHitPBuf                        = &RealIHit_v_buf;
-  vHitsUnused                         = &vDontUsedHits_B;  /// array of hits used on current iteration
-  L1Vector<L1Hit>* vHitsUnused_buf    = &vDontUsedHits_A;  /// buffer for copy
+  RealIHitP                        = &RealIHit_v;
+  RealIHitPBuf                     = &RealIHit_v_buf;
+  vHitsUnused                      = &vDontUsedHits_B;  /// array of hits used on current iteration
+  L1Vector<L1Hit>* vHitsUnused_buf = &vDontUsedHits_A;  /// buffer for copy
 
   vHitPointsUnused                           = &vDontUsedHitsxy_B;  /// array of info for hits used on current iteration
   L1Vector<L1HitPoint>* vHitPointsUnused_buf = &vDontUsedHitsxy_A;

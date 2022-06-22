@@ -158,14 +158,21 @@ public:
   /// Gets L1FieldValue object at primary vertex
   const L1FieldValue& GetVertexFieldValue() const { return fVertexFieldValue; }
 
-  /// Are the hit search areas ignored
-  bool IsIgnoreHitSearchAreas() const { return fIsIgnoreHitSearchAreas; }
-
-  /// Is singlets fit starts at the target
-  bool IsFitSingletsFromTarget() const { return fIsFitSingletsFromTarget; }
-
   /// Class invariant checker
   void CheckConsistency() const;
+
+  /// ***************************
+  /// ** Flags for development **
+  /// ***************************
+
+  /// Are the hit search areas ignored
+  bool DevIsIgnoreHitSearchAreas() const { return fDevIsIgnoreHitSearchAreas; }
+
+  /// Is singlets fit starts at the target
+  bool DevIsFitSingletsFromTarget() const { return fDevIsFitSingletsFromTarget; }
+
+  /// Flag to match doublets using Mc information
+  bool DevIsMatchDoubletsViaMc() const { return fDevIsMatchDoubletsViaMc; }
 
 private:
   unsigned int fMaxDoubletsPerSinglet {150};  ///< Upper-bound cut on max number of doublets per one singlet
@@ -212,9 +219,11 @@ private:
   /// ** Flags for development **
   /// ***************************
 
-  bool fIsIgnoreHitSearchAreas {false};  ///< Process all hits on the station ignoring hit search area
+  bool fDevIsIgnoreHitSearchAreas {false};  ///< Process all hits on the station ignoring hit search area
 
-  bool fIsFitSingletsFromTarget {false};  ///< Fit singlet starting from the target with the KF
+  bool fDevIsFitSingletsFromTarget {false};  ///< Fit singlet starting from the target with the KF
+
+  bool fDevIsMatchDoubletsViaMc {false};  ///< Flag to match doublets using Mc information
 
   /********************************
    ** Friend classes declaration **

@@ -239,6 +239,9 @@ public:
   /// Gets number of stations situated in field region (MVD + STS in CBM)
   int GetNfieldStations() const { return fNfieldStations; }
 
+  /// Get mc track ID for a hit (debug tool)
+  int GetMcTrackIdForHit(int iHit);
+
 public:
   int fNstrips {0};                                    ///> number of strips
   L1Vector<L1Hit>* vHits {nullptr};                    ///> hits as a combination of front-, backstrips and z-position

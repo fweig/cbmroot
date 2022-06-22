@@ -199,7 +199,7 @@ InitStatus CbmL1::Init()
     fUseMUCH = 1;
     fUseTRD  = 1;
     fUseTOF  = 1;
-    fpInitManager->SetIgnoreHitSearchAreas(true);
+    fpInitManager->DevSetIgnoreHitSearchAreas(true);
   }
 
 
@@ -210,8 +210,9 @@ InitStatus CbmL1::Init()
     fUseMUCH = 0;
     fUseTRD  = 1;
     fUseTOF  = 0;
-    fpInitManager->SetIgnoreHitSearchAreas(true);
-    fpInitManager->SetFitSingletsFromTarget(true);
+    fpInitManager->DevSetIgnoreHitSearchAreas(true);
+    fpInitManager->DevSetFitSingletsFromTarget(true);
+    //fpInitManager->DevSetIsMatchDoubletsViaMc(true);
   }
 
   CheckDetectorPresence();

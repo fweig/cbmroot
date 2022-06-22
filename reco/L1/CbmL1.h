@@ -382,6 +382,10 @@ public:
 
   L1Vector<CbmL1HitStore> vHitStore {"CbmL1::vHitStore"};  // diff hit information
 
+  const L1Vector<CbmL1MCPoint>& GetMcPoints() const { return vMCPoints; }
+
+  const L1Vector<int>& GetHitMCRefs() const { return vHitMCRef; }
+
 private:
   double LoadMaterialMap(L1Material& mat, const TProfile2D* prof);
 

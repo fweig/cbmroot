@@ -1923,7 +1923,7 @@ void CbmL1::InputPerformance()
     for (unsigned int iH = 0; iH < vHits.size(); iH++) {
       const CbmL1Hit& h = vHits[iH];
 
-      if (h.Det != 1) continue;  // mvd hit
+      if (h.Det != 1) continue;  // not sts hit
       const CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(h.extIndex));
 
       //    int iMCPoint = -1;

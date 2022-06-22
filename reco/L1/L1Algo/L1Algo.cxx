@@ -4,6 +4,8 @@
 
 #include "L1Algo.h"
 
+#include "CbmL1.h"
+
 #include "L1Grid.h"
 #include "L1HitPoint.h"
 
@@ -244,6 +246,15 @@ void L1Algo::CreateHitPoint(const L1Hit& hit, L1HitPoint& point)
 {
   point.Set(hit.z, hit.u, hit.v, hit.du, hit.dv, hit.t, hit.dt);
 }
+
+int L1Algo::GetMcTrackIdForHit(int iHit)
+{
+  int hitId    = (*RealIHitP)[iHit];
+  int iMcPoint = CbmL1::Instance()->GetHitMCRefs()[hitId];
+  if (iMcPoint < 0) return -1;
+  return CbmL1::Instance()->GetMcPoints()[iMcPoint].ID;
+}
+
 
 //   bool L1Algo::SortTrip(TripSort const& a, TripSort const& b) {
 //       return   ( a.trip.GetLevel() >  b.trip.GetLevel() );

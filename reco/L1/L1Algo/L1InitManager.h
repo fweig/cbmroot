@@ -204,18 +204,21 @@ public:
   /// Sets target poisition
   void SetTargetPosition(double x, double y, double z);
 
+  /// Transfers L1Parameters object to the destination
+  void TransferParametersContainer(L1Parameters& destination);
+
   /// ***************************
   /// ** Flags for development **
   /// ***************************
 
   /// Ignopre hit search areas
-  void SetIgnoreHitSearchAreas(bool value = true) { fParameters.fIsIgnoreHitSearchAreas = value; }
+  void DevSetIgnoreHitSearchAreas(bool value = true) { fParameters.fDevIsIgnoreHitSearchAreas = value; }
 
   /// Start singlets fit at the target
-  void SetFitSingletsFromTarget(bool value = true) { fParameters.fIsFitSingletsFromTarget = value; }
+  void DevSetFitSingletsFromTarget(bool value = true) { fParameters.fDevIsFitSingletsFromTarget = value; }
 
-  /// Transfers L1Parameters object to the destination
-  void TransferParametersContainer(L1Parameters& destination);
+  /// Flag to match doublets using Mc information
+  void DevSetIsMatchDoubletsViaMc(bool value = true) { fParameters.fDevIsMatchDoubletsViaMc = value; }
 
 private:
   /// Checker for L1CAIteration container initialization (sets EInitKey::kCAIterations)
