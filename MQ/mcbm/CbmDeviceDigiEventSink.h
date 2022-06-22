@@ -39,7 +39,9 @@
 #include <map>
 #include <vector>
 
+class TCanvas;
 class TFile;
+class TH1;
 class TList;
 class TClonesArray;
 //class TimesliceMetaData;
@@ -118,6 +120,9 @@ private:
   uint64_t fulTsCounter                                  = 0;
   uint64_t fulMissedTsCounter                            = 0;
   std::chrono::system_clock::time_point fLastPublishTime = std::chrono::system_clock::now();
+  uint64_t fulProcessedEvents                            = 0;
+  std::chrono::system_clock::time_point fLastFillTime    = std::chrono::system_clock::now();
+  std::chrono::system_clock::time_point fStartTime       = std::chrono::system_clock::now();
 
   /// Control Commands reception
   bool fbReceivedEof      = false;
@@ -162,9 +167,18 @@ private:
   /// Flag indicating whether the histograms and canvases configurations were already published
   bool fbConfigSent = false;
 
+  TH1* fhFullTsBuffSizeEvo;
+  TH1* fhMissTsBuffSizeEvo;
+  TH1* fhFullTsProcEvo;
+  TH1* fhMissTsProcEvo;
+  TH1* fhTotalTsProcEvo;
+  TH1* fhTotalEventsEvo;
+  TCanvas* fcEventSinkAllHist;
+
   /// Internal methods
   bool IsChannelNameAllowed(std::string channelName);
   bool InitHistograms();
+  bool ResetHistograms(bool bResetStartTime = false);
   void CheckTsQueues();
   void PrepareTreeEntry(CbmEventTimeslice unpTs);
   void DumpTreeEntry();

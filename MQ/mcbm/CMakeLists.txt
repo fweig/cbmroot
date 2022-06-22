@@ -266,11 +266,12 @@ set(DEPENDENCIES
   CbmBase
   CbmData
   Core
+  Gpad
+  Hist
+  Net
+  RHTTP
   RIO
   Tree
-  Net
-  Hist
-  RHTTP
 )
 GENERATE_EXECUTABLE()
 

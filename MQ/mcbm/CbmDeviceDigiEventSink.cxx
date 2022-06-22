@@ -211,12 +211,64 @@ bool CbmDeviceDigiEventSink::InitHistograms()
   // bool initOK =CreateHistograms();
   bool initOK = true;
 
-  /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
+  /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder) or create them locally
   // ALGO: std::vector<std::pair<TNamed*, std::string>> vHistos = fMonitorAlgo->GetHistoVector();
   std::vector<std::pair<TNamed*, std::string>> vHistos = {};
-  /// Obtain vector of pointers on each canvas from the algo (+ optionally desired folder)
+
+  fhFullTsBuffSizeEvo =
+    new TH1I("hFullTsBuffSizeEvo", "Evo. of the full TS buffer size; Time in run [s]; Size []", 720, 0, 7200);
+  fhMissTsBuffSizeEvo =
+    new TH1I("hMissTsBuffSizeEvo", "Evo. of the missed TS buffer size; Time in run [s]; Size []", 720, 0, 7200);
+  fhFullTsProcEvo  = new TH1I("hFullTsProcEvo", "Processed full TS; Time in run [s]; # []", 720, 0, 7200);
+  fhMissTsProcEvo  = new TH1I("hMissTsProcEvo", "Processed missing TS; Time in run [s]; # []", 720, 0, 7200);
+  fhTotalTsProcEvo = new TH1I("hTotalTsProcEvo", "Total processed TS; Time in run [s]; # []", 720, 0, 7200);
+  fhTotalEventsEvo = new TH1I("hTotalEventsEvo", "Processed events; Time in run [s]; # []", 720, 0, 7200);
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhFullTsBuffSizeEvo, "EvtSink"));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhMissTsBuffSizeEvo, "EvtSink"));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhFullTsProcEvo, "EvtSink"));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhMissTsProcEvo, "EvtSink"));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhTotalTsProcEvo, "EvtSink"));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhTotalEventsEvo, "EvtSink"));
+
+  /// Obtain vector of pointers on each canvas from the algo (+ optionally desired folder) or create them locally
   // ALGO: std::vector<std::pair<TCanvas*, std::string>> vCanvases = fMonitorAlgo->GetCanvasVector();
   std::vector<std::pair<TCanvas*, std::string>> vCanvases = {};
+
+  fcEventSinkAllHist = new TCanvas("cEventSinkAllHist", "Event Sink Monitoring");
+  fcEventSinkAllHist->Divide(3, 2);
+
+  fcEventSinkAllHist->cd(1);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  fhFullTsBuffSizeEvo->Draw("hist");
+
+  fcEventSinkAllHist->cd(2);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  fhMissTsBuffSizeEvo->Draw("hist");
+
+  fcEventSinkAllHist->cd(3);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  fhFullTsProcEvo->Draw("hist");
+
+  fcEventSinkAllHist->cd(4);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  fhMissTsProcEvo->Draw("hist");
+
+  fcEventSinkAllHist->cd(5);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  fhTotalTsProcEvo->Draw("hist");
+
+  fcEventSinkAllHist->cd(6);
+  gPad->SetGridx();
+  gPad->SetGridy();
+  gPad->SetLogy();
+  fhTotalEventsEvo->Draw("hist");
+
+  vCanvases.push_back(std::pair<TCanvas*, std::string>(fcEventSinkAllHist, "canvases"));
 
   /// Add pointers to each histo in the histo array
   /// Create histo config vector
@@ -250,6 +302,20 @@ bool CbmDeviceDigiEventSink::InitHistograms()
   }  //  for( UInt_t uCanv = 0; uCanv < vCanvases.size(); ++uCanv )
 
   return initOK;
+}
+bool CbmDeviceDigiEventSink::ResetHistograms(bool bResetStartTime)
+{
+  fhFullTsBuffSizeEvo->Reset();
+  fhMissTsBuffSizeEvo->Reset();
+  fhFullTsProcEvo->Reset();
+  fhMissTsProcEvo->Reset();
+  fhTotalTsProcEvo->Reset();
+  fhTotalEventsEvo->Reset();
+  if (bResetStartTime) {
+    /// Reset the start time of the time evolution histograms
+    fStartTime = std::chrono::system_clock::now();
+  }
+  return true;
 }
 
 //--------------------------------------------------------------------//
@@ -333,11 +399,30 @@ bool CbmDeviceDigiEventSink::HandleData(FairMQParts& parts, int /*index*/)
 
   /// Histograms management
   if (kTRUE == fbFillHistos) {
-    /// Send histograms each 100 time slices. Should be each ~1s
+    std::chrono::system_clock::time_point currentTime = std::chrono::system_clock::now();
+
+    /// Fill histograms every 5 or more seconds
+    /// TODO: make it a parameter
+    std::chrono::duration<double_t> elapsedSecondsFill = currentTime - fLastFillTime;
+    if (5.0 < elapsedSecondsFill.count()) {
+      std::chrono::duration<double_t> secInRun = currentTime - fStartTime;
+
+      /// Rely on the fact that all histos have same X axis to avoid multiple "current bin" search
+      int32_t iBinIndex = fhFullTsBuffSizeEvo->FindBin(secInRun.count());
+      fhFullTsBuffSizeEvo->SetBinContent(iBinIndex, fmFullTsStorage.size());
+      fhMissTsBuffSizeEvo->SetBinContent(iBinIndex, fvulMissedTsIndices.size());
+      fhFullTsProcEvo->SetBinContent(iBinIndex, fulTsCounter);
+      fhMissTsProcEvo->SetBinContent(iBinIndex, fulMissedTsCounter);
+      fhTotalTsProcEvo->SetBinContent(iBinIndex, (fulTsCounter + fulMissedTsCounter));
+      fhTotalEventsEvo->SetBinContent(iBinIndex, fmFullTsStorage.size());
+
+      fLastFillTime = currentTime;
+    }
+
+    /// Send histograms each N timeslices.
     /// Use also runtime checker to trigger sending after M s if
     /// processing too slow or delay sending if processing too fast
-    std::chrono::system_clock::time_point currentTime = std::chrono::system_clock::now();
-    std::chrono::duration<double_t> elapsedSeconds    = currentTime - fLastPublishTime;
+    std::chrono::duration<double_t> elapsedSeconds = currentTime - fLastPublishTime;
     if ((fdMaxPublishTime < elapsedSeconds.count())
         || (0 == fulNumMessages % fuPublishFreqTs && fdMinPublishTime < elapsedSeconds.count())) {
       if (!fbConfigSent) {
@@ -347,7 +432,7 @@ bool CbmDeviceDigiEventSink::HandleData(FairMQParts& parts, int /*index*/)
       else
         SendHistograms();
 
-      fLastPublishTime = std::chrono::system_clock::now();
+      fLastPublishTime = currentTime;
     }  // if( ( fdMaxPublishTime < elapsedSeconds.count() ) || ( 0 == fulNumMessages % fuPublishFreqTs && fdMinPublishTime < elapsedSeconds.count() ) )
   }    // if( kTRUE == fbFillHistos )
 
@@ -509,6 +594,10 @@ void CbmDeviceDigiEventSink::PrepareTreeEntry(CbmEventTimeslice unpTs)
 
   /// Extract CbmEvent TClonesArray from input message
   (*fEventsSel) = std::move(unpTs.GetSelectedData());
+  if (kTRUE == fbFillHistos) {
+    /// Accumulated counts, will show rise + plateau pattern in spill
+    fulProcessedEvents += fEventsSel->size();
+  }
 
   /// Full TS Digis storage (optional usage, controlled by fbStoreFullTs!)
   if (fbStoreFullTs) {
@@ -605,7 +694,6 @@ bool CbmDeviceDigiEventSink::SendHistoConfAndData()
 
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr msgHistos(NewMessage());
-  //  Serialize<RootSerializer>(*msgHistos, &fArrayHisto);
   RootSerializer().Serialize(*msgHistos, &fArrayHisto);
 
   partsOut.AddPart(std::move(msgHistos));
@@ -617,7 +705,7 @@ bool CbmDeviceDigiEventSink::SendHistoConfAndData()
   }  // if( Send( partsOut, fsChannelNameHistosInput ) < 0 )
 
   /// Reset the histograms after sending them (but do not reset the time)
-  // ResetHistograms(kFALSE);
+  ResetHistograms(false);
 
   return true;
 }
@@ -626,7 +714,6 @@ bool CbmDeviceDigiEventSink::SendHistograms()
 {
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr message(NewMessage());
-  //  Serialize<RootSerializer>(*message, &fArrayHisto);
   RootSerializer().Serialize(*message, &fArrayHisto);
 
   /// Send message to the common histogram messages queue
@@ -636,7 +723,7 @@ bool CbmDeviceDigiEventSink::SendHistograms()
   }  // if( Send( message, fsChannelNameHistosInput ) < 0 )
 
   /// Reset the histograms after sending them (but do not reset the time)
-  // ResetHistograms(kFALSE);
+  ResetHistograms(false);
 
   return true;
 }
