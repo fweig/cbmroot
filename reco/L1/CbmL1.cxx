@@ -211,7 +211,7 @@ InitStatus CbmL1::Init()
     fUseTRD  = 1;
     fUseTOF  = 0;
     fpInitManager->DevSetIgnoreHitSearchAreas(true);
-    fpInitManager->DevSetFitSingletsFromTarget(true);
+    //fpInitManager->DevSetFitSingletsFromTarget(true);
     //fpInitManager->DevSetIsMatchDoubletsViaMc(true);
   }
 

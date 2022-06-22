@@ -37,6 +37,9 @@ L1Parameters::L1Parameters(const L1Parameters& other) noexcept
   , fNstationsActive(other.fNstationsActive)
   , fNstationsGeometry(other.fNstationsGeometry)
   , fActiveStationGlobalIDs(other.fActiveStationGlobalIDs)
+  , fDevIsIgnoreHitSearchAreas(other.fDevIsIgnoreHitSearchAreas)
+  , fDevIsFitSingletsFromTarget(other.fDevIsFitSingletsFromTarget)
+  , fDevIsMatchDoubletsViaMc(other.fDevIsMatchDoubletsViaMc)
 {
 }
 
@@ -78,6 +81,9 @@ void L1Parameters::Swap(L1Parameters& other) noexcept
   std::swap(fNstationsActive, other.fNstationsActive);
   std::swap(fNstationsGeometry, other.fNstationsGeometry);
   std::swap(fActiveStationGlobalIDs, other.fActiveStationGlobalIDs);
+  std::swap(fDevIsIgnoreHitSearchAreas, other.fDevIsIgnoreHitSearchAreas);
+  std::swap(fDevIsFitSingletsFromTarget, other.fDevIsFitSingletsFromTarget);
+  std::swap(fDevIsMatchDoubletsViaMc, other.fDevIsMatchDoubletsViaMc);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------
