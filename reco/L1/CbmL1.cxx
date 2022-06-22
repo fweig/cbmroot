@@ -645,7 +645,7 @@ InitStatus CbmL1::Init()
       if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {  //SGtrd2D!!
         trdFrontSigma = 1.1;
         trdBackSigma  = 1.1;
-        stationInfo.SetTimeResolution(1.e10);
+        // stationInfo.SetTimeResolution(1.e10);
         stationInfo.SetTimeInfo(false);
       }
       stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdFrontSigma, trdBackPhi, trdBackSigma);

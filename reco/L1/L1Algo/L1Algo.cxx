@@ -98,7 +98,6 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
   fTrackingLevel    = fInitManager.GetTrackingLevel();
   fGhostSuppression = fInitManager.GetGhostSuppression();
   fMomentumCutOff   = fInitManager.GetMomentumCutOff();
-
 }
 
 
@@ -168,10 +167,10 @@ void L1Algo::SetData(L1Vector<L1Hit>& Hits_, int nStrips_, L1Vector<unsigned cha
 void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, char iS)
 {
   const L1Station& sta = fParameters.GetStation(int(iS));
-  fscal u        = _h.u;
-  fscal v        = _h.v;
-  _x = (sta.xInfo.sin_phi[0] * u + sta.xInfo.cos_phi[0] * v) / (_h.z - fParameters.GetTargetPositionZ()[0]);
-  _y = (sta.yInfo.cos_phi[0] * u + sta.yInfo.sin_phi[0] * v) / (_h.z - fParameters.GetTargetPositionZ()[0]);
+  std::tie(_x, _y)     = sta.ConvUVtoXY(_h.u, _h.v);
+  float dz             = _h.z - fParameters.GetTargetPositionZ()[0];
+  _x /= dz;
+  _y /= dz;
 }
 
 void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta)
@@ -189,13 +188,10 @@ void L1Algo::StripsToCoor(
   const fscal& u, const fscal& v, fscal& _x, fscal& _y,
   const L1Station& sta) const  // TODO: Actually sta.yInfo.sin_phi is same for all stations, so ...
 {
-  //  fvec x,y;
-  //  StripsToCoor(u,v,x,y,sta);
-  //  _x = x[0];
-  //  _y = y[0];
-  _x = sta.xInfo.sin_phi[0] * u + sta.xInfo.cos_phi[0] * v;
-  _y = sta.yInfo.cos_phi[0] * u + sta.yInfo.sin_phi[0] * v;
+  std::tie(_x, _y) = sta.ConvUVtoXY(u, v);
 }
+
+
 /// convert strip positions to coordinates
 void L1Algo::StripsToCoor(
   const fscal& u, const fscal& v, fvec& _x, fvec& _y,
@@ -205,7 +201,7 @@ void L1Algo::StripsToCoor(
   //  StripsToCoor(u,v,x,y,sta);
   //  _x = x[0];
   //  _y = y[0];
-  _x = sta.xInfo.sin_phi * u + sta.xInfo.cos_phi * v;
+  _x = sta.xInfo.cos_phi * u + sta.xInfo.sin_phi * v;
   _y = sta.yInfo.cos_phi * u + sta.yInfo.sin_phi * v;
 }
 
@@ -216,12 +212,12 @@ void L1Algo::dUdV_to_dY(const fvec& u, const fvec& v, fvec& _y, const L1Station&
 
 void L1Algo::dUdV_to_dX(const fvec& u, const fvec& v, fvec& _x, const L1Station& sta)
 {
-  _x = sqrt((sta.xInfo.sin_phi * u) * (sta.xInfo.sin_phi * u) + (sta.xInfo.cos_phi * v) * (sta.xInfo.cos_phi * v));
+  _x = sqrt((sta.xInfo.cos_phi * u) * (sta.xInfo.cos_phi * u) + (sta.xInfo.sin_phi * v) * (sta.xInfo.sin_phi * v));
 }
 
 void L1Algo::dUdV_to_dXdY(const fvec& u, const fvec& v, fvec& _xy, const L1Station& sta)
 {
-  _xy = ((sta.xInfo.sin_phi * u) * (sta.yInfo.cos_phi * u) + (sta.xInfo.cos_phi * v) * (sta.yInfo.sin_phi * v));
+  _xy = ((sta.xInfo.cos_phi * u) * (sta.yInfo.cos_phi * u) + (sta.xInfo.sin_phi * v) * (sta.yInfo.sin_phi * v));
 }
 
 void L1Algo::StripsToCoor(
@@ -231,7 +227,7 @@ void L1Algo::StripsToCoor(
   // only for same-z
   //   x = u;
   //   y = (sta.yInfo.cos_phi*u + sta.yInfo.sin_phi*v);
-  x = sta.xInfo.sin_phi * u + sta.xInfo.cos_phi * v;
+  x = sta.xInfo.cos_phi * u + sta.xInfo.sin_phi * v;
   y = sta.yInfo.cos_phi * u + sta.yInfo.sin_phi * v;
 }
 

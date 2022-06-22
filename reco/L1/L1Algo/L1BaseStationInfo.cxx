@@ -309,18 +309,21 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
   fL1Station.backInfo.sin_phi = sBack;
   fL1Station.backInfo.sigma2  = backSigma * backSigma;
 
-  double det = (fabs(backPhi - frontPhi) < 0.1) ? cos(backPhi - frontPhi) : (cFront * sBack - sFront * cBack);
-  det *= det;
-  fL1Station.XYInfo.C00 = (sBack * sBack * frontSigma * frontSigma + sFront * sFront * backSigma * backSigma) / det;
-  fL1Station.XYInfo.C10 = -(sBack * cBack * frontSigma * frontSigma + sFront * cFront * backSigma * backSigma) / det;
-  fL1Station.XYInfo.C11 = (cBack * cBack * frontSigma * frontSigma + cFront * cFront * backSigma * backSigma) / det;
+  double det = cFront * sBack - sFront * cBack;
 
-  fL1Station.xInfo.cos_phi = -sFront / (cFront * sBack - cBack * sFront);
-  fL1Station.xInfo.sin_phi = sBack / (cFront * sBack - cBack * sFront);
+  assert(fabs(det) > 1.e-2);
+  double det2 = det * det;
+
+  fL1Station.XYInfo.C00 = (sBack * sBack * frontSigma * frontSigma + sFront * sFront * backSigma * backSigma) / det2;
+  fL1Station.XYInfo.C10 = -(sBack * cBack * frontSigma * frontSigma + sFront * cFront * backSigma * backSigma) / det2;
+  fL1Station.XYInfo.C11 = (cBack * cBack * frontSigma * frontSigma + cFront * cFront * backSigma * backSigma) / det2;
+
+  fL1Station.xInfo.cos_phi = sBack / det;
+  fL1Station.xInfo.sin_phi = -sFront / det;
   fL1Station.xInfo.sigma2  = fL1Station.XYInfo.C00;
 
-  fL1Station.yInfo.cos_phi = cBack / (cBack * sFront - cFront * sBack);
-  fL1Station.yInfo.sin_phi = -cFront / (cBack * sFront - cFront * sBack);
+  fL1Station.yInfo.cos_phi = -cBack / det;
+  fL1Station.yInfo.sin_phi = cFront / det;
   fL1Station.yInfo.sigma2  = fL1Station.XYInfo.C11;
   //-------------------------------------------------------------------------------------------------------
 

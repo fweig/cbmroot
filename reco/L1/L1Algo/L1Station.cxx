@@ -83,6 +83,24 @@ void L1Station::CheckConsistency() const
   xInfo.CheckConsistency();
   yInfo.CheckConsistency();
   XYInfo.CheckConsistency();
+
+  // Check consistency of coordinate transformations
+  for (float x = -1.f; x < 1.1f; x += 0.2) {
+    for (float y = -1.f; y < 1.1f; y += 0.2) {
+      float u, v;
+      std::tie(u, v) = ConvXYtoUV(x, y);
+      float x1, y1;
+      std::tie(x1, y1) = ConvUVtoXY(u, v);
+
+      if (fabs(x1 - x) > 1.e-6 || fabs(y1 - y) > 1.e-6) {
+        std::stringstream msg;
+        msg << "L1Station: " << this->ToString() << " makes wrong coordinate convertion: "
+            << "x,y " << x << "," << y << " -> u,v " << u << "," << v << " -> x,y " << x1 << "," << y1
+            << " are not the same: dx,dy " << x1 - x << "," << y1 - y;
+        throw std::logic_error(msg.str());
+      }
+    }
+  }
 }
 
 // TODO: Improve log style (S.Zh.)

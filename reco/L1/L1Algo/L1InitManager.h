@@ -232,16 +232,16 @@ private:
   /// Forms parameters container
   void FormParametersContainer();
 
-  /* Basic fields */
+  // * Basic fields *
 
   InitController_t fInitController {};      ///< Initialization flags
   L1DetectorIDSet_t fActiveDetectorIDs {};  ///< Set of tracking detectors, active during this analysis session
 
-  /* Target fields */
+  // * Target fields *
 
   double fTargetZ {0.};  ///< Target position z component in double precision
 
-  /* Stations related fields */
+  // * Stations related fields *
 
   std::set<L1BaseStationInfo> fStationsInfo {};  ///< Set of L1BaseStationInfo objects
 
@@ -257,7 +257,7 @@ private:
   L1FieldFunction_t fFieldFunction {[](const double (&)[3], double (&)[3]) {}};
   // NOTE: Stations of daetectors which will not be assigned as active, will not be included in the tracking!
 
-  /* CA track finder iterations related */
+  // * CA track finder iterations related *
 
   int fCAIterationsNumberCrosscheck {-1};  ///< Number of iterations to be passed (must be used for cross-checks)
 

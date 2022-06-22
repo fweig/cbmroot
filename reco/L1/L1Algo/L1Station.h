@@ -29,8 +29,8 @@ struct L1Station {
   L1FieldSlice fieldSlice {};
   L1UMeasurementInfo frontInfo {};
   L1UMeasurementInfo backInfo {};
-  L1UMeasurementInfo xInfo {};
-  L1UMeasurementInfo yInfo {};
+  L1UMeasurementInfo xInfo {};  ///< x axis in front,back coordinates
+  L1UMeasurementInfo yInfo {};  ///< y axis in front,back coordinates
   L1XYMeasurementInfo XYInfo {};
 
   /// Prints object fields
@@ -46,6 +46,19 @@ struct L1Station {
   /// \note Object is considered undefined in the creation time, so this function should be called after the object
   /// initialization
   void CheckConsistency() const;
+
+  /// convert x,y to u,v
+  std::pair<float, float> ConvXYtoUV(float x, float y) const
+  {
+    return std::make_pair(x * frontInfo.cos_phi[0] + y * frontInfo.sin_phi[0],
+                          x * backInfo.cos_phi[0] + y * backInfo.sin_phi[0]);
+  }
+
+  /// convert u,v to x,y
+  std::pair<float, float> ConvUVtoXY(float u, float v) const
+  {
+    return std::make_pair(u * xInfo.cos_phi[0] + v * xInfo.sin_phi[0], u * yInfo.cos_phi[0] + v * yInfo.sin_phi[0]);
+  }
 
 } _fvecalignment;
 

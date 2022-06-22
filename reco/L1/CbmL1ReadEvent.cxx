@@ -76,7 +76,7 @@ struct TmpHit {
   int iStation;            ///< index of station
   int ExtIndex;            ///< index of hit in the external TClonesArray array (NOTE: negative for MVD)
   double u_front, u_back;  ///< positions of strips
-  double x, y, z;          ///< position of hit (Cortesian coordinates)
+  double x, y, z;          ///< position of hit (Cartesian coordinates)
   double xmc, ymc, p;      ///< mc position of hit, total momentum
   double tx, ty;           ///< mc slopes of the mc point
   double dx, dy, dxy;      ///< hit position errors in Cortesian coordinates
@@ -108,46 +108,41 @@ struct TmpHit {
   /// \param ip
   /// \param NStrips
   /// \param st       reference to the station info object
-  // TODO: Probably, L1Station& st parameter should be constant. Do we really want to modify a station here? (S.Zharko)
-  void CreateHitFromPoint(const CbmL1MCPoint& point, int det, int nTmpHits, int nStripF, int ip, int& NStrips,
-                          const L1Station& st)
+  void CreateHitFromPoint(const CbmL1MCPoint& point, int ip, int det, int nTmpHits, int& NStrips, const L1Station& st)
   {
     ExtIndex = 0;
     Det      = det;
-    id       = nTmpHits;  //tmpHits.size();
+    id       = nTmpHits;
     iStation = point.iStation;
 
     dt   = st.dt[0];
     time = point.time + gRandom->Gaus(0, dt);
 
-    iStripF = nStripF + ip;  //firstDetStrip + ip;
+    iStripF = NStrips;
     iStripB = iStripF;
-    if (NStrips <= iStripF) { NStrips = iStripF + 1; }
+    NStrips++;
 
-    float f_sigma = 0.1;  // sqrt(st.frontInfo.sigma2[0]);
-    //1.;
-    float b_sigma = 0.1;  // sqrt(st.backInfo.sigma2[0]);//1.;
+    dx  = sqrt(st.XYInfo.C00[0]);
+    dy  = sqrt(st.XYInfo.C11[0]);
+    dxy = st.XYInfo.C10[0];
 
-    dx  = f_sigma;
-    dy  = b_sigma;
-    dxy = 0;
-    du  = f_sigma;
-    dv  = b_sigma;
+    du = sqrt(st.frontInfo.sigma2[0]);
+    dv = sqrt(st.backInfo.sigma2[0]);
 
-    x = point.x;  // + gRandom->Gaus(0, dx);
-    y = point.y;  // + gRandom->Gaus(0, dy);
-    z = point.z;
+    std::tie(u_front, u_back) = st.ConvXYtoUV(point.x, point.y);
+
+    u_front += gRandom->Gaus(0, du);
+    u_back += gRandom->Gaus(0, dv);
+
+    std::tie(x, y) = st.ConvUVtoXY(u_front, u_back);
+    z              = point.z;
 
     xmc = point.x;
     ymc = point.y;
 
     track = point.ID;
-
-    p = point.p;
-
-    u_front = x * st.frontInfo.cos_phi[0] + y * st.frontInfo.sin_phi[0];
-    u_back  = x * st.backInfo.cos_phi[0] + y * st.backInfo.sin_phi[0];
-    iMC     = ip;
+    p     = point.p;
+    iMC   = ip;
   }
 
   /// Sets randomized position and time of the hit
@@ -264,9 +259,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         for (Int_t iMC = 0; iMC < nMvdPointsInEvent; iMC++) {
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 1)) {
-            MC.iStation     = -1;
+            MC.iStation          = -1;
             const L1Station* sta = algo->GetParameters()->GetStations().begin();
-            double bestDist = 1.e20;
+            double bestDist      = 1.e20;
             for (Int_t iSt = 0; iSt < NMvdStationsGeom; iSt++) {
               // use z_in since z_out is sometimes very wrong
               // due to a problem in transport
@@ -303,9 +298,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         for (Int_t iMC = 0; iMC < nMC; iMC++) {
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 0)) {
-            MC.iStation     = -1;
+            MC.iStation          = -1;
             const L1Station* sta = algo->GetParameters()->GetStations().begin();
-            double bestDist = 1.e20;
+            double bestDist      = 1.e20;
             for (Int_t iSt = 0; iSt < NStsStationsGeom; iSt++) {
               int iStActive = algo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kSts);
               if (iStActive == -1) { continue; }
@@ -341,7 +336,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         for (Int_t iMC = 0; iMC < nMC; iMC++) {
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 2)) {
-            MC.iStation    = -1;
+            MC.iStation          = -1;
             const L1Station* sta = algo->GetParameters()->GetStations().begin();
             for (Int_t iSt = 0; iSt < NMuchStationsGeom; iSt++) {
               int iStActive = algo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kMuch);
@@ -369,7 +364,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         for (Int_t iMC = 0; iMC < fTrdPoints->Size(iFile, iEvent); iMC++) {
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 3)) {
-            MC.iStation    = -1;
+            MC.iStation          = -1;
             const L1Station* sta = algo->GetParameters()->GetStations().begin();
             for (Int_t iSt = 0; iSt < NTrdStationsGeom; iSt++) {
               int iStActive = algo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kTrd);
@@ -421,7 +416,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             if (trk_it == dFEI2vMCTracks.end()) continue;
             Int_t IND_Track = trk_it->second;
 
-            MC.iStation    = -1;
+            MC.iStation          = -1;
             const L1Station* sta = algo->GetParameters()->GetStations().begin();
             for (Int_t iSt = 0; iSt < NTOFStationGeom; iSt++) {
               int iStActive = algo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kTof);
@@ -449,7 +444,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
             if (!ReadMCPoint(&MC, TofPointToTrack[iTofSta][iMC], iFile, iEvent, 4)) {
 
-              MC.iStation    = -1;
+              MC.iStation          = -1;
               const L1Station* sta = algo->GetParameters()->GetStations().begin();
               for (Int_t iSt = 0; iSt < NTOFStation; iSt++) {
                 int iStActive = algo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kTof);
@@ -542,8 +537,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.z = pos.Z();
 
         const L1Station& st = algo->GetParameters()->GetStation(th.iStation);
-        th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
-        th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
+        th.u_front          = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
+        th.u_back           = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
       th.Det = 0;
       th.iMC = -1;
@@ -570,7 +565,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
   if (fUseSTS && (2 == fStsUseMcHit)) {  // create hits from points
 
-    int firstDetStrip = NStrips;
     for (int ip = firstStsPoint; ip < firstStsPoint + nStsPoints; ip++) {
       const CbmL1MCPoint& p = vMCPoints[ip];
       //       int mcTrack           = p.ID;
@@ -582,8 +576,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       //            << p.time << " mc " << p.ID << " p " << p.p << endl;
       TmpHit th;
       int DetId = 1;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips,
-                            algo->GetParameters()->GetStation(p.iStation));
+      th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, algo->GetParameters()->GetStation(p.iStation));
       tmpHits.push_back(th);
       nStsHits++;
     }
@@ -661,8 +654,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
         th.dv = mh->GetDv();
 
         const L1Station& st = algo->GetParameters()->GetStation(th.iStation);
-        th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
-        th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
+        th.u_front          = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
+        th.u_back           = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
       th.iMC = -1;
 
@@ -731,7 +724,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   // Get MuCh hits
   //
   if ((2 == fMuchUseMcHit) && fUseMUCH) {  // create hits from points
-    int firstDetStrip = NStrips;
 
     for (int ip = firstMuchPoint; ip < firstMuchPoint + nMuchPoints; ip++) {
       const CbmL1MCPoint& p = vMCPoints[ip];
@@ -744,8 +736,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       TmpHit th;
       int DetId = 2;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips,
-                            algo->GetParameters()->GetStation(p.iStation));
+      th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, algo->GetParameters()->GetStation(p.iStation));
 
       tmpHits.push_back(th);
       nMuchHits++;
@@ -801,8 +792,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
 
         const L1Station& st = algo->GetParameters()->GetStation(th.iStation);
-        th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
-        th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
+        th.u_front          = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
+        th.u_back           = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
       th.iMC  = -1;
       int iMC = -1;
@@ -836,151 +827,146 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       nMuchHits++;
 
     }  // for j
-  }    // if listMvdHits
-
-  if ((2 == fTrdUseMcHit) && fTrdHitMatches && fUseTRD) {  // create hits from points
-    int firstDetStrip = NStrips;
-
-    for (int ip = firstTrdPoint; ip < firstTrdPoint + nTrdPoints; ip++) {
-      const CbmL1MCPoint& p = vMCPoints[ip];
-
-      //       int mcTrack = p.ID;
-      //       if (mcTrack < 0) continue;
-      //       const CbmL1MCTrack& t = vMCTracks[mcTrack];
-
-      TmpHit th;
-      int DetId = 3;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips,
-                            algo->GetParameters()->GetStation(p.iStation));
-      tmpHits.push_back(th);
-      nTrdHits++;
-    }
-  }
+  }    // if listMuchHits
 
   //
   // Get TRD hits
   //
-  if (fUseTRD && listTrdHits && (2 != fTrdUseMcHit)) {
-    int firstDetStrip = NStrips;
-    vector<bool> mcUsed(nTrdPoints, 0);
 
-    for (int iHit = 0; iHit < listTrdHits->GetEntriesFast(); iHit++) {
-      TmpHit th;
+  if (fUseTRD) {
 
-      CbmTrdHit* mh = L1_DYNAMIC_CAST<CbmTrdHit*>(listTrdHits->At(iHit));
-      // SGtrd2d!! skip TRD-1D hit
-      if ((L1Algo::TrackingMode::kGlobal == fTrackingMode) && (int) mh->GetClassType() != 1) { continue; }
+    if (2 == fTrdUseMcHit) {  // create hits from MC points
+      for (int ip = firstTrdPoint; ip < firstTrdPoint + nTrdPoints; ip++) {
+        const CbmL1MCPoint& p = vMCPoints[ip];
+        //       int mcTrack = p.ID;
+        //       if (mcTrack < 0) continue;
+        //       const CbmL1MCTrack& t = vMCTracks[mcTrack];
+        TmpHit th;
+        int DetId = 3;
+        th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, algo->GetParameters()->GetStation(p.iStation));
+        tmpHits.push_back(th);
+        nTrdHits++;
+      }
+    }
+    else {  // read hits
 
-      th.ExtIndex = iHit;
-      th.Det      = 3;
+      assert(listTrdHits);
 
-      th.id = tmpHits.size();
+      vector<bool> mcUsed(nTrdPoints, 0);
 
-      int stIdx = algo->GetParameters()->GetStationIndexActive(mh->GetPlaneId(), L1DetectorID::kTrd);
-      if (stIdx == -1) continue;
+      for (int iHit = 0; iHit < listTrdHits->GetEntriesFast(); iHit++) {
+        TmpHit th;
 
-      th.iStation = stIdx;
+        CbmTrdHit* mh = L1_DYNAMIC_CAST<CbmTrdHit*>(listTrdHits->At(iHit));
 
-      //  if (mh->GetPlaneId()==0) continue;
-      //  if (mh->GetPlaneId()==1) continue;
-      //  if (mh->GetPlaneId()==2) continue;
-      //  if (mh->GetPlaneId()==3) continue;
+        if ((L1Algo::TrackingMode::kGlobal == fTrackingMode) && (int) mh->GetClassType() != 1) {
+          // SGtrd2d!! skip TRD-1D hit
+          continue;
+        }
 
-      th.time = mh->GetTime();
-      th.dt   = mh->GetTimeError();
+        th.ExtIndex = iHit;
+        th.Det      = 3;
+        th.id       = tmpHits.size();
 
-      //   th.iSector  = 0;
-      th.iStripF = firstDetStrip + iHit;
-      th.iStripB = th.iStripF;  //TrdHitsOnStationIndex[num+1][k];
-      if (NStrips <= th.iStripF) { NStrips = th.iStripF + 1; }
+        int stIdx = algo->GetParameters()->GetStationIndexActive(mh->GetPlaneId(), L1DetectorID::kTrd);
+        if (stIdx == -1) continue;
 
-      TVector3 pos, err;
-      mh->Position(pos);
-      mh->PositionError(err);
+        th.iStation = stIdx;
 
-      th.x = pos.X();
-      th.y = pos.Y();
-      th.z = pos.Z();
+        //  if (mh->GetPlaneId()==0) continue;
+        //  if (mh->GetPlaneId()==1) continue;
+        //  if (mh->GetPlaneId()==2) continue;
+        //  if (mh->GetPlaneId()==3) continue;
 
+        th.time = mh->GetTime();
+        th.dt   = mh->GetTimeError();
 
-      th.dx  = fabs(mh->GetDx());
-      th.dy  = fabs(mh->GetDy());
-      th.dxy = 0;
+        //   th.iSector  = 0;
+        th.iStripF = NStrips;
+        th.iStripB = th.iStripF;  //TrdHitsOnStationIndex[num+1][k];
+        NStrips++;
 
-      th.du = fabs(mh->GetDx());
-      th.dv = fabs(mh->GetDy());
+        TVector3 pos, err;
+        mh->Position(pos);
+        mh->PositionError(err);
 
-      const L1Station& st = algo->GetParameters()->GetStation(th.iStation);
-      th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
-      th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
+        th.x = pos.X();
+        th.y = pos.Y();
+        th.z = pos.Z();
 
-      th.iMC = -1;
+        th.dx  = fabs(mh->GetDx());
+        th.dy  = fabs(mh->GetDy());
+        th.dxy = 0;
 
-      if (fPerformance && fTrdHitMatches) {
+        th.du = fabs(mh->GetDx());
+        th.dv = fabs(mh->GetDy());
 
-        CbmMatch* trdHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fTrdHitMatches->At(iHit));
+        const L1Station& st = algo->GetParameters()->GetStation(th.iStation);
 
-        if (trdHitMatch->GetNofLinks() > 0) {
+        std::tie(th.u_front, th.u_back) = st.ConvXYtoUV(th.x, th.y);
 
-          int iMC = trdHitMatch->GetLink(0).GetIndex();
-
-          assert(iMC >= 0 && iMC < nTrdPoints);
-
-          th.iMC   = iMC + nMvdPoints + nStsPoints + nMuchPoints;
-          th.track = vMCPoints[th.iMC].ID;
-
-          if (1 == fTrdUseMcHit) {  // replace hits by MC points
-
-            if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
-              // SGtrd2d!! don't smear
-              th.dx = 0.;
-              th.dy = 0.;
-              th.dt = 0.;
-            }
-            th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetParameters()->GetStation(th.iStation));
-            /*
-              CbmTrdPoint* pt =
-                (CbmTrdPoint*) fTrdPoints->Get(trdHitMatch->GetLink(0).GetFile(), trdHitMatch->GetLink(0).GetEntry(),
-                                               trdHitMatch->GetLink(0).GetIndex());
-              
-              cout << " dx " << th.x - 0.5 * (pt->GetXOut() + pt->GetXIn()) << " dy "
-                   << th.y - 0.5 * (pt->GetYOut() + pt->GetYIn()) << " dz "
-                   << th.z - 0.5 * (pt->GetZOut() + pt->GetZIn()) << " z " << th.z << endl;
-              */
-            if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
-              // SGtrd2d!! enlarge errors
-              th.dx = 1.1;
-              th.du = 1.1;
-              th.dy = 1.1;
-              th.dv = 1.1;
-              th.dt = 10000.;
-            }
-            if (th.iMC < 0) continue;
-            if (mcUsed[iMC]) continue;
-            if (0) {  // select specific tracks only
-              int mcTrack = -1;
-              float mcP   = 0;
-              if (th.iMC >= 0) {
-                mcTrack = vMCPoints[th.iMC].ID;
-                if (mcTrack >= 0) { mcP = vMCTracks[mcTrack].p; }
-              }
-              if (mcP < 1.) continue;
-            }
-            mcUsed[iMC] = 1;
+        th.iMC     = -1;
+        th.track   = -1;
+        int iMcTrd = -1;
+        if (fPerformance && fTrdHitMatches) {
+          CbmMatch* trdHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fTrdHitMatches->At(iHit));
+          if (trdHitMatch->GetNofLinks() > 0) {
+            iMcTrd = trdHitMatch->GetLink(0).GetIndex();
+            assert(iMcTrd >= 0 && iMcTrd < nTrdPoints);
+            th.iMC   = iMcTrd + nMvdPoints + nStsPoints + nMuchPoints;
+            th.track = vMCPoints[th.iMC].ID;
           }
         }
-      }
-      tmpHits.push_back(th);
-      nTrdHits++;
-    }  // for listTrdHits
-  }    // if listTrdHits
+
+        if (1 == fTrdUseMcHit) {  // replace hit by MC points
+
+          assert(fPerformance && fTrdHitMatches);
+
+          if (th.iMC < 0) continue;      // skip noise hits
+          if (mcUsed[iMcTrd]) continue;  // one hit per MC point
+
+          if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
+            // SGtrd2d!! don't smear
+            TmpHit thsave = th;
+            th.dx         = 0.;
+            th.dy         = 0.;
+            th.dt         = 0.;
+            th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetParameters()->GetStation(th.iStation));
+            th.dx = thsave.dx;
+            th.dy = thsave.dy;
+            th.dt = thsave.dt;
+            // SGtrd2d!! artificial errors
+            th.dx = 1.1;
+            th.du = 1.1;
+            th.dy = 1.1;
+            th.dv = 1.1;
+          }
+          else {
+            th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetParameters()->GetStation(th.iStation));
+          }
+          mcUsed[iMcTrd] = 1;
+        }  // replace hit by MC points
+
+        if (0) {  // select specific tracks
+          int mcTrack = -1;
+          float mcP   = 0;
+          if (th.iMC >= 0) {
+            mcTrack = vMCPoints[th.iMC].ID;
+            if (mcTrack >= 0) { mcP = vMCTracks[mcTrack].p; }
+          }
+          if (mcP < 1.) continue;
+        }
+
+        tmpHits.push_back(th);
+        nTrdHits++;
+      }  // for listTrdHits
+    }
+  }  // read TRD hits
 
   //
   // Get ToF hits
   //
   if ((2 == fTofUseMcHit) && fUseTOF) {  // create hits from points
-    int firstDetStrip = NStrips;
-
     for (int ip = firstTofPoint; ip < firstTofPoint + nTofPoints; ip++) {
       const CbmL1MCPoint& p = vMCPoints[ip];
 
@@ -991,12 +977,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       //if (t.Points.size() > 4) continue;
 
       TmpHit th;
-
       int DetId = 4;
-      th.CreateHitFromPoint(p, DetId, tmpHits.size(), firstDetStrip, ip, NStrips,
-                            algo->GetParameters()->GetStation(p.iStation));
+      th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, algo->GetParameters()->GetStation(p.iStation));
       tmpHits.push_back(th);
-
       nTofHits++;
     }
   }
@@ -1065,8 +1048,8 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       th.iStation = stIdx;
 
       const L1Station& st = algo->GetParameters()->GetStation(th.iStation);
-      th.u_front    = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
-      th.u_back     = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
+      th.u_front          = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
+      th.u_back           = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
 
 
       th.iMC = -1;
