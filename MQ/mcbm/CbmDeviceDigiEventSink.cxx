@@ -168,6 +168,7 @@ try {
     /// Comment to prevent clang format single lining
     if (kFALSE == InitHistograms()) { throw InitTaskError("Failed to initialize the histograms."); }
   }  // if( kTRUE == fbFillHistos )
+  fbInitDone = true;
 }
 catch (InitTaskError& e) {
   LOG(error) << e.what();
@@ -254,7 +255,10 @@ bool CbmDeviceDigiEventSink::HandleMissTsData(FairMQMessagePtr& msg, int /*index
   fvulMissedTsIndices.insert(fvulMissedTsIndices.end(), vIndices.begin(), vIndices.end());
 
   /// Check TS queue and process it if needed (in case it filled a hole!)
-  CheckTsQueues();
+  if (!fbBypassConsecutiveTs) {
+    /// But only if Consecutive TS check is not disabled explicitly by user
+    CheckTsQueues();
+  }
 
   return true;
 }
@@ -633,11 +637,13 @@ CbmDeviceDigiEventSink::~CbmDeviceDigiEventSink()
   /// FIXME: Add pointers check before delete
 
   /// Close things properly if not already done
-  if (!fbFinishDone) Finish();
+  if (fbInitDone && !fbFinishDone) Finish();
 
   /// Clear events vector
-  fEventsSel->clear();
-  delete fEventsSel;
+  if (fbInitDone) {
+    fEventsSel->clear();
+    delete fEventsSel;
+  }
 
   delete fpRun;
 }
@@ -800,6 +806,7 @@ std::vector<CbmDigiEvent> CbmEventTimeslice::GetSelectedData()
     if (uNbDigis) {
       auto startIt = fvDigiT0.begin() + event.GetIndex(ECbmDataType::kT0Digi, 0);
       auto stopIt  = fvDigiT0.begin() + event.GetIndex(ECbmDataType::kT0Digi, uNbDigis - 1);
+      ++stopIt;
       selEvent.fData.fT0.fDigis.assign(startIt, stopIt);
 
       /*
@@ -824,6 +831,7 @@ std::vector<CbmDigiEvent> CbmEventTimeslice::GetSelectedData()
     if (uNbDigis) {
       auto startIt = fvDigiSts.begin() + event.GetIndex(ECbmDataType::kStsDigi, 0);
       auto stopIt  = fvDigiSts.begin() + event.GetIndex(ECbmDataType::kStsDigi, uNbDigis - 1);
+      ++stopIt;
       selEvent.fData.fSts.fDigis.assign(startIt, stopIt);
 
       /*
@@ -848,6 +856,7 @@ std::vector<CbmDigiEvent> CbmEventTimeslice::GetSelectedData()
     if (uNbDigis) {
       auto startIt = fvDigiMuch.begin() + event.GetIndex(ECbmDataType::kMuchDigi, 0);
       auto stopIt  = fvDigiMuch.begin() + event.GetIndex(ECbmDataType::kMuchDigi, uNbDigis - 1);
+      ++stopIt;
       selEvent.fData.fMuch.fDigis.assign(startIt, stopIt);
 
       /*
@@ -872,6 +881,7 @@ std::vector<CbmDigiEvent> CbmEventTimeslice::GetSelectedData()
     if (uNbDigis) {
       auto startIt = fvDigiTrd.begin() + event.GetIndex(ECbmDataType::kTrdDigi, 0);
       auto stopIt  = fvDigiTrd.begin() + event.GetIndex(ECbmDataType::kTrdDigi, uNbDigis - 1);
+      ++stopIt;
       selEvent.fData.fTrd.fDigis.assign(startIt, stopIt);
 
       /*
@@ -898,6 +908,7 @@ std::vector<CbmDigiEvent> CbmEventTimeslice::GetSelectedData()
     if (uNbDigis) {
       auto startIt = fvDigiTof.begin() + event.GetIndex(ECbmDataType::kTofDigi, 0);
       auto stopIt  = fvDigiTof.begin() + event.GetIndex(ECbmDataType::kTofDigi, uNbDigis - 1);
+      ++stopIt;
       selEvent.fData.fTof.fDigis.assign(startIt, stopIt);
 
       /*
@@ -922,6 +933,7 @@ std::vector<CbmDigiEvent> CbmEventTimeslice::GetSelectedData()
     if (uNbDigis) {
       auto startIt = fvDigiRich.begin() + event.GetIndex(ECbmDataType::kRichDigi, 0);
       auto stopIt  = fvDigiRich.begin() + event.GetIndex(ECbmDataType::kRichDigi, uNbDigis - 1);
+      ++stopIt;
       selEvent.fData.fRich.fDigis.assign(startIt, stopIt);
 
       /*
@@ -946,6 +958,7 @@ std::vector<CbmDigiEvent> CbmEventTimeslice::GetSelectedData()
     if (uNbDigis) {
       auto startIt = fvDigiPsd.begin() + event.GetIndex(ECbmDataType::kPsdDigi, 0);
       auto stopIt  = fvDigiPsd.begin() + event.GetIndex(ECbmDataType::kPsdDigi, uNbDigis - 1);
+      ++stopIt;
       selEvent.fData.fPsd.fDigis.assign(startIt, stopIt);
 
       /*
