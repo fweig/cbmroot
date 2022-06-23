@@ -255,11 +255,11 @@ private:
 
   Double_t getBeta(CbmTofTracklet* track);
 
-  Double_t getBeta(CbmRichRing* ring);
+  Double_t getBeta(const CbmRichRing* ring);
 
-  void analyseRing(CbmRichRing* ring, CbmEvent* ev, std::pair<int, double>& clTrack);
+  void analyseRing(const CbmRichRing* ring, CbmEvent* ev, std::pair<int, double>& clTrack);
 
-  Bool_t cutRadius(CbmRichRing* ring);
+  Bool_t cutRadius(const CbmRichRing* ring);
   Bool_t cutDistance(std::pair<int, double>& clTrack);
 
 

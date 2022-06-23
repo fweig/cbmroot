@@ -732,16 +732,18 @@ void run_reco_mcbm_real_wToF_mar22_iron_T0ref(const unsigned int runId = 2160,  
   //  outfile << "parFile: " << parFile << std::endl;
   outfile << "digiFile: " << digiFile << std::endl;
   outfile << "recoFile: " << recoFile << std::endl;
-  //outfile << "Geometry: " << geoFile << std::endl;
+  outfile << "Geometry: " << setup << std::endl;
   outfile << "TrackCalParFile: " << TofFileFolder << cCalId << std::endl;
   outfile << "TofClusterFile :" << TofFileFolder + cFname << std::endl;
   outfile << "TofOutput :" << cFname << std::endl << std::endl;
   outfile << "Trigger:" << std::endl;
   outfile << "  fixedTimeWindow :" << eb_fixedTimeWindow << std::endl;
   outfile << "  MinNumberT0   :" << eb_TriggerMinNumberT0 << std::endl;
+  outfile << "  MaxNumberT0   :" << eb_TriggerMaxNumberT0 << std::endl;
   outfile << "  MinNumberSts  :" << eb_TriggerMinNumberSts << std::endl;
   outfile << "  MinNumberMuch :" << eb_TriggerMinNumberMuch << std::endl;
   outfile << "  MinNumberTof  :" << eb_TriggerMinNumberTof << std::endl;
+  outfile << "  MinNumberTofLayers  :" << eb_TriggerMinNumberTofLayers << std::endl;
   outfile << "  MinNumberRich :" << eb_TriggerMinNumberRich << std::endl;
   outfile.close();
   // ------------------------------------------------------------------------
