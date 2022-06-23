@@ -84,7 +84,7 @@ Bool_t mcbm_event_reco(UInt_t uRunId                   = 2391,
   Int_t iSel2        = 20;  //500;
 
   // Tracking
-  Int_t iSel           = 1;  //500;//910041;
+  Int_t iSel           = -1;  //500;//910041;
   Int_t iTrackingSetup = 2;
   Int_t iGenCor        = 1;
   Double_t dScalFac    = 1.;
@@ -101,12 +101,14 @@ Bool_t mcbm_event_reco(UInt_t uRunId                   = 2391,
   if (uRunId >= 1588) cCalId = "1588.50.6.0";
   if (uRunId >= 2160) cCalId = "2160.50.4.0";
   if (uRunId >= 2352) cCalId = "2365.5.lxbk0600";
+  if (uRunId >= 2391) cCalId = "2391.5.lxbk0598";
   Int_t iCalSet = 30040500;  // calibration settings
   if (uRunId >= 759) iCalSet = 10020500;
   if (uRunId >= 812) iCalSet = 10020500;
   if (uRunId >= 1588) iCalSet = 12002002;
   if (uRunId >= 2160) iCalSet = 700900500;
   if (uRunId >= 2352) iCalSet = 42032500;
+  if (uRunId >= 2391) iCalSet = 22002500;
 
   Double_t Tint           = 100.;  // coincidence time interval
   Int_t iTrackMode        = 2;     // 2 for TofTracker
@@ -504,7 +506,7 @@ Bool_t mcbm_event_reco(UInt_t uRunId                   = 2391,
         iDut          = (iDut - iDutRpc) / 10;
         Int_t iDutSm  = iDut % 10;
         iDut          = (iDut - iDutSm) / 10;
-        tofCluster->SetDutId(iDut);
+        tofCluster->SetDutId(-1);  // (iDut);
         tofCluster->SetDutSm(iDutSm);
         tofCluster->SetDutRpc(iDutRpc);
 
@@ -928,7 +930,7 @@ Bool_t mcbm_event_reco(UInt_t uRunId                   = 2391,
 
   // e.g for RICH:
   // CbmRichMCbmQaReal* qaTask = new CbmRichMCbmQaReal();
-  // Int_t taskId = 1;
+  // Int_t taskId = 2;
   // if (taskId < 0) { qaTask->SetOutputDir(Form("result_run%d", uRunId)); }
   // else {
   //   qaTask->SetOutputDir(Form("result_run%d_%05d", uRunId, taskId));
