@@ -301,7 +301,7 @@ private:
   /// \param TsStart      Reference to the timeslice start time
   /// \param TsLength     Reference to the timeslice length
   /// \param TsOverlap    Reference to the timeslice overlap length (does not used at the moment)
-  /// \param FstHitinTs   Index of the first hit in the time-lice
+  /// \param FstHitinTs   Index of the first hit in the time-slice
   /// \param areDataLeft  Flag: true - data were left after reading the sub-timeslice
   /// \param event        Pointer to the current CbmEvent object
   void ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, float& TsOverlap, int& FstHitinTs,

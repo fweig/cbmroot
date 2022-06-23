@@ -26,18 +26,21 @@ struct L1AlgoInputData {
 
   /// Default constructor
   L1AlgoInputData()  = default;
+  
   /// Default destructor
   ~L1AlgoInputData() = default;
 
   /// Resets the object
   /// For all the vectors the clear method is called, all other fields are set to zero
   void Clear();
+  
   /// Gets number of the station strips
   int GetNstrips() const { return fNstrips; }
   /// Gives an access to the underlying vector of L1Hit objects
   L1Vector<L1Hit>& GetHits() { return vHits; }
   /// Gives an access to the vector of the strip flags
   L1Vector<unsigned char>& GetSFlag() { return fStripFlag; }
+  
   /// Gets an access of the start indexes for different stations
   /// \return pointer to the first element of the array over the stations
   const L1HitIndex_t* GetHitsStartIndex() const { return HitsStartIndex; }
@@ -54,9 +57,6 @@ struct L1AlgoInputData {
   ///    true  - data was read and stored into this object
   ///    false - data was not read for some reason
   bool ReadHitsFromFile(const char work_dir[100], const int maxNEvent, const int iVerbose);
-  // TODO: Is there any reason to pass string as an array of chars? It is dangerous, because if one can pass a
-  //       string containing more then 100 symbols and thus cast a segmentation violation. So, I'd change it
-  //       to const char*, if there are no any specific reasons to keep the current signature. (S.Zharko)
 
   //  void PrintHits();
 
@@ -65,20 +65,27 @@ struct L1AlgoInputData {
   //
   /// Placement new operator for single element
   void* operator new(size_t size, void* ptr) { return ::operator new(size, ptr); }
+  
   /// Placement new operator for multiple elements
   void* operator new[](size_t size, void* ptr) { return ::operator new(size, ptr); }
+  
   /// New operator for single element
   void* operator new(size_t size) { return _mm_malloc(size, 16); }
+  
   /// New operator for multiple elements
   void* operator new[](size_t size) { return _mm_malloc(size, 16); }
+  
   /// Delete operator for single element
   void operator delete(void* ptr, size_t) { _mm_free(ptr); }
+  
   /// Delete operator for multiple elements
   void operator delete[](void* ptr, size_t) { _mm_free(ptr); }
 
   // TODO: Where are the definitions? (S.Zharko)
+  
   /// Copy constructor
   L1AlgoInputData(const L1AlgoInputData& a);
+  
   /// Copy assignment operator
   const L1AlgoInputData& operator=(const L1AlgoInputData& a);
 

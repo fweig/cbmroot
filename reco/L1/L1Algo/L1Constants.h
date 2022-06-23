@@ -12,6 +12,8 @@
 #ifndef L1Constants_h
 #define L1Constants_h 1
 
+#include "L1NaN.h"
+
 /// Namespace contains compile-time constants definition for the L1 tracking algorithm
 namespace L1Constants
 {
@@ -72,6 +74,16 @@ namespace L1Constants
     constexpr int kAssertionLevel {0};  ///< Assertion level
     constexpr int kAlignment {16};
   }  // end namespace misc
+
+  /// NoInit constants (aliasses)
+  namespace noin
+  {
+    constexpr float        kF   { L1NaN::SetNaN<float>() };
+    constexpr double       kD   { L1NaN::SetNaN<double>() };
+    constexpr int          k32I { L1NaN::SetNaN<int>() };
+    constexpr unsigned int k32U { L1NaN::SetNaN<unsigned int>() };
+  }
+
 }  // end namespace L1Constants
 
 

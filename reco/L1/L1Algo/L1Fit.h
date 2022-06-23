@@ -13,6 +13,7 @@
 #include "L1Def.h"
 #include "L1MaterialInfo.h"
 #include "L1TrackPar.h"
+#include "L1Constants.h"
 
 ///
 /// A collection of fit routines used by the CA tracker
@@ -75,12 +76,12 @@ public:
 
   void L1AddTargetMaterial(L1TrackPar& T, fvec qp0, fvec w);
 
-  const fvec PipeRadThick   = 7.87e-3f;      // 0.7 mm Aluminium
-  const fvec TargetRadThick = 3.73e-2f * 2;  // 250 mum Gold
+  const fvec PipeRadThick   = 7.87e-3f;      // 0.7 mm Aluminium  // TODO: !
+  const fvec TargetRadThick = 3.73e-2f * 2;  // 250 mum Gold      // TODO: !
 
 private:
-  fvec fMass  = 0.10565800;  // muon mass by default (pion 0.13957000f )
-  fvec fMass2 = fMass * fMass;
+  fvec fMass  {L1Constants::phys::kMuonMass};  // muon mass by default
+  fvec fMass2 {fMass * fMass};
 
   //ClassDefNV(L1Fit, 0)
 };

@@ -21,7 +21,7 @@ class L1Station {
 public:
   int type        {L1NaN::SetNaN<decltype(type)>()};
   int timeInfo    {L1NaN::SetNaN<decltype(timeInfo)>()};          ///< flag: if time information can be used
-  int fieldStatus {L1NaN::SetNaN<decltype(fieldStatus)>()};       ///< flag: 1 - station is INSIDE the field, 0 - station is OUTSIDE the field
+  int fieldStatus {L1NaN::SetNaN<decltype(fieldStatus)>()};       ///< flag: 1 - station is INSIDE the field, 0 - station is OUTSIDE the field (replace with enum)
   fvec z          {L1NaN::SetNaN<decltype(z)>()};     ///< z position of station     [cm]
   fvec Rmin       {L1NaN::SetNaN<decltype(Rmin)>()};  ///< min radius of the station [cm]
   fvec Rmax       {L1NaN::SetNaN<decltype(Rmax)>()};  ///< max radius of the station [cm]

@@ -1041,8 +1041,9 @@ void CbmL1::Reconstruct(CbmEvent* event)
     if (fPerformance) {
       HitMatch();
       // calculate the max number of Hits\mcPoints on continuous(consecutive) stations
-      for (L1Vector<CbmL1MCTrack>::iterator it = vMCTracks.begin(); it != vMCTracks.end(); ++it)
+      for (auto it = vMCTracks.begin(); it != vMCTracks.end(); ++it) {
         it->Init();
+      }
     }
 
     if (fSTAPDataMode % 2 == 1) {  // 1,3
