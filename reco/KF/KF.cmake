@@ -30,7 +30,8 @@ ${CBMDETECTORBASE_DIR}/sts
 ${CBMROOT_SOURCE_DIR}/mvd 
 
 ${CBMDETECTORBASE_DIR}/much # TMP for tracker interface
-${CBMDETECTORBASE_DIR}/trd # TMP for tracker interface
+${CBMDETECTORBASE_DIR}/trd  # TMP for tracker interface
+${CBMDETECTORBASE_DIR}/tof  # TMP for tracker interface
 ${CBMROOT_SOURCE_DIR}/sim/transport/steer # TMP for tracker interface
 ${CBMROOT_SOURCE_DIR}/sim/transport/geosetup # TMP for tracker interface
 )
@@ -174,7 +175,7 @@ ENDIF (SSE_FOUND)
 set(LINKDEF KFLinkDef.h)
 Set(LIBRARY_NAME KF)
 Set(DEPENDENCIES
-  CbmRecoBase CbmSimSteer CbmStsBase CbmMvd CbmMuchBase CbmTrdBase CbmBase CbmData Base Vc.a Minuit2
+  CbmRecoBase CbmSimSteer CbmStsBase CbmMvd CbmMuchBase CbmTrdBase CbmTofBase CbmBase CbmData Base Vc.a Minuit2
 )
 Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 

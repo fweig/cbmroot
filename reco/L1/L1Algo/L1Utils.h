@@ -10,12 +10,13 @@
 #ifndef L1Utils_h
 #define L1Utils_h 1
 
+#include <type_traits>
+
 #include <iomanip>
 #include <limits>
 #include <map>
 #include <sstream>
 #include <string>
-#include <type_traits>
 #include <unordered_map>
 
 #include <cmath>
@@ -32,7 +33,7 @@ struct L1Utils {
   /// \param  lhs  Left floating point to compare
   /// \param  rhs  Right floating point to compare
   /// \return      Comparison result: true - equals within epsilon
-  template <typename T, typename std::enable_if<std::is_floating_point<T>::value, T>::type* = nullptr>
+  template<typename T, typename std::enable_if<std::is_floating_point<T>::value, T>::type* = nullptr>
   static bool CmpFloats(T lhs, T rhs)
   {
     return fabs(lhs - rhs) < 2. * std::numeric_limits<T>::epsilon() * fabs(lhs + rhs)

@@ -15,6 +15,7 @@
 #include "CbmMvdTrackingInterface.h"
 #include "CbmSetup.h"
 #include "CbmStsTrackingInterface.h"
+#include "CbmTofTrackingInterface.h"
 #include "CbmTrdTrackingInterface.h"
 
 #include <FairLogger.h>
@@ -42,12 +43,14 @@ CbmTrackingDetectorInterfaceInit::CbmTrackingDetectorInterfaceInit() : FairTask(
     if (useSts) { fpStsTrackingInterface = new CbmStsTrackingInterface(); }
     if (useMuch) { fpMuchTrackingInterface = new CbmMuchTrackingInterface(); }
     if (useTrd) { fpTrdTrackingInterface = new CbmTrdTrackingInterface(); }
+    if (useTof) { fpTofTrackingInterface = new CbmTofTrackingInterface(); }
 
     /** Add subtasks - tracker detector interfaces **/
     if (useMvd) { this->Add(fpMvdTrackingInterface); }
     if (useSts) { this->Add(fpStsTrackingInterface); }
     if (useMuch) { this->Add(fpMuchTrackingInterface); }
     if (useTrd) { this->Add(fpTrdTrackingInterface); }
+    if (useTof) { this->Add(fpTofTrackingInterface); }
   }
 }
 

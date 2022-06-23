@@ -20,12 +20,12 @@ struct L1MaterialInfo {
   fvec thick {L1NaN::SetNaN<decltype(thick)>()};  ///< Average thickness of the station in arbitary length units
   /// Average radiation length (X0) of the station material in THE SAME UNITS as the thickness
   fvec RL {L1NaN::SetNaN<decltype(RL)>()};
-  fvec RadThick {L1NaN::SetNaN<decltype(RadThick)>()};       ///< Average thickness in units of radiation length (X/X0)
-  fvec logRadThick {L1NaN::SetNaN<decltype(logRadThick)>()}; ///< Log of average thickness in units of radiation length
+  fvec RadThick {L1NaN::SetNaN<decltype(RadThick)>()};        ///< Average thickness in units of radiation length (X/X0)
+  fvec logRadThick {L1NaN::SetNaN<decltype(logRadThick)>()};  ///< Log of average thickness in units of radiation length
 
   /// Verifies class invariant consistency
   void CheckConsistency() const;
-  
+
   /// Checks, if the fields are NaN
   bool IsNaN() const
   {
@@ -77,12 +77,9 @@ public:
   /// \param x  X coordinate of the point [cm] (SIMDized vector)
   /// \param y  Y coordinate of the point [cm] (SIMDized veotor)
   fvec GetRadThick(fvec x, fvec y) const;
-  
+
   /// Checks, if the fields are NaN
-  bool IsNaN() const
-  {
-    return L1NaN::IsNaN(fNbins) || L1NaN::IsNaN(fRmax) || L1NaN::IsNaN(fFactor);
-  }
+  bool IsNaN() const { return L1NaN::IsNaN(fNbins) || L1NaN::IsNaN(fRmax) || L1NaN::IsNaN(fFactor); }
 
   /// Verifies class invariant consistency
   void CheckConsistency() const;
@@ -105,9 +102,10 @@ public:
   void Swap(L1Material& other) noexcept;
 
 private:
-  int fNbins    {L1NaN::SetNaN<decltype(fNbins)>()};   ///< Number of rows (columns) in the material budget table
-  float fRmax   {L1NaN::SetNaN<decltype(fRmax)>()};    ///< Size of the station in x and y dimensions [cm]
-  float fFactor {L1NaN::SetNaN<decltype(fFactor)>()};  ///< Factor used in the recalculation of point coordinates to row/column id
+  int fNbins {L1NaN::SetNaN<decltype(fNbins)>()};  ///< Number of rows (columns) in the material budget table
+  float fRmax {L1NaN::SetNaN<decltype(fRmax)>()};  ///< Size of the station in x and y dimensions [cm]
+  float fFactor {
+    L1NaN::SetNaN<decltype(fFactor)>()};  ///< Factor used in the recalculation of point coordinates to row/column id
   std::vector<float> fTable {};  ///< Material budget table
 } _fvecalignment;
 

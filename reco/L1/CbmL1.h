@@ -63,9 +63,6 @@ class KFTopoPerformance;
 class CbmMCDataObject;
 
 class CbmEvent;
-class CbmTofDigiBdfPar;
-
-class CbmTofDigiPar;
 class TProfile2D;
 
 class CbmL1HitStore {
@@ -477,8 +474,6 @@ private:
   CbmMCDataArray* fTofPoints {nullptr};
   TClonesArray* fTofHitDigiMatches {nullptr};  // CbmMatches array
   TClonesArray* fTofHits {nullptr};            // CbmMatches array
-  CbmTofDigiPar* fDigiPar {nullptr};
-  CbmTofDigiBdfPar* fTofDigiBdfPar {nullptr};
   vector<vector<int>> TofPointToTrack;
 
   TFile* fPerfFile {nullptr};

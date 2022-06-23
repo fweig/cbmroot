@@ -64,9 +64,9 @@ namespace L1Constants
   namespace phys
   {
     /* Particle masses used for track fit */
-    constexpr float kMuonMass     {0.10565800f};  ///< Muon mass     [GeV/c2]
-    constexpr float kElectronMass {0.000511f};    ///< Electron mass [GeV/c2]
-  }
+    constexpr float kMuonMass {0.10565800f};    ///< Muon mass     [GeV/c2]
+    constexpr float kElectronMass {0.000511f};  ///< Electron mass [GeV/c2]
+  }                                             // namespace phys
 
   /// Miscellaneous constants
   namespace misc
@@ -78,11 +78,11 @@ namespace L1Constants
   /// NoInit constants (aliasses)
   namespace noin
   {
-    constexpr float        kF   { L1NaN::SetNaN<float>() };
-    constexpr double       kD   { L1NaN::SetNaN<double>() };
-    constexpr int          k32I { L1NaN::SetNaN<int>() };
-    constexpr unsigned int k32U { L1NaN::SetNaN<unsigned int>() };
-  }
+    constexpr float kF {L1NaN::SetNaN<float>()};
+    constexpr double kD {L1NaN::SetNaN<double>()};
+    constexpr int k32I {L1NaN::SetNaN<int>()};
+    constexpr unsigned int k32U {L1NaN::SetNaN<unsigned int>()};
+  }  // namespace noin
 
 }  // end namespace L1Constants
 

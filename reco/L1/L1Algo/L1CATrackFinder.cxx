@@ -154,9 +154,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
   L1Fit fit;
 
-  if (fpCurrentIteration->GetElectronFlag()) {
-    fit.SetParticleMass(L1Constants::phys::kElectronMass);
-  }
+  if (fpCurrentIteration->GetElectronFlag()) { fit.SetParticleMass(L1Constants::phys::kElectronMass); }
   else {
     fit.SetParticleMass(fDefaultMass);
   }
@@ -1278,19 +1276,10 @@ inline void L1Algo::f5(  // input
 
 inline void L1Algo::DupletsStaPort(
   /// input:
-  int istal, 
-  int istam, 
-  Tindex ip, 
-  L1Vector<Tindex>& n_g, 
-  Tindex* portionStopIndex_,
+  int istal, int istam, Tindex ip, L1Vector<Tindex>& n_g, Tindex* portionStopIndex_,
   /// output:
-  L1TrackPar* T_1, 
-  L1FieldRegion* fld_1, 
-  L1HitIndex_t* hitsl_1, 
-  L1Vector<char>& lmDuplets, 
-  Tindex& n_2,
-  L1Vector<L1HitIndex_t>& i1_2, 
-  L1Vector<L1HitIndex_t>& hitsm_2
+  L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1, L1Vector<char>& lmDuplets, Tindex& n_2,
+  L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2
   ///
 )
 {
@@ -1384,43 +1373,35 @@ inline void L1Algo::DupletsStaPort(
 
 /// ------------------- Triplets on station ----------------------
 
-inline void
-L1Algo::TripletsStaPort(  /// creates triplets: 
-  /// input: 
-  ///  @istal - start station number, 
-  ///  @istam - middle station number, 
-  ///  @istar - last station number, 
-  ///  @ip - index of portion, 
-  ///  @&n_g - numer of elements in portion, 
+inline void L1Algo::TripletsStaPort(  /// creates triplets:
+  /// input:
+  ///  @istal - start station number,
+  ///  @istam - middle station number,
+  ///  @istar - last station number,
+  ///  @ip - index of portion,
+  ///  @&n_g - numer of elements in portion,
   ///  @*portionStopIndex
-  int istal, 
-  int istam, 
-  int istar,
+  int istal, int istam, int istar,
 
-  /// @nstaltriplets - , 
-  /// @*portionStopIndex, 
-  /// @*T_1 - track parameters for singlets, 
-  /// @*fld_1 - field approximation for singlets, 
+  /// @nstaltriplets - ,
+  /// @*portionStopIndex,
+  /// @*T_1 - track parameters for singlets,
+  /// @*fld_1 - field approximation for singlets,
   /// @&n_2 - number of doublets in portion
   /// @&n_2 - number of douplets,
-  /// @&i1_2 - index of 1st hit in portion indexed by doublet index, 
+  /// @&i1_2 - index of 1st hit in portion indexed by doublet index,
   /// @&hitsm_2 - index of middle hit in hits array indexed by doublet index
 
 
-  Tindex& nstaltriplets, 
-  L1TrackPar* T_1, 
-  L1FieldRegion* fld_1, 
-  L1HitIndex_t* hitsl_1,
+  Tindex& nstaltriplets, L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
 
-  Tindex& n_2, 
-  L1Vector<L1HitIndex_t>& i1_2, 
-  L1Vector<L1HitIndex_t>& hitsm_2,
+  Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2,
 
   const L1Vector<char>& mrDuplets
 
-  /// output: 
-  // @*vTriplets_part - array of triplets, 
-  // @*TripStartIndexH, 
+  /// output:
+  // @*vTriplets_part - array of triplets,
+  // @*TripStartIndexH,
   // @*TripStopIndexH - start/stop index of a triplet in the array
 
 )
@@ -1765,7 +1746,7 @@ void L1Algo::CATrackFinder()
   // ---- Loop over Track Finder iterations ----------------------------------------------------------------//
   L1ASSERT(0, fNFindIterations == fParameters.GetCAIterations().size());
   isec = 0;                                                      // TODO: temporary! (S.Zharko)
-  
+
   for (const auto& caIteration : fParameters.GetCAIterations())  // all finder
   {
     fpCurrentIteration = &caIteration;  // select current iteration
@@ -1917,20 +1898,20 @@ void L1Algo::CATrackFinder()
     L1HitIndex_t hitslG_1[Portion];
 
     /// middle hits indexed by number of doublets in portion(i2)
-    L1Vector<L1HitIndex_t> hitsm_2("L1CATrackFinder::hitsm_2");  
-    
+    L1Vector<L1HitIndex_t> hitsm_2("L1CATrackFinder::hitsm_2");
+
     /// index in portion of singlets(i1) indexed by index in portion of doublets(i2)
     L1Vector<L1HitIndex_t> i1_2("L1CATrackFinder::i1_2");
 
     /// middle hits indexed by number of doublets in portion(i2)
     L1Vector<L1HitIndex_t> hitsmG_2("L1CATrackFinder::hitsmG_2");
- 
+
     /// index in portion of singlets(i1) indexed by index in portion of doublets(i2)
     L1Vector<L1HitIndex_t> i1G_2("L1CATrackFinder::i1G_2");
-    
+
     /// is exist a doublet started from indexed by left hit
     L1Vector<char> lmDuplets[L1Constants::size::kMaxNstations] {"L1CATrackFinder::lmDuplets"};
-    
+
     /// is exist a doublet started from indexed by left hit
     L1Vector<char> lmDupletsG[L1Constants::size::kMaxNstations] {"L1CATrackFinder::lmDupletsG"};
 

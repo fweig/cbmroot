@@ -3,12 +3,14 @@
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
 #include "L1MaterialInfo.h"
-#include "L1Utils.h"
+
 #include <FairLogger.h>
 
 #include <iomanip>
 #include <sstream>
 #include <vector>
+
+#include "L1Utils.h"
 
 /************************
  * L1MaterialInfo class *

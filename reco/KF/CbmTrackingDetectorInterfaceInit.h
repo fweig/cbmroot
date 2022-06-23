@@ -18,6 +18,7 @@ class CbmMvdTrackingInterface;
 class CbmStsTrackingInterface;
 class CbmMuchTrackingInterface;
 class CbmTrdTrackingInterface;
+class CbmTofTrackingInterface;
 
 /// Class CbmTrackingDetectorInterfaceInit implements a task for the tracking detector interfaces initialization.
 /// The tracking detector interfaces are added as subtasks. The CbmTrackingDetectorInterfaceInit class instance is to
@@ -45,6 +46,7 @@ public:
   CbmStsTrackingInterface* GetStsTrackingInterface() { return fpStsTrackingInterface; }
   CbmMuchTrackingInterface* GetMuchTrackingInterface() { return fpMuchTrackingInterface; }
   CbmTrdTrackingInterface* GetTrdTrackingInterface() { return fpTrdTrackingInterface; }
+  CbmTofTrackingInterface* GetTofTrackingInterface() { return fpTofTrackingInterface; }
 
 private:
   static CbmTrackingDetectorInterfaceInit* fpInstance;  ///< Instance of the class
@@ -53,6 +55,7 @@ private:
   CbmStsTrackingInterface* fpStsTrackingInterface {nullptr};    ///< Instance of the STS tracker interface
   CbmMuchTrackingInterface* fpMuchTrackingInterface {nullptr};  ///< Instance of the MuCh tracker interface
   CbmTrdTrackingInterface* fpTrdTrackingInterface {nullptr};    ///< Instance of the TRD tracker interface
+  CbmTofTrackingInterface* fpTofTrackingInterface {nullptr};    ///< Instance of the TOF tracker interface
 
   ClassDef(CbmTrackingDetectorInterfaceInit, 0);
 };

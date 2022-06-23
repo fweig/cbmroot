@@ -1,6 +1,6 @@
 set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}
-
+  ${CBMBASE_DIR}
   ${CBMDATA_DIR}
   ${CBMDATA_DIR}/tof
   ${CBMDATA_DIR}/raw
@@ -30,6 +30,7 @@ set(SRCS
   CbmTofDigiPar.cxx
   CbmMcbm2018TofPar.cxx
   CbmTofGeoHandler.cxx
+  CbmTofTrackingInterface.cxx
   TTrbHeader.cxx
 )
 

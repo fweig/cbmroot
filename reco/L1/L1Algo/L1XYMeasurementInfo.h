@@ -25,10 +25,7 @@ public:
   std::string ToString(int indentLevel = 0) const;
 
   /// Checks, if the fields are NaN
-  bool IsNaN() const
-  {
-    return L1NaN::IsNaN(C00) || L1NaN::IsNaN(C10) || L1NaN::IsNaN(C11);
-  }
+  bool IsNaN() const { return L1NaN::IsNaN(C00) || L1NaN::IsNaN(C10) || L1NaN::IsNaN(C11); }
 } _fvecalignment;
 
 

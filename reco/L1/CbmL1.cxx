@@ -28,6 +28,7 @@
 #include "CbmMvdTrackingInterface.h"
 #include "CbmSetup.h"
 #include "CbmStsTrackingInterface.h"
+#include "CbmTofTrackingInterface.h"
 #include "CbmTrdTrackingInterface.h"
 
 #include <boost/filesystem.hpp>
@@ -36,9 +37,6 @@
 #include "CbmMCDataObject.h"
 #include "CbmStsFindTracks.h"
 #include "CbmStsHit.h"
-#include "CbmTofCell.h"
-#include "CbmTofDigiBdfPar.h"
-#include "CbmTofDigiPar.h"  // in tof/TofParam
 #include "CbmTrackingDetectorInterfaceInit.h"
 
 #include "FairEventHeader.h"
@@ -121,18 +119,7 @@ void CbmL1::CheckDetectorPresence()
 }
 
 
-void CbmL1::SetParContainers()
-{
-  LOG(warn) << "(!) \033[1;32mCALL CbmL1::SetParContainers\033[0m";
-  FairRunAna* ana     = FairRunAna::Instance();
-  FairRuntimeDb* rtdb = ana->GetRuntimeDb();
-  fDigiPar            = (CbmTofDigiPar*) (rtdb->getContainer("CbmTofDigiPar"));
-  //  fTrdDigiPar = (CbmTrdDigiPar*)(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdDigiPar"));
-
-  fTofDigiBdfPar = (CbmTofDigiBdfPar*) (rtdb->getContainer("CbmTofDigiBdfPar"));
-  rtdb->initContainers(ana->GetRunId());  // needed to get tracking stations for ToF hits
-}
-
+void CbmL1::SetParContainers() {}
 
 InitStatus CbmL1::ReInit()
 {
@@ -404,84 +391,22 @@ InitStatus CbmL1::Init()
    ** Counting numbers of stations for different detector subsystems  **
    *********************************************************************/
 
-  //CbmMuchGeoScheme* fGeoScheme = CbmMuchGeoScheme::Instance();
-
-  /*** MuCh ***/
-  //if (fUseMUCH) {
-  //  /// Save old global file and folder pointer to avoid messing with FairRoot
-  //  fGeoScheme->Init(fMuchDigiFile, 0);
-  //  for (int iStation = 0; iStation < fGeoScheme->GetNStations(); iStation++) {
-  //    const CbmMuchStation* station = fGeoScheme->GetStation(iStation);
-  //    int nLayers                   = station->GetNLayers();
-  //    NMuchStationsGeom += nLayers;
-  //    std::cout << "\033[1;31mMUCH: station " << iStation << " layer\033[0m\n";
-  //  }
-  //}
-
-  /*** TRD ***/
-  //if (fUseTRD) {
-  //  Int_t layerCounter  = 0;
-  //  TObjArray* topNodes = gGeoManager->GetTopNode()->GetNodes();
-  //  for (Int_t iTopNode = 0; iTopNode < topNodes->GetEntriesFast(); iTopNode++) {
-  //    TGeoNode* topNode = static_cast<TGeoNode*>(topNodes->At(iTopNode));
-  //    if (TString(topNode->GetName()).Contains("trd")) {
-  //      TObjArray* layers = topNode->GetNodes();
-  //      for (Int_t iLayer = 0; iLayer < layers->GetEntriesFast(); iLayer++) {
-  //        TGeoNode* layer = static_cast<TGeoNode*>(layers->At(iLayer));
-  //        if (TString(layer->GetName()).Contains("layer")) { layerCounter++; }
-  //      }
-  //    }
-  //  }
-  //  NTrdStationsGeom = layerCounter;
-  //  //if ((fTrackingMode == L1Algo::TrackingMode::kMcbm) && (fMissingHits)) { NTrdStationsGeom = NTrdStationsGeom - 1; }
-  //  LOG(info) << " NTrdStations " << NTrdStationsGeom;
-  //}
-
-  /*** ToF ***/
-  vector<float> TofStationZ;
-  vector<int> TofStationN;
-  if (fUseTOF) {
-    NTOFStationGeom = fTofDigiBdfPar->GetNbTrackingStations();
-    TofStationZ.resize(NTOFStationGeom, 0);
-    TofStationN.resize(NTOFStationGeom, 0);
-
-    for (int iSmType = 0; iSmType < fTofDigiBdfPar->GetNbSmTypes(); iSmType++) {
-      for (int iSm = 0; iSm < fTofDigiBdfPar->GetNbSm(iSmType); iSm++) {
-        for (int iRpc = 0; iRpc < fTofDigiBdfPar->GetNbRpc(iSmType); iRpc++) {
-          int iAddr                = CbmTofAddress::GetUniqueAddress(iSm, iRpc, 0, 0, iSmType);
-          int station              = fTofDigiBdfPar->GetTrackingStation(iSmType, iSm, iRpc);
-          CbmTofCell* fChannelInfo = fDigiPar->GetCell(iAddr);
-          if (NULL == fChannelInfo) break;
-          float z = fChannelInfo->GetZ();
-          float x = fChannelInfo->GetX();
-          //float y = fChannelInfo->GetY();
-
-          if (station < 0) continue;
-
-          if (fMissingHits) {
-            if ((x > 20) && (z > 270) && (station == 1)) station = 2;
-            if (z > 400) continue;
-          }
-          TofStationZ[station] += z;
-          TofStationN[station] += 1;
-        }
-      }
-    }
-    for (Int_t i = 0; i < NTOFStationGeom; i++)
-      TofStationZ[i] = TofStationZ[i] / TofStationN[i];
-  }
-
-
   /*** MVD and STS ***/
   auto mvdInterface  = CbmMvdTrackingInterface::Instance();
   auto stsInterface  = CbmStsTrackingInterface::Instance();
   auto muchInterface = CbmMuchTrackingInterface::Instance();
   auto trdInterface  = CbmTrdTrackingInterface::Instance();
+  auto tofInterface  = CbmTofTrackingInterface::Instance();
+
+  // NOTE: hack for "mcbm_beam_2021_07_surveyed" to account for a mismactch in the station
+  //       indeces of hits in TOF
+  if (fMissingHits) { tofInterface->FixHitsStationsMismatch(); }
 
   NMvdStationsGeom  = (fUseMVD) ? mvdInterface->GetNtrackingStations() : 0;
   NStsStationsGeom  = (fUseSTS) ? stsInterface->GetNtrackingStations() : 0;
   NMuchStationsGeom = (fUseMUCH) ? muchInterface->GetNtrackingStations() : 0;
   NTrdStationsGeom  = (fUseTRD) ? trdInterface->GetNtrackingStations() : 0;
+  NTOFStationGeom   = (fUseTOF) ? tofInterface->GetNtrackingStations() : 0;
   NStationGeom      = NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom + NTrdStationsGeom + NTOFStationGeom;
 
   // Provide crosscheck number of stations for the fpInitManagera
@@ -663,22 +588,22 @@ InitStatus CbmL1::Init()
     for (int iSt = 0; iSt < NTOFStationGeom; ++iSt) {
       auto stationInfo = L1BaseStationInfo(L1DetectorID::kTof, iSt);
       stationInfo.SetStationType(4);
-      stationInfo.SetTimeInfo(1);
-      stationInfo.SetTimeResolution(0.075);
+      stationInfo.SetTimeInfo(tofInterface->IsTimeInfoProvided(iSt));
+      stationInfo.SetTimeResolution(tofInterface->GetTimeResolution(iSt));
       stationInfo.SetFieldStatus(0);
-      stationInfo.SetZ(TofStationZ[iSt]);
-      auto thickness = 10.;
-      auto radLength = 2.;
+      stationInfo.SetZ(tofInterface->GetZ(iSt));
+      auto thickness = tofInterface->GetThickness(iSt);
+      auto radLength = tofInterface->GetRadLength(iSt);
       stationInfo.SetMaterialSimple(thickness, radLength);
       stationInfo.SetMaterialMap(std::move(materialTableTof[iSt]), correctionTof);
-      stationInfo.SetXmax(20.);
-      stationInfo.SetYmax(20.);
-      stationInfo.SetRmin(0.);
-      stationInfo.SetRmax(150.);
-      fscal tofFrontPhi   = 0;
-      fscal tofBackPhi    = TMath::Pi() / 2.;
-      fscal tofFrontSigma = 0.42;
-      fscal tofBackSigma  = 0.23;
+      stationInfo.SetXmax(tofInterface->GetXmax(iSt));
+      stationInfo.SetYmax(tofInterface->GetYmax(iSt));
+      stationInfo.SetRmin(tofInterface->GetRmin(iSt));
+      stationInfo.SetRmax(tofInterface->GetRmax(iSt));
+      fscal tofFrontPhi   = tofInterface->GetStripsStereoAngleFront(iSt);
+      fscal tofBackPhi    = tofInterface->GetStripsStereoAngleBack(iSt);
+      fscal tofFrontSigma = tofInterface->GetStripsSpatialRmsFront(iSt);
+      fscal tofBackSigma  = tofInterface->GetStripsSpatialRmsBack(iSt);
       stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofFrontSigma, tofBackPhi, tofBackSigma);
       stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
       fpInitManager->AddStation(stationInfo);

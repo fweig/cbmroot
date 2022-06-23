@@ -312,7 +312,7 @@ public:
 
 
   /// --- data used during finding iterations
-  int isec {0};  // iteration TODO: to be dispatched (S.Zharko, 21.06.2022)
+  int isec {0};                                       // iteration TODO: to be dispatched (S.Zharko, 21.06.2022)
   const L1CAIteration* fpCurrentIteration {nullptr};  ///< pointer to the current CA track finder iteration
 
   L1Vector<L1Hit>* vHitsUnused {nullptr};

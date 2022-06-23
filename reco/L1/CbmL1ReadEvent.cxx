@@ -33,9 +33,9 @@
 #include "CbmStsHit.h"
 #include "CbmStsPoint.h"
 #include "CbmStsSetup.h"
-#include "CbmTofDigiBdfPar.h"
 #include "CbmTofHit.h"
 #include "CbmTofPoint.h"
+#include "CbmTofTrackingInterface.h"
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 
@@ -1002,19 +1002,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       if (0x00202806 == mh->GetAddress() || 0x00002806 == mh->GetAddress()) continue;
 
-      int sttof = -1;
-
-      sttof = fTofDigiBdfPar->GetTrackingStation(mh);
+      int sttof = CbmTofTrackingInterface::Instance()->GetTrackingStation(mh);
 
       if (sttof < 0) continue;
-
-      // if (fTofDigiBdfPar->GetTrackingStation(mh) == 0) sttof = 0;
-      // if (fTofDigiBdfPar->GetTrackingStation(mh) == 1) sttof = 0;
-      // if (fTofDigiBdfPar->GetTrackingStation(mh) == 2) sttof = 1;
-      // if (fTofDigiBdfPar->GetTrackingStation(mh) == 3) sttof = 1;
-      // if (fTofDigiBdfPar->GetTrackingStation(mh) == 4) sttof = 2;
-      // if (fTofDigiBdfPar->GetTrackingStation(mh) == 5) sttof = 2;
-
 
       th.time = mh->GetTime();
       th.dt   = mh->GetTimeError();
@@ -1039,9 +1029,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
       th.y = pos.Y();
       th.z = pos.Z();
 
-      if (fMissingHits)
-        if ((th.x > 20) && (th.z > 270) && (fTofDigiBdfPar->GetTrackingStation(mh) == 1)) sttof = 2;
-      if (th.z > 400) continue;
+      if (th.z > 400) continue;  // is it still needed here? (S.Zharko)
 
       int stIdx = algo->GetParameters()->GetStationIndexActive(sttof, L1DetectorID::kTof);
       if (stIdx == -1) continue;

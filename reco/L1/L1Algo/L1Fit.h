@@ -10,10 +10,10 @@
 #ifndef L1Fit_H
 #define L1Fit_H
 
+#include "L1Constants.h"
 #include "L1Def.h"
 #include "L1MaterialInfo.h"
 #include "L1TrackPar.h"
-#include "L1Constants.h"
 
 ///
 /// A collection of fit routines used by the CA tracker
@@ -80,7 +80,7 @@ public:
   const fvec TargetRadThick = 3.73e-2f * 2;  // 250 mum Gold      // TODO: !
 
 private:
-  fvec fMass  {L1Constants::phys::kMuonMass};  // muon mass by default
+  fvec fMass {L1Constants::phys::kMuonMass};  // muon mass by default
   fvec fMass2 {fMass * fMass};
 
   //ClassDefNV(L1Fit, 0)
