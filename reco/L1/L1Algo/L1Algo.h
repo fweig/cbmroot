@@ -643,20 +643,13 @@ private:
     kFastPrimIter2,
     kAllSecJumpIter  // secondary tracks with jumped triplets
   };
+
 #ifdef TRACKS_FROM_TRIPLETS
-  enum
-  {
-    fNFindIterations = TRACKS_FROM_TRIPLETS_ITERATION + 1
-  };  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
+  int fNFindIterations = TRACKS_FROM_TRIPLETS_ITERATION + 1;  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
 #else  // not TRACKS_FROM_TRIPLETS
-
-  enum
-  {
-    fNFindIterations = 4
-  };  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
-
-
+  int fNFindIterations = -1;  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
 #endif  // TRACKS_FROM_TRIPLETS
+
 #else  // not FIND_GAPED_TRACKS
   enum
   {

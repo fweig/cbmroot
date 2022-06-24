@@ -1744,7 +1744,15 @@ void L1Algo::CATrackFinder()
 
 
   // ---- Loop over Track Finder iterations ----------------------------------------------------------------//
-  L1ASSERT(0, fNFindIterations == fParameters.GetCAIterations().size());
+
+#ifdef TRACKS_FROM_TRIPLETS
+  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
+  fNFindIterations = TRACKS_FROM_TRIPLETS_ITERATION + 1;
+#else
+  fNFindIterations = fParameters.GetNcaIterations();
+#endif
+
+  L1ASSERT(0, fNFindIterations == (int) fParameters.GetCAIterations().size());
   isec = 0;                                                      // TODO: temporary! (S.Zharko)
 
   for (const auto& caIteration : fParameters.GetCAIterations())  // all finder

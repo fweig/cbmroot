@@ -118,6 +118,9 @@ public:
   /// Provides access to L1CAIteration vector (const)
   const L1IterationsContainer_t& GetCAIterations() const { return fCAIterations; }
 
+  /// Provides number of iterations
+  int GetNcaIterations() const { return fCAIterations.size(); }
+
   /// Provides access to L1Stations container (const)
   const L1StationsContainer_t& GetStations() const { return fStations; }
 
