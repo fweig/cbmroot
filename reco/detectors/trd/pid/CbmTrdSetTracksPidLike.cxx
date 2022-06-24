@@ -15,6 +15,9 @@
 #include "CbmTrdTrack.h"
 
 #include "FairRootManager.h"
+#include "FairRunAna.h"
+#include "FairRuntimeDb.h"
+#include "FairParamList.h"
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -43,11 +46,13 @@ CbmTrdSetTracksPidLike::~CbmTrdSetTracksPidLike() {}
 // -------------------------------------------------------------------------
 
 // -----  SetParContainers -------------------------------------------------
-void CbmTrdSetTracksPidLike::SetParContainers() {}
+void CbmTrdSetTracksPidLike::SetParContainers() {
+  fGasPar = static_cast<CbmTrdParSetGas*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGas"));
+}
 // -------------------------------------------------------------------------
 
 
-// -----  RaedData -------------------------------------------------
+// -----  ReadData -------------------------------------------------
 Bool_t CbmTrdSetTracksPidLike::ReadData()
 {
   //
@@ -60,13 +65,14 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
   // and can construct the required file name
 
   if (fFileName.IsNull()) {
-    CbmTrdGas* fTrdGas = CbmTrdGas::Instance();
-    if (fTrdGas == 0) {
-      fTrdGas = new CbmTrdGas();
-      fTrdGas->Init();
-    }
-    fFileName = fTrdGas->GetFileName("Like");
+
+    FairParamList* parlist = new FairParamList();
+    fGasPar->putParams(parlist);
+    FairParamObj* filenamepar = parlist->find("RepoPid");
+    fFileName.Form("%s/%s", getenv("VMCWORKDIR"), filenamepar->getParamValue());
+    
   }
+
 
   /// Save old global file and folder pointer to avoid messing with FairRoot
   TFile* oldFile     = gFile;
