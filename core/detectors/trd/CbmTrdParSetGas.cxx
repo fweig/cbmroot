@@ -38,7 +38,6 @@ Bool_t CbmTrdParSetGas::getParams(FairParamList* l)
   Text_t repo[100], pid[100];
   if (!l->fill("RepoDrift", repo, 100)) return kFALSE;
   if (!l->fill("RepoPid", pid, 100)) return kFALSE;
-
   TFile* oldFile     = gFile;
   TDirectory* oldDir = gDirectory;
 
@@ -103,8 +102,10 @@ void CbmTrdParSetGas::putParams(FairParamList* l)
   CbmTrdParModGas* mod = (CbmTrdParModGas*) fModuleMap[moduleId[0]];
 
 
+  TString repopid(mod->GetFileName().Data());
+    
   l->add("RepoDrift", "parameters/trd/CbmTrdDriftMap.root");
-  l->add("RepoPid", "parameters/trd/Likelihood_Xenon_85_GSI_12.root");
+  l->add("RepoPid", repopid);
   l->add("Gas", Form("Xe_%d", Int_t(1.e2 * mod->GetNobleGas())));
   l->add("NrOfModules", fNrOfModules);
   l->add("ModuleIdArray", moduleId);
