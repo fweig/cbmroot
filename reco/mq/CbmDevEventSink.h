@@ -15,7 +15,6 @@
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
-#include "CbmTsEventHeader.h"
 
 #include "TimesliceMetaData.h"
 
@@ -35,7 +34,6 @@
 class TFile;
 class TList;
 class TClonesArray;
-//class TimesliceMetaData;
 class FairRunOnline;
 class FairRootManager;
 
@@ -47,16 +45,14 @@ public:
 
   std::vector<CbmDigiEvent> GetSelectedData();
 
-  /// TS information in header
-  CbmTsEventHeader fCbmTsEventHeader;
   TimesliceMetaData fTsMetaData;
   std::vector<CbmDigiEvent> fvEvents;
 };
 
-class CbmDeviceEventSink : public FairMQDevice {
+class CbmDevEventSink : public FairMQDevice {
 public:
-  CbmDeviceEventSink();
-  virtual ~CbmDeviceEventSink();
+  CbmDevEventSink();
+  virtual ~CbmDevEventSink();
 
 protected:
   virtual void InitTask();
@@ -87,10 +83,6 @@ private:
   /// List of MQ channels names
   std::vector<std::string> fsAllowedChannels = {fsChannelNameDataInput};
 
-  /// Parameters management
-  //      TList* fParCList = nullptr;
-  //      Bool_t InitParameters( TList* fParCList );
-
   /// Statistics & missed TS detection
   uint64_t fuPrevTsIndex                                 = 0;
   uint64_t fulNumMessages                                = 0;
@@ -104,8 +96,6 @@ private:
   uint64_t fuTotalTsCount = 0;
 
   /// Data reception
-  /// Event (TS) header
-  CbmTsEventHeader* fEvtHeader = nullptr;
   /// TS MetaData storage
   TClonesArray* fTimeSliceMetaDataArray = nullptr;  //!
   TimesliceMetaData* fTsMetaData        = nullptr;

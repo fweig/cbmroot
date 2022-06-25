@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Pierre-Alain Loizeau [committer], Dominik Smith */
 
-#include "CbmDeviceEventSink.h"
+#include "CbmDevEventSink.h"
 
 /// CBM headers
 #include "CbmEvent.h"
@@ -48,12 +48,12 @@ using namespace std;
 
 //Bool_t bMcbm2018MonitorTaskT0ResetHistos = kFALSE;
 
-CbmDeviceEventSink::CbmDeviceEventSink() {}
+CbmDevEventSink::CbmDevEventSink() {}
 
-void CbmDeviceEventSink::InitTask()
+void CbmDevEventSink::InitTask()
 try {
   /// Read options from executable
-  LOG(info) << "Init options for CbmDeviceEventSink.";
+  LOG(info) << "Init options for CbmDevEventSink.";
 
   fsOutputFileName = fConfig->GetValue<std::string>("OutFileName");
 
@@ -67,10 +67,10 @@ try {
   fsChannelNameHistosInput = fConfig->GetValue<std::string>("ChNameIn");
 
   /// Associate the MissedTs Channel to the corresponding handler
-  OnData(fsChannelNameMissedTs, &CbmDeviceEventSink::HandleMissTsData);
+  OnData(fsChannelNameMissedTs, &CbmDevEventSink::HandleMissTsData);
 
   /// Associate the command Channel to the corresponding handler
-  OnData(fsChannelNameCommands, &CbmDeviceEventSink::HandleCommand);
+  OnData(fsChannelNameCommands, &CbmDevEventSink::HandleCommand);
 
   /// Associate the Event + Unp data Channel to the corresponding handler
   // Get the information about created channels from the device
@@ -88,7 +88,7 @@ try {
     LOG(info) << "Channel name: " << entry.first;
     if (std::string::npos != entry.first.find(fsChannelNameDataInput)) {
       if (!IsChannelNameAllowed(entry.first)) throw InitTaskError("Channel name does not match.");
-      OnData(entry.first, &CbmDeviceEventSink::HandleData);
+      OnData(entry.first, &CbmDevEventSink::HandleData);
     }  // if( entry.first.find( "ts" )
   }    // for( auto const &entry : fChannels )
 
@@ -120,16 +120,11 @@ try {
   LOG(info) << "Init Root Output to " << fsOutputFileName;
 
   fpFairRootMgr->InitSink();
-  fEvtHeader = new CbmTsEventHeader();
-  fpFairRootMgr->Register("EventHeader.", "Event", fEvtHeader, kTRUE);
-
   /// Register all input data members with the FairRoot manager
   /// TS MetaData
   fpFairRootMgr->Register("TimesliceMetaData", "TS Meta Data", fTimeSliceMetaDataArray, kTRUE);
   /// CbmEvent
   fpFairRootMgr->RegisterAny("DigiEvent", fEventsSel, kTRUE);
-
-
   fpFairRootMgr->WriteFolder();
 
   LOG(info) << "Initialized outTree with rootMgr at " << fpFairRootMgr;
@@ -146,7 +141,7 @@ catch (InitTaskError& e) {
   cbm::mq::ChangeState(this, cbm::mq::Transition::ErrorFound);
 }
 
-bool CbmDeviceEventSink::IsChannelNameAllowed(std::string channelName)
+bool CbmDevEventSink::IsChannelNameAllowed(std::string channelName)
 {
   for (auto const& entry : fsAllowedChannels) {
     std::size_t pos1 = channelName.find(entry);
@@ -164,7 +159,7 @@ bool CbmDeviceEventSink::IsChannelNameAllowed(std::string channelName)
   return false;
 }
 
-bool CbmDeviceEventSink::InitHistograms()
+bool CbmDevEventSink::InitHistograms()
 {
   /// Histos creation and obtain pointer on them
   /// Trigger histo creation, filling vHistos and vCanvases
@@ -214,7 +209,7 @@ bool CbmDeviceEventSink::InitHistograms()
 
 //--------------------------------------------------------------------//
 // handler is called whenever a message arrives on fsChannelNameMissedTs, with a reference to the message and a sub-channel index (here 0)
-bool CbmDeviceEventSink::HandleMissTsData(FairMQMessagePtr& msg, int /*index*/)
+bool CbmDevEventSink::HandleMissTsData(FairMQMessagePtr& msg, int /*index*/)
 {
   std::vector<uint64_t> vIndices;
   std::string msgStrMissTs(static_cast<char*>(msg->GetData()), msg->GetSize());
@@ -231,7 +226,7 @@ bool CbmDeviceEventSink::HandleMissTsData(FairMQMessagePtr& msg, int /*index*/)
 }
 //--------------------------------------------------------------------//
 // handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
-bool CbmDeviceEventSink::HandleData(FairMQParts& parts, int /*index*/)
+bool CbmDevEventSink::HandleData(FairMQParts& parts, int /*index*/)
 {
   fulNumMessages++;
   LOG(debug) << "Received message number " << fulNumMessages << " with " << parts.Size() << " parts"
@@ -300,7 +295,7 @@ bool CbmDeviceEventSink::HandleData(FairMQParts& parts, int /*index*/)
   return true;
 }
 //--------------------------------------------------------------------//
-bool CbmDeviceEventSink::HandleCommand(FairMQMessagePtr& msg, int /*index*/)
+bool CbmDevEventSink::HandleCommand(FairMQMessagePtr& msg, int /*index*/)
 {
   /*
    std::string sCommand( static_cast< char * >( msg->GetData() ),
@@ -323,7 +318,7 @@ bool CbmDeviceEventSink::HandleCommand(FairMQMessagePtr& msg, int /*index*/)
 
     /// Extract the last TS index and global full TS count
     if (std::string::npos == charPosDel) {
-      LOG(fatal) << "CbmDeviceEventSink::HandleCommand => "
+      LOG(fatal) << "CbmDevEventSink::HandleCommand => "
                  << "Incomplete EOF command received: " << sCommand;
       return false;
     }  // if( std::string::npos == charPosDel )
@@ -333,7 +328,7 @@ bool CbmDeviceEventSink::HandleCommand(FairMQMessagePtr& msg, int /*index*/)
     charPosDel        = sNext.find(' ');
 
     if (std::string::npos == charPosDel) {
-      LOG(fatal) << "CbmDeviceEventSink::HandleCommand => "
+      LOG(fatal) << "CbmDevEventSink::HandleCommand => "
                  << "Incomplete EOF command received: " << sCommand;
       return false;
     }  // if( std::string::npos == charPosDel )
@@ -342,11 +337,11 @@ bool CbmDeviceEventSink::HandleCommand(FairMQMessagePtr& msg, int /*index*/)
     charPosDel++;
     fuTotalTsCount = std::stoul(sNext.substr(charPosDel));
 
-    LOG(info) << "CbmDeviceEventSink::HandleCommand => "
+    LOG(info) << "CbmDevEventSink::HandleCommand => "
               << "Received EOF command with final TS index " << fuLastTsIndex << " and total nb TS " << fuTotalTsCount;
     /// End of data: clean save of data + close file + send last state of histos if enabled
     if (fuPrevTsIndex == fuLastTsIndex && fulTsCounter == fuTotalTsCount) {
-      LOG(info) << "CbmDeviceEventSink::HandleCommand => "
+      LOG(info) << "CbmDevEventSink::HandleCommand => "
                 << "Found final TS index " << fuLastTsIndex << " and total nb TS " << fuTotalTsCount;
       Finish();
     }  // if( fuPrevTsIndex == fuLastTsIndex && fulTsCounter == fuTotalTsCount )
@@ -363,7 +358,7 @@ bool CbmDeviceEventSink::HandleCommand(FairMQMessagePtr& msg, int /*index*/)
   return true;
 }
 //--------------------------------------------------------------------//
-void CbmDeviceEventSink::CheckTsQueues()
+void CbmDevEventSink::CheckTsQueues()
 {
   bool bHoleFoundInBothQueues = false;
 
@@ -387,8 +382,7 @@ void CbmDeviceEventSink::CheckTsQueues()
       continue;
     }  // if( fmFullTsStorage.end() != itFullTs && fuPrevTsIndex + 1 == (*itFullTs).first() )
     if (fmFullTsStorage.end() != itFullTs)
-      LOG(debug) << "CbmDeviceEventSink::CheckTsQueues => Full TS " << (*itFullTs).first << " VS "
-                 << (fuPrevTsIndex + 1);
+      LOG(debug) << "CbmDevEventSink::CheckTsQueues => Full TS " << (*itFullTs).first << " VS " << (fuPrevTsIndex + 1);
     /// Check if the first TS in the missed TS queue is the next one
     if (fvulMissedTsIndices.end() != itMissTs
         && ((0 == fuPrevTsIndex && fuPrevTsIndex == (*itMissTs))
@@ -410,16 +404,16 @@ void CbmDeviceEventSink::CheckTsQueues()
       continue;
     }  // if( fvulMissedTsIndices.end() != itMissTs && fuPrevTsIndex + 1 == (*itMissTs ) )
     if (fvulMissedTsIndices.end() != itMissTs)
-      LOG(debug) << "CbmDeviceEventSink::CheckTsQueues => Empty TS " << (*itMissTs) << " VS " << (fuPrevTsIndex + 1);
+      LOG(debug) << "CbmDevEventSink::CheckTsQueues => Empty TS " << (*itMissTs) << " VS " << (fuPrevTsIndex + 1);
 
     /// Should be reached only if both queues at the end or hole found in both
     bHoleFoundInBothQueues = true;
   }  // while( !bHoleFoundInBothQueues )
 
-  LOG(debug) << "CbmDeviceEventSink::CheckTsQueues => buffered TS " << fmFullTsStorage.size() << " buffered empties "
+  LOG(debug) << "CbmDevEventSink::CheckTsQueues => buffered TS " << fmFullTsStorage.size() << " buffered empties "
              << fvulMissedTsIndices.size();
   for (auto it = fmFullTsStorage.begin(); it != fmFullTsStorage.end(); ++it) {
-    LOG(debug) << "CbmDeviceEventSink::CheckTsQueues => buffered TS index " << (*it).first;
+    LOG(debug) << "CbmDevEventSink::CheckTsQueues => buffered TS index " << (*it).first;
   }
 
   /// Delete the processed entries
@@ -428,18 +422,16 @@ void CbmDeviceEventSink::CheckTsQueues()
 
   /// End of data: clean save of data + close file + send last state of histos if enabled
   if (fbReceivedEof && fuPrevTsIndex == fuLastTsIndex && fulTsCounter == fuTotalTsCount) {
-    LOG(info) << "CbmDeviceEventSink::CheckTsQueues => "
+    LOG(info) << "CbmDevEventSink::CheckTsQueues => "
               << "Found final TS index " << fuLastTsIndex << " and total nb TS " << fuTotalTsCount;
     Finish();
   }  // if( fbReceivedEof && fuPrevTsIndex == fuLastTsIndex && fulTsCounter == fuTotalTsCount )
 }
 //--------------------------------------------------------------------//
-void CbmDeviceEventSink::PrepareTreeEntry(CbmEventTimeslice unpTs)
+void CbmDevEventSink::PrepareTreeEntry(CbmEventTimeslice unpTs)
 {
   /// FIXME: poor man solution with lots of data copy until we undertsnad how to properly deal
   /// with FairMq messages ownership and memory managment
-
-  (*fEvtHeader) = std::move(unpTs.fCbmTsEventHeader);
 
   /// FIXME: Not sure if this is the proper way to insert the data
   new ((*fTimeSliceMetaDataArray)[fTimeSliceMetaDataArray->GetEntriesFast()])
@@ -449,25 +441,13 @@ void CbmDeviceEventSink::PrepareTreeEntry(CbmEventTimeslice unpTs)
   (*fEventsSel) = std::move(unpTs.GetSelectedData());
 }
 
-void CbmDeviceEventSink::DumpTreeEntry()
+void CbmDevEventSink::DumpTreeEntry()
 {
   // Unpacked digis + CbmEvent output to root file
-  /*
- * NH style
-//      fpFairRootMgr->FillEventHeader(fEvtHeader);
-//      LOG(info) << "Fill WriteOutBuffer with FairRootManager at " << fpFairRootMgr;
-//      fpOutRootFile->cd();
-      fpFairRootMgr->Fill();
-      fpFairRootMgr->StoreWriteoutBufferData( fpFairRootMgr->GetEventTime() );
-      //fpFairRootMgr->StoreAllWriteoutBufferData();
-      fpFairRootMgr->DeleteOldWriteoutBufferData();
-*/
   /// FairRunOnline style
   fpFairRootMgr->StoreWriteoutBufferData(fpFairRootMgr->GetEventTime());
-  fpFairRootMgr->FillEventHeader(fEvtHeader);
   fpFairRootMgr->Fill();
   fpFairRootMgr->DeleteOldWriteoutBufferData();
-  //  fpFairRootMgr->Write();
 
   /// Clear metadata array
   fTimeSliceMetaDataArray->Clear();
@@ -478,12 +458,11 @@ void CbmDeviceEventSink::DumpTreeEntry()
 
 //--------------------------------------------------------------------//
 
-bool CbmDeviceEventSink::SendHistoConfAndData()
+bool CbmDevEventSink::SendHistoConfAndData()
 {
   /// Prepare multiparts message and header
   std::pair<uint32_t, uint32_t> pairHeader(fvpsHistosFolder.size(), fvpsCanvasConfig.size());
   FairMQMessagePtr messageHeader(NewMessage());
-  //  Serialize<BoostSerializer<std::pair<uint32_t, uint32_t>>>(*messageHeader, pairHeader);
   BoostSerializer<std::pair<uint32_t, uint32_t>>().Serialize(*messageHeader, pairHeader);
 
   FairMQParts partsOut;
@@ -492,38 +471,21 @@ bool CbmDeviceEventSink::SendHistoConfAndData()
   for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto) {
     /// Serialize the vector of histo config into a single MQ message
     FairMQMessagePtr messageHist(NewMessage());
-    //    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageHist, fvpsHistosFolder[uHisto]);
     BoostSerializer<std::pair<std::string, std::string>>().Serialize(*messageHist, fvpsHistosFolder[uHisto]);
 
     partsOut.AddPart(std::move(messageHist));
   }  // for (UInt_t uHisto = 0; uHisto < fvpsHistosFolder.size(); ++uHisto)
 
-  /// Catch case where no histos are registered!
-  /// => Add empty message
-  if (0 == fvpsHistosFolder.size()) {
-    FairMQMessagePtr messageHist(NewMessage());
-    partsOut.AddPart(std::move(messageHist));
-  }
-
   for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv) {
     /// Serialize the vector of canvas config into a single MQ message
     FairMQMessagePtr messageCan(NewMessage());
-    //    Serialize<BoostSerializer<std::pair<std::string, std::string>>>(*messageCan, fvpsCanvasConfig[uCanv]);
     BoostSerializer<std::pair<std::string, std::string>>().Serialize(*messageCan, fvpsCanvasConfig[uCanv]);
 
     partsOut.AddPart(std::move(messageCan));
   }  // for (UInt_t uCanv = 0; uCanv < fvpsCanvasConfig.size(); ++uCanv)
 
-  /// Catch case where no Canvases are registered!
-  /// => Add empty message
-  if (0 == fvpsCanvasConfig.size()) {
-    FairMQMessagePtr messageHist(NewMessage());
-    partsOut.AddPart(std::move(messageHist));
-  }
-
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr msgHistos(NewMessage());
-  //  Serialize<RootSerializer>(*msgHistos, &fArrayHisto);
   RootSerializer().Serialize(*msgHistos, &fArrayHisto);
 
   partsOut.AddPart(std::move(msgHistos));
@@ -540,11 +502,10 @@ bool CbmDeviceEventSink::SendHistoConfAndData()
   return true;
 }
 
-bool CbmDeviceEventSink::SendHistograms()
+bool CbmDevEventSink::SendHistograms()
 {
   /// Serialize the array of histos into a single MQ message
   FairMQMessagePtr message(NewMessage());
-  //  Serialize<RootSerializer>(*message, &fArrayHisto);
   RootSerializer().Serialize(*message, &fArrayHisto);
 
   /// Send message to the common histogram messages queue
@@ -560,7 +521,7 @@ bool CbmDeviceEventSink::SendHistograms()
 }
 
 //--------------------------------------------------------------------//
-CbmDeviceEventSink::~CbmDeviceEventSink()
+CbmDevEventSink::~CbmDevEventSink()
 {
   /// FIXME: Add pointers check before delete
 
@@ -574,7 +535,7 @@ CbmDeviceEventSink::~CbmDeviceEventSink()
   delete fpRun;
 }
 
-void CbmDeviceEventSink::Finish()
+void CbmDevEventSink::Finish()
 {
   // Clean closure of output to root file
   fpFairRootMgr->Write();
@@ -602,21 +563,8 @@ CbmEventTimeslice::CbmEventTimeslice(FairMQParts& parts)
   /// Extract unpacked data from input message
   uint32_t uPartIdx = 0;
 
-  /// TODO: code order of vectors in the TS header!!
-
-  /// TS header
-  TObject* tempObjectPointer = nullptr;
-  RootSerializer().Deserialize(*parts.At(uPartIdx), tempObjectPointer);
-  if (tempObjectPointer && TString(tempObjectPointer->ClassName()).EqualTo("CbmTsEventHeader")) {
-    fCbmTsEventHeader = *(static_cast<CbmTsEventHeader*>(tempObjectPointer));
-  }
-  else {
-    LOG(fatal) << "Failed to deserialize the TS header";
-  }
-  ++uPartIdx;
-
   /// TS metadata
-  tempObjectPointer = nullptr;
+  TObject* tempObjectPointer = nullptr;
   RootSerializer().Deserialize(*parts.At(uPartIdx), tempObjectPointer);
 
   if (tempObjectPointer && TString(tempObjectPointer->ClassName()).EqualTo("TimesliceMetaData")) {

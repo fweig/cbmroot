@@ -3,15 +3,11 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQMcbmEvtBuilderWin2020.sh.in ${
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQBuildRawEvents.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQBuildRawEvents.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBuildRawEvents2021.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBuildRawEvents2021.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBuildRawEventsCosmics2021.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBuildRawEventsCosmics2021.sh)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startEventBuilder.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startEventBuilder.sh)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startBuildRawEvents2022.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startBuildRawEvents2022.sh)
 
 set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/MQ/base
-    ${CBMROOT_SOURCE_DIR}/algo
-    ${CBMROOT_SOURCE_DIR}/algo/evbuild
-    ${CBMROOT_SOURCE_DIR}/algo/trigger
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/unpacker
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/tasks
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/parameter
@@ -258,28 +254,6 @@ set(DEPENDENCIES
 )
 GENERATE_EXECUTABLE()
 
-set(EXE_NAME EventBuilder)
-set(SRCS CbmDeviceEventBuilder.cxx runEventBuilder.cxx)
-
-set(DEPENDENCIES
-  ${DEPENDENCIES_ALL}
-  Algo
-  CbmFlibFlesTools
-  CbmEventBuilder
-  KF
-  L1
-  CbmBase
-  CbmRecoBase
-  CbmData
-  CbmTofBase
-  Core
-  RIO
-  Net
-  Hist
-  RHTTP
-)
-GENERATE_EXECUTABLE()
-
 set(EXE_NAME DigiEventSink)
 set(SRCS CbmDeviceDigiEventSink.cxx runDigiEventSink.cxx)
 
@@ -299,26 +273,6 @@ set(DEPENDENCIES
 )
 GENERATE_EXECUTABLE()
 
-set(EXE_NAME EventSink)
-set(SRCS CbmDeviceEventSink.cxx runEventSink.cxx)
-
-set(DEPENDENCIES
-  ${DEPENDENCIES_ALL}
-  external::fles_ipc
-  CbmFlibMcbm2018
-  CbmFlibFlesTools
-  CbmBase
-  CbmData
-  Core
-  RIO
-  Tree
-  Net
-  Hist
-  RHTTP
-)
-GENERATE_EXECUTABLE()
-
-
 # Set the correct variables for the installation
 set(VMCWORKDIR ${CMAKE_INSTALL_PREFIX}/share/cbmroot)
 
@@ -334,13 +288,11 @@ configure_file(${MY_SOURCE_DIR}/startMQMcbmEvtBuilderWin2020.sh.in   ${TMPDIR}/b
 configure_file(${MY_SOURCE_DIR}/startMQBuildRawEvents.sh.in          ${TMPDIR}/bin/MQ/topologies/install/startMQBuildRawEvents.sh)
 configure_file(${MY_SOURCE_DIR}/startBuildRawEvents2021.sh.in        ${TMPDIR}/bin/MQ/topologies/install/startBuildRawEvents2021.sh)
 configure_file(${MY_SOURCE_DIR}/startBuildRawEventsCosmics2021.sh.in ${TMPDIR}/bin/MQ/topologies/install/startBuildRawEventsCosmics2021.sh)
-configure_file(${MY_SOURCE_DIR}/startEventBuilder.sh.in              ${TMPDIR}/bin/MQ/topologies/install/startEventBuilder.sh)
 
 install(PROGRAMS ${TMPDIR}/bin/MQ/topologies/install/startMQMcbmPulserMonitor2020.sh
                  ${TMPDIR}/bin/MQ/topologies/install/startMQMcbmEvtBuilderWin2020.sh
                  ${TMPDIR}/bin/MQ/topologies/install/startMQBuildRawEvents.sh
                  ${TMPDIR}/bin/MQ/topologies/install/startBuildRawEvents2021.sh
                  ${TMPDIR}/bin/MQ/topologies/install/startBuildRawEventsCosmics2021.sh
-                 ${TMPDIR}/bin/MQ/topologies/install/startEventBuilder.sh
         DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/MQ/topologies
        )

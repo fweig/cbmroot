@@ -35,6 +35,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
     ${FAIRROOT_INCLUDE_DIR}
     ${FAIRMQ_INCLUDE_DIR}
     ${FAIRMQ_INCLUDE_DIR}/options
+    ${VMC_INCLUDE_DIRS}
     ${FAIRLOGGER_INCLUDE_DIR}
 
     ${IPC_INCLUDE_DIRECTORY}
@@ -45,7 +46,6 @@ include_directories(${INCLUDE_DIRECTORIES})
 include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
-  ${KFParticle_LIB_DIR}
   ${FAIRMQ_LIBRARY_DIR}
   ${FAIRROOT_LIBRARY_DIR}
   ${ROOT_LIBRARY_DIR}
@@ -54,9 +54,9 @@ set(LINK_DIRECTORIES
 
 link_directories(${LINK_DIRECTORIES})
 
-# Set the install path within the build directory
+#Set the install path within the build directory
 set(EXECUTABLE_OUTPUT_PATH "${EXECUTABLE_OUTPUT_PATH}/mq")
-# Set the install path within the installation directory
+#Set the install path within the installation directory
 set(BIN_DESTINATION bin/mq)
 
 Set(BOOST_LIBS
@@ -84,26 +84,60 @@ set(EXE_NAME MqDevUnpack)
 set(SRCS CbmDevUnpack.cxx runUnpack.cxx)
 
 set(DEPENDENCIES
-  ${DEPENDENCIES}
   ${FAIR_LIBS}
   ${BOOST_LIBS}
   external::fles_ipc
-  CbmFlibFlesTools
   Algo
-  CbmBase
-  CbmRecoBase
-  CbmPsdReco
-  CbmRichReco
-  CbmRecoSts
-  CbmTofReco
-  CbmTrdReco
   CbmData
-  CbmSimSteer # for CbmSetup!
   Core
+  RIO
+  Net
 )
 GENERATE_EXECUTABLE()
 
-# Set the correct variables for the installation
+set(EXE_NAME MqDevTrigger)
+set(SRCS CbmDevTrigger.cxx runTrigger.cxx)
+
+set(DEPENDENCIES
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  Algo
+  CbmData
+  Core
+  RIO
+  Net
+)
+GENERATE_EXECUTABLE()
+
+set(EXE_NAME MqDevBuildEvents)
+set(SRCS CbmDevBuildEvents.cxx runBuildEvents.cxx)
+
+set(DEPENDENCIES
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  Algo
+  CbmData
+  Core
+  RIO
+  Net
+)
+GENERATE_EXECUTABLE()
+
+set(EXE_NAME MqDevEventSink)
+set(SRCS CbmDevEventSink.cxx runEventSink.cxx)
+
+set(DEPENDENCIES
+  ${FAIR_LIBS}
+  ${BOOST_LIBS}
+  CbmFlibFlesTools
+  CbmData
+  Core
+  RIO
+  Net
+)
+GENERATE_EXECUTABLE()
+
+#Set the correct variables for the installation
 set(VMCWORKDIR ${CMAKE_INSTALL_PREFIX}/share/cbmroot)
 
 set(MY_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -112,7 +146,7 @@ set(CMAKE_CURRENT_SOURCE_DIR ${VMCWORKDIR}/input)
 set(TMPDIR "${CMAKE_BINARY_DIR}")
 set(CMAKE_BINARY_DIR ${CMAKE_INSTALL_PREFIX})
 
-# Configure file for installation directory
+#Configure file for installation directory
 configure_file(${MY_SOURCE_DIR}/startUnpack.sh.in              ${TMPDIR}/bin/MQ/topologies/install/startUnpack.sh)
 
 install(PROGRAMS ${TMPDIR}/bin/MQ/topologies/install/startUnpack.sh

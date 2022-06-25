@@ -59,9 +59,6 @@ catch (InitTaskError& e) {
 
 Bool_t CbmDevUnpack::InitAlgos()
 {
-  /// Event header object
-  fCbmTsEventHeader = new CbmTsEventHeader();
-
   // --- Common parameters for all components
   uint32_t numChansPerAsic   = 128;  // R/O channels per ASIC
   uint32_t numAsicsPerModule = 16;   // Number of ASICs per module
@@ -158,20 +155,12 @@ bool CbmDevUnpack::ConditionalRun()
   if (!SendData(digiTs, TsMetaData)) return false;
   LOG(debug) << "Unpack: Sent TS index " << ts.index();
 
-  // Reset the event header for a new timeslice
-  fCbmTsEventHeader->Reset();
-
   return true;
 }
 
 bool CbmDevUnpack::SendData(const CbmDigiTimeslice& timeslice, const TimesliceMetaData& TsMetaData)
 {
   FairMQParts parts;
-
-  /// Prepare serialized versions of the TS Event header
-  FairMQMessagePtr messTsHeader(NewMessage());
-  RootSerializer().Serialize(*messTsHeader, fCbmTsEventHeader);
-  parts.AddPart(std::move(messTsHeader));
 
   /// Prepare serialized version of Digi Timeslice
   std::stringstream ossTS;
@@ -201,17 +190,9 @@ bool CbmDevUnpack::SendData(const CbmDigiTimeslice& timeslice, const TimesliceMe
   return true;
 }
 
-CbmDevUnpack::~CbmDevUnpack()
-{
-  if (fCbmTsEventHeader) { delete fCbmTsEventHeader; }
-}
-
 CbmDigiTimeslice CbmDevUnpack::DoUnpack(const fles::Timeslice& timeslice)
 {
   fNumTs++;
-
-  fCbmTsEventHeader->SetTsIndex(timeslice.index());
-  fCbmTsEventHeader->SetTsStartTime(timeslice.start_time());
 
   // Output digi timeslice
   CbmDigiTimeslice digiTs;
@@ -280,9 +261,6 @@ CbmDigiTimeslice CbmDevUnpack::DoUnpack(const fles::Timeslice& timeslice)
     }
 
   }  //# component
-
-  // --- Add Sts Digis to header
-  fCbmTsEventHeader->AddNDigisSts(numDigis);
 
   // --- Sorting of output digis. Is required by both digi trigger and event builder.
   std::sort(digiTs.fData.fSts.fDigis.begin(), digiTs.fData.fSts.fDigis.end(),

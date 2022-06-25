@@ -2,20 +2,14 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Pierre-Alain Loizeau[committer], Dominik Smith */
 
-#include "CbmDeviceEventBuilder.h"
+#include "CbmDevBuildEvents.h"
 
 /// CBM headers
-#include "CbmEvent.h"
-#include "CbmFlesCanvasTools.h"
 #include "CbmMQDefs.h"
-#include "CbmMatch.h"
-#include "CbmMvdDigi.h"
-#include "CbmTsEventHeader.h"
 
 /// FAIRROOT headers
 #include "FairMQLogger.h"
-#include "FairMQProgOptions.h"  // device->fConfig
-#include "FairParGenericSet.h"
+#include "FairMQProgOptions.h"
 #include "FairRootFileSink.h"
 #include "FairRootManager.h"
 #include "FairRunOnline.h"
@@ -26,13 +20,6 @@
 
 /// FAIRSOFT headers (geant, boost, ...)
 #include "TimesliceMetaData.h"
-
-#include "TCanvas.h"
-#include "TClonesArray.h"
-#include "TFile.h"
-#include "TH1.h"
-#include "TList.h"
-#include "TNamed.h"
 
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/utility.hpp>
@@ -48,35 +35,21 @@ struct InitTaskError : std::runtime_error {
 
 using namespace std;
 
-CbmDeviceEventBuilder::CbmDeviceEventBuilder() {}
+CbmDevBuildEvents::CbmDevBuildEvents() {}
 
-void CbmDeviceEventBuilder::InitTask()
+void CbmDevBuildEvents::InitTask()
 try {
   /// Read options from executable
-  LOG(info) << "Init options for CbmDeviceEventBuilder.";
-  //fbFillHistos      = fConfig->GetValue<bool>("FillHistos");
-  //fbIgnoreTsOverlap = fConfig->GetValue<bool>("IgnOverMs");
+  LOG(info) << "Init options for CbmDevBuildEvents.";
 
   fsOutputFileName = fConfig->GetValue<std::string>("OutFileName");  //For storage of events
 
   // Event builder algorithm params
-  const std::vector<std::string> vsAddDet        = fConfig->GetValue<std::vector<std::string>>("AddDet");
   const std::vector<std::string> vsSetEvbuildWin = fConfig->GetValue<std::vector<std::string>>("SetEvbuildWin");
 
-  // Trigger algorithm params
-  const std::string sTriggerDet = fConfig->GetValue<std::string>("TriggerDet");
-  fTriggerWindow                = fConfig->GetValue<double>("TriggerWin");
-  fMinNumDigis                  = fConfig->GetValue<int32_t>("TriggerMinDigis");
-  fDeadTime                     = fConfig->GetValue<double>("TriggerDeadTime");
-
-  fsChannelNameDataInput   = fConfig->GetValue<std::string>("TsNameIn");
-  fsChannelNameDataOutput  = fConfig->GetValue<std::string>("EvtNameOut");
-  fsChannelNameHistosInput = fConfig->GetValue<std::string>("ChNameIn");
-  fsAllowedChannels[0]     = fsChannelNameDataInput;
-
-  fuPublishFreqTs  = fConfig->GetValue<uint32_t>("PubFreqTs");
-  fdMinPublishTime = fConfig->GetValue<double_t>("PubTimeMin");
-  fdMaxPublishTime = fConfig->GetValue<double_t>("PubTimeMax");
+  fsChannelNameDataInput  = fConfig->GetValue<std::string>("TrigNameIn");
+  fsChannelNameDataOutput = fConfig->GetValue<std::string>("EvtNameOut");
+  fsAllowedChannels[0]    = fsChannelNameDataInput;
 
   /// Prepare root output
   if ("" != fsOutputFileName) {
@@ -88,9 +61,6 @@ try {
     fpFairRootMgr->InitSink();
 
     /// Create storage objects
-    fCbmTsEventHeaderOut = new CbmTsEventHeader();
-    fpFairRootMgr->Register("EventHeader.", "Event", fCbmTsEventHeaderOut, kTRUE);
-
     fEventsSelOut = new std::vector<CbmDigiEvent>();
     fpFairRootMgr->RegisterAny("DigiEvent", fEventsSelOut, kTRUE);
 
@@ -115,39 +85,16 @@ try {
     LOG(info) << "Channel name: " << entry.first;
     if (std::string::npos != entry.first.find(fsChannelNameDataInput)) {
       if (!IsChannelNameAllowed(entry.first)) throw InitTaskError("Channel name does not match.");
-      OnData(entry.first, &CbmDeviceEventBuilder::HandleData);
+      OnData(entry.first, &CbmDevBuildEvents::HandleData);
     }
   }
-
-  /// Extract refdet
-  fTriggerDet = GetDetectorId(sTriggerDet);
-
-  if (ECbmModuleId::kNotExist == fTriggerDet) {
-    LOG(info) << "CbmDeviceEventBuilder::InitTask => Trying to change "
-                 "reference to unsupported detector, ignored! "
-              << sTriggerDet;
-  }
-
-  /// Extract detector to add if any
-  /*
-  for (std::vector<std::string>::const_iterator itStrAdd = vsAddDet.begin(); itStrAdd != vsAddDet.end(); ++itStrAdd) {
-    const ECbmModuleId addDet = GetDetectorId(*itStrAdd);
-    if (ECbmModuleId::kNotExist != addDet) { fEvbuildAlgo.AddSystem(addDet); }
-    else {
-      LOG(info) << "CbmDeviceEventBuilder::InitTask => Trying to add "
-                   "unsupported detector, ignored! "
-                << (*itStrAdd);
-      continue;
-    }
-  }
-  */
 
   /// Extract event builder window to add if any
   for (std::vector<std::string>::const_iterator itStrEvbuildWin = vsSetEvbuildWin.begin();
        itStrEvbuildWin != vsSetEvbuildWin.end(); ++itStrEvbuildWin) {
     size_t charPosDel = (*itStrEvbuildWin).find(',');
     if (std::string::npos == charPosDel) {
-      LOG(info) << "CbmDeviceEventBuilder::InitTask => "
+      LOG(info) << "CbmDevBuildEvents::InitTask => "
                 << "Trying to set event builder window with invalid option pattern, ignored! "
                 << " (Should be ECbmModuleId,dWinBeg,dWinEnd but instead found " << (*itStrEvbuildWin) << " )";
       continue;
@@ -158,7 +105,7 @@ try {
     const ECbmModuleId selDet = GetDetectorId(sSelDet);
 
     if (ECbmModuleId::kNotExist == selDet) {
-      LOG(info) << "CbmDeviceEventBuilder::InitTask => "
+      LOG(info) << "CbmDevBuildEvents::InitTask => "
                 << "Trying to set trigger window for unsupported detector, ignored! " << sSelDet;
       continue;
     }
@@ -168,7 +115,7 @@ try {
     std::string sNext = (*itStrEvbuildWin).substr(charPosDel);
     charPosDel        = sNext.find(',');
     if (std::string::npos == charPosDel) {
-      LOG(info) << "CbmDeviceEventBuilder::InitTask => "
+      LOG(info) << "CbmDevBuildEvents::InitTask => "
                 << "Trying to set event builder window with invalid option pattern, ignored! "
                 << " (Should be ECbmModuleId,dWinBeg,dWinEnd but instead found " << (*itStrEvbuildWin) << " )";
       continue;
@@ -188,7 +135,7 @@ catch (InitTaskError& e) {
   cbm::mq::ChangeState(this, cbm::mq::Transition::ErrorFound);
 }
 
-ECbmModuleId CbmDeviceEventBuilder::GetDetectorId(std::string detName)
+ECbmModuleId CbmDevBuildEvents::GetDetectorId(std::string detName)
 {
   /// FIXME: Disable clang formatting for now as it corrupts all alignment
   /* clang-format off */
@@ -205,7 +152,7 @@ ECbmModuleId CbmDeviceEventBuilder::GetDetectorId(std::string detName)
   /* clang-format on */
 }
 
-bool CbmDeviceEventBuilder::IsChannelNameAllowed(std::string channelName)
+bool CbmDevBuildEvents::IsChannelNameAllowed(std::string channelName)
 {
   for (auto const& entry : fsAllowedChannels) {
     std::size_t pos1 = channelName.find(entry);
@@ -224,7 +171,7 @@ bool CbmDeviceEventBuilder::IsChannelNameAllowed(std::string channelName)
 }
 
 // handler is called whenever a message arrives on "data", with a reference to the message and a sub-channel index (here 0)
-bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
+bool CbmDevBuildEvents::HandleData(FairMQParts& parts, int /*index*/)
 {
   fulNumMessages++;
   LOG(info) << "Received message number " << fulNumMessages << " with " << parts.Size() << " parts"
@@ -235,67 +182,25 @@ bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
   /// Extract unpacked data from input message
   uint32_t uPartIdx = 0;
 
-  /// TS header
-  CbmTsEventHeader* evtHeader = new CbmTsEventHeader();
-  //  Deserialize<RootSerializer>(*parts.At(uPartIdx), evtHeader);
-  RootSerializer().Deserialize(*parts.At(uPartIdx), evtHeader);
-  ++uPartIdx;
-
+  /// TS
   CbmDigiTimeslice ts;
-
-  /// T0
-  std::string msgStrT0(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issT0(msgStrT0);
-  boost::archive::binary_iarchive inputArchiveT0(issT0);
-  inputArchiveT0 >> ts.fData.fT0.fDigis;
-  ++uPartIdx;
-
-  /// STS
-  std::string msgStrSts(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issSts(msgStrSts);
-  boost::archive::binary_iarchive inputArchiveSts(issSts);
-  inputArchiveSts >> ts.fData.fSts.fDigis;
-  ++uPartIdx;
-
-  /// MUCH
-  std::string msgStrMuch(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issMuch(msgStrMuch);
-  boost::archive::binary_iarchive inputArchiveMuch(issMuch);
-  inputArchiveMuch >> ts.fData.fMuch.fDigis;
-  ++uPartIdx;
-
-  /// TRD
-  std::string msgStrTrd(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issTrd(msgStrTrd);
-  boost::archive::binary_iarchive inputArchiveTrd(issTrd);
-  inputArchiveTrd >> ts.fData.fTrd.fDigis;
-  ++uPartIdx;
-
-  /// T0F
-  std::string msgStrTof(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issTof(msgStrTof);
-  boost::archive::binary_iarchive inputArchiveTof(issTof);
-  inputArchiveTof >> ts.fData.fTof.fDigis;
-  ++uPartIdx;
-
-  /// RICH
-  std::string msgStrRich(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issRich(msgStrRich);
-  boost::archive::binary_iarchive inputArchiveRich(issRich);
-  inputArchiveRich >> ts.fData.fRich.fDigis;
-  ++uPartIdx;
-
-  /// PSD
-  std::string msgStrPsd(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issPsd(msgStrPsd);
-  boost::archive::binary_iarchive inputArchivePsd(issPsd);
-  inputArchivePsd >> ts.fData.fPsd.fDigis;
+  std::string msgStrTS(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+  std::istringstream issTS(msgStrTS);
+  boost::archive::binary_iarchive inputArchiveTS(issTS);
+  inputArchiveTS >> ts;
   ++uPartIdx;
 
   /// TS metadata
   TimesliceMetaData* tsMetaData = new TimesliceMetaData();
-  //  Deserialize<RootSerializer>(*parts.At(uPartIdx), tsMetaData);
   RootSerializer().Deserialize(*parts.At(uPartIdx), tsMetaData);
+  ++uPartIdx;
+
+  /// Triggers
+  std::vector<double> triggers;
+  std::string msgStrTrig(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+  std::istringstream issTrig(msgStrTrig);
+  boost::archive::binary_iarchive inputArchiveTrig(issTrig);
+  inputArchiveTrig >> triggers;
   ++uPartIdx;
 
   //if (1 == fulNumMessages) {
@@ -310,8 +215,6 @@ bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
   LOG(debug) << "TOF Vector size: " << ts.fData.fTof.fDigis.size();
   LOG(debug) << "RICH Vector size: " << ts.fData.fRich.fDigis.size();
   LOG(debug) << "PSD Vector size: " << ts.fData.fPsd.fDigis.size();
-
-  const std::vector<double> triggers = GetTriggerTimes(ts);
   LOG(debug) << "triggers: " << triggers.size();
 
   /// Create events
@@ -319,7 +222,7 @@ bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
   LOG(debug) << "vEvents size: " << vEvents.size();
 
   /// Send output message
-  if (!SendEvents(vEvents, tsMetaData, evtHeader)) { return false; }
+  if (!SendEvents(vEvents, tsMetaData)) { return false; }
 
   /// Write events to file
   // FIXME: poor man solution with lots of data copy until we undertand how to properly deal
@@ -328,8 +231,6 @@ bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
   if ("" != fsOutputFileName) {
     (*fEventsSelOut) = std::move(vEvents);
     LOG(debug) << "fEventSel size: " << fEventsSelOut->size();
-
-    (*fCbmTsEventHeaderOut) = std::move(*evtHeader);
 
     new ((*fTimeSliceMetaDataArrayOut)[fTimeSliceMetaDataArrayOut->GetEntriesFast()])
       TimesliceMetaData(std::move(*tsMetaData));
@@ -343,71 +244,24 @@ bool CbmDeviceEventBuilder::HandleData(FairMQParts& parts, int /*index*/)
   return true;
 }
 
-void CbmDeviceEventBuilder::DumpTreeEntry()
+void CbmDevBuildEvents::DumpTreeEntry()
 {
   // Unpacked digis + CbmEvent output to root file
 
   /// FairRunOnline style
   fpFairRootMgr->StoreWriteoutBufferData(fpFairRootMgr->GetEventTime());
-  fpFairRootMgr->FillEventHeader(fCbmTsEventHeaderOut);
   fpFairRootMgr->Fill();
   fpFairRootMgr->DeleteOldWriteoutBufferData();
 }
 
-std::vector<double> CbmDeviceEventBuilder::GetTriggerTimes(const CbmDigiTimeslice& ts)
-{
-  std::vector<double> vDigiTimes;
-  switch (fTriggerDet) {
-    case ECbmModuleId::kMuch: {
-      vDigiTimes = GetDigiTimes(ts.fData.fMuch.fDigis);
-      break;
-    }
-    case ECbmModuleId::kSts: {
-      vDigiTimes = GetDigiTimes(ts.fData.fSts.fDigis);
-      break;
-    }
-    case ECbmModuleId::kTof: {
-      vDigiTimes = GetDigiTimes(ts.fData.fTof.fDigis);
-      break;
-    }
-    case ECbmModuleId::kTrd: {
-      vDigiTimes = GetDigiTimes(ts.fData.fTrd.fDigis);
-      break;
-    }
-    case ECbmModuleId::kRich: {
-      vDigiTimes = GetDigiTimes(ts.fData.fRich.fDigis);
-      break;
-    }
-    case ECbmModuleId::kPsd: {
-      vDigiTimes = GetDigiTimes(ts.fData.fPsd.fDigis);
-      break;
-    }
-    case ECbmModuleId::kT0: {
-      vDigiTimes = GetDigiTimes(ts.fData.fT0.fDigis);
-      break;
-    }
-    default: LOG(fatal) << "CbmDeviceEventBuilder::GetTriggerTimes(): Reading digis from unknown detector type!";
-  }
-  LOG(debug) << "CbmDeviceEventBuilder::GetTriggerTimes(): Building triggers from " << vDigiTimes.size() << " digis.";
-  return fTriggerAlgo(vDigiTimes, fTriggerWindow, fMinNumDigis, fDeadTime);
-}
-
-bool CbmDeviceEventBuilder::SendEvents(const std::vector<CbmDigiEvent>& vEvents, const TimesliceMetaData* tsMetaData,
-                                       const CbmTsEventHeader* eventHeader)
+bool CbmDevBuildEvents::SendEvents(const std::vector<CbmDigiEvent>& vEvents, const TimesliceMetaData* tsMetaData)
 {
   LOG(debug) << "Vector size: " << vEvents.size();
 
   FairMQParts partsOut;
 
-  /// Prepare serialized versions of the TS Event header
-  FairMQMessagePtr messTsHeader(NewMessage());
-  //  Serialize<RootSerializer>(*messTsHeader, eventHeader);
-  RootSerializer().Serialize(*messTsHeader, eventHeader);
-  partsOut.AddPart(std::move(messTsHeader));
-
   // Prepare TS meta data
   FairMQMessagePtr messTsMeta(NewMessage());
-  //  Serialize<RootSerializer>(*messTsMeta, tsMetaData);
   RootSerializer().Serialize(*messTsMeta, tsMetaData);
   partsOut.AddPart(std::move(messTsMeta));
 
@@ -430,7 +284,7 @@ bool CbmDeviceEventBuilder::SendEvents(const std::vector<CbmDigiEvent>& vEvents,
   return true;
 }
 
-void CbmDeviceEventBuilder::Finish()
+void CbmDevBuildEvents::Finish()
 {
   if ("" != fsOutputFileName) {
     // Clean closure of output to root file
@@ -440,12 +294,11 @@ void CbmDeviceEventBuilder::Finish()
   fbFinishDone = kTRUE;
 }
 
-CbmDeviceEventBuilder::~CbmDeviceEventBuilder()
+CbmDevBuildEvents::~CbmDevBuildEvents()
 {
   /// Close things properly if not alredy done
   if (!fbFinishDone) Finish();
   if (fEventsSelOut) { delete fEventsSelOut; }
   if (fpRun) { delete fpRun; }
-  if (fCbmTsEventHeaderOut) { delete fCbmTsEventHeaderOut; }
   if (fTimeSliceMetaDataArrayOut) { delete fTimeSliceMetaDataArrayOut; }
 }

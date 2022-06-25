@@ -13,7 +13,6 @@
 #define CBMDEVUNPACK_H
 
 #include "CbmMqTMessage.h"
-#include "CbmTsEventHeader.h"
 
 #include "Timeslice.hpp"
 
@@ -36,7 +35,7 @@ struct CbmDigiTimeslice;
 class CbmDevUnpack : public FairMQDevice {
 public:
   CbmDevUnpack();
-  virtual ~CbmDevUnpack();
+  virtual ~CbmDevUnpack() {};
 
 private:
   std::map<uint16_t, cbm::algo::UnpackSts> fAlgoSts = {};
@@ -50,9 +49,6 @@ private:
   /// Statistics & first TS rejection
   size_t fNumMessages = 0;
   size_t fNumTs       = 0;
-
-  /// Pointer to the Timeslice header conatining start time and index
-  CbmTsEventHeader* fCbmTsEventHeader = nullptr;
 
   /** @brief Read command line parameters for MQ device */
   virtual void InitTask();

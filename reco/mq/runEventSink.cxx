@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Pierre-Alain Loizeau [committer] */
 
-#include "CbmDeviceEventSink.h"
+#include "CbmDevEventSink.h"
 
 #include <iomanip>
 #include <string>
@@ -32,4 +32,4 @@ void addCustomOptions(bpo::options_description& options)
                         "MQ channel name for histos");
 }
 
-FairMQDevicePtr getDevice(const FairMQProgOptions& /*config*/) { return new CbmDeviceEventSink(); }
+FairMQDevicePtr getDevice(const FairMQProgOptions& /*config*/) { return new CbmDevEventSink(); }
