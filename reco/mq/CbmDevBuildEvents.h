@@ -53,7 +53,7 @@ private:
 
   /// Statistics & first TS rejection
   uint64_t fulNumMessages = 0;
-  uint64_t fulTsCounter   = 0;
+  //  uint64_t fulTsCounter   = 0;
 
   /// Processing algos
   cbm::algo::EventBuilder fEvbuildAlgo;

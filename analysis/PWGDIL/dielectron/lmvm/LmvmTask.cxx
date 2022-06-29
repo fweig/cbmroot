@@ -1164,7 +1164,7 @@ void LmvmTask::DifferenceSignalAndBg()
       fH.FillH2("hTrdElLikePur_El", cand.fMomentum.Mag(), cand.fTrdLikeEl, fW);
       fH.FillH2("hTofM2Pur_El", cand.fMomentum.Mag(), cand.fMass2, fW);
     }
-    else if (!cand.IsMcSignal() && std::abs(cand.fMcPdg != 11)) {
+    else if (!cand.IsMcSignal() && std::abs(cand.fMcPdg) != 11) {
       fH.FillH2("hAnnRichVsMomPur_Bg", cand.fMomentum.Mag(), cand.fRichAnn, fW);
       fH.FillH2("hTrdElLikePur_Bg", cand.fMomentum.Mag(), cand.fTrdLikeEl, fW);
       fH.FillH2("hTofM2Pur_Bg", cand.fMomentum.Mag(), cand.fMass2, fW);

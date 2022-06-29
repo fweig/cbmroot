@@ -28,7 +28,7 @@ class CbmL1Track;
 class CbmStsTrack;
 class L1TrackPar;
 class L1UMeasurementInfo;
-class L1MaterialInfo;
+struct L1MaterialInfo;
 class L1Station;
 class L1FieldRegion;
 class CbmKFVertex;

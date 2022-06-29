@@ -28,7 +28,7 @@
 #include <chrono>
 #include <vector>
 
-class CbmDigiTimeslice;
+struct CbmDigiTimeslice;
 class CbmTsEventHeader;
 class TimesliceMetaData;
 

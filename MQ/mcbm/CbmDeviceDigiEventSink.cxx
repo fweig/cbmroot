@@ -622,7 +622,8 @@ void CbmDeviceDigiEventSink::PrepareTreeEntry(CbmEventTimeslice unpTs)
     TimesliceMetaData(std::move(unpTs.fTsMetaData));
 
   /// Extract CbmEvent vector from input message
-  (*fEventsSel) = std::move(unpTs.GetSelectedData());
+  // FU, 29.06.22 Remove std::move to allow copy ellision
+  (*fEventsSel) = unpTs.GetSelectedData();
   if (kTRUE == fbFillHistos) {
     /// Accumulated counts, will show rise + plateau pattern in spill
     fulProcessedEvents += fEventsSel->size();

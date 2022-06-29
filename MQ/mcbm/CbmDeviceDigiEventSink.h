@@ -152,7 +152,7 @@ private:
   CbmTsEventHeader* fEvtHeader = nullptr;
   /// TS MetaData storage
   TClonesArray* fTimeSliceMetaDataArray = nullptr;  //!
-  TimesliceMetaData* fTsMetaData        = nullptr;
+                                                    //  TimesliceMetaData* fTsMetaData        = nullptr;
   /// CbmEvents
   std::vector<CbmDigiEvent>* fEventsSel = nullptr;  //! output container of CbmEvents
   /// Full TS Digis storage (optional usage, controlled by fbStoreFullTs!)

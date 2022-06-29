@@ -52,7 +52,7 @@
 #include "L1Algo/L1Vector.h"
 #include "L1EventEfficiencies.h"
 
-class L1AlgoInputData;
+struct L1AlgoInputData;
 class L1Algo;
 class L1Event;
 class CbmL1ParticlesFinder;

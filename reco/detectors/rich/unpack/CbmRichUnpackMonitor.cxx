@@ -81,7 +81,7 @@ Bool_t CbmRichUnpackMonitor::ResetHistograms()
   return kTRUE;
 }
 
-Bool_t CbmRichUnpackMonitor::CreateDebugHistograms(CbmMcbm2018RichPar* pUnpackPar) { return kTRUE; }
+Bool_t CbmRichUnpackMonitor::CreateDebugHistograms(CbmMcbm2018RichPar* /*pUnpackPar*/) { return kTRUE; }
 
 Bool_t CbmRichUnpackMonitor::ResetDebugHistograms() { return kTRUE; }
 // -------------------------------------------------------------------------
@@ -105,8 +105,8 @@ void CbmRichUnpackMonitor::FillDigisToTDiRICH(Int_t Address, Double_t ToT)
 }
 
 // -------------------------------------------------------------------------
-void CbmRichUnpackMonitor::PrintDebugInfo(const uint64_t MsStartTime, const size_t NrProcessedTs,
-                                          const uint16_t msDescriptorFlags, const uint32_t uSize)
+void CbmRichUnpackMonitor::PrintDebugInfo(const uint64_t /*MsStartTime*/, const size_t /*NrProcessedTs*/,
+                                          const uint16_t /*msDescriptorFlags*/, const uint32_t /*uSize*/)
 {
 }
 

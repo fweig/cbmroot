@@ -17,6 +17,8 @@ public:
 
   AccTimingEvent(std::string sLine, bool bVerbose = false);
 
+  virtual ~AccTimingEvent() = default;
+
   void Print() const;
 
   uint32_t GetGroupId() const { return ((fulRawEvent >> kOffsetGroupId) & ((1ULL << kNbBitsGroupId) - 1)); }
@@ -94,6 +96,8 @@ public:
     , fLastEvtBeforeTs(lastEvtBefTs)
   {
   }
+
+  virtual ~AccStatusTs() = default;
 
   void SetLastEvtBefTs(AccTimingEvent lastEvtBefTs) { fLastEvtBeforeTs = lastEvtBefTs; }
 

@@ -96,8 +96,8 @@ void CbmTofHitsConverter::ProcessData(CbmEvent* event)
     event_id = FairRootManager::Instance()->GetEntryNr();
   }
 
-  const int n_tracks   = event ? event->GetNofData(ECbmDataType::kGlobalTrack) : cbm_global_tracks_->GetEntriesFast();
-  const int n_tof_hits = event ? event->GetNofData(ECbmDataType::kTofHit) : cbm_tof_hits_->GetEntriesFast();
+  const int n_tracks = event ? event->GetNofData(ECbmDataType::kGlobalTrack) : cbm_global_tracks_->GetEntriesFast();
+  //  const int n_tof_hits = event ? event->GetNofData(ECbmDataType::kTofHit) : cbm_tof_hits_->GetEntriesFast(); // FU, 02.08.22
 
   if (n_tracks <= 0) {
     LOG(warn) << "No global tracks!";
