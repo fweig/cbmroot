@@ -75,6 +75,9 @@ public:
     fbDupliWithoutAdc      = bDiffAdc;
   }
 
+  /** @brief Enable/Disable firmware binning (switch only supported by older implementations) */
+  void SetFwBinning(bool useFwBinning) { fbUseFwBinning = useFwBinning; }
+
   /**
    * @brief Get the requested parameter containers. To be defined in the derived classes!
    * Return the required parameter containers together with the paths to the ascii
@@ -133,6 +136,9 @@ protected:
 
   /** @brief If rejecting duplicate digis, enables rejection even if ADC differs*/
   bool fbDupliWithoutAdc = true;
+
+  /** @brief Enables firmware binning (some implementations ignore this) */
+  bool fbUseFwBinning = true;
 
 private:
   ClassDef(CbmStsUnpackAlgoBase, 2)

@@ -111,6 +111,8 @@ public:
   /** @brief Add a monitor to the unpacker. @param value CbmStsUnpackMonitor */
   void SetMonitor(std::shared_ptr<CbmStsUnpackMonitor> value) { fMonitor = value; }
 
+  /** @brief Enable/Disable firmware binning (switch only supported by legacy algo) */
+  void SetFwBinning(bool useFwBinning) { fbUseFwBinning = useFwBinning; }
 
 protected:
   /**
@@ -143,6 +145,9 @@ protected:
 
   /** @brief If rejecting duplicate digis, enables rejection even if ADC differs*/
   bool fbDupliWithoutAdc = true;
+
+  /** @brief Enables firmware binning (some implementations ignore this) */
+  bool fbUseFwBinning = false;
 
   /// Temporary storage of user parameters
   std::vector<FebChanMaskReco> fvChanMasks = {};

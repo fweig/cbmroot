@@ -52,7 +52,13 @@ uint64_t CbmStsUnpackAlgo::getFullTimeStamp(const uint16_t usRawTs)
 }
 
 // ---- init
-Bool_t CbmStsUnpackAlgo::init() { return kTRUE; }
+Bool_t CbmStsUnpackAlgo::init()
+{
+  if (!fbUseFwBinning) {
+    LOG(warning) << "Chosen STS unpacker always uses firmware binning (``false'' setting is ignored).";
+  }
+  return kTRUE;
+}
 
 // ---- initDpbIdIndexMap ----
 void CbmStsUnpackAlgo::initDpbIdIndexMap(CbmMcbm2018StsPar* parset)
@@ -485,9 +491,9 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
           if (fMonitor) fMonitor->FillDuplicateHitsAdc(uFebIdx, uChanInFeb, usRawAdc);
           return;
         }  // if same TS, (ADC,) TS MSB, TS MSB cycle, reject
-        fvvusLastTsChan[uAsicIdx][usChan]         = usRawTs;
-        fvvusLastAdcChan[uAsicIdx][usChan]        = usRawAdc;
-        fvvulLastTsMsbChan[uAsicIdx][usChan]      = fulTsMsbIndexInTs[fuCurrDpbIdx];
+        fvvusLastTsChan[uAsicIdx][usChan]    = usRawTs;
+        fvvusLastAdcChan[uAsicIdx][usChan]   = usRawAdc;
+        fvvulLastTsMsbChan[uAsicIdx][usChan] = fulTsMsbIndexInTs[fuCurrDpbIdx];
       }  // if (fbRejectDuplicateDigis)
 
       uint32_t uChanInMod = usChan + fNrChsPerAsic * (uAsicIdx % fNrAsicsPerFeb);
@@ -551,8 +557,8 @@ void CbmStsUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
       (static_cast<double_t>(ulHitTime) * stsxyter::kdClockCycleNs - fSystemTimeOffset + fTsStartTime) * 1e-9;
 
     // Prepare monitoring values
-    const uint32_t uAsicInFeb       = uAsicIdx % fNrAsicsPerFeb;
-    const double dCalAdc            = fvdFebAdcOffs[uFebIdx] + (usRawAdc - 1) * fvdFebAdcGain[uFebIdx];
+    const uint32_t uAsicInFeb = uAsicIdx % fNrAsicsPerFeb;
+    const double dCalAdc      = fvdFebAdcOffs[uFebIdx] + (usRawAdc - 1) * fvdFebAdcGain[uFebIdx];
 
     fMonitor->FillHitMonitoringHistos(uFebIdx, usChan, uChanInFeb, usRawAdc, dCalAdc, usRawTs, mess.IsHitMissedEvts());
     fMonitor->FillHitEvoMonitoringHistos(uFebIdx, uAsicIdx, uAsicInFeb, uChanInFeb, dHitTimeAbsSec,

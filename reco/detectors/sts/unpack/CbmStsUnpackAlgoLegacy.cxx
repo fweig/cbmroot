@@ -460,8 +460,13 @@ bool CbmStsUnpackAlgoLegacy::unpack(const fles::Timeslice* ts, std::uint16_t uMs
 // -------------------------------------------------------------------------
 void CbmStsUnpackAlgoLegacy::RefreshTsMsbFields(const size_t uMsIdx)
 {
-  const uint32_t uTsMsbCycleHeader =
-    std::floor(fulCurrentMsIdx / (stsxyter::kulTsCycleNbBinsBinning * stsxyter::kdClockCycleNs));
+  uint32_t uTsMsbCycleHeader;
+  if (fbUseFwBinning) {
+    uTsMsbCycleHeader = std::floor(fulCurrentMsIdx / (stsxyter::kulTsCycleNbBinsBinning * stsxyter::kdClockCycleNs));
+  }
+  else {
+    uTsMsbCycleHeader = std::floor(fulCurrentMsIdx / (stsxyter::kulTsCycleNbBins * stsxyter::kdClockCycleNs));
+  }
 
   if (0 == uMsIdx) {
     if (uTsMsbCycleHeader != fvuCurrentTsMsbCycle[fuCurrDpbIdx])
@@ -552,9 +557,13 @@ void CbmStsUnpackAlgoLegacy::LoopMsMessages(const uint8_t* msContent, const uint
 // -------------------------------------------------------------------------
 void CbmStsUnpackAlgoLegacy::ProcessHitInfo(const stsxyter::Message& mess)
 {
-  const uint16_t usElinkIdx = mess.GetLinkIndexHitBinning();
-  const uint32_t uCrobIdx   = usElinkIdx / fUnpackPar->GetNbElinkPerCrob();
-  const int32_t uFebIdx     = fUnpackPar->ElinkIdxToFebIdx(usElinkIdx);
+  uint16_t usElinkIdx;
+  if (fbUseFwBinning) { usElinkIdx = mess.GetLinkIndexHitBinning(); }
+  else {
+    usElinkIdx = mess.GetLinkIndex();
+  }
+  const uint32_t uCrobIdx = usElinkIdx / fUnpackPar->GetNbElinkPerCrob();
+  const int32_t uFebIdx   = fUnpackPar->ElinkIdxToFebIdx(usElinkIdx);
   if (-1 == uFebIdx) {
     LOG(warning) << "CbmStsUnpackAlgoLegacy::ProcessHitInfo => "
                  << "Wrong elink Idx! Elink raw " << Form("%d remap %d", usElinkIdx, uFebIdx);
@@ -566,9 +575,13 @@ void CbmStsUnpackAlgoLegacy::ProcessHitInfo(const stsxyter::Message& mess)
   //LOG(info) << "Test " << uFebIdx << " " << uAsicIdx / fUnpackPar->GetNbAsicsPerFeb();
   //const uint32_t uFebIdx    = uAsicIdx / fUnpackPar->GetNbAsicsPerFeb();  // delete this?
 
-  const uint16_t usChan     = mess.GetHitChannel();
-  const uint16_t usRawAdc   = mess.GetHitAdc();
-  const uint16_t usRawTs    = mess.GetHitTimeBinning();
+  const uint16_t usChan   = mess.GetHitChannel();
+  const uint16_t usRawAdc = mess.GetHitAdc();
+  uint16_t usRawTs;
+  if (fbUseFwBinning) { usRawTs = mess.GetHitTimeBinning(); }
+  else {
+    usRawTs = mess.GetHitTimeFull();
+  }
   const uint32_t uChanInFeb = usChan + fUnpackPar->GetNbChanPerAsic() * (uAsicIdx % fUnpackPar->GetNbAsicsPerFeb());
 
   /// Duplicate hits rejection
@@ -626,7 +639,11 @@ void CbmStsUnpackAlgoLegacy::ProcessHitInfo(const stsxyter::Message& mess)
 
 void CbmStsUnpackAlgoLegacy::ProcessTsMsbInfo(const stsxyter::Message& mess, uint32_t uMessIdx, uint32_t uMsIdx)
 {
-  const uint32_t uVal = mess.GetTsMsbValBinning();
+  uint32_t uVal;
+  if (fbUseFwBinning) { uVal = mess.GetTsMsbValBinning(); }
+  else {
+    uVal = mess.GetTsMsbVal();
+  }
 
   // Update Status counters
   if (uVal < fvulCurrentTsMsb[fuCurrDpbIdx]) {
@@ -714,12 +731,20 @@ void CbmStsUnpackAlgoLegacy::ProcessStatusInfo(const stsxyter::Message& mess, ui
 uint64_t CbmStsUnpackAlgoLegacy::GetFullTimeStamp(const uint16_t usRawTs)
 {
   // Use TS w/o overlap bits as they will anyway come from the TS_MSB
-  const uint64_t ulTime =
-    usRawTs
-    + static_cast<uint64_t>(stsxyter::kuHitNbTsBinsBinning) * static_cast<uint64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
-    + static_cast<uint64_t>(stsxyter::kulTsCycleNbBinsBinning)
-        * static_cast<uint64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
 
+  uint64_t ulTime;
+  if (fbUseFwBinning) {
+    ulTime =
+      usRawTs
+      + static_cast<uint64_t>(stsxyter::kuHitNbTsBinsBinning) * static_cast<uint64_t>(fvulCurrentTsMsb[fuCurrDpbIdx])
+      + static_cast<uint64_t>(stsxyter::kulTsCycleNbBinsBinning)
+          * static_cast<uint64_t>(fvuCurrentTsMsbCycle[fuCurrDpbIdx]);
+  }
+  else {
+    ulTime =
+      usRawTs
+      + static_cast<uint64_t>(stsxyter::kuHitNbTsBins) * (static_cast<uint64_t>(fvulCurrentTsMsb[fuCurrDpbIdx]) % 4);
+  }
   return ulTime;
 }
 

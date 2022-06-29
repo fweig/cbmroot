@@ -81,17 +81,17 @@ private:
    * @brief Handles the distribution of the hidden derived classes to their explicit functions.
    *
    * @param parset
-   * @return Bool_t initOk
+   * @return bool initOk
   */
-  Bool_t initParSet(FairParGenericSet* parset);
+  bool initParSet(FairParGenericSet* parset);
 
   /**
    * @brief Initialize the parameters from CbmMcbm2018StsPar.
    *
    * @param parset
-   * @return Bool_t initOk
+   * @return bool initOk
   */
-  Bool_t initParSet(CbmMcbm2018StsPar* parset);
+  bool initParSet(CbmMcbm2018StsPar* parset);
 
   void InitInternalStatus();
   void InitTempVectors(std::vector<int32_t>* viModuleType, std::vector<int32_t>* viModAddress,
