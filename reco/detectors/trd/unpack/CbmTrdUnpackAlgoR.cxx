@@ -246,6 +246,8 @@ Spadic::MsMessageType CbmTrdUnpackAlgoR::getMessageType(const std::uint32_t fram
 // ---- getTsMsb ----
 std::uint8_t CbmTrdUnpackAlgoR::getTsMsb(const std::uint32_t frame)
 {
+  if ((frame & 0xf) > 0)
+    return -2;  // if a 'error' ts_msb is received the tsmsb value is not correct. To not mess up the counting -2 is returned.
   // The epoch in form of the TS_MSBs is written 3 times into the frame to allow to check for bit flips and catch errors. It has the length of 6 bits and an offset of 4
   std::uint8_t tsmsb[3];
   for (uint iepoch = 0; iepoch < 3; ++iepoch) {
@@ -381,7 +383,7 @@ bool CbmTrdUnpackAlgoR::unpack(const fles::Timeslice* ts, std::uint16_t icomp, U
       switch (kWordtype) {
         case Spadic::MsMessageType::kEPO: {
           auto tsmsb = getTsMsb(frame);
-          if (tsmsb > currTsMsb) fNrTsMsbVec.at(istream)++;
+          if (((tsmsb - currTsMsb) & 0x3f) == 1 || currTsMsb == -1) fNrTsMsbVec.at(istream)++;
           currTsMsb = tsmsb;
           fNrEpochMsgs++;
           break;
