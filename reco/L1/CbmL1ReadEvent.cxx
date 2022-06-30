@@ -1014,9 +1014,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
       th.id = tmpHits.size();
 
-      if (0x00202806 == mh->GetAddress() || 0x00002806 == mh->GetAddress()) continue;
+      if (0x00202806 == mh->GetAddress() || 0x00002806 == mh->GetAddress()) continue;  // TODO: Why? (S.Zharko)
 
-      int sttof = CbmTofTrackingInterface::Instance()->GetTrackingStation(mh);
+      int sttof = CbmTofTrackingInterface::Instance()->GetTrackingStationIndex(mh);
 
       if (sttof < 0) continue;
 

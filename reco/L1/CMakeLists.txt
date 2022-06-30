@@ -157,6 +157,8 @@ ParticleFinder/CbmL1PFFitter.cxx
 ParticleFinder/CbmL1PFMCParticle.cxx
 
 qa/CbmTrackerInputQaTrd.cxx
+qa/CbmTrackingInputQaBase.cxx
+qa/CbmTrackingInputQaSts.cxx
 )
 
 set(HEADERS
@@ -189,6 +191,8 @@ OffLineInterface/CbmL1GlobalFindTracksEvents.h
 L1Algo/L1Def.h
 L1Algo/L1Vector.h
 qa/CbmTrackerInputQaTrd.h
+qa/CbmTrackingInputQaBase.h
+qa/CbmTrackingInputQaSts.h
 )
 
 

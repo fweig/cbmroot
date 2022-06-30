@@ -160,6 +160,8 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
   run->AddTask(mcManager);
   // ------------------------------------------------------------------------
 
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());  // Geometry interface initializer for tracker
+
   // ----- Match reco to MC ------
   CbmMatchRecoToMC* matchTask = new CbmMatchRecoToMC();
   run->AddTask(matchTask);
@@ -189,6 +191,7 @@ void run_qa(TString dataTra = "data/sis100_muon_jpsi_test", TString dataRaw = "d
   if (CbmSetup::Instance()->IsActive(ECbmModuleId::kSts)) {
     //run->AddTask(new CbmStsDigitizeQa()); //opens lots of windows
     run->AddTask(new CbmStsFindTracksQa());
+    run->AddTask(new CbmTrackingInputQaSts());
   }
   // ------------------------------------------------------------------------
 

@@ -16,6 +16,7 @@
 #include "CbmMuchModuleGem.h"
 #include "CbmMuchPad.h"
 #include "CbmMuchStation.h"
+#include "CbmPixelHit.h"
 #include "CbmTrackingDetectorInterfaceBase.h"
 
 #include "FairTask.h"
@@ -97,6 +98,15 @@ public:
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Time resolution [ns]
   double GetTimeResolution(int /*stationId*/) const { return 3.9; }
+
+  /// Gets a tracking station of a CbmPixelHit
+  /// \param  hit  A pointer to CbmPixelHit
+  /// \return Local index of the tracking station
+  int GetTrackingStationIndex(const CbmPixelHit* hit) const
+  {
+    return CbmMuchGeoScheme::GetStationIndex(hit->GetAddress()) * 3
+           + CbmMuchGeoScheme::GetLayerIndex(hit->GetAddress());
+  }
 
   /// Gets max size of a station along the X-axis
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])

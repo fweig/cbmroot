@@ -12,7 +12,9 @@
 #ifndef CbmTrdTrackingInterface_h
 #define CbmTrdTrackingInterface_h 1
 
+#include "CbmPixelHit.h"
 #include "CbmTrackingDetectorInterfaceBase.h"
+#include "CbmTrdAddress.h"
 #include "CbmTrdParModDigi.h"
 #include "CbmTrdParSetDigi.h"
 
@@ -92,6 +94,11 @@ public:
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Time resolution [ns]
   double GetTimeResolution(int /*stationId*/) const { return 10.; }
+
+  /// Gets a tracking station of a CbmPixelHit
+  /// \param  hit  A pointer to CbmPixelHit
+  /// \return Local index of the tracking station
+  int GetTrackingStationIndex(const CbmPixelHit* hit) const { return CbmTrdAddress::GetLayerId(hit->GetAddress()); }
 
   /// Gets max size of a station along the X-axis
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])

@@ -12,6 +12,8 @@
 #ifndef CbmTofTrackingInterface_h
 #define CbmTofTrackingInterface_h 1
 
+#include "CbmPixelHit.h"
+#include "CbmTofAddress.h"
 #include "CbmTofDigiBdfPar.h"
 #include "CbmTofHit.h"
 #include "CbmTrackingDetectorInterfaceBase.h"
@@ -94,12 +96,16 @@ public:
   double GetTimeResolution(int /*stationId*/) const { return 0.075; }
 
   /// Gets a tracking station of a ToF hit
-  /// \param hit  A pointer to ToF hit
-  __attribute__((always_inline)) int GetTrackingStation(CbmTofHit* hit) const
+  /// \param  hit  A pointer to ToF hit
+  /// \return Local index of the tracking station
+  int GetTrackingStationIndex(const CbmPixelHit* hit) const
   {
-    int iSt = fDigiBdfPar->GetTrackingStation(hit);
+    int iSt = fDigiBdfPar->GetTrackingStation(CbmTofAddress::GetSmType(hit->GetAddress()),
+                                              CbmTofAddress::GetSmId(hit->GetAddress()),
+                                              CbmTofAddress::GetRpcId(hit->GetAddress()));
+
     if (fIfMissingHits) {
-      /// Recalculate station index for inconsistent hits
+      // Recalculate station index for inconsistent hits
       if (hit->GetX() > 20. && hit->GetZ() > 270. && 1 == iSt) { iSt = 2; }
     }
     return iSt;

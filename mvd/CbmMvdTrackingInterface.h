@@ -13,7 +13,9 @@
 #define CbmMvdTrackingInterface_h 1
 
 #include "CbmMvdDetector.h"
+#include "CbmMvdHit.h"
 #include "CbmMvdStationPar.h"
+#include "CbmPixelHit.h"
 #include "CbmTrackingDetectorInterfaceBase.h"
 
 #include "FairTask.h"
@@ -99,6 +101,20 @@ public:
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Time resolution [ns]
   double GetTimeResolution(int /*stationId*/) const { return 1000.; }
+
+  /// Gets a tracking station of a CbmPixelHit
+  /// \param  hit  A pointer to CbmPixelHit
+  /// \return Local index of the tracking station
+  int GetTrackingStationIndex(const CbmPixelHit* hit) const
+  {
+    auto hitMvd = [&] {
+      if constexpr (kUseDynamicCast) { return dynamic_cast<const CbmMvdHit*>(hit); }
+      else {
+        return static_cast<const CbmMvdHit*>(hit);
+      }
+    }();
+    return hitMvd->GetStationNr();
+  }
 
   /// Gets max size of a tracking station along the X-axis
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])

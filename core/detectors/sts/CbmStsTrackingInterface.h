@@ -12,6 +12,7 @@
 #ifndef CbmStsTrackingInterface_h
 #define CbmStsTrackingInterface_h 1
 
+#include "CbmPixelHit.h"
 #include "CbmStsParSetModule.h"
 #include "CbmStsParSetSensor.h"
 #include "CbmStsParSetSensorCond.h"
@@ -102,6 +103,14 @@ public:
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Time resolution [ns]
   double GetTimeResolution(int /*stationId*/) const { return 5.; }
+
+  /// Gets a tracking station of a CbmPixelHit
+  /// \param  hit  A pointer to CbmPixelHit
+  /// \return Local index of the tracking station
+  int GetTrackingStationIndex(const CbmPixelHit* hit) const
+  {
+    return CbmStsSetup::Instance()->GetStationNumber(hit->GetAddress());
+  }
 
   /// Gets max size of a station along the X-axis
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
