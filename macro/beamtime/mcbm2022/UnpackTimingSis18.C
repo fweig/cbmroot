@@ -3,12 +3,14 @@
    Authors: Pierre-Alain Loizeau [committer] */
 
 void UnpackTimingSis18(std::string sDigiFileName,
-                       std::string sTimingFilesFolder = "/lustre/cbm/users/ploizeau/mcbm2022", bool bVerbose = false)
+                       std::string sTimingFilesFolder = "/lustre/cbm/prod/beamtime/2022/mcbm_sis18_events/",
+                       bool bVerbose                  = false)
 {
-  std::vector<std::string> vTimingFileNames = {"sis18_events_2022_03_24.txt", "sis18_events_2022_03_29.txt",
-                                               "sis18_events_2022_03_30.txt", "sis18_events_2022_03_31.txt",
-                                               "sis18_events_2022_04_01.txt", "sis18_events_2022_04_02.txt",
-                                               "sis18_events_2022_04_03.txt", "sis18_events_2022_04_04.txt"};
+  std::vector<std::string> vTimingFileNames = {
+    "sis18_events_2022_03_24.txt",    "sis18_events_2022_03_29.txt",   "sis18_events_2022_03_30.txt",
+    "sis18_events_2022_03_31.txt",    "sis18_events_2022_04_01.txt",   "sis18_events_2022_04_02.txt",
+    "sis18_events_2022_04_03.txt",    "sis18_events_2022_04_04.txt",   "sis18_events_2022_05_18.txt",
+    "sis18_events_2022_05_23_24.txt", "sis18_events_2022_05_25_26.txt"};
 
   /// Test the decoder
   /*
@@ -82,7 +84,7 @@ void UnpackTimingSis18(std::string sDigiFileName,
   if (ulLastTsStartUtc < vAllEvtsBuff[0].GetTime()) {
     std::cout << "Last TS start time in this file: " << ulLastTsStartUtc << std::endl;
     std::cout << "Earlier than the first recorded accelerator Event: " << vAllEvtsBuff[0].GetTime() << std::endl;
-    std::cout << "=> No eccelerator data available for this digi file!" << std::endl;
+    std::cout << "=> No accelerator data available for this digi file!" << std::endl;
     return;
   }
 
