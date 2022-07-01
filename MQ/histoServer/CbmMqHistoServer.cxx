@@ -35,19 +35,7 @@ Bool_t bMqHistoServerSaveHistos  = kFALSE;
 */
 CbmMqHistoServer::CbmMqHistoServer()
   : FairMQDevice()
-  , fsChannelNameHistosInput("histogram-in")
-  , fsChannelNameHistosConfig("histo-conf")
-  , fsChannelNameCanvasConfig("canvas-conf")
-  , fsHistoFileName("MqHistos.root")
-  , fuHttpServerPort(8098)
   , fArrayHisto()
-  , fvpsHistosFolder()
-  , fvpsCanvasConfig()
-  , fvHistos()
-  , fvCanvas()
-  , fNMessages(0)
-  , fServer(nullptr)
-  , fStopThread(false)
 {
 }
 
@@ -308,8 +296,10 @@ void CbmMqHistoServer::UpdateHttpServer()
 
 void CbmMqHistoServer::PostRun()
 {
+  SaveHistograms();
   fStopThread = true;
   fThread.join();
+  SaveHistograms();
 }
 
 template<class HistoT>

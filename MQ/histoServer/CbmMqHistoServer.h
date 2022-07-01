@@ -42,37 +42,37 @@ protected:
 
 private:
   /// Parameters
-  std::string fsChannelNameHistosInput;
-  std::string fsChannelNameHistosConfig;
-  std::string fsChannelNameCanvasConfig;
-  std::string fsHistoFileName;
-  uint32_t fuHttpServerPort;
+  std::string fsChannelNameHistosInput  = "histogram-in";
+  std::string fsChannelNameHistosConfig = "histo-conf";
+  std::string fsChannelNameCanvasConfig = "canvas-conf";
+  std::string fsHistoFileName           = "MqHistos.root";
+  uint32_t fuHttpServerPort             = 8098;
 
   /// Array of histograms with unique names
   TObjArray fArrayHisto;
   /// Vector of string with ( HistoName, FolderPath ) to send to the histogram server
-  std::vector<std::pair<std::string, std::string>> fvpsHistosFolder;
+  std::vector<std::pair<std::string, std::string>> fvpsHistosFolder = {};
   /// Vector of string pairs with ( CanvasName, CanvasConfig ) to send to the histogram server
   /// Format of Can config is "Name;Title;NbPadX(U);NbPadY(U);ConfigPad1(s);....;ConfigPadXY(s)"
   /// Format of Pad config is "GrixX(b),GridY(b),LogX(b),LogY(b),LogZ(b),HistoName(s),DrawOptions(s)"
-  std::vector<std::pair<std::string, std::string>> fvpsCanvasConfig;
-  std::vector<bool> fvbCanvasReady;
-  bool fbAllCanvasReady;
+  std::vector<std::pair<std::string, std::string>> fvpsCanvasConfig = {};
+  std::vector<bool> fvbCanvasReady                                  = {};
+  bool fbAllCanvasReady                                             = false;
 
-  std::vector<std::pair<TNamed*, std::string>> fvHistos;  //! Vector of Histos pointers and folder path
-  std::vector<bool> fvbHistoRegistered;
-  bool fbAllHistosRegistered;
-  std::vector<std::pair<TCanvas*, std::string>> fvCanvas;  //! Vector of Canvas pointers and folder path
-  std::vector<bool> fvbCanvasRegistered;
-  bool fbAllCanvasRegistered;
+  std::vector<std::pair<TNamed*, std::string>> fvHistos  = {};  //! Vector of Histos pointers and folder path
+  std::vector<bool> fvbHistoRegistered                   = {};
+  bool fbAllHistosRegistered                             = false;
+  std::vector<std::pair<TCanvas*, std::string>> fvCanvas = {};  //! Vector of Canvas pointers and folder path
+  std::vector<bool> fvbCanvasRegistered                  = {};
+  bool fbAllCanvasRegistered                             = false;
 
   /// Internal status
-  int fNMessages;
+  int fNMessages = 0;
 
-  THttpServer* fServer;
+  THttpServer* fServer = nullptr;
 
   std::thread fThread;
-  bool fStopThread;
+  bool fStopThread = false;
 
   template<class HistoT>
   bool ReadHistogram(HistoT* pHist);
