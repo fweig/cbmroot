@@ -3,7 +3,7 @@
    Authors: Norbert Herrmann [committer], Pierre-Alain Loizeau */
 
 /**
-nh, adapt from 
+nh, adapt from
  * \file CbmTrdTrackFinderIdeal.h
 **/
 
@@ -44,8 +44,8 @@ public:
   void TrklSeed(Int_t iHit);
   Int_t HitUsed(Int_t iHit);
 
-  /*			  
-   void RemoveMultipleAssignedHits(        
+  /*
+   void RemoveMultipleAssignedHits(
 			 TClonesArray* fTofHits,
 			 Int_t         iDet
 			 );
@@ -74,9 +74,13 @@ public:
   inline Double_t GetChiMaxAccept() { return fChiMaxAccept; }
 
   static void Line3Dfit(CbmTofTracklet* pTrk);
+  static void Line3Dfit(CbmTofTracklet* pTrk, Int_t iAddr);
   Bool_t Active(CbmTofTracklet* pTrk);
 
   void PrintStatus(char* cComm);
+  void AddVertex();
+  inline void SetAddVertex(int ival) { fiAddVertex = ival; }
+  inline void SetVtxNbTrksMin(int ival) { fiVtxNbTrksMin = ival; }
 
   //Copy constructor
   CbmTofTrackFinderNN(const CbmTofTrackFinderNN& finder);
@@ -105,7 +109,8 @@ private:
   std::vector<CbmTofTracklet*> fTracks;  // Tracklets to which hit is assigned
   //std::vector<std::map <CbmTofTracklet *, Int_t> > fvTrkMap;  // Tracklets to which hit is assigned
   std::vector<std::vector<CbmTofTracklet*>> fvTrkVec;  // Tracklets to which hit is assigned
-
+  int fiAddVertex;
+  int fiVtxNbTrksMin;
   ClassDef(CbmTofTrackFinderNN, 1);
 };
 

@@ -52,27 +52,28 @@ Double_t* CbmTofTrackletTools::Line3DFit(CbmTofTracklet* pTrk, Int_t iDetId)
   pStart[1]          = (pTrk->GetTrackParameter())->GetTx();
   pStart[2]          = pTrk->GetFitY(0.);
   pStart[3]          = (pTrk->GetTrackParameter())->GetTy();
-  LOG(debug) << "Line3DFit init: X0 " << pStart[0] << ", TX " << pStart[1] << ", Y0 " << pStart[2] << ", TY "
-             << pStart[3];
+  LOG(debug1) << "Line3DFit init: X0 " << pStart[0] << ", TX " << pStart[1] << ", Y0 " << pStart[2] << ", TY "
+              << pStart[3];
   fMinuit.DoFit(gr, pStart);
   gr->Delete();
   Double_t* dRes;
   //   LOG(info) << "Get fit results ";
   dRes = fMinuit.GetParFit();
-  LOG(debug) << "Line3Dfit result: " << gMinuit->fCstatu << " : X0 " << dRes[0] << ", TX " << dRes[1] << ", Y0 "
-             << dRes[2] << ", TY " << dRes[3] << ", Chi2DoF: " << fMinuit.GetChi2DoF();
+  LOG(debug1) << "Line3Dfit result: " << gMinuit->fCstatu << " : X0 " << dRes[0] << ", TX " << dRes[1] << ", Y0 "
+              << dRes[2] << ", TY " << dRes[3] << ", Chi2DoF: " << fMinuit.GetChi2DoF();
   return dRes;
 }
 
 Double_t CbmTofTrackletTools::FitTt(CbmTofTracklet* pTrk, Int_t iDetId)
 {
+  // Call with iDetId=-1 for full Tracklet fit
   Int_t nValidHits = 0;
   Int_t iHit1      = 0;
   Double_t dDist1  = 100.;
   //LOG(info) << "FitTt: " << pTrk->GetNofHits() << " hits, exclude " << Form("0x%08x",iDetId);
-  Double_t aR[pTrk->GetNofHits() - 1];
-  Double_t at[pTrk->GetNofHits() - 1];
-  Double_t ae[pTrk->GetNofHits() - 1];
+  Double_t aR[pTrk->GetNofHits()];
+  Double_t at[pTrk->GetNofHits()];
+  Double_t ae[pTrk->GetNofHits()];
   for (Int_t iHit = 0; iHit < pTrk->GetNofHits(); iHit++) {
     if (iDetId == pTrk->GetTofDetIndex(iHit)) continue;
     if (nValidHits == 0) {
@@ -111,14 +112,20 @@ Double_t CbmTofTrackletTools::FitTt(CbmTofTracklet* pTrk, Int_t iDetId)
   }
   Double_t det_cov_mat =
     esum * RRsum
-    - Rsum * Rsum;  // Determinant of inverted Covariance Matrix -> 1/det is common Faktor of Cavariance Matrix
-  //fT0=(RRsum*tsum-Rsum*Rtsum)/det_cov_mat;    // Best Guess for time at origin
-  return (-Rsum * tsum + esum * Rtsum) / det_cov_mat;  // Best guess for inverted velocity
-  //fT0Err=TMath::Sqrt(RRsum/det_cov_mat);      // sqrt of (0,0) in Covariance matrix -> error on fT0
-  //fTtErr=TMath::Sqrt(esum/det_cov_mat);       // sqrt of (1,1) in Covariance Matrix -> error on fTt
-  //fT0TtCov=-Rsum/det_cov_mat;                 // (0,1)=(1,0) in Covariance Matrix -> cov(fT0,fTt)
-
-  //fT0+=yoffset;                               // Adding yoffset again
+    - Rsum * Rsum;  // Determinant of inverted Covariance Matrix -> 1/det is common Faktor of Covariance Matrix
+  Double_t dT0      = (RRsum * tsum - Rsum * Rtsum) / det_cov_mat;  // Best Guess for time at origin
+  Double_t dTt      = (-Rsum * tsum + esum * Rtsum) / det_cov_mat;  // Best guess for inverted velocity
+  Double_t dT0Err   = TMath::Sqrt(RRsum / det_cov_mat);  // sqrt of (0,0) in Covariance matrix -> error on fT0
+  Double_t dTtErr   = TMath::Sqrt(esum / det_cov_mat);   // sqrt of (1,1) in Covariance Matrix -> error on fTt
+  Double_t dT0TtCov = -Rsum / det_cov_mat;               // (0,1)=(1,0) in Covariance Matrix -> cov(fT0,fTt)
+  dT0 += yoffset;                                        // Adding yoffset again
+  // store fit values with tracklet
+  pTrk->SetTt(dTt);  // dangerous & dirty, overwrites common fit
+  pTrk->SetTtErr(dTtErr);
+  pTrk->SetT0(dT0);
+  pTrk->SetT0Err(dT0Err);
+  pTrk->SetT0TtCov(dT0TtCov);
+  return dTt;
 }
 
 Double_t CbmTofTrackletTools::GetXdif(CbmTofTracklet* pTrk, Int_t iDetId, CbmTofHit* pHit)
@@ -277,6 +284,39 @@ Double_t CbmTofTrackletTools::GetTexpected(CbmTofTracklet* pTrk, Int_t iDetId, C
   }
   dTref /= (Double_t) Nref;
   return dTref;
+}
+
+Double_t CbmTofTrackletTools::GetTexpectedError(CbmTofTracklet* pTrk, Int_t iDetId, CbmTofHit* pHit, Double_t dTmean)
+{
+  Double_t dTrms  = 0.;
+  Double_t dTrms2 = 0.;
+  Double_t Nref   = 0;
+  Double_t dTt    = 0.;
+
+  //dTt = FitTt(pTrk, iDetId);
+  dTt = pTrk->GetTt();
+
+  for (Int_t iHit = 0; iHit < pTrk->GetNofHits(); iHit++) {
+    if (iDetId == pTrk->GetTofDetIndex(iHit) || 0 == pTrk->GetTofDetIndex(iHit)) continue;
+    Double_t dSign = 1.;
+    if (pTrk->GetTofHitPointer(iHit)->GetZ() < pHit->GetZ()) dSign = -1;
+    Double_t dTref =
+      pTrk->GetTofHitPointer(iHit)->GetTime() - dTt * dSign * pTrk->Dist3D(pTrk->GetTofHitPointer(iHit), pHit);
+    dTref -= dTmean;
+    dTrms2 += dTref * dTref;
+    Nref++;
+  }
+  if (Nref == 0) {
+    LOG(error) << "DetId " << iDetId << ", Nref " << Nref << " sizes " << pTrk->GetNofHits();
+    return 1.E20;
+  }
+  dTrms2 /= (Double_t) Nref;
+  dTrms = TMath::Sqrt(dTrms2);
+  /*
+  LOG(info)<<"TExpErr: "<<Form("addr 0x%08x, Nhit %d, Nref %d, TM %8.2f, Rms %8.2f ",
+		  iDetId, (Int_t)pTrk->GetNofHits(), (Int_t)Nref, dTmean, dTrms);
+		  */
+  return dTrms;
 }
 
 ClassImp(CbmTofTrackletTools)

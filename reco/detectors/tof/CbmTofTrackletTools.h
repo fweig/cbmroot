@@ -40,6 +40,7 @@ public:
   virtual Double_t GetYdif(CbmTofTracklet* pTrk, Int_t iDetId, CbmTofHit* pHit);
   virtual Double_t GetTdif(CbmTofTracklet* pTrk, Int_t iDetId, CbmTofHit* pHit);
   virtual Double_t GetTexpected(CbmTofTracklet* pTrk, Int_t iDetId, CbmTofHit* pHit);
+  virtual Double_t GetTexpectedError(CbmTofTracklet* pTrk, Int_t iDetId, CbmTofHit* pHit, Double_t dTexp);
 
 private:
   ClassDef(CbmTofTrackletTools, 1);

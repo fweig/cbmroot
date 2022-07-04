@@ -60,6 +60,7 @@ using std::vector;
 
 //const Int_t DetMask = 0x3FFFFF;  // check for consistency with v14a geometry
 const Int_t DetMask = 0x1FFFFF;  // check for consistency with v21a geometry
+static int iTS      = 0;
 
 ClassImp(CbmTofFindTracks);
 
@@ -103,6 +104,10 @@ CbmTofFindTracks::CbmTofFindTracks(const char* name, const char* /*title*/, CbmT
   , fvXoff()
   , fvYoff()
   , fvZoff()
+  , fvTsig()
+  , fvXsig()
+  , fvYsig()
+  , fvZsig()
   , fhTrklMul(NULL)
   , fhTrklChi2(NULL)
   , fhAllHitsStation(NULL)
@@ -117,6 +122,7 @@ CbmTofFindTracks::CbmTofFindTracks(const char* name, const char* /*title*/, CbmT
   , fhTrklZ0yHMul(NULL)
   , fhTrklTxHMul(NULL)
   , fhTrklTyHMul(NULL)
+  , fhTrklTyTx(NULL)
   , fhTrklTtHMul(NULL)
   , fhTrklVelHMul(NULL)
   , fhTrklT0HMul(NULL)
@@ -131,10 +137,12 @@ CbmTofFindTracks::CbmTofFindTracks(const char* name, const char* /*title*/, CbmT
   , vhPullZ()
   , vhPullT()
   , vhPullTB()
+  , vhTrefRms()
   , vhResidualTBWalk()
   , vhResidualYWalk()
   , vhXY_AllTracks()
   , vhXY_AllStations()
+  , vhXY_AllFitStations()
   , vhXY_MissedStation()
   , vhXY_DX()
   , vhXY_DY()
@@ -146,6 +154,7 @@ CbmTofFindTracks::CbmTofFindTracks(const char* name, const char* /*title*/, CbmT
   , fhVTXNorm(NULL)
   , fhVTX_XY0(NULL)
   , fhVTX_DT0_Norm(NULL)
+  , fiStationStatus()
   , fOutHstFileName("")
   , fCalParFileName("")
   , fCalOutFileName("./tofFindTracks.hst.root")
@@ -170,6 +179,7 @@ CbmTofFindTracks::CbmTofFindTracks(const char* name, const char* /*title*/, CbmT
   , fiBeamCounter(-1)
   , fiStationMaxHMul(1000)
   , fTtTarg(30.)
+  , fdTOffScal(1.)
   , fVTXNorm(0.)
   , fVTX_T(0.)
   , fVTX_X(0.)
@@ -189,13 +199,14 @@ CbmTofFindTracks::CbmTofFindTracks(const char* name, const char* /*title*/, CbmT
   , fdRefVelMean(0.)
   , fdRefDVel(1.E7)
   , fdR0Lim(0.)
+  , fdTtMin(0.)
   , fStart()
   , fStop()
   , fdTrackingTime(0.)
   , fdBeamMomentumLab(0.)
   , fbRemoveSignalPropagationTime(kFALSE)
   , fiBeamMaxHMul(1000)
-  , fiCalOpt(0)
+  , fiCalOpt((int) 0)
 {
   if (!fInstance) fInstance = this;
 }
@@ -300,10 +311,8 @@ InitStatus CbmTofFindTracks::Init()
     Int_t iCellId = fDigiPar->GetCellId(iCell);
     Int_t iCh     = fTofId->GetCell(iCellId);
     if (0 == iCh) {
-      LOG(info) << Form("Init found RpcInd %d, %lu at Addr 0x%08x, ModType %d, "
-                        "ModId %d, RpcId %d ",
-                        iRpc, fRpcAddr.size(), iCellId, fTofId->GetSMType(iCellId), fTofId->GetSModule(iCellId),
-                        fTofId->GetCounter(iCellId));
+      LOG(info) << Form("Init found at Ind %d, %lu Rpc with Addr 0x%08x, TSR %d%d%d ", iRpc, fRpcAddr.size(), iCellId,
+                        fTofId->GetSMType(iCellId), fTofId->GetSModule(iCellId), fTofId->GetCounter(iCellId));
       if (fTofId->GetSMType(iCellId) == 5) {
         bBeamCounter = kTRUE;
         LOG(info) << "Found beam counter in setup! at RpcInd " << iRpc << ", Addr.size " << fRpcAddr.size();
@@ -313,8 +322,10 @@ InitStatus CbmTofFindTracks::Init()
       iRpc++;
     }
   }
-  fStationHMul.resize(fNTofStations + 1);
 
+  LOG(debug) << "Initialize fStationHMul to size " << fNTofStations + 1;
+  fStationHMul.resize(fNTofStations + 1);
+  LOG(debug) << "Initialize fStationHMul to size " << fNTofStations + 1;
 
   LoadCalParameter();
 
@@ -324,7 +335,7 @@ InitStatus CbmTofFindTracks::Init()
     fTofCalibrator = new CbmTofCalibrator();
     if (fTofCalibrator->Init() != kSUCCESS) return kFATAL;
     if (bBeamCounter) {
-      fTofCalibrator->SetBeam(bBeamCounter);
+      if (fiBeamCounter > -1) fTofCalibrator->SetBeam(bBeamCounter);
       fTofCalibrator->SetR0Lim(fdR0Lim);
       LOG(info) << "Set CbmTofCalibrator::R0Lim to " << fdR0Lim;
     }
@@ -340,17 +351,23 @@ Bool_t CbmTofFindTracks::LoadCalParameter()
 {
   UInt_t NSt = fMapRpcIdParInd.size();
   fvToff.resize(NSt);
-  for (uint i = 0; i < NSt; i++)
-    fvToff[i] = 0.;
   fvXoff.resize(NSt);
-  for (uint i = 0; i < NSt; i++)
-    fvXoff[i] = 0.;
   fvYoff.resize(NSt);
-  for (uint i = 0; i < NSt; i++)
-    fvYoff[i] = 0.;
   fvZoff.resize(NSt);
-  for (uint i = 0; i < NSt; i++)
+  fvTsig.resize(NSt);
+  fvXsig.resize(NSt);
+  fvYsig.resize(NSt);
+  fvZsig.resize(NSt);
+  for (uint i = 0; i < NSt; i++) {
+    fvToff[i] = 0.;
+    fvXoff[i] = 0.;
+    fvYoff[i] = 0.;
     fvZoff[i] = 0.;
+    fvTsig[i] = fSIGT;
+    fvXsig[i] = fSIGX;
+    fvYsig[i] = fSIGY;
+    fvZsig[i] = fSIGZ;
+  }
 
   if (fCalParFileName.IsNull()) return kTRUE;
 
@@ -372,7 +389,7 @@ Bool_t CbmTofFindTracks::LoadCalParameter()
   TH1D* fhtmpX  = (TH1D*) gDirectory->FindObjectAny(Form("hPullX_Smt_Off"));
   TH1D* fhtmpY  = (TH1D*) gDirectory->FindObjectAny(Form("hPullY_Smt_Off"));
   TH1D* fhtmpZ  = (TH1D*) gDirectory->FindObjectAny(Form("hPullZ_Smt_Off"));
-  TH1D* fhtmpW  = (TH1D*) gDirectory->FindObjectAny(Form("hPullT_Smt_Width"));
+  TH1D* fhtmpWT = (TH1D*) gDirectory->FindObjectAny(Form("hPullT_Smt_Width"));
   TH1D* fhtmpWX = (TH1D*) gDirectory->FindObjectAny(Form("hPullX_Smt_Width"));
   TH1D* fhtmpWY = (TH1D*) gDirectory->FindObjectAny(Form("hPullY_Smt_Width"));
   TH1D* fhtmpWZ = (TH1D*) gDirectory->FindObjectAny(Form("hPullZ_Smt_Width"));
@@ -406,24 +423,60 @@ Bool_t CbmTofFindTracks::LoadCalParameter()
       fvZoff[iSt] = fhPullZ_Smt_Off->GetBinContent(iSt + 1);
   }
 
-  if (NULL == fhtmpW) { LOG(info) << Form("CbmTofFindTracks::LoadCalParameter: hPullT_Smt_Width") << " not found. "; }
+  if (NULL == fhtmpWT) { LOG(info) << Form("CbmTofFindTracks::LoadCalParameter: hPullT_Smt_Width") << " not found. "; }
   else {
-    if (fbUseSigCalib) fhPullT_Smt_Width = (TH1D*) fhtmpW->Clone();
+    if (fbUseSigCalib) {
+      fhPullT_Smt_Width = (TH1D*) fhtmpWT->Clone();
+      for (UInt_t iSt = 0; iSt < NSt; iSt++) {
+        fvTsig[iSt] = fhPullT_Smt_Width->GetBinContent(iSt + 1);
+        if (fvTsig[iSt] == 0) {
+          LOG(warning) << "Invalid Tsig for station " << iSt;
+          fvTsig[iSt] = fSIGT;
+        }
+      }
+    }
   }
 
   if (NULL == fhtmpWX) { LOG(info) << Form("CbmTofFindTracks::LoadCalParameter: hPullX_Smt_Width") << " not found. "; }
   else {
-    if (fbUseSigCalib) fhPullX_Smt_Width = (TH1D*) fhtmpWX->Clone();
+    if (fbUseSigCalib) {
+      fhPullX_Smt_Width = (TH1D*) fhtmpWX->Clone();
+      for (UInt_t iSt = 0; iSt < NSt; iSt++) {
+        fvXsig[iSt] = fhPullX_Smt_Width->GetBinContent(iSt + 1);
+        if (fvXsig[iSt] == 0) {
+          LOG(warning) << "Invalid Xsig for station " << iSt;
+          fvXsig[iSt] = fSIGX;
+        }
+      }
+    }
   }
 
   if (NULL == fhtmpWY) { LOG(info) << Form("CbmTofFindTracks::LoadCalParameter: hPullY_Smt_Width") << " not found. "; }
   else {
-    if (fbUseSigCalib) fhPullY_Smt_Width = (TH1D*) fhtmpWY->Clone();
+    if (fbUseSigCalib) {
+      fhPullY_Smt_Width = (TH1D*) fhtmpWY->Clone();
+      for (UInt_t iSt = 0; iSt < NSt; iSt++) {
+        fvYsig[iSt] = fhPullY_Smt_Width->GetBinContent(iSt + 1);
+        if (fvYsig[iSt] == 0) {
+          LOG(warning) << "Invalid Ysig for station " << iSt;
+          fvYsig[iSt] = fSIGY;
+        }
+      }
+    }
   }
 
   if (NULL == fhtmpWZ) { LOG(info) << Form("CbmTofFindTracks::LoadCalParameter: hPullZ_Smt_Width") << " not found. "; }
   else {
-    if (fbUseSigCalib) fhPullZ_Smt_Width = (TH1D*) fhtmpWZ->Clone();
+    if (fbUseSigCalib) {
+      fhPullZ_Smt_Width = (TH1D*) fhtmpWZ->Clone();
+      for (UInt_t iSt = 0; iSt < NSt; iSt++) {
+        fvZsig[iSt] = fhPullZ_Smt_Width->GetBinContent(iSt + 1);
+        if (fvZsig[iSt] == 0) {
+          LOG(warning) << "Invalid Zsig for station " << iSt;
+          fvZsig[iSt] = fSIGZ;
+        }
+      }
+    }
   }
 
   fCalParFile->Close();
@@ -433,28 +486,35 @@ Bool_t CbmTofFindTracks::LoadCalParameter()
   if (NULL == fhPullT_Smt_Off) {  // provide default TOffset histogram
     fhPullT_Smt_Off =
       new TH1F(Form("hPullT_Smt_Off"), Form("Tracklet PullT vs RpcInd ; RpcInd ; #DeltaT (ns)"), nSmt, 0, nSmt);
-
-    // Initialize Parameter
-    if (fiCorMode <= 3)  // hidden option, FIXME
-      for (Int_t iDet = 0; iDet < nSmt; iDet++) {
-        std::map<Int_t, Int_t>::iterator it;
-        //it = fMapRpcIdParInd.find(iDet);
-        for (it = fMapRpcIdParInd.begin(); it != fMapRpcIdParInd.end(); it++) {
-          if (it->second == iDet) break;
-        }
-        LOG(debug1) << Form(" iDet %d -> iUniqueId ?  0x%08x, 0x%08x ", iDet, it->first, it->second);
-        Int_t iUniqueId          = it->first;
-        CbmTofCell* fChannelInfo = fDigiPar->GetCell(iUniqueId);
-        if (NULL != fChannelInfo) {
-          Double_t dVal = 0.;  // FIXME numeric constant in code, default for cosmic
+  }
+  // Initialize Parameter
+  if (fiCorMode <= 3) {  // hidden option, FIXME
+    for (Int_t iDet = 0; iDet < nSmt; iDet++) {
+      std::map<Int_t, Int_t>::iterator it;
+      //it = fMapRpcIdParInd.find(iDet)
+      Int_t iMap = 0;
+      for (it = fMapRpcIdParInd.begin(); it != fMapRpcIdParInd.end(); it++) {
+        iMap++;
+        if (it->second == iDet) break;
+      }
+      LOG(debug1) << Form(" iDet %d -> iUniqueId ?  0x%08x, 0x%08x ", iDet, it->first, it->second);
+      Int_t iUniqueId          = it->first;
+      CbmTofCell* fChannelInfo = fDigiPar->GetCell(iUniqueId);
+      if (NULL != fChannelInfo) {
+        Double_t dVal = 0.;  // FIXME numeric constant in code, default for cosmic
+        dVal          = fhPullT_Smt_Off->GetBinContent(iDet + 1, dVal);
+        if (dVal == 0) {
           if (fiBeamCounter != iUniqueId) dVal = fChannelInfo->GetZ() * fTtTarg;  //  use calibration target value
           fhPullT_Smt_Off->SetBinContent(iDet + 1, dVal);
-          LOG(info) << Form("Initialize det 0x%08x at %d, z=%f with TOff %6.2f", iUniqueId, iDet + 1,
-                            fChannelInfo->GetZ(), dVal);
         }
+        else {
+          if (fdTOffScal != 0.) fhPullT_Smt_Off->SetBinContent(iDet + 1, dVal * fdTOffScal);
+        }
+        LOG(info) << Form("Initialize det 0x%08x at %d, GloInd %d, z=%f to Tt %6.4f, %6.4f with TOff %6.2f", iUniqueId,
+                          iDet, iMap, fChannelInfo->GetZ(), fTtTarg, fdTOffScal, dVal);
       }
+    }
   }
-
   if (NULL == fhPullT_Smt_Width) {  // provide default TWidth histogram
     fhPullT_Smt_Width =
       new TH1F(Form("hPullT_Smt_Width"), Form("Tracklet ResiT Width vs RpcInd ; RpcInd ; RMS(T) (ns)"), nSmt, 0, nSmt);
@@ -491,7 +551,7 @@ Bool_t CbmTofFindTracks::LoadCalParameter()
     }
   }
 
-  if (NULL == fhPullZ_Smt_Off)  // provide default TOffset histogram
+  if (NULL == fhPullZ_Smt_Off)  // provide default ZOffset histogram
     fhPullZ_Smt_Off =
       new TH1F(Form("hPullZ_Smt_Off"), Form("Tracklet ResiZ vs RpcInd ; RpcInd ; #DeltaZ (cm)"), nSmt, 0, nSmt);
   if (NULL == fhPullZ_Smt_Width) {
@@ -678,41 +738,65 @@ Bool_t CbmTofFindTracks::WriteHistos()
     {
       TProfile* htmp = fhPullT_Smt->ProfileX();
       TH1D* htmp1D   = htmp->ProjectionX();
-
       if (fhPullT_Smt_Off != NULL) {
         Double_t nx = htmp1D->GetNbinsX();
         for (Int_t ix = 0; ix < nx; ix++) {
-          TH1D* hpy = fhPullT_Smt->ProjectionY("_py", ix + 1, ix + 1);
-          if (hpy->GetEntries() > 100.) {
+          Double_t dVal = fhPullT_Smt_Off->GetBinContent(ix + 1);  //Current value
+          Double_t dCor = htmp->GetBinContent(ix + 1);
+          Double_t dRMS = htmp->GetBinError(ix + 1);
+          TH1D* hpy     = fhPullT_Smt->ProjectionY(Form("%s_py%d", fhPullT_Smt->GetName(), ix), ix + 1, ix + 1);
+          if (hpy->GetEntries() > 50.) {
             Int_t iBmax        = hpy->GetMaximumBin();
             TAxis* xaxis       = hpy->GetXaxis();
             Double_t dMean     = xaxis->GetBinCenter(iBmax);  //X-value of bin with maximal content
-            Double_t dRMS      = TMath::Abs(hpy->GetRMS());
+            dRMS               = TMath::Abs(hpy->GetRMS());
             Double_t dLim      = 1.5 * dRMS;
-            TFitResultPtr fRes = hpy->Fit("gaus", "SQM", "", dMean - dLim, dMean + dLim);
-            Double_t dFMean    = fRes->Parameter(1);
-
-            Double_t dVal = fhPullT_Smt_Off->GetBinContent(ix + 1);
-            dVal -= dFMean;
-            TF1* fg              = hpy->GetFunction("gaus");
-            Double_t dFMeanError = fg->GetParError(1);
-            LOG(info) << "Update hPullT_Smt_Off3 Ind " << ix << Form(", 0x%08x: ", fRpcAddr[ix])
-                      << fhPullT_Smt_Off->GetBinContent(ix + 1) << " + " << dFMean << ", Err " << dFMeanError << " -> "
-                      << dVal << ", Width " << dRMS << ", Chi2 " << fg->GetChisquare();
-            if (dFMeanError < 0.05) {  // FIXME: hardwired constant
-              if (dRMS < RMSmin) dRMS = RMSmin;
-              if (dRMS > fSIGT * 3.0) dRMS = fSIGT * 3.;
-              if (fRpcAddr[ix] != fiBeamCounter)  // don't correct beam counter time
-                fhPullT_Smt_Off->SetBinContent(ix + 1, dVal);
-              else
-                LOG(info) << "No Off3 correction for beam counter at index " << ix;
-              fhPullT_Smt_Width->SetBinContent(ix + 1, dRMS);
+            Double_t dNorm     = hpy->GetBinContent(iBmax);
+            LOG(info) << "Fit3 " << hpy->GetName()
+                      << Form(", %f with %f, %f, %f ", hpy->GetEntries(), dNorm, dMean, dLim);
+            if (dNorm > 10) {
+              TFitResultPtr fRes = hpy->Fit("gaus", "SQM", "", dMean - dLim, dMean + dLim);
+              //TF1* mgaus=new TF1("mgaus","gaus", dMean - dLim, dMean + dLim);
+              //mgaus->SetParameters(dNorm,dMean,dLim*0.5);
+              //TFitResultPtr fRes = hpy->Fit("mgaus", "SQM", "", dMean - dLim, dMean + dLim);
+              // see https://root-forum.cern.ch/t/tfitresultptr-not-valid-check/35944/4
+              if (gMinuit->fCstatu.Contains("OK") || gMinuit->fCstatu.Contains("CONVERGED")) {
+                TF1* fg = hpy->GetFunction("gaus");
+                if (fg == NULL) {
+                  LOG(fatal) << "No associated gaus function for " << hpy->GetName();
+                  continue;
+                }
+                //Double_t dFMean = fRes->Parameter(1);
+                Double_t dFMean      = fg->GetParameter(1);
+                dCor                 = dFMean;  // update offset
+                Double_t dFMeanError = fg->GetParError(1);
+                LOG(info) << "Update hPullT_Smt_Off3 Ind " << ix << Form(", 0x%08x: ", fRpcAddr[ix])
+                          << fhPullT_Smt_Off->GetBinContent(ix + 1) << " + " << dFMean << ", Err " << dFMeanError
+                          << " -> " << dVal - dCor << ", Width " << dRMS << ", Chi2 " << fg->GetChisquare();
+                if (dFMeanError < 0.05) {  // FIXME: hardwired constant
+                  if (dRMS < RMSmin) dRMS = RMSmin;
+                  if (dRMS > fSIGT * 3.0) dRMS = fSIGT * 3.;
+                }
+              }
+              else {
+                LOG(info) << " Fit of " << hpy->GetName() << " failed with " << gMinuit->fCstatu;
+              }
+            }
+            else {
+              LOG(info) << "Fit3: Too few entries for fit ofhisto " << hpy->GetName() << ": " << dNorm;
             }
           }
           else {
-            LOG(debug1) << "Update hPullT_Smt_Off " << ix << ": insufficient counts: " << hpy->GetEntries();
+            LOG(info) << "Update hPullT_Smt_Off " << ix << ": insufficient counts: " << hpy->GetEntries();
           }
-        }
+
+          if (fRpcAddr[ix] != fiBeamCounter)  // don't correct beam counter time
+            fhPullT_Smt_Off->SetBinContent(ix + 1, dVal - dCor);
+          else
+            LOG(info) << "No Off3 correction for beam counter at index " << ix;
+
+          fhPullT_Smt_Width->SetBinContent(ix + 1, dRMS);
+        }  //ix loop end
       }
       else {
         LOG(warning) << "CbmTofFindTracks::WriteHistos: fhPullT_Smt_Off not found ";
@@ -729,6 +813,8 @@ Bool_t CbmTofFindTracks::WriteHistos()
       if (fhPullX_Smt_Off != NULL) {
         Double_t nx = htmp1D->GetNbinsX();
         for (Int_t ix = 0; ix < nx; ix++) {
+          int iSmType = CbmTofAddress::GetSmType(fRpcAddr[ix] & DetMask);
+          if (iSmType == 8) continue;  // skip pad counters
           TH1D* hpy     = fhPullX_Smt->ProjectionY("_py", ix + 1, ix + 1);
           Double_t dVal = fhPullX_Smt_Off->GetBinContent(ix + 1);
           //dVal -= htmp1D->GetBinContent(ix + 1);
@@ -774,6 +860,8 @@ Bool_t CbmTofFindTracks::WriteHistos()
       if (fhPullY_Smt_Off != NULL) {
         Double_t nx = htmp1D->GetNbinsX();
         for (Int_t ix = 0; ix < nx; ix++) {
+          int iSmType = CbmTofAddress::GetSmType(fRpcAddr[ix] & DetMask);
+          if (iSmType == 8) continue;  // skip pad counters
           Double_t dVal = fhPullY_Smt_Off->GetBinContent(ix + 1);
           //dVal -= htmp1D->GetBinContent(ix + 1);
           // Fit gaussian
@@ -918,7 +1006,67 @@ Bool_t CbmTofFindTracks::WriteHistos()
       }
     } break;
 
-    default:;
+    case 82:
+    case 81:
+    case 80: {
+      Int_t iSel = fiCorMode % 10;
+      LOG(info) << "Update time offsets with Detector Doublets " << iSel;
+      int iO[3] = {0, 5, 10};  // 0 - 1 - 2 - layers
+      switch (iSel) {
+        case 1: iO[2] = 25; break;  // 0 - 1 - big modules
+        case 2:
+          iO[0] = 5;
+          iO[1] = 25;
+          iO[2] = 12;
+          break;  // 1 - big - 2
+        default:;
+      }
+      const size_t N    = 3;
+      double dTshift[N] = {3 * 0.};
+      for (int iLoc = 0; iLoc < 5; iLoc++) {                            // loop over rpcs in module
+        if (EvalDoublets(iLoc, iLoc + iO[1], iLoc + iO[2], dTshift)) {  // returns vector of shifts
+          double dTMeanShift = (dTshift[0] + dTshift[1] + dTshift[2]) / 3.;
+          for (int i = 0; i < 3; i++) {  // apply time shifts
+            int iStation = GetStationOfAddr(fDigiBdfPar->GetDetUId(iLoc + iO[i]));
+            if (fiStationStatus[iStation] > 0) continue;                     // do not modify
+            int ix = fMapRpcIdParInd[fDigiBdfPar->GetDetUId(iLoc + iO[i])];  // convert BDF to Geo counting
+            LOG(info) << "UpdateDT0 bdf ch " << iLoc + iO[i] << ", geo ch " << ix << " by " << Form("%f", dTshift[i]);
+            fhPullT_Smt_Off->SetBinContent(ix + 1, fhPullT_Smt_Off->GetBinContent(ix + 1) + dTshift[i] - dTMeanShift);
+          }
+        }
+        else {
+          iO[2]++;                                                        // try neighbor
+          if (EvalDoublets(iLoc, iLoc + iO[1], iLoc + iO[2], dTshift)) {  // returns vector of shifts
+            double dTMeanShift = (dTshift[0] + dTshift[1] + dTshift[2]) / 3.;
+            for (int i = 0; i < 3; i++) {
+              int iStation = GetStationOfAddr(fDigiBdfPar->GetDetUId(iLoc + iO[i]));
+              if (fiStationStatus[iStation] > 0) continue;                     // do not modify
+              int ix = fMapRpcIdParInd[fDigiBdfPar->GetDetUId(iLoc + iO[i])];  // convert BDF to Geo counting
+              LOG(info) << "UpdateDT+ bdf ch " << iLoc + iO[i] << ", geo ch " << ix << " by " << dTshift[i];
+              fhPullT_Smt_Off->SetBinContent(ix + 1, fhPullT_Smt_Off->GetBinContent(ix + 1) + dTshift[i] - dTMeanShift);
+            }
+          }
+          else {
+            iO[2] -= 2;                                                     // try other neighbor
+            if (EvalDoublets(iLoc, iLoc + iO[1], iLoc + iO[2], dTshift)) {  // returns vector of shifts
+              double dTMeanShift = (dTshift[0] + dTshift[1] + dTshift[2]) / 3.;
+              for (int i = 0; i < 3; i++) {
+                int iStation = GetStationOfAddr(fDigiBdfPar->GetDetUId(iLoc + iO[i]));
+                if (fiStationStatus[iStation] > 0) continue;                     // do not modify
+                int ix = fMapRpcIdParInd[fDigiBdfPar->GetDetUId(iLoc + iO[i])];  // convert BDF to Geo counting
+                LOG(info) << "UpdateDT- bdf ch " << iLoc + iO[i] << ", geo ch " << ix << " by " << dTshift[i];
+                fhPullT_Smt_Off->SetBinContent(ix + 1,
+                                               fhPullT_Smt_Off->GetBinContent(ix + 1) + dTshift[i] - dTMeanShift);
+              }
+            }
+            iO[2] += 2;  // restore offset
+          }
+          iO[2]--;  // restore offset
+        }
+      }
+    } break;
+
+    default: LOG(info) << "Correction mode not implemented!";
   }
 
   if (NULL != fhPullT_Smt_Off) {
@@ -976,7 +1124,7 @@ Bool_t CbmTofFindTracks::WriteHistos()
 // -----   Public method Exec   --------------------------------------------
 void CbmTofFindTracks::Exec(Option_t* opt)
 {
-  if (fair::Logger::Logging(fair::Severity::debug)) { fDigiBdfPar->printParams(); }
+  //if (fair::Logger::Logging(fair::Severity::debug)) { fDigiBdfPar->printParams(); }
   if (!fEventsColl) {
     //    fTofHitArray = (TClonesArray*)fTofHitArrayIn->Clone();
     fTofHitArray = (TClonesArray*) fTofHitArrayIn;
@@ -987,6 +1135,8 @@ void CbmTofFindTracks::Exec(Option_t* opt)
     Int_t iNbCalHits = 0;
     fTrackArrayOut->Delete();   //Clear("C");
     fTofHitArrayOut->Delete();  //Clear("C");
+    LOG(info) << "Process TS " << iTS << " with " << fEventsColl->GetEntriesFast() << " events";
+    iTS++;
     for (Int_t iEvent = 0; iEvent < fEventsColl->GetEntriesFast(); iEvent++) {
       CbmEvent* tEvent = dynamic_cast<CbmEvent*>(fEventsColl->At(iEvent));
       LOG(debug) << "Process event " << iEvent << " with " << tEvent->GetNofData(ECbmDataType::kTofHit) << " hits";
@@ -1021,8 +1171,8 @@ void CbmTofFindTracks::Exec(Option_t* opt)
         CbmTofHit* tHit = dynamic_cast<CbmTofHit*>(fTofHitArray->At(iHit));
         new ((*fTofHitArrayOut)[iNbCalHits++]) CbmTofHit(*tHit);
       }
-
       fTrackArray->Delete();
+      //fTrackArray->Clear();
     }
   }
 }
@@ -1033,6 +1183,7 @@ void CbmTofFindTracks::ExecFind(Option_t* /*opt*/, CbmEvent* tEvent)
   ResetStationsFired();
   if (NULL != fTofUHitArray) fTofUHitArray->Clear("C");
   if (NULL != fTrackArray) fTrackArray->Delete();  // reset
+  //if (NULL != fTrackArray) fTrackArray->Clear();  // reset
 
   // recalibrate hits and count trackable hits
   for (Int_t iHit = 0; iHit < fTofHitArray->GetEntriesFast(); iHit++) {
@@ -1089,45 +1240,37 @@ void CbmTofFindTracks::ExecFind(Option_t* /*opt*/, CbmEvent* tEvent)
     }
 
     // tune positions and times
-    Double_t dTcor = 0.;
     if ((iDetId & DetMask) != fiBeamCounter) {  // do not modify diamond position
       Int_t iRpcInd = fMapRpcIdParInd[iDetId];
       pHit->SetTime(pHit->GetTime() + fvToff[iRpcInd]);
       pHit->SetX(pHit->GetX() + fvXoff[iRpcInd]);
       pHit->SetY(pHit->GetY() + fvYoff[iRpcInd]);
       pHit->SetZ(pHit->GetZ() + fvZoff[iRpcInd]);
-      /*
-      if (fhPullT_Smt_Off != NULL) {
-        dTcor = (Double_t) fhPullT_Smt_Off->GetBinContent(iRpcInd + 1);
-        pHit->SetTime(pHit->GetTime() + dTcor);
-      }
-      if (fhPullX_Smt_Off != NULL) {
-        Double_t dXcor = (Double_t) fhPullX_Smt_Off->GetBinContent(iRpcInd + 1);
-        pHit->SetX(pHit->GetX() + dXcor);
-      }
-      if (fhPullY_Smt_Off != NULL) {
-        Double_t dYcor = (Double_t) fhPullY_Smt_Off->GetBinContent(iRpcInd + 1);
-        pHit->SetY(pHit->GetY() + dYcor);
-      }
-      if (fhPullZ_Smt_Off != NULL) {
-        Double_t dZcor = (Double_t) fhPullZ_Smt_Off->GetBinContent(iRpcInd + 1);
-        pHit->SetZ(pHit->GetZ() + dZcor);
-      }
-      */
     }
 
     Int_t iSt = GetStationOfAddr(iDetId);
-    MarkStationFired(iSt);
+    if (iSt >= (Int_t) fStationHMul.size()) {
+      LOG(fatal) << Form("Invalid station # %d for detId 0x%08x, TSR %d%d%d", iSt, iDetId,
+                         CbmTofAddress::GetSmType(iDetId), CbmTofAddress::GetSmId(iDetId),
+                         CbmTofAddress::GetRpcId(iDetId));
+    }
 
-    LOG(debug) << Form("Exec found Hit %02d, addr 0x%08x, sta %02d, %02d, HM "
+    if ((Int_t) fMapStationRpcId.size() > fNTofStations) {
+      PrintSetup();
+      LOG(fatal) << "Invalid NTofStations " << fNTofStations << ", " << fMapStationRpcId.size();
+    }
+
+    LOG(debug) << Form("Exec found Hit %02d, addr 0x%08x, TSR %d%d%d, sta %02d, %02d, HM "
                        "%02d, X %6.2f(%3.2f) Y "
-                       "%6.2f(%3.2f)  Z %6.2f(%3.2f)  T %6.2f(%3.2f) (%6.2f)",
-                       iHit, pHit->GetAddress(), GetStationOfAddr(iDetId), fDigiBdfPar->GetTrackingStation(pHit),
+                       "%6.2f(%3.2f)  Z %6.2f(%3.2f)  T %6.2f(%3.2f)",
+                       iHit, pHit->GetAddress(), CbmTofAddress::GetSmType(iDetId), CbmTofAddress::GetSmId(iDetId),
+                       CbmTofAddress::GetRpcId(iDetId), GetStationOfAddr(iDetId), fDigiBdfPar->GetTrackingStation(pHit),
                        fStationHMul[GetStationOfAddr(iDetId)], pHit->GetX(), pHit->GetDx(), pHit->GetY(), pHit->GetDy(),
-                       pHit->GetZ(), pHit->GetDz(), pHit->GetTime(), pHit->GetTimeError(), dTcor);
+                       pHit->GetZ(), pHit->GetDz(), pHit->GetTime(), pHit->GetTimeError());
+    MarkStationFired(iSt);
   }
 
-  LOG(debug) << Form("CbmTofFindTracks::Exec NStationsFired %d > %d Min ?, NbStations %d", GetNStationsFired(),
+  LOG(debug) << Form("CbmTofFindTracks::Exec NStationsFired %d >= %d Min ?, NbStations %d", GetNStationsFired(),
                      GetMinNofHits(), fDigiBdfPar->GetNbTrackingStations());
 
   if (GetNStationsFired() < GetMinNofHits()) {
@@ -1153,7 +1296,7 @@ void CbmTofFindTracks::ExecFind(Option_t* /*opt*/, CbmEvent* tEvent)
 
     FindVertex();
 
-    FillHistograms(tEvent);
+    if (fbDoHistos) FillHistograms(tEvent);
   }
 
   FillUHits();  // put unused hits into TClonesArray
@@ -1166,7 +1309,7 @@ void CbmTofFindTracks::Finish()
 {
   if (fiEvent < 1000) return;  // preserve calibration histos in event display
   if (fiCalOpt > 0) fTofCalibrator->UpdateCalHist(fiCalOpt);
-  WriteHistos();
+  if (fbDoHistos) WriteHistos();
 
   LOG(info) << Form(" CbmTofFindTracks::Finished  ");
 }
@@ -1196,10 +1339,10 @@ void CbmTofFindTracks::CreateHistograms()
                         ((CbmTofTrackFinderNN*) fFinder)->GetChiMaxAccept());
 
   fhTrackingTimeNhits =
-    new TH2F(Form("hTrackingTimeNhits"), Form("Tracking Time; NHits; #Deltat (s)"), 100, 0, 200, 50, 0, 0.1);
+    new TH2F(Form("hTrackingTimeNhits"), Form("Tracking Time; NHits; #Deltat (s)"), 200, 0, 200, 50, 0, 0.2);
 
   fhTrklMulNhits =
-    new TH2F(Form("hTrklMulNhits"), Form("Tracklet Multiplicity; NHits; NTracklet"), 150, 0, 150, 30, 0, 30);
+    new TH2F(Form("hTrklMulNhits"), Form("Tracklet Multiplicity; NHits; NTracklet"), 200, 0, 200, 30, 0, 30);
 
   fhTrklMulMaxMM =
     new TH2F(Form("hTrklMulMaxMax-1"), Form("Tracklet Multiplicity; TMulMax; TMulMax-1"), 10, 0, 10, 10, 0, 10);
@@ -1213,11 +1356,22 @@ void CbmTofFindTracks::CreateHistograms()
   fhTrklZ0yHMul = new TH2F(Form("hTrklZ0yHMul"), Form("Tracklet Z0y vs. Hit - Multiplicity; HMul_{Tracklet}; Z0y"), 8,
                            2, 10, 100, -300, 300);
 
-  fhTrklTxHMul = new TH2F(Form("hTrklTxHMul"), Form("Tracklet Tx vs. Hit - Multiplicity; HMul_{Tracklet}; Tx"), 8, 2,
-                          10, 100, -0.65, 0.65);
+  double dTxLim  = ((CbmTofTrackFinderNN*) fFinder)->GetTxLIM();
+  double dTyLim  = ((CbmTofTrackFinderNN*) fFinder)->GetTyLIM();
+  double dTxMean = ((CbmTofTrackFinderNN*) fFinder)->GetTxMean();
+  double dTyMean = ((CbmTofTrackFinderNN*) fFinder)->GetTyMean();
+  double dTxMin  = dTxMean - dTxLim;
+  double dTxMax  = dTxMean + dTxLim;
+  double dTyMin  = dTyMean - dTyLim;
+  double dTyMax  = dTyMean + dTyLim;
 
-  fhTrklTyHMul   = new TH2F(Form("hTrklTyHMul"), Form("Tracklet Ty vs. Hit - Multiplicity; HMul_{Tracklet}; Ty"), 8, 2,
-                          10, 100, -0.65, 0.65);
+  fhTrklTxHMul = new TH2F(Form("hTrklTxHMul"), Form("Tracklet Tx vs. Hit - Multiplicity; HMul_{Tracklet}; Tx"), 8, 2,
+                          10, 100, dTxMin, dTxMax);
+  fhTrklTyHMul = new TH2F(Form("hTrklTyHMul"), Form("Tracklet Ty vs. Hit - Multiplicity; HMul_{Tracklet}; Ty"), 8, 2,
+                          10, 100, dTyMin, dTyMax);
+
+  fhTrklTyTx = new TH2F(Form("hTrklTyTx"), Form("Tracklet Ty vs. Tx; Tx; Ty"), 50, dTxMin, dTxMax, 50, dTyMin, dTyMax);
+
   Double_t TTMAX = 0.2;
   fhTrklTtHMul   = new TH2F(Form("hTrklTtHMul"), Form("Tracklet Tt vs. Hit - Multiplicity; HMul_{Tracklet}; Tt"), 8, 2,
                           10, 100, -TTMAX, TTMAX);
@@ -1263,7 +1417,7 @@ void CbmTofFindTracks::CreateHistograms()
   fhTOff_HMul2 = new TH2F(Form("hTOff_HMul2"), Form("Tracklet TOff(HMul2); RpcInd ; TOff (ns)"), nSmt, 0, nSmt, 500,
                           -fT0MAX, fT0MAX);
 
-  Double_t DTTMAX = 0.09;
+  Double_t DTTMAX = 0.11;
   fhDeltaTt_Smt   = new TH2F(Form("hDeltaTt_Smt"), Form("Tracklet DeltaTt; RpcInd ; #DeltaTt (ns/cm)"), nSmt, 0, nSmt,
                            100, -DTTMAX, DTTMAX);
 
@@ -1272,10 +1426,12 @@ void CbmTofFindTracks::CreateHistograms()
   vhPullZ.resize(fNTofStations);
   vhPullT.resize(fNTofStations);
   vhPullTB.resize(fNTofStations);
+  vhTrefRms.resize(fNTofStations);
   vhResidualTBWalk.resize(fNTofStations);
   vhResidualYWalk.resize(fNTofStations);
   vhXY_AllTracks.resize(fNTofStations);
   vhXY_AllStations.resize(fNTofStations);
+  vhXY_AllFitStations.resize(fNTofStations);
   vhXY_MissedStation.resize(fNTofStations);
   vhXY_DX.resize(fNTofStations);
   vhXY_DY.resize(fNTofStations);
@@ -1296,6 +1452,7 @@ void CbmTofFindTracks::CreateHistograms()
       new TH1F(Form("hPullT_Station_%d", iSt), Form("hResiT_Station_%d;  #DeltaT (ns)", iSt), 59, -fT0MAX, fT0MAX);
     vhPullTB[iSt] = new TH1F(Form("hPullTB_Station_%d", iSt), Form("hResiTB_Station_%d;  #DeltaT (ns)", iSt), 59,
                              -1.25 * fT0MAX, 1.25 * fT0MAX);
+    vhTrefRms[iSt] = new TH1F(Form("hTrefRms_Station_%d", iSt), Form("hTrefRms_Station_%d;  RMS (ns)", iSt), 40, 0, 2.);
     const Double_t TOTmax = 50.;
     vhResidualTBWalk[iSt] =
       new TH2F(Form("hResidualTBWalk_Station_%d", iSt), Form("hResidualTBWalk_Station_%d;  #DeltaT (ns)", iSt), TOTmax,
@@ -1307,7 +1464,7 @@ void CbmTofFindTracks::CreateHistograms()
     Int_t Nbins              = 32.;
     CbmTofCell* fChannelInfo = fDigiPar->GetCell(fMapStationRpcId[iSt]);
     if (NULL == fChannelInfo) {
-      LOG(fatal) << "Geometry for station " << iSt << ", Rpc " << fMapStationRpcId[iSt] << " not defined ";
+      LOG(fatal) << "Geometry for station " << iSt << Form(", Rpc %0x08x ", fMapStationRpcId[iSt]) << " not defined ";
       return;
     }
     Int_t NbinsX        = 2 * XSIZ / fChannelInfo->GetSizex();
@@ -1315,6 +1472,9 @@ void CbmTofFindTracks::CreateHistograms()
                                    -XSIZ, XSIZ, Nbins, -XSIZ, XSIZ);
     vhXY_AllStations[iSt] = new TH2F(Form("hXY_AllStations_%d", iSt), Form("hXY_AllStations_%d;  x(cm); y (cm)", iSt),
                                      NbinsX, -XSIZ, XSIZ, Nbins, -XSIZ, XSIZ);
+    vhXY_AllFitStations[iSt] =
+      new TH2F(Form("hXY_AllFitStations_%d", iSt), Form("hXY_AllFitStations_%d;  x(cm); y (cm)", iSt), NbinsX, -XSIZ,
+               XSIZ, Nbins, -XSIZ, XSIZ);
     vhXY_MissedStation[iSt] =
       new TH2F(Form("hXY_MissedStation_%d", iSt), Form("hXY_MissedStation_%d;  x(cm); y (cm)", iSt), NbinsX, -XSIZ,
                XSIZ, Nbins, -XSIZ, XSIZ);
@@ -1341,7 +1501,7 @@ void CbmTofFindTracks::CreateHistograms()
   }
 
 
-  // vertex histrograms
+  // vertex histograms
   Double_t NNORM = 40.;
   fhVTXNorm      = new TH1F(Form("hVTXNorm"), Form("Vertex Normalisation; #_{TrackletHits}"), NNORM, 0, NNORM);
   fhVTX_XY0 =
@@ -1408,6 +1568,8 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent)
     }
   }
   if (fiBeamCounter != -1 && NULL == pRefHit) return;
+  //LOG(debug)<<"FillH_start";
+  //PrintSetup();
 
   std::vector<Int_t> HMul;
   HMul.resize(fNTofStations + 1);
@@ -1419,13 +1581,15 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent)
   for (Int_t iTrk = 0; iTrk < fTrackArray->GetEntriesFast(); iTrk++) {
     CbmTofTracklet* pTrk = (CbmTofTracklet*) fTrackArray->At(iTrk);
     if (NULL == pTrk) continue;
-    if (pTrk->GetNofHits() > fNTofStations) {
+    if (pTrk->GetNofHits() > fNTofStations + 1) {  // +1 for virtual T0
       LOG(error) << "CbmTofFindTracks::FillHistograms: more hits (" << pTrk->GetNofHits() << ") than stations ("
                  << fNTofStations << ")";
       continue;
     }
 
-    //if (pTrk->GetTrackTy()>0.) continue;  // TEMPORARY!!!!
+    //if (pTrk->GetTrackTy()>0.) continue;  // Debugging!!!!
+    //LOG(debug)<<"FillH_HMul "<<iTrk<<", "<<pTrk->GetNofHits();
+    //PrintSetup();
 
     HMul[pTrk->GetNofHits()]++;
 
@@ -1441,6 +1605,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent)
         Int_t iDetId    = pTrk->GetTofDetIndex(iH);  // DetId of iH. Hit
         CbmTofHit* pHit = pTrk->GetTofHitPointer(iH);
         Int_t iSt       = GetStationOfAddr(iDetId);  // Station of 1. Hit
+        if (iSt < 0) continue;
         Double_t dTOff  = pHit->GetTime() - pHit->GetR() * fTtTarg - dTRef0;
         LOG(debug1) << Form("<D> CbmTofFindTracks::FillHistograms: iDetId1 "
                             "0x%08x, iST1 = %d with dTOff %f at RpcInd %d",
@@ -1449,15 +1614,16 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent)
       }  // loop over tracklets' hits
     }
 
-    if (pTrk->GetNofHits() > fMinNofHits) {  // for further analysis request at least 3 matched hits
+    if (pTrk->GetNofHits() >= fMinNofHits) {  // for further analysis request at least 3 matched hits
       iTMul++;
       fhTrklChi2->Fill(pTrk->GetNofHits(), pTrk->GetChiSq());
 
-      if (fiCalOpt > 0) fTofCalibrator->FillCalHist(pTrk, fiCalOpt, tEvent);
+      if (fiCalOpt > 0)
+        if (pTrk->GetTt() > fdTtMin) fTofCalibrator->FillCalHist(pTrk, fiCalOpt, tEvent);
 
       CbmTofTrackletParam* tPar = pTrk->GetTrackParameter();
       Double_t dTt              = pTrk->GetTt();
-      LOG(debug) << Form("Trk %d info: Lz=%6.2f Z0x=%6.2f Z0y=%6.2f Tt=%6.4f", iTrk, tPar->GetLz(), pTrk->GetZ0x(),
+      LOG(debug) << Form("Trk %d info: Lz=%6.2f Z0x=%6.2f Z0y=%6.2f Tt=%6.4f, ", iTrk, tPar->GetLz(), pTrk->GetZ0x(),
                          pTrk->GetZ0y(), dTt)
                  << tPar->ToString();
 
@@ -1465,8 +1631,20 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent)
       fhTrklZ0yHMul->Fill(pTrk->GetNofHits(), pTrk->GetFitY(0.));
       fhTrklTxHMul->Fill(pTrk->GetNofHits(), tPar->GetTx());
       fhTrklTyHMul->Fill(pTrk->GetNofHits(), tPar->GetTy());
+      fhTrklTyTx->Fill(tPar->GetTx(), tPar->GetTy());
       fhTrklTtHMul->Fill(pTrk->GetNofHits(), dTt);
 
+      if (kFALSE) {  //kFALSE && fdTtMin < -10.) {  // print event number for inspection in event display
+        //Double_t zPosTar = 160.;
+        //if (TMath::Abs(tPar->GetTx())<0.2 && TMath::Abs(tPar->GetTy())<0.1) {
+        //if(TMath::Abs(pTrk->GetFitX(0.))<5 && TMath::Abs(pTrk->GetFitY(0.))<5) {
+        //if ((TMath::Abs(pTrk->GetFitX(zPosTar) - 20.) < 10 && TMath::Abs(pTrk->GetFitY(zPosTar) - 15.) < 5)
+        if (pTrk->GetNofHits() > 8) {
+          LOG(info) << Form("Found tracklet candidate (x0,y0)=(%5.2f,%5.2f), Hmul %d, v %6.2f in event %d ",
+                            pTrk->GetFitX(0.), pTrk->GetFitY(0.), pTrk->GetNofHits(), 1. / dTt, fiEvent)
+                    << " within " << fTofHitArray->GetEntriesFast() << " hits ";
+        }
+      }
       switch (GetNReqStations() - pTrk->GetNofHits()) {
         case 0:  // max hit number
           fhTrklXY0_0->Fill(pTrk->GetFitX(0.), pTrk->GetFitY(0.));
@@ -1481,7 +1659,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent)
         if (pTrk->GetR0() > fdR0Lim) continue;
       }
 
-      if (dTt > 0.)
+      if (dTt > fdTtMin)
         for (Int_t iSt = 0; iSt < fNTofStations; iSt++) {
           Int_t iH = pTrk->GetStationHitIndex(fMapStationRpcId[iSt]);  // Station Hit index
           if (iH < 0) continue;                                        // Station not part of tracklet
@@ -1498,8 +1676,10 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent)
           Double_t dDX  = pHit->GetX() - pTrk->GetFitX(pHit->GetZ());     // - tPar->GetX() - tPar->GetTx()*dDZ;
           Double_t dDY  = pHit->GetY() - pTrk->GetFitY(pHit->GetZ());     // - tPar->GetTy()*dDZ;
           Double_t dDT  = pHit->GetTime() - pTrk->GetFitT(pHit->GetZ());  // pTrk->GetTdif(fMapStationRpcId[iSt]);
-          Double_t dDTB = fTrackletTools->GetTdif(pTrk, fMapStationRpcId[iSt],
-                                                  pHit);  // ignore pHit in calc of reference
+          Double_t dTexp = fTrackletTools->GetTexpected(pTrk, fMapStationRpcId[iSt], pHit);
+          Double_t dDTB  = pHit->GetTime() - dTexp;
+          //        	fTrackletTools->GetTdif(pTrk, fMapStationRpcId[iSt],pHit);  // ignore pHit in calc of reference
+          Double_t dTexpErr = fTrackletTools->GetTexpectedError(pTrk, fMapStationRpcId[iSt], pHit, dTexp);
           Double_t dTOT = pHit->GetCh() / 10.;            // misuse of channel field
 
           Double_t dZZ = pHit->GetZ() - tPar->GetZy(pHit->GetY());
@@ -1513,6 +1693,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent)
           vhPullZ[iSt]->Fill(dZZ);
           vhPullT[iSt]->Fill(dDT);
           vhPullTB[iSt]->Fill(dDTB);
+          vhTrefRms[iSt]->Fill(dTexpErr);
           vhResidualTBWalk[iSt]->Fill(dTOT, dDTB);
           vhResidualYWalk[iSt]->Fill(dTOT, dDY);
 
@@ -1530,20 +1711,26 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent)
           fhDeltaTt_Smt->Fill((Double_t) fMapRpcIdParInd[fMapStationRpcId[iSt]], dDeltaTt);
           //XXX use BRef as Referenz!!!
           if (pRefHit != NULL) {
-            Double_t dTOff = dDeltaTt *  //pHit->GetR();
-                             TMath::Sqrt(TMath::Power(pHit->GetX() - pRefHit->GetX(), 2)
-                                         + TMath::Power(pHit->GetY() - pRefHit->GetY(), 2)
-                                         + TMath::Power(pHit->GetZ() - pRefHit->GetZ(), 2))
-                             * TMath::Sign(1, pHit->GetZ() - pRefHit->GetZ());
-            fhTOff_Smt->Fill((Double_t) fMapRpcIdParInd[fMapStationRpcId[iSt]], dTOff);
+            if (pHit != pRefHit) {
+              Double_t dTOff = dDeltaTt *  //pHit->GetR();
+                               TMath::Sqrt(TMath::Power(pHit->GetX() - pRefHit->GetX(), 2)
+                                           + TMath::Power(pHit->GetY() - pRefHit->GetY(), 2)
+                                           + TMath::Power(pHit->GetZ() - pRefHit->GetZ(), 2))
+                               * TMath::Sign(1, pHit->GetZ() - pRefHit->GetZ());
+              fhTOff_Smt->Fill((Double_t) fMapRpcIdParInd[fMapStationRpcId[iSt]], dTOff);
+            }
           }
-        }
+        }  // station loop end
 
       // extrapolation of tracklet to vertex @ z=0
       //      FairTrackParam paramExtr;
       //      fFitter->Extrapolate(pTrk->GetParamFirst(),0.,&paramExtr);
-    }  // condition on NofHits>2 end
-
+    }                                                // condition on NofHits>2 end
+    Double_t dTt = fTrackletTools->FitTt(pTrk, -1);  // restore full fit
+    if (dTt == 0) {
+      LOG(error) << "Invalid inverse velocity ";
+      continue;
+    }
     // monitoring of tracklet hits with  selected velocities from reference counters
     if (TMath::Abs(pTrk->GetRefVel((UInt_t)(fNReqStations - 1)) - fdRefVelMean) < fdRefDVel) {
       fhTrklVelHMul->Fill(pTrk->GetNofHits(), 1. / pTrk->GetTt());
@@ -1571,7 +1758,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent)
         for (Int_t iSt = 0; iSt < fNTofStations; iSt++) {
           Int_t iH = pTrk->GetStationHitIndex(fMapStationRpcId[iSt]);  // Station Hit index
           if (iH < 0) {
-            LOG(debug) << " Incomplete Tracklet, skip station " << iSt;
+            LOG(debug1) << " Incomplete Tracklet, skip station " << iSt;
             continue;  // Station not part of tracklet
           }
           CbmTofHit* pHit          = (CbmTofHit*) fTofHitArray->At(iH);
@@ -1606,8 +1793,17 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent)
           vhXY_TOT[iSt]->Fill(hitpos_local[0], hitpos_local[1], dTOT);
           vhXY_CSZ[iSt]->Fill(hitpos_local[0], hitpos_local[1], dCSZ);
 
+          // Refit tracklet without Dut info
+          fTrackletTools->Line3DFit(pTrk, iChId & DetMask);
+          hitpos[0] = pTrk->GetFitX(pHit->GetZ());
+          hitpos[1] = pTrk->GetFitY(pHit->GetZ());
+          hitpos[2] = pHit->GetZ();
+          gGeoManager->MasterToLocal(hitpos, hitpos_local);
+          vhXY_AllFitStations[iSt]->Fill(hitpos_local[0], hitpos_local[1]);
+          fTrackletTools->Line3DFit(pTrk, -1);
+
           // debugging consistency of geometry transformations ....
-          if (fair::Logger::Logging(fair::Severity::debug)) {
+          if (fair::Logger::Logging(fair::Severity::debug3)) {
             if (iSt == fNReqStations - 1) {  // treat as if not found
               Int_t iAddr               = fMapStationRpcId[iSt];
               CbmTofCell* fChannelInfoD = fDigiPar->GetCell(iAddr);
@@ -1719,11 +1915,12 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent)
                                        fChannelInfo->GetSizex());
                   }
                   zPosMiss = fChannelInfoMiss->GetZ() + (Double_t) fhPullZ_Smt_Off->GetBinContent(iRpcInd + 1);
-
+                  /*
                   LOG(debug) << Form("Geo consistency check 0x%08x at St%d, z=%7.2f,%7.2f: "
                                      "iChTrafo %d, Miss %d , xloc %6.2f, dx %4.2f",
                                      iAddr, iSt, zPos, zPosMiss, iChTrafo, iChMiss, hitpos_local[0],
                                      fChannelInfo->GetSizex());
+                                     */
                   fChannelInfo = fChannelInfoMiss;
                   iAddr        = iAddrMiss;
                 }
@@ -1764,7 +1961,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent)
     }  // velocity selection end
   }    // loop over tracklets end
 
-  if (HMul.size() > 3) fhTrklMulMaxMM->Fill(HMul[fNTofStations], HMul[fNTofStations - 1]);
+  if (HMul.size() > 3) { fhTrklMulMaxMM->Fill(HMul[fNReqStations], HMul[fNReqStations - 1]); }
   if (HMul.size() > 5) fhTrklMul3D->Fill(HMul[fNTofStations], HMul[fNTofStations - 1], HMul[fNTofStations - 2]);
   fhTrklMulNhits->Fill(fTofHitArray->GetEntriesFast(), iTMul);
   fhTrackingTimeNhits->Fill(fTofHitArray->GetEntriesFast(), fdTrackingTime);
@@ -1783,7 +1980,7 @@ void CbmTofFindTracks::FillHistograms(CbmEvent* tEvent)
           pTrk->PrintInfo();
         }
       }
-  if (1)
+  if (kFALSE)                                  // print event info for special events
     if (fTrackArray->GetEntriesFast() > 25) {  // temporary
       LOG(info) << "Found high track multiplicity of " << fTrackArray->GetEntriesFast() << " in event " << fiEvent
                 << " from " << fTofHitArray->GetEntriesFast() << " hits ";
@@ -1869,6 +2066,8 @@ void CbmTofFindTracks::SetStation(Int_t iVal, Int_t iModType, Int_t iModId, Int_
   if (NULL != fDigiBdfPar) iCenterCh = TMath::Floor((fDigiBdfPar->GetNbChan(iModType, iRpcId) - 1) / 2);
   Int_t iAddr            = CbmTofAddress::GetUniqueAddress(iModId, iRpcId, iCenterCh, 0, iModType);
   fMapStationRpcId[iVal] = iAddr;
+  LOG(info) << "SetStation: added " << iVal
+            << Form(" TSRC %d%d%d%02d, addr 0x%08x ", iModType, iModId, iRpcId, iCenterCh, iAddr);
 }
 
 void CbmTofFindTracks::SetBeamCounter(Int_t iModType, Int_t iModId, Int_t iRpcId)
@@ -1879,9 +2078,21 @@ void CbmTofFindTracks::SetBeamCounter(Int_t iModType, Int_t iModId, Int_t iRpcId
 Int_t CbmTofFindTracks::GetStationOfAddr(Int_t iAddr)
 {
   std::map<Int_t, Int_t>::iterator it;
-  for (it = fMapStationRpcId.begin(); it != fMapStationRpcId.end(); it++)
+  Int_t iNSt = 0;
+  Int_t iSt  = -1;
+  for (it = fMapStationRpcId.begin(); it != fMapStationRpcId.end(); it++) {
     //std::map <Int_t, Int_t>::iterator it = fMapStationRpcId.find(iAddr);
+    /*
+	Int_t iDetId=it->second;
+	LOG(debug)<<Form("GetStationOfAddr 0x%08x, TSR %d%d%d: St %d, TSR %d%d%d ", iAddr,
+			CbmTofAddress::GetSmType(iAddr),CbmTofAddress::GetSmId(iAddr),CbmTofAddress::GetRpcId(iAddr),
+			it->first, CbmTofAddress::GetSmType(iDetId),CbmTofAddress::GetSmId(iDetId),CbmTofAddress::GetRpcId(iDetId));
+    */
+    if (iNSt > fNTofStations) LOG(fatal) << "Invalid NSt " << iNSt;
+    iNSt++;
     if (it->second == iAddr) break;
+  }
+  if (it != fMapStationRpcId.end()) iSt = it->first;
   /*
   if(it->first == fMapStationRpcId.size())
   {
@@ -1890,14 +2101,19 @@ Int_t CbmTofFindTracks::GetStationOfAddr(Int_t iAddr)
   	     ;
   }
   */
-  return it->first;
+  return iSt;
 }
 
 void CbmTofFindTracks::PrintSetup()
 {
   for (std::map<Int_t, Int_t>::iterator it = fMapStationRpcId.begin(); it != fMapStationRpcId.end(); it++) {
-    cout << " <I> Tracking station " << it->first << " contains RpcId " << Form("0x%08x", it->second) << endl;
+    Int_t iDetId = it->second;
+    LOG(debug) << " <I> Tracking station " << it->first << " contains RpcId "
+               << Form("0x%08x, TSR %d%d%d", it->second, CbmTofAddress::GetSmType(iDetId),
+                       CbmTofAddress::GetSmId(iDetId), CbmTofAddress::GetRpcId(iDetId));
   }
+  if ((Int_t) fMapStationRpcId.size() > fNTofStations)
+    LOG(fatal) << "Invalid NTofStations " << fNTofStations << ", " << fMapStationRpcId.size();
 }
 
 Double_t CbmTofFindTracks::GetTOff(Int_t iAddr)
@@ -1907,32 +2123,28 @@ Double_t CbmTofFindTracks::GetTOff(Int_t iAddr)
   return (Double_t) fhPullT_Smt_Off->GetBinContent(fMapRpcIdParInd[iAddr] + 1);
 }
 
-Double_t CbmTofFindTracks::GetSigT(Int_t iAddr)
-{
-  return (Double_t) fhPullT_Smt_Width->GetBinContent(fMapRpcIdParInd[iAddr] + 1);
-}
+Double_t CbmTofFindTracks::GetSigT(Int_t iAddr) { return fvTsig[GetStationOfAddr(iAddr)]; }
 
-Double_t CbmTofFindTracks::GetSigX(Int_t iAddr)
-{
-  return (Double_t) fhPullX_Smt_Width->GetBinContent(fMapRpcIdParInd[iAddr] + 1);
-}
+Double_t CbmTofFindTracks::GetSigX(Int_t iAddr) { return fvXsig[GetStationOfAddr(iAddr)]; }
 
-Double_t CbmTofFindTracks::GetSigY(Int_t iAddr)
-{
-  return (Double_t) fhPullY_Smt_Width->GetBinContent(fMapRpcIdParInd[iAddr] + 1);
-}
+Double_t CbmTofFindTracks::GetSigY(Int_t iAddr) { return fvYsig[GetStationOfAddr(iAddr)]; }
 
-Double_t CbmTofFindTracks::GetSigZ(Int_t iAddr)
-{
-  return (Double_t) fhPullZ_Smt_Width->GetBinContent(fMapRpcIdParInd[iAddr] + 1);
-}
+Double_t CbmTofFindTracks::GetSigZ(Int_t iAddr) { return fvZsig[GetStationOfAddr(iAddr)]; }
+
+Double_t CbmTofFindTracks::GetStationSigT(Int_t iSt) { return fvTsig[iSt]; }
+
+Double_t CbmTofFindTracks::GetStationSigX(Int_t iSt) { return fvXsig[iSt]; }
+
+Double_t CbmTofFindTracks::GetStationSigY(Int_t iSt) { return fvYsig[iSt]; }
+
+Double_t CbmTofFindTracks::GetStationSigZ(Int_t iSt) { return fvZsig[iSt]; }
 
 Int_t CbmTofFindTracks::GetNStationsFired()
 {
   Int_t iNSt = 0;
   for (Int_t iSt = 0; iSt < fNTofStations; iSt++) {
     if (fStationHMul[iSt] > 0 && fStationHMul[iSt] < fiStationMaxHMul) iNSt++;
-    LOG(debug2) << Form("Station %d, Addr 0x%08x, HMul %d, Max %d, Sum %d", iSt, GetAddrOfStation(iSt),
+    LOG(debug1) << Form("Station %d, Addr 0x%08x, HMul %d, Max %d, Sum %d", iSt, GetAddrOfStation(iSt),
                         fStationHMul[iSt], fiStationMaxHMul, iNSt);
   }
   return iNSt;
@@ -1985,8 +2197,7 @@ Bool_t CbmTofFindTracks::CheckHit2Track(CbmTofHit* pHit)
 
 void CbmTofFindTracks::CheckMaxHMul()
 {
-  fInspectEvent = kTRUE;
-
+  //fInspectEvent = kTRUE;
   for (Int_t iSt = 0; iSt < fNTofStations; iSt++) {
     if (fStationHMul[iSt] > fiStationMaxHMul) { fInspectEvent = kFALSE; }
     else {
@@ -2002,4 +2213,76 @@ void CbmTofFindTracks::PrintMapRpcIdParInd()
     LOG(info) << Form("MapRpcIdParInd: %d, 0x%08x ", it->second, it->first);
     it++;
   }
+}
+
+void CbmTofFindTracks::MarkStationFired(Int_t iSt) { fStationHMul[iSt]++; }
+
+bool CbmTofFindTracks::EvalDoublets(int iI0, int iI1, int iI2, double* dTshift)
+{
+  //LOG(info)<<"Evaluate time offsets from 3 doublets in triplet "<<iI0<<" "<<iI1<<" "<<iI2;
+  //for (int i=0; i<3; i++) dTshift[i]=(double)i;
+  //LOG(info)<<"Initial Tshift " <<dTshift[0]<<" "<<dTshift[1]<<" "<<dTshift[2];
+  //return kTRUE;
+
+  const double c      = 30.;  //speed of light in cm/ns
+  const double dNTrks = 100.;
+  double A[3]         = {3 * 0.};
+  double D[3]         = {3 * 0.};
+  TString hnameDT[3]  = {Form("hDoubletDt_%02d%02d", iI0, iI1), Form("hDoubletDt_%02d%02d", iI0, iI2),
+                        Form("hDoubletDt_%02d%02d", iI1, iI2)};
+  TString hnameDD[3]  = {Form("hDoubletDd_%02d%02d", iI0, iI1), Form("hDoubletDd_%02d%02d", iI0, iI2),
+                        Form("hDoubletDd_%02d%02d", iI1, iI2)};
+  TString hnameV[3]   = {Form("hDoubletV_%02d%02d", iI0, iI1), Form("hDoubletV_%02d%02d", iI0, iI2),
+                       Form("hDoubletV_%02d%02d", iI1, iI2)};
+  TH1* hDT[3];
+  TH1* hDD[3];
+  TH1* hV[3];
+  for (int i = 0; i < 3; i++) {
+    hDT[i] = (TH1*) gROOT->FindObjectAny(hnameDT[i]);
+    if (NULL == hDT[i]) {
+      LOG(warn) << "CalHisto " << hnameDT[i] << " not existing";
+      return kFALSE;
+    }
+    hDD[i] = (TH1*) gROOT->FindObjectAny(hnameDD[i]);
+    if (NULL == hDD[i]) {
+      LOG(warn) << "CalHisto " << hnameDD[i] << " not existing";
+      return kFALSE;
+    }
+    hV[i] = (TH1*) gROOT->FindObjectAny(hnameV[i]);
+    if (NULL == hV[i]) {
+      LOG(warn) << "CalHisto " << hnameV[i] << " not existing";
+      return kFALSE;
+    }
+    if (hDT[i]->Integral() < dNTrks) {
+      LOG(warn) << "Too few entries for triplet " << iI0 << " " << iI1 << " " << iI2 << " in " << hnameV[i] << ": "
+                << hV[i]->Integral();
+      return kFALSE;  // return without shifts
+    }
+    //D[i]=hDT[i]->GetMean()*hV[i]->GetMean();
+    D[i] = hDD[i]->GetMean();
+    A[i] = (D[i] - c * hDT[i]->GetMean()) / c;
+  }
+  dTshift[0] = 0.5 * (A[0] + A[1] - A[2]);
+  dTshift[1] = 0.5 * (-A[0] + A[1] - A[2]);
+  dTshift[2] = 0.5 * (A[0] + A[1] + A[2]);
+  LOG(info) << "Final Tshift for " << iI0 << " " << iI1 << " " << iI2 << ": " << dTshift[0] << " " << dTshift[1] << " "
+            << dTshift[2];
+  return kTRUE;
+}
+
+void CbmTofFindTracks::SetStationStatus(int iStation, int iStatus)
+{
+  if ((int) fiStationStatus.size() < iStation) {
+    fiStationStatus.resize(iStation + 1);
+    for (int i = 0; i < iStation + 1; i++)
+      fiStationStatus[i] = 0;
+    LOG(info) << "StationStatus initialized for " << fiStationStatus.size() << " stations";
+  }
+  fiStationStatus[iStation] = iStatus;
+}
+int CbmTofFindTracks::GetStationStatus(int iStation)
+{
+  if (iStation < (int) fiStationStatus.size()) return fiStationStatus[iStation];
+  else
+    return 0;
 }

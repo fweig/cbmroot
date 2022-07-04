@@ -55,7 +55,7 @@ public:
   CbmTofFindTracks();
 
 
-  /** Standard constructor 
+  /** Standard constructor
    **
    *@param name   Name of class
    *@param title  Task title
@@ -118,6 +118,8 @@ public:
   void PrintSetup();
 
   inline void SetR0Lim(Double_t dVal) { fdR0Lim = dVal; }
+  inline Double_t GetR0Lim() { return fdR0Lim; }
+  inline void SetTtMin(Double_t dVal) { fdTtMin = dVal; }
   inline Int_t GetAddrOfStation(Int_t iVal) { return fMapStationRpcId[iVal]; }
   inline Int_t GetDetIndSize() { return fMapRpcIdParInd.size(); }
   Int_t GetStationOfAddr(Int_t iAddr);
@@ -129,6 +131,7 @@ public:
   inline Int_t GetBeamCounter() const { return fiBeamCounter; }
   inline Int_t GetEventNumber() const { return fiEvent; }
   inline Double_t GetTtTarg() const { return fTtTarg; }
+  inline Double_t GetTOffScal() const { return fdTOffScal; }
 
   inline Double_t GetSigT() const { return fSIGT; }
   inline Double_t GetSigX() const { return fSIGX; }
@@ -142,6 +145,11 @@ public:
   Double_t GetSigZ(Int_t iAddr);
   Double_t GetTOff(Int_t iAddr);
 
+  Double_t GetStationSigT(Int_t iSt);
+  Double_t GetStationSigX(Int_t iSt);
+  Double_t GetStationSigY(Int_t iSt);
+  Double_t GetStationSigZ(Int_t iSt);
+
   inline void SetSIGT(Double_t dval) { fSIGT = dval; }
   inline void SetSIGX(Double_t dval) { fSIGX = dval; }
   inline void SetSIGY(Double_t dval) { fSIGY = dval; }
@@ -154,17 +162,21 @@ public:
   inline void SetCalParFileName(TString CalParFileName) { fCalParFileName = CalParFileName; }
   inline void SetCalOutFileName(TString CalOutFileName) { fCalOutFileName = CalOutFileName; }
   inline void SetTtTarg(Double_t val) { fTtTarg = val; }
+  inline void SetTOffScal(Double_t val) { fdTOffScal = val; }
   inline void SetT0MAX(Double_t val) { fT0MAX = val; }
 
   inline void SetStationMaxHMul(Int_t ival) { fiStationMaxHMul = ival; }
-  inline void MarkStationFired(Int_t iSt) { fStationHMul[iSt]++; }
+  void MarkStationFired(Int_t iSt);
   Int_t GetNStationsFired();
   void ResetStationsFired();
+  void SetStationStatus(int iStation, int iStatus);
+  int GetStationStatus(int iStation);
 
   inline void SetBeamMomentumLab(Double_t dval) { fdBeamMomentumLab = dval; }
   inline void SetRemoveSignalPropagationTime(Bool_t bval) { fbRemoveSignalPropagationTime = bval; }
   inline void SetBeamMaxHMul(Int_t ival) { fiBeamMaxHMul = ival; }
   inline void SetCalOpt(Int_t ival) { fiCalOpt = ival; }
+  inline void SetNoHistos() { fbDoHistos = kFALSE; }
 
   inline Double_t GetVertexT() const { return fVTX_T; }
   inline Double_t GetVertexX() const { return fVTX_X; }
@@ -177,6 +189,7 @@ public:
     else
       return fTofHitIndexArray[iHit];
   }
+  bool EvalDoublets(int iI0, int iI1, int iI2, double* dTshift);
 
 private:
   static CbmTofFindTracks* fInstance;
@@ -211,6 +224,11 @@ private:
   std::vector<Double_t> fvYoff;  // station correction parameter
   std::vector<Double_t> fvZoff;  // station correction parameter
 
+  std::vector<Double_t> fvTsig;  // station resolution parameter
+  std::vector<Double_t> fvXsig;  // station resolution parameter
+  std::vector<Double_t> fvYsig;  // station resolution parameter
+  std::vector<Double_t> fvZsig;  // station resolution parameter
+
   CbmTofFindTracks(const CbmTofFindTracks&);
   CbmTofFindTracks& operator=(const CbmTofFindTracks&);
 
@@ -232,6 +250,7 @@ private:
   TH2* fhTrklZ0yHMul;
   TH2* fhTrklTxHMul;
   TH2* fhTrklTyHMul;
+  TH2* fhTrklTyTx;
   TH2* fhTrklTtHMul;
   TH2* fhTrklVelHMul;
   TH2* fhTrklT0HMul;
@@ -247,10 +266,12 @@ private:
   std::vector<TH1*> vhPullZ;
   std::vector<TH1*> vhPullT;
   std::vector<TH1*> vhPullTB;
+  std::vector<TH1*> vhTrefRms;
   std::vector<TH2*> vhResidualTBWalk;
   std::vector<TH2*> vhResidualYWalk;
   std::vector<TH2*> vhXY_AllTracks;      // for monitoring
   std::vector<TH2*> vhXY_AllStations;    // for efficiency estimation
+  std::vector<TH2*> vhXY_AllFitStations;  // for efficiency estimation
   std::vector<TH2*> vhXY_MissedStation;  // for efficiency estimation
   std::vector<TH3*> vhXY_DX;
   std::vector<TH3*> vhXY_DY;
@@ -264,8 +285,9 @@ private:
   TH2* fhVTX_XY0;
   TH2* fhVTX_DT0_Norm;
 
-  Int_t fTypeStation[100];  // FIXME fixed array size
-  TString fOutHstFileName;  // name of the histogram output file name with Calibration Parameters
+  Int_t fTypeStation[1000];          // FIXME fixed array size
+  std::vector<int> fiStationStatus;  // counter status with Geo index in calibration process
+  TString fOutHstFileName;           // name of the histogram output file name with Calibration Parameters
 
   Bool_t LoadCalParameter();
   Bool_t WriteHistos();
@@ -292,7 +314,8 @@ private:
   Int_t fiCorMode;
   Int_t fiBeamCounter;
   Int_t fiStationMaxHMul;
-  Double_t fTtTarg;   // expected average slope in ps/cm
+  Double_t fTtTarg;     // expected average slope in ns/cm
+  Double_t fdTOffScal;  // modifier to tune average velocity
   Double_t fVTXNorm;  // Number of Hits contributing to Vertex determination
   Double_t fVTX_T;    // measured event wise t0
   Double_t fVTX_X;    // measured event wise vertex x
@@ -315,6 +338,7 @@ private:
   Double_t fdRefVelMean;
   Double_t fdRefDVel;
   Double_t fdR0Lim;
+  Double_t fdTtMin;
 
   TTimeStamp fStart;
   TTimeStamp fStop;
@@ -323,7 +347,8 @@ private:
   Double_t fdBeamMomentumLab;  // beam momentum in lab frame [AGeV/c]
   Bool_t fbRemoveSignalPropagationTime;
   Int_t fiBeamMaxHMul;
-  Int_t fiCalOpt;
+  int fiCalOpt;
+  Bool_t fbDoHistos = kTRUE;
 
   ClassDef(CbmTofFindTracks, 1);
 };
