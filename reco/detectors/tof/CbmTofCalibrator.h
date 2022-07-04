@@ -34,6 +34,7 @@ class CbmDigiManager;
 #include "CbmTofTrackletParam.h"
 #include "CbmTofTrackletTools.h"
 
+#include "FairEventHeader.h"
 #include "FairTrackParam.h"
 
 #include "TH1.h"
@@ -60,10 +61,12 @@ public:
   InitStatus Init();
   Bool_t InitParameters();
   Bool_t CreateCalHist();
+  void FillCalHist(CbmTofHit* pHit, Int_t iOpt, CbmEvent* pEvent = NULL);
   void FillCalHist(CbmTofTracklet* pTrk, Int_t iOpt, CbmEvent* pEvent = NULL);
   Bool_t UpdateCalHist(Int_t iOpt);
   void ReadHist(TFile* fhFile);
   void WriteHist(TFile* fhFile);
+  void HstDoublets(CbmTofTracklet* pTrk);
 
   inline void SetR0Lim(Double_t dVal) { fdR0Lim = dVal; }
   inline void SetBeam(Bool_t bVal) { fbBeam = bVal; }
@@ -79,14 +82,18 @@ private:
   CbmTofDigiPar* fDigiPar;
   CbmTofDigiBdfPar* fDigiBdfPar;
   TClonesArray* fTofDigiMatchColl;  // TOF Digi Links
+
+  FairEventHeader* fEvtHeader;
+
   TH1* fhCalR0;
   TH1* fhCalDX0;
   TH1* fhCalDY0;
 
+  std::vector<TH2*> fhCalTot;                             // [nbDet]
   std::vector<TH2*> fhCalPosition;                        // [nbDet]
   std::vector<TH2*> fhCalPos;                             // [nbDet]
   std::vector<TH2*> fhCalTOff;                            // [nbDet]
-  std::vector<TH2*> fhCalTot;                             // [nbDet]
+  std::vector<TH2*> fhCalTofOff;                          // [nbDet]
   std::vector<std::vector<std::vector<TH2*>>> fhCalWalk;  // [nbDet][nbCh][nSide]
 
   std::vector<TH1*> fhCorPos;                             // [nbDet]
@@ -97,6 +104,9 @@ private:
   std::vector<std::vector<std::vector<TH1*>>> fhCorWalk;  // [nbDet][nbCh][nSide]
 
   std::map<UInt_t, UInt_t> fDetIdIndexMap;
+  std::map<int, TH1*> fhDoubletDt;
+  std::map<int, TH1*> fhDoubletDd;
+  std::map<int, TH1*> fhDoubletV;
 
   Double_t fdR0Lim = 0.;
   Bool_t fbBeam    = kFALSE;

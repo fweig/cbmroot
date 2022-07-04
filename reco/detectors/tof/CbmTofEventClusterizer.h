@@ -29,12 +29,14 @@ class CbmTofDigiBdfPar;
 class CbmTofCell;
 class CbmTofFindTracks;
 class CbmDigiManager;
+class CbmTofCalibrator;
 #include "CbmMatch.h"
 #include "CbmTofAddress.h"  // in cbmdata/tof
 #include "CbmTofDigi.h"
 
 class TTofCalibData;
 class TTrbHeader;
+class FairEventHeader;
 
 // FAIR classes and includes
 #include "FairTask.h"
@@ -89,7 +91,7 @@ public:
        ** @brief Inherited from FairTask.
        **/
   virtual void Exec(Option_t* option);
-  virtual void ExecEvent(Option_t* option);
+  virtual void ExecEvent(Option_t* option, CbmEvent* tEvent = NULL);
 
   /**
        ** @brief Inherited from FairTask.
@@ -157,11 +159,18 @@ public:
   inline void SetEnableMatchPosScaling(Bool_t bval) { fEnableMatchPosScaling = bval; }
   inline void SetEnableAvWalk(Bool_t bval) { fEnableAvWalk = bval; }
   inline void SetPs2Ns(Bool_t bval) { fbPs2Ns = bval; }
+  inline Double_t GetStartAnalysisTime() { return fdStartAnalysisTime; }
+  inline int GetNbHits() { return fiNbHits; }
+  CbmTofHit* GetHitPointer(int iHit);
+  CbmMatch* GetMatchPointer(int iHit);
+  inline double GetTotMean() { return fTotMean; }
+  inline int GetBeamAddr() { return fiBeamRefAddr; }
 
   //static Double_t  f1_xboxe(double *x, double *par); // Fit function
   virtual void fit_ybox(const char* hname);                    // Fit
   virtual void fit_ybox(TH1* h, Double_t dy);                  // Fit
   virtual void fit_ybox(TH1* h, Double_t dy, Double_t* fpar);  // Fit
+  virtual double* find_yedges(const char* hname, Double_t dThr, Double_t dLen);
   virtual void CheckLHMemory();                                // Check consistency of stored last hits
   virtual void CleanLHMemory();                                // Cleanup
   virtual Bool_t AddNextChan(Int_t iSmType, Int_t iSm, Int_t iRpc, Int_t iLastChan, Double_t dLastPosX,
@@ -216,7 +225,7 @@ private:
 
   // Histogramming functions
   Bool_t CreateHistos();
-  Bool_t FillHistos();
+  Bool_t FillHistos(CbmEvent* tEvent);
   Bool_t WriteHistos();
   Bool_t DeleteHistos();
 
@@ -237,6 +246,7 @@ private:
   CbmTofDigiBdfPar* fDigiBdfPar;
 
   TTrbHeader* fTrbHeader;
+  FairEventHeader* fEvtHeader;
 
   // Input variables
   const std::vector<CbmMatch>* fTofDigiPointMatches = nullptr;  // TOF MC point matches
@@ -277,6 +287,8 @@ private:
   std::vector<std::vector<std::vector<Double_t>>> fvdDifY;      //[nbType][nbRpc][nClusters]
   std::vector<std::vector<std::vector<Double_t>>> fvdDifCh;     //[nbType][nbRpc][nClusters]
 
+  CbmTofCalibrator* fTofCalibrator;
+
   // Histograms
   TH1* fhClustBuildTime;
   TH1* fhHitsPerTracks;
@@ -313,6 +325,7 @@ private:
   std::vector<TH1*> fhRpcCluRate;                            //[nbDet]
   std::vector<TH1*> fhRpcCluRate10s;                         //[nbDet]
   std::vector<TH2*> fhRpcCluPosition;                        //[nbDet]
+  std::vector<TH2*> fhRpcCluPos;                             //[nbDet]
   std::vector<TProfile*> fhRpcCluPositionEvol;               //[nbDet]
   std::vector<TProfile*> fhRpcCluTimeEvol;                   //[nbDet]
   std::vector<TH2*> fhRpcCluDelPos;                          //[nbDet]
@@ -343,8 +356,10 @@ private:
   std::vector<std::vector<TH2*>> fhTRpcCluAvWalk;                          // [nbDet][nbSel]
   std::vector<std::vector<TH2*>> fhTRpcCluDelTof;                          // [nbDet][nbSel]
   std::vector<std::vector<TH2*>> fhTRpcCludXdY;                            // [nbDet][nbSel]
+  std::vector<std::vector<TH2*>> fhTRpcCluQASY;                            // [nbDet][nbSel]
   std::vector<std::vector<std::vector<std::vector<TH2*>>>> fhTRpcCluWalk;  // [nbDet][nbSel][nbCh][nSide]
   std::vector<std::vector<TH3*>> fhTRpcCluWalk2;                           // [nbDet][nbSel]
+  std::vector<std::vector<TH3*>> fhTRpcCluQ2DT;                            // [nbDet][nbSel]
 
   std::vector<std::vector<TH2*>> fhTSmCluPosition;  //[nbSmTypes][nbSel]
   std::vector<std::vector<TH2*>> fhTSmCluTOff;      //[nbSmTypes][nbSel]
@@ -446,6 +461,7 @@ private:
   Double_t fdMaxSpaceDist;  // Isn't this just a local variable? Why make it global and preset?!?
 
   Double_t fdEvent;
+  Double_t fdStartAnalysisTime;
 
   Bool_t fbSwapChannelSides;
   Int_t fiOutputTreeEntry;
