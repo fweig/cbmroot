@@ -5,11 +5,11 @@
 /*
  *====================================================================
  *
- *  CBM Level 1 Reconstruction 
- *  
+ *  CBM Level 1 Reconstruction
+ *
  *  Authors: I.Kisel,  S.Gorbunov
  *
- *  e-mail : ikisel@kip.uni-heidelberg.de 
+ *  e-mail : ikisel@kip.uni-heidelberg.de
  *
  *====================================================================
  *
@@ -181,7 +181,7 @@ public:
   void ApplyCorrectionToMaterialMap(L1Material& material, const L1MaterialInfo& homogenious)
   {
     // TODO: unify the correction function for all detectors
-    float minVal = 0.;
+    [[maybe_unused]] float minVal = 0.;
     if constexpr (detID == L1DetectorID::kMuch) { minVal = 0.15f; }
     else if constexpr (detID == L1DetectorID::kTof || detID == L1DetectorID::kTrd) {
       minVal = 0.0015f;
