@@ -38,6 +38,9 @@ void addCustomOptions(bpo::options_description& options)
   options.add_options()("SetTrigMinLayersNb", bpo::value<std::vector<std::string>>()->multitoken()->composing(),
                         "Set minimum number of fired layers for selected detector, use string matching "
                         "ECbmModuleId,uMinLayersNb e.g. kTof,3");
+  options.add_options()("SetHistMaxDigiNb", bpo::value<std::vector<std::string>>()->multitoken()->composing(),
+                        "Set max nb of digi in histograms for selected detector, use string matching "
+                        "ECbmModuleId,dMaxDigiNb e.g. kTof,1000");
   options.add_options()("DoNotSend", bpo::value<bool>()->default_value(false), "Disable the sending of data if true");
   options.add_options()("TsNameIn", bpo::value<std::string>()->default_value("unpts_0"),
                         "MQ channel name for unpacked TS data");

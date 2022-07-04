@@ -69,6 +69,7 @@ try {
   fvsSetTrigMinNb       = fConfig->GetValue<std::vector<std::string>>("SetTrigMinNb");
   fvsSetTrigMaxNb       = fConfig->GetValue<std::vector<std::string>>("SetTrigMaxNb");
   fvsSetTrigMinLayersNb = fConfig->GetValue<std::vector<std::string>>("SetTrigMinLayersNb");
+  fvsSetHistMaxDigiNb   = fConfig->GetValue<std::vector<std::string>>("SetHistMaxDigiNb");
 
   fbDoNotSend              = fConfig->GetValue<bool>("DoNotSend");
   fsChannelNameDataInput   = fConfig->GetValue<std::string>("TsNameIn");
@@ -294,6 +295,39 @@ try {
     UInt_t uMinLayersNb = std::stoul((*itStrMinLayersNb).substr(charPosDel));
 
     fpAlgo->SetTriggerMinLayersNumber(selDet, uMinLayersNb);
+  }
+
+  /// Extract Histograms Max Digi limits if any
+  for (std::vector<std::string>::iterator itStrHistMaxDigi = fvsSetHistMaxDigiNb.begin();
+       itStrHistMaxDigi != fvsSetHistMaxDigiNb.end();
+       ++itStrHistMaxDigi) {
+    size_t charPosDel = (*itStrHistMaxDigi).find(',');
+    if (std::string::npos == charPosDel) {
+      LOG(info)
+        << "CbmDeviceBuildDigiEvents::InitTask => "
+        << "Trying to set Histos max Digi nb with invalid option pattern, ignored! "
+        << " (Should be ECbmModuleId,dMaxDigiNb but instead found " << (*itStrHistMaxDigi)
+        << " )";
+      continue;
+    }
+
+    /// Detector Enum Tag
+    std::string sSelDet = (*itStrHistMaxDigi).substr(0, charPosDel);
+    ECbmModuleId selDet = GetDetectorId(sSelDet);
+    if (ECbmModuleId::kNotExist == selDet) {
+      LOG(info)
+        << "CbmDeviceBuildDigiEvents::InitTask => "
+        << "Trying to set Histos max Digi nb for unsupported detector, ignored! "
+        << sSelDet;
+      continue;
+    }
+
+    /// Min number
+    charPosDel++;
+    Double_t dHistMaxDigiNb = std::stod((*itStrHistMaxDigi).substr(charPosDel));
+
+    LOG(debug) << "set Histos max Digi nb to " << dHistMaxDigiNb;
+    fpAlgo->SetHistogramMaxDigiNb(selDet, dHistMaxDigiNb);
   }
 
   /// FIXME: Re-enable clang formatting after formatted lines
