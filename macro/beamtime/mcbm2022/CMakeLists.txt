@@ -13,6 +13,13 @@ Install(FILES ${_resolvedRichFile}
         DESTINATION share/cbmroot/macro/beamtime/mcbm2022
        )
 
+# SLURM scripts, bash scripts
+Install(DIRECTORY online
+        DESTINATION share/cbmroot/macro/beamtime/mcbm2022
+        FILES_MATCHING PATTERN "*.sbatch"
+                       PATTERN "*.sh"
+        )
+
 # Just the empty folder for output
 Install(DIRECTORY data
         DESTINATION share/cbmroot/macro/beamtime/mcbm2022
