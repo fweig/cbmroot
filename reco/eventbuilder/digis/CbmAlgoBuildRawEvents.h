@@ -58,7 +58,7 @@ public:
 
   RawEventBuilderDetector(ECbmModuleId detIdIn, ECbmDataType dataTypeIn, std::string sNameIn, UInt_t uTriggerMinDigisIn,
                           Int_t iTriggerMaxDigisIn, Double_t fdTimeWinBegIn, Double_t fdTimeWinEndIn,
-                          UInt_t uTriggerMinLayersIn = 0)
+                          UInt_t uTriggerMinLayersIn = 0, Double_t fdHistMaxDigiNbIn = 1000)
     : RawEventBuilderDetector(detIdIn, dataTypeIn, sNameIn)
   {
     fuTriggerMinDigis  = uTriggerMinDigisIn;
@@ -66,6 +66,7 @@ public:
     fuTriggerMinLayers = uTriggerMinLayersIn;
     fdTimeWinBeg       = fdTimeWinBegIn;
     fdTimeWinEnd       = fdTimeWinEndIn;
+    fdHistMaxDigiNb    = fdHistMaxDigiNbIn;
   }
 
   bool operator==(const RawEventBuilderDetector& other) const { return (other.detId == this->detId); }
@@ -86,6 +87,8 @@ public:
   /// Selection Window
   Double_t fdTimeWinBeg = -100;
   Double_t fdTimeWinEnd = 100;
+  /// Histo configuration
+  Double_t fdHistMaxDigiNb = 1000;
   /// Book-keeping variables
   UInt_t fuStartIndex = 0;
   UInt_t fuEndIndex   = 0;
@@ -152,6 +155,7 @@ public:
   void SetTriggerMaxNumber(ECbmModuleId selDet, Int_t iVal);
   void SetTriggerMinLayersNumber(ECbmModuleId selDet, UInt_t uVal);
   void SetTriggerWindow(ECbmModuleId selDet, Double_t dWinBeg, Double_t dWinEnd);
+  void SetHistogramMaxDigiNb(ECbmModuleId selDet, Double_t dDigiNbMax);
 
   void SetTsParameters(Double_t dTsStartTime, Double_t dTsLength, Double_t dTsOverLength)
   {

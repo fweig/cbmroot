@@ -1056,13 +1056,18 @@ void CbmAlgoBuildRawEvents::CreateHistograms()
     new TH1F("fhEventDt", "interval in seed time of consecutive events; Seed time dt [ns]; Events", 10000, 0, 100000);
   // fhEventDt->SetCanExtend(TH1::kAllAxes);  // Breaks the MQ histogram server as cannot be merged!
 
-  fhEventSize = new TH1F("hEventSize", "nb of all  digis in the event; Nb Digis []; Events []", 10000, 0, 10000);
+  double_t dHistMaxTotDigis = fRefDet.fdHistMaxDigiNb;
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
+    dHistMaxTotDigis += (*det).fdHistMaxDigiNb;
+  }
+  fhEventSize = new TH1F("hEventSize", "nb of all  digis in the event; Nb Digis []; Events []", dHistMaxTotDigis, 0,
+                         dHistMaxTotDigis);
   // fhEventSize->SetCanExtend(TH1::kAllAxes);  // Breaks the MQ histogram server as cannot be merged!
 
   fhNbDigiPerEvtTime = new TH2I("hNbDigiPerEvtTime",
                                 "nb of all  digis per event vs seed time of the events; Seed time "
                                 "[s]; Nb Digis []; Events []",
-                                1000, 0, 0.2, 5000, 0, 5000);
+                                1000, 0, 0.2, dHistMaxTotDigis, 0, dHistMaxTotDigis);
   // fhNbDigiPerEvtTime->SetCanExtend(TH2::kAllAxes);  // Breaks he MQ histogram server as cannot be merged!
 
   fhCpuTimePerTs  = new TH1D("hCpuTimePerTs", "CPU Processing time of TS vs TS; Ts; CPU time [ms]", 6000, 0, 6000);
@@ -1102,13 +1107,13 @@ void CbmAlgoBuildRawEvents::CreateHistograms()
                                           Form("nb of %s digis per event vs seed time of the events; Seed time in TS "
                                                "[s]; Nb Digis []; Events []",
                                                (*det).sName.data()),
-                                          1000, 0, 0.2, 5000, 0, 5000);
+                                          1000, 0, 0.2, (*det).fdHistMaxDigiNb, 0, (*det).fdHistMaxDigiNb);
     // hNbDigiPerEvtTimeDet->SetCanExtend(TH2::kAllAxes);   // Breaks he MQ histogram server as cannot be merged!
     fvhNbDigiPerEvtTimeDet.push_back(hNbDigiPerEvtTimeDet);
 
-    TH1* hNbDigiPerEvtDet =
-      new TH1I(Form("hNbDigiPerEvt%s", (*det).sName.data()),
-               Form("nb of %s digis per event; Nb Digis []", (*det).sName.data()), 10000, 0, 10000);
+    TH1* hNbDigiPerEvtDet = new TH1I(Form("hNbDigiPerEvt%s", (*det).sName.data()),
+                                     Form("nb of %s digis per event; Nb Digis []", (*det).sName.data()),
+                                     (*det).fdHistMaxDigiNb, 0, (*det).fdHistMaxDigiNb);
     fvhNbDigiPerEvtDet.push_back(hNbDigiPerEvtDet);
 
     TH1* hTDiff =
@@ -1150,12 +1155,12 @@ void CbmAlgoBuildRawEvents::CreateHistograms()
                                         Form("nb of %s digis per event vs seed time of the events; Seed time in TS "
                                              "[s]; Nb Digis []; Events []",
                                              fRefDet.sName.data()),
-                                        1000, 0, 0.2, 5000, 0, 5000);
+                                        1000, 0, 0.2, fRefDet.fdHistMaxDigiNb, 0, fRefDet.fdHistMaxDigiNb);
   fvhNbDigiPerEvtTimeDet.push_back(hNbDigiPerEvtTimeDet);
 
-  TH1I* hNbDigiPerEvtDet =
-    new TH1I(Form("hNbDigiPerEvt%s", fRefDet.sName.data()),
-             Form("nb of %s digis per event; Nb Digis []", fRefDet.sName.data()), 10000, 0, 10000);
+  TH1I* hNbDigiPerEvtDet = new TH1I(Form("hNbDigiPerEvt%s", fRefDet.sName.data()),
+                                    Form("nb of %s digis per event; Nb Digis []", fRefDet.sName.data()),
+                                    fRefDet.fdHistMaxDigiNb, 0, fRefDet.fdHistMaxDigiNb);
   fvhNbDigiPerEvtDet.push_back(hNbDigiPerEvtDet);
 
   TH1I* hTDiff =
@@ -1921,6 +1926,28 @@ void CbmAlgoBuildRawEvents::SetTriggerWindow(ECbmModuleId selDet, Double_t dWinB
   UpdateTimeWinBoundariesExtrema();
   /// Update the variable storing the size if widest time window for overlap detection
   UpdateWidestTimeWinRange();
+}
+
+void CbmAlgoBuildRawEvents::SetHistogramMaxDigiNb(ECbmModuleId selDet, Double_t dVal)
+{
+  /// Check first if reference detector
+  if (fRefDet.detId == selDet) {
+    fRefDet.fdHistMaxDigiNb = dVal;
+    LOG(debug) << "Set histogram max digi nb for " << fRefDet.sName << " to " << dVal;
+    return;
+  }
+
+  /// Loop on selection detectors
+  for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
+    if ((*det).detId == selDet) {
+      (*det).fdHistMaxDigiNb = dVal;
+      LOG(debug) << "Set histogram max digi nb " << (*det).sName << " to " << dVal;
+      return;
+    }
+  }
+  LOG(warning) << "CbmAlgoBuildRawEvents::SetHistogramMaxDigiNb => "
+                  "Doing nothing, detector neither reference nor in selection list!"
+               << selDet;
 }
 
 void CbmAlgoBuildRawEvents::UpdateTimeWinBoundariesExtrema()
