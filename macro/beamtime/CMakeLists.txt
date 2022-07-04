@@ -1,6 +1,8 @@
 #--- Installation only
-# mCBM 20201: install parameter files to allow execution of unpacking on Virgo/Lustre
+# mCBM 2021: install parameter files to allow execution of unpacking on Virgo/Lustre
 add_subdirectory(mcbm2021)
+# mCBM 2022: install parameter files + macro + online scripts to allow execution of unpacking on mFLES
+add_subdirectory(mcbm2022)
 
 ################################################################################
 #--- Deprecated (not running)
