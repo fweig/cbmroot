@@ -8,6 +8,8 @@ set(SRCS
   trigger/TimeClusterTrigger.cxx
   detectors/sts/StsReadoutConfig.cxx
   detectors/sts/UnpackSts.cxx
+  detectors/much/MuchReadoutConfig.cxx
+  detectors/much/UnpackMuch.cxx
  )
 
 add_library(Algo SHARED ${SRCS})
