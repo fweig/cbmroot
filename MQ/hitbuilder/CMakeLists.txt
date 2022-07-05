@@ -77,7 +77,7 @@ set(EXE_NAME HitBuilderTof)
 set(SRCS CbmDeviceHitBuilderTof.cxx runHitBuilderTof.cxx)
 set(DEPENDENCIES
   ${DEPENDENCIES_ALL}
-#    fles_ipc
+#    external::fles_ipc
   CbmBase
   CbmData
   CbmTofBase

@@ -119,7 +119,7 @@ private:
   // Input variables
   Int_t fiNDigiIn;
   std::vector<CbmTofDigi> fvDigiIn;
-  std::vector<int> fEventHeader;
+  std::vector<uint64_t> fEventHeader;
   FairEventHeader* fEvtHeader;
 
   // Output variables
@@ -180,7 +180,11 @@ private:
 
   // histograms
   TH1* fhEvDetMul;
+  TH1* fhEvDigiMul;
+  TH1* fhEvRateIn;
+  TH1* fhEvRateOut;
   TH1* fhPulMul;
+  TH1* fhDigiTdif;
   TH2* fhPulserTimesRaw;
   std::vector<TProfile*> fhPulserTimeRawEvo;
   TH2* fhPulserTimesCor;

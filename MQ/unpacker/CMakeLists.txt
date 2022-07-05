@@ -2,11 +2,14 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerUnpackerParserver.sh.in
 
 set(INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${BASE_INCLUDE_DIRECTORIES}
     ${CBMROOT_SOURCE_DIR}/MQ/base
 #    ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/parameter
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/dataformat
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/unpacker
     ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/commonMQ
+    ${CBMROOT_SOURCE_DIR}/reco/base
+    ${CBMROOT_SOURCE_DIR}/reco/detectors/tof/unpack
 
     ${CBMDATA_DIR}
     ${CBMDATA_DIR}/raw
@@ -83,6 +86,22 @@ set(DEPENDENCIES
   CbmBase
 #  CbmBeamtimeBase
   CbmData
+  Core
+  RIO
+  Net
+  Hist
+)
+
+set(EXE_NAME UnpackTofCri)
+set(SRCS CbmTbDaqBuffer.cxx CbmDeviceUnpackTofCri.cxx runUnpackTofCri.cxx)
+set(DEPENDENCIES
+  ${DEPENDENCIES_ALL}
+  external::fles_ipc
+  CbmFlibMcbm2018
+  CbmTofBase
+  CbmBase
+  CbmData
+  CbmTofReco
   Core
   RIO
   Net

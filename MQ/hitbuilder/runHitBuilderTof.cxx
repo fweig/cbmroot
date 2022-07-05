@@ -20,6 +20,8 @@ void addCustomOptions(bpo::options_description& options)
   options.add_options()("PulTotMin", bpo::value<uint64_t>()->default_value(0), "Min Tot value");
   options.add_options()("PulTotMax", bpo::value<uint64_t>()->default_value(0), "Max Tot value");
 
+  options.add_options()("ReqTint", bpo::value<uint64_t>()->default_value(50), "Coincidence time interval");
+
   options.add_options()("DutType", bpo::value<uint64_t>()->default_value(0), "Dut type identifier");
   options.add_options()("DutSm", bpo::value<uint64_t>()->default_value(0), "Dut module number");
   options.add_options()("DutRpc", bpo::value<uint64_t>()->default_value(1), "Dut counter number");
