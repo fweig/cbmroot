@@ -172,7 +172,7 @@ public:
    * In this function also all initialization steps of the unpacker algorithms have to happen.
    * @return std::shared_ptr<CbmRecoUnpackAlgo>
   */
-  std::shared_ptr<CbmRecoUnpackAlgo<TOutput, TOptOutA, TOptOutB>> GetUnpacker() { return fAlgo; };
+  std::shared_ptr<TAlgo> GetUnpacker() { return fAlgo; };
 
   /**
    * @brief Get the requested parameter containers from the Algo.
