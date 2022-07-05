@@ -56,6 +56,8 @@ public:
   virtual inline void SetSIGT(Double_t /*val*/) {};
   virtual inline void SetSIGX(Double_t /*val*/) {};
   virtual inline void SetSIGY(Double_t /*val*/) {};
+  virtual inline void SetAddVertex(Int_t) {};
+  virtual inline void SetVtxNbTrksMin(Int_t) {};
 
   /** Abstract method DoFind. To be implemented in the concrete class.
    ** Task: Read the hit array and fill the track array,
