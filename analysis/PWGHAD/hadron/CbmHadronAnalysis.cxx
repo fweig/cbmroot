@@ -48,6 +48,8 @@ using namespace std;
 #include "TH1.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TH3.h"
+#include "TH3F.h"
 #include "TMath.h"
 #include "TROOT.h"
 #include "TRandom.h"
@@ -491,14 +493,17 @@ void CbmHadronAnalysis::CreateHistogramms()
   // gROOT->cd();
   FairRunAna* fRun = FairRunAna::Instance();
   fHist            = fRun->GetOutputFile();
+  TString hname    = fHist->GetName();
+  hname.Insert(hname.Length() - 5, ".HadAna");
+  fHist = new TFile(hname, "recreate");
   LOG(info) << "CreateHistograms in " << fHist->GetName();
   // gSystem->cd(fHist->GetName());
   fHist->ReOpen("Update");
 
   fhTofHitMul = new TH1F(Form("hTofHitMul"), Form("TofHit Multiplicity; M_{TofHit} "), fiTofHitMulMax, 0.,
                          (Double_t) fiTofHitMulMax);
-  fhStsHitMul = new TH1F(Form("hStsHitMul"), Form("StsHit Multiplicity; M_{StsHit} "), fiTofHitMulMax, 0.,
-                         (Double_t) fiTofHitMulMax);
+  fhStsHitMul = new TH1F(Form("hStsHitMul"), Form("StsHit Multiplicity; M_{StsHit} "), fiTofHitMulMax * 10, 0.,
+                         (Double_t) fiTofHitMulMax * 10);
 
   Float_t ymin   = -1.;
   Float_t ymax   = 4.;
@@ -789,9 +794,9 @@ void CbmHadronAnalysis::CreateHistogramms()
   fa_xy_hit3 = new TH2F("xy_hit3", "TofHit /cm^{2}/s; ;", nbinx, -xrange, xrange, nbiny, -yrange, yrange);
 
 
-  fa_tof_hit     = new TH1F("tof_hit", "TofHit(all); t (ns); counts;", 100, 10., 110.);
+  fa_tof_hit     = new TH1F("tof_hit", "TofHit(all); t (ns); counts;", 100, 0., 100.);
   fa_dtof_hit    = new TH1F("dtof_hit", "TofHit(all); #Deltat (ns); counts;", 100, -1., 1.);
-  fa_tof_hitprim = new TH1F("tof_hitprim", "TofHit(prim); t (ns); counts;", 100, 10., 110.);
+  fa_tof_hitprim = new TH1F("tof_hitprim", "TofHit(prim); t (ns); counts;", 100, 0., 100.);
   fa_pv_hit      = new TH2F("pv_hit", "TofHit(all); velocity; momentum;", 100, 0., 32., 100., 0., 5.);
   fa_tm_hit =
     new TH2F("tm_hit", "TofHit(all); momentum (GeV/c); M_{ToF}*sign(Z) (GeV/c^{2});", 100, 0., 10., 200., -1.5, 2.5);
@@ -818,15 +823,15 @@ void CbmHadronAnalysis::CreateHistogramms()
   fa_t0mn_nf_b_hit = new TH2F("t0mn_nf_b_hit", "average time zero hits noforward ; b(fm); number of hits ; counts;", 28,
                               0., 14., 100, 0., 500.);
 
-  fa_dxx = new TH2F("dxx", "TofHit; x; Delta x;", 100, -xrange, xrange, 50., -10., 10.);
-  fa_dxy = new TH2F("dxy", "TofHit; y; Delta x;", 100, -yrange, yrange, 50., -10., 10.);
-  fa_dxz = new TH2F("dxz", "TofHit; z; Delta x;", 100, 400., 650., 50., -10., 10.);
-  fa_dyx = new TH2F("dyx", "TofHit; x; Delta y;", 100, -xrange, xrange, 50., -10., 10.);
-  fa_dyy = new TH2F("dyy", "TofHit; y; Delta y;", 100, -yrange, yrange, 50., -10., 10.);
-  fa_dyz = new TH2F("dyz", "TofHit; z; Delta y;", 100, 400., 650., 50., -10., 10.);
-  fa_dzx = new TH2F("dzx", "TofHit; x; Delta z;", 100, -xrange, xrange, 50, -20., 20.);
-  fa_dzy = new TH2F("dzy", "TofHit; y; Delta z;", 100, -yrange, yrange, 50, -20., 20.);
-  fa_dzz = new TH2F("dzz", "TofHit; z; Delta z;", 100, 400., 650., 50, -20., 20.);
+  fa_dxx = new TH2F("dxx", "TofHit - TofPoint; x (cm); #Delta x (cm);", 100, -xrange, xrange, 50., -10., 10.);
+  fa_dxy = new TH2F("dxy", "TofHit - TofPoint; y (cm); #Delta x (cm);", 100, -yrange, yrange, 50., -10., 10.);
+  fa_dxz = new TH2F("dxz", "TofHit - TofPoint; z (cm); #Delta x (cm);", 100, 400., 650., 50., -10., 10.);
+  fa_dyx = new TH2F("dyx", "TofHit - TofPoint; x (cm); #Delta y (cm);", 100, -xrange, xrange, 50., -10., 10.);
+  fa_dyy = new TH2F("dyy", "TofHit - TofPoint; y (cm); #Delta y (cm);", 100, -yrange, yrange, 50., -10., 10.);
+  fa_dyz = new TH2F("dyz", "TofHit - TofPoint; z (cm); #Delta y (cm);", 100, 400., 650., 50., -10., 10.);
+  fa_dzx = new TH2F("dzx", "TofHit - TofPoint; x (cm); #Delta z (cm);", 100, -xrange, xrange, 50, -20., 20.);
+  fa_dzy = new TH2F("dzy", "TofHit - TofPoint; y (cm); #Delta z (cm);", 100, -yrange, yrange, 50, -20., 20.);
+  fa_dzz = new TH2F("dzz", "TofHit - TofPoint; z (cm); #Delta z (cm);", 100, 400., 650., 50, -20., 20.);
 
   fa_hit_ch  = new TH1F("hit_ch", "TofHits; channel; rate (Hz/s);", 50000, 0., 50000.);
   fa_dhit_ch = new TH2F("dhit_ch", "Tof Double Hits; channel; counts;", 50000, 0., 50000., 2, 0.5, 2.5);
@@ -1155,6 +1160,36 @@ InitStatus CbmHadronAnalysis::Init()
   else
     LOG(info) << "DigiManager has Tof Digis";
 
+  if (!fDigiMan->IsMatchPresent(ECbmModuleId::kTof)) { LOG(warn) << GetName() << ": No TofDigiMatches!"; }
+  else
+    LOG(info) << "DigiManager has TofDigiMatches";
+
+  if (!fDigiMan->IsPresent(ECbmModuleId::kSts)) {
+    LOG(error) << GetName() << ": No STS input digis!";
+    return kFATAL;
+  }
+  else
+    LOG(info) << "DigiManager has Sts Digis";
+
+  if (!fDigiMan->IsMatchPresent(ECbmModuleId::kSts)) { LOG(warn) << GetName() << ": No StsDigiMatches!"; }
+  else
+    LOG(info) << "DigiManager has StsDigiMatches";
+
+  if (!fDigiMan->IsMatchPresent(ECbmModuleId::kTof)) { LOG(warn) << GetName() << ": No TofDigiMatches!"; }
+  else
+    LOG(info) << "DigiManager has TofDigiMatches";
+
+  if (!fDigiMan->IsPresent(ECbmModuleId::kSts)) {
+    LOG(error) << GetName() << ": No STS input digis!";
+    return kFATAL;
+  }
+  else
+    LOG(info) << "DigiManager has Sts Digis";
+
+  if (!fDigiMan->IsMatchPresent(ECbmModuleId::kSts)) { LOG(warn) << GetName() << ": No StsDigiMatches!"; }
+  else
+    LOG(info) << "DigiManager has StsDigiMatches";
+
   /*
    fTofDigis   = (TClonesArray *) rootMgr->GetObject("TofDigi");
 
@@ -1167,31 +1202,35 @@ InitStatus CbmHadronAnalysis::Init()
    {
       LOG(error)<<"CbmHadronAnalysis::RegisterInputs => Could not get the TofDigi TClonesArray!!!";
    } // if( NULL == fTofDigis)
-*/
+
+  fTofDigiMatchPointsColl = (TClonesArray*) rootMgr->GetObject("TofDigiMatch");
+  if (NULL == fTofDigiMatchPointsColl) { cout << "-I- CbmHadronAnalysis::Init : no TofDigiMatch array!" << endl; }
+
+  fStsDigis = (TClonesArray*) rootMgr->GetObject("StsDigi");
+  if (NULL == fStsDigis) { cout << "-W- CbmHadronAnalysis::Init : no STS Digi array!" << endl; }
+  fStsDigiMatchColl = (TClonesArray*) rootMgr->GetObject("StsDigiMatch");
+  if (NULL == fStsDigiMatchColl) {
+    cout << "-W- CbmHadronAnalysis::Init : no STS DigiMatch array!" << endl;
+  }
+  */
 
   fTofDigiMatchColl = (TClonesArray*) rootMgr->GetObject("TofHitCalDigiMatch");
   if (NULL == fTofDigiMatchColl) {
     cout << "-I- CbmHadronAnalysis::Init : no TOF HitCalDigiMatch array!" << endl;
-    fTofDigiMatchColl = (TClonesArray*) rootMgr->GetObject("TofDigiMatch");
-    if (NULL == fTofDigiMatchColl) { cout << "-I- CbmHadronAnalysis::Init : no TOF digiMatch array!" << endl; }
   }
 
-  fTofDigiMatchPointsColl = (TClonesArray*) rootMgr->GetObject("TofDigiMatchPoints");
-  if (NULL == fTofDigiMatchPointsColl) {
-    cout << "-I- CbmHadronAnalysis::Init : no TOF digiMatchPoints array!" << endl;
+  fTofHitsColl = (TClonesArray*) rootMgr->GetObject("TofCalHit");
+  if (NULL == fTofHitsColl) {
+    cout << "-W- CbmHadronAnalysis::Init : no TOFCalHit array!" << endl;
+    fTofHitsColl = (TClonesArray*) rootMgr->GetObject("TofHit");
+    if (NULL == fTofHitsColl) { cout << "-W- CbmHadronAnalysis::Init : no TOF Hit array!" << endl; }
   }
-
-  fTofHitsColl = (TClonesArray*) rootMgr->GetObject("TofHit");
-  if (NULL == fTofHitsColl) { cout << "-W- CbmHadronAnalysis::Init : no TOF Hit array!" << endl; }
 
   fTofTracks = (TClonesArray*) rootMgr->GetObject("TofTrack");
-  if (NULL == fTofTracks) {
-    cout << "-W- CbmHadronAnalysis::Init : "
-         << "no Tof Track array!" << endl;
-  }
+  if (NULL == fTofTracks) { cout << "-W- CbmHadronAnalysis::Init : no Tof Track array!" << endl; }
 
   fTrdPoints = (TClonesArray*) rootMgr->GetObject("TrdPoint");
-  if (NULL == fTofPoints) { cout << "-W- CbmHadronAnalysis::Init : no TRD point array!" << endl; }
+  if (NULL == fTrdPoints) { cout << "-W- CbmHadronAnalysis::Init : no TRD point array!" << endl; }
 
   fTrdHits = (TClonesArray*) rootMgr->GetObject("TrdHit");
   if (NULL == fTrdHits) { cout << "-W- CbmHadronAnalysis::Init : no TRD Hit array!" << endl; }
@@ -1208,13 +1247,6 @@ InitStatus CbmHadronAnalysis::Init()
   if (NULL == fStsHitsColl) { cout << "-W- CbmHadronAnalysis::Init : no STS Hit array!" << endl; }
   fStsClusters = (TClonesArray*) rootMgr->GetObject("StsCluster");
   if (NULL == fStsClusters) { cout << "-W- CbmHadronAnalysis::Init : no STS Cluster array!" << endl; }
-  fStsDigis = (TClonesArray*) rootMgr->GetObject("StsDigi");
-  if (NULL == fStsDigis) { cout << "-W- CbmHadronAnalysis::Init : no STS Digi array!" << endl; }
-  fStsDigiMatchColl = (TClonesArray*) rootMgr->GetObject("StsDigiMatch");
-  if (NULL == fStsDigiMatchColl) {
-    cout << "-W- CbmHadronAnalysis::Init : "
-         << "no STS DigiMatch array!" << endl;
-  }
 
   // Get pointer to PrimaryVertex object from IOManager if it exists
   // The old name for the object is "PrimaryVertex" the new one
@@ -1242,16 +1274,10 @@ InitStatus CbmHadronAnalysis::Init()
   }
 
   fMCTracksColl = (TClonesArray*) rootMgr->GetObject("MCTrack");
-  if (NULL == fMCTracksColl) {
-    cout << "-W- CbmHadronAnalysis::Init : "
-         << "no MC track array!" << endl;
-  }
+  if (NULL == fMCTracksColl) { cout << "-W- CbmHadronAnalysis::Init : no MC track array!" << endl; }
 
   fStsPointsColl = (TClonesArray*) rootMgr->GetObject("StsPoint");
-  if (NULL == fStsPointsColl) {
-    cout << "-W- CbmHadronAnalysis::Init : "
-         << "no STS Point array!" << endl;
-  }
+  if (NULL == fStsPointsColl) { cout << "-W- CbmHadronAnalysis::Init : no STS Point array!" << endl; }
 
   fTrackFitter.Init();
 
@@ -1450,7 +1476,10 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
       if (211 != TMath::Abs(pdgCode) &&  // pions
           321 != TMath::Abs(pdgCode) &&  // kaons
           2212 != TMath::Abs(pdgCode))   // protons
+      {
+        LOG(info) << "skip pdgCode " << pdgCode;
         continue;
+      }
     }
     else {
       mfrag = (pdgCode % 1000) / 10 * .931494028;  // ignoring binding energies ...
@@ -1464,9 +1493,8 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
     dphi      = dphi / RADDEG;
     rp_weight = 0.;
 
-    //cout << " Track k="<<k<<", pdgCode = "<<pdgCode<<
-    //  " Mass " << MCTrack->GetMass()<<","<<mfrag<<" Y " << MCTrack->GetRapidity() <<
-    //  " Pt " << MCTrack->GetPt() <<endl;
+    LOG(info) << " Track k=" << k << ", pdgCode = " << pdgCode << " Mass " << MCTrack->GetMass() << "," << mfrag
+              << " Y " << MCTrack->GetRapidity() << " Pt " << MCTrack->GetPt();
 
     switch (pdgCode) {
       case 211: {
@@ -2132,57 +2160,55 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
 
   Int_t lp = -1;
   for (Int_t j = 0; j < nTofHits; j++) {
-    //cout << "<D-hit> j= " << j << endl;
     TofHit = (CbmTofHit*) fTofHits->At(j);
     if (NULL == TofHit) continue;
-    //      Int_t l = TofHit->GetRefId();  // pointer to Digi
-    Int_t l = j;  // One CbmMatch per hit and in same order!!!!
-    if (fTofDigiMatchColl != NULL && fTofDigiMatchPointsColl != NULL) {
-      CbmMatch* digiMatch = (CbmMatch*) fTofDigiMatchColl->At(l);
+    if (TofHit->GetTime() < 0.2) continue;  //start counter has no poi matches
+
+    if (fTofDigiMatchColl != NULL) {
+      CbmMatch* digiMatch = (CbmMatch*) fTofDigiMatchColl->At(j);
       // take first digi's point link
       CbmLink L0         = digiMatch->GetLink(0);
       Int_t iDigInd0     = L0.GetIndex();
-      CbmMatch* poiMatch = (CbmMatch*) fTofDigiMatchPointsColl->At(iDigInd0);
-      if (NULL == poiMatch) {
-        LOG(warn) << "No MC point found for hit " << j << ", digi " << iDigInd0;
-        continue;
+      if (fDigiMan->GetMatch(ECbmModuleId::kTof, iDigInd0) != NULL) {
+        CbmMatch* poiMatch = (CbmMatch*) fDigiMan->GetMatch(ECbmModuleId::kTof, iDigInd0);
+        if (NULL == poiMatch) {
+          LOG(warn) << "No MC point found for hit " << j << ", digi " << iDigInd0;
+          continue;
+        }
+        LOG(debug) << "Got PoiMatch for TofHit " << j << ", digi " << iDigInd0 << ": " << poiMatch;
+        CbmLink LP;
+        try {
+          LP = poiMatch->GetMatchedLink();
+        }
+        catch (...) {
+          LOG(info) << "Got invalid PoiMatch for TofHit " << j << ", digi " << iDigInd0 << ": " << poiMatch;
+          continue;
+        }
+        lp = LP.GetIndex();
       }
-      CbmLink LP = poiMatch->GetMatchedLink();
-      lp         = LP.GetIndex();
-      /*
-       for (Int_t iLink=0; iLink<digiMatch->GetNofLinks(); iLink+=2){  // loop over digis
-           CbmLink L0 = digiMatch->GetLink(iLink);   //vDigish.at(ivDigInd);
-	   Int_t iDigInd0=L0.GetIndex();
-           Int_t iDigInd1=(digiMatch->GetLink(iLink+1)).GetIndex(); //vDigish.at(ivDigInd+1);
-           LOG(debug1)<<" " << iDigInd0<<", "<<iDigInd1;
-
-           if (iDigInd0 < fTofDigisColl->GetEntriesFast() && iDigInd1 < fTofDigisColl->GetEntriesFast()){
-            CbmTofDigiExp *pDig0 = (CbmTofDigiExp*) (fTofDigisColl->At(iDigInd0));
-            CbmTofDigiExp *pDig1 = (CbmTofDigiExp*) (fTofDigisColl->At(iDigInd1));
-	   }
-       }
-       */
     }
     else {
       lp = -1;
       LOG(debug) << "No Link to MCTofPoint found for hit " << j;
       continue;
     }
-    TofPoint = (CbmTofPoint*) fTofPoints->At(lp);
-    Int_t k  = TofPoint->GetTrackID();
-    MCTrack  = (CbmMCTrack*) fMCTracksColl->At(k);
-    pdgCode  = MCTrack->GetPdgCode();
-    px_MC    = MCTrack->GetPx();
-    py_MC    = MCTrack->GetPy();
-    pz_MC    = MCTrack->GetPz();
-    p_MC     = sqrt(px_MC * px_MC + py_MC * py_MC + pz_MC * pz_MC);
-    if (k > 100000) {
-      cout << "<E-hit> Too many MCTracks " << k << " from " << nMCTracks << endl;
-      continue;
-    }
-    //cout << "<D-hit> k= " << k << endl;
-    //cout << Form("HadronAnalysis:: hit %d, poi %d, MCt %d, Eff %d ",j,lp,k,TrackP[k]) << endl;
-    /*
+
+    if (NULL != fTofPoints) {
+      TofPoint = (CbmTofPoint*) fTofPoints->At(lp);
+      Int_t k  = TofPoint->GetTrackID();
+      MCTrack  = (CbmMCTrack*) fMCTracksColl->At(k);
+      pdgCode  = MCTrack->GetPdgCode();
+      px_MC    = MCTrack->GetPx();
+      py_MC    = MCTrack->GetPy();
+      pz_MC    = MCTrack->GetPz();
+      p_MC     = sqrt(px_MC * px_MC + py_MC * py_MC + pz_MC * pz_MC);
+      if (k > 100000) {
+        cout << "<E-hit> Too many MCTracks " << k << " from " << nMCTracks << endl;
+        continue;
+      }
+      LOG(debug) << Form("HadronAnalysis:: hit %d, poi %d, MCt %d, Eff %d, mom %7.2f, pdg %d ", j, lp, k, TrackP[k],
+                         p_MC, pdgCode);
+      /*
       if(TofHit->GetX()<-90.) { //nh-debug
 	LOG(info)  << Form(" Invalid Hit in ev %d: %6.1f, %6.1f, %6.1f, poi: %6.1f, %6.1f, %6.1f, pdg: %d",
 			   fEvents,TofHit->GetX(),TofHit->GetY(),TofHit->GetZ(),
@@ -2191,360 +2217,361 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
 	LOG(fatal) << "<D-hit> j " << j << ", l " << l << ", k " << k << ", lp ";
       }
       */
-    if (TrackP[k] == 0) {  // for efficiency
-                           //     if (1) {
-      TrackP[k]++;
-      t_hit             = TofHit->GetTime();
-      Float_t delta_tof = TofPoint->GetTime() - t_hit;
-      Float_t delta_x   = TofPoint->GetX() - TofHit->GetX();
-      Float_t delta_y   = TofPoint->GetY() - TofHit->GetY();
-      Float_t delta_z   = TofPoint->GetZ() - TofHit->GetZ();
+      if (TrackP[k] == 0) {  // for efficiency
+                             //     if (1) {
+        TrackP[k]++;
+        t_hit             = TofHit->GetTime();
+        Float_t delta_tof = TofPoint->GetTime() - t_hit;
+        Float_t delta_x   = TofPoint->GetX() - TofHit->GetX();
+        Float_t delta_y   = TofPoint->GetY() - TofHit->GetY();
+        Float_t delta_z   = TofPoint->GetZ() - TofHit->GetZ();
 
-      fa_dxx->Fill(TofPoint->GetX(), delta_x);
-      fa_dxy->Fill(TofPoint->GetY(), delta_x);
-      fa_dxz->Fill(TofPoint->GetZ(), delta_x);
-      fa_dyx->Fill(TofPoint->GetX(), delta_y);
-      fa_dyy->Fill(TofPoint->GetY(), delta_y);
-      fa_dyz->Fill(TofPoint->GetZ(), delta_y);
-      fa_dzx->Fill(TofPoint->GetX(), delta_z);
-      fa_dzy->Fill(TofPoint->GetY(), delta_z);
-      fa_dzz->Fill(TofPoint->GetZ(), delta_z);
+        fa_dxx->Fill(TofPoint->GetX(), delta_x);
+        fa_dxy->Fill(TofPoint->GetY(), delta_x);
+        fa_dxz->Fill(TofPoint->GetZ(), delta_x);
+        fa_dyx->Fill(TofPoint->GetX(), delta_y);
+        fa_dyy->Fill(TofPoint->GetY(), delta_y);
+        fa_dyz->Fill(TofPoint->GetZ(), delta_y);
+        fa_dzx->Fill(TofPoint->GetX(), delta_z);
+        fa_dzy->Fill(TofPoint->GetY(), delta_z);
+        fa_dzz->Fill(TofPoint->GetZ(), delta_z);
 
-      fa_xy_hit1->Fill(TofHit->GetX(), TofHit->GetY());
-      fa_xy_hit2->Fill(TofHit->GetX(), TofHit->GetY(), fwxy2);
-      fa_hit_ch->Fill(TofHit->GetCh());
-      fa_dhit_ch->Fill(TofHit->GetCh(), TofHit->GetFlag());
+        fa_xy_hit1->Fill(TofHit->GetX(), TofHit->GetY());
+        fa_xy_hit2->Fill(TofHit->GetX(), TofHit->GetY(), fwxy2);
+        fa_hit_ch->Fill(TofHit->GetCh());
+        fa_dhit_ch->Fill(TofHit->GetCh(), TofHit->GetFlag());
 
-      Float_t vel = TofPoint->GetLength() / t_hit;
-      Float_t bet = vel / clight;
-      if (bet > 0.99999) { bet = 0.99999; }
-      Float_t tofmass = p_MC / bet * TMath::Sqrt(1. - bet * bet) * TMath::Sign(1, pdgCode);
-      Float_t dist    = TMath::Sqrt(TMath::Power(TofHit->GetX(), 2) + TMath::Power(TofHit->GetY(), 2)
-                                 + TMath::Power(TofHit->GetZ(), 2));
-      fa_tof_hit->Fill(t_hit);
-      fa_pv_hit->Fill(vel, p_MC);
-      fa_tm_hit->Fill(p_MC, tofmass);
-      fa_dtof_hit->Fill(delta_tof);
-      Float_t t0_hit = t_hit - dist / clight;
-      fa_t0_hit->Fill(t0_hit);
-      //if(t0_hit<MaxT0) {
-      if (t0_hit < T0MIN + 2.4 * MaxT0) {
-        NT0++;
-        t0m_hit = ((Float_t)(NT0 - 1) * t0m_hit + t0_hit) / (Float_t) NT0;
-        if ((TMath::Abs(TofHit->GetX()) < 55. && TMath::Abs(TofHit->GetY()) < 55.)) {  //  region E
-          NT0F++;
-          t0mf_hit = ((Float_t)(NT0F - 1) * t0mf_hit + t0_hit) / (Float_t) NT0F;
-        }
-        else {
-          NT0NF++;
-          t0mnf_hit = ((Float_t)(NT0NF - 1) * t0mnf_hit + t0_hit) / (Float_t) NT0NF;
-        }
-      }
-
-      if (MCTrack->GetMotherId() != -1) continue;  // primary particles only
-      if (TrackP[k] > 1) continue;                 // for efficiency consider only first hit of track
-      fa_tm_hitprim->Fill(p_MC, tofmass);
-      fa_tof_hitprim->Fill(t_hit);
-
-      Float_t Phip = RADDEG * atan2(MCTrack->GetPy(), MCTrack->GetPx());
-      Float_t dphi = Phip - RADDEG * fMCEventHeader->GetRotZ();
-      if (dphi < -180.) { dphi += 360.; };
-      if (dphi > 180.) { dphi -= 360.; };
-      dphi = dphi / RADDEG;
-
-      rp_weight = 0.;
-
-      switch (pdgCode) {
-        case 211: {
-          fa_ptm_rap_hit_pip->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
-          fa_v1_rap_hit_pip->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
-          fa_v2_rap_hit_pip->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
-
-          if (use_pions_for_flow && TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
-              && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
-            if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
-              rp_weight = -1.;
-            }
-            else {
-              rp_weight = +1.;
-            }
+        Float_t vel = TofPoint->GetLength() / t_hit;
+        Float_t bet = vel / clight;
+        if (bet > 0.99999) { bet = 0.99999; }
+        Float_t tofmass = p_MC / bet * TMath::Sqrt(1. - bet * bet) * TMath::Sign(1, pdgCode);
+        Float_t dist    = TMath::Sqrt(TMath::Power(TofHit->GetX(), 2) + TMath::Power(TofHit->GetY(), 2)
+                                   + TMath::Power(TofHit->GetZ(), 2));
+        fa_tof_hit->Fill(t_hit);
+        fa_pv_hit->Fill(vel, p_MC);
+        fa_tm_hit->Fill(p_MC, tofmass);
+        fa_dtof_hit->Fill(delta_tof);
+        Float_t t0_hit = t_hit - dist / clight;
+        fa_t0_hit->Fill(t0_hit);
+        //if(t0_hit<MaxT0) {
+        if (t0_hit < T0MIN + 2.4 * MaxT0) {
+          NT0++;
+          t0m_hit = ((Float_t)(NT0 - 1) * t0m_hit + t0_hit) / (Float_t) NT0;
+          if ((TMath::Abs(TofHit->GetX()) < 55. && TMath::Abs(TofHit->GetY()) < 55.)) {  //  region E
+            NT0F++;
+            t0mf_hit = ((Float_t)(NT0F - 1) * t0mf_hit + t0_hit) / (Float_t) NT0F;
           }
           else {
-            rp_weight = 0.;
+            NT0NF++;
+            t0mnf_hit = ((Float_t)(NT0NF - 1) * t0mnf_hit + t0_hit) / (Float_t) NT0NF;
           }
-          break;
-        };
-        case -211: {
-          fa_ptm_rap_hit_pim->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
-          fa_v1_rap_hit_pim->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
-          fa_v2_rap_hit_pim->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
+        }
 
-          if (use_pions_for_flow && TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
-              && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
-            if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
-              rp_weight = -1.;
+        if (MCTrack->GetMotherId() != -1) continue;  // primary particles only
+        if (TrackP[k] > 1) continue;                 // for efficiency consider only first hit of track
+        fa_tm_hitprim->Fill(p_MC, tofmass);
+        fa_tof_hitprim->Fill(t_hit);
+
+        Float_t Phip = RADDEG * atan2(MCTrack->GetPy(), MCTrack->GetPx());
+        Float_t dphi = Phip - RADDEG * fMCEventHeader->GetRotZ();
+        if (dphi < -180.) { dphi += 360.; };
+        if (dphi > 180.) { dphi -= 360.; };
+        dphi = dphi / RADDEG;
+
+        rp_weight = 0.;
+
+        switch (pdgCode) {
+          case 211: {
+            fa_ptm_rap_hit_pip->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
+            fa_v1_rap_hit_pip->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
+            fa_v2_rap_hit_pip->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
+
+            if (use_pions_for_flow && TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
+                && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
+              if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
+                rp_weight = -1.;
+              }
+              else {
+                rp_weight = +1.;
+              }
             }
             else {
-              rp_weight = +1.;
+              rp_weight = 0.;
             }
+            break;
+          };
+          case -211: {
+            fa_ptm_rap_hit_pim->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
+            fa_v1_rap_hit_pim->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
+            fa_v2_rap_hit_pim->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
+
+            if (use_pions_for_flow && TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
+                && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
+              if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
+                rp_weight = -1.;
+              }
+              else {
+                rp_weight = +1.;
+              }
+            }
+            else {
+              rp_weight = 0.;
+            }
+            break;
+          };
+          case 321: {
+            fa_ptm_rap_hit_kp->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
+            fa_v1_rap_hit_kp->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
+            fa_v2_rap_hit_kp->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
+            break;
+          };
+          case -321: {
+            fa_ptm_rap_hit_km->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
+            fa_v1_rap_hit_km->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
+            fa_v2_rap_hit_km->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
+            break;
+          };
+          case 2212: {
+            fa_ptm_rap_hit_p->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
+            fa_v1_rap_hit_p->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
+            fa_v2_rap_hit_p->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
+            // reaction plane determination
+            if (TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
+                && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
+              if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
+                rp_weight = +1.;
+              }
+              else {
+                rp_weight = -1.;
+              }
+            }
+            else {
+              rp_weight = 0.;
+            }
+            break;
+          };
+          case -2212: {
+            fa_ptm_rap_hit_pbar->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
+            fa_v1_rap_hit_pbar->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
+            fa_v2_rap_hit_pbar->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
+            break;
+          };
+
+          case 1000010020: {  // deuteron
+            fa_ptm_rap_hit_d->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
+            fa_v1_rap_hit_d->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
+            fa_v2_rap_hit_d->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
+            // reaction plane determination
+            if (TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
+                && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
+              if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
+                rp_weight = 1.;
+              }
+              else {
+                rp_weight = -1.;
+              }
+            }
+            break;
+          };
+
+          case 1000010030: {  // triton
+            fa_ptm_rap_hit_t->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
+            fa_v1_rap_hit_t->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
+            fa_v2_rap_hit_t->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
+            // reaction plane determination
+            if (TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
+                && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
+              if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
+                rp_weight = 1.;
+              }
+              else {
+                rp_weight = -1.;
+              }
+            }
+            break;
+          };
+
+          case 1000020030: {  // 3he
+            fa_ptm_rap_hit_h->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
+            fa_v1_rap_hit_h->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
+            fa_v2_rap_hit_h->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
+            // reaction plane determination
+            if (TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
+                && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
+              if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
+                rp_weight = 1.;
+              }
+              else {
+                rp_weight = -1.;
+              }
+            }
+            break;
+          };
+          case 1000020040: {  // alpha
+            fa_ptm_rap_hit_a->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
+            fa_v1_rap_hit_a->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
+            fa_v2_rap_hit_a->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
+            // reaction plane determination
+            if (TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
+                && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
+              if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
+                rp_weight = 1.;
+              }
+              else {
+                rp_weight = -1.;
+              }
+            }
+            break;
+          };
+
+          default: {  // intermediate mass fragments
+            //cout << " Track k="<<k<<", pdgCode = "<<pdgCode<<
+            //" Mass " << MCTrack->GetMass()<<","<<MCTrack->GetMass()<<" Y " << MCTrack->GetRapidity() <<
+            //" Pt " << MCTrack->GetPt() <<endl;
+            fa_ptm_rap_hit_imf->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
+            fa_v1_rap_hit_imf->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
+            fa_v2_rap_hit_imf->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
+            // reaction plane determination  (optimistic)
+            if (TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
+                && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
+              if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
+                rp_weight = 1.;
+              }
+              else {
+                rp_weight = -1.;
+              }
+            }
+            break;
+          };
+        }
+
+        if (rp_weight != 0.) {
+          if (gRandom->Uniform(1) > 0.5) {  //subdivide events into 2 random subevents
+            Np1++;
+            Qx1 = Qx1 + rp_weight * MCTrack->GetPx();
+            Qy1 = Qy1 + rp_weight * MCTrack->GetPy();
           }
           else {
-            rp_weight = 0.;
+            Np2++;
+            Qx2 = Qx2 + rp_weight * MCTrack->GetPx();
+            Qy2 = Qy2 + rp_weight * MCTrack->GetPy();
           }
-          break;
-        };
-        case 321: {
-          fa_ptm_rap_hit_kp->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
-          fa_v1_rap_hit_kp->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
-          fa_v2_rap_hit_kp->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
-          break;
-        };
-        case -321: {
-          fa_ptm_rap_hit_km->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
-          fa_v1_rap_hit_km->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
-          fa_v2_rap_hit_km->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
-          break;
-        };
-        case 2212: {
-          fa_ptm_rap_hit_p->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
-          fa_v1_rap_hit_p->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
-          fa_v2_rap_hit_p->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
-          // reaction plane determination
-          if (TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
-              && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
-            if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
-              rp_weight = +1.;
-            }
-            else {
-              rp_weight = -1.;
-            }
-          }
-          else {
-            rp_weight = 0.;
-          }
-          break;
-        };
-        case -2212: {
-          fa_ptm_rap_hit_pbar->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
-          fa_v1_rap_hit_pbar->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
-          fa_v2_rap_hit_pbar->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
-          break;
-        };
-
-        case 1000010020: {  // deuteron
-          fa_ptm_rap_hit_d->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
-          fa_v1_rap_hit_d->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
-          fa_v2_rap_hit_d->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
-          // reaction plane determination
-          if (TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
-              && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
-            if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
-              rp_weight = 1.;
-            }
-            else {
-              rp_weight = -1.;
-            }
-          }
-          break;
-        };
-
-        case 1000010030: {  // triton
-          fa_ptm_rap_hit_t->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
-          fa_v1_rap_hit_t->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
-          fa_v2_rap_hit_t->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
-          // reaction plane determination
-          if (TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
-              && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
-            if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
-              rp_weight = 1.;
-            }
-            else {
-              rp_weight = -1.;
-            }
-          }
-          break;
-        };
-
-        case 1000020030: {  // 3he
-          fa_ptm_rap_hit_h->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
-          fa_v1_rap_hit_h->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
-          fa_v2_rap_hit_h->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
-          // reaction plane determination
-          if (TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
-              && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
-            if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
-              rp_weight = 1.;
-            }
-            else {
-              rp_weight = -1.;
-            }
-          }
-          break;
-        };
-        case 1000020040: {  // alpha
-          fa_ptm_rap_hit_a->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
-          fa_v1_rap_hit_a->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
-          fa_v2_rap_hit_a->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
-          // reaction plane determination
-          if (TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
-              && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
-            if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
-              rp_weight = 1.;
-            }
-            else {
-              rp_weight = -1.;
-            }
-          }
-          break;
-        };
-
-        default:
-        {  // intermediate mass fragments
-           //cout << " Track k="<<k<<", pdgCode = "<<pdgCode<<
-          //" Mass " << MCTrack->GetMass()<<","<<MCTrack->GetMass()<<" Y " << MCTrack->GetRapidity() <<
-          //" Pt " << MCTrack->GetPt() <<endl;
-          fa_ptm_rap_hit_imf->Fill(MCTrack->GetRapidity(), MCTrack->GetPt() / MCTrack->GetMass());
-          fa_v1_rap_hit_imf->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(dphi));
-          fa_v2_rap_hit_imf->Fill((MCTrack->GetRapidity() - GetMidY()) / GetMidY(), TMath::Cos(2 * dphi));
-          // reaction plane determination  (optimistic)
-          if (TMath::Abs((MCTrack->GetRapidity() - yrp_mid) / yrp_mid) > GetDY()
-              && MCTrack->GetPt() / MCTrack->GetMass() > GetFlowMinPtm()) {
-            if (MCTrack->GetRapidity() > yrp_mid) {  // set weights for reaction plane
-              rp_weight = 1.;
-            }
-            else {
-              rp_weight = -1.;
-            }
-          }
-          break;
-        };
-      }
-
-      if (rp_weight != 0.) {
-        if (gRandom->Uniform(1) > 0.5) {  //subdivide events into 2 random subevents
-          Np1++;
-          Qx1 = Qx1 + rp_weight * MCTrack->GetPx();
-          Qy1 = Qy1 + rp_weight * MCTrack->GetPy();
         }
-        else {
-          Np2++;
-          Qx2 = Qx2 + rp_weight * MCTrack->GetPx();
-          Qy2 = Qy2 + rp_weight * MCTrack->GetPy();
+      }
+      else {
+        if (0) {
+          cout << "<W> CHA: >=2. hit from track k =" << k << " Hit# "
+               << j
+               //   << " Str(Cell) "<< TofHit->GetCell()    << "," << TofPoint->GetCell()
+               //   << " Module "   << TofHit->GetModule()  << "," << TofPoint->GetModule()
+               //   << " SM "       << TofHit->GetSModule() << "," << TofPoint->GetSModule()
+               //   << " SMType "   << TofHit->GetSMtype()  << "," << TofPoint->GetSMtype()
+               << endl;
         }
       }
     }
-    else {
-      if (0) {
-        cout << "<W> CHA: >=2. hit from track k =" << k << " Hit# "
-             << j
-             //   << " Str(Cell) "<< TofHit->GetCell()    << "," << TofPoint->GetCell()
-             //   << " Module "   << TofHit->GetModule()  << "," << TofPoint->GetModule()
-             //   << " SM "       << TofHit->GetSModule() << "," << TofPoint->GetSModule()
-             //   << " SMType "   << TofHit->GetSMtype()  << "," << TofPoint->GetSMtype()
-             << endl;
-      }
-    }
-  }
-  if (Np1 > 0 && Np2 > 0) {
-    phirp1 = atan2(Qy1, Qx1);
-    phirp2 = atan2(Qy2, Qx2);
-    if (fflowFile != NULL) {  // subevent RP flattening
-      TH1F* phirp_hit_fpar = fflowFile->Get<TH1F>("phirps_hit_fpar");
-      Float_t dphir        = 0.;
-      for (int j = 0; j < 4; j++) {
-        Float_t i = (float) (j + 1);
-        dphir += (-phirp_hit_fpar->GetBinContent(j) * TMath::Cos(i * phirp1)
-                  + phirp_hit_fpar->GetBinContent(j + 4) * TMath::Sin(i * phirp1))
-                 / i;
-      }
-      phirp1 += dphir;
+    if (Np1 > 0 && Np2 > 0) {
+      phirp1 = atan2(Qy1, Qx1);
+      phirp2 = atan2(Qy2, Qx2);
+      if (fflowFile != NULL) {  // subevent RP flattening
+        TH1F* phirp_hit_fpar = fflowFile->Get<TH1F>("phirps_hit_fpar");
+        Float_t dphir        = 0.;
+        for (int jj = 0; jj < 4; jj++) {
+          Float_t i = (float) (jj + 1);
+          dphir += (-phirp_hit_fpar->GetBinContent(jj) * TMath::Cos(i * phirp1)
+                    + phirp_hit_fpar->GetBinContent(jj + 4) * TMath::Sin(i * phirp1))
+                   / i;
+        }
+        phirp1 += dphir;
 
-      dphir = 0.;
-      for (int j = 0; j < 4; j++) {
-        Float_t i = (float) (j + 1);
-        dphir += (-phirp_hit_fpar->GetBinContent(j) * TMath::Cos(i * phirp2)
-                  + phirp_hit_fpar->GetBinContent(j + 4) * TMath::Sin(i * phirp2))
-                 / i;
+        dphir = 0.;
+        for (int jj = 0; jj < 4; jj++) {
+          Float_t i = (float) (jj + 1);
+          dphir += (-phirp_hit_fpar->GetBinContent(jj) * TMath::Cos(i * phirp2)
+                    + phirp_hit_fpar->GetBinContent(jj + 4) * TMath::Sin(i * phirp2))
+                   / i;
+        }
+        phirp2 += dphir;
+      }                                      // subevent RP flattening end
+      fa_phirps_hit->Fill(phirp1 * RADDEG);  // 1D histo
+      fa_phirps_hit->Fill(phirp2 * RADDEG);  // 1D histo
+      delrp = (phirp1 - phirp2);
+      if (NULL != fMCEventHeader) {
+        if (0) {  //nh-debug
+          cout << "<D-hit> Impact parameter " << fMCEventHeader->GetB() << ", delrp = " << delrp << endl;
+        }
+        fa_cdrp_b_hit->Fill(fMCEventHeader->GetB(), TMath::Cos(delrp));
+        delrp = delrp * RADDEG;
+        if (delrp < -180.) delrp += 360.;
+        if (delrp > 180.) delrp -= 360.;
+        fa_drp_b_hit->Fill(fMCEventHeader->GetB(), delrp);
       }
-      phirp2 += dphir;
-    }                                      // subevent RP flattening end
-    fa_phirps_hit->Fill(phirp1 * RADDEG);  // 1D histo
-    fa_phirps_hit->Fill(phirp2 * RADDEG);  // 1D histo
-    delrp = (phirp1 - phirp2);
-    if (NULL != fMCEventHeader) {
-      if (0) {  //nh-debug
-        cout << "<D-hit> Impact parameter " << fMCEventHeader->GetB() << ", delrp = " << delrp << endl;
-      }
-      fa_cdrp_b_hit->Fill(fMCEventHeader->GetB(), TMath::Cos(delrp));
-      delrp = delrp * RADDEG;
-      if (delrp < -180.) delrp += 360.;
-      if (delrp > 180.) delrp -= 360.;
-      fa_drp_b_hit->Fill(fMCEventHeader->GetB(), delrp);
     }
-  }
-  phirp = RADDEG * atan2(Qy1 + Qy2, Qx1 + Qx2);  // full reaction plane
-  while (phirp < -180.) {
-    phirp += 360.;
-  }
-  while (phirp > 180.) {
-    phirp -= 360.;
-  }
-  if (fflowFile != NULL) {  // RP flattening
-    TH1F* phirp_hit_fpar = fflowFile->Get<TH1F>("phirp_hit_fpar");
-    Float_t dphir        = 0.;
-    for (int j = 0; j < 4; j++) {
-      Float_t i = (float) (j + 1);
-      //cout << " RP flat par "<< i << ","<<j<< " par " << phirp_gen_fpar->GetBinContent(j)
-      //     << ","<< phirp_gen_fpar->GetBinContent(j+4) << " phirp "<<phirp<<" dphir "<< dphir << endl;
-      dphir += ((-phirp_hit_fpar->GetBinContent(j) * TMath::Cos(i * phirp / RADDEG)
-                 + phirp_hit_fpar->GetBinContent(j + 4) * TMath::Sin(i * phirp / RADDEG))
-                / i);
-    }
-    //cout << " phirp " << phirp << " dphir " << dphir*RADDEG << endl;
-
-    phirp += dphir * RADDEG;
+    phirp = RADDEG * atan2(Qy1 + Qy2, Qx1 + Qx2);  // full reaction plane
     while (phirp < -180.) {
       phirp += 360.;
     }
     while (phirp > 180.) {
       phirp -= 360.;
     }
-  }  // RP flattening end
-  if (NULL != fMCEventHeader) {
-    delrp = phirp - RADDEG * fMCEventHeader->GetRotZ();
-    while (delrp < -180.) {
-      delrp += 360.;
-    }
-    while (delrp > 180.) {
-      delrp -= 360.;
-    }
-    fa_phirp_hit->Fill(phirp);  // 1D histo
-    fa_delrp_b_hit->Fill(fMCEventHeader->GetB(), delrp);
-    fa_cdelrp_b_hit->Fill(fMCEventHeader->GetB(), TMath::Cos(delrp / RADDEG));
+    if (fflowFile != NULL) {  // RP flattening
+      TH1F* phirp_hit_fpar = fflowFile->Get<TH1F>("phirps_hit_fpar");
+      Float_t dphir        = 0.;
+      for (int jj = 0; jj < 4; jj++) {
+        Float_t i = (float) (jj + 1);
+        //cout << " RP flat par "<< i << ","<<jj<< " par " << phirp_gen_fpar->GetBinContent(j)
+        //     << ","<< phirp_gen_fpar->GetBinContent(j+4) << " phirp "<<phirp<<" dphir "<< dphir << endl;
+        dphir += ((-phirp_hit_fpar->GetBinContent(jj) * TMath::Cos(i * phirp / RADDEG)
+                   + phirp_hit_fpar->GetBinContent(jj + 4) * TMath::Sin(i * phirp / RADDEG))
+                  / i);
+      }
+      //cout << " phirp " << phirp << " dphir " << dphir*RADDEG << endl;
 
-    fa_tn_hit->Fill(T0MIN);
-    fa_t0mn_hit->Fill((Float_t) NT0);
-    fa_t0mn_b_hit->Fill(fMCEventHeader->GetB(), (Float_t) NT0);
-    if (NT0 > 0) {
-      fa_t0m_hit->Fill(t0m_hit);
-      fa_t0m_b_hit->Fill(fMCEventHeader->GetB(), t0m_hit);
-    }
+      phirp += dphir * RADDEG;
+      while (phirp < -180.) {
+        phirp += 360.;
+      }
+      while (phirp > 180.) {
+        phirp -= 360.;
+      }
+    }  // RP flattening end
+    if (NULL != fMCEventHeader) {
+      delrp = phirp - RADDEG * fMCEventHeader->GetRotZ();
+      while (delrp < -180.) {
+        delrp += 360.;
+      }
+      while (delrp > 180.) {
+        delrp -= 360.;
+      }
+      fa_phirp_hit->Fill(phirp);  // 1D histo
+      fa_delrp_b_hit->Fill(fMCEventHeader->GetB(), delrp);
+      fa_cdelrp_b_hit->Fill(fMCEventHeader->GetB(), TMath::Cos(delrp / RADDEG));
 
-    fa_t0mn_f_hit->Fill((Float_t) NT0F);
-    fa_t0mn_f_b_hit->Fill(fMCEventHeader->GetB(), (Float_t) NT0F);
-    if (NT0F > 0) {
-      fa_t0m_f_hit->Fill(t0mf_hit);
-      fa_t0m_f_b_hit->Fill(fMCEventHeader->GetB(), t0mf_hit);
+      fa_tn_hit->Fill(T0MIN);
+      fa_t0mn_hit->Fill((Float_t) NT0);
+      fa_t0mn_b_hit->Fill(fMCEventHeader->GetB(), (Float_t) NT0);
+      if (NT0 > 0) {
+        fa_t0m_hit->Fill(t0m_hit);
+        fa_t0m_b_hit->Fill(fMCEventHeader->GetB(), t0m_hit);
+      }
+
+      fa_t0mn_f_hit->Fill((Float_t) NT0F);
+      fa_t0mn_f_b_hit->Fill(fMCEventHeader->GetB(), (Float_t) NT0F);
+      if (NT0F > 0) {
+        fa_t0m_f_hit->Fill(t0mf_hit);
+        fa_t0m_f_b_hit->Fill(fMCEventHeader->GetB(), t0mf_hit);
+      }
+      fa_t0mn_nf_hit->Fill((Float_t) NT0NF);
+      fa_t0mn_nf_b_hit->Fill(fMCEventHeader->GetB(), (Float_t) NT0NF);
+      if (NT0NF > 0) {
+        fa_t0m_nf_hit->Fill(t0mnf_hit);
+        fa_t0m_nf_b_hit->Fill(fMCEventHeader->GetB(), t0mnf_hit);
+      }
     }
-    fa_t0mn_nf_hit->Fill((Float_t) NT0NF);
-    fa_t0mn_nf_b_hit->Fill(fMCEventHeader->GetB(), (Float_t) NT0NF);
-    if (NT0NF > 0) {
-      fa_t0m_nf_hit->Fill(t0mnf_hit);
-      fa_t0m_nf_b_hit->Fill(fMCEventHeader->GetB(), t0mnf_hit);
-    }
-  }
-  //    cout << "<I> CbmHadronAnalysis: Number of T0 particles: NTO = " << NT0 << endl;
-  ////////////////////////////////////////////////////////////////////////////////////////////
+    //    cout << "<I> CbmHadronAnalysis: Number of T0 particles: NTO = " << NT0 << endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+  }  // TofPoints check end
+
   // GlobalTrack level analysis
 
   const Double_t DISTMAX = 100.;
@@ -2961,14 +2988,15 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
       FairTrackParam paramExtr;
       fTrackFitter.FitToVertex(StsTrack, fPrimVertex, &paramExtr);
       vtxb = fTrackFitter.GetChiToVertex(StsTrack,
-                                         fPrimVertex);  //impact paramter ???
+                                         fPrimVertex);  //impact parameter ???
       fa_VtxB->Fill(vtxb);
 
       Int_t NStsHits = StsTrack->GetNofStsHits();
       //if(NStsHits<8) continue; // nh-debugging
-      if (fStsDigiMatchColl)
+      if (fDigiMan->IsMatchPresent(ECbmModuleId::kSts))
         for (Int_t ih = 0; ih < NStsHits; ih++) {
           Int_t iHind = StsTrack->GetHitIndex(ih);
+
           LOG(debug1) << " inspect STS track " << s << ", hit " << ih << ", hitindex " << iHind;
           if (NULL == fStsHits) LOG(fatal) << " No STS Hits available ";
           //CbmStsHit* hit = (CbmStsHit*) fStsHits->At(iHind); // still valid ? - ok?
@@ -2979,18 +3007,20 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
 
           CbmStsCluster* fclu = (CbmStsCluster*) fStsClusters->At(hit->GetFrontClusterId());
           CbmStsCluster* bclu = (CbmStsCluster*) fStsClusters->At(hit->GetBackClusterId());
-          LOG(debug1) << " Mul f: " << fclu->GetNofDigis() << " (";
+          std::stringstream ss;
+          ss << " Mul f: " << fclu->GetNofDigis() << " (";
           for (Int_t iDigi = 0; iDigi < fclu->GetNofDigis(); iDigi++) {
-            LOG(debug1) << fclu->GetDigi(iDigi) << " ";
+            ss << fclu->GetDigi(iDigi) << " ";
             //CbmStsDigi* stsdigi      = (CbmStsDigi*) fStsDigis->At( fclu->GetDigi(iDigi) );
-            CbmMatch* stsdigiMatch = (CbmMatch*) fStsDigiMatchColl->At(fclu->GetDigi(iDigi));
-            LOG(debug1) << stsdigiMatch->GetNofLinks() << " ";
+            //CbmMatch* stsdigiMatch = (CbmMatch*) fStsDigiMatchColl->At(fclu->GetDigi(iDigi));
+            CbmMatch* stsdigiMatch = (CbmMatch*) fDigiMan->GetMatch(ECbmModuleId::kSts, fclu->GetDigi(iDigi));
+            ss << stsdigiMatch->GetNofLinks() << " ";
             for (Int_t iL = 0; iL < stsdigiMatch->GetNofLinks(); iL++) {
               const CbmLink& link = stsdigiMatch->GetLink(iL);
               CbmStsPoint* poi    = (CbmStsPoint*) fStsPointsColl->At(link.GetIndex());
               if (NULL == poi) continue;
               Int_t MCInd = poi->GetTrackID();
-              LOG(debug1) << " MCInd " << poi->GetTrackID() << " ";
+              ss << " MCInd " << poi->GetTrackID() << " ";
               Int_t iMCt = 0;
               for (; iMCt < NStsMCt; iMCt++) {
                 if (MCInd == StsMCt[iMCt]) {
@@ -3008,15 +3038,16 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
           }
 
           for (Int_t iDigi = 0; iDigi < bclu->GetNofDigis(); iDigi++) {
-            LOG(debug1) << bclu->GetDigi(iDigi) << " ";
+            ss << bclu->GetDigi(iDigi) << " ";
             //CbmStsDigi* stsdigi      = (CbmStsDigi*) fStsDigis->At( bclu->GetDigi(iDigi) );
-            CbmMatch* stsdigiMatch = (CbmMatch*) fStsDigiMatchColl->At(bclu->GetDigi(iDigi));
-            LOG(debug1) << stsdigiMatch->GetNofLinks() << " ";
+            //CbmMatch* stsdigiMatch = (CbmMatch*) fStsDigiMatchColl->At(bclu->GetDigi(iDigi));
+            CbmMatch* stsdigiMatch = (CbmMatch*) fDigiMan->GetMatch(ECbmModuleId::kSts, bclu->GetDigi(iDigi));
+            ss << stsdigiMatch->GetNofLinks() << " ";
             for (Int_t iL = 0; iL < stsdigiMatch->GetNofLinks(); iL++) {
               const CbmLink& link = stsdigiMatch->GetLink(iL);
               CbmStsPoint* poi    = (CbmStsPoint*) fStsPointsColl->At(link.GetIndex());
               Int_t MCInd         = poi->GetTrackID();
-              LOG(debug1) << " MCInd " << poi->GetTrackID() << " ";
+              ss << " MCInd " << poi->GetTrackID() << " ";
               Int_t iMCt = 0;
               for (; iMCt < NStsMCt; iMCt++) {
                 if (MCInd == StsMCt[iMCt]) {
@@ -3033,7 +3064,8 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
             }
           }
 
-          LOG(debug1) << "), mul b: " << bclu->GetNofDigis();
+          ss << "), mul b: " << bclu->GetNofDigis();
+          LOG(debug1) << ss.str();
         }  // loop over STS hits finished
 
       std::stringstream ss;
@@ -3135,8 +3167,8 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
       NGTofTrack++;
       TofHit = (CbmTofHit*) fTofHits->At(j);
       if (NULL == TofHit) continue;
-      //       Int_t l = TofHit->GetRefId();
-      Int_t l = j;  // One CbmMatch per Hit and in the same order!!!!
+      if (TofHit->GetTime() < 0.2) continue;  // skip  start counter
+
       Int_t k = -1;
 
       if (NULL == fTofDigiMatchColl) {
@@ -3145,7 +3177,7 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
         //k = TofPoint->GetTrackID();
       }
       else {
-        CbmMatch* digiMatch = (CbmMatch*) fTofDigiMatchColl->At(l);
+        CbmMatch* digiMatch = (CbmMatch*) fTofDigiMatchColl->At(j);
         // take first digi's point link
         Int_t iDigiMul = digiMatch->GetNofLinks();
         Int_t iPoiMul  = 0;
@@ -3157,9 +3189,26 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
         for (Int_t iLink = 0; iLink < digiMatch->GetNofLinks(); iLink++) {  // loop over digis
           CbmLink L          = digiMatch->GetLink(iLink);
           Int_t iDigInd      = L.GetIndex();
-          CbmMatch* poiMatch = (CbmMatch*) fTofDigiMatchPointsColl->At(iDigInd);
-          CbmLink LP         = poiMatch->GetMatchedLink();
-          lp                 = LP.GetIndex();
+          if (!fDigiMan->IsMatchPresent(ECbmModuleId::kTof)) {
+            LOG(error) << "MC-Points not available for DigInd " << iDigInd;
+            continue;
+          }
+          CbmMatch* poiMatch = (CbmMatch*) fDigiMan->GetMatch(ECbmModuleId::kTof, iDigInd);
+          //CbmMatch* poiMatch = (CbmMatch*) fTofDigiMatchPointsColl->At(iDigInd);
+          LOG(info) << "Got PoiMatch for TofHit " << j << ", t " << TofHit->GetTime() << ", digi " << iDigInd << ": "
+                    << poiMatch;
+          if (NULL == poiMatch) continue;
+
+          CbmLink LP;
+          try {
+            LP = poiMatch->GetMatchedLink();
+          }
+          catch (...) {
+            LOG(info) << "Got invalid PoiMatch for TofHit " << j << ", digi " << iDigInd << ": " << poiMatch;
+            continue;
+          }
+          lp = LP.GetIndex();
+
           if (lp != iPoiArr[iPoiMul]) {
             //	   cout << Form("<D> HadronAnalysis: gt %d, Hit %d, Link %d, poi %d, lpoi %d, PoiMul %d",
             //		i,j,iLink,lp, iPoiArr[iPoiMul], iPoiMul)<<endl;
@@ -3185,8 +3234,15 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
         TofPoint = (CbmTofPoint*) fTofPoints->At(iPoiArr[0]);
         k        = iTrkArr[0];
       }
-
+      if (NULL == fMCTracksColl) {
+        LOG(error) << "MC-Tracks not available for k " << k;
+        continue;
+      }
       MCTrack = (CbmMCTrack*) fMCTracksColl->At(k);
+      if (NULL == MCTrack) {
+        LOG(warn) << "No Track for TofHit " << j << ", Tofpoint " << lp << ", TrackId " << k;
+        continue;
+      }
       pdgCode = MCTrack->GetPdgCode();
       px_MC   = MCTrack->GetPx();
       py_MC   = MCTrack->GetPy();
@@ -3588,12 +3644,12 @@ void CbmHadronAnalysis::ExecEvent(Option_t*)
 void CbmHadronAnalysis::Finish()
 {
   // Normalisations
-  cout << "CbmHadronAnalysis::Finish up with " << fEvents << " analyzed events " << endl;
+  LOG(info) << "CbmHadronAnalysis::Finish up with " << fEvents << " analyzed events ";
 
   Double_t sfe  = 1. / fEvents;
   Double_t sfac = 1.E7;
 
-  cout << "<I> Normalisation factors " << sfe << "," << sfac << endl;
+  LOG(info) << "<I> Normalisation factors " << sfe << "," << sfac;
 
   fa_hit_ch->Scale(sfe * sfac);
 
@@ -3615,6 +3671,7 @@ void CbmHadronAnalysis::WriteHistogramms()
 {
   // Write histogramms to the file
   if (NULL != fHist) {
+    fHist->cd();
     TIter next(gDirectory->GetList());
     TH1* h;
     TObject* obj;
@@ -3626,8 +3683,9 @@ void CbmHadronAnalysis::WriteHistogramms()
       }
     }
   }
-  fHist->ls();
-  //fHist->Close();
+  LOG(info) << "Histos in " << fHist->GetName();
+  //fHist->ls();
+  fHist->Close();
 }
 // ------------------------------------------------------------------
 static Int_t iCandEv = 0;
@@ -3662,6 +3720,30 @@ void CbmHadronAnalysis::ReconstructSecondaries()
   static TH2F* fa_ptm_rap_rec_lam;
   static TH2F* fa_ptm_rap_mix_lam;
   //static TH2F* fa_ptm_rap_sub_lam;
+
+  static TH2F* fhTofStsXX;
+  static TH2F* fhTofStsYY;
+  static TH2F* fhTofStsdXdY;
+  static TH2F* fhTofStsdXX;
+  static TH2F* fhTofStsdXY;
+  static TH2F* fhTofStsdYX;
+  static TH2F* fhTofStsdYY;
+  static TH2F* fhTofVelNhit;
+  static TH1F* fhNT0;
+  static TH2F* fhStsStsX0Y0;
+  static TH2F* fhStsStsX0X1;
+  static TH2F* fhStsStsY0X1;
+  static TH2F* fhStsStsX0Y1;
+  static TH2F* fhStsStsY0Y1;
+  static TH2F* fhStsStsX0X2;
+  static TH2F* fhStsStsY0X2;
+  static TH2F* fhStsStsX0Y2;
+  static TH2F* fhStsStsY0Y2;
+
+  static TH3F* fhTofSts1dXXY;
+  static TH3F* fhTofSts1dYXY;
+  static TH3F* fhTofSts2dXXY;
+  static TH3F* fhTofSts2dYXY;
 
   static std::vector<std::list<std::vector<TLorentzVector>>> fvP;
   static std::vector<std::list<std::vector<TLorentzVector>>> fvX;
@@ -3710,6 +3792,9 @@ void CbmHadronAnalysis::ReconstructSecondaries()
 
   if (iCandEv == 0) {  //initialize
     // define some histograms
+    TDirectory* oldDir = gDirectory;
+    fHist->ReOpen("Update");
+
     Double_t MinvMin = secMass[0] + secMass[1];
     cout << "Add secondary histos to " << fHist->GetName() << endl;
     fhTofChi = new TH1F(Form("hTofChi"), Form("TofHit Merger; #chi "), 100, 0., dChiTofLim * 2.);
@@ -3739,6 +3824,56 @@ void CbmHadronAnalysis::ReconstructSecondaries()
     fhMCPathLen  = new TH1F(Form("hMCPathLen"), Form("MC hyperon path length; L [cm]"), 100, 0., 30.);
     fhMCLamMom   = new TH1F(Form("hMCLamMom"), Form("MC hyperon momentum; p [GeV]"), 100, 0., 5.);
 
+    fhTofStsXX = new TH2F(Form("hTofStsXX"), Form("Position correlation XX; x_{Sts} [cm]; x_{TofExt} [cm]"), 200, -10.,
+                          10., 200, -15., 15.);
+    fhTofStsYY = new TH2F(Form("hTofStsYY"), Form("Position correlation YY; y_{Sts} [cm]; y_{TofExt} [cm]"), 200, -10.,
+                          10., 200, -15., 15.);
+    fhTofStsdXdY =
+      new TH2F(Form("hTofStsdXdY"), Form("Position correlation dXX; #Deltax_{Tof-Sts} [cm]; #Deltay_{Tof-Sts} [cm]"),
+               100, -2., 2., 100, -2., 2.);
+    fhTofStsdXX  = new TH2F(Form("hTofStsdXX"), Form("Position correlation dXX; x_{Tof} [cm]; #Deltax_{Tof-Sts} [cm]"),
+                           200, -15., 15., 100, -2., 2.);
+    fhTofStsdXY  = new TH2F(Form("hTofStsdXY"), Form("Position correlation dXY; y_{Tof} [cm]; #Deltax_{Tof-Sts} [cm]"),
+                           200, -15., 15., 100, -2., 2.);
+    fhTofStsdYX  = new TH2F(Form("hTofStsdYX"), Form("Position correlation dYX; x_{Tof} [cm]; #Deltay_{Tof-Sts} [cm]"),
+                           200, -15., 15., 100, -2., 2.);
+    fhTofStsdYY  = new TH2F(Form("hTofStsdYY"), Form("Position correlation dYY; y_{Tof} [cm]; #Deltay_{Tof-Sts} [cm]"),
+                           200, -15., 15., 100, -2., 2.);
+    fhTofVelNhit = new TH2F(Form("hTofVelNhit"), Form("Velocity vs Nhit; Nhit []; v [cm/ns]"), 10, 0, 10, 100, 0, 50.);
+    fhNT0        = new TH1F(Form("hNT0"), Form("Number of T0 signal per event; N []; cts []"), 10, 0, 10);
+    fhStsStsX0Y0 = new TH2F(Form("hStsStsX0Y0"), Form("vertex location; x0_{StsSts} [cm]; y0_{StsSts} [cm]"), 100, -2.,
+                            2., 100, -2., 2.);
+
+    fhStsStsX0X1 = new TH2F(Form("hStsStsX0X1"), Form("vertex position dependence; x1_{Sts} [cm]; x0_{StsSts} [cm]"),
+                            100, -10., 10., 100, -2., 2.);
+    fhStsStsY0X1 = new TH2F(Form("hStsStsY0X1"), Form("vertex position dependence; x1_{Sts} [cm]; y0_{StsSts} [cm]"),
+                            100, -10., 10., 100, -2., 2.);
+    fhStsStsX0Y1 = new TH2F(Form("hStsStsX0Y1"), Form("vertex position dependence; y1_{Sts} [cm]; x0_{StsSts} [cm]"),
+                            100, -10., 10., 100, -2., 2.);
+    fhStsStsY0Y1 = new TH2F(Form("hStsStsY0Y1"), Form("vertex position dependence; y1_{Sts} [cm]; y0_{StsSts} [cm]"),
+                            100, -10., 10., 100, -2., 2.);
+
+    fhStsStsX0X2 = new TH2F(Form("hStsStsX0X2"), Form("vertex position dependence; x2_{Sts} [cm]; x0_{StsSts} [cm]"),
+                            100, -10., 10., 100, -2., 2.);
+    fhStsStsY0X2 = new TH2F(Form("hStsStsY0X2"), Form("vertex position dependence; x2_{Sts} [cm]; y0_{StsSts} [cm]"),
+                            100, -10., 10., 100, -2., 2.);
+    fhStsStsX0Y2 = new TH2F(Form("hStsStsX0Y2"), Form("vertex position dependence; y2_{Sts} [cm]; x0_{StsSts} [cm]"),
+                            100, -10., 10., 100, -2., 2.);
+    fhStsStsY0Y2 = new TH2F(Form("hStsStsY0Y2"), Form("vertex position dependence; y2_{Sts} [cm]; y0_{StsSts} [cm]"),
+                            100, -10., 10., 100, -2., 2.);
+
+    fhTofSts1dXXY =
+      new TH3F(Form("hTofSts1dXXY"), Form("Position deviation dXXY; x_{Sts1} [cm]; y_{Sts1}; #Deltax_{Tof-Sts} [cm]"),
+               100, -10., 10., 100, 10, 10, 50, -2., 2.);
+    fhTofSts1dYXY =
+      new TH3F(Form("hTofSts1dYXY"), Form("Position deviation dYXY; x_{Sts1} [cm]; y_{Sts1}; #Deltay_{Tof-Sts} [cm]"),
+               100, -10., 10., 100, 10, 10, 50, -2., 2.);
+    fhTofSts2dXXY =
+      new TH3F(Form("hTofSts2dXXY"), Form("Position deviation dXXY; x_{Sts1} [cm]; y_{Sts1}; #Deltax_{Tof-Sts} [cm]"),
+               100, -10., 10., 100, 10, 10, 50, -2., 2.);
+    fhTofSts2dYXY =
+      new TH3F(Form("hTofSts2dYXY"), Form("Position deviation dYXY; x_{Sts1} [cm]; y_{Sts1}; #Deltay_{Tof-Sts} [cm]"),
+               100, -10., 10., 100, 10, 10, 50, -2., 2.);
 
     // physics observables
     Float_t ymin   = -1.;
@@ -3752,6 +3887,7 @@ void CbmHadronAnalysis::ReconstructSecondaries()
     fa_ptm_rap_rec_lam = new TH2F("ptm_rap_rec_lam", "rec lam; y; p_{T}/m", ptm_nbx, ymin, ymax, ptm_nby, 0., ptmmax);
     fa_ptm_rap_mix_lam = new TH2F("ptm_rap_mix_lam", "mix lam; y; p_{T}/m", ptm_nbx, ymin, ymax, ptm_nby, 0., ptmmax);
     //    fa_ptm_rap_sub_lam = new TH2F("ptm_rap_sub_lam","sub lam; y; p_{T}/m",ptm_nbx,ymin,ymax,ptm_nby,0.,ptmmax);
+    gDirectory = oldDir;
   }
   iCandEv++;  // count events locally
 
@@ -3815,6 +3951,34 @@ void CbmHadronAnalysis::ReconstructSecondaries()
     dTofDist2Min[j] = 100.;  //initialize
   }
 
+  //-2. find T0
+  Double_t dT0  = 0.;
+  Double_t dNT0 = 0;
+  for (Int_t i = 0; i < nTofHits; i++) {
+    CbmTofHit* pTofHit = (CbmTofHit*) fTofHits->At(i);
+    if (NULL == pTofHit) continue;
+    if (pTofHit->GetZ() == 0.) {
+      dT0 += pTofHit->GetTime();
+      dNT0++;
+    }
+  }
+  fhNT0->Fill(dNT0);
+  if (dNT0 > 0) {
+    dT0 /= dNT0;
+    LOG(debug) << "Found T0 " << dT0 << " from " << dNT0 << " signals ";
+  }
+  else
+    return;
+
+  //-1. prepare TOF hits for counter overlaps and substract T0
+  for (Int_t i = 0; i < nTofHits; i++) {
+    CbmTofHit* pTofHit = (CbmTofHit*) fTofHits->At(i);
+    if (NULL == pTofHit) continue;
+    if (pTofHit->GetZ() == 0.) continue;  // don't merge with fake beam counter
+    pTofHit->SetFlag(1);
+    pTofHit->SetTime(pTofHit->GetTime() - dT0);
+  }
+
   //0. merge TOF hits due to counter overlaps
   for (Int_t i = 0; i < nTofHits; i++) {
     CbmTofHit* pTofHit = (CbmTofHit*) fTofHits->At(i);
@@ -3841,7 +4005,10 @@ void CbmHadronAnalysis::ReconstructSecondaries()
         Double_t dChi = TMath::Sqrt(dChi2) / 3.;
         fhTofChi->Fill(dChi);
         if (dChi < dChiTofLim) {                                    // merge info
-          pTofHit->SetTime((pTofHit->GetTime() + dTimeExp) * 0.5);  // update time
+          pTofHit->SetTime((pTofHit->GetTime() * pTofHit->GetFlag() + dTimeExp)
+                           / (pTofHit->GetFlag() + 1));  // update time
+          pTofHit->SetFlag(pTofHit->GetFlag() + 1);
+          pTofHit2->SetFlag(0);
           fTofHits->Remove(pTofHit2);
           //pTofHit2->Delete();                                  // remove from TClonesArray
           LOG(debug) << "Tof Hits " << i << " and " << i2 << " merged ";
@@ -3850,15 +4017,21 @@ void CbmHadronAnalysis::ReconstructSecondaries()
         }
       }
     }
+    fhTofVelNhit->Fill(pTofHit->GetFlag(), pTofHit->GetR() / pTofHit->GetTime());
   }
+
 
   //1. find best tof silicon match for primary track hypothesis
   for (Int_t i = 0; i < nTofHits; i++) {
     CbmTofHit* pTofHit = (CbmTofHit*) fTofHits->At(i);
-    if (NULL == pTofHit) continue;
+    if (NULL == pTofHit) {
+      P[i].SetPxPyPzE(0., 0., 0., 0.);  // avoid nan
+      continue;
+    }
     if (pTofHit->GetZ() == 0.) continue;  // skip fake beam counter
     dStsDistMin[i]  = 1.E3;
     dSts2DistMin[i] = 1.E3;
+    Double_t dTofX = 0, dTofY = 0, dStsX = 0, dStsY = 0;
     for (Int_t l = 0; l < NTrdStations; l++)
       dTrdDistMin[i][l] = 1.E3;
     iStsMin[i][0] = -1;
@@ -3871,7 +4044,7 @@ void CbmHadronAnalysis::ReconstructSecondaries()
       Double_t sPosYext = pTofHit->GetY() * sPosZ / pTofHit->GetZ();
       Double_t dDist2   = TMath::Power(pStsHit->GetX() - sPosXext, 2) + TMath::Power(pStsHit->GetY() - sPosYext, 2);
       Double_t dDist    = TMath::Sqrt(dDist2);
-      fhDperp->Fill(dDist);
+
       LOG(debug) << "Sts " << j << ", xyz " << pStsHit->GetX() << ", " << pStsHit->GetY() << ", " << sPosZ;
       LOG(debug) << "Tof " << i << ", xyz " << pTofHit->GetX() << ", " << pTofHit->GetY() << ", " << pTofHit->GetZ();
       LOG(debug) << "Tof " << i << ", Sts " << j << Form(" -> dist %6.3f, Min %6.3f ", dDist, dStsDistMin[i]);
@@ -3888,8 +4061,23 @@ void CbmHadronAnalysis::ReconstructSecondaries()
         dTofDistMin[j] = dDist;
         LOG(debug) << "Prim Track cand started for Tof " << i << ", Sts " << j
                    << Form(": dist %6.3f, Min %6.3f at z = %4.1f", dDist, dStsDistMin[i], sPosZ);
+        dTofX = sPosXext;
+        dTofY = sPosYext;
+        dStsX = pStsHit->GetX();
+        dStsY = pStsHit->GetY();
       }
     }  // for (Int_t j=0; j<nStsHits; j++) {
+    // diagnose closest pair
+    if (dStsDistMin[i] < 100.) {
+      fhDperp->Fill(dStsDistMin[i]);
+      fhTofStsXX->Fill(dStsX, dTofX);
+      fhTofStsYY->Fill(dStsY, dTofY);
+      fhTofStsdXdY->Fill(dTofX - dStsX, dTofY - dStsY);
+      fhTofStsdXX->Fill(dTofX, dTofX - dStsX);
+      fhTofStsdXY->Fill(dTofY, dTofX - dStsX);
+      fhTofStsdYX->Fill(dTofX, dTofY - dStsY);
+      fhTofStsdYY->Fill(dTofY, dTofY - dStsY);
+    }
   }    //for (Int_t i=0; i<nTofHits; i++) {
 
   //2.: find second silicon hit for primary tracks
@@ -3906,7 +4094,6 @@ void CbmHadronAnalysis::ReconstructSecondaries()
       Double_t sPos2Yext  = pStsHit->GetY() * sPos2Z / pStsHit->GetZ();
       Double_t dDist2 = TMath::Power(pSts2Hit->GetX() - sPos2Xext, 2) + TMath::Power(pSts2Hit->GetY() - sPos2Yext, 2);
       Double_t dDist  = TMath::Sqrt(dDist2);
-      fhDperp2->Fill(dDist);
       LOG(debug) << "Tof " << i << ", Sts " << j
                  << Form(" Sts2 %d -> dist %6.3f, Min %6.3f at z = %4.1f", k, dDist, dSts2DistMin[i], sPos2Z);
 
@@ -3932,6 +4119,33 @@ void CbmHadronAnalysis::ReconstructSecondaries()
                    << Form(": dist %6.3f, Min %6.3f at z = %4.1f", dDist, dSts2DistMin[i], sPos2Z);
       }  // primary or proton candidate
     }    //  for (Int_t k=0; k<nStsHits; k++) {
+    if (dSts2DistMin[i] < fdDistPrimLim2) {
+      fhDperp2->Fill(dSts2DistMin[i]);
+      // diagnose Sts
+      CbmStsHit* pSts0 = (CbmStsHit*) fStsHits->At(iStsMin[i][0]);
+      CbmStsHit* pSts1 = (CbmStsHit*) fStsHits->At(iStsMin[i][1]);
+      Double_t dX0 = pSts0->GetX() - (pSts1->GetX() - pSts0->GetX()) / (pSts1->GetZ() - pSts0->GetZ()) * pSts0->GetZ();
+      Double_t dY0 = pSts0->GetY() - (pSts1->GetY() - pSts0->GetY()) / (pSts1->GetZ() - pSts0->GetZ()) * pSts0->GetZ();
+      fhStsStsX0Y0->Fill(dX0, dY0);
+      fhStsStsX0X1->Fill(pSts0->GetX(), dX0);
+      fhStsStsX0Y1->Fill(pSts0->GetY(), dX0);
+      fhStsStsY0X1->Fill(pSts0->GetX(), dY0);
+      fhStsStsY0Y1->Fill(pSts0->GetY(), dY0);
+      fhStsStsX0X2->Fill(pSts1->GetX(), dX0);
+      fhStsStsX0Y2->Fill(pSts1->GetY(), dX0);
+      fhStsStsY0X2->Fill(pSts1->GetX(), dY0);
+      fhStsStsY0Y2->Fill(pSts1->GetY(), dY0);
+
+      CbmTofHit* pTofHit = (CbmTofHit*) fTofHits->At(i);
+      fhTofSts1dXXY->Fill(pSts0->GetX(), pSts0->GetY(),
+                          pTofHit->GetX() * pSts0->GetZ() / pTofHit->GetZ() - pSts0->GetX());
+      fhTofSts1dYXY->Fill(pSts0->GetX(), pSts0->GetY(),
+                          pTofHit->GetY() * pSts0->GetZ() / pTofHit->GetZ() - pSts0->GetY());
+      fhTofSts2dXXY->Fill(pSts1->GetX(), pSts1->GetY(),
+                          pTofHit->GetX() * pSts1->GetZ() / pTofHit->GetZ() - pSts1->GetX());
+      fhTofSts2dYXY->Fill(pSts1->GetX(), pSts1->GetY(),
+                          pTofHit->GetY() * pSts1->GetZ() / pTofHit->GetZ() - pSts1->GetY());
+    }
   }      // for (Int_t j=0; j<nStsHits; j++) {
 
   //2.a - confirm primary track hypothesis by TRD
@@ -4039,14 +4253,14 @@ void CbmHadronAnalysis::ReconstructSecondaries()
 
   //4. secondary pion candidate
   for (Int_t i = 0; i < nTofHits; i++) {
+    CbmTofHit* pTofHit = (CbmTofHit*) fTofHits->At(i);
+    if (NULL == pTofHit) continue;
+    if (pTofHit->GetZ() == 0.) continue;  // skip fake beam counter
     LOG(debug) << "Tof " << i << Form(" sec cand Min %6.3f > %6.3f ?", dStsDistMin[i], fdDistPrimLim);
     if (dStsDistMin[i] > fdDistPrimLim) {  // Tof hit not in the primary class
       Double_t dDistMin  = 100.;
       Int_t jbest        = -1;
       Int_t kbest        = -1;
-      CbmTofHit* pTofHit = (CbmTofHit*) fTofHits->At(i);
-      if (NULL == pTofHit) continue;
-      if (pTofHit->GetZ() == 0.) continue;  // skip fake beam counter
       for (Int_t j = 0; j < nStsHits; j++) {
         LOG(debug) << "Tof " << i << ", Sts " << j
                    << Form(" ? sec cand %6.3f Min %6.3f ", dTofDistMin[j], fdDistPrimLim);
@@ -4066,7 +4280,6 @@ void CbmHadronAnalysis::ReconstructSecondaries()
             Double_t dDist2 =
               TMath::Power(pSts2Hit->GetX() - sPos2Xext, 2) + TMath::Power(pSts2Hit->GetY() - sPos2Yext, 2);
             Double_t dDist = TMath::Sqrt(dDist2);
-            fhDperpS->Fill(dDist);
             LOG(debug) << "Sec Tof " << i << ", Sts " << j
                        << Form(" Sts2 %d -> dist %6.3f < %6.3f ? at z = %4.1f", k, dDist,
                                TMath::Min(dDistMin, fdDistSecLim2), sPos2Z);
@@ -4078,7 +4291,7 @@ void CbmHadronAnalysis::ReconstructSecondaries()
           }  // for (Int_t k=0; k<nStsHits; k++) {
         }    //if( dTofDistMin[j] > dDistPrimLim) {  // Sts hit not in the primary class
       }      // for (Int_t j=0; j<nStsHits; j++) {
-
+      fhDperpS->Fill(dDistMin);
       LOG(debug) << "Sec Dist for TofHit " << i << ": " << dDistMin << ", j " << jbest << ", k " << kbest;
 
       if (dDistMin < 100.) {  // secondary candidate found, store vectors
@@ -4192,8 +4405,8 @@ void CbmHadronAnalysis::ReconstructSecondaries()
       itX0--;
       itDX--;
       itX--;
-      LOG(debug1) << "LV P has size " << P.size() << ", fvP size " << fvP[iMixClass].size() << " in mix class "
-                  << iMixClass;
+      LOG(debug) << "LV P has size " << P.size() << ", fvP size " << fvP[iMixClass].size() << " in mix class "
+                 << iMixClass;
       for (std::list<std::vector<TLorentzVector>>::iterator itP = fvP[iMixClass].begin(); itP != fvP[iMixClass].end();
            ++itP) {
         iMixEv++;
@@ -4204,9 +4417,14 @@ void CbmHadronAnalysis::ReconstructSecondaries()
         std::vector<TLorentzVector> XE = *itX;   //fvX[iEv];
         std::vector<TVector3> X0E      = *itX0;  //fvX0[iEv];
         std::vector<TVector3> DXE      = *itDX;  //fvDX[iEv];
-        LOG(debug1) << "iMixEv " << iMixEv << ": PE has size " << PE.size() << ", X0E: " << X0E.size();
+        LOG(debug) << "iMixEv " << iMixEv << ": PE has size " << PE.size() << ", X0E: " << X0E.size();
         if (iMixEv == 1) {
-          if (PE != P) LOG(fatal) << "P not properly restored from list";
+          if (PE != P) {
+            for (UInt_t j = 0; j < PE.size(); j++) {
+              LOG(debug) << "P comp " << j << ": " << P[j].M() << " " << PE[j].M();
+            }
+            LOG(debug) << "P not properly restored from list ";
+          }
         }
 
         for (UInt_t j = 0; j < PE.size(); j++) {
