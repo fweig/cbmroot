@@ -8,14 +8,14 @@
  * @brief Baseclass for the Trd unpacker algorithms
  * @version 0.1
  * @date 2021-04-21
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
- * This is the base class for the algorithmic part of the tsa data unpacking 
+ *
+ * This is the base class for the algorithmic part of the tsa data unpacking
  * processes of the CbmTrd.
- * The actual translation from tsa to digi happens in the derived classes. 
- * 
- * 
+ * The actual translation from tsa to digi happens in the derived classes.
+ *
+ *
 */
 
 #ifndef CbmRecoUnpackAlgo_TMPL
@@ -158,8 +158,8 @@ protected:
 
   /**
    * @brief Get the Timeslice Params and transfer them to the member variables
-   * 
-   * @param ts 
+   *
+   * @param ts
   */
   void getTimesliceParams(const fles::Timeslice* ts)
   {
@@ -180,7 +180,7 @@ protected:
 
   /**
    * @brief Forward the parameters stored in the containers to the member variables.
-   * 
+   *
    * @retval Bool_t initOk   If not kSUCCESS, task will be set inactive.
   */
   Bool_t initParContainers()
@@ -207,27 +207,27 @@ protected:
 
   /**
    * @brief Handles the distribution of the hidden derived classes to their explicit functions.
-   * 
-   * @param parset 
-   * @return Bool_t 
+   *
+   * @param parset
+   * @return Bool_t
   */
   virtual Bool_t initParSet(FairParGenericSet* parset) = 0;
 
   /**
    * @brief Set the Derived Ts Parameters
-   * 
+   *
    * In this function parameters required by the explicit algo connected to the timeslice can be set.
-   * 
-   * @param itimeslice 
-   * @return true 
-   * @return false 
+   *
+   * @param itimeslice
+   * @return true
+   * @return false
   */
   virtual bool setDerivedTsParameters(size_t /*itimeslice*/) { return true; }
 
 
   /**
    * @brief Intialisation at begin of run. Special inits of the derived algos.
-   * 
+   *
    * @retval Bool_t initOk
   */
   virtual Bool_t init() = 0;
@@ -242,13 +242,13 @@ protected:
 
   /**
    * @brief Unpack a given microslice. To be implemented in the derived unpacker algos.
-   * 
+   *
    * @param ts timeslice pointer
    * @param icomp index to the component to be unpacked
    * @param imslice index of the microslice to be unpacked
-   * @return true 
-   * @return false 
-   * 
+   * @return true
+   * @return false
+   *
    * @remark The content of the µslice can only be accessed via the timeslice. Hence, we need to pass the pointer to the full timeslice
   */
   virtual bool unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice) = 0;
@@ -261,7 +261,7 @@ public:
 
   /**
    * @brief Add a parameter container and the path to its ascii input. Note that all containers have to be derived from FairParGenericSet.
-   * @param pair 
+   * @param pair
   */
   void AddParContainer(std::pair<std::string, std::shared_ptr<FairParGenericSet>> pair)
   {
@@ -273,7 +273,7 @@ public:
 
   /**
    * @brief Action at end of run.
-   * 
+   *
   */
   void Finish()
   {
@@ -302,38 +302,38 @@ public:
 
   /**
    * @brief Get the Name of the (derived) object
-   * 
-   * @return std::string 
+   *
+   * @return std::string
   */
   std::string GetName() { return fName; }
 
   // Getters
   /**
    * @brief Get a given output vector connected to the tree, if called after calling InitUnpacker().
-   * 
-   * @return std::vector<TOptOutA>* 
+   *
+   * @return std::vector<TOptOutA>*
   */
   std::vector<TOptOutA>* GetOptOutAVec() { return fOptOutAVec; }
 
   /**
    * @brief Get a given output vector connected to the tree, if called after calling InitUnpacker().
-   * 
-   * @return std::vector<TOptOutA>* 
+   *
+   * @return std::vector<TOptOutA>*
   */
   std::vector<TOptOutA>* GetOptOutBVec() { return fOptOutBVec; }
 
   /**
    * @brief Get the Output Obj Size
-   * 
-   * @return size_t 
+   *
+   * @return size_t
   */
   static size_t GetOutputObjSize() { return sizeof(TOutput); }
 
   /**
    * @brief Get the requested parameter containers. To be defined in the derived classes!
-   * Return the required parameter containers together with the paths to the ascii 
+   * Return the required parameter containers together with the paths to the ascii
    * files to.
-   *  
+   *
    * @param[in] std::string geoTag as used in CbmSetup
    * @param[in] std::uint32_t runId for runwise defined parameters
    * @return fParContVec
@@ -346,9 +346,9 @@ public:
 
   /**
    * @brief Intialisation at begin of run.
-   * 
+   *
    * Runs for all types of algos. In case you need a specialised init function add it as protected function and call it in this Init function.
-   * 
+   *
    * @retval Bool_t initOk   If not kTRUE, task will be set inactive.
   */
   Bool_t Init()
@@ -361,14 +361,16 @@ public:
 
     initOk &= initParContainers();
 
+    LOG(info)<< fName <<"::SystemTimeOffset:" << fSystemTimeOffset;
+
     return initOk;
   }
 
   // Setters
   /**
    * @brief Set the Do Ignore Overlapp µslices flag
-   * 
-   * @param value 
+   *
+   * @param value
   */
   void SetDoIgnoreOverlappMs(bool value = false) { fDoIgnoreOverlappMs = value; }
 
@@ -380,23 +382,26 @@ public:
 
   /**
    * @brief Set the base path to the parameter containers.
-   * 
-   * @param value 
+   *
+   * @param value
   */
   void SetParFilesBasePath(std::string value) { fParFilesBasePath = value; }
 
   /** @brief Set the global system time offset @remark in princible this should go to parameters */
   void SetSystemTimeOffset(int32_t value) { fSystemTimeOffset = value; }
 
+  /** @brief Get the global system time offset @remark in princible this should go to parameters */
+  int32_t GetSystemTimeOffset() { return fSystemTimeOffset; }
+
   /** @brief Set the start time of the current TS */
   void SetTsStartTime(size_t value) { fTsStartTime = value; }
 
   /**
    * @brief Actual unpacking function
-   * 
-   * @param option 
-   * @return true 
-   * @return false 
+   *
+   * @param option
+   * @return true
+   * @return false
   */
   std::vector<TOutput> Unpack(const fles::Timeslice* ts, std::uint16_t icomp)
   {

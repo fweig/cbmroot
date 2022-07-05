@@ -357,6 +357,21 @@ public:
   /** @brief Set the global system time offset @remark in princible this should go to parameters */
   void SetSystemTimeOffset(int32_t value) { fSystemTimeOffset = value; }
 
+  /** @brief Get the global system time offset @remark in princible this should go to parameters */
+  int32_t GetSystemTimeOffset() { return fSystemTimeOffset; }
+
+  /** @brief Set the global system time offset and set it directly in the algo if possible @remark in princible this should go to parameters */
+  void SetSystemTimeOffsetAlgo(int32_t value) {
+    fSystemTimeOffset = value;
+    if(nullptr != fAlgo ) {
+      // Try to apply it immediately to the algo
+      fAlgo->SetSystemTimeOffset( value );
+    }
+    else {
+      LOG(warn) << fName << "::SetSystemTimeOffsetAlgo() Algo not available, value saved in case later available";
+    }
+  }
+
   /** @brief Set the value of the flag to ignore the overlap microslices @remark in princible this should go to parameters */
   void SetDoIgnoreOverlappMs(bool value = false) { fDoIgnoreOverlappMs = value; }
 
