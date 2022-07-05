@@ -578,10 +578,10 @@ Int_t CbmTofDigiBdfPar::GetTrackingStation(Int_t iSmType, Int_t iSm, Int_t iRpc)
   if (iSmType < fiNbSmTypes) {
     if (iSm < fiNbSm[iSmType] && iRpc < fiNbRpc[iSmType]) return fiTrkStation[iSmType][iSm * fiNbRpc[iSmType] + iRpc];
     else
-      return 0.0;
+      return 0;
   }  // if( iSmType < fiNbSmTypes )
   else
-    return 0.0;
+    return 0;
 }
 Int_t CbmTofDigiBdfPar::GetNbChan(Int_t iSmType, Int_t iRpc) const
 {
