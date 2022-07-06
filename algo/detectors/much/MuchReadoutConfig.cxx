@@ -6,31 +6,17 @@
 
 #include "CbmMuchAddress.h"
 
-//#include "FairDetParIo.h"
-//#include "FairParIo.h"
-//#include "FairParamList.h"
 #include <Logger.h>
-#include <bitset>
 
-//#include "TMath.h"
-//#include "TString.h"
+#include <bitset>
 
 using namespace std;
 
 namespace cbm::algo
 {
 
+  // -------------------------------------------------------------------------
   /*
-// -----   Public method clear   -------------------------------------------
-void MuchReadoutConfig::clear()
-{
-  status = false;
-  resetInputVersions();
-}
-// -------------------------------------------------------------------------
-
-// -------------------------------------------------------------------------
-
 void MuchReadoutConfig::putParams(FairParamList* l)
 {
   if (!l) return;
@@ -53,63 +39,6 @@ void MuchReadoutConfig::putParams(FairParamList* l)
   l->add("RealX", fRealX);
   l->add("PadSize", fRealPadSize);
 }
-
-// -------------------------------------------------------------------------
-
-bool MuchReadoutConfig::getParams(FairParamList* l)
-{
-
-  if (!l) return false;
-
-  if (!l->fill("NrOfDpbs", &numComp)) return false;
-
-  eqId.Set(numComp);
-  if (!l->fill("DbpIdArray", &eqId)) return false;
-
-  fiCrobActiveFlag.Set(numComp * kuNbCrobsPerDpb);
-  if (!l->fill("CrobActiveFlag", &fiCrobActiveFlag)) return false;
-
-  if (!l->fill("NrOfFebsInGemA", &fuFebsInGemA)) return false;
-
-  fnFebsIdsArrayGemA.Set(GetNrOfFebsInGemA());
-  if (!l->fill("nFebsIdsArrayA", &fnFebsIdsArrayGemA)) return false;
-
-  if (!l->fill("NrOfFebsInGemB", &fuFebsInGemB)) return false;
-
-  fnFebsIdsArrayGemB.Set(GetNrOfFebsInGemB());
-  if (!l->fill("nFebsIdsArrayB", &fnFebsIdsArrayGemB)) return false;
-
-  if (!l->fill("NrOfFebsInRpc", &fuFebsInRpc)) return false;
-
-  fnFebsIdsArrayRpc.Set(GetNrOfFebsInRpc());
-  if (!l->fill("nFebsIdsArrayRpc", &fnFebsIdsArrayRpc)) return false;
-
-  fChannelsToPadXA.Set(GetNrOfFebs() * kuNbChanPerAsic);
-  if (!l->fill("ChannelsToPadXA", &fChannelsToPadXA)) return false;
-
-  fChannelsToPadYA.Set(GetNrOfFebs() * kuNbChanPerAsic);
-  if (!l->fill("ChannelsToPadYA", &fChannelsToPadYA)) return false;
-
-  fChannelsToPadXB.Set(GetNrOfFebs() * kuNbChanPerAsic);
-  if (!l->fill("ChannelsToPadXB", &fChannelsToPadXB)) return false;
-
-  fChannelsToPadYB.Set(GetNrOfFebs() * kuNbChanPerAsic);
-  if (!l->fill("ChannelsToPadYB", &fChannelsToPadYB)) return false;
-
-  fChannelsToPadXRpc.Set(GetNrOfFebsInRpc() * kuNbChanPerAsic);
-  if (!l->fill("ChannelsToPadXRpc", &fChannelsToPadXRpc)) return false;
-
-  fChannelsToPadYRpc.Set(GetNrOfFebsInRpc() * kuNbChanPerAsic);
-  if (!l->fill("ChannelsToPadYRpc", &fChannelsToPadYRpc)) return false;
-
-  fRealX.Set(2232);  // Number of Sectors in one GEM Module
-  if (!l->fill("RealX", &fRealX)) return false;
-
-  fRealPadSize.Set(2232);  // Number of Sectors in one GEM Module
-  if (!l->fill("PadSize", &fRealPadSize)) return false;
-
-  return true;
-}
 */
 
   void MuchReadoutConfig::Init()
@@ -119,6 +48,28 @@ bool MuchReadoutConfig::getParams(FairParamList* l)
 
     // Array to hold the unique IDs (equipment ID) for all MUCH DPBs
     uint16_t eqId[numComp] = {0x18e3, 0x18ef, 0x1861, 0x6601, 0x4f19, 0x5b7b};
+
+    // Mapping of eLink to FEB number within CROB. If -1, elink not used.
+    // This mapping is the same for each component.
+    const int16_t elink2Feb[numElinksPerCrob] = {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4,
+                                                 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8};
+
+    // Constructing the map (equipmentId, eLink, channel) -> (MUCH address)
+    uint16_t numElinksPerComp = numCrobPerComp * numElinksPerCrob;
+    for (uint16_t comp = 0; comp < numComp; comp++) {
+      uint16_t equipment = eqId[comp];
+      fReadoutMap[equipment].resize(numElinksPerComp);
+      for (uint16_t crob = 0; crob < numCrobPerComp; crob++) {
+        for (uint16_t elink = 0; elink < numElinksPerCrob; elink++) {
+          fReadoutMap[equipment][elink].resize(numChanPerAsic);
+          for (uint16_t channel = 0; channel < numChanPerAsic; channel++) {
+
+
+            fReadoutMap[equipment][elink][channel] = 0;
+          }  //# channel
+        }    //# elink
+      }      //# CROB
+    }        //# component
   }
 
   //To do address need to be checked carefully
@@ -238,20 +189,22 @@ bool MuchReadoutConfig::getParams(FairParamList* l)
 
 
   // -------------------------------------------------------------------------
+  /*
   int16_t MuchReadoutConfig::ElinkIdxToFebIdx(uint16_t uElink)
   {
-    if (uElink < kuNbElinksPerCrob) return kiCrobMapElinkFebIdx[uElink];
+    if (uElink < numElinksPerCrob) return kiCrobMapElinkFebIdx[uElink];
     else {
       LOG(warning) << "MuchReadoutConfig::ElinkIdxToFebIdx => Index out of bound, "
                    << "Elink is " << uElink << " returning crazy value!";
       return -1;
     }
   }
+  */
 
   bool MuchReadoutConfig::IsCrobActive(uint16_t uDpbIdx, uint16_t uCrobIdx)
   {
     if (uDpbIdx < numComp) {
-      if (uCrobIdx < kuNbCrobsPerDpb) return 0 < fiCrobActiveFlag[uDpbIdx * kuNbCrobsPerDpb + uCrobIdx] ? true : false;
+      if (uCrobIdx < numCrobPerComp) return 0 < fiCrobActiveFlag[uDpbIdx * numCrobPerComp + uCrobIdx] ? true : false;
       else {
         LOG(warning) << "MuchReadoutConfig::IsCrobActive => Crob Index out of bound, "
                      << "returning default inactive!";
@@ -282,9 +235,9 @@ bool MuchReadoutConfig::getParams(FairParamList* l)
   bool MuchReadoutConfig::IsFebActive(uint16_t uDpbIdx, uint16_t uCrobIdx, uint16_t uFebIdx)
   {
     if (uDpbIdx < numComp) {
-      if (uCrobIdx < kuNbCrobsPerDpb) {
+      if (uCrobIdx < numCrobPerComp) {
         if (uFebIdx < kuNbFebsPerCrob) {
-          uint16_t uIdx = (uDpbIdx * kuNbCrobsPerDpb + uCrobIdx) * kuNbFebsPerCrob + uFebIdx;
+          uint16_t uIdx = (uDpbIdx * numCrobPerComp + uCrobIdx) * kuNbFebsPerCrob + uFebIdx;
           return IsFebActive(uIdx);
         }
         else {
@@ -308,62 +261,62 @@ bool MuchReadoutConfig::getParams(FairParamList* l)
 
   int8_t MuchReadoutConfig::GetPadXA(uint8_t febid, uint8_t channelid)
   {
-    if (fChannelsToPadXA.size() <= static_cast<int16_t>((febid * kuNbChanPerAsic) + channelid)) {
-      LOG(debug) << "MuchReadoutConfig::GetPadXA => Index out of bounds: " << ((febid * kuNbChanPerAsic) + channelid)
+    if (fChannelsToPadXA.size() <= static_cast<int16_t>((febid * numChanPerAsic) + channelid)) {
+      LOG(debug) << "MuchReadoutConfig::GetPadXA => Index out of bounds: " << ((febid * numChanPerAsic) + channelid)
                  << " VS " << fChannelsToPadXA.size() << " (" << febid << " and " << channelid << ")";
       return -2;
     }
-    return fChannelsToPadXA[(febid * kuNbChanPerAsic) + channelid];
+    return fChannelsToPadXA[(febid * numChanPerAsic) + channelid];
   }
 
   int8_t MuchReadoutConfig::GetPadYA(uint8_t febid, uint8_t channelid)
   {
-    if (fChannelsToPadYA.size() <= static_cast<int16_t>((febid * kuNbChanPerAsic) + channelid)) {
-      LOG(debug) << "MuchReadoutConfig::GetPadYA => Index out of bounds: " << ((febid * kuNbChanPerAsic) + channelid)
+    if (fChannelsToPadYA.size() <= static_cast<int16_t>((febid * numChanPerAsic) + channelid)) {
+      LOG(debug) << "MuchReadoutConfig::GetPadYA => Index out of bounds: " << ((febid * numChanPerAsic) + channelid)
                  << " VS " << fChannelsToPadYA.size() << " (" << febid << " and " << channelid << ")";
       return -2;
     }
-    return fChannelsToPadYA[(febid * kuNbChanPerAsic) + channelid];
+    return fChannelsToPadYA[(febid * numChanPerAsic) + channelid];
   }
 
   int8_t MuchReadoutConfig::GetPadXB(uint8_t febid, uint8_t channelid)
   {
-    if (fChannelsToPadXB.size() <= static_cast<int16_t>((febid * kuNbChanPerAsic) + channelid)) {
-      LOG(debug) << "MuchReadoutConfig::GetPadXB => Index out of bounds: " << ((febid * kuNbChanPerAsic) + channelid)
+    if (fChannelsToPadXB.size() <= static_cast<int16_t>((febid * numChanPerAsic) + channelid)) {
+      LOG(debug) << "MuchReadoutConfig::GetPadXB => Index out of bounds: " << ((febid * numChanPerAsic) + channelid)
                  << " VS " << fChannelsToPadXB.size() << " (" << febid << " and " << channelid << ")";
       return -2;
     }
-    return fChannelsToPadXB[(febid * kuNbChanPerAsic) + channelid];
+    return fChannelsToPadXB[(febid * numChanPerAsic) + channelid];
   }
 
   int8_t MuchReadoutConfig::GetPadYB(uint8_t febid, uint8_t channelid)
   {
-    if (fChannelsToPadYB.size() <= static_cast<int16_t>((febid * kuNbChanPerAsic) + channelid)) {
-      LOG(debug) << "MuchReadoutConfig::GetPadYB => Index out of bounds: " << ((febid * kuNbChanPerAsic) + channelid)
+    if (fChannelsToPadYB.size() <= static_cast<int16_t>((febid * numChanPerAsic) + channelid)) {
+      LOG(debug) << "MuchReadoutConfig::GetPadYB => Index out of bounds: " << ((febid * numChanPerAsic) + channelid)
                  << " VS " << fChannelsToPadYB.size() << " (" << febid << " and " << channelid << ")";
       return -2;
     }
-    return fChannelsToPadYB[(febid * kuNbChanPerAsic) + channelid];
+    return fChannelsToPadYB[(febid * numChanPerAsic) + channelid];
   }
 
   int8_t MuchReadoutConfig::GetPadXRpc(uint8_t febid, uint8_t channelid)
   {
-    if (fChannelsToPadXRpc.size() <= static_cast<int16_t>((febid * kuNbChanPerAsic) + channelid)) {
-      LOG(debug) << "CbmMcbm2018MuchPar::GetPadXRpc => Index out of bounds: " << ((febid * kuNbChanPerAsic) + channelid)
+    if (fChannelsToPadXRpc.size() <= static_cast<int16_t>((febid * numChanPerAsic) + channelid)) {
+      LOG(debug) << "CbmMcbm2018MuchPar::GetPadXRpc => Index out of bounds: " << ((febid * numChanPerAsic) + channelid)
                  << " VS " << fChannelsToPadXRpc.size() << " (" << febid << " and " << channelid << ")";
       return -2;
     }
-    return fChannelsToPadXRpc[(febid * kuNbChanPerAsic) + channelid];
+    return fChannelsToPadXRpc[(febid * numChanPerAsic) + channelid];
   }
 
   int8_t MuchReadoutConfig::GetPadYRpc(uint8_t febid, uint8_t channelid)
   {
-    if (fChannelsToPadYRpc.size() <= static_cast<int16_t>((febid * kuNbChanPerAsic) + channelid)) {
-      LOG(debug) << "CbmMcbm2018MuchPar::GetPadYRpc => Index out of bounds: " << ((febid * kuNbChanPerAsic) + channelid)
+    if (fChannelsToPadYRpc.size() <= static_cast<int16_t>((febid * numChanPerAsic) + channelid)) {
+      LOG(debug) << "CbmMcbm2018MuchPar::GetPadYRpc => Index out of bounds: " << ((febid * numChanPerAsic) + channelid)
                  << " VS " << fChannelsToPadYRpc.size() << " (" << febid << " and " << channelid << ")";
       return -2;
     }
-    return fChannelsToPadYRpc[(febid * kuNbChanPerAsic) + channelid];
+    return fChannelsToPadYRpc[(febid * numChanPerAsic) + channelid];
   }
 
   int32_t MuchReadoutConfig::GetFebId(uint16_t uAsicIdx)
@@ -381,18 +334,6 @@ bool MuchReadoutConfig::getParams(FairParamList* l)
                    << "Returning large value -2";
       return -2;
     }
-  }
-
-  //GetModule() is not used in unpacker
-  uint16_t MuchReadoutConfig::GetModule(uint16_t uAsicIdx)
-  {
-    if (uAsicIdx >= GetNrOfFebsInGemA()) {
-      if ((uAsicIdx % GetNrOfFebsInGemA()) < GetNrOfFebsInRpc()) return 1;
-      else
-        return 2;
-    }
-    else
-      return 0;
   }
 
   double MuchReadoutConfig::GetRealX(int16_t SectorIndex)

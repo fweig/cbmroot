@@ -11,21 +11,12 @@
 #ifndef ALGO_DETECTORS_MUCH_MUCHREADOUTCONFIG_H
 #define ALGO_DETECTORS_MUCH_MUCHREADOUTCONFIG_H
 
-//#include "FairParGenericSet.h"
-
 #include <cstdint>
+#include <map>
 #include <vector>
-
-//#include "TArrayD.h"
-//#include "TArrayI.h"
-
-//class FairParIo;
-//class FairParamList;
 
 namespace cbm::algo
 {
-
-  //class MuchReadoutConfig : public FairParGenericSet {
   class MuchReadoutConfig {
 
   public:
@@ -35,37 +26,12 @@ namespace cbm::algo
     /** Destructor **/
     ~MuchReadoutConfig() {};
 
-    /** Reset all parameters **/
-    virtual void clear();
-
-    /*
-  void putParams(FairParamList*);
-  bool getParams(FairParamList*);
-*/
-    static constexpr uint16_t GetNbCrobsPerDpb() { return kuNbCrobsPerDpb; }
-    static constexpr uint16_t GetNbElinkPerCrob() { return kuNbElinksPerCrob; }
-    static constexpr uint16_t GetNbElinkPerDpb() { return kuNbCrobsPerDpb * kuNbElinksPerCrob; }
-    static constexpr uint16_t GetNbFebsPerCrob() { return kuNbFebsPerCrob; }
-    static constexpr uint16_t GetNbFebsPerDpb() { return kuNbCrobsPerDpb * kuNbFebsPerCrob; }
-    static constexpr uint16_t GetNbAsicsPerFeb() { return kuNbAsicsPerFeb; }
-    static constexpr uint16_t GetNbAsicsPerCrob() { return kuNbFebsPerCrob * kuNbAsicsPerFeb; }
-    static constexpr uint16_t GetNbAsicsPerDpb() { return kuNbCrobsPerDpb * GetNbAsicsPerCrob(); }
-    static constexpr uint16_t GetNbChanPerAsic() { return kuNbChanPerAsic; }
-    static constexpr uint16_t GetNbChanPerFeb() { return kuNbAsicsPerFeb * kuNbChanPerAsic; }
-
-    //! Convert from eLink index to FEB Connection ( 0 to kuNbFebsPerCrob)
-    int16_t ElinkIdxToFebIdx(uint16_t uElink);
-
-    uint16_t GetNrOfDpbs() { return numComp; }
-    uint16_t GetNrOfCrobs() { return numComp * kuNbCrobsPerDpb; }
+    uint16_t GetNrOfCrobs() { return numComp * numCrobPerComp; }
     uint16_t GetNrOfFebs() { return GetNrOfCrobs() * kuNbFebsPerCrob; }
-    uint16_t GetNrOfAsics() { return GetNrOfFebs() * kuNbAsicsPerFeb; }
     uint16_t GetNrOfFebsInGemA() { return fuFebsInGemA; }
     uint16_t GetNrOfFebsInGemB() { return fuFebsInGemB; }
-    int16_t GetNrOfChannels() { return kuNbChanPerAsic; }
 
     int32_t GetFebId(uint16_t);
-    uint16_t GetModule(uint16_t);
 
     int8_t GetPadXA(uint8_t febid, uint8_t channelid);
     int8_t GetPadYA(uint8_t febid, uint8_t channelid);
@@ -91,6 +57,10 @@ namespace cbm::algo
     double GetFebAdcOffset(uint16_t uDpbIdx, uint16_t uCrobIdx, uint16_t uFebIdx);
 
   private:
+    // --- MUCH readout map
+    // --- Map index: (equipment, elink, channel), map value: (MUCH address)
+    std::map<uint16_t, std::vector<std::vector<uint32_t>>> fReadoutMap = {};
+
     /** @brief Initialisation of readout map **/
     void Init();
 
@@ -98,20 +68,15 @@ namespace cbm::algo
     uint32_t CreateMuchAddress(uint32_t dpbidx, int32_t iFebId, uint32_t usChan);
 
     /// Constants
-    static const uint16_t kuNbCrobsPerDpb   = 1;    // Number of CROBs possible per DPB
-    static const uint16_t kuNbElinksPerCrob = 42;   // Number of elinks in each CROB ?
-    static const uint16_t kuNbFebsPerCrob   = 9;    // Number of FEBs  connected to each CROB for mMuch 2019
-    static const uint16_t kuNbAsicsPerFeb   = 1;    // Number of ASICs connected in each FEB for MUCH
-    static const uint16_t kuNbChanPerAsic   = 128;  // Number of channels in each ASIC
-    //   static constexpr uint16_t  kuCrobMapElinkFebIdx[ kuNbElinksPerCrob ] = {
-    const int16_t kiCrobMapElinkFebIdx[kuNbElinksPerCrob] = {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2,
-                                                             3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5,
-                                                             6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8};
-    //! Map from eLink index to ASIC index within CROB ( 0 to kuNbFebsPerCrob * kuNbAsicPerFeb )
+    static const uint16_t numCrobPerComp   = 1;    // Number of CROBs possible per DPB
+    static const uint16_t numElinksPerCrob = 42;   // Number of elinks in each CROB ?
+    static const uint16_t kuNbFebsPerCrob  = 9;    // Number of FEBs  connected to each CROB for mMuch 2019
+    static const uint16_t kuNbAsicsPerFeb  = 1;    // Number of ASICs connected in each FEB for MUCH
+    static const uint16_t numChanPerAsic   = 128;  // Number of channels in each ASIC
 
     /// Variables
-    uint16_t numComp = 6;                  // Total number of MUCH DPBs in system
-    
+    uint16_t numComp = 6;  // Total number of MUCH DPBs in system
+
     std::vector<int16_t> fiCrobActiveFlag;    // Array to hold the active flag for all CROBs, [ NbDpb * kuNbCrobPerDpb ]
     uint16_t fuFebsInGemA = 0;                // Number of FEBs connected in GEM Module A
     uint16_t fuFebsInGemB = 0;                // Number of FEBs connected in GEM Module B
