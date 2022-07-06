@@ -4,10 +4,13 @@
 
 #include "MuchReadoutConfig.h"
 
+#include "CbmMuchAddress.h"
+
 //#include "FairDetParIo.h"
 //#include "FairParIo.h"
 //#include "FairParamList.h"
 #include <Logger.h>
+#include <bitset>
 
 //#include "TMath.h"
 //#include "TString.h"
@@ -32,8 +35,8 @@ void MuchReadoutConfig::putParams(FairParamList* l)
 {
   if (!l) return;
 
-  l->add("NrOfDpbs", fuNrOfDpbs);
-  l->add("DbpIdArray", fiDbpIdArray);
+  l->add("NrOfDpbs", numComp);
+  l->add("DbpIdArray", eqId);
   l->add("CrobActiveFlag", fiCrobActiveFlag);
   l->add("NrOfFebsInGemA", fuFebsInGemA);
   l->add("nFebsIdsArrayA", fnFebsIdsArrayGemA);
@@ -58,12 +61,12 @@ bool MuchReadoutConfig::getParams(FairParamList* l)
 
   if (!l) return false;
 
-  if (!l->fill("NrOfDpbs", &fuNrOfDpbs)) return false;
+  if (!l->fill("NrOfDpbs", &numComp)) return false;
 
-  fiDbpIdArray.Set(fuNrOfDpbs);
-  if (!l->fill("DbpIdArray", &fiDbpIdArray)) return false;
+  eqId.Set(numComp);
+  if (!l->fill("DbpIdArray", &eqId)) return false;
 
-  fiCrobActiveFlag.Set(fuNrOfDpbs * kuNbCrobsPerDpb);
+  fiCrobActiveFlag.Set(numComp * kuNbCrobsPerDpb);
   if (!l->fill("CrobActiveFlag", &fiCrobActiveFlag)) return false;
 
   if (!l->fill("NrOfFebsInGemA", &fuFebsInGemA)) return false;
@@ -109,6 +112,131 @@ bool MuchReadoutConfig::getParams(FairParamList* l)
 }
 */
 
+  void MuchReadoutConfig::Init()
+  {
+    // This here refers to the mCBM 2021 setup.
+    // Taken from CbmMuchUnpackPar in combination with macro/beamtime/mcbm2021/mSts.par
+
+    // Array to hold the unique IDs (equipment ID) for all MUCH DPBs
+    uint16_t eqId[numComp] = {0x18e3, 0x18ef, 0x1861, 0x6601, 0x4f19, 0x5b7b};
+  }
+
+  //To do address need to be checked carefully
+  uint32_t MuchReadoutConfig::CreateMuchAddress(uint32_t dpbidx, int32_t iFebId, uint32_t usChan)
+  {
+    // For generating Station number (GEM1 station = 0, GEM2 station = 1 and RPC station = 2)
+    /// Below FebID is according to FEB Position in Module GEM A or Module GEM B (Carefully write MUCH Par file)
+    int32_t station = -1;
+    int32_t layer   = -1;
+    if (iFebId == -7)  //Pulser FEB
+    {
+      station = 6;  // for Pulser
+      layer   = 0;  //
+    }
+    else if (dpbidx == 0 || dpbidx == 1 || dpbidx == 2)  //First 3 DPBs are for GEM-1
+    {
+      station = 0;  // for mCBM setup
+      layer   = 0;  // Station 0 for GEM-A and station 1 for Module GEM-B
+    }
+    else if (dpbidx == 4 || dpbidx == 5)  //Last 2 DPBs are for GEM-2
+    {
+      station = 1;  // for mCBM setup  station
+      layer   = 0;  // 0 for Module GEM-A and 1 for Module GEM-B
+    }
+    else if (dpbidx == 3) {
+      station = 2;  // for mCBM setup only one station
+      layer   = 0;  //
+    }
+    else {
+      LOG(warning) << "Wrong DPB Id x " << dpbidx;
+      return 0;
+    }  //No address generated.
+
+    //Common layer side module will be 0 only for mCBM 2022
+    int32_t layerside = 0;  // 0 in mCBM
+    int32_t sModule   = 0;  // 0 in mCBM
+
+    int32_t sSector  = -9;  //channel values are from 0-96 therefore as per CbmMuchAddress it is sector
+    int32_t sChannel = -9;  //sector values are from 0-22 therefore as per CbmMuchAddress it is channel
+
+    // Channel flip in stsXYTER v2.1 : 0<->1, 2<->3, 3<->4 and so on...
+    auto fiFlag = 1;  //! Switch to smx2.0/smx2.1 data-> fiFlag = 0 for 2.0 and fiFlag = 1 for 2.1
+    if (fiFlag == 1) {
+      if (usChan % 2 == 0) usChan = usChan + 1;
+      else
+        usChan = usChan - 1;
+    }
+
+    // PadX means CHANNEL for CbmMuchAddress
+    // PadY means SECTOR for CbmMuchAddress
+    // Due to two FLEX cable connected to single FEB; First Flex Connector number
+    // 1 - 63 and second flex connector number 64 - 127
+    //in few FEB positioned these flex connectors are flipped so below correction applied.
+    if (station == 0 && fiFlag == 1 && layer == 0) {  // First layer (GEM1) has old readout PCB
+      if (iFebId == 0 || iFebId == 1 || iFebId == 2 || iFebId == 3 || iFebId == 4 || iFebId == 8 || iFebId == 9
+          || iFebId == 10 || iFebId == 11 || iFebId == 17) {
+        sChannel = GetPadXA(iFebId, 127 - usChan);
+        sSector  = GetPadYA(iFebId, 127 - usChan);
+      }
+      else {
+        sChannel = GetPadXA(iFebId, usChan);
+        sSector  = GetPadYA(iFebId, usChan);
+      }
+    }
+    else if (station == 1 && fiFlag == 1 && layer == 0) {  // second layer (GEM2) has new readout PCB
+      if (iFebId == 0 || iFebId == 1 || iFebId == 2 || iFebId == 3 || iFebId == 4 || iFebId == 8 || iFebId == 9
+          || iFebId == 10 || iFebId == 11 || iFebId == 17) {
+        sChannel = GetPadXB(iFebId, 127 - usChan);
+        sSector  = GetPadYB(iFebId, 127 - usChan);
+      }
+      else {
+        sChannel = GetPadXB(iFebId, usChan);
+        sSector  = GetPadYB(iFebId, usChan);
+      }
+    }
+    else if (station == 0 || station == 1) {  // Both layer with same type of PCB (Probably below is not necessary)
+      if (iFebId == 0 || iFebId == 1 || iFebId == 2 || iFebId == 3 || iFebId == 4 || iFebId == 8 || iFebId == 9
+          || iFebId == 10 || iFebId == 11 || iFebId == 17) {
+        sChannel = GetPadXA(iFebId, 127 - usChan);
+        sSector  = GetPadYA(iFebId, 127 - usChan);
+      }
+      else {
+        sChannel = GetPadXA(iFebId, usChan);
+        sSector  = GetPadYA(iFebId, usChan);
+      }
+    }
+    else if (station == 2) {  //For RPC
+      sChannel = GetPadXRpc(iFebId, usChan);
+      sSector  = GetPadYRpc(iFebId, usChan);
+    }
+    else  // Checking for the not connected or misconnected pads
+    {
+      LOG(debug) << "Sector " << sSector << " channel " << sChannel << " is not connected or misconnected to pad. "
+                 << " corresponding Feb is " << iFebId << " and uschan " << usChan << " DPB id " << dpbidx
+                 << " Skipping this hit message.";
+      return 0;
+    }
+
+    //Creating Unique address of the particular channel of GEM
+    uint32_t address = CbmMuchAddress::GetAddress(station, layer, layerside, sModule, sSector, sChannel);
+    LOG(debug) << "Raw address " << address;
+    address = CbmMuchAddress::SetElementId(address, 1, station);
+    LOG(debug) << "After adding station " << address << " binary " << std::bitset<32>(address);
+    address = CbmMuchAddress::SetElementId(address, 2, layer);
+    LOG(debug) << "After adding Layer " << address << " binary " << std::bitset<32>(address);
+    address = CbmMuchAddress::SetElementId(address, 3, layerside);
+    LOG(debug) << "After adding Layer Side " << address << " binary " << std::bitset<32>(address);
+    address = CbmMuchAddress::SetElementId(address, 4, sModule);
+    LOG(debug) << "After adding module " << address << " binary " << std::bitset<32>(address);
+    address = CbmMuchAddress::SetElementId(address, 5, sSector);
+    LOG(debug) << "After adding sector " << address << " binary " << std::bitset<32>(address);
+    address = CbmMuchAddress::SetElementId(address, 6, sChannel);
+    LOG(debug) << "After adding channel " << address << " binary " << std::bitset<32>(address);
+
+    return address;
+  }
+
+
   // -------------------------------------------------------------------------
   int16_t MuchReadoutConfig::ElinkIdxToFebIdx(uint16_t uElink)
   {
@@ -120,20 +248,9 @@ bool MuchReadoutConfig::getParams(FairParamList* l)
     }
   }
 
-  // -------------------------------------------------------------------------
-  uint16_t MuchReadoutConfig::GetDpbId(uint16_t uDpbIdx)
-  {
-    if (uDpbIdx < fuNrOfDpbs) return fiDbpIdArray[uDpbIdx];
-    else {
-      LOG(warning) << "MuchReadoutConfig::GetDpbId => Index out of bound, "
-                   << "DPB Id is " << std::hex << uDpbIdx << " returning crazy value!";
-      return 0xFFFFFFFF;
-    }
-  }
-
   bool MuchReadoutConfig::IsCrobActive(uint16_t uDpbIdx, uint16_t uCrobIdx)
   {
-    if (uDpbIdx < fuNrOfDpbs) {
+    if (uDpbIdx < numComp) {
       if (uCrobIdx < kuNbCrobsPerDpb) return 0 < fiCrobActiveFlag[uDpbIdx * kuNbCrobsPerDpb + uCrobIdx] ? true : false;
       else {
         LOG(warning) << "MuchReadoutConfig::IsCrobActive => Crob Index out of bound, "
@@ -164,7 +281,7 @@ bool MuchReadoutConfig::getParams(FairParamList* l)
 
   bool MuchReadoutConfig::IsFebActive(uint16_t uDpbIdx, uint16_t uCrobIdx, uint16_t uFebIdx)
   {
-    if (uDpbIdx < fuNrOfDpbs) {
+    if (uDpbIdx < numComp) {
       if (uCrobIdx < kuNbCrobsPerDpb) {
         if (uFebIdx < kuNbFebsPerCrob) {
           uint16_t uIdx = (uDpbIdx * kuNbCrobsPerDpb + uCrobIdx) * kuNbFebsPerCrob + uFebIdx;

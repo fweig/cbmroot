@@ -56,9 +56,8 @@ namespace cbm::algo
     //! Convert from eLink index to FEB Connection ( 0 to kuNbFebsPerCrob)
     int16_t ElinkIdxToFebIdx(uint16_t uElink);
 
-    uint16_t GetNrOfDpbs() { return fuNrOfDpbs; }
-    uint16_t GetDpbId(uint16_t uDpbIdx);
-    uint16_t GetNrOfCrobs() { return fuNrOfDpbs * kuNbCrobsPerDpb; }
+    uint16_t GetNrOfDpbs() { return numComp; }
+    uint16_t GetNrOfCrobs() { return numComp * kuNbCrobsPerDpb; }
     uint16_t GetNrOfFebs() { return GetNrOfCrobs() * kuNbFebsPerCrob; }
     uint16_t GetNrOfAsics() { return GetNrOfFebs() * kuNbAsicsPerFeb; }
     uint16_t GetNrOfFebsInGemA() { return fuFebsInGemA; }
@@ -92,6 +91,12 @@ namespace cbm::algo
     double GetFebAdcOffset(uint16_t uDpbIdx, uint16_t uCrobIdx, uint16_t uFebIdx);
 
   private:
+    /** @brief Initialisation of readout map **/
+    void Init();
+
+    /** @brief Maps component index, Fed Id and channel number to Much Address **/
+    uint32_t CreateMuchAddress(uint32_t dpbidx, int32_t iFebId, uint32_t usChan);
+
     /// Constants
     static const uint16_t kuNbCrobsPerDpb   = 1;    // Number of CROBs possible per DPB
     static const uint16_t kuNbElinksPerCrob = 42;   // Number of elinks in each CROB ?
@@ -105,8 +110,8 @@ namespace cbm::algo
     //! Map from eLink index to ASIC index within CROB ( 0 to kuNbFebsPerCrob * kuNbAsicPerFeb )
 
     /// Variables
-    uint16_t fuNrOfDpbs = 0;                  // Total number of MUCH DPBs in system
-    std::vector<int16_t> fiDbpIdArray;        // Array to hold the unique IDs (equipment ID) for all MUCH DPBs
+    uint16_t numComp = 6;                  // Total number of MUCH DPBs in system
+    
     std::vector<int16_t> fiCrobActiveFlag;    // Array to hold the active flag for all CROBs, [ NbDpb * kuNbCrobPerDpb ]
     uint16_t fuFebsInGemA = 0;                // Number of FEBs connected in GEM Module A
     uint16_t fuFebsInGemB = 0;                // Number of FEBs connected in GEM Module B
