@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Florian Uhlig [committer] */
 
-void pl_all_DigiTot(Int_t iNDet = 4)
+void pl_all_DigiTot(Int_t iNDet = 7)
 {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
@@ -10,7 +10,7 @@ void pl_all_DigiTot(Int_t iNDet = 4)
   //TCanvas *can = new TCanvas("can","can",48,56,900,700);
   //can->Divide(4,4,0.01,0.01);
   //  can->Divide(2,3,0.01,0.01);
-  can->Divide(5, 7, 0.01, 0.01);
+  can->Divide(5, 8, 0.01, 0.01);
   Float_t lsize = 0.07;
 
   gPad->SetFillColor(0);
@@ -23,9 +23,10 @@ void pl_all_DigiTot(Int_t iNDet = 4)
 
   TH1* h;
   TH2* h2;
-  Int_t iType[6]   = {0, 9, 6, 5, 9, 8};
-  Int_t iNumSm[6]  = {5, 2, 1, 1, 3, 2};
-  Int_t iNumRpc[6] = {5, 2, 2, 1, 2, 1};
+  const Int_t iType[7]   = {0, 2, 9, 7, 6, 5, 8};
+  const Int_t iSmNum[7]  = {5, 1, 1, 1, 1, 1, 2};
+  const Int_t iRpcNum[7] = {5, 5, 2, 2, 2, 1, 1};
+
   Int_t iCanv      = 0;
   // if (h!=NULL) h->Delete();
 

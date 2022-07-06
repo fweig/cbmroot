@@ -1,7 +1,7 @@
 /* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Florian Uhlig [committer] */
-void pl_all_Track2D(Int_t iOpt = 1, Int_t iNSt = 7)
+void pl_all_Cal2D(Int_t iOpt = 1, Int_t iNSt = 7)
 {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
@@ -23,7 +23,8 @@ void pl_all_Track2D(Int_t iOpt = 1, Int_t iNSt = 7)
   TH2* h2;
   const Int_t iType[7]   = {0, 2, 9, 7, 6, 5, 8};
   const Int_t iSmNum[7]  = {5, 1, 1, 1, 1, 1, 2};
-  const Int_t iRpcNum[7] = {5, 5, 2, 2, 1, 1, 1};
+  const Int_t iRpcNum[7] = {5, 5, 2, 2, 2, 1, 1};
+
   TString cOpt;
 
   switch (iOpt) {
@@ -31,9 +32,9 @@ void pl_all_Track2D(Int_t iOpt = 1, Int_t iNSt = 7)
     case 1: cOpt = "Pos"; break;
     case 2: cOpt = "TOff"; break;
     case 3: cOpt = "Tot"; break;
-    case 4: cOpt = "Walk"; break;
-    case 5: cOpt = "TofOff"; break;
-    case 6: cOpt = "Mul"; break;
+    case 4: cOpt = "AvWalk"; break;
+    case 5: cOpt = "Walk"; break;
+    case 6: cOpt = "TofOff"; break;
     case 7: cOpt = "Trms"; break;
     case 8: cOpt = "DelPos"; break;
     case 9: cOpt = "DelTOff"; break;
@@ -94,10 +95,8 @@ void pl_all_Track2D(Int_t iOpt = 1, Int_t iNSt = 7)
               iDet++;
               dAvMean += h->ProfileX()->GetMean(2);
               dAvRMS += h->ProfileX()->GetRMS(2);
-              /*
               cout << "TrackQA " << cOpt.Data() << " for TSR " << iType[iSt] << iSm << iRp << ": Off "
                    << h->ProfileX()->GetMean(2) << ", RMS " << h->ProfileX()->GetRMS(2) << endl;
-                   */
             }
         }
       }
@@ -110,5 +109,5 @@ void pl_all_Track2D(Int_t iOpt = 1, Int_t iNSt = 7)
   gROOT->ProcessLine(Form(".! echo %d > %sAvOff.res", (Int_t)(dAvMean * 1.E4), cOpt.Data()));
   gROOT->ProcessLine(Form(".! echo %d > %sAvRMS.res", (Int_t)(dAvRMS * 1.E4), cOpt.Data()));
 
-  can->SaveAs(Form("pl_all_Track_%s.pdf", cOpt.Data()));
+  can->SaveAs(Form("pl_all_Cal_%s.pdf", cOpt.Data()));
 }

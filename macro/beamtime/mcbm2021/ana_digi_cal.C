@@ -8,6 +8,7 @@ void ana_digi_cal(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel = 0
 {
   Int_t iVerbose = 1;
   Int_t iBugCor  = 0;
+  Int_t iFirstEvent = 0;
   //Specify log level (INFO, DEBUG, DEBUG1, ...)
   //TString logLevel = "FATAL";
   //TString logLevel = "ERROR";
@@ -26,8 +27,8 @@ void ana_digi_cal(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel = 0
    cout << "workdir = "<< workDir.Data() << endl;
    return;
   */
-  TString paramDir = workDir + "/macro/beamtime/mcbm2021/";
-  //TString paramDir   = "./";
+  //TString paramDir = workDir + "/macro/beamtime/mcbm2021/";
+  TString paramDir  = "./";
   TString ParFile   = paramDir + "data/" + cFileId + ".params.root";
   TString InputFile = paramDir + "data/" + cFileId + ".root";
   // TString InputFile  =  "./data/" + cFileId + ".root";
@@ -47,6 +48,7 @@ void ana_digi_cal(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel = 0
   if (iRun < 690) TofGeo = "v20a_mcbm";
   else {
     if (iRun < 1112) { TofGeo = "v21a_mcbm"; }
+    if (iRun < 1400) { TofGeo = "v21b_mcbm"; }
     else {
       if (iRun < 1400) { TofGeo = "v21b_mcbm"; }
       else {
@@ -56,6 +58,14 @@ void ana_digi_cal(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel = 0
   }
 
   cout << "Geometry version " << TofGeo << endl;
+
+  if (nEvents > -1) {
+    if (iRun > 10000) {
+      iFirstEvent = 2000000;  // late start of Buc ...
+      if (iRun > 1050) iFirstEvent = 10000000;
+      nEvents += iFirstEvent;
+    }
+  }
 
   //   TObjString *tofDigiFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par"); // TOF digi file
   //   parFileList->Add(tofDigiFile);
@@ -106,14 +116,15 @@ void ana_digi_cal(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel = 0
   tofClust->SetChannelDeadtime(dDeadtime);  // artificial deadtime in ns
   tofClust->SetEnableAvWalk(kFALSE);
   //tofClust->SetEnableMatchPosScaling(kFALSE); // turn off projection to nominal target
-  tofClust->SetYFitMin(1.E4);
+  tofClust->SetYFitMin(1.E3);
   tofClust->SetToDAv(0.04);
   // tofClust->SetTimePeriod(25600.);       // ignore coarse time
   // tofClust->SetCorMode(iBugCor);         // correct missing hits
-  //tofClust->SetIdMode(0);  // calibrate on counter level
+  //tofClust->SetIdMode(0);                  // calibrate on counter level
   tofClust->SetIdMode(1);  // calibrate on module level
   //   tofClust->SetDeadStrips(15,23);   // declare dead strip for T0M3,Rpc0,Strip 23
   //tofClust->SetDeadStrips(25,16);   // declare non-existant diamond strip (#5) dead
+  tofClust->SetMemoryTime(1000000.);  // internal storage time of hits in ns
 
   Int_t calSelRead = calSel;
   if (calSel < 0) calSelRead = 0;
@@ -223,6 +234,7 @@ void ana_digi_cal(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel = 0
     case 72:
     case 73:
       tofClust->SetTRefDifMax(2.5);  // in ns
+      tofClust->SetTRefDifMax(10.);  // in ns
       tofClust->PosYMaxScal(0.9);    //in % of length
       break;
     case 82:
@@ -346,7 +358,7 @@ void ana_digi_cal(Int_t nEvents = 10000000, Int_t calMode = 53, Int_t calSel = 0
   // -----   Intialise and run   --------------------------------------------
   run->Init();
   cout << "Starting run" << endl;
-  run->Run(0, nEvents);
+  run->Run(iFirstEvent, nEvents);
   //tofClust->Finish();
   // ------------------------------------------------------------------------
   // default display

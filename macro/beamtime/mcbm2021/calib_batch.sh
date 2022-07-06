@@ -64,8 +64,8 @@ Deadtime=50
 
 echo define root execution environment at I=$I for Run $RunId Mode $RunIdMode
 
-if [ -e /lustre/nyx ]; then
-source /lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/build6/config.sh 
+if [ -e /lustre ]; then
+source /lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/build/config.sh 
 wdir=/lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2021
 outdir=/lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2021/${RunId}
 else 
@@ -75,8 +75,8 @@ fi
 mkdir ${outdir}
 
 cd  ${wdir}
-echo execute: ./init_cal_all.sh ${RunIdMode} ${CalSet} ${Deadtime}
-source ./init_cal_all.sh ${RunIdMode} ${CalSet} ${Deadtime}
+echo execute: ./init_cal_all.sh ${RunIdMode} ${CalSet} ${Sel2}
+source ./init_cal_all.sh ${RunIdMode} ${CalSet} ${Sel2}
 #echo execute: ./init_calib_star.sh ${RunIdMode} ${CalSet} ${Deadtime}
 #source ./init_calib_star.sh ${RunIdMode} ${CalSet} ${Deadtime}
 
@@ -85,7 +85,8 @@ cd  ${wdir}
 #source ./iter_calib.sh ${RunIdMode} ${CalSet} ${Sel2} ${Deadtime} 
 
 cd  ${wdir}
-echo execute: ./gen_hits.sh ${RunIdMode} ${CalSet} ${Sel2} ${Deadtime}
-source ./gen_hits.sh ${RunIdMode} ${CalSet} ${Sel2} ${Deadtime}
+Nevt=20000000
+echo execute: ./gen_hits.sh ${RunIdMode} ${CalSet} ${Sel2} ${Deadtime} $Nevt 
+source ./gen_hits.sh ${RunIdMode} ${CalSet} ${Sel2} ${Deadtime} $Nevt 
 
 mv -v slurm-${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out ${outdir}/Calib_${RunIdMode}_${CalSet}_${Sel2}.out

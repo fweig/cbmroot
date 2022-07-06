@@ -1,14 +1,14 @@
-/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2021-2022 PI-UHd, GSI
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Florian Uhlig [committer] */
+   Authors: Norbert Herrmann [committer] */
 
-void pl_all_Sel2D(Int_t iOpt = 0, Int_t iSel = 0, Int_t iOpt2 = 0, Int_t iNSt = 4)
+void pl_all_Sel2D(Int_t iOpt = 0, Int_t iSel = 0, Int_t iOpt2 = 0, Int_t iNSt = 7)
 {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
   TCanvas* can = new TCanvas("can", "can", 48, 56, 900, 900);
-  can->Divide(5, 7, 0.01, 0.01);
+  can->Divide(5, 8, 0.01, 0.01);
   //  can->Divide(2,2,0,0);
   Float_t lsize = 0.07;
 
@@ -23,9 +23,10 @@ void pl_all_Sel2D(Int_t iOpt = 0, Int_t iSel = 0, Int_t iOpt2 = 0, Int_t iNSt = 
   TH1* hp;
   TH2* h;
   TH2* h2;
-  const Int_t iType[6]   = {0, 9, 6, 5, 6, 8};
-  const Int_t iSmNum[6]  = {5, 2, 1, 1, 1, 1};
-  const Int_t iRpcNum[6] = {5, 2, 2, 1, 2, 8};
+  const Int_t iType[7]   = {0, 2, 9, 7, 6, 5, 8};
+  const Int_t iSmNum[7]  = {5, 1, 1, 1, 1, 1, 2};
+  const Int_t iRpcNum[7] = {5, 5, 2, 2, 2, 1, 1};
+
   TString cOpt;
 
   switch (iOpt) {
@@ -37,6 +38,7 @@ void pl_all_Sel2D(Int_t iOpt = 0, Int_t iSel = 0, Int_t iOpt2 = 0, Int_t iNSt = 
     case 5: cOpt = "DelTof"; break;
     case 6: cOpt = "dXdY"; break;
     case 7: cOpt = "TofOff"; break;
+    case 7: cOpt = "QASY"; break;
     default:;
   }
 
@@ -61,7 +63,7 @@ void pl_all_Sel2D(Int_t iOpt = 0, Int_t iSel = 0, Int_t iOpt2 = 0, Int_t iNSt = 
         h             = (TH2*) gROOT->FindObjectAny(hname);
         if (h != NULL) {
           h->Draw("colz");
-          gPad->SetLogz();
+          //gPad->SetLogz();
 
           if (iOpt2 > 0) switch (iOpt) {
               case 6: {

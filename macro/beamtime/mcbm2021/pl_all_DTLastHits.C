@@ -22,10 +22,9 @@ void pl_all_DTLastHits(Int_t iNSt = 6, Double_t Tstart = 1., Double_t Tend = 100
 
   TH1* h;
   TH2* h2;
-  const Int_t iType[6]   = {0, 9, 7, 5, 6, 8};
-  const Int_t iSmNum[6]  = {5, 1, 1, 1, 1, 0};
-  const Int_t iRpcNum[6] = {5, 2, 1, 1, 2, 8};
-
+  const Int_t iType[6]   = {0, 2, 9, 6, 5, 8};
+  const Int_t iSmNum[6]  = {5, 1, 2, 1, 1, 0};
+  const Int_t iRpcNum[6] = {5, 5, 2, 2, 1, 8};
 
   Int_t iCanv = 0;
   // if (h!=NULL) h->Delete();

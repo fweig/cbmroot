@@ -7,7 +7,7 @@ void pl_over_cor(Int_t SmT = 9, Int_t iSm = 0, Int_t iRpc = 0, Double_t yRange =
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 50, 0, 800, 800);
-  can->Divide(3, 3);
+  can->Divide(2, 3);
 
   gPad->SetFillColor(0);
   gStyle->SetPalette(1);
@@ -61,7 +61,8 @@ void pl_over_cor(Int_t SmT = 9, Int_t iSm = 0, Int_t iRpc = 0, Double_t yRange =
     cout << hname << " not found" << endl;
   }
 
-  can->cd(4);
+
+  can->cd(5);
   // gROOT->cd();
   for (Int_t iCh = 0; iCh < iNch; iCh++) {
     hname = Form("Cor_SmT%d_sm%03d_rpc%03d_Ch%03d_S0_Walk_px", SmT, iSm, iRpc, iCh);
@@ -84,7 +85,7 @@ void pl_over_cor(Int_t SmT = 9, Int_t iSm = 0, Int_t iRpc = 0, Double_t yRange =
     }
   }
 
-  can->cd(5);
+  can->cd(6);
   for (Int_t iCh = 0; iCh < iNch; iCh++) {
     hname = Form("Cor_SmT%d_sm%03d_rpc%03d_Ch%03d_S1_Walk_px", SmT, iSm, iRpc, iCh);
     h2    = (TH2*) gDirectory->FindObjectAny(hname);
@@ -105,7 +106,7 @@ void pl_over_cor(Int_t SmT = 9, Int_t iSm = 0, Int_t iRpc = 0, Double_t yRange =
     }
   }
 
-  can->cd(6);
+  can->cd(4);
   // gROOT->cd();
   // TString hname=Form("cl_SmT%d_sm%03d_rpc%03d_Mul",SmT,iSm,iRpc);
   hname = Form("cl_CorSmT%d_sm%03d_rpc%03d_Tot_Off", SmT, iSm, iRpc);
@@ -118,7 +119,7 @@ void pl_over_cor(Int_t SmT = 9, Int_t iSm = 0, Int_t iRpc = 0, Double_t yRange =
     cout << hname << " not found" << endl;
   }
 
-  can->cd(7);
+  can->cd(4);
   Int_t iNSel = 2;
   for (Int_t iTr = 0; iTr < iNSel; iTr++) {
     hname = Form("cl_CorSmT%d_sm%03d_rpc%03d_Sel%02d_DelTof", SmT, iSm, iRpc, iTr);
@@ -139,4 +140,5 @@ void pl_over_cor(Int_t SmT = 9, Int_t iSm = 0, Int_t iRpc = 0, Double_t yRange =
       cout << hname << " not found" << endl;
     }
   }
+  can->SaveAs(Form("pl_over_cor_%01d_%01d_%01d.pdf", SmT, iSm, iRpc));
 }

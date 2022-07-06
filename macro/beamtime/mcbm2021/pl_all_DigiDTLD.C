@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Florian Uhlig [committer] */
 
-void pl_all_DigiDTLD(Int_t iNDet = 4, Double_t dDTthr = 2., Int_t iOpt = 0)
+void pl_all_DigiDTLD(Int_t iNDet = 7, Double_t dDTthr = 2., Int_t iOpt = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
@@ -10,7 +10,7 @@ void pl_all_DigiDTLD(Int_t iNDet = 4, Double_t dDTthr = 2., Int_t iOpt = 0)
   //TCanvas *can = new TCanvas("can","can",48,56,900,700);
   //can->Divide(4,4,0.01,0.01);
   //  can->Divide(2,3,0.01,0.01);
-  can->Divide(5, 7, 0.01, 0.01);
+  can->Divide(5, 8, 0.01, 0.01);
   Float_t lsize = 0.07;
 
   gPad->SetFillColor(0);
@@ -25,10 +25,9 @@ void pl_all_DigiDTLD(Int_t iNDet = 4, Double_t dDTthr = 2., Int_t iOpt = 0)
   TH2* h2;
   TH1* hTime;
   TString hnameT;
-
-  const Int_t iType[6]   = {0, 9, 6, 5, 7, 8};
-  const Int_t iSmNum[6]  = {5, 2, 1, 1, 1, 1};
-  const Int_t iRpcNum[6] = {5, 2, 2, 1, 1, 8};
+  const Int_t iType[7]   = {0, 2, 9, 7, 6, 5, 8};
+  const Int_t iSmNum[7]  = {5, 1, 1, 1, 1, 1, 2};
+  const Int_t iRpcNum[7] = {5, 5, 2, 2, 2, 1, 1};
 
   Double_t dTime = 0.;
   Int_t iCanv    = 0;

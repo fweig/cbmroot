@@ -1,8 +1,7 @@
 /* Copyright (C) 2017-2020 PI-UHd, GSI
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Norbert Herrmann [committer] */
-
-void pl_XY_trk(Int_t NSt = 4, Double_t MinEff = 0.5, Double_t dThr = 0.1)
+void pl_XY_trk(Int_t NSt = 4, Double_t MinEff = 0.5, Double_t dThr = 0.1, int iOpt = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
@@ -34,6 +33,7 @@ void pl_XY_trk(Int_t NSt = 4, Double_t MinEff = 0.5, Double_t dThr = 0.1)
     can->cd(iCan++);
     gROOT->cd();
     hname = Form("hXY_AllStations_%d", iSt);
+    if (iOpt == 1) hname = Form("hXY_AllFitStations_%d", iSt);
     h2    = (TH2*) gROOT->FindObjectAny(hname);
     if (h2 != NULL) {
       h2->Draw("colz");

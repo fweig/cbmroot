@@ -6,6 +6,10 @@ void load_hst(TString cstr = "hst/default.hst.root")
 {
   // Read histogramms from the file
   TFile* fHist = TFile::Open(cstr, "READ");
+  if (NULL == fHist) {
+    cout << " File " << cstr.Data() << " not existing " << endl;
+    return;
+  }
   TIter next(fHist->GetListOfKeys());
 
   gROOT->cd();

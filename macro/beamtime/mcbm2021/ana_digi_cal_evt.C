@@ -1,18 +1,14 @@
-/* Copyright (C) 2021 Physikalisches Institut, Universitaet Heidelberg, Heidelberg 
+/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors:  Norbert Herrmann [committer]*/
+   Authors: Florian Uhlig [committer] */
 
-void eval_raw(Int_t nEvents = 10000000, Int_t calMode = 33, Int_t calSel = 1, Int_t calSm = 900, Int_t RefSel = 1,
-              TString cFileId = "Test", Int_t iCalSet = 910601600, Bool_t bOut = 0, Int_t iSel2 = 0,
-              Double_t dDeadtime = 50, TString cCalId = "XXX", Int_t iSel = 910041, Int_t iSel22 = 31,
-              Int_t iTrackingSetup = 4, Int_t iGenCor = 1, Double_t dScalFac = 1., Double_t dChi2Lim2 = 3.,
-              Bool_t bUseSigCalib = kFALSE, Int_t iCalOpt = 1, Int_t iAnaCor = 1, Int_t iTrkPar = 0, Int_t iMc = 0,
-              Int_t iPlot = 0)
+void ana_digi_cal_evt(Int_t nEvents = 10000000, Int_t calMode = 93, Int_t calSel = 0, Int_t calSm = 900,
+                      Int_t RefSel = 1, TString cFileId = "2038", Int_t iCalSet = 910601600, Bool_t bOut = 0,
+                      Int_t iSel2 = 0, Double_t dDeadtime = 50, TString cCalId = "XXX", Int_t iPlot = 1)
 {
   Int_t iVerbose    = 1;
   Int_t iBugCor     = 0;
-  Int_t iFirstEvent = 0;  //500000;
-
+  Int_t iFirstEvent = 0;
 
   //Specify log level (INFO, DEBUG, DEBUG1, ...)
   //TString logLevel = "FATAL";
@@ -27,15 +23,19 @@ void eval_raw(Int_t nEvents = 10000000, Int_t calMode = 33, Int_t calSel = 1, In
   gLogger->SetLogVerbosityLevel("VERYHIGH");
   //gLogger->SetLogVerbosityLevel("MEDIUM");
 
-  TString workDir  = gSystem->Getenv("VMCWORKDIR");
+  TString workDir = gSystem->Getenv("VMCWORKDIR");
+  /*
+   TString workDir    = (TString)gInterpreter->ProcessLine(".! pwd");
+   cout << "workdir = "<< workDir.Data() << endl;
+   return;
+  */
   TString paramDir = workDir + "/macro/beamtime/mcbm2021/";
-  //TString paramDir   = "../";
-
+  //TString paramDir   = "./";
   TString ParFile   = paramDir + "data/" + cFileId + ".params.root";
-  TString InputFile = paramDir + "data/" + cFileId + ".root";
+  TString InputFile = paramDir + "RawDataIn/" + cFileId + ".digievents.root";
   // TString InputFile  =  "./data/" + cFileId + ".root";
-  TString OutputFile = paramDir + "data/EvalRaw_" + cFileId + Form("_%09d_%03d_%02.0f_Cal", iCalSet, iSel2, dDeadtime)
-                       + cCalId + Form("_%d_%03d_trk%03d", iSel, iSel22, iTrackingSetup) + ".out.root";
+  TString OutputFile = paramDir + "data/TofHits_" + cFileId + Form("_%09d_%03d_%02.0f_Cal", iCalSet, iSel2, dDeadtime)
+                       + cCalId + ".out.root";
 
   TString shcmd = "rm -v " + ParFile;
   gSystem->Exec(shcmd.Data());
@@ -44,27 +44,23 @@ void eval_raw(Int_t nEvents = 10000000, Int_t calMode = 33, Int_t calSel = 1, In
 
   TString FId = cFileId;
   Int_t iNLen = FId.First(".");
+  if (iNLen <= 0) iNLen = FId.Length();
   TString cRun(FId(0, iNLen));
   Int_t iRun = cRun.Atoi();
-
-  Int_t iGeo     = 0;
+  cout << "FileId " << cFileId << ", Run " << iRun << endl;
   TString TofGeo = "";
-  if (iGeo == 0) {
-    if (iRun < 690) TofGeo = "v20a_mcbm";
+  if (iRun < 690) TofGeo = "v20a_mcbm";
+  else {
+    if (iRun < 1112) { TofGeo = "v21a_mcbm"; }
+    if (iRun < 1400) { TofGeo = "v21b_mcbm"; }
     else {
-      if (iRun < 1112) { TofGeo = "v21a_mcbm"; }
+      if (iRun < 1400) { TofGeo = "v21b_mcbm"; }
       else {
-        if (iRun < 1400) { TofGeo = "v21b_mcbm"; }
+        if (iRun < 2000) { TofGeo = "v21d_mcbm"; }
         else {
-          if (iRun < 2050) { TofGeo = "v21d_mcbm"; }
+          if (iRun < 2100) { TofGeo = "v21e_mcbm"; }
           else {
-            if (iRun < 2150) { TofGeo = "v21e_mcbm"; }
-            else {
-              if (iRun < 2176) { TofGeo = "v21f_mcbm"; }
-              else {
-                TofGeo = "v21g_mcbm";
-              }
-            }
+            TofGeo = "v21f_mcbm";
           }
         }
       }
@@ -80,10 +76,7 @@ void eval_raw(Int_t nEvents = 10000000, Int_t calMode = 33, Int_t calSel = 1, In
     }
   }
 
-  //   TObjString *tofDigiFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digi.par"); // TOF digi file
-  //   parFileList->Add(tofDigiFile);
 
-  //   TObjString tofDigiBdfFile = new TObjString( paramDir + "/tof." + FPar + "digibdf.par");
   TObjString* tofDigiBdfFile = new TObjString(workDir + "/parameters/tof/tof_" + TofGeo + ".digibdf.par");
   parFileList->Add(tofDigiBdfFile);
 
@@ -102,61 +95,25 @@ void eval_raw(Int_t nEvents = 10000000, Int_t calMode = 33, Int_t calSel = 1, In
     master->Draw("ogl");
   }
 
-  Int_t iRef    = iSel % 1000;
-  Int_t iDut    = (iSel - iRef) / 1000;
-  Int_t iDutRpc = iDut % 10;
-  iDut          = (iDut - iDutRpc) / 10;
-  Int_t iDutSm  = iDut % 10;
-  iDut          = (iDut - iDutSm) / 10;
-  Int_t iRefRpc = iRef % 10;
-  iRef          = (iRef - iRefRpc) / 10;
-  Int_t iRefSm  = iRef % 10;
-  iRef          = (iRef - iRefSm) / 10;
-
-  Int_t iSel2in  = iSel2;
-  Int_t iSel2Rpc = iSel2 % 10;
-  iSel2          = (iSel2 - iSel2Rpc) / 10;
-  Int_t iSel2Sm  = iSel2 % 10;
-  iSel2          = (iSel2 - iSel2Sm) / 10;
-
-  Int_t iRSelin = iCalSet % 1000;
   // -----   Reconstruction run   -------------------------------------------
-  FairRunAna* run = new FairRunAna();
-  //run->SetInputFile(InputFile.Data());
-  //run->AddFriend(InputFile.Data());
+  FairRunAna* run             = new FairRunAna();
   FairFileSource* fFileSource = new FairFileSource(InputFile.Data());
   run->SetSource(fFileSource);
-  // run->SetOutputFile(OutputFile);
-  //run->SetSink( new FairRootFileSink( OutputFile.Data() ) );
   run->SetUserOutputFileName(OutputFile.Data());
   run->SetSink(new FairRootFileSink(run->GetUserOutputFileName()));
 
+  // ----   Make Reco Events   ----------------------------------------------
+  // ---- This is required if the input is in DigiEvent format
+  auto makeEvents = std::make_unique<CbmTaskMakeRecoEvents>();
+  //LOG(info) << "-I- Adding task " << makeEvents->GetName();
+  run->AddTask(makeEvents.release());
+  // ------------------------------------------------------------------------
+
   gROOT->LoadMacro("ini_Clusterizer.C");
   Char_t* cCmd = Form("ini_Clusterizer(%d,%d,%d,%d,\"%s\",%d,%d,%d,%f,\"%s\")", calMode, calSel, calSm, RefSel,
-                      cFileId.Data(), iCalSet, (Int_t) bOut, iSel2in, dDeadtime, cCalId.Data());
+                      cFileId.Data(), iCalSet, (Int_t) bOut, iSel2, dDeadtime, cCalId.Data());
   cout << "<I> " << cCmd << endl;
   gInterpreter->ProcessLine(cCmd);
-
-  // =========================================================================
-  // ===                       Tracking                                    ===
-  // =========================================================================
-  gROOT->LoadMacro("ini_trks.C");
-  cCmd = Form("ini_trks(%d,%d,%d,%6.2f,%8.1f,\"%s\",%d,%d,%d)", iSel, iTrackingSetup, iGenCor, dScalFac, dChi2Lim2,
-              cCalId.Data(), (Int_t) bUseSigCalib, iCalOpt, iTrkPar);
-  gInterpreter->ProcessLine(cCmd);
-  LOG(info) << cCmd;
-  CbmTofFindTracks* tofFindTracks = CbmTofFindTracks::Instance();
-  Int_t iNStations                = tofFindTracks->GetNStations();
-
-  // =========================================================================
-  // ===                       Analysis                                    ===
-  // =========================================================================
-  gROOT->LoadMacro("ini_AnaTestbeam.C");
-  cCmd =
-    Form("ini_AnaTestbeam(%d,\"%s\",%d,%d,%5.2f,%d,%d)", iSel, cFileId.Data(), iSel2in, iRSelin, 0.9, iAnaCor, iMc);
-  LOG(info) << cCmd;
-  gInterpreter->ProcessLine(cCmd);
-
 
   // -----  Parameter database   --------------------------------------------
 
@@ -186,13 +143,13 @@ void eval_raw(Int_t nEvents = 10000000, Int_t calMode = 33, Int_t calSel = 1, In
   //tofClust->Finish();
   // ------------------------------------------------------------------------
   // default display
-  /*
-  TString Display_Status = "pl_over_Mat04D4best.C";
-  TString Display_Funct = "pl_over_Mat04D4best()";  
-  gROOT->LoadMacro(Display_Status);
-  */
+
 
   gROOT->LoadMacro("save_hst.C");
+  TString FSave = Form("save_hst(\"CluStatus%d_%d_Cal_%s.hst.root\")", iCalSet, iSel2, cCalId.Data());
+  gInterpreter->ProcessLine(FSave.Data());
+
+  //if(calMode%10 >7) return;
 
   gROOT->LoadMacro("fit_ybox.h");
   gROOT->LoadMacro("pl_all_CluMul.C");
@@ -206,14 +163,17 @@ void eval_raw(Int_t nEvents = 10000000, Int_t calMode = 33, Int_t calSel = 1, In
   gROOT->LoadMacro("pl_over_MatD4sel.C");
   gROOT->LoadMacro("pl_all_Sel2D.C");
   gROOT->LoadMacro("pl_all_2D.C");
-
-  TString FSave = Form("save_hst(\"EvalRaw_%d_%d_Cal_%s_%06d_%03d_trk_%03d.hst.root\")", iCalSet, iSel2in,
-                       cCalId.Data(), iSel, iSel22, iTrackingSetup);
-  gInterpreter->ProcessLine(FSave.Data());
+  gROOT->LoadMacro("pl_all_Cal2D.C");
 
   if (iPlot) {
 
-    switch (iCalSet) {
+    switch (calMode % 10) {
+      case 9:
+        for (Int_t iOpt = 0; iOpt < 7; iOpt++) {
+          gInterpreter->ProcessLine(Form("pl_all_Cal2D(%d)", iOpt));
+        }
+        break;
+
       default:
         for (Int_t iOpt = 0; iOpt < 8; iOpt++) {
           for (Int_t iSel = 0; iSel < 2; iSel++) {
@@ -224,6 +184,7 @@ void eval_raw(Int_t nEvents = 10000000, Int_t calMode = 33, Int_t calSel = 1, In
         for (Int_t iOpt = 0; iOpt < 12; iOpt++) {
           gInterpreter->ProcessLine(Form("pl_all_2D(%d)", iOpt));
         }
+
         /*
 	gInterpreter->ProcessLine("pl_over_clu(0,0,0)");
 	gInterpreter->ProcessLine("pl_over_clu(0,0,1)");
@@ -267,10 +228,10 @@ void eval_raw(Int_t nEvents = 10000000, Int_t calMode = 33, Int_t calSel = 1, In
         gInterpreter->ProcessLine("pl_all_CluPosEvol()");
         gInterpreter->ProcessLine("pl_all_CluTimeEvol()");
         gInterpreter->ProcessLine("pl_all_dTSel()");
+      */
 
         //  gInterpreter->ProcessLine("pl_over_MatD4sel()");
         //  gInterpreter->ProcessLine(Display_Funct.Data());
-      */
         break;
         ;
     }

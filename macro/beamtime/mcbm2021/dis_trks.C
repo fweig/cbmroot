@@ -112,9 +112,11 @@ void dis_trks(Int_t nEvents = 10, Int_t iSel = 1, Int_t iGenCor = 1, TString cFi
 
     //run->SetInputFile(InputFile.Data());
     //run->AddFriend(InputDigiFile.Data());
-    run->SetInputFile(InputDigiFile.Data());
-    //run->AddFriend(InputFile.Data());
-    run->SetOutputFile(OutputFile);
+    FairFileSource* fFileSource = new FairFileSource(InputFile.Data());
+    fFileSource->AddFriend(InputDigiFile.Data());
+    run->SetSource(fFileSource);
+    run->SetUserOutputFileName(OutputFile.Data());
+    run->SetSink(new FairRootFileSink(run->GetUserOutputFileName()));
 
     FairLogger::GetLogger()->SetLogScreenLevel(logLevel.Data());
     //  FairLogger::GetLogger()->SetLogVerbosityLevel("MEDIUM");

@@ -4,7 +4,7 @@
 
 void ini_trks(Int_t iSel = 910041, Int_t iTrackingSetup = 4, Int_t iGenCor = 1, Double_t dScalFac = 1.,
               Double_t dChi2Lim2 = 500., TString cCalId = "", Bool_t bUseSigCalib = kFALSE, Int_t iCalOpt = 1,
-              Int_t iTrkPar = 2)
+              Int_t iTrkPar = 2, Double_t dTOffScal = 1.)
 {
   if (cCalId == "") {
     cout << "<E> No action without cCalId!" << endl;
@@ -42,7 +42,8 @@ void ini_trks(Int_t iSel = 910041, Int_t iTrackingSetup = 4, Int_t iGenCor = 1, 
   tofFindTracks->SetCalOpt(iCalOpt);   // 1 - update offsets, 2 - update walk, 0 - bypass
   tofFindTracks->SetCorMode(iGenCor);  // valid options: 0,1,2,3,4,5,6, 10 - 19
   //tofFindTracks->SetTtTarg(0.047);     // target value for Mar2021 double stack, v21b
-  tofFindTracks->SetTtTarg(0.035);  // target value for Jun2021 double stack, v21c, v21d
+  tofFindTracks->SetTtTarg(0.035);        // target value for Jun2021 double stack, v21c, v21d,v21e,v21f
+  tofFindTracks->SetTOffScal(dTOffScal);  // modifier of existing offset values
   //  0.0605);  // target value for Mar2020 triple stack -> betapeak ~ 0.95
   //tofFindTracks->SetTtTarg(0.062);           // target value for Mar2020 triple stack -> betapeak ~ 0.95
   //tofFindTracks->SetTtTarg(0.058);           // target value for Mar2020 double stack
@@ -65,12 +66,14 @@ void ini_trks(Int_t iSel = 910041, Int_t iTrackingSetup = 4, Int_t iGenCor = 1, 
 
   cout << "<I> Tracker Parameter Set: " << iTrkPar << endl;
   switch (iTrkPar) {
-    case 0:                                    // for full mTof setup
-      tofTrackFinder->SetTxMean(0.);           // mean slope dy/dz
+    case 0:                                    // for full mTof setup at 12.5 deg
+      tofTrackFinder->SetTxMean(-0.2);         // mean slope dy/dz
       tofTrackFinder->SetTyMean(0.);           // mean slope dy/dz
-      tofTrackFinder->SetTxLIM(0.3);           // max slope dx/dz
-      tofTrackFinder->SetTyLIM(0.3);           // max dev from mean slope dy/dz
+      tofTrackFinder->SetTxLIM(0.4);           // max slope dx/dz
+      tofTrackFinder->SetTyLIM(0.4);           // max dev from mean slope dy/dz
       tofFindTracks->SetBeamCounter(5, 0, 0);  // default beam counter
+      tofFindTracks->SetR0Lim(30.);
+      tofFindTracks->SetEvNhitMax(40);  // avoid wasting time
       break;
     case 1:                                    // for double stack test counters
       tofTrackFinder->SetTxMean(0.);           // mean slope dy/dz
@@ -97,6 +100,16 @@ void ini_trks(Int_t iSel = 910041, Int_t iTrackingSetup = 4, Int_t iGenCor = 1, 
       tofFindTracks->SetTtMin(-100.);       // allow negative velocities with respect to z-axis
       tofFindTracks->SetR0Lim(30.);         // allow for large extrapolation errors
       break;
+    case 4:                           // for Mar2022-CRI
+      tofTrackFinder->SetTxMean(0.);  // mean slope dy/dz
+      tofTrackFinder->SetTyMean(0.);  // mean slope dy/dz
+      tofTrackFinder->SetTxLIM(0.2);  // max slope dx/dz
+      tofTrackFinder->SetTyLIM(0.4);  // max dev from mean slope dy/dz
+      //tofTrackFinder->SetAddVertex(kTRUE);  // add virtual vertex
+      tofFindTracks->SetTtTarg(0.033);  // target value for mCBM Cosmic2021 triple stack, v21d, run 1588
+      tofFindTracks->SetTtMin(0.);      // allow negative velocities with respect to z-axis
+      tofFindTracks->SetR0Lim(20.);     // allow for large extrapolation errors
+      break;
   }
 
   Int_t iMinNofHits   = -1;
@@ -110,14 +123,14 @@ void ini_trks(Int_t iSel = 910041, Int_t iTrackingSetup = 4, Int_t iGenCor = 1, 
       tofFindTracks->SetStation(0, 5, 0, 0);  // Diamond
       break;
 
-    case 1:  // for calibration mode of full setup
+    case 1:  // for calibration mode of full mTof setup
     {
       Double_t dTsig = dScalFac * 0.03;
       tofFindTracks->SetSIGT(dTsig);  // allow for variable deviations in ns
     }
-      iMinNofHits   = 3;
-      iNStations    = 30;
-      iNReqStations = 4;
+      iMinNofHits   = 4;
+      iNStations    = 39;
+      iNReqStations = 5;
       tofFindTracks->SetStation(0, 5, 0, 0);
       tofFindTracks->SetStation(1, 0, 2, 2);
       tofFindTracks->SetStation(2, 0, 1, 2);
@@ -145,22 +158,24 @@ void ini_trks(Int_t iSel = 910041, Int_t iTrackingSetup = 4, Int_t iGenCor = 1, 
       tofFindTracks->SetStation(24, 0, 4, 4);
       tofFindTracks->SetStation(25, 0, 3, 4);
       tofFindTracks->SetStation(26, 9, 0, 0);
-      tofFindTracks->SetStation(27, 9, 1, 0);
+      tofFindTracks->SetStation(27, 7, 0, 0);
       tofFindTracks->SetStation(28, 9, 0, 1);
-      tofFindTracks->SetStation(29, 9, 1, 1);
-      //tofFindTracks->SetStation(28, 6, 0, 0);
-      //tofFindTracks->SetStation(29, 6, 0, 1);
+      tofFindTracks->SetStation(29, 7, 0, 1);
+      tofFindTracks->SetStation(30, 6, 0, 0);
+      tofFindTracks->SetStation(31, 6, 0, 1);
+      tofFindTracks->SetStation(32, 2, 0, 0);
+      tofFindTracks->SetStation(33, 2, 0, 1);
+      tofFindTracks->SetStation(34, 2, 0, 2);
+      tofFindTracks->SetStation(35, 2, 0, 3);
+      tofFindTracks->SetStation(36, 2, 0, 4);
+      tofFindTracks->SetStation(37, 8, 0, 0);
+      tofFindTracks->SetStation(38, 8, 1, 0);
       break;
 
     case 10:  // for calibration mode of full setup
-    {
-      Double_t dTsig = dScalFac * 0.03;
-      tofFindTracks->SetSIGT(dTsig);  // allow for variable deviations in ns
-    }
       iMinNofHits   = 3;
-      iNStations    = 37;
+      iNStations    = 39;
       iNReqStations = 4;
-      tofFindTracks->SetStation(36, 5, 0, 0);
       tofFindTracks->SetStation(0, 0, 2, 2);
       tofFindTracks->SetStation(1, 0, 1, 2);
       tofFindTracks->SetStation(2, 0, 0, 2);
@@ -187,9 +202,9 @@ void ini_trks(Int_t iSel = 910041, Int_t iTrackingSetup = 4, Int_t iGenCor = 1, 
       tofFindTracks->SetStation(23, 0, 4, 4);
       tofFindTracks->SetStation(24, 0, 3, 4);
       tofFindTracks->SetStation(25, 9, 0, 0);
-      tofFindTracks->SetStation(26, 9, 1, 0);
+      tofFindTracks->SetStation(26, 7, 0, 0);
       tofFindTracks->SetStation(27, 9, 0, 1);
-      tofFindTracks->SetStation(28, 9, 1, 1);
+      tofFindTracks->SetStation(28, 7, 0, 1);
       tofFindTracks->SetStation(29, 6, 0, 0);
       tofFindTracks->SetStation(30, 6, 0, 1);
       tofFindTracks->SetStation(31, 2, 0, 0);
@@ -197,6 +212,9 @@ void ini_trks(Int_t iSel = 910041, Int_t iTrackingSetup = 4, Int_t iGenCor = 1, 
       tofFindTracks->SetStation(33, 2, 0, 2);
       tofFindTracks->SetStation(34, 2, 0, 3);
       tofFindTracks->SetStation(35, 2, 0, 4);
+      tofFindTracks->SetStation(36, 8, 0, 0);
+      tofFindTracks->SetStation(37, 8, 1, 0);
+      tofFindTracks->SetStation(38, 5, 0, 0);
       break;
 
     case 11:  // for calibration mode of 2-stack & test counters

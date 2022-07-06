@@ -1,10 +1,8 @@
 /* Copyright (C) 2017-2018 PI-UHd, GSI
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Norbert Herrmann [committer] */
-
-void pl_TIS(TString sysinfo = "", Double_t dFracMax = 0.1)
+void pl_TIS(Double_t dEffMin = 0.1, Double_t dEffMax = 1.01, TString sysinfo = "")
 {
-  gROOT->LoadMacro(((TString) gSystem->Getenv("VMCWORKDIR") + "/macro/beamtime/pl_Datime.C").Data());
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   TCanvas* can = new TCanvas("can", "can", 48, 55, 450, 600);
@@ -104,6 +102,8 @@ void pl_TIS(TString sysinfo = "", Double_t dFracMax = 0.1)
   pEffSel->Draw("AP");
   gPad->Update();
   auto graph = pEffSel->GetPaintedGraph();
+  graph->SetMinimum(dEffMin);
+  graph->SetMaximum(dEffMax);
   graph->GetXaxis()->SetRangeUser(0., 10.);
   gPad->Update();
   /*
@@ -131,7 +131,10 @@ void pl_TIS(TString sysinfo = "", Double_t dFracMax = 0.1)
   pEffDut->Draw("AP");
   // gPad->SetLogy();
   gPad->Update();
+
   auto gEffDut = pEffDut->GetPaintedGraph();
+  gEffDut->SetMinimum(dEffMin);
+  gEffDut->SetMaximum(dEffMax);
   gEffDut->GetXaxis()->SetRangeUser(0., 10.);
   gPad->Update();
 

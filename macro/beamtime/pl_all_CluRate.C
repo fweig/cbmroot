@@ -2,13 +2,14 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Norbert Herrmann [committer] */
 
-void pl_all_CluRate(Int_t iNSt = 6, Double_t Tstart = 0., Double_t Tend = 800.)
+void pl_all_CluRate(Int_t iNSt = 3, Double_t Tstart = 0., Double_t Tend = 800.)
 {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
   TCanvas* can = new TCanvas("can", "can", 48, 56, 900, 900);
   switch (iNSt) {
+    case 3: can->Divide(5, 6, 0.01, 0.01); break;
     case 6: can->Divide(4, 4, 0.01, 0.01); break;
     case 5: can->Divide(3, 4, 0.01, 0.01); break;
   }
@@ -27,9 +28,9 @@ void pl_all_CluRate(Int_t iNSt = 6, Double_t Tstart = 0., Double_t Tend = 800.)
 
   TH1* h;
   TH2* h2;
-  const Int_t iType[6]   = {5, 4, 6, 2, 9, 8};
-  const Int_t iSmNum[6]  = {3, 1, 1, 2, 3, 3};
-  const Int_t iRpcNum[6] = {1, 1, 2, 1, 2, 1};
+  const Int_t iType[6]   = {0, 2, 9, 2, 9, 8};
+  const Int_t iSmNum[6]  = {5, 1, 1, 2, 3, 3};
+  const Int_t iRpcNum[6] = {5, 5, 2, 1, 2, 1};
 
   Int_t iCanv = 0;
   // if (h!=NULL) h->Delete();

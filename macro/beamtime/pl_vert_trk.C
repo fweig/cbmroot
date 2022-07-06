@@ -1,7 +1,6 @@
 /* Copyright (C) 2020 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Florian Uhlig [committer], Norbert Herrmann */
-
 void pl_vert_trk(Double_t dFitWidth = 0.)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

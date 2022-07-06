@@ -23,8 +23,11 @@ void pl_Eff_TIS(Int_t iDut = 910, Double_t dEffMin = 0.5, Double_t dEffMax = 1.,
   TH1* h1f;
   TH1* h1m;
   TH1* h1all;
+  TH2* h2;
   TH2* h2f;
   TH2* h2m;
+  TH2* h2all;
+
   // if (hPla!=NULL) hPla->Delete();
   TString hname   = "";
   TProfile* h2pfx = NULL;
@@ -35,24 +38,22 @@ void pl_Eff_TIS(Int_t iDut = 910, Double_t dEffMin = 0.5, Double_t dEffMax = 1.,
   gROOT->cd();
   hname = Form("hDutTIS_Found_%d", iDut);
   cout << " Look for histo " << hname << endl;
-  h1 = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1->Draw();
-    gPad->SetLogy();
-    h1f    = (TH1*) h1->Clone();
-    Nfound = h1f->GetEntries();
+  h2 = (TH2*) gROOT->FindObjectAny(hname);
+  if (h2 != NULL) {
+    h2->Draw("colz");
+    //gPad->SetLogy();
+    h2f    = (TH2*) h2->Clone();
+    Nfound = h2f->GetEntries();
   }
   else {
     cout << hname << " not found" << endl;
   }
 
   hname = Form("hDutTIS_Missed_%d", iDut);
-  h1    = (TH1*) gROOT->FindObjectAny(hname);
-  if (h1 != NULL) {
-    h1m     = (TH1*) h1->Clone();
-    Nmissed = h1m->GetEntries();
-    h1m->Draw("same");
-    h1m->SetLineColor(2);
+  h2    = (TH2*) gROOT->FindObjectAny(hname);
+  if (h2 != NULL) {
+    h2m     = (TH2*) h2->Clone();
+    Nmissed = h2m->GetEntries();
   }
   else {
     cout << hname << " not found" << endl;
@@ -60,17 +61,31 @@ void pl_Eff_TIS(Int_t iDut = 910, Double_t dEffMin = 0.5, Double_t dEffMax = 1.,
 
   can->cd(2);
 
-  h1m->Draw();
-  h1f->Draw("same");
+  h2m->Draw("colz");
+  //h1f->Draw("same");
 
   can->cd(3);
 
-  h1all = (TH1*) h1f->Clone("hDutTIS_all");
-  h1all->Add(h1m, h1f, 1., 1.);
+  h2all = (TH2*) h2f->Clone("hDutTIS_all");
+  h2all->Add(h2m, h2f, 1., 1.);
+  h2all->Draw("colz");
+
+  /*
+  TEfficiency* pEffDut = new TEfficiency(*h2f, *h2all);
+  pEffDut->SetTitle("Efficiency of DUT");
+  pEffDut->SetName("hDutTIS_eff");
+  pEffDut->Draw("colz");
+  gPad->Update();
+*/
+
+  can->cd(4);
+  h1all = h2all->ProjectionX();
+  h1f   = h2f->ProjectionX();
+  h1m   = h2m->ProjectionX();
 
   TEfficiency* pEffDut = new TEfficiency(*h1f, *h1all);
   pEffDut->SetTitle("Efficiency of DUT");
-  pEffDut->SetName("hDutTIS_eff");
+  pEffDut->SetName("hDutTIS_eff1D");
   pEffDut->Draw("AP");
   gPad->Update();
 
@@ -86,6 +101,8 @@ void pl_Eff_TIS(Int_t iDut = 910, Double_t dEffMin = 0.5, Double_t dEffMax = 1.,
   gPad->Update();
   gPad->SetGridx();
   gPad->SetGridy();
+
+  return;
 
   can->cd(4);
   hname = Form("hDutDTLH_TIS_%d", iDut);

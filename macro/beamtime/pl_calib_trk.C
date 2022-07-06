@@ -209,7 +209,7 @@ void pl_calib_trk()
 
 
   dTOff       = TMath::Abs(dTOff);
-  Int_t iTOff = ((Int_t)(dTOff * 1000.) * 1000) + (Int_t)(dTRMS * 1000.);
+  Int_t iTOff = ((Int_t)(dTOff * 1000.) * 10000) + (Int_t)(dTRMS * 1000.);
   cout << " dTOff = " << dTOff << ", dRMS = " << dTRMS << " -> iTOff = " << iTOff << endl;
 
   gROOT->ProcessLine(Form(".! echo %d  > TCalib.res", iTOff));

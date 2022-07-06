@@ -1,14 +1,15 @@
-/* Copyright (C) 2020-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2020-2022 PI-UHd, GSI
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Florian Uhlig [committer] */
+   Authors: Norbert Herrmann [committer] */
 
 void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0., Double_t Tend = 800., Int_t iMode = 0,
-                         Int_t iOpt = 0, Double_t THR = 1.E5, Double_t Ymax = 5E3)
+                         Int_t iOpt = 0, Double_t Ymax = 5E3, Double_t THR = 1.E5)
 {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
   TCanvas* can = new TCanvas("can", "can", 48, 56, 900, 900);
+
 
   can->Divide(1, 2, 0.01, 0.01);
 
@@ -30,12 +31,17 @@ void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0.,
   TH1* hRat;
   TH1* hDis;
   TH2* h2;
-  const Int_t iTSR[11] = {500, 2, 12, 1, 11, 3, 11, 4, 14, 5, 15};
-  //const Int_t iTSR[11]     = {500,   41,   31,  900,  901,  910,  911,  600, 601,  33, 43};
-  //const Int_t iPlot[11]    = {  1,    1,    1,    1,    1,    1,    1,    1,   1,   1,  1};
-  const Int_t iPlot[11] = {0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1};
 
-  const Double_t dArea[11] = {1., 864., 864., 864., 756., 852., 852., 280., 280., 864., 864.};
+  const Int_t iTSR[11]     = {500, 41, 31, 900, 901, 700, 701, 600, 601, 33, 43};                   // March 2022
+  const Double_t dArea[11] = {1., 864., 864., 864., 864., 1664., 1664., 172.8, 172.8, 864., 864.};  // March 2022
+
+  //const Int_t iTSR[11] = {500, 2, 12, 1, 11, 3, 11, 0, 10, 4, 14};  // July 2021
+  //const Int_t iTSR[11] = {500, 41, 31, 900, 901, 910, 911, 600, 601, 33, 43};  // May 2021
+  //const Int_t iPlot[11]    = {  1,    1,    1,    1,    1,    1,    1,    1,   1,   1,  1};
+  const Int_t iPlot[11] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+
+  //const Double_t dArea[11] = {1., 864., 864., 864., 756., 852., 852., 172.8, 172.8, 864., 864.};  // May
+  //const Double_t dArea[11] = {1., 432., 432., 432., 432., 426., 426., 172.8, 172.8, 432., 432.}; // Jul
   const Double_t dDist[11] = {1., 353., 532.5, 386., 416., 416., 445., 478., 485., 353., 543.};
 
   Int_t iCanv = 0;
@@ -76,8 +82,9 @@ void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0.,
         hRef->SetMaximum(Ymax);
         hRef->GetYaxis()->SetTitle("Flux (Hz/cm^{2})");
         //ScaleXaxis(hRef,ScaleX); //shift to align times
-        TH1* hREfFlux = (TH1*) hRef->Clone();
-        hREfFlux->SetName("hRefFlux");
+        TH1* hRefFlux = (TH1*) hRef;  //->Clone();
+        cout << "New RefFlux histo: " << hRefFlux->GetName() << endl;
+        hRefFlux->SetName("hRefFlux");
       } break;
       case 2:  //flux=rate/area*dist**2
         hRef->Add(h, hRef, 0., dDist[IndRef] * dDist[IndRef] / dArea[IndRef]);
@@ -104,9 +111,12 @@ void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0.,
   }
 
   can->cd(1);
-  Int_t iCol = 1;
+  Int_t iCol = 0;
   for (Int_t iSt = 0; iSt < iNSt; iSt++) {
+    iCol++;
+    if (iCol == 5 || iCol == 10) iCol++;  // skip yellow
     if (iPlot[iSt] == 0) continue;
+
     iRp     = iTSR[iSt] % 10;
     iSmType = (iTSR[iSt] - iRp) / 10;
     iSm     = iSmType % 10;
@@ -142,8 +152,7 @@ void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0.,
       }
 
       hDis->Draw("samehistE");
-      hDis->SetLineColor(iCol++);
-      if (iCol == 5 || iCol == 10) iCol++;  // skip yellow
+      hDis->SetLineColor(iCol);
       //h->UseCurrentStyle();
       //gPad->SetLogy();
     }
@@ -152,11 +161,15 @@ void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0.,
     }
   }
 
+  // determine and plot ratios
   can->cd(2);
-  iCol         = 1;
-  TLegend* leg = new TLegend(0.25, 0.7, 0.35, 0.95);
+  iCol            = 0;
+  Bool_t bIniPlot = kFALSE;
+  TLegend* leg    = new TLegend(0.25, 0.7, 0.35, 0.95);
   leg->SetTextSize(0.03);
   for (Int_t iSt = 0; iSt < iNSt; iSt++) {
+    iCol++;
+    if (iCol == 5 || iCol == 10) iCol++;  // skip yellow
     if (iPlot[iSt] == 0) continue;
     iRp     = iTSR[iSt] % 10;
     iSmType = (iTSR[iSt] - iRp) / 10;
@@ -212,7 +225,8 @@ void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0.,
           }
         } break;
       }
-      if (iSt == 0) {
+      if (!bIniPlot) {
+        bIniPlot = kTRUE;
         hRat->SetMinimum(1.E-2);
         hRat->SetMaximum(2.);
         hRat->Draw("L E");
@@ -221,9 +235,7 @@ void pl_all_CluRateRatio(Int_t iRef = 500, Int_t iNSt = 3, Double_t Tstart = 0.,
       else
         hRat->Draw("L E SAME");
 
-      hRat->SetLineColor(iCol++);
-      if (iCol == 5 || iCol == 10) iCol++;  // skip yellow
-
+      hRat->SetLineColor(iCol);
       //h->UseCurrentStyle();
       //gPad->SetLogy();
     }

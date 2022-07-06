@@ -49,8 +49,8 @@ void fit_yPos(Int_t SmT = 0, Int_t iSm = 0, Int_t iRpc = 0, Double_t dLini = 0.)
     h2y = h2->ProjectionY();
     h2y->Draw();
     cout << " Fit with ybox " << h2y->GetName() << endl;
-    fit_ybox((const char*) (h2y->GetName()));
-    if (0) {  //NULL != gMinuit ) {
+    fit_ybox((const char*) (h2y->GetName()), dLini);
+    if (1) {  //NULL != gMinuit ) {
       cout << "Minuit ended with " << gMinuit->fCstatu << endl;
     }
 

@@ -1,3 +1,7 @@
+/* Copyright (C) 2020 Facility for Antiproton and Ion Research in Europe, Darmstadt
+   SPDX-License-Identifier: GPL-3.0-only
+   Authors: Pierre-Alain Loizeau [committer], Florian Uhlig, Norbert Herrmann */
+
 /** @file MonitorTof.C
  ** @author Florian Uhlig <f.uhlig@gsi.de>
  ** @date 20.06.2016
@@ -14,10 +18,10 @@ FairRunOnline* run = NULL;
 /// FIXME: Disable clang formatting to keep easy parameters overview
 /* clang-format off */
 void MonitorTof(TString inFile               = "",
-                TString sHostname            = "localhost",
+                TString sHostname            = "node8",
                 Int_t iServerRefreshRate     = 100,
-                Int_t iServerHttpPort        = 8080,
-                UInt_t nrEvents              = 0,
+                Int_t iServerHttpPort        = 8060,
+                UInt_t nrEvents              = 100,
                 Bool_t bIgnoreCriticalErrors = kTRUE,
                 Int_t iGdpbIndex             = -1,
                 TString sHistoFile           = "data/HistosMonitorTof.root")
@@ -43,7 +47,7 @@ void MonitorTof(TString inFile               = "",
   TString paramDir   = srcDir + "/macro/beamtime/mcbm2021/";
   //TString paramDir = "/scratch/cbmroot_macro/macro/beamtime/mcbm2020/";
 
-  TString paramFileTof       = paramDir + "mTofPar.par";
+  TString paramFileTof       = paramDir + "mTofCriPar.par";
   TObjString* parTofFileName = new TObjString(paramFileTof);
   parFileList->Add(parTofFileName);
 
@@ -86,6 +90,7 @@ void MonitorTof(TString inFile               = "",
                           iServerHttpPort);  // refresh each 100 events
   /// To avoid the server sucking all Histos from gROOT when no output file is used
   /// ===> Need to explicitely add the canvases to the server in the task!
+
   run->GetHttpServer()->GetSniffer()->SetScanGlobalDir(kFALSE);
   run->SetAutoFinish(kFALSE);
 

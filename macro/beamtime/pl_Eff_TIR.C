@@ -8,7 +8,7 @@ void pl_Eff_TIR(Int_t iDut = 900, Double_t dEffMin = 0., Double_t dEffMax = 1., 
   gROOT->LoadMacro("pl_Datime.C");
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
-  TCanvas* can = new TCanvas("can", "can", 48, 55, 700, 600);
+  TCanvas* can = new TCanvas("can", "can", 48, 55, 900, 800);
   can->Divide(1, 3);
 
   gPad->SetFillColor(0);
@@ -51,6 +51,7 @@ void pl_Eff_TIR(Int_t iDut = 900, Double_t dEffMin = 0., Double_t dEffMax = 1., 
   }
   else {
     cout << hname << " not found" << endl;
+    return;
   }
 
   can->cd(1);
@@ -83,6 +84,7 @@ void pl_Eff_TIR(Int_t iDut = 900, Double_t dEffMin = 0., Double_t dEffMax = 1., 
   h1m->SetLineColor(kRed);
   gPad->SetLogy();
   h1all->GetXaxis()->SetRangeUser(TIRmin, TIRmax);
+  h1all->GetXaxis()->SetTitle("Time (s)");
   gPad->Update();
 
   can->cd(3);

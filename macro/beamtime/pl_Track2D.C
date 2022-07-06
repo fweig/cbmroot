@@ -1,7 +1,6 @@
 /* Copyright (C) 2020 PI-UHd, GSI
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Norbert Herrmann [committer] */
-
 void pl_Track2D(Int_t iOpt = 1, Int_t iCounterId = 22, Int_t iStrip = -1, Double_t TotMax = 10.)
 {
   //  TCanvas *can = new TCanvas("can22","can22");

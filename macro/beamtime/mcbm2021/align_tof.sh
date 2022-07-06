@@ -1,11 +1,12 @@
 #!/bin/bash
-# Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
-# SPDX-License-Identifier: GPL-3.0-only
-# First commited by Florian Uhlig
+# @file align_tof.sh
+# @copyright Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+# * @license SPDX-License-Identifier: GPL-3.0-only
+# * @authors Norbert Herrmann [orginator] **/
 
 # shell script to iterate tracklet calibration histograms
-#SBATCH -J track
-#SBATCH -D /lustre/nyx/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2021
+#SBATCH -J align
+#SBATCH -D /lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2021
 #SBATCH --time=8:00:00
 ##SBATCH --time=6-00:00:00
 #SBATCH --mem=4000
@@ -56,6 +57,11 @@ if [[ $iTrkPar = "" ]]; then
   #iTrkPar=3   # July2021 acceptance of CRI -mTOF
 fi 
 
+nEvt=$7
+if [[ $nEvt = "" ]]; then 
+  nEvt=2000000  # default event number
+fi
+
 iMc=0
 McId=${cRun:0:4}
 if [ "$McId" = "mcbm" ]; then 
@@ -63,19 +69,20 @@ if [ "$McId" = "mcbm" ]; then
   iMc=1
 fi
 
+iSel=$8
+if [[ $iSel = "" ]]; then 
+  iSel=12002
+fi
+iSel2=-1
 
-# what should be done ?
-#iDut=900; iRef=41; iSel2=31
-iDut=12; iRef=2; iSel2=2  # CRI setup, run 1588, July 2021
-((iSel=$iDut*1000+$iRef))
-iTrkPar=0   # beam
-iTrkPar=1   # beam in limited acceptance (test counter in 2-stack)
-#iTrkPar=2  # cosmics
-nEvt=1000000
+dTOffScal=$9
+if [[ $dTOffScal = "" ]]; then 
+  dTOffScal=1.
+fi
 
 
-dDTres=2000
-dDTRMSres=2000
+dDTres=200000
+dDTRMSres=200000
 iter=0;
 
 if [ -e /lustre/cbm ]; then
@@ -88,12 +95,12 @@ outdir=${wdir}/${cRun}
 fi
 
 # frange2 limits chi2
-fRange2=8.
-TRange2Limit=3.5 
+fRange2=9.
+TRange2Limit=4. 
 
 #frange1 limits DT spectrum range 
-fRange1=6.
-TRange1Limit=1.5
+fRange1=5.
+TRange1Limit=2.5
 dDeadtime=50
 
 if [ ! -e ${cRun} ]; then 
@@ -123,21 +130,12 @@ if [ $nEvt -gt $nEvtMax ]; then
   nEvt=$nEvtMax
 fi
 
-#((fRange2 /= 2))
-#if((${fRange2}<$Range2Limit));then
-# ((fRange2=$Range2Limit))
-#fi
 fRange2=`echo "$fRange2 * 0.9" | bc`
 compare_TRange2=`echo "$fRange2 < $TRange2Limit" | bc`
 if  [[ $compare_TRange2 > 0 ]]; then
   fRange2=$TRange2Limit
 fi
 
-#bash only handles integers!!
-#((fRange1 /= 2))  
-#if((${fRange1}<1));then
-# ((fRange1=1))
-#fi
 fRange1=`echo "$fRange1 * 0.9" | bc`
 compare_TRange=`echo "$fRange1 < $TRange1Limit" | bc`
 if  [[ $compare_TRange > 0 ]]; then
@@ -146,10 +144,12 @@ fi
 
 # correction modes: 2 - TOff from Tt, 3 - Pull t, 4 - x, 5 - y, 6 - z, >10 - Pull t of individual stations 
 #for iCal in 3 2 10 11 12 13 14 15 4 5; do
-#for iCal in 3 4 5; do
-for iCal in 3 2 4; do
+#for iCal in 3 2 4 5; do
+#for iCal in 3 2 4; do
 #for iCal in 3 2 ; do
-#for iCal in 3 ; do
+#for iCal in 3 80 81; do
+for iCal in 3 ; do
+#for iCal in 3 5; do
 #for iCal in 4 3 ; do  # cosmic
     nIt=1
     if [ $iter -eq 0 ] && [ $iMc -eq 1 ]; then
@@ -158,10 +158,11 @@ for iCal in 3 2 4; do
     fi
     while [[ $nIt > 0 ]]; do
 	((iter += 1))
-	root -b -q '../ana_trks.C('$nEvt','$iSel','$iCal',"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",1,1,'$iCalSet',1,'$iTrkPar','$iMc')'
+	root -b -q '../ana_trks.C('$nEvt','$iSel','$iCal',"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",1,0,'$iCalSet',1,'$iTrkPar','$dTOffScal','$iMc')'
 	cp -v tofFindTracks.hst.root ${cRun}_tofFindTracks.hst.root
 	cp -v tofFindTracks.hst.root ${cRun}_tofFindTracks.hst${iter}.root
 	cp -v tofAnaTestBeam.hst.root ${cRun}_TrkAnaTestBeam.hst.root
+	dTOffScal=1.
 	((nIt -= 1))
     done
 done
@@ -185,7 +186,7 @@ compare_result=`echo "$Tres < $dDTres" | bc`
 dTRMSdif=`echo "$dDTRMSres - $TRMSres" | bc`
 compare_RMS=`echo "$TRMSres < $dDTRMSres" | bc`
 
-echo at iter=$iter got TOff = $Tres, compare to $dDTres, dTdif = $dTdif, result = $compare_result, TRMS = $TRMSres, old $dDTRMSres, dif = $dTRMSdif, result = $compare_RMS 
+echo `date`: iter=$iter got TOff = $Tres, compare to $dDTres, dTdif = $dTdif, result = $compare_result, TRMS = $TRMSres, old $dDTRMSres, dif = $dTRMSdif, result = $compare_RMS 
 
 ((compare_result += $compare_RMS))
 echo result_summary: $compare_result 
@@ -209,5 +210,5 @@ done
 
 cd ..
 #mv -v slurm-${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out ${outdir}/IterTrack_${cRun}_${cSet}.out
-mv -v slurm-${SLURM_JOB_ID}.out ${outdir}/IterTrack_${cRun}_${cSet}.out
+mv -v slurm-${SLURM_JOB_ID}.out ${outdir}/AlignTof_${cRun}_${cSet}_${iTraSetup}_${iTrkPar}.out
 

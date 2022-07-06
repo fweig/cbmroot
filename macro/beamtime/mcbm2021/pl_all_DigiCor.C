@@ -1,8 +1,8 @@
-/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2016-2018 PI-UHd, GSI
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Florian Uhlig [committer] */
+   Authors: Norbert Herrmann [committer] */
 
-void pl_all_DigiCor(Int_t iNDet = 4)
+void pl_all_DigiCor(Int_t iNDet = 7)
 {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
@@ -10,7 +10,7 @@ void pl_all_DigiCor(Int_t iNDet = 4)
   //TCanvas *can = new TCanvas("can","can",48,56,900,700);
   //can->Divide(4,4,0.01,0.01);
   //  can->Divide(2,3,0.01,0.01);
-  can->Divide(5, 7, 0.01, 0.01);
+  can->Divide(5, 8, 0.01, 0.01);
   Float_t lsize = 0.07;
 
   gPad->SetFillColor(0);
@@ -23,9 +23,9 @@ void pl_all_DigiCor(Int_t iNDet = 4)
 
   TH1* h;
   TH2* h2;
-  const Int_t iType[6]   = {0, 9, 6, 5, 7, 8};
-  const Int_t iSmNum[6]  = {5, 2, 1, 1, 1, 1};
-  const Int_t iRpcNum[6] = {5, 2, 2, 1, 2, 8};
+  const Int_t iType[7]   = {0, 2, 9, 7, 6, 5, 8};
+  const Int_t iSmNum[7]  = {5, 1, 1, 1, 1, 1, 2};
+  const Int_t iRpcNum[7] = {5, 5, 2, 2, 2, 1, 1};
 
   Int_t iCanv = 0;
   // if (h!=NULL) h->Delete();
@@ -40,7 +40,7 @@ void pl_all_DigiCor(Int_t iNDet = 4)
         h2            = (TH2*) gROOT->FindObjectAny(hname);
         if (h2 != NULL) {
           h2->Draw("colz");
-          //     gPad->SetLogy();
+          gPad->SetLogz();
         }
         else {
           cout << "Histogram " << hname << " not existing. " << endl;

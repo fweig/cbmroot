@@ -52,8 +52,19 @@ if [[ ${cCalRef} = "" ]]; then
     echo use default CalSet $cCalRef
 fi
 
-dDTres=10000000
-nEvt=2000000
+cSingleShot=$9
+if [[ ${cSingleShot} = "S" ]]; then
+  dDTres=0
+  nEvt=-1
+else 
+  dDTres=10000000
+  nEvt=1000000
+fi
+
+iTrkPar=${10}
+if [[ ${iTrkPar} = "" ]]; then
+  iTrkPar=0
+fi
 
 cSel2=$iSel2;
 if [[ $iSel2 < 100 ]]; then
@@ -69,9 +80,11 @@ if [ "$McId" = "mcbm" ]; then
   echo processing MC simulation
   iMc=1
 fi
+
+echo iTrkPar = $iTrkPar
   
 if [ -e /lustre/cbm ]; then
-source /lustre/cbm/users/nh/CBM/cbmroot/trunk/build/config.sh 
+source /lustre/cbm/users/nh/CBM/cbmroot/trunk/build/config.sh -a
 wdir=/lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2021
 outdir=/lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2021/${cRun}
 else 
@@ -115,10 +128,11 @@ while [[ $dDTres > 0 ]]; do
 
 for iCal in 1 2 3 5 6 7 8 1
 do
-
-root -b -q '../../ana_trks_eval.C('$nEvt','$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal',0,'$iCalSet',0,'$iMc')'
+echo execute root -b -q '../../ana_trks_eval.C('$nEvt','$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal',0,'$iCalSet','$iTrkPar','$iMc')'
+root -b -q '../../ana_trks_eval.C('$nEvt','$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal',0,'$iCalSet','$iTrkPar','$iMc')'
 mv -v tofAnaTestBeam.hst.root ${cRun}_TrkAnaTestBeam.hst.root
 rm all_*
+rm core*
 
 if (! (test -f Test.res)); then
   echo no resolution file available: exit
@@ -143,8 +157,9 @@ done
 
 # final action -> scan full statistics 
 iCal=1
-root -b -q '../../ana_trks_eval.C(-1,'$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal',0,'$iCalSet',1,'$iMc')'
+root -b -q '../../ana_trks_eval.C(-1,'$iSel',-1,"'$cRun'","'$cSet'",'$iSel2','$iTraSetup','$fRange1','$fRange2','$dDeadtime',"'$cCalId'",'$iCal',0,'$iCalSet','$iTrkPar','$iMc')'
 rm all_*
+rm core*
 cd ../..
 
 #mv -v slurm-${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out ${outdir}/IterTrack_${cRun}_${cSet}.out

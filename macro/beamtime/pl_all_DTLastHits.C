@@ -2,13 +2,13 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Norbert Herrmann [committer] */
 
-void pl_all_DTLastHits(Int_t iNSt = 6, Double_t Tstart = 1., Double_t Tend = 1000.)
+void pl_all_DTLastHits(Int_t iNSt = 5, Double_t Tstart = 1., Double_t Tend = 1000.)
 {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
   //  TCanvas *can = new TCanvas("can","can",48,55,700,900);
   TCanvas* can = new TCanvas("can", "can", 48, 56, 900, 900);
-  can->Divide(4, 4, 0.01, 0.01);
+  can->Divide(5, 8, 0.01, 0.01);
   //  can->Divide(2,2,0,0);
   Float_t lsize = 0.07;
 
@@ -22,9 +22,9 @@ void pl_all_DTLastHits(Int_t iNSt = 6, Double_t Tstart = 1., Double_t Tend = 100
 
   TH1* h;
   TH2* h2;
-  const Int_t iType[6]   = {5, 4, 6, 2, 9, 8};
-  const Int_t iSmNum[6]  = {1, 1, 1, 2, 3, 3};
-  const Int_t iRpcNum[6] = {1, 1, 2, 1, 2, 1};
+  const Int_t iType[6]   = {0, 2, 9, 6, 5, 8};
+  const Int_t iSmNum[6]  = {5, 1, 2, 1, 1, 0};
+  const Int_t iRpcNum[6] = {5, 5, 2, 2, 1, 8};
 
   Int_t iCanv = 0;
   // if (h!=NULL) h->Delete();

@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Florian Uhlig [committer] */
 
-void pl_all_CluRate(Int_t iNSt = 4, Int_t iOpt = 0, Double_t Tstart = 0., Double_t Tend = 800., Int_t iMode = 0)
+void pl_all_CluRate(Int_t iNSt = 3, Int_t iOpt = 0, Double_t Tstart = 0., Double_t Tend = 800., Int_t iMode = 0)
 {
   //  TCanvas *can = new TCanvas("can22","can22");
   //  can->Divide(2,2);
@@ -11,6 +11,7 @@ void pl_all_CluRate(Int_t iNSt = 4, Int_t iOpt = 0, Double_t Tstart = 0., Double
   switch (iMode) {
     case 0:
       switch (iNSt) {
+        case 3: can->Divide(5, 7, 0.01, 0.01); break;
         case 6: can->Divide(5, 7, 0.01, 0.01); break;
         case 5: can->Divide(5, 6, 0.01, 0.01); break;
         default: can->Divide(5, 6, 0.01, 0.01); break;
@@ -39,9 +40,9 @@ void pl_all_CluRate(Int_t iNSt = 4, Int_t iOpt = 0, Double_t Tstart = 0., Double
 
   TH1* h;
   TH2* h2;
-  const Int_t iType[6]   = {0, 9, 5, 6, 7, 8};
+  const Int_t iType[6]   = {0, 2, 9, 6, 7, 8};
   const Int_t iSmNum[6]  = {5, 1, 1, 1, 1, 1};
-  const Int_t iRpcNum[6] = {5, 2, 1, 2, 1, 8};
+  const Int_t iRpcNum[6] = {5, 5, 2, 2, 1, 8};
 
   Int_t iCanv = 0;
   Int_t iCol  = 0;

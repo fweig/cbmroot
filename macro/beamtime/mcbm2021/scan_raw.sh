@@ -9,10 +9,13 @@
 #SBATCH --time=48:00:00
 #SBATCH --mem=2000
 #SBATCH --partition=long
+
+echo scan_raw for run $1 , CalSet $2
+
 cRun=$1
 
 iCalSet=$2
-if [[ "$iCalset" = "" ]]; then 
+if [[ "$iCalSet" = "" ]]; then 
 iCalSet=31041500
 fi
 

@@ -71,7 +71,7 @@ void check_timing_any(TString fileName, UInt_t uRunId = 0, Int_t nEvents = 0, TS
   timeChecker->AddCheckDetector(ECbmModuleId::kTrd, "Trd");
   timeChecker->RemoveCheckDetector(ECbmModuleId::kTof);
   //timeChecker->AddCheckDetector(ECbmModuleId::kTof, "Tof", -150000, 150000, 320*150);
-  timeChecker->AddCheckDetector(ECbmModuleId::kTof, "Tof", -2000, 2000, 320 * 2);
+  timeChecker->AddCheckDetector(ECbmModuleId::kTof, "Tof", -2000, 2000, 320*2);
   */
 
   /// Add detectors not in default list
