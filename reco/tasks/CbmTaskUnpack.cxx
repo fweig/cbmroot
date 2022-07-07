@@ -35,9 +35,10 @@
 
 
 using namespace std;
+using cbm::algo::UnpackMuchElinkPar;
+using cbm::algo::UnpackMuchPar;
 using cbm::algo::UnpackStsElinkPar;
 using cbm::algo::UnpackStsPar;
-
 
 // -----   Constructor   -----------------------------------------------------
 CbmTaskUnpack::CbmTaskUnpack() : FairTask("Unpack") {}
@@ -76,7 +77,16 @@ void CbmTaskUnpack::Exec(Option_t*)
 #pragma omp parallel for schedule(dynamic) shared(timeslice) reduction(+ : numMs, numBytes, numDigis, numCompUsed)
   for (uint64_t comp = 0; comp < timeslice->num_components(); comp++) {
 
+    // --- Component log
+    size_t numBytesInComp = 0;
+    size_t numDigisInComp = 0;
+    uint64_t numMsInComp  = 0;
+
+    TStopwatch compTimer;
+    compTimer.Start();
+
     auto systemId = static_cast<fles::SubsystemIdentifier>(timeslice->descriptor(comp, 0).sys_id);
+
     if (systemId == fles::SubsystemIdentifier::STS) {
       const uint16_t equipmentId = timeslice->descriptor(comp, 0).eq_id;
       const auto algoIt          = fAlgoSts.find(equipmentId);
@@ -88,14 +98,8 @@ void CbmTaskUnpack::Exec(Option_t*)
       // algorithms depending on the version.
       assert(timeslice->descriptor(comp, 0).sys_ver == 0x20);
 
-      // --- Component log
-      size_t numBytesInComp = 0;
-      size_t numDigisInComp = 0;
-      TStopwatch compTimer;
-      compTimer.Start();
-
       // --- Microslice loop
-      uint64_t numMsInComp = timeslice->num_microslices(comp);
+      numMsInComp = timeslice->num_microslices(comp);
       for (uint64_t mslice = 0; mslice < numMsInComp; mslice++) {
         const auto msDescriptor = timeslice->descriptor(comp, mslice);
         const auto msContent    = timeslice->content(comp, mslice);
@@ -111,17 +115,48 @@ void CbmTaskUnpack::Exec(Option_t*)
         fTimeslice->fData.fSts.fDigis.insert(fTimeslice->fData.fSts.fDigis.end(), result.first.begin(),
                                              result.first.end());
       }  //# microslice
-
-      compTimer.Stop();
-      LOG(debug) << GetName() << ": Component " << comp << ", microslices " << numMsInComp << " input size "
-                 << numBytesInComp << " bytes, "
-                 << ", digis " << numDigisInComp << ", CPU time " << compTimer.CpuTime() * 1000. << " ms";
       numCompUsed++;
-      numBytes += numBytesInComp;
-      numDigis += numDigisInComp;
-      numMs += numMsInComp;
+    }  // system STS
 
-    }  //? system (only STS)
+    if (systemId == fles::SubsystemIdentifier::MUCH) {
+      const uint16_t equipmentId = timeslice->descriptor(comp, 0).eq_id;
+      const auto algoIt          = fAlgoMuch.find(equipmentId);
+      assert(algoIt != fAlgoMuch.end());
+
+      // The current algorithm works for the MUCH data format version XXXX (insert) used in XXXX.
+      // Other versions are not yet supported.
+      // In the future, different data formats will be supported by instantiating different
+      // algorithms depending on the version.
+      // assert(timeslice->descriptor(comp, 0).sys_ver == 0x20);    // set for MUCH
+
+      // --- Microslice loop
+      numMsInComp = timeslice->num_microslices(comp);
+      for (uint64_t mslice = 0; mslice < numMsInComp; mslice++) {
+        const auto msDescriptor = timeslice->descriptor(comp, mslice);
+        const auto msContent    = timeslice->content(comp, mslice);
+        numBytesInComp += msDescriptor.size;
+        auto result = (algoIt->second)(msContent, msDescriptor, timeslice->start_time());
+        LOG(debug1) << GetName() << ": Component " << comp << ", microslice " << mslice << ", digis "
+                    << result.first.size() << ", errors " << result.second.fNumNonHitOrTsbMessage << " | "
+                    << result.second.fNumErrElinkOutOfRange << " | " << result.second.fNumErrInvalidFirstMessage
+                    << " | " << result.second.fNumErrInvalidMsSize << " | " << result.second.fNumErrTimestampOverflow
+                    << " | ";
+        numDigisInComp += result.first.size();
+#pragma omp critical(insert_much_digis)
+        fTimeslice->fData.fMuch.fDigis.insert(fTimeslice->fData.fMuch.fDigis.end(), result.first.begin(),
+                                              result.first.end());
+      }  //# microslice
+      numCompUsed++;
+    }  // system MUCH
+
+    compTimer.Stop();
+    LOG(debug) << GetName() << ": Component " << comp << ", microslices " << numMsInComp << " input size "
+               << numBytesInComp << " bytes, "
+               << ", digis " << numDigisInComp << ", CPU time " << compTimer.CpuTime() * 1000. << " ms";
+
+    numBytes += numBytesInComp;
+    numDigis += numDigisInComp;
+    numMs += numMsInComp;
 
   }  //# component
 
@@ -129,9 +164,13 @@ void CbmTaskUnpack::Exec(Option_t*)
 #ifdef WITH_EXECUTION
   std::sort(std::execution::par_unseq, fTimeslice->fData.fSts.fDigis.begin(), fTimeslice->fData.fSts.fDigis.end(),
             [](CbmStsDigi digi1, CbmStsDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
+  std::sort(std::execution::par_unseq, fTimeslice->fData.fMuch.fDigis.begin(), fTimeslice->fData.fMuch.fDigis.end(),
+            [](CbmMuchDigi digi1, CbmMuchDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
 #else
   std::sort(fTimeslice->fData.fSts.fDigis.begin(), fTimeslice->fData.fSts.fDigis.end(),
             [](CbmStsDigi digi1, CbmStsDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
+  std::sort(fTimeslice->fData.fMuch.fDigis.begin(), fTimeslice->fData.fMuch.fDigis.end(),
+            [](CbmMuchDigi digi1, CbmMuchDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
 #endif
 
   // --- Timeslice log
@@ -202,16 +241,16 @@ InitStatus CbmTaskUnpack::Init()
   ioman->RegisterAny("DigiTimeslice.", fTimeslice, IsOutputBranchPersistent("DigiTimeslice."));
   LOG(info) << "--- Registered branch DigiTimeslice.";
 
-  // --- Common parameters for all components
-  uint32_t numChansPerAsic   = 128;  // R/O channels per ASIC
-  uint32_t numAsicsPerModule = 16;   // Number of ASICs per module
+  // --- Common parameters for all components for STS
+  uint32_t numChansPerAsicSts   = 128;  // R/O channels per ASIC for STS
+  uint32_t numAsicsPerModuleSts = 16;   // Number of ASICs per module for STS
 
-  // Create one algorithm per component and configure it with parameters
-  auto equipIds = fStsConfig.GetEquipmentIds();
-  for (auto& equip : equipIds) {
+  // Create one algorithm per component for STS and configure it with parameters
+  auto equipIdsSts = fStsConfig.GetEquipmentIds();
+  for (auto& equip : equipIdsSts) {
     std::unique_ptr<UnpackStsPar> par(new UnpackStsPar());
-    par->fNumChansPerAsic   = numChansPerAsic;
-    par->fNumAsicsPerModule = numAsicsPerModule;
+    par->fNumChansPerAsic   = numChansPerAsicSts;
+    par->fNumAsicsPerModule = numAsicsPerModuleSts;
     const size_t numElinks  = fStsConfig.GetNumElinks(equip);
     for (size_t elink = 0; elink < numElinks; elink++) {
       UnpackStsElinkPar elinkPar;
@@ -227,6 +266,24 @@ InitStatus CbmTaskUnpack::Init()
     fAlgoSts[equip].SetParams(std::move(par));
     LOG(info) << "--- Configured equipment " << equip << " with " << numElinks << " elinks";
   }  //# equipments
+
+  // --- Common parameters for all components for MUCH
+  uint32_t numChansPerAsicMuch = 128;  // R/O channels per ASIC for MUCH
+
+  // Create one algorithm per component and configure it with parameters
+  auto equipIdsMuch = fMuchConfig.GetEquipmentIds();
+  for (auto& equip : equipIdsMuch) {
+    std::unique_ptr<UnpackMuchPar> par(new UnpackMuchPar());
+    par->fNumChansPerAsic  = numChansPerAsicMuch;
+    const size_t numElinks = fMuchConfig.GetNumElinks(equip);
+    for (size_t elink = 0; elink < numElinks; elink++) {
+      UnpackMuchElinkPar elinkPar;
+      elinkPar.fAddress    = fMuchConfig.Map(equip, elink);  // Vector of MUCH addresses for this elink
+      elinkPar.fTimeOffset = 0.;
+    }
+    fAlgoMuch[equip].SetParams(std::move(par));
+    LOG(info) << "--- Configured equipment " << equip << " with " << numElinks << " elinks";
+  }
 
   LOG(info) << "--- Configured " << fAlgoSts.size() << " unpacker algorithms for STS.";
   LOG(debug) << "Readout map:" << fStsConfig.PrintReadoutMap();

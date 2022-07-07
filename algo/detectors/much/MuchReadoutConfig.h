@@ -20,11 +20,29 @@ namespace cbm::algo
   class MuchReadoutConfig {
 
   public:
-    /** Standard constructor **/
-    MuchReadoutConfig() {};
+    /** @brief Constructor **/
+    MuchReadoutConfig();
 
-    /** Destructor **/
-    ~MuchReadoutConfig() {};
+    /** @brief Destructor **/
+    virtual ~MuchReadoutConfig();
+
+    /** @brief Equipment in the configuration
+     ** @return Vector of equipment IDs
+     **/
+    std::vector<uint16_t> GetEquipmentIds();
+
+    /** @brief Number of elinks of a component
+     ** @param Equipment ID
+     ** @return Number of elinks
+     **/
+    size_t GetNumElinks(uint16_t equipmentId);
+
+    /** @brief API: Mapping from component and elink to addresses per channel
+     ** @param equipId     Equipment identifier (component)
+     ** @param elink       Elink number within component
+     ** @return Vector of MUCH addresses, indexed via channel number
+     */
+    std::vector<uint32_t> Map(uint16_t equipId, uint16_t elink);
 
     uint16_t GetNrOfCrobs() { return numComp * numCrobPerComp; }
     uint16_t GetNrOfFebs() { return GetNrOfCrobs() * kuNbFebsPerCrob; }

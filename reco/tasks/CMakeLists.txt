@@ -39,7 +39,7 @@ ${CBMROOT_SOURCE_DIR}/core/data/raw
 ${CBMROOT_SOURCE_DIR}/algo/evbuild
 ${CBMROOT_SOURCE_DIR}/algo/trigger
 ${CBMROOT_SOURCE_DIR}/algo/detectors/sts
-
+${CBMROOT_SOURCE_DIR}/algo/detectors/much
 )
 
 set(SYSTEM_INCLUDE_DIRECTORIES

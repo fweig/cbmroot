@@ -95,7 +95,7 @@ namespace cbm::algo
   inline void UnpackMuch::ProcessHitMessage(const stsxyter::Message& message, vector<CbmMuchDigi>& digiVec,
                                             UnpackMuchMonitorData& monitor) const
   {
-
+    /* STS version
     // --- Check eLink and get parameters
     uint16_t elink = message.GetLinkIndexHitBinning();
     if (elink >= fParams.fElinkParams.size()) {
@@ -130,7 +130,8 @@ namespace cbm::algo
     double charge = elinkPar.fAdcOffset + (message.GetHitAdc() - 1) * elinkPar.fAdcGain;
 
     // --- Create output digi
-    //  digiVec.emplace_back(address, channel, messageTime, charge);
+    digiVec.emplace_back(address, channel, messageTime, charge);
+*/
   }
   // --------------------------------------------------------------------------
 

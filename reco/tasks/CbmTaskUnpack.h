@@ -15,7 +15,9 @@
 #include <vector>
 
 #include "EventBuilder.h"
+#include "MuchReadoutConfig.h"
 #include "StsReadoutConfig.h"
+#include "UnpackMuch.h"
 #include "UnpackSts.h"
 
 class CbmDigiManager;
@@ -67,9 +69,14 @@ private:  // methods
 
 
 private:  // members
-  CbmSourceTs* fSource                              = nullptr;
+  CbmSourceTs* fSource = nullptr;
+
   std::map<uint16_t, cbm::algo::UnpackSts> fAlgoSts = {};
   cbm::algo::StsReadoutConfig fStsConfig {};
+
+  std::map<uint16_t, cbm::algo::UnpackMuch> fAlgoMuch = {};
+  cbm::algo::MuchReadoutConfig fMuchConfig {};
+
   size_t fNumTs                = 0;
   size_t fNumMs                = 0;
   size_t fNumBytes             = 0;

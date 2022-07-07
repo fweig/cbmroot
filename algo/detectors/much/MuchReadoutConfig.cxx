@@ -41,6 +41,49 @@ void MuchReadoutConfig::putParams(FairParamList* l)
 }
 */
 
+  // ---  Constructor  ------------------------------------------------------------------
+  MuchReadoutConfig::MuchReadoutConfig() { Init(); }
+  // ------------------------------------------------------------------------------------
+
+
+  // ---   Destructor   -----------------------------------------------------------------
+  MuchReadoutConfig::~MuchReadoutConfig() {}
+  // ------------------------------------------------------------------------------------
+
+  // ---   Equipment IDs   --------------------------------------------------------------
+  std::vector<uint16_t> MuchReadoutConfig::GetEquipmentIds()
+  {
+    std::vector<uint16_t> result;
+    for (auto& entry : fReadoutMap)
+      result.push_back(entry.first);
+    return result;
+  }
+  // ------------------------------------------------------------------------------------
+
+  // ---   Number of elinks for a component / equipment   -------------------------------
+  size_t MuchReadoutConfig::GetNumElinks(uint16_t equipmentId)
+  {
+    size_t result = 0;
+    auto it       = fReadoutMap.find(equipmentId);
+    if (it != fReadoutMap.end()) result = fReadoutMap[equipmentId].size();
+    return result;
+  }
+  // ------------------------------------------------------------------------------------
+
+
+  // ---  Mapping (equimentId, elink) -> address[channel]  ------------------------------
+  std::vector<uint32_t> MuchReadoutConfig::Map(uint16_t equipmentId, uint16_t elinkId)
+  {
+    std::vector<uint32_t> result;
+    auto equipIter = fReadoutMap.find(equipmentId);
+    if (equipIter != fReadoutMap.end()) {
+      if (elinkId < equipIter->second.size()) { result = equipIter->second.at(elinkId); }
+    }
+    return result;
+  }
+  // ------------------------------------------------------------------------------------
+
+
   void MuchReadoutConfig::Init()
   {
     // This here refers to the mCBM 2021 setup.

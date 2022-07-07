@@ -29,11 +29,11 @@ namespace cbm::algo
    ** @brief STS Unpacking parameters for one eLink / ASIC
    **/
   struct UnpackMuchElinkPar {
-    int32_t fAddress     = 0;   ///< CbmMuchAddress for the connected module
-    uint32_t fAsicNr     = 0;   ///< Number of connected ASIC within the module
+    std::vector<uint32_t> fAddress;  ///< CbmMuchAddress for different channels
+    //uint32_t fAsicNr     = 0;   ///< Number of connected ASIC within the module
     uint64_t fTimeOffset = 0.;  ///< Time calibration parameter
-    double fAdcOffset    = 0.;  ///< Charge calibration parameter
-    double fAdcGain      = 0.;  ///< Charge calibration parameter
+    //double fAdcOffset    = 0.;  ///< Charge calibration parameter
+    //double fAdcGain      = 0.;  ///< Charge calibration parameter
   };
 
 
