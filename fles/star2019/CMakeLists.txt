@@ -66,11 +66,6 @@ Set(SRCS
    eventbuilder/CbmStar2019EventBuilderEtof.cxx
 )
 
-If(_UINT8_T_EXIST)
-  Add_Definitions(-DHAVE_UINT8_T_HEADER_FILE)
-  Set(DEFINITIONS HAVE_UINT8_T_HEADER_FILE)
-EndIf()
-
 Set(LINKDEF CbmFlibStar2019LinkDef.h )
 Set(LIBRARY_NAME CbmFlibStar2019)
 Set(DEPENDENCIES

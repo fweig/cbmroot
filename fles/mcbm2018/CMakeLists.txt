@@ -127,11 +127,6 @@ Set(SRCS
    tasks/CbmMcbmSpillFindTask.cxx
 )
 
-If(_UINT8_T_EXIST)
-  Add_Definitions(-DHAVE_UINT8_T_HEADER_FILE)
-  Set(DEFINITIONS HAVE_UINT8_T_HEADER_FILE)
-EndIf()
-
 Set(LINKDEF CbmFlibMcbm2018LinkDef.h )
 Set(LIBRARY_NAME CbmFlibMcbm2018)
 Set(DEPENDENCIES

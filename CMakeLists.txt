@@ -1,5 +1,4 @@
 # The name of our project is "CBMROOT".  CMakeLists files in this project can
-
 # refer to the root source directory of the project as ${CBMROOT_SOURCE_DIR} or
 # as ${CMAKE_SOURCE_DIR} and to the root binary directory of the project as
 # ${CBMROOT_BINARY_DIR} or ${CMAKE_BINARY_DIR}.
@@ -18,22 +17,10 @@ project(CBMROOT)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-FIND_PATH(FAIRBASE NAMES FairRun.h  PATHS
-  ${CBMBASE_DIR}/steer
-  NO_DEFAULT_PATH
-)
-
-If (FAIRBASE)
-  Message(STATUS "Found FAIRBASE")
-  SET(FAIRBASE ${FAIRBASE})
-Else (FAIRBASE)
-  Message(STATUS "NOT Found FAIRBASE")
-  IF(NOT DEFINED ENV{FAIRROOTPATH})
-     MESSAGE(FATAL_ERROR "You did not define the environment variable FAIRROOTPATH which is needed to find FairRoot. Please set this variable and execute cmake again.")
-  ENDIF(NOT DEFINED ENV{FAIRROOTPATH})
-  SET(FAIRROOTPATH $ENV{FAIRROOTPATH})
-
-EndIf (FAIRBASE)
+IF(NOT DEFINED ENV{FAIRROOTPATH})
+  MESSAGE(FATAL_ERROR "You did not define the environment variable FAIRROOTPATH which is needed to find FairRoot. Please set this variable and execute cmake again.")
+ENDIF(NOT DEFINED ENV{FAIRROOTPATH})
+SET(FAIRROOTPATH $ENV{FAIRROOTPATH})
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/
 # is checked
@@ -45,20 +32,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 set(CMAKE_PREFIX_PATH $ENV{SIMPATH} ${CMAKE_PREFIX_PATH})
 set(CMAKE_INSTALL_LIBDIR lib)
 
-if(FAIRROOTPATH)
-  find_package(FairRoot)
-  SET(MY_ROOT_INCLUDE_PATH ${FAIRROOT_INCLUDE_DIR})
-  If(CMAKE_INSTALL_PREFIX)
-     Message("***** HERE *****")
-     SET(MY_ROOT_INCLUDE_PATH 
-         ${MY_ROOT_INCLUDE_PATH} 
-         "${CMAKE_INSTALL_PREFIX}/include" 
-         "${CMAKE_INSTALL_PREFIX}/include/mvd"
-         "${CMAKE_INSTALL_PREFIX}/include/littrack"
-         "${CMAKE_INSTALL_PREFIX}/include/KF"
-        )
-  EndIf(CMAKE_INSTALL_PREFIX)
-endif(FAIRROOTPATH)
+find_package(FairRoot)
 
 # Load some basic macros which are needed later on
 include(CbmMacros)
@@ -183,17 +157,6 @@ Set(INCLUDE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/include")
 
 Set(VMCWORKDIR ${CBMROOT_SOURCE_DIR})
 
-Option(USE_PATH_INFO "Information from PATH and LD_LIBRARY_PATH are used." OFF)
-If(USE_PATH_INFO)
-  Set(PATH $ENV{PATH})
-  If (APPLE)
-    Set(LD_LIBRARY_PATH $ENV{DYLD_LIBRARY_PATH})
-  Else (APPLE)
-    Set(LD_LIBRARY_PATH $ENV{LD_LIBRARY_PATH})
-  EndIf (APPLE)
-Else(USE_PATH_INFO)
-  STRING(REGEX MATCHALL "[^:]+" PATH $ENV{PATH})
-EndIf(USE_PATH_INFO)
 
 # Check if the user wants to build the project in the source
 # directory
@@ -207,92 +170,75 @@ ENDIF(NOT UNIX)
 
 #Check if necessary environment variables are set
 #If not stop execution
-if(NOT CBMROOT_MINIMAL)
-  IF(NOT DEFINED ENV{SIMPATH})
-    MESSAGE(FATAL_ERROR "You did not define the environment variable SIMPATH which is nedded to find the external packages. Please set this variable and execute cmake again.")
-  ENDIF(NOT DEFINED ENV{SIMPATH})
-  SET(SIMPATH $ENV{SIMPATH})
-else(NOT CBMROOT_MINIMAL)
-  if(NOT DEFINED ENV{ROOTSYS})
-    MESSAGE(FATAL_ERROR "You did not define the environment variable ROOTSYS which is nedded for the installation of the minimal version of CbmRoot. Please set this variable and execute cmake again.")
-  endif(NOT DEFINED ENV{ROOTSYS})
-endif(NOT CBMROOT_MINIMAL)
-
-
-# Check if the external packages are installed into a separate install
-# directory
-CHECK_EXTERNAL_PACKAGE_INSTALL_DIR()
+IF(NOT DEFINED ENV{SIMPATH})
+  MESSAGE(FATAL_ERROR "You did not define the environment variable SIMPATH which is nedded to find the external packages. Please set this variable and execute cmake again.")
+ENDIF(NOT DEFINED ENV{SIMPATH})
+SET(SIMPATH $ENV{SIMPATH})
 
 # searches for needed packages
 # REQUIRED means that cmake will stop if this packages are not found
 # For example the framework can run without GEANT4, but ROOT is
 # mandatory
-if(CBMROOT_MINIMAL)
-  MESSAGE("******* Install minimal CbmRoot Version ********")
-  find_package(ROOT 6.00.00 REQUIRED)
-else(CBMROOT_MINIMAL)
-  find_package(ROOT 6.00.00 REQUIRED)
-  if("${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR}" VERSION_GREATER 6.16)
-    if("${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR}" VERSION_LESS 6.26)
-      Execute_Process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --has-vmc
-                       OUTPUT_VARIABLE ROOT_vmc_FOUND
-                      )
+find_package(ROOT 6.00.00 REQUIRED)
+if("${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR}" VERSION_GREATER 6.16)
+  if("${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR}" VERSION_LESS 6.26)
+    Execute_Process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --has-vmc
+                    OUTPUT_VARIABLE ROOT_vmc_FOUND
+                   )
 
-      String(STRIP ${ROOT_vmc_FOUND} ROOT_vmc_FOUND)
-      If(NOT ROOT_vmc_FOUND)
-        set(CMAKE_PREFIX_PATH $ENV{SIMPATH} ${CMAKE_PREFIX_PATH})
-        find_package2(PUBLIC VMC REQUIRED)
-        set(VMCLIB VMCLibrary)
-      endif()
-    else()
+    String(STRIP ${ROOT_vmc_FOUND} ROOT_vmc_FOUND)
+    If(NOT ROOT_vmc_FOUND)
       set(CMAKE_PREFIX_PATH $ENV{SIMPATH} ${CMAKE_PREFIX_PATH})
       find_package2(PUBLIC VMC REQUIRED)
       set(VMCLIB VMCLibrary)
     endif()
+  else()
+    set(CMAKE_PREFIX_PATH $ENV{SIMPATH} ${CMAKE_PREFIX_PATH})
+    find_package2(PUBLIC VMC REQUIRED)
+    set(VMCLIB VMCLibrary)
   endif()
+endif()
 
-  find_package2(PUBLIC Geant3 REQUIRED)
-  if(Geant3_FOUND)
-    Message("Geant3 was found")
-    Set(Geant3_LIBRARY_DIR ${Geant3_DIR}/../../${Geant3_CMAKE_INSTALL_LIBDIR})
-    FIND_PATH(Geant3_SYSTEM_DIR NAMES data PATHS
-              ${Geant3_DIR}/../../share/geant3
-              ${Geant3_DIR}/../../share/Geant3-${Geant3_VERSION}
-              NO_DEFAULT_PATH)
-  endif()
+find_package2(PUBLIC Geant3 REQUIRED)
+if(Geant3_FOUND)
+  Message("Geant3 was found")
+  Set(Geant3_LIBRARY_DIR ${Geant3_DIR}/../../${Geant3_CMAKE_INSTALL_LIBDIR})
+  FIND_PATH(Geant3_SYSTEM_DIR NAMES data PATHS
+            ${Geant3_DIR}/../../share/geant3
+            ${Geant3_DIR}/../../share/Geant3-${Geant3_VERSION}
+            NO_DEFAULT_PATH)
+endif()
 
-  find_package(GEANT4)
-  find_package(GEANT4DATA)
-  find_package(GEANT4VMC)
-  find_package(TBB)
-  find_package(SSE)
+find_package(GEANT4)
+find_package(GEANT4DATA)
+find_package(GEANT4VMC)
+find_package(TBB)
+find_package(SSE)
 #  find_package(IWYU)
-  find_package(ZeroMQ)
+find_package(ZeroMQ)
 
-  Set(Boost_NO_SYSTEM_PATHS TRUE)
-  Set(Boost_NO_BOOST_CMAKE TRUE)
-  set(BOOST_ROOT ${SIMPATH})
-  Message("-- Looking for Boost ...")
-  # If an older version of boost is found both of the variables below are
-  # cached and in a second cmake run, a good boost version is found even
-  # if the version is to old.
-  # To overcome this problem both variables are cleared before checking
-  # for boost.
-  Unset(Boost_INCLUDE_DIR CACHE)
-  Unset(Boost_LIBRARY_DIRS CACHE)
-  find_package(Boost 1.48 COMPONENTS program_options thread system timer serialization regex log log_setup filesystem)
-  If (Boost_FOUND)
-    Set(Boost_Avail 1)
-  Else (Boost_FOUND)
-    Set(Boost_Avail 0)
-  EndIf (Boost_FOUND)
+Set(Boost_NO_SYSTEM_PATHS TRUE)
+Set(Boost_NO_BOOST_CMAKE TRUE)
+set(BOOST_ROOT ${SIMPATH})
+Message("-- Looking for Boost ...")
+# If an older version of boost is found both of the variables below are
+# cached and in a second cmake run, a good boost version is found even
+# if the version is to old.
+# To overcome this problem both variables are cleared before checking
+# for boost.
+Unset(Boost_INCLUDE_DIR CACHE)
+Unset(Boost_LIBRARY_DIRS CACHE)
+find_package(Boost 1.48 COMPONENTS program_options thread system timer serialization regex log log_setup filesystem)
+If (Boost_FOUND)
+  Set(Boost_Avail 1)
+Else (Boost_FOUND)
+  Set(Boost_Avail 0)
+EndIf (Boost_FOUND)
 
-  Find_Package(FairLogger)
-  Find_Package(FairMQ)
+Find_Package(FairLogger)
+Find_Package(FairMQ)
 
-  find_package(OpenMP)
-
-endif(CBMROOT_MINIMAL)
+find_package(OpenMP)
 
 # set a variable which should be used in all CMakeLists.txt
 # Defines all basic include directories from fairbase
@@ -334,11 +280,6 @@ SET(LD_LIBRARY_PATH  ${CBMLIBDIR} ${Boost_LIBRARY_DIRS} ${LD_LIBRARY_PATH})
 # Recurse into the given subdirectories.  This does not actually
 # cause another cmake executable to run.  The same process will walk through
 # the project's entire directory structure.
-
-If(CMAKE_SYSTEM_NAME MATCHES Darwin)
-  Include(CheckIncludeFile)
-  Check_Include_File("_types/_uint8_t.h" _UINT8_T_EXIST)
-EndIf()
 
 Option(BUILD_UNITTESTS "Build all unit tests and add them as new tests" ON)
 If(BUILD_UNITTESTS)
@@ -465,29 +406,22 @@ if(IWYU_FOUND)
 
 endif(IWYU_FOUND)
 
-if(NOT CBMROOT_MINIMAL)
-  WRITE_CONFIG_FILE(config.sh)
-  WRITE_CONFIG_FILE(config.csh)
+WRITE_CONFIG_FILE(config.sh)
+WRITE_CONFIG_FILE(config.csh)
 
-  SET(ROOT_INCLUDE_PATH 
-      ${ROOT_INCLUDE_PATH} 
-      "${CMAKE_INSTALL_PREFIX}/include" 
-      "${CMAKE_INSTALL_PREFIX}/include/mvd"
-      "${CMAKE_INSTALL_PREFIX}/include/littrack"
-      "${CMAKE_INSTALL_PREFIX}/include/KF"
-      "${CMAKE_INSTALL_PREFIX}/include/AnalysisTree"
-      "${CMAKE_INSTALL_PREFIX}/include/AnalysisTreeQA"
-     )
-  set(CMAKE_INSTALL_LIBDIR lib)
-  SET(VMCWORKDIR ${CMAKE_INSTALL_PREFIX}/share/cbmroot)
-  WRITE_CONFIG_FILE(config.sh_install)
-  WRITE_CONFIG_FILE(config.csh_install)
-
-else(NOT CBMROOT_MINIMAL)
-  SET(FULL_CONFIG_FILE "false")
-  WRITE_CONFIG_FILE(config.sh)
-endif(NOT CBMROOT_MINIMAL)
-
+SET(ROOT_INCLUDE_PATH 
+    ${ROOT_INCLUDE_PATH} 
+    "${CMAKE_INSTALL_PREFIX}/include" 
+    "${CMAKE_INSTALL_PREFIX}/include/mvd"
+    "${CMAKE_INSTALL_PREFIX}/include/littrack"
+    "${CMAKE_INSTALL_PREFIX}/include/KF"
+    "${CMAKE_INSTALL_PREFIX}/include/AnalysisTree"
+    "${CMAKE_INSTALL_PREFIX}/include/AnalysisTreeQA"
+   )
+set(CMAKE_INSTALL_LIBDIR lib)
+SET(VMCWORKDIR ${CMAKE_INSTALL_PREFIX}/share/cbmroot)
+WRITE_CONFIG_FILE(config.sh_install)
+WRITE_CONFIG_FILE(config.csh_install)
 
 Install(FILES ${CMAKE_BINARY_DIR}/config.sh_install
         DESTINATION bin

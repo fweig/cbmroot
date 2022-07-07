@@ -15,14 +15,7 @@
 
 #include <iostream>
 
-#ifdef HAVE_UINT8_T_HEADER_FILE
-#include <_types/_uint16_t.h>
-#include <_types/_uint32_t.h>
-#include <_types/_uint64_t.h>
-#include <_types/_uint8_t.h>
-#else
 #include <stdint.h>
-#endif
 
 #include <Rtypes.h>
 #include <TNamed.h>
@@ -82,6 +75,7 @@ private:
   ClassDef(PairAnalysisHn,
            2)  // (temporary) class to hold functions in THnSparse
 };
+
 ClassImp(PairAnalysisHn)
   //// end temporary solution
 

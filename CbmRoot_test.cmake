@@ -1,3 +1,9 @@
+# Check if cmake has the required version
+# Since flesnet requires 3.14.0 we should be consistent while we
+# build it in the CbmRoot context
+cmake_minimum_required(VERSION 3.14.0 FATAL_ERROR)
+cmake_policy(VERSION 3.14...3.23)
+
 Set(CTEST_SOURCE_DIRECTORY $ENV{SOURCEDIR})
 Set(CTEST_BINARY_DIRECTORY $ENV{BUILDDIR})
 Set(CTEST_SITE $ENV{SITE})
@@ -21,9 +27,10 @@ Set(CTEST_BUILD_COMMAND "${BUILD_COMMAND} -i -k -j$ENV{number_of_processors}")
 # Extract the FairRoot version from fairroot-config
 # The version info is of the form Major.Minor.Patch e.g. 15.11.1 and
 # is stored in the variable FairRoot_VERSION
-Set(CMAKE_MODULE_PATH "${CTEST_SOURCE_DIRECTORY}/cmake/modules" ${CMAKE_MODULE_PATH})
-Include(CbmMacros)
-FairRootVersion()
+#Set(CMAKE_MODULE_PATH "${CTEST_SOURCE_DIRECTORY}/cmake/modules" ${CMAKE_MODULE_PATH})
+#set(FAIRROOTPATH $ENV{FAIRROOTPATH})
+#Include(CbmMacros)
+#FairRootVersion()
 
 Set(CTEST_USE_LAUNCHERS 1)
 
@@ -81,27 +88,20 @@ If(NOT _RETVAL)
              )
 
   If(${_CMakeModel} MATCHES Continuous)
-    If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
-      CTest_Submit(PARTS Update Configure Build)
-    Else()
-      CTest_Submit(PARTS Update Configure Build
-                   BUILD_ID cdash_build_id
-                  )
-    EndIf()
+    CTest_Submit(PARTS Update Configure Build
+                 BUILD_ID cdash_build_id
+                )
     if(${_NUM_ERROR} GREATER 0)
-      If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
-      Else()
-        message(STATUS " ")
-        message(STATUS " You can find the produced results on the CDash server")
-        message(STATUS " ")
-        message(STATUS " CDash Build Summary ..: "
-                "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/buildSummary.php?buildid=${cdash_build_id}"
-               )
-        message(STATUS " CDash Test List ......: "
-                "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/viewTest.php?buildid=${cdash_build_id}"
-               )
-        message(STATUS " ")
-      EndIf()
+      message(STATUS " ")
+      message(STATUS " You can find the produced results on the CDash server")
+      message(STATUS " ")
+      message(STATUS " CDash Build Summary ..: "
+              "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/buildSummary.php?buildid=${cdash_build_id}"
+             )
+      message(STATUS " CDash Test List ......: "
+              "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/viewTest.php?buildid=${cdash_build_id}"
+             )
+      message(STATUS " ")
       Message(STATUS "Build finished with ${_NUM_ERROR} errors")
       message(FATAL_ERROR "Compilation failure")
     endif()
@@ -114,35 +114,23 @@ If(NOT _RETVAL)
             )
 
   If(${_CMakeModel} MATCHES Continuous)
-    If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
-      CTest_Submit(PARTS Test)
-    Else()
-      CTest_Submit(PARTS Test
-                   BUILD_ID cdash_build_id
-                  )
-    EndIf()
+    CTest_Submit(PARTS Test
+                 BUILD_ID cdash_build_id
+                )
   EndIf()
 
   If(GCOV_COMMAND)
     Ctest_Coverage(BUILD "${CTEST_BINARY_DIRECTORY}")
     If(${_CMakeModel} MATCHES Continuous)
-      If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
-        CTest_Submit(PARTS Coverage)
-      Else()
-        CTest_Submit(PARTS Coverage
-                     BUILD_ID cdash_build_id
-                    )
-      EndIf()
+      CTest_Submit(PARTS Coverage
+                   BUILD_ID cdash_build_id
+                  )
     EndIf()
   EndIf()
 
   Ctest_Upload(FILES ${CTEST_NOTES_FILES})
   If(NOT ${_CMakeModel} MATCHES Continuous)
-    If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
-      Ctest_Submit()
-    Else()
-      Ctest_Submit(BUILD_ID cdash_build_id)
-    EndIf()
+    Ctest_Submit(BUILD_ID cdash_build_id)
   EndIf()
 
   If(EXTRA_FLAGS MATCHES "INSTALL_PREFIX" AND EXTRA_FLAGS MATCHES "CBM_TEST_INSTALL" AND NOT _ctest_test_ret_val)
@@ -159,47 +147,40 @@ If(NOT _RETVAL)
                       RESULTS_VARIABLE _install_ret_value
                      )
     endif()
- Else()
-   # if installation isn't tested the return value should be 0
-   set(_install_ret_value false)
- EndIf()
+  Else()
+     # if installation isn't tested the return value should be 0
+     set(_install_ret_value false)
+  EndIf()
+
+  Message("_ctest_test_ret_val: ${_ctest_test_ret_val}")
+  Message("_install_ret_value: ${_install_ret_value}")
 
   # Pipeline should fail also in case of failed tests
   if (_ctest_test_ret_val OR _install_ret_value)
-    If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
-    Else()
-      message(STATUS " ")
-      message(STATUS " You can find the produced results on the CDash server")
-      message(STATUS " ")
-      message(STATUS " CDash Build Summary ..: "
-              "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/buildSummary.php?buildid=${cdash_build_id}"
-             )
-      message(STATUS " CDash Test List ......: "
-              "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/viewTest.php?buildid=${cdash_build_id}"
-             )
-      message(STATUS " ")
-    EndIf()
+    message(STATUS " ")
+    message(STATUS " You can find the produced results on the CDash server")
+    message(STATUS " ")
+    message(STATUS " CDash Build Summary ..: "
+            "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/buildSummary.php?buildid=${cdash_build_id}"
+           )
+    message(STATUS " CDash Test List ......: "
+            "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/viewTest.php?buildid=${cdash_build_id}"
+           )
+    message(STATUS " ")
     Message(FATAL_ERROR "Some tests failed.")
   endif()
 
 Else()
-  If(${CMAKE_VERSION} VERSION_LESS "3.14.0")
-    Ctest_Submit()
-  Else()
-    CTest_Submit(BUILD_ID cdash_build_id)
-  EndIf()
+  CTest_Submit(BUILD_ID cdash_build_id)
 EndIf()
 
-If(${CMAKE_VERSION} VERSION_LESS 3.14.0)
-Else()
-  message(STATUS " ")
-  message(STATUS " You can find the produced results on the CDash server")
-  message(STATUS " ")
-  message(STATUS " CDash Build Summary ..: "
-          "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/buildSummary.php?buildid=${cdash_build_id}"
-         )
-  message(STATUS " CDash Test List ......: "
-          "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/viewTest.php?buildid=${cdash_build_id}"
-         )
-  message(STATUS " ")
-EndIf()
+message(STATUS " ")
+message(STATUS " You can find the produced results on the CDash server")
+message(STATUS " ")
+message(STATUS " CDash Build Summary ..: "
+        "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/buildSummary.php?buildid=${cdash_build_id}"
+       )
+message(STATUS " CDash Test List ......: "
+        "${CTEST_DROP_METHOD}://${CTEST_DROP_SITE}/viewTest.php?buildid=${cdash_build_id}"
+       )
+message(STATUS " ")

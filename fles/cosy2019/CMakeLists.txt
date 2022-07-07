@@ -58,11 +58,6 @@ Set(SRCS
    monitor/CbmCosy2019MonitorTaskHodo.cxx
 )
 
-If(_UINT8_T_EXIST)
-  Add_Definitions(-DHAVE_UINT8_T_HEADER_FILE)
-  Set(DEFINITIONS HAVE_UINT8_T_HEADER_FILE)
-EndIf()
-
 Set(LINKDEF CbmBeamtimeCosy2019LinkDef.h )
 Set(LIBRARY_NAME CbmBeamtimeCosy2019)
 Set(DEPENDENCIES

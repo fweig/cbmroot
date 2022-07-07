@@ -35,11 +35,6 @@ Set(SRCS
    CbmFlesHistosTools.cxx
 )
 
-If(_UINT8_T_EXIST)
-  Add_Definitions(-DHAVE_UINT8_T_HEADER_FILE)
-  Set(DEFINITIONS HAVE_UINT8_T_HEADER_FILE)
-EndIf()
-
 #Set(LINKDEF CbmFlibMcbm2018LinkDef.h )
 Set(LIBRARY_NAME CbmFlibFlesTools)
 Set(DEPENDENCIES
