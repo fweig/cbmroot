@@ -67,7 +67,8 @@ private:
   std::vector<std::string> fvsSetTrigMinLayersNb = {};
   std::vector<std::string> fvsSetHistMaxDigiNb   = {};
   /// I/O control
-  bool fbDoNotSend = false;
+  bool fbDoNotSend       = false;
+  bool fbDigiEventOutput = false;
   /// message queues
   std::string fsChannelNameDataInput   = "unpts_0";
   std::string fsChannelNameDataOutput  = "events";
@@ -133,6 +134,7 @@ private:
   bool InitHistograms();
   void Finish();
   bool SendEvents(FairMQParts& partsIn);
+  bool SendDigiEvents(FairMQParts& partsIn);
   bool SendHistoConfAndData();
   bool SendHistograms();
 };

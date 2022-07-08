@@ -42,6 +42,7 @@
 class TCanvas;
 class TFile;
 class TH1;
+class TProfile;
 class TList;
 class TClonesArray;
 //class TimesliceMetaData;
@@ -51,13 +52,20 @@ class FairRootManager;
 class CbmEventTimeslice {
   /// TODO: rename to CbmTsWithEvents
 public:
-  CbmEventTimeslice(FairMQParts& parts);
+  CbmEventTimeslice(FairMQParts& parts, bool bDigiEvtInput = false);
   ~CbmEventTimeslice();
 
-  std::vector<CbmDigiEvent> GetSelectedData();
+  void ExtractSelectedData();
+  std::vector<CbmDigiEvent>& GetSelectedData(){
+    if (!fbDigiEvtInput) ExtractSelectedData();
+    return fvDigiEvents;
+  }
 
+  /// Input Type
+  bool fbDigiEvtInput = false;
   /// TS information in header
   CbmTsEventHeader fCbmTsEventHeader;
+  /// Raw data
   std::vector<CbmTofDigi> fvDigiT0;
   std::vector<CbmStsDigi> fvDigiSts;
   std::vector<CbmMuchDigi> fvDigiMuch;
@@ -65,8 +73,12 @@ public:
   std::vector<CbmTofDigi> fvDigiTof;
   std::vector<CbmRichDigi> fvDigiRich;
   std::vector<CbmPsdDigi> fvDigiPsd;
+  /// extra Metadata
   TimesliceMetaData fTsMetaData;
+  /// Raw events
   std::vector<CbmEvent> fvEvents;
+  /// Digi events
+  std::vector<CbmDigiEvent> fvDigiEvents;
 };
 
 class CbmDeviceDigiEventSink : public FairMQDevice {
@@ -88,6 +100,7 @@ private:
   bool fbBypassConsecutiveTs = false;  //! Switch ON/OFF the bypass of the consecutive TS buffer before writing to file
   bool fbWriteMissingTs      = false;  //! Switch ON/OFF writing of empty TS to file for the missing ones (if no bypass)
   bool fbDisableCompression  = false;  //! Switch ON/OFF the ROOT file compression
+  bool fbDigiEventInput      = false;  //! Switch ON/OFF the input of CbmDigiEvents instead of raw data + CbmEvents
   bool fbFillHistos          = false;  //! Switch ON/OFF filling of histograms
   bool fbInitDone            = false;  //! Keep track of whether the Init was already fully completed
   bool fbFinishDone          = false;  //! Keep track of whether the Finish was already called
@@ -119,8 +132,11 @@ private:
   uint64_t fulNumMessages                                = 0;
   uint64_t fulTsCounter                                  = 0;
   uint64_t fulMissedTsCounter                            = 0;
-  std::chrono::system_clock::time_point fLastPublishTime = std::chrono::system_clock::now();
   uint64_t fulProcessedEvents                            = 0;
+  uint64_t fulLastFullTsCounter                          = 0;
+  uint64_t fulLastMissTsCounter                          = 0;
+  uint64_t fulLastProcessedEvents                        = 0;
+  std::chrono::system_clock::time_point fLastPublishTime = std::chrono::system_clock::now();
   std::chrono::system_clock::time_point fLastFillTime    = std::chrono::system_clock::now();
   std::chrono::system_clock::time_point fStartTime       = std::chrono::system_clock::now();
 
@@ -167,8 +183,8 @@ private:
   /// Flag indicating whether the histograms and canvases configurations were already published
   bool fbConfigSent = false;
 
-  TH1* fhFullTsBuffSizeEvo;
-  TH1* fhMissTsBuffSizeEvo;
+  TProfile* fhFullTsBuffSizeEvo;
+  TProfile* fhMissTsBuffSizeEvo;
   TH1* fhFullTsProcEvo;
   TH1* fhMissTsProcEvo;
   TH1* fhTotalTsProcEvo;

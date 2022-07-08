@@ -12,6 +12,7 @@
 #include "CbmDeviceBuildDigiEvents.h"
 
 /// CBM headers
+#include "CbmDigiEvent.h"
 #include "CbmEvent.h"
 #include "CbmFlesCanvasTools.h"
 #include "CbmMQDefs.h"
@@ -72,6 +73,7 @@ try {
   fvsSetHistMaxDigiNb   = fConfig->GetValue<std::vector<std::string>>("SetHistMaxDigiNb");
 
   fbDoNotSend              = fConfig->GetValue<bool>("DoNotSend");
+  fbDigiEventOutput        = fConfig->GetValue<bool>("DigiEventOutput");
   fsChannelNameDataInput   = fConfig->GetValue<std::string>("TsNameIn");
   fsChannelNameDataOutput  = fConfig->GetValue<std::string>("EvtNameOut");
   fsChannelNameHistosInput = fConfig->GetValue<std::string>("ChNameIn");
@@ -577,7 +579,14 @@ bool CbmDeviceBuildDigiEvents::HandleData(FairMQParts& parts, int /*index*/)
   fpAlgo->ProcessTs();
 
   /// Send events vector to ouput
-  if (!fbDoNotSend && !SendEvents(parts)) return false;
+  if (!fbDoNotSend) {
+    if (fbDigiEventOutput) {
+      if (!(SendDigiEvents(parts))) return false;
+    }
+    else {
+      if (!(SendEvents(parts))) return false;
+    }
+  }
 
   /// Clear metadata
   fTimeSliceMetaDataArray->Clear();
@@ -654,6 +663,126 @@ bool CbmDeviceBuildDigiEvents::SendEvents(FairMQParts& partsIn)
     [](void*, void* object) { delete static_cast<std::string*>(object); },
     strMsgEvt));  // object that manages the data
 */
+  if (Send(partsOut, fsChannelNameDataOutput) < 0) {
+    LOG(error) << "Problem sending data to " << fsChannelNameDataOutput;
+    return false;
+  }
+
+  vOutEvents.clear();
+
+  return true;
+}
+
+bool CbmDeviceBuildDigiEvents::SendDigiEvents(FairMQParts& partsIn)
+{
+  /// Get vector reference from algo
+  std::vector<CbmEvent*> vEvents = fpAlgo->GetEventVector();
+
+  /// Move CbmEvent from temporary vector to std::vector of full objects
+  LOG(debug) << "In Vector size: " << vEvents.size();
+  std::vector<CbmDigiEvent> vOutEvents;
+  vOutEvents.reserve(vEvents.size());
+  for (CbmEvent* event : vEvents) {
+    CbmDigiEvent selEvent;
+    selEvent.fTime   = event->GetStartTime();
+    selEvent.fNumber = event->GetNumber();
+
+    /// FIXME: for pure digi based event, we select "continuous slices of digis"
+    ///        => Copy block of [First Digi index, last digi index] with assign(it_start, it_stop)
+    /// FIXME: Keep TRD1D + TRD2D support, may lead to holes in the digi sequence!
+    ///        => Would need to keep the loop
+
+    /// Get the proper order for block selection as TRD1D and TRD2D may insert indices in separate loops
+    /// => Needed to ensure that the start and stop of the block copy do not trigger a vector size exception
+    event->SortIndices();
+        /// for each detector, find the data in the Digi vectors and copy them
+    /// TODO: Template + loop on list of data types?
+    /// ==> T0
+    uint32_t uNbDigis = (0 < event->GetNofData(ECbmDataType::kT0Digi) ? event->GetNofData(ECbmDataType::kT0Digi) : 0);
+    if (uNbDigis) {
+      auto startIt = fvDigiT0->begin() + event->GetIndex(ECbmDataType::kT0Digi, 0);
+      auto stopIt  = fvDigiT0->begin() + event->GetIndex(ECbmDataType::kT0Digi, uNbDigis - 1);
+      ++stopIt;
+      selEvent.fData.fT0.fDigis.assign(startIt, stopIt);
+    }
+
+    /// ==> STS
+    uNbDigis = (0 < event->GetNofData(ECbmDataType::kStsDigi) ? event->GetNofData(ECbmDataType::kStsDigi) : 0);
+    if (uNbDigis) {
+      auto startIt = fvDigiSts->begin() + event->GetIndex(ECbmDataType::kStsDigi, 0);
+      auto stopIt  = fvDigiSts->begin() + event->GetIndex(ECbmDataType::kStsDigi, uNbDigis - 1);
+      ++stopIt;
+      selEvent.fData.fSts.fDigis.assign(startIt, stopIt);
+    }
+
+    /// ==> MUCH
+    uNbDigis = (0 < event->GetNofData(ECbmDataType::kMuchDigi) ? event->GetNofData(ECbmDataType::kMuchDigi) : 0);
+    if (uNbDigis) {
+      auto startIt = fvDigiMuch->begin() + event->GetIndex(ECbmDataType::kMuchDigi, 0);
+      auto stopIt  = fvDigiMuch->begin() + event->GetIndex(ECbmDataType::kMuchDigi, uNbDigis - 1);
+      ++stopIt;
+      selEvent.fData.fMuch.fDigis.assign(startIt, stopIt);
+    }
+
+    /// ==> TRD + TRD2D
+    uNbDigis = (0 < event->GetNofData(ECbmDataType::kTrdDigi) ? event->GetNofData(ECbmDataType::kTrdDigi) : 0);
+    if (uNbDigis) {
+      auto startIt = fvDigiTrd->begin() + event->GetIndex(ECbmDataType::kTrdDigi, 0);
+      auto stopIt  = fvDigiTrd->begin() + event->GetIndex(ECbmDataType::kTrdDigi, uNbDigis - 1);
+      ++stopIt;
+      selEvent.fData.fTrd.fDigis.assign(startIt, stopIt);
+    }
+
+    /// ==> TOF
+    uNbDigis = (0 < event->GetNofData(ECbmDataType::kTofDigi) ? event->GetNofData(ECbmDataType::kTofDigi) : 0);
+    if (uNbDigis) {
+      auto startIt = fvDigiTof->begin() + event->GetIndex(ECbmDataType::kTofDigi, 0);
+      auto stopIt  = fvDigiTof->begin() + event->GetIndex(ECbmDataType::kTofDigi, uNbDigis - 1);
+      ++stopIt;
+      selEvent.fData.fTof.fDigis.assign(startIt, stopIt);
+    }
+
+    /// ==> RICH
+    uNbDigis = (0 < event->GetNofData(ECbmDataType::kRichDigi) ? event->GetNofData(ECbmDataType::kRichDigi) : 0);
+    if (uNbDigis) {
+      auto startIt = fvDigiRich->begin() + event->GetIndex(ECbmDataType::kRichDigi, 0);
+      auto stopIt  = fvDigiRich->begin() + event->GetIndex(ECbmDataType::kRichDigi, uNbDigis - 1);
+      ++stopIt;
+      selEvent.fData.fRich.fDigis.assign(startIt, stopIt);
+    }
+
+    /// ==> PSD
+    uNbDigis = (0 < event->GetNofData(ECbmDataType::kPsdDigi) ? event->GetNofData(ECbmDataType::kPsdDigi) : 0);
+    if (uNbDigis) {
+      auto startIt = fvDigiPsd->begin() + event->GetIndex(ECbmDataType::kPsdDigi, 0);
+      auto stopIt  = fvDigiPsd->begin() + event->GetIndex(ECbmDataType::kPsdDigi, uNbDigis - 1);
+      ++stopIt;
+      selEvent.fData.fPsd.fDigis.assign(startIt, stopIt);
+    }
+
+    vOutEvents.push_back(std::move(selEvent));
+  }
+
+  LOG(debug) << "Out Vector size: " << vEvents.size();
+  /// Serialize the array of events into a single MQ message
+  std::stringstream ossEvt;
+  boost::archive::binary_oarchive oaEvt(ossEvt);
+  oaEvt << vOutEvents;
+  std::string* strMsgEvt = new std::string(ossEvt.str());
+  FairMQMessagePtr message(NewMessage(const_cast<char*>(strMsgEvt->c_str()),  // data
+                                      strMsgEvt->length(),                    // size
+                                      [](void*, void* object) { delete static_cast<std::string*>(object); },
+                                      strMsgEvt));  // object that manages the data
+  LOG(debug) << "Serializing done";
+
+  /// Make a new composed messaged with TsHeader + vector of Digi Event + TsMetaData
+  /// FIXME: Find out if possible to use only the boost serializer
+  FairMQParts partsOut;
+  partsOut.AddPart(std::move(partsIn.At(0)));                   // TsHeader
+  partsOut.AddPart(std::move(partsIn.At(partsIn.Size() - 1)));  // TsMetaData
+  partsOut.AddPart(std::move(message));                         // DigiEvent vector
+  LOG(debug) << "Message preparation done";
+
   if (Send(partsOut, fsChannelNameDataOutput) < 0) {
     LOG(error) << "Problem sending data to " << fsChannelNameDataOutput;
     return false;

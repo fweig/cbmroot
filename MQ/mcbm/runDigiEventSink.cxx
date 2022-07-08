@@ -31,6 +31,9 @@ void addCustomOptions(bpo::options_description& options)
   options.add_options()("TreeFileMaxSize", bpo::value<int64_t>()->default_value(10000000000LL),
                         "Set the maximum output tree size (~file size) in bytes");
 
+  options.add_options()("DigiEventInput", bpo::value<bool>()->default_value(false),
+                        "Enable the input of CbmDigiEvents instead of raw data + CbmEvents if true");
+
   options.add_options()("FillHistos", bpo::value<bool>()->default_value(false),
                         "Fill histograms and send them to histo server if true");
 

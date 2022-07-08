@@ -35,6 +35,7 @@
 #include "TCanvas.h"
 #include "TFile.h"
 #include "TH1.h"
+#include "TProfile.h"
 #include "TList.h"
 #include "TNamed.h"
 
@@ -73,6 +74,7 @@ try {
   fbWriteMissingTs      = fConfig->GetValue<bool>("WriteMissingTs");
   fbDisableCompression  = fConfig->GetValue<bool>("DisableCompression");
   fiTreeFileMaxSize     = fConfig->GetValue<int64_t>("TreeFileMaxSize");
+  fbDigiEventInput      = fConfig->GetValue<bool>("DigiEventInput");
 
   fbFillHistos             = fConfig->GetValue<bool>("FillHistos");
   fuPublishFreqTs          = fConfig->GetValue<uint32_t>("PubFreqTs");
@@ -216,9 +218,9 @@ bool CbmDeviceDigiEventSink::InitHistograms()
   std::vector<std::pair<TNamed*, std::string>> vHistos = {};
 
   fhFullTsBuffSizeEvo =
-    new TH1I("hFullTsBuffSizeEvo", "Evo. of the full TS buffer size; Time in run [s]; Size []", 720, 0, 7200);
+    new TProfile("hFullTsBuffSizeEvo", "Evo. of the full TS buffer size; Time in run [s]; Size []", 720, 0, 7200);
   fhMissTsBuffSizeEvo =
-    new TH1I("hMissTsBuffSizeEvo", "Evo. of the missed TS buffer size; Time in run [s]; Size []", 720, 0, 7200);
+    new TProfile("hMissTsBuffSizeEvo", "Evo. of the missed TS buffer size; Time in run [s]; Size []", 720, 0, 7200);
   fhFullTsProcEvo  = new TH1I("hFullTsProcEvo", "Processed full TS; Time in run [s]; # []", 720, 0, 7200);
   fhMissTsProcEvo  = new TH1I("hMissTsProcEvo", "Processed missing TS; Time in run [s]; # []", 720, 0, 7200);
   fhTotalTsProcEvo = new TH1I("hTotalTsProcEvo", "Total processed TS; Time in run [s]; # []", 720, 0, 7200);
@@ -349,7 +351,7 @@ bool CbmDeviceDigiEventSink::HandleData(FairMQParts& parts, int /*index*/)
   if (0 == fulNumMessages % 10000) LOG(info) << "Received " << fulNumMessages << " messages";
 
   /// Unpack the message
-  CbmEventTimeslice unpTs(parts);
+  CbmEventTimeslice unpTs(parts, fbDigiEventInput);
 
   /// FIXME: Need to check if TS arrived in order (probably not!!!) + buffer!!!
   LOG(debug) << "Next TS check " << fuPrevTsIndex << " " << fulTsCounter << " " << unpTs.fTsMetaData.GetIndex()
@@ -404,19 +406,31 @@ bool CbmDeviceDigiEventSink::HandleData(FairMQParts& parts, int /*index*/)
     /// Fill histograms every 5 or more seconds
     /// TODO: make it a parameter
     std::chrono::duration<double_t> elapsedSecondsFill = currentTime - fLastFillTime;
-    if (5.0 < elapsedSecondsFill.count()) {
+    if (1.0 < elapsedSecondsFill.count()) {
       std::chrono::duration<double_t> secInRun = currentTime - fStartTime;
 
       /// Rely on the fact that all histos have same X axis to avoid multiple "current bin" search
+      /*
       int32_t iBinIndex = fhFullTsBuffSizeEvo->FindBin(secInRun.count());
       fhFullTsBuffSizeEvo->SetBinContent(iBinIndex, fmFullTsStorage.size());
       fhMissTsBuffSizeEvo->SetBinContent(iBinIndex, fvulMissedTsIndices.size());
       fhFullTsProcEvo->SetBinContent(iBinIndex, fulTsCounter);
       fhMissTsProcEvo->SetBinContent(iBinIndex, fulMissedTsCounter);
       fhTotalTsProcEvo->SetBinContent(iBinIndex, (fulTsCounter + fulMissedTsCounter));
-      fhTotalEventsEvo->SetBinContent(iBinIndex, fmFullTsStorage.size());
+      fhTotalEventsEvo->SetBinContent(iBinIndex, fulProcessedEvents);
+      */
+      fhFullTsBuffSizeEvo->Fill(secInRun.count(), fmFullTsStorage.size());
+      fhMissTsBuffSizeEvo->Fill(secInRun.count(), fvulMissedTsIndices.size());
+      fhFullTsProcEvo->Fill(secInRun.count(), (fulTsCounter - fulLastFullTsCounter));
+      fhMissTsProcEvo->Fill(secInRun.count(), (fulMissedTsCounter - fulLastMissTsCounter));
+      fhTotalTsProcEvo->Fill(secInRun.count(),
+                             (fulTsCounter - fulLastFullTsCounter + fulMissedTsCounter - fulLastMissTsCounter));
+      fhTotalEventsEvo->Fill(secInRun.count(), fulProcessedEvents -fulLastProcessedEvents);
 
       fLastFillTime = currentTime;
+      fulLastFullTsCounter   = fulTsCounter;
+      fulLastMissTsCounter   = fulMissedTsCounter;
+      fulLastProcessedEvents = fulProcessedEvents;
     }
 
     /// Send histograms each N timeslices.
@@ -592,7 +606,7 @@ void CbmDeviceDigiEventSink::PrepareTreeEntry(CbmEventTimeslice unpTs)
   new ((*fTimeSliceMetaDataArray)[fTimeSliceMetaDataArray->GetEntriesFast()])
     TimesliceMetaData(std::move(unpTs.fTsMetaData));
 
-  /// Extract CbmEvent TClonesArray from input message
+  /// Extract CbmEvent vector from input message
   (*fEventsSel) = std::move(unpTs.GetSelectedData());
   if (kTRUE == fbFillHistos) {
     /// Accumulated counts, will show rise + plateau pattern in spill
@@ -768,99 +782,150 @@ void CbmDeviceDigiEventSink::Finish()
   fbFinishDone = kTRUE;
 }
 
-CbmEventTimeslice::CbmEventTimeslice(FairMQParts& parts)
+
+CbmEventTimeslice::CbmEventTimeslice(FairMQParts& parts, bool bDigiEvtInput)
 {
-  /// Extract unpacked data from input message
+  fbDigiEvtInput =bDigiEvtInput;
+
   uint32_t uPartIdx = 0;
 
-  /// TODO: code order of vectors in the TS header!!
+  if (fbDigiEvtInput) {
+    /// Digi events => Extract selected data from input message
+    if (3 != parts.Size()) {
+      LOG(error) << "CbmEventTimeslice::CbmEventTimeslice => Wrong number of parts to deserialize DigiEvents: "
+                 << parts.Size() << " VS 3!";
+      LOG(fatal) << "Probably the wrong value was used for the option DigiEventInput of the Sink or DigiEventOutput of "
+                 << "the event builder";
+    }
 
-  /// TS header
-  TObject* tempObjectPointer = nullptr;
-  RootSerializer().Deserialize(*parts.At(uPartIdx), tempObjectPointer);
-  if (tempObjectPointer && TString(tempObjectPointer->ClassName()).EqualTo("CbmTsEventHeader")) {
-    fCbmTsEventHeader = *(static_cast<CbmTsEventHeader*>(tempObjectPointer));
+    /// (1) TS header
+    TObject* tempObjectPointer = nullptr;
+    RootSerializer().Deserialize(*parts.At(uPartIdx), tempObjectPointer);
+    if (tempObjectPointer && TString(tempObjectPointer->ClassName()).EqualTo("CbmTsEventHeader")) {
+      fCbmTsEventHeader = *(static_cast<CbmTsEventHeader*>(tempObjectPointer));
+    }
+    else {
+      LOG(fatal) << "Failed to deserialize the TS header";
+    }
+    ++uPartIdx;
+
+    /// (2) TS metadata
+    tempObjectPointer = nullptr;
+    RootSerializer().Deserialize(*parts.At(uPartIdx), tempObjectPointer);
+
+    if (tempObjectPointer && TString(tempObjectPointer->ClassName()).EqualTo("TimesliceMetaData")) {
+      fTsMetaData = *(static_cast<TimesliceMetaData*>(tempObjectPointer));
+    }
+    else {
+      LOG(fatal) << "Failed to deserialize the TS metadata";
+    }
+    ++uPartIdx;
+
+    /// (3) Events
+    std::string msgStrEvt(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issEvt(msgStrEvt);
+    boost::archive::binary_iarchive inputArchiveEvt(issEvt);
+    inputArchiveEvt >> fvDigiEvents;
+    ++uPartIdx;
+
+    LOG(debug) << "Input event array " << fvDigiEvents.size();
   }
   else {
-    LOG(fatal) << "Failed to deserialize the TS header";
+    /// Raw data + raw events => Extract unpacked data from input message
+    if (10 != parts.Size()) {
+      LOG(error) << "CbmEventTimeslice::CbmEventTimeslice => Wrong number of parts to deserialize raw data + events: "
+                 << parts.Size() << " VS 10!";
+      LOG(fatal) << "Probably the wrong value was used for the option DigiEventInput of the Sink or DigiEventOutput of "
+                 << "the event builder";
+    }
+
+    /// (1) TS header
+    TObject* tempObjectPointer = nullptr;
+    RootSerializer().Deserialize(*parts.At(uPartIdx), tempObjectPointer);
+    if (tempObjectPointer && TString(tempObjectPointer->ClassName()).EqualTo("CbmTsEventHeader")) {
+      fCbmTsEventHeader = *(static_cast<CbmTsEventHeader*>(tempObjectPointer));
+    }
+    else {
+      LOG(fatal) << "Failed to deserialize the TS header";
+    }
+    ++uPartIdx;
+
+    /// (2) T0
+    std::string msgStrT0(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issT0(msgStrT0);
+    boost::archive::binary_iarchive inputArchiveT0(issT0);
+    inputArchiveT0 >> fvDigiT0;
+    ++uPartIdx;
+
+    /// (3) STS
+    std::string msgStrSts(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issSts(msgStrSts);
+    boost::archive::binary_iarchive inputArchiveSts(issSts);
+    inputArchiveSts >> fvDigiSts;
+    ++uPartIdx;
+
+    /// (4) MUCH
+    std::string msgStrMuch(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issMuch(msgStrMuch);
+    boost::archive::binary_iarchive inputArchiveMuch(issMuch);
+    inputArchiveMuch >> fvDigiMuch;
+    ++uPartIdx;
+
+    /// (5) TRD
+    std::string msgStrTrd(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issTrd(msgStrTrd);
+    boost::archive::binary_iarchive inputArchiveTrd(issTrd);
+    inputArchiveTrd >> fvDigiTrd;
+    ++uPartIdx;
+
+    /// (6) T0F
+    std::string msgStrTof(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issTof(msgStrTof);
+    boost::archive::binary_iarchive inputArchiveTof(issTof);
+    inputArchiveTof >> fvDigiTof;
+    ++uPartIdx;
+
+    /// (7) RICH
+    std::string msgStrRich(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issRich(msgStrRich);
+    boost::archive::binary_iarchive inputArchiveRich(issRich);
+    inputArchiveRich >> fvDigiRich;
+    ++uPartIdx;
+
+    /// (8) PSD
+    std::string msgStrPsd(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issPsd(msgStrPsd);
+    boost::archive::binary_iarchive inputArchivePsd(issPsd);
+    inputArchivePsd >> fvDigiPsd;
+    ++uPartIdx;
+
+    /// (9) TS metadata
+    tempObjectPointer = nullptr;
+    RootSerializer().Deserialize(*parts.At(uPartIdx), tempObjectPointer);
+
+    if (tempObjectPointer && TString(tempObjectPointer->ClassName()).EqualTo("TimesliceMetaData")) {
+      fTsMetaData = *(static_cast<TimesliceMetaData*>(tempObjectPointer));
+    }
+    else {
+      LOG(fatal) << "Failed to deserialize the TS metadata";
+    }
+    ++uPartIdx;
+
+    /// (10) Events
+    /// FIXME: Find out if possible to use only the boost serializer/deserializer
+    /*
+    std::string msgStrEvt(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
+    std::istringstream issEvt(msgStrEvt);
+    boost::archive::binary_iarchive inputArchiveEvt(issEvt);
+    inputArchiveEvt >> fvEvents;
+    ++uPartIdx;
+    LOG(info) << "Input event array " << fvEvents.size();
+    */
+    std::vector<CbmEvent>* pvOutEvents = nullptr;
+    RootSerializer().Deserialize(*parts.At(uPartIdx), pvOutEvents);
+    fvEvents = std::move(*pvOutEvents);
+    LOG(debug) << "Input event array " << fvEvents.size();
   }
-  ++uPartIdx;
-
-  /// T0
-  std::string msgStrT0(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issT0(msgStrT0);
-  boost::archive::binary_iarchive inputArchiveT0(issT0);
-  inputArchiveT0 >> fvDigiT0;
-  ++uPartIdx;
-
-  /// STS
-  std::string msgStrSts(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issSts(msgStrSts);
-  boost::archive::binary_iarchive inputArchiveSts(issSts);
-  inputArchiveSts >> fvDigiSts;
-  ++uPartIdx;
-
-  /// MUCH
-  std::string msgStrMuch(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issMuch(msgStrMuch);
-  boost::archive::binary_iarchive inputArchiveMuch(issMuch);
-  inputArchiveMuch >> fvDigiMuch;
-  ++uPartIdx;
-
-  /// TRD
-  std::string msgStrTrd(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issTrd(msgStrTrd);
-  boost::archive::binary_iarchive inputArchiveTrd(issTrd);
-  inputArchiveTrd >> fvDigiTrd;
-  ++uPartIdx;
-
-  /// T0F
-  std::string msgStrTof(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issTof(msgStrTof);
-  boost::archive::binary_iarchive inputArchiveTof(issTof);
-  inputArchiveTof >> fvDigiTof;
-  ++uPartIdx;
-
-  /// RICH
-  std::string msgStrRich(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issRich(msgStrRich);
-  boost::archive::binary_iarchive inputArchiveRich(issRich);
-  inputArchiveRich >> fvDigiRich;
-  ++uPartIdx;
-
-  /// PSD
-  std::string msgStrPsd(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issPsd(msgStrPsd);
-  boost::archive::binary_iarchive inputArchivePsd(issPsd);
-  inputArchivePsd >> fvDigiPsd;
-  ++uPartIdx;
-
-  /// TS metadata
-  tempObjectPointer = nullptr;
-  RootSerializer().Deserialize(*parts.At(uPartIdx), tempObjectPointer);
-
-  if (tempObjectPointer && TString(tempObjectPointer->ClassName()).EqualTo("TimesliceMetaData")) {
-    fTsMetaData = *(static_cast<TimesliceMetaData*>(tempObjectPointer));
-  }
-  else {
-    LOG(fatal) << "Failed to deserialize the TS metadata";
-  }
-  ++uPartIdx;
-
-  /// Events
-  /// FIXME: Find out if possible to use only the boost serializer/deserializer
-  /*
-  std::string msgStrEvt(static_cast<char*>(parts.At(uPartIdx)->GetData()), (parts.At(uPartIdx))->GetSize());
-  std::istringstream issEvt(msgStrEvt);
-  boost::archive::binary_iarchive inputArchiveEvt(issEvt);
-  inputArchiveEvt >> fvEvents;
-  ++uPartIdx;
-  LOG(info) << "Input event array " << fvEvents.size();
-  */
-  std::vector<CbmEvent>* pvOutEvents = nullptr;
-  RootSerializer().Deserialize(*parts.At(uPartIdx), pvOutEvents);
-  fvEvents = std::move(*pvOutEvents);
-  LOG(debug) << "Input event array " << fvEvents.size();
 }
 
 CbmEventTimeslice::~CbmEventTimeslice()
@@ -873,13 +938,12 @@ CbmEventTimeslice::~CbmEventTimeslice()
   fvDigiRich.clear();
   fvDigiPsd.clear();
   fvEvents.clear();
+  fvDigiEvents.clear();
 }
 
-
-std::vector<CbmDigiEvent> CbmEventTimeslice::GetSelectedData()
+void CbmEventTimeslice::ExtractSelectedData()
 {
-  std::vector<CbmDigiEvent> vEventsSel;
-  vEventsSel.reserve(fvEvents.size());
+  fvDigiEvents.reserve(fvEvents.size());
 
   /// Loop on events in input vector
   for (CbmEvent event : fvEvents) {
@@ -1075,8 +1139,6 @@ std::vector<CbmDigiEvent> CbmEventTimeslice::GetSelectedData()
       */
     }
 
-    vEventsSel.push_back(selEvent);
+    fvDigiEvents.push_back(selEvent);
   }
-
-  return vEventsSel;
 }

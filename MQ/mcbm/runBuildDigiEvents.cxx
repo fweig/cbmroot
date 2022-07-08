@@ -42,6 +42,8 @@ void addCustomOptions(bpo::options_description& options)
                         "Set max nb of digi in histograms for selected detector, use string matching "
                         "ECbmModuleId,dMaxDigiNb e.g. kTof,1000");
   options.add_options()("DoNotSend", bpo::value<bool>()->default_value(false), "Disable the sending of data if true");
+  options.add_options()("DigiEventOutput", bpo::value<bool>()->default_value(false),
+                        "Enable output of CbmDigiEvents instead of raw data + CbmEvents if true");
   options.add_options()("TsNameIn", bpo::value<std::string>()->default_value("unpts_0"),
                         "MQ channel name for unpacked TS data");
   options.add_options()("EvtNameOut", bpo::value<std::string>()->default_value("events"),
