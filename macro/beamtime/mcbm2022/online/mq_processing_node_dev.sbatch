@@ -31,7 +31,8 @@ else
 fi
 
 # Prepare log folder variables
-_log_folder="/local/mcbm2022/online_logs/${_run_id}/"
+#_log_folder="/local/mcbm2022/online_logs/${_run_id}/"
+_log_folder="/storage/6/mcbm2022/online_logs/${_run_id}/"
 _localhost=`hostname`
 
 echo $SLURM_ARRAY_TASK_ID ${_localhost} ${_run_id} ${_nbbranch} ${_TriggSet} ${_hostname}
@@ -460,12 +461,13 @@ EVTSINK+=" --severity info"
 EVTSINK+=" --StoreFullTs 0"
 EVTSINK+=" --BypassConsecutiveTs true"
 EVTSINK+=" --WriteMissingTs false"
-EVTSINK+=" --DisableCompression true"
+# EVTSINK+=" --DisableCompression true"
 EVTSINK+=" --TreeFileMaxSize 4000000000"
+EVTSINK+=" --DigiEventInput true"
 if [ ${_Disk} -eq 0 ]; then
   EVTSINK+=" --OutFileName /local/mcbm2022/data/${_run_id}_${_TriggSet}_${_localhost}.digi_events.root"
 else
-  EVTSINK+=" --OutFileName /storage/${_Disk}/data/${_run_id}_${_TriggSet}_${_localhost}.digi_events.root"
+  EVTSINK+=" --OutFileName /storage/${_Disk}/mcbm2022/data/${_run_id}_${_TriggSet}_${_localhost}.digi_events.root"
 fi
 EVTSINK+=" --FillHistos true"
 EVTSINK+=" --PubFreqTs $_pubfreqts"
@@ -542,11 +544,11 @@ while (( _iBranch < _nbbranch )); do
   EVTBUILDER+=" --PubFreqTs $_pubfreqts"
   EVTBUILDER+=" --PubTimeMin $_pubminsec"
   EVTBUILDER+=" --PubTimeMax $_pubmaxsec"
-  if [ ${_iBranch} -eq 0 ]; then
-    EVTBUILDER+=" --FillHistos true"
-  else
+#  if [ ${_iBranch} -eq 0 ]; then
+#    EVTBUILDER+=" --FillHistos true"
+#  else
     EVTBUILDER+=" --FillHistos false"
-  fi
+#  fi
   EVTBUILDER+=" --IgnTsOver false"
   EVTBUILDER+=" --EvtOverMode AllowOverlap"
   EVTBUILDER+=" --RefDet kT0"
@@ -576,9 +578,12 @@ while (( _iBranch < _nbbranch )); do
 
   EVTBUILDER+=" --SetTrigMinLayersNb kTof,${_TriggerMinLayersNumberTof}"
   EVTBUILDER+=" --SetTrigMinLayersNb kSts,${_TriggerMinLayersNumberSts}"
+
   EVTBUILDER+=" --TsNameIn unpts$_iBranch"
   EVTBUILDER+=" --EvtNameOut events"
 #  EVTBUILDER+=" --DoNotSend true"
+  EVTBUILDER+=" --DigiEventOutput true"
+
   EVTBUILDER+=" --channel-config name=unpts$_iBranch,type=pull,method=connect,transport=zeromq,rcvBufSize=1,address=tcp://127.0.0.1:$_iPort,rateLogging=$_ratelog"
   EVTBUILDER+=" --channel-config name=events,type=push,method=connect,transport=zeromq,sndBufSize=1,address=tcp://127.0.0.1:11556,rateLogging=$_ratelog"
 #  EVTBUILDER+=" --channel-config name=commands,type=sub,method=connect,transport=zeromq,address=tcp://127.0.0.1:11007"
