@@ -30,10 +30,7 @@ namespace cbm::algo
    **/
   struct UnpackMuchElinkPar {
     std::vector<uint32_t> fAddress;  ///< CbmMuchAddress for different channels
-    //uint32_t fAsicNr     = 0;   ///< Number of connected ASIC within the module
-    uint64_t fTimeOffset = 0.;  ///< Time calibration parameter
-    //double fAdcOffset    = 0.;  ///< Charge calibration parameter
-    //double fAdcGain      = 0.;  ///< Charge calibration parameter
+    uint64_t fTimeOffset = 0.;       ///< Time calibration parameter
   };
 
 
