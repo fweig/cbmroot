@@ -1,4 +1,4 @@
-/* Copyright (C) 2015-2017 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2015-2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Volker Friese [committer], David Emschermann */
 
@@ -14,16 +14,23 @@
 // T. Balog, 11.05.2015
 //
 // --------------------------------------------------------------------------
+/*
+#if !defined(__CLING__)
+#include "CbmTransport.h"
+
+#include "FairSystemInfo.h"
+
+#include "TStopwatch.h"
+#endif
+*/
+#include "../../sim/transport/gconfig/g3Config.C"
 
 //void matbudget_mc(Int_t nEvents = 10      , const char* stsGeo = "v16v")
 //void matbudget_mc(Int_t nEvents = 1000000 , const char* stsGeo = "v16v")
-void matbudget_mc(Int_t nEvents = 10000000, const char* stsGeo = "v16v")
+void matbudget_mc(Int_t nEvents = 10000000, const char* stsGeo = "v21e")
 {
-
   // ========================================================================
   //          Adjust this part according to your requirements
-
-
   // ----- Paths and file names  --------------------------------------------
   TString stsVersion(stsGeo);
   TString inDir   = gSystem->Getenv("VMCWORKDIR");
@@ -55,12 +62,10 @@ void matbudget_mc(Int_t nEvents = 10000000, const char* stsGeo = "v16v")
   gDebug = 0;
   // ------------------------------------------------------------------------
 
-
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
   // ------------------------------------------------------------------------
-
 
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* run = new FairRunSim();
@@ -77,7 +82,6 @@ void matbudget_mc(Int_t nEvents = 10000000, const char* stsGeo = "v16v")
   // -----   Create media   -------------------------------------------------
   run->SetMaterials("media.geo");  // Materials
   // ------------------------------------------------------------------------
-
 
   // -----   Create detectors and passive volumes   -------------------------
   if (caveGeom != "") {
@@ -133,9 +137,7 @@ void matbudget_mc(Int_t nEvents = 10000000, const char* stsGeo = "v16v")
     tof->SetGeometryFileName(tofGeom);
     run->AddModule(tof);
   }
-
   // ------------------------------------------------------------------------
-
 
   // -----   Create magnetic field   ----------------------------------------
   // Zero field
@@ -156,13 +158,12 @@ void matbudget_mc(Int_t nEvents = 10000000, const char* stsGeo = "v16v")
   Int_t multiplicity       = 1;  // particles per event
   FairBoxGenerator* boxGen = new FairBoxGenerator(pdgId, multiplicity);
 
-  boxGen->SetBoxXYZ(-50., -50., 50., 50., 0.);
+  boxGen->SetBoxXYZ(-50., -50., 50., 50., -200.);  // Start at -200cm in Z
   boxGen->SetPRange(0.1, 0.5);
   boxGen->SetThetaRange(0., 0.);
   boxGen->SetPhiRange(0., 360.);
 
   primGen->AddGenerator(boxGen);
-
   run->SetRadLenRegister(kTRUE);
   // ------------------------------------------------------------------------
 

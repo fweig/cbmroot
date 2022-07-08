@@ -1,6 +1,6 @@
-/* Copyright (C) 2016 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2015-2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: David Emschermann [committer] */
+   Authors: Thomas Balog, David Emschermann [committer] */
 
 // --------------------------------------------------------------------------
 //
@@ -15,14 +15,14 @@
 //
 // --------------------------------------------------------------------------
 
+#include "../../sim/transport/gconfig/g3Config.C"
+
 //void matbudget_mc_phi(Int_t nEvents = 10      , const char* stsGeo = "v15c")
 //void matbudget_mc_phi(Int_t nEvents = 1000000 , const char* stsGeo = "v15c")
-void matbudget_mc_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c")
+void matbudget_mc_phi(Int_t nEvents = 1000000, const char* stsGeo = "v21e")
 {
-
   // ========================================================================
   //          Adjust this part according to your requirements
-
 
   // ----- Paths and file names  --------------------------------------------
   TString stsVersion(stsGeo);
@@ -55,12 +55,10 @@ void matbudget_mc_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c")
   gDebug = 0;
   // ------------------------------------------------------------------------
 
-
   // -----   Timer   --------------------------------------------------------
   TStopwatch timer;
   timer.Start();
   // ------------------------------------------------------------------------
-
 
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* run = new FairRunSim();
@@ -136,7 +134,6 @@ void matbudget_mc_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c")
 
   // ------------------------------------------------------------------------
 
-
   // -----   Create magnetic field   ----------------------------------------
   // Zero field
   CbmFieldConst* magField = new CbmFieldConst();
@@ -156,12 +153,9 @@ void matbudget_mc_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c")
   Int_t multiplicity       = 1;  // particles per event
   FairBoxGenerator* boxGen = new FairBoxGenerator(pdgId, multiplicity);
 
-  //  boxGen->SetBoxXYZ(-50.,-50.,50.,50.,0.);
-  boxGen->SetXYZ(0., 0., 0.);
+  boxGen->SetXYZ(0., 0., -44.0);  // The target is -44.0 cm from centre of the magnet.
   boxGen->SetPRange(0.1, 0.5);
   boxGen->SetThetaRange(0., 40.);
-  //  boxGen->SetThetaRange(2.5,25.);
-  //  boxGen->SetThetaRange(0.,0.);
   boxGen->SetPhiRange(0., 360.);
 
   primGen->AddGenerator(boxGen);
@@ -185,7 +179,6 @@ void matbudget_mc_phi(Int_t nEvents = 10000000, const char* stsGeo = "v15c")
   rtdb->saveOutput();
   rtdb->print();
   // ------------------------------------------------------------------------
-
 
   // -----   Start run   ----------------------------------------------------
   run->Run(nEvents);
