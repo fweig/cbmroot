@@ -56,7 +56,8 @@ public:
   ~CbmEventTimeslice();
 
   void ExtractSelectedData();
-  std::vector<CbmDigiEvent>& GetSelectedData(){
+  std::vector<CbmDigiEvent>& GetSelectedData()
+  {
     if (!fbDigiEvtInput) ExtractSelectedData();
     return fvDigiEvents;
   }
@@ -116,9 +117,10 @@ private:
   /// Output file/tree management
   int64_t fiTreeFileMaxSize = 10000000000LL;  //! Default value: ~10 GB
   /// Histograms management
-  uint32_t fuPublishFreqTs  = 100;
-  double_t fdMinPublishTime = 0.5;
-  double_t fdMaxPublishTime = 5.0;
+  uint32_t fuPublishFreqTs   = 100;
+  double_t fdMinPublishTime  = 0.5;
+  double_t fdMaxPublishTime  = 5.0;
+  std::string fsHistosSuffix = "";
 
   /// List of MQ channels names
   std::vector<std::string> fsAllowedChannels = {fsChannelNameDataInput};

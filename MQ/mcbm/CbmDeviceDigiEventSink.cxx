@@ -35,9 +35,9 @@
 #include "TCanvas.h"
 #include "TFile.h"
 #include "TH1.h"
-#include "TProfile.h"
 #include "TList.h"
 #include "TNamed.h"
+#include "TProfile.h"
 
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/utility.hpp>
@@ -80,6 +80,7 @@ try {
   fuPublishFreqTs          = fConfig->GetValue<uint32_t>("PubFreqTs");
   fdMinPublishTime         = fConfig->GetValue<double_t>("PubTimeMin");
   fdMaxPublishTime         = fConfig->GetValue<double_t>("PubTimeMax");
+  fsHistosSuffix           = fConfig->GetValue<std::string>("HistosSuffix");
   fsChannelNameHistosInput = fConfig->GetValue<std::string>("ChNameIn");
 
   /// Associate the MissedTs Channel to the corresponding handler
@@ -217,26 +218,40 @@ bool CbmDeviceDigiEventSink::InitHistograms()
   // ALGO: std::vector<std::pair<TNamed*, std::string>> vHistos = fMonitorAlgo->GetHistoVector();
   std::vector<std::pair<TNamed*, std::string>> vHistos = {};
 
-  fhFullTsBuffSizeEvo =
-    new TProfile("hFullTsBuffSizeEvo", "Evo. of the full TS buffer size; Time in run [s]; Size []", 720, 0, 7200);
-  fhMissTsBuffSizeEvo =
-    new TProfile("hMissTsBuffSizeEvo", "Evo. of the missed TS buffer size; Time in run [s]; Size []", 720, 0, 7200);
-  fhFullTsProcEvo  = new TH1I("hFullTsProcEvo", "Processed full TS; Time in run [s]; # []", 720, 0, 7200);
-  fhMissTsProcEvo  = new TH1I("hMissTsProcEvo", "Processed missing TS; Time in run [s]; # []", 720, 0, 7200);
-  fhTotalTsProcEvo = new TH1I("hTotalTsProcEvo", "Total processed TS; Time in run [s]; # []", 720, 0, 7200);
-  fhTotalEventsEvo = new TH1I("hTotalEventsEvo", "Processed events; Time in run [s]; # []", 720, 0, 7200);
-  vHistos.push_back(std::pair<TNamed*, std::string>(fhFullTsBuffSizeEvo, "EvtSink"));
-  vHistos.push_back(std::pair<TNamed*, std::string>(fhMissTsBuffSizeEvo, "EvtSink"));
-  vHistos.push_back(std::pair<TNamed*, std::string>(fhFullTsProcEvo, "EvtSink"));
-  vHistos.push_back(std::pair<TNamed*, std::string>(fhMissTsProcEvo, "EvtSink"));
-  vHistos.push_back(std::pair<TNamed*, std::string>(fhTotalTsProcEvo, "EvtSink"));
-  vHistos.push_back(std::pair<TNamed*, std::string>(fhTotalEventsEvo, "EvtSink"));
+  /* clang-format off */
+  fhFullTsBuffSizeEvo = new TProfile(Form("hFullTsBuffSizeEvo%s", fsHistosSuffix.data()),
+                                     "Evo. of the full TS buffer size; Time in run [s]; Size []",
+                                     720, 0, 7200);
+  fhMissTsBuffSizeEvo = new TProfile(Form("hMissTsBuffSizeEvo%s", fsHistosSuffix.data()),
+                                     "Evo. of the missed TS buffer size; Time in run [s]; Size []",
+                                     720, 0, 7200);
+  fhFullTsProcEvo  = new TH1I(Form("hFullTsProcEvo%s", fsHistosSuffix.data()),
+                              "Processed full TS; Time in run [s]; # []",
+                              720, 0, 7200);
+  fhMissTsProcEvo  = new TH1I(Form("hMissTsProcEvo%s", fsHistosSuffix.data()),
+                              "Processed missing TS; Time in run [s]; # []",
+                              720, 0, 7200);
+  fhTotalTsProcEvo = new TH1I(Form("hTotalTsProcEvo%s", fsHistosSuffix.data()),
+                              "Total processed TS; Time in run [s]; # []",
+                              720, 0, 7200);
+  fhTotalEventsEvo = new TH1I(Form("hTotalEventsEvo%s", fsHistosSuffix.data()),
+                              "Processed events; Time in run [s]; # []",
+                              720, 0, 7200);
+  /* clang-format on */
+
+  std::string sFolder = std::string("EvtSink") + fsHistosSuffix;
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhFullTsBuffSizeEvo, sFolder));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhMissTsBuffSizeEvo, sFolder));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhFullTsProcEvo, sFolder));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhMissTsProcEvo, sFolder));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhTotalTsProcEvo, sFolder));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhTotalEventsEvo, sFolder));
 
   /// Obtain vector of pointers on each canvas from the algo (+ optionally desired folder) or create them locally
   // ALGO: std::vector<std::pair<TCanvas*, std::string>> vCanvases = fMonitorAlgo->GetCanvasVector();
   std::vector<std::pair<TCanvas*, std::string>> vCanvases = {};
 
-  fcEventSinkAllHist = new TCanvas("cEventSinkAllHist", "Event Sink Monitoring");
+  fcEventSinkAllHist = new TCanvas(Form("cEventSinkAllHist%s", fsHistosSuffix.data()), "Event Sink Monitoring");
   fcEventSinkAllHist->Divide(3, 2);
 
   fcEventSinkAllHist->cd(1);
@@ -270,7 +285,7 @@ bool CbmDeviceDigiEventSink::InitHistograms()
   gPad->SetLogy();
   fhTotalEventsEvo->Draw("hist");
 
-  vCanvases.push_back(std::pair<TCanvas*, std::string>(fcEventSinkAllHist, "canvases"));
+  vCanvases.push_back(std::pair<TCanvas*, std::string>(fcEventSinkAllHist, std::string("canvases") + fsHistosSuffix));
 
   /// Add pointers to each histo in the histo array
   /// Create histo config vector
@@ -425,9 +440,9 @@ bool CbmDeviceDigiEventSink::HandleData(FairMQParts& parts, int /*index*/)
       fhMissTsProcEvo->Fill(secInRun.count(), (fulMissedTsCounter - fulLastMissTsCounter));
       fhTotalTsProcEvo->Fill(secInRun.count(),
                              (fulTsCounter - fulLastFullTsCounter + fulMissedTsCounter - fulLastMissTsCounter));
-      fhTotalEventsEvo->Fill(secInRun.count(), fulProcessedEvents -fulLastProcessedEvents);
+      fhTotalEventsEvo->Fill(secInRun.count(), fulProcessedEvents - fulLastProcessedEvents);
 
-      fLastFillTime = currentTime;
+      fLastFillTime          = currentTime;
       fulLastFullTsCounter   = fulTsCounter;
       fulLastMissTsCounter   = fulMissedTsCounter;
       fulLastProcessedEvents = fulProcessedEvents;
@@ -785,7 +800,7 @@ void CbmDeviceDigiEventSink::Finish()
 
 CbmEventTimeslice::CbmEventTimeslice(FairMQParts& parts, bool bDigiEvtInput)
 {
-  fbDigiEvtInput =bDigiEvtInput;
+  fbDigiEvtInput = bDigiEvtInput;
 
   uint32_t uPartIdx = 0;
 

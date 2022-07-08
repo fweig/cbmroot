@@ -695,7 +695,8 @@ bool CbmDeviceBuildDigiEvents::SendDigiEvents(FairMQParts& partsIn)
     /// Get the proper order for block selection as TRD1D and TRD2D may insert indices in separate loops
     /// => Needed to ensure that the start and stop of the block copy do not trigger a vector size exception
     event->SortIndices();
-        /// for each detector, find the data in the Digi vectors and copy them
+
+    /// for each detector, find the data in the Digi vectors and copy them
     /// TODO: Template + loop on list of data types?
     /// ==> T0
     uint32_t uNbDigis = (0 < event->GetNofData(ECbmDataType::kT0Digi) ? event->GetNofData(ECbmDataType::kT0Digi) : 0);
@@ -769,10 +770,11 @@ bool CbmDeviceBuildDigiEvents::SendDigiEvents(FairMQParts& partsIn)
   boost::archive::binary_oarchive oaEvt(ossEvt);
   oaEvt << vOutEvents;
   std::string* strMsgEvt = new std::string(ossEvt.str());
-  FairMQMessagePtr message(NewMessage(const_cast<char*>(strMsgEvt->c_str()),  // data
-                                      strMsgEvt->length(),                    // size
-                                      [](void*, void* object) { delete static_cast<std::string*>(object); },
-                                      strMsgEvt));  // object that manages the data
+  FairMQMessagePtr message(NewMessage(
+    const_cast<char*>(strMsgEvt->c_str()),  // data
+    strMsgEvt->length(),                    // size
+    [](void*, void* object) { delete static_cast<std::string*>(object); },
+    strMsgEvt));  // object that manages the data
   LOG(debug) << "Serializing done";
 
   /// Make a new composed messaged with TsHeader + vector of Digi Event + TsMetaData

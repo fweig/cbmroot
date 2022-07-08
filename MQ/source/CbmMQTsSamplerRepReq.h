@@ -58,6 +58,7 @@ protected:
   uint32_t fuPublishFreqTs             = 0;
   double_t fdMinPublishTime            = 0.5;
   double_t fdMaxPublishTime            = 5;
+  std::string fsHistosSuffix           = "";
 
   uint64_t fulFirstTsIndex   = 0;
   uint64_t fulPrevTsIndex    = 0;

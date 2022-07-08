@@ -43,6 +43,8 @@ void addCustomOptions(bpo::options_description& options)
                         "Minimal time between two publishing");
   options.add_options()("PubTimeMax", bpo::value<double_t>()->default_value(10.0),
                         "Maximal time between two publishing");
+  options.add_options()("HistosSuffix", bpo::value<std::string>()->default_value(""),
+                        "Suffix added to folders, histos and canvases names, e.g. for multiple nodes usages");
   options.add_options()("ChNameIn", bpo::value<std::string>()->default_value("histogram-in"),
                         "MQ channel name for histos");
 }

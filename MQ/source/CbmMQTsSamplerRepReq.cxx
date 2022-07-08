@@ -75,6 +75,7 @@ try {
   fuPublishFreqTs          = fConfig->GetValue<uint32_t>("PubFreqTs");
   fdMinPublishTime         = fConfig->GetValue<double_t>("PubTimeMin");
   fdMaxPublishTime         = fConfig->GetValue<double_t>("PubTimeMax");
+  fsHistosSuffix           = fConfig->GetValue<std::string>("HistosSuffix");
   fsChannelNameHistosInput = fConfig->GetValue<std::string>("ChNameIn");
 
   if (fbNoSplitTs) {
@@ -252,6 +253,9 @@ bool CbmMQTsSamplerRepReq::InitHistograms()
   LOG(info) << "Histograms publication frequency in TS:    " << fuPublishFreqTs;
   LOG(info) << "Histograms publication min. interval in s: " << fdMinPublishTime;
   LOG(info) << "Histograms publication max. interval in s: " << fdMaxPublishTime;
+  if ("" != fsHistosSuffix) {  //
+    LOG(info) << "Suffix added to folders, histograms and canvas names: " << fsHistosSuffix;
+  }
 
   /// Vector of pointers on each histo (+ optionally desired folder)
   std::vector<std::pair<TNamed*, std::string>> vHistos = {};
@@ -259,25 +263,40 @@ bool CbmMQTsSamplerRepReq::InitHistograms()
   std::vector<std::pair<TCanvas*, std::string>> vCanvases = {};
 
   /// Histos creation and obtain pointer on them
-  fhTsRate       = new TH1I("TsRate", "TS rate; t [s]", 1800, 0., 1800.);
-  fhTsSize       = new TH1I("TsSize", "Size of TS; Size [MB]", 15000, 0., 15000.);
-  fhTsSizeEvo    = new TProfile("TsSizeEvo", "Evolution of the TS Size; t [s]; Mean size [MB]", 1800, 0., 1800.);
-  fhTsMaxSizeEvo = new TH1F("TsMaxSizeEvo", "Evolution of maximal TS Size; t [s]; Max size [MB]", 1800, 0., 1800.);
-  fhMissedTS     = new TH1I("Missed_TS", "Missed TS", 2, -0.5, 1.5);
-  fhMissedTSEvo  = new TProfile("Missed_TS_Evo", "Missed TS evolution; t [s]", 1800, 0., 1800.);
+  /* clang-format off */
+  fhTsRate       = new TH1I(Form("TsRate%s", fsHistosSuffix.data()),
+                            "TS rate; t [s]",
+                            1800, 0., 1800.);
+  fhTsSize       = new TH1I(Form("TsSize%s", fsHistosSuffix.data()),
+                           "Size of TS; Size [MB]",
+                           15000, 0., 15000.);
+  fhTsSizeEvo    = new TProfile(Form("TsSizeEvo%s", fsHistosSuffix.data()),
+                                "Evolution of the TS Size; t [s]; Mean size [MB]",
+                                1800, 0., 1800.);
+  fhTsMaxSizeEvo = new TH1F(Form("TsMaxSizeEvo%s", fsHistosSuffix.data()),
+                            "Evolution of maximal TS Size; t [s]; Max size [MB]",
+                            1800, 0., 1800.);
+  fhMissedTS     = new TH1I(Form("MissedTs%s", fsHistosSuffix.data()),
+                            "Missed TS",
+                            2, -0.5, 1.5);
+  fhMissedTSEvo  = new TProfile(Form("MissedTsEvo%s", fsHistosSuffix.data()),
+                                "Missed TS evolution; t [s]",
+                                1800, 0., 1800.);
+  /* clang-format on */
 
   /// Add histo pointers to the histo vector
-  vHistos.push_back(std::pair<TNamed*, std::string>(fhTsRate, "Sampler"));
-  vHistos.push_back(std::pair<TNamed*, std::string>(fhTsSize, "Sampler"));
-  vHistos.push_back(std::pair<TNamed*, std::string>(fhTsSizeEvo, "Sampler"));
-  vHistos.push_back(std::pair<TNamed*, std::string>(fhTsMaxSizeEvo, "Sampler"));
-  vHistos.push_back(std::pair<TNamed*, std::string>(fhMissedTS, "Sampler"));
-  vHistos.push_back(std::pair<TNamed*, std::string>(fhMissedTSEvo, "Sampler"));
+  std::string sFolder = std::string("Sampler") + fsHistosSuffix;
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhTsRate, sFolder));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhTsSize, sFolder));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhTsSizeEvo, sFolder));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhTsMaxSizeEvo, sFolder));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhMissedTS, sFolder));
+  vHistos.push_back(std::pair<TNamed*, std::string>(fhMissedTSEvo, sFolder));
 
   /// Canvases creation
   Double_t w = 10;
   Double_t h = 10;
-  fcSummary  = new TCanvas("cSampSummary", "Sampler monitoring plots", w, h);
+  fcSummary  = new TCanvas(Form("cSampSummary%s", fsHistosSuffix.data()), "Sampler monitoring plots", w, h);
   fcSummary->Divide(2, 3);
 
   fcSummary->cd(1);
@@ -313,7 +332,7 @@ bool CbmMQTsSamplerRepReq::InitHistograms()
   fhMissedTSEvo->Draw("el");
 
   /// Add canvas pointers to the canvas vector
-  vCanvases.push_back(std::pair<TCanvas*, std::string>(fcSummary, "canvases"));
+  vCanvases.push_back(std::pair<TCanvas*, std::string>(fcSummary, std::string("canvases") + fsHistosSuffix));
 
   /// Add pointers to each histo in the histo array
   /// Create histo config vector
