@@ -105,10 +105,15 @@ void MuchReadoutConfig::putParams(FairParamList* l)
       for (uint16_t crob = 0; crob < numCrobPerComp; crob++) {
         for (uint16_t elink = 0; elink < numElinksPerCrob; elink++) {
           fReadoutMap[equipment][elink].resize(numChanPerAsic);
-          for (uint16_t channel = 0; channel < numChanPerAsic; channel++) {
 
+          uint16_t elinkId   = numElinksPerCrob * crob + elink;      // elink within component
+          uint32_t febInCrob = elink2Feb[elinkId];                   // FEB within CROB
+          uint32_t feb       = comp * GetFebsPerComp() + febInCrob;  // global FEB index
+          int32_t febId      = GetFebId(feb);                        // FEB Id in MUCH addressing scheme
 
-            fReadoutMap[equipment][elink][channel] = 0;
+          for (uint16_t chanInAsic = 0; chanInAsic < numChanPerAsic; chanInAsic++) {
+            uint32_t channel                       = chanInAsic + numChanPerAsic * (feb % kuNbAsicsPerFeb);
+            fReadoutMap[equipment][elink][channel] = CreateMuchAddress(comp, febId, channel);
           }  //# channel
         }    //# elink
       }      //# CROB
@@ -229,20 +234,6 @@ void MuchReadoutConfig::putParams(FairParamList* l)
 
     return address;
   }
-
-
-  // -------------------------------------------------------------------------
-  /*
-  int16_t MuchReadoutConfig::ElinkIdxToFebIdx(uint16_t uElink)
-  {
-    if (uElink < numElinksPerCrob) return kiCrobMapElinkFebIdx[uElink];
-    else {
-      LOG(warning) << "MuchReadoutConfig::ElinkIdxToFebIdx => Index out of bound, "
-                   << "Elink is " << uElink << " returning crazy value!";
-      return -1;
-    }
-  }
-  */
 
   bool MuchReadoutConfig::IsCrobActive(uint16_t uDpbIdx, uint16_t uCrobIdx)
   {

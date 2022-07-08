@@ -44,6 +44,7 @@ namespace cbm::algo
      */
     std::vector<uint32_t> Map(uint16_t equipId, uint16_t elink);
 
+    uint16_t GetFebsPerComp() { return numCrobPerComp * kuNbFebsPerCrob; }
     uint16_t GetNrOfCrobs() { return numComp * numCrobPerComp; }
     uint16_t GetNrOfFebs() { return GetNrOfCrobs() * kuNbFebsPerCrob; }
     uint16_t GetNrOfFebsInGemA() { return fuFebsInGemA; }

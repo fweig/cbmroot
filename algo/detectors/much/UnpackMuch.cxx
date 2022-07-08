@@ -95,7 +95,6 @@ namespace cbm::algo
   inline void UnpackMuch::ProcessHitMessage(const stsxyter::Message& message, vector<CbmMuchDigi>& digiVec,
                                             UnpackMuchMonitorData& monitor) const
   {
-    /* STS version
     // --- Check eLink and get parameters
     uint16_t elink = message.GetLinkIndexHitBinning();
     if (elink >= fParams.fElinkParams.size()) {
@@ -103,18 +102,9 @@ namespace cbm::algo
       return;
     }
     const UnpackMuchElinkPar& elinkPar = fParams.fElinkParams.at(elink);
-    uint32_t asicNr                    = elinkPar.fAsicNr;
 
-    // --- Hardware-to-software address
-    uint32_t numChansPerModule = fParams.fNumAsicsPerModule * fParams.fNumChansPerAsic;
-    uint32_t address           = elinkPar.fAddress;
-    uint32_t channel           = 0;
-    if (asicNr < fParams.fNumAsicsPerModule / 2) {  // front side (n side)
-      channel = message.GetHitChannel() + fParams.fNumChansPerAsic * asicNr;
-    }
-    else {  // back side (p side)
-      channel = numChansPerModule - message.GetHitChannel() + 1;
-    }
+    uint16_t channel = message.GetHitChannel();
+    uint32_t address = (elinkPar.fAddress)[channel];
 
     // --- Expand time stamp to time within timeslice (in clock cycle)
     uint64_t messageTime = message.GetHitTimeBinning() + fCurrentEpochTime;
@@ -124,14 +114,12 @@ namespace cbm::algo
 
     // --- Correct ASIC-wise offsets
     messageTime -= elinkPar.fTimeOffset;
-    // --- TODO: Add walk correction (depends on ADC)
 
     // --- Charge
-    double charge = elinkPar.fAdcOffset + (message.GetHitAdc() - 1) * elinkPar.fAdcGain;
+    double charge = message.GetHitAdc();
 
     // --- Create output digi
-    digiVec.emplace_back(address, channel, messageTime, charge);
-*/
+    digiVec.emplace_back(address, charge, messageTime);
   }
   // --------------------------------------------------------------------------
 
