@@ -61,9 +61,9 @@ namespace cbm::algo
     static const uint16_t numFebsPerCrob   = 9;    // Number of FEBs  connected to each CROB for mMuch 2019
     static const uint16_t numAsicsPerFeb   = 1;    // Number of ASICs connected in each FEB for MUCH
     static const uint16_t numChanPerAsic   = 128;  // Number of channels in each ASIC
+    static const uint16_t numComp          = 6;    // Total number of MUCH DPBs in system
 
     /// Variables
-    uint16_t numComp       = 6;               // Total number of MUCH DPBs in system
     uint16_t numFebsInGemA = 27;              // Number of FEBs connected in GEM Module A
     uint16_t numFebsInGemB = 18;              // Number of FEBs connected in GEM Module B
     uint16_t numFebsInRpc  = 9;               // Number of FEBs connected in RPC Module

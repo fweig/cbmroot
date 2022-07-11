@@ -280,6 +280,7 @@ InitStatus CbmTaskUnpack::Init()
       UnpackMuchElinkPar elinkPar;
       elinkPar.fAddress    = fMuchConfig.Map(equip, elink);  // Vector of MUCH addresses for this elink
       elinkPar.fTimeOffset = 0.;
+      par->fElinkParams.push_back(elinkPar);
     }
     fAlgoMuch[equip].SetParams(std::move(par));
     LOG(info) << "--- Configured equipment " << equip << " with " << numElinks << " elinks";

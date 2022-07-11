@@ -34,6 +34,8 @@ namespace cbm::algo
     // --- Current TS_MSB epoch cycle
     auto const msTime = msDescr.idx;  // Unix time of MS in ns
     fCurrentCycle     = std::ldiv(msTime, fkCycleLength).quot;
+    fCurrentEpoch     = 0;  // Needed to make each MS independent of the previous! Will be updated in message 1 if MS OK
+    fCurrentEpochTime = 0;  // Needed to make each MS independent of the previous! Will be updated in message 1 if MS OK
 
     // --- Number of messages in microslice
     auto msSize = msDescr.size;
