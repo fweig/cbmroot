@@ -539,8 +539,26 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapBuc(UInt_t& uCh, UInt_t uGbtx)
             case 1:
             case 2: iSideMap = 1; break;
           }
-        } break;
-
+          break;
+        }
+        case 8: {
+          // Special case for two channels in 2022
+          // Fallthrough to 7 for all other channels
+          if (2 == iFeet) {
+            if (7 == iStr) {
+              ///                                               SM Rpc St Si Type
+              fviRpcChUId[uCh] = CbmTofAddress::GetUniqueAddress(0, 0, 0, 0, 8);
+              uCh++;
+              continue;
+            }
+            else if (23 == iStr) {
+              ///                                               SM Rpc St Si Type
+              fviRpcChUId[uCh] = CbmTofAddress::GetUniqueAddress(1, 0, 0, 0, 8);
+              uCh++;
+              continue;
+            }
+          }
+        }
         case 7: {
           // clang-format off
           /*
@@ -562,35 +580,46 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapBuc(UInt_t& uCh, UInt_t uGbtx)
           // clang-format on
           Int_t iInd = iFeet * 32 + iStr;
           Int_t i    = 0;
-          for (; i < 160; i++)
+          for (; i < 160; i++) {
             if (iInd == iChMap[i]) break;
+          }
           iStrMap        = i % 32;
           Int_t iFeetInd = (i - iStrMap) / 32;
           switch (iFeetInd) {
-            case 0:
+            case 0: {
               iRpcMap  = 0;
               iSideMap = 1;
               break;
-            case 1:
+            }
+            case 1: {
               iRpcMap  = 1;
               iSideMap = 1;
               break;
-            case 2:
+            }
+            case 2: {
               iRpcMap  = 1;
               iSideMap = 0;
               break;
-            case 3:
+            }
+            case 3: {
               iRpcMap  = 0;
               iSideMap = 0;
               break;
-            case 4: iSideMap = -1; break;
+            }
+            case 4: {
+              iSideMap = -1;
+              break;
+            }
           }
           iModuleIdMap = fiModuleId[uGbtx];
           LOG(debug) << "Buc of GBTX " << uGbtx << " Ch " << uCh
                      << Form(", Feet %1d, Str %2d, Ind %3d, i %3d, FeetInd %1d, Rpc %1d, Side %1d, Str %2d ", iFeet,
                              iStr, iInd, i, iFeetInd, iRpcMap, iSideMap, iStrMap);
-        } break;
-        default:;
+          break;
+        }
+        default: {
+          break;
+        }
       }  // switch (fiRpcSide[uGbtx])
       if (iSideMap > -1)
         fviRpcChUId[uCh] = CbmTofAddress::GetUniqueAddress(iModuleIdMap, iRpcMap, iStrMap, iSideMap, fiRpcType[uGbtx]);
