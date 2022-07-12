@@ -109,6 +109,15 @@ public:
     */
   void SetIcdGeneration(bool val = true) { fGenerateICD = val; }
 
+  /**
+    * Set Tot of RICH detector
+    */
+  void SetTotRich(Double_t min, Double_t max)
+  {
+    fTotMin = min;
+    fTotMax = max;
+  }
+
 
 private:
   CbmDigiManager* fDigiMan = nullptr;
@@ -122,6 +131,10 @@ private:
   CbmHistManager* fHM;
 
   Double_t fXOffsetHisto;
+
+  Double_t fTotMin = 0.0;
+
+  Double_t fTotMax = 100.0;
 
   Int_t fEventNum;
 

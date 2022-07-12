@@ -58,6 +58,15 @@ public:
   }
 
   /**
+    * Set an LE Limits
+    */
+  void SetLELimits(Double_t min, Double_t max)
+  {
+    fLEMin = min;
+    fLEMax = max;
+  }
+
+  /**
     * Set a pointer to the loaded Rich hits
     */
   void SetRichHits(TClonesArray* hits = nullptr) { fRichHits = hits; }
@@ -116,6 +125,10 @@ private:
   std::string fOutputDir;  // output dir for results
 
   std::string fFileName = "Ev";
+
+  Double_t fLEMin;
+
+  Double_t fLEMax;
 
   CbmHistManager* fHM;
 

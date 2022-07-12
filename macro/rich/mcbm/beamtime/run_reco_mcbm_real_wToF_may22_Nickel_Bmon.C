@@ -2,25 +2,30 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Florian Uhlig [committer] */
 
-void run_reco_mcbm_real_wToF_mar22(const unsigned int runId = 1981,  // used for the output folder
-                                   int nEvents = 200, const int taskId = 3,
-                                   const string srcfolder = "/data/cbmroot/cbmsource/macro/run/data/")
+void run_reco_mcbm_real_wToF_may22_Nickel_Bmon(const unsigned int runId = 2160,  // used for the output folder
+                                               int nEvents = 50, const int taskId = 11,
+                                               const string srcfolder = "/data/cbmroot/mcbmsource/macro/run/data/")
 {
   // -----   File names   --------------------------------------------------
-  const string& digiFile = Form("%s/%4d.digi.root", srcfolder.c_str(), runId);
+  const string& digiFile = Form("%s/%4d_bmonintof.digi.root", srcfolder.c_str(), runId);
 
-  const string& recoFile = Form("reco_mcbm_mar22_%d.root", runId);
+
   //TString setup          = "mcbm_beam_2021_07_surveyed";
-  TString setup = "mcbm_beam_2022_03_09_carbon";
+  TString setup = "mcbm_beam_2022_03_22_iron";
+  if (runId >= 2352) setup = "mcbm_beam_2022_05_23_nickel";
+
+  const string& recoFile = Form("reco_%s_%d.root", setup.Data(), runId);
   // -----------------------------------------------------------------------
 
 
   // -----   EventBuilder Settings-----------------------------------------
   const Double_t eb_fixedTimeWindow {200.};
   const Int_t eb_TriggerMinNumberT0 {1};
+  const Int_t eb_TriggerMaxNumberT0 {2};
   const Int_t eb_TriggerMinNumberSts {0};
   const Int_t eb_TriggerMinNumberMuch {0};
-  const Int_t eb_TriggerMinNumberTof {4};
+  const Int_t eb_TriggerMinNumberTof {16};
+  const Int_t eb_TriggerMinNumberTofLayers {4};
   const Int_t eb_TriggerMinNumberRich {5};
   // -----------------------------------------------------------------------
 
@@ -50,10 +55,14 @@ void run_reco_mcbm_real_wToF_mar22(const unsigned int runId = 1981,  // used for
   if (runId >= 759) cCalId = "759.100.4.0";
   if (runId >= 812) cCalId = "831.100.4.0";
   if (runId >= 1588) cCalId = "1588.50.6.0";
+  if (runId >= 2160) cCalId = "2160.50.4.0";
+  if (runId >= 2352) cCalId = "2365.5.lxbk0600";
   Int_t iCalSet = 30040500;  // calibration settings
   if (runId >= 759) iCalSet = 10020500;
   if (runId >= 812) iCalSet = 10020500;
   if (runId >= 1588) iCalSet = 12002002;
+  if (runId >= 2160) iCalSet = 700900500;
+  if (runId >= 2352) iCalSet = 42032500;
 
   Double_t Tint           = 100.;  // coincidence time interval
   Int_t iTrackMode        = 2;     // 2 for TofTracker
@@ -68,12 +77,12 @@ void run_reco_mcbm_real_wToF_mar22(const unsigned int runId = 1981,  // used for
   TTree::SetMaxTreeSize(90000000000);
   // -----------------------------------------------------------------------
 
-
   TString myName  = "run_reco_mcbm_real";
   TString srcDir  = gSystem->Getenv("VMCWORKDIR");  // top source directory
   TString workDir = gSystem->Getenv("VMCWORKDIR");
 
   remove(recoFile.c_str());
+
 
   // -----   Load the geometry setup   -------------------------------------
   std::cout << std::endl;
@@ -89,11 +98,14 @@ void run_reco_mcbm_real_wToF_mar22(const unsigned int runId = 1981,  // used for
   geoSetup->SetActive(ECbmModuleId::kMuch, kFALSE);
   geoSetup->SetActive(ECbmModuleId::kRich, kTRUE);
   geoSetup->SetActive(ECbmModuleId::kTrd, kFALSE);
+  geoSetup->SetActive(ECbmModuleId::kTrd2d, kFALSE);
   geoSetup->SetActive(ECbmModuleId::kPsd, kFALSE);
+  geoSetup->SetActive(ECbmModuleId::kTof, kTRUE);
   // -----------------------------------------------------------------------
 
   //TString TofFileFolder = Form("/lustre/cbm/users/nh/CBM/cbmroot/trunk/macro/beamtime/mcbm2020/%s", cCalId.Data());
-  TString TofFileFolder = Form("/data/cbmroot/files/tofCal/mTofCriPar2/%s", cCalId.Data());
+  //TString TofFileFolder = Form("/data/cbmroot/files/tofCal/mTofCriPar2/%s", cCalId.Data());
+  TString TofFileFolder = Form("/data/cbmroot/files/tofCal/%s", cCalId.Data());
 
   std::cout << std::endl << "-I- " << myName << ": Defining parameter files " << std::endl;
   TList* parFileList = new TList();
@@ -116,8 +128,8 @@ void run_reco_mcbm_real_wToF_mar22(const unsigned int runId = 1981,  // used for
     //    parFileList->Add("/lustre/cbm/users/adrian/cbmgit/cbmsource/parameters/tof/tof_v21c_mcbm.digibdf.par");
     std::cout << "-I- " << myName << ": Using parameter file " << tofBdfFile->GetString() << std::endl;
 
-    //geoFile             = srcDir + "/macro/mcbm/data/" + setup + ".geo.root";
-    geoFile             = srcDir + "/macro/mcbm/data/mcbm_beam_2022_03_09_carbon.geo.root";
+    geoFile = srcDir + "/macro/mcbm/data/" + setup + ".geo.root";
+    //geoFile             = srcDir + "/macro/mcbm/data/mcbm_beam_2022_03_22_iron.geo.root";
     TFile* fgeo         = new TFile(geoFile);
     TGeoManager* geoMan = (TGeoManager*) fgeo->Get("FAIRGeom");
     if (NULL == geoMan) {
@@ -150,6 +162,44 @@ void run_reco_mcbm_real_wToF_mar22(const unsigned int runId = 1981,  // used for
   run->SetSource(inputSource);
   run->SetOutputFile(recoFile.c_str());
 
+
+  // =========================================================================
+  // ===                   Alignment Correction                            ===
+  // =========================================================================
+  // (Fairsoft Apr21p2 or newer is needed)
+
+
+  TString alignmentMatrixFileName = "AlignmentMatrices_" + setup + ".root";
+  if (alignmentMatrixFileName.Length() != 0) {
+    std::cout << "-I- " << myName << ": Applying alignment for file " << alignmentMatrixFileName << std::endl;
+
+    // Define the basic structure which needs to be filled with information
+    // This structure is stored in the output file and later passed to the
+    // FairRoot framework to do the (miss)alignment
+    std::map<std::string, TGeoHMatrix>* matrices {nullptr};
+
+    // read matrices from disk
+    LOG(info) << "Filename: " << alignmentMatrixFileName;
+    TFile* misalignmentMatrixRootfile = new TFile(alignmentMatrixFileName, "READ");
+    if (misalignmentMatrixRootfile->IsOpen()) {
+      gDirectory->GetObject("MisalignMatrices", matrices);
+      misalignmentMatrixRootfile->Close();
+    }
+    else {
+      LOG(error) << "Could not open file " << alignmentMatrixFileName << "\n Exiting";
+      exit(1);
+    }
+
+    if (matrices) { run->AddAlignmentMatrices(*matrices); }
+    else {
+      LOG(error) << "Alignment required but no matrices found."
+                 << "\n Exiting";
+      exit(1);
+    }
+  }
+  // ------------------------------------------------------------------------
+
+
   // --------------------event builder---------------------------------------
   CbmTaskBuildRawEvents* evBuildRaw = new CbmTaskBuildRawEvents();
 
@@ -161,27 +211,35 @@ void run_reco_mcbm_real_wToF_mar22(const unsigned int runId = 1981,  // used for
   if (!geoSetup->IsActive(ECbmModuleId::kMuch)) evBuildRaw->RemoveDetector(kRawEventBuilderDetMuch);
   if (!geoSetup->IsActive(ECbmModuleId::kPsd)) evBuildRaw->RemoveDetector(kRawEventBuilderDetPsd);
   if (!geoSetup->IsActive(ECbmModuleId::kTrd)) evBuildRaw->RemoveDetector(kRawEventBuilderDetTrd);
+  if (!geoSetup->IsActive(ECbmModuleId::kTrd2d)) evBuildRaw->RemoveDetector(kRawEventBuilderDetTrd2D);
   if (!geoSetup->IsActive(ECbmModuleId::kSts)) evBuildRaw->RemoveDetector(kRawEventBuilderDetSts);
   if (!geoSetup->IsActive(ECbmModuleId::kTof)) evBuildRaw->RemoveDetector(kRawEventBuilderDetTof);
 
   // Set TOF as reference detector
   evBuildRaw->SetReferenceDetector(kRawEventBuilderDetTof);
+  // evBuildRaw->SetReferenceDetector(kRawEventBuilderDetT0);
 
+  // evBuildRaw->AddDetector(kRawEventBuilderDetT0);
   // void SetTsParameters(double TsStartTime, double TsLength, double TsOverLength): TsStartTime=0, TsLength=256ms in 2021, TsOverLength=TS overlap, not used in mCBM2021
   evBuildRaw->SetTsParameters(0.0, 1.28e8, 0.0);
 
   if (geoSetup->IsActive(ECbmModuleId::kTof))
     evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kTof, eb_TriggerMinNumberTof);
+  if (geoSetup->IsActive(ECbmModuleId::kTof))
+    evBuildRaw->SetTriggerMinLayersNumber(ECbmModuleId::kTof, eb_TriggerMinNumberTofLayers);
 
+  evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kT0, eb_TriggerMinNumberT0);
+  evBuildRaw->SetTriggerMaxNumber(ECbmModuleId::kT0, eb_TriggerMaxNumberT0);
   if (geoSetup->IsActive(ECbmModuleId::kTof)) evBuildRaw->SetTriggerMaxNumber(ECbmModuleId::kTof, -1);
 
-  //evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kSts, eb_TriggerMinNumberSts);
-  //evBuildRaw->SetTriggerMaxNumber(ECbmModuleId::kSts, -1);
+  // evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kSts, eb_TriggerMinNumberSts);
+  // evBuildRaw->SetTriggerMaxNumber(ECbmModuleId::kSts, -1);
 
   evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kRich, eb_TriggerMinNumberRich);
   evBuildRaw->SetTriggerMaxNumber(ECbmModuleId::kRich, -1);
 
-  if (geoSetup->IsActive(ECbmModuleId::kTof)) evBuildRaw->SetTriggerWindow(ECbmModuleId::kTof, -50, 50);
+  evBuildRaw->SetTriggerWindow(ECbmModuleId::kT0, -50, 150);
+  if (geoSetup->IsActive(ECbmModuleId::kTof)) evBuildRaw->SetTriggerWindow(ECbmModuleId::kTof, -50, 100);
   if (geoSetup->IsActive(ECbmModuleId::kSts)) evBuildRaw->SetTriggerWindow(ECbmModuleId::kSts, -50, 50);
   if (geoSetup->IsActive(ECbmModuleId::kTrd)) evBuildRaw->SetTriggerWindow(ECbmModuleId::kTrd, -200, 200);
   if (geoSetup->IsActive(ECbmModuleId::kRich)) evBuildRaw->SetTriggerWindow(ECbmModuleId::kRich, -50, 100);
@@ -195,6 +253,7 @@ void run_reco_mcbm_real_wToF_mar22(const unsigned int runId = 1981,  // used for
   hitProd->SetMappingFile("mRICH_Mapping_vert_20190318_elView.geo");
   hitProd->setToTLimits(23.7, 30.0);
   hitProd->applyToTCut();
+  hitProd->applyICDCorrection();
   run->AddTask(hitProd);
   // ------------------------------------------------------------------------
 
@@ -290,8 +349,7 @@ void run_reco_mcbm_real_wToF_mar22(const unsigned int runId = 1981,  // used for
       ;
     }
   }
-
-  // ---------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
 
   // =========================================================================
   // ===                   Tof Tracking                                    ===
@@ -314,7 +372,7 @@ void run_reco_mcbm_real_wToF_mar22(const unsigned int runId = 1981,  // used for
   // ===                       Tracking                                    ===
   // =========================================================================
 
-  // if (doTofTracking)
+  //if (doTofTracking)
   {
     CbmTofTrackFinder* tofTrackFinder = new CbmTofTrackFinderNN();
     tofTrackFinder->SetMaxTofTimeDifference(0.2);  // in ns/cm
@@ -624,7 +682,8 @@ void run_reco_mcbm_real_wToF_mar22(const unsigned int runId = 1981,  // used for
     qaTask->SetOutputDir(Form("result_run%d_%05d", runId, taskId));
   }
   //qaTask->XOffsetHistos(+25.0);
-  qaTask->XOffsetHistos(0.0);
+  qaTask->XOffsetHistos(-4.1);
+  if (runId > 2351) qaTask->XOffsetHistos(0.0);
   qaTask->SetMaxNofDrawnEvents(100);
   qaTask->SetTotRich(23.7, 30.0);
   qaTask->SetTriggerRichHits(eb_TriggerMinNumberRich);

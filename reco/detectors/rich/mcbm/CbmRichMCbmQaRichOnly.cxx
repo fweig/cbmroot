@@ -107,7 +107,7 @@ InitStatus CbmRichMCbmQaRichOnly::Init()
   fSeDisplay->SetRichHits(fRichHits);
   fSeDisplay->SetRichRings(fRichRings);
   ///fSeDisplay->SetTofTracks(fTofTracks);
-  fSeDisplay->SetTotRich(23.7, 30.);
+  fSeDisplay->SetTotRich(fTotMin, fTotMax);
   fSeDisplay->SetMaxNofDrawnEvents(fMaxNofDrawnEvents);
   fSeDisplay->XOffsetHistos(fXOffsetHisto);
   fSeDisplay->SetOutDir(fOutputDir);
@@ -150,7 +150,7 @@ void CbmRichMCbmQaRichOnly::InitHistograms()
                      -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 84, -25.2, 25.2);
   fHM->Create1<TH1D>("fhRichRingRadius", "fhRichRingRadius;Ring radius [cm];Entries", 100, 0., 7.);
   fHM->Create1<TH1D>("fhNofHitsInRing", "fhNofHitsInRing;# hits in ring;Entries", 50, -0.5, 49.5);
-  fHM->Create2<TH2D>("fhICD", "fhICD;channel;DeltaTime", 2305, -0.5, 2304.5, 31, -15.5, 15.5);
+  fHM->Create2<TH2D>("fhICD", "fhICD;channel;DeltaTime", 2305, -0.5, 2304.5, 130, -6.5, 6.5);
 
   fHM->Create2<TH2D>("fhRichRingRadiusY", "fhRichRingRadiusY;Ring Radius [cm]; Y position[cm];Entries", 70, -0.05, 6.95,
                      84, -25.2, 25.2);
@@ -399,10 +399,10 @@ void CbmRichMCbmQaRichOnly::DrawHist()
     DrawH2(fHM->H2("fhDigisInChnl"));
   }
 
-  //   {
-  //     fHM->CreateCanvas("DigisTimeTot", "DigisTimeTot", 600, 600);
-  //     DrawH2(fHM->H2("fhDigisTimeTot"));
-  //   }
+  // {
+  //   fHM->CreateCanvas("DigisTimeTot", "DigisTimeTot", 600, 600);
+  //   DrawH2(fHM->H2("fhDigisTimeTot"));
+  // }
 
   {
     fHM->CreateCanvas("HitsTimeTot", "HitsTimeTot", 600, 600);
@@ -654,7 +654,7 @@ void CbmRichMCbmQaRichOnly::DrawFromFile(const string& fileName, const string& o
 bool CbmRichMCbmQaRichOnly::doToT(CbmRichHit* hit)
 {
   bool check = false;
-  if ((hit->GetToT() > 23.7) && (hit->GetToT() < 30.0)) check = true;
+  if ((hit->GetToT() > fTotMin) && (hit->GetToT() < fTotMax)) check = true;
 
   return check;
 }

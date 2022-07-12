@@ -32,6 +32,8 @@ CbmRichMCbmSEDisplay::CbmRichMCbmSEDisplay()
   , fNofDrawnEvents(0)
   , fMaxNofDrawnEvents(100)
   , fOutputDir("result")
+  , fLEMin(0.0)
+  , fLEMax(200.0)
   , fHM(nullptr)
 {
 }
@@ -46,6 +48,8 @@ CbmRichMCbmSEDisplay::CbmRichMCbmSEDisplay(CbmHistManager* manager)
   , fNofDrawnEvents(0)
   , fMaxNofDrawnEvents(100)
   , fOutputDir("result")
+  , fLEMin(0.0)
+  , fLEMax(200.0)
   , fHM(manager)
 {
 }
@@ -106,10 +110,13 @@ void CbmRichMCbmSEDisplay::DrawEvent(CbmEvent* ev, std::vector<int>& ringIndx, b
                    10. + fXOffsetHisto + 6.225, 1, -5., 20);
   }
 
-  TPad* pad_time           = new TPad("pad_time", "timeDist", 0, 0, 1, 0.20);
-  TH1D* timeDistRichHit    = new TH1D((ss.str() + "timeDistRichHit").c_str(), ";LE [ns];Entries", 200, 0.0, 200.);
-  TH1D* timeDistRichHitToT = new TH1D((ss.str() + "timeDistRichHitToT").c_str(), ";LE [ns];Entries", 200, 0.0, 200.);
-  TH1D* timeDistTofTrack   = new TH1D((ss.str() + "timeDistTofTrack").c_str(), ";LE [ns];Entries", 200, 0.0, 200.);
+  Int_t BinSize         = (Int_t)(fLEMax - fLEMin);
+  TPad* pad_time        = new TPad("pad_time", "timeDist", 0, 0, 1, 0.20);
+  TH1D* timeDistRichHit = new TH1D((ss.str() + "timeDistRichHit").c_str(), ";LE [ns];Entries", BinSize, fLEMin, fLEMax);
+  TH1D* timeDistRichHitToT =
+    new TH1D((ss.str() + "timeDistRichHitToT").c_str(), ";LE [ns];Entries", BinSize, fLEMin, fLEMax);
+  TH1D* timeDistTofTrack =
+    new TH1D((ss.str() + "timeDistTofTrack").c_str(), ";LE [ns];Entries", BinSize, fLEMin, fLEMax);
   pad_event->Draw();
   pad_time->Draw();
   pad_event->cd();

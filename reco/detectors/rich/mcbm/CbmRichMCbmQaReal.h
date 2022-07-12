@@ -110,8 +110,19 @@ public:
     */
   void SetTriggerRichHits(Int_t val = 0) { fTriggerRichHits = val; }
 
+
   /**
-    * Set an ToT cut of the RICH Hits. 
+    * Set a flag to draw only Single Event Displays with minimum one ring.
+    */
+  void SetSEDisplayRingOnly(bool val = true) { bSeDisplayRingOnly = val; }
+
+  /**
+    * Activate generation of Time related histograms
+    */
+  void ActivateTimeHistograms(bool val = true) { fDoTimePlots = val; }
+
+  /**
+    * Set an ToT cut of the RICH Hits.
     */
   void SetTotRich(Double_t min, Double_t max)
   {
@@ -174,6 +185,7 @@ private:
 
   Int_t fTracksinRichWithRichHits[4] = {0, 0, 0, 0};
 
+  uint64_t fTSMinTime = 0;
 
   string fOutputDir;  // output dir for results
 
@@ -183,11 +195,17 @@ private:
   bool fDoWriteHistToFile = true;
   bool fDoDrawCanvas      = true;
 
+  bool bSeDisplayRingOnly = false;
+
   bool fDigiHitsInitialized = false;
+
+  bool fDoTimePlots = false;
 
   bool RestrictToFullAcc(CbmTofTracklet* track);
   bool RestrictToFullAcc(TVector3& pos);
   bool RestrictToFullAcc(Double_t x, Double_t y);
+
+  TVector3 extrapolate(CbmTofHit* tofHit, Double_t Z);
 
   Double_t fCbmEventStartTime = 0.;
   CbmEvent* fEventPnt         = nullptr;

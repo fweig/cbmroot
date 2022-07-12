@@ -151,6 +151,7 @@ InitStatus CbmRichMCbmQaReal::Init()
   fSeDisplay->SetTotRich(fTotRichMin, fTotRichMax);
   fSeDisplay->SetMaxNofDrawnEvents(fMaxNofDrawnEvents);
   fSeDisplay->SetOutDir(fOutputDir);
+  fSeDisplay->SetLELimits(-60.0, 200.0);
   fSeDisplay->XOffsetHistos(fXOffsetHisto);
   //-----------------------------------------------------------
 
@@ -164,6 +165,7 @@ InitStatus CbmRichMCbmQaReal::Init()
   fSeDsply_TR->SetMaxNofDrawnEvents(fMaxNofDrawnEvents);
   fSeDsply_TR->SetOutDir(fOutputDir);
   fSeDsply_TR->XOffsetHistos(fXOffsetHisto);
+  fSeDsply_TR->SetLELimits(-60.0, 200.0);
   fSeDsply_TR->SetCanvasDir("SE_Corr");
   //-----------------------------------------------------------
 
@@ -254,6 +256,12 @@ void CbmRichMCbmQaReal::InitHistograms()
   fHM->Create2<TH2D>("fhTofRichX_stack3", "fhTofRichX_stack3;Rich Hit X [cm];TofHit X [cm];Entries", 67,
                      -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
   fHM->Create2<TH2D>("fhTofRichY", "fhTofRichY;Rich Hit Y [cm];TofHit Y [cm];Entries", 84, -25.2, 25.2, 200, -80, 80);
+  fHM->Create2<TH2D>("fhTofRichY_stack1", "fhTofRichY_stack1;Rich Hit Y [cm];TofHit Y [cm];Entries", 84, -25.2, 25.2,
+                     200, -80, 80);
+  fHM->Create2<TH2D>("fhTofRichY_stack2", "fhTofRichY_stack2;Rich Hit Y [cm];TofHit Y [cm];Entries", 84, -25.2, 25.2,
+                     200, -80, 80);
+  fHM->Create2<TH2D>("fhTofRichY_stack3", "fhTofRichY_stack3;Rich Hit Y [cm];TofHit Y [cm];Entries", 84, -25.2, 25.2,
+                     200, -80, 80);
   //fHM->Create2<TH2D>("fhTofRichRingHitX","fhTofRichRingHitX;Rich Ring Hit X [cm];TofHit X [cm];Entries", 67, -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto,  400, -50, 110);
   fHM->Create2<TH2D>("fhTofTrackRichHitX", "fhTofTrackRichHitX;RICH Hit X [cm];TofTrack X [cm];Entries", 67,
                      -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
@@ -374,6 +382,25 @@ void CbmRichMCbmQaReal::InitHistograms()
   fHM->Create3<TH3D>("fhTofXYZ", "fhTofXYZ;Tof Hit X [cm];TofHit Z [cm];Tof Hit Y [cm];Entries", 100, -20, 20, 141,
                      230., 370., 100, -20, 20);
   fHM->Create2<TH2D>("fhTofHitsXY", "fhTofHitsXY;Tof Hit X [cm];Tof Hit Y [cm];Entries", 100, -20, 20, 200, -80, 80);
+
+  for (auto moduleIds = 0; moduleIds < 5; moduleIds++) {
+    fHM->Create2<TH2D>(Form("fhTofHitsXY_%u", moduleIds),
+                       Form("fhTofHitsXY_%u;Tof Hit X [cm];Tof Hit Y [cm];Entries", moduleIds), 200, -100, 100, 200,
+                       -80, 80);
+    fHM->Create2<TH2D>(Form("fhTofHitsZX_%u", moduleIds),
+                       Form("fhTofHitsZX_%u;Tof Hit X [cm];Tof Hit Y [cm];Entries", moduleIds), 200, 200, 400, 200,
+                       -100, 100);
+    fHM->Create2<TH2D>(Form("fhTofRichX_%u", moduleIds),
+                       Form("fhTofRichX_%u;Rich Hit X [cm];TofHit X [cm];Entries", moduleIds), 67,
+                       -20.1 + fXOffsetHisto, 20.1 + fXOffsetHisto, 400, -50, 110);
+    fHM->Create2<TH2D>(Form("fhTofRichY_%u", moduleIds),
+                       Form("fhTofRichY_%u;Rich Hit Y [cm];TofHit Y [cm];Entries", moduleIds), 84, -25.2, 25.2, 200,
+                       -80, 80);
+    fHM->Create2<TH2D>(Form("fhTofRichHitsResidual_%u", moduleIds),
+                       Form("fhTofRichHitsResidual_%u;Rich-Tof hit X [cm];Rich-Tof hit  Y [cm];Entries", moduleIds),
+                       150, -15.0, 15.0, 150, -15.0, 15.0);
+  }
+
   fHM->Create1<TH1D>("fhTofHitsZ", "fhTofHitsZ;Z [cm];Entries", 350, -0.5, 349.5);
   fHM->Create2<TH2D>("fhTofHitsXZ", "fhTofHitsXZ;Z [cm];X [cm];Entries", 350, -0.5, 349.5, 400, -50, 110);
   //Tof Tracks
@@ -421,38 +448,38 @@ void CbmRichMCbmQaReal::InitHistograms()
   fHM->Create1<TH1D>("fhTrackRingDistance_corr", "fhTrackRingDistance_corr;TrackRingDistance [cm];Entries", 31, -0.5,
                      30.5);
 
-  fHM->Create1<TH1D>("fhTofBetaTracksWithHitsNoRing", "fhTofBetaTracksWithHitsNoRing; \\beta;Entries", 151, -0.005,
+  fHM->Create1<TH1D>("fhTofBetaTracksWithHitsNoRing", "fhTofBetaTracksWithHitsNoRing; \\beta;Entries", 301, -1.505,
                      1.505);
   fHM->Create1<TH1D>("fhTofBetaTracksWithHits", "fhTofBetaTracksWithHits; \\beta;Entries", 151, -0.005, 1.505);
   fHM->Create1<TH1D>("fhTofBetaTracksNoRing", "fhTofBetaTracksNoRing; \\beta;Entries", 151, -0.005, 1.505);
   fHM->Create1<TH1D>("fhTofBetaTrackswithClosestRingInRange", "fhTofBetaTrackswithClosestRingInRange; \\beta;Entries",
-                     151, -0.005, 1.505);
+                     301, -1.505, 1.505);
 
   fHM->Create1<TH1D>("fhRichRingBeta", "fhRichRingBeta; \\beta;Entries", 151, -0.005, 1.505);
   fHM->Create1<TH1D>("fhRichRingBeta_GoodRing", "fhRichRingBeta_GoodRing; \\beta;Entries", 151, -0.005, 1.505);
 
-  fHM->Create1<TH1D>("fhTofBetaRing", "fhTofBetaRing; \\beta;Entries", 151, -0.005, 1.505);
-  fHM->Create1<TH1D>("fhTofBetaAll", "fhTofBetaAll; \\beta;Entries", 151, -0.005, 1.505);
-  fHM->Create2<TH2D>("fhTofBetaVsRadius", "fhTofBetaVsRadius; \\beta;ring radius [cm];Entries", 151, -0.005, 1.505, 100,
+  fHM->Create1<TH1D>("fhTofBetaRing", "fhTofBetaRing; \\beta;Entries", 301, -1.505, 1.505);
+  fHM->Create1<TH1D>("fhTofBetaAll", "fhTofBetaAll; \\beta;Entries", 301, -1.505, 1.505);
+  fHM->Create2<TH2D>("fhTofBetaVsRadius", "fhTofBetaVsRadius; \\beta;ring radius [cm];Entries", 301, -1.505, 1.505, 100,
                      0., 7.);
-  fHM->Create2<TH2D>("fhTofBetaRingDist", "fhTofBetaRingDist; \\beta;ring Dist [cm];Entries", 151, -0.005, 1.505, 100,
+  fHM->Create2<TH2D>("fhTofBetaRingDist", "fhTofBetaRingDist; \\beta;ring Dist [cm];Entries", 301, -1.505, 1.505, 100,
                      0., 20.);
   fHM->Create1<TH1D>("fhTofBetaAllFullAcc", "fhTofBetaAllFullAcc; \\beta;Entries", 301, -1.505, 1.505);
 
   fHM->Create1<TH1D>("fhRingDeltaTime", "fhRingDeltaTime; \\Delta Time/ns;Entries", 101, -10.1, 10.1);
   fHM->Create1<TH1D>("fhRingToTs", "fhRingToTs; ToT/ns;Entries", 601, 9.975, 40.025);
-  fHM->Create1<TH1D>("fhRingLE", "fhRingLE;LE/ns;Entries", 201, -0.5, 200.5);
-  fHM->Create1<TH1D>("fhGoodRingLE", "fhGoodRingLE;LE/ns;Entries", 201, -0.5, 200.5);
-  fHM->Create1<TH1D>("fhRingNoClTrackLE", "fhRingNoClTrackLE;LE/ns;Entries", 201, -0.5, 200.5);
-  fHM->Create1<TH1D>("fhRingClTrackFarAwayLE", "fhRingClTrackFarAwayLE;LE/ns;Entries", 201, -0.5, 200.5);
-  fHM->Create2<TH2D>("fhRingLEvsToT", "fhRingLEvsToT;LE/ns;ToT/ns;Entries", 201, -0.5, 200.5, 601, 9.975, 40.025);
+  fHM->Create1<TH1D>("fhRingLE", "fhRingLE;LE/ns;Entries", 261, -60.5, 200.5);
+  fHM->Create1<TH1D>("fhGoodRingLE", "fhGoodRingLE;LE/ns;Entries", 261, -60.5, 200.5);
+  fHM->Create1<TH1D>("fhRingNoClTrackLE", "fhRingNoClTrackLE;LE/ns;Entries", 261, -60.5, 200.5);
+  fHM->Create1<TH1D>("fhRingClTrackFarAwayLE", "fhRingClTrackFarAwayLE;LE/ns;Entries", 231, -30.5, 200.5);
+  fHM->Create2<TH2D>("fhRingLEvsToT", "fhRingLEvsToT;LE/ns;ToT/ns;Entries", 261, -60.5, 200.5, 601, 9.975, 40.025);
 
   fHM->Create1<TH1D>("fhInnerRingDeltaTime", "fhInnerRingDeltaTime; \\Delta Time/ns;Entries", 101, -10.1, 10.1);
   fHM->Create1<TH1D>("fhInnerRingToTs", "fhInnerRingToTs; ToT/ns;Entries", 601, 9.975, 40.025);
-  fHM->Create1<TH1D>("fhInnerRingLE", "fhInnerRingLE;LE/ns;Entries", 201, -0.5, 200.5);
-  fHM->Create1<TH1D>("fhInnerGoodRingLE", "fhInnerGoodRingLE;LE/ns;Entries", 201, -0.5, 200.5);
-  fHM->Create1<TH1D>("fhInnerRingNoClTrackLE", "fhInnerRingNoClTrackLE;LE/ns;Entries", 201, -0.5, 200.5);
-  fHM->Create1<TH1D>("fhInnerRingClTrackFarAwayLE", "fhInnerRingClTrackFarAwayLE;LE/ns;Entries", 201, -0.5, 200.5);
+  fHM->Create1<TH1D>("fhInnerRingLE", "fhInnerRingLE;LE/ns;Entries", 261, -60.5, 200.5);
+  fHM->Create1<TH1D>("fhInnerGoodRingLE", "fhInnerGoodRingLE;LE/ns;Entries", 261, -60.5, 200.5);
+  fHM->Create1<TH1D>("fhInnerRingNoClTrackLE", "fhInnerRingNoClTrackLE;LE/ns;Entries", 261, -60.5, 200.5);
+  fHM->Create1<TH1D>("fhInnerRingClTrackFarAwayLE", "fhInnerRingClTrackFarAwayLE;LE/ns;Entries", 261, -60.5, 200.5);
   fHM->Create1<TH1D>("fhInnerRingFlag", "fhInnerRingFlag;Has|HasNot;Entries", 2, -0.5, 1.5);
   fHM->Create1<TH1D>("fhNofInnerHits", "fhNofInnerHits;#Hits;Entries", 31, -0.5, 30.5);
 
@@ -479,7 +506,41 @@ void CbmRichMCbmQaReal::InitHistograms()
                      -20 + fXOffsetHisto, 30 + fXOffsetHisto, 180, -90,
                      90);  // projected in RICH Plane
 
-  fHM->Create1<TH1D>("fhHitTimeEvent", "fhHitTimeEvent;time [ns];Entries", 700, -100., 600);
+  fHM->Create1<TH1D>("fhHitTimeEvent", "fhHitTimeEvent;time [ns];Entries", 300, -100., 200);
+
+  for (auto i = 0; i < 5; ++i)
+    fHM->Create2<TH2D>(Form("fhTofHitXZ_Station_%u", i), Form("fhTofHitXZ_Station_%u;Z [cm];X [cm];Entries", i), 350,
+                       -0.5, 349.5, 400, -50, 110);
+
+  fHM->Create1<TH1D>("fhT0DigiMultiplicity", "fhT0DigiMultiplicity;multiplicity; Entries", 16, -1.5, 14.5);
+  fHM->Create1<TH1D>("fhT0DigiTime", "fhT0DigiTime;time [ns]; Entries", 500, 0., 100.);
+  fHM->Create1<TH1D>("fhT0DigiTimeEvent", "fhT0DigiTimeEvent;time [ns]; Entries", 500, 0., 100.);
+
+  //Hit Time Plots
+  if (fDoTimePlots) {
+    fHM->Create1<TH1D>("fhHitTimeMeanRichHit", "fhHitTimeMeanRichHit;time [ns];Entries", 600, -30., 30);
+    fHM->Create1<TH1D>("fhHitTimeMeanRichHitVsEvent", "fhHitTimeMeanRichHitVsEvent;time [ns];Entries", 300, -100., 200);
+    fHM->Create1<TH1D>("fhHitTimeMeanTofHitVsEvent", "fhHitTimeMeanTofHitVsEvent;time [ns];Entries", 300, -100., 200);
+    fHM->Create1<TH1D>("fhHitTimeMeanRichHitVsMeanTof", "fhHitTimeMeanRichHitVsMeanTof;time [ns];Entries", 300, -100.,
+                       200);
+
+    for (auto i = 0; i < 72; ++i)
+      fHM->Create1<TH1D>(Form("/HitTime/fhHitTimeEvent_%u", i),
+                         Form("/HitTime/fhHitTimeEvent_%u; time [ns];Entries", i), 300, -100, 200);
+
+    for (auto i = 0; i < 72; ++i)
+      fHM->Create1<TH1D>(Form("/HitTime/fhHitTimeMeanRichHit_%u", i),
+                         Form("/HitTime/fhHitTimeMeanRichHit_%u; time [ns];Entries", i), 300, -30, 30);
+
+    for (auto i = 0; i < 72; ++i)
+      fHM->Create2<TH2D>(Form("/HitTime_2D/fhHitTimeEvent_%u", i),
+                         Form("/HitTime_2D/fhHitTimeEvent_%u; time [ns], ToT [ns];Entries", i), 300, -100, 200, 30, 15,
+                         30);
+
+    for (auto i = 0; i < 33; ++i)
+      fHM->Create1<TH1D>(Form("/HitTime_chnl/fhHitTimeEvent_chnl_%u", i),
+                         Form("/HitTime_chnl/fhHitTimeEvent_chnl_%u; time [ns];Entries", i), 300, -100, 200);
+  }  // End Hit Time Plots
 }
 
 
@@ -492,7 +553,6 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
   uint64_t tsStartTime = 0;
   if (nullptr != fTSHeader) tsStartTime = fTSHeader->GetTsStartTime();
 
-  uint64_t TSMinTime = 0;
   if (fDigiHitsInitialized == false) {
     auto nOfCbmEvent = fCbmEvent->GetEntriesFast();
     if (nOfCbmEvent > 0) {
@@ -533,7 +593,7 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
         fHM->H1("fhT0DigisTimeLogZoom")->GetXaxis()->SetLimits(minTime, minTime + dTZoom1);
         fHM->H1("fhT0DigisTimeLogZoom2")->GetXaxis()->SetLimits(minTime, minTime + dTZoom2);
 
-        TSMinTime            = tsStartTime;
+        fTSMinTime           = tsStartTime;
         fDigiHitsInitialized = true;
       }
     }
@@ -541,8 +601,8 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
 
   if (fDigiHitsInitialized == true) {
 
-    double TsTimeAfterStart = static_cast<double>(tsStartTime - TSMinTime);
-    int nofRichDigis = fDigiMan->GetNofDigis(ECbmModuleId::kRich);
+    double TsTimeAfterStart = static_cast<double>(tsStartTime - fTSMinTime);
+    int nofRichDigis        = fDigiMan->GetNofDigis(ECbmModuleId::kRich);
     fHM->H1("fhNofRichDigisInTimeslice")->Fill(nofRichDigis);
     for (int i = 0; i < nofRichDigis; i++) {
       const CbmRichDigi* digi = fDigiMan->Get<CbmRichDigi>(i);
@@ -631,11 +691,10 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
   auto fNCbmEvent = fCbmEvent->GetEntriesFast();
 
   for (int i = 0; i < fNCbmEvent; i++) {
-    fHM->H1("fhNofCbmEvents")->Fill(1);
     CbmEvent* ev = static_cast<CbmEvent*>(fCbmEvent->At(i));
-
     if (fTriggerRichHits != 0 && (ev->GetNofData(ECbmDataType::kRichHit) < fTriggerRichHits)) continue;
-    if (fTriggerTofHits != 0 && (ev->GetNofData(ECbmDataType::kTofHit) < fTriggerTofHits)) continue;
+    fHM->H1("fhNofCbmEvents")->Fill(1);
+    //if (fTriggerTofHits != 0 && (ev->GetNofData(ECbmDataType::kTofHit) < fTriggerTofHits)) continue;
 
     //if (ev->GetNofData(ECbmDataType::kTofHit)  > (fTriggerTofHits+10) ) continue;
 
@@ -646,8 +705,7 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
       a = 0;
 
     fEventPnt          = ev;
-    fCbmEventStartTime = fEventPnt->GetStartTime();
-
+    fCbmEventStartTime = ev->GetStartTime();
 
     // Scan Event to find first Digi that triggered.
     //         std::cout<<"Sts Digis:"<< ev->GetNofData(kStsDigi)<<std::endl;
@@ -658,15 +716,79 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
     //        unsigned int flagRich = 0;
     Double_t startTime = std::numeric_limits<Double_t>::max();
 
+    fHM->H1("fhT0DigiMultiplicity")->Fill(ev->GetNofData(ECbmDataType::kT0Digi));
+    //std::cout<<ev->GetNofData(ECbmDataType::kT0Digi)<<std::endl;
+    for (int j = 0; j < ev->GetNofData(ECbmDataType::kT0Digi); j++) {
+      auto iT0Digi             = ev->GetIndex(ECbmDataType::kT0Digi, j);
+      const CbmTofDigi* T0Digi = nullptr;
+      if (fT0Digis) T0Digi = &(fT0Digis->at(iT0Digi));
+      assert(T0Digi);
+      fHM->H1("fhT0DigiTimeEvent")->Fill(T0Digi->GetTime() - fCbmEventStartTime);
+    }
+
+    //std::cout<<"NofT0Digis in TS: "<< fT0Digis->size() <<std::endl;
+    Double_t minT0TimeDiff = std::numeric_limits<Double_t>::max();
+    Double_t T0Time        = std::numeric_limits<Double_t>::max();
+    for (auto j = 0; j < fT0Digis->size(); j++) {
+      const CbmTofDigi* T0Digi = nullptr;
+      if (fT0Digis) T0Digi = &(fT0Digis->at(j));
+      assert(T0Digi);
+      Double_t timeDiffT0 = T0Digi->GetTime() - fCbmEventStartTime;
+      if (std::fabs(timeDiffT0) < std::fabs(minT0TimeDiff)) {
+        minT0TimeDiff = timeDiffT0;
+        T0Time        = T0Digi->GetTime();
+      }
+    }
+    //std::cout<<"T0Digistime: "<< T0Time << "  EventStartTime:" << fCbmEventStartTime <<"   Time DIff: "<< minT0TimeDiff <<std::endl;
+    fHM->H1("fhT0DigiTime")->Fill(minT0TimeDiff);
+
+    Double_t meanRichHitTime = 0.;
+    if (fDoTimePlots) {
+      for (int j = 0; j < ev->GetNofData(ECbmDataType::kRichHit); j++) {
+        auto iRichHit       = ev->GetIndex(ECbmDataType::kRichHit, j);
+        CbmRichHit* richHit = static_cast<CbmRichHit*>(fRichHits->At(iRichHit));
+        meanRichHitTime += richHit->GetTime();
+      }
+      if (ev->GetNofData(ECbmDataType::kRichHit) > 0) meanRichHitTime /= ev->GetNofData(ECbmDataType::kRichHit);
+
+      Double_t meanTofHitTime = 0.;
+      for (int j = 0; j < ev->GetNofData(ECbmDataType::kTofHit); j++) {
+        auto iTofHit      = ev->GetIndex(ECbmDataType::kTofHit, j);
+        CbmTofHit* tofHit = static_cast<CbmTofHit*>(fTofHits->At(iTofHit));
+        meanTofHitTime += tofHit->GetTime();
+      }
+      if (ev->GetNofData(ECbmDataType::kTofHit) > 0) meanTofHitTime /= ev->GetNofData(ECbmDataType::kTofHit);
+
+      fHM->H1("fhHitTimeMeanRichHitVsEvent")->Fill(meanRichHitTime - fCbmEventStartTime);
+      fHM->H1("fhHitTimeMeanTofHitVsEvent")->Fill(meanTofHitTime - fCbmEventStartTime);
+      fHM->H1("fhHitTimeMeanRichHitVsMeanTof")->Fill(meanRichHitTime - meanTofHitTime);
+    }
+
     for (int j = 0; j < ev->GetNofData(ECbmDataType::kRichHit); j++) {
       auto iRichHit = ev->GetIndex(ECbmDataType::kRichHit, j);
       evRichHitIndx.push_back(iRichHit);
       CbmRichHit* richHit = static_cast<CbmRichHit*>(fRichHits->At(iRichHit));
+      uint32_t pmtId      = (((richHit->GetAddress()) >> 24) & 0xF) * 9 + (((richHit->GetAddress()) >> 20) & 0xF);
       fHM->H1("fhHitTimeEvent")->Fill(richHit->GetTime() - fCbmEventStartTime);
+
+      if (fDoTimePlots) {
+        uint32_t DiRichId = (((richHit->GetAddress()) >> 24) & 0xF) * 18 + (((richHit->GetAddress()) >> 20) & 0xF) * 2
+                            + (((richHit->GetAddress()) >> 16) & 0xF);
+
+        fHM->H1(Form("/HitTime/fhHitTimeEvent_%u", DiRichId))->Fill(richHit->GetTime() - fCbmEventStartTime);
+        fHM->H1(Form("/HitTime/fhHitTimeMeanRichHit_%u", DiRichId))->Fill(richHit->GetTime() - meanRichHitTime);
+        fHM->H1("fhHitTimeMeanRichHit")->Fill(richHit->GetTime() - meanRichHitTime);
+
+        fHM->H2(Form("/HitTime_2D/fhHitTimeEvent_%u", DiRichId))
+          ->Fill(richHit->GetTime() - fCbmEventStartTime, richHit->GetToT());
+        if (DiRichId == 52)
+          fHM->H1(Form("/HitTime_chnl/fhHitTimeEvent_chnl_%u", richHit->GetAddress() & 0xFFFF))
+            ->Fill(richHit->GetTime() - fCbmEventStartTime);
+      }
+
       fHM->H1("fhRichHitToTEvent")->Fill(richHit->GetToT());
       fHM->H2("fhRichHitXYEvent")->Fill(richHit->GetX(), richHit->GetY());
       //Blob finder
-      uint32_t pmtId = (((richHit->GetAddress()) >> 20) & 0xF) + (((richHit->GetAddress()) >> 24) & 0xF) * 9;
       pmtHits[pmtId]++;
 
       //std::cout<<"\t\t *  "<<i<<". Event, Hit "<< j <<": "<< iRichHit <<"\t " << std::fixed << std::setprecision(5) << richHit->GetTime() <<std::endl;
@@ -696,32 +818,66 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
         CbmTofHit* tofHit = static_cast<CbmTofHit*>(fTofHits->At(iTofHit));
         if (tofHit->GetTime() < startTime) { startTime = tofHit->GetTime(); /* flagRich = 0;*/ }
         if (tofHit->GetZ() < 2.) continue;  // Cut T0 away!
-        fHM->H2("fhTofRichX")->Fill(richHit->GetX(), tofHit->GetX());
+
+        auto TofModulId   = (tofHit->GetAddress() >> 4) & 0x3F;
+        auto TofModulType = (tofHit->GetAddress() >> 11) & 0xF;
+        //std::cout<<std::hex<<tofHit->GetAddress()<<std::dec<<"  Type: "<<TofModulType<<"  Id: "<<TofModulId<<std::endl;
+        if (TofModulType != 0) continue;
+        //fHM->H2("fhTofRichX")->Fill(richHit->GetX(), tofHit->GetX());
+
+        fHM->H2(Form("fhTofHitXZ_Station_%u", TofModulId))->Fill(tofHit->GetZ(), tofHit->GetX());
 
         //Befor tof_v20b
         /*if (tofHit->GetZ()> 230. && tofHit->GetZ() < 250) fHM->H2("fhTofRichX_stack1")->Fill(richHit->GetX(),tofHit->GetX());
                 if (tofHit->GetZ()> 250. && tofHit->GetZ() < 265) fHM->H2("fhTofRichX_stack2")->Fill(richHit->GetX(),tofHit->GetX());
                 if (tofHit->GetZ()> 265. && tofHit->GetZ() < 285) fHM->H2("fhTofRichX_stack3")->Fill(richHit->GetX(),tofHit->GetX());
                 */
-        if (tofHit->GetZ() > 230. && tofHit->GetZ() < 255)
+        if (TofModulId == 0) {  //(tofHit->GetZ() > 230. && tofHit->GetZ() < 255)
           fHM->H2("fhTofRichX_stack1")->Fill(richHit->GetX(), tofHit->GetX());
-        if (tofHit->GetZ() >= 255. && tofHit->GetZ() < 272)
+          fHM->H2("fhTofRichY_stack1")->Fill(richHit->GetY(), tofHit->GetY());
+          fHM->H2("fhTofRichX")->Fill(richHit->GetX(), tofHit->GetX());
+          fHM->H2("fhTofRichY")->Fill(richHit->GetY(), tofHit->GetY());
+          fHM->H2("fhTofHitsXY")->Fill(tofHit->GetX(), tofHit->GetY());
+        }
+        if (TofModulId == 1) {  //(tofHit->GetZ() >= 255. && tofHit->GetZ() < 272)
           fHM->H2("fhTofRichX_stack2")->Fill(richHit->GetX(), tofHit->GetX());
-        if (tofHit->GetZ() >= 272. && tofHit->GetZ() < 290)
+          fHM->H2("fhTofRichY_stack2")->Fill(richHit->GetY(), tofHit->GetY());
+          fHM->H2("fhTofRichX")->Fill(richHit->GetX(), tofHit->GetX());
+          fHM->H2("fhTofRichY")->Fill(richHit->GetY(), tofHit->GetY());
+          fHM->H2("fhTofHitsXY")->Fill(tofHit->GetX(), tofHit->GetY());
+        }
+        if (TofModulId == 2) {  //(tofHit->GetZ() >= 272. && tofHit->GetZ() < 290)
           fHM->H2("fhTofRichX_stack3")->Fill(richHit->GetX(), tofHit->GetX());
+          fHM->H2("fhTofRichY_stack3")->Fill(richHit->GetY(), tofHit->GetY());
+          fHM->H2("fhTofRichX")->Fill(richHit->GetX(), tofHit->GetX());
+          fHM->H2("fhTofRichY")->Fill(richHit->GetY(), tofHit->GetY());
+          fHM->H2("fhTofHitsXY")->Fill(tofHit->GetX(), tofHit->GetY());
+        }
 
-        fHM->H2("fhTofRichY")->Fill(richHit->GetY(), tofHit->GetY());
-        fHM->H2("fhTofRichX_zoomed")->Fill(richHit->GetX(), tofHit->GetX());
-        fHM->H2("fhTofRichY_zoomed")->Fill(richHit->GetY(), tofHit->GetY());
+        //fHM->H2("fhTofRichX_zoomed")->Fill(richHit->GetX(), tofHit->GetX());
+        //fHM->H2("fhTofRichY_zoomed")->Fill(richHit->GetY(), tofHit->GetY());
 
-        fHM->H2("fhTofHitsXY")->Fill(tofHit->GetX(), tofHit->GetY());
+        //fHM->H2("fhTofHitsXY")->Fill(tofHit->GetX(), tofHit->GetY());
+
+        fHM->H2(Form("fhTofHitsXY_%u", TofModulId))->Fill(tofHit->GetX(), tofHit->GetY());
+        fHM->H2(Form("fhTofHitsZX_%u", TofModulId))->Fill(tofHit->GetZ(), tofHit->GetX());
+        fHM->H2(Form("fhTofRichX_%u", TofModulId))->Fill(richHit->GetX(), tofHit->GetX());
+        fHM->H2(Form("fhTofRichY_%u", TofModulId))->Fill(richHit->GetY(), tofHit->GetY());
+        TVector3 hitExtr = extrapolate(tofHit, richHit->GetZ());
+        fHM->H2(Form("fhTofRichHitsResidual_%u", TofModulId))
+          ->Fill(richHit->GetX() - hitExtr.X(), richHit->GetY() - hitExtr.Y());
       }
     }
 
     //std::cout<<"Diff in StartTime DigiToHit: "<< startTime - fCbmEventStartTime << "\t" <<flagRich<<std::endl;
     fCbmEventStartTime = startTime;
 
-    fSeDisplay->DrawEvent(ev, ringIndx, 1);
+    if (bSeDisplayRingOnly) {
+      if (ringIndx.size() > 0) fSeDisplay->DrawEvent(ev, ringIndx, 1);
+    }
+    else {
+      fSeDisplay->DrawEvent(ev, ringIndx, 1);
+    }
 
     //       std::cout<<DrawCbmEvent<<std::endl;
     // for (int j=0;j<ev->GetNofData(ECbmDataType::kRichDigi);j++){
@@ -907,17 +1063,19 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
                 fHM->H2("fhTofTrackRichHitX_oBetacuts_dtime_10")->Fill(richHit->GetX(), track->GetFitX(RichZPos));
                 fHM->H2("fhTofTrackRichHitY_oBetacuts_dtime_10")->Fill(richHit->GetY(), track->GetFitY(RichZPos));
               }
-
-              if (track->GetNofHits() == 4) {
-                for (int l = 0; l < track->GetNofHits(); ++l) {
-                  auto hitIndex           = track->GetHitIndex(l);
-                  auto iTofHit            = ev->GetIndex(ECbmDataType::kTofHit, hitIndex);
-                  const CbmTofHit* tofHit = static_cast<CbmTofHit*>(fTofHits->At(iTofHit));
-                  if (tofHit->GetZ() < 2.) continue;  // Cut T0 away!
-                  fHM->H2("fhTofTrackHitRichHitX_oBetacuts_dtime")->Fill(richHit->GetX(), tofHit->GetX());
-                  fHM->H2("fhTofTrackHitRichHitY_oBetacuts_dtime")->Fill(richHit->GetY(), tofHit->GetY());
-                }
-              }
+              // if (track->GetNofHits() == 4) {
+              //   for (int l = 0; l < track->GetNofHits(); ++l) {
+              //     size_t hitIndex           = track->GetHitIndex(l);
+              //     size_t iTofHit            = ev->GetIndex(ECbmDataType::kTofHit, hitIndex);
+              //     //if (fEventNum == 88) continue; // TODO: workaround for run 2060
+              //     if (fEventNum == 4) continue;
+              //     if (iTofHit > -1) continue;
+              //     const CbmTofHit* tofHit = static_cast<CbmTofHit*>(fTofHits->At(iTofHit));
+              //     if (tofHit->GetZ() < 2.) continue;  // Cut T0 away!
+              //     fHM->H2("fhTofTrackHitRichHitX_oBetacuts_dtime")->Fill(richHit->GetX(), tofHit->GetX());
+              //     fHM->H2("fhTofTrackHitRichHitY_oBetacuts_dtime")->Fill(richHit->GetY(), tofHit->GetY());
+              //   }
+              // }
             }
           }
           else {
@@ -1412,6 +1570,17 @@ void CbmRichMCbmQaReal::DrawHist()
   }
 
   {
+    TCanvas* c = fHM->CreateCanvas("TofRichY_Stacks", "TofRichY_Stacks", 1800, 600);
+    c->Divide(3, 1);
+    c->cd(1);
+    DrawH2(fHM->H2("fhTofRichY_stack1"));
+    c->cd(2);
+    DrawH2(fHM->H2("fhTofRichY_stack2"));
+    c->cd(3);
+    DrawH2(fHM->H2("fhTofRichY_stack3"));
+  }
+
+  {
     fHM->CreateCanvas("TofRichRingXZ", "TofRichRingXZ", 1200, 1200);
 
     DrawH2(fHM->H2("fhTofRichRingXZ"));
@@ -1427,6 +1596,86 @@ void CbmRichMCbmQaReal::DrawHist()
     fHM->CreateCanvas("TofHitsXY", "TofHitsXY", 1200, 1200);
 
     DrawH2(fHM->H2("fhTofHitsXY"));
+  }
+
+  {
+    TCanvas* c = fHM->CreateCanvas("TofHitsXY_moduleIds", "TofHitsXY_moduleIds", 2500, 500);
+
+    c->Divide(5, 1);
+    c->cd(1);
+    DrawH2(fHM->H2("fhTofHitsXY_0"));
+    c->cd(2);
+    DrawH2(fHM->H2("fhTofHitsXY_1"));
+    c->cd(3);
+    DrawH2(fHM->H2("fhTofHitsXY_2"));
+    c->cd(4);
+    DrawH2(fHM->H2("fhTofHitsXY_3"));
+    c->cd(5);
+    DrawH2(fHM->H2("fhTofHitsXY_4"));
+  }
+
+  {
+    TCanvas* c = fHM->CreateCanvas("TofHitsZX_moduleIds", "TofHitsZX_moduleIds", 2500, 500);
+
+    c->Divide(5, 1);
+    c->cd(1);
+    DrawH2(fHM->H2("fhTofHitsZX_0"));
+    c->cd(2);
+    DrawH2(fHM->H2("fhTofHitsZX_1"));
+    c->cd(3);
+    DrawH2(fHM->H2("fhTofHitsZX_2"));
+    c->cd(4);
+    DrawH2(fHM->H2("fhTofHitsZX_3"));
+    c->cd(5);
+    DrawH2(fHM->H2("fhTofHitsZX_4"));
+  }
+
+  {
+    TCanvas* c = fHM->CreateCanvas("TofRichHitsX_moduleIds", "TofRichHitsX_moduleIds", 2500, 500);
+
+    c->Divide(5, 1);
+    c->cd(1);
+    DrawH2(fHM->H2("fhTofRichX_0"));
+    c->cd(2);
+    DrawH2(fHM->H2("fhTofRichX_1"));
+    c->cd(3);
+    DrawH2(fHM->H2("fhTofRichX_2"));
+    c->cd(4);
+    DrawH2(fHM->H2("fhTofRichX_3"));
+    c->cd(5);
+    DrawH2(fHM->H2("fhTofRichX_4"));
+  }
+
+  {
+    TCanvas* c = fHM->CreateCanvas("TofRichHitsY_moduleIds", "TofRichHitsY_moduleIds", 2500, 500);
+
+    c->Divide(5, 1);
+    c->cd(1);
+    DrawH2(fHM->H2("fhTofRichY_0"));
+    c->cd(2);
+    DrawH2(fHM->H2("fhTofRichY_1"));
+    c->cd(3);
+    DrawH2(fHM->H2("fhTofRichY_2"));
+    c->cd(4);
+    DrawH2(fHM->H2("fhTofRichY_3"));
+    c->cd(5);
+    DrawH2(fHM->H2("fhTofRichY_4"));
+  }
+
+  {
+    TCanvas* c = fHM->CreateCanvas("fhTofRichHitsResidual_moduleIds", "fhTofRichHitsResidual_moduleIds", 2500, 500);
+
+    c->Divide(5, 1);
+    c->cd(1);
+    DrawH2(fHM->H2("fhTofRichHitsResidual_0"));
+    c->cd(2);
+    DrawH2(fHM->H2("fhTofRichHitsResidual_1"));
+    c->cd(3);
+    DrawH2(fHM->H2("fhTofRichHitsResidual_2"));
+    c->cd(4);
+    DrawH2(fHM->H2("fhTofRichHitsResidual_3"));
+    c->cd(5);
+    DrawH2(fHM->H2("fhTofRichHitsResidual_4"));
   }
 
   {
@@ -1836,6 +2085,18 @@ void CbmRichMCbmQaReal::DrawHist()
   {
     fHM->CreateCanvas("HitTimeEvent", "HitTimeEvent", 1200, 1200);
     DrawH1(fHM->H1("fhHitTimeEvent"));
+  }
+
+  {
+    TCanvas* c = fHM->CreateCanvas("T0", "T0", 2400, 800);
+    //c->SetLogy();
+    c->Divide(3, 1);
+    c->cd(1);
+    DrawH1(fHM->H1("fhT0DigiMultiplicity"));
+    c->cd(2);
+    DrawH1(fHM->H1("fhT0DigiTime"));
+    c->cd(3);
+    DrawH1(fHM->H1("fhT0DigiTimeEvent"));
   }
 }
 
@@ -2322,6 +2583,19 @@ Bool_t CbmRichMCbmQaReal::cutDistance(std::pair<int, double>& clTrack)
   if ((clTrack.first >= 0) && (clTrack.second < 10.)) return true;
 
   return false;
+}
+
+
+TVector3 CbmRichMCbmQaReal::extrapolate(CbmTofHit* tofHit, Double_t Z)
+{
+  TVector3 extVec(0, 0, 0);
+  TVector3 vertex(0, 0, 0);
+  Double_t factor = (Z - vertex.Z()) / (tofHit->GetZ() - vertex.Z());
+  Double_t x      = vertex.X() + factor * (tofHit->GetX() - vertex.X());
+  Double_t y      = vertex.Y() + factor * (tofHit->GetY() - vertex.Y());
+  extVec.SetXYZ(x, y, Z);
+
+  return extVec;
 }
 
 ClassImp(CbmRichMCbmQaReal)
