@@ -22,6 +22,14 @@ if(DOWNLOAD_EXTERNALS)
 
   Add_Subdirectory(flib_dpb)
 
+  download_project_if_needed(PROJECT gsl
+    GIT_REPOSITORY    "https://github.com/microsoft/GSL.git"
+    GIT_TAG           "v4.0.0"
+    SOURCE_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/GSL
+  )
+  set(GSL_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/GSL/include PARENT_SCOPE)
+  install(DIRECTORY GSL/include/gsl TYPE INCLUDE)
+
   find_package(Vc 1.4.1)
   if(NOT Vc_FOUND)
     Message("Vc not found in FairSoft installation, Build included version.")

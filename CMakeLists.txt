@@ -216,6 +216,12 @@ ${XPU_INCLUDE_DIRECTORY} # Required for XPU_D macro in base data types
 )
 
 
+set(BASE_INCLUDE_DIRECTORIES
+  ${BASE_INCLUDE_DIRECTORIES}
+  ${GSL_INCLUDE_DIRECTORY}
+)
+
+
 ### Base directories
 add_subdirectory (core)
 add_subdirectory (algo)
