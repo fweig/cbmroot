@@ -56,6 +56,8 @@ find_package(FairRoot)
 
 # Load some basic macros which are needed later on
 include(CbmMacros)
+include(CbmTargets)
+include(CbmGenerateConfig)
 include(FairMacros)
 include(WriteConfigFile)
 include(CTest)
@@ -340,118 +342,24 @@ EndIf()
 
 add_subdirectory(tutorials)
 
-add_custom_target(cleanlib
-                  COMMAND ${CMAKE_COMMAND} -E remove libCbm*
-                  COMMAND ${CMAKE_COMMAND} -E remove G__Cbm*
-                  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-                 )
-
-add_custom_target(cleantest
-                  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake/scripts/cleantest.cmake
-                 )
-
-find_package2(PRIVATE ClangFormat)
-if(ClangFormat_FOUND AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
-  if (FAIRROOT_FORMAT_BASE)
-    set(BASE_COMMIT ${FAIRROOT_FORMAT_BASE})
-  else()
-    set(BASE_COMMIT upstream/master)
-  endif()
-
-  if (FAIRROOT_GIT_CLANG_FORMAT_BIN)
-    set(GIT_CLANG_FORMAT_BIN ${FAIRROOT_GIT_CLANG_FORMAT_BIN})
-  else()
-    set(GIT_CLANG_FORMAT_BIN git-clang-format)
-  endif()
-
-  # Create a list C, C++ and header files which have been changed in the
-  # current commit
-  execute_process(COMMAND ${CMAKE_SOURCE_DIR}/cmake/scripts/find_files.sh
-                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-                  OUTPUT_VARIABLE FileList
-                  OUTPUT_STRIP_TRAILING_WHITESPACE
-                 )
-  string(REGEX REPLACE " " ";" FileList "${FileList}")
-
-  # Loop over the files and create the code whch is executed when running
-  # "make FormatCheck".
-  # The produced code will run clang-format on one of the files. If
-  # clang-format finds code which are not satisfying our code rules a
-  # detailed error message is created. This error message can be checked on
-  # our CDash web page.
-  foreach(file ${FileList})
-    set(file1 ${CMAKE_BINARY_DIR}/${file}.cf_out)
-
-    list(APPEND myfilelist ${file1})
-    add_custom_command(OUTPUT ${file1}
-                       COMMAND ${CMAKE_SOURCE_DIR}/cmake/scripts/check-format-1.sh ${file} ${file1}
-                       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-                      )
-  endforeach()
-
-  # Create the target FormatCheck which only depends on the files creted in
-  # previous step. When running "make FormatCheck" clang-format is executed
-  # for all C, C++ and header files which have changed in the commit.
-  add_custom_target(FormatCheck
-                     DEPENDS ${myfilelist}
-                    )
-
-endif()
-
 Option(BUILD_DOXYGEN "Build Doxygen" OFF)
 if(BUILD_DOXYGEN)
   MESSAGE(STATUS "*** Building the Doxygen documentaion ***")
   ADD_SUBDIRECTORY(doxygen)
 endif(BUILD_DOXYGEN)
 
-if(RULE_CHECKER_FOUND)
+# Definde additional targets 
+# cleanlib: rm al Cbm libraries and dictionaries
+# cleantest: remove all files from build directory created when running ROOT macros
+# FormatCheck: execute clang-format for all changed files (needed for CI) 
+define_additional_targets()
 
-  ADD_CUSTOM_TARGET(RULES
-     COMMAND ${RULE_CHECKER_SCRIPT1} ${CMAKE_BINARY_DIR} viol > violations.html
-     DEPENDS $ENV{ALL_RULES})
+# generate the needed config files to run macros from build and 
+# installation directories. The later will be installed into the
+# install directory
+generate_config_files()
 
-endif(RULE_CHECKER_FOUND)
-
-if(IWYU_FOUND)
-
-  ADD_CUSTOM_TARGET(checkHEADERS
-     DEPENDS $ENV{ALL_HEADER_RULES}
-  )
-
-endif(IWYU_FOUND)
-
-WRITE_CONFIG_FILE(config.sh)
-WRITE_CONFIG_FILE(config.csh)
-
-SET(ROOT_INCLUDE_PATH 
-    ${ROOT_INCLUDE_PATH} 
-    "${CMAKE_INSTALL_PREFIX}/include" 
-    "${CMAKE_INSTALL_PREFIX}/include/mvd"
-    "${CMAKE_INSTALL_PREFIX}/include/littrack"
-    "${CMAKE_INSTALL_PREFIX}/include/KF"
-    "${CMAKE_INSTALL_PREFIX}/include/AnalysisTree"
-    "${CMAKE_INSTALL_PREFIX}/include/AnalysisTreeQA"
-   )
-set(CMAKE_INSTALL_LIBDIR lib)
-SET(VMCWORKDIR ${CMAKE_INSTALL_PREFIX}/share/cbmroot)
-WRITE_CONFIG_FILE(config.sh_install)
-WRITE_CONFIG_FILE(config.csh_install)
-
-Install(FILES ${CMAKE_BINARY_DIR}/config.sh_install
-        DESTINATION bin
-        RENAME CbmRootConfig.sh
-       )
-
-Install(FILES ${CMAKE_BINARY_DIR}/check_system.sh
-        DESTINATION bin
-       )
-
-Install(FILES ${CMAKE_BINARY_DIR}/config.csh_install
-        DESTINATION bin
-        RENAME CbmRootConfig.csh
-       )
-
-
+# install the parameters, geometries and input directories
 Install(DIRECTORY geometry input parameters
         DESTINATION share/cbmroot
         PATTERN ".git" EXCLUDE)
