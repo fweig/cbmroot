@@ -123,11 +123,11 @@ void CbmTaskUnpack::Exec(Option_t*)
       const auto algoIt          = fAlgoMuch.find(equipmentId);
       assert(algoIt != fAlgoMuch.end());
 
-      // The current algorithm works for the MUCH data format version XXXX (insert) used in XXXX.
+      // The current algorithm works for the MUCH data format version 0x20 used in 2021.
       // Other versions are not yet supported.
       // In the future, different data formats will be supported by instantiating different
       // algorithms depending on the version.
-      // assert(timeslice->descriptor(comp, 0).sys_ver == 0x20);    // set for MUCH
+      assert(timeslice->descriptor(comp, 0).sys_ver == 0x20);
 
       // --- Microslice loop
       numMsInComp = timeslice->num_microslices(comp);
