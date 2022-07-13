@@ -86,9 +86,9 @@ IncludeCategories:
     Priority:        3
   - Regex:           '^("|<)Logger.h'
     Priority:        3
-  - Regex:           '^("|<)T'
+  - Regex:           '^("|<)T.*\.h'
     Priority:        4
-  - Regex:           '^("|<)Rt'
+  - Regex:           '^("|<)Rt.*\.h'
     Priority:        4
   - Regex:           '^("|<)boost'
     Priority:        5
