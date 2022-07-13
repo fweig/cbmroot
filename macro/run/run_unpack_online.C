@@ -254,15 +254,37 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     // Activate the line below to write Trd1D digis to a separate "TrdFaspDigi" branch. Can be used to separate between Fasp and Spadic digis
     //trdfasp2dconfig->SetOutputBranchName("TrdFaspDigi");
     uint8_t map[NFASPMOD];
+    uint16_t cri_map[NCRIMOD];
+    for (int i(0); i < NFASPMOD; i++)
+      map[i] = i;
     if (runid <= 1588) {
+      const size_t nfasps = 12;
       uint8_t map21[] = {9, 2, 3, 11, 10, 7, 8, 0, 1, 4, 6, 5};
-      for (int i(0); i < NFASPMOD; i++)
-        map[i] = (i < 12 ? map21[i] : i);
+      for (int i(0); i < nfasps; i++)
+        map[i] = map21[i];
+      uint16_t crob_map21[] = {0x00f0, 0, 0, 0, 0};
+      for (int i(0); i < NCROBMOD; i++)
+        crob_map[i] = crob_map21[i];
     }
-    else
-      for (int i(0); i < NFASPMOD; i++)
-        map[i] = i;
+    else if (runid >= 2335) {
+      const size_t nfasp0 = 72;
+      const size_t nfasps = 36;
+      uint8_t map22[]     = {
+        84,  85,  86,  87,  88,  89,   // FEB14/0xffc1
+        90,  91,  92,  93,  94,  95,   // FEB17/0xffc1
+        96,  97,  98,  99,  100, 101,  // FEB18/0xffc1
+        102, 103, 104, 105, 106, 107,  // FEB16/0xffc1
+        72,  73,  74,  75,  76,  77,   // FEB9/0xffc1
+        78,  79,  80,  81,  82,  83    // FEB8/0xffc1
+      };
+      for (int i(0); i < nfasps; i++)
+        map[i + nfasp0] = map22[i];
+      uint16_t crob_map22[] = {0xffc2, 0xffc5, 0xffc1, 0, 0};
+      for (int i(0); i < NCROBMOD; i++)
+        crob_map[i] = crob_map22[i];
+    }
     trdfasp2dconfig->SetFaspMapping(5, map);
+    trdfasp2dconfig->SetCriMapping(5, cri_map);
     std::string parfilesbasepathTrdfasp2d = Form("%s/parameters/trd", srcDir.Data());
     trdfasp2dconfig->SetParFilesBasePath(parfilesbasepathTrdfasp2d);
     trdfasp2dconfig->SetSystemTimeOffset(-1800);  // [ns] value to be updated
