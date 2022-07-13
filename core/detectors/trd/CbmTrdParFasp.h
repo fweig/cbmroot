@@ -6,7 +6,11 @@
 #define CBMTRDPARFASP_H
 
 #define NFASPMOD 180
+#define NCROBMOD 5
+#define NFASPCROB NFASPMOD / NCROBMOD
 #define NFASPCH 16
+
+#define FASP_EPOCH_LENGTH 128
 
 #include "CbmTrdParAsic.h"  // for CbmTrdParAsic
 

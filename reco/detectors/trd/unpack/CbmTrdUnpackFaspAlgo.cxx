@@ -25,13 +25,20 @@
 
 #include <boost/format.hpp>
 
+// select verbosity level
+// 0 : none
+// 1 : data unpacker
+// 2 : digi packing
 #define VERBOSE 0
 
 using namespace std;
 
-CbmTrdUnpackFaspAlgo::CbmTrdUnpackFaspAlgo() : CbmRecoUnpackAlgo("CbmTrdUnpackFaspAlgo"), fModuleId(), fAsicPar()
+CbmTrdUnpackFaspAlgo::CbmTrdUnpackFaspAlgo()
+  : CbmRecoUnpackAlgo("CbmTrdUnpackFaspAlgo")
+  , fModuleId()
+  , fAsicPar()
+  , fTime(0)
 {
-  memset(fTime, 0, NCRI * sizeof(ULong64_t));
 }
 
 //_________________________________________________________________________________
@@ -128,6 +135,13 @@ void CbmTrdUnpackFaspAlgo::SetAsicMapping(const std::map<uint32_t, uint8_t[NFASP
 }
 
 //_________________________________________________________________________________
+void CbmTrdUnpackFaspAlgo::SetCrobMapping(const std::map<uint32_t, uint16_t[NCROBMOD]>& map)
+{
+  if (fCrobMap) delete fCrobMap;
+  fCrobMap = new std::map<uint32_t, uint16_t[NCROBMOD]>(map);
+}
+
+//_________________________________________________________________________________
 void CbmTrdUnpackFaspAlgo::PrintAsicMapping()
 {
   if (!fFaspMap) {
@@ -181,7 +195,7 @@ void CbmTrdUnpackFaspAlgo::mess_readEW(uint32_t w, CbmTrdFaspContent* mess)
   shift += Int_t(kMessType);
   mess->epoch = (wd >> shift) & 0x1fffff;
   shift += Int_t(kMessEpoch);
-  mess->cri = (wd >> shift) & 0x3f;
+  mess->crob = (wd >> shift) & 0x3f;
   printf("DBG :: ");
   mess_prt(mess);
 }
@@ -194,7 +208,7 @@ void CbmTrdUnpackFaspAlgo::mess_prt(CbmTrdFaspContent* mess)
               % static_cast<unsigned int>(mess->fasp) % static_cast<unsigned int>(mess->ch)
               % static_cast<unsigned int>(mess->tlab) % static_cast<unsigned int>(mess->data);
   else
-    cout << boost::format("    EPOCH: cri_id=%02d ch_id=%02d epoch=%05d\n") % static_cast<unsigned int>(mess->cri)
+    cout << boost::format("    EPOCH: crob_id=%02d ch_id=%02d epoch=%05d\n") % static_cast<unsigned int>(mess->crob)
               % static_cast<unsigned int>(mess->ch) % static_cast<unsigned int>(mess->epoch);
 }
 
@@ -214,13 +228,13 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
     if (lFasp == 0xff) {
       lFasp = messes[0]->fasp;
       // link data to the position on the padplane
-      if (!(faspPar = (CbmTrdParFasp*) fAsicPar.GetAsicPar(imess->cri * 1000 + lFasp))) {
-        LOG(error) << GetName() << "::pushDigis - Par for FASP " << (int) lFasp << " in module " << imess->cri
+      if (!(faspPar = (CbmTrdParFasp*) fAsicPar.GetAsicPar(imess->mod * 1000 + lFasp))) {
+        LOG(error) << GetName() << "::pushDigis - Par for FASP " << (int) lFasp << " in module " << imess->mod
                    << " missing. Skip.";
         return false;
       }
-      if (!(digiPar = (CbmTrdParModDigi*) fDigiSet->GetModulePar(imess->cri))) {
-        LOG(error) << GetName() << "::pushDigis - DIGI par for module " << imess->cri << " missing. Skip.";
+      if (!(digiPar = (CbmTrdParModDigi*) fDigiSet->GetModulePar(imess->mod))) {
+        LOG(error) << GetName() << "::pushDigis - DIGI par for module " << imess->mod << " missing. Skip.";
         return false;
       }
       if (VERBOSE) faspPar->Print();
@@ -267,7 +281,7 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
 
     if (!use) {
       CbmTrdDigi* digi = new CbmTrdDigi(pad, lchT, lchR, imess->tlab);
-      digi->SetAddressModule(imess->cri);
+      digi->SetAddressModule(imess->mod);
       digis.push_back(digi);
     }
     delete imess;
@@ -277,7 +291,7 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
   for (vector<CbmTrdDigi*>::iterator id = digis.begin(); id != digis.end(); id++) {
     // TODO temporary add DAQ time calibration for FASPRO.
     // Should be absorbed in the ASIC parameter definition
-    (*id)->SetTimeDAQ(fTime[0] + (*id)->GetTimeDAQ() + tdaqOffset);
+    (*id)->SetTimeDAQ(fTime + (*id)->GetTimeDAQ() + tdaqOffset);
     fOutputVec.emplace_back(*std::move(*id));
     if (fMonitor) fMonitor->FillHistos((*id));
     if (VERBOSE) cout << (*id)->ToString();
@@ -296,6 +310,8 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
   //LOG(info) << "Component " << icomp << " connected to config CbmTrdUnpackConfig2D. Slice "<<imslice;
 
   uint32_t mod_id = 5;
+  uint8_t crob_id = 0;
+  uint16_t eq_id;
   bool unpackOk   = true;
   //Double_t fdMsSizeInNs = 1.28e6;
 
@@ -303,7 +319,15 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
   // Cast required to silence a warning on macos (there a uint64_t is a llu)
   if (VERBOSE) printf("time start %lu\n", static_cast<size_t>(msdesc.idx));
   // define time wrt start of time slice in TRD/FASP clks [80 MHz]
-  fTime[0] = ULong64_t((msdesc.idx - fTsStartTime - fSystemTimeOffset) / 12.5);
+  fTime = ULong64_t((msdesc.idx - fTsStartTime - fSystemTimeOffset) / 12.5);
+  eq_id = msdesc.eq_id;  // read the CROB id
+  for (; crob_id < NCROBMOD; crob_id++) {
+    if (((*fCrobMap)[mod_id])[crob_id] == eq_id) break;
+  }
+  if (crob_id == NCROBMOD) {
+    LOG(error) << GetName() << "::unpack - CROB eq_id=" << eq_id << " not registered in the unpacker.";
+    return false;
+  }
 
   // Get the µslice size in bytes to calculate the number of completed words
   auto mssize = msdesc.size;
@@ -338,7 +362,7 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
     uint8_t slice   = (w >> 5) & 0x7f;
     uint16_t data   = (w >> 12) & 0x3fff;
     uint32_t epoch  = (w >> 5) & 0x1fffff;
-    uint8_t fasp_id = (w >> 26) & 0x3f;
+    uint8_t fasp_id = ((w >> 26) & 0x3f) + crob_id * NFASPCROB;
     // std::cout<<"fasp_id="<<static_cast<unsigned int>(fasp_id)<<" ch_id="<<static_cast<unsigned int>(ch_id)<<" isaux="<<static_cast<unsigned int>(isaux)<<std::endl;
     if (isaux) {
       if (!ch_id) {
@@ -350,7 +374,7 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
         vDigi.clear();
         lFaspOld = 0xff;
 
-        fTime[fasp_id] += 128;
+        fTime += FASP_EPOCH_LENGTH;
       }
       else if (ch_id == 1) {
         if (VERBOSE) cout << boost::format("    PAUSE: fasp_id=%02d\n") % static_cast<unsigned int>(fasp_id);
@@ -383,7 +407,8 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
       mess->tlab = slice;
       mess->data = data >> 1;
       mess->fasp = lFaspOld;
-      mess->cri  = mod_id;
+      mess->mod  = mod_id;
+      mess->crob = crob_id;
       vDigi.push_back(mess);
     }
     //prt_wd(*wd);

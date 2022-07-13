@@ -35,6 +35,7 @@ void CbmTrdUnpackFaspConfig::InitAlgo()
 {
   if (fDoLog) LOG(info) << fName << "::InitAlgo - Setup Fasp mapping";
   fAlgo->SetAsicMapping(fFaspMap);
+  fAlgo->SetCrobMapping(fCrobMap);
   /*if (fDoLog) */ fAlgo->PrintAsicMapping();
 
   // If we have a monitor in the config add it to the algo
@@ -54,6 +55,12 @@ void CbmTrdUnpackFaspConfig::InitAlgo()
 void CbmTrdUnpackFaspConfig::SetFaspMapping(int modAddress, uint8_t faspMap[NFASPMOD])
 {
   memcpy(fFaspMap[modAddress], faspMap, NFASPMOD * sizeof(uint8_t));
+}
+
+//_____________________________________________________________________
+void CbmTrdUnpackFaspConfig::SetCrobMapping(int modAddress, uint16_t crobMap[NCROBMOD])
+{
+  memcpy(fCrobMap[modAddress], crobMap, NCROBMOD * sizeof(uint16_t));
 }
 
 ClassImp(CbmTrdUnpackFaspConfig)

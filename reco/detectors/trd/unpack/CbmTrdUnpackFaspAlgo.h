@@ -38,7 +38,8 @@
 #include <memory>
 #include <utility>
 
-#define NCRI 40  // no of CRI in the system (1/TRD-2D_FASP module)
+// TODO to be defined in correlation with time offsets (AB 20.05.22)
+#define NCRI 40  // no of CRI in the system (5/TRD-2D_FASP module)
 #define NCOLS 8  // no of cols / FASP
 
 class CbmTrdParSetDigi;
@@ -89,13 +90,14 @@ public:
 
   /** @brief Data structure for unpacking the FASP word */
   struct CbmTrdFaspContent {
-    uint8_t ch;
-    uint8_t type;
-    uint8_t tlab;
-    uint16_t data;
-    uint32_t epoch;
-    uint8_t fasp;
-    uint8_t cri;
+    uint8_t ch;      ///< ch id in the FASP
+    uint8_t type;    ///< message type 0 = epoch, 1 = data (not used for the moment)
+    uint8_t tlab;    ///< time of the digi inside the epoch
+    uint16_t data;   ///< ADC value
+    uint32_t epoch;  ///< epoch id (not used for the moment)
+    uint32_t mod;    ///< full module address according to CbmTrdAddress
+    uint8_t crob;    ///< CROB id in the module
+    uint8_t fasp;    ///< FASP id in the module
   };
 
   /**
@@ -113,6 +115,8 @@ public:
 
   /** @brief Introduce fasp index mapping*/
   void SetAsicMapping(const std::map<uint32_t, uint8_t[NFASPMOD]>& map);
+  /** @brief Initialize CROB mapping for all modules*/
+  void SetCrobMapping(const std::map<uint32_t, uint16_t[NCROBMOD]>& map);
   /** @brief Set a predefined monitor 
    *  @param monitor predefined unpacking monitor */
   void SetMonitor(std::shared_ptr<CbmTrdUnpackFaspMonitor> monitor) { fMonitor = monitor; }
@@ -127,7 +131,12 @@ protected:
   /** @brief Print FASP message */
   void mess_prt(CbmTrdFaspContent* mess);
   bool pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFaspContent*> digis);
-  ULong64_t fTime[NCRI];
+  /** @brief Time offset for digi wrt the TS start, expressed in 80 MHz clks. It contains:
+   *  - relative offset of the MS wrt the TS
+   *  - FASP epoch offset for current CROB
+   *  - TRD2D system offset wrt to experiment time (e.g. T0) 
+   */
+  ULong64_t fTime;
 
   /** @brief Finish function for this algorithm base clase */
   void finish()
@@ -185,7 +194,8 @@ protected:
 
 private:
   void prt_wd(uint32_t w);
-  std::map<uint32_t, uint8_t[NFASPMOD]>* fFaspMap = nullptr;
+  std::map<uint32_t, uint8_t[NFASPMOD]>* fFaspMap  = nullptr;  ///> FASP mapping update wrt the default setting
+  std::map<uint32_t, uint16_t[NCROBMOD]>* fCrobMap = nullptr;  ///> CRI mapping setting
   /** @brief Potential (online) monitor for the unpacking process */
   std::shared_ptr<CbmTrdUnpackFaspMonitor> fMonitor = nullptr;
   std::vector<Int_t> fModuleId;

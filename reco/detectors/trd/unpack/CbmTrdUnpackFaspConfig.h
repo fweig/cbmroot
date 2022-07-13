@@ -72,6 +72,11 @@ public:
    * @param faspMap mapped ids of FASP ASICs for module
    */
   void SetFaspMapping(int modAddress, uint8_t faspMap[NFASPMOD]);
+  /** @brief define crob id mapping for each module
+   * @param modAddress module address according to geometry
+   * @param crobMap mapped ids of CROBs eq_id for module
+   */
+  void SetCrobMapping(int modAddress, uint16_t crobMap[NFASPMOD]);
 
   /** @brief Add a monitor to the unpacker. 
    *  @param value CbmTrdUnpackFaspMonitor */
@@ -86,7 +91,8 @@ protected:
   virtual std::shared_ptr<CbmTrdUnpackFaspAlgo> chooseAlgo();
 
 private:
-  std::map<uint32_t, uint8_t[NFASPMOD]> fFaspMap;  ///> DAQ packing of FASP id
+  std::map<uint32_t, uint8_t[NFASPMOD]> fFaspMap;   ///> Module address to FASP id mapping
+  std::map<uint32_t, uint16_t[NCROBMOD]> fCrobMap;  ///> Module address to CROB id mapping
   /** @brief pointer to the monitor object */
   std::shared_ptr<CbmTrdUnpackFaspMonitor> fMonitor = nullptr;
 
