@@ -17,10 +17,29 @@ project(CBMROOT)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-IF(NOT DEFINED ENV{FAIRROOTPATH})
-  MESSAGE(FATAL_ERROR "You did not define the environment variable FAIRROOTPATH which is needed to find FairRoot. Please set this variable and execute cmake again.")
-ENDIF(NOT DEFINED ENV{FAIRROOTPATH})
-SET(FAIRROOTPATH $ENV{FAIRROOTPATH})
+#Check if necessary environment variables are set
+#If not stop execution
+IF(NOT DEFINED ENV{SIMPATH} AND NOT DEFINED SIMPATH)
+message (FATAL_ERROR "\
+You did not define the environment variable SIMPATH or define SIMPATH when calling cmake. \
+Either of the two is needed to properly find the external packages. \
+Please either set this environment variable or pass -DSIMPATH=<path> and execute cmake again. \
+")
+ENDIF()
+if (NOT DEFINED SIMPATH)
+  set(SIMPATH $ENV{SIMPATH})
+endif()
+
+IF(NOT DEFINED ENV{FAIRROOTPATH} AND NOT DEFINED FAIRROOTPATH)
+  message(FATAL_ERROR "\
+You did not define the environment variable FAIRROOTPATH or define FAIRROOTPATH when calling cmake. \
+Either of the two is needed to properly find the external packages. \
+Please set this environment variable or pass -DFAIRROOTPATH=<path> and and execute cmake again.")
+ENDIF()
+if (NOT DEFINED FAIRROOTPATH)
+  set(FAIRROOTPATH $ENV{FAIRROOTPATH})
+endif()
+
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/
 # is checked
@@ -29,9 +48,10 @@ set(CMAKE_MODULE_PATH "${FAIRROOTPATH}/share/fairbase/cmake/modules"  ${CMAKE_MO
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 #set(CMAKE_PREFIX_PATH "$ENV{SIMPATH}/share/cmake/ZeroMQ" ${CMAKE_PREFIX_PATH})
-set(CMAKE_PREFIX_PATH $ENV{SIMPATH} ${CMAKE_PREFIX_PATH})
+set(CMAKE_PREFIX_PATH ${SIMPATH} ${CMAKE_PREFIX_PATH})
 set(CMAKE_INSTALL_LIBDIR lib)
 
+set(FairRoot_DIR ${FAIRROOTPATH})
 find_package(FairRoot)
 
 # Load some basic macros which are needed later on
@@ -53,7 +73,7 @@ If(NOT _HAS_CXX17_FLAG)
   Message(FATAL_ERROR "The used C++ compiler (${CMAKE_CXX_COMPILER}) does not support C++17. CbmRoot can only be compiled with compilers supporting C++17. Please install such an compiler.")
 EndIf()
 
-Execute_process(COMMAND $ENV{SIMPATH}/bin/fairsoft-config --cxxflags OUTPUT_VARIABLE _res_fairsoft_config OUTPUT_STRIP_TRAILING_WHITESPACE)
+Execute_process(COMMAND ${SIMPATH}/bin/fairsoft-config --cxxflags OUTPUT_VARIABLE _res_fairsoft_config OUTPUT_STRIP_TRAILING_WHITESPACE)
 String(FIND ${_res_fairsoft_config} "-std=c++17" POS_C++17)
 If(${POS_C++17} EQUAL -1)
   Message(FATAL_ERROR "FairSoft wasn't compiled with support for c++17. Please recompile FairSoft with a compiler which supports c++17.")
@@ -61,7 +81,7 @@ else()
   set(CMAKE_CXX_STANDARD 17)
 EndIf()
 
-Execute_process(COMMAND $ENV{SIMPATH}/bin/fairsoft-config --root-version OUTPUT_VARIABLE _res_root_version OUTPUT_STRIP_TRAILING_WHITESPACE)
+Execute_process(COMMAND ${SIMPATH}/bin/fairsoft-config --root-version OUTPUT_VARIABLE _res_root_version OUTPUT_STRIP_TRAILING_WHITESPACE)
 If(NOT ${_res_root_version} EQUAL 6)
   Message(FATAL_ERROR "FairSoft was not compiled with ROOT6.")
 EndIf()
@@ -82,8 +102,8 @@ If(FairSoft_VERSION VERSION_LESS 21.4.0)
   Message(FATAL_ERROR "\n CbmRoot needs at least FairSoft version apr21p2. \n You use FairSoft ${_fairsoft_version}. Please upgrade your FairSoft version.")
 EndIf()
 
-Execute_process(COMMAND $ENV{FAIRROOTPATH}/bin/fairroot-config --fairsoft_path OUTPUT_VARIABLE _simpath OUTPUT_STRIP_TRAILING_WHITESPACE)
-Remove_Trailing_Slash($ENV{SIMPATH})
+Execute_process(COMMAND ${FAIRROOTPATH}/bin/fairroot-config --fairsoft_path OUTPUT_VARIABLE _simpath OUTPUT_STRIP_TRAILING_WHITESPACE)
+Remove_Trailing_Slash(${SIMPATH})
 Set(_simpath ${_ret_val})
 Remove_Trailing_Slash(${_simpath})
 Set(_fairroot_config ${_ret_val})
@@ -168,12 +188,6 @@ IF(NOT UNIX)
   MESSAGE(FATAL_ERROR "You're not on an UNIX system. The project was up to now only tested on UNIX systems, so we break here. If you want to go on please edit the CMakeLists.txt in the source directory.")
 ENDIF(NOT UNIX)
 
-#Check if necessary environment variables are set
-#If not stop execution
-IF(NOT DEFINED ENV{SIMPATH})
-  MESSAGE(FATAL_ERROR "You did not define the environment variable SIMPATH which is nedded to find the external packages. Please set this variable and execute cmake again.")
-ENDIF(NOT DEFINED ENV{SIMPATH})
-SET(SIMPATH $ENV{SIMPATH})
 
 # searches for needed packages
 # REQUIRED means that cmake will stop if this packages are not found
@@ -188,12 +202,12 @@ if("${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR}" VERSION_GREATER 6.16)
 
     String(STRIP ${ROOT_vmc_FOUND} ROOT_vmc_FOUND)
     If(NOT ROOT_vmc_FOUND)
-      set(CMAKE_PREFIX_PATH $ENV{SIMPATH} ${CMAKE_PREFIX_PATH})
+      set(CMAKE_PREFIX_PATH ${SIMPATH} ${CMAKE_PREFIX_PATH})
       find_package2(PUBLIC VMC REQUIRED)
       set(VMCLIB VMCLibrary)
     endif()
   else()
-    set(CMAKE_PREFIX_PATH $ENV{SIMPATH} ${CMAKE_PREFIX_PATH})
+    set(CMAKE_PREFIX_PATH ${SIMPATH} ${CMAKE_PREFIX_PATH})
     find_package2(PUBLIC VMC REQUIRED)
     set(VMCLIB VMCLibrary)
   endif()

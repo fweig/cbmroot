@@ -12,7 +12,7 @@ EndMacro()
 
 Macro(FairRootVersion)
 
-  Execute_Process(COMMAND $ENV{FAIRROOTPATH}/bin/fairroot-config --version
+  Execute_Process(COMMAND ${FAIRROOTPATH}/bin/fairroot-config --version
                   OUTPUT_VARIABLE _fairroot_version
                   OUTPUT_STRIP_TRAILING_WHITESPACE
                  )
@@ -55,7 +55,7 @@ EndMacro()
 
 Macro(FairSoftVersion)
 
-  Execute_Process(COMMAND $ENV{SIMPATH}/bin/fairsoft-config --version
+  Execute_Process(COMMAND ${SIMPATH}/bin/fairsoft-config --version
                   OUTPUT_VARIABLE _fairsoft_version
                   OUTPUT_STRIP_TRAILING_WHITESPACE
                  )
