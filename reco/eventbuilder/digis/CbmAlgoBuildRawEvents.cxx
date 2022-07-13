@@ -421,12 +421,59 @@ void CbmAlgoBuildRawEvents::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx)
     }
   }
 
+
+  /// Check if this reference detector passes the trigger conditions to "exit early"
+  /// then check for each detectors if it also passes
+  /// => Replaces the call to CheckTriggerCondition after a complete loop
+  if (kTRUE == CheckTriggerConditions(fCurrentEvent, fRefDet)) {
+
+    /// Search for matches for each detector in selection list
+    bool bAllTriggersOk = true;
+    for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
+      SearchMatches(dSeedTime, *det);
+
+      /// Check if this det pass the trigger conditions to "exit early"
+      if (kFALSE == CheckTriggerConditions(fCurrentEvent, *det)) {  //
+        bAllTriggersOk = false;
+        break;
+      }
+    }
+    if (bAllTriggersOk) {
+      fdPrevEvtTime = dSeedTime;
+
+      /// In case of NoOverlap or MergeOverlap, we can and should start checking the next window
+      /// from end of current window in order to save CPU and avoid duplicating
+      if (EOverlapModeRaw::NoOverlap == fOverMode || EOverlapModeRaw::MergeOverlap == fOverMode) {
+        /// Update reference detector
+        if (fRefDet.detId != ECbmModuleId::kNotExist) { fRefDet.fuStartIndex = fRefDet.fuEndIndex; }
+        /// Loop on selection detectors
+        for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
+          (*det).fuStartIndex = (*det).fuEndIndex;
+        }
+      }
+      // LOG(info) << Form("Accept seed %9.0f due to Selection Trigger requirements", dSeedTime);
+    }
+    else {
+      // LOG(info) << Form("Reject seed %9.0f due to Selection Trigger requirements", dSeedTime);
+      LOG(debug1) << "Reject seed due to Trigger requirements";
+      delete fCurrentEvent;
+      fCurrentEvent = nullptr;  /// delete does NOT set a pointer to nullptr...
+    }
+  }
+  else {
+    // LOG(info) << Form("Reject seed %9.0f due to Reference Trigger requirements", dSeedTime);
+    LOG(debug1) << "Reject seed due to Trigger requirements";
+    delete fCurrentEvent;
+    fCurrentEvent = nullptr;  /// delete does NOT set a pointer to nullptr...
+  }
+  /*
   /// Search for matches for each detector in selection list
   for (std::vector<RawEventBuilderDetector>::iterator det = fvDets.begin(); det != fvDets.end(); ++det) {
     SearchMatches(dSeedTime, *det);
   }
 
   CheckTriggerCondition(dSeedTime);
+  */
 }
 
 //----------------------------------------------------------------------
