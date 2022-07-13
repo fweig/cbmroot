@@ -296,11 +296,11 @@ bool CbmTofUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
             fMonitor->FillErrMonitoringHistos(fuCurrDpbIdx, fuGet4Id, pMess[uIdx].getGdpbSysErrChanId(),
                                               pMess[uIdx].getGdpbSysErrData());
 
-            if (90 == fuCurrentMsSysId) {
+            if (0x90 == fuCurrentMsSysId) {
               fMonitor->FillErrBmonMonitoringHistos(fdCurrentMsTime, fuCurrDpbIdx, fuGet4Id,
                                                     critof001::GET4_V2X_ERR_LOST_EVT
                                                       == pMess[uIdx].getGdpbSysErrData());
-            }  // if (90 == fuCurrentMsSysId)
+            }  // if (0x90 == fuCurrentMsSysId)
           }    // if (critof001::SYS_GET4_ERROR == pMess[uIdx].getGdpbSysSubType())
         }      // if (fMonitor )
         break;

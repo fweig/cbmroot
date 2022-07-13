@@ -1320,18 +1320,21 @@ Bool_t CbmTofUnpackMonitor::Init(CbmMcbm2018TofPar* parset)
     //
     sSystem = "bmon";
   }
-  THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
-  if (nullptr != server) {
-    for (UInt_t uCanvas = 0; uCanvas < vCanvases.size(); ++uCanvas) {
-      server->Register(Form("/%s/%s", sSystem.data(), vCanvases[uCanvas].second.data()), vCanvases[uCanvas].first);
+
+  if (fbInternalHttp) {
+    THttpServer* server = FairRunOnline::Instance()->GetHttpServer();
+    if (nullptr != server) {
+      for (UInt_t uCanvas = 0; uCanvas < vCanvases.size(); ++uCanvas) {
+        server->Register(Form("/%s/%s", sSystem.data(), vCanvases[uCanvas].second.data()), vCanvases[uCanvas].first);
+      }
+      for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
+        server->Register(Form("/%s/%s", sSystem.data(), vHistos[uHisto].second.data()), vHistos[uHisto].first);
+      }
+      /*
+      server->RegisterCommand(Form("/Reset_%s_Hist", sSystem.data()), "bMcbm2018UnpackerTaskStsResetHistos=kTRUE");
+      server->Restrict("/Reset_UnpSts_Hist", "allow=admin");
+      */
     }
-    for (UInt_t uHisto = 0; uHisto < vHistos.size(); ++uHisto) {
-      server->Register(Form("/%s/%s", sSystem.data(), vHistos[uHisto].second.data()), vHistos[uHisto].first);
-    }
-    /*
-    server->RegisterCommand(Form("/Reset_%s_Hist", sSystem.data()), "bMcbm2018UnpackerTaskStsResetHistos=kTRUE");
-    server->Restrict("/Reset_UnpSts_Hist", "allow=admin");
-*/
   }
 
   return kTRUE;

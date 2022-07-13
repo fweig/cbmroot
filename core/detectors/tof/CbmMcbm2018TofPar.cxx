@@ -381,8 +381,8 @@ void CbmMcbm2018TofPar::BuildChannelsUidMapT0_2022(UInt_t& uCh, UInt_t uGbtx)
       /// Mapping for the 2022 beamtime
       if (-1 < fiModuleId[uGbtx] && uGet4 < 32 && 0 == uGet4 % 4 && 0 == uGet4Ch) {
         /// 1 channel per physical GET4, 2 links per physical GET4, 4 physical GET4s per GBTx, 1 GBTx per comp.
-        /// 8 channels for one side, 8 for the other
-        UInt_t uChannelT0 = (uGet4 / 8 + 4 * (uGbtx / 2)) % 8;
+        /// 16 channels for one side, 16 for the other
+        UInt_t uChannelT0 = (uGet4 / 8 + 4 * (uGbtx / 2)) % 16;
         /// Type hard-coded to allow different parameter values to separate 2022 T0 and pre-2022 T0
         fviRpcChUId[uCh] = CbmTofAddress::GetUniqueAddress(fiModuleId[uGbtx], 0, uChannelT0, fiRpcSide[uGbtx], 5);
         LOG(info) << Form("  Bmon channel: %u side %u from GBTx %2u, "

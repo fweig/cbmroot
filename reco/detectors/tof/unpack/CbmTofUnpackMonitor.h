@@ -62,6 +62,28 @@ public:
     fuBmonChanMap[6] = uChan6;
     fuBmonChanMap[7] = uChan7;
   }
+  inline void SetBmonChannelMap(UInt_t uChan0, UInt_t uChan1, UInt_t uChan2, UInt_t uChan3, UInt_t uChan4,
+                                UInt_t uChan5, UInt_t uChan6, UInt_t uChan7, UInt_t uChan8, UInt_t uChan9,
+                                UInt_t uChan10, UInt_t uChan11, UInt_t uChan12, UInt_t uChan13, UInt_t uChan14,
+                                UInt_t uChan15)
+  {
+    fuBmonChanMap[0]  = uChan0;
+    fuBmonChanMap[1]  = uChan1;
+    fuBmonChanMap[2]  = uChan2;
+    fuBmonChanMap[3]  = uChan3;
+    fuBmonChanMap[4]  = uChan4;
+    fuBmonChanMap[5]  = uChan5;
+    fuBmonChanMap[6]  = uChan6;
+    fuBmonChanMap[7]  = uChan7;
+    fuBmonChanMap[8]  = uChan8;
+    fuBmonChanMap[9]  = uChan9;
+    fuBmonChanMap[10] = uChan10;
+    fuBmonChanMap[11] = uChan11;
+    fuBmonChanMap[12] = uChan12;
+    fuBmonChanMap[13] = uChan13;
+    fuBmonChanMap[14] = uChan14;
+    fuBmonChanMap[15] = uChan15;
+  }
 
   void SetLongDurationLimits(UInt_t uDurationSeconds, UInt_t uBinSize)
   {
@@ -115,6 +137,18 @@ public:
   /** @brief Read the Bmon mode */
   bool GetBmonMode() { return fBmonMode; }
 
+  /** @brief Activate/de-activate the internal histo serve mode */
+  void SetInternalHttpMode(bool value) { fbInternalHttp = value; }
+
+  /** @brief Read the Bmon mode */
+  bool GetInternalHttpMode() { return fbInternalHttp; }
+
+  /** @brief Set start time for evolution histos */
+  void SetHistosStartTime(double_t value) { fdStartTime = value; }
+
+  /** @brief Set start time for evolution histos */
+  double_t GetHistosStartTime() { return fdStartTime; }
+
 private:
   TString fHistoFileName = "data/mon.tof.root";
 
@@ -137,7 +171,8 @@ private:
   UInt_t fuLongHistoBinNb      = 1;
 
   /** @brief Flag if debug mode is active or not */
-  bool fBmonMode = false;
+  bool fBmonMode      = false;
+  bool fbInternalHttp = true;
 
   /// ---> Constants
   static const UInt_t kuMaxNbFlibLinks  = 32;

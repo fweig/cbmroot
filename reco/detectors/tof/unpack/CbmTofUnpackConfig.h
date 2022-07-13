@@ -94,6 +94,9 @@ public:
   /** @brief Add a monitor to the unpacker. @param value CbmStsUnpackMonitor */
   void SetMonitor(std::shared_ptr<CbmTofUnpackMonitor> value) { fMonitor = value; }
 
+  /** @brief Returns the monitor of the unpacker if any. @return value CbmTofUnpackMonitor */
+  std::shared_ptr<CbmTofUnpackMonitor> GetMonitor() { return fMonitor; }
+
 protected:
   /**
    * @brief Choose the derived unpacker algorithm to be used for the DAQ output to Digi translation. If algo was already set manually by the user this algorithm is used.
