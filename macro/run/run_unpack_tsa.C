@@ -109,6 +109,10 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
       /// Nickel runs: 2350 - 2397 = 23/05/2022 - 25/05/2022
       setupName = "mcbm_beam_2022_05_23_nickel";
     }
+    else if (2454 <= runid && runid <= 2497) {
+      /// Lambda Benchmark Gold runs: 2454 - 2497 = 16/06/2022 - 18/06/2022
+      setupName = "mcbm_beam_2022_06_16_gold";
+    }
     if (defaultSetupName != setupName) {
       std::cout << "Automatic setup choice for run " << runid << ": " << setupName << std::endl;
     }
