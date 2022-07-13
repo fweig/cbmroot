@@ -48,7 +48,7 @@ CbmTrdParModGas::CbmTrdParModGas(const char* title)
   , fGasThick(0.6)
   , fPercentCO2(0.2)
   , fDriftMap(nullptr)
-  , fFileNamePID()
+  , fFileNamePID("parameters/trd/Likelihood_Xenon_85_v20b_tdr18_apr21.root")
 {
   TString s(title);
   TString name;
