@@ -3,7 +3,7 @@
 //----------------------------------------------------------------------------
 NrOfGdpbs: Int_t 4
 GdpbIdArray: Int_t \
-0xabf3 0xabf2 0xabf0 0xabf1
+0xabf3 0xabf2 0xabf1 0xabf0
 NrOfFeesPerGdpb: Int_t 10
 NrOfGet4PerFee:  Int_t 8
 NrOfChannelsPerGet4: Int_t 4
@@ -14,7 +14,7 @@ NrOfRpc: Int_t \
 RpcType: Int_t \
  99 -1 99 -1 99 -1 99 -1
 RpcSide: Int_t \
-  0  0  0  0  1  0  1  0
+  0  0  0  0  0  0  0  0
 ModuleId: Int_t \
   0 -1  0 -1  0 -1  0 -1
 NbMsTot: Int_t 100

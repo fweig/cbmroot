@@ -92,7 +92,7 @@ void run_unpack_online_bmon(std::vector<std::string> publisher = {"tcp://localho
   bmonconfig = std::make_shared<CbmBmonUnpackConfig>("", runid);
   if (bmonconfig) {
     // bmonconfig->SetDebugState();
-    bmonconfig->SetDoWriteOutput();
+    // bmonconfig->SetDoWriteOutput();
     // bmonconfig->SetDoWriteOptOutA("CbmBmonErrors");
     std::string parfilesbasepathBmon = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
     bmonconfig->SetParFilesBasePath(parfilesbasepathBmon);
@@ -100,6 +100,10 @@ void run_unpack_online_bmon(std::vector<std::string> publisher = {"tcp://localho
     bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
     /// Enable Monitor plots
     bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));
+    if (2337 <= runid) {
+      bmonconfig->GetMonitor()->SetSpillThreshold(250);
+      bmonconfig->GetMonitor()->SetSpillThresholdNonPulser(100);
+    }
   }
   // -------------
 
@@ -117,10 +121,10 @@ void run_unpack_online_bmon(std::vector<std::string> publisher = {"tcp://localho
   // -----   CbmSourceTsArchive   -------------------------------------------
   auto source = new CbmSourceTsArchive(publisher);
   auto unpack = source->GetRecoUnpack();
-  unpack->SetDoPerfProfiling(doPerfProfiling);
-  unpack->SetOutputFilename(perfProfFileName);
+  //unpack->SetDoPerfProfiling(doPerfProfiling);
+  //unpack->SetOutputFilename(perfProfFileName);
   // Enable full time sorting instead sorting per FLIM link
-  unpack->SetTimeSorting(true);
+  //unpack->SetTimeSorting(true);
   unpack->SetMonitoringOnly(true);
 
   if (bmonconfig) unpack->SetUnpackConfig(bmonconfig);
@@ -217,8 +221,8 @@ std::shared_ptr<CbmTofUnpackMonitor> GetTofMonitor(std::string treefilename, boo
   return monitor;
 }
 
-void run_unpack_online_bmon(std::string publisher = "tcp://localhost:5556", Int_t serverHttpPort = 8080,
-                            Int_t serverRefreshRate = 100, std::int32_t nevents = -1, UInt_t runid = 1905,
+void run_unpack_online_bmon(std::string publisher = "tcp://localhost:5556", UInt_t runid = 1905,
+                            Int_t serverHttpPort = 8080, Int_t serverRefreshRate = 10, std::int32_t nevents = -1,
                             const char* setupName = defaultSetupName, std::string outpath = "data/")
 {
   std::vector<std::string> vPublisher = {publisher};

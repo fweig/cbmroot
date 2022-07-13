@@ -113,6 +113,10 @@ void run_unpack_tsa_bmon(std::vector<std::string> infile = {"test.tsa"}, UInt_t 
     bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
     /// Enable Monitor plots
     bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));
+    if (2337 <= runid) {
+      bmonconfig->GetMonitor()->SetSpillThreshold(250);
+      bmonconfig->GetMonitor()->SetSpillThresholdNonPulser(100);
+    }
   }
   // -------------
 

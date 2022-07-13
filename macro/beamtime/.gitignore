@@ -1,3 +1,5 @@
 mcbm20??/all_*.par
 mcbm20??/core_dump*
 mcbm20??/*.pdf
+mcbm20??/*.png
+mcbm20??/*.log
