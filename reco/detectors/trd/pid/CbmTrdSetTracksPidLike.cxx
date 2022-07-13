@@ -14,10 +14,10 @@
 #include "CbmTrdHit.h"
 #include "CbmTrdTrack.h"
 
+#include "FairParamList.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
-#include "FairParamList.h"
 
 #include "TClonesArray.h"
 #include "TH1.h"
@@ -46,7 +46,8 @@ CbmTrdSetTracksPidLike::~CbmTrdSetTracksPidLike() {}
 // -------------------------------------------------------------------------
 
 // -----  SetParContainers -------------------------------------------------
-void CbmTrdSetTracksPidLike::SetParContainers() {
+void CbmTrdSetTracksPidLike::SetParContainers()
+{
   fGasPar = static_cast<CbmTrdParSetGas*>(FairRunAna::Instance()->GetRuntimeDb()->getContainer("CbmTrdParSetGas"));
 }
 // -------------------------------------------------------------------------
@@ -70,7 +71,6 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
     fGasPar->putParams(parlist);
     FairParamObj* filenamepar = parlist->find("RepoPid");
     fFileName.Form("%s/%s", getenv("VMCWORKDIR"), filenamepar->getParamValue());
-    
   }
 
 

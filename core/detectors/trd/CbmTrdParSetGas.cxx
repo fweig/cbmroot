@@ -103,7 +103,7 @@ void CbmTrdParSetGas::putParams(FairParamList* l)
 
 
   TString repopid(mod->GetFileName().Data());
-    
+
   l->add("RepoDrift", "parameters/trd/CbmTrdDriftMap.root");
   l->add("RepoPid", repopid);
   l->add("Gas", Form("Xe_%d", Int_t(1.e2 * mod->GetNobleGas())));
