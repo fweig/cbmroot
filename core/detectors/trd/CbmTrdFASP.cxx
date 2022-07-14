@@ -30,12 +30,14 @@
 
 using namespace std;
 
-Bool_t CbmTrdFASP::fgNeighbour = kTRUE;  // by default enable neighbour trigger
+// Bool_t CbmTrdFASP::fgNeighbour = kTRUE;  // by default enable neighbour trigger
+Bool_t CbmTrdFASP::fgNeighbour = kFALSE;  // AB : match HW on mCBM22
 // Float_t CbmTrdFASP::fgShaperThr       = 0.2;  // [V]
 // Float_t CbmTrdFASP::fgNeighbourThr    = 0.07; // [V]
-Float_t CbmTrdFASP::fgShaperThr       = 0.05;   // [V]
-Float_t CbmTrdFASP::fgNeighbourThr    = 0.04;   // [V]
-Float_t CbmTrdFASP::fgBaseline        = 0.25;   // [V]
+//Float_t CbmTrdFASP::fgShaperThr       = 0.05;  // [V]
+Float_t CbmTrdFASP::fgShaperThr       = 0.08;   //[V]  AB : match HW on mCBM22
+Float_t CbmTrdFASP::fgNeighbourThr    = 0.04;   //[V]
+Float_t CbmTrdFASP::fgBaseline        = 0.25;   //[V]  AB : match HW on mCBM22
 Float_t CbmTrdFASP::fgOutGain         = 2.025;  // [V/ 4095 ADC chs]
 const Int_t CbmTrdFASP::fgkNclkFT     = 14;     // [clk]
 Int_t CbmTrdFASP::fgNclkLG            = 31;     // [clk]
@@ -43,27 +45,6 @@ const Int_t CbmTrdFASP::fgkBufferKeep = 400;    // [5*ns]
 //___________________________________________________________________
 CbmTrdFASP::CbmTrdFASP(UInt_t uslice)
   : TObject()
-  , fStartTime(0)
-  , fProcTime(0)
-  , fCol(-1)
-  , fRow(-1)
-  , fAsicId(-1)
-  , fNraw(0)
-  , fDigi(nullptr)
-  , fHitThPrev(uslice)
-  , fShaper(uslice)
-  , fShaperNext(uslice)
-  , fDigiProc()
-  , fPar(nullptr)
-  , fTimeLG(-1)
-  , fTimeFT(-1)
-  , fTimeDY(-1)
-  , fFT(0)
-  , fGraphId(0)
-  , fOut()
-  , fGraphMap()
-  , fGthr(nullptr)
-  , fMonitor(nullptr)
 {
   /** Build the FASP simulator for a microslice of 5*uslice [ns]
    */
@@ -104,106 +85,134 @@ void CbmTrdFASP::Clear(Option_t* opt)
 {
   //  printf("CbmTrdFASP::Clear : Nphys[0] = %d\n", fNphys[0]);
 
-  if (fNphys[0]) ProcessShaper('R');        // process last rect channel without interference from current tilt
+  if (fNphys[1]) ProcessShaper('R');        // process last rect channel without interference from current tilt
   fHitThPrev.assign(fHitThPrev.size(), 0);  //*sizeof(Bool_t));
   WriteDigi();                              // finalize fDigi list
   if (strcmp(opt, "draw") == 0) Draw();
 }
 
 //___________________________________________________________________
+void CbmTrdFASP::InitChannel(int id, const CbmTrdParFaspChannel* par, int asicId, int chId)
+{
+  if (id < 0 || id > 1) {
+    LOG(error) << "FASP simulator supports only two channels at time. Request for channel " << id << " was skipped.";
+    return;
+  }
+  fPar[id]    = par;
+  fAsicId[id] = asicId;
+  if (asicId < 0) {
+    fChId[id] = -1;
+    return;
+  }
+
+  if (chId < 0 || chId >= NFASPCH) {
+    LOG(warn) << "FASP ASIC implements " << NFASPCH << " channels. Channel identifier " << chId << " not considered.";
+    fChId[id] = -1;
+    return;
+  }
+  else
+    fChId[id] = chId;
+
+  if (DRAW) {
+    if (fGraphMap.find(fAsicId[id]) == fGraphMap.end()) fGraphMap[fAsicId[id]] = {0};
+    else {
+      int jg = fGraphMap[fAsicId[id]][fChId[id]];
+      if (jg > 0) {
+        memset(fGraph[jg]->GetY(), 0, fGraph[jg]->GetN() * sizeof(double));
+        memset(fGraphShp[jg]->GetY(), 0, fGraphShp[jg]->GetN() * sizeof(double));
+        memset(fGraphPhys[jg]->GetY(), 0, fGraphPhys[jg]->GetN() * sizeof(double));
+      }
+    }
+  }
+}
+
+//___________________________________________________________________
+int CbmTrdFASP::AddGraph(char typ)
+{
+  int gid(0);
+  if (fNgraph >= NGRAPH) {
+    LOG(warn) << "CbmTrdFASP::AddGraph : Draw buffer size " << NGRAPH << " exhausted. Expert setting.";
+    return gid;
+  }
+
+  int id(typ == 'T' ? 0 : 1);
+  gid         = fNgraph;
+  fGraph[gid] = new TGraph(/*fOut.size()*/);
+  fGraph[gid]->SetNameTitle(Form("g%03d", gid),
+                            Form("FASP id/ch [%3d / %2d] pad[%3d][%c]", fAsicId[id], fChId[id], fPad, typ));
+  fGraph[gid]->SetFillStyle(0);
+  fGraph[gid]->SetMarkerStyle(7);
+  fGraph[gid]->SetLineColor(kRed);
+  fGraph[gid]->SetMarkerColor(kRed);
+
+  fGraphShp[gid] = (TGraph*) fGraph[gid]->Clone();
+  fGraphShp[gid]->SetName(Form("gs%03d", gid));
+  fGraphShp[gid]->SetLineColor(kBlack);
+  fGraphShp[gid]->SetMarkerColor(kBlack);
+
+  fGraphPhys[gid] = (TGraph*) fGraph[gid]->Clone();
+  fGraphPhys[gid]->SetName(Form("gp%03d", gid));
+  fGraphPhys[gid]->SetMarkerStyle(20);
+  fGraphPhys[gid]->SetLineWidth(2);
+  for (UInt_t ip(0), tm(fStartTime / 5); ip < fOut.size(); ip++, tm += 5)
+    fGraphPhys[gid]->SetPoint(ip, tm, 0.);
+
+  fNgraph++;
+
+  return gid;
+}
+
+//___________________________________________________________________
 void CbmTrdFASP::Draw(Option_t* /*opt*/)
 {
-  //  printf("CbmTrdFASP::Draw : row[%2d] col[%2d] asic[%2d]\n", fRow, fCol, fAsicId);
   if (!DRAW) return;
   if (!fGraphMap.size()) return;
 
-  Int_t nasic(0), last(-1), nlast(0);
-  vector<pair<Int_t, Int_t>>::iterator ig = fGraphMap.begin();
-  while (ig != fGraphMap.end()) {
-    if (last < 0 || ig->first != last) {
-      nasic++;
-      last  = ig->first;
-      nlast = 0;
-    }
-    nlast++;
-    ig++;
-  }
-  if (nasic <= 1) return;
-
   TH1* h(nullptr);
-  TString st, sch;
-  Int_t ch, jg;
   TVirtualPad* c1(nullptr);
   if (!fMonitor) {
-    fMonitor = new TCanvas("c", "FASP Simulator", 10, 10, 1500, 2000);
-    fMonitor->Divide(2, 8, 1.e-5, 1.e-5);
-    for (Int_t ic(0); ic < 16; ic++) {
-      c1 = fMonitor->cd(ic + 1);
+    fMonitor = new TCanvas("c", "FASP Simulator", 10, 10, 1850, 2500);
+    fMonitor->Divide(4, 4, 1.e-5, 1.e-5);
+    for (Int_t ic(1); ic <= NFASPCH; ic++) {
+      c1 = fMonitor->cd(ic);
+      c1->SetLogy();
       c1->SetLeftMargin(0.03580097);
       c1->SetRightMargin(0.006067961);
       c1->SetTopMargin(0.01476793);
     }
-    //     fMonitor = new TCanvas("c", "FASP Simulator",10,10,500,1000);
-    //     fMonitor->Divide(1,2,1.e-5, 1.e-5);
-    //     for(Int_t ic(0); ic<2; ic++){
-    //       c1 = fMonitor->cd(ic+1);
-    //       c1->SetLeftMargin(0.03580097);
-    //       c1->SetRightMargin(0.006067961);
-    //       c1->SetTopMargin(0.01476793);
-    //     }
     fGthr = new TLine();
     fGthr->SetLineStyle(2);
   }
 
-  ig   = fGraphMap.begin();
-  last = ig->first;
-  for (Int_t iasic(0); iasic < nasic - 1; iasic++) {
-    while (ig != fGraphMap.end()) {
-      if (ig->first != last) {  // save graphs
-        fMonitor->Modified();
-        fMonitor->Update();
-        fMonitor->SaveAs(Form("FASP_analog_ASIC%03d.gif", last));
-        for (Int_t ic(0); ic < /*2*/ 16; ic++)
-          fMonitor->cd(ic + 1)->Clear();
-        last = ig->first;
-        break;
-      }
-      jg  = ig->second;
-      st  = fGraph[jg]->GetTitle();
-      sch = st(st.Sizeof() - 3, 2);
-      ch  = sch.Atoi();
-      if (ch >= 8) c1 = fMonitor->cd(2 + 2 * (ch - 8));  //->SetLogy();
+  for (auto iasic : fGraphMap) {
+    for (Int_t ic(0); ic < NFASPCH; ic++)
+      fMonitor->cd(ic + 1)->Clear();
+    for (int ich(0), jg(0); ich < NFASPCH; ich++) {
+      if (!(jg = iasic.second[ich])) continue;
+
+      int rch = ich / 4, cch = ich % 4;
+      c1 = fMonitor->cd(4 * cch + rch + 1);
+
+      if (!fGraph[jg]) LOG(error) << "Missing graph for " << jg;
       else
-        c1 = fMonitor->cd(1 + 2 * ch);
-      fGraph[jg]->Draw("al");
-      fGraphShp[jg]->Draw("l");
-      fGraphPhys[jg]->Draw("lp");
+        fGraph[jg]->Draw("al");
+      if (!fGraphShp[jg]) LOG(error) << "Missing shaper graph for " << jg;
+      else
+        fGraphShp[jg]->Draw("l");
+      if (!fGraphPhys[jg]) LOG(error) << "Missing physics graph for " << jg;
+      else
+        fGraphPhys[jg]->Draw("lp");
       fGthr->SetLineColor(kGreen);
       fGthr->DrawLine(0, fgShaperThr + 0.2, 5 * fOut.size(), fgShaperThr + 0.2);
       fGthr->SetLineColor(kRed);
       fGthr->DrawLine(0, fgNeighbourThr + 0.2, 5 * fOut.size(), fgNeighbourThr + 0.2);
       h = fGraph[jg]->GetHistogram();
-      h->GetYaxis()->SetRangeUser(0.01, 5.3);
-
-      ig++;
+      h->GetYaxis()->SetRangeUser(0.1, 6);
     }
+    fMonitor->Modified();
+    fMonitor->Update();
+    fMonitor->SaveAs(Form("FASP%03d_sim.png", iasic.first));
   }
-
-  //swap draw buffer
-  TGraph* buffer[NGRAPH] = {nullptr};
-  memcpy(buffer, fGraph, (jg + 1) * sizeof(TGraph*));
-  memcpy(fGraph, &fGraph[jg + 1], nlast * sizeof(TGraph*));
-  memcpy(&fGraph[nlast], buffer, (jg + 1) * sizeof(TGraph*));
-  memcpy(buffer, fGraphShp, (jg + 1) * sizeof(TGraph*));
-  memcpy(fGraphShp, &fGraphShp[jg + 1], nlast * sizeof(TGraph*));
-  memcpy(&fGraphShp[nlast], buffer, (jg + 1) * sizeof(TGraph*));
-  memcpy(buffer, fGraphPhys, (jg + 1) * sizeof(TGraph*));
-  memcpy(fGraphPhys, &fGraphPhys[jg + 1], nlast * sizeof(TGraph*));
-  memcpy(&fGraphPhys[nlast], buffer, (jg + 1) * sizeof(TGraph*));
-  fGraphId -= jg + 1;
-  fGraphMap.clear();
-  for (Int_t ich(0); ich < nlast; ich++)
-    fGraphMap.push_back(make_pair(last, ich));
 }
 
 //___________________________________________________________________
@@ -245,17 +254,17 @@ void CbmTrdFASP::GetShaperSignal(Double_t charge)
   }
 
   if (idx0 < 0) {  // above calibrated region
-    if (VERBOSE) printf("refMax[%2d]=%5.1f\n", fgkNDB - 1, fgkCharge[fgkNDB - 1]);
+    if (VERBOSE) printf(" refMax[%2d]=%5.1f", fgkNDB - 1, fgkCharge[fgkNDB - 1]);
     memcpy(fSignal, fgkShaper[fgkNDB - 1], FASP_WINDOW * sizeof(Float_t));
   }
   else if (idx0 == 0 && charge < fgkCharge[0]) {  // below calibrated region
-    if (VERBOSE) printf("refMin[0]={%5.1f}\n", fgkCharge[0]);
+    if (VERBOSE) printf(" refMin[0]={%5.1f}", fgkCharge[0]);
     for (Int_t it(0); it < FASP_WINDOW; it++)
       fSignal[it] = charge * fgkShaper[0][it] / fgkCharge[0];
   }
   else {
     idx1 = idx0 + 1;
-    if (VERBOSE) printf("ref={%5.1f[%2d] %5.1f[%2d]}\n", fgkCharge[idx0], idx0, fgkCharge[idx1], idx1);
+    if (VERBOSE) printf(" ref={%5.1f[%2d] %5.1f[%2d]}", fgkCharge[idx0], idx0, fgkCharge[idx1], idx1);
     // linear interpolation
     Double_t dq(fgkCharge[idx0] - fgkCharge[idx1]);
     for (Int_t it(0); it < FASP_WINDOW; it++)
@@ -264,9 +273,6 @@ void CbmTrdFASP::GetShaperSignal(Double_t charge)
                     / dq;
   }
 }
-
-//___________________________________________________________________
-void CbmTrdFASP::Init(Int_t /*col*/, CbmTrdParFaspChannel* /*par*/) {}
 
 //___________________________________________________________________
 Double_t CbmTrdFASP::MakeOut(Int_t time)
@@ -295,14 +301,14 @@ Double_t CbmTrdFASP::MakeOut(Int_t time)
 }
 
 //___________________________________________________________________
-void CbmTrdFASP::PhysToRaw(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* vdigi, Int_t col, Int_t row)
+void CbmTrdFASP::PhysToRaw(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* vdigi)
 {
   /** Public interface for converting physical digi to raw digi. See ScanDigi and ScanDigiNE for 
    * the actual algorithms  
    */
-  if (fgNeighbour) ScanDigiNE(vdigi, col, row);
+  if (fgNeighbour) ScanDigiNE(vdigi);
   else
-    ScanDigi(vdigi, col, row);
+    ScanDigi(vdigi);
 }
 
 //___________________________________________________________________
@@ -311,7 +317,7 @@ void CbmTrdFASP::Print(Option_t* opt) const
   /** Dump settings for the FASP simulator and optionally the content of the current buffers.
    */
 
-  printf("FASP Simulator : Col[%2d] NeighbourTrigger[%c]\n", fCol, fgNeighbour ? 'y' : 'n');
+  printf("FASP Simulator : Pad[%3d] NeighbourTrigger[%c]\n", fPad, fgNeighbour ? 'y' : 'n');
   printf("  Main CH      : Trigger[V]=%4.2f Flat-Top[ns]=%5.1f\n", fgShaperThr,
          fgkNclkFT * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP));
   printf("  Neighbour CH : Trigger[V]=%4.2f Linear-gate[ns]=%5.1f\n", fgNeighbourThr,
@@ -342,12 +348,13 @@ Int_t CbmTrdFASP::ProcessShaper(Char_t typ)
    * Optionally the analog input and output for the current channel are also saved if DRAW is defined.
    */
 
+  int id(typ == 'T' ? 0 : 1), chId = fChId[id], asicId = fAsicId[id];
   if (VERBOSE)
-    printf("    CbmTrdFASP::ProcessShaper(%c) : row[%2d] col[%2d] asic[%4d] "
-           "PhysDigi[%d] GraphPtr[%d] ...\n",
-           typ, fRow, fCol, fAsicId, fNphys[0], (DRAW ? fGraphId : -1));
-  fTimeFT = -1;
-  fTimeLG = -1;
+    printf("    CbmTrdFASP::ProcessShaper(%c) : pad [%3d] asic/ch[%4d/%2d] "
+           "digis[%d] ...\n",
+           typ, fPad, asicId, chId, fNphys[id]);
+  fTimeFT = -1;  // length of the FT gate in 5ns bins (see fgkNclkFT)
+  fTimeLG = -1;  // length of the LG gate in 5ns bins (see fgkNclkLG)
   fFT     = 0;
   // digital signals
   Bool_t ht(0), htf(0),       // hit_threshold level/front for current FASP channel
@@ -356,19 +363,21 @@ Int_t CbmTrdFASP::ProcessShaper(Char_t typ)
     pk_cmd(0),                // peak_command level
     lg_cmd(0),                // linear-gate_command level
     trigger(0);               // trigger type [1] = self [0]=neighbour
-  UInt_t n(0),                // no of raw digi found in current shaper
-    htime(0);                 // hit time on current channel
-  Double_t out, max(-1), old(-1);
+  uint n(0),                  // no of raw digi found in current shaper
+    ht_time(0),               // hit time on current channel
+    cs_time(0);               // CS time on current channel
+  double out, max(-1), old(-1);
   for (size_t i = 1; i < fShaper.size() - 1; i++) {
     // compute hit threshold level/front for current and neighbour channels
     htf_prev = 0;
     htf      = 0;
     htf_next = 0;
-    if (/*fShaper[i-1]<fgNeighbourThr && */ fShaper[i] >= fgNeighbourThr) htime = i * 5;
+    //TODO NE if (/*fShaper[i-1]<fgNeighbourThr && */ fShaper[i] >= fgNeighbourThr) ht_time = i * 5;
     if (fShaper[i - 1] < fgShaperThr && fShaper[i] >= fgShaperThr) {
       ht      = 1;
       htf     = 1;
       trigger = 1;
+      ht_time = i * 5;
       if (VERBOSE) printf("      %4lu : HT 1\n", i * 5);
     }
     else if (fShaper[i - 1] >= fgShaperThr && fShaper[i] < fgShaperThr) {
@@ -396,8 +405,11 @@ Int_t CbmTrdFASP::ProcessShaper(Char_t typ)
     if (fTimeLG < 0) {  // check if linear-gate is closed
       if ((fgNeighbour && (htf_prev || htf || htf_next)) || (!fgNeighbour && htf)) {
         lg_cmd  = 1;
-        fTimeLG = i + 0.2 * fgNclkLG * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP);
-        if (VERBOSE) printf("      %4lu : LG_CMD 1 -> MinGateEnd[ns]=%d\n", i * 5, fTimeLG * 5);
+        fTimeLG =
+          i
+          + 0.2 * fgNclkLG
+              * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP);  // compute the end time of LG in FASP-sim 5ns clks
+        if (VERBOSE) printf("      %4lu : LG_CMD 1 -> LG_End[ns]=%d\n", i * 5, fTimeLG * 5);
       }
     }
     else if (static_cast<size_t>(fTimeLG) < i && !ht && !pk_cmd && (fgNeighbour && (!fHitThPrev[i] && !ht_next))) {
@@ -424,18 +436,21 @@ Int_t CbmTrdFASP::ProcessShaper(Char_t typ)
         max = out;
         if (VERBOSE) printf("      %4lu : MAX[V]=%5.2f\n", i * 5, max);
       }
-      if (out < max - 0.05) {
+      // start digital processing when the analog signal drops 50 mV under the max value.
+      // Adjust this value to the measured data in order to correctly describe the time difference spectra obtained (e.g. mCBM22)
+      if (out < max - 0.02) {
         fTimeFT = i + 0.2 * fgkNclkFT * CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP);
         fTimeDY = -1;
         fFT     = max + 0.01;
+        cs_time = uint((i + 3) * 5);
         // save data for digi update
         fDigiProc.push_back(make_tuple(
-          htime, UInt_t((i + 3) * 5), UInt_t(4095 * TMath::Min(Float_t(1.), (fgBaseline + fFT) / fgOutGain)), trigger));
+          ht_time, cs_time, UInt_t(4095 * TMath::Min(Float_t(1.), (fgBaseline + fFT) / fgOutGain)), trigger));
         n++;
         if (VERBOSE)
-          printf("      %4lu : HT[ns]=%4d FT[V]=%5.2f CS[ns]+=15 |CS[ns]=%d "
+          printf("      %4lu : HT[ns]=%4u FT[V]=%5.2f CS[ns]=%4u CS_End[ns]=%d "
                  "Trig[%c]\n",
-                 i * 5, htime, fFT, fTimeFT * 5, trigger ? 'S' : 'N');
+                 i * 5, ht_time, fFT, cs_time, fTimeFT * 5, trigger ? 'S' : 'N');
       }
     }
     if (fTimeFT > 0 && static_cast<size_t>(fTimeFT) <= i) {
@@ -458,91 +473,72 @@ Int_t CbmTrdFASP::ProcessShaper(Char_t typ)
 
   // save results for draw
   if (DRAW) {
-    if (fGraphId < NGRAPH - 1) {
-      Int_t ch = 2 * (fCol % 8) + (typ == 'R' ? 1 : 0), ip(0), time = fStartTime;
-      if (!fGraph[fGraphId]) {
-        fGraph[fGraphId] = new TGraph(fOut.size());
-        fGraph[fGraphId]->SetName(Form("g%03d", fGraphId));
-        fGraph[fGraphId]->SetFillStyle(0);
-        fGraph[fGraphId]->SetMarkerStyle(7);
-        fGraph[fGraphId]->SetLineColor(kRed);
-        fGraph[fGraphId]->SetMarkerColor(kRed);
-        fGraphShp[fGraphId] = (TGraph*) fGraph[fGraphId]->Clone();
-        fGraphShp[fGraphId]->SetName(Form("gs%03d", fGraphId));
-        fGraphShp[fGraphId]->SetLineColor(kBlack);
-        fGraphShp[fGraphId]->SetMarkerColor(kBlack);
+    int gid = fGraphMap[asicId][chId];
+    if (!gid)
+      LOG(warn) << "CbmTrdFASP::ProcessShaper : Draw representation missing for "
+                << Form(" FASP id/ch[%3d/%2d].", asicId, chId);
+    else {
+      double time = fStartTime;
+      //printf("AB :: g%d[%s] size[%lu]\n", gid, fGraph[gid]->GetName(), fShaper.size());
+      for (uint ip(0); ip < fShaper.size(); ip++, time += 5.) {
+        //printf("time[%3d]=%.0f out[%f] shp[%f]\n", ip, time, 0.3+fOut[ip], 0.2+fShaper[ip]);
+        fGraph[gid]->SetPoint(ip, time, 0.3 + fOut[ip]);
+        fGraphShp[gid]->SetPoint(ip, time, 0.2 + fShaper[ip]);
       }
-      fGraph[fGraphId]->SetTitle(Form("Col[%2d] Row[%2d] ASIC[%3d] Channel = %2d", fCol, fRow, fAsicId, ch));
-      fGraphMap.push_back(make_pair(fAsicId, fGraphId));
-      vector<Float_t>::const_iterator ot = fOut.cbegin(), st = fShaper.cbegin();
-      while (ot != fOut.cend()) {
-        fGraph[fGraphId]->SetPoint(ip, time, 0.3 + *ot);
-        ot++;
-        fGraphShp[fGraphId]->SetPoint(ip, time, 0.2 + *st);
-        st++;
-        time += 5;
-        ip++;
-      }
-      fGraphId += 1;
     }
-    else
-      LOG(warn) << "CbmTrdFASP::ProcessShaper : Draw buffer exhausted. Expert setting.";
   }
   // move to the next channel
   memcpy(fShaper.data(), fShaperNext.data(), fShaper.size() * sizeof(Float_t));
   memset(fShaperNext.data(), 0, fShaperNext.size() * sizeof(Float_t));
-  fNphys[0] = fNphys[1];
-  fNphys[1] = 0;
 
   return n;
 }
 
 //___________________________________________________________________
-void CbmTrdFASP::ScanDigi(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* vdigi, Int_t col, Int_t row)
+void CbmTrdFASP::ScanDigi(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* vdigi)
 {
   /** Transform point like time distribution of digis into the time dependent analog signal of the first FASP shaper
    */
 
-  CbmTrdDigi* digi(nullptr);
-  ULong64_t time;
-  Int_t dt, gid, asic = row * 9 + col / 8;
-  Double_t t, r;
-  if (fAsicId < 0) fAsicId = asic;  // init asic identifier
-  fCol    = col;
-  fRow    = row;
-  fAsicId = asic;
-  if (DRAW) {
-    gid = fGraphId + 1;
-    if (fGraphPhys[gid]) memset(fGraphPhys[gid]->GetY(), 0, fGraphPhys[gid]->GetN() * sizeof(Double_t));
-    else {
-      fGraphPhys[gid] = new TGraph(fOut.size());
-      fGraphPhys[gid]->SetName(Form("gp%03d", gid));
-      fGraphPhys[gid]->SetMarkerStyle(20);
-      fGraphPhys[gid]->SetLineWidth(2);
-      for (UInt_t ip(0), tm(fStartTime / 5); ip < fOut.size(); ip++, tm += 5)
-        fGraphPhys[gid]->SetPoint(ip, tm, 0.);
-    }
-  }
+  fPad      = -1;
+  fNphys[0] = 0;
+  fNphys[1] = 0;
+
   // process digi
-  std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>::iterator iv = vdigi->begin();
   vector<Float_t>::iterator itb;
-  while (iv != vdigi->end()) {
-    digi = iv->first;
-    time = (digi->GetTimeDAQ() - fStartTime) / 5;  // get time in 5ns bins
+  for (auto iv : (*vdigi)) {
+    CbmTrdDigi* digi = iv.first;
+
+    // first time initialize geographic location
+    if (fPad < 0) {
+      fPad = digi->GetAddressChannel();
+
+      if (VERBOSE > 1)
+        printf("  AB :: (%3d) fStartTime = %llu N=%lu ASIC=[%3d | %2d] ASIC=[%3d | %2d]\n", fPad, fStartTime,
+               vdigi->size(), fAsicId[0], fChId[0], fAsicId[1], fChId[1]);
+    }
+    ULong64_t time = (digi->GetTime() - fStartTime) / 5;  // get time in 5ns bins
+
+    if (VERBOSE > 1) printf("  AB :: digi->GetTime() = %f sim->time = %llu\n", digi->GetTime(), time * 5);
     if (time + FASP_WINDOW > fShaper.size()) {
-      LOG(debug) << "CbmTrdFASP::ScanDigi() : Digi @ row[" << row << "] col[" << col << "] time[" << digi->GetTimeDAQ()
+      LOG(debug) << "CbmTrdFASP::ScanDigi() : Digi @ pad[" << fPad << " time[" << digi->GetTime()
                  << "] dows not fit in the current buffer starting @ " << fStartTime << "ns. Skip this time.";
       break;
     }
 
-    r = digi->GetCharge(t, dt);
+    int dt;
+    double t, r = digi->GetCharge(t, dt);
     t /= 10;
     r /= 10;
     if (VERBOSE)
       printf("  time buffer[5ns]=%4llu / phys[ns]=%llu charge[fC]=%5.1f / %5.1f", time, digi->GetTimeDAQ(), t, r);
     // tilt pad channel
-    if (t > 0) {
-      if (DRAW) fGraphPhys[gid]->SetPoint(time, digi->GetTimeDAQ(), t / 100.);
+    if (t > 0 && fChId[0] >= 0) {
+      if (DRAW) {
+        int gid = fGraphMap[fAsicId[0]][fChId[0]];
+        if (!gid) fGraphMap[fAsicId[0]][fChId[0]] = gid = AddGraph('T');
+        if (gid) fGraphPhys[gid]->SetPoint(time, digi->GetTime(), t / 10.);
+      }
       GetShaperSignal(t);
       itb = fShaper.begin();
       itb += time;
@@ -550,11 +546,14 @@ void CbmTrdFASP::ScanDigi(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* vdigi,
         (*itb) += fSignal[it];
       fNphys[0]++;
     }
-    else if (VERBOSE)
-      printf("\n");
+
     // rect pad channel
-    if (r > 0) {
-      if (DRAW) fGraphPhys[gid]->SetPoint(time, digi->GetTimeDAQ(), r / 100.);
+    if (r > 0 && fChId[1] >= 0) {
+      if (DRAW) {
+        int gid = fGraphMap[fAsicId[1]][fChId[1]];
+        if (!gid) fGraphMap[fAsicId[1]][fChId[1]] = gid = AddGraph('R');
+        fGraphPhys[gid]->SetPoint(time, digi->GetTime(), r / 10.);
+      }
       GetShaperSignal(r);
       itb = fShaperNext.begin();
       itb += time + dt;
@@ -562,176 +561,185 @@ void CbmTrdFASP::ScanDigi(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* vdigi,
         (*itb) += fSignal[it];
       fNphys[1]++;
     }
-    else if (VERBOSE)
-      printf("\n");
-    iv++;
-  }
+
+    if (VERBOSE) printf("\n");
+  }  // end reading the digis
+
   if (fNphys[0]) fNraw = ProcessShaper('T');  // process tilt
   if (fNphys[1]) ProcessShaper('R');          // process rect
+
   fDigi = vdigi;
   WriteDigi();
 }
 
 //___________________________________________________________________
-void CbmTrdFASP::ScanDigiNE(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* vdigi, Int_t col, Int_t row)
+void CbmTrdFASP::ScanDigiNE(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* /*vdigi*/)
 {
   /** Transform point like time distribution of digis into the time dependent analog signal 
    * of the first FASP shaper and process output (see ProcessShaper())
    */
 
-  CbmTrdDigi* digi(nullptr);
-  ULong64_t time;
-  Int_t dt, gid, asic = row * 9 + col / 8;
-  Double_t t, r;
-  std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>::iterator iv;
-  vector<Float_t>::iterator itb;
-
-  if (fAsicId < 0) fAsicId = asic;  // init asic identifier
-
-  // printf("CbmTrdFASP::ScanDigiNE : fCol[%2d] col[%2d] graph[%d]\n", fCol, col, fGraphId);
-  // No interference from the previous data
-  if (fCol < 0 ||                        // first data in the module
-      (fCol >= 0 && col != fCol + 1) ||  // column jump
-      (fRow >= 0 && row != fRow)) {      // row jump
-    Clear((fAsicId != asic ? "draw" : ""));
-
-    if (DRAW) {
-      gid = fGraphId;
-      if (fGraphPhys[gid]) memset(fGraphPhys[gid]->GetY(), 0, fGraphPhys[gid]->GetN() * sizeof(Double_t));
-      else {
-        fGraphPhys[gid] = new TGraph(fOut.size());
-        fGraphPhys[gid]->SetName(Form("gp%03d", gid));
-        fGraphPhys[gid]->SetMarkerStyle(20);
-        fGraphPhys[gid]->SetLineWidth(2);
-        for (UInt_t ip(0), tm(fStartTime / 5); ip < fOut.size(); ip++, tm += 5)
-          fGraphPhys[gid]->SetPoint(ip, tm, 0.);
-      }
-    }
-
-    // load data from current tilt channel
-    iv = vdigi->begin();
-    while (iv != vdigi->end()) {
-      digi = iv->first;
-      time = (digi->GetTimeDAQ() - fStartTime) / 5;  // get time from buffer start in 5ns bins
-      if (time + FASP_WINDOW > fShaper.size()) {
-        LOG(debug) << "CbmTrdFASP::ScanDigiNE() : T-Digi @ row[" << row << "] col[" << col << "] time["
-                   << digi->GetTimeDAQ() << "] does not fit in the current buffer starting @ " << fStartTime
-                   << "ns. Skip this time.";
-        break;
-      }
-      digi->GetCharge(t, dt);
-      t /= 10.;
+  LOG(info) << "CbmTrdFASP::ScanDigiNE() : **Method under construction**. Use CbmTrdFASP::ScanDigi() instead by "
+               "selecting CbmTrdFASP:: SetNeighbourTrigger(0)";
+  return;
       if (VERBOSE)
         printf("  [T] time buffer[5ns]=%4llu / phys[ns]=%llu charge[fC]=%5.1f ", time, digi->GetTimeDAQ(), t);
-      // tilt pad channel
-      if (t > 0) {
-        if (DRAW) fGraphPhys[gid]->SetPoint(time, digi->GetTimeDAQ(), t / 100.);
-        GetShaperSignal(t);
-        itb = fShaper.begin();
-        itb += time;
-        for (Int_t it(0); it < FASP_WINDOW && itb != fShaper.end(); it++, itb++)
-          (*itb) += fSignal[it];
-        fNphys[0]++;
-      }
-      else if (VERBOSE)
-        printf("\n");
-      iv++;
-    }
-  }
-  else {
-    if (DRAW) {
-      gid = fGraphId + 1;
-      if (fGraphPhys[gid]) memset(fGraphPhys[gid]->GetY(), 0, fGraphPhys[gid]->GetN() * sizeof(Double_t));
-      else {
-        fGraphPhys[gid] = new TGraph(fOut.size());
-        fGraphPhys[gid]->SetName(Form("gp%03d", gid));
-        fGraphPhys[gid]->SetMarkerStyle(20);
-        fGraphPhys[gid]->SetLineWidth(2);
-        for (UInt_t ip(0), tm(fStartTime / 5); ip < fOut.size(); ip++, tm += 5)
-          fGraphPhys[gid]->SetPoint(ip, tm, 0.);
-      }
-    }
-
-    // load tilt digi to account for neighbour trigger
-    iv = vdigi->begin();
-    while (iv != vdigi->end()) {
-      digi = iv->first;
-      time = (digi->GetTimeDAQ() - fStartTime) / 5;  // get time from buffer start in 5ns bins
-      if (time + FASP_WINDOW > fShaper.size()) {
-        LOG(debug) << "CbmTrdFASP::ScanDigiNE() : T-Digi @ row[" << row << "] col[" << col << "] time["
-                   << digi->GetTimeDAQ() << "] does not fit in the current buffer starting @ " << fStartTime
-                   << "ns. Skip this time.";
-        break;
-      }
-      digi->GetCharge(t, dt);
-      t /= 10.;
-
       if (VERBOSE)
         printf("  [T] time buffer[5ns]=%4llu / phys[ns]=%llu charge[fC]=%5.1f ", time, digi->GetTimeDAQ(), t);
-      // tilt pad channel
-      if (t > 0) {
-        if (DRAW) fGraphPhys[gid]->SetPoint(time, digi->GetTimeDAQ(), t / 100.);
-        GetShaperSignal(t);
-        itb = fShaperNext.begin();
-        itb += time;
-        for (Int_t it(0); it < FASP_WINDOW && itb != fShaperNext.end(); it++, itb++)
-          (*itb) += fSignal[it];
-        fNphys[1]++;
-      }
-      else if (VERBOSE)
-        printf("\n");
-      iv++;
-    }
-    ProcessShaper('R');  // process previous rect channel
-    WriteDigi();         // finalize fDigi list
-  }
-
-  fCol    = col;
-  fRow    = row;
-  fAsicId = asic;
-
-  if (DRAW) {
-    gid = fGraphId + 1;
-    if (fGraphPhys[gid]) memset(fGraphPhys[gid]->GetY(), 0, fGraphPhys[gid]->GetN() * sizeof(Double_t));
-    else {
-      fGraphPhys[gid] = new TGraph(fOut.size());
-      fGraphPhys[gid]->SetName(Form("gp%03d", gid));
-      fGraphPhys[gid]->SetMarkerStyle(20);
-      fGraphPhys[gid]->SetLineWidth(2);
-      for (UInt_t ip(0), tm(fStartTime / 5); ip < fOut.size(); ip++, tm += 5)
-        fGraphPhys[gid]->SetPoint(ip, tm, 0.);
-    }
-  }
-  iv = vdigi->begin();
-  while (iv != vdigi->end()) {
-    digi = iv->first;
-    time = (digi->GetTimeDAQ() - fStartTime) / 5;  // get time from buffer start in 5ns bins
-    if (time + FASP_WINDOW > fShaper.size()) {
-      LOG(debug) << "CbmTrdFASP::ScanDigiNE() : R-Digi @ row[" << row << "] col[" << col << "] time["
-                 << digi->GetTimeDAQ() << "] dows not fit in the current buffer starting @ " << fStartTime
-                 << "ns. Skip this time.";
-      break;
-    }
-    r = digi->GetCharge(t, dt);
-    r /= 10.;
     if (VERBOSE) printf("  [R] time buffer[5ns]=%4llu / phys[ns]=%llu charge[fC]=%5.1f ", time, digi->GetTimeDAQ(), r);
 
-    // rect pad channel
-    if (r > 0) {
-      if (DRAW) fGraphPhys[gid]->SetPoint(time, digi->GetTimeDAQ(), r / 100.);
-      GetShaperSignal(r);
-      itb = fShaperNext.begin();
-      itb += time + dt;
-      for (Int_t it(0); it < FASP_WINDOW && itb != fShaperNext.end(); it++, itb++)
-        (*itb) += fSignal[it];
-      fNphys[1]++;
-    }
-    else if (VERBOSE)
-      printf("\n");
-    iv++;
-  }
-  fNraw = ProcessShaper('T');  // process tilt on current channel
-  fDigi = vdigi;               // save link for further processing
+  //   CbmTrdDigi* digi(nullptr);
+  //   ULong64_t time;
+  //   Int_t dt, gid, asic = row * 9 + col / 8;  // TODO should come from calibration
+  //   Double_t t, r;
+  //   std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>::iterator iv;
+  //   vector<Float_t>::iterator itb;
+  //
+  //   if (fAsicId < 0) fAsicId = asic;  // init asic identifier
+  //
+  //   // printf("CbmTrdFASP::ScanDigiNE : fCol[%2d] col[%2d] graph[%d]\n", fCol, col, fGraphId);
+  //   // No interference from the previous data
+  //   if (fCol < 0 ||                        // first data in the module
+  //       (fCol >= 0 && col != fCol + 1) ||  // column jump
+  //       (fRow >= 0 && row != fRow)) {      // row jump
+  //     Clear((fAsicId != asic ? "draw" : ""));
+  //
+  //     if (DRAW) {
+  //       gid = fGraphId;
+  //       if (fGraphPhys[gid]) memset(fGraphPhys[gid]->GetY(), 0, fGraphPhys[gid]->GetN() * sizeof(Double_t));
+  //       else {
+  //         fGraphPhys[gid] = new TGraph(fOut.size());
+  //         fGraphPhys[gid]->SetName(Form("gp%03d", gid));
+  //         fGraphPhys[gid]->SetMarkerStyle(20);
+  //         fGraphPhys[gid]->SetLineWidth(2);
+  //         for (UInt_t ip(0), tm(fStartTime / 5); ip < fOut.size(); ip++, tm += 5)
+  //           fGraphPhys[gid]->SetPoint(ip, tm, 0.);
+  //       }
+  //     }
+  //
+  //     // load data from current tilt channel
+  //     iv = vdigi->begin();
+  //     while (iv != vdigi->end()) {
+  //       digi = iv->first;
+  //       // TODO:AB  GetTimeDAQ() [clk] and fStartTime [ns]
+  //       time = (digi->GetTimeDAQ() - fStartTime) / 5;  // get time from buffer start in 5ns bins
+  //       if (time + FASP_WINDOW > fShaper.size()) {
+  //         LOG(debug) << "CbmTrdFASP::ScanDigiNE() : T-Digi @ row[" << row << "] col[" << col << "] time["
+  //                    << digi->GetTimeDAQ() << "] does not fit in the current buffer starting @ " << fStartTime
+  //                    << "ns. Skip this time.";
+  //         break;
+  //       }
+  //       digi->GetCharge(t, dt);
+  //       t /= 10.;
+  //       if (VERBOSE) printf("  [T] time buffer[5ns]=%4llu / phys[ns]=%lu charge[fC]=%5.1f ", time, digi->GetTimeDAQ(), t);
+  //       // tilt pad channel
+  //       if (t > 0) {
+  //         if (DRAW) fGraphPhys[gid]->SetPoint(time, digi->GetTimeDAQ(), t / 100.);
+  //         GetShaperSignal(t);
+  //         itb = fShaper.begin();
+  //         itb += time;
+  //         for (Int_t it(0); it < FASP_WINDOW && itb != fShaper.end(); it++, itb++)
+  //           (*itb) += fSignal[it];
+  //         fNphys[0]++;
+  //       }
+  //       else if (VERBOSE)
+  //         printf("\n");
+  //       iv++;
+  //     }
+  //   }
+  //   else {
+  //     if (DRAW) {
+  //       gid = fGraphId + 1;
+  //       if (fGraphPhys[gid]) memset(fGraphPhys[gid]->GetY(), 0, fGraphPhys[gid]->GetN() * sizeof(Double_t));
+  //       else {
+  //         fGraphPhys[gid] = new TGraph(fOut.size());
+  //         fGraphPhys[gid]->SetName(Form("gp%03d", gid));
+  //         fGraphPhys[gid]->SetMarkerStyle(20);
+  //         fGraphPhys[gid]->SetLineWidth(2);
+  //         for (UInt_t ip(0), tm(fStartTime / 5); ip < fOut.size(); ip++, tm += 5)
+  //           fGraphPhys[gid]->SetPoint(ip, tm, 0.);
+  //       }
+  //     }
+  //
+  //     // load tilt digi to account for neighbour trigger
+  //     iv = vdigi->begin();
+  //     while (iv != vdigi->end()) {
+  //       digi = iv->first;
+  //       time = (digi->GetTimeDAQ() - fStartTime) / 5;  // get time from buffer start in 5ns bins
+  //       if (time + FASP_WINDOW > fShaper.size()) {
+  //         LOG(debug) << "CbmTrdFASP::ScanDigiNE() : T-Digi @ row[" << row << "] col[" << col << "] time["
+  //                    << digi->GetTimeDAQ() << "] does not fit in the current buffer starting @ " << fStartTime
+  //                    << "ns. Skip this time.";
+  //         break;
+  //       }
+  //       digi->GetCharge(t, dt);
+  //       t /= 10.;
+  //
+  //       if (VERBOSE) printf("  [T] time buffer[5ns]=%4llu / phys[ns]=%lu charge[fC]=%5.1f ", time, digi->GetTimeDAQ(), t);
+  //       // tilt pad channel
+  //       if (t > 0) {
+  //         if (DRAW) fGraphPhys[gid]->SetPoint(time, digi->GetTimeDAQ(), t / 100.);
+  //         GetShaperSignal(t);
+  //         itb = fShaperNext.begin();
+  //         itb += time;
+  //         for (Int_t it(0); it < FASP_WINDOW && itb != fShaperNext.end(); it++, itb++)
+  //           (*itb) += fSignal[it];
+  //         fNphys[1]++;
+  //       }
+  //       else if (VERBOSE)
+  //         printf("\n");
+  //       iv++;
+  //     }
+  //     ProcessShaper('R');  // process previous rect channel
+  //     WriteDigi();         // finalize fDigi list
+  //   }
+  //
+  //   fCol    = col;
+  //   fRow    = row;
+  //   fAsicId = asic;
+  //
+  //   if (DRAW) {
+  //     gid = fGraphId + 1;
+  //     if (fGraphPhys[gid]) memset(fGraphPhys[gid]->GetY(), 0, fGraphPhys[gid]->GetN() * sizeof(Double_t));
+  //     else {
+  //       fGraphPhys[gid] = new TGraph(fOut.size());
+  //       fGraphPhys[gid]->SetName(Form("gp%03d", gid));
+  //       fGraphPhys[gid]->SetMarkerStyle(20);
+  //       fGraphPhys[gid]->SetLineWidth(2);
+  //       for (UInt_t ip(0), tm(fStartTime / 5); ip < fOut.size(); ip++, tm += 5)
+  //         fGraphPhys[gid]->SetPoint(ip, tm, 0.);
+  //     }
+  //   }
+  //   iv = vdigi->begin();
+  //   while (iv != vdigi->end()) {
+  //     digi = iv->first;
+  //     time = (digi->GetTimeDAQ() - fStartTime) / 5;  // get time from buffer start in 5ns bins
+  //     if (time + FASP_WINDOW > fShaper.size()) {
+  //       LOG(debug) << "CbmTrdFASP::ScanDigiNE() : R-Digi @ row[" << row << "] col[" << col << "] time["
+  //                  << digi->GetTimeDAQ() << "] dows not fit in the current buffer starting @ " << fStartTime
+  //                  << "ns. Skip this time.";
+  //       break;
+  //     }
+  //     r = digi->GetCharge(t, dt);
+  //     r /= 10.;
+  //     if (VERBOSE) printf("  [R] time buffer[5ns]=%4llu / phys[ns]=%lu charge[fC]=%5.1f ", time, digi->GetTimeDAQ(), r);
+  //
+  //     // rect pad channel
+  //     if (r > 0) {
+  //       if (DRAW) fGraphPhys[gid]->SetPoint(time, digi->GetTimeDAQ(), r / 100.);
+  //       GetShaperSignal(r);
+  //       itb = fShaperNext.begin();
+  //       itb += time + dt;
+  //       for (Int_t it(0); it < FASP_WINDOW && itb != fShaperNext.end(); it++, itb++)
+  //         (*itb) += fSignal[it];
+  //       fNphys[1]++;
+  //     }
+  //     else if (VERBOSE)
+  //       printf("\n");
+  //     iv++;
+  //   }
+  //   fNraw = ProcessShaper('T');  // process tilt on current channel
+  //   fDigi = vdigi;               // save link for further processing
 }
 
 //___________________________________________________________________
@@ -748,55 +756,53 @@ void CbmTrdFASP::WriteDigi()
 {
 
   if (!fDigi) return;
-  if (VERBOSE)
-    printf("      CbmTrdFASP::WriteDigi(T[%d], R[%d]) ...\n", fNraw + 1, Int_t(fDigiProc.size()) - fNraw + 1);
+  if (VERBOSE) printf("    CbmTrdFASP::WriteDigi(T[%d], R[%d]) ...\n", fNraw, Int_t(fDigiProc.size()) - fNraw);
 
-  vector<tuple<UInt_t, UInt_t, UInt_t, Bool_t>>::iterator it = fDigiProc.begin(),  // begin [tilt] iterator
-    jt                                                       = it + fNraw,         // middle [rect] iterator
-    lt                                                       = jt;                 // middle iterator
+  auto it = fDigiProc.begin(),  // [tilt] iterator
+    ir    = it + fNraw,         // [rect] iterator
+    im    = ir;                 // middle iterator
   CbmTrdDigi *digi(nullptr), *digi1(nullptr);
   CbmMatch* dmatch(nullptr);
-  ULong64_t time, dtime;
-  Int_t dt, ddt, trigger(0);
-  Double_t t, r, t0, r0;
-  UInt_t hTime,  // hit time [ns]
-    csTime,      // CS time  [ns]
+  ULong64_t time,  // relative time[ns] of PHYSICAL digi wrt the simulator window start
+    dtime;         // relative time[ns] of DIGITAL digi wrt the simulator window start
+  int dt, ddt, trigger(0);
+  double t, r, t0, r0;
+  uint ht_time,  // hit time [ns]
+    cs_time,     // CS time  [ns]
     tADC,        // tilt channel signal [ADC]
     rADC;        // rect channel signal [ADC]
   //Bool_t mask(0), pileup(0);
-  std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>::iterator jv, iv = fDigi->begin();
-
-  while (iv != fDigi->end()) {
-    digi   = iv->first;
-    dmatch = iv->second;
-    time   = (digi->GetTimeDAQ() - fStartTime);  // digi time in [ns] from buffer start
+  for (auto dd : (*fDigi)) {
+    digi   = dd.first;
+    dmatch = dd.second;
+    time   = (digi->GetTime() - fStartTime);  // digi time in [ns] from buffer start
     // stop digi finalize
     if (time > fProcTime) break;
     r = digi->GetCharge(t, dt);
     r /= 10.;
     t /= 10.;
-    if (VERBOSE) cout << "        IN : " << digi->ToString() << "         " << dmatch->ToString();
+    if (VERBOSE) cout << "      IN : " << digi->ToString() << "         " << dmatch->ToString();
 
     rADC    = 0;
     tADC    = 0;
-    dtime   = 0;
-    ddt     = 0; /*mask=0; pileup=0;*/
+    dtime   = 0;  // relative time of the prompt(T and R) CS signals expressed in ns
+    ddt     = 0;  // time difference between the T and R signals expressed in clks
     trigger = 0;
-    hTime   = 0;
-    while (it != lt) {
-      hTime = get<0>(*it);
-      if (VERBOSE) printf("        [T] htime[ns]=%d FT[ADC]=%4d ... \n", hTime, get<2>(*it));
-      if (hTime > time) break;
+    ht_time = 0;
+    while (it != im) {
+      ht_time = get<0>(*it);
+      if (VERBOSE) printf("      [T] htime[ns]=%d FT[ADC]=%4d ... \n", ht_time, get<2>(*it));
+      if (ht_time > time) break;
       it++;
     }
-    if (t > 0. && it != lt) {
-      csTime = get<1>(*it);
-      //printf("match T htime[%d] time[%d]\n", hTime, time);
-      if (hTime - time < 400) {  // found converted hit
+    if (t > 0. && it != im) {
+      cs_time = get<1>(*it);
+      //printf("match T htime[%d] time[%llu]\n", ht_time, time);
+      if (ht_time - time < 400) {  // found converted hit
         if (VERBOSE)
-          printf("        [T] ht[ns]=%4d CS[ns]=%4d FT[ADC]=%4u Trg[%s]\n", hTime, csTime, get<2>(*it),
+          printf("      [T] ht[ns]=%4d CS[ns]=%4d FT[ADC]=%4u Trg[%s]\n", ht_time, cs_time, get<2>(*it),
                  (get<3>(*it) ? "S" : "N"));
-        dtime = csTime;
+        dtime = cs_time;
         tADC  = get<2>(*it);
         if (get<3>(*it)) trigger |= 1;
         //if(csTime-hTime > 350) pileup = kTRUE; // 350 ns max peak time
@@ -804,59 +810,60 @@ void CbmTrdFASP::WriteDigi()
       }  //else if(t>40.) mask=kTRUE; // hit not converted : possible under threshold, masked
       // 40fC threshold
     }
+    //printf("AB :: time[%llu] dtime[%llu] dt[%d]\n", time, dtime, dt);
 
     time += dt;
-    hTime = 0;
-    while (jt != fDigiProc.end()) {
-      hTime = get<0>(*jt);
-      if (VERBOSE) printf("        [R] htime[ns]=%d FT[ADC]=%4d ...\n", hTime, get<2>(*jt));
-      if (hTime > time) break;
-      jt++;
+    ht_time = 0;
+    while (ir != fDigiProc.end()) {
+      ht_time = get<0>(*ir);
+      if (VERBOSE) printf("      [R] htime[ns]=%d FT[ADC]=%4d ...\n", ht_time, get<2>(*ir));
+      if (ht_time > time) break;
+      ir++;
     }
-    if (r > 0. && jt != fDigiProc.end()) {
-      csTime = get<1>(*jt);
-      //printf("match R htime[%d] time[%d]\n", hTime, time);
-      if (hTime - time < 400) {  // found converted hit
+    if (r > 0. && ir != fDigiProc.end()) {
+      cs_time = get<1>(*ir);
+      //printf("match R htime[%d] time[%llu]\n", ht_time, time);
+      if (ht_time - time < 400) {  // found converted hit
         if (VERBOSE)
-          printf("        [R] ht[ns]=%4d CS[ns]=%4d FT[ADC]=%4u Trg[%s]\n", hTime, csTime, get<2>(*jt),
-                 (get<3>(*jt) ? "S" : "N"));
+          printf("      [R] ht[ns]=%4d CS[ns]=%4d FT[ADC]=%4u Trg[%s]\n", ht_time, cs_time, get<2>(*ir),
+                 (get<3>(*ir) ? "S" : "N"));
         if (dtime) {
-          if (csTime > dtime)
-            ddt = TMath::Ceil(Int_t(csTime - dtime) / CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP));
+          if (cs_time > dtime)
+            ddt = TMath::Ceil(Int_t(cs_time - dtime) / CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP));
           else
-            ddt = TMath::Floor(Int_t(csTime - dtime) / CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP));
+            ddt = TMath::Floor(Int_t(cs_time - dtime) / CbmTrdDigi::Clk(CbmTrdDigi::eCbmTrdAsicType::kFASP));
         }
         else
-          dtime = csTime;
-        rADC = get<2>(*jt);
-        if (get<3>(*jt)) trigger |= 2;
+          dtime = cs_time;
+        rADC = get<2>(*ir);
+        if (get<3>(*ir)) trigger |= 2;
         //if(csTime-hTime > 350) pileup = kTRUE; // 350 ns max peak time
-        jt++;
+        ir++;
       }  //else if(r>40.) mask=kTRUE;  // hit not converted : possible under threshold, masked
       // 40fC threshold
     }
 
+    //printf("AB :: time[%llu] dtime[%llu] ddt[%d]\n", time, dtime, ddt);
     //update digi
     digi->SetMasked(1);  // mark as processed
     if (dtime) {
       digi->SetTime(fStartTime + dtime);
       digi->SetCharge(tADC, rADC, ddt);
       digi->SetTriggerType(trigger);
-      if (VERBOSE) cout << "        OUT: " << digi->ToString();
+      if (VERBOSE) cout << "      OUT: " << digi->ToString();
     }
     else
       digi->SetFlag(0, kTRUE);  // mark for deletion
     if (VERBOSE)
       cout << "    ===================================="
            << "\n";
-    iv++;
   }
 
   // try to merge digits
   ULong64_t time0, time1;
   Char_t type0,  // prompt digi. kTRUE if rectangle
     type1;       // late digi. kTRUE if rectangle
-  for (iv = fDigi->begin(); iv != fDigi->end(); iv++) {
+  for (auto iv = fDigi->begin(); iv != fDigi->end(); iv++) {
     digi = iv->first;
     if (digi->IsFlagged(0)) continue;  // no output
     if (!digi->IsMasked()) break;      // not finalized
@@ -864,7 +871,7 @@ void CbmTrdFASP::WriteDigi()
     if (r0 > 0. && t0 > 0.) continue;  // already complete
     type0 = (r0 > 0. ? 1 : 0);         // mark type for prompt digi
     time0 = digi->GetTimeDAQ();        // mark time for prompt digi
-    for (jv = iv + 1; jv != fDigi->end(); jv++) {
+    for (auto jv = iv + 1; jv != fDigi->end(); jv++) {
       digi1 = jv->first;
       if (digi1->IsFlagged(0)) continue;  // no output
       r = digi1->GetCharge(t, dt);

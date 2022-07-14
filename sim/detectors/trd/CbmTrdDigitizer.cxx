@@ -210,7 +210,6 @@ void CbmTrdDigitizer::Exec(Option_t*)
     nofLatticeHits += n1;
     nofPointsAboveThreshold += n2;
     std::map<Int_t, std::pair<CbmTrdDigi*, CbmMatch*>>* digis = imod->second->GetDigiMap();
-    //printf("  Digits[%d] %d\n", imod->first, digis->size());
     for (std::map<Int_t, pair<CbmTrdDigi*, CbmMatch*>>::iterator it = digis->begin(); it != digis->end(); it++) {
       assert(it->second.second);
       CbmTrdDigi* digi = it->second.first;
@@ -309,6 +308,8 @@ CbmTrdModuleSim* CbmTrdDigitizer::AddModule(Int_t detId)
     else
       SetUseFASP();
     module = fModuleMap[moduleAddress] = new CbmTrdModuleSim2D(moduleAddress, lyId, orientation, UseFASP());
+    // AB :: calibration wrt the Tof detector as the T0 simulation is still in development (14.07.2022)
+    module->SetTimeSysOffset(-400);
     Int_t rType(-1);
     if ((rType = geoHandler.GetRadiatorType(path)) >= 0) {
       if (!fRadiator2D) {  // strong TRD-2D entrance window

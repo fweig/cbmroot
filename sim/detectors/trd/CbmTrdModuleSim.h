@@ -86,12 +86,14 @@ public:
   virtual void ResetCounters() { ; }
   virtual void SetMessageConverter(CbmTrdRawToDigiR* conv = NULL) = 0;
   virtual void SetQA(CbmTrdCheckUtil* qa = NULL)                  = 0;
+  virtual void SetTimeSysOffset(int dt) { fTimeSysOffset = dt; }
 
 protected:
   // definitions of MC input
   Int_t fPointId;               ///< MC point id being processed
   Int_t fEventId;               ///< MC event id being processed
   Int_t fInputId;               ///< MC input file number
+  Int_t fTimeSysOffset = 0;     ///< Time offset of TRD digis to align them with other detectors (T0, ToF)
   Double_t fXYZ[3];             ///< MC position of the point in module coordinates
   CbmTrdDigitizer* fDigitizer;  //! Pointer to digitizer
 
