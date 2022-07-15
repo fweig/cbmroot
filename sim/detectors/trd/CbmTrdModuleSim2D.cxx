@@ -602,7 +602,7 @@ Int_t CbmTrdModuleSim2D::FlushBuffer(ULong64_t time)
     FairRootManager* ioman = FairRootManager::Instance();
     fTimeSlice             = (CbmTimeSlice*) ioman->GetObject("TimeSlice.");
   }
-  Bool_t closeTS(kFALSE);
+  bool closeTS(false);
   if (fTimeSlice) {
     closeTS = (fTimeOld - fTimeSlice->GetEndTime() - 1000) > 0.;
     if (!time) closeTS = true;
@@ -617,7 +617,7 @@ Int_t CbmTrdModuleSim2D::FlushBuffer(ULong64_t time)
   // ask FASP simulator if there is enough time elapsed from the last running of the simulator
   if (time > 0 && !fFASP->Go(time) && !closeTS) return 0;
   // configure FASP simulator time range for special cases
-  if (closeTS) fFASP->SetProcTime(TMath::Nint(fTimeSlice->GetEndTime()));
+  if (closeTS && fTimeSlice->IsRegular()) fFASP->SetProcTime(TMath::Nint(fTimeSlice->GetEndTime()));
 
   if (VERBOSE) {
     cout << "\nPHYS DIGITS : \n";
@@ -713,7 +713,7 @@ Int_t CbmTrdModuleSim2D::FlushBuffer(ULong64_t time)
         delete digi;
         if (digiMatch) {
           digiMatch->AddLink(iv->second->GetLink(0));
-          if (VERBOSE) cout << "\t" << digiMatch->ToString();
+          if (VERBOSE > 2) cout << "\t" << digiMatch->ToString();
         }
         iv = fBuffer[padAddress].erase(iv);  // remove from saved buffer
         continue;
@@ -759,10 +759,12 @@ Int_t CbmTrdModuleSim2D::FlushBuffer(ULong64_t time)
     printf("CbmTrdModuleSim2D::FlushBuffer : write %d digis in [%d - "
            "%d]ns. Digits still in buffer %d\n",
            n, TMath::Nint(timeMin), TMath::Nint(timeMax), nDigiLeft);
+
   if (newStartTime > 0) fFASP->SetStartTime(newStartTime);
-  else
-    fFASP->SetStartTime(fFASP->GetEndTime());
-  fFASP->SetProcTime(time);
+  else {
+    if (fTimeSlice->IsRegular()) fFASP->SetStartTime(fFASP->GetEndTime());
+  }
+  fFASP->SetProcTime(/*time*/);  // TODO Makes sense for TB with precautions !
 
   //iteratively process all digi at the end of run
   if (time == 0 && nDigiLeft) n += FlushBuffer();
