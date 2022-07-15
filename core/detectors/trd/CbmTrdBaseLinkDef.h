@@ -27,6 +27,7 @@
 #pragma link C++ class CbmTrdParSpadic + ;
 #pragma link C++ class CbmTrdSpadic + ;
 #pragma link C++ class CbmTrdFASP + ;
+#pragma link C++ class std::map<int, std::array<int, 16>> + ;
 #pragma link C++ class CbmTrdParFasp + ;
 #pragma link C++ class CbmTrdParFaspChannel + ;
 #pragma link C++ class CbmTrdParModGas + ;
