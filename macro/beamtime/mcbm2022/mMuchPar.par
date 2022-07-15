@@ -26,7 +26,7 @@ nFebsIdsArrayB: Int_t \
 // RPC Number of Febs and location of Febs
 NrOfFebsInRpc: Int_t 9 
 nFebsIdsArrayRpc: Int_t \
-  3 -1 -1  2  0 -1  1 -1 -1 #Id for the connected FEB Position in GEM Module B
+  3 -1 -1 -1  0  1 -1 -1  2 #Id for the connected FEB Position in GEM Module B
 ChannelsToPadXA: Int_t \
   8  6  8  6  8  6  8  5  7  5  7  5  7  5  7  5 \
   7  4  6  4  6  4  8  4  9  4  9  3  9  3  9  3 \
