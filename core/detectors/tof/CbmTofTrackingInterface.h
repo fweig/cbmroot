@@ -111,6 +111,19 @@ public:
     return iSt;
   }
 
+  /// Gets a tracking station by the address of element
+  /// \param  address  Unique element address
+  /// \return Local index of the tracking station
+  int GetTrackingStationIndex(int /*address*/) const
+  {
+    // int iSt = fDigiBdfPar->GetTrackingStation(CbmTofAddress::GetSmType(address),
+    //                                           CbmTofAddress::GetSmId(address),
+    //                                           CbmTofAddress::GetRpcId(address));
+    // NOTE: Implement, when the "mcbm_beam_2021_07_surveyed" parameters will be fixed
+
+    return -1; // iSt;
+  }
+
 
   /// Gets max size of a station along the X-axis
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])

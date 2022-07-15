@@ -1482,8 +1482,8 @@ void CbmL1::HitMatch()
           static_cast<const CbmMatch*>(listStsClusterMatch->At(sh->GetBackClusterId()));
         CbmMatch stsHitMatch;
 
-        Float_t Sum_of_front = 0;
-        Float_t Sum_of_back  = 0;
+        Float_t Sum_of_front = 0; // total weight of all front links
+        Float_t Sum_of_back  = 0; // total weight of all back links
 
 
         for (Int_t iFrontLink = 0; iFrontLink < frontClusterMatch->GetNofLinks(); iFrontLink++) {

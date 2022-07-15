@@ -74,6 +74,11 @@ public:
   /// \return Local index of the tracking station
   virtual int GetTrackingStationIndex(const CbmPixelHit* hit) const = 0;
 
+  /// Gets a tracking station by the address of element
+  /// \param  address  Unique element address
+  /// \return Local index of the tracking station
+  virtual int GetTrackingStationIndex(int address) const = 0;
+
   /// Gets max size of a station along the X-axis
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Size of station along the X-axis [cm]

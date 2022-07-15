@@ -104,8 +104,16 @@ public:
   /// \return Local index of the tracking station
   int GetTrackingStationIndex(const CbmPixelHit* hit) const
   {
-    return CbmMuchGeoScheme::GetStationIndex(hit->GetAddress()) * 3
-           + CbmMuchGeoScheme::GetLayerIndex(hit->GetAddress());
+    return GetTrackingStationIndex(hit->GetAddress());
+  }
+
+  /// Gets a tracking station by the address of element
+  /// \param  address  Unique element address
+  /// \return Local index of the tracking station
+  int GetTrackingStationIndex(int address) const
+  {
+    return CbmMuchGeoScheme::GetStationIndex(address) * 3
+           + CbmMuchGeoScheme::GetLayerIndex(address);
   }
 
   /// Gets max size of a station along the X-axis

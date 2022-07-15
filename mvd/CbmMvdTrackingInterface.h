@@ -12,6 +12,7 @@
 #ifndef CbmMvdTrackingInterface_h
 #define CbmMvdTrackingInterface_h 1
 
+#include "CbmMvdDetectorId.h"
 #include "CbmMvdDetector.h"
 #include "CbmMvdHit.h"
 #include "CbmMvdStationPar.h"
@@ -28,7 +29,7 @@
 /// Class CbmMvdTrackingInterface is a CbmL1 subtask, which provides necessary methods for L1 tracker
 /// to access the geometry and dataflow settings.
 ///
-class CbmMvdTrackingInterface : public FairTask, public CbmTrackingDetectorInterfaceBase {
+class CbmMvdTrackingInterface : public FairTask, public CbmTrackingDetectorInterfaceBase, public CbmMvdDetectorId {
 public:
   /// Default constructor
   CbmMvdTrackingInterface();
@@ -114,6 +115,14 @@ public:
       }
     }();
     return hitMvd->GetStationNr();
+  }
+  
+  /// Gets a tracking station by the address of element (detectorID in terms of MVD)
+  /// \param  detectorId  Unique element address (detectorID in terms of MVD)
+  /// \return Local index of the tracking station
+  int GetTrackingStationIndex(int detectorId) const
+  {
+    return StationNr(detectorId);
   }
 
   /// Gets max size of a tracking station along the X-axis
