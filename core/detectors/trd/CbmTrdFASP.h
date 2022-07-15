@@ -127,8 +127,8 @@ protected:
   int fAsicId[2]            = {-1, -1};  ///< identifier of FASP(s) in module
   int fChId[2]              = {-1, -1};  ///< FASP channels being processed
   std::vector<Float_t> fOut = {0.};      ///< analog output for the current channel
-  std::map<int, std::array<int, NFASPCH>> fGraphMap =
-    {};                                    ///<  map of ASIC_id and (ch_id, output_id of FASP signals graphs) pairs
+  std::map<int, std::array<int, NFASPCH>>
+    fGraphMap;                             ///<  map of ASIC_id and (ch_id, output_id of FASP signals graphs) pairs
   TGraph* fGraph[NGRAPH]     = {nullptr};  ///< graph representations of analog FASP response
   TGraph* fGraphShp[NGRAPH]  = {nullptr};  ///< graph representations of FASP shaper
   TGraph* fGraphPhys[NGRAPH] = {nullptr};  ///< graph representations of physics digi
