@@ -528,8 +528,11 @@ void CbmMuchUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
       //}
 
       if (fMonitor) fMonitor->CountDigi(uAsicIdx, uChanInFeb);
+      //Checking for Raw channel value
+      if (usChan > 127 || usChan < 0) LOG(debug) << "ERROR !!! Channel in hit message is out of range  " << usChan;
       // uFebIdx is FEB position in the GEM and RPC
-      const uint32_t address = CreateMuchAddress(fuCurrDpbIdx, uFebIdx, uChanInFeb);
+      const uint32_t address = CreateMuchAddress(fuCurrDpbIdx, uFebIdx, usChan);
+      //const uint32_t address = CreateMuchAddress(fuCurrDpbIdx, uFebIdx, uChanInFeb);
       LOG(debug) << "Created Much Address = " << address << " from fuCurrDpbIdx " << fuCurrDpbIdx << " Feb Id "
                  << uFebIdx << " Channnel Id " << uChanInFeb;
       if (address) {
@@ -605,7 +608,7 @@ uint32_t CbmMuchUnpackAlgo::CreateMuchAddress(uint32_t dpbidx, int32_t iFebId, u
     station = 0;  // for mCBM setup
     layer   = 0;  // Station 0 for GEM-A and station 1 for Module GEM-B
   }
-  else if (dpbidx == 4 || dpbidx == 5)  //Last 2 DPBs are for GEM-2
+  else if (dpbidx == 4 || dpbidx == 5 || dpbidx == 6)  //Last 3 DPBs are for GEM-2 after 10/04/2022
   {
     station = 1;  // for mCBM setup  station
     layer   = 0;  // 0 for Module GEM-A and 1 for Module GEM-B

@@ -144,7 +144,7 @@ protected:
   std::vector<FebChanMaskReco> fvChanMasks = {};
 
   /// Parameter file name
-  std::string fsParFileName = "mTofCriPar.par";
+  std::string fsParFileName = "mMuchPar.par";
 
 private:
   ClassDef(CbmMuchUnpackConfig, 2)
