@@ -212,7 +212,11 @@ parse_command_line()
 		echo "Example case to install only FairRoot and CbmRoot (and not FairSoft)"
 		echo "./autoinstall_framework.sh -fr -cr"
                 echo
-                echo "Example case to install only CbmRoot and use FairSoft/FairRoot from external installation"
+                echo "Example case to install on Debian10 only CbmRoot and use FairSoft/FairRoot from external installation"
+                echo "./autoinstall_framework.sh --use_fairsoft /cvmfs/fairsoft.gsi.de/debian10/fairsoft/apr21p2 \ "
+                echo "    --use_fairroot /cvmfs/fairsoft.gsi.de/debian10/fairroot/v18.6.7_fs_apr21p2 -cr"
+                echo
+                echo "Example case to install on Debian11 only CbmRoot and use FairSoft/FairRoot from external installation"
                 echo "./autoinstall_framework.sh --use_fairsoft /cvmfs/cbm.gsi.de/debian11/fairsoft/apr21p2 \ "
                 echo "    --use_fairroot /cvmfs/cbm.gsi.de/debian11/fairroot/v18.6.7_apr21p2 -cr"
 		exit 0;;
