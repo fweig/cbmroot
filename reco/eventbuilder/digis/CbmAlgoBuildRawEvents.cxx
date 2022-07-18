@@ -1151,50 +1151,52 @@ void CbmAlgoBuildRawEvents::CreateHistograms()
   }
 
   /// Same plots for the reference detector
-  TH2I* hNbDigiPerEvtTimeDet = new TH2I(Form("hNbDigiPerEvtTime%s", fRefDet.sName.data()),
-                                        Form("nb of %s digis per event vs seed time of the events; Seed time in TS "
-                                             "[s]; Nb Digis []; Events []",
-                                             fRefDet.sName.data()),
-                                        1000, 0, 0.2, fRefDet.fdHistMaxDigiNb, 0, fRefDet.fdHistMaxDigiNb);
-  fvhNbDigiPerEvtTimeDet.push_back(hNbDigiPerEvtTimeDet);
+  if (ECbmModuleId::kNotExist != fRefDet.detId) {
+    TH2I* hNbDigiPerEvtTimeDet = new TH2I(Form("hNbDigiPerEvtTime%s", fRefDet.sName.data()),
+                                          Form("nb of %s digis per event vs seed time of the events; Seed time in TS "
+                                               "[s]; Nb Digis []; Events []",
+                                               fRefDet.sName.data()),
+                                          1000, 0, 0.2, fRefDet.fdHistMaxDigiNb, 0, fRefDet.fdHistMaxDigiNb);
+    fvhNbDigiPerEvtTimeDet.push_back(hNbDigiPerEvtTimeDet);
 
-  TH1I* hNbDigiPerEvtDet = new TH1I(Form("hNbDigiPerEvt%s", fRefDet.sName.data()),
-                                    Form("nb of %s digis per event; Nb Digis []", fRefDet.sName.data()),
-                                    fRefDet.fdHistMaxDigiNb, 0, fRefDet.fdHistMaxDigiNb);
-  fvhNbDigiPerEvtDet.push_back(hNbDigiPerEvtDet);
+    TH1I* hNbDigiPerEvtDet = new TH1I(Form("hNbDigiPerEvt%s", fRefDet.sName.data()),
+                                      Form("nb of %s digis per event; Nb Digis []", fRefDet.sName.data()),
+                                      fRefDet.fdHistMaxDigiNb, 0, fRefDet.fdHistMaxDigiNb);
+    fvhNbDigiPerEvtDet.push_back(hNbDigiPerEvtDet);
 
-  TH1I* hTDiff =
-    new TH1I(Form("hTDiff%s", fRefDet.sName.data()),
-             Form("#DeltaT of %s digis to seed time of event;#DeltaT (ns); Counts []", fRefDet.sName.data()), 200,
-             fRefDet.fdTimeWinBeg, fRefDet.fdTimeWinEnd);  // FIXME, adjust to configured window
-  fvhTDiff.push_back(hTDiff);
+    TH1I* hTDiff =
+      new TH1I(Form("hTDiff%s", fRefDet.sName.data()),
+               Form("#DeltaT of %s digis to seed time of event;#DeltaT (ns); Counts []", fRefDet.sName.data()), 200,
+               fRefDet.fdTimeWinBeg, fRefDet.fdTimeWinEnd);  // FIXME, adjust to configured window
+    fvhTDiff.push_back(hTDiff);
 
-  // clang-format off
-  TH1* hSelRatioPerTsNb = new TH1D(Form("hSelRatioPerTsNb%s", fRefDet.sName.data()),
-                                   Form("ratio of sel digis per TS vs TS for %s; TS; Sel Digis Ratio []",
-                                        fRefDet.sName.data()),
-                                   6000, 0, 6000);
-  TH1* hInpRatioPerTsSz = new TH1D(Form("hInpRatioPerTsSz%s", fRefDet.sName.data()),
-                                   Form("ratio of input digi size in total input size vs TS for %s; TS; Size Ratio []",
-                                        fRefDet.sName.data()),
-                                   6000, 0, 6000);
-  TH1* hOutRatioPerTsSz = new TH1D(Form("hOutRatioPerTsSz%s", fRefDet.sName.data()),
-                                   Form("ratio of selected digi size in event size vs TS for %s; TS; Size Ratio []",
-                                        fRefDet.sName.data()),
-                                   6000, 0, 6000);
-  // clang-format on
+    // clang-format off
+    TH1* hSelRatioPerTsNb = new TH1D(Form("hSelRatioPerTsNb%s", fRefDet.sName.data()),
+                                     Form("ratio of sel digis per TS vs TS for %s; TS; Sel Digis Ratio []",
+                                          fRefDet.sName.data()),
+                                     6000, 0, 6000);
+    TH1* hInpRatioPerTsSz = new TH1D(Form("hInpRatioPerTsSz%s", fRefDet.sName.data()),
+                                     Form("ratio of input digi size in total input size vs TS for %s; TS; Size Ratio []",
+                                          fRefDet.sName.data()),
+                                     6000, 0, 6000);
+    TH1* hOutRatioPerTsSz = new TH1D(Form("hOutRatioPerTsSz%s", fRefDet.sName.data()),
+                                     Form("ratio of selected digi size in event size vs TS for %s; TS; Size Ratio []",
+                                          fRefDet.sName.data()),
+                                     6000, 0, 6000);
+    // clang-format on
 
-  fvhSelRatioPerTsNb.push_back(hSelRatioPerTsNb);
-  fvhInpRatioPerTsSz.push_back(hInpRatioPerTsSz);
-  fvhOutRatioPerTsSz.push_back(hOutRatioPerTsSz);
+    fvhSelRatioPerTsNb.push_back(hSelRatioPerTsNb);
+    fvhInpRatioPerTsSz.push_back(hInpRatioPerTsSz);
+    fvhOutRatioPerTsSz.push_back(hOutRatioPerTsSz);
 
-  AddHistoToVector(hSelRatioPerTsNb, "evtbuild-eff");
-  AddHistoToVector(hInpRatioPerTsSz, "evtbuild-eff");
-  AddHistoToVector(hOutRatioPerTsSz, "evtbuild-eff");
+    AddHistoToVector(hSelRatioPerTsNb, "evtbuild-eff");
+    AddHistoToVector(hInpRatioPerTsSz, "evtbuild-eff");
+    AddHistoToVector(hOutRatioPerTsSz, "evtbuild-eff");
 
-  outFolder->Add(hSelRatioPerTsNb);
-  outFolder->Add(hInpRatioPerTsSz);
-  outFolder->Add(hOutRatioPerTsSz);
+    outFolder->Add(hSelRatioPerTsNb);
+    outFolder->Add(hInpRatioPerTsSz);
+    outFolder->Add(hOutRatioPerTsSz);
+  }
 
   fhSizeReductionPerTs =
     new TH1D("hSizeReductionPerTs", "ratio of tot. sel. digi size to tot. input digi size vs TS; TS; Size Ratio []",
@@ -1438,118 +1440,119 @@ void CbmAlgoBuildRawEvents::FillHistos()
         uNbDataTof = TMath::Max(0, evt->GetNofData(fvDets[uDetIdx].dataType));
       }
     }
+
     /// Reference detector
-    uint32_t uRefDetIdx = fvDets.size();
-    if (nullptr != fvhNbDigiPerEvtDet[uRefDetIdx]) {
+    if (ECbmModuleId::kNotExist != fRefDet.detId) {
+      if (nullptr != fvhNbDigiPerEvtDet[uRefDetIdx]) {
+        if (0 != fuDetTypeT0 && ECbmDataType::kT0Digi == fRefDet.dataType) {
+          // filter T0 digis from Tof (remove this block if T0 properly implemented)
+          for (int idigi = 0; idigi < evt->GetNofData(ECbmDataType::kTofDigi); ++idigi) {
+            double dTimeDiff = 1.E30;
+            uint idx         = evt->GetIndex(ECbmDataType::kTofDigi, idigi);
+            auto pDigi       = GetDigi<CbmTofDigi>(idx);
+            if (nullptr == pDigi) continue;
 
-      if (0 != fuDetTypeT0 && ECbmDataType::kT0Digi == fRefDet.dataType) {
-        // filter T0 digis from Tof (remove this block if T0 properly implemented)
-        for (int idigi = 0; idigi < evt->GetNofData(ECbmDataType::kTofDigi); ++idigi) {
-          double dTimeDiff = 1.E30;
-          uint idx         = evt->GetIndex(ECbmDataType::kTofDigi, idigi);
-          auto pDigi       = GetDigi<CbmTofDigi>(idx);
-          if (nullptr == pDigi) continue;
-
-          // filter T0 digis from Tof
-          if (GetTofDetType(pDigi) == fuDetTypeT0) {
-            uNbDataT0++;
-            dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
-            if (dTimeDiff < 1.E30) {  //
-              fvhTDiff[uRefDetIdx]->Fill(dTimeDiff);
-            }
-          }
-        }
-      }  // if (0 != fuDetTypeT0 && ECbmDataType::kT0Digi == fRefDet.dataType)
-      else if (0 != fuDetTypeT0 && ECbmDataType::kTofDigi == fRefDet.dataType) {
-        // filter T0 digis from Tof (remove this block if T0 properly implemented)
-        for (int idigi = 0; idigi < evt->GetNofData(fRefDet.dataType); ++idigi) {
-          double dTimeDiff = 1.E30;
-          uint idx         = evt->GetIndex(fRefDet.dataType, idigi);
-          auto pDigi       = GetDigi<CbmTofDigi>(idx);
-          if (nullptr == pDigi) continue;
-
-          // filter T0 digis from Tof
-          if (GetTofDetType(pDigi) != fuDetTypeT0) {
-            uNbDataTof++;
-            dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
-            if (dTimeDiff < 1.E30) {  //
-              fvhTDiff[uRefDetIdx]->Fill(dTimeDiff);
-            }
-          }
-        }
-      }  // else if (0 != fuDetTypeT0 && ECbmDataType::kTofDigi == fRefDet.dataType)
-      else {
-        for (int idigi = 0; idigi < evt->GetNofData(fRefDet.dataType); ++idigi) {
-          double dTimeDiff = 1.E30;
-          uint idx         = evt->GetIndex(fRefDet.dataType, idigi);
-          switch (fRefDet.dataType) {
-            case ECbmDataType::kT0Digi: {
-              if (fT0DigiVec->size() <= idx) continue;
-              dTimeDiff = fT0DigiVec->at(idx).GetTime() - evt->GetStartTime();
-              break;
-            }
-            case ECbmDataType::kStsDigi: {
-              auto pDigi = GetDigi<CbmStsDigi>(idx);
-              if (nullptr == pDigi) continue;
+            // filter T0 digis from Tof
+            if (GetTofDetType(pDigi) == fuDetTypeT0) {
+              uNbDataT0++;
               dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
-              break;
+              if (dTimeDiff < 1.E30) {  //
+                fvhTDiff[uRefDetIdx]->Fill(dTimeDiff);
+              }
             }
-            case ECbmDataType::kMuchDigi: {
-              if (fbUseMuchBeamtimeDigi) {
-                auto pDigi = GetDigi<CbmMuchBeamTimeDigi>(idx);
+          }
+        }  // if (0 != fuDetTypeT0 && ECbmDataType::kT0Digi == fRefDet.dataType)
+        else if (0 != fuDetTypeT0 && ECbmDataType::kTofDigi == fRefDet.dataType) {
+          // filter T0 digis from Tof (remove this block if T0 properly implemented)
+          for (int idigi = 0; idigi < evt->GetNofData(fRefDet.dataType); ++idigi) {
+            double dTimeDiff = 1.E30;
+            uint idx         = evt->GetIndex(fRefDet.dataType, idigi);
+            auto pDigi       = GetDigi<CbmTofDigi>(idx);
+            if (nullptr == pDigi) continue;
+
+            // filter T0 digis from Tof
+            if (GetTofDetType(pDigi) != fuDetTypeT0) {
+              uNbDataTof++;
+              dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+              if (dTimeDiff < 1.E30) {  //
+                fvhTDiff[uRefDetIdx]->Fill(dTimeDiff);
+              }
+            }
+          }
+        }  // else if (0 != fuDetTypeT0 && ECbmDataType::kTofDigi == fRefDet.dataType)
+        else {
+          for (int idigi = 0; idigi < evt->GetNofData(fRefDet.dataType); ++idigi) {
+            double dTimeDiff = 1.E30;
+            uint idx         = evt->GetIndex(fRefDet.dataType, idigi);
+            switch (fRefDet.dataType) {
+              case ECbmDataType::kT0Digi: {
+                if (fT0DigiVec->size() <= idx) continue;
+                dTimeDiff = fT0DigiVec->at(idx).GetTime() - evt->GetStartTime();
+                break;
+              }
+              case ECbmDataType::kStsDigi: {
+                auto pDigi = GetDigi<CbmStsDigi>(idx);
                 if (nullptr == pDigi) continue;
                 dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+                break;
               }
-              else {
-                auto pDigi = GetDigi<CbmMuchDigi>(idx);
+              case ECbmDataType::kMuchDigi: {
+                if (fbUseMuchBeamtimeDigi) {
+                  auto pDigi = GetDigi<CbmMuchBeamTimeDigi>(idx);
+                  if (nullptr == pDigi) continue;
+                  dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+                }
+                else {
+                  auto pDigi = GetDigi<CbmMuchDigi>(idx);
+                  if (nullptr == pDigi) continue;
+                  dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+                }
+                break;
+              }
+              case ECbmDataType::kTofDigi: {
+                auto pDigi = GetDigi<CbmTofDigi>(idx);
                 if (nullptr == pDigi) continue;
                 dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+                break;
               }
-              break;
-            }
-            case ECbmDataType::kTofDigi: {
-              auto pDigi = GetDigi<CbmTofDigi>(idx);
-              if (nullptr == pDigi) continue;
-              dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
-              break;
-            }
-            case ECbmDataType::kTrdDigi: {
-              auto pDigi = GetDigi<CbmTrdDigi>(idx);
-              if (nullptr == pDigi) continue;
-              dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
-              if (pDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kSPADIC) {
-                if (fRefDet.sName == "Trd2D") continue;
-                ++uNbDataTrd1d;
+              case ECbmDataType::kTrdDigi: {
+                auto pDigi = GetDigi<CbmTrdDigi>(idx);
+                if (nullptr == pDigi) continue;
+                dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+                if (pDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kSPADIC) {
+                  if (fRefDet.sName == "Trd2D") continue;
+                  ++uNbDataTrd1d;
+                }
+                else if (pDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kFASP) {
+                  if (fRefDet.sName == "Trd1D") continue;
+                  ++uNbDataTrd2d;
+                }
+                break;
               }
-              else if (pDigi->GetType() == CbmTrdDigi::eCbmTrdAsicType::kFASP) {
-                if (fRefDet.sName == "Trd1D") continue;
-                ++uNbDataTrd2d;
+              case ECbmDataType::kRichDigi: {
+                auto pDigi = GetDigi<CbmRichDigi>(idx);  // FIXME, need to find the proper digi template
+                if (nullptr == pDigi) continue;
+                dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+                break;
               }
-              break;
+              case ECbmDataType::kPsdDigi: {
+                auto pDigi = GetDigi<CbmPsdDigi>(idx);  // FIXME, need to find the proper digi template
+                if (nullptr == pDigi) continue;
+                dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
+                break;
+              }
+              default: LOG(error) << "Unkown dataType " << fRefDet.dataType;
             }
-            case ECbmDataType::kRichDigi: {
-              auto pDigi = GetDigi<CbmRichDigi>(idx);  // FIXME, need to find the proper digi template
-              if (nullptr == pDigi) continue;
-              dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
-              break;
-            }
-            case ECbmDataType::kPsdDigi: {
-              auto pDigi = GetDigi<CbmPsdDigi>(idx);  // FIXME, need to find the proper digi template
-              if (nullptr == pDigi) continue;
-              dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
-              break;
-            }
-            default: LOG(error) << "Unkown dataType " << fRefDet.dataType;
+
+            if (dTimeDiff < 1.E30) fvhTDiff[uRefDetIdx]->Fill(dTimeDiff);
           }
 
-          if (dTimeDiff < 1.E30) fvhTDiff[uRefDetIdx]->Fill(dTimeDiff);
-        }
-
-        if (ECbmDataType::kT0Digi == fRefDet.dataType) {  //
-          uNbDataT0 = TMath::Max(0, evt->GetNofData(fRefDet.dataType));
-        }
-        if (ECbmDataType::kTofDigi == fRefDet.dataType) {
-          uNbDataTof = TMath::Max(0, evt->GetNofData(fRefDet.dataType));
+          if (ECbmDataType::kT0Digi == fRefDet.dataType) {  //
+            uNbDataT0 = TMath::Max(0, evt->GetNofData(fRefDet.dataType));
+          }
+          if (ECbmDataType::kTofDigi == fRefDet.dataType) {
+            uNbDataTof = TMath::Max(0, evt->GetNofData(fRefDet.dataType));
+          }
         }
       }
     }
@@ -1607,52 +1610,55 @@ void CbmAlgoBuildRawEvents::FillHistos()
         }
       }
     }
+
     /// Same for the reference detector
-    if (0 != fuDetTypeT0 && fRefDet.sName == "T0") {
-      // filter T0 digis from Tof (remove this block if T0 properly implemented)
-      fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataT0);
-      fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataT0);
-    }
-    else if (0 != fuDetTypeT0 && fRefDet.sName == "Tof") {
-      // filter T0 digis from Tof (remove this block if T0 properly implemented)
-      fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTof);
-      fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTof);
-
-      if (0 < GetNofDigis(fRefDet.detId)) {
-        /// Selection ratio
-        uint64_t ulDigiSizeOut = GetSizeFromDigisNb(fRefDet.detId, uNbDataT0 + uNbDataTof);
-
-        ulTotalOutputSize += ulDigiSizeOut;
-        vulTotalOutputSizeDet[uRefDetIdx] += ulDigiSizeOut;
+    if (ECbmModuleId::kNotExist != fRefDet.detId) {
+      if (0 != fuDetTypeT0 && fRefDet.sName == "T0") {
+        // filter T0 digis from Tof (remove this block if T0 properly implemented)
+        fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataT0);
+        fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataT0);
       }
-    }
-    else if (fRefDet.sName == "Trd1D") {
-      fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTrd1d);
-      fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTrd1d);
+      else if (0 != fuDetTypeT0 && fRefDet.sName == "Tof") {
+        // filter T0 digis from Tof (remove this block if T0 properly implemented)
+        fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTof);
+        fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTof);
 
-      if (0 < GetNofDigis(fRefDet.detId)) {
-        /// Selection ratio
-        uint64_t ulDigiSizeOut = GetSizeFromDigisNb(fRefDet.detId, uNbDataTrd1d + uNbDataTrd2d);
+        if (0 < GetNofDigis(fRefDet.detId)) {
+          /// Selection ratio
+          uint64_t ulDigiSizeOut = GetSizeFromDigisNb(fRefDet.detId, uNbDataT0 + uNbDataTof);
 
-        ulTotalOutputSize += ulDigiSizeOut;
-        vulTotalOutputSizeDet[uRefDetIdx] += ulDigiSizeOut;
+          ulTotalOutputSize += ulDigiSizeOut;
+          vulTotalOutputSizeDet[uRefDetIdx] += ulDigiSizeOut;
+        }
       }
-    }
-    else if (fRefDet.sName == "Trd2D") {
-      fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTrd2d);
-      fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTrd2d);
-    }
-    else {
-      fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(TMath::Max(0, evt->GetNofData(fRefDet.dataType)));
-      fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9,
-                                               TMath::Max(0, evt->GetNofData(fRefDet.dataType)));
+      else if (fRefDet.sName == "Trd1D") {
+        fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTrd1d);
+        fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTrd1d);
 
-      if (0 < GetNofDigis(fRefDet.detId)) {
-        /// Selection ratio
-        uint64_t ulDigiSizeOut = GetSizeFromDigisNb(fRefDet.detId, TMath::Max(0, evt->GetNofData(fRefDet.dataType)));
+        if (0 < GetNofDigis(fRefDet.detId)) {
+          /// Selection ratio
+          uint64_t ulDigiSizeOut = GetSizeFromDigisNb(fRefDet.detId, uNbDataTrd1d + uNbDataTrd2d);
 
-        ulTotalOutputSize += ulDigiSizeOut;
-        vulTotalOutputSizeDet[uRefDetIdx] += ulDigiSizeOut;
+          ulTotalOutputSize += ulDigiSizeOut;
+          vulTotalOutputSizeDet[uRefDetIdx] += ulDigiSizeOut;
+        }
+      }
+      else if (fRefDet.sName == "Trd2D") {
+        fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(uNbDataTrd2d);
+        fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9, uNbDataTrd2d);
+      }
+      else {
+        fvhNbDigiPerEvtDet[uRefDetIdx]->Fill(TMath::Max(0, evt->GetNofData(fRefDet.dataType)));
+        fvhNbDigiPerEvtTimeDet[uRefDetIdx]->Fill(evt->GetStartTime() * 1e-9,
+                                                 TMath::Max(0, evt->GetNofData(fRefDet.dataType)));
+
+        if (0 < GetNofDigis(fRefDet.detId)) {
+          /// Selection ratio
+          uint64_t ulDigiSizeOut = GetSizeFromDigisNb(fRefDet.detId, TMath::Max(0, evt->GetNofData(fRefDet.dataType)));
+
+          ulTotalOutputSize += ulDigiSizeOut;
+          vulTotalOutputSizeDet[uRefDetIdx] += ulDigiSizeOut;
+        }
       }
     }
 
@@ -1665,9 +1671,11 @@ void CbmAlgoBuildRawEvents::FillHistos()
     ulTotalInputSize += ulDigiSizeIn;
     vulTotalInputSizeDet[uDetIdx] += ulDigiSizeIn;
   }
-  uint64_t ulDigiSizeIn = GetSizeFromDigisNb(fRefDet.detId, GetNofDigis(fRefDet.detId));
-  ulTotalInputSize += ulDigiSizeIn;
-  vulTotalInputSizeDet[uRefDetIdx] += ulDigiSizeIn;
+  if (ECbmModuleId::kNotExist != fRefDet.detId) {
+    uint64_t ulDigiSizeIn = GetSizeFromDigisNb(fRefDet.detId, GetNofDigis(fRefDet.detId));
+    ulTotalInputSize += ulDigiSizeIn;
+    vulTotalInputSizeDet[uRefDetIdx] += ulDigiSizeIn;
+  }
 
   /// Re-Loop on selection detectors to fill global TS ratios
   for (UInt_t uDetIdx = 0; uDetIdx < fvDets.size(); ++uDetIdx) {
@@ -1682,16 +1690,21 @@ void CbmAlgoBuildRawEvents::FillHistos()
     }
   }
   /// Same for the reference detector
-  if (0 != vulTotalInputSizeDet[uRefDetIdx]) {  //
-    fvhSelRatioPerTsNb[uRefDetIdx]->Fill(fuNrTs,
-                                         vulTotalOutputSizeDet[uRefDetIdx] * 1.0 / vulTotalInputSizeDet[uRefDetIdx]);
+  if (ECbmModuleId::kNotExist != fRefDet.detId) {
+    if (0 != vulTotalInputSizeDet[uRefDetIdx]) {  //
+      fvhSelRatioPerTsNb[uRefDetIdx]->Fill(fuNrTs,
+                                           vulTotalOutputSizeDet[uRefDetIdx] * 1.0 / vulTotalInputSizeDet[uRefDetIdx]);
+    }
+    if (0 != ulTotalInputSize) {  //
+      fvhInpRatioPerTsSz[uRefDetIdx]->Fill(fuNrTs, vulTotalInputSizeDet[uRefDetIdx] * 1.0 / ulTotalInputSize);
+    }
+    if (0 != ulTotalOutputSize) {  //
+      fvhOutRatioPerTsSz[uRefDetIdx]->Fill(fuNrTs, vulTotalOutputSizeDet[uRefDetIdx] * 1.0 / ulTotalOutputSize);
+    }
   }
+  /// Global value for all detectors
   if (0 != ulTotalInputSize) {  //
-    fvhInpRatioPerTsSz[uRefDetIdx]->Fill(fuNrTs, vulTotalInputSizeDet[uRefDetIdx] * 1.0 / ulTotalInputSize);
     fhSizeReductionPerTs->Fill(fuNrTs, ulTotalOutputSize * 1.0 / ulTotalInputSize);
-  }
-  if (0 != ulTotalOutputSize) {  //
-    fvhOutRatioPerTsSz[uRefDetIdx]->Fill(fuNrTs, vulTotalOutputSizeDet[uRefDetIdx] * 1.0 / ulTotalOutputSize);
   }
   LOG(debug) << "I/O Size ratio: " << (ulTotalOutputSize * 1.0 / ulTotalInputSize);
 }
