@@ -407,62 +407,76 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
             TofPointToTrack[iSt][i]   = -1;
           }
 
+        std::vector<char> isTofPointMatched;
+        isTofPointMatched.resize(fTofPoints->Size(iFile, iEvent), 0);
+
+        for (int iHit = 0; iHit < fTofHits->GetEntriesFast(); iHit++) {
+          CbmMatch* matchHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fTofHitDigiMatches->At(iHit));
+          for (int iLink = 0; iLink < matchHitMatch->GetNofLinks(); iLink++) {
+            Int_t iMC              = matchHitMatch->GetLink(iLink).GetIndex();
+            isTofPointMatched[iMC] = 1;
+          }
+        }
+
 
         for (Int_t iMC = 0; iMC < fTofPoints->Size(iFile, iEvent); iMC++) {
+          if (isTofPointMatched[iMC] == 0) continue;
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 4)) {
             Double_t dtrck          = dFEI(iFile, iEvent, MC.ID);
             DFEI2I::iterator trk_it = dFEI2vMCTracks.find(dtrck);
             if (trk_it == dFEI2vMCTracks.end()) continue;
-            Int_t IND_Track = trk_it->second;
+            Int_t iTrack = trk_it->second;
 
             MC.iStation          = -1;
             const L1Station* sta = algo->GetParameters()->GetStations().begin();
-            for (Int_t iSt = 0; iSt < NTOFStationGeom; iSt++) {
+
+            float dist = 1000;
+            int iSta   = -1;
+            for (int iSt = 0; iSt < NTOFStationGeom; iSt++) {
               int iStActive = algo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kTof);
               if (iStActive == -1) { continue; }
-              MC.iStation = (MC.z > sta[iStActive].z[0] - 15) ? iStActive : MC.iStation;
+              if (fabs(MC.z - sta[iStActive].z[0]) < dist) {
+                dist = fabs(MC.z - sta[iStActive].z[0]);
+                iSta = iSt;
+              }
             }
+            MC.iStation = algo->GetParameters()->GetStationIndexActive(iSta, L1DetectorID::kTof);
             if (MC.iStation < 0) continue;
             assert(MC.iStation >= 0);
-            int iTofSta = MC.iStation - (NMvdStations + NStsStations + NMuchStations + NTrdStations);
 
-            if (iTofSta >= 0) {
-              float dz = TofPointToTrackdZ[iTofSta][IND_Track];
-              if (fabs(sta[MC.iStation].z[0] - MC.z) < dz) { TofPointToTrack[iTofSta][IND_Track] = iMC; }
-              TofPointToTrackdZ[iTofSta][IND_Track] = fabs(sta[MC.iStation].z[0] - MC.z);
+            if (iSta >= 0) {
+              if (fabs(sta[iSta].z[0] - MC.z) < TofPointToTrackdZ[iSta][iTrack]) {
+                TofPointToTrack[iSta][iTrack]   = iMC;
+                TofPointToTrackdZ[iSta][iTrack] = fabs(sta[iSta].z[0] - MC.z);
+              }
             }
           }
         }
 
         for (int iTofSta = 0; iTofSta < NTOFStation; iTofSta++)
-          for (unsigned int iMC = 0; iMC < TofPointToTrack[iTofSta].size(); iMC++) {
+          for (unsigned int iTrack = 0; iTrack < TofPointToTrack[iTofSta].size(); iTrack++) {
 
-            if (TofPointToTrack[iTofSta][iMC] == -1) continue;
+            if (TofPointToTrack[iTofSta][iTrack] < 0) continue;
 
             CbmL1MCPoint MC;
 
-            if (!ReadMCPoint(&MC, TofPointToTrack[iTofSta][iMC], iFile, iEvent, 4)) {
+            if (!ReadMCPoint(&MC, TofPointToTrack[iTofSta][iTrack], iFile, iEvent, 4)) {
 
-              MC.iStation          = -1;
-              const L1Station* sta = algo->GetParameters()->GetStations().begin();
-              for (Int_t iSt = 0; iSt < NTOFStation; iSt++) {
-                int iStActive = algo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kTof);
-                if (iStActive == -1) { continue; }
-                MC.iStation = (MC.z > sta[iStActive].z[0] - 15) ? iStActive : MC.iStation;
-              }
-              if (MC.iStation < 0) continue;
-              TofPointToTrack[iTofSta][iMC] = vMCPoints.size();
-              vMCTracks[iMC].Points.push_back_no_warning(vMCPoints.size());
+              MC.iStation = (NMvdStations + NStsStations + NMuchStations + NTrdStations + iTofSta);
 
-              MC.ID = iMC;
+              vMCTracks[iTrack].Points.push_back_no_warning(vMCPoints.size());
 
-              vMCPoints.push_back(MC);
-              vMCPoints_in_Time_Slice.push_back(0);
+              MC.ID = iTrack;
 
               dFEI2vMCPoints.insert(DFEI2I::value_type(
-                dFEI(iFile, iEvent, TofPointToTrack[iTofSta][iMC] + nMvdPoints + nStsPoints + nMuchPoints + nTrdPoints),
-                vMCPoints.size() - 1));
+                dFEI(iFile, iEvent,
+                     TofPointToTrack[iTofSta][iTrack] + nMvdPoints + nStsPoints + nMuchPoints + nTrdPoints),
+                vMCPoints.size()));
+
+              vMCPoints.push_back(MC);
+
+              vMCPoints_in_Time_Slice.push_back(0);
               nTofPoints++;
             }
           }
@@ -1048,17 +1062,21 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
         CbmMatch* matchHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fTofHitDigiMatches->At(j));
 
+        for (int iLink = 0; iLink < matchHitMatch->GetNofLinks(); iLink++)  //matchHitMatch->GetNofLinks(); k++)
+        {
+          Int_t iMC    = matchHitMatch->GetLink(iLink).GetIndex();
+          Int_t iFile  = matchHitMatch->GetLink(iLink).GetFile();
+          Int_t iEvent = matchHitMatch->GetLink(iLink).GetEntry();
 
-        if (0 < matchHitMatch->GetNofLinks()) {
-          Int_t iMC    = matchHitMatch->GetLink(0).GetIndex();
-          Int_t iFile  = matchHitMatch->GetLink(0).GetFile();
-          Int_t iEvent = matchHitMatch->GetLink(0).GetEntry();
+          Int_t iIndex = iMC + nMvdPoints + nStsPoints + nMuchPoints + nTrdPoints;
 
-          CbmTofPoint* pt = L1_DYNAMIC_CAST<CbmTofPoint*>(fTofPoints->Get(iFile, iEvent, iMC));
-          pt->GetTrackID();
-          Double_t dtrck          = dFEI(iFile, iEvent, pt->GetTrackID());
+          //CbmTofPoint* pt = L1_DYNAMIC_CAST<CbmTofPoint*>(fTofPoints->Get(iFile, iEvent, iMC));
+          // pt->GetTrackID();
+          Double_t dtrck          = dFEI(iFile, iEvent, iIndex);
           DFEI2I::iterator trk_it = dFEI2vMCPoints.find(dtrck);
-          if (trk_it != dFEI2vMCPoints.end()) th.iMC = TofPointToTrack[sttof][trk_it->second];
+          if (trk_it == dFEI2vMCPoints.end()) continue;
+
+          th.iMC = trk_it->second;
           if ((1 == fTofUseMcHit) && (th.iMC > -1))
             th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetParameters()->GetStation(th.iStation));
         }
@@ -1150,6 +1168,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
     h.t  = th.time;
     h.dt = th.dt;
+
     //  h.track = th.track;
     //    h.dx  = th.dx;
     //    h.dy  = th.dy;
@@ -1261,8 +1280,8 @@ void CbmL1::Fill_vMCTracks()
       }
 
 
-      Int_t IND_Track = vMCTracks.size();  //or iMCTrack?
-      CbmL1MCTrack T(mass, q, vr, vp, IND_Track, mother_ID, pdg);
+      Int_t iTrack = vMCTracks.size();  //or iMCTrack?
+      CbmL1MCTrack T(mass, q, vr, vp, iTrack, mother_ID, pdg);
       //        CbmL1MCTrack T(mass, q, vr, vp, iMCTrack, mother_ID, pdg);
       T.time   = MCTrack->GetStartT();
       T.iFile  = iFile;
