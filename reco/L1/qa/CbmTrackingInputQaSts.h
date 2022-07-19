@@ -156,8 +156,8 @@ private:
   // *****************
 
   // ** Flags and cuts **
-  bool fIsMcPresent {
-    false};  ///< Flag: true - all procedures involving MC will be processed, otherwise data will be processed only
+  /// Flag: true - all procedures involving MC will be processed, otherwise data will be processed only
+  bool fIsMcPresent {false};
 
   bool fIsQaPassed {true};  ///< Flag: true - QA is successful, false - QA is failed
 

@@ -754,7 +754,6 @@ inline void L1Algo::findTripletsStep0(  // input
       }
       else if (kGlobal == fTrackingMode) {
         fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, 1);
-      }
       else {
         fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), T2.qp, 1);
       }
@@ -828,8 +827,6 @@ inline void L1Algo::findTripletsStep0(  // input
           int indR = HitsUnusedStartIndex[iStaR] + irh;
           if (GetMcTrackIdForUnusedHit(indM) != GetMcTrackIdForUnusedHit(indR)) { continue; }
         }
-
-#ifdef USE_EVENT_NUMBER  // NOTE:
         if ((T2.n[i2_4] != hitr.n)) continue;
 #endif  // USE_EVENT_NUMBER
         const fscal zr = hitr.Z();
@@ -917,8 +914,6 @@ inline void L1Algo::findTripletsStep0(  // input
             continue;  // chi2_triplet < CHI2_CUT
           }
 
-        //if (!T_cur.IsEntryConsistent(false, i2_4)) { continue; }
-
         // pack triplet
         L1TrackPar& T3 = T_3[n3_V];
 
@@ -926,14 +921,17 @@ inline void L1Algo::findTripletsStep0(  // input
         hitsm_3.push_back(hitsm_2_tmp[i2_4]);
         hitsr_3.push_back(irh);
 
+
         T3.SetOneEntry(n3_4, T2, i2_4);
         u_front_3[n3_V][n3_4] = hitr.U();
         u_back_3[n3_V][n3_4]  = hitr.V();
-        du_[n3_V][n3_4]       = hitr.dU();
-        dv_[n3_V][n3_4]       = hitr.dV();
-        z_Pos_3[n3_V][n3_4]   = zr;
-        timeR[n3_V][n3_4]     = hitr.time;
-        timeER[n3_V][n3_4]    = hitr.timeEr;
+        //dx_[n3_V][n3_4]       = hitr.dX();
+        // dy_[n3_V][n3_4]       = hitr.dY();
+        du_[n3_V][n3_4]     = hitr.dU();
+        dv_[n3_V][n3_4]     = hitr.dV();
+        z_Pos_3[n3_V][n3_4] = zr;
+        timeR[n3_V][n3_4]   = hitr.time;
+        timeER[n3_V][n3_4]  = hitr.timeEr;
 
         n3++;
         Ntriplets++;
@@ -946,7 +944,8 @@ inline void L1Algo::findTripletsStep0(  // input
           u_front_3.push_back(fvec_0);
           u_back_3.push_back(fvec_0);
           z_Pos_3.push_back(fvec_0);
-          // TODO: SG: use of fvec_1 here changes the results
+          //            dx_.push_back(fvec_0);
+          //            dy_.push_back(fvec_0);
           du_.push_back(fvec_0);
           dv_.push_back(fvec_0);
           timeR.push_back(fvec_0);
