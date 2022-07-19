@@ -84,7 +84,9 @@ public:
       f->SetLineColor(kRed);
       f->SetLineWidth(3);
       TPaveStats* st = (TPaveStats*) this->FindObject("stats");
-      if (!st) { LOG(fatal) << "CbmQaHist: can not access statistics of histogram with name \"" << this->GetName() << '\"'; }
+      if (!st) {
+        LOG(fatal) << "CbmQaHist: can not access statistics of histogram with name \"" << this->GetName() << '\"';
+      }
       else {
         st->SetX1NDC(0.6);
         st->SetX2NDC(0.940);

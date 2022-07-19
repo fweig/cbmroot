@@ -109,6 +109,7 @@ public:
   void SetMaxDZ(float input) { fMaxDZ = input; }
 
   /// Sets max considered q/p for tracks
+  /// TODO: Replace with minimum momentum setter (S.Zharko)
   void SetMaxInvMom(float input) { fMaxInvMom = input; }
 
   /// Sets max slope (tx\ty) in 3D hit position of a triplet

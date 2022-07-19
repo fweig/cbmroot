@@ -27,9 +27,9 @@
 #include "TParameter.h"
 #include "TProfile.h"
 #include "TString.h"
-#include <tuple>
 
 #include <memory>
+#include <tuple>
 #include <vector>
 
 class CbmDigiManager;
@@ -58,7 +58,7 @@ public:
   CbmTrackingInputQaSts(CbmTrackingInputQaSts&&)      = delete;
   CbmTrackingInputQaSts& operator=(const CbmTrackingInputQaSts&) = delete;
   CbmTrackingInputQaSts& operator=(CbmTrackingInputQaSts&&) = delete;
-  
+
   /// TTask: Executes the task (processes a timeslice)
   /// \param option  Specify action for the TTask::Exec (not defined yet)
   void Exec(Option_t* /*option*/);
@@ -66,19 +66,22 @@ public:
   /// FairTask: Action at hte end of the run
   void Finish();
 
+  /// Fits histograms
+  void FitHistograms();
+
   /// Gets maximum allowed distance between z-components of hit/MC-point position and the station center [cm]
   double GetMaxDistanceZ() const { return fMaxDistanceZ; }
-  
+
   /// Gets maximum allowed difference between pulls distributions RMS and the expected RMS value of RMS = 1
   double GetMaxPullsRmsDiff() const { return fMaxPullsRmsDiff; }
-  
+
   /// Gets minimum particle momentum
   double GetMinMomentum() const { return fMinMomentum; }
-  
-  /// Fits and draws histograms
+
+  /// Draws histograms
   TFolder& GetQa();
-  
-  /// FairTask: Task initialization an the beginning of the run
+
+  /// FairTask: Task initialization in the beginning of the run
   InitStatus Init();
 
   /// FairTask: Task reinitialization
@@ -102,7 +105,7 @@ private:
   // ***************
   // ** Functions **
   // ***************
-  
+
   /// Checks accumulated distributions
   bool CheckDistributions();
 
@@ -129,12 +132,12 @@ private:
   /// \param  iHit  An index of the hit in the hits array
   /// \return Match object
   CbmMatch MatchHits(const CbmStsHit* pHit, int iHit);
-  
+
   /// Initializes input data branches
   InitStatus ReadAndCreateDataBranches();
 
   /// Registers histogram
-  /// \param  pHisto  
+  /// \param  pHisto
   void RegisterHist(TH1* pHisto)
   {
     fHistList.push_back(pHisto);
@@ -151,17 +154,18 @@ private:
   // *****************
 
   // ** Flags and cuts **
-  bool fIsMcPresent {false};  ///< Flag: true - all procedures involving MC will be processed, otherwice data will be processed only
+  bool fIsMcPresent {
+    false};  ///< Flag: true - all procedures involving MC will be processed, otherwise data will be processed only
 
-  bool fIsQaPassed {true};  ///< Flag: true - QA is successfull, false - Qa is failed 
+  bool fIsQaPassed {true};  ///< Flag: true - QA is successful, false - QA is failed
 
   /// Maximum allowed distance between z-components of hit/MC-point position and the station center [cm]
-  double fMaxDistanceZ {1.0};  
+  double fMaxDistanceZ {1.0};
 
-  double fMinMomentum {0.01}; ///< Minimum value of particle momentum z component [GeV/c]
-  
+  double fMinMomentum {0.01};  ///< Minimum value of particle momentum z component [GeV/c]
+
   double fMaxPullsRmsDiff {0.05};  ///< Maximum difference of the pulls RMS from unity
-  
+
   // ** Input arrays **
 
   CbmTrackingDetectorInterfaceBase* fpDetectorInterface {nullptr};  ///< Pointer to current tracking detector I/F
@@ -171,10 +175,10 @@ private:
   CbmMCEventList* fpMcEventList {nullptr};
   CbmMCDataManager* fpMcManager {nullptr};
 
-  TClonesArray* fpClusters {nullptr};          ///< Clusters
-  TClonesArray* fpHits {nullptr};              ///< Hits
-  TClonesArray* fpClusterMatches {nullptr};    ///< Matches for clusters (used only in STS)
-  TClonesArray* fpHitMatches {nullptr};        ///< Matches for hits, provided with CbmMatchRecoToMC task
+  TClonesArray* fpClusters {nullptr};        ///< Clusters
+  TClonesArray* fpHits {nullptr};            ///< Hits
+  TClonesArray* fpClusterMatches {nullptr};  ///< Matches for clusters (used only in STS)
+  TClonesArray* fpHitMatches {nullptr};      ///< Matches for hits, provided with CbmMatchRecoToMC task
 
   CbmMCDataArray* fpMcTracks {nullptr};
   CbmMCDataArray* fpMcPoints {nullptr};
@@ -182,15 +186,15 @@ private:
 
   // ** Output folders **
 
-  TFolder  fOutFolder {"TrackingInputQaSts", "TrackingInputQaSts"}; ///< Output folder for this QA task
-  TFolder* fpOutFolderHists {nullptr};  ///< Subfolder for raw histograms
+  TFolder fOutFolder {"TrackingInputQaSts", "TrackingInputQaSts"};  ///< Output folder for this QA task
+  TFolder* fpOutFolderHists {nullptr};                              ///< Subfolder for raw histograms
 
   std::vector<TH1*> fHistList;  ///< List of the pointers to all histograms contained in the class
 
   // ** Histograms **
 
   TParameter<long> fNevents {"nEvents", 0};  ///< Number of processed events
-  
+
   std::vector<CbmQaHist<TH1D>> fHistResidualX;  ///< Residual distributions for X vs index of a station
   std::vector<CbmQaHist<TH1D>> fHistResidualY;  ///< Residual distributions for X vs index of a station
   std::vector<CbmQaHist<TH1D>> fHistResidualT;  ///< Residual distributions for T vs index of a station
@@ -203,10 +207,10 @@ private:
   std::vector<CbmQaHist<TH1D>> fHistHitsPerPoint;  ///< Distribution of hits per one MC point vs. index of a station
 
   // TODO: There is a class TEfficiency in the ROOT, probably it's a good idea to use it here (S.Zharko)
-  std::vector<CbmQaHist<TProfile2D>> fHistEfficiencyXY;  ///< 
-  std::vector<CbmQaHist<TProfile>>   fHistEfficiencyR;   ///<
+  std::vector<CbmQaHist<TProfile2D>> fHistEfficiencyXY;  ///<
+  std::vector<CbmQaHist<TProfile>> fHistEfficiencyR;     ///<
 
-  static constexpr std::tuple<int, double, double> fRangeResidualX {100, -0.01, 0.01}; 
+  static constexpr std::tuple<int, double, double> fRangeResidualX {100, -0.01, 0.01};
   static constexpr std::tuple<int, double, double> fRangeResidualY {100, -0.03, 0.03};
   static constexpr std::tuple<int, double, double> fRangeResidualT {100, -25., 25.};
 
@@ -220,9 +224,9 @@ private:
 
   // ** Canvases **
 
-  CbmQaCanvas fCanvResidualX {"c_sts_residualX", "STS X Residual distributions", 1500, 1000 };
-  CbmQaCanvas fCanvResidualY {"c_sts_residualY", "STS Y Residual distributions", 1500, 1000 };
-  CbmQaCanvas fCanvResidualT {"c_sts_residualT", "STS T Residual distributions", 1500, 1000 };
+  CbmQaCanvas fCanvResidualX {"c_sts_residualX", "STS X Residual distributions", 1500, 1000};
+  CbmQaCanvas fCanvResidualY {"c_sts_residualY", "STS Y Residual distributions", 1500, 1000};
+  CbmQaCanvas fCanvResidualT {"c_sts_residualT", "STS T Residual distributions", 1500, 1000};
 
   CbmQaCanvas fCanvPullX {"c_sts_pullX", "STS X Pull distributions", 1500, 1000};
   CbmQaCanvas fCanvPullY {"c_sts_pullY", "STS Y Pull distributions", 1500, 1000};
@@ -230,7 +234,7 @@ private:
 
   CbmQaCanvas fCanvPointsPerHit {"c_sts_PointsPerHit", "STS MC Points per Hit", 1500, 1000};
   CbmQaCanvas fCanvHitsPerPoint {"c_sts_HitsPerPoint", "STS Hits per MC Point", 1500, 1000};
-  
+
   CbmQaCanvas fCanvEfficiencyR {"c_sts_EfficiencyR", "STS Efficiency vs. R", 1500, 1000};
   CbmQaCanvas fCanvEfficiencyXY {"c_sts_EfficiencyXY", "STS Efficiency vs. X and Y", 1500, 1000};
 
@@ -238,8 +242,6 @@ private:
   // ************
   // ** Output **
   // ************
-
-
 };
 
 #endif

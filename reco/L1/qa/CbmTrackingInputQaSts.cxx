@@ -11,23 +11,23 @@
 
 #include "CbmTrackingInputQaSts.h"
 
-#include "CbmMCDataArray.h"
-#include "CbmStsCluster.h"
 #include "CbmDigiManager.h"
+#include "CbmMCDataArray.h"
 #include "CbmMCEventList.h"
-#include "CbmMatch.h"
-#include "CbmStsHit.h"
-#include "CbmStsAddress.h"  // TODO: TMP for tests, must be removed!!!! (S.Zharko)
-#include "CbmTimeSlice.h"
 #include "CbmMCTrack.h"
+#include "CbmMatch.h"
+#include "CbmStsAddress.h"  // TODO: TMP for tests, must be removed!!!! (S.Zharko)
+#include "CbmStsCluster.h"
+#include "CbmStsHit.h"
 #include "CbmStsPoint.h"
 #include "CbmStsTrackingInterface.h"  // Communicate via tracking detector interface
+#include "CbmTimeSlice.h"
 
 #include "FairLogger.h"
 
 #include "TClonesArray.h"
-#include "TParticlePDG.h"
 #include "TDatabasePDG.h"
+#include "TParticlePDG.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -36,49 +36,43 @@ ClassImp(CbmTrackingInputQaSts);
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-CbmTrackingInputQaSts::CbmTrackingInputQaSts(int verbosity) : FairTask("CbmTrackingInputQaSts", verbosity) 
-{
-}
+CbmTrackingInputQaSts::CbmTrackingInputQaSts(int verbosity) : FairTask("CbmTrackingInputQaSts", verbosity) {}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-CbmTrackingInputQaSts::~CbmTrackingInputQaSts()
-{
-  DeInit();
-}
+CbmTrackingInputQaSts::~CbmTrackingInputQaSts() { DeInit(); }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
 bool CbmTrackingInputQaSts::CheckDistributions()
 {
+  std::cout << "CALL CbmTrackingInputQaSts::CheckDistributions()\n";
+
   bool res = true;
-  
+
   const int nStations = fpDetectorInterface->GetNtrackingStations();
 
   // ** Check pulls **
   //
-
-
   // Function to compare pulls distributions RMS with 1
   // TODO: Choose proper selection criteria (S.Zharko)
   auto CheckPullsDistribution = [&](const TH1& pHist) {
     // Checks sigma of distribution fit with unity
     auto* pFitFunc = pHist.GetFunction("gaus");
     if (!pFitFunc) {
-      throw std::runtime_error("STS tracking input QA: attempt to check sigma of unfitted pulls histogram");
+      throw std::runtime_error(TString("STS tracking input QA: attempt to check sigma of histogram \"")
+                               + pHist.GetName() + "\" with undefined fit");
     }
     auto vSigma = pFitFunc->GetParameter(2);
     auto eSigma = pFitFunc->GetParError(2);
 
     // Select 3 sigma interval
-    LOG(info) << "Checking histogram \"" << pHist.GetName() << "\": fit result = " << vSigma << " +/- " << eSigma; 
-    if (std::fabs(vSigma - 1.) < 3. * eSigma) {
-      return true;
-    }
+    LOG(info) << "Checking histogram \"" << pHist.GetName() << "\": fit result = " << vSigma << " +/- " << eSigma;
+    if (std::fabs(vSigma - 1.) < 3. * eSigma) { return true; }
     else {
       return false;
     }
-    
+
     //auto vRms = pHist.GetRMS();      // RMS value
     //auto eRms = pHist.GetRMSError(); // RMS error
     //std::cout << std::fabs(vRms - 1.) << '\n';
@@ -120,14 +114,14 @@ void CbmTrackingInputQaSts::DeInit()
   fpDigiManager       = nullptr;
 
   fpMcManager = nullptr;
-  fpMcTracks = nullptr;
-  fpMcPoints = nullptr;
+  fpMcTracks  = nullptr;
+  fpMcPoints  = nullptr;
 
-  fpMcEventList = nullptr;
-  fpClusters  = nullptr;
-  fpHits      = nullptr;
+  fpMcEventList    = nullptr;
+  fpClusters       = nullptr;
+  fpHits           = nullptr;
   fpClusterMatches = nullptr;
-  fpHitMatches = nullptr;
+  fpHitMatches     = nullptr;
 
   fOutFolder.Clear();
   fpOutFolderHists = nullptr;
@@ -163,25 +157,44 @@ void CbmTrackingInputQaSts::Exec(Option_t*)
 // --------------------------------------------------------------------------------------------------------------------
 //
 void CbmTrackingInputQaSts::Finish()
-{ 
+{
+  std::cout << "CALL CbmTrackingInputQaSts::Finish()\n";
+
+  // Fit histograms
+  this->FitHistograms();
+
   // Add output to a sink
   auto* pSink = FairRootManager::Instance()->GetSink();
-  if (pSink) {
-    pSink->WriteObject(&GetQa(), nullptr);
-  }
+  if (pSink) { pSink->WriteObject(&GetQa(), nullptr); }
 
-  // Check accumulated distributions 
+  // Check accumulated distributions
   bool areResolutionsOk = CheckDistributions();
 
   // TODO: Collect all the flags in one place and make a decission here (S.Zharko)
 
-  if (areResolutionsOk) {
-    LOG(info) << this->GetName() << ": \033[1;32mtask succeeded\033[0m"; 
-  } 
+  if (areResolutionsOk) { LOG(info) << this->GetName() << ": \033[1;32mtask succeeded\033[0m"; }
   else {
-    LOG(info) << this->GetName() << ": \033[1;31mtask failed\033[0m"; 
+    LOG(info) << this->GetName() << ": \033[1;31mtask failed\033[0m";
   }
+}
 
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void CbmTrackingInputQaSts::FitHistograms()
+{
+  std::cout << "CALL CbmTrackingInputQaSts::FitHistograms()\n";
+
+  const int nStations = fpDetectorInterface->GetNtrackingStations();
+  for (int iSt = 0; iSt < nStations; ++iSt) {
+    // Fit histograms
+    fHistResidualX[iSt].Fit("gaus", "Q");
+    fHistResidualY[iSt].Fit("gaus", "Q");
+    fHistResidualT[iSt].Fit("gaus", "Q");
+
+    fHistPullX[iSt].Fit("gaus", "Q");
+    fHistPullY[iSt].Fit("gaus", "Q");
+    fHistPullT[iSt].Fit("gaus", "Q");
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -198,19 +211,10 @@ InitStatus CbmTrackingInputQaSts::GeometryQa()
 TFolder& CbmTrackingInputQaSts::GetQa()
 {
   //gStyle->SetPaperSize(20, 20);
-  
+
   // Loop over tracking stations
   const int nStations = fpDetectorInterface->GetNtrackingStations();
   for (int iSt = 0; iSt < nStations; ++iSt) {
-    // Fit histograms
-    fHistResidualX[iSt].Fit("gaus", "Q");
-    fHistResidualY[iSt].Fit("gaus", "Q");
-    fHistResidualT[iSt].Fit("gaus", "Q");
-    
-    fHistPullX[iSt].Fit("gaus", "Q");
-    fHistPullY[iSt].Fit("gaus", "Q");
-    fHistPullT[iSt].Fit("gaus", "Q");
-    
     // Draw histograms
     fCanvResidualX.cd(iSt + 1);
     fHistResidualX[iSt].DrawCopy("", "");
@@ -237,7 +241,7 @@ TFolder& CbmTrackingInputQaSts::GetQa()
 
     fCanvEfficiencyXY.cd(iSt + 1);
     fHistEfficiencyXY[iSt].DrawCopy("colz", "");
-  }// Loop over tracking stations: end
+  }  // Loop over tracking stations: end
   return fOutFolder;
 }
 
@@ -267,14 +271,14 @@ InitStatus CbmTrackingInputQaSts::Init()
   fpOutFolderHists = fOutFolder.AddFolder("rawHist", "Raw histograms");
   gStyle->SetOptStat(0);
 
-  fNevents.SetVal(0); // redundant
+  fNevents.SetVal(0);  // redundant
   fpOutFolderHists->Add(&fNevents);
 
   // Register histograms in the output folder
   for (auto* histo : fHistList) {
     fpOutFolderHists->Add(histo);
   }
-  
+
   // Do QA of geometry in the end of initialization
   return GeometryQa();
 }
@@ -313,7 +317,7 @@ InitStatus CbmTrackingInputQaSts::InitCanvases()
 
   fCanvEfficiencyR.Divide2D(fpDetectorInterface->GetNtrackingStations());
   fCanvEfficiencyXY.Divide2D(fpDetectorInterface->GetNtrackingStations());
-  
+
   // Add the canvases to the output folder
   fOutFolder.Add(&fCanvResidualX);
   fOutFolder.Add(&fCanvResidualY);
@@ -325,10 +329,10 @@ InitStatus CbmTrackingInputQaSts::InitCanvases()
 
   fOutFolder.Add(&fCanvPointsPerHit);
   fOutFolder.Add(&fCanvHitsPerPoint);
-  
+
   fOutFolder.Add(&fCanvEfficiencyR);
   fOutFolder.Add(&fCanvEfficiencyXY);
-  
+
   return kSUCCESS;
 }
 
@@ -337,7 +341,7 @@ InitStatus CbmTrackingInputQaSts::InitCanvases()
 InitStatus CbmTrackingInputQaSts::InitHistograms()
 {
   gStyle->SetOptStat();
-  
+
   fHistResidualX.clear();
   fHistResidualY.clear();
   fHistResidualT.clear();
@@ -348,7 +352,7 @@ InitStatus CbmTrackingInputQaSts::InitHistograms()
 
   fHistPointsPerHit.clear();
   fHistHitsPerPoint.clear();
-  
+
   fHistEfficiencyR.clear();
   fHistEfficiencyXY.clear();
 
@@ -418,24 +422,24 @@ InitStatus CbmTrackingInputQaSts::InitHistograms()
     histTitle                   = Form("STS: Station %d: Hit per MC points; N_{hits} per MC point", iSt);
     std::tie(nBins, rMin, rMax) = fRangeHitsPerPoint;
     fHistHitsPerPoint.emplace_back(histName, histTitle, nBins, rMin, rMax);
-  
+
     // Efficiencies
-    double xMax = fpDetectorInterface->GetXmax(iSt);  /// TODO: test ranges              
+    double xMax = fpDetectorInterface->GetXmax(iSt);  /// TODO: test ranges
     double yMax = fpDetectorInterface->GetYmax(iSt);  /// TODO: test ranges
-    
+
     // Efficiency vs. distance of point from center
-    histName    = Form("pr1_sts_EfficiencyR_st%d", iSt);
-    histTitle   = Form("STS: Station %d: Efficiency R; R [cm]", iSt);
-    rMin        = 0.;
-    rMax        = sqrt(xMax * xMax + yMax * yMax);
-    nBins       = 100;
+    histName  = Form("pr1_sts_EfficiencyR_st%d", iSt);
+    histTitle = Form("STS: Station %d: Efficiency R; R [cm]", iSt);
+    rMin      = 0.;
+    rMax      = sqrt(xMax * xMax + yMax * yMax);
+    nBins     = 100;
     fHistEfficiencyR.emplace_back(histName, histTitle, nBins, rMin, rMax);
     fHistEfficiencyR[iSt].SetOptStat(1110);
 
-    // Efficiency vs. x and y 
-    histName    = Form("pr1_sts_EfficiencyXY_st%d", iSt);
-    histTitle   = Form("STS: Station %d: Efficiency XY; X [cm]; Y [cm]", iSt);
-    nBins       = 50;
+    // Efficiency vs. x and y
+    histName  = Form("pr1_sts_EfficiencyXY_st%d", iSt);
+    histTitle = Form("STS: Station %d: Efficiency XY; X [cm]; Y [cm]", iSt);
+    nBins     = 50;
     fHistEfficiencyXY.emplace_back(histName, histTitle, nBins, -xMax, xMax, nBins, -yMax, yMax);
     fHistEfficiencyXY[iSt].SetOptStat(10);
   }
@@ -472,7 +476,7 @@ CbmMatch CbmTrackingInputQaSts::MatchHits(const CbmStsHit* pHit, int iHit)
     LOG(error) << "STD: hit (id = " << iHit << ") has incorrect front cluster index: " << iClusterF;
     throw std::runtime_error("STS tracking input QA: wrong front cluster index");
   }
-  
+
   const int iClusterB = pHit->GetBackClusterId();
   if (iClusterB < 0) {
     LOG(error) << "STD: hit (id = " << iHit << ") has incorrect back cluster index: " << iClusterF;
@@ -491,7 +495,7 @@ CbmMatch CbmTrackingInputQaSts::MatchHits(const CbmStsHit* pHit, int iHit)
     LOG(error) << "STD: back cluster does not exist for hit (id = " << iHit << ')';
     throw std::runtime_error("STS tracking input QA: back cluster not found");
   }
-  
+
   const CbmMatch* pClusterMatchF = dynamic_cast<const CbmMatch*>(fpClusterMatches->At(iClusterF));
   const CbmMatch* pClusterMatchB = dynamic_cast<const CbmMatch*>(fpClusterMatches->At(iClusterB));
 
@@ -519,7 +523,7 @@ CbmMatch CbmTrackingInputQaSts::MatchHits(const CbmStsHit* pHit, int iHit)
     }
   }
 
-  return res; // Rely on NRVO
+  return res;  // Rely on NRVO
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -529,25 +533,25 @@ double CbmTrackingInputQaSts::ParticleMass(int pdg)
   if (fabs(pdg) < 9999999 && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg))) {
     return TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
   }
-  
+
   constexpr double kAmuToGev {0.93149410242};  // 1 amu in GeV/c2
-  
+
   // Define masses of several light nuclei by hands
-  if (fabs(pdg) == 1000010020) { 
-    return kAmuToGev * 2.01410177812; // deutron
-  } 
-  else if (fabs(pdg) == 1000010030) { 
-    return kAmuToGev * 3.01604927790; // triton
-  } 
-  else if (fabs(pdg) == 1000020030) { 
-    return kAmuToGev * 3.01602932007; // He-3
-  } 
-  else if (fabs(pdg) == 1000020040) { 
-    return kAmuToGev * 4.00260325413; // He-4
+  if (fabs(pdg) == 1000010020) {
+    return kAmuToGev * 2.01410177812;  // deutron
   }
-    
+  else if (fabs(pdg) == 1000010030) {
+    return kAmuToGev * 3.01604927790;  // triton
+  }
+  else if (fabs(pdg) == 1000020030) {
+    return kAmuToGev * 3.01602932007;  // He-3
+  }
+  else if (fabs(pdg) == 1000020040) {
+    return kAmuToGev * 4.00260325413;  // He-4
+  }
+
   LOG(warn) << "\033[1;31m Found mass for pdg = " << pdg << " is undefined. "
-            << "Please, provide data for this particle\033[0m\n"; 
+            << "Please, provide data for this particle\033[0m\n";
 
   return 0.;
 }
@@ -557,9 +561,7 @@ double CbmTrackingInputQaSts::ParticleMass(int pdg)
 InitStatus CbmTrackingInputQaSts::ReadAndCreateDataBranches()
 {
   auto* pManager = FairRootManager::Instance();
-  if (!pManager) {
-    LOG(fatal) << "FairRootManager was not found";
-  }
+  if (!pManager) { LOG(fatal) << "FairRootManager was not found"; }
 
   fpDigiManager = CbmDigiManager::Instance();
   fpDigiManager->Init();  // NOTE: is initialized only once
@@ -574,7 +576,8 @@ InitStatus CbmTrackingInputQaSts::ReadAndCreateDataBranches()
     return kERROR;
   }
 
-  fpHits = dynamic_cast<TClonesArray*>(FairRootManager::Instance()->GetObject("StsHit"));;
+  fpHits = dynamic_cast<TClonesArray*>(FairRootManager::Instance()->GetObject("StsHit"));
+  ;
   if (!fpHits) {
     LOG(error) << "Hits input array was not found for STS";
     return kERROR;
@@ -627,21 +630,21 @@ void CbmTrackingInputQaSts::ResolutionQa()
 {
   // Resolution QA is impossible without MC information
   if (!fIsMcPresent) { return; }
-  
+
   const int nHits     = fpHits->GetEntriesFast();                     // Number of hits in event/ts
   const int nStations = fpDetectorInterface->GetNtrackingStations();  // Number of stations in event/ts
   const int nMcEvents = fpMcEventList->GetNofEvents();                // Number of MC events in event/ts
-  
-  std::vector<std::vector<int>> nHitsPerMcPoint; // Number of hits per one MC point in different MC events
+
+  std::vector<std::vector<int>> nHitsPerMcPoint;  // Number of hits per one MC point in different MC events
   nHitsPerMcPoint.resize(nMcEvents);
-  
+
   // ** Loop over MC events within event/ts **
   for (int iE = 0; iE < nMcEvents; ++iE) {
     const int fileId  = fpMcEventList->GetFileIdByIndex(iE);
     const int eventId = fpMcEventList->GetEventIdByIndex(iE);
     const int nPoints = fpMcPoints->Size(fileId, eventId);
     nHitsPerMcPoint[iE].resize(nPoints, 0);
-  } // Loop over MC events within event/ts: end
+  }  // Loop over MC events within event/ts: end
 
 
   // ** Loop over hits within event/ts **
@@ -651,23 +654,23 @@ void CbmTrackingInputQaSts::ResolutionQa()
       LOG(error) << "STS hit with index " << iHit << " does not exist in \"StsHit\" array";
       throw std::runtime_error("STS tracking input QA: hit does not exist");
     }
- 
+
     // Check station index of a hit
     const int iStation = fpDetectorInterface->GetTrackingStationIndex(pHit);
     if (iStation < 0 || iStation >= nStations) {
-      LOG(error) << "STS hit with index " << iHit << ": tracking station index = "
-                 << iStation << " is out of range [0, " << nStations << ']';
+      LOG(error) << "STS hit with index " << iHit << ": tracking station index = " << iStation
+                 << " is out of range [0, " << nStations << ']';
       throw std::runtime_error("STS tracking input QA: hit has inconsistent station index");
     }
 
     // Get custom match for the hit
-    const CbmMatch hitMatch = MatchHits(pHit, iHit); // throws std::runtime_error
+    const CbmMatch hitMatch = MatchHits(pHit, iHit);  // throws std::runtime_error
 
     // Fill number of hits per one MC point vector and update the number of hits per a given MC point
     int nMcPoints = 0;  // Number of non-noisy MC points per event
     for (int iLink = 0; iLink < hitMatch.GetNofLinks(); ++iLink) {
       const auto& link = hitMatch.GetLink(iLink);
-      if (link.GetIndex() >= 0) { // Select only non-noisy links (non-noisy digis)
+      if (link.GetIndex() >= 0) {  // Select only non-noisy links (non-noisy digis)
         ++nMcPoints;
         const int iE = fpMcEventList->GetEventIndex(link);
         if (iE < 0 || iE >= nMcEvents) {
@@ -686,23 +689,23 @@ void CbmTrackingInputQaSts::ResolutionQa()
 
     // Select only hits with one MC point
     if (nMcPoints != 1) { continue; }
-    
+
     // Take the best link in the match
     const auto& bestLink = hitMatch.GetMatchedLink();
 
-    // Skip noise 
+    // Skip noise
     if (bestLink.GetIndex() < 0) { continue; }
 
     // Get MC point
     const auto* pPoint = dynamic_cast<const CbmStsPoint*>(fpMcPoints->Get(bestLink));
     if (!pPoint) {
       LOG(error) << "STS: MC point does not exist (iHit = " << iHit << ')';
-      throw std::runtime_error("STS tracking input QA: MC point does not exist"); // NOTE: 
+      throw std::runtime_error("STS tracking input QA: MC point does not exist");  // NOTE:
     }
 
     // TODO: Study the distributions of |pointZIn - stationZ|, |pointZout - stationZ| and |hitZ - stationZ|
     //const double stationZ = fpDetectorInterface->GetZ(iStation);
-    
+
     // ***********************************
     // ** Calculate residuals and pools **
     // ***********************************
@@ -713,21 +716,21 @@ void CbmTrackingInputQaSts::ResolutionQa()
       LOG(error) << "STS: MC event time is undefined (iHit = " << iHit << ')';
       throw std::runtime_error("STS tracking input QA: the MC event time is undefined");
     }
-  
+
     // Get time, space position and momenta components for the MC point (values are taken for the "In" point)
-    double mcX = pPoint->GetXIn();       // [cm]
-    double mcY = pPoint->GetYIn();       // [cm]
-    double mcZ = pPoint->GetZIn();       // [cm]
-    double mcT = pPoint->GetTime() + t0; // [ns]
-    double mcPx = pPoint->GetPx();       // [GeV/c]
-    double mcPy = pPoint->GetPy();       // [GeV/c]
-    double mcPz = pPoint->GetPz();       // [GeV/c]
+    double mcX  = pPoint->GetXIn();        // [cm]
+    double mcY  = pPoint->GetYIn();        // [cm]
+    double mcZ  = pPoint->GetZIn();        // [cm]
+    double mcT  = pPoint->GetTime() + t0;  // [ns]
+    double mcPx = pPoint->GetPx();         // [GeV/c]
+    double mcPy = pPoint->GetPy();         // [GeV/c]
+    double mcPz = pPoint->GetPz();         // [GeV/c]
 
     // Skip slow particles (TODO: why pZ, not p?
     if (fabs(pPoint->GetPzOut()) < fMinMomentum) { continue; }
 
     // Difference between z components of MC in point and the hit
-    double dz = pHit->GetZ() - mcZ; // [cm]
+    double dz = pHit->GetZ() - mcZ;  // [cm]
 
     // Propagate MC-point x and y "In" coordinates to z-plane of the hit
     mcX += dz * mcPx / mcPz;
@@ -736,14 +739,14 @@ void CbmTrackingInputQaSts::ResolutionQa()
     // Propagete MC-point "In" time to z-plane of the hit
     int pdgCode = pPoint->GetPid();
     double mass = ParticleMass(pdgCode);
-    constexpr double speedOfLight {29.9792458}; // cm/ns
+    constexpr double speedOfLight {29.9792458};  // cm/ns
     TVector3 mom;
-    
+
     mcT += dz / (mcPz * speedOfLight) * sqrt(mass * mass + mom.Mag2());
 
-    double dx = pHit->GetX() - mcX;
-    double dy = pHit->GetY() - mcY;
-    double dt = pHit->GetTime() - mcT;
+    double dx   = pHit->GetX() - mcX;
+    double dy   = pHit->GetY() - mcY;
+    double dt   = pHit->GetTime() - mcT;
     double rmsX = pHit->GetDx();
     double rmsY = pHit->GetDy();
     double rmsT = pHit->GetTimeError();
@@ -754,9 +757,9 @@ void CbmTrackingInputQaSts::ResolutionQa()
 
     fHistPullX[iStation].Fill(dx / rmsX);
     fHistPullY[iStation].Fill(dy / rmsY);
-    fHistPullT[iStation].Fill(dt / rmsT);  
-  }// Loop over hits within event/ts: end
-  
+    fHistPullT[iStation].Fill(dt / rmsT);
+  }  // Loop over hits within event/ts: end
+
   // *********************
   // ** Fill efficiency **
   // *********************
@@ -766,7 +769,7 @@ void CbmTrackingInputQaSts::ResolutionQa()
     const int fileId  = fpMcEventList->GetFileIdByIndex(iE);
     const int eventId = fpMcEventList->GetEventIdByIndex(iE);
     const int nPoints = fpMcPoints->Size(fileId, eventId);
-    
+
     // ** Loop over MC points **
     for (int iP = 0; iP < nPoints; ++iP) {
       const auto* pPoint = dynamic_cast<CbmStsPoint*>(fpMcPoints->Get(fileId, eventId, iP));
@@ -774,22 +777,22 @@ void CbmTrackingInputQaSts::ResolutionQa()
         LOG(error) << "MC point does not exist for iE = " << iE << ", iP = " << iP;
         throw std::runtime_error("STS tracking input QA: MC point does not exist");
       }
-      
+
       int address  = pPoint->GetDetectorID();
       int iStation = fpDetectorInterface->GetTrackingStationIndex(address);
       if (iStation < 0 || iStation >= nStations) {
-        LOG(error) << "STS MC point with index " << iP << ": tracking station index = "
-                   << iStation << " is out of range [0, " << nStations << ']';
+        LOG(error) << "STS MC point with index " << iP << ": tracking station index = " << iStation
+                   << " is out of range [0, " << nStations << ']';
         throw std::runtime_error("STS tracking input QA: MC point has inconsistent station index");
       }
       fHistHitsPerPoint[iStation].Fill(nHitsPerMcPoint[iE][iP]);
-      
-      double pointDistance = sqrt(pPoint->GetXIn() * pPoint->GetXIn() + pPoint->GetYIn() * pPoint->GetYIn()); // [cm]
+
+      double pointDistance = sqrt(pPoint->GetXIn() * pPoint->GetXIn() + pPoint->GetYIn() * pPoint->GetYIn());  // [cm]
       fHistEfficiencyR[iStation].Fill(pointDistance, (nHitsPerMcPoint[iE][iP] > 0));
       fHistEfficiencyXY[iStation].Fill(pPoint->GetXIn(), pPoint->GetYIn(), (nHitsPerMcPoint[iE][iP] > 0));
     }
 
-  } // Loop over MC events within event/ts: end
+  }  // Loop over MC events within event/ts: end
 }
 
 
@@ -799,4 +802,3 @@ void CbmTrackingInputQaSts::SetParContainers()
 {
   std::cout << "\033[1;32mCALL:\033[0mCbmTrackingInputQaSts::SetParContainers()\n";
 }
-

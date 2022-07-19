@@ -98,7 +98,7 @@ endif()
  
 link_directories( ${LINK_DIRECTORIES})
 
-
+# ----- Compilation sources --------------------------------------------
 set(SRCS
 #L1Algo / L1CATrackFinder.cxx
 #CbmL1Performance.cxx
@@ -149,9 +149,11 @@ L1Algo/L1CAIteration.cxx
 L1Algo/L1BaseStationInfo.cxx
 L1Algo/L1InitManager.cxx
 L1Algo/L1Parameters.cxx
+L1Algo/L1ConfigRW.cxx
 L1Algo/utils/L1AlgoDraw.cxx
 L1Algo/utils/L1AlgoEfficiencyPerformance.cxx
 L1Algo/utils/L1AlgoPulls.cxx
+
 
 ParticleFinder/CbmL1PFFitter.cxx
 ParticleFinder/CbmL1PFMCParticle.cxx
@@ -159,7 +161,9 @@ ParticleFinder/CbmL1PFMCParticle.cxx
 qa/CbmTrackerInputQaTrd.cxx
 qa/CbmTrackingInputQaSts.cxx
 )
+# ----------------------------------------------------------------------
 
+# ----- Headers --------------------------------------------------------
 set(HEADERS
 CbmL1CATrdTrackFinderSA.h
 CbmL1.h
@@ -192,6 +196,7 @@ L1Algo/L1Vector.h
 qa/CbmTrackerInputQaTrd.h
 qa/CbmTrackingInputQaSts.h
 )
+# ----------------------------------------------------------------------
 
 
 
@@ -247,6 +252,7 @@ Set(DEPENDENCIES
     CbmRecoSts
     CbmQaBase
     boost_regex
+    external::yaml-cpp
    )
 
 if (OPENMP_FOUND AND APPLE)
@@ -280,6 +286,7 @@ Install(FILES CbmL1Counters.h
               L1Algo/L1InitManager.h
               L1Algo/L1CAIteration.h
               L1Algo/L1Parameters.h
+              L1Algo/L1ConfigRW.h
               L1Algo/L1Constants.h
               L1Algo/L1Utils.h
               L1Algo/L1NaN.h

@@ -175,65 +175,26 @@ public:
     if (fileName != "") fMatBudgetFileName[L1DetectorID::kTof] = fileName;
   }
 
+  /// \brief Sets a name for the input configuration file
+  /// If the file is undefined, default tracking parameters will be used. Otherwise, the default parameters will be
+  /// overridden with ones from the configuration file
+  /// \param filename  Name of the input tracking configuration file
+  void SetInputConfigName(const char* filename)
+  {
+    if (fpInitManager) { fpInitManager->SetInputConfigName(std::string(filename)); }
+  }
+
+  /// \brief Sets a name for the output configuration file
+  /// \param filename  Name of the input tracking configuration file
+  void SetOutputConfigName(const char* filename)
+  {
+    if (fpInitManager) { fpInitManager->SetOutputConfigName(std::string(filename)); }
+  }
+
   /// Correction function for the material budget map
   /// It fills bins with no statistics
   template<L1DetectorID detID>
-  void ApplyCorrectionToMaterialMap(L1Material& material, const L1MaterialInfo& homogenious)
-  {
-    // TODO: unify the correction function for all detectors
-    [[maybe_unused]] float minVal = 0.;
-    if constexpr (detID == L1DetectorID::kMuch) { minVal = 0.15f; }
-    else if constexpr (detID == L1DetectorID::kTof || detID == L1DetectorID::kTrd) {
-      minVal = 0.0015f;
-    }
-
-    // A bit ugly solution, but so can we avoid dependency on input maps file
-    std::vector<float> keepRow {};
-    if constexpr (detID != L1DetectorID::kSts) { keepRow.resize(material.GetNbins()); }
-
-    for (int iBinX = 0; iBinX < material.GetNbins(); ++iBinX) {
-      if constexpr (detID == L1DetectorID::kTof) { minVal = 0.0015f; }
-      if constexpr (detID != L1DetectorID::kSts) {
-        for (int iBinY = 0; iBinY < material.GetNbins(); ++iBinY) {
-          keepRow[iBinY] = material.GetRadThick(iBinX, iBinY);
-        }
-      }
-      for (int iBinY = 0; iBinY < material.GetNbins(); ++iBinY) {
-        if constexpr (detID == L1DetectorID::kMvd) {
-          // Correction for holes in the material map
-          if (material.GetRadThick(iBinX, iBinY) < homogenious.RadThick[0]) {
-            if (iBinY > 0 && iBinY < material.GetNbins() - 1) {
-              material.SetRadThick(iBinX, iBinY, TMath::Min(keepRow[iBinY - 1], keepRow[iBinY + 1]));
-            }
-          }
-
-          // Correction for the hardcodded value of RadThick of MVD stations
-          if (material.GetRadThick(iBinX, iBinY) < 0.0015) { material.SetRadThick(iBinX, iBinY, 0.0015); }
-        }
-        else if constexpr (detID == L1DetectorID::kSts) {
-          if (material.GetRadThick(iBinX, iBinY) < homogenious.RadThick[0]) {
-            material.SetRadThick(iBinX, iBinY, homogenious.RadThick[0]);
-          }
-        }
-        else if constexpr (detID == L1DetectorID::kMuch || detID == L1DetectorID::kTrd || detID == L1DetectorID::kTof) {
-          // Correction for holes in the material map
-          if (L1Algo::TrackingMode::kGlobal != fTrackingMode) {
-            if ((iBinY > 0) && (iBinY < material.GetNbins() - 1)) {
-              material.SetRadThick(iBinX, iBinY, TMath::Min(keepRow[iBinY - 1], keepRow[iBinY + 1]));
-            }
-          }
-          float val = material.GetRadThick(iBinX, iBinY);
-          if (val > 0.0015) {  // remember last non-zero value
-            minVal = val;
-          }
-          else {  // empty bin with no statistics, fill it with the neoighbours value
-            material.SetRadThick(iBinX, iBinY, minVal);
-          }
-        }
-      }
-    }
-  }
-
+  void ApplyCorrectionToMaterialMap(L1Material& material, const L1MaterialInfo& homogenious);
 
   /// Utility to map the L1DetectorID items into detector names
   static constexpr const char* GetDetectorName(L1DetectorID detectorID)
@@ -294,7 +255,7 @@ private:
   /// Read information about hits, mcPoints and mcTracks into L1 classes
 
   /// Repacks data from the external TClonesArray objects to the internal L1 arrays
-  /// \param fData_       Pointer to the target object containig L1Algo internal arrays of hits
+  /// \param fData_       Pointer to the target object containing L1Algo internal arrays of hits
   /// \param TsStart      Reference to the timeslice start time
   /// \param TsLength     Reference to the timeslice length
   /// \param TsOverlap    Reference to the timeslice overlap length (does not used at the moment)
@@ -308,7 +269,7 @@ private:
   /// \param   MC       Pointer to a target CbmL1MCPoint object
   /// \param   iPoint   Index of the point into the input MC points CbmMCDataArray object for the particular detector
   /// \param   MVD      Index of the detector subsystem
-  /// \return  flag: false - success, true - some errors occured
+  /// \return  flag: false - success, true - some errors occurred
   bool ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int MVD);  // help procedure
 
   /// Converts data from generic FairMCPoint based class to the CbmL1MCPoint
@@ -317,7 +278,7 @@ private:
   /// \param   file     Index of the input file
   /// \param   event    Index of the input event
   /// \param   MVD      Index of the detector subsystem
-  /// \return  flag: false - success, true - some errors occured
+  /// \return  flag: false - success, true - some errors occurred
   // TODO: Probably, we should replace input parameter MVD with the template  (S.Zharko)
   bool ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int MVD);
 
@@ -332,13 +293,13 @@ private:
    */
 
   /// Procedure for match hits and MCPoints.
-  /// Reads information about correspondence between hits and mcpoints and fill CbmL1MCPoint::hitIds and CbmL1Hit::mcPointIds arrays
+  /// Reads information about correspondence between hits and MC-points and fill CbmL1MCPoint::hitIds and CbmL1Hit::mcPointIds arrays
   /// should be called after fill of algo
   void HitMatch();
 
-  void FieldApproxCheck();    // Build histos with difference between Field map and approximated field
-  void FieldIntegralCheck();  // Build 2D histo: dependence of the field integral on phi and theta
-  void InputPerformance();    // Build histos about input data, like hit pulls, etc.
+  void FieldApproxCheck();    // Build histograms with difference between Field map and approximated field
+  void FieldIntegralCheck();  // Build 2D histogram: dependence of the field integral on phi and theta
+  void InputPerformance();    // Build histograms about input data, like hit pulls, etc.
   void TimeHist();
 
   /// Reconstruction Performance
@@ -515,5 +476,66 @@ private:
 
   ClassDef(CbmL1, 0);
 };
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+template<L1DetectorID detID>
+void CbmL1::ApplyCorrectionToMaterialMap(L1Material& material, const L1MaterialInfo& homogenious)
+{
+  // TODO: unify the correction function for all detectors
+  [[maybe_unused]] float minVal = 0.;
+  if constexpr (detID == L1DetectorID::kMuch) { minVal = 0.15f; }
+  else if constexpr (detID == L1DetectorID::kTof || detID == L1DetectorID::kTrd) {
+    minVal = 0.0015f;
+  }
+
+  // A bit ugly solution, but so can we avoid dependency on input maps file
+  std::vector<float> keepRow {};
+  if constexpr (detID != L1DetectorID::kSts) { keepRow.resize(material.GetNbins()); }
+
+  for (int iBinX = 0; iBinX < material.GetNbins(); ++iBinX) {
+    if constexpr (detID == L1DetectorID::kTof) { minVal = 0.0015f; }
+    if constexpr (detID != L1DetectorID::kSts) {
+      for (int iBinY = 0; iBinY < material.GetNbins(); ++iBinY) {
+        keepRow[iBinY] = material.GetRadThick(iBinX, iBinY);
+      }
+    }
+    for (int iBinY = 0; iBinY < material.GetNbins(); ++iBinY) {
+      if constexpr (detID == L1DetectorID::kMvd) {
+        // Correction for holes in the material map
+        if (material.GetRadThick(iBinX, iBinY) < homogenious.RadThick[0]) {
+          if (iBinY > 0 && iBinY < material.GetNbins() - 1) {
+            material.SetRadThick(iBinX, iBinY, TMath::Min(keepRow[iBinY - 1], keepRow[iBinY + 1]));
+          }
+        }
+
+        // Correction for the hard-coded value of RadThick of MVD stations
+        if (material.GetRadThick(iBinX, iBinY) < 0.0015) { material.SetRadThick(iBinX, iBinY, 0.0015); }
+      }
+      else if constexpr (detID == L1DetectorID::kSts) {
+        if (material.GetRadThick(iBinX, iBinY) < homogenious.RadThick[0]) {
+          material.SetRadThick(iBinX, iBinY, homogenious.RadThick[0]);
+        }
+      }
+      else if constexpr (detID == L1DetectorID::kMuch || detID == L1DetectorID::kTrd || detID == L1DetectorID::kTof) {
+        // Correction for holes in the material map
+        if (L1Algo::TrackingMode::kGlobal != fTrackingMode) {
+          if ((iBinY > 0) && (iBinY < material.GetNbins() - 1)) {
+            material.SetRadThick(iBinX, iBinY, TMath::Min(keepRow[iBinY - 1], keepRow[iBinY + 1]));
+          }
+        }
+        float val = material.GetRadThick(iBinX, iBinY);
+        if (val > 0.0015) {  // remember last non-zero value
+          minVal = val;
+        }
+        else {  // empty bin with no statistics, fill it with the neighbours value
+          material.SetRadThick(iBinX, iBinY, minVal);
+        }
+      }
+    }
+  }
+}
+
 
 #endif  //_CbmL1_h_

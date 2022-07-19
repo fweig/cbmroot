@@ -4,7 +4,7 @@
 
 /************************************************************************************************************
  * @file L1InitManager.h
- * @bried Input data management class for L1Algo
+ * @brief Input data management class for L1Algo
  * @since 24.12.2021
  ***********************************************************************************************************/
 #ifndef L1InitManager_h
@@ -12,6 +12,7 @@
 
 #include "L1BaseStationInfo.h"
 #include "L1CAIteration.h"
+#include "L1ConfigRW.h"
 #include "L1Constants.h"
 #include "L1Field.h"
 #include "L1ObjectInitController.h"
@@ -27,6 +28,8 @@
 #include <memory>  //unique_ptr
 #include <numeric>
 #include <set>
+
+class L1ConfigRW;
 
 /// Forward declaration of the tracking detectors scoped enumeration. Concrete realization of this enumeration must be
 /// determined in the concrete setup class (i.e. CbmL1/BmnL1)
@@ -75,7 +78,7 @@ private:
     //       this->GetObjectInitController().ToString() method call (S.Zharko)
     kActiveDetectorIDs,             ///< 0) If the detector sequence is set
     kStationsNumberCrosscheck,      ///< 1) If the crosscheck station numbers were setup
-    kFieldFunction,                 ///< 2) If magnetic field getter funciton is set
+    kFieldFunction,                 ///< 2) If magnetic field getter function is set
     kTargetPos,                     ///< 3) If target position was defined
     kPrimaryVertexField,            ///< 4) If magnetic field value and region defined at primary vertex
     kStationsInfo,                  ///< 5) If all the planned stations were added to the manager
@@ -121,14 +124,20 @@ public:
   /// Adds another station of a given type using std::unique_ptr-wraped pointer to L1BaseStationInfo
   void AddStation(const std::unique_ptr<L1BaseStationInfo>& puStation) { AddStation(*puStation); }
 
-  /// Provides final checks of large fields initialization calling Check"Object"Init() privat methods,
-  /// must be called in the begining of L1Algo::Init()
+  /// Provides final checks of large fields initialization calling Check"Object"Init() private methods,
+  /// must be called in the beginning of L1Algo::Init()
   void CheckInit();
   // NOTE: This method calls checkers of large fields initializations like a station or an iteration. The method must be
   //       called in the L1Algo class. (S.Zharko)
 
+  /// Clears vector of CA track finder iterations
+  void ClearCAIterations();
+
   /// Gets ghost suppression flag
   int GetGhostSuppression() const { return fGhostSuppression; }
+
+  /// Gets a name of the input configuration file
+  const std::string& GetInputConfigName() const { return fConfigInputName; }
 
   /// Gets momentum cutoff
   float GetMomentumCutOff() const { return fMomentumCutOff; }
@@ -136,7 +145,7 @@ public:
   /// Gets a const reference to L1ObjectInitController
   const InitController_t& GetInitController() const { return fInitController; }
 
-  /// Gets a pointer to L1Parameters instance with a posibility of its fields modification
+  /// Gets a pointer to L1Parameters instance with a possibility of its fields modification
   //const L1Parameters* GetParameters() const { return fpParameters; }
 
   /// Gets total number of active stations
@@ -157,19 +166,16 @@ public:
     return fNstationsGeometry[static_cast<L1DetectorID_t>(detectorID)];
   }
 
+  /// Gets a name of the output configuration file
+  const std::string& GetOutputConfigName() const { return fConfigOutputName; }
+
   /// Gets tracking level
   int GetTrackingLevel() const { return fTrackingLevel; }
 
   /// Calculates L1FieldValue and L1FieldReference values for a selected step in z-axis from the target position
   /// \param zStep step between nodal points
-  // TODO: Consider posibility for linear approximation (S.Zh.)
+  // TODO: Consider possibility for linear approximation (S.Zh.)
   void InitTargetField(double zStep);
-
-  /// Prints a list of CA track finder iterations
-  void PrintCAIterations(int verbosityLevel = 0) const;
-
-  /// Prints a list of stations
-  void PrintStations(int verbosityLevel = 0) const;
 
   /// Pushes an CA track finder iteration into a sequence of iteration using reference
   void PushBackCAIteration(const L1CAIteration& iteration);
@@ -189,35 +195,49 @@ public:
   /// Sets a magnetic field function, which will be applied for all the stations
   void SetFieldFunction(const L1FieldFunction_t& fieldFcn);
 
-  ///
+  /// FIXME: ...
   void SetGhostSuppression(int ghostSuppression);
+
+  /// Sets a name of the input configuration file. If the file is undefined, default settings will be used. If the file is
+  /// defined, the default settings will be overwritten with
+  /// \param  filename  Name of the input L1 parameters configuration
+  void SetInputConfigName(const std::string& filename) { fConfigInputName = filename; }
 
   ///
   void SetMomentumCutOff(float momentumCutOff);
 
-  ///
-  void SetTrackingLevel(int trackingLevel);
-
   /// Sets a number of actual stations for a particular tracking detector ID to provide initialization cross-check
   void SetNstations(L1DetectorID detectorID, int nStations);
 
-  /// Sets target poisition
+  /// Sets a name of the output configuration file. The output file is created from the fields, saved in the resulted
+  /// L1Parameters object
+  /// \param  filename  Name of the output L1 parameters configuration
+  void SetOutputConfigName(const std::string& filename) { fConfigOutputName = filename; }
+
+  /// Sets target position
+  /// \param  x  Position X component [cm]
+  /// \param  y  Position Y component [cm]
+  /// \param  z  Position Z component [cm]
   void SetTargetPosition(double x, double y, double z);
 
+  ///
+  void SetTrackingLevel(int trackingLevel);
+
   /// Transfers L1Parameters object to the destination
+  /// \param  destination  Reference to the destination of the L1 object
   void TransferParametersContainer(L1Parameters& destination);
 
   /// ***************************
   /// ** Flags for development **
   /// ***************************
 
-  /// Ignopre hit search areas
+  /// Ignore hit search areas
   void DevSetIgnoreHitSearchAreas(bool value = true) { fParameters.fDevIsIgnoreHitSearchAreas = value; }
 
   /// Start singlets fit at the target
   void DevSetFitSingletsFromTarget(bool value = true) { fParameters.fDevIsFitSingletsFromTarget = value; }
 
-  /// Flag to match doublets using Mc information
+  /// Flag to match doublets using MC information
   void DevSetIsMatchDoubletsViaMc(bool value = true) { fParameters.fDevIsMatchDoubletsViaMc = value; }
 
 private:
@@ -246,16 +266,16 @@ private:
   std::set<L1BaseStationInfo> fStationsInfo {};  ///< Set of L1BaseStationInfo objects
 
   /// Numbers of stations, which are active in tracking. Index of an array element (except the last one) corresponds to a given
-  /// L1DetectorID of the detector subystem. The last array element corresponds to the total number of stations.
+  /// L1DetectorID of the detector subsystem. The last array element corresponds to the total number of stations.
   std::array<int, L1Constants::size::kMaxNdetectors + 1> fNstationsActive {};
 
   /// Actual numbers of stations, provided by geometry. Index of an array element (except the last one) corresponds to a given
-  /// L1DetectorID of the detector subystem. The last array element corresponds to the total number of stations.
+  /// L1DetectorID of the detector subsystem. The last array element corresponds to the total number of stations.
   std::array<int, L1Constants::size::kMaxNdetectors + 1> fNstationsGeometry {};
 
   /// A function which returns magnetic field vector B in a radius-vector xyz
   L1FieldFunction_t fFieldFunction {[](const double (&)[3], double (&)[3]) {}};
-  // NOTE: Stations of daetectors which will not be assigned as active, will not be included in the tracking!
+  // NOTE: Stations of detectors which will not be assigned as active, will not be included in the tracking!
 
   // * CA track finder iterations related *
 
@@ -265,7 +285,12 @@ private:
 
   int fTrackingLevel {0};     ///< tracking level
   int fGhostSuppression {0};  ///< flag: if true, ghost tracks are suppressed
-  float fMomentumCutOff {0};  ///< minimum momentum of tracks TODO: ?
+  float fMomentumCutOff {0};  ///< minimum momentum of tracks
+
+  // * Configuration related *
+  std::string fConfigInputName {""};              ///< name for the input configuration file
+  std::string fConfigOutputName {""};             ///< name for the output configuration file
+  L1ConfigRW fConfigRW {this, /*verbose = */ 4};  ///< configuration file reader and writer
 };
 
 #endif

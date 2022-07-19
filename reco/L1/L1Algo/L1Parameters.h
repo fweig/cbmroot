@@ -174,15 +174,14 @@ public:
   /// Is singlets fit starts at the target
   bool DevIsFitSingletsFromTarget() const { return fDevIsFitSingletsFromTarget; }
 
-  /// Flag to match doublets using Mc information
+  /// Flag to match doublets using MC information
   bool DevIsMatchDoubletsViaMc() const { return fDevIsMatchDoubletsViaMc; }
 
 private:
   unsigned int fMaxDoubletsPerSinglet {150};  ///< Upper-bound cut on max number of doublets per one singlet
   unsigned int fMaxTripletPerDoublets {15};   ///< Upper-bound cut on max number of triplets per one doublet
 
-  alignas(L1Constants::misc::kAlignment)
-    L1IterationsContainer_t fCAIterations {};  ///< L1 Track finder iterations vector
+  alignas(L1Constants::misc::kAlignment) L1IterationsContainer_t fCAIterations {};  ///< L1 tracking iterations vector
 
   /*************************
    ** Geometry parameters **
@@ -204,14 +203,14 @@ private:
   alignas(L1Constants::misc::kAlignment) L1MaterialContainer_t fThickMap {};
 
   /// Numbers of stations, which are active in tracking. Index of an array element (except the last one) corresponds to a given
-  /// L1DetectorID of the detector subystem. The last array element corresponds to the total number of stations.
+  /// L1DetectorID of the detector subsystem. The last array element corresponds to the total number of stations.
   alignas(L1Constants::misc::kAlignment) std::array<int, (L1Constants::size::kMaxNdetectors + 1)> fNstationsActive {};
 
   /// Actual numbers of stations, provided by geometry. Index of an array element (except the last one) corresponds to a given
-  /// L1DetectorID of the detector subystem. The last array element corresponds to the total number of stations.
+  /// L1DetectorID of the detector subsystem. The last array element corresponds to the total number of stations.
   alignas(L1Constants::misc::kAlignment) std::array<int, (L1Constants::size::kMaxNdetectors + 1)> fNstationsGeometry {};
 
-  /// Map of the actual detector indeces to the active detector indeces
+  /// Map of the actual detector indexes to the active detector indexes
   /// The vector maps actual station index (which is defined by ) to the index of station in tracking. If the station is inactive,
   /// its index is equal to -1. Example: let stations 1 and 4 be inactive. Then:
   ///   actual index:  0  1  2  3  4  5  6  7  8  9  0  0  0  0
@@ -226,13 +225,12 @@ private:
 
   bool fDevIsFitSingletsFromTarget {false};  ///< Fit singlet starting from the target with the KF
 
-  bool fDevIsMatchDoubletsViaMc {false};  ///< Flag to match doublets using Mc information
+  bool fDevIsMatchDoubletsViaMc {false};  ///< Flag to match doublets using MC information
 
   /********************************
    ** Friend classes declaration **
    ********************************/
 
-  /// Note provide friend access to L1InitManager (TODO: L1Algo auch?)
   friend class L1InitManager;
 };
 

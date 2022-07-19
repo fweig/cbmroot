@@ -617,8 +617,8 @@ InitStatus CbmL1::Init()
    **                                    **
    ****************************************/
 
-  // TODO: Need to provide a selection: default iterations input (these hardcoded ones), input from file or input
-  //       from runing macro (S.Zharko)
+  // TODO: Need to provide a selection: default iterations input (these hard-coded ones), input from file or input
+  //       from running macro (S.Zharko)
   auto trackingIterFastPrim = L1CAIteration("FastPrimIter");
   trackingIterFastPrim.SetTrackChi2Cut(10.f);
   trackingIterFastPrim.SetTripletChi2Cut(23.4450f);  // = 7.815 * 3;  // prob = 0.05
@@ -1024,7 +1024,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     if (fVerbose > 1) { cout << "L1 Track fitter  ok" << endl; }
 
-    // save recontstructed tracks
+    // save reconstructed tracks
     if (fLegacyEventMode) vRTracksCur.clear();
     int start_hit = 0;
 

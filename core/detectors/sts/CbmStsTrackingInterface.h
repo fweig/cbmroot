@@ -107,18 +107,12 @@ public:
   /// Gets a tracking station of a CbmPixelHit
   /// \param  hit  A pointer to CbmPixelHit
   /// \return Local index of the tracking station
-  int GetTrackingStationIndex(const CbmPixelHit* hit) const
-  {
-    return GetTrackingStationIndex(hit->GetAddress());
-  }
+  int GetTrackingStationIndex(const CbmPixelHit* hit) const { return GetTrackingStationIndex(hit->GetAddress()); }
 
   /// Gets a tracking station by the address of element
   /// \param  address  Unique element address
   /// \return Local index of the tracking station
-  int GetTrackingStationIndex(int address) const
-  {
-    return CbmStsSetup::Instance()->GetStationNumber(address);
-  }
+  int GetTrackingStationIndex(int address) const { return CbmStsSetup::Instance()->GetStationNumber(address); }
 
   /// Gets max size of a station along the X-axis
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])

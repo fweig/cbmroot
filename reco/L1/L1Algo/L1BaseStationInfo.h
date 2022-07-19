@@ -4,7 +4,7 @@
 
 /************************************************************************************************************
  * @file L1BaseStationInfo.h
- * @bried A base class for a L1 station interface
+ * @brief A base class for a L1 station interface
  * @since 18.12.2021
  *
  * The class is implemented to connect concrete experimental setup (CBM or BMN in CbmL1 

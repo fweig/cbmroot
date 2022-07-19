@@ -380,6 +380,7 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
 
     // L1 tracking
     auto l1 = (debugWithMC) ? new CbmL1("L1", 2, 3) : new CbmL1("L1", 0);
+    l1->SetInputConfigName(TString(gSystem->Getenv("VMCWORKDIR")) + "/reco/L1/L1Algo/L1ConfigExample.yaml");
 
     // --- Material budget file names
     TString mvdGeoTag;

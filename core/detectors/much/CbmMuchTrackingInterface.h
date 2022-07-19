@@ -102,18 +102,14 @@ public:
   /// Gets a tracking station of a CbmPixelHit
   /// \param  hit  A pointer to CbmPixelHit
   /// \return Local index of the tracking station
-  int GetTrackingStationIndex(const CbmPixelHit* hit) const
-  {
-    return GetTrackingStationIndex(hit->GetAddress());
-  }
+  int GetTrackingStationIndex(const CbmPixelHit* hit) const { return GetTrackingStationIndex(hit->GetAddress()); }
 
   /// Gets a tracking station by the address of element
   /// \param  address  Unique element address
   /// \return Local index of the tracking station
   int GetTrackingStationIndex(int address) const
   {
-    return CbmMuchGeoScheme::GetStationIndex(address) * 3
-           + CbmMuchGeoScheme::GetLayerIndex(address);
+    return CbmMuchGeoScheme::GetStationIndex(address) * 3 + CbmMuchGeoScheme::GetLayerIndex(address);
   }
 
   /// Gets max size of a station along the X-axis

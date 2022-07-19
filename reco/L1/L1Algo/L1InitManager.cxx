@@ -4,7 +4,7 @@
 
 /************************************************************************************************************
  * @file L1InitManager.cxx
- * @bried Input data management class for L1Algo
+ * @brief Input data management class for L1Algo
  * @since 19.01.2022
  ***********************************************************************************************************/
 
@@ -15,14 +15,14 @@
 
 #include "L1Assert.h"
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
 {
   // Check if other fields were defined already
   // Active detector IDs
   L1MASSERT(0, fInitController.GetFlag(EInitKey::kActiveDetectorIDs),
-            "Attempt to add a station info before the active detetors set had been initialized");
+            "Attempt to add a station info before the active detectors set had been initialized");
 
   // Number of stations check
   L1MASSERT(0, fInitController.GetFlag(EInitKey::kStationsNumberCrosscheck),
@@ -30,7 +30,7 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
 
   // Field function
   L1MASSERT(0, fInitController.GetFlag(EInitKey::kFieldFunction),
-            "Attempt to add a station info before the magnetic field function had been intialized");
+            "Attempt to add a station info before the magnetic field function had been initialized");
 
   // Check activeness of this station type
   bool isStationActive =
@@ -44,7 +44,7 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
     if (!inStationCopy.GetInitController().GetFlag(L1BaseStationInfo::EInitKey::kThicknessMap)) {
       LOG(warn) << "Station material map was not set for detectorID = "
                 << static_cast<int>(inStationCopy.GetDetectorID()) << ", stationID = " << inStationCopy.GetStationID()
-                << ". Homogenious material budget will be used: " << inStationCopy.GetRadThick()[0];
+                << ". Homogeneous material budget will be used: " << inStationCopy.GetRadThick()[0];
       L1Material material;
       material.SetBins(1, 100);
       material.SetRadThick(0, 0, inStationCopy.GetRadThick()[0]);
@@ -62,7 +62,7 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
     // insert the station in a set
     auto insertionResult = fStationsInfo.insert(std::move(inStationCopy));
     if (!insertionResult.second) {
-      LOG(fatal) << "Attempt to add a dublicating station info object (detectorID = "
+      LOG(fatal) << "Attempt to add a duplicated station info object (detectorID = "
                  << static_cast<int>(inStationCopy.GetDetectorID()) << ", stationID = " << inStationCopy.GetStationID()
                  << ")";
     }
@@ -83,7 +83,7 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
              << ". Is active: " << isStationActive;
 }
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::CheckInit()
 {
@@ -91,10 +91,24 @@ void L1InitManager::CheckInit()
   this->CheckStationsInfoInit();
 }
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
+//
+void L1InitManager::ClearCAIterations()
+{
+  fParameters.fCAIterations.clear();
+  fCAIterationsNumberCrosscheck = -1;
+  fInitController.SetFlag(EInitKey::kCAIterations, false);
+}
+
+// ----------------------------------------------------------------------------------------------------------------------
 // NOTE: this function should be called once in the TransferParametersContainer
 void L1InitManager::FormParametersContainer()
 {
+  // Read configuration file
+  // NOTE: We consider parameters from the configuration file as ones with a higher priority, so all the defined
+  //       variables there would be rewritten by the configuration
+  if (fConfigInputName != "") { fConfigRW.ReadYaml(fConfigInputName); }
+
   // Check initialization
   this->CheckInit();
 
@@ -127,7 +141,7 @@ void L1InitManager::FormParametersContainer()
   fParameters.CheckConsistency();
 }
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::InitTargetField(double zStep)
 {
@@ -139,7 +153,7 @@ void L1InitManager::InitTargetField(double zStep)
 
   // Check for field function
   L1MASSERT(0, fInitController.GetFlag(EInitKey::kFieldFunction),
-            "Attempt to initialze the field value and field region near target before initializing field function");
+            "Attempt to initialize the field value and field region near target before initializing field function");
 
   // Check for target defined
   L1MASSERT(
@@ -168,25 +182,7 @@ void L1InitManager::InitTargetField(double zStep)
   fInitController.SetFlag(EInitKey::kPrimaryVertexField);
 }
 
-//-----------------------------------------------------------------------------------------------------------------------
-//
-void L1InitManager::PrintCAIterations(int verbosityLevel) const
-{
-  for (const auto& iteration : fParameters.fCAIterations) {
-    iteration.Print(verbosityLevel);
-  }
-}
-
-//-----------------------------------------------------------------------------------------------------------------------
-//
-void L1InitManager::PrintStations(int verbosityLevel) const
-{
-  for (const auto& station : fStationsInfo) {
-    station.Print(verbosityLevel);
-  }
-}
-
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::PushBackCAIteration(const L1CAIteration& iteration)
 {
@@ -199,28 +195,28 @@ void L1InitManager::PushBackCAIteration(const L1CAIteration& iteration)
   fParameters.fCAIterations.push_back(iteration);
 }
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::SetActiveDetectorIDs(const L1DetectorIDSet_t& detectorIDs)
 {
-  // TODO: To think about redifinition possibilities: should it be allowed or not? (S.Zh.)
+  // TODO: To think about redefinition possibilities: should it be allowed or not? (S.Zh.)
   fActiveDetectorIDs = detectorIDs;
   fInitController.SetFlag(EInitKey::kActiveDetectorIDs);
 }
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::SetCAIterationsNumberCrosscheck(int nIterations)
 {
   fCAIterationsNumberCrosscheck                = nIterations;
   L1Vector<L1CAIteration>& iterationsContainer = fParameters.fCAIterations;
 
-  // NOTE: should be called to prevent multiple copyings of objects between the memory realocations
+  // NOTE: should be called to prevent multiple copies of objects between the memory reallocations
   iterationsContainer.reserve(nIterations);
   fInitController.SetFlag(EInitKey::kCAIterationsNumberCrosscheck);
 }
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::SetFieldFunction(const L1FieldFunction_t& fieldFunction)
 {
@@ -233,7 +229,7 @@ void L1InitManager::SetFieldFunction(const L1FieldFunction_t& fieldFunction)
   }
 }
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::SetGhostSuppression(int ghostSuppression)
 {
@@ -245,7 +241,7 @@ void L1InitManager::SetGhostSuppression(int ghostSuppression)
   fInitController.SetFlag(EInitKey::kGhostSuppression);
 }
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::SetMomentumCutOff(float momentumCutOff)
 {
@@ -257,7 +253,7 @@ void L1InitManager::SetMomentumCutOff(float momentumCutOff)
   fInitController.SetFlag(EInitKey::kMomentumCutOff);
 }
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::SetNstations(L1DetectorID detectorID, int nStations)
 {
@@ -298,7 +294,7 @@ void L1InitManager::SetNstations(L1DetectorID detectorID, int nStations)
   }
 }
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::SetTargetPosition(double x, double y, double z)
 {
@@ -316,7 +312,7 @@ void L1InitManager::SetTargetPosition(double x, double y, double z)
   fInitController.SetFlag(EInitKey::kTargetPos);
 }
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::SetTrackingLevel(int trackingLevel)
 {
@@ -328,7 +324,7 @@ void L1InitManager::SetTrackingLevel(int trackingLevel)
   fInitController.SetFlag(EInitKey::kTrackingLevel);
 }
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::TransferParametersContainer(L1Parameters& destination)
 {
@@ -341,7 +337,7 @@ void L1InitManager::TransferParametersContainer(L1Parameters& destination)
 // INIT CHECKERS
 //
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::CheckCAIterationsInit()
 {
@@ -361,7 +357,7 @@ void L1InitManager::CheckCAIterationsInit()
   fInitController.SetFlag(EInitKey::kCAIterations, ifInitPassed);
 }
 
-//-----------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------
 // TODO: REWRITE! and add const qualifier (S.Zharko)
 void L1InitManager::CheckStationsInfoInit()
 {

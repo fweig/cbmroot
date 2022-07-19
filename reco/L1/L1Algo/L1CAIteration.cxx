@@ -132,7 +132,7 @@ std::string L1CAIteration::ToString(int indentLevel) const
   aStream << indent << indentChar << "Doublet chi2 cut:             " << fDoubletChi2Cut << '\n';
   aStream << indent << indentChar << "Pick gather:                  " << fPickGather << '\n';
   aStream << indent << indentChar << "Pick neighbour:               " << fPickNeighbour << '\n';
-  aStream << indent << indentChar << "Max invariant momentum:       " << fMaxInvMom << '\n';
+  aStream << indent << indentChar << "Max inverse momentum:         " << fMaxInvMom << '\n';
   aStream << indent << indentChar << "Max slope at primary vertex:  " << fMaxSlopePV << '\n';
   aStream << indent << indentChar << "Max slope:                    " << fMaxSlope << '\n';
   aStream << indent << indentChar << "Max DZ:                       " << fMaxDZ << '\n';

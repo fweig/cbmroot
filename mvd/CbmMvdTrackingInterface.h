@@ -12,8 +12,8 @@
 #ifndef CbmMvdTrackingInterface_h
 #define CbmMvdTrackingInterface_h 1
 
-#include "CbmMvdDetectorId.h"
 #include "CbmMvdDetector.h"
+#include "CbmMvdDetectorId.h"
 #include "CbmMvdHit.h"
 #include "CbmMvdStationPar.h"
 #include "CbmPixelHit.h"
@@ -116,14 +116,11 @@ public:
     }();
     return hitMvd->GetStationNr();
   }
-  
+
   /// Gets a tracking station by the address of element (detectorID in terms of MVD)
   /// \param  detectorId  Unique element address (detectorID in terms of MVD)
   /// \return Local index of the tracking station
-  int GetTrackingStationIndex(int detectorId) const
-  {
-    return StationNr(detectorId);
-  }
+  int GetTrackingStationIndex(int detectorId) const { return StationNr(detectorId); }
 
   /// Gets max size of a tracking station along the X-axis
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])

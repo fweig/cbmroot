@@ -4,7 +4,7 @@
 
 /************************************************************************************************************
  * @file L1BaseStationInfo.cxx
- * @bried Realization of L1BaseStationInfo class large methods
+ * @brief Realization of L1BaseStationInfo class large methods
  * @since 18.01.2022
  *
  * The class is implemented to connect concrete experimental setup (CBM or BMN in CbmL1 

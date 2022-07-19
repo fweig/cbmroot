@@ -49,10 +49,10 @@ namespace L1Constants
     /// Flag for calling the CAMergeClones procedure ... TODO
     constexpr bool kIfMergeClones {true};
 
-    /// Flag: debug mode for analyzing the doublets pergormance efficiencies
+    /// Flag: debug mode for analyzing the doublets performance efficiencies
     //constexpr bool kIfDebugDoubletsPerformance {false};
 
-    /// Flag: debug mode for analyzing the tiplets pergormance efficiencies
+    /// Flag: debug mode for analyzing the tiplets performance efficiencies
     //constexpr bool kIfDebugTripletsPerformance {false};
 
     /// Flag: debug mode for creating pools for triplets.
@@ -75,7 +75,7 @@ namespace L1Constants
     constexpr int kAlignment {16};
   }  // end namespace misc
 
-  /// NoInit constants (aliasses)
+  /// NoInit constants (aliases)
   namespace noin
   {
     constexpr float kF {L1NaN::SetNaN<float>()};
