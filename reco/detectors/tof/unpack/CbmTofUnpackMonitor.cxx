@@ -53,6 +53,18 @@ CbmTofUnpackMonitor::~CbmTofUnpackMonitor()
   }
 }
 
+void CbmTofUnpackMonitor::SetBmonChannelMap(std::vector<uint32_t> vChanMapIn)
+{
+  uint32_t uNbCh = vChanMapIn.size();
+  if (8 != uNbCh && 16 != uNbCh) {
+    LOG(fatal) << "Wrong number of channels in call to CbmTofUnpackMonitor::SetBmonChannelMap, "
+               << "only 8 and 16 supported, input here was " << uNbCh;
+  }
+  for (UInt_t uChan = 0; uChan < uNbCh; ++uChan) {
+    fuBmonChanMap[uChan] = vChanMapIn[uChan];
+  }
+}
+
 Bool_t CbmTofUnpackMonitor::CreateHistograms()
 {
   /// Avoid name collision for the histos and canvases in Root memory

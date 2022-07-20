@@ -13,7 +13,9 @@
 #include "TProfile.h"
 #include "TProfile2D.h"
 
+#include <array>
 #include <cstdint>
+#include <vector>
 
 class TCanvas;
 
@@ -50,40 +52,7 @@ public:
   inline void SetSpillThreshold(UInt_t uCntLimit) { fuOffSpillCountLimit = uCntLimit; }
   inline void SetSpillThresholdNonPulser(UInt_t uCntLimit) { fuOffSpillCountLimitNonPulser = uCntLimit; }
   inline void SetSpillCheckInterval(Double_t dIntervalSec) { fdSpillCheckInterval = dIntervalSec; }
-  inline void SetBmonChannelMap(UInt_t uChan0, UInt_t uChan1, UInt_t uChan2, UInt_t uChan3, UInt_t uChan4,
-                                UInt_t uChan5, UInt_t uChan6, UInt_t uChan7)
-  {
-    fuBmonChanMap[0] = uChan0;
-    fuBmonChanMap[1] = uChan1;
-    fuBmonChanMap[2] = uChan2;
-    fuBmonChanMap[3] = uChan3;
-    fuBmonChanMap[4] = uChan4;
-    fuBmonChanMap[5] = uChan5;
-    fuBmonChanMap[6] = uChan6;
-    fuBmonChanMap[7] = uChan7;
-  }
-  inline void SetBmonChannelMap(UInt_t uChan0, UInt_t uChan1, UInt_t uChan2, UInt_t uChan3, UInt_t uChan4,
-                                UInt_t uChan5, UInt_t uChan6, UInt_t uChan7, UInt_t uChan8, UInt_t uChan9,
-                                UInt_t uChan10, UInt_t uChan11, UInt_t uChan12, UInt_t uChan13, UInt_t uChan14,
-                                UInt_t uChan15)
-  {
-    fuBmonChanMap[0]  = uChan0;
-    fuBmonChanMap[1]  = uChan1;
-    fuBmonChanMap[2]  = uChan2;
-    fuBmonChanMap[3]  = uChan3;
-    fuBmonChanMap[4]  = uChan4;
-    fuBmonChanMap[5]  = uChan5;
-    fuBmonChanMap[6]  = uChan6;
-    fuBmonChanMap[7]  = uChan7;
-    fuBmonChanMap[8]  = uChan8;
-    fuBmonChanMap[9]  = uChan9;
-    fuBmonChanMap[10] = uChan10;
-    fuBmonChanMap[11] = uChan11;
-    fuBmonChanMap[12] = uChan12;
-    fuBmonChanMap[13] = uChan13;
-    fuBmonChanMap[14] = uChan14;
-    fuBmonChanMap[15] = uChan15;
-  }
+  void SetBmonChannelMap(std::vector<uint32_t> vChanMapIn);
 
   void SetLongDurationLimits(UInt_t uDurationSeconds, UInt_t uBinSize)
   {
