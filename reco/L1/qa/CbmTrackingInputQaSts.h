@@ -66,9 +66,6 @@ public:
   /// FairTask: Action at hte end of the run
   void Finish();
 
-  /// Fits histograms
-  void FitHistograms();
-
   /// Gets maximum allowed distance between z-components of hit/MC-point position and the station center [cm]
   double GetMaxDistanceZ() const { return fMaxDistanceZ; }
 
@@ -113,7 +110,12 @@ private:
   void DeInit();
 
   /// Fills distributions of residuals
+  /// \return Success status
   bool FillHistosResiduals();
+
+  /// Fits histograms
+  /// \return Success status
+  bool FitHistograms();
 
   /// Checks geometry
   InitStatus GeometryQa();

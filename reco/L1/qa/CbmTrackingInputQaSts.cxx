@@ -46,8 +46,6 @@ CbmTrackingInputQaSts::~CbmTrackingInputQaSts() { DeInit(); }
 //
 bool CbmTrackingInputQaSts::CheckDistributions()
 {
-  std::cout << "CALL CbmTrackingInputQaSts::CheckDistributions()\n";
-
   bool res = true;
 
   const int nStations = fpDetectorInterface->GetNtrackingStations();
@@ -60,14 +58,14 @@ bool CbmTrackingInputQaSts::CheckDistributions()
     // Checks sigma of distribution fit with unity
     auto* pFitFunc = pHist.GetFunction("gaus");
     if (!pFitFunc) {
-      throw std::runtime_error(TString("STS tracking input QA: attempt to check sigma of histogram \"")
-                               + pHist.GetName() + "\" with undefined fit");
+      LOG(error) << "STS tracking input QA: fit function not found for histogram \"" << pHist.GetName() << '\"';
+      return false;
     }
     auto vSigma = pFitFunc->GetParameter(2);
     auto eSigma = pFitFunc->GetParError(2);
 
     // Select 3 sigma interval
-    LOG(info) << "Checking histogram \"" << pHist.GetName() << "\": fit result = " << vSigma << " +/- " << eSigma;
+    LOG(info) << "Checking histogram \"" << pHist.GetName() << "\": sigma(fit) = " << vSigma << " +/- " << eSigma;
     if (std::fabs(vSigma - 1.) < 3. * eSigma) { return true; }
     else {
       return false;
@@ -147,7 +145,7 @@ void CbmTrackingInputQaSts::DeInit()
 //
 void CbmTrackingInputQaSts::Exec(Option_t*)
 {
-  // Run resolution Qa
+  // Run resolution QA
   ResolutionQa();
 
   // Update number of events
@@ -158,19 +156,18 @@ void CbmTrackingInputQaSts::Exec(Option_t*)
 //
 void CbmTrackingInputQaSts::Finish()
 {
-  std::cout << "CALL CbmTrackingInputQaSts::Finish()\n";
-
   // Fit histograms
-  this->FitHistograms();
+  bool isFitSucceed = this->FitHistograms();
+  if (!isFitSucceed) { LOG(error) << "STS tracking input QA: histograms could not be fitted"; }
+
+  // Check accumulated distributions
+  bool areResolutionsOk = isFitSucceed && CheckDistributions();
 
   // Add output to a sink
   auto* pSink = FairRootManager::Instance()->GetSink();
   if (pSink) { pSink->WriteObject(&GetQa(), nullptr); }
 
-  // Check accumulated distributions
-  bool areResolutionsOk = CheckDistributions();
-
-  // TODO: Collect all the flags in one place and make a decission here (S.Zharko)
+  // TODO: Collect all the flags in one place and make a decision here (S.Zharko)
 
   if (areResolutionsOk) { LOG(info) << this->GetName() << ": \033[1;32mtask succeeded\033[0m"; }
   else {
@@ -180,21 +177,35 @@ void CbmTrackingInputQaSts::Finish()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmTrackingInputQaSts::FitHistograms()
+bool CbmTrackingInputQaSts::FitHistograms()
 {
-  std::cout << "CALL CbmTrackingInputQaSts::FitHistograms()\n";
+  bool res = true;  // flag: true - fit succeed, false - fit failed
+
+  // Function, which provides fit of a histogram with necessary checks
+  // If the histogram is empty, the function returns false.
+  auto FitHistogram = [](TH1& hist, const char* fcnname, const char* fitopt) {
+    if (hist.GetEntries() > 0) {
+      hist.Fit(fcnname, fitopt);
+      return true;
+    }
+    else {
+      LOG(warn) << "STS tracking input QA: attempt to fit an empty histogram \"" << hist.GetName() << '\"';
+      return false;
+    }
+  };
 
   const int nStations = fpDetectorInterface->GetNtrackingStations();
   for (int iSt = 0; iSt < nStations; ++iSt) {
     // Fit histograms
-    fHistResidualX[iSt].Fit("gaus", "Q");
-    fHistResidualY[iSt].Fit("gaus", "Q");
-    fHistResidualT[iSt].Fit("gaus", "Q");
-
-    fHistPullX[iSt].Fit("gaus", "Q");
-    fHistPullY[iSt].Fit("gaus", "Q");
-    fHistPullT[iSt].Fit("gaus", "Q");
+    res = FitHistogram(fHistResidualX[iSt], "gaus", "Q") && res;
+    res = FitHistogram(fHistResidualY[iSt], "gaus", "Q") && res;
+    res = FitHistogram(fHistResidualT[iSt], "gaus", "Q") && res;
+    res = FitHistogram(fHistPullX[iSt], "gaus", "Q") && res;
+    res = FitHistogram(fHistPullY[iSt], "gaus", "Q") && res;
+    res = FitHistogram(fHistPullT[iSt], "gaus", "Q") && res;
   }
+
+  return res;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -303,7 +314,7 @@ InitStatus CbmTrackingInputQaSts::InitCanvases()
   fCanvEfficiencyR.Clear();
   fCanvEfficiencyXY.Clear();
 
-  // Devide canvases into sections to store plots vs. station ID
+  // Divide canvases into sections to store plots vs. station ID
   fCanvResidualX.Divide2D(fpDetectorInterface->GetNtrackingStations());
   fCanvResidualY.Divide2D(fpDetectorInterface->GetNtrackingStations());
   fCanvResidualT.Divide2D(fpDetectorInterface->GetNtrackingStations());
@@ -470,7 +481,7 @@ CbmMatch CbmTrackingInputQaSts::MatchHits(const CbmStsHit* pHit, int iHit)
 {
   CbmMatch res;  // Matching result
 
-  // Front and back cluster indeces
+  // Front and back cluster indexes
   const int iClusterF = pHit->GetFrontClusterId();
   if (iClusterF < 0) {
     LOG(error) << "STD: hit (id = " << iHit << ") has incorrect front cluster index: " << iClusterF;
@@ -798,7 +809,4 @@ void CbmTrackingInputQaSts::ResolutionQa()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmTrackingInputQaSts::SetParContainers()
-{
-  std::cout << "\033[1;32mCALL:\033[0mCbmTrackingInputQaSts::SetParContainers()\n";
-}
+void CbmTrackingInputQaSts::SetParContainers() {}
