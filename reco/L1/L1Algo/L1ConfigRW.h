@@ -43,8 +43,6 @@ private:
   void ReadCAIterations(const YAML::Node& node);
 
   /// Gets parameters content of the node
-  /// FIXME: We assume, that all of the keys of node can be represented with strings. This assumption is not always true, so
-  ///        one should be sure about the assumption when using this function.
   /// \param   node  YAML node
   /// \return  Vector of key names
   std::vector<std::string> GetNodeKeys(const YAML::Node& node) const;

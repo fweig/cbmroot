@@ -1479,18 +1479,20 @@ inline void L1Algo::DupletsStaPort(
     L1HitPoint* vHits_l = &((*vHitPointsUnused)[0]) + HitsUnusedStartIndex[istal];
     L1HitPoint* vHits_m = &((*vHitPointsUnused)[0]) + HitsUnusedStartIndex[istam];
 
-    fvec u_front[Portion / fvecLen], u_back[Portion / fvecLen];
-    fvec dv0[Portion / fvecLen], du0[Portion / fvecLen];
-    fvec zPos[Portion / fvecLen];
-    fvec HitTime[Portion / fvecLen];
-    fvec HitTimeEr[Portion / fvecLen];
-    fvec Event[Portion / fvecLen];
+    fvec u_front[L1Constants::size::kPortionLeftHitsP];
+    fvec u_back[L1Constants::size::kPortionLeftHitsP];
+    fvec dv0[L1Constants::size::kPortionLeftHitsP];
+    fvec du0[L1Constants::size::kPortionLeftHitsP];
+    fvec zPos[L1Constants::size::kPortionLeftHitsP];
+    fvec HitTime[L1Constants::size::kPortionLeftHitsP];
+    fvec HitTimeEr[L1Constants::size::kPortionLeftHitsP];
+    fvec Event[L1Constants::size::kPortionLeftHitsP];
 
     /// prepare the portion of left hits data
     Tindex& n1 = n_g[ip];
 
     findSingletsStep0(  // input
-      (ip - portionStopIndex_[istal + 1]) * Portion, n1, vHits_l,
+      (ip - portionStopIndex_[istal + 1]) * L1Constants::size::kPortionLeftHits, n1, vHits_l,
       // output
       u_front, u_back, zPos, hitsl_1, HitTime, HitTimeEr, Event, du0, dv0);
 
@@ -1719,6 +1721,7 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
 
 void L1Algo::CATrackFinder()
 {
+
 
 #ifdef _OPENMP
   omp_set_num_threads(fNThreads);
@@ -2019,10 +2022,10 @@ void L1Algo::CATrackFinder()
       fDupletPortionSize.clear();
       for (int istal = fNstations - 2; istal >= fFirstCAstation; istal--) {  //start downstream chambers
         int NHits_l   = HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal];
-        int nPortions = NHits_l / Portion;
-        int rest      = NHits_l - nPortions * Portion;
+        int nPortions = NHits_l / L1Constants::size::kPortionLeftHits;
+        int rest      = NHits_l - nPortions * L1Constants::size::kPortionLeftHits;
         for (int ipp = 0; ipp < nPortions; ipp++) {
-          fDupletPortionSize.push_back(Portion);
+          fDupletPortionSize.push_back(L1Constants::size::kPortionLeftHits);
         }  // start_lh - portion of left hits
         if (rest > 0) fDupletPortionSize.push_back(rest);
         fDupletPortionStopIndex[istal] = fDupletPortionSize.size();
@@ -2042,17 +2045,17 @@ void L1Algo::CATrackFinder()
          for (int istal = fNstations-2; istal >= fFirstCAstation; istal--)  //start downstream chambers
          {
          int nHits = HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal];
-
-         int NHits_P = nHits/Portion;
-
+         
+         int NHits_P = nHits/L1Constants::size::kPortionLeftHits;
+         
          for( int ipp = 0; ipp < NHits_P; ipp++ )
          {
-         n_g1[ip] = Portion;
+         n_g1[ip] = L1Constants::size::kPortionLeftHits;
          ip++;
          } // start_lh - portion of left hits
-
-         n_g1[ip] = nHits - NHits_P*Portion;
-
+         
+         n_g1[ip] = nHits - NHits_P * L1Constants::size::kPortionLeftHits;
+         
          ip++;
          fDupletPortionStopIndex[istal] = ip;
          }// lstations
@@ -2067,13 +2070,12 @@ void L1Algo::CATrackFinder()
 #endif
 
 
-    const Tindex vPortion = Portion / fvecLen;
-    L1TrackPar T_1[vPortion];
-    L1FieldRegion fld_1[vPortion];
-    L1HitIndex_t hitsl_1[Portion];
-    L1TrackPar TG_1[vPortion];
-    L1FieldRegion fldG_1[vPortion];
-    L1HitIndex_t hitslG_1[Portion];
+    L1TrackPar T_1[L1Constants::size::kPortionLeftHitsP];
+    L1FieldRegion fld_1[L1Constants::size::kPortionLeftHitsP];
+    L1HitIndex_t hitsl_1[L1Constants::size::kPortionLeftHits];
+    L1TrackPar TG_1[L1Constants::size::kPortionLeftHitsP];
+    L1FieldRegion fldG_1[L1Constants::size::kPortionLeftHitsP];
+    L1HitIndex_t hitslG_1[L1Constants::size::kPortionLeftHits];
 
     /// middle hits indexed by number of doublets in portion(i2)
     L1Vector<L1HitIndex_t> hitsm_2("L1CATrackFinder::hitsm_2");

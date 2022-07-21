@@ -13,6 +13,7 @@
 #define L1Constants_h 1
 
 #include "L1NaN.h"
+#include "vectors/P4_F32vec4.h"  // for fvecLen
 
 /// Namespace contains compile-time constants definition for the L1 tracking algorithm
 namespace L1Constants
@@ -28,15 +29,23 @@ namespace L1Constants
     constexpr int kMaxFieldApproxPolynomialOrder {5};
 
     /// Amount of bits to code a station, thread or triplet. This values determine the ma
-    constexpr unsigned int kStationBits {6u};                                ///< Amount of bits to code one station
-    constexpr unsigned int kThreadBits {6u};                                 ///< Amount of bits to code one thread
-    constexpr unsigned int kTripletBits {32u - kStationBits - kThreadBits};  ///< Amount of bits to code one triplet
+    constexpr unsigned int kStationBits = 6u;                                ///< Amount of bits to code one station
+    constexpr unsigned int kThreadBits  = 6u;                                ///< Amount of bits to code one thread
+    constexpr unsigned int kTripletBits = 32u - kStationBits - kThreadBits;  ///< Amount of bits to code one triplet
 
-    constexpr int kMaxNdetectors {5};                  ///< Max number of tracking detectors
-    constexpr int kMaxNstations {1u << kStationBits};  ///< Max number of stations, 2^6  = 64
-    constexpr int kMaxNthreads {1u << kThreadBits};    ///< Max number of threads, 2^6  = 64
-    constexpr int kMaxNtriplets {1u << kTripletBits};  ///< Max number of triplets, 2^20 = 1,048,576
-  }                                                    // end namespace size
+    constexpr int kMaxNdetectors = 5;                   ///< Max number of tracking detectors
+    constexpr int kMaxNstations  = 1u << kStationBits;  ///< Max number of stations, 2^6  = 64
+    constexpr int kMaxNthreads   = 1u << kThreadBits;   ///< Max number of threads, 2^6  = 64
+    constexpr int kMaxNtriplets  = 1u << kTripletBits;  ///< Max number of triplets, 2^20 = 1,048,576
+
+    // TODO: Clarify the meaning of these coefficients
+    constexpr int kCoeff               = 64 / 4;                         ///< TODO:
+    constexpr int kPortionLeftHits     = 1024 / kCoeff;                  ///< portion of left hits
+    constexpr int kPortionLeftHitsP    = 1024 / kCoeff / fvecLen;        ///< portion of left hits per one vector word
+    constexpr int kMaxPortionDoublets  = 10000 / 5 * 64 / 2 / kCoeff;    ///< Max size of the doublets portion
+    constexpr int kMaxPortionTriplets  = 10000 * 5 * 64 / 2 / kCoeff;    ///< Max size of the triplets portion
+    constexpr int kMaxPortionTripletsP = kMaxPortionTriplets / fvecLen;  ///< Max size of the triplets portion
+  }                                                                      // namespace size
 
   /// Control flags
   namespace control
@@ -64,26 +73,25 @@ namespace L1Constants
   namespace phys
   {
     /* Particle masses used for track fit */
-    constexpr float kMuonMass {0.10565800f};    ///< Muon mass     [GeV/c2]
-    constexpr float kElectronMass {0.000511f};  ///< Electron mass [GeV/c2]
-  }                                             // namespace phys
+    constexpr float kMuonMass     = 0.10565800f;  ///< Muon mass     [GeV/c2]
+    constexpr float kElectronMass = 0.000511f;    ///< Electron mass [GeV/c2]
+  }                                               // namespace phys
 
   /// Miscellaneous constants
   namespace misc
   {
     constexpr int kAssertionLevel {0};  ///< Assertion level
     constexpr int kAlignment {16};
-  }  // end namespace misc
+  }  // namespace misc
 
   /// NoInit constants (aliases)
   namespace noin
   {
-    constexpr float kF {L1NaN::SetNaN<float>()};
-    constexpr double kD {L1NaN::SetNaN<double>()};
-    constexpr int k32I {L1NaN::SetNaN<int>()};
-    constexpr unsigned int k32U {L1NaN::SetNaN<unsigned int>()};
+    constexpr float kF          = L1NaN::SetNaN<float>();
+    constexpr double kD         = L1NaN::SetNaN<double>();
+    constexpr int k32I          = L1NaN::SetNaN<int>();
+    constexpr unsigned int k32U = L1NaN::SetNaN<unsigned int>();
   }  // namespace noin
-
 }  // end namespace L1Constants
 
 

@@ -34,25 +34,25 @@ void L1Algo::SetNThreads(unsigned int n)
     fTrackCandidates[i].SetName(std::stringstream() << "L1Algo::fTrackCandidates[" << i << "]");
 
 
-    fT_3[i].reserve(MaxPortionTriplets / fvecLen);
+    fT_3[i].reserve(L1Constants::size::kMaxPortionTripletsP);
 
     fhitsl_3[i].SetName(std::stringstream() << "L1Algo::fhitsl_3[" << i << "]");
     fhitsm_3[i].SetName(std::stringstream() << "L1Algo::fhitsm_3[" << i << "]");
     fhitsr_3[i].SetName(std::stringstream() << "L1Algo::fhitsr_3[" << i << "]");
 
-    fhitsl_3[i].reserve(MaxPortionTriplets);
-    fhitsm_3[i].reserve(MaxPortionTriplets);
-    fhitsr_3[i].reserve(MaxPortionTriplets);
+    fhitsl_3[i].reserve(L1Constants::size::kMaxPortionTriplets);
+    fhitsm_3[i].reserve(L1Constants::size::kMaxPortionTriplets);
+    fhitsr_3[i].reserve(L1Constants::size::kMaxPortionTriplets);
 
-    fu_front3[i].reserve(MaxPortionTriplets / fvecLen);
-    fu_back3[i].reserve(MaxPortionTriplets / fvecLen);
-    fz_pos3[i].reserve(MaxPortionTriplets / fvecLen);
-    fTimeR[i].reserve(MaxPortionTriplets / fvecLen);
-    fTimeER[i].reserve(MaxPortionTriplets / fvecLen);
-    dx[i].reserve(MaxPortionTriplets / fvecLen);
-    dy[i].reserve(MaxPortionTriplets / fvecLen);
-    du[i].reserve(MaxPortionTriplets / fvecLen);
-    dv[i].reserve(MaxPortionTriplets / fvecLen);
+    fu_front3[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    fu_back3[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    fz_pos3[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    fTimeR[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    fTimeER[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    dx[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    dy[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    du[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    dv[i].reserve(L1Constants::size::kMaxPortionTripletsP);
 
     for (unsigned int j = 0; j < L1Constants::size::kMaxNstations; j++) {
       fTriplets[j][i].SetName(std::stringstream() << "L1Algo::fTriplets[" << i << "][" << j << "]");

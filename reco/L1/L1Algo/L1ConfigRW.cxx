@@ -36,7 +36,7 @@ std::vector<std::string> L1ConfigRW::GetNodeKeys(const YAML::Node& node) const
     }
   }
   catch (const YAML::InvalidNode& exc) {  // It is impossible to
-    LOG(warn) << "L1 config: attempt to call L1ConfigRW::GetNodeKeys for node, which keys could not be represented "
+    LOG(warn) << "L1 config: attempt to call L1ConfigRW::GetNodeKeys for node, keys of which could not be represented "
               << "with strings. An empty vector will be returned";
     std::vector<std::string>().swap(res);
   }

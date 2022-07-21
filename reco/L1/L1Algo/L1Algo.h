@@ -259,20 +259,20 @@ public:
   int GetMcTrackIdForUnusedHit(int iHit);
 
 public:
-  int fNstrips {0};                                    ///> number of strips
-  L1Vector<L1Hit>* vHits {nullptr};                    ///> hits as a combination of front-, backstrips and z-position
-  L1Grid vGrid[L1Constants::size::kMaxNstations];      ///> hits as a combination of front-, backstrips and z-position
-  L1Grid vGridTime[L1Constants::size::kMaxNstations];  ///>
+  int fNstrips {0};                                ///< number of strips
+  L1Vector<L1Hit>* vHits {nullptr};                ///< hits as a combination of front and back strips and z-position
+  L1Grid vGrid[L1Constants::size::kMaxNstations];  ///< hits as a combination of front and back strips and z-position
+  L1Grid vGridTime[L1Constants::size::kMaxNstations];  ///<
 
   L1Vector<unsigned char>* fStripFlag {nullptr};  // information of hits station & using hits in tracks;
 
   double fCATime {0.};  // time of track finding
 
-  L1Vector<L1Track> fTracks {"L1Algo::fTracks"};           // reconstructed tracks
-  L1Vector<L1HitIndex_t> fRecoHits {"L1Algo::fRecoHits"};  // packed hits of reconstructed tracks
+  L1Vector<L1Track> fTracks {"L1Algo::fTracks"};           ///< reconstructed tracks
+  L1Vector<L1HitIndex_t> fRecoHits {"L1Algo::fRecoHits"};  ///< packed hits of reconstructed tracks
 
-  const L1HitIndex_t* HitsStartIndex {nullptr};  // station-bounders in vHits array
-  const L1HitIndex_t* HitsStopIndex {nullptr};   // station-bounders in vHits array
+  const L1HitIndex_t* HitsStartIndex {nullptr};  ///< station-bounders in vHits array
+  const L1HitIndex_t* HitsStopIndex {nullptr};   ///< station-bounders in vHits array
 
 
   //  L1Branch* pointer;
@@ -305,36 +305,15 @@ public:
   fvec EventTime[L1Constants::size::kMaxNthreads][L1Constants::size::kMaxNthreads] {{0}};
   fvec Err[L1Constants::size::kMaxNthreads][L1Constants::size::kMaxNthreads] {{0}};
 
-
-  /// standard sizes of the arrays
-  enum
-  {
-    multiCoeff = 1,  // central - 1, mbias
-
-
-    coeff = 64 / 4,
-
-    Portion = 1024 / coeff,  // portion of left hits
-
-    MaxPortionDoublets = 10000 / 5 * 64 / 2 / coeff /*/ multiCoeff*/ * 1,
-    MaxPortionTriplets = 10000 * 5 * 64 / 2 / coeff /*/ multiCoeff*/ * 1,
-    MaxNPortion        = 40 * coeff / multiCoeff,
-
-
-    MaxArrSize = MaxNPortion * MaxPortionDoublets / L1Constants::size::kMaxNstations
-    //200000,  // standart size of big arrays  // mas be 40000 for normal work in cbmroot!
-  };
-
-
   /// --- data used during finding iterations
   int isec {0};                                       // iteration TODO: to be dispatched (S.Zharko, 21.06.2022)
-  const L1CAIteration* fpCurrentIteration {nullptr};  ///< pointer to the current CA track finder iteration
+  const L1CAIteration* fpCurrentIteration = nullptr;  ///< pointer to the current CA track finder iteration
 
-  L1Vector<L1Hit>* vHitsUnused {nullptr};
-  L1Vector<L1HitIndex_t>* RealIHitP {nullptr};
-  L1Vector<L1HitIndex_t>* RealIHitPBuf {nullptr};
-  L1Vector<L1HitPoint>* vHitPointsUnused {nullptr};
-  L1HitIndex_t* RealIHit {nullptr};  // index in vHits indexed by index in vHitsUnused
+  L1Vector<L1Hit>* vHitsUnused           = nullptr;
+  L1Vector<L1HitIndex_t>* RealIHitP      = nullptr;
+  L1Vector<L1HitIndex_t>* RealIHitPBuf   = nullptr;
+  L1Vector<L1HitPoint>* vHitPointsUnused = nullptr;
+  L1HitIndex_t* RealIHit                 = nullptr;  // index in vHits indexed by index in vHitsUnused
 
   L1HitIndex_t HitsUnusedStartIndex[L1Constants::size::kMaxNstations + 1] {0};
   L1HitIndex_t HitsUnusedStopIndex[L1Constants::size::kMaxNstations + 1] {0};
@@ -466,7 +445,6 @@ private:
                     fvec* chi2);
   ///
   void CAMergeClones();
-
 
   inline __attribute__((always_inline)) void PackLocation(unsigned int& location, unsigned int& triplet,
                                                           unsigned int iStation, unsigned int& thread)

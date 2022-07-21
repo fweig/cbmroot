@@ -2,12 +2,11 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
-/************************************************************************************************************
- * @file L1Parameters.cxx
- * @brief Parameter container for the L1Algo library
- * @since 10.02.2022
- * @author S.Zharko <s.zharko@gsi.de>
- ***********************************************************************************************************/
+/// @file L1Parameters.cxx
+/// @brief Parameter container for the L1Algo library
+/// @since 10.02.2022
+/// @author S.Zharko <s.zharko@gsi.de>
+
 #include "L1Parameters.h"
 
 #include <FairLogger.h>

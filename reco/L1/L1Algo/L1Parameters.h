@@ -2,12 +2,10 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
-/************************************************************************************************************
- * @file L1Parameters.h
- * @brief Parameter container for the L1Algo library
- * @since 19.12.2021
- * @author S.Zharko <s.zharko@gsi.de>
- ***********************************************************************************************************/
+/// @file L1Parameters.h
+/// @brief Parameter container for the L1Algo library
+/// @since 19.12.2021
+/// @author S.Zharko <s.zharko@gsi.de>
 
 #ifndef L1Parameters_h
 #define L1Parameters_h 1
@@ -164,9 +162,9 @@ public:
   /// Class invariant checker
   void CheckConsistency() const;
 
-  /// ***************************
-  /// ** Flags for development **
-  /// ***************************
+  // ***************************
+  // ** Flags for development **
+  // ***************************
 
   /// Are the hit search areas ignored
   bool DevIsIgnoreHitSearchAreas() const { return fDevIsIgnoreHitSearchAreas; }
@@ -220,9 +218,9 @@ private:
   ///   active index:  0 -1  1  2 -1  3  4  5  6  7  0  0  0  0
   alignas(L1Constants::misc::kAlignment) std::array<int, L1Constants::size::kMaxNstations> fActiveStationGlobalIDs {};
 
-  /// ***************************
-  /// ** Flags for development **
-  /// ***************************
+  // ***************************
+  // ** Flags for development **
+  // ***************************
 
   bool fDevIsIgnoreHitSearchAreas {false};  ///< Process all hits on the station ignoring hit search area
 
@@ -232,9 +230,9 @@ private:
 
   bool fDevIsMatchTripletsViaMc {false};  ///< Flag to match triplets using Mc information
 
-  /********************************
-   ** Friend classes declaration **
-   ********************************/
+  // ********************************
+  // ** Friend classes declaration **
+  // ********************************
 
   friend class L1InitManager;
 };

@@ -74,8 +74,8 @@ class L1InitManager {
 private:
   enum class EInitKey
   {
-    // NOTE: Please, keep the numbers of enum items in the existing order: it helps to debug the initialization with
-    //       this->GetObjectInitController().ToString() method call (S.Zharko)
+    // NOTE: Please, keep the numbers of the enumeration items in the existing order: it helps to debug the
+    //       initialization with this->GetObjectInitController().ToString() method call (S.Zharko)
     kActiveDetectorIDs,             ///< 0) If the detector sequence is set
     kStationsNumberCrosscheck,      ///< 1) If the crosscheck station numbers were setup
     kFieldFunction,                 ///< 2) If magnetic field getter function is set
@@ -87,7 +87,7 @@ private:
     kTrackingLevel,                 ///< 8)
     kGhostSuppression,              ///< 9)
     kMomentumCutOff,                ///< 10)
-    kEnd                            ///< 11) [technical] number of entries in the enum
+    kEnd                            ///< 11) [technical] number of entries in the enumeration
   };
 
   using L1DetectorIDIntMap_t = std::unordered_map<L1DetectorID, int, L1Utils::EnumClassHash>;
@@ -232,9 +232,9 @@ public:
   /// \param  destination  Reference to the destination of the L1 object
   void TransferParametersContainer(L1Parameters& destination);
 
-  /// ***************************
-  /// ** Flags for development **
-  /// ***************************
+  // ***************************
+  // ** Flags for development **
+  // ***************************
 
   /// Ignore hit search areas
   void DevSetIgnoreHitSearchAreas(bool value = true) { fParameters.fDevIsIgnoreHitSearchAreas = value; }
@@ -249,6 +249,10 @@ public:
   void DevSetIsMatchTripletsViaMc(bool value = true) { fParameters.fDevIsMatchTripletsViaMc = value; }
 
 private:
+  // *********************
+  // ** Private methods **
+  // *********************
+
   /// Checker for L1CAIteration container initialization (sets EInitKey::kCAIterations)
   /// \return true If all L1CAIteration objects were initialized properly
   void CheckCAIterationsInit();
@@ -259,6 +263,11 @@ private:
 
   /// Forms parameters container
   void FormParametersContainer();
+
+
+  // *****************
+  // ** Data fields **
+  // *****************
 
   // * Basic fields *
 
