@@ -68,7 +68,6 @@ CbmDigitization::~CbmDigitization()
     if (it->second) delete it->second;
   }  //# CbmDigitizeInfos
   // CbmDaq and the digitizers are destructed by FairRun.
-  if (fSource) delete fSource;
 }
 // --------------------------------------------------------------------------
 
