@@ -16,6 +16,7 @@
 #include <TH2.h>
 #include <THttpServer.h>
 #include <TProfile.h>
+#include <TROOT.h>
 
 #include <cstdint>
 #include <iomanip>
@@ -113,9 +114,19 @@ void CbmRichUnpackMonitor::PrintDebugInfo(const uint64_t MsStartTime, const size
 Bool_t CbmRichUnpackMonitor::Init(CbmMcbm2018RichPar* parset)
 {
   pUnpackParameters = parset;
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+  gROOT->cd();
+
   /// Trigger histo creation on all associated monitors
   CreateHistograms(parset);
   if (fDebugMode) CreateDebugHistograms(parset);
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
   std::vector<std::pair<TNamed*, std::string>> vHistos = GetHistoVector();

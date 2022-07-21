@@ -20,7 +20,12 @@ CbmStsUnpackConfig::CbmStsUnpackConfig(std::string detGeoSetupTag, UInt_t runid)
 {
 }
 
-CbmStsUnpackConfig::~CbmStsUnpackConfig() {}
+CbmStsUnpackConfig::~CbmStsUnpackConfig()
+{
+  LOG(debug) << fName << "::~CbmStsUnpackConfig";
+  fWalkMap.clear();
+  LOG(debug) << fName << "::~CbmStsUnpackConfig done";
+}
 
 // ---- Init ----
 void CbmStsUnpackConfig::InitAlgo()

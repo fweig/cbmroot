@@ -20,6 +20,7 @@
 #include <THttpServer.h>
 #include <TPaveStats.h>
 #include <TProfile.h>
+#include <TROOT.h>
 
 #include <cstdint>
 #include <iomanip>
@@ -1312,6 +1313,11 @@ Bool_t CbmTofUnpackMonitor::Init(CbmMcbm2018TofPar* parset)
   fuNbOfChannelsPerComp = fuNbOfGet4PerComp * fuNbOfChannelsPerGet4;
   fuNbOfGet4InSyst      = fuNbOfComps * fuNbOfGet4PerComp;
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+  gROOT->cd();
+
   /// Trigger histo creation on all associated monitors
   CreateHistograms();
   DrawCanvases();
@@ -1319,6 +1325,10 @@ Bool_t CbmTofUnpackMonitor::Init(CbmMcbm2018TofPar* parset)
     CreateBmonHistograms();
     DrawBmonCanvases();
   }
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
   std::vector<std::pair<TNamed*, std::string>> vHistos = GetHistoVector();
@@ -1402,6 +1412,16 @@ void CbmTofUnpackMonitor::Finish()
 
   histoFile->Close();
   delete histoFile;
+
+  /// Cleanup memory
+  for (auto iter = fvpAllHistoPointers.begin(); iter != fvpAllHistoPointers.end();) {
+    if (iter->first != nullptr) { delete iter->first; }
+    iter = fvpAllHistoPointers.erase(iter);
+  }
+  for (auto iter = fvpAllCanvasPointers.begin(); iter != fvpAllCanvasPointers.end();) {
+    if (iter->first != nullptr) { delete iter->first; }
+    iter = fvpAllCanvasPointers.erase(iter);
+  }
 }
 
 

@@ -18,6 +18,7 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <TProfile.h>
+#include <TROOT.h>
 
 #include <boost/math/special_functions/math_fwd.hpp>
 
@@ -98,7 +99,17 @@ Bool_t CbmTrdUnpackFaspMonitor::Init()
     else
       it++;
   }
+
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+  gROOT->cd();
+
   createHistos();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   return kTRUE;
 }

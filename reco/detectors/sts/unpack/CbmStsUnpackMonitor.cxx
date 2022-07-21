@@ -17,6 +17,7 @@
 #include <TH2.h>
 #include <THttpServer.h>
 #include <TProfile.h>
+#include <TROOT.h>
 
 #include <cstdint>
 #include <iomanip>
@@ -879,12 +880,21 @@ Bool_t CbmStsUnpackMonitor::Init(CbmMcbm2018StsPar* parset)
   // Get Infos from the parset
   fNrElinksPerDpb = parset->GetNbElinkPerDpb();
 
+  /// Save old global file and folder pointer to avoid messing with FairRoot
+  TFile* oldFile     = gFile;
+  TDirectory* oldDir = gDirectory;
+  gROOT->cd();
+
   /// Trigger histo creation on all associated monitors
   CreateHistograms(parset);
   if (fDebugMode) CreateDebugHistograms(parset);
 
   /// Trigger Canvas creation on all associated monitors
   DrawCanvases();
+
+  /// Restore old global file and folder pointer to avoid messing with FairRoot
+  gFile      = oldFile;
+  gDirectory = oldDir;
 
   /// Obtain vector of pointers on each histo from the algo (+ optionally desired folder)
   std::vector<std::pair<TNamed*, std::string>> vHistos = GetHistoVector();
