@@ -102,7 +102,7 @@ protected:
   }
 
   /** @brief Function that allows special calls during Finish in the derived algos */
-  virtual void finishDerived() { return; }
+  void finishDerived();
 
   /**
    * @brief Initialisation at begin of run. Special inits of the derived algos.
@@ -204,6 +204,8 @@ private:
   bool fbBmonParMode                    = false;
   std::vector<bool> fvbMaskedComponents = {};
   bool fbLastEpochGood                  = false;
+  uint64_t fulBadEpochNb                = 0;
+  uint64_t fulBadEpochHitNb             = 0;
 
   /// Book-keeping members
   uint32_t fuProcEpochUntilError = 0;

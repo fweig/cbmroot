@@ -44,6 +44,14 @@ std::vector<std::pair<std::string, std::shared_ptr<FairParGenericSet>>>*
   return &fParContVec;
 }
 
+// ---- finishDerived ----
+void CbmTofUnpackAlgo::finishDerived()
+{
+  LOG(info) << fName << std::endl                                  // Block clang format
+            << " " << fulBadEpochNb << " bad epochs" << std::endl  // Block clang format
+            << " " << fulBadEpochHitNb << " hit messages lost due to bad epochs";
+}
+
 // ---- init
 Bool_t CbmTofUnpackAlgo::init() { return kTRUE; }
 
@@ -264,6 +272,9 @@ bool CbmTofUnpackAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UI
           /// Epoch OK
           ProcessHit(pMess[uIdx]);
         }
+        else {
+          ++fulBadEpochHitNb;
+        }
         break;
       }  // case critof001::MSG_HIT:
       case critof001::MSG_EPOCH: {
@@ -365,6 +376,7 @@ void CbmTofUnpackAlgo::ProcessEpoch(const critof001::Message& mess, uint32_t uMe
       fbLastEpochGood       = false;
       ulEpochNr             = ulMsStartInEpoch;
       fuProcEpochUntilError = 0;
+      ++fulBadEpochNb;
     }  // if( ulEpochNr != ulMsStartInEpoch )
     else {
       fbLastEpochGood = true;
@@ -383,6 +395,7 @@ void CbmTofUnpackAlgo::ProcessEpoch(const critof001::Message& mess, uint32_t uMe
     ulEpochNr             = (fulCurrentEpoch + 1) % critof001::kulEpochCycleEp;
     fbLastEpochGood       = false;
     fuProcEpochUntilError = 0;
+    ++fulBadEpochNb;
   }  // if( ( (fulCurrentEpoch + 1) % critof001::kuEpochCounterSz ) != ulEpochNr )
   else {
     fbLastEpochGood = true;
