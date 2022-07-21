@@ -36,18 +36,6 @@ CbmStsParAsic::CbmStsParAsic(const CbmStsParAsic& other)
 }
 // -------------------------------------------------------------------------
 
-
-// -----   Move constructor   ----------------------------------------------
-CbmStsParAsic::CbmStsParAsic(CbmStsParAsic&& other)
-{
-  Set(other.fNofChannels, other.fNofAdc, other.fDynRange, other.fThreshold, other.fTimeResolution, other.fDeadTime,
-      other.fNoise, other.fZeroNoiseRate);
-  SetTimeOffset(other.fTimeOffset);
-  SetWalkCoef(other.fWalkCoef);
-}
-// -------------------------------------------------------------------------
-
-
 // -----   Copy assignment operator   --------------------------------------
 CbmStsParAsic& CbmStsParAsic::operator=(const CbmStsParAsic& other)
 {
@@ -58,19 +46,6 @@ CbmStsParAsic& CbmStsParAsic::operator=(const CbmStsParAsic& other)
   return *this;
 }
 // -------------------------------------------------------------------------
-
-
-// -----   Move assignment operator   --------------------------------------
-CbmStsParAsic& CbmStsParAsic::operator=(CbmStsParAsic&& other)
-{
-  Set(other.fNofChannels, other.fNofAdc, other.fDynRange, other.fThreshold, other.fTimeResolution, other.fDeadTime,
-      other.fNoise, other.fZeroNoiseRate);
-  SetTimeOffset(other.fTimeOffset);
-  SetWalkCoef(other.fWalkCoef);
-  return *this;
-}
-// -------------------------------------------------------------------------
-
 
 // -----   Destructor   ----------------------------------------------------
 CbmStsParAsic::~CbmStsParAsic()
@@ -142,7 +117,7 @@ double CbmStsParAsic::GetRandomNoiseCharge() const
 void CbmStsParAsic::Init()
 {
   if (fNoiseCharge) delete fNoiseCharge;
-  fNoiseCharge = new TF1("Noise Charge", "TMath::Gaus(x, [0], [1])", fThreshold, 10. * fNoise);
+  fNoiseCharge = new TF1("Noise_Charge", "TMath::Gaus(x, [0], [1])", fThreshold, 10. * fNoise, "NL");
   fNoiseCharge->SetParameters(0., fNoise);
   fIsInit = kTRUE;
 }

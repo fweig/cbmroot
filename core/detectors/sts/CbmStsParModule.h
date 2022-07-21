@@ -38,6 +38,14 @@ public:
   CbmStsParModule(uint32_t nChannels, uint32_t nAsicChannels);
 
 
+  /** @brief Copy constructor (implicitely disable move constructor and assignment)**/
+  CbmStsParModule(const CbmStsParModule&);
+
+
+  /** @brief Copy assignment operator **/
+  CbmStsParModule& operator=(const CbmStsParModule& other);
+
+
   /** @brief Destructor **/
   ~CbmStsParModule() {};
 

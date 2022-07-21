@@ -41,20 +41,12 @@ public:
                 double noise, double znr);
 
 
-  /** @brief Copy constructor **/
+  /** @brief Copy constructor (implicitely disable move constructor and assignment)**/
   CbmStsParAsic(const CbmStsParAsic&);
-
-
-  /** @brief Move constructor (disabled) **/
-  CbmStsParAsic(CbmStsParAsic&&);
 
 
   /** @brief Copy assignment operator **/
   CbmStsParAsic& operator=(const CbmStsParAsic& other);
-
-
-  /** @brief Move assignment operator (disabled) **/
-  CbmStsParAsic& operator=(CbmStsParAsic&&);
 
 
   /** @brief Destructor **/

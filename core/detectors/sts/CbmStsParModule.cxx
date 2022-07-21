@@ -25,6 +25,27 @@ CbmStsParModule::CbmStsParModule(uint32_t nChannels, uint32_t nAsicChannels)
 // -------------------------------------------------------------------------
 
 
+// -----   Copy constructor   ----------------------------------------------
+CbmStsParModule::CbmStsParModule(const CbmStsParModule& other)
+{
+  fNofChannels     = other.GetNofChannels();
+  fNofAsicChannels = other.GetNofAsicChannels();
+  fAsicPars        = other.GetAsicParams();
+}
+// -------------------------------------------------------------------------
+
+
+// -----   Copy assignment operator   --------------------------------------
+CbmStsParModule& CbmStsParModule::operator=(const CbmStsParModule& other)
+{
+  fNofChannels     = other.GetNofChannels();
+  fNofAsicChannels = other.GetNofAsicChannels();
+  fAsicPars        = other.GetAsicParams();
+  return *this;
+}
+// -------------------------------------------------------------------------
+
+
 // -----   Randomly deactivate channels   ----------------------------------
 uint32_t CbmStsParModule::DeactivateRandomChannels(Double_t fraction)
 {
