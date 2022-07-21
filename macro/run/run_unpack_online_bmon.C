@@ -109,6 +109,12 @@ void run_unpack_online_bmon(std::vector<std::string> publisher = {"tcp://localho
     bmonconfig->SetParFilesBasePath(parfilesbasepathBmon);
     bmonconfig->SetParFileName("mBmonCriPar.par");
     bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+    if (2160 <= runid) {
+      bmonconfig->SetSystemTimeOffset(-80);  // [ns] value to be updated
+    }
+    if (2350 <= runid) {
+      bmonconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+    }
     /// Enable Monitor plots
     bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));
     if (2337 <= runid) {
@@ -185,6 +191,16 @@ void run_unpack_online_bmon(std::vector<std::string> publisher = {"tcp://localho
   timer.Stop();
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "After CpuTime = " << timer.CpuTime() << " s RealTime = " << timer.RealTime() << " s." << std::endl;
+  // ------------------------------------------------------------------------
+
+  // --   Release all shared pointers to config before ROOT destroys things -
+  // => We need to destroy things by hand because run->Finish calls (trhought the FairRootManager) Source->Close which
+  //    does call the Source destructor, so due to share pointer things stay alive until out of macro scope...
+  run->SetSource(nullptr);
+  delete run;
+  delete source;
+
+  bmonconfig.reset();
   // ------------------------------------------------------------------------
 
 }  // End of main macro function

@@ -229,14 +229,18 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     int sensor, asic;
     std::ifstream asicTimeWalk_par(Form("%s/mStsAsicTimeWalk.par", parfilesbasepathSts.data()));
     while (asicTimeWalk_par >> std::hex >> sensor >> std::dec >> asic >> p0 >> p1 >> p2 >> p3) {
-      std::cout << Form("Setting time-walk parametersfor: module %x, ASIC %u\n", sensor, asic);
+      // std::cout << Form("Setting time-walk parameters for: module %x, ASIC %u\n", sensor, asic);
       parAsic->SetWalkCoef({p0, p1, p2, p3});
 
       if (walkMap.find(sensor) == walkMap.end()) { walkMap[sensor] = CbmStsParModule(*parMod); }
       walkMap[sensor].SetAsic(asic, *parAsic);
+      // std::cout << Form("Done with time-walk parameters for: module %x, ASIC %u\n", sensor, asic);
     }
 
     stsconfig->SetWalkMap(walkMap);
+    walkMap.clear();
+    delete parMod;
+    delete parAsic;
   }
   // -------------
 
@@ -520,6 +524,23 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
   timer.Stop();
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "After CpuTime = " << timer.CpuTime() << " s RealTime = " << timer.RealTime() << " s." << std::endl;
+  // ------------------------------------------------------------------------
+
+  // --   Release all shared pointers to config before ROOT destroys things -
+  // => We need to destroy things by hand because run->Finish calls (trhought the FairRootManager) Source->Close which
+  //    does call the Source destructor, so due to share pointer things stay alive until out of macro scope...
+  run->SetSource(nullptr);
+  delete run;
+  delete source;
+
+  bmonconfig.reset();
+  stsconfig.reset();
+  muchconfig.reset();
+  trd1Dconfig.reset();
+  trdfasp2dconfig.reset();
+  tofconfig.reset();
+  richconfig.reset();
+  psdconfig.reset();
   // ------------------------------------------------------------------------
 
 }  // End of main macro function

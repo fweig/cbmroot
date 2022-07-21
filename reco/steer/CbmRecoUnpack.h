@@ -61,7 +61,7 @@ public:
 
 
   /** @brief Destructor **/
-  ~CbmRecoUnpack() {};
+  ~CbmRecoUnpack() { LOG(debug) << "CbmRecoUnpack::~CbmRecoUnpack!"; };
 
   /** @brief Copy constructor - not implemented **/
   CbmRecoUnpack(const CbmRecoUnpack&) = delete;

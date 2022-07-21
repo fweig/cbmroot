@@ -42,7 +42,10 @@ public:
 
 
   /** @brief Destructor **/
-  virtual ~CbmSourceTsArchive() {};
+  virtual ~CbmSourceTsArchive()
+  {
+    if (fTsSource) delete fTsSource;
+  }
 
 
   /** @brief Copy constructor - not implemented **/

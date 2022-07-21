@@ -1,3 +1,4 @@
 all_*.par
 data/*.root
 data/qa/*.root
+CbmRecoUnpack.perf.root

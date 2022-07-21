@@ -210,6 +210,9 @@ Bool_t mcbm_unp_event(bool bBmoninTof = false,
     }
 
     stsconfig->SetWalkMap(walkMap);
+    walkMap.clear();
+    delete parMod;
+    delete parAsic;
   }
   // -------------
 
@@ -497,6 +500,23 @@ Bool_t mcbm_unp_event(bool bBmoninTof = false,
   timer.Stop();
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "After CpuTime = " << timer.CpuTime() << " s RealTime = " << timer.RealTime() << " s." << std::endl;
+  // ------------------------------------------------------------------------
+
+  // --   Release all shared pointers to config before ROOT destroys things -
+  // => We need to destroy things by hand because run->Finish calls (trhought the FairRootManager) Source->Close which
+  //    does call the Source destructor, so due to share pointer things stay alive until out of macro scope...
+  run->SetSource(nullptr);
+  delete run;
+  delete source;
+
+  bmonconfig.reset();
+  stsconfig.reset();
+  muchconfig.reset();
+  trd1Dconfig.reset();
+  trdfasp2dconfig.reset();
+  tofconfig.reset();
+  richconfig.reset();
+  psdconfig.reset();
   // ------------------------------------------------------------------------
 
   return kTRUE;

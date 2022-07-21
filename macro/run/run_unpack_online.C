@@ -140,7 +140,7 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     if (2160 <= runid) {
       richconfig->SetSystemTimeOffset(50);  // [ns] value to be updated
     }
-    if (2350 <= uRunId) {
+    if (2350 <= runid) {
       richconfig->SetSystemTimeOffset(100);  // [ns] value to be updated
     }
     if (runid == 1588) richconfig->MaskDiRICH(0x7150);
@@ -169,7 +169,7 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     if (2160 <= runid) {
       stsconfig->SetSystemTimeOffset(-1075);  // [ns] value to be updated
     }
-    if (2350 <= uRunId) {
+    if (2350 <= runid) {
       stsconfig->SetSystemTimeOffset(-970);  // [ns] value to be updated
     }
 
@@ -211,14 +211,18 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     int sensor, asic;
     std::ifstream asicTimeWalk_par(Form("%s/mStsAsicTimeWalk.par", parfilesbasepathSts.data()));
     while (asicTimeWalk_par >> std::hex >> sensor >> std::dec >> asic >> p0 >> p1 >> p2 >> p3) {
-      std::cout << Form("Setting time-walk parametersfor: module %x, ASIC %u\n", sensor, asic);
+      // std::cout << Form("Setting time-walk parameters for: module %x, ASIC %u\n", sensor, asic);
       parAsic->SetWalkCoef({p0, p1, p2, p3});
 
       if (walkMap.find(sensor) == walkMap.end()) { walkMap[sensor] = CbmStsParModule(*parMod); }
       walkMap[sensor].SetAsic(asic, *parAsic);
+      // std::cout << Form("Done with time-walk parameters for: module %x, ASIC %u\n", sensor, asic);
     }
 
     stsconfig->SetWalkMap(walkMap);
+    walkMap.clear();
+    delete parMod;
+    delete parAsic;
   }
   // -------------
 
@@ -236,13 +240,21 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
       /// Starting to use CRI Based MUCH setup with 2GEM and 1 RPC since 09/03/2022 Carbon run
       muchconfig->SetParFileName("mMuchParUpto26032022.par");
     }
-    else if (2350 <= runid && runid <= 2367) {
-      /// First nickel runs
-      muchconfig->SetParFileName("mMuchParNickel_23052022.par");
+    else if (2163 <= runid && runid <= 2291) {
+      ///
+      muchconfig->SetParFileName("mMuchParUpto03042022.par");
     }
-    else if (2367 < runid) {
+    else if (2311 <= runid && runid <= 2315) {
+      ///
+      muchconfig->SetParFileName("mMuchParUpto10042022.par");
+    }
+    else if (2316 <= runid && runid <= 2366) {
+      ///
+      muchconfig->SetParFileName("mMuchParUpto23052022.par");
+    }
+    else if (2367 <= runid && runid <= 2397) {
       /// Starting to use GEM 2 moved to CRI 0 on 24/05/2022
-      muchconfig->SetParFileName("mMuchParNickel_25052022.par");
+      muchconfig->SetParFileName("mMuchParUpto26052022.par");
     }
 
     /// Enable duplicates rejection, Ignores the ADC for duplicates check
@@ -253,7 +265,7 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     if (2160 <= runid) {
       muchconfig->SetSystemTimeOffset(-1020);  // [ns] value to be updated
     }
-    if (2350 <= uRunId) {
+    if (2350 <= runid) {
       muchconfig->SetSystemTimeOffset(-980);  // [ns] value to be updated
     }
 
@@ -286,7 +298,7 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     if (2160 <= runid) {
       trd1Dconfig->SetSystemTimeOffset(1140);  // [ns] value to be updated
     }
-    if (2350 <= uRunId) {
+    if (2350 <= runid) {
       trd1Dconfig->SetSystemTimeOffset(1300);  // [ns] value to be updated
     }
   }
@@ -300,9 +312,9 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     // trdfasp2dconfig->SetDebugState();
     trdfasp2dconfig->SetDoWriteOutput();
     // Activate the line below to write Trd1D digis to a separate "TrdFaspDigi" branch. Can be used to separate between Fasp and Spadic digis
-    //trdfasp2dconfig->SetOutputBranchName("TrdFaspDigi");
+    // trdfasp2dconfig->SetOutputBranchName("TrdFaspDigi");
     uint8_t map[NFASPMOD];
-    uint16_t cri_map[NCRIMOD];
+    uint16_t crob_map[NCROBMOD];
     for (int i(0); i < NFASPMOD; i++)
       map[i] = i;
     if (runid <= 1588) {
@@ -332,14 +344,14 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
         crob_map[i] = crob_map22[i];
     }
     trdfasp2dconfig->SetFaspMapping(5, map);
-    trdfasp2dconfig->SetCriMapping(5, cri_map);
+    trdfasp2dconfig->SetCrobMapping(5, crob_map);
     std::string parfilesbasepathTrdfasp2d = Form("%s/parameters/trd", srcDir.Data());
     trdfasp2dconfig->SetParFilesBasePath(parfilesbasepathTrdfasp2d);
     trdfasp2dconfig->SetSystemTimeOffset(-1800);  // [ns] value to be updated
     if (2160 <= runid) {
       trdfasp2dconfig->SetSystemTimeOffset(-570);  // [ns] value to be updated
     }
-    if (2350 <= uRunId) {
+    if (2350 <= runid) {
       trdfasp2dconfig->SetSystemTimeOffset(-510);  // [ns] value to be updated
     }
     trdfasp2dconfig->SetMonitor(dynamic_pointer_cast<CbmTrdUnpackFaspMonitor>(GetTrdMonitor(outfilename, 1)));
@@ -392,7 +404,7 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
     if (2160 <= runid) {
       tofconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
     }
-    if (2350 <= uRunId) {
+    if (2350 <= runid) {
       tofconfig->SetSystemTimeOffset(40);  // [ns] value to be updated
     }
     if (runid <= 1659) {
@@ -419,7 +431,7 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
       if (2160 <= runid) {
         bmonconfig->SetSystemTimeOffset(-80);  // [ns] value to be updated
       }
-      if (2350 <= uRunId) {
+      if (2350 <= runid) {
         bmonconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
       }
       /// Enable Monitor plots
@@ -502,6 +514,23 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
   timer.Stop();
   std::cout << "Macro finished successfully." << std::endl;
   std::cout << "After CpuTime = " << timer.CpuTime() << " s RealTime = " << timer.RealTime() << " s." << std::endl;
+  // ------------------------------------------------------------------------
+
+  // --   Release all shared pointers to config before ROOT destroys things -
+  // => We need to destroy things by hand because run->Finish calls (trhought the FairRootManager) Source->Close which
+  //    does call the Source destructor, so due to share pointer things stay alive until out of macro scope...
+  run->SetSource(nullptr);
+  delete run;
+  delete source;
+
+  bmonconfig.reset();
+  stsconfig.reset();
+  muchconfig.reset();
+  trd1Dconfig.reset();
+  trdfasp2dconfig.reset();
+  tofconfig.reset();
+  richconfig.reset();
+  psdconfig.reset();
   // ------------------------------------------------------------------------
 
 }  // End of main macro function
