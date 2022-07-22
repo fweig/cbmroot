@@ -776,15 +776,15 @@ void CbmRichMCbmQaReal::Exec(Option_t* /*option*/)
 
     //std::cout<<"NofT0Digis in TS: "<< fT0Digis->size() <<std::endl;
     Double_t minT0TimeDiff = std::numeric_limits<Double_t>::max();
-    Double_t T0Time        = std::numeric_limits<Double_t>::max();
-    for (auto j = 0; j < fT0Digis->size(); j++) {
+    //Double_t T0Time        = std::numeric_limits<Double_t>::max();
+    for (uint32_t j = 0; j < fT0Digis->size(); j++) {
       const CbmTofDigi* T0Digi = nullptr;
       if (fT0Digis) T0Digi = &(fT0Digis->at(j));
       assert(T0Digi);
       Double_t timeDiffT0 = T0Digi->GetTime() - fCbmEventStartTime;
       if (std::fabs(timeDiffT0) < std::fabs(minT0TimeDiff)) {
         minT0TimeDiff = timeDiffT0;
-        T0Time        = T0Digi->GetTime();
+        //T0Time        = T0Digi->GetTime();
       }
     }
     //std::cout<<"T0Digistime: "<< T0Time << "  EventStartTime:" << fCbmEventStartTime <<"   Time DIff: "<< minT0TimeDiff <<std::endl;
@@ -1361,7 +1361,7 @@ std::pair<int, double> CbmRichMCbmQaReal::FindClosestRing(CbmTofTracklet* track,
     const double xDist        = (x_track - ringX);
     const double yDist        = (y_track - ringY);
     const double rDist        = std::sqrt(xDist * xDist + yDist * yDist);
-    const double RadiusFactor = 1.2;  // Factor of how big radius of acceptance should
+    //const double RadiusFactor = 1.2;  // Factor of how big radius of acceptance should
 
     if (/*rDist < ring->GetRadius() * RadiusFactor &&*/ cutRadius(ring)) {
       //std::cout<<"Track in defined Ring range ("<<ring->GetRadius()*RadiusFactor<<"cm) (RingRadius: "<<ring->GetRadius()<<"cm).  ";

@@ -263,10 +263,12 @@ void CbmRichUnpackAlgo2022::processTrbPacket(CbmRichUnpackAlgoMicrosliceReader& 
   uint32_t trigNum_this = reader.NextWord() & 0xFFFFFF;
   reader.NextWord();  // reserved
 
+  uint32_t wordEpoch;  // Create variable out of 1st loop to trick the "unused variable" warning with 2nd loop use
+  uint32_t wordTime;   // Create variable out of 1st loop to trick the "unused variable" warning with 2nd loop use
   for (auto l = 0; l < 2; ++l) {
-    uint32_t wordEpoch = reader.NextWord();
+    wordEpoch = reader.NextWord();
     //uint32_t epoch     = CbmRichUnpackAlgoTdcWordReader::ProcessEpoch(wordEpoch);
-    uint32_t wordTime = reader.NextWord();
+    wordTime = reader.NextWord();
     //CbmRichUnpackAlgoTdcTimeData td;
     //CbmRichUnpackAlgoTdcWordReader::ProcessTimeData(wordTime, td);
 
@@ -281,12 +283,18 @@ void CbmRichUnpackAlgo2022::processTrbPacket(CbmRichUnpackAlgoMicrosliceReader& 
 
   uint32_t trigNum_prevMes = reader.NextWord() & 0xFFFFFF;
 
+  if (false) {
+    // Following just for tricking the unused var warning detection without breaking the existing code
+    LOG(trace) << "trigNum_this =" << trigNum_this << " trigNum_prevMes = " << trigNum_prevMes
+               << " CbmTimePacket_prev = " << CbmTimePacket_prev;
+  }
+
   reader.NextWord();  // reserved
 
   for (auto l = 0; l < 14; ++l) {
-    uint32_t wordEpoch = reader.NextWord();
-    uint32_t epoch     = CbmRichUnpackAlgoTdcWordReader::ProcessEpoch(wordEpoch);
-    uint32_t wordTime  = reader.NextWord();
+    wordEpoch      = reader.NextWord();
+    uint32_t epoch = CbmRichUnpackAlgoTdcWordReader::ProcessEpoch(wordEpoch);
+    wordTime       = reader.NextWord();
     CbmRichUnpackAlgoTdcTimeData td;
     CbmRichUnpackAlgoTdcWordReader::ProcessTimeData(wordTime, td);
 
