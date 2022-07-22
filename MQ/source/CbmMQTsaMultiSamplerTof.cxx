@@ -290,7 +290,7 @@ bool CbmMQTsaMultiSamplerTof::ConditionalRun()
               if (fComponentsToSend[idx] > 0) {
                 LOG(debug) << "Append timeslice component of link " << nrComp << " to idx " << idx;
 
-                fles::StorableTimeslice component {static_cast<uint32_t>(ts.num_microslices(nrComp), ts.index())};
+                fles::StorableTimeslice component {static_cast<uint32_t>(ts.num_core_microslices()), ts.index()};
                 component.append_component(ts.num_microslices(0));
 
                 for (size_t m = 0; m < ts.num_microslices(nrComp); ++m) {
@@ -365,7 +365,7 @@ bool CbmMQTsaMultiSamplerTof::CreateAndCombineComponents(const fles::Timeslice& 
     if (fComponentsToSend[idx]>0) {
       LOG(debug) << "Append timeslice component of link " << nrComp<< " to idx "<<idx;
 
-      fles::StorableTimeslice component{static_cast<uint32_t>(ts.num_microslices(nrComp), ts.index())};
+      fles::StorableTimeslice component{static_cast<uint32_t>(ts.num_core_microslices()), ts.index()};
       component.append_component(ts.num_microslices(0));
 
       for (size_t m = 0; m < ts.num_microslices(nrComp); ++m) {
@@ -406,7 +406,7 @@ bool CbmMQTsaMultiSamplerTof::AppendData(const fles::StorableTimeslice& /*compon
 bool CbmMQTsaMultiSamplerTof::SendTs()
 {
   /*
-  for (int idx=0; idx<parts.size(); idx++)   
+  for (int idx=0; idx<parts.size(); idx++)
     if(bparts[idx]){
       LOG(debug) << "Send data to channel " << fChannelsToSend[idx][0];
       if (Send(parts[idx], fChannelsToSend[idx][0]) < 0) {
@@ -525,7 +525,7 @@ bool CbmMQTsaMultiSamplerTof::CheckTimeslice(const fles::Timeslice& ts)
     LOG(debug) << "Component " << c << " has the system id 0x" << std::hex
                << static_cast<int>(ts.descriptor(c, 0).sys_id) << std::dec;
     /*
-    if(ts.descriptor(c,0).sys_id == 0x90 ) { // found a t0 - timeslice 
+    if(ts.descriptor(c,0).sys_id == 0x90 ) { // found a t0 - timeslice
            ts.descriptor(c,0).sys_id = 0x60;         // rename t0 to tof , not allowed
     }
     */

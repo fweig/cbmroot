@@ -306,7 +306,7 @@ bool CbmMQTsaSamplerTof::ConditionalRun()
           if (fComponentsToSend[idx] > 0) {
             LOG(debug) << "Append timeslice component of link " << nrComp << " to idx " << idx;
 
-            fles::StorableTimeslice component {static_cast<uint32_t>(ts.num_microslices(nrComp)), ts.index()};
+            fles::StorableTimeslice component {static_cast<uint32_t>(ts.num_core_microslices()), ts.index()};
             component.append_component(ts.num_microslices(0));
 
             for (size_t m = 0; m < ts.num_microslices(nrComp); ++m) {
@@ -390,7 +390,7 @@ bool CbmMQTsaSamplerTof::CreateAndCombineComponents(const fles::Timeslice& /*ts*
     if (fComponentsToSend[idx]>0) {
       LOG(debug) << "Append timeslice component of link " << nrComp<< " to idx "<<idx;
 
-      fles::StorableTimeslice component{static_cast<uint32_t>(ts.num_microslices(nrComp), ts.index())};
+      fles::StorableTimeslice component{static_cast<uint32_t>(ts.num_core_microslices()), ts.index()};
       component.append_component(ts.num_microslices(0));
 
       for (size_t m = 0; m < ts.num_microslices(nrComp); ++m) {
@@ -431,7 +431,7 @@ bool CbmMQTsaSamplerTof::AppendData(const fles::StorableTimeslice& /*component*/
 bool CbmMQTsaSamplerTof::SendTs()
 {
   /*
-  for (int idx=0; idx<parts.size(); idx++)   
+  for (int idx=0; idx<parts.size(); idx++)
     if(bparts[idx]){
       LOG(debug) << "Send data to channel " << fChannelsToSend[idx][0];
       if (Send(parts[idx], fChannelsToSend[idx][0]) < 0) {
@@ -462,7 +462,7 @@ bool CbmMQTsaSamplerTof::CreateAndSendComponent(const fles::Timeslice& ts, int n
     if (fComponentsToSend[idx] > 0) {
       LOG(debug) << "Create timeslice component for link " << nrComp;
 
-      fles::StorableTimeslice component {static_cast<uint32_t>(ts.num_microslices(nrComp)), ts.index()};
+      fles::StorableTimeslice component {static_cast<uint32_t>(ts.num_core_microslices()), ts.index()};
       component.append_component(ts.num_microslices(0));
 
       for (size_t m = 0; m < ts.num_microslices(nrComp); ++m) {
