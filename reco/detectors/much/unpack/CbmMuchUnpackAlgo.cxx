@@ -529,7 +529,7 @@ void CbmMuchUnpackAlgo::processHitInfo(const stsxyter::Message& mess)
 
       if (fMonitor) fMonitor->CountDigi(uAsicIdx, uChanInFeb);
       //Checking for Raw channel value
-      if (usChan > 127 || usChan < 0) LOG(debug) << "ERROR !!! Channel in hit message is out of range  " << usChan;
+      if (usChan > 127) LOG(debug) << "ERROR !!! Channel in hit message is out of range  " << usChan;
       // uFebIdx is FEB position in the GEM and RPC
       const uint32_t address = CreateMuchAddress(fuCurrDpbIdx, uFebIdx, usChan);
       //const uint32_t address = CreateMuchAddress(fuCurrDpbIdx, uFebIdx, uChanInFeb);

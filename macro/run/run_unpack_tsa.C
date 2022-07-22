@@ -333,15 +333,15 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
     // trdfasp2dconfig->SetOutputBranchName("TrdFaspDigi");
     uint8_t map[NFASPMOD];
     uint16_t crob_map[NCROBMOD];
-    for (int i(0); i < NFASPMOD; i++)
+    for (uint32_t i(0); i < NFASPMOD; i++)
       map[i] = i;
     if (runid <= 1588) {
       const size_t nfasps = 12;
       uint8_t map21[] = {9, 2, 3, 11, 10, 7, 8, 0, 1, 4, 6, 5};
-      for (int i(0); i < nfasps; i++)
+      for (uint32_t i(0); i < nfasps; i++)
         map[i] = map21[i];
       uint16_t crob_map21[] = {0x00f0, 0, 0, 0, 0};
-      for (int i(0); i < NCROBMOD; i++)
+      for (uint32_t i(0); i < NCROBMOD; i++)
         crob_map[i] = crob_map21[i];
     }
     else if (runid >= 2335) {
@@ -355,10 +355,10 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
         72,  73,  74,  75,  76,  77,   // FEB9/0xffc1
         78,  79,  80,  81,  82,  83    // FEB8/0xffc1
       };
-      for (int i(0); i < nfasps; i++)
+      for (uint32_t i(0); i < nfasps; i++)
         map[i + nfasp0] = map22[i];
       uint16_t crob_map22[] = {0xffc2, 0xffc5, 0xffc1, 0, 0};
-      for (int i(0); i < NCROBMOD; i++)
+      for (uint32_t i(0); i < NCROBMOD; i++)
         crob_map[i] = crob_map22[i];
     }
     trdfasp2dconfig->SetFaspMapping(5, map);
