@@ -32,7 +32,7 @@ CbmMCInputSet::CbmMCInputSet(Double_t rate)
 
   if (rate > 0.) {
     Double_t mean = 1.e9 / rate;  // mean time between events
-    fDeltaDist    = new TF1("DeltaDist", "exp(-x/[0])/[0]", 0., 10. * mean);
+    fDeltaDist    = new TF1("DeltaDist", "exp(-x/[0])/[0]", 0., 10. * mean, "NL");
     fDeltaDist->SetParameter(0, mean);
   }
   fInputHandle = fInputs.begin();
