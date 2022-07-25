@@ -10,13 +10,16 @@
 #ifndef L1Utils_h
 #define L1Utils_h 1
 
-#include <type_traits>
 
+#include <FairLogger.h>
+
+#include <chrono>
 #include <iomanip>
 #include <limits>
 #include <map>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 
 #include <cmath>
@@ -28,24 +31,23 @@
 #endif
 
 /// Class contains some utility functions for L1Algo
-struct L1Utils {
-
+namespace L1Utils
+{
   /// NaN value for float
-  static constexpr float kNaN {std::numeric_limits<float>::signaling_NaN()};
+  constexpr float kNaN {std::numeric_limits<float>::signaling_NaN()};
 
   /// Comparison method for floats
   /// \param  lhs  Left floating point to compare
   /// \param  rhs  Right floating point to compare
   /// \return      Comparison result: true - equals within epsilon
   template<typename T, typename std::enable_if<std::is_floating_point<T>::value, T>::type* = nullptr>
-  static bool CmpFloats(T lhs, T rhs)
+  [[gnu::always_inline]] inline bool CmpFloats(T lhs, T rhs)
   {
     return fabs(lhs - rhs) < 2. * std::numeric_limits<T>::epsilon() * fabs(lhs + rhs)
            || fabs(lhs - rhs) < std::numeric_limits<T>::min();
   }
 
-
-  static __attribute__((always_inline)) void CheckSimdVectorEquality(fvec v, const char* name)
+  [[gnu::always_inline]] inline void CheckSimdVectorEquality(fvec v, const char* name)
   {
     if (!v.IsHorizontallyEqual()) {
       std::stringstream msg;
@@ -63,50 +65,24 @@ struct L1Utils {
     }
   };
 
-  /// Template function, which sets a value to an element of the map with a particular key
-  /// \param key    Key of the element to be modified
-  /// \param value  New value of the element under the selected key
-  /// \param aMap   A reference to the map, which element is to be modified
-  template<class Key, class T, class Hash = std::hash<Key>>
-  static void SetSingleValueToMap(Key key, T value, std::unordered_map<Key, T, Hash>& aMap)
-  {
-    aMap[key] = value;
-  }
+  /// A time profiler for measuring performace of scopes
+  class TimeProfiler {
+  public:
+    /// Constructor
+    TimeProfiler(const char* scopeName) : fScopeName(scopeName), fStart(std::chrono::high_resolution_clock::now()) {}
 
-  /// Template function, which sets a value to ALL elements of the map
-  /// \param value  New value of the element under the selected key
-  /// \param aMap   A reference to the map, which element is to be modified
-  template<class Key, class T, class Hash = std::hash<Key>>
-  static void SetSameValueToMap(T value, std::unordered_map<Key, T, Hash>& aMap)
-  {
-    for (auto it = aMap.begin(); it != aMap.end(); ++it) {
-      it->second = value;
+    /// Destructor
+    ~TimeProfiler()
+    {
+      auto stop = std::chrono::high_resolution_clock::now();
+      auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - fStart).count();
+      LOG(info) << "Scope \033[1;32m" << fScopeName << "\033[0m was executed in " << time << " ns";
     }
-  }
 
-  /// Template function, which resets the elements of one map with the values defined in another map
-  /// \param inMap  A constant reference to the map containing new parameters
-  /// \param aMap   A reference to the map, which is going to be modified
-  template<class Key, class T, class Hash = std::hash<Key>>
-  static void SetMappedValuesToMap(const std::unordered_map<Key, T, Hash>& inMap,
-                                   std::unordered_map<Key, T, Hash>& aMap)
-  {
-    for (auto it = aMap.begin(); it != aMap.end(); ++it) {
-      if (inMap.find(it->first) != inMap.end()) { it->second = inMap.at(it->first); }
-    }
-  }
-
-  /// Template function to represent mapped contents into std::string
-  /// NOTE: operator<< must be defined for value of the map
-  template<class Key, class T, class Hash = std::hash<Key>>
-  static std::string RepresentMapWithString(const std::unordered_map<Key, T, Hash>& aMap, int entryWidth = 15)
-  {
-    std::stringstream token;
-    for (auto it = aMap.begin(); it != aMap.end(); ++it) {
-      token << std::setw(entryWidth) << std::setfill(' ') << it->second << ' ';
-    }
-    return token.str();
-  }
-};
+  private:
+    const char* fScopeName {};
+    const std::chrono::high_resolution_clock::time_point fStart {};
+  };
+}  // namespace L1Utils
 
 #endif  // L1Utils_h

@@ -31,24 +31,24 @@ class L1Track {
 public:
   static constexpr float kNaN {std::numeric_limits<float>::signaling_NaN()};
 
-  unsigned char NHits;      ///> Number of hits in track
-  unsigned char n;          ///> TODO: ??
-  float Momentum {kNaN};    ///> TODO: ??
-  float fTrackTime {kNaN};  ///> Track time
-  fscal TFirst[7] {kNaN};   ///> Track parameters on the first station
-  fscal CFirst[21] {kNaN};  ///> Track parameter covariation matrix elemenst on the first station
-  fscal TLast[7] {kNaN};    ///> Track parameters on the last station
-  fscal CLast[21] {kNaN};   ///> Track parameter covatiation matrix elements on the second station
-  fscal Tpv[7] {kNaN};      ///> Track parameters in the primary vertex
-  fscal Cpv[21] {kNaN};     ///> Track parameter covariation matrix elements in the primary vertex
-  fscal chi2 {kNaN};        ///> Track fit chi-square value
-  short int NDF;            ///> Track fit NDF value
+  unsigned char NHits;      ///< Number of hits in track
+  unsigned char n;          ///< TODO: ??
+  float Momentum {kNaN};    ///< TODO: ??
+  float fTrackTime {kNaN};  ///< Track time
+  fscal TFirst[7] {kNaN};   ///< Track parameters on the first station
+  fscal CFirst[21] {kNaN};  ///< Track parameter covariation matrix elemenst on the first station
+  fscal TLast[7] {kNaN};    ///< Track parameters on the last station
+  fscal CLast[21] {kNaN};   ///< Track parameter covatiation matrix elements on the second station
+  fscal Tpv[7] {kNaN};      ///< Track parameters in the primary vertex
+  fscal Cpv[21] {kNaN};     ///< Track parameter covariation matrix elements in the primary vertex
+  fscal chi2 {kNaN};        ///< Track fit chi-square value
+  short int NDF;            ///< Track fit NDF value
 
   // TODO: shouldn't it be the L1HitIndex_t type instead of int? (S.Zharko)
-  int FirstHitIndex;  ///> Track first hit index in the hits vector
-  int LastHitIndex;   ///> Track last hit index in the hits vector
-  int index;          ///> Index of the track
-  int ista;           ///> TODO: ??
+  int FirstHitIndex;  ///< Track first hit index in the hits vector
+  int LastHitIndex;   ///< Track last hit index in the hits vector
+  int index;          ///< Index of the track
+  int ista;           ///< TODO: ??
 
   /// Provides comparison of two L1Track objects
   /// If two tracks have different number of hits, the smallest track has the largest number of hits.

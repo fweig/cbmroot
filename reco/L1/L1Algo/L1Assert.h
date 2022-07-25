@@ -38,7 +38,7 @@ namespace L1Assert
 
   /// Basic template function. Usage: place "level <= L1Assert::kAssertionLevel" as a template parameter
   template<bool IsAsserted>
-  int DoAssertion(int level, bool condition, const char* msg, const char* fileName, int lineNo)
+  void DoAssertion(int level, bool condition, const char* msg, const char* fileName, int lineNo)
   {
     if (!condition) {
       LOG(fatal) << '\n'
@@ -48,15 +48,13 @@ namespace L1Assert
                  << " *****   line:               " << lineNo;
       std::abort();  // keep it here, because sometimes LOG(fatal) does not work (for example, in your unit testes)
     }
-    return 1;
   }
 
   /// Specialization in case of IsAsserted = false, i.e. the assertion is not made
   template<>
-  inline __attribute__((always_inline)) int DoAssertion<false>(int /*level*/, bool /*condition*/, const char* /*msg*/,
-                                                               const char* /*fileName*/, int /*lineNo*/)
+  inline __attribute__((always_inline)) void DoAssertion<false>(int /*level*/, bool /*condition*/, const char* /*msg*/,
+                                                                const char* /*fileName*/, int /*lineNo*/)
   {
-    return 0;
   }
 };  // namespace L1Assert
 

@@ -93,7 +93,7 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
   LOG(info) << fParameters.ToString(3);
 
   // Get number of station
-  fNstations = fInitManager.GetNstationsActive();
+  fNstations = fParameters.GetNstationsActive();
 
   fTrackingLevel    = fInitManager.GetTrackingLevel();
   fGhostSuppression = fInitManager.GetGhostSuppression();
@@ -116,7 +116,7 @@ void L1Algo::SetData(L1Vector<L1Hit>& Hits_, int nStrips_, L1Vector<unsigned cha
 
   int nHits = vHits->size();
 
-  NHitsIsecAll = nHits;
+  NHitsIsecAll = nHits; // TODO: Is it needed?
 
   vNotUsedHits_A.reset(nHits);
   vNotUsedHits_B.reset(nHits);

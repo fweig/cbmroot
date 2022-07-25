@@ -43,6 +43,7 @@ class L1AlgoDraw;
 #include <map>
 
 #include "L1Branch.h"
+#include "L1ClonesMerger.h"
 #include "L1Field.h"
 #include "L1Grid.h"
 #include "L1Hit.h"
@@ -166,39 +167,6 @@ public:
   Tindex fDupletPortionStopIndex[L1Constants::size::kMaxNstations] {0};  // end of the duplet portions for the station
   L1Vector<Tindex> fDupletPortionSize {"L1Algo::fDupletPortionSize"};    // N duplets in a portion
 
-  /********************************************************************************************/ /**
-   * Temporary vectors used by the clone merger 
-   * TODO: Probably, the subclass L1TrackMerger for clones merger would help to improve 
-   *       readability (S.Zharko)
-   ***********************************************************************************************/
-
-  //
-  // Vectors that are parallel to fTracks
-  //
-  /// First station of a track
-  L1Vector<unsigned short> fMergerTrackFirstStation {"L1Algo::fMergerTrackFirstStation"};
-  /// Last station of a track
-  L1Vector<unsigned short> fMergerTrackLastStation {"L1Algo::fMergerTrackLastStation"};
-  /// Index of the first hit of a track
-  L1Vector<L1HitIndex_t> fMergerTrackFirstHit {"L1Algo::fMergerTrackFirstHit"};
-  /// Index of the last hit of a track
-  L1Vector<L1HitIndex_t> fMergerTrackLastHit {"L1Algo::fMergerTrackLastHit"};
-  /// Index (TODO:??) of a track that can be merge with the given track
-  L1Vector<unsigned short> fMergerTrackNeighbour {"L1Algo::fMergerTrackNeighbour"};
-  /// Chi2 value of the track merging procedure
-  L1Vector<float> fMergerTrackChi2 {"L1Algo::fMergerTrackChi2"};
-  /// Flag: is the given track already stored to the output
-  L1Vector<char> fMergerTrackIsStored {"L1Algo::fMergerTrackIsStored"};
-  /// Flag: is the track a downstream neighbour of another track
-  L1Vector<char> fMergerTrackIsDownstreamNeighbour {"L1Algo::fMergerTrackIsDownstreamNeighbour"};
-  //
-  // Utility vectors
-  //
-  /// Tracks after the merging procedure
-  L1Vector<L1Track> fMergerTracksNew {"L1Algo::fMergerTracksNew"};           // vector of tracks after the merge
-  L1Vector<L1HitIndex_t> fMergerRecoHitsNew {"L1Algo::fMergerRecoHitsNew"};  // vector of track hits after the merge
-
-
 #ifdef DRAW
   L1AlgoDraw* draw {nullptr};
   void DrawRecoTracksTime(const L1Vector<CbmL1Track>& tracks);
@@ -261,7 +229,7 @@ public:
 public:
   int fNstrips {0};                                ///< number of strips
   L1Vector<L1Hit>* vHits {nullptr};                ///< hits as a combination of front and back strips and z-position
-  L1Grid vGrid[L1Constants::size::kMaxNstations];  ///< hits as a combination of front and back strips and z-position
+  L1Grid vGrid[L1Constants::size::kMaxNstations];  ///<
   L1Grid vGridTime[L1Constants::size::kMaxNstations];  ///<
 
   L1Vector<unsigned char>* fStripFlag {nullptr};  // information of hits station & using hits in tracks;
@@ -386,15 +354,15 @@ public:
   // TODO: remove it (S.Zharko)
 
   /// Gets a pointer to the L1Algo parameters object
-  const L1Parameters* GetParameters() { return &fParameters; }
+  const L1Parameters* GetParameters() const { return &fParameters; }
 
   /// Gets a pointer to the L1Algo initialization object
   L1InitManager* GetInitManager() { return &fInitManager; }
 
 private:
-  L1Parameters fParameters {};    ///< Object of L1Algo parameters class
-  L1InitManager fInitManager {};  ///< Object of L1Algo initialization manager class
-
+  L1Parameters fParameters {};           ///< Object of L1Algo parameters class
+  L1InitManager fInitManager {};         ///< Object of L1Algo initialization manager class
+  L1ClonesMerger fClonesMerger {*this};  ///< Object of L1Algo clones merger algorithm
 
   /*********************************************************************************************/ /**
    *                             ------  FUNCTIONAL PART ------
@@ -435,16 +403,6 @@ private:
   /// Find additional hits for existing track
   /// \return chi2
   fscal BranchExtender(L1Branch& t);
-
-  /// ----- Subroutines used by L1Algo::CAMergeClones() ------
-  void InvertCholetsky(fvec a[15]);
-  void MultiplySS(fvec const C[15], fvec const V[15], fvec K[5][5]);
-  void MultiplyMS(fvec const C[5][5], fvec const V[15], fvec K[15]);
-  void MultiplySR(fvec const C[15], fvec const r_in[5], fvec r_out[5]);
-  void FilterTracks(fvec const r[5], fvec const C[15], fvec const m[5], fvec const V[15], fvec R[5], fvec W[15],
-                    fvec* chi2);
-  ///
-  void CAMergeClones();
 
   inline __attribute__((always_inline)) void PackLocation(unsigned int& location, unsigned int& triplet,
                                                           unsigned int iStation, unsigned int& thread)

@@ -754,6 +754,7 @@ inline void L1Algo::findTripletsStep0(  // input
       }
       else if (kGlobal == fTrackingMode) {
         fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, 1);
+      }
       else {
         fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), T2.qp, 1);
       }
@@ -827,6 +828,8 @@ inline void L1Algo::findTripletsStep0(  // input
           int indR = HitsUnusedStartIndex[iStaR] + irh;
           if (GetMcTrackIdForUnusedHit(indM) != GetMcTrackIdForUnusedHit(indR)) { continue; }
         }
+
+#ifdef USE_EVENT_NUMBER  // NOTE:
         if ((T2.n[i2_4] != hitr.n)) continue;
 #endif  // USE_EVENT_NUMBER
         const fscal zr = hitr.Z();
@@ -2634,7 +2637,14 @@ void L1Algo::CATrackFinder()
   c_timerG.Start();
 #endif
 
-  if constexpr (L1Constants::control::kIfMergeClones) { CAMergeClones(); }
+  if constexpr (L1Constants::control::kIfMergeClones) {
+    //CAMergeClones();
+    // Fit tracks
+    this->L1KFTrackFitter();
+
+    // Merge clones
+    fClonesMerger.Exec(fTracks, fRecoHits);
+  }
 
 #ifdef XXX
   c_timerG.Stop();
