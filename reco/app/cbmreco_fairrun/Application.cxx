@@ -4,9 +4,8 @@
 
 #include "Application.h"
 
-#include <thread>
-
 #include <chrono>
+#include <thread>
 
 Application::Application(ProgramOptions const& opt) : fOpt(opt)
 {
