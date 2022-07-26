@@ -304,7 +304,8 @@ If(DEFINED ENV{RAW_DATA_PATH} )
   ## Generate scripts
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_unpack_tsa.C )  # Unpackers
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2021/check_timing_any.C )  # Check Timing
-  ## Run only if raw data files present
+
+  ## Run only if raw data files present: 2021
   ForEach(RUN 1588 )
     Message( STATUS "Checking if raw data file exists: ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa" )
     If(EXISTS ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa)
@@ -334,6 +335,39 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_unpacked_${RUN}})
       Set(fixture_chktime_${RUN} fixture_done_${testname})
       set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_chktime_${RUN}})
+    EndIf() # If(EXISTS ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa))
+  EndForEach() # ForEach(RUN 1588 )
+
+  ## Run only if raw data files present: 2022
+  ForEach(RUN 2391 2488 )
+    Message( STATUS "Checking if raw data file exists: ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa" )
+    If(EXISTS ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa)
+      Message( STATUS "Raw data file found, tests will be performed for mCBM run ${RUN}" )
+
+      ## Define tests + dependencies
+      ### Raw data analysis tests: unpacking
+      Set(testname mcbm_unpack_${RUN})
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_unpack_tsa.sh \"${RAW_DATA_PATH}/${RUN}_first20Ts.tsa\" ${RUN})
+      Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
+      Set_Tests_Properties(${testname} PROPERTIES
+            FAIL_REGULAR_EXPRESSION "segmentation violation"
+            PASS_REGULAR_EXPRESSION "Macro finished successfully")
+      set_tests_properties(${testname} PROPERTIES DEPENDS run_cleanup)
+      set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED run_cleanup)
+      Set(fixture_unpacked_${RUN} fixture_done_${testname})
+      set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_unpacked_${RUN}})
+
+      ### Raw data analysis tests: event building and reconstruction => need calibration files!!
+#      Set(testname mcbm_event_2022_${RUN})
+#      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/check_timing_any.sh \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" ${RUN})
+#      Set_Tests_Properties(${testname} PROPERTIES TIMEOUT "600")
+#      Set_Tests_Properties(${testname} PROPERTIES
+#            FAIL_REGULAR_EXPRESSION "segmentation violation"
+#            PASS_REGULAR_EXPRESSION "Macro finished successfully")
+#      set_tests_properties(${testname} PROPERTIES DEPENDS mcbm_unpack_${RUN})
+#      set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED ${fixture_unpacked_${RUN}})
+#      Set(fixture_chktime_${RUN} fixture_done_${testname})
+#      set_tests_properties(${testname} PROPERTIES FIXTURES_SETUP ${fixture_chktime_${RUN}})
     EndIf() # If(EXISTS ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa))
   EndForEach() # ForEach(RUN 1588 )
 EndIf() # If(DEFINED ENV{RAW_DATA_PATH} )
