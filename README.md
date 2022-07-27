@@ -138,11 +138,18 @@ From your build directory, then call
 After your build is complete, before running any part of CbmRoot from a shell,
 a large number of environment variables must be set, which contain various
 library and include paths. This is done automatically by executing the "config.sh"
-or "config.csh" script from your CbmRoot build directory. If you are using
-a Bash shell, you can  add the following line to .bashrc to further automate
-this step:
+or "config.csh" script from your CbmRoot build directory. 
 
-    source ~/build_cbmroot/config.sh > /dev/null 2>&1
+Please note, that you must supply the argument "-p" (prepend) or "-a" (append) to 
+these scripts, depending on whether you wish to add the new entries at the front or 
+back of existing environment variables. Failing to do so will cause the variables
+to be overwritten, and may render your shell inoperable. This behavior may be desired
+in some cases, e.g. on the Virgo cluster.
+
+If you are using a Bash shell, you can add the following line to .bashrc to further 
+automate this step:
+
+    source ~/build_cbmroot/config.sh -a > /dev/null 2>&1
 
 The problem with this automatisation is that it frequently results in
 problems if you use more than one combination of FairSoft/FairRoot/Cbmroot.
