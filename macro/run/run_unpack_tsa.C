@@ -123,45 +123,27 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
 
   // -----   UnpackerConfigs   ----------------------------------------------
 
-  // ---- PSD ----
-  std::shared_ptr<CbmPsdUnpackConfig> psdconfig = nullptr;
-
-  psdconfig = std::make_shared<CbmPsdUnpackConfig>("", runid);
-  if (psdconfig) {
-    // psdconfig->SetDebugState();
-    psdconfig->SetDoWriteOutput();
-    // psdconfig->SetDoWriteOptOutA("CbmPsdDsp");
-    std::string parfilesbasepathPsd = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
-    psdconfig->SetParFilesBasePath(parfilesbasepathPsd);
-    psdconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
-  }
-  // -------------
-
-  // ---- RICH ----
-  std::shared_ptr<CbmRichUnpackConfig> richconfig = nullptr;
-
-  richconfig = std::make_shared<CbmRichUnpackConfig>("", runid);
-  if (richconfig) {
-    if (1904 < runid) {
-      /// Switch to new unpacking algo starting from first combined cosmics run in 2022
-      richconfig->SetUnpackerVersion(CbmRichUnpackerVersion::v03);
-      richconfig->SetMonitor(GetRichMonitor(outfilename, true));
+  // ---- BMON ----
+  std::shared_ptr<CbmBmonUnpackConfig> bmonconfig = nullptr;
+  if (!bBmoninTof) {
+    bmonconfig = std::make_shared<CbmBmonUnpackConfig>("", runid);
+    if (bmonconfig) {
+      // bmonconfig->SetDebugState();
+      bmonconfig->SetDoWriteOutput();
+      // bmonconfig->SetDoWriteOptOutA("CbmBmonErrors");
+      std::string parfilesbasepathBmon = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
+      bmonconfig->SetParFilesBasePath(parfilesbasepathBmon);
+      bmonconfig->SetParFileName("mBmonCriPar.par");
+      bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+      if (2160 <= runid) {
+        bmonconfig->SetSystemTimeOffset(-80);  // [ns] value to be updated
+      }
+      if (2350 <= runid) {
+        bmonconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+      }
+      /// Enable Monitor plots
+      // bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));
     }
-
-    richconfig->DoTotOffsetCorrection();  // correct ToT offset
-    richconfig->SetDebugState();
-    richconfig->SetDoWriteOutput();
-    std::string parfilesbasepathRich = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
-    richconfig->SetParFilesBasePath(parfilesbasepathRich);
-    richconfig->SetSystemTimeOffset(256000 - 1200);  // [ns] 1 MS and additional correction
-    if (1904 < runid) richconfig->SetSystemTimeOffset(-1200);
-    if (2160 <= runid) {
-      richconfig->SetSystemTimeOffset(50);  // [ns] value to be updated
-    }
-    if (2350 <= runid) {
-      richconfig->SetSystemTimeOffset(100);  // [ns] value to be updated
-    }
-    if (runid == 1588) richconfig->MaskDiRICH(0x7150);
   }
   // -------------
 
@@ -434,27 +416,45 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
   }
   // -------------
 
-  // ---- BMON ----
-  std::shared_ptr<CbmBmonUnpackConfig> bmonconfig = nullptr;
-  if (!bBmoninTof) {
-    bmonconfig = std::make_shared<CbmBmonUnpackConfig>("", runid);
-    if (bmonconfig) {
-      // bmonconfig->SetDebugState();
-      bmonconfig->SetDoWriteOutput();
-      // bmonconfig->SetDoWriteOptOutA("CbmBmonErrors");
-      std::string parfilesbasepathBmon = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
-      bmonconfig->SetParFilesBasePath(parfilesbasepathBmon);
-      bmonconfig->SetParFileName("mBmonCriPar.par");
-      bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
-      if (2160 <= runid) {
-        bmonconfig->SetSystemTimeOffset(-80);  // [ns] value to be updated
-      }
-      if (2350 <= runid) {
-        bmonconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
-      }
-      /// Enable Monitor plots
-      // bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));
+  // ---- RICH ----
+  std::shared_ptr<CbmRichUnpackConfig> richconfig = nullptr;
+
+  richconfig = std::make_shared<CbmRichUnpackConfig>("", runid);
+  if (richconfig) {
+    if (1904 < runid) {
+      /// Switch to new unpacking algo starting from first combined cosmics run in 2022
+      richconfig->SetUnpackerVersion(CbmRichUnpackerVersion::v03);
+      richconfig->SetMonitor(GetRichMonitor(outfilename, true));
     }
+
+    richconfig->DoTotOffsetCorrection();  // correct ToT offset
+    richconfig->SetDebugState();
+    richconfig->SetDoWriteOutput();
+    std::string parfilesbasepathRich = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+    richconfig->SetParFilesBasePath(parfilesbasepathRich);
+    richconfig->SetSystemTimeOffset(256000 - 1200);  // [ns] 1 MS and additional correction
+    if (1904 < runid) richconfig->SetSystemTimeOffset(-1200);
+    if (2160 <= runid) {
+      richconfig->SetSystemTimeOffset(50);  // [ns] value to be updated
+    }
+    if (2350 <= runid) {
+      richconfig->SetSystemTimeOffset(100);  // [ns] value to be updated
+    }
+    if (runid == 1588) richconfig->MaskDiRICH(0x7150);
+  }
+  // -------------
+
+  // ---- PSD ----
+  std::shared_ptr<CbmPsdUnpackConfig> psdconfig = nullptr;
+
+  psdconfig = std::make_shared<CbmPsdUnpackConfig>("", runid);
+  if (psdconfig) {
+    // psdconfig->SetDebugState();
+    psdconfig->SetDoWriteOutput();
+    // psdconfig->SetDoWriteOptOutA("CbmPsdDsp");
+    std::string parfilesbasepathPsd = Form("%s/macro/beamtime/mcbm2021/", srcDir.Data());
+    psdconfig->SetParFilesBasePath(parfilesbasepathPsd);
+    psdconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
   }
   // -------------
 
@@ -477,14 +477,14 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
   // Enable full time sorting instead sorting per FLIM link
   unpack->SetTimeSorting(true);
 
-  if (psdconfig) unpack->SetUnpackConfig(psdconfig);
-  if (richconfig) unpack->SetUnpackConfig(richconfig);
+  if (bmonconfig) unpack->SetUnpackConfig(bmonconfig);
   if (stsconfig) unpack->SetUnpackConfig(stsconfig);
   if (muchconfig) unpack->SetUnpackConfig(muchconfig);
   if (trd1Dconfig) unpack->SetUnpackConfig(trd1Dconfig);
   if (trdfasp2dconfig) unpack->SetUnpackConfig(trdfasp2dconfig);
   if (tofconfig) unpack->SetUnpackConfig(tofconfig);
-  if (bmonconfig) unpack->SetUnpackConfig(bmonconfig);
+  if (richconfig) unpack->SetUnpackConfig(richconfig);
+  if (psdconfig) unpack->SetUnpackConfig(psdconfig);
   // ------------------------------------------------------------------------
 
 
