@@ -57,9 +57,9 @@ InitStatus CbmMuchTrackingInterface::Init()
 
   // Check initialization of the MuCh digi parameters file
   if (!fGeoScheme->IsInitialized()) {
-    LOG(fatal) << "CbmMuchTrackingInterface::Init: MuCh digi parameters were not intialized\n"
+    LOG(fatal) << "CbmMuchTrackingInterface::Init: MuCh digi parameters were not initialized\n"
                << "\033[4;1;32mNOTE\033[0m: For the MuCh digi parameters initialization please place the following "
-               << "code your macro:\n"
+               << "code to your macro:\n"
                << "\n\t// ----- MuCh digi parameters initialization --------------------------------------"
                << "\n\tif (CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch)) {"
                << "\n\t  // Parameter file name"

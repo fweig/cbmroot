@@ -178,18 +178,11 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     // (suppose track is straight line with origin in the target)
     fvec& u = u_front_l[i1_V];
     fvec& v = u_back_l[i1_V];
-    fvec xl, yl;  // left(1-st) hit coor
+    auto [xl, yl]   = stal.ConvUVtoXY<fvec>(u, v);
     fvec zl         = zPos_l[i1_V];
     fvec& time      = HitTime_l[i1_V];
     fvec& timeEr    = HitTimeEr[i1_V];
     const fvec dzli = 1.f / (zl - fTargZ);
-    fvec dx1, dy1, dxy1 = 0;
-
-    dUdV_to_dX(d_u[i1_V], d_v[i1_V], dx1, stal);
-    dUdV_to_dY(d_u[i1_V], d_v[i1_V], dy1, stal);
-    dUdV_to_dXdY(d_u[i1_V], d_v[i1_V], dxy1, stal);
-
-    StripsToCoor(u, v, xl, yl, stal);
 
     const fvec tx = (xl - fTargX) * dzli;
     const fvec ty = (yl - fTargY) * dzli;
@@ -307,11 +300,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
       T.C10 = stal.XYInfo.C10;
       T.C11 = stal.XYInfo.C11;
 
-      if (fUseHitErrors) {
-        T.C00 = dx1 * dx1;
-        T.C10 = dxy1;
-        T.C11 = dy1 * dy1;
-      }
+      if (fUseHitErrors) { std::tie(T.C00, T.C10, T.C11) = stal.FormXYCovarianceMatrix(d_u[i1_V], d_v[i1_V]); }
 
       //assert(T.IsConsistent(true, -1));
 
@@ -484,17 +473,14 @@ inline void L1Algo::findDoubletsStep0(
 
       fscal dy_est2 = Pick_m22[i1_4] * fabs(C11[i1_4] + stam.XYInfo.C11[i1_4]);
 
-      if (fUseHitErrors) {
-        fvec dym = 0;
-        dUdV_to_dY(hitm.dU(), hitm.dV(), dym, stam);
-        dy_est2 = Pick_m22[i1_4] * fabs(C11[i1_4] + dym[0] * dym[0]);
-      }
+      /// Covariation matrix of the hit
+      auto [dxxScalMhit, dxyScalMhit, dyyScalMhit] = stam.FormXYCovarianceMatrix(hitm.dU(), hitm.dV());
 
-      fvec xm, ym = 0;
+      if (fUseHitErrors) { dy_est2 = Pick_m22[i1_4] * fabs(C11[i1_4] + dyyScalMhit); }
 
-      StripsToCoor(hitm.U(), hitm.V(), xm, ym, stam);
+      auto [xm, ym] = stam.ConvUVtoXY<fscal>(hitm.U(), hitm.V());
 
-      const fscal dY = ym[i1_4] - y[i1_4];
+      const fscal dY = ym - y[i1_4];
 
       if (dY * dY > dy_est2) continue;
 
@@ -504,13 +490,9 @@ inline void L1Algo::findDoubletsStep0(
 
       fscal dx_est2 = Pick_m22[i1_4] * fabs(C00[i1_4] + stam.XYInfo.C00[i1_4]);
 
-      if (fUseHitErrors) {
-        fvec dxm = 0;
-        dUdV_to_dX(hitm.dU(), hitm.dV(), dxm, stam);
-        dx_est2 = Pick_m22[i1_4] * fabs(C00[i1_4] + dxm[0] * dxm[0]);
-      }
+      if (fUseHitErrors) { dx_est2 = Pick_m22[i1_4] * fabs(C00[i1_4] + dxxScalMhit); }
 
-      const fscal dX = xm[i1_4] - x[i1_4];
+      const fscal dX = xm - x[i1_4];
 
       if (dX * dX > dx_est2) continue;
 
@@ -635,8 +617,6 @@ inline void L1Algo::findTripletsStep0(  // input
     // pack the data
     fvec u_front_2 = 0.f;
     fvec u_back_2  = 0.f;
-    fvec dx2       = 1.f;
-    fvec dy2       = 1.f;
     fvec du2       = 1.f;
     fvec dv2       = 1.f;
     fvec zPos_2    = 0.f;
@@ -677,11 +657,6 @@ inline void L1Algo::findTripletsStep0(  // input
       hitsm_2_tmp[n2_4] = hitsm_2[i2];
       n2_4++;
     }  // n2_4
-
-    dUdV_to_dX(du2, dv2, dx2, stam);
-    dUdV_to_dY(du2, dv2, dy2, stam);
-
-    // assert(T2.IsConsistent(true, n2_4));
 
     fvec dz = zPos_2 - T2.z;
 
@@ -835,9 +810,7 @@ inline void L1Algo::findTripletsStep0(  // input
         const fscal zr = hitr.Z();
         //  const fscal yr = hitr.Y();
 
-        fvec xr, yr = 0;
-
-        StripsToCoor(hitr.U(), hitr.V(), xr, yr, star);
+        auto [xr, yr] = star.ConvUVtoXY<fscal>(hitr.U(), hitr.V());
 
         L1TrackPar T_cur = T2;
 
@@ -864,13 +837,12 @@ inline void L1Algo::findTripletsStep0(  // input
              C11[i2_4]
              + star.XYInfo.C11[i2_4])));  // TODO for FastPrim dx < dy - other sort is optimal. But not for doublets
 
-        if (fUseHitErrors) {
-          fvec dyr = 0;
-          dUdV_to_dY(hitr.dU(), hitr.dV(), dyr, star);
-          dy_est2 = (Pick_r22[i2_4] * (fabs(C11[i2_4] + dyr[0] * dyr[0])));
-        }
+        /// Covariation matrix of the hit
+        auto [dxxScalRhit, dxyScalRhit, dyyScalRhit] = star.FormXYCovarianceMatrix(hitr.dU(), hitr.dV());
 
-        const fscal dY  = yr[i2_4] - y[i2_4];
+        if (fUseHitErrors) { dy_est2 = (Pick_r22[i2_4] * (fabs(C11[i2_4] + dyyScalRhit))); }
+
+        const fscal dY  = yr - y[i2_4];
         const fscal dY2 = dY * dY;
 
         if (dY2 > dy_est2) continue;  // if (yr > y_plus_new [i2_4] ) continue;
@@ -883,13 +855,9 @@ inline void L1Algo::findTripletsStep0(  // input
 
         fscal dx_est2 = (Pick_r22[i2_4] * (fabs(C00[i2_4] + star.XYInfo.C00[i2_4])));
 
-        if (fUseHitErrors) {
-          fvec dxr = 0;
-          dUdV_to_dX(hitr.dU(), hitr.dV(), dxr, star);
-          dx_est2 = (Pick_r22[i2_4] * (fabs(C00[i2_4] + dxr[0] * dxr[0])));
-        }
+        if (fUseHitErrors) { dx_est2 = (Pick_r22[i2_4] * (fabs(C00[i2_4] + dxxScalRhit))); }
 
-        const fscal dX = xr[i2_4] - x[i2_4];
+        const fscal dX = xr - x[i2_4];
         if (dX * dX > dx_est2) continue;
         // check chi2  // not effective
         fvec C10;
@@ -1090,7 +1058,7 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
       const L1Hit& hit = (*vHits)[ihit[ih]];
       u[ih]            = hit.u;
       v[ih]            = hit.v;
-      StripsToCoor(u[ih], v[ih], x[ih], y[ih], sta[ih]);
+      std::tie(x[ih], y[ih]) = sta[ih].ConvUVtoXY<fscal>(u[ih], v[ih]);
       z[ih] = hit.z;
     };
 
@@ -2501,9 +2469,8 @@ void L1Algo::CATrackFinder()
             const L1Hit& hit     = (*vHits)[*phIt];
             L1HitPoint tempPoint = CreateHitPoint(hit);  //TODO take number of station from hit
 
-            float xcoor, ycoor = 0;
             L1Station stah = fParameters.GetStation(0);  // TODO: Why is it a copy?
-            StripsToCoor(tempPoint.U(), tempPoint.V(), xcoor, ycoor, stah);
+            auto [xcoor, ycoor] = stah.ConvUVtoXY<fscal>(tempPoint.U(), tempPoint.V());
             float zcoor = tempPoint.Z() - fParameters.GetTargetPositionZ()[0];
 
             float timeFlight = sqrt(xcoor * xcoor + ycoor * ycoor + zcoor * zcoor) / 30.f;  // c = 30[cm/ns]
@@ -2520,7 +2487,7 @@ void L1Algo::CATrackFinder()
             for (unsigned int ih = 0; ih < tr.fHits.size(); ih++) {
               cout << GetMcTrackIdForHit(tr.fHits[ih]) << " ";
             }
-            cout << endl;
+            cout << '\n';
           }
 
         }  // tracks

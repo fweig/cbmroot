@@ -99,7 +99,7 @@ void L1AlgoDraw::DrawMCTracks()
     cout << "Gray - secondary p < 0.5 - (third\\second iteration)" << endl;
   };
 
-  for (vector<CbmL1MCTrack>::iterator it = L1.vMCTracks.begin(); it != L1.vMCTracks.end(); ++it) {
+  for (vector<CbmL1MCTrack>::iterator it = L1.fvMCTracks.begin(); it != L1.fvMCTracks.end(); ++it) {
     CbmL1MCTrack& T = *it;
     //draw reconstructable tracks only
     if (!T.IsReconstructable()) continue;
@@ -141,7 +141,7 @@ void L1AlgoDraw::DrawMCTracks()
       cout << endl;
     }
     for (int ip = 0; ip < npoints; ip++) {
-      CbmL1MCPoint& p = L1.vMCPoints[T.Points[ip]];
+      CbmL1MCPoint& p = L1.fvMCPoints[T.Points[ip]];
       double par1[6];
       //if( fabs(p.pz)<0.05 ) continue;
       par1[0] = p.x;
@@ -557,7 +557,7 @@ void L1AlgoDraw::DrawInputHits()
     Int_t n_poly_fake = 0;
     for (int ih = HitsStartIndex[ista]; ih < HitsStopIndex[ista]; ih++) {
       L1Hit& h = vHits[ih];
-      int iMC  = CbmL1::Instance()->vHitMCRef[ih];
+      int iMC  = CbmL1::Instance()->fvHitPointIndexes[ih];
       //if( (vSFlag[h.f] | vSFlagB[h.b] )&0x02 ) continue; // if used
 
       float x, y, z;
@@ -691,7 +691,7 @@ void L1AlgoDraw::DrawRestHits(L1HitIndex_t* StsRestHitsStartIndex, L1HitIndex_t*
     for (L1HitIndex_t iRestHit = StsRestHitsStartIndex[ista]; iRestHit < StsRestHitsStopIndex[ista]; iRestHit++) {
       int ih   = realIHit[iRestHit];
       L1Hit& h = vHits[ih];
-      int iMC  = CbmL1::Instance()->vHitMCRef[ih];
+      int iMC  = CbmL1::Instance()->fvHitPointIndexes[ih];
       //if( (vSFlag[h.f] | vSFlagB[h.b] )&0x02 ) continue; // if used
 
       float x, y, z;

@@ -17,10 +17,6 @@
 /// L1Hit objects), used for track reconstruction procedure.
 ///
 struct L1AlgoInputData {
-  /*
-   *  Funcitons
-   */
-
   static constexpr int kMaxNStations {25};  ///> max number of stations to be passed to the L1AlgoInputData object
   // TODO: Why is it different to the value used in L1Algo (L1Constants::size::kMaxNstations)? (S.Zharko)
 
@@ -36,14 +32,17 @@ struct L1AlgoInputData {
 
   /// Gets number of the station strips
   int GetNstrips() const { return fNstrips; }
+
   /// Gives an access to the underlying vector of L1Hit objects
   L1Vector<L1Hit>& GetHits() { return vHits; }
+
   /// Gives an access to the vector of the strip flags
   L1Vector<unsigned char>& GetSFlag() { return fStripFlag; }
 
   /// Gets an access of the start indexes for different stations
   /// \return pointer to the first element of the array over the stations
   const L1HitIndex_t* GetHitsStartIndex() const { return HitsStartIndex; }
+
   /// Gets an access of the stop indexes for different stations
   /// \return pointer to the first element of the array over the stations
   const L1HitIndex_t* GetHitsStopIndex() const { return HitsStopIndex; }
@@ -99,17 +98,11 @@ struct L1AlgoInputData {
   /*
    *  Data fields (public)
    */
-  /// hits as a combination of front-, backstrips and z-position
-  L1Vector<L1Hit> vHits {"L1AlgoInputData::vHits"};
-
+  L1Vector<L1Hit> vHits {"L1AlgoInputData::vHits"};  ///< hits as a combination of front-, backstrips and z-position
   int fNstrips {0};  ///> Number of strips in the station
-  /// information of hits station & used hits in tracks;
-  L1Vector<unsigned char> fStripFlag {"L1AlgoInputData::fStripFlag"};
-
-  /// Start indeces for a given station
-  L1HitIndex_t HitsStartIndex[kMaxNStations + 1] {0};
-  /// Stop indeces for a given station
-  L1HitIndex_t HitsStopIndex[kMaxNStations + 1] {0};
+  L1Vector<unsigned char> fStripFlag {"L1AlgoInputData::fStripFlag"};  ///< hits station & used hits in tracks
+  L1HitIndex_t HitsStartIndex[kMaxNStations + 1] {0};                  ///< Start indeces for a given station
+  L1HitIndex_t HitsStopIndex[kMaxNStations + 1] {0};                   ///< Stop indeces for a given station
 
 } _fvecalignment;
 

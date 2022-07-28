@@ -36,6 +36,7 @@ L1HitsSortHelper::L1HitsSortHelper(vector<L1Hit>& hits, vector<L1HitPoint>& poin
       fD[i].p = &(points[i]);
       fD[i].i = indices[i];
       //      StripsToCoor(fD[i].p->U(),fD[i].p->V(), x, y, vStations[iS]);
+      //      NOTE: Use vStations[iS].ConvUVtoXY() istead
       //      fD[i].bin = fGrid[iS].GetBinBounded(x[0], y[0]);
     }
 }

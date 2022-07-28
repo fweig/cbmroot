@@ -1,6 +1,6 @@
-/* Copyright (C) 2007-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2007-2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Maksym Zyzak, Valentina Akishina, Igor Kulakov [committer] */
+   Authors: Maksym Zyzak, Valentina Akishina, Igor Kulakov [committer], Sergei Zharko */
 
 #ifndef L1Algo_h
 #define L1Algo_h
@@ -22,7 +22,7 @@ class L1AlgoDraw;
 // =====>dispatched<===== // #define MERGE_CLONES
 // #define TRACKS_FROM_TRIPLETS_ITERATION kAllPrimIter
 
-//#define HitErrors
+// =====>dispatched<===== // #define HitErrors
 //#define GLOBAL
 //#define mCBM
 
@@ -67,7 +67,6 @@ class L1AlgoDraw;
 using std::map;
 
 typedef int Tindex;
-
 #ifdef PULLS
 #define TRIP_PERFORMANCE
 class L1AlgoPulls;
@@ -84,7 +83,7 @@ class L1AlgoEfficiencyPerformance;
 using L1StationsArray_t = std::array<L1Station, L1Constants::size::kMaxNstations>;
 using L1MaterialArray_t = std::array<L1Material, L1Constants::size::kMaxNstations>;
 
-/// Central class of L1 tracking
+/// Main class of L1 CA track finder algorithm
 ///
 class L1Algo {
 public:
@@ -324,18 +323,9 @@ public:
 
   void GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta);
 
-  void dUdV_to_dY(const fvec& u, const fvec& v, fvec& _y, const L1Station& sta);
-
-  void dUdV_to_dX(const fvec& u, const fvec& v, fvec& _x, const L1Station& sta);
-
-  void dUdV_to_dXdY(const fvec& u, const fvec& v, fvec& _xy, const L1Station& sta);
 
   void GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, char iS);
-  void StripsToCoor(const fscal& u, const fscal& v, fscal& x, fscal& y,
-                    const L1Station& sta) const;  // convert strip positions to coordinates
-  void StripsToCoor(const fscal& u, const fscal& v, fvec& x, fvec& y,
-                    const L1Station& sta) const;  // convert strip positions to coordinates
-  void StripsToCoor(const fvec& u, const fvec& v, fvec& x, fvec& y, const L1Station& sta) const;
+
   L1HitPoint CreateHitPoint(const L1Hit& hit);  // full the hit point by hit information.
 
   void CreateHitPoint(const L1Hit& hit, L1HitPoint& point);

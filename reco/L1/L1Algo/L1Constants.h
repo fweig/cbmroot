@@ -51,23 +51,17 @@ namespace L1Constants
   namespace control
   {
     /// Flag for the radiation length tables usage
-    /// true - Radiational tables will be used,
+    /// true  - material budget tables will be used,
     /// false - basic station material info is used
     constexpr bool kIfUseRadLengthTable {true};
 
     /// Flag for calling the CAMergeClones procedure ... TODO
     constexpr bool kIfMergeClones {true};
 
-    /// Flag: debug mode for analyzing the doublets performance efficiencies
-    //constexpr bool kIfDebugDoubletsPerformance {false};
-
-    /// Flag: debug mode for analyzing the tiplets performance efficiencies
-    //constexpr bool kIfDebugTripletsPerformance {false};
-
-    /// Flag: debug mode for creating pools for triplets.
-    /// NOTE: this feature will work only if the L1Parameters::kIfDebugTipletsPerformace is true!
-    //constexpr bool kIfCreateTripletPulls {false};
-  }  // end namespace control
+    /// Flag: hit errors
+    /// true  - hit errors will be saved in the track extender algorithm
+    constexpr bool kIfSaveHitErrorsInTrackExtender {false};
+  }  // namespace control
 
   /// Physics constants
   namespace phys

@@ -67,7 +67,7 @@ void CbmL1::TrackMatch()
   pMCTrackMap.clear();
 
   // fill pMCTrackMap
-  for (vector<CbmL1MCTrack>::iterator i = vMCTracks.begin(); i != vMCTracks.end(); ++i) {
+  for (vector<CbmL1MCTrack>::iterator i = fvMCTracks.begin(); i != fvMCTracks.end(); ++i) {
     CbmL1MCTrack& MC = *i;
 
     if (pMCTrackMap.find(MC.ID) == pMCTrackMap.end()) { pMCTrackMap.insert(pair<int, CbmL1MCTrack*>(MC.ID, &MC)); }
@@ -76,9 +76,9 @@ void CbmL1::TrackMatch()
     }
   }
   // -- prepare information about reconstructed tracks
-  const int nRTracks = vRTracks.size();
+  const int nRTracks = fvRecoTracks.size();
   for (int iR = 0; iR < nRTracks; iR++) {
-    CbmL1Track* prtra = &(vRTracks[iR]);
+    CbmL1Track* prtra = &(fvRecoTracks[iR]);
 
     //  cout<<iR<<" iR"<<endl;
 
@@ -88,13 +88,13 @@ void CbmL1::TrackMatch()
     map<int, int>& hitmap = prtra->hitMap;  // how many hits from each mcTrack belong to current recoTrack
     for (vector<int>::iterator ih = (prtra->Hits).begin(); ih != (prtra->Hits).end(); ++ih) {
 
-      const int nMCPoints = vHits[*ih].mcPointIds.size();
+      const int nMCPoints = fvExternalHits[*ih].mcPointIds.size();
       for (int iP = 0; iP < nMCPoints; iP++) {
-        int iMC = vHits[*ih].mcPointIds[iP];
+        int iMC = fvExternalHits[*ih].mcPointIds[iP];
 
         //     cout<<iMC<<" iMC"<<endl;
         int ID = -1;
-        if (iMC >= 0) ID = vMCPoints[iMC].ID;
+        if (iMC >= 0) ID = fvMCPoints[iMC].ID;
         if (hitmap.find(ID) == hitmap.end()) hitmap[ID] = 1;
         else {
           hitmap[ID] += 1;
@@ -309,7 +309,7 @@ void CbmL1::EfficienciesPerformance()
   ntra.fOutDir    = fHistoDir;  // Setup a pointer for output directory
   L1_NTRA.fOutDir = fHistoDir;  // Save average efficiencies
 
-  for (vector<CbmL1Track>::iterator rtraIt = vRTracks.begin(); rtraIt != vRTracks.end(); ++rtraIt) {
+  for (vector<CbmL1Track>::iterator rtraIt = fvRecoTracks.begin(); rtraIt != fvRecoTracks.end(); ++rtraIt) {
     ntra.ghosts += rtraIt->IsGhost();
     if (rtraIt->IsGhost()) {  // Debug.
       cout << " L1: ghost track: nhits " << rtraIt->GetNOfHits() << " p " << 1. / rtraIt->T[5] << " purity "
@@ -326,14 +326,14 @@ void CbmL1::EfficienciesPerformance()
     }
   }
 
-  int sta_nhits[algo->GetNstations()], sta_nfakes[algo->GetNstations()];
+  int sta_nhits[fpAlgo->GetNstations()], sta_nfakes[fpAlgo->GetNstations()];
 
-  for (int i = 0; i < algo->GetNstations(); i++) {
+  for (int i = 0; i < fpAlgo->GetNstations(); i++) {
     sta_nhits[i]  = 0;
     sta_nfakes[i] = 0;
   }
 
-  for (vector<CbmL1MCTrack>::iterator mtraIt = vMCTracks.begin(); mtraIt != vMCTracks.end(); mtraIt++) {
+  for (vector<CbmL1MCTrack>::iterator mtraIt = fvMCTracks.begin(); mtraIt != fvMCTracks.end(); mtraIt++) {
     CbmL1MCTrack& mtra = *(mtraIt);
 
 
@@ -365,7 +365,7 @@ void CbmL1::EfficienciesPerformance()
     if (reco) nclones = mtra.GetNClones();
     //     if (nclones){ // Debug. Look at clones
     //       for (int irt = 0; irt < rTracks.size(); irt++){
-    //         const int ista = vHitStore[rTracks[irt]->Hits[0]].iStation;
+    //         const int ista = fvHitStore[rTracks[irt]->Hits[0]].iStation;
     //         cout << rTracks[irt]->GetNOfHits() << "(" << ista << ") ";
     //       }
     //       cout << mtra.NStations() << endl;
@@ -406,7 +406,7 @@ void CbmL1::EfficienciesPerformance()
         ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "fast");
 
         if (mtra.IsPrimary()) {                // reference primary
-          if (mtra.NStations() == NStation) {  // long reference primary
+          if (mtra.NStations() == fNStations) {  // long reference primary
             ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "long_fast_prim");
           }
           ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "fast_prim");
@@ -465,7 +465,7 @@ void CbmL1::EfficienciesPerformance()
     if (fVerbose > 1) {
       ntra.PrintEff(true);
       cout << "Number of true and fake hits in stations: " << endl;
-      for (int i = 0; i < algo->GetNstations(); i++) {
+      for (int i = 0; i < fpAlgo->GetNstations(); i++) {
         cout << sta_nhits[i] - sta_nfakes[i] << "+" << sta_nfakes[i] << "   ";
       }
       cout << endl;
@@ -760,7 +760,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
 
   //   //hit density calculation: h_hit_density[10]
   //
-  //   for (vector<CbmL1HitStore>::iterator hIt = vHitStore.begin(); hIt != vHitStore.end(); ++hIt){
+  //   for (vector<CbmL1HitStore>::iterator hIt = fvHitStore.begin(); hIt != fvHitStore.end(); ++hIt){
   //     float x = hIt->x;
   //     float y = hIt->y;
   //     float r = sqrt(x*x+y*y);
@@ -768,13 +768,13 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
   //   }
 
   //
-  for (vector<CbmL1Track>::iterator rtraIt = vRTracks.begin(); rtraIt != vRTracks.end(); ++rtraIt) {
+  for (vector<CbmL1Track>::iterator rtraIt = fvRecoTracks.begin(); rtraIt != fvRecoTracks.end(); ++rtraIt) {
     CbmL1Track* prtra = &(*rtraIt);
     if ((prtra->Hits).size() < 1) continue;
     {  // fill histos
       if (fabs(prtra->T[4]) > 1.e-10) h_reco_mom->Fill(fabs(1.0 / prtra->T[4]));
       h_reco_nhits->Fill((prtra->Hits).size());
-      CbmL1HitStore& mh = vHitStore[prtra->Hits[0]];
+      CbmL1HitStore& mh = fvHitStore[prtra->Hits[0]];
       h_reco_station->Fill(mh.iStation);
     }
 
@@ -806,20 +806,20 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
         h_ghost_Rmom->Fill(fabs(1.0 / prtra->T[4]));
       }
       h_ghost_nhits->Fill((prtra->Hits).size());
-      CbmL1HitStore& h1 = vHitStore[prtra->Hits[0]];
-      CbmL1HitStore& h2 = vHitStore[prtra->Hits[1]];
+      CbmL1HitStore& h1 = fvHitStore[prtra->Hits[0]];
+      CbmL1HitStore& h2 = fvHitStore[prtra->Hits[1]];
       h_ghost_fstation->Fill(h1.iStation);
       h_ghost_r->Fill(sqrt(fabs(h1.x * h1.x + h1.y * h1.y)));
-      double z1 = algo->GetParameters()->GetStation(h1.iStation).z[0];
-      double z2 = algo->GetParameters()->GetStation(h2.iStation).z[0];
+      double z1 = fpAlgo->GetParameters()->GetStation(h1.iStation).z[0];
+      double z2 = fpAlgo->GetParameters()->GetStation(h2.iStation).z[0];
       if (fabs(z2 - z1) > 1.e-4) {
         h_ghost_tx->Fill((h2.x - h1.x) / (z2 - z1));
         h_ghost_ty->Fill((h2.y - h1.y) / (z2 - z1));
       }
 
       if (fabs(prtra->T[4]) > 1.e-10) h2_ghost_nhits_vs_mom->Fill(fabs(1.0 / prtra->T[4]), (prtra->Hits).size());
-      CbmL1HitStore& hf = vHitStore[prtra->Hits[0]];
-      CbmL1HitStore& hl = vHitStore[prtra->Hits[(prtra->Hits).size() - 1]];
+      CbmL1HitStore& hf = fvHitStore[prtra->Hits[0]];
+      CbmL1HitStore& hl = fvHitStore[prtra->Hits[(prtra->Hits).size() - 1]];
       if (fabs(prtra->T[4]) > 1.e-10) h2_ghost_fstation_vs_mom->Fill(fabs(1.0 / prtra->T[4]), hf.iStation + 1);
       if (hl.iStation >= hf.iStation) h2_ghost_lstation_vs_fstation->Fill(hf.iStation + 1, hl.iStation + 1);
     }
@@ -827,7 +827,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
   }  // for reco tracks
 
   int mc_total = 0;  // total amount of reconstructable mcTracks
-  for (vector<CbmL1MCTrack>::iterator mtraIt = vMCTracks.begin(); mtraIt != vMCTracks.end(); mtraIt++) {
+  for (vector<CbmL1MCTrack>::iterator mtraIt = fvMCTracks.begin(); mtraIt != fvMCTracks.end(); mtraIt++) {
     CbmL1MCTrack& mtra = *(mtraIt);
     //    if( !( mtra.pdg == -11 && mtra.mother_ID == -1 ) ) continue; // electrons only
 
@@ -844,8 +844,8 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
 
     int nSta = mtra.NStations();
 
-    CbmL1HitStore& fh = vHitStore[*(mtra.Hits.begin())];
-    CbmL1HitStore& lh = vHitStore[*(mtra.Hits.rbegin())];
+    CbmL1HitStore& fh = fvHitStore[*(mtra.Hits.begin())];
+    CbmL1HitStore& lh = fvHitStore[*(mtra.Hits.rbegin())];
 
     h_reg_MCmom->Fill(momentum);
     if (mtra.IsPrimary()) {
@@ -907,7 +907,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
 
 
     int iph           = mtra.Hits[0];
-    CbmL1HitStore& ph = vHitStore[iph];
+    CbmL1HitStore& ph = fvHitStore[iph];
 
     h_sec_r->Fill(sqrt(fabs(ph.x * ph.x + ph.y * ph.y)));
     if (fabs(mtra.pz) > 1.e-8) {
@@ -994,16 +994,16 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
       h_notfound_r->Fill(sqrt(fabs(ph.x * ph.x + ph.y * ph.y)));
 
       if (mtra.Points.size() > 0) {
-        CbmL1MCPoint& pMC = vMCPoints[mtra.Points[0]];
+        CbmL1MCPoint& pMC = fvMCPoints[mtra.Points[0]];
         h_notfound_tx->Fill(pMC.px / pMC.pz);
         h_notfound_ty->Fill(pMC.py / pMC.pz);
       }
 
-      //      CbmL1HitStore &ph21 = vHitStore[mtra.Hits[0]];
-      //      CbmL1HitStore &ph22 = vHitStore[mtra.Hits[1]];
+      //      CbmL1HitStore &ph21 = fvHitStore[mtra.Hits[0]];
+      //      CbmL1HitStore &ph22 = fvHitStore[mtra.Hits[1]];
 
-      //      double z21 = algo->GetParameters()->GetStation(ph21.iStation).z[0];
-      //      double z22 = algo->GetParameters()->GetStation(ph22.iStation).z[0];
+      //      double z21 = fpAlgo->GetParameters()->GetStation(ph21.iStation).z[0];
+      //      double z22 = fpAlgo->GetParameters()->GetStation(ph22.iStation).z[0];
       //      if( fabs(z22-z21)>1.e-4 ){
       //        h_notfound_tx->Fill((ph22.x-ph21.x)/(z22-z21));
       //        h_notfound_ty->Fill((ph22.y-ph21.y)/(z22-z21));
@@ -1023,17 +1023,17 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
   }  // for mcTracks
 
   int NFakes = 0;
-  for (unsigned int ih = 0; ih < algo->vHits->size(); ih++) {
-    int iMC = vHitMCRef[ih];  // TODO2: adapt to linking
+  for (unsigned int ih = 0; ih < fpAlgo->vHits->size(); ih++) {
+    int iMC = fvHitPointIndexes[ih];  // TODO2: adapt to linking
     if (iMC < 0) NFakes++;
   }
 
   h_reco_time->Fill(fTrackingTime);
   h_reco_timeNtr->Fill(mc_total, fTrackingTime);
-  h_reco_timeNhit->Fill(algo->vHits->size(), fTrackingTime);
+  h_reco_timeNhit->Fill(fpAlgo->vHits->size(), fTrackingTime);
 
   h_reco_fakeNtr->Fill(mc_total, NFakes);
-  h_reco_fakeNhit->Fill(algo->vHits->size() - NFakes, NFakes);
+  h_reco_fakeNhit->Fill(fpAlgo->vHits->size() - NFakes, NFakes);
 
 
   h_reg_MCmom->Scale(1.f / NEvents);
@@ -1077,7 +1077,7 @@ void CbmL1::TrackFitPerformance()
   static bool first_call = 1;
 
   L1Fit fit;
-  fit.SetParticleMass(algo->GetDefaultParticleMass());
+  fit.SetParticleMass(fpAlgo->GetDefaultParticleMass());
 
 
   if (first_call) {
@@ -1184,7 +1184,7 @@ void CbmL1::TrackFitPerformance()
     gDirectory = currentDir;
   }  // if first call
 
-  for (vector<CbmL1Track>::iterator it = vRTracks.begin(); it != vRTracks.end(); ++it) {
+  for (vector<CbmL1Track>::iterator it = fvRecoTracks.begin(); it != fvRecoTracks.end(); ++it) {
 
     if (it->IsGhost()) continue;
 
@@ -1192,7 +1192,7 @@ void CbmL1::TrackFitPerformance()
 #define L1FSTPARAMEXTRAPOLATE
 #ifdef L1FSTPARAMEXTRAPOLATE
 
-      const int last_station = vHitStore[it->Hits.back()].iStation;
+      const int last_station = fvHitStore[it->Hits.back()].iStation;
 
       CbmL1MCTrack mc = *(it->GetMCTracks()[0]);
       L1TrackPar trPar(it->T, it->C);
@@ -1202,8 +1202,8 @@ void CbmL1::TrackFitPerformance()
       int ih     = 0;
       for (unsigned int iMCPoint = 0; iMCPoint < mc.Points.size(); iMCPoint++) {
         const int iMCP      = mc.Points[iMCPoint];
-        CbmL1MCPoint& mcP   = vMCPoints[iMCP];
-        const L1Station& st = algo->GetParameters()->GetStation(mcP.iStation);
+        CbmL1MCPoint& mcP   = fvMCPoints[iMCP];
+        const L1Station& st = fpAlgo->GetParameters()->GetStation(mcP.iStation);
         z[ih]               = st.z[0];
         if (ih > 0 && (z[ih] - z[ih - 1]) < 0.1) continue;
         st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
@@ -1211,8 +1211,8 @@ void CbmL1::TrackFitPerformance()
         if (ih == 3) break;
       }
       if (ih < 3) continue;
-      CbmL1MCPoint& mcP = vMCPoints[mc.Points[0]];
-      targB             = algo->GetParameters()->GetVertexFieldValue();
+      CbmL1MCPoint& mcP = fvMCPoints[mc.Points[0]];
+      targB             = fpAlgo->GetParameters()->GetVertexFieldValue();
       fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
       L1Extrapolate(trPar, mcP.zIn, trPar.qp, fld);
 
@@ -1261,14 +1261,14 @@ void CbmL1::TrackFitPerformance()
       if (finite(trPar.C44[0]) && trPar.C44[0] > 0) h_fit[9]->Fill((trPar.qp[0] - mcP.q / mcP.p) / sqrt(trPar.C44[0]));
       h_fit[10]->Fill(trPar.qp[0]);
       h_fit[11]->Fill(mcP.q / mcP.p);
-      if (last_station > NMvdStations) h_fit[12]->Fill(trPar.t[0] - mcP.time);
-      if (last_station > NMvdStations)
+      if (last_station > fNMvdStations) h_fit[12]->Fill(trPar.t[0] - mcP.time);
+      if (last_station > fNMvdStations)
         if (finite(trPar.C55[0]) && trPar.C55[0] > 0) h_fit[13]->Fill((trPar.t[0] - mcP.time) / sqrt(trPar.C55[0]));
 
 #else
-      int iMC = vHitMCRef[it->Hits.front()];  // TODO2: adapt to linking
+      int iMC = fvHitPointIndexes[it->Hits.front()];  // TODO2: adapt to linking
       if (iMC < 0) continue;
-      CbmL1MCPoint& mc = vMCPoints[iMC];
+      CbmL1MCPoint& mc = fvMCPoints[iMC];
       //      if( !( mc.pdg == -11 && mc.mother_ID == -1 ) ) continue; // electrons only
       h_fit[0]->Fill((mc.x - it->T[0]) * 1.e4);
       h_fit[1]->Fill((mc.y - it->T[1]) * 1.e4);
@@ -1296,14 +1296,14 @@ void CbmL1::TrackFitPerformance()
     }
 
 
-    {                                        // last hit
-      int iMC = vHitMCRef[it->Hits.back()];  // TODO2: adapt to linking
+    {                                           // last hit
+      int iMC = fvHitPointIndexes[it->Hits.back()];  // TODO2: adapt to linking
       if (iMC < 0) continue;
 
 #define L1FSTPARAMEXTRAPOLATE
 #ifdef L1FSTPARAMEXTRAPOLATE
 
-      const int last_station = vHitStore[it->Hits.back()].iStation;
+      const int last_station = fvHitStore[it->Hits.back()].iStation;
 
       CbmL1MCTrack mc = *(it->GetMCTracks()[0]);
       L1TrackPar trPar(it->TLast, it->CLast);
@@ -1313,8 +1313,8 @@ void CbmL1::TrackFitPerformance()
       int ih     = 0;
       for (unsigned int iMCPoint = 0; iMCPoint < mc.Points.size(); iMCPoint++) {
         const int iMCP      = mc.Points[iMCPoint];
-        CbmL1MCPoint& mcP   = vMCPoints[iMCP];
-        const L1Station& st = algo->GetParameters()->GetStation(mcP.iStation);
+        CbmL1MCPoint& mcP   = fvMCPoints[iMCP];
+        const L1Station& st = fpAlgo->GetParameters()->GetStation(mcP.iStation);
         z[ih]               = st.z[0];
         if (ih > 0 && (z[ih] - z[ih - 1]) < 0.1) continue;
         st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
@@ -1322,8 +1322,8 @@ void CbmL1::TrackFitPerformance()
         if (ih == 3) break;
       }
       if (ih < 3) continue;
-      CbmL1MCPoint& mcP = vMCPoints[iMC];
-      targB             = algo->GetParameters()->GetVertexFieldValue();
+      CbmL1MCPoint& mcP = fvMCPoints[iMC];
+      targB             = fpAlgo->GetParameters()->GetVertexFieldValue();
       fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
       L1Extrapolate(trPar, mcP.zOut, trPar.qp, fld);
 
@@ -1332,7 +1332,7 @@ void CbmL1::TrackFitPerformance()
       h_fitL[2]->Fill((trPar.tx[0] - mcP.pxOut / mcP.pzOut) * 1.e3);
       h_fitL[3]->Fill((trPar.ty[0] - mcP.pyOut / mcP.pzOut) * 1.e3);
       h_fitL[4]->Fill(fabs(1. / trPar.qp[0]) / mcP.p - 1);
-      if (last_station > NMvdStations) h_fitL[12]->Fill(trPar.t[0] - mcP.time);
+      if (last_station > fNMvdStations) h_fitL[12]->Fill(trPar.t[0] - mcP.time);
 
 
       if (finite(trPar.C00[0]) && trPar.C00[0] > 0) h_fitL[5]->Fill((trPar.x[0] - mcP.xOut) / sqrt(trPar.C00[0]));
@@ -1344,10 +1344,10 @@ void CbmL1::TrackFitPerformance()
       if (finite(trPar.C44[0]) && trPar.C44[0] > 0) h_fitL[9]->Fill((trPar.qp[0] - mcP.q / mcP.p) / sqrt(trPar.C44[0]));
       h_fitL[10]->Fill(trPar.qp[0]);
       h_fitL[11]->Fill(mcP.q / mcP.p);
-      if (last_station > NMvdStations)
+      if (last_station > fNMvdStations)
         if (finite(trPar.C55[0]) && trPar.C55[0] > 0) h_fitL[13]->Fill((trPar.t[0] - mcP.time) / sqrt(trPar.C55[0]));
 #else
-      CbmL1MCPoint& mc = vMCPoints[iMC];
+      CbmL1MCPoint& mc = fvMCPoints[iMC];
 
       h_fitL[0]->Fill((it->TLast[0] - mc.x) * 1.e4);
       h_fitL[1]->Fill((it->TLast[1] - mc.y) * 1.e4);
@@ -1384,8 +1384,8 @@ void CbmL1::TrackFitPerformance()
           for (unsigned int ih = 0; ih < 3; ih++) {
             if (ih >= mc.Points.size()) continue;  //If nofMCPoints in track < 3
             const int iMCP      = mc.Points[ih];
-            CbmL1MCPoint& mcP   = vMCPoints[iMCP];
-            const L1Station& st = algo->GetParameters()->GetStation(mcP.iStation);
+            CbmL1MCPoint& mcP   = fvMCPoints[iMCP];
+            const L1Station& st = fpAlgo->GetParameters()->GetStation(mcP.iStation);
             z[ih]               = st.z[0];
             st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
           };
@@ -1393,16 +1393,16 @@ void CbmL1::TrackFitPerformance()
 
           L1Extrapolate(trPar, mc.z, trPar.qp, fld);
           // add material
-          const int fSta = vHitStore[it->Hits[0]].iStation;
-          const int dir  = int((mc.z - algo->GetParameters()->GetStation(fSta).z[0])
-                              / fabs(mc.z - algo->GetParameters()->GetStation(fSta).z[0]));
-          //         if (abs(mc.z - algo->GetParameters()->GetStation(fSta).z[0]) > 10.) continue; // can't extrapolate on large distance
-          for (int iSta = fSta /*+dir*/;
-               (iSta >= 0) && (iSta < NStation) && (dir * (mc.z - algo->GetParameters()->GetStation(iSta).z[0]) > 0);
+          const int fSta = fvHitStore[it->Hits[0]].iStation;
+          const int dir  = int((mc.z - fpAlgo->GetParameters()->GetStation(fSta).z[0])
+                              / fabs(mc.z - fpAlgo->GetParameters()->GetStation(fSta).z[0]));
+          //         if (abs(mc.z - fpAlgo->GetParameters()->GetStation(fSta).z[0]) > 10.) continue; // can't extrapolate on large distance
+          for (int iSta = fSta /*+dir*/; (iSta >= 0) && (iSta < fNStations)
+                                         && (dir * (mc.z - fpAlgo->GetParameters()->GetStation(iSta).z[0]) > 0);
                iSta += dir) {
             //           cout << iSta << " " << dir << endl;
-            fit.L1AddMaterial(trPar, algo->GetParameters()->GetStation(iSta).materialInfo, trPar.qp, 1);
-            if (iSta + dir == NMvdStations - 1) fit.L1AddPipeMaterial(trPar, trPar.qp, 1);
+            fit.L1AddMaterial(trPar, fpAlgo->GetParameters()->GetStation(iSta).materialInfo, trPar.qp, 1);
+            if (iSta + dir == fNMvdStations - 1) fit.L1AddPipeMaterial(trPar, trPar.qp, 1);
           }
         }
         if (mc.z != trPar.z[0]) continue;
@@ -1445,41 +1445,42 @@ void CbmL1::TrackFitPerformance()
           L1FieldValue B[3], targB _fvecalignment;
           float z[3];
 
-          targB = algo->GetParameters()->GetVertexFieldValue();
+          targB = fpAlgo->GetParameters()->GetVertexFieldValue();
 
           int ih = 1;
           for (unsigned int iHit = 0; iHit < it->Hits.size(); iHit++) {
-            const int iStation  = vHitStore[it->Hits[iHit]].iStation;
-            const L1Station& st = algo->GetParameters()->GetStation(iStation);
+            const int iStation  = fvHitStore[it->Hits[iHit]].iStation;
+            const L1Station& st = fpAlgo->GetParameters()->GetStation(iStation);
             z[ih]               = st.z[0];
-            st.fieldSlice.GetFieldValue(vHitStore[it->Hits[iHit]].x, vHitStore[it->Hits[iHit]].y, B[ih]);
+            st.fieldSlice.GetFieldValue(fvHitStore[it->Hits[iHit]].x, fvHitStore[it->Hits[iHit]].y, B[ih]);
             ih++;
             if (ih == 3) break;
           }
           if (ih < 3) continue;
 
           // add material
-          const int fSta = vHitStore[it->Hits[0]].iStation;
+          const int fSta = fvHitStore[it->Hits[0]].iStation;
 
-          const int dir = (mc.z - algo->GetParameters()->GetStation(fSta).z[0])
-                          / abs(mc.z - algo->GetParameters()->GetStation(fSta).z[0]);
-          //         if (abs(mc.z - algo->GetParameters()->GetStation(fSta].z[0]) > 10.) continue; // can't extrapolate on large distance
+          const int dir = (mc.z - fpAlgo->GetParameters()->GetStation(fSta).z[0])
+                          / abs(mc.z - fpAlgo->GetParameters()->GetStation(fSta).z[0]);
+          //         if (abs(mc.z - fpAlgo->GetParameters()->GetStation(fSta].z[0]) > 10.) continue; // can't extrapolate on large distance
 
-          for (int iSta = fSta + dir;
-               (iSta >= 0) && (iSta < NStation) && (dir * (mc.z - algo->GetParameters()->GetStation(iSta).z[0]) > 0);
+          for (int iSta = fSta + dir; (iSta >= 0) && (iSta < fNStations)
+                                      && (dir * (mc.z - fpAlgo->GetParameters()->GetStation(iSta).z[0]) > 0);
                iSta += dir) {
 
-            z[0]     = algo->GetParameters()->GetStation(iSta).z[0];
+            z[0]     = fpAlgo->GetParameters()->GetStation(iSta).z[0];
             float dz = z[1] - z[0];
-            algo->GetParameters()->GetStation(iSta).fieldSlice.GetFieldValue(trPar.x - trPar.tx * dz,
-                                                                             trPar.y - trPar.ty * dz, B[0]);
+            fpAlgo->GetParameters()->GetStation(iSta).fieldSlice.GetFieldValue(trPar.x - trPar.tx * dz,
+                                                                               trPar.y - trPar.ty * dz, B[0]);
             fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
 
-            L1Extrapolate(trPar, algo->GetParameters()->GetStation(iSta).z[0], trPar.qp, fld);
-            fit.L1AddMaterial(trPar, algo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y), trPar.qp, 1);
-            fit.EnergyLossCorrection(trPar, algo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y),
+            L1Extrapolate(trPar, fpAlgo->GetParameters()->GetStation(iSta).z[0], trPar.qp, fld);
+            fit.L1AddMaterial(trPar, fpAlgo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y), trPar.qp,
+                              1);
+            fit.EnergyLossCorrection(trPar, fpAlgo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y),
                                      trPar.qp, fvec(1.f), fvec(1.f));
-            if (iSta + dir == NMvdStations - 1) {
+            if (iSta + dir == fNMvdStations - 1) {
               fit.L1AddPipeMaterial(trPar, trPar.qp, 1);
               fit.EnergyLossCorrection(trPar, fit.PipeRadThick, trPar.qp, fvec(1.f), fvec(1.f));
             }
@@ -1586,16 +1587,16 @@ void CbmL1::FieldApproxCheck()
   fout->cd();
 
   FairField* MF = CbmKF::Instance()->GetMagneticField();
-  for (int ist = 0; ist < NStation; ist++) {
+  for (int ist = 0; ist < fNStations; ist++) {
     double z    = 0;
     double Xmax = -100, Ymax = -100;
-    if (ist < NMvdStations) {
+    if (ist < fNMvdStations) {
       CbmKFTube& t = CbmKF::Instance()->vMvdMaterial[ist];
       z            = t.z;
       Xmax = Ymax = t.R;
     }
     else {
-      CbmStsStation* station = CbmStsSetup::Instance()->GetStation(ist - NMvdStations);
+      CbmStsStation* station = CbmStsSetup::Instance()->GetStation(ist - fNMvdStations);
       z                      = station->GetZ();
 
       Xmax = station->GetXmax();
@@ -1630,7 +1631,7 @@ void CbmL1::FieldApproxCheck()
 
     const int M         = 5;  // polinom order
     const int N         = (M + 1) * (M + 2) / 2;
-    const L1Station& st = algo->GetParameters()->GetStation(ist);
+    const L1Station& st = fpAlgo->GetParameters()->GetStation(ist);
     for (int i = 0; i < N; i++) {
       FSl.cx[i] = st.fieldSlice.cx[i][0];
       FSl.cy[i] = st.fieldSlice.cy[i][0];
@@ -1929,22 +1930,22 @@ void CbmL1::InputPerformance()
 
   map<unsigned int, unsigned int>::iterator it;
 
-  if (listStsHits && listStsHitMatch) {
-    for (unsigned int iH = 0; iH < vHits.size(); iH++) {
-      const CbmL1Hit& h = vHits[iH];
+  if (fpStsHits && fpStsHitMatches) {
+    for (unsigned int iH = 0; iH < fvExternalHits.size(); iH++) {
+      const CbmL1Hit& h = fvExternalHits[iH];
 
       if (h.Det != 1) continue;  // not sts hit
-      const CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(listStsHits->At(h.extIndex));
+      const CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(h.extIndex));
 
       //    int iMCPoint = -1;
       CbmLink link;
       CbmStsPoint* pt = 0;
 
-      if (listStsClusterMatch) {
+      if (fpStsClusterMatches) {
         const CbmMatch* frontClusterMatch =
-          static_cast<const CbmMatch*>(listStsClusterMatch->At(sh->GetFrontClusterId()));
+          static_cast<const CbmMatch*>(fpStsClusterMatches->At(sh->GetFrontClusterId()));
         const CbmMatch* backClusterMatch =
-          static_cast<const CbmMatch*>(listStsClusterMatch->At(sh->GetBackClusterId()));
+          static_cast<const CbmMatch*>(fpStsClusterMatches->At(sh->GetBackClusterId()));
         CbmMatch stsHitMatch;
 
         for (Int_t iFrontLink = 0; iFrontLink < frontClusterMatch->GetNofLinks(); iFrontLink++) {
@@ -1967,7 +1968,7 @@ void CbmL1::InputPerformance()
               bestWeight   = link.GetWeight();
               Int_t iFile  = link.GetFile();
               Int_t iEvent = link.GetEntry();
-              pt           = (CbmStsPoint*) fStsPoints->Get(iFile, iEvent, link.GetIndex());
+              pt           = (CbmStsPoint*) fpStsPoints->Get(iFile, iEvent, link.GetIndex());
             }
           }
         }
@@ -1976,7 +1977,7 @@ void CbmL1::InputPerformance()
 
         double mcTime = pt->GetTime();
 
-        if (!fLegacyEventMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
+        if (!fLegacyEventMode) mcTime += fpEventList->GetEventTime(link.GetEntry(), link.GetFile());
 
         // hit pulls and residuals
 
@@ -2000,9 +2001,9 @@ void CbmL1::InputPerformance()
         }
         else {  // errors used in TF
           pullXsts->Fill((hitPos.X() - mcPos.X())
-                         / sqrt(algo->GetParameters()->GetStation(NMvdStations).XYInfo.C00[0]));
+                         / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C00[0]));
           pullYsts->Fill((hitPos.Y() - mcPos.Y())
-                         / sqrt(algo->GetParameters()->GetStation(NMvdStations).XYInfo.C11[0]));
+                         / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C11[0]));
         }
 
         resXsts->Fill((hitPos.X() - mcPos.X()) * 10 * 1000);
@@ -2013,12 +2014,12 @@ void CbmL1::InputPerformance()
   }  // sts
 
 
-  if (listMvdHits && listMvdHitMatches) {
-    Int_t nEnt = listMvdHits->GetEntriesFast();
+  if (fpMvdHits && fpMvdHitMatches) {
+    Int_t nEnt = fpMvdHits->GetEntriesFast();
     for (int j = 0; j < nEnt; j++) {
 
-      CbmMvdHit* sh = L1_DYNAMIC_CAST<CbmMvdHit*>(listMvdHits->At(j));
-      CbmMatch* hm  = L1_DYNAMIC_CAST<CbmMatch*>(listMvdHitMatches->At(j));
+      CbmMvdHit* sh = L1_DYNAMIC_CAST<CbmMvdHit*>(fpMvdHits->At(j));
+      CbmMatch* hm  = L1_DYNAMIC_CAST<CbmMatch*>(fpMvdHitMatches->At(j));
 
       CbmMvdPoint* pt = nullptr;
       {
@@ -2027,7 +2028,7 @@ void CbmL1::InputPerformance()
           const CbmLink& link = hm->GetLink(iLink);
           if (link.GetWeight() < mcWeight) continue;
           mcWeight = link.GetWeight();
-          pt       = dynamic_cast<CbmMvdPoint*>(fMvdPoints->Get(&link));
+          pt       = dynamic_cast<CbmMvdPoint*>(fpMvdPoints->Get(&link));
         }
       }
       if (!pt) continue;
@@ -2048,9 +2049,9 @@ void CbmL1::InputPerformance()
       //       if (hitErr.Y() != 0) pullY->Fill( (hitPos.Y() - mcPos.Y()) / sh->GetDy() );
       if (hitErr.X() != 0)
         pullXmvd->Fill((hitPos.X() - mcPos.X())
-                       / sqrt(algo->GetParameters()->GetStation(0).XYInfo.C00[0]));  // errors used in TF
+                       / sqrt(fpAlgo->GetParameters()->GetStation(0).XYInfo.C00[0]));  // errors used in TF
       if (hitErr.Y() != 0)
-        pullYmvd->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->GetParameters()->GetStation(0).XYInfo.C11[0]));
+        pullYmvd->Fill((hitPos.Y() - mcPos.Y()) / sqrt(fpAlgo->GetParameters()->GetStation(0).XYInfo.C11[0]));
 
       resXmvd->Fill((hitPos.X() - mcPos.X()) * 10 * 1000);
       resYmvd->Fill((hitPos.Y() - mcPos.Y()) * 10 * 1000);
@@ -2058,14 +2059,14 @@ void CbmL1::InputPerformance()
   }  // mvd
 
 
-  if (fMuchPixelHits && listMuchHitMatches) {
-    for (unsigned int iH = 0; iH < vHits.size(); iH++) {
-      const CbmL1Hit& h = vHits[iH];
+  if (fpMuchPixelHits && fpMuchHitMatches) {
+    for (unsigned int iH = 0; iH < fvExternalHits.size(); iH++) {
+      const CbmL1Hit& h = fvExternalHits[iH];
 
       if (h.Det != 2) continue;  // mvd hit
 
-      const CbmMuchPixelHit* sh = L1_DYNAMIC_CAST<CbmMuchPixelHit*>(fMuchPixelHits->At(h.extIndex));
-      CbmMatch* hm              = L1_DYNAMIC_CAST<CbmMatch*>(listMuchHitMatches->At(h.extIndex));
+      const CbmMuchPixelHit* sh = L1_DYNAMIC_CAST<CbmMuchPixelHit*>(fpMuchPixelHits->At(h.extIndex));
+      CbmMatch* hm              = L1_DYNAMIC_CAST<CbmMatch*>(fpMuchHitMatches->At(h.extIndex));
 
 
       if (hm->GetNofLinks() == 0) continue;
@@ -2084,10 +2085,10 @@ void CbmL1::InputPerformance()
       }
       if (bestWeight / totalWeight < 0.7 || iMCPoint < 0) continue;
 
-      CbmMuchPoint* pt = (CbmMuchPoint*) fMuchPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
+      CbmMuchPoint* pt = (CbmMuchPoint*) fpMuchPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
       double mcTime    = pt->GetTime();
 
-      if (!fLegacyEventMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
+      if (!fLegacyEventMode) mcTime += fpEventList->GetEventTime(link.GetEntry(), link.GetFile());
       // mcTime+=20;
 
       // hit pulls and residuals
@@ -2116,8 +2117,10 @@ void CbmL1::InputPerformance()
         pullTmuch->Fill((h.t - mcTime) / sh->GetTimeError());
       }
       else {  // errors used in TF
-        pullXmuch->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->GetParameters()->GetStation(NMvdStations).XYInfo.C00[0]));
-        pullYmuch->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->GetParameters()->GetStation(NMvdStations).XYInfo.C11[0]));
+        pullXmuch->Fill((hitPos.X() - mcPos.X())
+                        / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C00[0]));
+        pullYmuch->Fill((hitPos.Y() - mcPos.Y())
+                        / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C11[0]));
       }
 
       resXmuch->Fill((h.x - mcPos.X()) * 10 * 1000);
@@ -2127,13 +2130,13 @@ void CbmL1::InputPerformance()
   }  // much
 
 
-  if (listTrdHits && fTrdHitMatches) {
-    for (unsigned int iH = 0; iH < vHits.size(); iH++) {
-      const CbmL1Hit& h = vHits[iH];
+  if (fpTrdHits && fpTrdHitMatches) {
+    for (unsigned int iH = 0; iH < fvExternalHits.size(); iH++) {
+      const CbmL1Hit& h = fvExternalHits[iH];
 
       if (h.Det != 3) continue;  // mvd hit
-      const CbmTrdHit* sh = L1_DYNAMIC_CAST<CbmTrdHit*>(listTrdHits->At(h.extIndex));
-      CbmMatch* hm        = L1_DYNAMIC_CAST<CbmMatch*>(fTrdHitMatches->At(h.extIndex));
+      const CbmTrdHit* sh = L1_DYNAMIC_CAST<CbmTrdHit*>(fpTrdHits->At(h.extIndex));
+      CbmMatch* hm        = L1_DYNAMIC_CAST<CbmMatch*>(fpTrdHitMatches->At(h.extIndex));
 
 
       if (hm->GetNofLinks() == 0) continue;
@@ -2154,10 +2157,10 @@ void CbmL1::InputPerformance()
       }
       if (bestWeight / totalWeight < 0.7 || iMCPoint < 0) continue;
 
-      CbmTrdPoint* pt = (CbmTrdPoint*) fTrdPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
+      CbmTrdPoint* pt = (CbmTrdPoint*) fpTrdPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
       double mcTime   = pt->GetTime();
 
-      if (!fLegacyEventMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
+      if (!fLegacyEventMode) mcTime += fpEventList->GetEventTime(link.GetEntry(), link.GetFile());
 
       // hit pulls and residuals
       //      if ((sh->GetPlaneId()) == 0) continue;
@@ -2183,8 +2186,10 @@ void CbmL1::InputPerformance()
         pullTtrd->Fill((h.t - mcTime) / sh->GetTimeError());
       }
       else {  // errors used in TF
-        pullXtrd->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->GetParameters()->GetStation(NMvdStations).XYInfo.C00[0]));
-        pullYtrd->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->GetParameters()->GetStation(NMvdStations).XYInfo.C11[0]));
+        pullXtrd->Fill((hitPos.X() - mcPos.X())
+                       / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C00[0]));
+        pullYtrd->Fill((hitPos.Y() - mcPos.Y())
+                       / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C11[0]));
       }
 
       resXtrd->Fill((h.x - mcPos.X()) * 10 * 1000);
@@ -2195,14 +2200,14 @@ void CbmL1::InputPerformance()
   }  // much
 
 
-  if (fTofHits && fTofHitDigiMatches) {
-    for (unsigned int iH = 0; iH < vHits.size(); iH++) {
-      const CbmL1Hit& h = vHits[iH];
+  if (fpTofHits && fpTofHitMatches) {
+    for (unsigned int iH = 0; iH < fvExternalHits.size(); iH++) {
+      const CbmL1Hit& h = fvExternalHits[iH];
 
       if (h.Det != 4) continue;  // mvd hit
 
-      CbmTofHit* sh = L1_DYNAMIC_CAST<CbmTofHit*>(fTofHits->At(h.extIndex));
-      CbmMatch* hm  = L1_DYNAMIC_CAST<CbmMatch*>(fTofHitDigiMatches->At(h.extIndex));
+      CbmTofHit* sh = L1_DYNAMIC_CAST<CbmTofHit*>(fpTofHits->At(h.extIndex));
+      CbmMatch* hm  = L1_DYNAMIC_CAST<CbmMatch*>(fpTofHitMatches->At(h.extIndex));
 
 
       if (hm->GetNofLinks() == 0) continue;
@@ -2224,10 +2229,10 @@ void CbmL1::InputPerformance()
 
       if (iMCPoint < 0) continue;
 
-      CbmTofPoint* pt = (CbmTofPoint*) fTofPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
+      CbmTofPoint* pt = (CbmTofPoint*) fpTofPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());
       double mcTime   = pt->GetTime();
 
-      if (!fLegacyEventMode) mcTime += fEventList->GetEventTime(link.GetEntry(), link.GetFile());
+      if (!fLegacyEventMode) mcTime += fpEventList->GetEventTime(link.GetEntry(), link.GetFile());
 
       // hit pulls and residuals
 
@@ -2251,8 +2256,10 @@ void CbmL1::InputPerformance()
         pullTtof->Fill((sh->GetTime() - mcTime) / sh->GetTimeError());
       }
       else {  // errors used in TF
-        pullXtof->Fill((hitPos.X() - mcPos.X()) / sqrt(algo->GetParameters()->GetStation(NMvdStations).XYInfo.C00[0]));
-        pullYtof->Fill((hitPos.Y() - mcPos.Y()) / sqrt(algo->GetParameters()->GetStation(NMvdStations).XYInfo.C11[0]));
+        pullXtof->Fill((hitPos.X() - mcPos.X())
+                       / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C00[0]));
+        pullYtof->Fill((hitPos.Y() - mcPos.Y())
+                       / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C11[0]));
       }
 
       resXtof->Fill((h.x - mcPos.X()) * 10 * 1000);

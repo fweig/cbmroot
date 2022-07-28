@@ -64,8 +64,8 @@ using L1DetectorID_t = std::underlying_type_t<L1DetectorID>;
 ///
 /// 3. Initialize number of stations for each detector:
 ///
-///    initMan->SetNstationsCrosscheck(L1DetectorID::kMvd, NMvdStations)
-///    initMan->SetNstationsCrosscheck(L1DetectorID::kSts, NStsStations);
+///    initMan->SetNstationsCrosscheck(L1DetectorID::kMvd, fNMvdStations)
+///    initMan->SetNstationsCrosscheck(L1DetectorID::kSts, fNStsStations);
 ///
 /// 4. Initialize each station using L1BaseStationInfo:
 ///

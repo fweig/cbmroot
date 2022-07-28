@@ -55,20 +55,60 @@ public:
   /// \param  x  X coordinate [length unit]
   /// \param  y  Y coordinate [length unit]
   /// \return Pair of U and V strip coordinates
-  template<typename T, std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, fvec>::value, bool> = true>
-  std::pair<T, T> ConvXYtoUV(T x, T y) const;
-
+  template <typename T,
+            typename std::enable_if<std::is_floating_point<T>::value || std::is_same<T, fvec>::value, T>::type* = nullptr>
+  std::pair<T, T> ConvXYtoUV(T x, T y) const
+  {
+    if constexpr (std::is_same<T, fvec>::value) {
+      return std::make_pair(x * frontInfo.cos_phi + y * frontInfo.sin_phi,
+                            x * backInfo.cos_phi + y * backInfo.sin_phi);
+    }
+    else {
+      return std::make_pair(x * frontInfo.cos_phi[0] + y * frontInfo.sin_phi[0],
+                            x * backInfo.cos_phi[0] + y * backInfo.sin_phi[0]);
+    }
+  }
+  
   /// Converts strip coordinates U and V into Cartesian coordinates X and Y in transverse plane
   /// \param  x  X coordinate [length unit]
   /// \param  y  Y coordinate [length unit]
   /// \return Pair of Y and X Cartesian coordinates
-  template<typename T, std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, fvec>::value, bool> = true>
-  std::pair<T, T> ConvUVtoXY(T u, T v) const;
+  template <typename T,
+            typename std::enable_if<std::is_floating_point<T>::value || std::is_same<T, fvec>::value, T>::type* = nullptr>
+  std::pair<T, T> ConvUVtoXY(T u, T v) const
+  {
+    if constexpr (std::is_same<T, fvec>::value) {
+      return std::make_pair(u * xInfo.cos_phi + v * xInfo.sin_phi, u * yInfo.cos_phi + v * yInfo.sin_phi);
+    }
+    else {
+      return std::make_pair(u * xInfo.cos_phi[0] + v * xInfo.sin_phi[0], u * yInfo.cos_phi[0] + v * yInfo.sin_phi[0]);
+    }
+  } 
 
   /// Converts variances of strip coordinates U and V into covariance matrix of Cartesian coordinates X and Y
   /// \param du  U coordinate uncertainty [length unit]
   /// \param dv  V coordinate uncertainty [length unit]
   /// \return Covariance matrix of hit position in Cartesian coordinates: [dxx, dxy, dyy] [length unit squared]
+<<<<<<< Updated upstream
+  template <typename T,
+            typename std::enable_if<std::is_floating_point<T>::value || std::is_same<T, fvec>::value, T>::type* = nullptr>
+  std::tuple<T, T, T> FormXYCovarianceMatrix(T du, T dv) const
+  {
+    if constexpr (std::is_same<T, fvec>::value) {
+      return std::make_tuple(
+        (xInfo.cos_phi * du) * (xInfo.cos_phi * du) + (xInfo.sin_phi * dv) * (xInfo.sin_phi * dv), // dx2
+        (xInfo.cos_phi * du) * (yInfo.cos_phi * du) + (xInfo.sin_phi * dv) * (yInfo.sin_phi * dv), // dxy
+        (yInfo.cos_phi * du) * (yInfo.cos_phi * du) + (yInfo.sin_phi * dv) * (yInfo.sin_phi * dv)  // dy2
+      );
+    } 
+    else {
+      return std::make_tuple(
+        (xInfo.cos_phi[0] * du) * (xInfo.cos_phi[0] * du) + (xInfo.sin_phi[0] * dv) * (xInfo.sin_phi[0] * dv), // dx2
+        (xInfo.cos_phi[0] * du) * (yInfo.cos_phi[0] * du) + (xInfo.sin_phi[0] * dv) * (yInfo.sin_phi[0] * dv), // dxy
+        (yInfo.cos_phi[0] * du) * (yInfo.cos_phi[0] * du) + (yInfo.sin_phi[0] * dv) * (yInfo.sin_phi[0] * dv)  // dy2
+      );
+    }
+=======
   template<typename T, std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, fvec>::value, bool> = true>
   std::tuple<T, T, T> FormXYCovarianceMatrix(T du, T dv) const;
 
@@ -89,9 +129,12 @@ std::pair<T, T> L1Station::ConvXYtoUV(T x, T y) const
   else {
     return std::make_pair(x * frontInfo.cos_phi[0] + y * frontInfo.sin_phi[0],
                           x * backInfo.cos_phi[0] + y * backInfo.sin_phi[0]);
+>>>>>>> Stashed changes
   }
-}
 
+<<<<<<< Updated upstream
+} _fvecalignment;
+=======
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<typename T, std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, fvec>::value, bool>>
@@ -125,5 +168,6 @@ std::tuple<T, T, T> L1Station::FormXYCovarianceMatrix(T du, T dv) const
     );
   }
 }
+>>>>>>> Stashed changes
 
 #endif  // L1Station_h

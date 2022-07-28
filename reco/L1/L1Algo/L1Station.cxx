@@ -87,10 +87,8 @@ void L1Station::CheckConsistency() const
   // Check consistency of coordinate transformations
   for (float x = -1.f; x < 1.1f; x += 0.2) {
     for (float y = -1.f; y < 1.1f; y += 0.2) {
-      float u, v;
-      std::tie(u, v) = ConvXYtoUV(x, y);
-      float x1, y1;
-      std::tie(x1, y1) = ConvUVtoXY(u, v);
+      auto [u, v]   = ConvXYtoUV<float>(x, y);
+      auto [x1, y1] = ConvUVtoXY<float>(u, v);
 
       if (fabs(x1 - x) > 1.e-6 || fabs(y1 - y) > 1.e-6) {
         std::stringstream msg;
@@ -142,7 +140,7 @@ std::string L1Station::ToString(int verbosityLevel, int indentLevel) const
     aStream << indent << indentChar << "X layer:\n";
     aStream << xInfo.ToString(indentLevel + 2) << '\n';
     aStream << indent << indentChar << "Y layer:\n";
-    aStream << xInfo.ToString(indentLevel + 2) << '\n';
+    aStream << yInfo.ToString(indentLevel + 2) << '\n';
   }
   return aStream.str();
 }

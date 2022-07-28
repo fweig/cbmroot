@@ -36,9 +36,9 @@ public:
   float Momentum {kNaN};    ///< TODO: ??
   float fTrackTime {kNaN};  ///< Track time
   fscal TFirst[7] {kNaN};   ///< Track parameters on the first station
-  fscal CFirst[21] {kNaN};  ///< Track parameter covariation matrix elemenst on the first station
+  fscal CFirst[21] {kNaN};  ///< Track parameter covariation matrix elements on the first station
   fscal TLast[7] {kNaN};    ///< Track parameters on the last station
-  fscal CLast[21] {kNaN};   ///< Track parameter covatiation matrix elements on the second station
+  fscal CLast[21] {kNaN};   ///< Track parameter covariation matrix elements on the second station
   fscal Tpv[7] {kNaN};      ///< Track parameters in the primary vertex
   fscal Cpv[21] {kNaN};     ///< Track parameter covariation matrix elements in the primary vertex
   fscal chi2 {kNaN};        ///< Track fit chi-square value

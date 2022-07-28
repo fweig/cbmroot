@@ -81,9 +81,9 @@ Int_t CbmL1GlobalTrackFinder::CopyL1Tracks(CbmEvent* event)
   Int_t trdTrackIndex  = fTrdTracks->GetEntriesFast();
   Int_t tofTrackIndex  = fTofTracks->GetEntriesFast();
 
-  LOG(debug) << "Copy L1 tracks : " << L1->vRTracks.size() << " tracks in L1";
+  LOG(debug) << "Copy L1 tracks : " << L1->fvRecoTracks.size() << " tracks in L1";
 
-  for (vector<CbmL1Track>::iterator it = L1->vRTracks.begin(); it != L1->vRTracks.end(); ++it) {
+  for (vector<CbmL1Track>::iterator it = L1->fvRecoTracks.begin(); it != L1->fvRecoTracks.end(); ++it) {
     CbmL1Track& T = *it;
     //BEGIN add global track
     new ((*fGlobalTracks)[globalTrackIndex]) CbmGlobalTrack();
@@ -107,7 +107,7 @@ Int_t CbmL1GlobalTrackFinder::CopyL1Tracks(CbmEvent* event)
     bool hasTrdHits  = false;
     bool hasTofHits  = false;
     for (vector<int>::iterator ih = it->Hits.begin(); ih != it->Hits.end(); ++ih) {
-      CbmL1HitStore& h = L1->vHitStore[*ih];
+      CbmL1HitStore& h = L1->fvHitStore[*ih];
 
       if (h.Det == 1 && hasStsHits == false) {
         hasStsHits         = true;
@@ -164,7 +164,7 @@ void CbmL1GlobalTrackFinder::CbmL1TrackToCbmTrack(CbmL1Track l1track, CbmTrack* 
   CbmL1* L1 = CbmL1::Instance();
 
   for (vector<int>::iterator ih = T->Hits.begin(); ih != T->Hits.end(); ++ih) {
-    CbmL1HitStore& h = L1->vHitStore[*ih];
+    CbmL1HitStore& h = L1->fvHitStore[*ih];
     if (h.Det != systemIdT) continue;
   }
   ndf -= 5;
@@ -190,7 +190,7 @@ void CbmL1GlobalTrackFinder::CbmL1TrackToCbmStsTrack(CbmL1Track l1track, CbmStsT
   CbmL1* L1 = CbmL1::Instance();
 
   for (vector<int>::iterator ih = T->Hits.begin(); ih != T->Hits.end(); ++ih) {
-    CbmL1HitStore& h = L1->vHitStore[*ih];
+    CbmL1HitStore& h = L1->fvHitStore[*ih];
     if (h.Det != systemIdT) continue;
     track->AddHit(h.ExtIndex, kSTSHIT);
   }
@@ -222,7 +222,7 @@ void CbmL1GlobalTrackFinder::CbmL1TrackToCbmMuchTrack(CbmL1Track l1track, CbmMuc
   CbmL1* L1 = CbmL1::Instance();
 
   for (vector<int>::iterator ih = T->Hits.begin(); ih != T->Hits.end(); ++ih) {
-    CbmL1HitStore& h = L1->vHitStore[*ih];
+    CbmL1HitStore& h = L1->fvHitStore[*ih];
     if (h.Det != systemIdT) continue;
     track->AddHit(h.ExtIndex, kMUCHPIXELHIT);
   }
@@ -250,7 +250,7 @@ void CbmL1GlobalTrackFinder::CbmL1TrackToCbmTrdTrack(CbmL1Track l1track, CbmTrdT
   CbmL1* L1 = CbmL1::Instance();
 
   for (vector<int>::iterator ih = T->Hits.begin(); ih != T->Hits.end(); ++ih) {
-    CbmL1HitStore& h = L1->vHitStore[*ih];
+    CbmL1HitStore& h = L1->fvHitStore[*ih];
     if (h.Det != systemIdT) continue;
     track->AddHit(h.ExtIndex, kTRDHIT);
   }
@@ -279,7 +279,7 @@ void CbmL1GlobalTrackFinder::CbmL1TrackToCbmTofTrack(CbmL1Track l1track, CbmTofT
   CbmL1* L1 = CbmL1::Instance();
 
   for (vector<int>::iterator ih = T->Hits.begin(); ih != T->Hits.end(); ++ih) {
-    CbmL1HitStore& h = L1->vHitStore[*ih];
+    CbmL1HitStore& h = L1->fvHitStore[*ih];
     if (h.Det != systemIdT) continue;
     // track->AddHit(h.ExtIndex, kTOFHIT);
   }
@@ -339,7 +339,7 @@ void CbmL1GlobalTrackFinder::SetDefaultParticlePDG(int pdg)
   /// set a default particle mass for the track fit
   /// it is used during reconstruction for the multiple scattering estimation
   CbmL1* l1 = CbmL1::Instance();
-  if (!l1 || !l1->algo) {
+  if (!l1 || !l1->fpAlgo) {
     LOG(fatal) << "L1 instance doesn't exist or is not initialised";
     return;
   }
@@ -348,5 +348,5 @@ void CbmL1GlobalTrackFinder::SetDefaultParticlePDG(int pdg)
     LOG(fatal) << "Particle with pdg " << pdg << " doesn't exist";
     return;
   }
-  l1->algo->SetDefaultParticleMass(p->Mass());
+  l1->fpAlgo->SetDefaultParticleMass(p->Mass());
 }

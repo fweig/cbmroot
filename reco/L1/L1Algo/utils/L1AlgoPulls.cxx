@@ -125,9 +125,9 @@ void L1AlgoPulls::AddOne(L1TrackPar& T_, int i, L1HitIndex_t ih)
   err.qp = sqrt(T_.C44[i]);
 
   // mc data
-  int iMCP = fL1->vHitMCRef[ih];
+  int iMCP = fL1->fvHitPointIndexes[ih];
   if (iMCP < 0) return;
-  CbmL1MCPoint& mcP = fL1->vMCPoints[iMCP];
+  CbmL1MCPoint& mcP = fL1->fvMCPoints[iMCP];
   TL1TrackParameters mc(mcP);
 
   // fill residuals

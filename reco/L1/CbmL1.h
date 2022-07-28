@@ -101,12 +101,17 @@ enum class L1DetectorID
 /// TODO: L1InitManager - main interface of communication between cbmroot/bmnroot and L1Algo (S.Zharko)
 ///
 class CbmL1 : public FairTask {
-private:
-  CbmL1(const CbmL1&);
-  CbmL1 operator=(const CbmL1&);
-
 public:
-  typedef std::set<std::pair<int, int>> DFSET;
+  // **********************
+  // ** Types definition **
+  // **********************
+
+  using DFSET  = std::set<std::pair<int, int>>;  // Why std::set<std::pair<>> instead of std::map<>?
+  using DFEI2I = std::map<Double_t, Int_t>;
+
+  // **************************
+  // ** Friends classes list **
+  // **************************
 
   friend class L1AlgoDraw;
   friend class L1AlgoPulls;
@@ -117,59 +122,100 @@ public:
   friend class CbmL1MCTrack;
   friend class CbmL1PFFitter;
 
-  static CbmL1* Instance() { return fInstance; }
 
-  void SetParContainers();
-  void CheckDetectorPresence();
-  virtual InitStatus ReInit();
-  virtual InitStatus Init();
-  void Exec(Option_t* option);
+  // **********************************
+  // ** Member functions declaration **
+  // **********************************
 
+  // ** Constructors and destructor **
+
+  /// Default constructor
   CbmL1();
 
-  /**                                  Constructor
-      * @param _fPerformance - type of Efficiency output: 0 - w\o efficiencies, doesn't use MC data; 1 - L1 standard efficiency definition; 2 - QA efficiency definition
-      * @param fSTAPDataMode_ - way to work with files for the standalone package: 0 - off , 1 - write, 2  - read data and work only with it, 3 - write and read (debug)
-      * @param findParticleMode_ : 0 - don't run FindParticles; 1 - run, all MC particle is reco-able; 2 - run, MC particle is reco-able if created from reco-able tracks; 3 - run, MC particle is reco-able if created from reconstructed tracks
-      */
-  CbmL1(const char* name, Int_t iVerbose = 1, Int_t _fPerformance = 0, int fSTAPDataMode_ = 0,
-        TString fSTAPDataDir_ = "./", int findParticleMode_ = 0);
+  /// Constructor from parameters
+  /// \param  name              Name of the task
+  /// \param  verbose           Verbosity level
+  /// \param  performance       Performance run flag:
+  ///                           0: run without performance measurement
+  ///                           1: standard efficiency definition
+  ///                           2: QA efficiency definition
+  /// \param  dataMode          Option to work with files for the standalone mode
+  ///                           0: standalone mode is not used
+  ///                           1: data for standalone mode is written to configuration file (currently does not work)
+  ///                           2: tracking runs in standalone mode using configuration file (currently does not work)
+  ///                           3: data is written and read (currently does not work)
+  /// \param  dataDir           Name of directory for configuration file
+  /// \param  findParticleMode  Find particle utility mode
+  ///                           0: FindParticles is not used
+  ///                           1: All MC particles are reconstructable
+  ///                           2: MC particles are reconstructable if created from reconstructable tracks
+  ///                           3: MC particles are reconstructable if created from reconstructed tracks
+  CbmL1(const char* name, Int_t verbose = 1, Int_t performance = 0, int dataMode = 0, const TString& dataDir = "./",
+        int findParticleMode = 0);
 
-  ~CbmL1(/*if (targetFieldSlice) delete;*/);
+  /// Copy constructor
+  CbmL1(const CbmL1&) = delete;
 
-  /// Gets a pointer to L1InitManager (for an access in run_reco.C)
-  L1InitManager* GetInitManager() { return fpInitManager; }
-  /// Gets a set of active detectors used in tracking
-  // TODO: think about return (value, reference or const reference?) (S.Zh.)
-  std::set<L1DetectorID> GetActiveTrackingDetectorIDs() const { return fActiveTrackingDetectorIDs; }
-  /// Sets a vector of detectors used in tracking
-  void SetActiveTrackingDetectorIDs(const std::set<L1DetectorID>& init) { fActiveTrackingDetectorIDs = init; }
+  /// Move constructor
+  CbmL1(CbmL1&&) = delete;
 
-  void SetUseMcHit(int StsUseMcHit = 0, int MuchUseMcHit = 0, int TrdUseMcHit = 0, int TofUseMcHit = 0)
-  {
-    fStsUseMcHit  = StsUseMcHit;
-    fMuchUseMcHit = MuchUseMcHit;
-    fTrdUseMcHit  = TrdUseMcHit;
-    fTofUseMcHit  = TofUseMcHit;
-  }
+  /// Copy assignment operator
+  CbmL1& operator=(const CbmL1&) = delete;
 
-  /* Material budget setters */
+  /// Move assignment operator
+  CbmL1& operator=(CbmL1&&) = delete;
+
+  /// Destructor
+  ~CbmL1();
+
+  /// Pointer to CbmL1 instance
+  static CbmL1* Instance() { return fpInstance; }
+
+
+  // ** Member functions override from FairTask **
+
+  /// Defines action in the beginning of the run (initialization)
+  virtual InitStatus Init();
+
+  /// Reruns the initialization
+  virtual InitStatus ReInit();
+
+  /// Defines action in the end of the run (saves results)
+  void Finish();
+
+
+  // ** Specific member functions **
+
+  /// Checks, if detector subsystems are present in the setup
+  /// If a particular subsystem is absent, it is not used in tracking.
+  void CheckDetectorPresence();
+
+
+  /// Sets material budget file name for MVD
   void SetMvdMaterialBudgetFileName(const TString& fileName)
   {
     if (fileName != "") fMatBudgetFileName[L1DetectorID::kMvd] = fileName;
   }
+
+  /// Sets material budget file name for STS
   void SetStsMaterialBudgetFileName(const TString& fileName)
   {
     if (fileName != "") fMatBudgetFileName[L1DetectorID::kSts] = fileName;
   }
+
+  /// Sets material budget file name for MuCh
   void SetMuchMaterialBudgetFileName(const TString& fileName)
   {
     if (fileName != "") fMatBudgetFileName[L1DetectorID::kMuch] = fileName;
   }
+
+  /// Sets material budget file name for TRD
   void SetTrdMaterialBudgetFileName(const TString& fileName)
   {
     if (fileName != "") fMatBudgetFileName[L1DetectorID::kTrd] = fileName;
   }
+
+  /// Sets material budget file name for TOF
   void SetTofMaterialBudgetFileName(const TString& fileName)
   {
     if (fileName != "") fMatBudgetFileName[L1DetectorID::kTof] = fileName;
@@ -217,14 +263,13 @@ public:
 
   void SetExtrapolateToTheEndOfSTS(bool b) { fExtrapolateToTheEndOfSTS = b; }
   void SetLegacyEventMode(bool b) { fLegacyEventMode = b; }
-  void SetMuchPar(TString fileName) { fMuchDigiFile = fileName; }
+  void SetMuchPar(TString fileName) { fsMuchDigiFile = fileName; }  // TODO: Remove! (S.Zharko)
   void SetUseHitErrors(bool value) { fUseHitErrors = value; }
   void SetMissingHits(bool value) { fMissingHits = value; }
   void SetStsOnlyMode() { fTrackingMode = L1Algo::TrackingMode::kSts; }
   void SetMcbmMode() { fTrackingMode = L1Algo::TrackingMode::kMcbm; }
   void SetGlobalMode() { fTrackingMode = L1Algo::TrackingMode::kGlobal; }
 
-  void Finish();
 
   //   void SetTrackingLevel( Int_t iLevel ){ fTrackingLevel = iLevel; }
   //   void MomentumCutOff( Double_t cut ){ fMomentumCutOff = cut; }
@@ -233,16 +278,20 @@ public:
 
   /// Reconstructs an event
   /// \param event  Pointer to current CbmEvent object
-  void Reconstruct(CbmEvent* event = NULL);
+  void Reconstruct(CbmEvent* event = nullptr);
 
   //  bool ReadMCDataFromFile(const char work_dir[100], const int maxNEvent, const int iVerbose);
-  //   vector<CbmL1MCPoint> vMCPoints;
+  //   vector<CbmL1MCPoint> fvMCPoints;
 
   //   static bool compareZ(const int &a, const int &b );
-  inline double Get_Z_vMCPoint(int a) const { return vMCPoints[a].z; }
+  inline double Get_Z_vMCPoint(int a) const { return fvMCPoints[a].z; }
+
+  const L1Vector<CbmL1MCPoint>& GetMcPoints() const { return fvMCPoints; }
+
+  const L1Vector<int>& GetHitMCRefs() const { return fvHitPointIndexes; }
+
 
 private:
-  typedef std::map<Double_t, Int_t> DFEI2I;
 
   struct TH1FParameters {
     TString name, title;
@@ -250,15 +299,16 @@ private:
     float xMin, xMax;
   };
 
-  void IdealTrackFinder();  // just copy all reconstructable MCTracks into RecoTracks.
+  /// Runs ideal track finder: copies all MC-tracks into reconstructed tracks
+  void IdealTrackFinder();
 
   /// Read information about hits, mcPoints and mcTracks into L1 classes
 
   /// Repacks data from the external TClonesArray objects to the internal L1 arrays
   /// \param fData_       Pointer to the target object containing L1Algo internal arrays of hits
-  /// \param TsStart      Reference to the timeslice start time
-  /// \param TsLength     Reference to the timeslice length
-  /// \param TsOverlap    Reference to the timeslice overlap length (does not used at the moment)
+  /// \param TsStart      Reference to the time slice start time
+  /// \param TsLength     Reference to the time slice length
+  /// \param TsOverlap    Reference to the time slice overlap length (does not used at the moment)
   /// \param FstHitinTs   Index of the first hit in the time-slice
   /// \param areDataLeft  Flag: true - data were left after reading the sub-timeslice
   /// \param event        Pointer to the current CbmEvent object
@@ -285,7 +335,7 @@ private:
   //   static bool compareZ(const int &a, const int &b );
   //   bool compareZ(const int &a, const int &b );
 
-  /// Fills the vMCTracks vector and the dFEI2vMCTracks set
+  /// Fills the fvMCTracks vector and the dFEI2vMCTracks set
   void Fill_vMCTracks();
 
   /*
@@ -319,59 +369,71 @@ private:
   /// SIMD KF Banchmark service-functions
   void WriteSIMDKFData();
 
+  /// Gets a pointer to L1InitManager (for an access in run_reco.C)
+  L1InitManager* GetInitManager() { return fpInitManager; }
+
+  void SetUseMcHit(int StsUseMcHit = 0, int MuchUseMcHit = 0, int TrdUseMcHit = 0, int TofUseMcHit = 0)
+  {
+    fStsUseMcHit  = StsUseMcHit;
+    fMuchUseMcHit = MuchUseMcHit;
+    fTrdUseMcHit  = TrdUseMcHit;
+    fTofUseMcHit  = TofUseMcHit;
+  }
+
   void WriteHistosCurFile(TObject* obj);
 
   static std::istream& eatwhite(std::istream& is);  // skip spaces
   static void writedir2current(TObject* obj);       // help procedure
 
-
   inline Double_t dFEI(int file, int event, int idx) { return (1000 * idx) + file + (0.0001 * event); }
 
+
+  // ***************************
+  // ** Member variables list **
+  // ***************************
+
 public:
-  L1Algo* algo {nullptr};  // for access to L1 Algorithm from L1::Instance
+  // ** Basic data members **
 
-  TString fMuchDigiFile {};  // Much digitization file name
-  bool fUseHitErrors {true};
-  bool fMissingHits {false};
-  L1Algo::TrackingMode fTrackingMode {L1Algo::TrackingMode::kSts};
+  L1Algo* fpAlgo               = nullptr;  ///< Pointer to the L1 track finder algorithm
+  L1InitManager* fpInitManager = nullptr;  ///< Pointer to the initialization manager for the L1 algorithm
 
-  L1Vector<CbmL1Track> vRTracks {"CbmL1::vRTracks"};  ///> reconstructed tracks
-  DFSET vFileEvent {};
 
-  L1Vector<CbmL1HitStore> vHitStore {"CbmL1::vHitStore"};  // diff hit information
+  TString fsMuchDigiFile {};  ///< TODO: REMOVE
+  bool fUseHitErrors = true;  ///<
+  bool fMissingHits  = false;
 
-  const L1Vector<CbmL1MCPoint>& GetMcPoints() const { return vMCPoints; }
+  L1Algo::TrackingMode fTrackingMode = L1Algo::TrackingMode::kSts;  ///< Tracking mode: kSts, kMcbm or kGlobal
 
-  const L1Vector<int>& GetHitMCRefs() const { return vHitMCRef; }
+
+  DFSET fvFileEvent {};  ///< Map of fileID to eventId
+
+
+  L1Vector<CbmL1Track> fvRecoTracks = {"CbmL1::fvRecoTracks"};  ///< Reconstructed tracks container
 
 private:
-  double LoadMaterialMap(L1Material& mat, const TProfile2D* prof);
+  static CbmL1* fpInstance;
 
-  static CbmL1* fInstance;
+  L1AlgoInputData* fpData {nullptr};
 
-  L1InitManager* fpInitManager {nullptr};  ///< Pointer to L1InitManager object of L1 algorithm core
-
-  std::set<L1DetectorID> fActiveTrackingDetectorIDs {};  ///< Set of detectors active in tracking
-
-  L1AlgoInputData* fData {nullptr};
-
-  L1Vector<CbmL1MCPoint> vMCPoints {"CbmL1::vMCPoints"};
   int nMvdPoints {0};
-  L1Vector<int> vMCPoints_in_Time_Slice {"CbmL1::vMCPoints_in_Time_Slice"};
 
-  int NStation {0};       ///< number of all detector stations
-  int NMvdStations {0};   ///< number of mvd stations
-  int NStsStations {0};   ///< number of sts stations
-  int NMuchStations {0};  ///< number of much stations
-  int NTrdStations {0};   ///< number of trd stations
-  int NTOFStation {0};    ///< number of tof stations
-  ///
-  int NMvdStationsGeom;
-  int NStsStationsGeom;
-  int NTrdStationsGeom;
-  int NMuchStationsGeom;
-  int NTOFStationGeom;
-  int NStationGeom;
+  L1Vector<CbmL1MCPoint> fvMCPoints = {"CbmL1::fvMCPoints"};       ///< Container of MC points
+  L1Vector<int> fvMCPointIndexesTs {"CbmL1::fvMCPointIndexesTs"};  ///< Indexes of MC points in TS
+
+  int fNStations     = 0;  ///< number of total active detector stations
+  int fNMvdStations  = 0;  ///< number of active MVD stations
+  int fNStsStations  = 0;  ///< number of active STS stations
+  int fNMuchStations = 0;  ///< number of active MuCh stations
+  int fNTrdStations  = 0;  ///< number of active TRD stations
+  int fNTofStations  = 0;  ///< number of active TOF stations
+
+  int fNStationsGeom     = 0;  ///< number of total detector stations
+  int fNMvdStationsGeom  = 0;  ///< number of MVD stations
+  int fNStsStationsGeom  = 0;  ///< number of STS stations;
+  int fNMuchStationsGeom = 0;  ///< number of MuCh stations;
+  int fNTrdStationsGeom  = 0;  ///< number of TRD stations;
+  int fNTofStationsGeom  = 0;  ///< number of TOF stations;
 
 
   Int_t fPerformance {0};     // 0 - w\o perf. 1 - L1-Efficiency definition. 2 - QA-Eff.definition
@@ -386,57 +448,93 @@ private:
   Double_t fMomentumCutOff {0.1};   // currently not used
   Bool_t fGhostSuppression {true};  // currently not used
 
-  Int_t fStsUseMcHit {-1};   // if STS data should be processed
-  Int_t fMuchUseMcHit {-1};  // if Much data should be processed
-  Int_t fTrdUseMcHit {-1};   // if Trd data should be processed
-  Int_t fTofUseMcHit {-1};   // if Tof data should be processed
+  /// TODO: change to bool
+  Int_t fStsUseMcHit  = -1;  ///< if STS data should be processed
+  Int_t fMuchUseMcHit = -1;  ///< if Much data should be processed
+  Int_t fTrdUseMcHit  = -1;  ///< if Trd data should be processed
+  Int_t fTofUseMcHit  = -1;  ///< if Tof data should be processed
 
-  Bool_t fUseMVD {false};   // if Mvd data should be processed
-  Bool_t fUseSTS {false};   // if Mvd data should be processed
-  Bool_t fUseMUCH {false};  // if Much data should be processed
-  Bool_t fUseTRD {false};   // if Trd data should be processed
-  Bool_t fUseTOF {false};   // if Tof data should be processed
+  bool fUseMVD  = false;  ///< if Mvd data should be processed
+  bool fUseSTS  = false;  ///< if Mvd data should be processed
+  bool fUseMUCH = false;  ///< if Much data should be processed
+  bool fUseTRD  = false;  ///< if Trd data should be processed
+  bool fUseTOF  = false;  ///< if Tof data should be processed
 
-  /// Input data
+  // ** Raw input data **
+
   CbmTimeSlice* fTimeSlice {nullptr};
-  CbmMCEventList* fEventList {nullptr};  //!  MC event list (all)
 
-  CbmMCDataArray* fStsPoints {nullptr};
-  CbmMCDataArray* fMvdPoints {nullptr};
-  CbmMCDataArray* fMCTracks {nullptr};
-  CbmMCDataObject* fMcEventHeader {nullptr};
+  // Reconstructed hits input
+  TClonesArray* fpMvdHits       = nullptr;  ///< Array of MVD hits ("MvdHit")
+  TClonesArray* fpStsHits       = nullptr;  ///< Array of STS hits ("StsHit")
+  TClonesArray* fpMuchPixelHits = nullptr;  ///< Array of MuCh hits ("MuchPixelHit")
+  TClonesArray* fpTrdHits       = nullptr;  ///< Array of TRD hits ("TrdHit")
+  TClonesArray* fpTofHits       = nullptr;  ///< Array of TOF hits ("TofHit")
 
-  TClonesArray* listStsDigiMatch {nullptr};
-  TClonesArray* listStsClusters {nullptr};
-  TClonesArray* listStsHits {nullptr};
-  TClonesArray* listStsHitMatch {nullptr};
-  TClonesArray* listStsClusterMatch {nullptr};
+  // ** MC input **
 
-  TClonesArray* listMvdHits {nullptr};
-  TClonesArray* listMvdDigiMatches {nullptr};
-  TClonesArray* listMvdHitMatches {nullptr};
+  // General
+  CbmMCEventList* fpEventList      = nullptr;  ///< MC event list (all)
+  CbmMCDataArray* fpMCTracks       = nullptr;  ///< MC tracks list
+  CbmMCDataObject* fpMcEventHeader = nullptr;  ///< MC event header
 
-  //MuCh
+  // MC-point arrays
+  CbmMCDataArray* fpMvdPoints  = nullptr;  ///< MVD MC-points array
+  CbmMCDataArray* fpStsPoints  = nullptr;  ///< STS MC-points array
+  CbmMCDataArray* fpMuchPoints = nullptr;  ///< MuCh MC-points array
+  CbmMCDataArray* fpTrdPoints  = nullptr;  ///< TRD MC-points array
+  CbmMCDataArray* fpTofPoints  = nullptr;  ///< TOF MC-points array
 
-  CbmMCDataArray* fMuchPoints {nullptr};
-  TClonesArray* listMuchHitMatches {nullptr};  // Output CbmMatch array
-  TClonesArray* fDigiMatchesMuch {nullptr};
-  TClonesArray* fClustersMuch {nullptr};
-  TClonesArray* fMuchPixelHits {nullptr};  // CbmMuchPixelHit array
-  TClonesArray* fDigisMuch {nullptr};
 
-  //TRD
+  // ** MC-reconstruction matching input **
 
-  CbmMCDataArray* fTrdPoints {nullptr};
-  TClonesArray* listTrdHits {nullptr};
-  TClonesArray* fTrdHitMatches {nullptr};
+  // Measured digis
+  TClonesArray* fpMuchDigis = nullptr;  ///< Array of MuCh digis
 
-  //ToF
-  CbmMCDataArray* fTofPoints {nullptr};
-  TClonesArray* fTofHitDigiMatches {nullptr};  // CbmMatches array
-  TClonesArray* fTofHits {nullptr};            // CbmMatches array
-  vector<vector<int>> TofPointToTrack;
+  // Reconstructed clusters
+  TClonesArray* fpStsClusters  = nullptr;  ///< Array of STS clusters
+  TClonesArray* fpMuchClusters = nullptr;  ///< Array of MuCh clusters
 
+  // Hit matches
+  TClonesArray* fpStsHitMatches  = nullptr;  ///< Array of STS hit matches (NOTE: currently not used)
+  TClonesArray* fpMvdHitMatches  = nullptr;  ///< Array of MVD hit matches
+  TClonesArray* fpMuchHitMatches = nullptr;  ///< Array of MuCh hit matches
+  TClonesArray* fpTrdHitMatches  = nullptr;  ///< Array of TOF hit matches
+  TClonesArray* fpTofHitMatches  = nullptr;  ///< Array of TRD hit matches
+
+  // Digi and cluster matches
+  TClonesArray* fpMvdDigiMatches    = nullptr;  ///< Array of MVD digi matches (NOTE: currently unused)
+  TClonesArray* fpStsDigiMatches    = nullptr;  ///< Array of STS digi matches (NOTE: currently unused)
+  TClonesArray* fpStsClusterMatches = nullptr;  ///< Array of STS cluster matches
+  TClonesArray* fpMuchDigiMatches   = nullptr;  ///< Array of MuCh digi matches (NOTE: currently unsused)
+
+  vector<vector<int>> fTofPointToTrack;  ///<
+
+  // ** Repacked input data **
+
+  L1Vector<CbmL1Hit> fvExternalHits = {"CbmL1::fvExternalHits"};  ///< Array of hits with MC information
+
+  /// Indexes of hits after hits sorting (used only with fLegacyEventMode = true)
+  L1Vector<int> fvSortedHitsIndexes = {"CbmL1::fvSortedHitsIndexes"};
+
+  /// Indexes of STS hits in fpStsHits array after hits sorting (used only with fLegacyEventMode = true)
+  L1Vector<int> fvSortedStsHitsIndexes = {"CbmL1::fvSortedStsHitsIndexes"};
+  L1Vector<CbmL1MCTrack> fvMCTracks    = {"CbmL1::fvMCTracks"};         ///< Array of MC tracks
+  L1Vector<int> fvHitPointIndexes      = {"CbmL1::fvHitPointIndexes"};  ///< Indexes of MC points vs. hit index
+
+public:
+  L1Vector<CbmL1HitStore> fvHitStore = {"CbmL1::fvHitStore"};  ///< Container of hits with extended information
+  // indices of MCPoints in fvMCPoints, indexed by index of hit in algo->vHits array. According to StsMatch. Used for IdealResponce
+  //    L1Vector<int>          vHitMCRef1;
+  //   CbmMatch HitMatch;
+private:
+  DFEI2I dFEI2vMCPoints = {};
+  DFEI2I dFEI2vMCTracks = {};
+
+  // *****************************
+  // ** Tracking performance QA **
+  // *****************************
+  // TODO: move to a separate class (S.Zharko)
   TFile* fPerfFile {nullptr};
   TDirectory* fHistoDir {nullptr};
 
@@ -446,18 +544,6 @@ private:
   static const int fNGhostHistos = 9;
   TH1F* fGhostHisto[fNGhostHistos] {nullptr};
 
-  /// Used data = Repacked input data
-  L1Vector<CbmL1Hit> vHits {"CbmL1::vHits"};  // hits with hit-mcpoint match information
-  L1Vector<int> SortedIndex {"CbmL1::SortedIndex"};
-  L1Vector<int> StsIndex {"CbmL1::StsIndex"};
-  L1Vector<CbmL1MCTrack> vMCTracks {"CbmL1::vMCTracks"};
-  L1Vector<int> vHitMCRef {
-    "CbmL1::vHitMCRef"};  // indices of MCPoints in vMCPoints, indexed by index of hit in algo->vHits array. According to StsMatch. Used for IdealResponce
-                          //    L1Vector<int>          vHitMCRef1;
-                          //   CbmMatch HitMatch;
-
-  DFEI2I dFEI2vMCPoints {};
-  DFEI2I dFEI2vMCTracks {};
 
   int fFindParticlesMode {0};  // 0 - don't run FindParticles
                                // 1 - run, all MC particle is reco-able

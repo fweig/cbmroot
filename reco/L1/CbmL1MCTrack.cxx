@@ -64,7 +64,7 @@ void CbmL1MCTrack::Init()
   // get Hits
   Hits.clear();
   for (unsigned int iP = 0; iP < Points.size(); iP++) {
-    CbmL1MCPoint* point = &(L1->vMCPoints[Points[iP]]);
+    CbmL1MCPoint* point = &(L1->fvMCPoints[Points[iP]]);
     for (unsigned int iH = 0; iH < point->hitIds.size(); iH++) {
       const int iih = point->hitIds[iH];
       if (std::find(Hits.begin(), Hits.end(), iih) == Hits.end()) Hits.push_back_no_warning(iih);
@@ -86,7 +86,7 @@ float CbmL1MCTrack::Fraction_MC()
   CbmL1* L1   = CbmL1::Instance();
   int counter = 0;
   for (unsigned int iP = 0; iP < Points.size(); iP++) {
-    if (L1->vMCPoints_in_Time_Slice[Points[iP]] > 0) counter++;
+    if (L1->fvMCPointIndexesTs[Points[iP]] > 0) counter++;
   };
   return (Points.size() > 0) ? float(counter) / float(Points.size()) : 0;
 }
@@ -100,7 +100,7 @@ void CbmL1MCTrack::CalculateMCCont()
   nMCContStations = 0;
   int istaold = -1, ncont = 0;
   for (int ih = 0; ih < nPoints; ih++) {
-    CbmL1MCPoint& h = L1->vMCPoints[Points[ih]];
+    CbmL1MCPoint& h = L1->fvMCPoints[Points[ih]];
     int ista        = h.iStation;
     if (ista - istaold == 1) ncont++;
     else if (ista - istaold > 1) {
@@ -116,7 +116,7 @@ void CbmL1MCTrack::CalculateMCCont()
 void CbmL1MCTrack::CalculateHitCont()
 {
   CbmL1* L1    = CbmL1::Instance();
-  L1Algo* algo = L1->algo;
+  L1Algo* algo = L1->fpAlgo;
 
   int nhits        = Hits.size();
   nHitContStations = 0;
@@ -155,7 +155,7 @@ void CbmL1MCTrack::CalculateMaxNStaHits()
   int lastSta         = -1;
   int cur_maxNStaHits = 0;
   for (unsigned int iH = 0; iH < Hits.size(); iH++) {
-    CbmL1HitStore& sh = L1->vHitStore[Hits[iH]];
+    CbmL1HitStore& sh = L1->fvHitStore[Hits[iH]];
     if (sh.iStation == lastSta) { cur_maxNStaHits++; }
     else {                             // new station
       if (!(sh.iStation > lastSta)) {  // tracks going in backward direction are not reconstructable
@@ -183,7 +183,7 @@ void CbmL1MCTrack::CalculateMaxNStaMC()
   float lastz       = -1;
   int cur_maxNStaMC = 0, cur_maxNSensorMC = 0;
   for (unsigned int iH = 0; iH < Points.size(); iH++) {
-    CbmL1MCPoint& mcP = L1->vMCPoints[Points[iH]];
+    CbmL1MCPoint& mcP = L1->fvMCPoints[Points[iH]];
     if (mcP.iStation == lastSta) cur_maxNStaMC++;
     else {  // new station
       if (cur_maxNStaMC > maxNStaMC) maxNStaMC = cur_maxNStaMC;
@@ -230,7 +230,7 @@ void CbmL1MCTrack::CalculateIsReconstructable()
 
   if (Points.size() > 0) {
     isAdditional = f & (nHitContStations == nStations) & (nMCContStations == nStations) & (nMCStations == nStations)
-                   & (nHitContStations >= 3) & (L1->vMCPoints[Points[0]].iStation == 0);
+                   & (nHitContStations >= 3) & (L1->fvMCPoints[Points[0]].iStation == 0);
     isAdditional &= !isReconstructable;
   }
   else

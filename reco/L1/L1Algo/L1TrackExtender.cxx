@@ -54,20 +54,17 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
 
   fvec u0 = hit0.u;
   fvec v0 = hit0.v;
-  fvec x0, y0;
-  StripsToCoor(u0, v0, x0, y0, sta0);
+  auto [x0, y0] = sta0.ConvUVtoXY<fvec>(u0, v0);
   fvec z0 = hit0.z;
 
   fvec u1 = hit1.u;
   fvec v1 = hit1.v;
-  fvec x1, y1;
-  StripsToCoor(u1, v1, x1, y1, sta1);
+  auto [x1, y1] = sta1.ConvUVtoXY<fvec>(u1, v1);
   fvec z1 = hit1.z;
 
   fvec u2 = hit2.u;
   fvec v2 = hit2.v;
-  fvec x2, y2;
-  StripsToCoor(u2, v2, x2, y2, sta2);
+  auto [x2, y2] = sta2.ConvUVtoXY<fvec>(u2, v2);
   //  fvec z2 = hit2.z;
 
   fvec dzi = 1. / (z1 - z0);
@@ -167,8 +164,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
     fldB1 = fldB2;
     fldZ0 = fldZ1;
     fldZ1 = fldZ2;
-    fvec x, y;
-    StripsToCoor(u, v, x, y, sta);
+    auto [x, y] = sta.ConvUVtoXY<fvec>(u, v);
     sta.fieldSlice.GetFieldValue(x, y, fldB2);
 
     fldZ2 = sta.z;
@@ -219,18 +215,15 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
   fvec u0 = hit0.u;
   fvec v0 = hit0.v;
-  fvec x0, y0;
-  StripsToCoor(u0, v0, x0, y0, sta0);
+  auto [x0, y0] = sta0.ConvUVtoXY<fvec>(u0, v0);
 
   fvec u1 = hit1.u;
   fvec v1 = hit1.v;
-  fvec x1, y1;
-  StripsToCoor(u1, v1, x1, y1, sta1);
+  auto [x1, y1] = sta1.ConvUVtoXY<fvec>(u1, v1);
 
   fvec u2 = hit2.u;
   fvec v2 = hit2.v;
-  fvec x2, y2;
-  StripsToCoor(u2, v2, x2, y2, sta2);
+  auto [x2, y2] = sta2.ConvUVtoXY<fvec>(u2, v2);
 
   L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
   L1FieldRegion fld _fvecalignment;
@@ -316,9 +309,8 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
     const L1Hit& hit = (*vHitsUnused)[iHit_best];
     fvec u           = hit.u;
     fvec v           = hit.v;
-    fvec x, y, z;
-    StripsToCoor(u, v, x, y, sta);
-    z = hit.z;
+    fvec z           = hit.z;
+    auto [x, y]      = sta.ConvUVtoXY<fvec>(u, v);
 
     fvec dz1 = z - T.z;
 

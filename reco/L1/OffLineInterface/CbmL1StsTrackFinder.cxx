@@ -68,8 +68,8 @@ Int_t CbmL1StsTrackFinder::CopyL1Tracks(CbmEvent* event)
 
   Int_t trackIndex = fTracks->GetEntriesFast();
   Int_t nTracks    = 0;
-  LOG(debug) << "Copy L1 tracks : " << L1->vRTracks.size() << " tracks in L1";
-  for (vector<CbmL1Track>::iterator it = L1->vRTracks.begin(); it != L1->vRTracks.end(); ++it) {
+  LOG(debug) << "Copy L1 tracks : " << L1->fvRecoTracks.size() << " tracks in L1";
+  for (vector<CbmL1Track>::iterator it = L1->fvRecoTracks.begin(); it != L1->fvRecoTracks.end(); ++it) {
     CbmL1Track& T = *it;
     new ((*fTracks)[trackIndex]) CbmStsTrack();
     nTracks++;
@@ -88,8 +88,8 @@ Int_t CbmL1StsTrackFinder::CopyL1Tracks(CbmEvent* event)
     t->SetTimeError(T.Cpv[20]);
 
     for (vector<int>::iterator ih = it->Hits.begin(); ih != it->Hits.end(); ++ih) {
-      CbmL1HitStore& h = L1->vHitStore[*ih];
-      // 	  double zref = L1->algo->vStations[h.iStation].z[0];
+      CbmL1HitStore& h = L1->fvHitStore[*ih];
+      // 	  double zref = L1->fpAlgo->vStations[h.iStation].z[0];
       if (h.Det > 1) {  // not MVD or STS hit
         continue;
       }
@@ -153,7 +153,7 @@ void SetDefaultParticlePDG(int pdg = 211)
   /// set a default particle mass for the track fit
   /// it is used during reconstruction for the multiple scattering estimation
   CbmL1* l1 = CbmL1::Instance();
-  if (!l1 || !l1->algo) {
+  if (!l1 || !l1->fpAlgo) {
     LOG(fatal) << "L1 instance doesn't exist or is not initialised";
     return;
   }
@@ -162,6 +162,6 @@ void SetDefaultParticlePDG(int pdg = 211)
     LOG(fatal) << "Particle with pdg " << pdg << " doesn't exist";
     return;
   }
-  l1->algo->SetDefaultParticleMass(p->Mass());
+  l1->fpAlgo->SetDefaultParticleMass(p->Mass());
 }
 // -------------------------------------------------------------------------

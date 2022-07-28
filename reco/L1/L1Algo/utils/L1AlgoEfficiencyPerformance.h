@@ -135,7 +135,7 @@ private:
   void FillMC();  // collect mcTracklets from mcTracks
   void MatchTracks();
 
-  CbmL1* fL1 {nullptr};
+  CbmL1* fL1 {nullptr};  // TODO: remove dependency (S.Zharko)
 
   vector<L1RecoTracklet> recoTracklets {};
   vector<L1MCTracklet> mcTracklets {};
@@ -166,7 +166,7 @@ void L1AlgoEfficiencyPerformance<NHits>::Init()
 template<int NHits>
 void L1AlgoEfficiencyPerformance<NHits>::FillMC()
 {
-  for (vector<CbmL1MCTrack>::iterator mtraIt = fL1->vMCTracks.begin(); mtraIt != fL1->vMCTracks.end(); mtraIt++) {
+  for (vector<CbmL1MCTrack>::iterator mtraIt = fL1->fvMCTracks.begin(); mtraIt != fL1->fvMCTracks.end(); mtraIt++) {
     CbmL1MCTrack& mtra = *(mtraIt);
     //     if( ! mtra.IsReconstructable() ) continue;
 
@@ -175,7 +175,7 @@ void L1AlgoEfficiencyPerformance<NHits>::FillMC()
     int lastIterSta = -1;
     for (int iterOffset = 0; iterOffset < NMCPoints; iterOffset++) {  // first mcPoint on the station
       //      const int iterMcId = mtra.Points[iterOffset];
-      int iterSta = fL1->vMCPoints[mtra.Points[iterOffset]].iStation;
+      int iterSta = fL1->fvMCPoints[mtra.Points[iterOffset]].iStation;
       if (iterSta == lastIterSta) continue;  // find offset for next station
       lastIterSta = iterSta;
 
@@ -185,7 +185,7 @@ void L1AlgoEfficiencyPerformance<NHits>::FillMC()
       L1MCTracklet trlet;  // TODO: don't use hits in mcTracklet
       for (int is = 0, offset = iterOffset; ((offset < NMCPoints) && (is < NHits)); offset++) {
         const int mcId     = mtra.Points[offset];
-        CbmL1MCPoint* mcPs = &(fL1->vMCPoints[mcId]);
+        CbmL1MCPoint* mcPs = &(fL1->fvMCPoints[mcId]);
         is                 = mcPs->iStation - iterSta;
 
         if (is < NHits) {
@@ -206,7 +206,7 @@ void L1AlgoEfficiencyPerformance<NHits>::FillMC()
       trlet.mcTrackId       = mtra.ID;
       trlet.mcMotherTrackId = mtra.mother_ID;
       trlet.p               = mtra.p;
-      if (mtra.p > 1. / fL1->algo->GetMaxInvMom()) trlet.SetAsReconstructable();
+      if (mtra.p > 1. / fL1->fpAlgo->GetMaxInvMom()) trlet.SetAsReconstructable();
 
       mcTracklets.push_back(trlet);
     }  // for Iter = stations
@@ -224,10 +224,10 @@ bool L1AlgoEfficiencyPerformance<NHits>::AddOne(L1HitIndex_t* iHits)
 
   // obtain mc data
   for (int iih = 0; iih < NHits; iih++) {
-    int nMC = fL1->vHits[iHits[iih]].mcPointIds.size();
+    int nMC = fL1->fvExternalHits[iHits[iih]].mcPointIds.size();
     for (int iMC = 0; iMC < nMC; iMC++) {
-      const int iMCP = fL1->vHits[iHits[iih]].mcPointIds[iMC];
-      int mcId       = fL1->vMCPoints[iMCP].ID;
+      const int iMCP = fL1->fvExternalHits[iHits[iih]].mcPointIds[iMC];
+      int mcId       = fL1->fvMCPoints[iMCP].ID;
       mcIds[iih].push_back(mcId);
     }  // for mcPoints
   }    // for hits
@@ -254,7 +254,7 @@ bool L1AlgoEfficiencyPerformance<NHits>::AddOne(L1HitIndex_t* iHits)
   for (unsigned int i = 0; i < mcsN.size(); i++) {
     if (mcsN[i] >= 0) {
       trlet.mcTrackId = mcsN[i];
-      trlet.iStation  = fL1->vMCPoints[fL1->vHits[iHits[0]].mcPointIds[0]].iStation;
+      trlet.iStation  = fL1->fvMCPoints[fL1->fvExternalHits[iHits[0]].mcPointIds[0]].iStation;
       break;
     }
   }
@@ -341,7 +341,7 @@ void L1AlgoEfficiencyPerformance<NHits>::CalculateEff()
         //             const int NPointHits = mtra.hitIds[iSta2].size();
         //             for (int iH = 0; iH < NPointHits; iH++){
         //               cout << mtra.hitIds[iSta2][iH] << "";
-        //               cout << "(" << fL1->vHitStore[mtra.hitIds[iSta2][iH]].x << "\\" << fL1->vHitStore[mtra.hitIds[iSta2][iH]].y << "= " << fL1->vHitStore[mtra.hitIds[iSta2][iH]].x/fL1->vHitStore[mtra.hitIds[iSta2][iH]].y << " ) ";
+        //               cout << "(" << fL1->fvHitStore[mtra.hitIds[iSta2][iH]].x << "\\" << fL1->fvHitStore[mtra.hitIds[iSta2][iH]].y << "= " << fL1->fvHitStore[mtra.hitIds[iSta2][iH]].x/fL1->fvHitStore[mtra.hitIds[iSta2][iH]].y << " ) ";
         //             }
         //             cout << endl;
         //           }
@@ -388,7 +388,7 @@ inline void L1AlgoEfficiencyPerformance<NHits>::Print(TString title, bool statio
   cout << endl;
 
   if (stations) {
-    for (int iSta = 0; iSta < fL1->NStation - NHits + 1; iSta++) {
+    for (int iSta = 0; iSta < fL1->fNStations - NHits + 1; iSta++) {
       TString title_sta = title;
       title_sta += " station ";
       title_sta += iSta;
