@@ -110,6 +110,6 @@ protected:
   /** @brief nDigis in "this" timeslice measured by the BMON */
   uint64_t fNDigisBmon = 0;
 
-  ClassDef(CbmTsEventHeader, 6)
+  ClassDef(CbmTsEventHeader, 7)
 };
 #endif
