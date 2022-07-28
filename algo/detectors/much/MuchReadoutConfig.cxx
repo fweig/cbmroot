@@ -228,7 +228,7 @@ namespace cbm::algo
 
   int8_t MuchReadoutConfig::GetPadXA(uint8_t febid, uint8_t channelid)
   {
-    if (fChannelsToPadXA.size() <= static_cast<int16_t>((febid * numChanPerAsic) + channelid)) {
+    if (fChannelsToPadXA.size() <= (static_cast<uint32_t>(febid) * numChanPerAsic) + channelid) {
       LOG(debug) << "MuchReadoutConfig::GetPadXA => Index out of bounds: " << ((febid * numChanPerAsic) + channelid)
                  << " VS " << fChannelsToPadXA.size() << " (" << febid << " and " << channelid << ")";
       return -2;
@@ -238,7 +238,7 @@ namespace cbm::algo
 
   int8_t MuchReadoutConfig::GetPadYA(uint8_t febid, uint8_t channelid)
   {
-    if (fChannelsToPadYA.size() <= static_cast<int16_t>((febid * numChanPerAsic) + channelid)) {
+    if (fChannelsToPadYA.size() <= (static_cast<uint32_t>(febid) * numChanPerAsic) + channelid) {
       LOG(debug) << "MuchReadoutConfig::GetPadYA => Index out of bounds: " << ((febid * numChanPerAsic) + channelid)
                  << " VS " << fChannelsToPadYA.size() << " (" << febid << " and " << channelid << ")";
       return -2;
@@ -248,7 +248,7 @@ namespace cbm::algo
 
   int8_t MuchReadoutConfig::GetPadXB(uint8_t febid, uint8_t channelid)
   {
-    if (fChannelsToPadXB.size() <= static_cast<int16_t>((febid * numChanPerAsic) + channelid)) {
+    if (fChannelsToPadXB.size() <= (static_cast<uint32_t>(febid) * numChanPerAsic) + channelid) {
       LOG(debug) << "MuchReadoutConfig::GetPadXB => Index out of bounds: " << ((febid * numChanPerAsic) + channelid)
                  << " VS " << fChannelsToPadXB.size() << " (" << febid << " and " << channelid << ")";
       return -2;
@@ -258,7 +258,7 @@ namespace cbm::algo
 
   int8_t MuchReadoutConfig::GetPadYB(uint8_t febid, uint8_t channelid)
   {
-    if (fChannelsToPadYB.size() <= static_cast<int16_t>((febid * numChanPerAsic) + channelid)) {
+    if (fChannelsToPadYB.size() <= (static_cast<uint32_t>(febid) * numChanPerAsic) + channelid) {
       LOG(debug) << "MuchReadoutConfig::GetPadYB => Index out of bounds: " << ((febid * numChanPerAsic) + channelid)
                  << " VS " << fChannelsToPadYB.size() << " (" << febid << " and " << channelid << ")";
       return -2;
@@ -268,7 +268,7 @@ namespace cbm::algo
 
   int8_t MuchReadoutConfig::GetPadXRpc(uint8_t febid, uint8_t channelid)
   {
-    if (fChannelsToPadXRpc.size() <= static_cast<int16_t>((febid * numChanPerAsic) + channelid)) {
+    if (fChannelsToPadXRpc.size() <= (static_cast<uint32_t>(febid) * numChanPerAsic) + channelid) {
       LOG(debug) << "CbmMcbm2018MuchPar::GetPadXRpc => Index out of bounds: " << ((febid * numChanPerAsic) + channelid)
                  << " VS " << fChannelsToPadXRpc.size() << " (" << febid << " and " << channelid << ")";
       return -2;
@@ -278,7 +278,7 @@ namespace cbm::algo
 
   int8_t MuchReadoutConfig::GetPadYRpc(uint8_t febid, uint8_t channelid)
   {
-    if (fChannelsToPadYRpc.size() <= static_cast<int16_t>((febid * numChanPerAsic) + channelid)) {
+    if (fChannelsToPadYRpc.size() <= (static_cast<uint32_t>(febid) * numChanPerAsic) + channelid) {
       LOG(debug) << "CbmMcbm2018MuchPar::GetPadYRpc => Index out of bounds: " << ((febid * numChanPerAsic) + channelid)
                  << " VS " << fChannelsToPadYRpc.size() << " (" << febid << " and " << channelid << ")";
       return -2;
