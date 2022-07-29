@@ -3,7 +3,7 @@
 # The included libraries provide the interface to the experiment data in timeslices
 # both online and in timeslice archive (.tsa) files.
 
-set(FLESNET_VERSION ae9146fe1395644786085e923338eeefaa65d456) # 2022-06-22
+set(FLESNET_VERSION 9f18207773bba0c27689a904f900e893745b4ed8) # 2022-07-29
 
 set(FLESNET_SRC_URL "https://github.com/cbm-fles/flesnet")
 
