@@ -4,6 +4,8 @@
 
 #include "ATKFParticleFinder.h"
 
+#include "KFParticleTopoReconstructor.h"
+
 void ATKFParticleFinder::InitInput(const std::string& file_name, const std::string& tree_name)
 {
   std::cout << "ATKFParticleFinder::InitInput()\n";

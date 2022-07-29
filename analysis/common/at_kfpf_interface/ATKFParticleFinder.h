@@ -16,7 +16,8 @@
 #include "AnalysisTree/Detector.hpp"
 #include "AnalysisTree/EventHeader.hpp"
 #include "CutsContainer.h"
-#include "KFParticleTopoReconstructor.h"
+
+class KFParticleTopoReconstructor;
 
 class ATKFParticleFinder {
 public:
