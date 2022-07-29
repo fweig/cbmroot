@@ -125,6 +125,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
 
   // ---- BMON ----
   std::shared_ptr<CbmBmonUnpackConfig> bmonconfig = nullptr;
+
   if (!bBmoninTof) {
     bmonconfig = std::make_shared<CbmBmonUnpackConfig>("", runid);
     if (bmonconfig) {
