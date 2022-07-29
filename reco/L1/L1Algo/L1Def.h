@@ -13,12 +13,11 @@
 
 #include <assert.h>
 
-//#if defined(HAVE_SSE) || SSE_FOUND
+#if defined(__CINT__) || defined(__CLING__)
+#include "vectors/PSEUDO_F32vec4.h"
+#else
 #include "vectors/P4_F32vec4.h"
-//#else
-//#include "vectors/PSEUDO_F32vec4.h"
-//#error NoSseFound
-//#endif  // HAVE_SSE
+#endif
 
 
 template<typename T>

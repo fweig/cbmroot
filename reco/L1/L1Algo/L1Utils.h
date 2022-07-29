@@ -21,7 +21,11 @@
 
 #include <cmath>
 
+#if defined(__CINT__) || defined(__CLING__)
+#include "vectors/PSEUDO_F32vec4.h"
+#else
 #include "vectors/P4_F32vec4.h"
+#endif
 
 /// Class contains some utility functions for L1Algo
 struct L1Utils {
