@@ -496,7 +496,7 @@ void CbmStsFitPerformanceTask::Exec(Option_t* /*option*/)
         FairTrackParam paramI;
         fFitter.Extrapolate(trackI, z[iz], &paramI);
         CbmKFMath::CopyTrackParam2TC(&paramI, sT[iTrack][iz], sC[iTrack][iz]);
-        if (!finite(sC[iTrack][iz][0]) || sC[iTrack][iz][0] < 0 || sC[iTrack][iz][0] > 10.) {
+        if (!isfinite(sC[iTrack][iz][0]) || sC[iTrack][iz][0] < 0 || sC[iTrack][iz][0] > 10.) {
           flag[iTrack] = 0;
           break;
         }
@@ -850,9 +850,9 @@ void CbmStsFitPerformanceTask::FillTrackHisto(const Double_t mc[6], CbmStsTrack*
   CbmKFMath::CopyTrackParam2TC(&param, t, c);
   Bool_t ok = 1;
   for (int i = 0; i < 6; i++)
-    ok = ok && finite(t[i]);
+    ok = ok && isfinite(t[i]);
   for (int i = 0; i < 15; i++)
-    ok = ok && finite(c[i]);
+    ok = ok && isfinite(c[i]);
   if (!ok) return;
   //fhExtraTracks2ndMVD->Fill(t[0], t[1]);
 

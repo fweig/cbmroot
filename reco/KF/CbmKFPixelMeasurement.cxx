@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+using std::isfinite;
 using std::vector;
 
 ClassImp(CbmKFPixelMeasurement);
@@ -19,12 +20,12 @@ Int_t CbmKFPixelMeasurement::Filter(CbmKFTrackInterface& track)
   Double_t* C = track.GetCovMatrix();
 
   Double_t w = (C[0] + V[0]) * (C[2] + V[2]) - (C[1] + V[1]) * (C[1] + V[1]);
-  if (w < 1.E-20 || !finite(w)) {
+  if (w < 1.E-20 || !isfinite(w)) {
     err = 1;
     return err;
   }
   w = 1. / w;
-  if (!finite(w)) return 1;
+  if (!isfinite(w)) return 1;
 
   Double_t W[3]    = {w * (C[2] + V[2]), -w * (C[1] + V[1]), w * (C[0] + V[0])};
   Double_t zeta[2] = {T[0] - x, T[1] - y};

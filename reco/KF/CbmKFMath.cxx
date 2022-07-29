@@ -725,7 +725,7 @@ Int_t CbmKFMath::GetNoise(Double_t Lrl, Double_t F, Double_t Fe, Double_t tx, Do
   *Q9        = 0;
   *Ecor      = 1.;
   Double_t t = sqrt(1. + tx * tx + ty * ty);
-  if (!finite(t) || t > 1.e4) return 1;
+  if (!isfinite(t) || t > 1.e4) return 1;
   t          = sqrt(t);
   Double_t l = t * Lrl;
   if (l > 1.) l = 1.;  // protect against l too big

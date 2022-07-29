@@ -33,7 +33,7 @@ ClassImp(CbmPVFinderKF)
     if (st->GetChiSq() < 0. || st->GetChiSq() > 3.5 * 3.5 * st->GetNDF()) continue;
     CbmKFTrack& T = CloneArray[i];
     T.SetStsTrack(*st);
-    if (!finite(T.GetTrack()[0]) || !finite(T.GetCovMatrix()[0])) continue;
+    if (!isfinite(T.GetTrack()[0]) || !isfinite(T.GetCovMatrix()[0])) continue;
     Finder.AddTrack(&T);
   }
   CbmKFVertex v;
@@ -70,7 +70,7 @@ Int_t CbmPVFinderKF::FindEventVertex(CbmEvent* event, TClonesArray* tracks)
       continue;
     CbmKFTrack& kTrack = trackArray[iTrack];
     kTrack.SetStsTrack(*track);
-    if (!finite(kTrack.GetTrack()[0]) || !finite(kTrack.GetCovMatrix()[0])) continue;
+    if (!isfinite(kTrack.GetTrack()[0]) || !isfinite(kTrack.GetCovMatrix()[0])) continue;
     vFinder.AddTrack(&kTrack);
   }
 

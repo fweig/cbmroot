@@ -308,20 +308,20 @@ void CbmKFTrackFitQa::FillHistoAtParticleVertex(CbmMCTrack* track_mc, CbmKFTrack
   res_AtPV_y->Fill(ddy);
   res_AtPV_tx->Fill(ddtx);
   res_AtPV_ty->Fill(ddty);
-  if (finite(fT[4]) && (fabs(fT[4]) > 1.e-20)) res_AtPV_qp->Fill(ddqp);
+  if (isfinite(fT[4]) && (fabs(fT[4]) > 1.e-20)) res_AtPV_qp->Fill(ddqp);
   //pulls of the parameters
-  if (finite(fC[0]) && fC[0] > 0) pull_AtPV_x->Fill(ddx / sqrt(fC[0]));
-  if (finite(fC[2]) && fC[2] > 0) pull_AtPV_y->Fill(ddy / sqrt(fC[2]));
-  if (finite(fC[5]) && fC[5] > 0) pull_AtPV_tx->Fill(ddtx / sqrt(fC[5]));
-  if (finite(fC[9]) && fC[9] > 0) pull_AtPV_ty->Fill(ddty / sqrt(fC[9]));
-  if (finite(fC[14]) && fC[14] > 0) pull_AtPV_qp->Fill(ddqp_p / sqrt(fC[14]));
+  if (isfinite(fC[0]) && fC[0] > 0) pull_AtPV_x->Fill(ddx / sqrt(fC[0]));
+  if (isfinite(fC[2]) && fC[2] > 0) pull_AtPV_y->Fill(ddy / sqrt(fC[2]));
+  if (isfinite(fC[5]) && fC[5] > 0) pull_AtPV_tx->Fill(ddtx / sqrt(fC[5]));
+  if (isfinite(fC[9]) && fC[9] > 0) pull_AtPV_ty->Fill(ddty / sqrt(fC[9]));
+  if (isfinite(fC[14]) && fC[14] > 0) pull_AtPV_qp->Fill(ddqp_p / sqrt(fC[14]));
 
-  if (finite(fT[4]) && (fabs(fT[4]) > 1.e-20)) {
+  if (isfinite(fT[4]) && (fabs(fT[4]) > 1.e-20)) {
     if (qtrack == (fabs(fT[4]) / fT[4])) q_QA->Fill(P_mc, 100.0);
     else
       q_QA->Fill(P_mc, 0.0);
 
-    if (finite(fC[14]) && fC[14] > 0) dp_p->Fill(P_mc, fabs(1. / fT[4]) * sqrt(fC[14]) * 100, 1);
+    if (isfinite(fC[14]) && fC[14] > 0) dp_p->Fill(P_mc, fabs(1. / fT[4]) * sqrt(fC[14]) * 100, 1);
   }
 }
 
@@ -394,20 +394,20 @@ void CbmKFTrackFitQa::FillHistoAtFirstPoint(CbmKFTrErrMCPoints* mc_points, CbmMC
     res_AtFP_y->Fill(ddy * 10000.);
     res_AtFP_tx->Fill(ddtx);
     res_AtFP_ty->Fill(ddty);
-    if (finite(fT[4]) && (fabs(fT[4]) > 1.e-20)) res_AtFP_qp->Fill(ddqp);
+    if (isfinite(fT[4]) && (fabs(fT[4]) > 1.e-20)) res_AtFP_qp->Fill(ddqp);
     //pulls of the parameters
-    if (finite(fC[0]) && fC[0] > 0) pull_AtFP_x->Fill(ddx / sqrt(fC[0]));
-    if (finite(fC[2]) && fC[2] > 0) pull_AtFP_y->Fill(ddy / sqrt(fC[2]));
-    if (finite(fC[5]) && fC[5] > 0) pull_AtFP_tx->Fill(ddtx / sqrt(fC[5]));
-    if (finite(fC[9]) && fC[9] > 0) pull_AtFP_ty->Fill(ddty / sqrt(fC[9]));
-    if (finite(fC[14]) && fC[14] > 0) pull_AtFP_qp->Fill(ddqp_p / sqrt(fC[14]));
+    if (isfinite(fC[0]) && fC[0] > 0) pull_AtFP_x->Fill(ddx / sqrt(fC[0]));
+    if (isfinite(fC[2]) && fC[2] > 0) pull_AtFP_y->Fill(ddy / sqrt(fC[2]));
+    if (isfinite(fC[5]) && fC[5] > 0) pull_AtFP_tx->Fill(ddtx / sqrt(fC[5]));
+    if (isfinite(fC[9]) && fC[9] > 0) pull_AtFP_ty->Fill(ddty / sqrt(fC[9]));
+    if (isfinite(fC[14]) && fC[14] > 0) pull_AtFP_qp->Fill(ddqp_p / sqrt(fC[14]));
 
-    if (finite(fT[4]) && (fabs(fT[4]) > 1.e-20)) {
+    if (isfinite(fT[4]) && (fabs(fT[4]) > 1.e-20)) {
       if (qtrack == (fabs(fT[4]) / fT[4])) q_QA->Fill(P_mc, 100.0);
       else
         q_QA->Fill(P_mc, 0.0);
 
-      if (finite(fC[14]) && fC[14] > 0) dp_p->Fill(P_mc, fabs(1. / fT[4]) * sqrt(fC[14]) * 100, 1);
+      if (isfinite(fC[14]) && fC[14] > 0) dp_p->Fill(P_mc, fabs(1. / fT[4]) * sqrt(fC[14]) * 100, 1);
     }
     //cout << ddx <<"  "<< ddx/sqrt(fC[0]) << endl;
   }

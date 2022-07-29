@@ -951,10 +951,10 @@ Int_t CbmKFFieldMath::ExtrapolateALight(const Double_t T_in[],  // input track p
   {
     bool ok = 1;
     for (int i = 0; i < 6; i++)
-      ok = ok && finite(T_in[i]) && (T_in[i] < 1.e5);
+      ok = ok && isfinite(T_in[i]) && (T_in[i] < 1.e5);
     if (C_in)
       for (int i = 0; i < 15; i++)
-        ok = ok && finite(C_in[i]);
+        ok = ok && isfinite(C_in[i]);
     if (!ok) {
       for (int i = 0; i < 6; i++)
         T_out[i] = 0;

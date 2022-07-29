@@ -205,7 +205,7 @@ Double_t CbmStsKFTrackFitter::FitToVertex(CbmStsTrack* track, CbmVertex* vtx, Fa
   T.GetTrackParam(*v_track);
   if (T.GetRefNDF() > 0 && T.GetRefChi2() >= 0) {
     ret = T.GetRefChi2() / T.GetRefNDF();
-    if (finite(ret)) ret = sqrt(ret);
+    if (isfinite(ret)) ret = sqrt(ret);
   }
   return ret;
 }
@@ -216,10 +216,10 @@ Bool_t CbmStsKFTrackFitter::CheckTrack(CbmKFTrack& T)
   Double_t* t = T.GetTrack();
   Double_t* c = T.GetCovMatrix();
   for (int i = 0; i < 6; i++)
-    ok = ok && finite(t[i]) && TMath::Abs(t[i]) < 1.e5;
+    ok = ok && isfinite(t[i]) && TMath::Abs(t[i]) < 1.e5;
   for (int i = 0; i < 15; i++)
-    ok = ok && finite(c[i]);
-  ok = ok && finite(T.GetMass()) && finite(T.GetRefChi2());
+    ok = ok && isfinite(c[i]);
+  ok = ok && isfinite(T.GetMass()) && isfinite(T.GetRefChi2());
   if (ok) {
     ok = ok && (c[0] > 0);
     ok = ok && (c[2] > 0);

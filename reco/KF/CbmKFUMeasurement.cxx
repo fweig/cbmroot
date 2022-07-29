@@ -6,6 +6,8 @@
 
 #include <cmath>
 
+using std::isfinite;
+
 ClassImp(CbmKFUMeasurement)
 
   void CbmKFUMeasurement::Set(Double_t z_, Double_t u_, Double_t phi_, Double_t sigma2_)
@@ -28,9 +30,9 @@ Int_t CbmKFUMeasurement::Filter(CbmKFTrackInterface& track)
   Double_t* C = track.GetCovMatrix();
 
   Double_t W = sigma2 + phi_cc * C[0] + phi_2sc * C[1] + phi_ss * C[2];
-  if (!finite(W) || W < 1.e-10) return 1;
+  if (!isfinite(W) || W < 1.e-10) return 1;
   W = 1. / W;
-  if (!finite(W)) return 1;
+  if (!isfinite(W)) return 1;
 
   Double_t zeta = phi_c * T[0] + phi_s * T[1] - u;
 
