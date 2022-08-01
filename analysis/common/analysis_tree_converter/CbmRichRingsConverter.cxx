@@ -4,8 +4,10 @@
 
 #include "CbmRichRingsConverter.h"
 
+#include "CbmDefs.h"
+#include "CbmEvent.h"
 #include <CbmGlobalTrack.h>
-#include <rich/CbmRichRing.h>
+#include <CbmRichRing.h>
 
 #include <FairMCPoint.h>
 #include <FairRootManager.h>
@@ -38,13 +40,12 @@ void CbmRichRingsConverter::Init()
   rich_branch.AddField<float>("radial_angle", "(0||1||2)*pi +- atan( abs((+-100-y)/-x) )");
 
   auto* man = AnalysisTree::TaskManager::GetInstance();
-  man->AddBranch(out_branch_, rich_rings_, rich_branch);
+  man->AddBranch(rich_rings_, rich_branch);
   man->AddMatching(match_to_, out_branch_, vtx_tracks_2_rich_);
 }
 
-void CbmRichRingsConverter::FillRichRings()
+void CbmRichRingsConverter::ProcessData(CbmEvent* event)
 {
-
   assert(cbm_rich_rings_);
   rich_rings_->ClearChannels();
   vtx_tracks_2_rich_->Clear();
@@ -65,22 +66,27 @@ void CbmRichRingsConverter::FillRichRings()
   if (it == indexes_map_->end()) { throw std::runtime_error(match_to_ + " is not found to match with TOF hits"); }
   auto rec_tracks_map = it->second;
 
-  rich_rings_->Reserve(cbm_global_tracks_->GetEntriesFast());
+  const int n_tracks = event ? event->GetNofData(ECbmDataType::kGlobalTrack) : cbm_global_tracks_->GetEntriesFast();
+  if (n_tracks <= 0) {
+    LOG(warn) << "No global tracks!";
+    return;
+  }
+  rich_rings_->Reserve(n_tracks);
 
-  for (Int_t igt = 0; igt < cbm_global_tracks_->GetEntriesFast(); igt++) {
-    const auto* global_track = static_cast<const CbmGlobalTrack*>(cbm_global_tracks_->At(igt));
+  for (Int_t igt = 0; igt < n_tracks; igt++) {
+    const auto trackIndex    = event ? event->GetIndex(ECbmDataType::kGlobalTrack, igt) : igt;
+    const auto* global_track = static_cast<const CbmGlobalTrack*>(cbm_global_tracks_->At(trackIndex));
 
     Int_t i_rich = global_track->GetRichRingIndex();
     if (i_rich < 0) continue;
     auto rich_ring = static_cast<CbmRichRing*>(cbm_rich_rings_->At(i_rich));
-    //    auto rich_match = static_cast<CbmTrackMatchNew*>( cbm_rich_rings_->At(i_rich));
-    //    Int_t itrdMC = (rich_match ? rich_match->GetMatchedLink().GetIndex() : -1);
-    //    richProj = static_cast<FairTrackParam*>(fRichProjection->At(i));
+    if (rich_ring == nullptr) {
+      LOG(warn) << "No RICH ring!";
+      continue;
+    }
 
     auto& ring = rich_rings_->AddChannel(branch);
-
     ring.SetPosition(rich_ring->GetCenterX(), rich_ring->GetCenterY(), 0.f);
-
     ring.SetField(int(rich_ring->GetNofHits()), i_n_hits);
     ring.SetField(int(rich_ring->GetNofHitsOnRing()), i_n_hits + 1);
     ring.SetField(float(rich_ring->GetAaxis()), i_axis);
@@ -100,8 +106,6 @@ void CbmRichRingsConverter::FillRichRings()
     }
   }
 }
-
-void CbmRichRingsConverter::Exec() { FillRichRings(); }
 
 CbmRichRingsConverter::~CbmRichRingsConverter()
 {

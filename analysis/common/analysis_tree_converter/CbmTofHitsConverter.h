@@ -11,6 +11,8 @@
 
 class TClonesArray;
 class FairTrackParam;
+class CbmMCDataManager;
+class CbmMCDataArray;
 
 namespace AnalysisTree
 {
@@ -27,14 +29,13 @@ public:
   ~CbmTofHitsConverter() final;
 
   void Init() final;
-  void Exec() final;
+  void ProcessData(CbmEvent* event) final;
   void Finish() final {}
 
 private:
-  void FillTofHits();
   static void ExtrapolateStraightLine(FairTrackParam* params, float z);
 
-  const std::map<int, int>& GetMatchMap(std::string name) const
+  const std::map<int, int>& GetMatchMap(const std::string& name) const
   {
     const auto& it = indexes_map_->find(name);
     if (it == indexes_map_->end()) { throw std::runtime_error(name + " is not found to match with TOF hits"); }
@@ -44,9 +45,12 @@ private:
 
   TClonesArray* cbm_global_tracks_ {nullptr};
   TClonesArray* cbm_tof_hits_ {nullptr};
-  TClonesArray* cbm_tof_points_ {nullptr};
+  //  TClonesArray* cbm_tof_points_ {nullptr};
   TClonesArray* cbm_tof_match_ {nullptr};
-  TClonesArray* cbm_mc_tracks_ {nullptr};
+  //  TClonesArray* cbm_mc_tracks_ {nullptr};
+  CbmMCDataManager* cbm_mc_manager_ {nullptr};
+  CbmMCDataArray* cbm_mc_tracks_new_ {nullptr};
+  CbmMCDataArray* cbm_tof_points_new_ {nullptr};
 
   AnalysisTree::HitDetector* tof_hits_ {nullptr};
   AnalysisTree::Matching* vtx_tracks_2_tof_ {nullptr};

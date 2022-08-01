@@ -189,6 +189,14 @@ void SimEventHeaderQA(QA::Task& task)
 
 void RecEventHeaderQA(QA::Task& task)
 {
+  task.AddH1({"Match weight", {rec_event_header, "match_weight"}, {QA::gNbins, 0, 1.01}});
+
+  task.AddH1({"Start time", {rec_event_header, "start_time"}, {QA::gNbins, 1e6, 1e6}});
+  task.AddH1({"End time", {rec_event_header, "end_time"}, {QA::gNbins, 1e6, 1e6}});
+
+  task.AddH2({"M_{tracks}", {rec_event_header, "M"}, {800, 0, 800}},
+             {"Match weight", {rec_event_header, "match_weight"}, {QA::gNbins, 0, 1.01}});
+
   task.AddH1({"x_{vertex} (cm)", {rec_event_header, "vtx_x"}, {QA::gNbins, -1, 1}});
   task.AddH1({"y_{vertex} (cm)", {rec_event_header, "vtx_y"}, {QA::gNbins, -1, 1}});
   task.AddH1({"z_{vertex} (cm)", {rec_event_header, "vtx_z"}, {QA::gNbins, -1, 1}});

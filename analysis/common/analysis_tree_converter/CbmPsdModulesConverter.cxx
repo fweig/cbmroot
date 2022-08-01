@@ -4,6 +4,8 @@
 
 #include "CbmPsdModulesConverter.h"
 
+#include "CbmDefs.h"
+#include "CbmEvent.h"
 #include "CbmPsdHit.h"
 
 #include "FairRootManager.h"
@@ -16,9 +18,9 @@
 
 #include "AnalysisTree/Detector.hpp"
 
-ClassImp(CbmPsdModulesConverter)
+ClassImp(CbmPsdModulesConverter);
 
-  void CbmPsdModulesConverter::Init()
+void CbmPsdModulesConverter::Init()
 {
   assert(!out_branch_.empty());
   auto* ioman = FairRootManager::Instance();
@@ -28,11 +30,11 @@ ClassImp(CbmPsdModulesConverter)
   AnalysisTree::BranchConfig psd_branch(out_branch_, AnalysisTree::DetType::kModule);
 
   auto* man = AnalysisTree::TaskManager::GetInstance();
-  man->AddBranch(out_branch_, psd_modules_, psd_branch);
+  man->AddBranch(psd_modules_, psd_branch);
 }
 
 
-void CbmPsdModulesConverter::Exec()
+void CbmPsdModulesConverter::ProcessData(CbmEvent* event)
 {
   assert(cbm_psd_hits_);
   psd_modules_->ClearChannels();
@@ -45,13 +47,19 @@ void CbmPsdModulesConverter::Exec()
   const auto& branch = config->GetBranchConfig(out_branch_);
 
   const int n_psd_modules = data_header->GetModulePositions(0).GetNumberOfChannels();
+
   psd_modules_->Reserve(n_psd_modules);
   for (int i = 0; i < n_psd_modules; ++i) {
     auto& module = psd_modules_->AddChannel(branch);
     module.SetSignal(0.f);
   }
 
-  const int nPsdHits = cbm_psd_hits_->GetEntriesFast();
+  const int nPsdHits = event ? event->GetNofData(ECbmDataType::kPsdHit) : cbm_psd_hits_->GetEntriesFast();
+  if (nPsdHits <= 0) {
+    LOG(warn) << "No PSD hits!";
+    return;
+  }
+
   for (int i = 0; i < nPsdHits; ++i) {
     hit = (CbmPsdHit*) cbm_psd_hits_->At(i);
     if (hit == nullptr) continue;

@@ -14,15 +14,12 @@ class TClonesArray;
 class CbmPsdModulesConverter final : public CbmConverterTask {
 public:
   explicit CbmPsdModulesConverter(std::string out_branch_name, std::string match_to = "")
-    : CbmConverterTask(std::move(out_branch_name), std::move(match_to))
-  {
-    out_branch_ = "PsdModules";
-  };
+    : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {};
 
   ~CbmPsdModulesConverter() final;
 
   void Init() final;
-  void Exec() final;
+  void ProcessData(CbmEvent* event) final;
   void Finish() final;
 
 private:

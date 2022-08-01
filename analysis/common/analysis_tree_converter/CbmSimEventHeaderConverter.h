@@ -11,6 +11,9 @@
 
 class FairMCEventHeader;
 class CbmVertex;
+class CbmMCDataManager;
+class CbmMCDataArray;
+class CbmMCDataObject;
 
 class CbmSimEventHeaderConverter final : public CbmConverterTask {
 public:
@@ -18,12 +21,14 @@ public:
   ~CbmSimEventHeaderConverter() final = default;
 
   void Init() final;
-  void Exec() final;
+  void ProcessData(CbmEvent* event) final;
   void Finish() final { delete sim_event_header_; };
 
 private:
   AnalysisTree::EventHeader* sim_event_header_ {nullptr};
   FairMCEventHeader* cbm_header_ {nullptr};
+  CbmMCDataManager* cbm_mc_manager_ {nullptr};
+  CbmMCDataObject* cbm_header_obj_ {nullptr};
 
   ClassDef(CbmSimEventHeaderConverter, 1)
 };

@@ -18,6 +18,7 @@
 #pragma link C++ class CbmPsdModulesConverter + ;
 #pragma link C++ class CbmTrdTracksConverter + ;
 #pragma link C++ class CbmRichRingsConverter + ;
+//#pragma link C++ class CbmMatchEvents + ;
 
 //#pragma link C++ class CbmMuchTracksConverter+;
 

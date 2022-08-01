@@ -4,8 +4,11 @@
 
 #include "CbmTofHitsConverter.h"
 
+#include "CbmDefs.h"
+#include "CbmEvent.h"
+#include "CbmMCDataArray.h"
+#include "CbmMCDataManager.h"
 #include <CbmGlobalTrack.h>
-#include <CbmMCTrack.h>
 #include <CbmTofHit.h>
 #include <CbmTrackMatchNew.h>
 
@@ -16,7 +19,6 @@
 
 #include <AnalysisTree/TaskManager.hpp>
 #include <cassert>
-#include <vector>
 
 #include "AnalysisTree/Matching.hpp"
 
@@ -30,8 +32,12 @@ void CbmTofHitsConverter::Init()
   cbm_tof_hits_      = (TClonesArray*) ioman->GetObject("TofHit");
   cbm_global_tracks_ = (TClonesArray*) ioman->GetObject("GlobalTrack");
   cbm_tof_match_     = (TClonesArray*) ioman->GetObject("TofHitMatch");
-  cbm_tof_points_    = (TClonesArray*) ioman->GetObject("TofPoint");
-  cbm_mc_tracks_     = (TClonesArray*) ioman->GetObject("MCTrack");
+  //  cbm_tof_points_    = (TClonesArray*) ioman->GetObject("TofPoint");
+  //  cbm_mc_tracks_     = (TClonesArray*) ioman->GetObject("MCTrack");
+
+  cbm_mc_manager_     = dynamic_cast<CbmMCDataManager*>(ioman->GetObject("MCDataManager"));
+  cbm_mc_tracks_new_  = cbm_mc_manager_->InitBranch("MCTrack");
+  cbm_tof_points_new_ = cbm_mc_manager_->InitBranch("TofPoint");
 
   AnalysisTree::BranchConfig tof_branch(out_branch_, AnalysisTree::DetType::kHit);
   tof_branch.AddField<float>("mass2", "Mass squared");
@@ -42,7 +48,7 @@ void CbmTofHitsConverter::Init()
   tof_branch.AddField<int>("mc_pdg", "MC-true PDG code of particle with highest contribution to TOF hit");
 
   auto* man = AnalysisTree::TaskManager::GetInstance();
-  man->AddBranch(out_branch_, tof_hits_, tof_branch);
+  man->AddBranch(tof_hits_, tof_branch);
   man->AddMatching(match_to_, out_branch_, vtx_tracks_2_tof_);
   man->AddMatching(out_branch_, mc_tracks_, tof_hits_2_mc_tracks_);
 }
@@ -60,8 +66,7 @@ void CbmTofHitsConverter::ExtrapolateStraightLine(FairTrackParam* params, float 
   params->SetPosition({x, y, z});
 }
 
-
-void CbmTofHitsConverter::FillTofHits()
+void CbmTofHitsConverter::ProcessData(CbmEvent* event)
 {
   assert(cbm_tof_hits_);
   tof_hits_->ClearChannels();
@@ -80,10 +85,29 @@ void CbmTofHitsConverter::FillTofHits()
   auto rec_tracks_map = GetMatchMap(match_to_);
   auto sim_tracks_map = GetMatchMap(mc_tracks_);
 
-  tof_hits_->Reserve(cbm_global_tracks_->GetEntriesFast());
+  int file_id {0}, event_id {0};
+  if (event) {
+    auto match = event->GetMatch();
+    if (!match) return;
+    file_id  = event->GetMatch()->GetMatchedLink().GetFile();
+    event_id = event->GetMatch()->GetMatchedLink().GetEntry();
+  }
+  else {
+    event_id = FairRootManager::Instance()->GetEntryNr();
+  }
 
-  for (Int_t igt = 0; igt < cbm_global_tracks_->GetEntriesFast(); igt++) {
-    const auto* globalTrack = static_cast<const CbmGlobalTrack*>(cbm_global_tracks_->At(igt));
+  const int n_tracks   = event ? event->GetNofData(ECbmDataType::kGlobalTrack) : cbm_global_tracks_->GetEntriesFast();
+  const int n_tof_hits = event ? event->GetNofData(ECbmDataType::kTofHit) : cbm_tof_hits_->GetEntriesFast();
+
+  if (n_tracks <= 0) {
+    LOG(warn) << "No global tracks!";
+    return;
+  }
+  tof_hits_->Reserve(n_tracks);
+
+  for (Int_t igt = 0; igt < n_tracks; igt++) {
+    const auto trackIndex   = event ? event->GetIndex(ECbmDataType::kGlobalTrack, igt) : igt;
+    const auto* globalTrack = static_cast<const CbmGlobalTrack*>(cbm_global_tracks_->At(trackIndex));
     const Int_t tofHitIndex = globalTrack->GetTofHitIndex();
     if (tofHitIndex < 0) continue;
 
@@ -125,7 +149,14 @@ void CbmTofHitsConverter::FillTofHits()
 
     const auto* tofMatch = dynamic_cast<CbmMatch*>(cbm_tof_match_->At(tofHitIndex));
     if (tofMatch && tofMatch->GetNofLinks() > 0) {
-      const auto* tofPoint = dynamic_cast<FairMCPoint*>(cbm_tof_points_->At(tofMatch->GetMatchedLink().GetIndex()));
+      const auto& link = tofMatch->GetMatchedLink();
+      if (link.GetFile() != file_id || link.GetEntry() != event_id) {  // match from different event
+        LOG(warn) << "match from different event";
+        //        continue;
+      }
+      const auto* tofPoint = dynamic_cast<FairMCPoint*>(cbm_tof_points_new_->Get(link));
+      //      const auto* tofPoint = dynamic_cast<FairMCPoint*>(cbm_tof_points_->At(link.GetIndex()));
+
       if (!tofPoint) { throw std::runtime_error("no TOF point"); }
 
       Int_t mc_track_id = tofPoint->GetTrackID();
@@ -139,7 +170,6 @@ void CbmTofHitsConverter::FillTofHits()
   }
 }
 
-void CbmTofHitsConverter::Exec() { FillTofHits(); }
 
 CbmTofHitsConverter::~CbmTofHitsConverter()
 {

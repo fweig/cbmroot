@@ -4,8 +4,9 @@
 
 #include "CbmTrdTracksConverter.h"
 
+#include "CbmDefs.h"
+#include "CbmEvent.h"
 #include <CbmGlobalTrack.h>
-#include <CbmTrackMatchNew.h>
 #include <CbmTrdHit.h>
 #include <CbmTrdTrack.h>
 
@@ -16,15 +17,14 @@
 
 #include <AnalysisTree/TaskManager.hpp>
 #include <cassert>
-#include <vector>
 
 #include "AnalysisTree/Matching.hpp"
 
-ClassImp(CbmTrdTracksConverter)
+ClassImp(CbmTrdTracksConverter);
 
-  void CbmTrdTracksConverter::Init()
+
+void CbmTrdTracksConverter::Init()
 {
-
   assert(!out_branch_.empty());
   auto* ioman = FairRootManager::Instance();
 
@@ -42,13 +42,12 @@ ClassImp(CbmTrdTracksConverter)
   trd_branch.AddField<int>("n_hits", "Number of hits");
 
   auto* man = AnalysisTree::TaskManager::GetInstance();
-  man->AddBranch(out_branch_, trd_tracks_, trd_branch);
+  man->AddBranch(trd_tracks_, trd_branch);
   man->AddMatching(match_to_, out_branch_, vtx_tracks_2_trd_);
 }
 
-void CbmTrdTracksConverter::FillTrdTracks()
+void CbmTrdTracksConverter::ProcessData(CbmEvent* event)
 {
-
   assert(cbm_trd_tracks_);
   trd_tracks_->ClearChannels();
   vtx_tracks_2_trd_->Clear();
@@ -66,16 +65,27 @@ void CbmTrdTracksConverter::FillTrdTracks()
   if (it == indexes_map_->end()) { throw std::runtime_error(match_to_ + " is not found to match with TOF hits"); }
   auto rec_tracks_map = it->second;
 
-  trd_tracks_->Reserve(cbm_global_tracks_->GetEntriesFast());
+  const int n_tracks = event ? event->GetNofData(ECbmDataType::kGlobalTrack) : cbm_global_tracks_->GetEntriesFast();
+  if (n_tracks <= 0) {
+    LOG(warn) << "No global tracks!";
+    return;
+  }
 
-  for (Int_t igt = 0; igt < cbm_global_tracks_->GetEntriesFast(); igt++) {
-    const auto* global_track = static_cast<const CbmGlobalTrack*>(cbm_global_tracks_->At(igt));
+  trd_tracks_->Reserve(n_tracks);
+
+  for (Int_t igt = 0; igt < n_tracks; igt++) {
+    const auto trackIndex = event ? event->GetIndex(ECbmDataType::kGlobalTrack, igt) : igt;
+
+    const auto* global_track = static_cast<const CbmGlobalTrack*>(cbm_global_tracks_->At(trackIndex));
 
     Int_t itrd = global_track->GetTrdTrackIndex();
     if (itrd < 0) continue;
 
     auto trd_track = static_cast<CbmTrdTrack*>(cbm_trd_tracks_->At(itrd));
-
+    if (trd_track == nullptr) {
+      LOG(warn) << "No TRD track!";
+      continue;
+    }
     auto& track = trd_tracks_->AddChannel(branch);
     TVector3 mom, mom_last;
     trd_track->GetParamFirst()->Momentum(mom);
@@ -115,8 +125,6 @@ void CbmTrdTracksConverter::FillTrdTracks()
     }
   }
 }
-
-void CbmTrdTracksConverter::Exec() { FillTrdTracks(); }
 
 CbmTrdTracksConverter::~CbmTrdTracksConverter()
 {

@@ -11,6 +11,7 @@ set(SRCS
         CbmTofHitsConverter.cxx
         CbmTrdTracksConverter.cxx
         CbmRichRingsConverter.cxx
+		CbmMatchEvents.cxx
     )
     
 
@@ -26,6 +27,7 @@ Set(INCLUDE_DIRECTORIES
   ${CBMROOT_SOURCE_DIR}/core/data/tof
   ${CBMROOT_SOURCE_DIR}/core/data/psd
   ${CBMROOT_SOURCE_DIR}/core/data/trd
+  ${CBMROOT_SOURCE_DIR}/core/data/rich
 
   ${CBMROOT_SOURCE_DIR}/sim/transport/generators
   ${CBMROOT_SOURCE_DIR}/sim/transport/steer

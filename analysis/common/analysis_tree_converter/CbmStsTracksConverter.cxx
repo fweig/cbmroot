@@ -4,6 +4,9 @@
 
 #include "CbmStsTracksConverter.h"
 
+#include "CbmDefs.h"
+#include "CbmEvent.h"
+#include "CbmMCDataManager.h"
 #include "CbmMCTrack.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
@@ -24,17 +27,17 @@
 #include "L1Field.h"
 
 
-ClassImp(CbmStsTracksConverter)
+ClassImp(CbmStsTracksConverter);
 
-  void CbmStsTracksConverter::Exec()
+void CbmStsTracksConverter::ProcessData(CbmEvent* event)
 {
-  assert(cbm_sts_tracks_ != nullptr && cbm_mc_tracks_ != nullptr);
+  assert(cbm_sts_tracks_ != nullptr && cbm_mc_tracks_new_ != nullptr);
 
   vtx_tracks_2_sim_->Clear();
   out_indexes_map_.clear();
 
-  ReadVertexTracks();
-  MapTracks();
+  ReadVertexTracks(event);
+  MapTracks(event);
 }
 
 CbmStsTracksConverter::~CbmStsTracksConverter()
@@ -49,8 +52,11 @@ void CbmStsTracksConverter::InitInput()
 
   cbm_prim_vertex_ = (CbmVertex*) ioman->GetObject("PrimaryVertex.");
   cbm_sts_tracks_  = (TClonesArray*) ioman->GetObject("StsTrack");
-  cbm_mc_tracks_   = (TClonesArray*) ioman->GetObject("MCTrack");
-  cbm_sts_match_   = (TClonesArray*) ioman->GetObject("StsTrackMatch");
+  //  cbm_mc_tracks_   = (TClonesArray*) ioman->GetObject("MCTrack");
+  cbm_sts_match_ = (TClonesArray*) ioman->GetObject("StsTrackMatch");
+
+  cbm_mc_manager_    = dynamic_cast<CbmMCDataManager*>(ioman->GetObject("MCDataManager"));
+  cbm_mc_tracks_new_ = cbm_mc_manager_->InitBranch("MCTrack");
 }
 
 void CbmStsTracksConverter::Init()
@@ -66,6 +72,7 @@ void CbmStsTracksConverter::Init()
   vtx_tracks_config.AddField<int>("q", "charge");
   vtx_tracks_config.AddField<int>("nhits", "number of hits (total MVD+STS)");
   vtx_tracks_config.AddField<int>("nhits_mvd", "number of hits in MVD");
+  vtx_tracks_config.AddField<float>("match_weight", "true over all hits ratio for a matched MC-track");
 
   if (is_write_kfinfo_) {
     vtx_tracks_config.AddFields<float>({"x", "y", "z", "tx", "ty", "qp"}, "track parameters");
@@ -74,6 +81,8 @@ void CbmStsTracksConverter::Init()
     vtx_tracks_config.AddFields<float>({"cov1", "cov2", "cov3", "cov4", "cov5", "cov6", "cov7", "cov8", "cov9", "cov10",
                                         "cov11", "cov12", "cov13", "cov14", "cov15"},
                                        "covarience matrix");
+
+    vtx_tracks_config.AddField<float>("dE_over_dx");
 
     vtx_tracks_config.AddField<int>("mother_pdg", "PDG code of mother particle");
     vtx_tracks_config.AddField<int>("mc_pdg", "MC-true PDG code");
@@ -87,7 +96,7 @@ void CbmStsTracksConverter::Init()
     ipasscuts_   = vtx_tracks_config.GetFieldId("pass_cuts");
   }
   auto* man = AnalysisTree::TaskManager::GetInstance();
-  man->AddBranch(out_branch_, vtx_tracks_, vtx_tracks_config);
+  man->AddBranch(vtx_tracks_, vtx_tracks_config);
   man->AddMatching(out_branch_, match_to_, vtx_tracks_2_sim_);
 }
 
@@ -122,7 +131,7 @@ float CbmStsTracksConverter::ExtrapolateToVertex(CbmStsTrack* sts_track, Analysi
   return chi2_to_vtx[0];
 }
 
-void CbmStsTracksConverter::ReadVertexTracks()
+void CbmStsTracksConverter::ReadVertexTracks(CbmEvent* event)
 {
   assert(cbm_prim_vertex_ && cbm_sts_tracks_);
 
@@ -137,20 +146,26 @@ void CbmStsTracksConverter::ReadVertexTracks()
   const int inhits_mvd = branch.GetFieldId("nhits_mvd");
   const int idcax      = branch.GetFieldId("dcax");
   const int ivtx_chi2  = branch.GetFieldId("vtx_chi2");
+  const int ide_dx     = branch.GetFieldId("dE_over_dx");
 
-  const int n_sts_tracks = cbm_sts_tracks_->GetEntries();
+  const int n_sts_tracks = event ? event->GetNofStsTracks() : cbm_sts_tracks_->GetEntries();
+  if (n_sts_tracks <= 0) {
+    LOG(warn) << "No STS tracks!";
+    return;
+  }
   vtx_tracks_->Reserve(n_sts_tracks);
 
   for (short i_track = 0; i_track < n_sts_tracks; ++i_track) {
-    auto* sts_track = (CbmStsTrack*) cbm_sts_tracks_->At(i_track);
+    const int track_index = event ? event->GetStsTrackIndex(i_track) : i_track;
+    auto* sts_track       = (CbmStsTrack*) cbm_sts_tracks_->At(track_index);
     if (!sts_track) { throw std::runtime_error("empty track!"); }
 
     auto& track = vtx_tracks_->AddChannel(branch);
 
-    int pdg            = GetMcPid((CbmTrackMatchNew*) cbm_sts_match_->At(i_track), track);
+    //    int pdg            = GetMcPid((CbmTrackMatchNew*) cbm_sts_match_->At(track_index), track);
     bool is_good_track = IsGoodCovMatrix(sts_track);
 
-    float chi2_vertex                     = ExtrapolateToVertex(sts_track, track, pdg);
+    float chi2_vertex                     = ExtrapolateToVertex(sts_track, track, 211);
     const FairTrackParam* trackParamFirst = sts_track->GetParamFirst();
     TVector3 momRec;
     trackParamFirst->Momentum(momRec);
@@ -166,8 +181,9 @@ void CbmStsTracksConverter::ReadVertexTracks()
     track.SetField(float(trackParamFirst->GetZ() - cbm_prim_vertex_->GetZ()), idcax + 2);
     track.SetField(int(sts_track->GetNofMvdHits()), inhits_mvd);
     track.SetField(float(chi2_vertex), ivtx_chi2);
+    track.SetField(float(sts_track->GetELoss()), ide_dx);
 
-    out_indexes_map_.insert(std::make_pair(i_track, track.GetId()));
+    out_indexes_map_.insert(std::make_pair(track_index, track.GetId()));
 
     if (is_write_kfinfo_) { WriteKFInfo(track, sts_track, is_good_track); }
   }
@@ -196,7 +212,6 @@ void CbmStsTracksConverter::WriteKFInfo(AnalysisTree::Track& track, const CbmSts
 
 bool CbmStsTracksConverter::IsGoodCovMatrix(const CbmStsTrack* sts_track) const
 {
-
   if (!is_reproduce_cbmkfpf_) return true;
 
   assert(sts_track);
@@ -229,52 +244,7 @@ bool CbmStsTracksConverter::IsGoodCovMatrix(const CbmStsTrack* sts_track) const
   return ok;
 }
 
-int CbmStsTracksConverter::GetMcPid(const CbmTrackMatchNew* match, AnalysisTree::Track& track) const
-{
-
-  if (!is_write_kfinfo_) { return -2; }
-  //-----------PID as in MZ's
-  //CbmKFPF----------------------------------------------------------
-  Int_t nMCTracks = cbm_mc_tracks_->GetEntriesFast();
-
-  int pdgCode = -2;
-  if (match->GetNofLinks() > 0) {  // there is at least one matched MC-track
-    Float_t bestWeight  = 0.f;
-    Float_t totalWeight = 0.f;
-    Int_t mcTrackId     = -1;
-
-    for (int iLink = 0; iLink < match->GetNofLinks(); iLink++) {
-      totalWeight += match->GetLink(iLink).GetWeight();
-      if (match->GetLink(iLink).GetWeight() > bestWeight) {
-        bestWeight = match->GetLink(iLink).GetWeight();
-        mcTrackId  = match->GetLink(iLink).GetIndex();
-      }
-    }
-
-    if (!((bestWeight / totalWeight < 0.7) || (mcTrackId >= nMCTracks || mcTrackId < 0))) {
-      auto* mctrack = static_cast<CbmMCTrack*>(cbm_mc_tracks_->At(mcTrackId));
-
-      if (!(TMath::Abs(mctrack->GetPdgCode()) == 11 || TMath::Abs(mctrack->GetPdgCode()) == 13
-            || TMath::Abs(mctrack->GetPdgCode()) == 211 || TMath::Abs(mctrack->GetPdgCode()) == 321
-            || TMath::Abs(mctrack->GetPdgCode()) == 2212 || TMath::Abs(mctrack->GetPdgCode()) == 1000010020
-            || TMath::Abs(mctrack->GetPdgCode()) == 1000010030 || TMath::Abs(mctrack->GetPdgCode()) == 1000020030
-            || TMath::Abs(mctrack->GetPdgCode()) == 1000020040)) {
-        pdgCode = -1;
-      }
-      else {
-        pdgCode = mctrack->GetPdgCode();
-      }
-      if (mctrack->GetMotherId() > -1) {
-        track.SetField(int(((CbmMCTrack*) cbm_mc_tracks_->At(mctrack->GetMotherId()))->GetPdgCode()), imother_pdg_);
-      }
-    }
-  }
-  track.SetField(pdgCode, imc_pdg_);
-
-  return pdgCode;
-}
-
-void CbmStsTracksConverter::MapTracks()
+void CbmStsTracksConverter::MapTracks(CbmEvent* event)
 {
   const auto it = indexes_map_->find(match_to_);
   if (it == indexes_map_->end()) { throw std::runtime_error(match_to_ + " is not found to match with vertex tracks"); }
@@ -283,21 +253,86 @@ void CbmStsTracksConverter::MapTracks()
   if (out_indexes_map_.empty() || sim_tracks_map.empty()) return;
   CbmTrackMatchNew* match {nullptr};
 
+  int file_id {0}, event_id {0};
+  if (event) {
+    file_id  = event->GetMatch()->GetMatchedLink().GetFile();
+    event_id = event->GetMatch()->GetMatchedLink().GetEntry();
+  }
+  else {
+    event_id = FairRootManager::Instance()->GetEntryNr();
+  }
+  auto weight_id = config_->GetBranchConfig(out_branch_).GetFieldId("match_weight");
+
   for (const auto& track_id : out_indexes_map_) {
     const int cbm_id = track_id.first;
     const int out_id = track_id.second;
-    match            = (CbmTrackMatchNew*) cbm_sts_match_->At(cbm_id);
-    if (match->GetNofLinks() > 0) {  // there is at least one matched MC-track
-      const int mc_track_id = match->GetMatchedLink().GetIndex();
+    auto& track      = vtx_tracks_->Channel(out_id);
 
-      if (match->GetTrueOverAllHitsRatio() < 0.5)  // not enough hits to be a match
+    match = (CbmTrackMatchNew*) cbm_sts_match_->At(cbm_id);
+    if (match->GetNofLinks() > 0) {  // there is at least one matched MC-track
+
+      const auto& link = match->GetMatchedLink();
+
+      if (link.GetFile() != file_id || link.GetEntry() != event_id) {  // match from different event
+        LOG(warn) << "MC track from different event";
         continue;
+      }
+
+      const int mc_track_id = link.GetIndex();
 
       auto p = sim_tracks_map.find(mc_track_id);
       if (p == sim_tracks_map.end())  // match is not found
         continue;
 
+      //      LOG(info) << match->GetTrueOverAllHitsRatio();
+
+      track.SetField(float(match->GetTrueOverAllHitsRatio()), weight_id);
       vtx_tracks_2_sim_->AddMatch(out_id, p->second);
     }
   }
 }
+
+//int CbmStsTracksConverter::GetMcPid(const CbmTrackMatchNew* match, AnalysisTree::Track& track) const
+//{
+//
+//  if (!is_write_kfinfo_) { return -2; }
+//  //-----------PID as in MZ's
+//  //CbmKFPF----------------------------------------------------------
+//  Int_t nMCTracks = cbm_mc_tracks_->GetEntriesFast();
+//
+//  int pdgCode = -2;
+//  if (match->GetNofLinks() > 0) {  // there is at least one matched MC-track
+//    Float_t bestWeight  = 0.f;
+//    Float_t totalWeight = 0.f;
+//    Int_t mcTrackId     = -1;
+//
+//    for (int iLink = 0; iLink < match->GetNofLinks(); iLink++) {
+//      totalWeight += match->GetLink(iLink).GetWeight();
+//      if (match->GetLink(iLink).GetWeight() > bestWeight) {
+//        bestWeight = match->GetLink(iLink).GetWeight();
+//        mcTrackId  = match->GetLink(iLink).GetIndex();
+//      }
+//    }
+//
+//    if (!((bestWeight / totalWeight < 0.7) || (mcTrackId >= nMCTracks || mcTrackId < 0))) {
+//      auto* mctrack = static_cast<CbmMCTrack*>(cbm_mc_tracks_->At(mcTrackId));
+//
+//      if (!(TMath::Abs(mctrack->GetPdgCode()) == 11 || TMath::Abs(mctrack->GetPdgCode()) == 13
+//      || TMath::Abs(mctrack->GetPdgCode()) == 211 || TMath::Abs(mctrack->GetPdgCode()) == 321
+//      || TMath::Abs(mctrack->GetPdgCode()) == 2212 || TMath::Abs(mctrack->GetPdgCode()) == 1000010020
+//      || TMath::Abs(mctrack->GetPdgCode()) == 1000010030 || TMath::Abs(mctrack->GetPdgCode()) == 1000020030
+//      || TMath::Abs(mctrack->GetPdgCode()) == 1000020040)) {
+//        pdgCode = -1;
+//      }
+//      else {
+//        pdgCode = mctrack->GetPdgCode();
+//      }
+//      if (mctrack->GetMotherId() > -1) {
+//        track.SetField(int(((CbmMCTrack*) cbm_mc_tracks_->At(mctrack->GetMotherId()))->GetPdgCode()), imother_pdg_);
+//      }
+//    }
+//  }
+//  track.SetField(pdgCode, imc_pdg_);
+//
+//  return pdgCode;
+//}

@@ -16,43 +16,44 @@ class UEvent;
 class TFile;
 class TTree;
 class FairMCEventHeader;
+class CbmMCDataManager;
+class CbmMCDataArray;
 
 class CbmSimTracksConverter final : public CbmConverterTask {
 
-
 public:
-  explicit CbmSimTracksConverter(std::string out_branch_name, std::string match_to = "", std::string unigen_name = "",
-                                 std::string mc_eventheader = "MCEventHeader.")
-    : CbmConverterTask(std::move(out_branch_name), std::move(match_to))
-    , fUnigenEvent(nullptr)
-    , fFile(nullptr)
-    , fTree(nullptr)
-    , fUnigenFile(unigen_name)
-    , fEventHeaderBranch(mc_eventheader)
-    , fEntry(0)
-    , fUseUnigen(kFALSE)
-    , fDeltaPhi(0)
-    , fBetaCM(0) {};
+  explicit CbmSimTracksConverter(std::string out_branch_name, std::string match_to = "")
+    : CbmConverterTask(std::move(out_branch_name), std::move(match_to)) {};
 
   ~CbmSimTracksConverter() final;
 
+  void SetUnigenInfo(const std::string& unigen_name)
+  {
+    use_unigen_       = true;
+    unigen_file_name_ = unigen_name;
+  }
+
   void Init() final;
-  void Exec() final;
+  void ProcessData(CbmEvent* event) final;
   void Finish() final {};
 
 private:
   AnalysisTree::Particles* sim_tracks_ {nullptr};
   FairMCEventHeader* cbm_header_ {nullptr};
-  TClonesArray* cbm_mc_tracks_ {nullptr};
-  UEvent* fUnigenEvent;
-  TFile* fFile;
-  TTree* fTree;
-  TString fUnigenFile;
-  TString fEventHeaderBranch;
-  Int_t fEntry;
-  Bool_t fUseUnigen;
-  Double_t fDeltaPhi;
-  Double_t fBetaCM;  // CM velocity in the lab frame
+  //  TClonesArray* cbm_mc_tracks_ {nullptr};
+
+  CbmMCDataManager* cbm_mc_manager_ {nullptr};
+  CbmMCDataArray* cbm_mc_tracks_new_ {nullptr};
+
+  void InitUnigen();
+
+  UEvent* unigen_event_ {nullptr};
+  TFile* unigen_file_ {nullptr};
+  TTree* unigen_tree_ {nullptr};
+  std::string unigen_file_name_;
+  Int_t entry_ {0};
+  Double_t beta_cm_ {0};  ///< CM velocity in the lab frame
+  Bool_t use_unigen_ {false};
 
   ClassDef(CbmSimTracksConverter, 1)
 };

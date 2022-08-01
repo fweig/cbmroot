@@ -3,7 +3,7 @@
    Authors: Viktor Klochkov [committer] */
 
 void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setupName = "sis100_electron",
-                             TString unigenFile = "")
+                             TString unigenFile = "", bool is_event_base = true)
 {
   const std::string system = "Au+Au";  // TODO can we read it automatically?
   const float beam_mom     = 12.;
@@ -69,7 +69,7 @@ void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setu
   // ------------------------------------------------------------------------
 
   // ----- Mc Data Manager   ------------------------------------------------
-  auto* mcManager = new CbmMCDataManager("MCManager", 1);
+  auto* mcManager = new CbmMCDataManager("MCManager", is_event_base);
   mcManager->AddFile(traFile);
   run->AddTask(mcManager);
   // ------------------------------------------------------------------------
@@ -112,7 +112,8 @@ void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setu
   man->SetBeamMomentum(beam_mom);
 
   man->SetOutputName(outFile, "rTree");
-  //  man->SetOutTreeName("aTree");
+
+  if (!is_event_base) { man->AddTask(new CbmMatchEvents()); }
 
   man->AddTask(new CbmSimEventHeaderConverter("SimEventHeader"));
   man->AddTask(new CbmRecEventHeaderConverter("RecEventHeader"));
@@ -126,8 +127,7 @@ void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setu
   man->AddTask(new CbmRichRingsConverter("RichRings", "VtxTracks"));
   man->AddTask(new CbmTofHitsConverter("TofHits", "VtxTracks"));
   man->AddTask(new CbmTrdTracksConverter("TrdTracks", "VtxTracks"));
-  man->AddTask(new CbmPsdModulesConverter("PsdModules"));
-
+  if (is_event_base) { man->AddTask(new CbmPsdModulesConverter("PsdModules")); }
   run->AddTask(man);
 
   // -----  Parameter database   --------------------------------------------
@@ -179,5 +179,5 @@ void run_analysis_tree_maker(TString dataSet = "../../../run/test", TString setu
   //   Generate_CTest_Dependency_File(depFile);
   // ------------------------------------------------------------------------
 
-  RemoveGeoManager();
+  //  RemoveGeoManager();
 }

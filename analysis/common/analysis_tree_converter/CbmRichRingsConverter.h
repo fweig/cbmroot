@@ -24,12 +24,10 @@ public:
   ~CbmRichRingsConverter() final;
 
   void Init() final;
-  void Exec() final;
+  void ProcessData(CbmEvent* event) final;
   void Finish() final {};
 
 private:
-  void FillRichRings();
-
   TClonesArray* cbm_global_tracks_ {nullptr};
   TClonesArray* cbm_rich_rings_ {nullptr};
 

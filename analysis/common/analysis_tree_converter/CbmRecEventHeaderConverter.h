@@ -6,6 +6,8 @@
 #define ANALYSIS_TREE_RECEVENTHEADERCONVERTER_H_
 
 #include "CbmConverterTask.h"
+#include "CbmDefs.h"
+#include "CbmEvent.h"
 
 #include "AnalysisTree/EventHeader.hpp"
 
@@ -19,11 +21,11 @@ public:
   ~CbmRecEventHeaderConverter() final = default;
 
   void Init() final;
-  void Exec() final;
+  void ProcessData(CbmEvent* event) final;
   void Finish() final { delete rec_event_header_; };
 
 private:
-  float GetPsdEnergy();
+  float GetPsdEnergy(CbmEvent* event);
 
   AnalysisTree::EventHeader* rec_event_header_ {nullptr};
 

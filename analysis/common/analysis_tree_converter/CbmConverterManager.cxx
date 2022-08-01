@@ -5,7 +5,9 @@
 #include "CbmConverterManager.h"
 
 #include "CbmConverterTask.h"
+#include "CbmEvent.h"
 
+#include "TClonesArray.h"
 #include "TGeoBBox.h"
 #include "TGeoManager.h"
 
@@ -14,33 +16,54 @@
 #include "AnalysisTree/DataHeader.hpp"
 #include "AnalysisTree/TaskManager.hpp"
 
-ClassImp(CbmConverterManager)
+ClassImp(CbmConverterManager);
 
-  InitStatus CbmConverterManager::Init()
+InitStatus CbmConverterManager::Init()
 {
   task_manager_->Init();
   FillDataHeader();
+  InitEvent();
   return kSUCCESS;
 }
 
-void CbmConverterManager::Exec(Option_t* /*opt*/)
+void CbmConverterManager::AddTask(CbmConverterTask* task)
+{
+  tasks_.emplace_back(task);
+  task_manager_->AddTask(reinterpret_cast<AnalysisTree::Task*>(task));
+}
+
+void CbmConverterManager::ProcessData(CbmEvent* event)
 {
   index_map_.clear();
 
   for (auto* task : tasks_) {
     task->SetIndexesMap(&index_map_);
-    task->Exec();
+    task->ProcessData(event);
     index_map_.insert(std::make_pair(task->GetOutputBranchName(), task->GetOutIndexesMap()));
   }
   task_manager_->FillOutput();
 }
 
+void CbmConverterManager::Exec(Option_t* /*opt*/)
+{
+  if (events_ != nullptr) {
+    auto n_events = events_->GetEntriesFast();
+    for (int i_event = 0; i_event < n_events; ++i_event) {
+      auto* event = (CbmEvent*) events_->At(i_event);
+      ProcessData(event);
+    }
+  }
+  else {
+    LOG(info) << "Event based mode\n";
+    ProcessData(nullptr);
+  }
+}
+
+
 void CbmConverterManager::Finish()
 {
   TDirectory* curr   = gDirectory;  // TODO check why this is needed
   TFile* currentFile = gFile;
-
-  task_manager_->GetChain()->Write();
 
   task_manager_->Finish();
 

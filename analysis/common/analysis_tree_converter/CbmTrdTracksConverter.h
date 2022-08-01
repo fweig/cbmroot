@@ -18,13 +18,6 @@ namespace AnalysisTree
 
 class CbmTrdTracksConverter final : public CbmConverterTask {
 
-  enum kInBranches
-  {
-    kTrdTrack = 0,
-    kGlobalTrack,
-    kTrdHit
-  };
-
 public:
   explicit CbmTrdTracksConverter(std::string out_branch_name, std::string match_to = "")
     : CbmConverterTask(std::move(out_branch_name), std::move(match_to))
@@ -34,12 +27,10 @@ public:
   ~CbmTrdTracksConverter() final;
 
   void Init() final;
-  void Exec() final;
+  void ProcessData(CbmEvent* event) final;
   void Finish() final {};
 
 private:
-  void FillTrdTracks();
-
   TClonesArray* cbm_global_tracks_ {nullptr};
   TClonesArray* cbm_trd_tracks_ {nullptr};
   TClonesArray* cbm_trd_hits_ {nullptr};

@@ -18,6 +18,7 @@ namespace AnalysisTree
 }  // namespace AnalysisTree
 
 class CbmConverterTask;
+class CbmEvent;
 
 class CbmConverterManager : public FairTask {
 
@@ -29,19 +30,26 @@ public:
   void Exec(Option_t* opt) override;
   void Finish() override;
 
-  void AddTask(CbmConverterTask* task)
-  {
-    tasks_.emplace_back(task);
-    task_manager_->AddTask(reinterpret_cast<AnalysisTree::Task*>(task));
-  }
+  void AddTask(CbmConverterTask* task);
 
   void SetSystem(const std::string& system) { system_ = system; }
   void SetBeamMomentum(float beam_mom) { beam_mom_ = beam_mom; }
 
-  void SetOutputName(std::string file, std::string tree = "rTree") { task_manager_->SetOutputName(file, tree); }
+  void SetOutputName(std::string file, std::string tree = "rTree")
+  {
+    task_manager_->SetOutputName(std::move(file), std::move(tree));
+  }
+
+  void InitEvent()
+  {
+    auto* ioman = FairRootManager::Instance();
+    events_     = (TClonesArray*) ioman->GetObject("CbmEvent");
+  }
+
 
 private:
   void FillDataHeader();
+  void ProcessData(CbmEvent* event);
 
   AnalysisTree::TaskManager* task_manager_ {AnalysisTree::TaskManager::GetInstance()};
 
@@ -51,6 +59,7 @@ private:
   std::vector<CbmConverterTask*> tasks_ {};
 
   std::map<std::string, std::map<int, int>> index_map_ {};  ///< map CbmRoot to AT of indexes for a given branch
+  TClonesArray* events_ {nullptr};
 
   ClassDefOverride(CbmConverterManager, 1)
 };
