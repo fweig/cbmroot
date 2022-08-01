@@ -393,10 +393,13 @@ Bool_t CbmDeviceUnpack::InitContainers()
           /// Uranium runs: 2176 - 2310
           parFileNameTof = "mTofCriParUranium.par";
         }
-        else if (2335 <= fuRunId) {
+        else if (2335 <= fuRunId && fuRunId <= 2497) {
           /// Nickel runs: 2335 - 2397
-          /// Gold runs: 2400 - xxxx
+          /// Gold runs: 2400 - 2497
           parFileNameTof = "mTofCriParNickel.par";
+        }
+        else {
+          parFileNameTof = "mTofCriPar.par";
         }
       }
       tofconfig->SetParFilesBasePath(parfilesbasepathTof);

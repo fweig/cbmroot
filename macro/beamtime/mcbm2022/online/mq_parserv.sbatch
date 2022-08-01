@@ -45,30 +45,67 @@ _parfileTrdGain=$VMCWORKDIR/parameters/trd/trd_v22d_mcbm.gain.par
 _parfileTof=$VMCWORKDIR/macro/beamtime/mcbm2022/mTofCriPar.par
 _parfileRich=$VMCWORKDIR/macro/beamtime/mcbm2021/mRichPar_70.par
 
+
 # Parameter files => Update depending on run ID!!!
+# --> Setup
 if [ $_run_id -ge 2060 ]; then
   if [ $_run_id -le 2065 ]; then
     _setup_name=mcbm_beam_2022_03_09_carbon
-    _parfileTof=$VMCWORKDIR/macro/beamtime/mcbm2022/mTofCriParCarbon.par
   elif [ $_run_id -le 2160 ]; then # Potentially wrong setup between 2065 and 2150 but not official runs
     _setup_name=mcbm_beam_2022_03_22_iron
-    _parfileTof=$VMCWORKDIR/macro/beamtime/mcbm2022/mTofCriParIron.par
   elif [ $_run_id -le 2310 ]; then # Potentially wrong setup between 2160 and 2176 but not official runs
     _setup_name=mcbm_beam_2022_03_28_uranium
     _parfileTrdAsic=$VMCWORKDIR/parameters/trd/trd_v22g_mcbm.asic.par
     _parfileTrdDigi=$VMCWORKDIR/parameters/trd/trd_v22g_mcbm.digi.par
     _parfileTrdGas=$VMCWORKDIR/parameters/trd/trd_v22g_mcbm.gas.par
     _parfileTrdGain=$VMCWORKDIR/parameters/trd/trd_v22g_mcbm.gain.par
-    _parfileTof=$VMCWORKDIR/macro/beamtime/mcbm2022/mTofCriParUranium.par
-  elif [ $_run_id -ge 2350 ]; then
+  elif [ $_run_id -le 2397 ]; then # Potentially wrong setup between 2310 and 2350 but not official runs
     _setup_name=mcbm_beam_2022_05_23_nickel
     _parfileTrdAsic=$VMCWORKDIR/parameters/trd/trd_v22h_mcbm.asic.par
     _parfileTrdDigi=$VMCWORKDIR/parameters/trd/trd_v22h_mcbm.digi.par
     _parfileTrdGas=$VMCWORKDIR/parameters/trd/trd_v22h_mcbm.gas.par
     _parfileTrdGain=$VMCWORKDIR/parameters/trd/trd_v22h_mcbm.gain.par
-    _parfileTof=$VMCWORKDIR/macro/beamtime/mcbm2022/mTofCriParUranium.par
+  elif [ $_run_id -le 2497 ]; then # Potentially wrong setup between 2397 and 2454 but not official runs
+    _setup_name=mcbm_beam_2022_06_16_gold
+    _parfileTrdAsic=$VMCWORKDIR/parameters/trd/trd_v22h_mcbm.asic.par
+    _parfileTrdDigi=$VMCWORKDIR/parameters/trd/trd_v22h_mcbm.digi.par
+    _parfileTrdGas=$VMCWORKDIR/parameters/trd/trd_v22h_mcbm.gas.par
+    _parfileTrdGain=$VMCWORKDIR/parameters/trd/trd_v22h_mcbm.gain.par
   fi
 fi
+# --> mMUCH
+if [ $_run_id -ge 2060 ]; then
+  if [ $_run_id -le 2162 ]; then
+    _parfileMuch=$VMCWORKDIR/macro/beamtime/mcbm2022/mMuchParUpto26032022.par # Valid for runs 2060-2162
+  elif [ $_run_id -le 2291 ]; then
+    _parfileMuch=$VMCWORKDIR/macro/beamtime/mcbm2022/mMuchParUpto03042022.par # Valid for runs 2163-2291
+  elif [ $_run_id -le 2315 ]; then
+    _parfileMuch=$VMCWORKDIR/macro/beamtime/mcbm2022/mMuchParUpto10042022.par # Valid for runs 2292-2315
+  elif [ $_run_id -le 2366 ]; then
+    _parfileMuch=$VMCWORKDIR/macro/beamtime/mcbm2022/mMuchParUpto23052022.par # Valid for runs 2316-2366
+  elif [ $_run_id -le 2397 ]; then
+    _parfileMuch=$VMCWORKDIR/macro/beamtime/mcbm2022/mMuchParUpto26052022.par # Valid for runs 2060-2162
+  else
+    _parfileMuch=$VMCWORKDIR/macro/beamtime/mcbm2022/mMuchPar.par # Valid for runs 2398 and higher until further notice
+  fi
+fi
+# --> mTOF
+if [ $_run_id -ge 2060 ]; then
+  if [ $_run_id -le 2065 ]; then
+    _parfileTof=$VMCWORKDIR/macro/beamtime/mcbm2022/mTofCriParCarbon.par # Valid for runs 2060-2065
+  elif [ $_run_id -le 2160 ]; then # Potentially wrong setup between 2065 and 2150 but not official runs
+    _parfileTof=$VMCWORKDIR/macro/beamtime/mcbm2022/mTofCriParIron.par # Valid for runs 2150-2160
+  elif [ $_run_id -le 2310 ]; then # Potentially wrong setup between 2160 and 2176 but not official runs
+    _parfileTof=$VMCWORKDIR/macro/beamtime/mcbm2022/mTofCriParUranium.par # Valid for runs 2176-2310
+  elif [ $_run_id -le 2497 ]; then # Potentially wrong setup between 2310 and 2335 but not official runs
+     # Nickel runs: 2335 - 2397
+     # Gold runs: 2400 - 2497
+    _parfileTof=$VMCWORKDIR/macro/beamtime/mcbm2022/mTofCriParNickel.par # Valid for runs 2335-2497
+  else
+    _parfileTof=$VMCWORKDIR/macro/beamtime/mcbm2022/mTofCriPar.par # Up to TOF team to tune for testing
+  fi
+fi
+
 ########################################################################################################################
 
 _ratelog=0 # hides ZMQ messages rates and bandwidth
