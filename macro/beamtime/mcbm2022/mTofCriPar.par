@@ -7,16 +7,16 @@ GdpbIdArray: Int_t \
 NrOfFeesPerGdpb: Int_t 10
 NrOfGet4PerFee:  Int_t 8
 NrOfChannelsPerGet4: Int_t 4
-NrOfGbtx: Int_t  16
-NrOfModule: Int_t 0
+NrOfGbtx: Int_t   16
+NrOfModule: Int_t  0
 NrOfRpc: Int_t \
-  5  5  5  5  5  5  5  5  5  5  5  5  2  2  2  2
+  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5  5
 RpcType: Int_t \
-  0  0  0  0  2  2  0  0  0  0  0  0  9  9  6  9
+  0  0  0  0  2  2  0  0  0  0  0  0  7  9  6  9
 RpcSide: Int_t \
-  0  1  0  1  0  1  0  1  0  1  0  1  2  2  2  0
+  1  0  1  0  1  0  1  0  1  0  1  0  0  0  7  0
 ModuleId: Int_t \
-  0  0  1  1  0  0  2  2  3  3  4  4  0 -1  0  1
+  0  0  1  1  0  0  2  2  3  3  4  4  0 -1  0  0
 NbMsTot: Int_t 100
 NbMsOverlap: Int_t 1
 SizeMsInNs: Double_t 102400.0

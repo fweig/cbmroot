@@ -238,6 +238,10 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
       /// Starting to use GEM 2 moved to CRI 0 on 24/05/2022
       muchconfig->SetParFileName("mMuchParUpto26052022.par");
     }
+    else {
+      /// Default file for all other runs (including 06/2022 Gold runs)
+      muchconfig->SetParFileName("mMuchPar.par");
+    }
 
     /// Enable duplicates rejection, Ignores the ADC for duplicates check
     muchconfig->SetDuplicatesRejection(true, true);
@@ -370,14 +374,17 @@ void run_unpack_online(std::vector<std::string> publisher = {"tcp://localhost:55
         /// Uranium runs: 2176 - 2310
         parFileNameTof = "mTofCriParUranium.par";
       }
-      else if (2335 <= runid) {
+      else if (2335 <= runid && runid <= 2497) {
         /// Nickel runs: 2335 - 2397
-        /// Gold runs: 2400 - xxxx
+        /// Gold runs: 2400 - 2497
         parFileNameTof = "mTofCriParNickel.par";
         if (bBmoninTof) {
           /// Map the BMon components in the TOF par file
           parFileNameTof = "mTofCriParNickel_withBmon.par";
         }
+      }
+      else {
+        parFileNameTof = "mTofCriPar.par";
       }
     }
     tofconfig->SetParFilesBasePath(parfilesbasepathTof);
