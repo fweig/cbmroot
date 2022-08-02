@@ -406,12 +406,6 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
     Int_t muchFlag = 0;
     if (geoTag.Contains("mcbm")) muchFlag = 1;
 
-    TString parFile = gSystem->Getenv("VMCWORKDIR");
-    //    parFile         = parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
-    parFile = parFile + "/parameters/much/much_" + geoTag + "_digi_sector.root";
-    std::cout << "L1: Using parameter file " << parFile << std::endl;
-    l1->SetMuchPar(parFile);
-
     TString parFile2 = gSystem->Getenv("VMCWORKDIR");
     parFile2         = parFile2 + "/parameters/much/much_matbudget_" + geoTag + ".root ";
     std::cout << "Using material budget file " << parFile2 << std::endl;

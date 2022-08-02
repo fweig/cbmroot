@@ -1,6 +1,6 @@
-/* Copyright (C) 2006-2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2006-2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
-   Authors: Ivan Kisel,  Sergey Gorbunov, Maksym Zyzak, Valentina Akishina, Igor Kulakov, Denis Bertini [committer] */
+   Authors: Ivan Kisel,  Sergey Gorbunov, Maksym Zyzak, Valentina Akishina, Igor Kulakov, Denis Bertini [committer], Sergei Zharko */
 
 /*
  *====================================================================
@@ -263,7 +263,6 @@ public:
 
   void SetExtrapolateToTheEndOfSTS(bool b) { fExtrapolateToTheEndOfSTS = b; }
   void SetLegacyEventMode(bool b) { fLegacyEventMode = b; }
-  void SetMuchPar(TString fileName) { fsMuchDigiFile = fileName; }  // TODO: Remove! (S.Zharko)
   void SetUseHitErrors(bool value) { fUseHitErrors = value; }
   void SetMissingHits(bool value) { fMissingHits = value; }
   void SetStsOnlyMode() { fTrackingMode = L1Algo::TrackingMode::kSts; }
@@ -398,13 +397,10 @@ public:
   L1Algo* fpAlgo               = nullptr;  ///< Pointer to the L1 track finder algorithm
   L1InitManager* fpInitManager = nullptr;  ///< Pointer to the initialization manager for the L1 algorithm
 
-
-  TString fsMuchDigiFile {};  ///< TODO: REMOVE
-  bool fUseHitErrors = true;  ///<
-  bool fMissingHits  = false;
+  bool fUseHitErrors = true;   ///<
+  bool fMissingHits  = false;  ///< Turns on several ad-hock settings for "mcbm_beam_2021_07_surveyed.100ev" setup
 
   L1Algo::TrackingMode fTrackingMode = L1Algo::TrackingMode::kSts;  ///< Tracking mode: kSts, kMcbm or kGlobal
-
 
   DFSET fvFileEvent {};  ///< Map of fileID to eventId
 
@@ -412,14 +408,14 @@ public:
   L1Vector<CbmL1Track> fvRecoTracks = {"CbmL1::fvRecoTracks"};  ///< Reconstructed tracks container
 
 private:
-  static CbmL1* fpInstance;
+  static CbmL1* fpInstance;  ///< Instance of CbmL1
 
-  L1AlgoInputData* fpData {nullptr};
+  L1AlgoInputData* fpData = nullptr;  ///< Pointer to the L1 tacking algorithm input object
 
-  int nMvdPoints {0};
+  int nMvdPoints = 0;  // TODO: Should be removed (S.Zharko)
 
-  L1Vector<CbmL1MCPoint> fvMCPoints = {"CbmL1::fvMCPoints"};       ///< Container of MC points
-  L1Vector<int> fvMCPointIndexesTs {"CbmL1::fvMCPointIndexesTs"};  ///< Indexes of MC points in TS
+  L1Vector<CbmL1MCPoint> fvMCPoints = {"CbmL1::fvMCPoints"};          ///< Container of MC points
+  L1Vector<int> fvMCPointIndexesTs  = {"CbmL1::fvMCPointIndexesTs"};  ///< Indexes of MC points in TS
 
   int fNStations     = 0;  ///< number of total active detector stations
   int fNMvdStations  = 0;  ///< number of active MVD stations
@@ -436,17 +432,18 @@ private:
   int fNTofStationsGeom  = 0;  ///< number of TOF stations;
 
 
-  Int_t fPerformance {0};     // 0 - w\o perf. 1 - L1-Efficiency definition. 2 - QA-Eff.definition
-  double fTrackingTime {0.};  // time of track finding
+  Int_t fPerformance   = 0;   ///< performance mode: 0 - w\o perf. 1 - L1-Efficiency definition. 2 - QA-Eff.definition
+  double fTrackingTime = 0.;  ///< time of track finding procedure
 
-  int fSTAPDataMode {0};  // way to work with file for standalone package.
-                          // 0 (off) , 1 (write), 2 (read data and work only with it), 3 (debug - write and read)
+  /// Option to work with file for standalone package (currently does not work)
+  /// 0 (off) , 1 (write), 2 (read data and work only with it), 3 (debug - write and read)
+  int fSTAPDataMode = 0;
 
   TString fSTAPDataDir {};
 
-  Int_t fTrackingLevel {2};         // currently not used
-  Double_t fMomentumCutOff {0.1};   // currently not used
-  Bool_t fGhostSuppression {true};  // currently not used
+  Int_t fTrackingLevel     = 2;     // currently not used
+  Double_t fMomentumCutOff = 0.1;   // currently not used
+  Bool_t fGhostSuppression = true;  // currently not used
 
   /// TODO: change to bool
   Int_t fStsUseMcHit  = -1;  ///< if STS data should be processed
@@ -462,7 +459,7 @@ private:
 
   // ** Raw input data **
 
-  CbmTimeSlice* fTimeSlice {nullptr};
+  CbmTimeSlice* fTimeSlice = nullptr;  ///< Pointer to the TS object
 
   // Reconstructed hits input
   TClonesArray* fpMvdHits       = nullptr;  ///< Array of MVD hits ("MvdHit")
