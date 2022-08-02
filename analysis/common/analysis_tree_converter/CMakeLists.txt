@@ -36,8 +36,6 @@ Set(INCLUDE_DIRECTORIES
   ${CBMROOT_SOURCE_DIR}/reco/KF
   ${CBMROOT_SOURCE_DIR}/reco/L1
   ${CBMROOT_SOURCE_DIR}/reco/L1/L1Algo
-  ${KFParticle_INCLUDE_DIR}
-  ${AnalysisTree_INCLUDE_DIR}
   ${CBMROOT_SOURCE_DIR}/sim/transport/generators/unigen
 )
 
@@ -46,6 +44,8 @@ Include_Directories (${INCLUDE_DIRECTORIES})
 Set(SYSTEM_INCLUDE_DIRECTORIES
   ${BASE_INCLUDE_DIRECTORIES}
   ${Boost_INCLUDE_DIR} 
+  ${KFParticle_INCLUDE_DIR}
+  ${AnalysisTree_INCLUDE_DIR}
 )
 
 Include_Directories (SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
