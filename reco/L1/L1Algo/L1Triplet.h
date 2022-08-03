@@ -15,7 +15,6 @@
 /// L1Triplet class represents a short 3-hit track segment called a "triplet".
 ///
 class L1Triplet {
-
 public:
   /// default constructor
   L1Triplet() = default;
@@ -74,24 +73,26 @@ public:
   void Print();
 
 private:
-  fscal fChi2 = 0.f;  // chi^2
-  fscal fQp   = 0.f;  // q/p
-  fscal fCqp  = 0.f;  // RMS of q/p
-  fscal fTx   = 0.f;  // tx at the left hit
-  fscal fCtx  = 0.f;  // RMS of tx
-  fscal fTy   = 0.f;  // ty at the left hit
-  fscal fCty  = 0.f;  // RMS of ty
+  fscal fChi2 = 0.f;  ///< chi^2
+  fscal fQp   = 0.f;  ///< q/p
+  fscal fCqp  = 0.f;  ///< RMS of q/p
+  fscal fTx   = 0.f;  ///< tx at the left hit
+  fscal fCtx  = 0.f;  ///< RMS of tx
+  fscal fTy   = 0.f;  ///< ty at the left hit
+  fscal fCty  = 0.f;  ///< RMS of ty
 
-  unsigned int fFirstNeighbour = 0;  // ID of the first neighbouring triplet
-  L1HitIndex_t fHitL           = 0;  // left hit index (16b) in vHits array
-  L1HitIndex_t fHitM           = 0;  // middle hit index (16b)
-  L1HitIndex_t fHitR           = 0;  // right hit index (16b)
-  int fNneighbours             = 0;  // n of neighbouring triplets
-  unsigned char fLevel         = 0;  // triplet level
-                                     // == its possible position on the longest track candidate it belongs to.
-                                     // level 0 = rightmost triplet of a track candidate
-                                     // level k = k-ths triplet along the track counting upstream, from right to left.
-  unsigned char fSta = 0;            // packed station numbers: staL (4b), staM-1-staL (2b), staR-2-staL (2b)
+  unsigned int fFirstNeighbour = 0;  ///< ID of the first neighbouring triplet
+  L1HitIndex_t fHitL           = 0;  ///< left hit index (16b) in vHits array
+  L1HitIndex_t fHitM           = 0;  ///< middle hit index (16b)
+  L1HitIndex_t fHitR           = 0;  ///< right hit index (16b)
+  int fNneighbours             = 0;  ///< n of neighbouring triplets
+
+  /// Triplet level - its possible position on the longest track candidate it belongs to.
+  /// level 0 = rightmost triplet of a track candidate
+  /// level k = k-ths triplet along the track counting upstream, from right to left.
+  unsigned char fLevel = 0;
+
+  unsigned char fSta = 0;  ///< packed station numbers: staL (4b), staM-1-staL (2b), staR-2-staL (2b)
 };
 
 #endif

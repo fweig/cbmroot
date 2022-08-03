@@ -64,9 +64,14 @@ class L1AlgoDraw;
 #include "omp.h"
 #endif
 
-using std::map;
+// *******************************
+// ** Types definition (global) **
+// *******************************
 
-typedef int Tindex;
+using L1StationsArray_t = std::array<L1Station, L1Constants::size::kMaxNstations>;
+using L1MaterialArray_t = std::array<L1Material, L1Constants::size::kMaxNstations>;
+using Tindex            = int;  // TODO: Replace with L1HitIndex_t, if suitable
+
 #ifdef PULLS
 #define TRIP_PERFORMANCE
 class L1AlgoPulls;
@@ -80,68 +85,68 @@ template<Tindex NHits>
 class L1AlgoEfficiencyPerformance;
 #endif
 
-using L1StationsArray_t = std::array<L1Station, L1Constants::size::kMaxNstations>;
-using L1MaterialArray_t = std::array<L1Material, L1Constants::size::kMaxNstations>;
 
 /// Main class of L1 CA track finder algorithm
 ///
 class L1Algo {
 public:
+  // *************************
+  // ** Friend classes list **
+  // *************************
+
+  friend class CbmL1;  /// TODO: Remove this dependency
+  friend class ParalleledDup;
+  friend class ParalleledTrip;
+#ifdef DRAW
+  friend class L1AlgoDraw;
+#endif
+
+  // **********************************
+  // ** Member functions declaration **
+  // **********************************
+
+  // ** Constructors and destructor
+
+  /// Constructor
+  /// \param nThreads  Number of threads for multi-threaded mode
   L1Algo(unsigned int nThreads = 1);
 
+  /// Copy constructor
   L1Algo(const L1Algo&) = delete;
-  L1Algo operator=(const L1Algo&) = delete;
 
-  /// Sets a default particle mass for the track fit
-  /// it is used during reconstruction
-  /// for the multiple scattering and energy loss estimation
-  /// \param mass Default particle mass
-  void SetDefaultParticleMass(float mass) { fDefaultMass = mass; }
+  /// Move constructor
+  L1Algo(L1Algo&&) = delete;
 
-  /// Gets default particle mass
-  /// \return particle mass
-  float GetDefaultParticleMass() const { return fDefaultMass; }
+  /// Copy assignment operator
+  L1Algo& operator=(const L1Algo&) = delete;
 
-  /// Gets default particle mass squared
-  /// \return particle mass squared
-  float GetDefaultParticleMass2() const { return fDefaultMass * fDefaultMass; }
+  /// Move assignment operator
+  L1Algo& operator=(L1Algo&&) = delete;
+
+  /// Destructor
+  ~L1Algo() = default;
 
 
-  /// pack station, thread and triplet indices to an unique triplet ID
-  static unsigned int PackTripletId(unsigned int Station, unsigned int Thread, unsigned int Triplet)
-  {
-    //SG!!#ifndef FAST_CODE
-    assert(Station < L1Constants::size::kMaxNstations);
-    assert(Thread < L1Constants::size::kMaxNthreads);
-    assert(Triplet < L1Constants::size::kMaxNtriplets);
-    //#endif
-    constexpr unsigned int kMoveThread  = L1Constants::size::kTripletBits;
-    constexpr unsigned int kMoveStation = L1Constants::size::kTripletBits + L1Constants::size::kThreadBits;
-    return (Station << kMoveStation) + (Thread << kMoveThread) + Triplet;
-  }
+  // ** Functions, which pack and unpack indexes of station, thread and triplet **
 
-  /// unpack the triplet ID to its station index
-  static unsigned int TripletId2Station(unsigned int ID)
-  {
-    constexpr unsigned int kMoveStation = L1Constants::size::kTripletBits + L1Constants::size::kThreadBits;
-    return ID >> kMoveStation;
-  }
+  // TODO: move to L1Triplet class (S.Zharko)
+  /// Packs station, thread and triplet indices to an unique triplet ID
+  /// \param  iStation  Index of station in the active stations array
+  /// \param  iThread   Index of thread processing triplet
+  /// \param  iTriplet  Index of triplet
+  static unsigned int PackTripletId(unsigned int iStation, unsigned int iThread, unsigned int iTriplet);
 
-  /// unpack the triplet ID to its thread index
-  static unsigned int TripletId2Thread(unsigned int ID)
-  {
-    constexpr unsigned int kMoveThread = L1Constants::size::kTripletBits;
-    constexpr unsigned int kThreadMask = (1u << L1Constants::size::kThreadBits) - 1u;
-    return (ID >> kMoveThread) & kThreadMask;
-  }
+  /// Unpacks the triplet ID to its station index
+  /// \param  id  Unique triplet ID
+  static unsigned int TripletId2Station(unsigned int id);
 
-  /// unpack the triplet ID to its triplet index
-  static unsigned int TripletId2Triplet(unsigned int ID)
-  {
-    constexpr unsigned int kTripletMask = (1u << L1Constants::size::kTripletBits) - 1u;
-    return ID & kTripletMask;
-  }
+  /// Unpacks the triplet ID to its thread index
+  /// \param  id  Unique triplet ID
+  static unsigned int TripletId2Thread(unsigned int id);
 
+  /// Unpacks the triplet ID to its triplet index
+  /// \param  id  Unique triplet ID
+  static unsigned int TripletId2Triplet(unsigned int id);
 
   /// pack thread and track indices to an unique track ID
   static int PackTrackId(int Thread, int Track)
@@ -155,169 +160,16 @@ public:
   /// unpack the track ID to its track index
   static int TrackId2Track(int ID) { return TripletId2Triplet((unsigned int) ID); }
 
+  /// Sets L1Algo parameters object
+  /// \param other - reference to the L1Parameters object
+  void SetParameters(const L1Parameters& other) { fParameters = other; }
+  // TODO: remove it (S.Zharko)
 
-  L1Vector<L1Triplet> fTriplets[L1Constants::size::kMaxNstations][L1Constants::size::kMaxNthreads] {
-    {"L1Algo::fTriplets"}};  // created triplets at station + thread
+  /// Gets a pointer to the L1Algo parameters object
+  const L1Parameters* GetParameters() const { return &fParameters; }
 
-  // Track candidates created out of adjacent triplets before the final track selection.
-  // The candidates may share any amount of hits.
-  L1Vector<L1Branch> fTrackCandidates[L1Constants::size::kMaxNthreads] {"L1Algo::fTrackCandidates"};
-
-  Tindex fDupletPortionStopIndex[L1Constants::size::kMaxNstations] {0};  // end of the duplet portions for the station
-  L1Vector<Tindex> fDupletPortionSize {"L1Algo::fDupletPortionSize"};    // N duplets in a portion
-
-#ifdef DRAW
-  L1AlgoDraw* draw {nullptr};
-  void DrawRecoTracksTime(const L1Vector<CbmL1Track>& tracks);
-#endif
-
-  enum TrackingMode
-  {
-    kSts,
-    kGlobal,
-    kMcbm
-  };
-
-  void Init(const bool UseHitErrors, const TrackingMode mode, const bool MissingHits);
-
-  void SetData(L1Vector<L1Hit>& Hits_, int nStrips_, L1Vector<unsigned char>& SFlag_,
-               const L1HitIndex_t* HitsStartIndex_, const L1HitIndex_t* HitsStopIndex_);
-
-  void PrintHits();
-
-  /// The main procedure - find tracks.
-  void CATrackFinder();
-
-  /// Track fitting procedures
-  void KFTrackFitter_simple();  // version, which use procedured used during the reconstruction
-  void L1KFTrackFitter();       // version from SIMD-KF benchmark
-
-  void L1KFTrackFitterMuch();
-
-  float GetMaxInvMom() const { return fMaxInvMom[0]; }
-
-  /// ----- Input data -----
-  // filled in CbmL1::ReadEvent();
-
-  void SetNThreads(unsigned int n);
-
-private:
-  int fNstations {0};            ///< number of all detector stations
-  int fNstationsBeforePipe {0};  ///< number of stations before pipe (MVD stations in CBM)
-  int fNfieldStations {0};       ///< number of stations in the field region
-  //alignas(16) L1StationsArray_t fStations {};  ///< array of L1Station objects
-  //alignas(16) L1MaterialArray_t fRadThick {};  ///< material for each station
-  float fDefaultMass {L1Constants::phys::kMuonMass};  ///< mass of the propagated particle [GeV/c2]
-
-public:
-  /// Gets total number of stations used in tracking
-  int GetNstations() const { return fNstations; }
-
-  /// Gets number of stations before the pipe (MVD stations in CBM)
-  int GetNstationsBeforePipe() const { return fNstationsBeforePipe; }
-
-  /// Gets number of stations situated in field region (MVD + STS in CBM)
-  int GetNfieldStations() const { return fNfieldStations; }
-
-  /// Get mc track ID for a hit (debug tool)
-  int GetMcTrackIdForHit(int iHit);
-
-  /// Get mc track ID for a hit (debug tool)
-  int GetMcTrackIdForUnusedHit(int iHit);
-
-public:
-  int fNstrips {0};                                ///< number of strips
-  L1Vector<L1Hit>* vHits {nullptr};                ///< hits as a combination of front and back strips and z-position
-  L1Grid vGrid[L1Constants::size::kMaxNstations];  ///<
-  L1Grid vGridTime[L1Constants::size::kMaxNstations];  ///<
-
-  L1Vector<unsigned char>* fStripFlag {nullptr};  // information of hits station & using hits in tracks;
-
-  double fCATime {0.};  // time of track finding
-
-  L1Vector<L1Track> fTracks {"L1Algo::fTracks"};           ///< reconstructed tracks
-  L1Vector<L1HitIndex_t> fRecoHits {"L1Algo::fRecoHits"};  ///< packed hits of reconstructed tracks
-
-  const L1HitIndex_t* HitsStartIndex {nullptr};  ///< station-bounders in vHits array
-  const L1HitIndex_t* HitsStopIndex {nullptr};   ///< station-bounders in vHits array
-
-
-  //  L1Branch* pointer;
-  unsigned int NHitsIsecAll {0};
-
-  L1Vector<L1Hit> vNotUsedHits_A {"L1Algo::vNotUsedHits_A"};
-  L1Vector<L1Hit> vNotUsedHits_B {"L1Algo::vNotUsedHits_B"};
-  L1Vector<L1Hit> vNotUsedHits_Buf {"L1Algo::vNotUsedHits_Buf"};
-  L1Vector<L1HitPoint> vNotUsedHitsxy_A {"L1Algo::vNotUsedHitsxy_A"};
-  L1Vector<L1HitPoint> vNotUsedHitsxy_buf {"L1Algo::vNotUsedHitsxy_buf"};
-  L1Vector<L1HitPoint> vNotUsedHitsxy_B {"L1Algo::vNotUsedHitsxy_B"};
-  L1Vector<L1Track> fTracks_local[L1Constants::size::kMaxNthreads] {"L1Algo::fTracks_local"};
-  L1Vector<L1HitIndex_t> fRecoHits_local[L1Constants::size::kMaxNthreads] {"L1Algo::fRecoHits_local"};
-
-  L1Vector<L1HitIndex_t> RealIHit_v {"L1Algo::RealIHit_v"};
-  L1Vector<L1HitIndex_t> RealIHit_v_buf {"L1Algo::RealIHit_v_buf"};
-  L1Vector<L1HitIndex_t> RealIHit_v_buf2 {"L1Algo::RealIHit_v_buf2"};
-
-#ifdef _OPENMP
-  L1Vector<omp_lock_t> fStripToTrackLock {"L1Algo::fStripToTrackLock"};
-#endif
-
-  L1Vector<int> fStripToTrack {"L1Algo::fStripToTrack"};  // strip to track pointers
-
-  int fNThreads {0};
-  bool fUseHitErrors {true};
-  bool fMissingHits {0};  ///< TODO ???
-  TrackingMode fTrackingMode {kSts};
-
-  fvec EventTime[L1Constants::size::kMaxNthreads][L1Constants::size::kMaxNthreads] {{0}};
-  fvec Err[L1Constants::size::kMaxNthreads][L1Constants::size::kMaxNthreads] {{0}};
-
-  /// --- data used during finding iterations
-  int isec {0};                                       // iteration TODO: to be dispatched (S.Zharko, 21.06.2022)
-  const L1CAIteration* fpCurrentIteration = nullptr;  ///< pointer to the current CA track finder iteration
-
-  L1Vector<L1Hit>* vHitsUnused           = nullptr;
-  L1Vector<L1HitIndex_t>* RealIHitP      = nullptr;
-  L1Vector<L1HitIndex_t>* RealIHitPBuf   = nullptr;
-  L1Vector<L1HitPoint>* vHitPointsUnused = nullptr;
-  L1HitIndex_t* RealIHit                 = nullptr;  // index in vHits indexed by index in vHitsUnused
-
-  L1HitIndex_t HitsUnusedStartIndex[L1Constants::size::kMaxNstations + 1] {0};
-  L1HitIndex_t HitsUnusedStopIndex[L1Constants::size::kMaxNstations + 1] {0};
-  L1HitIndex_t HitsUnusedStartIndexEnd[L1Constants::size::kMaxNstations + 1] {0};
-  L1HitIndex_t HitsUnusedStopIndexEnd[L1Constants::size::kMaxNstations + 1] {0};
-
-
-  L1Vector<int> fHitFirstTriplet {"L1Algo::fHitFirstTriplet"};  /// link hit -> first triplet { hit, *, *}
-  L1Vector<int> fHitNtriplets {"L1Algo::fHitNtriplets"};        /// link hit ->n triplets { hit, *, *}
-
-
-  //  fvec u_front[Portion/fvecLen], u_back[Portion/fvecLen];
-  //  fvec zPos[Portion/fvecLen];
-  //  fvec fHitTime[Portion/fvecLen];
-
-  nsL1::vector<L1TrackPar>::TSimd fT_3[L1Constants::size::kMaxNthreads];
-
-  L1Vector<L1HitIndex_t> fhitsl_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsl_3"};
-  L1Vector<L1HitIndex_t> fhitsm_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsm_3"};
-  L1Vector<L1HitIndex_t> fhitsr_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsr_3"};
-
-  nsL1::vector<fvec>::TSimd fu_front3[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd fu_back3[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd fz_pos3[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd fTimeR[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd fTimeER[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd dx[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd dy[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd du[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd dv[L1Constants::size::kMaxNthreads];
-
-
-  //   Tindex NHits_l[L1Constants::size::kMaxNstations];
-  //   Tindex NHits_l_P[L1Constants::size::kMaxNstations];
-  /// ----- Output data -----
-
-  friend class CbmL1;
+  /// Gets a pointer to the L1Algo initialization object
+  L1InitManager* GetInitManager() { return &fInitManager; }
 
   /// ----- Hit-point-strips conversion routines ------
 
@@ -333,26 +185,25 @@ public:
 
   inline int UnPackIndex(const int& i, int& a, int& b, int& c);
   /// -- Flags routines --
-  inline __attribute__((always_inline)) static unsigned char GetFStation(unsigned char flag) { return flag / 4; }
-  inline __attribute__((always_inline)) static bool GetFUsed(unsigned char flag) { return (flag & 0x02) != 0; }
+  [[gnu::always_inline]] static unsigned char GetFStation(unsigned char flag) { return flag / 4; }
+  [[gnu::always_inline]] static bool GetFUsed(unsigned char flag) { return (flag & 0x02) != 0; }
   //   bool GetFUsedD  ( unsigned char flag ){ return (flag&0x01)!=0; }
 
 
-  /// Sets L1Algo parameters object
-  /// \param other - reference to the L1Parameters object
-  void SetParameters(const L1Parameters& other) { fParameters = other; }
-  // TODO: remove it (S.Zharko)
+  /// \brief Sets a default particle mass for the track fit
+  /// It is used during reconstruction
+  /// for the multiple scattering and energy loss estimation
+  /// \param mass Default particle mass
+  void SetDefaultParticleMass(float mass) { fDefaultMass = mass; }
 
-  /// Gets a pointer to the L1Algo parameters object
-  const L1Parameters* GetParameters() const { return &fParameters; }
+  /// Gets default particle mass
+  /// \return particle mass
+  float GetDefaultParticleMass() const { return fDefaultMass; }
 
-  /// Gets a pointer to the L1Algo initialization object
-  L1InitManager* GetInitManager() { return &fInitManager; }
+  /// Gets default particle mass squared
+  /// \return particle mass squared
+  float GetDefaultParticleMass2() const { return fDefaultMass * fDefaultMass; }
 
-private:
-  L1Parameters fParameters {};           ///< Object of L1Algo parameters class
-  L1InitManager fInitManager {};         ///< Object of L1Algo initialization manager class
-  L1ClonesMerger fClonesMerger {*this};  ///< Object of L1Algo clones merger algorithm
 
   /*********************************************************************************************/ /**
    *                             ------  FUNCTIONAL PART ------
@@ -394,34 +245,36 @@ private:
   /// \return chi2
   fscal BranchExtender(L1Branch& t);
 
-  inline __attribute__((always_inline)) void PackLocation(unsigned int& location, unsigned int& triplet,
-                                                          unsigned int iStation, unsigned int& thread)
+  [[gnu::always_inline]] void PackLocation(unsigned int& location, unsigned int& triplet, unsigned int iStation,
+                                           unsigned int& thread)
   {
     location = (triplet << 11) | (thread << 3) | iStation;
   }
 
-  inline __attribute__((always_inline)) void UnPackStation(unsigned int& location, unsigned int& iStation)
+  [[gnu::always_inline]] void UnPackStation(unsigned int& location, unsigned int& iStation)
   {
     iStation = location & 0x7;
   }
 
-  inline __attribute__((always_inline)) void UnPackThread(unsigned int& location, unsigned int& thread)
+  [[gnu::always_inline]] void UnPackThread(unsigned int& location, unsigned int& thread)
   {
     thread = (location >> 3) & 0xFF;
   }
 
-  inline __attribute__((always_inline)) void UnPackTriplet(unsigned int& location, unsigned int& triplet)
+  [[gnu::always_inline]] void UnPackTriplet(unsigned int& location, unsigned int& triplet)
   {
     triplet = (location >> 11);
   }
 
-  inline __attribute__((always_inline)) void SetFStation(unsigned char& flag, unsigned int iStation)
+  [[gnu::always_inline]] void SetFStation(unsigned char& flag, unsigned int iStation)
   {
     flag = iStation * 4 + (flag % 4);
   }
-  inline __attribute__((always_inline)) void SetFUsed(unsigned char& flag) { flag |= 0x02; }
+
+  [[gnu::always_inline]] void SetFUsed(unsigned char& flag) { flag |= 0x02; }
   //   void SetFUsedD   ( unsigned char &flag ){ flag |= 0x01; }
-  inline __attribute__((always_inline)) void SetFUnUsed(unsigned char& flag) { flag &= 0xFC; }
+
+  [[gnu::always_inline]] void SetFUnUsed(unsigned char& flag) { flag &= 0xFC; }
   //   void SetFUnUsedD ( unsigned char &flag ){ flag &= 0xFE; }
 
   /// Prepare the portion of left hits data
@@ -443,10 +296,8 @@ private:
   void findDoubletsStep0(  // input
     Tindex n1, const L1Station& stal, const L1Station& stam, L1HitPoint* vHits_m, L1TrackPar* T_1,
     L1HitIndex_t* hitsl_1,
-
     // output
     Tindex& n2, L1Vector<L1HitIndex_t>& i1_2,
-
 #ifdef DOUB_PERFORMANCE
     L1Vector<L1HitIndex_t>& hitsl_2,
 #endif  // DOUB_PERFORMANCE
@@ -517,14 +368,9 @@ private:
   void TripletsStaPort(  // input
     int istal, int istam, int istar, Tindex& nstaltriplets, L1TrackPar* T_1, L1FieldRegion* fld_1,
     L1HitIndex_t* hitsl_1,
-
     Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2,
-
     const L1Vector<char>& mrDuplets
-
     // output
-
-
   );
 
 
@@ -543,6 +389,181 @@ private:
   void FilterFirstL(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& t_er, L1Station& st, fvec& dx, fvec& dy,
                     fvec& dxy);
 
+
+#ifdef DRAW
+  L1AlgoDraw* draw {nullptr};
+  void DrawRecoTracksTime(const L1Vector<CbmL1Track>& tracks);
+#endif
+
+  enum TrackingMode
+  {
+    kSts,
+    kGlobal,
+    kMcbm
+  };
+
+  void Init(const bool UseHitErrors, const TrackingMode mode, const bool MissingHits);
+
+  void SetData(L1Vector<L1Hit>& Hits_, int nStrips_, L1Vector<unsigned char>& SFlag_,
+               const L1HitIndex_t* HitsStartIndex_, const L1HitIndex_t* HitsStopIndex_);
+
+  void PrintHits();
+
+  /// The main procedure - find tracks.
+  void CATrackFinder();
+
+  /// Track fitting procedures
+  void KFTrackFitter_simple();  // version, which use procedured used during the reconstruction
+  void L1KFTrackFitter();       // version from SIMD-KF benchmark
+
+  void L1KFTrackFitterMuch();
+
+  float GetMaxInvMom() const { return fMaxInvMom[0]; }
+
+  void SetNThreads(unsigned int n);
+
+public:
+  /// Gets total number of stations used in tracking
+  int GetNstations() const { return fNstations; }
+
+  /// Gets number of stations before the pipe (MVD stations in CBM)
+  int GetNstationsBeforePipe() const { return fNstationsBeforePipe; }
+
+  /// Gets number of stations situated in field region (MVD + STS in CBM)
+  int GetNfieldStations() const { return fNfieldStations; }
+
+  /// Get mc track ID for a hit (debug tool)
+  int GetMcTrackIdForHit(int iHit);
+
+  /// Get mc track ID for a hit (debug tool)
+  int GetMcTrackIdForUnusedHit(int iHit);
+
+private:
+  int fNstations {0};            ///< number of all detector stations
+  int fNstationsBeforePipe {0};  ///< number of stations before pipe (MVD stations in CBM)
+  int fNfieldStations {0};       ///< number of stations in the field region
+  //alignas(16) L1StationsArray_t fStations {};  ///< array of L1Station objects
+  //alignas(16) L1MaterialArray_t fRadThick {};  ///< material for each station
+  float fDefaultMass {L1Constants::phys::kMuonMass};  ///< mass of the propagated particle [GeV/c2]
+
+
+  // ***************************
+  // ** Member variables list **
+  // ***************************
+
+  L1Vector<unsigned char> fvHitKeyFlags {
+    "L1Algo::fvHitKeyFlags"};  ///< List of key flags: has been this hit or cluster already used
+
+public:
+  int fNstrips {0};                                    ///< number of strips
+  L1Vector<L1Hit>* vHits {nullptr};                    ///< hits as a combination of front-, backstrips and z-position
+  L1Grid vGrid[L1Constants::size::kMaxNstations];      ///<
+  L1Grid vGridTime[L1Constants::size::kMaxNstations];  ///<
+
+  L1Vector<unsigned char>* fStripFlag {nullptr};  // information of hits station & using hits in tracks;
+
+  double fCATime {0.};  // time of track finding
+
+  L1Vector<L1Track> fTracks {"L1Algo::fTracks"};           ///< reconstructed tracks
+  L1Vector<L1HitIndex_t> fRecoHits {"L1Algo::fRecoHits"};  ///< packed hits of reconstructed tracks
+
+  const L1HitIndex_t* HitsStartIndex {nullptr};  // station-bounders in vHits array
+  const L1HitIndex_t* HitsStopIndex {nullptr};   // station-bounders in vHits array
+
+
+  /// Created triplets vs station and thread index
+  L1Vector<L1Triplet> fTriplets[L1Constants::size::kMaxNstations][L1Constants::size::kMaxNthreads] {
+    {"L1Algo::fTriplets"}};
+
+  /// Track candidates created out of adjacent triplets before the final track selection.
+  /// The candidates may share any amount of hits.
+  L1Vector<L1Branch> fTrackCandidates[L1Constants::size::kMaxNthreads] {"L1Algo::fTrackCandidates"};
+
+  Tindex fDupletPortionStopIndex[L1Constants::size::kMaxNstations] {0};  ///< end of the duplet portions for the station
+  L1Vector<Tindex> fDupletPortionSize {"L1Algo::fDupletPortionSize"};    ///< Number of duplets in a portion
+
+
+  //  L1Branch* pointer;
+  unsigned int NHitsIsecAll {0};
+  
+  L1Vector<L1Hit> vNotUsedHits_A {"L1Algo::vNotUsedHits_A"};
+  L1Vector<L1Hit> vNotUsedHits_B {"L1Algo::vNotUsedHits_B"};
+  L1Vector<L1Hit> vNotUsedHits_Buf {"L1Algo::vNotUsedHits_Buf"};
+  L1Vector<L1HitPoint> vNotUsedHitsxy_A {"L1Algo::vNotUsedHitsxy_A"};
+  L1Vector<L1HitPoint> vNotUsedHitsxy_buf {"L1Algo::vNotUsedHitsxy_buf"};
+  L1Vector<L1HitPoint> vNotUsedHitsxy_B {"L1Algo::vNotUsedHitsxy_B"};
+  L1Vector<L1Track> fTracks_local[L1Constants::size::kMaxNthreads] {"L1Algo::fTracks_local"};
+  L1Vector<L1HitIndex_t> fRecoHits_local[L1Constants::size::kMaxNthreads] {"L1Algo::fRecoHits_local"};
+
+  L1Vector<L1HitIndex_t> RealIHit_v {"L1Algo::RealIHit_v"};
+  L1Vector<L1HitIndex_t> RealIHit_v_buf {"L1Algo::RealIHit_v_buf"};
+  L1Vector<L1HitIndex_t> RealIHit_v_buf2 {"L1Algo::RealIHit_v_buf2"};
+
+#ifdef _OPENMP
+  L1Vector<omp_lock_t> fStripToTrackLock {"L1Algo::fStripToTrackLock"};
+#endif
+
+  L1Vector<int> fStripToTrack {"L1Algo::fStripToTrack"};    // front strip to track pointers
+  L1Vector<int> fStripToTrackB {"L1Algo::fStripToTrackB"};  // back strip to track pointers
+
+  int fNThreads {0};
+  bool fUseHitErrors {true};
+  bool fMissingHits {0};  ///< TODO ???
+  TrackingMode fTrackingMode {kSts};
+
+  fvec EventTime[L1Constants::size::kMaxNthreads][L1Constants::size::kMaxNthreads] {{0}};
+  fvec Err[L1Constants::size::kMaxNthreads][L1Constants::size::kMaxNthreads] {{0}};
+
+  /// --- data used during finding iterations
+  int isec {0};                                       // iteration TODO: to be dispatched (S.Zharko, 21.06.2022)
+  const L1CAIteration* fpCurrentIteration = nullptr;  ///< pointer to the current CA track finder iteration
+
+  L1Vector<L1Hit>* vHitsUnused           = nullptr;
+  L1Vector<L1HitIndex_t>* RealIHitP      = nullptr;
+  L1Vector<L1HitIndex_t>* RealIHitPBuf   = nullptr;
+  L1Vector<L1HitPoint>* vHitPointsUnused = nullptr;
+  L1HitIndex_t* RealIHit                 = nullptr;  // index in vHits indexed by index in vHitsUnused
+
+  L1HitIndex_t HitsUnusedStartIndex[L1Constants::size::kMaxNstations + 1] {0};
+  L1HitIndex_t HitsUnusedStopIndex[L1Constants::size::kMaxNstations + 1] {0};
+  L1HitIndex_t HitsUnusedStartIndexEnd[L1Constants::size::kMaxNstations + 1] {0};
+  L1HitIndex_t HitsUnusedStopIndexEnd[L1Constants::size::kMaxNstations + 1] {0};
+
+  L1Vector<int> fHitFirstTriplet {"L1Algo::fHitFirstTriplet"};  /// link hit -> first triplet { hit, *, *}
+  L1Vector<int> fHitNtriplets {"L1Algo::fHitNtriplets"};        /// link hit ->n triplets { hit, *, *}
+
+
+  //  fvec u_front[Portion/fvecLen], u_back[Portion/fvecLen];
+  //  fvec zPos[Portion/fvecLen];
+  //  fvec fHitTime[Portion/fvecLen];
+
+  nsL1::vector<L1TrackPar>::TSimd fT_3[L1Constants::size::kMaxNthreads];
+
+  L1Vector<L1HitIndex_t> fhitsl_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsl_3"};
+  L1Vector<L1HitIndex_t> fhitsm_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsm_3"};
+  L1Vector<L1HitIndex_t> fhitsr_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsr_3"};
+
+  nsL1::vector<fvec>::TSimd fu_front3[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd fu_back3[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd fz_pos3[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd fTimeR[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd fTimeER[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd dx[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd dy[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd du[L1Constants::size::kMaxNthreads];
+  nsL1::vector<fvec>::TSimd dv[L1Constants::size::kMaxNthreads];
+
+
+  //   Tindex NHits_l[L1Constants::size::kMaxNstations];
+  //   Tindex NHits_l_P[L1Constants::size::kMaxNstations];
+  /// ----- Output data -----
+
+
+private:
+  L1Parameters fParameters {};           ///< Object of L1Algo parameters class
+  L1InitManager fInitManager {};         ///< Object of L1Algo initialization manager class
+  L1ClonesMerger fClonesMerger {*this};  ///< Object of L1Algo clones merger algorithm
+
 #ifdef TBB
   enum
   {
@@ -550,8 +571,6 @@ private:
     nblocks  = 1   // number of stations on one thread
   };
 
-  friend class ParalleledDup;
-  friend class ParalleledTrip;
 #endif  // TBB
 #ifdef TBB2
 public:
@@ -602,7 +621,7 @@ private:
   };
 #endif  // FIND_GAPED_TRACKS
 
-  map<int, int> threadNumberToCpuMap {};
+  std::map<int, int> threadNumberToCpuMap {};
 
   float fTrackChi2Cut {10.f};
   float fTripletChi2Cut {5.f};  // cut for selecting triplets before collecting tracks.per one DoF
@@ -646,9 +665,51 @@ private:
 #ifdef DOUB_PERFORMANCE
   L1AlgoEfficiencyPerformance<2>* fL1Eff_doublets;
 #endif
-#ifdef DRAW
-  friend class L1AlgoDraw;
-#endif
 } _fvecalignment;
+
+
+// ********************************************
+// ** Inline member functions implementation **
+// ********************************************
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+[[gnu::always_inline]] inline unsigned int L1Algo::PackTripletId(unsigned int iStation, unsigned int iThread,
+                                                                 unsigned int iTriplet)
+{
+#ifndef FAST_CODE
+  assert(iStation < L1Constants::size::kMaxNstations);
+  assert(iThread < L1Constants::size::kMaxNthreads);
+  assert(iTriplet < L1Constants::size::kMaxNtriplets);
+#endif
+  constexpr unsigned int kMoveThread  = L1Constants::size::kTripletBits;
+  constexpr unsigned int kMoveStation = L1Constants::size::kTripletBits + L1Constants::size::kThreadBits;
+  return (iStation << kMoveStation) + (iThread << kMoveThread) + iTriplet;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+[[gnu::always_inline]] inline unsigned int L1Algo::TripletId2Station(unsigned int id)
+{
+  constexpr unsigned int kMoveStation = L1Constants::size::kTripletBits + L1Constants::size::kThreadBits;
+  return id >> kMoveStation;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+[[gnu::always_inline]] inline unsigned int L1Algo::TripletId2Thread(unsigned int id)
+{
+  constexpr unsigned int kMoveThread = L1Constants::size::kTripletBits;
+  constexpr unsigned int kThreadMask = (1u << L1Constants::size::kThreadBits) - 1u;
+  return (id >> kMoveThread) & kThreadMask;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+[[gnu::always_inline]] inline unsigned int L1Algo::TripletId2Triplet(unsigned int id)
+{
+  constexpr unsigned int kTripletMask = (1u << L1Constants::size::kTripletBits) - 1u;
+  return id & kTripletMask;
+}
 
 #endif

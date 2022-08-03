@@ -47,13 +47,39 @@ public:
   /// Constructor to make initializations like L1Vector<int> myVector {"MyVector", {1, 2, 3}}
   L1Vector(const std::string& name, std::initializer_list<T> init) : Tbase(init), fName(name) {}
 
-  L1Vector(const L1Vector& v) : Tbase() { *this = v; }
+  /// Copy constructor
+  L1Vector(const L1Vector& v) : Tbase()
+  {
+    //LOG(info) << "\033[1;32mCALL L1Vector copy constructor\033[0m";
+    *this = v;
+  }
 
+  /// Move constructor
+  L1Vector(L1Vector&& v) noexcept : Tbase(std::move(v)), fName(std::move(v.fName))
+  {
+    //LOG(info) << "\033[1;32mCALL L1Vector move constructor\033[0m";
+  }
+
+  /// Copy assignment operator
   L1Vector& operator=(const L1Vector& v)
   {
-    fName = v.fName;
-    Tbase::reserve(v.capacity());  // make sure that the capacity is transmitted
-    Tbase::assign(v.begin(), v.end());
+    //LOG(info) << "\033[1;32mCALL L1Vector copy assignment operator\033[0m";
+    if (this != &v) {
+      fName = v.fName;
+      Tbase::reserve(v.capacity());  // make sure that the capacity is transmitted
+      Tbase::assign(v.begin(), v.end());
+    }
+    return *this;
+  }
+
+  /// Move assignment operator
+  L1Vector& operator=(L1Vector&& v) noexcept
+  {
+    //LOG(info) << "\033[1;32mCALL L1Vector move assignment operator\033[0m";
+    if (this != &v) {
+      std::swap(fName, v.fName);
+      Tbase::swap(v);
+    }
     return *this;
   }
 

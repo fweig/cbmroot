@@ -2212,12 +2212,12 @@ void CbmL1::InputPerformance()
 
       if (hm->GetNofLinks() == 0) continue;
       Float_t bestWeight  = 0.f;
-      Float_t totalWeight = 0.f;
+      //Float_t totalWeight = 0.f;
       int iMCPoint        = -1;
       CbmLink link;
 
       for (int iLink = 0; iLink < hm->GetNofLinks(); iLink++) {
-        totalWeight += hm->GetLink(iLink).GetWeight();
+        //totalWeight += hm->GetLink(iLink).GetWeight();
         if (hm->GetLink(iLink).GetWeight() > bestWeight) {
           bestWeight = hm->GetLink(iLink).GetWeight();
           iMCPoint   = hm->GetLink(iLink).GetIndex();
@@ -2225,8 +2225,8 @@ void CbmL1::InputPerformance()
         }
       }
 
+      // TODO: Unify the cut and the whole code block for different detectors (S.Zharko)
       // if (bestWeight / totalWeight < 0.7 || iMCPoint < 0) continue;
-
       if (iMCPoint < 0) continue;
 
       CbmTofPoint* pt = (CbmTofPoint*) fpTofPoints->Get(link.GetFile(), link.GetEntry(), link.GetIndex());

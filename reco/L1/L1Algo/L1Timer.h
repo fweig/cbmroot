@@ -12,17 +12,10 @@
 
 #include "L1Def.h"
 
-using std::cout;
-using std::endl;
-using std::ios;
-using std::setw;
-using std::string;
-using std::vector;
-
 class TimerInfo {
 public:
   TimerInfo() : fName(""), fReal(0), fCpu(0) {};
-  TimerInfo(const string& name) : fName(name), fReal(0), fCpu(0) {};
+  TimerInfo(const std::string& name) : fName(name), fReal(0), fCpu(0) {};
 
   TimerInfo& operator=(TStopwatch& sw)
   {
@@ -50,25 +43,25 @@ public:
     return r;
   }
 
-  // void Print(){ cout << fReal << "/" << fCpu; };
-  void PrintReal() { cout << fReal; };
+  // void Print(){ std::cout << fReal << "/" << fCpu; };
+  void PrintReal() { std::cout << fReal; };
   float Real() { return fReal; };
-  string& Name() { return fName; };
+  std::string& Name() { return fName; };
 
 private:
-  string fName;
+  std::string fName;
   float fReal, fCpu;
 };
 
 class L1CATFIterTimerInfo {
 public:
   L1CATFIterTimerInfo() : fNameToI(), fTIs() {};
-  void Add(string name)
+  void Add(std::string name)
   {
     fNameToI[name] = fTIs.size();
     fTIs.push_back(TimerInfo(name));
   };
-  TimerInfo& operator[](string name) { return fTIs[fNameToI[name]]; };
+  TimerInfo& operator[](std::string name) { return fTIs[fNameToI[name]]; };
   TimerInfo& operator[](int i) { return fTIs[i]; };
   void operator+=(L1CATFIterTimerInfo& t)
   {
@@ -90,26 +83,26 @@ public:
   {
     if (f) {
       PrintNames();
-      cout << endl;
+      std::cout << '\n';
     }
     fTIs[0].PrintReal();
     for (unsigned int i = 1; i < fTIs.size(); ++i) {
-      cout << " | " << setw(fTIs[i].Name().size());
+      std::cout << " | " << std::setw(fTIs[i].Name().size());
       fTIs[i].PrintReal();
     }
-    if (f) cout << endl;
+    if (f) std::cout << '\n';
   };
   void PrintNames()
   {
-    cout << fTIs[0].Name();
+    std::cout << fTIs[0].Name();
     for (unsigned int i = 1; i < fTIs.size(); ++i) {
-      cout << " | " << fTIs[i].Name();
+      std::cout << " | " << fTIs[i].Name();
     }
   };
 
 private:
-  map<string, int> fNameToI;
-  vector<TimerInfo> fTIs;
+  std::map<std::string, int> fNameToI;
+  std::vector<TimerInfo> fTIs;
 };
 
 class L1CATFTimerInfo {
@@ -117,7 +110,7 @@ public:
   L1CATFTimerInfo() : fTIIs(), fTIAll() {};
   void SetNIter(int n) { fTIIs.resize(n); };
 
-  void Add(string name)
+  void Add(std::string name)
   {
     for (unsigned int i = 0; i < fTIIs.size(); ++i)
       fTIIs[i].Add(name);
@@ -152,25 +145,25 @@ public:
   L1CATFIterTimerInfo& GetAllInfo() { return fTIAll; };
   void PrintReal()
   {
-    cout.precision(1);
-    cout.setf(ios::fixed);
-    cout << " stage "
-         << " : ";
+    std::cout.precision(1);
+    std::cout.setf(std::ios::fixed);
+    std::cout << " stage "
+              << " : ";
     fTIAll.PrintNames();
-    cout << endl;
+    std::cout << '\n';
     for (unsigned int i = 0; i < fTIIs.size(); ++i) {
-      cout << " iter " << i << " : ";
+      std::cout << " iter " << i << " : ";
       fTIIs[i].PrintReal();
-      cout << endl;
+      std::cout << '\n';
     }
-    cout << " all   "
-         << " : ";
+    std::cout << " all   "
+              << " : ";
     fTIAll.PrintReal();
-    cout << endl;
+    std::cout << '\n';
   };
 
 private:
-  vector<L1CATFIterTimerInfo> fTIIs;
+  std::vector<L1CATFIterTimerInfo> fTIIs;
   L1CATFIterTimerInfo fTIAll;
 };
 

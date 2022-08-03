@@ -69,14 +69,18 @@ namespace L1Utils
   class TimeProfiler {
   public:
     /// Constructor
-    TimeProfiler(const char* scopeName) : fScopeName(scopeName), fStart(std::chrono::high_resolution_clock::now()) {}
+    TimeProfiler(const char* scopeName) : fScopeName(scopeName), fStart(std::chrono::high_resolution_clock::now())
+    {
+      LOG(info) << "---------- Time measurement in scope \033[1;32m" << fScopeName << "\033[0m: Start";
+    }
 
     /// Destructor
     ~TimeProfiler()
     {
       auto stop = std::chrono::high_resolution_clock::now();
       auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - fStart).count();
-      LOG(info) << "Scope \033[1;32m" << fScopeName << "\033[0m was executed in " << time << " ns";
+      LOG(info) << "---------- Time measurement in scope \033[1;32m" << fScopeName
+                << "\033[0m: Finish. Result: " << time << " ns";
     }
 
   private:

@@ -1522,7 +1522,6 @@ void CbmL1::HitMatch()
         }
 
         Float_t bestWeight  = 0.f;
-        Float_t totalWeight = 0.f;
         for (Int_t iLink = 0; iLink < stsHitMatch.GetNofLinks(); iLink++) {
           const CbmLink& link = stsHitMatch.GetLink(iLink);
           Int_t iFile         = link.GetFile();
@@ -1541,7 +1540,6 @@ void CbmL1::HitMatch()
 
           assert(pnt_it != dFEI2vMCPoints.end());
 
-          totalWeight += link.GetWeight();
           if (link.GetWeight() > bestWeight) {
             bestWeight = link.GetWeight();
             iP         = pnt_it->second;
