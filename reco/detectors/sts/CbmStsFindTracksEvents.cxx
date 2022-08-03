@@ -100,7 +100,7 @@ void CbmStsFindTracksEvents::Exec(Option_t* /*opt*/)
   }    //? event branch present
 
   else {  // Timeslice reconstruction without events
-    ProcessEvent(nullptr);
+    result  = ProcessEvent(nullptr);
     nHits   = result.first;
     nTracks = result.second;
   }
