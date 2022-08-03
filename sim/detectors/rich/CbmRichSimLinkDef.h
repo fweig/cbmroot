@@ -13,4 +13,6 @@
 #pragma link C++ class CbmDigitize < CbmRichDigi> + ;
 #pragma link C++ class CbmRichDigitizer + ;
 
+#pragma link C++ class RichGeoCreator + ;
+
 #endif

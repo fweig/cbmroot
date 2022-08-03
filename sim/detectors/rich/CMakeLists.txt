@@ -1,6 +1,8 @@
 set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}
 
+  ${CMAKE_CURRENT_SOURCE_DIR}/geo
+
   ${CBMDETECTORBASE_DIR}/rich
 
   ${CBMROOT_SOURCE_DIR}/sim/transport/base
@@ -32,6 +34,7 @@ link_directories(${LINK_DIRECTORIES})
 set(SRCS
   CbmRich.cxx
   CbmRichDigitizer.cxx
+  geo/RichGeoCreator.cxx
 )
 
 IF (SSE_FOUND)

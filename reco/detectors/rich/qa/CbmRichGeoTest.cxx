@@ -109,10 +109,10 @@ void CbmRichGeoTest::InitHistograms()
 {
   double xMin = -120.;
   double xMax = 120.;
-  int nBinsX  = 300;
+  int nBinsX  = 240;
   double yMin = -210;
   double yMax = 210.;
-  int nBinsY  = 105;
+  int nBinsY  = 420;
 
   fHM = new CbmHistManager();
 

@@ -5,7 +5,7 @@ void addCopyNumbersToNodes(TGeoVolume* volume);
 void Import_GDML_Export_ROOT()
 {
 
-  TString richGeoFilename = "rich_v21a.gdml";
+  TString richGeoFilename = "ShBox_20220628.gdml";
   cout << "Importing '" << richGeoFilename << "'." << endl;
 
   // Load FairRunSim to ensure the correct unit system

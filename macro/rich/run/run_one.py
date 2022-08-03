@@ -3,22 +3,23 @@
 import os
 import sys
 
-taskId = sys.argv[1]
+runId = sys.argv[1]
 cbmrootConfigPath = "/Users/slebedev/Development/cbm/git/build/config.sh"
 macroDir = "/Users/slebedev/Development/cbm/git/cbmroot/macro/rich/"
 nofEvents = 100
 
 urqmdFile = "/Users/slebedev/Development/cbm/data/urqmd/auau/10gev/centr/urqmd.auau.10gev.centr.00001.root"
 dataDir= "/Users/slebedev/Development/cbm/data/sim/rich/reco/"
-traFile = dataDir + "/tra."+ taskId + ".root"
-parFile = dataDir + "/par."+ taskId + ".root"
-digiFile = dataDir + "/digi."+ taskId + ".root"
-recoFile = dataDir + "/reco."+ taskId + ".root"
-qaFile = dataDir + "/qa."+ taskId + ".root"
-geoSimFile = dataDir + "/geosim."+ taskId + ".root"
+traFile = dataDir + "/tra."+ runId + ".root"
+parFile = dataDir + "/par."+ runId + ".root"
+digiFile = dataDir + "/digi."+ runId + ".root"
+recoFile = dataDir + "/reco."+ runId + ".root"
+qaFile = dataDir + "/qa."+ runId + ".root"
+geoSimFile = dataDir + "/geosim."+ runId + ".root"
 
-geoSetup = "sis100_electron"
-resultDir = "results_recoqa/"
+# geoSetup = "sis100_electron"
+geoSetup = "sis100_electron_" + runId
+resultDir = "results_recoqa_" + runId + "/"
 targetZ = -44.0
 
 traCmd=('root -l -b -q {}/run/run_transport.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",{},{},\\"{}\\",\\"{}\\",{},{}\)').format(macroDir, urqmdFile, traFile, parFile, geoSimFile, 5, 5, "", geoSetup, nofEvents, targetZ)

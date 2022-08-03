@@ -9,9 +9,9 @@ def main():
   runId = sys.argv[1]
   testType = sys.argv[2] # geotest or urqmdtest
 
-  #runId = "0"
-  geoSetup = "sis100_electron"
-  nEvents = 3000 if testType == "geotest" else 100
+ 
+  geoSetup = "sis100_electron_" + runId
+  nEvents = 5000 if testType == "geotest" else 250
   targetZ = -44.0
   energy = "10gev"
 
@@ -22,7 +22,7 @@ def main():
 
   plutoFile = ""
   dataDir = "/Users/slebedev/Development/cbm/data/sim/rich/" + testType
-  resultDir = "results_" + testType + "_" + runId + "_"+ energy +"/" 
+  resultDir = "results_" + testType + "_"+ energy + "_" + runId + "/" 
   
 
   traFile = dataDir + "/tra." + runId + ".root"  
