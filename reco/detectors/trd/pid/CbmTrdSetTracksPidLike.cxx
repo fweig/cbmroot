@@ -71,6 +71,9 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
     fGasPar->putParams(parlist);
     FairParamObj* filenamepar = parlist->find("RepoPid");
     fFileName.Form("%s/%s", getenv("VMCWORKDIR"), filenamepar->getParamValue());
+    //Whitespace added on some mac versions somehow to the filename resulting in fatal error, chop away here
+    while (!fFileName.EndsWith(".root"))
+      fFileName.Chop();
   }
 
 
