@@ -101,8 +101,11 @@ void CbmTrdParSetGas::putParams(FairParamList* l)
   }
   CbmTrdParModGas* mod = (CbmTrdParModGas*) fModuleMap[moduleId[0]];
 
+
+  TString repopid(mod->GetFileName().Data());
+
   l->add("RepoDrift", "parameters/trd/CbmTrdDriftMap.root");
-  l->add("RepoPid", mod->GetFileName().Data());
+  l->add("RepoPid", repopid);
   l->add("Gas", Form("Xe_%d", Int_t(1.e2 * mod->GetNobleGas())));
   l->add("NrOfModules", fNrOfModules);
   l->add("ModuleIdArray", moduleId);
