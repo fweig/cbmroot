@@ -1948,11 +1948,11 @@ inline void PairAnalysisVarManager::CalculateHitTypes(const PairAnalysisTrack* t
     TClonesArray* hits = fgEvent->GetHits(idet);
     TClonesArray* pnts = fgEvent->GetPoints(idet);
 
-    Int_t links   = 0;
-    Double_t dist = 0.;
-    *trueH        = 0;
-    *distH        = 0;
-    *fakeH        = (mctrk > -1 ? 0 : nhits);
+    //Int_t links   = 0; //Only needed for kTrdDistortion
+    //Double_t dist = 0.;
+    *trueH = 0;
+    *distH = 0;
+    *fakeH = (mctrk > -1 ? 0 : nhits);
     if (hits && pnts && mctrk > -1) {
       for (Int_t ihit = 0; ihit < nhits; ihit++) {
 
@@ -1983,7 +1983,7 @@ inline void PairAnalysisVarManager::CalculateHitTypes(const PairAnalysisTrack* t
         Bool_t btrueH = kTRUE;
         Bool_t bfakeH = kTRUE;
         Int_t nlinks  = mtch->GetNofLinks();
-        links += nlinks;
+        //links += nlinks;
         for (Int_t iLink = 0; iLink < nlinks; iLink++) {
           //	if(nlinks!=1) { fakeH++; continue; }
           FairMCPoint* pnt = static_cast<FairMCPoint*>(pnts->At(mtch->GetLink(iLink).GetIndex()));
@@ -1995,7 +1995,7 @@ inline void PairAnalysisVarManager::CalculateHitTypes(const PairAnalysisTrack* t
             Int_t lblG = mc->GetMothersLabel(lblM);
             if (lbl != mctrk && lblM != mctrk && lblG != mctrk) {
               btrueH = kFALSE;
-              dist += 1.;
+              //dist += 1.;
             }
             else
               bfakeH = kFALSE;
