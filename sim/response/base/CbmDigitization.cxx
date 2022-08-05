@@ -473,6 +473,9 @@ void CbmDigitization::Run(Int_t event1, Int_t event2)
     }
     delete gGeoManager;
   }
+
+  TList* badlist = gROOT->GetListOfBrowsables();
+  badlist->Remove(badlist->FindObject("FairTaskList"));
   delete run;
 }
 // --------------------------------------------------------------------------
