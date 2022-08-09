@@ -531,7 +531,7 @@ void CbmTrdFASP::ScanDigi(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* vdigi)
     t /= 10;
     r /= 10;
     if (VERBOSE)
-      printf("  time buffer[5ns]=%4llu / phys[ns]=%llu charge[fC]=%5.1f / %5.1f", time, digi->GetTimeDAQ(), t, r);
+      printf("  time buffer[5ns]=%4llu / phys[ns]=%lu charge[fC]=%5.1f / %5.1f", time, digi->GetTimeDAQ(), t, r);
     // tilt pad channel
     if (t > 0 && fChId[0] >= 0) {
       if (DRAW) {
@@ -582,11 +582,6 @@ void CbmTrdFASP::ScanDigiNE(std::vector<std::pair<CbmTrdDigi*, CbmMatch*>>* /*vd
   LOG(info) << "CbmTrdFASP::ScanDigiNE() : **Method under construction**. Use CbmTrdFASP::ScanDigi() instead by "
                "selecting CbmTrdFASP:: SetNeighbourTrigger(0)";
   return;
-      if (VERBOSE)
-        printf("  [T] time buffer[5ns]=%4llu / phys[ns]=%llu charge[fC]=%5.1f ", time, digi->GetTimeDAQ(), t);
-      if (VERBOSE)
-        printf("  [T] time buffer[5ns]=%4llu / phys[ns]=%llu charge[fC]=%5.1f ", time, digi->GetTimeDAQ(), t);
-    if (VERBOSE) printf("  [R] time buffer[5ns]=%4llu / phys[ns]=%llu charge[fC]=%5.1f ", time, digi->GetTimeDAQ(), r);
 
   //   CbmTrdDigi* digi(nullptr);
   //   ULong64_t time;
