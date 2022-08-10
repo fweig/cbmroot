@@ -50,8 +50,8 @@ public:
   L1HitIndex_t GetMHit() const { return fHitM; }
   L1HitIndex_t GetRHit() const { return fHitR; }
 
-  void SetNNeighbours(char n) { fNneighbours = n; }
-  char GetNNeighbours() const { return fNneighbours; }
+  void SetNNeighbours(int n) { fNneighbours = n; }
+  int GetNNeighbours() const { return fNneighbours; }
 
   void SetFNeighbour(unsigned int n) { fFirstNeighbour = n; }
   unsigned int GetFNeighbour() const { return fFirstNeighbour; }
@@ -86,7 +86,7 @@ private:
   L1HitIndex_t fHitL           = 0;  // left hit index (16b) in vHits array
   L1HitIndex_t fHitM           = 0;  // middle hit index (16b)
   L1HitIndex_t fHitR           = 0;  // right hit index (16b)
-  char fNneighbours            = 0;  // n of neighbouring triplets
+  int fNneighbours             = 0;  // n of neighbouring triplets
   unsigned char fLevel         = 0;  // triplet level
                                      // == its possible position on the longest track candidate it belongs to.
                                      // level 0 = rightmost triplet of a track candidate

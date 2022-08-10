@@ -61,6 +61,8 @@ public:
 
   friend class CbmL1;
 
+  double pt() { return sqrt(px * px + py * py); }
+
 private:
   void CalculateMCCont();
   void CalculateHitCont();
@@ -85,8 +87,8 @@ public:
   int mother_ID = -1;
   int pdg       = -1;
   bool isSignal {0};
-  L1Vector<int> Points {"CbmL1MCTrack::Points"};    // indices of pints in L1::vMCPoints
-  L1Vector<int> Hits {"CbmL1MCTrack::Hits"};        // indices of hits in algo->vHits or L1::vHits
+  L1Vector<int> Points {"CbmL1MCTrack::Points"};  // indices of pints in L1::vMCPoints
+  L1Vector<int> Hits {"CbmL1MCTrack::Hits"};      // indices of hits in algo->vHits or L1::vHits
 
 private:
   int nMCContStations  = 0;  // number of consecutive stations with mcPoints

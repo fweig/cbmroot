@@ -23,7 +23,8 @@ struct L1Branch {
   char Momentum {0};
   char NHits {0};
   fscal chi2 {0.};
-  int CandIndex {0};
+  int fID {0};
+  bool fIsAlive {0};
   L1Vector<L1HitIndex_t> fHits {"L1Branch::fHits"};
 
   //     static bool compareCand(const L1Branch *a, const L1Branch *b){
@@ -68,8 +69,7 @@ struct L1Branch {
 
     if (a.ista != b.ista) return (a.ista < b.ista);
 
-    else
-      return (a.chi2 < b.chi2);
+    return (a.chi2 < b.chi2);
   }
 
 
@@ -91,19 +91,21 @@ struct L1Branch {
   // return (a.Quality > b.Quality );
   //}
 
-  void Set(unsigned char iStation, unsigned char Length, float Chi2, float Qp)
+  void Set(unsigned char iStation, unsigned char Length, float Chi2, float Qp, int ID)
   {
     NHits = Length;
     ista  = iStation;
     //  iN = ( (static_cast<unsigned char>( Chi2 ))<<3 ) + (Level%8);
     //unsigned short int ista_l = 16-iStation;
-    float tmp = sqrt(Chi2) / 3.5 * 255;
-    if (tmp > 255) tmp = 255;
+    // float tmp = sqrt(Chi2) / 3.5 * 255;
+    // if (tmp > 255) tmp = 255;
     // unsigned short int chi_2 = 255 - static_cast<unsigned char>( tmp );
     // Quality = (Length<<12) + (ista_l<<8) + chi_2;
     Momentum = 1.0 / fabs(Qp);
     //    chi2 = chi_2;
     chi2 = Chi2;
+    fID      = ID;
+    fIsAlive = true;
   }
 
   //   void SetLength( unsigned char Length ){

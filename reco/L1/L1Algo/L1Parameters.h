@@ -177,6 +177,9 @@ public:
   /// Flag to match doublets using MC information
   bool DevIsMatchDoubletsViaMc() const { return fDevIsMatchDoubletsViaMc; }
 
+  /// Flag to match triplets using Mc information
+  bool DevIsMatchTripletsViaMc() const { return fDevIsMatchTripletsViaMc; }
+
 private:
   unsigned int fMaxDoubletsPerSinglet {150};  ///< Upper-bound cut on max number of doublets per one singlet
   unsigned int fMaxTripletPerDoublets {15};   ///< Upper-bound cut on max number of triplets per one doublet
@@ -226,6 +229,8 @@ private:
   bool fDevIsFitSingletsFromTarget {false};  ///< Fit singlet starting from the target with the KF
 
   bool fDevIsMatchDoubletsViaMc {false};  ///< Flag to match doublets using MC information
+
+  bool fDevIsMatchTripletsViaMc {false};  ///< Flag to match triplets using Mc information
 
   /********************************
    ** Friend classes declaration **

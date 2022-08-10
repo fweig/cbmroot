@@ -90,7 +90,7 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
 
 
   fInitManager.TransferParametersContainer(fParameters);
-  LOG(info) << fParameters.ToString();
+  LOG(info) << fParameters.ToString(3);
 
   // Get number of station
   fNstations = fInitManager.GetNstationsActive();
@@ -118,33 +118,31 @@ void L1Algo::SetData(L1Vector<L1Hit>& Hits_, int nStrips_, L1Vector<unsigned cha
 
   NHitsIsecAll = nHits;
 
-  vDontUsedHits_A.reset(nHits);
-  vDontUsedHits_B.reset(nHits);
-  vDontUsedHits_Buf.reset(nHits);
-  vDontUsedHitsxy_A.reset(nHits);
-  vDontUsedHitsxy_buf.reset(nHits);
-  vDontUsedHitsxy_B.reset(nHits);
+  vNotUsedHits_A.reset(nHits);
+  vNotUsedHits_B.reset(nHits);
+  vNotUsedHits_Buf.reset(nHits);
+  vNotUsedHitsxy_A.reset(nHits);
+  vNotUsedHitsxy_buf.reset(nHits);
+  vNotUsedHitsxy_B.reset(nHits);
   RealIHit_v.reset(nHits);
   RealIHit_v_buf.reset(nHits);
   RealIHit_v_buf2.reset(nHits);
 
 #ifdef _OPENMP
-  fHitToBestTrackF.reset(fNstrips);
-  fHitToBestTrackB.reset(fNstrips);
-  for (unsigned int j = 0; j < fHitToBestTrackB.size(); j++) {
-    omp_init_lock(&fHitToBestTrackB[j]);
-    omp_init_lock(&fHitToBestTrackF[j]);
+  fStripToTrackLock.reset(fNstrips);
+  for (unsigned int j = 0; j < fStripToTrackLock.size(); j++) {
+    omp_init_lock(&fStripToTrackLock[j]);
   }
 #endif
 
-  fStripToTrack.clear();
-  fStripToTrack.reserve(fNstrips);
+  fStripToTrackF.clear();
+  fStripToTrackF.reserve(fNstrips);
 
   fStripToTrackB.clear();
   fStripToTrackB.reserve(fNstrips);
 
-  TripForHit[0].reset(nHits);
-  TripForHit[1].reset(nHits);
+  fHitFirstTriplet.reset(nHits);
+  fHitNtriplets.reset(nHits);
 
   fDupletPortionSize.clear();
   fDupletPortionSize.reserve(2 * nHits);
@@ -244,6 +242,14 @@ void L1Algo::CreateHitPoint(const L1Hit& hit, L1HitPoint& point)
 }
 
 int L1Algo::GetMcTrackIdForHit(int iHit)
+{
+  int hitId    = iHit;
+  int iMcPoint = CbmL1::Instance()->GetHitMCRefs()[hitId];
+  if (iMcPoint < 0) return -1;
+  return CbmL1::Instance()->GetMcPoints()[iMcPoint].ID;
+}
+
+int L1Algo::GetMcTrackIdForUnusedHit(int iHit)
 {
   int hitId    = (*RealIHitP)[iHit];
   int iMcPoint = CbmL1::Instance()->GetHitMCRefs()[hitId];

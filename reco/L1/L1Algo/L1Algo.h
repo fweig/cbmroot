@@ -65,6 +65,8 @@ class L1AlgoDraw;
 
 using std::map;
 
+typedef int Tindex;
+
 #ifdef PULLS
 #define TRIP_PERFORMANCE
 class L1AlgoPulls;
@@ -77,7 +79,6 @@ class L1AlgoEfficiencyPerformance;
 template<Tindex NHits>
 class L1AlgoEfficiencyPerformance;
 #endif
-typedef int Tindex;
 
 using L1StationsArray_t = std::array<L1Station, L1Constants::size::kMaxNstations>;
 using L1MaterialArray_t = std::array<L1Material, L1Constants::size::kMaxNstations>;
@@ -109,11 +110,11 @@ public:
   /// pack station, thread and triplet indices to an unique triplet ID
   static unsigned int PackTripletId(unsigned int Station, unsigned int Thread, unsigned int Triplet)
   {
-#ifndef FAST_CODE
+    //SG!!#ifndef FAST_CODE
     assert(Station < L1Constants::size::kMaxNstations);
     assert(Thread < L1Constants::size::kMaxNthreads);
     assert(Triplet < L1Constants::size::kMaxNtriplets);
-#endif
+    //#endif
     constexpr unsigned int kMoveThread  = L1Constants::size::kTripletBits;
     constexpr unsigned int kMoveStation = L1Constants::size::kTripletBits + L1Constants::size::kThreadBits;
     return (Station << kMoveStation) + (Thread << kMoveThread) + Triplet;
@@ -140,6 +141,19 @@ public:
     constexpr unsigned int kTripletMask = (1u << L1Constants::size::kTripletBits) - 1u;
     return ID & kTripletMask;
   }
+
+
+  /// pack thread and track indices to an unique track ID
+  static int PackTrackId(int Thread, int Track)
+  {
+    return PackTripletId(0, (unsigned int) Thread, (unsigned int) Track);
+  }
+
+  /// unpack the track ID to its thread index
+  static int TrackId2Thread(int ID) { return TripletId2Thread((unsigned int) ID); }
+
+  /// unpack the track ID to its track index
+  static int TrackId2Track(int ID) { return TripletId2Triplet((unsigned int) ID); }
 
 
   L1Vector<L1Triplet> fTriplets[L1Constants::size::kMaxNstations][L1Constants::size::kMaxNthreads] {
@@ -241,6 +255,9 @@ public:
   /// Get mc track ID for a hit (debug tool)
   int GetMcTrackIdForHit(int iHit);
 
+  /// Get mc track ID for a hit (debug tool)
+  int GetMcTrackIdForUnusedHit(int iHit);
+
 public:
   int fNstrips {0};                                    ///> number of strips
   L1Vector<L1Hit>* vHits {nullptr};                    ///> hits as a combination of front-, backstrips and z-position
@@ -261,12 +278,12 @@ public:
   //  L1Branch* pointer;
   unsigned int NHitsIsecAll {0};
 
-  L1Vector<L1Hit> vDontUsedHits_A {"L1Algo::vDontUsedHits_A"};
-  L1Vector<L1Hit> vDontUsedHits_B {"L1Algo::vDontUsedHits_B"};
-  L1Vector<L1Hit> vDontUsedHits_Buf {"L1Algo::vDontUsedHits_Buf"};
-  L1Vector<L1HitPoint> vDontUsedHitsxy_A {"L1Algo::vDontUsedHitsxy_A"};
-  L1Vector<L1HitPoint> vDontUsedHitsxy_buf {"L1Algo::vDontUsedHitsxy_buf"};
-  L1Vector<L1HitPoint> vDontUsedHitsxy_B {"L1Algo::vDontUsedHitsxy_B"};
+  L1Vector<L1Hit> vNotUsedHits_A {"L1Algo::vNotUsedHits_A"};
+  L1Vector<L1Hit> vNotUsedHits_B {"L1Algo::vNotUsedHits_B"};
+  L1Vector<L1Hit> vNotUsedHits_Buf {"L1Algo::vNotUsedHits_Buf"};
+  L1Vector<L1HitPoint> vNotUsedHitsxy_A {"L1Algo::vNotUsedHitsxy_A"};
+  L1Vector<L1HitPoint> vNotUsedHitsxy_buf {"L1Algo::vNotUsedHitsxy_buf"};
+  L1Vector<L1HitPoint> vNotUsedHitsxy_B {"L1Algo::vNotUsedHitsxy_B"};
   L1Vector<L1Track> fTracks_local[L1Constants::size::kMaxNthreads] {"L1Algo::fTracks_local"};
   L1Vector<L1HitIndex_t> fRecoHits_local[L1Constants::size::kMaxNthreads] {"L1Algo::fRecoHits_local"};
 
@@ -275,12 +292,11 @@ public:
   L1Vector<L1HitIndex_t> RealIHit_v_buf2 {"L1Algo::RealIHit_v_buf2"};
 
 #ifdef _OPENMP
-  L1Vector<omp_lock_t> fHitToBestTrackF {"L1Algo::fHitToBestTrackF"};
-  L1Vector<omp_lock_t> fHitToBestTrackB {"L1Algo::fHitToBestTrackB"};
+  L1Vector<omp_lock_t> fStripToTrackLock {"L1Algo::fStripToTrackLock"};
 #endif
 
-  L1Vector<int> fStripToTrack {"L1Algo::fStripToTrack"};    // front strip to track pointers
-  L1Vector<int> fStripToTrackB {"L1Algo::fStripToTrackB"};  // back strip to track pointers
+  L1Vector<int> fStripToTrackF {"L1Algo::fStripToTrack"};  // strip to track pointers
+  L1Vector<int> fStripToTrackB {"L1Algo::fStripToTrack"};  // strip to track pointers
 
   int fNThreads {0};
   bool fUseHitErrors {true};
@@ -327,7 +343,8 @@ public:
   L1HitIndex_t HitsUnusedStopIndexEnd[L1Constants::size::kMaxNstations + 1] {0};
 
 
-  L1Vector<int> TripForHit[2] {"L1Algo::TripForHit"};  // TODO: what does '2' stand for?
+  L1Vector<int> fHitFirstTriplet {"L1Algo::fHitFirstTriplet"};  /// link hit -> first triplet { hit, *, *}
+  L1Vector<int> fHitNtriplets {"L1Algo::fHitNtriplets"};        /// link hit ->n triplets { hit, *, *}
 
 
   //  fvec u_front[Portion/fvecLen], u_back[Portion/fvecLen];
@@ -487,7 +504,7 @@ private:
     Tindex start_lh, Tindex n1_l, L1HitPoint* Hits_l,
     // output
     fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, L1HitIndex_t* hitsl, fvec* HitTime_l, fvec* HitTimeEr, fvec* Event_l,
-    fvec* d_x, fvec* d_y, fvec* d_xy, fvec* d_u, fvec* d_v);
+    fvec* d_u, fvec* d_v);
 
   /// Get the field approximation. Add the target to parameters estimation. Propagate to middle station.
   void findSingletsStep1(  // input
@@ -495,7 +512,7 @@ private:
 
     fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, fvec* HitTime_l, fvec* HitTimeEr,
     // output
-    L1TrackPar* T_1, L1FieldRegion* fld_1, fvec* d_x, fvec* d_y, fvec* d_xy, fvec* d_u, fvec* d_v);
+    L1TrackPar* T_1, L1FieldRegion* fld_1, fvec* d_u, fvec* d_v);
 
   /// Find the doublets. Reformat data in the portion of doublets.
   void findDoubletsStep0(  // input
@@ -550,12 +567,7 @@ private:
     Tindex n3, int istal, int istam, int istar, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
     L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3,
     // output
-    Tindex& nstaltriplets, L1Vector<L1HitIndex_t>* hitsn_3 = 0, L1Vector<L1HitIndex_t>* hitsr_5 = 0
-
-    // #ifdef XXX
-    //                 ,unsigned int &stat_n_trip
-    // #endif
-  );
+    Tindex& nstaltriplets);
 
 
   /// Find neighbours of triplets. Calculate level of triplets.

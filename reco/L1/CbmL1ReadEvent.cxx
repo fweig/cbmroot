@@ -151,14 +151,19 @@ struct TmpHit {
   /// \param point  constant reference to the input MC-point
   /// \param st     reference to the station info object
   // TODO: Probably, L1Station& st parameter should be constant. Do we really want to modify a station here? (S.Zharko)
-  void SetHitFromPoint(const CbmL1MCPoint& point, const L1Station& st)
+  void SetHitFromPoint(const CbmL1MCPoint& point, const L1Station& st, bool doSmear = 1)
   {
-    x       = 0.5 * (point.xIn + point.xOut) + gRandom->Gaus(0, dx);
-    y       = 0.5 * (point.yIn + point.yOut) + gRandom->Gaus(0, dy);
+    x       = 0.5 * (point.xIn + point.xOut);
+    y       = 0.5 * (point.yIn + point.yOut);
     z       = 0.5 * (point.zIn + point.zOut);
-    time    = point.time + gRandom->Gaus(0, dt);
+    time    = point.time;
     u_front = x * st.frontInfo.cos_phi[0] + y * st.frontInfo.sin_phi[0];
     u_back  = x * st.backInfo.cos_phi[0] + y * st.backInfo.sin_phi[0];
+    if (doSmear) {
+      x += gRandom->Gaus(0, dx);
+      y += gRandom->Gaus(0, dy);
+      time += gRandom->Gaus(0, dt);
+    }
   }
 };
 
@@ -938,26 +943,14 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
           if (th.iMC < 0) continue;      // skip noise hits
           if (mcUsed[iMcTrd]) continue;  // one hit per MC point
-
-          if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
-            // SGtrd2d!! don't smear
-            TmpHit thsave = th;
-            th.dx         = 0.;
-            th.dy         = 0.;
-            th.dt         = 0.;
-            th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetParameters()->GetStation(th.iStation));
-            th.dx = thsave.dx;
-            th.dy = thsave.dy;
-            th.dt = thsave.dt;
-            // SGtrd2d!! artificial errors
-            th.dx = 1.1;
-            th.du = 1.1;
-            th.dy = 1.1;
-            th.dv = 1.1;
+          bool doSmear = true;
+          if (0) {  // SGtrd2d!! debug: artificial errors
+            th.dx = .1;
+            th.du = .1;
+            th.dy = .1;
+            th.dv = .1;
           }
-          else {
-            th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetParameters()->GetStation(th.iStation));
-          }
+          th.SetHitFromPoint(vMCPoints[th.iMC], algo->GetParameters()->GetStation(th.iStation), doSmear);
           mcUsed[iMcTrd] = 1;
         }  // replace hit by MC points
 
@@ -1271,7 +1264,6 @@ void CbmL1::Fill_vMCTracks()
       TLorentzVector vp;
       MCTrack->GetStartVertex(vr);
       MCTrack->Get4Momentum(vp);
-
       Int_t pdg  = MCTrack->GetPdgCode();
       Double_t q = 0, mass = 0.;
       if (pdg < 9999999 && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg))) {
@@ -1279,6 +1271,7 @@ void CbmL1::Fill_vMCTracks()
         mass = TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
       }
 
+      //cout << "mc track " << iMCTrack << " pdg " << pdg << " z " << vr.Z() << endl;
 
       Int_t iTrack = vMCTracks.size();  //or iMCTrack?
       CbmL1MCTrack T(mass, q, vr, vp, iTrack, mother_ID, pdg);

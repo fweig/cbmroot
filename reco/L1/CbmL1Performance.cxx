@@ -305,19 +305,19 @@ void CbmL1::EfficienciesPerformance()
   static double L1_CATIME = 0.0;
 
 
-  TL1PerfEfficiencies ntra;  // efficiencies for current event
+  TL1PerfEfficiencies ntra;     // efficiencies for current event
   ntra.fOutDir    = fHistoDir;  // Setup a pointer for output directory
   L1_NTRA.fOutDir = fHistoDir;  // Save average efficiencies
 
   for (vector<CbmL1Track>::iterator rtraIt = vRTracks.begin(); rtraIt != vRTracks.end(); ++rtraIt) {
     ntra.ghosts += rtraIt->IsGhost();
-    //     if(rtraIt->IsGhost()){ // Debug.
-    //       cout << " " << rtraIt->GetNOfHits() << " " << 1./rtraIt->T[5] << " " << rtraIt->GetMaxPurity() << " | ";
+    //if (rtraIt->IsGhost()) {  // Debug.
+    //cout << " " << rtraIt->GetNOfHits() << " " << 1. / rtraIt->T[5] << " " << rtraIt->GetMaxPurity() << " | ";
     //       for( map<int, int>::iterator posIt = rtraIt->hitMap.begin(); posIt != rtraIt->hitMap.end(); posIt++ ){
     //         cout << " (" << posIt->second << " " << posIt->first << ") ";
     //       }
-    //       cout << endl;
-    //     }
+    //cout << endl;
+    //}
   }
 
   int sta_nhits[algo->GetNstations()], sta_nfakes[algo->GetNstations()];
@@ -457,7 +457,7 @@ void CbmL1::EfficienciesPerformance()
   //   cout.precision(3);
   if (fVerbose) {
     if (fVerbose > 1) {
-      ntra.PrintEff();
+      ntra.PrintEff(true);
       cout << "Number of true and fake hits in stations: " << endl;
       for (int i = 0; i < algo->GetNstations(); i++) {
         cout << sta_nhits[i] - sta_nfakes[i] << "+" << sta_nfakes[i] << "   ";
@@ -1191,10 +1191,10 @@ void CbmL1::TrackFitPerformance()
       float z[3] = {0.f, 0.f, 0.f};
       int ih     = 0;
       for (unsigned int iMCPoint = 0; iMCPoint < mc.Points.size(); iMCPoint++) {
-        const int iMCP    = mc.Points[iMCPoint];
-        CbmL1MCPoint& mcP = vMCPoints[iMCP];
+        const int iMCP      = mc.Points[iMCPoint];
+        CbmL1MCPoint& mcP   = vMCPoints[iMCP];
         const L1Station& st = algo->GetParameters()->GetStation(mcP.iStation);
-        z[ih]             = st.z[0];
+        z[ih]               = st.z[0];
         if (ih > 0 && (z[ih] - z[ih - 1]) < 0.1) continue;
         st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
         ih++;
@@ -1286,8 +1286,8 @@ void CbmL1::TrackFitPerformance()
     }
 
 
-    {                                           // last hit
-      int iMC = vHitMCRef[it->Hits.back()];     // TODO2: adapt to linking
+    {                                        // last hit
+      int iMC = vHitMCRef[it->Hits.back()];  // TODO2: adapt to linking
       if (iMC < 0) continue;
 
 #define L1FSTPARAMEXTRAPOLATE
@@ -1302,10 +1302,10 @@ void CbmL1::TrackFitPerformance()
       float z[3] = {0.f, 0.f, 0.f};
       int ih     = 0;
       for (unsigned int iMCPoint = 0; iMCPoint < mc.Points.size(); iMCPoint++) {
-        const int iMCP    = mc.Points[iMCPoint];
-        CbmL1MCPoint& mcP = vMCPoints[iMCP];
+        const int iMCP      = mc.Points[iMCPoint];
+        CbmL1MCPoint& mcP   = vMCPoints[iMCP];
         const L1Station& st = algo->GetParameters()->GetStation(mcP.iStation);
-        z[ih]             = st.z[0];
+        z[ih]               = st.z[0];
         if (ih > 0 && (z[ih] - z[ih - 1]) < 0.1) continue;
         st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
         ih++;
@@ -1373,10 +1373,10 @@ void CbmL1::TrackFitPerformance()
           float z[3];
           for (unsigned int ih = 0; ih < 3; ih++) {
             if (ih >= mc.Points.size()) continue;  //If nofMCPoints in track < 3
-            const int iMCP    = mc.Points[ih];
-            CbmL1MCPoint& mcP = vMCPoints[iMCP];
+            const int iMCP      = mc.Points[ih];
+            CbmL1MCPoint& mcP   = vMCPoints[iMCP];
             const L1Station& st = algo->GetParameters()->GetStation(mcP.iStation);
-            z[ih]             = st.z[0];
+            z[ih]               = st.z[0];
             st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
           };
           fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
@@ -1441,7 +1441,7 @@ void CbmL1::TrackFitPerformance()
           for (unsigned int iHit = 0; iHit < it->Hits.size(); iHit++) {
             const int iStation  = vHitStore[it->Hits[iHit]].iStation;
             const L1Station& st = algo->GetParameters()->GetStation(iStation);
-            z[ih]              = st.z[0];
+            z[ih]               = st.z[0];
             st.fieldSlice.GetFieldValue(vHitStore[it->Hits[iHit]].x, vHitStore[it->Hits[iHit]].y, B[ih]);
             ih++;
             if (ih == 3) break;
@@ -1618,8 +1618,8 @@ void CbmL1::FieldApproxCheck()
     L1FieldValue B_L1;
     Double_t bbb, bbb_L1;
 
-    const int M   = 5;  // polinom order
-    const int N   = (M + 1) * (M + 2) / 2;
+    const int M         = 5;  // polinom order
+    const int N         = (M + 1) * (M + 2) / 2;
     const L1Station& st = algo->GetParameters()->GetStation(ist);
     for (int i = 0; i < N; i++) {
       FSl.cx[i] = st.fieldSlice.cx[i][0];

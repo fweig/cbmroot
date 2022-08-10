@@ -239,6 +239,12 @@ public:
   /// Checks, if all of the bands is NaN
   bool IsNanAll() const { return std::isnan(v[0]) && std::isnan(v[1]) && std::isnan(v[2]) && std::isnan(v[3]); }
 
+  /// Checks, if all of the bands are finite
+  bool IsFiniteAll() const
+  {
+    return std::isfinite(v[0]) && std::isfinite(v[1]) && std::isfinite(v[2]) && std::isfinite(v[3]);
+  }
+
 } __attribute__((aligned(16)));
 
 

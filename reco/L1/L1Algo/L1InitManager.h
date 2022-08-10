@@ -222,6 +222,11 @@ public:
 
   ///
   void SetTrackingLevel(int trackingLevel);
+  /// Sets upper-bound cut on max number of doublets per one singlet
+  void SetMaxDoubletsPerSinglet(unsigned int value) { fParameters.fMaxDoubletsPerSinglet = value; }
+
+  /// Sets upper-bound cut on max number of triplets per one doublet
+  void SetMaxTripletPerDoublets(unsigned int value) { fParameters.fMaxTripletPerDoublets = value; }
 
   /// Transfers L1Parameters object to the destination
   /// \param  destination  Reference to the destination of the L1 object
@@ -239,6 +244,9 @@ public:
 
   /// Flag to match doublets using MC information
   void DevSetIsMatchDoubletsViaMc(bool value = true) { fParameters.fDevIsMatchDoubletsViaMc = value; }
+
+  /// Flag to match triplets using Mc information
+  void DevSetIsMatchTripletsViaMc(bool value = true) { fParameters.fDevIsMatchTripletsViaMc = value; }
 
 private:
   /// Checker for L1CAIteration container initialization (sets EInitKey::kCAIterations)

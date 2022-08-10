@@ -40,6 +40,7 @@ L1Parameters::L1Parameters(const L1Parameters& other) noexcept
   , fDevIsIgnoreHitSearchAreas(other.fDevIsIgnoreHitSearchAreas)
   , fDevIsFitSingletsFromTarget(other.fDevIsFitSingletsFromTarget)
   , fDevIsMatchDoubletsViaMc(other.fDevIsMatchDoubletsViaMc)
+  , fDevIsMatchTripletsViaMc(other.fDevIsMatchTripletsViaMc)
 {
 }
 
@@ -84,6 +85,7 @@ void L1Parameters::Swap(L1Parameters& other) noexcept
   std::swap(fDevIsIgnoreHitSearchAreas, other.fDevIsIgnoreHitSearchAreas);
   std::swap(fDevIsFitSingletsFromTarget, other.fDevIsFitSingletsFromTarget);
   std::swap(fDevIsMatchDoubletsViaMc, other.fDevIsMatchDoubletsViaMc);
+  std::swap(fDevIsMatchTripletsViaMc, other.fDevIsMatchTripletsViaMc);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------

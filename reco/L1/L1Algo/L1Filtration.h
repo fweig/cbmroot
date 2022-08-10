@@ -346,7 +346,7 @@ inline void L1FilterVtx(L1TrackPar& T, fvec x, fvec y, const L1XYMeasurementInfo
 
 inline void L1FilterXY(L1TrackPar& T, fvec x, fvec y, const L1XYMeasurementInfo& info)
 {
-  cnst TWO = 2.;
+  cnst TWO = 2.f;
 
   fvec zeta0, zeta1, S00, S10, S11, si;
   fvec F00, F10, F20, F30, F40, F01, F11, F21, F31, F41;
@@ -371,13 +371,13 @@ inline void L1FilterXY(L1TrackPar& T, fvec x, fvec y, const L1XYMeasurementInfo&
   S10 = F10 + info.C10;
   S11 = F11 + info.C11;
 
-  si          = 1. / (S00 * S11 - S10 * S10);
+  si          = 1.f / (S00 * S11 - S10 * S10);
   fvec S00tmp = S00;
   S00         = si * S11;
   S10         = -si * S10;
   S11         = si * S00tmp;
 
-  T.chi2 += zeta0 * zeta0 * S00 + 2. * zeta0 * zeta1 * S10 + zeta1 * zeta1 * S11;
+  T.chi2 += zeta0 * zeta0 * S00 + 2.f * zeta0 * zeta1 * S10 + zeta1 * zeta1 * S11;
   T.NDF += TWO;
 
   K00 = F00 * S00 + F01 * S10;
@@ -413,7 +413,6 @@ inline void L1FilterXY(L1TrackPar& T, fvec x, fvec y, const L1XYMeasurementInfo&
   T.C43 -= K40 * F30 + K41 * F31;
   T.C44 -= K40 * F40 + K41 * F41;
 }
-
 
 /*
 inline void L1Filter1D( L1TrackPar &T, fvec &u, fvec &sigma2, fvec H[] )

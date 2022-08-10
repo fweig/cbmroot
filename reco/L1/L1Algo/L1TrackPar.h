@@ -81,7 +81,14 @@ public:
 
   void SetOneEntry(const int i0, const L1TrackPar& T1, const int i1);
 
-  void Print(int i = -1);
+  void Print(int i = -1) const;
+
+  void PrintCorrelations(int i = -1) const;
+
+  bool IsEntryConsistent(bool printWhenWrong, int i) const;
+
+  bool IsConsistent(bool printWhenWrong, int nFilled) const;
+
   // void L1Extrapolate
   // (
   // //  L1TrackPar &T, // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
@@ -95,32 +102,95 @@ public:
 
 // =============================================================================================
 
-inline void L1TrackPar::Print(int i)
+inline void L1TrackPar::Print(int i) const
 {
-  std::cout.setf(std::ios::scientific, std::ios::floatfield);
+  // std::cout.setf(std::ios::scientific, std::ios::floatfield);
   if (i == -1) {
     std::cout << "T = " << std::endl;
-    std::cout << x << std::endl;
-    std::cout << y << std::endl;
-    std::cout << tx << std::endl;
-    std::cout << ty << std::endl;
-    std::cout << qp << std::endl;
-    std::cout << z << std::endl;
+    std::cout << " x " << x << std::endl;
+    std::cout << " y " << y << std::endl;
+    std::cout << " tx " << tx << std::endl;
+    std::cout << " ty " << ty << std::endl;
+    std::cout << " qp " << qp << std::endl;
+    std::cout << " t " << t << std::endl;
+    std::cout << " z " << z << std::endl;
+    std::cout << "C = " << std::endl;
+    std::cout << " c00 " << C00 << std::endl;
+    std::cout << " c11 " << C11 << std::endl;
+    std::cout << " c22 " << C22 << std::endl;
+    std::cout << " c33 " << C33 << std::endl;
+    std::cout << " c44 " << C44 << std::endl;
+    std::cout << " c55 " << C55 << std::endl;
   }
   else {
     std::cout << "T = ";
-    std::cout << x[i] << " ";
-    std::cout << y[i] << " ";
-    std::cout << tx[i] << " ";
-    std::cout << ty[i] << " ";
-    std::cout << qp[i] << " ";
-    std::cout << z[i] << std::endl;
+    std::cout << " x " << x[i];
+    std::cout << " y " << y[i];
+    std::cout << " tx " << tx[i];
+    std::cout << " ty " << ty[i];
+    std::cout << " qp " << qp[i];
+    std::cout << " t " << t[i];
+    std::cout << " z " << z[i] << std::endl;
     std::cout << "C = ";
-    std::cout << C00[i] << " ";
-    std::cout << C11[i] << " ";
-    std::cout << C22[i] << " ";
-    std::cout << C33[i] << " ";
-    std::cout << C44[i] << std::endl;
+    std::cout << " c00 " << C00[i];
+    std::cout << " c11 " << C11[i];
+    std::cout << " c22 " << C22[i];
+    std::cout << " c33 " << C33[i];
+    std::cout << " c44 " << C44[i] << std::endl;
+    std::cout << " c55 " << C55[i] << std::endl;
+  }
+  PrintCorrelations(i);
+}
+
+inline void L1TrackPar::PrintCorrelations(int i) const
+{
+  // std::cout.setf(std::ios::scientific, std::ios::floatfield);
+
+  if (i == -1) {
+    fvec s0 = sqrt(C00);
+    fvec s1 = sqrt(C11);
+    fvec s2 = sqrt(C22);
+    fvec s3 = sqrt(C33);
+    fvec s4 = sqrt(C44);
+    fvec s5 = sqrt(C55);
+
+    std::cout << "K = " << std::endl;
+    std::cout << " k10 " << C10 / s1 / s0 << std::endl;
+
+    std::cout << "\n k20 " << C20 / s2 / s0 << std::endl;
+    std::cout << " k21 " << C21 / s2 / s1 << std::endl;
+
+    std::cout << "\n k30 " << C30 / s3 / s0 << std::endl;
+    std::cout << " k31 " << C31 / s3 / s1 << std::endl;
+    std::cout << " k32 " << C32 / s3 / s2 << std::endl;
+
+    std::cout << "\n k40 " << C40 / s4 / s0 << std::endl;
+    std::cout << " k41 " << C41 / s4 / s1 << std::endl;
+    std::cout << " k42 " << C42 / s4 / s2 << std::endl;
+    std::cout << " k43 " << C43 / s4 / s3 << std::endl;
+
+    std::cout << "\n k50 " << C50 / s5 / s0 << std::endl;
+    std::cout << " k51 " << C51 / s5 / s1 << std::endl;
+    std::cout << " k52 " << C52 / s5 / s2 << std::endl;
+    std::cout << " k53 " << C53 / s5 / s3 << std::endl;
+    std::cout << " k54 " << C54 / s5 / s4 << std::endl;
+  }
+  else {
+    float s0 = sqrt(C00[i]);
+    float s1 = sqrt(C11[i]);
+    float s2 = sqrt(C22[i]);
+    float s3 = sqrt(C33[i]);
+    float s4 = sqrt(C44[i]);
+    float s5 = sqrt(C55[i]);
+
+    std::cout << "K = " << std::endl;
+    std::cout << " " << C10[i] / s1 / s0 << std::endl;
+    std::cout << " " << C20[i] / s2 / s0 << " " << C21[i] / s2 / s1 << std::endl;
+    std::cout << " " << C30[i] / s3 / s0 << " " << C31[i] / s3 / s1 << " " << C32[i] / s3 / s2 << std::endl;
+    std::cout << " " << C40[i] / s4 / s0 << " " << C41[i] / s4 / s1 << " " << C42[i] / s4 / s2 << " "
+              << C43[i] / s4 / s3 << std::endl;
+    std::cout << " " << C50[i] / s5 / s0 << " " << C51[i] / s5 / s1 << " " << C52[i] / s5 / s2 << " "
+              << C53[i] / s5 / s3 << " " << C54[i] / s5 / s4 << std::endl;
   }
 }
 
@@ -158,5 +228,72 @@ inline void L1TrackPar::SetOneEntry(const int i0, const L1TrackPar& T1, const in
   chi2[i0] = T1.chi2[i1];
   NDF[i0]  = T1.NDF[i1];
 }  // SetOneEntry
+
+inline bool L1TrackPar::IsEntryConsistent(bool printWhenWrong, int i) const
+{
+  bool ok = true;
+
+  const fvec* v  = &x;
+  const fvec* v1 = &NDF;
+  for (; v < v1; v++) {
+    ok = ok && std::isfinite((*v)[i]);
+  }
+  // verify diagonal elements
+
+  ok = ok && (C00[i] > 0.f);
+  ok = ok && (C11[i] > 0.f);
+  ok = ok && (C22[i] > 0.f);
+  ok = ok && (C33[i] > 0.f);
+  ok = ok && (C44[i] > 0.f);
+  ok = ok && (C55[i] > 0.f);
+
+  // verify non-diagonal elements
+  ok = ok && (C10[i] * C10[i] <= C11[i] * C00[i]);
+
+  ok = ok && (C20[i] * C20[i] <= C22[i] * C00[i]);
+  ok = ok && (C21[i] * C21[i] <= C22[i] * C11[i]);
+
+  ok = ok && (C30[i] * C30[i] <= C33[i] * C00[i]);
+  ok = ok && (C31[i] * C31[i] <= C33[i] * C11[i]);
+  ok = ok && (C32[i] * C32[i] <= C33[i] * C22[i]);
+
+  ok = ok && (C40[i] * C40[i] <= C44[i] * C00[i]);
+  ok = ok && (C41[i] * C41[i] <= C44[i] * C11[i]);
+  ok = ok && (C42[i] * C42[i] <= C44[i] * C22[i]);
+  ok = ok && (C43[i] * C43[i] <= C44[i] * C33[i]);
+
+  ok = ok && (C50[i] * C50[i] <= C55[i] * C00[i]);
+  ok = ok && (C51[i] * C51[i] <= C55[i] * C11[i]);
+  ok = ok && (C52[i] * C52[i] <= C55[i] * C22[i]);
+  ok = ok && (C53[i] * C53[i] <= C55[i] * C33[i]);
+  ok = ok && (C54[i] * C54[i] <= C55[i] * C44[i]);
+
+  if (!ok && printWhenWrong) {
+    std::cout << "L1TrackPar parameters are not consistent: " << std::endl;
+    Print(i);
+  }
+  return ok;
+}
+
+inline bool L1TrackPar::IsConsistent(bool printWhenWrong, int nFilled) const
+{
+  assert(nFilled <= fvecLen);
+  bool ok = true;
+  if (nFilled < 0) { nFilled = fvecLen; }
+  for (int i = 0; i < nFilled; ++i) {
+    ok = ok && IsEntryConsistent(printWhenWrong, i);
+  }
+
+  if (!ok && printWhenWrong) {
+    std::cout << "L1TrackPar parameters are not consistent: " << std::endl;
+    if (nFilled == fvecLen) { std::cout << "  All vector elements are filled " << std::endl; }
+    else {
+      std::cout << "  Only first " << nFilled << " vector elements are filled " << std::endl;
+    }
+    Print(-1);
+  }
+  return ok;
+}
+
 
 #endif

@@ -360,7 +360,7 @@ void run_reco_L1global(TString input = "", Int_t nTimeSlices = -1, Int_t firstTi
     }
     l1->SetGlobalMode();
     l1->SetUseHitErrors(true);
-    l1->SetUseMcHit(0, 0, 1, 0);
+    //l1->SetUseMcHit(0, 0, 1, 0);
 
     // --- Material budget file names
     TString mvdGeoTag;
@@ -395,60 +395,6 @@ void run_reco_L1global(TString input = "", Int_t nTimeSlices = -1, Int_t firstTi
     std::cout << "-I- " << myName << ": Added task " << globalFindTracks->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
-
-
-  // ==== From here on, the time-based and the event-based reconstruction
-  // ==== chains differ, since time-based version of primary vertex finding
-  // ==== and global tracking are not yet available. For time-based
-  // ==== reconstruction, a track-based event finder is used; no global
-  // ==== tracks are produced.
-
-  if (eventBased) {
-
-    // -----   Primary vertex finding   -------------------------------------
-    CbmPrimaryVertexFinder* pvFinder = new CbmPVFinderKF();
-    CbmFindPrimaryVertex* findVertex = new CbmFindPrimaryVertex(pvFinder);
-    run->AddTask(findVertex);
-    std::cout << "-I- " << myName << ": Added task " << findVertex->GetName() << std::endl;
-    // ----------------------------------------------------------------------
-
-
-    // ---   Global track finding   -----------------------------------------
-    CbmLitFindGlobalTracks* finder = new CbmLitFindGlobalTracks();
-    finder->SetTrackingType("branch");
-    finder->SetMergerType("nearest_hit");
-    run->AddTask(finder);
-    std::cout << "-I- : Added task " << finder->GetName() << std::endl;
-    // ----------------------------------------------------------------------
-
-    // ---   Particle Id in TRD   -----------------------------------------
-    if (useTrd) {
-      CbmTrdSetTracksPidLike* trdLI = new CbmTrdSetTracksPidLike("TRDLikelihood", "TRDLikelihood");
-      trdLI->SetUseMCInfo(kTRUE);
-      trdLI->SetUseMomDependence(kTRUE);
-      run->AddTask(trdLI);
-      std::cout << "-I- : Added task " << trdLI->GetName() << std::endl;
-    }
-    // ------------------------------------------------------------------------
-
-
-    // -----   RICH reconstruction   ----------------------------------------
-    if (useRich) {
-      CbmRichReconstruction* richReco = new CbmRichReconstruction();
-      run->AddTask(richReco);
-      std::cout << "-I- : Added task " << richReco->GetName() << std::endl;
-    }
-    // ----------------------------------------------------------------------
-
-  }  //? event-based reco
-
-  else {
-
-    // -----   Event building from STS tracks   -----------------------------
-    run->AddTask(new CbmBuildEventsFromTracksReal());
-    // ----------------------------------------------------------------------
-
-  }  //? time-based reco
 
 
   // -----  Parameter database   --------------------------------------------
