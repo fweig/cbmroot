@@ -295,8 +295,7 @@ public:
   L1Vector<omp_lock_t> fStripToTrackLock {"L1Algo::fStripToTrackLock"};
 #endif
 
-  L1Vector<int> fStripToTrackF {"L1Algo::fStripToTrack"};  // strip to track pointers
-  L1Vector<int> fStripToTrackB {"L1Algo::fStripToTrack"};  // strip to track pointers
+  L1Vector<int> fStripToTrack {"L1Algo::fStripToTrack"};  // strip to track pointers
 
   int fNThreads {0};
   bool fUseHitErrors {true};

@@ -135,11 +135,8 @@ void L1Algo::SetData(L1Vector<L1Hit>& Hits_, int nStrips_, L1Vector<unsigned cha
   }
 #endif
 
-  fStripToTrackF.clear();
-  fStripToTrackF.reserve(fNstrips);
-
-  fStripToTrackB.clear();
-  fStripToTrackB.reserve(fNstrips);
+  fStripToTrack.clear();
+  fStripToTrack.reserve(fNstrips);
 
   fHitFirstTriplet.reset(nHits);
   fHitNtriplets.reset(nHits);

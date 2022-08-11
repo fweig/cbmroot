@@ -2069,8 +2069,7 @@ void L1Algo::CATrackFinder()
         fTrackCandidates[i].clear();
       }
 
-      fStripToTrackF.reset(fNstrips, -1);
-      fStripToTrackB.reset(fNstrips, -1);
+      fStripToTrack.reset(fNstrips, -1);
 
       //== Loop over triplets with the required level, find and store track candidates
 
@@ -2207,7 +2206,7 @@ void L1Algo::CATrackFinder()
 #ifdef _OPENMP
                 omp_set_lock(&fStripToTrackLock[h.f]);
 #endif
-                int& stripF = (fStripToTrackF)[h.f];
+                int& stripF = (fStripToTrack)[h.f];
                 if ((stripF >= 0) && (stripF != tr.fID)) {  // strip is used by other candidate
                   const auto& other = fTrackCandidates[TrackId2Thread(stripF)][TrackId2Track(stripF)];
                   if (!other.fIsAlive && L1Branch::compareCand(tr, other)) { stripF = tr.fID; }
@@ -2228,7 +2227,7 @@ void L1Algo::CATrackFinder()
 #ifdef _OPENMP
                 omp_set_lock(&fStripToTrackLock[h.b]);
 #endif
-                int& stripB = (fStripToTrackB)[h.b];
+                int& stripB = (fStripToTrack)[h.b];
                 if ((stripB >= 0) && (stripB != tr.fID)) {  // strip is used by other candidate
                   const auto& other = fTrackCandidates[TrackId2Thread(stripB)][TrackId2Track(stripB)];
                   if (!other.fIsAlive && L1Branch::compareCand(tr, other)) { stripB = tr.fID; }
@@ -2258,14 +2257,14 @@ void L1Algo::CATrackFinder()
             tr.fIsAlive = true;
             for (int iHit = 0; tr.fIsAlive && (iHit < (int) tr.fHits.size()); ++iHit) {
               const L1Hit& h = (*vHits)[tr.fHits[iHit]];
-              tr.fIsAlive    = tr.fIsAlive && ((fStripToTrackF)[h.f] == tr.fID) && ((fStripToTrackB)[h.b] == tr.fID);
+              tr.fIsAlive    = tr.fIsAlive && ((fStripToTrack)[h.f] == tr.fID) && ((fStripToTrack)[h.b] == tr.fID);
             }
 
             if (!tr.fIsAlive) {  // release strips
               for (int iHit = 0; (iHit < (int) tr.fHits.size()); ++iHit) {
                 const L1Hit& h = (*vHits)[tr.fHits[iHit]];
-                if (fStripToTrackF[h.f] == tr.fID) { fStripToTrackF[h.f] = -1; }
-                if (fStripToTrackB[h.b] == tr.fID) { fStripToTrackB[h.b] = -1; }
+                if (fStripToTrack[h.f] == tr.fID) { fStripToTrack[h.f] = -1; }
+                if (fStripToTrack[h.b] == tr.fID) { fStripToTrack[h.b] = -1; }
               }
             }
             else {
@@ -2299,7 +2298,7 @@ void L1Algo::CATrackFinder()
             for (L1Vector<L1HitIndex_t>::iterator phIt = tr.fHits.begin();  /// used strips are marked
                  phIt != tr.fHits.end(); ++phIt) {
               const L1Hit& h = (((*vHits))[*phIt]);
-              if (((fStripToTrackB)[h.b] != tr.fID) || ((fStripToTrackF)[h.f] != tr.fID)) {
+              if (((fStripToTrack)[h.b] != tr.fID) || ((fStripToTrack)[h.f] != tr.fID)) {
                 check = 0;
                 break;
               }
