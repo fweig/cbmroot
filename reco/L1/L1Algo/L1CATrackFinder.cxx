@@ -2252,10 +2252,10 @@ void L1Algo::CATrackFinder()
               if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
 #endif
               {  // ghost supression !!!
-                // TODO: Primary => 3 hits tracks are saved, other whise 3 hit tracks are thrown away
+                // TODO: Primary => 3 hits tracks are saved, otherwise 3 hit tracks are thrown away
                 if (isec != kFastPrimIter && isec != kAllPrimIter && isec != kAllPrimEIter && isec != kAllSecEIter)
                   if (first_trip.GetLevel() == 0)
-                    continue;  // ghost suppression // find track with 3 hits only if it was created from a chain of triplets, but not from only one triplet
+                    continue;  //ghost suppression//find track with 3 hits only if it was created from a chain of triplets, but not from only one triplet
 
                 if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
                   if ((firstTripletLevel == 0)

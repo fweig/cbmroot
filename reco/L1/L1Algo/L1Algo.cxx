@@ -100,6 +100,15 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
   fMomentumCutOff   = fInitManager.GetMomentumCutOff();
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void L1Algo::ReceiveInputData(L1InputData&& inputData)
+{
+  fInputData = std::move(inputData);
+  // TODO: Reset here internal data (probably, we should have additional class for internal data)
+}
+
+
 ///
 void L1Algo::SetData(L1Vector<L1Hit>& Hits_, int nStrips_, L1Vector<unsigned char>& SFlag_,
                      const L1HitIndex_t* HitsStartIndex_, const L1HitIndex_t* HitsStopIndex_)

@@ -2,11 +2,9 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
-/************************************************************************************************************
- * @file L1InitManager.cxx
- * @brief Input data management class for L1Algo
- * @since 19.01.2022
- ***********************************************************************************************************/
+/// \file L1InitManager.cxx
+/// \brief Input parameters management class for L1Algo
+/// \since 19.01.2022
 
 #include "L1InitManager.h"
 

@@ -51,6 +51,7 @@
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1Vector.h"
 #include "L1EventEfficiencies.h"
+#include "L1IODataManager.h"
 
 struct L1AlgoInputData;
 class L1Algo;
@@ -396,6 +397,9 @@ public:
 
   L1Algo* fpAlgo               = nullptr;  ///< Pointer to the L1 track finder algorithm
   L1InitManager* fpInitManager = nullptr;  ///< Pointer to the initialization manager for the L1 algorithm
+
+  L1IODataManager fIODataManager;  ///< Input-output data manager
+
 
   bool fUseHitErrors = true;   ///<
   bool fMissingHits  = false;  ///< Turns on several ad-hock settings for "mcbm_beam_2021_07_surveyed.100ev" setup

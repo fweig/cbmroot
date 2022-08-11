@@ -148,6 +148,8 @@ L1Algo/L1CAIteration.cxx
 L1Algo/L1BaseStationInfo.cxx
 L1Algo/L1InitManager.cxx
 L1Algo/L1Parameters.cxx
+L1Algo/L1InputData.cxx
+L1Algo/L1IODataManager.cxx
 L1Algo/L1ClonesMerger.cxx
 L1Algo/L1ConfigRW.cxx
 L1Algo/utils/L1AlgoDraw.cxx
@@ -286,6 +288,8 @@ Install(FILES CbmL1Counters.h
               L1Algo/L1InitManager.h
               L1Algo/L1CAIteration.h
               L1Algo/L1Parameters.h
+              L1Algo/L1InputData.h
+              L1Algo/L1IODataManager.h
               L1Algo/L1ClonesMerger.h
               L1Algo/L1ConfigRW.h
               L1Algo/L1Constants.h

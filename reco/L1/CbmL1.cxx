@@ -76,7 +76,7 @@ using std::ios;
 
 ClassImp(CbmL1);
 
-static L1Algo gAlgo _fvecalignment;  // TODO: gAlgo
+static L1Algo gAlgo _fvecalignment;  // TODO: Change coupling logic between L1Algo and CbmL1
 
 //L1AlgoInputData* fData_static _fvecalignment;
 
@@ -92,6 +92,7 @@ CbmL1::CbmL1() : CbmL1("L1") {}
 CbmL1::CbmL1(const char* name, Int_t verbose, Int_t performance, int dataMode, const TString& dataDir,
              int findParticleMode)
   : FairTask(name, verbose)
+  , fIODataManager(L1IODataManager(gAlgo.GetParameters()))
   , fPerformance(performance)
   , fSTAPDataMode(dataMode)
   , fSTAPDataDir(dataDir)
@@ -966,6 +967,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
       ReadEvent(fpData, TsStart, TsLength, TsOverlap, FstHitinTs, areDataLeft, event);
     }
 
+    // Send data from IODataManager to L1Algo
+    fIODataManager.SendInputData(fpAlgo);
 
     // ********************************************************************************************
     if constexpr (0) {  // correct hits on MC // dbg

@@ -61,6 +61,15 @@ namespace L1Constants
     /// Flag: hit errors
     /// true  - hit errors will be saved in the track extender algorithm
     constexpr bool kIfSaveHitErrorsInTrackExtender {false};
+
+    /// Flag: input data QA level
+    ///  - 0: no checks will be done
+    ///  - 1: only number of hits and strips as well as validity of hits first and last indexes will be checked
+    ///  - 2: hits sorting is checked
+    ///  - 3: every hit is checked for consistency
+    /// \note The larger Level corresponds to more precise checks, but is followed by larger time penalty
+    constexpr int kInputDataQaLevel = 3;
+
   }  // namespace control
 
   /// Physics constants
@@ -74,9 +83,9 @@ namespace L1Constants
   /// Miscellaneous constants
   namespace misc
   {
-    constexpr int kAssertionLevel {0};  ///< Assertion level
-    constexpr int kAlignment {16};
-  }  // namespace misc
+    constexpr int kAssertionLevel = 0;   ///< Assertion level
+    constexpr int kAlignment      = 16;  ///< Default alignment of data (bytes)
+  }                                      // namespace misc
 
   /// NoInit constants (aliases)
   namespace noin

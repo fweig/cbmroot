@@ -12,6 +12,8 @@
 #ifndef L1Hit_h
 #define L1Hit_h
 
+#include "L1Constants.h"
+
 using L1HitIndex_t   = unsigned /*short*/ int;  ///< Index of L1Hit
 using L1StripIndex_t = unsigned /*short*/ int;  ///< Index of the station strip
 
@@ -20,18 +22,24 @@ using L1StripIndex_t = unsigned /*short*/ int;  ///< Index of the station strip
 /// Note: U is a transverse coordinate of the hit in the axis perpendicular to the front strip
 /// Note: V is a transverse coordinate of the hit in the axis perpendicular to the back strip
 ///
-class L1Hit {
+class /*alignas(L1Constants::misc::kAlignment)*/ L1Hit {
 public:
-  L1StripIndex_t f {0};  ///< front strip index
-  L1StripIndex_t b {0};  ///< back strip index
-  float u {0.f};         ///< measured U coordinate [cm]
-  float v {0.f};         ///< measured V coordinate [cm]
-  float t {0.f};         ///< measured time
-  float z {0.f};         ///< fixed Z coordinate
-  float du {0.f};        ///< measured uncertainty of U coordinate [cm]
-  float dv {0.f};        ///< measured uncertainty of V coordinate [cm]
-  float dt {0.f};        ///< measured uncertainty of time [ns]
-  int ID {0};            ///< TODO: check if this ID is redundant
+  L1StripIndex_t f {0};  ///< front hit key index
+  L1StripIndex_t b {0};  ///< back hit key index
+  /// NOTE: For STS f and b correspond to the indexes of the front and back clusters of the hit in a dataset. For other
+  ///       tracking detectors (MVD, MuCh, TRD, TOF) f == b and corresponds to the index of the hit. Indexes f and b
+  ///       do not intersect between different detector stations.
+
+  float u  = 0.f;  ///< measured U coordinate [cm]
+  float v  = 0.f;  ///< measured V coordinate [cm]
+  float t  = 0.f;  ///< measured time [ns]
+  float z  = 0.f;  ///< fixed Z coordinate [cm]
+  float du = 0.f;  ///< measured uncertainty of U coordinate [cm]
+  float dv = 0.f;  ///< measured uncertainty of V coordinate [cm]
+  float dt = 0.f;  ///< measured uncertainty of time [ns]
+  int ID   = 0;    ///< index of hit before hits sorting
+  int iSt  = 0;    ///< index of station in the active stations array
+  // TODO: Test speed penalty of using iSt index
 };
 
 #endif

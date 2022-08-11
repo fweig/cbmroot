@@ -50,6 +50,7 @@ class L1AlgoDraw;
 #include "L1HitPoint.h"
 #include "L1HitsSortHelper.h"
 #include "L1InitManager.h"
+#include "L1InputData.h"
 #include "L1Parameters.h"
 #include "L1Portion.h"
 #include "L1Station.h"
@@ -170,6 +171,10 @@ public:
 
   /// Gets a pointer to the L1Algo initialization object
   L1InitManager* GetInitManager() { return &fInitManager; }
+
+  /// Receives input data
+  void ReceiveInputData(L1InputData&& inputData);
+
 
   /// ----- Hit-point-strips conversion routines ------
 
@@ -455,10 +460,13 @@ private:
     "L1Algo::fvHitKeyFlags"};  ///< List of key flags: has been this hit or cluster already used
 
 public:
-  int fNstrips {0};                                    ///< number of strips
-  L1Vector<L1Hit>* vHits {nullptr};                    ///< hits as a combination of front-, backstrips and z-position
-  L1Grid vGrid[L1Constants::size::kMaxNstations];      ///<
+  L1InputData fInputData;  ///< Tracking input data
+
+  int fNstrips {0};                                ///< number of strips
+  L1Vector<L1Hit>* vHits {nullptr};                ///< hits as a combination of front and back strips and z-position
+  L1Grid vGrid[L1Constants::size::kMaxNstations];  ///<
   L1Grid vGridTime[L1Constants::size::kMaxNstations];  ///<
+
 
   L1Vector<unsigned char>* fStripFlag {nullptr};  // information of hits station & using hits in tracks;
 

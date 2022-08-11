@@ -221,7 +221,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   // -- produce Sts hits from space points --
 
   for (int i = 0; i < fNStations; i++) {
-
     fData_->HitsStartIndex[i] = static_cast<L1HitIndex_t>(-1);
     fData_->HitsStopIndex[i]  = 0;
   }
@@ -1144,6 +1143,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   fvHitStore.reserve(nHits);
   fvHitPointIndexes.reserve(nHits);
 
+  fIODataManager.ResetInputData();
+  fIODataManager.ReserveNhits(nHits);
+  fIODataManager.SetNhitKeys(NStrips);
 
   // ----- Fill
   for (int i = 0; i < nHits; i++) {
@@ -1166,27 +1168,17 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     assert(th.iStripB >= 0 || th.iStripB < NStrips);
 
     L1Hit h;
-    h.f = th.iStripF;
-    h.b = th.iStripB;
-
-    h.ID = th.id;
-
-    h.t  = th.time;
-    h.dt = th.dt;
-
-    //  h.track = th.track;
-    //    h.dx  = th.dx;
-    //    h.dy  = th.dy;
-    h.du = th.du;
-    h.dv = th.dv;
-    h.u  = th.u;
-    h.v  = th.v;
-    //    h.dxy = th.dxy;
-    //     h.p = th.p;
-    //     h.q = th.q;
-    // h.ista = th.iStation;
-
-    h.z = th.z;
+    h.f   = th.iStripF;
+    h.b   = th.iStripB;
+    h.ID  = th.id;
+    h.t   = th.time;
+    h.dt  = th.dt;
+    h.du  = th.du;
+    h.dv  = th.dv;
+    h.u   = th.u;
+    h.v   = th.v;
+    h.z   = th.z;
+    h.iSt = th.iStation;
 
 
     // save hit
@@ -1203,10 +1195,12 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
 
     fData_->vHits.push_back(h);
+    fIODataManager.PushBackHit(h);
 
     int iSt = th.iStation;
 
-    if (fData_->HitsStartIndex[iSt] == static_cast<L1HitIndex_t>(-1)) fData_->HitsStartIndex[iSt] = nEffHits;
+    if (fData_->HitsStartIndex[iSt] == static_cast<L1HitIndex_t>(-1)) { fData_->HitsStartIndex[iSt] = nEffHits; }
+    assert(nEffHits == i);
     nEffHits++;
 
     fData_->HitsStopIndex[iSt] = nEffHits;
@@ -1229,6 +1223,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
   fpAlgo->SetData(fData_->GetHits(), fData_->GetNstrips(), fData_->GetSFlag(), fData_->GetHitsStartIndex(),
                   fData_->GetHitsStopIndex());
+
 
   if (fPerformance) {
     if (fVerbose >= 10) cout << "HitMatch is done." << endl;
