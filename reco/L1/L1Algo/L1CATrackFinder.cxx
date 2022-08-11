@@ -2092,10 +2092,9 @@ void L1Algo::CATrackFinder()
 #endif
             L1Triplet& first_trip = (fTriplets[istaF][iThread][itrip]);
             if (GetFUsed((*fStripFlag)[(*vHitsUnused)[first_trip.GetLHit()].f]
-                         | (*fStripFlag)[(*vHitsUnused)[first_trip.GetLHit()].b]))
+                         | (*fStripFlag)[(*vHitsUnused)[first_trip.GetLHit()].b])) {
               continue;
-
-
+            }
 //               ghost supression !!!
 #ifndef FIND_GAPED_TRACKS
             if (/*(isec == kFastPrimIter) ||*/ (isec == kAllPrimIter) || (isec == kAllPrimEIter)
@@ -2114,7 +2113,6 @@ void L1Algo::CATrackFinder()
                   if (first_trip.GetLevel() == 0)
                     continue;  // ghost suppression // find track with 3 hits only if it was created from a chain of triplets, but not from only one triplet
 
-
                 if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
                   if ((firstTripletLevel == 0)
                       && (GetFStation((*fStripFlag)[(*vHitsUnused)[first_trip.GetLHit()].f]) != 0))
@@ -2124,7 +2122,6 @@ void L1Algo::CATrackFinder()
               if (first_trip.GetLevel() < firstTripletLevel)
                 continue;  // try only triplets, which can start track with firstTripletLevel+3 length. w\o it have more ghosts, but efficiency either
             }
-
 
             //  curr_tr.Momentum = 0.f;
             curr_tr.chi2 = 0.f;
@@ -2137,25 +2134,26 @@ void L1Algo::CATrackFinder()
             curr_L    = 1;
             curr_chi2 = first_trip.GetChi2();
 
-            best_tr = (curr_tr);
-
+            best_tr   = (curr_tr);
             best_chi2 = curr_chi2;
             best_L    = curr_L;
 
             CAFindTrack(istaF, best_tr, best_L, best_chi2, &first_trip, (curr_tr), curr_L, curr_chi2, min_best_l,
                         new_tr);  /// reqursive func to build a tree of possible track-candidates and choose the best
-
             //              if ( best_L < min_best_l ) continue;
             if (best_L < firstTripletLevel + 2) continue;  // lose maximum one hit
 
             if (best_L < min_level + 3) continue;  // should find all hits for min_level
 
-            ndf       = best_L * 2 - 5;
+            ndf = best_L * 2 - 5;
+
+            if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) { ndf = best_L * 2 - 4; }
+
             best_chi2 = best_chi2 / ndf;  //normalize
 
 #ifndef TRACKS_FROM_TRIPLETS
             if (fGhostSuppression) {
-              if (best_L == 3) {
+              if (3 == best_L) {
                 // if( isec == kAllSecIter ) continue; // too /*short*/ secondary track
                 if (((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) && (istaF != 0))
                   continue;  // too /*short*/ non-MAPS track
@@ -2164,76 +2162,122 @@ void L1Algo::CATrackFinder()
               }
             }
 #endif
-            best_tr.Set(istaF, best_L, best_chi2, first_trip.GetQp(),
-                        PackTrackId(thread_num, fTrackCandidates[thread_num].size()));
             fTrackCandidates[thread_num].push_back(best_tr);
-
             L1Branch& tr = fTrackCandidates[thread_num].back();
-
-            bool check = 1;
-
-            for (L1Vector<L1HitIndex_t>::iterator phitIt = tr.fHits.begin();  /// used strips are marked
-                 phitIt != tr.fHits.end(); ++phitIt) {
-              const L1Hit& h = (*vHits)[*phitIt];
-#ifdef _OPENMP
-              omp_set_lock(&fStripToTrackLock[h.b]);
-#endif
-              int& strip1 = (fStripToTrackB)[h.b];
-
-              if (strip1 != -1) {
-                int thread = TrackId2Thread(strip1);
-                int num    = TrackId2Track(strip1);
-
-                if (L1Branch::compareCand(tr, fTrackCandidates[thread][num])) {
-                  fTrackCandidates[thread][num].fID = -1;
-                  strip1                            = tr.fID;
-                }
-                else {
-                  check = 0;
-#ifdef _OPENMP
-                  omp_unset_lock(&fStripToTrackLock[h.b]);
-#endif
-                  break;
-                }
+            tr.Set(istaF, best_L, best_chi2, first_trip.GetQp(),
+                   PackTrackId(thread_num, fTrackCandidates[thread_num].size() - 1));
+            if (0) {  // debug
+              cout << "track " << fTrackCandidates[thread_num].size() - 1 << " found, L = " << (int) best_L
+                   << " chi2= " << best_chi2 << endl;
+              cout << " hits: ";
+              for (unsigned int i = 0; i < tr.fHits.size(); i++) {
+                cout << GetMcTrackIdForHit(tr.fHits[i]) << " ";
               }
-              else
-                strip1 = tr.fID;
-#ifdef _OPENMP
-              omp_unset_lock(&fStripToTrackLock[h.b]);
-#endif
-
-              if (check) {
-#ifdef _OPENMP
-                omp_set_lock(&fStripToTrackLock[h.f]);
-#endif
-                int& strip2 = (fStripToTrackF)[h.f];
-                if (strip2 != -1) {
-                  int thread = TrackId2Thread(strip2);
-                  int num    = TrackId2Track(strip2);
-
-                  if (L1Branch::compareCand(tr, fTrackCandidates[thread][num])) {
-                    fTrackCandidates[thread][num].fID = -1;
-                    strip2                            = tr.fID;
-                  }
-                  else {
-                    check = 0;
-#ifdef _OPENMP
-                    omp_unset_lock(&fStripToTrackLock[h.f]);
-#endif
-                    break;
-                  }
-                }
-                else
-                  strip2 = tr.fID;
-#ifdef _OPENMP
-                omp_unset_lock(&fStripToTrackLock[h.f]);
-#endif
-              }
+              cout << endl;
             }
-            if (!check) { fTrackCandidates[thread_num].pop_back(); }
           }  // itrip
         }    // iThread
       }      // istaF
+
+      for (Tindex iThread = 0; iThread < fNThreads; ++iThread) {
+        for (Tindex iTrack = 0; iTrack < (Tindex) fTrackCandidates[iThread].size(); ++iTrack) {
+          L1Branch& tr = fTrackCandidates[iThread][iTrack];
+          tr.fIsAlive  = false;
+        }
+      }
+
+      bool repeatCompetition = true;
+      int iComp              = 0;
+      for (iComp = 0; (iComp < 100) && repeatCompetition; ++iComp) {
+
+        // == Loop over track candidates and mark their strips
+        // TODO: OpenMP
+
+        repeatCompetition = false;
+
+        for (Tindex iThread = 0; iThread < fNThreads; ++iThread) {
+          for (Tindex iTrack = 0; iTrack < (Tindex) fTrackCandidates[iThread].size(); ++iTrack) {
+            L1Branch& tr = fTrackCandidates[iThread][iTrack];
+            if (tr.fIsAlive) continue;
+
+            for (int iHit = 0; iHit < (int) tr.fHits.size(); ++iHit) {
+              const L1Hit& h = (*vHits)[tr.fHits[iHit]];
+              bool isAlive   = true;
+              {  // front  strip
+#ifdef _OPENMP
+                omp_set_lock(&fStripToTrackLock[h.f]);
+#endif
+                int& stripF = (fStripToTrackF)[h.f];
+                if ((stripF >= 0) && (stripF != tr.fID)) {  // strip is used by other candidate
+                  const auto& other = fTrackCandidates[TrackId2Thread(stripF)][TrackId2Track(stripF)];
+                  if (!other.fIsAlive && L1Branch::compareCand(tr, other)) { stripF = tr.fID; }
+                  else {
+                    isAlive = false;
+                  }
+                }
+                else {
+                  stripF = tr.fID;
+                }
+#ifdef _OPENMP
+                omp_unset_lock(&fStripToTrackLock[h.f]);
+#endif
+                if (!isAlive) { break; }
+              }
+
+              {  // back strip
+#ifdef _OPENMP
+                omp_set_lock(&fStripToTrackLock[h.b]);
+#endif
+                int& stripB = (fStripToTrackB)[h.b];
+                if ((stripB >= 0) && (stripB != tr.fID)) {  // strip is used by other candidate
+                  const auto& other = fTrackCandidates[TrackId2Thread(stripB)][TrackId2Track(stripB)];
+                  if (!other.fIsAlive && L1Branch::compareCand(tr, other)) { stripB = tr.fID; }
+                  else {
+                    isAlive = false;
+                  }
+                }
+                else {
+                  stripB = tr.fID;
+                }
+#ifdef _OPENMP
+                omp_unset_lock(&fStripToTrackLock[h.b]);
+#endif
+                if (!isAlive) { break; }
+              }
+            }  // loop over hits
+          }    // itrack
+        }      // iThread
+
+        // == Loop over track candidates and select those that are alive
+        // TODO: OpenMP
+        for (Tindex iThread = 0; iThread < fNThreads; ++iThread) {
+          for (Tindex iTrack = 0; iTrack < (Tindex) fTrackCandidates[iThread].size(); ++iTrack) {
+            L1Branch& tr = fTrackCandidates[iThread][iTrack];
+            if (tr.fIsAlive) { continue; }
+
+            tr.fIsAlive = true;
+            for (int iHit = 0; tr.fIsAlive && (iHit < (int) tr.fHits.size()); ++iHit) {
+              const L1Hit& h = (*vHits)[tr.fHits[iHit]];
+              tr.fIsAlive    = tr.fIsAlive && ((fStripToTrackF)[h.f] == tr.fID) && ((fStripToTrackB)[h.b] == tr.fID);
+            }
+
+            if (!tr.fIsAlive) {  // release strips
+              for (int iHit = 0; (iHit < (int) tr.fHits.size()); ++iHit) {
+                const L1Hit& h = (*vHits)[tr.fHits[iHit]];
+                if (fStripToTrackF[h.f] == tr.fID) { fStripToTrackF[h.f] = -1; }
+                if (fStripToTrackB[h.b] == tr.fID) { fStripToTrackB[h.b] = -1; }
+              }
+            }
+            else {
+              repeatCompetition = true;
+            }
+          }  // itrack
+        }    // iThread
+      }      // competitions
+
+      // cout << " N Competitions: " << iComp << endl;
+
+      // ==
 
       for (int i = 0; i < fNThreads; ++i) {
         fTracks_local[i].clear();
