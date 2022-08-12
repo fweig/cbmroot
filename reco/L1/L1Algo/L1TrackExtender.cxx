@@ -44,9 +44,9 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   const L1Hit& hit1 = (*vHits)[hits[iFirstHit + step]];
   const L1Hit& hit2 = (*vHits)[hits[iFirstHit + 2 * step]];
 
-  int ista0 = GetFStation((*fStripFlag)[hit0.f]);
-  int ista1 = GetFStation((*fStripFlag)[hit1.f]);
-  int ista2 = GetFStation((*fStripFlag)[hit2.f]);
+  int ista0 = hit0.iSt;
+  int ista1 = hit1.iSt;
+  int ista2 = hit2.iSt;
 
   const L1Station& sta0 = fParameters.GetStation(ista0);
   const L1Station& sta1 = fParameters.GetStation(ista1);
@@ -121,7 +121,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   for (int i = iFirstHit + step; step * i <= step * iLastHit; i += step) {
     const L1Hit& hit = (*vHits)[hits[i]];
     ista_prev        = ista;
-    ista             = GetFStation((*fStripFlag)[hit.f]);
+    ista             = hit.iSt;
 
     const L1Station& sta = fParameters.GetStation(ista);
 
@@ -199,15 +199,15 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
   const signed short int step = -2 * static_cast<int>(dir) + 1;  // increment for station index
   const int iFirstHit         = (dir) ? 2 : t.NHits - 3;
-  //  int ista = GetFStation((*fStripFlag)[(*vHits)[t.Hits[iFirstHit]].f]) + 2*step; // current station. set to the end of track
+  //  int ista = (*vHits)[t.Hits[iFirstHit]].iSt + 2*step; // current station. set to the end of track
 
   const L1Hit& hit0 = (*vHits)[t.fHits[iFirstHit]];  // optimize
   const L1Hit& hit1 = (*vHits)[t.fHits[iFirstHit + step]];
   const L1Hit& hit2 = (*vHits)[t.fHits[iFirstHit + 2 * step]];
 
-  const int ista0 = GetFStation((*fStripFlag)[hit0.f]);
-  const int ista1 = GetFStation((*fStripFlag)[hit1.f]);
-  const int ista2 = GetFStation((*fStripFlag)[hit2.f]);
+  const int ista0 = hit0.iSt;
+  const int ista1 = hit1.iSt;
+  const int ista2 = hit2.iSt;
 
   const L1Station& sta0 = fParameters.GetStation(ista0);
   const L1Station& sta1 = fParameters.GetStation(ista1);

@@ -43,6 +43,7 @@
 #include "TH2.h"
 #include "TProfile.h"
 #include <TFile.h>
+#include "TMath.h"
 
 #include <iostream>
 #include <list>
@@ -530,6 +531,18 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
   static TH2F *h2_rest_nhits_vs_mom_prim, *h2_rest_nhits_vs_mom_sec, *h2_rest_fstation_vs_mom_prim,
     *h2_rest_fstation_vs_mom_sec, *h2_rest_lstation_vs_fstation_prim, *h2_rest_lstation_vs_fstation_sec;
 
+  static TH1F* h_reg_phi_prim;
+  static TH1F* h_reg_phi_sec;
+  static TH1F* h_acc_phi_prim;
+  static TH1F* h_acc_phi_sec;
+  static TH1F* h_reco_phi_prim;
+  static TH1F* h_reco_phi_sec;
+  static TH1F* h_rest_phi_prim;
+  static TH1F* h_rest_phi_sec;
+  static TH1F* h_ghost_phi;
+  static TH1F* h_reco_phi;
+  static TH1F* h_notfound_phi;
+
   static bool first_call = 1;
 
   if (first_call) {
@@ -579,6 +592,15 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     h_rest_mom_prim = new TH1F("h_rest_mom_prim", "Momentum of not found primary tracks", 500, 0.0, 5.0);
     h_rest_mom_sec  = new TH1F("h_rest_mom_sec", "Momentum of not found secondary tracks", 500, 0.0, 5.0);
 
+    h_reg_phi_prim  = new TH1F("h_reg_phi_prim", "Azimuthal angle of registered primary tracks", 1000, -3.15, 3.15);
+    h_reg_phi_sec   = new TH1F("h_reg_phi_sec", "Azimuthal angle of registered secondary tracks", 1000, -3.15, 3.15);
+    h_acc_phi_prim  = new TH1F("h_acc_phi_prim", "Azimuthal angle of accepted primary tracks", 1000, -3.15, 3.15);
+    h_acc_phi_sec   = new TH1F("h_acc_phi_sec", "Azimuthal angle of accepted secondary tracks", 1000, -3.15, 3.15);
+    h_reco_phi_prim = new TH1F("h_reco_phi_prim", "Azimuthal angle of reconstructed primary tracks", 1000, -3.15, 3.15);
+    h_reco_phi_sec  = new TH1F("h_reco_phi_sec", "Azimuthal angle of reconstructed secondary tracks", 1000, -3.15, 3.15);
+    h_rest_phi_prim = new TH1F("h_rest_phi_prim", "Azimuthal angle of not found primary tracks", 1000, -3.15, 3.15);
+    h_rest_phi_sec  = new TH1F("h_rest_phi_sec", "Azimuthal angle of not found secondary tracks", 1000, -3.15, 3.15);
+    
     h_reg_nhits_prim  = new TH1F("h_reg_nhits_prim", "Number of hits in registered primary track", 51, -0.1, 10.1);
     h_reg_nhits_sec   = new TH1F("h_reg_nhits_sec", "Number of hits in registered secondary track", 51, -0.1, 10.1);
     h_acc_nhits_prim  = new TH1F("h_acc_nhits_prim", "Number of hits in accepted primary track", 51, -0.1, 10.1);
@@ -589,6 +611,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     h_rest_nhits_sec  = new TH1F("h_rest_nhits_sec", "Number of hits in not found secondary track", 51, -0.1, 10.1);
 
     h_ghost_mom      = new TH1F("h_ghost_mom", "Momentum of ghost tracks", 500, 0.0, 5.0);
+    h_ghost_phi      = new TH1F("h_ghost_phi", "Azimuthal angle of ghost tracks", 1000, -3.15, 3.15);
     h_ghost_nhits    = new TH1F("h_ghost_nhits", "Number of hits in ghost track", 51, -0.1, 10.1);
     h_ghost_fstation = new TH1F("h_ghost_fstation", "First station of ghost track", 50, -0.5, 10.0);
     h_ghost_chi2     = new TH1F("h_ghost_chi2", "Chi2/NDF of ghost track", 50, -0.5, 10.0);
@@ -599,6 +622,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     h_ghost_purity   = new TH1F("h_ghost_purity", "Ghost: percentage of correct hits", 100, -0.5, 100.5);
 
     h_reco_mom      = new TH1F("h_reco_mom", "Momentum of reco track", 50, 0.0, 5.0);
+    h_reco_phi      = new TH1F("h_reco_phi", "Azimuthal angle of reco track", 1000, -3.15, 3.15);
     h_reco_nhits    = new TH1F("h_reco_nhits", "Number of hits in reco track", 50, 0.0, 10.0);
     h_reco_station  = new TH1F("h_reco_station", "First station of reco track", 50, -0.5, 10.0);
     h_reco_chi2     = new TH1F("h_reco_chi2", "Chi2/NDF of reco track", 50, -0.5, 10.0);
@@ -631,6 +655,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     h_sec_r = new TH1F("h_sec_r", "R of sec MC track at the first hit", 50, 0.0, 15.0);
 
     h_notfound_mom     = new TH1F("h_notfound_mom", "Momentum of not found track", 50, 0.0, 5.0);
+    h_notfound_phi     = new TH1F("h_notfound_phi", "Momentum of not found track", 50, 0.0, 5.0);
     h_notfound_nhits   = new TH1F("h_notfound_nhits", "Num hits of not found track", 50, 0.0, 10.0);
     h_notfound_station = new TH1F("h_notfound_station", "First station of not found track", 50, 0.0, 10.0);
     h_notfound_r       = new TH1F("h_notfound_r", "R at first hit of not found track", 50, 0.0, 15.0);
@@ -772,7 +797,11 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     CbmL1Track* prtra = &(*rtraIt);
     if ((prtra->Hits).size() < 1) continue;
     {  // fill histos
-      if (fabs(prtra->T[4]) > 1.e-10) h_reco_mom->Fill(fabs(1.0 / prtra->T[4]));
+      if (fabs(prtra->T[4]) > 1.e-10) h_reco_mom->Fill(fabs(1.0 / prtra->T[4])); // TODO: Is it a right precision? In FairTrackParam it is 1.e-4 (S.Zharko)
+      // NOTE: p = (TMath::Abs(fQp) > 1.e-4) ? 1. / TMath::Abs(fQp) : 1.e4; // FairTrackParam::Momentum(TVector3)
+      // h_reco_mom->Fill(TMath::Abs(prtra->T[4] > 1.e-4) ? 1. / TMath::Abs(prtra->T[4]) : 1.e+4); // this should be correct
+
+      h_reco_phi->Fill(TMath::ATan2(-prtra->T[3], -prtra->T[2])); // TODO: What is precision?
       h_reco_nhits->Fill((prtra->Hits).size());
       CbmL1HitStore& mh = fvHitStore[prtra->Hits[0]];
       h_reco_station->Fill(mh.iStation);
@@ -803,6 +832,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
       h_ghost_purity->Fill(100 * prtra->GetMaxPurity());
       if (fabs(prtra->T[4]) > 1.e-10) {
         h_ghost_mom->Fill(fabs(1.0 / prtra->T[4]));
+        h_ghost_phi->Fill(atan(prtra->T[3] / prtra->T[2]));  // phi = atan(py / px) = atan(ty / tx)
         h_ghost_Rmom->Fill(fabs(1.0 / prtra->T[4]));
       }
       h_ghost_nhits->Fill((prtra->Hits).size());
@@ -838,6 +868,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     double momentum = mtra.p;
     double pt       = sqrt(mtra.px * mtra.px + mtra.py * mtra.py);
     double theta    = acos(mtra.pz / mtra.p) * 180 / 3.1415;
+    double phi      = TMath::ATan2(-mtra.py, -mtra.px);
 
     h_mcp->Fill(momentum);
     h_nmchits->Fill(nmchits);
@@ -850,6 +881,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     h_reg_MCmom->Fill(momentum);
     if (mtra.IsPrimary()) {
       h_reg_mom_prim->Fill(momentum);
+      h_reg_phi_prim->Fill(phi);
       h_reg_prim_MCmom->Fill(momentum);
       h_reg_nhits_prim->Fill(nSta);
       h2_reg_nhits_vs_mom_prim->Fill(momentum, nSta);
@@ -858,6 +890,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     }
     else {
       h_reg_mom_sec->Fill(momentum);
+      h_reg_phi_sec->Fill(phi);
       h_reg_sec_MCmom->Fill(momentum);
       h_reg_nhits_sec->Fill(nSta);
       if (momentum > 0.01) {
@@ -875,6 +908,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     h_acc_MCmom->Fill(momentum);
     if (mtra.IsPrimary()) {
       h_acc_mom_prim->Fill(momentum);
+      h_acc_phi_prim->Fill(phi);
       h_acc_prim_MCmom->Fill(momentum);
       h_acc_nhits_prim->Fill(nSta);
       h2_acc_nhits_vs_mom_prim->Fill(momentum, nSta);
@@ -883,6 +917,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     }
     else {
       h_acc_mom_sec->Fill(momentum);
+      h_acc_phi_sec->Fill(phi);
       h_acc_sec_MCmom->Fill(momentum);
       h_acc_nhits_sec->Fill(nSta);
       if (momentum > 0.01) {
@@ -936,6 +971,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
       }
       if (mtra.mother_ID < 0) {  // primary
         h_reco_mom_prim->Fill(momentum);
+        h_reco_phi_prim->Fill(phi);
         h_reco_prim_MCmom->Fill(momentum);
         h_reco_nhits_prim->Fill(nSta);
         h2_reco_nhits_vs_mom_prim->Fill(momentum, nSta);
@@ -944,6 +980,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
       }
       else {
         h_reco_mom_sec->Fill(momentum);
+        h_reco_phi_sec->Fill(phi);
         h_reco_sec_MCmom->Fill(momentum);
         h_reco_nhits_sec->Fill(nSta);
         if (momentum > 0.01) {
@@ -955,6 +992,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     }
     else {
       h_notfound_mom->Fill(momentum);
+      h_notfound_phi->Fill(phi);
       p_eff_all_vs_mom->Fill(momentum, 0.0);
       p_eff_all_vs_nhits->Fill(nMCHits, 0.0);
       p_eff_all_vs_pt->Fill(pt, 0.0);
@@ -970,6 +1008,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
       }
       if (mtra.mother_ID < 0) {  // primary
         h_rest_mom_prim->Fill(momentum);
+        h_rest_phi_prim->Fill(phi);
         h_rest_nhits_prim->Fill(nSta);
         h2_rest_nhits_vs_mom_prim->Fill(momentum, nSta);
         h2_rest_fstation_vs_mom_prim->Fill(momentum, fh.iStation + 1);
@@ -977,6 +1016,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
       }
       else {
         h_rest_mom_sec->Fill(momentum);
+        h_rest_phi_sec->Fill(phi);
         h_rest_nhits_sec->Fill(nSta);
         if (momentum > 0.01) {
           h2_rest_nhits_vs_mom_sec->Fill(momentum, nSta);

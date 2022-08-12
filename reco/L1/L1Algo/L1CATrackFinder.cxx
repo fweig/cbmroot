@@ -2258,8 +2258,7 @@ void L1Algo::CATrackFinder()
                     continue;  //ghost suppression//find track with 3 hits only if it was created from a chain of triplets, but not from only one triplet
 
                 if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
-                  if ((firstTripletLevel == 0)
-                      && (GetFStation((*fStripFlag)[(*vHitsUnused)[first_trip.GetLHit()].f]) != 0))
+                  if ((firstTripletLevel == 0) && ((*vHitsUnused)[first_trip.GetLHit()].iSt != 0))
                     continue;  // ghost supression // collect only MAPS tracks-triplets  CHECK!!!
                 }
               }

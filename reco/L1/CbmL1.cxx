@@ -986,7 +986,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 #ifdef USE_EVENT_NUMBER
         h.n = mcp.event;
 #endif
-        const int ista       = (*fpAlgo->fStripFlag)[h.f] / 4;
+        const int ista       = h.iSt;
         const L1Station& sta = fpAlgo->GetParameters()->GetStation(ista);
         if (std::find(strips.begin(), strips.end(), h.f) != strips.end()) {  // separate strips
 

@@ -125,7 +125,7 @@ void CbmL1MCTrack::CalculateHitCont()
     for (int ih = 0; ih < nhits; ih++) {
       int jh         = Hits[ih];
       const L1Hit& h = (*algo->vHits)[jh];
-      int ista       = (*algo->fStripFlag)[h.f] / 4;
+      int ista       = h.iSt;
 
       if (ista - istaold == 1) ncont++;
       else if (ista - istaold > 1) {
