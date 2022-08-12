@@ -86,7 +86,18 @@ inline void L1Algo::findSingletsStep0(  // input
   /// the data is orginesed in order to be used by SIMD
 
   const Tindex end_lh = start_lh + n1_l;
-
+  const int lastV     = (n1_l - 1) / fvecLen;
+  if (lastV >= 0) {
+    // set some positive errors to unfilled part of vectors in order to avoid nans
+    L1HitPoint& hitl = Hits_l[0];
+    d_u[lastV]       = hitl.dU();
+    d_v[lastV]       = hitl.dV();
+    HitTimeEr[lastV] = hitl.timeEr;
+    u_front_l[lastV] = hitl.U();
+    u_back_l[lastV]  = hitl.V();
+    HitTime_l[lastV] = hitl.time;
+    zPos_l[lastV]    = hitl.Z();
+  }
 
   for (Tindex ilh = start_lh, i1 = 0; ilh < end_lh; ++ilh, ++i1) {
     Tindex i1_V      = i1 / fvecLen;
@@ -159,6 +170,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
   for (int i1_V = 0; i1_V < n1_V; i1_V++) {
     L1TrackPar& T = T_1[i1_V];
+
     L1FieldRegion& fld1 =
       fld_1[i1_V];  // by  middle hit, left hit and "center" . Will be used for extrapolation to right hit
 
@@ -214,7 +226,8 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     if (istac != istal) fld1.Set(m_B, zstam, l_B, zstal, centB, zstac);
     else
       fld1.Set(m_B, zstam, l_B, zstal, fTargB, fTargZ);
-#else  // if USE_3HITS  -- the best now
+#else
+    // if USE_3HITS  -- the best now
     L1FieldValue r_B _fvecalignment;
     const L1Station& star = fParameters.GetStation(istam + 1);
     fvec zstar            = star.z;
@@ -240,7 +253,6 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) T.C22 = T.C33 = 10;
     T.C44 = fMaxInvMom / 3. * fMaxInvMom / 3.;
     T.C55 = timeEr * timeEr;
-
 
     if (fParameters.DevIsFitSingletsFromTarget()) {  // TODO: doesn't work. Why?
 
@@ -301,6 +313,8 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
         T.C11 = dy1 * dy1;
       }
 
+      //assert(T.IsConsistent(true, -1));
+
       //  add the target
       if (istal < fNfieldStations) {
         fvec eX, eY, J04, J14;
@@ -316,16 +330,40 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
         J[5] = J14;
         L1FilterVtx(T, fTargX, fTargY, TargetXYInfo, eX, eY, J);
       }
-      else {
-        L1ExtrapolateLine(T, fTargZ);
-        L1FilterXY(T, fTargX, fTargY, TargetXYInfo);
+      else {  //TODO: SG: take the field into account properly
+        fvec eX, eY, J04, J14;
+        fvec dz;
+        dz  = fTargZ - zl;
+        eX  = T.tx * dz;
+        eY  = T.ty * dz;
+        J04 = 0.f;
+        J14 = 0.f;
+        L1ExtrapolateJXY0(T.tx, T.ty, dz, fld0, eX, eY, J04, J14);
+        fvec J[6];
+        J[0] = dz;
+        J[1] = 0;
+        J[2] = J04;
+        J[3] = 0;
+        J[4] = dz;
+        J[5] = J14;
+        L1FilterVtx(T, fTargX, fTargY, TargetXYInfo, eX, eY, J);
+        // old code
+        //L1ExtrapolateLine(T, fTargZ);
+        //assert(T.IsConsistent(true, -1));
+        //L1FilterXY(T, fTargX, fTargY, TargetXYInfo);
+        //assert(T.IsConsistent(true, -1));
       }
     }
 
+    //assert(T.IsConsistent(true, -1));
+
     if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-      if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
+      if (kMcbm == fTrackingMode) {
         fit.L1AddThickMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, 1,
                                stal.materialInfo.thick, 1);
+      }
+      else if (kGlobal == fTrackingMode) {
+        fit.L1AddMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, 1);
       }
       else {
         fit.L1AddMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, 1);
@@ -338,14 +376,19 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
       fit.L1AddPipeMaterial(T, fMaxInvMom, 1);
     }
 
+    //assert(T.IsConsistent(true, -1));
+
     fvec dz = zstam - zl;
     L1ExtrapolateTime(T, dz, stam.timeInfo);
 
-    // extrapolate to left hit
+    // extrapolate to the middle hit
     if (istam < fNfieldStations) { L1Extrapolate0(T, zstam, fld0); }
     else {
       L1ExtrapolateLine(T, zstam);  // TODO: fld1 doesn't work!
     }
+
+    // assert(T.IsConsistent(true, -1));
+
   }  // i1_V
 }
 
@@ -373,6 +416,9 @@ inline void L1Algo::findDoubletsStep0(
     const Tindex i1_4      = i1 % fvecLen;
     L1TrackPar& T1         = T_1[i1_V];
 
+    // assert(T1.IsEntryConsistent(true, i1_4));
+    // if (!T1.IsEntryConsistent(false, i1_4)) continue;
+
     const int n2Saved = n2;
 
     const fvec Pick_m22 = (fDoubletChi2Cut - T1.chi2);
@@ -392,7 +438,7 @@ inline void L1Algo::findDoubletsStep0(
 
     L1HitIndex_t imh = 0;
     int irm1         = -1;
-    while (true) {
+    while (true) {  // loop over the hits in the area
       if (fParameters.DevIsIgnoreHitSearchAreas()) {
         irm1++;
         if ((L1HitIndex_t) irm1 >= (HitsUnusedStopIndex[iStaM] - HitsUnusedStartIndex[iStaM])) break;
@@ -411,6 +457,7 @@ inline void L1Algo::findDoubletsStep0(
       }
 
       // check y-boundaries
+      //TODO: move hardcoded cuts to parameters
       if ((stam.timeInfo) && (stal.timeInfo)) {
         if (fabs(time - hitm.time) > sqrt(timeError + hitm.timeEr * hitm.timeEr) * 5) continue;
         if (fabs(time - hitm.time) > 30) continue;
@@ -495,7 +542,6 @@ inline void L1Algo::findDoubletsStep0(
 
       // FilterTime(T1, hitm.time, hitm.timeEr);
 
-
 #ifdef DO_NOT_SELECT_TRIPLETS
       if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
 #endif  // DO_NOT_SELECT_TRIPLETS
@@ -521,8 +567,10 @@ inline void L1Algo::findDoubletsStep0(
         hitsm_2.reduce(hitsm_2.size() - Ndoublets);
         break;
       }
-    }
+    }  // loop over the hits in the area
+
     lmDuplets[hitsl_1[i1]] = (n2Saved < n2);
+
   }  // for i1
 }
 
@@ -542,10 +590,24 @@ inline void L1Algo::findTripletsStep0(  // input
   nsL1::vector<fvec>::TSimd& dv_, nsL1::vector<fvec>::TSimd& du_, nsL1::vector<fvec>::TSimd& timeR,
   nsL1::vector<fvec>::TSimd& timeER)
 {
+  int iStaM = &stam - fParameters.GetStations().begin();
+  int iStaR = &star - fParameters.GetStations().begin();
+
   L1HitIndex_t hitsl_2[fvecLen];
   L1HitIndex_t hitsm_2_tmp[fvecLen];
-  fvec fvec_0;
+  fvec fvec_0 = 0.f;
+  fvec fvec_1 = 1.f;
   L1TrackPar L1TrackPar_0;
+  // SG!! to avoid nans in unfilled part
+  //TODO: SG: investigate, it changes the results !!
+  /*
+  L1TrackPar_0.C00 = 1.f;
+  L1TrackPar_0.C11 = 1.f;
+  L1TrackPar_0.C22 = 1.f;
+  L1TrackPar_0.C33 = 1.f;
+  L1TrackPar_0.C44 = 1.f;
+  L1TrackPar_0.C55 = 1.f;
+  */
 
   L1Fit fit;
   fit.SetParticleMass(fDefaultMass);
@@ -556,307 +618,342 @@ inline void L1Algo::findTripletsStep0(  // input
   u_front_3.push_back(fvec_0);
   u_back_3.push_back(fvec_0);
   z_Pos_3.push_back(fvec_0);
-  //  dx_.push_back(fvec_0);
-  //  dy_.push_back(fvec_0);
-  du_.push_back(fvec_0);
-  dv_.push_back(fvec_0);
+  du_.push_back(fvec_1);
+  dv_.push_back(fvec_1);
   timeR.push_back(fvec_0);
-  timeER.push_back(fvec_0);
+  timeER.push_back(fvec_1);
 
+  assert(istar < fNstations);  //TODO SG!!! check if it is needed
 
-  L1TrackPar T2;
-  L1FieldRegion f2;
-  // pack the data
-  fvec u_front_2;
-  fvec u_back_2;
-  fvec dx2;
-  fvec dy2;
-  fvec du2;
-  fvec dv2;
-  fvec zPos_2;
-  fvec timeM;
-  fvec timeMEr;
-  fvec num;
-
+  if (istar >= fNstations) return;
 
   // ---- Add the middle hits to parameters estimation. Propagate to right station. ----
-  if (istar < fNstations) {
-    for (Tindex i2 = 0; i2 < n2;) {
-      Tindex n2_4 = 0;
-      for (; n2_4 < fvecLen && i2 < n2; n2_4++, i2++) {
-        //         if (!mrDuplets[hitsm_2[i2]]) {
-        //           n2_4--;
-        //           continue;
-        //         }
-        const Tindex& i1  = i1_2[i2];
-        const Tindex i1_V = i1 / fvecLen;
-        const Tindex i1_4 = i1 % fvecLen;
 
+  for (Tindex i2 = 0; i2 < n2;) {
+    L1TrackPar T2 = L1TrackPar_0;
+    L1FieldRegion f2;
+    // pack the data
+    fvec u_front_2 = 0.f;
+    fvec u_back_2  = 0.f;
+    fvec dx2       = 1.f;
+    fvec dy2       = 1.f;
+    fvec du2       = 1.f;
+    fvec dv2       = 1.f;
+    fvec zPos_2    = 0.f;
+    fvec timeM     = 0.f;
+    fvec timeMEr   = 1.f;
 
-        const L1TrackPar& T1    = T_1[i1_V];
-        const L1FieldRegion& f1 = fld_1[i1_V];
-        T2.SetOneEntry(n2_4, T1, i1_4);
-        f2.SetOneEntry(n2_4, f1, i1_4);
+    Tindex n2_4 = 0;
+    for (; n2_4 < fvecLen && i2 < n2; i2++) {
+      //         if (!mrDuplets[hitsm_2[i2]]) {
+      //           n2_4--;
+      //           continue;
+      //         }
+      const Tindex& i1  = i1_2[i2];
+      const Tindex i1_V = i1 / fvecLen;
+      const Tindex i1_4 = i1 % fvecLen;
 
-        const Tindex& imh      = hitsm_2[i2];
-        const L1HitPoint& hitm = vHits_m[imh];
-        u_front_2[n2_4]        = hitm.U();
-        u_back_2[n2_4]         = hitm.V();
-        zPos_2[n2_4]           = hitm.Z();
-        timeM[n2_4]            = hitm.time;
-        timeMEr[n2_4]          = hitm.timeEr;
-        //  num[n2_4] = hitm.track;
-        du2[n2_4] = hitm.dU();
-        dv2[n2_4] = hitm.dV();
+      const L1TrackPar& T1 = T_1[i1_V];
 
-        hitsl_2[n2_4]     = hitsl_1[i1];
-        hitsm_2_tmp[n2_4] = hitsm_2[i2];
-      }  // n2_4
+      //assert(T1.IsEntryConsistent(true, i1_4));
+      //if (!T1.IsEntryConsistent(false, i1_4)) continue;
 
-      dUdV_to_dX(du2, dv2, dx2, stam);
-      dUdV_to_dY(du2, dv2, dy2, stam);
+      const L1FieldRegion& f1 = fld_1[i1_V];
+      T2.SetOneEntry(n2_4, T1, i1_4);
+      f2.SetOneEntry(n2_4, f1, i1_4);
 
-      fvec dz = zPos_2 - T2.z;
+      const Tindex& imh      = hitsm_2[i2];
+      const L1HitPoint& hitm = vHits_m[imh];
+      u_front_2[n2_4]        = hitm.U();
+      u_back_2[n2_4]         = hitm.V();
+      zPos_2[n2_4]           = hitm.Z();
+      timeM[n2_4]            = hitm.time;
+      timeMEr[n2_4]          = hitm.timeEr;
+      //  num[n2_4] = hitm.track;
+      du2[n2_4] = hitm.dU();
+      dv2[n2_4] = hitm.dV();
 
-      L1ExtrapolateTime(T2, dz, stam.timeInfo);
-      // add middle hit
-      L1ExtrapolateLine(T2, zPos_2);
+      hitsl_2[n2_4]     = hitsl_1[i1];
+      hitsm_2_tmp[n2_4] = hitsm_2[i2];
+      n2_4++;
+    }  // n2_4
 
+    dUdV_to_dX(du2, dv2, dx2, stam);
+    dUdV_to_dY(du2, dv2, dy2, stam);
 
-      L1UMeasurementInfo info = stam.frontInfo;
+    // assert(T2.IsConsistent(true, n2_4));
 
-      if (fUseHitErrors) info.sigma2 = du2 * du2;
+    fvec dz = zPos_2 - T2.z;
 
-      if (istam < fNfieldStations) { L1Filter(T2, info, u_front_2); }
-      else {
-        L1FilterNoField(T2, info, u_front_2);
+    L1ExtrapolateTime(T2, dz, stam.timeInfo);
+
+    // assert(T2.IsConsistent(true, n2_4));
+
+    // add middle hit
+    L1ExtrapolateLine(T2, zPos_2);
+
+    // assert(T2.IsConsistent(true, n2_4));
+
+    L1UMeasurementInfo info = stam.frontInfo;
+
+    if (fUseHitErrors) info.sigma2 = du2 * du2;
+
+    // TODO: SG: L1FilterNoField is wrong.
+    // TODO: If the field was present before,
+    // TODO: the momentum is correlated with the position and corresponding
+    // TODO: matrix elements must be up[dated
+
+    if (istam < fNfieldStations) { L1Filter(T2, info, u_front_2); }
+    else {
+      L1FilterNoField(T2, info, u_front_2);
+    }
+
+    // assert(T2.IsConsistent(true, n2_4));
+
+    info = stam.backInfo;
+    if (fUseHitErrors) info.sigma2 = dv2 * dv2;
+
+    if (istam < fNfieldStations) { L1Filter(T2, info, u_back_2); }
+    else {
+      L1FilterNoField(T2, info, u_back_2);
+    }
+
+    // assert(T2.IsConsistent(true, n2_4));
+
+    FilterTime(T2, timeM, timeMEr, stam.timeInfo);
+
+    // assert(T2.IsConsistent(true, n2_4));
+
+    if constexpr (L1Constants::control::kIfUseRadLengthTable) {
+      if (kMcbm == fTrackingMode) {
+        fit.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, 1,
+                               stam.materialInfo.thick, 1);
       }
-
-      info = stam.backInfo;
-      if (fUseHitErrors) info.sigma2 = dv2 * dv2;
-
-      if (istam < fNfieldStations) { L1Filter(T2, info, u_back_2); }
-      else {
-        L1FilterNoField(T2, info, u_back_2);
+      else if (kGlobal == fTrackingMode) {
+        fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, 1);
       }
+      else {
+        fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), T2.qp, 1);
+      }
+    }
+    else {
+      fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, 1);
+    }
+    if ((istar >= fNstationsBeforePipe) && (istam <= fNstationsBeforePipe - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
 
-      FilterTime(T2, timeM, timeMEr, stam.timeInfo);
-      if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-        if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
-          fit.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, 1,
-                                 stam.materialInfo.thick, 1);
+    // assert(T2.IsConsistent(true, n2_4));
+
+    fvec dz2 = star.z - T2.z;
+    L1ExtrapolateTime(T2, dz2, stam.timeInfo);
+
+    // assert(T2.IsConsistent(true, n2_4));
+
+    // extrapolate to the right hit station
+
+    if (istar <= fNfieldStations) {
+      L1Extrapolate(T2, star.z, T2.qp, f2);  // Full extrapolation in the magnetic field
+    }
+    else {
+      L1ExtrapolateLine(T2, star.z);  // Extrapolation with line ()
+    }
+
+    // assert(T2.IsConsistent(true, n2_4));
+
+    // ---- Find the triplets(right hit). Reformat data in the portion of triplets. ----
+    for (Tindex i2_4 = 0; i2_4 < n2_4; ++i2_4) {
+
+      //if (!T2.IsEntryConsistent(false, i2_4)) { continue; }
+      if (kSts == fTrackingMode && (T2.C44[i2_4] < 0)) { continue; }
+      if (T2.C00[i2_4] < 0 || T2.C11[i2_4] < 0 || T2.C22[i2_4] < 0 || T2.C33[i2_4] < 0 || T2.C55[i2_4] < 0) continue;
+
+      if (fabs(T2.tx[i2_4]) > fMaxSlope) continue;
+      if (fabs(T2.ty[i2_4]) > fMaxSlope) continue;
+
+      const fvec Pick_r22    = (fTripletChi2Cut - T2.chi2);
+      const float& timeError = T2.C55[i2_4];
+      const float& time      = T2.t[i2_4];
+      // find first possible hit
+
+#ifdef DO_NOT_SELECT_TRIPLETS
+      if (isec == TRACKS_FROM_TRIPLETS_ITERATION) { Pick_r22 = Pick_r2 + 1; }
+#endif  // DO_NOT_SELECT_TRIPLETS
+      const fscal iz = 1.f / (T2.z[i2_4] - fParameters.GetTargetPositionZ()[0]);
+      L1HitAreaTime area(vGridTime[&star - fParameters.GetStations().begin()], T2.x[i2_4] * iz, T2.y[i2_4] * iz,
+                         (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + fMaxDZ * fabs(T2.tx))[i2_4] * iz,
+                         (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + fMaxDZ * fabs(T2.ty))[i2_4] * iz, time,
+                         sqrt(timeError) * 5);
+
+      L1HitIndex_t irh       = 0;
+      L1HitIndex_t Ntriplets = 0;
+      int irh1               = -1;
+      while (true) {
+        if (fParameters.DevIsIgnoreHitSearchAreas()) {
+          irh1++;
+          if ((L1HitIndex_t) irh1 >= (HitsUnusedStopIndex[istar] - HitsUnusedStartIndex[istar])) break;
+          irh = irh1;
         }
         else {
-          fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), T2.qp, 1);
+          if (!area.GetNext(irh)) break;
         }
-      }
-      else {
-        fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, 1);
-      }
-      if ((istar >= fNstationsBeforePipe) && (istam <= fNstationsBeforePipe - 1)) {
-        fit.L1AddPipeMaterial(T2, T2.qp, 1);
-      }
 
-      fvec dz2 = star.z - T2.z;
-      L1ExtrapolateTime(T2, dz2, stam.timeInfo);
+        // while (area.GetNext(irh)) {
+        //for (int irh = 0; irh < ( HitsUnusedStopIndex[istar] - HitsUnusedStartIndex[istar] ); irh++){
+        const L1HitPoint& hitr = vHits_r[irh];
 
-      // extrapolate to the right hit station
-
-      if (istar <= fNfieldStations) {
-        L1Extrapolate(T2, star.z, T2.qp, f2);  // Full extrapolation in the magnetic field
-      }
-      else {
-        L1ExtrapolateLine(T2, star.z);  // Extrapolation with line ()
-      }
-
-      // ---- Find the triplets(right hit). Reformat data in the portion of triplets. ----
-      for (Tindex i2_4 = 0; i2_4 < n2_4; ++i2_4) {
-        if (kSts == fTrackingMode && (T2.C44[i2_4] < 0)) { continue; }
-        if (T2.C00[i2_4] < 0 || T2.C11[i2_4] < 0 || T2.C22[i2_4] < 0 || T2.C33[i2_4] < 0 || T2.C55[i2_4] < 0) continue;
-
-        if (fabs(T2.tx[i2_4]) > fMaxSlope) continue;
-        if (fabs(T2.ty[i2_4]) > fMaxSlope) continue;
-
-        const fvec Pick_r22    = (fTripletChi2Cut - T2.chi2);
-        const float& timeError = T2.C55[i2_4];
-        const float& time      = T2.t[i2_4];
-        // find first possible hit
-
-#ifdef DO_NOT_SELECT_TRIPLETS
-        if (isec == TRACKS_FROM_TRIPLETS_ITERATION) Pick_r22 = Pick_r2 + 1;
-#endif  // DO_NOT_SELECT_TRIPLETS
-        const fscal iz = 1.f / (T2.z[i2_4] - fParameters.GetTargetPositionZ()[0]);
-        L1HitAreaTime area(vGridTime[&star - fParameters.GetStations().begin()], T2.x[i2_4] * iz, T2.y[i2_4] * iz,
-                           (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + fMaxDZ * fabs(T2.tx))[i2_4] * iz,
-                           (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + fMaxDZ * fabs(T2.ty))[i2_4] * iz, time,
-                           sqrt(timeError) * 5);
-
-        L1HitIndex_t irh       = 0;
-        L1HitIndex_t Ntriplets = 0;
-        int irh1               = -1;
-        while (true) {
-          if (fParameters.DevIsIgnoreHitSearchAreas()) {
-            irh1++;
-            if ((L1HitIndex_t) irh1 >= (HitsUnusedStopIndex[istar] - HitsUnusedStartIndex[istar])) break;
-            irh = irh1;
-          }
-          else {
-            if (!area.GetNext(irh)) break;
-          }
-
-          // while (area.GetNext(irh)) {
-          //for (int irh = 0; irh < ( HitsUnusedStopIndex[istar] - HitsUnusedStartIndex[istar] ); irh++){
-          const L1HitPoint& hitr = vHits_r[irh];
+        if (fParameters.DevIsMatchTripletsViaMc()) {
+          int indM = HitsUnusedStartIndex[iStaM] + hitsm_2_tmp[i2_4];
+          int indR = HitsUnusedStartIndex[iStaR] + irh;
+          if (GetMcTrackIdForUnusedHit(indM) != GetMcTrackIdForUnusedHit(indR)) { continue; }
+        }
 
 #ifdef USE_EVENT_NUMBER  // NOTE:
-          if ((T2.n[i2_4] != hitr.n)) continue;
+        if ((T2.n[i2_4] != hitr.n)) continue;
 #endif  // USE_EVENT_NUMBER
-          const fscal zr = hitr.Z();
-          //  const fscal yr = hitr.Y();
+        const fscal zr = hitr.Z();
+        //  const fscal yr = hitr.Y();
 
-          fvec xr, yr = 0;
+        fvec xr, yr = 0;
 
-          StripsToCoor(hitr.U(), hitr.V(), xr, yr, star);
+        StripsToCoor(hitr.U(), hitr.V(), xr, yr, star);
 
-          L1TrackPar T_cur = T2;
+        L1TrackPar T_cur = T2;
 
+        fvec dz3 = zr - T_cur.z;
+        L1ExtrapolateTime(T_cur, dz3, star.timeInfo);
 
-          fvec dz3 = zr - T_cur.z;
-          L1ExtrapolateTime(T_cur, dz3, star.timeInfo);
+        L1ExtrapolateLine(T_cur, zr);
 
-          L1ExtrapolateLine(T_cur, zr);
+        if ((star.timeInfo) && (stam.timeInfo))
+          if (fabs(T_cur.t[i2_4] - hitr.time) > sqrt(T_cur.C55[i2_4] + hitr.timeEr) * 5) continue;
 
-          if ((star.timeInfo) && (stam.timeInfo))
-            if (fabs(T_cur.t[i2_4] - hitr.time) > sqrt(T_cur.C55[i2_4] + hitr.timeEr) * 5) continue;
+        // TODO: SG: hardcoded cut of 30 ns
+        if ((star.timeInfo) && (stam.timeInfo))
+          if (fabs(T_cur.t[i2_4] - hitr.time) > 30) continue;
 
-          if ((star.timeInfo) && (stam.timeInfo))
-            if (fabs(T_cur.t[i2_4] - hitr.time) > 30) continue;
+        // - check whether hit belong to the window ( track position +\- errors ) -
+        // check lower boundary
+        fvec y, C11;
+        L1ExtrapolateYC11Line(T2, zr, y, C11);
+        // cout << "sta " << iStaR << " dy = " << sqrt(C11) << endl;
+        fscal dy_est2 =
+          (Pick_r22[i2_4]
+           * (fabs(
+             C11[i2_4]
+             + star.XYInfo.C11[i2_4])));  // TODO for FastPrim dx < dy - other sort is optimal. But not for doublets
 
-          // - check whether hit belong to the window ( track position +\- errors ) -
-          // check lower boundary
-          fvec y, C11;
-          L1ExtrapolateYC11Line(T2, zr, y, C11);
-          fscal dy_est2 =
-            (Pick_r22[i2_4]
-             * (fabs(
-               C11[i2_4]
-               + star.XYInfo.C11[i2_4])));  // TODO for FastPrim dx < dy - other sort is optimal. But not for doublets
+        if (fUseHitErrors) {
+          fvec dyr = 0;
+          dUdV_to_dY(hitr.dU(), hitr.dV(), dyr, star);
+          dy_est2 = (Pick_r22[i2_4] * (fabs(C11[i2_4] + dyr[0] * dyr[0])));
+        }
 
-          if (fUseHitErrors) {
-            fvec dyr = 0;
-            dUdV_to_dY(hitr.dU(), hitr.dV(), dyr, star);
-            dy_est2 = (Pick_r22[i2_4] * (fabs(C11[i2_4] + dyr[0] * dyr[0])));
-          }
+        const fscal dY  = yr[i2_4] - y[i2_4];
+        const fscal dY2 = dY * dY;
 
-          const fscal dY  = yr[i2_4] - y[i2_4];
-          const fscal dY2 = dY * dY;
-          if (dY2 > dy_est2 && dY2 < 0) continue;  // if (yr < y_minus_new[i2_4]) continue;
-          // check upper boundary
-          if (dY2 > dy_est2) continue;  // if (yr > y_plus_new [i2_4] ) continue;
-          // check x-boundaries
-          fvec x, C00;
+        if (dY2 > dy_est2) continue;  // if (yr > y_plus_new [i2_4] ) continue;
+        // check x-boundaries
+        fvec x, C00;
 
-          L1ExtrapolateXC00Line(T2, zr, x, C00);
+        L1ExtrapolateXC00Line(T2, zr, x, C00);
 
+        // cout << "sta " << iStaR << " dx = " << sqrt(C00) << endl;
 
-          fscal dx_est2 = (Pick_r22[i2_4] * (fabs(C00[i2_4] + star.XYInfo.C00[i2_4])));
+        fscal dx_est2 = (Pick_r22[i2_4] * (fabs(C00[i2_4] + star.XYInfo.C00[i2_4])));
 
-          if (fUseHitErrors) {
-            fvec dxr = 0;
-            dUdV_to_dX(hitr.dU(), hitr.dV(), dxr, star);
-            dx_est2 = (Pick_r22[i2_4] * (fabs(C00[i2_4] + dxr[0] * dxr[0])));
-          }
+        if (fUseHitErrors) {
+          fvec dxr = 0;
+          dUdV_to_dX(hitr.dU(), hitr.dV(), dxr, star);
+          dx_est2 = (Pick_r22[i2_4] * (fabs(C00[i2_4] + dxr[0] * dxr[0])));
+        }
 
-          const fscal dX = xr[i2_4] - x[i2_4];
-          if (dX * dX > dx_est2) continue;
-          // check chi2  // not effective
-          fvec C10;
-          L1ExtrapolateC10Line(T2, zr, C10);
-          fvec chi2 = T2.chi2;
+        const fscal dX = xr[i2_4] - x[i2_4];
+        if (dX * dX > dx_est2) continue;
+        // check chi2  // not effective
+        fvec C10;
+        L1ExtrapolateC10Line(T2, zr, C10);
+        fvec chi2 = T2.chi2;
 
-          info = star.frontInfo;
+        info = star.frontInfo;
 
-          if (fUseHitErrors) info.sigma2 = hitr.dU() * hitr.dU();
+        if (fUseHitErrors) info.sigma2 = hitr.dU() * hitr.dU();
 
-          L1FilterChi2XYC00C10C11(info, x, y, C00, C10, C11, chi2, hitr.U());
-          info = star.backInfo;
+        L1FilterChi2XYC00C10C11(info, x, y, C00, C10, C11, chi2, hitr.U());
+        info = star.backInfo;
 
-          if (fUseHitErrors) info.sigma2 = hitr.dV() * hitr.dV();
+        if (fUseHitErrors) info.sigma2 = hitr.dV() * hitr.dV();
 
-          L1FilterChi2(info, x, y, C00, C10, C11, chi2, hitr.V());
+        L1FilterChi2(info, x, y, C00, C10, C11, chi2, hitr.V());
 
-          FilterTime(T_cur, hitr.time, hitr.timeEr, star.timeInfo);
+        FilterTime(T_cur, hitr.time, hitr.timeEr, star.timeInfo);
 
 
 #ifdef DO_NOT_SELECT_TRIPLETS
-          if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
+        if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
 #endif  // DO_NOT_SELECT_TRIPLETS
-            if (chi2[i2_4] > fTripletChi2Cut || C00[i2_4] < 0 || C11[i2_4] < 0 || T_cur.C55[i2_4] < 0)
-              continue;  // chi2_triplet < CHI2_CUT
-
-          // pack triplet
-          L1TrackPar& T3 = T_3[n3_V];
-
-          hitsl_3.push_back(hitsl_2[i2_4]);
-          hitsm_3.push_back(hitsm_2_tmp[i2_4]);
-          hitsr_3.push_back(irh);
-
-
-          T3.SetOneEntry(n3_4, T2, i2_4);
-          u_front_3[n3_V][n3_4] = hitr.U();
-          u_back_3[n3_V][n3_4]  = hitr.V();
-          //dx_[n3_V][n3_4]       = hitr.dX();
-          // dy_[n3_V][n3_4]       = hitr.dY();
-          du_[n3_V][n3_4]     = hitr.dU();
-          dv_[n3_V][n3_4]     = hitr.dV();
-          z_Pos_3[n3_V][n3_4] = zr;
-          timeR[n3_V][n3_4]   = hitr.time;
-          timeER[n3_V][n3_4]  = hitr.timeEr;
-
-          n3++;
-          Ntriplets++;
-
-          n3_V = n3 / fvecLen;
-          n3_4 = n3 % fvecLen;
-
-          if (!n3_4) {
-            T_3.push_back(L1TrackPar_0);
-            u_front_3.push_back(fvec_0);
-            u_back_3.push_back(fvec_0);
-            z_Pos_3.push_back(fvec_0);
-            //            dx_.push_back(fvec_0);
-            //            dy_.push_back(fvec_0);
-            du_.push_back(fvec_0);
-            dv_.push_back(fvec_0);
-            timeR.push_back(fvec_0);
-            timeER.push_back(fvec_0);
+          if (chi2[i2_4] > fTripletChi2Cut || C00[i2_4] < 0 || C11[i2_4] < 0 || T_cur.C55[i2_4] < 0) {
+            continue;  // chi2_triplet < CHI2_CUT
           }
+
+        //if (!T_cur.IsEntryConsistent(false, i2_4)) { continue; }
+
+        // pack triplet
+        L1TrackPar& T3 = T_3[n3_V];
+
+        hitsl_3.push_back(hitsl_2[i2_4]);
+        hitsm_3.push_back(hitsm_2_tmp[i2_4]);
+        hitsr_3.push_back(irh);
+
+        T3.SetOneEntry(n3_4, T2, i2_4);
+        u_front_3[n3_V][n3_4] = hitr.U();
+        u_back_3[n3_V][n3_4]  = hitr.V();
+        du_[n3_V][n3_4]       = hitr.dU();
+        dv_[n3_V][n3_4]       = hitr.dV();
+        z_Pos_3[n3_V][n3_4]   = zr;
+        timeR[n3_V][n3_4]     = hitr.time;
+        timeER[n3_V][n3_4]    = hitr.timeEr;
+
+        n3++;
+        Ntriplets++;
+
+        n3_V = n3 / fvecLen;
+        n3_4 = n3 % fvecLen;
+
+        if (!n3_4) {
+          T_3.push_back(L1TrackPar_0);
+          u_front_3.push_back(fvec_0);
+          u_back_3.push_back(fvec_0);
+          z_Pos_3.push_back(fvec_0);
+          // TODO: SG: use of fvec_1 here changes the results
+          du_.push_back(fvec_0);
+          dv_.push_back(fvec_0);
+          timeR.push_back(fvec_0);
+          timeER.push_back(fvec_0);
+        }
 
 #ifndef FAST_CODE
 //TODO: optimise triplet portion limit and put a warning
 // assert(Ntriplets < fParameters.GetMaxTripletPerDoublets());
 #endif  // FAST_CODE
-          if (Ntriplets >= fParameters.GetMaxTripletPerDoublets()) {
+        if (Ntriplets >= fParameters.GetMaxTripletPerDoublets()) {
 
-            n3 = n3 - Ntriplets;
+          n3 = n3 - Ntriplets;
 
-            T_3.resize(n3 / fvecLen);
-            u_front_3.resize(n3 / fvecLen);
-            u_back_3.resize(n3 / fvecLen);
-            z_Pos_3.resize(n3 / fvecLen);
-            du_.resize(n3 / fvecLen);
-            dv_.resize(n3 / fvecLen);
-            timeR.resize(n3 / fvecLen);
-            timeER.resize(n3 / fvecLen);
-
-            break;
-          }
+          T_3.resize(n3 / fvecLen);
+          u_front_3.resize(n3 / fvecLen);
+          u_back_3.resize(n3 / fvecLen);
+          z_Pos_3.resize(n3 / fvecLen);
+          du_.resize(n3 / fvecLen);
+          dv_.resize(n3 / fvecLen);
+          timeR.resize(n3 / fvecLen);
+          timeER.resize(n3 / fvecLen);
+          cout << "SG:: GetMaxTripletPerDoublets==" << fParameters.GetMaxTripletPerDoublets() << " reached" << endl;
+          //assert(0);
+          break;
         }
+      }
 
-
-      }  // i2_4
-    }    // i2_V
-  }      // if istar
+    }  // i2_4
+  }    // i2_V
 }
 
 /// Add the right hits to parameters estimation.
@@ -871,13 +968,20 @@ inline void L1Algo::findTripletsStep1(  // input
   //                L1TrackPar *T_3
   nsL1::vector<L1TrackPar>::TSimd& T_3)
 {
+
   for (Tindex i3_V = 0; i3_V < n3_V; ++i3_V) {
 
     fvec dz = z_Pos[i3_V] - T_3[i3_V].z;
 
-    L1ExtrapolateTime(T_3[i3_V], dz, star.timeInfo);
-    L1ExtrapolateLine(T_3[i3_V], z_Pos[i3_V]);
+    L1TrackPar& T3 = T_3[i3_V];
 
+    // assert(T3.IsConsistent(true, -1));
+
+    L1ExtrapolateTime(T3, dz, star.timeInfo);
+
+    L1ExtrapolateLine(T3, z_Pos[i3_V]);
+
+    // assert(T3.IsConsistent(true, -1));
 
     L1UMeasurementInfo info = star.frontInfo;
 
@@ -885,24 +989,29 @@ inline void L1Algo::findTripletsStep1(  // input
 
     bool noField = (&star - fParameters.GetStations().begin() >= fNfieldStations);
 
-    if (noField) { L1FilterNoField(T_3[i3_V], info, u_front_[i3_V]); }
+    if (noField) { L1FilterNoField(T3, info, u_front_[i3_V]); }
     else {
-      L1Filter(T_3[i3_V], info, u_front_[i3_V]);
+      L1Filter(T3, info, u_front_[i3_V]);
     }
+
+    // assert(T3.IsConsistent(true, -1));
 
     info = star.backInfo;
 
     if (fUseHitErrors) info.sigma2 = dv_[i3_V] * dv_[i3_V];
 
-    if (noField) { L1FilterNoField(T_3[i3_V], info, u_back_[i3_V]); }
+    if (noField) { L1FilterNoField(T3, info, u_back_[i3_V]); }
     else {
-      L1Filter(T_3[i3_V], info, u_back_[i3_V]);
+      L1Filter(T3, info, u_back_[i3_V]);
     }
+
+    // assert(T3.IsConsistent(true, -1));
 
     if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
-      FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V], star.timeInfo);
+      FilterTime(T3, timeR[i3_V], timeER[i3_V], star.timeInfo);
     }
 
+    // assert(T3.IsConsistent(true, -1));
     //  FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V]);
   }
 }
@@ -918,6 +1027,8 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
 
   const int NHits = 3;  // triplets
 
+  // TODO: SG: middle and right station numbers might be different for different triplets!!!
+
   // prepare data
   int ista[NHits] = {istal, istal + 1, istal + 2};
 
@@ -931,12 +1042,22 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
     int i3_4 = i3 % fvecLen;
 
     L1TrackPar& T3 = T_3[i3_V];
-    fscal& qp0     = T3.qp[i3_4];
+
+    //if (!T3.IsEntryConsistent(false, i3_4)) continue;
+
+    fscal& qp0 = T3.qp[i3_4];
 
     // prepare data
     L1HitIndex_t ihit[NHits] = {(*RealIHitP)[hitsl_3[i3] + HitsUnusedStartIndex[ista[0]]],
                                 (*RealIHitP)[hitsm_3[i3] + HitsUnusedStartIndex[ista[1]]],
                                 (*RealIHitP)[hitsr_3[i3] + HitsUnusedStartIndex[ista[2]]]};
+
+    if (fParameters.DevIsMatchTripletsViaMc()) {
+      int mc1 = GetMcTrackIdForUnusedHit(ihit[0]);
+      int mc2 = GetMcTrackIdForUnusedHit(ihit[1]);
+      int mc3 = GetMcTrackIdForUnusedHit(ihit[2]);
+      if ((mc1 != mc2) || (mc1 != mc3)) { continue; }
+    }
 
     fscal u[NHits], v[NHits], x[NHits], y[NHits], z[NHits];
     for (int ih = 0; ih < NHits; ++ih) {
@@ -1079,14 +1200,29 @@ inline void L1Algo::findTripletsStep3(  // input
   // output
   Tindex& nstaltriplets)
 {
+  /// Selects good triplets and saves them into fTriplets.
+  /// Finds neighbouring triplets at the next station.
+  ///
+  /// \param n3  Number of triplets to process
+  /// \param istal  index of the left station
+  /// \param istam  index of the middle station
+  /// \param istar  index of the right station
+  /// \param T_3  fitted trajectories of triplets
+  /// \param hitsl_3  index of the left triplet hit in unused hits on the left station
+  /// \param hitsm_3  index of the middle triplet hit in unused hits on the middle station
+  /// \param hitsr_3  index of the right triplet hit in unused hits on the right station
+  ///
+  /// Output:
+  ///
+  /// \param nstaltriplets updated number of triplets in fTriplets[istal][Thread]
 
-  /// Select good triplets and save them into fTriplets. Find neighbouring triplets at the next station.
+  // TODO: SG: remove nstaltriplets parameter
 
 #ifdef _OPENMP
   unsigned int Thread = omp_get_thread_num();
-#else  // not _OPENMP
+#else
   unsigned int Thread = 0;
-#endif  // _OPENMP
+#endif
 
   L1HitIndex_t ihitl_priv = 0;
 
@@ -1095,6 +1231,8 @@ inline void L1Algo::findTripletsStep3(  // input
     const Tindex i3_4 = i3 % fvecLen;
 
     L1TrackPar& T3 = T_3[i3_V];
+
+    //if (!T3.IsEntryConsistent(false, i3_4)) continue;
 
     // select
     fscal& chi2 = T3.chi2[i3_4];
@@ -1118,7 +1256,11 @@ inline void L1Algo::findTripletsStep3(  // input
 #ifdef DO_NOT_SELECT_TRIPLETS
     if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
 #endif  // DO_NOT_SELECT_TRIPLETS
-      if (!finite(chi2) || chi2 < 0 || chi2 > fTripletChi2Cut) continue;
+
+      // assert(finite(chi2) && chi2 > 0);
+
+      if (!finite(chi2) || chi2 < 0) { continue; }
+    if (chi2 > fTripletChi2Cut) { continue; }
 
     fscal qp = T3.qp[i3_4];
 
@@ -1162,6 +1304,7 @@ inline void L1Algo::findTripletsStep3(  // input
     unsigned int neighTriplet  = TripletId2Triplet(neighLocation);
 
     if (nNeighbours > 0) { assert((int) neighStation == istal + 1 || (int) neighStation == istal + 2); }
+
     unsigned char level = 0;
 
     for (unsigned int iN = 0; iN < nNeighbours; ++iN, ++neighTriplet, ++neighLocation) {
@@ -1506,7 +1649,7 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
 #else
       fL1Eff_triplets->AddOne(iHits);
 #endif
-      if (T_3[i_V].chi2[i_4] < fTripletChi2Cut) fL1Eff_triplets2->AddOne(iHits);
+      if (T_3[i_V].chi2[i_4] < fTripletChi2Cut) { fL1Eff_triplets2->AddOne(iHits); }
     }
 #endif  // TRIP_PERFORMANCE
 
@@ -1515,9 +1658,7 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
     findTripletsStep3(  // input
       n3, istal, istam, istar, T_3, hitsl_3, hitsm_3, hitsr_3,
       // output
-      nstaltriplets
-
-    );
+      nstaltriplets);
   }
 }
 
@@ -1796,6 +1937,7 @@ void L1Algo::CATrackFinder()
         // --- SET PARAMETERS FOR THE ITERATION ---
 
         fFirstCAstation = caIteration.GetFirstStationIndex();
+        fTrackChi2Cut   = caIteration.GetTrackChi2Cut();
         fDoubletChi2Cut = caIteration.GetDoubletChi2Cut();  //11.3449 * 2.f / 3.f;  // prob = 0.1
         fTripletChi2Cut = caIteration.GetTripletChi2Cut();  //21.1075;  // prob = 0.01%
         fPickGather     = caIteration.GetPickGather();      //3.0;
@@ -1937,14 +2079,13 @@ void L1Algo::CATrackFinder()
                                       i1G_2)  //schedule(dynamic, 2)
 #endif
       for (Tindex ip = fDupletPortionStopIndex[istal + 1]; ip < fDupletPortionStopIndex[istal]; ++ip) {
-        Tindex n_2;  /// number of doublets in portion
+        Tindex n_2   = 0;  /// number of doublets in portion
         int NHitsSta = HitsStopIndex[istal] - HitsStartIndex[istal];
         lmDuplets[istal].reset(NHitsSta);
         lmDupletsG[istal].reset(NHitsSta);
 
         hitsm_2.clear();
         i1_2.clear();
-
 
         DupletsStaPort(istal, istal + 1, ip, fDupletPortionSize, fDupletPortionStopIndex,
 
@@ -1971,7 +2112,6 @@ void L1Algo::CATrackFinder()
           Tindex nG_2;
           hitsmG_2.clear();
           i1G_2.clear();
-
           if ((fMissingHits && ((istal == 0) || (istal == 1))) || !fMissingHits)
             DupletsStaPort(  // input
               istal, istal + 2, ip, fDupletPortionSize, fDupletPortionStopIndex,
@@ -2291,84 +2431,63 @@ void L1Algo::CATrackFinder()
 #endif
         for (Tindex iCandidate = 0; iCandidate < (Tindex) fTrackCandidates[i].size(); ++iCandidate) {
           L1Branch& tr = fTrackCandidates[i][iCandidate];
-
-          bool check = 1;
-
-          if (fTrackCandidates[i][iCandidate].fID != -1) {
-            for (L1Vector<L1HitIndex_t>::iterator phIt = tr.fHits.begin();  /// used strips are marked
-                 phIt != tr.fHits.end(); ++phIt) {
-              const L1Hit& h = (((*vHits))[*phIt]);
-              if (((fStripToTrack)[h.b] != tr.fID) || ((fStripToTrack)[h.f] != tr.fID)) {
-                check = 0;
-                break;
-              }
-            }
-
-            if (kMcbm == fTrackingMode) {
-              if (tr.NHits <= 3) { check = 0; }
-            }
-            else if (kGlobal == fTrackingMode) {
-              if (tr.NHits <= 3) { check = 0; }
-            }
-            else {
-              if (tr.NHits < 3) { check = 0; }
-            }
-
-            if (check) {
+          if (!tr.fIsAlive) continue;
+          if (kMcbm == fTrackingMode) {
+            if (tr.NHits <= 3) { continue; }
+          }
+          else if (kGlobal == fTrackingMode) {
+            if (tr.NHits <= 3) { continue; }
+          }
+          else {
+            if (tr.NHits < 3) { continue; }
+          }
 #ifdef EXTEND_TRACKS
-              if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
-                if (tr.NHits != fNstations) BranchExtender(tr);
-              }
+          if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
+            if (tr.NHits != fNstations) BranchExtender(tr);
+          }
 #endif
-              float sumTime = 0;
-
+          float sumTime = 0;
 
 #ifdef _OPENMP
-
-              int num_thread = omp_get_thread_num();
-
+          int num_thread = omp_get_thread_num();
 #else
-
-              int num_thread = 0;
-
+          int num_thread = 0;
 #endif
+          for (L1Vector<L1HitIndex_t>::iterator phIt = tr.fHits.begin();  /// used strips are marked
+               phIt != tr.fHits.end(); ++phIt) {
+            L1Hit& h = (*vHits)[*phIt];
 
-              if (kGlobal == fTrackingMode) {  //SGtrd2d!!
-                if (tr.fHits.size() < 4) continue;
-              }
-              for (L1Vector<L1HitIndex_t>::iterator phIt = tr.fHits.begin();  /// used strips are marked
-                   phIt != tr.fHits.end(); ++phIt) {
-                L1Hit& h = (*vHits)[*phIt];
+            SetFUsed((*fStripFlag)[h.f]);
+            SetFUsed((*fStripFlag)[h.b]);
 
+            fRecoHits_local[num_thread].push_back(*phIt);
+            const L1Hit& hit     = (*vHits)[*phIt];
+            L1HitPoint tempPoint = CreateHitPoint(hit);  //TODO take number of station from hit
 
-                SetFUsed((*fStripFlag)[h.f]);
-                SetFUsed((*fStripFlag)[h.b]);
+            float xcoor, ycoor = 0;
+            L1Station stah = fParameters.GetStation(0);  // TODO: Why is it a copy?
+            StripsToCoor(tempPoint.U(), tempPoint.V(), xcoor, ycoor, stah);
+            float zcoor = tempPoint.Z() - fParameters.GetTargetPositionZ()[0];
 
-                fRecoHits_local[num_thread].push_back(*phIt);
-
-                const L1Hit& hit = (*vHits)[*phIt];
-
-
-                L1HitPoint tempPoint = CreateHitPoint(hit);  //TODO take number of station from hit
-
-                float xcoor, ycoor = 0;
-                L1Station stah = fParameters.GetStation(0);  // TODO: Why is it a copy?
-                StripsToCoor(tempPoint.U(), tempPoint.V(), xcoor, ycoor, stah);
-                float zcoor = tempPoint.Z() - fParameters.GetTargetPositionZ()[0];
-
-                float timeFlight = sqrt(xcoor * xcoor + ycoor * ycoor + zcoor * zcoor) / 30.f;  // c = 30[cm/ns]
-                sumTime += (hit.t - timeFlight);
-              }
-
-              t.NHits = tr.NHits;
-              // t.Momentum   = tr.Momentum;
-              t.fTrackTime = sumTime / t.NHits;
-              fTracks_local[num_thread].push_back(t);
-            }
+            float timeFlight = sqrt(xcoor * xcoor + ycoor * ycoor + zcoor * zcoor) / 30.f;  // c = 30[cm/ns]
+            sumTime += (hit.t - timeFlight);
           }
-        }
-      }
 
+          t.NHits = tr.NHits;
+          // t.Momentum   = tr.Momentum;
+          t.fTrackTime = sumTime / t.NHits;
+          fTracks_local[num_thread].push_back(t);
+          if (0) {  // SG debug
+            cout << "store track " << iCandidate << " chi2= " << tr.chi2 << endl;
+            cout << " hits: ";
+            for (unsigned int ih = 0; ih < tr.fHits.size(); ih++) {
+              cout << GetMcTrackIdForHit(tr.fHits[ih]) << " ";
+            }
+            cout << endl;
+          }
+
+        }  // tracks
+      }    // threads
 
 #ifdef XXX
       Time.Stop();
@@ -2405,7 +2524,7 @@ void L1Algo::CATrackFinder()
           fRecoHits[offset_hits[i] + iH] = fRecoHits_local[i][iH];
         }
       }
-    }  //istaf
+    }  // firstTripletLevel
 
 #ifdef XXX
     c_timer.Stop();
@@ -2624,8 +2743,11 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
     }
 
     //if( curr_L < min_best_l - 1 ) return; // suppouse that only one hit can be added by extender
-    if (curr_chi2 > fTrackChi2Cut * (curr_L * 2 - 5.0)) return;
+    int ndf = curr_L * 2 - 5;
 
+    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) { ndf = curr_L * 2 - 4; }
+
+    if (curr_chi2 > fTrackChi2Cut * ndf) return;
 
     //       // try to find more hits
     // #ifdef EXTEND_TRACKS
@@ -2692,14 +2814,19 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       fscal Cty = curr_trip->GetCty();
       Cty += new_trip.GetCty();
 
+      assert(std::isfinite(dtx));
+      assert(std::isfinite(dty));
+      assert(std::isfinite(Ctx));
+      assert(std::isfinite(Cty));
+
       if (kMcbm == fTrackingMode) {
         if (dty > 3 * Cty) continue;
         if (dtx > 3 * Ctx) continue;
       }
 
       if (kGlobal == fTrackingMode) {
-        if (dty > 6 * sqrt(Cty)) continue;  //SGtrd2d
-        if (dtx > 7 * sqrt(Ctx)) continue;
+        if (dty > fPickNeighbour * sqrt(Cty)) continue;  //SGtrd2d
+        if (dtx > fPickNeighbour * sqrt(Ctx)) continue;
       }
 
       if (GetFUsed((*fStripFlag)[(*vHitsUnused)[new_trip.GetLHit()].f]
@@ -2712,17 +2839,10 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
           best_L    = curr_L;
         }
       }
-      else {  // if hits are used add new triplet to the current track
+      else {  // hit is not used: add the left hit from the new triplet to the current track
 
-        new_tr[ista] = curr_tr;
-
-        unsigned char new_L = curr_L;
+        unsigned char new_L = curr_L + 1;
         fscal new_chi2      = curr_chi2;
-
-        // add new hit
-        new_tr[ista].fHits.push_back((*RealIHitP)[new_trip.GetLHit()]);
-        new_tr[ista].NHits++;
-        new_L += 1;
 
         dqp = dqp / Cqp;
 
@@ -2735,6 +2855,9 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
           dty = dty / Cty;  // TODO: SG: it must be /sqrt(Cty);
         }
 
+        assert(std::isfinite(dtx));
+        assert(std::isfinite(dty));
+
         if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
           new_chi2 += dtx * dtx;
           new_chi2 += dty * dty;
@@ -2743,12 +2866,35 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
           new_chi2 += dqp * dqp;
         }
 
+        if (0) {  //SGtrd2d debug!!
+          int mc01 = GetMcTrackIdForUnusedHit(curr_trip->GetLHit());
+          int mc02 = GetMcTrackIdForUnusedHit(curr_trip->GetMHit());
+          int mc03 = GetMcTrackIdForUnusedHit(curr_trip->GetRHit());
+          int mc11 = GetMcTrackIdForUnusedHit(new_trip.GetLHit());
+          int mc12 = GetMcTrackIdForUnusedHit(new_trip.GetMHit());
+          int mc13 = GetMcTrackIdForUnusedHit(new_trip.GetRHit());
+          if ((mc01 == mc02) && (mc02 == mc03)) {
+            cout << " sta " << ista << " mc0 " << mc01 << " " << mc02 << " " << mc03 << " mc1 " << mc11 << " " << mc12
+                 << " " << mc13 << " chi2 " << curr_chi2 / (2 * (curr_L + 2) - 4) << " new "
+                 << new_chi2 / (2 * (new_L + 2) - 4) << endl;
+            cout << "   hits " << curr_trip->GetLHit() << " " << curr_trip->GetMHit() << " " << curr_trip->GetRHit()
+                 << " " << new_trip.GetLHit() << endl;
+          }
+        }
+
         if (kGlobal == fTrackingMode) {  //SGtrd2d!!!
-          if (new_chi2 > fTrackChi2Cut * 2 * new_L) continue;
+          // nHits in chi2 calculation == new_L+2, ndf == 4
+          if (new_chi2 > fTrackChi2Cut * (2 * (new_L + 2) - 4)) continue;
         }
         else {
           if (new_chi2 > fTrackChi2Cut * new_L) continue;  // TODO: SG: it must be  ( 2 * new_L )
         }
+
+        // add new hit
+        new_tr[ista] = curr_tr;
+        new_tr[ista].fHits.push_back((*RealIHitP)[new_trip.GetLHit()]);
+        new_tr[ista].NHits++;
+
         const int new_ista = ista + new_trip.GetMSta() - new_trip.GetLSta();
 
         CAFindTrack(new_ista, best_tr, best_L, best_chi2, &new_trip, new_tr[ista], new_L, new_chi2, min_best_l, new_tr);
