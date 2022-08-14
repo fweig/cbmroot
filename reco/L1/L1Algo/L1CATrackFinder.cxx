@@ -1224,7 +1224,7 @@ inline void L1Algo::findTripletsStep3(  // input
   unsigned int Thread = 0;
 #endif
 
-  L1HitIndex_t ihitl_priv = 0;
+  L1HitIndex_t ihitl_prev = 0;
 
   for (Tindex i3 = 0; i3 < n3; ++i3) {
     const Tindex i3_V = i3 / fvecLen;
@@ -1246,12 +1246,12 @@ inline void L1Algo::findTripletsStep3(  // input
 
     unsigned int Location = PackTripletId(istal, Thread, fTriplets[istal][Thread].size());
 
-    if (ihitl_priv == 0 || ihitl_priv != hitsl_3[i3]) {
+    if (ihitl_prev != 1 + hitsl_3[i3]) {
       fHitFirstTriplet[ihitl] = Location;
       fHitNtriplets[ihitl]    = 0;
     }
 
-    ihitl_priv = hitsl_3[i3];
+    ihitl_prev = 1 + hitsl_3[i3];
 
 #ifdef DO_NOT_SELECT_TRIPLETS
     if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
