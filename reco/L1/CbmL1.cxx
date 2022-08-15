@@ -200,6 +200,9 @@ InitStatus CbmL1::Init()
     fpInitManager->DevSetIgnoreHitSearchAreas(true);
     //fpInitManager->DevSetFitSingletsFromTarget(true);
     //fpInitManager->DevSetIsMatchDoubletsViaMc(true);
+    //fpInitManager->DevSetIsMatchTripletsViaMc(true);
+    //fpInitManager->DevSetIsMatchNeighbourdViaMc(true);
+    fpInitManager->SetMaxTripletPerDoublets(1000);
   }
 
   CheckDetectorPresence();
@@ -409,7 +412,7 @@ InitStatus CbmL1::Init()
   NTOFStationGeom   = (fUseTOF) ? tofInterface->GetNtrackingStations() : 0;
   NStationGeom      = NMvdStationsGeom + NStsStationsGeom + NMuchStationsGeom + NTrdStationsGeom + NTOFStationGeom;
 
-  // Provide crosscheck number of stations for the fpInitManagera
+  // Provide crosscheck number of stations for the fpInitManager
   fpInitManager->SetNstations(L1DetectorID::kMvd, NMvdStationsGeom);
   fpInitManager->SetNstations(L1DetectorID::kSts, NStsStationsGeom);
   fpInitManager->SetNstations(L1DetectorID::kMuch, NMuchStationsGeom);
@@ -568,8 +571,8 @@ InitStatus CbmL1::Init()
       fscal trdFrontSigma = trdInterface->GetStripsSpatialRmsFront(iSt);
       fscal trdBackSigma  = trdInterface->GetStripsSpatialRmsBack(iSt);
       if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {  //SGtrd2D!!
-        trdFrontSigma = 1.1;
-        trdBackSigma  = 1.1;
+        trdFrontSigma = .1;
+        trdBackSigma  = .1;
         // stationInfo.SetTimeResolution(1.e10);
         stationInfo.SetTimeInfo(false);
       }
@@ -763,6 +766,42 @@ InitStatus CbmL1::Init()
     fpInitManager->PushBackCAIteration(trackingIterAllPrim);
     fpInitManager->PushBackCAIteration(trackingIterAllPrimJump);
     fpInitManager->PushBackCAIteration(trackingIterAllSec);
+  }
+  else if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
+    // SGtrd2d!!
+
+    // Initialize CA track finder iterations sequence
+
+    auto trd2dIter1 = L1CAIteration("Trd2dIter1");
+    trd2dIter1.SetTrackChi2Cut(7.f);              //10.f
+    trd2dIter1.SetTripletChi2Cut(2 * 23.4450f);   // = 7.815 * 3;  // prob = 0.05
+    trd2dIter1.SetDoubletChi2Cut(4. * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
+    trd2dIter1.SetPickGather(3.0f);
+    trd2dIter1.SetPickNeighbour(4.0f);
+    trd2dIter1.SetMaxInvMom(1.0 / 0.05);  //(1.0 / 0.5);
+    trd2dIter1.SetMaxSlopePV(.5f);
+    trd2dIter1.SetMaxSlope(.5f);
+    trd2dIter1.SetMaxDZ(0.05);
+    trd2dIter1.SetTargetPosSigmaXY(1., 1.);  //(1, 1);
+    trd2dIter1.SetMinLevelTripletStart(1);
+    trd2dIter1.SetPrimaryFlag(true);
+
+    auto trd2dIter2 = L1CAIteration("Trd2dIter2");
+    trd2dIter2.SetTrackChi2Cut(7.f);              //10.f
+    trd2dIter2.SetTripletChi2Cut(2 * 23.4450f);   // = 7.815 * 3;  // prob = 0.05
+    trd2dIter2.SetDoubletChi2Cut(4. * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
+    trd2dIter2.SetPickGather(3.0f);
+    trd2dIter2.SetPickNeighbour(4.0f);
+    trd2dIter2.SetMaxInvMom(1.0 / 0.05);  //(1.0 / 0.5);
+    trd2dIter2.SetMaxSlopePV(.5f);
+    trd2dIter2.SetMaxSlope(.5f);
+    trd2dIter2.SetMaxDZ(0.05);
+    trd2dIter2.SetTargetPosSigmaXY(8 * 10, 6 * 10);  //(1, 1);
+    trd2dIter2.SetMinLevelTripletStart(1);
+    trd2dIter2.SetPrimaryFlag(true);
+
+    fpInitManager->SetCAIterationsNumberCrosscheck(1);
+    fpInitManager->PushBackCAIteration(trd2dIter2);
   }
   else {
     fpInitManager->SetCAIterationsNumberCrosscheck(4);
