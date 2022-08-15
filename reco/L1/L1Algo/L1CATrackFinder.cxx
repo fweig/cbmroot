@@ -1294,6 +1294,7 @@ inline void L1Algo::findTripletsStep3(  // input
                                           sqrt(fabs(T3.C22[i3_4])), T3.ty[i3_4], sqrt(fabs(T3.C33[i3_4])));
 
     L1Triplet& tr1 = fTriplets[istal][Thread].back();
+    tr1.SetLevel(0);
 
     ++nstaltriplets;
 
