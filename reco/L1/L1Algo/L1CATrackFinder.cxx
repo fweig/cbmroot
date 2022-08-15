@@ -946,7 +946,8 @@ inline void L1Algo::findTripletsStep0(  // input
           dv_.resize(n3 / fvecLen);
           timeR.resize(n3 / fvecLen);
           timeER.resize(n3 / fvecLen);
-          cout << "SG:: GetMaxTripletPerDoublets==" << fParameters.GetMaxTripletPerDoublets() << " reached" << endl;
+          cout << "GetMaxTripletPerDoublets==" << fParameters.GetMaxTripletPerDoublets()
+               << " reached in findTripletsStep0()" << endl;
           //assert(0);
           break;
         }
@@ -1247,6 +1248,10 @@ inline void L1Algo::findTripletsStep3(  // input
     unsigned int Location = PackTripletId(istal, Thread, fTriplets[istal][Thread].size());
 
     if (ihitl_prev != 1 + hitsl_3[i3]) {
+      // TODO: SG: A bug! The code doesn't work for iterations with missing hits.
+      // TODO: Triplets with the same left hit are not placed continiously in fTriplets vector.
+      // TODO: Urgent!!!
+      // assert(fHitNtriplets[ihitl] == 0);
       fHitFirstTriplet[ihitl] = Location;
       fHitNtriplets[ihitl]    = 0;
     }
@@ -2071,7 +2076,7 @@ void L1Algo::CATrackFinder()
     hitsmG_2.reserve(9000);
     i1G_2.reserve(9000);
 
-    for (int istal = fNstations - 2; istal >= fFirstCAstation; istal--)  //  //start downstream chambers
+    for (int istal = fNstations - 2; istal >= fFirstCAstation; istal--)  // start downstream chambers
     {
 
 #ifdef _OPENMP
@@ -2079,7 +2084,7 @@ void L1Algo::CATrackFinder()
                                       i1G_2)  //schedule(dynamic, 2)
 #endif
       for (Tindex ip = fDupletPortionStopIndex[istal + 1]; ip < fDupletPortionStopIndex[istal]; ++ip) {
-        Tindex n_2   = 0;  /// number of doublets in portion
+        Tindex n_2   = 0;  // number of doublets in portion
         int NHitsSta = HitsStopIndex[istal] - HitsStartIndex[istal];
         lmDuplets[istal].reset(NHitsSta);
         lmDupletsG[istal].reset(NHitsSta);
