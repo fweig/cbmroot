@@ -41,9 +41,9 @@
 
 #include "TH1.h"
 #include "TH2.h"
+#include "TMath.h"
 #include "TProfile.h"
 #include <TFile.h>
-#include "TMath.h"
 
 #include <iostream>
 #include <list>
@@ -597,10 +597,10 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     h_acc_phi_prim  = new TH1F("h_acc_phi_prim", "Azimuthal angle of accepted primary tracks", 1000, -3.15, 3.15);
     h_acc_phi_sec   = new TH1F("h_acc_phi_sec", "Azimuthal angle of accepted secondary tracks", 1000, -3.15, 3.15);
     h_reco_phi_prim = new TH1F("h_reco_phi_prim", "Azimuthal angle of reconstructed primary tracks", 1000, -3.15, 3.15);
-    h_reco_phi_sec  = new TH1F("h_reco_phi_sec", "Azimuthal angle of reconstructed secondary tracks", 1000, -3.15, 3.15);
+    h_reco_phi_sec = new TH1F("h_reco_phi_sec", "Azimuthal angle of reconstructed secondary tracks", 1000, -3.15, 3.15);
     h_rest_phi_prim = new TH1F("h_rest_phi_prim", "Azimuthal angle of not found primary tracks", 1000, -3.15, 3.15);
     h_rest_phi_sec  = new TH1F("h_rest_phi_sec", "Azimuthal angle of not found secondary tracks", 1000, -3.15, 3.15);
-    
+
     h_reg_nhits_prim  = new TH1F("h_reg_nhits_prim", "Number of hits in registered primary track", 51, -0.1, 10.1);
     h_reg_nhits_sec   = new TH1F("h_reg_nhits_sec", "Number of hits in registered secondary track", 51, -0.1, 10.1);
     h_acc_nhits_prim  = new TH1F("h_acc_nhits_prim", "Number of hits in accepted primary track", 51, -0.1, 10.1);
@@ -797,11 +797,13 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     CbmL1Track* prtra = &(*rtraIt);
     if ((prtra->Hits).size() < 1) continue;
     {  // fill histos
-      if (fabs(prtra->T[4]) > 1.e-10) h_reco_mom->Fill(fabs(1.0 / prtra->T[4])); // TODO: Is it a right precision? In FairTrackParam it is 1.e-4 (S.Zharko)
+      if (fabs(prtra->T[4]) > 1.e-10)
+        h_reco_mom->Fill(
+          fabs(1.0 / prtra->T[4]));  // TODO: Is it a right precision? In FairTrackParam it is 1.e-4 (S.Zharko)
       // NOTE: p = (TMath::Abs(fQp) > 1.e-4) ? 1. / TMath::Abs(fQp) : 1.e4; // FairTrackParam::Momentum(TVector3)
       // h_reco_mom->Fill(TMath::Abs(prtra->T[4] > 1.e-4) ? 1. / TMath::Abs(prtra->T[4]) : 1.e+4); // this should be correct
 
-      h_reco_phi->Fill(TMath::ATan2(-prtra->T[3], -prtra->T[2])); // TODO: What is precision?
+      h_reco_phi->Fill(TMath::ATan2(-prtra->T[3], -prtra->T[2]));  // TODO: What is precision?
       h_reco_nhits->Fill((prtra->Hits).size());
       CbmL1HitStore& mh = fvHitStore[prtra->Hits[0]];
       h_reco_station->Fill(mh.iStation);

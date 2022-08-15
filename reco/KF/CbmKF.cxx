@@ -99,7 +99,7 @@ InitStatus CbmKF::Init()
   if (!CbmTrackingDetectorInterfaceInit::Instance()) {
     LOG(fatal)
       << "CbmKF::Init(): CbmTrackingDetectorInterfaceInit instance was not found. Please, add it as a task to your "
-         "reco macro before the KF and L1 tasks:\n"
+         "reco macro right before the KF and L1 tasks and after all the tasks before KF:\n"
       << "\033[1;30mrun->AddTask(new CbmTrackingDetectorInterfaceInit());\033[0m";
   }
 

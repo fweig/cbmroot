@@ -193,7 +193,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         const L1Hit& hit0 = (*vHits)[hits[0]];
         const L1Hit& hit1 = (*vHits)[hits[1]];
         const L1Hit& hit2 = (*vHits)[hits[2]];
-        
+
         int ista0 = hit0.iSt;
         int ista1 = hit1.iSt;
         int ista2 = hit2.iSt;

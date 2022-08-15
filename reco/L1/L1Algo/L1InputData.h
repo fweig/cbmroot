@@ -90,9 +90,9 @@ private:
   L1Vector<L1Hit> fvHits = {"L1InputData::fvHits"};  ///< Sorted sample of input hits
                                                      ///< \note Hits in the vector are sorted as follows. Among two hits
                                                      ///<       the largest has the largest station index in the active
-    ///<       stations array. If both indexes were measured withing one
-    ///<       station, the largest hit has the largest y component of
-    ///<       the coordinates
+  ///<       stations array. If both indexes were measured withing one
+  ///<       station, the largest hit has the largest y component of
+  ///<       the coordinates
 
   /// Index of the first hit in the sorted hits vector for a given station
   std::array<L1HitIndex_t, L1Constants::size::kMaxNstations> fvStartHitIndexes = {0};
