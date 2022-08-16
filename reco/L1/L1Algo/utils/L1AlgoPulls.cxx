@@ -140,7 +140,7 @@ void L1AlgoPulls::AddOne(L1TrackPar& T_, int i, L1HitIndex_t ih)
 
 #ifdef BUILD_HISTO_FOR_EACH_STANTION
   int ista = mcP.iStation - 2;  // last hit
-  //   int ista = fL1->algo->vSFlag[ fL1->algo->vHits[ih].f ]/4 - 2; // last hit
+  //   int ista = fL1->algo->vSFlag[ fL1->algo->GetInputData()->GetHit(ih).f ]/4 - 2; // last hit
   fStaPulls[ista].push_back(P);
 #endif  // BUILD_HISTO_FOR_EACH_STANTION
 };

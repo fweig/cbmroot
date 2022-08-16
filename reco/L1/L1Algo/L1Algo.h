@@ -175,6 +175,8 @@ public:
   /// Receives input data
   void ReceiveInputData(L1InputData&& inputData);
 
+  /// Gets pointer to input data object for external access
+  const L1InputData* GetInputData() const { return &fInputData; }
 
   /// ----- Hit-point-strips conversion routines ------
 
@@ -456,12 +458,12 @@ private:
   // ** Member variables list **
   // ***************************
 
+  L1InputData fInputData;  ///< Tracking input data
+
   L1Vector<unsigned char> fvHitKeyFlags {
     "L1Algo::fvHitKeyFlags"};  ///< List of key flags: has been this hit or cluster already used
 
 public:
-  L1InputData fInputData;  ///< Tracking input data
-
   int fNstrips {0};                                ///< number of strips
   L1Vector<L1Hit>* vHits {nullptr};                ///< hits as a combination of front and back strips and z-position
   L1Grid vGrid[L1Constants::size::kMaxNstations];  ///<

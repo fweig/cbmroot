@@ -49,7 +49,6 @@
 
 #include "TDatabasePDG.h"
 #include "TRandom.h"
-
 #include <iostream>
 
 using std::cout;
@@ -1147,9 +1146,10 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   fIODataManager.ReserveNhits(nHits);
   fIODataManager.SetNhitKeys(NStrips);
 
+
   // ----- Fill
-  for (int i = 0; i < nHits; i++) {
-    TmpHit& th = tmpHits[i];
+  for (int iHit = 0; iHit < nHits; ++iHit) {
+    TmpHit& th = tmpHits[iHit];
 
     CbmL1HitStore s;
     s.Det      = th.Det;
@@ -1162,7 +1162,7 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     s.dxy      = th.dxy;
     s.time     = th.time;
 
-    fvSortedHitsIndexes[th.id] = i;
+    fvSortedHitsIndexes[th.id] = iHit;
 
     assert(th.iStripF >= 0 || th.iStripF < NStrips);
     assert(th.iStripB >= 0 || th.iStripB < NStrips);
@@ -1180,19 +1180,19 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     h.z   = th.z;
     h.iSt = th.iStation;
 
-
     // save hit
-    fvExternalHits.push_back(CbmL1Hit(fpData->vHits.size(), th.ExtIndex, th.Det));
+    fvExternalHits.push_back(CbmL1Hit(iHit, th.ExtIndex, th.Det));
 
-    fvExternalHits[fvExternalHits.size() - 1].x = th.x;
-    fvExternalHits[fvExternalHits.size() - 1].y = th.y;
-    fvExternalHits[fvExternalHits.size() - 1].t = th.time;
+    fvExternalHits[iHit].x = th.x;
+    fvExternalHits[iHit].y = th.y;
+    fvExternalHits[iHit].t = th.time;
 
-    fvExternalHits[fvExternalHits.size() - 1].ID = th.id;
+    fvExternalHits[iHit].ID = th.id;
 
-    fvExternalHits[fvExternalHits.size() - 1].f = th.iStripF;
-    fvExternalHits[fvExternalHits.size() - 1].b = th.iStripB;
+    fvExternalHits[iHit].f = th.iStripF;
+    fvExternalHits[iHit].b = th.iStripB;
 
+    // TODO: Here one should fill in the fvExternalHits[iHit].mcPointIds
 
     fData_->vHits.push_back(h);
     fIODataManager.PushBackHit(h);
@@ -1200,7 +1200,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     int iSt = th.iStation;
 
     if (fData_->HitsStartIndex[iSt] == static_cast<L1HitIndex_t>(-1)) { fData_->HitsStartIndex[iSt] = nEffHits; }
-    assert(nEffHits == i);
     nEffHits++;
 
     fData_->HitsStopIndex[iSt] = nEffHits;

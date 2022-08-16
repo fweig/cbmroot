@@ -12,14 +12,7 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-L1InputData::L1InputData()
-{
-  // Init first hit indexes
-  //for (int iStation = 0; iStation < L1Constants::size::kMaxNstations; ++iStation) {
-  //  fvFirstHitIndexes[iStation] = static_cast<L1HitIndex_t>(-1);
-  //}
-  // NOTE: the last hit indexes should be initialized with 0. It is done in the variable declaration
-}
+L1InputData::L1InputData() {}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //

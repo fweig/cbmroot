@@ -16,7 +16,7 @@ public:
 
   CbmL1Hit(int hitId_, int extIndex_, int Det_) : hitId(hitId_), extIndex(extIndex_), Det(Det_) {};
 
-  int hitId    = 0;    ///< index of L1Hit in algo->vHits array. Should be equal to index of this in L1->vHits
+  int hitId    = 0;    ///< index of L1Hit in fInputData::fvHits array. Should be equal to index of this in L1->vHits
   int extIndex = 0;    ///< index of hit in the TClonesArray array
   int Det      = 0;    ///< station index
   float x      = 0.f;  ///< measured X coordinate

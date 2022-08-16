@@ -63,8 +63,11 @@ public:
   /// \param  index  Index of hit in the hits sample
   const L1Hit& GetHit(L1HitIndex_t index) const { return fvHits[index]; }
 
-  /// Get reference to hits vector
+  /// Gets reference to hits vector
   const L1Vector<L1Hit>& GetHits() const { return fvHits; }
+
+  /// Gets number of hits in the hits vector
+  L1HitIndex_t GetNhits() const { return fvHits.size(); }
 
   /// Gets total number of stored keys
   int GetNhitKeys() const { return fNhitKeys; }
@@ -87,12 +90,13 @@ private:
   // ** Member variables list **
   // ***************************
 
-  L1Vector<L1Hit> fvHits = {"L1InputData::fvHits"};  ///< Sorted sample of input hits
-                                                     ///< \note Hits in the vector are sorted as follows. Among two hits
-                                                     ///<       the largest has the largest station index in the active
-  ///<       stations array. If both indexes were measured withing one
-  ///<       station, the largest hit has the largest y component of
-  ///<       the coordinates
+  /// Sorted sample of input hits
+  /// \note Hits in the vector are sorted as follows. Among two hits
+  ///       the largest has the largest station index in the active
+  ///       stations array. If both indexes were measured withing one
+  ///       station, the largest hit has the largest y component of
+  ///       the coordinates
+  L1Vector<L1Hit> fvHits = {"L1InputData::fvHits"};
 
   /// Index of the first hit in the sorted hits vector for a given station
   std::array<L1HitIndex_t, L1Constants::size::kMaxNstations> fvStartHitIndexes = {0};

@@ -948,7 +948,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     if (event) {
 
-      fpData->fStripFlag.clear();
+      //fpData->fStripFlag.clear();
 
       areDataLeft = false;
       TsStart     = 0;
@@ -958,12 +958,15 @@ void CbmL1::Reconstruct(CbmEvent* event)
     }
 
     if (fSTAPDataMode >= 2) {  // 2,3
-      fpData->ReadHitsFromFile(fSTAPDataDir.Data(), 1, fVerbose);
+      // TODO: Rewrite it:
+      //fpData->ReadHitsFromFile(fSTAPDataDir.Data(), 1, fVerbose);
 
-      fpAlgo->SetData(fpData->GetHits(), fpData->GetNstrips(), fpData->GetSFlag(), fpData->GetHitsStartIndex(),
-                      fpData->GetHitsStopIndex());
+      // TODO: Rewrite it:
+      //fpAlgo->SetData(fpData->GetHits(), fpData->GetNstrips(), fpData->GetSFlag(), fpData->GetHitsStartIndex(),
+      //                fpData->GetHitsStopIndex());
     }
     else {
+      // TODO: There is no use in passing fpData into the ReadEvent function -> remove (S.Zharko)
       ReadEvent(fpData, TsStart, TsLength, TsOverlap, FstHitinTs, areDataLeft, event);
     }
 
@@ -1033,8 +1036,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
       WriteSTAPPerfData();
     };
     if (fSTAPDataMode >= 2) {  // 2,3
-      //ReadSTAPAlgoData();
-
+      ReadSTAPAlgoData();
       ReadSTAPPerfData();
     };
 
@@ -1044,17 +1046,17 @@ void CbmL1::Reconstruct(CbmEvent* event)
     //  FieldIntegralCheck();
 
     // TODO: Remove code below (S.Zharko)
-    for (unsigned int iH = 0; iH < (*fpAlgo->vHits).size(); ++iH) {
-#ifdef USE_EVENT_NUMBER
-      L1Hit& h = const_cast<L1Hit&>((*fpAlgo->vHits)[iH]);
-      h.n      = -1;
-#endif
-      if (fvExternalHits[iH].mcPointIds.size() == 0) continue;
-#ifdef USE_EVENT_NUMBER
-      const CbmL1MCPoint& mcp = fvMCPoints[fvExternalHits[iH].mcPointIds[0]];
-      h.n                     = mcp.event;
-#endif
-    }
+    //     for (unsigned int iH = 0; iH < (*fpAlgo->vHits).size(); ++iH) {
+    // #ifdef USE_EVENT_NUMBER
+    //       L1Hit& h = const_cast<L1Hit&>((*fpAlgo->vHits)[iH]);
+    //       h.n      = -1;
+    // #endif
+    //       if (fvExternalHits[iH].mcPointIds.size() == 0) continue;
+    // #ifdef USE_EVENT_NUMBER
+    //       const CbmL1MCPoint& mcp = fvMCPoints[fvExternalHits[iH].mcPointIds[0]];
+    //       h.n                     = mcp.event;
+    // #endif
+    //     }
 
     if (fVerbose > 1) { cout << "L1 Track finder..." << endl; }
     fpAlgo->CATrackFinder();
@@ -1116,7 +1118,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
         int start_hit1 = start_hit;
         if (fpAlgo->fRecoHits[start_hit1] > fvExternalHits.size() - 1) start_hit++;
         else if (!fLegacyEventMode) {
-          t.Hits.push_back(((*fpAlgo->vHits)[fpAlgo->fRecoHits[start_hit]]).ID);
+          t.Hits.push_back((fpAlgo->GetInputData()->GetHit(fpAlgo->fRecoHits[start_hit]).ID));
         }
         else {
           t.Hits.push_back(fpAlgo->fRecoHits[start_hit]);
@@ -1162,10 +1164,10 @@ void CbmL1::Reconstruct(CbmEvent* event)
         continue;  ///Discard tracks from overlap region
 
         /// set strips as unused
-        for (unsigned int i = 0; i < HitsLocal.size(); i++) {
-          fpAlgo->SetFUnUsed(const_cast<unsigned char&>((*fpAlgo->fStripFlag)[fvExternalHits[HitsLocal[i]].f]));
-          fpAlgo->SetFUnUsed(const_cast<unsigned char&>((*fpAlgo->fStripFlag)[fvExternalHits[HitsLocal[i]].b]));
-        }
+        //for (unsigned int i = 0; i < HitsLocal.size(); i++) {
+        //  fpAlgo->SetFUnUsed(const_cast<unsigned char&>((*fpAlgo->fStripFlag)[fvExternalHits[HitsLocal[i]].f]));
+        //  fpAlgo->SetFUnUsed(const_cast<unsigned char&>((*fpAlgo->fStripFlag)[fvExternalHits[HitsLocal[i]].b]));
+        //}
       }
       vRTracksCur.push_back(t);
     }
@@ -1225,18 +1227,18 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
   if ((fPerformance) && (fSTAPDataMode < 2)) { InputPerformance(); }
 
-
-  for (unsigned int iH = 0; iH < (*fpAlgo->vHits).size(); ++iH) {
-#ifdef USE_EVENT_NUMBER
-    L1Hit& h = const_cast<L1Hit&>((*fpAlgo->vHits)[iH]);
-    h.n      = -1;
-#endif
-    if (fvExternalHits[iH].mcPointIds.size() == 0) continue;
-#ifdef USE_EVENT_NUMBER
-    const CbmL1MCPoint& mcp = fvMCPoints[fvExternalHits[iH].mcPointIds[0]];
-    h.n                     = mcp.event;
-#endif
-  }
+  // TODO: Remove this code (S.Zharko)
+  //  for (unsigned int iH = 0; iH < (*fpAlgo->vHits).size(); ++iH) {
+  //#ifdef USE_EVENT_NUMBER
+  //    L1Hit& h = const_cast<L1Hit&>((*fpAlgo->vHits)[iH]);
+  //    h.n      = -1;
+  //#endif
+  //    if (fvExternalHits[iH].mcPointIds.size() == 0) continue;
+  //#ifdef USE_EVENT_NUMBER
+  //    const CbmL1MCPoint& mcp = fvMCPoints[fvExternalHits[iH].mcPointIds[0]];
+  //    h.n                     = mcp.event;
+  //#endif
+  //  }
 
   // output performance
   if (fPerformance) {
@@ -1371,536 +1373,35 @@ void CbmL1::IdealTrackFinder()
 
 /// -----   STandAlone Package service-functions  -----------------------------
 
-void CbmL1::WriteSTAPGeoData(const L1Vector<float>& geo_)
+void CbmL1::WriteSTAPGeoData(const L1Vector<float>& /*geo_*/)
 {
-  // write geo in file
-  TString fgeo_name = fSTAPDataDir + "geo_algo.txt";
-  std::ofstream fgeo(fgeo_name);
-  fgeo.setf(ios::scientific, ios::floatfield);
-  fgeo.precision(20);
-  int size = geo_.size();
-  for (int i = 0; i < size; i++) {
-    fgeo << geo_[i] << endl;
-  };
-  fgeo.close();
-  cout << "-I- CbmL1: Geometry data has been written in " << fgeo_name << endl;
-}  // void CbmL1::WriteSTAPGeoData(void* geo_, int size)
-
+  LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
+}
 
 void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
 {
-  // write algo data in file
-  static int vNEvent = 1;
-  std::fstream fadata;
-
-  TString fadata_name = fSTAPDataDir + "data_algo.txt";
-  //    if ( vNEvent <= maxNEvent ) {
-  if (1) {
-
-    if (vNEvent == 1) fadata.open(fadata_name, std::fstream::out);  // begin new file
-    else
-      fadata.open(fadata_name, std::fstream::out | std::fstream::app);
-
-    fadata << "Event:"
-           << " ";
-    fadata << vNEvent << endl;
-    // write vStrips
-    int n = fpAlgo->fNstrips;
-    fadata << n << endl;
-    if (fVerbose >= 4) {
-      cout << "vStrips[" << n << "]"
-           << " have been written." << endl;
-    }
-    // write fStripFlag
-    n = (*fpAlgo->fStripFlag).size();
-    fadata << n << endl;
-    unsigned char element;
-    for (int i = 0; i < n; i++) {
-      element = (*fpAlgo->fStripFlag)[i];
-      fadata << static_cast<int>(element) << endl;
-    };
-    if (fVerbose >= 4) {
-      cout << "fStripFlag[" << n << "]"
-           << " have been written." << endl;
-    }
-    if (fVerbose >= 4) {
-      cout << "fStripFlagB[" << n << "]"
-           << " have been written." << endl;
-    }
-    // write vHits
-    n = (*fpAlgo->vHits).size();
-    fadata << n << endl;
-    for (int i = 0; i < n; i++) {
-      const L1Hit& h = (*fpAlgo->vHits)[i];
-      fadata << static_cast<int>(h.f) << " ";
-      fadata << static_cast<int>(h.b) << " ";
-#ifdef USE_EVENT_NUMBER
-      fadata << static_cast<unsigned short int>(h.n) << " ";
-#endif
-      fadata << h.z << " ";
-      fadata << h.u << " ";
-      fadata << h.v << " ";
-      // fadata  << (*fpAlgo->vHits)[i].time << endl;
-      fadata << h.t << endl;
-    };
-    if (fVerbose >= 4) {
-      cout << "vHits[" << n << "]"
-           << " have been written." << endl;
-    }
-    // write HitsStartIndex and HitsStopIndex
-    n = 20;
-    for (int i = 0; i < n; i++) {
-      if (int(L1Constants::size::kMaxNstations) + 1 > i) { fadata << fpAlgo->HitsStartIndex[i] << endl; }
-      else {
-        fadata << 0 << endl;
-      }
-    };
-    for (int i = 0; i < n; i++) {
-      if (int(L1Constants::size::kMaxNstations) + 1 > i) fadata << fpAlgo->HitsStopIndex[i] << endl;
-      else
-        fadata << 0 << endl;
-    };
-
-
-    fadata.close();
-  }
-  cout << "-I- CbmL1: CATrackFinder data for event number " << vNEvent << " have been written in file " << fadata_name
-       << endl;
-  vNEvent++;
-}  // void CbmL1::WriteSTAPAlgoData()
-
+  LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
+}
 
 void CbmL1::WriteSTAPPerfData()  // must be called after ReadEvent
 {
-  std::fstream fpdata;
-  fpdata << std::setprecision(8);
-
-  static int vNEvent = 1;
-
-  TString fpdata_name = fSTAPDataDir + "data_perfo.txt";
-  // write data for performance in file
-  //   if ( vNEvent <= maxNEvent )  {
-  if (1) {
-
-    if (vNEvent == 1) fpdata.open(fpdata_name, std::fstream::out);  // begin new file
-    else
-      fpdata.open(fpdata_name, std::fstream::out | std::fstream::app);
-
-    fpdata << "Event: ";
-    fpdata << vNEvent << endl;
-    // write fvMCPoints
-    Int_t n = fvMCPoints.size();  // number of elements
-    fpdata << n << endl;
-    for (int i = 0; i < n; i++) {
-      fpdata << fvMCPoints[i].xIn << " ";
-      fpdata << fvMCPoints[i].yIn << " ";
-      fpdata << fvMCPoints[i].zIn << "  ";
-      fpdata << fvMCPoints[i].pxIn << " ";
-      fpdata << fvMCPoints[i].pyIn << " ";
-      fpdata << fvMCPoints[i].pzIn << " " << endl;
-      fpdata << fvMCPoints[i].xOut << " ";
-      fpdata << fvMCPoints[i].yOut << " ";
-      fpdata << fvMCPoints[i].zOut << "  ";
-      fpdata << fvMCPoints[i].pxOut << " ";
-      fpdata << fvMCPoints[i].pyOut << " ";
-      fpdata << fvMCPoints[i].pzOut << " " << endl;
-
-      fpdata << fvMCPoints[i].p << "  ";
-      fpdata << fvMCPoints[i].q << " ";
-      fpdata << fvMCPoints[i].mass << " ";
-      fpdata << fvMCPoints[i].time << "   ";
-
-      fpdata << fvMCPoints[i].pdg << " ";
-      fpdata << fvMCPoints[i].ID << " ";
-      fpdata << fvMCPoints[i].mother_ID << " ";
-      fpdata << fvMCPoints[i].iStation << endl;
-
-      const int nhits = fvMCPoints[i].hitIds.size();
-      fpdata << nhits << endl << "   ";
-      for (int k = 0; k < nhits; k++) {
-        fpdata << fvMCPoints[i].hitIds[k] << " ";
-      };
-      fpdata << endl;
-    };
-    if (fVerbose >= 4) {
-      cout << "fvMCPoints[" << n << "]"
-           << " have been written." << endl;
-    }
-    // write fvMCTracks  . without Points
-    n = fvMCTracks.size();  // number of elements
-    fpdata << n << endl;
-    for (int i = 0; i < n; i++) {
-      fpdata << fvMCTracks[i].x << " ";
-      fpdata << fvMCTracks[i].y << " ";
-      fpdata << fvMCTracks[i].z << "  ";
-      fpdata << fvMCTracks[i].px << " ";
-      fpdata << fvMCTracks[i].py << " ";
-      fpdata << fvMCTracks[i].pz << " ";
-      fpdata << fvMCTracks[i].p << "  ";
-      fpdata << fvMCTracks[i].q << " ";
-      fpdata << fvMCTracks[i].mass << " ";
-      fpdata << fvMCTracks[i].time << "   ";
-
-      fpdata << fvMCTracks[i].pdg << " ";
-      fpdata << fvMCTracks[i].ID << " ";
-      fpdata << fvMCTracks[i].mother_ID << endl;
-
-      int nhits = fvMCTracks[i].Hits.size();
-      fpdata << "   " << nhits << endl << "   ";
-      for (int k = 0; k < nhits; k++) {
-        fpdata << fvMCTracks[i].Hits[k] << " ";
-      };
-      fpdata << endl;
-
-      const int nPoints = fvMCTracks[i].Points.size();
-      fpdata << nPoints << endl << "   ";
-      for (int k = 0; k < nPoints; k++) {
-        fpdata << fvMCTracks[i].Points[k] << " ";
-      };
-      fpdata << endl;
-
-      fpdata << fvMCTracks[i].nMCContStations << " ";
-      fpdata << fvMCTracks[i].nHitContStations << " ";
-      fpdata << fvMCTracks[i].maxNStaMC << " ";
-      fpdata << fvMCTracks[i].maxNSensorMC << " ";
-      fpdata << fvMCTracks[i].maxNStaHits << " ";
-      fpdata << fvMCTracks[i].nStations << endl;
-    };
-    if (fVerbose >= 4) {
-      cout << "fvMCTracks[" << n << "]"
-           << " have been written." << endl;
-    }
-    // write fvHitPointIndexes
-    n = fvHitPointIndexes.size();  // number of elements
-    fpdata << n << endl;
-    for (int i = 0; i < n; i++) {
-      fpdata << fvHitPointIndexes[i] << endl;
-    };
-    if (fVerbose >= 4) {
-      cout << "fvHitPointIndexes[" << n << "]"
-           << " have been written." << endl;
-    }
-    // write fvHitStore
-    n = fvHitStore.size();  // number of elements
-    fpdata << n << endl;
-    for (int i = 0; i < n; i++) {
-      fpdata << fvHitStore[i].ExtIndex << "  ";
-      fpdata << fvHitStore[i].iStation << "  ";
-
-      fpdata << fvHitStore[i].x << " ";
-      fpdata << fvHitStore[i].y << endl;
-    };
-    if (fVerbose >= 4) {
-      cout << "fvHitStore[" << n << "]"
-           << " have been written." << endl;
-    }
-    // write fvExternalHits
-    n = fvExternalHits.size();  // number of elements
-    fpdata << n << endl;
-    for (int i = 0; i < n; i++) {
-      fpdata << fvExternalHits[i].hitId << " ";
-      fpdata << fvExternalHits[i].extIndex << endl;
-
-      const int nPoints = fvExternalHits[i].mcPointIds.size();
-      fpdata << nPoints << endl << "   ";
-      for (int k = 0; k < nPoints; k++) {
-        fpdata << fvExternalHits[i].mcPointIds[k] << " ";
-      };
-      fpdata << endl;
-    };
-    if (fVerbose >= 4) {
-      cout << "fvExternalHits[" << n << "]"
-           << " have been written." << endl;
-    }
-    fpdata.close();
-  }
-  cout << "-I- CbmL1: Data for performance of event number " << vNEvent << " have been written in file " << fpdata_name
-       << endl;
-  vNEvent++;
+  LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
 }  // void CbmL1::WriteSTAPPerfData()
 
-std::istream& CbmL1::eatwhite(std::istream& is)  // skip spaces
+void CbmL1::ReadSTAPGeoData(L1Vector<fscal>& /*geo_*/, int& /*size*/)
 {
-  char c;
-  while (is.get(c)) {
-    if (isspace(c) == 0) {
-      is.putback(c);
-      break;
-    }
-  }
-  return is;
-}
-
-//void CbmL1::ReadSTAPGeoData(L1Vector<float> geo_, int &size)
-//void CbmL1::ReadSTAPGeoData(L1Vector<fscal> geo_, int &size)
-void CbmL1::ReadSTAPGeoData(L1Vector<fscal>& geo_, int& size)
-{
-  TString fgeo_name = fSTAPDataDir + "geo_algo.txt";
-  std::ifstream fgeo(fgeo_name);
-
-  cout << "-I- CbmL1: Read geometry from file " << fgeo_name << endl;
-  int i;
-  for (i = 0; !fgeo.eof(); i++) {
-    fscal tmp;
-    fgeo >> tmp >> eatwhite;
-    cout << " geo_[" << i << "]=" << geo_[i] << " tmp= " << tmp << endl;
-    geo_[i] = tmp;
-  };
-  size = i;
-  fgeo.close();
+  LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
 }  // void CbmL1::ReadSTAPGeoData(void* geo_, int &size)
 
 void CbmL1::ReadSTAPAlgoData()
 {
-  static int nEvent = 1;
-  static std::fstream fadata;
-  TString fadata_name = fSTAPDataDir + "data_algo.txt";
-  //  if (nEvent <= maxNEvent){
-  if (1) {
-    if (nEvent == 1) fadata.open(fadata_name, std::fstream::in);
-
-    if (fpAlgo->vHits) fpAlgo->vHits->clear();
-    fpAlgo->fNstrips = 0;
-    if (fpAlgo->fStripFlag) fpAlgo->fStripFlag->clear();
-
-    // check correct position in file
-    char s[] = "Event:  ";
-    int nEv;
-    fadata >> s;
-    fadata >> nEv;
-    if (nEv != nEvent) cout << "-E- CbmL1: Can't read event number " << nEvent << " from file " << fadata_name << endl;
-
-    int n;  // number of elements
-    // read fpAlgo->vStrips
-    fadata >> n;
-    cout << " n " << n << endl;
-    fpAlgo->fNstrips = n;
-    if (fVerbose >= 4) {
-      cout << "vStrips[" << n << "]"
-           << " have been read." << endl;
-    }
-    // read fpAlgo->fStripFlag
-    fadata >> n;
-    for (int i = 0; i < n; i++) {
-      int element;
-      fadata >> element;
-      fpAlgo->fStripFlag->push_back(static_cast<unsigned char>(element));
-    }
-    if (fVerbose >= 4) {
-      cout << "fStripFlag[" << n << "]"
-           << " have been read." << endl;
-    }
-    // read fpAlgo->vHits
-    fadata >> n;
-    int element_f;  // for convert
-    int element_b;
-    int element_n;
-    for (int i = 0; i < n; i++) {
-      L1Hit element;
-      fadata >> element_f >> element_b >> element_n >> element.z >> element.u >> element.v >> element.t;
-      element.f = static_cast<L1HitIndex_t>(element_f);
-      element.b = static_cast<L1HitIndex_t>(element_b);
-      fpAlgo->vHits->push_back(element);
-    }
-    if (fVerbose >= 4) {
-      cout << "vHits[" << n << "]"
-           << " have been read." << endl;
-    }
-    // read HitsStartIndex and HitsStopIndex
-    n = 20;  // TODO: Why 20? (S.Zh.)
-    for (int i = 0; i < n; i++) {
-      int tmp;
-      fadata >> tmp;
-      if (int(L1Constants::size::kMaxNstations) + 1 > i) (const_cast<unsigned int&>(fpAlgo->HitsStartIndex[i]) = tmp);
-    }
-    for (int i = 0; i < n; i++) {
-      int tmp;
-      fadata >> tmp;
-      if (int(L1Constants::size::kMaxNstations) + 1 > i) (const_cast<unsigned int&>(fpAlgo->HitsStopIndex[i]) = tmp);
-    }
-
-    cout << "-I- CbmL1: CATrackFinder data for event " << nEvent << " has been read from file " << fadata_name
-         << " successfully." << endl;
-  }
-  nEvent++;
-}  // void CbmL1::ReadSTAPAlgoData()
+  LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
+}
 
 void CbmL1::ReadSTAPPerfData()
 {
-  static int nEvent = 1;
-  static std::fstream fpdata;
-  TString fpdata_name = fSTAPDataDir + "data_perfo.txt";
-  //  if (nEvent <= maxNEvent){
-  if (1) {
-    if (nEvent == 1) { fpdata.open(fpdata_name, std::fstream::in); };
-
-    fvMCPoints.clear();
-    fvMCTracks.clear();
-    fvHitPointIndexes.clear();
-    fvHitStore.clear();
-    fvExternalHits.clear();
-    dFEI2vMCPoints.clear();
-    dFEI2vMCTracks.clear();
-    // check if it is right position in file
-    char s[] = "EVENT:     ";  // buffer
-    int nEv  = 0;              // event number
-    fpdata >> s;
-    fpdata >> nEv;
-
-    if (nEv != nEvent)
-      cout << "-E- CbmL1: Performance: can't read event number " << nEvent << " from file "
-           << "data_perfo.txt" << endl;
-    // fvMCPoints
-    int n;  // number of elements
-    fpdata >> n;
-    for (int i = 0; i < n; i++) {
-      CbmL1MCPoint element;
-
-      fpdata >> element.xIn;
-      fpdata >> element.yIn;
-      fpdata >> element.zIn;
-      fpdata >> element.pxIn;
-      fpdata >> element.pyIn;
-      fpdata >> element.pzIn;
-
-      fpdata >> element.xOut;
-      fpdata >> element.yOut;
-      fpdata >> element.zOut;
-      fpdata >> element.pxOut;
-      fpdata >> element.pyOut;
-      fpdata >> element.pzOut;
-
-      fpdata >> element.p;
-      fpdata >> element.q;
-      fpdata >> element.mass;
-      fpdata >> element.time;
-
-      fpdata >> element.pdg;
-      fpdata >> element.ID;
-      fpdata >> element.mother_ID;
-      fpdata >> element.iStation;
-
-      int nhits;
-      fpdata >> nhits;
-      for (int k = 0; k < nhits; k++) {
-        int helement;
-        fpdata >> helement;
-        element.hitIds.push_back(helement);
-      };
-
-      fvMCPoints.push_back(element);
-    };
-    if (fVerbose >= 4) {
-      cout << "fvMCPoints[" << n << "]"
-           << " have been read." << endl;
-    }
-    // fvMCTracks . without Points
-    fpdata >> n;
-    for (int i = 0; i < n; i++) {
-      CbmL1MCTrack element;
-
-      fpdata >> element.x;
-      fpdata >> element.y;
-      fpdata >> element.z;
-      fpdata >> element.px;
-      fpdata >> element.py;
-      fpdata >> element.pz;
-      fpdata >> element.p;
-      fpdata >> element.q;
-      fpdata >> element.mass;
-      fpdata >> element.time;
-
-      fpdata >> element.pdg;
-      fpdata >> element.ID;
-      fpdata >> element.mother_ID;
-
-      int nhits;
-      fpdata >> nhits;
-      for (int k = 0; k < nhits; k++) {
-        int helement;
-        fpdata >> helement;
-        element.Hits.push_back(helement);
-      };
-      fpdata >> nhits;
-      for (int k = 0; k < nhits; k++) {
-        int helement;
-        fpdata >> helement;
-        element.Points.push_back(helement);
-      };
-
-      fpdata >> element.nMCContStations;
-      fpdata >> element.nHitContStations;
-      fpdata >> element.maxNStaMC;
-      fpdata >> element.maxNSensorMC;
-      fpdata >> element.maxNStaHits;
-      fpdata >> element.nStations;
-
-      element.CalculateIsReconstructable();
-      fvMCTracks.push_back(element);
-    };
-    if (fVerbose >= 4) {
-      cout << "fvMCTracks[" << n << "]"
-           << " have been read." << endl;
-    }
-    // fvHitPointIndexes
-    fpdata >> n;
-    fvHitPointIndexes.reserve(n);
-    for (int i = 0; i < n; i++) {
-      int element;
-      fpdata >> element;
-      fvHitPointIndexes.push_back(element);
-    };
-    if (fVerbose >= 4) {
-      cout << "fvHitPointIndexes[" << n << "]"
-           << " have been read." << endl;
-    }
-    // fvHitStore
-    fpdata >> n;
-    fvHitStore.reserve(n);
-    for (int i = 0; i < n; i++) {
-      CbmL1HitStore element;
-      fpdata >> element.ExtIndex;
-      fpdata >> element.iStation;
-
-      fpdata >> element.x;
-      fpdata >> element.y;
-      fvHitStore.push_back(element);
-    };
-    if (fVerbose >= 4) {
-      cout << "fvHitStore[" << n << "]"
-           << " have been read." << endl;
-    }
-    // fvExternalHits
-    fpdata >> n;
-    for (int i = 0; i < n; i++) {
-      CbmL1Hit element;
-      fpdata >> element.hitId;
-      fpdata >> element.extIndex;
-
-      int nPoints;
-      fpdata >> nPoints;
-      for (int k = 0; k < nPoints; k++) {
-        int id;
-        fpdata >> id;
-        element.mcPointIds.push_back(id);
-      };
-      fvExternalHits.push_back(element);
-    };
-    if (fVerbose >= 4) {
-      cout << "fvExternalHits[" << n << "]"
-           << " have been read." << endl;
-    }
-
-    //    if (nEvent == maxNEvent) { // file open on begin of all work class and close at end
-    //       fpdata.close();
-    //       cout << " -I- Performance: data read from file " << "data_perfo.txt" << " successfully"<< endl;
-    //     }
-    cout << "-I- CbmL1: L1Performance data for event " << nEvent << " has been read from file " << fpdata_name
-         << " successfully." << endl;
-
-  }  // if (nEvent <= maxNEvent)
-  nEvent++;
-}  // void CbmL1::ReadSTAPPerfData()
+  LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
+}
 
 void CbmL1::WriteSIMDKFData()
 {

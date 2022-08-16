@@ -104,8 +104,12 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
 //
 void L1Algo::ReceiveInputData(L1InputData&& inputData)
 {
+  // ----- Get input data ----------------------------------------------------------------------------------------------
   fInputData = std::move(inputData);
   // TODO: Reset here internal data (probably, we should have additional class for internal data)
+
+  // ----- Reset data arrays -------------------------------------------------------------------------------------------
+  fvHitKeyFlags.reset(fInputData.GetNhitKeys());
 }
 
 
@@ -113,7 +117,7 @@ void L1Algo::ReceiveInputData(L1InputData&& inputData)
 void L1Algo::SetData(L1Vector<L1Hit>& Hits_, int nStrips_, L1Vector<unsigned char>& SFlag_,
                      const L1HitIndex_t* HitsStartIndex_, const L1HitIndex_t* HitsStopIndex_)
 {
-
+  // TODO: Remove (S.Zharko)
   vHits      = &Hits_;
   fNstrips   = nStrips_;
   fStripFlag = &SFlag_;
@@ -122,7 +126,7 @@ void L1Algo::SetData(L1Vector<L1Hit>& Hits_, int nStrips_, L1Vector<unsigned cha
   HitsStopIndex  = HitsStopIndex_;
 
   // TODO: maximal array sizes need to be adjusted
-
+  // TODO: move to ReceiveInputData function (S.Zharko)
   int nHits = vHits->size();
 
   NHitsIsecAll = nHits; // TODO: Is it needed?

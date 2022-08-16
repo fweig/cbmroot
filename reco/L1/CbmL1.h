@@ -238,6 +238,13 @@ public:
     if (fpInitManager) { fpInitManager->SetOutputConfigName(std::string(filename)); }
   }
 
+  /// Sets flag: to correct input hits on MC or not
+  /// \param flag: true - hits will be corrected on MC information
+  void SetCorrectHitsOnMC(bool flag) { fIfCorrectHitsOnMC = flag; }
+
+  /// Gets flag: to correct input hits on MC or not
+  bool GetCorrectHitsOnMC() const { return fIfCorrectHitsOnMC; }
+
   /// Correction function for the material budget map
   /// It fills bins with no statistics
   template<L1DetectorID detID>
@@ -460,6 +467,8 @@ private:
   bool fUseMUCH = false;  ///< if Much data should be processed
   bool fUseTRD  = false;  ///< if Trd data should be processed
   bool fUseTOF  = false;  ///< if Tof data should be processed
+
+  bool fIfCorrectHitsOnMC = false;  ///< if correct input hits on MC information (debug)
 
   // ** Raw input data **
 

@@ -103,7 +103,7 @@ public:
 
   void UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<L1HitIndex_t>* indicesBuf, L1HitIndex_t* indices,
                       L1Vector<L1Hit>* hits2, L1Vector<L1HitPoint>* pointsBuf, L1HitPoint* points, int& NHitsOnStation,
-                      char iS, L1Algo& Algo, const L1Vector<unsigned char>* vSFlag);
+                      char iS, L1Algo& Algo, const L1Vector<unsigned char>& vSFlag);
 
 
 private:

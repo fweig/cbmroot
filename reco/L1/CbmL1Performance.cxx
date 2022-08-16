@@ -1065,17 +1065,17 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
   }  // for mcTracks
 
   int NFakes = 0;
-  for (unsigned int ih = 0; ih < fpAlgo->vHits->size(); ih++) {
+  for (unsigned int ih = 0; ih < fpAlgo->GetInputData()->GetNhits(); ih++) {
     int iMC = fvHitPointIndexes[ih];  // TODO2: adapt to linking
     if (iMC < 0) NFakes++;
   }
 
   h_reco_time->Fill(fTrackingTime);
   h_reco_timeNtr->Fill(mc_total, fTrackingTime);
-  h_reco_timeNhit->Fill(fpAlgo->vHits->size(), fTrackingTime);
+  h_reco_timeNhit->Fill(fpAlgo->GetInputData()->GetNhits(), fTrackingTime);
 
   h_reco_fakeNtr->Fill(mc_total, NFakes);
-  h_reco_fakeNhit->Fill(fpAlgo->vHits->size() - NFakes, NFakes);
+  h_reco_fakeNhit->Fill(fpAlgo->GetInputData()->GetNhits() - NFakes, NFakes);
 
 
   h_reg_MCmom->Scale(1.f / NEvents);

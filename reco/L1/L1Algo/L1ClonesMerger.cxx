@@ -64,10 +64,10 @@ void L1ClonesMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& 
 #endif
   for (int iTr = 0; iTr < nTracks; iTr++) {
     firstHit[iTr]     = start_hit;
-    firstStation[iTr] = (*frAlgo.vHits)[extRecoHits[start_hit]].iSt;
+    firstStation[iTr] = frAlgo.GetInputData()->GetHit(extRecoHits[start_hit]).iSt;
     start_hit += extTracks[iTr].NHits - 1;
     lastHit[iTr]     = start_hit;
-    lastStation[iTr] = (*frAlgo.vHits)[extRecoHits[start_hit]].iSt;
+    lastStation[iTr] = frAlgo.GetInputData()->GetHit(extRecoHits[start_hit]).iSt;
     start_hit++;
 
     isStored[iTr]              = false;

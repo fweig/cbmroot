@@ -1055,7 +1055,7 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
 
     fscal u[NHits], v[NHits], x[NHits], y[NHits], z[NHits];
     for (int ih = 0; ih < NHits; ++ih) {
-      const L1Hit& hit = (*vHits)[ihit[ih]];
+      const L1Hit& hit       = fInputData.GetHit(ihit[ih]);
       u[ih]            = hit.u;
       v[ih]            = hit.v;
       std::tie(x[ih], y[ih]) = sta[ih].ConvUVtoXY<fscal>(u[ih], v[ih]);
@@ -1789,8 +1789,8 @@ void L1Algo::CATrackFinder()
   fTracks.clear();
   fRecoHits.clear();
 
-  fRecoHits.reserve(2 * vHits->size());
-  fTracks.reserve(2 * vHits->size() / fNstations);
+  fRecoHits.reserve(2 * fInputData.GetNhits());
+  fTracks.reserve(2 * fInputData.GetNhits() / fNstations);
 
   int nNotUsedHits = 0;
 
@@ -1807,7 +1807,7 @@ void L1Algo::CATrackFinder()
   for (int ist = 0; ist < fNstations; ++ist)
     for (L1HitIndex_t ih = HitsStartIndex[ist]; ih < HitsStopIndex[ist]; ++ih) {
 
-      const float& time = (*vHits)[ih].t;
+      const float& time = fInputData.GetHit(ih).t;
       if ((lasttime < time) && (!std::isinf(time))) lasttime = time;
       if ((starttime > time) && (time > 0)) starttime = time;
     }
@@ -1843,8 +1843,8 @@ void L1Algo::CATrackFinder()
     int start = HitsUnusedStartIndex[iS];
     int nhits = HitsUnusedStopIndex[iS] - start;
     if (nhits > 0) {
-      vGridTime[iS].StoreHits(nhits, &((*vHits)[start]), iS, *this, start, &(vNotUsedHits_Buf[start]),
-                              &((*vHits)[start]), &(RealIHit_v[start]));
+      vGridTime[iS].StoreHits(nhits, &(fInputData.GetHit(start)), iS, *this, start, &(vNotUsedHits_Buf[start]),
+                              &(fInputData.GetHit(start)), &(RealIHit_v[start]));
     }
     else {  // to avoid out-of-range crash in array[start]
       vGridTime[iS].StoreHits(nhits, nullptr, iS, *this, start, nullptr, nullptr, nullptr);
@@ -1854,9 +1854,15 @@ void L1Algo::CATrackFinder()
 
   for (int ist = 0; ist < fNstations; ++ist)
     for (L1HitIndex_t ih = HitsStartIndex[ist]; ih < HitsStopIndex[ist]; ++ih) {
-      L1Hit& h = (*vHits)[ih];
-      SetFUnUsed((*fStripFlag)[h.f]);
-      SetFUnUsed((*fStripFlag)[h.b]);
+      const L1Hit& h = fInputData.GetHit(ih);
+      //SetFUnUsed((*fStripFlag)[h.f]);
+      //SetFUnUsed((*fStripFlag)[h.b]);
+      //L1_SHOW(fInputData.GetNhitKeys());
+      //L1_SHOW(fvHitKeyFlags.size());
+      //L1_SHOW(h.f);
+      //L1_SHOW(h.b);
+      fvHitKeyFlags[h.f] = 0;
+      fvHitKeyFlags[h.b] = 0;
     }
 
   for (int ista = 0; ista < fNstations; ++ista) {
@@ -2235,8 +2241,8 @@ void L1Algo::CATrackFinder()
             int thread_num = 0;
 #endif
             L1Triplet& first_trip = (fTriplets[istaF][iThread][itrip]);
-            if (GetFUsed((*fStripFlag)[(*vHitsUnused)[first_trip.GetLHit()].f]
-                         | (*fStripFlag)[(*vHitsUnused)[first_trip.GetLHit()].b])) {
+            if (fvHitKeyFlags[(*vHitsUnused)[first_trip.GetLHit()].f]
+                || fvHitKeyFlags[(*vHitsUnused)[first_trip.GetLHit()].b]) {
               continue;
             }
 //               ghost supression !!!
@@ -2344,7 +2350,7 @@ void L1Algo::CATrackFinder()
             if (tr.fIsAlive) continue;
 
             for (int iHit = 0; iHit < (int) tr.fHits.size(); ++iHit) {
-              const L1Hit& h = (*vHits)[tr.fHits[iHit]];
+              const L1Hit& h = fInputData.GetHit(tr.fHits[iHit]);
               bool isAlive   = true;
               {  // front  strip
 #ifdef _OPENMP
@@ -2400,13 +2406,13 @@ void L1Algo::CATrackFinder()
 
             tr.fIsAlive = true;
             for (int iHit = 0; tr.fIsAlive && (iHit < (int) tr.fHits.size()); ++iHit) {
-              const L1Hit& h = (*vHits)[tr.fHits[iHit]];
+              const L1Hit& h = fInputData.GetHit(tr.fHits[iHit]);
               tr.fIsAlive    = tr.fIsAlive && ((fStripToTrack)[h.f] == tr.fID) && ((fStripToTrack)[h.b] == tr.fID);
             }
 
             if (!tr.fIsAlive) {  // release strips
               for (int iHit = 0; (iHit < (int) tr.fHits.size()); ++iHit) {
-                const L1Hit& h = (*vHits)[tr.fHits[iHit]];
+                const L1Hit& h = fInputData.GetHit(tr.fHits[iHit]);
                 if (fStripToTrack[h.f] == tr.fID) { fStripToTrack[h.f] = -1; }
                 if (fStripToTrack[h.b] == tr.fID) { fStripToTrack[h.b] = -1; }
               }
@@ -2459,13 +2465,10 @@ void L1Algo::CATrackFinder()
 #endif
           for (L1Vector<L1HitIndex_t>::iterator phIt = tr.fHits.begin();  /// used strips are marked
                phIt != tr.fHits.end(); ++phIt) {
-            L1Hit& h = (*vHits)[*phIt];
-
-            SetFUsed((*fStripFlag)[h.f]);
-            SetFUsed((*fStripFlag)[h.b]);
-
+            const L1Hit& hit = fInputData.GetHit(*phIt);
+            fvHitKeyFlags[hit.f] = 1; 
+            fvHitKeyFlags[hit.b] = 1; 
             fRecoHits_local[num_thread].push_back(*phIt);
-            const L1Hit& hit     = (*vHits)[*phIt];
             L1HitPoint tempPoint = CreateHitPoint(hit);  //TODO take number of station from hit
 
             L1Station stah = fParameters.GetStation(0);  // TODO: Why is it a copy?
@@ -2554,7 +2557,7 @@ void L1Algo::CATrackFinder()
         int NHitsOnStationTmp = NHitsOnStation;
 
         vGridTime[ista].UpdateIterGrid(Nelements, staHits, RealIHitPBuf, staHitIndices, vHitsUnused_buf,
-                                       vHitPointsUnused_buf, staHitPoints, NHitsOnStation, ista, *this, fStripFlag);
+                                       vHitPointsUnused_buf, staHitPoints, NHitsOnStation, ista, *this, fvHitKeyFlags);
 
         HitsUnusedStartIndex[ista] = NHitsOnStationTmp;
         HitsUnusedStopIndex[ista]  = NHitsOnStation;
@@ -2731,7 +2734,12 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
     const L1HitIndex_t& ihitr = curr_trip->GetRHit();
 
 
-    if (!GetFUsed((*fStripFlag)[(*vHitsUnused)[ihitm].f] | (*fStripFlag)[(*vHitsUnused)[ihitm].b])) {
+    //if (!GetFUsed((*fStripFlag)[(*vHitsUnused)[ihitm].f] | (*fStripFlag)[(*vHitsUnused)[ihitm].b])) {
+    //L1_SHOW(fInputData.GetNhitKeys());
+    //L1_SHOW(fvHitKeyFlags.size());
+    //L1_SHOW((*vHitsUnused)[ihitm].f);
+    //L1_SHOW((*vHitsUnused)[ihitm].b);
+    if (!(fvHitKeyFlags[(*vHitsUnused)[ihitm].f] || fvHitKeyFlags[(*vHitsUnused)[ihitm].b])) {
 
       //        curr_tr.Hits.push_back((*RealIHitP)[ihitm]);
 
@@ -2742,7 +2750,12 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       curr_L++;
     }
 
-    if (!GetFUsed((*fStripFlag)[(*vHitsUnused)[ihitr].f] | (*fStripFlag)[(*vHitsUnused)[ihitr].b])) {
+    //if (!GetFUsed((*fStripFlag)[(*vHitsUnused)[ihitr].f] | (*fStripFlag)[(*vHitsUnused)[ihitr].b])) {
+    //L1_SHOW(fInputData.GetNhitKeys());
+    //L1_SHOW(fvHitKeyFlags.size());
+    //L1_SHOW((*vHitsUnused)[ihitr].f);
+    //L1_SHOW((*vHitsUnused)[ihitr].b);
+    if (!(fvHitKeyFlags[(*vHitsUnused)[ihitr].f] || fvHitKeyFlags[(*vHitsUnused)[ihitr].b])) {
 
       //curr_tr.Hits.push_back((*RealIHitP)[ihitr]);
       curr_tr.fHits.push_back((*RealIHitP)[ihitr]);
@@ -2846,8 +2859,14 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
         if (dtx > fPickNeighbour * sqrt(Ctx)) continue;
       }
 
-      if (GetFUsed((*fStripFlag)[(*vHitsUnused)[new_trip.GetLHit()].f]
-                   | (*fStripFlag)[(*vHitsUnused)[new_trip.GetLHit()].b])) {  //hits are used
+      //if (GetFUsed((*fStripFlag)[(*vHitsUnused)[new_trip.GetLHit()].f]
+      //             | (*fStripFlag)[(*vHitsUnused)[new_trip.GetLHit()].b])) {  //hits are used
+      //L1_SHOW(fInputData.GetNhitKeys());
+      //L1_SHOW(fvHitKeyFlags.size());
+      //L1_SHOW((*vHitsUnused)[new_trip.GetLHit()].f);
+      //L1_SHOW((*vHitsUnused)[new_trip.GetLHit()].b);
+      if (fvHitKeyFlags[(*vHitsUnused)[new_trip.GetLHit()].f]
+          || fvHitKeyFlags[(*vHitsUnused)[new_trip.GetLHit()].b]) {  //hits are used
         //  no used hits allowed -> compare and store track
         if ((curr_L > best_L) || ((curr_L == best_L) && (curr_chi2 < best_chi2))) {
           best_tr = curr_tr;

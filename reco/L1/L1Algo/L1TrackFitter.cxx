@@ -52,9 +52,9 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
     for (int iter = 0; iter < 3; iter++) {
       //cout<<" Back 1"<<endl;
       {  // fit backward
-        const L1Hit& hit0 = (*vHits)[hits[nHits - 1]];
-        const L1Hit& hit1 = (*vHits)[hits[nHits - 2]];
-        const L1Hit& hit2 = (*vHits)[hits[nHits - 3]];
+        const L1Hit& hit0 = fInputData.GetHit(hits[nHits - 1]);
+        const L1Hit& hit1 = fInputData.GetHit(hits[nHits - 2]);
+        const L1Hit& hit2 = fInputData.GetHit(hits[nHits - 3]);
 
         int ista0 = hit0.iSt;
         int ista1 = hit1.iSt;
@@ -124,7 +124,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         //cout<<"\nfit, iter=:"<<iter<<endl;
         for (int i = nHits - 2; i >= 0; i--) {
           //  if( fabs(T.qp[0])>2. ) break;  // iklm. Don't know it need for
-          const L1Hit& hit = (*vHits)[hits[i]];
+          const L1Hit& hit = fInputData.GetHit(hits[i]);
           ista             = hit.iSt;
 
           const L1Station& sta = fParameters.GetStation(ista);
@@ -189,10 +189,9 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
       // fit forward
       {
         //T.qp = first_trip->GetQpOrig(MaxInvMom);
-
-        const L1Hit& hit0 = (*vHits)[hits[0]];
-        const L1Hit& hit1 = (*vHits)[hits[1]];
-        const L1Hit& hit2 = (*vHits)[hits[2]];
+        const L1Hit& hit0 = fInputData.GetHit(hits[0]);
+        const L1Hit& hit1 = fInputData.GetHit(hits[1]);
+        const L1Hit& hit2 = fInputData.GetHit(hits[2]);
 
         int ista0 = hit0.iSt;
         int ista1 = hit1.iSt;
@@ -256,7 +255,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         int ista = ista2;
 
         for (int i = 1; i < nHits; i++) {
-          const L1Hit& hit     = (*vHits)[hits[i]];
+          const L1Hit& hit     = fInputData.GetHit(hits[i]);
           ista                 = hit.iSt;
           const L1Station& sta = fParameters.GetStation(ista);
           fvec u               = hit.u;
@@ -423,7 +422,7 @@ void L1Algo::L1KFTrackFitter()
       int nHitsTrack = t[iVec]->NHits;
       int iSta[L1Constants::size::kMaxNstations];
       for (i = 0; i < nHitsTrack; i++) {
-        const L1Hit& hit = (*vHits)[fRecoHits[start_hit++]];
+        const L1Hit& hit = fInputData.GetHit(fRecoHits[start_hit++]);
         const int ista   = hit.iSt;
         iSta[i]          = ista;
         w[ista][iVec]    = 1.;
@@ -893,7 +892,7 @@ void L1Algo::L1KFTrackFitterMuch()
       int nHitsTrack      = t[iVec]->NHits;
       int nHitsTrackField = 0;
       for (i = 0; i < nHitsTrack; i++) {
-        const L1Hit& hit = (*vHits)[fRecoHits[start_hit++]];
+        const L1Hit& hit = fInputData.GetHit(fRecoHits[start_hit++]);
         const int ista   = hit.iSt;
         if (ista < fNfieldStations) nHitsTrackField++;
         iSta[i]       = ista;

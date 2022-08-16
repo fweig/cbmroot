@@ -40,9 +40,9 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   const int iFirstHit         = (dir) ? nHits - 1 : 0;
   const int iLastHit          = (dir) ? 0 : nHits - 1;
 
-  const L1Hit& hit0 = (*vHits)[hits[iFirstHit]];
-  const L1Hit& hit1 = (*vHits)[hits[iFirstHit + step]];
-  const L1Hit& hit2 = (*vHits)[hits[iFirstHit + 2 * step]];
+  const L1Hit& hit0 = fInputData.GetHit(hits[iFirstHit]);
+  const L1Hit& hit1 = fInputData.GetHit(hits[iFirstHit + step]);
+  const L1Hit& hit2 = fInputData.GetHit(hits[iFirstHit + 2 * step]);
 
   int ista0 = hit0.iSt;
   int ista1 = hit1.iSt;
@@ -119,7 +119,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   int ista      = ista2;
 
   for (int i = iFirstHit + step; step * i <= step * iLastHit; i += step) {
-    const L1Hit& hit = (*vHits)[hits[i]];
+    const L1Hit& hit = fInputData.GetHit(hits[i]);
     ista_prev        = ista;
     ista             = hit.iSt;
 
@@ -199,11 +199,11 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
   const signed short int step = -2 * static_cast<int>(dir) + 1;  // increment for station index
   const int iFirstHit         = (dir) ? 2 : t.NHits - 3;
-  //  int ista = (*vHits)[t.Hits[iFirstHit]].iSt + 2*step; // current station. set to the end of track
+  //  int ista = fInputData.GetHit(t.Hits[iFirstHit]).iSt + 2 * step; // current station. set to the end of track
 
-  const L1Hit& hit0 = (*vHits)[t.fHits[iFirstHit]];  // optimize
-  const L1Hit& hit1 = (*vHits)[t.fHits[iFirstHit + step]];
-  const L1Hit& hit2 = (*vHits)[t.fHits[iFirstHit + 2 * step]];
+  const L1Hit& hit0 = fInputData.GetHit(t.fHits[iFirstHit]);  // optimize
+  const L1Hit& hit1 = fInputData.GetHit(t.fHits[iFirstHit + step]);
+  const L1Hit& hit2 = fInputData.GetHit(t.fHits[iFirstHit + 2 * step]);
 
   const int ista0 = hit0.iSt;
   const int ista1 = hit1.iSt;
@@ -276,7 +276,11 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
       //TODO: bug, it should be hit.dt*hit.dt
       if (fabs(hit.t - T.t[0]) > sqrt(T.C55[0] + hit.dt * hit.dt) * 5) continue;
 
-      if (GetFUsed((*fStripFlag)[hit.f] | (*fStripFlag)[hit.b])) continue;  // if used
+      //if (GetFUsed((*fStripFlag)[hit.f] | (*fStripFlag)[hit.b])) continue;  // if used
+      //L1_SHOW(fvHitKeyFlags.size());
+      //L1_SHOW(hit.f);
+      //L1_SHOW(hit.b);
+      if (fvHitKeyFlags[hit.f] || fvHitKeyFlags[hit.b]) { continue; }
 
       fscal xh, yh, zh;
       GetHitCoor(hit, xh, yh, zh, sta);  // faster

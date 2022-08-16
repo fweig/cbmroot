@@ -40,9 +40,9 @@ inline void memset(T* dest, T i, size_t num)
 void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<L1HitIndex_t>* indicesBuf,
                             L1HitIndex_t* indices, L1Vector<L1Hit>* hits2, L1Vector<L1HitPoint>* pointsBuf,
                             L1HitPoint* points, int& NHitsOnStation, char iS, L1Algo& Algo,
-                            const L1Vector<unsigned char>* vSFlag)
+                            const L1Vector<unsigned char>& vSFlag)
 {
-
+  //L1_SHOW(vSFlag.size());
   fFirstHitInBin.reset(fN + 2, 0);
 
   fscal xs = 0;
@@ -55,7 +55,7 @@ void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<L1HitI
 
     const L1Hit& hit = hits[x];
 
-    if (!L1Algo::GetFUsed((*vSFlag)[hit.f] | (*vSFlag)[hit.b])) {
+    if (!(vSFlag[hit.f] || vSFlag[hit.b])) {
       Algo.GetHitCoor(hit, xs, ys, iS);
 
       const L1HitIndex_t& bin = GetBinBounded(xs, ys, hit.t);
@@ -97,7 +97,7 @@ void L1Grid::UpdateIterGrid(unsigned int Nelements, L1Hit* hits, L1Vector<L1HitI
   for (L1HitIndex_t x = 0; x < Nelements; x++) {
 
     const L1Hit& hit = hits[x];
-    if (!L1Algo::GetFUsed((*vSFlag)[hit.f] | (*vSFlag)[hit.b])) {
+    if (!(vSFlag[hit.f] || vSFlag[hit.b])) {
       Algo.GetHitCoor(hit, xs, ys, iS);
 
 

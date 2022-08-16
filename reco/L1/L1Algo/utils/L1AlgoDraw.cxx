@@ -74,11 +74,11 @@ void L1AlgoDraw::InitL1Draw(L1Algo* algo_)
   //   algo = CbmL1::Instance()->algo;
   algo = algo_;
 
-  vHits.reserve(algo->vHits->size());
-  for (unsigned int i = 0; i < algo->vHits->size(); i++) {
-    vHits.push_back((*algo->vHits)[i]);
+  vHits.reserve(algo->GetInputData()->GetNhits());
+  for (unsigned int i = 0; i < algo->GetInputData()->GetNhits(); i++) {
+    vHits.push_back(algo->GetInputData()->GetHit(i));
   }
-  NStations = algo->GetNstations();
+  NStations = algo->GetParameters()->GetNstationsActive();
   for (int i = 0; i < NStations; i++) {
     HitsStartIndex[i]    = algo->HitsStartIndex[i];
     HitsStopIndex[i]     = algo->HitsStopIndex[i];
@@ -466,7 +466,7 @@ void L1AlgoDraw::DrawDoublet(int il, int ir)
 
 void L1AlgoDraw::DrawInfo()
 {
-  cout << " vHits.size = " << algo->vHits->size() << endl;
+  cout << " vHits.size = " << algo->GetInputData()->GetNhits() << endl;
   cout << " vRecoHits.size = " << algo->fRecoHits.size() << endl;
   cout << " vTracks.size = " << algo->fTracks.size() << endl;
 }
