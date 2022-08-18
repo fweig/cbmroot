@@ -23,7 +23,9 @@ EndIf()
 # Test if all libraries can be loaded
 GENERATE_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/scripts/checklibs.sh ${CBMROOT_BINARY_DIR}/macro/)
 add_test(load_libraries ${CBMROOT_BINARY_DIR}/macro/checklibs.sh)
-
+set_tests_properties(load_libraries PROPERTIES
+                     TIMEOUT 900
+                    )
 
 # Install in any case
 Install(PROGRAMS ${CBMROOT_SOURCE_DIR}/scripts/checklibs.sh
