@@ -694,6 +694,8 @@ inline void L1Algo::findTripletsStep0(  // input
 
     // assert(T2.IsConsistent(true, n2_4));
 
+    // L1TrackPar tStore1 = T2;
+
     L1UMeasurementInfo info = stam.frontInfo;
 
     if (fUseHitErrors) info.sigma2 = du2 * du2;
@@ -708,7 +710,28 @@ inline void L1Algo::findTripletsStep0(  // input
       L1FilterNoField(T2, info, u_front_2);
     }
 
-    // assert(T2.IsConsistent(true, n2_4));
+    // L1TrackPar tStore2 = T2;
+
+    //assert(T2.IsConsistent(true, n2_4));
+
+    // a good place to debug the fit
+
+    /*    
+    if (tStore1.IsConsistent(false, n2_4) && !tStore2.IsConsistent(false, n2_4)) {
+      cout << " i2 " << i2 << " dx2 " << dx2 << endl;
+      cout << "\n\n before filtration: \n\n" << endl;
+      tStore1.Print();
+      tStore1.IsConsistent(true, n2_4);      
+      cout << "\n\n after filtration: \n\n" << endl;
+      tStore2.Print();
+      tStore2.IsConsistent(true, n2_4); 
+      cout << "\n\n " << n2_4 << " vector elements are filled." << endl;
+      cout << "measurement: cos " << info.cos_phi[0] << " sin " << info.sin_phi[0] << " u " << u_front_2 << " s2 "
+           << sqrt(info.sigma2) << endl;
+      cout << "\n\n" << endl;
+      exit(0);
+    }
+    */
 
     info = stam.backInfo;
     if (fUseHitErrors) info.sigma2 = dv2 * dv2;
@@ -946,7 +969,7 @@ inline void L1Algo::findTripletsStep0(  // input
           dv_.resize(n3 / fvecLen);
           timeR.resize(n3 / fvecLen);
           timeER.resize(n3 / fvecLen);
-          cout << "GetMaxTripletPerDoublets==" << fParameters.GetMaxTripletPerDoublets()
+          cout << "L1: GetMaxTripletPerDoublets==" << fParameters.GetMaxTripletPerDoublets()
                << " reached in findTripletsStep0()" << endl;
           //assert(0);
           break;
@@ -1259,13 +1282,17 @@ inline void L1Algo::findTripletsStep3(  // input
     ihitl_prev = 1 + hitsl_3[i3];
 
 #ifdef DO_NOT_SELECT_TRIPLETS
-    if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
+    if (isec != TRACKS_FROM_TRIPLETS_ITERATION) {
+      if (chi2 > fTripletChi2Cut) { continue; }
+    }
+#else
+    if (chi2 > fTripletChi2Cut) { continue; }
 #endif  // DO_NOT_SELECT_TRIPLETS
 
-      // assert(finite(chi2) && chi2 > 0);
+    // assert(finite(chi2) && chi2 > 0);
 
-      if (!finite(chi2) || chi2 < 0) { continue; }
-    if (chi2 > fTripletChi2Cut) { continue; }
+    if (!finite(chi2) || chi2 < 0) { continue; }
+    //if (!T3.IsEntryConsistent(false, i3_4)) { continue; }
 
     fscal qp = T3.qp[i3_4];
 
@@ -2819,6 +2846,13 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       fscal dty = fabs(ty1 - ty2);
       fscal Cty = curr_trip->GetCty();
       Cty += new_trip.GetCty();
+
+      // it shouldn't happen, but happens sometimes
+
+      if (!std::isfinite(dtx)) continue;
+      if (!std::isfinite(dty)) continue;
+      if (!std::isfinite(Ctx)) continue;
+      if (!std::isfinite(Cty)) continue;
 
       assert(std::isfinite(dtx));
       assert(std::isfinite(dty));

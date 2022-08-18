@@ -14,42 +14,45 @@
 #define cnst const fvec
 
 
-inline void FilterTime(L1TrackPar& T, fvec t0, fvec dt0, fvec timeInfo = 1., fvec w = 1.)
+inline void FilterTime(L1TrackPar& T, fvec t, fvec dt, fvec timeInfo = 1., fvec w = 1.)
 {
-  fvec wi, zeta, zetawi, HCH;
-  fvec F0, F1, F2, F3, F4, F5;
-  fvec K1, K2, K3, K4, K5;
-
-  zeta = T.t - t0;
+  // filter track with a time measurement
 
   // F = CH'
-  F0 = T.C50;
-  F1 = T.C51;
+  fvec F0 = T.C50;
+  fvec F1 = T.C51;
+  fvec F2 = T.C52;
+  fvec F3 = T.C53;
+  fvec F4 = T.C54;
+  fvec F5 = T.C55;
 
-  HCH = T.C55;
+  fvec HCH = T.C55;
 
-  F2 = T.C52;
-  F3 = T.C53;
-  F4 = T.C54;
-  F5 = T.C55;
+  w = w & (timeInfo > 0.f);
 
-#if 1  // use mask
-  const fvec mask = (timeInfo > 0);
-  wi              = mask & w / (dt0 * dt0 + HCH);
-  zetawi          = zeta * wi;
-  T.chi2 += mask & (zeta * zetawi);
-#else
-  wi     = w / (dt0 * dt0 + HCH);
-  zetawi = zeta * wi;
-  T.chi2 += zeta * zetawi;
-#endif  // 0
+  fvec dt2 = dt * dt;
+
+  // when dt0 is much smaller than current time error,
+  // set track time exactly to the measurement value without filtering
+  // it helps to keep the initial time errors reasonably small
+  // the calculations in the covariance matrix are not affected
+
+  const fvec maskDoFilter = (HCH < dt2 * 16.f);
+  //const fvec maskDoFilter = _f32vec4_true;
+
+  fvec wi     = w / (dt2 + 1.0000001f * HCH);
+  fvec zeta   = T.t - t;
+  fvec zetawi = zeta / ((maskDoFilter & dt2) + HCH);
+
+  //T.chi2 += maskDoFilter & (zeta * zetawi);
+  T.chi2 += zeta * zeta * wi;
   T.NDF += w;
 
-  K1 = F1 * wi;
-  K2 = F2 * wi;
-  K3 = F3 * wi;
-  K4 = F4 * wi;
-  K5 = F5 * wi;
+  fvec K1 = F1 * wi;
+  fvec K2 = F2 * wi;
+  fvec K3 = F3 * wi;
+  fvec K4 = F4 * wi;
+  fvec K5 = F5 * wi;
 
   T.x -= F0 * zetawi;
   T.y -= F1 * zetawi;
@@ -80,43 +83,47 @@ inline void FilterTime(L1TrackPar& T, fvec t0, fvec dt0, fvec timeInfo = 1., fve
   T.C54 -= K5 * F4;
   T.C55 -= K5 * F5;
 }
+
 
 inline void L1Filter(L1TrackPar& T, const L1UMeasurementInfo& info, fvec u, fvec w = 1.)
 {
-  fvec wi, zeta, zetawi, HCH;
-  fvec F0, F1, F2, F3, F4, F5;
-  fvec K1, K2, K3, K4, K5;
+  // filter the track T with an 1-D measurement u
 
-  zeta = info.cos_phi * T.x + info.sin_phi * T.y - u;
+  fvec zeta = info.cos_phi * T.x + info.sin_phi * T.y - u;
 
   // F = CH'
-  F0 = info.cos_phi * T.C00 + info.sin_phi * T.C10;
-  F1 = info.cos_phi * T.C10 + info.sin_phi * T.C11;
+  fvec F0 = info.cos_phi * T.C00 + info.sin_phi * T.C10;
+  fvec F1 = info.cos_phi * T.C10 + info.sin_phi * T.C11;
+  fvec F2 = info.cos_phi * T.C20 + info.sin_phi * T.C21;
+  fvec F3 = info.cos_phi * T.C30 + info.sin_phi * T.C31;
+  fvec F4 = info.cos_phi * T.C40 + info.sin_phi * T.C41;
+  fvec F5 = info.cos_phi * T.C50 + info.sin_phi * T.C51;
 
-  HCH = (F0 * info.cos_phi + F1 * info.sin_phi);
+  fvec HCH = (F0 * info.cos_phi + F1 * info.sin_phi);
 
-  F2 = info.cos_phi * T.C20 + info.sin_phi * T.C21;
-  F3 = info.cos_phi * T.C30 + info.sin_phi * T.C31;
-  F4 = info.cos_phi * T.C40 + info.sin_phi * T.C41;
-  F5 = info.cos_phi * T.C50 + info.sin_phi * T.C51;
+  // when the measurement error info.sigma2 is much smaller than the current track error HCH,
+  // move track exactly to the measurement without filtering
+  // it helps to keep the initial track errors reasonably small
+  // the calculations in the covariance matrix are not affected
 
-#if 0  // use mask
-  const fvec mask = (HCH < info.sigma2 * 16.);
-  wi = w/( (mask & info.sigma2) +HCH );
-  zetawi = zeta *wi;
-  T.chi2 +=  mask & (zeta * zetawi);
-#else
-  wi     = w / (info.sigma2 + HCH);
-  zetawi = zeta * wi;
-  T.chi2 += zeta * zetawi;
-#endif  // 0
+  //const fvec maskDoFilter = (HCH < info.sigma2 * 16.f);
+  const fvec maskDoFilter = _f32vec4_true;
+
+  // correction to HCH is needed for the case when sigma2 is so small
+  // with respect to HCH that it disappears due to the roundoff error
+  //
+  fvec wi     = w / (info.sigma2 + 1.0000001f * HCH);
+  fvec zetawi = zeta / ((maskDoFilter & info.sigma2) + HCH);
+
+  // T.chi2 += maskDoFilter & (zeta * zetawi);
+  T.chi2 += zeta * zeta * wi;
   T.NDF += w;
 
-  K1 = F1 * wi;
-  K2 = F2 * wi;
-  K3 = F3 * wi;
-  K4 = F4 * wi;
-  K5 = F5 * wi;
+  fvec K1 = F1 * wi;
+  fvec K2 = F2 * wi;
+  fvec K3 = F3 * wi;
+  fvec K4 = F4 * wi;
+  fvec K5 = F5 * wi;
 
   T.x -= F0 * zetawi;
   T.y -= F1 * zetawi;
@@ -147,6 +154,7 @@ inline void L1Filter(L1TrackPar& T, const L1UMeasurementInfo& info, fvec u, fvec
   T.C54 -= K5 * F4;
   T.C55 -= K5 * F5;
 }
+
 
 inline void L1FilterNoField(L1TrackPar& T, const L1UMeasurementInfo& info, fvec u, fvec w = 1.)
 {

@@ -81,6 +81,13 @@ public:
 
   void SetOneEntry(const int i0, const L1TrackPar& T1, const int i1);
 
+  fvec C(int i, int j) const
+  {
+    const fvec* c = &C00;
+    int ind       = (j <= i) ? i * (1 + i) / 2 + j : j * (1 + j) / 2 + i;
+    return c[ind];
+  }
+
   void Print(int i = -1) const;
 
   void PrintCorrelations(int i = -1) const;
@@ -144,7 +151,10 @@ inline void L1TrackPar::Print(int i) const
 
 inline void L1TrackPar::PrintCorrelations(int i) const
 {
+
+  std::_Ios_Fmtflags flagSafe = std::cout.flags();
   // std::cout.setf(std::ios::scientific, std::ios::floatfield);
+  std::cout << std::setprecision(6);
 
   if (i == -1) {
     fvec s0 = sqrt(C00);
@@ -192,6 +202,7 @@ inline void L1TrackPar::PrintCorrelations(int i) const
     std::cout << " " << C50[i] / s5 / s0 << " " << C51[i] / s5 / s1 << " " << C52[i] / s5 / s2 << " "
               << C53[i] / s5 / s3 << " " << C54[i] / s5 / s4 << std::endl;
   }
+  std::cout.flags(flagSafe);
 }
 
 inline void L1TrackPar::SetOneEntry(const int i0, const L1TrackPar& T1, const int i1)
@@ -229,48 +240,86 @@ inline void L1TrackPar::SetOneEntry(const int i0, const L1TrackPar& T1, const in
   NDF[i0]  = T1.NDF[i1];
 }  // SetOneEntry
 
-inline bool L1TrackPar::IsEntryConsistent(bool printWhenWrong, int i) const
+inline bool L1TrackPar::IsEntryConsistent(bool printWhenWrong, int k) const
 {
   bool ok = true;
 
-  const fvec* v  = &x;
-  const fvec* v1 = &NDF;
-  for (; v < v1; v++) {
-    ok = ok && std::isfinite((*v)[i]);
+  // verify that all the numbers in the object are valid floats
+  const fvec* memberFirst = &x;
+  const fvec* memberLast  = &NDF;
+  for (int i = 0; i < &memberLast - &memberFirst + 1; i++) {
+    if (!std::isfinite(memberFirst[i][k])) {
+      ok = false;
+      if (printWhenWrong) {
+        std::cout << " L1TrackPar member N " << i << ", vector entry " << k
+                  << " is not a number: " << memberFirst[i][k];
+      }
+    }
   }
-  // verify diagonal elements
 
-  ok = ok && (C00[i] > 0.f);
-  ok = ok && (C11[i] > 0.f);
-  ok = ok && (C22[i] > 0.f);
-  ok = ok && (C33[i] > 0.f);
-  ok = ok && (C44[i] > 0.f);
-  ok = ok && (C55[i] > 0.f);
+  // verify diagonal elements.
+  // Cii is a squared dispersion of i-th parameter, it must be positive
 
-  // verify non-diagonal elements
-  ok = ok && (C10[i] * C10[i] <= C11[i] * C00[i]);
+  for (int i = 0; i < 6; i++) {
+    if (C(i, i)[k] <= 0.f) {
+      ok = false;
+      if (printWhenWrong) {
+        std::cout << " L1TrackPar: C[" << i << "," << i << "], vec entry " << k << " is not positive: " << C(i, i)[k]
+                  << std::endl;
+      }
+    }
+  }
 
-  ok = ok && (C20[i] * C20[i] <= C22[i] * C00[i]);
-  ok = ok && (C21[i] * C21[i] <= C22[i] * C11[i]);
+  // verify non-diagonal elements.
+  // Cij/sqrt(Cii*Cjj) is a correlation between i-th and j-th parameter,
+  // it must belong to [-1,1]
 
-  ok = ok && (C30[i] * C30[i] <= C33[i] * C00[i]);
-  ok = ok && (C31[i] * C31[i] <= C33[i] * C11[i]);
-  ok = ok && (C32[i] * C32[i] <= C33[i] * C22[i]);
+  for (int i = 1; i < 6; i++) {
+    for (int j = 0; j < i; j++) {
+      double tolerance = 1.0;
+      if (C(i, j)[k] * C(i, j)[k] > tolerance * (C(i, i)[k] * C(j, j)[k])) {
+        ok = false;
+        if (printWhenWrong) {
+          std::cout << " L1TrackPar: correlation [" << i << "," << j << "], vec entry " << k
+                    << " is too large: " << C(i, i)[k] / sqrt(C(i, i)[k] * C(j, j)[k]) << std::endl;
+        }
+      }
+    }
+  }
 
-  ok = ok && (C40[i] * C40[i] <= C44[i] * C00[i]);
-  ok = ok && (C41[i] * C41[i] <= C44[i] * C11[i]);
-  ok = ok && (C42[i] * C42[i] <= C44[i] * C22[i]);
-  ok = ok && (C43[i] * C43[i] <= C44[i] * C33[i]);
+  // verify triplets of correlations
+  // Kxy * Kxy + Kxz * Kxz + Kyz * Kyz <= 1 + 2 * Kxy * Kxz * Kyz
 
-  ok = ok && (C50[i] * C50[i] <= C55[i] * C00[i]);
-  ok = ok && (C51[i] * C51[i] <= C55[i] * C11[i]);
-  ok = ok && (C52[i] * C52[i] <= C55[i] * C22[i]);
-  ok = ok && (C53[i] * C53[i] <= C55[i] * C33[i]);
-  ok = ok && (C54[i] * C54[i] <= C55[i] * C44[i]);
+  for (int i = 2; i < 6; i++) {
+    for (int j = 1; j < i; j++) {
+      for (int m = 0; m < j; m++) {
+        double tolerance = 1.0;
+        double Cxx       = C(i, i)[k];
+        double Cyy       = C(j, j)[k];
+        double Czz       = C(m, m)[k];
+        double Cxy       = C(i, j)[k];
+        double Cxz       = C(i, m)[k];
+        double Cyz       = C(j, m)[k];
+        if (Cxx * Cyz * Cyz + Cyy * Cxz * Cxz + Czz * Cxy * Cxy
+            > tolerance * (Cxx * Cyy * Czz + 2. * Cxy * Cyz * Cxz)) {
+          ok = false;
+          if (printWhenWrong) {
+            double Kxy = Cxy / sqrt(Cxx * Cyy);
+            double Kxz = Cxz / sqrt(Cxx * Czz);
+            double Kyz = Cyz / sqrt(Cyy * Czz);
+            std::cout << " L1TrackPar: correlations between parametetrs " << i << ", " << j << ", " << m
+                      << ", vec entry " << k << " are wrong: " << Kxy << " " << Kxz << " " << Kyz << std::endl;
+            std::cout << " inequation: " << Kxy * Kxy + Kxz * Kxz + Kyz * Kyz << " > " << 1 + 2 * Kxy * Kxz * Kyz
+                      << std::endl;
+          }
+        }
+      }
+    }
+  }
 
   if (!ok && printWhenWrong) {
     std::cout << "L1TrackPar parameters are not consistent: " << std::endl;
-    Print(i);
+    Print(k);
   }
   return ok;
 }

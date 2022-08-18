@@ -800,7 +800,16 @@ InitStatus CbmL1::Init()
     trd2dIter2.SetMinLevelTripletStart(1);
     trd2dIter2.SetPrimaryFlag(true);
 
+    // Initialize CA track finder iterations sequence
+
     fpInitManager->SetCAIterationsNumberCrosscheck(1);
+    /*
+    fpInitManager->SetCAIterationsNumberCrosscheck(5);
+    fpInitManager->PushBackCAIteration(trackingIterFastPrim);
+    fpInitManager->PushBackCAIteration(trackingIterAllPrim);
+    fpInitManager->PushBackCAIteration(trackingIterAllPrimJump);
+    fpInitManager->PushBackCAIteration(trackingIterAllSec);
+     */
     fpInitManager->PushBackCAIteration(trd2dIter2);
   }
   else {
