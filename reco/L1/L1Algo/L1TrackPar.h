@@ -151,8 +151,7 @@ inline void L1TrackPar::Print(int i) const
 
 inline void L1TrackPar::PrintCorrelations(int i) const
 {
-
-  std::_Ios_Fmtflags flagSafe = std::cout.flags();
+  auto flagSafe = std::cout.flags();
   // std::cout.setf(std::ios::scientific, std::ios::floatfield);
   std::cout << std::setprecision(6);
 
