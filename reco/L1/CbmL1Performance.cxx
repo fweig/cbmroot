@@ -311,13 +311,19 @@ void CbmL1::EfficienciesPerformance()
 
   for (vector<CbmL1Track>::iterator rtraIt = vRTracks.begin(); rtraIt != vRTracks.end(); ++rtraIt) {
     ntra.ghosts += rtraIt->IsGhost();
-    //if (rtraIt->IsGhost()) {  // Debug.
-    //cout << " " << rtraIt->GetNOfHits() << " " << 1. / rtraIt->T[5] << " " << rtraIt->GetMaxPurity() << " | ";
-    //       for( map<int, int>::iterator posIt = rtraIt->hitMap.begin(); posIt != rtraIt->hitMap.end(); posIt++ ){
-    //         cout << " (" << posIt->second << " " << posIt->first << ") ";
-    //       }
-    //cout << endl;
-    //}
+    if (rtraIt->IsGhost()) {  // Debug.
+      cout << " L1: ghost track: nhits " << rtraIt->GetNOfHits() << " p " << 1. / rtraIt->T[5] << " purity "
+           << rtraIt->GetMaxPurity() << " | hits ";
+      for (map<int, int>::iterator posIt = rtraIt->hitMap.begin(); posIt != rtraIt->hitMap.end(); posIt++) {
+        cout << " (" << posIt->second << " " << posIt->first << ") ";
+      }
+      cout << endl;
+      for (map<int, int>::iterator posIt = rtraIt->hitMap.begin(); posIt != rtraIt->hitMap.end(); posIt++) {
+        CbmL1MCTrack& t = vMCTracks[posIt->first];
+        cout << "mc " << posIt->first << " pdg " << t.pdg << " mother: " << t.mother_ID;
+        cout << " n mc stations: " << t.NMCStations() << endl;
+      }
+    }
   }
 
   int sta_nhits[algo->GetNstations()], sta_nfakes[algo->GetNstations()];
@@ -496,9 +502,10 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
 
   //static TH1F *h_hit_density[10];
 
-  static TH1F *h_ghost_mom, *h_ghost_nhits, *h_ghost_fstation, *h_ghost_chi2, *h_ghost_prob, *h_ghost_tx, *h_ghost_ty;
+  static TH1F *h_ghost_purity, *h_ghost_mom, *h_ghost_nhits, *h_ghost_fstation, *h_ghost_chi2, *h_ghost_prob,
+    *h_ghost_tx, *h_ghost_ty;
   static TH1F *h_reco_mom, *h_reco_d0_mom, *h_reco_nhits, *h_reco_station, *h_reco_chi2, *h_reco_prob, *h_rest_prob,
-    *h_reco_clean, *h_reco_time;
+    *h_reco_purity, *h_reco_time;
   static TProfile *h_reco_timeNtr, *h_reco_timeNhit;
   static TProfile *h_reco_fakeNtr, *h_reco_fakeNhit;
   static TH1F *h_tx, *h_ty, *h_sec_r, *h_ghost_r;
@@ -548,9 +555,10 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
       new TProfile("p_eff_prim_vs_nhits", "PrimSet Efficiency vs NMCHits", 8, 3.0, 11.0, 0.0, 100.0);
     p_eff_sec_vs_nhits = new TProfile("p_eff_sec_vs_nhits", "SecSet Efficiency vs NMCHits", 8, 3.0, 11.0, 0.0, 100.0);
 
-    h_reg_MCmom       = new TH1F("h_reg_MCmom", "Momentum of registered tracks", 100, 0.0, 5.0);
-    h_acc_MCmom       = new TH1F("h_acc_MCmom", "Reconstructable tracks", 100, 0.0, 5.0);
-    h_reco_MCmom      = new TH1F("h_reco_MCmom", "Reconstructed tracks", 100, 0.0, 5.0);
+    h_reg_MCmom  = new TH1F("h_reg_MCmom", "Momentum of registered tracks", 100, 0.0, 5.0);
+    h_acc_MCmom  = new TH1F("h_acc_MCmom", "Reconstructable tracks", 100, 0.0, 5.0);
+    h_reco_MCmom = new TH1F("h_reco_MCmom", "Reconstructed tracks", 100, 0.0, 5.0);
+
     h_ghost_Rmom      = new TH1F("h_ghost_Rmom", "Ghost tracks", 100, 0.0, 5.0);
     h_reg_prim_MCmom  = new TH1F("h_reg_prim_MCmom", "Momentum of registered tracks", 100, 0.0, 5.0);
     h_acc_prim_MCmom  = new TH1F("h_acc_prim_MCmom", "Reconstructable tracks", 100, 0.0, 5.0);
@@ -585,9 +593,10 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     h_ghost_fstation = new TH1F("h_ghost_fstation", "First station of ghost track", 50, -0.5, 10.0);
     h_ghost_chi2     = new TH1F("h_ghost_chi2", "Chi2/NDF of ghost track", 50, -0.5, 10.0);
     h_ghost_prob     = new TH1F("h_ghost_prob", "Prob of ghost track", 505, 0., 1.01);
-    h_ghost_r        = new TH1F("h_ghost_r", "R of ghost track at the first hit", 50, 0.0, 15.0);
+    h_ghost_r        = new TH1F("h_ghost_r", "R of ghost track at the first hit", 50, 0.0, 150.0);
     h_ghost_tx       = new TH1F("h_ghost_tx", "tx of ghost track at the first hit", 50, -5.0, 5.0);
     h_ghost_ty       = new TH1F("h_ghost_ty", "ty of ghost track at the first hit", 50, -1.0, 1.0);
+    h_ghost_purity   = new TH1F("h_ghost_purity", "Ghost: percentage of correct hits", 100, -0.5, 100.5);
 
     h_reco_mom      = new TH1F("h_reco_mom", "Momentum of reco track", 50, 0.0, 5.0);
     h_reco_nhits    = new TH1F("h_reco_nhits", "Number of hits in reco track", 50, 0.0, 10.0);
@@ -595,7 +604,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
     h_reco_chi2     = new TH1F("h_reco_chi2", "Chi2/NDF of reco track", 50, -0.5, 10.0);
     h_reco_prob     = new TH1F("h_reco_prob", "Prob of reco track", 505, 0., 1.01);
     h_rest_prob     = new TH1F("h_rest_prob", "Prob of reco rest track", 505, 0., 1.01);
-    h_reco_clean    = new TH1F("h_reco_clean", "Percentage of correct hits", 100, -0.5, 100.5);
+    h_reco_purity   = new TH1F("h_reco_purity", "Percentage of correct hits", 100, -0.5, 100.5);
     h_reco_time     = new TH1F("h_reco_time", "CA Track Finder Time (s/ev)", 20, 0.0, 20.0);
     h_reco_timeNtr  = new TProfile("h_reco_timeNtr", "CA Track Finder Time (s/ev) vs N Tracks", 200, 0.0, 1000.0);
     h_reco_timeNhit = new TProfile("h_reco_timeNhit", "CA Track Finder Time (s/ev) vs N Hits", 200, 0.0, 30000.0);
@@ -769,7 +778,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
       h_reco_station->Fill(mh.iStation);
     }
 
-    h_reco_clean->Fill(prtra->GetMaxPurity());
+    h_reco_purity->Fill(100 * prtra->GetMaxPurity());
 
     if (prtra->NDF > 0) {
       if (prtra->IsGhost()) {
@@ -791,6 +800,7 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRe
 
     // fill ghost histos
     if (prtra->IsGhost()) {
+      h_ghost_purity->Fill(100 * prtra->GetMaxPurity());
       if (fabs(prtra->T[4]) > 1.e-10) {
         h_ghost_mom->Fill(fabs(1.0 / prtra->T[4]));
         h_ghost_Rmom->Fill(fabs(1.0 / prtra->T[4]));
