@@ -609,15 +609,15 @@ Int_t CbmTrdModuleSim2D::FlushBuffer(ULong64_t time)
   }
   fTimeOld = time;
 
-  if (VERBOSE)
-    printf("CbmTrdModuleSim2D::FlushBuffer(%llu) FASP start[%llu] end[%llu] "
-           "closeTS[%c]\n",
-           time, fFASP->GetStartTime(), fFASP->GetEndTime(), (closeTS ? 'y' : 'n'));
-
   // ask FASP simulator if there is enough time elapsed from the last running of the simulator
   if (time > 0 && !fFASP->Go(time) && !closeTS) return 0;
   // configure FASP simulator time range for special cases
   if (closeTS && fTimeSlice->IsRegular()) fFASP->SetProcTime(TMath::Nint(fTimeSlice->GetEndTime()));
+
+  if (VERBOSE)
+    printf("CbmTrdModuleSim2D::FlushBuffer(%llu) FASP start[%llu] end[%llu] "
+           "closeTS[%c]\n",
+           time, fFASP->GetStartTime(), fFASP->GetEndTime(), (closeTS ? 'y' : 'n'));
 
   if (VERBOSE) {
     cout << "\nPHYS DIGITS : \n";
@@ -762,12 +762,16 @@ Int_t CbmTrdModuleSim2D::FlushBuffer(ULong64_t time)
 
   if (newStartTime > 0) fFASP->SetStartTime(newStartTime);
   else {
-    if (fTimeSlice->IsRegular()) fFASP->SetStartTime(fFASP->GetEndTime());
+    if (fTimeSlice->IsRegular() || nDigiLeft) fFASP->SetStartTime(fFASP->GetEndTime());
   }
-  fFASP->SetProcTime(/*time*/);  // TODO Makes sense for TB with precautions !
+  if (time > 0) fFASP->SetProcTime(/*time*/);  // TODO Makes sense for TB with precautions !
 
   //iteratively process all digi at the end of run
-  if (time == 0 && nDigiLeft) n += FlushBuffer();
+  if (time == 0) {
+    if (nDigiLeft) n += FlushBuffer();
+    else
+      fFASP->SetStartTime(0);
+  }
   return n;
 }
 
