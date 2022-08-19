@@ -89,7 +89,7 @@ private:
   TObjArray* fHistdEdx = NULL;  // Prob. of dEdx for 5 particle species
   Int_t fNofTracks     = 0;     // Number of tracks successfully fitted
 
-  CbmTrdParSetGas* fGasPar;  // Gas parameters, path to input reference spectra located here
+  CbmTrdParSetGas* fGasPar = NULL;  // Gas parameters, path to input reference spectra located here
 
   static const Int_t fgkNParts = 5;  // numer of different particle species
   enum EParticleType
@@ -108,7 +108,7 @@ private:
   Double_t GetProbability(Int_t iType, Double_t mom, Double_t dedx) const;
 
 
-  ClassDef(CbmTrdSetTracksPidLike, 1);
+  ClassDef(CbmTrdSetTracksPidLike, 2);
 };
 
 #endif
