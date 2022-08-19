@@ -47,7 +47,6 @@ CbmTrdUnpackFaspAlgo::~CbmTrdUnpackFaspAlgo() {}
 //_________________________________________________________________________________
 Bool_t CbmTrdUnpackFaspAlgo::initParSet(FairParGenericSet* parset)
 {
-  printf("AB :: CbmTrdUnpackFaspAlgo::initParSet\n");
   FairParamList parList;
   Int_t nModules(0);
   if (strcmp(parset->ClassName(), "CbmTrdParSetAsic") == 0) {
@@ -309,9 +308,8 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
       }
     }
     else {  // init pad position in map and build digi for message
-      CbmTrdDigi digi(pad, lchT, lchR, lTime);
-      digi.SetAddressModule(fMod);
-      fDigiBuffer[fCrob][pad].push_back(digi);
+      fDigiBuffer[fCrob][pad].emplace_back(pad, lchT, lchR, lTime);
+      fDigiBuffer[fCrob][pad].back().SetAddressModule(fMod);
     }
   }
   messes.clear();
