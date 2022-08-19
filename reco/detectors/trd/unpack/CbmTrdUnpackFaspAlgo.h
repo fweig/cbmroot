@@ -60,7 +60,7 @@ public:
    * a - word type (0)
    * c - channel id
    */
-  enum CbmTrdFaspMessage
+  enum CbmTrdFaspMessageLength
   {
     kMessCh    = 4,
     kMessType  = 1,
@@ -89,15 +89,16 @@ public:
 
 
   /** @brief Data structure for unpacking the FASP word */
-  struct CbmTrdFaspContent {
-    uint8_t ch;      ///< ch id in the FASP
-    uint8_t type;    ///< message type 0 = epoch, 1 = data (not used for the moment)
-    uint8_t tlab;    ///< time of the digi inside the epoch
-    uint16_t data;   ///< ADC value
-    uint32_t epoch;  ///< epoch id (not used for the moment)
-    uint32_t mod;    ///< full module address according to CbmTrdAddress
-    uint8_t crob;    ///< CROB id in the module
-    uint8_t fasp;    ///< FASP id in the module
+  struct CbmTrdFaspMessage {
+    CbmTrdFaspMessage(uint8_t c, uint8_t typ, uint8_t t, uint16_t d, uint8_t rob, uint8_t asic);
+    uint8_t ch     = 0;  ///< ch id in the FASP
+    uint8_t type   = 0;  ///< message type 0 = epoch, 1 = data (not used for the moment)
+    uint8_t tlab   = 0;  ///< time of the digi inside the epoch
+    uint16_t data  = 0;  ///< ADC value
+    uint32_t epoch = 0;  ///< epoch id (not used for the moment)
+    uint32_t mod   = 0;  ///< full module address according to CbmTrdAddress
+    uint8_t crob   = 0;  ///< CROB id in the module
+    uint8_t fasp   = 0;  ///< FASP id in the module
   };
 
   /**
@@ -128,18 +129,18 @@ protected:
   /** @brief Get message type from the FASP word */
   CbmTrdFaspMessageType mess_type(uint32_t wd);
   /** @brief Convert the FASP word into a DATA message */
-  void mess_readDW(uint32_t wd, CbmTrdFaspContent* mess);
+  void mess_readDW(uint32_t wd, CbmTrdFaspMessage* mess);
   /** @brief Convert the FASP word into a EPOCH message */
-  void mess_readEW(uint32_t wd, CbmTrdFaspContent* mess);
+  void mess_readEW(uint32_t wd, CbmTrdFaspMessage* mess);
   /** @brief Print FASP message */
-  void mess_prt(CbmTrdFaspContent* mess);
-  bool pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFaspContent> messages);
+  void mess_prt(CbmTrdFaspMessage* mess);
+  bool pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFaspMessage> messages);
   /** @brief Time offset for digi wrt the TS start, expressed in 80 MHz clks. It contains:
    *  - relative offset of the MS wrt the TS
    *  - FASP epoch offset for current CROB
    *  - TRD2D system offset wrt to experiment time (e.g. T0)
    */
-  ULong64_t fTime;
+  ULong64_t fTime = 0;
 
   /** @brief Finish function for this algorithm base clase */
   void finish()
@@ -209,7 +210,7 @@ private:
   std::shared_ptr<CbmTrdUnpackFaspMonitor> fMonitor = nullptr;
   uint16_t fCrob                                    = 0xffff;  //! current crob being processed
   uint16_t fMod                                     = 0xffff;  //! current module being processed
-  std::vector<uint16_t> fModuleId;  ///> list of modules for which there is are calibration parameters
+  std::vector<uint16_t> fModuleId = {};  ///> list of modules for which there is are calibration parameters
   CbmTrdParSetAsic fAsicPar;
   CbmTrdParSetDigi* fDigiSet = nullptr;
 

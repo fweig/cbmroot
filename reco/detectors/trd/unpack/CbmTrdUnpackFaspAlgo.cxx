@@ -32,12 +32,19 @@
 #define VERBOSE 0
 
 using namespace std;
+CbmTrdUnpackFaspAlgo::CbmTrdFaspMessage::CbmTrdFaspMessage(uint8_t c, uint8_t typ, uint8_t t, uint16_t d, uint8_t rob,
+                                                           uint8_t asic)
+  : ch(c)
+  , type(typ)
+  , tlab(t)
+  , data(d)
+  , crob(rob)
+  , fasp(asic)
+{
+}
 
 CbmTrdUnpackFaspAlgo::CbmTrdUnpackFaspAlgo()
   : CbmRecoUnpackAlgo("CbmTrdUnpackFaspAlgo")
-  , fTime(0)
-  , fModuleId()
-  , fAsicPar()
 {
 }
 
@@ -170,7 +177,7 @@ CbmTrdUnpackFaspAlgo::CbmTrdFaspMessageType CbmTrdUnpackFaspAlgo::mess_type(uint
 }
 
 //_________________________________________________________________________________
-void CbmTrdUnpackFaspAlgo::mess_readDW(uint32_t w, CbmTrdFaspContent* mess)
+void CbmTrdUnpackFaspAlgo::mess_readDW(uint32_t w, CbmTrdFaspMessage* mess)
 {
   uint32_t wd(w), shift(0);
   mess->ch = wd & 0xf;
@@ -188,7 +195,7 @@ void CbmTrdUnpackFaspAlgo::mess_readDW(uint32_t w, CbmTrdFaspContent* mess)
 }
 
 //_________________________________________________________________________________
-void CbmTrdUnpackFaspAlgo::mess_readEW(uint32_t w, CbmTrdFaspContent* mess)
+void CbmTrdUnpackFaspAlgo::mess_readEW(uint32_t w, CbmTrdFaspMessage* mess)
 {
   uint32_t wd(w), shift(0);
   mess->ch = wd & 0xf;
@@ -203,7 +210,7 @@ void CbmTrdUnpackFaspAlgo::mess_readEW(uint32_t w, CbmTrdFaspContent* mess)
 }
 
 //_________________________________________________________________________________
-void CbmTrdUnpackFaspAlgo::mess_prt(CbmTrdFaspContent* mess)
+void CbmTrdUnpackFaspAlgo::mess_prt(CbmTrdFaspMessage* mess)
 {
   if (mess->type == kData)
     cout << boost::format("    DATA : fasp_id=%02d ch_id=%02d tclk=%03d data=%4d\n")
@@ -215,7 +222,7 @@ void CbmTrdUnpackFaspAlgo::mess_prt(CbmTrdFaspContent* mess)
 }
 
 //_________________________________________________________________________________
-bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFaspContent> messes)
+bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFaspMessage> messes)
 {
   UChar_t lFasp(0xff);
   UShort_t lchR, lchT;
@@ -282,9 +289,8 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
 
       // build digi for message when update failed
       if (!use) {
-        CbmTrdDigi digi(pad, lchT, lchR, lTime);
-        digi.SetAddressModule(fMod);
-        fDigiBuffer[fCrob][pad].push_back(digi);
+        fDigiBuffer[fCrob][pad].emplace_back(pad, lchT, lchR, lTime);
+        fDigiBuffer[fCrob][pad].back().SetAddressModule(fMod);
         id = fDigiBuffer[fCrob][pad].rbegin();
       }
 
@@ -426,8 +432,7 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
 
 
   UChar_t lFaspOld(0xff);
-  vector<CbmTrdFaspContent> vMess;
-  CbmTrdFaspContent mess;
+  vector<CbmTrdFaspMessage> vMess;
   for (uint64_t j = 0; j < nwords; j++, wd++) {
     //     // Select the appropriate conversion type of the word according to the message type
     //     switch(mess_type(*wd)){
@@ -484,13 +489,7 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
         LOG(debug) << GetName() << "::unpack - Self-triggered data.";
         data &= 0x1fff;
       }
-      mess.ch   = ch_id;
-      mess.type = kData;
-      mess.tlab = slice;
-      mess.data = data >> 1;
-      mess.fasp = lFaspOld;
-      mess.crob = crob_id;
-      vMess.push_back(mess);
+      vMess.emplace_back(ch_id, kData, slice, data >> 1, crob_id, lFaspOld);
     }
     //prt_wd(*wd);
   }
