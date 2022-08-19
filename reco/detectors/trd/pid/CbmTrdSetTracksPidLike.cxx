@@ -94,7 +94,7 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
   gROOT->cd();
 
   TH2D* h[10];
-  TObjArray* inArr = NULL;
+  TObjArray* inArr = nullptr;
 
   if (fMCinput) {  /// mc pid method
     if (fMomDep) {

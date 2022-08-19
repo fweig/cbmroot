@@ -82,14 +82,14 @@ private:
   TString fFileName               = "";      // input file
   Bool_t fMCinput                 = kFALSE;  // use MC information for input histograms
   Bool_t fMomDep                  = kTRUE;   // use momentum dependence for input histograms
-  TClonesArray* fTrackArray       = NULL;    /** Input array of TRD tracks */
-  TClonesArray* fTrdHitArray      = NULL;    /** Input array of TRD Hits */
-  TClonesArray* fglobalTrackArray = NULL;    /** Input array of global tracks */
+  TClonesArray* fTrackArray       = nullptr; /** Input array of TRD tracks */
+  TClonesArray* fTrdHitArray      = nullptr; /** Input array of TRD Hits */
+  TClonesArray* fglobalTrackArray = nullptr; /** Input array of global tracks */
 
-  TObjArray* fHistdEdx = NULL;  // Prob. of dEdx for 5 particle species
-  Int_t fNofTracks     = 0;     // Number of tracks successfully fitted
+  TObjArray* fHistdEdx = nullptr;  // Prob. of dEdx for 5 particle species
+  Int_t fNofTracks     = 0;        // Number of tracks successfully fitted
 
-  CbmTrdParSetGas* fGasPar = NULL;  // Gas parameters, path to input reference spectra located here
+  CbmTrdParSetGas* fGasPar = nullptr;  // Gas parameters, path to input reference spectra located here
 
   static const Int_t fgkNParts = 5;  // numer of different particle species
   enum EParticleType
