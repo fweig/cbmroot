@@ -78,7 +78,7 @@ public:
    */
   void SetCrobMapping(int modAddress, uint16_t crobMap[NFASPMOD]);
 
-  /** @brief Add a monitor to the unpacker. 
+  /** @brief Add a monitor to the unpacker.
    *  @param value CbmTrdUnpackFaspMonitor */
   void SetMonitor(std::shared_ptr<CbmTrdUnpackFaspMonitor> value) { fMonitor = value; }
 
@@ -89,6 +89,9 @@ protected:
    * @return Bool_t initOk
   */
   virtual std::shared_ptr<CbmTrdUnpackFaspAlgo> chooseAlgo();
+
+  /** @brief Implement additional actions to be called once per TS, e.g. needed if more than the default output vector is used. */
+  virtual void reset();
 
 private:
   std::map<uint32_t, uint8_t[NFASPMOD]> fFaspMap;   ///> Module address to FASP id mapping

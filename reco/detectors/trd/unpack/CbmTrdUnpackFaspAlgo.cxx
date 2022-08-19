@@ -47,23 +47,26 @@ CbmTrdUnpackFaspAlgo::~CbmTrdUnpackFaspAlgo() {}
 //_________________________________________________________________________________
 Bool_t CbmTrdUnpackFaspAlgo::initParSet(FairParGenericSet* parset)
 {
+  printf("AB :: CbmTrdUnpackFaspAlgo::initParSet\n");
   FairParamList parList;
   Int_t nModules(0);
   if (strcmp(parset->ClassName(), "CbmTrdParSetAsic") == 0) {
     CbmTrdParSetAsic* setPar = static_cast<CbmTrdParSetAsic*>(parset);
     for (auto did : fModuleId) {
+      printf("AB :: check did %d\n", did);
       const CbmTrdParSetAsic* setDet = static_cast<const CbmTrdParSetAsic*>(setPar->GetModuleSet(did));
       if (!setDet) continue;
       if (setDet->GetAsicType() != Int_t(CbmTrdDigi::eCbmTrdAsicType::kFASP)) continue;
       if (fMonitor) fMonitor->addParam(did, setDet);
       nModules++;
+      printf("AB :: register ASIC params for module %d\n", did);
       std::vector<Int_t> a;
       setDet->GetAsicAddresses(&a);
       for (auto add : a) {
         CbmTrdParAsic* asic = (CbmTrdParAsic*) setDet->GetModulePar(add);
         if (asic->IsA() == CbmTrdParSpadic::Class()) continue;
         fAsicPar.addParam(asic);
-        if (VERBOSE) asic->Print();
+        if (VERBOSE > 2) asic->Print();
       }
     }
     //      setPar->printParams();
@@ -213,7 +216,7 @@ void CbmTrdUnpackFaspAlgo::mess_prt(CbmTrdFaspContent* mess)
 }
 
 //_________________________________________________________________________________
-bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFaspContent*> messes)
+bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFaspContent> messes)
 {
   UChar_t lFasp(0xff);
   UShort_t lchR, lchT;
@@ -223,110 +226,92 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
   CbmTrdParFasp* faspPar(nullptr);
   const CbmTrdParFaspChannel* chCalib(nullptr);
   CbmTrdParModDigi* digiPar(nullptr);
+
   for (auto imess : messes) {
     if (lFasp == 0xff) {
-      lFasp = messes[0]->fasp;
+      lFasp = messes[0].fasp;
       // link data to the position on the padplane
-      if (!(faspPar = (CbmTrdParFasp*) fAsicPar.GetAsicPar(imess->mod * 1000 + lFasp))) {
-        LOG(error) << GetName() << "::pushDigis - Par for FASP " << (int) lFasp << " in module " << imess->mod
+      if (!(faspPar = (CbmTrdParFasp*) fAsicPar.GetAsicPar(fMod * 1000 + lFasp))) {
+        LOG(error) << GetName() << "::pushDigis - Par for FASP " << (int) lFasp << " in module " << fMod
                    << " missing. Skip.";
         return false;
       }
-      if (!(digiPar = (CbmTrdParModDigi*) fDigiSet->GetModulePar(imess->mod))) {
-        LOG(error) << GetName() << "::pushDigis - DIGI par for module " << imess->mod << " missing. Skip.";
+      if (!(digiPar = (CbmTrdParModDigi*) fDigiSet->GetModulePar(fMod))) {
+        LOG(error) << GetName() << "::pushDigis - DIGI par for module " << fMod << " missing. Skip.";
         return false;
       }
       // TODO temporary add DAQ time calibration for FASPRO.
       // Should be absorbed in the ASIC parameter definition
-      if (digiPar->GetPadRow(faspPar->GetChannelAddress(imess->ch)) % 2) tdaqOffset = 3;
+      if (digiPar->GetPadRow(faspPar->GetChannelAddress(imess.ch)) % 2) tdaqOffset = 3;
 
       if (VERBOSE) faspPar->Print();
     }
-    if (VERBOSE) mess_prt(imess);
+    if (VERBOSE) mess_prt(&imess);
 
-    pad     = faspPar->GetChannelAddress(imess->ch);
-    chCalib = faspPar->GetChannel(imess->ch);
+    pad     = faspPar->GetChannelAddress(imess.ch);
+    chCalib = faspPar->GetChannel(imess.ch);
     ch      = 2 * pad + chCalib->HasPairingR();
-    lTime   = fTime + tdaqOffset + imess->tlab;
+    lTime   = fTime + tdaqOffset + imess.tlab;
     lchR    = 0;
     lchT    = 0;
-    if (chCalib->HasPairingR()) lchR = imess->data;
+    if (chCalib->HasPairingR()) lchR = imess.data;
     else
-      lchT = imess->data;
+      lchT = imess.data;
     if (VERBOSE)
-      printf("fasp[%2d] ch[%4d / %2d] pad[%4d] row[%2d] col[%2d] %c[%4d]\n", lFasp, ch, imess->ch, pad,
+      printf("fasp[%2d] ch[%4d / %2d] pad[%4d] row[%2d] col[%2d] %c[%4d]\n", lFasp, ch, imess.ch, pad,
              digiPar->GetPadRow(pad), digiPar->GetPadColumn(pad), (chCalib->HasPairingT() ? 'T' : 'R'),
              lchT > 0 ? lchT : lchR);
 
-    if (fDigiBuffer.find(pad) != fDigiBuffer.end()) {
+    if (fDigiBuffer[fCrob][pad].size()) {
       // check if last digi has both R/T message components. Update if not and is within time window
-      auto id = fDigiBuffer[pad].rbegin();
-      dtime   = (*id)->GetTimeDAQ() - lTime;
+      auto id = fDigiBuffer[fCrob][pad].rbegin();  // Should always be valid here.
+                                                   // No need to extra check
+      dtime = (*id).GetTimeDAQ() - lTime;
       bool use(false);
       if (TMath::Abs(dtime) < 5) {  // test message part of (last) digi
-        r = (*id)->GetCharge(t, dt);
+        r = (*id).GetCharge(t, dt);
         if (lchR && r < 0.1) {  // set R charge on an empty slot
-          (*id)->SetCharge(t, lchR, -dtime);
+          (*id).SetCharge(t, lchR, -dtime);
           use = true;
         }
         else if (lchT && t < 0.1) {  // set T charge on an empty slot
-          (*id)->SetCharge(lchT, r, +dtime);
-          (*id)->SetTimeDAQ(ULong64_t((*id)->GetTimeDAQ() - dtime));
+          (*id).SetCharge(lchT, r, +dtime);
+          (*id).SetTimeDAQ(ULong64_t((*id).GetTimeDAQ() - dtime));
           use = true;
         }
       }
 
       // build digi for message when update failed
       if (!use) {
-        CbmTrdDigi* digi = new CbmTrdDigi(pad, lchT, lchR, lTime);
-        digi->SetAddressModule(imess->mod);
-        fDigiBuffer[pad].push_back(digi);
-        id = fDigiBuffer[pad].rbegin();
+        CbmTrdDigi digi(pad, lchT, lchR, lTime);
+        digi.SetAddressModule(fMod);
+        fDigiBuffer[fCrob][pad].push_back(digi);
+        id = fDigiBuffer[fCrob][pad].rbegin();
       }
 
-      if (id != fDigiBuffer[pad].rend()) id++;
+      if (id != fDigiBuffer[fCrob][pad].rend()) id++;
 
-      // update charge for previously allocated digis to account for FASPRO ADC buffering and read-out problem
+      // update charge for previously allocated digis to account for FASPRO ADC buffering and read-out feature
       use = false;
-      for (; id != fDigiBuffer[pad].rend(); ++id) {
-        r = (*id)->GetCharge(t, dt);
+      for (; id != fDigiBuffer[fCrob][pad].rend(); ++id) {
+        r = (*id).GetCharge(t, dt);
         if (lchR && int(r)) {  // update R charge and mark on digi
-          (*id)->SetCharge(t, lchR, dt);
-          (*id)->SetFlag(1);
+          (*id).SetCharge(t, lchR, dt);
+          (*id).SetFlag(1);
           use = true;
         }
         else if (lchT && int(t)) {  // update T charge and mark on digi
-          (*id)->SetCharge(lchT, r, dt);
-          (*id)->SetFlag(0);
+          (*id).SetCharge(lchT, r, dt);
+          (*id).SetFlag(0);
           use = true;
         }
         if (use) break;
       }
     }
     else {  // init pad position in map and build digi for message
-      CbmTrdDigi* digi = new CbmTrdDigi(pad, lchT, lchR, lTime);
-      digi->SetAddressModule(imess->mod);
-      fDigiBuffer[pad].push_back(digi);
-    }
-    delete imess;
-  }
-
-  // push finalized digits to the next level
-  for (int jd(0); jd < NFASPCH; jd += 2) {
-    int ipad(faspPar->GetChannelAddress(jd));
-    if (fDigiBuffer.find(ipad) == fDigiBuffer.end()) continue;
-
-    for (auto id = fDigiBuffer[ipad].begin(); id != fDigiBuffer[ipad].end(); id++) {
-      r = (*id)->GetCharge(t, dt);
-      // check if digi has all signals CORRECTED
-      if (((t > 0) != (*id)->IsFlagged(0)) || ((r > 0) != (*id)->IsFlagged(1))) continue;
-      if (fMonitor) fMonitor->FillHistos(((*id)));
-      // reset flags as they were used only to mark the correctly setting of the charge/digi
-      (*id)->SetFlag(0, false);
-      (*id)->SetFlag(1, false);
-      fOutputVec.emplace_back(*std::move((*id)));
-      // clear digi buffer wrt the digi which was forwarded to higher structures
-      id = fDigiBuffer[ipad].erase(id);
+      CbmTrdDigi digi(pad, lchT, lchR, lTime);
+      digi.SetAddressModule(fMod);
+      fDigiBuffer[fCrob][pad].push_back(digi);
     }
   }
   messes.clear();
@@ -334,13 +319,62 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
   return true;
 }
 
+uint32_t CbmTrdUnpackFaspAlgo::ResetTimeslice()
+{
+  uint32_t uNbLostDigis = 0;
+  /// PAL 03/08/2022: clear internal buffer at latest between two timeslices (TS are self contained!)
+
+  for (auto crobBuffer : fDigiBuffer) {
+    for (auto pad_id(0); pad_id < NFASPMOD * NFASPCH; pad_id++) {
+      if (!crobBuffer.second[pad_id].size()) continue;
+
+      LOG(warn) << fName << "::ResetTimeslice - buffered digi @ CROB=" << crobBuffer.first << " / pad=" << pad_id
+                << " store " << crobBuffer.second[pad_id].size() << " unprocessed digi.";
+      uNbLostDigis += crobBuffer.second[pad_id].size();
+
+      crobBuffer.second[pad_id].clear();
+    }
+  }
+  return uNbLostDigis;
+}
+
+void CbmTrdUnpackFaspAlgo::FinalizeComponent()
+{
+  Double_t r, t;
+  Int_t dt;
+  // push finalized digits to the next level
+  for (uint16_t ipad(0); ipad < NFASPMOD * NFASPCH; ipad++) {
+    if (!fDigiBuffer[fCrob][ipad].size()) continue;
+    uint nIncomplete(0);
+    for (auto id = fDigiBuffer[fCrob][ipad].begin(); id != fDigiBuffer[fCrob][ipad].end(); id++) {
+      r = (*id).GetCharge(t, dt);
+      // check if digi has all signals CORRECTED
+      if (((t > 0) != (*id).IsFlagged(0)) || ((r > 0) != (*id).IsFlagged(1))) {
+        nIncomplete++;
+        continue;
+      }
+      if (fMonitor) fMonitor->FillHistos((&(*id)));
+      // reset flags as they were used only to mark the correctly setting of the charge/digi
+      (*id).SetFlag(0, false);
+      (*id).SetFlag(1, false);
+      fOutputVec.emplace_back(std::move((*id)));
+    }
+    // clear digi buffer wrt the digi which was forwarded to higher structures
+    fDigiBuffer[fCrob][ipad].clear();
+    if (nIncomplete > 2) {
+      LOG(warn) << fName << "FinalizeComponent(" << fCrob << ") skip " << nIncomplete << " incomplete digi at pad "
+                << ipad << ".\n";
+    }
+  }
+  fCrob = 0xffff;  // reset current crob id
+}
+
 // ---- unpack ----
 bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice)
 {
   if (VERBOSE) printf("CbmTrdUnpackFaspAlgo::unpack 0x%04x %d\n", icomp, imslice);
-  //LOG(info) << "Component " << icomp << " connected to config CbmTrdUnpackConfig2D. Slice "<<imslice;
+  // LOG(info) << "Component " << icomp << " connected to config CbmTrdUnpackConfig2D. Slice "<<imslice;
 
-  uint32_t mod_id = 5;
   uint8_t crob_id = 0;
   uint16_t eq_id;
   bool unpackOk   = true;
@@ -351,14 +385,33 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
   if (VERBOSE) printf("time start %lu\n", static_cast<size_t>(msdesc.idx));
   // define time wrt start of time slice in TRD/FASP clks [80 MHz]
   fTime = ULong64_t((msdesc.idx - fTsStartTime - fSystemTimeOffset) / 12.5);
-  eq_id = msdesc.eq_id;  // read the CROB id
-  for (; crob_id < NCROBMOD; crob_id++) {
-    if (((*fCrobMap)[mod_id])[crob_id] == eq_id) break;
+
+  // get MOD_id and CROB id from the equipment
+  bool mapped = false;
+  eq_id       = msdesc.eq_id;
+  for (auto mod_id : fModuleId) {
+    for (crob_id = 0; crob_id < NCROBMOD; crob_id++) {
+      if (((*fCrobMap)[mod_id])[crob_id] == eq_id) break;
+    }
+    if (crob_id == NCROBMOD) continue;
+
+    // found module-cri pair
+    // buffer module configuration
+    if (fMod == 0xffff || fMod != mod_id) {
+      fMod = mod_id;
+      if (!init()) {
+        LOG(error) << GetName() << "::unpack - init mod_id=" << mod_id << " failed.";
+        return false;
+      }
+    }
+    mapped = true;
+    break;
   }
-  if (crob_id == NCROBMOD) {
+  if (!mapped) {
     LOG(error) << GetName() << "::unpack - CROB eq_id=" << eq_id << " not registered in the unpacker.";
     return false;
   }
+  if (fCrob == 0xffff) fCrob = icomp;
 
   // Get the µslice size in bytes to calculate the number of completed words
   auto mssize = msdesc.size;
@@ -375,8 +428,8 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
 
 
   UChar_t lFaspOld(0xff);
-  vector<CbmTrdFaspContent*> vDigi;
-  CbmTrdFaspContent* mess(nullptr);
+  vector<CbmTrdFaspContent> vMess;
+  CbmTrdFaspContent mess;
   for (uint64_t j = 0; j < nwords; j++, wd++) {
     //     // Select the appropriate conversion type of the word according to the message type
     //     switch(mess_type(*wd)){
@@ -398,8 +451,8 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
     if (isaux) {
       if (!ch_id) {
         // clear buffer
-        if (vDigi.size()) { pushDigis(vDigi); }
-        vDigi.clear();
+        if (vMess.size()) { pushDigis(vMess); }
+        vMess.clear();
 
         if (VERBOSE)
           cout << boost::format("    EE : fasp_id=%02d ch_id=%02d epoch=%03d\n") % static_cast<unsigned int>(fasp_id)
@@ -413,12 +466,12 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
       }
     }
     else {
-      if (fFaspMap) fasp_id = ((*fFaspMap)[mod_id])[fasp_id];
+      if (fFaspMap) fasp_id = ((*fFaspMap)[fMod])[fasp_id];
 
       if (lFaspOld != fasp_id) {
         // push
-        if (vDigi.size()) { pushDigis(vDigi); }
-        vDigi.clear();
+        if (vMess.size()) { pushDigis(vMess); }
+        vMess.clear();
         lFaspOld = fasp_id;
       }
       if (data & 0x1) {
@@ -433,15 +486,13 @@ bool CbmTrdUnpackFaspAlgo::unpack(const fles::Timeslice* ts, std::uint16_t icomp
         LOG(debug) << GetName() << "::unpack - Self-triggered data.";
         data &= 0x1fff;
       }
-      mess       = new CbmTrdFaspContent;
-      mess->ch   = ch_id;
-      mess->type = kData;
-      mess->tlab = slice;
-      mess->data = data >> 1;
-      mess->fasp = lFaspOld;
-      mess->mod  = mod_id;
-      mess->crob = crob_id;
-      vDigi.push_back(mess);
+      mess.ch   = ch_id;
+      mess.type = kData;
+      mess.tlab = slice;
+      mess.data = data >> 1;
+      mess.fasp = lFaspOld;
+      mess.crob = crob_id;
+      vMess.push_back(mess);
     }
     //prt_wd(*wd);
   }

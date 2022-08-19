@@ -9,14 +9,14 @@
  * @brief Trd FASP unpacking algorithm
  * @version 0.1
  * @date 2021-04-21
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
- * This is the base class for the algorithmic part of the tsa data unpacking 
+ *
+ * This is the base class for the algorithmic part of the tsa data unpacking
  * processes of the CbmTrd.
- * The actual translation from tsa to digi happens in the derived classes. 
- * 
- * 
+ * The actual translation from tsa to digi happens in the derived classes.
+ *
+ *
 */
 
 #ifndef CbmTrdUnpackFaspAlgo_H
@@ -45,7 +45,7 @@
 class CbmTrdParSetDigi;
 class CbmTrdUnpackFaspAlgo : public CbmRecoUnpackAlgo<CbmTrdDigi> {
 public:
-  /** @brief Bytes per FASP frame stored in the microslices (32 bits words) 
+  /** @brief Bytes per FASP frame stored in the microslices (32 bits words)
    * - DATA WORD -
    * ffff.ffdd dddd.dddd dddd.tttt ttta.cccc
    * f - FASP id
@@ -56,7 +56,7 @@ public:
    * - EPOCH WORD -
    * ffff.fftt tttt.tttt tttt.tttt ttta.cccc
    * f - FASP id
-   * t - epoch index 
+   * t - epoch index
    * a - word type (0)
    * c - channel id
    */
@@ -102,7 +102,7 @@ public:
 
   /**
    * @brief Get the requested parameter containers.
-   * Return the required parameter containers together with the paths to the ascii 
+   * Return the required parameter containers together with the paths to the ascii
    * files to.
    *  
    * @param[in] std::string geoTag as used in CbmSetup
@@ -121,6 +121,9 @@ public:
    *  @param monitor predefined unpacking monitor */
   void SetMonitor(std::shared_ptr<CbmTrdUnpackFaspMonitor> monitor) { fMonitor = monitor; }
 
+  /** @brief Check and assure there are no data left-overs */
+  uint32_t ResetTimeslice();
+
 protected:
   /** @brief Get message type from the FASP word */
   CbmTrdFaspMessageType mess_type(uint32_t wd);
@@ -130,11 +133,11 @@ protected:
   void mess_readEW(uint32_t wd, CbmTrdFaspContent* mess);
   /** @brief Print FASP message */
   void mess_prt(CbmTrdFaspContent* mess);
-  bool pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFaspContent*> digis);
+  bool pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFaspContent> messages);
   /** @brief Time offset for digi wrt the TS start, expressed in 80 MHz clks. It contains:
    *  - relative offset of the MS wrt the TS
    *  - FASP epoch offset for current CROB
-   *  - TRD2D system offset wrt to experiment time (e.g. T0) 
+   *  - TRD2D system offset wrt to experiment time (e.g. T0)
    */
   ULong64_t fTime;
 
@@ -147,7 +150,7 @@ protected:
   /**
    * @brief Additional initialisation function for all BaseR derived algorithms.
    * 
-   * @return Bool_t initOk 
+   * @return Bool_t initOk
   */
   virtual Bool_t init() { return kTRUE; }
 
@@ -156,26 +159,30 @@ protected:
   /**
    * @brief Handles the distribution of the hidden derived classes to their explicit functions.
    * 
-   * @param parset 
-   * @return Bool_t initOk 
+   * @param parset
+   * @return Bool_t initOk
   */
   Bool_t initParSet(FairParGenericSet* parset);
 
   /**
    * @brief Unpack a given microslice.
-   * 
+   *
    * @param ts timeslice pointer
    * @param icomp index to the component to be unpacked
    * @param imslice index of the microslice to be unpacked
-   * @return true 
-   * @return false 
-   * 
+   * @return true if all is fine
+   *
    * @remark The content of the µslice can only be accessed via the timeslice. Hence, we need to pass the pointer to the full timeslice
   */
   bool unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice);
 
+  /**
+   * @brief Finalize component (e.g. copy from temp buffers)
+  */
+  void FinalizeComponent();
+
   // Constants
-  /** @brief Bytes per FASP frame stored in the microslices (32 bits words) 
+  /** @brief Bytes per FASP frame stored in the microslices (32 bits words)
    * - DATA WORD -
    * ffff.ffdd dddd.dddd dddd.tttt ttta.cccc
    * f - FASP id
@@ -186,7 +193,7 @@ protected:
    * - EPOCH WORD -
    * ffff.fftt tttt.tttt tttt.tttt ttta.cccc
    * f - FASP id
-   * t - epoch index 
+   * t - epoch index
    * a - word type (0)
    * c - channel id
    */
@@ -196,10 +203,13 @@ private:
   void prt_wd(uint32_t w);
   std::map<uint32_t, uint8_t[NFASPMOD]>* fFaspMap  = nullptr;  ///> FASP mapping update wrt the default setting
   std::map<uint32_t, uint16_t[NCROBMOD]>* fCrobMap = nullptr;  ///> CRI mapping setting
-  std::map<uint32_t, std::vector<CbmTrdDigi*>> fDigiBuffer;    ///> Map of buffered digi per pad
+  std::map<uint16_t, std::array<std::vector<CbmTrdDigi>, NFASPMOD* NFASPCH>> fDigiBuffer = {
+    {{}}};  ///> Buffered digi for each pad in CROB component
   /** @brief Potential (online) monitor for the unpacking process */
   std::shared_ptr<CbmTrdUnpackFaspMonitor> fMonitor = nullptr;
-  std::vector<Int_t> fModuleId;
+  uint16_t fCrob                                    = 0xffff;  //! current crob being processed
+  uint16_t fMod                                     = 0xffff;  //! current module being processed
+  std::vector<uint16_t> fModuleId;  ///> list of modules for which there is are calibration parameters
   CbmTrdParSetAsic fAsicPar;
   CbmTrdParSetDigi* fDigiSet = nullptr;
 

@@ -30,6 +30,15 @@ std::shared_ptr<CbmTrdUnpackFaspAlgo> CbmTrdUnpackFaspConfig::chooseAlgo()
   return nullptr;
 }
 
+// ---- reset ----
+void CbmTrdUnpackFaspConfig::reset()
+{
+  uint32_t uNbLostDigis = fAlgo->ResetTimeslice();
+  if (uNbLostDigis /*&& fDoLog*/) {
+    LOG(info) << fName << "::reset - Lost digis after processing timeslice: " << uNbLostDigis;
+  }
+}
+
 //_____________________________________________________________________
 void CbmTrdUnpackFaspConfig::InitAlgo()
 {

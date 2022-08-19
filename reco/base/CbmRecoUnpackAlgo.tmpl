@@ -253,6 +253,12 @@ protected:
   */
   virtual bool unpack(const fles::Timeslice* ts, std::uint16_t icomp, UInt_t imslice) = 0;
 
+  /**
+   * @brief Use this function to implement additional actions to be called to finalize component if necessary.
+            (e.g. copy from temp buffers)
+  */
+  virtual void FinalizeComponent() { return; };
+
 public:
   // Runtime functions
 
@@ -432,6 +438,9 @@ public:
         continue;
       }
     }
+
+    /// Give opportunity to finalize component (e.g. copy from temp buffers) if necessary
+    FinalizeComponent();
 
     auto ndigis = fOutputVec.size();
     fNrCreatedDigis += ndigis;
