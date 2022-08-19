@@ -1796,16 +1796,16 @@ void L1Algo::CATrackFinder()
 
   // #pragma omp parallel for  reduction(+:nNotUsedHits)
   for (int ista = 0; ista < fNstations; ++ista) {
-    nNotUsedHits += (HitsStopIndex[ista] - HitsStartIndex[ista]);
-    HitsUnusedStartIndex[ista] = HitsStartIndex[ista];
-    HitsUnusedStopIndex[ista]  = HitsStopIndex[ista];
+    nNotUsedHits += (fInputData.GetStopHitIndex(ista) - fInputData.GetStartHitIndex(ista));
+    HitsUnusedStartIndex[ista] = fInputData.GetStartHitIndex(ista);
+    HitsUnusedStopIndex[ista]  = fInputData.GetStopHitIndex(ista);
   }
 
   float lasttime  = 0;
   float starttime = std::numeric_limits<float>::max();
 
   for (int ist = 0; ist < fNstations; ++ist)
-    for (L1HitIndex_t ih = HitsStartIndex[ist]; ih < HitsStopIndex[ist]; ++ih) {
+    for (L1HitIndex_t ih = fInputData.GetStartHitIndex(ist); ih < fInputData.GetStopHitIndex(ist); ++ih) {
 
       const float& time = fInputData.GetHit(ih).t;
       if ((lasttime < time) && (!std::isinf(time))) lasttime = time;
@@ -1853,7 +1853,7 @@ void L1Algo::CATrackFinder()
 
 
   for (int ist = 0; ist < fNstations; ++ist)
-    for (L1HitIndex_t ih = HitsStartIndex[ist]; ih < HitsStopIndex[ist]; ++ih) {
+    for (L1HitIndex_t ih = fInputData.GetStartHitIndex(ist); ih < fInputData.GetStopHitIndex(ist); ++ih) {
       const L1Hit& h = fInputData.GetHit(ih);
       //SetFUnUsed((*fStripFlag)[h.f]);
       //SetFUnUsed((*fStripFlag)[h.b]);
@@ -1869,7 +1869,7 @@ void L1Algo::CATrackFinder()
 #ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic, 5)
 #endif
-    for (L1HitIndex_t ih = HitsStartIndex[ista]; ih < HitsStopIndex[ista]; ++ih) {
+    for (L1HitIndex_t ih = fInputData.GetStartHitIndex(ista); ih < fInputData.GetStopHitIndex(ista); ++ih) {
       CreateHitPoint(vNotUsedHits_Buf[ih], vNotUsedHitsxy_B[ih]);
     }
   }
@@ -2090,8 +2090,8 @@ void L1Algo::CATrackFinder()
                                       i1G_2)  //schedule(dynamic, 2)
 #endif
       for (Tindex ip = fDupletPortionStopIndex[istal + 1]; ip < fDupletPortionStopIndex[istal]; ++ip) {
-        Tindex n_2   = 0;  // number of doublets in portion
-        int NHitsSta = HitsStopIndex[istal] - HitsStartIndex[istal];
+        Tindex n_2 = 0;  /// number of doublets in portion
+        int NHitsSta = fInputData.GetStopHitIndex(istal) - fInputData.GetStartHitIndex(istal);
         lmDuplets[istal].reset(NHitsSta);
         lmDupletsG[istal].reset(NHitsSta);
 
@@ -2220,7 +2220,7 @@ void L1Algo::CATrackFinder()
         fTrackCandidates[i].clear();
       }
 
-      fStripToTrack.reset(fNstrips, -1);
+      fStripToTrack.reset(fInputData.GetNhitKeys(), -1);
 
       //== Loop over triplets with the required level, find and store track candidates
 

@@ -110,7 +110,6 @@ CbmL1.cxx
 #CbmL1TrdTrackFinderSts.cxx 
 CbmL1TrackMerger.cxx 
 CbmL1TofMerger.cxx
-L1AlgoInputData.cxx
 OffLineInterface/CbmL1RichENNRingFinder.cxx
 OffLineInterface/CbmL1RichENNRingFinderParallel.cxx 
 OffLineInterface/CbmL1StsTrackFinder.cxx 

@@ -53,7 +53,6 @@
 #include "L1EventEfficiencies.h"
 #include "L1IODataManager.h"
 
-struct L1AlgoInputData;
 class L1Algo;
 class L1Event;
 class CbmL1ParticlesFinder;
@@ -312,15 +311,14 @@ private:
   /// Read information about hits, mcPoints and mcTracks into L1 classes
 
   /// Repacks data from the external TClonesArray objects to the internal L1 arrays
-  /// \param fData_       Pointer to the target object containing L1Algo internal arrays of hits
   /// \param TsStart      Reference to the time slice start time
   /// \param TsLength     Reference to the time slice length
   /// \param TsOverlap    Reference to the time slice overlap length (does not used at the moment)
   /// \param FstHitinTs   Index of the first hit in the time-slice
   /// \param areDataLeft  Flag: true - data were left after reading the sub-timeslice
   /// \param event        Pointer to the current CbmEvent object
-  void ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, float& TsOverlap, int& FstHitinTs,
-                 bool& areDataLeft, CbmEvent* event = NULL);
+  void ReadEvent(float& TsStart, float& TsLength, float& TsOverlap, int& FstHitinTs, bool& areDataLeft,
+                 CbmEvent* event = NULL);
 
   /// Converts data from generic FairMCPoint based class to the CbmL1MCPoint (dummy method)
   /// \param   MC       Pointer to a target CbmL1MCPoint object
@@ -420,8 +418,6 @@ public:
 
 private:
   static CbmL1* fpInstance;  ///< Instance of CbmL1
-
-  L1AlgoInputData* fpData = nullptr;  ///< Pointer to the L1 tacking algorithm input object
 
   int nMvdPoints = 0;  // TODO: Should be removed (S.Zharko)
 

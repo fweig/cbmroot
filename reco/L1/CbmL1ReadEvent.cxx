@@ -42,7 +42,6 @@
 #include "FairMCEventHeader.h"
 
 #include "L1Algo/L1Algo.h"
-#include "L1AlgoInputData.h"
 
 //#include "CbmMvdHitMatch.h"
 
@@ -175,14 +174,13 @@ struct TmpHit {
   }
 };
 
-void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, float& /*TsOverlap*/, int& FstHitinTs,
-                      bool& areDataLeft, CbmEvent* event)
+void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int& FstHitinTs, bool& areDataLeft,
+                      CbmEvent* event)
 {
   if (fVerbose >= 10) cout << "ReadEvent: start." << endl;
 
   areDataLeft = false;  // no data left after reading the sub-timeslice
 
-  fData_->Clear();
 
   // clear arrays for next event
   fvMCPoints.clear();                         /* <CbmL1MCPoint> */
@@ -216,14 +214,6 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
     if (fUseTOF && fpTofHits) nHitsTotal += fpTofHits->GetEntriesFast();
     tmpHits.reserve(nHitsTotal);
   }
-
-  // -- produce Sts hits from space points --
-
-  for (int i = 0; i < fNStations; i++) {
-    fData_->HitsStartIndex[i] = static_cast<L1HitIndex_t>(-1);
-    fData_->HitsStopIndex[i]  = 0;
-  }
-
 
   nMvdPoints      = 0;
   int nStsPoints  = 0;
@@ -1116,15 +1106,10 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
   sort(tmpHits.begin(), tmpHits.end(), TmpHit::Compare);
 
   // ----- Save strips into L1Algo
-  fData_->fNstrips = NStrips;
-  fData_->fStripFlag.reset(NStrips, 0);
   int maxHitIndex = 0;
 
   for (int ih = 0; ih < nHits; ih++) {
     TmpHit& th                     = tmpHits[ih];
-    char flag                      = th.iStation * 4;
-    fData_->fStripFlag[th.iStripF] = flag;
-    fData_->fStripFlag[th.iStripB] = flag;
     if (maxHitIndex < th.id) { maxHitIndex = th.id; }
   }  // ih
 
@@ -1132,12 +1117,9 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
 
   // ----- Fill and save fvExternalHits, fvHitStore and fvHitPointIndexes vectors as well as fpData->vHits
-  int nEffHits = 0;
-
   fvSortedHitsIndexes.reset(maxHitIndex + 1);
 
   fvExternalHits.reserve(nHits);
-  fData_->vHits.reserve(nHits);
 
   fvHitStore.reserve(nHits);
   fvHitPointIndexes.reserve(nHits);
@@ -1194,35 +1176,16 @@ void CbmL1::ReadEvent(L1AlgoInputData* fData_, float& TsStart, float& TsLength, 
 
     // TODO: Here one should fill in the fvExternalHits[iHit].mcPointIds
 
-    fData_->vHits.push_back(h);
     fIODataManager.PushBackHit(h);
-
-    int iSt = th.iStation;
-
-    if (fData_->HitsStartIndex[iSt] == static_cast<L1HitIndex_t>(-1)) { fData_->HitsStartIndex[iSt] = nEffHits; }
-    nEffHits++;
-
-    fData_->HitsStopIndex[iSt] = nEffHits;
 
     fvHitStore.push_back(s);
     fvHitPointIndexes.push_back(th.iMC);
   }
 
-  for (int i = 0; i < fNStations; i++) {
-    if (fData_->HitsStartIndex[i] == static_cast<L1HitIndex_t>(-1)) {
-      fData_->HitsStartIndex[i] = fData_->HitsStopIndex[i];
-    }
-  }
+  if (fVerbose >= 1) cout << "ReadEvent: mvd and sts are saved." << endl;
 
-  if (fVerbose >= 10) cout << "ReadEvent: mvd and sts are saved." << endl;
-
-  /*
-   * Translate gathered hits data to the L1Algo object. TODO: raplace it with L1DataManager functionality (S.Zharko)
-   */
-
-  fpAlgo->SetData(fData_->GetHits(), fData_->GetNstrips(), fData_->GetSFlag(), fData_->GetHitsStartIndex(),
-                  fData_->GetHitsStopIndex());
-
+  // ----- Send data from IODataManager to L1Algo --------------------------------------------------------------------
+  fIODataManager.SendInputData(fpAlgo);
 
   if (fPerformance) {
     if (fVerbose >= 10) cout << "HitMatch is done." << endl;

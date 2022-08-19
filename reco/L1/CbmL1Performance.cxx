@@ -1338,7 +1338,7 @@ void CbmL1::TrackFitPerformance()
     }
 
 
-    {                                           // last hit
+    {                                                // last hit
       int iMC = fvHitPointIndexes[it->Hits.back()];  // TODO2: adapt to linking
       if (iMC < 0) continue;
 

@@ -65,7 +65,6 @@
 #include "L1Algo/L1Branch.h"
 #include "L1Algo/L1Field.h"
 #include "L1Algo/L1Hit.h"
-#include "L1AlgoInputData.h"
 #include "L1Event.h"
 
 using std::cout;
@@ -138,9 +137,6 @@ InitStatus CbmL1::ReInit()
 //
 InitStatus CbmL1::Init()
 {
-
-  fpData = new L1AlgoInputData();
-
   if (fVerbose > 1) {
     char y[20] = " [0;33;44m";         // yellow
     char Y[20] = " [1;33;44m";         // yellow bold
@@ -944,12 +940,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
 
   while (areDataLeft) {
-    fpData->Clear();
-
     if (event) {
-
-      //fpData->fStripFlag.clear();
-
       areDataLeft = false;
       TsStart     = 0;
       TsLength    = 2000000000;  // TODO: Why this number was selected? (S.Zharko)
@@ -958,70 +949,13 @@ void CbmL1::Reconstruct(CbmEvent* event)
     }
 
     if (fSTAPDataMode >= 2) {  // 2,3
-      // TODO: Rewrite it:
-      //fpData->ReadHitsFromFile(fSTAPDataDir.Data(), 1, fVerbose);
-
-      // TODO: Rewrite it:
-      //fpAlgo->SetData(fpData->GetHits(), fpData->GetNstrips(), fpData->GetSFlag(), fpData->GetHitsStartIndex(),
-      //                fpData->GetHitsStopIndex());
-    }
-    else {
-      // TODO: There is no use in passing fpData into the ReadEvent function -> remove (S.Zharko)
-      ReadEvent(fpData, TsStart, TsLength, TsOverlap, FstHitinTs, areDataLeft, event);
+      LOG(fatal) << "L1: Sorry, at the moment standalone tracking module is unavailable. This functionality will be "
+                 << "reimplemented soon.";
     }
 
-    // Send data from IODataManager to L1Algo
-    fIODataManager.SendInputData(fpAlgo);
+    // ----- Read data from branches and send data from IODataManager to L1Algo ----------------------------------------
+    ReadEvent(TsStart, TsLength, TsOverlap, FstHitinTs, areDataLeft, event);
 
-    // ********************************************************************************************
-    if constexpr (0) {  // correct hits on MC // dbg
-      TRandom3 random;
-      L1Vector<int> strips("CbmL1::strips");
-      for (unsigned int iH = 0; iH < (*fpAlgo->vHits).size(); ++iH) {
-        L1Hit& h = const_cast<L1Hit&>((*fpAlgo->vHits)[iH]);
-#ifdef USE_EVENT_NUMBER
-        h.n = -1;
-#endif
-        if (fvExternalHits[iH].mcPointIds.size() == 0) continue;
-
-        const CbmL1MCPoint& mcp = fvMCPoints[fvExternalHits[iH].mcPointIds[0]];
-
-#ifdef USE_EVENT_NUMBER
-        h.n = mcp.event;
-#endif
-        const int ista       = h.iSt;
-        const L1Station& sta = fpAlgo->GetParameters()->GetStation(ista);
-        if (std::find(strips.begin(), strips.end(), h.f) != strips.end()) {  // separate strips
-
-          (*fpAlgo->fStripFlag).push_back((*fpAlgo->fStripFlag)[h.f]);
-
-          h.f = fpAlgo->fNstrips;
-          fpAlgo->fNstrips++;
-        }
-        strips.push_back(h.f);
-        if (std::find(strips.begin(), strips.end(), h.b) != strips.end()) {
-          (*fpAlgo->fStripFlag).push_back((*fpAlgo->fStripFlag)[h.b]);
-          h.b = fpAlgo->fNstrips;
-          fpAlgo->fNstrips++;
-        }
-        strips.push_back(h.b);
-
-        double u = mcp.x * sta.frontInfo.cos_phi[0] + mcp.y * sta.frontInfo.sin_phi[0];
-        double v = mcp.x * sta.backInfo.cos_phi[0] + mcp.y * sta.backInfo.sin_phi[0];
-
-#if 1  // GAUSS
-        u += random.Gaus(0, sqrt(sta.frontInfo.sigma2)[0]);
-        v += random.Gaus(0, sqrt(sta.backInfo.sigma2)[0]);
-#else  // UNIFORM
-        u += 3.5 * sqrt(sta.frontInfo.sigma2)[0] * random.Uniform(-1, 1);
-        v += 3.5 * sqrt(sta.backInfo.sigma2)[0] * random.Uniform(-1, 1);
-#endif
-        h.u = u;
-        h.v = v;
-        h.z = mcp.z;
-      }
-    }
-    // ********************************************************************************************
 
     if (fPerformance) {
       HitMatch();
@@ -1030,15 +964,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
         it->Init();
       }
     }
-
-    if (fSTAPDataMode % 2 == 1) {  // 1,3
-      WriteSTAPAlgoData();
-      WriteSTAPPerfData();
-    };
-    if (fSTAPDataMode >= 2) {  // 2,3
-      ReadSTAPAlgoData();
-      ReadSTAPPerfData();
-    };
 
     if ((fPerformance) && (fSTAPDataMode < 2)) { InputPerformance(); }
 
@@ -1187,7 +1112,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     if (!fLegacyEventMode) cout << "CA Track Finder: " << fpAlgo->fCATime << " s/sub-ts" << endl << endl;
   }
-
+  
 
   if (fPerformance) {
 
@@ -1196,7 +1121,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
     int fHit    = 0;
     bool stop   = 0;
 
-    ReadEvent(fpData, start, end, start, fHit, stop, event);
+    ReadEvent(start, end, start, fHit, stop, event);
     HitMatch();
     // calculate the max number of Hits\mcPoints on continuous(consecutive) stations
 

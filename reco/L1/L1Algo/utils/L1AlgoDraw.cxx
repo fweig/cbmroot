@@ -80,8 +80,8 @@ void L1AlgoDraw::InitL1Draw(L1Algo* algo_)
   }
   NStations = algo->GetParameters()->GetNstationsActive();
   for (int i = 0; i < NStations; i++) {
-    HitsStartIndex[i]    = algo->HitsStartIndex[i];
-    HitsStopIndex[i]     = algo->HitsStopIndex[i];
+    HitsStartIndex[i]    = algo->GetInputData()->GetStartHitIndex(i);
+    HitsStopIndex[i]     = algo->GetInputData()->GetStopHitIndex(i);
     vStations[i]         = algo->GetParameters()->GetStation(i);
   }
 }

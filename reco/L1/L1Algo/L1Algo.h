@@ -411,9 +411,6 @@ public:
 
   void Init(const bool UseHitErrors, const TrackingMode mode, const bool MissingHits);
 
-  void SetData(L1Vector<L1Hit>& Hits_, int nStrips_, L1Vector<unsigned char>& SFlag_,
-               const L1HitIndex_t* HitsStartIndex_, const L1HitIndex_t* HitsStopIndex_);
-
   void PrintHits();
 
   /// The main procedure - find tracks.
@@ -464,22 +461,14 @@ private:
     "L1Algo::fvHitKeyFlags"};  ///< List of key flags: has been this hit or cluster already used
 
 public:
-  int fNstrips {0};                                ///< number of strips
-  L1Vector<L1Hit>* vHits {nullptr};                ///< hits as a combination of front and back strips and z-position
-  L1Grid vGrid[L1Constants::size::kMaxNstations];  ///<
+  L1Grid vGrid[L1Constants::size::kMaxNstations];      ///<
   L1Grid vGridTime[L1Constants::size::kMaxNstations];  ///<
 
-
-  L1Vector<unsigned char>* fStripFlag {nullptr};  // information of hits station & using hits in tracks;
 
   double fCATime {0.};  // time of track finding
 
   L1Vector<L1Track> fTracks {"L1Algo::fTracks"};           ///< reconstructed tracks
   L1Vector<L1HitIndex_t> fRecoHits {"L1Algo::fRecoHits"};  ///< packed hits of reconstructed tracks
-
-  const L1HitIndex_t* HitsStartIndex {nullptr};  // station-bounders in vHits array
-  const L1HitIndex_t* HitsStopIndex {nullptr};   // station-bounders in vHits array
-
 
   /// Created triplets vs station and thread index
   L1Vector<L1Triplet> fTriplets[L1Constants::size::kMaxNstations][L1Constants::size::kMaxNthreads] {

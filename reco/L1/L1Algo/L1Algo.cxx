@@ -106,31 +106,11 @@ void L1Algo::ReceiveInputData(L1InputData&& inputData)
 {
   // ----- Get input data ----------------------------------------------------------------------------------------------
   fInputData = std::move(inputData);
-  // TODO: Reset here internal data (probably, we should have additional class for internal data)
 
   // ----- Reset data arrays -------------------------------------------------------------------------------------------
   fvHitKeyFlags.reset(fInputData.GetNhitKeys());
-}
-
-
-///
-void L1Algo::SetData(L1Vector<L1Hit>& Hits_, int nStrips_, L1Vector<unsigned char>& SFlag_,
-                     const L1HitIndex_t* HitsStartIndex_, const L1HitIndex_t* HitsStopIndex_)
-{
-  // TODO: Remove (S.Zharko)
-  vHits      = &Hits_;
-  fNstrips   = nStrips_;
-  fStripFlag = &SFlag_;
-
-  HitsStartIndex = HitsStartIndex_;
-  HitsStopIndex  = HitsStopIndex_;
-
-  // TODO: maximal array sizes need to be adjusted
-  // TODO: move to ReceiveInputData function (S.Zharko)
-  int nHits = vHits->size();
-
-  NHitsIsecAll = nHits; // TODO: Is it needed?
-
+  int nHits = fInputData.GetNhits();
+  NHitsIsecAll = nHits;
   vNotUsedHits_A.reset(nHits);
   vNotUsedHits_B.reset(nHits);
   vNotUsedHits_Buf.reset(nHits);
@@ -142,14 +122,14 @@ void L1Algo::SetData(L1Vector<L1Hit>& Hits_, int nStrips_, L1Vector<unsigned cha
   RealIHit_v_buf2.reset(nHits);
 
 #ifdef _OPENMP
-  fStripToTrackLock.reset(fNstrips);
+  fStripToTrackLock.reset(fInputData.GetNhitKeys());
   for (unsigned int j = 0; j < fStripToTrackLock.size(); j++) {
     omp_init_lock(&fStripToTrackLock[j]);
   }
 #endif
 
   fStripToTrack.clear();
-  fStripToTrack.reserve(fNstrips);
+  fStripToTrack.reserve(fInputData.GetNhitKeys());
 
   fHitFirstTriplet.reset(nHits);
   fHitNtriplets.reset(nHits);
