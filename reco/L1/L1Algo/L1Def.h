@@ -13,7 +13,7 @@
 
 #include <assert.h>
 
-#if defined(__CINT__) || defined(__CLING__)
+#if defined(__CLING__) && defined(__arm64__)
 #include "vectors/PSEUDO_F32vec4.h"
 #else
 #include "vectors/P4_F32vec4.h"
