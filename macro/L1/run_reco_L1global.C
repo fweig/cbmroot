@@ -393,6 +393,15 @@ void run_reco_L1global(TString input = "", Int_t nTimeSlices = -1, Int_t firstTi
     FairTask* globalFindTracks                = new CbmL1GlobalFindTracksEvents(globalTrackFinder);
     run->AddTask(globalFindTracks);
     std::cout << "-I- " << myName << ": Added task " << globalFindTracks->GetName() << std::endl;
+
+    if (debugWithMC) {
+      CbmMatchRecoToMC* match2 = new CbmMatchRecoToMC();
+      run->AddTask(match2);
+    }
+
+    CbmTrackingTrdQa* trdTrackerQa = new CbmTrackingTrdQa;
+    run->AddTask(trdTrackerQa);
+    std::cout << "-I- " << myName << ": Added task " << trdTrackerQa->GetName() << std::endl;
   }
   // ------------------------------------------------------------------------
 
