@@ -51,8 +51,10 @@
 #include <vector>
 
 #include "L1Algo/L1Algo.h"
+#include "L1Algo/L1Def.h"
 #include "L1Algo/L1Extrapolation.h"  // for vertex pulls
 #include "L1Algo/L1Fit.h"            // for vertex pulls
+
 
 using std::cout;
 using std::endl;
@@ -222,32 +224,10 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
     mc_length_hits.counters[index] += _mc_length_hits;
   };
 
-  void PrintEff(bool ifPrintTableToLog = false, const std::string& nameOfTable = "efficiency_table")
+  void PrintEff(bool ifPrintTableToLog = false, bool ifDeleteTable = false,
+                const std::string& nameOfTable = "efficiency_table")
   {
     L1_assert(nEvents != 0);
-
-    // cout.setf(ios::fixed);
-    // cout.setf(ios::showpoint);
-    // cout.precision(3);
-    // cout.setf(ios::right);
-    // cout << "Track category         : "
-    //      << " Eff  "
-    //      << " / "
-    //      << "Killed"
-    //      << " / "
-    //      << "Length"
-    //      << " / "
-    //      << "Fakes "
-    //      << " / "
-    //      << "Clones"
-    //      << " / "
-    //      << "All Reco"
-    //      << " | "
-    //      << "  All MC "
-    //      << " / "
-    //      << "MCl(hits)"
-    //      << " / "
-    //      << "MCl(MCps)" << endl;
     int NCounters = mc.GetNcounters();
     std::vector<std::string> rowNames(20);
     for (int iC = 0; iC < NCounters; ++iC) {
@@ -255,9 +235,6 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
     }
     std::vector<std::string> colNames = {"Eff.",     "Killed", "Length",    "Fakes",    "Clones",
                                          "All Reco", "All MC", "MCl(hits)", "MCl(MCps)"};
-
-    TDirectory* curdir = gDirectory;
-    gDirectory         = fOutDir;
 
     CbmQaTable* aTable = new CbmQaTable(nameOfTable.c_str(), "Track Efficiency", 20, 9);
     aTable->SetNamesOfRows(rowNames);
@@ -276,11 +253,13 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
     if (ifPrintTableToLog) {
       cout << *aTable;  // print a table to log
     }
+    if (!ifDeleteTable) { aTable->SetDirectory(fOutDir); }
+    else {
+      delete aTable;
+    }
+
     cout << "Ghost     probability  : " << ratio_ghosts << "  | " << ghosts << endl;
-
-    gDirectory = curdir;
   };
-
 
   TL1TracksCatCounters<double> ratio_killed;
   TL1TracksCatCounters<double> ratio_clone;
@@ -320,7 +299,7 @@ void CbmL1::EfficienciesPerformance()
       }
       cout << endl;
       for (map<int, int>::iterator posIt = rtraIt->hitMap.begin(); posIt != rtraIt->hitMap.end(); posIt++) {
-        CbmL1MCTrack& t = vMCTracks[posIt->first];
+        CbmL1MCTrack& t = fvMCTracks[posIt->first];
         cout << "mc " << posIt->first << " pdg " << t.pdg << " mother: " << t.mother_ID;
         cout << " n mc stations: " << t.NMCStations() << endl;
       }
@@ -464,7 +443,7 @@ void CbmL1::EfficienciesPerformance()
   //   cout.precision(3);
   if (fVerbose) {
     if (fVerbose > 1) {
-      ntra.PrintEff(true);
+      ntra.PrintEff(true, true);
       cout << "Number of true and fake hits in stations: " << endl;
       for (int i = 0; i < fpAlgo->GetNstations(); i++) {
         cout << sta_nhits[i] - sta_nfakes[i] << "+" << sta_nfakes[i] << "   ";
@@ -473,7 +452,7 @@ void CbmL1::EfficienciesPerformance()
     }  // fVerbose > 1
     cout << endl;
     cout << "L1 ACCUMULATED STAT    : " << L1_NEVENTS << " EVENTS " << endl << endl;
-    L1_NTRA.PrintEff(/*ifPrintTableToLog = */ true);
+    L1_NTRA.PrintEff(/*ifPrintTableToLog = */ true, false);
     cout << "MC tracks/event found  : "
          << int(double(L1_NTRA.reco.counters[L1_NTRA.indices["total"]]) / double(L1_NEVENTS)) << endl;
     cout << endl;

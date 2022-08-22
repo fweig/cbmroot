@@ -109,7 +109,7 @@ void L1Algo::ReceiveInputData(L1InputData&& inputData)
 
   // ----- Reset data arrays -------------------------------------------------------------------------------------------
   fvHitKeyFlags.reset(fInputData.GetNhitKeys());
-  int nHits = fInputData.GetNhits();
+  int nHits    = fInputData.GetNhits();
   NHitsIsecAll = nHits;
   vNotUsedHits_A.reset(nHits);
   vNotUsedHits_B.reset(nHits);

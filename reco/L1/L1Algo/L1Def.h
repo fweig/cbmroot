@@ -48,10 +48,14 @@ T finite(T x)
 #if defined(NDEBUG) || defined(L1_NO_ASSERT)
 #define L1_ASSERT(v, msg)
 #define L1_assert(v)
+
 // Prints expression value to the std::cout
 #define L1_SHOW(expr)
+
 // Prints file and line information to the std::cout
 #define L1_SHOWF(msg)
+
+
 #else
 #define L1_ASSERT(v, msg)                                                                                              \
   if (v) {}                                                                                                            \
@@ -67,6 +71,12 @@ T finite(T x)
   std::cout << "(!) " << __FILE__ << ":" << __LINE__ << ": \033[01;38;5;208m" << (#msg) << "\033[0m\n"
 #endif
 
+// Prints function call
+#if defined(__GNUC__)
+#define L1_SHOWFN std::cout << "\033[1;32mCALL \033[1;33m" << __PRETTY_FUNCTION__ << "\033[0m\n"
+#else
+#define L1_SHOWFN std::cout << "\033[1;32mCALL \033[1;33m" << __func__ << "\033[0m\n"
+#endif
 
 typedef int index_type;
 

@@ -484,7 +484,7 @@ public:
 
   //  L1Branch* pointer;
   unsigned int NHitsIsecAll {0};
-  
+
   L1Vector<L1Hit> vNotUsedHits_A {"L1Algo::vNotUsedHits_A"};
   L1Vector<L1Hit> vNotUsedHits_B {"L1Algo::vNotUsedHits_B"};
   L1Vector<L1Hit> vNotUsedHits_Buf {"L1Algo::vNotUsedHits_Buf"};

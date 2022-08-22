@@ -68,7 +68,7 @@ namespace L1Constants
     ///  - 2: hits sorting is checked
     ///  - 3: every hit is checked for consistency
     /// \note The larger Level corresponds to more precise checks, but is followed by larger time penalty
-    constexpr int kInputDataQaLevel = 3;
+    constexpr int kInputDataQaLevel = 0;  // WARNING: other options does not work properly, more tests are needed!
 
   }  // namespace control
 

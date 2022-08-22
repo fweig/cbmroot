@@ -1112,7 +1112,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     if (!fLegacyEventMode) cout << "CA Track Finder: " << fpAlgo->fCATime << " s/sub-ts" << endl << endl;
   }
-  
+
 
   if (fPerformance) {
 

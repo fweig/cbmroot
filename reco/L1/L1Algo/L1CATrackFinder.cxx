@@ -2090,7 +2090,7 @@ void L1Algo::CATrackFinder()
                                       i1G_2)  //schedule(dynamic, 2)
 #endif
       for (Tindex ip = fDupletPortionStopIndex[istal + 1]; ip < fDupletPortionStopIndex[istal]; ++ip) {
-        Tindex n_2 = 0;  /// number of doublets in portion
+        Tindex n_2   = 0;  /// number of doublets in portion
         int NHitsSta = fInputData.GetStopHitIndex(istal) - fInputData.GetStartHitIndex(istal);
         lmDuplets[istal].reset(NHitsSta);
         lmDupletsG[istal].reset(NHitsSta);
@@ -2465,9 +2465,9 @@ void L1Algo::CATrackFinder()
 #endif
           for (L1Vector<L1HitIndex_t>::iterator phIt = tr.fHits.begin();  /// used strips are marked
                phIt != tr.fHits.end(); ++phIt) {
-            const L1Hit& hit = fInputData.GetHit(*phIt);
-            fvHitKeyFlags[hit.f] = 1; 
-            fvHitKeyFlags[hit.b] = 1; 
+            const L1Hit& hit     = fInputData.GetHit(*phIt);
+            fvHitKeyFlags[hit.f] = 1;
+            fvHitKeyFlags[hit.b] = 1;
             fRecoHits_local[num_thread].push_back(*phIt);
             L1HitPoint tempPoint = CreateHitPoint(hit);  //TODO take number of station from hit
 
