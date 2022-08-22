@@ -2,14 +2,25 @@ set(KFPARTICLE_LIBNAME "${CMAKE_SHARED_LIBRARY_PREFIX}KFParticle${CMAKE_SHARED_L
 
 set(KFPARTICLE_SRC_URL "https://github.com/cbmsw/KFParticle.git")
 set(KFPARTICLE_DESTDIR "${CMAKE_BINARY_DIR}/external/KFPARTICLE-prefix")
+set(KFPARTICLE_TAG     "1e1c5dee0e2bd98a3df677beb88e497fbef92504")
 
 # GIT_TAG is a hash for KFParticle tag cbm/v1.1-1 
-download_project_if_needed(PROJECT         kfparticle_source
-                           GIT_REPOSITORY  ${KFPARTICLE_SRC_URL}
-                           GIT_TAG         "1e1c5dee0e2bd98a3df677beb88e497fbef92504"
-                           SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/KFParticle
-                           TEST_FILE       CMakeLists.txt
-                          )
+if (CMAKE_SYSTEM_NAME MATCHES Darwin AND ${CMAKE_SYSTEM_PROCESSOR} MATCHES arm64)
+  download_project_if_needed(PROJECT         kfparticle_source
+                             GIT_REPOSITORY  ${KFPARTICLE_SRC_URL}
+                             GIT_TAG         ${KFPARTICLE_TAG}
+                             SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/KFParticle
+                             TEST_FILE       CMakeLists.txt
+                             PATCH_COMMAND   "patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/KFParticle_applem1.patch"
+                            )
+else()
+  download_project_if_needed(PROJECT         kfparticle_source
+                             GIT_REPOSITORY  ${KFPARTICLE_SRC_URL}
+                             GIT_TAG         ${KFPARTICLE_TAG}
+                             SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/KFParticle
+                             TEST_FILE       CMakeLists.txt
+                            )
+endif()
 
 If(ProjectUpdated)
   File(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/external/KFPARTICLE-prefix)

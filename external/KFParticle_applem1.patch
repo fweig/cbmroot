@@ -1,0 +1,30 @@
+diff --git a/KFParticle/KFPInputData.h b/KFParticle/KFPInputData.h
+index 8f674f8..50f5143 100644
+--- a/KFParticle/KFPInputData.h
++++ b/KFParticle/KFPInputData.h
+@@ -29,6 +29,10 @@
+ #include <string>
+ #include <fstream>
+ 
++#ifdef __APPLE__
++#include <mm_malloc.h>
++#endif
++
+ /** @class KFPTrackIndex
+  ** @brief Helper structure to sort tracks in the KFPTrackVector object.
+  ** @author  M.Zyzak, I.Kisel
+diff --git a/KFParticle/KFPSimdAllocator.h b/KFParticle/KFPSimdAllocator.h
+index 20a13c4..42fd493 100644
+--- a/KFParticle/KFPSimdAllocator.h
++++ b/KFParticle/KFPSimdAllocator.h
+@@ -22,6 +22,10 @@
+ #ifndef KFPSimdAllocator_H
+ #define KFPSimdAllocator_H
+ 
++#ifdef __APPLE__
++#include <mm_malloc.h>
++#endif
++
+ #include <Vc/Vc>
+ 
+ /** @class KFPSimdAllocator

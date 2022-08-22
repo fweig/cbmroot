@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 60ab7e6..9cf7543 100644
+index 60ab7e6..4df2021 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -27,11 +27,11 @@ if(NOT DEFINED NICAFEMTO_SUBDIR_BUILD)
@@ -77,17 +77,22 @@ index 60ab7e6..9cf7543 100644
  	Set(SIMPATH $ENV{SIMPATH})
  	Set(Boost_NO_SYSTEM_PATHS TRUE)
  	Set(Boost_NO_BOOST_CMAKE TRUE)
-@@ -131,7 +143,7 @@ if(NOT DEFINED NICAFEMTO_SUBDIR_BUILD)
+@@ -129,9 +141,13 @@ if(NOT DEFINED NICAFEMTO_SUBDIR_BUILD)
+ 	find_package(GSL)
+         if(NOT GSL_FOUND)
            if(APPLE)
-             set(GSL_DIR /usr/local)
+-            set(GSL_DIR /usr/local)
++            execute_process(COMMAND brew --prefix
++                            OUTPUT_VARIABLE _brew_install_dir
++                            OUTPUT_STRIP_TRAILING_WHITESPACE
++                           )
++            set(GSL_DIR "${_brew_install_dir}")
            else()
 -            unset(GSL_DIR)
 +            set(GSL_DIR /usr)
            endif()
            find_package(GSL REQUIRED)
          endif()
-diff --git a/dataformat/NicaDataFormatManager.h b/dataformat/NicaDataFormatManager.h
-index 4ecb407..a739199 100644
 diff --git a/cuts/CMakeLists.txt b/cuts/CMakeLists.txt
 index 1d1c4f0..e5676ba 100755
 --- a/cuts/CMakeLists.txt
@@ -114,6 +119,8 @@ index b8576ab..b3fc335 100644
  
  GENERATE_LIBRARY()
  
+diff --git a/dataformat/NicaDataFormatManager.h b/dataformat/NicaDataFormatManager.h
+index 4ecb407..a739199 100644
 --- a/dataformat/NicaDataFormatManager.h
 +++ b/dataformat/NicaDataFormatManager.h
 @@ -13,9 +13,9 @@
