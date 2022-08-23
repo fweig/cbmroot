@@ -42,7 +42,7 @@ inline void FilterTime(L1TrackPar& T, fvec t, fvec dt, fvec timeInfo = 1., fvec 
 
   fvec wi     = w / (dt2 + 1.0000001f * HCH);
   fvec zeta   = T.t - t;
-  fvec zetawi = zeta / ((maskDoFilter & dt2) + HCH);
+  fvec zetawi = w * zeta / ((maskDoFilter & dt2) + HCH);
 
   //T.chi2 += maskDoFilter & (zeta * zetawi);
   T.chi2 += zeta * zeta * wi;
@@ -106,14 +106,14 @@ inline void L1Filter(L1TrackPar& T, const L1UMeasurementInfo& info, fvec u, fvec
   // it helps to keep the initial track errors reasonably small
   // the calculations in the covariance matrix are not affected
 
-  //const fvec maskDoFilter = (HCH < info.sigma2 * 16.f);
-  const fvec maskDoFilter = _f32vec4_true;
+  const fvec maskDoFilter = (HCH < info.sigma2 * 16.f);
+  //const fvec maskDoFilter = _f32vec4_true;
 
   // correction to HCH is needed for the case when sigma2 is so small
   // with respect to HCH that it disappears due to the roundoff error
   //
   fvec wi     = w / (info.sigma2 + 1.0000001f * HCH);
-  fvec zetawi = zeta / ((maskDoFilter & info.sigma2) + HCH);
+  fvec zetawi = w * zeta / ((maskDoFilter & info.sigma2) + HCH);
 
   // T.chi2 += maskDoFilter & (zeta * zetawi);
   T.chi2 += zeta * zeta * wi;
