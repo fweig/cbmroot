@@ -331,7 +331,7 @@ void L1Algo::L1KFTrackFitter()
   L1FieldValue fldB01, fldB11, fldB21 _fvecalignment;
   L1FieldRegion fld1 _fvecalignment;
 
-  const int nHits = fNstations;
+  const int nHits = fParameters.GetNstationsActive();
   int iVec = 0, i = 0;
   int nTracks_SIMD = fvecLen;
   L1TrackPar T;  // fitting parametr coresponding to current track
@@ -796,7 +796,7 @@ void L1Algo::L1KFTrackFitterMuch()
   L1FieldValue fldB01, fldB11, fldB21 _fvecalignment;
   L1FieldRegion fld1 _fvecalignment;
 
-  const int nHits = fNstations;
+  const int nHits = fParameters.GetNstationsActive();
   int iVec = 0, i = 0;
   int nTracks_SIMD = fvecLen;
   L1TrackPar T;  // fitting parametr coresponding to current track
@@ -882,7 +882,7 @@ void L1Algo::L1KFTrackFitterMuch()
     }
 
     for (iVec = 0; iVec < nTracks_SIMD; iVec++) {
-      for (i = 0; i < fNstations; i++) {
+      for (i = 0; i < fParameters.GetNstationsActive(); i++) {
         d_xx[i][iVec] = 0;
         d_yy[i][iVec] = 0;
       }

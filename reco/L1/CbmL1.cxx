@@ -98,7 +98,6 @@ CbmL1::CbmL1(const char* name, Int_t verbose, Int_t performance, int dataMode, c
   , fFindParticlesMode(findParticleMode)
 {
   if (!fpInstance) fpInstance = this;
-  if (!fpInitManager) { fpInitManager = gAlgo.GetInitManager(); }
 
   if (!CbmTrackingDetectorInterfaceInit::Instance()) {
     LOG(fatal) << "CbmL1: CbmTrackingDetectorInterfaceInit instance was not found. Please, add it as a task to your "
@@ -169,8 +168,13 @@ InitStatus CbmL1::Init()
 #endif
   }
 
+  // Init L1 algo core
+
   fpAlgo    = &gAlgo;
+  fpAlgo->Init(fUseHitErrors, fTrackingMode, fMissingHits);
+
   fHistoDir = gROOT->mkdir("L1");
+
 
   // turn on reconstruction in sub-detectors
 
@@ -192,7 +196,7 @@ InitStatus CbmL1::Init()
     fUseMUCH = 1;
     fUseTRD  = 1;
     fUseTOF  = 1;
-    fpInitManager->DevSetIgnoreHitSearchAreas(true);
+    fInitManager.DevSetIgnoreHitSearchAreas(true);
   }
 
 
@@ -203,12 +207,12 @@ InitStatus CbmL1::Init()
     fUseMUCH = 0;
     fUseTRD  = 1;
     fUseTOF  = 0;
-    fpInitManager->DevSetIgnoreHitSearchAreas(true);
-    //fpInitManager->DevSetFitSingletsFromTarget(true);
-    //fpInitManager->DevSetIsMatchDoubletsViaMc(true);
-    //fpInitManager->DevSetIsMatchTripletsViaMc(true);
-    //fpInitManager->DevSetIsMatchNeighbourdViaMc(true);
-    fpInitManager->SetMaxTripletPerDoublets(1000);
+    fInitManager.DevSetIgnoreHitSearchAreas(true);
+    //fInitManager.DevSetFitSingletsFromTarget(true);
+    //fInitManager.DevSetIsMatchDoubletsViaMc(true);
+    //fInitManager.DevSetIsMatchTripletsViaMc(true);
+    //fInitManager.DevSetIsMatchNeighbourdViaMc(true);
+    fInitManager.SetMaxTripletPerDoublets(1000);
   }
 
   CheckDetectorPresence();
@@ -355,7 +359,7 @@ InitStatus CbmL1::Init()
    ** Field initialization **
    **************************/
 
-  fpInitManager->SetFieldFunction([](const double(&inPos)[3], double(&outB)[3]) {
+  fInitManager.SetFieldFunction([](const double(&inPos)[3], double(&outB)[3]) {
     CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);
   });
 
@@ -364,13 +368,13 @@ InitStatus CbmL1::Init()
    ***************************/
 
   auto& target = CbmKF::Instance()->vTargets[0];
-  fpInitManager->SetTargetPosition(target.x, target.y, target.z);
+  fInitManager.SetTargetPosition(target.x, target.y, target.z);
 
   /*********************************
    ** Target field initialization **
    *********************************/
 
-  fpInitManager->InitTargetField(/*zStep = */ 2.5 /*cm*/);  // Replace zStep -> sizeZfieldRegion = 2 * zStep (TODO)
+  fInitManager.InitTargetField(/*zStep = */ 2.5 /*cm*/);  // Replace zStep -> sizeZfieldRegion = 2 * zStep (TODO)
 
   /**************************************
    **                                  **
@@ -390,7 +394,7 @@ InitStatus CbmL1::Init()
   if (fUseMUCH) { vActiveTrackingDetectorIDs.insert(L1DetectorID::kMuch); }
   if (fUseTRD) { vActiveTrackingDetectorIDs.insert(L1DetectorID::kTrd); }
   if (fUseTOF) { vActiveTrackingDetectorIDs.insert(L1DetectorID::kTof); }
-  fpInitManager->SetActiveDetectorIDs(vActiveTrackingDetectorIDs);
+  fInitManager.SetActiveDetectorIDs(vActiveTrackingDetectorIDs);
 
   /*********************************************************************
    ** Counting numbers of stations for different detector subsystems  **
@@ -414,12 +418,12 @@ InitStatus CbmL1::Init()
   fNTofStationsGeom  = (fUseTOF) ? tofInterface->GetNtrackingStations() : 0;
   fNStationsGeom = fNMvdStationsGeom + fNStsStationsGeom + fNMuchStationsGeom + fNTrdStationsGeom + fNTofStationsGeom;
 
-  // Provide crosscheck number of stations for the fpInitManagera
-  fpInitManager->SetNstations(L1DetectorID::kMvd, fNMvdStationsGeom);
-  fpInitManager->SetNstations(L1DetectorID::kSts, fNStsStationsGeom);
-  fpInitManager->SetNstations(L1DetectorID::kMuch, fNMuchStationsGeom);
-  fpInitManager->SetNstations(L1DetectorID::kTrd, fNTrdStationsGeom);
-  fpInitManager->SetNstations(L1DetectorID::kTof, fNTofStationsGeom);
+  // Provide crosscheck number of stations for the fInitManagera
+  fInitManager.SetNstations(L1DetectorID::kMvd, fNMvdStationsGeom);
+  fInitManager.SetNstations(L1DetectorID::kSts, fNStsStationsGeom);
+  fInitManager.SetNstations(L1DetectorID::kMuch, fNMuchStationsGeom);
+  fInitManager.SetNstations(L1DetectorID::kTrd, fNTrdStationsGeom);
+  fInitManager.SetNstations(L1DetectorID::kTof, fNTofStationsGeom);
 
   {
     if (fSTAPDataMode % 2 == 1) {  // 1,3
@@ -498,7 +502,7 @@ InitStatus CbmL1::Init()
         (fscal) mvdInterface->GetStripsStereoAngleFront(iSt), (fscal) mvdInterface->GetStripsSpatialRmsFront(iSt),
         (fscal) mvdInterface->GetStripsStereoAngleBack(iSt), (fscal) mvdInterface->GetStripsSpatialRmsBack(iSt));
       stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-      fpInitManager->AddStation(stationInfo);
+      fInitManager.AddStation(stationInfo);
       LOG(info) << "- MVD station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
     }
   }
@@ -523,7 +527,7 @@ InitStatus CbmL1::Init()
         (fscal) stsInterface->GetStripsStereoAngleFront(iSt), (fscal) stsInterface->GetStripsSpatialRmsFront(iSt),
         (fscal) stsInterface->GetStripsStereoAngleBack(iSt), (fscal) stsInterface->GetStripsSpatialRmsBack(iSt));
       stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-      fpInitManager->AddStation(stationInfo);
+      fInitManager.AddStation(stationInfo);
       LOG(info) << "- STS station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
     }
   }
@@ -548,7 +552,7 @@ InitStatus CbmL1::Init()
         (fscal) muchInterface->GetStripsStereoAngleFront(iSt), (fscal) muchInterface->GetStripsSpatialRmsFront(iSt),
         (fscal) muchInterface->GetStripsStereoAngleBack(iSt), (fscal) muchInterface->GetStripsSpatialRmsBack(iSt));
       stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-      fpInitManager->AddStation(stationInfo);
+      fInitManager.AddStation(stationInfo);
       LOG(info) << "- MuCh station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
     }
   }
@@ -583,7 +587,7 @@ InitStatus CbmL1::Init()
       if (iSt == 1 && L1Algo::TrackingMode::kMcbm == fTrackingMode && fMissingHits) {
         stationInfo.SetTrackingStatus(false);
       }
-      fpInitManager->AddStation(stationInfo);
+      fInitManager.AddStation(stationInfo);
       LOG(info) << "- TRD station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
     }
   }
@@ -611,7 +615,7 @@ InitStatus CbmL1::Init()
       fscal tofBackSigma  = tofInterface->GetStripsSpatialRmsBack(iSt);
       stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofFrontSigma, tofBackPhi, tofBackSigma);
       stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-      fpInitManager->AddStation(stationInfo);
+      fInitManager.AddStation(stationInfo);
       LOG(info) << "- TOF station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
     }
   }
@@ -762,12 +766,12 @@ InitStatus CbmL1::Init()
     trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.3);
     trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.3);
 
-    fpInitManager->SetCAIterationsNumberCrosscheck(4);
+    fInitManager.SetCAIterationsNumberCrosscheck(4);
     // Initialize CA track finder iterations sequence
-    fpInitManager->PushBackCAIteration(trackingIterFastPrim);
-    fpInitManager->PushBackCAIteration(trackingIterAllPrim);
-    fpInitManager->PushBackCAIteration(trackingIterAllPrimJump);
-    fpInitManager->PushBackCAIteration(trackingIterAllSec);
+    fInitManager.PushBackCAIteration(trackingIterFastPrim);
+    fInitManager.PushBackCAIteration(trackingIterAllPrim);
+    fInitManager.PushBackCAIteration(trackingIterAllPrimJump);
+    fInitManager.PushBackCAIteration(trackingIterAllSec);
   }
   else if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
     // SGtrd2d!!
@@ -804,50 +808,50 @@ InitStatus CbmL1::Init()
 
     // Initialize CA track finder iterations sequence
 
-    fpInitManager->SetCAIterationsNumberCrosscheck(1);
+    fInitManager.SetCAIterationsNumberCrosscheck(1);
     /*
-    fpInitManager->SetCAIterationsNumberCrosscheck(5);
-    fpInitManager->PushBackCAIteration(trackingIterFastPrim);
-    fpInitManager->PushBackCAIteration(trackingIterAllPrim);
-    fpInitManager->PushBackCAIteration(trackingIterAllPrimJump);
-    fpInitManager->PushBackCAIteration(trackingIterAllSec);
+    fInitManager.SetCAIterationsNumberCrosscheck(5);
+    fInitManager.PushBackCAIteration(trackingIterFastPrim);
+    fInitManager.PushBackCAIteration(trackingIterAllPrim);
+    fInitManager.PushBackCAIteration(trackingIterAllPrimJump);
+    fInitManager.PushBackCAIteration(trackingIterAllSec);
      */
-    fpInitManager->PushBackCAIteration(trd2dIter2);
+    fInitManager.PushBackCAIteration(trd2dIter2);
   }
   else {
-    fpInitManager->SetCAIterationsNumberCrosscheck(4);
+    fInitManager.SetCAIterationsNumberCrosscheck(4);
     // Initialize CA track finder iterations sequence
-    fpInitManager->PushBackCAIteration(trackingIterFastPrim);
-    fpInitManager->PushBackCAIteration(trackingIterAllPrim);
-    fpInitManager->PushBackCAIteration(trackingIterAllPrimJump);
-    fpInitManager->PushBackCAIteration(trackingIterAllSec);
-    //fpInitManager->PushBackCAIteration(trackingIterAllPrimE);
-    //fpInitManager->PushBackCAIteration(trackingIterAllSecE);
-    //fpInitManager->PushBackCAIteration(trackingIterFastPrimJump);
-    //fpInitManager->PushBackCAIteration(trackingIterFastPrim2);
-    //fpInitManager->PushBackCAIteration(trackingIterAllSecJump);
+    fInitManager.PushBackCAIteration(trackingIterFastPrim);
+    fInitManager.PushBackCAIteration(trackingIterAllPrim);
+    fInitManager.PushBackCAIteration(trackingIterAllPrimJump);
+    fInitManager.PushBackCAIteration(trackingIterAllSec);
+    //fInitManager.PushBackCAIteration(trackingIterAllPrimE);
+    //fInitManager.PushBackCAIteration(trackingIterAllSecE);
+    //fInitManager.PushBackCAIteration(trackingIterFastPrimJump);
+    //fInitManager.PushBackCAIteration(trackingIterFastPrim2);
+    //fInitManager.PushBackCAIteration(trackingIterAllSecJump);
   }
 
   /**********************
    ** Set special cuts **
    **********************/
 
-  fpInitManager->SetGhostSuppression(fGhostSuppression);
-  fpInitManager->SetTrackingLevel(fTrackingLevel);
-  fpInitManager->SetMomentumCutOff(fMomentumCutOff);
-
-  /**********************/
-
-  fpAlgo->Init(fUseHitErrors, fTrackingMode, fMissingHits);
+  fInitManager.SetGhostSuppression(fGhostSuppression);
+  fInitManager.SetTrackingLevel(fTrackingLevel);
+  fInitManager.SetMomentumCutOff(fMomentumCutOff);
 
   /*** Get numbers of active stations ***/
 
-  fNMvdStations  = fpInitManager->GetNstationsActive(L1DetectorID::kMvd);
-  fNStsStations  = fpInitManager->GetNstationsActive(L1DetectorID::kSts);
-  fNTrdStations  = fpInitManager->GetNstationsActive(L1DetectorID::kTrd);
-  fNMuchStations = fpInitManager->GetNstationsActive(L1DetectorID::kMuch);
-  fNTofStations  = fpInitManager->GetNstationsActive(L1DetectorID::kTof);
-  fNStations     = fpInitManager->GetNstationsActive();
+  fNMvdStations  = fInitManager.GetNstationsActive(L1DetectorID::kMvd);
+  fNStsStations  = fInitManager.GetNstationsActive(L1DetectorID::kSts);
+  fNTrdStations  = fInitManager.GetNstationsActive(L1DetectorID::kTrd);
+  fNMuchStations = fInitManager.GetNstationsActive(L1DetectorID::kMuch);
+  fNTofStations  = fInitManager.GetNstationsActive(L1DetectorID::kTof);
+  fNStations     = fInitManager.GetNstationsActive();
+
+
+  // Send formed parameters object to L1Algo instance
+  fInitManager.SendParameters(fpAlgo);
 
   LOG(info) << "----- Numbers of stations active in tracking -----";
   LOG(info) << "  MVD:    " << fNMvdStations;
@@ -1253,7 +1257,7 @@ void CbmL1::IdealTrackFinder()
     L1Track algoTr;
     algoTr.NHits = 0;
 
-    L1Vector<int> hitIndices("CbmL1::hitIndices", fpAlgo->GetNstations(), -1);
+    L1Vector<int> hitIndices("CbmL1::hitIndices", fpAlgo->GetParameters()->GetNstationsActive(), -1);
 
     for (unsigned int iH = 0; iH < MC.Hits.size(); iH++) {
       const int hitI      = MC.Hits[iH];
@@ -1265,7 +1269,7 @@ void CbmL1::IdealTrackFinder()
     }
 
 
-    for (int iH = 0; iH < fpAlgo->GetNstations(); iH++) {
+    for (int iH = 0; iH < fpAlgo->GetParameters()->GetNstationsActive(); iH++) {
       const int hitI = hitIndices[iH];
       if (hitI < 0) continue;
 
@@ -1276,7 +1280,7 @@ void CbmL1::IdealTrackFinder()
 
     if (algoTr.NHits < 3) continue;
 
-    for (int iH = 0; iH < fpAlgo->GetNstations(); iH++) {
+    for (int iH = 0; iH < fpAlgo->GetParameters()->GetNstationsActive(); iH++) {
       const int hitI = hitIndices[iH];
       if (hitI < 0) continue;
       fpAlgo->fRecoHits.push_back(hitI);
@@ -1580,7 +1584,7 @@ void CbmL1::WriteSIMDKFData()
   }
 }
 
-
+// NOTE: this function should be called before fInitManager.SendParameters(fpAlgo)
 std::vector<L1Material> CbmL1::ReadMaterialBudget(L1DetectorID detectorID)
 {
   std::vector<L1Material> result {};
@@ -1595,11 +1599,11 @@ std::vector<L1Material> CbmL1::ReadMaterialBudget(L1DetectorID detectorID)
                 << fMatBudgetFileName.at(detectorID);
     }
 
-    result.resize(fpInitManager->GetNstationsGeometry(detectorID));
+    result.resize(fInitManager.GetNstationsGeometry(detectorID));
     TString stationNamePrefix = "Radiation Thickness [%], Station";
 
     // NOTE: Loop over geometry stations. We probably do not know which stations are active/inactive (S.Zharko)
-    for (int iSt = 0; iSt < fpInitManager->GetNstationsGeometry(detectorID); ++iSt) {
+    for (int iSt = 0; iSt < fInitManager.GetNstationsGeometry(detectorID); ++iSt) {
       // TODO: Unify material table names (S.Zharko)
       TString stationName = stationNamePrefix + (detectorID == L1DetectorID::kMvd ? iSt : iSt + 1);
       auto* hStaRadLen    = rlFile.Get<TProfile2D>(stationName);

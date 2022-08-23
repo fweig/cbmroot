@@ -11,8 +11,8 @@
 #include <algorithm>
 #include <sstream>
 
+#include "L1Algo.h"
 #include "L1Assert.h"
-
 // ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
@@ -65,16 +65,14 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
                  << ")";
     }
 
-    int index = fStationsInfo.size() - 1
-                + (fNstationsGeometry[fNstationsGeometry.size() - 1] - fNstationsActive[fNstationsActive.size() - 1]);
+    int index = fStationsInfo.size() - 1 + fParameters.fNstationsGeometryTotal - fParameters.fNstationsActiveTotal;
     fParameters.fActiveStationGlobalIDs[index] = fStationsInfo.size() - 1;
   }
   else {
-    int index = fStationsInfo.size()
-                + (fNstationsGeometry[fNstationsGeometry.size() - 1] - fNstationsActive[fNstationsActive.size() - 1]);
+    int index = fStationsInfo.size() + fParameters.fNstationsGeometryTotal - fParameters.fNstationsActiveTotal;
     fParameters.fActiveStationGlobalIDs[index] = -1;
-    fNstationsActive[static_cast<L1DetectorID_t>(inStation.GetDetectorID())]--;
-    fNstationsActive[fNstationsActive.size() - 1]--;
+    fParameters.fNstationsActive[static_cast<L1DetectorID_t>(inStation.GetDetectorID())]--;
+    fParameters.fNstationsActiveTotal--;
   }
   LOG(debug) << "L1InitManager: adding a station with stationID = " << inStation.GetStationID()
              << " and detectorID = " << static_cast<int>(inStation.GetDetectorID())
@@ -99,7 +97,7 @@ void L1InitManager::ClearCAIterations()
 }
 
 // ----------------------------------------------------------------------------------------------------------------------
-// NOTE: this function should be called once in the TransferParametersContainer
+// NOTE: this function should be called once in the SendParameters
 void L1InitManager::FormParametersContainer()
 {
   // Read configuration file
@@ -114,10 +112,6 @@ void L1InitManager::FormParametersContainer()
     LOG(fatal) << "Attempt to form parameters container before all necessary fields were initialized"
                << fInitController.ToString();
   }
-
-  // Copy station numbers
-  std::copy(fNstationsActive.begin(), fNstationsActive.end(), fParameters.fNstationsActive.begin());
-  std::copy(fNstationsGeometry.begin(), fNstationsGeometry.end(), fParameters.fNstationsGeometry.begin());
 
   // Form array of stations
   auto destinationArrayIterator = fParameters.fStations.begin();
@@ -193,6 +187,18 @@ void L1InitManager::PushBackCAIteration(const L1CAIteration& iteration)
   fParameters.fCAIterations.push_back(iteration);
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+//
+bool L1InitManager::SendParameters(L1Algo* pAlgo)
+{
+  // Form parameters cotainer
+  this->FormParametersContainer();
+
+  assert(pAlgo);
+  pAlgo->ReceiveParameters(std::move(fParameters));
+  return true;
+}
+
 // ----------------------------------------------------------------------------------------------------------------------
 //
 void L1InitManager::SetActiveDetectorIDs(const L1DetectorIDSet_t& detectorIDs)
@@ -235,7 +241,7 @@ void L1InitManager::SetGhostSuppression(int ghostSuppression)
     LOG(warn) << "L1InitManager::SetGhostSuppression: attempt of reinitializating the ghost suppresion flag. Ignore";
     return;
   }
-  fGhostSuppression = ghostSuppression;
+  fParameters.fGhostSuppression = ghostSuppression;
   fInitController.SetFlag(EInitKey::kGhostSuppression);
 }
 
@@ -247,7 +253,7 @@ void L1InitManager::SetMomentumCutOff(float momentumCutOff)
     LOG(warn) << "L1InitManager::SetMomentumCutOff: attempt of reinitializating the momentum cutoff value. Ignore";
     return;
   }
-  fMomentumCutOff = momentumCutOff;
+  fParameters.fMomentumCutOff = momentumCutOff;
   fInitController.SetFlag(EInitKey::kMomentumCutOff);
 }
 
@@ -263,8 +269,8 @@ void L1InitManager::SetNstations(L1DetectorID detectorID, int nStations)
   // but it will be ignored inside L1InitManager.
   if (fActiveDetectorIDs.find(detectorID) != fActiveDetectorIDs.end()) {
     if (nStations) {
-      fNstationsGeometry[static_cast<L1DetectorID_t>(detectorID)] = nStations;
-      fNstationsActive[static_cast<L1DetectorID_t>(detectorID)]   = nStations;
+      fParameters.fNstationsGeometry[static_cast<L1DetectorID_t>(detectorID)] = nStations;
+      fParameters.fNstationsActive[static_cast<L1DetectorID_t>(detectorID)]   = nStations;
     }
     else {
       // TODO: Probably it is better to replace fatal with warn and remove the detectorID from active detectors (S.Zharko)
@@ -278,7 +284,7 @@ void L1InitManager::SetNstations(L1DetectorID detectorID, int nStations)
   if (!fInitController.GetFlag(EInitKey::kStationsNumberCrosscheck)) {
     bool ifInitialized = true;
     for (auto item : fActiveDetectorIDs) {
-      if (fNstationsGeometry[static_cast<L1DetectorID_t>(item)] == 0) {
+      if (fParameters.fNstationsGeometry[static_cast<L1DetectorID_t>(item)] == 0) {
         ifInitialized = false;
         break;
       }
@@ -286,9 +292,9 @@ void L1InitManager::SetNstations(L1DetectorID detectorID, int nStations)
     fInitController.SetFlag(EInitKey::kStationsNumberCrosscheck, ifInitialized);
   }
   if (fInitController.GetFlag(EInitKey::kStationsNumberCrosscheck)) {
-    fNstationsGeometry[L1Constants::size::kMaxNdetectors] =
-      std::accumulate(fNstationsGeometry.begin(), fNstationsGeometry.end() - 1, 0);
-    fNstationsActive[L1Constants::size::kMaxNdetectors] = fNstationsGeometry[L1Constants::size::kMaxNdetectors];
+    fParameters.fNstationsGeometryTotal =
+      std::accumulate(fParameters.fNstationsGeometry.begin(), fParameters.fNstationsGeometry.end(), 0);
+    fParameters.fNstationsActiveTotal = fParameters.fNstationsGeometryTotal;
   }
 }
 
@@ -318,17 +324,8 @@ void L1InitManager::SetTrackingLevel(int trackingLevel)
     LOG(warn) << "L1InitManager::SetTrackingLevel: attempt of reinitialization the tracking level. Ignore";
     return;
   }
-  fTrackingLevel = trackingLevel;
+  fParameters.fTrackingLevel = trackingLevel;
   fInitController.SetFlag(EInitKey::kTrackingLevel);
-}
-
-// ----------------------------------------------------------------------------------------------------------------------
-//
-void L1InitManager::TransferParametersContainer(L1Parameters& destination)
-{
-  this->FormParametersContainer();
-  destination = std::move(fParameters);
-  LOG(info) << "Parameters object transfered to L1Algo core";
 }
 
 //
@@ -383,7 +380,7 @@ void L1InitManager::CheckStationsInfoInit()
     //
     // 2) Check for maximum allowed number of stations
     //
-    int nStationsTotal = fNstationsGeometry[fNstationsGeometry.size() - 1];
+    int nStationsTotal = fParameters.fNstationsGeometryTotal;
     if (nStationsTotal > L1Constants::size::kMaxNstations) {
       LOG(fatal) << "Actual total number of registered stations in geometry (" << nStationsTotal
                  << ") is larger then possible (" << L1Constants::size::kMaxNstations

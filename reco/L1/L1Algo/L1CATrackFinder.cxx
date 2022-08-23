@@ -605,9 +605,9 @@ inline void L1Algo::findTripletsStep0(  // input
   timeR.push_back(fvec_0);
   timeER.push_back(fvec_1);
 
-  assert(istar < fNstations);  //TODO SG!!! check if it is needed
+  assert(istar < fParameters.GetNstationsActive());  //TODO SG!!! check if it is needed
 
-  if (istar >= fNstations) return;
+  if (istar >= fParameters.GetNstationsActive()) return;
 
   // ---- Add the middle hits to parameters estimation. Propagate to right station. ----
 
@@ -1297,7 +1297,7 @@ inline void L1Algo::findTripletsStep3(  // input
 
     fHitNtriplets[ihitl]++;
 
-    if (istal > (fNstations - 4)) continue;
+    if (istal > (fParameters.GetNstationsActive() - 4)) continue;
 
     unsigned int nNeighbours = fHitNtriplets[ihitm];
 
@@ -1339,13 +1339,13 @@ inline void L1Algo::f5(  // input
   if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
 #endif
 
-    for (int istal = fNstations - 4; istal >= fFirstCAstation; istal--) {
+    for (int istal = fParameters.GetNstationsActive() - 4; istal >= fFirstCAstation; istal--) {
       for (int tripType = 0; tripType < 3; tripType++)  // tT = 0 - 123triplet, tT = 1 - 124triplet, tT = 2 - 134triplet
       {
         if ((((isec != kFastPrimJumpIter) && (isec != kAllPrimJumpIter) && (isec != kAllSecJumpIter))
              && (tripType != 0))
             || (((isec == kFastPrimJumpIter) || (isec == kAllPrimJumpIter) || (isec == kAllSecJumpIter))
-                && (tripType != 0) && (istal == fNstations - 4)))
+                && (tripType != 0) && (istal == fParameters.GetNstationsActive() - 4)))
           continue;
 
         int istam = istal + 1;
@@ -1442,7 +1442,7 @@ inline void L1Algo::DupletsStaPort(
   ///   @&i1_2 - index of 1st hit in portion indexed by doublet index
   ///   @&hitsm_2 - index of middle hit in hits array indexed by doublet index
 
-  if (istam < fNstations) {
+  if (istam < fParameters.GetNstationsActive()) {
     const L1Station& stal = fParameters.GetStation(istal);
     const L1Station& stam = fParameters.GetStation(istam);
 
@@ -1550,7 +1550,7 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
 
 )
 {
-  if (istar < fNstations) {
+  if (istar < fParameters.GetNstationsActive()) {
     // prepare data
     const L1Station& stam = fParameters.GetStation(istam);
     const L1Station& star = fParameters.GetStation(istar);
@@ -1790,12 +1790,12 @@ void L1Algo::CATrackFinder()
   fRecoHits.clear();
 
   fRecoHits.reserve(2 * fInputData.GetNhits());
-  fTracks.reserve(2 * fInputData.GetNhits() / fNstations);
+  fTracks.reserve(2 * fInputData.GetNhits() / fParameters.GetNstationsActive());
 
   int nNotUsedHits = 0;
 
   // #pragma omp parallel for  reduction(+:nNotUsedHits)
-  for (int ista = 0; ista < fNstations; ++ista) {
+  for (int ista = 0; ista < fParameters.GetNstationsActive(); ++ista) {
     nNotUsedHits += (fInputData.GetStopHitIndex(ista) - fInputData.GetStartHitIndex(ista));
     HitsUnusedStartIndex[ista] = fInputData.GetStartHitIndex(ista);
     HitsUnusedStopIndex[ista]  = fInputData.GetStopHitIndex(ista);
@@ -1804,7 +1804,7 @@ void L1Algo::CATrackFinder()
   float lasttime  = 0;
   float starttime = std::numeric_limits<float>::max();
 
-  for (int ist = 0; ist < fNstations; ++ist)
+  for (int ist = 0; ist < fParameters.GetNstationsActive(); ++ist)
     for (L1HitIndex_t ih = fInputData.GetStartHitIndex(ist); ih < fInputData.GetStopHitIndex(ist); ++ih) {
 
       const float& time = fInputData.GetHit(ih).t;
@@ -1837,7 +1837,7 @@ void L1Algo::CATrackFinder()
   vHitsUnused = &vNotUsedHits_Buf;
 
 
-  for (int iS = 0; iS < fNstations; ++iS) {
+  for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
 
     vGridTime[iS].BuildBins(-1, 1, -0.6, 0.6, starttime, lasttime, xStep, yStep, (lasttime - starttime + 1));
     int start = HitsUnusedStartIndex[iS];
@@ -1852,7 +1852,7 @@ void L1Algo::CATrackFinder()
   }
 
 
-  for (int ist = 0; ist < fNstations; ++ist)
+  for (int ist = 0; ist < fParameters.GetNstationsActive(); ++ist)
     for (L1HitIndex_t ih = fInputData.GetStartHitIndex(ist); ih < fInputData.GetStopHitIndex(ist); ++ih) {
       const L1Hit& h = fInputData.GetHit(ih);
       //SetFUnUsed((*fStripFlag)[h.f]);
@@ -1865,7 +1865,7 @@ void L1Algo::CATrackFinder()
       fvHitKeyFlags[h.b] = 0;
     }
 
-  for (int ista = 0; ista < fNstations; ++ista) {
+  for (int ista = 0; ista < fParameters.GetNstationsActive(); ++ista) {
 #ifdef _OPENMP
 #pragma omp parallel for schedule(dynamic, 5)
 #endif
@@ -1909,7 +1909,7 @@ void L1Algo::CATrackFinder()
     fpCurrentIteration = &caIteration;  // select current iteration
 
     for (int n = 0; n < fNThreads; n++) {
-      for (int j = 0; j < fNstations; j++) {
+      for (int j = 0; j < fParameters.GetNstationsActive(); j++) {
         fTriplets[j][n].clear();
       }
     }
@@ -1932,7 +1932,7 @@ void L1Algo::CATrackFinder()
       vHitPointsUnused_buf                    = vHitsUnused_temp2;
     }
     // TODO: Replace NStations with fInitManager.GetNstationsGeom() (S.Zharko)
-    for (int ist = 0; ist < fNstations; ++ist) {
+    for (int ist = 0; ist < fParameters.GetNstationsActive(); ++ist) {
       for (L1HitIndex_t ih = HitsUnusedStartIndex[ist]; ih < HitsUnusedStopIndex[ist]; ++ih) {
         //SG!!
         fHitFirstTriplet[ih] = 0;
@@ -1940,8 +1940,8 @@ void L1Algo::CATrackFinder()
       }
     }
     /*
-   fHitFirstTriplet.assign(HitsUnusedStopIndex[fNstations-1],0);
-   fHitNtriplets.assign(HitsUnusedStopIndex[fNstations-1],0);
+   fHitFirstTriplet.assign(HitsUnusedStopIndex[fParameters.GetNstationsActive() - 1],0);
+   fHitNtriplets.assign(HitsUnusedStopIndex[fParameters.GetNstationsActive() - 1],0);
 */
     {
       // #pragma omp  task
@@ -1983,7 +1983,7 @@ void L1Algo::CATrackFinder()
       }
 
 #ifndef L1_NO_ASSERT
-      for (int istal = fNstations - 1; istal >= 0; istal--) {
+      for (int istal = fParameters.GetNstationsActive() - 1; istal >= 0; istal--) {
         L1_ASSERT(HitsUnusedStopIndex[istal] >= HitsUnusedStartIndex[istal],
                   HitsUnusedStopIndex[istal] << " >= " << HitsUnusedStartIndex[istal]);
         L1_ASSERT(HitsUnusedStopIndex[istal] <= (*vHitsUnused).size(),
@@ -1995,9 +1995,10 @@ void L1Algo::CATrackFinder()
 
     {
       /// possible left hits of triplets are splited in portions of 16 (4 SIMDs) to use memory faster
-      fDupletPortionStopIndex[fNstations - 1] = 0;
+      fDupletPortionStopIndex[fParameters.GetNstationsActive() - 1] = 0;
       fDupletPortionSize.clear();
-      for (int istal = fNstations - 2; istal >= fFirstCAstation; istal--) {  //start downstream chambers
+      for (int istal = fParameters.GetNstationsActive() - 2; istal >= fFirstCAstation;
+           istal--) {  //start downstream chambers
         int NHits_l   = HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal];
         int nPortions = NHits_l / L1Constants::size::kPortionLeftHits;
         int rest      = NHits_l - nPortions * L1Constants::size::kPortionLeftHits;
@@ -2016,10 +2017,10 @@ void L1Algo::CATrackFinder()
 
     /*    {
          /// possible left hits of triplets are splited in portions of 16 (4 SIMDs) to use memory faster
-         fDupletPortionStopIndex[fNstations-1] = 0;
+         fDupletPortionStopIndex[fParameters.GetNstationsActive() - 1] = 0;
          unsigned int ip = 0;  //index of curent portion
 
-         for (int istal = fNstations-2; istal >= fFirstCAstation; istal--)  //start downstream chambers
+         for (int istal = fParameters.GetNstationsActive() - 2; istal >= fFirstCAstation; istal--)  //start downstream chambers
          {
          int nHits = HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal];
          
@@ -2072,7 +2073,7 @@ void L1Algo::CATrackFinder()
     /// is exist a doublet started from indexed by left hit
     L1Vector<char> lmDupletsG[L1Constants::size::kMaxNstations] {"L1CATrackFinder::lmDupletsG"};
 
-    for (int i = 0; i < fNstations; i++) {
+    for (int i = 0; i < fParameters.GetNstationsActive(); i++) {
       lmDuplets[i].SetName(std::stringstream() << "L1CATrackFinder::lmDuplets[" << i << "]");
       lmDupletsG[i].SetName(std::stringstream() << "L1CATrackFinder::lmDupletsG[" << i << "]");
     }
@@ -2082,7 +2083,8 @@ void L1Algo::CATrackFinder()
     hitsmG_2.reserve(9000);
     i1G_2.reserve(9000);
 
-    for (int istal = fNstations - 2; istal >= fFirstCAstation; istal--)  // start downstream chambers
+    for (int istal = fParameters.GetNstationsActive() - 2; istal >= fFirstCAstation;
+         istal--)  // start downstream chambers
     {
 
 #ifdef _OPENMP
@@ -2151,7 +2153,7 @@ void L1Algo::CATrackFinder()
     }
 
     //     int nlevels[L1Constants::size::kMaxNstations];  // number of triplets with some number of neighbours.
-    //     for (int il = 0; il < fNstations; ++il) nlevels[il] = 0;
+    //     for (int il = 0; il < fParameters.GetNstationsActive(); ++il) nlevels[il] = 0;
     //
     //      f5(   // input
     //           // output
@@ -2189,7 +2191,7 @@ void L1Algo::CATrackFinder()
     //     int min_level = 1; // min level for start triplet. So min track length = min_level+3.
     //     if (isec == kAllPrimJumpIter) min_level = 1;
     //     if ( (isec == kAllSecIter) || (isec == kAllSecJumpIter) ) min_level = 2; // only the long low momentum tracks
-    // //    if (isec == -1) min_level = fNstations-3 - 3; //only the longest tracks
+    // //    if (isec == -1) min_level = fParameters.GetNstationsActive() - 3 - 3; //only the longest tracks
 
 
     L1Branch curr_tr;
@@ -2205,12 +2207,13 @@ void L1Algo::CATrackFinder()
 
 
     // collect consequtive: the longest tracks, shorter, more shorter and so on
-    for (int firstTripletLevel = fNstations - 3; firstTripletLevel >= min_level; firstTripletLevel--) {
+    for (int firstTripletLevel = fParameters.GetNstationsActive() - 3; firstTripletLevel >= min_level;
+         firstTripletLevel--) {
       // choose length in triplets number - firstTripletLevel - the maximum possible triplet level among all triplets in the searched candidate
       TStopwatch Time;
 
       //  how many levels to check
-      int nlevel = (fNstations - 2) - firstTripletLevel + 1;
+      int nlevel = (fParameters.GetNstationsActive() - 2) - firstTripletLevel + 1;
 
       const unsigned char min_best_l =
         (firstTripletLevel > min_level) ? firstTripletLevel + 2 : min_level + 3;  // loose maximum
@@ -2224,7 +2227,7 @@ void L1Algo::CATrackFinder()
 
       //== Loop over triplets with the required level, find and store track candidates
 
-      for (int istaF = fFirstCAstation; istaF <= fNstations - 3 - firstTripletLevel; ++istaF) {
+      for (int istaF = fFirstCAstation; istaF <= fParameters.GetNstationsActive() - 3 - firstTripletLevel; ++istaF) {
 
         if (--nlevel == 0) break;  //TODO: SG: this is not needed
 
@@ -2453,7 +2456,7 @@ void L1Algo::CATrackFinder()
           }
 #ifdef EXTEND_TRACKS
           if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
-            if (tr.NHits != fNstations) BranchExtender(tr);
+            if (tr.NHits != fParameters.GetNstationsActive()) BranchExtender(tr);
           }
 #endif
           float sumTime = 0;
@@ -2542,7 +2545,7 @@ void L1Algo::CATrackFinder()
     if (isec < (fNFindIterations - 1)) {
       int NHitsOnStation = 0;
 
-      for (int ista = 0; ista < fNstations; ++ista) {
+      for (int ista = 0; ista < fParameters.GetNstationsActive(); ++ista) {
         int start                   = HitsUnusedStartIndex[ista];
         int Nelements               = HitsUnusedStopIndex[ista] - start;
         L1Hit* staHits              = nullptr;  // to avoid out-of-range error in ..[start]

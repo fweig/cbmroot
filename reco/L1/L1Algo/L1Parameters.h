@@ -35,6 +35,13 @@ using L1MaterialContainer_t   = std::array<L1Material, L1Constants::size::kMaxNs
 /// L1InitManager class and then moved to the L1Algo instance.
 ///
 class alignas(L1Constants::misc::kAlignment) L1Parameters {
+
+  // ********************************
+  // ** Friend classes declaration **
+  // ********************************
+
+  friend class L1InitManager;
+
   using L1DetectorID_t = std::underlying_type_t<L1DetectorID>;
 
 public:
@@ -78,7 +85,7 @@ public:
   unsigned int GetMaxTripletPerDoublets() const { return fMaxTripletPerDoublets; }
 
   /// Gets total number of active stations
-  int GetNstationsActive() const { return fNstationsActive[fNstationsActive.size() - 1]; }
+  int GetNstationsActive() const { return fNstationsActiveTotal; }
 
   /// Gets number of active stations for given detector ID
   int GetNstationsActive(L1DetectorID detectorID) const
@@ -87,7 +94,7 @@ public:
   }
 
   /// Gets total number of stations, provided by setup geometry
-  int GetNstationsGeometry() const { return fNstationsGeometry[fNstationsGeometry.size() - 1]; }
+  int GetNstationsGeometry() const { return fNstationsGeometryTotal; }
 
   /// Gets number of stations, provided by setup geometry for given detector ID
   int GetNstationsGeometry(L1DetectorID detectorID) const
@@ -98,7 +105,7 @@ public:
   /// Calculates global index of station among geometry (accounts for inactive stations)
   /// \param localIndex  index of the detector subsystem module/station/layer provided by detector subsystem experts
   /// \param detectorID  ID of the detector subsystem
-  __attribute__((always_inline)) int GetStationIndexGeometry(int localIndex, L1DetectorID detectorID) const
+  [[gnu::always_inline]] int GetStationIndexGeometry(int localIndex, L1DetectorID detectorID) const
   {
     return localIndex
            + std::accumulate(fNstationsGeometry.cbegin(), fNstationsGeometry.cbegin() + static_cast<int>(detectorID),
@@ -108,7 +115,7 @@ public:
   /// Calculates global index of station used by track finder
   /// \param localIndex  index of the detector subsystem module/station/layer provided by detector subsystem experts
   /// \param detectorID  ID of the detector subsystem
-  __attribute__((always_inline)) int GetStationIndexActive(int localIndex, L1DetectorID detectorID) const
+  [[gnu::always_inline]] int GetStationIndexActive(int localIndex, L1DetectorID detectorID) const
   {
     return fActiveStationGlobalIDs[GetStationIndexGeometry(localIndex, detectorID)];
   }
@@ -147,10 +154,13 @@ public:
     return fThickMap[iStActive].GetRadThick(xPos, yPos);
   }
 
-  /// Gets target position
-  /// \param iDimension  Component of target position: 0 - x, 1 - y, 2 - z
+  /// Gets X component of target position
   fvec GetTargetPositionX() const { return fTargetPos[0]; }
+
+  /// Gets Y component of target position
   fvec GetTargetPositionY() const { return fTargetPos[1]; }
+
+  /// Gets Z component of target position
   fvec GetTargetPositionZ() const { return fTargetPos[2]; }
 
   /// Gets L1FieldRegion object at primary vertex
@@ -158,6 +168,15 @@ public:
 
   /// Gets L1FieldValue object at primary vertex
   const L1FieldValue& GetVertexFieldValue() const { return fVertexFieldValue; }
+
+  /// Gets ghost suppression flag
+  int GetGhostSuppression() const { return fGhostSuppression; }
+
+  /// Gets tracking level
+  int GetTrackingLevel() const { return fTrackingLevel; }
+
+  /// Gets momentum cutoff
+  float GetMomentumCutOff() const { return fMomentumCutOff; }
 
   /// Class invariant checker
   void CheckConsistency() const;
@@ -203,13 +222,16 @@ private:
   /// Array of station thickness map
   alignas(L1Constants::misc::kAlignment) L1MaterialContainer_t fThickMap {};
 
-  /// Numbers of stations, which are active in tracking. Index of an array element (except the last one) corresponds to a given
-  /// L1DetectorID of the detector subsystem. The last array element corresponds to the total number of stations.
-  alignas(L1Constants::misc::kAlignment) std::array<int, (L1Constants::size::kMaxNdetectors + 1)> fNstationsActive {};
+  int fNstationsGeometryTotal = -1;  ///< total number of stations, provided by geometry
+  int fNstationsActiveTotal   = -1;  ///< total number of active tracking stations
 
   /// Actual numbers of stations, provided by geometry. Index of an array element (except the last one) corresponds to a given
   /// L1DetectorID of the detector subsystem. The last array element corresponds to the total number of stations.
-  alignas(L1Constants::misc::kAlignment) std::array<int, (L1Constants::size::kMaxNdetectors + 1)> fNstationsGeometry {};
+  alignas(L1Constants::misc::kAlignment) std::array<int, L1Constants::size::kMaxNdetectors> fNstationsGeometry = {};
+
+  /// Numbers of stations, which are active in tracking. Index of an array element (except the last one) corresponds to a given
+  /// L1DetectorID of the detector subsystem. The last array element corresponds to the total number of stations.
+  alignas(L1Constants::misc::kAlignment) std::array<int, L1Constants::size::kMaxNdetectors> fNstationsActive = {};
 
   /// Map of the actual detector indexes to the active detector indexes
   /// The vector maps actual station index (which is defined by ) to the index of station in tracking. If the station is inactive,
@@ -217,6 +239,10 @@ private:
   ///   actual index:  0  1  2  3  4  5  6  7  8  9  0  0  0  0
   ///   active index:  0 -1  1  2 -1  3  4  5  6  7  0  0  0  0
   alignas(L1Constants::misc::kAlignment) std::array<int, L1Constants::size::kMaxNstations> fActiveStationGlobalIDs {};
+
+  int fTrackingLevel    = 0;  ///< tracking level
+  int fGhostSuppression = 0;  ///< flag: if true, ghost tracks are suppressed
+  float fMomentumCutOff = 0;  ///< minimum momentum of tracks
 
   // ***************************
   // ** Flags for development **
@@ -230,11 +256,6 @@ private:
 
   bool fDevIsMatchTripletsViaMc {false};  ///< Flag to match triplets using Mc information
 
-  // ********************************
-  // ** Friend classes declaration **
-  // ********************************
-
-  friend class L1InitManager;
 };
 
 #endif  // L1Parameters_h

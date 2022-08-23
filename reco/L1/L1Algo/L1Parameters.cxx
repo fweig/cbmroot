@@ -33,9 +33,14 @@ L1Parameters::L1Parameters(const L1Parameters& other) noexcept
   , fVertexFieldRegion(other.fVertexFieldRegion)
   , fStations(other.fStations)
   , fThickMap(other.fThickMap)
-  , fNstationsActive(other.fNstationsActive)
+  , fNstationsGeometryTotal(other.fNstationsGeometryTotal)
+  , fNstationsActiveTotal(other.fNstationsActiveTotal)
   , fNstationsGeometry(other.fNstationsGeometry)
+  , fNstationsActive(other.fNstationsActive)
   , fActiveStationGlobalIDs(other.fActiveStationGlobalIDs)
+  , fTrackingLevel(other.fTrackingLevel)
+  , fGhostSuppression(other.fGhostSuppression)
+  , fMomentumCutOff(other.fMomentumCutOff)
   , fDevIsIgnoreHitSearchAreas(other.fDevIsIgnoreHitSearchAreas)
   , fDevIsFitSingletsFromTarget(other.fDevIsFitSingletsFromTarget)
   , fDevIsMatchDoubletsViaMc(other.fDevIsMatchDoubletsViaMc)
@@ -78,9 +83,14 @@ void L1Parameters::Swap(L1Parameters& other) noexcept
   std::swap(fVertexFieldRegion, other.fVertexFieldRegion);
   std::swap(fStations, other.fStations);
   std::swap(fThickMap, other.fThickMap);
-  std::swap(fNstationsActive, other.fNstationsActive);
+  std::swap(fNstationsGeometryTotal, other.fNstationsGeometryTotal);
+  std::swap(fNstationsActiveTotal, other.fNstationsActiveTotal);
   std::swap(fNstationsGeometry, other.fNstationsGeometry);
+  std::swap(fNstationsActive, other.fNstationsActive);
   std::swap(fActiveStationGlobalIDs, other.fActiveStationGlobalIDs);
+  std::swap(fTrackingLevel, other.fTrackingLevel);
+  std::swap(fGhostSuppression, other.fGhostSuppression);
+  std::swap(fMomentumCutOff, other.fMomentumCutOff);
   std::swap(fDevIsIgnoreHitSearchAreas, other.fDevIsIgnoreHitSearchAreas);
   std::swap(fDevIsFitSingletsFromTarget, other.fDevIsFitSingletsFromTarget);
   std::swap(fDevIsMatchDoubletsViaMc, other.fDevIsMatchDoubletsViaMc);
@@ -101,13 +111,12 @@ void L1Parameters::CheckConsistency() const
    *
    */
 
-  if (std::accumulate(fNstationsGeometry.cbegin(), fNstationsGeometry.cend() - 1, 0)
-      != *(fNstationsGeometry.cend() - 1)) {
+  if (std::accumulate(fNstationsGeometry.cbegin(), fNstationsGeometry.cend(), 0) != fNstationsGeometryTotal) {
     throw std::logic_error("L1Parameters: invalid object condition: total number of stations provided by geometry "
                            "differs from the sum of the station numbers for individual detector subsystems");
   };
 
-  if (std::accumulate(fNstationsActive.cbegin(), fNstationsActive.cend() - 1, 0) != *(fNstationsActive.cend() - 1)) {
+  if (std::accumulate(fNstationsActive.cbegin(), fNstationsActive.cend(), 0) != fNstationsActiveTotal) {
     throw std::logic_error("L1Parameters: invalid object condition: total number of stations active in tracking "
                            "differs from the sum of the station numbers for individual detector subsystems");
   };
@@ -123,10 +132,10 @@ void L1Parameters::CheckConsistency() const
   auto filterInactiveStationIDs = [](int x) { return x != -1; };
   int nStationsCheck =
     std::count_if(fActiveStationGlobalIDs.cbegin(), fActiveStationGlobalIDs.cend(), filterInactiveStationIDs);
-  if (nStationsCheck != *(fNstationsActive.cend() - 1)) {
+  if (nStationsCheck != fNstationsActiveTotal) {
     std::stringstream msg;
     msg << "L1Parameters: invalid object condition: array of active station IDs is not consistent "
-        << "with the total number of stations (" << nStationsCheck << " vs. " << *(fNstationsActive.cend() - 1) << ' '
+        << "with the total number of stations (" << nStationsCheck << " vs. " << fNstationsActiveTotal << ' '
         << "expected)";
     throw std::logic_error(msg.str());
   }
@@ -177,7 +186,7 @@ void L1Parameters::CheckConsistency() const
    *       L1MaterialInfo, etc. (S.Zharko)
    */
 
-  for (int iSt = 0; iSt < *(fNstationsActive.cend() - 1); ++iSt) {
+  for (int iSt = 0; iSt < fNstationsActiveTotal; ++iSt) {
     fStations[iSt].CheckConsistency();
     if (fStations[iSt].z[0] < fTargetPos[2][0]) {
       std::stringstream msg;
@@ -194,7 +203,7 @@ void L1Parameters::CheckConsistency() const
    *       all the stations in array but only until *(fNstationsActive.cend() - 1) (== NstationsActiveTotal).
    */
 
-  for (int iSt = 0; iSt < *(fNstationsActive.cend() - 1); ++iSt) {
+  for (int iSt = 0; iSt < fNstationsActiveTotal; ++iSt) {
     fThickMap[iSt].CheckConsistency();
   }
 
@@ -247,15 +256,15 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
   aStream << indent << indentChar << "NUMBER OF STATIONS:\n";
   aStream << indent << indentChar << indentChar << "Number of stations (Geometry): ";
   for (int idx = 0; idx < int(fNstationsGeometry.size()); ++idx) {
-    if (int(fNstationsGeometry.size() - 1) == idx) { aStream << " | total = "; }
     aStream << std::setw(2) << std::setfill(' ') << fNstationsGeometry[idx] << ' ';
   }
+  aStream << " | total = " << std::setw(2) << std::setfill(' ') << fNstationsGeometryTotal;
   aStream << '\n';
   aStream << indent << indentChar << indentChar << "Number of stations (Active):   ";
   for (int idx = 0; idx < int(fNstationsActive.size()); ++idx) {
-    if (int(fNstationsActive.size() - 1) == idx) { aStream << " | total = "; }
     aStream << std::setw(2) << std::setfill(' ') << fNstationsActive[idx] << ' ';
   }
+  aStream << " | total = " << std::setw(2) << std::setfill(' ') << fNstationsActiveTotal;
   aStream << '\n';
   aStream << indent << indentChar << indentChar << "Active station indeces: ";
   for (int idx = 0; idx < *(fNstationsActive.end() - 1); ++idx) {

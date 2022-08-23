@@ -49,7 +49,6 @@ class L1AlgoDraw;
 #include "L1Hit.h"
 #include "L1HitPoint.h"
 #include "L1HitsSortHelper.h"
-#include "L1InitManager.h"
 #include "L1InputData.h"
 #include "L1Parameters.h"
 #include "L1Portion.h"
@@ -169,11 +168,11 @@ public:
   /// Gets a pointer to the L1Algo parameters object
   const L1Parameters* GetParameters() const { return &fParameters; }
 
-  /// Gets a pointer to the L1Algo initialization object
-  L1InitManager* GetInitManager() { return &fInitManager; }
-
   /// Receives input data
   void ReceiveInputData(L1InputData&& inputData);
+
+  /// Receives tracking parameters
+  void ReceiveParameters(L1Parameters&& parameters);
 
   /// Gets pointer to input data object for external access
   const L1InputData* GetInputData() const { return &fInputData; }
@@ -191,11 +190,6 @@ public:
   inline int PackIndex(const int& a, const int& b, const int& c);
 
   inline int UnPackIndex(const int& i, int& a, int& b, int& c);
-  /// -- Flags routines --
-  [[gnu::always_inline]] static unsigned char GetFStation(unsigned char flag) { return flag / 4; }
-  [[gnu::always_inline]] static bool GetFUsed(unsigned char flag) { return (flag & 0x02) != 0; }
-  //   bool GetFUsedD  ( unsigned char flag ){ return (flag&0x01)!=0; }
-
 
   /// \brief Sets a default particle mass for the track fit
   /// It is used during reconstruction
@@ -277,12 +271,6 @@ public:
   {
     flag = iStation * 4 + (flag % 4);
   }
-
-  [[gnu::always_inline]] void SetFUsed(unsigned char& flag) { flag |= 0x02; }
-  //   void SetFUsedD   ( unsigned char &flag ){ flag |= 0x01; }
-
-  [[gnu::always_inline]] void SetFUnUsed(unsigned char& flag) { flag &= 0xFC; }
-  //   void SetFUnUsedD ( unsigned char &flag ){ flag &= 0xFE; }
 
   /// Prepare the portion of left hits data
   void findSingletsStep0(  // input
@@ -427,9 +415,6 @@ public:
   void SetNThreads(unsigned int n);
 
 public:
-  /// Gets total number of stations used in tracking
-  int GetNstations() const { return fNstations; }
-
   /// Gets number of stations before the pipe (MVD stations in CBM)
   int GetNstationsBeforePipe() const { return fNstationsBeforePipe; }
 
@@ -443,7 +428,6 @@ public:
   int GetMcTrackIdForUnusedHit(int iHit);
 
 private:
-  int fNstations {0};            ///< number of all detector stations
   int fNstationsBeforePipe {0};  ///< number of stations before pipe (MVD stations in CBM)
   int fNfieldStations {0};       ///< number of stations in the field region
   //alignas(16) L1StationsArray_t fStations {};  ///< array of L1Station objects
@@ -455,7 +439,8 @@ private:
   // ** Member variables list **
   // ***************************
 
-  L1InputData fInputData;  ///< Tracking input data
+  L1Parameters fParameters;  ///< Object of L1Algo parameters class
+  L1InputData fInputData;    ///< Tracking input data
 
   L1Vector<unsigned char> fvHitKeyFlags {
     "L1Algo::fvHitKeyFlags"};  ///< List of key flags: has been this hit or cluster already used
@@ -559,8 +544,6 @@ public:
 
 
 private:
-  L1Parameters fParameters {};           ///< Object of L1Algo parameters class
-  L1InitManager fInitManager {};         ///< Object of L1Algo initialization manager class
   L1ClonesMerger fClonesMerger {*this};  ///< Object of L1Algo clones merger algorithm
 
 #ifdef TBB

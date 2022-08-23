@@ -306,9 +306,10 @@ void CbmL1::EfficienciesPerformance()
     }
   }
 
-  int sta_nhits[fpAlgo->GetNstations()], sta_nfakes[fpAlgo->GetNstations()];
+  int sta_nhits[fpAlgo->GetParameters()->GetNstationsActive()];
+  int sta_nfakes[fpAlgo->GetParameters()->GetNstationsActive()];
 
-  for (int i = 0; i < fpAlgo->GetNstations(); i++) {
+  for (int i = 0; i < fpAlgo->GetParameters()->GetNstationsActive(); i++) {
     sta_nhits[i]  = 0;
     sta_nfakes[i] = 0;
   }
@@ -445,7 +446,7 @@ void CbmL1::EfficienciesPerformance()
     if (fVerbose > 1) {
       ntra.PrintEff(true, true);
       cout << "Number of true and fake hits in stations: " << endl;
-      for (int i = 0; i < fpAlgo->GetNstations(); i++) {
+      for (int i = 0; i < fpAlgo->GetParameters()->GetNstationsActive(); i++) {
         cout << sta_nhits[i] - sta_nfakes[i] << "+" << sta_nfakes[i] << "   ";
       }
       cout << endl;

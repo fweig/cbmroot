@@ -193,7 +193,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
                           const fvec qp0)  // TODO take into account pipe
 {
   L1Vector<L1HitIndex_t> newHits {"L1TrackExtender::newHits"};
-  newHits.reserve(fNstations);
+  newHits.reserve(fParameters.GetNstationsActive());
   L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
 
@@ -243,7 +243,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
   const fvec pickGather2 = fPickGather * fPickGather;
 
-  for (; (ista < fNstations) && (ista >= 0); ista += step) {  // CHECKME why ista2?
+  for (; (ista < fParameters.GetNstationsActive()) && (ista >= 0); ista += step) {  // CHECKME why ista2?
 
     const L1Station& sta = fParameters.GetStation(ista);
 

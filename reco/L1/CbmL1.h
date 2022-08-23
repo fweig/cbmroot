@@ -52,6 +52,7 @@
 #include "L1Algo/L1Vector.h"
 #include "L1EventEfficiencies.h"
 #include "L1IODataManager.h"
+#include "L1InitManager.h"
 
 class L1Algo;
 class L1Event;
@@ -225,17 +226,11 @@ public:
   /// If the file is undefined, default tracking parameters will be used. Otherwise, the default parameters will be
   /// overridden with ones from the configuration file
   /// \param filename  Name of the input tracking configuration file
-  void SetInputConfigName(const char* filename)
-  {
-    if (fpInitManager) { fpInitManager->SetInputConfigName(std::string(filename)); }
-  }
+  void SetInputConfigName(const char* filename) { fInitManager.SetInputConfigName(std::string(filename)); }
 
   /// \brief Sets a name for the output configuration file
   /// \param filename  Name of the input tracking configuration file
-  void SetOutputConfigName(const char* filename)
-  {
-    if (fpInitManager) { fpInitManager->SetOutputConfigName(std::string(filename)); }
-  }
+  void SetOutputConfigName(const char* filename) { fInitManager.SetOutputConfigName(std::string(filename)); }
 
   /// Sets flag: to correct input hits on MC or not
   /// \param flag: true - hits will be corrected on MC information
@@ -375,7 +370,7 @@ private:
   void WriteSIMDKFData();
 
   /// Gets a pointer to L1InitManager (for an access in run_reco.C)
-  L1InitManager* GetInitManager() { return fpInitManager; }
+  L1InitManager* GetInitManager() { return &fInitManager; }
 
   void SetUseMcHit(int StsUseMcHit = 0, int MuchUseMcHit = 0, int TrdUseMcHit = 0, int TofUseMcHit = 0)
   {
@@ -400,11 +395,10 @@ private:
 public:
   // ** Basic data members **
 
-  L1Algo* fpAlgo               = nullptr;  ///< Pointer to the L1 track finder algorithm
-  L1InitManager* fpInitManager = nullptr;  ///< Pointer to the initialization manager for the L1 algorithm
+  L1Algo* fpAlgo = nullptr;  ///< Pointer to the L1 track finder algorithm
 
+  L1InitManager fInitManager;      ///< Tracking parameters data manager
   L1IODataManager fIODataManager;  ///< Input-output data manager
-
 
   bool fUseHitErrors = true;   ///<
   bool fMissingHits  = false;  ///< Turns on several ad-hock settings for "mcbm_beam_2021_07_surveyed.100ev" setup

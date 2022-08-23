@@ -77,27 +77,6 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
   fUseHitErrors = UseHitErrors;
   fTrackingMode = mode;
   fMissingHits  = MissingHits;
-
-
-  //int NMvdStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NMbdStations (S. Zh.)
-  int nStationsSts     = fInitManager.GetNstationsActive(static_cast<L1DetectorID>(1));
-  fNstationsBeforePipe = fInitManager.GetNstationsActive(static_cast<L1DetectorID>(0));
-  //int NStsStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NStsStations (S. Zh.)
-
-  fNfieldStations = nStationsSts + fNstationsBeforePipe;  // TODO: Provide special getter for it (S.Zharko, 12.05.2022)
-
-  if (fTrackingMode == kMcbm) { fNfieldStations = -1; }
-
-
-  fInitManager.TransferParametersContainer(fParameters);
-  LOG(info) << fParameters.ToString(3);
-
-  // Get number of station
-  fNstations = fParameters.GetNstationsActive();
-
-  fTrackingLevel    = fInitManager.GetTrackingLevel();
-  fGhostSuppression = fInitManager.GetGhostSuppression();
-  fMomentumCutOff   = fInitManager.GetMomentumCutOff();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -149,6 +128,29 @@ void L1Algo::ReceiveInputData(L1InputData&& inputData)
       fTriplets[j][i].reserve(2 * nHits);
     }
   }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void L1Algo::ReceiveParameters(L1Parameters&& parameters)
+{
+  fParameters = std::move(parameters);
+
+  //int NMvdStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NMbdStations (S. Zh.)
+  int nStationsSts     = fParameters.GetNstationsActive(static_cast<L1DetectorID>(1));
+  fNstationsBeforePipe = fParameters.GetNstationsActive(static_cast<L1DetectorID>(0));
+  //int NStsStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NStsStations (S. Zh.)
+
+  fNfieldStations = nStationsSts + fNstationsBeforePipe;  // TODO: Provide special getter for it (S.Zharko, 12.05.2022)
+
+  if (fTrackingMode == kMcbm) { fNfieldStations = -1; }
+
+
+  LOG(info) << fParameters.ToString(3);
+
+  fTrackingLevel    = fParameters.GetTrackingLevel();
+  fGhostSuppression = fParameters.GetGhostSuppression();
+  fMomentumCutOff   = fParameters.GetMomentumCutOff();
 }
 
 /// TODO: Move to L1Hit

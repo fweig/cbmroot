@@ -96,7 +96,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
   TClonesArray* listMvdHits = 0;
   if (NMvdStations > 0.) listMvdHits = (TClonesArray*) fManger->GetObject("MvdHit");
 
-  static int nHits = CbmL1::Instance()->fpAlgo->GetNstations();
+  static int nHits = CbmL1::Instance()->fpAlgo->GetParameters()->GetNstationsActive();
   int iVec = 0, i = 0;
   int nTracks_SIMD = fvecLen;
   L1TrackPar T;  // fitting parametr coresponding to current track
@@ -406,7 +406,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
 
   CbmStsTrack* t[fvecLen];
 
-  int nStations        = CbmL1::Instance()->fpAlgo->GetNstations();
+  int nStations        = CbmL1::Instance()->fpAlgo->GetParameters()->GetNstationsActive();
   int NMvdStations     = CbmL1::Instance()->fpAlgo->GetNstationsBeforePipe();
   const L1Station* sta = CbmL1::Instance()->fpAlgo->GetParameters()->GetStations().begin();
   fvec* zSta       = new fvec[nStations];
