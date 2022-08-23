@@ -50,11 +50,14 @@ public:
 
   void SetPIDInformation(CbmKFParticleFinderPID* pid) { fPID = pid; }
 
+
   // set cuts
   void SetPrimaryProbCut(float prob);
 
   // Set SE analysis
   void SetSuperEventAnalysis();
+
+  void SetTarget(const std::array<float, 3>& target);
 
   //KF Particle Finder cuts
   void SetMaxDistanceBetweenParticlesCut(float cut);

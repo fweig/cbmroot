@@ -579,6 +579,9 @@ void CbmKFParticleFinder::SetSuperEventAnalysis()
   fTopoReconstructor->SetMixedEventAnalysis();
 }
 
+
+void CbmKFParticleFinder::SetTarget(const std::array<float, 3>& target) { fTopoReconstructor->SetTarget(target); }
+
 KFParticleFinder* CbmKFParticleFinder::GetKFParticleFinder() { return fTopoReconstructor->GetKFParticleFinder(); }
 void CbmKFParticleFinder::SetMaxDistanceBetweenParticlesCut(float cut)
 {

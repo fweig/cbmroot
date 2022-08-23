@@ -278,6 +278,10 @@ void CbmKF::GetTargetInfo()
   target.y = global[1];
   target.z = global[2];
 
+  fTargetXYZ[0] = target.x;
+  fTargetXYZ[1] = target.y;
+  fTargetXYZ[2] = target.z;
+
   if (fVerbose) {
     cout << "KALMAN FILTER : === READ TARGET MATERIAL ===" << endl;
     cout << " found targed \"" << targetPath << "\" at ( " << target.x << " " << target.y << " " << target.z << " ) "
@@ -309,6 +313,8 @@ void CbmKF::GetTargetInfo()
   vTargets.push_back(target);
   LOG(info) << "Target info: " << target.KFInfo();
 }
+
+std::array<double, 3> CbmKF::GetTargetPosition() { return fTargetXYZ; }
 
 void CbmKF::FindTargetNode(TString& targetPath, TGeoNode*& targetNode)
 {
