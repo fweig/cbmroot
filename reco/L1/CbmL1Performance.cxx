@@ -386,7 +386,7 @@ void CbmL1::EfficienciesPerformance()
       if (mtra.p > CbmL1Constants::MinRefMom) {  // reference tracks
         ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "fast");
 
-        if (mtra.IsPrimary()) {                // reference primary
+        if (mtra.IsPrimary()) {                  // reference primary
           if (mtra.NStations() == fNStations) {  // long reference primary
             ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "long_fast_prim");
           }
@@ -1402,7 +1402,7 @@ void CbmL1::TrackFitPerformance()
         {  // extrapolate to vertex
           L1FieldRegion fld _fvecalignment;
           L1FieldValue B[3] _fvecalignment;
-          float z[3];
+          float z[3] = {0.f, 0.f, 0.f};
           for (unsigned int ih = 0; ih < 3; ih++) {
             if (ih >= mc.Points.size()) continue;  //If nofMCPoints in track < 3
             const int iMCP      = mc.Points[ih];
@@ -2233,9 +2233,9 @@ void CbmL1::InputPerformance()
 
 
       if (hm->GetNofLinks() == 0) continue;
-      Float_t bestWeight  = 0.f;
+      Float_t bestWeight = 0.f;
       //Float_t totalWeight = 0.f;
-      int iMCPoint        = -1;
+      int iMCPoint = -1;
       CbmLink link;
 
       for (int iLink = 0; iLink < hm->GetNofLinks(); iLink++) {

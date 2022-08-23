@@ -10,9 +10,9 @@
 #ifndef L1ClonesMerger_h
 #define L1ClonesMerger_h 1
 
+#include "L1Def.h"
 #include "L1Hit.h"  // For L1HitIndex_t
 #include "L1Vector.h"
-#include "vectors/P4_F32vec4.h"
 
 class L1Track;
 class L1Algo;

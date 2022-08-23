@@ -12,17 +12,12 @@
 #ifndef L1NaN_h
 #define L1NaN_h 1
 
-#include <type_traits>
-
 #include <limits>
+#include <type_traits>
 
 #include <cmath>
 
-#if defined(__CLING__) && defined(__arm64__)
-#include "vectors/PSEUDO_F32vec4.h"
-#else
-#include "vectors/P4_F32vec4.h"
-#endif
+#include "L1Def.h"
 
 /// Namespace L1NaN defines functions to set variables to NaN and check wether they are NaN or not
 ///

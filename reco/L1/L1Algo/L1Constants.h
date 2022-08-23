@@ -13,7 +13,6 @@
 #define L1Constants_h 1
 
 #include "L1NaN.h"
-#include "vectors/P4_F32vec4.h"  // for fvecLen
 
 /// Namespace contains compile-time constants definition for the L1 tracking algorithm
 namespace L1Constants
