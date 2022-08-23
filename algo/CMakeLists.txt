@@ -11,7 +11,11 @@ set(SRCS
   detectors/much/MuchReadoutConfig.cxx
   detectors/much/UnpackMuch.cxx
   detectors/tof/HitFinderTof.cxx
-)
+  detectors/tof/TofReadoutConfig.cxx
+  detectors/tof/UnpackTof.cxx
+  detectors/t0/T0ReadoutConfig.cxx
+  detectors/t0/UnpackT0.cxx
+ )
 
 add_library(Algo SHARED ${SRCS})
 
