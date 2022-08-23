@@ -27,6 +27,7 @@ target_include_directories(Algo
          ${CMAKE_CURRENT_SOURCE_DIR}/detectors/sts
          ${CMAKE_CURRENT_SOURCE_DIR}/detectors/much
          ${CMAKE_CURRENT_SOURCE_DIR}/detectors/tof
+         ${CMAKE_CURRENT_SOURCE_DIR}/detectors/t0
  )
 
 target_link_libraries(Algo PUBLIC OnlineData ROOT::GenVector INTERFACE FairLogger::FairLogger external::fles_ipc)

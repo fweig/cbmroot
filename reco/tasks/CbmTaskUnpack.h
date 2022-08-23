@@ -11,6 +11,9 @@
 
 #include <FairTask.h>
 
+#include "T0ReadoutConfig.h"
+#include "TofReadoutConfig.h"
+
 #include <sstream>
 #include <vector>
 
@@ -19,6 +22,8 @@
 #include "StsReadoutConfig.h"
 #include "UnpackMuch.h"
 #include "UnpackSts.h"
+#include "UnpackT0.h"
+#include "UnpackTof.h"
 
 class CbmDigiManager;
 class CbmSourceTs;
@@ -77,6 +82,12 @@ private:  // members
   std::map<uint16_t, cbm::algo::UnpackMuch> fAlgoMuch = {};
   cbm::algo::MuchReadoutConfig fMuchConfig {};
 
+  std::map<uint16_t, cbm::algo::UnpackTof> fAlgoTof = {};
+  cbm::algo::TofReadoutConfig fTofConfig {};
+
+  std::map<uint16_t, cbm::algo::UnpackT0> fAlgoT0 = {};
+  cbm::algo::T0ReadoutConfig fT0Config {};
+
   size_t fNumTs                = 0;
   size_t fNumMs                = 0;
   size_t fNumBytes             = 0;
@@ -84,8 +95,12 @@ private:  // members
   double fTime                 = 0.;
   CbmDigiTimeslice* fTimeslice = nullptr;  ///< Output data
 
+  //Microslice loop
+  template<class Digi, class UnpackAlgo>
+  uint64_t MsLoop(const fles::Timeslice* timeslice, UnpackAlgo& algo, const uint64_t comp, std::vector<Digi>* digis,
+                  size_t* numBytesInComp, size_t* numDigisInComp);
 
-  ClassDef(CbmTaskUnpack, 1);
+  ClassDef(CbmTaskUnpack, 2);
 };
 
 #endif /* CBMTASKUNPACK_H */

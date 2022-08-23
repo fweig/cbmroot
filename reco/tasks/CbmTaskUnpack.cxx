@@ -38,6 +38,10 @@ using cbm::algo::UnpackMuchElinkPar;
 using cbm::algo::UnpackMuchPar;
 using cbm::algo::UnpackStsElinkPar;
 using cbm::algo::UnpackStsPar;
+using cbm::algo::UnpackT0ElinkPar;
+using cbm::algo::UnpackT0Par;
+using cbm::algo::UnpackTofElinkPar;
+using cbm::algo::UnpackTofPar;
 
 // -----   Constructor   -----------------------------------------------------
 CbmTaskUnpack::CbmTaskUnpack() : FairTask("Unpack") {}
@@ -50,6 +54,31 @@ CbmTaskUnpack::~CbmTaskUnpack()
   if (fTimeslice) delete fTimeslice;
 }
 // ---------------------------------------------------------------------------
+
+
+// ----------------- Microslice loop ------------------------------------------
+template<class Digi, class UnpackAlgo>
+uint64_t CbmTaskUnpack::MsLoop(const fles::Timeslice* timeslice, UnpackAlgo& algo, const uint64_t comp,
+                               std::vector<Digi>* digis, size_t* numBytesInComp, size_t* numDigisInComp)
+{
+  const uint64_t numMsInComp = timeslice->num_microslices(comp);
+
+  for (uint64_t mslice = 0; mslice < numMsInComp; mslice++) {
+    const auto msDescriptor = timeslice->descriptor(comp, mslice);
+    const auto msContent    = timeslice->content(comp, mslice);
+    *numBytesInComp += msDescriptor.size;
+    auto result = algo(msContent, msDescriptor, timeslice->start_time());
+    LOG(debug1) << GetName() << ": Component " << comp << ", microslice " << mslice << ", digis " << result.first.size()
+                << ", errors " << result.second.fNumNonHitOrTsbMessage << " | " << result.second.fNumErrElinkOutOfRange
+                << " | " << result.second.fNumErrInvalidFirstMessage << " | " << result.second.fNumErrInvalidMsSize
+                << " | " << result.second.fNumErrTimestampOverflow << " | ";
+    *numDigisInComp += result.first.size();
+#pragma omp critical(insert_digis)
+    digis->insert(digis->end(), result.first.begin(), result.first.end());
+  }
+  return numMsInComp;
+}
+// ----------------------------------------------------------------------------
 
 
 // -----   Execution   -------------------------------------------------------
@@ -86,6 +115,7 @@ void CbmTaskUnpack::Exec(Option_t*)
 
     auto systemId = static_cast<fles::SubsystemIdentifier>(timeslice->descriptor(comp, 0).sys_id);
 
+    // STS
     if (systemId == fles::SubsystemIdentifier::STS) {
       const uint16_t equipmentId = timeslice->descriptor(comp, 0).eq_id;
       const auto algoIt          = fAlgoSts.find(equipmentId);
@@ -98,25 +128,13 @@ void CbmTaskUnpack::Exec(Option_t*)
       assert(timeslice->descriptor(comp, 0).sys_ver == 0x20);
 
       // --- Microslice loop
-      numMsInComp = timeslice->num_microslices(comp);
-      for (uint64_t mslice = 0; mslice < numMsInComp; mslice++) {
-        const auto msDescriptor = timeslice->descriptor(comp, mslice);
-        const auto msContent    = timeslice->content(comp, mslice);
-        numBytesInComp += msDescriptor.size;
-        auto result = (algoIt->second)(msContent, msDescriptor, timeslice->start_time());
-        LOG(debug1) << GetName() << ": Component " << comp << ", microslice " << mslice << ", digis "
-                    << result.first.size() << ", errors " << result.second.fNumNonHitOrTsbMessage << " | "
-                    << result.second.fNumErrElinkOutOfRange << " | " << result.second.fNumErrInvalidFirstMessage
-                    << " | " << result.second.fNumErrInvalidMsSize << " | " << result.second.fNumErrTimestampOverflow
-                    << " | ";
-        numDigisInComp += result.first.size();
-#pragma omp critical(insert_sts_digis)
-        fTimeslice->fData.fSts.fDigis.insert(fTimeslice->fData.fSts.fDigis.end(), result.first.begin(),
-                                             result.first.end());
-      }  //# microslice
+      numMsInComp =
+        MsLoop(timeslice, algoIt->second, comp, &fTimeslice->fData.fSts.fDigis, &numBytesInComp, &numDigisInComp);
+
       numCompUsed++;
     }  // system STS
 
+    // MUCH
     if (systemId == fles::SubsystemIdentifier::MUCH) {
       const uint16_t equipmentId = timeslice->descriptor(comp, 0).eq_id;
       const auto algoIt          = fAlgoMuch.find(equipmentId);
@@ -129,24 +147,49 @@ void CbmTaskUnpack::Exec(Option_t*)
       assert(timeslice->descriptor(comp, 0).sys_ver == 0x20);
 
       // --- Microslice loop
-      numMsInComp = timeslice->num_microslices(comp);
-      for (uint64_t mslice = 0; mslice < numMsInComp; mslice++) {
-        const auto msDescriptor = timeslice->descriptor(comp, mslice);
-        const auto msContent    = timeslice->content(comp, mslice);
-        numBytesInComp += msDescriptor.size;
-        auto result = (algoIt->second)(msContent, msDescriptor, timeslice->start_time());
-        LOG(debug1) << GetName() << ": Component " << comp << ", microslice " << mslice << ", digis "
-                    << result.first.size() << ", errors " << result.second.fNumNonHitOrTsbMessage << " | "
-                    << result.second.fNumErrElinkOutOfRange << " | " << result.second.fNumErrInvalidFirstMessage
-                    << " | " << result.second.fNumErrInvalidMsSize << " | " << result.second.fNumErrTimestampOverflow
-                    << " | ";
-        numDigisInComp += result.first.size();
-#pragma omp critical(insert_much_digis)
-        fTimeslice->fData.fMuch.fDigis.insert(fTimeslice->fData.fMuch.fDigis.end(), result.first.begin(),
-                                              result.first.end());
-      }  //# microslice
+      numMsInComp =
+        MsLoop(timeslice, algoIt->second, comp, &fTimeslice->fData.fMuch.fDigis, &numBytesInComp, &numDigisInComp);
+
       numCompUsed++;
     }  // system MUCH
+
+    // TOF
+    if (systemId == fles::SubsystemIdentifier::RPC) {
+      const uint16_t equipmentId = timeslice->descriptor(comp, 0).eq_id;
+      const auto algoIt          = fAlgoTof.find(equipmentId);
+      assert(algoIt != fAlgoTof.end());
+
+      // The current algorithm works for the TOF data format version XXXX used in 2021.
+      // Other versions are not yet supported.
+      // In the future, different data formats will be supported by instantiating different
+      // algorithms depending on the version.
+      //assert(timeslice->descriptor(comp, 0).sys_ver == XXXX);
+
+      // --- Microslice loop
+      numMsInComp =
+        MsLoop(timeslice, algoIt->second, comp, &fTimeslice->fData.fTof.fDigis, &numBytesInComp, &numDigisInComp);
+
+      numCompUsed++;
+    }  // system TOF
+
+    // T0
+    if (systemId == fles::SubsystemIdentifier::T0) {
+      const uint16_t equipmentId = timeslice->descriptor(comp, 0).eq_id;
+      const auto algoIt          = fAlgoT0.find(equipmentId);
+      assert(algoIt != fAlgoT0.end());
+
+      // The current algorithm works for the T0 data format version XXXX used in 2021.
+      // Other versions are not yet supported.
+      // In the future, different data formats will be supported by instantiating different
+      // algorithms depending on the version.
+      //assert(timeslice->descriptor(comp, 0).sys_ver == XXXX);
+
+      // --- Microslice loop
+      numMsInComp =
+        MsLoop(timeslice, algoIt->second, comp, &fTimeslice->fData.fT0.fDigis, &numBytesInComp, &numDigisInComp);
+
+      numCompUsed++;
+    }  // system T0
 
     compTimer.Stop();
     LOG(debug) << GetName() << ": Component " << comp << ", microslices " << numMsInComp << " input size "
@@ -165,11 +208,19 @@ void CbmTaskUnpack::Exec(Option_t*)
             [](CbmStsDigi digi1, CbmStsDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
   std::sort(std::execution::par_unseq, fTimeslice->fData.fMuch.fDigis.begin(), fTimeslice->fData.fMuch.fDigis.end(),
             [](CbmMuchDigi digi1, CbmMuchDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
+  std::sort(std::execution::par_unseq, fTimeslice->fData.fTof.fDigis.begin(), fTimeslice->fData.fTof.fDigis.end(),
+            [](CbmTofDigi digi1, CbmTofDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
+  std::sort(std::execution::par_unseq, fTimeslice->fData.fT0.fDigis.begin(), fTimeslice->fData.fT0.fDigis.end(),
+            [](CbmTofDigi digi1, CbmTofDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
 #else
   std::sort(fTimeslice->fData.fSts.fDigis.begin(), fTimeslice->fData.fSts.fDigis.end(),
             [](CbmStsDigi digi1, CbmStsDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
   std::sort(fTimeslice->fData.fMuch.fDigis.begin(), fTimeslice->fData.fMuch.fDigis.end(),
             [](CbmMuchDigi digi1, CbmMuchDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
+  std::sort(fTimeslice->fData.fTof.fDigis.begin(), fTimeslice->fData.fTof.fDigis.end(),
+            [](CbmTofDigi digi1, CbmTofDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
+  std::sort(fTimeslice->fData.fT0.fDigis.begin(), fTimeslice->fData.fT0.fDigis.end(),
+            [](CbmTofDigi digi1, CbmTofDigi digi2) { return digi1.GetTime() < digi2.GetTime(); });
 #endif
 
   // --- Timeslice log
@@ -279,8 +330,51 @@ InitStatus CbmTaskUnpack::Init()
     LOG(info) << "--- Configured equipment " << equip << " with " << numElinks << " elinks";
   }
 
+  // --- Common parameters for all components for TOF
+  uint32_t numChansPerAsicTof = 4;  // R/O channels per ASIC for TOF
+
+  // Create one algorithm per component and configure it with parameters
+  auto equipIdsTof = fTofConfig.GetEquipmentIds();
+  for (auto& equip : equipIdsTof) {
+    std::unique_ptr<UnpackTofPar> par(new UnpackTofPar());
+    par->fNumChansPerAsic  = numChansPerAsicTof;
+    const size_t numElinks = fTofConfig.GetNumElinks(equip);
+    for (size_t elink = 0; elink < numElinks; elink++) {
+      UnpackTofElinkPar elinkPar;
+      elinkPar.fChannelUId = fTofConfig.Map(equip, elink);  // Vector of TOF addresses for this elink
+      elinkPar.fTimeOffset = 0.;
+      par->fElinkParams.push_back(elinkPar);
+    }
+    fAlgoTof[equip].SetParams(std::move(par));
+    LOG(info) << "--- Configured equipment " << equip << " with " << numElinks << " elinks";
+  }
+
+  // --- Common parameters for all components for T0
+  uint32_t numChansPerAsicT0 = 4;  // R/O channels per ASIC for T0
+
+  // Create one algorithm per component and configure it with parameters
+  auto equipIdsT0 = fT0Config.GetEquipmentIds();
+  for (auto& equip : equipIdsT0) {
+    std::unique_ptr<UnpackT0Par> par(new UnpackT0Par());
+    par->fNumChansPerAsic  = numChansPerAsicT0;
+    const size_t numElinks = fT0Config.GetNumElinks(equip);
+    for (size_t elink = 0; elink < numElinks; elink++) {
+      UnpackT0ElinkPar elinkPar;
+      elinkPar.fChannelUId = fT0Config.Map(equip, elink);  // Vector of T0 addresses for this elink
+      elinkPar.fTimeOffset = 0.;
+      par->fElinkParams.push_back(elinkPar);
+    }
+    fAlgoT0[equip].SetParams(std::move(par));
+    LOG(info) << "--- Configured equipment " << equip << " with " << numElinks << " elinks";
+  }
+
+
   LOG(info) << "--- Configured " << fAlgoSts.size() << " unpacker algorithms for STS.";
   LOG(debug) << "Readout map:" << fStsConfig.PrintReadoutMap();
+  LOG(info) << "--- Configured " << fAlgoMuch.size() << " unpacker algorithms for MUCH.";
+  LOG(info) << "--- Configured " << fAlgoTof.size() << " unpacker algorithms for TOF.";
+  LOG(info) << "--- Configured " << fAlgoT0.size() << " unpacker algorithms for T0.";
+
   LOG(info) << "==================================================";
 
   return kSUCCESS;

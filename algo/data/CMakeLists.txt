@@ -26,7 +26,7 @@ set(SRCS
   ${CMAKE_SOURCE_DIR}/core/data/psd/CbmPsdDigi.cxx
   ${CMAKE_SOURCE_DIR}/core/data/psd/CbmPsdAddress.cxx
 
-
+  ${CMAKE_SOURCE_DIR}/core/data/raw/CriGet4Mess001.cxx
   ${CMAKE_SOURCE_DIR}/core/data/raw/StsXyterMessage.cxx
 )
 
