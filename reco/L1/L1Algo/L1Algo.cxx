@@ -136,21 +136,22 @@ void L1Algo::ReceiveParameters(L1Parameters&& parameters)
 {
   fParameters = std::move(parameters);
 
-  //int NMvdStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NMbdStations (S. Zh.)
-  int nStationsSts     = fParameters.GetNstationsActive(static_cast<L1DetectorID>(1));
   fNstationsBeforePipe = fParameters.GetNstationsActive(static_cast<L1DetectorID>(0));
-  //int NStsStations = static_cast<int>(geo[ind++]);  // TODO: get rid of NStsStations (S. Zh.)
 
-  fNfieldStations = nStationsSts + fNstationsBeforePipe;  // TODO: Provide special getter for it (S.Zharko, 12.05.2022)
-
-  if (fTrackingMode == kMcbm) { fNfieldStations = -1; }
-
-
-  LOG(info) << fParameters.ToString(3);
+  // FIXME: SZh 24.08.2022
+  //        This approach is suitable only for a case, when all the stations inside a magnetic field come right before
+  //        all the stations outside of the field!
+  fNfieldStations = std::lower_bound(fParameters.GetStations().cbegin(),
+                                     fParameters.GetStations().cbegin() + fParameters.GetNstationsActive(),
+                                     0,  // we are looking for the first zero element
+                                     [](const L1Station& s, int edge) { return bool(s.fieldStatus) > edge; })
+                    - fParameters.GetStations().cbegin();
 
   fTrackingLevel    = fParameters.GetTrackingLevel();
   fGhostSuppression = fParameters.GetGhostSuppression();
   fMomentumCutOff   = fParameters.GetMomentumCutOff();
+
+  LOG(info) << fParameters.ToString(3);
 }
 
 /// TODO: Move to L1Hit

@@ -162,6 +162,29 @@ void L1Parameters::CheckConsistency() const
   }
 
   /*
+   * Check magnetic field flags of the stations
+   *
+   * In a current version of tracking there are three configurations possible to be proceeded:
+   *  A. All the stations are inside magnetic field
+   *  B. There is no magnetic field in a setup
+   *  C. All the first stations are inside magnetic field, all the last stations are outside the field
+   * In all the cases the fieldStatus flags should be sorted containing all non-zero elements in the beginning
+   * (representing stations placed into magnetic field) and all zero elements in the end of z-axis.
+   */
+  bool ifFieldStatusFlagsOk = std::is_sorted(
+    fStations.cbegin(), fStations.cbegin() + fNstationsActiveTotal,
+    [&](const L1Station& lhs, const L1Station& rhs) { return bool(lhs.fieldStatus) > bool(rhs.fieldStatus); });
+
+  if (!ifFieldStatusFlagsOk) {
+    std::stringstream msg;
+    msg << "L1Parameters: invalid object condition: L1 tracking is impossible for a given field configuration:\n";
+    for (int iSt = 0; iSt < fNstationsActiveTotal; ++iSt) {
+      msg << "- station ID:  " << iSt << ",  field status: " << fStations[iSt].fieldStatus << '\n';
+    }
+    throw std::logic_error(msg.str());
+  }
+
+  /*
    * Check target position SIMD vector
    */
 
