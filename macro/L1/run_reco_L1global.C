@@ -400,6 +400,7 @@ void run_reco_L1global(TString input = "", Int_t nTimeSlices = -1, Int_t firstTi
     }
 
     CbmTrackingTrdQa* trdTrackerQa = new CbmTrackingTrdQa;
+    trdTrackerQa->SetYcm(1.57704);  // Au-Au 10 AGeV
     run->AddTask(trdTrackerQa);
     std::cout << "-I- " << myName << ": Added task " << trdTrackerQa->GetName() << std::endl;
   }

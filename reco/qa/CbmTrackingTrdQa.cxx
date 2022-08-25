@@ -19,6 +19,7 @@
 #include "TGeoManager.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include <TPDGCode.h>
 
 // Includes from FairRoot
 #include "FairEventHeader.h"
@@ -43,6 +44,52 @@ using std::fixed;
 using std::right;
 using std::setprecision;
 using std::setw;
+
+const char* CbmTrackingTrdQa::fgkIdxName[fgkNpdg] = {"e", "#mu", "#pi", "K", "#bf{p}", "any"};
+const char* CbmTrackingTrdQa::fgkIdxSymb[fgkNpdg] = {"e", "mu", "pi", "K", "p", "x"};
+
+// -------------------------------------------------------------------------
+int CbmTrackingTrdQa::Pdg2Idx(int pdg)
+{
+  int idx(5);
+  switch (pdg) {
+    case kElectron:
+    case kPositron: idx = 0; break;
+    case kMuonMinus:
+    case kMuonPlus: idx = 1; break;
+    case kPiMinus:
+    case kPiPlus: idx = 2; break;
+    case kKMinus:
+    case kKPlus: idx = 3; break;
+    case kProton:
+    case kProtonBar: idx = 4; break;
+    default: idx = 5; break;
+  }
+  return idx;
+}
+int CbmTrackingTrdQa::Idx2Pdg(int idx)
+{
+  if (idx < 0 || idx >= 5) return 0;
+  int pdg = 0;
+  switch (idx) {
+    case 0: pdg = kElectron; break;
+    case 1: pdg = kMuonMinus; break;
+    case 2: pdg = kPiPlus; break;
+    case 3: pdg = kKPlus; break;
+    case 4: pdg = kProton; break;
+  }
+  return pdg;
+}
+const char* CbmTrackingTrdQa::Idx2Name(int idx)
+{
+  if (idx < 0 || idx >= 5) return "non";
+  return fgkIdxName[idx];
+}
+const char* CbmTrackingTrdQa::Idx2Symb(int idx)
+{
+  if (idx < 0 || idx >= 5) return "o";
+  return fgkIdxSymb[idx];
+}
 
 
 // -----   Default constructor   -------------------------------------------
@@ -152,6 +199,8 @@ void CbmTrackingTrdQa::Exec(Option_t* /*opt*/)
     // Get momentum
     mcTrack->GetMomentum(momentum);
     info.fPt     = momentum.Pt();
+    info.fPdg    = mcTrack->GetPdgCode();
+    info.fY      = mcTrack->GetRapidity() - fYCM;
     info.fIsFast = (info.fPt > 0.1);
 
     // Continue only for reconstructible tracks
@@ -196,10 +245,12 @@ void CbmTrackingTrdQa::Exec(Option_t* /*opt*/)
     fhNpAccAll->Fill(Double_t(nStations));
     if (info.fIsPrimary) {
       fhPtAccPrim->Fill(info.fPt);
+      fhPidPtY["prmY"][Pdg2Idx(info.fPdg)]->Fill(info.fY, info.fPt);
       fhNpAccPrim->Fill(Double_t(nStations));
     }
     else {
       fhPtAccSec->Fill(info.fPt);
+      fhPidPtY["secY"][Pdg2Idx(info.fPdg)]->Fill(info.fY, info.fPt);
       fhNpAccSec->Fill(Double_t(nStations));
       fhZAccSec->Fill(vertex.Z());
     }
@@ -230,14 +281,17 @@ void CbmTrackingTrdQa::Exec(Option_t* /*opt*/)
     nRecAll++;
     fhPtRecAll->Fill(info.fPt);
     fhNpRecAll->Fill(Double_t(nAllHits));
+    //fhPidXY[Pdg2Idx[info.fPdg]]->Fill(info.fY, info.fPt);
     if (info.fIsPrimary) {
       nRecPrim++;
       fhPtRecPrim->Fill(info.fPt);
+      fhPidPtY["prmE"][Pdg2Idx(info.fPdg)]->Fill(info.fY, info.fPt);
       fhNpRecPrim->Fill(Double_t(nAllHits));
     }
     else {
       nRecSec++;
       fhPtRecSec->Fill(info.fPt);
+      fhPidPtY["secE"][Pdg2Idx(info.fPdg)]->Fill(info.fY, info.fPt);
       fhNpRecSec->Fill(Double_t(nAllHits));
       fhZRecSec->Fill(vertex.Z());
     }
@@ -435,7 +489,15 @@ void CbmTrackingTrdQa::Finish()
   DivideHistos(fhNpRecPrim, fhNpAccPrim, fhNpEffPrim);
   DivideHistos(fhNpRecSec, fhNpAccSec, fhNpEffSec);
   DivideHistos(fhZRecSec, fhZAccSec, fhZEffSec);
-
+  for (int idx(0); idx < fgkNpdg; idx++) {
+    fhPidPtY["allY"][idx]->Add(fhPidPtY["prmY"][idx]);
+    fhPidPtY["allY"][idx]->Add(fhPidPtY["secY"][idx]);
+    fhPidPtY["allE"][idx]->Add(fhPidPtY["prmE"][idx]);
+    fhPidPtY["allE"][idx]->Add(fhPidPtY["secE"][idx]);
+    DivideHistos(fhPidPtY["prmE"][idx], fhPidPtY["prmY"][idx], fhPidPtY["prmE"][idx], "2D");
+    DivideHistos(fhPidPtY["secE"][idx], fhPidPtY["secY"][idx], fhPidPtY["secE"][idx], "2D");
+    DivideHistos(fhPidPtY["allE"][idx], fhPidPtY["allY"][idx], fhPidPtY["allE"][idx], "2D");
+  }
   // Normalise histos for clones and ghosts to one event
   if (fNEvents) {
     fhNhClones->Scale(1. / Double_t(fNEvents));
@@ -562,7 +624,7 @@ void CbmTrackingTrdQa::CreateHistos()
 
   // Momentum distributions
   Double_t minPt = 0.;
-  Double_t maxPt = 10.;
+  Double_t maxPt = 2.;
   Int_t nBinsPt  = 40;
 
   fhStationEffXY.clear();
@@ -571,8 +633,8 @@ void CbmTrackingTrdQa::CreateHistos()
     //auto trdInterface = CbmTrdTrackingInterface::Instance();
     double dx = 150;  //trdInterface->GetXmax(i);
     double dy = 150;  //trdInterface->GetYmax(i);
-    fhStationEffXY.emplace_back(Form("fhStationEffXY%i", i), Form("Efficiency XY: Station %i;X [cm];Y [cm]", i), 50,
-                                -dx, dx, 50, -dy, dy);
+    fhStationEffXY.emplace_back(Form("fhStationEffXY%i", i), Form("Efficiency XY: Station %i;X [cm];Y [cm]", i), 300,
+                                -dx, dx, 300, -dy, dy);
     fhStationEffXY[i].SetDirectory(0);
     fhStationEffXY[i].SetOptStat(10);
     fhStationEffXY[i].GetYaxis()->SetTitleOffset(1.4);
@@ -601,6 +663,18 @@ void CbmTrackingTrdQa::CreateHistos()
   fHistoList->Add(fhPtRecSec);
   fHistoList->Add(fhPtEffSec);
 
+  const char* pltTitle[] = {"Yield", "Yield", "Yield", "Efficiency", "Efficiency", "Efficiency"};
+  const char* pltLab[]   = {"yield", "yield", "yield", "#epsilon (%)", "#epsilon (%)", "#epsilon (%)"};
+  const char* vxTyp[]    = {"allY", "prmY", "secY", "allE", "prmE", "secE"};
+  for (int ivx(0); ivx < 6; ivx++) {
+    for (int ipid(0); ipid < fgkNpdg; ipid++) {
+      fhPidPtY[vxTyp[ivx]][ipid] =
+        new TH2F(Form("hPtY_%s%s", vxTyp[ivx], Idx2Symb(ipid)),
+                 Form("%s %s(%s); y - y_{cm}; p_{T} (GeV/c); %s", pltTitle[ivx], Idx2Name(ipid), vxTyp[ivx], pltLab[ivx]), 50, -2.5,
+                 2.5, nBinsPt, minPt, maxPt);
+      fHistoList->Add(fhPidPtY[vxTyp[ivx]][ipid]);
+    }
+  }
   // Number-of-points distributions
   Double_t minNp = -0.5;
   Double_t maxNp = 15.5;
@@ -799,7 +873,7 @@ void CbmTrackingTrdQa::FillTrackMatchMap(Int_t& nRec, Int_t& nGhosts, Int_t& nCl
 
 
 // -----   Private method DivideHistos   -----------------------------------
-void CbmTrackingTrdQa::DivideHistos(TH1* histo1, TH1* histo2, TH1* histo3)
+void CbmTrackingTrdQa::DivideHistos(TH1* histo1, TH1* histo2, TH1* histo3, Option_t* opt)
 {
 
   if (!histo1 || !histo2 || !histo3) {
@@ -815,6 +889,18 @@ void CbmTrackingTrdQa::DivideHistos(TH1* histo1, TH1* histo2, TH1* histo3)
     LOG(error) << histo2->GetName() << " " << histo2->GetNbinsX();
     LOG(error) << histo3->GetName() << " " << histo3->GetNbinsX();
     return;
+  }
+  if (strcmp(opt, "2D") == 0) {
+    Int_t nBinsY = histo1->GetNbinsY();
+    if (histo2->GetNbinsY() != nBinsY || histo3->GetNbinsY() != nBinsY) {
+      LOG(error) << GetName() << "::DivideHistos: "
+                 << "Different bin numbers in histos";
+      LOG(error) << histo1->GetName() << " " << histo1->GetNbinsY();
+      LOG(error) << histo2->GetName() << " " << histo2->GetNbinsY();
+      LOG(error) << histo3->GetName() << " " << histo3->GetNbinsY();
+      return;
+    }
+    nBins *= nBinsY;
   }
 
   Double_t c1, c2, c3, ce;
@@ -833,8 +919,8 @@ void CbmTrackingTrdQa::DivideHistos(TH1* histo1, TH1* histo2, TH1* histo3)
       c3 = 0.;
       ce = 0.;
     }
-    histo3->SetBinContent(iBin, c3);
-    histo3->SetBinError(iBin, ce);
+    histo3->SetBinContent(iBin, 1.e2 * c3);
+    histo3->SetBinError(iBin, 1.e2 * ce);
   }
 }
 // -------------------------------------------------------------------------

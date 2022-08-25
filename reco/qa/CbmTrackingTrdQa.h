@@ -51,6 +51,9 @@ public:
   /** Destructor **/
   virtual ~CbmTrackingTrdQa();
 
+  /** Set rapidity of CM for the collision such that tracks are represented in CM **/
+  void SetYcm(double ycm) { fYCM = ycm; }
+
   /** Set parameter containers **/
   virtual void SetParContainers();
 
@@ -72,6 +75,15 @@ private:
 
   /** Get the target node from the geometry **/
   void GetTargetPosition();
+
+  /** convert Pdg code <-> index **/
+  static const int fgkNpdg = 6;
+  static const char* fgkIdxName[fgkNpdg];
+  static const char* fgkIdxSymb[fgkNpdg];
+  static int Pdg2Idx(int pdg);
+  static int Idx2Pdg(int idx);
+  static const char* Idx2Name(int idx);
+  static const char* Idx2Symb(int idx);
 
   /** Create histograms **/
   void CreateHistos();
@@ -96,8 +108,9 @@ private:
    *@param histo1  reconstructed tracks
    *@param histo2  all tracks (normalisation)
    *@param histo3  efficiency
+   *@param opt  histogram dimension, for 2D use opt = "2D"
    **/
-  void DivideHistos(TH1* histo1, TH1* histo2, TH1* histo3);
+  void DivideHistos(TH1* histo1, TH1* histo2, TH1* histo3, Option_t* opt = "");
 
   struct McTrackInfo {
     std::map<Int_t, Int_t> fHitMap = {};  /// Trd station -> number of attached hits
@@ -112,6 +125,8 @@ private:
     Bool_t fIsFast {0};
     Bool_t fIsLong {0};
     Double_t fPt {0.};
+    Int_t fPdg  = 0;
+    Double_t fY = 0.;
   };
 
   McTrackInfo& getMcTrackInfo(const CbmLink& link)
@@ -148,6 +163,7 @@ private:
   Int_t fMinStations = 4;  // Minimal number of stations with hits for considered MCTrack
 
   Double_t fQuota = 0.7;  // True/all hits for track to be considered reconstructed
+  float fYCM = 0.;  // rapidity of CM    
 
   TFolder fOutFolder = {"TrackingTrdQa", "TrackingTrdQa"};  /// output folder with histos and canvases
 
@@ -155,6 +171,9 @@ private:
 
   // eff. vs. XY
   std::vector<CbmQaHist<TProfile2D>> fhStationEffXY;
+  std::array<TH2F*, fgkNpdg> fhPidXY;
+  // eff. vs. pT - Y
+  std::map<const char*, std::array<TH2F*, fgkNpdg>> fhPidPtY;
 
   // eff. vs. pt, all
   TH1F* fhPtAccAll = nullptr;
