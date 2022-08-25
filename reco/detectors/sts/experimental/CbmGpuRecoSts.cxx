@@ -190,9 +190,6 @@ void CbmGpuRecoSts::Setup(size_t maxDigisPerModule, size_t nDigitsTotal)
 
 void CbmGpuRecoSts::RunHitFinder()
 {
-  setenv("XPU_PROFILE", "1", 1);
-  xpu::initialize();
-
   auto& hfc = fHitfinderCpu;
 
   // ROCm bug: Mi100 name is an emtpy string...
@@ -367,6 +364,10 @@ void CbmGpuRecoSts::FetchDigis(size_t& maxDigisPerModule, size_t& nDigisTotal)
 
   CbmDigiManager* digis = CbmDigiManager::Instance();
   auto& hfc             = fHitfinderCpu;
+
+  // Remove digis from previous timeslice
+  fDigisByModuleB.clear();
+  fDigisByModuleF.clear();
 
   // FIXME: GPU reco should use regular digi class too
   nDigis      = digis->GetNofDigis(ECbmModuleId::kSts);

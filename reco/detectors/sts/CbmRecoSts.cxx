@@ -33,6 +33,8 @@
 
 #include <iomanip>
 
+#include <xpu/host.h>
+
 #if __has_include(<omp.h>)
 #include <omp.h>
 #endif
@@ -333,6 +335,14 @@ InitStatus CbmRecoSts::Init()
   std::cout << std::endl;
   LOG(info) << "==========================================================";
   LOG(info) << GetName() << ": Initialising ";
+
+  // Initialize xpu.
+  // TODO: This call can be relatively expensive.
+  //       We need a way to ensure this happens only once at the beginning.
+  if (fUseGpuReco) {
+    setenv("XPU_PROFILE", "1", 1);  // Always enable profiling in xpu
+    xpu::initialize();
+  }
 
   // --- Check IO-Manager
   FairRootManager* ioman = FairRootManager::Instance();
