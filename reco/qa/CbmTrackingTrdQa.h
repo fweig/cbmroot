@@ -151,7 +151,7 @@ private:
   TClonesArray* fTrdHits            = nullptr;  //! TrdHits
   TClonesArray* fTrdHitMatch        = nullptr;  //! TrdHitMatch
   TClonesArray* fGlobalTracks       = nullptr;  //! GlobalTrack
-  TClonesArray* fGlobalTrackMatches = nullptr;  //! GlobalTrackMatch
+  //TClonesArray* fGlobalTrackMatches = nullptr;  //! GlobalTrackMatch
   TClonesArray* fTrdTracks          = nullptr;  //! TrdTrack
   TClonesArray* fTrdTrackMatches    = nullptr;  //! TrdTrackMatch
 

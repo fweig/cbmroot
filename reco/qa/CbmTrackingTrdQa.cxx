@@ -423,7 +423,7 @@ InitStatus CbmTrackingTrdQa::Init()
   assert(fGlobalTracks);
 
   // Get GlobalTrackMatch array
-  fGlobalTrackMatches = (TClonesArray*) fManager->GetObject("GlobalTrackMatch");
+  //fGlobalTrackMatches = (TClonesArray*) fManager->GetObject("GlobalTrackMatch");
   //assert(fGlobalTrackMatches);
 
   // Get TrdTrack array
@@ -752,7 +752,7 @@ void CbmTrackingTrdQa::FillHitMap()
 
     if ((int) hit->GetClassType() != 1) {
       // skip TRD-1D hit
-      continue;
+      //continue;
     }
 
     Int_t station = CbmTrdTrackingInterface::Instance()->GetTrackingStationIndex(hit);
@@ -781,7 +781,6 @@ void CbmTrackingTrdQa::FillHitMap()
 // ------   Private method FillMatchMap   ----------------------------------
 void CbmTrackingTrdQa::FillTrackMatchMap(Int_t& nRec, Int_t& nGhosts, Int_t& nClones)
 {
-
   // Clear matching maps
   for (auto it = fMcTrackInfoMap.begin(); it != fMcTrackInfoMap.end(); ++it) {
     McTrackInfo& info         = it->second;
@@ -797,6 +796,8 @@ void CbmTrackingTrdQa::FillTrackMatchMap(Int_t& nRec, Int_t& nGhosts, Int_t& nCl
   nClones = 0;
   nRec    = 0;
 
+  //assert(fGlobalTrackMatches);
+
   for (Int_t iGlobalTrack = 0; iGlobalTrack < fGlobalTracks->GetEntriesFast(); iGlobalTrack++) {
 
     // --- GlobalTrack
@@ -805,12 +806,12 @@ void CbmTrackingTrdQa::FillTrackMatchMap(Int_t& nRec, Int_t& nGhosts, Int_t& nCl
 
     // --- TrackMatch
 
-    assert(iGlobalTrack >= 0 && iGlobalTrack < fTrdTrackMatches->GetEntriesFast());
+    //assert(iGlobalTrack >= 0 && iGlobalTrack < fGlobalTrackMatches->GetEntriesFast());
     //CbmTrackMatchNew* globalMatch = (CbmTrackMatchNew*) fGlobalTrackMatches->At(iGlobalTrack);
     //assert(globalMatch);
 
-
     int iTrdTrack = globalTrack->GetTrdTrackIndex();
+
     if (iTrdTrack < 0) continue;
     CbmTrdTrack* trdTrack = (CbmTrdTrack*) fTrdTracks->At(iTrdTrack);
     assert(trdTrack);
