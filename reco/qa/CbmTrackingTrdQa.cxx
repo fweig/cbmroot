@@ -668,10 +668,10 @@ void CbmTrackingTrdQa::CreateHistos()
   const char* vxTyp[]    = {"allY", "prmY", "secY", "allE", "prmE", "secE"};
   for (int ivx(0); ivx < 6; ivx++) {
     for (int ipid(0); ipid < fgkNpdg; ipid++) {
-      fhPidPtY[vxTyp[ivx]][ipid] =
-        new TH2F(Form("hPtY_%s%s", vxTyp[ivx], Idx2Symb(ipid)),
-                 Form("%s %s(%s); y - y_{cm}; p_{T} (GeV/c); %s", pltTitle[ivx], Idx2Name(ipid), vxTyp[ivx], pltLab[ivx]), 50, -2.5,
-                 2.5, nBinsPt, minPt, maxPt);
+      fhPidPtY[vxTyp[ivx]][ipid] = new TH2F(
+        Form("hPtY_%s%s", vxTyp[ivx], Idx2Symb(ipid)),
+        Form("%s %s(%s); y - y_{cm}; p_{T} (GeV/c); %s", pltTitle[ivx], Idx2Name(ipid), vxTyp[ivx], pltLab[ivx]), 50,
+        -2.5, 2.5, nBinsPt, minPt, maxPt);
       fHistoList->Add(fhPidPtY[vxTyp[ivx]][ipid]);
     }
   }

@@ -163,7 +163,7 @@ private:
   Int_t fMinStations = 4;  // Minimal number of stations with hits for considered MCTrack
 
   Double_t fQuota = 0.7;  // True/all hits for track to be considered reconstructed
-  float fYCM = 0.;  // rapidity of CM    
+  float fYCM      = 0.;   // rapidity of CM
 
   TFolder fOutFolder = {"TrackingTrdQa", "TrackingTrdQa"};  /// output folder with histos and canvases
 
