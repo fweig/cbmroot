@@ -790,7 +790,7 @@ InitStatus CbmL1::Init()
     trd2dIter1.SetMaxDZ(0.05);
     trd2dIter1.SetTargetPosSigmaXY(1., 1.);  //(1, 1);
     trd2dIter1.SetMinLevelTripletStart(1);
-    trd2dIter1.SetPrimaryFlag(true);
+    trd2dIter1.SetPrimaryFlag(false);
 
     auto trd2dIter2 = L1CAIteration("Trd2dIter2");
     trd2dIter2.SetTrackChi2Cut(7.f);              //10.f
@@ -803,8 +803,8 @@ InitStatus CbmL1::Init()
     trd2dIter2.SetMaxSlope(.5f);
     trd2dIter2.SetMaxDZ(0.05);
     trd2dIter2.SetTargetPosSigmaXY(8 * 10, 6 * 10);  //(1, 1);
-    trd2dIter2.SetMinLevelTripletStart(1);
-    trd2dIter2.SetPrimaryFlag(true);
+    trd2dIter2.SetMinLevelTripletStart(0);
+    trd2dIter2.SetPrimaryFlag(false);
 
     // Initialize CA track finder iterations sequence
 

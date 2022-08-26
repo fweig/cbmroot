@@ -2449,7 +2449,7 @@ void L1Algo::CATrackFinder()
             if (tr.NHits <= 3) { continue; }
           }
           else if (kGlobal == fTrackingMode) {
-            if (tr.NHits <= 3) { continue; }
+            if (tr.NHits < 3) { continue; }
           }
           else {
             if (tr.NHits < 3) { continue; }
