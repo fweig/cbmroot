@@ -143,16 +143,17 @@ public:
     return _mm_cmpeq_ps(a, b);
   }
 
-#define if3(a, b, c) ((a) & (b)) | ((!(a)) & (c))  // analog (a) ? b : c
+  // #define if3(a, b, c) ((a) & (b)) | ((!(a)) & (c))  // analog (a) ? b : c
+
+  static F32vec4 One() { return F32vec4(1.); }
+  static F32vec4 Zero() { return F32vec4(0.); }
+  static F32vec4 MaskOne() { return _f32vec4_true; }
+  static F32vec4 MaskZero() { return _f32vec4_false; }
 
 #define NotEmptyFvec(a) bool((a)[0]) | bool((a)[1]) | bool((a)[2]) | bool((a)[3])
 #define EmptyFvec(a) !(bool((a)[0]) | bool((a)[1]) | bool((a)[2]) | bool((a)[3]))
   // bool NotEmpty(const F32vec4 &a) { return a[0]||a[1]||a[2]||a[3]; }
   // bool    Empty(const F32vec4 &a) { return !(a[0]||a[1]||a[2]||a[3]); } // optimize
-  friend F32vec4 bool2int(const F32vec4& a)
-  {  // mask returned
-    return if3(a, 1, 0);
-  }
 
   /* Define all operators for consistensy */
 
@@ -228,23 +229,6 @@ public:
     return strm;
   }
 
-  /// Checks, if all bands are equal
-  /// NOTE: two values defined as signaling_NaN() are not equal, thus if there are all or one
-  /// of the words are kNaN, the function returns false
-  bool IsHorizontallyEqual() const { return v[0] == v[1] && v[1] == v[2] && v[2] == v[3]; }
-
-  /// Checks, if any of the bands is NaN
-  bool IsNanAny() const { return std::isnan(v[0]) || std::isnan(v[1]) || std::isnan(v[2]) || std::isnan(v[3]); }
-
-  /// Checks, if all of the bands is NaN
-  bool IsNanAll() const { return std::isnan(v[0]) && std::isnan(v[1]) && std::isnan(v[2]) && std::isnan(v[3]); }
-
-  /// Checks, if all of the bands are finite
-  bool IsFiniteAll() const
-  {
-    return std::isfinite(v[0]) && std::isfinite(v[1]) && std::isfinite(v[2]) && std::isfinite(v[3]);
-  }
-
 } __attribute__((aligned(16)));
 
 
@@ -255,6 +239,41 @@ const int fvecLen = 4;
 //#define fvec_false _f32vec4_false
 #define _fvecalignment __attribute__((aligned(16)))
 
+inline fvec if3(const fvec& mask, const fvec& b, const fvec& c)
+{
+  // return (a ?b :c);
+  return (b & mask) + (c & (!mask));
+}
+
+inline fvec masked(const fvec& a, const fvec& mask) { return if3(mask, a, fvec::Zero()); }
+
+inline fvec mask2int(const fvec& mask)
+{  // mask returned
+  return if3(mask, fvec::One(), fvec::Zero());
+}
+
+/// Checks, if all bands are equal
+/// NOTE: two values defined as signaling_NaN() are not equal, thus if there are all or one
+/// of the words are kNaN, the function returns false
+inline bool IsHorizontallyEqual(const fvec& v)
+{
+  fscal s  = v[0];
+  bool ret = true;
+  for (int i = 1; i < fvecLen; i++) {
+    ret = ret && (v[i] == s);
+  }
+  return ret;
+}
+
+/// Checks, if any of the bands is NaN
+inline bool IsNanAny(const fvec& v)
+{
+  bool ret = false;
+  for (int i = 0; i < fvecLen; i++) {
+    ret = ret || std::isnan(v[i]);
+  }
+  return ret;
+}
 
 #include "std_alloc.h"
 

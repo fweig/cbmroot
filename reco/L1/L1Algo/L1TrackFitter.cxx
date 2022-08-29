@@ -47,7 +47,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
     L1Fit fit;
     fit.SetParticleMass(GetDefaultParticleMass());
 
-    fvec qp0 = 0.25;
+    fvec qp0(0.25);
     //fvec qp0 = 2./t.Momentum;
     for (int iter = 0; iter < 3; iter++) {
       //cout<<" Back 1"<<endl;
@@ -66,18 +66,18 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         const L1Station& sta1 = fParameters.GetStation(ista1);
         const L1Station& sta2 = fParameters.GetStation(ista2);
 
-        fvec u0 = hit0.u;
-        fvec v0 = hit0.v;
+        fvec u0       = hit0.u;
+        fvec v0       = hit0.v;
         auto [x0, y0] = sta0.ConvUVtoXY<fvec>(u0, v0);
-        fvec z0 = hit0.z;
+        fvec z0       = hit0.z;
 
-        fvec u1 = hit1.u;
-        fvec v1 = hit1.v;
+        fvec u1       = hit1.u;
+        fvec v1       = hit1.v;
         auto [x1, y1] = sta1.ConvUVtoXY<fvec>(u1, v1);
-        fvec z1 = hit1.z;
+        fvec z1       = hit1.z;
 
-        fvec u2 = hit2.u;
-        fvec v2 = hit2.v;
+        fvec u2       = hit2.u;
+        fvec v2       = hit2.v;
         auto [x2, y2] = sta1.ConvUVtoXY<fvec>(u2, v2);
         // fvec z2 = hit2.z;
 
@@ -93,17 +93,17 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
 
         T.qp   = qp0;
         T.z    = z0;
-        T.chi2 = 0.;
-        T.NDF  = 2.;
+        T.chi2 = fvec(0.);
+        T.NDF  = fvec(2.);
         T.C00  = sta0.XYInfo.C00;
         T.C10  = sta0.XYInfo.C10;
         T.C11  = sta0.XYInfo.C11;
 
-        T.C20 = T.C21 = 0;
-        T.C30 = T.C31 = T.C32 = 0;
-        T.C40 = T.C41 = T.C42 = T.C43 = 0;
+        T.C20 = T.C21 = fvec(0.);
+        T.C30 = T.C31 = T.C32 = fvec(0.);
+        T.C40 = T.C41 = T.C42 = T.C43 = fvec(0.);
         T.C22 = T.C33 = vINF;
-        T.C44         = 1.;
+        T.C44         = fvec(1.);
 
         //        static L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
         //        static L1FieldRegion fld _fvecalignment;
@@ -142,8 +142,8 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
 
           //         if (ista == fNstationsBeforePipe - 1) fit.L1AddPipeMaterial( T, qp0, 1);
 
-          fvec u = hit.u;
-          fvec v = hit.v;
+          fvec u      = hit.u;
+          fvec v      = hit.v;
           auto [x, y] = sta.ConvUVtoXY<fvec>(u, v);
           L1Filter(T, sta.frontInfo, u);
           L1Filter(T, sta.backInfo, v);
@@ -183,7 +183,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
 
         t.chi2 = T.chi2[0];
         t.NDF  = static_cast<int>(T.NDF[0]);
-        qp0    = T.qp[0];
+        qp0    = T.qp;
       }  // fit backward
 
       // fit forward
@@ -201,18 +201,18 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         const L1Station& sta1 = fParameters.GetStation(ista1);
         const L1Station& sta2 = fParameters.GetStation(ista2);
 
-        fvec u0 = hit0.u;
-        fvec v0 = hit0.v;
+        fvec u0       = hit0.u;
+        fvec v0       = hit0.v;
         auto [x0, y0] = sta0.ConvUVtoXY<fvec>(u0, v0);
-        fvec z0 = hit0.z;
+        fvec z0       = hit0.z;
 
-        fvec u1 = hit1.u;
-        fvec v1 = hit1.v;
+        fvec u1       = hit1.u;
+        fvec v1       = hit1.v;
         auto [x1, y1] = sta1.ConvUVtoXY<fvec>(u1, v1);
         // fvec z1 = hit1.z;
 
-        fvec u2 = hit2.u;
-        fvec v2 = hit2.v;
+        fvec u2       = hit2.u;
+        fvec v2       = hit2.v;
         auto [x2, y2] = sta2.ConvUVtoXY<fvec>(u2, v2);
         //  fvec z2 = hit2.z;
 
@@ -221,8 +221,8 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         //fvec qp0 = first_trip->GetQpOrig(MaxInvMom);
 
         //        const fvec vINF = .1;
-        T.chi2 = 0.;
-        T.NDF  = 2.;
+        T.chi2 = fvec(0.);
+        T.NDF  = fvec(2.);
         T.x    = x0;
         T.y    = y0;
         //         T.tx = (x1-x0)*dzi;
@@ -312,7 +312,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         t.chi2 += T.chi2[0];
         t.NDF += static_cast<int>(T.NDF[0]);
       }
-      qp0 = T.qp[0];
+      qp0 = T.qp;
     }
   }  // for(int itrack
 }
@@ -428,16 +428,16 @@ void L1Algo::L1KFTrackFitter()
         w[ista][iVec]    = 1.;
         if (ista > fNstationsBeforePipe) w_time[ista][iVec] = 1.;
 
-        u[ista][iVec]   = hit.u;
-        v[ista][iVec]   = hit.v;
-        d_u[ista][iVec] = hit.du;
-        d_v[ista][iVec] = hit.dv;
+        u[ista][iVec]            = hit.u;
+        v[ista][iVec]            = hit.v;
+        d_u[ista][iVec]          = hit.du;
+        d_v[ista][iVec]          = hit.dv;
         std::tie(x_temp, y_temp) = sta[ista].ConvUVtoXY<fvec>(u[ista], v[ista]);
-        x[ista][iVec]      = x_temp[iVec];
-        y[ista][iVec]      = y_temp[iVec];
-        time[ista][iVec]   = hit.t;
-        timeEr[ista][iVec] = hit.dt;
-        z[ista][iVec]      = hit.z;
+        x[ista][iVec]            = x_temp[iVec];
+        y[ista][iVec]            = y_temp[iVec];
+        time[ista][iVec]         = hit.t;
+        timeEr[ista][iVec]       = hit.dt;
+        z[ista][iVec]            = hit.z;
         sta[ista].fieldSlice.GetFieldValue(x[ista], y[ista], fB_temp);
         std::tie(d_xx[ista], d_xy[ista], d_yy[ista]) = sta[ista].FormXYCovarianceMatrix(d_u[ista], d_v[ista]);
 
@@ -530,10 +530,10 @@ void L1Algo::L1KFTrackFitter()
         fldB0.Combine(fB[i], w[i]);
         fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
-        fvec initialised = fvec(z[i] < z_end) & fvec(z_start <= z[i]);
-        fvec w1          = (w[i] & (initialised));
-        fvec w1_time     = (w_time[i] & (initialised));
-        fvec wIn         = (ONE & (initialised));
+        fvec initialised = (z[i] < z_end) & (z_start <= z[i]);
+        fvec w1          = masked(w[i], initialised);
+        fvec w1_time     = masked(w_time[i], initialised);
+        fvec wIn         = masked(fvec::One(), initialised);
 
         fld1 = fld;
 
@@ -692,10 +692,10 @@ void L1Algo::L1KFTrackFitter()
         fldB0.Combine(fB[i], w[i]);
         fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
-        fvec initialised = fvec(z[i] <= z_end) & fvec(z_start < z[i]);
-        fvec w1          = (w[i] & (initialised));
-        fvec wIn         = (ONE & (initialised));
-        fvec w1_time     = (w_time[i] & (initialised));
+        fvec initialised = (z[i] <= z_end) & (z_start < z[i]);
+        fvec w1          = masked(w[i], initialised);
+        fvec w1_time     = masked(w_time[i], initialised);
+        fvec wIn         = masked(fvec::One(), initialised);
 
         L1Extrapolate(T, z[i], qp0, fld, &w1);
 
@@ -901,15 +901,15 @@ void L1Algo::L1KFTrackFitterMuch()
         d_xx[i][iVec] = 0;
         d_yy[i][iVec] = 0;
 
-        u[ista][iVec] = hit.u;
-        v[ista][iVec] = hit.v;
+        u[ista][iVec]                                = hit.u;
+        v[ista][iVec]                                = hit.v;
         std::tie(x_temp, y_temp)                     = sta[ista].ConvUVtoXY<fvec>(u[ista], v[ista]);
-        x[ista][iVec]      = x_temp[iVec];
-        y[ista][iVec]      = y_temp[iVec];
-        time[ista][iVec]   = hit.t;
-        timeEr[ista][iVec] = hit.dt;
-        d_u[ista][iVec]    = hit.du;
-        d_v[ista][iVec]    = hit.dv;
+        x[ista][iVec]                                = x_temp[iVec];
+        y[ista][iVec]                                = y_temp[iVec];
+        time[ista][iVec]                             = hit.t;
+        timeEr[ista][iVec]                           = hit.dt;
+        d_u[ista][iVec]                              = hit.du;
+        d_v[ista][iVec]                              = hit.dv;
         std::tie(d_xx[ista], d_xy[ista], d_yy[ista]) = sta[ista].FormXYCovarianceMatrix(d_u[ista], d_v[ista]);
 
         //  mom[ista][iVec] = hit.p;
@@ -1002,9 +1002,9 @@ void L1Algo::L1KFTrackFitterMuch()
       fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
 
       for (++i; i < nHits; i++) {
-        fvec initialised = fvec(z[i] <= z_end) & fvec(z_start < z[i]);
-        fvec w1          = (w[i] & (initialised));
-        fvec wIn         = (ONE & (initialised));
+        fvec initialised = (z[i] <= z_end) & (z_start < z[i]);
+        fvec w1          = masked(w[i], initialised);
+        fvec wIn         = masked(fvec::One(), initialised);
 
         fldZ0 = z[i];
         dz    = (fldZ1 - fldZ0);
@@ -1078,33 +1078,25 @@ void L1Algo::L1KFTrackFitterMuch()
             if (max_steps < nofSteps[j]) max_steps = nofSteps[j];
           }
 
-          const fvec mask = (nofSteps < fvec(1)) & fvec(1);
 
-          fvec nofSteps1 = fvec(0);
+          fvec nofSteps1 = fvec::Zero();
 
-          fvec one = fvec(1);
-
-          fvec stepSize = (((mask) *d_z) + ((one - mask) * st)) * w1;
-
-          fvec z_cur = T1.fz;
-
-          fvec w2 = w1;
+          fvec stepSize = if3(nofSteps < fvec::One(), d_z, st) * w1;
+          fvec z_cur    = T1.fz;
+          fvec w2       = w1;
 
 
           for (int iStep = 0; iStep < max_steps + 1; iStep++) {
 
-            const fvec mask1 = (nofSteps == nofSteps1) & fvec(1);
-
-            z_cur = (one - mask1) * (stepSize + T1.fz) + mask1 * z_last;
+            const fvec maskLastStep = (nofSteps == nofSteps1);
+            z_cur                   = if3(maskLastStep, z_last, T1.fz + stepSize);
 
             //  fvec v_mc = fabs(1/qp01)/sqrt(mass2+fabs(1/qp01)*fabs(1/qp01));
             // T1.ExtrapolateLine1( z, &w2, v_mc);
 
             T1.ExtrapolateLine(z_cur, &w2);
-
-            nofSteps1 = nofSteps1 + (one - mask1);
-
-            w2 = w2 & (one - mask1);
+            nofSteps1 += masked(fvec::One(), !maskLastStep);
+            w2 = masked(w2, !maskLastStep);
 
             //          T1.ExtrapolateLine( z_last, &w1);
             //          L1ExtrapolateLine( T, z_last);
@@ -1123,7 +1115,7 @@ void L1Algo::L1KFTrackFitterMuch()
               T1.L1AddThickMaterial(fParameters.GetMaterialThickness(i, T1.fx, T1.fy) / (nofSteps + fvec(1)), qp01, wIn,
                                     sta[i].materialInfo.thick / (nofSteps + fvec(1)), 1);
 
-              wIn = wIn & (one - mask1);
+              wIn = masked(wIn, !maskLastStep);
             }
             else {
               fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
@@ -1206,11 +1198,9 @@ void L1Algo::L1KFTrackFitterMuch()
 
       for (--i; i >= 0; i--) {
 
-        fvec initialised = fvec(z[i] < z_end) & fvec(z_start <= z[i]);
-        fvec w1          = (w[i] & (initialised));
-
-        fvec wIn = (ONE & (initialised));
-
+        fvec initialised = (z[i] < z_end) & (z_start <= z[i]);
+        fvec w1          = masked(w[i], initialised);
+        fvec wIn         = masked(fvec::One(), initialised);
 
         if (i >= fNfieldStations - 1) {
 
@@ -1226,29 +1216,27 @@ void L1Algo::L1KFTrackFitterMuch()
 
           int max_steps = 0;
 
-          for (int j = 0; j < 4; j++) {
+          for (int j = 0; j < fvecLen; j++) {
             nofSteps[j] = int(fabs(d_z[j]) / 10);  //*w1[i];
             if (max_steps < nofSteps[j]) max_steps = nofSteps[j];
           }
 
-          const fvec mask = (nofSteps < fvec(1)) & fvec(1);
-          fvec nofSteps1  = fvec(0);
-          fvec one        = fvec(1);
-          fvec stepSize   = (((mask) *d_z) + ((one - mask) * st)) * wIn;
-          fvec z_cur      = T1.fz;
-          fvec w2         = wIn;
+          fvec nofSteps1 = fvec(0);
+          fvec stepSize  = wIn * if3((nofSteps < fvec::One()), d_z, st);
+          fvec z_cur     = T1.fz;
+          fvec w2        = wIn;
 
           for (int iStep = 0; iStep < max_steps + 1; iStep++) {
 
-            const fvec mask1 = (nofSteps == nofSteps1) & fvec(1);
-
-            z_cur = (one - mask1) * (T1.fz - stepSize) + mask1 * z_last;
+            const fvec maskLastStep = (nofSteps == nofSteps1);
+            z_cur                   = if3(maskLastStep, z_last, T1.fz - stepSize);
 
             //               fvec v_mc = fabs(1/qp01)/sqrt(mass2+fabs(1/qp01)*fabs(1/qp01));
             //               T1.ExtrapolateLine1( z_cur, &w2, v_mc);
 
             T1.ExtrapolateLine(z_cur, &w2);
-            nofSteps1 = nofSteps1 + (one - mask1);
+            nofSteps1 += masked(fvec::One(), !maskLastStep);
+
             // TODO: Unify the selection of energy loss correction! (S.Zharko)
             if constexpr (L1Constants::control::kIfUseRadLengthTable) {
               if (i == 11 || i == 14 || i == 17)
@@ -1264,7 +1252,7 @@ void L1Algo::L1KFTrackFitterMuch()
               T1.L1AddThickMaterial(fParameters.GetMaterialThickness(i, T1.fx, T1.fy) / (nofSteps + fvec(1)), qp01, w2,
                                     sta[i].materialInfo.thick / (nofSteps + fvec(1)), 0);
 
-              w2 = w2 & (one - mask1);
+              w2 = masked(w2, !maskLastStep);
             }
             else {
               fit.L1AddMaterial(T, sta[i].materialInfo, qp0, w2);
@@ -1568,7 +1556,7 @@ void L1Algo::GuessVec(L1TrackParFit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, 
   t.fy  = (A2 * b0 - A1 * b1) * det;
   t.fty = (-A1 * b0 + A0 * b1) * det;
   t.fqp = -L * c_light_i * rsqrt(txtx1 + t.fty * t.fty);
-  if (timeV) t.ft = time & (nhits > 0);
+  if (timeV) { t.ft = masked(time, nhits > 0); }
 
   t.fz = z0;
 }

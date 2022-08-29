@@ -64,7 +64,7 @@ namespace L1NaN
   template<typename T, typename std::enable_if<std::is_same<T, fvec>::value, T>::type* = nullptr>
   bool IsNaN(T value)
   {
-    return value.IsNanAny();  // NOTE: Here we consider fvec a NaN if at least one of its words is NaN
+    return IsNanAny(value);  // NOTE: Here we consider fvec a NaN if at least one of its words is NaN
   }
 };  // namespace L1NaN
 

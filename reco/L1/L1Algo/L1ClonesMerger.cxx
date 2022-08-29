@@ -297,9 +297,8 @@ void L1ClonesMerger::InvertCholesky(fvec a[15])
       uud += u[j][i] * u[j][i] * d[j];
     uud = a[i * (i + 3) / 2] - uud;
 
-    fvec smallval    = 1.e-12;
-    fvec initialised = fvec(uud < smallval);
-    uud              = ((!initialised) & uud) + (smallval & initialised);
+    fvec smallval(1.e-12);
+    uud = if3(uud >= smallval, uud, smallval);
 
     d[i]    = uud / fabs(uud);
     u[i][i] = sqrt(fabs(uud));

@@ -55,6 +55,10 @@ public:
 
   void EnergyLossCorrection(L1TrackPar& T, const fvec& radThick, fvec& qp0, fvec direction, fvec w);
 
+  template<int atomicZ>
+  void EnergyLossCorrection(float atomicA, float rho, float radLen, L1TrackPar& T, const fvec& radThick, fvec& qp0,
+                            fvec direction, fvec w);
+
   void EnergyLossCorrectionAl(L1TrackPar& T, const fvec& radThick, fvec& qp0, fvec direction, fvec w);
 
 
@@ -85,7 +89,5 @@ private:
 
   //ClassDefNV(L1Fit, 0)
 };
-
-#include "L1FitMaterial.h"
 
 #endif

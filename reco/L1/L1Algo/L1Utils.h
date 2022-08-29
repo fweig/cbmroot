@@ -44,7 +44,7 @@ namespace L1Utils
 
   [[gnu::always_inline]] inline void CheckSimdVectorEquality(fvec v, const char* name)
   {
-    if (!v.IsHorizontallyEqual()) {
+    if (!IsHorizontallyEqual(v)) {
       std::stringstream msg;
       msg << name << " SIMD vector is inconsistent, not all of the words are equal each other: " << v;
       throw std::logic_error(msg.str());

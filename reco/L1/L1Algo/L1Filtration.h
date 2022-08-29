@@ -14,7 +14,7 @@
 #define cnst const fvec
 
 
-inline void FilterTime(L1TrackPar& T, fvec t, fvec dt, fvec timeInfo = 1., fvec w = 1.)
+inline void FilterTime(L1TrackPar& T, fvec t, fvec dt, fvec timeInfo = fvec::One(), fvec w = fvec::One())
 {
   // filter track with a time measurement
 
@@ -28,7 +28,7 @@ inline void FilterTime(L1TrackPar& T, fvec t, fvec dt, fvec timeInfo = 1., fvec 
 
   fvec HCH = T.C55;
 
-  w = w & (timeInfo > 0.f);
+  w = masked(w, timeInfo > fvec::Zero());
 
   fvec dt2 = dt * dt;
 
@@ -42,7 +42,7 @@ inline void FilterTime(L1TrackPar& T, fvec t, fvec dt, fvec timeInfo = 1., fvec 
 
   fvec wi     = w / (dt2 + 1.0000001f * HCH);
   fvec zeta   = T.t - t;
-  fvec zetawi = w * zeta / ((maskDoFilter & dt2) + HCH);
+  fvec zetawi = w * zeta / (masked(dt2, maskDoFilter) + HCH);
 
   //T.chi2 += maskDoFilter & (zeta * zetawi);
   T.chi2 += zeta * zeta * wi;
@@ -113,9 +113,9 @@ inline void L1Filter(L1TrackPar& T, const L1UMeasurementInfo& info, fvec u, fvec
   // with respect to HCH that it disappears due to the roundoff error
   //
   fvec wi     = w / (info.sigma2 + 1.0000001f * HCH);
-  fvec zetawi = w * zeta / ((maskDoFilter & info.sigma2) + HCH);
+  fvec zetawi = w * zeta / (masked(info.sigma2, maskDoFilter) + HCH);
 
-  // T.chi2 += maskDoFilter & (zeta * zetawi);
+  // T.chi2 += masked( zeta * zetawi, maskDoFilter);
   T.chi2 += zeta * zeta * wi;
   T.NDF += w;
 
@@ -158,7 +158,7 @@ inline void L1Filter(L1TrackPar& T, const L1UMeasurementInfo& info, fvec u, fvec
 
 inline void L1FilterNoField(L1TrackPar& T, const L1UMeasurementInfo& info, fvec u, fvec w = 1.)
 {
-  fvec wi, zeta, zetawi, HCH;
+  fvec zeta, HCH;
   fvec F0, F1, F2, F3, F4, F5;
   fvec K1, K2, K3, K4, K5;
 
@@ -175,19 +175,16 @@ inline void L1FilterNoField(L1TrackPar& T, const L1UMeasurementInfo& info, fvec 
   F4 = info.cos_phi * T.C40 + info.sin_phi * T.C41;
   F5 = info.cos_phi * T.C50 + info.sin_phi * T.C51;
 
-#if 0  // use mask
-  const fvec mask = (HCH < info.sigma2 * 16.);
-  wi = w/( (mask & info.sigma2) +HCH );
-  zetawi = zeta *wi;
-  T.chi2 +=  mask & (zeta * zetawi);
-#else
-  wi     = w / (info.sigma2 + HCH);
-  zetawi = zeta * wi;
+  //const fmask maskDoFilter = (HCH < info.sigma2 * 16.f);
+  const fvec maskDoFilter(fvec::MaskOne());
 
-  T.chi2 += zeta * zetawi;
+  //TODO: SG:  try this
+  //fvec wi          = w / (info.sigma2 + 1.0000001f * HCH);
 
+  fvec wi     = w / (info.sigma2 + HCH);
+  fvec zetawi = w * zeta / (masked(info.sigma2, maskDoFilter) + HCH);
 
-#endif  // 0
+  T.chi2 += zeta * zeta * wi;
   T.NDF += w;
 
   K1 = F1 * wi;

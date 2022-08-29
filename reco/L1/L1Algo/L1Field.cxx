@@ -67,21 +67,21 @@ void L1FieldSlice::CheckConsistency() const
 {
   /* Check SIMD data vectors for consistent initialization */
   for (int i = 0; i < L1Constants::size::kMaxNFieldApproxCoefficients; ++i) {
-    if (!cx[i].IsHorizontallyEqual()) {
+    if (!IsHorizontallyEqual(cx[i])) {
       std::stringstream msg;
       msg << "L1FieldSlice: \"cx[" << i
           << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cx[i];
       throw std::logic_error(msg.str());
     }
 
-    if (!cy[i].IsHorizontallyEqual()) {
+    if (!IsHorizontallyEqual(cy[i])) {
       std::stringstream msg;
       msg << "L1FieldSlice: \"cy[" << i
           << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cy[i];
       throw std::logic_error(msg.str());
     }
 
-    if (!cz[i].IsHorizontallyEqual()) {
+    if (!IsHorizontallyEqual(cz[i])) {
       std::stringstream msg;
       msg << "L1FieldSlice: \"cz[" << i
           << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cz[i];
@@ -190,7 +190,7 @@ void L1FieldRegion::CheckConsistency() const
 // TODO: Should it be inline? (S.Zharko)
 L1FieldValue L1FieldRegion::Get(const fvec z)
 {
-  fvec dz  = (z - z0);
+  fvec dz  = z - z0;
   fvec dz2 = dz * dz;
   L1FieldValue B;
   B.x = cx0 + cx1 * dz + cx2 * dz2;
@@ -203,7 +203,7 @@ L1FieldValue L1FieldRegion::Get(const fvec z)
 // TODO: Should it be inline? (S.Zharko)
 void L1FieldRegion::Get(const fvec z_, fvec* B) const
 {
-  fvec dz  = (z_ - z0);
+  fvec dz  = z_ - z0;
   fvec dz2 = dz * dz;
   B[0]     = cx0 + cx1 * dz + cx2 * dz2;
   B[1]     = cy0 + cy1 * dz + cy2 * dz2;
@@ -216,8 +216,10 @@ void L1FieldRegion::Set(const L1FieldValue& b0, const fvec b0z, const L1FieldVal
                         const L1FieldValue& b2, const fvec b2z)
 {
   z0       = b0z;
-  fvec dz1 = b1z - b0z, dz2 = b2z - b0z;
-  fvec det = rcp(fvec(dz1 * dz2 * (dz2 - dz1)));
+  fvec dz1 = b1z - b0z;
+  fvec dz2 = b2z - b0z;
+  fvec det = rcp(dz1 * dz2 * (dz2 - dz1));
+
   fvec w21 = -dz2 * det;
   fvec w22 = dz1 * det;
   fvec w11 = -dz2 * w21;
@@ -246,8 +248,8 @@ void L1FieldRegion::Set(const L1FieldValue& b0, const fvec b0z, const L1FieldVal
 // TODO: Should it be inline? (S.Zharko)
 void L1FieldRegion::Set(const L1FieldValue& b0, const fvec b0z, const L1FieldValue& b1, const fvec b1z)
 {
-  z0       = b0z[0];
-  fvec dzi = rcp(fvec(b1z - b0z));
+  z0       = b0z;
+  fvec dzi = rcp(b1z - b0z);
   cx0      = b0.x;
   cy0      = b0.y;
   cz0      = b0.z;
@@ -267,7 +269,7 @@ void L1FieldRegion::Shift(fvec z)
   fvec cx2dz = cx2 * dz;
   fvec cy2dz = cy2 * dz;
   fvec cz2dz = cz2 * dz;
-  z0         = z[0];
+  z0         = z;
   cx0 += (cx1 + cx2dz) * dz;
   cy0 += (cy1 + cy2dz) * dz;
   cz0 += (cz1 + cz2dz) * dz;

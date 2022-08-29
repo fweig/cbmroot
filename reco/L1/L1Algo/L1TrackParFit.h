@@ -112,16 +112,24 @@ public:
   void ExtrapolateLine(fvec z_out, fvec* w = 0);
   void ExtrapolateLine1(fvec z_out, fvec* w = 0, fvec v = 0);
   void Compare(L1TrackPar& T);
+
   void EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
-  void L1AddMaterial(const L1MaterialInfo& info, fvec qp0, fvec w = 1);
+
+  template<int atomicZ>
+  void EnergyLossCorrection(float atomicA, float rho, float radLen, const fvec& radThick, fvec& qp0, fvec direction,
+                            fvec w);
+
+  void EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
+  void EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
+  void EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
+
+  void L1AddMaterial(const L1MaterialInfo& info, fvec qp0, fvec w);
 
   void L1AddMaterial(fvec radThick, fvec qp0, fvec w = 1);
 
   void L1AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream);
   void L1AddPipeMaterial(fvec qp0, fvec w = 1);
-  void EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fvec direction, fvec w = 1);
-  void EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, fvec direction, fvec w = 1);
-  void EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec direction, fvec w = 1);
+
   // void L1Extrapolate
   // (
   // //  L1TrackParFit &T, // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
