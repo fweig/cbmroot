@@ -20,12 +20,6 @@
 #endif
 
 
-template<typename T>
-T finite(T x)
-{
-  return std::isfinite(x);
-}
-
 #ifdef FAST_CODE
 
 #define L1_NO_ASSERT  // use with asserts, etc.

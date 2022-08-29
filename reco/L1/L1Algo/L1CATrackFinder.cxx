@@ -1039,7 +1039,7 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
 
     //if (!T3.IsEntryConsistent(false, i3_4)) continue;
 
-    fscal& qp0 = T3.qp[i3_4];
+    fscal qp0 = T3.qp[i3_4];
 
     // prepare data
     L1HitIndex_t ihit[NHits] = {(*RealIHitP)[hitsl_3[i3] + HitsUnusedStartIndex[ista[0]]],
@@ -1229,7 +1229,7 @@ inline void L1Algo::findTripletsStep3(  // input
     //if (!T3.IsEntryConsistent(false, i3_4)) continue;
 
     // select
-    fscal& chi2 = T3.chi2[i3_4];
+    fscal chi2 = T3.chi2[i3_4];
 
     const L1HitIndex_t ihitl = hitsl_3[i3] + HitsUnusedStartIndex[istal];
     const L1HitIndex_t ihitm = hitsm_3[i3] + HitsUnusedStartIndex[istam];
