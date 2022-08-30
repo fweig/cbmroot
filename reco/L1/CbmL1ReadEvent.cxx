@@ -1185,6 +1185,9 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
   if (fVerbose >= 1) cout << "ReadEvent: mvd and sts are saved." << endl;
 
   // ----- Send data from IODataManager to L1Algo --------------------------------------------------------------------
+  if (1 == fSTAPDataMode) { WriteAlgoInputData(); }
+  if (2 == fSTAPDataMode) { ReadAlgoInputData(); }
+  // TODO: SZh: If we read data from file, we don't need to collect them above. This should be addressed
   fIODataManager.SendInputData(fpAlgo);
 
   if (fPerformance) {

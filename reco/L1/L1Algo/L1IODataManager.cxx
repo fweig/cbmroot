@@ -9,6 +9,11 @@
 
 #include "L1IODataManager.h"
 
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+
+#include <fstream>
+
 #include "L1Algo.h"
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -30,6 +35,28 @@ bool L1IODataManager::SendInputData(L1Algo* pAlgo)
   }
   LOG(error) << "L1: Attempt to set up inconsistent input data";
   return false;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void L1IODataManager::ReadInputData(const std::string& fileName)
+{
+  // Reset input data object
+  this->ResetInputData();
+  LOG(info) << "L1: Input data will be read from file \"" << fileName << "\"";
+
+  // Open input binary file
+  std::ifstream ifs(fileName, std::ios::binary);
+  if (!ifs) { LOG(fatal) << "L1: input data reader: data file \"" << fileName << "\" was not found"; }
+
+  // Get L1InputData object
+  try {
+    boost::archive::binary_iarchive ia(ifs);
+    ia >> fInputData;
+  }
+  catch (const std::exception&) {
+    LOG(fatal) << "L1: input data reader: data file \"" << fileName << "\" has incorrect data format or was corrupted";
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -66,3 +93,22 @@ void L1IODataManager::SetStartStopHitIndexes()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
+void L1IODataManager::WriteInputData(const std::string& fileName) const
+{
+  // Check current data object for consistency
+  if (!CheckInputData<L1Constants::control::kInputDataQaLevel>()) {
+    LOG(error) << "L1: input data writer: attempt to write invalid input data object to file \"" << fileName << "\"";
+    return;
+  }
+
+  // Open output binary file
+  std::ofstream ofs(fileName, std::ios::binary);
+  if (!ofs) {
+    LOG(error) << "L1: input data writer: failed opening file \"" << fileName << " for writing input data\"";
+    return;
+  }
+
+  // Serialize L1InputData object and write
+  boost::archive::binary_oarchive oa(ofs);
+  oa << fInputData;
+}

@@ -425,30 +425,6 @@ InitStatus CbmL1::Init()
   fInitManager.SetNstations(L1DetectorID::kTrd, fNTrdStationsGeom);
   fInitManager.SetNstations(L1DetectorID::kTof, fNTofStationsGeom);
 
-  {
-    if (fSTAPDataMode % 2 == 1) {  // 1,3
-      LOG(fatal) << "CbmL1::Init: geo vector was removed, currently data cannot be written to a text-file";
-      // TODO: Rewrite parameters i/o into L1InitManager (S.Zharko, 12.05.2022)
-      //WriteSTAPGeoData(geo);
-    };
-    //if(fSTAPDataMode >= 2){ // 2,3
-    //  int ind2, ind = geo.size();
-    //  ReadSTAPGeoData(geo, ind2);
-    //  if (ind2 != ind)  LOG(error) << "-E- CbmL1: Read geometry from file " << fSTAPDataDir + "geo_algo.txt was NOT successful.";
-    //};
-  }
-
-  if (fSTAPDataMode >= 2) {  // 2,3
-    LOG(fatal) << "CbmL1::Init: geo vector was removed, currently data cannot be read from a text-file. "
-               << "Please, run CbmL1 task with STAPDataMode option < 2";
-    // TODO: Rewrite parameters i/o into L1InitManager (S.Zharko, 12.05.2022)
-    //int ind2, ind = geo.size();
-    //ReadSTAPGeoData(geo, ind2);
-    //if (ind2 != ind)
-    //  LOG(error) << "-E- CbmL1: Read geometry from file " << fSTAPDataDir + "geo_algo.txt was NOT successful.";
-  }
-
-
   /****************************
    ** Material budget input  **
    ****************************/
@@ -952,10 +928,6 @@ void CbmL1::Reconstruct(CbmEvent* event)
       FstHitinTs  = 0;
     }
 
-    if (fSTAPDataMode >= 2) {  // 2,3
-      LOG(fatal) << "L1: Sorry, at the moment standalone tracking module is unavailable. This functionality will be "
-                 << "reimplemented soon.";
-    }
 
     // ----- Read data from branches and send data from IODataManager to L1Algo ----------------------------------------
     ReadEvent(TsStart, TsLength, TsOverlap, FstHitinTs, areDataLeft, event);
@@ -1302,36 +1274,109 @@ void CbmL1::IdealTrackFinder()
 
 /// -----   STandAlone Package service-functions  -----------------------------
 
+// ---------------------------------------------------------------------------------------------------------------------
+//
 void CbmL1::WriteSTAPGeoData(const L1Vector<float>& /*geo_*/)
 {
   LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
 }
 
-void CbmL1::WriteSTAPAlgoData()  // must be called after ReadEvent
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void CbmL1::WriteAlgoInputData()  // must be called after ReadEvent
 {
-  LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
+  // Check if output directory exists
+  if (!boost::filesystem::exists(fSTAPDataDir.Data())) {
+    LOG(warn) << "CbmL1: directory " << fSTAPDataDir.Data()
+              << " (full path: " << boost::filesystem::system_complete(fSTAPDataDir.Data()).string()
+              << ") for writing L1AlgoData object does not exist";
+    fSTAPDataDir = ".";
+  }
+
+  if (!boost::filesystem::is_directory(fSTAPDataDir.Data())) {
+    LOG(warn) << "CbmL1: path " << fSTAPDataDir.Data()
+              << " (full path: " << boost::filesystem::system_complete(fSTAPDataDir.Data()).string()
+              << ") is not a directory";
+    fSTAPDataDir = ".";
+  }
+
+  // Define output directory
+  std::string hitsDir = (fSTAPDataDir + "/tracking_input_hits").Data();
+  if (!boost::filesystem::exists(hitsDir)) { boost::filesystem::create_directories(hitsDir); }
+
+  // Get filename
+  static int iEvent         = 0;
+  boost::filesystem::path p = (FairRunAna::Instance()->GetUserOutputFileName()).Data();
+  std::string prefix        = p.filename().string();
+  std::string suffix        = "reco.root";
+  prefix.erase(prefix.find("reco.root"));
+  std::string filename = hitsDir + "/" + prefix + "event" + std::to_string(iEvent) + ".L1InputData.dat";
+  ++iEvent;
+
+  // Write file
+  L1_SHOW(filename);
+  fIODataManager.WriteInputData(filename);
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+//
 void CbmL1::WriteSTAPPerfData()  // must be called after ReadEvent
 {
   LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
-}  // void CbmL1::WriteSTAPPerfData()
+}
 
-void CbmL1::ReadSTAPGeoData(L1Vector<fscal>& /*geo_*/, int& /*size*/)
-{
-  LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
-}  // void CbmL1::ReadSTAPGeoData(void* geo_, int &size)
-
-void CbmL1::ReadSTAPAlgoData()
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void CbmL1::ReadSTAPGeoData()
 {
   LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void CbmL1::ReadAlgoInputData()
+{
+  // Check if output directory exists
+  if (!boost::filesystem::exists(fSTAPDataDir.Data())) {
+    LOG(warn) << "CbmL1: directory " << fSTAPDataDir.Data()
+              << " (full path: " << boost::filesystem::system_complete(fSTAPDataDir.Data()).string()
+              << ") for reading L1AlgoData object does not exist";
+    fSTAPDataDir = ".";
+  }
+
+  if (!boost::filesystem::is_directory(fSTAPDataDir.Data())) {
+    LOG(warn) << "CbmL1: path " << fSTAPDataDir.Data()
+              << " (full path: " << boost::filesystem::system_complete(fSTAPDataDir.Data()).string()
+              << ") is not a directory";
+    fSTAPDataDir = ".";
+  }
+
+  // Define output directory
+  std::string hitsDir = fSTAPDataDir.Data();
+
+  // Get filename
+  static int iEvent         = 0;
+  boost::filesystem::path p = (FairRunAna::Instance()->GetUserOutputFileName()).Data();
+  std::string prefix        = p.filename().string();
+  std::string suffix        = "reco.root";
+  prefix.erase(prefix.find("reco.root"));
+  std::string filename = hitsDir + "/" + prefix + "event" + std::to_string(iEvent) + ".L1InputData.dat";
+  ++iEvent;
+
+  // Write file
+  L1_SHOW(filename);
+  fIODataManager.ReadInputData(filename);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
 void CbmL1::ReadSTAPPerfData()
 {
   LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+//
 void CbmL1::WriteSIMDKFData()
 {
   // TODO: Must be totally reimplemented (S.Zharko)

@@ -12,6 +12,8 @@
 #ifndef L1Hit_h
 #define L1Hit_h
 
+#include <boost/serialization/access.hpp>
+
 #include "L1Constants.h"
 
 using L1HitIndex_t   = unsigned /*short*/ int;  ///< Index of L1Hit
@@ -23,6 +25,8 @@ using L1StripIndex_t = unsigned /*short*/ int;  ///< Index of the station strip
 /// Note: V is a transverse coordinate of the hit in the axis perpendicular to the back strip
 ///
 class /*alignas(L1Constants::misc::kAlignment)*/ L1Hit {
+  friend class boost::serialization::access;
+
 public:
   L1StripIndex_t f {0};  ///< front hit key index
   L1StripIndex_t b {0};  ///< back hit key index
@@ -40,6 +44,24 @@ public:
   int ID   = 0;    ///< index of hit before hits sorting
   int iSt  = 0;    ///< index of station in the active stations array
   // TODO: Test speed penalty of using iSt index
+
+private:
+  /// Serialization method, used to save L1Hit objects into binary or text file in a defined order
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int /*version*/)
+  {
+    ar& f;
+    ar& b;
+    ar& u;
+    ar& v;
+    ar& t;
+    ar& z;
+    ar& du;
+    ar& dv;
+    ar& dt;
+    ar& ID;
+    ar& iSt;
+  }
 };
 
 #endif

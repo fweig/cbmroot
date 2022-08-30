@@ -14,6 +14,11 @@
 #ifndef FAST_CODE
 #include <FairLogger.h>
 #endif
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/base_object.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/vector.hpp>
+
 #include <sstream>
 
 /// L1Vector class is a wrapper around std::vector.
@@ -30,6 +35,8 @@
 
 template<class T>
 class L1Vector : private std::vector<T> {
+  friend class boost::serialization::access;
+
 public:
   typedef std::vector<T> Tbase;
 
@@ -239,6 +246,13 @@ private:
   using Tbase::assign;  // use reset() instead
   using Tbase::at;
   using Tbase::resize;
+
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int /*version*/)
+  {
+    ar& boost::serialization::base_object<Tbase>(*this);
+    ar& fName;
+  }
 };
 
 ///

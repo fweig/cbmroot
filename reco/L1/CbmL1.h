@@ -360,11 +360,11 @@ private:
 
   /// STandAlone Package service-functions
   void WriteSTAPGeoData(const L1Vector<float>& geo);  // create geo_algo.dat
-  void WriteSTAPAlgoData();                           // create data_algo.dat
+  void WriteAlgoInputData();                          // create data_algo.dat
   void WriteSTAPPerfData();                           // create data_perfo.dat
   //void ReadSTAPGeoData(L1Vector<float> geo, int &size);
-  void ReadSTAPGeoData(L1Vector<float>& geo, int& size);
-  void ReadSTAPAlgoData();
+  void ReadSTAPGeoData();
+  void ReadAlgoInputData();
   void ReadSTAPPerfData();
   /// SIMD KF Banchmark service-functions
   void WriteSIMDKFData();
@@ -387,6 +387,8 @@ private:
 
   inline Double_t dFEI(int file, int event, int idx) { return (1000 * idx) + file + (0.0001 * event); }
 
+private:
+  std::string fInputDataFilename = "";  ///< File name to read/write input hits
 
   // ***************************
   // ** Member variables list **

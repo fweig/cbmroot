@@ -10,12 +10,14 @@
 #ifndef L1InputData_h
 #define L1InputData_h 1
 
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/array.hpp>
+
 #include <array>
 
 #include "L1Constants.h"
 #include "L1Hit.h"
 #include "L1Vector.h"
-
 
 /// Class L1InputData represents a block of the input data to the L1 tracking algorithm per event or time slice.
 /// Filling of the L1InputData is carried out with L1IODataManager class
@@ -27,7 +29,7 @@ public:
   // **************************
 
   friend class L1IODataManager;  ///< Class which fills the L1InputData object for each event or time slice
-
+  friend class boost::serialization::access;
 
   // ***************************
   // ** Member functions list **
@@ -85,6 +87,15 @@ private:
   /// Swap method
   void Swap(L1InputData& other) noexcept;
 
+  /// Data serialization method
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int /*versino*/)
+  {
+    ar& fvHits;
+    ar& fvStartHitIndexes;
+    ar& fvStopHitIndexes;
+    ar& fNhitKeys;
+  }
 
   // ***************************
   // ** Member variables list **

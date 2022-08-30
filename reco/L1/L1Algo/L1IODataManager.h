@@ -49,6 +49,10 @@ public:
   /// Move assignment operator
   L1IODataManager& operator=(L1IODataManager&& other) = delete;
 
+  /// Reads input data object from boost-serialized binary file
+  /// \param  fileName  Name of input file
+  void ReadInputData(const std::string& fileName);
+
   /// Reserve number of hits
   /// \param  nHits  Number of hits to be stored
   /// \note   If one does not call this method, the underlying vector of hits will be filled with the time penalty
@@ -69,6 +73,10 @@ public:
   /// \param  pAlgo  Pointer to the L1 tracking algorithm main class
   /// \return Success flag
   bool SendInputData(L1Algo* pAlgo);
+
+  /// Writes input data object to boost-serialized binary file
+  /// \param  fileName  Name of input file
+  void WriteInputData(const std::string& fileName) const;
 
 private:
   /// Sets the start and stop indexes vs. station index
