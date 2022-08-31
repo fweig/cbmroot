@@ -337,7 +337,6 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
   //========================================================================
 
 
-  cnst ZERO = 0.0, ONE = 1.;
   cnst c_light = 0.000299792458;
 
   const fvec a[4] = {0.0f, 0.5f, 0.5f, 1.0f};
@@ -351,6 +350,7 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
   //----------------------------------------------------------------
 
   if (w) { z_out = if3((fvec(0.f) < *w), z_out, fz); }
+
   fvec qp_in      = fqp;
   const fvec z_in = fz;
   const fvec h    = (z_out - fz);
@@ -424,18 +424,6 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
     k[step4 + 4] = At[step];
   }  // end of Runge-Kutta steps
 
-  fvec initialised = ZERO;
-  if (w)  //TODO use operator {?:}
-  {
-    const fvec zero = ZERO;
-    initialised     = fvec(zero < *w);
-  }
-  else {
-    const fvec one  = ONE;
-    const fvec zero = ZERO;
-    initialised     = fvec(zero < one);
-  }
-
   {
 
 
@@ -445,17 +433,12 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
     //     cout << "initialised = " << initialised << "; ";
     //     cout << "fx = " << fx;
 
-    fx = ((x0[0] + c[0] * k[0] + c[1] * k[5 + 0] + c[2] * k[10 + 0] + c[3] * k[15 + 0]) & initialised)
-         + ((!initialised) & fx);
-    fy = ((x0[1] + c[0] * k[1] + c[1] * k[5 + 1] + c[2] * k[10 + 1] + c[3] * k[15 + 1]) & initialised)
-         + ((!initialised) & fy);
-    ftx = ((x0[2] + c[0] * k[2] + c[1] * k[5 + 2] + c[2] * k[10 + 2] + c[3] * k[15 + 2]) & initialised)
-          + ((!initialised) & ftx);
-    fty = ((x0[3] + c[0] * k[3] + c[1] * k[5 + 3] + c[2] * k[10 + 3] + c[3] * k[15 + 3]) & initialised)
-          + ((!initialised) & fty);
-    ft = ((x0[4] + c[0] * k[4] + c[1] * k[5 + 4] + c[2] * k[10 + 4] + c[3] * k[15 + 4]) & initialised)
-         + ((!initialised) & ft);
-    fz = (z_out & initialised) + ((!initialised) & fz);
+    fx  = x0[0] + c[0] * k[0] + c[1] * k[5 + 0] + c[2] * k[10 + 0] + c[3] * k[15 + 0];
+    fy  = x0[1] + c[0] * k[1] + c[1] * k[5 + 1] + c[2] * k[10 + 1] + c[3] * k[15 + 1];
+    ftx = x0[2] + c[0] * k[2] + c[1] * k[5 + 2] + c[2] * k[10 + 2] + c[3] * k[15 + 2];
+    fty = x0[3] + c[0] * k[3] + c[1] * k[5 + 3] + c[2] * k[10 + 3] + c[3] * k[15 + 3];
+    ft  = x0[4] + c[0] * k[4] + c[1] * k[5 + 4] + c[2] * k[10 + 4] + c[3] * k[15 + 4];
+    fz  = z_out;
 
     //     cout << "; fx = " << fx << endl;
   }
@@ -563,7 +546,7 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
     k1[step4]     = x[2] * h;
     k1[step4 + 1] = x[3] * h;
     k1[step4 + 2] = Ax_tx[step] * x[2] + Ax_ty[step] * x[3];
-    //    k1[step4+3] = Ay_tx[step] * x[2] + Ay_ty[step] * x[3];
+    // k1[step4+3] = Ay_tx[step] * x[2] + Ay_ty[step] * x[3]; //  TODO: SG: check if the simplification below is ok
     k1[step4 + 4] = At_tx[step] * x[2] + At_ty[step] * x[3];
   }  // end of Runge-Kutta steps for derivatives dx/dty
 
@@ -571,28 +554,31 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
     J[18 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[5 + i] + c[2] * k1[10 + i] + c[3] * k1[15 + i];
   }
   //      end of derivatives dx/dty
-  J[21] = 1.;
-  J[22] = 0.;
+  J[21] = fvec(1.);
+  J[22] = fvec(0.);
   J[23] = x0[4] + c[0] * k1[4] + c[1] * k1[5 + 4] + c[2] * k1[10 + 4] + c[3] * k1[15 + 4];
   //
   //    derivatives dx/dx and dx/dy
 
-  for (i = 0; i < 12; ++i)
-    J[i] = 0.;
-  J[0] = 1.;
-  J[7] = 1.;
-  for (i = 30; i < 35; i++)
-    J[i] = 0.f;
-  J[35] = 1.f;
+  for (i = 0; i < 12; ++i) {
+    J[i] = fvec(0.);
+  }
+
+  J[0] = fvec(1.);
+  J[7] = fvec(1.);
+  for (i = 30; i < 35; i++) {
+    J[i] = fvec(0.);
+  }
+  J[35] = fvec(1.);
 
   fvec dqp = qp_in - qp0;
 
   {  // update parameters
-    fx += ((J[6 * 4 + 0] * dqp) & initialised);
-    fy += ((J[6 * 4 + 1] * dqp) & initialised);
-    ftx += ((J[6 * 4 + 2] * dqp) & initialised);
-    fty += ((J[6 * 4 + 3] * dqp) & initialised);
-    ft += ((J[6 * 4 + 5] * dqp) & initialised);
+    fx += J[6 * 4 + 0] * dqp;
+    fy += J[6 * 4 + 1] * dqp;
+    ftx += J[6 * 4 + 2] * dqp;
+    fty += J[6 * 4 + 3] * dqp;
+    ft += J[6 * 4 + 5] * dqp;
   }
   //    cout<<fx<<" fx"<<endl;
   //          covariance matrix transport
@@ -658,32 +644,32 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
   const fvec cj55 = C55 + C52 * J[17] + C53 * J[23] + C54 * J[29];
 
 
-  C00 = ((cj00 + cj20 * J[12] + cj30 * J[18] + cj40 * J[24]) & initialised) + ((!initialised) & C00);
+  C00 = cj00 + cj20 * J[12] + cj30 * J[18] + cj40 * J[24];
 
-  C10 = ((cj10 + cj20 * J[13] + cj30 * J[19] + cj40 * J[25]) & initialised) + ((!initialised) & C10);
-  C11 = ((cj11 + cj21 * J[13] + cj31 * J[19] + cj41 * J[25]) & initialised) + ((!initialised) & C11);
+  C10 = cj10 + cj20 * J[13] + cj30 * J[19] + cj40 * J[25];
+  C11 = cj11 + cj21 * J[13] + cj31 * J[19] + cj41 * J[25];
 
-  C20 = ((cj20 + cj30 * J[20] + cj40 * J[26]) & initialised) + ((!initialised) & C20);
-  C21 = ((cj21 + cj31 * J[20] + cj41 * J[26]) & initialised) + ((!initialised) & C21);
-  C22 = ((cj22 + cj32 * J[20] + cj42 * J[26]) & initialised) + ((!initialised) & C22);
+  C20 = cj20 + cj30 * J[20] + cj40 * J[26];
+  C21 = cj21 + cj31 * J[20] + cj41 * J[26];
+  C22 = cj22 + cj32 * J[20] + cj42 * J[26];
 
-  C30 = ((cj30 + cj20 * J[15] + cj40 * J[27]) & initialised) + ((!initialised) & C30);
-  C31 = ((cj31 + cj21 * J[15] + cj41 * J[27]) & initialised) + ((!initialised) & C31);
-  C32 = ((cj32 + cj22 * J[15] + cj42 * J[27]) & initialised) + ((!initialised) & C32);
-  C33 = ((cj33 + cj23 * J[15] + cj43 * J[27]) & initialised) + ((!initialised) & C33);
+  C30 = cj30 + cj20 * J[15] + cj40 * J[27];
+  C31 = cj31 + cj21 * J[15] + cj41 * J[27];
+  C32 = cj32 + cj22 * J[15] + cj42 * J[27];
+  C33 = cj33 + cj23 * J[15] + cj43 * J[27];
 
-  C40 = ((cj40) &initialised) + ((!initialised) & C40);
-  C41 = ((cj41) &initialised) + ((!initialised) & C41);
-  C42 = ((cj42) &initialised) + ((!initialised) & C42);
-  C43 = ((cj43) &initialised) + ((!initialised) & C43);
-  C44 = ((cj44) &initialised) + ((!initialised) & C44);
+  C40 = cj40;
+  C41 = cj41;
+  C42 = cj42;
+  C43 = cj43;
+  C44 = cj44;
 
-  C50 = ((cj50 + cj20 * J[17] + cj30 * J[23] + cj40 * J[29]) & initialised) + ((!initialised) & C50);
-  C51 = ((cj51 + cj21 * J[17] + cj31 * J[23] + cj41 * J[29]) & initialised) + ((!initialised) & C51);
-  C52 = ((cj52 + cj22 * J[17] + cj32 * J[23] + cj42 * J[29]) & initialised) + ((!initialised) & C52);
-  C53 = ((cj53 + cj23 * J[17] + cj33 * J[23] + cj43 * J[29]) & initialised) + ((!initialised) & C53);
-  C54 = ((cj54 + cj24 * J[17] + cj34 * J[23] + cj44 * J[29]) & initialised) + ((!initialised) & C54);
-  C55 = ((cj55 + cj25 * J[17] + cj35 * J[23] + cj45 * J[29]) & initialised) + ((!initialised) & C55);
+  C50 = cj50 + cj20 * J[17] + cj30 * J[23] + cj40 * J[29];
+  C51 = cj51 + cj21 * J[17] + cj31 * J[23] + cj41 * J[29];
+  C52 = cj52 + cj22 * J[17] + cj32 * J[23] + cj42 * J[29];
+  C53 = cj53 + cj23 * J[17] + cj33 * J[23] + cj43 * J[29];
+  C54 = cj54 + cj24 * J[17] + cj34 * J[23] + cj44 * J[29];
+  C55 = cj55 + cj25 * J[17] + cj35 * J[23] + cj45 * J[29];
 }
 
 void L1TrackParFit::L1AddPipeMaterial(fvec qp0, fvec w)
