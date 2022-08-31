@@ -410,9 +410,9 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
     fvec p2     = 1.f / (qp0 * qp0);
     fvec m2     = fMass2;
     fvec v      = 29.9792458f * sqrt(p2 / (m2 + p2));
-    At[step]    = sqrt(1.f + tx * tx + ty * ty) / v;
-    At_tx[step] = tx / sqrt(1.f + tx * tx + ty * ty) / v;
-    At_ty[step] = ty / sqrt(1.f + tx * tx + ty * ty) / v;
+    At[step]    = h * sqrt(1.f + tx * tx + ty * ty) / v;
+    At_tx[step] = h * tx / sqrt(1.f + tx * tx + ty * ty) / v;
+    At_ty[step] = h * ty / sqrt(1.f + tx * tx + ty * ty) / v;
 
     //     cout<<Ax[step]<<" Ax[step] "<<Ay[step]<<" ay "<<At[step]<<" At[step] "<<qp0<<" qp0 "<<h<<" h"<<endl;
 
@@ -421,7 +421,7 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
     k[step4 + 1] = ty * h;
     k[step4 + 2] = Ax[step] * qp0;
     k[step4 + 3] = Ay[step] * qp0;
-    k[step4 + 4] = At[step] * h;
+    k[step4 + 4] = At[step];
   }  // end of Runge-Kutta steps
 
   fvec initialised = ZERO;
