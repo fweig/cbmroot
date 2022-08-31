@@ -27,29 +27,29 @@ struct CbmStsGpuRecoDevice {
 };
 
 XPU_EXPORT_KERNEL(CbmStsGpuRecoDevice, SortDigis);
-XPU_BLOCK_SIZE(SortDigis, CBM_STS_SORT_DIGIS_BLOCK_SIZE);
+XPU_BLOCK_SIZE_1D(SortDigis, CBM_STS_SORT_DIGIS_BLOCK_SIZE);
 
 // Combine substeps for finding clusters into a single kernel
 XPU_EXPORT_KERNEL(CbmStsGpuRecoDevice, FindClustersSingleStep);
-XPU_BLOCK_SIZE(FindClustersSingleStep, CBM_STS_FIND_CLUSTERS_BLOCK_SIZE);
+XPU_BLOCK_SIZE_1D(FindClustersSingleStep, CBM_STS_FIND_CLUSTERS_BLOCK_SIZE);
 
 XPU_EXPORT_KERNEL(CbmStsGpuRecoDevice, CalculateOffsets);
-XPU_BLOCK_SIZE(CalculateOffsets, CBM_STS_FIND_CLUSTERS_BLOCK_SIZE);
+XPU_BLOCK_SIZE_1D(CalculateOffsets, CBM_STS_FIND_CLUSTERS_BLOCK_SIZE);
 
 XPU_EXPORT_KERNEL(CbmStsGpuRecoDevice, FindClusters);
-XPU_BLOCK_SIZE(FindClusters, CBM_STS_FIND_CLUSTERS_BLOCK_SIZE);
+XPU_BLOCK_SIZE_1D(FindClusters, CBM_STS_FIND_CLUSTERS_BLOCK_SIZE);
 
 XPU_EXPORT_KERNEL(CbmStsGpuRecoDevice, FindClustersBasic);
 
 XPU_EXPORT_KERNEL(CbmStsGpuRecoDevice, CalculateClusters);
-XPU_BLOCK_SIZE(CalculateClusters, CBM_STS_FIND_CLUSTERS_BLOCK_SIZE);
+XPU_BLOCK_SIZE_1D(CalculateClusters, CBM_STS_FIND_CLUSTERS_BLOCK_SIZE);
 
 XPU_EXPORT_KERNEL(CbmStsGpuRecoDevice, CalculateClustersBasic);
 
 XPU_EXPORT_KERNEL(CbmStsGpuRecoDevice, SortClusters);
-XPU_BLOCK_SIZE(SortClusters, CBM_STS_SORT_CLUSTERS_BLOCK_SIZE);
+XPU_BLOCK_SIZE_1D(SortClusters, CBM_STS_SORT_CLUSTERS_BLOCK_SIZE);
 
 XPU_EXPORT_KERNEL(CbmStsGpuRecoDevice, FindHits);
-XPU_BLOCK_SIZE(FindHits, CBM_STS_FIND_HITS_BLOCK_SIZE);
+XPU_BLOCK_SIZE_1D(FindHits, CBM_STS_FIND_HITS_BLOCK_SIZE);
 
 #endif

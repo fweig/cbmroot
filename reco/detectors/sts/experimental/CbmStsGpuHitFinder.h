@@ -73,14 +73,14 @@ namespace experimental
     float dX;
   };
 
-  using SortDigisT = xpu::block_sort<unsigned long int, ::CbmStsDigi, xpu::block_size<SortDigis> {},
+  using SortDigisT = xpu::block_sort<unsigned long int, ::CbmStsDigi, xpu::block_size<SortDigis>::value.x,
                                      CBM_STS_SORT_DIGIS_ITEMS_PER_THREAD>;
 
   struct CbmStsSortDigiSmem {
     typename SortDigisT::storage_t sortBuf;
   };
 
-  using SortClustersT = xpu::block_sort<CbmStsTimeNs, CbmStsClusterIdx, xpu::block_size<SortClusters> {},
+  using SortClustersT = xpu::block_sort<CbmStsTimeNs, CbmStsClusterIdx, xpu::block_size<SortClusters>::value.x,
                                         CBM_STS_SORT_CLUSTERS_ITEMS_PER_THREAD>;
 
   struct CbmStsSortClusterSmem {
