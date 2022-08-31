@@ -50,24 +50,40 @@ Bool_t CbmSourceTs::Init()
 
 
 // -----   Read one time slice from archive   ---------------------------------
-Int_t CbmSourceTs::ReadEvent(UInt_t)
+Int_t CbmSourceTs::ReadEvent(UInt_t tsIndex)
 {
-  // Timeslices can only be read sequentially, so the argument is ignored.
+  // Timeslices can only be read sequentially.
   // It appears that the first call to this method from FairRunOnline is in the
   // init stage. In order not to always lose the first timeslice, a call to
   // TimesliceSource::get is avoided in the first call.
-  if (fNumCalls == 0) LOG(info) << "SourceTs: Init call to ReadEvent";
-  else {
-    fFlesTs = nullptr;
-    fFlesTs = fFlesSource->get();
-    if (!fFlesTs) {
-      LOG(info) << "SourceTs: End of archive reached; stopping run.";
-      return 1;
-    }
-    LOG(info) << "SourceTs: Reading time slice " << GetNumTs() << " (index " << fFlesTs->index()
-              << ") at t = " << fFlesTs->start_time() << " ns";
+  if (fNumCalls == 0) {
+    LOG(info) << "SourceTs: Init call to ReadEvent";
+    fNumCalls++;
   }
-  fNumCalls++;
+  else if (tsIndex > 0 && tsIndex < fNumCalls - 1) {
+    LOG(error) << "SourceTs: Out-of-sequence reading of timeslices not supported.";
+    return 1;
+  }
+  else {
+    do {
+      fFlesTs = nullptr;
+      fFlesTs = fFlesSource->get();
+      if (!fFlesTs) {
+        LOG(info) << "SourceTs: End of archive reached; stopping run.";
+        return 1;
+      }
+      if (tsIndex == fNumCalls - 1) {
+        LOG(info) << "SourceTs: Reading time slice " << GetNumTs() << " (index " << fFlesTs->index()
+                  << ") at t = " << fFlesTs->start_time() << " ns";
+      }
+      else {
+        LOG(info) << "SourceTs: Skipping time slice " << GetNumTs() << " (index " << fFlesTs->index()
+                  << ") at t = " << fFlesTs->start_time() << " ns";
+        LOG(info) << "(TS is still fetched from disk, this may take some time)";
+      }
+      fNumCalls++;
+    } while (tsIndex >= fNumCalls - 1);
+  }
   return 0;
 }
 // ----------------------------------------------------------------------------
