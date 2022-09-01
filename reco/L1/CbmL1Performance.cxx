@@ -1520,7 +1520,7 @@ void CbmL1::TrackFitPerformance()
             z[1] = z[0];
           }
 
-          z[0] = 0;
+          z[0] = fpAlgo->GetParameters()->GetTargetPositionZ()[0];
           B[0] = targB;
           fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
           L1Extrapolate(trPar, mc.z, trPar.qp, fld);
