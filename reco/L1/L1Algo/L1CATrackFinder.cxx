@@ -144,22 +144,33 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
   const L1Station& stal = fParameters.GetStation(istal);
   const L1Station& stam = fParameters.GetStation(istam);
-  fvec zstal            = stal.z;
-  fvec zstam            = stam.z;
 
-  int istal_global = 5;  //TODO: SG: what are these stations? Should the numbers depend on the presence of mvd?
-  int istam_global = 6;
-  const L1Station& stal_global = fParameters.GetStation(istal_global);
-  const L1Station& stam_global = fParameters.GetStation(istam_global);
-  fvec zstal_global            = stal_global.z;
-  fvec zstam_global            = stam_global.z;
+  // stations for approximating the field between the target and the left hit
+  int fld0Ista1 = istal;
+  if (fld0Ista1 >= fNfieldStations) { fld0Ista1 = fNfieldStations - 1; }
+  if (fld0Ista1 < 1) { fld0Ista1 = 1; }
+  int fld0Ista0 = fld0Ista1 / 2;  // station between istal and the target
 
-  L1FieldRegion
-    fld0;  // by  left   hit, target and "center" (station in-between). Used here for extrapolation to target and to middle hit
-  L1FieldValue l_B_global, centB, centB_global,
-    l_B _fvecalignment;  // field for singlet creation
-  L1FieldValue m_B,
-    m_B_global _fvecalignment;  // field for the next extrapolations
+  assert(0 <= fld0Ista0 && fld0Ista0 < fld0Ista1 && fld0Ista1 < fParameters.GetNstationsActive());
+
+  // stations for approximating the field between the left and the right hit
+  int fld1Ista0 = istal;
+  int fld1Ista1 = istam;
+  int fld1Ista2 = istam + 1;
+  if (fld1Ista2 >= fParameters.GetNstationsActive()) {
+    fld1Ista2 = istam;
+    fld1Ista1 = istam - 1;
+    if (fld1Ista0 >= fld1Ista1) { fld1Ista0 = fld1Ista1 - 1; }
+  }
+
+  assert(0 <= fld1Ista0 && fld1Ista0 < fld1Ista1 && fld1Ista1 < fld1Ista2
+         && fld1Ista2 < fParameters.GetNstationsActive());
+
+  const L1Station& fld0Sta0 = fParameters.GetStation(fld0Ista0);
+  const L1Station& fld0Sta1 = fParameters.GetStation(fld0Ista1);
+  const L1Station& fld1Sta0 = fParameters.GetStation(fld1Ista0);
+  const L1Station& fld1Sta1 = fParameters.GetStation(fld1Ista1);
+  const L1Station& fld1Sta2 = fParameters.GetStation(fld1Ista2);
 
   L1Fit fit;
 
@@ -171,13 +182,22 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
   for (int i1_V = 0; i1_V < n1_V; i1_V++) {
     L1TrackPar& T = T_1[i1_V];
 
-    L1FieldRegion& fld1 =
-      fld_1[i1_V];  // by  middle hit, left hit and "center" . Will be used for extrapolation to right hit
+    // field made by  the left hit, the target and the station istac in-between.
+    // is used for extrapolation to the target and to the middle hit
+    L1FieldRegion fld0;
+
+    // field, made by the left hit, the middle station and the right station
+    // Will be used for extrapolation to the right hit
+    L1FieldRegion& fld1 = fld_1[i1_V];
+
+    L1FieldValue lB, mB, cB, rB _fvecalignment;
+    L1FieldValue l_B_global, centB_global _fvecalignment;
 
     // get the magnetic field along the track.
     // (suppose track is straight line with origin in the target)
-    fvec& u = u_front_l[i1_V];
-    fvec& v = u_back_l[i1_V];
+
+    fvec& u         = u_front_l[i1_V];
+    fvec& v         = u_back_l[i1_V];
     auto [xl, yl]   = stal.ConvUVtoXY<fvec>(u, v);
     fvec zl         = zPos_l[i1_V];
     fvec& time      = HitTime_l[i1_V];
@@ -187,48 +207,15 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     const fvec tx = (xl - fTargX) * dzli;
     const fvec ty = (yl - fTargY) * dzli;
 
-    // estimate field for singlet creation
-    int istac = istal / 2;  // "center" station
-    //     if (istal >= fNstationsBeforePipe) // to make it in the same way for both with and w\o mvd
-    //       istac = (istal - fNstationsBeforePipe) / 2 + fNstationsBeforePipe;
-    const L1Station& stac = fParameters.GetStation(istac);
-    fvec zstac            = stac.z;
+    L1FieldValue b00, b01, b10, b11, b12;
+    fld0Sta0.fieldSlice.GetFieldValue(fTargX + tx * (fld0Sta0.z - fTargZ), fTargY + ty * (fld0Sta0.z - fTargZ), b00);
+    fld0Sta1.fieldSlice.GetFieldValue(fTargX + tx * (fld0Sta1.z - fTargZ), fTargY + ty * (fld0Sta1.z - fTargZ), b01);
+    fld1Sta0.fieldSlice.GetFieldValue(fTargX + tx * (fld1Sta0.z - fTargZ), fTargY + ty * (fld1Sta0.z - fTargZ), b10);
+    fld1Sta1.fieldSlice.GetFieldValue(fTargX + tx * (fld1Sta1.z - fTargZ), fTargY + ty * (fld1Sta1.z - fTargZ), b11);
+    fld1Sta2.fieldSlice.GetFieldValue(fTargX + tx * (fld1Sta2.z - fTargZ), fTargY + ty * (fld1Sta2.z - fTargZ), b12);
 
-    int istac_global = istal_global / 2;  // "center" station
-
-    const L1Station& stac_global = fParameters.GetStation(istac_global);
-    fvec zstac_global            = stac.z;
-
-    stac.fieldSlice.GetFieldValue(fTargX + tx * (zstac - fTargZ), fTargY + ty * (zstac - fTargZ), centB);
-    stal.fieldSlice.GetFieldValue(fTargX + tx * (zstal - fTargZ), fTargY + ty * (zstal - fTargZ), l_B);
-
-    stam_global.fieldSlice.GetFieldValue(fTargX + tx * (zstam_global - fTargZ), fTargY + ty * (zstam_global - fTargZ),
-                                         m_B_global);
-    stal_global.fieldSlice.GetFieldValue(fTargX + tx * (zstal_global - fTargZ), fTargY + ty * (zstal_global - fTargZ),
-                                         l_B_global);
-    stac_global.fieldSlice.GetFieldValue(fTargX + tx * (zstac_global - fTargZ), fTargY + ty * (zstac_global - fTargZ),
-                                         centB_global);
-
-    if (istac != istal) fld0.Set(l_B, stal.z, centB, stac.z, fTargB, fTargZ);
-    else
-      fld0.Set(l_B, zstal, fTargB, fTargZ);
-    // estimate field for the next extrapolations
-    stam.fieldSlice.GetFieldValue(fTargX + tx * (zstam - fTargZ), fTargY + ty * (zstam - fTargZ), m_B);
-#define USE_3HITS  // TODO: move this directive to more suitable place
-#ifndef USE_3HITS
-    if (istac != istal) fld1.Set(m_B, zstam, l_B, zstal, centB, zstac);
-    else
-      fld1.Set(m_B, zstam, l_B, zstal, fTargB, fTargZ);
-#else
-    // if USE_3HITS  -- the best now
-    L1FieldValue r_B _fvecalignment;
-    const L1Station& star = fParameters.GetStation(istam + 1);
-    fvec zstar            = star.z;
-    star.fieldSlice.GetFieldValue(fTargX + tx * (zstar - fTargZ), fTargY + ty * (zstar - fTargZ), r_B);
-    fld1.Set(r_B, zstar, m_B, zstam, l_B, zstal);
-    if ((istam + 1) >= fNfieldStations)
-      fld1.Set(m_B_global, zstam_global, l_B_global, zstal_global, centB_global, zstac_global);
-#endif  // USE_3HITS
+    fld0.Set(fTargB, fTargZ, b00, fld0Sta0.z, b01, fld0Sta1.z);
+    fld1.Set(b10, fld1Sta0.z, b11, fld1Sta1.z, b12, fld1Sta2.z);
 
     T.chi2 = 0.;
     T.NDF  = 2.;
@@ -367,13 +354,13 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
     //assert(T.IsConsistent(true, -1));
 
-    fvec dz = zstam - zl;
+    fvec dz = stam.z - zl;
     L1ExtrapolateTime(T, dz, stam.timeInfo);
 
     // extrapolate to the middle hit
-    if (istam < fNfieldStations) { L1Extrapolate0(T, zstam, fld0); }
+    if (istam < fNfieldStations) { L1Extrapolate0(T, stam.z, fld0); }
     else {
-      L1ExtrapolateLine(T, zstam);  // TODO: fld1 doesn't work!
+      L1ExtrapolateLine(T, stam.z);  // TODO: fld1 doesn't work!
     }
 
     // assert(T.IsConsistent(true, -1));
@@ -1056,10 +1043,10 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
     fscal u[NHits], v[NHits], x[NHits], y[NHits], z[NHits];
     for (int ih = 0; ih < NHits; ++ih) {
       const L1Hit& hit       = fInputData.GetHit(ihit[ih]);
-      u[ih]            = hit.u;
-      v[ih]            = hit.v;
+      u[ih]                  = hit.u;
+      v[ih]                  = hit.v;
       std::tie(x[ih], y[ih]) = sta[ih].ConvUVtoXY<fscal>(u[ih], v[ih]);
-      z[ih] = hit.z;
+      z[ih]                  = hit.z;
     };
 
     // initialize parameters
@@ -1097,6 +1084,7 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
       fvec dz = (sta[ih].z - z[ih]);
       sta[ih].fieldSlice.GetFieldValue(x[ih] + tx[ih] * dz, y[ih] + ty[ih] * dz, B[ih]);
     };
+
     fld.Set(B[0], sta[0].z, B[1], sta[1].z, B[2], sta[2].z);
 
     // fit
@@ -1108,8 +1096,7 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
       else {
         fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
       }
-      if (ista[ih] == fNstationsBeforePipe - 1) fit.L1AddPipeMaterial(T, T.qp, 1);
-
+      if (ista[ih] == fNstationsBeforePipe - 1) { fit.L1AddPipeMaterial(T, T.qp, 1); }
       L1Filter(T, sta[ih].frontInfo, u[ih]);
       L1Filter(T, sta[ih].backInfo, v[ih]);
     }
@@ -1600,7 +1587,6 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
     timeER.clear();
 
     /// Find the triplets(right hit). Reformat data in the portion of triplets.
-
 
     findTripletsStep0(  // input
       vHits_r, stam, star,
@@ -2474,9 +2460,9 @@ void L1Algo::CATrackFinder()
             fRecoHits_local[num_thread].push_back(*phIt);
             L1HitPoint tempPoint = CreateHitPoint(hit);  //TODO take number of station from hit
 
-            L1Station stah = fParameters.GetStation(0);  // TODO: Why is it a copy?
+            L1Station stah      = fParameters.GetStation(0);  // TODO: Why is it a copy?
             auto [xcoor, ycoor] = stah.ConvUVtoXY<fscal>(tempPoint.U(), tempPoint.V());
-            float zcoor = tempPoint.Z() - fParameters.GetTargetPositionZ()[0];
+            float zcoor         = tempPoint.Z() - fParameters.GetTargetPositionZ()[0];
 
             float timeFlight = sqrt(xcoor * xcoor + ycoor * ycoor + zcoor * zcoor) / 30.f;  // c = 30[cm/ns]
             sumTime += (hit.t - timeFlight);
