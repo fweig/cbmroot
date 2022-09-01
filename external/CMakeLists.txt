@@ -24,7 +24,7 @@ if(DOWNLOAD_EXTERNALS)
 
   download_project_if_needed(PROJECT gsl
     GIT_REPOSITORY    "https://github.com/microsoft/GSL.git"
-    GIT_TAG           "v4.0.0"
+    GIT_TAG           "a3534567187d2edc428efd3f13466ff75fe5805c"
     SOURCE_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/GSL
   )
   set(GSL_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/GSL/include PARENT_SCOPE)
@@ -44,7 +44,7 @@ if(DOWNLOAD_EXTERNALS)
 
   download_project_if_needed(PROJECT           xpu
                              GIT_REPOSITORY    "https://github.com/fweig/xpu"
-                             GIT_TAG           "v0.7.2"
+                             GIT_TAG           "00fd050b65d5798800517710fbc241c062acd927"
                              SOURCE_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/xpu
                              CONFIGURE_COMMAND ""
                              BUILD_COMMAND     ""
