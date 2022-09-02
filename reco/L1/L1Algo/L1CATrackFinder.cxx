@@ -2460,7 +2460,7 @@ void L1Algo::CATrackFinder()
             fRecoHits_local[num_thread].push_back(*phIt);
             L1HitPoint tempPoint = CreateHitPoint(hit);  //TODO take number of station from hit
 
-            L1Station stah      = fParameters.GetStation(0);  // TODO: Why is it a copy?
+            const L1Station& stah = fParameters.GetStation(hit.iSt);
             auto [xcoor, ycoor] = stah.ConvUVtoXY<fscal>(tempPoint.U(), tempPoint.V());
             float zcoor         = tempPoint.Z() - fParameters.GetTargetPositionZ()[0];
 
