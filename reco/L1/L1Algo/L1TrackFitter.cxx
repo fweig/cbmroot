@@ -1459,7 +1459,7 @@ void L1Algo::GuessVec(L1TrackPar& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fve
   fvec A2A5 = A2 * A5;
   fvec A4A4 = A4 * A4;
 
-  fvec det = rcp(-A2 * A3A3 + A1 * (A3A4 + A3A4 - A1A5) + A0 * (A2A5 - A4A4));
+  fvec det = fvec::One() / (-A2 * A3A3 + A1 * (A3A4 + A3A4 - A1A5) + A0 * (A2A5 - A4A4));
   fvec Ai0 = (-A4A4 + A2A5);
   fvec Ai1 = (A3A4 - A1A5);
   fvec Ai2 = (-A3A3 + A0 * A5);
@@ -1471,16 +1471,16 @@ void L1Algo::GuessVec(L1TrackPar& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fve
   t.x        = (Ai0 * a0 + Ai1 * a1 + Ai3 * a2) * det;
   t.tx       = (Ai1 * a0 + Ai2 * a1 + Ai4 * a2) * det;
   fvec txtx1 = 1. + t.tx * t.tx;
-  L          = (Ai3 * a0 + Ai4 * a1 + Ai5 * a2) * det * rcp(txtx1);
+  L          = (Ai3 * a0 + Ai4 * a1 + Ai5 * a2) * det / txtx1;
   L1         = L * t.tx;
   A1         = A1 + A3 * L1;
   A2         = A2 + (A4 + A4 + A5 * L1) * L1;
   b1 += b2 * L1;
-  det = rcp(-A1 * A1 + A0 * A2);
+  det = fvec::One() / (-A1 * A1 + A0 * A2);
 
   t.y  = (A2 * b0 - A1 * b1) * det;
   t.ty = (-A1 * b0 + A0 * b1) * det;
-  t.qp = -L * c_light_i * rsqrt(txtx1 + t.ty * t.ty);
+  t.qp = -L * c_light_i / sqrt(txtx1 + t.ty * t.ty);
   t.z  = z0;
 }
 
@@ -1534,7 +1534,7 @@ void L1Algo::GuessVec(L1TrackParFit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, 
   fvec A2A5 = A2 * A5;
   fvec A4A4 = A4 * A4;
 
-  fvec det = rcp(-A2 * A3A3 + A1 * (A3A4 + A3A4 - A1A5) + A0 * (A2A5 - A4A4));
+  fvec det = fvec::One() / (-A2 * A3A3 + A1 * (A3A4 + A3A4 - A1A5) + A0 * (A2A5 - A4A4));
   fvec Ai0 = (-A4A4 + A2A5);
   fvec Ai1 = (A3A4 - A1A5);
   fvec Ai2 = (-A3A3 + A0 * A5);
@@ -1546,16 +1546,16 @@ void L1Algo::GuessVec(L1TrackParFit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, 
   t.fx       = (Ai0 * a0 + Ai1 * a1 + Ai3 * a2) * det;
   t.ftx      = (Ai1 * a0 + Ai2 * a1 + Ai4 * a2) * det;
   fvec txtx1 = 1. + t.ftx * t.ftx;
-  L          = (Ai3 * a0 + Ai4 * a1 + Ai5 * a2) * det * rcp(txtx1);
+  L          = (Ai3 * a0 + Ai4 * a1 + Ai5 * a2) * det / txtx1;
   L1         = L * t.ftx;
   A1         = A1 + A3 * L1;
   A2         = A2 + (A4 + A4 + A5 * L1) * L1;
   b1 += b2 * L1;
-  det = rcp(-A1 * A1 + A0 * A2);
+  det = fvec::One() / (-A1 * A1 + A0 * A2);
 
   t.fy  = (A2 * b0 - A1 * b1) * det;
   t.fty = (-A1 * b0 + A0 * b1) * det;
-  t.fqp = -L * c_light_i * rsqrt(txtx1 + t.fty * t.fty);
+  t.fqp = -L * c_light_i / sqrt(txtx1 + t.fty * t.fty);
   if (timeV) { t.ft = masked(time, nhits > 0); }
 
   t.fz = z0;

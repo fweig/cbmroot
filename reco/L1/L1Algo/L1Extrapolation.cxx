@@ -214,7 +214,7 @@ void L1ExtrapolateAnalytic(L1TrackPar& T,  // input track parameters (x,y,tx,ty,
   const fvec ctdz2 = c_light * t * dz2;
 
   const fvec dqp  = qp - qp0;
-  const fvec t2i  = c1 * rcp(t2);  // /t2;
+  const fvec t2i  = c1 / t2;
   const fvec xt2i = x * t2i;
   const fvec yt2i = y * t2i;
   const fvec tmp0 = ht1SA1 + c2 * ht2SA2 + c3 * ht3SA3;

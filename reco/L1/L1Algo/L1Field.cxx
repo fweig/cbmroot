@@ -218,7 +218,7 @@ void L1FieldRegion::Set(const L1FieldValue& b0, const fvec b0z, const L1FieldVal
   z0       = b0z;
   fvec dz1 = b1z - b0z;
   fvec dz2 = b2z - b0z;
-  fvec det = rcp(dz1 * dz2 * (b2z - b1z));
+  fvec det = fvec::One() / (dz1 * dz2 * (b2z - b1z));
 
   fvec w21 = -dz2 * det;
   fvec w22 = dz1 * det;
@@ -249,7 +249,7 @@ void L1FieldRegion::Set(const L1FieldValue& b0, const fvec b0z, const L1FieldVal
 void L1FieldRegion::Set(const L1FieldValue& b0, const fvec b0z, const L1FieldValue& b1, const fvec b1z)
 {
   z0       = b0z;
-  fvec dzi = rcp(b1z - b0z);
+  fvec dzi = fvec::One() / (b1z - b0z);
   cx0      = b0.x;
   cy0      = b0.y;
   cz0      = b0.z;
