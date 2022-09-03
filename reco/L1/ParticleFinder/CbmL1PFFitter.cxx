@@ -252,9 +252,9 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       b0.Combine(fB[i], w[i]);
       fld.Set(b0, z0, b1, z1, b2, z2);
 
-      fvec initialised = (z[i] <= z_end) & (z_start < z[i]);
-      fvec w1          = masked(w[i], initialised);
-      fvec wIn         = mask2int(initialised);
+      fmask initialised = (z[i] <= z_end) & (z_start < z[i]);
+      fvec w1           = masked(w[i], initialised);
+      fvec wIn          = mask2int(initialised);
 
       L1Extrapolate(T, z[i], qp0, fld, &w1);
       if (i == NMvdStations) {  // TODO: How a hit can be also a station? (S.Zharko)
@@ -329,9 +329,9 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       b0.Combine(fB[i], w[i]);
       fld.Set(b0, z0, b1, z1, b2, z2);
 
-      fvec initialised = (z[i] < z_end) & (z_start <= z[i]);
-      fvec w1          = masked(w[i], initialised);
-      fvec wIn         = mask2int(initialised);
+      fmask initialised = (z[i] < z_end) & (z_start <= z[i]);
+      fvec w1           = masked(w[i], initialised);
+      fvec wIn          = mask2int(initialised);
 
       L1Extrapolate(T, z[i], qp0, fld, &w1);
       if (i == NMvdStations - 1) {
@@ -410,8 +410,9 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
   int NMvdStations     = CbmL1::Instance()->fpAlgo->GetNstationsBeforePipe();
   const L1Station* sta = CbmL1::Instance()->fpAlgo->GetParameters()->GetStations().begin();
   fvec* zSta           = new fvec[nStations];
-  for (int iSta = 0; iSta < nStations; iSta++)
+  for (int iSta = 0; iSta < nStations; iSta++) {
     zSta[iSta] = sta[iSta].z;
+  }
 
   field.reserve(Tracks.size());
 
@@ -426,7 +427,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
   unsigned short N_vTracks = Tracks.size();
   int ista;
   for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvecLen) {
-    if (N_vTracks - itrack < static_cast<unsigned short>(fvecLen)) nTracks_SIMD = N_vTracks - itrack;
+    if (N_vTracks - itrack < static_cast<unsigned short>(fvecLen)) { nTracks_SIMD = N_vTracks - itrack; }
 
     fvec mass2;
     for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
@@ -525,7 +526,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
     c[2] += fvec(Cv[2]);
     fvec d   = c[0] * c[2] - c[1] * c[1];
     fvec chi = sqrt(fabs(0.5 * (dx * dx * c[0] - 2 * dx * dy * c[1] + dy * dy * c[2]) / d));
-    chi      = masked(chi, fabs(d) >= 1.e-20);
+    chi      = masked(chi, fabs(d) >= fvec(1.e-20));
 
     for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
       chiToVtx.push_back(chi[iVec]);

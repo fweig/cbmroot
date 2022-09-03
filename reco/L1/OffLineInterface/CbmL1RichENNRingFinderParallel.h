@@ -114,13 +114,13 @@ class CbmL1RichENNRingFinderParallel : public CbmRichRingFinder {
       , Cx(0)
       , Cy(0)
       ,  // coefficients for the parameter space
-      on_ring(fvec::MaskOne()) {};
+      on_ring(MaskOne()) {};
 
     // variables for local search:
     fvec lx, ly, lr2;         // local coordinates
     fvec S0, S1, S2, S3, S4;  // coefficients for calculation of E
     fvec C, Cx, Cy;           // coefficients for the parameter space
-    fvec on_ring;             // is the hit close to the current ring
+    fmask on_ring;            // is the hit close to the current ring
   };
 
 

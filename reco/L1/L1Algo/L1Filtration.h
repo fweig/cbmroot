@@ -37,7 +37,7 @@ inline void FilterTime(L1TrackPar& T, fvec t, fvec dt, fvec timeInfo = fvec::One
   // it helps to keep the initial time errors reasonably small
   // the calculations in the covariance matrix are not affected
 
-  const fvec maskDoFilter = (HCH < dt2 * 16.f);
+  const fmask maskDoFilter = (HCH < dt2 * 16.f);
   //const fvec maskDoFilter = _f32vec4_true;
 
   fvec wi     = w / (dt2 + 1.0000001f * HCH);
@@ -106,7 +106,7 @@ inline void L1Filter(L1TrackPar& T, const L1UMeasurementInfo& info, fvec u, fvec
   // it helps to keep the initial track errors reasonably small
   // the calculations in the covariance matrix are not affected
 
-  const fvec maskDoFilter = (HCH < info.sigma2 * 16.f);
+  const fmask maskDoFilter = (HCH < info.sigma2 * 16.f);
   //const fvec maskDoFilter = _f32vec4_true;
 
   // correction to HCH is needed for the case when sigma2 is so small
@@ -176,7 +176,7 @@ inline void L1FilterNoField(L1TrackPar& T, const L1UMeasurementInfo& info, fvec 
   F5 = info.cos_phi * T.C50 + info.sin_phi * T.C51;
 
   //const fmask maskDoFilter = (HCH < info.sigma2 * 16.f);
-  const fvec maskDoFilter(fvec::MaskOne());
+  const fmask maskDoFilter(MaskOne());
 
   //TODO: SG:  try this
   //fvec wi          = w / (info.sigma2 + 1.0000001f * HCH);

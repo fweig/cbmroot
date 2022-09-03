@@ -530,10 +530,10 @@ void L1Algo::L1KFTrackFitter()
         fldB0.Combine(fB[i], w[i]);
         fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
-        fvec initialised = (z[i] < z_end) & (z_start <= z[i]);
-        fvec w1          = masked(w[i], initialised);
-        fvec w1_time     = masked(w_time[i], initialised);
-        fvec wIn         = masked(fvec::One(), initialised);
+        fmask initialised = (z[i] < z_end) & (z_start <= z[i]);
+        fvec w1           = masked(w[i], initialised);
+        fvec w1_time      = masked(w_time[i], initialised);
+        fvec wIn          = masked(fvec::One(), initialised);
 
         fld1 = fld;
 
@@ -692,10 +692,10 @@ void L1Algo::L1KFTrackFitter()
         fldB0.Combine(fB[i], w[i]);
         fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
-        fvec initialised = (z[i] <= z_end) & (z_start < z[i]);
-        fvec w1          = masked(w[i], initialised);
-        fvec w1_time     = masked(w_time[i], initialised);
-        fvec wIn         = masked(fvec::One(), initialised);
+        fmask initialised = (z[i] <= z_end) & (z_start < z[i]);
+        fvec w1           = masked(w[i], initialised);
+        fvec w1_time      = masked(w_time[i], initialised);
+        fvec wIn          = masked(fvec::One(), initialised);
 
         L1Extrapolate(T, z[i], qp0, fld, &w1);
 
@@ -1002,9 +1002,9 @@ void L1Algo::L1KFTrackFitterMuch()
       fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
 
       for (++i; i < nHits; i++) {
-        fvec initialised = (z[i] <= z_end) & (z_start < z[i]);
-        fvec w1          = masked(w[i], initialised);
-        fvec wIn         = masked(fvec::One(), initialised);
+        fmask initialised = (z[i] <= z_end) & (z_start < z[i]);
+        fvec w1           = masked(w[i], initialised);
+        fvec wIn          = masked(fvec::One(), initialised);
 
         fldZ0 = z[i];
         dz    = (fldZ1 - fldZ0);
@@ -1088,8 +1088,8 @@ void L1Algo::L1KFTrackFitterMuch()
 
           for (int iStep = 0; iStep < max_steps + 1; iStep++) {
 
-            const fvec maskLastStep = (nofSteps == nofSteps1);
-            z_cur                   = if3(maskLastStep, z_last, T1.fz + stepSize);
+            const fmask maskLastStep = (nofSteps == nofSteps1);
+            z_cur                    = if3(maskLastStep, z_last, T1.fz + stepSize);
 
             //  fvec v_mc = fabs(1/qp01)/sqrt(mass2+fabs(1/qp01)*fabs(1/qp01));
             // T1.ExtrapolateLine1( z, &w2, v_mc);
@@ -1198,7 +1198,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
       for (--i; i >= 0; i--) {
 
-        fvec initialised = (z[i] < z_end) & (z_start <= z[i]);
+        fmask initialised = (z[i] < z_end) & (z_start <= z[i]);
         fvec w1          = masked(w[i], initialised);
         fvec wIn         = masked(fvec::One(), initialised);
 
@@ -1228,7 +1228,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
           for (int iStep = 0; iStep < max_steps + 1; iStep++) {
 
-            const fvec maskLastStep = (nofSteps == nofSteps1);
+            const fmask maskLastStep = (nofSteps == nofSteps1);
             z_cur                   = if3(maskLastStep, z_last, T1.fz - stepSize);
 
             //               fvec v_mc = fabs(1/qp01)/sqrt(mass2+fabs(1/qp01)*fabs(1/qp01));

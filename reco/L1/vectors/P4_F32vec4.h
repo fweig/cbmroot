@@ -132,8 +132,6 @@ public:
 
   static F32vec4 One() { return F32vec4(1.); }
   static F32vec4 Zero() { return F32vec4(0.); }
-  static F32vec4 MaskOne() { return _f32vec4_true; }
-  static F32vec4 MaskZero() { return _f32vec4_false; }
 
   /* Define all operators for consistensy */
 
@@ -175,12 +173,10 @@ public:
 
 typedef F32vec4 fvec;
 typedef float fscal;
+typedef fvec fmask;
 const int fvecLen = 4;
 //#define fvec_true  _f32vec4_true
 //#define fvec_false _f32vec4_false
-#define _fvecalignment __attribute__((aligned(16)))
-
-inline fvec fabs(const fvec& a) { return abs(a); }
 
 inline fvec if3(const fvec& mask, const fvec& b, const fvec& c)
 {
@@ -188,9 +184,18 @@ inline fvec if3(const fvec& mask, const fvec& b, const fvec& c)
   return (b & mask) + (c & (!mask));
 }
 
-inline fvec masked(const fvec& a, const fvec& mask) { return if3(mask, a, fvec::Zero()); }
+inline fmask MaskOne() { return _f32vec4_true; }
+inline fmask MaskZero() { return _f32vec4_false; }
 
-inline fvec mask2int(const fvec& mask)
+
+#define _fvecalignment __attribute__((aligned(16)))
+
+
+inline fvec fabs(const fvec& a) { return abs(a); }
+
+inline fvec masked(const fvec& a, const fmask& mask) { return if3(mask, a, fvec::Zero()); }
+
+inline fvec mask2int(const fmask& mask)
 {  // mask returned
   return if3(mask, fvec::One(), fvec::Zero());
 }
@@ -218,9 +223,16 @@ inline bool IsNanAny(const fvec& v)
   return ret;
 }
 
-inline bool NotEmptyFvec(const F32vec4& a) { return bool(a[0]) || bool(a[1]) || bool(a[2]) || bool(a[3]); }
+inline bool EmptyFmask(const fmask& a)
+{
+  bool ret = true;
+  for (int i = 0; i < fvecLen; i++) {
+    ret = ret && (!bool(a[i]));
+  }
+  return ret;
+}
 
-inline bool EmptyFvec(const F32vec4& a) { return !(bool(a[0]) || bool(a[1]) || bool(a[2]) || bool(a[3])); }
+inline bool NotEmptyFmask(const fmask& a) { return !EmptyFmask(a); }
 
 #include "std_alloc.h"
 

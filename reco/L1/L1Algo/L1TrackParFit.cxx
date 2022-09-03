@@ -32,7 +32,7 @@ void L1TrackParFit::Filter(L1UMeasurementInfo& info, fvec u, fvec w)
   F5 = info.cos_phi * C50 + info.sin_phi * C51;
 
 #if 0  // use mask
-  const fvec mask = (HCH < info.sigma2 * 16.);
+  const fmask mask = (HCH < info.sigma2 * 16.);
   wi = w/( (mask & info.sigma2) +HCH );
   zetawi = zeta *wi;
   chi2 +=  mask & (zeta * zetawi);
@@ -99,7 +99,7 @@ void L1TrackParFit::FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w)
   F5 = info.cos_phi * C50 + info.sin_phi * C51;
 
 #if 0  // use mask
-  const fvec mask = (HCH < info.sigma2 * 16.);
+  const fmask mask = (HCH < info.sigma2 * 16.);
   wi = w/( (mask & info.sigma2) +HCH );
   zetawi = zeta *wi;
   chi2 +=  mask & (zeta * zetawi);
@@ -166,10 +166,10 @@ void L1TrackParFit::Filter(fvec t0, fvec dt0, fvec w, fvec timeInfo)
   F5 = C55;
 
 #if 1  // use mask
-  const fvec mask = (timeInfo > 0);
-  wi              = mask & w / (dt0 * dt0 + HCH);
-  zetawi          = zeta * wi;
-  chi2 += mask & (zeta * zetawi);
+  const fmask mask = (timeInfo > 0.f);
+  wi               = masked(w / (dt0 * dt0 + HCH), mask);
+  zetawi           = zeta * wi;
+  chi2 += masked(zeta * zetawi, mask);
 #else
   wi     = w / (dt0 * dt0 + HCH);
   zetawi = zeta * wi;
@@ -220,7 +220,7 @@ void L1TrackParFit::ExtrapolateLine(fvec z_out, fvec* w)
   cnst c_light = 29.9792458;
 
   fvec dz = (z_out - fz);
-  if (w) { dz = dz & (fvec(0.f) < *w); }
+  if (w) { dz = masked(dz, (fvec(0.f) < *w)); }
 
   fx += dz * ftx;
   fy += dz * fty;
@@ -266,7 +266,7 @@ void L1TrackParFit::ExtrapolateLine1(fvec z_out, fvec* w, fvec v)
   cnst c_light = 29.9792458;
 
   fvec dz = (z_out - fz);
-  if (w) { dz = dz & (fvec(0.f) < *w); }
+  if (w) { dz = masked(dz, (fvec(0.f) < *w)); }
 
   fx += dz * ftx;
   fy += dz * fty;
@@ -806,7 +806,7 @@ void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec d
 
   const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
   fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
-  fvec ok                = (corr == corr) & (fvec::Zero() < w);
+  fmask ok               = (corr == corr) & (fvec::Zero() < w);
   corr                   = if3(ok, corr, fvec::One());
 
   qp0 *= corr;
@@ -839,7 +839,7 @@ void L1TrackParFit::EnergyLossCorrection(float atomicA, float rho, float radLen,
 
   const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
   fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
-  fvec ok                = (corr == corr) & (fvec::Zero() < w);
+  fmask ok               = (corr == corr) & (fvec::Zero() < w);
   corr                   = if3(ok, corr, fvec::One());
 
   qp0 *= corr;

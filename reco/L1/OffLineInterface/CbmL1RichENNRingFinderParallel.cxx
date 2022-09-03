@@ -305,7 +305,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
     fvec S0, S1, S2, S3, S4, S5, S6, S7;
     fvec X = 0, Y = 0, R = 0, R2 = 0;
 
-    fvec validRing(fvec::MaskOne());  // mask of the valid rings
+    fmask validRing(MaskOne());  // mask of the valid rings
 
     fvec SearchAreaSize = 0;  // number of hits to fit and search ring
     fvec PickUpAreaSize = 0;
@@ -375,7 +375,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
 #endif
     for (int isa = 0; isa < MaxSearchAreaSize; isa++) {  // TODO don't work w\o this because of nan in wights
       ENNSearchHitV& sHit = SearchArea[isa];
-      const fvec validHit = (fvec(isa) < SearchAreaSize) & validRing;
+      const fmask validHit = (fvec(isa) < SearchAreaSize) & validRing;
       sHit.lx             = if3(validHit, sHit.lx, 0);
       sHit.ly             = if3(validHit, sHit.ly, 0);
       sHit.lr2            = if3(validHit, sHit.lr2, 0);
@@ -386,7 +386,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
     S0 = S1 = S2 = S3 = S4 = 0.;
     for (int ih = 0; ih < MaxSearchAreaSize; ih++) {
       ENNSearchHitV& sHit = SearchArea[ih];
-      const fvec validHit = (fvec(ih) < SearchAreaSize) & validRing;
+      const fmask validHit = (fvec(ih) < SearchAreaSize) & validRing;
 
       fvec& lr2 = sHit.lr2;
       fvec lr   = sqrt(lr2);
@@ -435,7 +435,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
       Dmax                   = -1.;
 
       for (THitIndex ih = 0; ih < MaxSearchAreaSize; ih++) {
-        const fvec validHit = (fvec(ih) < SearchAreaSize) & validRing;
+        const fmask validHit = (fvec(ih) < SearchAreaSize) & validRing;
         //        ENNHit *j = &(SearchArea[ih]);
         ENNSearchHitV& sHit = SearchArea[ih];
         const fvec dx       = sHit.lx - X;
@@ -455,7 +455,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
         S4 += w * sHit.S4;
       }
 
-    } while (NotEmptyFvec(Dmax > fvec(0.)));
+    } while (NotEmptyFmask(Dmax > fvec(0.)));
 
 
 #ifdef PRINT_TIMING
@@ -505,7 +505,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
 #ifdef PRINT_TIMING
     GetTimer("Ring finding: Store ring").Start(0);
 #endif  // PRINT_TIMING
-    if (ISUNLIKELY(EmptyFvec(validRing))) continue;
+    if (ISUNLIKELY(EmptyFmask(validRing))) continue;
 
       ///////////
 #if 0  // TODO 1

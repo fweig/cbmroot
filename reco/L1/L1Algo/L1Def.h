@@ -13,12 +13,7 @@
 
 #include <assert.h>
 
-#if defined(__CLING__) && defined(__arm64__)
-#include "vectors/PSEUDO_F32vec4.h"
-#else
-#include "vectors/P4_F32vec4.h"
-#endif
-
+#include "vectors/L1vec.h"
 
 #ifdef FAST_CODE
 

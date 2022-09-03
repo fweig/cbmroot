@@ -148,7 +148,7 @@ fvec L1Fit::ApproximateBetheBloch(const fvec& bg2)
   const fvec x    = 0.5f * log(bg2);
   const fvec lhwI = log(28.816f * 1e-9f * sqrt(rho * mZA) / mI);
 
-  fvec init    = x > x1;
+  fmask init   = x > x1;
   d2           = masked(lhwI + x - 0.5f, init);
   const fvec r = (x1 - x) / (x1 - x0);
   init         = (x > x0) & (x1 > x);
@@ -195,7 +195,7 @@ fvec L1Fit::ApproximateBetheBloch(const fvec& bg2, const fvec& kp0, const fvec& 
   const fvec x    = 0.5f * log(bg2);
   const fvec lhwI = log(28.816f * 1e-9f * sqrt(rho * mZA) / mI);
 
-  fvec init    = x > x1;
+  fmask init   = x > x1;
   d2           = masked(lhwI + x - 0.5f, init);
   const fvec r = (x1 - x) / (x1 - x0);
   init         = (x > x0) & (x1 > x);
@@ -228,7 +228,7 @@ void L1Fit::EnergyLossCorrection(L1TrackPar& T, const fvec& radThick, fvec& qp0,
 
   const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
   fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
-  fvec ok                = (corr == corr) & (fvec::Zero() < w);
+  fmask ok               = (corr == corr) & (fvec::Zero() < w);
   corr                   = if3(ok, corr, fvec::One());
 
   qp0 *= corr;
@@ -270,7 +270,7 @@ void L1Fit::EnergyLossCorrection(float atomicA, float rho, float radLen, L1Track
 
   const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
   fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
-  fvec ok                = (corr == corr) & (fvec::Zero() < w);
+  fmask ok               = (corr == corr) & (fvec::Zero() < w);
   corr                   = if3(ok, corr, fvec::One());
 
   qp0 *= corr;
