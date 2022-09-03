@@ -22,17 +22,12 @@
 
 #include <iomanip>
 #include <iostream>
-
-#ifdef HAVE_SSE
-#include "P4_F32vec4.h"
-#else
-#include "PSEUDO_F32vec4.h"
-#error NoSseFound
-#endif  // HAVE_SSE
-
 #include <vector>
 
 #include <cmath>
+
+#include "Vc/Vc"
+
 using std::cout;
 using std::endl;
 
@@ -111,11 +106,11 @@ void CbmTrdSetTracksPidModWkn::Exec(Option_t*)
 
   std::vector<float> eLossVector;  // vector for energy losses
 
-  fvec* mWkn  = new fvec[fnSet];
-  fvec resWkn = 0;
-  fvec numTr  = 0;
+  Vc::float_v* mWkn  = new Vc::float_v[fnSet];
+  Vc::float_v resWkn = 0;
+  Vc::float_v numTr  = 0;
 
-  //  int nTracks_SIMD = fvecLen;
+  //  int nTracks_SIMD = Vc::float_v::Size;
   int NHits = 0;
   int iV    = 0;
 
@@ -159,14 +154,14 @@ void CbmTrdSetTracksPidModWkn::Exec(Option_t*)
 
     iV++;
 
-    if (!((iV == fvecLen) || ((itrack == (nTrue - 1)) && (iV != 0)))) continue;
+    if (!((iV == Vc::float_v::Size) || ((itrack == (nTrue - 1)) && (iV != 0)))) continue;
 
-    fvec sumWkn = 0;
+    Vc::float_v sumWkn = 0;
     for (Int_t iHit = 0; iHit < fnSet; iHit++) {
       ti      = iHit + 1;
-      fvec g1 = (ti - 1) / fnSet - mWkn[iHit];
-      fvec g2 = ti / fnSet - mWkn[iHit];
-      fvec s1 = 1, s2 = 1;
+      Vc::float_v g1 = (ti - 1) / fnSet - mWkn[iHit];
+      Vc::float_v g2 = ti / fnSet - mWkn[iHit];
+      Vc::float_v s1 = 1, s2 = 1;
       for (int iPow = 0; iPow < 5; iPow++) {
         s1 *= g1;
         s2 *= g2;

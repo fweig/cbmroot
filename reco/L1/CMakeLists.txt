@@ -317,6 +317,7 @@ Install(FILES L1Algo/L1Algo.h
   DESTINATION include/L1Algo
 )
 
-Install(FILES vectors/L1vecVc.h
+Install(FILES vectors/L1vec.h
+  vectors/L1vecVc.h
   DESTINATION include/vectors
 )
