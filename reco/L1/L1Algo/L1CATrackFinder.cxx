@@ -2461,8 +2461,9 @@ void L1Algo::CATrackFinder()
             L1HitPoint tempPoint = CreateHitPoint(hit);  //TODO take number of station from hit
 
             const L1Station& stah = fParameters.GetStation(hit.iSt);
-            auto [xcoor, ycoor] = stah.ConvUVtoXY<fscal>(tempPoint.U(), tempPoint.V());
-            float zcoor         = tempPoint.Z() - fParameters.GetTargetPositionZ()[0];
+            auto [xcoor, ycoor]   = stah.ConvUVtoXY<fscal>(tempPoint.U(), tempPoint.V());
+
+            float zcoor = tempPoint.Z() - fParameters.GetTargetPositionZ()[0];
 
             float timeFlight = sqrt(xcoor * xcoor + ycoor * ycoor + zcoor * zcoor) / 30.f;  // c = 30[cm/ns]
             sumTime += (hit.t - timeFlight);
