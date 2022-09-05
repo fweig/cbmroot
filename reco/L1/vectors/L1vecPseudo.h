@@ -80,6 +80,18 @@ public:
     return z;
   }
 
+  bool isEmpty()
+  {
+    bool ret = true;
+    for (int i = 0; i < fvecLen; i++) {
+      ret = ret && (!v[i]);
+    }
+    return ret;
+  }
+
+  bool isNotEmpty() { return !isEmpty(); }
+
+
   friend std::ostream& operator<<(std::ostream& strm, const fmask& a)
   {
     strm << '[';
@@ -129,6 +141,13 @@ public:
   fscal& operator[](int i) { return v[i]; }
 
   fscal operator[](int i) const { return v[i]; }
+
+  void setZero(fmask m)
+  {
+    for (int i = 0; i < Size; i++) {
+      if (m[i]) { v[i] = 0.; }
+    }
+  }
 
 #define _f1(A, F)                                                                                                      \
   fvec z;                                                                                                              \
@@ -247,9 +266,6 @@ public:
 #define _fvecalignment __attribute__((aligned(fvec::Size * sizeof(fscal))))
 
 
-inline fmask MaskOne() { return fmask::One(); }
-inline fmask MaskZero() { return fmask::One(); }
-
 inline fvec fabs(const fvec& a) { return abs(a); }
 
 inline fvec masked(const fvec& a, const fmask& mask) { return iif(mask, a, fvec::Zero()); }
@@ -282,16 +298,6 @@ inline bool IsNanAny(const fvec& v)
   return ret;
 }
 
-inline bool EmptyFmask(const fmask& a)
-{
-  bool ret = true;
-  for (int i = 0; i < fvecLen; i++) {
-    ret = ret && (!bool(a[i]));
-  }
-  return ret;
-}
-
-inline bool NotEmptyFmask(const fmask& a) { return !EmptyFmask(a); }
 
 #include "std_alloc.h"
 

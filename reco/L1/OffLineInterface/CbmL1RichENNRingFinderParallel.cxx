@@ -305,7 +305,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
     fvec S0, S1, S2, S3, S4, S5, S6, S7;
     fvec X = 0, Y = 0, R = 0, R2 = 0;
 
-    fmask validRing(MaskOne());  // mask of the valid rings
+    fmask validRing(fmask::One());  // mask of the valid rings
 
     fvec SearchAreaSize = 0;  // number of hits to fit and search ring
     fvec PickUpAreaSize = 0;
@@ -455,7 +455,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
         S4 += w * sHit.S4;
       }
 
-    } while (NotEmptyFmask(Dmax > fvec(0.)));
+    } while ((Dmax > fvec(0.)).isNotEmpty());
 
 
 #ifdef PRINT_TIMING
@@ -505,7 +505,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
 #ifdef PRINT_TIMING
     GetTimer("Ring finding: Store ring").Start(0);
 #endif  // PRINT_TIMING
-    if (ISUNLIKELY(EmptyFmask(validRing))) continue;
+    if (ISUNLIKELY(validRing.isEmpty())) continue;
 
       ///////////
 #if 0  // TODO 1
@@ -534,7 +534,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
         ringV.localIHits.push_back( iif( validHit, sHit.localIndex, fvec(-1.) ) );
         ringV.NHits += mask2int(validHit);
         validHit = validHit & ( d <= ShadowSize ); // TODO check *4
-        if ( Empty (validHit) ) continue; // CHECKME
+        if ( validHit.isEmpty() ) continue; // CHECKME
         Shadow.push_back( iif( validHit, sHit.localIndex, fvec(-1.) ) );
       }
       for( int ipu = 0; ipu < MaxPickUpAreaSize; ipu++ ) {
@@ -545,12 +545,12 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
         const fvec dy = puHit.y - ringV.y;
         const fvec d = fabs( sqrt(dx*dx+dy*dy) - ringV.r );
         validHit = validHit & ( d <= HitSize );
-        if ( Empty (validHit) ) continue;
+        if ( validHit.isEmpty() ) continue;
         ringV.chi2 += d*d;
         ringV.localIHits.push_back( iif( validHit, puHit.localIndex, fvec(-1.) ) );
         ringV.NHits += mask2int(validHit);
         validHit = validHit & ( d <= ShadowSize ); // TODO check *4
-        if ( Empty (validHit) ) continue; // CHECKME
+        if ( validHit.isEmpty() ) continue; // CHECKME
         Shadow.push_back( iif( validHit, puHit.localIndex, fvec(-1.) ) );
       }
 

@@ -44,7 +44,7 @@ void L1ExtrapolateAnalytic(L1TrackPar& T,  // input track parameters (x,y,tx,ty,
   const fvec qp = T.qp;
   fvec dz       = (z_out - T.z);
 
-  if (w) { dz = masked(dz, fvec::Zero() < *w); }
+  if (w) { dz.setZero(*w <= fvec::Zero()); }
 
   const fvec dz2 = dz * dz;
   const fvec dz3 = dz2 * dz;
@@ -687,7 +687,7 @@ void L1ExtrapolateTime(L1TrackPar& T,  // input track parameters (x,y,tx,ty,Q/p)
                        fvec timeInfo)
 {
   cnst c_light = 29.9792458;
-  dz           = masked(dz, timeInfo >= 0);
+  dz.setZero(timeInfo < 0);  //TODO: SG: bug: must be <=0
 
   T.t += dz * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1) / c_light;
 

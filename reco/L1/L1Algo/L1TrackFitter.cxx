@@ -531,9 +531,9 @@ void L1Algo::L1KFTrackFitter()
         fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
         fmask initialised = (z[i] < z_end) & (z_start <= z[i]);
-        fvec w1           = masked(w[i], initialised);
-        fvec w1_time      = masked(w_time[i], initialised);
-        fvec wIn          = masked(fvec::One(), initialised);
+        fvec w1           = iif(initialised, w[i], fvec::Zero());
+        fvec w1_time      = iif(initialised, w_time[i], fvec::Zero());
+        fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
         fld1 = fld;
 
@@ -693,9 +693,9 @@ void L1Algo::L1KFTrackFitter()
         fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
         fmask initialised = (z[i] <= z_end) & (z_start < z[i]);
-        fvec w1           = masked(w[i], initialised);
-        fvec w1_time      = masked(w_time[i], initialised);
-        fvec wIn          = masked(fvec::One(), initialised);
+        fvec w1           = iif(initialised, w[i], fvec::Zero());
+        fvec w1_time      = iif(initialised, w_time[i], fvec::Zero());
+        fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
         L1Extrapolate(T, z[i], qp0, fld, &w1);
 
@@ -1003,8 +1003,8 @@ void L1Algo::L1KFTrackFitterMuch()
 
       for (++i; i < nHits; i++) {
         fmask initialised = (z[i] <= z_end) & (z_start < z[i]);
-        fvec w1           = masked(w[i], initialised);
-        fvec wIn          = masked(fvec::One(), initialised);
+        fvec w1           = iif(initialised, w[i], fvec::Zero());
+        fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
         fldZ0 = z[i];
         dz    = (fldZ1 - fldZ0);
@@ -1095,8 +1095,8 @@ void L1Algo::L1KFTrackFitterMuch()
             // T1.ExtrapolateLine1( z, &w2, v_mc);
 
             T1.ExtrapolateLine(z_cur, &w2);
-            nofSteps1 += masked(fvec::One(), !maskLastStep);
-            w2 = masked(w2, !maskLastStep);
+            nofSteps1 += iif(!maskLastStep, fvec::One(), fvec::Zero());
+            w2 = iif(!maskLastStep, w2, fvec::Zero());
 
             //          T1.ExtrapolateLine( z_last, &w1);
             //          L1ExtrapolateLine( T, z_last);
@@ -1115,7 +1115,7 @@ void L1Algo::L1KFTrackFitterMuch()
               T1.L1AddThickMaterial(fParameters.GetMaterialThickness(i, T1.fx, T1.fy) / (nofSteps + fvec(1)), qp01, wIn,
                                     sta[i].materialInfo.thick / (nofSteps + fvec(1)), 1);
 
-              wIn = masked(wIn, !maskLastStep);
+              wIn = iif(!maskLastStep, wIn, fvec::Zero());
             }
             else {
               fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
@@ -1199,8 +1199,8 @@ void L1Algo::L1KFTrackFitterMuch()
       for (--i; i >= 0; i--) {
 
         fmask initialised = (z[i] < z_end) & (z_start <= z[i]);
-        fvec w1           = masked(w[i], initialised);
-        fvec wIn          = masked(fvec::One(), initialised);
+        fvec w1           = iif(initialised, w[i], fvec::Zero());
+        fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
         if (i >= fNfieldStations - 1) {
 
@@ -1235,7 +1235,7 @@ void L1Algo::L1KFTrackFitterMuch()
             //               T1.ExtrapolateLine1( z_cur, &w2, v_mc);
 
             T1.ExtrapolateLine(z_cur, &w2);
-            nofSteps1 += masked(fvec::One(), !maskLastStep);
+            nofSteps1 += iif(!maskLastStep, fvec::One(), fvec::Zero());
 
             // TODO: Unify the selection of energy loss correction! (S.Zharko)
             if constexpr (L1Constants::control::kIfUseRadLengthTable) {
@@ -1252,7 +1252,7 @@ void L1Algo::L1KFTrackFitterMuch()
               T1.L1AddThickMaterial(fParameters.GetMaterialThickness(i, T1.fx, T1.fy) / (nofSteps + fvec(1)), qp01, w2,
                                     sta[i].materialInfo.thick / (nofSteps + fvec(1)), 0);
 
-              w2 = masked(w2, !maskLastStep);
+              w2 = iif(!maskLastStep, w2, fvec::Zero());
             }
             else {
               fit.L1AddMaterial(T, sta[i].materialInfo, qp0, w2);
@@ -1556,7 +1556,7 @@ void L1Algo::GuessVec(L1TrackParFit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, 
   t.fy  = (A2 * b0 - A1 * b1) * det;
   t.fty = (-A1 * b0 + A0 * b1) * det;
   t.fqp = -L * c_light_i / sqrt(txtx1 + t.fty * t.fty);
-  if (timeV) { t.ft = masked(time, nhits > 0); }
+  if (timeV) { t.ft = iif(nhits > fvec::Zero(), time, fvec::Zero()); }
 
   t.fz = z0;
 }

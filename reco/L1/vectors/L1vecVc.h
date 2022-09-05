@@ -26,8 +26,6 @@ inline fvec operator+(const fvec& a, fscal b) { return a + fvec(b); }
 inline fvec operator-(fscal a, const fvec& b) { return fvec(a) - b; }
 inline fvec operator-(const fvec& a, fscal b) { return a - fvec(b); }
 
-inline fmask MaskOne() { return fmask::One(); }
-inline fmask MaskZero() { return fmask::One(); }
 
 inline fvec fabs(const fvec& a) { return abs(a); }
 
@@ -61,16 +59,6 @@ inline bool IsNanAny(const fvec& v)
   return ret;
 }
 
-inline bool EmptyFmask(const fmask& a)
-{
-  bool ret = true;
-  for (int i = 0; i < fvecLen; i++) {
-    ret = ret && (!bool(a[i]));
-  }
-  return ret;
-}
-
-inline bool NotEmptyFmask(const fmask& a) { return !EmptyFmask(a); }
 
 #include "std_alloc.h"
 

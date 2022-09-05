@@ -176,7 +176,7 @@ inline void L1FilterNoField(L1TrackPar& T, const L1UMeasurementInfo& info, fvec 
   F5 = info.cos_phi * T.C50 + info.sin_phi * T.C51;
 
   //const fmask maskDoFilter = (HCH < info.sigma2 * 16.f);
-  const fmask maskDoFilter(MaskOne());
+  const fmask maskDoFilter(fmask::One());
 
   //TODO: SG:  try this
   //fvec wi          = w / (info.sigma2 + 1.0000001f * HCH);
