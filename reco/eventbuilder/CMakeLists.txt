@@ -89,7 +89,7 @@ ENDIF (SSE_FOUND)
 set(LINKDEF CbmEventBuilderLinkDef.h)
 Set(LIBRARY_NAME CbmEventBuilder)
 Set(DEPENDENCIES
-    CbmData CbmBase CbmField CbmStsBase CbmMvd Base CbmQaBase
+    CbmData CbmBase CbmField CbmStsBase CbmMvd Base CbmQaBase Vc.a
 )
 
 GENERATE_LIBRARY()

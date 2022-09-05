@@ -1238,24 +1238,26 @@ void CbmL1::TrackFitPerformance()
       fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
       L1Extrapolate(trPar, mcP.zIn, trPar.qp, fld);
 
-      double dx = trPar.x[0] - mcP.xIn;
-      double dy = trPar.y[0] - mcP.yIn;
+      const L1TrackPar& tr = trPar;
+
+      double dx = tr.x[0] - mcP.xIn;
+      double dy = tr.y[0] - mcP.yIn;
       double dt = sqrt(dx * dx + dy * dy);
       // make dt distance negative for the half of the tracks to ease the gaussian fit and the rms calculation
       if (mc.ID % 2) dt = -dt;
       double pt = sqrt(mcP.px * mcP.px + mcP.py * mcP.py);
       h_fit[0]->Fill(dx * 1.e4);
       h_fit[1]->Fill(dy * 1.e4);
-      h_fit[2]->Fill((trPar.tx[0] - mcP.pxIn / mcP.pzIn) * 1.e3);
-      h_fit[3]->Fill((trPar.ty[0] - mcP.pyIn / mcP.pzIn) * 1.e3);
-      h_fit[4]->Fill(fabs(1. / trPar.qp[0]) / mcP.p - 1);
+      h_fit[2]->Fill((tr.tx[0] - mcP.pxIn / mcP.pzIn) * 1.e3);
+      h_fit[3]->Fill((tr.ty[0] - mcP.pyIn / mcP.pzIn) * 1.e3);
+      h_fit[4]->Fill(fabs(1. / tr.qp[0]) / mcP.p - 1);
 
-      PRes2D->Fill(mcP.p, (1. / fabs(trPar.qp[0]) - mcP.p) / mcP.p * 100.);
+      PRes2D->Fill(mcP.p, (1. / fabs(tr.qp[0]) - mcP.p) / mcP.p * 100.);
 
       CbmL1MCTrack mcTrack = *(it->GetMCTracks()[0]);
 
       if (mcTrack.IsPrimary()) {
-        PRes2DPrim->Fill(mcP.p, (1. / fabs(trPar.qp[0]) - mcP.p) / mcP.p * 100.);
+        PRes2DPrim->Fill(mcP.p, (1. / fabs(tr.qp[0]) - mcP.p) / mcP.p * 100.);
 
         if (abs(mcTrack.pdg) == 211) {
           pion_res_p_fstt->Fill(mcP.p, dt * 1.e4);
@@ -1271,23 +1273,19 @@ void CbmL1::TrackFitPerformance()
         }
       }
       else {
-        PRes2DSec->Fill(mcP.p, (1. / fabs(trPar.qp[0]) - mcP.p) / mcP.p * 100.);
+        PRes2DSec->Fill(mcP.p, (1. / fabs(tr.qp[0]) - mcP.p) / mcP.p * 100.);
       }
 
-      if (std::isfinite(trPar.C00[0]) && trPar.C00[0] > 0) h_fit[5]->Fill((trPar.x[0] - mcP.xIn) / sqrt(trPar.C00[0]));
-      if (std::isfinite(trPar.C11[0]) && trPar.C11[0] > 0) h_fit[6]->Fill((trPar.y[0] - mcP.yIn) / sqrt(trPar.C11[0]));
-      if (std::isfinite(trPar.C22[0]) && trPar.C22[0] > 0)
-        h_fit[7]->Fill((trPar.tx[0] - mcP.pxIn / mcP.pzIn) / sqrt(trPar.C22[0]));
-      if (std::isfinite(trPar.C33[0]) && trPar.C33[0] > 0)
-        h_fit[8]->Fill((trPar.ty[0] - mcP.pyIn / mcP.pzIn) / sqrt(trPar.C33[0]));
-      if (std::isfinite(trPar.C44[0]) && trPar.C44[0] > 0)
-        h_fit[9]->Fill((trPar.qp[0] - mcP.q / mcP.p) / sqrt(trPar.C44[0]));
-      h_fit[10]->Fill(trPar.qp[0]);
+      if (std::isfinite(tr.C00[0]) && tr.C00[0] > 0) h_fit[5]->Fill((tr.x[0] - mcP.xIn) / sqrt(tr.C00[0]));
+      if (std::isfinite(tr.C11[0]) && tr.C11[0] > 0) h_fit[6]->Fill((tr.y[0] - mcP.yIn) / sqrt(tr.C11[0]));
+      if (std::isfinite(tr.C22[0]) && tr.C22[0] > 0) h_fit[7]->Fill((tr.tx[0] - mcP.pxIn / mcP.pzIn) / sqrt(tr.C22[0]));
+      if (std::isfinite(tr.C33[0]) && tr.C33[0] > 0) h_fit[8]->Fill((tr.ty[0] - mcP.pyIn / mcP.pzIn) / sqrt(tr.C33[0]));
+      if (std::isfinite(tr.C44[0]) && tr.C44[0] > 0) h_fit[9]->Fill((tr.qp[0] - mcP.q / mcP.p) / sqrt(tr.C44[0]));
+      h_fit[10]->Fill(tr.qp[0]);
       h_fit[11]->Fill(mcP.q / mcP.p);
-      if (last_station > fNMvdStations) h_fit[12]->Fill(trPar.t[0] - mcP.time);
+      if (last_station > fNMvdStations) h_fit[12]->Fill(tr.t[0] - mcP.time);
       if (last_station > fNMvdStations)
-        if (std::isfinite(trPar.C55[0]) && trPar.C55[0] > 0)
-          h_fit[13]->Fill((trPar.t[0] - mcP.time) / sqrt(trPar.C55[0]));
+        if (std::isfinite(tr.C55[0]) && tr.C55[0] > 0) h_fit[13]->Fill((tr.t[0] - mcP.time) / sqrt(tr.C55[0]));
 
 #else
       int iMC = fvHitPointIndexes[it->Hits.front()];  // TODO2: adapt to linking
@@ -1351,29 +1349,27 @@ void CbmL1::TrackFitPerformance()
       fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
       L1Extrapolate(trPar, mcP.zOut, trPar.qp, fld);
 
-      h_fitL[0]->Fill((trPar.x[0] - mcP.xOut) * 1.e4);
-      h_fitL[1]->Fill((trPar.y[0] - mcP.yOut) * 1.e4);
-      h_fitL[2]->Fill((trPar.tx[0] - mcP.pxOut / mcP.pzOut) * 1.e3);
-      h_fitL[3]->Fill((trPar.ty[0] - mcP.pyOut / mcP.pzOut) * 1.e3);
-      h_fitL[4]->Fill(fabs(1. / trPar.qp[0]) / mcP.p - 1);
-      if (last_station > fNMvdStations) h_fitL[12]->Fill(trPar.t[0] - mcP.time);
+      const L1TrackPar& tr = trPar;
+
+      h_fitL[0]->Fill((tr.x[0] - mcP.xOut) * 1.e4);
+      h_fitL[1]->Fill((tr.y[0] - mcP.yOut) * 1.e4);
+      h_fitL[2]->Fill((tr.tx[0] - mcP.pxOut / mcP.pzOut) * 1.e3);
+      h_fitL[3]->Fill((tr.ty[0] - mcP.pyOut / mcP.pzOut) * 1.e3);
+      h_fitL[4]->Fill(fabs(1. / tr.qp[0]) / mcP.p - 1);
+      if (last_station > fNMvdStations) h_fitL[12]->Fill(tr.t[0] - mcP.time);
 
 
-      if (std::isfinite(trPar.C00[0]) && trPar.C00[0] > 0)
-        h_fitL[5]->Fill((trPar.x[0] - mcP.xOut) / sqrt(trPar.C00[0]));
-      if (std::isfinite(trPar.C11[0]) && trPar.C11[0] > 0)
-        h_fitL[6]->Fill((trPar.y[0] - mcP.yOut) / sqrt(trPar.C11[0]));
-      if (std::isfinite(trPar.C22[0]) && trPar.C22[0] > 0)
-        h_fitL[7]->Fill((trPar.tx[0] - mcP.pxOut / mcP.pzOut) / sqrt(trPar.C22[0]));
-      if (std::isfinite(trPar.C33[0]) && trPar.C33[0] > 0)
-        h_fitL[8]->Fill((trPar.ty[0] - mcP.pyOut / mcP.pzOut) / sqrt(trPar.C33[0]));
-      if (std::isfinite(trPar.C44[0]) && trPar.C44[0] > 0)
-        h_fitL[9]->Fill((trPar.qp[0] - mcP.q / mcP.p) / sqrt(trPar.C44[0]));
-      h_fitL[10]->Fill(trPar.qp[0]);
+      if (std::isfinite(tr.C00[0]) && tr.C00[0] > 0) h_fitL[5]->Fill((tr.x[0] - mcP.xOut) / sqrt(tr.C00[0]));
+      if (std::isfinite(tr.C11[0]) && tr.C11[0] > 0) h_fitL[6]->Fill((tr.y[0] - mcP.yOut) / sqrt(tr.C11[0]));
+      if (std::isfinite(tr.C22[0]) && tr.C22[0] > 0)
+        h_fitL[7]->Fill((tr.tx[0] - mcP.pxOut / mcP.pzOut) / sqrt(tr.C22[0]));
+      if (std::isfinite(tr.C33[0]) && tr.C33[0] > 0)
+        h_fitL[8]->Fill((tr.ty[0] - mcP.pyOut / mcP.pzOut) / sqrt(tr.C33[0]));
+      if (std::isfinite(tr.C44[0]) && tr.C44[0] > 0) h_fitL[9]->Fill((tr.qp[0] - mcP.q / mcP.p) / sqrt(tr.C44[0]));
+      h_fitL[10]->Fill(tr.qp[0]);
       h_fitL[11]->Fill(mcP.q / mcP.p);
       if (last_station > fNMvdStations)
-        if (std::isfinite(trPar.C55[0]) && trPar.C55[0] > 0)
-          h_fitL[13]->Fill((trPar.t[0] - mcP.time) / sqrt(trPar.C55[0]));
+        if (std::isfinite(tr.C55[0]) && tr.C55[0] > 0) h_fitL[13]->Fill((tr.t[0] - mcP.time) / sqrt(tr.C55[0]));
 #else
       CbmL1MCPoint& mc = fvMCPoints[iMC];
 
@@ -1435,9 +1431,12 @@ void CbmL1::TrackFitPerformance()
           }
         }
         if (mc.z != trPar.z[0]) continue;
+
+        const L1TrackPar& tr = trPar;
+
         //       static int good = 0;
         //       static int bad = 0;
-        //       if (mc.z != trPar.z[0]){
+        //       if (mc.z != tr.z[0]){
         //         bad++;
         //         continue;
         //       }
@@ -1445,26 +1444,22 @@ void CbmL1::TrackFitPerformance()
         //       cout << "bad\\good" << bad << " " << good << endl;
 
         // calculate pulls
-        //h_fitSV[0]->Fill( (mc.x-trPar.x[0]) *1.e4);
-        //h_fitSV[1]->Fill( (mc.y-trPar.y[0]) *1.e4);
-        h_fitSV[0]->Fill((trPar.x[0] - mc.x));
-        h_fitSV[1]->Fill((trPar.y[0] - mc.y));
-        h_fitSV[2]->Fill((trPar.tx[0] - mc.px / mc.pz) * 1.e3);
-        h_fitSV[3]->Fill((trPar.ty[0] - mc.py / mc.pz) * 1.e3);
-        h_fitSV[4]->Fill(fabs(1. / trPar.qp[0]) / mc.p - 1);
-        if (std::isfinite(trPar.C00[0]) && trPar.C00[0] > 0) h_fitSV[5]->Fill((trPar.x[0] - mc.x) / sqrt(trPar.C00[0]));
-        if (std::isfinite(trPar.C11[0]) && trPar.C11[0] > 0) h_fitSV[6]->Fill((trPar.y[0] - mc.y) / sqrt(trPar.C11[0]));
-        if (std::isfinite(trPar.C22[0]) && trPar.C22[0] > 0)
-          h_fitSV[7]->Fill((trPar.tx[0] - mc.px / mc.pz) / sqrt(trPar.C22[0]));
-        if (std::isfinite(trPar.C33[0]) && trPar.C33[0] > 0)
-          h_fitSV[8]->Fill((trPar.ty[0] - mc.py / mc.pz) / sqrt(trPar.C33[0]));
-        if (std::isfinite(trPar.C44[0]) && trPar.C44[0] > 0)
-          h_fitSV[9]->Fill((trPar.qp[0] - mc.q / mc.p) / sqrt(trPar.C44[0]));
-        h_fitSV[10]->Fill(trPar.qp[0]);
+        //h_fitSV[0]->Fill( (mc.x-tr.x[0]) *1.e4);
+        //h_fitSV[1]->Fill( (mc.y-tr.y[0]) *1.e4);
+        h_fitSV[0]->Fill((tr.x[0] - mc.x));
+        h_fitSV[1]->Fill((tr.y[0] - mc.y));
+        h_fitSV[2]->Fill((tr.tx[0] - mc.px / mc.pz) * 1.e3);
+        h_fitSV[3]->Fill((tr.ty[0] - mc.py / mc.pz) * 1.e3);
+        h_fitSV[4]->Fill(fabs(1. / tr.qp[0]) / mc.p - 1);
+        if (std::isfinite(tr.C00[0]) && tr.C00[0] > 0) h_fitSV[5]->Fill((tr.x[0] - mc.x) / sqrt(tr.C00[0]));
+        if (std::isfinite(tr.C11[0]) && tr.C11[0] > 0) h_fitSV[6]->Fill((tr.y[0] - mc.y) / sqrt(tr.C11[0]));
+        if (std::isfinite(tr.C22[0]) && tr.C22[0] > 0) h_fitSV[7]->Fill((tr.tx[0] - mc.px / mc.pz) / sqrt(tr.C22[0]));
+        if (std::isfinite(tr.C33[0]) && tr.C33[0] > 0) h_fitSV[8]->Fill((tr.ty[0] - mc.py / mc.pz) / sqrt(tr.C33[0]));
+        if (std::isfinite(tr.C44[0]) && tr.C44[0] > 0) h_fitSV[9]->Fill((tr.qp[0] - mc.q / mc.p) / sqrt(tr.C44[0]));
+        h_fitSV[10]->Fill(tr.qp[0]);
         h_fitSV[11]->Fill(mc.q / mc.p);
-        h_fitSV[12]->Fill(trPar.t[0] - mc.time);
-        if (std::isfinite(trPar.C55[0]) && trPar.C55[0] > 0)
-          h_fitSV[13]->Fill((trPar.t[0] - mc.time) / sqrt(trPar.C55[0]));
+        h_fitSV[12]->Fill(tr.t[0] - mc.time);
+        if (std::isfinite(tr.C55[0]) && tr.C55[0] > 0) h_fitSV[13]->Fill((tr.t[0] - mc.time) / sqrt(tr.C55[0]));
       }
       else {  // primary
 
@@ -1527,8 +1522,10 @@ void CbmL1::TrackFitPerformance()
         }
         if (mc.z != trPar.z[0]) continue;
 
-        double dx = trPar.x[0] - mc.x;
-        double dy = trPar.y[0] - mc.y;
+        const L1TrackPar& tr = trPar;
+
+        double dx = tr.x[0] - mc.x;
+        double dy = tr.y[0] - mc.y;
         double dt = sqrt(dx * dx + dy * dy);
         // make dt distance negative for the half of the tracks to ease the gaussian fit and the rms calculation
         if (mc.ID % 2) dt = -dt;
@@ -1549,24 +1546,20 @@ void CbmL1::TrackFitPerformance()
         }
 
         // calculate pulls
-        h_fitPV[0]->Fill((mc.x - trPar.x[0]));
-        h_fitPV[1]->Fill((mc.y - trPar.y[0]));
-        h_fitPV[2]->Fill((mc.px / mc.pz - trPar.tx[0]) * 1.e3);
-        h_fitPV[3]->Fill((mc.py / mc.pz - trPar.ty[0]) * 1.e3);
-        h_fitPV[4]->Fill(fabs(1 / trPar.qp[0]) / mc.p - 1);
-        if (std::isfinite(trPar.C00[0]) && trPar.C00[0] > 0) h_fitPV[5]->Fill((mc.x - trPar.x[0]) / sqrt(trPar.C00[0]));
-        if (std::isfinite(trPar.C11[0]) && trPar.C11[0] > 0) h_fitPV[6]->Fill((mc.y - trPar.y[0]) / sqrt(trPar.C11[0]));
-        if (std::isfinite(trPar.C22[0]) && trPar.C22[0] > 0)
-          h_fitPV[7]->Fill((mc.px / mc.pz - trPar.tx[0]) / sqrt(trPar.C22[0]));
-        if (std::isfinite(trPar.C33[0]) && trPar.C33[0] > 0)
-          h_fitPV[8]->Fill((mc.py / mc.pz - trPar.ty[0]) / sqrt(trPar.C33[0]));
-        if (std::isfinite(trPar.C44[0]) && trPar.C44[0] > 0)
-          h_fitPV[9]->Fill((mc.q / mc.p - trPar.qp[0]) / sqrt(trPar.C44[0]));
-        h_fitPV[10]->Fill(trPar.qp[0]);
+        h_fitPV[0]->Fill((mc.x - tr.x[0]));
+        h_fitPV[1]->Fill((mc.y - tr.y[0]));
+        h_fitPV[2]->Fill((mc.px / mc.pz - tr.tx[0]) * 1.e3);
+        h_fitPV[3]->Fill((mc.py / mc.pz - tr.ty[0]) * 1.e3);
+        h_fitPV[4]->Fill(fabs(1 / tr.qp[0]) / mc.p - 1);
+        if (std::isfinite(tr.C00[0]) && tr.C00[0] > 0) h_fitPV[5]->Fill((mc.x - tr.x[0]) / sqrt(tr.C00[0]));
+        if (std::isfinite(tr.C11[0]) && tr.C11[0] > 0) h_fitPV[6]->Fill((mc.y - tr.y[0]) / sqrt(tr.C11[0]));
+        if (std::isfinite(tr.C22[0]) && tr.C22[0] > 0) h_fitPV[7]->Fill((mc.px / mc.pz - tr.tx[0]) / sqrt(tr.C22[0]));
+        if (std::isfinite(tr.C33[0]) && tr.C33[0] > 0) h_fitPV[8]->Fill((mc.py / mc.pz - tr.ty[0]) / sqrt(tr.C33[0]));
+        if (std::isfinite(tr.C44[0]) && tr.C44[0] > 0) h_fitPV[9]->Fill((mc.q / mc.p - tr.qp[0]) / sqrt(tr.C44[0]));
+        h_fitPV[10]->Fill(tr.qp[0]);
         h_fitPV[11]->Fill(mc.q / mc.p);
-        h_fitPV[12]->Fill(mc.time - trPar.t[0]);
-        if (std::isfinite(trPar.C55[0]) && trPar.C55[0] > 0)
-          h_fitPV[13]->Fill((mc.time - trPar.t[0]) / sqrt(trPar.C55[0]));
+        h_fitPV[12]->Fill(mc.time - tr.t[0]);
+        if (std::isfinite(tr.C55[0]) && tr.C55[0] > 0) h_fitPV[13]->Fill((mc.time - tr.t[0]) / sqrt(tr.C55[0]));
 #else
         FairTrackParam fTP;
 

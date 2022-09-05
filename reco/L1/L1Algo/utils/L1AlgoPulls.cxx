@@ -113,16 +113,18 @@ void L1AlgoPulls::AddOne(L1TrackPar& T_, int i, L1HitIndex_t ih)
   if (T_.chi2[i] > csCut * T_.NDF[i]) return;
   // get error
   TL1TrackParameters err;
-  if (!(finite(T_.C00[i]) && T_.C00[i] > 0)) return;
-  if (!(finite(T_.C11[i]) && T_.C11[i] > 0)) return;
-  if (!(finite(T_.C22[i]) && T_.C22[i] > 0)) return;
-  if (!(finite(T_.C33[i]) && T_.C33[i] > 0)) return;
-  if (!(finite(T_.C44[i]) && T_.C44[i] > 0)) return;
-  err.x  = sqrt(T_.C00[i]);
-  err.y  = sqrt(T_.C11[i]);
-  err.tx = sqrt(T_.C22[i]);
-  err.ty = sqrt(T_.C33[i]);
-  err.qp = sqrt(T_.C44[i]);
+  const L1TrackPar& tr = T_;
+
+  if (!(finite(tr.C00[i]) && tr.C00[i] > 0)) return;
+  if (!(finite(tr.C11[i]) && tr.C11[i] > 0)) return;
+  if (!(finite(tr.C22[i]) && tr.C22[i] > 0)) return;
+  if (!(finite(tr.C33[i]) && tr.C33[i] > 0)) return;
+  if (!(finite(tr.C44[i]) && tr.C44[i] > 0)) return;
+  err.x  = sqrt(tr.C00[i]);
+  err.y  = sqrt(tr.C11[i]);
+  err.tx = sqrt(tr.C22[i]);
+  err.ty = sqrt(tr.C33[i]);
+  err.qp = sqrt(tr.C44[i]);
 
   // mc data
   int iMCP = fL1->fvHitPointIndexes[ih];

@@ -50,6 +50,7 @@ ${CBMDETECTORBASE_DIR}/rich/utils
 
 ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/Interface
+${CBMROOT_SOURCE_DIR}/reco/L1/vectors 
 
 ${CBMROOT_SOURCE_DIR}/run
 )

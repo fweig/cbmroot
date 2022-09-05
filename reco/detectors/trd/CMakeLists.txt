@@ -110,6 +110,7 @@ Set(DEPENDENCIES
   Base
   CbmTrdBase
   TMVA
+  Vc.a
 )
 
 GENERATE_LIBRARY()

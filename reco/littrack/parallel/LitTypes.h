@@ -12,11 +12,6 @@
 #ifndef LITTYPES_H_
 #define LITTYPES_H_
 
-#ifdef HAVE_SSE
-#include "vectors/P4_F32vec4.h"
-#else
-#include "vectors/PSEUDO_F32vec1.h"
-#error LitNoSseFound
-#endif
+#include "L1vecVc.h"
 
 #endif /* LITTYPES_H_ */
