@@ -10,9 +10,10 @@
 #ifndef L1Parameters_h
 #define L1Parameters_h 1
 
-#include <type_traits>
+#include <boost/serialization/array.hpp>
 
 #include <numeric>
+#include <type_traits>
 
 #include "L1CAIteration.h"
 #include "L1Constants.h"
@@ -249,13 +250,42 @@ private:
   // ***************************
 
   bool fDevIsIgnoreHitSearchAreas {false};  ///< Process all hits on the station ignoring hit search area
-
   bool fDevIsFitSingletsFromTarget {false};  ///< Fit singlet starting from the target with the KF
-
   bool fDevIsMatchDoubletsViaMc {false};  ///< Flag to match doublets using MC information
-
   bool fDevIsMatchTripletsViaMc {false};  ///< Flag to match triplets using Mc information
 
+  /// Serialization function
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int)
+  {
+    ar& fMaxDoubletsPerSinglet;
+    ar& fMaxTripletPerDoublets;
+
+    ar& fCAIterations;
+    ar& fTargetPos;
+
+    ar& fVertexFieldValue;
+    ar& fVertexFieldRegion;
+
+    ar& fStations;
+    ar& fThickMap;
+
+    ar& fNstationsGeometryTotal;
+    ar& fNstationsActiveTotal;
+    ar& fNstationsGeometry;
+    ar& fNstationsActive;
+    ar& fActiveStationGlobalIDs;
+
+    ar& fTrackingLevel;
+    ar& fGhostSuppression;
+    ar& fMomentumCutOff;
+
+    ar& fDevIsIgnoreHitSearchAreas;
+    ar& fDevIsFitSingletsFromTarget;
+    ar& fDevIsMatchDoubletsViaMc;
+    ar& fDevIsMatchTripletsViaMc;
+  }
 };
 
 #endif  // L1Parameters_h

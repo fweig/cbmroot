@@ -46,6 +46,7 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "L1Algo/L1Algo.h"
@@ -358,14 +359,36 @@ private:
   void TrackFitPerformance();      // pulls & residuals. Can be called only after Performance()
   void HistoPerformance();         // fill some histograms and calculate efficiencies
 
-  /// STandAlone Package service-functions
-  void WriteSTAPGeoData(const L1Vector<float>& geo);  // create geo_algo.dat
-  void WriteAlgoInputData();                          // create data_algo.dat
-  void WriteSTAPPerfData();                           // create data_perfo.dat
-  //void ReadSTAPGeoData(L1Vector<float> geo, int &size);
-  void ReadSTAPGeoData();
-  void ReadAlgoInputData();
-  void ReadSTAPPerfData();
+  // ** STandAlone Package service-functions **
+
+  /// Defines the name of input/output directory [dir] and prefix of the files [pref], which is used to define
+  /// input and output data trees in the reconstruction macro. If the output TTree file has name
+  /// /path/to/[pref].reco.root, the data files will be:
+  ///   [dir]/input_hits/[pref].job[No].L1InputData.dat - hits input files, containing serialized L1InputData objects,
+  ///     stored for each job (each call of CbmL1::ReadEvent function)
+  ///   [dir]/[pref].L1Parameters.dat - parameters input files, containing serialized L1Parameters object
+  ///
+  void DefineSTAPNames(TString dirName);
+
+  /// Writes initialized L1Parameters object to file ""
+  void WriteSTAPParamObject();
+
+  /// Writes a sample of an L1InputData object to defined directory fSTAPDataDir
+  /// \param iJob  Number of job, usually is defined by the nCalls of executing function
+  /// \note  Creates a file fSTAPDataDir + "/" + fSTAPDataPrefix + "." + TString::Format(kSTAPAlgoIDataSuffix, iJob)
+  void WriteSTAPAlgoInputData(int iJob = 0);
+
+  void WriteSTAPPerfInputData();
+
+  /// Reads a sample of an L1InputData object from defined directory fSTAPDataDir
+  /// \param iJob  Number of job, usually is defined by the nCalls of executing function
+  /// \note  Reads from a file fSTAPDataDir + "/" + fSTAPDataPrefix + "." + TString::Format(kSTAPAlgoIDataSuffix, iJob)
+  void ReadSTAPParamObject();
+
+  void ReadSTAPAlgoInputData(int iJob = 0);
+
+  void ReadSTAPPerfInputData();
+
   /// SIMD KF Banchmark service-functions
   void WriteSIMDKFData();
 
@@ -442,7 +465,23 @@ private:
   /// 0 (off) , 1 (write), 2 (read data and work only with it), 3 (debug - write and read)
   int fSTAPDataMode = 0;
 
-  TString fSTAPDataDir {};
+  TString fSTAPDataDir    = ".";     ///< Name of input/output directory for running in a STAP mode
+  TString fSTAPDataPrefix = "test";  ///< Name of input/output file prefix. The prefix is defined by output TTree file
+
+  /// Extension for IO of the L1Parameters object
+  static constexpr std::string_view kSTAPParamSuffix = "L1Parameters.dat";
+
+  /// Extension for IO of the L1InputData object
+  /// \note IO of the L1InputData object is called inside every launch of CbmL1::ReadEvent function. Inside the function
+  ///       there is a static counter, which calculates the job (function call) number. One have to define the name of
+  ///       the kSTAPAlgoIDataSuffix containing '%d' control symbol, which is replaced with the current job number.
+  ///       \example The file name with [pref] = auau.mbias.eb.100ev and [suff] = "job%d.L1InputData.dat" for the job
+  ///       number 10 is auau.mbias.eb.100ev.job10.L1InputData.dat
+  static constexpr std::string_view kSTAPAlgoIDataSuffix = "job%d.L1InputData.dat";
+
+  /// Name of subdirectory for handling L1InputData objects
+  static constexpr std::string_view kSTAPAlgoIDataDir = "input_hits";
+
 
   Int_t fTrackingLevel     = 2;     // currently not used
   Double_t fMomentumCutOff = 0.1;   // currently not used

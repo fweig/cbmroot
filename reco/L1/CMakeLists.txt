@@ -305,6 +305,7 @@ Install(FILES CbmL1Counters.h
   L1Algo/L1Constants.h
   L1Algo/L1Utils.h
   L1Algo/L1NaN.h
+  L1Algo/L1SimdSerializer.h 
   vectors/std_alloc.h
   DESTINATION include
 )

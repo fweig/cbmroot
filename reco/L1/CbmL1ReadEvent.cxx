@@ -177,6 +177,8 @@ struct TmpHit {
 void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int& FstHitinTs, bool& areDataLeft,
                       CbmEvent* event)
 {
+  static int nCalls = 0;
+
   if (fVerbose >= 10) cout << "ReadEvent: start." << endl;
 
   areDataLeft = false;  // no data left after reading the sub-timeslice
@@ -1185,8 +1187,8 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
   if (fVerbose >= 1) cout << "ReadEvent: mvd and sts are saved." << endl;
 
   // ----- Send data from IODataManager to L1Algo --------------------------------------------------------------------
-  if (1 == fSTAPDataMode) { WriteAlgoInputData(); }
-  if (2 == fSTAPDataMode) { ReadAlgoInputData(); }
+  if (1 == fSTAPDataMode) { WriteSTAPAlgoInputData(nCalls); }
+  if (2 == fSTAPDataMode) { ReadSTAPAlgoInputData(nCalls); }
   // TODO: SZh: If we read data from file, we don't need to collect them above. This should be addressed
   fIODataManager.SendInputData(fpAlgo);
 
@@ -1195,6 +1197,8 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
     if (fVerbose >= 10) cout << "MCPoints and MCTracks are saved." << endl;
   }
   if (fVerbose >= 10) cout << "ReadEvent is done." << endl;
+
+  ++nCalls;
 }  // void CbmL1::ReadEvent()
 //
 //--------------------------------------------------------------------------------------------------

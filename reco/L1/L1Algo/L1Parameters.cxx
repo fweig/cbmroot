@@ -246,6 +246,7 @@ void L1Parameters::Print(int /*verbosityLevel*/) const
 //
 std::string L1Parameters::ToString(int verbosity, int indentLevel) const
 {
+  // FIXME: SZh: Fill it with other parameters
   std::stringstream aStream {};
   constexpr char indentChar = '\t';
   std::string indent(indentLevel, indentChar);
@@ -275,7 +276,6 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
     aStream << indent << indentChar << indentChar << indentChar << char(120 + dim) << " = " << fTargetPos[dim][0]
             << " cm\n";
   }
-
   aStream << indent << indentChar << "NUMBER OF STATIONS:\n";
   aStream << indent << indentChar << indentChar << "Number of stations (Geometry): ";
   for (int idx = 0; idx < int(fNstationsGeometry.size()); ++idx) {
@@ -299,6 +299,8 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
   for (int idx = 0; idx < *(fNstationsActive.end() - 1); ++idx) {
     aStream << indent << indentChar << indentChar << fStations[idx].ToString(verbosity) << '\n';
   }
+
+  aStream << indent << "FLAGS:\n";
   aStream << indent << "--------------------------------------------------------------------------------\n";
   return aStream.str();
 }

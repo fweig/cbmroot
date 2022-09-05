@@ -2,13 +2,17 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
-/// \file L1InitManager.cxx
+/// \file  L1InitManager.cxx
 /// \brief Input parameters management class for L1Algo
 /// \since 19.01.2022
 
 #include "L1InitManager.h"
 
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+
 #include <algorithm>
+#include <fstream>
 #include <sstream>
 
 #include "L1Algo.h"
@@ -89,11 +93,61 @@ void L1InitManager::CheckInit()
 
 // ----------------------------------------------------------------------------------------------------------------------
 //
+void L1InitManager::ClearSetupInfo()
+{
+  // Clear stations set and a thickness map
+  fStationsInfo.clear();
+  std::fill(fParameters.fThickMap.begin(), fParameters.fThickMap.end(), L1Material());
+  fInitController.SetFlag(EInitKey::kStationsInfo, false);
+
+  // Set number of stations do default values
+  std::fill(fParameters.fNstationsGeometry.begin(), fParameters.fNstationsGeometry.end(), 0);
+  std::fill(fParameters.fNstationsActive.begin(), fParameters.fNstationsActive.end(), 0);
+  std::fill(fParameters.fActiveStationGlobalIDs.begin(), fParameters.fActiveStationGlobalIDs.end(), 0);
+  fParameters.fNstationsGeometryTotal = -1;
+  fParameters.fNstationsActiveTotal   = -1;
+  fInitController.SetFlag(EInitKey::kStationsNumberCrosscheck, false);
+
+  // Clear active detectors
+  fActiveDetectorIDs.clear();
+  fInitController.SetFlag(EInitKey::kActiveDetectorIDs, false);
+
+  // Clear field info
+  fParameters.fVertexFieldRegion = L1FieldRegion();
+  fParameters.fVertexFieldValue  = L1FieldValue();
+  fInitController.SetFlag(EInitKey::kPrimaryVertexField, false);
+
+  // Clear target position
+  std::fill(fParameters.fTargetPos.begin(), fParameters.fTargetPos.end(), L1Utils::kNaN);
+  fTargetZ = 0.;
+  fInitController.SetFlag(EInitKey::kTargetPos, false);
+
+  // Clear field function
+  fFieldFunction = L1FieldFunction_t([](const double(&)[3], double(&)[3]) {});
+  fInitController.SetFlag(EInitKey::kFieldFunction, false);
+
+  // Clear other flags
+  fParameters.fTrackingLevel    = 0;
+  fParameters.fGhostSuppression = 0;
+  fParameters.fMomentumCutOff   = 0;
+  fInitController.SetFlag(EInitKey::kTrackingLevel, false);
+  fInitController.SetFlag(EInitKey::kGhostSuppression, false);
+  fInitController.SetFlag(EInitKey::kMomentumCutOff, false);
+
+  fParameters.fDevIsIgnoreHitSearchAreas  = false;
+  fParameters.fDevIsFitSingletsFromTarget = false;
+  fParameters.fDevIsMatchDoubletsViaMc    = false;
+  fParameters.fDevIsMatchTripletsViaMc    = false;
+}
+
+// ----------------------------------------------------------------------------------------------------------------------
+//
 void L1InitManager::ClearCAIterations()
 {
   fParameters.fCAIterations.clear();
   fCAIterationsNumberCrosscheck = -1;
   fInitController.SetFlag(EInitKey::kCAIterations, false);
+  fInitController.SetFlag(EInitKey::kStationsNumberCrosscheck, false);
 }
 
 // ----------------------------------------------------------------------------------------------------------------------
@@ -189,11 +243,26 @@ void L1InitManager::PushBackCAIteration(const L1CAIteration& iteration)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
+void L1InitManager::ReadParametersObject(const std::string& fileName)
+{
+  // Open input binary file
+  std::ifstream ifs(fileName, std::ios::binary);
+  if (!ifs) { LOG(fatal) << "L1InitManager: parameters data file \"" << fileName << "\" was not found"; }
+
+  // Get L1InputData object
+  try {
+    boost::archive::binary_iarchive ia(ifs);
+    ia >> fParameters;
+  }
+  catch (const std::exception&) {
+    LOG(fatal) << "L1InitManager: parameters file \"" << fileName << "\" has incorrect data format or was corrupted";
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
 bool L1InitManager::SendParameters(L1Algo* pAlgo)
 {
-  // Form parameters cotainer
-  this->FormParametersContainer();
-
   assert(pAlgo);
   pAlgo->ReceiveParameters(std::move(fParameters));
   return true;
@@ -326,6 +395,22 @@ void L1InitManager::SetTrackingLevel(int trackingLevel)
   }
   fParameters.fTrackingLevel = trackingLevel;
   fInitController.SetFlag(EInitKey::kTrackingLevel);
+}
+
+// ----------------------------------------------------------------------------------------------------------------------
+//
+void L1InitManager::WriteParametersObject(const std::string& fileName) const
+{
+  // Open output binary file
+  std::ofstream ofs(fileName, std::ios::binary);
+  if (!ofs) {
+    LOG(error) << "L1InitManager: failed opening file \"" << fileName << " for writing parameters object\"";
+    return;
+  }
+
+  // Serialize L1Parameters object and write
+  boost::archive::binary_oarchive oa(ofs);
+  oa << fParameters;
 }
 
 //

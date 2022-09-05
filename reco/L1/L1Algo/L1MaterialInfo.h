@@ -5,6 +5,8 @@
 #ifndef L1MaterialInfo_h
 #define L1MaterialInfo_h
 
+#include <boost/serialization/vector.hpp>
+
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -12,6 +14,7 @@
 
 #include "L1Def.h"
 #include "L1NaN.h"
+#include "L1SimdSerializer.h"
 
 /// Class L1MaterialInfo contains SIMDized vector fields of the
 /// The fields of the structure should ONLY be initialized within L1BaseStationInfo::SetMaterial(double, double) method, when the
@@ -35,6 +38,17 @@ struct L1MaterialInfo {
   /// String representation of class contents
   /// \param indentLevel    number of indent characters in the output
   std::string ToString(int indentLevel = 0) const;
+
+  /// Serialization function
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int)
+  {
+    ar& thick;
+    ar& RL;
+    ar& RadThick;
+    ar& logRadThick;
+  }
 } _fvecalignment;
 
 /// Class L1Material describes a map of station thickness in units of radiation length (X0) to the specific point in XY plane
@@ -107,6 +121,17 @@ private:
   float fFactor {
     L1NaN::SetNaN<decltype(fFactor)>()};  ///< Factor used in the recalculation of point coordinates to row/column id
   std::vector<float> fTable {};  ///< Material budget table
+
+  /// Serialization function
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int)
+  {
+    ar& fNbins;
+    ar& fRmax;
+    ar& fFactor;
+    ar& fTable;
+  }
 } _fvecalignment;
 
 #endif

@@ -375,7 +375,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
   run->AddTask(kalman);
 
   // L1 tracking
-  auto l1 = (debugWithMC) ? new CbmL1("L1", 1, 3) : new CbmL1();
+  auto l1 = (debugWithMC) ? new CbmL1("L1", 1, 3, 0) : new CbmL1();
   l1->SetLegacyEventMode(1);
   l1->SetMcbmMode();
   l1->SetUseHitErrors(1);

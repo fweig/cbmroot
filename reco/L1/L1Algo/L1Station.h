@@ -11,6 +11,7 @@
 #include "L1Field.h"
 #include "L1MaterialInfo.h"
 #include "L1NaN.h"
+#include "L1SimdSerializer.h"
 #include "L1UMeasurementInfo.h"
 #include "L1Utils.h"
 #include "L1XYMeasurementInfo.h"
@@ -36,6 +37,30 @@ public:
   L1UMeasurementInfo xInfo {};  ///< x axis in front,back coordinates
   L1UMeasurementInfo yInfo {};  ///< y axis in front,back coordinates
   L1XYMeasurementInfo XYInfo {};
+
+  /// Serialization function
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int)
+  {
+    ar& type;
+    ar& timeInfo;
+    ar& fieldStatus;
+
+    ar& z;
+    ar& Rmin;
+    ar& Rmax;
+    ar& dt;
+
+    ar& materialInfo;
+    ar& fieldSlice;
+    ar& frontInfo;
+    ar& backInfo;
+    ar& xInfo;
+    ar& yInfo;
+    ar& XYInfo;
+  }
+
 
   /// Prints object fields
   /// \param verbosity  Verbosity level of the output

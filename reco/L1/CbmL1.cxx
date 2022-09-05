@@ -77,8 +77,6 @@ ClassImp(CbmL1);
 
 static L1Algo gAlgo _fvecalignment;  // TODO: Change coupling logic between L1Algo and CbmL1
 
-//L1AlgoInputData* fData_static _fvecalignment;
-
 CbmL1* CbmL1::fpInstance = 0;
 
 
@@ -94,14 +92,21 @@ CbmL1::CbmL1(const char* name, Int_t verbose, Int_t performance, int dataMode, c
   , fIODataManager(L1IODataManager(gAlgo.GetParameters()))
   , fPerformance(performance)
   , fSTAPDataMode(dataMode)
-  , fSTAPDataDir(dataDir)
   , fFindParticlesMode(findParticleMode)
 {
   if (!fpInstance) fpInstance = this;
 
+  switch (fSTAPDataMode) {
+    case 1: LOG(info) << "CbmL1: input data will be written for a standalone usage"; break;
+    case 2: LOG(info) << "CbmL1: input data will be read from external files"; break;
+    default: LOG(info) << "CbmL1: tracking will be run without external data R/W"; break;
+  }
+
+  if (1 == fSTAPDataMode || 2 == fSTAPDataMode) { this->DefineSTAPNames(dataDir); }
+
   if (!CbmTrackingDetectorInterfaceInit::Instance()) {
     LOG(fatal) << "CbmL1: CbmTrackingDetectorInterfaceInit instance was not found. Please, add it as a task to your "
-                  "reco macro before the KF and L1 task:\n"
+                  "reco macro right before the KF and L1 tasks:\n"
                << "\033[1;30mrun->AddTask(new CbmTrackingDetectorInterfaceInit());\033[0m";
   }
 }
@@ -347,487 +352,507 @@ InitStatus CbmL1::Init()
     fpMvdHits = L1_DYNAMIC_CAST<TClonesArray*>(fairManager->GetObject("MvdHit"));
   }
 
-  fNMvdStationsGeom  = 0;
-  fNStsStationsGeom  = 0;
-  fNMuchStationsGeom = 0;
-  fNTrdStationsGeom  = 0;
-  fNTofStationsGeom  = 0;
-  fNStationsGeom     = 0;
+  // *****************************
+  // ** Geometry initialization **
+  // *****************************
 
+  // Read parameters object from a binary file
+  if (2 == fSTAPDataMode) {
+    this->ReadSTAPParamObject();
 
-  /**************************
-   ** Field initialization **
-   **************************/
+    fNMvdStationsGeom  = fInitManager.GetNstationsGeometry(L1DetectorID::kMvd);
+    fNStsStationsGeom  = fInitManager.GetNstationsGeometry(L1DetectorID::kSts);
+    fNTrdStationsGeom  = fInitManager.GetNstationsGeometry(L1DetectorID::kTrd);
+    fNMuchStationsGeom = fInitManager.GetNstationsGeometry(L1DetectorID::kMuch);
+    fNTofStationsGeom  = fInitManager.GetNstationsGeometry(L1DetectorID::kTof);
+    fNStationsGeom     = fInitManager.GetNstationsGeometry();
 
-  fInitManager.SetFieldFunction([](const double(&inPos)[3], double(&outB)[3]) {
-    CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);
-  });
-
-  /***************************
-   ** Target initialization **
-   ***************************/
-
-  auto& target = CbmKF::Instance()->vTargets[0];
-  fInitManager.SetTargetPosition(target.x, target.y, target.z);
-
-  /*********************************
-   ** Target field initialization **
-   *********************************/
-
-  fInitManager.InitTargetField(/*zStep = */ 2.5 /*cm*/);  // Replace zStep -> sizeZfieldRegion = 2 * zStep (TODO)
-
-  /**************************************
-   **                                  **
-   ** STATIONS GEOMETRY INITIALIZATION **
-   **                                  **
-   **************************************/
-
-
-  /***************************************************
-   ** Active tracking detector subsystems selection **
-   ***************************************************/
-
-  std::set<L1DetectorID> vActiveTrackingDetectorIDs {};  // Set of detectors active in tracking
-
-  if (fUseMVD) { vActiveTrackingDetectorIDs.insert(L1DetectorID::kMvd); }
-  if (fUseSTS) { vActiveTrackingDetectorIDs.insert(L1DetectorID::kSts); }
-  if (fUseMUCH) { vActiveTrackingDetectorIDs.insert(L1DetectorID::kMuch); }
-  if (fUseTRD) { vActiveTrackingDetectorIDs.insert(L1DetectorID::kTrd); }
-  if (fUseTOF) { vActiveTrackingDetectorIDs.insert(L1DetectorID::kTof); }
-  fInitManager.SetActiveDetectorIDs(vActiveTrackingDetectorIDs);
-
-  /*********************************************************************
-   ** Counting numbers of stations for different detector subsystems  **
-   *********************************************************************/
-
-  /*** MVD and STS ***/
-  auto mvdInterface  = CbmMvdTrackingInterface::Instance();
-  auto stsInterface  = CbmStsTrackingInterface::Instance();
-  auto muchInterface = CbmMuchTrackingInterface::Instance();
-  auto trdInterface  = CbmTrdTrackingInterface::Instance();
-  auto tofInterface  = CbmTofTrackingInterface::Instance();
-
-  // NOTE: hack for "mcbm_beam_2021_07_surveyed" to account for a mismactch in the station
-  //       indeces of hits in TOF
-  if (fMissingHits) { tofInterface->FixHitsStationsMismatch(); }
-
-  fNMvdStationsGeom  = (fUseMVD) ? mvdInterface->GetNtrackingStations() : 0;
-  fNStsStationsGeom  = (fUseSTS) ? stsInterface->GetNtrackingStations() : 0;
-  fNMuchStationsGeom = (fUseMUCH) ? muchInterface->GetNtrackingStations() : 0;
-  fNTrdStationsGeom  = (fUseTRD) ? trdInterface->GetNtrackingStations() : 0;
-  fNTofStationsGeom  = (fUseTOF) ? tofInterface->GetNtrackingStations() : 0;
-  fNStationsGeom = fNMvdStationsGeom + fNStsStationsGeom + fNMuchStationsGeom + fNTrdStationsGeom + fNTofStationsGeom;
-
-  // Provide crosscheck number of stations for the fInitManagera
-  fInitManager.SetNstations(L1DetectorID::kMvd, fNMvdStationsGeom);
-  fInitManager.SetNstations(L1DetectorID::kSts, fNStsStationsGeom);
-  fInitManager.SetNstations(L1DetectorID::kMuch, fNMuchStationsGeom);
-  fInitManager.SetNstations(L1DetectorID::kTrd, fNTrdStationsGeom);
-  fInitManager.SetNstations(L1DetectorID::kTof, fNTofStationsGeom);
-
-  /****************************
-   ** Material budget input  **
-   ****************************/
-
-  // NOTE: std::vector of material tables. Vector sizes correspond to number of stations provided by geometry, i.e. both
-  //       active and inactive station are represented in the folloving vectors
-  auto materialTableMvd  = ReadMaterialBudget(L1DetectorID::kMvd);
-  auto materialTableSts  = ReadMaterialBudget(L1DetectorID::kSts);
-  auto materialTableMuch = ReadMaterialBudget(L1DetectorID::kMuch);
-  auto materialTableTrd  = ReadMaterialBudget(L1DetectorID::kTrd);
-  auto materialTableTof  = ReadMaterialBudget(L1DetectorID::kTof);
-
-  /* User corrections (optional) */
-  auto correctionMvd = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-    this->ApplyCorrectionToMaterialMap<L1DetectorID::kMvd>(material, homogenious);
-  };
-  auto correctionSts = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-    this->ApplyCorrectionToMaterialMap<L1DetectorID::kSts>(material, homogenious);
-  };
-  auto correctionMuch = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-    this->ApplyCorrectionToMaterialMap<L1DetectorID::kMuch>(material, homogenious);
-  };
-  auto correctionTrd = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-    this->ApplyCorrectionToMaterialMap<L1DetectorID::kTrd>(material, homogenious);
-  };
-  auto correctionTof = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-    this->ApplyCorrectionToMaterialMap<L1DetectorID::kTof>(material, homogenious);
-  };
-
-  /***************************************
-   ** Stations geometry initialization  **
-   ***************************************/
-
-  /*** MVD stations info ***/
-  if (fUseMVD) {
-    for (int iSt = 0; iSt < fNMvdStationsGeom; ++iSt) {
-      auto stationInfo = L1BaseStationInfo(L1DetectorID::kMvd, iSt);
-      stationInfo.SetStationType(1);  // MVD
-      stationInfo.SetTimeInfo(mvdInterface->IsTimeInfoProvided(iSt));
-      stationInfo.SetTimeResolution(mvdInterface->GetTimeResolution(iSt));
-      stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
-      stationInfo.SetZ(mvdInterface->GetZ(iSt));
-      stationInfo.SetXmax(mvdInterface->GetXmax(iSt));
-      stationInfo.SetYmax(mvdInterface->GetYmax(iSt));
-      stationInfo.SetRmin(mvdInterface->GetRmin(iSt));
-      stationInfo.SetRmax(mvdInterface->GetRmax(iSt));
-      stationInfo.SetMaterialSimple(mvdInterface->GetThickness(iSt), mvdInterface->GetRadLength(iSt));
-      stationInfo.SetMaterialMap(std::move(materialTableMvd[iSt]), correctionMvd);
-      // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
-      stationInfo.SetFrontBackStripsGeometry(
-        (fscal) mvdInterface->GetStripsStereoAngleFront(iSt), (fscal) mvdInterface->GetStripsSpatialRmsFront(iSt),
-        (fscal) mvdInterface->GetStripsStereoAngleBack(iSt), (fscal) mvdInterface->GetStripsSpatialRmsBack(iSt));
-      stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-      fInitManager.AddStation(stationInfo);
-      LOG(info) << "- MVD station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
-    }
+    if (fMissingHits) { CbmTofTrackingInterface::Instance()->FixHitsStationsMismatch(); }
   }
-
-  /*** STS stations info ***/
-  if (fUseSTS) {
-    for (int iSt = 0; iSt < fNStsStationsGeom; ++iSt) {
-      auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
-      stationInfo.SetStationType(0);  // STS
-      stationInfo.SetTimeInfo(stsInterface->IsTimeInfoProvided(iSt));
-      stationInfo.SetTimeResolution(stsInterface->GetTimeResolution(iSt));
-      stationInfo.SetFieldStatus(L1Algo::TrackingMode::kMcbm == fTrackingMode ? 0 : 1);
-      stationInfo.SetZ(stsInterface->GetZ(iSt));
-      stationInfo.SetXmax(stsInterface->GetXmax(iSt));
-      stationInfo.SetYmax(stsInterface->GetYmax(iSt));
-      stationInfo.SetRmin(stsInterface->GetRmin(iSt));
-      stationInfo.SetRmax(stsInterface->GetRmax(iSt));
-      stationInfo.SetMaterialSimple(stsInterface->GetThickness(iSt), stsInterface->GetRadLength(iSt));
-      stationInfo.SetMaterialMap(std::move(materialTableSts[iSt]), correctionSts);
-      // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
-      stationInfo.SetFrontBackStripsGeometry(
-        (fscal) stsInterface->GetStripsStereoAngleFront(iSt), (fscal) stsInterface->GetStripsSpatialRmsFront(iSt),
-        (fscal) stsInterface->GetStripsStereoAngleBack(iSt), (fscal) stsInterface->GetStripsSpatialRmsBack(iSt));
-      stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-      fInitManager.AddStation(stationInfo);
-      LOG(info) << "- STS station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
-    }
-  }
-
-  /*** MuCh stations info ***/
-  if (fUseMUCH) {
-    for (int iSt = 0; iSt < fNMuchStationsGeom; ++iSt) {
-      auto stationInfo = L1BaseStationInfo(L1DetectorID::kMuch, iSt);
-      stationInfo.SetStationType(2);  // MuCh
-      stationInfo.SetTimeInfo(muchInterface->IsTimeInfoProvided(iSt));
-      stationInfo.SetTimeResolution(muchInterface->GetTimeResolution(iSt));
-      stationInfo.SetFieldStatus(0);
-      stationInfo.SetZ(muchInterface->GetZ(iSt));
-      stationInfo.SetXmax(muchInterface->GetXmax(iSt));
-      stationInfo.SetYmax(muchInterface->GetYmax(iSt));
-      stationInfo.SetRmin(muchInterface->GetRmin(iSt));
-      stationInfo.SetRmax(muchInterface->GetRmax(iSt));
-      stationInfo.SetMaterialSimple(muchInterface->GetThickness(iSt), muchInterface->GetRadLength(iSt));
-      stationInfo.SetMaterialMap(std::move(materialTableMuch[iSt]), correctionMuch);
-      // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
-      stationInfo.SetFrontBackStripsGeometry(
-        (fscal) muchInterface->GetStripsStereoAngleFront(iSt), (fscal) muchInterface->GetStripsSpatialRmsFront(iSt),
-        (fscal) muchInterface->GetStripsStereoAngleBack(iSt), (fscal) muchInterface->GetStripsSpatialRmsBack(iSt));
-      stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-      fInitManager.AddStation(stationInfo);
-      LOG(info) << "- MuCh station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
-    }
-  }
-
-  /*** TRD stations info ***/
-  if (fUseTRD) {
-    for (int iSt = 0; iSt < fNTrdStationsGeom; ++iSt) {
-      auto stationInfo = L1BaseStationInfo(L1DetectorID::kTrd, iSt);
-      stationInfo.SetStationType((iSt == 1 || iSt == 3) ? 6 : 3);  // MuCh
-      stationInfo.SetTimeInfo(trdInterface->IsTimeInfoProvided(iSt));
-      stationInfo.SetTimeResolution(trdInterface->GetTimeResolution(iSt));
-      stationInfo.SetFieldStatus(0);
-      stationInfo.SetZ(trdInterface->GetZ(iSt));
-      stationInfo.SetXmax(trdInterface->GetXmax(iSt));
-      stationInfo.SetYmax(trdInterface->GetYmax(iSt));
-      stationInfo.SetRmin(trdInterface->GetRmin(iSt));
-      stationInfo.SetRmax(trdInterface->GetRmax(iSt));
-      stationInfo.SetMaterialSimple(trdInterface->GetThickness(iSt), trdInterface->GetRadLength(iSt));
-      stationInfo.SetMaterialMap(std::move(materialTableTrd[iSt]), correctionTrd);
-      fscal trdFrontPhi   = trdInterface->GetStripsStereoAngleFront(iSt);
-      fscal trdBackPhi    = trdInterface->GetStripsStereoAngleBack(iSt);
-      fscal trdFrontSigma = trdInterface->GetStripsSpatialRmsFront(iSt);
-      fscal trdBackSigma  = trdInterface->GetStripsSpatialRmsBack(iSt);
-      if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {  //SGtrd2D!!
-        trdFrontSigma = .1;
-        trdBackSigma  = .1;
-        // stationInfo.SetTimeResolution(1.e10);
-        stationInfo.SetTimeInfo(false);
-      }
-      stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdFrontSigma, trdBackPhi, trdBackSigma);
-      stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-      if (iSt == 1 && L1Algo::TrackingMode::kMcbm == fTrackingMode && fMissingHits) {
-        stationInfo.SetTrackingStatus(false);
-      }
-      fInitManager.AddStation(stationInfo);
-      LOG(info) << "- TRD station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
-    }
-  }
-
-  /*** TOF stations info ***/
-  if (fUseTOF) {
-    for (int iSt = 0; iSt < fNTofStationsGeom; ++iSt) {
-      auto stationInfo = L1BaseStationInfo(L1DetectorID::kTof, iSt);
-      stationInfo.SetStationType(4);
-      stationInfo.SetTimeInfo(tofInterface->IsTimeInfoProvided(iSt));
-      stationInfo.SetTimeResolution(tofInterface->GetTimeResolution(iSt));
-      stationInfo.SetFieldStatus(0);
-      stationInfo.SetZ(tofInterface->GetZ(iSt));
-      auto thickness = tofInterface->GetThickness(iSt);
-      auto radLength = tofInterface->GetRadLength(iSt);
-      stationInfo.SetMaterialSimple(thickness, radLength);
-      stationInfo.SetMaterialMap(std::move(materialTableTof[iSt]), correctionTof);
-      stationInfo.SetXmax(tofInterface->GetXmax(iSt));
-      stationInfo.SetYmax(tofInterface->GetYmax(iSt));
-      stationInfo.SetRmin(tofInterface->GetRmin(iSt));
-      stationInfo.SetRmax(tofInterface->GetRmax(iSt));
-      fscal tofFrontPhi   = tofInterface->GetStripsStereoAngleFront(iSt);
-      fscal tofBackPhi    = tofInterface->GetStripsStereoAngleBack(iSt);
-      fscal tofFrontSigma = tofInterface->GetStripsSpatialRmsFront(iSt);
-      fscal tofBackSigma  = tofInterface->GetStripsSpatialRmsBack(iSt);
-      stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofFrontSigma, tofBackPhi, tofBackSigma);
-      stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
-      fInitManager.AddStation(stationInfo);
-      LOG(info) << "- TOF station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
-    }
-  }
-
-  /****************************************
-   **                                    **
-   ** TRACKING ITERATIONS INITIALIZATION **
-   **                                    **
-   ****************************************/
-
-  // TODO: Need to provide a selection: default iterations input (these hard-coded ones), input from file or input
-  //       from running macro (S.Zharko)
-  auto trackingIterFastPrim = L1CAIteration("FastPrimIter");
-  trackingIterFastPrim.SetTrackChi2Cut(10.f);
-  trackingIterFastPrim.SetTripletChi2Cut(23.4450f);  // = 7.815 * 3;  // prob = 0.05
-  trackingIterFastPrim.SetDoubletChi2Cut(7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
-  trackingIterFastPrim.SetPickGather(3.0f);
-  trackingIterFastPrim.SetPickNeighbour(5.0f);
-  trackingIterFastPrim.SetMaxInvMom(1.0 / 0.5);
-  trackingIterFastPrim.SetMaxSlopePV(1.1f);
-  trackingIterFastPrim.SetMaxSlope(2.748f);
-  trackingIterFastPrim.SetMaxDZ(0);
-  trackingIterFastPrim.SetTargetPosSigmaXY(1, 1);
-  trackingIterFastPrim.SetMinLevelTripletStart(0);
-  trackingIterFastPrim.SetPrimaryFlag(true);
-
-  auto trackingIterAllPrim = L1CAIteration("AllPrimIter");
-  trackingIterAllPrim.SetTrackChi2Cut(10.f);
-  trackingIterAllPrim.SetTripletChi2Cut(23.4450f);
-  trackingIterAllPrim.SetDoubletChi2Cut(7.56327f);
-  trackingIterAllPrim.SetPickGather(4.0f);
-  trackingIterAllPrim.SetPickNeighbour(5.0f);
-  trackingIterAllPrim.SetMaxInvMom(1.0 / 0.05);
-  trackingIterAllPrim.SetMaxSlopePV(1.1f);
-  trackingIterAllPrim.SetMaxSlope(2.748f);
-  trackingIterAllPrim.SetMaxDZ(0.1);
-  trackingIterAllPrim.SetTargetPosSigmaXY(1, 1);
-  trackingIterAllPrim.SetMinLevelTripletStart(0);
-  trackingIterAllPrim.SetPrimaryFlag(true);
-
-  auto trackingIterFastPrim2 = L1CAIteration("FastPrim2Iter");
-  trackingIterFastPrim2.SetTrackChi2Cut(10.f);
-  trackingIterFastPrim2.SetTripletChi2Cut(21.1075f);
-  trackingIterFastPrim2.SetDoubletChi2Cut(7.56327f);
-  trackingIterFastPrim2.SetPickGather(3.0f);
-  trackingIterFastPrim2.SetPickNeighbour(5.0f);
-  trackingIterFastPrim2.SetMaxInvMom(1.0 / 0.5);
-  trackingIterFastPrim2.SetMaxSlopePV(1.1f);
-  trackingIterFastPrim2.SetMaxSlope(2.748f);
-  trackingIterFastPrim2.SetMaxDZ(0);
-  trackingIterFastPrim2.SetTargetPosSigmaXY(5, 5);
-  trackingIterFastPrim2.SetMinLevelTripletStart(0);
-  trackingIterFastPrim2.SetPrimaryFlag(true);
-
-  auto trackingIterAllSec = L1CAIteration("AllSecIter");
-  trackingIterAllSec.SetTrackChi2Cut(10.f);
-  trackingIterAllSec.SetTripletChi2Cut(18.7560f);  // = 6.252 * 3;  // prob = 0.1
-  trackingIterAllSec.SetDoubletChi2Cut(7.56327f);
-  trackingIterAllSec.SetPickGather(4.0f);
-  trackingIterAllSec.SetPickNeighbour(5.0f);
-  trackingIterAllSec.SetMaxInvMom(1.0 / 0.1);
-  trackingIterAllSec.SetMaxSlopePV(1.5f);
-  trackingIterAllSec.SetMaxSlope(2.748f);
-  trackingIterAllSec.SetMaxDZ(0.1);
-  trackingIterAllSec.SetTargetPosSigmaXY(10, 10);
-  trackingIterAllSec.SetMinLevelTripletStart(1);
-  trackingIterAllSec.SetPrimaryFlag(false);
-
-  auto trackingIterFastPrimJump = L1CAIteration("FastPrimJumpIter");
-  trackingIterFastPrimJump.SetTrackChi2Cut(10.f);
-  trackingIterFastPrimJump.SetTripletChi2Cut(21.1075f);  // prob = 0.01
-  trackingIterFastPrimJump.SetDoubletChi2Cut(7.56327f);
-  trackingIterFastPrimJump.SetPickGather(3.0f);
-  trackingIterFastPrimJump.SetPickNeighbour(5.0f);
-  trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.5);
-  trackingIterFastPrimJump.SetMaxSlopePV(1.1f);
-  trackingIterFastPrimJump.SetMaxSlope(2.748f);
-  trackingIterFastPrimJump.SetMaxDZ(0);
-  trackingIterFastPrimJump.SetTargetPosSigmaXY(5, 5);
-  trackingIterFastPrimJump.SetMinLevelTripletStart(0);
-  trackingIterFastPrimJump.SetPrimaryFlag(true);
-
-  auto trackingIterAllPrimJump = L1CAIteration("AllPrimJumpIter");
-  trackingIterAllPrimJump.SetTrackChi2Cut(10.f);
-  trackingIterAllPrimJump.SetTripletChi2Cut(18.7560f);
-  trackingIterAllPrimJump.SetDoubletChi2Cut(7.56327f);
-  trackingIterAllPrimJump.SetPickGather(4.0f);
-  trackingIterAllPrimJump.SetPickNeighbour(5.0f);
-  trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.1);
-  trackingIterAllPrimJump.SetMaxSlopePV(1.1f);
-  trackingIterAllPrimJump.SetMaxSlope(2.748f);
-  trackingIterAllPrimJump.SetMaxDZ(0.1);
-  trackingIterAllPrimJump.SetTargetPosSigmaXY(5, 5);
-  trackingIterAllPrimJump.SetMinLevelTripletStart(0);
-  trackingIterAllPrimJump.SetPrimaryFlag(true);
-
-  auto trackingIterAllSecJump = L1CAIteration("AllSecJumpIter");
-  trackingIterAllSecJump.SetTrackChi2Cut(10.f);
-  trackingIterAllSecJump.SetTripletChi2Cut(21.1075f);
-  trackingIterAllSecJump.SetDoubletChi2Cut(7.56327f);
-  trackingIterAllSecJump.SetPickGather(4.0f);
-  trackingIterAllSecJump.SetPickNeighbour(5.0f);
-  trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.1);
-  trackingIterAllSecJump.SetMaxSlopePV(1.5f);
-  trackingIterAllSecJump.SetMaxSlope(2.748f);
-  trackingIterAllSecJump.SetMaxDZ(0.1);
-  trackingIterAllSecJump.SetMinLevelTripletStart(1);
-  trackingIterAllSecJump.SetTargetPosSigmaXY(10, 10);
-
-  auto trackingIterAllPrimE = L1CAIteration("AllPrimEIter");
-  trackingIterAllPrimE.SetTrackChi2Cut(10.f);
-  trackingIterAllPrimE.SetTripletChi2Cut(23.4450f);
-  trackingIterAllPrimE.SetDoubletChi2Cut(7.56327f);
-  trackingIterAllPrimE.SetPickGather(4.0f);
-  trackingIterAllPrimE.SetPickNeighbour(5.0f);
-  trackingIterAllPrimE.SetMaxInvMom(1.0 / 0.05);
-  trackingIterAllPrimE.SetMaxSlopePV(1.1f);
-  trackingIterAllPrimE.SetMaxSlope(2.748f);
-  trackingIterAllPrimE.SetMaxDZ(0.1);
-  trackingIterAllPrimE.SetTargetPosSigmaXY(1, 1);
-  trackingIterAllPrimE.SetMinLevelTripletStart(0);
-  trackingIterAllPrimE.SetPrimaryFlag(true);
-  trackingIterAllPrimE.SetElectronFlag(true);
-
-  auto trackingIterAllSecE = L1CAIteration("AllSecEIter");
-  trackingIterAllSecE.SetTrackChi2Cut(10.f);
-  trackingIterAllSecE.SetTripletChi2Cut(18.7560f);
-  trackingIterAllSecE.SetDoubletChi2Cut(7.56327f);
-  trackingIterAllSecE.SetPickGather(4.0f);
-  trackingIterAllSecE.SetPickNeighbour(5.0f);
-  trackingIterAllSecE.SetMaxInvMom(1.0 / 0.05);
-  trackingIterAllSecE.SetMaxSlopePV(1.5f);
-  trackingIterAllSecE.SetMaxSlope(2.748f);
-  trackingIterAllSecE.SetMaxDZ(0.1);
-  trackingIterAllSecE.SetMinLevelTripletStart(1);
-  trackingIterAllSecE.SetTargetPosSigmaXY(10, 10);
-  trackingIterAllSecE.SetElectronFlag(true);
-
-  // Select default track finder
-  if (L1Algo::TrackingMode::kMcbm == fTrackingMode) {
-    trackingIterAllPrim.SetMaxInvMom(1. / 0.1);
-    trackingIterAllPrimE.SetMaxInvMom(1. / 0.1);
-    trackingIterAllSecE.SetMaxInvMom(1. / 0.1);
-
-    trackingIterFastPrim.SetMaxInvMom(1.0 / 0.3);
-    trackingIterAllSec.SetMaxInvMom(1.0 / 0.3);
-    trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.3);
-    trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.3);
-    trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.3);
-
-    fInitManager.SetCAIterationsNumberCrosscheck(4);
-    // Initialize CA track finder iterations sequence
-    fInitManager.PushBackCAIteration(trackingIterFastPrim);
-    fInitManager.PushBackCAIteration(trackingIterAllPrim);
-    fInitManager.PushBackCAIteration(trackingIterAllPrimJump);
-    fInitManager.PushBackCAIteration(trackingIterAllSec);
-  }
-  else if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
-    // SGtrd2d!!
-
-    // Initialize CA track finder iterations sequence
-
-    auto trd2dIter1 = L1CAIteration("Trd2dIter1");
-    trd2dIter1.SetTrackChi2Cut(7.f);              //10.f
-    trd2dIter1.SetTripletChi2Cut(2 * 23.4450f);   // = 7.815 * 3;  // prob = 0.05
-    trd2dIter1.SetDoubletChi2Cut(4. * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
-    trd2dIter1.SetPickGather(3.0f);
-    trd2dIter1.SetPickNeighbour(4.0f);
-    trd2dIter1.SetMaxInvMom(1.0 / 0.05);  //(1.0 / 0.5);
-    trd2dIter1.SetMaxSlopePV(.5f);
-    trd2dIter1.SetMaxSlope(.5f);
-    trd2dIter1.SetMaxDZ(0.05);
-    trd2dIter1.SetTargetPosSigmaXY(1., 1.);  //(1, 1);
-    trd2dIter1.SetMinLevelTripletStart(1);
-    trd2dIter1.SetPrimaryFlag(false);
-
-    auto trd2dIter2 = L1CAIteration("Trd2dIter2");
-    trd2dIter2.SetTrackChi2Cut(7.f);              //10.f
-    trd2dIter2.SetTripletChi2Cut(2 * 23.4450f);   // = 7.815 * 3;  // prob = 0.05
-    trd2dIter2.SetDoubletChi2Cut(4. * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
-    trd2dIter2.SetPickGather(3.0f);
-    trd2dIter2.SetPickNeighbour(4.0f);
-    trd2dIter2.SetMaxInvMom(1.0 / 0.05);  //(1.0 / 0.5);
-    trd2dIter2.SetMaxSlopePV(.5f);
-    trd2dIter2.SetMaxSlope(.5f);
-    trd2dIter2.SetMaxDZ(0.05);
-    trd2dIter2.SetTargetPosSigmaXY(8 * 10, 6 * 10);  //(1, 1);
-    trd2dIter2.SetMinLevelTripletStart(0);
-    trd2dIter2.SetPrimaryFlag(false);
-
-    // Initialize CA track finder iterations sequence
-
-    fInitManager.SetCAIterationsNumberCrosscheck(1);
-    /*
-    fInitManager.SetCAIterationsNumberCrosscheck(5);
-    fInitManager.PushBackCAIteration(trackingIterFastPrim);
-    fInitManager.PushBackCAIteration(trackingIterAllPrim);
-    fInitManager.PushBackCAIteration(trackingIterAllPrimJump);
-    fInitManager.PushBackCAIteration(trackingIterAllSec);
-     */
-    fInitManager.PushBackCAIteration(trd2dIter2);
-  }
+  // Parameters initialization, based on the FairRunAna chain
   else {
-    fInitManager.SetCAIterationsNumberCrosscheck(4);
-    // Initialize CA track finder iterations sequence
-    fInitManager.PushBackCAIteration(trackingIterFastPrim);
-    fInitManager.PushBackCAIteration(trackingIterAllPrim);
-    fInitManager.PushBackCAIteration(trackingIterAllPrimJump);
-    fInitManager.PushBackCAIteration(trackingIterAllSec);
-    //fInitManager.PushBackCAIteration(trackingIterAllPrimE);
-    //fInitManager.PushBackCAIteration(trackingIterAllSecE);
-    //fInitManager.PushBackCAIteration(trackingIterFastPrimJump);
-    //fInitManager.PushBackCAIteration(trackingIterFastPrim2);
-    //fInitManager.PushBackCAIteration(trackingIterAllSecJump);
+    auto mvdInterface  = CbmMvdTrackingInterface::Instance();
+    auto stsInterface  = CbmStsTrackingInterface::Instance();
+    auto muchInterface = CbmMuchTrackingInterface::Instance();
+    auto trdInterface  = CbmTrdTrackingInterface::Instance();
+    auto tofInterface  = CbmTofTrackingInterface::Instance();
+
+    // NOTE: hack for "mcbm_beam_2021_07_surveyed" to account for a mismactch in the station
+    //       indeces of hits in TOF
+    if (fMissingHits) { tofInterface->FixHitsStationsMismatch(); }
+
+    fNMvdStationsGeom  = (fUseMVD) ? mvdInterface->GetNtrackingStations() : 0;
+    fNStsStationsGeom  = (fUseSTS) ? stsInterface->GetNtrackingStations() : 0;
+    fNMuchStationsGeom = (fUseMUCH) ? muchInterface->GetNtrackingStations() : 0;
+    fNTrdStationsGeom  = (fUseTRD) ? trdInterface->GetNtrackingStations() : 0;
+    fNTofStationsGeom  = (fUseTOF) ? tofInterface->GetNtrackingStations() : 0;
+    fNStationsGeom = fNMvdStationsGeom + fNStsStationsGeom + fNMuchStationsGeom + fNTrdStationsGeom + fNTofStationsGeom;
+
+    // **************************
+    // ** Field initialization **
+    // **************************
+
+    fInitManager.SetFieldFunction([](const double(&inPos)[3], double(&outB)[3]) {
+      CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);
+    });
+
+    // ***************************
+    // ** Target initialization **
+    // ***************************
+
+    auto& target = CbmKF::Instance()->vTargets[0];
+    fInitManager.SetTargetPosition(target.x, target.y, target.z);
+
+    // *********************************
+    // ** Target field initialization **
+    // *********************************
+
+    fInitManager.InitTargetField(/*zStep = */ 2.5 /*cm*/);  // Replace zStep -> sizeZfieldRegion = 2 * zStep (TODO)
+
+    // **************************************
+    // **                                  **
+    // ** STATIONS GEOMETRY INITIALIZATION **
+    // **                                  **
+    // **************************************
+
+
+    // ***************************************************
+    // ** Active tracking detector subsystems selection **
+    // ***************************************************
+
+    std::set<L1DetectorID> vActiveTrackingDetectorIDs {};  // Set of detectors active in tracking
+
+    if (fUseMVD) { vActiveTrackingDetectorIDs.insert(L1DetectorID::kMvd); }
+    if (fUseSTS) { vActiveTrackingDetectorIDs.insert(L1DetectorID::kSts); }
+    if (fUseMUCH) { vActiveTrackingDetectorIDs.insert(L1DetectorID::kMuch); }
+    if (fUseTRD) { vActiveTrackingDetectorIDs.insert(L1DetectorID::kTrd); }
+    if (fUseTOF) { vActiveTrackingDetectorIDs.insert(L1DetectorID::kTof); }
+    fInitManager.SetActiveDetectorIDs(vActiveTrackingDetectorIDs);
+
+    // *********************************************************************
+    // ** Counting numbers of stations for different detector subsystems  **
+    // *********************************************************************
+
+
+    // Provide crosscheck number of stations for the fInitManagera
+    fInitManager.SetNstations(L1DetectorID::kMvd, fNMvdStationsGeom);
+    fInitManager.SetNstations(L1DetectorID::kSts, fNStsStationsGeom);
+    fInitManager.SetNstations(L1DetectorID::kMuch, fNMuchStationsGeom);
+    fInitManager.SetNstations(L1DetectorID::kTrd, fNTrdStationsGeom);
+    fInitManager.SetNstations(L1DetectorID::kTof, fNTofStationsGeom);
+
+    // ****************************
+    // ** Material budget input  **
+    // ****************************
+
+    // NOTE: std::vector of material tables. Vector sizes correspond to number of stations provided by geometry, i.e. both
+    //       active and inactive station are represented in the folloving vectors
+    auto materialTableMvd  = ReadMaterialBudget(L1DetectorID::kMvd);
+    auto materialTableSts  = ReadMaterialBudget(L1DetectorID::kSts);
+    auto materialTableMuch = ReadMaterialBudget(L1DetectorID::kMuch);
+    auto materialTableTrd  = ReadMaterialBudget(L1DetectorID::kTrd);
+    auto materialTableTof  = ReadMaterialBudget(L1DetectorID::kTof);
+
+    /* User corrections (optional) */
+    auto correctionMvd = [this](L1Material& material, const L1MaterialInfo& homogenious) {
+      this->ApplyCorrectionToMaterialMap<L1DetectorID::kMvd>(material, homogenious);
+    };
+    auto correctionSts = [this](L1Material& material, const L1MaterialInfo& homogenious) {
+      this->ApplyCorrectionToMaterialMap<L1DetectorID::kSts>(material, homogenious);
+    };
+    auto correctionMuch = [this](L1Material& material, const L1MaterialInfo& homogenious) {
+      this->ApplyCorrectionToMaterialMap<L1DetectorID::kMuch>(material, homogenious);
+    };
+    auto correctionTrd = [this](L1Material& material, const L1MaterialInfo& homogenious) {
+      this->ApplyCorrectionToMaterialMap<L1DetectorID::kTrd>(material, homogenious);
+    };
+    auto correctionTof = [this](L1Material& material, const L1MaterialInfo& homogenious) {
+      this->ApplyCorrectionToMaterialMap<L1DetectorID::kTof>(material, homogenious);
+    };
+
+    // ***************************************
+    // ** Stations geometry initialization  **
+    // ***************************************
+
+    // *** MVD stations info ***
+    if (fUseMVD) {
+      for (int iSt = 0; iSt < fNMvdStationsGeom; ++iSt) {
+        auto stationInfo = L1BaseStationInfo(L1DetectorID::kMvd, iSt);
+        stationInfo.SetStationType(1);  // MVD
+        stationInfo.SetTimeInfo(mvdInterface->IsTimeInfoProvided(iSt));
+        stationInfo.SetTimeResolution(mvdInterface->GetTimeResolution(iSt));
+        stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
+        stationInfo.SetZ(mvdInterface->GetZ(iSt));
+        stationInfo.SetXmax(mvdInterface->GetXmax(iSt));
+        stationInfo.SetYmax(mvdInterface->GetYmax(iSt));
+        stationInfo.SetRmin(mvdInterface->GetRmin(iSt));
+        stationInfo.SetRmax(mvdInterface->GetRmax(iSt));
+        stationInfo.SetMaterialSimple(mvdInterface->GetThickness(iSt), mvdInterface->GetRadLength(iSt));
+        stationInfo.SetMaterialMap(std::move(materialTableMvd[iSt]), correctionMvd);
+        // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
+        stationInfo.SetFrontBackStripsGeometry(
+          (fscal) mvdInterface->GetStripsStereoAngleFront(iSt), (fscal) mvdInterface->GetStripsSpatialRmsFront(iSt),
+          (fscal) mvdInterface->GetStripsStereoAngleBack(iSt), (fscal) mvdInterface->GetStripsSpatialRmsBack(iSt));
+        stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
+        fInitManager.AddStation(stationInfo);
+        LOG(info) << "- MVD station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
+      }
+    }
+
+    // *** STS stations info ***
+    if (fUseSTS) {
+      for (int iSt = 0; iSt < fNStsStationsGeom; ++iSt) {
+        auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
+        stationInfo.SetStationType(0);  // STS
+        stationInfo.SetTimeInfo(stsInterface->IsTimeInfoProvided(iSt));
+        stationInfo.SetTimeResolution(stsInterface->GetTimeResolution(iSt));
+        stationInfo.SetFieldStatus(L1Algo::TrackingMode::kMcbm == fTrackingMode ? 0 : 1);
+        stationInfo.SetZ(stsInterface->GetZ(iSt));
+        stationInfo.SetXmax(stsInterface->GetXmax(iSt));
+        stationInfo.SetYmax(stsInterface->GetYmax(iSt));
+        stationInfo.SetRmin(stsInterface->GetRmin(iSt));
+        stationInfo.SetRmax(stsInterface->GetRmax(iSt));
+        stationInfo.SetMaterialSimple(stsInterface->GetThickness(iSt), stsInterface->GetRadLength(iSt));
+        stationInfo.SetMaterialMap(std::move(materialTableSts[iSt]), correctionSts);
+        // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
+        stationInfo.SetFrontBackStripsGeometry(
+          (fscal) stsInterface->GetStripsStereoAngleFront(iSt), (fscal) stsInterface->GetStripsSpatialRmsFront(iSt),
+          (fscal) stsInterface->GetStripsStereoAngleBack(iSt), (fscal) stsInterface->GetStripsSpatialRmsBack(iSt));
+        stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
+        fInitManager.AddStation(stationInfo);
+        LOG(info) << "- STS station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
+      }
+    }
+
+    // *** MuCh stations info ***
+    if (fUseMUCH) {
+      for (int iSt = 0; iSt < fNMuchStationsGeom; ++iSt) {
+        auto stationInfo = L1BaseStationInfo(L1DetectorID::kMuch, iSt);
+        stationInfo.SetStationType(2);  // MuCh
+        stationInfo.SetTimeInfo(muchInterface->IsTimeInfoProvided(iSt));
+        stationInfo.SetTimeResolution(muchInterface->GetTimeResolution(iSt));
+        stationInfo.SetFieldStatus(0);
+        stationInfo.SetZ(muchInterface->GetZ(iSt));
+        stationInfo.SetXmax(muchInterface->GetXmax(iSt));
+        stationInfo.SetYmax(muchInterface->GetYmax(iSt));
+        stationInfo.SetRmin(muchInterface->GetRmin(iSt));
+        stationInfo.SetRmax(muchInterface->GetRmax(iSt));
+        stationInfo.SetMaterialSimple(muchInterface->GetThickness(iSt), muchInterface->GetRadLength(iSt));
+        stationInfo.SetMaterialMap(std::move(materialTableMuch[iSt]), correctionMuch);
+        // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
+        stationInfo.SetFrontBackStripsGeometry(
+          (fscal) muchInterface->GetStripsStereoAngleFront(iSt), (fscal) muchInterface->GetStripsSpatialRmsFront(iSt),
+          (fscal) muchInterface->GetStripsStereoAngleBack(iSt), (fscal) muchInterface->GetStripsSpatialRmsBack(iSt));
+        stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
+        fInitManager.AddStation(stationInfo);
+        LOG(info) << "- MuCh station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
+      }
+    }
+
+    // *** TRD stations info ***
+    if (fUseTRD) {
+      for (int iSt = 0; iSt < fNTrdStationsGeom; ++iSt) {
+        auto stationInfo = L1BaseStationInfo(L1DetectorID::kTrd, iSt);
+        stationInfo.SetStationType((iSt == 1 || iSt == 3) ? 6 : 3);  // MuCh
+        stationInfo.SetTimeInfo(trdInterface->IsTimeInfoProvided(iSt));
+        stationInfo.SetTimeResolution(trdInterface->GetTimeResolution(iSt));
+        stationInfo.SetFieldStatus(0);
+        stationInfo.SetZ(trdInterface->GetZ(iSt));
+        stationInfo.SetXmax(trdInterface->GetXmax(iSt));
+        stationInfo.SetYmax(trdInterface->GetYmax(iSt));
+        stationInfo.SetRmin(trdInterface->GetRmin(iSt));
+        stationInfo.SetRmax(trdInterface->GetRmax(iSt));
+        stationInfo.SetMaterialSimple(trdInterface->GetThickness(iSt), trdInterface->GetRadLength(iSt));
+        stationInfo.SetMaterialMap(std::move(materialTableTrd[iSt]), correctionTrd);
+        fscal trdFrontPhi   = trdInterface->GetStripsStereoAngleFront(iSt);
+        fscal trdBackPhi    = trdInterface->GetStripsStereoAngleBack(iSt);
+        fscal trdFrontSigma = trdInterface->GetStripsSpatialRmsFront(iSt);
+        fscal trdBackSigma  = trdInterface->GetStripsSpatialRmsBack(iSt);
+        if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {  //SGtrd2D!!
+          trdFrontSigma = .1;
+          trdBackSigma  = .1;
+          // stationInfo.SetTimeResolution(1.e10);
+          stationInfo.SetTimeInfo(false);
+        }
+        stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdFrontSigma, trdBackPhi, trdBackSigma);
+        stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
+        if (iSt == 1 && L1Algo::TrackingMode::kMcbm == fTrackingMode && fMissingHits) {
+          stationInfo.SetTrackingStatus(false);
+        }
+        fInitManager.AddStation(stationInfo);
+        LOG(info) << "- TRD station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
+      }
+    }
+
+    // *** TOF stations info ***
+    if (fUseTOF) {
+      for (int iSt = 0; iSt < fNTofStationsGeom; ++iSt) {
+        auto stationInfo = L1BaseStationInfo(L1DetectorID::kTof, iSt);
+        stationInfo.SetStationType(4);
+        stationInfo.SetTimeInfo(tofInterface->IsTimeInfoProvided(iSt));
+        stationInfo.SetTimeResolution(tofInterface->GetTimeResolution(iSt));
+        stationInfo.SetFieldStatus(0);
+        stationInfo.SetZ(tofInterface->GetZ(iSt));
+        auto thickness = tofInterface->GetThickness(iSt);
+        auto radLength = tofInterface->GetRadLength(iSt);
+        stationInfo.SetMaterialSimple(thickness, radLength);
+        stationInfo.SetMaterialMap(std::move(materialTableTof[iSt]), correctionTof);
+        stationInfo.SetXmax(tofInterface->GetXmax(iSt));
+        stationInfo.SetYmax(tofInterface->GetYmax(iSt));
+        stationInfo.SetRmin(tofInterface->GetRmin(iSt));
+        stationInfo.SetRmax(tofInterface->GetRmax(iSt));
+        fscal tofFrontPhi   = tofInterface->GetStripsStereoAngleFront(iSt);
+        fscal tofBackPhi    = tofInterface->GetStripsStereoAngleBack(iSt);
+        fscal tofFrontSigma = tofInterface->GetStripsSpatialRmsFront(iSt);
+        fscal tofBackSigma  = tofInterface->GetStripsSpatialRmsBack(iSt);
+        stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofFrontSigma, tofBackPhi, tofBackSigma);
+        stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
+        fInitManager.AddStation(stationInfo);
+        LOG(info) << "- TOF station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
+      }
+    }
+
+    // ****************************************
+    // **                                    **
+    // ** TRACKING ITERATIONS INITIALIZATION **
+    // **                                    **
+    // ****************************************
+
+    // TODO: Need to provide a selection: default iterations input (these hard-coded ones), input from file or input
+    //       from running macro (S.Zharko)
+    auto trackingIterFastPrim = L1CAIteration("FastPrimIter");
+    trackingIterFastPrim.SetTrackChi2Cut(10.f);
+    trackingIterFastPrim.SetTripletChi2Cut(23.4450f);  // = 7.815 * 3;  // prob = 0.05
+    trackingIterFastPrim.SetDoubletChi2Cut(7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
+    trackingIterFastPrim.SetPickGather(3.0f);
+    trackingIterFastPrim.SetPickNeighbour(5.0f);
+    trackingIterFastPrim.SetMaxInvMom(1.0 / 0.5);
+    trackingIterFastPrim.SetMaxSlopePV(1.1f);
+    trackingIterFastPrim.SetMaxSlope(2.748f);
+    trackingIterFastPrim.SetMaxDZ(0);
+    trackingIterFastPrim.SetTargetPosSigmaXY(1, 1);
+    trackingIterFastPrim.SetMinLevelTripletStart(0);
+    trackingIterFastPrim.SetPrimaryFlag(true);
+
+    auto trackingIterAllPrim = L1CAIteration("AllPrimIter");
+    trackingIterAllPrim.SetTrackChi2Cut(10.f);
+    trackingIterAllPrim.SetTripletChi2Cut(23.4450f);
+    trackingIterAllPrim.SetDoubletChi2Cut(7.56327f);
+    trackingIterAllPrim.SetPickGather(4.0f);
+    trackingIterAllPrim.SetPickNeighbour(5.0f);
+    trackingIterAllPrim.SetMaxInvMom(1.0 / 0.05);
+    trackingIterAllPrim.SetMaxSlopePV(1.1f);
+    trackingIterAllPrim.SetMaxSlope(2.748f);
+    trackingIterAllPrim.SetMaxDZ(0.1);
+    trackingIterAllPrim.SetTargetPosSigmaXY(1, 1);
+    trackingIterAllPrim.SetMinLevelTripletStart(0);
+    trackingIterAllPrim.SetPrimaryFlag(true);
+
+    auto trackingIterFastPrim2 = L1CAIteration("FastPrim2Iter");
+    trackingIterFastPrim2.SetTrackChi2Cut(10.f);
+    trackingIterFastPrim2.SetTripletChi2Cut(21.1075f);
+    trackingIterFastPrim2.SetDoubletChi2Cut(7.56327f);
+    trackingIterFastPrim2.SetPickGather(3.0f);
+    trackingIterFastPrim2.SetPickNeighbour(5.0f);
+    trackingIterFastPrim2.SetMaxInvMom(1.0 / 0.5);
+    trackingIterFastPrim2.SetMaxSlopePV(1.1f);
+    trackingIterFastPrim2.SetMaxSlope(2.748f);
+    trackingIterFastPrim2.SetMaxDZ(0);
+    trackingIterFastPrim2.SetTargetPosSigmaXY(5, 5);
+    trackingIterFastPrim2.SetMinLevelTripletStart(0);
+    trackingIterFastPrim2.SetPrimaryFlag(true);
+
+    auto trackingIterAllSec = L1CAIteration("AllSecIter");
+    trackingIterAllSec.SetTrackChi2Cut(10.f);
+    trackingIterAllSec.SetTripletChi2Cut(18.7560f);  // = 6.252 * 3;  // prob = 0.1
+    trackingIterAllSec.SetDoubletChi2Cut(7.56327f);
+    trackingIterAllSec.SetPickGather(4.0f);
+    trackingIterAllSec.SetPickNeighbour(5.0f);
+    trackingIterAllSec.SetMaxInvMom(1.0 / 0.1);
+    trackingIterAllSec.SetMaxSlopePV(1.5f);
+    trackingIterAllSec.SetMaxSlope(2.748f);
+    trackingIterAllSec.SetMaxDZ(0.1);
+    trackingIterAllSec.SetTargetPosSigmaXY(10, 10);
+    trackingIterAllSec.SetMinLevelTripletStart(1);
+    trackingIterAllSec.SetPrimaryFlag(false);
+
+    auto trackingIterFastPrimJump = L1CAIteration("FastPrimJumpIter");
+    trackingIterFastPrimJump.SetTrackChi2Cut(10.f);
+    trackingIterFastPrimJump.SetTripletChi2Cut(21.1075f);  // prob = 0.01
+    trackingIterFastPrimJump.SetDoubletChi2Cut(7.56327f);
+    trackingIterFastPrimJump.SetPickGather(3.0f);
+    trackingIterFastPrimJump.SetPickNeighbour(5.0f);
+    trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.5);
+    trackingIterFastPrimJump.SetMaxSlopePV(1.1f);
+    trackingIterFastPrimJump.SetMaxSlope(2.748f);
+    trackingIterFastPrimJump.SetMaxDZ(0);
+    trackingIterFastPrimJump.SetTargetPosSigmaXY(5, 5);
+    trackingIterFastPrimJump.SetMinLevelTripletStart(0);
+    trackingIterFastPrimJump.SetPrimaryFlag(true);
+
+    auto trackingIterAllPrimJump = L1CAIteration("AllPrimJumpIter");
+    trackingIterAllPrimJump.SetTrackChi2Cut(10.f);
+    trackingIterAllPrimJump.SetTripletChi2Cut(18.7560f);
+    trackingIterAllPrimJump.SetDoubletChi2Cut(7.56327f);
+    trackingIterAllPrimJump.SetPickGather(4.0f);
+    trackingIterAllPrimJump.SetPickNeighbour(5.0f);
+    trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.1);
+    trackingIterAllPrimJump.SetMaxSlopePV(1.1f);
+    trackingIterAllPrimJump.SetMaxSlope(2.748f);
+    trackingIterAllPrimJump.SetMaxDZ(0.1);
+    trackingIterAllPrimJump.SetTargetPosSigmaXY(5, 5);
+    trackingIterAllPrimJump.SetMinLevelTripletStart(0);
+    trackingIterAllPrimJump.SetPrimaryFlag(true);
+
+    auto trackingIterAllSecJump = L1CAIteration("AllSecJumpIter");
+    trackingIterAllSecJump.SetTrackChi2Cut(10.f);
+    trackingIterAllSecJump.SetTripletChi2Cut(21.1075f);
+    trackingIterAllSecJump.SetDoubletChi2Cut(7.56327f);
+    trackingIterAllSecJump.SetPickGather(4.0f);
+    trackingIterAllSecJump.SetPickNeighbour(5.0f);
+    trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.1);
+    trackingIterAllSecJump.SetMaxSlopePV(1.5f);
+    trackingIterAllSecJump.SetMaxSlope(2.748f);
+    trackingIterAllSecJump.SetMaxDZ(0.1);
+    trackingIterAllSecJump.SetMinLevelTripletStart(1);
+    trackingIterAllSecJump.SetTargetPosSigmaXY(10, 10);
+
+    auto trackingIterAllPrimE = L1CAIteration("AllPrimEIter");
+    trackingIterAllPrimE.SetTrackChi2Cut(10.f);
+    trackingIterAllPrimE.SetTripletChi2Cut(23.4450f);
+    trackingIterAllPrimE.SetDoubletChi2Cut(7.56327f);
+    trackingIterAllPrimE.SetPickGather(4.0f);
+    trackingIterAllPrimE.SetPickNeighbour(5.0f);
+    trackingIterAllPrimE.SetMaxInvMom(1.0 / 0.05);
+    trackingIterAllPrimE.SetMaxSlopePV(1.1f);
+    trackingIterAllPrimE.SetMaxSlope(2.748f);
+    trackingIterAllPrimE.SetMaxDZ(0.1);
+    trackingIterAllPrimE.SetTargetPosSigmaXY(1, 1);
+    trackingIterAllPrimE.SetMinLevelTripletStart(0);
+    trackingIterAllPrimE.SetPrimaryFlag(true);
+    trackingIterAllPrimE.SetElectronFlag(true);
+
+    auto trackingIterAllSecE = L1CAIteration("AllSecEIter");
+    trackingIterAllSecE.SetTrackChi2Cut(10.f);
+    trackingIterAllSecE.SetTripletChi2Cut(18.7560f);
+    trackingIterAllSecE.SetDoubletChi2Cut(7.56327f);
+    trackingIterAllSecE.SetPickGather(4.0f);
+    trackingIterAllSecE.SetPickNeighbour(5.0f);
+    trackingIterAllSecE.SetMaxInvMom(1.0 / 0.05);
+    trackingIterAllSecE.SetMaxSlopePV(1.5f);
+    trackingIterAllSecE.SetMaxSlope(2.748f);
+    trackingIterAllSecE.SetMaxDZ(0.1);
+    trackingIterAllSecE.SetMinLevelTripletStart(1);
+    trackingIterAllSecE.SetTargetPosSigmaXY(10, 10);
+    trackingIterAllSecE.SetElectronFlag(true);
+
+    // Select default track finder
+    if (L1Algo::TrackingMode::kMcbm == fTrackingMode) {
+      trackingIterAllPrim.SetMaxInvMom(1. / 0.1);
+      trackingIterAllPrimE.SetMaxInvMom(1. / 0.1);
+      trackingIterAllSecE.SetMaxInvMom(1. / 0.1);
+
+      trackingIterFastPrim.SetMaxInvMom(1.0 / 0.3);
+      trackingIterAllSec.SetMaxInvMom(1.0 / 0.3);
+      trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.3);
+      trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.3);
+      trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.3);
+
+      fInitManager.SetCAIterationsNumberCrosscheck(4);
+      // Initialize CA track finder iterations sequence
+      fInitManager.PushBackCAIteration(trackingIterFastPrim);
+      fInitManager.PushBackCAIteration(trackingIterAllPrim);
+      fInitManager.PushBackCAIteration(trackingIterAllPrimJump);
+      fInitManager.PushBackCAIteration(trackingIterAllSec);
+    }
+    else if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
+      // SGtrd2d!!
+
+      // Initialize CA track finder iterations sequence
+
+      auto trd2dIter1 = L1CAIteration("Trd2dIter1");
+      trd2dIter1.SetTrackChi2Cut(7.f);              //10.f
+      trd2dIter1.SetTripletChi2Cut(2 * 23.4450f);   // = 7.815 * 3;  // prob = 0.05
+      trd2dIter1.SetDoubletChi2Cut(4. * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
+      trd2dIter1.SetPickGather(3.0f);
+      trd2dIter1.SetPickNeighbour(4.0f);
+      trd2dIter1.SetMaxInvMom(1.0 / 0.05);  //(1.0 / 0.5);
+      trd2dIter1.SetMaxSlopePV(.5f);
+      trd2dIter1.SetMaxSlope(.5f);
+      trd2dIter1.SetMaxDZ(0.05);
+      trd2dIter1.SetTargetPosSigmaXY(1., 1.);  //(1, 1);
+      trd2dIter1.SetMinLevelTripletStart(1);
+      trd2dIter1.SetPrimaryFlag(false);
+
+      auto trd2dIter2 = L1CAIteration("Trd2dIter2");
+      trd2dIter2.SetTrackChi2Cut(7.f);              //10.f
+      trd2dIter2.SetTripletChi2Cut(2 * 23.4450f);   // = 7.815 * 3;  // prob = 0.05
+      trd2dIter2.SetDoubletChi2Cut(4. * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
+      trd2dIter2.SetPickGather(3.0f);
+      trd2dIter2.SetPickNeighbour(4.0f);
+      trd2dIter2.SetMaxInvMom(1.0 / 0.05);  //(1.0 / 0.5);
+      trd2dIter2.SetMaxSlopePV(.5f);
+      trd2dIter2.SetMaxSlope(.5f);
+      trd2dIter2.SetMaxDZ(0.05);
+      trd2dIter2.SetTargetPosSigmaXY(8 * 10, 6 * 10);  //(1, 1);
+      trd2dIter2.SetMinLevelTripletStart(0);
+      trd2dIter2.SetPrimaryFlag(false);
+
+      // Initialize CA track finder iterations sequence
+
+      fInitManager.SetCAIterationsNumberCrosscheck(1);
+      /*
+      fInitManager.SetCAIterationsNumberCrosscheck(5);
+      fInitManager.PushBackCAIteration(trackingIterFastPrim);
+      fInitManager.PushBackCAIteration(trackingIterAllPrim);
+      fInitManager.PushBackCAIteration(trackingIterAllPrimJump);
+      fInitManager.PushBackCAIteration(trackingIterAllSec);
+       */
+      fInitManager.PushBackCAIteration(trd2dIter2);
+    }
+    else {
+      fInitManager.SetCAIterationsNumberCrosscheck(4);
+      // Initialize CA track finder iterations sequence
+      fInitManager.PushBackCAIteration(trackingIterFastPrim);
+      fInitManager.PushBackCAIteration(trackingIterAllPrim);
+      fInitManager.PushBackCAIteration(trackingIterAllPrimJump);
+      fInitManager.PushBackCAIteration(trackingIterAllSec);
+      //fInitManager.PushBackCAIteration(trackingIterAllPrimE);
+      //fInitManager.PushBackCAIteration(trackingIterAllSecE);
+      //fInitManager.PushBackCAIteration(trackingIterFastPrimJump);
+      //fInitManager.PushBackCAIteration(trackingIterFastPrim2);
+      //fInitManager.PushBackCAIteration(trackingIterAllSecJump);
+    }
+
+    // **********************
+    // ** Set special cuts **
+    // **********************
+
+    fInitManager.SetGhostSuppression(fGhostSuppression);
+    fInitManager.SetTrackingLevel(fTrackingLevel);
+    fInitManager.SetMomentumCutOff(fMomentumCutOff);
+
+    // Form parameters container
+    fInitManager.FormParametersContainer();
+
+    // Write to file if needed
+    if (1 == fSTAPDataMode) { this->WriteSTAPParamObject(); }
   }
 
-  /**********************
-   ** Set special cuts **
-   **********************/
-
-  fInitManager.SetGhostSuppression(fGhostSuppression);
-  fInitManager.SetTrackingLevel(fTrackingLevel);
-  fInitManager.SetMomentumCutOff(fMomentumCutOff);
+  //
+  // ** Send formed parameters object to L1Algo instance **
+  //
+  fInitManager.SendParameters(fpAlgo);
 
   /*** Get numbers of active stations ***/
 
-  fNMvdStations  = fInitManager.GetNstationsActive(L1DetectorID::kMvd);
-  fNStsStations  = fInitManager.GetNstationsActive(L1DetectorID::kSts);
-  fNTrdStations  = fInitManager.GetNstationsActive(L1DetectorID::kTrd);
-  fNMuchStations = fInitManager.GetNstationsActive(L1DetectorID::kMuch);
-  fNTofStations  = fInitManager.GetNstationsActive(L1DetectorID::kTof);
-  fNStations     = fInitManager.GetNstationsActive();
+  fNMvdStations  = fpAlgo->GetParameters()->GetNstationsActive(L1DetectorID::kMvd);
+  fNStsStations  = fpAlgo->GetParameters()->GetNstationsActive(L1DetectorID::kSts);
+  fNTrdStations  = fpAlgo->GetParameters()->GetNstationsActive(L1DetectorID::kTrd);
+  fNMuchStations = fpAlgo->GetParameters()->GetNstationsActive(L1DetectorID::kMuch);
+  fNTofStations  = fpAlgo->GetParameters()->GetNstationsActive(L1DetectorID::kTof);
+  fNStations     = fpAlgo->GetParameters()->GetNstationsActive();
 
-
-  // Send formed parameters object to L1Algo instance
-  fInitManager.SendParameters(fpAlgo);
 
   LOG(info) << "----- Numbers of stations active in tracking -----";
   LOG(info) << "  MVD:    " << fNMvdStations;
@@ -1276,101 +1301,99 @@ void CbmL1::IdealTrackFinder()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmL1::WriteSTAPGeoData(const L1Vector<float>& /*geo_*/)
+void CbmL1::DefineSTAPNames(TString dirName)
 {
-  LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
-}
+  namespace bfs = boost::filesystem;
 
-// ---------------------------------------------------------------------------------------------------------------------
-//
-void CbmL1::WriteAlgoInputData()  // must be called after ReadEvent
-{
-  // Check if output directory exists
-  if (!boost::filesystem::exists(fSTAPDataDir.Data())) {
-    LOG(warn) << "CbmL1: directory " << fSTAPDataDir.Data()
-              << " (full path: " << boost::filesystem::system_complete(fSTAPDataDir.Data()).string()
+  // Check, if dirName path exists
+  if (!bfs::exists(dirName.Data())) {
+    LOG(warn) << "CbmL1: directory " << dirName.Data()
+              << " (full path: " << bfs::system_complete(dirName.Data()).string()
               << ") for writing L1AlgoData object does not exist";
     fSTAPDataDir = ".";
   }
 
-  if (!boost::filesystem::is_directory(fSTAPDataDir.Data())) {
+  // Check, if dirName path is a directory
+  if (!bfs::is_directory(fSTAPDataDir.Data())) {
     LOG(warn) << "CbmL1: path " << fSTAPDataDir.Data()
-              << " (full path: " << boost::filesystem::system_complete(fSTAPDataDir.Data()).string()
-              << ") is not a directory";
+              << " (full path: " << bfs::system_complete(fSTAPDataDir.Data()).string() << ") is not a directory";
     fSTAPDataDir = ".";
   }
 
-  // Define output directory
-  std::string hitsDir = (fSTAPDataDir + "/tracking_input_hits").Data();
-  if (!boost::filesystem::exists(hitsDir)) { boost::filesystem::create_directories(hitsDir); }
+  // TODO: Prepare directory, if it is not defined?
+  //
+  LOG(info) << "CbmL1: STAP data root directory is \033[1;32m" << bfs::system_complete(fSTAPDataDir.Data())
+            << "\033[0m";
 
-  // Get filename
-  static int iEvent         = 0;
-  boost::filesystem::path p = (FairRunAna::Instance()->GetUserOutputFileName()).Data();
-  std::string prefix        = p.filename().string();
-  std::string suffix        = "reco.root";
-  prefix.erase(prefix.find("reco.root"));
-  std::string filename = hitsDir + "/" + prefix + "event" + std::to_string(iEvent) + ".L1InputData.dat";
-  ++iEvent;
+  // Output prefix definition
+  bfs::path pathToOutput = FairRunAna::Instance()->GetUserOutputFileName().Data();
+  fSTAPDataPrefix        = pathToOutput.filename().string();
+  TString sOutputSuffix  = ".reco.root";
+  {
+    int suffixIdx = fSTAPDataPrefix.Index(sOutputSuffix);
+    if (suffixIdx != -1) { fSTAPDataPrefix.Remove(suffixIdx, sOutputSuffix.Length()); }
+  }
+  // Leave prefix without points on the edges, if there are any
+  fSTAPDataPrefix = fSTAPDataPrefix.Strip(TString::EStripType::kBoth, '.');
 
-  // Write file
-  L1_SHOW(filename);
-  fIODataManager.WriteInputData(filename);
+  // Directory for handling L1InputData objects
+  TString sInputDataDir = fSTAPDataDir + "/" + TString(kSTAPAlgoIDataDir.data());
+  if (!bfs::exists(sInputDataDir.Data())) {
+    LOG(warn) << "CbmL1: directory for tracking input data does not exist. It will be created";
+    bfs::create_directories(sInputDataDir.Data());
+  }
+  LOG(info) << "CbmL1: STAP tracking input jobs directory is \033[1;32m" << bfs::system_complete(sInputDataDir.Data())
+            << "\033[0m";
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmL1::WriteSTAPPerfData()  // must be called after ReadEvent
+void CbmL1::WriteSTAPParamObject()
+{
+  TString filename = fSTAPDataDir + "/" + fSTAPDataPrefix + "." + TString(kSTAPParamSuffix.data());
+  fInitManager.WriteParametersObject(filename.Data());
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void CbmL1::WriteSTAPAlgoInputData(int iJob)  // must be called after ReadEvent
+{
+  TString filename = fSTAPDataDir + "/" + TString(kSTAPAlgoIDataDir.data()) + "/" + fSTAPDataPrefix + "."
+                     + TString::Format(kSTAPAlgoIDataSuffix.data(), iJob);
+
+  // Write file
+  fIODataManager.WriteInputData(filename.Data());
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void CbmL1::WriteSTAPPerfInputData()  // must be called after ReadEvent
 {
   LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmL1::ReadSTAPGeoData()
+void CbmL1::ReadSTAPParamObject()
 {
-  LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
+  TString filename = fSTAPDataDir + "/" + fSTAPDataPrefix + "." + TString(kSTAPParamSuffix.data());
+  fInitManager.ReadParametersObject(filename.Data());
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmL1::ReadAlgoInputData()
+void CbmL1::ReadSTAPAlgoInputData(int iJob)
 {
-  // Check if output directory exists
-  if (!boost::filesystem::exists(fSTAPDataDir.Data())) {
-    LOG(warn) << "CbmL1: directory " << fSTAPDataDir.Data()
-              << " (full path: " << boost::filesystem::system_complete(fSTAPDataDir.Data()).string()
-              << ") for reading L1AlgoData object does not exist";
-    fSTAPDataDir = ".";
-  }
+  TString filename = fSTAPDataDir + "/" + TString(kSTAPAlgoIDataDir) + "/" + fSTAPDataPrefix + "."
+                     + TString::Format(kSTAPAlgoIDataSuffix.data(), iJob);
 
-  if (!boost::filesystem::is_directory(fSTAPDataDir.Data())) {
-    LOG(warn) << "CbmL1: path " << fSTAPDataDir.Data()
-              << " (full path: " << boost::filesystem::system_complete(fSTAPDataDir.Data()).string()
-              << ") is not a directory";
-    fSTAPDataDir = ".";
-  }
-
-  // Define output directory
-  std::string hitsDir = fSTAPDataDir.Data();
-
-  // Get filename
-  static int iEvent         = 0;
-  boost::filesystem::path p = (FairRunAna::Instance()->GetUserOutputFileName()).Data();
-  std::string prefix        = p.filename().string();
-  std::string suffix        = "reco.root";
-  prefix.erase(prefix.find("reco.root"));
-  std::string filename = hitsDir + "/" + prefix + "event" + std::to_string(iEvent) + ".L1InputData.dat";
-  ++iEvent;
-
-  // Write file
-  L1_SHOW(filename);
-  fIODataManager.ReadInputData(filename);
+  // Read file
+  fIODataManager.ReadInputData(filename.Data());
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmL1::ReadSTAPPerfData()
+void CbmL1::ReadSTAPPerfInputData()
 {
   LOG(fatal) << "CbmL1: Running in standalone mode is not available at the moment. It will be updated soon...";
 }

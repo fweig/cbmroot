@@ -9,9 +9,9 @@
 
 #include "L1Def.h"
 #include "L1NaN.h"
+#include "L1SimdSerializer.h"
 
 class L1XYMeasurementInfo {
-
 public:
   fvec C00 {L1NaN::SetNaN<decltype(C00)>()};
   fvec C10 {L1NaN::SetNaN<decltype(C10)>()};
@@ -26,6 +26,16 @@ public:
 
   /// Checks, if the fields are NaN
   bool IsNaN() const { return L1NaN::IsNaN(C00) || L1NaN::IsNaN(C10) || L1NaN::IsNaN(C11); }
+
+  /// Serialization function
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int)
+  {
+    ar& C00;
+    ar& C10;
+    ar& C11;
+  }
 } _fvecalignment;
 
 

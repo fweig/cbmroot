@@ -9,6 +9,7 @@
 
 #include "L1Constants.h"
 #include "L1Def.h"
+#include "L1SimdSerializer.h"
 
 class L1FieldValue {
 public:
@@ -30,9 +31,19 @@ public:
   /// String representation of class contents
   /// \param indentLevel      number of indent characters in the output
   std::string ToString(int indentLevel) const;
+
+  /// Serialization function
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int)
+  {
+    ar& x;
+    ar& y;
+    ar& z;
+  }
 } _fvecalignment;
 
-inline __attribute__((always_inline)) void L1FieldValue::Combine(L1FieldValue& B, fvec w)
+[[gnu::always_inline]] inline void L1FieldValue::Combine(L1FieldValue& B, fvec w)
 {
   x += w * (B.x - x);
   y += w * (B.y - y);
@@ -70,6 +81,16 @@ public:
     [L1Constants::size::kMaxNFieldApproxCoefficients];  ///< Polynomial coefficients for y-component of the field value
   fvec cz
     [L1Constants::size::kMaxNFieldApproxCoefficients];  ///< Polynomial coefficients for z-component of the field value
+
+  /// Serialization function
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int)
+  {
+    ar& cx;
+    ar& cy;
+    ar& cz;
+  }
 } _fvecalignment;
 
 
@@ -159,6 +180,22 @@ public:
   fvec cz1 {0.f};
   fvec cz2 {0.f};
   fvec z0 {0.f};  ///< z-coordinate of the field region central point
+
+  /// Serialization function
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar, const unsigned int)
+  {
+    ar& cx0;
+    ar& cx1;
+    ar& cx2;
+    ar& cy0;
+    ar& cy1;
+    ar& cy2;
+    ar& cz0;
+    ar& cz1;
+    ar& cz2;
+  }
 } _fvecalignment;
 
 #endif

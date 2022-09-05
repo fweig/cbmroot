@@ -2,11 +2,9 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
-/************************************************************************************************************
- * @file L1InitManager.h
- * @brief Input data management class for L1Algo
- * @since 24.12.2021
- ***********************************************************************************************************/
+/// \file  L1InitManager.h
+/// \brief Input data management class for L1Algo
+/// \since 24.12.2021
 #ifndef L1InitManager_h
 #define L1InitManager_h 1
 
@@ -134,6 +132,12 @@ public:
   /// Clears vector of CA track finder iterations
   void ClearCAIterations();
 
+  /// Clears vector of base setup
+  void ClearSetupInfo();
+
+  /// Forms parameters container
+  void FormParametersContainer();
+
   /// Gets ghost suppression flag
   int GetGhostSuppression() const { return fParameters.fGhostSuppression; }
 
@@ -184,6 +188,10 @@ public:
   /// Pushes an CA track finder iteration into a sequence of iteration using std::unique_ptr
   void PushBackCAIteration(const std::unique_ptr<L1CAIteration>& puIteration) { PushBackCAIteration(*puIteration); }
 
+  /// Reads parameters object from boost-serialized binary file
+  /// \param  fileName  Name of input file
+  void ReadParametersObject(const std::string& fileName);
+
   /// Sets a set of active tracking detector IDs
   void SetActiveDetectorIDs(const L1DetectorIDSet_t& detectorIDs);
 
@@ -231,6 +239,11 @@ public:
   /// \return Success flag
   bool SendParameters(L1Algo* pAlgo);
 
+  /// Writes parameters object from boost-serialized binary file
+  /// \param  fileName  Name of input file
+  void WriteParametersObject(const std::string& fileName) const;
+
+
   // ***************************
   // ** Flags for development **
   // ***************************
@@ -260,8 +273,6 @@ private:
   /// \return true If all L1BaseStationInfo objects were initialized properly. Similar effect can be achieved by
   void CheckStationsInfoInit();
 
-  /// Forms parameters container
-  void FormParametersContainer();
 
 
   // *****************
