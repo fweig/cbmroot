@@ -264,8 +264,8 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
 
     L1HitAreaTime area(vGridTime[ista], T.x[0] * iz, T.y[0] * iz,
-                       (sqrt(fPickGather * (T.C00 + sta.XYInfo.C00)) + fMaxDZ * fabs(T.tx))[0] * iz,
-                       (sqrt(fPickGather * (T.C11 + sta.XYInfo.C11)) + fMaxDZ * fabs(T.ty))[0] * iz, T.t[0],
+                       (sqrt(fPickGather * (T.C00 + sta.XYInfo.C00)) + fMaxDZ * abs(T.tx))[0] * iz,
+                       (sqrt(fPickGather * (T.C11 + sta.XYInfo.C11)) + fMaxDZ * abs(T.ty))[0] * iz, T.t[0],
                        sqrt(T.C55[0]));
 
     L1HitIndex_t ih = 0;
@@ -300,7 +300,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
       fscal d2  = d_x * d_x + d_y * d_y;
       if (d2 > r2_best) continue;
 
-      fscal dxm_est2 = (pickGather2 * (fabs(C00 + sta.XYInfo.C00)))[0];
+      fscal dxm_est2 = (pickGather2 * (abs(C00 + sta.XYInfo.C00)))[0];
       if (d_x * d_x > dxm_est2) continue;
 
       r2_best   = d2;

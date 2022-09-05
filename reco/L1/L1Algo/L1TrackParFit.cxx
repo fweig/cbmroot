@@ -878,7 +878,7 @@ void L1TrackParFit::EnergyLossCorrection(float atomicA, float rho, float radLen,
   //   T.C42 *= corr;
   //   T.C43 *= corr;
   // T.C44 *= corr*corr;
-  C44 += fabs(SDEDX);
+  C44 += abs(SDEDX);
 }
 
 

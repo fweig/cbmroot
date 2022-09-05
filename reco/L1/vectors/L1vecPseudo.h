@@ -266,8 +266,6 @@ public:
 #define _fvecalignment __attribute__((aligned(fvec::Size * sizeof(fscal))))
 
 
-inline fvec fabs(const fvec& a) { return abs(a); }
-
 /// Checks, if all bands are equal
 /// NOTE: two values defined as signaling_NaN() are not equal, thus if there are all or one
 /// of the words are kNaN, the function returns false

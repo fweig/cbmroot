@@ -300,8 +300,8 @@ void L1ClonesMerger::InvertCholesky(fvec a[15])
     fvec smallval(1.e-12);
     uud = iif(uud >= smallval, uud, smallval);
 
-    d[i]    = uud / fabs(uud);
-    u[i][i] = sqrt(fabs(uud));
+    d[i]    = uud / abs(uud);
+    u[i][i] = sqrt(abs(uud));
 
     for (int j = i + 1; j < 5; j++) {
       uud = 0.f;

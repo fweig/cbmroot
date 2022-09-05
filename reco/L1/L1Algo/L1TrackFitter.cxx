@@ -1069,7 +1069,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
           const fvec st = fvec(10);
 
-          fvec nofSteps = (fabs(d_z) / 10);
+          fvec nofSteps = (abs(d_z) / 10);
 
           int max_steps = 0;
 
@@ -1212,7 +1212,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
           fvec d_z      = T1.fz - z_last;
           const fvec st = fvec(10);
-          fvec nofSteps = (fabs(d_z) / 10);
+          fvec nofSteps = (abs(d_z) / 10);
 
           int max_steps = 0;
 

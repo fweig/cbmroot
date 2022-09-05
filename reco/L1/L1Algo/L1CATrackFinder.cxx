@@ -407,8 +407,8 @@ inline void L1Algo::findDoubletsStep0(
     const float& time      = T1.t[i1_4];
 
     L1HitAreaTime areaTime(vGridTime[iStaM], T1.x[i1_4] * iz, T1.y[i1_4] * iz,
-                           (sqrt(Pick_m22 * (T1.C00 + stam.XYInfo.C00)) + fMaxDZ * fabs(T1.tx))[i1_4] * iz,
-                           (sqrt(Pick_m22 * (T1.C11 + stam.XYInfo.C11)) + fMaxDZ * fabs(T1.ty))[i1_4] * iz, time,
+                           (sqrt(Pick_m22 * (T1.C00 + stam.XYInfo.C00)) + fMaxDZ * abs(T1.tx))[i1_4] * iz,
+                           (sqrt(Pick_m22 * (T1.C11 + stam.XYInfo.C11)) + fMaxDZ * abs(T1.ty))[i1_4] * iz, time,
                            sqrt(timeError) * 5);
 
 
@@ -764,8 +764,8 @@ inline void L1Algo::findTripletsStep0(  // input
 #endif  // DO_NOT_SELECT_TRIPLETS
       const fscal iz = 1.f / (T2.z[i2_4] - fParameters.GetTargetPositionZ()[0]);
       L1HitAreaTime area(vGridTime[&star - fParameters.GetStations().begin()], T2.x[i2_4] * iz, T2.y[i2_4] * iz,
-                         (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + fMaxDZ * fabs(T2.tx))[i2_4] * iz,
-                         (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + fMaxDZ * fabs(T2.ty))[i2_4] * iz, time,
+                         (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + fMaxDZ * abs(T2.tx))[i2_4] * iz,
+                         (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + fMaxDZ * abs(T2.ty))[i2_4] * iz, time,
                          sqrt(timeError) * 5);
 
       L1HitIndex_t irh       = 0;

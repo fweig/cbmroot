@@ -440,13 +440,13 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
         ENNSearchHitV& sHit = SearchArea[ih];
         const fvec dx       = sHit.lx - X;
         const fvec dy       = sHit.ly - Y;
-        const fvec d        = fabs(sqrt(dx * dx + dy * dy) - R);
+        const fvec d        = abs(sqrt(dx * dx + dy * dy) - R);
         const fvec dSq      = d * d;
         sHit.on_ring        = (d <= HitSize) & validHit;
-        const fvec dp       = iif(sHit.on_ring, fvec(-1.), fabs(sHit.C + sHit.Cx * X + sHit.Cy * Y));
+        const fvec dp       = iif(sHit.on_ring, fvec(-1.), abs(sHit.C + sHit.Cx * X + sHit.Cy * Y));
         Dmax                = iif(((dp <= Dcut) & (dp > Dmax)), dp, Dmax);
 
-        fvec w = iif((sHit.on_ring), 1. / (HitSizeSq_v + fabs(dSq)), 1. / (1.e-5 + fabs(dSq)));
+        fvec w = iif((sHit.on_ring), 1. / (HitSizeSq_v + abs(dSq)), 1. / (1.e-5 + abs(dSq)));
         w      = iif((dp <= Dcut) & validHit, w, fvec::Zero());
         S0 += w * sHit.S0;
         S1 += w * sHit.S1;
@@ -528,7 +528,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
         ENNSearchHitV &sHit = SearchArea[ih];
         const fvec dx = sHit.x - ringV.x;
         const fvec dy = sHit.y - ringV.y;
-        const fvec d = fabs( sqrt(dx*dx+dy*dy) - ringV.r );
+        const fvec d = abs( sqrt(dx*dx+dy*dy) - ringV.r );
         validHit = validHit & ( d <= HitSize );
         ringV.chi2 += d*d;
         ringV.localIHits.push_back( iif( validHit, sHit.localIndex, fvec(-1.) ) );
@@ -543,7 +543,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
         ENNHitV &puHit = PickUpArea[ipu];
         const fvec dx = puHit.x - ringV.x;
         const fvec dy = puHit.y - ringV.y;
-        const fvec d = fabs( sqrt(dx*dx+dy*dy) - ringV.r );
+        const fvec d = abs( sqrt(dx*dx+dy*dy) - ringV.r );
         validHit = validHit & ( d <= HitSize );
         if ( validHit.isEmpty() ) continue;
         ringV.chi2 += d*d;
