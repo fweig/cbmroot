@@ -2,12 +2,12 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergei Zharko, Maksym Zyzak [committer]*/
 
-/// \file    L1ClonesMerger.h
+/// \file    L1CloneMerger.h
 /// \authors S.Zharko <s.zharko@gsi.de> (interface), M.Zyzak (original algorithm)
 /// \brief   A class wrapper over clones merger algorithm for the L1 track finder (implementation)
 /// \since   22.07.2022 (second version)
 
-#include "L1ClonesMerger.h"
+#include "L1CloneMerger.h"
 
 #include <iostream>
 
@@ -18,15 +18,15 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-L1ClonesMerger::L1ClonesMerger(const L1Algo& algo) : frAlgo(algo) {}
+L1CloneMerger::L1CloneMerger(const L1Algo& algo) : frAlgo(algo) {}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-L1ClonesMerger::~L1ClonesMerger() {}
+L1CloneMerger::~L1CloneMerger() {}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void L1ClonesMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& extRecoHits)
+void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& extRecoHits)
 {
   L1Vector<unsigned short>& firstStation = fTrackFirstStation;
   L1Vector<unsigned short>& lastStation  = fTrackLastStation;
@@ -236,8 +236,8 @@ void L1ClonesMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& 
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void L1ClonesMerger::FilterTracks(fvec const r[5], fvec const C[15], fvec const m[5], fvec const V[15], fvec R[5],
-                                  fvec W[15], fvec* chi2)
+void L1CloneMerger::FilterTracks(fvec const r[5], fvec const C[15], fvec const m[5], fvec const V[15], fvec R[5],
+                                 fvec W[15], fvec* chi2)
 {
   fvec S[15];
   for (int i = 0; i < 15; i++) {
@@ -282,7 +282,7 @@ void L1ClonesMerger::FilterTracks(fvec const r[5], fvec const C[15], fvec const 
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void L1ClonesMerger::InvertCholesky(fvec a[15])
+void L1CloneMerger::InvertCholesky(fvec a[15])
 {
   fvec d[5], uud, u[5][5];
   for (int i = 0; i < 5; i++) {
@@ -347,7 +347,7 @@ void L1ClonesMerger::InvertCholesky(fvec a[15])
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void L1ClonesMerger::MultiplyMS(fvec const C[5][5], fvec const V[15], fvec K[15])
+void L1CloneMerger::MultiplyMS(fvec const C[5][5], fvec const V[15], fvec K[15])
 {
   K[0] = C[0][0] * V[0] + C[0][1] * V[1] + C[0][2] * V[3] + C[0][3] * V[6] + C[0][4] * V[10];
 
@@ -372,7 +372,7 @@ void L1ClonesMerger::MultiplyMS(fvec const C[5][5], fvec const V[15], fvec K[15]
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void L1ClonesMerger::MultiplySR(fvec const C[15], fvec const r_in[5], fvec r_out[5])
+void L1CloneMerger::MultiplySR(fvec const C[15], fvec const r_in[5], fvec r_out[5])
 {
   r_out[0] = r_in[0] * C[0] + r_in[1] * C[1] + r_in[2] * C[3] + r_in[3] * C[6] + r_in[4] * C[10];
   r_out[1] = r_in[0] * C[1] + r_in[1] * C[2] + r_in[2] * C[4] + r_in[3] * C[7] + r_in[4] * C[11];
@@ -383,7 +383,7 @@ void L1ClonesMerger::MultiplySR(fvec const C[15], fvec const r_in[5], fvec r_out
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void L1ClonesMerger::MultiplySS(fvec const C[15], fvec const V[15], fvec K[5][5])
+void L1CloneMerger::MultiplySS(fvec const C[15], fvec const V[15], fvec K[5][5])
 {
   K[0][0] = C[0] * V[0] + C[1] * V[1] + C[3] * V[3] + C[6] * V[6] + C[10] * V[10];
   K[0][1] = C[0] * V[1] + C[1] * V[2] + C[3] * V[4] + C[6] * V[7] + C[10] * V[11];

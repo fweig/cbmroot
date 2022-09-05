@@ -2602,7 +2602,7 @@ void L1Algo::CATrackFinder()
     this->L1KFTrackFitter();
 
     // Merge clones
-    fClonesMerger.Exec(fTracks, fRecoHits);
+    fCloneMerger.Exec(fTracks, fRecoHits);
   }
 
 #ifdef XXX

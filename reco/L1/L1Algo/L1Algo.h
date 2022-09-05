@@ -43,7 +43,7 @@ class L1AlgoDraw;
 #include <map>
 
 #include "L1Branch.h"
-#include "L1ClonesMerger.h"
+#include "L1CloneMerger.h"
 #include "L1Field.h"
 #include "L1Grid.h"
 #include "L1Hit.h"
@@ -544,7 +544,7 @@ public:
 
 
 private:
-  L1ClonesMerger fClonesMerger {*this};  ///< Object of L1Algo clones merger algorithm
+  L1CloneMerger fCloneMerger {*this};  ///< Object of L1Algo clones merger algorithm
 
 #ifdef TBB
   enum

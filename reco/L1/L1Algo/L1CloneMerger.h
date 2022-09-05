@@ -2,13 +2,13 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergei Zharko [committer], Maksym Zyzak */
 
-/// \file    L1ClonesMerger.h
+/// \file    L1CloneMerger.h
 /// \authors S.Zharko <s.zharko@gsi.de> (interface), M.Zyzak (original algorithm)
 /// \brief   A class wrapper over clones merger algorithm for the L1 track finder (declaration)
 /// \since   22.07.2022
 
-#ifndef L1ClonesMerger_h
-#define L1ClonesMerger_h 1
+#ifndef L1CloneMerger_h
+#define L1CloneMerger_h 1
 
 #include "L1Def.h"
 #include "L1Hit.h"  // For L1HitIndex_t
@@ -19,25 +19,25 @@ class L1Algo;
 
 /// Class implements a clones merger algorithm for the CA (L1) track finder
 ///
-class L1ClonesMerger {
+class L1CloneMerger {
 public:
   /// Default constructor
-  L1ClonesMerger(const L1Algo& algo);
+  L1CloneMerger(const L1Algo& algo);
 
   /// Destructor
-  ~L1ClonesMerger();
+  ~L1CloneMerger();
 
   /// Copy constructor
-  L1ClonesMerger(const L1ClonesMerger&) = delete;
+  L1CloneMerger(const L1CloneMerger&) = delete;
 
   /// Move constructor
-  L1ClonesMerger(L1ClonesMerger&&) = delete;
+  L1CloneMerger(L1CloneMerger&&) = delete;
 
   /// Copy assignment operator
-  L1ClonesMerger& operator=(const L1ClonesMerger&) = delete;
+  L1CloneMerger& operator=(const L1CloneMerger&) = delete;
 
   /// Move assignment operator
-  L1ClonesMerger& operator=(L1ClonesMerger&&) = delete;
+  L1CloneMerger& operator=(L1CloneMerger&&) = delete;
 
   /// Registers
 
@@ -86,28 +86,28 @@ private:
   // ***************
 
   /// First station of a track
-  L1Vector<unsigned short> fTrackFirstStation {"L1ClonesMerger::fTrackFirstStation"};
+  L1Vector<unsigned short> fTrackFirstStation {"L1CloneMerger::fTrackFirstStation"};
 
   /// Last station of a track
-  L1Vector<unsigned short> fTrackLastStation {"L1ClonesMerger::fTrackLastStation"};
+  L1Vector<unsigned short> fTrackLastStation {"L1CloneMerger::fTrackLastStation"};
 
   /// Index of the first hit of a track
-  L1Vector<L1HitIndex_t> fTrackFirstHit {"L1ClonesMerger::fTrackFirstHit"};
+  L1Vector<L1HitIndex_t> fTrackFirstHit {"L1CloneMerger::fTrackFirstHit"};
 
   /// Index of the last hit of a track
-  L1Vector<L1HitIndex_t> fTrackLastHit {"L1ClonesMerger::fTrackLastHit"};
+  L1Vector<L1HitIndex_t> fTrackLastHit {"L1CloneMerger::fTrackLastHit"};
 
   /// Index (TODO:??) of a track that can be merge with the given track
-  L1Vector<unsigned short> fTrackNeighbour {"L1ClonesMerger::fTrackNeighbour"};
+  L1Vector<unsigned short> fTrackNeighbour {"L1CloneMerger::fTrackNeighbour"};
 
   /// Chi2 value of the track merging procedure
-  L1Vector<float> fTrackChi2 {"L1ClonesMerger::fTrackChi2"};
+  L1Vector<float> fTrackChi2 {"L1CloneMerger::fTrackChi2"};
 
   /// Flag: is the given track already stored to the output
-  L1Vector<char> fTrackIsStored {"L1ClonesMerger::fTrackIsStored"};
+  L1Vector<char> fTrackIsStored {"L1CloneMerger::fTrackIsStored"};
 
   /// Flag: is the track a downstream neighbour of another track
-  L1Vector<char> fTrackIsDownstreamNeighbour {"L1ClonesMerger::fTrackIsDownstreamNeighbour"};
+  L1Vector<char> fTrackIsDownstreamNeighbour {"L1CloneMerger::fTrackIsDownstreamNeighbour"};
 
   L1Vector<L1Track> fTracksNew {"L1CAMergerClones::fTracksNew"};  ///< vector of tracks after the merge
 
@@ -116,4 +116,4 @@ private:
   const L1Algo& frAlgo;  ///< Reference to the main track finder algorithm class
 };
 
-#endif  // L1ClonesMerger_h
+#endif  // L1CloneMerger_h

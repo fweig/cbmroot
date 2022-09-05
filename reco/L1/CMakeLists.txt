@@ -153,7 +153,7 @@ set(SRCS
   L1Algo/L1Parameters.cxx
   L1Algo/L1InputData.cxx
   L1Algo/L1IODataManager.cxx
-  L1Algo/L1ClonesMerger.cxx
+  L1Algo/L1CloneMerger.cxx
   L1Algo/L1ConfigRW.cxx
   L1Algo/utils/L1AlgoDraw.cxx
   L1Algo/utils/L1AlgoEfficiencyPerformance.cxx
@@ -300,7 +300,7 @@ Install(FILES CbmL1Counters.h
   L1Algo/L1Parameters.h
   L1Algo/L1InputData.h
   L1Algo/L1IODataManager.h
-  L1Algo/L1ClonesMerger.h
+  L1Algo/L1CloneMerger.h
   L1Algo/L1ConfigRW.h
   L1Algo/L1Constants.h
   L1Algo/L1Utils.h
