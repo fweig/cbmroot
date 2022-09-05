@@ -349,7 +349,7 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
 
   //----------------------------------------------------------------
 
-  if (w) { z_out = if3((fvec(0.f) < *w), z_out, fz); }
+  if (w) { z_out = iif((fvec(0.f) < *w), z_out, fz); }
 
   fvec qp_in      = fqp;
   const fvec z_in = fz;
@@ -807,7 +807,7 @@ void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec d
   const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
   fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
   fmask ok               = (corr == corr) & (fvec::Zero() < w);
-  corr                   = if3(ok, corr, fvec::One());
+  corr                   = iif(ok, corr, fvec::One());
 
   qp0 *= corr;
   fqp *= corr;
@@ -840,7 +840,7 @@ void L1TrackParFit::EnergyLossCorrection(float atomicA, float rho, float radLen,
   const fvec E2Corrected = (sqrt(E2) + direction * dE) * (sqrt(E2) + direction * dE);
   fvec corr              = sqrt(p2 / (E2Corrected - fMass2));
   fmask ok               = (corr == corr) & (fvec::Zero() < w);
-  corr                   = if3(ok, corr, fvec::One());
+  corr                   = iif(ok, corr, fvec::One());
 
   qp0 *= corr;
   fqp *= corr;

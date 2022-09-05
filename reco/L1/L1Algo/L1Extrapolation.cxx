@@ -332,7 +332,7 @@ void L1ExtrapolateRungeKutta  // extrapolates track parameters and returns jacob
 
   //----------------------------------------------------------------
 
-  if (w) { z_out = if3(fvec::Zero() < *w, z_out, T.z); }
+  if (w) { z_out = iif(fvec::Zero() < *w, z_out, T.z); }
 
   fvec qp_in      = T.qp;
   const fvec z_in = T.z;

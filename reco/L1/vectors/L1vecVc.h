@@ -26,24 +26,16 @@ inline fvec operator+(const fvec& a, fscal b) { return a + fvec(b); }
 inline fvec operator-(fscal a, const fvec& b) { return fvec(a) - b; }
 inline fvec operator-(const fvec& a, fscal b) { return a - fvec(b); }
 
-inline fvec if3(const fmask& a, const fvec& b, const fvec& c)
-{
-  // return (a ?b :c);
-  fvec ret = c;
-  ret(a)   = b;
-  return ret;
-}
-
 inline fmask MaskOne() { return fmask::One(); }
 inline fmask MaskZero() { return fmask::One(); }
 
 inline fvec fabs(const fvec& a) { return abs(a); }
 
-inline fvec masked(const fvec& a, const fmask& mask) { return if3(mask, a, fvec::Zero()); }
+inline fvec masked(const fvec& a, const fmask& mask) { return iif(mask, a, fvec::Zero()); }
 
 inline fvec mask2int(const fmask& mask)
 {  // mask returned
-  return if3(mask, fvec::One(), fvec::Zero());
+  return iif(mask, fvec::One(), fvec::Zero());
 }
 
 /// Checks, if all bands are equal

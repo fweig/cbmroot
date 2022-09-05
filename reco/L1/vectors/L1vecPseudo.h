@@ -172,7 +172,7 @@ public:
   friend fmask operator>=(const fvec& a, const fvec& b) { _opComp(a, b, >=) }
   friend fmask operator==(const fvec& a, const fvec& b) { _opComp(a, b, ==) }
 
-  friend fvec if3(fmask a, fvec b, fvec c)
+  friend fvec iif(fmask a, fvec b, fvec c)
   {
     fvec z;
     for (int i = 0; i < Size; i++) {
@@ -252,11 +252,11 @@ inline fmask MaskZero() { return fmask::One(); }
 
 inline fvec fabs(const fvec& a) { return abs(a); }
 
-inline fvec masked(const fvec& a, const fmask& mask) { return if3(mask, a, fvec::Zero()); }
+inline fvec masked(const fvec& a, const fmask& mask) { return iif(mask, a, fvec::Zero()); }
 
 inline fvec mask2int(const fmask& mask)
 {  // mask returned
-  return if3(mask, fvec::One(), fvec::Zero());
+  return iif(mask, fvec::One(), fvec::Zero());
 }
 
 /// Checks, if all bands are equal
