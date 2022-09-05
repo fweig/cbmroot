@@ -268,11 +268,6 @@ public:
 
 inline fvec fabs(const fvec& a) { return abs(a); }
 
-inline fvec mask2int(const fmask& mask)
-{  // mask returned
-  return iif(mask, fvec::One(), fvec::Zero());
-}
-
 /// Checks, if all bands are equal
 /// NOTE: two values defined as signaling_NaN() are not equal, thus if there are all or one
 /// of the words are kNaN, the function returns false

@@ -29,10 +29,10 @@ inline fvec operator-(const fvec& a, fscal b) { return a - fvec(b); }
 
 inline fvec fabs(const fvec& a) { return abs(a); }
 
-inline fvec mask2int(const fmask& mask)
-{  // mask returned
-  return iif(mask, fvec::One(), fvec::Zero());
-}
+//inline fvec mask2int(const fmask& mask)
+//{  // mask returned
+//return iif(mask, fvec::One(), fvec::Zero());
+//}
 
 /// Checks, if all bands are equal
 /// NOTE: two values defined as signaling_NaN() are not equal, thus if there are all or one

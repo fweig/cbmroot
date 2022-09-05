@@ -498,7 +498,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
 
     for (int iSt = nStations - 4; iSt >= 0; iSt--) {
 
-      fvec w = mask2int(T.z > (zSta[iSt] + 2.5));
+      fvec w = iif(T.z > (zSta[iSt] + 2.5), fvec::One(), fvec::Zero());
 
       L1Extrapolate(T, zSta[iSt], T.qp, fld, &w);
       if (iSt == NMvdStations - 1) {

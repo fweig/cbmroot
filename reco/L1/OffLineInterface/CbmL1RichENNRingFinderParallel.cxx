@@ -470,7 +470,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
       S0 = S1 = S2 = S3 = S4 = S5 = S6 = S7 = 0.0;
       for (THitIndex ih = 0; ih < MaxSearchAreaSize; ih++) {
         ENNSearchHitV& sHit = SearchArea[ih];
-        const fvec w        = mask2int(SearchArea[ih].on_ring);
+        const fvec w        = iif(SearchArea[ih].on_ring, fvec::One(), fvec::Zero());
         S0 += w * sHit.S0;
         S1 += w * sHit.S1;
         S2 += w * sHit.S2;
@@ -532,7 +532,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
         validHit = validHit & ( d <= HitSize );
         ringV.chi2 += d*d;
         ringV.localIHits.push_back( iif( validHit, sHit.localIndex, fvec(-1.) ) );
-        ringV.NHits += mask2int(validHit);
+        ringV.NHits += iif(validHit, fvec::One(), fvec::Zero());
         validHit = validHit & ( d <= ShadowSize ); // TODO check *4
         if ( validHit.isEmpty() ) continue; // CHECKME
         Shadow.push_back( iif( validHit, sHit.localIndex, fvec(-1.) ) );
@@ -548,7 +548,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
         if ( validHit.isEmpty() ) continue;
         ringV.chi2 += d*d;
         ringV.localIHits.push_back( iif( validHit, puHit.localIndex, fvec(-1.) ) );
-        ringV.NHits += mask2int(validHit);
+        ringV.NHits += iif(validHit, fvec::One(), fvec::Zero());
         validHit = validHit & ( d <= ShadowSize ); // TODO check *4
         if ( validHit.isEmpty() ) continue; // CHECKME
         Shadow.push_back( iif( validHit, puHit.localIndex, fvec(-1.) ) );
