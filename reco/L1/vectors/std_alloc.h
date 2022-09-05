@@ -6,11 +6,9 @@
 #define STD_ALLOC_H
 // ---------------------- Allocator for using STL ------------------------
 
+#include <Vc/Vc>
 #include <limits>
 #include <vector>
-
-#include "xmmintrin.h"
-
 
 namespace nsL1
 {
@@ -113,10 +111,10 @@ namespace nsL1
 
     void* operator new(size_t size, void* ptr) { return ::operator new(size, ptr); }
     void* operator new[](size_t size, void* ptr) { return ::operator new(size, ptr); }
-    void* operator new(size_t size) { return _mm_malloc(size, 16); }
-    void* operator new[](size_t size) { return _mm_malloc(size, 16); }
-    void operator delete(void* ptr, size_t) { _mm_free(ptr); }
-    void operator delete[](void* ptr, size_t) { _mm_free(ptr); }
+    void* operator new(size_t size) { return Vc::malloc<T, Vc::AlignOnCacheline>(size / sizeof(T) + 1); }
+    void* operator new[](size_t size) { return Vc::malloc<T, Vc::AlignOnCacheline>(size / sizeof(T) + 1); }
+    void operator delete(void* ptr, size_t) { Vc::free(ptr); }
+    void operator delete[](void* ptr, size_t) { Vc::free(ptr); }
   };  // SimdAlloc
 
   // return that all specializations of this allocator are interchangeable
