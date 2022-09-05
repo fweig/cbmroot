@@ -253,8 +253,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       fld.Set(b0, z0, b1, z1, b2, z2);
 
       fmask initialised = (z[i] <= z_end) & (z_start < z[i]);
-      fvec w1           = masked(w[i], initialised);
-      fvec wIn          = mask2int(initialised);
+      fvec w1           = iif(initialised, w[i], fvec::Zero());
+      fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
       L1Extrapolate(T, z[i], qp0, fld, &w1);
       if (i == NMvdStations) {  // TODO: How a hit can be also a station? (S.Zharko)
@@ -330,8 +330,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       fld.Set(b0, z0, b1, z1, b2, z2);
 
       fmask initialised = (z[i] < z_end) & (z_start <= z[i]);
-      fvec w1           = masked(w[i], initialised);
-      fvec wIn          = mask2int(initialised);
+      fvec w1           = iif(initialised, w[i], fvec::Zero());
+      fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
       L1Extrapolate(T, z[i], qp0, fld, &w1);
       if (i == NMvdStations - 1) {
@@ -526,7 +526,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
     c[2] += fvec(Cv[2]);
     fvec d   = c[0] * c[2] - c[1] * c[1];
     fvec chi = sqrt(fabs(0.5 * (dx * dx * c[0] - 2 * dx * dy * c[1] + dy * dy * c[2]) / d));
-    chi      = masked(chi, fabs(d) >= fvec(1.e-20));
+    chi.setZero(fabs(d) < fvec(1.e-20));
 
     for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
       chiToVtx.push_back(chi[iVec]);

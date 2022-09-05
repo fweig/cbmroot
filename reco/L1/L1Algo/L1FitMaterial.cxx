@@ -149,7 +149,7 @@ fvec L1Fit::ApproximateBetheBloch(const fvec& bg2)
   const fvec lhwI = log(28.816f * 1e-9f * sqrt(rho * mZA) / mI);
 
   fmask init   = x > x1;
-  d2           = masked(lhwI + x - 0.5f, init);
+  d2           = iif(init, lhwI + x - 0.5f, fvec::Zero());
   const fvec r = (x1 - x) / (x1 - x0);
   init         = (x > x0) & (x1 > x);
   d2           = iif(init, lhwI + x - 0.5f + (0.5f - lhwI - x0) * r * r * r, d2);
@@ -196,7 +196,7 @@ fvec L1Fit::ApproximateBetheBloch(const fvec& bg2, const fvec& kp0, const fvec& 
   const fvec lhwI = log(28.816f * 1e-9f * sqrt(rho * mZA) / mI);
 
   fmask init   = x > x1;
-  d2           = masked(lhwI + x - 0.5f, init);
+  d2           = iif(init, lhwI + x - 0.5f, fvec::Zero());
   const fvec r = (x1 - x) / (x1 - x0);
   init         = (x > x0) & (x1 > x);
   d2           = iif(init, lhwI + x - 0.5f + (0.5f - lhwI - x0) * r * r * r, d2);

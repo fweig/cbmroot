@@ -28,7 +28,7 @@ inline void FilterTime(L1TrackPar& T, fvec t, fvec dt, fvec timeInfo = fvec::One
 
   fvec HCH = T.C55;
 
-  w = masked(w, timeInfo > fvec::Zero());
+  w.setZero(timeInfo <= fvec::Zero());
 
   fvec dt2 = dt * dt;
 
@@ -42,7 +42,7 @@ inline void FilterTime(L1TrackPar& T, fvec t, fvec dt, fvec timeInfo = fvec::One
 
   fvec wi     = w / (dt2 + 1.0000001f * HCH);
   fvec zeta   = T.t - t;
-  fvec zetawi = w * zeta / (masked(dt2, maskDoFilter) + HCH);
+  fvec zetawi = w * zeta / (iif(maskDoFilter, dt2, fvec::Zero()) + HCH);
 
   //T.chi2 += maskDoFilter & (zeta * zetawi);
   T.chi2 += zeta * zeta * wi;
@@ -113,9 +113,9 @@ inline void L1Filter(L1TrackPar& T, const L1UMeasurementInfo& info, fvec u, fvec
   // with respect to HCH that it disappears due to the roundoff error
   //
   fvec wi     = w / (info.sigma2 + 1.0000001f * HCH);
-  fvec zetawi = w * zeta / (masked(info.sigma2, maskDoFilter) + HCH);
+  fvec zetawi = w * zeta / (iif(maskDoFilter, info.sigma2, fvec::Zero()) + HCH);
 
-  // T.chi2 += masked( zeta * zetawi, maskDoFilter);
+  // T.chi2 += iif( maskDoFilter, zeta * zetawi, fvec::Zero() );
   T.chi2 += zeta * zeta * wi;
   T.NDF += w;
 
@@ -182,7 +182,7 @@ inline void L1FilterNoField(L1TrackPar& T, const L1UMeasurementInfo& info, fvec 
   //fvec wi          = w / (info.sigma2 + 1.0000001f * HCH);
 
   fvec wi     = w / (info.sigma2 + HCH);
-  fvec zetawi = w * zeta / (masked(info.sigma2, maskDoFilter) + HCH);
+  fvec zetawi = w * zeta / (iif(maskDoFilter, info.sigma2, fvec::Zero()) + HCH);
 
   T.chi2 += zeta * zeta * wi;
   T.NDF += w;

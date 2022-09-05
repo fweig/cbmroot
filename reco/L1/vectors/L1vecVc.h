@@ -29,8 +29,6 @@ inline fvec operator-(const fvec& a, fscal b) { return a - fvec(b); }
 
 inline fvec fabs(const fvec& a) { return abs(a); }
 
-inline fvec masked(const fvec& a, const fmask& mask) { return iif(mask, a, fvec::Zero()); }
-
 inline fvec mask2int(const fmask& mask)
 {  // mask returned
   return iif(mask, fvec::One(), fvec::Zero());

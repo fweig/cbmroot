@@ -687,7 +687,7 @@ void L1ExtrapolateTime(L1TrackPar& T,  // input track parameters (x,y,tx,ty,Q/p)
                        fvec timeInfo)
 {
   cnst c_light = 29.9792458;
-  dz.setZero(timeInfo < 0);  //TODO: SG: bug: must be <=0
+  dz.setZero(timeInfo <= fvec::Zero());
 
   T.t += dz * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1) / c_light;
 

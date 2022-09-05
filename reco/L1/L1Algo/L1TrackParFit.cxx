@@ -167,9 +167,9 @@ void L1TrackParFit::Filter(fvec t0, fvec dt0, fvec w, fvec timeInfo)
 
 #if 1  // use mask
   const fmask mask = (timeInfo > 0.f);
-  wi               = masked(w / (dt0 * dt0 + HCH), mask);
+  wi               = iif(mask, w / (dt0 * dt0 + HCH), fvec::Zero());
   zetawi           = zeta * wi;
-  chi2 += masked(zeta * zetawi, mask);
+  chi2 += iif(mask, zeta * zetawi, fvec::Zero());
 #else
   wi     = w / (dt0 * dt0 + HCH);
   zetawi = zeta * wi;
@@ -220,7 +220,7 @@ void L1TrackParFit::ExtrapolateLine(fvec z_out, fvec* w)
   cnst c_light = 29.9792458;
 
   fvec dz = (z_out - fz);
-  if (w) { dz = masked(dz, (fvec(0.f) < *w)); }
+  if (w) { dz.setZero(*w <= fvec::Zero()); }
 
   fx += dz * ftx;
   fy += dz * fty;
@@ -266,7 +266,7 @@ void L1TrackParFit::ExtrapolateLine1(fvec z_out, fvec* w, fvec v)
   cnst c_light = 29.9792458;
 
   fvec dz = (z_out - fz);
-  if (w) { dz = masked(dz, (fvec(0.f) < *w)); }
+  if (w) { dz.setZero(*w <= fvec::Zero()); }
 
   fx += dz * ftx;
   fy += dz * fty;
