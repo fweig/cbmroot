@@ -189,6 +189,15 @@ public:
   friend fmask operator>=(const fvec& a, const fvec& b) { _opComp(a, b, >=) }
   friend fmask operator==(const fvec& a, const fvec& b) { _opComp(a, b, ==) }
 
+  friend fmask isnan(const fvec& a)
+  {
+    fmask m;
+    for (int i = 0; i < size(); i++) {
+      m[i] = std::isnan(a[i[);
+    }
+    return m;
+  }
+
   friend fvec iif(fmask a, fvec b, fvec c)
   {
     fvec z;
@@ -273,16 +282,6 @@ inline bool IsHorizontallyEqual(const fvec& v)
   bool ret = true;
   for (int i = 1; i < fvec::size(); i++) {
     ret = ret && (v[i] == s);
-  }
-  return ret;
-}
-
-/// Checks, if any of the bands is NaN
-inline bool IsNanAny(const fvec& v)
-{
-  bool ret = false;
-  for (int i = 0; i < fvec::size(); i++) {
-    ret = ret || std::isnan(v[i]);
   }
   return ret;
 }

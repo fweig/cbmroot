@@ -39,16 +39,6 @@ inline bool IsHorizontallyEqual(const fvec& v)
   return ret;
 }
 
-/// Checks, if any of the bands is NaN
-inline bool IsNanAny(const fvec& v)
-{
-  bool ret = false;
-  for (size_t i = 0; i < fvec::size(); i++) {
-    ret = ret || std::isnan(v[i]);
-  }
-  return ret;
-}
-
 
 #include "std_alloc.h"
 
