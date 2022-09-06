@@ -10,11 +10,11 @@
 
 If(CMAKE_SYSTEM_NAME MATCHES Linux)
   Exec_Program(cat ARGS "/proc/cpuinfo" OUTPUT_VARIABLE CPUINFO)
-  String(REGEX REPLACE "^.*(sse).*$" "\\1" SSE_THERE ${CPUINFO})
+  String(REGEX REPLACE "^.*(sse).*$" "\\1" SSE_THERE "${CPUINFO}")
   String(COMPARE EQUAL "sse" "${SSE_THERE}" SSE_TRUE)
 ElseIf(CMAKE_SYSTEM_NAME MATCHES Darwin)
   Exec_Program("/usr/sbin/sysctl -n machdep.cpu.features" OUTPUT_VARIABLE CPUINFO)
-  String(REGEX REPLACE "^.*(SSE).*$" "\\1" SSE_THERE ${CPUINFO})
+  String(REGEX REPLACE "^.*(SSE).*$" "\\1" SSE_THERE "${CPUINFO}")
   String(COMPARE EQUAL "SSE" "${SSE_THERE}" SSE_TRUE)
 EndIf(CMAKE_SYSTEM_NAME MATCHES Linux)
 
