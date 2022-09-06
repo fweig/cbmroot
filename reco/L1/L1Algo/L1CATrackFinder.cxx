@@ -1246,9 +1246,9 @@ inline void L1Algo::findTripletsStep3(  // input
     if (chi2 > fTripletChi2Cut) { continue; }
 #endif  // DO_NOT_SELECT_TRIPLETS
 
-    // assert(finite(chi2) && chi2 > 0);
+    // assert(std::isfinite(chi2) && chi2 > 0);
 
-    if (!finite(chi2) || chi2 < 0) { continue; }
+    if (!std::isfinite(chi2) || chi2 < 0) { continue; }
     //if (!T3.IsEntryConsistent(false, i3_4)) { continue; }
 
     fscal qp = T3.qp[i3_4];

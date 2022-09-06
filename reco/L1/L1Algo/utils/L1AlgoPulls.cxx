@@ -115,11 +115,11 @@ void L1AlgoPulls::AddOne(L1TrackPar& T_, int i, L1HitIndex_t ih)
   TL1TrackParameters err;
   const L1TrackPar& tr = T_;
 
-  if (!(finite(tr.C00[i]) && tr.C00[i] > 0)) return;
-  if (!(finite(tr.C11[i]) && tr.C11[i] > 0)) return;
-  if (!(finite(tr.C22[i]) && tr.C22[i] > 0)) return;
-  if (!(finite(tr.C33[i]) && tr.C33[i] > 0)) return;
-  if (!(finite(tr.C44[i]) && tr.C44[i] > 0)) return;
+  if (!(std::isfinite(tr.C00[i]) && tr.C00[i] > 0)) return;
+  if (!(std::isfinite(tr.C11[i]) && tr.C11[i] > 0)) return;
+  if (!(std::isfinite(tr.C22[i]) && tr.C22[i] > 0)) return;
+  if (!(std::isfinite(tr.C33[i]) && tr.C33[i] > 0)) return;
+  if (!(std::isfinite(tr.C44[i]) && tr.C44[i] > 0)) return;
   err.x  = sqrt(tr.C00[i]);
   err.y  = sqrt(tr.C11[i]);
   err.tx = sqrt(tr.C22[i]);

@@ -5,6 +5,9 @@
 #ifndef L1TrackPar_h
 #define L1TrackPar_h 1
 
+#include <iomanip>
+#include <iostream>
+
 #include "L1Def.h"
 
 class L1TrackPar {

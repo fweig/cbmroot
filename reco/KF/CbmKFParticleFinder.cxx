@@ -191,15 +191,15 @@ void CbmKFParticleFinder::Exec(Option_t* /*opt*/)
       if (stsTrack->GetNofHits() < 3) continue;
 
       bool ok = 1;
-      ok      = ok && finite(parameters->GetX());
-      ok      = ok && finite(parameters->GetY());
-      ok      = ok && finite(parameters->GetZ());
-      ok      = ok && finite(parameters->GetTx());
-      ok      = ok && finite(parameters->GetTy());
-      ok      = ok && finite(parameters->GetQp());
+      ok      = ok && std::isfinite(parameters->GetX());
+      ok      = ok && std::isfinite(parameters->GetY());
+      ok      = ok && std::isfinite(parameters->GetZ());
+      ok      = ok && std::isfinite(parameters->GetTx());
+      ok      = ok && std::isfinite(parameters->GetTy());
+      ok      = ok && std::isfinite(parameters->GetQp());
 
       for (unsigned short iC = 0; iC < 15; iC++)
-        ok = ok && finite(V[iC]);
+        ok = ok && std::isfinite(V[iC]);
       ok = ok && (V[0] < 1. && V[0] > 0.) && (V[2] < 1. && V[2] > 0.) && (V[5] < 1. && V[5] > 0.)
            && (V[9] < 1. && V[9] > 0.) && (V[14] < 1. && V[14] > 0.);
       ok = ok && stsTrack->GetChiSq() < 10 * stsTrack->GetNDF();
