@@ -279,32 +279,32 @@ void L1Fit::EnergyLossCorrection(float atomicA, float rho, float radLen, L1Track
   //      T.qp  =    dqp;
   T.qp *= corr;
 
-  float P = fabs(1. / qp[0]);  // GeV
+  fvec P = fvec(fabs(1. / qp[0]));  // GeV
 
-  float Z   = atomicZ;
-  float A   = atomicA;
-  float RHO = rho;
+  fvec Z(atomicZ);
+  fvec A(atomicA);
+  fvec RHO(rho);
 
-  fvec STEP  = radThick * tr * radLen;
-  fvec EMASS = 0.511 * 1e-3;  // GeV
+  fvec STEP = radThick * tr * radLen;
+  fvec EMASS(0.511 * 1e-3);  // GeV
 
   fvec BETA  = P / sqrt(E2);
   fvec GAMMA = sqrt(E2) / fMass;
 
   // Calculate xi factor (KeV).
-  fvec XI = (153.5 * Z * STEP * RHO) / (A * BETA * BETA);
+  fvec XI = (fvec(153.5) * Z * STEP * RHO) / (A * BETA * BETA);
 
   // Maximum energy transfer to atomic electron (KeV).
   fvec ETA   = BETA * GAMMA;
   fvec ETASQ = ETA * ETA;
   fvec RATIO = EMASS / fMass;
-  fvec F1    = 2. * EMASS * ETASQ;
-  fvec F2    = 1. + 2. * RATIO * GAMMA + RATIO * RATIO;
-  fvec EMAX  = 1e6 * F1 / F2;
+  fvec F1    = fvec(2.) * EMASS * ETASQ;
+  fvec F2    = fvec(1.) + fvec(2.) * RATIO * GAMMA + RATIO * RATIO;
+  fvec EMAX  = fvec(1e6) * F1 / F2;
 
-  fvec DEDX2 = XI * EMAX * (1. - (BETA * BETA / 2.)) * 1e-12;
+  fvec DEDX2 = XI * EMAX * (fvec(1.) - (BETA * BETA / fvec(2.))) * fvec(1e-12);
 
-  float P2   = P * P;
+  fvec P2    = P * P;
   fvec SDEDX = ((E2) *DEDX2) / (P2 * P2 * P2);
 
 
@@ -456,15 +456,16 @@ void L1Fit::L1AddThickMaterial(L1TrackPar& T, fvec radThick, fvec qp0, fvec w, f
   fvec h2    = h * h;
   fvec qp0t  = qp0 * t;
 
-  cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f, c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
+  cnst c1(0.0136), c2 = c1 * fvec(0.038), c3 = c2 * fvec(0.5), c4 = -c3 / fvec(2.0), c5 = c3 / fvec(3.0),
+                   c6 = -c3 / fvec(4.0);
 
   fvec s0 = (c1 + c2 * log(radThick) + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
   //fvec a = ( (ONE+fMass2*qp0*qp0t)*radThick*s0*s0 );
   fvec a = ((t + fMass2 * qp0 * qp0t) * radThick * s0 * s0);
 
-  fvec D   = (fDownstream) ? 1. : -1.;
-  fvec T23 = (thickness * thickness) / 3.0;
-  fvec T2  = thickness / 2.0;
+  fvec D   = (fDownstream) ? fvec(1.) : fvec(-1.);
+  fvec T23 = (thickness * thickness) / fvec(3.0);
+  fvec T2  = thickness / fvec(2.0);
 
 
   T.C00 += w * txtx1 * a * T23;
@@ -495,11 +496,12 @@ void L1Fit::L1AddHalfMaterial(L1TrackPar& T, const L1MaterialInfo& info, fvec qp
   fvec h2    = h * h;
   fvec qp0t  = qp0 * t;
 
-  cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f, c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
+  cnst c1(0.0136), c2 = c1 * fvec(0.038), c3 = c2 * fvec(0.5), c4 = -c3 / fvec(2.0), c5 = c3 / fvec(3.0),
+                   c6 = -c3 / fvec(4.0);
 
-  fvec s0 = (c1 + c2 * (info.logRadThick + log(0.5)) + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
+  fvec s0 = (c1 + c2 * (info.logRadThick + fvec(log(0.5))) + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
   //fvec a = ( (ONE+fMass2*qp0*qp0t)*info.RadThick*0.5*s0*s0 );
-  fvec a = ((t + fMass2 * qp0 * qp0t) * info.RadThick * 0.5 * s0 * s0);
+  fvec a = ((t + fMass2 * qp0 * qp0t) * info.RadThick * fvec(0.5) * s0 * s0);
 
   T.C22 += txtx1 * a;
   T.C32 += tx * ty * a;

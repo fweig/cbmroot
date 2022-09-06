@@ -170,17 +170,17 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
         stam = staf - 1;
 
       fvec zm = frAlgo.GetParameters()->GetStation(stam).z;
-      fvec xm = 0.5 * (Tf.x + Tf.tx * (zm - Tf.z) + Tb.x + Tb.tx * (zm - Tb.z));
-      fvec ym = 0.5 * (Tf.y + Tf.ty * (zm - Tf.z) + Tb.y + Tb.ty * (zm - Tb.z));
+      fvec xm = fvec(0.5) * (Tf.x + Tf.tx * (zm - Tf.z) + Tb.x + Tb.tx * (zm - Tb.z));
+      fvec ym = fvec(0.5) * (Tf.y + Tf.ty * (zm - Tf.z) + Tb.y + Tb.ty * (zm - Tb.z));
       frAlgo.GetParameters()->GetStation(stam).fieldSlice.GetFieldValue(xm, ym, fBm);
       fld.Set(fBb, Tb.z, fBm, zm, fBf, Tf.z);
 
-      fvec zMiddle = 0.5 * (Tb.z + Tf.z);
+      fvec zMiddle = fvec(0.5) * (Tb.z + Tf.z);
 
       L1Extrapolate(Tf, zMiddle, Tf.qp, fld);
       L1Extrapolate(Tb, zMiddle, Tb.qp, fld);
 
-      fvec Chi2Tracks = 0.f;
+      fvec Chi2Tracks(0.);
       FilterTracks(&(Tf.x), &(Tf.C00), &(Tb.x), &(Tb.C00), 0, 0, &Chi2Tracks);
       if (Chi2Tracks[0] > 50) continue;
 

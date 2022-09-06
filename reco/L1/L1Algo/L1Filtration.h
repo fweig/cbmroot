@@ -256,7 +256,7 @@ inline void L1FilterChi2XYC00C10C11(const L1UMeasurementInfo& info, fvec& x, fve
 
   HCH = (F0 * info.cos_phi + F1 * info.sin_phi);
 
-  wi     = 1. / (info.sigma2 + HCH);
+  wi     = fvec(1.) / (info.sigma2 + HCH);
   zetawi = zeta * wi;
   chi2 += zeta * zetawi;
 
@@ -273,7 +273,7 @@ inline void L1FilterChi2XYC00C10C11(const L1UMeasurementInfo& info, fvec& x, fve
 inline void L1FilterVtx(L1TrackPar& T, fvec x, fvec y, const L1XYMeasurementInfo& info, fvec extrDx, fvec extrDy,
                         fvec J[])
 {
-  cnst TWO = 2.;
+  cnst TWO(2.);
 
   fvec zeta0, zeta1, S00, S10, S11, si;
   fvec F00, F10, F20, F30, F40, F01, F11, F21, F31, F41;
@@ -304,14 +304,14 @@ inline void L1FilterVtx(L1TrackPar& T, fvec x, fvec y, const L1XYMeasurementInfo
   S10 = info.C10 + F10 + J[3] * F20 + J[4] * F30 + J[5] * F40;
   S11 = info.C11 + F11 + J[3] * F21 + J[4] * F31 + J[5] * F41;
 
-  si = 1. / (S00 * S11 - S10 * S10);
+  si = fvec(1.) / (S00 * S11 - S10 * S10);
   //si = fvec(rcp(fvec((S00*S11 - S10*S10)[0])));
   fvec S00tmp = S00;
   S00         = si * S11;
   S10         = -si * S10;
   S11         = si * S00tmp;
 
-  T.chi2 += zeta0 * zeta0 * S00 + 2. * zeta0 * zeta1 * S10 + zeta1 * zeta1 * S11;
+  T.chi2 += zeta0 * zeta0 * S00 + fvec(2.) * zeta0 * zeta1 * S10 + zeta1 * zeta1 * S11;
   T.NDF += TWO;
 
   K00 = F00 * S00 + F01 * S10;

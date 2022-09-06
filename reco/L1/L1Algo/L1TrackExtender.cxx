@@ -67,9 +67,9 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   auto [x2, y2] = sta2.ConvUVtoXY<fvec>(u2, v2);
   //  fvec z2 = hit2.z;
 
-  fvec dzi = 1. / (z1 - z0);
+  fvec dzi = fvec(1.) / (z1 - z0);
 
-  const fvec vINF = .1;
+  const fvec vINF = fvec(.1);
   T.x             = x0;
   T.y             = y0;
   if (initParams) {
@@ -82,8 +82,8 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   T.t = hit0.t;
 
   // T.t[0]=(hit0.t+hit1.t+hit2.t)/3;
-  T.chi2 = 0.;
-  T.NDF  = 2.;
+  T.chi2 = fvec(0.);
+  T.NDF  = fvec(2.);
   T.C00  = sta0.XYInfo.C00;
   T.C10  = sta0.XYInfo.C10;
   T.C11  = sta0.XYInfo.C11;

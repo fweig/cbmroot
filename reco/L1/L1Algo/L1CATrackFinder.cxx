@@ -224,14 +224,14 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     T.ty = ty;
     T.t  = time;
 
-    T.qp  = 0.;
-    T.C20 = T.C21 = 0;
-    T.C30 = T.C31 = T.C32 = 0;
-    T.C40 = T.C41 = T.C42 = T.C43 = 0;
-    T.C50 = T.C51 = T.C52 = T.C53 = T.C54 = 0;
-    T.C22 = T.C33 = fMaxSlopePV * fMaxSlopePV / 9.;
+    T.qp  = fvec(0.);
+    T.C20 = T.C21 = fvec(0.);
+    T.C30 = T.C31 = T.C32 = fvec(0.);
+    T.C40 = T.C41 = T.C42 = T.C43 = fvec(0.);
+    T.C50 = T.C51 = T.C52 = T.C53 = T.C54 = fvec(0.);
+    T.C22 = T.C33 = fMaxSlopePV * fMaxSlopePV / fvec(9.);
     if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) T.C22 = T.C33 = 10;
-    T.C44 = fMaxInvMom / 3. * fMaxInvMom / 3.;
+    T.C44 = fMaxInvMom / fvec(3.) * fMaxInvMom / fvec(3.);
     T.C55 = timeEr * timeEr;
 
     if (fParameters.DevIsFitSingletsFromTarget()) {  // TODO: doesn't work. Why?

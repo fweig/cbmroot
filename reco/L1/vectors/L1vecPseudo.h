@@ -119,7 +119,7 @@ public:
 
   fscal v[fmask::Size];
 
-  fvec() : fvec(0.f) {}
+  fvec() : fvec(0.) {}
 
   fvec(const fvec& a)
   {
@@ -235,22 +235,11 @@ public:
 
   friend fvec operator-(const fvec& a) { return fvec(0) - a; }
   friend fvec operator+(const fvec& a) { return a; }
-  friend fvec operator+(const fvec& a, const fscal& b) { return a + fvec(b); }
-  friend fvec operator-(const fvec& a, const fscal& b) { return a - fvec(b); }
-  friend fvec operator*(const fvec& a, const fscal& b) { return a * fvec(b); }
-  friend fvec operator/(const fvec& a, const fscal& b) { return a / fvec(b); }
-  friend fvec operator+(const fscal& a, const fvec& b) { return fvec(a) + b; }
-  friend fvec operator-(const fscal& a, const fvec& b) { return fvec(a) - b; }
-  friend fvec operator*(const fscal& a, const fvec& b) { return fvec(a) * b; }
-  friend fvec operator/(const fscal& a, const fvec& b) { return fvec(a) / b; }
+
   friend void operator+=(fvec& a, const fvec& b) { a = a + b; }
   friend void operator-=(fvec& a, const fvec& b) { a = a - b; }
   friend void operator*=(fvec& a, const fvec& b) { a = a * b; }
   friend void operator/=(fvec& a, const fvec& b) { a = a / b; }
-  friend void operator+=(fvec& a, const fscal& b) { a = a + b; }
-  friend void operator-=(fvec& a, const fscal& b) { a = a - b; }
-  friend void operator*=(fvec& a, const fscal& b) { a = a * b; }
-  friend void operator/=(fvec& a, const fscal& b) { a = a / b; }
 
   friend std::ostream& operator<<(std::ostream& strm, const fvec& a)
   {
@@ -272,9 +261,7 @@ public:
 
 } __attribute__((aligned(16)));
 
-
 #define _fvecalignment __attribute__((aligned(fvec::size() * sizeof(fscal))))
 
-#include "std_alloc.h"
 
 #endif

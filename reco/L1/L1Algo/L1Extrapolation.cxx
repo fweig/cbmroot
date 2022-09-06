@@ -110,16 +110,18 @@ void L1ExtrapolateAnalytic(L1TrackPar& T,  // input track parameters (x,y,tx,ty,
 
   fvec syz;
   {
-    cnst d = 1. / 360., c00 = 30. * 6. * d, c01 = 30. * 2. * d, c02 = 30. * d, c10 = 3. * 40. * d, c11 = 3. * 15. * d,
-         c12 = 3. * 8. * d, c20 = 2. * 45. * d, c21 = 2. * 2. * 9. * d, c22 = 2. * 2. * 5. * d;
+    constexpr double d = 1. / 360.;
+    cnst c00(30. * 6. * d), c01(30. * 2. * d), c02(30. * d), c10(3. * 40. * d), c11(3. * 15. * d), c12(3. * 8. * d),
+      c20(2. * 45. * d), c21(2. * 2. * 9. * d), c22(2. * 2. * 5. * d);
     syz = Fy0 * (c00 * Fz0 + c01 * Fz1 + c02 * Fz2) + Fy1 * (c10 * Fz0 + c11 * Fz1 + c12 * Fz2)
           + Fy2 * (c20 * Fz0 + c21 * Fz1 + c22 * Fz2);
   }
 
   fvec Syz;
   {
-    cnst d = 1. / 2520., c00 = 21. * 20. * d, c01 = 21. * 5. * d, c02 = 21. * 2. * d, c10 = 7. * 30. * d,
-         c11 = 7. * 9. * d, c12 = 7. * 4. * d, c20 = 2. * 63. * d, c21 = 2. * 21. * d, c22 = 2. * 10. * d;
+    constexpr double d = 1. / 2520.;
+    cnst c00(21. * 20. * d), c01(21. * 5. * d), c02(21. * 2. * d), c10(7. * 30. * d), c11(7. * 9. * d),
+      c12(7. * 4. * d), c20(2. * 63. * d), c21(2. * 21. * d), c22(2. * 10. * d);
     Syz = Fy0 * (c00 * Fz0 + c01 * Fz1 + c02 * Fz2) + Fy1 * (c10 * Fz0 + c11 * Fz1 + c12 * Fz2)
           + Fy2 * (c20 * Fz0 + c21 * Fz1 + c22 * Fz2);
   }
@@ -129,15 +131,16 @@ void L1ExtrapolateAnalytic(L1TrackPar& T,  // input track parameters (x,y,tx,ty,
 
   fvec Syy;
   {
-    cnst d = 1. / 2520., c00 = 420. * d, c01 = 21. * 15. * d, c02 = 21. * 8. * d, c03 = 63. * d, c04 = 70. * d,
-         c05 = 20. * d;
-    Syy      = Fy0 * (c00 * Fy0 + c01 * Fy1 + c02 * Fy2) + Fy1 * (c03 * Fy1 + c04 * Fy2) + c05 * Fy2 * Fy2;
+    constexpr double d = 1. / 2520.;
+    cnst c00(420. * d), c01(21. * 15. * d), c02(21. * 8. * d), c03(63. * d), c04(70. * d), c05(20. * d);
+    Syy = Fy0 * (c00 * Fy0 + c01 * Fy1 + c02 * Fy2) + Fy1 * (c03 * Fy1 + c04 * Fy2) + c05 * Fy2 * Fy2;
   }
 
   fvec Syyy;
   {
-    cnst d = 1. / 181440., c000 = 7560 * d, c001 = 9 * 1008 * d, c002 = 5 * 1008 * d, c011 = 21 * 180 * d,
-         c012 = 24 * 180 * d, c022 = 7 * 180 * d, c111 = 540 * d, c112 = 945 * d, c122 = 560 * d, c222 = 112 * d;
+    constexpr double d = 1. / 181440.;
+    cnst c000(7560 * d), c001(9 * 1008 * d), c002(5 * 1008 * d), c011(21 * 180 * d), c012(24 * 180 * d),
+      c022(7 * 180 * d), c111(540 * d), c112(945 * d), c122(560 * d), c222(112 * d);
     const fvec Fy22 = Fy2 * Fy2;
     Syyy = Fy0 * (Fy0 * (c000 * Fy0 + c001 * Fy1 + c002 * Fy2) + Fy1 * (c011 * Fy1 + c012 * Fy2) + c022 * Fy22)
            + Fy1 * (Fy1 * (c111 * Fy1 + c112 * Fy2) + c122 * Fy22) + c222 * Fy22 * Fy2;
@@ -686,13 +689,13 @@ void L1ExtrapolateTime(L1TrackPar& T,  // input track parameters (x,y,tx,ty,Q/p)
                        fvec dz,        // extrapolate to this z position
                        fvec timeInfo)
 {
-  cnst c_light = 29.9792458;
+  cnst c_light(29.9792458);
   dz.setZero(timeInfo <= fvec::Zero());
 
   T.t += dz * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1) / c_light;
 
-  const fvec k1 = dz * T.tx / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1.));
-  const fvec k2 = dz * T.ty / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1.));
+  const fvec k1 = dz * T.tx / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + fvec(1.)));
+  const fvec k2 = dz * T.ty / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + fvec(1.)));
 
   fvec c52 = T.C52;
   fvec c53 = T.C53;
@@ -809,23 +812,25 @@ void L1ExtrapolateJXY  // is not used currently
 
   fvec Syz;
   {
-    cnst d = 1. / 2520., c00 = 21. * 20. * d, c01 = 21. * 5. * d, c02 = 21. * 2. * d, c10 = 7. * 30. * d,
-         c11 = 7. * 9. * d, c12 = 7. * 4. * d, c20 = 2. * 63. * d, c21 = 2. * 21. * d, c22 = 2. * 10. * d;
+    constexpr double d = 1. / 2520.;
+    cnst c00(21. * 20. * d), c01(21. * 5. * d), c02(21. * 2. * d), c10(7. * 30. * d), c11(7. * 9. * d),
+      c12(7. * 4. * d), c20(2. * 63. * d), c21(2. * 21. * d), c22(2. * 10. * d);
     Syz = Fy0 * (c00 * Fz0 + c01 * Fz1 + c02 * Fz2) + Fy1 * (c10 * Fz0 + c11 * Fz1 + c12 * Fz2)
           + Fy2 * (c20 * Fz0 + c21 * Fz1 + c22 * Fz2);
   }
 
   fvec Syy;
   {
-    cnst d = 1. / 2520., c00 = 420. * d, c01 = 21. * 15. * d, c02 = 21. * 8. * d, c03 = 63. * d, c04 = 70. * d,
-         c05 = 20. * d;
-    Syy      = Fy0 * (c00 * Fy0 + c01 * Fy1 + c02 * Fy2) + Fy1 * (c03 * Fy1 + c04 * Fy2) + c05 * Fy2 * Fy2;
+    constexpr double d = 1. / 2520.;
+    cnst c00(420. * d), c01(21. * 15. * d), c02(21. * 8. * d), c03(63. * d), c04(70. * d), c05(20. * d);
+    Syy = Fy0 * (c00 * Fy0 + c01 * Fy1 + c02 * Fy2) + Fy1 * (c03 * Fy1 + c04 * Fy2) + c05 * Fy2 * Fy2;
   }
 
   fvec Syyy;
   {
-    cnst d = 1. / 181440., c000 = 7560 * d, c001 = 9 * 1008 * d, c002 = 5 * 1008 * d, c011 = 21 * 180 * d,
-         c012 = 24 * 180 * d, c022 = 7 * 180 * d, c111 = 540 * d, c112 = 945 * d, c122 = 560 * d, c222 = 112 * d;
+    constexpr double d = 1. / 181440.;
+    cnst c000(7560 * d), c001(9 * 1008 * d), c002(5 * 1008 * d), c011(21 * 180 * d), c012(24 * 180 * d),
+      c022(7 * 180 * d), c111(540 * d), c112(945 * d), c122(560 * d), c222(112 * d);
     fvec Fy22 = Fy2 * Fy2;
     Syyy      = Fy0 * (Fy0 * (c000 * Fy0 + c001 * Fy1 + c002 * Fy2) + Fy1 * (c011 * Fy1 + c012 * Fy2) + c022 * Fy22)
            + Fy1 * (Fy1 * (c111 * Fy1 + c112 * Fy2) + c122 * Fy22) + c222 * Fy22 * Fy2;

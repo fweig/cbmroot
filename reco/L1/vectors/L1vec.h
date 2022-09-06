@@ -8,4 +8,6 @@
 #include "vectors/L1vecVc.h"
 //#include "vectors/L1vecPseudo.h"
 
+#include "std_alloc.h"
+
 #endif

@@ -13,19 +13,4 @@ typedef Vc::float_m fmask;
 
 #define _fvecalignment __attribute__((aligned(Vc::VectorAlignment)))
 
-inline fvec operator*(fscal a, const fvec& b) { return fvec(a) * b; }
-inline fvec operator*(const fvec& a, fscal b) { return a * fvec(b); }
-
-inline fvec operator/(fscal a, const fvec& b) { return fvec(a) / b; }
-inline fvec operator/(const fvec& a, fscal b) { return a / fvec(b); }
-
-inline fvec operator+(fscal a, const fvec& b) { return fvec(a) + b; }
-inline fvec operator+(const fvec& a, fscal b) { return a + fvec(b); }
-
-inline fvec operator-(fscal a, const fvec& b) { return fvec(a) - b; }
-inline fvec operator-(const fvec& a, fscal b) { return a - fvec(b); }
-
-#include "std_alloc.h"
-
-
 #endif

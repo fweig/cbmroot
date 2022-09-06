@@ -395,9 +395,9 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
       sHit.S2 = sHit.lx * sHit.ly;
       sHit.S3 = sHit.lx * lr2;
       sHit.S4 = sHit.ly * lr2;
-      sHit.C  = -lr * .5;
+      sHit.C  = -lr * fvec(.5);
 
-      const fvec w  = iif(validHit, iif(lr > fvec(1.E-4), 1. / lr, fvec::One()), fvec::Zero());
+      const fvec w  = iif(validHit, iif(lr > fvec(1.E-4), fvec(1.) / lr, fvec::One()), fvec::Zero());
       const fvec w2 = w * w;
       sHit.Cx       = w * sHit.lx;
       sHit.Cy       = w * sHit.ly;
@@ -423,7 +423,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
       fvec tmp = S0 * S1 - S2 * S2;
 
       //      if( fabs(tmp) < 1.E-10 ) break; // CHECKME
-      tmp = 0.5 / tmp;
+      tmp = fvec(0.5) / tmp;
       X   = (S3 * S1 - S4 * S2) * tmp;
       Y   = (S4 * S0 - S3 * S2) * tmp;
       R2  = X * X + Y * Y;
@@ -431,7 +431,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
 
       const fvec Dcut = Dmax * Rejection;  // cut for noise hits
         //      float RingCut   = HitSize4 * R ; // closeness
-      S0 = S1 = S2 = S3 = S4 = 0.0;
+      S0 = S1 = S2 = S3 = S4 = fvec::Zero();
       Dmax                   = -1.;
 
       for (THitIndex ih = 0; ih < MaxSearchAreaSize; ih++) {
@@ -446,7 +446,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
         const fvec dp       = iif(sHit.on_ring, fvec(-1.), abs(sHit.C + sHit.Cx * X + sHit.Cy * Y));
         Dmax                = iif(((dp <= Dcut) & (dp > Dmax)), dp, Dmax);
 
-        fvec w = iif((sHit.on_ring), 1. / (HitSizeSq_v + abs(dSq)), 1. / (1.e-5 + abs(dSq)));
+        fvec w = iif((sHit.on_ring), fvec(1.) / (HitSizeSq_v + abs(dSq)), fvec(1.) / (fvec(1.e-5) + abs(dSq)));
         w      = iif((dp <= Dcut) & validHit, w, fvec::Zero());
         S0 += w * sHit.S0;
         S1 += w * sHit.S1;
@@ -487,8 +487,8 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
       //        if( fabs(s0) < 1.E-6 || fabs(s1) < 1.E-6 ) continue; // CHECKME
       const fvec tmp = s1 * (S5 * S5 - NRingHits * S0) + s0 * s0;
       const fvec A   = ((S0 * S7 - S3 * S5) * s1 - s2 * s0) / tmp;
-      Y              = (s2 + s0 * A) / s1 * 0.5;
-      X              = (S3 + S5 * A - S2 * Y * 2) / S0 * 0.5;
+      Y              = (s2 + s0 * A) / s1 * fvec(0.5);
+      X              = (S3 + S5 * A - S2 * Y * 2) / S0 * fvec(0.5);
       R2             = X * X + Y * Y - A;
       // if( R2 < 0 ) continue; // will be rejected letter by R2 > R2Min
       R = sqrt(R2);

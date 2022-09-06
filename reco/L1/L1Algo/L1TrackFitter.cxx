@@ -19,10 +19,10 @@ using std::vector;
 
 namespace NS_L1TrackFitter
 {
-  const fvec c_light = 0.000299792458, c_light_i = 1. / c_light;
-  const fvec ZERO = 0.;
-  const fvec ONE  = 1.;
-  const fvec vINF = 0.1;
+  const fvec c_light(0.000299792458), c_light_i(fvec(1.) / c_light);
+  const fvec ZERO(0.);
+  const fvec ONE(1.);
+  const fvec vINF(0.1);
 }  // namespace NS_L1TrackFitter
 using namespace NS_L1TrackFitter;
 
@@ -81,7 +81,7 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         auto [x2, y2] = sta1.ConvUVtoXY<fvec>(u2, v2);
         // fvec z2 = hit2.z;
 
-        fvec dzi = 1. / (z1 - z0);
+        fvec dzi = fvec(1.) / (z1 - z0);
 
         //        const fvec vINF = .1;
         T.x = x0;
@@ -1470,7 +1470,7 @@ void L1Algo::GuessVec(L1TrackPar& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fve
   fvec L, L1;
   t.x        = (Ai0 * a0 + Ai1 * a1 + Ai3 * a2) * det;
   t.tx       = (Ai1 * a0 + Ai2 * a1 + Ai4 * a2) * det;
-  fvec txtx1 = 1. + t.tx * t.tx;
+  fvec txtx1 = fvec(1.) + t.tx * t.tx;
   L          = (Ai3 * a0 + Ai4 * a1 + Ai5 * a2) * det / txtx1;
   L1         = L * t.tx;
   A1         = A1 + A3 * L1;
@@ -1545,7 +1545,7 @@ void L1Algo::GuessVec(L1TrackParFit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, 
   fvec L, L1;
   t.fx       = (Ai0 * a0 + Ai1 * a1 + Ai3 * a2) * det;
   t.ftx      = (Ai1 * a0 + Ai2 * a1 + Ai4 * a2) * det;
-  fvec txtx1 = 1. + t.ftx * t.ftx;
+  fvec txtx1 = fvec(1.) + t.ftx * t.ftx;
   L          = (Ai3 * a0 + Ai4 * a1 + Ai5 * a2) * det / txtx1;
   L1         = L * t.ftx;
   A1         = A1 + A3 * L1;

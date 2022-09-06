@@ -48,10 +48,10 @@ using std::vector;
 
 namespace NS_L1TrackFitter
 {
-  const fvec c_light = 0.000299792458, c_light_i = 1. / c_light;
-  const fvec ZERO = 0.;
-  const fvec ONE  = 1.;
-  const fvec vINF = 0.1;
+  const fvec c_light(0.000299792458), c_light_i = fvec(1.) / c_light;
+  const fvec ZERO = fvec(0.);
+  const fvec ONE  = fvec(1.);
+  const fvec vINF = fvec(0.1);
 }  // namespace NS_L1TrackFitter
 using namespace NS_L1TrackFitter;
 
@@ -498,7 +498,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
 
     for (int iSt = nStations - 4; iSt >= 0; iSt--) {
 
-      fvec w = iif(T.z > (zSta[iSt] + 2.5), fvec::One(), fvec::Zero());
+      fvec w = iif(T.z > (zSta[iSt] + fvec(2.5)), fvec::One(), fvec::Zero());
 
       L1Extrapolate(T, zSta[iSt], T.qp, fld, &w);
       if (iSt == NMvdStations - 1) {
@@ -518,14 +518,14 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
 
     Double_t Cv[3] = {primVtx.GetCovMatrix()[0], primVtx.GetCovMatrix()[1], primVtx.GetCovMatrix()[2]};
 
-    fvec dx   = T.x - primVtx.GetRefX();
-    fvec dy   = T.y - primVtx.GetRefY();
+    fvec dx   = T.x - fvec(primVtx.GetRefX());
+    fvec dy   = T.y - fvec(primVtx.GetRefY());
     fvec c[3] = {T.C00, T.C10, T.C11};
     c[0] += fvec(Cv[0]);
     c[1] += fvec(Cv[1]);
     c[2] += fvec(Cv[2]);
     fvec d   = c[0] * c[2] - c[1] * c[1];
-    fvec chi = sqrt(abs(0.5 * (dx * dx * c[0] - 2 * dx * dy * c[1] + dy * dy * c[2]) / d));
+    fvec chi = sqrt(abs(fvec(0.5) * (dx * dx * c[0] - fvec(2.) * dx * dy * c[1] + dy * dy * c[2]) / d));
     chi.setZero(abs(d) < fvec(1.e-20));
 
     for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {

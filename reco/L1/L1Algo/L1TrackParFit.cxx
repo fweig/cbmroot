@@ -225,10 +225,10 @@ void L1TrackParFit::ExtrapolateLine(fvec z_out, fvec* w)
   fx += dz * ftx;
   fy += dz * fty;
   fz += dz;
-  ft += dz * sqrt(1. + ftx * ftx + fty * fty) / c_light;
+  ft += dz * sqrt(fvec(1.) + ftx * ftx + fty * fty) / c_light;
 
-  const fvec k1 = dz * ftx / (c_light * sqrt(ftx * ftx + fty * fty + 1.));
-  const fvec k2 = dz * fty / (c_light * sqrt(ftx * ftx + fty * fty + 1.));
+  const fvec k1 = dz * ftx / (c_light * sqrt(ftx * ftx + fty * fty + fvec(1.)));
+  const fvec k2 = dz * fty / (c_light * sqrt(ftx * ftx + fty * fty + fvec(1.)));
 
   const fvec dzC32_in = dz * C32;
 
@@ -263,7 +263,7 @@ void L1TrackParFit::ExtrapolateLine(fvec z_out, fvec* w)
 void L1TrackParFit::ExtrapolateLine1(fvec z_out, fvec* w, fvec v)
 {
 
-  cnst c_light = 29.9792458;
+  cnst c_light(29.9792458);
 
   fvec dz = (z_out - fz);
   if (w) { dz.setZero(*w <= fvec::Zero()); }
@@ -272,10 +272,10 @@ void L1TrackParFit::ExtrapolateLine1(fvec z_out, fvec* w, fvec v)
   fy += dz * fty;
   fz += dz;
 
-  ft += dz * sqrt(1. + ftx * ftx + fty * fty) / (v * c_light);
+  ft += dz * sqrt(fvec(1.) + ftx * ftx + fty * fty) / (v * c_light);
 
-  const fvec k1 = dz * ftx / ((v * c_light) * sqrt(ftx * ftx + fty * fty + 1.));
-  const fvec k2 = dz * fty / ((v * c_light) * sqrt(ftx * ftx + fty * fty + 1.));
+  const fvec k1 = dz * ftx / ((v * c_light) * sqrt(ftx * ftx + fty * fty + fvec(1.)));
+  const fvec k2 = dz * fty / ((v * c_light) * sqrt(ftx * ftx + fty * fty + fvec(1.)));
 
   const fvec dzC32_in = dz * C32;
 
@@ -741,15 +741,16 @@ void L1TrackParFit::L1AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thi
   fvec h2    = h * h;
   fvec qp0t  = qp0 * t;
 
-  cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f, c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
+  cnst c1(0.0136), c2 = c1 * fvec(0.038), c3 = c2 * fvec(0.5), c4 = -c3 / fvec(2.0), c5 = c3 / fvec(3.0),
+                   c6 = -c3 / fvec(4.0);
 
   fvec s0 = (c1 + c2 * log(radThick) + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
   //fvec a = ( (ONE+mass2*qp0*qp0t)*radThick*s0*s0 );
   fvec a = ((t + fMass2 * qp0 * qp0t) * radThick * s0 * s0);
 
-  fvec D   = (fDownstream) ? 1. : -1.;
-  fvec T23 = (thickness * thickness) / 3.0;
-  fvec T2  = thickness / 2.0;
+  fvec D   = (fDownstream) ? fvec(1.) : fvec(-1.);
+  fvec T23 = (thickness * thickness) / fvec(3.0);
+  fvec T2  = thickness / fvec(2.0);
 
   C00 += w * txtx1 * a * T23;
   C10 += w * tx * ty * a * T23;
@@ -845,33 +846,33 @@ void L1TrackParFit::EnergyLossCorrection(float atomicA, float rho, float radLen,
   qp0 *= corr;
   fqp *= corr;
 
-  float P = fabs(1. / qp0[0]);  // GeV
+  fvec P(fabs(1. / qp0[0]));  // GeV
 
-  float Z   = atomicZ;
-  float A   = atomicA;
-  float RHO = rho;
+  fvec Z(atomicZ);
+  fvec A(atomicA);
+  fvec RHO(rho);
 
-  fvec STEP  = radThick * tr * radLen;
-  fvec EMASS = 0.511 * 1e-3;  // GeV
+  fvec STEP = radThick * tr * radLen;
+  fvec EMASS(0.511 * 1e-3);  // GeV
 
   fvec BETA  = P / sqrt(E2Corrected);
   fvec GAMMA = sqrt(E2Corrected) / fMass;
 
   // Calculate xi factor (KeV).
-  fvec XI = (153.5 * Z * STEP * RHO) / (A * BETA * BETA);
+  fvec XI = (fvec(153.5) * Z * STEP * RHO) / (A * BETA * BETA);
 
   // Maximum energy transfer to atomic electron (KeV).
   fvec ETA   = BETA * GAMMA;
   fvec ETASQ = ETA * ETA;
   fvec RATIO = EMASS / fMass;
-  fvec F1    = 2. * EMASS * ETASQ;
-  fvec F2    = 1. + 2. * RATIO * GAMMA + RATIO * RATIO;
-  fvec EMAX  = 1e6 * F1 / F2;
+  fvec F1    = fvec(2.) * EMASS * ETASQ;
+  fvec F2    = fvec(1.) + fvec(2.) * RATIO * GAMMA + RATIO * RATIO;
+  fvec EMAX  = fvec(1e6) * F1 / F2;
 
-  fvec DEDX2 = XI * EMAX * (1. - (BETA * BETA / 2.)) * 1e-12;
+  fvec DEDX2 = XI * EMAX * (fvec(1.) - (BETA * BETA / fvec(2.))) * fvec(1e-12);
 
-  float P2   = P * P;
-  fvec SDEDX = ((E2) *DEDX2) / (P2 * P2 * P2);
+  fvec P2    = P * P;
+  fvec SDEDX = (E2 * DEDX2) / (P2 * P2 * P2);
 
   //   T.C40 *= corr;
   //   T.C41 *= corr;
