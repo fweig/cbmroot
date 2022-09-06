@@ -67,26 +67,9 @@ void L1FieldSlice::CheckConsistency() const
 {
   /* Check SIMD data vectors for consistent initialization */
   for (int i = 0; i < L1Constants::size::kMaxNFieldApproxCoefficients; ++i) {
-    if (!IsHorizontallyEqual(cx[i])) {
-      std::stringstream msg;
-      msg << "L1FieldSlice: \"cx[" << i
-          << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cx[i];
-      throw std::logic_error(msg.str());
-    }
-
-    if (!IsHorizontallyEqual(cy[i])) {
-      std::stringstream msg;
-      msg << "L1FieldSlice: \"cy[" << i
-          << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cy[i];
-      throw std::logic_error(msg.str());
-    }
-
-    if (!IsHorizontallyEqual(cz[i])) {
-      std::stringstream msg;
-      msg << "L1FieldSlice: \"cz[" << i
-          << "]\" SIMD vector is inconsistent not all of the words are equal each other: " << cz[i];
-      throw std::logic_error(msg.str());
-    }
+    L1Utils::CheckSimdVectorEquality(cx[i], "L1FieldSlice: cx");
+    L1Utils::CheckSimdVectorEquality(cy[i], "L1FieldSlice: cy");
+    L1Utils::CheckSimdVectorEquality(cz[i], "L1FieldSlice: cz");
   }
 }
 
