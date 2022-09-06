@@ -283,8 +283,8 @@ void CbmKFParticleFinder::Exec(Option_t* /*opt*/)
     fitter.CalculateFieldRegionAtLastPoint(vRTracks, vFieldAtLastPoint);
     vector<KFFieldVector> vFieldVector(ntracks), vFieldVectorAtLastPoint(ntracks);
     for (Int_t iTr = 0; iTr < ntracks; iTr++) {
-      int entrSIMD                = iTr % fvecLen;
-      int entrVec                 = iTr / fvecLen;
+      int entrSIMD                = iTr % fvec::size();
+      int entrVec                 = iTr / fvec::size();
       vFieldVector[iTr].fField[0] = vField[entrVec].cx0[entrSIMD];
       vFieldVector[iTr].fField[1] = vField[entrVec].cx1[entrSIMD];
       vFieldVector[iTr].fField[2] = vField[entrVec].cx2[entrSIMD];
@@ -297,8 +297,8 @@ void CbmKFParticleFinder::Exec(Option_t* /*opt*/)
       vFieldVector[iTr].fField[9] = vField[entrVec].z0[entrSIMD];
     }
     for (Int_t iTr = 0; iTr < ntracks; iTr++) {
-      int entrSIMD                           = iTr % fvecLen;
-      int entrVec                            = iTr / fvecLen;
+      int entrSIMD                           = iTr % fvec::size();
+      int entrVec                            = iTr / fvec::size();
       vFieldVectorAtLastPoint[iTr].fField[0] = vFieldAtLastPoint[entrVec].cx0[entrSIMD];
       vFieldVectorAtLastPoint[iTr].fField[1] = vFieldAtLastPoint[entrVec].cx1[entrSIMD];
       vFieldVectorAtLastPoint[iTr].fField[2] = vFieldAtLastPoint[entrVec].cx2[entrSIMD];

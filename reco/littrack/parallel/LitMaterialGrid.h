@@ -154,7 +154,7 @@ namespace lit
       {
         fvec v;
         // Get material thickness for each packed value
-        for (unsigned int i = 0; i < fvecLen; i++) {
+        for (size_t i = 0; i < fvec::size(); i++) {
           v[i] = GetMaterial(x[i], y[i]);
         }
         return v;

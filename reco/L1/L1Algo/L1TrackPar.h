@@ -328,16 +328,16 @@ inline bool L1TrackPar::IsEntryConsistent(bool printWhenWrong, int k) const
 
 inline bool L1TrackPar::IsConsistent(bool printWhenWrong, int nFilled) const
 {
-  assert(nFilled <= fvecLen);
+  assert(nFilled <= (int) fvec::size());
   bool ok = true;
-  if (nFilled < 0) { nFilled = fvecLen; }
+  if (nFilled < 0) { nFilled = fvec::size(); }
   for (int i = 0; i < nFilled; ++i) {
     ok = ok && IsEntryConsistent(printWhenWrong, i);
   }
 
   if (!ok && printWhenWrong) {
     std::cout << "L1TrackPar parameters are not consistent: " << std::endl;
-    if (nFilled == fvecLen) { std::cout << "  All vector elements are filled " << std::endl; }
+    if (nFilled == (int) fvec::size()) { std::cout << "  All vector elements are filled " << std::endl; }
     else {
       std::cout << "  Only first " << nFilled << " vector elements are filled " << std::endl;
     }

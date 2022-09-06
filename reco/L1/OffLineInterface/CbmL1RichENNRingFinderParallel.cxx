@@ -145,15 +145,15 @@ Int_t CbmL1RichENNRingFinderParallel::DoFind(CbmEvent* event, TClonesArray* HitA
   // save local-out indices correspondece
   nsL1vector<ENNHitV>::TSimd UpV;
   nsL1vector<ENNHitV>::TSimd DownV;
-  UpV.resize((Up.size() + fvecLen - 1) / fvecLen);
-  DownV.resize((Down.size() + fvecLen - 1) / fvecLen);
+  UpV.resize((Up.size() + fvec::size() - 1) / fvec::size());
+  DownV.resize((Down.size() + fvec::size() - 1) / fvec::size());
   for (THitIndex k = 0; k < Up.size(); k++) {
-    int k_4 = k % fvecLen, k_V = k / fvecLen;
+    int k_4 = k % fvec::size(), k_V = k / fvec::size();
     ENNHitV& hits = UpV[k_V];  // TODO change on ENNHitV
     hits.CopyHit(Up[k], k_4);
   }
   for (THitIndex k = 0; k < Down.size(); k++) {
-    int k_4 = k % fvecLen, k_V = k / fvecLen;
+    int k_4 = k % fvec::size(), k_V = k / fvec::size();
     ENNHitV& hits = DownV[k_V];
     hits.CopyHit(Down[k], k_4);
   }
@@ -284,10 +284,10 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
 
   //  ENNRingHit* ileft = &(Hits[0]), *iright = ileft;//, i_main = ileft;
   int ileft = 0, iright = ileft;
-  // int ileft[fvecLen] = {0, 0, 0, 0};
-  // int iright[fvecLen] = {0, 0, 0, 0};
+  // int ileft[fvec::size()] = {0, 0, 0, 0};
+  // int iright[fvec::size()] = {0, 0, 0, 0};
 
-  THitIndex i_mains[fvecLen] = {0};
+  THitIndex i_mains[fvec::size()] = {0};
 
   THitIndex i_main_array[NHits];  // need for proceed in paralled almost independent areas
   for (THitIndex i = 0; i < NHits; i++) {
@@ -310,9 +310,9 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
     fvec SearchAreaSize = 0;  // number of hits to fit and search ring
     fvec PickUpAreaSize = 0;
 
-    for (int i_4 = 0; (i_4 < fvecLen) && (ii_main < NHits); ii_main++) {
+    for (size_t i_4 = 0; (i_4 < fvec::size()) && (ii_main < NHits); ii_main++) {
       const THitIndex i_main = i_main_array[ii_main];
-      const int i_main_4 = i_main % fvecLen, i_main_V = i_main / fvecLen;
+      const int i_main_4 = i_main % fvec::size(), i_main_V = i_main / fvec::size();
       ENNHitV* i = &HitsV[i_main_V];
       if (i->quality[i_main_4] >= StartHitMaxQuality) continue;  // already found hit
 
@@ -321,16 +321,16 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
       float left  = i->x[i_main_4] - AreaSize;
       float right = i->x[i_main_4] + AreaSize;
 
-      // while(                          (HitsV[ileft[i_4]/fvecLen] .x[ileft[i_4]%fvecLen] < left ) ) ++ileft[i_4];
-      // while( (iright[i_4] < NHits) && (HitsV[iright[i_4]/fvecLen].x[ileft[i_4]%fvecLen] < right) ) ++iright[i_4];
+      // while(                          (HitsV[ileft[i_4]/fvec::size()] .x[ileft[i_4]%fvec::size()] < left ) ) ++ileft[i_4];
+      // while( (iright[i_4] < NHits) && (HitsV[iright[i_4]/fvec::size()].x[ileft[i_4]%fvec::size()] < right) ) ++iright[i_4];
       // for( int j = ileft[i_4]; j < iright[i_4]; ++j ){
-      while ((HitsV[ileft / fvecLen].x[ileft % fvecLen] < left))
+      while ((HitsV[ileft / fvec::size()].x[ileft % fvec::size()] < left))
         ++ileft;  // TODO SIMDize
-      while ((iright < NHits) && (HitsV[iright / fvecLen].x[ileft % fvecLen] < right))
+      while ((iright < NHits) && (HitsV[iright / fvec::size()].x[ileft % fvec::size()] < right))
         ++iright;
 
       for (int j = ileft; j < iright; ++j) {
-        const int j_4 = j % fvecLen, j_V = j / fvecLen;
+        const int j_4 = j % fvec::size(), j_V = j / fvec::size();
         ENNSearchHitV& sHit = SearchArea[int(SearchAreaSize[i_4])];
         sHit.CopyHit(HitsV[j_V], j_4, i_4);
 
@@ -360,8 +360,8 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
     ENNHitV iHit;
     int MaxSearchAreaSize = 0;
     int MaxPickUpAreaSize = 0;
-    for (int i_4 = 0; i_4 < fvecLen; i_4++) {
-      iHit.CopyHit(HitsV[i_mains[i_4] / fvecLen], i_mains[i_4] % fvecLen, i_4);
+    for (size_t i_4 = 0; i_4 < fvec::size(); i_4++) {
+      iHit.CopyHit(HitsV[i_mains[i_4] / fvec::size()], i_mains[i_4] % fvec::size(), i_4);
       MaxSearchAreaSize = (MaxSearchAreaSize < SearchAreaSize[i_4]) ? int(SearchAreaSize[i_4]) : MaxSearchAreaSize;
       MaxPickUpAreaSize = (MaxPickUpAreaSize < PickUpAreaSize[i_4]) ? int(PickUpAreaSize[i_4]) : MaxPickUpAreaSize;
     }
@@ -563,7 +563,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
         // } 
    
         //quality *= ShadowOpacity;
-      for( int i_4 = 0; (i_4 < fvecLen); i_4++) { 
+      for( int i_4 = 0; (i_4 < fvec::size()); i_4++) { 
         const int NShadow = Shadow.size();
         for( int is = 0; is < NShadow; is++ ) { // CHECKME change loops to speed up?
           cout << i_4 << Shadow[is] << endl;
@@ -571,10 +571,10 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
           if (ih_f == -1) continue;
            int ih = static_cast<int>(ih_f);  // TODO ! problem in conversion...
            float ih_f2 =  static_cast<float>(ih);
-          cout << ih_f << " " << ih << " " << ih_f2 << " " << ih%fvecLen << " " << ih/fvecLen << endl;
+          cout << ih_f << " " << ih << " " << ih_f2 << " " << ih%fvec::size() << " " << ih/fvec::size() << endl;
 
-          const THitIndex ih_4 = ih%fvecLen;
-          ENNHitV & hitV = HitsV[ih/fvecLen];
+          const THitIndex ih_4 = ih%fvec::size();
+          ENNHitV & hitV = HitsV[ih/fvec::size()];
 
             //          hitV.quality[ih_4] = ( hitV.quality[ih_4] < quality[i_4] ) ? quality[i_4] : hitV.quality[ih_4];
             //        shHit->quality = iif( shHit->quality < quality, quality, shHit->quality );
@@ -584,7 +584,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
 #endif  // 0
     ////////////////
 
-    for (int i_4 = 0; (i_4 < fvecLen); i_4++) {
+    for (size_t i_4 = 0; (i_4 < fvec::size()); i_4++) {
       //      if( NRingHits < MinRingHits || R2 > R2Max || R2 < R2Min ) continue;
 
       if (/*ISUNLIKELY*/ (!validRing[i_4])) continue;
@@ -641,8 +641,8 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
       const int NShadow = Shadow.size();
       for (int is = 0; is < NShadow; is++) {
         const THitIndex ih   = Shadow[is];
-        const THitIndex ih_4 = ih % fvecLen;
-        ENNHitV& hitV        = HitsV[ih / fvecLen];
+        const THitIndex ih_4 = ih % fvec::size();
+        ENNHitV& hitV        = HitsV[ih / fvec::size()];
 
         hitV.quality[ih_4] = (hitV.quality[ih_4] < quality) ? quality : hitV.quality[ih_4];
         //        shHit->quality = iif( shHit->quality < quality, quality, shHit->quality );
@@ -729,16 +729,16 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
 
 
       const THitIndex firstIh = i->localIHits[0];
-      const ENNHitV& firstHit = HitsV[firstIh / fvecLen];
-      const int firstIh_4     = firstIh % fvecLen;
+      const ENNHitV& firstHit = HitsV[firstIh / fvec::size()];
+      const int firstIh_4     = firstIh % fvec::size();
       const THitIndex maxI    = i->localIHits.size();
 
       vector<ENNSearchHitV> shits;
       shits.resize(maxI);
       for (THitIndex iih = 0; iih < maxI; iih++) {
         const THitIndex ih  = i->localIHits[iih];
-        const ENNHitV& hit  = HitsV[ih / fvecLen];
-        const int ih_4      = ih % fvecLen;
+        const ENNHitV& hit  = HitsV[ih / fvec::size()];
+        const int ih_4      = ih % fvec::size();
         ENNSearchHitV& shit = shits[iih];
 
         shit.ly[0]  = hit.y[ih_4] - firstHit.y[firstIh_4];
@@ -831,9 +831,9 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
 
       for (THitIndex iih = 0; iih < maxI; iih++) {
         const THitIndex ih  = i->localIHits[iih];
-        const ENNHitV& hit  = HitsV[ih / fvecLen];
+        const ENNHitV& hit  = HitsV[ih / fvec::size()];
         ENNSearchHitV& shit = shits[iih];
-        const int ih_4      = ih % fvecLen;
+        const int ih_4      = ih % fvec::size();
 
         float dx           = hit.x[ih_4] - i->x;
         float dy           = hit.y[ih_4] - i->y;
@@ -869,8 +869,8 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
       const THitIndex maxI = i->localIHits.size();
       for (THitIndex n = 0; n < maxI; n++) {
         const THitIndex ih = i->localIHits[n];
-        ENNHitV& hit       = HitsV[ih / fvecLen];
-        const int ih_4     = ih % fvecLen;
+        ENNHitV& hit       = HitsV[ih / fvec::size()];
+        const int ih_4     = ih % fvec::size();
         hit.quality[ih_4]  = 1;
       }
       for (iR j = i + 1; j != Rend; ++j) {
@@ -881,8 +881,8 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
         const THitIndex maxJ = j->localIHits.size();
         for (THitIndex m = 0; m < maxJ; m++) {
           const THitIndex ihm = j->localIHits[m];
-          const ENNHitV& hitm = HitsV[ihm / fvecLen];
-          if (hitm.quality[ihm % fvecLen] == 0) j->NOwn++;
+          const ENNHitV& hitm = HitsV[ihm / fvec::size()];
+          if (hitm.quality[ihm % fvec::size()] == 0) j->NOwn++;
         }
       }
       i->on   = 1;
@@ -924,8 +924,8 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
     best->on                  = 1;
     const THitIndex NHitsBest = best->localIHits.size();
     for (THitIndex iih = 0; iih < NHitsBest; iih++) {
-      const THitIndex ih                        = best->localIHits[iih];
-      HitsV[ih / fvecLen].quality[ih % fvecLen] = 1;
+      const THitIndex ih                                  = best->localIHits[iih];
+      HitsV[ih / fvec::size()].quality[ih % fvec::size()] = 1;
     }
     for (iR ir = Rbeg; ir != Rend; ++ir) {
       if (ir->skip) continue;
@@ -935,7 +935,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
       const THitIndex NHitsCur = ir->localIHits.size();
       for (THitIndex iih = 0; iih < NHitsCur; iih++) {
         const THitIndex ih = ir->localIHits[iih];
-        ir->NOwn += (HitsV[ih / fvecLen].quality[ih % fvecLen] == 0);
+        ir->NOwn += (HitsV[ih / fvec::size()].quality[ih % fvec::size()] == 0);
       }
     }
   } while (1);

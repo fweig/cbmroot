@@ -86,7 +86,7 @@ inline void L1Algo::findSingletsStep0(  // input
   /// the data is orginesed in order to be used by SIMD
 
   const Tindex end_lh = start_lh + n1_l;
-  const int lastV     = (n1_l - 1) / fvecLen;
+  const int lastV     = (n1_l - 1) / fvec::size();
   if (lastV >= 0) {
     // set some positive errors to unfilled part of vectors in order to avoid nans
     L1HitPoint& hitl = Hits_l[0];
@@ -100,8 +100,8 @@ inline void L1Algo::findSingletsStep0(  // input
   }
 
   for (Tindex ilh = start_lh, i1 = 0; ilh < end_lh; ++ilh, ++i1) {
-    Tindex i1_V      = i1 / fvecLen;
-    Tindex i1_4      = i1 % fvecLen;
+    Tindex i1_V      = i1 / fvec::size();
+    Tindex i1_4      = i1 % fvec::size();
     L1HitPoint& hitl = Hits_l[ilh];
 
 
@@ -388,8 +388,8 @@ inline void L1Algo::findDoubletsStep0(
   for (Tindex i1 = 0; i1 < n1; ++i1)  // for each singlet
   {
     unsigned int Ndoublets = 0;
-    const Tindex i1_V      = i1 / fvecLen;
-    const Tindex i1_4      = i1 % fvecLen;
+    const Tindex i1_V      = i1 / fvec::size();
+    const Tindex i1_4      = i1 % fvec::size();
     L1TrackPar& T1         = T_1[i1_V];
 
     // assert(T1.IsEntryConsistent(true, i1_4));
@@ -562,8 +562,8 @@ inline void L1Algo::findTripletsStep0(  // input
   int iStaM = &stam - fParameters.GetStations().begin();
   int iStaR = &star - fParameters.GetStations().begin();
 
-  L1HitIndex_t hitsl_2[fvecLen];
-  L1HitIndex_t hitsm_2_tmp[fvecLen];
+  L1HitIndex_t hitsl_2[fvec::size()];
+  L1HitIndex_t hitsm_2_tmp[fvec::size()];
   fvec fvec_0 = 0.f;
   fvec fvec_1 = 1.f;
   L1TrackPar L1TrackPar_0;
@@ -610,15 +610,15 @@ inline void L1Algo::findTripletsStep0(  // input
     fvec timeM     = 0.f;
     fvec timeMEr   = 1.f;
 
-    Tindex n2_4 = 0;
-    for (; n2_4 < fvecLen && i2 < n2; i2++) {
+    size_t n2_4 = 0;
+    for (; n2_4 < fvec::size() && i2 < n2; i2++) {
       //         if (!mrDuplets[hitsm_2[i2]]) {
       //           n2_4--;
       //           continue;
       //         }
       const Tindex& i1  = i1_2[i2];
-      const Tindex i1_V = i1 / fvecLen;
-      const Tindex i1_4 = i1 % fvecLen;
+      const Tindex i1_V = i1 / fvec::size();
+      const Tindex i1_4 = i1 % fvec::size();
 
       const L1TrackPar& T1 = T_1[i1_V];
 
@@ -745,7 +745,7 @@ inline void L1Algo::findTripletsStep0(  // input
     // assert(T2.IsConsistent(true, n2_4));
 
     // ---- Find the triplets(right hit). Reformat data in the portion of triplets. ----
-    for (Tindex i2_4 = 0; i2_4 < n2_4; ++i2_4) {
+    for (size_t i2_4 = 0; i2_4 < n2_4; ++i2_4) {
 
       //if (!T2.IsEntryConsistent(false, i2_4)) { continue; }
       if (kSts == fTrackingMode && (T2.C44[i2_4] < 0)) { continue; }
@@ -894,8 +894,8 @@ inline void L1Algo::findTripletsStep0(  // input
         n3++;
         Ntriplets++;
 
-        n3_V = n3 / fvecLen;
-        n3_4 = n3 % fvecLen;
+        n3_V = n3 / fvec::size();
+        n3_4 = n3 % fvec::size();
 
         if (!n3_4) {
           T_3.push_back(L1TrackPar_0);
@@ -918,14 +918,14 @@ inline void L1Algo::findTripletsStep0(  // input
 
           n3 = n3 - Ntriplets;
 
-          T_3.resize(n3 / fvecLen);
-          u_front_3.resize(n3 / fvecLen);
-          u_back_3.resize(n3 / fvecLen);
-          z_Pos_3.resize(n3 / fvecLen);
-          du_.resize(n3 / fvecLen);
-          dv_.resize(n3 / fvecLen);
-          timeR.resize(n3 / fvecLen);
-          timeER.resize(n3 / fvecLen);
+          T_3.resize(n3 / fvec::size());
+          u_front_3.resize(n3 / fvec::size());
+          u_back_3.resize(n3 / fvec::size());
+          z_Pos_3.resize(n3 / fvec::size());
+          du_.resize(n3 / fvec::size());
+          dv_.resize(n3 / fvec::size());
+          timeR.resize(n3 / fvec::size());
+          timeER.resize(n3 / fvec::size());
           cout << "L1: GetMaxTripletPerDoublets==" << fParameters.GetMaxTripletPerDoublets()
                << " reached in findTripletsStep0()" << endl;
           //assert(0);
@@ -1019,8 +1019,8 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
   };
 
   for (int i3 = 0; i3 < n3; ++i3) {
-    int i3_V = i3 / fvecLen;
-    int i3_4 = i3 % fvecLen;
+    int i3_V = i3 / fvec::size();
+    int i3_4 = i3 % fvec::size();
 
     L1TrackPar& T3 = T_3[i3_V];
 
@@ -1208,8 +1208,8 @@ inline void L1Algo::findTripletsStep3(  // input
   L1HitIndex_t ihitl_prev = 0;
 
   for (Tindex i3 = 0; i3 < n3; ++i3) {
-    const Tindex i3_V = i3 / fvecLen;
-    const Tindex i3_4 = i3 % fvecLen;
+    const Tindex i3_V = i3 / fvec::size();
+    const Tindex i3_4 = i3 % fvec::size();
 
     L1TrackPar& T3 = T_3[i3_V];
 
@@ -1458,7 +1458,7 @@ inline void L1Algo::DupletsStaPort(
       L1_ASSERT(hitsl_1[i] < HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal],
                 hitsl_1[i] << " < " << HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal]);
 
-    Tindex n1_V = (n1 + fvecLen - 1) / fvecLen;
+    Tindex n1_V = (n1 + fvec::size() - 1) / fvec::size();
 
     /// Get the field approximation. Add the target to parameters estimation. Propagaete to middle station.
 
@@ -1603,7 +1603,7 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
       du3, dv3, timeR, timeER);
 
 
-    n3_V = (n3 + fvecLen - 1) / fvecLen;
+    n3_V = (n3 + fvec::size() - 1) / fvec::size();
 
     for (Tindex i = 0; i < static_cast<Tindex>(hitsl_3.size()); ++i)
       L1_assert(hitsl_3[i] < HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal]);

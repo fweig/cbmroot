@@ -117,8 +117,8 @@ void CbmKFParticleInterface::SetKFParticleFromStsTrack(CbmStsTrack* track, KFPar
     cov[20] = cpzpz;
 
     float field[10];
-    int entrSIMD = iTr % fvecLen;
-    int entrVec  = iTr / fvecLen;
+    int entrSIMD = iTr % fvec::size();
+    int entrVec  = iTr / fvec::size();
     field[0]     = vField[entrVec].cx0[entrSIMD];
     field[1]     = vField[entrVec].cx1[entrSIMD];
     field[2]     = vField[entrVec].cx2[entrSIMD];

@@ -11,7 +11,6 @@
 #include <cmath>
 
 typedef float fscal;
-const int fvecLen = 4;
 
 /**********************************
  *
@@ -28,9 +27,9 @@ fscal sgn(fscal x);
 class fmask {
 
 public:
-  static constexpr int Size {4};
+  static constexpr size_t size() { return 4; }
 
-  bool v[Size];
+  bool v[size()];
 
   bool& operator[](int i) { return v[i]; }
   bool operator[](int i) const { return v[i]; }
@@ -39,14 +38,14 @@ public:
 
   fmask(const fmask& a)
   {
-    for (int i = 0; i < Size; i++) {
+    for (int i = 0; i < size(); i++) {
       v[i] = a.v[i];
     }
   }
 
   fmask(bool a)
   {
-    for (int i = 0; i < Size; i++) {
+    for (int i = 0; i < size(); i++) {
       v[i] = a;
     }
   }
@@ -57,7 +56,7 @@ public:
 
 #define _op(A, B, F)                                                                                                   \
   fmask z;                                                                                                             \
-  for (int i = 0; i < Size; i++) {                                                                                     \
+  for (int i = 0; i < size(); i++) {                                                                                   \
     z[i] = (A[i] F B[i]);                                                                                              \
   }                                                                                                                    \
   return z;
@@ -74,7 +73,7 @@ public:
   friend fmask operator!(const fmask& a)
   {
     fmask z;
-    for (int i = 0; i < Size; i++) {
+    for (int i = 0; i < size(); i++) {
       z[i] = !a[i];
     }
     return z;
@@ -95,7 +94,7 @@ public:
   friend std::ostream& operator<<(std::ostream& strm, const fmask& a)
   {
     strm << '[';
-    for (int i = 0; i < Size; i++) {
+    for (int i = 0; i < size(); i++) {
       strm << std::setw(12) << std::setfill(' ') << a[i] << ' ';
     }
     return strm;
@@ -103,7 +102,7 @@ public:
 
   friend std::istream& operator>>(std::istream& strm, fmask& a)
   {
-    for (int i = 0; i < Size; i++) {
+    for (int i = 0; i < size(); i++) {
       strm >> a[i];
     }
     return strm;
@@ -114,22 +113,21 @@ public:
 class fvec {
 
 public:
-  static constexpr int Size {fmask::Size};
-
-  fscal v[Size];
+  static constexpr size_t size() { return fmask::size(); }
+  fscal v[size()];
 
   fvec() : fvec(0.f) {}
 
   fvec(const fvec& a)
   {
-    for (int i = 0; i < Size; i++) {
+    for (int i = 0; i < size(); i++) {
       v[i] = a.v[i];
     }
   }
 
   fvec(fscal a)
   {
-    for (int i = 0; i < Size; i++) {
+    for (int i = 0; i < size(); i++) {
       v[i] = a;
     }
   }
@@ -144,35 +142,35 @@ public:
 
   void setZero(fmask m)
   {
-    for (int i = 0; i < Size; i++) {
+    for (int i = 0; i < size(); i++) {
       if (m[i]) { v[i] = 0.; }
     }
   }
 
 #define _f1(A, F)                                                                                                      \
   fvec z;                                                                                                              \
-  for (int i = 0; i < Size; i++) {                                                                                     \
+  for (int i = 0; i < size(); i++) {                                                                                   \
     z[i] = F(A[i]);                                                                                                    \
   }                                                                                                                    \
   return z;
 
 #define _f2(A, B, F)                                                                                                   \
   fvec z;                                                                                                              \
-  for (int i = 0; i < Size; i++) {                                                                                     \
+  for (int i = 0; i < size(); i++) {                                                                                   \
     z[i] = F(A[i], B[i]);                                                                                              \
   }                                                                                                                    \
   return z;
 
 #define _op(A, B, F)                                                                                                   \
   fvec z;                                                                                                              \
-  for (int i = 0; i < Size; i++) {                                                                                     \
+  for (int i = 0; i < size(); i++) {                                                                                   \
     z[i] = (A[i] F B[i]);                                                                                              \
   }                                                                                                                    \
   return z;
 
 #define _opComp(A, B, F)                                                                                               \
   fmask z;                                                                                                             \
-  for (int i = 0; i < Size; i++) {                                                                                     \
+  for (int i = 0; i < size(); i++) {                                                                                   \
     z[i] = (A[i] F B[i]);                                                                                              \
   }                                                                                                                    \
   return z;
@@ -194,7 +192,7 @@ public:
   friend fvec iif(fmask a, fvec b, fvec c)
   {
     fvec z;
-    for (int i = 0; i < Size; i++) {
+    for (int i = 0; i < size(); i++) {
       z[i] = a[i] ? b[i] : c[i];
     }
     return z;
@@ -246,7 +244,7 @@ public:
   {
     //strm << "[" << a[0] << " " << a[1] << " " << a[2] << " " << a[3] << "]";
     strm << '[';
-    for (int i = 0; i < Size; i++) {
+    for (int i = 0; i < size(); i++) {
       strm << std::setw(12) << std::setfill(' ') << a[i] << ' ';
     }
     return strm;
@@ -254,7 +252,7 @@ public:
 
   friend std::istream& operator>>(std::istream& strm, fvec& a)
   {
-    for (int i = 0; i < Size; i++) {
+    for (int i = 0; i < size(); i++) {
       strm >> a[i];
     }
     return strm;
@@ -263,7 +261,7 @@ public:
 } __attribute__((aligned(16)));
 
 
-#define _fvecalignment __attribute__((aligned(fvec::Size * sizeof(fscal))))
+#define _fvecalignment __attribute__((aligned(fvec::size() * sizeof(fscal))))
 
 
 /// Checks, if all bands are equal
@@ -273,7 +271,7 @@ inline bool IsHorizontallyEqual(const fvec& v)
 {
   fscal s  = v[0];
   bool ret = true;
-  for (int i = 1; i < fvecLen; i++) {
+  for (int i = 1; i < fvec::size(); i++) {
     ret = ret && (v[i] == s);
   }
   return ret;
@@ -283,7 +281,7 @@ inline bool IsHorizontallyEqual(const fvec& v)
 inline bool IsNanAny(const fvec& v)
 {
   bool ret = false;
-  for (int i = 0; i < fvecLen; i++) {
+  for (int i = 0; i < fvec::size(); i++) {
     ret = ret || std::isnan(v[i]);
   }
   return ret;

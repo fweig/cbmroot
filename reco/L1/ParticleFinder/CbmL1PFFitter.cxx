@@ -98,13 +98,13 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
 
   static int nHits = CbmL1::Instance()->fpAlgo->GetParameters()->GetNstationsActive();
   int iVec = 0, i = 0;
-  int nTracks_SIMD = fvecLen;
+  int nTracks_SIMD = fvec::size();
   L1TrackPar T;  // fitting parametr coresponding to current track
 
   L1Fit fit;
   fit.SetParticleMass(0.000511f);  // muon
 
-  CbmStsTrack* t[fvecLen];
+  CbmStsTrack* t[fvec::size()];
 
   int ista;
   const L1Station* sta = CbmL1::Instance()->fpAlgo->GetParameters()->GetStations().begin();
@@ -130,9 +130,9 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
 
   fvec mass = 0.000511f;
 
-  for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvecLen) {
+  for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvec::size()) {
 
-    if (N_vTracks - itrack < static_cast<unsigned short>(fvecLen)) nTracks_SIMD = N_vTracks - itrack;
+    if (N_vTracks - itrack < static_cast<unsigned short>(fvec::size())) nTracks_SIMD = N_vTracks - itrack;
     for (i = 0; i < nTracks_SIMD; i++) {
       t[i]     = &Tracks[itrack + i];  // current track
       T.x[i]   = t[i]->GetParamFirst()->GetX();
@@ -400,11 +400,11 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
 {
   chiToVtx.reserve(Tracks.size());
 
-  int nTracks_SIMD = fvecLen;
+  int nTracks_SIMD = fvec::size();
   L1TrackPar T;  // fitting parametr coresponding to current track
   L1Fit fit;
 
-  CbmStsTrack* t[fvecLen];
+  CbmStsTrack* t[fvec::size()];
 
   int nStations        = CbmL1::Instance()->fpAlgo->GetParameters()->GetNstationsActive();
   int NMvdStations     = CbmL1::Instance()->fpAlgo->GetNstationsBeforePipe();
@@ -426,8 +426,8 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
 
   unsigned short N_vTracks = Tracks.size();
   int ista;
-  for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvecLen) {
-    if (N_vTracks - itrack < static_cast<unsigned short>(fvecLen)) { nTracks_SIMD = N_vTracks - itrack; }
+  for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvec::size()) {
+    if (N_vTracks - itrack < static_cast<unsigned short>(fvec::size())) { nTracks_SIMD = N_vTracks - itrack; }
 
     fvec mass2;
     for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
@@ -578,10 +578,10 @@ void CbmL1PFFitter::CalculateFieldRegion(vector<CbmStsTrack>& Tracks, vector<L1F
   int NMvdStations          = CbmL1::Instance()->fpAlgo->GetNstationsBeforePipe();
   if (NMvdStations > 0.) listMvdHits = (TClonesArray*) fManger->GetObject("MvdHit");
 
-  int nTracks_SIMD = fvecLen;
+  int nTracks_SIMD = fvec::size();
   L1TrackPar T;  // fitting parametr coresponding to current track
 
-  CbmStsTrack* t[fvecLen];
+  CbmStsTrack* t[fvec::size()];
 
   int ista;
   const L1Station* sta = CbmL1::Instance()->fpAlgo->GetParameters()->GetStations().begin();
@@ -590,8 +590,8 @@ void CbmL1PFFitter::CalculateFieldRegion(vector<CbmStsTrack>& Tracks, vector<L1F
 
   unsigned short N_vTracks = Tracks.size();
 
-  for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvecLen) {
-    if (N_vTracks - itrack < static_cast<unsigned short>(fvecLen)) nTracks_SIMD = N_vTracks - itrack;
+  for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvec::size()) {
+    if (N_vTracks - itrack < static_cast<unsigned short>(fvec::size())) nTracks_SIMD = N_vTracks - itrack;
 
     for (int i = 0; i < nTracks_SIMD; i++)
       t[i] = &Tracks[itrack + i];  // current track
@@ -650,10 +650,10 @@ void CbmL1PFFitter::CalculateFieldRegionAtLastPoint(vector<CbmStsTrack>& Tracks,
   int NMvdStations          = CbmL1::Instance()->fpAlgo->GetNstationsBeforePipe();
   if (NMvdStations > 0.) listMvdHits = (TClonesArray*) fManger->GetObject("MvdHit");
 
-  int nTracks_SIMD = fvecLen;
+  int nTracks_SIMD = fvec::size();
   L1TrackPar T;  // fitting parametr coresponding to current track
 
-  CbmStsTrack* t[fvecLen];
+  CbmStsTrack* t[fvec::size()];
 
   int ista;
   const L1Station* sta = CbmL1::Instance()->fpAlgo->GetParameters()->GetStations().begin();
@@ -662,8 +662,8 @@ void CbmL1PFFitter::CalculateFieldRegionAtLastPoint(vector<CbmStsTrack>& Tracks,
 
   unsigned short N_vTracks = Tracks.size();
 
-  for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvecLen) {
-    if (N_vTracks - itrack < static_cast<unsigned short>(fvecLen)) nTracks_SIMD = N_vTracks - itrack;
+  for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvec::size()) {
+    if (N_vTracks - itrack < static_cast<unsigned short>(fvec::size())) nTracks_SIMD = N_vTracks - itrack;
 
     for (int i = 0; i < nTracks_SIMD; i++)
       t[i] = &Tracks[itrack + i];  // current track

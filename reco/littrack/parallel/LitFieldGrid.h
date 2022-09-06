@@ -184,7 +184,7 @@ namespace lit
       {
         LitFieldValue<fscal> v;
         // Get field value for each packed value
-        for (unsigned int i = 0; i < fvecLen; i++) {
+        for (size_t i = 0; i < fvec::size(); i++) {
           // Get field value in scalar format
           GetFieldValue(x[i], y[i], v);
           // Store field value in vector format

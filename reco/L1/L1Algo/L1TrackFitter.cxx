@@ -333,7 +333,7 @@ void L1Algo::L1KFTrackFitter()
 
   const int nHits = fParameters.GetNstationsActive();
   int iVec = 0, i = 0;
-  int nTracks_SIMD = fvecLen;
+  int nTracks_SIMD = fvec::size();
   L1TrackPar T;  // fitting parametr coresponding to current track
 
   L1TrackParFit T1;  // fitting parametr coresponding to current track
@@ -342,7 +342,7 @@ void L1Algo::L1KFTrackFitter()
   L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
 
-  L1Track* t[fvecLen];
+  L1Track* t[fvec::size()];
 
   const L1Station* sta = fParameters.GetStations().begin();
   L1Station staFirst, staLast;  // FIXME (?): Probably, we should replace these variables with references (S.Zharko)
@@ -405,8 +405,8 @@ void L1Algo::L1KFTrackFitter()
 
   unsigned short N_vTracks = fTracks.size();  // number of tracks processed per one SSE register
 
-  for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvecLen) {
-    if (N_vTracks - itrack < static_cast<unsigned short>(fvecLen)) nTracks_SIMD = N_vTracks - itrack;
+  for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvec::size()) {
+    if (N_vTracks - itrack < static_cast<unsigned short>(fvec::size())) nTracks_SIMD = N_vTracks - itrack;
 
     for (i = 0; i < nTracks_SIMD; i++)
       t[i] = &fTracks[itrack + i];  // current track
@@ -798,7 +798,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
   const int nHits = fParameters.GetNstationsActive();
   int iVec = 0, i = 0;
-  int nTracks_SIMD = fvecLen;
+  int nTracks_SIMD = fvec::size();
   L1TrackPar T;  // fitting parametr coresponding to current track
 
   L1TrackParFit T1;  // fitting parametr coresponding to current track
@@ -807,7 +807,7 @@ void L1Algo::L1KFTrackFitterMuch()
   L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
 
-  L1Track* t[fvecLen];
+  L1Track* t[fvec::size()];
 
   const L1Station* sta = fParameters.GetStations().begin();
   L1Station staFirst, staLast;
@@ -869,8 +869,8 @@ void L1Algo::L1KFTrackFitterMuch()
 
   unsigned short N_vTracks = fTracks.size();
 
-  for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvecLen) {
-    if (N_vTracks - itrack < static_cast<unsigned short>(fvecLen)) nTracks_SIMD = N_vTracks - itrack;
+  for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvec::size()) {
+    if (N_vTracks - itrack < static_cast<unsigned short>(fvec::size())) nTracks_SIMD = N_vTracks - itrack;
 
     for (i = 0; i < nTracks_SIMD; i++)
       t[i] = &fTracks[itrack + i];  // current track
@@ -1216,7 +1216,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
           int max_steps = 0;
 
-          for (int j = 0; j < fvecLen; j++) {
+          for (size_t j = 0; j < fvec::size(); j++) {
             nofSteps[j] = int(fabs(d_z[j]) / 10);  //*w1[i];
             if (max_steps < nofSteps[j]) max_steps = nofSteps[j];
           }

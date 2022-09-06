@@ -138,7 +138,7 @@ float L1Material::GetRadThick(float x, float y) const
 fvec L1Material::GetRadThick(fvec x, fvec y) const
 {
   fvec r;
-  for (int i = 0; i < fvecLen; i++)
+  for (size_t i = 0; i < fvec::size(); i++)
     r[i] = GetRadThick(x[i], y[i]);
   return r;
 }

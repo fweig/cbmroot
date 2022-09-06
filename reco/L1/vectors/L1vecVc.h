@@ -10,7 +10,6 @@
 typedef Vc::float_v fvec;
 typedef fvec::EntryType fscal;
 typedef Vc::float_m fmask;
-const int fvecLen = fvec::Size;
 
 #define _fvecalignment __attribute__((aligned(Vc::VectorAlignment)))
 
@@ -34,7 +33,7 @@ inline bool IsHorizontallyEqual(const fvec& v)
 {
   fscal s  = v[0];
   bool ret = true;
-  for (int i = 1; i < fvecLen; i++) {
+  for (size_t i = 1; i < fvec::size(); i++) {
     ret = ret && (v[i] == s);
   }
   return ret;
@@ -44,7 +43,7 @@ inline bool IsHorizontallyEqual(const fvec& v)
 inline bool IsNanAny(const fvec& v)
 {
   bool ret = false;
-  for (int i = 0; i < fvecLen; i++) {
+  for (size_t i = 0; i < fvec::size(); i++) {
     ret = ret || std::isnan(v[i]);
   }
   return ret;
