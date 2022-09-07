@@ -21,7 +21,7 @@ namespace boost
     template<class Archive>
     void serialize(Archive& ar, fvec& vect, const unsigned int)
     {
-      for (int i = 0; i < fvecLen; ++i) {
+      for (size_t i = 0; i < fvec::size(); ++i) {
         ar&(reinterpret_cast<fscal*>(&vect))[i];
       }
     }
