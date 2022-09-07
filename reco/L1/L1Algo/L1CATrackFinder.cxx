@@ -578,16 +578,17 @@ inline void L1Algo::findTripletsStep0(  // input
   L1Fit fit;
   fit.SetParticleMass(fDefaultMass);
 
+  n3          = 0;
   Tindex n3_V = 0, n3_4 = 0;
 
-  T_3.push_back(L1TrackPar_0);
-  u_front_3.push_back(fvec::Zero());
-  u_back_3.push_back(fvec::Zero());
-  z_Pos_3.push_back(fvec::Zero());
-  du_.push_back(fvec::One());
-  dv_.push_back(fvec::One());
-  timeR.push_back(fvec::Zero());
-  timeER.push_back(fvec::One());
+  T_3.reset(1, L1TrackPar_0);
+  u_front_3.reset(1, fvec::Zero());
+  u_back_3.reset(1, fvec::Zero());
+  z_Pos_3.reset(1, fvec::Zero());
+  du_.reset(1, fvec::One());
+  dv_.reset(1, fvec::One());
+  timeR.reset(1, fvec::Zero());
+  timeER.reset(1, fvec::One());
 
   assert(istar < fParameters.GetNstationsActive());  //TODO SG!!! check if it is needed
 
@@ -765,9 +766,9 @@ inline void L1Algo::findTripletsStep0(  // input
                          (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + fMaxDZ * abs(T2.ty))[i2_4] * iz, time,
                          sqrt(timeError) * 5);
 
-      L1HitIndex_t irh       = 0;
-      L1HitIndex_t Ntriplets = 0;
-      int irh1               = -1;
+      L1HitIndex_t irh              = 0;
+      L1HitIndex_t doubletNtriplets = 0;
+      int irh1                      = -1;
       while (true) {
         if (fParameters.DevIsIgnoreHitSearchAreas()) {
           irh1++;
@@ -869,7 +870,26 @@ inline void L1Algo::findTripletsStep0(  // input
             continue;  // chi2_triplet < CHI2_CUT
           }
 
+#ifndef FAST_CODE
+//TODO: optimise triplet portion limit and put a warning
+// assert(doubletNtriplets < fParameters.GetMaxTripletPerDoublets());
+#endif  // FAST_CODE
+
+        if (doubletNtriplets >= fParameters.GetMaxTripletPerDoublets()) {
+          cout << "L1: GetMaxTripletPerDoublets==" << fParameters.GetMaxTripletPerDoublets()
+               << " reached in findTripletsStep0()" << endl;
+          // reject already created triplets for this doublet
+          n3   = n3 - doubletNtriplets;
+          n3_V = n3 / fvec::size();
+          n3_4 = n3 % fvec::size();
+          //assert(0);
+          break;
+        }
+
         // pack triplet
+
+        doubletNtriplets++;
+
         L1TrackPar& T3 = T_3[n3_V];
 
         hitsl_3.push_back(hitsl_2[i2_4]);
@@ -889,12 +909,10 @@ inline void L1Algo::findTripletsStep0(  // input
         timeER[n3_V][n3_4]  = hitr.timeEr;
 
         n3++;
-        Ntriplets++;
-
         n3_V = n3 / fvec::size();
         n3_4 = n3 % fvec::size();
 
-        if (!n3_4) {
+        if (0 == n3_4) {
           T_3.push_back(L1TrackPar_0);
           u_front_3.push_back(fvec::Zero());
           u_back_3.push_back(fvec::Zero());
@@ -906,29 +924,7 @@ inline void L1Algo::findTripletsStep0(  // input
           timeR.push_back(fvec::Zero());
           timeER.push_back(fvec::Zero());
         }
-
-#ifndef FAST_CODE
-//TODO: optimise triplet portion limit and put a warning
-// assert(Ntriplets < fParameters.GetMaxTripletPerDoublets());
-#endif  // FAST_CODE
-        if (Ntriplets >= fParameters.GetMaxTripletPerDoublets()) {
-
-          n3 = n3 - Ntriplets;
-
-          T_3.reset(n3 / fvec::size());
-          u_front_3.reset(n3 / fvec::size());
-          u_back_3.reset(n3 / fvec::size());
-          z_Pos_3.reset(n3 / fvec::size());
-          du_.reset(n3 / fvec::size());
-          dv_.reset(n3 / fvec::size());
-          timeR.reset(n3 / fvec::size());
-          timeER.reset(n3 / fvec::size());
-          cout << "L1: GetMaxTripletPerDoublets==" << fParameters.GetMaxTripletPerDoublets()
-               << " reached in findTripletsStep0()" << endl;
-          //assert(0);
-          break;
-        }
-      }
+      }  // search area
 
     }  // i2_4
   }    // i2_V
@@ -1553,15 +1549,15 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
     int Thread = 0;
 #endif
 
-    L1Vector<L1TrackPar>& T_3            = fT_3[Thread];
-    L1Vector<L1HitIndex_t>& hitsl_3      = fhitsl_3[Thread];
-    L1Vector<L1HitIndex_t>& hitsm_3      = fhitsm_3[Thread];
-    L1Vector<L1HitIndex_t>& hitsr_3      = fhitsr_3[Thread];
-    L1Vector<fvec>& u_front3             = fu_front3[Thread];
-    L1Vector<fvec>& u_back3              = fu_back3[Thread];
-    L1Vector<fvec>& z_pos3               = fz_pos3[Thread];
-    L1Vector<fvec>& timeR                = fTimeR[Thread];
-    L1Vector<fvec>& timeER               = fTimeER[Thread];
+    L1Vector<L1TrackPar>& T_3       = fT_3[Thread];
+    L1Vector<L1HitIndex_t>& hitsl_3 = fhitsl_3[Thread];
+    L1Vector<L1HitIndex_t>& hitsm_3 = fhitsm_3[Thread];
+    L1Vector<L1HitIndex_t>& hitsr_3 = fhitsr_3[Thread];
+    L1Vector<fvec>& u_front3        = fu_front3[Thread];
+    L1Vector<fvec>& u_back3         = fu_back3[Thread];
+    L1Vector<fvec>& z_pos3          = fz_pos3[Thread];
+    L1Vector<fvec>& timeR           = fTimeR[Thread];
+    L1Vector<fvec>& timeER          = fTimeER[Thread];
     //    L1Vector<fvec>& dx3       = dx[Thread];
     //    L1Vector<fvec>& dy3       = dy[Thread];
     L1Vector<fvec>& du3 = du[Thread];
