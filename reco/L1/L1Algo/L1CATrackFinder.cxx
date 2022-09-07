@@ -895,11 +895,11 @@ inline void L1Algo::findTripletsStep0(  // input
         T3.SetOneEntry(n3_4, T2, i2_4);
         u_front_3[n3_V][n3_4] = hitr.U();
         u_back_3[n3_V][n3_4]  = hitr.V();
-        du_[n3_V][n3_4]       = hitr.dU();
-        dv_[n3_V][n3_4]       = hitr.dV();
-        z_Pos_3[n3_V][n3_4]   = zr;
-        timeR[n3_V][n3_4]     = hitr.time;
-        timeER[n3_V][n3_4]    = hitr.timeEr;
+        du_[n3_V][n3_4]     = hitr.dU();
+        dv_[n3_V][n3_4]     = hitr.dV();
+        z_Pos_3[n3_V][n3_4] = zr;
+        timeR[n3_V][n3_4]   = hitr.time;
+        timeER[n3_V][n3_4]  = hitr.timeEr;
 
         n3++;
         n3_V = n3 / fvec::size();
@@ -1547,8 +1547,8 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
     L1Vector<fvec>& z_pos3          = fz_pos3[Thread];
     L1Vector<fvec>& timeR           = fTimeR[Thread];
     L1Vector<fvec>& timeER          = fTimeER[Thread];
-    L1Vector<fvec>& du3             = du[Thread];
-    L1Vector<fvec>& dv3             = dv[Thread];
+    L1Vector<fvec>& du3 = du[Thread];
+    L1Vector<fvec>& dv3 = dv[Thread];
 
     T_3.clear();
     hitsl_3.clear();
@@ -1573,7 +1573,8 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
 
       mrDuplets,
       // output
-      n3, T_3, hitsl_3, hitsm_3, hitsr_3, u_front3, u_back3, z_pos3, du3, dv3, timeR, timeER);
+      n3, T_3, hitsl_3, hitsm_3, hitsr_3, u_front3, u_back3, z_pos3,
+      du3, dv3, timeR, timeER);
 
 
     n3_V = (n3 + fvec::size() - 1) / fvec::size();
@@ -1589,7 +1590,8 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
 
     /// Add the right hits to parameters estimation.
     findTripletsStep1(  // input
-      n3_V, star, u_front3, u_back3, z_pos3, du3, dv3, timeR, timeER,
+      n3_V, star, u_front3, u_back3, z_pos3,
+      du3, dv3, timeR, timeER,
       // output
       T_3);
 
