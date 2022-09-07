@@ -219,7 +219,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
     T.chi2 = 0.;
     T.NDF  = 2.;
-    if ((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) T.NDF = 0;
+    if ((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) T.NDF = fvec(0.);
     T.tx = tx;
     T.ty = ty;
     T.t  = time;
@@ -230,7 +230,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     T.C40 = T.C41 = T.C42 = T.C43 = fvec(0.);
     T.C50 = T.C51 = T.C52 = T.C53 = T.C54 = fvec(0.);
     T.C22 = T.C33 = fMaxSlopePV * fMaxSlopePV / fvec(9.);
-    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) T.C22 = T.C33 = 10;
+    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) T.C22 = T.C33 = fvec(10.);
     T.C44 = fMaxInvMom / fvec(3.) * fMaxInvMom / fvec(3.);
     T.C55 = timeEr * timeEr;
 
@@ -252,12 +252,12 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
       for (int ista = 0; ista <= istal - 1; ista++) {
         if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista, T.x, T.y), fMaxInvMom, 1);
+          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista, T.x, T.y), fMaxInvMom, fvec::One());
         }
         else {
-          fit.L1AddMaterial(T, fParameters.GetStation(ista).materialInfo, fMaxInvMom, 1);
+          fit.L1AddMaterial(T, fParameters.GetStation(ista).materialInfo, fMaxInvMom, fvec::One());
         }
-        if (ista == fNstationsBeforePipe - 1) fit.L1AddPipeMaterial(T, fMaxInvMom, 1);
+        if (ista == fNstationsBeforePipe - 1) fit.L1AddPipeMaterial(T, fMaxInvMom, fvec::One());
       }
 
       // add left hit
@@ -335,21 +335,21 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
     if constexpr (L1Constants::control::kIfUseRadLengthTable) {
       if (kMcbm == fTrackingMode) {
-        fit.L1AddThickMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, 1,
+        fit.L1AddThickMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One(),
                                stal.materialInfo.thick, 1);
       }
       else if (kGlobal == fTrackingMode) {
-        fit.L1AddMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, 1);
+        fit.L1AddMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One());
       }
       else {
-        fit.L1AddMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, 1);
+        fit.L1AddMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One());
       }
     }
     else {
-      fit.L1AddMaterial(T, stal.materialInfo, fMaxInvMom, 1);
+      fit.L1AddMaterial(T, stal.materialInfo, fMaxInvMom, fvec::One());
     }
     if ((istam >= fNstationsBeforePipe) && (istal <= fNstationsBeforePipe - 1)) {
-      fit.L1AddPipeMaterial(T, fMaxInvMom, 1);
+      fit.L1AddPipeMaterial(T, fMaxInvMom, fvec::One());
     }
 
     //assert(T.IsConsistent(true, -1));
@@ -564,8 +564,6 @@ inline void L1Algo::findTripletsStep0(  // input
 
   L1HitIndex_t hitsl_2[fvec::size()];
   L1HitIndex_t hitsm_2_tmp[fvec::size()];
-  fvec fvec_0 = 0.f;
-  fvec fvec_1 = 1.f;
   L1TrackPar L1TrackPar_0;
   // SG!! to avoid nans in unfilled part
   //TODO: SG: investigate, it changes the results !!
@@ -584,13 +582,13 @@ inline void L1Algo::findTripletsStep0(  // input
   Tindex n3_V = 0, n3_4 = 0;
 
   T_3.push_back(L1TrackPar_0);
-  u_front_3.push_back(fvec_0);
-  u_back_3.push_back(fvec_0);
-  z_Pos_3.push_back(fvec_0);
-  du_.push_back(fvec_1);
-  dv_.push_back(fvec_1);
-  timeR.push_back(fvec_0);
-  timeER.push_back(fvec_1);
+  u_front_3.push_back(fvec::Zero());
+  u_back_3.push_back(fvec::Zero());
+  z_Pos_3.push_back(fvec::Zero());
+  du_.push_back(fvec::One());
+  dv_.push_back(fvec::One());
+  timeR.push_back(fvec::Zero());
+  timeER.push_back(fvec::One());
 
   assert(istar < fParameters.GetNstationsActive());  //TODO SG!!! check if it is needed
 
@@ -711,18 +709,18 @@ inline void L1Algo::findTripletsStep0(  // input
 
     if constexpr (L1Constants::control::kIfUseRadLengthTable) {
       if (kMcbm == fTrackingMode) {
-        fit.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, 1,
+        fit.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, fvec::One(),
                                stam.materialInfo.thick, 1);
       }
       else if (kGlobal == fTrackingMode) {
-        fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, 1);
+        fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, fvec::One());
       }
       else {
-        fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), T2.qp, 1);
+        fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), T2.qp, fvec::One());
       }
     }
     else {
-      fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, 1);
+      fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, fvec::One());
     }
     if ((istar >= fNstationsBeforePipe) && (istam <= fNstationsBeforePipe - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
 
@@ -899,15 +897,15 @@ inline void L1Algo::findTripletsStep0(  // input
 
         if (!n3_4) {
           T_3.push_back(L1TrackPar_0);
-          u_front_3.push_back(fvec_0);
-          u_back_3.push_back(fvec_0);
-          z_Pos_3.push_back(fvec_0);
-          //            dx_.push_back(fvec_0);
-          //            dy_.push_back(fvec_0);
-          du_.push_back(fvec_0);
-          dv_.push_back(fvec_0);
-          timeR.push_back(fvec_0);
-          timeER.push_back(fvec_0);
+          u_front_3.push_back(fvec::Zero());
+          u_back_3.push_back(fvec::Zero());
+          z_Pos_3.push_back(fvec::Zero());
+          //            dx_.push_back(fvec::Zero());
+          //            dy_.push_back(fvec::Zero());
+          du_.push_back(fvec::Zero());
+          dv_.push_back(fvec::Zero());
+          timeR.push_back(fvec::Zero());
+          timeER.push_back(fvec::Zero());
         }
 
 #ifndef FAST_CODE
@@ -1091,12 +1089,12 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
     for (int ih = 1; ih < NHits; ++ih) {
       L1Extrapolate(T, z[ih], T.qp, fld);
       if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-        fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista[ih], T.x, T.y), T.qp, 1);
+        fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista[ih], T.x, T.y), T.qp, fvec::One());
       }
       else {
-        fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
+        fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, fvec::One());
       }
-      if (ista[ih] == fNstationsBeforePipe - 1) { fit.L1AddPipeMaterial(T, T.qp, 1); }
+      if (ista[ih] == fNstationsBeforePipe - 1) { fit.L1AddPipeMaterial(T, T.qp, fvec::One()); }
       L1Filter(T, sta[ih].frontInfo, u[ih]);
       L1Filter(T, sta[ih].backInfo, v[ih]);
     }
@@ -1126,12 +1124,12 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
       for (ih = NHits - 2; ih >= 0; ih--) {
         L1Extrapolate(T, z[ih], T.qp, fld);
         if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista[ih], T.x, T.y), T.qp, 1);
+          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista[ih], T.x, T.y), T.qp, fvec::One());
         }
         else {
-          fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
+          fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, fvec::One());
         }
-        if (ista[ih] == fNstationsBeforePipe) fit.L1AddPipeMaterial(T, T.qp, 1);
+        if (ista[ih] == fNstationsBeforePipe) fit.L1AddPipeMaterial(T, T.qp, fvec::One());
 
         L1Filter(T, sta[ih].frontInfo, u[ih]);
         L1Filter(T, sta[ih].backInfo, v[ih]);
@@ -1158,12 +1156,12 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
       for (ih = 1; ih < NHits; ++ih) {
         L1Extrapolate(T, z[ih], T.qp, fld);
         if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista[ih], T.x, T.y), T.qp, 1);
+          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista[ih], T.x, T.y), T.qp, fvec::One());
         }
         else {
-          fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, 1);
+          fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, fvec::One());
         }
-        if (ista[ih] == fNstationsBeforePipe + 1) fit.L1AddPipeMaterial(T, T.qp, 1);
+        if (ista[ih] == fNstationsBeforePipe + 1) fit.L1AddPipeMaterial(T, T.qp, fvec::One());
 
         L1Filter(T, sta[ih].frontInfo, u[ih]);
         L1Filter(T, sta[ih].backInfo, v[ih]);

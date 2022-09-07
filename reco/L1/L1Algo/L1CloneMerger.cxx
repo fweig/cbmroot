@@ -72,7 +72,7 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
 
     isStored[iTr]              = false;
     neighbour[iTr]             = kNoNeighbour;
-    trackChi2[iTr]             = 100000;
+    trackChi2[iTr]             = 100000.;
     isDownstreamNeighbour[iTr] = false;
   }
 
@@ -187,12 +187,12 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
       if (Chi2Tracks[0] < trackChi2[iTr] || Chi2Tracks[0] < trackChi2[jTr]) {
         if (neighbour[iTr] < kNoNeighbour) {
           neighbour[neighbour[iTr]]             = kNoNeighbour;
-          trackChi2[neighbour[iTr]]             = 100000;
+          trackChi2[neighbour[iTr]]             = 100000.;
           isDownstreamNeighbour[neighbour[iTr]] = false;
         }
         if (neighbour[jTr] < kNoNeighbour) {
           neighbour[neighbour[jTr]]             = kNoNeighbour;
-          trackChi2[neighbour[jTr]]             = 100000;
+          trackChi2[neighbour[jTr]]             = 100000.;
           isDownstreamNeighbour[neighbour[jTr]] = false;
         }
         neighbour[iTr]             = jTr;

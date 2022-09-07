@@ -36,10 +36,10 @@ void L1ExtrapolateAnalytic(L1TrackPar& T,  // input track parameters (x,y,tx,ty,
   //  Part of the analytic extrapolation formula with error (c_light*B*dz)^4/4!
   //
 
-  cnst c_light = 0.000299792458;
+  cnst c_light(0.000299792458);
 
-  cnst c1 = 1., c2 = 2., c3 = 3., c4 = 4., c6 = 6., c9 = 9., c15 = 15., c18 = 18., c45 = 45., c2i = 1. / 2.,
-       c3i = 1. / 3., c6i = 1. / 6., c12i = 1. / 12.;
+  cnst c1(1.), c2(2.), c3(3.), c4(4.), c6(6.), c9(9.), c15(15.), c18(18.), c45(45.), c2i(1. / 2.), c3i(1. / 3.),
+    c6i(1. / 6.), c12i(1. / 12.);
 
   const fvec qp = T.qp;
   fvec dz       = (z_out - T.z);
@@ -110,18 +110,18 @@ void L1ExtrapolateAnalytic(L1TrackPar& T,  // input track parameters (x,y,tx,ty,
 
   fvec syz;
   {
-    constexpr double d = 1. / 360.;
-    cnst c00(30. * 6. * d), c01(30. * 2. * d), c02(30. * d), c10(3. * 40. * d), c11(3. * 15. * d), c12(3. * 8. * d),
-      c20(2. * 45. * d), c21(2. * 2. * 9. * d), c22(2. * 2. * 5. * d);
+    constexpr double d = 360.;
+    cnst c00(30. * 6. / d), c01(30. * 2. / d), c02(30. / d), c10(3. * 40. / d), c11(3. * 15. / d), c12(3. * 8. / d),
+      c20(2. * 45. / d), c21(2. * 2. * 9. / d), c22(2. * 2. * 5. / d);
     syz = Fy0 * (c00 * Fz0 + c01 * Fz1 + c02 * Fz2) + Fy1 * (c10 * Fz0 + c11 * Fz1 + c12 * Fz2)
           + Fy2 * (c20 * Fz0 + c21 * Fz1 + c22 * Fz2);
   }
 
   fvec Syz;
   {
-    constexpr double d = 1. / 2520.;
-    cnst c00(21. * 20. * d), c01(21. * 5. * d), c02(21. * 2. * d), c10(7. * 30. * d), c11(7. * 9. * d),
-      c12(7. * 4. * d), c20(2. * 63. * d), c21(2. * 21. * d), c22(2. * 10. * d);
+    constexpr double d = 2520.;
+    cnst c00(21. * 20. / d), c01(21. * 5. / d), c02(21. * 2. / d), c10(7. * 30. / d), c11(7. * 9. / d),
+      c12(7. * 4. / d), c20(2. * 63. / d), c21(2. * 21. / d), c22(2. * 10. / d);
     Syz = Fy0 * (c00 * Fz0 + c01 * Fz1 + c02 * Fz2) + Fy1 * (c10 * Fz0 + c11 * Fz1 + c12 * Fz2)
           + Fy2 * (c20 * Fz0 + c21 * Fz1 + c22 * Fz2);
   }
@@ -131,16 +131,16 @@ void L1ExtrapolateAnalytic(L1TrackPar& T,  // input track parameters (x,y,tx,ty,
 
   fvec Syy;
   {
-    constexpr double d = 1. / 2520.;
-    cnst c00(420. * d), c01(21. * 15. * d), c02(21. * 8. * d), c03(63. * d), c04(70. * d), c05(20. * d);
+    constexpr double d = 2520.;
+    cnst c00(420. / d), c01(21. * 15. / d), c02(21. * 8. / d), c03(63. / d), c04(70. / d), c05(20. / d);
     Syy = Fy0 * (c00 * Fy0 + c01 * Fy1 + c02 * Fy2) + Fy1 * (c03 * Fy1 + c04 * Fy2) + c05 * Fy2 * Fy2;
   }
 
   fvec Syyy;
   {
-    constexpr double d = 1. / 181440.;
-    cnst c000(7560 * d), c001(9 * 1008 * d), c002(5 * 1008 * d), c011(21 * 180 * d), c012(24 * 180 * d),
-      c022(7 * 180 * d), c111(540 * d), c112(945 * d), c122(560 * d), c222(112 * d);
+    constexpr double d = 181440.;
+    cnst c000(7560 / d), c001(9 * 1008 / d), c002(5 * 1008 / d), c011(21 * 180 / d), c012(24 * 180 / d),
+      c022(7 * 180 / d), c111(540 / d), c112(945 / d), c122(560 / d), c222(112 / d);
     const fvec Fy22 = Fy2 * Fy2;
     Syyy = Fy0 * (Fy0 * (c000 * Fy0 + c001 * Fy1 + c002 * Fy2) + Fy1 * (c011 * Fy1 + c012 * Fy2) + c022 * Fy22)
            + Fy1 * (Fy1 * (c111 * Fy1 + c112 * Fy2) + c122 * Fy22) + c222 * Fy22 * Fy2;
@@ -323,11 +323,11 @@ void L1ExtrapolateRungeKutta  // extrapolates track parameters and returns jacob
   //========================================================================
 
 
-  cnst c_light = 0.000299792458;
+  cnst c_light(0.000299792458);
 
-  const fvec a[4] = {0.0f, 0.5f, 0.5f, 1.0f};
-  const fvec c[4] = {1.0f / 6.0f, 1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 6.0f};
-  const fvec b[4] = {0.0f, 0.5f, 0.5f, 1.0f};
+  const fvec a[4] = {fvec(0.), fvec(0.5), fvec(0.5), fvec(1.)};
+  const fvec c[4] = {fvec(1. / 6.), fvec(1. / 3.), fvec(1. / 3.), fvec(1. / 6.)};
+  const fvec b[4] = {fvec(0.), fvec(0.5), fvec(0.5), fvec(1.)};
 
   int step4;
   fvec k[16], x0[4], x[4], k1[16];
@@ -370,20 +370,20 @@ void L1ExtrapolateRungeKutta  // extrapolates track parameters and returns jacob
     fvec tx2     = tx * tx;
     fvec ty2     = ty * ty;
     fvec txty    = tx * ty;
-    fvec tx2ty21 = 1.f + tx2 + ty2;
+    fvec tx2ty21 = fvec(1.) + tx2 + ty2;
     // if( tx2ty21 > 1.e4 ) return 1;
-    fvec I_tx2ty21 = 1.f / tx2ty21 * qp0;
+    fvec I_tx2ty21 = fvec(1.) / tx2ty21 * qp0;
     fvec tx2ty2    = sqrt(tx2ty21);
     //   fvec I_tx2ty2 = qp0 * hC / tx2ty2 ; unsused ???
     tx2ty2 *= hC;
     fvec tx2ty2qp = tx2ty2 * qp0;
-    Ax[step]      = (txty * B[step][0] + ty * B[step][2] - (1.f + tx2) * B[step][1]) * tx2ty2;
-    Ay[step]      = (-txty * B[step][1] - tx * B[step][2] + (1.f + ty2) * B[step][0]) * tx2ty2;
+    Ax[step]      = (txty * B[step][0] + ty * B[step][2] - (fvec(1.) + tx2) * B[step][1]) * tx2ty2;
+    Ay[step]      = (-txty * B[step][1] - tx * B[step][2] + (fvec(1.) + ty2) * B[step][0]) * tx2ty2;
 
-    Ax_tx[step] = Ax[step] * tx * I_tx2ty21 + (ty * B[step][0] - 2.f * tx * B[step][1]) * tx2ty2qp;
+    Ax_tx[step] = Ax[step] * tx * I_tx2ty21 + (ty * B[step][0] - fvec(2.) * tx * B[step][1]) * tx2ty2qp;
     Ax_ty[step] = Ax[step] * ty * I_tx2ty21 + (tx * B[step][0] + B[step][2]) * tx2ty2qp;
     Ay_tx[step] = Ay[step] * tx * I_tx2ty21 + (-ty * B[step][1] - B[step][2]) * tx2ty2qp;
-    Ay_ty[step] = Ay[step] * ty * I_tx2ty21 + (-tx * B[step][1] + 2.f * ty * B[step][0]) * tx2ty2qp;
+    Ay_ty[step] = Ay[step] * ty * I_tx2ty21 + (-tx * B[step][1] + fvec(2.) * ty * B[step][0]) * tx2ty2qp;
 
     step4        = step * 4;
     k[step4]     = tx * h;
@@ -405,10 +405,10 @@ void L1ExtrapolateRungeKutta  // extrapolates track parameters and returns jacob
   //     Derivatives    dx/dqp
   //
 
-  x0[0] = 0.f;
-  x0[1] = 0.f;
-  x0[2] = 0.f;
-  x0[3] = 0.f;
+  x0[0] = fvec(0.);
+  x0[1] = fvec(0.);
+  x0[2] = fvec(0.);
+  x0[3] = fvec(0.);
 
   //
   //   Runge-Kutta step for derivatives dx/dqp
@@ -433,7 +433,7 @@ void L1ExtrapolateRungeKutta  // extrapolates track parameters and returns jacob
   for (i = 0; i < 4; ++i) {
     J[20 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i] + c[3] * k1[12 + i];
   }
-  J[24] = 1.;
+  J[24] = fvec(1.);
   //
   //      end of derivatives dx/dqp
   //
@@ -441,10 +441,10 @@ void L1ExtrapolateRungeKutta  // extrapolates track parameters and returns jacob
   //     Derivatives    dx/tx
   //
 
-  x0[0] = 0.f;
-  x0[1] = 0.f;
-  x0[2] = 1.f;
-  x0[3] = 0.f;
+  x0[0] = fvec(0.);
+  x0[1] = fvec(0.);
+  x0[2] = fvec(1.);
+  x0[3] = fvec(0.);
 
   //
   //   Runge-Kutta step for derivatives dx/dtx
@@ -469,16 +469,16 @@ void L1ExtrapolateRungeKutta  // extrapolates track parameters and returns jacob
     if (i != 2) { J[10 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i] + c[3] * k1[12 + i]; }
   }
   //      end of derivatives dx/dtx
-  J[12] = 1.f;
-  J[14] = 0.f;
+  J[12] = fvec(1.);
+  J[14] = fvec(0.);
 
   //     Derivatives    dx/ty
   //
 
-  x0[0] = 0.f;
-  x0[1] = 0.f;
-  x0[2] = 0.f;
-  x0[3] = 1.f;
+  x0[0] = fvec(0.);
+  x0[1] = fvec(0.);
+  x0[2] = fvec(0.);
+  x0[3] = fvec(1.);
 
   //
   //   Runge-Kutta step for derivatives dx/dty
@@ -505,17 +505,17 @@ void L1ExtrapolateRungeKutta  // extrapolates track parameters and returns jacob
     J[15 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[4 + i] + c[2] * k1[8 + i] + c[3] * k1[12 + i];
   }
   //      end of derivatives dx/dty
-  J[18] = 1.;
-  J[19] = 0.;
+  J[18] = fvec(1.);
+  J[19] = fvec(0.);
 
   //
   //    derivatives dx/dx and dx/dy
 
   for (i = 0; i < 10; ++i) {
-    J[i] = 0.;
+    J[i] = fvec(0.);
   }
-  J[0] = 1.;
-  J[6] = 1.;
+  J[0] = fvec(1.);
+  J[6] = fvec(1.);
 
   fvec dqp = qp_in - qp0;
 
@@ -593,9 +593,9 @@ void L1Extrapolate0(L1TrackPar& T,     // input track parameters (x,y,tx,ty,Q/p)
   //  Part of the analytic extrapolation formula with error (c_light*B*dz)^4/4!
   //
 
-  cnst c_light = 0.000299792458;
+  cnst c_light(0.000299792458);
 
-  cnst c1 = 1., c2i = 1. / 2., c3i = 1. / 3., c6i = 1. / 6., c12i = 1. / 12.;
+  cnst c1(1.), c2i(1. / 2.), c3i(1. / 3.), c6i(1. / 6.), c12i(1. / 12.);
 
   const fvec qp = T.qp;
 
@@ -692,10 +692,10 @@ void L1ExtrapolateTime(L1TrackPar& T,  // input track parameters (x,y,tx,ty,Q/p)
   cnst c_light(29.9792458);
   dz.setZero(timeInfo <= fvec::Zero());
 
-  T.t += dz * sqrt((T.tx * T.tx) + (T.ty * T.ty) + 1) / c_light;
+  T.t += dz * sqrt(T.tx * T.tx + T.ty * T.ty + fvec(1.)) / c_light;
 
-  const fvec k1 = dz * T.tx / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + fvec(1.)));
-  const fvec k2 = dz * T.ty / (c_light * sqrt((T.tx * T.tx) + (T.ty * T.ty) + fvec(1.)));
+  const fvec k1 = dz * T.tx / (c_light * sqrt(T.tx * T.tx + T.ty * T.ty + fvec(1.)));
+  const fvec k2 = dz * T.ty / (c_light * sqrt(T.tx * T.tx + T.ty * T.ty + fvec(1.)));
 
   fvec c52 = T.C52;
   fvec c53 = T.C53;
@@ -710,7 +710,7 @@ void L1ExtrapolateTime(L1TrackPar& T,  // input track parameters (x,y,tx,ty,Q/p)
 
 void L1ExtrapolateLine(L1TrackPar& T, fvec z_out)
 {
-  fvec dz = (z_out - T.z);
+  fvec dz = z_out - T.z;
 
   T.x += T.tx * dz;
   T.y += T.ty * dz;
@@ -747,11 +747,10 @@ void L1ExtrapolateJXY  // is not used currently
   //  Part of the analytic extrapolation formula with error (c_light*B*dz)^4/4!
   //
 
-  //   cnst ZERO = 0.0, ONE = 1.;
-  cnst c_light = 0.000299792458;
+  cnst c_light(0.000299792458);
 
-  cnst c1 = 1., c2 = 2., c3 = 3., c4 = 4., c6 = 6., c9 = 9., c15 = 15., c18 = 18., c45 = 45., c2i = 1. / 2.,
-       c6i = 1. / 6., c12i = 1. / 12.;
+  cnst c1(1.), c2(2.), c3(3.), c4(4.), c6(6.), c9(9.), c15(15.), c18(18.), c45(45.), c2i(1. / 2.), c6i(1. / 6.),
+    c12i(1. / 12.);
 
   fvec dz2 = dz * dz;
   fvec dz3 = dz2 * dz;
@@ -828,9 +827,9 @@ void L1ExtrapolateJXY  // is not used currently
 
   fvec Syyy;
   {
-    constexpr double d = 1. / 181440.;
-    cnst c000(7560 * d), c001(9 * 1008 * d), c002(5 * 1008 * d), c011(21 * 180 * d), c012(24 * 180 * d),
-      c022(7 * 180 * d), c111(540 * d), c112(945 * d), c122(560 * d), c222(112 * d);
+    constexpr double d = 181440.;
+    cnst c000(7560 / d), c001(9 * 1008 / d), c002(5 * 1008 / d), c011(21 * 180 / d), c012(24 * 180 / d),
+      c022(7 * 180 / d), c111(540 / d), c112(945 / d), c122(560 / d), c222(112 / d);
     fvec Fy22 = Fy2 * Fy2;
     Syyy      = Fy0 * (Fy0 * (c000 * Fy0 + c001 * Fy1 + c002 * Fy2) + Fy1 * (c011 * Fy1 + c012 * Fy2) + c022 * Fy22)
            + Fy1 * (Fy1 * (c111 * Fy1 + c112 * Fy2) + c122 * Fy22) + c222 * Fy22 * Fy2;
@@ -891,7 +890,7 @@ void L1ExtrapolateJXY0(fvec& tx,
                        fvec dz,   // extrapolate to this dz position
                        L1FieldRegion& F, fvec& extrDx, fvec& extrDy, fvec& J04, fvec& J14)
 {
-  cnst c_light = 0.000299792458, c1 = 1., c2i = 0.5, c6i = 1. / 6., c12i = 1. / 12.;
+  cnst c_light(0.000299792458), c1(1.), c2i(0.5), c6i(1. / 6.), c12i(1. / 12.);
 
   fvec dz2     = dz * dz;
   fvec dzc6i   = dz * c6i;
