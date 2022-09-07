@@ -1,13 +1,14 @@
 # Create a library called "libLittrackparallel".
 
 set(INCLUDE_DIRECTORIES
-  ${CBMROOT_SOURCE_DIR}/reco/L1/vectors
+  ${CBMROOT_SOURCE_DIR}/algo
 )
 
 include_directories(${INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
   ${Vc_LIB_DIR}
+  ${Algo_LIB_DIR}
 )
 
 link_directories(${LINK_DIRECTORIES})
@@ -35,7 +36,7 @@ ENDIF(SSE_FOUND)
 add_library(Littrackparallel SHARED ${LITTRACKPARALLEL_SRCS})
 set_target_properties(Littrackparallel PROPERTIES ${FAIRROOT_LIBRARY_PROPERTIES})
 
-target_link_libraries(Littrackparallel Vc.a)
+target_link_libraries(Littrackparallel Algo Vc.a)
 
 # install(TARGETS Littrackparallel DESTINATION ${CMAKE_BINARY_DIR}/lib)
 install(TARGETS Littrackparallel DESTINATION lib)

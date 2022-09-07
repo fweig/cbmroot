@@ -16,6 +16,8 @@ ELSE(SSE_FOUND)
 ENDIF(SSE_FOUND)
 
 Set(INCLUDE_DIRECTORIES
+
+  ${CBMROOT_SOURCE_DIR}/algo
   ${CBMROOT_SOURCE_DIR}/reco/base
   ${CBMROOT_SOURCE_DIR}/reco/detectors/sts
   ${CBMROOT_SOURCE_DIR}/reco/detectors/rich
@@ -63,7 +65,6 @@ Set(INCLUDE_DIRECTORIES
 Include_Directories(${INCLUDE_DIRECTORIES})
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${VC_INCLUDE_DIRS}
   ${BASE_INCLUDE_DIRECTORIES}
   ${KFParticle_INCLUDE_DIR}
 )
@@ -80,7 +81,7 @@ endif()
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
-  ${Vc_LIB_DIR}
+  ${Algo_LIB_DIR}
   ${KFParticle_LIB_DIR}
   ${FAIRROOT_LIBRARY_DIR}
   ${ROOT_LIBRARY_DIR}
@@ -247,7 +248,7 @@ Set(LINKDEF L1LinkDef.h)
 Set(LIBRARY_NAME L1)
 
 Set(DEPENDENCIES
-  Vc.a
+  Algo
   KF
   KFParticle
   Base
@@ -305,7 +306,7 @@ Install(FILES CbmL1Counters.h
   L1Algo/L1Constants.h
   L1Algo/L1Utils.h
   L1Algo/L1NaN.h
-  L1Algo/L1SimdSerializer.h 
+  L1Algo/L1SimdSerializer.h
   DESTINATION include
 )
 
@@ -315,9 +316,4 @@ Install(FILES L1Algo/L1Algo.h
   L1Algo/L1Hit.h
   L1Algo/L1Vector.h
   DESTINATION include/L1Algo
-)
-
-Install(FILES vectors/L1vec.h
-  vectors/L1vecVc.h
-  DESTINATION include/vectors
 )

@@ -37,6 +37,7 @@
 
 #include "KFParticleDatabase.h"
 #include "L1Algo.h"  // Also defines L1Parameters
+#include "L1Def.h"
 #include "L1Extrapolation.h"
 #include "L1Filtration.h"
 #include "L1Fit.h"
@@ -59,7 +60,7 @@ CbmL1PFFitter::CbmL1PFFitter() {}
 
 CbmL1PFFitter::~CbmL1PFFitter() {}
 
-void CbmL1PFFitter::FilterFirst(L1TrackPar& track, fvec& x, fvec& y, L1Station& st)
+void FilterFirst(L1TrackPar& track, fvec& x, fvec& y, L1Station& st)
 {
   track.C00 = st.XYInfo.C00;
   track.C10 = st.XYInfo.C10;

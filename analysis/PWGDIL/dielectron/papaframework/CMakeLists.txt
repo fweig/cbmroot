@@ -21,6 +21,8 @@ ${CBMROOT_SOURCE_DIR}/core/detectors/rich
 
 ${CBMROOT_SOURCE_DIR}/sim/transport/generators/unigen
 
+${CBMROOT_SOURCE_DIR}/algo
+
 ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/Interface 
 ${KFParticle_INCLUDE_DIR}
@@ -136,7 +138,7 @@ EndIf()
 Set(LINKDEF CbmPapaLinkDef.h)
 Set(LIBRARY_NAME CbmPapa)
 Set(DEPENDENCIES
-    L1 KF Littrack CbmRichReco CbmRichBase CbmBase CbmData CbmSimGenerators Base)
+    Algo L1 KF Littrack CbmRichReco CbmRichBase CbmBase CbmData CbmSimGenerators Base)
 
 GENERATE_LIBRARY()
 

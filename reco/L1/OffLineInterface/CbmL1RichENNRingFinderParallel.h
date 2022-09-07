@@ -24,9 +24,8 @@
 
 #include "CbmRichRingFinder.h"
 
-#include "vectors/L1vec.h"
-//#include "../vectors/PSEUDO_F32vec4.h" // for check
-//#include "../vectors/PSEUDO_F32vec1.h" // for check
+#include "ca/simd/CaSimd.h"
+using namespace cbm::algo::ca;  // TODO: remove "using" from headers
 
 #include "TStopwatch.h"
 #include "TString.h"

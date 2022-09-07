@@ -11,8 +11,6 @@
 
 #include <assert.h>
 
-#include "vectors/L1vec.h"
-
 #ifdef FAST_CODE
 
 #define L1_NO_ASSERT  // use with asserts, etc.
@@ -66,6 +64,5 @@
 #endif
 
 typedef int index_type;
-
 
 #endif

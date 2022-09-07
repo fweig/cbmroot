@@ -22,6 +22,7 @@ ${CBMDATA_DIR}/tof
 ${CBMDATA_DIR}/psd
 ${CBMDATA_DIR}/global
 
+${CBMROOT_SOURCE_DIR}/algo
 ${CBMROOT_SOURCE_DIR}/reco/L1
 ${CBMROOT_SOURCE_DIR}/reco/L1/L1Algo
 
@@ -89,7 +90,7 @@ ENDIF (SSE_FOUND)
 set(LINKDEF CbmEventBuilderLinkDef.h)
 Set(LIBRARY_NAME CbmEventBuilder)
 Set(DEPENDENCIES
-    CbmData CbmBase CbmField CbmStsBase CbmMvd Base CbmQaBase Vc.a
+    Algo CbmData CbmBase CbmField CbmStsBase CbmMvd Base CbmQaBase
 )
 
 GENERATE_LIBRARY()

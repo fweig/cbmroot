@@ -13,7 +13,7 @@
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/split_free.hpp>
 
-#include "vectors/L1vec.h"
+#include "ca/simd/CaSimd.h"
 /// This header defines functionality for saving and loading SIMDized vectors. At the moment, only the first element of
 /// the vector can be saved, and the loaded vector will be horizontally equal.
 ///

@@ -16,6 +16,8 @@ ${CBMDATA_DIR}/rich
 ${CBMDATA_DIR}/trd
 ${CBMDATA_DIR}/tof
 
+${CBMROOT_SOURCE_DIR}/algo
+
 ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/Interface 
 
@@ -72,7 +74,7 @@ ADD_DEFINITIONS(-DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -D
 Set(LINKDEF LmvmLinkDef.h)
 Set(LIBRARY_NAME CbmLmvm)
 Set(DEPENDENCIES
-    Littrack LittrackQA KF L1 CbmRichBase CbmRichReco CbmRecoBase CbmBase CbmData)
+    Littrack LittrackQA Algo KF L1 CbmRichBase CbmRichReco CbmRecoBase CbmBase CbmData)
 Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 
 GENERATE_LIBRARY()

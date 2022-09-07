@@ -22,8 +22,6 @@
 
 #include <vector>
 
-#include "L1Def.h"
-
 class CbmL1Track;
 class CbmStsTrack;
 class L1TrackPar;
@@ -37,8 +35,6 @@ class CbmL1PFFitter {
 public:
   CbmL1PFFitter();
   ~CbmL1PFFitter();
-
-  void FilterFirst(L1TrackPar& track, fvec& x, fvec& y, L1Station& st);
 
   //functions for fitting CbmStsTrack
   void Fit(std::vector<CbmStsTrack>& Tracks, std::vector<int>& pidHypo);

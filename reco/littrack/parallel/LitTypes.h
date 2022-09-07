@@ -12,6 +12,9 @@
 #ifndef LITTYPES_H_
 #define LITTYPES_H_
 
-#include "L1vecVc.h"
+#include "ca/simd/CaSimd.h"
+
+using cbm::algo::ca::fscal;
+using cbm::algo::ca::fvec;
 
 #endif /* LITTYPES_H_ */

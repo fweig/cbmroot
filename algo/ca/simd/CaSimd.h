@@ -2,10 +2,10 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov [committer]*/
 
-#ifndef L1vec_H
-#define L1vec_H
+#ifndef Ca_CaSimd_H
+#define Ca_CaSimd_H
 
-#include "vectors/L1vecVc.h"
-//#include "vectors/L1vecPseudo.h"
+#include "ca/simd/CaSimdVc.h"
+//#include "ca/simd/CaSimdPseudo.h"
 
 #endif

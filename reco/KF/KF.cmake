@@ -5,6 +5,7 @@
 Set(INCLUDE_DIRECTORIES
 ${CBMBASE_DIR} 
 
+${CBMROOT_SOURCE_DIR}/algo
 ${CBMROOT_SOURCE_DIR}/reco/base
 
 ${CBMDATA_DIR}
@@ -39,14 +40,13 @@ ${CBMROOT_SOURCE_DIR}/sim/transport/geosetup # TMP for tracker interface
 Include_Directories( ${INCLUDE_DIRECTORIES})
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${VC_INCLUDE_DIRS}
   ${BASE_INCLUDE_DIRECTORIES} 
 )
 
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
-${Vc_LIB_DIR}
+${Algo_LIB_DIR}
 ${FAIRROOT_LIBRARY_DIR}
 ${ROOT_LIBRARY_DIR}
 ${Boost_LIBRARY_DIRS}
@@ -175,7 +175,7 @@ ENDIF (SSE_FOUND)
 set(LINKDEF KFLinkDef.h)
 Set(LIBRARY_NAME KF)
 Set(DEPENDENCIES
-  CbmRecoBase CbmSimSteer CbmStsBase CbmMvd CbmMuchBase CbmTrdBase CbmTofBase CbmBase CbmData Base Vc.a Minuit2
+  Algo CbmRecoBase CbmSimSteer CbmStsBase CbmMvd CbmMuchBase CbmTrdBase CbmTofBase CbmBase CbmData Base Minuit2
 )
 Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 

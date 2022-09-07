@@ -13,6 +13,8 @@ ${CBMDATA_DIR}/rich
 ${CBMROOT_SOURCE_DIR}/core/detectors/rich/utils
 ${CBMROOT_SOURCE_DIR}/core/detectors/rich
 
+${CBMROOT_SOURCE_DIR}/algo
+
 ${CBMROOT_SOURCE_DIR}/reco/base
 
 ${CBMROOT_SOURCE_DIR}/reco/KF
@@ -75,7 +77,7 @@ ADD_DEFINITIONS(-DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -D
 
 Set(LINKDEF CbmConversionAnalysisLinkDef.h)
 Set(LIBRARY_NAME CbmConversionAnalysis)
-Set(DEPENDENCIES KF L1 CbmRichReco CbmRichBase CbmRecoBase CbmData Littrack)
+Set(DEPENDENCIES Algo KF L1 CbmRichReco CbmRichBase CbmRecoBase CbmData Littrack)
 Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 
 GENERATE_LIBRARY()

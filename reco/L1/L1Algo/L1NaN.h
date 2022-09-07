@@ -18,6 +18,8 @@
 #include <cmath>
 
 #include "L1Def.h"
+#include "ca/simd/CaSimd.h"
+using namespace cbm::algo::ca;  // TODO: remove "using" from headers
 
 /// Namespace L1NaN defines functions to set variables to NaN and check wether they are NaN or not
 ///
