@@ -49,8 +49,6 @@ void L1Algo::SetNThreads(unsigned int n)
     fz_pos3[i].reserve(L1Constants::size::kMaxPortionTripletsP);
     fTimeR[i].reserve(L1Constants::size::kMaxPortionTripletsP);
     fTimeER[i].reserve(L1Constants::size::kMaxPortionTripletsP);
-    dx[i].reserve(L1Constants::size::kMaxPortionTripletsP);
-    dy[i].reserve(L1Constants::size::kMaxPortionTripletsP);
     du[i].reserve(L1Constants::size::kMaxPortionTripletsP);
     dv[i].reserve(L1Constants::size::kMaxPortionTripletsP);
 

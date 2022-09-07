@@ -118,9 +118,6 @@ inline void L1Algo::findSingletsStep0(  // input
     u_back_l[i1_V][i1_4]  = hitl.V();
 
     if (fUseHitErrors) {
-      //      d_x[i1_V][i1_4]  = hitl.dX();
-      //      d_y[i1_V][i1_4]  = hitl.dY();
-      //      d_xy[i1_V][i1_4] = hitl.dXY();
       d_u[i1_V][i1_4] = hitl.dU();
       d_v[i1_V][i1_4] = hitl.dV();
     }
@@ -554,8 +551,6 @@ inline void L1Algo::findTripletsStep0(  // input
   // output
   Tindex& n3, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
   L1Vector<L1HitIndex_t>& hitsr_3, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
-  //  L1Vector<fvec>& dx_,
-  //  L1Vector<fvec>& dy_,
   L1Vector<fvec>& dv_, L1Vector<fvec>& du_, L1Vector<fvec>& timeR, L1Vector<fvec>& timeER)
 {
   int iStaM = &stam - fParameters.GetStations().begin();
@@ -900,13 +895,11 @@ inline void L1Algo::findTripletsStep0(  // input
         T3.SetOneEntry(n3_4, T2, i2_4);
         u_front_3[n3_V][n3_4] = hitr.U();
         u_back_3[n3_V][n3_4]  = hitr.V();
-        //dx_[n3_V][n3_4]       = hitr.dX();
-        // dy_[n3_V][n3_4]       = hitr.dY();
-        du_[n3_V][n3_4]     = hitr.dU();
-        dv_[n3_V][n3_4]     = hitr.dV();
-        z_Pos_3[n3_V][n3_4] = zr;
-        timeR[n3_V][n3_4]   = hitr.time;
-        timeER[n3_V][n3_4]  = hitr.timeEr;
+        du_[n3_V][n3_4]       = hitr.dU();
+        dv_[n3_V][n3_4]       = hitr.dV();
+        z_Pos_3[n3_V][n3_4]   = zr;
+        timeR[n3_V][n3_4]     = hitr.time;
+        timeER[n3_V][n3_4]    = hitr.timeEr;
 
         n3++;
         n3_V = n3 / fvec::size();
@@ -917,8 +910,6 @@ inline void L1Algo::findTripletsStep0(  // input
           u_front_3.push_back(fvec::Zero());
           u_back_3.push_back(fvec::Zero());
           z_Pos_3.push_back(fvec::Zero());
-          //            dx_.push_back(fvec::Zero());
-          //            dy_.push_back(fvec::Zero());
           du_.push_back(fvec::Zero());
           dv_.push_back(fvec::Zero());
           timeR.push_back(fvec::Zero());
@@ -933,8 +924,6 @@ inline void L1Algo::findTripletsStep0(  // input
 /// Add the right hits to parameters estimation.
 inline void L1Algo::findTripletsStep1(  // input
   Tindex n3_V, const L1Station& star, L1Vector<fvec>& u_front_, L1Vector<fvec>& u_back_, L1Vector<fvec>& z_Pos,
-  //  L1Vector<fvec>& dx_,
-  //  L1Vector<fvec>& dy_,
   L1Vector<fvec>& dv_, L1Vector<fvec>& du_, L1Vector<fvec>& timeR, L1Vector<fvec>& timeER,
   // output
   //                L1TrackPar *T_3
@@ -1558,10 +1547,8 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
     L1Vector<fvec>& z_pos3          = fz_pos3[Thread];
     L1Vector<fvec>& timeR           = fTimeR[Thread];
     L1Vector<fvec>& timeER          = fTimeER[Thread];
-    //    L1Vector<fvec>& dx3       = dx[Thread];
-    //    L1Vector<fvec>& dy3       = dy[Thread];
-    L1Vector<fvec>& du3 = du[Thread];
-    L1Vector<fvec>& dv3 = dv[Thread];
+    L1Vector<fvec>& du3             = du[Thread];
+    L1Vector<fvec>& dv3             = dv[Thread];
 
     T_3.clear();
     hitsl_3.clear();
@@ -1570,8 +1557,6 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
     u_front3.clear();
     u_back3.clear();
     z_pos3.clear();
-    //    dx3.clear();
-    //    dy3.clear();
     du3.clear();
     dv3.clear();
     timeR.clear();
@@ -1588,10 +1573,7 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
 
       mrDuplets,
       // output
-      n3, T_3, hitsl_3, hitsm_3, hitsr_3, u_front3, u_back3, z_pos3,
-      //      dx3,
-      //      dy3,
-      du3, dv3, timeR, timeER);
+      n3, T_3, hitsl_3, hitsm_3, hitsr_3, u_front3, u_back3, z_pos3, du3, dv3, timeR, timeER);
 
 
     n3_V = (n3 + fvec::size() - 1) / fvec::size();
@@ -1607,10 +1589,7 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
 
     /// Add the right hits to parameters estimation.
     findTripletsStep1(  // input
-      n3_V, star, u_front3, u_back3, z_pos3,
-      //      dx3,
-      //      dy3,
-      du3, dv3, timeR, timeER,
+      n3_V, star, u_front3, u_back3, z_pos3, du3, dv3, timeR, timeER,
       // output
       T_3);
 

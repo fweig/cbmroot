@@ -311,15 +311,11 @@ public:
     // output
     Tindex& n3, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
     L1Vector<L1HitIndex_t>& hitsr_3, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
-    //    L1Vector<fvec>& dx_,
-    //    L1Vector<fvec>& dy_,
     L1Vector<fvec>& du_, L1Vector<fvec>& dv_, L1Vector<fvec>& timeR, L1Vector<fvec>& timeER);
 
   /// Add the right hits to parameters estimation.
   void findTripletsStep1(  // input
     Tindex n3_V, const L1Station& star, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
-    //    L1Vector<fvec>& dx_,
-    //    L1Vector<fvec>& dy_,
     L1Vector<fvec>& du_, L1Vector<fvec>& dv_, L1Vector<fvec>& timeR, L1Vector<fvec>& timeER,
     // output
     L1Vector<L1TrackPar>& T_3);
@@ -527,8 +523,6 @@ public:
   L1Vector<fvec> fz_pos3[L1Constants::size::kMaxNthreads] {"L1Algo::fz_pos3"};
   L1Vector<fvec> fTimeR[L1Constants::size::kMaxNthreads] {"L1Algo::fTimeR"};
   L1Vector<fvec> fTimeER[L1Constants::size::kMaxNthreads] {"L1Algo::fTimeER"};
-  L1Vector<fvec> dx[L1Constants::size::kMaxNthreads] {"L1Algo::dx"};
-  L1Vector<fvec> dy[L1Constants::size::kMaxNthreads] {"L1Algo::dy"};
   L1Vector<fvec> du[L1Constants::size::kMaxNthreads] {"L1Algo::du"};
   L1Vector<fvec> dv[L1Constants::size::kMaxNthreads] {"L1Algo::dv"};
 
