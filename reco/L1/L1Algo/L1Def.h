@@ -7,8 +7,6 @@
 
 // #define FAST_CODE // FAST_CODE = more unsafe
 
-#include "TStopwatch.h"
-
 #include <iostream>
 
 #include <assert.h>

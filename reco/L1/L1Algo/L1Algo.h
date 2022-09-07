@@ -309,33 +309,29 @@ public:
 
     const L1Vector<char>& mrDuplets,
     // output
-    Tindex& n3, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
-    L1Vector<L1HitIndex_t>& hitsr_3, nsL1::vector<fvec>::TSimd& u_front_3, nsL1::vector<fvec>::TSimd& u_back_3,
-    nsL1::vector<fvec>::TSimd& z_Pos_3,
-    //    nsL1::vector<fvec>::TSimd& dx_,
-    //    nsL1::vector<fvec>::TSimd& dy_,
-    nsL1::vector<fvec>::TSimd& du_, nsL1::vector<fvec>::TSimd& dv_, nsL1::vector<fvec>::TSimd& timeR,
-    nsL1::vector<fvec>::TSimd& timeER);
+    Tindex& n3, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
+    L1Vector<L1HitIndex_t>& hitsr_3, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
+    //    L1Vector<fvec>& dx_,
+    //    L1Vector<fvec>& dy_,
+    L1Vector<fvec>& du_, L1Vector<fvec>& dv_, L1Vector<fvec>& timeR, L1Vector<fvec>& timeER);
 
   /// Add the right hits to parameters estimation.
   void findTripletsStep1(  // input
-    Tindex n3_V, const L1Station& star, nsL1::vector<fvec>::TSimd& u_front_3, nsL1::vector<fvec>::TSimd& u_back_3,
-    nsL1::vector<fvec>::TSimd& z_Pos_3,
-    //    nsL1::vector<fvec>::TSimd& dx_,
-    //    nsL1::vector<fvec>::TSimd& dy_,
-    nsL1::vector<fvec>::TSimd& du_, nsL1::vector<fvec>::TSimd& dv_, nsL1::vector<fvec>::TSimd& timeR,
-    nsL1::vector<fvec>::TSimd& timeER,
+    Tindex n3_V, const L1Station& star, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
+    //    L1Vector<fvec>& dx_,
+    //    L1Vector<fvec>& dy_,
+    L1Vector<fvec>& du_, L1Vector<fvec>& dv_, L1Vector<fvec>& timeR, L1Vector<fvec>& timeER,
     // output
-    nsL1::vector<L1TrackPar>::TSimd& T_3);
+    L1Vector<L1TrackPar>& T_3);
 
   /// Refit Triplets.
   void findTripletsStep2(  // input
-    Tindex n3, int istal, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
-    L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3, int nIterations = 0);
+    Tindex n3, int istal, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
+    L1Vector<L1HitIndex_t>& hitsr_3, int nIterations = 0);
 
   /// Select triplets. Save them into vTriplets.
   void findTripletsStep3(  // input
-    Tindex n3, int istal, int istam, int istar, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
+    Tindex n3, int istal, int istam, int istar, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
     L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3,
     // output
     Tindex& nstaltriplets);
@@ -362,8 +358,7 @@ public:
   /// Find triplets on station
   void TripletsStaPort(  // input
     int istal, int istam, int istar, Tindex& nstaltriplets, L1TrackPar* T_1, L1FieldRegion* fld_1,
-    L1HitIndex_t* hitsl_1,
-    Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2,
+    L1HitIndex_t* hitsl_1, Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2,
     const L1Vector<char>& mrDuplets
     // output
   );
@@ -521,21 +516,21 @@ public:
   //  fvec zPos[Portion/fvecLen];
   //  fvec fHitTime[Portion/fvecLen];
 
-  nsL1::vector<L1TrackPar>::TSimd fT_3[L1Constants::size::kMaxNthreads];
+  L1Vector<L1TrackPar> fT_3[L1Constants::size::kMaxNthreads] {"fT_3"};
 
   L1Vector<L1HitIndex_t> fhitsl_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsl_3"};
   L1Vector<L1HitIndex_t> fhitsm_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsm_3"};
   L1Vector<L1HitIndex_t> fhitsr_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsr_3"};
 
-  nsL1::vector<fvec>::TSimd fu_front3[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd fu_back3[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd fz_pos3[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd fTimeR[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd fTimeER[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd dx[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd dy[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd du[L1Constants::size::kMaxNthreads];
-  nsL1::vector<fvec>::TSimd dv[L1Constants::size::kMaxNthreads];
+  L1Vector<fvec> fu_front3[L1Constants::size::kMaxNthreads] {"L1Algo::fu_front3"};
+  L1Vector<fvec> fu_back3[L1Constants::size::kMaxNthreads] {"L1Algo::fu_back3"};
+  L1Vector<fvec> fz_pos3[L1Constants::size::kMaxNthreads] {"L1Algo::fz_pos3"};
+  L1Vector<fvec> fTimeR[L1Constants::size::kMaxNthreads] {"L1Algo::fTimeR"};
+  L1Vector<fvec> fTimeER[L1Constants::size::kMaxNthreads] {"L1Algo::fTimeER"};
+  L1Vector<fvec> dx[L1Constants::size::kMaxNthreads] {"L1Algo::dx"};
+  L1Vector<fvec> dy[L1Constants::size::kMaxNthreads] {"L1Algo::dy"};
+  L1Vector<fvec> du[L1Constants::size::kMaxNthreads] {"L1Algo::du"};
+  L1Vector<fvec> dv[L1Constants::size::kMaxNthreads] {"L1Algo::dv"};
 
 
   //   Tindex NHits_l[L1Constants::size::kMaxNstations];

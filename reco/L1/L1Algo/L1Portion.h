@@ -19,12 +19,11 @@ template<>
 class L1Portion<L1TrackPar> {
 public:
   typedef L1TrackPar T;
-  //     typedef vector<T> vType;
-  typedef nsL1::vector<T>::TSimd vType;
+  typedef L1Vector<T> vType;
 
-  L1Portion() : a(), dataSize(0) {};
-  L1Portion(int size) : a(), dataSize(0) { reserve(size); };
-  L1Portion(int size, int size2) : a(), dataSize(size2)
+  L1Portion() {};
+  L1Portion(int size) { reserve(size); };
+  L1Portion(int size, int size2) : dataSize(size2)
   {
     reserve(size);
     //     reserve2(size2);
@@ -40,7 +39,7 @@ public:
   void push_back(vType& v) { a.push_back(v); };
   void add_void()
   {
-    vType v;
+    vType v("L1Portion<L1TrackPar>::add_void");
     //     v.resize(dataSize);
     a.push_back(v);
     a[a.size() - 1].reserve(dataSize);
@@ -60,21 +59,20 @@ public:
   };
 
 private:
-  vector<vType> a;
+  vector<vType> a {"L1Portion<L1TrackPar>::a"};
   //   int mainSize; // size of a
-  int dataSize;  // size of vType
+  int dataSize {0};  // size of vType
 };
 
 template<>
 class L1Portion<L1FieldRegion> {
 public:
   typedef L1FieldRegion T;
-  typedef nsL1::vector<T>::TSimd vType;
-  //     typedef std::vector<T, nsL1::SimdAlloc<T> > vType;
+  typedef L1Vector<T> vType;
 
-  L1Portion() : a(), dataSize(0) {};
-  L1Portion(int size) : a(), dataSize(0) { reserve(size); };
-  L1Portion(int size, int size2) : a(), dataSize(size2)
+  L1Portion() {};
+  L1Portion(int size) { reserve(size); };
+  L1Portion(int size, int size2) : dataSize(size2)
   {
     reserve(size);
     //     reserve2(size2);
@@ -91,7 +89,7 @@ public:
   void push_back(vType& v) { a.push_back(v); };
   void add_void()
   {
-    vType v;
+    vType v("L1Portion<L1FieldRegion>::add_void");
     //     v.resize(dataSize);
     a.push_back(v);
     a[a.size() - 1].reserve(dataSize);
@@ -111,9 +109,9 @@ public:
   };
 
 private:
-  vector<vType> a;
+  vector<vType> a {"L1Portion<L1FieldRegion>::a"};
   //   int mainSize; // size of a
-  int dataSize;  // size of vType
+  int dataSize {0};  // size of vType
 };
 
 
@@ -122,9 +120,9 @@ class L1Portion {
 public:
   typedef vector<T> vType;
 
-  L1Portion() : a(), dataSize(0) {};
-  L1Portion(int size) : a(), dataSize(0) { reserve(size); };
-  L1Portion(int size, int size2) : a(), dataSize(size2)
+  L1Portion() {};
+  L1Portion(int size) { reserve(size); };
+  L1Portion(int size, int size2) : dataSize(size2)
   {
     reserve(size);
     //     reserve2(size2);
@@ -140,7 +138,7 @@ public:
   void push_back(vType& v) { a.push_back(v); };
   void add_void()
   {
-    vType v;
+    vType v("L1Portion<T>::add_void");
     //     v.resize(dataSize);
     a.push_back(v);
     a[a.size() - 1].reserve(dataSize);
@@ -160,9 +158,9 @@ public:
   };
 
 private:
-  vector<vType> a;
+  vector<vType> a {"L1Portion<T>::a"};
   //   int mainSize; // size of a
-  int dataSize;  // size of vType
+  int dataSize {0};  // size of vType
 };
 
 #endif  // L1Portion_H

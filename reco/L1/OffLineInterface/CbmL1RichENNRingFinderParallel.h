@@ -24,14 +24,14 @@
 
 #include "CbmRichRingFinder.h"
 
-#include "L1Def.h"
+#include "vectors/L1vec.h"
 //#include "../vectors/PSEUDO_F32vec4.h" // for check
 //#include "../vectors/PSEUDO_F32vec1.h" // for check
 
 #include "TStopwatch.h"
 #include "TString.h"
 
-#include <vector>
+#include "L1Vector.h"
 
 class ENNHit;
 class ENNRing;
@@ -179,8 +179,8 @@ class CbmL1RichENNRingFinderParallel : public CbmRichRingFinder {
   };
 
 
-  void ENNRingFinder(const int NHits, nsL1vector<ENNHitV>::TSimd& HitsV, std::vector<ENNRing>& Rings,
-                     float HitSize = 1., THitIndex MinRingHits = 5, fvec RMin = 2., fvec RMax = 6.);
+  void ENNRingFinder(const int NHits, L1Vector<ENNHitV>& HitsV, std::vector<ENNRing>& Rings, float HitSize = 1.,
+                     THitIndex MinRingHits = 5, fvec RMin = 2., fvec RMax = 6.);
 
 public:
   /** Standard constructor **/

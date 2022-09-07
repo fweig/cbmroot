@@ -121,10 +121,10 @@ Int_t CbmL1RichENNRingFinderParallel::DoFind(CbmEvent* event, TClonesArray* HitA
   sort(Down.begin(), Down.end(), ENNHit::Compare);
 
   // save local-out indices correspondece
-  vector<Int_t> outIndicesUp;    // indices in HitArray indexed by index in Up
-  vector<Int_t> outIndicesDown;  // indices in HitArray indexed by index in Down
-  outIndicesUp.resize(Up.size());
-  outIndicesDown.resize(Down.size());
+  L1Vector<Int_t> outIndicesUp;    // indices in HitArray indexed by index in Up
+  L1Vector<Int_t> outIndicesDown;  // indices in HitArray indexed by index in Down
+  outIndicesUp.reset(Up.size());
+  outIndicesDown.reset(Down.size());
   for (THitIndex k = 0; k < Up.size(); k++) {
     Up[k].localIndex = k;
     outIndicesUp[k]  = Up[k].outIndex;
@@ -143,10 +143,10 @@ Int_t CbmL1RichENNRingFinderParallel::DoFind(CbmEvent* event, TClonesArray* HitA
 #endif  // PRINT_TIMING
 
   // save local-out indices correspondece
-  nsL1vector<ENNHitV>::TSimd UpV;
-  nsL1vector<ENNHitV>::TSimd DownV;
-  UpV.resize((Up.size() + fvec::size() - 1) / fvec::size());
-  DownV.resize((Down.size() + fvec::size() - 1) / fvec::size());
+  L1Vector<ENNHitV> UpV;
+  L1Vector<ENNHitV> DownV;
+  UpV.reset((Up.size() + fvec::size() - 1) / fvec::size());
+  DownV.reset((Down.size() + fvec::size() - 1) / fvec::size());
   for (THitIndex k = 0; k < Up.size(); k++) {
     int k_4 = k % fvec::size(), k_V = k / fvec::size();
     ENNHitV& hits = UpV[k_V];  // TODO change on ENNHitV
@@ -234,9 +234,8 @@ Int_t CbmL1RichENNRingFinderParallel::DoFind(CbmEvent* event, TClonesArray* HitA
 }
 
 
-void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<ENNHitV>::TSimd& HitsV,
-                                                   vector<ENNRing>& Rings, float HitSize, THitIndex MinRingHits,
-                                                   fvec /*RMin*/, fvec RMax)
+void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, L1Vector<ENNHitV>& HitsV, vector<ENNRing>& Rings,
+                                                   float HitSize, THitIndex MinRingHits, fvec /*RMin*/, fvec RMax)
 {
 #ifdef PRINT_TIMING
   GetTimer("All").Start(0);
@@ -268,17 +267,17 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
 #ifdef PRINT_TIMING
   GetTimer("Ring finding").Start(0);
 #endif  // PRINT_TIMING
-  nsL1vector<ENNSearchHitV>::TSimd SearchArea;
-  nsL1vector<ENNHitV>::TSimd PickUpArea;
+  L1Vector<ENNSearchHitV> SearchArea;
+  L1Vector<ENNHitV> PickUpArea;
   const int MaxAreaHits = 200;  // TODO take into account NHits
 
-  SearchArea.resize(MaxAreaHits, ENNSearchHitV());
-  PickUpArea.resize(MaxAreaHits);
+  SearchArea.reset(MaxAreaHits, ENNSearchHitV());
+  PickUpArea.reset(MaxAreaHits);
 
   // TODO 1
 #if 0
-  nsL1vector<ENNRingV>::TSimd rings_tmp; // simd hits for tmp store
-  rings_tmp.resize(100); // TODO use NRings
+  L1Vector<ENNRingV> rings_tmp; // simd hits for tmp store
+  rings_tmp.reset(100); // TODO use NRings
   int nRings_tmp = 0;
 #endif
 
@@ -519,7 +518,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
       ringV.localIHits.push_back(iHit.localIndex);
       ringV.NHits = 1;
       ringV.chi2  = 0;
-      nsL1vector<fvec>::TSimd Shadow; // save hit indices of hits, which's quality will be changed
+      L1Vector<fvec> Shadow; // save hit indices of hits, which's quality will be changed
       Shadow.reserve(25);
       Shadow.push_back(iHit.localIndex);
       for( THitIndex ih = 0; ih < MaxSearchAreaSize; ih++){
@@ -734,7 +733,7 @@ void CbmL1RichENNRingFinderParallel::ENNRingFinder(const int NHits, nsL1vector<E
       const THitIndex maxI    = i->localIHits.size();
 
       vector<ENNSearchHitV> shits;
-      shits.resize(maxI);
+      shits.reset(maxI);
       for (THitIndex iih = 0; iih < maxI; iih++) {
         const THitIndex ih  = i->localIHits[iih];
         const ENNHitV& hit  = HitsV[ih / fvec::size()];

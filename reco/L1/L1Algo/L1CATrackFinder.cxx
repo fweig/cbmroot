@@ -39,6 +39,7 @@
 #endif  // _OPENMP
 
 #include "TRandom.h"
+#include "TStopwatch.h"
 
 #include "L1HitsSortHelper.h"
 #include "L1Timer.h"
@@ -551,13 +552,11 @@ inline void L1Algo::findTripletsStep0(  // input
   L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1, Tindex n2, L1Vector<L1HitIndex_t>& hitsm_2,
   L1Vector<L1HitIndex_t>& i1_2, const L1Vector<char>& /*mrDuplets*/,
   // output
-  Tindex& n3, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
-  L1Vector<L1HitIndex_t>& hitsr_3, nsL1::vector<fvec>::TSimd& u_front_3, nsL1::vector<fvec>::TSimd& u_back_3,
-  nsL1::vector<fvec>::TSimd& z_Pos_3,
-  //  nsL1::vector<fvec>::TSimd& dx_,
-  //  nsL1::vector<fvec>::TSimd& dy_,
-  nsL1::vector<fvec>::TSimd& dv_, nsL1::vector<fvec>::TSimd& du_, nsL1::vector<fvec>::TSimd& timeR,
-  nsL1::vector<fvec>::TSimd& timeER)
+  Tindex& n3, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
+  L1Vector<L1HitIndex_t>& hitsr_3, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
+  //  L1Vector<fvec>& dx_,
+  //  L1Vector<fvec>& dy_,
+  L1Vector<fvec>& dv_, L1Vector<fvec>& du_, L1Vector<fvec>& timeR, L1Vector<fvec>& timeER)
 {
   int iStaM = &stam - fParameters.GetStations().begin();
   int iStaR = &star - fParameters.GetStations().begin();
@@ -916,14 +915,14 @@ inline void L1Algo::findTripletsStep0(  // input
 
           n3 = n3 - Ntriplets;
 
-          T_3.resize(n3 / fvec::size());
-          u_front_3.resize(n3 / fvec::size());
-          u_back_3.resize(n3 / fvec::size());
-          z_Pos_3.resize(n3 / fvec::size());
-          du_.resize(n3 / fvec::size());
-          dv_.resize(n3 / fvec::size());
-          timeR.resize(n3 / fvec::size());
-          timeER.resize(n3 / fvec::size());
+          T_3.reset(n3 / fvec::size());
+          u_front_3.reset(n3 / fvec::size());
+          u_back_3.reset(n3 / fvec::size());
+          z_Pos_3.reset(n3 / fvec::size());
+          du_.reset(n3 / fvec::size());
+          dv_.reset(n3 / fvec::size());
+          timeR.reset(n3 / fvec::size());
+          timeER.reset(n3 / fvec::size());
           cout << "L1: GetMaxTripletPerDoublets==" << fParameters.GetMaxTripletPerDoublets()
                << " reached in findTripletsStep0()" << endl;
           //assert(0);
@@ -937,15 +936,13 @@ inline void L1Algo::findTripletsStep0(  // input
 
 /// Add the right hits to parameters estimation.
 inline void L1Algo::findTripletsStep1(  // input
-  Tindex n3_V, const L1Station& star, nsL1::vector<fvec>::TSimd& u_front_, nsL1::vector<fvec>::TSimd& u_back_,
-  nsL1::vector<fvec>::TSimd& z_Pos,
-  //  nsL1::vector<fvec>::TSimd& dx_,
-  //  nsL1::vector<fvec>::TSimd& dy_,
-  nsL1::vector<fvec>::TSimd& dv_, nsL1::vector<fvec>::TSimd& du_, nsL1::vector<fvec>::TSimd& timeR,
-  nsL1::vector<fvec>::TSimd& timeER,
+  Tindex n3_V, const L1Station& star, L1Vector<fvec>& u_front_, L1Vector<fvec>& u_back_, L1Vector<fvec>& z_Pos,
+  //  L1Vector<fvec>& dx_,
+  //  L1Vector<fvec>& dy_,
+  L1Vector<fvec>& dv_, L1Vector<fvec>& du_, L1Vector<fvec>& timeR, L1Vector<fvec>& timeER,
   // output
   //                L1TrackPar *T_3
-  nsL1::vector<L1TrackPar>::TSimd& T_3)
+  L1Vector<L1TrackPar>& T_3)
 {
 
   for (Tindex i3_V = 0; i3_V < n3_V; ++i3_V) {
@@ -998,8 +995,8 @@ inline void L1Algo::findTripletsStep1(  // input
 
 /// Refit Triplets.
 inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps introduction
-  Tindex n3, int istal, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
-  L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3, int nIterations)
+  Tindex n3, int istal, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
+  L1Vector<L1HitIndex_t>& hitsr_3, int nIterations)
 {
   L1Fit fit;
   fit.SetParticleMass(fDefaultMass);
@@ -1174,7 +1171,7 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
 
 
 inline void L1Algo::findTripletsStep3(  // input
-  Tindex n3, int istal, int istam, int istar, nsL1::vector<L1TrackPar>::TSimd& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
+  Tindex n3, int istal, int istam, int istar, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
   L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3,
   // output
   Tindex& nstaltriplets)
@@ -1384,7 +1381,7 @@ inline void L1Algo::f5(  // input
               if (level == jlevel + 1) neighCands.push_back(neighLocation);
             }
 
-            // trip->neighbours.resize(0);
+            // trip->neighbours.reset(0);
             // for (unsigned int in = 0; in < neighCands.size(); in++) {
             //   int ID           = neighCands[in];
             //   unsigned int Station     = TripletId2Station(ID);
@@ -1556,19 +1553,19 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
     int Thread = 0;
 #endif
 
-    nsL1::vector<L1TrackPar>::TSimd& T_3 = fT_3[Thread];
+    L1Vector<L1TrackPar>& T_3            = fT_3[Thread];
     L1Vector<L1HitIndex_t>& hitsl_3      = fhitsl_3[Thread];
     L1Vector<L1HitIndex_t>& hitsm_3      = fhitsm_3[Thread];
     L1Vector<L1HitIndex_t>& hitsr_3      = fhitsr_3[Thread];
-    nsL1::vector<fvec>::TSimd& u_front3  = fu_front3[Thread];
-    nsL1::vector<fvec>::TSimd& u_back3   = fu_back3[Thread];
-    nsL1::vector<fvec>::TSimd& z_pos3    = fz_pos3[Thread];
-    nsL1::vector<fvec>::TSimd& timeR     = fTimeR[Thread];
-    nsL1::vector<fvec>::TSimd& timeER    = fTimeER[Thread];
-    //    nsL1::vector<fvec>::TSimd& dx3       = dx[Thread];
-    //    nsL1::vector<fvec>::TSimd& dy3       = dy[Thread];
-    nsL1::vector<fvec>::TSimd& du3 = du[Thread];
-    nsL1::vector<fvec>::TSimd& dv3 = dv[Thread];
+    L1Vector<fvec>& u_front3             = fu_front3[Thread];
+    L1Vector<fvec>& u_back3              = fu_back3[Thread];
+    L1Vector<fvec>& z_pos3               = fz_pos3[Thread];
+    L1Vector<fvec>& timeR                = fTimeR[Thread];
+    L1Vector<fvec>& timeER               = fTimeER[Thread];
+    //    L1Vector<fvec>& dx3       = dx[Thread];
+    //    L1Vector<fvec>& dy3       = dy[Thread];
+    L1Vector<fvec>& du3 = du[Thread];
+    L1Vector<fvec>& dv3 = dv[Thread];
 
     T_3.clear();
     hitsl_3.clear();
