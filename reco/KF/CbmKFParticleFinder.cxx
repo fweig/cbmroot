@@ -19,8 +19,6 @@
 
 #include "FairRunAna.h"
 
-#include "L1Field.h"
-
 //KF Particle headers
 #include <Logger.h>
 
@@ -277,38 +275,20 @@ void CbmKFParticleFinder::Exec(Option_t* /*opt*/)
       kfVertex.GetRefZ() = fCbmPrimVertex->GetZ();
     }
 
-    vector<L1FieldRegion> vField, vFieldAtLastPoint;
+    vector<CbmL1PFFitter::PFFieldRegion> vField, vFieldAtLastPoint;
     fitter.Fit(vRTracks, pdg);
     fitter.GetChiToVertex(vRTracks, vField, vChiToPrimVtx, kfVertex, 3);
     fitter.CalculateFieldRegionAtLastPoint(vRTracks, vFieldAtLastPoint);
     vector<KFFieldVector> vFieldVector(ntracks), vFieldVectorAtLastPoint(ntracks);
     for (Int_t iTr = 0; iTr < ntracks; iTr++) {
-      int entrSIMD                = iTr % fvec::size();
-      int entrVec                 = iTr / fvec::size();
-      vFieldVector[iTr].fField[0] = vField[entrVec].cx0[entrSIMD];
-      vFieldVector[iTr].fField[1] = vField[entrVec].cx1[entrSIMD];
-      vFieldVector[iTr].fField[2] = vField[entrVec].cx2[entrSIMD];
-      vFieldVector[iTr].fField[3] = vField[entrVec].cy0[entrSIMD];
-      vFieldVector[iTr].fField[4] = vField[entrVec].cy1[entrSIMD];
-      vFieldVector[iTr].fField[5] = vField[entrVec].cy2[entrSIMD];
-      vFieldVector[iTr].fField[6] = vField[entrVec].cz0[entrSIMD];
-      vFieldVector[iTr].fField[7] = vField[entrVec].cz1[entrSIMD];
-      vFieldVector[iTr].fField[8] = vField[entrVec].cz2[entrSIMD];
-      vFieldVector[iTr].fField[9] = vField[entrVec].z0[entrSIMD];
+      for (int i = 0; i < 10; i++) {
+        vFieldVector[iTr].fField[i] = vField[iTr].fP[i];
+      }
     }
     for (Int_t iTr = 0; iTr < ntracks; iTr++) {
-      int entrSIMD                           = iTr % fvec::size();
-      int entrVec                            = iTr / fvec::size();
-      vFieldVectorAtLastPoint[iTr].fField[0] = vFieldAtLastPoint[entrVec].cx0[entrSIMD];
-      vFieldVectorAtLastPoint[iTr].fField[1] = vFieldAtLastPoint[entrVec].cx1[entrSIMD];
-      vFieldVectorAtLastPoint[iTr].fField[2] = vFieldAtLastPoint[entrVec].cx2[entrSIMD];
-      vFieldVectorAtLastPoint[iTr].fField[3] = vFieldAtLastPoint[entrVec].cy0[entrSIMD];
-      vFieldVectorAtLastPoint[iTr].fField[4] = vFieldAtLastPoint[entrVec].cy1[entrSIMD];
-      vFieldVectorAtLastPoint[iTr].fField[5] = vFieldAtLastPoint[entrVec].cy2[entrSIMD];
-      vFieldVectorAtLastPoint[iTr].fField[6] = vFieldAtLastPoint[entrVec].cz0[entrSIMD];
-      vFieldVectorAtLastPoint[iTr].fField[7] = vFieldAtLastPoint[entrVec].cz1[entrSIMD];
-      vFieldVectorAtLastPoint[iTr].fField[8] = vFieldAtLastPoint[entrVec].cz2[entrSIMD];
-      vFieldVectorAtLastPoint[iTr].fField[9] = vFieldAtLastPoint[entrVec].z0[entrSIMD];
+      for (int i = 0; i < 10; i++) {
+        vFieldVectorAtLastPoint[iTr].fField[i] = vFieldAtLastPoint[iTr].fP[i];
+      }
     }
 
     if (!fSuperEventAnalysis) {

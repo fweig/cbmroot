@@ -39,6 +39,7 @@
 #include "L1Algo.h"  // Also defines L1Parameters
 #include "L1Def.h"
 #include "L1Extrapolation.h"
+#include "L1Field.h"
 #include "L1Filtration.h"
 #include "L1Fit.h"
 #include "L1MaterialInfo.h"
@@ -59,6 +60,43 @@ using namespace NS_L1TrackFitter;
 CbmL1PFFitter::CbmL1PFFitter() {}
 
 CbmL1PFFitter::~CbmL1PFFitter() {}
+
+inline void CbmL1PFFitter::PFFieldRegion::setFromL1FieldRegion(const L1FieldRegion& fld, int i)
+{
+  fP[0] = fld.cx0[i];
+  fP[1] = fld.cx1[i];
+  fP[2] = fld.cx2[i];
+
+  fP[3] = fld.cy0[i];
+  fP[4] = fld.cy1[i];
+  fP[5] = fld.cy2[i];
+
+  fP[6] = fld.cz0[i];
+  fP[7] = fld.cz1[i];
+  fP[8] = fld.cz2[i];
+
+  fP[9] = fld.z0[i];
+}
+
+inline void CbmL1PFFitter::PFFieldRegion::getL1FieldRegion(L1FieldRegion& fld, int i)
+{
+  fld.cx0[i] = fP[0];
+  fld.cx1[i] = fP[1];
+  fld.cx2[i] = fP[2];
+
+  fld.cy0[i] = fP[3];
+  fld.cy1[i] = fP[4];
+  fld.cy2[i] = fP[5];
+
+  fld.cz0[i] = fP[6];
+  fld.cz1[i] = fP[7];
+  fld.cz2[i] = fP[8];
+
+  fld.z0[i] = fP[9];
+}
+
+inline CbmL1PFFitter::PFFieldRegion::PFFieldRegion(const L1FieldRegion& fld, int i) { setFromL1FieldRegion(fld, i); }
+
 
 void FilterFirst(L1TrackPar& track, fvec& x, fvec& y, L1Station& st)
 {
@@ -396,7 +434,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
   delete[] fB;
 }
 
-void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRegion>& field, vector<float>& chiToVtx,
+void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRegion>& field, vector<float>& chiToVtx,
                                    CbmKFVertex& primVtx, float chiPrim)
 {
   chiToVtx.reserve(Tracks.size());
@@ -495,7 +533,9 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
     fB[0]     = CbmL1::Instance()->fpAlgo->GetParameters()->GetVertexFieldValue();
     zField[0] = CbmL1::Instance()->fpAlgo->GetParameters()->GetTargetPositionZ();
     fld.Set(fB[2], zField[2], fB[1], zField[1], fB[0], zField[0]);
-    field.push_back(fld);
+    for (int i = 0; i < nTracks_SIMD; i++) {
+      field.emplace_back(fld, i);
+    }
 
     for (int iSt = nStations - 4; iSt >= 0; iSt--) {
 
@@ -567,7 +607,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<L1FieldRe
   delete[] zSta;
 }
 
-void CbmL1PFFitter::CalculateFieldRegion(vector<CbmStsTrack>& Tracks, vector<L1FieldRegion>& field)
+void CbmL1PFFitter::CalculateFieldRegion(vector<CbmStsTrack>& Tracks, vector<PFFieldRegion>& field)
 {
   field.reserve(Tracks.size());
 
@@ -635,11 +675,13 @@ void CbmL1PFFitter::CalculateFieldRegion(vector<CbmStsTrack>& Tracks, vector<L1F
     fB[0]     = CbmL1::Instance()->fpAlgo->GetParameters()->GetVertexFieldValue();
     zField[0] = CbmL1::Instance()->fpAlgo->GetParameters()->GetTargetPositionZ();
     fld.Set(fB[2], zField[2], fB[1], zField[1], fB[0], zField[0]);
-    field.push_back(fld);
+    for (int i = 0; i < nTracks_SIMD; i++) {
+      field.emplace_back(fld, i);
+    }
   }
 }
 
-void CbmL1PFFitter::CalculateFieldRegionAtLastPoint(vector<CbmStsTrack>& Tracks, vector<L1FieldRegion>& field)
+void CbmL1PFFitter::CalculateFieldRegionAtLastPoint(vector<CbmStsTrack>& Tracks, vector<PFFieldRegion>& field)
 {
   field.reserve(Tracks.size());
 
@@ -666,8 +708,9 @@ void CbmL1PFFitter::CalculateFieldRegionAtLastPoint(vector<CbmStsTrack>& Tracks,
   for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvec::size()) {
     if (N_vTracks - itrack < static_cast<unsigned short>(fvec::size())) nTracks_SIMD = N_vTracks - itrack;
 
-    for (int i = 0; i < nTracks_SIMD; i++)
+    for (int i = 0; i < nTracks_SIMD; i++) {
       t[i] = &Tracks[itrack + i];  // current track
+    }
 
     for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
       int nHitsTrackMvd = t[iVec]->GetNofMvdHits();
@@ -708,6 +751,8 @@ void CbmL1PFFitter::CalculateFieldRegionAtLastPoint(vector<CbmStsTrack>& Tracks,
     }
 
     fld.Set(fB[0], zField[0], fB[1], zField[1], fB[2], zField[2]);
-    field.push_back(fld);
+    for (int i = 0; i < nTracks_SIMD; i++) {
+      field.emplace_back(fld, i);
+    }
   }
 }

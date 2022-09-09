@@ -50,8 +50,6 @@
 
 #include <vector>
 
-#include "L1Field.h"
-
 ClassImp(PairAnalysisTrack)
 
   PairAnalysisTrack::PairAnalysisTrack()
@@ -306,7 +304,7 @@ void PairAnalysisTrack::Refit(Int_t pidHypo)
   vector<CbmStsTrack> stsTracks;
   stsTracks.resize(1);
   stsTracks[0] = *fStsTrack;
-  vector<L1FieldRegion> vField;
+  vector<CbmL1PFFitter::PFFieldRegion> vField;
   vector<float> chiPrim;
   vector<int> pidHypos;
   pidHypos.push_back(pidHypo);

@@ -17,7 +17,6 @@
 
 #include <iostream>
 
-#include "L1Field.h"
 #include "LmvmCand.h"
 #include "LmvmDef.h"
 
@@ -32,7 +31,7 @@ void LmvmUtils::CalculateAndSetTrackParams(LmvmCand* cand, CbmStsTrack* stsTrack
   vector<CbmStsTrack> stsTracks;
   stsTracks.resize(1);
   stsTracks[0] = *stsTrack;
-  vector<L1FieldRegion> vField;
+  vector<CbmL1PFFitter::PFFieldRegion> vField;
   vector<float> chiPrim;
   fPFFitter.GetChiToVertex(stsTracks, vField, chiPrim, kfVertex, 3e6);
   cand->fChi2sts                 = stsTracks[0].GetChiSq() / stsTracks[0].GetNDF();

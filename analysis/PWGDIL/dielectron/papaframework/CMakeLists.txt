@@ -27,9 +27,7 @@ ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/Interface 
 ${KFParticle_INCLUDE_DIR}
 
-${CBMROOT_SOURCE_DIR}/reco/L1
 ${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder
-${CBMROOT_SOURCE_DIR}/reco/L1/L1Algo
 
 ${CBMROOT_SOURCE_DIR}/reco/littrack
 ${CBMROOT_SOURCE_DIR}/reco/littrack/cbm

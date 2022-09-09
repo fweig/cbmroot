@@ -12,13 +12,10 @@
 
 #include "PairAnalysisPairLV.h"
 
-#include "CbmL1.h"
 #include "CbmMCTrack.h"
 
 #include <TDatabasePDG.h>
 
-#include "L1Algo.h"
-#include "L1Field.h"
 #include "PairAnalysisTrack.h"
 
 ClassImp(PairAnalysisPairLV)

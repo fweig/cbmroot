@@ -12,8 +12,6 @@
 #include "CbmL1PFFitter.h"
 #include "CbmStsTrack.h"
 
-#include "L1Field.h"
-
 //KF Particle headers
 #include "KFPTrackVector.h"
 #include "KFParticle.h"
@@ -42,7 +40,7 @@ void CbmKFParticleInterface::SetKFParticleFromStsTrack(CbmStsTrack* track, KFPar
   vector<float> vChiToPrimVtx;
   CbmKFVertex kfVertex;
 
-  vector<L1FieldRegion> vField;
+  vector<CbmL1PFFitter::PFFieldRegion> vField;
   fitter.GetChiToVertex(vRTracks, vField, vChiToPrimVtx, kfVertex, -3);
 
   KFPTrackVector tracks;
@@ -116,26 +114,15 @@ void CbmKFParticleInterface::SetKFParticleFromStsTrack(CbmStsTrack* track, KFPar
     cov[19] = cbpz * pz + b * cpzpz;
     cov[20] = cpzpz;
 
-    float field[10];
-    int entrSIMD = iTr % fvec::size();
-    int entrVec  = iTr / fvec::size();
-    field[0]     = vField[entrVec].cx0[entrSIMD];
-    field[1]     = vField[entrVec].cx1[entrSIMD];
-    field[2]     = vField[entrVec].cx2[entrSIMD];
-    field[3]     = vField[entrVec].cy0[entrSIMD];
-    field[4]     = vField[entrVec].cy1[entrSIMD];
-    field[5]     = vField[entrVec].cy2[entrSIMD];
-    field[6]     = vField[entrVec].cz0[entrSIMD];
-    field[7]     = vField[entrVec].cz1[entrSIMD];
-    field[8]     = vField[entrVec].cz2[entrSIMD];
-    field[9]     = vField[entrVec].z0[entrSIMD];
-
-    for (Int_t iP = 0; iP < 6; iP++)
+    for (Int_t iP = 0; iP < 6; iP++) {
       tracks.SetParameter(par[iP], iP, iTr);
-    for (Int_t iC = 0; iC < 21; iC++)
+    }
+    for (Int_t iC = 0; iC < 21; iC++) {
       tracks.SetCovariance(cov[iC], iC, iTr);
-    for (Int_t iF = 0; iF < 10; iF++)
-      tracks.SetFieldCoefficient(field[iF], iF, iTr);
+    }
+    for (Int_t iF = 0; iF < 10; iF++) {
+      tracks.SetFieldCoefficient(vField[iTr].fP[iF], iF, iTr);
+    }
     tracks.SetId(1, iTr);
     tracks.SetPDG(pdg, iTr);
     tracks.SetQ(q, iTr);
@@ -165,7 +152,7 @@ void CbmKFParticleInterface::ExtrapolateTrackToPV(const CbmStsTrack* track, CbmV
   assert(pv);
   if (pv) kfVertex = CbmKFVertex(*pv);
 
-  vector<L1FieldRegion> vField;
+  vector<CbmL1PFFitter::PFFieldRegion> vField;
   fitter.GetChiToVertex(vRTracks, vField, vChiToPrimVtx, kfVertex, 1000000.f);
 
   chiPrim    = vChiToPrimVtx[0];

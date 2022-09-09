@@ -20,8 +20,6 @@ ${CBMROOT_SOURCE_DIR}/reco/base
 ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/Interface 
 
-${CBMROOT_SOURCE_DIR}/reco/L1
-${CBMROOT_SOURCE_DIR}/reco/L1/L1Algo
 ${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder 
 
 ${CBMROOT_SOURCE_DIR}/reco/littrack/cbm/elid

@@ -17,7 +17,6 @@
 
 #include <vector>
 
-#include "L1Field.h"
 
 class CbmAnaJpsiUtils {
 public:
@@ -32,7 +31,7 @@ public:
     std::vector<CbmStsTrack> stsTracks;
     stsTracks.resize(1);
     stsTracks[0] = *stsTrack;
-    std::vector<L1FieldRegion> vField;
+    std::vector<CbmL1PFFitter::PFFieldRegion> vField;
     std::vector<float> chiPrim;
     fPFFitter.GetChiToVertex(stsTracks, vField, chiPrim, kfVertex, 3e6);
     cand->fChi2sts  = stsTracks[0].GetChiSq() / stsTracks[0].GetNDF();

@@ -33,7 +33,6 @@
 #include <Logger.h>
 
 #include "KFParticleTopoReconstructor.h"
-#include "L1Field.h"
 
 
 // includes of standard c++ classes or ROOT classes
@@ -997,7 +996,7 @@ void CbmAnaConversion::Exec(Option_t*)
     vector<CbmStsTrack> stsTracks;
     stsTracks.resize(1);
     stsTracks[0] = *stsTrack;
-    vector<L1FieldRegion> vField;
+    vector<CbmL1PFFitter::PFFieldRegion> vField;
     vector<float> chiPrim;
     fPFFitter.GetChiToVertex(stsTracks, vField, chiPrim, fKFVertex, 3e6);
     //cand.chi2sts = stsTracks[0].GetChiSq() / stsTracks[0].GetNDF();
@@ -1012,7 +1011,7 @@ void CbmAnaConversion::Exec(Option_t*)
     vector<CbmStsTrack> stsTracks_electron;
     stsTracks_electron.resize(1);
     stsTracks_electron[0] = *stsTrack;
-    vector<L1FieldRegion> vField_electron;
+    vector<CbmL1PFFitter::PFFieldRegion> vField_electron;
     vector<float> chiPrim_electron;
     vector<int> pidHypo_electron;
     pidHypo_electron.push_back(11);

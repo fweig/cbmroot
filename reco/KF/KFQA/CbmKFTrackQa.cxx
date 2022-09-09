@@ -22,7 +22,6 @@
 #include "KFParticleMatch.h"
 #include "KFParticleTopoReconstructor.h"
 #include "KFTopoPerformance.h"
-#include "L1Field.h"
 
 //ROOT headers
 #include "TClonesArray.h"
@@ -428,7 +427,7 @@ void CbmKFTrackQa::Exec(Option_t* /*opt*/)
 
   CbmL1PFFitter fitter;
   vector<float> vChiToPrimVtx;
-  vector<L1FieldRegion> vField;
+  vector<CbmL1PFFitter::PFFieldRegion> vField;
   fitter.Fit(vRTracks, pdg);
   fitter.GetChiToVertex(vRTracks, vField, vChiToPrimVtx, kfVertex, 3000000);
 

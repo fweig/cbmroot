@@ -12,16 +12,12 @@
 
 #include "CbmKFParticleInterface.h"
 #include "CbmKFTrack.h"
-#include "CbmL1.h"
-#include "CbmL1PFFitter.h"
 #include "CbmMCTrack.h"
 #include "CbmVertex.h"
 
 #include <TDatabasePDG.h>
 
 #include "KFParticle.h"
-#include "L1Algo.h"
-#include "L1Field.h"
 #include "PairAnalysisTrack.h"
 
 ClassImp(PairAnalysisPairKF)

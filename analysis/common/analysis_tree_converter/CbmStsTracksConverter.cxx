@@ -6,13 +6,13 @@
 
 #include "CbmDefs.h"
 #include "CbmEvent.h"
+#include "CbmL1PFFitter.h"
 #include "CbmMCDataManager.h"
 #include "CbmMCTrack.h"
 #include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmVertex.h"
 #include "Interface/CbmKFVertex.h"
-#include "ParticleFinder/CbmL1PFFitter.h"
 
 #include "FairRootManager.h"
 
@@ -24,7 +24,6 @@
 #include <cmath>
 
 #include "AnalysisTree/Matching.hpp"
-#include "L1Field.h"
 
 
 ClassImp(CbmStsTracksConverter);
@@ -106,7 +105,7 @@ float CbmStsTracksConverter::ExtrapolateToVertex(CbmStsTrack* sts_track, Analysi
   std::vector<CbmStsTrack> tracks = {*sts_track};
   CbmL1PFFitter fitter;
   std::vector<float> chi2_to_vtx;
-  std::vector<L1FieldRegion> field;
+  std::vector<CbmL1PFFitter::PFFieldRegion> field;
   CbmKFVertex kfVertex = CbmKFVertex(*cbm_prim_vertex_);
   if (is_reproduce_cbmkfpf_) {
     std::vector<int> pdgVector = {pdg};
@@ -116,16 +115,9 @@ float CbmStsTracksConverter::ExtrapolateToVertex(CbmStsTrack* sts_track, Analysi
   *sts_track = tracks[0];
 
   if (is_write_kfinfo_) {
-    track.SetField(float(field.at(0).cx0[0]), imf_);
-    track.SetField(float(field.at(0).cx1[0]), imf_ + 1);
-    track.SetField(float(field.at(0).cx2[0]), imf_ + 2);
-    track.SetField(float(field.at(0).cy0[0]), imf_ + 3);
-    track.SetField(float(field.at(0).cy1[0]), imf_ + 4);
-    track.SetField(float(field.at(0).cy2[0]), imf_ + 5);
-    track.SetField(float(field.at(0).cz0[0]), imf_ + 6);
-    track.SetField(float(field.at(0).cz1[0]), imf_ + 7);
-    track.SetField(float(field.at(0).cz2[0]), imf_ + 8);
-    track.SetField(float(field.at(0).z0[0]), imf_ + 9);
+    for (int i = 0; i < 10; i++) {
+      track.SetField(field[0].fP[i], imf_ + i);
+    }
   }
 
   return chi2_to_vtx[0];
