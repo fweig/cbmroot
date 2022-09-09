@@ -251,6 +251,7 @@ void CbmMcbm2018TofPar::BuildChannelsUidMap()
       }
       case 4:  // intended fallthrough
         [[fallthrough]];
+      case 7: [[fallthrough]];
       case 9:  // Star2 boxes
       {
         BuildChannelsUidMapStar2(uCh, uGbtx);
