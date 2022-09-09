@@ -1,123 +1,118 @@
 Set(INCLUDE_DIRECTORIES
-${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}
 
-${CBMBASE_DIR} 
-${CBMBASE_DIR}/draw
-${CBMBASE_DIR}/report
-${CBMBASE_DIR}/utils
+  ${CBMBASE_DIR}
+  ${CBMBASE_DIR}/draw
+  ${CBMBASE_DIR}/report
+  ${CBMBASE_DIR}/utils
 
-${CBMDATA_DIR}
-${CBMDATA_DIR}/sts
-${CBMDATA_DIR}/much
-${CBMDATA_DIR}/mvd
-${CBMDATA_DIR}/global
-${CBMDATA_DIR}/rich
-${CBMDATA_DIR}/trd
-${CBMDATA_DIR}/tof
-${CBMDATA_DIR}/psd
+  ${CBMDATA_DIR}
+  ${CBMDATA_DIR}/sts
+  ${CBMDATA_DIR}/much
+  ${CBMDATA_DIR}/mvd
+  ${CBMDATA_DIR}/global
+  ${CBMDATA_DIR}/rich
+  ${CBMDATA_DIR}/trd
+  ${CBMDATA_DIR}/tof
+  ${CBMDATA_DIR}/psd
 
-${CBMROOT_SOURCE_DIR}/mvd 
-${CBMROOT_SOURCE_DIR}/core/detectors/rich
+  ${CBMROOT_SOURCE_DIR}/mvd
+  ${CBMROOT_SOURCE_DIR}/core/detectors/rich
 
-${CBMROOT_SOURCE_DIR}/sim/transport/generators/unigen
+  ${CBMROOT_SOURCE_DIR}/sim/transport/generators/unigen
 
-${CBMROOT_SOURCE_DIR}/algo
+  ${CBMROOT_SOURCE_DIR}/reco/KF
+  ${CBMROOT_SOURCE_DIR}/reco/KF/Interface
+  ${KFParticle_INCLUDE_DIR}
 
-${CBMROOT_SOURCE_DIR}/reco/KF
-${CBMROOT_SOURCE_DIR}/reco/KF/Interface 
-${KFParticle_INCLUDE_DIR}
+  ${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder
 
-${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder
-
-${CBMROOT_SOURCE_DIR}/reco/littrack
-${CBMROOT_SOURCE_DIR}/reco/littrack/cbm
-${CBMROOT_SOURCE_DIR}/reco/littrack/cbm/base
-${CBMROOT_SOURCE_DIR}/reco/littrack/cbm/utils
-${CBMROOT_SOURCE_DIR}/reco/littrack/std
-${CBMROOT_SOURCE_DIR}/reco/littrack/std/data
-${CBMROOT_SOURCE_DIR}/reco/littrack/std/base
-
+  ${CBMROOT_SOURCE_DIR}/reco/littrack
+  ${CBMROOT_SOURCE_DIR}/reco/littrack/cbm
+  ${CBMROOT_SOURCE_DIR}/reco/littrack/cbm/base
+  ${CBMROOT_SOURCE_DIR}/reco/littrack/cbm/utils
+  ${CBMROOT_SOURCE_DIR}/reco/littrack/std
+  ${CBMROOT_SOURCE_DIR}/reco/littrack/std/data
+  ${CBMROOT_SOURCE_DIR}/reco/littrack/std/base
 )
 
-Include_Directories( ${INCLUDE_DIRECTORIES})
+Include_Directories(${INCLUDE_DIRECTORIES})
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES} 
+  ${BASE_INCLUDE_DIRECTORIES}
   ${Boost_INCLUDE_DIR}
 )
 
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
-${KFParticle_LIB_DIR}
-${FAIRROOT_LIBRARY_DIR}
-${ROOT_LIBRARY_DIR}
-${Boost_LIBRARY_DIRS}
+  ${KFParticle_LIB_DIR}
+  ${FAIRROOT_LIBRARY_DIR}
+  ${ROOT_LIBRARY_DIR}
+  ${Boost_LIBRARY_DIRS}
 )
 
-#Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wshadow -Weffc++ -Wno-unused-variable -Wno-unused-parameter -Wno-sign-compare -Wno-ignored-qualifiers -Wno-overloaded-virtual")
-
-link_directories( ${LINK_DIRECTORIES})
+# Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wshadow -Weffc++ -Wno-unused-variable -Wno-unused-parameter -Wno-sign-compare -Wno-ignored-qualifiers -Wno-overloaded-virtual")
+link_directories(${LINK_DIRECTORIES})
 
 set(SRCS
 
-AnalysisCuts.cxx
-AnalysisFilter.cxx
-PairAnalysisTrack.cxx
-PairAnalysisEvent.cxx
-PairAnalysisPair.cxx
-PairAnalysisPairKF.cxx
-PairAnalysisPairLV.cxx
-PairAnalysisHelper.cxx
-PairAnalysisStyler.cxx
+  AnalysisCuts.cxx
+  AnalysisFilter.cxx
+  PairAnalysisTrack.cxx
+  PairAnalysisEvent.cxx
+  PairAnalysisPair.cxx
+  PairAnalysisPairKF.cxx
+  PairAnalysisPairLV.cxx
+  PairAnalysisHelper.cxx
+  PairAnalysisStyler.cxx
 
-PairAnalysisCutQa.cxx
-PairAnalysisVarCuts.cxx
-PairAnalysisObjectCuts.cxx
-PairAnalysisPairLegCuts.cxx
-PairAnalysisCutCombi.cxx
-PairAnalysisCutGroup.cxx
+  PairAnalysisCutQa.cxx
+  PairAnalysisVarCuts.cxx
+  PairAnalysisObjectCuts.cxx
+  PairAnalysisPairLegCuts.cxx
+  PairAnalysisCutCombi.cxx
+  PairAnalysisCutGroup.cxx
 
-PairAnalysisVarManager.cxx
-PairAnalysisMetaData.cxx
+  PairAnalysisVarManager.cxx
+  PairAnalysisMetaData.cxx
 
-AnalysisTaskMultiPairAnalysis.cxx
-PairAnalysis.cxx
-#PairAnalysisDebugTree.cxx
-#PairAnalysisMixedEvent.cxx
-PairAnalysisHF.cxx
-###PairAnalysisHFhelper.cxx
-PairAnalysisHistos.cxx
-PairAnalysisMC.cxx
+  AnalysisTaskMultiPairAnalysis.cxx
+  PairAnalysis.cxx
 
-PairAnalysisSignalMC.cxx
-PairAnalysisTrackRotator.cxx
-PairAnalysisMixedEvent.cxx
-PairAnalysisMixingHandler.cxx
+  # PairAnalysisDebugTree.cxx
+  # PairAnalysisMixedEvent.cxx
+  PairAnalysisHF.cxx
 
-#PairAnalysisHistosHelper.cxx
-PairAnalysisFunction.cxx
-PairAnalysisSignalExt.cxx
-#PairAnalysisSignalFit.cxx
-PairAnalysisSpectrum.cxx
+  # ##PairAnalysisHFhelper.cxx
+  PairAnalysisHistos.cxx
+  PairAnalysisMC.cxx
 
+  PairAnalysisSignalMC.cxx
+  PairAnalysisTrackRotator.cxx
+  PairAnalysisMixedEvent.cxx
+  PairAnalysisMixingHandler.cxx
+
+  # PairAnalysisHistosHelper.cxx
+  PairAnalysisFunction.cxx
+  PairAnalysisSignalExt.cxx
+
+  # PairAnalysisSignalFit.cxx
+  PairAnalysisSpectrum.cxx
 )
 
+Set(HEADERS)
 
-Set(HEADERS )
-
-IF (SSE_FOUND)
+IF(SSE_FOUND)
   Message(STATUS "Papa will be compiled with SSE support")
   ADD_DEFINITIONS(-DHAVE_SSE)
-  SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS 
-  "-msse -O3")
-ELSE (SSE_FOUND)
+  SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS
+    "-msse -O3")
+ELSE(SSE_FOUND)
   MESSAGE(STATUS "Papa will be compiled without SSE support")
-  SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS 
-  "-O3")
-ENDIF (SSE_FOUND)
-
-
+  SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS
+    "-O3")
+ENDIF(SSE_FOUND)
 
 If(CMAKE_SYSTEM_NAME MATCHES Darwin)
   If(${MAC_OS_VERSION} LESS 10.9)
@@ -136,11 +131,10 @@ EndIf()
 Set(LINKDEF CbmPapaLinkDef.h)
 Set(LIBRARY_NAME CbmPapa)
 Set(DEPENDENCIES
-    Algo L1 KF Littrack CbmRichReco CbmRichBase CbmBase CbmData CbmSimGenerators Base)
+  L1 KF Littrack CbmRichReco CbmRichBase CbmBase CbmData CbmSimGenerators Base)
 
 GENERATE_LIBRARY()
 
-
 Install(FILES configs/Config_trd_PidLI.C
-        DESTINATION share/cbmroot/macro/papa
-       )
+  DESTINATION share/cbmroot/macro/papa
+)

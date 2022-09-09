@@ -24,7 +24,7 @@
 
 #include "CbmRichRingFinder.h"
 
-#include "ca/simd/CaSimd.h"
+#include "CaSimd.h"
 using namespace cbm::algo::ca;  // TODO: remove "using" from headers
 
 #include "TStopwatch.h"

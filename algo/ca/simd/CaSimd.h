@@ -5,7 +5,7 @@
 #ifndef Ca_CaSimd_H
 #define Ca_CaSimd_H
 
-#include "ca/simd/CaSimdVc.h"
-//#include "ca/simd/CaSimdPseudo.h"
+#include "CaSimdVc.h"
+//#include "CaSimdPseudo.h"
 
 #endif

@@ -22,7 +22,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/fieldapr
 ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/radlength
 ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/tof
 
-${CBMROOT_SOURCE_DIR}/algo
+${CBMROOT_SOURCE_DIR}/algo/ca/simd
 ${CBMROOT_SOURCE_DIR}/reco/base
 
 # needed only for the LitrackQA library
@@ -65,7 +65,6 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
-${Algo_LIB_DIR}
 ${KFParticle_LIB_DIR}
 ${FAIRROOT_LIBRARY_DIR}
 ${ROOT_LIBRARY_DIR}
@@ -183,7 +182,7 @@ EndIf (Boost_FOUND)
 set(LINKDEF  LittrackLinkDef.h)
 Set(LIBRARY_NAME Littrack)
 Set(DEPENDENCIES
-    Algo Littrackparallel KF KFParticleInterface CbmMuchBase CbmStsBase CbmRichBase CbmRecoBase CbmBase CbmData
+    Littrackparallel KF KFParticleInterface CbmMuchBase CbmStsBase CbmRichBase CbmRecoBase CbmBase CbmData
     CbmTofBase Base
 )
 GENERATE_LIBRARY()

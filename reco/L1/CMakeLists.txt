@@ -17,7 +17,8 @@ ENDIF(SSE_FOUND)
 
 Set(INCLUDE_DIRECTORIES
 
-  ${CBMROOT_SOURCE_DIR}/algo
+  ${CBMROOT_SOURCE_DIR}/algo/ca
+  ${CBMROOT_SOURCE_DIR}/algo/ca/simd
   ${CBMROOT_SOURCE_DIR}/reco/base
   ${CBMROOT_SOURCE_DIR}/reco/detectors/sts
   ${CBMROOT_SOURCE_DIR}/reco/detectors/rich
@@ -81,7 +82,6 @@ endif()
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
-  ${Algo_LIB_DIR}
   ${KFParticle_LIB_DIR}
   ${FAIRROOT_LIBRARY_DIR}
   ${ROOT_LIBRARY_DIR}

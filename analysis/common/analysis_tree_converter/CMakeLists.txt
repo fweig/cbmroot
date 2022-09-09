@@ -17,8 +17,6 @@ set(SRCS
 Set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}
 
-  ${CBMROOT_SOURCE_DIR}/algo
-
   ${CBMROOT_SOURCE_DIR}/core/base
   ${CBMROOT_SOURCE_DIR}/core/data
   ${CBMROOT_SOURCE_DIR}/core/data/base
@@ -75,7 +73,6 @@ Set(_AnalysisTree_LIB AnalysisTreeBase AnalysisTreeInfra)
 
 Set(DEPENDENCIES
   ${_AnalysisTree_LIB}
-  Algo
   CbmData
   CbmBase
   KFParticleInterface

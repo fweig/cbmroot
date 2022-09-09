@@ -12,7 +12,7 @@
 #ifndef LITTYPES_H_
 #define LITTYPES_H_
 
-#include "ca/simd/CaSimd.h"
+#include "CaSimd.h"
 
 using cbm::algo::ca::fscal;
 using cbm::algo::ca::fvec;

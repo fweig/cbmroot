@@ -23,7 +23,6 @@
 #include "CbmGlobalTrack.h"
 #include "CbmKFParticleInterface.h"
 #include "CbmKresFunctions.h"
-#include "CbmL1PFFitter.h"
 #include "CbmMCTrack.h"
 #include "CbmMvdHit.h"
 #include "CbmRichHit.h"
@@ -42,7 +41,6 @@
 #include <iostream>
 
 #include "KFParticle.h"
-#include "L1Field.h"
 
 
 using namespace std;

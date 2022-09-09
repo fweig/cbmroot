@@ -5,7 +5,6 @@
 Set(INCLUDE_DIRECTORIES
 ${CBMBASE_DIR} 
 
-${CBMROOT_SOURCE_DIR}/algo
 ${CBMROOT_SOURCE_DIR}/reco/base
 
 ${CBMDATA_DIR}
@@ -23,10 +22,6 @@ ${CBMROOT_SOURCE_DIR}/reco/KF/Interface
 ${CBMROOT_SOURCE_DIR}/reco/KF/KFQA
 
 ${CBMDETECTORBASE_DIR}/sts
-
-#${CBMROOT_SOURCE_DIR}/reco/L1
-#${CBMROOT_SOURCE_DIR}/reco/L1/L1Algo
-#${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder
 
 ${CBMROOT_SOURCE_DIR}/mvd 
 
@@ -46,7 +41,6 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 set(LINK_DIRECTORIES
-${Algo_LIB_DIR}
 ${FAIRROOT_LIBRARY_DIR}
 ${ROOT_LIBRARY_DIR}
 ${Boost_LIBRARY_DIRS}
@@ -175,7 +169,7 @@ ENDIF (SSE_FOUND)
 set(LINKDEF KFLinkDef.h)
 Set(LIBRARY_NAME KF)
 Set(DEPENDENCIES
-  Algo CbmRecoBase CbmSimSteer CbmStsBase CbmMvd CbmMuchBase CbmTrdBase CbmTofBase CbmBase CbmData Base Minuit2
+  CbmRecoBase CbmSimSteer CbmStsBase CbmMvd CbmMuchBase CbmTrdBase CbmTofBase CbmBase CbmData Base Minuit2
 )
 Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 

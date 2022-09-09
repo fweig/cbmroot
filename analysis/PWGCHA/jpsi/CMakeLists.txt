@@ -13,8 +13,6 @@ ${CBMDATA_DIR}/rich
 ${CBMDATA_DIR}/trd
 ${CBMDATA_DIR}/tof
 
-${CBMROOT_SOURCE_DIR}/algo
-
 ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/Interface 
 
@@ -69,7 +67,7 @@ ADD_DEFINITIONS(-DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -D
 
 Set(LINKDEF CbmJPsiAnalysisLinkDef.h)
 Set(LIBRARY_NAME CbmJPsiAnalysis)
-Set(DEPENDENCIES Algo KF L1 CbmRichReco CbmRichBase CbmBase CbmData Littrack)
+Set(DEPENDENCIES KF L1 CbmRichReco CbmRichBase CbmBase CbmData Littrack)
 Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 
 GENERATE_LIBRARY()

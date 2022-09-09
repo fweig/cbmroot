@@ -10,15 +10,11 @@ ${CBMDATA_DIR}/sts
 ${CBMDATA_DIR}/global
 ${CBMDATA_DIR}/rich
 
-${CBMROOT_SOURCE_DIR}/algo
-
 ${CBMROOT_SOURCE_DIR}/reco/base
 
 ${CBMROOT_SOURCE_DIR}/reco/KF
 ${CBMROOT_SOURCE_DIR}/reco/KF/Interface 
 
-${CBMROOT_SOURCE_DIR}/reco/L1
-${CBMROOT_SOURCE_DIR}/reco/L1/L1Algo
 ${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder 
 
 #${CBMROOT_SOURCE_DIR}/littrack/cbm/elid
@@ -90,7 +86,7 @@ ADD_DEFINITIONS(-DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -D
 
 Set(LINKDEF CbmConversion2AnalysisLinkDef.h)
 Set(LIBRARY_NAME CbmConversion2Analysis)
-Set(DEPENDENCIES Algo KF L1 CbmRichBase CbmRichReco CbmRecoBase CbmData)
+Set(DEPENDENCIES KF L1 CbmRichBase CbmRichReco CbmRecoBase CbmData)
 Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 
 GENERATE_LIBRARY()

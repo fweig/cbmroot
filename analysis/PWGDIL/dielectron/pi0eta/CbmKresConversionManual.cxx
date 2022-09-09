@@ -40,7 +40,6 @@
 #include <iostream>
 
 #include "KFParticle.h"
-#include "L1Field.h"
 
 using namespace std;
 
@@ -1346,7 +1345,7 @@ void CbmKresConversionManual::Exec(int fEventNumMan, double OpeningAngleCut, dou
 		vector<CbmStsTrack> stsTracks_electron;
 		stsTracks_electron.resize(1);
 		stsTracks_electron[0] = *stsTrack;
-		vector<L1FieldRegion> vField_electron;
+		vector<CbmL1PFFitter::PFFieldRegion> vField_electron;
 		vector<float> chiPrim_electron;
 		vector<int> pidHypo_electron;
 		pidHypo_electron.push_back(11);

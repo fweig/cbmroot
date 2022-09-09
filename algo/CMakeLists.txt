@@ -40,5 +40,5 @@ install(TARGETS Algo DESTINATION lib)
 install(FILES ca/simd/CaSimd.h
   ca/simd/CaSimdVc.h
   ca/simd/CaSimdPseudo.h
-  DESTINATION include/ca/simd
+  DESTINATION include/
 )
