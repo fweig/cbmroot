@@ -127,7 +127,6 @@ InitStatus CbmKFParticleFinder::Init()
   }
 
   fCbmPrimVertex = (CbmVertex*) ioman->GetObject("PrimaryVertex.");
-
   return kSUCCESS;
 }
 
@@ -144,6 +143,7 @@ void CbmKFParticleFinder::Exec(Option_t* /*opt*/)
   for (int iEvent = 0; iEvent < nEvents; iEvent++) {
     CbmEvent* event = 0;
     if (fTimeSliceMode) event = (CbmEvent*) fEvents->At(iEvent);
+    eventTopoReconstructor[iEvent].SetTarget(fTopoReconstructor->GetTargetPosition());
     eventTopoReconstructor[iEvent].SetChi2PrimaryCut(InversedChi2Prob(0.0001, 2));
     eventTopoReconstructor[iEvent].CopyCuts(fTopoReconstructor);
     eventTopoReconstructor[iEvent].GetKFParticleFinder()->SetReconstructionList(
@@ -581,7 +581,6 @@ void CbmKFParticleFinder::SetSuperEventAnalysis()
 
 
 void CbmKFParticleFinder::SetTarget(const std::array<float, 3>& target) { fTopoReconstructor->SetTarget(target); }
-
 KFParticleFinder* CbmKFParticleFinder::GetKFParticleFinder() { return fTopoReconstructor->GetKFParticleFinder(); }
 void CbmKFParticleFinder::SetMaxDistanceBetweenParticlesCut(float cut)
 {

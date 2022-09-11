@@ -314,7 +314,7 @@ void CbmKF::GetTargetInfo()
   LOG(info) << "Target info: " << target.KFInfo();
 }
 
-std::array<double, 3> CbmKF::GetTargetPosition() { return fTargetXYZ; }
+const std::array<float, 3> CbmKF::GetTargetPosition() { return fTargetXYZ; }
 
 void CbmKF::FindTargetNode(TString& targetPath, TGeoNode*& targetNode)
 {

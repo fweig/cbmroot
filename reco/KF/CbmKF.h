@@ -91,7 +91,7 @@ public:
 
   int GetNMvdStations() const { return CbmKF::Instance()->vMvdMaterial.size(); }
 
-  std::array<double, 3> GetTargetPosition();
+  const std::array<float, 3> GetTargetPosition();
 
 private:
   static CbmKF* fInstance;
@@ -113,7 +113,7 @@ private:
 
   void FindTargetNode(TString& targetPath, TGeoNode*& targetNode);
 
-  std::array<double, 3> fTargetXYZ;
+  std::array<float, 3> fTargetXYZ;
 
 
 private:
