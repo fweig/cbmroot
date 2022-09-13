@@ -151,7 +151,7 @@ void L1AlgoDraw::DrawMCTracks()
       par1[4] = p.q / p.p;
       par1[5] = p.z;
       if (fVerbose >= 5) {
-        static float pz = -1;
+        static fscal pz = -1;
         if (fabs(pz - p.z) > 1.0) cout << "-- ";
         cout << "point.z = " << p.z << endl;
         pz = p.z;
@@ -172,9 +172,9 @@ void L1AlgoDraw::DrawMCTracks()
           w  = 1;
           w1 = 0;
         }
-        float xl = (w1 * par[0] + w * par1[0]) / (w + w1);
-        float yl = (w1 * par[1] + w * par1[1]) / (w + w1);
-        float zl = (w1 * par[5] + w * par1[5]) / (w + w1);
+        double xl = (w1 * par[0] + w * par1[0]) / (w + w1);
+        double yl = (w1 * par[1] + w * par1[1]) / (w + w1);
+        double zl = (w1 * par[5] + w * par1[5]) / (w + w1);
         if ((fabs(xl) > 50.0) || (fabs(yl) > 50.0)) {
           //cout << "*** track " << NRegMCTracks+1 << " xl = " << xl << ", zl = " << zl << endl;
           //cout << "*** track " << NRegMCTracks+1 << " yl = " << yl << ", zl = " << zl << endl;
@@ -474,8 +474,8 @@ void L1AlgoDraw::DrawInfo()
 void L1AlgoDraw::DrawTarget()
 {
 
-  float x = 0, y = 0, z = 0;
-  float x_t, z_t;
+  double x = 0, y = 0, z = 0;
+  double x_t, z_t;
 
   TVector3 v3(x, y, z);
   v3.RotateX(TMath::Pi() / 5);
@@ -560,8 +560,8 @@ void L1AlgoDraw::DrawInputHits()
       int iMC  = CbmL1::Instance()->fvHitPointIndexes[ih];
       //if( (vSFlag[h.f] | vSFlagB[h.b] )&0x02 ) continue; // if used
 
-      float x, y, z;
-      float x_t, z_t;
+      fscal x, y, z;
+      fscal x_t, z_t;
       algo->GetHitCoor(h, x, y, z, st);
 
       TVector3 v3(x, y, z);
@@ -694,7 +694,7 @@ void L1AlgoDraw::DrawRestHits(L1HitIndex_t* StsRestHitsStartIndex, L1HitIndex_t*
       int iMC  = CbmL1::Instance()->fvHitPointIndexes[ih];
       //if( (vSFlag[h.f] | vSFlagB[h.b] )&0x02 ) continue; // if used
 
-      float x, y, z;
+      fscal x, y, z;
       algo->GetHitCoor(h, x, y, z, st);
       if (iMC >= 0) {
         x_poly[n_poly] = x;
@@ -800,7 +800,7 @@ L1AlgoDraw::Point L1AlgoDraw::GetHitCoor(int ih)
     }
   }
   L1Station& sta = vStations[ista];
-  float x, y, z;
+  fscal x, y, z;
   algo->GetHitCoor(hit, x, y, z, sta);
   return Point(x, y, z);
 };

@@ -342,7 +342,7 @@ void L1Algo::L1KFTrackFitter()
   L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
 
-  L1Track* t[fvec::size()];
+  L1Track* t[fvec::size()] {nullptr};
 
   const L1Station* sta = fParameters.GetStations().begin();
   L1Station staFirst, staLast;  // FIXME (?): Probably, we should replace these variables with references (S.Zharko)
@@ -807,7 +807,7 @@ void L1Algo::L1KFTrackFitterMuch()
   L1Fit fit;
   fit.SetParticleMass(GetDefaultParticleMass());
 
-  L1Track* t[fvec::size()];
+  L1Track* t[fvec::size()] {nullptr};
 
   const L1Station* sta = fParameters.GetStations().begin();
   L1Station staFirst, staLast;

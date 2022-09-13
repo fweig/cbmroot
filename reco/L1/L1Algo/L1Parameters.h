@@ -141,9 +141,9 @@ public:
   /// \param iStActive  Global index of an active station
   /// \param xPos       Position of the point in X dimension [cm]
   /// \param yPos       Position of the point in Y dimension [cm]
-  float GetMaterialThickness(int iStActive, float xPos, float yPos) const
+  float GetMaterialThicknessScal(int iStActive, float xPos, float yPos) const
   {
-    return fThickMap[iStActive].GetRadThick(xPos, yPos);
+    return fThickMap[iStActive].GetRadThickScal(xPos, yPos);
   }
 
   /// Gets material thickness in units of radiation length in a point on the XY plane for a selected station
@@ -152,7 +152,7 @@ public:
   /// \param yPos       Position of the point in Y dimension [cm] (SIMDized vector)
   fvec GetMaterialThickness(int iStActive, fvec xPos, fvec yPos) const
   {
-    return fThickMap[iStActive].GetRadThick(xPos, yPos);
+    return fThickMap[iStActive].GetRadThickVec(xPos, yPos);
   }
 
   /// Gets X component of target position

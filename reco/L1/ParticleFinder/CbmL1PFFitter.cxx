@@ -143,7 +143,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
   L1Fit fit;
   fit.SetParticleMass(0.000511f);  // muon
 
-  CbmStsTrack* t[fvec::size()];
+  CbmStsTrack* t[fvec::size()] {nullptr};
 
   int ista;
   const L1Station* sta = CbmL1::Instance()->fpAlgo->GetParameters()->GetStations().begin();
@@ -443,7 +443,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRe
   L1TrackPar T;  // fitting parametr coresponding to current track
   L1Fit fit;
 
-  CbmStsTrack* t[fvec::size()];
+  CbmStsTrack* t[fvec::size()] {nullptr};
 
   int nStations        = CbmL1::Instance()->fpAlgo->GetParameters()->GetNstationsActive();
   int NMvdStations     = CbmL1::Instance()->fpAlgo->GetNstationsBeforePipe();

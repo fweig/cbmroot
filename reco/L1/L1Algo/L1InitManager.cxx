@@ -49,7 +49,7 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
                 << ". Homogeneous material budget will be used: " << inStationCopy.GetRadThick()[0];
       L1Material material;
       material.SetBins(1, 100);
-      material.SetRadThick(0, 0, inStationCopy.GetRadThick()[0]);
+      material.SetRadThickBin(0, 0, inStationCopy.GetRadThick()[0]);
       inStationCopy.SetMaterialMap(std::move(material));
     }
 

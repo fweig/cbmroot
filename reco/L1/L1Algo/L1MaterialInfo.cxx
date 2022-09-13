@@ -122,7 +122,7 @@ L1Material& L1Material::operator=(L1Material&& other) noexcept
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
-float L1Material::GetRadThick(float x, float y) const
+float L1Material::GetRadThickScal(float x, float y) const
 {
   x     = (x < fRmax && x >= -fRmax) ? x : 0;
   y     = (y < fRmax && y >= -fRmax) ? y : 0;
@@ -135,11 +135,11 @@ float L1Material::GetRadThick(float x, float y) const
 
 //------------------------------------------------------------------------------------------------------------------------------------
 //
-fvec L1Material::GetRadThick(fvec x, fvec y) const
+fvec L1Material::GetRadThickVec(fvec x, fvec y) const
 {
   fvec r;
   for (size_t i = 0; i < fvec::size(); i++)
-    r[i] = GetRadThick(x[i], y[i]);
+    r[i] = GetRadThickScal(x[i], y[i]);
   return r;
 }
 
@@ -169,8 +169,8 @@ void L1Material::CheckConsistency() const
 //
 void L1Material::SetBins(int nBins, float stationSize)
 {
-  fNbins  = nBins;
-  fRmax   = stationSize;
+  fNbins = nBins;
+  fRmax  = stationSize;
 
   if (fNbins < 1) {
     std::stringstream aStream;

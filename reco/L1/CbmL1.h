@@ -625,39 +625,39 @@ void CbmL1::ApplyCorrectionToMaterialMap(L1Material& material, const L1MaterialI
     if constexpr (detID == L1DetectorID::kTof) { minVal = 0.0015f; }
     if constexpr (detID != L1DetectorID::kSts) {
       for (int iBinY = 0; iBinY < material.GetNbins(); ++iBinY) {
-        keepRow[iBinY] = material.GetRadThick(iBinX, iBinY);
+        keepRow[iBinY] = material.GetRadThickBin(iBinX, iBinY);
       }
     }
     for (int iBinY = 0; iBinY < material.GetNbins(); ++iBinY) {
       if constexpr (detID == L1DetectorID::kMvd) {
         // Correction for holes in the material map
-        if (material.GetRadThick(iBinX, iBinY) < homogenious.RadThick[0]) {
+        if (material.GetRadThickBin(iBinX, iBinY) < homogenious.RadThick[0]) {
           if (iBinY > 0 && iBinY < material.GetNbins() - 1) {
-            material.SetRadThick(iBinX, iBinY, TMath::Min(keepRow[iBinY - 1], keepRow[iBinY + 1]));
+            material.SetRadThickBin(iBinX, iBinY, TMath::Min(keepRow[iBinY - 1], keepRow[iBinY + 1]));
           }
         }
 
         // Correction for the hard-coded value of RadThick of MVD stations
-        if (material.GetRadThick(iBinX, iBinY) < 0.0015) { material.SetRadThick(iBinX, iBinY, 0.0015); }
+        if (material.GetRadThickBin(iBinX, iBinY) < 0.0015) { material.SetRadThickBin(iBinX, iBinY, 0.0015); }
       }
       else if constexpr (detID == L1DetectorID::kSts) {
-        if (material.GetRadThick(iBinX, iBinY) < homogenious.RadThick[0]) {
-          material.SetRadThick(iBinX, iBinY, homogenious.RadThick[0]);
+        if (material.GetRadThickBin(iBinX, iBinY) < homogenious.RadThick[0]) {
+          material.SetRadThickBin(iBinX, iBinY, homogenious.RadThick[0]);
         }
       }
       else if constexpr (detID == L1DetectorID::kMuch || detID == L1DetectorID::kTrd || detID == L1DetectorID::kTof) {
         // Correction for holes in the material map
         if (L1Algo::TrackingMode::kGlobal != fTrackingMode) {
           if ((iBinY > 0) && (iBinY < material.GetNbins() - 1)) {
-            material.SetRadThick(iBinX, iBinY, TMath::Min(keepRow[iBinY - 1], keepRow[iBinY + 1]));
+            material.SetRadThickBin(iBinX, iBinY, TMath::Min(keepRow[iBinY - 1], keepRow[iBinY + 1]));
           }
         }
-        float val = material.GetRadThick(iBinX, iBinY);
+        float val = material.GetRadThickBin(iBinX, iBinY);
         if (val > 0.0015) {  // remember last non-zero value
           minVal = val;
         }
         else {  // empty bin with no statistics, fill it with the neighbours value
-          material.SetRadThick(iBinX, iBinY, minVal);
+          material.SetRadThickBin(iBinX, iBinY, minVal);
         }
       }
     }

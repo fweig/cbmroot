@@ -80,17 +80,18 @@ public:
   /// Gets value of X/X0 in a given cell of the material table by the indeces of the row and column
   /// \param iBinX  Index of table column
   /// \param iBinY  Index of table row
-  float GetRadThick(int iBinX, int iBinY) const { return fTable[iBinX + fNbins * iBinY]; }
+  float GetRadThickBin(int iBinX, int iBinY) const { return fTable[iBinX + fNbins * iBinY]; }
 
   /// Gets material thickness in units of X0 in (x,y) point of the station
   /// \param x  X coordinate of the point [cm]
   /// \param y  Y coordinate of the point [cm]
-  float GetRadThick(float x, float y) const;
+  float GetRadThickScal(float x, float y) const;
 
   /// Gets material thickness in units of X0 in (x,y) point of the station
+  /// fvec type can be float, that is why "Vec" and "Scal" specifications
   /// \param x  X coordinate of the point [cm] (SIMDized vector)
   /// \param y  Y coordinate of the point [cm] (SIMDized veotor)
-  fvec GetRadThick(fvec x, fvec y) const;
+  fvec GetRadThickVec(fvec x, fvec y) const;
 
   /// Checks, if the fields are NaN
   bool IsNaN() const { return L1NaN::IsNaN(fNbins) || L1NaN::IsNaN(fRmax) || L1NaN::IsNaN(fFactor); }
@@ -105,7 +106,7 @@ public:
   /// \param iBinX      Index of table column
   /// \param iBinY      Index of table row
   /// \param thickness  Thickness of the material in units of X0
-  void SetRadThick(int iBinX, int iBinY, float thickness) { fTable[iBinX + fNbins * iBinY] = thickness; }
+  void SetRadThickBin(int iBinX, int iBinY, float thickness) { fTable[iBinX + fNbins * iBinY] = thickness; }
 
   /// Sets properties of the material table -- number of rows or columnts and the size of station in XY plane
   /// \param  nBins        Number of rows or columns
@@ -120,7 +121,7 @@ private:
   float fRmax {L1NaN::SetNaN<decltype(fRmax)>()};  ///< Size of the station in x and y dimensions [cm]
   float fFactor {
     L1NaN::SetNaN<decltype(fFactor)>()};  ///< Factor used in the recalculation of point coordinates to row/column id
-  std::vector<float> fTable {};  ///< Material budget table
+  std::vector<float> fTable {};           ///< Material budget table
 
   /// Serialization function
   friend class boost::serialization::access;

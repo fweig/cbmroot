@@ -401,8 +401,8 @@ inline void L1Algo::findDoubletsStep0(
 
     // -- collect possible doublets --
     const fscal iz         = 1.f / (T1.z[i1_4] - fParameters.GetTargetPositionZ()[0]);
-    const float& timeError = T1.C55[i1_4];
-    const float& time      = T1.t[i1_4];
+    const fscal timeError  = T1.C55[i1_4];
+    const fscal time       = T1.t[i1_4];
 
     L1HitAreaTime areaTime(vGridTime[iStaM], T1.x[i1_4] * iz, T1.y[i1_4] * iz,
                            (sqrt(Pick_m22 * (T1.C00 + stam.XYInfo.C00)) + fMaxDZ * abs(T1.tx))[i1_4] * iz,
@@ -556,8 +556,8 @@ inline void L1Algo::findTripletsStep0(  // input
   int iStaM = &stam - fParameters.GetStations().begin();
   int iStaR = &star - fParameters.GetStations().begin();
 
-  L1HitIndex_t hitsl_2[fvec::size()];
-  L1HitIndex_t hitsm_2_tmp[fvec::size()];
+  L1HitIndex_t hitsl_2[fvec::size()] {L1NaN::SetNaN<L1HitIndex_t>()};
+  L1HitIndex_t hitsm_2_tmp[fvec::size()] {L1NaN::SetNaN<L1HitIndex_t>()};
   L1TrackPar L1TrackPar_0;
   // SG!! to avoid nans in unfilled part
   //TODO: SG: investigate, it changes the results !!
@@ -604,7 +604,7 @@ inline void L1Algo::findTripletsStep0(  // input
     fvec timeMEr   = 1.f;
 
     size_t n2_4 = 0;
-    for (; n2_4 < fvec::size() && i2 < n2; i2++) {
+    for (; n2_4 < fvec::size() && i2 < n2; i2++, n2_4++) {
       //         if (!mrDuplets[hitsm_2[i2]]) {
       //           n2_4--;
       //           continue;
@@ -635,7 +635,6 @@ inline void L1Algo::findTripletsStep0(  // input
 
       hitsl_2[n2_4]     = hitsl_1[i1];
       hitsm_2_tmp[n2_4] = hitsm_2[i2];
-      n2_4++;
     }  // n2_4
 
     fvec dz = zPos_2 - T2.z;
@@ -748,8 +747,8 @@ inline void L1Algo::findTripletsStep0(  // input
       if (fabs(T2.ty[i2_4]) > fMaxSlope) continue;
 
       const fvec Pick_r22    = (fTripletChi2Cut - T2.chi2);
-      const float& timeError = T2.C55[i2_4];
-      const float& time      = T2.t[i2_4];
+      const fscal timeError  = T2.C55[i2_4];
+      const fscal time       = T2.t[i2_4];
       // find first possible hit
 
 #ifdef DO_NOT_SELECT_TRIPLETS
@@ -1332,7 +1331,7 @@ inline void L1Algo::f5(  // input
             if (istar != trip.GetRSta()) continue;
 
             unsigned char level = 0;
-            //           float  chi2 = trip->GetChi2();
+            //           fscal  chi2 = trip->GetChi2();
 
             L1HitIndex_t ihitl = trip.GetLHit();
             L1HitIndex_t ihitm = trip.GetMHit();
@@ -1757,13 +1756,13 @@ void L1Algo::CATrackFinder()
     HitsUnusedStopIndex[ista]  = fInputData.GetStopHitIndex(ista);
   }
 
-  float lasttime  = 0;
-  float starttime = std::numeric_limits<float>::max();
+  fscal lasttime  = 0;
+  fscal starttime = std::numeric_limits<fscal>::max();
 
   for (int ist = 0; ist < fParameters.GetNstationsActive(); ++ist)
     for (L1HitIndex_t ih = fInputData.GetStartHitIndex(ist); ih < fInputData.GetStopHitIndex(ist); ++ih) {
 
-      const float& time = fInputData.GetHit(ih).t;
+      const fscal time = fInputData.GetHit(ih).t;
       if ((lasttime < time) && (!std::isinf(time))) lasttime = time;
       if ((starttime > time) && (time > 0)) starttime = time;
     }
@@ -1774,18 +1773,18 @@ void L1Algo::CATrackFinder()
   c_timerG.Start();
 #endif  // XXX
 
-  float yStep = 1.5 / sqrt(nNotUsedHits);  // empirics. 0.01*sqrt(2374) ~= 0.5
+  fscal yStep = 1.5 / sqrt(nNotUsedHits);  // empirics. 0.01*sqrt(2374) ~= 0.5
 
 
-  //  float yStep = 0.5 / sqrt(nNotUsedHits);  // empirics. 0.01*sqrt(2374) ~= 0.5
+  //  fscal yStep = 0.5 / sqrt(nNotUsedHits);  // empirics. 0.01*sqrt(2374) ~= 0.5
   if (yStep > 0.3) yStep = 0.3;
-  float xStep = yStep * 3;
-  // float xStep = yStep * 3;
+  fscal xStep = yStep * 3;
+  // fscal xStep = yStep * 3;
 
   //  yStep = 0.0078;
-  //  const float hitDensity = sqrt( nNotUsedHits );
+  //  const fscal hitDensity = sqrt( nNotUsedHits );
 
-  //     float yStep = 0.7*4/hitDensity; // empirics. 0.01*sqrt(2374) ~= 0.5
+  //     fscal yStep = 0.7*4/hitDensity; // empirics. 0.01*sqrt(2374) ~= 0.5
   //     if (yStep > 0.3)
   //      yStep = 1.25;
   //      xStep = 2.05;
@@ -1919,8 +1918,8 @@ void L1Algo::CATrackFinder()
         fTargY = fParameters.GetTargetPositionY();
         fTargZ = fParameters.GetTargetPositionZ();
 
-        float SigmaTargetX = caIteration.GetTargetPosSigmaX();
-        float SigmaTargetY = caIteration.GetTargetPosSigmaY();  // target constraint [cm]
+        fscal SigmaTargetX = caIteration.GetTargetPosSigmaX();
+        fscal SigmaTargetY = caIteration.GetTargetPosSigmaY();  // target constraint [cm]
 
         // Select magnetic field. For primary tracks - fVtxFieldValue, for secondary tracks - st.fieldSlice
         if (caIteration.GetPrimaryFlag()) { fTargB = fParameters.GetVertexFieldValue(); }
@@ -2315,7 +2314,7 @@ void L1Algo::CATrackFinder()
 #ifdef _OPENMP
                 omp_set_lock(&fStripToTrackLock[h.f]);
 #endif
-                int& stripF = (fStripToTrack)[h.f];
+                auto& stripF = (fStripToTrack)[h.f];
                 if ((stripF >= 0) && (stripF != tr.fID)) {  // strip is used by other candidate
                   const auto& other = fTrackCandidates[TrackId2Thread(stripF)][TrackId2Track(stripF)];
                   if (!other.fIsAlive && L1Branch::compareCand(tr, other)) { stripF = tr.fID; }
@@ -2336,7 +2335,7 @@ void L1Algo::CATrackFinder()
 #ifdef _OPENMP
                 omp_set_lock(&fStripToTrackLock[h.b]);
 #endif
-                int& stripB = (fStripToTrack)[h.b];
+                auto& stripB = (fStripToTrack)[h.b];
                 if ((stripB >= 0) && (stripB != tr.fID)) {  // strip is used by other candidate
                   const auto& other = fTrackCandidates[TrackId2Thread(stripB)][TrackId2Track(stripB)];
                   if (!other.fIsAlive && L1Branch::compareCand(tr, other)) { stripB = tr.fID; }
@@ -2415,7 +2414,7 @@ void L1Algo::CATrackFinder()
             if (tr.NHits != fParameters.GetNstationsActive()) BranchExtender(tr);
           }
 #endif
-          float sumTime = 0;
+          fscal sumTime = 0;
 
 #ifdef _OPENMP
           int num_thread = omp_get_thread_num();
@@ -2433,9 +2432,9 @@ void L1Algo::CATrackFinder()
             const L1Station& stah = fParameters.GetStation(hit.iSt);
             auto [xcoor, ycoor]   = stah.ConvUVtoXY<fscal>(tempPoint.U(), tempPoint.V());
 
-            float zcoor = tempPoint.Z() - fParameters.GetTargetPositionZ()[0];
+            fscal zcoor = tempPoint.Z() - fParameters.GetTargetPositionZ()[0];
 
-            float timeFlight = sqrt(xcoor * xcoor + ycoor * ycoor + zcoor * zcoor) / 30.f;  // c = 30[cm/ns]
+            fscal timeFlight = sqrt(xcoor * xcoor + ycoor * ycoor + zcoor * zcoor) / 30.f;  // c = 30[cm/ns]
             sumTime += (hit.t - timeFlight);
           }
 
@@ -2602,7 +2601,7 @@ void L1Algo::CATrackFinder()
   tmp_gti.PrintReal(1);
   fstream filestr;
   filestr.open("speedUp.log", fstream::out | fstream::app);
-  float tripl_speed = 1000. / (tmp_ti.GetTimerAll()["tripl1"].Real());
+  fscal tripl_speed = 1000. / (tmp_ti.GetTimerAll()["tripl1"].Real());
   filestr << tripl_speed << " ";
   filestr.close();
 

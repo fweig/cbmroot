@@ -1682,7 +1682,7 @@ std::vector<L1Material> CbmL1::ReadMaterialBudget(L1DetectorID detectorID)
       result[iSt].SetBins(nBins, rMax);
       for (int iBinX = 0; iBinX < nBins; ++iBinX) {
         for (int iBinY = 0; iBinY < nBins; ++iBinY) {
-          result[iSt].SetRadThick(iBinX, iBinY, 0.01 * hStaRadLen->GetBinContent(iBinX, iBinY));
+          result[iSt].SetRadThickBin(iBinX, iBinY, 0.01 * hStaRadLen->GetBinContent(iBinX, iBinY));
         }  // iBinX
       }    // iBinY
       LOG(info) << "- station " << iSt;
