@@ -391,7 +391,24 @@ namespace cbm::algo
               case 2: iSideMap = 1; break;
             }
           } break;
-
+          case 8: {
+            // Special case for two channels in 2022
+            // Fallthrough to 7 for all other channels
+            if (2 == iFeet) {
+              if (7 == iStr) {
+                ///                                               SM Rpc St Si Type
+                fviRpcChUId[uCh] = CbmTofAddress::GetUniqueAddress(0, 0, 0, 0, 8);
+                uCh++;
+                continue;
+              }
+              else if (23 == iStr) {
+                ///                                               SM Rpc St Si Type
+                fviRpcChUId[uCh] = CbmTofAddress::GetUniqueAddress(1, 0, 0, 0, 8);
+                uCh++;
+                continue;
+              }
+            }
+          }
           case 7: {
             // clang-format off
           const int32_t iChMap[160]={

@@ -117,32 +117,8 @@ namespace cbm::algo
     double messageTime  = message.getMsgFullTimeD(fCurrentEpochInTs) - elinkPar.fTimeOffset;
     const double charge = (double) message.getGdpbHit32Tot();  //cast from uint32_t
 
-    {  // weird address hack   (probably should not be in final version)
-      std::unique_ptr<CbmTofDigi> digi(new CbmTofDigi(channelUId, messageTime, charge));
-      int iSmType = 8;
-      int iSm     = -1;
-      int iRpc    = 0;
-      int iDetId  = 0;
-      if (digi->GetType() == 6 && digi->GetRpc() == 1) {
-        switch ((int) (digi->GetChannel() * 2 + digi->GetSide())) {
-          case 62:  //800
-            iSm = 0;
-            break;
-          case 46:  //810
-            iSm = 1;
-            break;
-          default:;
-        }
-        if (iSm > -1) {
-          iDetId = CbmTofAddress::GetUniqueAddress(iSm, iRpc, 0, 0, iSmType);
-          digi->SetAddress(iDetId);
-        }
-      }
-      if (digi) digiVec.emplace_back(*std::move(digi));
-    }  //special remapping end
-
     // --- Create output digi
-    //digiVec.emplace_back(channelUId, messageTime, charge);  ((restore this))
+    digiVec.emplace_back(channelUId, messageTime, charge);
   }
   // --------------------------------------------------------------------------
 
