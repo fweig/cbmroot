@@ -400,9 +400,9 @@ inline void L1Algo::findDoubletsStep0(
     // Pick_m22 is not used, search for mean squared, 2nd version
 
     // -- collect possible doublets --
-    const fscal iz         = 1.f / (T1.z[i1_4] - fParameters.GetTargetPositionZ()[0]);
-    const fscal timeError  = T1.C55[i1_4];
-    const fscal time       = T1.t[i1_4];
+    const fscal iz        = 1.f / (T1.z[i1_4] - fParameters.GetTargetPositionZ()[0]);
+    const fscal timeError = T1.C55[i1_4];
+    const fscal time      = T1.t[i1_4];
 
     L1HitAreaTime areaTime(vGridTime[iStaM], T1.x[i1_4] * iz, T1.y[i1_4] * iz,
                            (sqrt(Pick_m22 * (T1.C00 + stam.XYInfo.C00)) + fMaxDZ * abs(T1.tx))[i1_4] * iz,
@@ -746,9 +746,9 @@ inline void L1Algo::findTripletsStep0(  // input
       if (fabs(T2.tx[i2_4]) > fMaxSlope) continue;
       if (fabs(T2.ty[i2_4]) > fMaxSlope) continue;
 
-      const fvec Pick_r22    = (fTripletChi2Cut - T2.chi2);
-      const fscal timeError  = T2.C55[i2_4];
-      const fscal time       = T2.t[i2_4];
+      const fvec Pick_r22   = (fTripletChi2Cut - T2.chi2);
+      const fscal timeError = T2.C55[i2_4];
+      const fscal time      = T2.t[i2_4];
       // find first possible hit
 
 #ifdef DO_NOT_SELECT_TRIPLETS
@@ -1756,18 +1756,6 @@ void L1Algo::CATrackFinder()
     HitsUnusedStopIndex[ista]  = fInputData.GetStopHitIndex(ista);
   }
 
-  fscal lasttime  = 0;
-  fscal starttime = std::numeric_limits<fscal>::max();
-
-  for (int ist = 0; ist < fParameters.GetNstationsActive(); ++ist)
-    for (L1HitIndex_t ih = fInputData.GetStartHitIndex(ist); ih < fInputData.GetStopHitIndex(ist); ++ih) {
-
-      const fscal time = fInputData.GetHit(ih).t;
-      if ((lasttime < time) && (!std::isinf(time))) lasttime = time;
-      if ((starttime > time) && (time > 0)) starttime = time;
-    }
-
-
 #ifdef XXX
   c_time.Start();
   c_timerG.Start();
@@ -1791,12 +1779,22 @@ void L1Algo::CATrackFinder()
 
   vHitsUnused = &vNotUsedHits_Buf;
 
-
   for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
+    bool timeUninitialised = 1;
+    fscal lasttime         = 0;
+    fscal starttime        = 0;
+    for (L1HitIndex_t ih = fInputData.GetStartHitIndex(iS); ih < fInputData.GetStopHitIndex(iS); ++ih) {
+      const fscal time = fInputData.GetHit(ih).t;
+      assert(std::isfinite(time));
+      if (timeUninitialised || lasttime < time) { lasttime = time; }
+      if (timeUninitialised || starttime > time) { starttime = time; }
+      timeUninitialised = false;
+    }
 
     vGridTime[iS].BuildBins(-1, 1, -0.6, 0.6, starttime, lasttime, xStep, yStep, (lasttime - starttime + 1));
     int start = HitsUnusedStartIndex[iS];
     int nhits = HitsUnusedStopIndex[iS] - start;
+
     if (nhits > 0) {
       vGridTime[iS].StoreHits(nhits, &(fInputData.GetHit(start)), iS, *this, start, &(vNotUsedHits_Buf[start]),
                               &(fInputData.GetHit(start)), &(RealIHit_v[start]));
@@ -2080,7 +2078,7 @@ void L1Algo::CATrackFinder()
           Tindex nG_2;
           hitsmG_2.clear();
           i1G_2.clear();
-          if ((fMissingHits && ((istal == 0) || (istal == 1))) || !fMissingHits)
+          if ((fMissingHits && ((istal == 0) || (istal == 1))) || !fMissingHits) {
             DupletsStaPort(  // input
               istal, istal + 2, ip, fDupletPortionSize, fDupletPortionStopIndex,
               // output
@@ -2089,20 +2087,20 @@ void L1Algo::CATrackFinder()
               lmDupletsG[istal],
 
               nG_2, i1G_2, hitsmG_2);
+          }
 
-          if ((fMissingHits && (istal == 0)) || !fMissingHits)
+          if ((fMissingHits && (istal == 0)) || !fMissingHits) {
             TripletsStaPort(  // input
               istal, istal + 1, istal + 3, nstaltriplets, T_1, fld_1, hitsl_1,
 
               n_2, i1_2, hitsm_2, lmDupletsG[istal + 1]);
+          }
 
-          if ((fMissingHits && (istal == 1)) || !fMissingHits)
+          if ((fMissingHits && (istal == 1)) || !fMissingHits) {
             TripletsStaPort(  // input
-              istal, istal + 2, istal + 3, nstaltriplets, TG_1, fldG_1, hitslG_1,
-
-              nG_2, i1G_2, hitsmG_2, lmDuplets[istal + 2]
-
-            );
+              istal, istal + 2, istal + 3, nstaltriplets, TG_1, fldG_1, hitslG_1, nG_2, i1G_2, hitsmG_2,
+              lmDuplets[istal + 2]);
+          }
         }
       }  //
     }

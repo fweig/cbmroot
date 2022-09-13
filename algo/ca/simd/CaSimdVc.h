@@ -13,6 +13,7 @@ namespace cbm::algo::ca
   typedef Vc::float_v fvec;
   //typedef Vc::double_v fvec;
   //typedef Vc::Vector<float, Vc::VectorAbi::Scalar>  fvec;
+  //typedef Vc::SimdArray<float, 4> fvec;
 
   typedef fvec::EntryType fscal;
   typedef fvec::MaskType fmask;
