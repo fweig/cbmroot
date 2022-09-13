@@ -1,4 +1,4 @@
-set(INPUT_VERSION 4f62a4a7707a2bdd16b06ca212785978c688e3af)
+set(INPUT_VERSION e7571e3af56ba81fa586efc7fa676b2b8e9beea4)
 
 set(INPUT_SRC_URL "https://git.cbm.gsi.de/CbmSoft/cbmroot_input.git")
 
