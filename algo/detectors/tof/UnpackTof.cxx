@@ -80,11 +80,11 @@ namespace cbm::algo
           break;
         }
         case critof001::MSG_SLOWC: {
-          // Fill error
+          result.second.fNumNonHitOrTsbMessage++;
           break;
         }
         case critof001::MSG_SYST: {
-          // Fill error
+          result.second.fNumNonHitOrTsbMessage++;
           break;
         }
         default: {

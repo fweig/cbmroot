@@ -150,24 +150,28 @@ namespace cbm::algo
           BuildChannelsUidMapCera(uCh, uGbtx);
           break;
         }
-        case 69:
-        case 6:  // Buc box
-        {
-          BuildChannelsUidMapBuc(uCh, uGbtx);
-          if (rpcType[uGbtx] == 6) break;
-        }
-          [[fallthrough]];
         case 4:  // intended fallthrough
           [[fallthrough]];
         case 7: [[fallthrough]];
         case 9:  // Star2 boxes
         {
-          if (rpcType[uGbtx] == 69) uCh -= 80;
           BuildChannelsUidMapStar2(uCh, uGbtx);
-          if (rpcType[uGbtx] == 69) uCh -= 80;
           break;
         }
-
+        case 6:  // Buc box
+        {
+          BuildChannelsUidMapBuc(uCh, uGbtx);
+          break;
+        }
+        case 69: {
+          /// 2022 case: 69 is followed by 4 and 9
+          BuildChannelsUidMapBuc(uCh, uGbtx);
+          /// Map also 4 and 9 (equivalent to fallthrough to 4 then 9 but without changing past behaviors)
+          uCh -= 80;  // PAL, 2022/03/17: ?!?
+          BuildChannelsUidMapStar2(uCh, uGbtx);
+          uCh -= 80;  // PAL, 2022/03/17: ?!?
+          break;
+        }
         case -1: {
           LOG(info) << " Found unused GBTX link at uCh = " << uCh;
           uCh += 160;
