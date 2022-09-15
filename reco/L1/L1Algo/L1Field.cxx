@@ -43,7 +43,7 @@ std::string L1FieldValue::ToString(int indentLevel) const
 //
 std::ostream& operator<<(std::ostream& out, const L1FieldValue& B)
 {
-  return out << B.x[0] << " | " << B.y[0] << " | " << B.z[0];
+  return out << B.x << " | " << B.y << " | " << B.z;
 };
 
 //

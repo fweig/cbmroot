@@ -506,7 +506,7 @@ void L1Algo::L1KFTrackFitter()
 
       FilterFirst(T1, x_last, y_last, time_last, time_er_last, staLast, d_xx_lst, d_yy_lst, d_xy_lst);
 
-      T1.Filter(time[i], timeEr[i], w_time[i], sta[i].timeInfo);
+      T1.FilterTime(time[i], timeEr[i], w_time[i], sta[i].timeInfo);
 
       // fit.L1AddMaterial( T, sta[i].materialInfo, qp0, 1 );
 
@@ -575,7 +575,7 @@ void L1Algo::L1KFTrackFitter()
         L1Filter(T, sta[i].backInfo, v[i], w1);
         T1.Filter(info, v[i], w1);
 
-        T1.Filter(time[i], timeEr[i], w1_time, sta[i].timeInfo);
+        T1.FilterTime(time[i], timeEr[i], w1_time, sta[i].timeInfo);
 
 
         fldB2 = fldB1;
@@ -669,7 +669,7 @@ void L1Algo::L1KFTrackFitter()
 
       FilterFirst(T1, x_first, y_first, time_first, time_er_first, staFirst, d_xx_fst, d_yy_fst, d_xy_fst);
 
-      T1.Filter(time[i], timeEr[i], w_time[i], sta[i].timeInfo);
+      T1.FilterTime(time[i], timeEr[i], w_time[i], sta[i].timeInfo);
 
       // fit.L1AddMaterial( T, sta[i].materialInfo, qp0, 1 );
       qp0  = T.qp;
@@ -735,7 +735,7 @@ void L1Algo::L1KFTrackFitter()
 
         T1.Filter(info, v[i], w1);
 
-        T1.Filter(time[i], timeEr[i], w1_time, sta[i].timeInfo);
+        T1.FilterTime(time[i], timeEr[i], w1_time, sta[i].timeInfo);
 
         fldB2 = fldB1;
         fldZ2 = fldZ1;
@@ -1055,7 +1055,7 @@ void L1Algo::L1KFTrackFitterMuch()
           T1.Filter(info, v[i], w1);
 
 
-          T1.Filter(time[i], timeEr[i], w1, sta[i].timeInfo);
+          T1.FilterTime(time[i], timeEr[i], w1, sta[i].timeInfo);
         }
 
         if (i >= 8) {
@@ -1134,7 +1134,7 @@ void L1Algo::L1KFTrackFitterMuch()
           L1Filter(T, info, v[i], w1);
           T1.Filter(info, v[i], w1);
 
-          T1.Filter(time[i], timeEr[i], w1, sta[i].timeInfo);
+          T1.FilterTime(time[i], timeEr[i], w1, sta[i].timeInfo);
         }
       }
       // fit.L1AddHalfMaterial( T, sta[i].materialInfo, qp0 );
@@ -1278,7 +1278,7 @@ void L1Algo::L1KFTrackFitterMuch()
           L1Filter(T, info, v[i], w1);
           T1.Filter(info, v[i], w1);
 
-          T1.Filter(time[i], timeEr[i], w1, sta[i].timeInfo);
+          T1.FilterTime(time[i], timeEr[i], w1, sta[i].timeInfo);
         }
 
         if (i < fNfieldStations - 1) {
@@ -1329,7 +1329,7 @@ void L1Algo::L1KFTrackFitterMuch()
           //   info.sigma2 = d_v[i] * d_v[i];
           T1.Filter(info, v[i], w1);
 
-          T1.Filter(time[i], timeEr[i], w1, sta[i].timeInfo);
+          T1.FilterTime(time[i], timeEr[i], w1, sta[i].timeInfo);
 
 
           fldB2 = fldB1;
@@ -1617,6 +1617,7 @@ void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, L1Stat
   track.NDF  = -3.0;
   track.chi2 = ZERO;
 }
+
 void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& dt, L1Station& st, fvec& /*d_xx*/,
                          fvec& /*d_yy*/, fvec& /*d_xy*/)
 {

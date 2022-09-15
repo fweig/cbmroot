@@ -10,6 +10,7 @@
 #include "L1MaterialInfo.h"
 #include "L1TrackPar.h"
 #include "L1UMeasurementInfo.h"
+#include "L1XYMeasurementInfo.h"
 
 class L1TrackParFit {
 
@@ -52,6 +53,7 @@ public:
     , C55(0.)
     , chi2(0.)
     , NDF(0.) {};
+
   L1TrackParFit(double* T, double* C)
     : fx(T[0])
     , fy(T[1])
@@ -60,9 +62,7 @@ public:
     , fqp(T[5])
     , fz(T[6])
     , ft(T[7])
-    ,
-
-    C00(C[0])
+    , C00(C[0])
     , C10(C[1])
     , C11(C[2])
     , C20(C[3])
@@ -106,7 +106,8 @@ public:
   fvec GetParticleMass2() const { return fMass2; }
 
   void Filter(L1UMeasurementInfo& info, fvec u, fvec w = 1.);
-  void Filter(fvec t0, fvec dt0, fvec w = 1., fvec timeInfo = 1.);
+  void FilterXY(const L1XYMeasurementInfo& info, fvec x, fvec y);
+  void FilterTime(fvec t0, fvec dt0, fvec w = 1., fvec timeInfo = 1.);
   void FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w = 1.);
   void Extrapolate(fvec z_out, fvec qp0, const L1FieldRegion& F, fvec* w = 0);
   void ExtrapolateLine(fvec z_out, fvec* w = 0);

@@ -14,7 +14,7 @@ const fvec TargetRadThick = 3.73e-2f * 2;  // 250 mum Gold
 
 void L1TrackParFit::Filter(L1UMeasurementInfo& info, fvec u, fvec w)
 {
-  fvec wi, zeta, zetawi, HCH;
+  fvec zeta, HCH;
   fvec F0, F1, F2, F3, F4, F5;
   fvec K1, K2, K3, K4, K5;
 
@@ -31,16 +31,17 @@ void L1TrackParFit::Filter(L1UMeasurementInfo& info, fvec u, fvec w)
   F4 = info.cos_phi * C40 + info.sin_phi * C41;
   F5 = info.cos_phi * C50 + info.sin_phi * C51;
 
-#if 0  // use mask
-  const fmask mask = (HCH < info.sigma2 * 16.);
-  wi = w/( (mask & info.sigma2) +HCH );
-  zetawi = zeta *wi;
-  chi2 +=  mask & (zeta * zetawi);
-#else
-  wi     = w / (info.sigma2 + HCH);
-  zetawi = zeta * wi;
-  chi2 += zeta * zetawi;
-#endif  // 0
+  const fmask maskDoFilter = (HCH < info.sigma2 * 16.f);
+  //const fvec maskDoFilter = _f32vec4_true;
+
+  // correction to HCH is needed for the case when sigma2 is so small
+  // with respect to HCH that it disappears due to the roundoff error
+  //
+  fvec wi     = w / (info.sigma2 + 1.0000001f * HCH);
+  fvec zetawi = w * zeta / (iif(maskDoFilter, info.sigma2, fvec::Zero()) + HCH);
+
+  // chi2 += iif( maskDoFilter, zeta * zetawi, fvec::Zero() );
+  chi2 += zeta * zeta * wi;
   NDF += w;
 
   K1 = F1 * wi;
@@ -146,43 +147,45 @@ void L1TrackParFit::FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w)
   C55 -= K5 * F5;
 }
 
-void L1TrackParFit::Filter(fvec t0, fvec dt0, fvec w, fvec timeInfo)
+void L1TrackParFit::FilterTime(fvec t, fvec dt, fvec w, fvec timeInfo)
 {
-  fvec wi, zeta, zetawi, HCH;
-  fvec F0, F1, F2, F3, F4, F5;
-  fvec K1, K2, K3, K4, K5;
-
-  zeta = ft - t0;
+  // filter track with a time measurement
 
   // F = CH'
-  F0 = C50;
-  F1 = C51;
+  fvec F0 = C50;
+  fvec F1 = C51;
+  fvec F2 = C52;
+  fvec F3 = C53;
+  fvec F4 = C54;
+  fvec F5 = C55;
 
-  HCH = C55;
+  fvec HCH = C55;
 
-  F2 = C52;
-  F3 = C53;
-  F4 = C54;
-  F5 = C55;
+  w.setZero(timeInfo <= fvec::Zero());
 
-#if 1  // use mask
-  const fmask mask = (timeInfo > 0.f);
-  wi               = iif(mask, w / (dt0 * dt0 + HCH), fvec::Zero());
-  zetawi           = zeta * wi;
-  chi2 += iif(mask, zeta * zetawi, fvec::Zero());
-#else
-  wi     = w / (dt0 * dt0 + HCH);
-  zetawi = zeta * wi;
-  chi2 += zeta * zetawi;
-#endif  // 0
+  fvec dt2 = dt * dt;
 
+  // when dt0 is much smaller than current time error,
+  // set track time exactly to the measurement value without filtering
+  // it helps to keep the initial time errors reasonably small
+  // the calculations in the covariance matrix are not affected
+
+  const fmask maskDoFilter = (HCH < dt2 * 16.f);
+  //const fvec maskDoFilter = _f32vec4_true;
+
+  fvec wi     = w / (dt2 + 1.0000001f * HCH);
+  fvec zeta   = ft - t;
+  fvec zetawi = w * zeta / (iif(maskDoFilter, dt2, fvec::Zero()) + HCH);
+
+  //T.chi2 += maskDoFilter & (zeta * zetawi);
+  chi2 += zeta * zeta * wi;
   NDF += w;
 
-  K1 = F1 * wi;
-  K2 = F2 * wi;
-  K3 = F3 * wi;
-  K4 = F4 * wi;
-  K5 = F5 * wi;
+  fvec K1 = F1 * wi;
+  fvec K2 = F2 * wi;
+  fvec K3 = F3 * wi;
+  fvec K4 = F4 * wi;
+  fvec K5 = F5 * wi;
 
   fx -= F0 * zetawi;
   fy -= F1 * zetawi;
@@ -213,6 +216,88 @@ void L1TrackParFit::Filter(fvec t0, fvec dt0, fvec w, fvec timeInfo)
   C54 -= K5 * F4;
   C55 -= K5 * F5;
 }
+
+
+void L1TrackParFit::FilterXY(const L1XYMeasurementInfo& info, fvec x, fvec y)
+{
+  cnst TWO(2.);
+
+  fvec zeta0, zeta1, S00, S10, S11, si;
+  fvec F00, F10, F20, F30, F40, F50, F01, F11, F21, F31, F41, F51;
+  fvec K00, K10, K20, K30, K40, K50, K01, K11, K21, K31, K41, K51;
+
+  zeta0 = fx - x;
+  zeta1 = fy - y;
+
+  // F = CH'
+  F00 = C00;
+  F10 = C10;
+  F20 = C20;
+  F30 = C30;
+  F40 = C40;
+  F50 = C50;
+  F01 = C10;
+  F11 = C11;
+  F21 = C21;
+  F31 = C31;
+  F41 = C41;
+  F51 = C51;
+
+  S00 = F00 + info.C00;
+  S10 = F10 + info.C10;
+  S11 = F11 + info.C11;
+
+  si          = 1.f / (S00 * S11 - S10 * S10);
+  fvec S00tmp = S00;
+  S00         = si * S11;
+  S10         = -si * S10;
+  S11         = si * S00tmp;
+
+  chi2 += zeta0 * zeta0 * S00 + 2.f * zeta0 * zeta1 * S10 + zeta1 * zeta1 * S11;
+  NDF += TWO;
+
+  K00 = F00 * S00 + F01 * S10;
+  K01 = F00 * S10 + F01 * S11;
+  K10 = F10 * S00 + F11 * S10;
+  K11 = F10 * S10 + F11 * S11;
+  K20 = F20 * S00 + F21 * S10;
+  K21 = F20 * S10 + F21 * S11;
+  K30 = F30 * S00 + F31 * S10;
+  K31 = F30 * S10 + F31 * S11;
+  K40 = F40 * S00 + F41 * S10;
+  K41 = F40 * S10 + F41 * S11;
+  K50 = F50 * S00 + F51 * S10;
+  K51 = F50 * S10 + F51 * S11;
+
+  fx -= K00 * zeta0 + K01 * zeta1;
+  fy -= K10 * zeta0 + K11 * zeta1;
+  ftx -= K20 * zeta0 + K21 * zeta1;
+  fty -= K30 * zeta0 + K31 * zeta1;
+  fqp -= K40 * zeta0 + K41 * zeta1;
+
+  C00 -= K00 * F00 + K01 * F01;
+  C10 -= K10 * F00 + K11 * F01;
+  C11 -= K10 * F10 + K11 * F11;
+  C20 -= K20 * F00 + K21 * F01;
+  C21 -= K20 * F10 + K21 * F11;
+  C22 -= K20 * F20 + K21 * F21;
+  C30 -= K30 * F00 + K31 * F01;
+  C31 -= K30 * F10 + K31 * F11;
+  C32 -= K30 * F20 + K31 * F21;
+  C33 -= K30 * F30 + K31 * F31;
+  C40 -= K40 * F00 + K41 * F01;
+  C41 -= K40 * F10 + K41 * F11;
+  C42 -= K40 * F20 + K41 * F21;
+  C43 -= K40 * F30 + K41 * F31;
+  C44 -= K40 * F40 + K41 * F41;
+  C50 -= K50 * F00 + K51 * F01;
+  C51 -= K50 * F10 + K51 * F11;
+  C52 -= K50 * F20 + K51 * F21;
+  C53 -= K50 * F30 + K51 * F31;
+  C54 -= K50 * F40 + K51 * F41;
+  C55 -= K50 * F50 + K51 * F51;
+}
+
 
 void L1TrackParFit::ExtrapolateLine(fvec z_out, fvec* w)
 {
@@ -375,6 +460,8 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
   fvec B[4][3];
   for (step = 0; step < 4; ++step) {
     F.Get(z_in + a[step] * h, B[step]);
+    //std::cout << "extrapolation step " << step << " z " << z_in + a[step] * h << " field " << B[step][0] << " " << B[step][1] << " "
+    //        << B[step][2] << std::endl;
   }
 
   for (step = 0; step < 4; ++step) {
@@ -407,12 +494,12 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
     Ay_tx[step] = Ay[step] * tx * I_tx2ty21 + (-ty * B[step][1] - B[step][2]) * tx2ty2qp;
     Ay_ty[step] = Ay[step] * ty * I_tx2ty21 + (-tx * B[step][1] + 2.f * ty * B[step][0]) * tx2ty2qp;
 
-    fvec p2     = 1.f / (qp0 * qp0);
     fvec m2     = fMass2;
-    fvec v      = 29.9792458f * sqrt(p2 / (m2 + p2));
-    At[step]    = h * sqrt(1.f + tx * tx + ty * ty) / v;
-    At_tx[step] = h * tx / sqrt(1.f + tx * tx + ty * ty) / v;
-    At_ty[step] = h * ty / sqrt(1.f + tx * tx + ty * ty) / v;
+    fvec vi     = sqrt(fvec(1.) + m2 * qp0 * qp0) / fvec(29.9792458f);
+    fvec l      = sqrt(fvec(1.) + tx * tx + ty * ty);
+    At[step]    = h * l * vi;
+    At_tx[step] = h * tx / l * vi;
+    At_ty[step] = h * ty / l * vi;
 
     //     cout<<Ax[step]<<" Ax[step] "<<Ay[step]<<" ay "<<At[step]<<" At[step] "<<qp0<<" qp0 "<<h<<" h"<<endl;
 
@@ -796,8 +883,10 @@ void L1TrackParFit::L1AddMaterial(const L1MaterialInfo& info, fvec qp0, fvec w)
 
 void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec direction, fvec w)
 {
-  const fvec p2 = 1.f / (fqp * fqp);
-  const fvec E2 = fMass2 + p2;
+  const fvec qp2cut(1. / (10. * 10.));  // 10 GeV cut
+  const fvec qp02 = max(qp0 * qp0, qp2cut);
+  const fvec p2   = fvec(1.) / qp02;
+  const fvec E2   = fMass2 + p2;
 
   const fvec bethe = L1Fit::ApproximateBetheBloch(p2 / fMass2);
 
@@ -816,16 +905,18 @@ void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec d
   C41 *= corr;
   C42 *= corr;
   C43 *= corr;
-  //   C54 *= corr;
   C44 *= corr * corr;
+  C54 *= corr;
 }
 
 template<int atomicZ>
 void L1TrackParFit::EnergyLossCorrection(float atomicA, float rho, float radLen, const fvec& radThick, fvec& qp0,
                                          fvec direction, fvec w)
 {
-  const fvec p2 = 1.f / (qp0 * qp0);
-  const fvec E2 = fMass2 + p2;
+  const fvec qp2cut(1. / (10. * 10.));  // 10 GeV cut
+  const fvec qp02 = max(qp0 * qp0, qp2cut);
+  const fvec p2   = fvec(1.) / qp02;
+  const fvec E2   = fMass2 + p2;
 
   fvec i;
   if (atomicZ < 13) i = (12. * atomicZ + 7.) * 1.e-9;
@@ -846,7 +937,7 @@ void L1TrackParFit::EnergyLossCorrection(float atomicA, float rho, float radLen,
   qp0 *= corr;
   fqp *= corr;
 
-  fvec P(fabs(1. / qp0[0]));  // GeV
+  fvec P(sqrt(p2));  // GeV
 
   fvec Z(atomicZ);
   fvec A(atomicA);
