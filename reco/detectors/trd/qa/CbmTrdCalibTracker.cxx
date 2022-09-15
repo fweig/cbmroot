@@ -713,10 +713,10 @@ void CbmTrdCalibTracker::ResolutionQa()
     p->Momentum(mom3);
     t += dz / (pz * speedOfLight) * sqrt(mass * mass + mom3.Mag2());
 
-    double du = hmc->GetDx();        //hit->GetX() - x;
+    double du = hit->GetX() - x;
     double dv = hit->GetY() - y;     //hmc->GetDy();  //hit->GetY() - y;
     double dt = hit->GetTime() - t;  // hmc->GetDt();  //hit->GetTime() - t;
-    double su = hmc->GetSx();
+    double su = hmc->GetDx();
     double sv = hit->GetDy();
     double st = hit->GetTimeError();
 
