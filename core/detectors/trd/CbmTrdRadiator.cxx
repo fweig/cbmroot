@@ -13,7 +13,7 @@
 
 #include <Logger.h>  // for Logger, LOG
 
-#include <TDirectory.h>  // for TDirectory
+#include <TDirectory.h>   // for TDirectory
 #include <TFile.h>        // for TFile, gFile
 #include <TGeoManager.h>  // for TGeoManager, gGeoManager
 #include <TH1.h>          // for TH1D
@@ -700,7 +700,7 @@ Int_t CbmTrdRadiator::TRspectrum()
 
   SetSigma(1);
 
-  Float_t stemp = 0;
+  //Float_t stemp = 0;
 
   // Loop over energy
   // stemp is the total energy of all created photons
@@ -739,7 +739,7 @@ Int_t CbmTrdRadiator::TRspectrum()
     // save the result
     fSpectrum->SetBinContent(iBin + 1, wn);
     // compute the integral
-    stemp += wn;
+    //stemp += wn;
   }
 
   // <nTR> (binsize corr.)
@@ -765,7 +765,7 @@ Int_t CbmTrdRadiator::WinTRspectrum()
 
   SetSigma(2);
 
-  Float_t stemp = 0;
+  //Float_t stemp = 0;
   for (Int_t iBin = 0; iBin < fSpNBins; iBin++) {
 
     Float_t sp = 0;
@@ -779,7 +779,7 @@ Int_t CbmTrdRadiator::WinTRspectrum()
 
     fWinSpectrum->SetBinContent(iBin + 1, wn);
 
-    stemp += wn;
+    //stemp += wn;
   }
 
   //fnTRprod = stemp * fSpBinWidth;
@@ -799,7 +799,7 @@ Int_t CbmTrdRadiator::DetTRspectrum()
   //
 
   SetSigma(3);
-  Float_t stemp  = 0;
+  //Float_t stemp  = 0;
   Float_t stemp2 = 0;
   for (Int_t iBin = 0; iBin < fSpNBins; iBin++) {
 
@@ -810,7 +810,7 @@ Int_t CbmTrdRadiator::DetTRspectrum()
     Float_t wn   = sp * conv;
 
     fDetSpectrum->SetBinContent(iBin + 1, wn);
-    stemp += wn;
+    //stemp += wn;
 
     // absorbed spectrum
     Float_t conv2 = 1 - TMath::Exp(-fSigmaDet[iBin]);

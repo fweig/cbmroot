@@ -1364,7 +1364,6 @@ void CbmTrdModuleSimR::ScanPadPlane(const Double_t* local_point, Double_t reldri
     if (fnScanRowConst > 0) maxRow = fnScanRowConst;
 
     Int_t startRow(rowId - maxRow / 2);
-    Double_t sum = 0;
     Int_t secRow(-1), targCol(-1), targRow(-1), targSec(-1), address(-1), fnRow(fDigiPar->GetNofRows()),
       fnCol(fDigiPar->GetNofColumns());
 
@@ -1403,8 +1402,6 @@ void CbmTrdModuleSimR::ScanPadPlane(const Double_t* local_point, Double_t reldri
       // std::cout<<" prf half +1: " << CalcPRF(1 * W , W, h)<<std::endl;
       chargeFraction =
         CalcPRF((iCol - columnId) * W - displacement_x, W, h) * CalcPRF((iRow - rowId) * H - displacement_y, H, h);
-
-      sum += chargeFraction;
 
       ch = chargeFraction * clusterELoss;
       tr = chargeFraction * clusterELossTR;
@@ -1450,7 +1447,6 @@ void CbmTrdModuleSimR::ScanPadPlane(const Double_t* local_point, Double_t reldri
 
           chargeFraction = CalcPRF(((iCol - collow) - columnId) * W - displacement_x, W, h)
                            * CalcPRF((iRow - rowId) * H - displacement_y, H, h);
-          sum += chargeFraction;
           ch = chargeFraction * clusterELoss;
           tr = chargeFraction * clusterELossTR;
 
@@ -1523,7 +1519,6 @@ void CbmTrdModuleSimR::ScanPadPlane(const Double_t* local_point, Double_t reldri
 
           chargeFraction = CalcPRF(((iCol + colhigh) - columnId) * W - displacement_x, W, h)
                            * CalcPRF((iRow - rowId) * H - displacement_y, H, h);
-          sum += chargeFraction;
           ch = chargeFraction * clusterELoss;
           tr = chargeFraction * clusterELossTR;
 

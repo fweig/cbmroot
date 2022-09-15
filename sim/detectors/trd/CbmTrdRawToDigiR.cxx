@@ -474,9 +474,9 @@ Double_t CbmTrdRawToDigiR::GetCharge(std::vector<Int_t> samples, Int_t shift)
       for (size_t i = 0; i < fSampleMask.size(); i++) {
         samplesum += samples[fSampleMask[i]];
       }
-      if (shift > -1) charge = fElookupSmall[shift][samples[fMaxBin]];
+      if (shift > -1) charge = fElookupSmall[shift][samplesum];
       else
-        charge = fElookupSmall[fElookupAsym[samples[fMaxBin]][samples[fMinBin]][samples[fHighBin]]][samples[fMaxBin]];
+        charge = fElookupSmall[fElookupAsym[samples[fMaxBin]][samples[fMinBin]][samples[fHighBin]]][samplesum];
     }
     else {
       return 0.;
