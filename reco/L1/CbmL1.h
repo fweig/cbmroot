@@ -227,7 +227,7 @@ public:
   /// If the file is undefined, default tracking parameters will be used. Otherwise, the default parameters will be
   /// overridden with ones from the configuration file
   /// \param filename  Name of the input tracking configuration file
-  void SetInputConfigName(const char* filename) { fInitManager.SetInputConfigName(std::string(filename)); }
+  void SetInputConfigName(const char* filename);
 
   /// \brief Sets a name for the output configuration file
   /// \param filename  Name of the input tracking configuration file

@@ -147,7 +147,7 @@ void L1InitManager::ClearCAIterations()
   fParameters.fCAIterations.clear();
   fCAIterationsNumberCrosscheck = -1;
   fInitController.SetFlag(EInitKey::kCAIterations, false);
-  fInitController.SetFlag(EInitKey::kStationsNumberCrosscheck, false);
+  fInitController.SetFlag(EInitKey::kCAIterationsNumberCrosscheck, false);
 }
 
 // ----------------------------------------------------------------------------------------------------------------------

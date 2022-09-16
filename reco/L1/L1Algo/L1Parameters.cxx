@@ -233,12 +233,10 @@ void L1Parameters::CheckConsistency() const
   LOG(info) << "Consistency test for L1 parameters object... \033[1;32mpassed\033[0m";
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 //
 void L1Parameters::Print(int /*verbosityLevel*/) const
 {
-  LOG(info) << "--------------  L1Algo parameters ---------------";
   LOG(info) << ToString();
 }
 
@@ -289,7 +287,7 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
   }
   aStream << " | total = " << std::setw(2) << std::setfill(' ') << fNstationsActiveTotal;
   aStream << '\n';
-  aStream << indent << indentChar << indentChar << "Active station indeces: ";
+  aStream << indent << indentChar << indentChar << "Active station indexes: ";
   for (int idx = 0; idx < *(fNstationsActive.end() - 1); ++idx) {
     aStream << std::setw(3) << std::setfill(' ') << fActiveStationGlobalIDs[idx] << ' ';
   }

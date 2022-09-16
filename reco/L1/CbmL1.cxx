@@ -139,6 +139,15 @@ InitStatus CbmL1::ReInit()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
+void CbmL1::SetInputConfigName(const char* filename)
+{
+  LOG(info) << "Reading parameters from configuration file: " << filename;
+  LOG(warn) << "\033[1;31mParameters configuration for tracking is not finalized! To be used only for tests! \033[0m";
+  fInitManager.SetInputConfigName(std::string(filename));
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
 InitStatus CbmL1::Init()
 {
   if (fVerbose > 1) {
