@@ -54,9 +54,6 @@ using std::cout;
 using std::endl;
 using std::find;
 
-//#define MVDIDEALHITS
-//#define STSIDEALHITS
-
 
 static bool compareZ(const int& a, const int& b)
 {
@@ -565,9 +562,6 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
           if (mvdHitMatch->GetNofLinks() > 0)
             if (mvdHitMatch->GetLink(0).GetIndex() < nMvdPoints) {
               th.iMC = mvdHitMatch->GetLink(0).GetIndex();
-#ifdef MVDIDEALHITS
-//TODO
-#endif
             }
         }
       }
@@ -619,8 +613,6 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       else
         hitIndexSort = j;
 
-      CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(hitIndexSort));
-
       // ***********************************
       // ** Fill the temporary hit object **
       // ***********************************
@@ -657,7 +649,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
         /// stop if reco TS ends and many hits left
         if (!event)
           if ((th.time > (TsStart + TsLength)) && ((nEntSts - hitIndex) > 300)) {
-            areDataLeft = true;  // there are unprocessed data left in the time slice
+    
             break;
           }
 
@@ -681,62 +673,6 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
         th.v                = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
       th.iMC = -1;
-
-      Int_t iMC = -1;
-
-      if (fPerformance) {
-        /// TODO: Matching should be done in CbmMatchRecoToMC (S.Zharko)
-        if (fpStsClusterMatches) {
-          const CbmMatch* frontClusterMatch =
-            static_cast<const CbmMatch*>(fpStsClusterMatches->At(sh->GetFrontClusterId()));
-          const CbmMatch* backClusterMatch =
-            static_cast<const CbmMatch*>(fpStsClusterMatches->At(sh->GetBackClusterId()));
-          CbmMatch stsHitMatch;
-
-          for (Int_t iFrontLink = 0; iFrontLink < frontClusterMatch->GetNofLinks(); iFrontLink++) {
-            const CbmLink& frontLink = frontClusterMatch->GetLink(iFrontLink);
-
-            for (Int_t iBackLink = 0; iBackLink < backClusterMatch->GetNofLinks(); iBackLink++) {
-              const CbmLink& backLink = backClusterMatch->GetLink(iBackLink);
-              if (frontLink == backLink) {
-                stsHitMatch.AddLink(frontLink);
-                stsHitMatch.AddLink(backLink);
-              }
-            }
-          }
-
-          if (stsHitMatch.GetNofLinks() > 0) {
-            Float_t bestWeight = 0.f;
-            for (Int_t iLink = 0; iLink < stsHitMatch.GetNofLinks(); iLink++) {
-              if (stsHitMatch.GetLink(iLink).GetWeight() > bestWeight) {
-                bestWeight   = stsHitMatch.GetLink(iLink).GetWeight();
-                Int_t iFile  = stsHitMatch.GetLink(iLink).GetFile();
-                Int_t iEvent = stsHitMatch.GetLink(iLink).GetEntry();
-                //                 if(fLegacyEventMode) //TODO Fix the event number in links
-                //                   iEvent+=1;
-                Int_t iIndex            = stsHitMatch.GetLink(iLink).GetIndex() + nMvdPoints;
-                Double_t dtrck          = dFEI(iFile, iEvent, iIndex);
-                DFEI2I::iterator trk_it = dFEI2vMCPoints.find(dtrck);
-                if (trk_it == dFEI2vMCPoints.end()) continue;
-                iMC = trk_it->second;
-              }
-            }
-          }
-#ifdef STSIDEALHITS
-          // TODO
-          // CbmStsPoint* point = L1_DYNAMIC_CAST<CbmStsPoint*>(listStsPts->At(s.ExtIndex));
-          // h.z = 0.5 * (point->GetZOut() + point->GetZIn());
-#endif
-        }
-        else {
-          iMC = sh->GetRefId();  // TODO1: don't need this with FairLinks
-        }
-      }  //fPerformance
-
-      if (iMC > -1) {
-        th.iMC = iMC;
-        // th.track = iMC;
-      }
 
       tmpHits.push_back(th);
       nStsHits++;
@@ -1433,7 +1369,7 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
 bool CbmL1::ReadMCPoint(CbmL1MCPoint* /*MC*/, int /*iPoint*/, int /*MVD*/) { return 0; }
 //
 //--------------------------------------------------------------------------------------------------
-//
+
 // TODO: Duplicated code (from CbmL1::ReadEvent)
 void CbmL1::HitMatch()
 {
@@ -1442,6 +1378,8 @@ void CbmL1::HitMatch()
     CbmL1Hit& hit = fvExternalHits[iH];
 
     if ((hit.Det == 1) && (2 != fStsUseMcHit)) {
+      L1_SHOW(iH);
+
       CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(fvExternalHits[iH].extIndex));
 
       int iP = -1;
@@ -1454,30 +1392,10 @@ void CbmL1::HitMatch()
           static_cast<const CbmMatch*>(fpStsClusterMatches->At(sh->GetBackClusterId()));
         CbmMatch stsHitMatch;
 
-        Float_t Sum_of_front = 0;  // total weight of all front links
-        Float_t Sum_of_back  = 0;  // total weight of all back links
-
-
         for (Int_t iFrontLink = 0; iFrontLink < frontClusterMatch->GetNofLinks(); iFrontLink++) {
           const CbmLink& frontLink = frontClusterMatch->GetLink(iFrontLink);
-          Sum_of_front             = Sum_of_front + frontLink.GetWeight();
-        }
-
-        for (Int_t iBackLink = 0; iBackLink < backClusterMatch->GetNofLinks(); iBackLink++) {
-          const CbmLink& backLink = backClusterMatch->GetLink(iBackLink);
-          Sum_of_back             = Sum_of_back + backLink.GetWeight();
-        }
-
-        for (Int_t iFrontLink = 0; iFrontLink < frontClusterMatch->GetNofLinks(); iFrontLink++) {
-          const CbmLink& frontLink = frontClusterMatch->GetLink(iFrontLink);
-
-          // Float_t Fraction_front = frontLink.GetWeight()/Sum_of_front;
-
           for (Int_t iBackLink = 0; iBackLink < backClusterMatch->GetNofLinks(); iBackLink++) {
             const CbmLink& backLink = backClusterMatch->GetLink(iBackLink);
-
-            // Float_t  Fraction_back = backLink.GetWeight()/Sum_of_back;
-
             if (frontLink == backLink) {
               stsHitMatch.AddLink(frontLink);
               stsHitMatch.AddLink(backLink);
@@ -1515,13 +1433,8 @@ void CbmL1::HitMatch()
         hit.mcPointIds.push_back_no_warning(iP);
         fvMCPoints[iP].hitIds.push_back_no_warning(iH);
       }
-      else {
-        int idPoint = fvHitPointIndexes[iH];
-        if (idPoint >= 0) {
-          hit.mcPointIds.push_back_no_warning(idPoint);
-          fvMCPoints[idPoint].hitIds.push_back_no_warning(iH);
-        }
-      }  // if no clusters
+
+      fvHitPointIndexes[iH] = iP;
     }
 
     if ((hit.Det != 1) || (2 == fStsUseMcHit)) {  // the hit is not from STS
