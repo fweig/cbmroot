@@ -93,7 +93,7 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
 
   gROOT->cd();
 
-  TH2F* h[10];
+  TH1* h[10];
   TObjArray* inArr = nullptr;
 
   if (fMCinput) {  /// mc pid method
@@ -128,7 +128,7 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
                                       "MC_muon_eloss"};
       inArr = new TObjArray(histnames.size());
       for (size_t i = 0; i < histnames.size(); i++) {
-        h[i] = histFile->Get<TH2F>(histnames[i]);
+        h[i] = histFile->Get<TH1F>(histnames[i]);
         if (!h[i]) {
           LOG(info) << "No input histogram " << histnames[i].Data();
           continue;
@@ -177,7 +177,7 @@ Bool_t CbmTrdSetTracksPidLike::ReadData()
                                       "ELE_muon_eloss"};
       inArr = new TObjArray(histnames.size());
       for (size_t i = 0; i < histnames.size(); i++) {
-        h[i] = histFile->Get<TH2F>(histnames[i]);
+        h[i] = histFile->Get<TH1F>(histnames[i]);
         if (!h[i]) {
           LOG(info) << "No input histogram " << histnames[i].Data();
           continue;
