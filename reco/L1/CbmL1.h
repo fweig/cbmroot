@@ -41,12 +41,15 @@
 #include "TClonesArray.h"
 #include "TH1.h"
 
+#include <boost/functional/hash.hpp>
+
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <set>
 #include <string_view>
+#include <unordered_map>
 #include <utility>
 
 #include "L1Algo/L1Algo.h"
@@ -67,6 +70,7 @@ class CbmMCDataObject;
 class CbmEvent;
 class TProfile2D;
 
+/// TODO: SZh 21.09.2022: Replace instances of this class with L1Hit
 class CbmL1HitStore {
 public:
   int ExtIndex;
@@ -80,6 +84,36 @@ public:
   double dxy;
   int Det;
 };
+
+/// Internal structure to handle link keys
+struct CbmL1LinkKey {
+  /// Constructor from links
+  CbmL1LinkKey(int32_t index, int32_t entry, int32_t file) : fIndex(index), fEntry(entry), fFile(file) {}
+  bool operator==(const CbmL1LinkKey& other) const
+  {
+    return fFile == other.fFile && fEntry == other.fEntry && fIndex == other.fIndex;
+  }
+
+  int32_t fIndex = -1;  ///< index of point/track, saved to link
+  int32_t fEntry = -1;  ///< index of link entry
+  int32_t fFile  = -1;  ///< index of link file
+};
+
+/// Hash for CbmL1LinkKey
+namespace std
+{
+  template<>
+  struct hash<CbmL1LinkKey> {
+    std::size_t operator()(const CbmL1LinkKey& key) const
+    {
+      std::size_t res = 0;
+      boost::hash_combine(res, key.fFile);
+      boost::hash_combine(res, key.fEntry);
+      boost::hash_combine(res, key.fIndex);
+      return res;
+    }
+  };
+}  // namespace std
 
 
 /// Enumeration for the detector subsystems used in L1 tracking
@@ -109,7 +143,6 @@ public:
   // **********************
 
   using DFSET  = std::set<std::pair<int, int>>;  // Why std::set<std::pair<>> instead of std::map<>?
-  using DFEI2I = std::map<Double_t, Int_t>;
 
   // **************************
   // ** Friends classes list **
@@ -336,7 +369,7 @@ private:
   //   static bool compareZ(const int &a, const int &b );
   //   bool compareZ(const int &a, const int &b );
 
-  /// Fills the fvMCTracks vector and the dFEI2vMCTracks set
+  /// Fills the fvMCTracks vector and the fmMCTracksMap
   void Fill_vMCTracks();
 
   /*
@@ -407,8 +440,6 @@ private:
 
   static std::istream& eatwhite(std::istream& is);  // skip spaces
   static void writedir2current(TObject* obj);       // help procedure
-
-  inline Double_t dFEI(int file, int event, int idx) { return (1000 * idx) + file + (0.0001 * event); }
 
 private:
   std::string fInputDataFilename = "";  ///< File name to read/write input hits
@@ -569,8 +600,9 @@ public:
   //    L1Vector<int>          vHitMCRef1;
   //   CbmMatch HitMatch;
 private:
-  DFEI2I dFEI2vMCPoints = {};
-  DFEI2I dFEI2vMCTracks = {};
+  std::unordered_map<CbmL1LinkKey, int> fmMCPointsLinksMap = {};  /// Internal MC point index vs. link
+  std::unordered_map<CbmL1LinkKey, int> fmMCTracksLinksMap = {};  /// Internal MC track index vs. link
+
 
   // *****************************
   // ** Tracking performance QA **

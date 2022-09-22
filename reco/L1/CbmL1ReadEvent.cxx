@@ -188,8 +188,9 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
   fvRecoTracks.clear(); /* <CbmL1Track>   */  // TODO: Move from this function to more suitable place (S.Zharko)
   fvHitPointIndexes.clear();       /* <int>: indexes of MC-points in fvMCPoints (by index of fpAlgo->vHits) */
   fvHitStore.clear();              /* <CbmL1HitStore> */
-  dFEI2vMCPoints.clear();          /* dFEI vs MC-point index: dFEI = index * 10000 + fileID + eventID * 0.0001 */
-  dFEI2vMCTracks.clear();          /* dFEI vs MC-track index: dFEI = index * 10000 + fileID + eventID * 0.0001 */
+
+  fmMCPointsLinksMap.clear();
+  fmMCTracksLinksMap.clear();
 
 
   if (fVerbose >= 10) cout << "ReadEvent: clear is done." << endl;
@@ -241,10 +242,10 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
    */
 
   if (fPerformance) {
-    // Fill fvMCTracks and dFEI2vMCTracks
+    // Fill fvMCTracks and fmMCTracksLinksMap
     Fill_vMCTracks();
 
-    // Fill fvMCPoints and dFEI2vMCPoints
+    // Fill fvMCPoints and fmMCPointsLinksMap
     fvMCPoints.clear();
     fvMCPoints.reserve(5 * fvMCTracks.size() * fNStations);
     fvMCPointIndexesTs.clear();
@@ -276,12 +277,11 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
             }
             assert(MC.iStation >= 0);
             if (fabs(maxDeviation) < fabs(bestDist)) { maxDeviation = bestDist; }
-            Double_t dtrck          = dFEI(iFile, iEvent, MC.ID);
-            DFEI2I::iterator trk_it = dFEI2vMCTracks.find(dtrck);
-            assert(trk_it != dFEI2vMCTracks.end());
-            MC.ID = trk_it->second;
+            auto itTrack = fmMCTracksLinksMap.find(CbmL1LinkKey(MC.ID, iEvent, iFile));
+            assert(itTrack != fmMCTracksLinksMap.cend());
+            MC.ID = itTrack->second;
             fvMCTracks[MC.ID].Points.push_back_no_warning(fvMCPoints.size());
-            dFEI2vMCPoints.insert(DFEI2I::value_type(dFEI(iFile, iEvent, iMC), fvMCPoints.size()));
+            fmMCPointsLinksMap[CbmL1LinkKey(iMC, iEvent, iFile)] = fvMCPoints.size();
             fvMCPoints.push_back(MC);
             fvMCPointIndexesTs.push_back(0);
             nMvdPoints++;
@@ -315,12 +315,11 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
             }
             assert(MC.iStation >= 0);
             if (fabs(maxDeviation) < fabs(bestDist)) { maxDeviation = bestDist; }
-            Double_t dtrck          = dFEI(iFile, iEvent, MC.ID);
-            DFEI2I::iterator trk_it = dFEI2vMCTracks.find(dtrck);
-            assert(trk_it != dFEI2vMCTracks.end());
-            MC.ID = trk_it->second;
+            auto itTrack = fmMCTracksLinksMap.find(CbmL1LinkKey(MC.ID, iEvent, iFile));
+            assert(itTrack != fmMCTracksLinksMap.cend());
+            MC.ID = itTrack->second;
             fvMCTracks[MC.ID].Points.push_back_no_warning(fvMCPoints.size());
-            dFEI2vMCPoints.insert(DFEI2I::value_type(dFEI(iFile, iEvent, iMC + nMvdPoints), fvMCPoints.size()));
+            fmMCPointsLinksMap[CbmL1LinkKey(iMC + nMvdPoints, iEvent, iFile)] = fvMCPoints.size();
             fvMCPoints.push_back(MC);
             fvMCPointIndexesTs.push_back(0);
             nStsPoints++;
@@ -345,13 +344,11 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
               if (MC.z > sta[iStActive].z[0] - 2.5) { MC.iStation = iStActive; }
             }
             assert(MC.iStation >= 0);
-            Double_t dtrck          = dFEI(iFile, iEvent, MC.ID);
-            DFEI2I::iterator trk_it = dFEI2vMCTracks.find(dtrck);
-            assert(trk_it != dFEI2vMCTracks.end());
-            MC.ID = trk_it->second;
+            auto itTrack = fmMCTracksLinksMap.find(CbmL1LinkKey(MC.ID, iEvent, iFile));
+            assert(itTrack != fmMCTracksLinksMap.cend());
+            MC.ID = itTrack->second;
             fvMCTracks[MC.ID].Points.push_back_no_warning(fvMCPoints.size());
-            dFEI2vMCPoints.insert(
-              DFEI2I::value_type(dFEI(iFile, iEvent, iMC + nMvdPoints + nStsPoints), fvMCPoints.size()));
+            fmMCPointsLinksMap[CbmL1LinkKey(iMC + nMvdPoints + nStsPoints, iEvent, iFile)] = fvMCPoints.size();
             fvMCPoints.push_back(MC);
             fvMCPointIndexesTs.push_back(0);
             nMuchPoints++;
@@ -374,13 +371,12 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
             }
             if (MC.iStation < 0) continue;
             assert(MC.iStation >= 0);
-            Double_t dtrck          = dFEI(iFile, iEvent, MC.ID);
-            DFEI2I::iterator trk_it = dFEI2vMCTracks.find(dtrck);
-            assert(trk_it != dFEI2vMCTracks.end());
-            MC.ID = trk_it->second;
+            auto itTrack = fmMCTracksLinksMap.find(CbmL1LinkKey(MC.ID, iEvent, iFile));
+            assert(itTrack != fmMCTracksLinksMap.cend());
+            MC.ID = itTrack->second;
             fvMCTracks[MC.ID].Points.push_back_no_warning(fvMCPoints.size());
-            dFEI2vMCPoints.insert(
-              DFEI2I::value_type(dFEI(iFile, iEvent, iMC + nMvdPoints + nStsPoints + nMuchPoints), fvMCPoints.size()));
+            fmMCPointsLinksMap[CbmL1LinkKey(iMC + nMvdPoints + nStsPoints + nMuchPoints, iEvent, iFile)] =
+              fvMCPoints.size();
             fvMCPoints.push_back(MC);
             fvMCPointIndexesTs.push_back(0);
             nTrdPoints++;
@@ -424,10 +420,9 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
           if (isTofPointMatched[iMC] == 0) continue;
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 4)) {
-            Double_t dtrck = dFEI(iFile, iEvent, MC.ID);
-            auto trk_it    = dFEI2vMCTracks.find(dtrck);
-            if (trk_it == dFEI2vMCTracks.end()) continue;
-            Int_t iTrack = trk_it->second;
+            auto itTrack = fmMCTracksLinksMap.find(CbmL1LinkKey(MC.ID, iEvent, iFile));
+            if (itTrack == fmMCTracksLinksMap.cend()) { continue; }
+            int iTrack = itTrack->second;
 
             MC.iStation          = -1;
             const L1Station* sta = fpAlgo->GetParameters()->GetStations().begin();
@@ -469,13 +464,9 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
               MC.ID = iTrack;
 
-              dFEI2vMCPoints.insert(DFEI2I::value_type(
-                dFEI(iFile, iEvent,
-                     fTofPointToTrack[iTofSta][iTrack] + nMvdPoints + nStsPoints + nMuchPoints + nTrdPoints),
-                fvMCPoints.size()));
-
+              int iMC = fTofPointToTrack[iTofSta][iTrack] + nMvdPoints + nStsPoints + nMuchPoints + nTrdPoints;
+              fmMCPointsLinksMap[CbmL1LinkKey(iMC, iEvent, iFile)] = fvMCPoints.size();
               fvMCPoints.push_back(MC);
-
               fvMCPointIndexesTs.push_back(0);
               nTofPoints++;
             }
@@ -488,11 +479,11 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       sort(fvMCTracks[iTr].Points.begin(), fvMCTracks[iTr].Points.end(), compareZ);
 
       if (fvMCTracks[iTr].mother_ID >= 0) {
-        Double_t dtrck          = dFEI(fvMCTracks[iTr].iFile, fvMCTracks[iTr].iEvent, fvMCTracks[iTr].mother_ID);
-        DFEI2I::iterator map_it = dFEI2vMCTracks.find(dtrck);
-        if (map_it == dFEI2vMCTracks.end()) fvMCTracks[iTr].mother_ID = -2;
-        else
-          fvMCTracks[iTr].mother_ID = map_it->second;
+        auto iFile                = fvMCTracks[iTr].iFile;
+        auto iEvent               = fvMCTracks[iTr].iEvent;
+        auto iMother              = fvMCTracks[iTr].mother_ID;
+        auto itTrack              = fmMCTracksLinksMap.find(CbmL1LinkKey(iMother, iEvent, iFile));
+        fvMCTracks[iTr].mother_ID = ((itTrack != fmMCTracksLinksMap.cend()) ? itTrack->second : -2);
       }
     }  //iTr
     if (fVerbose >= 10) cout << "Points in fvMCTracks are sorted." << endl;
@@ -772,10 +763,9 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
               Int_t iFile  = matchHitMatch->GetLink(0).GetFile();
               Int_t iEvent = matchHitMatch->GetLink(0).GetEntry();
 
-              Double_t dtrck          = dFEI(iFile, iEvent, iIndex);
-              DFEI2I::iterator trk_it = dFEI2vMCPoints.find(dtrck);
-              if (trk_it == dFEI2vMCPoints.end()) continue;
-              th.iMC = trk_it->second;
+              auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex, iEvent, iFile));
+              if (itPoint == fmMCPointsLinksMap.cend()) continue;
+              th.iMC = itPoint->second;
               if ((1 == fMuchUseMcHit) && (th.iMC > -1))
                 th.SetHitFromPoint(fvMCPoints[th.iMC], fpAlgo->GetParameters()->GetStation(th.iStation));
             }
@@ -1006,11 +996,9 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
           //CbmTofPoint* pt = L1_DYNAMIC_CAST<CbmTofPoint*>(fTofPoints->Get(iFile, iEvent, iMC));
           // pt->GetTrackID();
-          Double_t dtrck          = dFEI(iFile, iEvent, iIndex);
-          DFEI2I::iterator trk_it = dFEI2vMCPoints.find(dtrck);
-          if (trk_it == dFEI2vMCPoints.end()) continue;
-
-          th.iMC = trk_it->second;
+          auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex, iEvent, iFile));
+          if (itPoint == fmMCPointsLinksMap.cend()) continue;
+          th.iMC = itPoint->second;
           if ((1 == fTofUseMcHit) && (th.iMC > -1))
             th.SetHitFromPoint(fvMCPoints[th.iMC], fpAlgo->GetParameters()->GetStation(th.iStation));
         }
@@ -1196,8 +1184,7 @@ void CbmL1::Fill_vMCTracks()
       T.isSignal = T.IsPrimary() && (T.z > header->GetZ() + 1.e-10);
 
       fvMCTracks.push_back(T);
-      //    Double_t dtrck =dFEI(iFile,iEvent,iMCTrack);
-      dFEI2vMCTracks.insert(DFEI2I::value_type(dFEI(iFile, iEvent, iMCTrack), fvMCTracks.size() - 1));
+      fmMCTracksLinksMap[CbmL1LinkKey(iMCTrack, iEvent, iFile)] = fvMCTracks.size() - 1;
     }  //iTracks
   }    //Links
 
@@ -1378,8 +1365,6 @@ void CbmL1::HitMatch()
     CbmL1Hit& hit = fvExternalHits[iH];
 
     if ((hit.Det == 1) && (2 != fStsUseMcHit)) {
-      L1_SHOW(iH);
-
       CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(fvExternalHits[iH].extIndex));
 
       int iP = -1;
@@ -1416,15 +1401,12 @@ void CbmL1::HitMatch()
             iEvent = fvFileEvent.begin()->second;
           }
 
-          Double_t dpnt           = dFEI(iFile, iEvent, nMvdPoints + iIndex);
-          DFEI2I::iterator pnt_it = dFEI2vMCPoints.find(dpnt);
-
-
-          assert(pnt_it != dFEI2vMCPoints.end());
+          auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex + nMvdPoints, iEvent, iFile));
+          assert(itPoint != fmMCPointsLinksMap.cend());
 
           if (link.GetWeight() > bestWeight) {
             bestWeight = link.GetWeight();
-            iP         = pnt_it->second;
+            iP         = itPoint->second;
           }
         }
       }  //mach cluster

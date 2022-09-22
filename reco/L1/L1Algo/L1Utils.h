@@ -23,7 +23,9 @@
 
 #include <cmath>
 
+#include "CaSimd.h"
 #include "L1Def.h"
+
 
 /// Class contains some utility functions for L1Algo
 namespace L1Utils
@@ -42,10 +44,10 @@ namespace L1Utils
            || fabs(lhs - rhs) < std::numeric_limits<T>::min();
   }
 
-  [[gnu::always_inline]] inline void CheckSimdVectorEquality(fvec v, const char* name)
+  [[gnu::always_inline]] inline void CheckSimdVectorEquality(cbm::algo::ca::fvec v, const char* name)
   {
     bool ok = true;
-    for (size_t i = 1; i < fvec::size(); i++) {
+    for (size_t i = 1; i < cbm::algo::ca::fvec::size(); i++) {
       ok = ok && (v[i] == v[0]);
     }
     if (!ok) {

@@ -216,8 +216,12 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     fld1.Set(b10, fld1Sta0.z, b11, fld1Sta1.z, b12, fld1Sta2.z);
 
     T.chi2 = 0.;
-    T.NDF  = 2.;
+    T.NDF  = 2.;  /// Iterations -> Number of parameters - number of measurements,
     if ((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) T.NDF = fvec(0.);
+    // TODO: iteration parameter: "Starting NDF of track parameters"
+    // NDF = number of track parameters (6: x, y, tx, ty, qp, time) - number of measured parameters (3: x, y, time) on station or (2: x, y) on target
+    // Alternative: Iteration can find tracks starting from target or from station: -> use a FLAG
+
     T.tx = tx;
     T.ty = ty;
     T.t  = time;
@@ -1648,6 +1652,13 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
 void L1Algo::CATrackFinder()
 {
 
+#ifdef TRACKS_FROM_TRIPLETS
+  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
+  fNFindIterations = TRACKS_FROM_TRIPLETS_ITERATION + 1;
+#else
+  fNFindIterations = fParameters.GetNcaIterations();
+#endif
+
 
 #ifdef _OPENMP
   omp_set_num_threads(fNThreads);
@@ -1847,12 +1858,6 @@ void L1Algo::CATrackFinder()
 
   // ---- Loop over Track Finder iterations ----------------------------------------------------------------//
 
-#ifdef TRACKS_FROM_TRIPLETS
-  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
-  fNFindIterations = TRACKS_FROM_TRIPLETS_ITERATION + 1;
-#else
-  fNFindIterations = fParameters.GetNcaIterations();
-#endif
 
   L1ASSERT(0, fNFindIterations == (int) fParameters.GetCAIterations().size());
   isec = 0;  // TODO: temporary! (S.Zharko)
@@ -2075,6 +2080,7 @@ void L1Algo::CATrackFinder()
         );
 
         if ((isec == kFastPrimJumpIter) || (isec == kAllPrimJumpIter) || (isec == kAllSecJumpIter) || (fMissingHits)) {
+          // All iterations are "jump"!
           Tindex nG_2;
           hitsmG_2.clear();
           i1G_2.clear();
@@ -2141,6 +2147,8 @@ void L1Algo::CATrackFinder()
     if (isec == TRACKS_FROM_TRIPLETS_ITERATION) min_level = 0;
 #endif
 
+    // TODO: Just remove it
+    // // min_level: lower then this triplets would never start
     //     int min_level = 1; // min level for start triplet. So min track length = min_level+3.
     //     if (isec == kAllPrimJumpIter) min_level = 1;
     //     if ( (isec == kAllSecIter) || (isec == kAllSecJumpIter) ) min_level = 2; // only the long low momentum tracks
