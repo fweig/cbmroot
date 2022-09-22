@@ -401,9 +401,18 @@ InitStatus CbmL1::Init()
     // ** Field initialization **
     // **************************
 
-    fInitManager.SetFieldFunction([](const double(&inPos)[3], double(&outB)[3]) {
-      CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);
-    });
+    if (CbmKF::Instance()->GetMagneticField()) {
+      fInitManager.SetFieldFunction([](const double(&inPos)[3], double(&outB)[3]) {
+        CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);
+      });
+    }
+    else {
+      fInitManager.SetFieldFunction([](const double(&)[3], double(&outB)[3]) {
+        outB[0] = 0.;
+        outB[1] = 0.;
+        outB[2] = 0.;
+      });
+    }
 
     // ***************************
     // ** Target initialization **
