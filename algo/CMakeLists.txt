@@ -10,6 +10,7 @@ set(SRCS
   detectors/sts/UnpackSts.cxx
   detectors/much/MuchReadoutConfig.cxx
   detectors/much/UnpackMuch.cxx
+  detectors/tof/HitFinderTof.cxx
 )
 
 add_library(Algo SHARED ${SRCS})
@@ -24,7 +25,7 @@ target_include_directories(Algo
          ${CMAKE_CURRENT_SOURCE_DIR}/detectors/tof
  )
 
-target_link_libraries(Algo PUBLIC OnlineData INTERFACE FairLogger::FairLogger external::fles_ipc)
+target_link_libraries(Algo PUBLIC OnlineData ROOT::GenVector INTERFACE FairLogger::FairLogger external::fles_ipc)
 target_compile_definitions(Algo PUBLIC NO_ROOT)
 
 install(TARGETS Algo DESTINATION lib)

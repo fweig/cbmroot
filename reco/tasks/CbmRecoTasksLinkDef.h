@@ -18,6 +18,7 @@
 #pragma link C++ class CbmTaskDigiEventQa + ;
 #pragma link C++ class CbmTaskEventsCloneInToOut + ;
 #pragma link C++ class CbmTaskMakeRecoEvents + ;
+#pragma link C++ class CbmTaskTofHitFinder + ;
 #pragma link C++ class CbmTaskTriggerDigi + ;
 #pragma link C++ class CbmTaskUnpack + ;
 

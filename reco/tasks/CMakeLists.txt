@@ -3,7 +3,6 @@
 
 set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_SOURCE_DIR}/algo/evbuild
   )
 
 set(SRCS
@@ -14,6 +13,7 @@ set(SRCS
   CbmTaskEventsCloneInToOut.cxx
   CbmTaskMakeRecoEvents.cxx
   CbmTaskTriggerDigi.cxx
+  CbmTaskTofHitFinder.cxx
   CbmTaskUnpack.cxx
 )
 
@@ -27,6 +27,7 @@ set(LIBRARY_NAME CbmRecoTasks)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
 set(PUBLIC_DEPENDENCIES
   CbmData
+  CbmTofBase
   FairRoot::Base
   Algo
   ROOT::Core
