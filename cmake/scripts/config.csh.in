@@ -43,9 +43,11 @@ if ( "$same_system" == "1" ) then
 			echo "hello"
 			breaksw
 		case * :
-			setenv DYLD_LIBRARY_PATH="@MY_DYLD_LIBRARY_PATH@"
-			setenv LD_LIBRARY_PATH="@MY_LD_LIBRARY_PATH@"
-			setenv PATH="@MY_PATH@"
-			breaksw
+		        echo "Default was changed"
+		        echo "Append new paths to LD_LIBRARY_PATH and PATH instead of overwritting"
+                        setenv DYLD_LIBRARY_PATH $DYLD_LIBRARY_PATH:"@MY_DYLD_LIBRARY_PATH@"
+                        setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH:"@MY_LD_LIBRARY_PATH@"
+                        setenv PATH $PATH:"@MY_PATH@"
+                        breaksw
 	endsw
 endif
