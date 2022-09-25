@@ -53,30 +53,20 @@ include(CbmMacros)
 include(CbmTargets)
 include(CbmCompilerSettings)
 
-# Do some basic checks 
-# out-of-source build, unix system and
-# existence of FAIRROOTPATH and SIMPATH variables 
-Check_Prerequisites()
-
-# Load cmake functionality from the FairRoot installation
-if(IS_DIRECTORY ${FAIRROOTPATH}/share/fairbase/cmake/modules)
-  list(APPEND CMAKE_MODULE_PATH "${FAIRROOTPATH}/share/fairbase/cmake/modules")
-endif()
-if(IS_DIRECTORY ${FAIRROOTPATH}/share/fairbase/cmake/modules_old)
-  list(APPEND CMAKE_MODULE_PATH "${FAIRROOTPATH}/share/fairbase/cmake/modules_old")
-endif()
 include(FairMacros)
 include(WriteConfigFile)
 include(CheckCompiler)
+include(ROOTMacros)
 
+# Do some basic checks
+# out-of-source build, unix system and
+# existence of FAIRROOTPATH and SIMPATH variables
+Check_Prerequisites()
 
 # Has to be called after the CMAKE_MODULE_PATH contains the FairRoot
 # directories since the file is part of FairRoot 
 set(FairRoot_DIR ${FAIRROOTPATH})
 find_package(FairRoot REQUIRED)
-
-
-
 
 # Check if the compiler supports the needed C++ standard
 # Check for the minimum required versions of FairSoft and FairRoot
@@ -109,6 +99,9 @@ set(FAIRROOT_LIBRARY_PROPERTIES ${FAIRROOT_LIBRARY_PROPERTIES}
 # For example the framework can run without GEANT4, but ROOT is
 # mandatory
 find_package(ROOT 6.22.08 REQUIRED)
+set(ROOT_CINT_EXECUTABLE ${SIMPATH}/bin/rootcling)
+set(ROOT_INCLUDE_DIR ${ROOT_INCLUDE_DIRS})
+set(ROOT_CONFIG_EXECUTABLE ${SIMPATH}/bin/root-config)
 if("${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR}" VERSION_LESS 6.26)
   Execute_Process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --has-vmc
                   OUTPUT_VARIABLE ROOT_vmc_FOUND
