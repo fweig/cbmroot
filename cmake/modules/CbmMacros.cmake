@@ -180,7 +180,7 @@ MACRO (GENERATE_CBM_TEST_SCRIPT SCRIPT_FULL_NAME DEST_DIR)
 
   set(my_script_name ${SCRIPT_FULL_NAME})
 
-  configure_file(${FAIRROOTPATH}/share/fairbase/cmake/scripts/root_macro.sh.in
+  configure_file(${PROJECT_SOURCE_DIR}/cmake/scripts/root_macro.sh.in
                  ${DEST_DIR}/${shell_script_name}
                 )
 

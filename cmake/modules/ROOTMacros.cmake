@@ -153,15 +153,9 @@ MACRO (GENERATE_ROOT_TEST_SCRIPT SCRIPT_FULL_NAME)
   set(my_script_name ${SCRIPT_FULL_NAME})
 
   Write_Geant4Data_Variables_sh()
-  IF(FAIRROOTPATH)
-    configure_file(${FAIRROOTPATH}/share/fairbase/cmake/scripts/root_macro.sh.in
-                   ${new_path}/${shell_script_name}
-                  )
-  ELSE(FAIRROOTPATH)
-    configure_file(${PROJECT_SOURCE_DIR}/cmake/scripts/root_macro.sh.in
-                   ${new_path}/${shell_script_name}
-                  )
-  ENDIF(FAIRROOTPATH)
+  configure_file(${PROJECT_SOURCE_DIR}/cmake/scripts/root_macro.sh.in
+                 ${new_path}/${shell_script_name}
+                )
   execute_process(COMMAND /bin/chmod u+x ${new_path}/${shell_script_name} OUTPUT_QUIET)
 
 ENDMACRO (GENERATE_ROOT_TEST_SCRIPT)
