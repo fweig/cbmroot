@@ -52,7 +52,9 @@ Please set this environment variable or pass -DFAIRROOTPATH=<path> and and execu
   if (NOT DEFINED FAIRROOTPATH)
     set(FAIRROOTPATH $ENV{FAIRROOTPATH} PARENT_SCOPE)
   endif()
-
+  if (NOT DEFINED FairRoot_DIR)
+    set(FairRoot_DIR ${FAIRROOTPATH} PARENT_SCOPE)
+  endif()
 endfunction()
 
 function(check_external_stack)

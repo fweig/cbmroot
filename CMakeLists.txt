@@ -52,6 +52,7 @@ include(CbmGenerateConfig)
 include(CbmMacros)
 include(CbmTargets)
 include(CbmCompilerSettings)
+include(ROOTMacros)
 
 include(FairMacros)
 include(WriteConfigFile)
@@ -63,10 +64,105 @@ include(ROOTMacros)
 # existence of FAIRROOTPATH and SIMPATH variables
 Check_Prerequisites()
 
-# Has to be called after the CMAKE_MODULE_PATH contains the FairRoot
-# directories since the file is part of FairRoot 
-set(FairRoot_DIR ${FAIRROOTPATH})
+#Fairsoft Modules Path
+list(PREPEND CMAKE_PREFIX_PATH ${SIMPATH})
+
+#Searches for ROOT Package
+find_package(ROOT 6.22 CONFIG REQUIRED)
+if(ROOT_FOUND)
+  Message("Root was found")
+  set(ROOT_CINT_EXECUTABLE ${SIMPATH}/bin/rootcling)
+  set(ROOT_CONFIG_EXECUTABLE ${SIMPATH}/bin/root-config)
+  set(ROOT_INCLUDE_DIR ${ROOT_INCLUDE_DIRS})
+endif()
+
+find_package(FairCMakeModules REQUIRED)
+include(FairFindPackage2)
+
+#Searches for FairLogger Package
+find_package2(PUBLIC FairLogger)
+# at the end after all find_package[2] calls, call once
+find_package2_implicit_dependencies()
+if(FairLogger_FOUND)
+  Message("FairLogger was found")
+  set(FAIRLOGGER_FOUND TRUE)
+  set(FAIRLOGGER_INCLUDE_DIR ${FairLogger_INCDIR}/fairlogger)
+
+  # CbmRoot expects that the Logger include statement does not need any
+  # additional path in the statement
+  # The target FairLogger::FairLogger does not provide the needed info
+  # So we add the additional subdirectory here to the target
+  get_target_property(_incDirs FairLogger::FairLogger INTERFACE_INCLUDE_DIRECTORIES)
+  set_target_properties(FairLogger::FairLogger PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${_incDirs}/fairlogger"
+    )
+endif()
+
+#Searches for VMC Package
+if(ROOT_vmc_FOUND)
+  set(VMCLIB ROOT::VMC)
+  Message("Root_VMC was found")
+else()
+  find_package2(PUBLIC VMC REQUIRED)
+  set(VMCLIB VMCLibrary)
+endif()
+if(VMC_FOUND)
+  Message("VMC was found")
+endif()
+
+#Searches for FairROOT Package
+#include(FairRootTargets)
 find_package(FairRoot REQUIRED)
+if(FAIRROOT_FOUND)
+  Message("FairRoot was found")
+endif()
+
+
+#Searching for Boost Package
+find_package(Boost COMPONENTS serialization regex filesystem log container program_options)
+if(Boost_FOUND)
+  Message("Boost was found")
+endif()
+
+
+#Searching for Geant4 Package
+find_package(Geant4 CONFIG REQUIRED)
+if(Geant4_FOUND)
+  Message("Geant4 was found")
+endif()
+
+
+#Searching for VGM Package
+find_package(VGM CONFIG REQUIRED)
+if(VGM_FOUND)
+  Message("VGM was found")
+endif()
+
+#Searching for Geant4VMC Package
+find_package(Geant4VMC CONFIG REQUIRED)
+if(Geant4VMC_FOUND)
+  Message("Geant4VMC was found")
+endif()
+
+#Searching for Geant3 Package
+find_package(Geant3 CONFIG REQUIRED)
+if(Geant3_FOUND)
+  Message("Geant3 was found")
+endif()
+
+#Searching for SSE
+find_package(SSE REQUIRED)
+if(SSE_FOUND)
+  Message("SSE was found")
+endif()
+
+
+#Searching for FairMQ
+find_package(FairMQ CONFIG REQUIRED)
+if(FairMQ_FOUND)
+  Message("FairMQ was found")
+  set(FAIRMQ_INCLUDE_DIR ${FairMQ_INCDIR}/fairmq)
+endif()
 
 # Check if the compiler supports the needed C++ standard
 # Check for the minimum required versions of FairSoft and FairRoot
@@ -74,9 +170,6 @@ check_external_stack()
 
 # Set the compiler flags
 set_compiler_flags()
-
-# Allow to find <package>Config.cmake files in the FairSoft installation 
-set(CMAKE_PREFIX_PATH ${SIMPATH} ${CMAKE_PREFIX_PATH})
 
 # Define where the produced targets are placed in the binary directory
 Set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
@@ -93,69 +186,6 @@ set(FAIRROOT_LIBRARY_PROPERTIES ${FAIRROOT_LIBRARY_PROPERTIES}
     VERSION "${CBMROOT_VERSION}"
     SOVERSION "${CBMROOT_MAJOR_VERSION}"
 )
-
-# searches for needed packages
-# REQUIRED means that cmake will stop if this packages are not found
-# For example the framework can run without GEANT4, but ROOT is
-# mandatory
-find_package(ROOT 6.22.08 REQUIRED)
-set(ROOT_CINT_EXECUTABLE ${SIMPATH}/bin/rootcling)
-set(ROOT_INCLUDE_DIR ${ROOT_INCLUDE_DIRS})
-set(ROOT_CONFIG_EXECUTABLE ${SIMPATH}/bin/root-config)
-if("${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR}" VERSION_LESS 6.26)
-  Execute_Process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --has-vmc
-                  OUTPUT_VARIABLE ROOT_vmc_FOUND
-                 )
-
-  String(STRIP ${ROOT_vmc_FOUND} ROOT_vmc_FOUND)
-  If(NOT ROOT_vmc_FOUND)
-    set(CMAKE_PREFIX_PATH ${SIMPATH} ${CMAKE_PREFIX_PATH})
-    find_package2(PUBLIC VMC REQUIRED)
-    set(VMCLIB VMCLibrary)
-  endif()
-else()
-  set(CMAKE_PREFIX_PATH ${SIMPATH} ${CMAKE_PREFIX_PATH})
-  find_package2(PUBLIC VMC REQUIRED)
-  set(VMCLIB VMCLibrary)
-endif()
-
-find_package2(PUBLIC Geant3 REQUIRED)
-if(Geant3_FOUND)
-  Message("Geant3 was found")
-  Set(Geant3_LIBRARY_DIR ${Geant3_DIR}/../../${Geant3_CMAKE_INSTALL_LIBDIR})
-  FIND_PATH(Geant3_SYSTEM_DIR NAMES data PATHS
-            ${Geant3_DIR}/../../share/geant3
-            ${Geant3_DIR}/../../share/Geant3-${Geant3_VERSION}
-            NO_DEFAULT_PATH)
-endif()
-
-find_package(GEANT4)
-find_package(GEANT4DATA)
-find_package(GEANT4VMC)
-find_package(TBB)
-find_package(SSE)
-find_package(ZeroMQ)
-
-Set(Boost_NO_SYSTEM_PATHS TRUE)
-Set(Boost_NO_BOOST_CMAKE TRUE)
-set(BOOST_ROOT ${SIMPATH})
-Message("-- Looking for Boost ...")
-# If an older version of boost is found both of the variables below are
-# cached and in a second cmake run, a good boost version is found even
-# if the version is to old.
-# To overcome this problem both variables are cleared before checking
-# for boost.
-Unset(Boost_INCLUDE_DIR CACHE)
-Unset(Boost_LIBRARY_DIRS CACHE)
-find_package(Boost 1.48 COMPONENTS program_options thread system timer serialization regex log log_setup filesystem)
-If (Boost_FOUND)
-  Set(Boost_Avail 1)
-Else (Boost_FOUND)
-  Set(Boost_Avail 0)
-EndIf (Boost_FOUND)
-
-Find_Package(FairLogger)
-Find_Package(FairMQ)
 
 find_package(OpenMP)
 
@@ -203,6 +233,7 @@ endif()
 # Must be the first subdirectory since the defined targets are needed by
 # following targets
 add_subdirectory (external)
+
 set (BASE_INCLUDE_DIRECTORIES
 ${BASE_INCLUDE_DIRECTORIES}
 ${XPU_INCLUDE_DIRECTORY} # Required for XPU_D macro in base data types
@@ -235,7 +266,7 @@ endif()
 add_subdirectory (macro)
 add_subdirectory(fles)
 
-If(FAIRMQ_FOUND)
+If(FairMQ_FOUND)
   add_subdirectory(MQ)
 EndIf()
 
