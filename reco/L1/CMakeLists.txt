@@ -8,13 +8,6 @@
 # L1 defines
 ADD_DEFINITIONS(-DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 
-IF(SSE_FOUND)
-  ADD_DEFINITIONS(-DHAVE_SSE)
-  Message(STATUS "L1 will be compiled with SSE support")
-ELSE(SSE_FOUND)
-  Message(FATAL_ERROR "L1 can not be compiled without SSE support")
-ENDIF(SSE_FOUND)
-
 Set(INCLUDE_DIRECTORIES
 
   ${CBMROOT_SOURCE_DIR}/algo/ca
