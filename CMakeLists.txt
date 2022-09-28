@@ -119,7 +119,7 @@ endif()
 
 
 #Searching for Boost Package
-find_package(Boost COMPONENTS serialization regex filesystem log container program_options)
+find_package(Boost COMPONENTS serialization regex filesystem log log_setup container program_options thread)
 if(Boost_FOUND)
   Message("Boost was found")
 endif()

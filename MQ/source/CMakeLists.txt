@@ -55,8 +55,9 @@ Set(BOOST_LIBS
   ${Boost_SERIALIZATION_LIBRARY}
   ${Boost_PROGRAM_OPTIONS_LIBRARY}
   ${Boost_LOG_LIBRARY}
-  ${Boost_THREAD_LIBRARY}
+  ${Boost_LOG_SETUP_LIBRARY}
   ${Boost_REGEX_LIBRARY}
+  ${Boost_THREAD_LIBRARY}
 )
 
 If(UNIX AND NOT APPLE)
@@ -84,8 +85,8 @@ set(DEPENDENCIES_ALL
 set(EXE_NAME TsaSampler)
 set(SRCS CbmMQTsaSampler.cxx runTsaSampler.cxx)
 set(DEPENDENCIES
-  ${DEPENDENCIES_ALL}
   external::fles_ipc
+  ${DEPENDENCIES_ALL}
   CbmMQBase
 )
 GENERATE_EXECUTABLE()
@@ -93,10 +94,10 @@ GENERATE_EXECUTABLE()
 set(EXE_NAME MultiTsaSampler)
 set(SRCS CbmMQTsaMultiSampler.cxx runTsaMultiSampler.cxx)
 set(DEPENDENCIES
-  ${DEPENDENCIES_ALL}
   external::fles_ipc
-  CbmMQBase
   CbmFlibFlesTools
+  ${DEPENDENCIES_ALL}
+  CbmMQBase
   Core
   Gpad
   Hist
@@ -109,10 +110,10 @@ GENERATE_EXECUTABLE()
 set(EXE_NAME RepReqTsSampler)
 set(SRCS CbmMQTsSamplerRepReq.cxx runTsSamplerRepReq.cxx)
 set(DEPENDENCIES
-  ${DEPENDENCIES_ALL}
   external::fles_ipc
-  CbmMQBase
   CbmFlibFlesTools
+  ${DEPENDENCIES_ALL}
+  CbmMQBase
   Core
   Gpad
   Hist
@@ -135,8 +136,8 @@ GENERATE_EXECUTABLE()
 set(EXE_NAME TsaMultiSamplerTof)
 set(SRCS CbmMQTsaMultiSamplerTof.cxx runTsaMultiSamplerTof.cxx)
 set(DEPENDENCIES
-  ${DEPENDENCIES_ALL}
   external::fles_ipc
+  ${DEPENDENCIES_ALL}
   CbmMQBase
 )
 GENERATE_EXECUTABLE()
