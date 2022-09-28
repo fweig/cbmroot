@@ -184,7 +184,7 @@ InitStatus CbmL1::Init()
 
   // Init L1 algo core
 
-  fpAlgo    = &gAlgo;
+  fpAlgo = &gAlgo;
   fpAlgo->Init(fUseHitErrors, fTrackingMode, fMissingHits);
 
   fHistoDir = gROOT->mkdir("L1");
@@ -523,6 +523,8 @@ InitStatus CbmL1::Init()
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
         stationInfo.SetStationType(0);  // STS
         stationInfo.SetTimeInfo(stsInterface->IsTimeInfoProvided(iSt));
+        stationInfo.SetTimeInfo(L1Algo::TrackingMode::kMcbm != fTrackingMode ? stsInterface->IsTimeInfoProvided(iSt)
+                                                                             : false);
         stationInfo.SetTimeResolution(stsInterface->GetTimeResolution(iSt));
         stationInfo.SetFieldStatus(L1Algo::TrackingMode::kMcbm == fTrackingMode ? 0 : 1);
         stationInfo.SetZ(stsInterface->GetZ(iSt));
@@ -548,6 +550,8 @@ InitStatus CbmL1::Init()
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kMuch, iSt);
         stationInfo.SetStationType(2);  // MuCh
         stationInfo.SetTimeInfo(muchInterface->IsTimeInfoProvided(iSt));
+        stationInfo.SetTimeInfo(L1Algo::TrackingMode::kMcbm != fTrackingMode ? stsInterface->IsTimeInfoProvided(iSt)
+                                                                             : false);
         stationInfo.SetTimeResolution(muchInterface->GetTimeResolution(iSt));
         stationInfo.SetFieldStatus(0);
         stationInfo.SetZ(muchInterface->GetZ(iSt));
@@ -573,6 +577,8 @@ InitStatus CbmL1::Init()
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kTrd, iSt);
         stationInfo.SetStationType((iSt == 1 || iSt == 3) ? 6 : 3);  // MuCh
         stationInfo.SetTimeInfo(trdInterface->IsTimeInfoProvided(iSt));
+        stationInfo.SetTimeInfo(L1Algo::TrackingMode::kMcbm != fTrackingMode ? stsInterface->IsTimeInfoProvided(iSt)
+                                                                             : false);
         stationInfo.SetTimeResolution(trdInterface->GetTimeResolution(iSt));
         stationInfo.SetFieldStatus(0);
         stationInfo.SetZ(trdInterface->GetZ(iSt));
@@ -608,6 +614,8 @@ InitStatus CbmL1::Init()
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kTof, iSt);
         stationInfo.SetStationType(4);
         stationInfo.SetTimeInfo(tofInterface->IsTimeInfoProvided(iSt));
+        stationInfo.SetTimeInfo(L1Algo::TrackingMode::kMcbm != fTrackingMode ? stsInterface->IsTimeInfoProvided(iSt)
+                                                                             : false);
         stationInfo.SetTimeResolution(tofInterface->GetTimeResolution(iSt));
         stationInfo.SetFieldStatus(0);
         stationInfo.SetZ(tofInterface->GetZ(iSt));

@@ -852,77 +852,70 @@ Bool_t mcbm_event_reco(UInt_t uRunId                   = 2391,
   // ===                             L1                                    ===
   // =========================================================================
 
-  //   CbmKF* kalman = new CbmKF();
-  //   run->AddTask(kalman);
-  //   CbmL1* l1 = new CbmL1();
-  //   l1->SetLegacyEventMode(1);
-  //   l1->SetMcbmMode();
-  //   l1->SetUseHitErrors(1);
-  //   if (strcmp(geoSetupTag.data(), "mcbm_beam_2021_07_surveyed") == 0) l1->SetMissingHits(1);
-  //
-  //   // --- Material budget file names
-  //   TString mvdGeoTag;
-  //   if (geoSetup->GetGeoTag(ECbmModuleId::kMvd, mvdGeoTag)) {
-  //     TString parFile = gSystem->Getenv("VMCWORKDIR");
-  //     parFile         = parFile + "/parameters/mvd/mvd_matbudget_" + mvdGeoTag + ".root";
-  //     std::cout << "Using material budget file " << parFile << std::endl;
-  //     l1->SetMvdMaterialBudgetFileName(parFile.Data());
-  //   }
-  //   TString stsGeoTag;
-  //   if (geoSetup->GetGeoTag(ECbmModuleId::kSts, stsGeoTag)) {
-  //     TString parFile = gSystem->Getenv("VMCWORKDIR");
-  //     parFile         = parFile + "/parameters/sts/sts_matbudget_v19a.root";
-  //     std::cout << "Using material budget file " << parFile << std::endl;
-  //     l1->SetStsMaterialBudgetFileName(parFile.Data());
-  //   }
-  //
-  //   TString muchGeoTag;
-  //   if (geoSetup->GetGeoTag(ECbmModuleId::kMuch, muchGeoTag)) {
-  //
-  //     // --- Parameter file name
-  //     TString geoTag;
-  //     geoSetup->GetGeoTag(ECbmModuleId::kMuch, geoTag);
-  //     Int_t muchFlag = 0;
-  //     if (geoTag.Contains("mcbm")) muchFlag = 1;
-  //
-  //     TString parFile = gSystem->Getenv("VMCWORKDIR");
-  //     parFile         = parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
-  //     std::cout << "L1: Using parameter file " << parFile << std::endl;
-  //     l1->SetMuchPar(parFile);
-  //
-  //     TString parFile2 = gSystem->Getenv("VMCWORKDIR");
-  //     parFile2         = parFile2 + "/parameters/much/much_matbudget_" + geoTag + ".root ";
-  //     std::cout << "Using material budget file " << parFile2 << std::endl;
-  //     l1->SetMuchMaterialBudgetFileName(parFile2.Data());
-  //   }
-  //
-  //   TString trdGeoTag;
-  //   if (geoSetup->GetGeoTag(ECbmModuleId::kTrd, trdGeoTag)) {
-  //     TString parFile = gSystem->Getenv("VMCWORKDIR");
-  //     parFile         = parFile + "/parameters/trd/trd_matbudget_" + trdGeoTag + ".root ";
-  //     std::cout << "Using material budget file " << parFile << std::endl;
-  //     l1->SetTrdMaterialBudgetFileName(parFile.Data());
-  //   }
-  //
-  //   TString tofGeoTag;
-  //   if (geoSetup->GetGeoTag(ECbmModuleId::kTof, tofGeoTag)) {
-  //     TString parFile = gSystem->Getenv("VMCWORKDIR");
-  //     parFile         = parFile + "/parameters/tof/tof_matbudget_" + tofGeoTag + ".root ";
-  //     std::cout << "Using material budget file " << parFile << std::endl;
-  //     l1->SetTofMaterialBudgetFileName(parFile.Data());
-  //   }
-  //
+  run->AddTask(new CbmTrackingDetectorInterfaceInit());
 
-  // Workaround to get it running:
-  //  1) Change fUseGlobal  in line 129 of CbmStsParSetModule.h to
-  //       Bool_t fUseGlobal = kTRUE;
-  //  2) Change fUseGlobal  in line 114 of CbmStsParSetSensor.h to
-  //       Bool_t fUseGlobal = kTRUE;
-  //run->AddTask(l1);
 
-  //   CbmL1GlobalTrackFinder* globalTrackFinder = new CbmL1GlobalTrackFinder();
-  //   FairTask* globalFindTracks                = new CbmL1GlobalFindTracksEvents(globalTrackFinder);
-  //run->AddTask(globalFindTracks);
+  CbmKF* kalman = new CbmKF();
+  run->AddTask(kalman);
+
+  CbmL1* l1 = new CbmL1();
+  l1->SetLegacyEventMode(1);
+  l1->SetMcbmMode();
+  l1->SetUseHitErrors(1);
+
+  // --- Material budget file names
+  TString mvdGeoTag;
+  if (geoSetup->GetGeoTag(ECbmModuleId::kMvd, mvdGeoTag)) {
+    TString parFile = gSystem->Getenv("VMCWORKDIR");
+    parFile         = parFile + "/parameters/mvd/mvd_matbudget_" + mvdGeoTag + ".root";
+    std::cout << "Using material budget file " << parFile << std::endl;
+    l1->SetMvdMaterialBudgetFileName(parFile.Data());
+  }
+  TString stsGeoTag;
+  if (geoSetup->GetGeoTag(ECbmModuleId::kSts, stsGeoTag)) {
+    TString parFile = gSystem->Getenv("VMCWORKDIR");
+    parFile         = parFile + "/parameters/sts/sts_matbudget_v19a.root";
+    std::cout << "Using material budget file " << parFile << std::endl;
+    l1->SetStsMaterialBudgetFileName(parFile.Data());
+  }
+
+  TString muchGeoTag;
+  if (geoSetup->GetGeoTag(ECbmModuleId::kMuch, muchGeoTag)) {
+
+    // --- Parameter file name
+    TString geoTag;
+    geoSetup->GetGeoTag(ECbmModuleId::kMuch, geoTag);
+    Int_t muchFlag = 0;
+    if (geoTag.Contains("mcbm")) muchFlag = 1;
+
+
+    //       TString parFile2 = gSystem->Getenv("VMCWORKDIR");
+    //       parFile2         = parFile2 + "/parameters/much/much_matbudget_" + geoTag + ".root ";
+    //       std::cout << "Using material budget file " << parFile2 << std::endl;
+    //       l1->SetMuchMaterialBudgetFileName(parFile2.Data());
+  }
+
+  TString trdGeoTag;
+  if (geoSetup->GetGeoTag(ECbmModuleId::kTrd, trdGeoTag)) {
+    TString parFile = gSystem->Getenv("VMCWORKDIR");
+    parFile = parFile + "/parameters/trd/trd_matbudget_v22a_mcbm.root";  //trd_matbudget_" + trdGeoTag + ".root ";
+    std::cout << "Using material budget file " << parFile << std::endl;
+    l1->SetTrdMaterialBudgetFileName(parFile.Data());
+  }
+
+  TString tofGeoTag;
+  if (geoSetup->GetGeoTag(ECbmModuleId::kTof, tofGeoTag)) {
+    TString parFile = gSystem->Getenv("VMCWORKDIR");
+    //  parFile         = parFile + "/parameters/tof/tof_matbudget_" + tofGeoTag + ".root ";
+    parFile = parFile + "/parameters/tof/tof_matbudget_v21d_mcbm.root";
+    std::cout << "Using material budget file " << parFile << std::endl;
+    l1->SetTofMaterialBudgetFileName(parFile.Data());
+  }
+  run->AddTask(l1);
+
+  CbmL1GlobalTrackFinder* globalTrackFinder = new CbmL1GlobalTrackFinder();
+  FairTask* globalFindTracks                = new CbmL1GlobalFindTracksEvents(globalTrackFinder);
+  run->AddTask(globalFindTracks);
 
   // =========================================================================
   // ===                            QA                                     ===

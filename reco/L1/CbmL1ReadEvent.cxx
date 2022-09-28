@@ -48,6 +48,7 @@
 
 #include "TDatabasePDG.h"
 #include "TRandom.h"
+
 #include <iostream>
 
 using std::cout;
@@ -186,8 +187,8 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
   fvMCTracks.clear();                         /* <CbmL1MCTrack> */
   fvExternalHits.clear();                     /* <CbmL1Hit>     */
   fvRecoTracks.clear(); /* <CbmL1Track>   */  // TODO: Move from this function to more suitable place (S.Zharko)
-  fvHitPointIndexes.clear();       /* <int>: indexes of MC-points in fvMCPoints (by index of fpAlgo->vHits) */
-  fvHitStore.clear();              /* <CbmL1HitStore> */
+  fvHitPointIndexes.clear(); /* <int>: indexes of MC-points in fvMCPoints (by index of fpAlgo->vHits) */
+  fvHitStore.clear();        /* <CbmL1HitStore> */
 
   fmMCPointsLinksMap.clear();
   fmMCTracksLinksMap.clear();
@@ -551,9 +552,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
         if (fpMvdHitMatches) {
           CbmMatch* mvdHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpMvdHitMatches->At(j));
           if (mvdHitMatch->GetNofLinks() > 0)
-            if (mvdHitMatch->GetLink(0).GetIndex() < nMvdPoints) {
-              th.iMC = mvdHitMatch->GetLink(0).GetIndex();
-            }
+            if (mvdHitMatch->GetLink(0).GetIndex() < nMvdPoints) { th.iMC = mvdHitMatch->GetLink(0).GetIndex(); }
         }
       }
       //if(  h.MC_Point >=0 ) // DEBUG !!!!
@@ -639,10 +638,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
         /// stop if reco TS ends and many hits left
         if (!event)
-          if ((th.time > (TsStart + TsLength)) && ((nEntSts - hitIndex) > 300)) {
-    
-            break;
-          }
+          if ((th.time > (TsStart + TsLength)) && ((nEntSts - hitIndex) > 300)) { break; }
 
         TVector3 pos, err;
         mh->Position(pos);
@@ -804,17 +800,22 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
       vector<bool> mcUsed(nTrdPoints, 0);
 
-      for (int iHit = 0; iHit < fpTrdHits->GetEntriesFast(); iHit++) {
+      Int_t nEntTrd = (event ? event->GetNofData(ECbmDataType::kTrdHit) : fpTrdHits->GetEntriesFast());
+
+      for (int iHit = 0; iHit < nEntTrd; iHit++) {
         TmpHit th;
 
-        CbmTrdHit* mh = L1_DYNAMIC_CAST<CbmTrdHit*>(fpTrdHits->At(iHit));
+        Int_t hitIndex = 0;
+        hitIndex       = (event ? event->GetIndex(ECbmDataType::kTrdHit, iHit) : iHit);
+
+        CbmTrdHit* mh = L1_DYNAMIC_CAST<CbmTrdHit*>(fpTrdHits->At(hitIndex));
 
         if ((L1Algo::TrackingMode::kGlobal == fTrackingMode) && (int) mh->GetClassType() != 1) {
           // SGtrd2d!! skip TRD-1D hit
           continue;
         }
 
-        th.ExtIndex = iHit;
+        th.ExtIndex = hitIndex;
         th.Det      = 3;
         th.id       = tmpHits.size();
 
@@ -927,13 +928,20 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
     int firstDetStrip = NStrips;
 
-    for (int j = 0; j < fpTofHits->GetEntriesFast(); j++) {
+    Int_t nEntTof = (event ? event->GetNofData(ECbmDataType::kTofHit) : fpTofHits->GetEntriesFast());
+
+    for (int j = 0; j < nEntTof; j++) {
+
+
+      Int_t hitIndex = 0;
+      hitIndex       = (event ? event->GetIndex(ECbmDataType::kTofHit, j) : j);
+
       TmpHit th;
 
-      CbmTofHit* mh = L1_DYNAMIC_CAST<CbmTofHit*>(fpTofHits->At(j));
+      CbmTofHit* mh = L1_DYNAMIC_CAST<CbmTofHit*>(fpTofHits->At(hitIndex));
 
 
-      th.ExtIndex = j;
+      th.ExtIndex = hitIndex;
       th.Det      = 4;
 
       th.id = tmpHits.size();
@@ -1035,7 +1043,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
   int maxHitIndex = 0;
 
   for (int ih = 0; ih < nHits; ih++) {
-    TmpHit& th                     = tmpHits[ih];
+    TmpHit& th = tmpHits[ih];
     if (maxHitIndex < th.id) { maxHitIndex = th.id; }
   }  // ih
 
@@ -1264,8 +1272,8 @@ bool CbmL1::ReadMCPoint(CbmL1MCPoint* MC, int iPoint, int file, int event, int M
 
     if (!pt) return 1;
     if (!fLegacyEventMode) {
-      Double_t StartTime     = fTimeSlice->GetStartTime();                             // not used
-      Double_t EndTime       = fTimeSlice->GetEndTime();                               // not used
+      Double_t StartTime     = fTimeSlice->GetStartTime();                              // not used
+      Double_t EndTime       = fTimeSlice->GetEndTime();                                // not used
       Double_t Time_MC_point = pt->GetTime() + fpEventList->GetEventTime(event, file);  // not used
 
       if (StartTime > 0)
@@ -1388,7 +1396,7 @@ void CbmL1::HitMatch()
           }
         }
 
-        Float_t bestWeight  = 0.f;
+        Float_t bestWeight = 0.f;
         for (Int_t iLink = 0; iLink < stsHitMatch.GetNofLinks(); iLink++) {
           const CbmLink& link = stsHitMatch.GetLink(iLink);
           Int_t iFile         = link.GetFile();
