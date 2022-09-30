@@ -64,3 +64,4 @@ else(FAIRROOT_INCLUDE_DIR AND FAIRROOT_LIBRARY_DIR)
    MESSAGE(FATAL_ERROR "FairRoot installation not found")
 endif (FAIRROOT_INCLUDE_DIR AND FAIRROOT_LIBRARY_DIR)
 
+define_fairroot_targets()
