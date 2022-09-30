@@ -27,6 +27,10 @@ If(ProjectUpdated)
   Message("KFParticle source directory was changed so build directory was deleted")  
 EndIf()
 
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/include)
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
+endif()
+
 ExternalProject_Add(KFPARTICLE
   DEPENDS ${KF_DEPENDS_ON}
   BUILD_IN_SOURCE 0
@@ -49,8 +53,10 @@ ExternalProject_Add(KFPARTICLE
   INSTALL_COMMAND  ${CMAKE_COMMAND} --build . --target install
 )
 
-add_library(KFParticle SHARED IMPORTED)
-set_target_properties(KFParticle PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib)
+add_library(KFParticle SHARED IMPORTED GLOBAL)
+set_target_properties(KFParticle PROPERTIES
+  IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}KFParticle${CMAKE_SHARED_LIBRARY_SUFFIX}
+  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/include)
 add_dependencies(KFParticle KFPARTICLE)
 
 set(KFParticle_LIB_DIR ${CMAKE_BINARY_DIR}/lib PARENT_SCOPE)

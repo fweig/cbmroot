@@ -38,18 +38,18 @@ ExternalProject_Add(ANALYSISTREE
         INSTALL_COMMAND  ${CMAKE_COMMAND} --build . --target install
         )
 
-add_library(AnalysisTreeBase SHARED IMPORTED)
-set_target_properties(AnalysisTreeBase PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib)
+add_library(AnalysisTreeBase SHARED IMPORTED GLOBAL)
+set_target_properties(AnalysisTreeBase PROPERTIES
+  IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}AnalysisTreeBase${CMAKE_SHARED_LIBRARY_SUFFIX}
+  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/include)
 add_dependencies(AnalysisTreeBase ANALYSISTREE)
 
-add_library(AnalysisTreeInfra SHARED IMPORTED)
-set_target_properties(AnalysisTreeInfra PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib)
+add_library(AnalysisTreeInfra SHARED IMPORTED GLOBAL)
+set_target_properties(AnalysisTreeInfra PROPERTIES
+  IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}AnalysisTreeInfra${CMAKE_SHARED_LIBRARY_SUFFIX}
+  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/include)
 add_dependencies(AnalysisTreeInfra ANALYSISTREE)
 
-set(AnalysisTree_LIB_DIR ${CMAKE_BINARY_DIR}/lib)
-set(AnalysisTree_LIBRARIES AnalysisTreeBase AnalysisTreeInfra)
-set(AnalysisTree_INCLUDE_DIR "${CMAKE_BINARY_DIR}/include")
-set(AnalysisTree_FOUND TRUE)
 
 foreach(LIB_NAME ${ANALYSISTREE_LIBNAME})
     Install( FILES
