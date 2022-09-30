@@ -53,8 +53,8 @@ setup_env_variables()
   export ROOTVER=6
 
   # put your desired variants here:
-  export FSOFTDEV=apr21p2
-  export FROOTDEV=v18.6.7
+  export FSOFTDEV=apr22
+  export FROOTDEV=v18.6.8
 
   export FSOFTPRO=apr21p2
   export FROOTPRO=v18.6.7
