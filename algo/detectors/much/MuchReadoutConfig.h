@@ -11,6 +11,7 @@
 #ifndef ALGO_DETECTORS_MUCH_MUCHREADOUTCONFIG_H
 #define ALGO_DETECTORS_MUCH_MUCHREADOUTCONFIG_H
 
+#include <cstddef>
 #include <cstdint>
 #include <map>
 #include <vector>
