@@ -34,6 +34,7 @@ Set(INCLUDE_DIRECTORIES
 
   ${CBMROOT_SOURCE_DIR}/reco/L1
   ${CBMROOT_SOURCE_DIR}/reco/L1/L1Algo
+  ${CBMROOT_SOURCE_DIR}/reco/L1/catools
   ${CBMROOT_SOURCE_DIR}/reco/L1/OffLineInterface
   ${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder
   ${CBMROOT_SOURCE_DIR}/reco/L1/qa
@@ -128,6 +129,7 @@ set(SRCS
   L1Algo/L1Grid.cxx
   CbmL1Performance.cxx
   CbmL1ReadEvent.cxx
+  CbmCaPerformance.cxx
   L1Algo/L1Station.cxx
   L1Algo/L1TrackParFit.cxx
   L1Algo/L1Event.cxx
@@ -152,7 +154,9 @@ set(SRCS
   L1Algo/utils/L1AlgoDraw.cxx
   L1Algo/utils/L1AlgoEfficiencyPerformance.cxx
   L1Algo/utils/L1AlgoPulls.cxx
-
+  catools/CaToolsMcData.cxx
+  catools/CaToolsMcDataManager.cxx
+  catools/CaToolsPerformance.cxx
   ParticleFinder/CbmL1PFFitter.cxx
   ParticleFinder/CbmL1PFMCParticle.cxx
 
@@ -196,6 +200,10 @@ set(HEADERS
   # OffLineInterface / CbmL1SttTrack.h
   L1Algo/L1Def.h
   L1Algo/L1Vector.h
+  CbmCaPerformance.h
+  catools/CaToolsMcData.h
+  catools/CaToolsMcDataManager.h
+  catools/CaToolsPerformance.h
   qa/CbmTrackerInputQaTrd.h
   qa/CbmTrackerInputQaTof.h
   qa/CbmTrackingInputQaSts.h

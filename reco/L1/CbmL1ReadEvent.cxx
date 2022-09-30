@@ -172,6 +172,145 @@ struct TmpHit {
   }
 };
 
+
+// *****************************************
+// **     Hits and MC-points matching     **
+// *****************************************
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+template<>
+int CbmL1::MatchHitWithMc<L1DetectorID::kMvd>(int iHit) const
+{
+  int iPoint = -1;
+  if (fpMvdHitMatches) {
+    int iHitExt          = -(1 + iHit);  // TODO: SZh 28.08.2022: this should be replaced with iHitExt = hit.extIdex
+    const auto* hitMatch = dynamic_cast<CbmMatch*>(fpMvdHitMatches->At(iHitExt));
+    assert(hitMatch);
+    if (hitMatch->GetNofLinks() > 0 && hitMatch->GetLink(0).GetIndex() < fNpointsMvd) {
+      iPoint = hitMatch->GetLink(0).GetIndex();
+    }
+  }
+  return iPoint;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+template<>
+int CbmL1::MatchHitWithMc<L1DetectorID::kSts>(int iHit) const
+{
+  int iPoint     = -1;
+  const auto* sh = dynamic_cast<CbmStsHit*>(fpStsHits->At(iHit));
+
+  // Match MC point
+  if (fpStsClusterMatches) {
+    const auto* clusterMatchF = static_cast<const CbmMatch*>(fpStsClusterMatches->At(sh->GetFrontClusterId()));
+    const auto* clusterMatchB = static_cast<const CbmMatch*>(fpStsClusterMatches->At(sh->GetBackClusterId()));
+    CbmMatch hitMatch;
+    for (int iLinkF = 0; iLinkF < clusterMatchF->GetNofLinks(); ++iLinkF) {
+      const auto& linkF = clusterMatchF->GetLink(iLinkF);
+      for (int iLinkB = 0; iLinkB < clusterMatchB->GetNofLinks(); ++iLinkB) {
+        const auto& linkB = clusterMatchB->GetLink(iLinkB);
+        if (linkF == linkB) {
+          hitMatch.AddLink(linkF);
+          hitMatch.AddLink(linkB);
+        }
+      }
+    }
+    float bestWeight = 0.f;
+    for (int iLink = 0; iLink < hitMatch.GetNofLinks(); ++iLink) {
+      const CbmLink& link = hitMatch.GetLink(iLink);
+      int iFile           = link.GetFile();
+      int iEvent          = link.GetEntry();
+      int iIndex          = link.GetIndex();
+
+      if (fLegacyEventMode) {
+        iFile  = fvFileEvent.begin()->first;
+        iEvent = fvFileEvent.begin()->second;
+      }
+
+      auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex + fNpointsMvd, iEvent, iFile));
+      assert(itPoint != fmMCPointsLinksMap.cend());
+
+      if (link.GetWeight() > bestWeight) {
+        bestWeight = link.GetWeight();
+        iPoint     = itPoint->second;
+      }
+    }
+  }  // Match MC point
+  return iPoint;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+template<>
+int CbmL1::MatchHitWithMc<L1DetectorID::kMuch>(int iHit) const
+{
+  int iPoint               = -1;
+  const auto* hitMatchMuch = dynamic_cast<CbmMatch*>(fpMuchHitMatches->At(iHit));
+  if (hitMatchMuch) {
+    for (int iLink = 0; iLink < hitMatchMuch->GetNofLinks(); ++iLink) {
+      if (hitMatchMuch->GetLink(iLink).GetIndex() < fNpointsMuch) {
+        int iMc    = hitMatchMuch->GetLink(iLink).GetIndex();
+        int iIndex = iMc + fNpointsMvd + fNpointsSts;
+        int iFile  = hitMatchMuch->GetLink(0).GetFile();
+        int iEvent = hitMatchMuch->GetLink(0).GetEntry();
+
+        auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex, iEvent, iFile));
+        if (itPoint == fmMCPointsLinksMap.cend()) continue;
+        iPoint = itPoint->second;
+      }
+    }
+  }
+  return iPoint;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+template<>
+int CbmL1::MatchHitWithMc<L1DetectorID::kTrd>(int iHit) const
+{
+  int iPoint           = -1;
+  const auto* hitMatch = dynamic_cast<const CbmMatch*>(fpTrdHitMatches->At(iHit));
+  if (hitMatch) {
+    int iMC = -1;
+    if (hitMatch->GetNofLinks() > 0) {
+      iMC = hitMatch->GetLink(0).GetIndex();
+      assert(iMC >= 0 && iMC < fNpointsTrd);
+      iPoint = iMC + fNpointsMvd + fNpointsSts + fNpointsMuch;
+    }
+  }
+  return iPoint;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+template<>
+int CbmL1::MatchHitWithMc<L1DetectorID::kTof>(int iHit) const
+{
+  int iPoint           = -1;
+  const auto* hitMatch = dynamic_cast<const CbmMatch*>(fpTofHitMatches->At(iHit));
+  if (hitMatch) {
+    for (int iLink = 0; iLink < hitMatch->GetNofLinks(); ++iLink) {
+      int iFile    = hitMatch->GetLink(iLink).GetFile();
+      int iEvent   = hitMatch->GetLink(iLink).GetEntry();
+      int iMc      = hitMatch->GetLink(iLink).GetIndex();
+      int iIndex   = iMc + fNpointsMvd + fNpointsSts + fNpointsMuch + fNpointsTrd;
+      auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex, iEvent, iFile));
+      if (itPoint == fmMCPointsLinksMap.cend()) { continue; }
+      iPoint = itPoint->second;
+    }
+  }
+  return iPoint;
+}
+
+
+// **************************
+// **     Event reader     **
+// **************************
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
 void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int& FstHitinTs, bool& areDataLeft,
                       CbmEvent* event)
 {
@@ -216,19 +355,18 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
     tmpHits.reserve(nHitsTotal);
   }
 
-  nMvdPoints      = 0;
-  int nStsPoints  = 0;
-  int nTrdPoints  = 0;
-  int nMuchPoints = 0;
-  int nTofPoints  = 0;
+  fNpointsMvd  = 0;
+  fNpointsSts  = 0;
+  fNpointsTrd  = 0;
+  fNpointsMuch = 0;
+  fNpointsTof  = 0;
 
   // get MVD hits
-  Int_t nMvdHits  = 0;
-  Int_t nMuchHits = 0;
-  Int_t nTrdHits  = 0;
-  Int_t nTofHits  = 0;
-  // get STS hits
+  int nMvdHits  = 0;
   int nStsHits = 0;
+  int nMuchHits = 0;
+  int nTrdHits  = 0;
+  int nTofHits  = 0;
 
   int firstTrdPoint  = 0;
   int firstStsPoint  = 0;
@@ -257,9 +395,9 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       Int_t iEvent = set_it->second;
 
       if (fUseMVD && fpMvdPoints) {
-        Int_t nMvdPointsInEvent = fpMvdPoints->Size(iFile, iEvent);
+        Int_t fNpointsMvdInEvent = fpMvdPoints->Size(iFile, iEvent);
         double maxDeviation     = 0;
-        for (Int_t iMC = 0; iMC < nMvdPointsInEvent; iMC++) {
+        for (Int_t iMC = 0; iMC < fNpointsMvdInEvent; iMC++) {
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 1)) {
             MC.iStation          = -1;
@@ -285,7 +423,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
             fmMCPointsLinksMap[CbmL1LinkKey(iMC, iEvent, iFile)] = fvMCPoints.size();
             fvMCPoints.push_back(MC);
             fvMCPointIndexesTs.push_back(0);
-            nMvdPoints++;
+            fNpointsMvd++;
           }
         }
         if (fVerbose > 2) { LOG(info) << "CbmL1ReadEvent: max deviation of Mvd points " << maxDeviation; }
@@ -320,10 +458,10 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
             assert(itTrack != fmMCTracksLinksMap.cend());
             MC.ID = itTrack->second;
             fvMCTracks[MC.ID].Points.push_back_no_warning(fvMCPoints.size());
-            fmMCPointsLinksMap[CbmL1LinkKey(iMC + nMvdPoints, iEvent, iFile)] = fvMCPoints.size();
+            fmMCPointsLinksMap[CbmL1LinkKey(iMC + fNpointsMvd, iEvent, iFile)] = fvMCPoints.size();
             fvMCPoints.push_back(MC);
             fvMCPointIndexesTs.push_back(0);
-            nStsPoints++;
+            fNpointsSts++;
           }
         }
         if (fVerbose > 2) { LOG(info) << "CbmL1ReadEvent: max deviation of Sts points " << maxDeviation; }
@@ -349,10 +487,10 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
             assert(itTrack != fmMCTracksLinksMap.cend());
             MC.ID = itTrack->second;
             fvMCTracks[MC.ID].Points.push_back_no_warning(fvMCPoints.size());
-            fmMCPointsLinksMap[CbmL1LinkKey(iMC + nMvdPoints + nStsPoints, iEvent, iFile)] = fvMCPoints.size();
+            fmMCPointsLinksMap[CbmL1LinkKey(iMC + fNpointsMvd + fNpointsSts, iEvent, iFile)] = fvMCPoints.size();
             fvMCPoints.push_back(MC);
             fvMCPointIndexesTs.push_back(0);
-            nMuchPoints++;
+            fNpointsMuch++;
           }
         }
       }  // fpMuchPoints
@@ -376,11 +514,11 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
             assert(itTrack != fmMCTracksLinksMap.cend());
             MC.ID = itTrack->second;
             fvMCTracks[MC.ID].Points.push_back_no_warning(fvMCPoints.size());
-            fmMCPointsLinksMap[CbmL1LinkKey(iMC + nMvdPoints + nStsPoints + nMuchPoints, iEvent, iFile)] =
+            fmMCPointsLinksMap[CbmL1LinkKey(iMC + fNpointsMvd + fNpointsSts + fNpointsMuch, iEvent, iFile)] =
               fvMCPoints.size();
             fvMCPoints.push_back(MC);
             fvMCPointIndexesTs.push_back(0);
-            nTrdPoints++;
+            fNpointsTrd++;
           }
         }
       }  // fpTrdPoints
@@ -465,11 +603,11 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
               MC.ID = iTrack;
 
-              int iMC = fTofPointToTrack[iTofSta][iTrack] + nMvdPoints + nStsPoints + nMuchPoints + nTrdPoints;
+              int iMC = fTofPointToTrack[iTofSta][iTrack] + fNpointsMvd + fNpointsSts + fNpointsMuch + fNpointsTrd;
               fmMCPointsLinksMap[CbmL1LinkKey(iMC, iEvent, iFile)] = fvMCPoints.size();
               fvMCPoints.push_back(MC);
               fvMCPointIndexesTs.push_back(0);
-              nTofPoints++;
+              fNpointsTof++;
             }
           }
       }
@@ -547,14 +685,16 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
         th.v                = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
       th.Det = 0;
-      th.iMC = -1;
-      if (fPerformance) {
-        if (fpMvdHitMatches) {
-          CbmMatch* mvdHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpMvdHitMatches->At(j));
-          if (mvdHitMatch->GetNofLinks() > 0)
-            if (mvdHitMatch->GetLink(0).GetIndex() < nMvdPoints) { th.iMC = mvdHitMatch->GetLink(0).GetIndex(); }
-        }
-      }
+      th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kMvd>(th.ExtIndex) : -1;
+      //if (fPerformance) {
+      //  if (fpMvdHitMatches) {
+      //    CbmMatch* mvdHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpMvdHitMatches->At(j));
+      //    if (mvdHitMatch->GetNofLinks() > 0)
+      //      if (mvdHitMatch->GetLink(0).GetIndex() < fNpointsMvd) {
+      //        th.iMC = mvdHitMatch->GetLink(0).GetIndex();
+      //      }
+      //  }
+      //}
       //if(  h.MC_Point >=0 ) // DEBUG !!!!
       {
         tmpHits.push_back(th);
@@ -566,7 +706,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
   if (fUseSTS && (2 == fStsUseMcHit)) {  // create hits from points
 
-    for (int ip = firstStsPoint; ip < firstStsPoint + nStsPoints; ip++) {
+    for (int ip = firstStsPoint; ip < firstStsPoint + fNpointsSts; ip++) {
       const CbmL1MCPoint& p = fvMCPoints[ip];
       //       int mcTrack           = p.ID;
       //       if (mcTrack < 0) continue;
@@ -659,7 +799,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
         th.u                = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
         th.v                = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
-      th.iMC = -1;
+      th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kSts>(hitIndexSort) : -1;
 
       tmpHits.push_back(th);
       nStsHits++;
@@ -672,7 +812,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
   //
   if ((2 == fMuchUseMcHit) && fUseMUCH) {  // create hits from points
 
-    for (int ip = firstMuchPoint; ip < firstMuchPoint + nMuchPoints; ip++) {
+    for (int ip = firstMuchPoint; ip < firstMuchPoint + fNpointsMuch; ip++) {
       const CbmL1MCPoint& p = fvMCPoints[ip];
 
       //       int mcTrack = p.ID;
@@ -742,32 +882,33 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
         th.u                = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
         th.v                = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
       }
-      th.iMC  = -1;
-      int iMC = -1;
-
-
-      if (fPerformance) {
-        if (fpMuchHitMatches) {
-          CbmMatch* matchHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpMuchHitMatches->At(j));
-
-
-          for (Int_t iLink = 0; iLink < matchHitMatch->GetNofLinks(); iLink++) {
-            if (matchHitMatch->GetLink(iLink).GetIndex() < nMuchPoints) {
-              iMC          = matchHitMatch->GetLink(iLink).GetIndex();
-              Int_t iIndex = iMC + nMvdPoints + nStsPoints;
-
-              Int_t iFile  = matchHitMatch->GetLink(0).GetFile();
-              Int_t iEvent = matchHitMatch->GetLink(0).GetEntry();
-
-              auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex, iEvent, iFile));
-              if (itPoint == fmMCPointsLinksMap.cend()) continue;
-              th.iMC = itPoint->second;
-              if ((1 == fMuchUseMcHit) && (th.iMC > -1))
-                th.SetHitFromPoint(fvMCPoints[th.iMC], fpAlgo->GetParameters()->GetStation(th.iStation));
-            }
-          }
-        }
+      th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kMuch>(j) : -1;
+      if (1 == fMuchUseMcHit && th.iMC > -1) {
+        th.SetHitFromPoint(fvMCPoints[th.iMC], fpAlgo->GetParameters()->GetStation(th.iStation));
       }
+      //int iMC = -1;
+      //if (fPerformance) {
+      //  if (fpMuchHitMatches) {
+      //    CbmMatch* matchHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpMuchHitMatches->At(j));
+
+
+      //    for (Int_t iLink = 0; iLink < matchHitMatch->GetNofLinks(); iLink++) {
+      //      if (matchHitMatch->GetLink(iLink).GetIndex() < fNpointsMuch) {
+      //        iMC          = matchHitMatch->GetLink(iLink).GetIndex();
+      //        Int_t iIndex = iMC + fNpointsMvd + fNpointsSts;
+
+      //        Int_t iFile  = matchHitMatch->GetLink(0).GetFile();
+      //        Int_t iEvent = matchHitMatch->GetLink(0).GetEntry();
+
+      //        auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex, iEvent, iFile));
+      //        if (itPoint == fmMCPointsLinksMap.cend()) continue;
+      //        th.iMC = itPoint->second;
+      //        if ((1 == fMuchUseMcHit) && (th.iMC > -1))
+      //          th.SetHitFromPoint(fvMCPoints[th.iMC], fpAlgo->GetParameters()->GetStation(th.iStation));
+      //      }
+      //    }
+      //  }
+      //}
 
       tmpHits.push_back(th);
       nMuchHits++;
@@ -782,7 +923,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
   if (fUseTRD) {
 
     if (2 == fTrdUseMcHit) {  // create hits from MC points
-      for (int ip = firstTrdPoint; ip < firstTrdPoint + nTrdPoints; ip++) {
+      for (int ip = firstTrdPoint; ip < firstTrdPoint + fNpointsTrd; ip++) {
         const CbmL1MCPoint& p = fvMCPoints[ip];
         //       int mcTrack = p.ID;
         //       if (mcTrack < 0) continue;
@@ -798,7 +939,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
       assert(fpTrdHits);
 
-      vector<bool> mcUsed(nTrdPoints, 0);
+      vector<bool> mcUsed(fNpointsTrd, 0);
 
       Int_t nEntTrd = (event ? event->GetNofData(ECbmDataType::kTrdHit) : fpTrdHits->GetEntriesFast());
 
@@ -856,24 +997,26 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
         std::tie(th.u, th.v) = st.ConvXYtoUV<double>(th.x, th.y);
 
-        th.iMC     = -1;
-        th.track   = -1;
-        int iMcTrd = -1;
-        if (fPerformance && fpTrdHitMatches) {
-          CbmMatch* trdHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpTrdHitMatches->At(iHit));
-          if (trdHitMatch->GetNofLinks() > 0) {
-            iMcTrd = trdHitMatch->GetLink(0).GetIndex();
-            assert(iMcTrd >= 0 && iMcTrd < nTrdPoints);
-            th.iMC   = iMcTrd + nMvdPoints + nStsPoints + nMuchPoints;
-            th.track = fvMCPoints[th.iMC].ID;
-          }
-        }
+        th.iMC   = fPerformance ? MatchHitWithMc<L1DetectorID::kTrd>(iHit) : -1;
+        th.track = (th.iMC > -1) ? fvMCPoints[th.iMC].ID : -1;
+        //int iMcTrd = -1;
+        //if (fPerformance && fpTrdHitMatches) {
+        //  CbmMatch* trdHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpTrdHitMatches->At(iHit));
+        //  if (trdHitMatch->GetNofLinks() > 0) {
+        //    iMcTrd = trdHitMatch->GetLink(0).GetIndex();
+        //    assert(iMcTrd >= 0 && iMcTrd < fNpointsTrd);
+        //    th.iMC   = iMcTrd + fNpointsMvd + fNpointsSts + fNpointsMuch;
+        //    th.track = fvMCPoints[th.iMC].ID;
+        //  }
+        //}
 
         if (1 == fTrdUseMcHit) {  // replace hit by MC points
 
           assert(fPerformance && fpTrdHitMatches);
 
           if (th.iMC < 0) continue;      // skip noise hits
+          int iMcTrd = th.iMC - fNpointsMvd - fNpointsSts - fNpointsMuch;
+          assert(iMcTrd >= 0 && iMcTrd < fNpointsTrd);
           if (mcUsed[iMcTrd]) continue;  // one hit per MC point
           bool doSmear = true;
           if (0) {  // SGtrd2d!! debug: artificial errors
@@ -906,7 +1049,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
   // Get ToF hits
   //
   if ((2 == fTofUseMcHit) && fUseTOF) {  // create hits from points
-    for (int ip = firstTofPoint; ip < firstTofPoint + nTofPoints; ip++) {
+    for (int ip = firstTofPoint; ip < firstTofPoint + fNpointsTof; ip++) {
       const CbmL1MCPoint& p = fvMCPoints[ip];
 
       //       int mcTrack = p.ID;
@@ -985,32 +1128,35 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       th.u                = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
       th.v                = th.x * st.backInfo.cos_phi[0] + th.y * st.backInfo.sin_phi[0];
 
+      th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kTof>(j) : -1;
 
-      th.iMC = -1;
+      if (1 == fTofUseMcHit && th.iMC > -1) {
+        th.SetHitFromPoint(fvMCPoints[th.iMC], fpAlgo->GetParameters()->GetStation(th.iStation));
+      }
       //      int iMC = -1;
 
 
-      if (fPerformance) {
+      //if (fPerformance) {
 
-        CbmMatch* matchHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpTofHitMatches->At(j));
+      //  CbmMatch* matchHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpTofHitMatches->At(j));
 
-        for (int iLink = 0; iLink < matchHitMatch->GetNofLinks(); iLink++)  //matchHitMatch->GetNofLinks(); k++)
-        {
-          Int_t iMC    = matchHitMatch->GetLink(iLink).GetIndex();
-          Int_t iFile  = matchHitMatch->GetLink(iLink).GetFile();
-          Int_t iEvent = matchHitMatch->GetLink(iLink).GetEntry();
+      //  for (int iLink = 0; iLink < matchHitMatch->GetNofLinks(); iLink++)  //matchHitMatch->GetNofLinks(); k++)
+      //  {
+      //    Int_t iMC    = matchHitMatch->GetLink(iLink).GetIndex();
+      //    Int_t iFile  = matchHitMatch->GetLink(iLink).GetFile();
+      //    Int_t iEvent = matchHitMatch->GetLink(iLink).GetEntry();
 
-          Int_t iIndex = iMC + nMvdPoints + nStsPoints + nMuchPoints + nTrdPoints;
+      //    Int_t iIndex = iMC + fNpointsMvd + fNpointsSts + fNpointsMuch + fNpointsTrd;
 
-          //CbmTofPoint* pt = L1_DYNAMIC_CAST<CbmTofPoint*>(fTofPoints->Get(iFile, iEvent, iMC));
-          // pt->GetTrackID();
-          auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex, iEvent, iFile));
-          if (itPoint == fmMCPointsLinksMap.cend()) continue;
-          th.iMC = itPoint->second;
-          if ((1 == fTofUseMcHit) && (th.iMC > -1))
-            th.SetHitFromPoint(fvMCPoints[th.iMC], fpAlgo->GetParameters()->GetStation(th.iStation));
-        }
-      }
+      //    //CbmTofPoint* pt = L1_DYNAMIC_CAST<CbmTofPoint*>(fTofPoints->Get(iFile, iEvent, iMC));
+      //    // pt->GetTrackID();
+      //    auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex, iEvent, iFile));
+      //    if (itPoint == fmMCPointsLinksMap.cend()) continue;
+      //    th.iMC = itPoint->second;
+      //    if ((1 == fTofUseMcHit) && (th.iMC > -1))
+      //      th.SetHitFromPoint(fvMCPoints[th.iMC], fpAlgo->GetParameters()->GetStation(th.iStation));
+      //  }
+      //}
 
       tmpHits.push_back(th);
       nTofHits++;
@@ -1372,67 +1518,10 @@ void CbmL1::HitMatch()
   for (int iH = 0; iH < NHits; iH++) {
     CbmL1Hit& hit = fvExternalHits[iH];
 
-    if ((hit.Det == 1) && (2 != fStsUseMcHit)) {
-      CbmStsHit* sh = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(fvExternalHits[iH].extIndex));
-
-      int iP = -1;
-
-      if (fpStsClusterMatches) {
-
-        const CbmMatch* frontClusterMatch =
-          static_cast<const CbmMatch*>(fpStsClusterMatches->At(sh->GetFrontClusterId()));
-        const CbmMatch* backClusterMatch =
-          static_cast<const CbmMatch*>(fpStsClusterMatches->At(sh->GetBackClusterId()));
-        CbmMatch stsHitMatch;
-
-        for (Int_t iFrontLink = 0; iFrontLink < frontClusterMatch->GetNofLinks(); iFrontLink++) {
-          const CbmLink& frontLink = frontClusterMatch->GetLink(iFrontLink);
-          for (Int_t iBackLink = 0; iBackLink < backClusterMatch->GetNofLinks(); iBackLink++) {
-            const CbmLink& backLink = backClusterMatch->GetLink(iBackLink);
-            if (frontLink == backLink) {
-              stsHitMatch.AddLink(frontLink);
-              stsHitMatch.AddLink(backLink);
-            }
-          }
-        }
-
-        Float_t bestWeight = 0.f;
-        for (Int_t iLink = 0; iLink < stsHitMatch.GetNofLinks(); iLink++) {
-          const CbmLink& link = stsHitMatch.GetLink(iLink);
-          Int_t iFile         = link.GetFile();
-          Int_t iEvent        = link.GetEntry();
-          Int_t iIndex        = link.GetIndex();
-
-
-          if (fLegacyEventMode) {
-            iFile  = fvFileEvent.begin()->first;
-            iEvent = fvFileEvent.begin()->second;
-          }
-
-          auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex + nMvdPoints, iEvent, iFile));
-          assert(itPoint != fmMCPointsLinksMap.cend());
-
-          if (link.GetWeight() > bestWeight) {
-            bestWeight = link.GetWeight();
-            iP         = itPoint->second;
-          }
-        }
-      }  //mach cluster
-
-      if (iP >= 0) {
-        hit.mcPointIds.push_back_no_warning(iP);
-        fvMCPoints[iP].hitIds.push_back_no_warning(iH);
-      }
-
-      fvHitPointIndexes[iH] = iP;
-    }
-
-    if ((hit.Det != 1) || (2 == fStsUseMcHit)) {  // the hit is not from STS
-      int iP = fvHitPointIndexes[iH];
-      if (iP >= 0) {
-        hit.mcPointIds.push_back_no_warning(iP);
-        fvMCPoints[iP].hitIds.push_back_no_warning(iH);
-      }
+    int iP = fvHitPointIndexes[iH];
+    if (iP >= 0) {
+      hit.mcPointIds.push_back_no_warning(iP);
+      fvMCPoints[iP].hitIds.push_back_no_warning(iH);
     }
 
   }  // for hits

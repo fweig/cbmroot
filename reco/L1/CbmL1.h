@@ -376,9 +376,16 @@ private:
    * Input Performance
    */
 
+  /// Matches hit with MC point
+  /// \tparam  DetId Detector ID
+  /// \param   iHit  External index of hit
+  /// \return  tuple of MC point index in fvMCPoints array
+  template<L1DetectorID DetId>
+  int MatchHitWithMc(int iHit) const;
+
   /// Procedure for match hits and MCPoints.
   /// Reads information about correspondence between hits and MC-points and fill CbmL1MCPoint::hitIds and CbmL1Hit::mcPointIds arrays
-  /// should be called after fill of algo
+  /// should be called after reading the event
   void HitMatch();
 
   void FieldApproxCheck();    // Build histograms with difference between Field map and approximated field
@@ -469,7 +476,11 @@ public:
 private:
   static CbmL1* fpInstance;  ///< Instance of CbmL1
 
-  int nMvdPoints = 0;  // TODO: Should be removed (S.Zharko)
+  int fNpointsMvd  = 0;  ///< Number of MC points for MVD
+  int fNpointsSts  = 0;  ///< Number of MC points for STS
+  int fNpointsMuch = 0;  ///< Number of MC points for MuCh
+  int fNpointsTrd  = 0;  ///< Number of MC points for TRD
+  int fNpointsTof  = 0;  ///< Number of MC points for TOF
 
   L1Vector<CbmL1MCPoint> fvMCPoints = {"CbmL1::fvMCPoints"};          ///< Container of MC points
   L1Vector<int> fvMCPointIndexesTs  = {"CbmL1::fvMCPointIndexesTs"};  ///< Indexes of MC points in TS
@@ -518,11 +529,14 @@ private:
   Double_t fMomentumCutOff = 0.1;   // currently not used
   Bool_t fGhostSuppression = true;  // currently not used
 
-  /// TODO: change to bool
-  Int_t fStsUseMcHit  = -1;  ///< if STS data should be processed
-  Int_t fMuchUseMcHit = -1;  ///< if Much data should be processed
-  Int_t fTrdUseMcHit  = -1;  ///< if Trd data should be processed
-  Int_t fTofUseMcHit  = -1;  ///< if Tof data should be processed
+  /// Flags to adjust hits with MC information
+  /// 1: Position of a reconstructed hit is taken from matched MC point and smeared (optionally) with the position
+  ///    resolution
+  /// 2: A set of hits is created from the set of MC points
+  Int_t fStsUseMcHit  = -1;  ///< MC info flag for STS hits
+  Int_t fMuchUseMcHit = -1;  ///< MC info flag for MuCh hits
+  Int_t fTrdUseMcHit  = -1;  ///< MC info flag for TRD hits
+  Int_t fTofUseMcHit  = -1;  ///< MC info flag for TOF hits
 
   bool fUseMVD  = false;  ///< if Mvd data should be processed
   bool fUseSTS  = false;  ///< if Mvd data should be processed
