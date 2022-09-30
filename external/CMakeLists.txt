@@ -13,6 +13,10 @@ if(DOWNLOAD_EXTERNALS)
                              SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/cppzmq
                              TEST_FILE       zmq.hpp
                             )
+
+  add_library(cppzmq INTERFACE)
+  target_include_directories(cppzmq INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/cppzmq)
+
   # Install header files
   install(FILES cppzmq/zmq.hpp DESTINATION include)
 
@@ -86,6 +90,11 @@ else()
   set_target_properties(external::fles_monitoring PROPERTIES
                         IMPORTED_LOCATION external::fles_monitoring-NOTFOUND
              )
+
+ set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
+ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
+ set(INCLUDE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/include")
+ set(CMAKE_INSTALL_LIBDIR lib)
 
   # Define an empty macro such that ctest is happy when no externals are
   # available
