@@ -1110,9 +1110,9 @@ void CbmL1::TrackFitPerformance()
     gDirectory->mkdir("Fit");
     gDirectory->cd("Fit");
     {
-      PRes2D     = new TH2F("PRes2D", "Resolution P vs P", 100, 0., 20., 100, -15., 15.);
-      PRes2DPrim = new TH2F("PRes2DPrim", "Resolution P vs P", 100, 0., 20., 100, -15., 15.);
-      PRes2DSec  = new TH2F("PRes2DSec", "Resolution P vs P", 100, 0., 20., 100, -15., 15.);
+      PRes2D     = new TH2F("PRes2D", "Resolution P vs P [100%]", 100, 0., 20., 100, -.15, .15);
+      PRes2DPrim = new TH2F("PRes2DPrim", "Resolution P vs P [100%]", 100, 0., 20., 100, -.15, .15);
+      PRes2DSec  = new TH2F("PRes2DSec", "Resolution P vs P [100%]", 100, 0., 20., 100, -.15, .15);
 
       pion_res_pt_fstt = new TH2F("pion_res_pt_fstt", "", 100, 0, 10, 1000, -500, 500);
       kaon_res_pt_fstt = new TH2F("kaon_res_pt_fstt", "", 100, 0, 10, 1000, -500, 500);
@@ -1143,8 +1143,7 @@ void CbmL1::TrackFitPerformance()
                          //{"tx", "Residual Tx [mrad]",                  100,   -2.5,   2.5},
                          {"ty", "Residual Ty [mrad]", 100, -3.5, 3.5},
                          //{"ty", "Residual Ty [mrad]",                  100,   -2.5,   2.5},
-                         {"P", "Resolution P/Q [100%]", 100, -0.1, 0.1},
-                         //{"P",  "Resolution P/Q [100%]",               100,   -0.2,  0.2 },
+                         {"P", "Resolution P/Q [100%]", 100, -.15, .15},
                          {"px", "Pull X [residual/estimated_error]", 100, -6., 6.},
                          {"py", "Pull Y [residual/estimated_error]", 100, -6., 6.},
                          {"ptx", "Pull Tx [residual/estimated_error]", 100, -6., 6.},
@@ -1154,6 +1153,11 @@ void CbmL1::TrackFitPerformance()
                          {"QPmc", "MC Q/P ", 100, -10., 10.},
                          {"t", "Residual T [ns]", 100, -6., 6.},
                          {"pt", "Pull T [residual/estimated_error]", 100, -6., 6.}};
+
+      if (L1Algo::kGlobal == fpAlgo->fTrackingMode) {
+        Table[4].l = -1.;
+        Table[4].r = 1.;
+      }
 
       struct Tab {
         const char* name;
@@ -1169,7 +1173,7 @@ void CbmL1::TrackFitPerformance()
                                  {"tx", "Residual Tx [mrad]", 100, -2., 2.},
                                  //{"ty", "Residual Ty [mrad]",                  100,   -3.,   3.},
                                  {"ty", "Residual Ty [mrad]", 100, -2., 2.},
-                                 {"P", "Resolution P/Q [100%]", 100, -0.1, 0.1},
+                                 {"P", "Resolution P/Q [100%]", 100, -.15, .15},
                                  {"px", "Pull X [residual/estimated_error]", 100, -6., 6.},
                                  {"py", "Pull Y [residual/estimated_error]", 100, -6., 6.},
                                  {"ptx", "Pull Tx [residual/estimated_error]", 100, -6., 6.},
@@ -1217,7 +1221,9 @@ void CbmL1::TrackFitPerformance()
       const int last_station = fvHitStore[it->Hits.back()].iStation;
 
       CbmL1MCTrack mc = *(it->GetMCTracks()[0]);
+
       L1TrackPar trPar(it->T, it->C);
+
       L1FieldRegion fld _fvecalignment;
       L1FieldValue B[3], targB _fvecalignment;
       float z[3] = {0.f, 0.f, 0.f};
@@ -1233,8 +1239,10 @@ void CbmL1::TrackFitPerformance()
         if (ih == 3) break;
       }
       if (ih < 3) continue;
+
       CbmL1MCPoint& mcP = fvMCPoints[mc.Points[0]];
-      targB             = fpAlgo->GetParameters()->GetVertexFieldValue();
+
+      targB = fpAlgo->GetParameters()->GetVertexFieldValue();
       fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
       L1Extrapolate(trPar, mcP.zIn, trPar.qp, fld);
 
@@ -1250,14 +1258,17 @@ void CbmL1::TrackFitPerformance()
       h_fit[1]->Fill(dy * 1.e4);
       h_fit[2]->Fill((tr.tx[0] - mcP.pxIn / mcP.pzIn) * 1.e3);
       h_fit[3]->Fill((tr.ty[0] - mcP.pyIn / mcP.pzIn) * 1.e3);
-      h_fit[4]->Fill(fabs(1. / tr.qp[0]) / mcP.p - 1);
-
-      PRes2D->Fill(mcP.p, (1. / fabs(tr.qp[0]) - mcP.p) / mcP.p * 100.);
 
       CbmL1MCTrack mcTrack = *(it->GetMCTracks()[0]);
 
+      if (L1Algo::kGlobal != fpAlgo->fTrackingMode || mcTrack.IsPrimary()) {
+        h_fit[4]->Fill(fabs(1. / tr.qp[0]) / mcP.p - 1);
+      }
+      PRes2D->Fill(mcP.p, (1. / fabs(tr.qp[0]) - mcP.p) / mcP.p);
+
+
       if (mcTrack.IsPrimary()) {
-        PRes2DPrim->Fill(mcP.p, (1. / fabs(tr.qp[0]) - mcP.p) / mcP.p * 100.);
+        PRes2DPrim->Fill(mcP.p, (1. / fabs(tr.qp[0]) - mcP.p) / mcP.p);
 
         if (abs(mcTrack.pdg) == 211) {
           pion_res_p_fstt->Fill(mcP.p, dt * 1.e4);
@@ -1273,7 +1284,7 @@ void CbmL1::TrackFitPerformance()
         }
       }
       else {
-        PRes2DSec->Fill(mcP.p, (1. / fabs(tr.qp[0]) - mcP.p) / mcP.p * 100.);
+        PRes2DSec->Fill(mcP.p, (1. / fabs(tr.qp[0]) - mcP.p) / mcP.p);
       }
 
       if (std::isfinite(tr.C00[0]) && tr.C00[0] > 0) h_fit[5]->Fill((tr.x[0] - mcP.xIn) / sqrt(tr.C00[0]));
