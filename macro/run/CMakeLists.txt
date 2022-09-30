@@ -302,11 +302,11 @@ If(DEFINED ENV{RAW_DATA_PATH} )
   Message( STATUS "Raw data path provided => Performing mCBM 2021 tests using tsa files in ${RAW_DATA_PATH}" )
 
   ## Generate scripts
+  GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/create_mcbm_geo_setup.C )  # Geofile creation
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_unpack_tsa.C )  # Unpackers
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2021/check_timing_any.C )  # Check Timing mCBM 2021
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2022/mcbm_event.C )  # Event building mCBM 2022
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2022/mcbm_event_reco_L1.C )  # Reco + Event building + L1 mCBM 2022
-  GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/mcbm/mcbm_transport.C)
 
   ## Run only if raw data files present: 2021
   # =====>   Set the timeouts depending on test model (profiling = slow)
@@ -368,23 +368,23 @@ If(DEFINED ENV{RAW_DATA_PATH} )
   endif()
 
 
-  ### Transport run to create geo file
-  Set(setup mcbm_beam_2022_05_23_nickel)
-  Set(testname mcbm_geo_${setup})
-  Set(fixture_geo_run fixture_done_${testname})
-  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_transport.sh 1 \"${setup}\" \"${CBMROOT_BINARY_DIR}/macro/run/data/${setup}\" \"\" kTRUE)
-  Set_Tests_Properties(${testname} PROPERTIES
-    TIMEOUT "600"
-    PASS_REGULAR_EXPRESSION "Test Passed;All ok"
-    FIXTURES_REQUIRED run_cleanup
-    FIXTURES_SETUP ${fixture_geo_run}
-    )
 
   # ====================================================================
   ForEach(RUN 2391 2488 )
     Message( STATUS "Checking if raw data file exists: ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa" )
     If(EXISTS ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa)
       Message( STATUS "Raw data file found, tests will be performed for mCBM run ${RUN}" )
+
+      ### Transport run to create geo file
+      Set(testname mcbm_geo_${RUN})
+      Set(fixture_geo_${RUN} fixture_done_${testname})
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/create_mcbm_geo_setup.sh ${RUN})
+      Set_Tests_Properties(${testname} PROPERTIES
+        TIMEOUT "200"
+        PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+        FIXTURES_REQUIRED run_cleanup
+        FIXTURES_SETUP ${fixture_geo_${RUN}}
+        )
 
       ## Define tests + dependencies
       ### Raw data analysis tests: unpacking
@@ -415,15 +415,15 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       Set(testname mcbm_reco_2022_${RUN})
       Set(fixture_reco_${RUN} fixture_done_${testname})
       Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_event_reco_L1.sh ${RUN} ${RECO_EVNTS_NB}
-	\"${CBMROOT_BINARY_DIR}/macro/run/data/\" \"${CBMROOT_BINARY_DIR}/macro/run/data/\"
-	-1 kFALSE kTRUE kTRUE kTRUE kTRUE kFALSE kTRUE kTRUE kFALSE kTRUE kTRUE kFALSE kFALSE
-	\"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\"
-	)
+            \"${CBMROOT_BINARY_DIR}/macro/run/data/\" \"${CBMROOT_BINARY_DIR}/macro/run/data/\"
+            -1 kFALSE kTRUE kTRUE kTRUE kTRUE kFALSE kTRUE kTRUE kFALSE kTRUE kTRUE kFALSE kFALSE
+            \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\"
+            )
       Set_Tests_Properties(${testname} PROPERTIES
             TIMEOUT ${RAW_DATA_RECO_TO}
             FAIL_REGULAR_EXPRESSION "segmentation violation"
             PASS_REGULAR_EXPRESSION "Macro finished successfully"
-            FIXTURES_REQUIRED "${fixture_geo_run};${fixture_event_${RUN}}"
+            FIXTURES_REQUIRED "${fixture_geo_${RUN}};${fixture_event_${RUN}}"
             FIXTURES_SETUP ${fixture_reco_${RUN}}
             RESOURCE_LOCK mcbmRecoAllCoresBug
             )
