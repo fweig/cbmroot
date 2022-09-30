@@ -79,4 +79,11 @@
 #pragma link C++ class std::pair < TString, TString>;
 
 #pragma link C++ function Cbm::File::IsRootFile( string );
+
+#pragma link C++ namespace cbm;
+#pragma link C++ namespace cbm::mcbm;
+#pragma link C++ function cbm::mcbm::GetSetupFromRunId(uint64_t);
+// Class needed to trigger loading of the library as no fct dict in ROOT6 and CLING
+#pragma link C++ class cbm::mcbm::ToForceLibLoad;
+
 #endif

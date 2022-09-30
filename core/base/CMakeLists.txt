@@ -25,6 +25,7 @@ set(SRCS
   report/CbmLatexReportElement.cxx
   utils/CbmUtils.cxx
   utils/CbmGeometryUtils.cxx
+  utils/CbmMcbmUtils.cxx
   utils/CbmMediaList.cxx
   utils/CbmFileUtils.cxx
   )

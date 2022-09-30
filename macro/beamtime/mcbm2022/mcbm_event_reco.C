@@ -117,26 +117,16 @@ Bool_t mcbm_event_reco(UInt_t uRunId                   = 2391,
 
   // --- Load the geometry setup ----
   // This is currently only required by the TRD (parameters)
-  TString geoSetupTag = "mcbm_beam_2021_07_surveyed";
-  if (2060 <= uRunId) {
-    /// Setup changed multiple times between the 2022 carbon and uranium runs
-    if (uRunId <= 2065) {
-      /// Carbon runs: 2060 - 2065 = 10/03/2022
-      geoSetupTag = "mcbm_beam_2022_03_09_carbon";
-    }
-    else if (2150 <= uRunId && uRunId <= 2160) {
-      /// Iron runs: 2150 - 2160 = 24-25/03/2022
-      geoSetupTag = "mcbm_beam_2022_03_22_iron";
-    }
-    else if (2176 <= uRunId && uRunId <= 2310) {
-      /// Uranium runs: 2176 - 2310 = 30/03/2022 - 01/04/2022
-      geoSetupTag = "mcbm_beam_2022_03_28_uranium";
-    }
-    else if (2352 <= uRunId) {
-      /// Uranium runs: 2176 - 2310 = 30/03/2022 - 01/04/2022
-      geoSetupTag = "mcbm_beam_2022_05_23_nickel";
-    }
+  cbm::mcbm::ToForceLibLoad dummy;  /// Needed to trigger loading of the library as no fct dict in ROOT6 and CLING
+  TString geoSetupTag = "";
+  try {
+    geoSetupTag = cbm::mcbm::GetSetupFromRunId(uRunId);
   }
+  catch (const std::invalid_argument& e) {
+    std::cout << "Error in mapping from runID to setup name: " << e.what() << std::endl;
+    return kFALSE;
+  }
+
   TString geoFile    = srcDir + "/macro/mcbm/data/" + geoSetupTag + ".geo.root";
   CbmSetup* geoSetup = CbmSetup::Instance();
   geoSetup->LoadSetup(geoSetupTag);
@@ -720,16 +710,16 @@ Bool_t mcbm_event_reco(UInt_t uRunId                   = 2391,
         tofFindTracks->SetStation(15, 0, 0, 4);
 
         /*
-       tofFindTracks->SetStation(16, 0, 3, 2);         
-       tofFindTracks->SetStation(17, 0, 4, 2);  
-       tofFindTracks->SetStation(18, 0, 3, 1);         
+       tofFindTracks->SetStation(16, 0, 3, 2);
+       tofFindTracks->SetStation(17, 0, 4, 2);
+       tofFindTracks->SetStation(18, 0, 3, 1);
        tofFindTracks->SetStation(19, 0, 4, 1);
-       tofFindTracks->SetStation(20, 0, 3, 3);         
+       tofFindTracks->SetStation(20, 0, 3, 3);
        tofFindTracks->SetStation(21, 0, 4, 3);
-       tofFindTracks->SetStation(22, 0, 3, 0);         
+       tofFindTracks->SetStation(22, 0, 3, 0);
        tofFindTracks->SetStation(23, 0, 4, 0);
-       tofFindTracks->SetStation(24, 0, 3, 4);         
-       tofFindTracks->SetStation(25, 0, 4, 4); 
+       tofFindTracks->SetStation(24, 0, 3, 4);
+       tofFindTracks->SetStation(25, 0, 4, 4);
        */
         break;
 

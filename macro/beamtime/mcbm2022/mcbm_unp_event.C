@@ -367,27 +367,15 @@ Bool_t mcbm_unp_event(std::string infile,
 
 
   // -----   CbmSetup   -----------------------------------------------------
-  if (2060 <= uRunId && defaultSetupName == setupName) {
-    /// Setup changed multiple times between the 2022 carbon and uranium runs
-    if (uRunId <= 2065) {
-      /// Carbon runs: 2060 - 2065 = 10/03/2022
-      setupName = "mcbm_beam_2022_03_09_carbon";
+  /// Do automatic mapping only if not overridden by user
+  if (defaultSetupName == setupName) {
+    cbm::mcbm::ToForceLibLoad dummy;  /// Needed to trigger loading of the library as no fct dict in ROOT6 and CLING
+    try {
+      setupName = cbm::mcbm::GetSetupFromRunId(runid);
     }
-    else if (2150 <= uRunId && uRunId <= 2160) {
-      /// Iron runs: 2150 - 2160 = 24-25/03/2022
-      setupName = "mcbm_beam_2022_03_22_iron";
-    }
-    else if (2176 <= uRunId && uRunId <= 2310) {
-      /// Uranium runs: 2176 - 2310 = 30/03/2022 - 01/04/2022
-      setupName = "mcbm_beam_2022_03_28_uranium";
-    }
-    else if (2350 <= uRunId && uRunId <= 2397) {
-      /// Nickel runs: 2350 - 2397 = 23/05/2022 - 25/05/2022
-      setupName = "mcbm_beam_2022_05_23_nickel";
-    }
-    else if (2454 <= uRunId && uRunId <= 2497) {
-      /// Lambda Benchmark Gold runs: 2454 - 2497 = 16/06/2022 - 18/06/2022
-      setupName = "mcbm_beam_2022_06_16_gold";
+    catch (const std::invalid_argument& e) {
+      std::cout << "Error in mapping from runID to setup name: " << e.what() << std::endl;
+      return;
     }
     if (defaultSetupName != setupName) {
       std::cout << "Automatic setup choice for run " << uRunId << ": " << setupName << std::endl;
