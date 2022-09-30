@@ -111,7 +111,7 @@ if(VMC_FOUND)
 endif()
 
 #Searches for FairROOT Package
-#include(FairRootTargets)
+include(FairRootTargets)
 find_package(FairRoot REQUIRED)
 if(FAIRROOT_FOUND)
   Message("FairRoot was found")
