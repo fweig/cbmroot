@@ -112,7 +112,8 @@ public:
 
 inline void L1TrackPar::Print(int i) const
 {
-  // std::cout.setf(std::ios::scientific, std::ios::floatfield);
+  std::ios_base::fmtflags coutFlags(std::cout.flags());
+  std::cout.setf(std::ios::scientific, std::ios::floatfield);
   if (i == -1) {
     std::cout << "T = " << std::endl;
     std::cout << " x " << x << std::endl;
@@ -148,6 +149,7 @@ inline void L1TrackPar::Print(int i) const
     std::cout << " c55 " << C55[i] << std::endl;
   }
   PrintCorrelations(i);
+  std::cout.flags( coutFlags );
 }
 
 inline void L1TrackPar::PrintCorrelations(int i) const

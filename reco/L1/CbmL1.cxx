@@ -188,6 +188,8 @@ InitStatus CbmL1::Init()
   fpAlgo->Init(fUseHitErrors, fTrackingMode, fMissingHits);
 
   fHistoDir = gROOT->mkdir("L1");
+  fHistoDir->mkdir("Input");
+  fHistoDir->mkdir("Fit");
 
 
   // turn on reconstruction in sub-detectors
@@ -215,7 +217,7 @@ InitStatus CbmL1::Init()
 
 
   if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
-    //SGtrd2D!!
+    //at the moment trd2d tracking only
     fUseMVD  = 0;
     fUseSTS  = 0;
     fUseMUCH = 0;
@@ -1022,15 +1024,11 @@ void CbmL1::Reconstruct(CbmEvent* event)
       L1FieldValue b = fpAlgo->GetParameters()->GetVertexFieldValue();
 
       if ((fabs(b.x[0]) < 0.0000001) && (fabs(b.y[0]) < 0.0000001) && (fabs(b.z[0]) < 0.0000001)) {
+        // no field
         fpAlgo->KFTrackFitter_simple();
       }
       else {
-        if (L1Algo::TrackingMode::kGlobal == fTrackingMode || L1Algo::TrackingMode::kMcbm == fTrackingMode) {
-          fpAlgo->L1KFTrackFitterMuch();
-        }
-        else {
-          fpAlgo->L1KFTrackFitter();
-        }
+        fpAlgo->L1KFTrackFitter();
       }
     }
 

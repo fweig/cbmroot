@@ -13,7 +13,7 @@ void L1Extrapolate  // extrapolates track parameters and returns jacobian for ex
   (L1TrackPar& T,   // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
    fvec z_out,      // extrapolate to this z position
    fvec qp0,        // use Q/p linearisation at this value
-   const L1FieldRegion& F, fvec* w = nullptr);
+   const L1FieldRegion& F, const fvec* w = nullptr);
 
 void L1Extrapolate0(L1TrackPar& T,  // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
                     fvec z_out,     // extrapolate to this z position

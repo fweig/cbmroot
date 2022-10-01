@@ -1107,7 +1107,6 @@ void CbmL1::TrackFitPerformance()
 
     TDirectory* currentDir = gDirectory;
     gDirectory             = fHistoDir;
-    gDirectory->mkdir("Fit");
     gDirectory->cd("Fit");
     {
       PRes2D     = new TH2F("PRes2D", "Resolution P vs P [100%]", 100, 0., 20., 100, -.15, .15);
@@ -1183,6 +1182,11 @@ void CbmL1::TrackFitPerformance()
                                  {"QPmc", "MC Q/P ", 100, -10., 10.},
                                  {"t", "Residual T [ns]", 100, -10., 10.},
                                  {"pt", "Pull T [residual/estimated_error]", 100, -6., 6.}};
+
+      if (L1Algo::kGlobal == fpAlgo->fTrackingMode) {
+        TableVertex[4].l = -1.;
+        TableVertex[4].r = 1.;
+      }
 
       for (int i = 0; i < Nh_fit; i++) {
         char n[225], t[255];
@@ -1826,7 +1830,6 @@ void CbmL1::InputPerformance()
 
     TDirectory* currentDir = gDirectory;
     gDirectory             = fHistoDir;
-    gDirectory->mkdir("Input");
     gDirectory->cd("Input");
     gDirectory->mkdir("STS");
     gDirectory->cd("STS");
