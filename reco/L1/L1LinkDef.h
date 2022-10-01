@@ -31,6 +31,6 @@
 //#pragma link C++ class  CbmL1SttTrack+;
 #pragma link C++ class CbmTrackingInputQaSts + ;
 #pragma link C++ class CbmTrackerInputQaTrd + ;
-
+#pragma link C++ class CbmTrackerInputQaTof + ;
 
 #endif

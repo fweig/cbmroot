@@ -157,6 +157,7 @@ set(SRCS
   ParticleFinder/CbmL1PFMCParticle.cxx
 
   qa/CbmTrackerInputQaTrd.cxx
+  qa/CbmTrackerInputQaTof.cxx
   qa/CbmTrackingInputQaSts.cxx
 )
 
@@ -196,6 +197,7 @@ set(HEADERS
   L1Algo/L1Def.h
   L1Algo/L1Vector.h
   qa/CbmTrackerInputQaTrd.h
+  qa/CbmTrackerInputQaTof.h
   qa/CbmTrackingInputQaSts.h
 )
 
