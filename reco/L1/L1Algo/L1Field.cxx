@@ -4,6 +4,8 @@
 
 #include "L1Field.h"
 
+#include "CbmKF.h"
+
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -13,6 +15,8 @@
 //
 // L1FieldValue methods
 //
+
+bool L1FieldRegion::gkUseOriginalField = false;
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -184,13 +188,44 @@ L1FieldValue L1FieldRegion::Get(const fvec z)
 
 //----------------------------------------------------------------------------------------------------------------------
 // TODO: Should it be inline? (S.Zharko)
+void L1FieldRegion::Get(const fvec x, const fvec y, const fvec z, fvec* B) const
+{
+  if (gkUseOriginalField) {
+    for (size_t i = 0; i < fvec::size(); i++) {
+      double inPos[3] = {x[i], y[i], z[i]};
+      double outB[3];
+      CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);
+      B[0][i] = outB[0];
+      B[1][i] = outB[1];
+      B[2][i] = outB[2];
+    }
+  }
+  else {
+    Get(z, B);
+  }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// TODO: Should it be inline? (S.Zharko)
 void L1FieldRegion::Get(const fvec z_, fvec* B) const
 {
-  fvec dz  = z_ - z0;
-  fvec dz2 = dz * dz;
-  B[0]     = cx0 + cx1 * dz + cx2 * dz2;
-  B[1]     = cy0 + cy1 * dz + cy2 * dz2;
-  B[2]     = cz0 + cz1 * dz + cz2 * dz2;
+  if (gkUseOriginalField) {
+    for (size_t i = 0; i < fvec::size(); i++) {
+      double inPos[3] = {0., 0., z_[i]};
+      double outB[3];
+      CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);
+      B[0][i] = outB[0];
+      B[1][i] = outB[1];
+      B[2][i] = outB[2];
+    }
+  }
+  else {
+    fvec dz  = z_ - z0;
+    fvec dz2 = dz * dz;
+    B[0]     = cx0 + cx1 * dz + cx2 * dz2;
+    B[1]     = cy0 + cy1 * dz + cy2 * dz2;
+    B[2]     = cz0 + cz1 * dz + cz2 * dz2;
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

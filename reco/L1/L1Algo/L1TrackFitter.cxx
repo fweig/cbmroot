@@ -113,7 +113,6 @@ void L1Algo::KFTrackFitter_simple()  // TODO: Add pipe.
         fvec fldZ1 = sta2.z;
         fvec fldZ2 = sta0.z;
 
-
         sta1.fieldSlice.GetFieldValue(x1, y1, fldB0);
         sta2.fieldSlice.GetFieldValue(x2, y2, fldB1);
         sta0.fieldSlice.GetFieldValue(x0, y0, fldB2);
@@ -331,9 +330,8 @@ void L1Algo::L1KFTrackFitter()
   L1FieldValue fldB01, fldB11, fldB21 _fvecalignment;
   L1FieldRegion fld1 _fvecalignment;
 
-  const int nHits = fParameters.GetNstationsActive();
-  int iVec = 0, i = 0;
-  int nTracks_SIMD = fvec::size();
+  const int nStations = fParameters.GetNstationsActive();
+  int nTracks_SIMD    = fvec::size();
   L1TrackPar T;  // fitting parametr coresponding to current track
 
   L1TrackParFit T1;  // fitting parametr coresponding to current track
@@ -399,34 +397,44 @@ void L1Algo::L1KFTrackFitter()
 
 
   fvec ZSta[L1Constants::size::kMaxNstations];
-  for (int iHit = 0; iHit < nHits; iHit++) {
-    ZSta[iHit] = sta[iHit].z;
+  for (int ista = 0; ista < nStations; ista++) {
+    ZSta[ista] = sta[ista].z;
   }
 
   unsigned short N_vTracks = fTracks.size();  // number of tracks processed per one SSE register
 
   for (unsigned short itrack = 0; itrack < N_vTracks; itrack += fvec::size()) {
+
     if (N_vTracks - itrack < static_cast<unsigned short>(fvec::size())) nTracks_SIMD = N_vTracks - itrack;
 
-    for (i = 0; i < nTracks_SIMD; i++)
-      t[i] = &fTracks[itrack + i];  // current track
-
-    // get hits of current track
-    for (i = 0; i < nHits; i++) {
-      w[i]      = ZERO;
-      w_time[i] = ZERO;
-      z[i]      = ZSta[i];
+    for (int i = 0; i < nTracks_SIMD; i++) {
+      t[i] = &fTracks[itrack + i];
     }
 
-    for (iVec = 0; iVec < nTracks_SIMD; iVec++) {
+    // fill the rest of the SIMD vectors with something reasonable
+    for (uint i = nTracks_SIMD; i < fvec::size(); i++) {
+      t[i] = &fTracks[itrack];
+    }
+
+    // get hits of current track
+    for (int ista = 0; ista < nStations; ista++) {
+      w[ista]      = ZERO;
+      w_time[ista] = ZERO;
+      z[ista]      = ZSta[ista];
+    }
+
+    for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
+
       int nHitsTrack = t[iVec]->NHits;
       int iSta[L1Constants::size::kMaxNstations];
-      for (i = 0; i < nHitsTrack; i++) {
+
+      for (int ih = 0; ih < nHitsTrack; ih++) {
+
         const L1Hit& hit = fInputData.GetHit(fRecoHits[start_hit++]);
         const int ista   = hit.iSt;
-        iSta[i]          = ista;
+        iSta[ih]         = ista;
         w[ista][iVec]    = 1.;
-        if (ista > fNstationsBeforePipe) w_time[ista][iVec] = 1.;
+        if (sta[ista].timeInfo) { w_time[ista][iVec] = 1.; }
 
         u[ista][iVec]            = hit.u;
         v[ista][iVec]            = hit.v;
@@ -444,7 +452,7 @@ void L1Algo::L1KFTrackFitter()
         fB[ista].x[iVec] = fB_temp.x[iVec];
         fB[ista].y[iVec] = fB_temp.y[iVec];
         fB[ista].z[iVec] = fB_temp.z[iVec];
-        if (i == 0) {
+        if (ih == 0) {
           z_start[iVec]             = z[ista][iVec];
           x_first[iVec]             = x[ista][iVec];
           y_first[iVec]             = y[ista][iVec];
@@ -457,7 +465,7 @@ void L1Algo::L1KFTrackFitter()
           staFirst.XYInfo.C10[iVec] = sta[ista].XYInfo.C10[iVec];
           staFirst.XYInfo.C11[iVec] = sta[ista].XYInfo.C11[iVec];
         }
-        else if (i == nHitsTrack - 1) {
+        else if (ih == nHitsTrack - 1) {
           z_end[iVec]              = z[ista][iVec];
           x_last[iVec]             = x[ista][iVec];
           y_last[iVec]             = y[ista][iVec];
@@ -474,8 +482,8 @@ void L1Algo::L1KFTrackFitter()
 
       fscal prevZ = z_end[iVec];
       fscal cursy = 0., curSy = 0.;
-      for (i = nHitsTrack - 1; i >= 0; i--) {
-        const int ista      = iSta[i];
+      for (int ih = nHitsTrack - 1; ih >= 0; ih--) {
+        const int ista      = iSta[ih];
         const L1Station& st = fParameters.GetStation(ista);
         const fscal curZ    = z[ista][iVec];
         fscal dZ            = curZ - prevZ;
@@ -488,95 +496,99 @@ void L1Algo::L1KFTrackFitter()
     }
 
 
-    //fit backward
+    GuessVec(T, x, y, z, Sy, w, nStations, &z_end);
+    GuessVec(T1, x, y, z, Sy, w, nStations, &z_end, time, w_time);
 
-    GuessVec(T, x, y, z, Sy, w, nHits, &z_end);
-    GuessVec(T1, x, y, z, Sy, w, nHits, &z_end, time, w_time);
+    if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
+      T1.fqp = fvec(0.);
+      T.qp   = fvec(0.);
+    }
 
     for (int iter = 0; iter < 2; iter++) {  // 1.5 iterations
 
-      fvec qp0 = T.qp;
-
+      fvec qp0  = T.qp;
       fvec qp01 = T1.fqp;
 
-      i = nHits - 1;
+      // fit backward
+
+      int ista = nStations - 1;
+
+      time_last    = iif(w_time[ista] > fvec::Zero(), time_last, fvec::Zero());
+      time_er_last = iif(w_time[ista] > fvec::Zero(), time_er_last, fvec(100.));
 
       FilterFirst(T, x_last, y_last, staLast);
       // FilterFirst( T1, x_last, y_last, time_last, time_er_last, staLast );
 
       FilterFirst(T1, x_last, y_last, time_last, time_er_last, staLast, d_xx_lst, d_yy_lst, d_xy_lst);
 
-      T1.FilterTime(time[i], timeEr[i], w_time[i], sta[i].timeInfo);
+      T1.FilterTime(time[ista], timeEr[ista], w_time[ista], sta[ista].timeInfo);
 
       // fit.L1AddMaterial( T, sta[i].materialInfo, qp0, 1 );
 
-      fldZ1 = z[i];
+      fldZ1 = z[ista];
 
-      sta[i].fieldSlice.GetFieldValue(T.x, T.y, fldB1);
+      sta[ista].fieldSlice.GetFieldValue(T.x, T.y, fldB1);
 
+      fldB1.Combine(fB[ista], w[ista]);
 
-      fldB1.Combine(fB[i], w[i]);
-
-      fldZ2   = z[i - 2];
+      fldZ2   = z[ista - 2];
       fvec dz = fldZ2 - fldZ1;
-      sta[i].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, fldB2);
-      fldB2.Combine(fB[i - 2], w[i - 2]);
+      sta[ista].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, fldB2);
+      fldB2.Combine(fB[ista - 2], w[ista - 2]);
       fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
-      for (--i; i >= 0; i--) {
 
-        fldZ0 = z[i];
+      for (--ista; ista >= 0; ista--) {
+
+        fldZ0 = z[ista];
         dz    = (fldZ1 - fldZ0);
-        sta[i].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, fldB0);
-        fldB0.Combine(fB[i], w[i]);
+        sta[ista].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, fldB0);
+        fldB0.Combine(fB[ista], w[ista]);
         fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
-        fmask initialised = (z[i] < z_end) & (z_start <= z[i]);
-        fvec w1           = iif(initialised, w[i], fvec::Zero());
-        fvec w1_time      = iif(initialised, w_time[i], fvec::Zero());
-        fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
+        fmask initialised = (z[ista] < z_end) & (z_start <= z[ista]);
+        fvec w1           = iif(initialised, w[ista], fvec::Zero());
+        fvec wExtr        = iif(initialised, fvec::One(), fvec::Zero());
+        fvec w1_time      = iif(initialised, w_time[ista], fvec::Zero());
 
         fld1 = fld;
 
+        L1Extrapolate(T, z[ista], qp0, fld, &wExtr);
 
-        T1.Extrapolate(z[i], qp01, fld1, &w1);
+        T1.Extrapolate(z[ista], qp01, fld1, wExtr);
         //  T1.ExtrapolateLine(z[i]);
 
-        L1Extrapolate(T, z[i], qp0, fld, &w1);
+        if (ista == fNstationsBeforePipe - 1) {
+          fit.L1AddPipeMaterial(T, qp0, wExtr);
+          fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(1.f), wExtr);
 
-        if (i == fNstationsBeforePipe - 1) {
-
-          fit.L1AddPipeMaterial(T, qp0, wIn);
-          fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(1.f), wIn);
-
-
-          T1.L1AddPipeMaterial(qp01, wIn);
-          T1.EnergyLossCorrection(fit.PipeRadThick, qp01, fvec(1.f), wIn);
+          T1.L1AddPipeMaterial(qp01, wExtr);
+          T1.EnergyLossCorrection(fit.PipeRadThick, qp01, fvec(1.f), wExtr);
         }
         if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(i, T.x, T.y), qp0, wIn);
-          fit.EnergyLossCorrection(T, fParameters.GetMaterialThickness(i, T.x, T.y), qp0, fvec(1.f), wIn);
+          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista, T.x, T.y), qp0, wExtr);
+          fit.EnergyLossCorrection(T, fParameters.GetMaterialThickness(ista, T.x, T.y), qp0, fvec(1.f), wExtr);
 
-          T1.L1AddMaterial(fParameters.GetMaterialThickness(i, T1.fx, T1.fy), qp01, wIn);
-          T1.EnergyLossCorrection(fParameters.GetMaterialThickness(i, T1.fx, T1.fy), qp01, fvec(1.f), wIn);
+          T1.L1AddMaterial(fParameters.GetMaterialThickness(ista, T1.fx, T1.fy), qp01, wExtr);
+          T1.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, T1.fx, T1.fy), qp01, fvec(1.f), wExtr);
         }
         else {
-          fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
-          T1.L1AddMaterial(sta[i].materialInfo, qp01, wIn);
+          fit.L1AddMaterial(T, sta[ista].materialInfo, qp0, wExtr);
+          T1.L1AddMaterial(sta[ista].materialInfo, qp01, wExtr);
         }
-        L1UMeasurementInfo info = sta[i].frontInfo;
-        info.sigma2             = d_u[i] * d_u[i];
 
-        L1Filter(T, sta[i].frontInfo, u[i], w1);
-        T1.Filter(info, u[i], w1);
+        L1UMeasurementInfo info = sta[ista].frontInfo;
+        info.sigma2             = d_u[ista] * d_u[ista];
 
-        info        = sta[i].backInfo;
-        info.sigma2 = d_v[i] * d_v[i];
+        L1Filter(T, info, u[ista], w1);
+        T1.Filter(info, u[ista], w1);
 
-        L1Filter(T, sta[i].backInfo, v[i], w1);
-        T1.Filter(info, v[i], w1);
+        info        = sta[ista].backInfo;
+        info.sigma2 = d_v[ista] * d_v[ista];
 
-        T1.FilterTime(time[i], timeEr[i], w1_time, sta[i].timeInfo);
+        L1Filter(T, info, v[ista], w1);
+        T1.Filter(info, v[ista], w1);
 
+        T1.FilterTime(time[ista], timeEr[ista], w1_time, sta[ista].timeInfo);
 
         fldB2 = fldB1;
         fldZ2 = fldZ1;
@@ -585,127 +597,156 @@ void L1Algo::L1KFTrackFitter()
       }
       // fit.L1AddHalfMaterial( T, sta[i].materialInfo, qp0 );
 
-      for (iVec = 0; iVec < nTracks_SIMD; iVec++) {
-        t[iVec]->TFirst[0] = T1.fx[iVec];
-        t[iVec]->TFirst[1] = T1.fy[iVec];
-        t[iVec]->TFirst[2] = T1.ftx[iVec];
-        t[iVec]->TFirst[3] = T1.fty[iVec];
-        t[iVec]->TFirst[4] = T1.fqp[iVec];
-        t[iVec]->TFirst[5] = T1.fz[iVec];
-        t[iVec]->TFirst[6] = T1.ft[iVec];
-
-        t[iVec]->CFirst[0]  = T1.C00[iVec];
-        t[iVec]->CFirst[1]  = T1.C10[iVec];
-        t[iVec]->CFirst[2]  = T1.C11[iVec];
-        t[iVec]->CFirst[3]  = T1.C20[iVec];
-        t[iVec]->CFirst[4]  = T1.C21[iVec];
-        t[iVec]->CFirst[5]  = T1.C22[iVec];
-        t[iVec]->CFirst[6]  = T1.C30[iVec];
-        t[iVec]->CFirst[7]  = T1.C31[iVec];
-        t[iVec]->CFirst[8]  = T1.C32[iVec];
-        t[iVec]->CFirst[9]  = T1.C33[iVec];
-        t[iVec]->CFirst[10] = T1.C40[iVec];
-        t[iVec]->CFirst[11] = T1.C41[iVec];
-        t[iVec]->CFirst[12] = T1.C42[iVec];
-        t[iVec]->CFirst[13] = T1.C43[iVec];
-        t[iVec]->CFirst[14] = T1.C44[iVec];
-        t[iVec]->CFirst[15] = T1.C50[iVec];
-        t[iVec]->CFirst[16] = T1.C51[iVec];
-        t[iVec]->CFirst[17] = T1.C52[iVec];
-        t[iVec]->CFirst[18] = T1.C53[iVec];
-        t[iVec]->CFirst[19] = T1.C54[iVec];
-        t[iVec]->CFirst[20] = T1.C55[iVec];
-
-        t[iVec]->chi2 = T1.chi2[iVec];
-        t[iVec]->NDF  = (int) T1.NDF[iVec];
-      }
-
       // extrapolate to the PV region
-      L1TrackParFit T1PV = T1;
-      T1PV.Extrapolate(0.f, T1PV.fqp, fld);
 
-      // T1PV.ExtrapolateLine(0.f);
+      L1TrackParFit T1pv = T1;
+      {
+        L1UMeasurementInfo vtxInfoX;
+        vtxInfoX.cos_phi = 1.;
+        vtxInfoX.sin_phi = 0.;
+        vtxInfoX.sigma2  = fvec(1.e-4);
 
-      for (iVec = 0; iVec < nTracks_SIMD; iVec++) {
-        t[iVec]->Tpv[0] = T1PV.fx[iVec];
-        t[iVec]->Tpv[1] = T1PV.fy[iVec];
-        t[iVec]->Tpv[2] = T1PV.ftx[iVec];
-        t[iVec]->Tpv[3] = T1PV.fty[iVec];
-        t[iVec]->Tpv[4] = T1PV.fqp[iVec];
-        t[iVec]->Tpv[5] = T1PV.fz[iVec];
-        t[iVec]->Tpv[6] = T1PV.ft[iVec];
+        L1UMeasurementInfo vtxInfoY;
+        vtxInfoY.cos_phi = 0;
+        vtxInfoY.sin_phi = 1.;
+        vtxInfoY.sigma2  = fvec(1.e-4);
 
-        t[iVec]->Cpv[0]  = T1PV.C00[iVec];
-        t[iVec]->Cpv[1]  = T1PV.C10[iVec];
-        t[iVec]->Cpv[2]  = T1PV.C11[iVec];
-        t[iVec]->Cpv[3]  = T1PV.C20[iVec];
-        t[iVec]->Cpv[4]  = T1PV.C21[iVec];
-        t[iVec]->Cpv[5]  = T1PV.C22[iVec];
-        t[iVec]->Cpv[6]  = T1PV.C30[iVec];
-        t[iVec]->Cpv[7]  = T1PV.C31[iVec];
-        t[iVec]->Cpv[8]  = T1PV.C32[iVec];
-        t[iVec]->Cpv[9]  = T1PV.C33[iVec];
-        t[iVec]->Cpv[10] = T1PV.C40[iVec];
-        t[iVec]->Cpv[11] = T1PV.C41[iVec];
-        t[iVec]->Cpv[12] = T1PV.C42[iVec];
-        t[iVec]->Cpv[13] = T1PV.C43[iVec];
-        t[iVec]->Cpv[14] = T1PV.C44[iVec];
-        t[iVec]->Cpv[15] = T1PV.C50[iVec];
-        t[iVec]->Cpv[16] = T1PV.C51[iVec];
-        t[iVec]->Cpv[17] = T1PV.C52[iVec];
-        t[iVec]->Cpv[18] = T1PV.C53[iVec];
-        t[iVec]->Cpv[19] = T1PV.C54[iVec];
-        t[iVec]->Cpv[20] = T1PV.C55[iVec];
+        if (kGlobal == fTrackingMode) {
+          fvec qp00 = T1.fqp;
+          for (int vtxIter = 0; vtxIter < 2; vtxIter++) {
+            T1pv     = T1;
+            T1pv.fqp = qp00;
+            T1pv.Extrapolate(fParameters.GetTargetPositionZ(), T1pv.fqp, fld, fvec(1.));
+            T1pv.Filter(vtxInfoX, fParameters.GetTargetPositionX());
+            T1pv.Filter(vtxInfoY, fParameters.GetTargetPositionY());
+            qp00 = T1pv.fqp;
+          }
+        }
+        else {
+          T1pv = T1;
+          T1pv.Extrapolate(fParameters.GetTargetPositionZ(), T1pv.fqp, fld, fvec(1.));
+        }
       }
 
+      L1TrackParFit Tf = T1;
+      if (kGlobal == fTrackingMode) { Tf = T1pv; }
+
+      for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
+        t[iVec]->TFirst[0] = Tf.fx[iVec];
+        t[iVec]->TFirst[1] = Tf.fy[iVec];
+        t[iVec]->TFirst[2] = Tf.ftx[iVec];
+        t[iVec]->TFirst[3] = Tf.fty[iVec];
+        t[iVec]->TFirst[4] = Tf.fqp[iVec];
+        if (kGlobal == fTrackingMode) { t[iVec]->TFirst[4] = T1pv.fqp[iVec]; }
+        t[iVec]->TFirst[5] = Tf.fz[iVec];
+        t[iVec]->TFirst[6] = Tf.ft[iVec];
+
+        t[iVec]->CFirst[0]  = Tf.C00[iVec];
+        t[iVec]->CFirst[1]  = Tf.C10[iVec];
+        t[iVec]->CFirst[2]  = Tf.C11[iVec];
+        t[iVec]->CFirst[3]  = Tf.C20[iVec];
+        t[iVec]->CFirst[4]  = Tf.C21[iVec];
+        t[iVec]->CFirst[5]  = Tf.C22[iVec];
+        t[iVec]->CFirst[6]  = Tf.C30[iVec];
+        t[iVec]->CFirst[7]  = Tf.C31[iVec];
+        t[iVec]->CFirst[8]  = Tf.C32[iVec];
+        t[iVec]->CFirst[9]  = Tf.C33[iVec];
+        t[iVec]->CFirst[10] = Tf.C40[iVec];
+        t[iVec]->CFirst[11] = Tf.C41[iVec];
+        t[iVec]->CFirst[12] = Tf.C42[iVec];
+        t[iVec]->CFirst[13] = Tf.C43[iVec];
+        t[iVec]->CFirst[14] = Tf.C44[iVec];
+        t[iVec]->CFirst[15] = Tf.C50[iVec];
+        t[iVec]->CFirst[16] = Tf.C51[iVec];
+        t[iVec]->CFirst[17] = Tf.C52[iVec];
+        t[iVec]->CFirst[18] = Tf.C53[iVec];
+        t[iVec]->CFirst[19] = Tf.C54[iVec];
+        t[iVec]->CFirst[20] = Tf.C55[iVec];
+
+        t[iVec]->chi2 = Tf.chi2[iVec];
+        t[iVec]->NDF  = (int) Tf.NDF[iVec];
+      }
+
+      for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
+        t[iVec]->Tpv[0] = T1pv.fx[iVec];
+        t[iVec]->Tpv[1] = T1pv.fy[iVec];
+        t[iVec]->Tpv[2] = T1pv.ftx[iVec];
+        t[iVec]->Tpv[3] = T1pv.fty[iVec];
+        t[iVec]->Tpv[4] = T1pv.fqp[iVec];
+        t[iVec]->Tpv[5] = T1pv.fz[iVec];
+        t[iVec]->Tpv[6] = T1pv.ft[iVec];
+
+        t[iVec]->Cpv[0]  = T1pv.C00[iVec];
+        t[iVec]->Cpv[1]  = T1pv.C10[iVec];
+        t[iVec]->Cpv[2]  = T1pv.C11[iVec];
+        t[iVec]->Cpv[3]  = T1pv.C20[iVec];
+        t[iVec]->Cpv[4]  = T1pv.C21[iVec];
+        t[iVec]->Cpv[5]  = T1pv.C22[iVec];
+        t[iVec]->Cpv[6]  = T1pv.C30[iVec];
+        t[iVec]->Cpv[7]  = T1pv.C31[iVec];
+        t[iVec]->Cpv[8]  = T1pv.C32[iVec];
+        t[iVec]->Cpv[9]  = T1pv.C33[iVec];
+        t[iVec]->Cpv[10] = T1pv.C40[iVec];
+        t[iVec]->Cpv[11] = T1pv.C41[iVec];
+        t[iVec]->Cpv[12] = T1pv.C42[iVec];
+        t[iVec]->Cpv[13] = T1pv.C43[iVec];
+        t[iVec]->Cpv[14] = T1pv.C44[iVec];
+        t[iVec]->Cpv[15] = T1pv.C50[iVec];
+        t[iVec]->Cpv[16] = T1pv.C51[iVec];
+        t[iVec]->Cpv[17] = T1pv.C52[iVec];
+        t[iVec]->Cpv[18] = T1pv.C53[iVec];
+        t[iVec]->Cpv[19] = T1pv.C54[iVec];
+        t[iVec]->Cpv[20] = T1pv.C55[iVec];
+      }
 
       if (iter == 1) continue;  // only 1.5 iterations
+
       // fit forward
 
-      i = 0;
+      ista = 0;
 
       FilterFirst(T, x_first, y_first, staFirst);
       // FilterFirst( T1, x_first, y_first, time_first, time_er_first, staFirst);
 
       FilterFirst(T1, x_first, y_first, time_first, time_er_first, staFirst, d_xx_fst, d_yy_fst, d_xy_fst);
 
-      T1.FilterTime(time[i], timeEr[i], w_time[i], sta[i].timeInfo);
+      T1.FilterTime(time[ista], timeEr[ista], w_time[ista], sta[ista].timeInfo);
 
       // fit.L1AddMaterial( T, sta[i].materialInfo, qp0, 1 );
       qp0  = T.qp;
       qp01 = T1.fqp;
 
-      fldZ1 = z[i];
-      sta[i].fieldSlice.GetFieldValue(T.x, T.y, fldB1);
-      fldB1.Combine(fB[i], w[i]);
+      fldZ1 = z[ista];
+      sta[ista].fieldSlice.GetFieldValue(T.x, T.y, fldB1);
+      fldB1.Combine(fB[ista], w[ista]);
 
-      fldZ2 = z[i + 2];
+      fldZ2 = z[ista + 2];
       dz    = fldZ2 - fldZ1;
-      sta[i].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, fldB2);
-      fldB2.Combine(fB[i + 2], w[i + 2]);
+      sta[ista].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, fldB2);
+      fldB2.Combine(fB[ista + 2], w[ista + 2]);
       fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
 
-      for (++i; i < nHits; i++) {
-        fldZ0 = z[i];
+      for (++ista; ista < nStations; ista++) {
+        fldZ0 = z[ista];
         dz    = (fldZ1 - fldZ0);
-        sta[i].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, fldB0);
-        fldB0.Combine(fB[i], w[i]);
+        sta[ista].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, fldB0);
+        fldB0.Combine(fB[ista], w[ista]);
         fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
-        fmask initialised = (z[i] <= z_end) & (z_start < z[i]);
-        fvec w1           = iif(initialised, w[i], fvec::Zero());
-        fvec w1_time      = iif(initialised, w_time[i], fvec::Zero());
+        fmask initialised = (z[ista] <= z_end) & (z_start < z[ista]);
+        fvec w1           = iif(initialised, w[ista], fvec::Zero());
+        fvec w1_time      = iif(initialised, w_time[ista], fvec::Zero());
         fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
 
-        L1Extrapolate(T, z[i], qp0, fld, &w1);
+        L1Extrapolate(T, z[ista], qp0, fld, &w1);
 
-        // L1ExtrapolateLine( T, z[i]);
+        // L1ExtrapolateLine( T, z[ista]);
 
-        T1.Extrapolate(z[i], qp0, fld, &w1);
+        T1.Extrapolate(z[ista], qp0, fld, w1);
 
-        // T1.ExtrapolateLine( z[i]);
+        // T1.ExtrapolateLine( z[ista]);
 
-        if (i == fNstationsBeforePipe) {
+        if (ista == fNstationsBeforePipe) {
           fit.L1AddPipeMaterial(T, qp0, wIn);
           fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(-1.f), wIn);
 
@@ -713,43 +754,44 @@ void L1Algo::L1KFTrackFitter()
           T1.EnergyLossCorrection(fit.PipeRadThick, qp01, fvec(-1.f), wIn);
         }
         if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(i, T.x, T.y), qp0, wIn);
-          fit.EnergyLossCorrection(T, fParameters.GetMaterialThickness(i, T.x, T.y), qp0, fvec(-1.f), wIn);
+          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista, T.x, T.y), qp0, wIn);
+          fit.EnergyLossCorrection(T, fParameters.GetMaterialThickness(ista, T.x, T.y), qp0, fvec(-1.f), wIn);
 
-          T1.L1AddMaterial(fParameters.GetMaterialThickness(i, T1.fx, T1.fy), qp01, wIn);
-          T1.EnergyLossCorrection(fParameters.GetMaterialThickness(i, T1.fx, T1.fy), qp01, fvec(-1.f), wIn);
+          T1.L1AddMaterial(fParameters.GetMaterialThickness(ista, T1.fx, T1.fy), qp01, wIn);
+          T1.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, T1.fx, T1.fy), qp01, fvec(-1.f), wIn);
         }
         else {
-          fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
+          fit.L1AddMaterial(T, sta[ista].materialInfo, qp0, wIn);
         }
-        L1Filter(T, sta[i].frontInfo, u[i], w1);
-        L1Filter(T, sta[i].backInfo, v[i], w1);
+        L1Filter(T, sta[ista].frontInfo, u[ista], w1);
+        L1Filter(T, sta[ista].backInfo, v[ista], w1);
 
-        L1UMeasurementInfo info = sta[i].frontInfo;
-        info.sigma2             = d_u[i] * d_u[i];
+        L1UMeasurementInfo info = sta[ista].frontInfo;
+        info.sigma2             = d_u[ista] * d_u[ista];
 
-        T1.Filter(info, u[i], w1);
+        T1.Filter(info, u[ista], w1);
 
-        info        = sta[i].backInfo;
-        info.sigma2 = d_v[i] * d_v[i];
+        info        = sta[ista].backInfo;
+        info.sigma2 = d_v[ista] * d_v[ista];
 
-        T1.Filter(info, v[i], w1);
+        T1.Filter(info, v[ista], w1);
 
-        T1.FilterTime(time[i], timeEr[i], w1_time, sta[i].timeInfo);
+        T1.FilterTime(time[ista], timeEr[ista], w1_time, sta[ista].timeInfo);
 
         fldB2 = fldB1;
         fldZ2 = fldZ1;
         fldB1 = fldB0;
         fldZ1 = fldZ0;
       }
-      // fit.L1AddHalfMaterial( T, sta[i].materialInfo, qp0 );
+      // fit.L1AddHalfMaterial( T, sta[ista].materialInfo, qp0 );
 
-      for (iVec = 0; iVec < nTracks_SIMD; iVec++) {
+      for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
         t[iVec]->TLast[0] = T1.fx[iVec];
         t[iVec]->TLast[1] = T1.fy[iVec];
         t[iVec]->TLast[2] = T1.ftx[iVec];
         t[iVec]->TLast[3] = T1.fty[iVec];
         t[iVec]->TLast[4] = T1.fqp[iVec];
+        if (kGlobal == fTrackingMode) { t[iVec]->TLast[4] = T1pv.fqp[iVec]; }
         t[iVec]->TLast[5] = T1.fz[iVec];
         t[iVec]->TLast[6] = T1.ft[iVec];
 
@@ -1018,7 +1060,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
           L1Extrapolate(T, z[i], qp0, fld, &w1);
 
-          T1.Extrapolate(z[i], qp01, fld, &w1);
+          T1.Extrapolate(z[i], qp01, fld, w1);
 
           if (i == fNstationsBeforePipe) {
             fit.L1AddPipeMaterial(T, qp0, wIn);
@@ -1308,7 +1350,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
           // fvec v_mc = fabs(1/qp01)/sqrt(mass2+fabs(1/qp01)*fabs(1/qp01));
 
-          T1.Extrapolate(z[i], qp01, fld, &w1);
+          T1.Extrapolate(z[i], qp01, fld, w1);
           //          L1Extrapolate( T, z[i], qp0, fld,&w1 );
 
 
@@ -1339,7 +1381,6 @@ void L1Algo::L1KFTrackFitterMuch()
         }
       }
       // fit.L1AddHalfMaterial( T, sta[i].materialInfo, qp0 );
-
 
       for (iVec = 0; iVec < nTracks_SIMD; iVec++) {
 
@@ -1377,40 +1418,39 @@ void L1Algo::L1KFTrackFitterMuch()
         t[iVec]->NDF  = (int) T1.NDF[iVec];
       }
 
-
       // extrapolate to the PV region
-      L1TrackParFit T1PV = T1;
-      T1PV.Extrapolate(0.f, T1PV.fqp, fld);
+      L1TrackParFit T1pv = T1;
+      T1pv.Extrapolate(fParameters.GetTargetPositionZ(), T1pv.fqp, fld, fvec(1.));
       for (iVec = 0; iVec < nTracks_SIMD; iVec++) {
-        t[iVec]->Tpv[0] = T1PV.fx[iVec];
-        t[iVec]->Tpv[1] = T1PV.fy[iVec];
-        t[iVec]->Tpv[2] = T1PV.ftx[iVec];
-        t[iVec]->Tpv[3] = T1PV.fty[iVec];
-        t[iVec]->Tpv[4] = T1PV.fqp[iVec];
-        t[iVec]->Tpv[5] = T1PV.fz[iVec];
-        t[iVec]->Tpv[6] = T1PV.ft[iVec];
+        t[iVec]->Tpv[0] = T1pv.fx[iVec];
+        t[iVec]->Tpv[1] = T1pv.fy[iVec];
+        t[iVec]->Tpv[2] = T1pv.ftx[iVec];
+        t[iVec]->Tpv[3] = T1pv.fty[iVec];
+        t[iVec]->Tpv[4] = T1pv.fqp[iVec];
+        t[iVec]->Tpv[5] = T1pv.fz[iVec];
+        t[iVec]->Tpv[6] = T1pv.ft[iVec];
 
-        t[iVec]->Cpv[0]  = T1PV.C00[iVec];
-        t[iVec]->Cpv[1]  = T1PV.C10[iVec];
-        t[iVec]->Cpv[2]  = T1PV.C11[iVec];
-        t[iVec]->Cpv[3]  = T1PV.C20[iVec];
-        t[iVec]->Cpv[4]  = T1PV.C21[iVec];
-        t[iVec]->Cpv[5]  = T1PV.C22[iVec];
-        t[iVec]->Cpv[6]  = T1PV.C30[iVec];
-        t[iVec]->Cpv[7]  = T1PV.C31[iVec];
-        t[iVec]->Cpv[8]  = T1PV.C32[iVec];
-        t[iVec]->Cpv[9]  = T1PV.C33[iVec];
-        t[iVec]->Cpv[10] = T1PV.C40[iVec];
-        t[iVec]->Cpv[11] = T1PV.C41[iVec];
-        t[iVec]->Cpv[12] = T1PV.C42[iVec];
-        t[iVec]->Cpv[13] = T1PV.C43[iVec];
-        t[iVec]->Cpv[14] = T1PV.C44[iVec];
-        t[iVec]->Cpv[15] = T1PV.C50[iVec];
-        t[iVec]->Cpv[16] = T1PV.C51[iVec];
-        t[iVec]->Cpv[17] = T1PV.C52[iVec];
-        t[iVec]->Cpv[18] = T1PV.C53[iVec];
-        t[iVec]->Cpv[19] = T1PV.C54[iVec];
-        t[iVec]->Cpv[20] = T1PV.C55[iVec];
+        t[iVec]->Cpv[0]  = T1pv.C00[iVec];
+        t[iVec]->Cpv[1]  = T1pv.C10[iVec];
+        t[iVec]->Cpv[2]  = T1pv.C11[iVec];
+        t[iVec]->Cpv[3]  = T1pv.C20[iVec];
+        t[iVec]->Cpv[4]  = T1pv.C21[iVec];
+        t[iVec]->Cpv[5]  = T1pv.C22[iVec];
+        t[iVec]->Cpv[6]  = T1pv.C30[iVec];
+        t[iVec]->Cpv[7]  = T1pv.C31[iVec];
+        t[iVec]->Cpv[8]  = T1pv.C32[iVec];
+        t[iVec]->Cpv[9]  = T1pv.C33[iVec];
+        t[iVec]->Cpv[10] = T1pv.C40[iVec];
+        t[iVec]->Cpv[11] = T1pv.C41[iVec];
+        t[iVec]->Cpv[12] = T1pv.C42[iVec];
+        t[iVec]->Cpv[13] = T1pv.C43[iVec];
+        t[iVec]->Cpv[14] = T1pv.C44[iVec];
+        t[iVec]->Cpv[15] = T1pv.C50[iVec];
+        t[iVec]->Cpv[16] = T1pv.C51[iVec];
+        t[iVec]->Cpv[17] = T1pv.C52[iVec];
+        t[iVec]->Cpv[18] = T1pv.C53[iVec];
+        t[iVec]->Cpv[19] = T1pv.C54[iVec];
+        t[iVec]->Cpv[20] = T1pv.C55[iVec];
       }
     }  // iter
   }
@@ -1491,12 +1531,14 @@ void L1Algo::GuessVec(L1TrackParFit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, 
   fvec A0, A1 = ZERO, A2 = ZERO, A3 = ZERO, A4 = ZERO, A5 = ZERO, a0, a1 = ZERO, a2 = ZERO, b0, b1 = ZERO, b2 = ZERO;
   fvec z0, x, y, z, S, w, wz, wS, time;
 
-  time = 0;
+  time = fvec(0.);
 
   int i = NHits - 1;
-  if (zCur) z0 = *zCur;
-  else
+  if (zCur) { z0 = *zCur; }
+  else {
     z0 = zV[i];
+  }
+
   w  = wV[i];
   A0 = w;
   a0 = w * xV[i];
@@ -1524,9 +1566,13 @@ void L1Algo::GuessVec(L1TrackParFit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, 
     b0 += w * y;
     b1 += wz * y;
     b2 += wS * y;
-    if (timeV) time += w_time[i] * (timeV[i] - sqrt(x * x + y * y + z * z) / 30.f);
+    if (timeV) {
+      fvec dx = xV[i] - fParameters.GetTargetPositionX();
+      fvec dy = yV[i] - fParameters.GetTargetPositionY();
+      fvec dz = zV[i] - fParameters.GetTargetPositionZ();
+      time += w_time[i] * (timeV[i] - sqrt(dx * dx + dy * dy + dz * dz) / fvec(30.));
+    }
   }
-  time = time / nhits;
 
   fvec A3A3 = A3 * A3;
   fvec A3A4 = A3 * A4;
@@ -1556,7 +1602,7 @@ void L1Algo::GuessVec(L1TrackParFit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, 
   t.fy  = (A2 * b0 - A1 * b1) * det;
   t.fty = (-A1 * b0 + A0 * b1) * det;
   t.fqp = -L * c_light_i / sqrt(txtx1 + t.fty * t.fty);
-  if (timeV) { t.ft = iif(nhits > fvec::Zero(), time, fvec::Zero()); }
+  if (timeV) { t.ft = iif(nhits > fvec::Zero(), time / nhits, fvec::Zero()); }
 
   t.fz = z0;
 }
@@ -1579,6 +1625,11 @@ void L1Algo::FilterFirst(L1TrackPar& track, fvec& x, fvec& y, L1Station& st)
   track.C42 = ZERO;
   track.C43 = ZERO;
   track.C44 = ONE;
+  track.C50 = ZERO;
+  track.C51 = ZERO;
+  track.C52 = ZERO;
+  track.C53 = ZERO;
+  track.C55 = 2.6f * 2.6f;
 
   track.x    = x;
   track.y    = y;

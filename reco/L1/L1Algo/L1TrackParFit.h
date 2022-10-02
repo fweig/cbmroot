@@ -109,9 +109,13 @@ public:
   void FilterXY(const L1XYMeasurementInfo& info, fvec x, fvec y);
   void FilterTime(fvec t0, fvec dt0, fvec w = 1., fvec timeInfo = 1.);
   void FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w = 1.);
-  void Extrapolate(fvec z_out, fvec qp0, const L1FieldRegion& F, fvec* w = 0);
+
+  void Extrapolate(fvec z_out, fvec qp0, const L1FieldRegion& F, const fvec& w);
+  void ExtrapolateStep(fvec z_out, fvec qp0, const L1FieldRegion& F, const fvec& w);
+
   void ExtrapolateLine(fvec z_out, fvec* w = 0);
   void ExtrapolateLine1(fvec z_out, fvec* w = 0, fvec v = 0);
+
   void Compare(L1TrackPar& T);
 
   void EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
@@ -146,16 +150,25 @@ public:
 
 inline void L1TrackParFit::Print(int i)
 {
+  std::ios_base::fmtflags coutFlags(std::cout.flags());
   std::cout.setf(std::ios::scientific, std::ios::floatfield);
+
   if (i == -1) {
     std::cout << "T = " << std::endl;
-    std::cout << fx << std::endl;
-    std::cout << fy << std::endl;
-    std::cout << ftx << std::endl;
-    std::cout << fty << std::endl;
-    std::cout << fqp << std::endl;
-    std::cout << fz << std::endl;
-    std::cout << ft << std::endl;
+    std::cout << "    x " << fx << std::endl;
+    std::cout << "    y " << fy << std::endl;
+    std::cout << "   tx " << ftx << std::endl;
+    std::cout << "   ty " << fty << std::endl;
+    std::cout << "   qp " << fqp << std::endl;
+    std::cout << "    t " << ft << std::endl;
+    std::cout << "    z " << fz << std::endl;
+    std::cout << "C = " << std::endl;
+    std::cout << "  c00 " << C00 << std::endl;
+    std::cout << "  c11 " << C11 << std::endl;
+    std::cout << "  c22 " << C22 << std::endl;
+    std::cout << "  c33 " << C33 << std::endl;
+    std::cout << "  c44 " << C44 << std::endl;
+    std::cout << "  c55 " << C55 << std::endl;
   }
   else {
     std::cout << "T = ";
@@ -173,6 +186,7 @@ inline void L1TrackParFit::Print(int i)
     std::cout << C44[i] << " ";
     std::cout << C55[i] << std::endl;
   }
+  std::cout.flags(coutFlags);
 }
 
 

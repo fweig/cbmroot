@@ -262,6 +262,8 @@ void CbmTrackingTrdQa::Exec(Option_t* /*opt*/)
     //    Bool_t   isRec    = kFALSE;
     if (globalTrackId < 0) continue;
     if (trdTrackId < 0) continue;
+    CbmGlobalTrack* globalTrack = (CbmGlobalTrack*) fGlobalTracks->At(globalTrackId);
+
     CbmTrdTrack* trdTrack = (CbmTrdTrack*) fTrdTracks->At(trdTrackId);
     assert(trdTrack);
     assert(quali >= fQuota);
@@ -273,6 +275,14 @@ void CbmTrackingTrdQa::Exec(Option_t* /*opt*/)
     Int_t nFake    = 0;
     Int_t nAllHits = trdTrack->GetNofHits();
     assert(nTrue + nWrong + nFake == nAllHits);
+
+    double qp = globalTrack->GetParamFirst()->GetQp();
+    //double q  = (qp >= 1.) ? 1. : -1.;
+    double p  = (fabs(qp) > 1. / 100.) ? 1. / fabs(qp) : 100.;
+    double tx = globalTrack->GetParamFirst()->GetTx();
+    double ty = globalTrack->GetParamFirst()->GetTy();
+    double pt = sqrt((tx * tx + ty * ty) / (1. + tx * tx + ty * ty)) * p;
+
     // Verbose output
     LOG(debug1) << GetName() << ": MCTrack " << iMcTrack << ", stations " << nStations << ", hits " << nAllHits
                 << ", true hits " << nTrue;
@@ -287,6 +297,7 @@ void CbmTrackingTrdQa::Exec(Option_t* /*opt*/)
       fhPtRecPrim->Fill(info.fPt);
       fhPidPtY["prmE"][Pdg2Idx(info.fPdg)]->Fill(info.fY, info.fPt);
       fhNpRecPrim->Fill(Double_t(nAllHits));
+      if (info.fPt > 0.001) { fhPtResPrim->Fill((pt / info.fPt - 1.)); }
     }
     else {
       nRecSec++;
@@ -714,6 +725,9 @@ void CbmTrackingTrdQa::CreateHistos()
   fhNhGhosts = new TH1F("hNhGhosts", "number of hits for ghosts", nBinsNp, minNp, maxNp);
   fHistoList->Add(fhNhClones);
   fHistoList->Add(fhNhGhosts);
+
+  fhPtResPrim = new TH1F("hPtPrim", "Resolution Pt Primaries [100%]", 100, -1., 1.);
+  fHistoList->Add(fhPtResPrim);
 
   TIter next(fHistoList);
   while (TH1* histo = ((TH1*) next())) {

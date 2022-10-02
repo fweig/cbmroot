@@ -109,6 +109,13 @@ public:
   L1FieldValue Get(const fvec z);
 
   /// Gets the field vector and writes it into B pointer
+  /// \param x  x-coordinate of the point to calculate the field
+  /// \param y  y-coordinate of the point to calculate the field
+  /// \param z  z-coordinate of the point to calculate the field
+  /// \param B   pointer to the output fvec array of the magnetic field
+  void Get(const fvec x, const fvec y, const fvec z, fvec* B) const;
+
+  /// Gets the field vector and writes it into B pointer
   /// \param z_  z-coordinate of the point to calculate the field
   /// \param B   pointer to the output fvec array of the magnetic field
   void Get(const fvec z_, fvec* B) const;
@@ -164,6 +171,8 @@ public:
   std::string ToString(int indentLevel = 0) const;
 
 public:
+  static bool gkUseOriginalField;
+
   // TODO: Probably it's better to have arrays instead of separate fvec values? (S.Zharko)
   // Bx(z) = cx0 + cx1*(z-z0) + cx2*(z-z0)^2
   fvec cx0 {0.f};

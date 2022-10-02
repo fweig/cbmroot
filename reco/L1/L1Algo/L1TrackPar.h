@@ -149,7 +149,7 @@ inline void L1TrackPar::Print(int i) const
     std::cout << " c55 " << C55[i] << std::endl;
   }
   PrintCorrelations(i);
-  std::cout.flags( coutFlags );
+  std::cout.flags(coutFlags);
 }
 
 inline void L1TrackPar::PrintCorrelations(int i) const

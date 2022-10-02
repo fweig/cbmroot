@@ -37,7 +37,7 @@ void L1TrackParFit::Filter(L1UMeasurementInfo& info, fvec u, fvec w)
   // correction to HCH is needed for the case when sigma2 is so small
   // with respect to HCH that it disappears due to the roundoff error
   //
-  fvec wi     = w / (info.sigma2 + 1.0000001f * HCH);
+  fvec wi     = w / (info.sigma2 + fvec(1.0000001) * HCH);
   fvec zetawi = w * zeta / (iif(maskDoFilter, info.sigma2, fvec::Zero()) + HCH);
 
   // chi2 += iif( maskDoFilter, zeta * zetawi, fvec::Zero() );
@@ -395,7 +395,21 @@ void L1TrackParFit::ExtrapolateLine1(fvec z_out, fvec* w, fvec v)
 void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
   (fvec z_out,                   // extrapolate to this z position
    fvec qp0,                     // use Q/p linearisation at this value
-   const L1FieldRegion& F, fvec* w)
+   const L1FieldRegion& F, const fvec& w)
+{
+  fvec sgn = iif(fz < z_out, fvec(1.), fvec(-1.));
+  while (!(w * abs(z_out - fz) <= fvec(1.e-6)).isFull()) {
+    fvec zNew                              = fz + sgn * fvec(50.);  // max. 50 cm step
+    zNew(sgn * (z_out - zNew) <= fvec(0.)) = z_out;
+    ExtrapolateStep(zNew, qp0, F, w);
+  }
+}
+
+void
+  L1TrackParFit::ExtrapolateStep  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
+  (fvec z_out,                    // extrapolate to this z position
+   fvec qp0,                      // use Q/p linearisation at this value
+   const L1FieldRegion& F, const fvec& w)
 {
   //
   // Forth-order Runge-Kutta method for solution of the equation
@@ -424,20 +438,18 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
 
   cnst c_light = 0.000299792458;
 
-  const fvec a[4] = {0.0f, 0.5f, 0.5f, 1.0f};
-  const fvec c[4] = {1.0f / 6.0f, 1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 6.0f};
-  const fvec b[4] = {0.0f, 0.5f, 0.5f, 1.0f};
+  const fvec a[4] = {0., 0.5, 0.5, 1.};
+  const fvec c[4] = {1. / 6., 1. / 3., 1. / 3., 1. / 6.};
+  const fvec b[4] = {0., 0.5, 0.5, 1.};
 
-  int step4;
-  fvec k[20], x0[5], x[5], k1[20];
+  fvec k[20], x[5], k1[20];
   fvec Ax[4], Ay[4], Ax_tx[4], Ay_tx[4], Ax_ty[4], Ay_ty[4], At[4], At_tx[4], At_ty[4];
 
   //----------------------------------------------------------------
 
-  if (w) { z_out = iif((fvec(0.f) < *w), z_out, fz); }
+  z_out = iif((fvec(0.f) < w), z_out, fz);
 
   fvec qp_in      = fqp;
-  const fvec z_in = fz;
   const fvec h    = (z_out - fz);
 
   //   cout<<h<<" h"<<endl;
@@ -445,54 +457,54 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
   //   cout<<fty<<" fty"<<endl;
 
   fvec hC = h * c_light;
-  x0[0]   = fx;
-  x0[1]   = fy;
-  x0[2]   = ftx;
-  x0[3]   = fty;
-  x0[4]   = ft;
+  //std::cout << "fx " << fx << std::endl;
+  fvec x0[5];
+  x0[0] = fx;
+  x0[1] = fy;
+  x0[2] = ftx;
+  x0[3] = fty;
+  x0[4] = ft;
+
   //
   //   Runge-Kutta step
   //
 
-  int step;
-  int i;
+  for (int step = 0; step < 4; ++step) {
 
-  fvec B[4][3];
-  for (step = 0; step < 4; ++step) {
-    F.Get(z_in + a[step] * h, B[step]);
-    //std::cout << "extrapolation step " << step << " z " << z_in + a[step] * h << " field " << B[step][0] << " " << B[step][1] << " "
-    //        << B[step][2] << std::endl;
-  }
-
-  for (step = 0; step < 4; ++step) {
-    for (i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i) {
       if (step == 0) { x[i] = x0[i]; }
       else {
         x[i] = x0[i] + b[step] * k[step * 5 - 5 + i];
       }
     }
 
+    fvec B[3];
+
+    F.Get(x[0], x[1], fz + a[step] * h, B);
+    //std::cout << "extrapolation step " << step << " z " << z_in + a[step] * h << " field " << B[0] << " " << B[1] << " "
+    //        << B[2] << std::endl;
+
     fvec tx      = x[2];
     fvec ty      = x[3];
     fvec tx2     = tx * tx;
     fvec ty2     = ty * ty;
     fvec txty    = tx * ty;
-    fvec tx2ty21 = 1.f + tx2 + ty2;
+    fvec tx2ty21 = fvec(1.) + tx2 + ty2;
     // if( tx2ty21 > 1.e4 ) return 1;
-    fvec I_tx2ty21 = 1.f / tx2ty21 * qp0;
+    fvec I_tx2ty21 = fvec(1.) / tx2ty21 * qp0;
     fvec tx2ty2    = sqrt(tx2ty21);
     //   fvec I_tx2ty2 = qp0 * hC / tx2ty2 ; unsused ???
     tx2ty2 *= hC;
     fvec tx2ty2qp = tx2ty2 * qp0;
 
-    //     cout<<B[step][0]<<" B["<<step<<"][0] "<<B[step][2]<<" B["<<step<<"][2] "<<B[step][1]<<" B["<<step<<"][1]"<<endl;
-    Ax[step] = (txty * B[step][0] + ty * B[step][2] - (1.f + tx2) * B[step][1]) * tx2ty2;
-    Ay[step] = (-txty * B[step][1] - tx * B[step][2] + (1.f + ty2) * B[step][0]) * tx2ty2;
+    //     cout<<B[0]<<" B["<<step<<"][0] "<<B[2]<<" B["<<step<<"][2] "<<B[1]<<" B["<<step<<"][1]"<<endl;
+    Ax[step] = (txty * B[0] + ty * B[2] - (fvec(1.) + tx2) * B[1]) * tx2ty2;
+    Ay[step] = (-txty * B[1] - tx * B[2] + (fvec(1.) + ty2) * B[0]) * tx2ty2;
 
-    Ax_tx[step] = Ax[step] * tx * I_tx2ty21 + (ty * B[step][0] - 2.f * tx * B[step][1]) * tx2ty2qp;
-    Ax_ty[step] = Ax[step] * ty * I_tx2ty21 + (tx * B[step][0] + B[step][2]) * tx2ty2qp;
-    Ay_tx[step] = Ay[step] * tx * I_tx2ty21 + (-ty * B[step][1] - B[step][2]) * tx2ty2qp;
-    Ay_ty[step] = Ay[step] * ty * I_tx2ty21 + (-tx * B[step][1] + 2.f * ty * B[step][0]) * tx2ty2qp;
+    Ax_tx[step] = Ax[step] * tx * I_tx2ty21 + (ty * B[0] - fvec(2.) * tx * B[1]) * tx2ty2qp;
+    Ax_ty[step] = Ax[step] * ty * I_tx2ty21 + (tx * B[0] + B[2]) * tx2ty2qp;
+    Ay_tx[step] = Ay[step] * tx * I_tx2ty21 + (-ty * B[1] - B[2]) * tx2ty2qp;
+    Ay_ty[step] = Ay[step] * ty * I_tx2ty21 + (-tx * B[1] + fvec(2.) * ty * B[0]) * tx2ty2qp;
 
     fvec m2     = fMass2;
     fvec vi     = sqrt(fvec(1.) + m2 * qp0 * qp0) / fvec(29.9792458f);
@@ -503,12 +515,13 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
 
     //     cout<<Ax[step]<<" Ax[step] "<<Ay[step]<<" ay "<<At[step]<<" At[step] "<<qp0<<" qp0 "<<h<<" h"<<endl;
 
-    step4        = step * 5;
-    k[step4]     = tx * h;
-    k[step4 + 1] = ty * h;
-    k[step4 + 2] = Ax[step] * qp0;
-    k[step4 + 3] = Ay[step] * qp0;
-    k[step4 + 4] = At[step];
+    int step5 = step * 5;
+
+    k[step5 + 0] = tx * h;
+    k[step5 + 1] = ty * h;
+    k[step5 + 2] = Ax[step] * qp0;
+    k[step5 + 3] = Ay[step] * qp0;
+    k[step5 + 4] = At[step];
   }  // end of Runge-Kutta steps
 
   {
@@ -519,6 +532,9 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
     //     cout << "w = " << *w << "; ";
     //     cout << "initialised = " << initialised << "; ";
     //     cout << "fx = " << fx;
+
+    //std::cout << " x : x0[0] " << x0[0] << " k[0] " << k[0] << " k[5] " << k[5] << " k[10] " << k[10] << " k[15] "
+    //        << k[15] << std::endl;
 
     fx  = x0[0] + c[0] * k[0] + c[1] * k[5 + 0] + c[2] * k[10 + 0] + c[3] * k[15 + 0];
     fy  = x0[1] + c[0] * k[1] + c[1] * k[5 + 1] + c[2] * k[10 + 1] + c[3] * k[15 + 1];
@@ -531,132 +547,148 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
   }
   //   cout<<fx<<" fx"<<endl;
 
-  //
-  //     Derivatives    dx/dqp
-  //
+  fvec J[36];  // Jacobian of extrapolation
 
-  x0[0] = 0.f;
-  x0[1] = 0.f;
-  x0[2] = 0.f;
-  x0[3] = 0.f;
-  x0[4] = 0.f;
-
-  //
-  //   Runge-Kutta step for derivatives dx/dqp
-
-  for (step = 0; step < 4; ++step) {
-    for (i = 0; i < 5; ++i) {
-      if (step == 0) { x[i] = x0[i]; }
-      else {
-        x[i] = x0[i] + b[step] * k1[step * 5 - 5 + i];
-      }
-    }
-    step4         = step * 5;
-    k1[step4]     = x[2] * h;
-    k1[step4 + 1] = x[3] * h;
-    k1[step4 + 2] = Ax[step] + Ax_tx[step] * x[2] + Ax_ty[step] * x[3];
-    k1[step4 + 3] = Ay[step] + Ay_tx[step] * x[2] + Ay_ty[step] * x[3];
-    k1[step4 + 4] = At[step] + At_tx[step] * x[2] + At_ty[step] * x[3];
-
-  }  // end of Runge-Kutta steps for derivatives dx/dqp
-
-  fvec J[36];
-
-  for (i = 0; i < 4; ++i) {
-    J[24 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[5 + i] + c[2] * k1[10 + i] + c[3] * k1[15 + i];
-  }
-  J[28] = 1.;
-  J[29] = x0[4] + c[0] * k1[4] + c[1] * k1[5 + 4] + c[2] * k1[10 + 4] + c[3] * k1[15 + 4];
-  //
-  //      end of derivatives dx/dqp
-  //
-
-  //     Derivatives    dx/tx
-  //
-
-  x0[0] = 0.f;
-  x0[1] = 0.f;
-  x0[2] = 1.f;
-  x0[3] = 0.f;
-  x0[4] = 0.f;
-
-  //
-  //   Runge-Kutta step for derivatives dx/dtx
-  //
-
-  for (step = 0; step < 4; ++step) {
-    for (i = 0; i < 5; ++i) {
-      if (step == 0) { x[i] = x0[i]; }
-      else if (i != 2) {
-        x[i] = x0[i] + b[step] * k1[step * 5 - 5 + i];
-      }
-    }
-    step4         = step * 5;
-    k1[step4]     = x[2] * h;
-    k1[step4 + 1] = x[3] * h;
-    // k1[step4+2] = Ax_tx[step] * x[2] + Ax_ty[step] * x[3];
-    k1[step4 + 3] = Ay_tx[step] * x[2] + Ay_ty[step] * x[3];
-    k1[step4 + 4] = At_tx[step] * x[2] + At_ty[step] * x[3];
-  }  // end of Runge-Kutta steps for derivatives dx/dtx
-
-  for (i = 0; i < 4; ++i) {
-    if (i != 2) { J[12 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[5 + i] + c[2] * k1[10 + i] + c[3] * k1[15 + i]; }
-  }
-  //      end of derivatives dx/dtx
-  J[14] = 1.f;
-  J[16] = 0.f;
-  J[17] = x0[4] + c[0] * k1[4] + c[1] * k1[5 + 4] + c[2] * k1[10 + 4] + c[3] * k1[15 + 4];
-
-  //     Derivatives    dx/ty
-  //
-
-  x0[0] = 0.f;
-  x0[1] = 0.f;
-  x0[2] = 0.f;
-  x0[3] = 1.f;
-  x0[4] = 0.f;
-
-  //
-  //   Runge-Kutta step for derivatives dx/dty
-  //
-
-  for (step = 0; step < 4; ++step) {
-    for (i = 0; i < 5; ++i) {
-      if (step == 0) {
-        x[i] = x0[i];  // ty fixed
-      }
-      else if (i != 3) {
-        x[i] = x0[i] + b[step] * k1[step * 5 - 5 + i];
-      }
-    }
-    step4         = step * 5;
-    k1[step4]     = x[2] * h;
-    k1[step4 + 1] = x[3] * h;
-    k1[step4 + 2] = Ax_tx[step] * x[2] + Ax_ty[step] * x[3];
-    // k1[step4+3] = Ay_tx[step] * x[2] + Ay_ty[step] * x[3]; //  TODO: SG: check if the simplification below is ok
-    k1[step4 + 4] = At_tx[step] * x[2] + At_ty[step] * x[3];
-  }  // end of Runge-Kutta steps for derivatives dx/dty
-
-  for (i = 0; i < 3; ++i) {
-    J[18 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[5 + i] + c[2] * k1[10 + i] + c[3] * k1[15 + i];
-  }
-  //      end of derivatives dx/dty
-  J[21] = fvec(1.);
-  J[22] = fvec(0.);
-  J[23] = x0[4] + c[0] * k1[4] + c[1] * k1[5 + 4] + c[2] * k1[10 + 4] + c[3] * k1[15 + 4];
   //
   //    derivatives dx/dx and dx/dy
+  //
 
-  for (i = 0; i < 12; ++i) {
+  for (int i = 0; i < 12; ++i) {
     J[i] = fvec(0.);
   }
 
   J[0] = fvec(1.);
   J[7] = fvec(1.);
-  for (i = 30; i < 35; i++) {
+
+  //
+  //     Derivatives    dx/tx
+  //
+
+  x0[0] = fvec(0.);
+  x0[1] = fvec(0.);
+  x0[2] = fvec(1.);
+  x0[3] = fvec(0.);
+  x0[4] = fvec(0.);
+
+  //
+  //   Runge-Kutta step for derivatives dx/dtx
+  //
+
+  for (int step = 0; step < 4; ++step) {
+    int step5 = step * 5;
+    for (int i = 0; i < 5; ++i) {
+      if (step == 0) { x[i] = x0[i]; }
+      else if (i != 2) {
+        x[i] = x0[i] + b[step] * k1[step5 - 5 + i];
+      }
+    }
+
+    k1[step5 + 0] = x[2] * h;
+    k1[step5 + 1] = x[3] * h;
+    // k1[step5+2] = Ax_tx[step] * x[2] + Ax_ty[step] * x[3];
+    k1[step5 + 3] = Ay_tx[step] * x[2] + Ay_ty[step] * x[3];
+    k1[step5 + 4] = At_tx[step] * x[2] + At_ty[step] * x[3];
+  }  // end of Runge-Kutta steps for derivatives dx/dtx
+
+  for (int i = 0; i < 4; ++i) {
+    if (i != 2) { J[12 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[5 + i] + c[2] * k1[10 + i] + c[3] * k1[15 + i]; }
+  }
+
+  J[14] = fvec(1.);
+  J[16] = fvec(0.);
+  J[17] = x0[4] + c[0] * k1[4] + c[1] * k1[5 + 4] + c[2] * k1[10 + 4] + c[3] * k1[15 + 4];
+
+  //      end of derivatives dx/dtx
+
+  //
+  //     Derivatives    dx/ty
+  //
+
+  x0[0] = fvec(0.);
+  x0[1] = fvec(0.);
+  x0[2] = fvec(0.);
+  x0[3] = fvec(1.);
+  x0[4] = fvec(0.);
+
+  //
+  //   Runge-Kutta step for derivatives dx/dty
+  //
+
+  for (int step = 0; step < 4; ++step) {
+    int step5 = step * 5;
+    for (int i = 0; i < 5; ++i) {
+      if (step == 0) {
+        x[i] = x0[i];  // ty fixed
+      }
+      else if (i != 3) {
+        x[i] = x0[i] + b[step] * k1[step5 - 5 + i];
+      }
+    }
+    k1[step5 + 0] = x[2] * h;
+    k1[step5 + 1] = x[3] * h;
+    k1[step5 + 2] = Ax_tx[step] * x[2] + Ax_ty[step] * x[3];
+    // k1[step5+3] = Ay_tx[step] * x[2] + Ay_ty[step] * x[3]; //  TODO: SG: check if the simplification below is ok
+    k1[step5 + 4] = At_tx[step] * x[2] + At_ty[step] * x[3];
+  }  // end of Runge-Kutta steps for derivatives dx/dty
+
+  for (int i = 0; i < 3; ++i) {
+    J[18 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[5 + i] + c[2] * k1[10 + i] + c[3] * k1[15 + i];
+  }
+
+  J[21] = fvec(1.);
+  J[22] = fvec(0.);
+  J[23] = x0[4] + c[0] * k1[4] + c[1] * k1[5 + 4] + c[2] * k1[10 + 4] + c[3] * k1[15 + 4];
+
+  //      end of derivatives dx/dty
+
+  //
+  //     Derivatives    dx/dqp
+  //
+
+  x0[0] = fvec(0.);
+  x0[1] = fvec(0.);
+  x0[2] = fvec(0.);
+  x0[3] = fvec(0.);
+  x0[4] = fvec(0.);
+
+  //
+  //   Runge-Kutta step for derivatives dx/dqp
+  //
+
+  for (int step = 0; step < 4; ++step) {
+    for (int i = 0; i < 5; ++i) {
+      if (step == 0) { x[i] = x0[i]; }
+      else {
+        x[i] = x0[i] + b[step] * k1[step * 5 - 5 + i];
+      }
+    }
+    int step5     = step * 5;
+    k1[step5 + 0] = x[2] * h;
+    k1[step5 + 1] = x[3] * h;
+    k1[step5 + 2] = Ax[step] + Ax_tx[step] * x[2] + Ax_ty[step] * x[3];
+    k1[step5 + 3] = Ay[step] + Ay_tx[step] * x[2] + Ay_ty[step] * x[3];
+    k1[step5 + 4] = At[step] + At_tx[step] * x[2] + At_ty[step] * x[3];
+
+  }  // end of Runge-Kutta steps for derivatives dx/dqp
+
+  for (int i = 0; i < 4; ++i) {
+    J[24 + i] = x0[i] + c[0] * k1[i] + c[1] * k1[5 + i] + c[2] * k1[10 + i] + c[3] * k1[15 + i];
+  }
+  J[28] = fvec(1.);
+  J[29] = x0[4] + c[0] * k1[4] + c[1] * k1[5 + 4] + c[2] * k1[10 + 4] + c[3] * k1[15 + 4];
+
+  //      end of derivatives dx/dqp
+
+  //
+  //    derivatives dx/dt
+  //
+
+  for (int i = 30; i < 35; i++) {
     J[i] = fvec(0.);
   }
   J[35] = fvec(1.);
+
+  //      end of derivatives dx/dt
 
   fvec dqp = qp_in - qp0;
 
@@ -673,20 +705,26 @@ void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns ja
   //cout<< (ft - ft_old)<<" ft dt "<<endl;
 
   //   // if ( C_in&&C_out ) CbmKFMath::multQtSQ( 5, J, C_in, C_out); // TODO
-  //   j(0,2) = J[5*2 + 0];
-  //   j(1,2) = J[5*2 + 1];
-  //   j(2,2) = J[5*2 + 2];
-  //   j(3,2) = J[5*2 + 3];
+  //   j(0,2) = J[6*2 + 0];
+  //   j(1,2) = J[6*2 + 1];
+  //   j(2,2) = J[6*2 + 2];
+  //   j(3,2) = J[6*2 + 3];
+  //   j(4,2) = J[6*2 + 4];
+  //   j(5,2) = J[6*2 + 5];
   //
-  //   j(0,3) = J[5*3 + 0];
-  //   j(1,3) = J[5*3 + 1];
-  //   j(2,3) = J[5*3 + 2];
-  //   j(3,3) = J[5*3 + 3];
+  //   j(0,3) = J[6*3 + 0];
+  //   j(1,3) = J[6*3 + 1];
+  //   j(2,3) = J[6*3 + 2];
+  //   j(3,3) = J[6*3 + 3];
+  //   j(4,3) = J[6*3 + 4];
+  //   j(5,3) = J[6*3 + 5];
   //
-  //   j(0,4) = J[5*4 + 0];
-  //   j(1,4) = J[5*4 + 1];
-  //   j(2,4) = J[5*4 + 2];
-  //   j(3,4) = J[5*4 + 3];
+  //   j(0,4) = J[6*4 + 0];
+  //   j(1,4) = J[6*4 + 1];
+  //   j(2,4) = J[6*4 + 2];
+  //   j(3,4) = J[6*4 + 3];
+  //   j(4,4) = J[6*4 + 4];
+  //   j(5,4) = J[6*4 + 5];
 
   const fvec c42 = C42, c43 = C43;
 

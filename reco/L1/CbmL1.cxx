@@ -223,6 +223,7 @@ InitStatus CbmL1::Init()
     fUseMUCH = 0;
     fUseTRD  = 1;
     fUseTOF  = 0;
+    L1FieldRegion::gkUseOriginalField = true;
     fInitManager.DevSetIgnoreHitSearchAreas(true);
     //fInitManager.DevSetFitSingletsFromTarget(true);
     //fInitManager.DevSetIsMatchDoubletsViaMc(true);

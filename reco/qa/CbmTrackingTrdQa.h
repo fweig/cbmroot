@@ -214,6 +214,8 @@ private:
   TH1F* fhNhClones = nullptr;
   TH1F* fhNhGhosts = nullptr;
 
+  // Pt resolution
+  TH1F* fhPtResPrim = nullptr;
 
   /** List of histograms **/
   TList* fHistoList = nullptr;
