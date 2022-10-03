@@ -386,6 +386,7 @@ void run_reco_L1global(TString input = "", Int_t nTimeSlices = -1, Int_t firstTi
       l1->SetTrdMaterialBudgetFileName(parFile.Data());
     }
 
+    /*
     TString tofGeoTag;
     if (geo->GetGeoTag(ECbmModuleId::kTof, tofGeoTag)) {
       TString parFile = gSystem->Getenv("VMCWORKDIR");
@@ -393,6 +394,7 @@ void run_reco_L1global(TString input = "", Int_t nTimeSlices = -1, Int_t firstTi
       std::cout << "Using TOF material budget file " << parFile << std::endl;
       l1->SetTofMaterialBudgetFileName(parFile.Data());
     }
+*/
 
     run->AddTask(l1);
     std::cout << "-I- " << myName << ": Added task " << l1->GetName() << std::endl;
