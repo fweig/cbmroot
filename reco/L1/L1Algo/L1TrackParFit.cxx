@@ -171,14 +171,12 @@ void L1TrackParFit::FilterTime(fvec t, fvec dt, fvec w, fvec timeInfo)
   // the calculations in the covariance matrix are not affected
 
   const fmask maskDoFilter = (HCH < dt2 * 16.f);
-  //const fvec maskDoFilter = _f32vec4_true;
 
-  fvec wi     = w / (dt2 + 1.0000001f * HCH);
+  fvec wi     = w / (dt2 + fvec(1.0000001) * HCH);
   fvec zeta   = ft - t;
   fvec zetawi = w * zeta / (iif(maskDoFilter, dt2, fvec::Zero()) + HCH);
 
-  //T.chi2 += maskDoFilter & (zeta * zetawi);
-  chi2 += zeta * zeta * wi;
+  chi2(maskDoFilter) += zeta * zeta * wi;
   NDF += w;
 
   fvec K1 = F1 * wi;
@@ -449,8 +447,8 @@ void
 
   z_out = iif((fvec(0.f) < w), z_out, fz);
 
-  fvec qp_in      = fqp;
-  const fvec h    = (z_out - fz);
+  fvec qp_in   = fqp;
+  const fvec h = (z_out - fz);
 
   //   cout<<h<<" h"<<endl;
   //   cout<<ftx<<" ftx"<<endl;

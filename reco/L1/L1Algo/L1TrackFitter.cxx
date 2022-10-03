@@ -517,11 +517,7 @@ void L1Algo::L1KFTrackFitter()
       time_er_last = iif(w_time[ista] > fvec::Zero(), time_er_last, fvec(100.));
 
       FilterFirst(T, x_last, y_last, staLast);
-      // FilterFirst( T1, x_last, y_last, time_last, time_er_last, staLast );
-
       FilterFirst(T1, x_last, y_last, time_last, time_er_last, staLast, d_xx_lst, d_yy_lst, d_xy_lst);
-
-      T1.FilterTime(time[ista], timeEr[ista], w_time[ista], sta[ista].timeInfo);
 
       // fit.L1AddMaterial( T, sta[i].materialInfo, qp0, 1 );
 
@@ -587,7 +583,6 @@ void L1Algo::L1KFTrackFitter()
 
         L1Filter(T, info, v[ista], w1);
         T1.Filter(info, v[ista], w1);
-
         T1.FilterTime(time[ista], timeEr[ista], w1_time, sta[ista].timeInfo);
 
         fldB2 = fldB1;
@@ -706,11 +701,7 @@ void L1Algo::L1KFTrackFitter()
       ista = 0;
 
       FilterFirst(T, x_first, y_first, staFirst);
-      // FilterFirst( T1, x_first, y_first, time_first, time_er_first, staFirst);
-
       FilterFirst(T1, x_first, y_first, time_first, time_er_first, staFirst, d_xx_fst, d_yy_fst, d_xy_fst);
-
-      T1.FilterTime(time[ista], timeEr[ista], w_time[ista], sta[ista].timeInfo);
 
       // fit.L1AddMaterial( T, sta[i].materialInfo, qp0, 1 );
       qp0  = T.qp;
@@ -775,7 +766,6 @@ void L1Algo::L1KFTrackFitter()
         info.sigma2 = d_v[ista] * d_v[ista];
 
         T1.Filter(info, v[ista], w1);
-
         T1.FilterTime(time[ista], timeEr[ista], w1_time, sta[ista].timeInfo);
 
         fldB2 = fldB1;
@@ -1095,8 +1085,6 @@ void L1Algo::L1KFTrackFitterMuch()
 
           L1Filter(T, info, v[i], w1);
           T1.Filter(info, v[i], w1);
-
-
           T1.FilterTime(time[i], timeEr[i], w1, sta[i].timeInfo);
         }
 
@@ -1175,7 +1163,6 @@ void L1Algo::L1KFTrackFitterMuch()
           info.sigma2 = d_yy[i];
           L1Filter(T, info, v[i], w1);
           T1.Filter(info, v[i], w1);
-
           T1.FilterTime(time[i], timeEr[i], w1, sta[i].timeInfo);
         }
       }
@@ -1319,7 +1306,6 @@ void L1Algo::L1KFTrackFitterMuch()
 
           L1Filter(T, info, v[i], w1);
           T1.Filter(info, v[i], w1);
-
           T1.FilterTime(time[i], timeEr[i], w1, sta[i].timeInfo);
         }
 
@@ -1370,7 +1356,6 @@ void L1Algo::L1KFTrackFitterMuch()
           info = sta[i].backInfo;
           //   info.sigma2 = d_v[i] * d_v[i];
           T1.Filter(info, v[i], w1);
-
           T1.FilterTime(time[i], timeEr[i], w1, sta[i].timeInfo);
 
 
