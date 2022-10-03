@@ -6,9 +6,6 @@
 
 #include "L1Fit.h"
 
-const fvec PipeRadThick   = 7.87e-3f;      // 0.7 mm Aluminium
-const fvec TargetRadThick = 3.73e-2f * 2;  // 250 mum Gold
-
 
 #define cnst const fvec
 
@@ -803,7 +800,7 @@ void L1TrackParFit::L1AddPipeMaterial(fvec qp0, fvec w)
   //  static const fscal logRadThick=log(RadThick);
   //const fscal RadThick=0.0009f;//0.5/18.76;
 
-  const fscal logRadThick = log(PipeRadThick[0]);
+  const fscal logRadThick = log(fPipeRadThick[0]);
   fvec tx                 = ftx;
   fvec ty                 = fty;
   fvec txtx               = ftx * ftx;
@@ -817,7 +814,7 @@ void L1TrackParFit::L1AddPipeMaterial(fvec qp0, fvec w)
   cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f, c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
   fvec s0 = (c1 + c2 * fvec(logRadThick) + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
   //fvec a = ( (ONE+mass2*qp0*qp0t)*RadThick*s0*s0 );
-  fvec a = ((t + fMass2 * qp0 * qp0t) * PipeRadThick * s0 * s0);
+  fvec a = ((t + fMass2 * qp0 * qp0t) * fPipeRadThick * s0 * s0);
 
   C22 += w * txtx1 * a;
   C32 += w * tx * ty * a;
@@ -825,7 +822,7 @@ void L1TrackParFit::L1AddPipeMaterial(fvec qp0, fvec w)
 }
 
 
-void L1TrackParFit::L1AddMaterial(fvec radThick, fvec qp0, fvec w)
+void L1TrackParFit::L1AddMaterial(const fvec& radThick, fvec qp0, fvec w)
 {
   cnst ONE = 1.;
 

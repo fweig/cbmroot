@@ -22,6 +22,9 @@ public:
   fvec fMass  = 0.10565800;     // muon mass
   fvec fMass2 = fMass * fMass;  // mass squared
 
+  fvec fPipeRadThick {7.87e-3f};        // 0.7 mm Aluminium  // TODO:
+  fvec fTargetRadThick {3.73e-2f * 2};  // 250 mum Gold      // TODO:
+
   L1TrackParFit()
     : fx(0.)
     , fy(0.)
@@ -130,7 +133,7 @@ public:
 
   void L1AddMaterial(const L1MaterialInfo& info, fvec qp0, fvec w);
 
-  void L1AddMaterial(fvec radThick, fvec qp0, fvec w = 1);
+  void L1AddMaterial(const fvec& radThick, fvec qp0, fvec w = 1);
 
   void L1AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream);
   void L1AddPipeMaterial(fvec qp0, fvec w = 1);
@@ -142,7 +145,6 @@ public:
   //  fvec       qp0    , // use Q/p linearisation at this value
   //  L1FieldRegion &F
   //  );
-
 
 } _fvecalignment;
 
