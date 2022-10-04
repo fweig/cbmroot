@@ -1,39 +1,26 @@
-Set(INCLUDE_DIRECTORIES
-${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-Include_Directories( ${INCLUDE_DIRECTORIES})
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES} 
-)
-
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-${ROOT_LIBRARY_DIR}
-${FAIRROOT_LIBRARY_DIR}
-${Boost_LIBRARY_DIRS}
-)
- 
-link_directories( ${LINK_DIRECTORIES})
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
 
 set(SRCS
-CbmQaCanvas.cxx
-CbmQaPie.cxx
-CbmQaHist.cxx
-CbmQaTable.cxx
-)
+  CbmQaCanvas.cxx
+  CbmQaPie.cxx
+  CbmQaHist.cxx
+  CbmQaTable.cxx
+  )
 
-set(HEADERS
-CbmQaCanvas.h
-CbmQaPie.h
-CbmQaHist.h
-CbmQaTable.h
-)
 
-set(LINKDEF CbmQaBaseLinkDef.h)
-Set(LIBRARY_NAME CbmQaBase)
-Set(DEPENDENCIES Hist Gpad)
+set(LIBRARY_NAME CbmQaBase)
+set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
+set(PUBLIC_DEPENDENCIES
+  FairLogger::FairLogger
+  ROOT::Core
+  ROOT::Gpad
+  ROOT::Hist
+  )
 
-GENERATE_LIBRARY()
+set(INTERFACE_DEPENDENCIES
+  ROOT::Graf
+  )
+
+generate_cbm_library()

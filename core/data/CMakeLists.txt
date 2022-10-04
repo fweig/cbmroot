@@ -13,22 +13,9 @@ set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}/tof
   ${CMAKE_CURRENT_SOURCE_DIR}/rich
   ${CMAKE_CURRENT_SOURCE_DIR}/psd
-  ${CMAKE_CURRENT_SOURCE_DIR}/global
-  ${FLES_IPC_INCLUDE_DIRECTORY}
-)
-include_directories( ${INCLUDE_DIRECTORIES})
+  ${CMAKE_CURRENT_SOURCE_DIR}/global 
+  )
 
-set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES}
-)
-include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-
-)
-link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
   CbmAddress.cxx
@@ -44,15 +31,12 @@ set(SRCS
   CbmModuleList.cxx
   CbmErrorMessage.cxx
   CbmRawEvent.cxx
-
   CbmMCTrack.cxx
   CbmMCEventInfo.cxx
   CbmMCEventList.cxx
-
   CbmLink.cxx
   CbmMatch.cxx
   CbmTrackMatchNew.cxx
-
   CbmTsEventHeader.cxx
 
   base/CbmDigiBranchBase.cxx
@@ -128,24 +112,38 @@ set(SRCS
   raw/PsdGbtReader-v1.00.cxx
 )
 
-Set(NO_DICT_SRCS
+set(NO_DICT_SRCS
   CbmDefs.cxx
 
   # STAR sub-event writer source code
   tof/etof/star_rhicf.c
-)
+  )
+
 
 # Mask warning from file provided by STAR
 SET_SOURCE_FILES_PROPERTIES(tof/etof/star_rhicf.c PROPERTIES COMPILE_FLAGS -Wno-pointer-sign)
 
-CHANGE_FILE_EXTENSION(*.cxx *.h HEADERS "${SRCS}")
+
 list(APPEND HEADERS base/CbmDigiData.h global/CbmDigiEvent.h global/CbmDigiTimeslice.h)
 
-set(LINKDEF DataLinkDef.h)
 set(LIBRARY_NAME CbmData)
-set(DEPENDENCIES Base)
+set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
+set(PUBLIC_DEPENDENCIES 
+  FairRoot::Base
+  ROOT::Core  
+  ROOT::Matrix 
+  ROOT::Physics
+  external::fles_ipc
+  xpu
+  )
 
-GENERATE_LIBRARY()
+set(PRIVATE_DEPENDENCIES 
+  ROOT::EG
+  FairLogger::FairLogger
+  ${VMCLIB}  
+  )
+
+generate_cbm_library()
 
 # Install file which has no corresponding source file
 Install(FILES
@@ -154,3 +152,5 @@ Install(FILES
         raw/bitmask_operators.hpp raw/StsXyterFinalHit.h raw/PsdGbtDataFormat-v0.00.h raw/PsdGbtDataFormat-v1.00.h
         DESTINATION include
        )
+
+

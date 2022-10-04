@@ -1,31 +1,22 @@
 set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-include_directories(${INCLUDE_DIRECTORIES})
-
-set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES}
-)
-
-include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${Boost_LIBRARY_DIRS}
-)
-
-link_directories(${LINK_DIRECTORIES})
+  )
 
 set(SRCS
   PronyFitter.cxx
   CbmPsdContFact.cxx
   CbmMcbm2018PsdPar.cxx
-)
+  )
 
-set(LINKDEF CbmPsdBaseLinkDef.h)
-Set(LIBRARY_NAME CbmPsdBase)
-Set(DEPENDENCIES ParBase Base)
+set(LIBRARY_NAME CbmPsdBase)
+set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
+set(PUBLIC_DEPENDENCIES 
+  FairRoot::ParBase
+  )
 
-GENERATE_LIBRARY()
+set(PRIVATE_DEPENDENCIES 
+  FairLogger::FairLogger 
+  ROOT::Core 
+  )
+
+generate_cbm_library()
