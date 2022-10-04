@@ -15,8 +15,9 @@
 class L1TrackParFit {
 
 public:
-  fvec fx, fy, ftx, fty, fqp, fz, ft, C00, C10, C11, C20, C21, C22, C30, C31, C32, C33, C40, C41, C42, C43, C44, C50,
-    C51, C52, C53, C54, C55, chi2, NDF;
+  fvec fx {0.}, fy {0.}, ftx {0.}, fty {0.}, fqp {0.}, fz {0.}, ft {0.}, C00 {0.}, C10 {0.}, C11 {0.}, C20 {0.},
+    C21 {0.}, C22 {0.}, C30 {0.}, C31 {0.}, C32 {0.}, C33 {0.}, C40 {0.}, C41 {0.}, C42 {0.}, C43 {0.}, C44 {0.},
+    C50 {0.}, C51 {0.}, C52 {0.}, C53 {0.}, C54 {0.}, C55 {0.}, chi2 {0.}, NDF {0.};
   //  fvec n;
 
   fvec fMass  = 0.10565800;     // muon mass
@@ -25,37 +26,7 @@ public:
   fvec fPipeRadThick {7.87e-3f};        // 0.7 mm Aluminium  // TODO:
   fvec fTargetRadThick {3.73e-2f * 2};  // 250 mum Gold      // TODO:
 
-  L1TrackParFit()
-    : fx(0.)
-    , fy(0.)
-    , ftx(0.)
-    , fty(0.)
-    , fqp(0.)
-    , fz(0.)
-    , ft(0.)
-    , C00(0.)
-    , C10(0.)
-    , C11(0.)
-    , C20(0.)
-    , C21(0.)
-    , C22(0.)
-    , C30(0.)
-    , C31(0.)
-    , C32(0.)
-    , C33(0.)
-    , C40(0.)
-    , C41(0.)
-    , C42(0.)
-    , C43(0.)
-    , C44(0.)
-    , C50(0.)
-    , C51(0.)
-    , C52(0.)
-    , C53(0.)
-    , C54(0.)
-    , C55(0.)
-    , chi2(0.)
-    , NDF(0.) {};
+  L1TrackParFit() = default;
 
   L1TrackParFit(double* T, double* C)
     : fx(T[0])

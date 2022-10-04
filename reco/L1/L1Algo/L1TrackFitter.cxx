@@ -332,13 +332,9 @@ void L1Algo::L1KFTrackFitter()
 
   const int nStations = fParameters.GetNstationsActive();
   int nTracks_SIMD    = fvec::size();
-  L1TrackPar T;  // fitting parametr coresponding to current track
 
   L1TrackParFit T1;  // fitting parametr coresponding to current track
   T1.SetParticleMass(GetDefaultParticleMass());
-
-  L1Fit fit;
-  fit.SetParticleMass(GetDefaultParticleMass());
 
   L1Track* t[fvec::size()] {nullptr};
 
@@ -495,18 +491,14 @@ void L1Algo::L1KFTrackFitter()
       }
     }
 
-
-    GuessVec(T, x, y, z, Sy, w, nStations, &z_end);
     GuessVec(T1, x, y, z, Sy, w, nStations, &z_end, time, w_time);
 
     if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
       T1.fqp = fvec(0.);
-      T.qp   = fvec(0.);
     }
 
     for (int iter = 0; iter < 2; iter++) {  // 1.5 iterations
 
-      fvec qp0  = T.qp;
       fvec qp01 = T1.fqp;
 
       // fit backward
@@ -516,20 +508,17 @@ void L1Algo::L1KFTrackFitter()
       time_last    = iif(w_time[ista] > fvec::Zero(), time_last, fvec::Zero());
       time_er_last = iif(w_time[ista] > fvec::Zero(), time_er_last, fvec(100.));
 
-      FilterFirst(T, x_last, y_last, staLast);
       FilterFirst(T1, x_last, y_last, time_last, time_er_last, staLast, d_xx_lst, d_yy_lst, d_xy_lst);
-
-      // fit.L1AddMaterial( T, sta[i].materialInfo, qp0, 1 );
 
       fldZ1 = z[ista];
 
-      sta[ista].fieldSlice.GetFieldValue(T.x, T.y, fldB1);
+      sta[ista].fieldSlice.GetFieldValue(T1.fx, T1.fy, fldB1);
 
       fldB1.Combine(fB[ista], w[ista]);
 
       fldZ2   = z[ista - 2];
       fvec dz = fldZ2 - fldZ1;
-      sta[ista].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, fldB2);
+      sta[ista].fieldSlice.GetFieldValue(T1.fx + T1.ftx * dz, T1.fy + T1.fty * dz, fldB2);
       fldB2.Combine(fB[ista - 2], w[ista - 2]);
       fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
 
@@ -537,7 +526,7 @@ void L1Algo::L1KFTrackFitter()
 
         fldZ0 = z[ista];
         dz    = (fldZ1 - fldZ0);
-        sta[ista].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, fldB0);
+        sta[ista].fieldSlice.GetFieldValue(T1.fx - T1.ftx * dz, T1.fy - T1.fty * dz, fldB0);
         fldB0.Combine(fB[ista], w[ista]);
         fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
@@ -548,40 +537,28 @@ void L1Algo::L1KFTrackFitter()
 
         fld1 = fld;
 
-        L1Extrapolate(T, z[ista], qp0, fld, &wExtr);
-
         T1.Extrapolate(z[ista], qp01, fld1, wExtr);
-        //  T1.ExtrapolateLine(z[i]);
 
         if (ista == fNstationsBeforePipe - 1) {
-          fit.L1AddPipeMaterial(T, qp0, wExtr);
-          fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(1.f), wExtr);
-
           T1.L1AddPipeMaterial(qp01, wExtr);
-          T1.EnergyLossCorrection(fit.PipeRadThick, qp01, fvec(1.f), wExtr);
+          T1.EnergyLossCorrection(T1.fPipeRadThick, qp01, fvec(1.f), wExtr);
         }
         if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista, T.x, T.y), qp0, wExtr);
-          fit.EnergyLossCorrection(T, fParameters.GetMaterialThickness(ista, T.x, T.y), qp0, fvec(1.f), wExtr);
-
           T1.L1AddMaterial(fParameters.GetMaterialThickness(ista, T1.fx, T1.fy), qp01, wExtr);
           T1.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, T1.fx, T1.fy), qp01, fvec(1.f), wExtr);
         }
         else {
-          fit.L1AddMaterial(T, sta[ista].materialInfo, qp0, wExtr);
           T1.L1AddMaterial(sta[ista].materialInfo, qp01, wExtr);
         }
 
         L1UMeasurementInfo info = sta[ista].frontInfo;
         info.sigma2             = d_u[ista] * d_u[ista];
 
-        L1Filter(T, info, u[ista], w1);
         T1.Filter(info, u[ista], w1);
 
         info        = sta[ista].backInfo;
         info.sigma2 = d_v[ista] * d_v[ista];
 
-        L1Filter(T, info, v[ista], w1);
         T1.Filter(info, v[ista], w1);
         T1.FilterTime(time[ista], timeEr[ista], w1_time, sta[ista].timeInfo);
 
@@ -590,7 +567,6 @@ void L1Algo::L1KFTrackFitter()
         fldB1 = fldB0;
         fldZ1 = fldZ0;
       }
-      // fit.L1AddHalfMaterial( T, sta[i].materialInfo, qp0 );
 
       // extrapolate to the PV region
 
@@ -700,62 +676,45 @@ void L1Algo::L1KFTrackFitter()
 
       ista = 0;
 
-      FilterFirst(T, x_first, y_first, staFirst);
       FilterFirst(T1, x_first, y_first, time_first, time_er_first, staFirst, d_xx_fst, d_yy_fst, d_xy_fst);
 
-      // fit.L1AddMaterial( T, sta[i].materialInfo, qp0, 1 );
-      qp0  = T.qp;
       qp01 = T1.fqp;
 
       fldZ1 = z[ista];
-      sta[ista].fieldSlice.GetFieldValue(T.x, T.y, fldB1);
+      sta[ista].fieldSlice.GetFieldValue(T1.fx, T1.fy, fldB1);
       fldB1.Combine(fB[ista], w[ista]);
 
       fldZ2 = z[ista + 2];
       dz    = fldZ2 - fldZ1;
-      sta[ista].fieldSlice.GetFieldValue(T.x + T.tx * dz, T.y + T.ty * dz, fldB2);
+      sta[ista].fieldSlice.GetFieldValue(T1.fx + T1.ftx * dz, T1.fy + T1.fty * dz, fldB2);
       fldB2.Combine(fB[ista + 2], w[ista + 2]);
       fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
 
       for (++ista; ista < nStations; ista++) {
         fldZ0 = z[ista];
         dz    = (fldZ1 - fldZ0);
-        sta[ista].fieldSlice.GetFieldValue(T.x - T.tx * dz, T.y - T.ty * dz, fldB0);
+        sta[ista].fieldSlice.GetFieldValue(T1.fx - T1.ftx * dz, T1.fy - T1.fty * dz, fldB0);
         fldB0.Combine(fB[ista], w[ista]);
         fld.Set(fldB0, fldZ0, fldB1, fldZ1, fldB2, fldZ2);
 
         fmask initialised = (z[ista] <= z_end) & (z_start < z[ista]);
         fvec w1           = iif(initialised, w[ista], fvec::Zero());
         fvec w1_time      = iif(initialised, w_time[ista], fvec::Zero());
-        fvec wIn          = iif(initialised, fvec::One(), fvec::Zero());
+        fvec wExtr        = iif(initialised, fvec::One(), fvec::Zero());
 
-        L1Extrapolate(T, z[ista], qp0, fld, &w1);
-
-        // L1ExtrapolateLine( T, z[ista]);
-
-        T1.Extrapolate(z[ista], qp0, fld, w1);
-
-        // T1.ExtrapolateLine( z[ista]);
+        T1.Extrapolate(z[ista], qp01, fld, w1);
 
         if (ista == fNstationsBeforePipe) {
-          fit.L1AddPipeMaterial(T, qp0, wIn);
-          fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(-1.f), wIn);
-
-          T1.L1AddPipeMaterial(qp01, wIn);
-          T1.EnergyLossCorrection(fit.PipeRadThick, qp01, fvec(-1.f), wIn);
+          T1.L1AddPipeMaterial(qp01, wExtr);
+          T1.EnergyLossCorrection(T1.fPipeRadThick, qp01, fvec(-1.f), wExtr);
         }
         if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista, T.x, T.y), qp0, wIn);
-          fit.EnergyLossCorrection(T, fParameters.GetMaterialThickness(ista, T.x, T.y), qp0, fvec(-1.f), wIn);
-
-          T1.L1AddMaterial(fParameters.GetMaterialThickness(ista, T1.fx, T1.fy), qp01, wIn);
-          T1.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, T1.fx, T1.fy), qp01, fvec(-1.f), wIn);
+          T1.L1AddMaterial(fParameters.GetMaterialThickness(ista, T1.fx, T1.fy), qp01, wExtr);
+          T1.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, T1.fx, T1.fy), qp01, fvec(-1.f), wExtr);
         }
         else {
-          fit.L1AddMaterial(T, sta[ista].materialInfo, qp0, wIn);
+          T1.L1AddMaterial(sta[ista].materialInfo, qp01, wExtr);
         }
-        L1Filter(T, sta[ista].frontInfo, u[ista], w1);
-        L1Filter(T, sta[ista].backInfo, v[ista], w1);
 
         L1UMeasurementInfo info = sta[ista].frontInfo;
         info.sigma2             = d_u[ista] * d_u[ista];
@@ -773,7 +732,6 @@ void L1Algo::L1KFTrackFitter()
         fldB1 = fldB0;
         fldZ1 = fldZ0;
       }
-      // fit.L1AddHalfMaterial( T, sta[ista].materialInfo, qp0 );
 
       for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
         t[iVec]->TLast[0] = T1.fx[iVec];

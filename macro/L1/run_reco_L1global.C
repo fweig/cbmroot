@@ -396,6 +396,7 @@ void run_reco_L1global(TString input = "", Int_t nTimeSlices = -1, Int_t firstTi
     }
 */
 
+    l1->SetInputConfigName("");
     run->AddTask(l1);
     std::cout << "-I- " << myName << ": Added task " << l1->GetName() << std::endl;
 
