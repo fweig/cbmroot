@@ -190,4 +190,46 @@ MACRO (GENERATE_CBM_TEST_SCRIPT SCRIPT_FULL_NAME DEST_DIR)
 ENDMACRO (GENERATE_CBM_TEST_SCRIPT)
 #----- Macro GENERATE_CBM_TEST_SCRIPT  --------------------------------------
 
+macro(generate_cbm_library)
+#macro for generating Cbm libraries
 
+  ############### Changing the file extension .cxx to .h #################
+  foreach (SRCS ${SRCS})
+    string(REGEX REPLACE "[.]cxx$" ".h" HEADER "${SRCS}")
+      if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${HEADER}")
+        set(HEADERS ${HEADERS} ${HEADER})
+      endif()
+  endforeach()
+
+  ######################### build the library ############################
+  add_library(${LIBRARY_NAME} SHARED ${HEADERS} ${SRCS} ${NO_DICT_SRCS} ${LINKDEF})
+  
+  target_link_libraries(${LIBRARY_NAME} PUBLIC ${DEPENDENCIES} ${PUBLIC_DEPENDENCIES} PRIVATE ${PRIVATE_DEPENDENCIES} INTERFACE ${INTERFACE_DEPENDENCIES})
+  target_include_directories(${LIBRARY_NAME} PUBLIC ${INCLUDE_DIRECTORIES})
+
+  if(LINKDEF)
+    root_generate_dictionary(G__${LIBRARY_NAME} ${HEADERS} MODULE ${LIBRARY_NAME} LINKDEF ${LINKDEF})
+  endif(LINKDEF)
+
+  ############# Install target and corresponding header files ############
+  install(TARGETS ${LIBRARY_NAME} DESTINATION lib)
+  install(FILES ${HEADERS} DESTINATION include)
+
+
+  if(LINKDEF)
+    set(rootmap_file ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LIBRARY_NAME}.rootmap)
+    set(pcm_file ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LIBRARY_NAME}_rdict.pcm)
+    install(FILES ${rootmap_file} ${pcm_file} DESTINATION lib)
+  endif(LINKDEF)
+
+  set(LIBRARY_NAME)
+  set(LINKDEF)
+  set(SRCS)
+  set(HEADERS)
+  set(NO_DICT_SRCS)
+  set(DEPENDENCIES)
+  set(PUBLIC_DEPENDENCIES)
+  set(PRIVATE_DEPENDENCIES)
+  set(INTERFACE_DEPENDENCIES)
+
+endmacro(generate_cbm_library)
