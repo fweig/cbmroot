@@ -19,17 +19,10 @@ class L1AlgoDraw;
 //#define XXX               // time debug
 //#define COUNTERS          // diff counters (hits, doublets, ... )
 
-// =====>dispatched<===== // #define MERGE_CLONES
-
-// =====>dispatched<===== // #define HitErrors
 //#define GLOBAL
 //#define mCBM
 
-// =====>dispatched<===== // #define LAST_ITERATION kAllSecIter
 #define FIND_GAPED_TRACKS  // use triplets with gaps
-// =====>dispatched<===== // #define USE_RL_TABLE
-//#endif
-
 
 #include <array>
 #include <iomanip>

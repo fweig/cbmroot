@@ -88,11 +88,11 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   T.C10  = sta0.XYInfo.C10;
   T.C11  = sta0.XYInfo.C11;
 
-#ifdef HitErrors
-  T.C00 = hit0.dx * hit0.dx;
-  T.C10 = hit0.dxy;
-  T.C11 = hit0.dy * hit0.dy;
-#endif
+  if constexpr (L1Constants::control::kIfSaveHitErrorsInTrackExtender) {
+    T.C00 = hit0.dx * hit0.dx;
+    T.C10 = hit0.dxy;
+    T.C11 = hit0.dy * hit0.dy;
+  }
 
   T.C20 = T.C21 = 0;
   T.C30 = T.C31 = T.C32 = 0;
@@ -146,16 +146,12 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
 
     L1UMeasurementInfo info = sta.frontInfo;
 
-#ifdef HitErrors
-    info.sigma2 = hit.du * hit.du;
-#endif
+    if constexpr (L1Constants::control::kIfSaveHitErrorsInTrackExtender) { info.sigma2 = hit.du * hit.du; }
     L1Filter(T, info, u);
 
     info = sta.backInfo;
 
-#ifdef HitErrors
-    info.sigma2 = hit.dv * hit.dv;
-#endif
+    if constexpr (L1Constants::control::kIfSaveHitErrorsInTrackExtender) { info.sigma2 = hit.dv * hit.dv; }
     L1Filter(T, info, v);
 
     FilterTime(T, hit.t, hit.dt);
@@ -325,16 +321,12 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
     L1UMeasurementInfo info = sta.frontInfo;
 
-#ifdef HitErrors
-    info.sigma2 = hit.du * hit.du;
-#endif
+    if constexpr (L1Constants::control::kIfSaveHitErrorsInTrackExtender) { info.sigma2 = hit.du * hit.du; }
     L1Filter(T, info, u);
 
     info = sta.backInfo;
 
-#ifdef HitErrors
-    info.sigma2 = hit.dv * hit.dv;
-#endif
+    if constexpr (L1Constants::control::kIfSaveHitErrorsInTrackExtender) { info.sigma2 = hit.dv * hit.dv; }
     L1Filter(T, info, v);
 
     FilterTime(T, hit.t, hit.dt);
