@@ -136,7 +136,8 @@ public:
   void ClearSetupInfo();
 
   /// Forms parameters container
-  void FormParametersContainer();
+  /// \return  Success flag
+  bool FormParametersContainer();
 
   /// Gets ghost suppression flag
   int GetGhostSuppression() const { return fParameters.fGhostSuppression; }

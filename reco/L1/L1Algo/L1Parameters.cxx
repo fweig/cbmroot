@@ -11,6 +11,8 @@
 
 #include <FairLogger.h>
 
+#include <iomanip>
+
 //----------------------------------------------------------------------------------------------------------------------
 //
 L1Parameters::L1Parameters()
@@ -228,6 +230,38 @@ void L1Parameters::CheckConsistency() const
 
   for (int iSt = 0; iSt < fNstationsActiveTotal; ++iSt) {
     fThickMap[iSt].CheckConsistency();
+  }
+
+
+  /*
+   *  Check iterations sequence
+   *  1. Number of iterations with TrackFromTriplets flag turned on no more then 1
+   *  2. If this iteration exists, it should be the last one in the sequence
+   */
+  {
+    int nIterations = std::count_if(fCAIterations.begin(), fCAIterations.end(),
+                                    [=](const L1CAIteration& it) { return it.GetTrackFromTripletsFlag(); });
+    if (nIterations > 1) {
+      std::stringstream msg;
+      msg << "L1Parameters: found " << nIterations << " iterations with GetTrackFromTripletsFlag() == true:\n";
+      for (const auto& iter : fCAIterations) {
+        if (iter.GetTrackFromTripletsFlag()) { msg << '\t' << "- " << iter.GetName() << '\n'; }
+      }
+      msg << "Only the one iteration can have GetTrackFromTripletsFlag() == true, and this iteration should be ";
+      msg << "the last one";
+      throw std::logic_error(msg.str());
+    }
+
+    if (nIterations == 1 && !(fCAIterations.end() - 1)->GetTrackFromTripletsFlag()) {
+      std::stringstream msg;
+      msg << "L1Parameters: iteration with GetTrackFromTripletsFlag() == true is not the last in a sequence. ";
+      msg << "The GetTrackFromTripletsFlag() value in the iterations sequence: \n";
+      for (const auto& iter : fCAIterations) {
+        msg << '\t' << "- " << std::setw(15) << std::setfill(' ') << iter.GetName() << ' ';
+        msg << std::setw(6) << std::setfill(' ') << iter.GetTrackFromTripletsFlag() << '\n';
+      }
+      throw std::logic_error(msg.str());
+    }
   }
 
   LOG(info) << "Consistency test for L1 parameters object... \033[1;32mpassed\033[0m";

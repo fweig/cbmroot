@@ -745,6 +745,7 @@ InitStatus CbmL1::Init()
     trackingIterAllSecJump.SetMaxDZ(0.1);
     trackingIterAllSecJump.SetMinLevelTripletStart(1);
     trackingIterAllSecJump.SetTargetPosSigmaXY(10, 10);
+    trackingIterAllSecJump.SetPrimaryFlag(false);
 
     auto trackingIterAllPrimE = L1CAIteration("AllPrimEIter");
     trackingIterAllPrimE.SetTrackChi2Cut(10.f);
@@ -773,6 +774,7 @@ InitStatus CbmL1::Init()
     trackingIterAllSecE.SetMaxDZ(0.1);
     trackingIterAllSecE.SetMinLevelTripletStart(1);
     trackingIterAllSecE.SetTargetPosSigmaXY(10, 10);
+    trackingIterAllSecE.SetPrimaryFlag(false);
     trackingIterAllSecE.SetElectronFlag(true);
 
     // Select default track finder
@@ -786,6 +788,11 @@ InitStatus CbmL1::Init()
       trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.3);
       trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.3);
       trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.3);
+
+      trackingIterFastPrim.SetExtendTracksFlag(false);
+      trackingIterAllPrim.SetExtendTracksFlag(false);
+      trackingIterAllPrimJump.SetExtendTracksFlag(false);
+      trackingIterAllSec.SetExtendTracksFlag(false);
 
       fInitManager.SetCAIterationsNumberCrosscheck(4);
       // Initialize CA track finder iterations sequence
@@ -812,6 +819,7 @@ InitStatus CbmL1::Init()
       trd2dIter1.SetTargetPosSigmaXY(1., 1.);  //(1, 1);
       trd2dIter1.SetMinLevelTripletStart(1);
       trd2dIter1.SetPrimaryFlag(false);
+      trd2dIter1.SetExtendTracksFlag(false);
 
       auto trd2dIter2 = L1CAIteration("Trd2dIter2");
       trd2dIter2.SetTrackChi2Cut(7.f);              //10.f
@@ -826,6 +834,7 @@ InitStatus CbmL1::Init()
       trd2dIter2.SetTargetPosSigmaXY(8 * 10, 6 * 10);  //(1, 1);
       trd2dIter2.SetMinLevelTripletStart(0);
       trd2dIter2.SetPrimaryFlag(false);
+      trd2dIter2.SetExtendTracksFlag(false);
 
       // Initialize CA track finder iterations sequence
 
@@ -841,6 +850,18 @@ InitStatus CbmL1::Init()
     }
     else {
       fInitManager.SetCAIterationsNumberCrosscheck(4);
+
+      trackingIterFastPrim.SetExtendTracksFlag(true);
+      trackingIterAllPrim.SetExtendTracksFlag(true);
+      trackingIterFastPrim2.SetExtendTracksFlag(true);
+      trackingIterAllSec.SetExtendTracksFlag(true);
+      trackingIterFastPrimJump.SetExtendTracksFlag(true);
+      trackingIterAllPrimJump.SetExtendTracksFlag(true);
+      trackingIterAllSecJump.SetExtendTracksFlag(true);
+      trackingIterAllPrimE.SetExtendTracksFlag(true);
+      trackingIterAllSecE.SetExtendTracksFlag(true);
+
+
       // Initialize CA track finder iterations sequence
       fInitManager.PushBackCAIteration(trackingIterFastPrim);
       fInitManager.PushBackCAIteration(trackingIterAllPrim);
@@ -862,7 +883,7 @@ InitStatus CbmL1::Init()
     fInitManager.SetMomentumCutOff(fMomentumCutOff);
 
     // Form parameters container
-    fInitManager.FormParametersContainer();
+    if (!fInitManager.FormParametersContainer()) { return kERROR; }
 
     // Write to file if needed
     if (1 == fSTAPDataMode) { this->WriteSTAPParamObject(); }

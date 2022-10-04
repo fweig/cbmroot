@@ -152,7 +152,7 @@ void L1InitManager::ClearCAIterations()
 
 // ----------------------------------------------------------------------------------------------------------------------
 // NOTE: this function should be called once in the SendParameters
-void L1InitManager::FormParametersContainer()
+bool L1InitManager::FormParametersContainer()
 {
   // Read configuration file
   // NOTE: We consider parameters from the configuration file as ones with a higher priority, so all the defined
@@ -184,7 +184,15 @@ void L1InitManager::FormParametersContainer()
   }
 
   // Check the consistency of the parameters object. If object inconsistent, it throws std::logic_error
-  fParameters.CheckConsistency();
+  try {
+    fParameters.CheckConsistency();
+  }
+  catch (const std::logic_error& err) {
+    LOG(error) << "L1InitManager: parameters container consistency check failed. Reason: " << err.what();
+    return false;
+  }
+
+  return true;
 }
 
 // ----------------------------------------------------------------------------------------------------------------------

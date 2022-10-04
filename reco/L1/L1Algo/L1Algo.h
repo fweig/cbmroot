@@ -20,7 +20,6 @@ class L1AlgoDraw;
 //#define COUNTERS          // diff counters (hits, doublets, ... )
 
 // =====>dispatched<===== // #define MERGE_CLONES
-// #define TRACKS_FROM_TRIPLETS_ITERATION kAllPrimIter
 
 // =====>dispatched<===== // #define HitErrors
 //#define GLOBAL
@@ -29,10 +28,6 @@ class L1AlgoDraw;
 // =====>dispatched<===== // #define LAST_ITERATION kAllSecIter
 #define FIND_GAPED_TRACKS  // use triplets with gaps
 // =====>dispatched<===== // #define USE_RL_TABLE
-#ifndef TRACKS_FROM_TRIPLETS
-#define EXTEND_TRACKS
-#endif
-//#define USE_EVENT_NUMBER
 //#endif
 
 
@@ -571,11 +566,7 @@ private:
     kAllSecJumpIter  // secondary tracks with jumped triplets
   };
 
-#ifdef TRACKS_FROM_TRIPLETS
-  int fNFindIterations = TRACKS_FROM_TRIPLETS_ITERATION + 1;  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
-#else  // not TRACKS_FROM_TRIPLETS
   int fNFindIterations = -1;  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
-#endif  // TRACKS_FROM_TRIPLETS
 
 #else  // not FIND_GAPED_TRACKS
   enum
@@ -622,7 +613,7 @@ private:
   //  int TripNumThread;
 
   int fTrackingLevel {2};       // currently not used
-  int fGhostSuppression {1};    // currently not used
+  int fGhostSuppression {1};    // NOTE: Should be equal to 0 in TRACKS_FROM_TRIPLETS mode!
   float fMomentumCutOff {0.2};  // currently not used
 
   /// ----- Debug features -----

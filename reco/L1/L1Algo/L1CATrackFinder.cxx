@@ -106,9 +106,6 @@ inline void L1Algo::findSingletsStep0(  // input
     L1HitPoint& hitl = Hits_l[ilh];
 
 
-#ifdef USE_EVENT_NUMBER
-    Event_l[i1_V][i1_4] = hitl.track;
-#endif  // USE_EVENT_NUMBER
 
     HitTime_l[i1_V][i1_4] = hitl.time;
     HitTimeEr[i1_V][i1_4] = hitl.timeEr;
@@ -216,8 +213,8 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     fld1.Set(b10, fld1Sta0.z, b11, fld1Sta1.z, b12, fld1Sta2.z);
 
     T.chi2 = 0.;
-    T.NDF  = 2.;  /// Iterations -> Number of parameters - number of measurements,
-    if ((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) T.NDF = fvec(0.);
+    T.NDF  = (fpCurrentIteration->GetPrimaryFlag()) ? fvec(2.) : fvec(0.);
+
     // TODO: iteration parameter: "Starting NDF of track parameters"
     // NDF = number of track parameters (6: x, y, tx, ty, qp, time) - number of measured parameters (3: x, y, time) on station or (2: x, y) on target
     // Alternative: Iteration can find tracks starting from target or from station: -> use a FLAG
@@ -233,14 +230,15 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     T.C50 = T.C51 = T.C52 = T.C53 = T.C54 = fvec(0.);
     T.C22 = T.C33 = fMaxSlopePV * fMaxSlopePV / fvec(9.);
     if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) T.C22 = T.C33 = fvec(10.);
+    // TODO: Why 9. and 10.?
+
+
     T.C44 = fMaxInvMom / fvec(3.) * fMaxInvMom / fvec(3.);
     T.C55 = timeEr * timeEr;
 
     if (fParameters.DevIsFitSingletsFromTarget()) {  // TODO: doesn't work. Why?
-
       T.x = fTargX;
       T.y = fTargY;
-
       T.z   = fTargZ;
       T.C00 = TargetXYInfo.C00;
       T.C10 = TargetXYInfo.C10;
@@ -441,9 +439,6 @@ inline void L1Algo::findDoubletsStep0(
         if (fabs(time - hitm.time) > 30) continue;
       }
 
-#ifdef USE_EVENT_NUMBER
-      if ((Event[i1_V][i1_4] != hitm.n)) continue;
-#endif  // USE_EVENT_NUMBER
       // - check whether hit belong to the window ( track position +\- errors ) -
       const fscal zm = hitm.Z();
       //       L1TrackPar T1_new = T1;
@@ -495,15 +490,11 @@ inline void L1Algo::findDoubletsStep0(
       if (fUseHitErrors) info.sigma2 = hitm.dU() * hitm.dU();
 
       L1FilterChi2XYC00C10C11(info, x, y, C00, C10, C11, chi2, hitm.U());
-#ifdef DO_NOT_SELECT_TRIPLETS
-      if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
-#endif  // DO_NOT_SELECT_TRIPLETS
-        if (chi2[i1_4] > fDoubletChi2Cut) continue;
-          //       T1.t[i1_4] = hitm.time;
 
-#ifdef USE_EVENT_NUMBER
-      T1.n[i1_4] = hitm.n;
-#endif  // USE_EVENT_NUMBER
+      if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {
+        if (chi2[i1_4] > fDoubletChi2Cut) continue;
+      }
+
 
       info = stam.backInfo;
 
@@ -513,10 +504,9 @@ inline void L1Algo::findDoubletsStep0(
 
       // FilterTime(T1, hitm.time, hitm.timeEr);
 
-#ifdef DO_NOT_SELECT_TRIPLETS
-      if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
-#endif  // DO_NOT_SELECT_TRIPLETS
+      if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {
         if (chi2[i1_4] > fDoubletChi2Cut) continue;
+      }
 
       i1_2.push_back(i1);
 #ifdef DOUB_PERFORMANCE
@@ -750,14 +740,12 @@ inline void L1Algo::findTripletsStep0(  // input
       if (fabs(T2.tx[i2_4]) > fMaxSlope) continue;
       if (fabs(T2.ty[i2_4]) > fMaxSlope) continue;
 
-      const fvec Pick_r22   = (fTripletChi2Cut - T2.chi2);
+      const fvec Pick_r22   = fTripletChi2Cut - T2.chi2 + (!fpCurrentIteration->GetTrackFromTripletsFlag() ? 0 : 1);
       const fscal timeError = T2.C55[i2_4];
       const fscal time      = T2.t[i2_4];
       // find first possible hit
 
-#ifdef DO_NOT_SELECT_TRIPLETS
-      if (isec == TRACKS_FROM_TRIPLETS_ITERATION) { Pick_r22 = Pick_r2 + 1; }
-#endif  // DO_NOT_SELECT_TRIPLETS
+
       const fscal iz = 1.f / (T2.z[i2_4] - fParameters.GetTargetPositionZ()[0]);
       L1HitAreaTime area(vGridTime[&star - fParameters.GetStations().begin()], T2.x[i2_4] * iz, T2.y[i2_4] * iz,
                          (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + fMaxDZ * abs(T2.tx))[i2_4] * iz,
@@ -787,9 +775,6 @@ inline void L1Algo::findTripletsStep0(  // input
           if (GetMcTrackIdForUnusedHit(indM) != GetMcTrackIdForUnusedHit(indR)) { continue; }
         }
 
-#ifdef USE_EVENT_NUMBER  // NOTE:
-        if ((T2.n[i2_4] != hitr.n)) continue;
-#endif  // USE_EVENT_NUMBER
         const fscal zr = hitr.Z();
         //  const fscal yr = hitr.Y();
 
@@ -861,12 +846,11 @@ inline void L1Algo::findTripletsStep0(  // input
         FilterTime(T_cur, hitr.time, hitr.timeEr, star.timeInfo);
 
 
-#ifdef DO_NOT_SELECT_TRIPLETS
-        if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
-#endif  // DO_NOT_SELECT_TRIPLETS
+        if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {
           if (chi2[i2_4] > fTripletChi2Cut || C00[i2_4] < 0 || C11[i2_4] < 0 || T_cur.C55[i2_4] < 0) {
             continue;  // chi2_triplet < CHI2_CUT
           }
+        }
 
 #ifndef FAST_CODE
 //TODO: optimise triplet portion limit and put a warning
@@ -1221,13 +1205,9 @@ inline void L1Algo::findTripletsStep3(  // input
 
     ihitl_prev = 1 + hitsl_3[i3];
 
-#ifdef DO_NOT_SELECT_TRIPLETS
-    if (isec != TRACKS_FROM_TRIPLETS_ITERATION) {
+    if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {
       if (chi2 > fTripletChi2Cut) { continue; }
     }
-#else
-    if (chi2 > fTripletChi2Cut) { continue; }
-#endif  // DO_NOT_SELECT_TRIPLETS
 
     // assert(std::isfinite(chi2) && chi2 > 0);
 
@@ -1305,10 +1285,7 @@ inline void L1Algo::f5(  // input
 
   int* nlevel)
 {
-#ifdef TRACKS_FROM_TRIPLETS
-  if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
-#endif
-
+  if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {
     for (int istal = fParameters.GetNstationsActive() - 4; istal >= fFirstCAstation; istal--) {
       for (int tripType = 0; tripType < 3; tripType++)  // tT = 0 - 123triplet, tT = 1 - 124triplet, tT = 2 - 134triplet
       {
@@ -1383,6 +1360,7 @@ inline void L1Algo::f5(  // input
         }
       }  // tripType
     }    // istal
+  }      // if !fpCurrentIteration->GetTrackFromTripletsFlag()
 }
 
 /// ------------------- doublets on station ----------------------
@@ -1651,13 +1629,7 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
 
 void L1Algo::CATrackFinder()
 {
-
-#ifdef TRACKS_FROM_TRIPLETS
-  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
-  fNFindIterations = TRACKS_FROM_TRIPLETS_ITERATION + 1;
-#else
   fNFindIterations = fParameters.GetNcaIterations();
-#endif
 
 
 #ifdef _OPENMP
@@ -2132,20 +2104,16 @@ void L1Algo::CATrackFinder()
     ///=                                                                  =
     ///====================================================================
 
-    // #ifdef XXX
-    //     cout<<"---- Collect track candidates. ----"<<endl;
-    // #endif
-
     int min_level =
-      caIteration.GetMinLevelTripletStart();  // min level for start triplet. So min track length = min_level+3.
+      caIteration.GetMinLevelTripletStart();  // min level to start triplet. So min track length = min_level+3.
                                               //    if (isec == kFastPrimJumpIter) min_level = 1;
     //if ((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
     //  min_level = 1;  // only the long low momentum tracks
 
-#ifdef TRACKS_FROM_TRIPLETS
-    LOG(FATAL) << "L1CATrackFinder: min_level undefined in " << __FILE__ << " : " << __LINE__;
-    if (isec == TRACKS_FROM_TRIPLETS_ITERATION) min_level = 0;
-#endif
+    // TODO: SZh 04.10.2022: Why this fatal error is called?
+    // NOTE: This line was wrapped into TRACKS_FROM_TRIPLETS ifdef
+    //LOG(FATAL) << "L1CATrackFinder: min_level undefined in " << __FILE__ << " : " << __LINE__;
+    if (fpCurrentIteration->GetTrackFromTripletsFlag()) { min_level = 0; }
 
     // TODO: Just remove it
     // // min_level: lower then this triplets would never start
@@ -2209,7 +2177,7 @@ void L1Algo::CATrackFinder()
                 || fvHitKeyFlags[(*vHitsUnused)[first_trip.GetLHit()].b]) {
               continue;
             }
-//               ghost supression !!!
+//               ghost suppression !!!
 #ifndef FIND_GAPED_TRACKS
             if (/*(isec == kFastPrimIter) ||*/ (isec == kAllPrimIter) || (isec == kAllPrimEIter)
                 || (isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) {
@@ -2218,10 +2186,7 @@ void L1Algo::CATrackFinder()
                 || (isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter)
                 || (isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) {
 #endif
-#ifdef TRACKS_FROM_TRIPLETS
-              if (isec != TRACKS_FROM_TRIPLETS_ITERATION)
-#endif
-              {  // ghost supression !!!
+              if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {  // ghost suppression !!!
                 // TODO: Primary => 3 hits tracks are saved, otherwise 3 hit tracks are thrown away
                 if (isec != kFastPrimIter && isec != kAllPrimIter && isec != kAllPrimEIter && isec != kAllSecEIter)
                   if (first_trip.GetLevel() == 0)
@@ -2264,7 +2229,6 @@ void L1Algo::CATrackFinder()
 
             best_chi2 = best_chi2 / ndf;  //normalize
 
-#ifndef TRACKS_FROM_TRIPLETS
             if (fGhostSuppression) {
               if (3 == best_L) {
                 // if( isec == kAllSecIter ) continue; // too /*short*/ secondary track
@@ -2274,7 +2238,6 @@ void L1Algo::CATrackFinder()
                   continue;
               }
             }
-#endif
             fTrackCandidates[thread_num].push_back(best_tr);
             L1Branch& tr = fTrackCandidates[thread_num].back();
             tr.Set(istaF, best_L, best_chi2, first_trip.GetQp(),
@@ -2415,11 +2378,9 @@ void L1Algo::CATrackFinder()
           else {
             if (tr.NHits < 3) { continue; }
           }
-#ifdef EXTEND_TRACKS
-          if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
+          if (fpCurrentIteration->GetExtendTracksFlag()) {
             if (tr.NHits != fParameters.GetNstationsActive()) BranchExtender(tr);
           }
-#endif
           fscal sumTime = 0;
 
 #ifdef _OPENMP
@@ -2738,7 +2699,7 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
     if (curr_chi2 > fTrackChi2Cut * ndf) return;
 
     //       // try to find more hits
-    // #ifdef EXTEND_TRACKS
+    // if (fpCurrentIteration->GetExtendTracksFlag()) {
     //     // if( curr_L < min_best_l )
     //     if (isec != kFastPrimJumpIter && isec != kAllPrimJumpIter && isec != kAllSecJumpIter && curr_L >= 3){
     //       //curr_chi2 = BranchExtender(curr_tr);
@@ -2746,7 +2707,7 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
     //       curr_L = curr_tr.Hits.size();
     //         //      if( 2*curr_chi2 > (2*(curr_L*2-5) + 1) * 4*4 ) return;
     //     }
-    // #endif // EXTEND_TRACKS
+    // }
 
     // -- select the best
     if ((curr_L > best_L) || ((curr_L == best_L) && (curr_chi2 < best_chi2))) {

@@ -50,6 +50,12 @@ public:
   /// Gets doublet chi2 upper cut
   float GetDoubletChi2Cut() const { return fDoubletChi2Cut; }
 
+  /// flag check: electrons/positrons - true, heavy charged - false
+  bool GetElectronFlag() const { return fIsElectron; }
+
+  /// Sets flag: true - extends track candidates with unused hits
+  bool GetExtendTracksFlag() const { return fIfExtendTracks; }
+
   /// Gets station index of the first station used in tracking
   int GetFirstStationIndex() const { return fFirstStationIndex; }
 
@@ -77,6 +83,9 @@ public:
   /// Gets min value of dp/dp_error, for which two tiplets are neighbours
   float GetPickNeighbour() const { return fPickNeighbour; }
 
+  /// Checks flag: true - only primary tracks are searched, false - [all or only secondary?]
+  bool GetPrimaryFlag() const { return fIsPrimary; }
+
   /// Gets sigma target position in X direction [cm]
   float GetTargetPosSigmaX() const { return fTargetPosSigmaX; }
 
@@ -89,11 +98,18 @@ public:
   /// Gets triplet chi2 upper cut
   float GetTripletChi2Cut() const { return fTripletChi2Cut; }
 
-  /// flag check: electrons/positrons - true, heavy charged - false
-  bool GetElectronFlag() const { return fIsElectron; }
+  /// (DEBUG!) Sets flag:
+  ///   true:
+  ///     all the triplets found on this iteration will be converted to tracks,
+  ///     all the iterations following after this one will be rejected from the
+  ///     iterations sequence;
+  ///   false (default):
+  ///     tracks are built from triplets, and the minimal amount of hits used in
+  ///     each track equals four. In case of primary tracks the first measurement
+  ///     is taken from the target, and the other three measurements are taken from
+  ///     the triplet.
+  bool GetTrackFromTripletsFlag() const { return fIsTrackFromTriplets; }
 
-  /// Checks flag: true - only primary tracks are searched, false - [all or only secondary?]
-  bool GetPrimaryFlag() const { return fIsPrimary; }
 
   /// Prints iteration options
   void Print(int verbosityLevel = 0) const;
@@ -103,6 +119,9 @@ public:
 
   /// Sets flag: electron tracks - true, heavy ion tracks - false
   void SetElectronFlag(bool flag) { fIsElectron = flag; }
+
+  /// Sets flag: true - extends track candidates with unused hits
+  void SetExtendTracksFlag(bool flag) { fIfExtendTracks = flag; }
 
   /// Sets index of first station used in tracking
   void SetFirstStationIndex(int index) { fFirstStationIndex = index; }
@@ -143,6 +162,18 @@ public:
   /// Sets track chi2 upper cut
   void SetTrackChi2Cut(float input) { fTrackChi2Cut = input; }
 
+  /// (DEBUG!) Sets flag:
+  ///   true:
+  ///     all the triplets found on this iteration will be converted to tracks,
+  ///     all the iterations following after this one will be rejected from the
+  ///     iterations sequence;
+  ///   false (default):
+  ///     tracks are built from triplets, and the minimal amount of hits used in
+  ///     each track equals four. In case of primary tracks the first measurement
+  ///     is taken from the target, and the other three measurements are taken from
+  ///     the triplet.
+  void SetTrackFromTripletsFlag(bool flag) { fIsTrackFromTriplets = flag; }
+
   /// Sets triplet chi2 upper cut
   void SetTripletChi2Cut(float input) { fTripletChi2Cut = input; }
 
@@ -180,6 +211,20 @@ private:
   bool fIsPrimary  = false;  ///< Flag: true - only primary tracks are searched for
   bool fIsElectron = false;  ///< Flag: true - only electrons are searched for
 
+  /// \brief Flag to select triplets on the iteration as tracks
+  ///   In ordinary cases, the shortest track consists from four hits. For primary track the target is accounted as
+  /// the first hit, and the other three hits are taken from the stations. For secondary track all the hits are selected
+  /// from the stations only.
+  ///   If the fIsTrackFromTriplets flag is turned on, all of the triplets found on this iterations will be considered
+  /// as tracks.
+  ///
+  /// \note The only one iteration with the fIsTrackFromTriplets flag turned on can exist in the tracking iterations
+  ///       sequence and this iteration should be the last in the tracking sequence.
+  bool fIsTrackFromTriplets = false;
+
+  bool fIfExtendTracks = false;  ///< Flag: true - extends track candidates with unused hits
+
+
   /// Serialization method, used to save L1Hit objects into binary or text file in a defined order
   friend class boost::serialization::access;
   template<class Archive>
@@ -200,6 +245,8 @@ private:
     ar& fFirstStationIndex;
     ar& fIsPrimary;
     ar& fIsElectron;
+    ar& fIsTrackFromTriplets;
+    ar& fIfExtendTracks;
   }
 
 

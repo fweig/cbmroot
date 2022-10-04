@@ -40,6 +40,8 @@ L1CAIteration::L1CAIteration(const L1CAIteration& other) noexcept
   , fFirstStationIndex(other.fFirstStationIndex)
   , fIsPrimary(other.fIsPrimary)
   , fIsElectron(other.fIsElectron)
+  , fIsTrackFromTriplets(other.fIsTrackFromTriplets)
+  , fIfExtendTracks(other.fIfExtendTracks)
 {
 }
 //
@@ -115,6 +117,8 @@ void L1CAIteration::Swap(L1CAIteration& other) noexcept
   std::swap(fFirstStationIndex, other.fFirstStationIndex);
   std::swap(fIsPrimary, other.fIsPrimary);
   std::swap(fIsElectron, other.fIsElectron);
+  std::swap(fIsTrackFromTriplets, other.fIsTrackFromTriplets);
+  std::swap(fIfExtendTracks, other.fIfExtendTracks);
 }
 //
 //----------------------------------------------------------------------------------------------------------------------
@@ -122,24 +126,26 @@ void L1CAIteration::Swap(L1CAIteration& other) noexcept
 std::string L1CAIteration::ToString(int indentLevel) const
 {
   std::stringstream aStream {};
-  constexpr char indentChar = '\t';
-  std::string indent(indentLevel, indentChar);
+  constexpr char indCh = '\t';
+  std::string indent(indentLevel, indCh);
   aStream << indent << "L1CAIteration: " << fName << '\n';
-  aStream << indent << indentChar << "Is primary:   " << fIsPrimary << '\n';
-  aStream << indent << indentChar << "Is electron:  " << fIsElectron << '\n';
-  aStream << indent << indentChar << "Track chi2 cut:               " << fTrackChi2Cut << '\n';
-  aStream << indent << indentChar << "Triplet chi2 cut:             " << fTripletChi2Cut << '\n';
-  aStream << indent << indentChar << "Doublet chi2 cut:             " << fDoubletChi2Cut << '\n';
-  aStream << indent << indentChar << "Pick gather:                  " << fPickGather << '\n';
-  aStream << indent << indentChar << "Pick neighbour:               " << fPickNeighbour << '\n';
-  aStream << indent << indentChar << "Max inverse momentum:         " << fMaxInvMom << '\n';
-  aStream << indent << indentChar << "Max slope at primary vertex:  " << fMaxSlopePV << '\n';
-  aStream << indent << indentChar << "Max slope:                    " << fMaxSlope << '\n';
-  aStream << indent << indentChar << "Max DZ:                       " << fMaxDZ << '\n';
-  aStream << indent << indentChar << "Target position sigma X [cm]: " << fTargetPosSigmaX << '\n';
-  aStream << indent << indentChar << "Target position sigma Y [cm]: " << fTargetPosSigmaY << '\n';
-  aStream << indent << indentChar << "Min level for triplet start:  " << fMinLevelTripletStart << '\n';
-  aStream << indent << indentChar << "First tracking station index: " << fFirstStationIndex;
+  aStream << indent << indCh << "Is primary:                             " << fIsPrimary << '\n';
+  aStream << indent << indCh << "Is electron:                            " << fIsElectron << '\n';
+  aStream << indent << indCh << "Are tracks created from triplets:       " << fIsTrackFromTriplets << '\n';
+  aStream << indent << indCh << "Are tracks extended with unused hits :  " << fIfExtendTracks << '\n';
+  aStream << indent << indCh << "Track chi2 cut:                         " << fTrackChi2Cut << '\n';
+  aStream << indent << indCh << "Triplet chi2 cut:                       " << fTripletChi2Cut << '\n';
+  aStream << indent << indCh << "Doublet chi2 cut:                       " << fDoubletChi2Cut << '\n';
+  aStream << indent << indCh << "Pick gather:                            " << fPickGather << '\n';
+  aStream << indent << indCh << "Pick neighbour:                         " << fPickNeighbour << '\n';
+  aStream << indent << indCh << "Max inverse momentum:                   " << fMaxInvMom << '\n';
+  aStream << indent << indCh << "Max slope at primary vertex:            " << fMaxSlopePV << '\n';
+  aStream << indent << indCh << "Max slope:                              " << fMaxSlope << '\n';
+  aStream << indent << indCh << "Max DZ:                                 " << fMaxDZ << '\n';
+  aStream << indent << indCh << "Target position sigma X [cm]:           " << fTargetPosSigmaX << '\n';
+  aStream << indent << indCh << "Target position sigma Y [cm]:           " << fTargetPosSigmaY << '\n';
+  aStream << indent << indCh << "Min level for triplet start:            " << fMinLevelTripletStart << '\n';
+  aStream << indent << indCh << "First tracking station index:           " << fFirstStationIndex;
 
   return aStream.str();
 }
