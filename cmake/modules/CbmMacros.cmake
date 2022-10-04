@@ -219,6 +219,13 @@ macro(generate_cbm_library)
   if(LINKDEF)
     set(rootmap_file ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LIBRARY_NAME}.rootmap)
     set(pcm_file ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${LIBRARY_NAME}_rdict.pcm)
+
+    add_custom_command(TARGET ${LIBRARY_NAME} POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${rootmap_file} ${LIBRARY_OUTPUT_PATH}
+                       COMMAND ${CMAKE_COMMAND} -E copy_if_different ${pcm_file} ${LIBRARY_OUTPUT_PATH}
+                       DEPENDS ${LIBRARY_NAME}
+                      )
+
     install(FILES ${rootmap_file} ${pcm_file} DESTINATION lib)
   endif(LINKDEF)
 
