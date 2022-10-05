@@ -7,6 +7,6 @@
  ** @since 01.10.2019
  **/
 
-#include "geosetup/CbmGeoSetupMedia.h"
+#include "CbmGeoSetupMedia.h"
 
 ClassImp(CbmGeoSetupMedia);

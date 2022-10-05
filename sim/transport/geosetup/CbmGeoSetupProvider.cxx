@@ -7,7 +7,7 @@
  ** @since 01.10.2019
  **/
 
-#include "geosetup/CbmGeoSetupProvider.h"
+#include "CbmGeoSetupProvider.h"
 
 #include "CbmCave.h"
 #include "CbmDefs.h"
