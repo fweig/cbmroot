@@ -201,6 +201,12 @@ macro(generate_cbm_library)
       endif()
   endforeach()
 
+  foreach (HEADER ${HEADERS})
+    # strip relative path from headers to pass them to rootcling
+    get_filename_component(_rootheader ${HEADER} NAME)
+    list(APPEND ROOT_HEADERS ${_rootheader})
+  endforeach()
+
   ######################### build the library ############################
   add_library(${LIBRARY_NAME} SHARED ${HEADERS} ${SRCS} ${NO_DICT_SRCS} ${LINKDEF})
   
@@ -208,7 +214,7 @@ macro(generate_cbm_library)
   target_include_directories(${LIBRARY_NAME} PUBLIC ${INCLUDE_DIRECTORIES})
 
   if(LINKDEF)
-    root_generate_dictionary(G__${LIBRARY_NAME} ${HEADERS} MODULE ${LIBRARY_NAME} LINKDEF ${LINKDEF})
+    root_generate_dictionary(G__${LIBRARY_NAME} ${ROOT_HEADERS} MODULE ${LIBRARY_NAME} LINKDEF ${LINKDEF})
   endif(LINKDEF)
 
   ############# Install target and corresponding header files ############
