@@ -53,6 +53,7 @@ void L1ConfigRW::ReadCAIterations(const YAML::Node& node)
       LOG(info) << "L1 config: Reading CA tracking iterations sequence. Default iterations will be ignored";
     }
     fpInitManager->ClearCAIterations();
+    L1_SHOW(node.size());
     fpInitManager->SetCAIterationsNumberCrosscheck(node.size());
     if (fVerbose > 2) { LOG(info) << "L1 config: " << fVerbose << " CA iterations were recorded"; }
     if (fVerbose > 3) { LOG(info) << "L1 config: Recorded iterations:"; }
@@ -61,19 +62,25 @@ void L1ConfigRW::ReadCAIterations(const YAML::Node& node)
     for (const auto& input : node) {
       try {
         auto caIter = L1CAIteration(input["name"].as<std::string>());
-        caIter.SetTrackChi2Cut(input["track_chi2_cut"].as<float>());
-        caIter.SetTripletChi2Cut(input["triplet_chi2_cut"].as<float>());
-        caIter.SetDoubletChi2Cut(input["doublet_chi2_cut"].as<float>());
-        caIter.SetPickGather(input["pick_gather"].as<float>());
-        caIter.SetPickNeighbour(input["pick_neighbour"].as<float>());
-        caIter.SetMaxInvMom(1. / input["min_momentum"].as<float>());
-        caIter.SetMaxSlopePV(input["max_slope_pv"].as<float>());
-        caIter.SetMaxSlope(input["max_slope"].as<float>());
-        caIter.SetMaxDZ(input["max_dz"].as<float>());
-        caIter.SetTargetPosSigmaXY(input["target_pos_sigma_x"].as<float>(), input["target_pos_sigma_y"].as<float>());
-        caIter.SetMinLevelTripletStart(input["min_start_triplet_lvl"].as<int>());
-        caIter.SetPrimaryFlag(input["is_primary"].as<bool>());
-        caIter.SetElectronFlag(input["is_electron"].as<bool>());
+        caIter.SetTrackChi2Cut(input["track_chi2_cut"].as<float>(caIter.GetTrackChi2Cut()));
+        caIter.SetTripletChi2Cut(input["triplet_chi2_cut"].as<float>(caIter.GetTripletChi2Cut()));
+        caIter.SetDoubletChi2Cut(input["doublet_chi2_cut"].as<float>(caIter.GetDoubletChi2Cut()));
+        caIter.SetPickGather(input["pick_gather"].as<float>(caIter.GetPickGather()));
+        caIter.SetPickNeighbour(input["pick_neighbour"].as<float>(caIter.GetPickNeighbour()));
+        caIter.SetMaxInvMom(1. / input["min_momentum"].as<float>(caIter.GetMaxInvMom()));
+        caIter.SetMaxSlopePV(input["max_slope_pv"].as<float>(caIter.GetMaxSlopePV()));
+        caIter.SetMaxSlope(input["max_slope"].as<float>(caIter.GetMaxSlope()));
+        caIter.SetMaxDZ(input["max_dz"].as<float>(caIter.GetMaxDZ()));
+        caIter.SetTargetPosSigmaXY(input["target_pos_sigma_x"].as<float>(caIter.GetTargetPosSigmaX()),
+                                   input["target_pos_sigma_y"].as<float>(caIter.GetTargetPosSigmaY()));
+        caIter.SetFirstStationIndex(input["first_station_index"].as<int>(caIter.GetFirstStationIndex()));
+        caIter.SetMinLevelTripletStart(input["min_start_triplet_lvl"].as<int>(caIter.GetMinLevelTripletStart()));
+        caIter.SetPrimaryFlag(input["is_primary"].as<bool>(caIter.GetPrimaryFlag()));
+        caIter.SetElectronFlag(input["is_electron"].as<bool>(caIter.GetElectronFlag()));
+        caIter.SetTrackFromTripletsFlag(input["is_track_from_triplets"].as<bool>(caIter.GetTrackFromTripletsFlag()));
+        caIter.SetExtendTracksFlag(input["if_extend_tracks"].as<bool>(caIter.GetExtendTracksFlag()));
+        caIter.SetJumpedFlag(input["is_jumped"].as<bool>(caIter.GetJumpedFlag()));
+        caIter.SetSuppressGhostFlag(input["if_suppress_ghost"].as<bool>(caIter.GetSuppressGhostFlag()));
         if (fVerbose > 3) { LOG(info) << "L1 config:\n" << caIter.ToString(1); }
         fpInitManager->PushBackCAIteration(caIter);
       }
@@ -103,8 +110,14 @@ void L1ConfigRW::ReadYaml(const std::string& filename)
     config = YAML::LoadFile(filename);
   }
   catch (const YAML::BadFile& exc) {
-    LOG(error) << "L1 config: tracking parameters file \"" << filename << "\" does not exist, default will be used";
-    return;
+    std::stringstream msg;
+    msg << "file does not exist";
+    throw std::runtime_error(msg.str());
+  }
+  catch (const YAML::ParserException& exc) {
+    std::stringstream msg;
+    msg << "file is formatted improperly";
+    throw std::runtime_error(msg.str());
   }
 
   // Tracking iterations

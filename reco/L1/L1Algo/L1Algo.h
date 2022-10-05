@@ -544,37 +544,8 @@ private:
 
   // fNFindIterations - set number of interation for trackfinding
   // itetation of finding:
-#ifdef FIND_GAPED_TRACKS
-  enum
-  {
-    kFastPrimIter,     // primary fast tracks
-    kAllPrimIter,      // primary all tracks
-    kAllPrimJumpIter,  // primary tracks with jumped triplets
-    kAllSecIter,       // secondary all tracks
-    kAllPrimEIter,     // primary all electron tracks
-    kAllSecEIter,      // secondary all electron tracks
-
-    kFastPrimJumpIter,  // primary fast tracks with jumped triplets
-    kFastPrimIter2,
-    kAllSecJumpIter  // secondary tracks with jumped triplets
-  };
 
   int fNFindIterations = -1;  // TODO investigate kAllPrimJumpIter & kAllSecJumpIter
-
-#else  // not FIND_GAPED_TRACKS
-  enum
-  {
-    kFastPrimIter = 0,  // primary fast tracks
-    kAllPrimIter,       // primary all tracks
-    kAllSecIter,        // secondary all tracks
-    kFastPrimJumpIter,  // disabled
-    kAllPrimJumpIter,   // disabled
-    kFastPrimIter2,
-    kAllSecJumpIter,
-    kAllPrimEIter,
-    kAllSecEIter
-  };
-#endif  // FIND_GAPED_TRACKS
 
   std::map<int, int> threadNumberToCpuMap {};
 

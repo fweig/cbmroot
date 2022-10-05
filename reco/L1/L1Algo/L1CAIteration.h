@@ -13,6 +13,7 @@
 #define L1CAIteration_h 1
 
 #include <boost/serialization/access.hpp>
+#include <boost/serialization/string.hpp>
 
 #include <bitset>
 #include <string>
@@ -59,6 +60,9 @@ public:
   /// Gets station index of the first station used in tracking
   int GetFirstStationIndex() const { return fFirstStationIndex; }
 
+  /// Gets ... TODO
+  bool GetJumpedFlag() const { return fIfJumped; }
+
   /// Gets correction for accounting overlaping and iff z
   float GetMaxDZ() const { return fMaxDZ; }
 
@@ -85,6 +89,9 @@ public:
 
   /// Checks flag: true - only primary tracks are searched, false - [all or only secondary?]
   bool GetPrimaryFlag() const { return fIsPrimary; }
+
+  /// Sets flag: true - skip track candidates with level = 0
+  bool GetSuppressGhostFlag() const { return fIfSuppressGhost; }
 
   /// Gets sigma target position in X direction [cm]
   float GetTargetPosSigmaX() const { return fTargetPosSigmaX; }
@@ -126,6 +133,9 @@ public:
   /// Sets index of first station used in tracking
   void SetFirstStationIndex(int index) { fFirstStationIndex = index; }
 
+  /// Sets flag: true - triplets are built from hits .... TODO
+  void SetJumpedFlag(bool flag) { fIfJumped = flag; }
+
   /// Sets correction for accounting overlaping and iff z
   void SetMaxDZ(float input) { fMaxDZ = input; }
 
@@ -153,6 +163,9 @@ public:
 
   /// Sets flag: primary tracks - true, secondary tracks - false
   void SetPrimaryFlag(bool flag) { fIsPrimary = flag; }
+
+  /// Sets flag: true - skip track candidates with level = 0
+  void SetSuppressGhostFlag(bool flag) { fIfSuppressGhost = flag; }
 
   /// Sets sigma of target positions in XY plane
   /// \param  sigmaX  Sigma value in X direction [cm]
@@ -223,13 +236,19 @@ private:
   bool fIsTrackFromTriplets = false;
 
   bool fIfExtendTracks = false;  ///< Flag: true - extends track candidates with unused hits
+  bool fIfJumped       = false;  ///< Flag: true - find triplets with skip station
 
+  /// \brief Flag to suppress ghost tracks on the stage of track candidates selection
+  ///   If the flag is true, three-hit tracks with level = 0 will be skip. This helps to reduce ghost tracks
+  /// under conditions of high hits density
+  bool fIfSuppressGhost = false;
 
   /// Serialization method, used to save L1Hit objects into binary or text file in a defined order
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive& ar, const unsigned int /*version*/)
   {
+    ar& fName;
     ar& fTrackChi2Cut;
     ar& fTripletChi2Cut;
     ar& fDoubletChi2Cut;
@@ -247,6 +266,8 @@ private:
     ar& fIsElectron;
     ar& fIsTrackFromTriplets;
     ar& fIfExtendTracks;
+    ar& fIfJumped;
+    ar& fIfSuppressGhost;
   }
 
 

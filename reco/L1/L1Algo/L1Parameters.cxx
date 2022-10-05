@@ -239,8 +239,15 @@ void L1Parameters::CheckConsistency() const
    *  2. If this iteration exists, it should be the last one in the sequence
    */
   {
-    int nIterations = std::count_if(fCAIterations.begin(), fCAIterations.end(),
-                                    [=](const L1CAIteration& it) { return it.GetTrackFromTripletsFlag(); });
+    int nIterations = fCAIterations.size();
+    if (!nIterations) {
+      std::stringstream msg;
+      msg << "L1Parameters: 0 track finder iterations were found. Please, define at least one iteration";
+      throw std::logic_error(msg.str());
+    }
+
+    nIterations = std::count_if(fCAIterations.begin(), fCAIterations.end(),
+                                [=](const L1CAIteration& it) { return it.GetTrackFromTripletsFlag(); });
     if (nIterations > 1) {
       std::stringstream msg;
       msg << "L1Parameters: found " << nIterations << " iterations with GetTrackFromTripletsFlag() == true:\n";

@@ -89,9 +89,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   T.C11  = sta0.XYInfo.C11;
 
   if constexpr (L1Constants::control::kIfSaveHitErrorsInTrackExtender) {
-    T.C00 = hit0.dx * hit0.dx;
-    T.C10 = hit0.dxy;
-    T.C11 = hit0.dy * hit0.dy;
+    std::tie(T.C00, T.C10, T.C11) = sta0.FormXYCovarianceMatrix(hit0.du, hit0.dv);
   }
 
   T.C20 = T.C21 = 0;

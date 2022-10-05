@@ -157,14 +157,23 @@ bool L1InitManager::FormParametersContainer()
   // Read configuration file
   // NOTE: We consider parameters from the configuration file as ones with a higher priority, so all the defined
   //       variables there would be rewritten by the configuration
-  if (fConfigInputName != "") { fConfigRW.ReadYaml(fConfigInputName); }
+  try {
+    if (fConfigInputName != "") { fConfigRW.ReadYaml(fConfigInputName); }
+    LOG(info) << "L1InitManager: parameters configuration file \"" << fConfigInputName << "\" was loaded";
+  }
+  catch (const std::runtime_error& err) {
+    LOG(error) << "L1InitManager: parameters configuration file \"" << fConfigInputName << "\" was defined, "
+               << "but the loading failed. Reason: " << err.what();
+    return false;
+  }
 
   // Check initialization
   this->CheckInit();
 
   if (!fInitController.IsFinalized()) {
-    LOG(fatal) << "Attempt to form parameters container before all necessary fields were initialized"
+    LOG(error) << "L1InitManager: Attempt to form parameters container before all necessary fields were initialized"
                << fInitController.ToString();
+    return false;
   }
 
   // Form array of stations

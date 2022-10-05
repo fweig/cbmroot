@@ -42,6 +42,8 @@ L1CAIteration::L1CAIteration(const L1CAIteration& other) noexcept
   , fIsElectron(other.fIsElectron)
   , fIsTrackFromTriplets(other.fIsTrackFromTriplets)
   , fIfExtendTracks(other.fIfExtendTracks)
+  , fIfJumped(other.fIfJumped)
+  , fIfSuppressGhost(other.fIfSuppressGhost)
 {
 }
 //
@@ -119,6 +121,8 @@ void L1CAIteration::Swap(L1CAIteration& other) noexcept
   std::swap(fIsElectron, other.fIsElectron);
   std::swap(fIsTrackFromTriplets, other.fIsTrackFromTriplets);
   std::swap(fIfExtendTracks, other.fIfExtendTracks);
+  std::swap(fIfJumped, other.fIfJumped);
+  std::swap(fIfSuppressGhost, other.fIfSuppressGhost);
 }
 //
 //----------------------------------------------------------------------------------------------------------------------
@@ -133,6 +137,8 @@ std::string L1CAIteration::ToString(int indentLevel) const
   aStream << indent << indCh << "Is electron:                            " << fIsElectron << '\n';
   aStream << indent << indCh << "Are tracks created from triplets:       " << fIsTrackFromTriplets << '\n';
   aStream << indent << indCh << "Are tracks extended with unused hits :  " << fIfExtendTracks << '\n';
+  aStream << indent << indCh << "Are hits skip in triplets building:     " << fIfJumped << '\n';
+  aStream << indent << indCh << "Ghost suppression in tracks cand. selection :" << fIfSuppressGhost << '\n';
   aStream << indent << indCh << "Track chi2 cut:                         " << fTrackChi2Cut << '\n';
   aStream << indent << indCh << "Triplet chi2 cut:                       " << fTripletChi2Cut << '\n';
   aStream << indent << indCh << "Doublet chi2 cut:                       " << fDoubletChi2Cut << '\n';

@@ -1228,12 +1228,12 @@ inline void L1Algo::findTripletsStep3(  // input
       // TODO: But for some reason, the efficiency degrades without them.
       // TODO: It needs to be investigated. If the cuts are necessary, they need to be adjusted.
 
+      // TODO: SZh 04.10.2022: What does this number mean?
       fscal Cmax = 0.04 * fMaxInvMom[0];  // minimal momentum: 0.05 - 0.1
-                                          //if ( isec == kAllPrimJumpIter ) {
       if (Cqp > Cmax) {
-        //cout << "isec " << isec << " Cqp " << Cqp << " max " << Cmax << " add " << 0.05 * Cmax << endl;
         Cqp = Cmax;
       }
+      // TODO: SZh 04.10.2022: What does this number mean?
       Cqp += 0.05 * Cmax;  // TODO: without this line the ghost ratio increases, why?
     }
 
@@ -1289,11 +1289,12 @@ inline void L1Algo::f5(  // input
     for (int istal = fParameters.GetNstationsActive() - 4; istal >= fFirstCAstation; istal--) {
       for (int tripType = 0; tripType < 3; tripType++)  // tT = 0 - 123triplet, tT = 1 - 124triplet, tT = 2 - 134triplet
       {
-        if ((((isec != kFastPrimJumpIter) && (isec != kAllPrimJumpIter) && (isec != kAllSecJumpIter))
-             && (tripType != 0))
-            || (((isec == kFastPrimJumpIter) || (isec == kAllPrimJumpIter) || (isec == kAllSecJumpIter))
-                && (tripType != 0) && (istal == fParameters.GetNstationsActive() - 4)))
+        // All iters - jump
+        if ((!fpCurrentIteration->GetJumpedFlag() && tripType != 0)
+            || (fpCurrentIteration->GetJumpedFlag() && tripType != 0
+                && (fParameters.GetNstationsActive() - 4 == istal))) {
           continue;
+        }
 
         int istam = istal + 1;
         int istar = istal + 2;
@@ -1566,8 +1567,6 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
     for (Tindex i = 0; i < static_cast<Tindex>(hitsr_3.size()); ++i)
       L1_assert(hitsr_3[i] < HitsUnusedStopIndex[istar] - HitsUnusedStartIndex[istar]);
 
-    //        if (n3 >= MaxPortionTriplets) cout << "isec: " << isec << " station: " << istal << " portion number: " << ip << " CATrackFinder: Warning: Too many Triplets created in portion" << endl;
-
     /// Add the right hits to parameters estimation.
     findTripletsStep1(  // input
       n3_V, star, u_front3, u_back3, z_pos3, du3, dv3, timeR, timeER,
@@ -1621,11 +1620,11 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
 // }
 
 
-/***********************************************************************************************/ /**
- *                                                                                                *
- *                            ------ CATrackFinder procedure ------                               *
- *                                                                                                *
- **************************************************************************************************/
+// **************************************************************************************************
+// *                                                                                                *
+// *                            ------ CATrackFinder procedure ------                               *
+// *                                                                                                *
+// **************************************************************************************************
 
 void L1Algo::CATrackFinder()
 {
@@ -2051,7 +2050,7 @@ void L1Algo::CATrackFinder()
           // output
         );
 
-        if ((isec == kFastPrimJumpIter) || (isec == kAllPrimJumpIter) || (isec == kAllSecJumpIter) || (fMissingHits)) {
+        if (fpCurrentIteration->GetJumpedFlag() || (fMissingHits)) {
           // All iterations are "jump"!
           Tindex nG_2;
           hitsmG_2.clear();
@@ -2106,22 +2105,11 @@ void L1Algo::CATrackFinder()
 
     int min_level =
       caIteration.GetMinLevelTripletStart();  // min level to start triplet. So min track length = min_level+3.
-                                              //    if (isec == kFastPrimJumpIter) min_level = 1;
-    //if ((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter))
-    //  min_level = 1;  // only the long low momentum tracks
 
     // TODO: SZh 04.10.2022: Why this fatal error is called?
     // NOTE: This line was wrapped into TRACKS_FROM_TRIPLETS ifdef
     //LOG(FATAL) << "L1CATrackFinder: min_level undefined in " << __FILE__ << " : " << __LINE__;
     if (fpCurrentIteration->GetTrackFromTripletsFlag()) { min_level = 0; }
-
-    // TODO: Just remove it
-    // // min_level: lower then this triplets would never start
-    //     int min_level = 1; // min level for start triplet. So min track length = min_level+3.
-    //     if (isec == kAllPrimJumpIter) min_level = 1;
-    //     if ( (isec == kAllSecIter) || (isec == kAllSecJumpIter) ) min_level = 2; // only the long low momentum tracks
-    // //    if (isec == -1) min_level = fParameters.GetNstationsActive() - 3 - 3; //only the longest tracks
-
 
     L1Branch curr_tr;
     L1Branch new_tr[L1Constants::size::kMaxNstations];
@@ -2177,29 +2165,25 @@ void L1Algo::CATrackFinder()
                 || fvHitKeyFlags[(*vHitsUnused)[first_trip.GetLHit()].b]) {
               continue;
             }
-//               ghost suppression !!!
-#ifndef FIND_GAPED_TRACKS
-            if (/*(isec == kFastPrimIter) ||*/ (isec == kAllPrimIter) || (isec == kAllPrimEIter)
-                || (isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) {
-#else
-            if ((isec == kFastPrimIter) || (isec == kFastPrimIter2) || (isec == kFastPrimJumpIter)
-                || (isec == kAllPrimIter) || (isec == kAllPrimEIter) || (isec == kAllPrimJumpIter)
-                || (isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) {
-#endif
-              if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {  // ghost suppression !!!
-                // TODO: Primary => 3 hits tracks are saved, otherwise 3 hit tracks are thrown away
-                if (isec != kFastPrimIter && isec != kAllPrimIter && isec != kAllPrimEIter && isec != kAllSecEIter)
-                  if (first_trip.GetLevel() == 0)
-                    continue;  //ghost suppression//find track with 3 hits only if it was created from a chain of triplets, but not from only one triplet
+            //               ghost suppression !!!
+            //
 
-                if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
-                  if ((firstTripletLevel == 0) && ((*vHitsUnused)[first_trip.GetLHit()].iSt != 0))
-                    continue;  // ghost supression // collect only MAPS tracks-triplets  CHECK!!!
-                }
+            if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {  // ghost suppression !!!
+
+              if (fpCurrentIteration->GetSuppressGhostFlag()) {
+                if (first_trip.GetLevel() == 0)
+                  continue;  //ghost suppression//find track with 3 hits only if it was created from a chain of triplets, but not from only one triplet
               }
-              if (first_trip.GetLevel() < firstTripletLevel)
-                continue;  // try only triplets, which can start track with firstTripletLevel+3 length. w\o it have more ghosts, but efficiency either
+
+              if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
+                if ((firstTripletLevel == 0) && ((*vHitsUnused)[first_trip.GetLHit()].iSt != 0))
+                  continue;  // ghost supression // collect only MAPS tracks-triplets  CHECK!!!
+              }
             }
+
+            // Collect triplets, which can start a track with length equal to firstTipletLevel + 3. This cut suppresses
+            // ghost tracks, but does not affect the efficiency
+            if (first_trip.GetLevel() < firstTripletLevel) { continue; }
 
             //  curr_tr.Momentum = 0.f;
             curr_tr.chi2 = 0.f;
@@ -2231,11 +2215,8 @@ void L1Algo::CATrackFinder()
 
             if (fGhostSuppression) {
               if (3 == best_L) {
-                // if( isec == kAllSecIter ) continue; // too /*short*/ secondary track
-                if (((isec == kAllSecIter) || (isec == kAllSecEIter) || (isec == kAllSecJumpIter)) && (istaF != 0))
-                  continue;  // too /*short*/ non-MAPS track
-                if ((isec != kAllSecIter) && (isec != kAllSecEIter) && (isec != kAllSecJumpIter) && (best_chi2 > 5.0))
-                  continue;
+                if (!fpCurrentIteration->GetPrimaryFlag() && (istaF != 0)) continue;  // too /*short*/ non-MAPS track
+                if (fpCurrentIteration->GetPrimaryFlag() && (best_chi2 > 5.0)) continue;
               }
             }
             fTrackCandidates[thread_num].push_back(best_tr);
@@ -2698,10 +2679,11 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
 
     if (curr_chi2 > fTrackChi2Cut * ndf) return;
 
+    // TODO: SZh 04.10.2022: Does one should delete this code?
     //       // try to find more hits
     // if (fpCurrentIteration->GetExtendTracksFlag()) {
     //     // if( curr_L < min_best_l )
-    //     if (isec != kFastPrimJumpIter && isec != kAllPrimJumpIter && isec != kAllSecJumpIter && curr_L >= 3){
+    //     if (!fpCurrentIteration->GetJumpedFlag() && curr_L >= 3){
     //       //curr_chi2 = BranchExtender(curr_tr);
     //       BranchExtender(curr_tr);
     //       curr_L = curr_tr.Hits.size();
@@ -2785,12 +2767,6 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
         if (dtx > fPickNeighbour * sqrt(Ctx)) continue;
       }
 
-      //if (GetFUsed((*fStripFlag)[(*vHitsUnused)[new_trip.GetLHit()].f]
-      //             | (*fStripFlag)[(*vHitsUnused)[new_trip.GetLHit()].b])) {  //hits are used
-      //L1_SHOW(fInputData.GetNhitKeys());
-      //L1_SHOW(fvHitKeyFlags.size());
-      //L1_SHOW((*vHitsUnused)[new_trip.GetLHit()].f);
-      //L1_SHOW((*vHitsUnused)[new_trip.GetLHit()].b);
       if (fvHitKeyFlags[(*vHitsUnused)[new_trip.GetLHit()].f]
           || fvHitKeyFlags[(*vHitsUnused)[new_trip.GetLHit()].b]) {  //hits are used
         //  no used hits allowed -> compare and store track

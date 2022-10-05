@@ -662,6 +662,7 @@ InitStatus CbmL1::Init()
     trackingIterFastPrim.SetTargetPosSigmaXY(1, 1);
     trackingIterFastPrim.SetMinLevelTripletStart(0);
     trackingIterFastPrim.SetPrimaryFlag(true);
+    trackingIterFastPrim.SetSuppressGhostFlag(false);
 
     auto trackingIterAllPrim = L1CAIteration("AllPrimIter");
     trackingIterAllPrim.SetTrackChi2Cut(10.f);
@@ -676,6 +677,7 @@ InitStatus CbmL1::Init()
     trackingIterAllPrim.SetTargetPosSigmaXY(1, 1);
     trackingIterAllPrim.SetMinLevelTripletStart(0);
     trackingIterAllPrim.SetPrimaryFlag(true);
+    trackingIterAllPrim.SetSuppressGhostFlag(false);
 
     auto trackingIterFastPrim2 = L1CAIteration("FastPrim2Iter");
     trackingIterFastPrim2.SetTrackChi2Cut(10.f);
@@ -690,6 +692,7 @@ InitStatus CbmL1::Init()
     trackingIterFastPrim2.SetTargetPosSigmaXY(5, 5);
     trackingIterFastPrim2.SetMinLevelTripletStart(0);
     trackingIterFastPrim2.SetPrimaryFlag(true);
+    trackingIterFastPrim2.SetSuppressGhostFlag(true);
 
     auto trackingIterAllSec = L1CAIteration("AllSecIter");
     trackingIterAllSec.SetTrackChi2Cut(10.f);
@@ -704,6 +707,7 @@ InitStatus CbmL1::Init()
     trackingIterAllSec.SetTargetPosSigmaXY(10, 10);
     trackingIterAllSec.SetMinLevelTripletStart(1);
     trackingIterAllSec.SetPrimaryFlag(false);
+    trackingIterAllSec.SetSuppressGhostFlag(true);
 
     auto trackingIterFastPrimJump = L1CAIteration("FastPrimJumpIter");
     trackingIterFastPrimJump.SetTrackChi2Cut(10.f);
@@ -718,6 +722,8 @@ InitStatus CbmL1::Init()
     trackingIterFastPrimJump.SetTargetPosSigmaXY(5, 5);
     trackingIterFastPrimJump.SetMinLevelTripletStart(0);
     trackingIterFastPrimJump.SetPrimaryFlag(true);
+    trackingIterFastPrimJump.SetSuppressGhostFlag(true);
+    trackingIterFastPrimJump.SetJumpedFlag(true);
 
     auto trackingIterAllPrimJump = L1CAIteration("AllPrimJumpIter");
     trackingIterAllPrimJump.SetTrackChi2Cut(10.f);
@@ -732,6 +738,8 @@ InitStatus CbmL1::Init()
     trackingIterAllPrimJump.SetTargetPosSigmaXY(5, 5);
     trackingIterAllPrimJump.SetMinLevelTripletStart(0);
     trackingIterAllPrimJump.SetPrimaryFlag(true);
+    trackingIterAllPrimJump.SetSuppressGhostFlag(true);
+    trackingIterAllPrimJump.SetJumpedFlag(true);
 
     auto trackingIterAllSecJump = L1CAIteration("AllSecJumpIter");
     trackingIterAllSecJump.SetTrackChi2Cut(10.f);
@@ -746,6 +754,8 @@ InitStatus CbmL1::Init()
     trackingIterAllSecJump.SetMinLevelTripletStart(1);
     trackingIterAllSecJump.SetTargetPosSigmaXY(10, 10);
     trackingIterAllSecJump.SetPrimaryFlag(false);
+    trackingIterAllSecJump.SetSuppressGhostFlag(true);
+    trackingIterAllSecJump.SetJumpedFlag(true);
 
     auto trackingIterAllPrimE = L1CAIteration("AllPrimEIter");
     trackingIterAllPrimE.SetTrackChi2Cut(10.f);
@@ -761,6 +771,7 @@ InitStatus CbmL1::Init()
     trackingIterAllPrimE.SetMinLevelTripletStart(0);
     trackingIterAllPrimE.SetPrimaryFlag(true);
     trackingIterAllPrimE.SetElectronFlag(true);
+    trackingIterAllPrimE.SetSuppressGhostFlag(false);
 
     auto trackingIterAllSecE = L1CAIteration("AllSecEIter");
     trackingIterAllSecE.SetTrackChi2Cut(10.f);
@@ -776,6 +787,7 @@ InitStatus CbmL1::Init()
     trackingIterAllSecE.SetTargetPosSigmaXY(10, 10);
     trackingIterAllSecE.SetPrimaryFlag(false);
     trackingIterAllSecE.SetElectronFlag(true);
+    trackingIterAllSecE.SetSuppressGhostFlag(false);
 
     // Select default track finder
     if (L1Algo::TrackingMode::kMcbm == fTrackingMode) {
@@ -883,7 +895,7 @@ InitStatus CbmL1::Init()
     fInitManager.SetMomentumCutOff(fMomentumCutOff);
 
     // Form parameters container
-    if (!fInitManager.FormParametersContainer()) { return kERROR; }
+    if (!fInitManager.FormParametersContainer()) { return kFATAL; }
 
     // Write to file if needed
     if (1 == fSTAPDataMode) { this->WriteSTAPParamObject(); }

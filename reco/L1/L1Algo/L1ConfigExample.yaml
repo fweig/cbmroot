@@ -22,10 +22,15 @@ l1:
         max_slope:             2.748
         max_dz:                0. # cm
         min_start_triplet_lvl: 0
+        first_station_index:   0
         target_pos_sigma_x:    1. # cm
         target_pos_sigma_y:    1. # cm
         is_primary:            true
         is_electron:           false
+        is_jumped:             false
+        if_extend_tracks:       true
+        if_suppress_ghost:      false
+        is_track_from_triplets: false
       - name: "AllPrimIter"
         track_chi2_cut:        10.
         triplet_chi2_cut:      23.4450
@@ -37,10 +42,15 @@ l1:
         max_slope:             2.748
         max_dz:                0.1 # cm
         min_start_triplet_lvl: 0
+        first_station_index:   0
         target_pos_sigma_x:    1. # cm
         target_pos_sigma_y:    1. # cm
         is_primary:            true
         is_electron:           false
+        is_jumped:             false
+        if_extend_tracks:       true
+        if_suppress_ghost:      false
+        is_track_from_triplets: false
       - name: "AllPrimJumpIter"
         track_chi2_cut:        10.
         triplet_chi2_cut:      18.7560
@@ -52,10 +62,15 @@ l1:
         max_slope:             2.748
         max_dz:                0.1 # cm
         min_start_triplet_lvl: 0
+        first_station_index:   0
         target_pos_sigma_x:    5. # cm
         target_pos_sigma_y:    5. # cm
         is_primary:            true
         is_electron:           false
+        is_jumped:             true
+        if_extend_tracks:       true
+        if_suppress_ghost:      true
+        is_track_from_triplets: false
       - name: "AllSecIter"
         track_chi2_cut:        10.
         triplet_chi2_cut:      18.7560
@@ -67,8 +82,13 @@ l1:
         max_slope:             2.748
         max_dz:                0.1 # cm
         min_start_triplet_lvl: 1
+        first_station_index:   0
         target_pos_sigma_x:    10. # cm
         target_pos_sigma_y:    10. # cm
         is_primary:            false
         is_electron:           false
+        is_jumped:             false
+        if_extend_tracks:       true    
+        if_suppress_ghost:      true
+        is_track_from_triplets: false
 ...
