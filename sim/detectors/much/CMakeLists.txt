@@ -1,53 +1,46 @@
-
-Set(INCLUDE_DIRECTORIES
-${CMAKE_CURRENT_SOURCE_DIR}
-${CMAKE_CURRENT_SOURCE_DIR}/qa
-
-${CBMDETECTORBASE_DIR}/much
-
-${CBMBASE_DIR} 
-${CBMBASE_DIR}/utils
-
-${CBMROOT_SOURCE_DIR}/sim/transport/base
-${CBMROOT_SOURCE_DIR}/core/data/base
-${CBMROOT_SOURCE_DIR}/core/qa
-
-${CBMDATA_DIR} 
-${CBMDATA_DIR}/much 
-)
-
-Include_Directories( ${INCLUDE_DIRECTORIES})
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES} 
-)
-
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-${ROOT_LIBRARY_DIR}
-${FAIRROOT_LIBRARY_DIR}
-${Boost_LIBRARY_DIRS}
-)
- 
-link_directories( ${LINK_DIRECTORIES})
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/qa
+  )
 
 set(SRCS
-CbmGeoMuch.cxx  
-CbmMuch.cxx
+  CbmGeoMuch.cxx  
+  CbmMuch.cxx
+  
+  CbmMuchDigitizeGem.cxx
+  CbmMuchReadoutBuffer.cxx
+  CbmMuchSignal.cxx
+  
+  qa/CbmMuchTransportQa.cxx
+  qa/CbmMuchDigitizerQa.cxx
+  )
 
-CbmMuchDigitizeGem.cxx
-CbmMuchReadoutBuffer.cxx
-CbmMuchSignal.cxx
+set(LIBRARY_NAME CbmMuchSim)
+set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
+set(PUBLIC_DEPENDENCIES
+  CbmBase
+  CbmData
+  CbmMuchBase
+  FairRoot::Base
+  FairRoot::GeoBase
+  ROOT::Core
+  ROOT::Graf
+  ROOT::Hist
+  ROOT::MathCore
+  ROOT::Physics
+  )
 
-qa/CbmMuchTransportQa.cxx
-qa/CbmMuchDigitizerQa.cxx
-)
+set(PRIVATE_DEPENDENCIES
+  CbmQaBase
+  CbmSimBase
+  FairRoot::ParBase
+  VMCLibrary
+  ROOT::EG
+  ROOT::Geom
+  ROOT::Gpad
+  ROOT::RIO
+  ROOT::Tree
+  )
 
-set(LINKDEF CbmMuchSimLinkDef.h)
-Set(LIBRARY_NAME CbmMuchSim)
-Set(DEPENDENCIES
-    CbmMuchBase CbmSimBase CbmQaBase CbmBase CbmData Base
-)
 
-GENERATE_LIBRARY()
+generate_cbm_library()

@@ -8,61 +8,34 @@ set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}/plugins/buffers
   ${CMAKE_CURRENT_SOURCE_DIR}/qa
 
-  ${CBMDATA_DIR}
-  ${CBMDATA_DIR}/base
-  ${CBMDATA_DIR}/sts
-  ${CBMDATA_DIR}/mvd
-  ${CBMDATA_DIR}/global
-  ${CBMBASE_DIR}
-
-  ${CBMROOT_SOURCE_DIR}/sim/transport/base
-)
-
-include_directories(${INCLUDE_DIRECTORIES})
-
-set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES}
-)
-
-include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${Boost_LIBRARY_DIRS}
-)
-
-link_directories(${LINK_DIRECTORIES})
+  )
 
 set(SRCS
   plugins/tasks/CbmMvdSensorTask.cxx
   plugins/tasks/CbmMvdSensorDigitizerTask.cxx
   plugins/tasks/CbmMvdSensorDigitizerTBTask.cxx
-
   plugins/tasks/CbmMvdSensorDigiToHitTask.cxx
-
-#OLD
+  #OLD
   plugins/tasks/CbmMvdSensorHitfinderTask.cxx
   plugins/tasks/CbmMvdSensorClusterfinderTask.cxx
-####
+  ####
   plugins/tasks/CbmMvdSensorReadoutTask.cxx
-
   plugins/CbmMvdSensorPlugin.cxx
-
+  
   SensorDataSheets/CbmMvdMimosa26AHR.cxx
   SensorDataSheets/CbmMvdMimosa34.cxx
   SensorDataSheets/CbmMvdMimosis.cxx
   SensorDataSheets/CbmMvdSensorDataSheet.cxx
-
+  
   tools/CbmMvdGeoHandler.cxx
   tools/CbmMvdHelper.h
   tools/readout/CbmMvdReadoutSimple.cxx
   tools/readout/CbmMvdReadoutCluster.cxx
-
+  
   qa/CbmMvdQa.cxx
-
+  
   CbmMvd.cxx
-
+  
   CbmMvdDigitizer.cxx
   CbmMvdPileupManager.cxx
   CbmMvdPixelCharge.cxx
@@ -73,43 +46,64 @@ set(SRCS
   CbmMvdDigiToHit.cxx
   CbmMvdDigiToHitTB.cxx
   CbmMvdTrackingInterface.cxx
-
-#OLD
+  
+  #OLD
   CbmMvdClusterfinder.cxx
   CbmMvdClusterfinderTB.cxx
-####
+  ####
   CbmMvdReadout.cxx
-)
+  )
 
 
-
-set(LINKDEF CbmMvdLinkDef.h)
 set(LIBRARY_NAME CbmMvd)
-set(DEPENDENCIES
-    CbmSimBase CbmBase CbmData Base
-)
+set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
+set(PUBLIC_DEPENDENCIES
+  CbmBase
+  CbmData
+  FairRoot::Base
+  ROOT::Core
+  ROOT::Geom
+  ROOT::Gpad
+  ROOT::Hist
+  ROOT::MathCore
+  ROOT::Physics
+  )
 
-GENERATE_LIBRARY()
+set(PRIVATE_DEPENDENCIES
+  CbmSimBase
+  FairLogger::FairLogger
+  FairRoot::GeoBase
+  FairRoot::ParBase
+  ROOT::EG
+  ROOT::Graf
+  ROOT::Matrix
+  ROOT::RIO
+  ROOT::Tree
+  )
 
-Install(FILES tools/CbmMvdHelper.h
+generate_cbm_library()
+
+
+# Install file 
+install(FILES tools/CbmMvdHelper.h
               tools/CbmMvdGeoHandler.h
         DESTINATION include/mvd/tools
        )
-Install(FILES plugins/CbmMvdSensorPlugin.h
+install(FILES plugins/CbmMvdSensorPlugin.h
         DESTINATION include/mvd/plugins
        )
-Install(FILES SensorDataSheets/CbmMvdMimosa26AHR.h
+install(FILES SensorDataSheets/CbmMvdMimosa26AHR.h
               SensorDataSheets/CbmMvdSensorDataSheet.h
               SensorDataSheets/CbmMvdMimosa34.h
               SensorDataSheets/CbmMvdMimosis.h
         DESTINATION include/mvd/SensorDataSheets
        )
-Install(FILES plugins/buffers/CbmMvdSensorBuffer.h
+install(FILES plugins/buffers/CbmMvdSensorBuffer.h
               plugins/buffers/CbmMvdSensorFrameBuffer.h
               plugins/buffers/CbmMvdSensorTrackingBuffer.h
         DESTINATION include/mvd/plugins/buffers
        )
-Install(FILES plugins/tasks/CbmMvdSensorClusterfinderTask.h
+install(FILES plugins/tasks/CbmMvdSensorClusterfinderTask.h
               plugins/tasks/CbmMvdSensorDigitizerTask.h
               plugins/tasks/CbmMvdSensorDigitizerTBTask.h
               plugins/tasks/CbmMvdSensorDigiToHitTask.h
@@ -119,3 +113,4 @@ Install(FILES plugins/tasks/CbmMvdSensorClusterfinderTask.h
         DESTINATION include/mvd/plugins/tasks
        )
 
+      

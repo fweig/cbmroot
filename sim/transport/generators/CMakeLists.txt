@@ -1,83 +1,52 @@
-# CMakeList file for library CbmSim
-# V. Friese, 1 August 2019
-
-
-# -----   Library name   ----------------------------------
-Set(LIBRARY_NAME CbmSimGenerators)
-# ---------------------------------------------------------
-
-# -----  Compilation sources   ----------------------------
-set(SRCS
-CbmBeamGenerator.cxx
-CbmPhsdGenerator.cxx
-CbmPlutoGenerator.cxx
-CbmShieldGenerator.cxx
-CbmUnigenGenerator.cxx
-unigen/URun.cxx
-unigen/UEvent.cxx
-unigen/UParticle.cxx
-pluto/PDataBase.cxx
-pluto/PMesh.cxx
-pluto/PParticle.cxx
-pluto/PStaticData.cxx
-pluto/PStdData.cxx
-pluto/PValues.cxx
-)
-# ---------------------------------------------------------
-
-
-
-# ----  Include directories -------------------------------
 set(INCLUDE_DIRECTORIES
-${CBMDATA_DIR}
-${CBMBASE_DIR}/utils
-${CBMROOT_SOURCE_DIR}/sim
-${CBMROOT_SOURCE_DIR}/sim/transport
-${CBMROOT_SOURCE_DIR}/sim/transport/base
-${CBMROOT_SOURCE_DIR}/sim/transport/generators
-${CBMROOT_SOURCE_DIR}/sim/transport/generators/pluto
-${CBMROOT_SOURCE_DIR}/sim/transport/generators/unigen
-)
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/unigen
+  ${CMAKE_CURRENT_SOURCE_DIR}/pluto
+  )
 
-set(SYSTEM_INCLUDE_DIRECTORIES
-${BASE_INCLUDE_DIRECTORIES}
-)
-# ---------------------------------------------------------
-
-
-
-# ----  Link directories ----------------------------------
-set(LINK_DIRECTORIES
-${ROOT_LIBRARY_DIR}
-${FAIRROOT_LIBRARY_DIR}
-${Boost_LIBRARY_DIRS}
-)
-# ---------------------------------------------------------
+set(SRCS
+  CbmBeamGenerator.cxx
+  CbmPhsdGenerator.cxx
+  CbmPlutoGenerator.cxx
+  CbmShieldGenerator.cxx
+  CbmUnigenGenerator.cxx
+  unigen/URun.cxx
+  unigen/UEvent.cxx
+  unigen/UParticle.cxx
+  pluto/PDataBase.cxx
+  pluto/PMesh.cxx
+  pluto/PParticle.cxx
+  pluto/PStaticData.cxx
+  pluto/PStdData.cxx
+  pluto/PValues.cxx
+  )
 
 
-
-# -----   Library dependences   ---------------------------
-Set(DEPENDENCIES
-CbmBase
-CbmData
-CbmSimBase
-)
-# ---------------------------------------------------------
-
-
-# -----  LinkDef file   -----------------------------------
+set(LIBRARY_NAME CbmSimGenerators)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
-# ---------------------------------------------------------
+set(PUBLIC_DEPENDENCIES
+  FairRoot::Base
+  ROOT::Core
+  ROOT::Hist
+  ROOT::MathCore
+  ROOT::Physics
+  )
+
+set(PRIVATE_DEPENDENCIES
+  CbmBase
+  CbmSimBase
+  FairLogger::FairLogger
+  ROOT::EG
+  ROOT::RIO
+  ROOT::Tree
+  )
 
 
-# -----  Let cmake do the job   ---------------------------
-include_directories( ${INCLUDE_DIRECTORIES})
-include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-link_directories( ${LINK_DIRECTORIES})
-GENERATE_LIBRARY()
-# ---------------------------------------------------------
 
+generate_cbm_library()
 
-Install(FILES  ${CMAKE_CURRENT_SOURCE_DIR}/pluto/Pdefines.h
+# Install file which has no corresponding source file
+install(FILES
+        pluto/Pdefines.h
         DESTINATION include
        )

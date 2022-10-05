@@ -1,41 +1,13 @@
 set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}
-
   ${CMAKE_CURRENT_SOURCE_DIR}/geo
-
-  ${CBMDETECTORBASE_DIR}/rich
-
-  ${CBMROOT_SOURCE_DIR}/sim/transport/base
-
-  ${CBMBASE_DIR}
-  ${CBMBASE_DIR}/utils
-
-  ${CBMDATA_DIR}
-  ${CBMDATA_DIR}/rich
-)
-
-include_directories(${INCLUDE_DIRECTORIES})
-
-set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${Boost_INCLUDE_DIR}
-)
-
-include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${Boost_LIBRARY_DIRS}
-)
-
-link_directories(${LINK_DIRECTORIES})
+  )
 
 set(SRCS
   CbmRich.cxx
   CbmRichDigitizer.cxx
   geo/RichGeoCreator.cxx
-)
+  )
 
 IF (SSE_FOUND)
   ADD_DEFINITIONS(-DHAVE_SSE)
@@ -46,9 +18,28 @@ ELSE (SSE_FOUND)
   SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS "-O3")
 ENDIF (SSE_FOUND)
 
-set(LINKDEF  CbmRichSimLinkDef.h)
 
-Set(LIBRARY_NAME CbmRichSim)
-Set(DEPENDENCIES Base CbmData CbmSimBase CbmRichBase Gdml)
+set(LIBRARY_NAME CbmRichSim)
+set(LINKDEF  ${LIBRARY_NAME}LinkDef.h)
+set(PUBLIC_DEPENDENCIES
+  CbmBase
+  CbmData
+  CbmRichBase
+  FairRoot::Base
+  ROOT::Core
+  ROOT::Geom
+  ROOT::Physics
+  )
 
-GENERATE_LIBRARY()
+set(PRIVATE_DEPENDENCIES
+  CbmSimBase
+  FairRoot::GeoBase
+  FairRoot::ParBase
+  ROOT::EG
+  ROOT::Gdml
+  ROOT::MathCore
+  ROOT::RIO
+  VMCLibrary
+  )
+
+generate_cbm_library()
