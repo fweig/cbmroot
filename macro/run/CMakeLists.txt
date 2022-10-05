@@ -305,18 +305,28 @@ If(DEFINED ENV{RAW_DATA_PATH} )
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_unpack_tsa.C )  # Unpackers
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2021/check_timing_any.C )  # Check Timing mCBM 2021
   GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2022/mcbm_event.C )  # Event building mCBM 2022
+  GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/beamtime/mcbm2022/mcbm_event_reco_L1.C )  # Reco + Event building + L1 mCBM 2022
+  GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/mcbm/mcbm_transport.C)
 
   ## Run only if raw data files present: 2021
   # =====>   Set the timeouts depending on test model (profiling = slow)
   SET( RAW_DATA_UNPACK_TO 700) # Nightly mode on run4: 298 for run 1588, 525 for 2391, 601 for 2488
   SET( RAW_DATA_CHECK_TO  600) # Nightly mode on run4: 562 for run 1588
   SET( RAW_DATA_BUILD_TO  250) # Nightly mode on run4: 155 for 2391, 190 for 2488
+  SET( RAW_DATA_RECO_TO 2000) # 300 for 1 TS in 2391 and 2488
   if(${CBM_TEST_MODEL} MATCHES Weekly OR ${CBM_TEST_MODEL} MATCHES Profile )
     Message( STATUS "Profiling model detected, increasing timeout for mCBM 2021 tests with coverage." )
     SET( RAW_DATA_UNPACK_TO 800) # Coverage mode: 716 for run 1588 on run4
     SET( RAW_DATA_CHECK_TO  800) # Coverage mode: 654 for run 1588 on run4
   endif()
   # ====================================================================
+  SET( RECO_EVNTS_NB 20)
+  if(${CBM_TEST_MODEL} MATCHES MergeRequest OR ${CBM_TEST_MODEL} MATCHES Continuous )
+    Message( STATUS "MR or Continuous model detected, decreasing event nb for mCBM 2022 reco tests to single one." )
+    SET( RECO_EVNTS_NB 1)
+    SET( RAW_DATA_RECO_TO 900) # ~380 for 1 TS in 2391 and ~500 in 2488 on run4
+  endif()
+
   ForEach(RUN 1588 )
     Message( STATUS "Checking if raw data file exists: ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa" )
     If(EXISTS ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa)
@@ -356,6 +366,20 @@ If(DEFINED ENV{RAW_DATA_PATH} )
     SET( RAW_DATA_UNPACK_TO 2200)  # Coverage mode: 1669 for run 2391, 2085 for run 2488
     SET( RAW_DATA_CHECK_TO   300)  # Coverage mode:  171 for run 2391,  213 for run 2488
   endif()
+
+
+  ### Transport run to create geo file
+  Set(setup mcbm_beam_2022_05_23_nickel)
+  Set(testname mcbm_geo_${setup})
+  Set(fixture_geo_run fixture_done_${testname})
+  Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/mcbm_transport.sh 1 \"${setup}\" \"${CBMROOT_BINARY_DIR}/macro/run/data/${setup}\" \"\" kTRUE)
+  Set_Tests_Properties(${testname} PROPERTIES
+    TIMEOUT "600"
+    PASS_REGULAR_EXPRESSION "Test Passed;All ok"
+    FIXTURES_REQUIRED run_cleanup
+    FIXTURES_SETUP ${fixture_geo_run}
+    )
+
   # ====================================================================
   ForEach(RUN 2391 2488 )
     Message( STATUS "Checking if raw data file exists: ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa" )
@@ -386,9 +410,33 @@ If(DEFINED ENV{RAW_DATA_PATH} )
             FIXTURES_REQUIRED ${fixture_unpacked_${RUN}}
             FIXTURES_SETUP ${fixture_event_${RUN}}
             )
+
+      ### Raw analysis tests: (event building and) reconstruction => need calibration files!!
+      Set(testname mcbm_reco_2022_${RUN})
+      Set(fixture_reco_${RUN} fixture_done_${testname})
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_event_reco_L1.sh ${RUN} ${RECO_EVNTS_NB}
+	\"${CBMROOT_BINARY_DIR}/macro/run/data/\" \"${CBMROOT_BINARY_DIR}/macro/run/data/\"
+	-1 kFALSE kTRUE kTRUE kTRUE kTRUE kFALSE kTRUE kTRUE kFALSE kTRUE kTRUE kFALSE kFALSE
+	\"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\"
+	)
+      Set_Tests_Properties(${testname} PROPERTIES
+            TIMEOUT ${RAW_DATA_RECO_TO}
+            FAIL_REGULAR_EXPRESSION "segmentation violation"
+            PASS_REGULAR_EXPRESSION "Macro finished successfully"
+            FIXTURES_REQUIRED "${fixture_geo_run};${fixture_event_${RUN}}"
+            FIXTURES_SETUP ${fixture_reco_${RUN}}
+            RESOURCE_LOCK mcbmRecoAllCoresBug
+            )
+
+
     EndIf() # If(EXISTS ${RAW_DATA_PATH}/${RUN}_first20Ts.tsa))
   EndForEach() # ForEach(RUN 2391 2488 )
 EndIf() # If(DEFINED ENV{RAW_DATA_PATH} )
+
+
+
+
+
 #####################
 # ============================================================================
 
