@@ -157,14 +157,16 @@ bool L1InitManager::FormParametersContainer()
   // Read configuration file
   // NOTE: We consider parameters from the configuration file as ones with a higher priority, so all the defined
   //       variables there would be rewritten by the configuration
-  try {
-    if (fConfigInputName != "") { fConfigRW.ReadYaml(fConfigInputName); }
-    LOG(info) << "L1InitManager: parameters configuration file \"" << fConfigInputName << "\" was loaded";
-  }
-  catch (const std::runtime_error& err) {
-    LOG(error) << "L1InitManager: parameters configuration file \"" << fConfigInputName << "\" was defined, "
-               << "but the loading failed. Reason: " << err.what();
-    return false;
+  if (fConfigInputName != "") {
+    try {
+      fConfigRW.ReadYaml(fConfigInputName);
+      LOG(info) << "L1InitManager: parameters configuration file \"" << fConfigInputName << "\" was loaded";
+    }
+    catch (const std::runtime_error& err) {
+      LOG(error) << "L1InitManager: parameters configuration file \"" << fConfigInputName << "\" was defined, "
+                 << "but the loading failed. Reason: " << err.what();
+      return false;
+    }
   }
 
   // Check initialization

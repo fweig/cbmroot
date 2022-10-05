@@ -462,34 +462,6 @@ InitStatus CbmL1::Init()
     fInitManager.SetNstations(L1DetectorID::kTrd, fNTrdStationsGeom);
     fInitManager.SetNstations(L1DetectorID::kTof, fNTofStationsGeom);
 
-    // ****************************
-    // ** Material budget input  **
-    // ****************************
-
-    // NOTE: std::vector of material tables. Vector sizes correspond to number of stations provided by geometry, i.e. both
-    //       active and inactive station are represented in the folloving vectors
-    auto materialTableMvd  = ReadMaterialBudget(L1DetectorID::kMvd);
-    auto materialTableSts  = ReadMaterialBudget(L1DetectorID::kSts);
-    auto materialTableMuch = ReadMaterialBudget(L1DetectorID::kMuch);
-    auto materialTableTrd  = ReadMaterialBudget(L1DetectorID::kTrd);
-    auto materialTableTof  = ReadMaterialBudget(L1DetectorID::kTof);
-
-    /* User corrections (optional) */
-    auto correctionMvd = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-      this->ApplyCorrectionToMaterialMap<L1DetectorID::kMvd>(material, homogenious);
-    };
-    auto correctionSts = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-      this->ApplyCorrectionToMaterialMap<L1DetectorID::kSts>(material, homogenious);
-    };
-    auto correctionMuch = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-      this->ApplyCorrectionToMaterialMap<L1DetectorID::kMuch>(material, homogenious);
-    };
-    auto correctionTrd = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-      this->ApplyCorrectionToMaterialMap<L1DetectorID::kTrd>(material, homogenious);
-    };
-    auto correctionTof = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-      this->ApplyCorrectionToMaterialMap<L1DetectorID::kTof>(material, homogenious);
-    };
 
     // ***************************************
     // ** Stations geometry initialization  **
@@ -497,6 +469,10 @@ InitStatus CbmL1::Init()
 
     // *** MVD stations info ***
     if (fUseMVD) {
+      auto materialTableMvd = ReadMaterialBudget(L1DetectorID::kMvd);
+      auto correctionMvd    = [this](L1Material& material, const L1MaterialInfo& homogenious) {
+        this->ApplyCorrectionToMaterialMap<L1DetectorID::kMvd>(material, homogenious);
+      };
       for (int iSt = 0; iSt < fNMvdStationsGeom; ++iSt) {
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kMvd, iSt);
         stationInfo.SetStationType(1);  // MVD
@@ -522,6 +498,10 @@ InitStatus CbmL1::Init()
 
     // *** STS stations info ***
     if (fUseSTS) {
+      auto materialTableSts = ReadMaterialBudget(L1DetectorID::kSts);
+      auto correctionSts    = [this](L1Material& material, const L1MaterialInfo& homogenious) {
+        this->ApplyCorrectionToMaterialMap<L1DetectorID::kSts>(material, homogenious);
+      };
       for (int iSt = 0; iSt < fNStsStationsGeom; ++iSt) {
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
         stationInfo.SetStationType(0);  // STS
@@ -549,6 +529,10 @@ InitStatus CbmL1::Init()
 
     // *** MuCh stations info ***
     if (fUseMUCH) {
+      auto materialTableMuch = ReadMaterialBudget(L1DetectorID::kMuch);
+      auto correctionMuch    = [this](L1Material& material, const L1MaterialInfo& homogenious) {
+        this->ApplyCorrectionToMaterialMap<L1DetectorID::kMuch>(material, homogenious);
+      };
       for (int iSt = 0; iSt < fNMuchStationsGeom; ++iSt) {
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kMuch, iSt);
         stationInfo.SetStationType(2);  // MuCh
@@ -576,6 +560,10 @@ InitStatus CbmL1::Init()
 
     // *** TRD stations info ***
     if (fUseTRD) {
+      auto materialTableTrd = ReadMaterialBudget(L1DetectorID::kTrd);
+      auto correctionTrd    = [this](L1Material& material, const L1MaterialInfo& homogenious) {
+        this->ApplyCorrectionToMaterialMap<L1DetectorID::kTrd>(material, homogenious);
+      };
       for (int iSt = 0; iSt < fNTrdStationsGeom; ++iSt) {
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kTrd, iSt);
         stationInfo.SetStationType((iSt == 1 || iSt == 3) ? 6 : 3);  // MuCh
@@ -613,6 +601,10 @@ InitStatus CbmL1::Init()
 
     // *** TOF stations info ***
     if (fUseTOF) {
+      auto materialTableTof = ReadMaterialBudget(L1DetectorID::kTof);
+      auto correctionTof    = [this](L1Material& material, const L1MaterialInfo& homogenious) {
+        this->ApplyCorrectionToMaterialMap<L1DetectorID::kTof>(material, homogenious);
+      };
       for (int iSt = 0; iSt < fNTofStationsGeom; ++iSt) {
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kTof, iSt);
         stationInfo.SetStationType(4);
@@ -1749,7 +1741,7 @@ std::vector<L1Material> CbmL1::ReadMaterialBudget(L1DetectorID detectorID)
     gDirectory = oldDir;
   }  // if mat budget file found
   else {
-    LOG(warn) << "No material budget file is found for " << GetDetectorName(detectorID);
+    LOG(fatal) << "No material budget file is found for " << GetDetectorName(detectorID);
   }
   return result;
 }
