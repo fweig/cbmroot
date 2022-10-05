@@ -53,7 +53,6 @@ void L1ConfigRW::ReadCAIterations(const YAML::Node& node)
       LOG(info) << "L1 config: Reading CA tracking iterations sequence. Default iterations will be ignored";
     }
     fpInitManager->ClearCAIterations();
-    L1_SHOW(node.size());
     fpInitManager->SetCAIterationsNumberCrosscheck(node.size());
     if (fVerbose > 2) { LOG(info) << "L1 config: " << fVerbose << " CA iterations were recorded"; }
     if (fVerbose > 3) { LOG(info) << "L1 config: Recorded iterations:"; }
@@ -110,14 +109,10 @@ void L1ConfigRW::ReadYaml(const std::string& filename)
     config = YAML::LoadFile(filename);
   }
   catch (const YAML::BadFile& exc) {
-    std::stringstream msg;
-    msg << "file does not exist";
-    throw std::runtime_error(msg.str());
+    throw std::runtime_error("file does not exist");
   }
   catch (const YAML::ParserException& exc) {
-    std::stringstream msg;
-    msg << "file is formatted improperly";
-    throw std::runtime_error(msg.str());
+    throw std::runtime_error("file is formatted improperly");
   }
 
   // Tracking iterations

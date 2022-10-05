@@ -122,22 +122,22 @@ void CbmCaPerformance::CheckInit() const
 
   // Check detectors initialization
   if (fbUseMvd) {
-    if (fpMvdPoints) { throw std::logic_error("MC points unavailable for MVD"); }
+    if (!fpMvdPoints) { throw std::logic_error("MC points unavailable for MVD"); }
   }
 
   if (fbUseSts) {
-    if (fpStsPoints) { throw std::logic_error("MC points unavailable for STS"); }
+    if (!fpStsPoints) { throw std::logic_error("MC points unavailable for STS"); }
   }
 
   if (fbUseMuch) {
-    if (fpMuchPoints) { throw std::logic_error("MC points unavailable for MuCh"); }
+    if (!fpMuchPoints) { throw std::logic_error("MC points unavailable for MuCh"); }
   }
 
   if (fbUseTrd) {
-    if (fpTrdPoints) { throw std::logic_error("MC points unavailable for TRD"); }
+    if (!fpTrdPoints) { throw std::logic_error("MC points unavailable for TRD"); }
   }
 
   if (fbUseTof) {
-    if (fpTofPoints) { throw std::logic_error("MC points unavailable for TOF"); }
+    if (!fpTofPoints) { throw std::logic_error("MC points unavailable for TOF"); }
   }
 }
