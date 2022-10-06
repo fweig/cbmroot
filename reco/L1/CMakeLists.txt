@@ -123,7 +123,7 @@ set(SRCS
   # OffLineInterface / CbmL1SttTrack.cxx
   L1Algo/L1Algo.cxx
   L1Algo/L1CATrackFinder.cxx
-  L1Algo/L1TrackExtender.cxx
+  L1Algo/L1BranchExtender.cxx
   L1Algo/L1TrackFitter.cxx
   L1Algo/L1HitsSortHelper.cxx
   L1Algo/L1Grid.cxx

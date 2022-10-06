@@ -57,10 +57,6 @@ namespace L1Constants
     /// Flag for calling the CAMergeClones procedure ... TODO
     constexpr bool kIfMergeClones {true};
 
-    /// Flag: hit errors
-    /// true  - hit errors will be saved in the track extender algorithm
-    constexpr bool kIfSaveHitErrorsInTrackExtender {false};
-
     /// Flag: input data QA level
     ///  - 0: no checks will be done
     ///  - 1: only number of hits and strips as well as validity of hits first and last indexes will be checked

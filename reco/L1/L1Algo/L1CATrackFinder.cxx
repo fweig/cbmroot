@@ -411,17 +411,13 @@ inline void L1Algo::findDoubletsStep0(
                            (sqrt(Pick_m22 * (T1.C11 + stam.XYInfo.C11)) + fMaxDZ * abs(T1.ty))[i1_4] * iz, time,
                            sqrt(timeError) * 5);
 
-
-    L1HitIndex_t imh = 0;
-    int irm1         = -1;
-    while (true) {  // loop over the hits in the area
+    for (L1HitIndex_t imh = -1; true;) {  // loop over the hits in the area
       if (fParameters.DevIsIgnoreHitSearchAreas()) {
-        irm1++;
-        if ((L1HitIndex_t) irm1 >= (HitsUnusedStopIndex[iStaM] - HitsUnusedStartIndex[iStaM])) break;
-        imh = irm1;
+        imh++;
+        if ((L1HitIndex_t) imh >= (HitsUnusedStopIndex[iStaM] - HitsUnusedStartIndex[iStaM])) { break; }
       }
       else {
-        if (!areaTime.GetNext(imh)) break;
+        if (!areaTime.GetNext(imh)) { break; }
       }
 
       const L1HitPoint& hitm = vHits_m[imh];

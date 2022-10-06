@@ -34,7 +34,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
 
   // get hits of current track
   const L1Vector<L1HitIndex_t>& hits = t.fHits;  // array of indeses of hits of current track
-  const int nHits             = t.NHits;
+  const int nHits                    = t.NHits;
 
   const signed short int step = -2 * static_cast<int>(dir) + 1;  // increment for station index
   const int iFirstHit         = (dir) ? nHits - 1 : 0;
@@ -52,18 +52,18 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   const L1Station& sta1 = fParameters.GetStation(ista1);
   const L1Station& sta2 = fParameters.GetStation(ista2);
 
-  fvec u0 = hit0.u;
-  fvec v0 = hit0.v;
+  fvec u0       = hit0.u;
+  fvec v0       = hit0.v;
   auto [x0, y0] = sta0.ConvUVtoXY<fvec>(u0, v0);
-  fvec z0 = hit0.z;
+  fvec z0       = hit0.z;
 
-  fvec u1 = hit1.u;
-  fvec v1 = hit1.v;
+  fvec u1       = hit1.u;
+  fvec v1       = hit1.v;
   auto [x1, y1] = sta1.ConvUVtoXY<fvec>(u1, v1);
-  fvec z1 = hit1.z;
+  fvec z1       = hit1.z;
 
-  fvec u2 = hit2.u;
-  fvec v2 = hit2.v;
+  fvec u2       = hit2.u;
+  fvec v2       = hit2.v;
   auto [x2, y2] = sta2.ConvUVtoXY<fvec>(u2, v2);
   //  fvec z2 = hit2.z;
 
@@ -88,9 +88,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   T.C10  = sta0.XYInfo.C10;
   T.C11  = sta0.XYInfo.C11;
 
-  if constexpr (L1Constants::control::kIfSaveHitErrorsInTrackExtender) {
-    std::tie(T.C00, T.C10, T.C11) = sta0.FormXYCovarianceMatrix(hit0.du, hit0.dv);
-  }
+  if (fUseHitErrors) { std::tie(T.C00, T.C10, T.C11) = sta0.FormXYCovarianceMatrix(hit0.du, hit0.dv); }
 
   T.C20 = T.C21 = 0;
   T.C30 = T.C31 = T.C32 = 0;
@@ -127,11 +125,10 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
 
     fvec dz = z_sta - T.z;
 
-#if defined(mCBM) || defined(GLOBAL)
-    L1ExtrapolateLine(T, hit.z);
-#else
-    L1Extrapolate(T, hit.z, qp0, fld);
-#endif
+    if (kMcbm == fTrackingMode) { L1ExtrapolateLine(T, hit.z); }
+    else {
+      L1Extrapolate(T, hit.z, qp0, fld);
+    }
     L1ExtrapolateTime(T, dz);
 
     fit.L1AddMaterial(T, sta.materialInfo, qp0, 1);
@@ -144,20 +141,20 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
 
     L1UMeasurementInfo info = sta.frontInfo;
 
-    if constexpr (L1Constants::control::kIfSaveHitErrorsInTrackExtender) { info.sigma2 = hit.du * hit.du; }
+    if (fUseHitErrors) { info.sigma2 = hit.du * hit.du; }
     L1Filter(T, info, u);
 
     info = sta.backInfo;
 
-    if constexpr (L1Constants::control::kIfSaveHitErrorsInTrackExtender) { info.sigma2 = hit.dv * hit.dv; }
+    if (fUseHitErrors) { info.sigma2 = hit.dv * hit.dv; }
     L1Filter(T, info, v);
 
     FilterTime(T, hit.t, hit.dt);
 
-    fldB0 = fldB1;
-    fldB1 = fldB2;
-    fldZ0 = fldZ1;
-    fldZ1 = fldZ2;
+    fldB0       = fldB1;
+    fldB1       = fldB2;
+    fldZ0       = fldZ1;
+    fldZ1       = fldZ2;
     auto [x, y] = sta.ConvUVtoXY<fvec>(u, v);
     sta.fieldSlice.GetFieldValue(x, y, fldB2);
 
@@ -207,16 +204,16 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
   const L1Station& sta1 = fParameters.GetStation(ista1);
   const L1Station& sta2 = fParameters.GetStation(ista2);
 
-  fvec u0 = hit0.u;
-  fvec v0 = hit0.v;
+  fvec u0       = hit0.u;
+  fvec v0       = hit0.v;
   auto [x0, y0] = sta0.ConvUVtoXY<fvec>(u0, v0);
 
-  fvec u1 = hit1.u;
-  fvec v1 = hit1.v;
+  fvec u1       = hit1.u;
+  fvec v1       = hit1.v;
   auto [x1, y1] = sta1.ConvUVtoXY<fvec>(u1, v1);
 
-  fvec u2 = hit2.u;
-  fvec v2 = hit2.v;
+  fvec u2       = hit2.u;
+  fvec v2       = hit2.v;
   auto [x2, y2] = sta2.ConvUVtoXY<fvec>(u2, v2);
 
   L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
@@ -243,27 +240,31 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
     fvec dz = sta.z - T.z;
 
+    if (kMcbm == fTrackingMode) { L1ExtrapolateLine(T, sta.z); }
+    else {
+      L1Extrapolate(T, sta.z, qp0, fld);
+    }
     L1ExtrapolateTime(T, dz);
-
-#if defined(mCBM) || defined(GLOBAL)
-    L1ExtrapolateLine(T, sta.z);
-#else
-    L1Extrapolate(T, sta.z, qp0, fld);
-#endif
 
     fscal r2_best = 1e8;  // best distance to hit
     int iHit_best = -1;   // index of the best hit
 
     const fscal iz = 1.f / (T.z[0] - fParameters.GetTargetPositionZ()[0]);
 
-
     L1HitAreaTime area(vGridTime[ista], T.x[0] * iz, T.y[0] * iz,
                        (sqrt(fPickGather * (T.C00 + sta.XYInfo.C00)) + fMaxDZ * abs(T.tx))[0] * iz,
                        (sqrt(fPickGather * (T.C11 + sta.XYInfo.C11)) + fMaxDZ * abs(T.ty))[0] * iz, T.t[0],
                        sqrt(T.C55[0]));
 
-    L1HitIndex_t ih = 0;
-    while (area.GetNext(ih)) {
+    for (L1HitIndex_t ih = -1; true;) {  // loop over the hits in the area
+
+      if (fParameters.DevIsIgnoreHitSearchAreas()) {
+        ih++;
+        if ((L1HitIndex_t) ih >= (HitsUnusedStopIndex[ista] - HitsUnusedStartIndex[ista])) { break; }
+      }
+      else {
+        if (!area.GetNext(ih)) { break; }
+      }
 
       ih += HitsUnusedStartIndex[ista];
       const L1Hit& hit = (*vHitsUnused)[ih];
@@ -319,12 +320,12 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
     L1UMeasurementInfo info = sta.frontInfo;
 
-    if constexpr (L1Constants::control::kIfSaveHitErrorsInTrackExtender) { info.sigma2 = hit.du * hit.du; }
+    if (fUseHitErrors) { info.sigma2 = hit.du * hit.du; }
     L1Filter(T, info, u);
 
     info = sta.backInfo;
 
-    if constexpr (L1Constants::control::kIfSaveHitErrorsInTrackExtender) { info.sigma2 = hit.dv * hit.dv; }
+    if (fUseHitErrors) { info.sigma2 = hit.dv * hit.dv; }
     L1Filter(T, info, v);
 
     FilterTime(T, hit.t, hit.dt);
