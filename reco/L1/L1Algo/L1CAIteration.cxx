@@ -11,6 +11,7 @@
 
 #include "L1CAIteration.h"
 
+#include <limits>
 #include <sstream>
 
 #include "L1Constants.h"
@@ -88,21 +89,23 @@ L1CAIteration& L1CAIteration::operator=(L1CAIteration&& other) noexcept
 //
 bool L1CAIteration::Check() const
 {
+  constexpr float kMaxFloat = std::numeric_limits<float>::max();
   bool res = true;
-  // TODO: SZh 06.10.2022: These values should be tuned
-  res = this->CheckValueLimits<float>("track_chi2_cut", fTrackChi2Cut, 0.f, 12.f) && res;
-  res = this->CheckValueLimits<float>("triplet_chi2_cut", fTripletChi2Cut, 0.f, 30.f) && res;
-  res = this->CheckValueLimits<float>("doublet_chi2_cut", fDoubletChi2Cut, 0.f, 15.f) && res;
-  res = this->CheckValueLimits<float>("pick_gather", fPickGather, 2.f, 5.f) && res;
-  res = this->CheckValueLimits<float>("pick_neighbour", fPickNeighbour, 2.f, 6.f) && res;
-  res = this->CheckValueLimits<float>("min_momentum", fMaxInvMom, 1.f / 1.f, 1.f / 0.05f) && res;
-  res = this->CheckValueLimits<float>("max_slope_pv", fMaxSlopePV, 0.1f, 2.f) && res;
-  res = this->CheckValueLimits<float>("max_slope", fMaxSlope, 1.f, 3.f) && res;
-  res = this->CheckValueLimits<float>("max_dz", fMaxDZ, 0.f, 1.0f) && res;
-  res = this->CheckValueLimits<int>("min_start_triplet_lvl", fMinLevelTripletStart, 0, 5) && res;
+  // TODO: SZh 06.10.2022: These values should be tuned. At the moment the std::numeric_limits<T>::max value is used for
+  //                       debug purposes. In future, these values will be strengthened.
+  res = this->CheckValueLimits<float>("track_chi2_cut", fTrackChi2Cut, 0.f, kMaxFloat) && res;
+  res = this->CheckValueLimits<float>("triplet_chi2_cut", fTripletChi2Cut, 0.f, kMaxFloat) && res;
+  res = this->CheckValueLimits<float>("doublet_chi2_cut", fDoubletChi2Cut, 0.f, kMaxFloat) && res;
+  res = this->CheckValueLimits<float>("pick_gather", fPickGather, 0.f, kMaxFloat) && res;
+  res = this->CheckValueLimits<float>("pick_neighbour", fPickNeighbour, 0.f, kMaxFloat) && res;
+  res = this->CheckValueLimits<float>("min_momentum", fMaxInvMom, 1.f / kMaxFloat, 1.f / 0.001f) && res;
+  res = this->CheckValueLimits<float>("max_slope_pv", fMaxSlopePV, 0.f, kMaxFloat) && res;
+  res = this->CheckValueLimits<float>("max_slope", fMaxSlope, 0.f, kMaxFloat) && res;
+  res = this->CheckValueLimits<float>("max_dz", fMaxDZ, 0.f, kMaxFloat) && res;
+  res = this->CheckValueLimits<int>("min_start_triplet_lvl", fMinLevelTripletStart, 0, kMaxNstations) && res;
   res = this->CheckValueLimits<int>("first_station_index", fFirstStationIndex, 0, kMaxNstations) && res;
-  res = this->CheckValueLimits<float>("target_pos_sigma_x", fTargetPosSigmaX, 0.01f, 15.f) && res;
-  res = this->CheckValueLimits<float>("target_pos_sigma_y", fTargetPosSigmaY, 0.01f, 15.f) && res;
+  res = this->CheckValueLimits<float>("target_pos_sigma_x", fTargetPosSigmaX, 0.f, kMaxFloat) && res;
+  res = this->CheckValueLimits<float>("target_pos_sigma_y", fTargetPosSigmaY, 0.f, kMaxFloat) && res;
   return res;
 }
 
