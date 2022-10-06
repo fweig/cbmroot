@@ -12,6 +12,8 @@
 #ifndef L1CAIteration_h
 #define L1CAIteration_h 1
 
+#include <FairLogger.h>
+
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/string.hpp>
 
@@ -47,6 +49,9 @@ public:
 
   /// Move assignment operator
   L1CAIteration& operator=(L1CAIteration&& other) noexcept;
+
+  /// Checks parameters consistency
+  bool Check() const;
 
   /// Gets doublet chi2 upper cut
   float GetDoubletChi2Cut() const { return fDoubletChi2Cut; }
@@ -270,8 +275,29 @@ private:
     ar& fIfSuppressGhost;
   }
 
+  /// Checks, if a particular value lies within selected limits. In case of fail throws std::logic_error
+  /// \param  name   Name of parameters
+  /// \param  value  Value of parameter
+  /// \param  lLimit Lower limit of parameter
+  /// \param  uLimit Upper limit of parameter
+  template<typename T>
+  static bool CheckValueLimits(const std::string& name, T value, T lLimit, T uLimit);
 
   // ^ TODO: invent more proper name
 };
+
+// ---------------------------------------------------------------------------------------------------------------------
+// TODO: SZh. 06.10.2022: Probably, this method should be replaced to L1Utils
+template<typename T>
+bool L1CAIteration::CheckValueLimits(const std::string& name, T value, T lLimit, T uLimit)
+{
+  if (value < lLimit || value > uLimit) {
+    LOG(error) << "parameter\033[1;32m" << name << "\033[0m (" << value << ") runs out of range: [" << lLimit << ','
+               << uLimit << ']';
+    return false;
+  }
+  return true;
+}
+
 
 #endif  // L1CAIteration_h

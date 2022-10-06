@@ -235,14 +235,26 @@ void L1Parameters::CheckConsistency() const
 
   /*
    *  Check iterations sequence
-   *  1. Number of iterations with TrackFromTriplets flag turned on no more then 1
-   *  2. If this iteration exists, it should be the last one in the sequence
+   *  1. Number of iterations should be larger then zero
+   *  2. Each iteration should contain values within predefined limits
+   *  3. Number of iterations with TrackFromTriplets flag turned on no more then 1
+   *  4. If the TrackFromTriplets iteration exists, it should be the last one in the sequence
    */
   {
     int nIterations = fCAIterations.size();
     if (!nIterations) {
       std::stringstream msg;
       msg << "L1Parameters: 0 track finder iterations were found. Please, define at least one iteration";
+      throw std::logic_error(msg.str());
+    }
+
+    std::string names = "";
+    for (const auto iter : fCAIterations) {
+      if (!iter.Check()) { names += iter.GetName() + " "; }
+    }
+    if (names.size()) {
+      std::stringstream msg;
+      msg << "L1Parameters: some parameters are out of range for the following iterations: " << names;
       throw std::logic_error(msg.str());
     }
 
