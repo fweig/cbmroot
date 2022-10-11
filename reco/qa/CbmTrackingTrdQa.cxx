@@ -31,6 +31,7 @@
 #include "CbmMCDataArray.h"
 #include "CbmMCDataManager.h"
 #include "CbmMCTrack.h"
+#include "CbmStsTrack.h"
 #include "CbmTimeSlice.h"
 #include "CbmTrackMatchNew.h"
 #include "CbmTrdHit.h"
@@ -148,6 +149,7 @@ void CbmTrackingTrdQa::Exec(Option_t* /*opt*/)
   // check consistency
   //assert(fGlobalTracks->GetEntriesFast() == fGlobalTrackMatches->GetEntriesFast());
   assert(fTrdTracks->GetEntriesFast() == fTrdTrackMatches->GetEntriesFast());
+  assert(fStsTracks->GetEntriesFast() == fStsTrackMatches->GetEntriesFast());
 
   std::vector<CbmLink> events = fTimeSlice->GetMatch().GetLinks();
   std::sort(events.begin(), events.end());
@@ -198,10 +200,11 @@ void CbmTrackingTrdQa::Exec(Option_t* /*opt*/)
 
     // Get momentum
     mcTrack->GetMomentum(momentum);
+    info.fP      = momentum.Mag();
     info.fPt     = momentum.Pt();
     info.fPdg    = mcTrack->GetPdgCode();
     info.fY      = mcTrack->GetRapidity() - fYCM;
-    info.fIsFast = (info.fPt > 0.1);
+    info.fIsFast = (info.fP > 0.1);
 
     // Continue only for reconstructible tracks
 
@@ -276,9 +279,19 @@ void CbmTrackingTrdQa::Exec(Option_t* /*opt*/)
     Int_t nAllHits = trdTrack->GetNofHits();
     assert(nTrue + nWrong + nFake == nAllHits);
 
+    int nStsHits = 0;
+    {
+      Int_t stsTrackId = info.fStsTrackMatch;
+      if (stsTrackId >= 0) {
+        CbmStsTrack* stsTrack = (CbmStsTrack*) fStsTracks->At(stsTrackId);
+        assert(stsTrack);
+        nStsHits = stsTrack->GetNofHits();
+      }
+    }
+
     double qp = globalTrack->GetParamFirst()->GetQp();
     //double q  = (qp >= 1.) ? 1. : -1.;
-    double p  = (fabs(qp) > 1. / 100.) ? 1. / fabs(qp) : 100.;
+    double p  = (fabs(qp) > 1. / 1000.) ? 1. / fabs(qp) : 1000.;
     double tx = globalTrack->GetParamFirst()->GetTx();
     double ty = globalTrack->GetParamFirst()->GetTy();
     double pt = sqrt((tx * tx + ty * ty) / (1. + tx * tx + ty * ty)) * p;
@@ -298,6 +311,14 @@ void CbmTrackingTrdQa::Exec(Option_t* /*opt*/)
       fhPidPtY["prmE"][Pdg2Idx(info.fPdg)]->Fill(info.fY, info.fPt);
       fhNpRecPrim->Fill(Double_t(nAllHits));
       if (info.fPt > 0.001) { fhPtResPrim->Fill((pt / info.fPt - 1.)); }
+      if (info.fP > 0.001) {
+        double dp = p / info.fP - 1.;
+        fhPResPrim->Fill(dp);
+        if (nStsHits == 0) { fhPResPrimSts0->Fill(dp); }
+        if (nStsHits == 1) { fhPResPrimSts1->Fill(dp); }
+        if (nStsHits == 2) { fhPResPrimSts2->Fill(dp); }
+        if (nStsHits >= 3) { fhPResPrimSts3->Fill(dp); }
+      }
     }
     else {
       nRecSec++;
@@ -444,6 +465,14 @@ InitStatus CbmTrackingTrdQa::Init()
   // Get TrdTrackMatch array
   fTrdTrackMatches = (TClonesArray*) fManager->GetObject("TrdTrackMatch");
   assert(fTrdTrackMatches);
+
+  // Get StsTrack array
+  fStsTracks = (TClonesArray*) fManager->GetObject("StsTrack");
+  assert(fStsTracks);
+
+  // Get StsTrackMatch array
+  fStsTrackMatches = (TClonesArray*) fManager->GetObject("StsTrackMatch");
+  assert(fStsTrackMatches);
 
 
   // Create histograms
@@ -729,6 +758,21 @@ void CbmTrackingTrdQa::CreateHistos()
   fhPtResPrim = new TH1F("hPtPrim", "Resolution Pt Primaries [100%]", 100, -1., 1.);
   fHistoList->Add(fhPtResPrim);
 
+  fhPResPrim = new TH1F("hPPrim", "Resolution P Primaries [100%]", 100, -1., 1.);
+  fHistoList->Add(fhPResPrim);
+
+  fhPResPrimSts0 = new TH1F("hPPrimSts0", "Resolution P Primaries [100%], No Sts hits", 100, -1., 1.);
+  fHistoList->Add(fhPResPrimSts0);
+
+  fhPResPrimSts1 = new TH1F("hPPrimSts1", "Resolution P Primaries [100%], 1 Sts hit", 100, -1., 1.);
+  fHistoList->Add(fhPResPrimSts1);
+
+  fhPResPrimSts2 = new TH1F("hPPrimSts2", "Resolution P Primaries [100%], 2 Sts hits", 100, -1., 1.);
+  fHistoList->Add(fhPResPrimSts2);
+
+  fhPResPrimSts3 = new TH1F("hPPrimSts3", "Resolution P Primaries [100%], >=3 Sts hits", 100, -1., 1.);
+  fHistoList->Add(fhPResPrimSts3);
+
   TIter next(fHistoList);
   while (TH1* histo = ((TH1*) next())) {
     fOutFolder.Add(histo);
@@ -831,6 +875,8 @@ void CbmTrackingTrdQa::FillTrackMatchMap(Int_t& nRec, Int_t& nGhosts, Int_t& nCl
     assert(trdTrack);
     nRec++;
 
+    int iStsTrack = globalTrack->GetStsTrackIndex();
+
     // --- TrackMatch
 
     assert(iTrdTrack >= 0 && iTrdTrack < fTrdTrackMatches->GetEntriesFast());
@@ -875,6 +921,7 @@ void CbmTrackingTrdQa::FillTrackMatchMap(Int_t& nRec, Int_t& nGhosts, Int_t& nCl
     }
     info.fGlobalTrackMatch = iGlobalTrack;
     info.fTrdTrackMatch    = iTrdTrack;
+    info.fStsTrackMatch    = iStsTrack;
     info.fQuali            = quali;
     info.fMatchedNHitsAll  = nHits;
     info.fMatchedNHitsTrue = nTrue;

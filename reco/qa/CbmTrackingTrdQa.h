@@ -116,6 +116,7 @@ private:
     std::map<Int_t, Int_t> fHitMap = {};  /// Trd station -> number of attached hits
     Int_t fGlobalTrackMatch        = -1;  /// matched GlobalTrack index
     Int_t fTrdTrackMatch           = -1;  /// matched TrdTrack index
+    Int_t fStsTrackMatch           = -1;  /// matched StsTrack index
     Double_t fQuali                = 0.;  /// percentage of matched hits
     Int_t fMatchedNHitsAll         = 0;   /// number of matched hits
     Int_t fMatchedNHitsTrue        = 0;   /// number of matched hits
@@ -125,6 +126,7 @@ private:
     Bool_t fIsFast {0};
     Bool_t fIsLong {0};
     Double_t fPt {0.};
+    Double_t fP {0.};
     Int_t fPdg  = 0;
     Double_t fY = 0.;
   };
@@ -146,14 +148,16 @@ private:
   CbmMCDataArray* fMCTracks = nullptr;  //! MCtrack
 
   /// Trd
-  Int_t fTrdNstations               = 0;        // Number of Trd stations
-  CbmMCDataArray* fTrdPoints        = nullptr;  //! TrdPoints
-  TClonesArray* fTrdHits            = nullptr;  //! TrdHits
-  TClonesArray* fTrdHitMatch        = nullptr;  //! TrdHitMatch
-  TClonesArray* fGlobalTracks       = nullptr;  //! GlobalTrack
+  Int_t fTrdNstations         = 0;        // Number of Trd stations
+  CbmMCDataArray* fTrdPoints  = nullptr;  //! TrdPoints
+  TClonesArray* fTrdHits      = nullptr;  //! TrdHits
+  TClonesArray* fTrdHitMatch  = nullptr;  //! TrdHitMatch
+  TClonesArray* fGlobalTracks = nullptr;  //! GlobalTrack
   //TClonesArray* fGlobalTrackMatches = nullptr;  //! GlobalTrackMatch
-  TClonesArray* fTrdTracks          = nullptr;  //! TrdTrack
-  TClonesArray* fTrdTrackMatches    = nullptr;  //! TrdTrackMatch
+  TClonesArray* fTrdTracks       = nullptr;  //! TrdTrack
+  TClonesArray* fTrdTrackMatches = nullptr;  //! TrdTrackMatch
+  TClonesArray* fStsTracks       = nullptr;  //! StsTrack
+  TClonesArray* fStsTrackMatches = nullptr;  //! StsTrackMatch
 
   /** Geometry parameters **/
   TVector3 fTargetPos = {0., 0., 0.};  // Target centre position
@@ -216,6 +220,13 @@ private:
 
   // Pt resolution
   TH1F* fhPtResPrim = nullptr;
+
+  // P resolution
+  TH1F* fhPResPrim     = nullptr;
+  TH1F* fhPResPrimSts0 = nullptr;
+  TH1F* fhPResPrimSts1 = nullptr;
+  TH1F* fhPResPrimSts2 = nullptr;
+  TH1F* fhPResPrimSts3 = nullptr;
 
   /** List of histograms **/
   TList* fHistoList = nullptr;
