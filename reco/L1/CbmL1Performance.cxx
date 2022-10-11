@@ -148,13 +148,13 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
   {
     // add total efficiency
     AddCounter("long_fast_prim", "LongRPrim efficiency");
-    AddCounter("fast_prim", "RefPrim   efficiency");
-    AddCounter("fast_sec", "RefSec    efficiency");
-    AddCounter("fast", "Refset    efficiency");
+    AddCounter("fast_prim", "FastPrim  efficiency");
+    AddCounter("fast_sec", "FastSec   efficiency");
+    AddCounter("fast", "Fastset   efficiency");
     AddCounter("total", "Allset    efficiency");
-    AddCounter("slow_prim", "ExtraPrim efficiency");
-    AddCounter("slow_sec", "ExtraSec  efficiency");
-    AddCounter("slow", "Extra     efficiency");
+    AddCounter("slow_prim", "SlowPrim  efficiency");
+    AddCounter("slow_sec", "SlowSec   efficiency");
+    AddCounter("slow", "Slow      efficiency");
     AddCounter("d0", "D0        efficiency");
     AddCounter("short", "Short123s efficiency");
     AddCounter("shortPion", "Short123s pion   eff");
@@ -163,11 +163,11 @@ struct TL1PerfEfficiencies : public TL1Efficiencies {
     AddCounter("shortE", "Short123s e      eff");
     AddCounter("shortRest", "Short123s rest   eff");
 
-    AddCounter("fast_sec_e", "RefSec  E efficiency");
-    AddCounter("fast_e", "Refset  E efficiency");
+    AddCounter("fast_sec_e", "FastSec E efficiency");
+    AddCounter("fast_e", "Fastset E efficiency");
     AddCounter("total_e", "Allset  E efficiency");
-    AddCounter("slow_sec_e", "ExtraSecE efficiency");
-    AddCounter("slow_e", "Extra   E efficiency");
+    AddCounter("slow_sec_e", "SlowSec E efficiency");
+    AddCounter("slow_e", "Slow    E efficiency");
   }
 
   virtual ~TL1PerfEfficiencies() {};
@@ -383,51 +383,51 @@ void CbmL1::EfficienciesPerformance()
         ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "d0");
       }
 
-      if (mtra.p > CbmL1Constants::MinRefMom) {  // reference tracks
+      if (mtra.p > CbmL1Constants::MinFastMom) {  // fast tracks
         ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "fast");
 
-        if (mtra.IsPrimary()) {                  // reference primary
-          if (mtra.NStations() == fNStations) {  // long reference primary
+        if (mtra.IsPrimary()) {                  // fast primary
+          if (mtra.NStations() == fNStations) {  // long fast primary
             ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "long_fast_prim");
           }
           ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "fast_prim");
         }
-        else {  // reference secondary
+        else {  // fast secondary
           ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "fast_sec");
         }
       }
-      else {  // extra set of tracks
+      else {  // slow set of tracks
         ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "slow");
 
-        if (mtra.IsPrimary()) {  // extra primary
+        if (mtra.IsPrimary()) {  // slow primary
           ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "slow_prim");
         }
         else {
           ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "slow_sec");
         }
-      }  // if extra
+      }  // if slow
 
       if (mtra.pdg == 11 || mtra.pdg == -11) {
         ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "total_e");
 
-        if (mtra.p > CbmL1Constants::MinRefMom) {  // reference tracks
+        if (mtra.p > CbmL1Constants::MinFastMom) {  // fast tracks
           ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "fast_e");
 
-          if (mtra.IsPrimary()) {  // reference primary
+          if (mtra.IsPrimary()) {  // fast primary
           }
-          else {  // reference secondary
+          else {  // fast secondary
             ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "fast_sec_e");
           }
         }
-        else {  // extra set of tracks
+        else {  // slow set of tracks
           ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "slow_e");
 
-          if (mtra.IsPrimary()) {  // extra primary
+          if (mtra.IsPrimary()) {  // slow primary
           }
           else {
             ntra.Inc(reco, killed, ratio_length, ratio_fakes, nclones, mc_length, mc_length_hits, "slow_sec_e");
           }
-        }  // if extra
+        }  // if slow
       }
     }
 
@@ -462,7 +462,7 @@ void CbmL1::EfficienciesPerformance()
   }
 }  // void CbmL1::Performance()
 
-void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitRef on match data in CbmL1**Track classes
+void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitFast on match data in CbmL1**Track classes
 {
 
   //CbmKF &KF = *CbmKF::Instance();

@@ -223,12 +223,12 @@ InitStatus CbmL1::Init()
     fUseMUCH = 0;
     fUseTRD  = 1;
     fUseTOF  = 0;
+
     L1FieldRegion::gkUseOriginalField = true;
     fInitManager.DevSetIgnoreHitSearchAreas(true);
     //fInitManager.DevSetFitSingletsFromTarget(true);
     //fInitManager.DevSetIsMatchDoubletsViaMc(true);
     //fInitManager.DevSetIsMatchTripletsViaMc(true);
-    //fInitManager.DevSetIsMatchNeighbourdViaMc(true);
     fInitManager.SetMaxTripletPerDoublets(1000);
   }
 
@@ -583,9 +583,9 @@ InitStatus CbmL1::Init()
         fscal trdBackPhi    = trdInterface->GetStripsStereoAngleBack(iSt);
         fscal trdFrontSigma = trdInterface->GetStripsSpatialRmsFront(iSt);
         fscal trdBackSigma  = trdInterface->GetStripsSpatialRmsBack(iSt);
-        if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {  //SGtrd2D!!
-          trdFrontSigma = .1;
-          trdBackSigma  = .1;
+        if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
+          trdFrontSigma = 1.1;
+          trdBackSigma  = 1.1;
           // stationInfo.SetTimeResolution(1.e10);
           stationInfo.SetTimeInfo(false);
         }
@@ -806,24 +806,27 @@ InitStatus CbmL1::Init()
       fInitManager.PushBackCAIteration(trackingIterAllSec);
     }
     else if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
-      // SGtrd2d!!
 
       // Initialize CA track finder iterations sequence
 
-      auto trd2dIter1 = L1CAIteration("Trd2dIter1");
-      trd2dIter1.SetTrackChi2Cut(7.f);              //10.f
-      trd2dIter1.SetTripletChi2Cut(2 * 23.4450f);   // = 7.815 * 3;  // prob = 0.05
-      trd2dIter1.SetDoubletChi2Cut(4. * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
-      trd2dIter1.SetPickGather(3.0f);
-      trd2dIter1.SetPickNeighbour(4.0f);
-      trd2dIter1.SetMaxInvMom(1.0 / 0.05);  //(1.0 / 0.5);
-      trd2dIter1.SetMaxSlopePV(.5f);
-      trd2dIter1.SetMaxSlope(.5f);
-      trd2dIter1.SetMaxDZ(0.05);
-      trd2dIter1.SetTargetPosSigmaXY(1., 1.);  //(1, 1);
-      trd2dIter1.SetMinLevelTripletStart(1);
-      trd2dIter1.SetPrimaryFlag(false);
-      trd2dIter1.SetExtendTracksFlag(false);
+      auto globalIterPrimFast = L1CAIteration("globalIterPrimFast");
+      {
+        auto& it = globalIterPrimFast;
+        it.SetTrackChi2Cut(7.f);              //10.f
+        it.SetTripletChi2Cut(2 * 23.4450f);   // = 7.815 * 3;  // prob = 0.05
+        it.SetDoubletChi2Cut(4. * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
+        it.SetPickGather(3.0f);
+        it.SetPickNeighbour(4.0f);
+        it.SetMaxInvMom(1.0 / 0.05);  //(1.0 / 0.5);
+        it.SetMaxSlopePV(.5f);
+        it.SetMaxSlope(.5f);
+        it.SetMaxDZ(0.05);
+        it.SetTargetPosSigmaXY(1., 1.);  //(1, 1);
+        it.SetMinLevelTripletStart(1);
+        it.SetPrimaryFlag(true);
+        it.SetExtendTracksFlag(true);
+        //it.SetFirstStationIndex(11);
+      }
 
       auto trd2dIter2 = L1CAIteration("Trd2dIter2");
       trd2dIter2.SetTrackChi2Cut(7.f);              //10.f
@@ -838,11 +841,14 @@ InitStatus CbmL1::Init()
       trd2dIter2.SetTargetPosSigmaXY(8 * 10, 6 * 10);  //(1, 1);
       trd2dIter2.SetMinLevelTripletStart(0);
       trd2dIter2.SetPrimaryFlag(false);
-      trd2dIter2.SetExtendTracksFlag(false);
+      trd2dIter2.SetExtendTracksFlag(true);
+      //trd2dIter2.SetFirstStationIndex(12);
 
       // Initialize CA track finder iterations sequence
 
       fInitManager.SetCAIterationsNumberCrosscheck(1);
+      //fInitManager.PushBackCAIteration(globalIterPrimFast);
+      fInitManager.PushBackCAIteration(trd2dIter2);
       /*
       fInitManager.SetCAIterationsNumberCrosscheck(5);
       fInitManager.PushBackCAIteration(trackingIterFastPrim);
@@ -850,7 +856,6 @@ InitStatus CbmL1::Init()
       fInitManager.PushBackCAIteration(trackingIterAllPrimJump);
       fInitManager.PushBackCAIteration(trackingIterAllSec);
        */
-      fInitManager.PushBackCAIteration(trd2dIter2);
     }
     else {
       fInitManager.SetCAIterationsNumberCrosscheck(4);

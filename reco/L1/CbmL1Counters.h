@@ -203,6 +203,7 @@ inline void TL1Efficiencies::Inc(bool isReco, TString name)
 
 inline void TL1Efficiencies::PrintEff()
 {
+  std::ios_base::fmtflags coutFlags(std::cout.flags());
   std::cout.setf(std::ios::fixed);
   std::cout.setf(std::ios::showpoint);
   std::cout.precision(3);
@@ -219,6 +220,7 @@ inline void TL1Efficiencies::PrintEff()
 
   std::cout << "Clone     probability  : " << ratio_clones << " | " << clones << std::endl;
   std::cout << "Ghost     probability  : " << ratio_ghosts << " | " << ghosts << std::endl;
+  std::cout.flags(coutFlags);
 };
 
 #endif
