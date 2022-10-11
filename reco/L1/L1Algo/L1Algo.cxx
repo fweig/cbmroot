@@ -149,6 +149,8 @@ void L1Algo::ReceiveParameters(L1Parameters&& parameters)
   fGhostSuppression = fParameters.GetGhostSuppression();
   fMomentumCutOff   = fParameters.GetMomentumCutOff();
 
+  L1FieldRegion::ForceUseOfOriginalField(fParameters.DevIsUseOfOriginalField());
+
   LOG(info) << fParameters.ToString(3);
 }
 

@@ -104,21 +104,12 @@ public:
   /// Consistency checker
   void CheckConsistency() const;
 
-  /// Gets the field vector at z
-  // TODO: Probably we need a const specifier here, because the method does not change the fields
-  L1FieldValue Get(const fvec z);
-
   /// Gets the field vector and writes it into B pointer
   /// \param x  x-coordinate of the point to calculate the field
   /// \param y  y-coordinate of the point to calculate the field
   /// \param z  z-coordinate of the point to calculate the field
   /// \param B   pointer to the output fvec array of the magnetic field
-  void Get(const fvec x, const fvec y, const fvec z, fvec* B) const;
-
-  /// Gets the field vector and writes it into B pointer
-  /// \param z_  z-coordinate of the point to calculate the field
-  /// \param B   pointer to the output fvec array of the magnetic field
-  void Get(const fvec z_, fvec* B) const;
+  void Get(const fvec& x, const fvec& y, const fvec& z, fvec* B) const;
 
   /// Interpolates the magnetic field by three nodal points and sets the result to this L1FieldRegion object
   /// The result is a quadratic interpolation of the field as a function of z
@@ -170,8 +161,14 @@ public:
   /// \param indentLevel      number of indent characters in the output
   std::string ToString(int indentLevel = 0) const;
 
+  /// Use original field instead of the field approximation
+  void SetUseOriginalField(bool v = true) { fUseOriginalField = v; }
+
+  /// Force using the original field
+  static void ForceUseOfOriginalField(bool v = true) { fgkForceUseOfOriginalField = v; }
+
 public:
-  static bool gkUseOriginalField;
+  static bool fgkForceUseOfOriginalField;
 
   // TODO: Probably it's better to have arrays instead of separate fvec values? (S.Zharko)
   // Bx(z) = cx0 + cx1*(z-z0) + cx2*(z-z0)^2
@@ -188,7 +185,10 @@ public:
   fvec cz0 {0.f};
   fvec cz1 {0.f};
   fvec cz2 {0.f};
+
   fvec z0 {0.f};  ///< z-coordinate of the field region central point
+
+  bool fUseOriginalField {false};
 
   /// Serialization function
   friend class boost::serialization::access;

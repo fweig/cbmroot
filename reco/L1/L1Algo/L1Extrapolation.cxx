@@ -352,18 +352,16 @@ void L1ExtrapolateRungeKutta  // extrapolates track parameters and returns jacob
   int step;
   int i;
 
-  fvec B[4][3];
   for (step = 0; step < 4; ++step) {
-    F.Get(z_in + a[step] * h, B[step]);
-  }
 
-  for (step = 0; step < 4; ++step) {
     for (i = 0; i < 4; ++i) {
       if (step == 0) { x[i] = x0[i]; }
       else {
         x[i] = x0[i] + b[step] * k[step * 4 - 4 + i];
       }
     }
+    fvec B[3];
+    F.Get(x[0], x[1], z_in + a[step] * h, B);
 
     fvec tx      = x[2];
     fvec ty      = x[3];
@@ -377,13 +375,13 @@ void L1ExtrapolateRungeKutta  // extrapolates track parameters and returns jacob
     //   fvec I_tx2ty2 = qp0 * hC / tx2ty2 ; unsused ???
     tx2ty2 *= hC;
     fvec tx2ty2qp = tx2ty2 * qp0;
-    Ax[step]      = (txty * B[step][0] + ty * B[step][2] - (fvec(1.) + tx2) * B[step][1]) * tx2ty2;
-    Ay[step]      = (-txty * B[step][1] - tx * B[step][2] + (fvec(1.) + ty2) * B[step][0]) * tx2ty2;
+    Ax[step]      = (txty * B[0] + ty * B[2] - (fvec(1.) + tx2) * B[1]) * tx2ty2;
+    Ay[step]      = (-txty * B[1] - tx * B[2] + (fvec(1.) + ty2) * B[0]) * tx2ty2;
 
-    Ax_tx[step] = Ax[step] * tx * I_tx2ty21 + (ty * B[step][0] - fvec(2.) * tx * B[step][1]) * tx2ty2qp;
-    Ax_ty[step] = Ax[step] * ty * I_tx2ty21 + (tx * B[step][0] + B[step][2]) * tx2ty2qp;
-    Ay_tx[step] = Ay[step] * tx * I_tx2ty21 + (-ty * B[step][1] - B[step][2]) * tx2ty2qp;
-    Ay_ty[step] = Ay[step] * ty * I_tx2ty21 + (-tx * B[step][1] + fvec(2.) * ty * B[step][0]) * tx2ty2qp;
+    Ax_tx[step] = Ax[step] * tx * I_tx2ty21 + (ty * B[0] - fvec(2.) * tx * B[1]) * tx2ty2qp;
+    Ax_ty[step] = Ax[step] * ty * I_tx2ty21 + (tx * B[0] + B[2]) * tx2ty2qp;
+    Ay_tx[step] = Ay[step] * tx * I_tx2ty21 + (-ty * B[1] - B[2]) * tx2ty2qp;
+    Ay_ty[step] = Ay[step] * ty * I_tx2ty21 + (-tx * B[1] + fvec(2.) * ty * B[0]) * tx2ty2qp;
 
     step4        = step * 4;
     k[step4]     = tx * h;

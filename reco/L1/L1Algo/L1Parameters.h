@@ -189,6 +189,9 @@ public:
   /// Are the hit search areas ignored
   bool DevIsIgnoreHitSearchAreas() const { return fDevIsIgnoreHitSearchAreas; }
 
+  /// Is original field must be used instead of the approximated one
+  bool DevIsUseOfOriginalField() const { return fDevIsUseOfOriginalField; }
+
   /// Is singlets fit starts at the target
   bool DevIsFitSingletsFromTarget() const { return fDevIsFitSingletsFromTarget; }
 
@@ -250,6 +253,7 @@ private:
   // ***************************
 
   bool fDevIsIgnoreHitSearchAreas {false};  ///< Process all hits on the station ignoring hit search area
+  bool fDevIsUseOfOriginalField {false};    ///< Force use of original field
   bool fDevIsFitSingletsFromTarget {false};  ///< Fit singlet starting from the target with the KF
   bool fDevIsMatchDoubletsViaMc {false};  ///< Flag to match doublets using MC information
   bool fDevIsMatchTripletsViaMc {false};  ///< Flag to match triplets using Mc information

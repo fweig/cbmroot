@@ -1229,25 +1229,10 @@ void CbmL1::TrackFitPerformance()
       L1TrackPar trPar(it->T, it->C);
 
       L1FieldRegion fld _fvecalignment;
-      L1FieldValue B[3], targB _fvecalignment;
-      float z[3] = {0.f, 0.f, 0.f};
-      int ih     = 0;
-      for (unsigned int iMCPoint = 0; iMCPoint < mc.Points.size(); iMCPoint++) {
-        const int iMCP      = mc.Points[iMCPoint];
-        CbmL1MCPoint& mcP   = fvMCPoints[iMCP];
-        const L1Station& st = fpAlgo->GetParameters()->GetStation(mcP.iStation);
-        z[ih]               = st.z[0];
-        if (ih > 0 && (z[ih] - z[ih - 1]) < 0.1) continue;
-        st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
-        ih++;
-        if (ih == 3) break;
-      }
-      if (ih < 3) continue;
+      fld.SetUseOriginalField();
 
       CbmL1MCPoint& mcP = fvMCPoints[mc.Points[0]];
 
-      targB = fpAlgo->GetParameters()->GetVertexFieldValue();
-      fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
       L1Extrapolate(trPar, mcP.zIn, trPar.qp, fld);
 
       const L1TrackPar& tr = trPar;
@@ -1345,23 +1330,9 @@ void CbmL1::TrackFitPerformance()
       CbmL1MCTrack mc = *(it->GetMCTracks()[0]);
       L1TrackPar trPar(it->TLast, it->CLast);
       L1FieldRegion fld _fvecalignment;
-      L1FieldValue B[3], targB _fvecalignment;
-      float z[3] = {0.f, 0.f, 0.f};
-      int ih     = 0;
-      for (unsigned int iMCPoint = 0; iMCPoint < mc.Points.size(); iMCPoint++) {
-        const int iMCP      = mc.Points[iMCPoint];
-        CbmL1MCPoint& mcP   = fvMCPoints[iMCP];
-        const L1Station& st = fpAlgo->GetParameters()->GetStation(mcP.iStation);
-        z[ih]               = st.z[0];
-        if (ih > 0 && (z[ih] - z[ih - 1]) < 0.1) continue;
-        st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
-        ih++;
-        if (ih == 3) break;
-      }
-      if (ih < 3) continue;
+      fld.SetUseOriginalField();
+
       CbmL1MCPoint& mcP = fvMCPoints[iMC];
-      targB             = fpAlgo->GetParameters()->GetVertexFieldValue();
-      fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
       L1Extrapolate(trPar, mcP.zOut, trPar.qp, fld);
 
       const L1TrackPar& tr = trPar;
@@ -1419,18 +1390,7 @@ void CbmL1::TrackFitPerformance()
 
         {  // extrapolate to vertex
           L1FieldRegion fld _fvecalignment;
-          L1FieldValue B[3] _fvecalignment;
-          float z[3] = {0.f, 0.f, 0.f};
-          for (unsigned int ih = 0; ih < 3; ih++) {
-            if (ih >= mc.Points.size()) continue;  //If nofMCPoints in track < 3
-            const int iMCP      = mc.Points[ih];
-            CbmL1MCPoint& mcP   = fvMCPoints[iMCP];
-            const L1Station& st = fpAlgo->GetParameters()->GetStation(mcP.iStation);
-            z[ih]               = st.z[0];
-            st.fieldSlice.GetFieldValue(mcP.x, mcP.y, B[ih]);
-          };
-          fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
-
+          fld.SetUseOriginalField();
           L1Extrapolate(trPar, mc.z, trPar.qp, fld);
           // add material
           const int fSta = fvHitStore[it->Hits[0]].iStation;
@@ -1465,7 +1425,7 @@ void CbmL1::TrackFitPerformance()
         h_fitSV[1]->Fill((tr.y[0] - mc.y));
         h_fitSV[2]->Fill((tr.tx[0] - mc.px / mc.pz) * 1.e3);
         h_fitSV[3]->Fill((tr.ty[0] - mc.py / mc.pz) * 1.e3);
-        h_fitSV[4]->Fill(fabs(1. / tr.qp[0]) / mc.p - 1);
+        h_fitSV[4]->Fill(fabs(1. / tr.qp[0]) / mc.p - 1.);
         if (std::isfinite(tr.C00[0]) && tr.C00[0] > 0) h_fitSV[5]->Fill((tr.x[0] - mc.x) / sqrt(tr.C00[0]));
         if (std::isfinite(tr.C11[0]) && tr.C11[0] > 0) h_fitSV[6]->Fill((tr.y[0] - mc.y) / sqrt(tr.C11[0]));
         if (std::isfinite(tr.C22[0]) && tr.C22[0] > 0) h_fitSV[7]->Fill((tr.tx[0] - mc.px / mc.pz) / sqrt(tr.C22[0]));
@@ -1482,21 +1442,7 @@ void CbmL1::TrackFitPerformance()
 #ifdef L1EXTRAPOLATE
         {  // extrapolate to vertex
           L1FieldRegion fld _fvecalignment;
-          L1FieldValue B[3], targB _fvecalignment;
-          float z[3];
-
-          targB = fpAlgo->GetParameters()->GetVertexFieldValue();
-
-          int ih = 1;
-          for (unsigned int iHit = 0; iHit < it->Hits.size(); iHit++) {
-            const int iStation  = fvHitStore[it->Hits[iHit]].iStation;
-            const L1Station& st = fpAlgo->GetParameters()->GetStation(iStation);
-            z[ih]               = st.z[0];
-            st.fieldSlice.GetFieldValue(fvHitStore[it->Hits[iHit]].x, fvHitStore[it->Hits[iHit]].y, B[ih]);
-            ih++;
-            if (ih == 3) break;
-          }
-          if (ih < 3) continue;
+          fld.SetUseOriginalField();
 
           // add material
           const int fSta = fvHitStore[it->Hits[0]].iStation;
@@ -1509,30 +1455,16 @@ void CbmL1::TrackFitPerformance()
                                       && (dir * (mc.z - fpAlgo->GetParameters()->GetStation(iSta).z[0]) > 0);
                iSta += dir) {
 
-            z[0]     = fpAlgo->GetParameters()->GetStation(iSta).z[0];
-            float dz = z[1] - z[0];
-            fpAlgo->GetParameters()->GetStation(iSta).fieldSlice.GetFieldValue(trPar.x - trPar.tx * dz,
-                                                                               trPar.y - trPar.ty * dz, B[0]);
-            fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
-
             L1Extrapolate(trPar, fpAlgo->GetParameters()->GetStation(iSta).z[0], trPar.qp, fld);
             fit.L1AddMaterial(trPar, fpAlgo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y), trPar.qp,
                               1);
             fit.EnergyLossCorrection(trPar, fpAlgo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y),
-                                     trPar.qp, fvec(1.f), fvec(1.f));
+                                     trPar.qp, fvec(1.), fvec(1.));
             if (iSta + dir == fNMvdStations - 1) {
               fit.L1AddPipeMaterial(trPar, trPar.qp, 1);
               fit.EnergyLossCorrection(trPar, fit.PipeRadThick, trPar.qp, fvec(1.f), fvec(1.f));
             }
-            B[2] = B[1];
-            z[2] = z[1];
-            B[1] = B[0];
-            z[1] = z[0];
           }
-
-          z[0] = fpAlgo->GetParameters()->GetTargetPositionZ()[0];
-          B[0] = targB;
-          fld.Set(B[0], z[0], B[1], z[1], B[2], z[2]);
           L1Extrapolate(trPar, mc.z, trPar.qp, fld);
         }
         if (mc.z != trPar.z[0]) continue;

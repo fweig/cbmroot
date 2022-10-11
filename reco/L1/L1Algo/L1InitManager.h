@@ -252,6 +252,9 @@ public:
   /// Ignore hit search areas
   void DevSetIgnoreHitSearchAreas(bool value = true) { fParameters.fDevIsIgnoreHitSearchAreas = value; }
 
+  /// Force use of the original field (not approximated)
+  void DevSetUseOfOriginalField(bool value = true) { fParameters.fDevIsUseOfOriginalField = value; }
+
   /// Start singlets fit at the target
   void DevSetFitSingletsFromTarget(bool value = true) { fParameters.fDevIsFitSingletsFromTarget = value; }
 

@@ -215,7 +215,6 @@ InitStatus CbmL1::Init()
     fInitManager.DevSetIgnoreHitSearchAreas(true);
   }
 
-
   if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
     //at the moment trd2d tracking only
     fUseMVD  = 0;
@@ -224,7 +223,7 @@ InitStatus CbmL1::Init()
     fUseTRD  = 1;
     fUseTOF  = 0;
 
-    L1FieldRegion::gkUseOriginalField = true;
+    fInitManager.DevSetUseOfOriginalField();
     fInitManager.DevSetIgnoreHitSearchAreas(true);
     //fInitManager.DevSetFitSingletsFromTarget(true);
     //fInitManager.DevSetIsMatchDoubletsViaMc(true);
