@@ -14,13 +14,8 @@ add_subdirectory(detectors/tof)
 add_subdirectory(detectors/sts)
 add_subdirectory(detectors/psd)
 
-Execute_Process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --has-opengl
-                OUTPUT_VARIABLE EveIsBuild
-                OUTPUT_STRIP_TRAILING_WHITESPACE
-               )
-
-If(${EveIsBuild} STREQUAL yes)
-  Message(STATUS "Build the eventdisplay.")
+If(ROOT_opengl_FOUND)
+  Message(STATUS "OpenGL support found. Build the eventdisplay.")
   add_subdirectory (eventdisplay)
 Else()
   Message(STATUS "The eventdisplay is not build, there is no OpenGL support.")

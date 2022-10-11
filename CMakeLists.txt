@@ -71,8 +71,9 @@ list(PREPEND CMAKE_PREFIX_PATH ${SIMPATH})
 find_package(ROOT 6.22 CONFIG REQUIRED)
 if(ROOT_FOUND)
   Message("Root was found")
-  set(ROOT_CINT_EXECUTABLE ${SIMPATH}/bin/rootcling)
-  set(ROOT_CONFIG_EXECUTABLE ${SIMPATH}/bin/root-config)
+  # The following CMake variables are needed until the modernization is done 
+  set(ROOT_CINT_EXECUTABLE ${ROOT_BINDIR}/rootcling)
+  set(ROOT_CONFIG_EXECUTABLE ${ROOT_BINDIR}/root-config)
   set(ROOT_INCLUDE_DIR ${ROOT_INCLUDE_DIRS})
 endif()
 
