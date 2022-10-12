@@ -170,7 +170,7 @@ void L1Parameters::CheckConsistency() const
     }
 
     std::string names = "";
-    for (const auto iter : fCAIterations) {
+    for (const auto& iter : fCAIterations) {
       if (!iter.Check()) { names += iter.GetName() + " "; }
     }
     if (names.size()) {
@@ -209,10 +209,7 @@ void L1Parameters::CheckConsistency() const
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-void L1Parameters::Print(int /*verbosityLevel*/) const
-{
-  LOG(info) << ToString();
-}
+void L1Parameters::Print(int /*verbosityLevel*/) const { LOG(info) << ToString(); }
 
 //----------------------------------------------------------------------------------------------------------------------
 //

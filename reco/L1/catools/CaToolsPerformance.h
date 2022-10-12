@@ -55,8 +55,8 @@ namespace ca
 
 
     private:
-      const L1Parameters* fpParameters = nullptr;  ///< Instance of the tracking core class parameters
-      McData fMcData                   = {};       ///< Object of MC data
+      //      const L1Parameters* fpParameters = nullptr;  ///< Instance of the tracking core class parameters
+      McData fMcData = {};  ///< Object of MC data
     };
   }  // namespace tools
 }  // namespace ca

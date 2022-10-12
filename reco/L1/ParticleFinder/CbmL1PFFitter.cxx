@@ -154,7 +154,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
   fvec* y = new fvec[nHits];
   fvec* z = new fvec[nHits];
   fvec* w = new fvec[nHits];
-  fvec y_temp;
+  //  fvec y_temp;
   fvec x_first, y_first, x_last, y_last;
   fvec z0, z1, z2, dz, z_start, z_end;
   L1FieldValue* fB = new L1FieldValue[nHits];

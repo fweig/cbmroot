@@ -378,7 +378,7 @@ void L1Algo::L1KFTrackFitter()
 
   fvec time_last;
   fvec time_er_last;
-  fvec time_er_lst;  /// TODO: Why are there two different variables for the time error on the last station?
+  //  fvec time_er_lst;  /// TODO: Why are there two different variables for the time error on the last station?
 
   fvec Sy[L1Constants::size::kMaxNstations];
   fvec w[L1Constants::size::kMaxNstations];

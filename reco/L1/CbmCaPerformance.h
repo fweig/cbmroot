@@ -105,9 +105,9 @@ private:
   // *********************************
 
   // Mc-event
-  const CbmMCEventList* fpEventList      = nullptr;  ///< MC event list
-  const CbmMCDataObject* fpMcEventHeader = nullptr;  ///< MC event header
-  const CbmMCDataArray* fpMcTracks       = nullptr;  ///< MC tracks
+  //  const CbmMCEventList* fpEventList      = nullptr;  ///< MC event list
+  //  const CbmMCDataObject* fpMcEventHeader = nullptr;  ///< MC event header
+  //  const CbmMCDataArray* fpMcTracks       = nullptr;  ///< MC tracks
 
   // Mc-points
   const CbmMCDataArray* fpMvdPoints  = nullptr;  ///< MVD MC-points container
