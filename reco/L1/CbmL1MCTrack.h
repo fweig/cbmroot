@@ -41,12 +41,13 @@ public:
   CbmL1MCTrack(double mass, double q, TVector3 vr, TLorentzVector vp, int ID, int mother_ID, int pdg);
   //   CbmL1MCTrack(TmpMCPoints &mcPoint, TVector3 vr, TLorentzVector vp, int ID, int mother_ID);
 
-  bool IsPrimary() const { return mother_ID < 0; };
-  bool IsReconstructable() const { return isReconstructable; };
+  bool IsPrimary() const { return mother_ID < 0; }
+  bool IsReconstructable() const { return isReconstructable; }
   bool IsAdditional() const { return isAdditional; }
-  int NStations() const { return nStations; };
-  int NMCStations() const { return nMCStations; };
-  int NMCContStations() const { return nMCContStations; };
+  int NStations() const { return nStations; }
+  int NHitContStations() const { return nHitContStations; }
+  int NMCStations() const { return nMCStations; }
+  int NMCContStations() const { return nMCContStations; }
   float Fraction_MC();
 
   void Init();

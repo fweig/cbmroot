@@ -354,7 +354,7 @@ void run_reco_L1global(TString input = "", Int_t nTimeSlices = -1, Int_t firstTi
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
     CbmL1* l1 = 0;
-    if (debugWithMC) { l1 = new CbmL1("L1", 2, 2); }
+    if (debugWithMC) { l1 = new CbmL1("L1", 2, 1); }
     else {
       l1 = new CbmL1("L1", 0);
     }
