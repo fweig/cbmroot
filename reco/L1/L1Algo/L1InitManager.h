@@ -255,9 +255,6 @@ public:
   /// Force use of the original field (not approximated)
   void DevSetUseOfOriginalField(bool value = true) { fParameters.fDevIsUseOfOriginalField = value; }
 
-  /// Start singlets fit at the target
-  void DevSetFitSingletsFromTarget(bool value = true) { fParameters.fDevIsFitSingletsFromTarget = value; }
-
   /// Flag to match doublets using MC information
   void DevSetIsMatchDoubletsViaMc(bool value = true) { fParameters.fDevIsMatchDoubletsViaMc = value; }
 

@@ -106,7 +106,6 @@ inline void L1Algo::findSingletsStep0(  // input
     L1HitPoint& hitl = Hits_l[ilh];
 
 
-
     HitTime_l[i1_V][i1_4] = hitl.time;
     HitTimeEr[i1_V][i1_4] = hitl.timeEr;
 
@@ -236,50 +235,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     T.C44 = fMaxInvMom / fvec(3.) * fMaxInvMom / fvec(3.);
     T.C55 = timeEr * timeEr;
 
-    if (fParameters.DevIsFitSingletsFromTarget()) {  // TODO: doesn't work. Why?
-      T.x = fTargX;
-      T.y = fTargY;
-      T.z   = fTargZ;
-      T.C00 = TargetXYInfo.C00;
-      T.C10 = TargetXYInfo.C10;
-      T.C11 = TargetXYInfo.C11;
-      // extrapolate to left hit
-
-      if (istal <= fNfieldStations) { L1Extrapolate0(T, zl, fld0); }
-      else {
-        L1ExtrapolateLine(T, zl);
-      }
-
-      for (int ista = 0; ista <= istal - 1; ista++) {
-        if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista, T.x, T.y), fMaxInvMom, fvec::One());
-        }
-        else {
-          fit.L1AddMaterial(T, fParameters.GetStation(ista).materialInfo, fMaxInvMom, fvec::One());
-        }
-        if (ista == fNstationsBeforePipe - 1) fit.L1AddPipeMaterial(T, fMaxInvMom, fvec::One());
-      }
-
-      // add left hit
-      L1UMeasurementInfo info = stal.frontInfo;
-
-      if (fUseHitErrors) info.sigma2 = d_u[i1_V] * d_u[i1_V];
-
-      if (istal < fNfieldStations) L1Filter(T, info, u);
-      else {
-        L1FilterNoField(T, info, u);
-      }
-
-      info = stal.backInfo;
-
-      if (fUseHitErrors) { info.sigma2 = d_v[i1_V] * d_v[i1_V]; }
-
-      if (istal < fNfieldStations) { L1Filter(T, info, v); }
-      else {
-        L1FilterNoField(T, info, v);
-      }
-    }
-    else {  // not BEGIN_FROM_TARGET  -- the best for now
+    {  // add the target constraint
       T.x   = xl;
       T.y   = yl;
       T.z   = zl;
@@ -1226,9 +1182,7 @@ inline void L1Algo::findTripletsStep3(  // input
 
       // TODO: SZh 04.10.2022: What does this number mean?
       fscal Cmax = 0.04 * fMaxInvMom[0];  // minimal momentum: 0.05 - 0.1
-      if (Cqp > Cmax) {
-        Cqp = Cmax;
-      }
+      if (Cqp > Cmax) { Cqp = Cmax; }
       // TODO: SZh 04.10.2022: What does this number mean?
       Cqp += 0.05 * Cmax;  // TODO: without this line the ghost ratio increases, why?
     }
