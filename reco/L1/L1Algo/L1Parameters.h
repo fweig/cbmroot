@@ -50,22 +50,19 @@ public:
   L1Parameters();
 
   /// Destructor
-  ~L1Parameters() noexcept;
+  ~L1Parameters() noexcept = default;
 
   /// Copy constructor
-  L1Parameters(const L1Parameters& other) noexcept;
+  L1Parameters(const L1Parameters& other) = default;
 
   /// Copy assignment operator
-  L1Parameters& operator=(const L1Parameters& other) noexcept;
+  L1Parameters& operator=(const L1Parameters& other) = default;
 
   /// Move constructor
-  L1Parameters(L1Parameters&& other) noexcept;
+  L1Parameters(L1Parameters&& other) noexcept = default;
 
   /// Move assignment operator
-  L1Parameters& operator=(L1Parameters&& other) noexcept;
-
-  /// Swap method
-  void Swap(L1Parameters& other) noexcept;
+  L1Parameters& operator=(L1Parameters&& other) noexcept = default;
 
   /// Prints configuration
   void Print(int verbosityLevel = 0) const;

@@ -30,25 +30,25 @@
 class L1CAIteration {
 public:
   /// Default constructor
-  L1CAIteration() noexcept;
+  L1CAIteration() = default;
 
   /// Copy constructor
-  L1CAIteration(const L1CAIteration& other) noexcept;
+  L1CAIteration(const L1CAIteration& other) = default;
 
   /// Move constructor
-  L1CAIteration(L1CAIteration&& other) noexcept;
+  L1CAIteration(L1CAIteration&& other) noexcept = default;
 
   /// Constructor from L1CAIteration type
-  L1CAIteration(const std::string& name) noexcept;
+  L1CAIteration(const std::string& name);
 
   /// Destructor
-  ~L1CAIteration() noexcept;
+  ~L1CAIteration() noexcept = default;
 
   /// Copy assignment operator
-  L1CAIteration& operator=(const L1CAIteration& other) noexcept;
+  L1CAIteration& operator=(const L1CAIteration& other) = default;
 
   /// Move assignment operator
-  L1CAIteration& operator=(L1CAIteration&& other) noexcept;
+  L1CAIteration& operator=(L1CAIteration&& other) = default;
 
   /// Checks parameters consistency
   bool Check() const;
@@ -194,9 +194,6 @@ public:
 
   /// Sets triplet chi2 upper cut
   void SetTripletChi2Cut(float input) { fTripletChi2Cut = input; }
-
-  /// Swap method
-  void Swap(L1CAIteration& other) noexcept;
 
   /// String representation of the class contents
   /// \param indentLevel  Level of indentation for the text (in terms of \t symbols)

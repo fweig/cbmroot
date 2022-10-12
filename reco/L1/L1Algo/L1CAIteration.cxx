@@ -18,72 +18,9 @@
 
 using namespace L1Constants::size;
 
-
 // ---------------------------------------------------------------------------------------------------------------------
 //
-L1CAIteration::L1CAIteration() noexcept { LOG(debug) << "L1CAIteration: Default constructor called for " << this; }
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-L1CAIteration::L1CAIteration(const L1CAIteration& other) noexcept
-  // Basic fields
-  : fName(other.fName)
-  // Cuts
-  , fTrackChi2Cut(other.fTrackChi2Cut)
-  , fTripletChi2Cut(other.fTripletChi2Cut)
-  , fDoubletChi2Cut(other.fDoubletChi2Cut)
-  , fPickGather(other.fPickGather)
-  , fPickNeighbour(other.fPickNeighbour)
-  , fMaxInvMom(other.fMaxInvMom)
-  , fMaxSlopePV(other.fMaxSlopePV)
-  , fMaxSlope(other.fMaxSlope)
-  , fMaxDZ(other.fMaxDZ)
-  , fTargetPosSigmaX(other.fTargetPosSigmaX)
-  , fTargetPosSigmaY(other.fTargetPosSigmaY)
-  , fMinLevelTripletStart(other.fMinLevelTripletStart)
-  , fFirstStationIndex(other.fFirstStationIndex)
-  , fIsPrimary(other.fIsPrimary)
-  , fIsElectron(other.fIsElectron)
-  , fIsTrackFromTriplets(other.fIsTrackFromTriplets)
-  , fIfExtendTracks(other.fIfExtendTracks)
-  , fIfJumped(other.fIfJumped)
-  , fIfSuppressGhost(other.fIfSuppressGhost)
-{
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-L1CAIteration::L1CAIteration(L1CAIteration&& other) noexcept
-{
-  this->Swap(other);
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-L1CAIteration::L1CAIteration(const std::string& name) noexcept : fName(name) {}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-L1CAIteration::~L1CAIteration() noexcept {}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-L1CAIteration& L1CAIteration::operator=(const L1CAIteration& other) noexcept
-{
-  if (this != &other) { L1CAIteration(other).Swap(*this); }
-  return *this;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-L1CAIteration& L1CAIteration::operator=(L1CAIteration&& other) noexcept
-{
-  if (this != &other) {
-    L1CAIteration tmp(std::move(other));
-    this->Swap(tmp);
-  }
-  return *this;
-}
+L1CAIteration::L1CAIteration(const std::string& name) : fName(name) {}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
@@ -123,34 +60,6 @@ void L1CAIteration::SetTargetPosSigmaXY(float sigmaX, float sigmaY)
 {
   fTargetPosSigmaX = sigmaX;
   fTargetPosSigmaY = sigmaY;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-void L1CAIteration::Swap(L1CAIteration& other) noexcept
-{
-  // Basic fields
-  std::swap(fName, other.fName);
-  // Cuts
-  std::swap(fTrackChi2Cut, other.fTrackChi2Cut);
-  std::swap(fTripletChi2Cut, other.fTripletChi2Cut);
-  std::swap(fDoubletChi2Cut, other.fDoubletChi2Cut);
-  std::swap(fPickGather, other.fPickGather);
-  std::swap(fPickNeighbour, other.fPickNeighbour);
-  std::swap(fMaxInvMom, other.fMaxInvMom);
-  std::swap(fMaxSlopePV, other.fMaxSlopePV);
-  std::swap(fMaxSlope, other.fMaxSlope);
-  std::swap(fMaxDZ, other.fMaxDZ);
-  std::swap(fTargetPosSigmaX, other.fTargetPosSigmaX);
-  std::swap(fTargetPosSigmaY, other.fTargetPosSigmaY);
-  std::swap(fMinLevelTripletStart, other.fMinLevelTripletStart);
-  std::swap(fFirstStationIndex, other.fFirstStationIndex);
-  std::swap(fIsPrimary, other.fIsPrimary);
-  std::swap(fIsElectron, other.fIsElectron);
-  std::swap(fIsTrackFromTriplets, other.fIsTrackFromTriplets);
-  std::swap(fIfExtendTracks, other.fIfExtendTracks);
-  std::swap(fIfJumped, other.fIfJumped);
-  std::swap(fIfSuppressGhost, other.fIfSuppressGhost);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
