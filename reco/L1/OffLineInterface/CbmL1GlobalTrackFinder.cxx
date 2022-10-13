@@ -264,7 +264,7 @@ void CbmL1GlobalTrackFinder::CbmL1TrackToCbmTrdTrack(CbmL1Track l1track, CbmTrdT
   //track->SetFlag(T->GetQuality());//???
 
   FairTrackParam fpar(*track->GetParamFirst()), lpar(*track->GetParamLast());
-  CbmKFMath::CopyTC2TrackParam(&fpar, T->T, T->C);
+  CbmKFMath::CopyTC2TrackParam(&fpar, T->Tpv, T->Cpv);
   CbmKFMath::CopyTC2TrackParam(&lpar, T->TLast, T->CLast);
 }
 // -------------------------------------------------------------------------

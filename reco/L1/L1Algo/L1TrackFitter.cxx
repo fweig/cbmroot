@@ -599,8 +599,7 @@ void L1Algo::L1KFTrackFitter()
         }
       }
 
-      L1TrackPar Tf = fit.fTr;
-      if (kGlobal == fTrackingMode) { Tf = fitpv.fTr; }
+      const L1TrackPar &Tf = fit.fTr;
 
       for (int iVec = 0; iVec < nTracks_SIMD; iVec++) {
         t[iVec]->TFirst[0] = Tf.x[iVec];
