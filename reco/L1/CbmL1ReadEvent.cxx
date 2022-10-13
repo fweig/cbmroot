@@ -113,7 +113,8 @@ struct TmpHit {
   /// \param ip
   /// \param NStrips
   /// \param st       reference to the station info object
-  void CreateHitFromPoint(const CbmL1MCPoint& point, int ip, int det, int nTmpHits, int& NStrips, const L1Station& st)
+  void CreateHitFromPoint(const CbmL1MCPoint& point, int ip, int det, int nTmpHits, int& NStrips, const L1Station& st,
+                          bool doSmear = 1)
   {
     ExtIndex = 0;
     Det      = det;
@@ -121,7 +122,7 @@ struct TmpHit {
     iStation = point.iStation;
 
     dt   = st.dt[0];
-    time = point.time + gRandom->Gaus(0, dt);
+    time = point.time;
 
     iStripF = NStrips;
     iStripB = iStripF;
@@ -134,20 +135,7 @@ struct TmpHit {
     du = sqrt(st.frontInfo.sigma2[0]);
     dv = sqrt(st.backInfo.sigma2[0]);
 
-    std::tie(u, v) = st.ConvXYtoUV<double>(point.x, point.y);
-
-    u += gRandom->Gaus(0, du);
-    v += gRandom->Gaus(0, dv);
-
-    std::tie(x, y) = st.ConvUVtoXY<double>(u, v);
-    z              = point.z;
-
-    xmc = point.x;
-    ymc = point.y;
-
-    track = point.ID;
-    p     = point.p;
-    iMC   = ip;
+    SetHitFromPoint(point, ip, st, doSmear);
   }
 
   /// Sets randomized position and time of the hit
@@ -156,19 +144,22 @@ struct TmpHit {
   /// \param point  constant reference to the input MC-point
   /// \param st     reference to the station info object
   // TODO: Probably, L1Station& st parameter should be constant. Do we really want to modify a station here? (S.Zharko)
-  void SetHitFromPoint(const CbmL1MCPoint& point, const L1Station& st, bool doSmear = 1)
+  void SetHitFromPoint(const CbmL1MCPoint& point, int ip, const L1Station& st, bool doSmear = 1)
   {
-    x    = 0.5 * (point.xIn + point.xOut);
-    y    = 0.5 * (point.yIn + point.yOut);
-    z    = 0.5 * (point.zIn + point.zOut);
-    time = point.time;
-    u    = x * st.frontInfo.cos_phi[0] + y * st.frontInfo.sin_phi[0];
-    v    = x * st.backInfo.cos_phi[0] + y * st.backInfo.sin_phi[0];
+    std::tie(u, v) = st.ConvXYtoUV<double>(point.x, point.y);
     if (doSmear) {
-      x += gRandom->Gaus(0, dx);
-      y += gRandom->Gaus(0, dy);
-      time += gRandom->Gaus(0, dt);
+      u += CbmL1::boundedGaus(du);
+      v += CbmL1::boundedGaus(dv);
+      time += CbmL1::boundedGaus(dt);
     }
+    std::tie(x, y) = st.ConvUVtoXY<double>(u, v);
+    z              = point.z;
+
+    xmc   = point.x;
+    ymc   = point.y;
+    track = point.ID;
+    p     = point.p;
+    iMC   = ip;
   }
 };
 
@@ -363,14 +354,15 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
   // get MVD hits
   int nMvdHits  = 0;
-  int nStsHits = 0;
+  int nStsHits  = 0;
   int nMuchHits = 0;
   int nTrdHits  = 0;
   int nTofHits  = 0;
 
-  int firstTrdPoint  = 0;
+  int firstMvdPoint  = 0;
   int firstStsPoint  = 0;
   int firstMuchPoint = 0;
+  int firstTrdPoint  = 0;
   int firstTofPoint  = 0;
 
   /*
@@ -391,12 +383,12 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
     fvMCPointIndexesTs.reserve(fvMCPoints.capacity());
 
     for (DFSET::iterator set_it = fvFileEvent.begin(); set_it != fvFileEvent.end(); ++set_it) {
-      Int_t iFile  = set_it->first;
-      Int_t iEvent = set_it->second;
-
+      Int_t iFile   = set_it->first;
+      Int_t iEvent  = set_it->second;
+      firstMvdPoint = fvMCPoints.size();
       if (fUseMVD && fpMvdPoints) {
         Int_t fNpointsMvdInEvent = fpMvdPoints->Size(iFile, iEvent);
-        double maxDeviation     = 0;
+        double maxDeviation      = 0;
         for (Int_t iMC = 0; iMC < fNpointsMvdInEvent; iMC++) {
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 1)) {
@@ -644,37 +636,38 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
   // TODO: Refactor this code: MC information and matches should be collected separately in a separate class (S.Zharko)
 
   int NStrips = 0;
+
   //
   // get MVD hits
-  if (fUseMVD && fpMvdHits) {
+  if (fUseMVD && fpMvdHits && (2 != fMvdUseMcHit)) {
 
     int firstDetStrip = NStrips;
 
     for (int j = 0; j < fpMvdHits->GetEntriesFast(); j++) {
       TmpHit th;
       {
-        CbmMvdHit* mh = L1_DYNAMIC_CAST<CbmMvdHit*>(fpMvdHits->At(j));
-        th.ExtIndex   = -(1 + j);
-        th.id         = tmpHits.size();
-        th.iStation   = mh->GetStationNr();
+        CbmMvdHit* h = L1_DYNAMIC_CAST<CbmMvdHit*>(fpMvdHits->At(j));
+        th.ExtIndex  = -(1 + j);
+        th.id        = tmpHits.size();
+        th.iStation  = h->GetStationNr();
 
-        int stIdx = fpAlgo->GetParameters()->GetStationIndexActive(mh->GetStationNr(), L1DetectorID::kMvd);
+        int stIdx = fpAlgo->GetParameters()->GetStationIndexActive(h->GetStationNr(), L1DetectorID::kMvd);
         if (stIdx == -1) continue;
-        th.iStation = stIdx;  //mh->GetStationNr() - 1;
+        th.iStation = stIdx;
         th.iStripF  = firstDetStrip + j;
         th.iStripB  = th.iStripF;
         if (NStrips <= th.iStripF) { NStrips = th.iStripF + 1; }
 
         TVector3 pos, err;
-        mh->Position(pos);
-        mh->PositionError(err);
+        h->Position(pos);
+        h->PositionError(err);
 
-        th.dx = mh->GetDx();
-        th.dy = mh->GetDy();
+        th.dx = h->GetDx();
+        th.dy = h->GetDy();
 
-        th.du  = mh->GetDx();
-        th.dv  = mh->GetDy();
-        th.dxy = mh->GetDxy();
+        th.du  = h->GetDx();
+        th.dv  = h->GetDy();
+        th.dxy = h->GetDxy();
 
         th.x = pos.X();
         th.y = pos.Y();
@@ -686,40 +679,26 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       }
       th.Det = 0;
       th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kMvd>(th.ExtIndex) : -1;
-      //if (fPerformance) {
-      //  if (fpMvdHitMatches) {
-      //    CbmMatch* mvdHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpMvdHitMatches->At(j));
-      //    if (mvdHitMatch->GetNofLinks() > 0)
-      //      if (mvdHitMatch->GetLink(0).GetIndex() < fNpointsMvd) {
-      //        th.iMC = mvdHitMatch->GetLink(0).GetIndex();
-      //      }
-      //  }
-      //}
-      //if(  h.MC_Point >=0 ) // DEBUG !!!!
+      if (1 == fMvdUseMcHit && th.iMC >= 0) {
+        th.SetHitFromPoint(fvMCPoints[th.iMC], th.iMC, fpAlgo->GetParameters()->GetStation(th.iStation));
+      }
+      //if(  th.iMC >=0 ) // DEBUG !!!!
       {
         tmpHits.push_back(th);
         nMvdHits++;
       }
     }  // for j
   }    // if fpMvdHits
-  if (fVerbose >= 10) cout << "ReadEvent: MVD hits collected." << endl;
 
-  if (fUseSTS && (2 == fStsUseMcHit)) {  // create hits from points
+  if (fUseMVD && (2 == fMvdUseMcHit)) {  // create hits from points
 
-    for (int ip = firstStsPoint; ip < firstStsPoint + fNpointsSts; ip++) {
+    for (int ip = firstMvdPoint; ip < firstMvdPoint + fNpointsMvd; ip++) {
       const CbmL1MCPoint& p = fvMCPoints[ip];
-      //       int mcTrack           = p.ID;
-      //       if (mcTrack < 0) continue;
-      //       const CbmL1MCTrack& t = fvMCTracks[mcTrack];
-      //if (t.p < 1) continue;
-      // if (t.Points.size() > 4) continue;
-      // cout << "sts mc: station " << p.iStation - fNMvdStations << " x " << p.x << " y " << p.y << " z " << p.z << " t "
-      //            << p.time << " mc " << p.ID << " p " << p.p << endl;
       TmpHit th;
-      int DetId = 1;
+      int DetId = 0;
       th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation));
       tmpHits.push_back(th);
-      nStsHits++;
+      nMvdHits++;
     }
   }
 
@@ -751,25 +730,25 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
       // Fill reconstructed information
       {
-        CbmStsHit* mh = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(hitIndexSort));
-        th.ExtIndex   = hitIndexSort;
-        th.Det        = 1;
-        int stIdx     = fpAlgo->GetParameters()->GetStationIndexActive(
-          CbmStsSetup::Instance()->GetStationNumber(mh->GetAddress()), L1DetectorID::kSts);
+        CbmStsHit* h = L1_DYNAMIC_CAST<CbmStsHit*>(fpStsHits->At(hitIndexSort));
+        th.ExtIndex  = hitIndexSort;
+        th.Det       = 1;
+        int stIdx    = fpAlgo->GetParameters()->GetStationIndexActive(
+          CbmStsSetup::Instance()->GetStationNumber(h->GetAddress()), L1DetectorID::kSts);
 
         if (stIdx == -1) continue;
 
 
-        th.iStation = stIdx;  //mh->GetStationNr() - 1;
-        th.iStripF  = firstDetStrip + mh->GetFrontClusterId();
-        th.iStripB  = firstDetStrip + mh->GetBackClusterId();
+        th.iStation = stIdx;
+        th.iStripF  = firstDetStrip + h->GetFrontClusterId();
+        th.iStripB  = firstDetStrip + h->GetBackClusterId();
 
         if (NStrips <= th.iStripF) { NStrips = th.iStripF + 1; }
         if (NStrips <= th.iStripB) { NStrips = th.iStripB + 1; }
 
         //Get time
-        th.time = mh->GetTime();
-        th.dt   = mh->GetTimeError();
+        th.time = h->GetTime();
+        th.dt   = h->GetTimeError();
 
         if (!fLegacyEventMode) { th.id = nMvdHits + hitIndex; }
         else {
@@ -781,19 +760,19 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
           if ((th.time > (TsStart + TsLength)) && ((nEntSts - hitIndex) > 300)) { break; }
 
         TVector3 pos, err;
-        mh->Position(pos);
-        mh->PositionError(err);
+        h->Position(pos);
+        h->PositionError(err);
 
         th.x = pos.X();
         th.y = pos.Y();
         th.z = pos.Z();
 
-        th.dx  = mh->GetDx();
-        th.dy  = mh->GetDy();
-        th.dxy = mh->GetDxy();
+        th.dx  = h->GetDx();
+        th.dy  = h->GetDy();
+        th.dxy = h->GetDxy();
 
-        th.du = mh->GetDu();
-        th.dv = mh->GetDv();
+        th.du = h->GetDu();
+        th.dv = h->GetDv();
 
         const L1Station& st = fpAlgo->GetParameters()->GetStation(th.iStation);
         th.u                = th.x * st.frontInfo.cos_phi[0] + th.y * st.frontInfo.sin_phi[0];
@@ -801,34 +780,39 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       }
       th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kSts>(hitIndexSort) : -1;
 
+      if (1 == fStsUseMcHit && th.iMC >= 0) {
+        th.SetHitFromPoint(fvMCPoints[th.iMC], th.iMC, fpAlgo->GetParameters()->GetStation(th.iStation));
+      }
+
       tmpHits.push_back(th);
       nStsHits++;
 
     }  // for j
   }    // if fpStsHits
 
-  //
-  // Get MuCh hits
-  //
-  if ((2 == fMuchUseMcHit) && fUseMUCH) {  // create hits from points
+  if (fUseSTS && (2 == fStsUseMcHit)) {  // create hits from points
 
-    for (int ip = firstMuchPoint; ip < firstMuchPoint + fNpointsMuch; ip++) {
+    for (int ip = firstStsPoint; ip < firstStsPoint + fNpointsSts; ip++) {
       const CbmL1MCPoint& p = fvMCPoints[ip];
-
-      //       int mcTrack = p.ID;
+      //       int mcTrack           = p.ID;
       //       if (mcTrack < 0) continue;
       //       const CbmL1MCTrack& t = fvMCTracks[mcTrack];
       //if (t.p < 1) continue;
       // if (t.Points.size() > 4) continue;
-
+      // cout << "sts mc: station " << p.iStation - fNMvdStations << " x " << p.x << " y " << p.y << " z " << p.z << " t "
+      //            << p.time << " mc " << p.ID << " p " << p.p << endl;
       TmpHit th;
-      int DetId = 2;
+      int DetId = 1;
       th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation));
-
       tmpHits.push_back(th);
-      nMuchHits++;
+      nStsHits++;
     }
   }
+
+
+  //
+  // Get MuCh hits
+  //
 
   if (fUseMUCH && fpMuchPixelHits && (2 != fMuchUseMcHit)) {
 
@@ -840,25 +824,25 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       TmpHit th;
       {
 
-        CbmMuchPixelHit* mh = static_cast<CbmMuchPixelHit*>(fpMuchPixelHits->At(j));
+        CbmMuchPixelHit* h = static_cast<CbmMuchPixelHit*>(fpMuchPixelHits->At(j));
 
         th.ExtIndex = j;
         th.Det      = 2;
         th.id       = tmpHits.size();
 
 
-        Int_t stationNumber = CbmMuchGeoScheme::GetStationIndex(mh->GetAddress());
-        Int_t layerNumber   = CbmMuchGeoScheme::GetLayerIndex(mh->GetAddress());
+        Int_t stationNumber = CbmMuchGeoScheme::GetStationIndex(h->GetAddress());
+        Int_t layerNumber   = CbmMuchGeoScheme::GetLayerIndex(h->GetAddress());
 
         int DetId = stationNumber * 3 + layerNumber;
 
         int stIdx = fpAlgo->GetParameters()->GetStationIndexActive(DetId, L1DetectorID::kMuch);
         if (stIdx == -1) continue;
-        th.iStation = stIdx;  //mh->GetStationNr() - 1;
+        th.iStation = stIdx;  //h->GetStationNr() - 1;
 
         //Get time
-        th.time = mh->GetTime() - 14.5;
-        th.dt   = mh->GetTimeError();
+        th.time = h->GetTime() - 14.5;
+        th.dt   = h->GetTimeError();
 
 
         //   th.iSector  = 0;
@@ -866,16 +850,16 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
         th.iStripB = th.iStripF;
         if (NStrips <= th.iStripF) { NStrips = th.iStripF + 1; }
 
-        th.x = mh->GetX();
-        th.y = mh->GetY();
-        th.z = mh->GetZ();
+        th.x = h->GetX();
+        th.y = h->GetY();
+        th.z = h->GetZ();
 
-        th.dx  = mh->GetDx();
-        th.dy  = mh->GetDy();
+        th.dx  = h->GetDx();
+        th.dy  = h->GetDy();
         th.dxy = 0;
 
-        th.du = mh->GetDx();
-        th.dv = mh->GetDy();
+        th.du = h->GetDx();
+        th.dv = h->GetDy();
 
 
         const L1Station& st = fpAlgo->GetParameters()->GetStation(th.iStation);
@@ -884,7 +868,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       }
       th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kMuch>(j) : -1;
       if (1 == fMuchUseMcHit && th.iMC > -1) {
-        th.SetHitFromPoint(fvMCPoints[th.iMC], fpAlgo->GetParameters()->GetStation(th.iStation));
+        th.SetHitFromPoint(fvMCPoints[th.iMC], th.iMC, fpAlgo->GetParameters()->GetStation(th.iStation));
       }
       //int iMC = -1;
       //if (fPerformance) {
@@ -916,159 +900,159 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
     }  // for j
   }    // if listMuchHits
 
-  //
-  // Get TRD hits
-  //
+  if ((2 == fMuchUseMcHit) && fUseMUCH) {  // create hits from points
 
-  if (fUseTRD) {
-
-    if (2 == fTrdUseMcHit) {  // create hits from MC points
-      for (int ip = firstTrdPoint; ip < firstTrdPoint + fNpointsTrd; ip++) {
-        const CbmL1MCPoint& p = fvMCPoints[ip];
-        //       int mcTrack = p.ID;
-        //       if (mcTrack < 0) continue;
-        //       const CbmL1MCTrack& t = fvMCTracks[mcTrack];
-        TmpHit th;
-        int DetId = 3;
-        th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation));
-        tmpHits.push_back(th);
-        nTrdHits++;
-      }
-    }
-    else {  // read hits
-
-      assert(fpTrdHits);
-
-      vector<bool> mcUsed(fNpointsTrd, 0);
-
-      Int_t nEntTrd = (event ? event->GetNofData(ECbmDataType::kTrdHit) : fpTrdHits->GetEntriesFast());
-
-      for (int iHit = 0; iHit < nEntTrd; iHit++) {
-        TmpHit th;
-
-        Int_t hitIndex = 0;
-        hitIndex       = (event ? event->GetIndex(ECbmDataType::kTrdHit, iHit) : iHit);
-
-        CbmTrdHit* mh = L1_DYNAMIC_CAST<CbmTrdHit*>(fpTrdHits->At(hitIndex));
-
-        if ((L1Algo::TrackingMode::kGlobal == fTrackingMode) && (int) mh->GetClassType() != 1) {
-          // SGtrd2d!! skip TRD-1D hit
-          continue;
-        }
-
-        th.ExtIndex = hitIndex;
-        th.Det      = 3;
-        th.id       = tmpHits.size();
-
-        int stIdx = fpAlgo->GetParameters()->GetStationIndexActive(mh->GetPlaneId(), L1DetectorID::kTrd);
-        if (stIdx == -1) continue;
-
-        th.iStation = stIdx;
-
-        //  if (mh->GetPlaneId()==0) continue;
-        //  if (mh->GetPlaneId()==1) continue;
-        //  if (mh->GetPlaneId()==2) continue;
-        //  if (mh->GetPlaneId()==3) continue;
-
-        th.time = mh->GetTime();
-        th.dt   = mh->GetTimeError();
-
-        //   th.iSector  = 0;
-        th.iStripF = NStrips;
-        th.iStripB = th.iStripF;  //TrdHitsOnStationIndex[num+1][k];
-        NStrips++;
-
-        TVector3 pos, err;
-        mh->Position(pos);
-        mh->PositionError(err);
-
-        th.x = pos.X();
-        th.y = pos.Y();
-        th.z = pos.Z();
-
-        th.dx  = fabs(mh->GetDx());
-        th.dy  = fabs(mh->GetDy());
-        th.dxy = 0;
-
-        th.du = fabs(mh->GetDx());
-        th.dv = fabs(mh->GetDy());
-
-        const L1Station& st = fpAlgo->GetParameters()->GetStation(th.iStation);
-
-        std::tie(th.u, th.v) = st.ConvXYtoUV<double>(th.x, th.y);
-
-        th.iMC   = fPerformance ? MatchHitWithMc<L1DetectorID::kTrd>(iHit) : -1;
-        th.track = (th.iMC > -1) ? fvMCPoints[th.iMC].ID : -1;
-        //int iMcTrd = -1;
-        //if (fPerformance && fpTrdHitMatches) {
-        //  CbmMatch* trdHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpTrdHitMatches->At(iHit));
-        //  if (trdHitMatch->GetNofLinks() > 0) {
-        //    iMcTrd = trdHitMatch->GetLink(0).GetIndex();
-        //    assert(iMcTrd >= 0 && iMcTrd < fNpointsTrd);
-        //    th.iMC   = iMcTrd + fNpointsMvd + fNpointsSts + fNpointsMuch;
-        //    th.track = fvMCPoints[th.iMC].ID;
-        //  }
-        //}
-
-        if (1 == fTrdUseMcHit) {  // replace hit by MC points
-
-          assert(fPerformance && fpTrdHitMatches);
-
-          if (th.iMC < 0) continue;      // skip noise hits
-          int iMcTrd = th.iMC - fNpointsMvd - fNpointsSts - fNpointsMuch;
-          assert(iMcTrd >= 0 && iMcTrd < fNpointsTrd);
-          if (mcUsed[iMcTrd]) continue;  // one hit per MC point
-          bool doSmear = true;
-          if (0) {  // SGtrd2d!! debug: artificial errors
-            th.dx = .1;
-            th.du = .1;
-            th.dy = .1;
-            th.dv = .1;
-          }
-          th.SetHitFromPoint(fvMCPoints[th.iMC], fpAlgo->GetParameters()->GetStation(th.iStation), doSmear);
-          mcUsed[iMcTrd] = 1;
-        }  // replace hit by MC points
-
-        if (0) {  // select specific tracks
-          int mcTrack = -1;
-          float mcP   = 0;
-          if (th.iMC >= 0) {
-            mcTrack = fvMCPoints[th.iMC].ID;
-            if (mcTrack >= 0) { mcP = fvMCTracks[mcTrack].p; }
-          }
-          if (mcP < 1.) continue;
-        }
-
-        tmpHits.push_back(th);
-        nTrdHits++;
-      }  // for fpTrdHits
-    }
-  }  // read TRD hits
-
-  //
-  // Get ToF hits
-  //
-  if ((2 == fTofUseMcHit) && fUseTOF) {  // create hits from points
-    for (int ip = firstTofPoint; ip < firstTofPoint + fNpointsTof; ip++) {
+    for (int ip = firstMuchPoint; ip < firstMuchPoint + fNpointsMuch; ip++) {
       const CbmL1MCPoint& p = fvMCPoints[ip];
 
       //       int mcTrack = p.ID;
-      //  if (mcTrack < 0) continue;
-      //const CbmL1MCTrack& t = fvMCTracks[mcTrack];
+      //       if (mcTrack < 0) continue;
+      //       const CbmL1MCTrack& t = fvMCTracks[mcTrack];
       //if (t.p < 1) continue;
-      //if (t.Points.size() > 4) continue;
+      // if (t.Points.size() > 4) continue;
 
       TmpHit th;
-      int DetId = 4;
+      int DetId = 2;
       th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation));
+
       tmpHits.push_back(th);
-      nTofHits++;
+      nMuchHits++;
     }
   }
 
 
-  if (fUseTOF && fpTofHits && (2 != fTofUseMcHit)) {
+  //
+  // Get TRD hits
+  //
 
+  if (fUseTRD && fpTrdHits && (2 != fTrdUseMcHit)) {
+
+    assert(fpTrdHits);
+
+    vector<bool> mcUsed(fNpointsTrd, 0);
+
+    Int_t nEntTrd = (event ? event->GetNofData(ECbmDataType::kTrdHit) : fpTrdHits->GetEntriesFast());
+
+    for (int iHit = 0; iHit < nEntTrd; iHit++) {
+      TmpHit th;
+
+      Int_t hitIndex = 0;
+      hitIndex       = (event ? event->GetIndex(ECbmDataType::kTrdHit, iHit) : iHit);
+
+      CbmTrdHit* h = L1_DYNAMIC_CAST<CbmTrdHit*>(fpTrdHits->At(hitIndex));
+
+      if ((L1Algo::TrackingMode::kGlobal == fTrackingMode) && (int) h->GetClassType() != 1) {
+        // SGtrd2d!! skip TRD-1D hit
+        continue;
+      }
+
+      th.ExtIndex = hitIndex;
+      th.Det      = 3;
+      th.id       = tmpHits.size();
+
+      int stIdx = fpAlgo->GetParameters()->GetStationIndexActive(h->GetPlaneId(), L1DetectorID::kTrd);
+      if (stIdx == -1) continue;
+
+      th.iStation = stIdx;
+
+      //  if (h->GetPlaneId()==0) continue;
+      //  if (h->GetPlaneId()==1) continue;
+      //  if (h->GetPlaneId()==2) continue;
+      //  if (h->GetPlaneId()==3) continue;
+
+      th.time = h->GetTime();
+      th.dt   = h->GetTimeError();
+
+      //   th.iSector  = 0;
+      th.iStripF = NStrips;
+      th.iStripB = th.iStripF;  //TrdHitsOnStationIndex[num+1][k];
+      NStrips++;
+
+      TVector3 pos, err;
+      h->Position(pos);
+      h->PositionError(err);
+
+      th.x = pos.X();
+      th.y = pos.Y();
+      th.z = pos.Z();
+
+      th.dx  = fabs(h->GetDx());
+      th.dy  = fabs(h->GetDy());
+      th.dxy = 0;
+
+      th.du = fabs(h->GetDx());
+      th.dv = fabs(h->GetDy());
+
+      const L1Station& st = fpAlgo->GetParameters()->GetStation(th.iStation);
+
+      std::tie(th.u, th.v) = st.ConvXYtoUV<double>(th.x, th.y);
+
+      th.iMC   = fPerformance ? MatchHitWithMc<L1DetectorID::kTrd>(iHit) : -1;
+      th.track = (th.iMC > -1) ? fvMCPoints[th.iMC].ID : -1;
+      //int iMcTrd = -1;
+      //if (fPerformance && fpTrdHitMatches) {
+      //  CbmMatch* trdHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpTrdHitMatches->At(iHit));
+      //  if (trdHitMatch->GetNofLinks() > 0) {
+      //    iMcTrd = trdHitMatch->GetLink(0).GetIndex();
+      //    assert(iMcTrd >= 0 && iMcTrd < fNpointsTrd);
+      //    th.iMC   = iMcTrd + fNpointsMvd + fNpointsSts + fNpointsMuch;
+      //    th.track = fvMCPoints[th.iMC].ID;
+      //  }
+      //}
+
+      if (1 == fTrdUseMcHit) {  // replace hit by MC points
+
+        assert(fPerformance && fpTrdHitMatches);
+
+        if (th.iMC < 0) continue;  // skip noise hits
+        int iMcTrd = th.iMC - fNpointsMvd - fNpointsSts - fNpointsMuch;
+        assert(iMcTrd >= 0 && iMcTrd < fNpointsTrd);
+        if (mcUsed[iMcTrd]) continue;  // one hit per MC point
+        bool doSmear = true;
+        if (0) {  // SGtrd2d!! debug: artificial errors
+          th.dx = .1;
+          th.du = .1;
+          th.dy = .1;
+          th.dv = .1;
+        }
+        th.SetHitFromPoint(fvMCPoints[th.iMC], th.iMC, fpAlgo->GetParameters()->GetStation(th.iStation), doSmear);
+        mcUsed[iMcTrd] = 1;
+      }  // replace hit by MC points
+
+      if (0) {  // select specific tracks
+        int mcTrack = -1;
+        float mcP   = 0;
+        if (th.iMC >= 0) {
+          mcTrack = fvMCPoints[th.iMC].ID;
+          if (mcTrack >= 0) { mcP = fvMCTracks[mcTrack].p; }
+        }
+        if (mcP < 1.) continue;
+      }
+
+      tmpHits.push_back(th);
+      nTrdHits++;
+    }  // for fpTrdHits
+  }    // read TRD hits
+
+  if (fUseTRD && (2 == fTrdUseMcHit)) {  // create hits from MC points
+    for (int ip = firstTrdPoint; ip < firstTrdPoint + fNpointsTrd; ip++) {
+      const CbmL1MCPoint& p = fvMCPoints[ip];
+      //       int mcTrack = p.ID;
+      //       if (mcTrack < 0) continue;
+      //       const CbmL1MCTrack& t = fvMCTracks[mcTrack];
+      TmpHit th;
+      int DetId = 3;
+      th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation));
+      tmpHits.push_back(th);
+      nTrdHits++;
+    }
+  }
+
+  //
+  // Get ToF hits
+  //
+
+  if (fUseTOF && fpTofHits && (2 != fTofUseMcHit)) {
     int firstDetStrip = NStrips;
 
     Int_t nEntTof = (event ? event->GetNofData(ECbmDataType::kTofHit) : fpTofHits->GetEntriesFast());
@@ -1081,7 +1065,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
       TmpHit th;
 
-      CbmTofHit* mh = L1_DYNAMIC_CAST<CbmTofHit*>(fpTofHits->At(hitIndex));
+      CbmTofHit* h = L1_DYNAMIC_CAST<CbmTofHit*>(fpTofHits->At(hitIndex));
 
 
       th.ExtIndex = hitIndex;
@@ -1089,21 +1073,21 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
       th.id = tmpHits.size();
 
-      if (0x00202806 == mh->GetAddress() || 0x00002806 == mh->GetAddress()) continue;  // TODO: Why? (S.Zharko)
+      if (0x00202806 == h->GetAddress() || 0x00002806 == h->GetAddress()) continue;  // TODO: Why? (S.Zharko)
 
-      int sttof = CbmTofTrackingInterface::Instance()->GetTrackingStationIndex(mh);
+      int sttof = CbmTofTrackingInterface::Instance()->GetTrackingStationIndex(h);
 
       if (sttof < 0) continue;
 
-      th.time = mh->GetTime();
-      th.dt   = mh->GetTimeError();
+      th.time = h->GetTime();
+      th.dt   = h->GetTimeError();
 
-      th.dx  = mh->GetDx();
-      th.dy  = mh->GetDy();
+      th.dx  = h->GetDx();
+      th.dy  = h->GetDy();
       th.dxy = 0;
 
-      th.du = mh->GetDx();
-      th.dv = mh->GetDy();
+      th.du = h->GetDx();
+      th.dv = h->GetDy();
 
       //   th.iSector  = 0;
       th.iStripF = firstDetStrip + j;
@@ -1111,8 +1095,8 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       if (NStrips <= th.iStripF) { NStrips = th.iStripF + 1; }
 
       TVector3 pos, err;
-      mh->Position(pos);
-      mh->PositionError(err);
+      h->Position(pos);
+      h->PositionError(err);
 
       th.x = pos.X();
       th.y = pos.Y();
@@ -1131,38 +1115,33 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       th.iMC = fPerformance ? MatchHitWithMc<L1DetectorID::kTof>(j) : -1;
 
       if (1 == fTofUseMcHit && th.iMC > -1) {
-        th.SetHitFromPoint(fvMCPoints[th.iMC], fpAlgo->GetParameters()->GetStation(th.iStation));
+        th.SetHitFromPoint(fvMCPoints[th.iMC], th.iMC, fpAlgo->GetParameters()->GetStation(th.iStation));
       }
-      //      int iMC = -1;
-
-
-      //if (fPerformance) {
-
-      //  CbmMatch* matchHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpTofHitMatches->At(j));
-
-      //  for (int iLink = 0; iLink < matchHitMatch->GetNofLinks(); iLink++)  //matchHitMatch->GetNofLinks(); k++)
-      //  {
-      //    Int_t iMC    = matchHitMatch->GetLink(iLink).GetIndex();
-      //    Int_t iFile  = matchHitMatch->GetLink(iLink).GetFile();
-      //    Int_t iEvent = matchHitMatch->GetLink(iLink).GetEntry();
-
-      //    Int_t iIndex = iMC + fNpointsMvd + fNpointsSts + fNpointsMuch + fNpointsTrd;
-
-      //    //CbmTofPoint* pt = L1_DYNAMIC_CAST<CbmTofPoint*>(fTofPoints->Get(iFile, iEvent, iMC));
-      //    // pt->GetTrackID();
-      //    auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex, iEvent, iFile));
-      //    if (itPoint == fmMCPointsLinksMap.cend()) continue;
-      //    th.iMC = itPoint->second;
-      //    if ((1 == fTofUseMcHit) && (th.iMC > -1))
-      //      th.SetHitFromPoint(fvMCPoints[th.iMC], fpAlgo->GetParameters()->GetStation(th.iStation));
-      //  }
-      //}
 
       tmpHits.push_back(th);
       nTofHits++;
 
     }  // for j
   }    // if listTofHits
+
+  if ((2 == fTofUseMcHit) && fUseTOF) {  // create hits from points
+    for (int ip = firstTofPoint; ip < firstTofPoint + fNpointsTof; ip++) {
+      const CbmL1MCPoint& p = fvMCPoints[ip];
+
+      //       int mcTrack = p.ID;
+      //  if (mcTrack < 0) continue;
+      //const CbmL1MCTrack& t = fvMCTracks[mcTrack];
+      //if (t.p < 1) continue;
+      //if (t.Points.size() > 4) continue;
+
+      TmpHit th;
+      int DetId = 4;
+      th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation));
+      tmpHits.push_back(th);
+      nTofHits++;
+    }
+  }
+
 
   if (fVerbose > 1) {
     LOG(info) << "L1 ReadEvent: nhits mvd " << nMvdHits << " sts " << nStsHits << " much " << nMuchHits << " trd "

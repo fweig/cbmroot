@@ -182,11 +182,6 @@ InitStatus CbmL1::Init()
 #endif
   }
 
-  // Init L1 algo core
-
-  fpAlgo = &gAlgo;
-  fpAlgo->Init(fUseHitErrors, fTrackingMode, fMissingHits);
-
   fHistoDir = gROOT->mkdir("L1");
   fHistoDir->mkdir("Input");
   fHistoDir->mkdir("Fit");
@@ -225,7 +220,6 @@ InitStatus CbmL1::Init()
 
     fInitManager.DevSetUseOfOriginalField();
     fInitManager.DevSetIgnoreHitSearchAreas(true);
-    //fInitManager.DevSetFitSingletsFromTarget(true);
     //fInitManager.DevSetIsMatchDoubletsViaMc(true);
     //fInitManager.DevSetIsMatchTripletsViaMc(true);
     fInitManager.SetMaxTripletPerDoublets(1000);
@@ -654,6 +648,7 @@ InitStatus CbmL1::Init()
     trackingIterFastPrim.SetMinLevelTripletStart(0);
     trackingIterFastPrim.SetPrimaryFlag(true);
     trackingIterFastPrim.SetSuppressGhostFlag(false);
+    trackingIterFastPrim.SetExtendTracksFlag(true);
 
     auto trackingIterAllPrim = L1CAIteration("AllPrimIter");
     trackingIterAllPrim.SetTrackChi2Cut(10.f);
@@ -669,6 +664,7 @@ InitStatus CbmL1::Init()
     trackingIterAllPrim.SetMinLevelTripletStart(0);
     trackingIterAllPrim.SetPrimaryFlag(true);
     trackingIterAllPrim.SetSuppressGhostFlag(false);
+    trackingIterAllPrim.SetExtendTracksFlag(true);
 
     auto trackingIterFastPrim2 = L1CAIteration("FastPrim2Iter");
     trackingIterFastPrim2.SetTrackChi2Cut(10.f);
@@ -684,6 +680,7 @@ InitStatus CbmL1::Init()
     trackingIterFastPrim2.SetMinLevelTripletStart(0);
     trackingIterFastPrim2.SetPrimaryFlag(true);
     trackingIterFastPrim2.SetSuppressGhostFlag(true);
+    trackingIterFastPrim2.SetExtendTracksFlag(true);
 
     auto trackingIterAllSec = L1CAIteration("AllSecIter");
     trackingIterAllSec.SetTrackChi2Cut(10.f);
@@ -699,6 +696,7 @@ InitStatus CbmL1::Init()
     trackingIterAllSec.SetMinLevelTripletStart(1);
     trackingIterAllSec.SetPrimaryFlag(false);
     trackingIterAllSec.SetSuppressGhostFlag(true);
+    trackingIterAllSec.SetExtendTracksFlag(true);
 
     auto trackingIterFastPrimJump = L1CAIteration("FastPrimJumpIter");
     trackingIterFastPrimJump.SetTrackChi2Cut(10.f);
@@ -715,6 +713,7 @@ InitStatus CbmL1::Init()
     trackingIterFastPrimJump.SetPrimaryFlag(true);
     trackingIterFastPrimJump.SetSuppressGhostFlag(true);
     trackingIterFastPrimJump.SetJumpedFlag(true);
+    trackingIterFastPrimJump.SetExtendTracksFlag(true);
 
     auto trackingIterAllPrimJump = L1CAIteration("AllPrimJumpIter");
     trackingIterAllPrimJump.SetTrackChi2Cut(10.f);
@@ -731,6 +730,7 @@ InitStatus CbmL1::Init()
     trackingIterAllPrimJump.SetPrimaryFlag(true);
     trackingIterAllPrimJump.SetSuppressGhostFlag(true);
     trackingIterAllPrimJump.SetJumpedFlag(true);
+    trackingIterAllPrimJump.SetExtendTracksFlag(true);
 
     auto trackingIterAllSecJump = L1CAIteration("AllSecJumpIter");
     trackingIterAllSecJump.SetTrackChi2Cut(10.f);
@@ -747,6 +747,7 @@ InitStatus CbmL1::Init()
     trackingIterAllSecJump.SetPrimaryFlag(false);
     trackingIterAllSecJump.SetSuppressGhostFlag(true);
     trackingIterAllSecJump.SetJumpedFlag(true);
+    trackingIterAllSecJump.SetExtendTracksFlag(true);
 
     auto trackingIterAllPrimE = L1CAIteration("AllPrimEIter");
     trackingIterAllPrimE.SetTrackChi2Cut(10.f);
@@ -763,6 +764,7 @@ InitStatus CbmL1::Init()
     trackingIterAllPrimE.SetPrimaryFlag(true);
     trackingIterAllPrimE.SetElectronFlag(true);
     trackingIterAllPrimE.SetSuppressGhostFlag(false);
+    trackingIterAllPrimE.SetExtendTracksFlag(true);
 
     auto trackingIterAllSecE = L1CAIteration("AllSecEIter");
     trackingIterAllSecE.SetTrackChi2Cut(10.f);
@@ -779,6 +781,7 @@ InitStatus CbmL1::Init()
     trackingIterAllSecE.SetPrimaryFlag(false);
     trackingIterAllSecE.SetElectronFlag(true);
     trackingIterAllSecE.SetSuppressGhostFlag(false);
+    trackingIterAllSecE.SetExtendTracksFlag(true);
 
     // Select default track finder
     if (L1Algo::TrackingMode::kMcbm == fTrackingMode) {
@@ -811,20 +814,23 @@ InitStatus CbmL1::Init()
       auto globalIterPrimFast = L1CAIteration("globalIterPrimFast");
       {
         auto& it = globalIterPrimFast;
-        it.SetTrackChi2Cut(7.f);              //10.f
-        it.SetTripletChi2Cut(2 * 23.4450f);   // = 7.815 * 3;  // prob = 0.05
-        it.SetDoubletChi2Cut(4. * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
-        it.SetPickGather(3.0f);
-        it.SetPickNeighbour(4.0f);
-        it.SetMaxInvMom(1.0 / 0.05);  //(1.0 / 0.5);
-        it.SetMaxSlopePV(.5f);
-        it.SetMaxSlope(.5f);
-        it.SetMaxDZ(0.05);
-        it.SetTargetPosSigmaXY(1., 1.);  //(1, 1);
-        it.SetMinLevelTripletStart(1);
-        it.SetPrimaryFlag(true);
+        it.SetTrackChi2Cut(10 * 7.f);              //10.f
+        it.SetTripletChi2Cut(10 * 2 * 23.4450f);   // = 7.815 * 3;  // prob = 0.05
+        it.SetDoubletChi2Cut(10 * 4. * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
+        it.SetPickGather(10 * 3.0f);
+        it.SetPickNeighbour(10 * 4.0f);
+        it.SetMaxInvMom(10 * 1.0 / 0.05);  //(1.0 / 0.5);
+        it.SetMaxSlopePV(10 * .5f);
+        it.SetMaxSlope(10 * .5f);
+        it.SetMaxDZ(10 * 0.05);
+        it.SetTargetPosSigmaXY(10 * 1., 10 * 1.);  //(1, 1);
+        it.SetMinLevelTripletStart(0);
+        //it.SetPrimaryFlag(true);
         it.SetExtendTracksFlag(true);
+        it.SetPrimaryFlag(false);
+        //it.SetExtendTracksFlag(false);
         //it.SetFirstStationIndex(11);
+        it.SetSuppressGhostFlag(false);
       }
 
       auto trd2dIter2 = L1CAIteration("Trd2dIter2");
@@ -846,6 +852,8 @@ InitStatus CbmL1::Init()
       // Initialize CA track finder iterations sequence
 
       fInitManager.SetCAIterationsNumberCrosscheck(1);
+      //trackingIterFastPrim.SetExtendTracksFlag(true);
+      //fInitManager.PushBackCAIteration(trackingIterFastPrim);
       //fInitManager.PushBackCAIteration(globalIterPrimFast);
       fInitManager.PushBackCAIteration(trd2dIter2);
       /*
@@ -858,17 +866,6 @@ InitStatus CbmL1::Init()
     }
     else {
       fInitManager.SetCAIterationsNumberCrosscheck(4);
-
-      trackingIterFastPrim.SetExtendTracksFlag(true);
-      trackingIterAllPrim.SetExtendTracksFlag(true);
-      trackingIterFastPrim2.SetExtendTracksFlag(true);
-      trackingIterAllSec.SetExtendTracksFlag(true);
-      trackingIterFastPrimJump.SetExtendTracksFlag(true);
-      trackingIterAllPrimJump.SetExtendTracksFlag(true);
-      trackingIterAllSecJump.SetExtendTracksFlag(true);
-      trackingIterAllPrimE.SetExtendTracksFlag(true);
-      trackingIterAllSecE.SetExtendTracksFlag(true);
-
 
       // Initialize CA track finder iterations sequence
       fInitManager.PushBackCAIteration(trackingIterFastPrim);
@@ -896,6 +893,12 @@ InitStatus CbmL1::Init()
     // Write to file if needed
     if (1 == fSTAPDataMode) { this->WriteSTAPParamObject(); }
   }
+
+
+  // Init L1 algo core
+
+  fpAlgo = &gAlgo;
+  fpAlgo->Init(fUseHitErrors, fTrackingMode, fMissingHits);
 
   //
   // ** Send formed parameters object to L1Algo instance **
@@ -1748,4 +1751,14 @@ std::vector<L1Material> CbmL1::ReadMaterialBudget(L1DetectorID detectorID)
     LOG(fatal) << "No material budget file is found for " << GetDetectorName(detectorID);
   }
   return result;
+}
+
+double CbmL1::boundedGaus(double sigma)
+{
+  assert(sigma > 0. && std::isfinite(sigma));
+  double x = 0.;
+  do {
+    x = gRandom->Gaus(0., sigma);
+  } while (fabs(x) > 3.5 * sigma);
+  return x;
 }

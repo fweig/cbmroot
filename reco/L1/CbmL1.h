@@ -142,7 +142,7 @@ public:
   // ** Types definition **
   // **********************
 
-  using DFSET  = std::set<std::pair<int, int>>;  // Why std::set<std::pair<>> instead of std::map<>?
+  using DFSET = std::set<std::pair<int, int>>;  // Why std::set<std::pair<>> instead of std::map<>?
 
   // **************************
   // ** Friends classes list **
@@ -325,9 +325,19 @@ public:
 
   const L1Vector<int>& GetHitMCRefs() const { return fvHitPointIndexes; }
 
+  void SetUseMcHit(int MvdUseMcHit = 0, int StsUseMcHit = 0, int MuchUseMcHit = 0, int TrdUseMcHit = 0,
+                   int TofUseMcHit = 0)
+  {
+    fMvdUseMcHit  = MvdUseMcHit;
+    fStsUseMcHit  = StsUseMcHit;
+    fMuchUseMcHit = MuchUseMcHit;
+    fTrdUseMcHit  = TrdUseMcHit;
+    fTofUseMcHit  = TofUseMcHit;
+  }
+
+  static double boundedGaus(double sigma);
 
 private:
-
   struct TH1FParameters {
     TString name, title;
     int nbins;
@@ -435,14 +445,6 @@ private:
   /// Gets a pointer to L1InitManager (for an access in run_reco.C)
   L1InitManager* GetInitManager() { return &fInitManager; }
 
-  void SetUseMcHit(int StsUseMcHit = 0, int MuchUseMcHit = 0, int TrdUseMcHit = 0, int TofUseMcHit = 0)
-  {
-    fStsUseMcHit  = StsUseMcHit;
-    fMuchUseMcHit = MuchUseMcHit;
-    fTrdUseMcHit  = TrdUseMcHit;
-    fTofUseMcHit  = TofUseMcHit;
-  }
-
   void WriteHistosCurFile(TObject* obj);
 
   static std::istream& eatwhite(std::istream& is);  // skip spaces
@@ -533,6 +535,7 @@ private:
   /// 1: Position of a reconstructed hit is taken from matched MC point and smeared (optionally) with the position
   ///    resolution
   /// 2: A set of hits is created from the set of MC points
+  Int_t fMvdUseMcHit  = -1;  ///< MC info flag for MVD hits
   Int_t fStsUseMcHit  = -1;  ///< MC info flag for STS hits
   Int_t fMuchUseMcHit = -1;  ///< MC info flag for MuCh hits
   Int_t fTrdUseMcHit  = -1;  ///< MC info flag for TRD hits
