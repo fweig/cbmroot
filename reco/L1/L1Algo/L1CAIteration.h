@@ -80,9 +80,6 @@ public:
   /// Gets max slope (tx\ty) in primary vertex
   float GetMaxSlopePV() const { return fMaxSlopePV; }
 
-  /// Gets min level of the triplet start
-  int GetMinLevelTripletStart() const { return fMinLevelTripletStart; }
-
   /// Gets the name of the iteration
   const std::string& GetName() const { return fName; }
 
@@ -95,8 +92,11 @@ public:
   /// Checks flag: true - only primary tracks are searched, false - [all or only secondary?]
   bool GetPrimaryFlag() const { return fIsPrimary; }
 
-  /// Sets flag: true - skip track candidates with level = 0
-  bool GetSuppressGhostFlag() const { return fIfSuppressGhost; }
+  /// Gets min n hits
+  int GetMinNhits() const { return fMinNhits; }
+
+  /// Gets min n hits for tracks that start on station 0
+  int GetMinNhitsStation0() const { return fMinNhitsStation0; }
 
   /// Gets sigma target position in X direction [cm]
   float GetTargetPosSigmaX() const { return fTargetPosSigmaX; }
@@ -154,9 +154,6 @@ public:
   /// Sets max slope (tx\ty) in primary vertex
   void SetMaxSlopePV(float input) { fMaxSlopePV = input; }
 
-  /// Sets min level of the triplet start
-  void SetMinLevelTripletStart(int input) { fMinLevelTripletStart = input; }
-
   /// Sets name of the iteration
   void SetName(const std::string& name) { fName = name; }
 
@@ -170,7 +167,11 @@ public:
   void SetPrimaryFlag(bool flag) { fIsPrimary = flag; }
 
   /// Sets flag: true - skip track candidates with level = 0
-  void SetSuppressGhostFlag(bool flag) { fIfSuppressGhost = flag; }
+  void SetMinNhits(int val) { fMinNhits = val; }
+
+  /// Sets min n hits for tracks that start on station 0
+  void SetMinNhitsStation0(int val) { fMinNhitsStation0 = val; }
+
 
   /// Sets sigma of target positions in XY plane
   /// \param  sigmaX  Sigma value in X direction [cm]
@@ -201,7 +202,7 @@ public:
 
 private:
   /** Basic fields **/
-  std::string fName {""};           ///< Iteration name
+  std::string fName {""};  ///< Iteration name
 
   /** Track finder dependent cuts **/
   // TODO: Iteratively change the literals to floats (S.Zharko)
@@ -219,8 +220,6 @@ private:
   float fMaxDZ              = 0.f;                  ///< Correction for accounting overlaping and iff z [cm]
   float fTargetPosSigmaX    = 0;                    ///< Constraint on target position in X direction [cm]
   float fTargetPosSigmaY    = 0;                    ///< Constraint on target position in Y direction [cm]
-  int fMinLevelTripletStart = 0;                    ///< Min level for starting a triplet.
-                                                    ///< Track length = fMinLevelTripletStart + 3
   int fFirstStationIndex = 0;                       ///< First station, used for tracking
 
   bool fIsPrimary  = false;  ///< Flag: true - only primary tracks are searched for
@@ -240,10 +239,8 @@ private:
   bool fIfExtendTracks = false;  ///< Flag: true - extends track candidates with unused hits
   bool fIfJumped       = false;  ///< Flag: true - find triplets with skip station
 
-  /// \brief Flag to suppress ghost tracks on the stage of track candidates selection
-  ///   If the flag is true, three-hit tracks with level = 0 will be skip. This helps to reduce ghost tracks
-  /// under conditions of high hits density
-  bool fIfSuppressGhost = false;
+  int fMinNhits         = 3;  ///< min n hits on the tracks
+  int fMinNhitsStation0 = 3;  ///< min n hits for tracks that start on station 0
 
   /// Serialization method, used to save L1Hit objects into binary or text file in a defined order
   friend class boost::serialization::access;
@@ -262,14 +259,14 @@ private:
     ar& fMaxDZ;
     ar& fTargetPosSigmaX;
     ar& fTargetPosSigmaY;
-    ar& fMinLevelTripletStart;
     ar& fFirstStationIndex;
     ar& fIsPrimary;
     ar& fIsElectron;
     ar& fIsTrackFromTriplets;
     ar& fIfExtendTracks;
     ar& fIfJumped;
-    ar& fIfSuppressGhost;
+    ar& fMinNhits;
+    ar& fMinNhitsStation0;
   }
 
   /// Checks, if a particular value lies within selected limits. In case of fail throws std::logic_error

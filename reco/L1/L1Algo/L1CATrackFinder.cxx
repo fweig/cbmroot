@@ -2053,8 +2053,8 @@ void L1Algo::CATrackFinder()
     ///=                                                                  =
     ///====================================================================
 
-    int min_level =
-      caIteration.GetMinLevelTripletStart();  // min level to start triplet. So min track length = min_level+3.
+    // min level to start triplet. So min track length = min_level+3.
+    int min_level = std::min(caIteration.GetMinNhits(), caIteration.GetMinNhitsStation0()) - 3;
 
     // TODO: SZh 04.10.2022: Why this fatal error is called?
     // NOTE: This line was wrapped into TRACKS_FROM_TRIPLETS ifdef
@@ -2119,15 +2119,12 @@ void L1Algo::CATrackFinder()
             //
 
             if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {  // ghost suppression !!!
-
-              if (fpCurrentIteration->GetSuppressGhostFlag()) {
-                if (first_trip.GetLevel() == 0)
-                  continue;  //ghost suppression//find track with 3 hits only if it was created from a chain of triplets, but not from only one triplet
+              int nHits = 3 + first_trip.GetLevel();
+              if ((*vHitsUnused)[first_trip.GetLHit()].iSt == 0) {
+                if (nHits < fpCurrentIteration->GetMinNhitsStation0()) { continue; }
               }
-
-              if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
-                if ((firstTripletLevel == 0) && ((*vHitsUnused)[first_trip.GetLHit()].iSt != 0))
-                  continue;  // ghost supression // collect only MAPS tracks-triplets  CHECK!!!
+              else {
+                if (nHits < fpCurrentIteration->GetMinNhits()) { continue; }
               }
             }
 

@@ -212,14 +212,14 @@ InitStatus CbmL1::Init()
 
   if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
     //at the moment trd2d tracking only
-    fUseMVD  = 0;
-    fUseSTS  = 0;
+    fUseMVD  = 1;
+    fUseSTS  = 1;
     fUseMUCH = 0;
     fUseTRD  = 1;
     fUseTOF  = 0;
 
     fInitManager.DevSetUseOfOriginalField();
-    fInitManager.DevSetIgnoreHitSearchAreas(true);
+    //fInitManager.DevSetIgnoreHitSearchAreas(true);
     //fInitManager.DevSetIsMatchDoubletsViaMc(true);
     //fInitManager.DevSetIsMatchTripletsViaMc(true);
     fInitManager.SetMaxTripletPerDoublets(1000);
@@ -635,6 +635,8 @@ InitStatus CbmL1::Init()
     // TODO: Need to provide a selection: default iterations input (these hard-coded ones), input from file or input
     //       from running macro (S.Zharko)
     auto trackingIterFastPrim = L1CAIteration("FastPrimIter");
+    trackingIterFastPrim.SetMinNhits(4);
+    trackingIterFastPrim.SetMinNhitsStation0(3);
     trackingIterFastPrim.SetTrackChi2Cut(10.f);
     trackingIterFastPrim.SetTripletChi2Cut(23.4450f);  // = 7.815 * 3;  // prob = 0.05
     trackingIterFastPrim.SetDoubletChi2Cut(7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
@@ -645,12 +647,12 @@ InitStatus CbmL1::Init()
     trackingIterFastPrim.SetMaxSlope(2.748f);
     trackingIterFastPrim.SetMaxDZ(0);
     trackingIterFastPrim.SetTargetPosSigmaXY(1, 1);
-    trackingIterFastPrim.SetMinLevelTripletStart(0);
     trackingIterFastPrim.SetPrimaryFlag(true);
-    trackingIterFastPrim.SetSuppressGhostFlag(false);
     trackingIterFastPrim.SetExtendTracksFlag(true);
 
     auto trackingIterAllPrim = L1CAIteration("AllPrimIter");
+    trackingIterAllPrim.SetMinNhits(4);
+    trackingIterAllPrim.SetMinNhitsStation0(3);
     trackingIterAllPrim.SetTrackChi2Cut(10.f);
     trackingIterAllPrim.SetTripletChi2Cut(23.4450f);
     trackingIterAllPrim.SetDoubletChi2Cut(7.56327f);
@@ -661,12 +663,12 @@ InitStatus CbmL1::Init()
     trackingIterAllPrim.SetMaxSlope(2.748f);
     trackingIterAllPrim.SetMaxDZ(0.1);
     trackingIterAllPrim.SetTargetPosSigmaXY(1, 1);
-    trackingIterAllPrim.SetMinLevelTripletStart(0);
     trackingIterAllPrim.SetPrimaryFlag(true);
-    trackingIterAllPrim.SetSuppressGhostFlag(false);
     trackingIterAllPrim.SetExtendTracksFlag(true);
 
     auto trackingIterFastPrim2 = L1CAIteration("FastPrim2Iter");
+    trackingIterFastPrim2.SetMinNhits(4);
+    trackingIterFastPrim2.SetMinNhitsStation0(4);
     trackingIterFastPrim2.SetTrackChi2Cut(10.f);
     trackingIterFastPrim2.SetTripletChi2Cut(21.1075f);
     trackingIterFastPrim2.SetDoubletChi2Cut(7.56327f);
@@ -677,12 +679,12 @@ InitStatus CbmL1::Init()
     trackingIterFastPrim2.SetMaxSlope(2.748f);
     trackingIterFastPrim2.SetMaxDZ(0);
     trackingIterFastPrim2.SetTargetPosSigmaXY(5, 5);
-    trackingIterFastPrim2.SetMinLevelTripletStart(0);
     trackingIterFastPrim2.SetPrimaryFlag(true);
-    trackingIterFastPrim2.SetSuppressGhostFlag(true);
     trackingIterFastPrim2.SetExtendTracksFlag(true);
 
     auto trackingIterAllSec = L1CAIteration("AllSecIter");
+    trackingIterAllSec.SetMinNhits(4);
+    trackingIterAllSec.SetMinNhitsStation0(4);
     trackingIterAllSec.SetTrackChi2Cut(10.f);
     trackingIterAllSec.SetTripletChi2Cut(18.7560f);  // = 6.252 * 3;  // prob = 0.1
     trackingIterAllSec.SetDoubletChi2Cut(7.56327f);
@@ -693,12 +695,12 @@ InitStatus CbmL1::Init()
     trackingIterAllSec.SetMaxSlope(2.748f);
     trackingIterAllSec.SetMaxDZ(0.1);
     trackingIterAllSec.SetTargetPosSigmaXY(10, 10);
-    trackingIterAllSec.SetMinLevelTripletStart(1);
     trackingIterAllSec.SetPrimaryFlag(false);
-    trackingIterAllSec.SetSuppressGhostFlag(true);
     trackingIterAllSec.SetExtendTracksFlag(true);
 
     auto trackingIterFastPrimJump = L1CAIteration("FastPrimJumpIter");
+    trackingIterFastPrimJump.SetMinNhits(4);
+    trackingIterFastPrimJump.SetMinNhitsStation0(4);
     trackingIterFastPrimJump.SetTrackChi2Cut(10.f);
     trackingIterFastPrimJump.SetTripletChi2Cut(21.1075f);  // prob = 0.01
     trackingIterFastPrimJump.SetDoubletChi2Cut(7.56327f);
@@ -709,13 +711,13 @@ InitStatus CbmL1::Init()
     trackingIterFastPrimJump.SetMaxSlope(2.748f);
     trackingIterFastPrimJump.SetMaxDZ(0);
     trackingIterFastPrimJump.SetTargetPosSigmaXY(5, 5);
-    trackingIterFastPrimJump.SetMinLevelTripletStart(0);
     trackingIterFastPrimJump.SetPrimaryFlag(true);
-    trackingIterFastPrimJump.SetSuppressGhostFlag(true);
     trackingIterFastPrimJump.SetJumpedFlag(true);
     trackingIterFastPrimJump.SetExtendTracksFlag(true);
 
     auto trackingIterAllPrimJump = L1CAIteration("AllPrimJumpIter");
+    trackingIterAllPrimJump.SetMinNhits(4);
+    trackingIterAllPrimJump.SetMinNhitsStation0(4);
     trackingIterAllPrimJump.SetTrackChi2Cut(10.f);
     trackingIterAllPrimJump.SetTripletChi2Cut(18.7560f);
     trackingIterAllPrimJump.SetDoubletChi2Cut(7.56327f);
@@ -726,13 +728,13 @@ InitStatus CbmL1::Init()
     trackingIterAllPrimJump.SetMaxSlope(2.748f);
     trackingIterAllPrimJump.SetMaxDZ(0.1);
     trackingIterAllPrimJump.SetTargetPosSigmaXY(5, 5);
-    trackingIterAllPrimJump.SetMinLevelTripletStart(0);
     trackingIterAllPrimJump.SetPrimaryFlag(true);
-    trackingIterAllPrimJump.SetSuppressGhostFlag(true);
     trackingIterAllPrimJump.SetJumpedFlag(true);
     trackingIterAllPrimJump.SetExtendTracksFlag(true);
 
     auto trackingIterAllSecJump = L1CAIteration("AllSecJumpIter");
+    trackingIterAllSecJump.SetMinNhits(4);
+    trackingIterAllSecJump.SetMinNhitsStation0(4);
     trackingIterAllSecJump.SetTrackChi2Cut(10.f);
     trackingIterAllSecJump.SetTripletChi2Cut(21.1075f);
     trackingIterAllSecJump.SetDoubletChi2Cut(7.56327f);
@@ -742,14 +744,14 @@ InitStatus CbmL1::Init()
     trackingIterAllSecJump.SetMaxSlopePV(1.5f);
     trackingIterAllSecJump.SetMaxSlope(2.748f);
     trackingIterAllSecJump.SetMaxDZ(0.1);
-    trackingIterAllSecJump.SetMinLevelTripletStart(1);
     trackingIterAllSecJump.SetTargetPosSigmaXY(10, 10);
     trackingIterAllSecJump.SetPrimaryFlag(false);
-    trackingIterAllSecJump.SetSuppressGhostFlag(true);
     trackingIterAllSecJump.SetJumpedFlag(true);
     trackingIterAllSecJump.SetExtendTracksFlag(true);
 
     auto trackingIterAllPrimE = L1CAIteration("AllPrimEIter");
+    trackingIterAllPrimE.SetMinNhits(4);
+    trackingIterAllPrimE.SetMinNhitsStation0(3);
     trackingIterAllPrimE.SetTrackChi2Cut(10.f);
     trackingIterAllPrimE.SetTripletChi2Cut(23.4450f);
     trackingIterAllPrimE.SetDoubletChi2Cut(7.56327f);
@@ -760,13 +762,13 @@ InitStatus CbmL1::Init()
     trackingIterAllPrimE.SetMaxSlope(2.748f);
     trackingIterAllPrimE.SetMaxDZ(0.1);
     trackingIterAllPrimE.SetTargetPosSigmaXY(1, 1);
-    trackingIterAllPrimE.SetMinLevelTripletStart(0);
     trackingIterAllPrimE.SetPrimaryFlag(true);
     trackingIterAllPrimE.SetElectronFlag(true);
-    trackingIterAllPrimE.SetSuppressGhostFlag(false);
     trackingIterAllPrimE.SetExtendTracksFlag(true);
 
     auto trackingIterAllSecE = L1CAIteration("AllSecEIter");
+    trackingIterAllSecE.SetMinNhits(4);
+    trackingIterAllSecE.SetMinNhitsStation0(4);
     trackingIterAllSecE.SetTrackChi2Cut(10.f);
     trackingIterAllSecE.SetTripletChi2Cut(18.7560f);
     trackingIterAllSecE.SetDoubletChi2Cut(7.56327f);
@@ -776,25 +778,33 @@ InitStatus CbmL1::Init()
     trackingIterAllSecE.SetMaxSlopePV(1.5f);
     trackingIterAllSecE.SetMaxSlope(2.748f);
     trackingIterAllSecE.SetMaxDZ(0.1);
-    trackingIterAllSecE.SetMinLevelTripletStart(1);
     trackingIterAllSecE.SetTargetPosSigmaXY(10, 10);
     trackingIterAllSecE.SetPrimaryFlag(false);
     trackingIterAllSecE.SetElectronFlag(true);
-    trackingIterAllSecE.SetSuppressGhostFlag(false);
     trackingIterAllSecE.SetExtendTracksFlag(true);
 
     // Select default track finder
     if (L1Algo::TrackingMode::kMcbm == fTrackingMode) {
+
+      trackingIterFastPrim.SetMinNhits(4);
+      trackingIterFastPrim.SetMinNhitsStation0(4);
+
+      trackingIterAllSecE.SetMinNhits(4);
+      trackingIterAllSecE.SetMinNhitsStation0(4);
       trackingIterAllPrim.SetMaxInvMom(1. / 0.1);
       trackingIterAllPrimE.SetMaxInvMom(1. / 0.1);
       trackingIterAllSecE.SetMaxInvMom(1. / 0.1);
 
+      trackingIterAllSecJump.SetMinNhits(4);
+      trackingIterAllSecJump.SetMinNhitsStation0(4);
       trackingIterFastPrim.SetMaxInvMom(1.0 / 0.3);
       trackingIterAllSec.SetMaxInvMom(1.0 / 0.3);
       trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.3);
       trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.3);
       trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.3);
 
+      trackingIterAllSec.SetMinNhits(4);
+      trackingIterAllSec.SetMinNhitsStation0(4);
       trackingIterFastPrim.SetExtendTracksFlag(false);
       trackingIterAllPrim.SetExtendTracksFlag(false);
       trackingIterAllPrimJump.SetExtendTracksFlag(false);
@@ -814,26 +824,28 @@ InitStatus CbmL1::Init()
       auto globalIterPrimFast = L1CAIteration("globalIterPrimFast");
       {
         auto& it = globalIterPrimFast;
-        it.SetTrackChi2Cut(10 * 7.f);              //10.f
-        it.SetTripletChi2Cut(10 * 2 * 23.4450f);   // = 7.815 * 3;  // prob = 0.05
-        it.SetDoubletChi2Cut(10 * 4. * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
-        it.SetPickGather(10 * 3.0f);
-        it.SetPickNeighbour(10 * 4.0f);
-        it.SetMaxInvMom(10 * 1.0 / 0.05);  //(1.0 / 0.5);
-        it.SetMaxSlopePV(10 * .5f);
-        it.SetMaxSlope(10 * .5f);
-        it.SetMaxDZ(10 * 0.05);
-        it.SetTargetPosSigmaXY(10 * 1., 10 * 1.);  //(1, 1);
-        it.SetMinLevelTripletStart(0);
+        it.SetMinNhits(3);
+        it.SetMinNhitsStation0(3);
+        it.SetTrackChi2Cut(7.f);         //10.f
+        it.SetTripletChi2Cut(23.4450f);  // = 7.815 * 3;  // prob = 0.05
+        it.SetDoubletChi2Cut(7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
+        it.SetPickGather(3.0f);
+        it.SetPickNeighbour(4.0f);
+        it.SetMaxInvMom(1.0 / 0.1);  //(1.0 / 0.5);
+        it.SetMaxSlopePV(.1f);
+        it.SetMaxSlope(.5f);
+        it.SetMaxDZ(0.05);
+        it.SetTargetPosSigmaXY(1., 1.);  //(1, 1);
         //it.SetPrimaryFlag(true);
         it.SetExtendTracksFlag(true);
         it.SetPrimaryFlag(false);
         //it.SetExtendTracksFlag(false);
         //it.SetFirstStationIndex(11);
-        it.SetSuppressGhostFlag(false);
       }
 
       auto trd2dIter2 = L1CAIteration("Trd2dIter2");
+      trd2dIter2.SetMinNhits(3);
+      trd2dIter2.SetMinNhitsStation0(3);
       trd2dIter2.SetTrackChi2Cut(7.f);              //10.f
       trd2dIter2.SetTripletChi2Cut(2 * 23.4450f);   // = 7.815 * 3;  // prob = 0.05
       trd2dIter2.SetDoubletChi2Cut(4. * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
@@ -844,7 +856,6 @@ InitStatus CbmL1::Init()
       trd2dIter2.SetMaxSlope(.5f);
       trd2dIter2.SetMaxDZ(0.05);
       trd2dIter2.SetTargetPosSigmaXY(8 * 10, 6 * 10);  //(1, 1);
-      trd2dIter2.SetMinLevelTripletStart(0);
       trd2dIter2.SetPrimaryFlag(false);
       trd2dIter2.SetExtendTracksFlag(true);
       //trd2dIter2.SetFirstStationIndex(12);
@@ -852,10 +863,9 @@ InitStatus CbmL1::Init()
       // Initialize CA track finder iterations sequence
 
       fInitManager.SetCAIterationsNumberCrosscheck(1);
-      //trackingIterFastPrim.SetExtendTracksFlag(true);
       //fInitManager.PushBackCAIteration(trackingIterFastPrim);
-      //fInitManager.PushBackCAIteration(globalIterPrimFast);
-      fInitManager.PushBackCAIteration(trd2dIter2);
+      fInitManager.PushBackCAIteration(globalIterPrimFast);
+      //fInitManager.PushBackCAIteration(trd2dIter2);
       /*
       fInitManager.SetCAIterationsNumberCrosscheck(5);
       fInitManager.PushBackCAIteration(trackingIterFastPrim);

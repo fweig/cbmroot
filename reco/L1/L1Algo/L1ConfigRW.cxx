@@ -73,13 +73,13 @@ void L1ConfigRW::ReadCAIterations(const YAML::Node& node)
         caIter.SetTargetPosSigmaXY(input["target_pos_sigma_x"].as<float>(caIter.GetTargetPosSigmaX()),
                                    input["target_pos_sigma_y"].as<float>(caIter.GetTargetPosSigmaY()));
         caIter.SetFirstStationIndex(input["first_station_index"].as<int>(caIter.GetFirstStationIndex()));
-        caIter.SetMinLevelTripletStart(input["min_start_triplet_lvl"].as<int>(caIter.GetMinLevelTripletStart()));
         caIter.SetPrimaryFlag(input["is_primary"].as<bool>(caIter.GetPrimaryFlag()));
         caIter.SetElectronFlag(input["is_electron"].as<bool>(caIter.GetElectronFlag()));
         caIter.SetTrackFromTripletsFlag(input["is_track_from_triplets"].as<bool>(caIter.GetTrackFromTripletsFlag()));
         caIter.SetExtendTracksFlag(input["if_extend_tracks"].as<bool>(caIter.GetExtendTracksFlag()));
         caIter.SetJumpedFlag(input["is_jumped"].as<bool>(caIter.GetJumpedFlag()));
-        caIter.SetSuppressGhostFlag(input["if_suppress_ghost"].as<bool>(caIter.GetSuppressGhostFlag()));
+        caIter.SetMinNhits(input["min_n_hits"].as<bool>(caIter.GetMinNhits()));
+        caIter.SetMinNhitsStation0(input["min_n_hits_sta_0"].as<bool>(caIter.GetMinNhitsStation0()));
         if (fVerbose > 3) { LOG(info) << "L1 config:\n" << caIter.ToString(1); }
         fpInitManager->PushBackCAIteration(caIter);
       }
