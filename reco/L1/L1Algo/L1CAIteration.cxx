@@ -70,7 +70,7 @@ std::string L1CAIteration::ToString(int indentLevel) const
   std::stringstream aStream {};
   constexpr char indCh = '\t';
   std::string indent(indentLevel, indCh);
-  aStream << indent << "L1CAIteration: " << fName << '\n';
+  aStream << indent << "\033[1;30m" << fName << "\033[0m\n";
   aStream << indent << indCh << "Is primary:                             " << fIsPrimary << '\n';
   aStream << indent << indCh << "Is electron:                            " << fIsElectron << '\n';
   aStream << indent << indCh << "Are tracks created from triplets:       " << fIsTrackFromTriplets << '\n';

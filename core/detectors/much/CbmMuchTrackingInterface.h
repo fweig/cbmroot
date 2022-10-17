@@ -51,6 +51,9 @@ public:
   /// Gets pointer to the instance of the CbmMuchTrackingInterface
   static CbmMuchTrackingInterface* Instance() { return fpInstance; }
 
+  /// Gets name of this subsystem
+  std::string GetDetectorName() const { return "MuCh"; }
+
   /// Gets actual number of tracking stations, provided by the current geometry setup
   int GetNtrackingStations() const;
 

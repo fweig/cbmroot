@@ -46,6 +46,9 @@ public:
   /// Gets pointer to the instance of the CbmMvdTrackingInterface
   static CbmMvdTrackingInterface* Instance() { return fpInstance; }
 
+  /// Gets name of this subsystem
+  std::string GetDetectorName() const { return "MVD"; }
+
   /// Gets actual number of tracking stations, provided by the current geometry setup
   int GetNtrackingStations() const { return fMvdStationPar->GetStationCount(); }
 

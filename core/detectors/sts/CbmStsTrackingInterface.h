@@ -47,6 +47,9 @@ public:
   /// Gets pointer to the instance of the CbmStsTrackingInterface class
   static CbmStsTrackingInterface* Instance() { return fpInstance; }
 
+  /// Gets name of this subsystem
+  std::string GetDetectorName() const { return "STS"; }
+
   /// Gets actual number of the tracking stations, provided by the current geometry setup
   int GetNtrackingStations() const { return CbmStsSetup::Instance()->GetNofStations(); }
 
@@ -137,7 +140,7 @@ public:
   /// FairTask: sets parameter containers up
   void SetParContainers();
 
-  /// Copy and move constructers and assign operators are forbidden
+  /// Copy and move constructors and assign operators are forbidden
   CbmStsTrackingInterface(const CbmStsTrackingInterface&) = delete;
   CbmStsTrackingInterface(CbmStsTrackingInterface&&)      = delete;
   CbmStsTrackingInterface& operator=(const CbmStsTrackingInterface&) = delete;

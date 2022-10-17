@@ -282,9 +282,7 @@ void L1InitManager::ReadParametersObject(const std::string& fileName)
 bool L1InitManager::SendParameters(L1Algo* pAlgo)
 {
   assert(pAlgo);
-  std::cout << "\033[1;32m" << fParameters.ToString() << "\033[0m\n";
   pAlgo->ReceiveParameters(std::move(fParameters));
-  std::cout << "\033[1;31m" << fParameters.ToString() << "\033[0m\n";
   return true;
 }
 

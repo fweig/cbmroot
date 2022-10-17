@@ -31,26 +31,26 @@ CbmTrackingDetectorInterfaceInit::CbmTrackingDetectorInterfaceInit() : FairTask(
   if (!fpInstance) {
     fpInstance = this;
 
-    /** Check presence of the desired detectors **/
-    bool useMvd  = CbmSetup::Instance()->IsActive(ECbmModuleId::kMvd);
-    bool useSts  = CbmSetup::Instance()->IsActive(ECbmModuleId::kSts);
-    bool useMuch = CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch);
-    bool useTrd  = CbmSetup::Instance()->IsActive(ECbmModuleId::kTrd);
-    bool useTof  = CbmSetup::Instance()->IsActive(ECbmModuleId::kTof);
+    // Check presence of the desired detectors
+    fbUseMvd  = CbmSetup::Instance()->IsActive(ECbmModuleId::kMvd);
+    fbUseSts  = CbmSetup::Instance()->IsActive(ECbmModuleId::kSts);
+    fbUseMuch = CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch);
+    fbUseTrd  = CbmSetup::Instance()->IsActive(ECbmModuleId::kTrd);
+    fbUseTof  = CbmSetup::Instance()->IsActive(ECbmModuleId::kTof);
 
-    /** Invoke the detector interfaces **/
-    if (useMvd) { fpMvdTrackingInterface = new CbmMvdTrackingInterface(); }
-    if (useSts) { fpStsTrackingInterface = new CbmStsTrackingInterface(); }
-    if (useMuch) { fpMuchTrackingInterface = new CbmMuchTrackingInterface(); }
-    if (useTrd) { fpTrdTrackingInterface = new CbmTrdTrackingInterface(); }
-    if (useTof) { fpTofTrackingInterface = new CbmTofTrackingInterface(); }
+    // Invoke the detector interfaces
+    if (fbUseMvd) { fpMvdTrackingInterface = new CbmMvdTrackingInterface(); }
+    if (fbUseSts) { fpStsTrackingInterface = new CbmStsTrackingInterface(); }
+    if (fbUseMuch) { fpMuchTrackingInterface = new CbmMuchTrackingInterface(); }
+    if (fbUseTrd) { fpTrdTrackingInterface = new CbmTrdTrackingInterface(); }
+    if (fbUseTof) { fpTofTrackingInterface = new CbmTofTrackingInterface(); }
 
-    /** Add subtasks - tracker detector interfaces **/
-    if (useMvd) { this->Add(fpMvdTrackingInterface); }
-    if (useSts) { this->Add(fpStsTrackingInterface); }
-    if (useMuch) { this->Add(fpMuchTrackingInterface); }
-    if (useTrd) { this->Add(fpTrdTrackingInterface); }
-    if (useTof) { this->Add(fpTofTrackingInterface); }
+    // Add subtasks - tracker detector interfaces
+    if (fbUseMvd) { this->Add(fpMvdTrackingInterface); }
+    if (fbUseSts) { this->Add(fpStsTrackingInterface); }
+    if (fbUseMuch) { this->Add(fpMuchTrackingInterface); }
+    if (fbUseTrd) { this->Add(fpTrdTrackingInterface); }
+    if (fbUseTof) { this->Add(fpTofTrackingInterface); }
   }
 }
 
@@ -60,6 +60,3 @@ CbmTrackingDetectorInterfaceInit::~CbmTrackingDetectorInterfaceInit()
 {
   if (fpInstance == this) { fpInstance = nullptr; }
 }
-
-//-------------------------------------------------------------------------------------------------------------------------------------
-//

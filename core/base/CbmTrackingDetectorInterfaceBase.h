@@ -12,6 +12,8 @@
 #ifndef CbmTrackingDetectorInterfaceBase_h
 #define CbmTrackingDetectorInterfaceBase_h 1
 
+#include <string>
+
 class CbmPixelHit;
 
 /// Abstract class, which should be inherited by every detecting subsystem tracking interface class
@@ -20,6 +22,9 @@ class CbmTrackingDetectorInterfaceBase {
 public:
   /// Virtual destructor
   virtual ~CbmTrackingDetectorInterfaceBase() {}
+
+  /// Returns the name of the detector subsystem
+  virtual std::string GetDetectorName() const = 0;
 
   /// Gets actual number of stations, provided by the current geometry setup
   virtual int GetNtrackingStations() const = 0;
@@ -104,6 +109,10 @@ public:
   //  (decreases computting time, but can cause bugs)
 
   static constexpr bool kUseDynamicCast {true};
+
+
+  /// Checks detector interface: boundary conditions of the parameters
+  bool Check() const;
 };
 
 #endif  // CbmTrackingDetectorInterfaceBase_h

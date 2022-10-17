@@ -113,34 +113,34 @@ std::string L1Station::ToString(int verbosityLevel, int indentLevel) const
   std::stringstream aStream {};
   constexpr char indentChar = '\t';
   std::string indent(indentLevel, indentChar);
-  if (verbosityLevel > 1) {
-    // TODO: probably we can have verbosity level and address for each underlying object (S.Zharko)
-  }
-  if (verbosityLevel == 0) { aStream << "L1Station at z = " << z[0] << " cm"; }
+  if (verbosityLevel == 0) { aStream << "station type = " << type << ", z = " << z[0] << " cm"; }
   else {
-    aStream << '\n' << indent << "Address: " << this << '\n';
-    aStream << indent << "Station type ID:  " << std::setw(12) << std::setfill(' ') << type << '\n';
-    aStream << indent << "Is time info used:           " << std::setw(12) << std::setfill(' ') << timeInfo << '\n';
-    aStream << indent << "Is station placed in field:  " << std::setw(12) << std::setfill(' ') << fieldStatus << '\n';
-    aStream << indent << "z position [cm]:             " << std::setw(12) << std::setfill(' ') << z[0] << '\n';
-    aStream << indent << "Rmin [cm]:                   " << std::setw(12) << std::setfill(' ') << Rmin[0] << '\n';
-    aStream << indent << "Rmax [cm]:                   " << std::setw(12) << std::setfill(' ') << Rmax[0] << '\n';
+    aStream << '\n';
+    aStream << indent << "z pos [cm]:   " << std::setw(12) << std::setfill(' ') << z[0] << '\n';
+    aStream << indent << "R_min [cm]:   " << std::setw(12) << std::setfill(' ') << Rmin[0] << '\n';
+    aStream << indent << "R_max [cm]:   " << std::setw(12) << std::setfill(' ') << Rmax[0] << '\n';
+    aStream << indent << "Station type: " << std::setw(12) << std::setfill(' ') << type << '\n';
+    aStream << indent << "Is time used: " << std::setw(12) << std::setfill(' ') << timeInfo << '\n';
+    aStream << indent << "Is in field:  " << std::setw(12) << std::setfill(' ') << fieldStatus << '\n';
     aStream << materialInfo.ToString(indentLevel) << '\n';
-    if (verbosityLevel > 1) {
+
+    if (verbosityLevel > 3) {
       aStream << indent << "Field approcimation coefficients:\n";
       aStream << fieldSlice.ToString(indentLevel + 1) << '\n';
     }
-    aStream << indent << "Strips geometry:\n";
-    aStream << indent << indentChar << "Front:\n";
-    aStream << frontInfo.ToString(indentLevel + 2) << '\n';
-    aStream << indent << indentChar << "Back:\n";
-    aStream << backInfo.ToString(indentLevel + 2) << '\n';
-    aStream << indent << indentChar << "XY cov matrix:\n";
-    aStream << XYInfo.ToString(indentLevel + 2) << '\n';
-    aStream << indent << indentChar << "X layer:\n";
-    aStream << xInfo.ToString(indentLevel + 2) << '\n';
-    aStream << indent << indentChar << "Y layer:\n";
-    aStream << yInfo.ToString(indentLevel + 2) << '\n';
+    if (verbosityLevel > 2) {
+      aStream << indent << "Strips geometry:\n";
+      aStream << indent << indentChar << "Front:\n";
+      aStream << frontInfo.ToString(indentLevel + 2) << '\n';
+      aStream << indent << indentChar << "Back:\n";
+      aStream << backInfo.ToString(indentLevel + 2) << '\n';
+      aStream << indent << indentChar << "XY cov matrix:\n";
+      aStream << XYInfo.ToString(indentLevel + 2) << '\n';
+      aStream << indent << indentChar << "X layer:\n";
+      aStream << xInfo.ToString(indentLevel + 2) << '\n';
+      aStream << indent << indentChar << "Y layer:\n";
+      aStream << yInfo.ToString(indentLevel + 2) << '\n';
+    }
   }
   return aStream.str();
 }

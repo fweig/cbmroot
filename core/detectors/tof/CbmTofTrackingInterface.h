@@ -47,6 +47,9 @@ public:
   /// Gets pointer to the instance of the CbmTofTrackingInterface
   static CbmTofTrackingInterface* Instance() { return fpInstance; }
 
+  /// Gets name of this subsystem
+  std::string GetDetectorName() const { return "TOF"; }
+
   /// Gets actual number of tracking stations, provided by the current geometry setup
   int GetNtrackingStations() const { return fDigiBdfPar->GetNbTrackingStations(); }
 

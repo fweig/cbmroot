@@ -15,6 +15,7 @@ set(SRCS
   CbmRadDamage.cxx
   CbmHistManager.cxx
   CbmMatchRecoToMC.cxx
+  CbmTrackingDetectorInterfaceBase.cxx
   draw/CbmDrawHist.cxx
   report/CbmReport.cxx      
   report/CbmStudyReport.cxx

@@ -57,7 +57,7 @@ InitStatus CbmMuchTrackingInterface::Init()
 
   // Check initialization of the MuCh digi parameters file
   if (!fGeoScheme->IsInitialized()) {
-    LOG(fatal) << "CbmMuchTrackingInterface::Init: MuCh digi parameters were not initialized\n"
+    LOG(error) << "CbmMuchTrackingInterface::Init: MuCh digi parameters were not initialized\n"
                << "\033[4;1;32mNOTE\033[0m: For the MuCh digi parameters initialization please place the following "
                << "code to your macro:\n"
                << "\n\t// ----- MuCh digi parameters initialization --------------------------------------"
@@ -74,6 +74,14 @@ InitStatus CbmMuchTrackingInterface::Init()
                << "\n\t  if (!muchGeoScheme->IsInitialized()) { muchGeoScheme->Init(parFile, muchFlag); }"
                << "\n\t}"
                << "\n\t// --------------------------------------------------------------------------------";
+    return kFATAL;
+  }
+
+  // Check the validity of the parameters
+  if (!this->Check()) {
+    LOG(error)
+      << "Some errors occurred in the tracking detector interface initialization for MuCh (see information above)";
+    return kFATAL;
   }
 
   return kSUCCESS;

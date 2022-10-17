@@ -90,6 +90,109 @@ namespace L1Constants
     constexpr int k32I          = L1NaN::SetNaN<int>();
     constexpr unsigned int k32U = L1NaN::SetNaN<unsigned int>();
   }  // namespace noin
+
+
+  // Colors of terminal log
+  namespace clrs
+  {
+    // NOTE: To be used first, because different users may have different console bg and fg colors
+    constexpr char kCL[]   = "\e[0m";    ///< clear
+    constexpr char kCLb[]  = "\e[1m";    ///< clear bold
+    constexpr char kCLi[]  = "\e[3m";    ///< clear italic
+    constexpr char kCLu[]  = "\e[4m";    ///< clear underline
+    constexpr char kCLr[]  = "\e[7m";    ///< clear reverse
+    constexpr char kCLbi[] = "\e[1;3m";  ///< clear bold-italic
+    constexpr char kCLbu[] = "\e[1;4m";  ///< clear bold-underline
+    constexpr char kCLbr[] = "\e[1;7m";  ///< clear bold-reverse
+
+    // regular
+    constexpr char kBK[] = "\e[30m";  ///< normal black
+    constexpr char kRD[] = "\e[31m";  ///< normal red
+    constexpr char kGN[] = "\e[32m";  ///< normal green
+    constexpr char kYL[] = "\e[33m";  ///< normal yellow
+    constexpr char kBL[] = "\e[34m";  ///< normal blue
+    constexpr char kMG[] = "\e[35m";  ///< normal magenta
+    constexpr char kCY[] = "\e[36m";  ///< normal cyan
+    constexpr char kGY[] = "\e[37m";  ///< normal grey
+    constexpr char kWT[] = "\e[38m";  ///< normal white
+
+    // bold
+    constexpr char kBKb[] = "\e[1;30m";  ///< bold black
+    constexpr char kRDb[] = "\e[1;31m";  ///< bold red
+    constexpr char kGNb[] = "\e[1;32m";  ///< bold green
+    constexpr char kYLb[] = "\e[1;33m";  ///< bold yellow
+    constexpr char kBLb[] = "\e[1;34m";  ///< bold blue
+    constexpr char kMGb[] = "\e[1;35m";  ///< bold magenta
+    constexpr char kCYb[] = "\e[1;36m";  ///< bold cyan
+    constexpr char kGYb[] = "\e[1;37m";  ///< bold grey
+    constexpr char kWTb[] = "\e[1;38m";  ///< bold white
+
+    // italic
+    constexpr char kBKi[] = "\e[3;30m";  ///< italic black
+    constexpr char kRDi[] = "\e[3;31m";  ///< italic red
+    constexpr char kGNi[] = "\e[3;32m";  ///< italic green
+    constexpr char kYLi[] = "\e[3;33m";  ///< italic yellow
+    constexpr char kBLi[] = "\e[3;34m";  ///< italic blue
+    constexpr char kMGi[] = "\e[3;35m";  ///< italic magenta
+    constexpr char kCYi[] = "\e[3;36m";  ///< italic cyan
+    constexpr char kGYi[] = "\e[3;37m";  ///< italic grey
+    constexpr char kWTi[] = "\e[3;38m";  ///< italic white
+
+    // underline
+    constexpr char kBKu[] = "\e[4;30m";  ///< underline black
+    constexpr char kRDu[] = "\e[4;31m";  ///< underline red
+    constexpr char kGNu[] = "\e[4;32m";  ///< underline green
+    constexpr char kYLu[] = "\e[4;33m";  ///< underline yellow
+    constexpr char kBLu[] = "\e[4;34m";  ///< underline blue
+    constexpr char kMGu[] = "\e[4;35m";  ///< underline magenta
+    constexpr char kCYu[] = "\e[4;36m";  ///< underline cyan
+    constexpr char kGYu[] = "\e[4;37m";  ///< underline grey
+    constexpr char kWTu[] = "\e[4;38m";  ///< underline white
+
+    // reverse
+    constexpr char kBKr[] = "\e[7;30m";  ///< reverse black
+    constexpr char kRDr[] = "\e[7;31m";  ///< reverse red
+    constexpr char kGNr[] = "\e[7;32m";  ///< reverse green
+    constexpr char kYLr[] = "\e[7;33m";  ///< reverse yellow
+    constexpr char kBLr[] = "\e[7;34m";  ///< reverse blue
+    constexpr char kMGr[] = "\e[7;35m";  ///< reverse magenta
+    constexpr char kCYr[] = "\e[7;36m";  ///< reverse cyan
+    constexpr char kGYr[] = "\e[7;37m";  ///< reverse grey
+    constexpr char kWTr[] = "\e[7;38m";  ///< reverse white
+
+    // bold-underline
+    constexpr char kBKbu[] = "\e[1;4;30m";  ///< bold-underline black
+    constexpr char kRDbu[] = "\e[1;4;31m";  ///< bold-underline red
+    constexpr char kGNbu[] = "\e[1;4;32m";  ///< bold-underline green
+    constexpr char kYLbu[] = "\e[1;4;33m";  ///< bold-underline yellow
+    constexpr char kBLbu[] = "\e[1;4;34m";  ///< bold-underline blue
+    constexpr char kMGbu[] = "\e[1;4;35m";  ///< bold-underline magenta
+    constexpr char kCYbu[] = "\e[1;4;36m";  ///< bold-underline cyan
+    constexpr char kGYbu[] = "\e[1;4;37m";  ///< bold-underline grey
+    constexpr char kWTbu[] = "\e[1;4;38m";  ///< bold-underline white
+
+    // bold-italic
+    constexpr char kBKbi[] = "\e[1;3;30m";  ///< bold-italic black
+    constexpr char kRDbi[] = "\e[1;3;31m";  ///< bold-italic red
+    constexpr char kGNbi[] = "\e[1;3;32m";  ///< bold-italic green
+    constexpr char kYLbi[] = "\e[1;3;33m";  ///< bold-italic yellow
+    constexpr char kBLbi[] = "\e[1;3;34m";  ///< bold-italic blue
+    constexpr char kMGbi[] = "\e[1;3;35m";  ///< bold-italic magenta
+    constexpr char kCYbi[] = "\e[1;3;36m";  ///< bold-italic cyan
+    constexpr char kGYbi[] = "\e[1;3;37m";  ///< bold-italic grey
+    constexpr char kWTbi[] = "\e[1;3;38m";  ///< bold-italic white
+
+    // bold-reverse
+    constexpr char kBKbr[] = "\e[1;7;30m";  ///< bold-reverse black
+    constexpr char kRDbr[] = "\e[1;7;31m";  ///< bold-reverse red
+    constexpr char kGNbr[] = "\e[1;7;32m";  ///< bold-reverse green
+    constexpr char kYLbr[] = "\e[1;7;33m";  ///< bold-reverse yellow
+    constexpr char kBLbr[] = "\e[1;7;34m";  ///< bold-reverse blue
+    constexpr char kMGbr[] = "\e[1;7;35m";  ///< bold-reverse magenta
+    constexpr char kCYbr[] = "\e[1;7;36m";  ///< bold-reverse cyan
+    constexpr char kGYbr[] = "\e[1;7;37m";  ///< bold-reverse grey
+    constexpr char kWTbr[] = "\e[1;7;38m";  ///< bold-reverse white
+  }                                         // namespace clrs
 }  // end namespace L1Constants
 
 

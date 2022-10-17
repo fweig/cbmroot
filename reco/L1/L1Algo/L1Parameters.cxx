@@ -216,36 +216,40 @@ void L1Parameters::Print(int /*verbosityLevel*/) const { LOG(info) << ToString()
 std::string L1Parameters::ToString(int verbosity, int indentLevel) const
 {
   // FIXME: SZh: Fill it with other parameters
+  using namespace L1Constants::clrs;  // color the log text
   std::stringstream aStream {};
   constexpr char indentChar = '\t';
   std::string indent(indentLevel, indentChar);
   aStream << '\n';
-  aStream << indent << "--------------------------------------------------------------------------------\n";
-  aStream << indent << "                              L1 parameters list\n";
-  aStream << indent << "--------------------------------------------------------------------------------\n";
-  aStream << indent << "COMPILE TIME CONSTANTS:\n";
+  aStream << indent
+          << "----- L1 parameters list -------------------------------------------------------------------------\n";
+
+  aStream << indent << kCLb << "COMPILE TIME CONSTANTS:\n" << kCL;
   aStream << indent << indentChar << "Bits to code one station:           " << L1Constants::size::kStationBits << '\n';
   aStream << indent << indentChar << "Bits to code one thread:            " << L1Constants::size::kThreadBits << '\n';
   aStream << indent << indentChar << "Bits to code one triplet:           " << L1Constants::size::kTripletBits << '\n';
   aStream << indent << indentChar << "Max number of stations:             " << L1Constants::size::kMaxNstations << '\n';
   aStream << indent << indentChar << "Max number of threads:              " << L1Constants::size::kMaxNthreads << '\n';
   aStream << indent << indentChar << "Max number of triplets:             " << L1Constants::size::kMaxNtriplets << '\n';
-  aStream << indent << "RUNTIME CONSTANTS:\n";
+  aStream << indent << kCLb << "RUNTIME CONSTANTS:\n" << kCL;
   aStream << indent << indentChar << "Max number of doublets per singlet: " << fMaxDoubletsPerSinglet << '\n';
   aStream << indent << indentChar << "Max number of triplets per doublet: " << fMaxTripletPerDoublets << '\n';
-  aStream << indent << "CA TRACK FINDER ITERATIONS:\n";
+  aStream << indent << indentChar << "Tracking level:                     " << fTrackingLevel << '\n';
+  aStream << indent << indentChar << "Ghost suppresion:                   " << fGhostSuppression << '\n';
+  aStream << indent << indentChar << "Min tracks momentum:                " << fMomentumCutOff << '\n';
+  aStream << indent << indentChar << "Max number of triplets per doublet: " << fMaxTripletPerDoublets << '\n';
+  aStream << indent << kCLb << "CA TRACK FINDER ITERATIONS:\n" << kCL;
   for (int idx = 0; idx < static_cast<int>(fCAIterations.size()); ++idx) {
-    aStream << idx << ") " << fCAIterations[idx].ToString(indentLevel + 1) << '\n';
+    aStream << indent << indentChar << idx << ") " << fCAIterations[idx].ToString(indentLevel + 1) << '\n';
   }
-  aStream << indent << "GEOMETRY:\n";
-
-  aStream << indent << indentChar << "TARGET:\n";
+  aStream << indent << kCLb << "GEOMETRY:\n" << kCL;
+  aStream << indent << indentChar << kCLb << "TARGET:\n" << kCL;
   aStream << indent << indentChar << indentChar << "Position:\n";
   for (int dim = 0; dim < 3 /*nDimensions*/; ++dim) {
     aStream << indent << indentChar << indentChar << indentChar << char(120 + dim) << " = " << fTargetPos[dim][0]
             << " cm\n";
   }
-  aStream << indent << indentChar << "NUMBER OF STATIONS:\n";
+  aStream << indent << indentChar << kCLb << "NUMBER OF STATIONS:\n" << kCL;
   aStream << indent << indentChar << indentChar << "Number of stations (Geometry): ";
   for (int idx = 0; idx < int(fNstationsGeometry.size()); ++idx) {
     aStream << std::setw(2) << std::setfill(' ') << fNstationsGeometry[idx] << ' ';
@@ -259,17 +263,22 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
   aStream << " | total = " << std::setw(2) << std::setfill(' ') << fNstationsActiveTotal;
   aStream << '\n';
   aStream << indent << indentChar << indentChar << "Active station indexes: ";
-  for (int idx = 0; idx < *(fNstationsActive.end() - 1); ++idx) {
+  for (int idx = 0; idx < fNstationsActiveTotal; ++idx) {
     aStream << std::setw(3) << std::setfill(' ') << fActiveStationGlobalIDs[idx] << ' ';
   }
   aStream << '\n';
 
-  aStream << indent << indentChar << "STATIONS:\n ";
-  for (int idx = 0; idx < *(fNstationsActive.end() - 1); ++idx) {
-    aStream << indent << indentChar << indentChar << fStations[idx].ToString(verbosity) << '\n';
+  aStream << indent << indentChar << kCLb << "STATIONS:\n" << kCL;
+  for (int idx = 0; idx < fNstationsActiveTotal; ++idx) {
+    aStream << indent << indentChar << idx << ") " << fStations[idx].ToString(verbosity, indentLevel + 2) << '\n';
   }
 
-  aStream << indent << "FLAGS:\n";
-  aStream << indent << "--------------------------------------------------------------------------------\n";
+  aStream << indent << kCLb << "DEV FLAGS:" << kCL << " (for debug only)\n";
+  aStream << indent << indentChar << "Hits search area is ignored: " << fDevIsIgnoreHitSearchAreas << '\n';
+  aStream << indent << indentChar << "Non-approx. field is used:   " << fDevIsMatchDoubletsViaMc << '\n';
+  aStream << indent << indentChar << "Doublets vs. MC matching:    " << fDevIsMatchDoubletsViaMc << '\n';
+  aStream << indent << indentChar << "Triplets vs. MC matching:    " << fDevIsMatchTripletsViaMc << '\n';
+  aStream << indent
+          << "--------------------------------------------------------------------------------------------------\n";
   return aStream.str();
 }

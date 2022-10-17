@@ -35,6 +35,7 @@ public:
   /// Returns a pointer to the class instance
   static CbmTrackingDetectorInterfaceInit* Instance() { return fpInstance; }
 
+
   // Copy and move of the instance is prohibited
   CbmTrackingDetectorInterfaceInit(const CbmTrackingDetectorInterfaceInit&) = delete;
   CbmTrackingDetectorInterfaceInit(CbmTrackingDetectorInterfaceInit&&)      = delete;
@@ -48,6 +49,7 @@ public:
   CbmTrdTrackingInterface* GetTrdTrackingInterface() { return fpTrdTrackingInterface; }
   CbmTofTrackingInterface* GetTofTrackingInterface() { return fpTofTrackingInterface; }
 
+
 private:
   static CbmTrackingDetectorInterfaceInit* fpInstance;  ///< Instance of the class
 
@@ -56,6 +58,13 @@ private:
   CbmMuchTrackingInterface* fpMuchTrackingInterface {nullptr};  ///< Instance of the MuCh tracker interface
   CbmTrdTrackingInterface* fpTrdTrackingInterface {nullptr};    ///< Instance of the TRD tracker interface
   CbmTofTrackingInterface* fpTofTrackingInterface {nullptr};    ///< Instance of the TOF tracker interface
+
+  bool fbUseMvd  = false;  ///< If MVD used in a setup
+  bool fbUseSts  = false;  ///< If STS used in a setup
+  bool fbUseMuch = false;  ///< If MuCh used in a setup
+  bool fbUseTrd  = false;  ///< If TRD used in a setup
+  bool fbUseTof  = false;  ///< If TOF used in a setup
+
 
   ClassDef(CbmTrackingDetectorInterfaceInit, 0);
 };
