@@ -5,8 +5,9 @@ download_project_if_needed(PROJECT         flib_dpb
                            TEST_FILE       CMakeLists.txt
                           )
 
-Set(LIB_SOURCES flib_dpb/MicrosliceContents.cpp)
-Set(LIB_HEADERS flib_dpb/MicrosliceContents.hpp)
+set(LIB_SOURCES flib_dpb/MicrosliceContents.cpp)
+set(LIB_HEADERS flib_dpb/MicrosliceContents.hpp)
 
-Add_Library(flib_dpb SHARED ${LIB_SOURCES} ${LIB_HEADERS})
+add_Library(flib_dpb SHARED ${LIB_SOURCES} ${LIB_HEADERS})
+target_include_directories(flib_dpb PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/flib_dpb)
 Set_Target_Properties(flib_dpb PROPERTIES  SUFFIX ".so")

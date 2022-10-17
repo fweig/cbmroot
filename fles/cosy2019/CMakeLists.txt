@@ -2,51 +2,15 @@
 # the array .
 # The extension is already found.  Any number of sources could be listed here.
 
-Set(INCLUDE_DIRECTORIES
+set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/parameter
   ${CMAKE_CURRENT_SOURCE_DIR}/unpacker
   ${CMAKE_CURRENT_SOURCE_DIR}/monitor
-
-  ${CBMBASE_DIR}
-
-  ${CBMDATA_DIR}
-  ${CBMDATA_DIR}/base
-  ${CBMDATA_DIR}/raw
-  ${CBMDATA_DIR}/sts
-
-  ${CBMROOT_SOURCE_DIR}/fles/flestools
-
-  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018
-  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/unpacker
-  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/commonMQ
-
-  ${CBMDETECTORBASE_DIR}/sts
 )
 
-Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${Boost_INCLUDE_DIR}
-  ${ROOT_INCLUDE_DIR}
-  ${FLES_IPC_INCLUDE_DIRECTORY}
-)
 
-Include_Directories(${INCLUDE_DIRECTORIES})
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${Boost_LIBRARY_DIRS}
-)
-
-Link_Directories(
-  ${LINK_DIRECTORIES}
-)
-
-Set(SRCS
-
+set(SRCS
    parameter/CbmCosy2019HodoPar.cxx
    parameter/CbmCosy2019ContFact.cxx
 
@@ -58,12 +22,38 @@ Set(SRCS
    monitor/CbmCosy2019MonitorTaskHodo.cxx
 )
 
-Set(LINKDEF CbmBeamtimeCosy2019LinkDef.h )
-Set(LIBRARY_NAME CbmBeamtimeCosy2019)
-Set(DEPENDENCIES
-    CbmFlibFlesTools CbmFlibMcbm2018
-    CbmStsBase
-    CbmData CbmBase external::fles_ipc Eve Base
-)
 
-GENERATE_LIBRARY()
+If(_UINT8_T_EXIST)
+  Add_Definitions(-DHAVE_UINT8_T_HEADER_FILE)
+  Set(DEFINITIONS HAVE_UINT8_T_HEADER_FILE)
+EndIf()
+
+
+set(LIBRARY_NAME CbmBeamtimeCosy2019)
+set(LINKDEF ${LIBRARY_NAME}LinkDef.h )
+set(PUBLIC_DEPENDENCIES
+  CbmData
+  CbmFlibMcbm2018
+  FairRoot::Base
+  FairRoot::ParBase
+  ROOT::Core
+  ROOT::Gpad
+  ROOT::Hist
+
+  )
+
+set(PRIVATE_DEPENDENCIES
+  CbmFlibFlesTools
+  CbmStsBase
+  FairLogger::FairLogger
+  ROOT::MathCore
+  ROOT::RHTTP
+  ROOT::RIO
+  )
+
+set(INTERFACE_DEPENDENCIES
+  external::fles_ipc
+  )
+
+
+generate_cbm_library()

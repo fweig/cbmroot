@@ -2,57 +2,16 @@
 # the array .
 # The extension is already found.  Any number of sources could be listed here.
 
-Set(INCLUDE_DIRECTORIES
-  ${CBMBASE_DIR}
-
-  ${CBMDATA_DIR}
-  ${CBMDATA_DIR}/raw
-  ${CBMDATA_DIR}/tof
-  ${CBMDATA_DIR}/tof/etof # For the star_rhicf.c interface file and the final data format classes
-
-
-  ${CBMROOT_SOURCE_DIR}/fles/flestools
-
-#  ${CBMROOT_SOURCE_DIR}/fles/star2017/unpacker # For the star_rhicf.c interface file
-
-#  ${CBMROOT_SOURCE_DIR}/fles/star2018/unpacker # for the STAR2018 Event and Trigger format
-
-  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/
-  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/dataformat
-  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/commonMQ
-
-  ${CBMROOT_SOURCE_DIR}/fles/star2019/
-  ${CBMROOT_SOURCE_DIR}/fles/star2019/parameter
-  ${CBMROOT_SOURCE_DIR}/fles/star2019/commonMQ
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/parameter
+ # ${CMAKE_CURRENT_SOURCE_DIR}/commonMQ
 #  ${CBMROOT_SOURCE_DIR}/fles/star2019/unpacker
-  ${CBMROOT_SOURCE_DIR}/fles/star2019/monitor
-  ${CBMROOT_SOURCE_DIR}/fles/star2019/eventbuilder
+  ${CMAKE_CURRENT_SOURCE_DIR}/monitor
+  ${CMAKE_CURRENT_SOURCE_DIR}/eventbuilder
 )
 
-Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${Boost_INCLUDE_DIR}
-  ${ROOT_INCLUDE_DIR}
-  ${FLES_IPC_INCLUDE_DIRECTORY}
-  ${CBMROOT_SOURCE_DIR}/external/flib_dpb/flib_dpb
-  ${CMAKE_SOURCE_DIR}/external/cppzmq
-)
-
-Include_Directories(${INCLUDE_DIRECTORIES})
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${Boost_LIBRARY_DIRS}
-)
-
-Link_Directories(
-  ${LINK_DIRECTORIES}
-)
-
-Set(SRCS
+set(SRCS
    parameter/CbmStar2019TofPar.cxx
    parameter/CbmStar2019ContFact.cxx
 
@@ -66,10 +25,35 @@ Set(SRCS
    eventbuilder/CbmStar2019EventBuilderEtof.cxx
 )
 
-Set(LINKDEF CbmFlibStar2019LinkDef.h )
-Set(LIBRARY_NAME CbmFlibStar2019)
-Set(DEPENDENCIES
-    CbmFlibMcbm2018 CbmData CbmBase external::fles_ipc Eve Base
-)
+If(_UINT8_T_EXIST)
+  Add_Definitions(-DHAVE_UINT8_T_HEADER_FILE)
+  Set(DEFINITIONS HAVE_UINT8_T_HEADER_FILE)
+EndIf()
 
-GENERATE_LIBRARY()
+set(LIBRARY_NAME CbmFlibStar2019)
+set(LINKDEF ${LIBRARY_NAME}LinkDef.h )
+set(PUBLIC_DEPENDENCIES
+  CbmData
+  FairRoot::ParBase
+  ROOT::Core
+  )
+
+set(PRIVATE_DEPENDENCIES
+  CbmBase
+  CbmFlibFlesTools
+  CbmFlibMcbm2018
+  FairRoot::Base
+  ROOT::Gpad
+  ROOT::Graf
+  ROOT::Hist
+  ROOT::MathCore
+  ROOT::RHTTP
+  ROOT::RIO
+  )
+
+set(INTERFACE_DEPENDENCIES
+  external::fles_ipc
+  )
+
+generate_cbm_library()
+

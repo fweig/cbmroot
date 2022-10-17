@@ -1,63 +1,17 @@
 # Create a library called "libCbmFlibReader" which includes the source files given in
 # the array .
 # The extension is already found.  Any number of sources could be listed here.
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/dataformat
+  ${CMAKE_CURRENT_SOURCE_DIR}/commonMQ
+  ${CMAKE_CURRENT_SOURCE_DIR}/unpacker
+  ${CMAKE_CURRENT_SOURCE_DIR}/tasks
+  ${CMAKE_CURRENT_SOURCE_DIR}/monitor
+  )
 
-Set(INCLUDE_DIRECTORIES
-  ${CBMBASE_DIR}
-
-  ${CBMDATA_DIR}
-  ${CBMDATA_DIR}/base
-  ${CBMDATA_DIR}/raw
-  ${CBMDATA_DIR}/sts
-  ${CBMDATA_DIR}/much
-  ${CBMDATA_DIR}/global
-  ${CBMDATA_DIR}/rich
-  ${CBMDATA_DIR}/tof
-  ${CBMDATA_DIR}/psd
-  ${CBMDATA_DIR}/trd
-
-  ${CBMROOT_SOURCE_DIR}/fles/flestools
-
-  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018
-  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/dataforma
-  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/commonMQ
-#  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/parameter
-  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/unpacker
-  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/monitor
-  ${CBMROOT_SOURCE_DIR}/fles/mcbm2018/tasks
-  ${CBMDETECTORBASE_DIR}/trd # required for parameter handling of the trd
-  ${CBMDETECTORBASE_DIR}/psd
-  ${CBMDETECTORBASE_DIR}/sts
-  ${CBMDETECTORBASE_DIR}/tof
-  ${CBMDETECTORBASE_DIR}/much
-  ${CBMDETECTORBASE_DIR}/rich
-)
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${Boost_INCLUDE_DIR}
-  ${ROOT_INCLUDE_DIR}
-  ${FLES_IPC_INCLUDE_DIRECTORY}
-  ${FLES_LOGGING_INCLUDE_DIRECTORY}
-  ${CBMROOT_SOURCE_DIR}/external/flib_dpb/flib_dpb
-  ${CMAKE_SOURCE_DIR}/external/cppzmq
-)
-
-Include_Directories(${INCLUDE_DIRECTORIES})
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${Boost_LIBRARY_DIRS}
-)
-
-Link_Directories(
-  ${LINK_DIRECTORIES}
-)
-
-Set(SRCS
+set(SRCS
    CbmMcbmUnpack.cxx
    CbmMcbm2018Source.cxx
    CbmMcbm2018MsCrcCheck.cxx
@@ -127,15 +81,49 @@ Set(SRCS
    tasks/CbmMcbmSpillFindTask.cxx
 )
 
-Set(LINKDEF CbmFlibMcbm2018LinkDef.h )
-Set(LIBRARY_NAME CbmFlibMcbm2018)
-Set(DEPENDENCIES
-    CbmFlibFlesTools CbmStsBase CbmTofBase
-    CbmRichBase CbmMuchBase CbmTrdBase CbmPsdBase
-    CbmData CbmBase external::fles_ipc Eve Base
-)
 
-GENERATE_LIBRARY()
+If(_UINT8_T_EXIST)
+  Add_Definitions(-DHAVE_UINT8_T_HEADER_FILE)
+  Set(DEFINITIONS HAVE_UINT8_T_HEADER_FILE)
+EndIf()
+
+
+set(LIBRARY_NAME CbmFlibMcbm2018)
+set(LINKDEF ${LIBRARY_NAME}LinkDef.h )
+set(PUBLIC_DEPENDENCIES
+  CbmBase
+  CbmData
+  CbmTrdBase
+  CbmPsdBase
+  FairRoot::Base
+  external::fles_ipc
+  flib_dpb
+  ROOT::Core
+  ROOT::Hist
+  )
+
+set(PRIVATE_DEPENDENCIES
+  CbmFlibFlesTools
+  CbmMuchBase
+  CbmRichBase
+  CbmStsBase
+  CbmTofBase
+  FairLogger::FairLogger
+  FairRoot::ParBase
+  cppzmq
+  external::fles_logging
+  ROOT::Gpad
+  ROOT::Graf
+  ROOT::MathCore
+  ROOT::Physics
+  ROOT::RHTTP
+  ROOT::RIO  
+  )
+
+generate_cbm_library()
 
 # Install file which has no corresponding source file
-install(FILES commonMQ/CbmStar2019Algo.h DESTINATION include)
+install(FILES commonMQ/CbmStar2019Algo.h 
+        DESTINATION include
+       )
+
