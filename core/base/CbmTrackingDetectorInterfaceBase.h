@@ -29,6 +29,10 @@ public:
   /// Gets actual number of stations, provided by the current geometry setup
   virtual int GetNtrackingStations() const = 0;
 
+  // TODO: SZh 17.10.2022: At the moment the radiation length and the station thickness are not used for the tracking
+  //                       initialization as soon as the material budget maps are in use. Should we keep these
+  //                       accessors here, or just remove them from the interfaces?
+
   /// Gets station radiation length
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Radiation length [cm]
