@@ -756,8 +756,12 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
         }
 
         /// stop if reco TS ends and many hits left
-        if (!event)
-          if ((th.time > (TsStart + TsLength)) && ((nEntSts - hitIndex) > 300)) { break; }
+        if (!event) {
+          if ((th.time > (TsStart + TsLength)) && ((nEntSts - hitIndex) > 300)) {
+            areDataLeft = true;  // there are unprocessed data left in the time slice
+            break;
+          }
+        }
 
         TVector3 pos, err;
         h->Position(pos);
