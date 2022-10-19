@@ -2655,39 +2655,36 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       if ((new_trip.GetMHit() != curr_trip->GetRHit())) continue;
       if ((new_trip.GetLHit() != curr_trip->GetMHit())) continue;
 
-      const fscal qp1 = curr_trip->GetQp();
-      const fscal qp2 = new_trip.GetQp();
-      fscal dqp       = fabs(qp1 - qp2);
-      fscal Cqp       = curr_trip->GetCqp() + new_trip.GetCqp();
+      fscal dqp = fabs(curr_trip->GetQp() - new_trip.GetQp());
+      fscal Cqp = curr_trip->GetCqp() + new_trip.GetCqp();
+
+      fscal dtx = fabs(curr_trip->GetTx() - new_trip.GetTx());
+      fscal Ctx = curr_trip->GetCtx() + new_trip.GetCtx();
+
+      fscal dty = fabs(curr_trip->GetTy() - new_trip.GetTy());
+      fscal Cty = curr_trip->GetCty() + new_trip.GetCty();
+
       if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
+        if (!std::isfinite(dqp)) continue;
+        if (!std::isfinite(Cqp)) continue;
         if (dqp > fPickNeighbour * sqrt(Cqp)) {
           continue;  // bad neighbour // CHECKME why do we need recheck it?? (it really change result)
         }
       }
+      else {
 
-      fscal tx1 = curr_trip->GetTx();
-      fscal tx2 = new_trip.GetTx();
-      fscal dtx = fabs(tx1 - tx2);
-      fscal Ctx = curr_trip->GetCtx() + new_trip.GetCtx();
+        // it shouldn't happen, but happens sometimes
 
-      fscal ty1 = curr_trip->GetTy();
-      fscal ty2 = new_trip.GetTy();
-      fscal dty = fabs(ty1 - ty2);
-      fscal Cty = curr_trip->GetCty() + new_trip.GetCty();
+        if (!std::isfinite(dtx)) continue;
+        if (!std::isfinite(dty)) continue;
+        if (!std::isfinite(Ctx)) continue;
+        if (!std::isfinite(Cty)) continue;
 
-      // it shouldn't happen, but happens sometimes
+        assert(std::isfinite(dtx));
+        assert(std::isfinite(dty));
+        assert(std::isfinite(Ctx));
+        assert(std::isfinite(Cty));
 
-      if (!std::isfinite(dtx)) continue;
-      if (!std::isfinite(dty)) continue;
-      if (!std::isfinite(Ctx)) continue;
-      if (!std::isfinite(Cty)) continue;
-
-      assert(std::isfinite(dtx));
-      assert(std::isfinite(dty));
-      assert(std::isfinite(Ctx));
-      assert(std::isfinite(Cty));
-
-      if (kMcbm == fTrackingMode || kGlobal == fTrackingMode) {
         if (dty > fPickNeighbour * sqrt(Cty)) continue;
         if (dtx > fPickNeighbour * sqrt(Ctx)) continue;
       }
@@ -2707,18 +2704,17 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
         unsigned char new_L = curr_L + 1;
         fscal new_chi2      = curr_chi2;
 
-        dqp = dqp / sqrt(Cqp);
-        dtx = dtx / sqrt(Ctx);
-        dty = dty / sqrt(Cty);
-
-        assert(std::isfinite(dtx));
-        assert(std::isfinite(dty));
-
         if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
+          dtx = dtx / sqrt(Ctx);
+          dty = dty / sqrt(Cty);
+
+          assert(std::isfinite(dtx));
+          assert(std::isfinite(dty));
           new_chi2 += dtx * dtx;
           new_chi2 += dty * dty;
         }
         else {
+          dqp = dqp / sqrt(Cqp);
           new_chi2 += dqp * dqp;
         }
 
