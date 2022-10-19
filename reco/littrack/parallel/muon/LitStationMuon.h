@@ -14,7 +14,7 @@
 
 #include <vector>
 
-#include "../LitEnums.h"
+#include "LitEnums.h"
 #include "LitSubstationMuon.h"
 
 namespace lit

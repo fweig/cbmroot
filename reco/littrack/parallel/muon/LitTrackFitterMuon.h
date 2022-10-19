@@ -13,12 +13,12 @@
 #ifndef LITTRACKFITTERMUON_H_
 #define LITTRACKFITTERMUON_H_
 
-#include "../LitAddMaterial.h"
-#include "../LitExtrapolation.h"
-#include "../LitFiltration.h"
-#include "../LitTrackParam.h"
-#include "../LitTypes.h"
+#include "LitAddMaterial.h"
 #include "LitDetectorGeometryMuon.h"
+#include "LitExtrapolation.h"
+#include "LitFiltration.h"
+#include "LitTrackParam.h"
+#include "LitTypes.h"
 
 namespace lit
 {

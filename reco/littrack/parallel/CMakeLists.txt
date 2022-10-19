@@ -1,40 +1,34 @@
 # Create a library called "libLittrackparallel".
 
 set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
   ${CBMROOT_SOURCE_DIR}/algo/ca/simd
-)
+  )
 
-include_directories(${INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-)
-
-link_directories(${LINK_DIRECTORIES})
 
 set(LITTRACKPARALLEL_SRCS
-  LitTrackFinderNN.cxx
-)
-
-set(LITTRACKPARALLEL_HEADERS
-)
+    LitTrackFinderNN.cxx
+  )
 
 if(RULE_CHECKER_FOUND)
   CHECK_RULES("${LITTRACKPARALLEL_SRCS}" "${INCLUDE_DIRECTORIES}" LITTRACKPARALLEL_RULES)
 endif(RULE_CHECKER_FOUND)
 
-IF(SSE_FOUND)
+IF (SSE_FOUND)
   ADD_DEFINITIONS(-DHAVE_SSE)
   SET_SOURCE_FILES_PROPERTIES(${LITTRACKPARALLEL_SRCS} PROPERTIES COMPILE_FLAGS "-msse -O3 ")
   Message(STATUS "Littrackparallel will be compiled with SSE support")
-ELSE(SSE_FOUND)
+ELSE (SSE_FOUND)
   Message(STATUS "Littrackparallel will be compiled without SSE support")
   SET_SOURCE_FILES_PROPERTIES(${LITTRACKPARALLEL_SRCS} PROPERTIES COMPILE_FLAGS "-O3 ")
-ENDIF(SSE_FOUND)
+ENDIF (SSE_FOUND)
 
-add_library(Littrackparallel SHARED ${LITTRACKPARALLEL_SRCS})
-set_target_properties(Littrackparallel PROPERTIES ${FAIRROOT_LIBRARY_PROPERTIES})
 
-target_link_libraries(Littrackparallel Vc.a)
+set(SRCS ${LITTRACKPARALLEL_SRCS})
+# Since there was a problem with defining Vc::Vc as a dependecy a dependency
+# to KFParticle was set which includes the Vc dependency
+# This has to be fixed and done properly
+set(PUBLIC_DEPENDENCIES Vc::Vc)
+set(LIBRARY_NAME Littrackparallel)
 
-# install(TARGETS Littrackparallel DESTINATION ${CMAKE_BINARY_DIR}/lib)
-install(TARGETS Littrackparallel DESTINATION lib)
+generate_cbm_library()

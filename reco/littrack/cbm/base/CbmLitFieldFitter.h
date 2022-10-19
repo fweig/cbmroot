@@ -12,7 +12,7 @@
 #ifndef CBMLITFIELDFITTER_H_
 #define CBMLITFIELDFITTER_H_
 
-#include "../../parallel/LitFieldSlice.h"
+#include "LitFieldSlice.h"
 
 #include <vector>
 class FairField;

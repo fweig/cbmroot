@@ -34,7 +34,7 @@ if(DOWNLOAD_EXTERNALS)
   set(GSL_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/GSL/include PARENT_SCOPE)
   install(DIRECTORY GSL/include/gsl TYPE INCLUDE)
 
-  find_package(Vc 1.4.1)
+  #find_package(Vc 1.4.1)
   if(NOT Vc_FOUND)
     Message("Vc not found in FairSoft installation, Build included version.")
     Include(InstallVC.cmake)
@@ -47,8 +47,8 @@ if(DOWNLOAD_EXTERNALS)
   endif()
 
   download_project_if_needed(PROJECT           xpu
-                             GIT_REPOSITORY    "https://github.com/fweig/xpu"
-                             GIT_TAG           "7944bf1ea3537c6d49a0ee52326740d7145b546f" #v0.7.3
+                             GIT_REPOSITORY    "https://git.cbm.gsi.de/computing/xpu.git"
+                             GIT_TAG           "790b237dd3f0b820d0244c09c5a5545fe0466551" #v0.7.33
                              SOURCE_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/xpu
                              CONFIGURE_COMMAND ""
                              BUILD_COMMAND     ""

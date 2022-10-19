@@ -14,25 +14,14 @@ set(SRCS
 add_library(Algo SHARED ${SRCS})
 
 target_include_directories(Algo
-  PUBLIC ${CMAKE_SOURCE_DIR}/core/data
-  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/base
-  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/global
-  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/sts
-  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/rich
-  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/much
-  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/trd
-  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/tof
-  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/psd
-  PUBLIC ${CMAKE_SOURCE_DIR}/core/data/raw
-  PUBLIC ${FLES_IPC_INCLUDE_DIRECTORY}
-)
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+         ${CMAKE_CURRENT_SOURCE_DIR}/evbuild
+         ${CMAKE_CURRENT_SOURCE_DIR}/trigger
+         ${CMAKE_CURRENT_SOURCE_DIR}/detectors/sts
+         ${CMAKE_CURRENT_SOURCE_DIR}/detectors/much
+ )
 
-target_include_directories(Algo SYSTEM
-  PUBLIC ${Boost_INCLUDE_DIR}
-)
-
-target_link_libraries(Algo OnlineData)
-
+target_link_libraries(Algo PUBLIC OnlineData INTERFACE FairLogger::FairLogger external::fles_ipc)
 target_compile_definitions(Algo PUBLIC NO_ROOT)
 
 install(TARGETS Algo DESTINATION lib)

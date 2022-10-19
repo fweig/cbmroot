@@ -2,29 +2,25 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # Authors: Jan de Cuveland [committer]
 
-file(GLOB APP_SOURCES *.cxx)
-file(GLOB APP_HEADERS *.h)
+set(SRCS
+  Application.cxx
+  ProgramOptions.cxx
+  main.cxx
+  )
 
-add_executable(cbmreco_fairrun ${APP_SOURCES} ${APP_HEADERS})
+set(HEADERS
+  Application.h
+  ProgramOptions.h
+  ) 
 
-target_include_directories(cbmreco_fairrun SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
-
-# This will no longer be necessary when the CbmRecoTasks library is set up to include this property
-target_include_directories(cbmreco_fairrun
-  PUBLIC ${CMAKE_SOURCE_DIR}/reco/tasks
-)
-
-# This will no longer be necessary when the Fairroot libraries are set up to include this property
-target_link_directories(cbmreco_fairrun
-  PUBLIC ${FAIRROOT_LIBRARY_DIR}
-)
-
-target_link_libraries(cbmreco_fairrun
-  external::fles_logging
-  external::fles_monitoring
-  CbmRecoTasks
-  Core
-  ${Boost_LIBRARIES}
-)
+add_executable(cbmreco_fairrun ${SRCS} ${HEADERS})
+target_link_libraries(cbmreco_fairrun 
+  PUBLIC 
+    CbmRecoTasks 
+  PRIVATE 
+    Boost::program_options
+    external::fles_monitoring
+    external::fles_logging 
+  )
 
 install(TARGETS cbmreco_fairrun DESTINATION bin)

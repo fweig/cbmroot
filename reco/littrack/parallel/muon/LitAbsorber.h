@@ -12,7 +12,7 @@
 #ifndef LITABSORBER_H_
 #define LITABSORBER_H_
 
-#include "../LitFieldGrid.h"
+#include "LitFieldGrid.h"
 
 namespace lit
 {

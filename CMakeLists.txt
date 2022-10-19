@@ -132,6 +132,11 @@ if(Geant4_FOUND)
   Message("Geant4 was found")
 endif()
 
+#Searching for Vc Package
+find_package(Vc 1.4.1 CONFIG REQUIRED)
+if(Vc_FOUND)
+  Message("Vc was found")
+endif()
 
 #Searching for VGM Package
 find_package(VGM CONFIG REQUIRED)
@@ -162,7 +167,11 @@ endif()
 find_package(FairMQ CONFIG REQUIRED)
 if(FairMQ_FOUND)
   Message("FairMQ was found")
+
   set(FAIRMQ_INCLUDE_DIR ${FairMQ_INCDIR}/fairmq)
+
+  get_target_property(_inDirMQ FairMQ::FairMQ INTERFACE_INCLUDE_DIRECTORIES)
+  set_property(TARGET FairMQ::FairMQ APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${_inDirMQ}/fairmq/options") 
 endif()
 
 # Check if the compiler supports the needed C++ standard

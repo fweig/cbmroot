@@ -3,75 +3,36 @@
 add_subdirectory(clustering)
 add_subdirectory(parallel)
 
-INCLUDE(std/CMakeLists.txt)
+include(std/CMakeLists.txt)
 
 set(INCLUDE_DIRECTORIES
-${CMAKE_CURRENT_SOURCE_DIR}
-${CMAKE_CURRENT_SOURCE_DIR}/std
-${CMAKE_CURRENT_SOURCE_DIR}/cbm
-${CMAKE_CURRENT_SOURCE_DIR}/cbm/elid
-${CMAKE_CURRENT_SOURCE_DIR}/cbm/reco
-${CMAKE_CURRENT_SOURCE_DIR}/cbm/generators
-${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa
-${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/material
-${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/tracking
-${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/clustering
-${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/fit
-${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/field
-${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/fieldapr
-${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/radlength
-${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/tof
-
-${CBMROOT_SOURCE_DIR}/algo/ca/simd
-${CBMROOT_SOURCE_DIR}/reco/base
-
-# needed only for the LitrackQA library
-${CBMROOT_SOURCE_DIR}/reco/detectors/rich
-${CBMROOT_SOURCE_DIR}/reco/detectors/rich/fitter
-
-${CBMBASE_DIR}
-${CBMBASE_DIR}/report
-${CBMBASE_DIR}/draw
-${CBMBASE_DIR}/utils
-
-${CBMDATA_DIR}
-${CBMDATA_DIR}/base
-${CBMDATA_DIR}/much
-${CBMDATA_DIR}/trd
-${CBMDATA_DIR}/sts
-${CBMDATA_DIR}/tof
-${CBMDATA_DIR}/global
-${CBMDATA_DIR}/mvd
-${CBMDATA_DIR}/rich
-
-${CBMDETECTORBASE_DIR}/much
-${CBMDETECTORBASE_DIR}/sts
-${CBMDETECTORBASE_DIR}/rich
-${CBMDETECTORBASE_DIR}/rich/utils
-
-${CBMROOT_SOURCE_DIR}/reco/KF
-${CBMROOT_SOURCE_DIR}/reco/KF/Interface
-
-${CBMROOT_SOURCE_DIR}/run
-)
-
-Include_Directories( ${INCLUDE_DIRECTORIES})
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${Boost_INCLUDE_DIR}
-)
-
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-${KFParticle_LIB_DIR}
-${FAIRROOT_LIBRARY_DIR}
-${ROOT_LIBRARY_DIR}
-${Boost_LIBRARY_DIRS}
-)
-
-link_directories( ${LINK_DIRECTORIES})
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/std
+  ${CMAKE_CURRENT_SOURCE_DIR}/std/finder
+  ${CMAKE_CURRENT_SOURCE_DIR}/std/fitter
+  ${CMAKE_CURRENT_SOURCE_DIR}/std/propagation
+  ${CMAKE_CURRENT_SOURCE_DIR}/std/selection
+  ${CMAKE_CURRENT_SOURCE_DIR}/std/data
+  ${CMAKE_CURRENT_SOURCE_DIR}/std/base
+  ${CMAKE_CURRENT_SOURCE_DIR}/std/utils
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/base
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/utils
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/elid
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/reco
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/generators
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/mc
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/base
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/material
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/tracking
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/clustering
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/fit
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/field
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/fieldapr
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/radlength
+  ${CMAKE_CURRENT_SOURCE_DIR}/cbm/qa/tof
+  )
 
 set(SRCS
 
@@ -125,43 +86,6 @@ set(QA_SRCS
    cbm/qa/tof/CbmLitTofQaReport.cxx
 )
 
-set(HEADERS
-   cbm/elid/CbmLitGlobalElectronId.h
-   cbm/reco/CbmLitFindGlobalTracks.h
-   cbm/reco/CbmLitFindMvdTracks.h
-   cbm/reco/CbmLitFindGlobalTracksIdeal.h
-   cbm/reco/CbmLitFitTracksParallel.h
-   cbm/reco/CbmLitFitTracks.h
-   cbm/reco/CbmLitFindGlobalTracksParallel.h
-   cbm/generators/CbmLitPolarizedGenerator.h
-)
-
-Set(QA_HEADERS
-   cbm/qa/material/CbmLitCheckEnergyLossMuons.h
-   cbm/qa/material/CbmLitCheckBrem.h
-   cbm/qa/CbmLitCreateStandaloneData.h
-   cbm/qa/CbmLitTestMatrixMath.h
-   cbm/qa/tracking/CbmLitTrackingQa.h
-   cbm/qa/tracking/CbmLitTrackingQaStudyReport.h
-   cbm/qa/tracking/CbmLitTrackingQaReport.h
-   cbm/qa/clustering/CbmLitClusteringQa.h
-   cbm/qa/clustering/CbmLitClusteringQaReport.h
-   cbm/qa/clustering/CbmLitClusteringQaStudyReport.h
-   cbm/qa/fit/CbmLitFitQa.h
-   cbm/qa/fit/CbmLitFitQaReport.h
-   cbm/qa/fit/CbmLitFitQaStudyReport.h
-   cbm/qa/field/CbmLitFieldQa.h
-   cbm/qa/field/CbmLitFieldQaReport.h
-   cbm/qa/fieldapr/CbmLitFieldApproximationQa.h
-   cbm/qa/fieldapr/CbmLitFieldApproximationQaReport.h
-   cbm/qa/radlength/CbmLitRadLengthQa.h
-   cbm/qa/radlength/CbmLitRadLengthQaReport.h
-   cbm/qa/radlength/CbmLitRadLengthGenerator.h
-   cbm/qa/tof/CbmLitTofQa.h
-   cbm/qa/tof/CbmLitTofQaReport.h
-)
-
-
 
 IF (CMAKE_BUILD_TYPE MATCHES Debug)
 ELSE (CMAKE_BUILD_TYPE MATCHES Debug)
@@ -179,43 +103,95 @@ If (Boost_FOUND)
   set(DEFINITIONS BOOST_FOUND)
 EndIf (Boost_FOUND)
 
-set(LINKDEF  LittrackLinkDef.h)
-Set(LIBRARY_NAME Littrack)
-Set(DEPENDENCIES
-    Littrackparallel KF KFParticleInterface CbmMuchBase CbmStsBase CbmRichBase CbmRecoBase CbmBase CbmData
-    CbmTofBase Base
-)
-GENERATE_LIBRARY()
+
+set(LIBRARY_NAME Littrack)
+set(LINKDEF  ${LIBRARY_NAME}LinkDef.h)
+set(PUBLIC_DEPENDENCIES
+  CbmData
+  Littrackparallel
+  FairRoot::Base
+  ROOT::Hist
+  ROOT::Physics
+  ROOT::Core
+  )
+
+set(PRIVATE_DEPENDENCIES
+  CbmBase
+  CbmMuchBase
+  CbmSimSteer
+  KFParticleInterface
+  CbmRichBase
+  FairRoot::ParBase
+  ROOT::EG
+  ROOT::MathCore
+  ROOT::Geom
+  ROOT::Matrix
+  ROOT::Minuit2
+  ROOT::RIO
+  )
+
+
+generate_cbm_library()
 
 
 set(SRCS ${QA_SRCS})
-set(HEADERS ${QA_HEADERS})
+
+
+set(LIBRARY_NAME LittrackQA)
 set(LINKDEF  LittrackQALinkDef.h)
-Set(LIBRARY_NAME LittrackQA)
-Set(DEPENDENCIES
-    Littrack CbmRichReco KFParticleInterface
-)
+set(PUBLIC_DEPENDENCIES
+  CbmBase
+  CbmData
+  CbmMuchBase
+  KF
+  FairRoot::Base
+  ROOT::Core
+  ROOT::EG
+  ROOT::MathCore
+  )
 
-GENERATE_LIBRARY()
+set(PRIVATE_DEPENDENCIES
+  CbmRichBase
+  CbmRichReco
+  CbmStsBase
+  KFParticleInterface
+  FairRoot::GeoBase
+  FairRoot::ParBase
+  ROOT::Geom
+  ROOT::Gpad
+  ROOT::Graf
+  ROOT::Hist
+  ROOT::Matrix
+  ROOT::Physics
+  ROOT::RIO
+  )
 
-Install(FILES std/base/CbmLitTypes.h
+
+generate_cbm_library()
+
+install(FILES std/base/CbmLitTypes.h
               std/base/CbmLitFloat.h
               std/base/CbmLitPtrTypes.h
               std/base/CbmLitEnums.h
+              std/base/CbmLitHitData.h
         DESTINATION include/littrack/base
        )
-Install(FILES cbm/base/CbmLitDetectorSetup.h
+
+install(FILES cbm/base/CbmLitDetectorSetup.h
         DESTINATION include/littrack/base
        )
-Install(FILES cbm/base/CbmLitDetectorSetup.h
+
+install(FILES cbm/base/CbmLitDetectorSetup.h
         DESTINATION include/littrack/cbm/base
        )
-Install(FILES std/data/CbmLitFitNode.h
+
+install(FILES std/data/CbmLitFitNode.h
               std/data/CbmLitTrackParam.h
               std/data/CbmLitHit.h
         DESTINATION include/littrack/data
        )
-Install(FILES std/interface/CbmLitTrackExtrapolator.h
+
+install(FILES std/interface/CbmLitTrackExtrapolator.h
               std/interface/CbmLitTrackPropagator.h
               std/interface/CbmLitTrackFitter.h
               std/interface/CbmLitTrackSelection.h
@@ -226,6 +202,34 @@ Install(FILES std/interface/CbmLitTrackExtrapolator.h
               std/interface/CbmLitHitToTrackMerger.h
         DESTINATION include/littrack/interface
        )
-Install(FILES std/propagation/CbmLitMaterialInfo.h
+
+install(FILES std/propagation/CbmLitMaterialInfo.h
         DESTINATION include/littrack/propagation
+       )
+
+install(FILES std/selection/CbmLitQualitySort.h
+        DESTINATION include/littrack/selection
+       )
+
+install(FILES parallel/LitFieldGrid.h
+              parallel/LitFieldValue.h
+              parallel/LitTypes.h
+              parallel/LitUtils.h
+              parallel/LitFieldSlice.h
+              parallel/LitStation.h
+              parallel/LitVirtualStation.h
+              parallel/LitMaterialGrid.h
+              parallel/LitScalStripHit.h
+              parallel/LitTrackParam.h
+        DESTINATION include
+       )
+
+install(FILES
+          parallel/LitDetectorLayout.h
+          parallel/LitMaterialGrid.h
+          parallel/LitScalPixelHit.h
+          parallel/LitScalStripHit.h
+          parallel/LitScalTrack.h
+          parallel/LitTrackParam.h
+        DESTINATION include/parallel
        )

@@ -1,37 +1,7 @@
 set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/unpack
-
-  ${CMAKE_SOURCE_DIR}/core/detectors/psd
-
-  ${CBMBASE_DIR}
-
-  ${CBMDATA_DIR}
-  ${CBMDATA_DIR}/base
-  ${CBMDATA_DIR}/global
-  ${CBMDATA_DIR}/psd
-  ${CBMDATA_DIR}/raw
-
-
-  ${CBMROOT_SOURCE_DIR}/reco/base
-)
-
-include_directories(${INCLUDE_DIRECTORIES})
-
-set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${FLES_IPC_INCLUDE_DIRECTORY} # for fles infos for unpacker
-)
-
-include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${Boost_LIBRARY_DIRS}
-)
-
-link_directories(${LINK_DIRECTORIES})
+  )
 
 set(SRCS
   CbmPsdHitProducer.cxx
@@ -41,15 +11,28 @@ set(SRCS
   unpack/CbmPsdUnpackConfig.cxx
 )
 
-set(LINKDEF CbmPsdRecoLinkDef.h)
+
 set(LIBRARY_NAME CbmPsdReco)
-set(DEPENDENCIES
-    CbmPsdBase
-    CbmData
-    CbmBase
-    Base
-    CbmRecoBase
-)
+set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
+set(PUBLIC_DEPENDENCIES
+  CbmBase
+  CbmData
+  FairRoot::Base
+  )
 
-GENERATE_LIBRARY()
+set(PRIVATE_DEPENDENCIES
+  CbmPsdBase
+  CbmRecoBase
+  FairRoot::ParBase
+  ROOT::Core
+  ROOT::MathCore
+  ROOT::RIO
+  )
 
+set(INTERFACE_DEPENDENCIES
+  FairLogger::FairLogger
+  external::fles_ipc
+  ROOT::Hist
+  )
+
+generate_cbm_library()

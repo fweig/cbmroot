@@ -2,12 +2,10 @@
 # V. Friese,      1 August   2019
 # P.-A. Loizeau, 13 February 2020
 
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
 
-# -----   Library name   ----------------------------------
-Set(LIBRARY_NAME CbmRecoBase)
-# ---------------------------------------------------------
-
-# -----  Compilation sources   ----------------------------
 set(SRCS
 CbmUnpackTaskBase.cxx
 
@@ -30,66 +28,30 @@ CbmTofMerger.cxx
 CbmTrackMerger.cxx
 CbmRichMerger.cxx
 )
-# ---------------------------------------------------------
+
+set(HEADERS
+  CbmRecoUnpackConfig.tmpl
+  CbmRecoUnpackAlgo.tmpl
+  )
 
 
-
-# ----  Include directories -------------------------------
-set(INCLUDE_DIRECTORIES
-#${CBMDATA_DIR}
-#${CBMROOT_SOURCE_DIR}/reco
-${CBMROOT_SOURCE_DIR}/reco/base
-${CBMROOT_SOURCE_DIR}/core/base
-${CBMROOT_SOURCE_DIR}/core/data
-${CBMROOT_SOURCE_DIR}/core/data/base
-${CBMROOT_SOURCE_DIR}/core/data/sts
-)
-
-set(SYSTEM_INCLUDE_DIRECTORIES
-${BASE_INCLUDE_DIRECTORIES}
-${FLES_IPC_INCLUDE_DIRECTORY}
-)
-# ---------------------------------------------------------
-
-
-
-# ----  Link directories ----------------------------------
-set(LINK_DIRECTORIES
-${FAIRROOT_LIBRARY_DIR}
-${ROOT_LIBRARY_DIR}
-${Boost_LIBRARY_DIRS}
-)
-# ---------------------------------------------------------
-
-
-
-# -----   Library dependences   ---------------------------
-Set(DEPENDENCIES
-external::fles_ipc
-Base
-CbmBase
-#CbmData
-)
-# ---------------------------------------------------------
-
-
-# -----  LinkDef file   -----------------------------------
+set(LIBRARY_NAME CbmRecoBase)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
-# ---------------------------------------------------------
+set(PUBLIC_DEPENDENCIES
+  CbmData
+  FairRoot::Base
+  ROOT::Core
+  )
+
+set(PRIVATE_DEPENDENCIES
+  CbmBase
+  )
+
+set(INTERFACE_DEPENDENCIES
+  CbmFlibMcbm2018
+  external::fles_ipc
+  ROOT::Hist
+  )
 
 
-# -----  Install files without source file   --------------
-Install(FILES 
-    CbmRecoUnpackConfig.tmpl
-    CbmRecoUnpackAlgo.tmpl
-    DESTINATION include
-)
-# ---------------------------------------------------------
-
-
-# -----  Let cmake do the job   ---------------------------
-include_directories( ${INCLUDE_DIRECTORIES})
-include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-link_directories( ${LINK_DIRECTORIES})
-GENERATE_LIBRARY()
-# ---------------------------------------------------------
+generate_cbm_library()

@@ -15,9 +15,9 @@
 #include <algorithm>
 #include <vector>
 
-#include "../LitComparators.h"
-#include "../LitHit.h"
+#include "LitComparators.h"
 #include "LitDetectorLayoutMuon.h"
+#include "LitHit.h"
 
 namespace lit
 {

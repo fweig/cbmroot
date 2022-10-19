@@ -16,7 +16,7 @@
 
 #include <vector>
 
-#include "../../parallel/LitFieldGrid.h"
+#include "LitFieldGrid.h"
 class FairField;
 
 class CbmLitFieldGridCreator {

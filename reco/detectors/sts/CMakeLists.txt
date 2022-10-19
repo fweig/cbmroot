@@ -2,129 +2,91 @@
 # Last update: V. Friese, 25.03.2020
 
 
-# -----   Specify library name   --------------------------
-Set(LIBRARY_NAME CbmRecoSts)
-# ---------------------------------------------------------
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/sts
+  ${CMAKE_CURRENT_SOURCE_DIR}/unpack
+  ${CMAKE_CURRENT_SOURCE_DIR}/qa
+  ${CMAKE_CURRENT_SOURCE_DIR}/experimental
+  )
 
 
-# -----  Specify sources for compilation   ----------------
 set(SRCS
-CbmRecoSts.cxx
-CbmStsAlgoAnaCluster.cxx
-CbmStsAlgoFindClusters.cxx
-CbmStsAlgoFindHits.cxx
-CbmStsAlgoFindHitsOrtho.cxx
-CbmStsFindTracks.cxx
-CbmStsFindTracksEvents.cxx
-CbmStsRecoModule.cxx
-CbmRecoStsPixel.cxx
-CbmStsTrackFinderIdeal.cxx
+  CbmRecoSts.cxx
+  CbmStsAlgoAnaCluster.cxx
+  CbmStsAlgoFindClusters.cxx
+  CbmStsAlgoFindHits.cxx
+  CbmStsAlgoFindHitsOrtho.cxx
+  CbmStsFindTracks.cxx
+  CbmStsFindTracksEvents.cxx
+  CbmStsRecoModule.cxx
+  CbmRecoStsPixel.cxx
+  CbmStsTrackFinderIdeal.cxx
 
-unpack/CbmStsUnpackAlgo.cxx
-unpack/CbmStsUnpackAlgoBase.cxx
-unpack/CbmStsUnpackAlgoLegacy.cxx
-unpack/CbmStsUnpackConfig.cxx
-unpack/CbmStsUnpackMonitor.cxx
+  unpack/CbmStsUnpackAlgo.cxx
+  unpack/CbmStsUnpackAlgoBase.cxx
+  unpack/CbmStsUnpackAlgoLegacy.cxx
+  unpack/CbmStsUnpackConfig.cxx
+  unpack/CbmStsUnpackMonitor.cxx
 
-qa/CbmStsFindTracksQa.cxx
-)
+  qa/CbmStsFindTracksQa.cxx
+  )
+
 
 set(DEVICE_SRCS
-experimental/CbmStsGpuRecoDevice.cxx
-experimental/CbmStsGpuHitFinder.cxx
-)
+  experimental/CbmStsGpuRecoDevice.cxx
+  experimental/CbmStsGpuHitFinder.cxx
+  )
 
 set(NO_DICT_SRCS
-${DEVICE_SRCS}
-experimental/CbmGpuRecoSts.cxx
-)
-# -----  End of sources   ---------------------------------
+  ${DEVICE_SRCS}
+  experimental/CbmGpuRecoSts.cxx
+  )
 
-
-
-# ----  Specify include directories -----------------------
-set(INCLUDE_DIRECTORIES
-
-# This directory
-${CBMROOT_SOURCE_DIR}/reco/detectors/sts
-${CBMROOT_SOURCE_DIR}/reco/detectors/sts/unpack
-${CBMROOT_SOURCE_DIR}/reco/detectors/sts/qa
-${CBMROOT_SOURCE_DIR}/reco/detectors/sts/experimental
-
-# external
-${CBMROOT_SOURCE_DIR}/external/xpu/src
-
-# Reco
-${CBMROOT_SOURCE_DIR}/reco/base
-
-#QA
-${CBMROOT_SOURCE_DIR}/core/qa
-
-# Base
-${CBMBASE_DIR}
-
-# Data
-${CBMDATA_DIR}
-${CBMDATA_DIR}/base
-${CBMDATA_DIR}/global
-${CBMDATA_DIR}/sts
-${CBMDATA_DIR}/raw
-${CBMDATA_DIR}/mvd
-
-# MVD
-${CBMROOT_SOURCE_DIR}/mvd
-
-# STS
-${CBMDETECTORBASE_DIR}/sts
-)
-
-set(SYSTEM_INCLUDE_DIRECTORIES
-${BASE_INCLUDE_DIRECTORIES}
-${FLES_IPC_INCLUDE_DIRECTORY} # for fles infos for unpacker
-)
-# ----  End of include directories ------------------------
-
-
-# ----  Specify link directories --------------------------
-set(LINK_DIRECTORIES
-${ROOT_LIBRARY_DIR}
-${FAIRROOT_LIBRARY_DIR}
-${Boost_LIBRARY_DIRS}
-)
-# -----  End of link directories   ------------------------
-
-
-# -----   Specify library dependences   -------------------
-Set(DEPENDENCIES
-    CbmBase CbmData CbmQaBase CbmMvd CbmRecoBase CbmStsBase xpu
-)
-# ---------------------------------------------------------
-
-
-# -----  Specify LinkDef file   ---------------------------
+set(LIBRARY_NAME CbmRecoSts)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
-# ---------------------------------------------------------
+set(PUBLIC_DEPENDENCIES
+  CbmData
+  CbmStsBase
+  FairRoot::Base
+  ROOT::Core
+  ROOT::Hist
+  xpu
+  )
+
+set(PRIVATE_DEPENDENCIES
+  CbmBase
+  CbmRecoBase
+  CbmFlibFlesTools
+  CbmMvd
+  FairRoot::ParBase
+  ROOT::Geom
+  ROOT::Gpad
+  ROOT::MathCore
+  ROOT::RHTTP
+  ROOT::RIO
+  )
+
+set(INTERFACE_DEPENDENCIES
+  FairLogger::FairLogger
+  external::fles_ipc
+  ROOT::Physics
+  )
 
 
 # ---- Enable OpenMP  -------------------------------------
 # Comented since the OpenMP code is also commented in the moment
-# if (OPENMP_FOUND)
-#  message(STATUS "OPENMP_FOUND = TRUE")
+#if (OPENMP_FOUND)
 #  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 #  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-# endif()
+#endif()
 # ---------------------------------------------------------
 
+generate_cbm_library()
 
-# -----  Let cmake do the job   ---------------------------
-include_directories( ${INCLUDE_DIRECTORIES})
-include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-link_directories( ${LINK_DIRECTORIES})
-GENERATE_LIBRARY()
 xpu_attach(CbmRecoSts ${DEVICE_SRCS})
 
 # FIXME: Why is this needed to install headers in subfolder?
 install(DIRECTORY experimental/ TYPE INCLUDE
     FILES_MATCHING PATTERN "*.h"
 )
-# ---------------------------------------------------------

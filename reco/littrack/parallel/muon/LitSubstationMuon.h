@@ -12,7 +12,7 @@
 #ifndef LITSUBSTATIONMUON_H_
 #define LITSUBSTATIONMUON_H_
 
-#include "../LitMaterialInfo.h"
+#include "LitMaterialInfo.h"
 
 namespace lit
 {

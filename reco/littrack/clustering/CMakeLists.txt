@@ -1,61 +1,21 @@
 # Create a library called "libClustering".
 
-Set(INCLUDE_DIRECTORIES
-${CBMROOT_SOURCE_DIR}/reco/littrack/clustering
-
-${CBMBASE_DIR}
-${CBMBASE_DIR}/draw
-
-${CBMDATA_DIR}
-${CBMDATA_DIR}/base
-${CBMDATA_DIR}/sts
-${CBMDATA_DIR}/much
-#${CBMDATA_DIR}/mvd
-
-  ${CBMDETECTORBASE_DIR}/much
-
-#${CBMROOT_SOURCE_DIR}/mvd
-)
-
-Include_Directories( ${INCLUDE_DIRECTORIES})
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES}
-)
-
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-${ROOT_LIBRARY_DIR}
-${FAIRROOT_LIBRARY_DIR}
-${GEANT4_LIBRARY_DIR}
-)
-
-link_directories( ${LINK_DIRECTORIES})
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
 
 set(SRCS
-CbmClusteringGeometry.cxx
-CbmMuchClustering.cxx
-CbmClusteringA1.cxx
-CbmClusteringSL.cxx
-CbmClusteringWard.cxx
-CbmMuchTest.cxx
-#CbmMvdGeoCl.cxx
-#CbmMvdClustering.cxx
-#CbmMvdClusteringNoCharges.cxx
-)
+  CbmClusteringGeometry.cxx
+  CbmMuchClustering.cxx
+  CbmClusteringA1.cxx
+  CbmClusteringSL.cxx
+  CbmClusteringWard.cxx
+  CbmMuchTest.cxx
+  #CbmMvdGeoCl.cxx
+  #CbmMvdClustering.cxx
+  #CbmMvdClusteringNoCharges.cxx
+  )
 
-set(HEADERS
-#CbmClusteringGeometry.h
-CbmMuchClustering.h
-#CbmClusteringA1.h
-#CbmClusteringSL.h
-#CbmClusteringWard.h
-CbmMuchTest.h
-#CbmMvdGeoCl.h
-#CbmMvdClustering.h
-#CbmMvdClusteringNoCharges.h
-)
 
 IF (SSE_FOUND)
   ADD_DEFINITIONS(-DHAVE_SSE)
@@ -72,12 +32,22 @@ If (Boost_FOUND)
   set(DEFINITIONS BOOST_FOUND)
 EndIf (Boost_FOUND)
 
-set(LINKDEF CbmClusteringLinkDef.h)
-Set(LIBRARY_NAME CbmClustering)
-Set(DEPENDENCIES
-    CbmMuchBase CbmBase CbmData Base 
-)
 
-GENERATE_LIBRARY()
+set(LIBRARY_NAME CbmClustering)
+set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
+set(PUBLIC_DEPENDENCIES
+  CbmMuchBase
+  FairRoot::Base
+  ROOT::Hist
+  )
 
+set(PRIVATE_DEPENDENCIES
+  CbmBase
+  CbmData
+  ROOT::Core
+  ROOT::Gpad
+  ROOT::MathCore
+  ROOT::RIO
+  )
 
+generate_cbm_library()

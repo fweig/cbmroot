@@ -2,135 +2,49 @@
 # the array .
 # The extension is already found.  Any number of sources could be listed here.
 
-Set(INCLUDE_DIRECTORIES
-${CBMBASE_DIR} 
-
-${CBMROOT_SOURCE_DIR}/reco/base
-
-${CBMDATA_DIR}
-${CBMDATA_DIR}/base
-${CBMDATA_DIR}/sts
-${CBMDATA_DIR}/mvd
-${CBMDATA_DIR}/much
-${CBMDATA_DIR}/trd
-${CBMDATA_DIR}/rich
-${CBMDATA_DIR}/tof
-${CBMDATA_DIR}/global
-
-${CBMROOT_SOURCE_DIR}/reco/KF
-${CBMROOT_SOURCE_DIR}/reco/KF/Interface
-${CBMROOT_SOURCE_DIR}/reco/KF/KFQA
-
-${CBMDETECTORBASE_DIR}/sts
-
-${CBMROOT_SOURCE_DIR}/mvd 
-
-${CBMDETECTORBASE_DIR}/much # TMP for tracker interface
-${CBMDETECTORBASE_DIR}/trd  # TMP for tracker interface
-${CBMDETECTORBASE_DIR}/tof  # TMP for tracker interface
-${CBMROOT_SOURCE_DIR}/sim/transport/steer # TMP for tracker interface
-${CBMROOT_SOURCE_DIR}/sim/transport/geosetup # TMP for tracker interface
-)
-
-Include_Directories( ${INCLUDE_DIRECTORIES})
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES} 
-)
-
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-${FAIRROOT_LIBRARY_DIR}
-${ROOT_LIBRARY_DIR}
-${Boost_LIBRARY_DIRS}
-)
- 
-link_directories(BEFORE ${LINK_DIRECTORIES})
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/Interface
+  )
 
 set(SRCS
-CbmKF.cxx 
-CbmKFFieldMath.cxx 
-CbmKFHit.cxx 
-CbmKFMaterial.cxx 
-CbmKFMath.cxx 
-CbmKFPixelMeasurement.cxx 
-CbmKFPrimaryVertexFinder.cxx 
-CbmKFSecondaryVertexFinder.cxx 
-CbmKFTrackInterface.cxx 
-CbmKFUMeasurement.cxx 
-CbmKFVertexInterface.cxx 
+  CbmKF.cxx 
+  CbmKFFieldMath.cxx 
+  CbmKFHit.cxx 
+  CbmKFMaterial.cxx 
+  CbmKFMath.cxx 
+  CbmKFPixelMeasurement.cxx 
+  CbmKFPrimaryVertexFinder.cxx 
+  CbmKFSecondaryVertexFinder.cxx 
+  CbmKFTrackInterface.cxx 
+  CbmKFUMeasurement.cxx 
+  CbmKFVertexInterface.cxx 
 
 #### Tracker interfaces (will be moved to core/detector/*) ################
-CbmTrackingDetectorInterfaceInit.cxx
+  CbmTrackingDetectorInterfaceInit.cxx
 ###########################################################################
 
-#Interface/CbmEcalTrackExtrapolationKF.cxx
-Interface/CbmKFStsHit.cxx 
-Interface/CbmKFTrack.cxx 
-Interface/CbmKFTrdHit.cxx 
-Interface/CbmKFTofHit.cxx 
-Interface/CbmPVFinderKF.cxx 
-Interface/CbmStsFitPerformanceTask.cxx 
-Interface/CbmStsKFTrackFitter.cxx 
-Interface/CbmStsKFSecondaryVertexFinder.cxx 
-Interface/CbmTrdTrackFitterKF.cxx 
-Interface/CbmTofTrackFitterKF.cxx 
-Interface/CbmGlobalTrackFitterKF.cxx
-# CbmKFParticle.cxx
-# CbmKFParticle_simd.cxx
-# CbmKFParticleInterface.cxx
-#KFQA/CbmKFTrErrMCPoints.cxx
-#KFQA/CbmKFTrackFitQa.cxx
-#KFQA/CbmKFTrackQa.cxx
-#KFQA/KFParticleMatch.cxx
-#CbmKFParticleFinder.cxx
-#CbmKFParticleFinderPID.cxx
-#CbmKFParticleFinderQa.cxx
-#CbmKFParticleInterface.cxx
-)
+  #Interface/CbmEcalTrackExtrapolationKF.cxx
+  Interface/CbmKFStsHit.cxx 
+  Interface/CbmKFTrack.cxx 
+  Interface/CbmKFTrdHit.cxx 
+  Interface/CbmKFTofHit.cxx 
+  Interface/CbmPVFinderKF.cxx 
+  Interface/CbmStsFitPerformanceTask.cxx 
+  Interface/CbmStsKFTrackFitter.cxx 
+  Interface/CbmStsKFSecondaryVertexFinder.cxx 
+  Interface/CbmTrdTrackFitterKF.cxx 
+  Interface/CbmTofTrackFitterKF.cxx 
+  Interface/CbmGlobalTrackFitterKF.cxx
+  # CbmKFParticle.cxx
+  # CbmKFParticle_simd.cxx
+  # CbmKFParticleInterface.cxx
+  #CbmKFParticleFinder.cxx
+  #CbmKFParticleFinderPID.cxx
+  #CbmKFParticleFinderQa.cxx
+  #CbmKFParticleInterface.cxx
+  )
 
-
-set(HEADERS
-CbmKF.h 
-CbmKFFieldMath.h
-CbmKFHit.h
-CbmKFMaterial.h
-CbmKFMath.h
-CbmKFPixelMeasurement.h
-CbmKFPrimaryVertexFinder.h
-CbmKFSecondaryVertexFinder.h
-CbmKFTrackInterface.h
-CbmKFUMeasurement.h 
-CbmKFVertexInterface.h
-
-#### Tracker interfaces (will be moved to core/detector/*) ################
-CbmTrackingDetectorInterfaceInit.h
-###########################################################################
-
-#Interface/CbmEcalTrackExtrapolationKF.h
-Interface/CbmKFStsHit.h
-Interface/CbmKFTrack.h 
-Interface/CbmKFTrdHit.h 
-Interface/CbmKFTofHit.h 
-Interface/CbmPVFinderKF.h
-Interface/CbmStsFitPerformanceTask.h
-Interface/CbmStsKFTrackFitter.h
-Interface/CbmStsKFSecondaryVertexFinder.h
-Interface/CbmTrdTrackFitterKF.h
-Interface/CbmTofTrackFitterKF.h
-Interface/CbmGlobalTrackFitterKF.h
-# CbmKFParticle.h
-#KFQA/CbmKFTrErrMCPoints.h
-#KFQA/CbmKFTrackFitQa.h
-#KFQA/CbmKFTrackQa.h
-#KFQA/CbmKFPartEfficiencies.h
-#KFQA/KFParticleMatch.h
-#CbmKFParticleFinder.h
-#CbmKFParticleFinderPID.h
-#CbmKFParticleFinderQa.h
-#CbmKFParticleInterface.h
-)
 
 If(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   ADD_DEFINITIONS(-Wall -Wsign-promo -Wctor-dtor-privacy -Wreorder -Wno-deprecated -Wno-parentheses -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS) # -Weffc++ -Wnon-virtual-dtor -Woverloaded-virtual -Wold-style-cast   : wait for other parts of cbmroot\root.
@@ -166,14 +80,42 @@ ELSE (SSE_FOUND)
   "-O3")
 ENDIF (SSE_FOUND)
 
-set(LINKDEF KFLinkDef.h)
-Set(LIBRARY_NAME KF)
-Set(DEPENDENCIES
-  CbmRecoBase CbmSimSteer CbmStsBase CbmMvd CbmMuchBase CbmTrdBase CbmTofBase CbmBase CbmData Base Minuit2
-)
+
+set(LIBRARY_NAME KF)
+set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
+set(PUBLIC_DEPENDENCIES
+  CbmBase
+  CbmData
+  CbmMvd
+  CbmRecoBase
+  FairRoot::Base
+  ROOT::Core
+  ROOT::Geom
+  ROOT::Hist
+  )
+
+set(PRIVATE_DEPENDENCIES
+  CbmMuchBase
+  CbmSimSteer
+  CbmStsBase
+  CbmTofBase
+  CbmTrdBase
+  FairLogger::FairLogger
+  FairRoot::GeoBase
+  FairRoot::ParBase
+  ROOT::EG
+  ROOT::Gpad
+  ROOT::MathCore
+  ROOT::Matrix
+  ROOT::Physics
+  ROOT::RIO
+  ROOT::Tree
+  )
+
 Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 
-GENERATE_LIBRARY()
+generate_cbm_library()
 
-Install(FILES Interface/CbmKFVertex.h
-        DESTINATION include)
+install(FILES Interface/CbmKFVertex.h
+        DESTINATION include
+       )

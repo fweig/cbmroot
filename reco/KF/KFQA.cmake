@@ -2,67 +2,23 @@
 # the array .
 # The extension is already found.  Any number of sources could be listed here.
 
-Set(INCLUDE_DIRECTORIES
-${CBMBASE_DIR} 
-
-${CBMROOT_SOURCE_DIR}/reco/base
-
-${CBMDATA_DIR}
-${CBMDATA_DIR}/base
-${CBMDATA_DIR}/sts
-${CBMDATA_DIR}/mvd
-${CBMDATA_DIR}/much
-${CBMDATA_DIR}/trd
-${CBMDATA_DIR}/rich
-${CBMDATA_DIR}/tof
-${CBMDATA_DIR}/global
-
-${CBMROOT_SOURCE_DIR}/reco/KF
-${CBMROOT_SOURCE_DIR}/reco/KF/Interface
-${CBMROOT_SOURCE_DIR}/reco/KF/KFQA
-
-${CBMDETECTORBASE_DIR}/sts
-
-${CBMROOT_SOURCE_DIR}/reco/L1
-${CBMROOT_SOURCE_DIR}/reco/L1/L1Algo
-${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder
-
-${CBMROOT_SOURCE_DIR}/mvd 
-)
-
-Include_Directories( ${INCLUDE_DIRECTORIES})
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${KFParticle_INCLUDE_DIR}
-  ${BASE_INCLUDE_DIRECTORIES} 
-)
-
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-${KFParticle_LIB_DIR}
-${FAIRROOT_LIBRARY_DIR}
-${ROOT_LIBRARY_DIR}
-${Boost_LIBRARY_DIRS}
-)
- 
-link_directories(BEFORE ${LINK_DIRECTORIES})
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/KFQA
+  ${CMAKE_CURRENT_SOURCE_DIR}/Interface
+  )
 
 set(SRCS
-KFQA/CbmKFTrErrMCPoints.cxx
-KFQA/CbmKFTrackFitQa.cxx
-KFQA/CbmKFTrackQa.cxx
-KFQA/KFParticleMatch.cxx
-)
+  KFQA/CbmKFTrErrMCPoints.cxx
+  KFQA/CbmKFTrackFitQa.cxx
+  KFQA/CbmKFTrackQa.cxx
+  KFQA/KFParticleMatch.cxx
+  )
 
 
 set(HEADERS
-KFQA/CbmKFTrErrMCPoints.h
-KFQA/CbmKFTrackFitQa.h
-KFQA/CbmKFTrackQa.h
-KFQA/CbmKFPartEfficiencies.h
-KFQA/KFParticleMatch.h
-)
+  KFQA/CbmKFPartEfficiencies.h
+  )
 
 If(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   ADD_DEFINITIONS(-Wall -Wsign-promo -Wctor-dtor-privacy -Wreorder -Wno-deprecated -Wno-parentheses -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS) # -Weffc++ -Wnon-virtual-dtor -Woverloaded-virtual -Wold-style-cast   : wait for other parts of cbmroot\root.
@@ -98,17 +54,35 @@ ELSE (SSE_FOUND)
   "-O3")
 ENDIF (SSE_FOUND)
 
-set(LINKDEF KFQALinkDef.h)
-Set(LIBRARY_NAME KFQA)
-Set(DEPENDENCIES
-    KF L1 KFParticle
-)
+
+set(LIBRARY_NAME KFQA)
+set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
+set(PUBLIC_DEPENDENCIES
+  CbmData
+  KF
+  L1
+  FairRoot::Base
+  ROOT::Core
+  ROOT::Hist
+  )
+
+set(PRIVATE_DEPENDENCIES
+  CbmBase
+  CbmStsBase
+  KFParticle
+  ROOT::EG
+  ROOT::MathCore
+  ROOT::RIO
+  ROOT::Tree
+  )
+
+
 
 Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 
-GENERATE_LIBRARY()
+generate_cbm_library()
 
-Add_Dependencies(KFQA KFPARTICLE)
-Install(FILES KFQA/CbmKFTrErrMCPoints.h
+install(FILES KFQA/CbmKFTrErrMCPoints.h
               KFQA/CbmKFPartEfficiencies.h
-        DESTINATION include/KF/KFQA)
+        DESTINATION include/KF/KFQA
+       )

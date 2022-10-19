@@ -12,9 +12,9 @@
 #ifndef LITSTATIONGROUP_H_
 #define LITSTATIONGROUP_H_
 
-#include "../LitFieldGrid.h"
-#include "../LitFieldRegion.h"
 #include "LitAbsorber.h"
+#include "LitFieldGrid.h"
+#include "LitFieldRegion.h"
 #include "LitStationMuon.h"
 
 namespace lit

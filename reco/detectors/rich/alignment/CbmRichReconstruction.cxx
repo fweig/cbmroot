@@ -16,7 +16,7 @@
 #include "CbmRichRing.h"
 //#include "prototype/CbmRichProtProjectionProducer.h"
 
-#include "CbmL1RichENNRingFinder.h"
+//#include "CbmL1RichENNRingFinder.h"
 #include "CbmRichRingFinderHough.h"
 #include "CbmRichRingFinderIdeal.h"
 #include "CbmRichTrackExtrapolationBase.h"
@@ -172,14 +172,14 @@ void CbmRichReconstruction::InitFinder()
   else if (fFinderName == "ideal") {
     fRingFinder = new CbmRichRingFinderIdeal();
   }
-  else if (fFinderName == "enn") {
+  /*else if (fFinderName == "enn") {
     fRingFinder = new CbmL1RichENNRingFinder(0);
-  }
-  else if ((fFinderName == "enn_parallel")) {
-    // fRingFinder = new CbmL1RichENNRingFinderParallel(0);
-    //    } else if (fFinderName == "hough_prototype") {
-    //        fRingFinder = new CbmRichProtRingFinderHough();
-  }
+    }
+    else if ((fFinderName == "enn_parallel")) {
+    fRingFinder = new CbmL1RichENNRingFinderParallel(0);
+    } else if (fFinderName == "hough_prototype") {
+    fRingFinder = new CbmRichProtRingFinderHough();
+    }*/
   else {
     LOG(fatal) << fFinderName << " is not correct name for ring finder algorithm.";
   }

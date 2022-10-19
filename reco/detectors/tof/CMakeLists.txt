@@ -1,42 +1,9 @@
 set(INCLUDE_DIRECTORIES
-
+  ${CBMROOT_SOURCE_DIR}/fles/flestools
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/unpack
+  )
 
-  ${CBMDETECTORBASE_DIR}/tof
-
-  ${CBMDATA_DIR}
-  ${CBMDATA_DIR}/base
-  ${CBMDATA_DIR}/tof
-  ${CBMDATA_DIR}/raw
-  ${CBMDATA_DIR}/global
-
-  ${CBMBASE_DIR}
-
-  ${CBMROOT_SOURCE_DIR}/reco/base
-
-  ${CBMROOT_SOURCE_DIR}/core/eventdisplay
-  ${CBMROOT_SOURCE_DIR}/core/qa
-
-  ${CBMROOT_SOURCE_DIR}/fles/flestools # for Timeslice/Microslice printout formatting tools
-)
-
-include_directories(${INCLUDE_DIRECTORIES})
-
-set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${FLES_IPC_INCLUDE_DIRECTORY} # for fles infos for unpacker
-)
-
-include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${Boost_LIBRARY_DIRS}
-)
-
-link_directories(${LINK_DIRECTORIES})
 
 set(SRCS
   CbmTofBuildDigiEvents.cxx
@@ -58,11 +25,42 @@ set(SRCS
   unpack/CbmTofUnpackMonitor.cxx
 )
 
-set(LINKDEF CbmTofRecoLinkDef.h)
-Set(LIBRARY_NAME CbmTofReco)
-Set(DEFINITIONS ${DEFINITIONS} BUILD_TOF_BEAMTIME)
-Set(DEPENDENCIES
-    CbmTofBase CbmRecoBase CbmBase CbmData CbmFlibFlesTools CbmDisplay Base Minuit
-)
 
-GENERATE_LIBRARY()
+set(LIBRARY_NAME CbmTofReco)
+set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
+set(PUBLIC_DEPENDENCIES
+  CbmBase
+  CbmData
+  CbmRecoBase
+  CbmTofBase
+  FairLogger::FairLogger
+  FairRoot::Base
+  ROOT::Core
+  ROOT::Graf3d
+  ROOT::Hist
+  ROOT::MathCore
+  ROOT::Minuit
+  )
+
+set(PRIVATE_DEPENDENCIES
+  CbmDisplay
+  CbmFlibFlesTools
+  FairRoot::EventDisplay
+  FairRoot::ParBase
+  ROOT::Eve
+  ROOT::Geom
+  ROOT::Gpad
+  ROOT::Graf
+  ROOT::Matrix
+  ROOT::Physics
+  ROOT::RHTTP
+  ROOT::RIO
+  ROOT::Spectrum
+  )
+
+set(INTERFACE_DEPENDENCIES
+  external::fles_ipc
+  )
+
+
+generate_cbm_library()

@@ -15,10 +15,10 @@
 #ifndef LITTRACKFINDERNNVECELECTRON_H_
 #define LITTRACKFINDERNNVECELECTRON_H_
 
-#include "../LitHit.h"
-#include "../LitTrack.h"
 #include "LitDetectorGeometryElectron.h"
+#include "LitHit.h"
 #include "LitHitDataElectron.h"
+#include "LitTrack.h"
 
 namespace lit
 {

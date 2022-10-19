@@ -244,5 +244,30 @@ macro(generate_cbm_library)
   set(PUBLIC_DEPENDENCIES)
   set(PRIVATE_DEPENDENCIES)
   set(INTERFACE_DEPENDENCIES)
+  set(ROOT_HEADERS)
 
 endmacro(generate_cbm_library)
+
+
+macro(generate_cbm_executable)
+#macro for making executable in Cbm
+  Add_Executable(${EXE_NAME} ${SRCS})
+  target_link_libraries(${EXE_NAME} PUBLIC ${DEPENDENCIES} ${PUBLIC_DEPENDENCIES} PRIVATE ${PRIVATE_DEPENDENCIES} INTERFACE ${INTERFACE_DEPENDENCIES})
+
+  if(DEFINED BIN_DESTINATION)
+    install(TARGETS ${EXE_NAME} DESTINATION ${BIN_DESTINATION})
+    else(DEFINED BIN_DESTINATION)
+      install(TARGETS ${EXE_NAME} DESTINATION bin)
+  endif(DEFINED BIN_DESTINATION)
+
+  set(EXE_NAME)
+  set(SRCS)
+  set(HEADERS)
+  set(BIN_DESTINATION)
+  set(DEPENDENCIES)
+  set(DEPENDENCIES)
+  set(PUBLIC_DEPENDENCIES)
+  set(PRIVATE_DEPENDENCIES)
+  set(INTERFACE_DEPENDENCIES)
+
+endmacro(generate_cbm_executable)
