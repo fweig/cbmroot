@@ -117,6 +117,9 @@ public:
 
   /// Checks detector interface: boundary conditions of the parameters
   bool Check() const;
+
+  /// Prints all the parameters into table and saves the table as a string
+  std::string ToString() const;
 };
 
 #endif  // CbmTrackingDetectorInterfaceBase_h

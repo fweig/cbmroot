@@ -11,13 +11,17 @@
 
 #include <Logger.h>
 
+#include <iomanip>
 #include <limits>
 #include <set>
 #include <vector>
 
+// ---------------------------------------------------------------------------------------------------------------------
+//
 bool CbmTrackingDetectorInterfaceBase::Check() const
 {
   bool res = true;
+  LOG(info) << ToString();
   std::stringstream msg;
   msg << "Errors in the detector interface initialization for " << this->GetDetectorName() << ":\n";
 
@@ -27,7 +31,6 @@ bool CbmTrackingDetectorInterfaceBase::Check() const
     res = false && res;
   }
   else {
-
     // Station individual parameters check
     for (int iSt = 0; iSt < this->GetNtrackingStations(); ++iSt) {
       std::string prefix = std::string("\t- Station ") + std::to_string(iSt) + " has ";
@@ -123,4 +126,43 @@ bool CbmTrackingDetectorInterfaceBase::Check() const
   }
 
   return res;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+std::string CbmTrackingDetectorInterfaceBase::ToString() const
+{
+  using std::setfill;
+  using std::setw;
+  std::stringstream table;
+  table << "\nTracking detector interface: " << setw(5) << setfill(' ') << GetDetectorName() << '\n';
+  table << setw(5) << setfill(' ') << "st.No" << ' ';
+  table << setw(10) << setfill(' ') << "z[cm]" << ' ';
+  table << setw(10) << setfill(' ') << "R_min[cm]" << ' ';
+  table << setw(10) << setfill(' ') << "R_max[cm]" << ' ';
+  table << setw(10) << setfill(' ') << "x_max[cm]" << ' ';
+  table << setw(10) << setfill(' ') << "y_max[cm]" << ' ';
+  table << setw(12) << setfill(' ') << "res.time[ns]" << ' ';
+  table << setw(11) << setfill(' ') << "angleF[rad]" << ' ';
+  table << setw(11) << setfill(' ') << "angleB[rad]" << ' ';
+  table << setw(10) << setfill(' ') << "res.F [cm]" << ' ';
+  table << setw(10) << setfill(' ') << "res.B [cm]" << ' ';
+  table << setw(10) << setfill(' ') << "dz [cm]" << ' ';
+  table << setw(10) << setfill(' ') << "RL [cm]" << '\n';
+  for (int iSt = 0; iSt < GetNtrackingStations(); ++iSt) {
+    table << setw(5) << setfill(' ') << iSt << ' ';
+    table << setw(10) << setfill(' ') << GetZ(iSt) << ' ';
+    table << setw(10) << setfill(' ') << GetRmin(iSt) << ' ';
+    table << setw(10) << setfill(' ') << GetRmax(iSt) << ' ';
+    table << setw(10) << setfill(' ') << GetXmax(iSt) << ' ';
+    table << setw(10) << setfill(' ') << GetYmax(iSt) << ' ';
+    table << setw(12) << setfill(' ') << GetTimeResolution(iSt) << ' ';
+    table << setw(11) << setfill(' ') << GetStripsStereoAngleFront(iSt) << ' ';
+    table << setw(11) << setfill(' ') << GetStripsStereoAngleBack(iSt) << ' ';
+    table << setw(10) << setfill(' ') << GetStripsSpatialRmsFront(iSt) << ' ';
+    table << setw(10) << setfill(' ') << GetStripsSpatialRmsBack(iSt) << ' ';
+    table << setw(10) << setfill(' ') << GetThickness(iSt) << ' ';
+    table << setw(10) << setfill(' ') << GetRadLength(iSt) << '\n';
+  }
+  return table.str();
 }

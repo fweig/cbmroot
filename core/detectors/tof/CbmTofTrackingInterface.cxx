@@ -12,6 +12,7 @@
 #include "CbmTofTrackingInterface.h"
 
 #include "CbmTofCell.h"
+#include "CbmTofCreateDigiPar.h"
 #include "CbmTofDigiPar.h"
 
 #include "FairDetector.h"
@@ -40,6 +41,10 @@ CbmTofTrackingInterface::~CbmTofTrackingInterface()
 //
 InitStatus CbmTofTrackingInterface::Init()
 {
+  // create digitization parameters from geometry file
+  CbmTofCreateDigiPar* tofDigiPar = new CbmTofCreateDigiPar("TOF Digi Producer", "TOF task");
+  LOG(info) << "Create DigiPar";
+  tofDigiPar->Init();
   // ** ToF tracking station position z-components initialization **
 
   // Init ToF stations position z-components. For each ToF tracking station the position z-component is calculated
@@ -56,7 +61,6 @@ InitStatus CbmTofTrackingInterface::Init()
         int iAddr         = CbmTofAddress::GetUniqueAddress(iSm, iRpc, 0, 0, iSmType);
         int station       = fDigiBdfPar->GetTrackingStation(iSmType, iSm, iRpc);
         auto* channelInfo = dynamic_cast<CbmTofCell*>(fDigiPar->GetCell(iAddr));
-
         if (nullptr == channelInfo) { break; }
 
         float z = channelInfo->GetZ();
@@ -103,6 +107,7 @@ InitStatus CbmTofTrackingInterface::ReInit()
 //
 void CbmTofTrackingInterface::SetParContainers()
 {
+
   auto runtimeDb = FairRunAna::Instance()->GetRuntimeDb();
   fDigiPar       = dynamic_cast<CbmTofDigiPar*>(runtimeDb->getContainer("CbmTofDigiPar"));
   fDigiBdfPar    = dynamic_cast<CbmTofDigiBdfPar*>(runtimeDb->getContainer("CbmTofDigiBdfPar"));

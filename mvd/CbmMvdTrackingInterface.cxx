@@ -44,7 +44,7 @@ InitStatus CbmMvdTrackingInterface::Init()
   // Check the validity of the parameters
   if (!this->Check()) {
     LOG(error)
-      << "Some errors occurred in the tracking detector interface initialization for MuCh (see information above)";
+      << "Some errors occurred in the tracking detector interface initialization for MVD (see information above)";
     return kFATAL;
   }
 
