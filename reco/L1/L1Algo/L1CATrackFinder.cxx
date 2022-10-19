@@ -1171,24 +1171,14 @@ inline void L1Algo::findTripletsStep3(  // input
     //TODO: why sqrt's? Wouldn't it be faster to skip sqrt() here and
     //TODO: compare the squared differences dqr*dqp later?
 
-    fscal Cqp = sqrt(fabs(T3.C44[i3_4]));
+    fscal Cqp = T3.C44[i3_4];
 
-    {  // legacy
-
-      // TODO: SG: The magic cuts below are the rest from an old conversion of the momentum to char.
-      // TODO: They came from the truncation to the 0-255 range and had no other meaning.
-      // TODO: But for some reason, the efficiency degrades without them.
-      // TODO: It needs to be investigated. If the cuts are necessary, they need to be adjusted.
-
-      // TODO: SZh 04.10.2022: What does this number mean?
-      fscal Cmax = 0.04 * fMaxInvMom[0];  // minimal momentum: 0.05 - 0.1
-      if (Cqp > Cmax) { Cqp = Cmax; }
-      // TODO: SZh 04.10.2022: What does this number mean?
-      Cqp += 0.05 * Cmax;  // TODO: without this line the ghost ratio increases, why?
-    }
+    // TODO: SG: a magic correction that comes from the legacy code
+    // removing it leads to a higher ghost ratio
+    Cqp += 0.001;
 
     fTriplets[istal][Thread].emplace_back(ihitl, ihitm, ihitr, istal, istam, istar, 0, 0, 0, chi2, qp, Cqp, T3.tx[i3_4],
-                                          sqrt(fabs(T3.C22[i3_4])), T3.ty[i3_4], sqrt(fabs(T3.C33[i3_4])));
+                                          T3.C22[i3_4], T3.ty[i3_4], T3.C33[i3_4]);
 
     L1Triplet& tr1 = fTriplets[istal][Thread].back();
     tr1.SetLevel(0);
@@ -1288,8 +1278,9 @@ inline void L1Algo::f5(  // input
               //      if (neigh.GetMSta() != istar) continue; // neighbours should have 2 common hits
               //      if (neigh.GetMHit() != ihitr) continue; //!!!
 
-              if (fabs(trip.GetQp() - neigh.GetQp()) > fPickNeighbour * (trip.GetCqp() + neigh.GetCqp()))
+              if (fabs(trip.GetQp() - neigh.GetQp()) > fPickNeighbour * sqrt(trip.GetCqp() + neigh.GetCqp())) {
                 continue;  // neighbours should have same qp
+              }
 
               // calculate level
               unsigned char jlevel = neigh.GetLevel();
@@ -2656,11 +2647,6 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
 
       unsigned int ID = curr_trip->GetFNeighbour() + in;
 
-      //    ID = curr_trip->neighbours[in];
-      //    const fscal &qp2 = curr_trip->GetQp();
-      //    fscal &Cqp2 = curr_trip->Cqp;
-      //    if (( fabs(qp - qp2) > fPickNeighbour * (Cqp + Cqp2) ) )  continue;
-
       unsigned int Station = TripletId2Station(ID);
       unsigned int Thread  = TripletId2Thread(ID);
       unsigned int Triplet = TripletId2Triplet(ID);
@@ -2672,10 +2658,9 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       const fscal qp1 = curr_trip->GetQp();
       const fscal qp2 = new_trip.GetQp();
       fscal dqp       = fabs(qp1 - qp2);
-      fscal Cqp       = curr_trip->GetCqp();
-      Cqp += new_trip.GetCqp();
+      fscal Cqp       = curr_trip->GetCqp() + new_trip.GetCqp();
       if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
-        if (dqp > fPickNeighbour * Cqp) {
+        if (dqp > fPickNeighbour * sqrt(Cqp)) {
           continue;  // bad neighbour // CHECKME why do we need recheck it?? (it really change result)
         }
       }
@@ -2683,14 +2668,12 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       fscal tx1 = curr_trip->GetTx();
       fscal tx2 = new_trip.GetTx();
       fscal dtx = fabs(tx1 - tx2);
-      fscal Ctx = curr_trip->GetCtx();
-      Ctx += new_trip.GetCtx();
+      fscal Ctx = curr_trip->GetCtx() + new_trip.GetCtx();
 
       fscal ty1 = curr_trip->GetTy();
       fscal ty2 = new_trip.GetTy();
       fscal dty = fabs(ty1 - ty2);
-      fscal Cty = curr_trip->GetCty();
-      Cty += new_trip.GetCty();
+      fscal Cty = curr_trip->GetCty() + new_trip.GetCty();
 
       // it shouldn't happen, but happens sometimes
 
@@ -2704,13 +2687,8 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       assert(std::isfinite(Ctx));
       assert(std::isfinite(Cty));
 
-      if (kMcbm == fTrackingMode) {
-        if (dty > 3 * Cty) continue;
-        if (dtx > 3 * Ctx) continue;
-      }
-
-      if (kGlobal == fTrackingMode) {
-        if (dty > fPickNeighbour * sqrt(Cty)) continue;  //SGtrd2d
+      if (kMcbm == fTrackingMode || kGlobal == fTrackingMode) {
+        if (dty > fPickNeighbour * sqrt(Cty)) continue;
         if (dtx > fPickNeighbour * sqrt(Ctx)) continue;
       }
 
@@ -2729,16 +2707,9 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
         unsigned char new_L = curr_L + 1;
         fscal new_chi2      = curr_chi2;
 
-        dqp = dqp / Cqp;
-
-        if (kGlobal == fTrackingMode) {  //SGtrd2d!!!
-          dtx = dtx / sqrt(Ctx);
-          dty = dty / sqrt(Cty);
-        }
-        else {
-          dtx = dtx / Ctx;  // TODO: SG: it must be /sqrt(Ctx);
-          dty = dty / Cty;  // TODO: SG: it must be /sqrt(Cty);
-        }
+        dqp = dqp / sqrt(Cqp);
+        dtx = dtx / sqrt(Ctx);
+        dty = dty / sqrt(Cty);
 
         assert(std::isfinite(dtx));
         assert(std::isfinite(dty));
