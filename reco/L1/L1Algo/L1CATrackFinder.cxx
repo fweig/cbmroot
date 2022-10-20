@@ -93,12 +93,14 @@ bool L1Algo::checkTripletMatch(const L1Triplet& l, const L1Triplet& r, fscal& dc
   fscal dty = fabs(l.GetTy() - r.GetTy());
   fscal Cty = l.GetCty() + r.GetCty();
 
-  if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
+  if (r.IsMomentumFitted()) {
+    assert(l.IsMomentumFitted());
     if (!std::isfinite(dqp)) return false;
     if (!std::isfinite(Cqp)) return false;
     if (dqp * dqp > fTripletLinkChi2 * Cqp) {
       return false;  // bad neighbour // CHECKME why do we need recheck it?? (it really change result)
     }
+    dchi2 = dqp * dqp / Cqp;
   }
   else {
 
@@ -111,12 +113,9 @@ bool L1Algo::checkTripletMatch(const L1Triplet& l, const L1Triplet& r, fscal& dc
 
     if (dty * dty > fTripletLinkChi2 * Cty) return false;
     if (dtx * dtx > fTripletLinkChi2 * Ctx) return false;
+    dchi2 = 0.5f * (dtx * dtx / Ctx + dty * dty / Cty);
   }
 
-  if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) { dchi2 = dtx * dtx / Ctx + dty * dty / Cty; }
-  else {
-    dchi2 = dqp * dqp / Cqp;
-  }
   if (!std::isfinite(dchi2)) return false;
 
   return true;
@@ -1174,6 +1173,12 @@ inline void L1Algo::findTripletsStep3(  // input
 
   L1HitIndex_t ihitl_prev = 0;
 
+  const L1Station& stal = fParameters.GetStation(istal);
+  const L1Station& stam = fParameters.GetStation(istam);
+  const L1Station& star = fParameters.GetStation(istar);
+
+  bool isMomentumFitted = ((stal.fieldStatus != 0) || (stam.fieldStatus != 0) || (star.fieldStatus != 0));
+
   for (Tindex i3 = 0; i3 < n3; ++i3) {
     const Tindex i3_V = i3 / fvec::size();
     const Tindex i3_4 = i3 % fvec::size();
@@ -1229,6 +1234,7 @@ inline void L1Algo::findTripletsStep3(  // input
                                           T3.C22[i3_4], T3.ty[i3_4], T3.C33[i3_4]);
 
     L1Triplet& tr1 = fTriplets[istal][Thread].back();
+    tr1.SetIsMomentumFitted(isMomentumFitted);
     tr1.SetLevel(0);
 
     ++nstaltriplets;
