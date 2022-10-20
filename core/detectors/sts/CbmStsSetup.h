@@ -203,6 +203,8 @@ private:
      **/
   Bool_t ReadGeometry(TGeoManager* geoManager);
 
+  void RecomputePhysicalAssmbBbox(TGeoManager* geo);
+
 
   /** @brief Read the geometry from a ROOT geometry file
      ** @param fileName  Name of geometry file

@@ -22,18 +22,19 @@
 #include <FairRun.h>    // for FairRun
 #include <Logger.h>     // for FairLogger
 
-#include <TCollection.h>       // for TIter
-#include <TDirectory.h>        // for TDirectory, gDirectory
-#include <TFile.h>             // for TFile
-#include <TGeoManager.h>       // for TGeoManager, gGeoManager
-#include <TGeoMatrix.h>        // for TGeoHMatrix
-#include <TGeoNode.h>          // for TGeoNode
-#include <TGeoPhysicalNode.h>  // for TGeoPhysicalNode
-#include <TGeoVolume.h>        // for TGeoVolume
-#include <TKey.h>              // for TKey
-#include <TList.h>             // for TList
-#include <TString.h>           // for TString, operator<<, operator+
-#include <TSystem.h>           // for TSystem, gSystem
+#include <TCollection.h>        // for TIter
+#include <TDirectory.h>         // for TDirectory, gDirectory
+#include <TFile.h>              // for TFile
+#include <TGeoManager.h>        // for TGeoManager, gGeoManager
+#include <TGeoMatrix.h>         // for TGeoHMatrix
+#include <TGeoNode.h>           // for TGeoNode
+#include <TGeoPhysicalNode.h>   // for TGeoPhysicalNode
+#include <TGeoShapeAssembly.h>  // for TGeoShapeAssembly
+#include <TGeoVolume.h>         // for TGeoVolume
+#include <TKey.h>               // for TKey
+#include <TList.h>              // for TList
+#include <TString.h>            // for TString, operator<<, operator+
+#include <TSystem.h>            // for TSystem, gSystem
 
 #include <cassert>   // for assert
 #include <iomanip>   // for setw, __iom_t6
@@ -347,6 +348,11 @@ Bool_t CbmStsSetup::ReadGeometry(TGeoManager* geo)
   path         = path + "/" + sts->GetName();
   fNode        = new TGeoPhysicalNode(path);
 
+  // --- Force BoundingBox recomputation for AssemblyVolumes as they may have been corrupted by alignment
+  // FIXME: will be fixed in FairRoot and/or Root in near future, temp fix in meantime
+  RecomputePhysicalAssmbBbox(geo);
+  geo->RefreshPhysicalNodes();
+
   // --- Check for old geometry (with stations) or new geometry (with units)
   Bool_t hasStation = kFALSE;
   Bool_t hasUnit    = kFALSE;
@@ -372,6 +378,25 @@ Bool_t CbmStsSetup::ReadGeometry(TGeoManager* geo)
 }
 // -------------------------------------------------------------------------
 
+void CbmStsSetup::RecomputePhysicalAssmbBbox(TGeoManager* geo)
+{
+  TObjArray* pPhysNodesArr = geo->GetListOfPhysicalNodes();
+
+  TGeoPhysicalNode* pPhysNode  = nullptr;
+  TGeoShapeAssembly* pShapeAsb = nullptr;
+
+  Int_t iNbNodes = pPhysNodesArr->GetEntriesFast();
+  for (Int_t iInd = 0; iInd < iNbNodes; ++iInd) {
+    pPhysNode = dynamic_cast<TGeoPhysicalNode*>(pPhysNodesArr->At(iInd));
+    if (pPhysNode) {
+      pShapeAsb = dynamic_cast<TGeoShapeAssembly*>(pPhysNode->GetShape());
+      if (pShapeAsb) {
+        // Should reach here only if the original node was a TGeoShapeAssembly
+        pShapeAsb->ComputeBBox();
+      }
+    }
+  }
+}
 
 // -----   Read geometry from geometry file   ------------------------------
 Bool_t CbmStsSetup::ReadGeometry(const char* fileName)
