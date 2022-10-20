@@ -92,7 +92,7 @@ private:
   /// level k = k-ths triplet along the track counting upstream, from right to left.
   unsigned char fLevel = 0;
 
-  unsigned char fSta = 0;  ///< packed station numbers: staL (4b), staM-1-staL (2b), staR-2-staL (2b)
+  unsigned short fSta = 0;  ///< packed station numbers: staL (12b), staM-1-staL (2b), staR-2-staL (2b)
 };
 
 #endif

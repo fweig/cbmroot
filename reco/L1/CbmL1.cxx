@@ -641,7 +641,7 @@ InitStatus CbmL1::Init()
     trackingIterFastPrim.SetTripletChi2Cut(23.4450f);  // = 7.815 * 3;  // prob = 0.05
     trackingIterFastPrim.SetDoubletChi2Cut(7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
     trackingIterFastPrim.SetPickGather(3.0f);
-    trackingIterFastPrim.SetPickNeighbour(5.0f);
+    trackingIterFastPrim.SetTripletLinkChi2(25.);
     trackingIterFastPrim.SetMaxInvMom(1.0 / 0.5);
     trackingIterFastPrim.SetMaxSlopePV(1.1f);
     trackingIterFastPrim.SetMaxSlope(2.748f);
@@ -657,7 +657,7 @@ InitStatus CbmL1::Init()
     trackingIterAllPrim.SetTripletChi2Cut(23.4450f);
     trackingIterAllPrim.SetDoubletChi2Cut(7.56327f);
     trackingIterAllPrim.SetPickGather(4.0f);
-    trackingIterAllPrim.SetPickNeighbour(5.0f);
+    trackingIterAllPrim.SetTripletLinkChi2(25.);
     trackingIterAllPrim.SetMaxInvMom(1.0 / 0.05);
     trackingIterAllPrim.SetMaxSlopePV(1.1f);
     trackingIterAllPrim.SetMaxSlope(2.748f);
@@ -673,7 +673,7 @@ InitStatus CbmL1::Init()
     trackingIterFastPrim2.SetTripletChi2Cut(21.1075f);
     trackingIterFastPrim2.SetDoubletChi2Cut(7.56327f);
     trackingIterFastPrim2.SetPickGather(3.0f);
-    trackingIterFastPrim2.SetPickNeighbour(5.0f);
+    trackingIterFastPrim2.SetTripletLinkChi2(25.);
     trackingIterFastPrim2.SetMaxInvMom(1.0 / 0.5);
     trackingIterFastPrim2.SetMaxSlopePV(1.1f);
     trackingIterFastPrim2.SetMaxSlope(2.748f);
@@ -689,7 +689,7 @@ InitStatus CbmL1::Init()
     trackingIterAllSec.SetTripletChi2Cut(18.7560f);  // = 6.252 * 3;  // prob = 0.1
     trackingIterAllSec.SetDoubletChi2Cut(7.56327f);
     trackingIterAllSec.SetPickGather(4.0f);
-    trackingIterAllSec.SetPickNeighbour(5.0f);
+    trackingIterAllSec.SetTripletLinkChi2(25.);
     trackingIterAllSec.SetMaxInvMom(1.0 / 0.1);
     trackingIterAllSec.SetMaxSlopePV(1.5f);
     trackingIterAllSec.SetMaxSlope(2.748f);
@@ -705,7 +705,7 @@ InitStatus CbmL1::Init()
     trackingIterFastPrimJump.SetTripletChi2Cut(21.1075f);  // prob = 0.01
     trackingIterFastPrimJump.SetDoubletChi2Cut(7.56327f);
     trackingIterFastPrimJump.SetPickGather(3.0f);
-    trackingIterFastPrimJump.SetPickNeighbour(5.0f);
+    trackingIterFastPrimJump.SetTripletLinkChi2(25.);
     trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.5);
     trackingIterFastPrimJump.SetMaxSlopePV(1.1f);
     trackingIterFastPrimJump.SetMaxSlope(2.748f);
@@ -722,7 +722,7 @@ InitStatus CbmL1::Init()
     trackingIterAllPrimJump.SetTripletChi2Cut(18.7560f);
     trackingIterAllPrimJump.SetDoubletChi2Cut(7.56327f);
     trackingIterAllPrimJump.SetPickGather(4.0f);
-    trackingIterAllPrimJump.SetPickNeighbour(5.0f);
+    trackingIterAllPrimJump.SetTripletLinkChi2(25.);
     trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.1);
     trackingIterAllPrimJump.SetMaxSlopePV(1.1f);
     trackingIterAllPrimJump.SetMaxSlope(2.748f);
@@ -739,7 +739,7 @@ InitStatus CbmL1::Init()
     trackingIterAllSecJump.SetTripletChi2Cut(21.1075f);
     trackingIterAllSecJump.SetDoubletChi2Cut(7.56327f);
     trackingIterAllSecJump.SetPickGather(4.0f);
-    trackingIterAllSecJump.SetPickNeighbour(5.0f);
+    trackingIterAllSecJump.SetTripletLinkChi2(25.);
     trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.1);
     trackingIterAllSecJump.SetMaxSlopePV(1.5f);
     trackingIterAllSecJump.SetMaxSlope(2.748f);
@@ -756,7 +756,7 @@ InitStatus CbmL1::Init()
     trackingIterAllPrimE.SetTripletChi2Cut(23.4450f);
     trackingIterAllPrimE.SetDoubletChi2Cut(7.56327f);
     trackingIterAllPrimE.SetPickGather(4.0f);
-    trackingIterAllPrimE.SetPickNeighbour(5.0f);
+    trackingIterAllPrimE.SetTripletLinkChi2(25.);
     trackingIterAllPrimE.SetMaxInvMom(1.0 / 0.05);
     trackingIterAllPrimE.SetMaxSlopePV(1.1f);
     trackingIterAllPrimE.SetMaxSlope(2.748f);
@@ -773,7 +773,7 @@ InitStatus CbmL1::Init()
     trackingIterAllSecE.SetTripletChi2Cut(18.7560f);
     trackingIterAllSecE.SetDoubletChi2Cut(7.56327f);
     trackingIterAllSecE.SetPickGather(4.0f);
-    trackingIterAllSecE.SetPickNeighbour(5.0f);
+    trackingIterAllSecE.SetTripletLinkChi2(25.);
     trackingIterAllSecE.SetMaxInvMom(1.0 / 0.05);
     trackingIterAllSecE.SetMaxSlopePV(1.5f);
     trackingIterAllSecE.SetMaxSlope(2.748f);
@@ -830,7 +830,7 @@ InitStatus CbmL1::Init()
         it.SetTripletChi2Cut(23.4450f);  // = 7.815 * 3;  // prob = 0.05
         it.SetDoubletChi2Cut(7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
         it.SetPickGather(3.0f);
-        it.SetPickNeighbour(4.0f);
+        it.SetTripletLinkChi2(16.0);
         it.SetMaxInvMom(1.0 / 0.1);  //(1.0 / 0.5);
         it.SetMaxSlopePV(.1f);
         it.SetMaxSlope(.5f);
@@ -850,7 +850,7 @@ InitStatus CbmL1::Init()
       trd2dIter2.SetTripletChi2Cut(2 * 23.4450f);   // = 7.815 * 3;  // prob = 0.05
       trd2dIter2.SetDoubletChi2Cut(4. * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
       trd2dIter2.SetPickGather(3.0f);
-      trd2dIter2.SetPickNeighbour(4.0f);
+      trd2dIter2.SetTripletLinkChi2(16.);
       trd2dIter2.SetMaxInvMom(1.0 / 0.05);  //(1.0 / 0.5);
       trd2dIter2.SetMaxSlopePV(.5f);
       trd2dIter2.SetMaxSlope(.5f);

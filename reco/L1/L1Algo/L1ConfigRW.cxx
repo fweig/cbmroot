@@ -65,7 +65,7 @@ void L1ConfigRW::ReadCAIterations(const YAML::Node& node)
         caIter.SetTripletChi2Cut(input["triplet_chi2_cut"].as<float>(caIter.GetTripletChi2Cut()));
         caIter.SetDoubletChi2Cut(input["doublet_chi2_cut"].as<float>(caIter.GetDoubletChi2Cut()));
         caIter.SetPickGather(input["pick_gather"].as<float>(caIter.GetPickGather()));
-        caIter.SetPickNeighbour(input["pick_neighbour"].as<float>(caIter.GetPickNeighbour()));
+        caIter.SetTripletLinkChi2(input["triplet_link_chi2"].as<float>(caIter.GetTripletLinkChi2()));
         caIter.SetMaxInvMom(1. / input["min_momentum"].as<float>(caIter.GetMaxInvMom()));
         caIter.SetMaxSlopePV(input["max_slope_pv"].as<float>(caIter.GetMaxSlopePV()));
         caIter.SetMaxSlope(input["max_slope"].as<float>(caIter.GetMaxSlope()));

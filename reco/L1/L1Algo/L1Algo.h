@@ -407,6 +407,8 @@ public:
   int GetMcTrackIdForUnusedHit(int iHit);
 
 private:
+  bool checkTripletMatch(const L1Triplet& l, const L1Triplet& r, fscal& dchi2) const;
+
   int fNstationsBeforePipe {0};  ///< number of stations before pipe (MVD stations in CBM)
   int fNfieldStations {0};       ///< number of stations in the field region
   //alignas(16) L1StationsArray_t fStations {};  ///< array of L1Station objects
@@ -560,11 +562,11 @@ private:
 
   /// parameters which are different for different iterations. Set in the begin of CAL1TrackFinder
 
-  float fPickGather {L1Utils::kNaN};     ///< same for attaching additional hits to track
-  float fPickNeighbour {L1Utils::kNaN};  ///< (fPickNeighbour < dp/dp_error)  =>  triplets are neighbours
-  fvec fMaxInvMom {L1Utils::kNaN};       ///< max considered q/p for tracks
-  fvec fMaxSlopePV {L1Utils::kNaN};      ///< max slope (tx\ty) in prim vertex
-  float fMaxSlope {L1Utils::kNaN};       ///< max slope (tx\ty) in 3d hit position of a triplet
+  float fPickGather {L1Utils::kNaN};       ///< same for attaching additional hits to track
+  float fTripletLinkChi2 {L1Utils::kNaN};  ///< (dp2/dp_error2 < fTripletLinkChi2)  =>  triplets are neighbours
+  fvec fMaxInvMom {L1Utils::kNaN};         ///< max considered q/p for tracks
+  fvec fMaxSlopePV {L1Utils::kNaN};        ///< max slope (tx\ty) in prim vertex
+  float fMaxSlope {L1Utils::kNaN};         ///< max slope (tx\ty) in 3d hit position of a triplet
 
   fvec fTargX {L1Utils::kNaN};  ///< target position x coordinate for the current iteration (modifiable)
   fvec fTargY {L1Utils::kNaN};  ///< target position y coordinate for the current iteration (modifiable)

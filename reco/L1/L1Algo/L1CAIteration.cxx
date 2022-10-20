@@ -34,7 +34,7 @@ bool L1CAIteration::Check() const
   res = this->CheckValueLimits<float>("triplet_chi2_cut", fTripletChi2Cut, 0.f, kMaxFloat) && res;
   res = this->CheckValueLimits<float>("doublet_chi2_cut", fDoubletChi2Cut, 0.f, kMaxFloat) && res;
   res = this->CheckValueLimits<float>("pick_gather", fPickGather, 0.f, kMaxFloat) && res;
-  res = this->CheckValueLimits<float>("pick_neighbour", fPickNeighbour, 0.f, kMaxFloat) && res;
+  res = this->CheckValueLimits<float>("triplet_link_chi2", fTripletLinkChi2, 0.f, kMaxFloat) && res;
   res = this->CheckValueLimits<float>("min_momentum", fMaxInvMom, 1.f / kMaxFloat, 1.f / 0.001f) && res;
   res = this->CheckValueLimits<float>("max_slope_pv", fMaxSlopePV, 0.f, kMaxFloat) && res;
   res = this->CheckValueLimits<float>("max_slope", fMaxSlope, 0.f, kMaxFloat) && res;
@@ -82,7 +82,7 @@ std::string L1CAIteration::ToString(int indentLevel) const
   aStream << indent << indCh << "Triplet chi2 cut:                       " << fTripletChi2Cut << '\n';
   aStream << indent << indCh << "Doublet chi2 cut:                       " << fDoubletChi2Cut << '\n';
   aStream << indent << indCh << "Pick gather:                            " << fPickGather << '\n';
-  aStream << indent << indCh << "Pick neighbour:                         " << fPickNeighbour << '\n';
+  aStream << indent << indCh << "Triplet link chi2:                      " << fTripletLinkChi2 << '\n';
   aStream << indent << indCh << "Max inverse momentum:                   " << fMaxInvMom << '\n';
   aStream << indent << indCh << "Max slope at primary vertex:            " << fMaxSlopePV << '\n';
   aStream << indent << indCh << "Max slope:                              " << fMaxSlope << '\n';

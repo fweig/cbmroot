@@ -74,6 +74,54 @@ using std::cout;
 using std::endl;
 
 
+bool L1Algo::checkTripletMatch(const L1Triplet& l, const L1Triplet& r, fscal& dchi2) const
+{
+  dchi2 = 0.;
+
+  if (r.GetMHit() != l.GetRHit()) return false;
+  if (r.GetLHit() != l.GetMHit()) return false;
+
+  if (r.GetMSta() != l.GetRSta()) return false;
+  if (r.GetLSta() != l.GetMSta()) return false;
+
+  fscal dqp = fabs(l.GetQp() - r.GetQp());
+  fscal Cqp = l.GetCqp() + r.GetCqp();
+
+  fscal dtx = fabs(l.GetTx() - r.GetTx());
+  fscal Ctx = l.GetCtx() + r.GetCtx();
+
+  fscal dty = fabs(l.GetTy() - r.GetTy());
+  fscal Cty = l.GetCty() + r.GetCty();
+
+  if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
+    if (!std::isfinite(dqp)) return false;
+    if (!std::isfinite(Cqp)) return false;
+    if (dqp * dqp > fTripletLinkChi2 * Cqp) {
+      return false;  // bad neighbour // CHECKME why do we need recheck it?? (it really change result)
+    }
+  }
+  else {
+
+    // it shouldn't happen, but happens sometimes
+
+    if (!std::isfinite(dtx)) return false;
+    if (!std::isfinite(dty)) return false;
+    if (!std::isfinite(Ctx)) return false;
+    if (!std::isfinite(Cty)) return false;
+
+    if (dty * dty > fTripletLinkChi2 * Cty) return false;
+    if (dtx * dtx > fTripletLinkChi2 * Ctx) return false;
+  }
+
+  if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) { dchi2 = dtx * dtx / Ctx + dty * dty / Cty; }
+  else {
+    dchi2 = dqp * dqp / Cqp;
+  }
+  if (!std::isfinite(dchi2)) return false;
+
+  return true;
+}
+
 inline void L1Algo::findSingletsStep0(  // input
   Tindex start_lh, Tindex n1_l, L1HitPoint* Hits_l,
   // output
@@ -1204,7 +1252,8 @@ inline void L1Algo::findTripletsStep3(  // input
 
       L1Triplet& curNeighbour = fTriplets[neighStation][neighThread][neighTriplet];
 
-      if ((curNeighbour.GetMHit() != ihitr)) continue;
+      fscal dchi2 = 0.;
+      if (!checkTripletMatch(tr1, curNeighbour, dchi2)) continue;
 
       if (tr1.GetFNeighbour() == 0) tr1.SetFNeighbour(neighLocation);
 
@@ -1278,9 +1327,8 @@ inline void L1Algo::f5(  // input
               //      if (neigh.GetMSta() != istar) continue; // neighbours should have 2 common hits
               //      if (neigh.GetMHit() != ihitr) continue; //!!!
 
-              if (fabs(trip.GetQp() - neigh.GetQp()) > fPickNeighbour * sqrt(trip.GetCqp() + neigh.GetCqp())) {
-                continue;  // neighbours should have same qp
-              }
+              fscal dchi2 = 0.;
+              if (!checkTripletMatch(trip, neigh, dchi2)) continue;
 
               // calculate level
               unsigned char jlevel = neigh.GetLevel();
@@ -1818,15 +1866,15 @@ void L1Algo::CATrackFinder()
       {
         // --- SET PARAMETERS FOR THE ITERATION ---
 
-        fFirstCAstation = caIteration.GetFirstStationIndex();
-        fTrackChi2Cut   = caIteration.GetTrackChi2Cut();
-        fDoubletChi2Cut = caIteration.GetDoubletChi2Cut();  //11.3449 * 2.f / 3.f;  // prob = 0.1
-        fTripletChi2Cut = caIteration.GetTripletChi2Cut();  //21.1075;  // prob = 0.01%
-        fPickGather     = caIteration.GetPickGather();      //3.0;
-        fPickNeighbour  = caIteration.GetPickNeighbour();   //5.0;
-        fMaxInvMom      = caIteration.GetMaxInvMom();       //1.0 / 0.5;  // max considered q/p
-        fMaxSlopePV     = caIteration.GetMaxSlopePV();      //1.1;
-        fMaxSlope       = caIteration.GetMaxSlope();        //2.748;  // corresponds to 70 grad
+        fFirstCAstation  = caIteration.GetFirstStationIndex();
+        fTrackChi2Cut    = caIteration.GetTrackChi2Cut();
+        fDoubletChi2Cut  = caIteration.GetDoubletChi2Cut();   //11.3449 * 2.f / 3.f;  // prob = 0.1
+        fTripletChi2Cut  = caIteration.GetTripletChi2Cut();   //21.1075;  // prob = 0.01%
+        fPickGather      = caIteration.GetPickGather();       //3.0;
+        fTripletLinkChi2 = caIteration.GetTripletLinkChi2();  //5.0;
+        fMaxInvMom       = caIteration.GetMaxInvMom();        //1.0 / 0.5;  // max considered q/p
+        fMaxSlopePV      = caIteration.GetMaxSlopePV();       //1.1;
+        fMaxSlope        = caIteration.GetMaxSlope();         //2.748;  // corresponds to 70 grad
 
         // define the target
         fTargX = fParameters.GetTargetPositionX();
@@ -2652,42 +2700,9 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       unsigned int Triplet = TripletId2Triplet(ID);
 
       const L1Triplet& new_trip = fTriplets[Station][Thread][Triplet];
-      if ((new_trip.GetMHit() != curr_trip->GetRHit())) continue;
-      if ((new_trip.GetLHit() != curr_trip->GetMHit())) continue;
 
-      fscal dqp = fabs(curr_trip->GetQp() - new_trip.GetQp());
-      fscal Cqp = curr_trip->GetCqp() + new_trip.GetCqp();
-
-      fscal dtx = fabs(curr_trip->GetTx() - new_trip.GetTx());
-      fscal Ctx = curr_trip->GetCtx() + new_trip.GetCtx();
-
-      fscal dty = fabs(curr_trip->GetTy() - new_trip.GetTy());
-      fscal Cty = curr_trip->GetCty() + new_trip.GetCty();
-
-      if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
-        if (!std::isfinite(dqp)) continue;
-        if (!std::isfinite(Cqp)) continue;
-        if (dqp > fPickNeighbour * sqrt(Cqp)) {
-          continue;  // bad neighbour // CHECKME why do we need recheck it?? (it really change result)
-        }
-      }
-      else {
-
-        // it shouldn't happen, but happens sometimes
-
-        if (!std::isfinite(dtx)) continue;
-        if (!std::isfinite(dty)) continue;
-        if (!std::isfinite(Ctx)) continue;
-        if (!std::isfinite(Cty)) continue;
-
-        assert(std::isfinite(dtx));
-        assert(std::isfinite(dty));
-        assert(std::isfinite(Ctx));
-        assert(std::isfinite(Cty));
-
-        if (dty > fPickNeighbour * sqrt(Cty)) continue;
-        if (dtx > fPickNeighbour * sqrt(Ctx)) continue;
-      }
+      fscal dchi2 = 0.;
+      if (!checkTripletMatch(*curr_trip, new_trip, dchi2)) continue;
 
       if (fvHitKeyFlags[(*vHitsUnused)[new_trip.GetLHit()].f]
           || fvHitKeyFlags[(*vHitsUnused)[new_trip.GetLHit()].b]) {  //hits are used
@@ -2702,21 +2717,8 @@ inline void L1Algo::CAFindTrack(int ista, L1Branch& best_tr, unsigned char& best
       else {  // hit is not used: add the left hit from the new triplet to the current track
 
         unsigned char new_L = curr_L + 1;
-        fscal new_chi2      = curr_chi2;
+        fscal new_chi2      = curr_chi2 + dchi2;
 
-        if (kGlobal == fTrackingMode || kMcbm == fTrackingMode) {
-          dtx = dtx / sqrt(Ctx);
-          dty = dty / sqrt(Cty);
-
-          assert(std::isfinite(dtx));
-          assert(std::isfinite(dty));
-          new_chi2 += dtx * dtx;
-          new_chi2 += dty * dty;
-        }
-        else {
-          dqp = dqp / sqrt(Cqp);
-          new_chi2 += dqp * dqp;
-        }
 
         if (0) {  //SGtrd2d debug!!
           int mc01 = GetMcTrackIdForUnusedHit(curr_trip->GetLHit());
