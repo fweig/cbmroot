@@ -37,7 +37,7 @@ private:
   std::vector<LmvmHist*> fH;
   LmvmHist fHMean;
 
-  int fRebMinv = 50;  // Rebin for minv histograms
+  int fRebMinv = 5;  // Rebin for minv histograms (binSize in Task.cxx is 10 MeV)
 
   std::string fOutputDir;  // output directory for figures
 
@@ -49,7 +49,7 @@ private:
   template<class T>
   T* GetCocktailMinv(const std::string& name, ELmvmAnaStep step);
 
-  TH1D* GetCocktailMinvH1(ELmvmAnaStep step);
+  TH1D* GetCocktailMinvH1(const std::string& name, ELmvmAnaStep step);
 
   /**
      * \brief Draw S/Bg vs minv.
@@ -58,13 +58,18 @@ private:
   void DrawMinvAll();
   void DrawMinv(ELmvmAnaStep step);
   void DrawMinvPtAll();
+  void DrawMomRecoPrecision();
   void DrawMinvBgSourcesAll();
 
   /**
      * \brief Draw invariant mass spectra for all signal types for specified analysis step with BG reduced by combinatorial BG.
-     * \param[in] step Analysis step.
      */
   void DrawMinvCombBgAndSignal();
+
+  /**
+     * \brief Draw invariant mass spectra in official style.
+     */
+  void DrawMinvOfficialStyle();  
 
   template<class T>
   void CreateMeanHist(const std::string& name, int nofEvents, int nofRebins = -1);  // if nRebin = -1, no rebin
@@ -99,6 +104,40 @@ private:
      */
   void SBgRangeAll();
 
+  /**
+     * \brief Draw properties of misidentified particles.
+     */
+  void InvestigateMisid();
+
+  void DrawBetaMomSpectra();
+
+  void DrawMomPluto();
+
+  void DrawTofM2();
+
+  void DrawGTrackVertex();
+
+  void DrawSignificancesAll();
+  void DrawSignificance(TH2D* hEl, TH2D* hBg, const std::string& name, double minZ, double maxZ, const std::string& option);
+
+  void DrawCutEffSignal();
+
+  void DrawPionSuppression();
+
+  // investigate misidentifications
+  void DrawMomentum();
+  void DrawPtYAndTofM2Elid();
+  void DrawTofPilePids();
+  void DrawTofHitXY();
+  void DrawPurity();
+  void DrawPurityHistText(TH2D* h);
+  void DrawChi2();
+
+  void DrawMinvScaleValues();
+
+  /**
+     * \brief Draw properties of misidentified particles in comparison with not-misidentified.
+     */
 
   void DrawSBgResults();
 
@@ -109,6 +148,7 @@ private:
      */
   void SaveCanvasToImage();
 
+  double fZ = -44.; // z-position of target
 
   LmvmDrawAll(const LmvmDrawAll&);
   LmvmDrawAll operator=(const LmvmDrawAll&);

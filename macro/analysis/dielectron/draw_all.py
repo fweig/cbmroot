@@ -26,7 +26,7 @@ def main():
 
     resultDirAna = resultDirPP + "/lmvm/"
     inRootAna = dataDir + plutoParticle + "/analysis.all.root"
-    os.system(('root -l -b -q {}/draw_analysis.C\(\\"{}\\",\\"{}\\",\\"{}\\"\)').format(macroDir, inRootAna, resultDirAna, useMvd))
+    #os.system(('root -l -b -q {}/draw_analysis.C\(\\"{}\\",\\"{}\\",\\"{}\\"\)').format(macroDir, inRootAna, resultDirAna, useMvd))
     
     resultDirLitqa = resultDirPP + "/litqa/"
     inRootLitqa = dataDir + plutoParticle + "/litqa.all.root"
@@ -40,7 +40,7 @@ def main():
   allOmegaD = dataDir + "/omegadalitz/analysis.all.root"
   resultDirAll = resultDir + "/all/"
 
- #os.system(('root -l -b -q {}/draw_analysis_all.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\"\)').format(macroDir, allInmed, allQgp, allOmega, allPhi, allOmegaD, resultDirAll, useMvd))
+  os.system(('root -l -b -q {}/draw_analysis_all.C\(\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\",\\"{}\\"\)').format(macroDir, allInmed, allQgp, allOmega, allPhi, allOmegaD, resultDirAll, useMvd))
 
 if __name__ == '__main__':
   main()

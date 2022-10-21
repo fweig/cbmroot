@@ -4,6 +4,8 @@
 
 #include "LmvmUtils.h"
 
+#include "Logger.h"
+
 #include "CbmKFVertex.h"
 #include "CbmL1PFFitter.h"
 #include "CbmMCTrack.h"
@@ -17,6 +19,7 @@
 
 #include <iostream>
 
+//#include "L1Field.h"
 #include "LmvmCand.h"
 #include "LmvmDef.h"
 
@@ -31,10 +34,11 @@ void LmvmUtils::CalculateAndSetTrackParams(LmvmCand* cand, CbmStsTrack* stsTrack
   vector<CbmStsTrack> stsTracks;
   stsTracks.resize(1);
   stsTracks[0] = *stsTrack;
+  //vector<L1FieldRegion> vField;  // TODO: this line or next (think of #include "L1Field.h" in header!)
   vector<CbmL1PFFitter::PFFieldRegion> vField;
   vector<float> chiPrim;
   fPFFitter.GetChiToVertex(stsTracks, vField, chiPrim, kfVertex, 3e6);
-  cand->fChi2sts                 = stsTracks[0].GetChiSq() / stsTracks[0].GetNDF();
+  cand->fChi2Sts                 = stsTracks[0].GetChiSq() / stsTracks[0].GetNDF();
   cand->fChi2Prim                = chiPrim[0];
   const FairTrackParam* vtxTrack = stsTracks[0].GetParamFirst();
 
@@ -139,7 +143,8 @@ bool LmvmUtils::IsMcPairBg(const CbmMCTrack* mctP, const CbmMCTrack* mctM, TClon
   bool isGamma = IsMcPairGamma(mctP, mctM, mcTracks);
   bool isEta   = IsMcPairEta(mctP, mctM, mcTracks);
   bool isPi0   = IsMcPairPi0(mctP, mctM, mcTracks);
-  return (!isEta) && (!isGamma) && (!isPi0) && (!(IsMcSignalEl(mctP) || IsMcSignalEl(mctM)));
+  //return (!isEta) && (!isGamma) && (!isPi0) && (!(IsMcSignalEl(mctP) && IsMcSignalEl(mctM))); // TODO: this line or next?
+  return (!isEta) && (!isPi0) && (!(IsMcSignalEl(mctP) && IsMcSignalEl(mctM)));
 }
 
 ELmvmSrc LmvmUtils::GetMcPairSrc(const CbmMCTrack* mctP, const CbmMCTrack* mctM, TClonesArray* mcTracks)
@@ -179,7 +184,8 @@ bool LmvmUtils::IsMcPairBg(const LmvmCand& candP, const LmvmCand& candM)
   bool isGamma = IsMcPairGamma(candP, candM);
   bool isEta   = IsMcPairEta(candP, candM);
   bool isPi0   = IsMcPairPi0(candP, candM);
-  return (!isEta) && (!isGamma) && (!isPi0) && (!(candP.IsMcSignal() || candM.IsMcSignal()));
+  //return (!isEta) && (!isGamma) && (!isPi0) && (!(candP.IsMcSignal() && candM.IsMcSignal())); // TODO: this line or next?
+  return (!isEta) && (!isPi0) && (!(candP.IsMcSignal() && candM.IsMcSignal()));
 }
 
 ELmvmSrc LmvmUtils::GetMcPairSrc(const LmvmCand& candP, const LmvmCand& candM)
@@ -241,17 +247,33 @@ void LmvmUtils::IsElectron(int globalTrackIndex, double momentum, double momentu
   bool richEl    = CbmLitGlobalElectronId::GetInstance().IsRichElectron(globalTrackIndex, momentum);
   cand->fRichAnn = CbmLitGlobalElectronId::GetInstance().GetRichAnn(globalTrackIndex, momentum);
 
-  bool trdEl = (momentum < 1.) ? true : CbmLitGlobalElectronId::GetInstance().IsTrdElectron(globalTrackIndex, momentum);
-  //bool trdEl     = CbmLitGlobalElectronId::GetInstance().IsTrdElectron(globalTrackIndex, momentum);
-
-  //cand->fTrdAnn  = CbmLitGlobalElectronId::GetInstance().GetTrdAnn(globalTrackIndex, momentum); //TODO: uncomment this and delete next line when TrdAnn is working again
-  cand->fTrdLikeEl = CbmLitGlobalElectronId::GetInstance().GetTrdAnn(globalTrackIndex, momentum);
+  bool trdEl = CbmLitGlobalElectronId::GetInstance().IsTrdElectron(globalTrackIndex, momentum);
+  // Additional TRD Cut
+  //if (cand->fChi2Trd > 6.) trdEl = false;
 
   bool tofEl     = CbmLitGlobalElectronId::GetInstance().IsTofElectron(globalTrackIndex, momentum);
   cand->fMass2   = CbmLitGlobalElectronId::GetInstance().GetTofM2(globalTrackIndex, momentum);
-  bool isMomCut  = (momentumCut > 0.) ? (momentum < momentumCut) : true;
+  // Additional ToF Cut
+  /*if (momentum >= 0.5 && momentum <= 2.) {
+    double slope = 4.;
+    double b = 0.;
+    if (cand->fTofDist > momentum*slope + b) tofEl = false;
+  }*/
 
+  bool isMomCut  = (momentumCut > 0.) ? (momentum < momentumCut) : true;
   cand->fIsElectron = (richEl && trdEl && tofEl && isMomCut);
+}
+
+void LmvmUtils::IsRichElectron(int globalTrackIndex, double momentum, LmvmCand* cand) {
+  cand->fIsRichElectron = CbmLitGlobalElectronId::GetInstance().IsRichElectron(globalTrackIndex, momentum);
+}
+
+void LmvmUtils::IsTrdElectron(int globalTrackIndex, double momentum, LmvmCand* cand) {
+  cand->fIsTrdElectron = (momentum < 1.) ? true : CbmLitGlobalElectronId::GetInstance().IsTrdElectron(globalTrackIndex, momentum);
+}
+
+void LmvmUtils::IsTofElectron(int globalTrackIndex, double momentum, LmvmCand* cand) {
+  cand->fIsTofElectron = CbmLitGlobalElectronId::GetInstance().IsTofElectron(globalTrackIndex, momentum);
 }
 
 void LmvmUtils::IsElectronMc(LmvmCand* cand, TClonesArray* mcTracks, double pionMisidLevel)
@@ -277,4 +299,46 @@ string LmvmUtils::GetChargeStr(const CbmMCTrack* mct)
 {
   if (mct->GetCharge() == 0) return "0";
   return (mct->GetCharge() > 0) ? "+" : "-";
+}
+
+double LmvmUtils::GetMassScaleInmed(double minv)  // TODO: make these more elegant and delete cout's
+{
+  int    nArray = sizeof(fMinvArray);
+  double weight = -1.;  
+
+  if (minv < fMinvArray[0]) return fScaleArrayInmed[0];
+  else {
+    for (int i = 1; i < nArray; i++) {
+      if (fMinvArray[i] > minv) {
+        double dy    = fScaleArrayInmed[i] - fScaleArrayInmed[i-1];
+        double dx    = fMinvArray[i] - fMinvArray[i-1];
+        double slope = dy/dx;
+        double dLeft = minv - fMinvArray[i-1];
+        weight       = fScaleArrayInmed[i-1] + slope * dLeft;
+        return weight;
+      }
+    }
+  }
+  return weight;
+}
+
+double LmvmUtils::GetMassScaleQgp(double minv)  // TODO: make these more elegant and delete cout's
+{
+  int    nArray = sizeof(fMinvArray);
+  double weight = -1.;  
+
+  if (minv < fMinvArray[0]) return fScaleArrayQgp[0];
+  else {
+    for (int i = 1; i < nArray; i++) {
+      if (fMinvArray[i] > minv) {
+        double dy    = fScaleArrayQgp[i] - fScaleArrayQgp[i-1];
+        double dx    = fMinvArray[i] - fMinvArray[i-1];
+        double slope = dy/dx;
+        double dLeft = minv - fMinvArray[i-1];
+        weight       = fScaleArrayQgp[i-1] + slope * dLeft;
+        return weight;
+      }
+    }
+  }
+  return weight;
 }

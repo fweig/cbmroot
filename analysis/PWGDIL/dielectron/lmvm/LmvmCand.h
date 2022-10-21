@@ -49,11 +49,23 @@ public:
   TVector3 fPosition;
   TVector3 fMomentum;
   double fMass     = 0.;
+  double fMassSig  = -1.; // mass of signal mother (remains '-1' if candidate is not signal electron)
   double fEnergy   = 0.;
   double fRapidity = 0.;
   int fCharge      = 0;
   double fChi2Prim = 0.;
-  double fChi2sts  = 0.;
+  double fChi2Sts  = 0.;
+  double fChi2Rich = 0.;
+  double fChi2Trd  = 0.;
+  double fChi2Tof  = 0.;
+  double fLength   = 0.; // length of according global track
+  double fTime     = 0.; //
+  double fTofDist  = -1.; // Hit-Track-Distance in ToF 
+
+  // To investigate misidentifications in single sub detectors
+  bool fIsRichElectron = false;
+  bool fIsTrdElectron  = false;
+  bool fIsTofElectron  = false;  
 
   int fMcMotherId    = -1;
   int fEventNumber   = 0;
@@ -64,8 +76,10 @@ public:
   int fStsInd        = -1;
   int fRichInd       = -1;
   int fTrdInd        = -1;
-  int fTofInd        = -1;
+  int fTofInd        = -1;// TODO: change to "fTofHitInd"
+  int fTofTrackInd   = -1; 
   int fMcPdg         = -1;
+  int fGTrackInd     = -1;
   double fRichAnn    = 0.;
   double fTrdAnn     = 0.;
   double fMass2      = 0.;
@@ -75,7 +89,7 @@ public:
   // Cuts. If true then cut is passed
   bool fIsChi2Prim = false;
   bool fIsElectron = false;
-  bool fIsGammaCut = true;  // Will be set to 'false' as soon as a partner with minv < 25 MeV is found
+  bool fIsGammaCut = true;   // Will be set to 'false' as soon as a partner with minv < 25 MeV is found
   bool fIsMvd1Cut  = false;
   bool fIsMvd2Cut  = false;
   bool fIsTtCut    = false;

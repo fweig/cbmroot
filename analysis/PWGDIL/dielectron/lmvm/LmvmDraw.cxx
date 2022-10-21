@@ -56,9 +56,12 @@ void LmvmDraw::DrawHistFromFile(const string& fileName, const string& outputDir,
   fH.fHM.ScaleByPattern(".*", 1. / fNofEvents);
   RebinMinvHist();
 
-  //DrawAnaStepMany("pair_pty", [this](ELmvmAnaStep step) { DrawPtY(step); });
   DrawAnaStepMany("pty_pair_signal", [this](ELmvmAnaStep step) { DrawPtY("hPtYPairSignal", step); });
-  DrawAnaStepMany("pty_cand", [this](ELmvmAnaStep step) { DrawPtY("hPtYCandidate", step); });
+  for (const auto& cand : fH.fCandNames) {
+    const string& cName = "hPtY_cands/" + cand;
+    const string& hName = "hPtY_cands_" + cand;
+    DrawAnaStepMany(cName, [this, hName](ELmvmAnaStep step) { DrawPtY(hName, step); });
+  }
   DrawAnaStepMany("pair_rapidity", [this](ELmvmAnaStep step) { DrawRapidity(step); });
   //DrawAnaStepMany("pair_pty_efficiency", [this](ELmvmAnaStep step) { DrawPtYEfficiency(step); });  // TODO: causes segmentation violation error
   DrawAnaStepMany("minv_sbg", [this](ELmvmAnaStep step) { DrawMinvSBg(step); });
@@ -82,9 +85,10 @@ void LmvmDraw::DrawHistFromFile(const string& fileName, const string& outputDir,
   DrawMismatchesAndGhosts();
   DrawMvdCutQa();
   DrawMvdAndStsHist();
-  DrawAccRecMom();
+  DrawAccRecVsMom(); // TODO: finish this method!
   DrawPmtXY();
   DrawMinvBg();  // TODO: do not extra method
+  DrawBetaMomSpectra();
   DrawCombinatorialPairs();
   SaveCanvasToImage();
 
@@ -118,70 +122,16 @@ void LmvmDraw::RebinMinvHist()
   fH.Rebin("hMinvBgSource", fH.fBgPairSrcNames, fH.fAnaStepNames, nGroupBgSrc);
 }
 
-TH1D* LmvmDraw::CreateSignificanceH1(TH1D* s, TH1D* bg, const string& name, const string& option)
+void LmvmDraw::DrawBetaMomSpectra()
 {
-  int nBins  = s->GetNbinsX();
-  TH1D* hsig = new TH1D(name.c_str(), name.c_str(), nBins, s->GetXaxis()->GetXmin(), s->GetXaxis()->GetXmax());
-  hsig->GetXaxis()->SetTitle(s->GetXaxis()->GetTitle());
-
-  // "right" - reject right part of the histogram. value > cut -> reject
-  if (option == "right") {
-    for (int i = 1; i <= nBins; i++) {
-      double sumSignal = s->Integral(1, i, "width");
-      double sumBg     = bg->Integral(1, i, "width");
-      double sign      = (sumSignal + sumBg != 0.) ? sumSignal / std::sqrt(sumSignal + sumBg) : 0.;
-      hsig->SetBinContent(i, sign);
-      hsig->GetYaxis()->SetTitle("Significance");
-    }
-  }
-  // "left" - reject left part of the histogram. value < cut -> reject
-  else if (option == "left") {
-    for (int i = nBins; i >= 1; i--) {
-      double sumSignal = s->Integral(i, nBins, "width");
-      double sumBg     = bg->Integral(i, nBins, "width");
-      double sign      = (sumSignal + sumBg != 0.) ? sumSignal / std::sqrt(sumSignal + sumBg) : 0.;
-      hsig->SetBinContent(i, sign);
-      hsig->GetYaxis()->SetTitle("Significance");
-    }
-  }
-  return hsig;
-}
-
-TH2D* LmvmDraw::CreateSignificanceH2(TH2D* signal, TH2D* bg, const string& name, const string& title)
-{
-  double xmin  = 1.0;
-  double xmax  = 5.0;
-  double ymin  = 1.0;
-  double ymax  = 5.0;
-  double delta = 0.1;
-  int nStepsX  = (int) ((xmax - xmin) / delta);
-  int nStepsY  = (int) ((ymax - ymin) / delta);
-
-  TH2D* hsig = new TH2D(name.c_str(), title.c_str(), nStepsX, xmin, xmax, nStepsY, ymin, ymax);
-
-  int binX = 1;
-  for (double xcut = xmin; xcut <= xmax; xcut += delta, binX++) {
-    int binY = 1;
-    for (double ycut = ymin; ycut <= ymax; ycut += delta, binY++) {
-      double sumSignal = 0;
-      double sumBg     = 0;
-      for (int ix = 1; ix <= signal->GetNbinsX(); ix++) {
-        for (int iy = 1; iy <= signal->GetNbinsY(); iy++) {
-          double xc  = signal->GetXaxis()->GetBinCenter(ix);
-          double yc  = signal->GetYaxis()->GetBinCenter(iy);
-          double val = -1 * (ycut / xcut) * xc + ycut;
-
-          if (!(xc < xcut && yc < val)) {
-            sumSignal += signal->GetBinContent(ix, iy);
-            sumBg += bg->GetBinContent(ix, iy);
-          }
-        }
-      }
-      double sign = (sumSignal + sumBg != 0.) ? sumSignal / std::sqrt(sumSignal + sumBg) : 0.;
-      hsig->SetBinContent(binX, binY, sign);
-    }
-  }
-  return hsig;
+  TH2D* hPos = fH.H2Clone("hBetaMom_cands_plutoEl+");
+  TH2D* hEl  = fH.H2Clone("hBetaMom_cands_plutoEl-");
+  TCanvas* c = fH.fHM.CreateCanvas("betaMom/", "betaMom/", 1600, 800);
+  c->Divide(2,1);
+  c->cd(1);
+  DrawH2(hEl, kLinear, kLinear, kLog, "colz");
+  c->cd(2);
+  DrawH2(hPos, kLinear, kLinear, kLog, "colz");
 }
 
 void LmvmDraw::DrawCutEffH1(const string& hist, const string& option)
@@ -440,8 +390,7 @@ void LmvmDraw::Draw1DCut(const string& hist, const string& sigOption, double cut
   DrawCutEffH1(hist, sigOption);
 
   c->cd(3);
-  TH1D* sign =
-    CreateSignificanceH1(fH.H1(hist, ELmvmSrc::Signal), fH.H1(hist, ELmvmSrc::Bg), hist + "_significance", sigOption);
+  TH1D* sign = fH.CreateSignificanceH1(fH.H1(hist, ELmvmSrc::Signal), fH.H1(hist, ELmvmSrc::Bg), hist + "_significance", sigOption);
   DrawH1(sign, kLinear, kLinear, "hist");
 }
 
@@ -639,37 +588,21 @@ void LmvmDraw::DrawElPurity()
                "Tracks per event x10^{3}");
 
   // Occurency of Electrons and not-Electrons for various cut categories
-  for (const string& hName : {"hAnnRichVsMomPur", "hTrdElLikePur", "hTofM2Pur"}) {
+  for (const string& hName : {"hAnnRichVsMomPur", "hTrdElLikePur"}) {
     string cName = "purity/cuts_" + hName;
     TCanvas* c   = fH.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 2400, 800);
     c->Divide(3, 1);
     int hi = 1;
     for (const string& id : {"El", "Bg"}) {
       TH2D* hist = fH.H2Clone(hName + "_" + id);
-      if (hName == "hTofM2Pur") {
-        hist->GetXaxis()->SetRangeUser(0., 3.);
-        hist->GetYaxis()->SetRangeUser(-0.1, 0.05);
-      }
       c->cd(hi);
       DrawH2(hist, kLinear, kLinear, kLog, "COLZ");
       DrawTextOnPad(id.c_str(), 0.6, 0.89, 0.7, 0.99);
-
-      if (hName == "hTofM2Pur") {  // TODO: these drawn lines needed?
-        vector<TLine*> lines {new TLine(0., 0.01, 1.3, 0.01), new TLine(1.3, 0.01, 2.5, 0.022)};  // set by hand
-        for (size_t i = 0; i < lines.size(); i++) {
-          lines[i]->SetLineWidth(2.);
-          lines[i]->Draw();
-        }
-      }
       hi++;
     }
     c->cd(hi);
     TH2D* ratio = fH.H2Clone(hName + "_El");
     ratio->Divide(fH.H2(hName + "_Bg"));
-    if (hName == "hTofM2Pur") {
-      ratio->GetXaxis()->SetRangeUser(0., 3.);
-      ratio->GetYaxis()->SetRangeUser(-0.1, 0.05);
-    }
     DrawH2(ratio, kLinear, kLinear, kLog, "COLZ");
     DrawTextOnPad("Ratio El/Bg", 0.4, 0.85, 0.8, 0.99);
   }
@@ -860,26 +793,26 @@ void LmvmDraw::DrawMinvMatching(ELmvmAnaStep step)
   fH.DrawAnaStepOnPad(step);
 }
 
-void LmvmDraw::DrawAccRecMom()
+void LmvmDraw::DrawAccRecVsMom()
 {
-  // Acceptance and reconstruction yields for various detector combinations
-  for (const int& pdg : {11, 211, 2212}) {
+  // Acceptance and reconstruction yields cs. momentum for various detector combinations
+  for (const int& pdg : {11, 211, 2212, 321}) {
     vector<string> subNames {"mc", "acc", "recSts", "recStsRich", "recStsRichTrd", "recStsRichTrdTof"};
-    vector<string> latex {
-      "MC", "Acc", "Rec in STS", "Rec in STS-RICH", "Rec in STS-RICH-TRD", "Rec in STS-RICH-TRD-TOF"};
+    vector<string> latex {"MC", "Acc", "Rec in STS", "Rec in STS-RICH", "Rec in STS-RICH-TRD", "Rec in STS-RICH-TRD-TOF"};
     vector<string> latexAll(latex.size()), latexPrim(latex.size());
-    string hName = (pdg == 11) ? "hElMom" : (pdg == 211) ? "hPiMom" : "hProtonMom";
-    string cName = "AccRecMom/" + hName;
+    string ptcl = (pdg == 11) ? "hEl" : (pdg == 211) ? "hPi" : (pdg == 2212) ? "hProton" : "hKaon";
+    
     vector<TH1*> histsAll, histsPrim;
     int i = 0;
+    
     for (const string& subName : subNames) {
-      TH1D* hAll = fH.H1(hName + "_all_" + subName);
+      TH1D* hAll  = fH.H1(ptcl + "Mom_all_" + subName);
       hAll->SetMinimum(3e-6);
       hAll->SetMaximum(50);
       latexAll[i] = latex[i] + " (" + Cbm::NumberToString(hAll->GetEntries() / fNofEvents, 2) + "/ev.)";
       histsAll.push_back(hAll);
 
-      TH1D* hPrim = fH.H1(hName + "_prim_" + subName);
+      TH1D* hPrim  = fH.H1(ptcl + "Mom_prim_" + subName);
       hPrim->SetMinimum(3e-6);
       hPrim->SetMaximum(50);
       latexPrim[i] = latex[i] + " (" + Cbm::NumberToString(hPrim->GetEntries() / fNofEvents, 2) + "/ev.)";
@@ -887,22 +820,16 @@ void LmvmDraw::DrawAccRecMom()
       i++;
     }
 
-    double y1 = 0.17;  //(pdg == 211) ? 0.20 : 0.74;
+    //if (pdg == 321) continue; TODO: with kaons?
+    double y1 = 0.17; //(pdg == 211) ? 0.20 : 0.74;
     double y2 = 0.42;  //(pdg == 211) ? 0.45 : 0.99;
+    string cName = "AccRecMom/" + ptcl + "Mom";
     fH.fHM.CreateCanvas(cName, cName, 900, 900);
     DrawH1(histsAll, latexAll, kLinear, kLog, true, 0.4, y1, 0.95, y2, "hist");
 
     fH.fHM.CreateCanvas(cName + "_prime", cName + "_prime", 900, 900);
     DrawH1(histsPrim, latexPrim, kLinear, kLog, true, 0.4, y1, 0.95, y2, "hist");
   }
-
-  // Pions, protons and kaons that are misidentified as electrons
-  TH1* misPi   = fH.H1Clone("hCandMisIdAsEl_pi");
-  TH1* misProt = fH.H1Clone("hCandMisIdAsEl_proton");
-  TH1* misKa   = fH.H1Clone("hCandMisIdAsEl_kaon");
-
-  fH.fHM.CreateCanvas("AccRecMom/MisidCands", "AccRecMom/MisidCands", 800, 800);
-  DrawH1({misPi, misProt, misKa}, {"#pi^{#pm}", "proton", "kaon"}, kLinear, kLog, true, 0.89, 0.75, 0.99, 0.92, "p");
 
   // Acceptance in single detectors
   for (const string& det : {"sts", "rich", "trd", "tof"}) {

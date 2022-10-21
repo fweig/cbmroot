@@ -42,6 +42,15 @@ public:
   const static std::vector<std::string> fBgPairSrcNames;
   const static std::vector<std::string> fBgPairSrcLatex;
 
+  const static int fNofGTrackNames = 15;
+  const static std::vector<std::string> fGTrackNames;
+  const static std::vector<std::string> fGTrackLatex;
+
+  const static int fNofCandNames = 10;
+  const static std::vector<std::string> fCandNames;
+  const static std::vector<std::string> fCandLatex;
+  
+
   std::vector<std::string> CombineNames(const std::string& name, const std::vector<std::string>& subNames);
 
   std::vector<std::string> CombineNames(const std::string& name, const std::vector<std::string>& subNames1,
@@ -125,11 +134,21 @@ public:
   std::string GetName(const std::string& name, ELmvmSrc src);
   std::string GetName(const std::string& name, ELmvmSrc src, ELmvmAnaStep step);
 
+  void SetOptH1(TH1D *hist, TString xAxisTitle, TString yAxisTitle, Int_t Ndevision, Int_t style, Float_t size, Int_t color, std::string opt = ""); // copied from Tetyanas macro
+  void SetOptCanvas(TCanvas *canvas);
+  void SetLegend(std::vector<LmvmLegend>, double textsize, double x1, double y1, double x2, double y2);
 
-  void Rebin(const std::string& name, int nGroup);
+  void Rebin(const std::string& name, int nGroup);  // TODO: used?
   void Rebin(const std::string& name, const std::vector<std::string>& subNames, int nGroup);
-  void Rebin(const std::string& name, const std::vector<std::string>& subNames1,
-             const std::vector<std::string>& subNames2, int nGroup);
+  void Rebin(const std::string& name, const std::vector<std::string>& subNames1, const std::vector<std::string>& subNames2, int nGroup);
+
+  TH1D* CreateSignificanceH1(TH1D* s, TH1D* bg, const std::string& name, const std::string& option);
+  TH2D* CreateSignificanceH2(TH2D* signal, TH2D* bg, const std::string& name, const std::string& title);
+
+  void DrawAll(int dim, const std::string& hFullname, const std::string& padText, std::vector<std::string> xLabel, std::vector<std::string> yLabel, double min, double max);
+  void DrawAllGTracks(int dim, const std::string& cName, const std::string& hName, std::vector<std::string> xLabel, std::vector<std::string> yLabel, double min, double max);
+  void DrawAllCands(int dim, const std::string& cName, const std::string& hName, std::vector<std::string> xLabel, std::vector<std::string> yLabel, double min, double max);  
+  void DrawAllCandsAndSteps(int dim, const std::string& cName, const std::string& hName, std::vector<std::string> xLabel, std::vector<std::string> yLabel, double min, double max);
 
   void WriteToFile();
 

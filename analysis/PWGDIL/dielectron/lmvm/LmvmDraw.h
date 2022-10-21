@@ -45,7 +45,7 @@ public:
 private:
   Int_t fNofEvents = 0;  // number of events of current job
 
-  bool fUseMvd           = false;  // do you want to draw histograms related to the MVD detector?
+  bool fUseMvd = false;  // do you want to draw histograms related to the MVD detector?
 
   LmvmCuts fCuts;  // electron identification and analysis cuts
 
@@ -62,20 +62,6 @@ private:
      * \brief Save all created canvases to images.
      */
   void SaveCanvasToImage();
-
-  /**
-     * Produce 1D significance histogram Significance=S/sqrt(S+BG).
-     * \param[in] s Histogram with signal.
-     * \param[in] bg Histogram eith background.
-     * \param[in] name Name of new significance histogram.
-     * \param[in] option Could be "right" or "left".
-     */
-  TH1D* CreateSignificanceH1(TH1D* s, TH1D* bg, const std::string& name, const std::string& option);
-
-  /**
-     * Produce 2D significance histogram Significance=S/sqrt(S+BG).
-     */
-  TH2D* CreateSignificanceH2(TH2D* signal, TH2D* bg, const std::string& name, const std::string& title);
 
   void DrawCutEffH1(const std::string& hist, const std::string& option);
 
@@ -104,7 +90,9 @@ private:
   void DrawBgSourcePairs(ELmvmAnaStep step, bool inPercent, bool drawAnaStep = true);
   void DrawBgSourcePairsAll();
 
-  void DrawAccRecMom();
+  void DrawAccRecVsMom();
+
+  void DrawBetaMomSpectra();
 
   void Draw2DCutTriangle(double xCr, double yCr);
 

@@ -27,8 +27,8 @@ def main():
   os.makedirs(workDir)
   os.chdir(workDir)
 
-  plutoFile = getPlutoPath(colSystem, colEnergy, plutoParticle, taskId)
-  #plutoFile = getPlutoPathTetyana(colSystem, colEnergy, plutoParticle, taskId)
+  #plutoFile = getPlutoPath(colSystem, colEnergy, plutoParticle, taskId)
+  plutoFile = getPlutoPathNew(colSystem, colEnergy, plutoParticle, taskId)
 
   urqmdFile = "/lustre/nyx/cbm/prod/gen/urqmd/auau/" + colEnergy + "/centr/urqmd.auau."+ colEnergy + ".centr." + str(taskId).zfill(5) + ".root"
 
@@ -70,7 +70,7 @@ def getPlutoPath(colSystem, colEnergy, plutoParticle, taskId):
   elif plutoParticle == "urqmd":
     return ""
 
-def getPlutoPathTetyana(colSystem, colEnergy, plutoParticle, taskId):
+def getPlutoPathNew(colSystem, colEnergy, plutoParticle, taskId):
   if plutoParticle == "rho0":
     return "/lustre/nyx/cbm/users/galatyuk/pluto/epem/" + colEnergy + "/rho0_pluto/sum_rho0_1000_001.zip#rho0_" + str(taskId).zfill(5) + ".root"
   elif plutoParticle == "omegaepem":

@@ -123,5 +123,18 @@ public:
   double fFitSigma   = 0;
 };
 
+class LmvmLegend {
+public:
+  LmvmLegend() {}  
+  LmvmLegend(TH1D* h, const char* name, Option_t* opt)
+    : fH(h)
+    , fName(name)
+    , fOpt(opt)
+  {
+  }
+  TH1D* fH = nullptr;
+  const char* fName = "";
+  Option_t* fOpt = "l";
+};
 
 #endif

@@ -12,6 +12,8 @@
 #include "FairRootManager.h"
 #include "FairTask.h"
 
+#include "CbmGlobalTrack.h"
+
 #include <fstream>
 #include <map>
 #include <string>
@@ -107,14 +109,22 @@ public:
 
   void AssignMcToTopologyCands(std::vector<LmvmCand>& topoCands);
 
-  void DifferenceSignalAndBg();
+  void DifferenceSignalAndBg(const LmvmCand& cand);
 
   /*
      * \brief Initialize all histograms.
      */
   void InitHists();
 
-  void SignalAndBgReco();
+  double MinvScale(double minv);
+
+  void AnalyseCandidates();
+
+  void AnalyseGlobalTracks();
+  void CheckMismatches(const CbmGlobalTrack* gTrack, int pdg, bool isElectron, const std::string& ptcl, double weight);
+  void BetaMom(const CbmMCTrack* mct, const CbmGlobalTrack* gTrack, const std::string& ptcl);
+  void CheckTofIdentification(const CbmGlobalTrack* gTrack, const std::string& pidString, double mom, double m2, int pdg, bool isTofEl);
+  void PidVsMom(const CbmGlobalTrack* gTrack, int iGTrack, int pdg, double mom);
 
   void CheckGammaConvAndPi0();
 
@@ -137,10 +147,22 @@ public:
 
   void CombinatorialPairs();
 
+  void FillCandPidValues(const CbmMCTrack* mcTrack, const LmvmCand& cand, ELmvmAnaStep step);
+
+  void CheckTofId(const CbmMCTrack* mcTrack, const LmvmCand& cand, ELmvmAnaStep step, int pdg);
+  bool IsInTofPile(double mom, double m2);
+
+  std::string GetPidString(const CbmMCTrack* mct, const LmvmCand* cand);
+  std::string GetPidString(double vertexMag, int pdg);
+
+  /*
+     * \brief Check if global track has entries in all detectors.
+     */
+  bool IsInAllDets(const CbmGlobalTrack* gTrack);
+
+  bool IsPrimary(double vertexMag);
+
   virtual void Finish();
-
-  void FillAccRecVsMomHist();
-
 
   ClassDef(LmvmTask, 1);
 
@@ -168,6 +190,7 @@ private:
   TClonesArray* fTofHits            = nullptr;
   TClonesArray* fTofHitsMatches     = nullptr;
   TClonesArray* fTofPoints          = nullptr;
+  TClonesArray* fTofTracks          = nullptr;
   CbmVertex* fPrimVertex            = nullptr;
   CbmKFVertex fKFVertex;
   CbmStsKFTrackFitter fKFFitter;
@@ -193,6 +216,10 @@ private:
   LmvmHist fH;  // histogram manager
 
   std::map<int, int> fNofHitsInRingMap;  // Number of hits in the MC RICH ring
+
+  double fZ = -44.; // z-position of target
+
+  std::string fParticle = "";
 
 public:
   void SetUseMvd(bool use) { fUseMvd = use; }

@@ -30,6 +30,7 @@ set(LIBRARY_NAME CbmLmvm)
 set(LINKDEF LmvmLinkDef.h)
 set(PUBLIC_DEPENDENCIES
   CbmBase
+  CbmRichBase
   CbmData
   KF
   NicaCbmFormat

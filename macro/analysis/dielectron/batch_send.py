@@ -4,7 +4,7 @@ import os
 import shutil
 
 def main():
-  nofJobs = 1000 
+  nofJobs = 1000
   timeLimit = "08:00:00"
   geoSetup = "sis100_electron"
   plutoParticles = ["inmed", "omegadalitz", "omegaepem", "phi", "qgp"]
