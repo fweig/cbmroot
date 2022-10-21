@@ -82,6 +82,10 @@ public:
   /// \param iStation  Index of the tracking station in the active stations array
   L1HitIndex_t GetStopHitIndex(int iStation) const { return fvStopHitIndexes[iStation]; }
 
+  /// Gets n hits for the station
+  /// \param iStation  Index of the tracking station in the active stations array
+  L1HitIndex_t GetNhits(int iStation) const { return fvStopHitIndexes[iStation] - fvStartHitIndexes[iStation]; }
+
 
 private:
   /// Swap method

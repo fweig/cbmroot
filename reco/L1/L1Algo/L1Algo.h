@@ -328,8 +328,8 @@ public:
 
 
   /// Find doublets on station
-  void DupletsStaPort(  // input
-    int istal, int istam, Tindex ip, L1Vector<Tindex>& n_g, Tindex* portionStopIndex_,
+  void CreateDuplets(  // input
+    int istal, int istam, Tindex iSingletPortion, Tindex singletPortionSize,
 
     // output
     L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
@@ -444,8 +444,8 @@ public:
   /// The candidates may share any amount of hits.
   L1Vector<L1Branch> fTrackCandidates[L1Constants::size::kMaxNthreads] {"L1Algo::fTrackCandidates"};
 
-  Tindex fDupletPortionStopIndex[L1Constants::size::kMaxNstations] {0};  ///< end of the duplet portions for the station
-  L1Vector<Tindex> fDupletPortionSize {"L1Algo::fDupletPortionSize"};    ///< Number of duplets in a portion
+  L1Vector<Tindex> fSingletPortionSize[L1Constants::size::kMaxNstations] {
+    "L1Algo::fSingletPortionSize"};  ///< Number of duplets in a portion
 
 
   //  L1Branch* pointer;

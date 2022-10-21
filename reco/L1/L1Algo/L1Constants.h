@@ -38,13 +38,13 @@ namespace L1Constants
     constexpr int kMaxNtriplets  = 1u << kTripletBits;  ///< Max number of triplets, 2^20 = 1,048,576
 
     // TODO: Clarify the meaning of these coefficients
-    constexpr int kCoeff               = 64 / 4;                        ///< TODO:
-    constexpr int kPortionLeftHits     = 1024 / kCoeff;                 ///< portion of left hits
-    constexpr int kPortionLeftHitsP    = 1024 / kCoeff / fvec::size();  ///< portion of left hits per one vector word
-    constexpr int kMaxPortionDoublets  = 10000 / 5 * 64 / 2 / kCoeff;   ///< Max size of the doublets portion
-    constexpr int kMaxPortionTriplets  = 10000 * 5 * 64 / 2 / kCoeff;   ///< Max size of the triplets portion
-    constexpr int kMaxPortionTripletsP = kMaxPortionTriplets / fvec::size();  ///< Max size of the triplets portion
-  }                                                                           // namespace size
+    constexpr int kCoeff                 = 64 / 4;                        ///< TODO:
+    constexpr int kSingletPortionSize    = 1024 / kCoeff;                 ///< portion of left hits
+    constexpr int kSingletPortionSizeVec = 1024 / kCoeff / fvec::size();  ///< portion of left hits per one vector word
+    constexpr int kMaxPortionDoublets    = 10000 / 5 * 64 / 2 / kCoeff;   ///< Max size of the doublets portion
+    constexpr int kMaxPortionTriplets    = 10000 * 5 * 64 / 2 / kCoeff;   ///< Max size of the triplets portion
+    constexpr int kMaxPortionTripletsP   = kMaxPortionTriplets / fvec::size();  ///< Max size of the triplets portion
+  }                                                                             // namespace size
 
   /// Control flags
   namespace control

@@ -111,8 +111,10 @@ void L1Algo::ReceiveInputData(L1InputData&& inputData)
   fHitFirstTriplet.reset(nHits);
   fHitNtriplets.reset(nHits);
 
-  fDupletPortionSize.clear();
-  fDupletPortionSize.reserve(2 * nHits);
+  for (int i = 0; i < L1Constants::size::kMaxNstations; i++) {
+    fSingletPortionSize[i].clear();
+    fSingletPortionSize[i].reserve(2 * fInputData.GetNhits(i));
+  }
 
   for (int i = 0; i < fNThreads; i++) {
     fTracks_local[i].clear();
@@ -168,7 +170,7 @@ void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, char iS)
 void L1Algo::GetHitCoor(const L1Hit& _h, fscal& _x, fscal& _y, fscal& _z, const L1Station& sta)
 {
   std::tie(_x, _y) = sta.ConvUVtoXY<fscal>(_h.u, _h.v);
-  _z = _h.z;
+  _z               = _h.z;
 }
 
 L1HitPoint L1Algo::CreateHitPoint(const L1Hit& hit)
