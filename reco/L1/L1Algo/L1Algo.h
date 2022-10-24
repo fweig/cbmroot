@@ -5,8 +5,6 @@
 #ifndef L1Algo_h
 #define L1Algo_h
 
-// #define TBB // TODO: Doesn't work now. Renew
-
 /// Debug features
 // #define PULLS            // triplets pulls
 // #define TRIP_PERFORMANCE // triplets efficiencies
@@ -525,18 +523,6 @@ public:
 private:
   L1CloneMerger fCloneMerger {*this};  ///< Object of L1Algo clones merger algorithm
 
-#ifdef TBB
-  enum
-  {
-    nthreads = 3,  // number of threads
-    nblocks  = 1   // number of stations on one thread
-  };
-
-#endif  // TBB
-#ifdef TBB2
-public:
-  Tindex thrId;
-#endif  // TBB2
 private:
   /// =================================  DATA PART  =================================
 

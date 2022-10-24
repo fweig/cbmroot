@@ -56,10 +56,6 @@
 #include "utils/L1AlgoEfficiencyPerformance.h"
 #endif  // DOUB_PERFORMANCE
 
-#ifdef TBB
-#include "L1AlgoTBB.h"
-#endif  // TBB
-
 #include <algorithm>
 #include <fstream>
 #include <iostream>
