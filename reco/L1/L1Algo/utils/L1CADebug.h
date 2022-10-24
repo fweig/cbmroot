@@ -10,7 +10,7 @@
 #include "CbmL1.h"
 
 TH1F *h_pick_res_x[20][3][3], *h_pick_res_y[20][3][3], *h_pick_pull_x[20][3][3], *h_pick_pull_y[20][3][3],
-  *h_nduplets[20][3], *h_res_x[20][3][3], *h_res_y[20][3][3], *h_res_tx[20][3][3], *h_res_ty[20][3][3],
+  *h_ndoublets[20][3], *h_res_x[20][3][3], *h_res_y[20][3][3], *h_res_tx[20][3][3], *h_res_ty[20][3][3],
   *h_res_qp[20][3][3], *h_pull_x[20][3][3], *h_pull_y[20][3][3], *h_pull_tx[20][3][3], *h_pull_ty[20][3][3],
   *h_pull_qp[20][3][3];
 //TH2F *h_dyvsy[20], *h_dxvsx[20];
@@ -64,7 +64,7 @@ void InitL1Histo()
           gDirectory->mkdir(stepname[istep]);
           gDirectory->cd(stepname[istep]);
 
-          h_nduplets[ist][istep] = new TH1F("h_nduplets", "h_nduplets", 50, 0, 5000);
+          h_ndoublets[ist][istep] = new TH1F("h_ndoublets", "h_ndoublets", 50, 0, 5000);
 
           const char* lmr[3] = {"left", "middle", "right"};
           for (int ilmr = 0; ilmr < 3; ilmr++) {

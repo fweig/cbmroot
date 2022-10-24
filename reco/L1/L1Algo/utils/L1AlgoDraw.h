@@ -32,9 +32,9 @@ public:
   void DrawRecoTracks();
 
   void DrawTriplets(std::vector<L1Triplet>& triplets, const L1HitIndex_t* realIHit);
-  void DrawDoublets(std::vector<L1HitIndex_t>* Duplets_hits, std::map<L1HitIndex_t, L1HitIndex_t>* Duplets_start,
+  void DrawDoublets(std::vector<L1HitIndex_t>* Doublets_hits, std::map<L1HitIndex_t, L1HitIndex_t>* Doublets_start,
                     const int MaxArrSize, L1HitIndex_t* HitsStartIndex, unsigned int* realIHit);
-  void DrawDoubletsOnSta(int iSta, L1HitIndex_t* Duplets_hits, L1HitIndex_t* Duplets_start, const int MaxArrSize,
+  void DrawDoubletsOnSta(int iSta, L1HitIndex_t* Doublets_hits, L1HitIndex_t* Doublets_start, const int MaxArrSize,
                          L1HitIndex_t* StsRestHitsStartIndex, unsigned int* realIHit);
 
   void DrawTarget();

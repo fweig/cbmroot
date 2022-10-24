@@ -284,7 +284,7 @@ public:
 #ifdef DOUB_PERFORMANCE
     L1Vector<L1HitIndex_t>& hitsl_2,
 #endif  // DOUB_PERFORMANCE
-    L1Vector<L1HitIndex_t>& hitsm_2, fvec* Event, L1Vector<char>& lmDuplets);
+    L1Vector<L1HitIndex_t>& hitsm_2, fvec* Event, L1Vector<char>& lmDoublets);
 
   /// Add the middle hits to parameters estimation. Propagate to right station.
   /// Find the triplets (right hit). Reformat data in the portion of triplets.
@@ -295,7 +295,7 @@ public:
 
     Tindex n2, L1Vector<L1HitIndex_t>& hitsm_2, L1Vector<L1HitIndex_t>& i1_2,
 
-    const L1Vector<char>& mrDuplets,
+    const L1Vector<char>& mrDoublets,
     // output
     Tindex& n3, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
     L1Vector<L1HitIndex_t>& hitsr_3, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
@@ -328,13 +328,13 @@ public:
 
 
   /// Find doublets on station
-  void CreateDuplets(  // input
+  void CreatePortionOfDoublets(  // input
     int istal, int istam, Tindex iSingletPortion, Tindex singletPortionSize,
 
     // output
     L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
 
-    L1Vector<char>& lmDuplets,
+    L1Vector<char>& lmDoublets,
 
 
     Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2);
@@ -343,7 +343,7 @@ public:
   void TripletsStaPort(  // input
     int istal, int istam, int istar, Tindex& nstaltriplets, L1TrackPar* T_1, L1FieldRegion* fld_1,
     L1HitIndex_t* hitsl_1, Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2,
-    const L1Vector<char>& mrDuplets
+    const L1Vector<char>& mrDoublets
     // output
   );
 
@@ -445,7 +445,7 @@ public:
   L1Vector<L1Branch> fTrackCandidates[L1Constants::size::kMaxNthreads] {"L1Algo::fTrackCandidates"};
 
   L1Vector<Tindex> fSingletPortionSize[L1Constants::size::kMaxNstations] {
-    "L1Algo::fSingletPortionSize"};  ///< Number of duplets in a portion
+    "L1Algo::fSingletPortionSize"};  ///< Number of doublets in a portion
 
 
   //  L1Branch* pointer;

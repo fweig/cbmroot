@@ -380,7 +380,7 @@ inline void L1Algo::findDoubletsStep0(
 #ifdef DOUB_PERFORMANCE
   L1Vector<L1HitIndex_t>& hitsl_2,
 #endif  // DOUB_PERFORMANCE
-  L1Vector<L1HitIndex_t>& hitsm_2, fvec* /*Event*/, L1Vector<char>& lmDuplets)
+  L1Vector<L1HitIndex_t>& hitsm_2, fvec* /*Event*/, L1Vector<char>& lmDoublets)
 {
   /// Find the doublets. Reformat data in the portion of doublets.
 
@@ -529,7 +529,7 @@ inline void L1Algo::findDoubletsStep0(
       }
     }  // loop over the hits in the area
 
-    lmDuplets[hitsl_1[i1]] = (n2Saved < n2);
+    lmDoublets[hitsl_1[i1]] = (n2Saved < n2);
 
   }  // for i1
 }
@@ -540,7 +540,7 @@ inline void L1Algo::findDoubletsStep0(
 inline void L1Algo::findTripletsStep0(  // input
   L1HitPoint* vHits_r, const L1Station& stam, const L1Station& star, int istam, int istar, L1HitPoint* vHits_m,
   L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1, Tindex n2, L1Vector<L1HitIndex_t>& hitsm_2,
-  L1Vector<L1HitIndex_t>& i1_2, const L1Vector<char>& /*mrDuplets*/,
+  L1Vector<L1HitIndex_t>& i1_2, const L1Vector<char>& /*mrDoublets*/,
   // output
   Tindex& n3, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
   L1Vector<L1HitIndex_t>& hitsr_3, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
@@ -598,7 +598,7 @@ inline void L1Algo::findTripletsStep0(  // input
 
     size_t n2_4 = 0;
     for (; n2_4 < fvec::size() && i2 < n2; i2++, n2_4++) {
-      //         if (!mrDuplets[hitsm_2[i2]]) {
+      //         if (!mrDoublets[hitsm_2[i2]]) {
       //           n2_4--;
       //           continue;
       //         }
@@ -1361,27 +1361,27 @@ inline void L1Algo::f5(  // input
 
 /// ------------------- doublets on station ----------------------
 
-inline void L1Algo::CreateDuplets(
+inline void L1Algo::CreatePortionOfDoublets(
   /// input:
   const int istal, const int istam, const Tindex iSingletPortion, const Tindex singletPortionSize,
   /// output:
-  L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1, L1Vector<char>& lmDuplets, Tindex& n_2,
+  L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1, L1Vector<char>& lmDoublets, Tindex& n_2,
   L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2
   ///
 )
 {
-  /// creates duplets
+  /// creates doublets
   /// input:
   ///   @istal - start station number
   ///   @istam - last station number
-  ///   @iPortion - index of portion
-  ///   @&portionSize - number of elements in portions
+  ///   @iPortion - index of portion of left hits
+  ///   @&portionSize - number of left hits in the portion
   /// output:
   ///   @*T_1 - singlets parameters
   ///   @*fld_1 - field aproximation
   ///   @*hitsl_1- left hits of triplets
-  ///   @&lmDuplets - existance of a doublet starting from the left hit
-  ///   @&n_2 - number of douplets
+  ///   @&lmDoublets - existance of a doublet starting from the left hit
+  ///   @&n_2 - number of doublets
   ///   @&i1_2 - index of 1st hit in portion indexed by doublet index
   ///   @&hitsm_2 - index of middle hit in hits array indexed by doublet index
 
@@ -1435,7 +1435,7 @@ inline void L1Algo::CreateDuplets(
 #ifdef DOUB_PERFORMANCE
       hitsl_2,
 #endif  // DOUB_PERFORMANCE
-      hitsm_2, Event, lmDuplets);
+      hitsm_2, Event, lmDoublets);
 
     for (Tindex i = 0; i < static_cast<Tindex>(hitsm_2.size()); ++i)
       L1_ASSERT(hitsm_2[i] < HitsUnusedStopIndex[istam] - HitsUnusedStartIndex[istam],
@@ -1472,7 +1472,7 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
   /// @*T_1 - track parameters for singlets,
   /// @*fld_1 - field approximation for singlets,
   /// @&n_2 - number of doublets in portion
-  /// @&n_2 - number of douplets,
+  /// @&n_2 - number of doublets,
   /// @&i1_2 - index of 1st hit in portion indexed by doublet index,
   /// @&hitsm_2 - index of middle hit in hits array indexed by doublet index
 
@@ -1481,7 +1481,7 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
 
   Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2,
 
-  const L1Vector<char>& mrDuplets
+  const L1Vector<char>& mrDoublets
 
   /// output:
   // @*vTriplets_part - array of triplets,
@@ -1544,7 +1544,7 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
 
       n_2, hitsm_2, i1_2,
 
-      mrDuplets,
+      mrDoublets,
       // output
       n3, T_3, hitsl_3, hitsm_3, hitsr_3, u_front3, u_back3, z_pos3, du3, dv3, timeR, timeER);
 
@@ -1936,7 +1936,7 @@ void L1Algo::CATrackFinder()
 
     /*    {
          /// possible left hits of triplets are splited in portions of 16 (4 SIMDs) to use memory faster
-         fDupletPortionStopIndex[fParameters.GetNstationsActive() - 1] = 0;
+         fDoubletPortionStopIndex[fParameters.GetNstationsActive() - 1] = 0;
          unsigned int ip = 0;  //index of curent portion
 
          for (int istal = fParameters.GetNstationsActive() - 2; istal >= fFirstCAstation; istal--)  //start downstream chambers
@@ -1954,7 +1954,7 @@ void L1Algo::CATrackFinder()
          n_g1[ip] = nHits - NHits_P * L1Constants::size::kSingletPortionSize;
          
          ip++;
-         fDupletPortionStopIndex[istal] = ip;
+         fDoubletPortionStopIndex[istal] = ip;
          }// lstations
          //       nPortions = ip;
          } */
@@ -1987,14 +1987,14 @@ void L1Algo::CATrackFinder()
     L1Vector<L1HitIndex_t> i1G_2("L1CATrackFinder::i1G_2");
 
     /// is exist a doublet started from indexed by left hit
-    L1Vector<char> lmDuplets[L1Constants::size::kMaxNstations] {"L1CATrackFinder::lmDuplets"};
+    L1Vector<char> lmDoublets[L1Constants::size::kMaxNstations] {"L1CATrackFinder::lmDoublets"};
 
     /// is exist a doublet started from indexed by left hit
-    L1Vector<char> lmDupletsG[L1Constants::size::kMaxNstations] {"L1CATrackFinder::lmDupletsG"};
+    L1Vector<char> lmDoubletsG[L1Constants::size::kMaxNstations] {"L1CATrackFinder::lmDoubletsG"};
 
     for (int i = 0; i < fParameters.GetNstationsActive(); i++) {
-      lmDuplets[i].SetName(std::stringstream() << "L1CATrackFinder::lmDuplets[" << i << "]");
-      lmDupletsG[i].SetName(std::stringstream() << "L1CATrackFinder::lmDupletsG[" << i << "]");
+      lmDoublets[i].SetName(std::stringstream() << "L1CATrackFinder::lmDoublets[" << i << "]");
+      lmDoubletsG[i].SetName(std::stringstream() << "L1CATrackFinder::lmDoubletsG[" << i << "]");
     }
 
     hitsm_2.reserve(9000);  // TODO: make reasonable cuts on n combinations, put them to the header
@@ -2013,21 +2013,21 @@ void L1Algo::CATrackFinder()
       for (Tindex ip = 0; ip < (Tindex) fSingletPortionSize[istal].size(); ++ip) {
         Tindex n_2   = 0;  /// number of doublets in portion
         int NHitsSta = fInputData.GetStopHitIndex(istal) - fInputData.GetStartHitIndex(istal);
-        lmDuplets[istal].reset(NHitsSta);
-        lmDupletsG[istal].reset(NHitsSta);
+        lmDoublets[istal].reset(NHitsSta);
+        lmDoubletsG[istal].reset(NHitsSta);
 
         hitsm_2.clear();
         i1_2.clear();
 
-        CreateDuplets(istal, istal + 1, ip, fSingletPortionSize[istal][ip],
+        CreatePortionOfDoublets(istal, istal + 1, ip, fSingletPortionSize[istal][ip],
 
-                      // output
-                      T_1, fld_1, hitsl_1,
+                                // output
+                                T_1, fld_1, hitsl_1,
 
-                      lmDuplets[istal],
+                                lmDoublets[istal],
 
 
-                      n_2, i1_2, hitsm_2);
+                                n_2, i1_2, hitsm_2);
 
         Tindex nstaltriplets = 0;
 
@@ -2036,7 +2036,7 @@ void L1Algo::CATrackFinder()
 
           n_2, i1_2, hitsm_2,
 
-          lmDuplets[istal + 1]
+          lmDoublets[istal + 1]
           // output
         );
 
@@ -2046,12 +2046,12 @@ void L1Algo::CATrackFinder()
           hitsmG_2.clear();
           i1G_2.clear();
           if ((fMissingHits && ((istal == 0) || (istal == 1))) || !fMissingHits) {
-            CreateDuplets(  // input
+            CreatePortionOfDoublets(  // input
               istal, istal + 2, ip, fSingletPortionSize[istal][ip],
               // output
               TG_1, fldG_1, hitslG_1,
 
-              lmDupletsG[istal],
+              lmDoubletsG[istal],
 
               nG_2, i1G_2, hitsmG_2);
           }
@@ -2060,13 +2060,13 @@ void L1Algo::CATrackFinder()
             TripletsStaPort(  // input
               istal, istal + 1, istal + 3, nstaltriplets, T_1, fld_1, hitsl_1,
 
-              n_2, i1_2, hitsm_2, lmDupletsG[istal + 1]);
+              n_2, i1_2, hitsm_2, lmDoubletsG[istal + 1]);
           }
 
           if ((fMissingHits && (istal == 1)) || !fMissingHits) {
             TripletsStaPort(  // input
               istal, istal + 2, istal + 3, nstaltriplets, TG_1, fldG_1, hitslG_1, nG_2, i1G_2, hitsmG_2,
-              lmDuplets[istal + 2]);
+              lmDoublets[istal + 2]);
           }
         }
       }  //

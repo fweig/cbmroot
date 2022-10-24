@@ -364,22 +364,22 @@ void L1AlgoDraw::DrawTriplet(int il, int im, int ir)
   marker.DrawMarker(lx[nHits - 1], ly[nHits - 1]);
 }
 
-void L1AlgoDraw::DrawDoublets(vector<L1HitIndex_t>* Duplets_hits, map<L1HitIndex_t, L1HitIndex_t>* Duplets_start,
+void L1AlgoDraw::DrawDoublets(vector<L1HitIndex_t>* Doublets_hits, map<L1HitIndex_t, L1HitIndex_t>* Doublets_start,
                               const int /*MaxArrSize*/, L1HitIndex_t* StsRestHitsStartIndex, unsigned int* realIHit)
 {
   for (int iSta = 0; iSta < NStations - 1; iSta++) {
     const int firstHitOnSta            = StsRestHitsStartIndex[iSta];
     const int firstHitOnNextSta        = StsRestHitsStartIndex[iSta + 1];
-    L1HitIndex_t* staDupletsHits                     = &(Duplets_hits[iSta][0]);
-    map<L1HitIndex_t, L1HitIndex_t>& staDupletsStart = Duplets_start[iSta];
+    L1HitIndex_t* staDoubletsHits                     = &(Doublets_hits[iSta][0]);
+    map<L1HitIndex_t, L1HitIndex_t>& staDoubletsStart = Doublets_start[iSta];
 
     for (int iRestLHit = firstHitOnSta; iRestLHit < firstHitOnNextSta; iRestLHit++) {
       const int ilh       = iRestLHit - firstHitOnSta;
-      const int iirhFirst = staDupletsStart[ilh];
-      const int iirhLast  = staDupletsStart[ilh + 1] - 1;
+      const int iirhFirst = staDoubletsStart[ilh];
+      const int iirhLast  = staDoubletsStart[ilh + 1] - 1;
 
       for (int iirh = iirhFirst; iirh <= iirhLast; iirh++) {
-        const int iRestRHit = staDupletsHits[iirh] + firstHitOnNextSta;
+        const int iRestRHit = staDoubletsHits[iirh] + firstHitOnNextSta;
 
         const int iLHit = realIHit[iRestLHit];
         const int iRHit = realIHit[iRestRHit];
@@ -397,21 +397,21 @@ void L1AlgoDraw::DrawDoublets(vector<L1HitIndex_t>* Duplets_hits, map<L1HitIndex
   YX->Update();
 };
 
-void L1AlgoDraw::DrawDoubletsOnSta(int iSta, L1HitIndex_t* Duplets_hits, L1HitIndex_t* Duplets_start,
+void L1AlgoDraw::DrawDoubletsOnSta(int iSta, L1HitIndex_t* Doublets_hits, L1HitIndex_t* Doublets_start,
                                    const int MaxArrSize, L1HitIndex_t* StsRestHitsStartIndex, unsigned int* realIHit)
 {
   const int firstHitOnSta     = StsRestHitsStartIndex[iSta];
   const int firstHitOnNextSta = StsRestHitsStartIndex[iSta + 1];
-  L1HitIndex_t* staDupletsHits  = Duplets_hits + MaxArrSize * iSta;
-  L1HitIndex_t* staDupletsStart = Duplets_start + MaxArrSize * iSta;
+  L1HitIndex_t* staDoubletsHits  = Doublets_hits + MaxArrSize * iSta;
+  L1HitIndex_t* staDoubletsStart = Doublets_start + MaxArrSize * iSta;
 
   for (int iRestLHit = firstHitOnSta; iRestLHit < firstHitOnNextSta; iRestLHit++) {
     const int ilh       = iRestLHit - firstHitOnSta;
-    const int iirhFirst = staDupletsStart[ilh];
-    const int iirhLast  = staDupletsStart[ilh + 1] - 1;
+    const int iirhFirst = staDoubletsStart[ilh];
+    const int iirhLast  = staDoubletsStart[ilh + 1] - 1;
 
     for (int iirh = iirhFirst; iirh <= iirhLast; iirh++) {
-      const int iRestRHit = staDupletsHits[iirh] + firstHitOnNextSta;
+      const int iRestRHit = staDoubletsHits[iirh] + firstHitOnNextSta;
 
       const int iLHit = realIHit[iRestLHit];
       const int iRHit = realIHit[iRestRHit];
