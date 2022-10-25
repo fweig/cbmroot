@@ -373,6 +373,8 @@ void CbmTofEventClusterizer::Exec(Option_t* option)
     LOG(info) << "New timeslice " << iNbTs << " with " << fEventsColl->GetEntriesFast() << " events, "
               << fDigiMan->GetNofDigis(ECbmModuleId::kTof) << " TOF digis + "
               << fDigiMan->GetNofDigis(ECbmModuleId::kT0) << " T0 digis ";
+    fiNbSkip1 = 0;
+    fiNbSkip2 = 0;
     iNbTs++;
     fiHitStart        = 0;
     Int_t iNbHits     = 0;
@@ -466,6 +468,14 @@ void CbmTofEventClusterizer::Exec(Option_t* option)
       fTofCalDigiVec->clear();
       fTofHitsColl->Clear("C");
       fTofDigiMatchColl->Delete();  //Clear("C");
+    }
+    if (0 < fiNbSkip1) {
+      //
+      LOG(info) << "Total Skip1 Digi nb " << fiNbSkip1;
+    }
+    if (0 < fiNbSkip2) {
+      //
+      LOG(info) << "Total Skip2 Digi nb " << fiNbSkip2;
     }
   }
   else {
@@ -4793,6 +4803,7 @@ Bool_t CbmTofEventClusterizer::BuildClusters()
     // Then loop over the digis array and store the Digis in separate vectors for
     // each RPC modules
 
+
     //      iNbTofDigi = fTofCalDigisColl->GetEntriesFast();
     iNbTofDigi = fTofCalDigiVec->size();
     for (Int_t iDigInd = 0; iDigInd < iNbTofDigi; iDigInd++) {
@@ -4815,11 +4826,14 @@ Bool_t CbmTofEventClusterizer::BuildClusters()
                       .push_back(iDigInd);
       }
       else {
-        LOG(info) << "Skip2 Digi "
-                  << " Type " << pDigi->GetType() << " " << fDigiBdfPar->GetNbSmTypes() << " Sm " << pDigi->GetSm()
-                  << " " << fDigiBdfPar->GetNbSm(pDigi->GetType()) << " Rpc " << pDigi->GetRpc() << " "
-                  << fDigiBdfPar->GetNbRpc(pDigi->GetType()) << " Ch " << pDigi->GetChannel() << " "
-                  << fDigiBdfPar->GetNbChan(pDigi->GetType(), 0);
+        if (fiNbSkip2 < 20) {
+          LOG(info) << "Skip2 Digi "
+                    << " Type " << pDigi->GetType() << " " << fDigiBdfPar->GetNbSmTypes() << " Sm " << pDigi->GetSm()
+                    << " " << fDigiBdfPar->GetNbSm(pDigi->GetType()) << " Rpc " << pDigi->GetRpc() << " "
+                    << fDigiBdfPar->GetNbRpc(pDigi->GetType()) << " Ch " << pDigi->GetChannel() << " "
+                    << fDigiBdfPar->GetNbChan(pDigi->GetType(), 0);
+        }
+        ++fiNbSkip2;
       }
     }  // for( Int_t iDigInd = 0; iDigInd < nTofDigi; iDigInd++ )
 
@@ -6230,11 +6244,14 @@ Bool_t CbmTofEventClusterizer::CalibRawDigis()
       }
     }
     else {
-      LOG(info) << "Skip1 Digi "
-                << " Type " << pDigi->GetType() << " " << fDigiBdfPar->GetNbSmTypes() << " Sm " << pDigi->GetSm() << " "
-                << fDigiBdfPar->GetNbSm(pDigi->GetType()) << " Rpc " << pDigi->GetRpc() << " "
-                << fDigiBdfPar->GetNbRpc(pDigi->GetType()) << " Ch " << pDigi->GetChannel() << " "
-                << fDigiBdfPar->GetNbChan(pDigi->GetType(), 0);
+      if (fiNbSkip1 < 20) {
+        LOG(info) << "Skip1 Digi "
+                  << " Type " << pDigi->GetType() << " " << fDigiBdfPar->GetNbSmTypes() << " Sm " << pDigi->GetSm()
+                  << " " << fDigiBdfPar->GetNbSm(pDigi->GetType()) << " Rpc " << pDigi->GetRpc() << " "
+                  << fDigiBdfPar->GetNbRpc(pDigi->GetType()) << " Ch " << pDigi->GetChannel() << " "
+                  << fDigiBdfPar->GetNbChan(pDigi->GetType(), 0);
+      }
+      ++fiNbSkip1;
     }
 
     if (0)  // (bAddBeamCounterSideDigi)

@@ -271,6 +271,8 @@ private:
 
   // Generic
   Int_t fVerbose;
+  Int_t fiNbSkip1 = 0;
+  Int_t fiNbSkip2 = 0;
 
 
   // Intermediate storage variables
