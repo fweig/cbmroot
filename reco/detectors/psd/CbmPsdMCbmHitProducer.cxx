@@ -39,9 +39,9 @@ InitStatus CbmPsdMCbmHitProducer::Init()
   FairRootManager* manager = FairRootManager::Instance();
 
   fCbmEvents = dynamic_cast<TClonesArray*>(manager->GetObject("CbmEvent"));
-  if (fCbmEvents == nullptr) { LOG(info) << ": CbmEvent NOT found \n \n \n"; }
+  if (fCbmEvents == nullptr) { LOG(info) << GetName() << "::Init() CbmEvent NOT found \n"; }
   else {
-    LOG(info) << ": CbmEvent found \n \n \n";
+    LOG(info) << GetName() << "::Init() CbmEvent found";
   }
 
   fDigiMan = CbmDigiManager::Instance();
@@ -67,7 +67,7 @@ void CbmPsdMCbmHitProducer::InitMapping() //TODO change for psd
     }
 
     fPsdMapping.clear();
-        
+
     while ( getline (file,line) ) {
 
         istringstream iss(line);
@@ -80,9 +80,9 @@ void CbmPsdMCbmHitProducer::InitMapping() //TODO change for psd
         data.fX = stod(results[6]);
         data.fY = stod(results[7]);
         data.fZ = 348.;
-        
+
         data.fX -= 6.3; //Shift by 1Pmt + PmtGap + 1cm
-        
+
         Int_t adr = ((data.fTrbId << 16) | (data.fChannel & 0x00FF));
 
        // cout <<  data.fTrbId << " " << data.fChannel << " " << data.fX << " " << data.fY << " " << adr << endl;

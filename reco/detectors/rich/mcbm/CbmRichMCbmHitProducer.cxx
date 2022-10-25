@@ -47,9 +47,9 @@ InitStatus CbmRichMCbmHitProducer::Init()
   FairRootManager* manager = FairRootManager::Instance();
 
   fCbmEvents = dynamic_cast<TClonesArray*>(manager->GetObject("CbmEvent"));
-  if (fCbmEvents == nullptr) { LOG(info) << ": CbmEvent NOT found \n \n \n"; }
+  if (fCbmEvents == nullptr) { LOG(info) << GetName() << "::Init() CbmEvent NOT found \n"; }
   else {
-    LOG(info) << ": CbmEvent found \n \n \n";
+    LOG(info) << GetName() << "::Init() CbmEvent found";
   }
 
   fDigiMan = CbmDigiManager::Instance();
@@ -290,7 +290,9 @@ bool CbmRichMCbmHitProducer::RestrictToAerogelAccDec2019(Double_t x, Double_t y)
 void CbmRichMCbmHitProducer::read_ICD(std::array<Double_t, 2304>& ICD_offsets, unsigned int iteration)
 {
   std::string line;
-  std::ifstream icd_file(Form("icd_offset_it_%u.data", iteration));
+  std::string filename = ("" == fIcdFilenameBase ? "icd_offset_it" : fIcdFilenameBase);
+  filename += Form("_%u.data", iteration);
+  std::ifstream icd_file(filename);
   unsigned int lineCnt = 0;
   if (icd_file.is_open()) {
     while (getline(icd_file, line)) {
@@ -299,17 +301,17 @@ void CbmRichMCbmHitProducer::read_ICD(std::array<Double_t, 2304>& ICD_offsets, u
       unsigned int addr = 0;
       Double_t value;
       if (!(iss >> addr >> value)) {
-        LOG(info) << "A Problem accured in line " << lineCnt << "\n";
+        LOG(info) << "A Problem accured in line " << lineCnt;
         break;
       }  // error
       lineCnt++;
       ICD_offsets.at(addr) += value;
     }
     icd_file.close();
-    LOG(info) << "Loaded inter channel delay file icd_offset_it_" << iteration << ".data for RICH.\n";
+    LOG(info) << "Loaded inter channel delay file " << filename << " for RICH.";
   }
   else {
-    LOG(info) << "Unable to open inter channel delay file icd_offset_it_" << iteration << ".data\n";
+    LOG(info) << "Unable to open inter channel delay file " << filename;
   }
 }
 

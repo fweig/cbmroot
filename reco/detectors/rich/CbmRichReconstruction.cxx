@@ -69,9 +69,9 @@ InitStatus CbmRichReconstruction::Init()
   if (nullptr == manager) LOG(fatal) << "CbmRichReconstruction::Init(): FairRootManager is nullptr.";
 
   fCbmEvents = dynamic_cast<TClonesArray*>(manager->GetObject("CbmEvent"));
-  if (fCbmEvents == nullptr) { LOG(info) << ": CbmEvent NOT found \n \n \n"; }
+  if (fCbmEvents == nullptr) { LOG(info) << GetName() << "::Init() CbmEvent NOT found \n"; }
   else {
-    LOG(info) << ": CbmEvent found \n \n \n";
+    LOG(info) << GetName() << "::Init() CbmEvent found";
   }
 
   if (fRunExtrapolation) {
@@ -201,7 +201,7 @@ void CbmRichReconstruction::InitFinder()
      fRingFinder = new CbmL1RichENNRingFinder(0);
      }
      else if ((fFinderName == "enn_parallel")) {
-     
+
      fRingFinder = new CbmL1RichENNRingFinderParallel(0);
      } else if (fFinderName == "hough_prototype") {
      fRingFinder = new CbmRichProtRingFinderHough();

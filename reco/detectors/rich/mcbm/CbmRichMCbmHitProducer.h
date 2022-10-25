@@ -77,6 +77,12 @@ public:
 
 
   /**
+     * Set ICD base-file path.
+     */
+  void SetIcdFilenameBase(const std::string& icdFileBase) { fIcdFilenameBase = icdFileBase; }
+
+
+  /**
     * Set ToT Limits.
     */
   void setToTLimits(double low, double high)
@@ -143,6 +149,7 @@ private:
 
   std::string fMappingFile;
 
+  std::string fIcdFilenameBase = "";
   std::array<Double_t, 2304> fICD_offset_read;
 
   void InitMapping();

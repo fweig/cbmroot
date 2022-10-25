@@ -479,7 +479,9 @@ Bool_t mcbm_event_reco_L1(UInt_t uRunId                   = 2391,
   if (bRICH && geoSetup->IsActive(ECbmModuleId::kRich)) {
     // -----   Local reconstruction of RICH Hits ------------------------------
     CbmRichMCbmHitProducer* hitProd = new CbmRichMCbmHitProducer();
-    hitProd->SetMappingFile("mRICH_Mapping_vert_20190318_elView.geo");
+    hitProd->SetMappingFile(std::string(srcDir.Data())
+                            + "/macro/rich/mcbm/beamtime/mRICH_Mapping_vert_20190318_elView.geo");
+    hitProd->SetIcdFilenameBase(std::string(srcDir.Data()) + "/macro/beamtime/mcbm2022/icd_offset_it");
     hitProd->setToTLimits(23.7, 30.0);
     hitProd->applyToTCut();
     hitProd->applyICDCorrection();
