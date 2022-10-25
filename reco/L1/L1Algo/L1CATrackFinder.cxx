@@ -120,9 +120,8 @@ bool L1Algo::checkTripletMatch(const L1Triplet& l, const L1Triplet& r, fscal& dc
 inline void L1Algo::findSingletsStep0(  // input
   Tindex start_lh, Tindex n1_l, L1HitPoint* Hits_l,
   // output
-  fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, L1HitIndex_t* hitsl, fvec* HitTime_l, fvec* HitTimeEr,
-  // comment unused parameters, FU, 18.01.21
-  fvec* /*Event_l*/, fvec* d_u, fvec* d_v)
+  fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, L1HitIndex_t* hitsl, fvec* HitTime_l, fvec* HitTimeEr, fvec* d_u,
+  fvec* d_v)
 {
 
   /// Prepare the portion of data of left hits of a triplet:
@@ -376,7 +375,7 @@ inline void L1Algo::findDoubletsStep0(
 #ifdef DOUB_PERFORMANCE
   L1Vector<L1HitIndex_t>& hitsl_2,
 #endif  // DOUB_PERFORMANCE
-  L1Vector<L1HitIndex_t>& hitsm_2, fvec* /*Event*/, L1Vector<char>& lmDoublets)
+  L1Vector<L1HitIndex_t>& hitsm_2)
 {
   /// Find the doublets. Reformat data in the portion of doublets.
 
@@ -393,8 +392,6 @@ inline void L1Algo::findDoubletsStep0(
 
     // assert(T1.IsEntryConsistent(true, i1_4));
     // if (!T1.IsEntryConsistent(false, i1_4)) continue;
-
-    const int n2Saved = n2;
 
     const fvec Pick_m22 = (fDoubletChi2Cut - T1.chi2);
     // if make it bigger the found hits will be rejected later because of the chi2 cut.
@@ -525,8 +522,6 @@ inline void L1Algo::findDoubletsStep0(
       }
     }  // loop over the hits in the area
 
-    lmDoublets[hitsl_1[i1]] = (n2Saved < n2);
-
   }  // for i1
 }
 
@@ -536,7 +531,7 @@ inline void L1Algo::findDoubletsStep0(
 inline void L1Algo::findTripletsStep0(  // input
   L1HitPoint* vHits_r, const L1Station& stam, const L1Station& star, int istam, int istar, L1HitPoint* vHits_m,
   L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1, Tindex n2, L1Vector<L1HitIndex_t>& hitsm_2,
-  L1Vector<L1HitIndex_t>& i1_2, const L1Vector<char>& /*mrDoublets*/,
+  L1Vector<L1HitIndex_t>& i1_2,
   // output
   Tindex& n3, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
   L1Vector<L1HitIndex_t>& hitsr_3, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
@@ -594,10 +589,7 @@ inline void L1Algo::findTripletsStep0(  // input
 
     size_t n2_4 = 0;
     for (; n2_4 < fvec::size() && i2 < n2; i2++, n2_4++) {
-      //         if (!mrDoublets[hitsm_2[i2]]) {
-      //           n2_4--;
-      //           continue;
-      //         }
+
       const Tindex& i1  = i1_2[i2];
       const Tindex i1_V = i1 / fvec::size();
       const Tindex i1_4 = i1 % fvec::size();
@@ -1351,8 +1343,8 @@ inline void L1Algo::CreatePortionOfDoublets(
   /// input:
   const int istal, const int istam, const Tindex iSingletPortion, const Tindex singletPortionSize,
   /// output:
-  L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1, L1Vector<char>& lmDoublets, Tindex& n_2,
-  L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2
+  L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1, Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2,
+  L1Vector<L1HitIndex_t>& hitsm_2
   ///
 )
 {
@@ -1363,10 +1355,9 @@ inline void L1Algo::CreatePortionOfDoublets(
   ///   @iSingletPortion - index of portion of left hits
   ///   @singletPortionSize - number of left hits in the portion
   /// output:
-  ///   @*T_1 - singlets parameters
-  ///   @*fld_1 - field aproximation
-  ///   @*hitsl_1- left hits of triplets
-  ///   @&lmDoublets - existance of a doublet starting from the left hit
+  ///   @*T_1 - singlet parameters
+  ///   @*fld_1 - field aproximation for singlets
+  ///   @*hitsl_1- left hits of future triplets
   ///   @&n_2 - number of doublets
   ///   @&i1_2 - index of 1st hit in portion indexed by doublet index
   ///   @&hitsm_2 - index of middle hit in hits array indexed by doublet index
@@ -1386,14 +1377,13 @@ inline void L1Algo::CreatePortionOfDoublets(
     fvec zPos[L1Constants::size::kSingletPortionSizeVec];
     fvec HitTime[L1Constants::size::kSingletPortionSizeVec];
     fvec HitTimeEr[L1Constants::size::kSingletPortionSizeVec];
-    fvec Event[L1Constants::size::kSingletPortionSizeVec];
 
     /// prepare the portion of left hits data
 
     findSingletsStep0(  // input
       iSingletPortion * L1Constants::size::kSingletPortionSize, singletPortionSize, vHits_l,
       // output
-      u_front, u_back, zPos, hitsl_1, HitTime, HitTimeEr, Event, du0, dv0);
+      u_front, u_back, zPos, hitsl_1, HitTime, HitTimeEr, du0, dv0);
 
     for (Tindex i = 0; i < singletPortionSize; ++i)
       L1_ASSERT(hitsl_1[i] < HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal],
@@ -1421,7 +1411,7 @@ inline void L1Algo::CreatePortionOfDoublets(
 #ifdef DOUB_PERFORMANCE
       hitsl_2,
 #endif  // DOUB_PERFORMANCE
-      hitsm_2, Event, lmDoublets);
+      hitsm_2);
 
     for (Tindex i = 0; i < static_cast<Tindex>(hitsm_2.size()); ++i)
       L1_ASSERT(hitsm_2[i] < HitsUnusedStopIndex[istam] - HitsUnusedStartIndex[istam],
@@ -1450,9 +1440,7 @@ inline void L1Algo::CreatePortionOfTriplets(
   /// input / output
   L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
 
-  Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2,
-
-  const L1Vector<char>& mrDoublets)
+  Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2)
 {
 
   /// creates a portion of triplets:
@@ -1528,7 +1516,6 @@ inline void L1Algo::CreatePortionOfTriplets(
 
       n_2, hitsm_2, i1_2,
 
-      mrDoublets,
       // output
       n3, T_3, hitsl_3, hitsm_3, hitsr_3, u_front3, u_back3, z_pos3, du3, dv3, timeR, timeER);
 
@@ -1968,17 +1955,6 @@ void L1Algo::CATrackFinder()
     /// index in portion of singlets(i1) indexed by index in portion of doublets(i2)
     L1Vector<L1HitIndex_t> i1G_2("L1CATrackFinder::i1G_2");
 
-    /// is exist a doublet started from indexed by left hit
-    L1Vector<char> lmDoublets[L1Constants::size::kMaxNstations] {"L1CATrackFinder::lmDoublets"};
-
-    /// is exist a doublet started from indexed by left hit
-    L1Vector<char> lmDoubletsG[L1Constants::size::kMaxNstations] {"L1CATrackFinder::lmDoubletsG"};
-
-    for (int i = 0; i < fParameters.GetNstationsActive(); i++) {
-      lmDoublets[i].SetName(std::stringstream() << "L1CATrackFinder::lmDoublets[" << i << "]");
-      lmDoubletsG[i].SetName(std::stringstream() << "L1CATrackFinder::lmDoubletsG[" << i << "]");
-    }
-
     hitsm_2.reserve(9000);  // TODO: make reasonable cuts on n combinations, put them to the header
     i1_2.reserve(9000);  // TODO: why that large numbers are needed even for mbias??? something goes wrong sometimes..
     hitsmG_2.reserve(9000);
@@ -1994,32 +1970,17 @@ void L1Algo::CATrackFinder()
 #endif
       for (Tindex ip = 0; ip < (Tindex) fSingletPortionSize[istal].size(); ++ip) {
         Tindex n_2   = 0;  /// number of doublets in portion
-        int NHitsSta = fInputData.GetStopHitIndex(istal) - fInputData.GetStartHitIndex(istal);
-        lmDoublets[istal].reset(NHitsSta);
-        lmDoubletsG[istal].reset(NHitsSta);
 
         hitsm_2.clear();
         i1_2.clear();
 
         CreatePortionOfDoublets(istal, istal + 1, ip, fSingletPortionSize[istal][ip],
-
                                 // output
-                                T_1, fld_1, hitsl_1,
-
-                                lmDoublets[istal],
-
-
-                                n_2, i1_2, hitsm_2);
+                                T_1, fld_1, hitsl_1, n_2, i1_2, hitsm_2);
 
 
         CreatePortionOfTriplets(  // input
-          istal, istal + 1, istal + 2, T_1, fld_1, hitsl_1,
-
-          n_2, i1_2, hitsm_2,
-
-          lmDoublets[istal + 1]
-          // output
-        );
+          istal, istal + 1, istal + 2, T_1, fld_1, hitsl_1, n_2, i1_2, hitsm_2);
 
         if (fpCurrentIteration->GetJumpedFlag() || (fMissingHits)) {
           // All iterations are "jump"!
@@ -2030,23 +1991,19 @@ void L1Algo::CATrackFinder()
             CreatePortionOfDoublets(  // input
               istal, istal + 2, ip, fSingletPortionSize[istal][ip],
               // output
-              TG_1, fldG_1, hitslG_1,
-
-              lmDoubletsG[istal],
-
-              nG_2, i1G_2, hitsmG_2);
+              TG_1, fldG_1, hitslG_1, nG_2, i1G_2, hitsmG_2);
           }
 
           if ((fMissingHits && (istal == 0)) || !fMissingHits) {
             CreatePortionOfTriplets(  // input
               istal, istal + 1, istal + 3, T_1, fld_1, hitsl_1,
 
-              n_2, i1_2, hitsm_2, lmDoubletsG[istal + 1]);
+              n_2, i1_2, hitsm_2);
           }
 
           if ((fMissingHits && (istal == 1)) || !fMissingHits) {
             CreatePortionOfTriplets(  // input
-              istal, istal + 2, istal + 3, TG_1, fldG_1, hitslG_1, nG_2, i1G_2, hitsmG_2, lmDoublets[istal + 2]);
+              istal, istal + 2, istal + 3, TG_1, fldG_1, hitslG_1, nG_2, i1G_2, hitsmG_2);
           }
         }
       }  //

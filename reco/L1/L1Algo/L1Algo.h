@@ -262,8 +262,8 @@ public:
   void findSingletsStep0(  // input
     Tindex start_lh, Tindex n1_l, L1HitPoint* Hits_l,
     // output
-    fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, L1HitIndex_t* hitsl, fvec* HitTime_l, fvec* HitTimeEr, fvec* Event_l,
-    fvec* d_u, fvec* d_v);
+    fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, L1HitIndex_t* hitsl, fvec* HitTime_l, fvec* HitTimeEr, fvec* d_u,
+    fvec* d_v);
 
   /// Get the field approximation. Add the target to parameters estimation. Propagate to middle station.
   void findSingletsStep1(  // input
@@ -282,7 +282,7 @@ public:
 #ifdef DOUB_PERFORMANCE
     L1Vector<L1HitIndex_t>& hitsl_2,
 #endif  // DOUB_PERFORMANCE
-    L1Vector<L1HitIndex_t>& hitsm_2, fvec* Event, L1Vector<char>& lmDoublets);
+    L1Vector<L1HitIndex_t>& hitsm_2);
 
   /// Add the middle hits to parameters estimation. Propagate to right station.
   /// Find the triplets (right hit). Reformat data in the portion of triplets.
@@ -293,7 +293,6 @@ public:
 
     Tindex n2, L1Vector<L1HitIndex_t>& hitsm_2, L1Vector<L1HitIndex_t>& i1_2,
 
-    const L1Vector<char>& mrDoublets,
     // output
     Tindex& n3, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
     L1Vector<L1HitIndex_t>& hitsr_3, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
@@ -326,21 +325,15 @@ public:
   /// Find doublets on station
   void CreatePortionOfDoublets(  // input
     int istal, int istam, Tindex iSingletPortion, Tindex singletPortionSize,
-
     // output
     L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
-
-    L1Vector<char>& lmDoublets,
-
-
+    //
     Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2);
 
   /// Find triplets on station
   void CreatePortionOfTriplets(  // input
     int istal, int istam, int istar, L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1, Tindex& n_2,
-    L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2, const L1Vector<char>& mrDoublets
-    // output
-  );
+    L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2);
 
 
   ///  ------ Subroutines used by L1Algo::KFTrackFitter()  ------
