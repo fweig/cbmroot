@@ -129,6 +129,7 @@ private:
 
   //
   UInt_t fuNbTs = 0;
+  UInt_t fuNbTrdCondWarn = 0;
 
   CheckTimingDetector fRefDet {CheckTimingDetector(ECbmModuleId::kT0, "T0")};
   std::vector<CheckTimingDetector> fvDets {

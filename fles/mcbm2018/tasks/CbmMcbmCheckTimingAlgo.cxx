@@ -182,6 +182,8 @@ void CbmMcbmCheckTimingAlgo::ProcessTs()
   LOG(info) << "executing TS " << fuNbTs << " index ["
             << (fCbmTsEventHeader != nullptr ? fCbmTsEventHeader->GetTsIndex() : -1) << "]";
 
+  fuNbTrdCondWarn = 0;
+
   switch (fRefDet.detId) {
     case ECbmModuleId::kSts: {
       CheckInterSystemOffset<CbmStsDigi>();
@@ -467,7 +469,11 @@ bool CbmMcbmCheckTimingAlgo::CheckCondition(CheckTimingDetector* det, UInt_t uCo
     if (digi->GetAddressModule() != moduleId) return false;
   }
   catch (const std::invalid_argument& ia) {
-    LOG(warning) << "Trd condition " << det->vName[uCond] << " not implemented. Skipped";
+    if (fuNbTrdCondWarn < 10) {
+      LOG(warning) << "Trd condition for index " << uCond << " name " << det->vName[uCond]
+                   << " not implemented. Skipped";
+      ++fuNbTrdCondWarn;
+    }
     return false;
   }
   return true;
