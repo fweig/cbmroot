@@ -314,9 +314,7 @@ public:
   /// Select triplets. Save them into vTriplets.
   void findTripletsStep3(  // input
     Tindex n3, int istal, int istam, int istar, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
-    L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3,
-    // output
-    Tindex& nstaltriplets);
+    L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3);
 
 
   /// Find neighbours of triplets. Calculate level of triplets.
@@ -338,10 +336,9 @@ public:
     Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2);
 
   /// Find triplets on station
-  void TripletsStaPort(  // input
-    int istal, int istam, int istar, Tindex& nstaltriplets, L1TrackPar* T_1, L1FieldRegion* fld_1,
-    L1HitIndex_t* hitsl_1, Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2,
-    const L1Vector<char>& mrDoublets
+  void CreatePortionOfTriplets(  // input
+    int istal, int istam, int istar, L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1, Tindex& n_2,
+    L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2, const L1Vector<char>& mrDoublets
     // output
   );
 
@@ -500,19 +497,19 @@ public:
   //  fvec zPos[Portion/fvecLen];
   //  fvec fHitTime[Portion/fvecLen];
 
-  L1Vector<L1TrackPar> fT_3[L1Constants::size::kMaxNthreads] {"fT_3"};
+  L1Vector<L1TrackPar> fTripletPar[L1Constants::size::kMaxNthreads] {"fTripletPar"};
 
-  L1Vector<L1HitIndex_t> fhitsl_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsl_3"};
-  L1Vector<L1HitIndex_t> fhitsm_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsm_3"};
-  L1Vector<L1HitIndex_t> fhitsr_3[L1Constants::size::kMaxNthreads] {"L1Algo::fhitsr_3"};
+  L1Vector<L1HitIndex_t> fTripletHitsL[L1Constants::size::kMaxNthreads] {"L1Algo::fTripletHitsL"};
+  L1Vector<L1HitIndex_t> fTripletHitsM[L1Constants::size::kMaxNthreads] {"L1Algo::fTripletHitsM"};
+  L1Vector<L1HitIndex_t> fTripletHitsR[L1Constants::size::kMaxNthreads] {"L1Algo::fTripletHitsR"};
 
-  L1Vector<fvec> fu_front3[L1Constants::size::kMaxNthreads] {"L1Algo::fu_front3"};
-  L1Vector<fvec> fu_back3[L1Constants::size::kMaxNthreads] {"L1Algo::fu_back3"};
-  L1Vector<fvec> fz_pos3[L1Constants::size::kMaxNthreads] {"L1Algo::fz_pos3"};
-  L1Vector<fvec> fTimeR[L1Constants::size::kMaxNthreads] {"L1Algo::fTimeR"};
-  L1Vector<fvec> fTimeER[L1Constants::size::kMaxNthreads] {"L1Algo::fTimeER"};
-  L1Vector<fvec> du[L1Constants::size::kMaxNthreads] {"L1Algo::du"};
-  L1Vector<fvec> dv[L1Constants::size::kMaxNthreads] {"L1Algo::dv"};
+  L1Vector<fvec> fTripletHitR_Ufront[L1Constants::size::kMaxNthreads] {"L1Algo::fTripletHitR_Ufront"};
+  L1Vector<fvec> fTripletHitR_Uback[L1Constants::size::kMaxNthreads] {"L1Algo::fTripletHitR_Uback"};
+  L1Vector<fvec> fTripletHitR_Z[L1Constants::size::kMaxNthreads] {"L1Algo::fTripletHitR_Z"};
+  L1Vector<fvec> fTripletHitR_Time[L1Constants::size::kMaxNthreads] {"L1Algo::fTripletHitR_Time"};
+  L1Vector<fvec> fTripletHitR_TimeErr[L1Constants::size::kMaxNthreads] {"L1Algo::fTripletHitR_TimeErr"};
+  L1Vector<fvec> fTripletHitR_dUfront[L1Constants::size::kMaxNthreads] {"L1Algo::fTripletHitR_dUfront"};
+  L1Vector<fvec> fTripletHitR_dUback[L1Constants::size::kMaxNthreads] {"L1Algo::fTripletHitR_dUback"};
 
 
   //   Tindex NHits_l[L1Constants::size::kMaxNstations];

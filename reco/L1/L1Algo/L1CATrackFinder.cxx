@@ -1139,9 +1139,7 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
 
 inline void L1Algo::findTripletsStep3(  // input
   Tindex n3, int istal, int istam, int istar, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
-  L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3,
-  // output
-  Tindex& nstaltriplets)
+  L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3)
 {
   /// Selects good triplets and saves them into fTriplets.
   /// Finds neighbouring triplets at the next station.
@@ -1154,12 +1152,6 @@ inline void L1Algo::findTripletsStep3(  // input
   /// \param hitsl_3  index of the left triplet hit in unused hits on the left station
   /// \param hitsm_3  index of the middle triplet hit in unused hits on the middle station
   /// \param hitsr_3  index of the right triplet hit in unused hits on the right station
-  ///
-  /// Output:
-  ///
-  /// \param nstaltriplets updated number of triplets in fTriplets[istal][Thread]
-
-  // TODO: SG: remove nstaltriplets parameter
 
 #ifdef _OPENMP
   unsigned int Thread = omp_get_thread_num();
@@ -1232,8 +1224,6 @@ inline void L1Algo::findTripletsStep3(  // input
     L1Triplet& tr1 = fTriplets[istal][Thread].back();
     tr1.SetIsMomentumFitted(isMomentumFitted);
     tr1.SetLevel(0);
-
-    ++nstaltriplets;
 
     fHitNtriplets[ihitl]++;
 
@@ -1370,8 +1360,8 @@ inline void L1Algo::CreatePortionOfDoublets(
   /// input:
   ///   @istal - start station number
   ///   @istam - last station number
-  ///   @iPortion - index of portion of left hits
-  ///   @&portionSize - number of left hits in the portion
+  ///   @iSingletPortion - index of portion of left hits
+  ///   @singletPortionSize - number of left hits in the portion
   /// output:
   ///   @*T_1 - singlets parameters
   ///   @*fld_1 - field aproximation
@@ -1453,39 +1443,37 @@ inline void L1Algo::CreatePortionOfDoublets(
 
 /// ------------------- Triplets on station ----------------------
 
-inline void L1Algo::TripletsStaPort(  /// creates triplets:
-  /// input:
-  ///  @istal - start station number,
-  ///  @istam - middle station number,
-  ///  @istar - last station number,
-  ///  @ip - index of portion,
-  ///  @&n_g - numer of elements in portion,
-  ///  @*portionStopIndex
+inline void L1Algo::CreatePortionOfTriplets(
+  /// input
   int istal, int istam, int istar,
 
-  /// @nstaltriplets - ,
-  /// @*portionStopIndex,
+  /// input / output
+  L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
+
+  Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2,
+
+  const L1Vector<char>& mrDoublets)
+{
+
+  /// creates a portion of triplets:
+  /// input:
+  ///  @istal - left station number,
+  ///  @istam - middle station number,
+  ///  @istar - right station number,
+
+  /// input / output:
+
   /// @*T_1 - track parameters for singlets,
   /// @*fld_1 - field approximation for singlets,
   /// @&n_2 - number of doublets in portion
   /// @&n_2 - number of doublets,
   /// @&i1_2 - index of 1st hit in portion indexed by doublet index,
   /// @&hitsm_2 - index of middle hit in hits array indexed by doublet index
-
-
-  Tindex& nstaltriplets, L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
-
-  Tindex& n_2, L1Vector<L1HitIndex_t>& i1_2, L1Vector<L1HitIndex_t>& hitsm_2,
-
-  const L1Vector<char>& mrDoublets
-
   /// output:
   // @*vTriplets_part - array of triplets,
   // @*TripStartIndexH,
   // @*TripStopIndexH - start/stop index of a triplet in the array
 
-)
-{
   if (istar < fParameters.GetNstationsActive()) {
     // prepare data
     const L1Station& stam = fParameters.GetStation(istam);
@@ -1507,17 +1495,17 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
     int Thread = 0;
 #endif
 
-    L1Vector<L1TrackPar>& T_3       = fT_3[Thread];
-    L1Vector<L1HitIndex_t>& hitsl_3 = fhitsl_3[Thread];
-    L1Vector<L1HitIndex_t>& hitsm_3 = fhitsm_3[Thread];
-    L1Vector<L1HitIndex_t>& hitsr_3 = fhitsr_3[Thread];
-    L1Vector<fvec>& u_front3        = fu_front3[Thread];
-    L1Vector<fvec>& u_back3         = fu_back3[Thread];
-    L1Vector<fvec>& z_pos3          = fz_pos3[Thread];
-    L1Vector<fvec>& timeR           = fTimeR[Thread];
-    L1Vector<fvec>& timeER          = fTimeER[Thread];
-    L1Vector<fvec>& du3             = du[Thread];
-    L1Vector<fvec>& dv3             = dv[Thread];
+    L1Vector<L1TrackPar>& T_3       = fTripletPar[Thread];
+    L1Vector<L1HitIndex_t>& hitsl_3 = fTripletHitsL[Thread];
+    L1Vector<L1HitIndex_t>& hitsm_3 = fTripletHitsM[Thread];
+    L1Vector<L1HitIndex_t>& hitsr_3 = fTripletHitsR[Thread];
+    L1Vector<fvec>& u_front3        = fTripletHitR_Ufront[Thread];
+    L1Vector<fvec>& u_back3         = fTripletHitR_Uback[Thread];
+    L1Vector<fvec>& z_pos3          = fTripletHitR_Z[Thread];
+    L1Vector<fvec>& timeR           = fTripletHitR_Time[Thread];
+    L1Vector<fvec>& timeER          = fTripletHitR_TimeErr[Thread];
+    L1Vector<fvec>& du3             = fTripletHitR_dUfront[Thread];
+    L1Vector<fvec>& dv3             = fTripletHitR_dUback[Thread];
 
     T_3.clear();
     hitsl_3.clear();
@@ -1584,9 +1572,7 @@ inline void L1Algo::TripletsStaPort(  /// creates triplets:
 
     /// Fill Triplets.
     findTripletsStep3(  // input
-      n3, istal, istam, istar, T_3, hitsl_3, hitsm_3, hitsr_3,
-      // output
-      nstaltriplets);
+      n3, istal, istam, istar, T_3, hitsl_3, hitsm_3, hitsr_3);
   }
 }
 
@@ -2025,10 +2011,9 @@ void L1Algo::CATrackFinder()
 
                                 n_2, i1_2, hitsm_2);
 
-        Tindex nstaltriplets = 0;
 
-        TripletsStaPort(  // input
-          istal, istal + 1, istal + 2, nstaltriplets, T_1, fld_1, hitsl_1,
+        CreatePortionOfTriplets(  // input
+          istal, istal + 1, istal + 2, T_1, fld_1, hitsl_1,
 
           n_2, i1_2, hitsm_2,
 
@@ -2053,16 +2038,15 @@ void L1Algo::CATrackFinder()
           }
 
           if ((fMissingHits && (istal == 0)) || !fMissingHits) {
-            TripletsStaPort(  // input
-              istal, istal + 1, istal + 3, nstaltriplets, T_1, fld_1, hitsl_1,
+            CreatePortionOfTriplets(  // input
+              istal, istal + 1, istal + 3, T_1, fld_1, hitsl_1,
 
               n_2, i1_2, hitsm_2, lmDoubletsG[istal + 1]);
           }
 
           if ((fMissingHits && (istal == 1)) || !fMissingHits) {
-            TripletsStaPort(  // input
-              istal, istal + 2, istal + 3, nstaltriplets, TG_1, fldG_1, hitslG_1, nG_2, i1G_2, hitsmG_2,
-              lmDoublets[istal + 2]);
+            CreatePortionOfTriplets(  // input
+              istal, istal + 2, istal + 3, TG_1, fldG_1, hitslG_1, nG_2, i1G_2, hitsmG_2, lmDoublets[istal + 2]);
           }
         }
       }  //

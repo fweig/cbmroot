@@ -34,23 +34,23 @@ void L1Algo::SetNThreads(unsigned int n)
     fTrackCandidates[i].SetName(std::stringstream() << "L1Algo::fTrackCandidates[" << i << "]");
 
 
-    fT_3[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    fTripletPar[i].reserve(L1Constants::size::kMaxPortionTripletsP);
 
-    fhitsl_3[i].SetName(std::stringstream() << "L1Algo::fhitsl_3[" << i << "]");
-    fhitsm_3[i].SetName(std::stringstream() << "L1Algo::fhitsm_3[" << i << "]");
-    fhitsr_3[i].SetName(std::stringstream() << "L1Algo::fhitsr_3[" << i << "]");
+    fTripletHitsL[i].SetName(std::stringstream() << "L1Algo::fhitsl_3[" << i << "]");
+    fTripletHitsM[i].SetName(std::stringstream() << "L1Algo::fhitsm_3[" << i << "]");
+    fTripletHitsR[i].SetName(std::stringstream() << "L1Algo::fhitsr_3[" << i << "]");
 
-    fhitsl_3[i].reserve(L1Constants::size::kMaxPortionTriplets);
-    fhitsm_3[i].reserve(L1Constants::size::kMaxPortionTriplets);
-    fhitsr_3[i].reserve(L1Constants::size::kMaxPortionTriplets);
+    fTripletHitsL[i].reserve(L1Constants::size::kMaxPortionTriplets);
+    fTripletHitsM[i].reserve(L1Constants::size::kMaxPortionTriplets);
+    fTripletHitsR[i].reserve(L1Constants::size::kMaxPortionTriplets);
 
-    fu_front3[i].reserve(L1Constants::size::kMaxPortionTripletsP);
-    fu_back3[i].reserve(L1Constants::size::kMaxPortionTripletsP);
-    fz_pos3[i].reserve(L1Constants::size::kMaxPortionTripletsP);
-    fTimeR[i].reserve(L1Constants::size::kMaxPortionTripletsP);
-    fTimeER[i].reserve(L1Constants::size::kMaxPortionTripletsP);
-    du[i].reserve(L1Constants::size::kMaxPortionTripletsP);
-    dv[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    fTripletHitR_Ufront[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    fTripletHitR_Uback[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    fTripletHitR_Z[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    fTripletHitR_Time[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    fTripletHitR_TimeErr[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    fTripletHitR_dUfront[i].reserve(L1Constants::size::kMaxPortionTripletsP);
+    fTripletHitR_dUback[i].reserve(L1Constants::size::kMaxPortionTripletsP);
 
     for (unsigned int j = 0; j < L1Constants::size::kMaxNstations; j++) {
       fTriplets[j][i].SetName(std::stringstream() << "L1Algo::fTriplets[" << i << "][" << j << "]");
