@@ -1,81 +1,46 @@
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startMQSamplerSink.sh.in ${CMAKE_BINARY_DIR}/bin/MQ/topologies/startMQSamplerSink.sh)
 
 set(INCLUDE_DIRECTORIES
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/MQ/base
-)
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
-    ${SYSTEM_INCLUDE_DIRECTORIES}
-    ${ZeroMQ_INCLUDE_DIR}
-    ${Boost_INCLUDE_DIR}
-    ${FAIRROOT_INCLUDE_DIR}
-    ${FAIRMQ_INCLUDE_DIR}
-    ${FAIRMQ_INCLUDE_DIR}/options
-
-    ${FLES_IPC_INCLUDE_DIRECTORY}
-    ${CBMROOT_SOURCE_DIR}/external/cppzmq
-)
-
-include_directories(${INCLUDE_DIRECTORIES})
-include_directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${Boost_LIBRARY_DIRS}
-)
-
-link_directories(${LINK_DIRECTORIES})
-
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+  
 # Set the install path within the build directory
 set(EXECUTABLE_OUTPUT_PATH "${EXECUTABLE_OUTPUT_PATH}/MQ/sink")
 # Set the install path within the installation directory
 set(BIN_DESTINATION bin/MQ/sink)
 
-Set(BOOST_LIBS
-  ${Boost_SYSTEM_LIBRARY}
-  ${Boost_SERIALIZATION_LIBRARY}
-  ${Boost_PROGRAM_OPTIONS_LIBRARY}
-  ${Boost_LOG_LIBRARY}
-)
+
 If(UNIX AND NOT APPLE)
   List(APPEND BOOST_LIBS pthread)
 EndIf()
 
-set(FAIR_LIBS
-  ${FAIRMQ_LIBS}
-)
+set(PRIVATE_DEPS
+  CbmMQBase
+  FairMQ::Tools
+  external::fles_ipc
+  )
 
-If(FAIRLOGGER_FOUND)
-  set(FAIR_LIBS
-      ${FAIR_LIBS}
-      FairLogger
-     )
-EndIf()
-
-# Dependencies common to all executables
-set(DEPENDENCIES_ALL
-  ${DEPENDENCIES}
-  ${FAIR_LIBS}
-  ${BOOST_LIBS}
-)
+set(INTERFACE_DEPS
+  FairMQ::FairMQ
+  )
 
 set(EXE_NAME DevNullSink)
 set(SRCS CbmDevNullSink.cxx runDevNullSink.cxx)
-set(DEPENDENCIES
-  ${DEPENDENCIES_ALL}
-  external::fles_ipc
-)
-GENERATE_EXECUTABLE()
+
+set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
+set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
+
+generate_cbm_executable()
+
 
 set(EXE_NAME TsaComponentSink)
 set(SRCS CbmTsaComponentSink.cxx runTsaComponentSink.cxx)
-set(DEPENDENCIES
-  ${DEPENDENCIES_ALL}
-  external::fles_ipc
-)
-GENERATE_EXECUTABLE()
+
+set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
+set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
+
+generate_cbm_executable()
+
 
 # Install scripts and input file
 if(EXISTS ${VMCWORKDIR}/input/tofget4_hd2018.tsa)
