@@ -49,6 +49,7 @@
 #include "TGeoManager.h"
 #include "TGeoNode.h"
 #include "TMatrixD.h"
+#include "TNtuple.h"
 #include "TProfile2D.h"
 #include "TROOT.h"
 #include "TRandom3.h"
@@ -1180,6 +1181,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
     EfficienciesPerformance();
     HistoPerformance();
     TrackFitPerformance();
+    if (fsMcTracksOutputFilename.size()) { DumpMCTracksToNtuple(); }
     // TimeHist();
     ///    WriteSIMDKFData();
   }
@@ -1226,6 +1228,13 @@ void CbmL1::Finish()
     writedir2current(fTableDir);
     outfile->Close();
     outfile->Delete();
+  }
+
+  if (fpMcTracksOutFile) {
+    fpMcTracksOutFile->cd();
+    fpMcTracksTree->Write();
+    fpMcTracksOutFile->Close();
+    fpMcTracksOutFile->Delete();
   }
 
   gFile      = currentFile;
@@ -1500,6 +1509,7 @@ void CbmL1::WriteSIMDKFData()
   }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
 // NOTE: this function should be called before fInitManager.SendParameters(fpAlgo)
 std::vector<L1Material> CbmL1::ReadMaterialBudget(L1DetectorID detectorID)
 {
@@ -1544,7 +1554,8 @@ std::vector<L1Material> CbmL1::ReadMaterialBudget(L1DetectorID detectorID)
   return result;
 }
 
-
+// ---------------------------------------------------------------------------------------------------------------------
+//
 double CbmL1::boundedGaus(double sigma)
 {
   assert(sigma > 0. && std::isfinite(sigma));

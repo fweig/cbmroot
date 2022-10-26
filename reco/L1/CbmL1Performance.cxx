@@ -37,13 +37,17 @@
 #include "CbmTrdHit.h"
 #include "CbmTrdPoint.h"
 
+#include "FairRunAna.h"
 #include "FairTrackParam.h"  // for vertex pulls
 
+#include "TFile.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TMath.h"
+#include "TNtuple.h"
 #include "TProfile.h"
-#include <TFile.h>
+
+#include <boost/filesystem.hpp>
 
 #include <iostream>
 #include <list>
@@ -2244,3 +2248,80 @@ void CbmL1::InputPerformance()
 
 
 }  // void CbmL1::InputPerformance()
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void CbmL1::DumpMCTracksToNtuple()
+{
+  if (!fpMcTracksTree) {
+    auto* currentDir  = gDirectory;
+    auto* currentFile = gFile;
+
+
+    // Get prefix and directory
+    boost::filesystem::path p = (FairRunAna::Instance()->GetUserOutputFileName()).Data();
+    std::string dir           = p.parent_path().string();
+    if (dir.empty()) dir = ".";
+    std::string filename = dir + "/" + fsMcTracksOutputFilename + "." + p.filename().string();
+    std::cout << "\033[1;31mSAVING A TREE: " << filename << "\033[0m\n";
+
+    fpMcTracksOutFile = new TFile(filename.c_str(), "RECREATE");
+    fpMcTracksOutFile->cd();
+    fpMcTracksTree = new TNtuple("t", "McTracks", "motherId:pdg:p:q:zv:s:x0:y0:z0:x1:y1:z1:x2:y2:z2");
+    // motherID   - id of mother particle (< 0, if primary)
+    // pdg        - PDG code of particle
+    // p          - absolute value of track momentum [GeV/c]
+    // q          - charge of track [e]
+    // zv         - z-component of track vertex [cm]
+    // s          - global index of station
+    // x0, y0, z0 - position of the left MC point in a triplet [cm]
+    // x1, y1, z1 - position of the middle MC point in a triplet [cm]
+    // x2, y2, z2 - position of the right MC point in a triplet [cm]
+
+    gFile      = currentFile;
+    gDirectory = currentDir;
+  }
+
+  struct ReducedMcPoint {
+    int s;    ///< global active index of tracking station
+    float x;  ///< x-component of point position [cm]
+    float y;  ///< y-component of point position [cm]
+    float z;  ///< z-component of point position [cm]
+    bool operator<(const ReducedMcPoint& other) { return s < other.s; }
+  };
+
+  for (const auto& tr : fvMCTracks) {
+    // Use only reconstructable tracks
+    if (!tr.IsReconstructable()) { continue; }
+
+    std::vector<ReducedMcPoint> vPoints;
+    vPoints.reserve(tr.Points.size());
+    for (unsigned int iP = 0; iP < tr.Points.size(); ++iP) {
+      const auto& point = fvMCPoints[tr.Points[iP]];
+      vPoints.emplace_back(ReducedMcPoint {point.iStation, float(point.x), float(point.y), float(point.z)});
+    }
+
+    std::sort(vPoints.begin(), vPoints.end());
+    for (unsigned int i = 0; i + 2 < vPoints.size(); ++i) {
+      // Condition to collect only triplets without gaps in stations
+      // TODO: SZh 20.10.2022 Add cases for jump iterations
+      if (vPoints[i + 1].s == vPoints[i].s + 1 && vPoints[i + 2].s == vPoints[i].s + 2) {
+        fpMcTracksTree->Fill(tr.mother_ID,       ///< index of mother particle
+                             tr.pdg,             ///< PDG code
+                             tr.p,               ///< absolute value of track momentum [GeV/c]
+                             tr.q,               ///< charge of track [e]
+                             tr.z,               ///< z-position of track vertex [cm]
+                             vPoints[i].s,       ///< global index of active tracking station
+                             vPoints[i].x,       ///< x-component of the left MC point in a triplet [cm]
+                             vPoints[i].y,       ///< y-component of the left MC point in a triplet [cm]
+                             vPoints[i].z,       ///< z-component of the left MC point in a triplet [cm]
+                             vPoints[i + 1].x,   ///< x-component of the middle MC point in a triplet [cm]
+                             vPoints[i + 1].y,   ///< y-component of the middle MC point in a triplet [cm]
+                             vPoints[i + 1].z,   ///< z-component of the middle MC point in a triplet [cm]
+                             vPoints[i + 2].x,   ///< x-component of the right MC point in a triplet [cm]
+                             vPoints[i + 2].y,   ///< y-component of the right MC point in a triplet [cm]
+                             vPoints[i + 2].z);  ///< z-component of the right MC point in a triplet [cm]
+      }
+    }
+  }
+}

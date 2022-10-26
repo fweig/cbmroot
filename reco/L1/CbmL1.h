@@ -69,6 +69,7 @@ class CbmMCDataObject;
 
 class CbmEvent;
 class TProfile2D;
+class TNtuple;
 
 /// TODO: SZh 21.09.2022: Replace instances of this class with L1Hit
 class CbmL1HitStore {
@@ -266,6 +267,11 @@ public:
   /// \param filename  Name of the input tracking configuration file
   void SetOutputConfigName(const char* filename) { fInitManager.SetOutputConfigName(std::string(filename)); }
 
+  /// \brief Sets output file for MC tracks ntuple
+  /// If the filename is empty string, ntuple is not filled
+  /// \param filename Name of the output file name
+  void SetOutputMcTracksNtupleFilename(const char* filename) { fsMcTracksOutputFilename = std::string(filename); }
+
   /// Sets flag: to correct input hits on MC or not
   /// \param flag: true - hits will be corrected on MC information
   void SetCorrectHitsOnMC(bool flag) { fIfCorrectHitsOnMC = flag; }
@@ -399,11 +405,29 @@ private:
   void InputPerformance();    // Build histograms about input data, like hit pulls, etc.
   void TimeHist();
 
-  /// Reconstruction Performance
-  void TrackMatch();  // Procedure for match Reconstructed and MC Tracks. Should be called before Performances
-  void EfficienciesPerformance();  // calculate efficiencies
-  void TrackFitPerformance();      // pulls & residuals. Can be called only after Performance()
-  void HistoPerformance();         // fill some histograms and calculate efficiencies
+  // ********************************
+  // ** Reconstruction Performance **
+  // ********************************
+
+
+  /// Matches reconstructed and MC tracks
+  /// \note Should be called before Performances
+  void TrackMatch();
+
+  /// Calculates tracking efficiencies (counters)
+  void EfficienciesPerformance();
+
+  /// Builds pulls and residuals
+  /// \note Should be called only after CbmL1::Performance()
+  void TrackFitPerformance();
+
+  /// Fills performance histograms
+  void HistoPerformance();
+
+  /// Writes MC tracks to ntuple
+  /// \note Executed only if the filename for MC tracks ntuple output is defined
+  void DumpMCTracksToNtuple();
+
 
   // ** STandAlone Package service-functions **
 
@@ -636,12 +660,14 @@ private:
   static const int fNGhostHistos = 9;
   TH1F* fGhostHisto[fNGhostHistos] {nullptr};
 
+  TFile* fpMcTracksOutFile             = nullptr;  ///< File to save MC-tracks ntuple
+  TNtuple* fpMcTracksTree              = nullptr;  ///< Ntuple to save MC-tracks
+  std::string fsMcTracksOutputFilename = "";       ///< Name of file to save MC-tracks ntuple
 
   int fFindParticlesMode {0};  // 0 - don't run FindParticles
                                // 1 - run, all MC particle is reco-able
                                // 2 - run, MC particle is reco-able if created from reco-able tracks
                                // 3 - run, MC particle is reco-able if created from reconstructed tracks
-
 
   std::unordered_map<L1DetectorID, TString>
     fMatBudgetFileName {};  ///< Map for material budget file names vs. detectorID
