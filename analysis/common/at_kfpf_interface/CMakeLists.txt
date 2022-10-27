@@ -1,35 +1,13 @@
-Set(LIBRARY_NAME AnalysisTreeKfpfInterface)
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+
 
 set(SRCS
-        ATKFParticleFinder.cxx
-        CutsContainer.cxx
-    )
+  ATKFParticleFinder.cxx
+  CutsContainer.cxx
+  )
 
-Set(INCLUDE_DIRECTORIES
-  ${CMAKE_CURRENT_SOURCE_DIR}
-
-  ${KFParticle_INCLUDE_DIR}
-  ${AnalysisTree_INCLUDE_DIR}
-)
-
-Include_Directories (${INCLUDE_DIRECTORIES})
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${Boost_INCLUDE_DIR} 
-)
-
-Include_Directories (SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set (LINK_DIRECTORIES
-  ${AnalysisTree_LIBRARY_DIR}
-  ${KFParticle_LIB_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${ROOT_LIBRARY_DIR}
-  ${Boost_LIBRARY_DIRS}
-)
- 
-link_directories(${LINK_DIRECTORIES})
 
 IF (SSE_FOUND)
   Message(STATUS "${LIBRARY_NAME} will be compiled with SSE support")
@@ -40,21 +18,30 @@ ELSE (SSE_FOUND)
   SET_SOURCE_FILES_PROPERTIES(${SRCS} PROPERTIES COMPILE_FLAGS "-msse -O3")
 ENDIF (SSE_FOUND)
 
-Set(LINKDEF AnalysisTreeKfpfInterfaceLinkDef.h)
 
-Set(_AnalysisTree_LIB AnalysisTreeBase AnalysisTreeInfra)
+set(LIBRARY_NAME AnalysisTreeKfpfInterface)
+set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
+set(PUBLIC_DEPENDENCIES
+  AnalysisTreeBase
+  )
 
-Set(DEPENDENCIES 
-	${_AnalysisTree_LIB} 
-	KFParticle)
-Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
+set(PRIVATE_DEPENDENCIES
+  ROOT::Core
+  ROOT::Tree
+  KFParticle
+  )
+
+set(INTERFACE_DEPENDENCIES
+  ROOT::RIO
+  ROOT::Tree
+  )
+
+set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 
 ADD_DEFINITIONS(${DEFINITIONS})
 
-GENERATE_LIBRARY()
+generate_cbm_library()
 
 # Install(FILES ../../../macro/analysis/common/analysis_tree_converter/run_treemaker.C
 #         DESTINATION share/cbmroot/macro/analysis_tree
 #        )
-
-Add_Dependencies(AnalysisTreeKfpfInterface ANALYSISTREE KFPARTICLE)

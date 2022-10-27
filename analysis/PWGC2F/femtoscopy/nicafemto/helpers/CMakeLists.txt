@@ -1,48 +1,35 @@
 # Create a library called "" which includes the source files given in
 # the array .
 # The extension is already found.  Any number of sources could be listed here.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
-Set(INCLUDE_DIRECTORIES
-  ${CMAKE_SOURCE_FAIRMCSTACK}
-  ${NICAFEMTO_FEATURES}
-  ${NICAFEMTO_DATA}
-  ${KF_HEADERS}
-  ${CBMDATA_DIR}
-  ${CBMDATA_DIR}/global
-  ${CBMDATA_DIR}/sts
-  ${NICA_CBM}/helpers
-)
-Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${ROOT_INCLUDE_DIR} 
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${CLHEP_INCLUDE_DIR}
-  ${Boost_INCLUDE_DIRS}
-)
-
-Set(LINK_DIRECTORIES
-  ${KFParticle_LIB_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${ROOT_LIBRARY_DIR}
-  ${Boost_LIBRARY_DIRS}
-)
-
-Include_Directories(${INCLUDE_DIRECTORIES})
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
- 
-Link_Directories(${LINK_DIRECTORIES})
-
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+  
 # List of source files
 set(SRCS
-CbmDetectorID.cxx
-NicaCbmFirstTask.cxx
-CbmHelix.cxx
-)
+  CbmDetectorID.cxx
+  NicaCbmFirstTask.cxx
+  CbmHelix.cxx
+  )
 
-Set(HEADERS )
-Set(LINKDEF NicaCbmHelpersLinkDef.h)
-Set(LIBRARY_NAME NicaCbmHelper)
-Set(DEPENDENCIES NicaFeatures NicaDataFormat Base NicaCut NicaAna KF KFParticle)
-GENERATE_LIBRARY()
 
-Add_Dependencies(NicaCbmHelper NICAFEMTO)
+set(LIBRARY_NAME NicaCbmHelper)
+set(LINKDEF NicaCbmHelpersLinkDef.h)
+set(PUBLIC_DEPENDENCIES
+  CbmData
+  FairRoot::Base
+  NicaFeatures
+  NicaDataFormat
+  )
+
+set(PRIVATE_DEPENDENCIES
+  ROOT::MathCore
+  )
+
+set(INTERFACE_DEPENDENCIES
+  ROOT::Core
+  )
+
+
+generate_cbm_library()
 

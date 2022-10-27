@@ -1,56 +1,14 @@
-Set(INCLUDE_DIRECTORIES
-${CMAKE_CURRENT_SOURCE_DIR}
-
-${CBMROOT_SOURCE_DIR}/reco/base
-
-${CBMBASE_DIR} 
-${CBMBASE_DIR}/draw
-${CBMBASE_DIR}/report
-${CBMBASE_DIR}/utils
-
-${CBMDATA_DIR}
-${CBMDATA_DIR}/sts
-${CBMDATA_DIR}/mvd
-${CBMDATA_DIR}/global
-${CBMDATA_DIR}/rich
-${CBMDATA_DIR}/trd
-${CBMDATA_DIR}/tof
-
-${CBMROOT_SOURCE_DIR}/reco/KF
-${CBMROOT_SOURCE_DIR}/reco/KF/Interface 
-
-${CBMROOT_SOURCE_DIR}/reco/L1/ParticleFinder 
-
-${CBMROOT_SOURCE_DIR}/rich
-
-${CBMROOT_SOURCE_DIR}/reco/littrack
-)
-
-Include_Directories( ${INCLUDE_DIRECTORIES})
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES} 
-  ${Boost_INCLUDE_DIR}
-)
-
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-set(LINK_DIRECTORIES
-${KFParticle_LIB_DIR}
-${FAIRROOT_LIBRARY_DIR}
-${ROOT_LIBRARY_DIR}
-${Boost_LIBRARY_DIRS}
-)
- 
-link_directories( ${LINK_DIRECTORIES})
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
 
 set(SRCS
-LmvmTask.cxx
-LmvmDraw.cxx
-LmvmDrawAll.cxx
-LmvmHist.cxx
-LmvmUtils.cxx
-)
+  LmvmTask.cxx
+  LmvmDraw.cxx
+  LmvmDrawAll.cxx
+  LmvmHist.cxx
+  LmvmUtils.cxx
+  )
 
 
 IF (SSE_FOUND)
@@ -67,13 +25,34 @@ ENDIF (SSE_FOUND)
 ADD_DEFINITIONS(-DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 
 
-Set(LINKDEF LmvmLinkDef.h)
-Set(LIBRARY_NAME CbmLmvm)
-Set(DEPENDENCIES
-    Littrack LittrackQA KF L1 CbmRichBase CbmRichReco CbmRecoBase CbmBase CbmData)
-Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -DUSE_TIMERS)
 
-GENERATE_LIBRARY()
+set(LIBRARY_NAME CbmLmvm)
+set(LINKDEF LmvmLinkDef.h)
+set(PUBLIC_DEPENDENCIES
+  CbmBase
+  CbmData
+  KF
+  NicaCbmFormat
+  FairRoot::Base
+  ROOT::Core
+  ROOT::Hist
+  ROOT::MathCore
+  ROOT::Physics
+  )
+
+set(PRIVATE_DEPENDENCIES
+  L1
+  Littrack
+  LittrackQA
+  ROOT::EG
+  ROOT::Gpad
+  ROOT::Graf
+  ROOT::RIO
+  ROOT::Tree
+  )
+
+
+generate_cbm_library()
 
 
 
