@@ -349,7 +349,7 @@ private:
    ** @param point  Pointer to CbmStsPoint to be processed
    ** @param link   Link to MCPoint
    **/
-  void ProcessPoint(const CbmStsPoint* point, Double_t eventTime = 0., CbmLink* link = NULL);
+  void ProcessPoint(const CbmStsPoint* point, Double_t eventTime, const CbmLink& link);
 
 
   /** @brief Reset event counters **/

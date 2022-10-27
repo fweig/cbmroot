@@ -280,14 +280,9 @@ void CbmStsSimSensorDssd::RegisterCharge(Int_t side, Int_t strip, Double_t charg
   Int_t channel = GetModuleChannel(strip, side, GetSensorId());
 
   // --- Get the MC link information
-  Int_t index = -1;
-  Int_t entry = -1;
-  Int_t file  = -1;
-  if (GetCurrentLink()) {
-    index = GetCurrentLink()->GetIndex();
-    entry = GetCurrentLink()->GetEntry();
-    file  = GetCurrentLink()->GetFile();
-  }
+  Int_t index = GetCurrentLink().GetIndex();
+  Int_t entry = GetCurrentLink().GetEntry();
+  Int_t file  = GetCurrentLink().GetFile();
 
   // --- Send signal to module
   GetModule()->AddSignal(channel, time, charge, index, entry, file);

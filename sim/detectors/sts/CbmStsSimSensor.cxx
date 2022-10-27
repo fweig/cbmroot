@@ -58,7 +58,7 @@ Int_t CbmStsSimSensor::GetSensorId() const
 
 
 // -----   Process a CbmStsPoint  ------------------------------------------
-Int_t CbmStsSimSensor::ProcessPoint(const CbmStsPoint* point, Double_t eventTime, CbmLink* link)
+Int_t CbmStsSimSensor::ProcessPoint(const CbmStsPoint* point, Double_t eventTime, const CbmLink& link)
 {
 
   // --- Physical node

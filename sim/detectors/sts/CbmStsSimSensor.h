@@ -11,6 +11,8 @@
 #define CBMSTSSIMSENSOR_H 1
 
 
+#include "CbmLink.h"
+
 #include <TObject.h>
 #include <TString.h>
 
@@ -70,7 +72,7 @@ public:
   /** @brief Current link object
      ** @return Current link object (to CbmStsPoint)
      **/
-  CbmLink* GetCurrentLink() const { return fCurrentLink; }
+  const CbmLink& GetCurrentLink() const { return fCurrentLink; }
 
 
   /** @brief Corresponding element in STS setup
@@ -107,7 +109,7 @@ public:
      ** system. The appropriate analogue response is then calculated
      ** with the pure virtual method CalculateResponse.
      **/
-  Int_t ProcessPoint(const CbmStsPoint* point, Double_t eventTime = 0., CbmLink* link = NULL);
+  Int_t ProcessPoint(const CbmStsPoint* point, Double_t eventTime, const CbmLink& link);
 
 
   /** Set the sensor conditions
@@ -172,7 +174,7 @@ protected:
   Double_t fBx                           = 0.;       ///< x component of magnetic field in sensor centre
   Double_t fBy                           = 0.;       ///< y component of magnetic field in sensor centre
   Double_t fBz                           = 0.;       ///< z component of magnetic field in sensor centre
-  CbmLink* fCurrentLink                  = nullptr;  //! Link to currently processed MCPoint
+  CbmLink fCurrentLink                   = {};       //! Link to currently processed MCPoint
 
 
   /** Perform response simulation for one MC Point

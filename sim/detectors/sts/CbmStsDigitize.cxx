@@ -613,7 +613,6 @@ void CbmStsDigitize::ProcessMCEvent()
   assert(fPoints);
   for (Int_t iPoint = 0; iPoint < fPoints->GetEntriesFast(); iPoint++) {
     const CbmStsPoint* point = (const CbmStsPoint*) fPoints->At(iPoint);
-    CbmLink* link            = new CbmLink(1., iPoint, fCurrentMCEntry, fCurrentInput);
 
     // --- Ignore points from secondaries if the respective flag is set
     if (fParSim->OnlyPrimaries()) {
@@ -639,16 +638,16 @@ void CbmStsDigitize::ProcessMCEvent()
     }
 
     // --- Process the StsPoint
+    CbmLink link(1., iPoint, fCurrentMCEntry, fCurrentInput);
     ProcessPoint(point, fCurrentEventTime, link);
     fNofPointsProc++;
-    delete link;
   }  //# StsPoints
 }
 // -------------------------------------------------------------------------
 
 
 // -----  Process a StsPoint   ---------------------------------------------
-void CbmStsDigitize::ProcessPoint(const CbmStsPoint* point, Double_t eventTime, CbmLink* link)
+void CbmStsDigitize::ProcessPoint(const CbmStsPoint* point, Double_t eventTime, const CbmLink& link)
 {
 
   // --- Get the sensor the point is in
