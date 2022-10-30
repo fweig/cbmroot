@@ -72,7 +72,7 @@ using std::endl;
 
 bool L1Algo::checkTripletMatch(const L1Triplet& l, const L1Triplet& r, fscal& dchi2) const
 {
-  dchi2 = 0.;
+  dchi2 = 1.e20;
 
   if (r.GetMHit() != l.GetRHit()) return false;
   if (r.GetLHit() != l.GetMHit()) return false;
@@ -109,6 +109,7 @@ bool L1Algo::checkTripletMatch(const L1Triplet& l, const L1Triplet& r, fscal& dc
 
     if (dty * dty > fTripletLinkChi2 * Cty) return false;
     if (dtx * dtx > fTripletLinkChi2 * Ctx) return false;
+
     dchi2 = 0.5f * (dtx * dtx / Ctx + dty * dty / Cty);
   }
 
@@ -1216,6 +1217,8 @@ inline void L1Algo::findTripletsStep3(  // input
     L1Triplet& tr1 = fTriplets[istal][Thread].back();
     tr1.SetIsMomentumFitted(isMomentumFitted);
     tr1.SetLevel(0);
+    tr1.SetFNeighbour(0);
+    tr1.SetNNeighbours(0);
 
     fHitNtriplets[ihitl]++;
 
@@ -1969,7 +1972,7 @@ void L1Algo::CATrackFinder()
                                       i1G_2)  //schedule(dynamic, 2)
 #endif
       for (Tindex ip = 0; ip < (Tindex) fSingletPortionSize[istal].size(); ++ip) {
-        Tindex n_2   = 0;  /// number of doublets in portion
+        Tindex n_2 = 0;  /// number of doublets in portion
 
         hitsm_2.clear();
         i1_2.clear();

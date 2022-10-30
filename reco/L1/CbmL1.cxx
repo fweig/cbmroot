@@ -860,12 +860,28 @@ InitStatus CbmL1::Init()
       trd2dIter2.SetExtendTracksFlag(true);
       //trd2dIter2.SetFirstStationIndex(12);
 
+      auto trd2dIter3 = L1CAIteration("trd2dIter3");
+      trd2dIter3.SetMinNhits(4);
+      trd2dIter3.SetMinNhitsStation0(4);
+      trd2dIter3.SetTrackChi2Cut(100 * 7.f);         //10.f
+      trd2dIter3.SetTripletChi2Cut(0.5 * 23.4450f);  // = 7.815 * 3;  // prob = 0.05
+      trd2dIter3.SetDoubletChi2Cut(0.7 * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
+      trd2dIter3.SetPickGather(3.0f);
+      trd2dIter3.SetTripletLinkChi2(10 * 300.);
+      trd2dIter3.SetMaxInvMom(1.0 / 0.05);  //(1.0 / 0.5);
+      trd2dIter3.SetMaxSlopePV(0 * .5f);
+      trd2dIter3.SetMaxSlope(.4);  //.5f);
+      trd2dIter3.SetMaxDZ(0.05);
+      trd2dIter3.SetTargetPosSigmaXY(7 * 10, 6 * 10);  //(1, 1);
+      trd2dIter3.SetPrimaryFlag(false);
+      trd2dIter3.SetExtendTracksFlag(true);
+
       // Initialize CA track finder iterations sequence
 
       fInitManager.SetCAIterationsNumberCrosscheck(1);
       //fInitManager.PushBackCAIteration(trackingIterFastPrim);
       //fInitManager.PushBackCAIteration(globalIterPrimFast);
-      fInitManager.PushBackCAIteration(trd2dIter2);
+      fInitManager.PushBackCAIteration(trd2dIter3);
       /*
       fInitManager.SetCAIterationsNumberCrosscheck(5);
       fInitManager.PushBackCAIteration(trackingIterFastPrim);
