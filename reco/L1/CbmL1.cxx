@@ -212,8 +212,8 @@ InitStatus CbmL1::Init()
 
   if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
     //at the moment trd2d tracking only
-    fUseMVD  = 1;
-    fUseSTS  = 1;
+    fUseMVD  = 0;
+    fUseSTS  = 0;
     fUseMUCH = 0;
     fUseTRD  = 1;
     fUseTOF  = 0;
@@ -864,8 +864,8 @@ InitStatus CbmL1::Init()
 
       fInitManager.SetCAIterationsNumberCrosscheck(1);
       //fInitManager.PushBackCAIteration(trackingIterFastPrim);
-      fInitManager.PushBackCAIteration(globalIterPrimFast);
-      //fInitManager.PushBackCAIteration(trd2dIter2);
+      //fInitManager.PushBackCAIteration(globalIterPrimFast);
+      fInitManager.PushBackCAIteration(trd2dIter2);
       /*
       fInitManager.SetCAIterationsNumberCrosscheck(5);
       fInitManager.PushBackCAIteration(trackingIterFastPrim);
