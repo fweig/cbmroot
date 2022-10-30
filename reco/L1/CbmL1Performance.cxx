@@ -317,7 +317,6 @@ void CbmL1::EfficienciesPerformance()
   for (vector<CbmL1MCTrack>::iterator mtraIt = fvMCTracks.begin(); mtraIt != fvMCTracks.end(); mtraIt++) {
     CbmL1MCTrack& mtra = *(mtraIt);
 
-
     //    if( !( mtra.pdg == -11 && mtra.mother_ID == -1 ) ) continue; // electrons only
     if (!mtra.IsReconstructable() && !mtra.IsAdditional()) continue;
 
@@ -454,8 +453,10 @@ void CbmL1::EfficienciesPerformance()
     cout << endl;
     cout << "L1 ACCUMULATED STAT    : " << L1_NEVENTS << " EVENTS " << endl << endl;
     L1_NTRA.PrintEff(/*ifPrintTableToLog = */ true, false);
-    cout << "MC tracks/event found  : "
-         << int(double(L1_NTRA.reco.counters[L1_NTRA.indices["total"]]) / double(L1_NEVENTS)) << endl;
+    cout << "Reconstructible MC tracks/event: "
+         << (double(L1_NTRA.mc.counters[L1_NTRA.indices["total"]]) / double(L1_NEVENTS)) << endl;
+    cout << "Reconsted MC tracks/event: "
+         << (double(L1_NTRA.reco.counters[L1_NTRA.indices["total"]]) / double(L1_NEVENTS)) << endl;
     cout << endl;
     cout << "CA Track Finder: " << L1_CATIME / L1_NEVENTS << (fLegacyEventMode ? " s/ev" : " s/time slice") << endl
          << endl;

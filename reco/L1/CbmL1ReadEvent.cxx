@@ -56,7 +56,7 @@ using std::endl;
 using std::find;
 
 
-static bool compareZ(const int& a, const int& b)
+static bool compareMcPointZ(const int& a, const int& b)
 {
   //        return (CbmL1::Instance()->fvMCPoints[a].z < CbmL1::Instance()->fvMCPoints[b].z);
   const CbmL1* l1 = CbmL1::Instance();
@@ -178,8 +178,8 @@ int CbmL1::MatchHitWithMc<L1DetectorID::kMvd>(int iHit) const
     int iHitExt          = -(1 + iHit);  // TODO: SZh 28.08.2022: this should be replaced with iHitExt = hit.extIdex
     const auto* hitMatch = dynamic_cast<CbmMatch*>(fpMvdHitMatches->At(iHitExt));
     assert(hitMatch);
-    if (hitMatch->GetNofLinks() > 0 && hitMatch->GetLink(0).GetIndex() < fNpointsMvd) {
-      iPoint = hitMatch->GetLink(0).GetIndex();
+    if (hitMatch->GetNofLinks() > 0 && hitMatch->GetMatchedLink().GetIndex() < fNpointsMvd) {
+      iPoint = hitMatch->GetMatchedLink().GetIndex();
     }
   }
   return iPoint;
@@ -244,8 +244,8 @@ int CbmL1::MatchHitWithMc<L1DetectorID::kMuch>(int iHit) const
       if (hitMatchMuch->GetLink(iLink).GetIndex() < fNpointsMuch) {
         int iMc    = hitMatchMuch->GetLink(iLink).GetIndex();
         int iIndex = iMc + fNpointsMvd + fNpointsSts;
-        int iFile  = hitMatchMuch->GetLink(0).GetFile();
-        int iEvent = hitMatchMuch->GetLink(0).GetEntry();
+        int iFile  = hitMatchMuch->GetMatchedLink().GetFile();
+        int iEvent = hitMatchMuch->GetMatchedLink().GetEntry();
 
         auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex, iEvent, iFile));
         if (itPoint == fmMCPointsLinksMap.cend()) continue;
@@ -266,7 +266,7 @@ int CbmL1::MatchHitWithMc<L1DetectorID::kTrd>(int iHit) const
   if (hitMatch) {
     int iMC = -1;
     if (hitMatch->GetNofLinks() > 0) {
-      iMC = hitMatch->GetLink(0).GetIndex();
+      iMC = hitMatch->GetMatchedLink().GetIndex();
       assert(iMC >= 0 && iMC < fNpointsTrd);
       iPoint = iMC + fNpointsMvd + fNpointsSts + fNpointsMuch;
     }
@@ -607,7 +607,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
 
     for (unsigned int iTr = 0; iTr < fvMCTracks.size(); iTr++) {
 
-      sort(fvMCTracks[iTr].Points.begin(), fvMCTracks[iTr].Points.end(), compareZ);
+      sort(fvMCTracks[iTr].Points.begin(), fvMCTracks[iTr].Points.end(), compareMcPointZ);
 
       if (fvMCTracks[iTr].mother_ID >= 0) {
         auto iFile                = fvMCTracks[iTr].iFile;
@@ -885,8 +885,8 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       //        iMC          = matchHitMatch->GetLink(iLink).GetIndex();
       //        Int_t iIndex = iMC + fNpointsMvd + fNpointsSts;
 
-      //        Int_t iFile  = matchHitMatch->GetLink(0).GetFile();
-      //        Int_t iEvent = matchHitMatch->GetLink(0).GetEntry();
+      //        Int_t iFile  = matchHitMatch->GetMatchedLink().GetFile();
+      //        Int_t iEvent = matchHitMatch->GetMatchedLink().GetEntry();
 
       //        auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex, iEvent, iFile));
       //        if (itPoint == fmMCPointsLinksMap.cend()) continue;
@@ -997,7 +997,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       //if (fPerformance && fpTrdHitMatches) {
       //  CbmMatch* trdHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpTrdHitMatches->At(iHit));
       //  if (trdHitMatch->GetNofLinks() > 0) {
-      //    iMcTrd = trdHitMatch->GetLink(0).GetIndex();
+      //    iMcTrd = trdHitMatch->GetMatchedLink().GetIndex();
       //    assert(iMcTrd >= 0 && iMcTrd < fNpointsTrd);
       //    th.iMC   = iMcTrd + fNpointsMvd + fNpointsSts + fNpointsMuch;
       //    th.track = fvMCPoints[th.iMC].ID;

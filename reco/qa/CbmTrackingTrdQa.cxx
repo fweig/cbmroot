@@ -212,10 +212,10 @@ void CbmTrackingTrdQa::Exec(Option_t* /*opt*/)
 
     int nContStations = 0;  // Number of continious stations
     {
-      int istaprev = -1;
+      int istaprev = -100;
       int len      = 0;
       for (auto itSta = info.fHitMap.begin(); itSta != info.fHitMap.end(); itSta++) {
-        if (len == 0 || itSta->first == istaprev + 1) { len++; }
+        if (itSta->first == istaprev + 1) { len++; }
         else {
           len = 1;
         }
@@ -810,7 +810,7 @@ void CbmTrackingTrdQa::FillHitMap()
 
     if ((int) hit->GetClassType() != 1) {
       // skip TRD-1D hit
-      //continue;
+      continue;
     }
 
     Int_t station = CbmTrdTrackingInterface::Instance()->GetTrackingStationIndex(hit);
@@ -909,15 +909,19 @@ void CbmTrackingTrdQa::FillTrackMatchMap(Int_t& nRec, Int_t& nGhosts, Int_t& nCl
 
     // previous match is better, this track is a clone
     if ((quali < info.fQuali) || ((quali == info.fQuali) && (nTrue < info.fMatchedNHitsTrue))) {
-      fhNhClones->Fill(nHits);
-      nClones++;
+      if (info.fIsAccepted) {
+        fhNhClones->Fill(nHits);
+        nClones++;
+      }
       continue;
     }
 
     // this track is better than the old one
     if (info.fMatchedNHitsAll > 0) {
-      fhNhClones->Fill(info.fMatchedNHitsAll);
-      nClones++;
+      if (info.fIsAccepted) {
+        fhNhClones->Fill(info.fMatchedNHitsAll);
+        nClones++;
+      }
     }
     info.fGlobalTrackMatch = iGlobalTrack;
     info.fTrdTrackMatch    = iTrdTrack;
