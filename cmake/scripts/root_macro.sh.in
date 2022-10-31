@@ -2,7 +2,7 @@
 
 # This macro is needed to start the Root macros used for automatic testing
 # from inside CMake using the add_test functionality. Since the tests
-# starts with a fresh environment on has to set first the correct environment
+# starts with a fresh environment one has to set first the correct environment
 # needed to run FairRoot.
 # Also parameters defined in add_test will be converted in the correct format
 # to be passed to root.
@@ -19,6 +19,9 @@ export VMCWORKDIR=@VMCWORKDIR@
 export Geant4VMC_MACRO_DIR=@Geant4VMC_MACRO_DIR@
 export USE_VGM=1
 export BOOST=@Boost_Avail@
+if [[ -z "${OMP_NUM_THREADS}" ]]; then
+  export OMP_NUM_THREADS=@OMP_NUM_THREADS@
+fi
 
 @Geant4Data_Variables_sh@
 

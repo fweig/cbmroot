@@ -30,6 +30,14 @@ if ( "$same_system" == "1" ) then
 	setenv VMCWORKDIR "@VMCWORKDIR@"
 	setenv FAIRLIBDIR "@FAIRLIBDIR@"
 	setenv PYTHONPATH "@MY_PYTHONPATH@"
+	setenv OMP_NUM_THREADS @OMP_NUM_THREADS@
+	if (! $?OMP_NUM_THREADS) then
+		setenv OMP_NUM_THREADS @OMP_NUM_THREADS@
+	else
+		if ("$OMP_NUM_THREADS" == "")  then
+			setenv OMP_NUM_THREADS @OMP_NUM_THREADS@
+		endif
+	endif
 	switch( $1 )
 		case '-a' :
 			setenv DYLD_LIBRARY_PATH $DYLD_LIBRARY_PATH:"@MY_DYLD_LIBRARY_PATH@"

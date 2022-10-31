@@ -32,7 +32,7 @@ set(CBMROOT_PATCH_VERSION 99)
 
 # Set name of our project to "CBMROOT"
 # This also sets ${CBMROOT_VERSION} to the provided VERSION value, which would be empty if not set here explicitly
-project(CBMROOT 
+project(CBMROOT
         VERSION ${CBMROOT_MAJOR_VERSION}.${CBMROOT_MINOR_VERSION}.${CBMROOT_PATCH_VERSION}
         LANGUAGES C CXX
 )
@@ -71,7 +71,7 @@ list(PREPEND CMAKE_PREFIX_PATH ${SIMPATH})
 find_package(ROOT 6.22 CONFIG REQUIRED)
 if(ROOT_FOUND)
   Message("Root was found")
-  # The following CMake variables are needed until the modernization is done 
+  # The following CMake variables are needed until the modernization is done
   set(ROOT_CINT_EXECUTABLE ${ROOT_BINDIR}/rootcling)
   set(ROOT_CONFIG_EXECUTABLE ${ROOT_BINDIR}/root-config)
   set(ROOT_INCLUDE_DIR ${ROOT_INCLUDE_DIRS})
@@ -171,7 +171,7 @@ if(FairMQ_FOUND)
   set(FAIRMQ_INCLUDE_DIR ${FairMQ_INCDIR}/fairmq)
 
   get_target_property(_inDirMQ FairMQ::FairMQ INTERFACE_INCLUDE_DIRECTORIES)
-  set_property(TARGET FairMQ::FairMQ APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${_inDirMQ}/fairmq/options") 
+  set_property(TARGET FairMQ::FairMQ APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${_inDirMQ}/fairmq/options")
 endif()
 
 # Check if the compiler supports the needed C++ standard
@@ -197,7 +197,12 @@ set(FAIRROOT_LIBRARY_PROPERTIES ${FAIRROOT_LIBRARY_PROPERTIES}
     SOVERSION "${CBMROOT_MAJOR_VERSION}"
 )
 
+# Searching for OpenMP + control variable prep. for config script (default behavior + override)
 find_package(OpenMP)
+set(OMP_NUM_THREADS 1)
+If(DEFINED ENV{OMP_NUM_THREADS} )
+  set(OMP_NUM_THREADS $ENV{OMP_NUM_THREADS})
+endif()
 
 # set a variable which should be used in all CMakeLists.txt
 # Defines all basic include directories from fairbase
@@ -288,13 +293,13 @@ if(BUILD_DOXYGEN)
   add_subdirectory(doxygen)
 endif()
 
-# Definde additional targets 
+# Definde additional targets
 # cleanlib: rm al Cbm libraries and dictionaries
 # cleantest: remove all files from build directory created when running ROOT macros
-# FormatCheck: execute clang-format for all changed files (needed for CI) 
+# FormatCheck: execute clang-format for all changed files (needed for CI)
 define_additional_targets()
 
-# generate the needed config files to run macros from build and 
+# generate the needed config files to run macros from build and
 # installation directories. The later will be installed into the
 # install directory
 generate_config_files()

@@ -29,6 +29,10 @@ if [ $same_system -eq 1 ]; then
 	export VMCWORKDIR="@VMCWORKDIR@"
 	export FAIRLIBDIR="@FAIRLIBDIR@"
 	export PYTHONPATH="@MY_PYTHONPATH@"
+	if [[ -z "${OMP_NUM_THREADS}" ]]; then
+		export OMP_NUM_THREADS=@OMP_NUM_THREADS@
+	fi
+
 	case $1 in
 		-a | --append )
 			export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:"@MY_DYLD_LIBRARY_PATH@"
