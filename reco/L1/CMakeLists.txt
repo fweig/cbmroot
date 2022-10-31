@@ -20,25 +20,6 @@ set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}/catools
   )
 
-if (OPENMP_FOUND)
-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-  set(SYSTEM_INCLUDE_DIRECTORIES
-    ${SYSTEM_INCLUDE_DIRECTORIES}
-    ${OpenMP_CXX_INCLUDE_DIRS}
-  )
-endif()
-
-
-if (OPENMP_FOUND AND APPLE)
-  get_filename_component(OpenMP_CXX_LIBRARY_DIR ${OpenMP_CXX_LIBRARIES} DIRECTORY)
-  Set(LINK_DIRECTORIES
-    ${LINK_DIRECTORIES}
-    ${OpenMP_CXX_LIBRARY_DIR}
-  )
-endif()
- 
-
 set(SRCS
   #L1Algo / L1CATrackFinder.cxx
   #CbmL1Performance.cxx
@@ -176,6 +157,10 @@ set(PUBLIC_DEPENDENCIES
   ROOT::Physics
   )
 
+if(OpenMP_CXX_FOUND)
+    list(APPEND PUBLIC_DEPENDENCIES OpenMP::OpenMP_CXX)
+endif()
+
 set(PRIVATE_DEPENDENCIES
   CbmMuchBase
   CbmMvd
@@ -199,13 +184,7 @@ set(PRIVATE_DEPENDENCIES
   )
 
 
-if (OPENMP_FOUND AND APPLE)
-  Set(DEPENDENCIES ${PUBLIC_DEPENDENCIES} ${PRIVATE_DEPENDENCIES} ${OpenMP_CXX_LIBRARIES}
-  )
-endif()
-
 generate_cbm_library()
-
 
 install(FILES CbmL1Counters.h
               L1Algo/L1Assert.h
