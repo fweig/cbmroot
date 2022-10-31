@@ -14,6 +14,7 @@
 #include "CbmStar2019Algo.h"  // mother class
 
 // STD
+#include <array>
 #include <map>
 #include <vector>
 
