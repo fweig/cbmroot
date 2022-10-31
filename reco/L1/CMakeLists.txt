@@ -186,6 +186,8 @@ set(PRIVATE_DEPENDENCIES
 
 generate_cbm_library()
 
+add_dependencies(G__L1 KFPARTICLE)
+
 install(FILES CbmL1Counters.h
               L1Algo/L1Assert.h
               L1Algo/L1EventEfficiencies.h

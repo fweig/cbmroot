@@ -42,6 +42,8 @@ ADD_DEFINITIONS(${DEFINITIONS})
 
 generate_cbm_library()
 
+add_dependencies(G__AnalysisTreeKfpfInterface KFPARTICLE ANALYSISTREE)
+
 # Install(FILES ../../../macro/analysis/common/analysis_tree_converter/run_treemaker.C
 #         DESTINATION share/cbmroot/macro/analysis_tree
 #        )

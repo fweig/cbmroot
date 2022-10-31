@@ -62,4 +62,4 @@ set(INTERFACE_DEPENDENCIES
 
 generate_cbm_library()
 
-
+add_dependencies(G__CbmConversionAnalysis KFPARTICLE)

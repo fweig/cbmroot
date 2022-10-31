@@ -116,6 +116,7 @@ set(INTERFACE_DEPENDENCIES
 
 generate_cbm_library()
 
+add_dependencies(G__CbmPapa KFPARTICLE)
 
 install(FILES configs/Config_trd_PidLI.C
         DESTINATION share/cbmroot/macro/papa

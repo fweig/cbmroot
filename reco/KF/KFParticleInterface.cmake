@@ -80,4 +80,4 @@ Set(DEFINITIONS -DDO_TPCCATRACKER_EFF_PERFORMANCE -DNonhomogeneousField -DCBM -D
 
 generate_cbm_library()
 
-Add_Dependencies(KFParticleInterface KFPARTICLE)
+add_dependencies(G__KFParticleInterface KFPARTICLE)

@@ -50,6 +50,9 @@ set(PRIVATE_DEPENDENCIES
 
 generate_cbm_library()
 
+add_dependencies(G__CbmAnalysisTreeInterface ANALYSISTREE)
+
+
 Install(FILES ../../../macro/analysis/common/analysis_tree_converter/run_analysis_tree_maker.C
         DESTINATION share/cbmroot/macro/analysis_tree
        )

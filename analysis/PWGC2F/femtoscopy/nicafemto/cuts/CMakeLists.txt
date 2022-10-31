@@ -35,3 +35,4 @@ set(PRIVATE_DEPENDENCIES
 
 generate_cbm_library()
 
+add_dependencies(G__NicaCbmCuts NICAFEMTO)

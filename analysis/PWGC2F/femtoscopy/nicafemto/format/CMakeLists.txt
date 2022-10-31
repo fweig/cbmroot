@@ -67,3 +67,4 @@ set(PRIVATE_DEPENDENCIES
 
 generate_cbm_library()
 
+add_dependencies(G__NicaCbmFormat NICAFEMTO ANALYSISTREE)
