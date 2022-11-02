@@ -21,17 +21,16 @@
 
 #include "L1Algo.h"
 #include "L1Assert.h"
+#include "L1Branch.h"
 #include "L1Extrapolation.h"
 #include "L1Filtration.h"
 #include "L1Fit.h"
-#include "L1HitPoint.h"
-#include "L1Track.h"
-#include "L1TrackPar.h"
-//#include "TDHelper.h"
-#include "L1Branch.h"
 #include "L1Grid.h"
 #include "L1HitArea.h"
+#include "L1HitPoint.h"
 #include "L1Portion.h"
+#include "L1Track.h"
+#include "L1TrackPar.h"
 
 #ifdef _OPENMP
 #include "omp.h"
@@ -80,25 +79,28 @@ bool L1Algo::checkTripletMatch(const L1Triplet& l, const L1Triplet& r, fscal& dc
   if (r.GetMSta() != l.GetRSta()) return false;
   if (r.GetLSta() != l.GetMSta()) return false;
 
-  fscal dqp = fabs(l.GetQp() - r.GetQp());
-  fscal Cqp = l.GetCqp() + r.GetCqp();
-
-  fscal dtx = fabs(l.GetTx() - r.GetTx());
-  fscal Ctx = l.GetCtx() + r.GetCtx();
-
-  fscal dty = fabs(l.GetTy() - r.GetTy());
-  fscal Cty = l.GetCty() + r.GetCty();
 
   if (r.IsMomentumFitted()) {
     assert(l.IsMomentumFitted());
+
+    fscal dqp = l.GetQp() - r.GetQp();
+    fscal Cqp = l.GetCqp() + r.GetCqp();
+
     if (!std::isfinite(dqp)) return false;
     if (!std::isfinite(Cqp)) return false;
+
     if (dqp * dqp > fTripletLinkChi2 * Cqp) {
       return false;  // bad neighbour // CHECKME why do we need recheck it?? (it really change result)
     }
     dchi2 = dqp * dqp / Cqp;
   }
   else {
+
+    fscal dtx = l.GetTx() - r.GetTx();
+    fscal Ctx = l.GetCtx() + r.GetCtx();
+
+    fscal dty = l.GetTy() - r.GetTy();
+    fscal Cty = l.GetCty() + r.GetCty();
 
     // it shouldn't happen, but happens sometimes
 
@@ -953,25 +955,37 @@ inline void L1Algo::findTripletsStep1(  // input
 }
 
 
-/// Refit Triplets.
-inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps introduction
-  Tindex n3, int istal, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
-  L1Vector<L1HitIndex_t>& hitsr_3, int nIterations)
+inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar, L1Vector<L1TrackPar>& T_3,
+                                      L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
+                                      L1Vector<L1HitIndex_t>& hitsr_3, int nIterations)
 {
+
+  nIterations = 2;
+
+  /// Refit Triplets
+
   L1Fit fit;
-  fit.SetParticleMass(fDefaultMass);
+  fit.SetParticleMass(GetDefaultParticleMass());
+
+  L1TrackParFit fitNew;
+  fitNew.SetParticleMass(GetDefaultParticleMass());
 
   const int NHits = 3;  // triplets
 
-  // TODO: SG: middle and right station numbers might be different for different triplets!!!
-
   // prepare data
-  int ista[NHits] = {istal, istal + 1, istal + 2};
+  int ista[NHits] = {istal, istam, istar};
 
   L1Station sta[3];
   for (int is = 0; is < NHits; ++is) {
     sta[is] = fParameters.GetStation(ista[is]);
   };
+
+  const L1Station& stal = fParameters.GetStation(istal);
+  const L1Station& stam = fParameters.GetStation(istam);
+  const L1Station& star = fParameters.GetStation(istar);
+
+  bool isMomentumFitted = ((stal.fieldStatus != 0) || (stam.fieldStatus != 0) || (star.fieldStatus != 0));
+  fvec ndf              = isMomentumFitted ? -5 : -4;
 
   for (int i3 = 0; i3 < n3; ++i3) {
     int i3_V = i3 / fvec::size();
@@ -980,8 +994,6 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
     L1TrackPar& T3 = T_3[i3_V];
 
     //if (!T3.IsEntryConsistent(false, i3_4)) continue;
-
-    fscal qp0 = T3.qp[i3_4];
 
     // prepare data
     L1HitIndex_t ihit[NHits] = {(*RealIHitP)[hitsl_3[i3] + HitsUnusedStartIndex[ista[0]]],
@@ -995,41 +1007,23 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
       if ((mc1 != mc2) || (mc1 != mc3)) { continue; }
     }
 
-    fscal u[NHits], v[NHits], x[NHits], y[NHits], z[NHits];
+    fscal u[NHits], v[NHits], t[NHits], x[NHits], y[NHits], z[NHits];
+    fscal du2[NHits], dv2[NHits], dt2[NHits];
+
     for (int ih = 0; ih < NHits; ++ih) {
       const L1Hit& hit       = fInputData.GetHit(ihit[ih]);
       u[ih]                  = hit.u;
       v[ih]                  = hit.v;
+      t[ih]                  = hit.t;
       std::tie(x[ih], y[ih]) = sta[ih].ConvUVtoXY<fscal>(u[ih], v[ih]);
       z[ih]                  = hit.z;
+      du2[ih]                = hit.du * hit.du;
+      dv2[ih]                = hit.dv * hit.dv;
+      dt2[ih]                = hit.dt * hit.dt;
     };
 
-    // initialize parameters
-    L1TrackPar T;
+    // find the field along the track
 
-    const fvec vINF = .1;
-    T.x             = x[0];
-    T.y             = y[0];
-
-    fvec dz01 = 1. / (z[1] - z[0]);
-    T.tx      = (x[1] - x[0]) * dz01;
-    T.ty      = (y[1] - y[0]) * dz01;
-
-    T.qp   = qp0;
-    T.z    = z[0];
-    T.chi2 = 0.;
-    T.NDF  = 2.;
-    T.C00  = sta[0].XYInfo.C00;
-    T.C10  = sta[0].XYInfo.C10;
-    T.C11  = sta[0].XYInfo.C11;
-
-    T.C20 = T.C21 = 0;
-    T.C30 = T.C31 = T.C32 = 0;
-    T.C40 = T.C41 = T.C42 = T.C43 = 0;
-    T.C22 = T.C33 = vINF;
-    T.C44         = 1.;
-
-    // find field along the track
     L1FieldValue B[3] _fvecalignment;
     L1FieldRegion fld _fvecalignment;
 
@@ -1042,89 +1036,90 @@ inline void L1Algo::findTripletsStep2(  // input // TODO not updated after gaps 
 
     fld.Set(B[0], sta[0].z, B[1], sta[1].z, B[2], sta[2].z);
 
-    // fit
-    for (int ih = 1; ih < NHits; ++ih) {
-      L1Extrapolate(T, z[ih], T.qp, fld);
-      if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-        fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista[ih], T.x, T.y), T.qp, fvec::One());
-      }
-      else {
-        fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, fvec::One());
-      }
-      if (ista[ih] == fNstationsBeforePipe - 1) { fit.L1AddPipeMaterial(T, T.qp, fvec::One()); }
-      L1Filter(T, sta[ih].frontInfo, u[ih]);
-      L1Filter(T, sta[ih].backInfo, v[ih]);
+
+    L1TrackPar& T = fitNew.fTr;
+
+    // initial parameters
+    {
+      fvec dz01 = 1. / (z[1] - z[0]);
+      T.tx      = (x[1] - x[0]) * dz01;
+      T.ty      = (y[1] - y[0]) * dz01;
+      T.qp      = 0.;  //(fscal) T3.qp[i3_4];
     }
 
-    // repeat several times in order to improve precision
+    // repeat several times in order to improve the precision
     for (int iiter = 0; iiter < nIterations; ++iiter) {
-      // fit backward
-      // keep tx,ty,q/p
-      int ih = NHits - 1;
-      T.x    = x[ih];
-      T.y    = y[ih];
-      T.z    = z[ih];
-      T.chi2 = 0.;
-      T.NDF  = 2.;
-      T.C00  = sta[ih].XYInfo.C00;
-      T.C10  = sta[ih].XYInfo.C10;
-      T.C11  = sta[ih].XYInfo.C11;
-
-      T.C20 = T.C21 = 0;
-      T.C30 = T.C31 = T.C32 = 0;
-      T.C40 = T.C41 = T.C42 = T.C43 = 0;
-      T.C22 = T.C33 = vINF;
-      T.C44         = 1.;
-
-      //       L1Filter( T, sta[ih].frontInfo, u[ih] );
-      //       L1Filter( T, sta[ih].backInfo,  v[ih] );
-      for (ih = NHits - 2; ih >= 0; ih--) {
-        L1Extrapolate(T, z[ih], T.qp, fld);
-        if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista[ih], T.x, T.y), T.qp, fvec::One());
-        }
-        else {
-          fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, fvec::One());
-        }
-        if (ista[ih] == fNstationsBeforePipe) fit.L1AddPipeMaterial(T, T.qp, fvec::One());
-
-        L1Filter(T, sta[ih].frontInfo, u[ih]);
-        L1Filter(T, sta[ih].backInfo, v[ih]);
-      }
       // fit forward
-      ih     = 0;
-      T.x    = x[ih];
-      T.y    = y[ih];
-      T.z    = z[ih];
-      T.chi2 = 0.;
-      T.NDF  = 2.;
-      T.C00  = sta[ih].XYInfo.C00;
-      T.C10  = sta[ih].XYInfo.C10;
-      T.C11  = sta[ih].XYInfo.C11;
+      {
+        fvec qp0 = T.qp;
+        if (qp0[0] > GetMaxInvMom()) { qp0 = GetMaxInvMom(); }
+        if (qp0[0] < -GetMaxInvMom()) { qp0 = -GetMaxInvMom(); }
 
-      T.C20 = T.C21 = 0;
-      T.C30 = T.C31 = T.C32 = 0;
-      T.C40 = T.C41 = T.C42 = T.C43 = 0;
-      T.C22 = T.C33 = vINF;
-      T.C44         = 1.;
+        T.ResetErrors(200., 200., 1., 1., 100., 1.e4);
+        T.NDF   = ndf;
+        T.qp    = 0.;
+        int ih0 = 0;
+        T.x     = x[ih0];
+        T.y     = y[ih0];
+        T.z     = z[ih0];
+        T.t     = t[ih0];
+        T.C55   = dt2[ih0];
 
-      //       L1Filter( T, sta[ih].frontInfo, u[ih] );
-      //       L1Filter( T, sta[ih].backInfo,  v[ih] );
-      for (ih = 1; ih < NHits; ++ih) {
-        L1Extrapolate(T, z[ih], T.qp, fld);
-        if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-          fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista[ih], T.x, T.y), T.qp, fvec::One());
+        fitNew.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0], fvec::One());
+        fitNew.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0], fvec::One());
+
+        for (int ih = 1; ih < NHits; ++ih) {
+          fitNew.Extrapolate(z[ih], qp0, fld, fvec::One());
+          if constexpr (L1Constants::control::kIfUseRadLengthTable) {
+            fitNew.AddMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
+          }
+          else {
+            fitNew.AddMaterial(sta[ih].materialInfo, qp0, fvec::One());
+          }
+          if (ista[ih] == fNstationsBeforePipe) { fitNew.AddPipeMaterial(qp0, fvec::One()); }
+          fitNew.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
+          fitNew.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
         }
-        else {
-          fit.L1AddMaterial(T, sta[ih].materialInfo, T.qp, fvec::One());
-        }
-        if (ista[ih] == fNstationsBeforePipe + 1) fit.L1AddPipeMaterial(T, T.qp, fvec::One());
+      }
 
-        L1Filter(T, sta[ih].frontInfo, u[ih]);
-        L1Filter(T, sta[ih].backInfo, v[ih]);
+      if (iiter == nIterations - 1) break;
+
+      // fit backward
+      {
+        fvec qp0 = T.qp;
+        if (qp0[0] > GetMaxInvMom()) { qp0 = GetMaxInvMom(); }
+        if (qp0[0] < -GetMaxInvMom()) { qp0 = -GetMaxInvMom(); }
+
+        T.ResetErrors(200., 200., 1., 1., 100., 1.e4);
+        T.NDF   = ndf;
+        T.qp    = 0.;
+        int ih0 = NHits - 1;
+        T.x     = x[ih0];
+        T.y     = y[ih0];
+        T.z     = z[ih0];
+        T.t     = t[ih0];
+        T.C55   = dt2[ih0];
+
+        fitNew.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0], fvec::One());
+        fitNew.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0], fvec::One());
+
+        for (int ih = NHits - 2; ih >= 0; --ih) {
+          fitNew.Extrapolate(z[ih], qp0, fld, fvec::One());
+          if constexpr (L1Constants::control::kIfUseRadLengthTable) {
+            fitNew.AddMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
+          }
+          else {
+            fitNew.AddMaterial(sta[ih].materialInfo, qp0, fvec::One());
+          }
+          if (ista[ih] == fNstationsBeforePipe - 1) { fitNew.AddPipeMaterial(qp0, fvec::One()); }
+          fitNew.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
+          fitNew.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
+        }
       }
     }  // for iiter
 
+    //cout << " chi2 " << T3.chi2[i3_4] << " " << T.chi2[0] << endl;
+    //T.chi2 = (fscal) T3.chi2[i3_4];
     T3.SetOneEntry(i3_4, T, i3_4);
   }  //i3
 }  // findTripletsStep2
@@ -1192,7 +1187,7 @@ inline void L1Algo::findTripletsStep3(  // input
     ihitl_prev = 1 + hitsl_3[i3];
 
     if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {
-      if (chi2 > fTripletChi2Cut) { continue; }
+      if (chi2 > fTripletFinalChi2Cut) { continue; }
     }
 
     // assert(std::isfinite(chi2) && chi2 > 0);
@@ -1475,7 +1470,7 @@ inline void L1Algo::CreatePortionOfTriplets(
     L1HitPoint* vHits_r = 0;
     vHits_r             = &((*vHitPointsUnused)[0]) + HitsUnusedStartIndex[istar];
 
-    Tindex n3 = 0, n3_V;
+    Tindex n3 = 0;
 
     /// Add the middle hits to parameters estimation. Propagate to right station.
 
@@ -1523,8 +1518,6 @@ inline void L1Algo::CreatePortionOfTriplets(
       n3, T_3, hitsl_3, hitsm_3, hitsr_3, u_front3, u_back3, z_pos3, du3, dv3, timeR, timeER);
 
 
-    n3_V = (n3 + fvec::size() - 1) / fvec::size();
-
     for (Tindex i = 0; i < static_cast<Tindex>(hitsl_3.size()); ++i)
       L1_assert(hitsl_3[i] < HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal]);
     for (Tindex i = 0; i < static_cast<Tindex>(hitsm_3.size()); ++i)
@@ -1533,14 +1526,16 @@ inline void L1Algo::CreatePortionOfTriplets(
       L1_assert(hitsr_3[i] < HitsUnusedStopIndex[istar] - HitsUnusedStartIndex[istar]);
 
     /// Add the right hits to parameters estimation.
+    /*
+    Tindex n3_V = (n3 + fvec::size() - 1) / fvec::size();
     findTripletsStep1(  // input
       n3_V, star, u_front3, u_back3, z_pos3, du3, dv3, timeR, timeER,
       // output
       T_3);
-
+*/
 
     /// refit
-    //         findTripletsStep2(  n3, istal, _RealIHit,          T_3,         hitsl_3, hitsm_3, hitsr_3, 0 );
+    findTripletsStep2(n3, istal, istam, istar, T_3, hitsl_3, hitsm_3, hitsr_3, 1);
 
 #ifdef TRIP_PERFORMANCE
     L1HitIndex_t* RealIHitL = &((*RealIHitP)[HitsUnusedStartIndex[istal]]);
@@ -1555,7 +1550,7 @@ inline void L1Algo::CreatePortionOfTriplets(
 #else
       fL1Eff_triplets->AddOne(iHits);
 #endif
-      if (T_3[i_V].chi2[i_4] < fTripletChi2Cut) { fL1Eff_triplets2->AddOne(iHits); }
+      if (T_3[i_V].chi2[i_4] < fTripletFinalChi2Cut) { fL1Eff_triplets2->AddOne(iHits); }
     }
 #endif  // TRIP_PERFORMANCE
 
@@ -1840,15 +1835,16 @@ void L1Algo::CATrackFinder()
       {
         // --- SET PARAMETERS FOR THE ITERATION ---
 
-        fFirstCAstation  = caIteration.GetFirstStationIndex();
-        fTrackChi2Cut    = caIteration.GetTrackChi2Cut();
-        fDoubletChi2Cut  = caIteration.GetDoubletChi2Cut();   //11.3449 * 2.f / 3.f;  // prob = 0.1
-        fTripletChi2Cut  = caIteration.GetTripletChi2Cut();   //21.1075;  // prob = 0.01%
-        fPickGather      = caIteration.GetPickGather();       //3.0;
-        fTripletLinkChi2 = caIteration.GetTripletLinkChi2();  //5.0;
-        fMaxInvMom       = caIteration.GetMaxInvMom();        //1.0 / 0.5;  // max considered q/p
-        fMaxSlopePV      = caIteration.GetMaxSlopePV();       //1.1;
-        fMaxSlope        = caIteration.GetMaxSlope();         //2.748;  // corresponds to 70 grad
+        fFirstCAstation      = caIteration.GetFirstStationIndex();
+        fTrackChi2Cut        = caIteration.GetTrackChi2Cut();
+        fDoubletChi2Cut      = caIteration.GetDoubletChi2Cut();  //11.3449 * 2.f / 3.f;  // prob = 0.1
+        fTripletChi2Cut      = caIteration.GetTripletChi2Cut();  //21.1075;  // prob = 0.01%
+        fTripletFinalChi2Cut = caIteration.GetTripletFinalChi2Cut();
+        fPickGather          = caIteration.GetPickGather();       //3.0;
+        fTripletLinkChi2     = caIteration.GetTripletLinkChi2();  //5.0;
+        fMaxInvMom           = caIteration.GetMaxInvMom();        //1.0 / 0.5;  // max considered q/p
+        fMaxSlopePV          = caIteration.GetMaxSlopePV();       //1.1;
+        fMaxSlope            = caIteration.GetMaxSlope();         //2.748;  // corresponds to 70 grad
 
         // define the target
         fTargX = fParameters.GetTargetPositionX();

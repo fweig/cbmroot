@@ -16,7 +16,6 @@ public:
   fvec x, y, tx, ty, qp, z, t, C00, C10, C11, C20, C21, C22, C30, C31, C32, C33, C40, C41, C42, C43, C44, C50, C51, C52,
     C53, C54, C55, chi2, NDF;
 
-
   L1TrackPar()
     : x(0)
     , y(0)
@@ -48,6 +47,7 @@ public:
     , C55(0)
     , chi2(0)
     , NDF(0) {};
+
   L1TrackPar(double* T, double* C)
     : x(T[0])
     , y(T[1])
@@ -97,14 +97,23 @@ public:
 
   bool IsConsistent(bool printWhenWrong, int nFilled) const;
 
-  // void L1Extrapolate
-  // (
-  // //  L1TrackPar &T, // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
-  //  fvec        z_out  , // extrapolate to this z position
-  //  fvec       qp0    , // use Q/p linearisation at this value
-  //  L1FieldRegion &F
-  //  );
+  void ResetErrors(fvec c00, fvec c11, fvec c22, fvec c33, fvec c44, fvec c55)
+  {
+    C10 = 0.;
+    C20 = C21 = 0.;
+    C30 = C31 = C32 = 0.;
+    C40 = C41 = C42 = C43 = 0.;
+    C50 = C51 = C52 = C53 = C54 = 0.;
 
+    C00  = c00;
+    C11  = c11;
+    C22  = c22;
+    C33  = c33;
+    C44  = c44;
+    C55  = c55;
+    chi2 = 0.;
+    NDF  = 0;
+  }
 
 } _fvecalignment;
 

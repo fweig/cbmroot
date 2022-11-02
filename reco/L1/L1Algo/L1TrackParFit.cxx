@@ -9,7 +9,7 @@
 
 #define cnst const fvec
 
-void L1TrackParFit::Filter(L1UMeasurementInfo& info, fvec u, fvec w)
+void L1TrackParFit::Filter(const L1UMeasurementInfo& info, const fvec& u, const fvec& sigma2, const fvec& w)
 {
   fvec zeta, HCH;
   fvec F0, F1, F2, F3, F4, F5;
@@ -28,14 +28,14 @@ void L1TrackParFit::Filter(L1UMeasurementInfo& info, fvec u, fvec w)
   F4 = info.cos_phi * fTr.C40 + info.sin_phi * fTr.C41;
   F5 = info.cos_phi * fTr.C50 + info.sin_phi * fTr.C51;
 
-  const fmask maskDoFilter = (HCH < info.sigma2 * 16.f);
+  const fmask maskDoFilter = (HCH < sigma2 * 16.f);
   //const fvec maskDoFilter = _f32vec4_true;
 
   // correction to HCH is needed for the case when sigma2 is so small
   // with respect to HCH that it disappears due to the roundoff error
   //
-  fvec wi     = w / (info.sigma2 + fvec(1.0000001) * HCH);
-  fvec zetawi = w * zeta / (iif(maskDoFilter, info.sigma2, fvec::Zero()) + HCH);
+  fvec wi     = w / (sigma2 + fvec(1.0000001) * HCH);
+  fvec zetawi = w * zeta / (iif(maskDoFilter, sigma2, fvec::Zero()) + HCH);
 
   // fTr.chi2 += iif( maskDoFilter, zeta * zetawi, fvec::Zero() );
   fTr.chi2 += zeta * zeta * wi;
@@ -792,7 +792,7 @@ void
   fTr.C55 = cj55 + cj25 * J[17] + cj35 * J[23] + cj45 * J[29];
 }
 
-void L1TrackParFit::L1AddPipeMaterial(fvec qp0, fvec w)
+void L1TrackParFit::AddPipeMaterial(fvec qp0, fvec w)
 {
   cnst ONE = 1.f;
 
@@ -822,7 +822,7 @@ void L1TrackParFit::L1AddPipeMaterial(fvec qp0, fvec w)
 }
 
 
-void L1TrackParFit::L1AddMaterial(const fvec& radThick, fvec qp0, fvec w)
+void L1TrackParFit::AddMaterial(const fvec& radThick, fvec qp0, fvec w)
 {
   cnst ONE = 1.;
 
@@ -847,7 +847,7 @@ void L1TrackParFit::L1AddMaterial(const fvec& radThick, fvec qp0, fvec w)
   fTr.C33 += w * (ONE + tyty) * a;
 }
 
-void L1TrackParFit::L1AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream)
+void L1TrackParFit::AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream)
 {
   cnst ONE = 1.;
 
@@ -887,7 +887,7 @@ void L1TrackParFit::L1AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thi
 }
 
 
-void L1TrackParFit::L1AddMaterial(const L1MaterialInfo& info, fvec qp0, fvec w)
+void L1TrackParFit::AddMaterial(const L1MaterialInfo& info, fvec qp0, fvec w)
 {
   cnst ONE = 1.f;
 

@@ -63,6 +63,7 @@ void L1ConfigRW::ReadCAIterations(const YAML::Node& node)
         auto caIter = L1CAIteration(input["name"].as<std::string>());
         caIter.SetTrackChi2Cut(input["track_chi2_cut"].as<float>(caIter.GetTrackChi2Cut()));
         caIter.SetTripletChi2Cut(input["triplet_chi2_cut"].as<float>(caIter.GetTripletChi2Cut()));
+        caIter.SetTripletFinalChi2Cut(input["triplet_final_chi2_cut"].as<float>(caIter.GetTripletFinalChi2Cut()));
         caIter.SetDoubletChi2Cut(input["doublet_chi2_cut"].as<float>(caIter.GetDoubletChi2Cut()));
         caIter.SetPickGather(input["pick_gather"].as<float>(caIter.GetPickGather()));
         caIter.SetTripletLinkChi2(input["triplet_link_chi2"].as<float>(caIter.GetTripletLinkChi2()));

@@ -32,6 +32,7 @@ bool L1CAIteration::Check() const
   //                       debug purposes. In future, these values will be strengthened.
   res = this->CheckValueLimits<float>("track_chi2_cut", fTrackChi2Cut, 0.f, kMaxFloat) && res;
   res = this->CheckValueLimits<float>("triplet_chi2_cut", fTripletChi2Cut, 0.f, kMaxFloat) && res;
+  res = this->CheckValueLimits<float>("triplet_final_chi2_cut", fTripletFinalChi2Cut, 0.f, kMaxFloat) && res;
   res = this->CheckValueLimits<float>("doublet_chi2_cut", fDoubletChi2Cut, 0.f, kMaxFloat) && res;
   res = this->CheckValueLimits<float>("pick_gather", fPickGather, 0.f, kMaxFloat) && res;
   res = this->CheckValueLimits<float>("triplet_link_chi2", fTripletLinkChi2, 0.f, kMaxFloat) && res;
@@ -80,6 +81,7 @@ std::string L1CAIteration::ToString(int indentLevel) const
   aStream << indent << indCh << "Min n hits for trscs at station 0:      " << fMinNhitsStation0 << '\n';
   aStream << indent << indCh << "Track chi2 cut:                         " << fTrackChi2Cut << '\n';
   aStream << indent << indCh << "Triplet chi2 cut:                       " << fTripletChi2Cut << '\n';
+  aStream << indent << indCh << "Triplet final chi2 cut:                       " << fTripletFinalChi2Cut << '\n';
   aStream << indent << indCh << "Doublet chi2 cut:                       " << fDoubletChi2Cut << '\n';
   aStream << indent << indCh << "Pick gather:                            " << fPickGather << '\n';
   aStream << indent << indCh << "Triplet link chi2:                      " << fTripletLinkChi2 << '\n';

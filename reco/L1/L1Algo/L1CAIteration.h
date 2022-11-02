@@ -35,6 +35,9 @@ public:
   /// Copy constructor
   L1CAIteration(const L1CAIteration& other) = default;
 
+  /// Copy constructor
+  L1CAIteration(const L1CAIteration& other, const std::string& name) : L1CAIteration(other) { SetName(name); }
+
   /// Move constructor
   L1CAIteration(L1CAIteration&& other) noexcept = default;
 
@@ -109,6 +112,9 @@ public:
 
   /// Gets triplet chi2 upper cut
   float GetTripletChi2Cut() const { return fTripletChi2Cut; }
+
+  /// Gets triplet chi2 upper cut
+  float GetTripletFinalChi2Cut() const { return fTripletFinalChi2Cut; }
 
   /// (DEBUG!) Sets flag:
   ///   true:
@@ -196,6 +202,9 @@ public:
   /// Sets triplet chi2 upper cut
   void SetTripletChi2Cut(float input) { fTripletChi2Cut = input; }
 
+  /// Sets triplet chi2 upper cut
+  void SetTripletFinalChi2Cut(float input) { fTripletFinalChi2Cut = input; }
+
   /// String representation of the class contents
   /// \param indentLevel  Level of indentation for the text (in terms of \t symbols)
   std::string ToString(int indentLevel = 0) const;
@@ -209,18 +218,19 @@ private:
   // NOTE: For each new cut one should not forget to create a setter and a getter, insert the value
   //       initialization in the copy constructor and the Swap operator as well as a string repre-
   //       sentation to the ToString method (S.Zharko)
-  float fTrackChi2Cut    = 10.f;                 ///< Track chi2 upper cut
-  float fTripletChi2Cut  = 21.1075f;             ///< Triplet chi2 upper cut
-  float fDoubletChi2Cut  = 11.3449 * 2.f / 3.f;  ///< Doublet chi2 upper cut
-  float fPickGather      = 3.0;                  ///< Size of region to attach new hits to the created track
-  float fTripletLinkChi2 = 25.0;                 ///< Min value of dp^2/dp_error^2, for which two tiplets are neighbours
-  float fMaxInvMom       = 1.0 / 0.5;            ///< Max considered q/p for tracks
-  float fMaxSlopePV      = 1.1;                  ///< Max slope (tx\ty) in primary vertex
-  float fMaxSlope        = 2.748;                ///< Max slope (tx\ty) in 3D hit position of a triplet
-  float fMaxDZ           = 0.f;                  ///< Correction for accounting overlaping and iff z [cm]
-  float fTargetPosSigmaX = 0;                    ///< Constraint on target position in X direction [cm]
-  float fTargetPosSigmaY = 0;                    ///< Constraint on target position in Y direction [cm]
-  int fFirstStationIndex = 0;                    ///< First station, used for tracking
+  float fTrackChi2Cut        = 10.f;                 ///< Track chi2 upper cut
+  float fTripletChi2Cut      = 21.1075f;             ///< Triplet chi2 upper cut
+  float fTripletFinalChi2Cut = 21.1075f;             ///< Triplet chi2 upper cut
+  float fDoubletChi2Cut      = 11.3449 * 2.f / 3.f;  ///< Doublet chi2 upper cut
+  float fPickGather          = 3.0;                  ///< Size of region to attach new hits to the created track
+  float fTripletLinkChi2     = 25.0;       ///< Min value of dp^2/dp_error^2, for which two tiplets are neighbours
+  float fMaxInvMom           = 1.0 / 0.5;  ///< Max considered q/p for tracks
+  float fMaxSlopePV          = 1.1;        ///< Max slope (tx\ty) in primary vertex
+  float fMaxSlope            = 2.748;      ///< Max slope (tx\ty) in 3D hit position of a triplet
+  float fMaxDZ               = 0.f;        ///< Correction for accounting overlaping and iff z [cm]
+  float fTargetPosSigmaX     = 0;          ///< Constraint on target position in X direction [cm]
+  float fTargetPosSigmaY     = 0;          ///< Constraint on target position in Y direction [cm]
+  int fFirstStationIndex     = 0;          ///< First station, used for tracking
 
   bool fIsPrimary  = false;  ///< Flag: true - only primary tracks are searched for
   bool fIsElectron = false;  ///< Flag: true - only electrons are searched for
@@ -250,6 +260,7 @@ private:
     ar& fName;
     ar& fTrackChi2Cut;
     ar& fTripletChi2Cut;
+    ar& fTripletFinalChi2Cut;
     ar& fDoubletChi2Cut;
     ar& fPickGather;
     ar& fTripletLinkChi2;

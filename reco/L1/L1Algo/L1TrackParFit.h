@@ -47,7 +47,7 @@ public:
   /// get the particle mass squared
   fvec GetParticleMass2() const { return fMass2; }
 
-  void Filter(L1UMeasurementInfo& info, fvec u, fvec w = 1.);
+  void Filter(const L1UMeasurementInfo& info, const fvec& u, const fvec& sigma2, const fvec& w);
   void FilterXY(const L1XYMeasurementInfo& info, fvec x, fvec y);
   void FilterTime(fvec t0, fvec dt0, fvec w = 1., fvec timeInfo = 1.);
   void FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w = 1.);
@@ -70,12 +70,12 @@ public:
   void EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
   void EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
 
-  void L1AddMaterial(const L1MaterialInfo& info, fvec qp0, fvec w);
+  void AddMaterial(const L1MaterialInfo& info, fvec qp0, fvec w);
 
-  void L1AddMaterial(const fvec& radThick, fvec qp0, fvec w = 1);
+  void AddMaterial(const fvec& radThick, fvec qp0, fvec w = 1);
 
-  void L1AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream);
-  void L1AddPipeMaterial(fvec qp0, fvec w = 1);
+  void AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream);
+  void AddPipeMaterial(fvec qp0, fvec w);
 
   // void L1Extrapolate
   // (

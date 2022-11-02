@@ -307,8 +307,8 @@ public:
 
   /// Refit Triplets.
   void findTripletsStep2(  // input
-    Tindex n3, int istal, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
-    L1Vector<L1HitIndex_t>& hitsr_3, int nIterations = 0);
+    Tindex n3, int istal, int istam, int istar, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3,
+    L1Vector<L1HitIndex_t>& hitsm_3, L1Vector<L1HitIndex_t>& hitsr_3, int nIterations = 0);
 
   /// Select triplets. Save them into vTriplets.
   void findTripletsStep3(  // input
@@ -528,6 +528,7 @@ private:
   std::map<int, int> threadNumberToCpuMap {};
 
   float fTrackChi2Cut {10.f};
+  float fTripletFinalChi2Cut {10.f};
   float fTripletChi2Cut {5.f};  // cut for selecting triplets before collecting tracks.per one DoF
   float fDoubletChi2Cut {5.f};
   float fTimeCut1 {0.f};  // TODO: please, specify "1" and "2" (S.Zharko)
