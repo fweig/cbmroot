@@ -79,11 +79,11 @@ public:
   const CbmTrdParFaspChannel* GetChannel(Int_t pad_address, UChar_t pair) const;
   const CbmTrdParFaspChannel* GetChannel(Int_t ch_address) const;
   virtual Int_t GetNchannels() const { return NFASPCH; };
-
-  Int_t GetPadAddress(Int_t ich) const
+  virtual Int_t GetChannelAddress(Int_t ich) const
   {
-    return ((ich < 0 || ich >= GetNchannels()) ? 0 : 0.5 * fChannelAddresses[ich]);
+    return ((ich < 0 || ich >= GetNchannels()) ? 0 : fChannelAddresses[ich]);
   }
+  Int_t GetPadAddress(Int_t ich) const { return 0.5 * GetChannelAddress(ich); }
   Double_t GetSizeX() const { return fgSizeX; }
   Double_t GetSizeY() const { return fgSizeY; }
   Double_t GetSizeZ() const { return fgSizeZ; }

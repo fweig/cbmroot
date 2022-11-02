@@ -59,13 +59,11 @@ Bool_t CbmTrdUnpackFaspAlgo::initParSet(FairParGenericSet* parset)
   if (strcmp(parset->ClassName(), "CbmTrdParSetAsic") == 0) {
     CbmTrdParSetAsic* setPar = static_cast<CbmTrdParSetAsic*>(parset);
     for (auto did : fModuleId) {
-      printf("AB :: check did %d\n", did);
       const CbmTrdParSetAsic* setDet = static_cast<const CbmTrdParSetAsic*>(setPar->GetModuleSet(did));
       if (!setDet) continue;
       if (setDet->GetAsicType() != Int_t(CbmTrdDigi::eCbmTrdAsicType::kFASP)) continue;
       if (fMonitor) fMonitor->addParam(did, setDet);
       nModules++;
-      printf("AB :: register ASIC params for module %d\n", did);
       std::vector<Int_t> a;
       setDet->GetAsicAddresses(&a);
       for (auto add : a) {
@@ -161,7 +159,7 @@ void CbmTrdUnpackFaspAlgo::PrintAsicMapping()
   for (auto imod : (*fFaspMap)) {
     printf("Mod [%6d] :", imod.first);
     for (int ifasp(0); ifasp < NFASPMOD; ifasp++) {
-      if (ifasp % 30 == 0) printf("\n");
+      if (ifasp % 9 == 0) printf("\n");
       int jfasp = imod.second[ifasp];
       printf("%3d ", (jfasp == 0xff ? -1 : jfasp));
     }
@@ -248,13 +246,13 @@ bool CbmTrdUnpackFaspAlgo::pushDigis(std::vector<CbmTrdUnpackFaspAlgo::CbmTrdFas
       }
       // TODO temporary add DAQ time calibration for FASPRO.
       // Should be absorbed in the ASIC parameter definition
-      if (digiPar->GetPadRow(faspPar->GetChannelAddress(imess.ch)) % 2) tdaqOffset = 3;
+      if (digiPar->GetPadRow(faspPar->GetPadAddress(imess.ch)) % 2 == 0) tdaqOffset = 3;
 
       if (VERBOSE) faspPar->Print();
     }
     if (VERBOSE) mess_prt(&imess);
 
-    pad     = faspPar->GetChannelAddress(imess.ch);
+    pad     = faspPar->GetPadAddress(imess.ch);
     chCalib = faspPar->GetChannel(imess.ch);
     ch      = 2 * pad + chCalib->HasPairingR();
     lTime   = fTime + tdaqOffset + imess.tlab;

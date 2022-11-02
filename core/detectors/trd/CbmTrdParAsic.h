@@ -44,10 +44,6 @@ public:
   virtual size_t GetComponentId() const { return fComponentId; }
   virtual Int_t GetNchannels() const = 0;
   virtual Int_t GetFebGrouping() const { return fFebGrouping; }
-  virtual Int_t GetChannelAddress(Int_t ich) const
-  {
-    return ((ich < 0 || ich >= GetNchannels()) ? 0 : fChannelAddresses[ich]);
-  }
   virtual std::vector<Int_t> GetChannelAddresses() const { return fChannelAddresses; }
   virtual void LoadParams(FairParamList*) { ; }
   virtual void Print(Option_t* opt = "") const;
