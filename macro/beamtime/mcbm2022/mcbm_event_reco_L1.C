@@ -298,8 +298,8 @@ Bool_t mcbm_event_reco_L1(UInt_t uRunId                   = 2391,
     if (!bRICH || !geoSetup->IsActive(ECbmModuleId::kRich)) evBuildRaw->RemoveDetector(kRawEventBuilderDetRich);
     if (!bMUCH || !geoSetup->IsActive(ECbmModuleId::kMuch)) evBuildRaw->RemoveDetector(kRawEventBuilderDetMuch);
     if (!bPSD || !geoSetup->IsActive(ECbmModuleId::kPsd)) evBuildRaw->RemoveDetector(kRawEventBuilderDetPsd);
-    if (!bTRD || !geoSetup->IsActive(ECbmModuleId::kTrd)) evBuildRaw->RemoveDetector(kRawEventBuilderDetTrd);
-    if (!bTRD2d || !geoSetup->IsActive(ECbmModuleId::kTrd2d)) evBuildRaw->RemoveDetector(kRawEventBuilderDetTrd2D);
+    if ((!bTRD && !bTRD2d) || !geoSetup->IsActive(ECbmModuleId::kTrd))
+      evBuildRaw->RemoveDetector(kRawEventBuilderDetTrd);
     if (!bSTS || !geoSetup->IsActive(ECbmModuleId::kSts)) evBuildRaw->RemoveDetector(kRawEventBuilderDetSts);
     if (!bTOF || !geoSetup->IsActive(ECbmModuleId::kTof)) evBuildRaw->RemoveDetector(kRawEventBuilderDetTof);
 
