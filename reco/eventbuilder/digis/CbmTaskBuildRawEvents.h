@@ -5,13 +5,9 @@
 #ifndef CBMTASKBUILDRAWEVENTS_H
 #define CBMTASKBUILDRAWEVENTS_H
 
-/// FAIRROOT headers
-#include "FairTask.h"
-
-/// FAIRSOFT headers (geant, boost, ...)
-
 /// CBMROOT headers
 #include "CbmAlgoBuildRawEvents.h"
+#include "CbmDigiEvent.h"
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmMuchDigi.h"
 #include "CbmPsdDigi.h"
@@ -21,6 +17,11 @@
 #include "CbmTrdDigi.h"
 #include "CbmTzdDigi.h"
 
+/// FAIRROOT headers
+#include "FairTask.h"
+
+/// FAIRSOFT headers (geant, boost, ...)
+
 /// C/C++ headers
 #include <array>
 #include <map>
@@ -29,6 +30,7 @@
 #include <vector>
 
 class CbmDigiManager;
+class CbmEvent;
 class CbmMatch;
 class CbmSeedFinderSlidingWindow;
 class RawEventBuilderDetector;
@@ -136,6 +138,8 @@ public:
   void DumpSeedTimesFromDetList();
   void SetSeedTimeWindow(Double_t beg, Double_t end) { fpAlgo->SetSeedTimeWindow(beg, end); }
 
+  void SetDigiEventOutput(Bool_t bFlagIn = kTRUE) { fbDigiEvtOut = bFlagIn; }
+
 private:
   /** Read digis from input, call seed finder, then build events **/
   void BuildEvents();
@@ -186,7 +190,11 @@ private:
 
   CbmAlgoBuildRawEvents* fpAlgo = nullptr;
 
-  TClonesArray* fEvents = nullptr;  //! output container of CbmEvents
+  Bool_t fbDigiEvtOut                    = kFALSE;
+  TClonesArray* fEvents                  = nullptr;  //! output container of CbmEvents
+  std::vector<CbmDigiEvent>* fDigiEvents = nullptr;  //! output container of CbmEvents
+
+  void ExtractSelectedData(std::vector<CbmEvent*> vEvents);
 
   Bool_t fbFillHistos {kTRUE};             //! Switch ON/OFF filling of histograms
   Bool_t fbWriteHistosToFairSink {kTRUE};  //! Write histos to FairRootManager instead of separate file

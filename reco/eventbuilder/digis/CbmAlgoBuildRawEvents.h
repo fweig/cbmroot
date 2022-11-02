@@ -5,11 +5,13 @@
 #ifndef CBMALGOBUILDRAWEVENTS_H
 #define CBMALGOBUILDRAWEVENTS_H
 
-/// FAIRROOT headers
-#include "FairTask.h"
-
 /// CBMROOT headers
 #include "CbmDefs.h"
+
+/// FAIRROOT headers
+
+/// FAIRSOFT headers (geant, boost, ...)
+#include "TFolder.h"
 
 /// C/C++ headers
 #include <boost/any.hpp>

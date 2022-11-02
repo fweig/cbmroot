@@ -32,6 +32,14 @@ CbmTaskBuildRawEvents::~CbmTaskBuildRawEvents()
   if (fTempDigiTimes) delete fTempDigiTimes;
   if (fTimer) delete fTimer;
   if (fCopyTimer) delete fCopyTimer;
+  if (fDigiEvents) {
+    fDigiEvents->clear();
+    delete fDigiEvents;
+  }
+  else if (fEvents) {
+    fEvents->Delete();
+    delete fEvents;
+  }
 }
 
 CbmTaskBuildRawEvents::CbmTaskBuildRawEvents() : FairTask("BuildRawEvents")
@@ -125,10 +133,19 @@ InitStatus CbmTaskBuildRawEvents::Init()
   InitDigis(ECbmModuleId::kPsd, &fPsdDigis);
   InitDigis(ECbmModuleId::kT0, &fT0Digis);
 
-  /// Register output array (CbmEvent)
-  fEvents = new TClonesArray("CbmEvent", 100);
-  ioman->Register("CbmEvent", "Cbm_Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
-  if (!fEvents) LOG(fatal) << "Output branch was not created";
+  /// Register output (array of CbmEvent or vector of CbmDigiEvents)
+  if (fbDigiEvtOut) {
+    if (fbUseMuchBeamtimeDigi) LOG(fatal) << "DigiEvent output branch not compatible with MuchBeamtimeDigi";
+
+    fDigiEvents = new std::vector<CbmDigiEvent>();
+    ioman->RegisterAny("DigiEvent", fDigiEvents, kTRUE);
+    if (!fDigiEvents) LOG(fatal) << "Output branch was not created";
+  }
+  else {
+    fEvents = new TClonesArray("CbmEvent", 100);
+    ioman->Register("CbmEvent", "Cbm_Event", fEvents, IsOutputBranchPersistent("CbmEvent"));
+    if (!fEvents) LOG(fatal) << "Output branch was not created";
+  }
 
   // Set timeslice meta data
   fpAlgo->SetTimeSliceMetaDataArray(dynamic_cast<TClonesArray*>(ioman->GetObject("TimesliceMetaData")));
@@ -193,7 +210,14 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
   logOut << std::setw(20) << std::left << GetName() << " [";
   logOut << std::fixed << std::setw(8) << std::setprecision(1) << std::right << timer.RealTime() * 1000. << " ms] ";
   logOut << "TS " << fNofTs;
-  if (fEvents) logOut << ", events " << fEvents->GetEntriesFast();
+  if (fbDigiEvtOut) {
+    logOut << ", events " << fDigiEvents->size();
+    fNofEvents += fDigiEvents->size();
+  }
+  else {
+    logOut << ", events " << fEvents->GetEntriesFast();
+    fNofEvents += fEvents->GetEntriesFast();
+  }
   LOG(info) << logOut.str();
   if (fSeedFinderSlidingWindow) {
     const size_t seedCount = fSeedFinderSlidingWindow->GetNofSeeds();
@@ -201,7 +225,6 @@ void CbmTaskBuildRawEvents::Exec(Option_t* /*option*/)
     fTotalSeedCount += seedCount;
   }
   fNofTs++;
-  fNofEvents += fEvents->GetEntriesFast();
   fTime += timer.RealTime();
 
   LOG(debug2) << "CbmTaskBuildRawEvents::Exec => Done";
@@ -415,17 +438,26 @@ void CbmTaskBuildRawEvents::Finish()
 
 void CbmTaskBuildRawEvents::FillOutput()
 {
-  /// Clear TClonesArray before usage.
-  fEvents->Delete();
-
   /// Get vector reference from algo
   std::vector<CbmEvent*> vEvents = fpAlgo->GetEventVector();
 
-  /// Move CbmEvent from temporary vector to TClonesArray
-  for (CbmEvent* event : vEvents) {
-    LOG(debug) << "Vector: " << event->ToString();
-    new ((*fEvents)[fEvents->GetEntriesFast()]) CbmEvent(std::move(*event));
-    LOG(debug) << "TClonesArray: " << static_cast<CbmEvent*>(fEvents->At(fEvents->GetEntriesFast() - 1))->ToString();
+  if (fbDigiEvtOut) {
+    /// Clear data from previous TS before usage.
+    fDigiEvents->clear();
+
+    /// Convert each CbmEvent to a CbmDigiEvent by extracting the corresponding data from the input vectors
+    ExtractSelectedData(vEvents);
+  }
+  else {
+    /// Clear TClonesArray before usage.
+    fEvents->Delete();
+
+    /// Move CbmEvent from temporary vector to TClonesArray
+    for (CbmEvent* event : vEvents) {
+      LOG(debug) << "Vector: " << event->ToString();
+      new ((*fEvents)[fEvents->GetEntriesFast()]) CbmEvent(std::move(*event));
+      LOG(debug) << "TClonesArray: " << static_cast<CbmEvent*>(fEvents->At(fEvents->GetEntriesFast() - 1))->ToString();
+    }
   }
   /// Clear event vector after usage
   fpAlgo->ClearEventVector();
@@ -495,6 +527,95 @@ void CbmTaskBuildRawEvents::DumpSeedTimesFromDetList()
   timesSorted.close();
   LOG(info) << "Completed DumpSeedTimesFromDetList(). Closing.";
   exit(0);  //terminate as this method should only be used for diagnostics
+}
+
+void CbmTaskBuildRawEvents::ExtractSelectedData(std::vector<CbmEvent*> vEvents)
+{
+  /// Move CbmEvent from temporary vector to std::vector of full objects
+  LOG(debug) << "In Vector size: " << vEvents.size();
+
+  fDigiEvents->reserve(vEvents.size());
+  for (CbmEvent* event : vEvents) {
+    CbmDigiEvent selEvent;
+    selEvent.fTime   = event->GetStartTime();
+    selEvent.fNumber = event->GetNumber();
+
+    /// FIXME: for pure digi based event, we select "continuous slices of digis"
+    ///        => Copy block of [First Digi index, last digi index] with assign(it_start, it_stop)
+    /// FIXME: Keep TRD1D + TRD2D support, may lead to holes in the digi sequence!
+    ///        => Would need to keep the loop
+
+    /// Get the proper order for block selection as TRD1D and TRD2D may insert indices in separate loops
+    /// => Needed to ensure that the start and stop of the block copy do not trigger a vector size exception
+    event->SortIndices();
+
+    /// for each detector, find the data in the Digi vectors and copy them
+    /// TODO: Template + loop on list of data types?
+    /// ==> T0
+    uint32_t uNbDigis = (0 < event->GetNofData(ECbmDataType::kT0Digi) ? event->GetNofData(ECbmDataType::kT0Digi) : 0);
+    if (0 < uNbDigis) {
+      auto startIt = fT0Digis->begin() + event->GetIndex(ECbmDataType::kT0Digi, 0);
+      auto stopIt  = fT0Digis->begin() + event->GetIndex(ECbmDataType::kT0Digi, uNbDigis - 1);
+      ++stopIt;
+      selEvent.fData.fT0.fDigis.assign(startIt, stopIt);
+    }
+
+    /// ==> STS
+    uNbDigis = (0 < event->GetNofData(ECbmDataType::kStsDigi) ? event->GetNofData(ECbmDataType::kStsDigi) : 0);
+    if (0 < uNbDigis) {
+      auto startIt = fStsDigis->begin() + event->GetIndex(ECbmDataType::kStsDigi, 0);
+      auto stopIt  = fStsDigis->begin() + event->GetIndex(ECbmDataType::kStsDigi, uNbDigis - 1);
+      ++stopIt;
+      selEvent.fData.fSts.fDigis.assign(startIt, stopIt);
+    }
+
+    /// ==> MUCH
+    uNbDigis = (0 < event->GetNofData(ECbmDataType::kMuchDigi) ? event->GetNofData(ECbmDataType::kMuchDigi) : 0);
+    if (0 < uNbDigis) {
+      auto startIt = fMuchDigis->begin() + event->GetIndex(ECbmDataType::kMuchDigi, 0);
+      auto stopIt  = fMuchDigis->begin() + event->GetIndex(ECbmDataType::kMuchDigi, uNbDigis - 1);
+      ++stopIt;
+      selEvent.fData.fMuch.fDigis.assign(startIt, stopIt);
+    }
+
+    /// ==> TRD + TRD2D
+    uNbDigis = (0 < event->GetNofData(ECbmDataType::kTrdDigi) ? event->GetNofData(ECbmDataType::kTrdDigi) : 0);
+    if (0 < uNbDigis) {
+      auto startIt = fTrdDigis->begin() + event->GetIndex(ECbmDataType::kTrdDigi, 0);
+      auto stopIt  = fTrdDigis->begin() + event->GetIndex(ECbmDataType::kTrdDigi, uNbDigis - 1);
+      ++stopIt;
+      selEvent.fData.fTrd.fDigis.assign(startIt, stopIt);
+    }
+
+    /// ==> TOF
+    uNbDigis = (0 < event->GetNofData(ECbmDataType::kTofDigi) ? event->GetNofData(ECbmDataType::kTofDigi) : 0);
+    if (0 < uNbDigis) {
+      auto startIt = fTofDigis->begin() + event->GetIndex(ECbmDataType::kTofDigi, 0);
+      auto stopIt  = fTofDigis->begin() + event->GetIndex(ECbmDataType::kTofDigi, uNbDigis - 1);
+      ++stopIt;
+      selEvent.fData.fTof.fDigis.assign(startIt, stopIt);
+    }
+
+    /// ==> RICH
+    uNbDigis = (0 < event->GetNofData(ECbmDataType::kRichDigi) ? event->GetNofData(ECbmDataType::kRichDigi) : 0);
+    if (0 < uNbDigis) {
+      auto startIt = fRichDigis->begin() + event->GetIndex(ECbmDataType::kRichDigi, 0);
+      auto stopIt  = fRichDigis->begin() + event->GetIndex(ECbmDataType::kRichDigi, uNbDigis - 1);
+      ++stopIt;
+      selEvent.fData.fRich.fDigis.assign(startIt, stopIt);
+    }
+
+    /// ==> PSD
+    uNbDigis = (0 < event->GetNofData(ECbmDataType::kPsdDigi) ? event->GetNofData(ECbmDataType::kPsdDigi) : 0);
+    if (0 < uNbDigis) {
+      auto startIt = fPsdDigis->begin() + event->GetIndex(ECbmDataType::kPsdDigi, 0);
+      auto stopIt  = fPsdDigis->begin() + event->GetIndex(ECbmDataType::kPsdDigi, uNbDigis - 1);
+      ++stopIt;
+      selEvent.fData.fPsd.fDigis.assign(startIt, stopIt);
+    }
+
+    fDigiEvents->push_back(std::move(selEvent));
+  }
 }
 
 ClassImp(CbmTaskBuildRawEvents)
