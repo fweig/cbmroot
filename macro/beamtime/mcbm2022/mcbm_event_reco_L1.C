@@ -304,8 +304,9 @@ Bool_t mcbm_event_reco_L1(UInt_t uRunId                   = 2391,
     //evBuildRaw->SetTriggerMaxNumber(ECbmModuleId::kSts, -1);
     //evBuildRaw->SetTriggerWindow(ECbmModuleId::kSts, -500, 500);
 
-    // void SetTsParameters(double TsStartTime, double TsLength, double TsOverLength): TsStartTime=0, TsLength=256ms in 2021, TsOverLength=TS overlap, not used in mCBM2021
-    evBuildRaw->SetTsParameters(0.0, 1.28e8, 1.12928e8);
+    // void SetTsParameters(double TsStartTime, double TsLength, double TsOverLength):
+    // => TsStartTime=0, TsLength=128 + 1.28 ms in 2022, TsOverLength=1.28 ms (1MS) in mCBM2022
+    evBuildRaw->SetTsParameters(0.0, 1.28e8, 1.28e6);
 
     if (geoSetup->IsActive(ECbmModuleId::kTof)) {
       evBuildRaw->SetTriggerMinNumber(ECbmModuleId::kTof, eb_TriggerMinNumberTof);
