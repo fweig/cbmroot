@@ -402,13 +402,25 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       ### Raw data analysis tests: event building and reconstruction => need calibration files!!
       Set(testname mcbm_event_2022_${RUN})
       Set(fixture_event_${RUN} fixture_done_${testname})
-      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_event.sh \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" ${RUN})
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_event.sh \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" ${RUN} 4 -1 false \"${CBMROOT_BINARY_DIR}/macro/run/data/\")
       Set_Tests_Properties(${testname} PROPERTIES
             TIMEOUT ${RAW_DATA_CHECK_TO}
             FAIL_REGULAR_EXPRESSION "segmentation violation"
             PASS_REGULAR_EXPRESSION "Macro finished successfully"
             FIXTURES_REQUIRED ${fixture_unpacked_${RUN}}
             FIXTURES_SETUP ${fixture_event_${RUN}}
+            )
+
+      ### Raw data analysis tests: event building and reconstruction => need calibration files!!
+      Set(testname mcbm_digievent_2022_${RUN})
+      Set(fixture_digievent_${RUN} fixture_done_${testname})
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_event.sh \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" ${RUN} 4 -1 true \"${CBMROOT_BINARY_DIR}/macro/run/data/\")
+      Set_Tests_Properties(${testname} PROPERTIES
+            TIMEOUT ${RAW_DATA_CHECK_TO}
+            FAIL_REGULAR_EXPRESSION "segmentation violation"
+            PASS_REGULAR_EXPRESSION "Macro finished successfully"
+            FIXTURES_REQUIRED ${fixture_event_${RUN}}
+            FIXTURES_SETUP ${fixture_digievent_${RUN}}
             )
 
       ### Raw analysis tests: (event building and) reconstruction => need calibration files!!
@@ -423,7 +435,7 @@ If(DEFINED ENV{RAW_DATA_PATH} )
             TIMEOUT ${RAW_DATA_RECO_TO}
             FAIL_REGULAR_EXPRESSION "segmentation violation"
             PASS_REGULAR_EXPRESSION "Macro finished successfully"
-            FIXTURES_REQUIRED "${fixture_geo_${RUN}};${fixture_event_${RUN}}"
+            FIXTURES_REQUIRED "${fixture_geo_${RUN}};${fixture_digievent_${RUN}}"
             FIXTURES_SETUP ${fixture_reco_${RUN}}
             RESOURCE_LOCK mcbmRecoAllCoresBug
             )

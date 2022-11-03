@@ -32,6 +32,7 @@ Bool_t mcbm_event(std::string infile,
                   UInt_t uRunId,
                   uint32_t uTriggerSet = 3,
                   std::int32_t nTimeslices = -1,
+                  bool bDigiEvtsOutput = false,
                   std::string sOutDir = "data/")
 {
   /// FIXME: Re-enable clang formatting after parameters initial values setting
@@ -341,11 +342,13 @@ Bool_t mcbm_event(std::string infile,
 
 
   // -----   Output filename   ----------------------------------------------
-  std::string filename    = Form("%d%s.event.root", uRunId, (bTrigSet ? Form("_%u", uTriggerSet) : ""));
+  std::string suffix = ".event.root";
+  if (bDigiEvtsOutput) suffix = ".digievents.root";
+  std::string filename    = Form("%d%s", uRunId, (bTrigSet ? Form("_%u", uTriggerSet) : "")) + suffix;
   std::string outfilename = sOutDir + "/" + filename;
   std::cout << "-I- " << myName << ": Output file will be " << outfilename << std::endl;
   std::string histosfilename = sOutDir + "/" + filename;
-  histosfilename.replace(histosfilename.find(".event.root"), 11, ".hist.root");
+  histosfilename.replace(histosfilename.find(suffix), suffix.size(), ".hist.root");
   std::cout << "-I- " << myName << ": Histos file will be " << histosfilename << std::endl;
   // ------------------------------------------------------------------------
 
@@ -440,6 +443,9 @@ Bool_t mcbm_event(std::string infile,
 
   // Use standard MUCH digis
   evBuildRaw->ChangeMuchBeamtimeDigiFlag();
+
+  // Enable DigiEvent output if requested
+  if (bDigiEvtsOutput) evBuildRaw->SetDigiEventOutput();
 
   evBuildRaw->SetOutFilename(histosfilename);
   // evBuildRaw->SetOutputBranchPersistent("CbmEvent", kFALSE);
