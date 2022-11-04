@@ -48,7 +48,6 @@ set(PRIVATE_DEPENDENCIES
   )
 
 set(INTERFACE_DEPENDENCIES
-  CbmFlibMcbm2018
   external::fles_ipc
   ROOT::Hist
   )
