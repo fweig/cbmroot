@@ -1,60 +1,42 @@
 # --- CMake steering file for core/data/test/global
 # --- V. Friese, 2021
 
-Set(INCLUDE_DIRECTORIES
-  ${CBMDATA_DIR}
-  ${CBMDATA_DIR}/base
-  ${CBMDATA_DIR}/global
-  ${CBMDATA_DIR}/sts
-  ${CBMDATA_DIR}/much
-  ${CBMDATA_DIR}/rich
-  ${CBMDATA_DIR}/tof
-  ${CBMDATA_DIR}/psd
-  ${CBMDATA_DIR}/trd
-  ${CBMDATA_DIR}/mvd
-  ${CBMDATA_DIR}/test/sts
-  ${FLES_IPC_INCLUDE_DIRECTORY}
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${GTEST_INCLUDE_DIR}
-)
-
-MESSAGE("FAIRROOT_LIBRARY_DIR: ${FAIRROOT_LIBRARY_DIR}")
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${SIMPATH}/lib
-)
+set(INCLUDE_DIRECTORIES
+   ${CMAKE_CURRENT_SOURCE_DIR}
+   ${CMAKE_CURRENT_SOURCE_DIR}/../sts
+  )
 
 
-Set(DEPENDENCIES
-  Core
-  Matrix
-  Physics
-  ${GTEST_BOTH_LIBRARIES}
-  FairTools
+set(PUB_DEPS
   CbmData
-  boost_serialization
-  ${CMAKE_THREAD_LIBS_INIT}
-)
-
-If(FAIRLOGGER_FOUND)
-  set(DEPENDENCIES
-      ${DEPENDENCIES}
-      FairLogger
-     )
-EndIf()
-
-if (CMAKE_SYSTEM_NAME MATCHES Linux)
-  set(DEPENDENCIES ${DEPENDENCIES} rt)
-endif()
-
+  Gtest
+  GtestMain
+  ROOT::Physics
+  )
+  
+set(PVT_DEPS
+  CbmTrdBase
+  NicaCbmFormat
+  ROOT::Core
+  ROOT::Matrix
+  ROOT::EG
+  VMCLibrary 
+  )
+  
+set(INT_DEPS  
+  FairRoot::Base
+  external::fles_ipc
+  xpu
+  )
+  
+ 
 # --- Test CbmDigiEvent
 Set(CbmDigiEventSources
   ${CBMDATA_DIR}/global/CbmDigiEvent.h
   _GTestCbmDigiEvent.cxx
 )
 CreateGTestExeAndAddTest(_GTestCbmDigiEvent "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmDigiEventSources}" "${DEPENDENCIES}" "")
+                         "${CbmDigiEventSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "")
 
 # --- Test CbmDigiTimeslice
 Set(CbmDigiTimesliceSources
@@ -62,7 +44,7 @@ Set(CbmDigiTimesliceSources
   _GTestCbmDigiTimeslice.cxx
 )
 CreateGTestExeAndAddTest(_GTestCbmDigiTimeslice "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmDigiTimesliceSources}" "${DEPENDENCIES}" "_GTestCbmDigiEvent")
+                         "${CbmDigiTimesliceSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmDigiEvent")
 
  # --- Test CbmVertex
 Set(CbmVertexSources
@@ -70,6 +52,6 @@ Set(CbmVertexSources
   _GTestCbmVertex.cxx
 )
 CreateGTestExeAndAddTest(_GTestCbmVertex "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmVertexSources}" "${DEPENDENCIES}" "_GTestCbmDigiTimeslice")
+                         "${CbmVertexSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmDigiTimeslice")
 
 

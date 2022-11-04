@@ -36,10 +36,24 @@ ExternalProject_Add(GTEST
   INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install
 )
 
-add_library(Gtest STATIC IMPORTED)
+#[[add_library(Gtest STATIC IMPORTED)
 set_target_properties(Gtest PROPERTIES IMPORTED_LOCATION ${Gtest_LIBRARY})
+add_dependencies(Gtest GTEST)]]
+
+add_library(Gtest STATIC IMPORTED GLOBAL)
+set_target_properties(Gtest PROPERTIES 
+IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}
+INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/include/gtest)
 add_dependencies(Gtest GTEST)
 
+
+add_library(GtestMain STATIC IMPORTED GLOBAL)
+set_target_properties(GtestMain PROPERTIES 
+IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX}
+INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/include/gtest)
+add_dependencies(GtestMain GTEST)
+
+message(STATUS  "-----------------${CMAKE_BINARY_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
 set(GTEST_LIBRARIES gtest)
 set(GTEST_INCLUDE_DIR "${CMAKE_BINARY_DIR}/include")
 set(GTEST_LIBRARY  ${CMAKE_BINARY_DIR}/${_LIBDIR_DEFAULT}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX})

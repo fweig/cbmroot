@@ -1,48 +1,39 @@
-Set(INCLUDE_DIRECTORIES
-  ${CBMDATA_DIR}
-  ${CBMDATA_DIR}/trd
-  ${CBMDATA_DIR}/test
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${GTEST_INCLUDE_DIR}
-)
+set(INCLUDE_DIRECTORIES
+   ${CMAKE_CURRENT_SOURCE_DIR}
+   ${CBMDATA_DIR}/trd
+   ${CMAKE_CURRENT_SOURCE_DIR}/..
+  )
 
-MESSAGE("FAIRROOT_LIBRARY_DIR: ${FAIRROOT_LIBRARY_DIR}")
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${SIMPATH}/lib
-)
-
-
-Set(DEPENDENCIES
-  Core
-  Physics
-  ${GTEST_BOTH_LIBRARIES}
-  FairTools
+set(PUB_DEPS
   CbmData
-  ${CMAKE_THREAD_LIBS_INIT}
-)
-
-If(FAIRLOGGER_FOUND)
-  set(DEPENDENCIES
-      ${DEPENDENCIES}
-      FairLogger
-     )
-EndIf()
-
-if (CMAKE_SYSTEM_NAME MATCHES Linux)
-  set(DEPENDENCIES ${DEPENDENCIES} rt)
-endif()
-
-
-
+  Gtest
+  GtestMain
+  ROOT::Physics
+  )
+  
+set(PVT_DEPS
+  CbmTrdBase
+  NicaCbmFormat
+  ROOT::Core
+  ROOT::Matrix
+  ROOT::EG
+  )
+  
+set(INT_DEPS  
+  FairRoot::Base
+  external::fles_ipc
+  xpu
+  VMCLibrary
+  )
+  
+  
 #Set(CbmTrdDetectorIdSources
 #  ${CBMDATA_DIR}/trd/CbmTrdAddress.cxx
 #  _GTestCbmTrdDetectorId.cxx
 #)
 
 #CreateGTestExeAndAddTest(_GTestCbmTrdDetectorId "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-#                         "${CbmTrdDetectorIdSources}" "${DEPENDENCIES}" "")
+#                         "${CbmTrdDetectorIdSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "")
 
 
 Set(CbmTrdDigiSources
@@ -51,7 +42,7 @@ Set(CbmTrdDigiSources
 )
 
 CreateGTestExeAndAddTest(_GTestCbmTrdDigi "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmTrdDigiSources}" "${DEPENDENCIES}" "")
+                         "${CbmTrdDigiSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "")
 
 #Set(CbmTrdAddressSources
 #  ${CBMDATA_DIR}/trd/CbmTrdAddress.cxx
@@ -59,7 +50,7 @@ CreateGTestExeAndAddTest(_GTestCbmTrdDigi "${INCLUDE_DIRECTORIES}" "${LINK_DIREC
 #)
 
 #CreateGTestExeAndAddTest(_GTestCbmTrdAddress "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-#                         "${CbmTrdAddressSources}" "${DEPENDENCIES}" "_GTestTrdDigi")
+#                         "${CbmTrdAddressSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestTrdDigi")
 
 Set(CbmTrdPointSources
   ${CBMDATA_DIR}/trd/CbmTrdPoint.cxx
@@ -67,7 +58,7 @@ Set(CbmTrdPointSources
 )
 
 CreateGTestExeAndAddTest(_GTestCbmTrdPoint "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmTrdPointSources}" "${DEPENDENCIES}" "_GTestTrdDigi")
+                         "${CbmTrdPointSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestTrdDigi")
 
 Set(CbmTrdHitSources
   ${CBMDATA_DIR}/trd/CbmTrdHit.cxx
@@ -75,4 +66,4 @@ Set(CbmTrdHitSources
 )
 
 CreateGTestExeAndAddTest(_GTestCbmTrdHit "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmTrdHitSources}" "${DEPENDENCIES}" "_GTestTrdPoint")
+                         "${CbmTrdHitSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestTrdPoint")

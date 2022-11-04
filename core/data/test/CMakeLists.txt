@@ -1,13 +1,11 @@
-Macro(CreateGTestExeAndAddTest _testname _includeDirs _linkDirs _sources _dependencies _testdepend)
+Macro(CreateGTestExeAndAddTest _testname _includeDirs _linkDirs _sources _pub_dep _pvt_dep _int_dep _testdepend)
 
-  Include_Directories(SYSTEM "${_includeDirs}")
-  Link_Directories(${_linkDirs})
-
-  Add_Executable(${_testname} ${_sources})
+  add_executable(${_testname} ${_sources})
   if(CBM_LOCAL_GTEST)
-    Add_Dependencies(${_testname} GTEST)
+    add_dependencies(${_testname} GTEST)
   endif()
-  Target_Link_Libraries(${_testname} ${_dependencies})
+  target_link_libraries(${_testname} PUBLIC ${_pub_dep} PRIVATE ${_pvt_dep} INTERFACE ${_int_dep} )
+  target_include_directories(${_testname} PUBLIC ${_includeDirs})
   Gen_Exe_Script(${_testname})
   string(REPLACE ${PROJECT_SOURCE_DIR}
          ${PROJECT_BINARY_DIR} new_path ${CMAKE_CURRENT_SOURCE_DIR}
@@ -18,66 +16,43 @@ Macro(CreateGTestExeAndAddTest _testname _includeDirs _linkDirs _sources _depend
   EndIf()
 EndMacro(CreateGTestExeAndAddTest)
 
-FIND_PACKAGE(Threads REQUIRED)
 
 add_subdirectory(global)
 add_subdirectory(psd)
 add_subdirectory(trd)
 
-Set(INCLUDE_DIRECTORIES
-  ${CBMBASE_DIR}
-  ${CBMDATA_DIR}
-  ${CBMDATA_DIR}/base
-  ${CBMDATA_DIR}/global
-  ${CBMDATA_DIR}/sts
-  ${CBMDATA_DIR}/tof
-  ${CBMDATA_DIR}/rich
-  ${CBMDATA_DIR}/much
-  ${CBMDATA_DIR}/test/sts
-  ${CBMDATA_DIR}/test/global
-  ${FLES_IPC_INCLUDE_DIRECTORY}
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${GTEST_INCLUDE_DIR}
-)
-
-MESSAGE("FAIRROOT_LIBRARY_DIR: ${FAIRROOT_LIBRARY_DIR}")
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${SIMPATH}/lib
+set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/..
+  ${CMAKE_CURRENT_SOURCE_DIR}/sts
+  ${CMAKE_CURRENT_SOURCE_DIR}/global
 )
 
 
-Set(DEPENDENCIES
-  Core
-  Matrix
-  Physics
-  ${GTEST_BOTH_LIBRARIES}
-  FairTools
+
+set(PUB_DEPS
   CbmData
-  Base
-  ParBase
-  GeoBase
-  MbsAPI
-  ${CMAKE_THREAD_LIBS_INIT}
-  boost_serialization
-)
+  Gtest
+  GtestMain
+  ROOT::Physics
+  )
+  
+set(PVT_DEPS
+  CbmTrdBase
+  NicaCbmFormat
+  ROOT::Core
+  ROOT::Matrix
+  ROOT::EG
+  )
+  
+set(INT_DEPS  
+  FairRoot::Base
+  external::fles_ipc
+  xpu
+  VMCLibrary
+  )
 
-set(SPECIAL_DEPENDENCIES
-  ${GTEST_BOTH_LIBRARIES}
-  FairTools
-)
 
-If(FAIRLOGGER_FOUND)
-  set(DEPENDENCIES
-      ${DEPENDENCIES}
-      FairLogger
-     )
-  set(SPECIAL_DEPENDENCIES
-      ${SPECIAL_DEPENDENCIES}
-      FairLogger
-     )
-EndIf()
 
 if (CMAKE_SYSTEM_NAME MATCHES Linux)
   set(DEPENDENCIES ${DEPENDENCIES} rt)
@@ -86,61 +61,61 @@ endif()
 
 
 Set(CbmLinkSources
-  ${CBMDATA_DIR}/CbmLink.cxx
+  ../CbmLink.cxx
   _GTestCbmLink.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmLink "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmLinkSources}" "${DEPENDENCIES}" "")
+                         "${CbmLinkSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "")
 
 Set(CbmMatchSources
-  ${CBMDATA_DIR}/CbmMatch.cxx
+  ../CbmMatch.cxx
   _GTestCbmMatch.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmMatch "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmMatchSources}" "${DEPENDENCIES}" "_GTestCbmLink")
+                         "${CbmMatchSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmLink")
 
 Set(CbmClusterSources
-  ${CBMDATA_DIR}/CbmCluster.cxx
+  ../CbmCluster.cxx
   _GTestCbmCluster.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmCluster "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmClusterSources}" "${DEPENDENCIES}" "_GTestCbmDigi")
+                         "${CbmClusterSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmDigi")
 
 Set(CbmHitSources
-  ${CBMDATA_DIR}/CbmHit.cxx
+  ../CbmHit.cxx
   _GTestCbmHit.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmHit "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmHitSources}" "${DEPENDENCIES}" "_GTestCbmCluster")
+                         "${CbmHitSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmCluster")
 
 Set(CbmPixelHitSources
-  ${CBMDATA_DIR}/CbmPixelHit.cxx
+  ../CbmPixelHit.cxx
   _GTestCbmPixelHit.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmPixelHit "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmPixelHitSources}" "${DEPENDENCIES}" "_GTestCbmHit")
+                         "${CbmPixelHitSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmHit")
 
 Set(CbmStripHitSources
-  ${CBMDATA_DIR}/CbmStripHit.cxx
+  ../CbmStripHit.cxx
   _GTestCbmStripHit.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmStripHit "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmStripHitSources}" "${DEPENDENCIES}" "_GTestCbmPixelHit")
+                         "${CbmStripHitSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmPixelHit")
 
 
 Set(CbmEventSources
-  ${CBMDATA_DIR}/CbmEvent.cxx
+  ../CbmEvent.cxx
   _GTestCbmEvent.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmEvent "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmEventSources}" "${DEPENDENCIES}" "_GTestCbmStripHit")
+                         "${CbmEventSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmStripHit")
 
 
 Set(CbmConstantsSources
@@ -148,24 +123,24 @@ Set(CbmConstantsSources
 )
 
 CreateGTestExeAndAddTest(_GTestCbmConstants "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmConstantsSources}" "${GTEST_BOTH_LIBRARIES};-pthread" "_GTestCbmEvent")
+                         "${CbmConstantsSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmEvent")
 
 Set(CbmErrorMessageSources
-  ${CBMDATA_DIR}/CbmErrorMessage.cxx
+  ../CbmErrorMessage.cxx
   _GTestCbmErrorMessage.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmErrorMessage "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmErrorMessageSources}" "${DEPENDENCIES};-pthread" "_GTestCbmConstants")
+                         "${CbmErrorMessageSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmConstants")
 
 
 Set(CbmAddressSources
-  ${CBMDATA_DIR}/CbmAddress.cxx
+  ../CbmAddress.cxx
   _GTestCbmAddress.cxx
 )  
 
 CreateGTestExeAndAddTest(_GTestCbmAddress "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmAddressSources}" "${DEPENDENCIES}" "_GTestCbmErrorMessage")
+                         "${CbmAddressSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmErrorMessage")
 
 
 
@@ -175,49 +150,49 @@ CreateGTestExeAndAddTest(_GTestCbmAddress "${INCLUDE_DIRECTORIES}" "${LINK_DIREC
 #)  
 #
 #CreateGTestExeAndAddTest(_GTestCbmModuleList "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-#                         "${CbmModuleListSources}" "${DEPENDENCIES}" "_GTestCbmVertex")
+#                         "${CbmModuleListSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmVertex")
 
 
 Set(CbmStsDigiSources
-  ${CBMDATA_DIR}/sts/CbmStsDigi.cxx
+  ../sts/CbmStsDigi.cxx
   sts/_GTestCbmStsDigi.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmStsDigi "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmStsDigiSources}" "${DEPENDENCIES}" "_GTestCbmVertex")
+                         "${CbmStsDigiSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestCbmVertex")
 
 Set(CbmTofDigiSources
-  ${CBMDATA_DIR}/tof/CbmTofDigi.cxx
+ ../tof/CbmTofDigi.cxx
   tof/_GTestCbmTofDigi.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmTofDigi "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmTofDigiSources}" "${DEPENDENCIES}" "_GTestStsDigi")
+                         "${CbmTofDigiSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestStsDigi")
 
 Set(CbmRichDigiSources
-  ${CBMDATA_DIR}/rich/CbmRichDigi.cxx
+  ../rich/CbmRichDigi.cxx
   rich/_GTestCbmRichDigi.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmRichDigi "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmRichDigiSources}" "${DEPENDENCIES}" "_GTestTofDigi")
+                         "${CbmRichDigiSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestTofDigi")
 
 
 Set(CbmMuchDigiSources
-  ${CBMDATA_DIR}/much/CbmMuchDigi.cxx
+  ../much/CbmMuchDigi.cxx
   much/_GTestCbmMuchDigi.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmMuchDigi "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmMuchDigiSources}" "${DEPENDENCIES}" "_GTesRichDigi")
+                         "${CbmMuchDigiSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTesRichDigi")
 
 Set(CbmMuchBeamTimeDigiSources
-  ${CBMDATA_DIR}/much/CbmMuchBeamTimeDigi.cxx
+  ../much/CbmMuchBeamTimeDigi.cxx
   much/_GTestCbmMuchBeamTimeDigi.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmMuchBeamTimeDigi "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmMuchBeamTimeDigiSources}" "${DEPENDENCIES}" "_GTestMuchDigi")
+                         "${CbmMuchBeamTimeDigiSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestMuchDigi")
 
 #GENERATE_ROOT_TEST_SCRIPT(${CMAKE_SOURCE_DIR}/test/cbmdata/load_all_libs.C)
 #  Add_Test(load_all_libs

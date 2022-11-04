@@ -1,46 +1,38 @@
-Set(INCLUDE_DIRECTORIES
-  ${CBMDATA_DIR}
-  ${CBMDATA_DIR}/psd
-  ${CBMDATA_DIR}/test
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${GTEST_INCLUDE_DIR}
-)
-
-MESSAGE("FAIRROOT_LIBRARY_DIR: ${FAIRROOT_LIBRARY_DIR}")
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${FAIRROOT_LIBRARY_DIR}
-  ${SIMPATH}/lib
-)
-
-
-Set(DEPENDENCIES
-  Core
-  Physics
-  ${GTEST_BOTH_LIBRARIES}
-  FairTools
+set(INCLUDE_DIRECTORIES
+   ${CMAKE_CURRENT_SOURCE_DIR}
+   ${CMAKE_CURRENT_SOURCE_DIR}/..
+  )
+ 
+set(PUB_DEPS
   CbmData
-  ${CMAKE_THREAD_LIBS_INIT}
-)
-
-If(FAIRLOGGER_FOUND)
-  set(DEPENDENCIES
-      ${DEPENDENCIES}
-      FairLogger
-     )
-EndIf()
-
-if (CMAKE_SYSTEM_NAME MATCHES Linux)
-  set(DEPENDENCIES ${DEPENDENCIES} rt)
-endif()
-
+  Gtest
+  GtestMain
+  ROOT::Physics
+  )
+  
+set(PVT_DEPS
+  CbmTrdBase
+  NicaCbmFormat
+  ROOT::Core
+  ROOT::Matrix
+  ROOT::EG
+  )
+  
+set(INT_DEPS  
+  FairRoot::Base
+  external::fles_ipc
+  xpu
+  VMCLibrary
+  )
+  
+  
 Set(CbmPsdDigiSources
   ${CBMDATA_DIR}/psd/CbmPsdDigi.cxx
   _GTestCbmPsdDigi.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmPsdDigi "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmPsdDigiSources}" "${DEPENDENCIES}" "")
+                         "${CbmPsdDigiSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "")
 
 Set(CbmPsdAddressSources
   ${CBMDATA_DIR}/psd/CbmPsdAddress.cxx
@@ -48,7 +40,7 @@ Set(CbmPsdAddressSources
 )
 
 CreateGTestExeAndAddTest(_GTestCbmPsdAddress "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmPsdAddressSources}" "${DEPENDENCIES}" "_GTestPsdDigi")
+                         "${CbmPsdAddressSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestPsdDigi")
 
 Set(CbmPsdPointSources
   ${CBMDATA_DIR}/psd/CbmPsdPoint.cxx
@@ -56,11 +48,11 @@ Set(CbmPsdPointSources
 )
 
 CreateGTestExeAndAddTest(_GTestCbmPsdPoint "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmPsdPointSources}" "${DEPENDENCIES}" "_GTestPsdAddress")
+                         "${CbmPsdPointSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestPsdAddress")
 Set(CbmPsdHitSources
   ${CBMDATA_DIR}/psd/CbmPsdHit.cxx
   _GTestCbmPsdHit.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmPsdHit "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
-                         "${CbmPsdHitSources}" "${DEPENDENCIES}" "_GTestPsdPoint")
+                         "${CbmPsdHitSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestPsdPoint")
