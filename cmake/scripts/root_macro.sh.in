@@ -19,7 +19,7 @@ export VMCWORKDIR=@VMCWORKDIR@
 export Geant4VMC_MACRO_DIR=@Geant4VMC_MACRO_DIR@
 export USE_VGM=1
 export BOOST=@Boost_Avail@
-if [[ -z "${OMP_NUM_THREADS}" ]]; then
+if [[ -z $OMP_NUM_THREADS ]]; then
   export OMP_NUM_THREADS=@OMP_NUM_THREADS@
 fi
 

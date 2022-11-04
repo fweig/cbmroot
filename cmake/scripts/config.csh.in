@@ -30,7 +30,6 @@ if ( "$same_system" == "1" ) then
 	setenv VMCWORKDIR "@VMCWORKDIR@"
 	setenv FAIRLIBDIR "@FAIRLIBDIR@"
 	setenv PYTHONPATH "@MY_PYTHONPATH@"
-	setenv OMP_NUM_THREADS @OMP_NUM_THREADS@
 	if (! $?OMP_NUM_THREADS) then
 		setenv OMP_NUM_THREADS @OMP_NUM_THREADS@
 	else

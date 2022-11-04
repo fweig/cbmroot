@@ -29,7 +29,7 @@ if [ $same_system -eq 1 ]; then
 	export VMCWORKDIR="@VMCWORKDIR@"
 	export FAIRLIBDIR="@FAIRLIBDIR@"
 	export PYTHONPATH="@MY_PYTHONPATH@"
-	if [[ -z "${OMP_NUM_THREADS}" ]]; then
+	if [[ -z $OMP_NUM_THREADS ]]; then
 		export OMP_NUM_THREADS=@OMP_NUM_THREADS@
 	fi
 
