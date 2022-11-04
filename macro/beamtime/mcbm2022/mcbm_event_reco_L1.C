@@ -16,24 +16,24 @@
 /// FIXME: Disable clang formatting to keep easy parameters overview
 /* clang-format off */
 Bool_t mcbm_event_reco_L1(UInt_t uRunId                   = 2391,
-			  Int_t nTimeslices               = 10,
-			  TString sInpDir                 = "./data/",
-			  TString sOutDir                 = "./data/",
-			  Int_t iUnpFileIndex             = -1,
-			  Bool_t bMVD                     = kFALSE,
-			  Bool_t bSTS                     = kTRUE,
-			  Bool_t bTRD                     = kTRUE,
-			  Bool_t bTRD2d                   = kTRUE,
-			  Bool_t bRICH                    = kTRUE,
-			  Bool_t bMUCH                    = kFALSE,
-			  Bool_t bTOF                     = kTRUE,
-			  Bool_t bTOFtr                   = kTRUE,
-			  Bool_t bPSD                     = kFALSE,
-			  Bool_t bAli                     = kTRUE,
-			  Bool_t bEvB                     = kTRUE,
-			  Bool_t bL1                      = kFALSE,
-			  Bool_t bQA                      = kFALSE,
-			  TString sInpFile                = ""
+                          Int_t nTimeslices               = 10,
+                          TString sInpDir                 = "./data/",
+                          TString sOutDir                 = "./data/",
+                          Int_t iUnpFileIndex             = -1,
+                          Bool_t bMVD                     = kFALSE,
+                          Bool_t bSTS                     = kTRUE,
+                          Bool_t bTRD                     = kTRUE,
+                          Bool_t bTRD2d                   = kTRUE,
+                          Bool_t bRICH                    = kTRUE,
+                          Bool_t bMUCH                    = kFALSE,
+                          Bool_t bTOF                     = kTRUE,
+                          Bool_t bTOFtr                   = kTRUE,
+                          Bool_t bPSD                     = kFALSE,
+                          Bool_t bAli                     = kTRUE,
+                          Bool_t bEvB                     = kTRUE,
+                          Bool_t bL1                      = kFALSE,
+                          Bool_t bQA                      = kFALSE,
+                          TString sInpFile                = ""
 			  )
 {
   /// FIXME: Re-enable clang formatting after parameters initial values setting
@@ -86,6 +86,7 @@ Bool_t mcbm_event_reco_L1(UInt_t uRunId                   = 2391,
 
 
   // -----   TOF defaults ------------------------
+  // ===> PAL 2022/11/04: overwriten by block around l.510!
   Int_t calMode      = 93;
   Int_t calSel       = 1;
   Int_t calSm        = 2;
@@ -102,6 +103,7 @@ Bool_t mcbm_event_reco_L1(UInt_t uRunId                   = 2391,
   Bool_t bUseSigCalib  = kFALSE;
   Int_t iCalOpt        = 110;  // 0=do not call CbmTofCalibrator
   Int_t iTrkPar        = 0;    // 4 for check without beam counter
+  Double_t dTOffScal   = 1.;
   // ------------------------------------------------------------------------
 
   // -----   TOF Calibration Settings ---------------------------------------
@@ -111,6 +113,7 @@ Bool_t mcbm_event_reco_L1(UInt_t uRunId                   = 2391,
   if (uRunId >= 1588) cCalId = "1588.50.6.0";
   if (uRunId >= 2160) cCalId = "2160.50.4.0";
   if (uRunId >= 2352) cCalId = "2391.5.000";
+
   Int_t iCalSet = 30040500;  // calibration settings
   if (uRunId >= 759) iCalSet = 10020500;
   if (uRunId >= 812) iCalSet = 10020500;
@@ -519,6 +522,7 @@ Bool_t mcbm_event_reco_L1(UInt_t uRunId                   = 2391,
         ;
       }
     }
+    // -------------------------------------------------------------------------
 
     // =========================================================================
     // ===                   Tof Tracking                                    ===
@@ -527,7 +531,6 @@ Bool_t mcbm_event_reco_L1(UInt_t uRunId                   = 2391,
     if (bTOFtr) {
       cout << "<I> Initialize Tof tracker by ini_trks" << endl;
 
-      Double_t dTOffScal = 1.;
       gROOT->LoadMacro(srcDir + "/macro/beamtime/mcbm2022/ini_tof_trks.C");
       Char_t* cCmd =
         Form("ini_tof_trks(%d,%d,%d,%6.2f,%8.1f,\"%s\",%d,%d,%d,%f,\"%s\")", iSel, iTrackingSetup, iGenCor, dScalFac,

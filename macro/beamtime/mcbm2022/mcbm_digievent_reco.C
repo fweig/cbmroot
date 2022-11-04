@@ -16,12 +16,27 @@
 /// FIXME: Disable clang formatting to keep easy parameters overview
 /* clang-format off */
 Bool_t mcbm_digievent_reco(UInt_t uRunId               = 2365,
-                       Int_t nTimeslices               = 10,
-                       Int_t iFirstTimeslice           = 0,
-                       TString cFId                    = "5.lxbk0598",
-                       TString sInpDir                 = "./data/",
-                       TString sOutDir                 = "./rec/",
-                       Int_t iUnpFileIndex             = -1)
+                           Int_t nTimeslices           = 10,
+                           Int_t iFirstTimeslice       = 0,
+                           TString cFId                = "5.lxbk0598",
+                           TString sInpDir             = "./data/",
+                           TString sOutDir             = "./rec/",
+                           Int_t iUnpFileIndex         = -1,
+                           Bool_t bMVD                 = kFALSE,
+                           Bool_t bSTS                 = kTRUE,
+                           Bool_t bTRD                 = kTRUE,
+                           Bool_t bTRD2d               = kTRUE,
+                           Bool_t bRICH                = kTRUE,
+                           Bool_t bMUCH                = kFALSE,
+                           Bool_t bTOF                 = kTRUE,
+                           Bool_t bTOFtr               = kTRUE,
+                           Bool_t bPSD                 = kFALSE,
+                           Bool_t bAli                 = kTRUE,
+                           Bool_t bL1                  = kFALSE,
+                           Bool_t bQA                  = kFALSE,
+                           Bool_t bTOFtrQa             = kFALSE,
+                           Bool_t bLambda              = kTRUE,
+                           TString sInpFile            = "")
 {
   /// FIXME: Re-enable clang formatting after parameters initial values setting
   /* clang-format on */
@@ -69,6 +84,8 @@ Bool_t mcbm_digievent_reco(UInt_t uRunId               = 2365,
   //  parFileIn += ".root";
   parFileOut += ".root";
   outFile += ".root";
+
+  if ("" != sInpFile) inFile = sInpFile;
   // ---------------------------------------------
 
   // -----   EventBuilder Settings----------------
@@ -80,6 +97,20 @@ Bool_t mcbm_digievent_reco(UInt_t uRunId               = 2365,
   const Int_t eb_TriggerMinNumberTofLayers {4};
   const Int_t eb_TriggerMinNumberRich {5};
 
+  // -----   TOF defaults ------------------------
+  // -----   Local selection variables  --------------------------------------
+  // Tracking
+  Int_t iSel           = 22002;  //500;//910041;
+  Int_t iTrackingSetup = 10;
+  Int_t iGenCor        = 1;
+  Double_t dScalFac    = 1.;
+  Double_t dChi2Lim2   = 5.;
+  Bool_t bUseSigCalib  = kFALSE;
+  Int_t iCalOpt        = 0;
+  Int_t iTrkPar        = 0;
+  Double_t dTOffScal   = 1.;
+  // ------------------------------------------------------------------------
+
   // -----   TOF Calibration Settings ---------------------------------------
   TString cCalId = "490.100.5.0";
   if (uRunId >= 759) cCalId = "759.100.4.0";
@@ -90,6 +121,7 @@ Bool_t mcbm_digievent_reco(UInt_t uRunId               = 2365,
   if (uRunId >= 2389) cCalId = "2389.5.lxbk0598";
   if (uRunId >= 2390) cCalId = "2391.5.lxbk0598";
   if (uRunId >= 2393) cCalId = "2393.5.lxbk0598";
+  if (uRunId == 2391) cCalId = "2391.5.000";
 
   Int_t iCalSet = 22002500;  // calibration settings
   if (uRunId >= 759) iCalSet = 10020500;
@@ -115,19 +147,19 @@ Bool_t mcbm_digievent_reco(UInt_t uRunId               = 2365,
     return kFALSE;
   }
 
-  TString geoFile    = srcDir + "/macro/mcbm/data/" + geoSetupTag + ".geo.root";
+  TString geoFile    = sInpDir + "/" + geoSetupTag + ".geo.root";
   CbmSetup* geoSetup = CbmSetup::Instance();
   geoSetup->LoadSetup(geoSetupTag);
 
   // You can modify the pre-defined setup by using
-  geoSetup->SetActive(ECbmModuleId::kMvd, kFALSE);
-  geoSetup->SetActive(ECbmModuleId::kSts, kTRUE);
-  geoSetup->SetActive(ECbmModuleId::kMuch, kFALSE);
-  geoSetup->SetActive(ECbmModuleId::kRich, kTRUE);
-  geoSetup->SetActive(ECbmModuleId::kTrd, kFALSE);
-  geoSetup->SetActive(ECbmModuleId::kTrd2d, kFALSE);
-  geoSetup->SetActive(ECbmModuleId::kTof, kTRUE);
-  geoSetup->SetActive(ECbmModuleId::kPsd, kFALSE);
+  if (bMVD) geoSetup->SetActive(ECbmModuleId::kMvd, kTRUE);
+  if (bSTS) geoSetup->SetActive(ECbmModuleId::kSts, kTRUE);
+  if (bMUCH) geoSetup->SetActive(ECbmModuleId::kMuch, kTRUE);
+  if (bRICH) geoSetup->SetActive(ECbmModuleId::kRich, kTRUE);
+  if (bTRD) geoSetup->SetActive(ECbmModuleId::kTrd, kTRUE);
+  if (bTRD2d) geoSetup->SetActive(ECbmModuleId::kTrd2d, kTRUE);
+  if (bTOF) geoSetup->SetActive(ECbmModuleId::kTof, kTRUE);
+  if (bPSD) geoSetup->SetActive(ECbmModuleId::kPsd, kTRUE);
 
   //-----  Load Parameters --------------------------------------------------
   TList* parFileList = new TList();
@@ -197,34 +229,34 @@ Bool_t mcbm_digievent_reco(UInt_t uRunId               = 2365,
   // ===                   Alignment Correction                            ===
   // =========================================================================
   // (Fairsoft Apr21p2 or newer is needed)
+  if (bAli) {
+    TString alignmentMatrixFileName = srcDir + "/parameters/mcbm/AlignmentMatrices_" + geoSetupTag + ".root";
+    if (alignmentMatrixFileName.Length() != 0) {
+      std::cout << "-I- " << myName << ": Applying alignment for file " << alignmentMatrixFileName << std::endl;
 
+      // Define the basic structure which needs to be filled with information
+      // This structure is stored in the output file and later passed to the
+      // FairRoot framework to do the (miss)alignment
+      std::map<std::string, TGeoHMatrix>* matrices {nullptr};
 
-  TString alignmentMatrixFileName = "AlignmentMatrices_" + geoSetupTag + ".root";
-  if (alignmentMatrixFileName.Length() != 0) {
-    std::cout << "-I- " << myName << ": Applying alignment for file " << alignmentMatrixFileName << std::endl;
+      // read matrices from disk
+      LOG(info) << "Filename: " << alignmentMatrixFileName;
+      TFile* misalignmentMatrixRootfile = new TFile(alignmentMatrixFileName, "READ");
+      if (misalignmentMatrixRootfile->IsOpen()) {
+        gDirectory->GetObject("MisalignMatrices", matrices);
+        misalignmentMatrixRootfile->Close();
+      }
+      else {
+        LOG(error) << "Could not open file " << alignmentMatrixFileName << "\n Exiting";
+        exit(1);
+      }
 
-    // Define the basic structure which needs to be filled with information
-    // This structure is stored in the output file and later passed to the
-    // FairRoot framework to do the (miss)alignment
-    std::map<std::string, TGeoHMatrix>* matrices {nullptr};
-
-    // read matrices from disk
-    LOG(info) << "Filename: " << alignmentMatrixFileName;
-    TFile* misalignmentMatrixRootfile = new TFile(alignmentMatrixFileName, "READ");
-    if (misalignmentMatrixRootfile->IsOpen()) {
-      gDirectory->GetObject("MisalignMatrices", matrices);
-      misalignmentMatrixRootfile->Close();
-    }
-    else {
-      LOG(error) << "Could not open file " << alignmentMatrixFileName << "\n Exiting";
-      exit(1);
-    }
-
-    if (matrices) { run->AddAlignmentMatrices(*matrices); }
-    else {
-      LOG(error) << "Alignment required but no matrices found."
-                 << "\n Exiting";
-      exit(1);
+      if (matrices) { run->AddAlignmentMatrices(*matrices); }
+      else {
+        LOG(error) << "Alignment required but no matrices found."
+                   << "\n Exiting";
+        exit(1);
+      }
     }
   }
   // ------------------------------------------------------------------------
@@ -243,7 +275,7 @@ Bool_t mcbm_digievent_reco(UInt_t uRunId               = 2365,
   // ===                 local STS Reconstruction                          ===
   // =========================================================================
 
-  if (geoSetup->IsActive(ECbmModuleId::kSts)) {
+  if (bSTS && geoSetup->IsActive(ECbmModuleId::kSts)) {
     CbmRecoSts* recoSts = new CbmRecoSts();
     recoSts->SetMode(kCbmRecoEvent);
 
@@ -316,7 +348,7 @@ Bool_t mcbm_digievent_reco(UInt_t uRunId               = 2365,
 
     // ASIC params: #ADC channels, dyn. range, threshold, time resol., dead time,
     // noise RMS, zero-threshold crossing rate
-    auto parAsic = new CbmStsParAsic(128, 32, 75000., 3000., 5., 800., 1000., 3.9789e-3);
+    auto parAsic = new CbmStsParAsic(128, 31, 75000., 3000., 5., 800., 1000., 3.9789e-3);
 
     // Module params: number of channels, number of channels per ASIC
     auto parMod = new CbmStsParModule(2048, 128);
@@ -337,8 +369,8 @@ Bool_t mcbm_digievent_reco(UInt_t uRunId               = 2365,
   // ===                 local TRD Reconstruction                          ===
   // =========================================================================
 
-  CbmTrdClusterFinder* trdCluster;
-  if (geoSetup->IsActive(ECbmModuleId::kTrd)) {
+  if (bTRD && geoSetup->IsActive(ECbmModuleId::kTrd)) {
+    CbmTrdClusterFinder* trdCluster;
     Double_t triggerThreshold = 0.5e-6;  // SIS100
 
     trdCluster = new CbmTrdClusterFinder();
@@ -353,21 +385,21 @@ Bool_t mcbm_digievent_reco(UInt_t uRunId               = 2365,
     std::cout << "-I- : Added task " << trdHit->GetName() << std::endl;
   }
 
-
   // =========================================================================
   // ===                    RICH Reconstruction                            ===
   // =========================================================================
 
-  if (geoSetup->IsActive(ECbmModuleId::kRich)) {
+  if (bRICH && geoSetup->IsActive(ECbmModuleId::kRich)) {
     // -----   Local reconstruction of RICH Hits ------------------------------
     CbmRichMCbmHitProducer* hitProd = new CbmRichMCbmHitProducer();
-    hitProd->SetMappingFile("mRICH_Mapping_vert_20190318_elView.geo");
+    hitProd->SetMappingFile(std::string(srcDir.Data())
+                            + "/macro/rich/mcbm/beamtime/mRICH_Mapping_vert_20190318_elView.geo");
+    hitProd->SetIcdFilenameBase(std::string(srcDir.Data()) + "/macro/beamtime/mcbm2022/icd_offset_it");
     hitProd->setToTLimits(23.7, 30.0);
     hitProd->applyToTCut();
     hitProd->applyICDCorrection();
     run->AddTask(hitProd);
     // ------------------------------------------------------------------------
-
 
     // -----   Local reconstruction in RICh -> Finding of Rings ---------------
     CbmRichReconstruction* richReco = new CbmRichReconstruction();
@@ -380,7 +412,8 @@ Bool_t mcbm_digievent_reco(UInt_t uRunId               = 2365,
   // ===                        TOF Hitfinding                             ===
   // =========================================================================
 
-  if (geoSetup->IsActive(ECbmModuleId::kTof)) {
+  TString parPath = srcDir + "/parameters/mcbm/";
+  if (bTOF && geoSetup->IsActive(ECbmModuleId::kTof)) {
     TString cFname;
     switch (iTofCluMode) {
       case 1: {
@@ -394,14 +427,15 @@ Bool_t mcbm_digievent_reco(UInt_t uRunId               = 2365,
         Bool_t bOut        = kFALSE;
 
         // ------------------------------------------------------------------------
-        gROOT->LoadMacro("ini_Clusterizer.C");
-        Char_t* cCmd = Form("ini_Clusterizer(%d,%d,%d,%d,\"%s\",%d,%d,%d,%f,\"%s\")", calMode, calSel, calSm, RefSel,
-                            cFileId.Data(), iCalSet, (Int_t) bOut, iSel2, dDeadtime, cCalId.Data());
+        gROOT->LoadMacro(srcDir + "/macro/beamtime/mcbm2022/ini_tof_clusterizer.C");
+        Char_t* cCmd =
+          Form("ini_tof_clusterizer(%d,%d,%d,%d,\"%s\",%d,%d,%d,%f,\"%s\",\"%s\")", calMode, calSel, calSm, RefSel,
+               cFileId.Data(), iCalSet, (Int_t) bOut, iSel2, dDeadtime, cCalId.Data(), parPath.Data());
         cout << "<I> " << cCmd << endl;
         gInterpreter->ProcessLine(cCmd);
         // disable histogramming
         CbmTofEventClusterizer* tofClust = CbmTofEventClusterizer::Instance();
-        tofClust->SetDutId(-1);
+        tofClust->SetDutId(-1);  // to disable histogramming
       } break;
 
       default: {
@@ -410,186 +444,182 @@ Bool_t mcbm_digievent_reco(UInt_t uRunId               = 2365,
     }
     // -------------------------------------------------------------------------
 
-
     // =========================================================================
     // ===                   Tof Tracking                                    ===
     // =========================================================================
 
-    cout << "<I> Initialize Tof tracker by ini_trks" << endl;
-    TString cTrkFile = Form("%s/%s_tofFindTracks.hst.root", TofFileFolder.Data(), cCalId.Data());
+    if (bTOFtr) {
+      cout << "<I> Initialize Tof tracker by ini_trks" << endl;
 
-    // -----   Local selection variables  --------------------------------------
-    // Tracking
-    Int_t iSel           = 22002;  //500;//910041;
-    Int_t iTrackingSetup = 10;
-    Int_t iGenCor        = 1;
-    Double_t dScalFac    = 1.;
-    Double_t dChi2Lim2   = 5.;
-    Bool_t bUseSigCalib  = kFALSE;
-    Int_t iCalOpt        = 0;
-    Int_t iTrkPar        = 0;
-    Double_t dTOffScal   = 1.;
-    gROOT->LoadMacro("ini_trks.C");
-    Char_t* cCmd = Form("ini_trks(%d,%d,%d,%6.2f,%8.1f,\"%s\",%d,%d,%d,%f)", iSel, iTrackingSetup, iGenCor, dScalFac,
-                        dChi2Lim2, cCalId.Data(), (Int_t) bUseSigCalib, iCalOpt, iTrkPar, dTOffScal);
-    cout << "<I> " << cCmd << endl;
-    gInterpreter->ProcessLine(cCmd);
+      gROOT->LoadMacro(srcDir + "/macro/beamtime/mcbm2022/ini_tof_trks.C");
+      Char_t* cCmd =
+        Form("ini_tof_trks(%d,%d,%d,%6.2f,%8.1f,\"%s\",%d,%d,%d,%f,\"%s\")", iSel, iTrackingSetup, iGenCor, dScalFac,
+             dChi2Lim2, cCalId.Data(), (Int_t) bUseSigCalib, iCalOpt, iTrkPar, dTOffScal, parPath.Data());
+      cout << "<I> " << cCmd << endl;
+      gInterpreter->ProcessLine(cCmd);
 
-    CbmTofFindTracks* tofFindTracks = CbmTofFindTracks::Instance();
-    Int_t iNStations                = tofFindTracks->GetNStations();
+      CbmTofFindTracks* tofFindTracks = CbmTofFindTracks::Instance();
+      Int_t iNStations                = tofFindTracks->GetNStations();
+    }
   }
 
 
   // =========================================================================
   // ===                             L1                                    ===
   // =========================================================================
+  if (bL1) {
+    run->AddTask(new CbmTrackingDetectorInterfaceInit());
 
-  //   CbmKF* kalman = new CbmKF();
-  //   run->AddTask(kalman);
-  //   CbmL1* l1 = new CbmL1();
-  //   l1->SetLegacyEventMode(1);
-  //   l1->SetMcbmMode();
-  //   if (strcmp(geoSetupTag.data(), "mcbm_beam_2021_07_surveyed") == 0) l1->SetMissingHits(1);
-  //
-  //   // --- Material budget file names
-  //   TString mvdGeoTag;
-  //   if (geoSetup->GetGeoTag(ECbmModuleId::kMvd, mvdGeoTag)) {
-  //     TString parFile = gSystem->Getenv("VMCWORKDIR");
-  //     parFile         = parFile + "/parameters/mvd/mvd_matbudget_" + mvdGeoTag + ".root";
-  //     std::cout << "Using material budget file " << parFile << std::endl;
-  //     l1->SetMvdMaterialBudgetFileName(parFile.Data());
-  //   }
-  //   TString stsGeoTag;
-  //   if (geoSetup->GetGeoTag(ECbmModuleId::kSts, stsGeoTag)) {
-  //     TString parFile = gSystem->Getenv("VMCWORKDIR");
-  //     parFile         = parFile + "/parameters/sts/sts_matbudget_v19a.root";
-  //     std::cout << "Using material budget file " << parFile << std::endl;
-  //     l1->SetStsMaterialBudgetFileName(parFile.Data());
-  //   }
-  //
-  //   TString muchGeoTag;
-  //   if (geoSetup->GetGeoTag(ECbmModuleId::kMuch, muchGeoTag)) {
-  //
-  //     // --- Parameter file name
-  //     TString geoTag;
-  //     geoSetup->GetGeoTag(ECbmModuleId::kMuch, geoTag);
-  //     Int_t muchFlag = 0;
-  //     if (geoTag.Contains("mcbm")) muchFlag = 1;
-  //
-  //     TString parFile = gSystem->Getenv("VMCWORKDIR");
-  //     parFile         = parFile + "/parameters/much/much_" + geoTag(0, 4) + "_digi_sector.root";
-  //     std::cout << "L1: Using parameter file " << parFile << std::endl;
-  //     l1->SetMuchPar(parFile);
-  //
-  //     TString parFile2 = gSystem->Getenv("VMCWORKDIR");
-  //     parFile2         = parFile2 + "/parameters/much/much_matbudget_" + geoTag + ".root ";
-  //     std::cout << "Using material budget file " << parFile2 << std::endl;
-  //     l1->SetMuchMaterialBudgetFileName(parFile2.Data());
-  //   }
-  //
-  //   TString trdGeoTag;
-  //   if (geoSetup->GetGeoTag(ECbmModuleId::kTrd, trdGeoTag)) {
-  //     TString parFile = gSystem->Getenv("VMCWORKDIR");
-  //     parFile         = parFile + "/parameters/trd/trd_matbudget_" + trdGeoTag + ".root ";
-  //     std::cout << "Using material budget file " << parFile << std::endl;
-  //     l1->SetTrdMaterialBudgetFileName(parFile.Data());
-  //   }
-  //
-  //   TString tofGeoTag;
-  //   if (geoSetup->GetGeoTag(ECbmModuleId::kTof, tofGeoTag)) {
-  //     TString parFile = gSystem->Getenv("VMCWORKDIR");
-  //     parFile         = parFile + "/parameters/tof/tof_matbudget_" + tofGeoTag + ".root ";
-  //     std::cout << "Using material budget file " << parFile << std::endl;
-  //     l1->SetTofMaterialBudgetFileName(parFile.Data());
-  //   }
-  //
+    CbmKF* kalman = new CbmKF();
+    run->AddTask(kalman);
 
-  // Workaround to get it running:
-  //  1) Change fUseGlobal  in line 129 of CbmStsParSetModule.h to
-  //       Bool_t fUseGlobal = kTRUE;
-  //  2) Change fUseGlobal  in line 114 of CbmStsParSetSensor.h to
-  //       Bool_t fUseGlobal = kTRUE;
-  //run->AddTask(l1);
+    CbmL1* l1 = new CbmL1();
+    l1->SetLegacyEventMode(1);
+    l1->SetMcbmMode();
+    //    if (strcmp(geoSetupTag.data(), "mcbm_beam_2021_07_surveyed") == 0) l1->SetMissingHits(1);
 
-  //   CbmL1GlobalTrackFinder* globalTrackFinder = new CbmL1GlobalTrackFinder();
-  //   FairTask* globalFindTracks                = new CbmL1GlobalFindTracksEvents(globalTrackFinder);
-  //run->AddTask(globalFindTracks);
+    // --- Material budget file names
+    TString mvdGeoTag;
+    if (geoSetup->GetGeoTag(ECbmModuleId::kMvd, mvdGeoTag)) {
+      TString parFile = gSystem->Getenv("VMCWORKDIR");
+      parFile         = parFile + "/parameters/mvd/mvd_matbudget_" + mvdGeoTag + ".root";
+      std::cout << "Using material budget file " << parFile << std::endl;
+      l1->SetMvdMaterialBudgetFileName(parFile.Data());
+    }
+    TString stsGeoTag;
+    if (geoSetup->GetGeoTag(ECbmModuleId::kSts, stsGeoTag)) {
+      TString parFile = gSystem->Getenv("VMCWORKDIR");
+      parFile         = parFile + "/parameters/sts/sts_matbudget_v19a.root";
+      std::cout << "Using material budget file " << parFile << std::endl;
+      l1->SetStsMaterialBudgetFileName(parFile.Data());
+    }
 
+    TString muchGeoTag;
+    if (geoSetup->GetGeoTag(ECbmModuleId::kMuch, muchGeoTag)) {
+
+      // --- Parameter file name
+      TString geoTag;
+      geoSetup->GetGeoTag(ECbmModuleId::kMuch, geoTag);
+      Int_t muchFlag = 0;
+      if (geoTag.Contains("mcbm")) muchFlag = 1;
+
+
+      //       TString parFile2 = gSystem->Getenv("VMCWORKDIR");
+      //       parFile2         = parFile2 + "/parameters/much/much_matbudget_" + geoTag + ".root ";
+      //       std::cout << "Using material budget file " << parFile2 << std::endl;
+      //       l1->SetMuchMaterialBudgetFileName(parFile2.Data());
+    }
+
+    TString trdGeoTag;
+    if (geoSetup->GetGeoTag(ECbmModuleId::kTrd, trdGeoTag)) {
+      TString parFile = gSystem->Getenv("VMCWORKDIR");
+      parFile = parFile + "/parameters/trd/trd_matbudget_v22a_mcbm.root";  //trd_matbudget_" + trdGeoTag + ".root ";
+      std::cout << "Using material budget file " << parFile << std::endl;
+      l1->SetTrdMaterialBudgetFileName(parFile.Data());
+    }
+
+    TString tofGeoTag;
+    if (geoSetup->GetGeoTag(ECbmModuleId::kTof, tofGeoTag)) {
+      TString parFile = gSystem->Getenv("VMCWORKDIR");
+      //  parFile         = parFile + "/parameters/tof/tof_matbudget_" + tofGeoTag + ".root ";
+
+      parFile = parFile + "/parameters/tof/tof_matbudget_v21d_mcbm.root";
+      std::cout << "Using material budget file " << parFile << std::endl;
+      l1->SetTofMaterialBudgetFileName(parFile.Data());
+    }
+
+
+    //   Workaround to get it running:
+    //    1) Change fUseGlobal  in line 129 of CbmStsParSetModule.h to
+    //         Bool_t fUseGlobal = kTRUE;
+    //    2) Change fUseGlobal  in line 114 of CbmStsParSetSensor.h to
+    //         Bool_t fUseGlobal = kTRUE;
+    run->AddTask(l1);
+
+    CbmL1GlobalTrackFinder* globalTrackFinder = new CbmL1GlobalTrackFinder();
+    FairTask* globalFindTracks                = new CbmL1GlobalFindTracksEvents(globalTrackFinder);
+    run->AddTask(globalFindTracks);
+  }
   // =========================================================================
   // ===                            QA                                     ===
   // =========================================================================
-
-  // e.g for RICH:
-  CbmRichMCbmQaReal* qaTask = new CbmRichMCbmQaReal();
-  Int_t taskId              = 1;
-  if (taskId < 0) { qaTask->SetOutputDir(Form("result_run%d", uRunId)); }
-  else {
-    qaTask->SetOutputDir(Form("result_run%d_%05d", uRunId, taskId));
+  if (bQA) {
+    // e.g for RICH:
+    CbmRichMCbmQaReal* qaTask = new CbmRichMCbmQaReal();
+    Int_t taskId              = 1;
+    if (taskId < 0) { qaTask->SetOutputDir(Form("result_run%d", uRunId)); }
+    else {
+      qaTask->SetOutputDir(Form("result_run%d_%05d", uRunId, taskId));
+    }
+    //qaTask->XOffsetHistos(+25.0);
+    qaTask->XOffsetHistos(-4.1);
+    if (uRunId > 2351) qaTask->XOffsetHistos(0.0);
+    qaTask->SetMaxNofDrawnEvents(0);
+    qaTask->SetTotRich(23.7, 30.0);
+    qaTask->SetTriggerRichHits(eb_TriggerMinNumberRich);
+    qaTask->SetTriggerTofHits(eb_TriggerMinNumberTof);
+    //qaTask->SetSEDisplayRingOnly();
+    run->AddTask(qaTask);
   }
-  //qaTask->XOffsetHistos(+25.0);
-  qaTask->XOffsetHistos(-4.1);
-  if (uRunId > 2351) qaTask->XOffsetHistos(0.0);
-  qaTask->SetMaxNofDrawnEvents(0);
-  qaTask->SetTotRich(23.7, 30.0);
-  qaTask->SetTriggerRichHits(eb_TriggerMinNumberRich);
-  qaTask->SetTriggerTofHits(eb_TriggerMinNumberTof);
-  //qaTask->SetSEDisplayRingOnly();
-  run->AddTask(qaTask);
   // ------------------------------------------------------------------------
   // --- Analysis by TOF track extension
   //
-  CbmTofExtendTracks* tofExtendTracks = new CbmTofExtendTracks("TofExtAna");
-  tofExtendTracks->SetCalParFileName("TofExtTracksPar.root");
-  tofExtendTracks->SetCalOutFileName("TofExtTracksOut.root");
-  tofExtendTracks->SetStationUT(2);  //
-  //iLev: 0 update alignment with deviation from original tracklet
-  //iLev: 1 update alignment with deviation from extended and refitted tracklet
-  tofExtendTracks->SetCorSrc(1);     // [iLev]0 - all hits, [ilev]1 - pulls,
-  tofExtendTracks->SetCorMode(210);  // 2 - Y coordinate, 1 - X coordinat, 0 Time offset
-  tofExtendTracks->SetTrkHitsMin(4);
-  tofExtendTracks->SetAddStations(1);
-  tofExtendTracks->SetReqStations(1);
-  tofExtendTracks->SetCutDX(10.);
-  tofExtendTracks->SetCutDY(10.);
-  tofExtendTracks->SetCutDT(50.);
-  tofExtendTracks->SetChi2Max(10.);
-  tofExtendTracks->SetCutStationMaxHitMul(100.);
-  tofExtendTracks->SetNTrkTofMax(50);
-  //run->AddTask(tofExtendTracks);
+  if (bTOFtrQa) {
+    CbmTofExtendTracks* tofExtendTracks = new CbmTofExtendTracks("TofExtAna");
+    tofExtendTracks->SetCalParFileName("TofExtTracksPar.root");
+    tofExtendTracks->SetCalOutFileName("TofExtTracksOut.root");
+    tofExtendTracks->SetStationUT(2);  //
+    //iLev: 0 update alignment with deviation from original tracklet
+    //iLev: 1 update alignment with deviation from extended and refitted tracklet
+    tofExtendTracks->SetCorSrc(1);     // [iLev]0 - all hits, [ilev]1 - pulls,
+    tofExtendTracks->SetCorMode(210);  // 2 - Y coordinate, 1 - X coordinat, 0 Time offset
+    tofExtendTracks->SetTrkHitsMin(4);
+    tofExtendTracks->SetAddStations(1);
+    tofExtendTracks->SetReqStations(1);
+    tofExtendTracks->SetCutDX(10.);
+    tofExtendTracks->SetCutDY(10.);
+    tofExtendTracks->SetCutDT(50.);
+    tofExtendTracks->SetChi2Max(10.);
+    tofExtendTracks->SetCutStationMaxHitMul(100.);
+    tofExtendTracks->SetNTrkTofMax(50);
+    run->AddTask(tofExtendTracks);
+  }
 
   // ------------------------------------------------------------------------
   // Hadron analysis, lambda search
   //
-  CbmHadronAnalysis* HadronAna = new CbmHadronAnalysis();  // in hadron
-  HadronAna->SetBeamMomentum(1.65);                        // beam momentum in GeV/c
-  HadronAna->SetDY(0.5);                                   // flow analysis exclusion window
-  HadronAna->SetRecSec(kTRUE);                             // enable lambda reconstruction
-  Int_t parSet = 0;
-  switch (parSet) {
-    case 0:                             // with background
-      HadronAna->SetDistPrimLim(1.);    // Max Tof-Sts trans distance for primaries
-      HadronAna->SetDistPrimLim2(0.3);  // Max Sts-Sts trans distance for primaries
-      HadronAna->SetDistSecLim2(0.3);   // Max Sts-Sts trans distance from TOF direction for secondaries
-      HadronAna->SetD0ProtLim(0.5);     // Min impact parameter for secondary proton
-      HadronAna->SetOpAngMin(0.1);      // Min opening angle for accepting pair
-      HadronAna->SetDCALim(0.7);        // Max DCA for accepting pair
-      HadronAna->SetVLenMin(5.);        // Min Lambda flight path length for accepting pair
-      HadronAna->SetVLenMax(25.);       // Max Lambda flight path length for accepting pair
-      HadronAna->SetNMixedEvents(10);   // Number of events to be mixed with
-      break;
-    case 1:                             // signal only, debugging
-      HadronAna->SetDistPrimLim(0.5);   // Max Tof-Sts trans distance for primaries
-      HadronAna->SetDistPrimLim2(0.3);  // Max Sts-Sts trans distance for primaries
-      HadronAna->SetDistSecLim2(0.3);   // Max Sts-Sts trans distance from TOF direction for secondaries
-      HadronAna->SetD0ProtLim(0.4);     // Min impact parameter for secondary proton
-      HadronAna->SetOpAngMin(0.1);      // Min opening angle for accepting pair
-      HadronAna->SetDCALim(0.2);        // Max DCA for accepting pair
-      HadronAna->SetVLenMin(5.);        // Min Lambda flight path length for accepting pair
-      HadronAna->SetVLenMax(25.);       // Max Lambda flight path length for accepting pair
-      HadronAna->SetNMixedEvents(10);   // Number of events to be mixed with
-      break;
+  if (bLambda) {
+    CbmHadronAnalysis* HadronAna = new CbmHadronAnalysis();  // in hadron
+    HadronAna->SetBeamMomentum(1.65);                        // beam momentum in GeV/c
+    HadronAna->SetDY(0.5);                                   // flow analysis exclusion window
+    HadronAna->SetRecSec(kTRUE);                             // enable lambda reconstruction
+    Int_t parSet = 0;
+    switch (parSet) {
+      case 0:                             // with background
+        HadronAna->SetDistPrimLim(1.);    // Max Tof-Sts trans distance for primaries
+        HadronAna->SetDistPrimLim2(0.3);  // Max Sts-Sts trans distance for primaries
+        HadronAna->SetDistSecLim2(0.3);   // Max Sts-Sts trans distance from TOF direction for secondaries
+        HadronAna->SetD0ProtLim(0.5);     // Min impact parameter for secondary proton
+        HadronAna->SetOpAngMin(0.1);      // Min opening angle for accepting pair
+        HadronAna->SetDCALim(0.7);        // Max DCA for accepting pair
+        HadronAna->SetVLenMin(5.);        // Min Lambda flight path length for accepting pair
+        HadronAna->SetVLenMax(25.);       // Max Lambda flight path length for accepting pair
+        HadronAna->SetNMixedEvents(10);   // Number of events to be mixed with
+        break;
+      case 1:                             // signal only, debugging
+        HadronAna->SetDistPrimLim(0.5);   // Max Tof-Sts trans distance for primaries
+        HadronAna->SetDistPrimLim2(0.3);  // Max Sts-Sts trans distance for primaries
+        HadronAna->SetDistSecLim2(0.3);   // Max Sts-Sts trans distance from TOF direction for secondaries
+        HadronAna->SetD0ProtLim(0.4);     // Min impact parameter for secondary proton
+        HadronAna->SetOpAngMin(0.1);      // Min opening angle for accepting pair
+        HadronAna->SetDCALim(0.2);        // Max DCA for accepting pair
+        HadronAna->SetVLenMin(5.);        // Min Lambda flight path length for accepting pair
+        HadronAna->SetVLenMax(25.);       // Max Lambda flight path length for accepting pair
+        HadronAna->SetNMixedEvents(10);   // Number of events to be mixed with
+        break;
+    }
+    run->AddTask(HadronAna);
   }
-  run->AddTask(HadronAna);
 
   // -----  Parameter database   --------------------------------------------
   std::cout << std::endl << std::endl;
@@ -622,7 +652,7 @@ Bool_t mcbm_digievent_reco(UInt_t uRunId               = 2365,
   run->Run(iFirstTimeslice, iFirstTimeslice + nTimeslices);
   // ------------------------------------------------------------------------
 
-  gROOT->LoadMacro("save_hst.C");
+  gROOT->LoadMacro(srcDir + "/macro/beamtime/save_hst.C");
   TString SaveToHstFile = "save_hst(\"" + cHstFile + "\")";
   gInterpreter->ProcessLine(SaveToHstFile);
 
