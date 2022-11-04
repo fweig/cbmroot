@@ -10,4 +10,6 @@ set(LIB_HEADERS flib_dpb/MicrosliceContents.hpp)
 
 add_Library(flib_dpb SHARED ${LIB_SOURCES} ${LIB_HEADERS})
 target_include_directories(flib_dpb PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/flib_dpb)
-Set_Target_Properties(flib_dpb PROPERTIES  SUFFIX ".so")
+
+install(TARGETS flib_dpb DESTINATION lib)
+install(FILES ${LIB_HEADERS} DESTINATION include)
