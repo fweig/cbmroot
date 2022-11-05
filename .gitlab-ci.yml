@@ -176,6 +176,9 @@ FileLicenceCheck:
     - if [[ -n $EXTRA_FLAGS ]]; then
     -   echo "export EXTRA_FLAGS=$EXTRA_FLAGS" >> Dart.cfg
     - fi
+    - if [[ -n $INSTALL_PROJECT ]]; then
+    -   echo "export INSTALL_PROJECT=TRUE" >> Dart.cfg
+    - fi
     - if [[ -n $CONFIGFILE ]]; then
     -   source $CONFIGFILE $FAIRSOFT_VERSION
     - fi
@@ -215,6 +218,8 @@ FileLicenceCheck:
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
     CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
+    INSTALL_PROJECT: "TRUE"
+    EXTRA_FLAGS: '"-DCBM_TEST_INSTALL=TRUE"'
 
 .singularity_centos7_variables_apr21: &singularity_centos7_variables_apr21
     OS: centos7
@@ -233,7 +238,8 @@ FileLicenceCheck:
     BASE_PATH: "/opt/"
     SIMPATH: "$BASE_PATH/fairsoft/${FAIRSOFT_VERSION}"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
-    EXTRA_FLAGS: '"-DCBM_TEST_INSTALL=TRUE\" \"-DCMAKE_INSTALL_PREFIX=install"'
+    INSTALL_PROJECT: "TRUE"
+    EXTRA_FLAGS: '"-DCBM_TEST_INSTALL=TRUE"'
 
 .linux_tag: &linux_tag
   stage: build

@@ -11,6 +11,7 @@ Set(CTEST_BUILD_NAME $ENV{LABEL})
 Set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 Set(CTEST_PROJECT_NAME "CBMROOT")
 Set(EXTRA_FLAGS $ENV{EXTRA_FLAGS})
+Set(INSTALL_PROJECT $ENV{INSTALL_PROJECT})
 
 if(NOT CBM_TEST_MODEL)
   set(CBM_TEST_MODEL NIGHTLY)
@@ -45,7 +46,9 @@ Else()
   set(_CMakeModel ${CBM_TEST_MODEL})
 EndIf()
 
-If(EXTRA_FLAGS)
+If(EXTRA_FLAGS AND INSTALL_PROJECT)
+  Set(CTEST_CONFIGURE_COMMAND " \"${CMAKE_EXECUTABLE_NAME}\" \"-G${CTEST_CMAKE_GENERATOR}\" \"-DCBM_TEST_MODEL=${CBM_TEST_MODEL}\" \"-DCMAKE_BUILD_TYPE=${_BuildType}\" \"-DCTEST_USE_LAUNCHERS=${CTEST_USE_LAUNCHERS}\" \"${EXTRA_FLAGS}\" \"-DCMAKE_INSTALL_PREFIX=${CTEST_SOURCE_DIRECTORY}/install\" \"${CTEST_SOURCE_DIRECTORY}\" ")
+ElseIf(EXTRA_FLAGS)
   Set(CTEST_CONFIGURE_COMMAND " \"${CMAKE_EXECUTABLE_NAME}\" \"-G${CTEST_CMAKE_GENERATOR}\" \"-DCBM_TEST_MODEL=${CBM_TEST_MODEL}\" \"-DCMAKE_BUILD_TYPE=${_BuildType}\" \"-DCTEST_USE_LAUNCHERS=${CTEST_USE_LAUNCHERS}\" \"${EXTRA_FLAGS}\" \"${CTEST_SOURCE_DIRECTORY}\" ")
 Else()
   Set(CTEST_CONFIGURE_COMMAND " \"${CMAKE_EXECUTABLE_NAME}\" \"-G${CTEST_CMAKE_GENERATOR}\" \"-DCBM_TEST_MODEL=${CBM_TEST_MODEL}\" \"-DCMAKE_BUILD_TYPE=${_BuildType}\" \"-DCTEST_USE_LAUNCHERS=${CTEST_USE_LAUNCHERS}\" \"${CTEST_SOURCE_DIRECTORY}\" ")
@@ -133,17 +136,18 @@ If(NOT _RETVAL)
     Ctest_Submit(BUILD_ID cdash_build_id)
   EndIf()
 
-  If(EXTRA_FLAGS MATCHES "INSTALL_PREFIX" AND EXTRA_FLAGS MATCHES "CBM_TEST_INSTALL" AND NOT _ctest_test_ret_val)
+  If(EXTRA_FLAGS MATCHES "CBM_TEST_INSTALL" AND NOT _ctest_test_ret_val)
+#  If(EXTRA_FLAGS MATCHES "INSTALL_PREFIX" AND EXTRA_FLAGS MATCHES "CBM_TEST_INSTALL" AND NOT _ctest_test_ret_val)
     Message("Testing Installation")
     execute_process(COMMAND ${BUILD_COMMAND} install -j$ENV{number_of_processors} WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
                     RESULTS_VARIABLE _install_ret_value
                    )
     if (NOT _install_ret_value)
-      execute_process(COMMAND ${CMAKE_EXECUTABLE_NAME} -E rm -R MQ algo analysis core external fles mvd reco sim
+      execute_process(COMMAND ${CMAKE_EXECUTABLE_NAME} -E rm -R build MQ algo analysis core external fles mvd reco sim
                       WORKING_DIRECTORY ${CTEST_SOURCE_DIRECTORY}
                      )
       message("executing test suite in ${CTEST_BINARY_DIRECTORY}/install")
-      execute_process(COMMAND ${CTEST_SOURCE_DIRECTORY}/cmake/scripts/execute_installation_test.sh ${CTEST_BINARY_DIRECTORY}/install
+      execute_process(COMMAND ${CTEST_SOURCE_DIRECTORY}/cmake/scripts/execute_installation_test.sh ${CTEST_SOURCE_DIRECTORY}/install
                       RESULTS_VARIABLE _install_ret_value
                      )
     endif()
