@@ -6,6 +6,7 @@
 
 #include "CbmL1.h"
 
+#include "CaToolsDebugger.h"
 #include "L1Grid.h"
 #include "L1HitPoint.h"
 
@@ -76,6 +77,8 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
   fTrackingMode = mode;
   fMissingHits  = MissingHits;
 }
+
+void L1Algo::Finish() { ca::tools::Debugger::Instance().Write(); }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
@@ -185,7 +188,7 @@ void L1Algo::CreateHitPoint(const L1Hit& hit, L1HitPoint& point)
   point.Set(hit.z, hit.u, hit.v, hit.du, hit.dv, hit.t, hit.dt);
 }
 
-int L1Algo::GetMcTrackIdForHit(int iHit)
+int L1Algo::GetMcTrackIdForHit(int iHit) const
 {
   int hitId    = iHit;
   int iMcPoint = CbmL1::Instance()->GetHitMCRefs()[hitId];
@@ -193,7 +196,7 @@ int L1Algo::GetMcTrackIdForHit(int iHit)
   return CbmL1::Instance()->GetMcPoints()[iMcPoint].ID;
 }
 
-int L1Algo::GetMcTrackIdForUnusedHit(int iHit)
+int L1Algo::GetMcTrackIdForUnusedHit(int iHit) const
 {
   int hitId    = (*RealIHitP)[iHit];
   int iMcPoint = CbmL1::Instance()->GetHitMCRefs()[hitId];
@@ -201,6 +204,12 @@ int L1Algo::GetMcTrackIdForUnusedHit(int iHit)
   return CbmL1::Instance()->GetMcPoints()[iMcPoint].ID;
 }
 
+const CbmL1MCTrack* L1Algo::GetMcTrackForUnusedHit(int iHit) const
+{
+  int id = GetMcTrackIdForUnusedHit(iHit);
+  if (id < 0) return nullptr;
+  return &CbmL1::Instance()->GetMcTracks()[id];
+}
 
 //   bool L1Algo::SortTrip(TripSort const& a, TripSort const& b) {
 //       return   ( a.trip.GetLevel() >  b.trip.GetLevel() );

@@ -1235,6 +1235,7 @@ void CbmL1::Finish()
 
   gFile      = currentFile;
   gDirectory = curr;
+  fpAlgo->Finish();
 }
 
 

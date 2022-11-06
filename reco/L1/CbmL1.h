@@ -323,6 +323,8 @@ public:
 
   const L1Vector<CbmL1MCPoint>& GetMcPoints() const { return fvMCPoints; }
 
+  const L1Vector<CbmL1MCTrack>& GetMcTracks() const { return fvMCTracks; }
+
   const L1Vector<int>& GetHitMCRefs() const { return fvHitPointIndexes; }
 
   void SetUseMcHit(int MvdUseMcHit = 0, int StsUseMcHit = 0, int MuchUseMcHit = 0, int TrdUseMcHit = 0,

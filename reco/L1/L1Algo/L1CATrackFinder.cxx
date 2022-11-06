@@ -19,6 +19,9 @@
  */
 
 
+#include "CbmL1.h"
+#include "CbmL1MCTrack.h"
+
 #include "L1Algo.h"
 #include "L1Assert.h"
 #include "L1Branch.h"
@@ -62,6 +65,8 @@
 #include <map>
 
 #include <stdio.h>
+
+#include "CaToolsDebugger.h"
 
 
 // using namespace std;
@@ -964,8 +969,7 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
 
   /// Refit Triplets
 
-  L1Fit fit;
-  fit.SetParticleMass(GetDefaultParticleMass());
+  ca::tools::Debugger::Instance().AddNtuple("triplets", "ev:mc:sta:p:vx:vy:vz:chi2");
 
   L1TrackParFit fitNew;
   fitNew.SetParticleMass(GetDefaultParticleMass());
@@ -1121,7 +1125,20 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
     //cout << " chi2 " << T3.chi2[i3_4] << " " << T.chi2[0] << endl;
     //T.chi2 = (fscal) T3.chi2[i3_4];
     T3.SetOneEntry(i3_4, T, i3_4);
+
+    {
+      int mc1 = GetMcTrackIdForUnusedHit(ihit[0]);
+      int mc2 = GetMcTrackIdForUnusedHit(ihit[1]);
+      int mc3 = GetMcTrackIdForUnusedHit(ihit[2]);
+      if ((mc1 >= 0) && (mc1 == mc2) && (mc1 == mc3)) {
+        const CbmL1MCTrack& mctr = CbmL1::Instance()->GetMcTracks()[mc1];
+        float ev                 = 0;
+        float chi2               = T.chi2[i3_4];
+        ca::tools::Debugger::Instance().FillNtuple("triplets", ev, mc1, istal, mctr.p, mctr.x, mctr.y, mctr.z, chi2);
+      }
+    }
   }  //i3
+
 }  // findTripletsStep2
 
 

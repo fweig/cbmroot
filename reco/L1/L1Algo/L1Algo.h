@@ -46,6 +46,8 @@ class L1AlgoDraw;
 #include "L1Utils.h"
 #include "L1Vector.h"
 
+class CbmL1MCTrack;
+
 #ifdef _OPENMP
 #include "omp.h"
 #endif
@@ -366,6 +368,8 @@ public:
 
   void Init(const bool UseHitErrors, const TrackingMode mode, const bool MissingHits);
 
+  void Finish();
+
   void PrintHits();
 
   /// The main procedure - find tracks.
@@ -389,10 +393,12 @@ public:
   int GetNfieldStations() const { return fNfieldStations; }
 
   /// Get mc track ID for a hit (debug tool)
-  int GetMcTrackIdForHit(int iHit);
+  int GetMcTrackIdForHit(int iHit) const;
 
   /// Get mc track ID for a hit (debug tool)
-  int GetMcTrackIdForUnusedHit(int iHit);
+  int GetMcTrackIdForUnusedHit(int iHit) const;
+
+  const CbmL1MCTrack* GetMcTrackForUnusedHit(int iHit) const;
 
 private:
   bool checkTripletMatch(const L1Triplet& l, const L1Triplet& r, fscal& dchi2) const;

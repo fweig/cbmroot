@@ -77,6 +77,7 @@ set(SRCS
   catools/CaToolsMcData.cxx
   catools/CaToolsMcDataManager.cxx
   catools/CaToolsPerformance.cxx
+  catools/CaToolsDebugger.cxx
   ParticleFinder/CbmL1PFFitter.cxx
   ParticleFinder/CbmL1PFMCParticle.cxx
 
