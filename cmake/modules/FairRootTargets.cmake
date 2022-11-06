@@ -7,12 +7,7 @@ macro(define_fairroot_targets)
     ${FAIRROOT_LIBRARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}FairTools${CMAKE_SHARED_LIBRARY_SUFFIX}
   )
   target_include_directories(FairRoot::FairTools INTERFACE
-    ${FAIRROOT_INCLUDE_DIR}
-    ${ROOT_INCLUDE_DIR}
-  )
-  target_link_directories(FairRoot::FairTools INTERFACE
-    ${ROOT_LIBRARY_DIR}
-    ${FAIRLOGGER_LIBRARY_DIR}
+    ${FAIRROOT_INCLUDE_DIR}   
   )
 
   target_link_libraries(FairRoot::FairTools INTERFACE
@@ -32,12 +27,7 @@ macro(define_fairroot_targets)
     ${FAIRROOT_LIBRARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}Alignment${CMAKE_SHARED_LIBRARY_SUFFIX}
   )
   target_include_directories(FairRoot::Alignment INTERFACE
-    ${FAIRROOT_INCLUDE_DIR}
-    ${ROOT_INCLUDE_DIR}
-  )
-  target_link_directories(FairRoot::Alignment INTERFACE
-    ${ROOT_LIBRARY_DIR}
-    ${FAIRROOT_LIBRARY_DIR}
+    ${FAIRROOT_INCLUDE_DIR}   
   )
 
   target_link_libraries(FairRoot::Alignment INTERFACE
@@ -54,13 +44,8 @@ macro(define_fairroot_targets)
   )
   target_include_directories(FairRoot::ParBase INTERFACE
     ${FAIRROOT_INCLUDE_DIR}
-    ${ROOT_INCLUDE_DIR}
   )
-  target_link_directories(FairRoot::ParBase INTERFACE
-    ${ROOT_LIBRARY_DIR}
-    ${FAIRROOT_LIBRARY_DIR}
-  )
-
+  
   target_link_libraries(FairRoot::ParBase INTERFACE
     FairRoot::FairTools
 
@@ -76,12 +61,7 @@ macro(define_fairroot_targets)
   )
   target_include_directories(FairRoot::GeoBase INTERFACE
     ${FAIRROOT_INCLUDE_DIR}
-    ${ROOT_INCLUDE_DIR}
-  )
-  target_link_directories(FairRoot::GeoBase INTERFACE
-    ${ROOT_LIBRARY_DIR}
-    ${FAIRROOT_LIBRARY_DIR}
-  )
+  ) 
 
   target_link_libraries(FairRoot::ParBase INTERFACE
     FairRoot::FairTools
@@ -109,14 +89,9 @@ macro(define_fairroot_targets)
     ${FAIRROOT_LIBRARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}Base${CMAKE_SHARED_LIBRARY_SUFFIX}
   )
   target_include_directories(FairRoot::Base INTERFACE
-    ${FAIRROOT_INCLUDE_DIR}
-    ${ROOT_INCLUDE_DIR}
-    ${Boost_INCLUDE_DIRS}
+    ${FAIRROOT_INCLUDE_DIR}  
   )
-  target_link_directories(FairRoot::Base INTERFACE
-    ${ROOT_LIBRARY_DIR}
-    ${FAIRROOT_LIBRARY_DIR}
-  )
+
   target_link_libraries(FairRoot::Base INTERFACE
     FairRoot::Alignment
     FairRoot::FairTools
@@ -138,7 +113,7 @@ macro(define_fairroot_targets)
     ROOT::Proof
     ROOT::RIO
     ROOT::Tree
-    ${VMCLIB}
+    VMCLibrary
     ROOT::Gdml
   )
 
@@ -149,13 +124,9 @@ macro(define_fairroot_targets)
     ${FAIRROOT_LIBRARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}EventDisplay${CMAKE_SHARED_LIBRARY_SUFFIX}
   )
   target_include_directories(FairRoot::EventDisplay INTERFACE
-    ${FAIRROOT_INCLUDE_DIR}
-    ${ROOT_INCLUDE_DIR}
+    ${FAIRROOT_INCLUDE_DIR}    
   )
-  target_link_directories(FairRoot::EventDisplay INTERFACE
-    ${ROOT_LIBRARY_DIR}
-    ${FAIRROOT_LIBRARY_DIR}
-  )
+
   target_link_libraries(FairRoot::EventDisplay INTERFACE
     FairRoot::FairTools
     FairRoot::Base # FairRootManager, FairRunAna, FairTSBufferFunctional, FairTimeStamp, FairEventManager
@@ -184,12 +155,9 @@ macro(define_fairroot_targets)
   )
   target_include_directories(FairRoot::TrkBase INTERFACE
     ${FAIRROOT_INCLUDE_DIR}
-    ${ROOT_INCLUDE_DIR}
+    
   )
-  target_link_directories(FairRoot::TrkBase INTERFACE
-    ${ROOT_LIBRARY_DIR}
-    ${FAIRROOT_LIBRARY_DIR}
-  )
+
   target_link_libraries(FairRoot::TrkBase INTERFACE
     FairRoot::FairTools
     FairRoot::Base # FairRunAna, FairField
@@ -207,13 +175,9 @@ macro(define_fairroot_targets)
     ${FAIRROOT_LIBRARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}Gen${CMAKE_SHARED_LIBRARY_SUFFIX}
   )
   target_include_directories(FairRoot::Gen INTERFACE
-    ${FAIRROOT_INCLUDE_DIR}
-    ${ROOT_INCLUDE_DIR}
+    ${FAIRROOT_INCLUDE_DIR}    
   )
-  target_link_directories(FairRoot::Gen INTERFACE
-    ${ROOT_LIBRARY_DIR}
-    ${FAIRROOT_LIBRARY_DIR}
-  )
+
   target_link_libraries(FairRoot::Gen INTERFACE
     FairRoot::Base # FairPrimaryGenerator, FairGenerator, FairIon, FairParticle, FairRunSim
     FairRoot::FairTools
@@ -232,13 +196,9 @@ macro(define_fairroot_targets)
     ${FAIRROOT_LIBRARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}BaseMQ${CMAKE_SHARED_LIBRARY_SUFFIX}
   )
   target_include_directories(FairRoot::BaseMQ INTERFACE
-    ${FAIRROOT_INCLUDE_DIR}
-    ${ROOT_INCLUDE_DIR}
+    ${FAIRROOT_INCLUDE_DIR}   
   )
-  target_link_directories(FairRoot::BaseMQ INTERFACE
-    ${ROOT_LIBRARY_DIR}
-    ${FAIRROOT_LIBRARY_DIR}
-  )
+
   target_link_libraries(FairRoot::BaseMQ INTERFACE
     FairRoot::Base # FairTask, FairRunAna, FairRootFileSink, FairFileSource
     FairRoot::ParBase # FairParRootFileIo, FairRuntimeDb
@@ -263,13 +223,9 @@ macro(define_fairroot_targets)
     ${FAIRROOT_LIBRARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}ParMQ${CMAKE_SHARED_LIBRARY_SUFFIX}
   )
   target_include_directories(FairRoot::ParMQ INTERFACE
-    ${FAIRROOT_INCLUDE_DIR}
-    ${ROOT_INCLUDE_DIR}
+    ${FAIRROOT_INCLUDE_DIR}    
   )
-  target_link_directories(FairRoot::ParMQ INTERFACE
-    ${ROOT_LIBRARY_DIR}
-    ${FAIRROOT_LIBRARY_DIR}
-  )
+
   target_link_libraries(FairRoot::ParMQ INTERFACE
     FairRoot::Base # FairRunIdGenerator
     FairRoot::BaseMQ # Serialization policies
@@ -290,14 +246,8 @@ macro(define_fairroot_targets)
   )
   target_include_directories(FairRoot::Geane INTERFACE
     ${FAIRROOT_INCLUDE_DIR}
-    ${ROOT_INCLUDE_DIR}
-    ${GEANT3_INCLUDE_DIR}
   )
-  target_link_directories(FairRoot::Geane INTERFACE
-    ${ROOT_LIBRARY_DIR}
-    ${FAIRROOT_LIBRARY_DIR}
-    ${GEANT3_LIBRARY_DIR}
-  )
+
   target_link_libraries(FairRoot::Geane INTERFACE
     FairRoot::Base # FairField, FairTask, FairPropagator
     FairRoot::TrkBase # FairTrackPar
@@ -307,7 +257,7 @@ macro(define_fairroot_targets)
     ROOT::Core
     ROOT::EG
     ROOT::Geom
-    ${VMCLIB}
+    VMCLibrary
     ROOT::Physics
     ROOT::MathCore
   )
