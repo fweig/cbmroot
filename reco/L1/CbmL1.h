@@ -484,6 +484,12 @@ private:
   int fNpointsTrd  = 0;  ///< Number of MC points for TRD
   int fNpointsTof  = 0;  ///< Number of MC points for TOF
 
+  int fNpointsMvdAll  = 0;  ///< Number of MC points for MVD
+  int fNpointsStsAll  = 0;  ///< Number of MC points for STS
+  int fNpointsMuchAll = 0;  ///< Number of MC points for MuCh
+  int fNpointsTrdAll  = 0;  ///< Number of MC points for TRD
+  int fNpointsTofAll  = 0;  ///< Number of MC points for TOF
+
   L1Vector<CbmL1MCPoint> fvMCPoints = {"CbmL1::fvMCPoints"};          ///< Container of MC points
   L1Vector<int> fvMCPointIndexesTs  = {"CbmL1::fvMCPointIndexesTs"};  ///< Indexes of MC points in TS
 

@@ -1935,7 +1935,8 @@ void CbmL1::InputPerformance()
           Float_t bestWeight = 0.f;
           for (Int_t iLink = 0; iLink < stsHitMatch.GetNofLinks(); iLink++) {
             if (stsHitMatch.GetLink(iLink).GetWeight() > bestWeight) {
-              link         = stsHitMatch.GetLink(iLink);
+              link = stsHitMatch.GetLink(iLink);
+              if (link.GetIndex() < 0) break;
               bestWeight   = link.GetWeight();
               Int_t iFile  = link.GetFile();
               Int_t iEvent = link.GetEntry();
@@ -1997,6 +1998,7 @@ void CbmL1::InputPerformance()
         float mcWeight = -1.f;
         for (int iLink = 0; iLink < hm->GetNofLinks(); iLink++) {
           const CbmLink& link = hm->GetLink(iLink);
+          if (link.GetIndex() < 0) break;
           if (link.GetWeight() < mcWeight) continue;
           mcWeight = link.GetWeight();
           pt       = dynamic_cast<CbmMvdPoint*>(fpMvdPoints->Get(&link));
@@ -2049,6 +2051,7 @@ void CbmL1::InputPerformance()
       for (int iLink = 0; iLink < hm->GetNofLinks(); iLink++) {
         totalWeight += hm->GetLink(iLink).GetWeight();
         if (hm->GetLink(iLink).GetWeight() > bestWeight) {
+          if (hm->GetLink(iLink).GetIndex() < 0) break;
           bestWeight = hm->GetLink(iLink).GetWeight();
           iMCPoint   = hm->GetLink(iLink).GetIndex();
           link       = hm->GetLink(iLink);
@@ -2121,6 +2124,10 @@ void CbmL1::InputPerformance()
       for (int iLink = 0; iLink < hm->GetNofLinks(); iLink++) {
         totalWeight += hm->GetLink(iLink).GetWeight();
         if (hm->GetLink(iLink).GetWeight() > bestWeight) {
+          if (hm->GetLink(iLink).GetIndex() < 0) {
+            iMCPoint = -1;
+            break;
+          }
           bestWeight = hm->GetLink(iLink).GetWeight();
           iMCPoint   = hm->GetLink(iLink).GetIndex();
           link       = hm->GetLink(iLink);
@@ -2190,6 +2197,10 @@ void CbmL1::InputPerformance()
       for (int iLink = 0; iLink < hm->GetNofLinks(); iLink++) {
         //totalWeight += hm->GetLink(iLink).GetWeight();
         if (hm->GetLink(iLink).GetWeight() > bestWeight) {
+          if (hm->GetLink(iLink).GetIndex() < 0) {
+            iMCPoint = -1;
+            break;
+          };
           bestWeight = hm->GetLink(iLink).GetWeight();
           iMCPoint   = hm->GetLink(iLink).GetIndex();
           link       = hm->GetLink(iLink);
