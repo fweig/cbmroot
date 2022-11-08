@@ -969,11 +969,14 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
 
   /// Refit Triplets
 
-  ca::tools::Debugger::Instance().AddNtuple("triplets", "ev:mc:sta:p:vx:vy:vz:chi2");
+  ca::tools::Debugger::Instance().AddNtuple("triplets", "ev:mc:sta:p:vx:vy:vz:chi2:ndf");
 
-  L1TrackParFit fitNew;
-  fitNew.SetParticleMass(GetDefaultParticleMass());
+  L1TrackParFit fit;
 
+  if (fpCurrentIteration->GetElectronFlag()) { fit.SetParticleMass(L1Constants::phys::kElectronMass); }
+  else {
+    fit.SetParticleMass(GetDefaultParticleMass());
+  }
   const int NHits = 3;  // triplets
 
   // prepare data
@@ -989,7 +992,10 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
   const L1Station& star = fParameters.GetStation(istar);
 
   bool isMomentumFitted = ((stal.fieldStatus != 0) || (stam.fieldStatus != 0) || (star.fieldStatus != 0));
-  fvec ndf              = isMomentumFitted ? -5 : -4;
+  bool isTimeFitted     = ((stal.timeInfo != 0) || (stam.timeInfo != 0) || (star.timeInfo != 0));
+  fvec ndf              = -4;  // straight line
+  ndf += isMomentumFitted ? -1 : 0;
+  ndf += isTimeFitted ? -1 : 0;
 
   for (int i3 = 0; i3 < n3; ++i3) {
     int i3_V = i3 / fvec::size();
@@ -1012,7 +1018,7 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
     }
 
     fscal u[NHits], v[NHits], t[NHits], x[NHits], y[NHits], z[NHits];
-    fscal du2[NHits], dv2[NHits], dt2[NHits];
+    fscal du[NHits], dv[NHits], dt[NHits], du2[NHits], dv2[NHits], dt2[NHits];
 
     for (int ih = 0; ih < NHits; ++ih) {
       const L1Hit& hit       = fInputData.GetHit(ihit[ih]);
@@ -1021,15 +1027,20 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
       t[ih]                  = hit.t;
       std::tie(x[ih], y[ih]) = sta[ih].ConvUVtoXY<fscal>(u[ih], v[ih]);
       z[ih]                  = hit.z;
-      du2[ih]                = hit.du * hit.du;
-      dv2[ih]                = hit.dv * hit.dv;
-      dt2[ih]                = hit.dt * hit.dt;
+      du[ih]                 = hit.du;
+      dv[ih]                 = hit.dv;
+      dt[ih]                 = hit.dt;
+
+      du2[ih] = hit.du * hit.du;
+      dv2[ih] = hit.dv * hit.dv;
+      dt2[ih] = hit.dt * hit.dt;
     };
 
     // find the field along the track
 
     L1FieldValue B[3] _fvecalignment;
     L1FieldRegion fld _fvecalignment;
+    L1FieldRegion fldTarget _fvecalignment;
 
     fvec tx[3] = {(x[1] - x[0]) / (z[1] - z[0]), (x[2] - x[0]) / (z[2] - z[0]), (x[2] - x[1]) / (z[2] - z[1])};
     fvec ty[3] = {(y[1] - y[0]) / (z[1] - z[0]), (y[2] - y[0]) / (z[2] - z[0]), (y[2] - y[1]) / (z[2] - z[1])};
@@ -1039,9 +1050,9 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
     };
 
     fld.Set(B[0], sta[0].z, B[1], sta[1].z, B[2], sta[2].z);
+    fldTarget.Set(fTargB, fTargZ, B[0], sta[0].z, B[1], sta[1].z);
 
-
-    L1TrackPar& T = fitNew.fTr;
+    L1TrackPar& T = fit.fTr;
 
     // initial parameters
     {
@@ -1060,6 +1071,7 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
         if (qp0[0] < -GetMaxInvMom()) { qp0 = -GetMaxInvMom(); }
 
         T.ResetErrors(200., 200., 1., 1., 100., 1.e4);
+        //T.ResetErrors(200., 200., 10., 10., 100., 1.e4);
         T.NDF   = ndf;
         T.qp    = 0.;
         int ih0 = 0;
@@ -1067,22 +1079,40 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
         T.y     = y[ih0];
         T.z     = z[ih0];
         T.t     = t[ih0];
-        T.C55   = dt2[ih0];
 
-        fitNew.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0], fvec::One());
-        fitNew.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0], fvec::One());
+        //std::tie(T.C00, T.C10, T.C11) = sta[ih0].FormXYCovarianceMatrix(du[ih0], dv[ih0]);
+
+        fit.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0], fvec::One());
+        fit.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0], fvec::One());
+        fit.FilterTime(t[ih0], dt[ih0], fvec::One(), sta[ih0].timeInfo);
+
+        {  // add the target constraint
+          fvec eX, eY, J04, J14;
+          fvec dz;
+          dz = fTargZ - T.z;
+          L1ExtrapolateJXY0(T.tx, T.ty, dz, fldTarget, eX, eY, J04, J14);
+          fvec J[6];
+          J[0] = dz;
+          J[1] = 0;
+          J[2] = J04;
+          J[3] = 0;
+          J[4] = dz;
+          J[5] = J14;
+          L1FilterVtx(T, fTargX, fTargY, TargetXYInfo, eX, eY, J);
+        }
 
         for (int ih = 1; ih < NHits; ++ih) {
-          fitNew.Extrapolate(z[ih], qp0, fld, fvec::One());
+          fit.Extrapolate(z[ih], qp0, fld, fvec::One());
           if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-            fitNew.AddMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
+            fit.AddMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
           }
           else {
-            fitNew.AddMaterial(sta[ih].materialInfo, qp0, fvec::One());
+            fit.AddMaterial(sta[ih].materialInfo, qp0, fvec::One());
           }
-          if (ista[ih] == fNstationsBeforePipe) { fitNew.AddPipeMaterial(qp0, fvec::One()); }
-          fitNew.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
-          fitNew.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
+          //if (ista[ih] == fNstationsBeforePipe) { fit.AddPipeMaterial(qp0, fvec::One()); }
+          fit.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
+          fit.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
+          fit.FilterTime(t[ih], dt[ih], fvec::One(), sta[ih].timeInfo);
         }
       }
 
@@ -1104,26 +1134,29 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
         T.t     = t[ih0];
         T.C55   = dt2[ih0];
 
-        fitNew.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0], fvec::One());
-        fitNew.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0], fvec::One());
+        //std::tie(T.C00, T.C10, T.C11) = sta[ih0].FormXYCovarianceMatrix(du[ih0], dv[ih0]);
+        fit.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0], fvec::One());
+        fit.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0], fvec::One());
+        //fit.FilterTime(t[ih0], dt[ih0], fvec::One(), sta[ih0].timeInfo);
 
         for (int ih = NHits - 2; ih >= 0; --ih) {
-          fitNew.Extrapolate(z[ih], qp0, fld, fvec::One());
+          fit.Extrapolate(z[ih], qp0, fld, fvec::One());
           if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-            fitNew.AddMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
+            fit.AddMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
           }
           else {
-            fitNew.AddMaterial(sta[ih].materialInfo, qp0, fvec::One());
+            fit.AddMaterial(sta[ih].materialInfo, qp0, fvec::One());
           }
-          if (ista[ih] == fNstationsBeforePipe - 1) { fitNew.AddPipeMaterial(qp0, fvec::One()); }
-          fitNew.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
-          fitNew.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
+          //if (ista[ih] == fNstationsBeforePipe - 1) { fit.AddPipeMaterial(qp0, fvec::One()); }
+          fit.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
+          fit.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
+          //fit.FilterTime(t[ih], dt[ih], fvec::One(), sta[ih].timeInfo);
         }
       }
     }  // for iiter
 
     //cout << " chi2 " << T3.chi2[i3_4] << " " << T.chi2[0] << endl;
-    //T.chi2 = (fscal) T3.chi2[i3_4];
+    T.chi2 = (fscal) T3.chi2[i3_4];  //SG!!!
     T3.SetOneEntry(i3_4, T, i3_4);
 
     {
@@ -1134,7 +1167,9 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
         const CbmL1MCTrack& mctr = CbmL1::Instance()->GetMcTracks()[mc1];
         float ev                 = 0;
         float chi2               = T.chi2[i3_4];
-        ca::tools::Debugger::Instance().FillNtuple("triplets", ev, mc1, istal, mctr.p, mctr.x, mctr.y, mctr.z, chi2);
+        float nd                 = T.NDF[i3_4];
+        ca::tools::Debugger::Instance().FillNtuple("triplets", ev, mc1, istal, mctr.p, mctr.x, mctr.y, mctr.z, chi2,
+                                                   nd);
       }
     }
   }  //i3
@@ -1181,7 +1216,7 @@ inline void L1Algo::findTripletsStep3(  // input
     //if (!T3.IsEntryConsistent(false, i3_4)) continue;
 
     // select
-    fscal chi2 = T3.chi2[i3_4];
+    fscal chi2 = T3.chi2[i3_4];  // / T3.NDF[i3_4];
 
     const L1HitIndex_t ihitl = hitsl_3[i3] + HitsUnusedStartIndex[istal];
     const L1HitIndex_t ihitm = hitsm_3[i3] + HitsUnusedStartIndex[istam];
@@ -1543,13 +1578,14 @@ inline void L1Algo::CreatePortionOfTriplets(
       L1_assert(hitsr_3[i] < HitsUnusedStopIndex[istar] - HitsUnusedStartIndex[istar]);
 
     /// Add the right hits to parameters estimation.
-    /*
+
+
     Tindex n3_V = (n3 + fvec::size() - 1) / fvec::size();
     findTripletsStep1(  // input
       n3_V, star, u_front3, u_back3, z_pos3, du3, dv3, timeR, timeER,
       // output
       T_3);
-*/
+
 
     /// refit
     findTripletsStep2(n3, istal, istam, istar, T_3, hitsl_3, hitsm_3, hitsr_3, 1);

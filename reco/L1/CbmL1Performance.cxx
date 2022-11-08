@@ -455,7 +455,7 @@ void CbmL1::EfficienciesPerformance()
     L1_NTRA.PrintEff(/*ifPrintTableToLog = */ true, false);
     cout << "Reconstructible MC tracks/event: "
          << (double(L1_NTRA.mc.counters[L1_NTRA.indices["total"]]) / double(L1_NEVENTS)) << endl;
-    cout << "Reconsted MC tracks/event: "
+    cout << "Reconstructed MC tracks/event: "
          << (double(L1_NTRA.reco.counters[L1_NTRA.indices["total"]]) / double(L1_NEVENTS)) << endl;
     cout << endl;
     cout << "CA Track Finder: " << L1_CATIME / L1_NEVENTS << (fLegacyEventMode ? " s/ev" : " s/time slice") << endl
