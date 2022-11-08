@@ -379,7 +379,6 @@ public:
   void KFTrackFitter_simple();  // version, which use procedured used during the reconstruction
   void L1KFTrackFitter();       // version from SIMD-KF benchmark
 
-  void L1KFTrackFitterMuch();
 
   float GetMaxInvMom() const { return fMaxInvMom[0]; }
 

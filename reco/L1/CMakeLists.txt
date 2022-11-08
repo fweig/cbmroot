@@ -35,13 +35,6 @@ set(SRCS
   OffLineInterface/CbmL1StsTrackFinder.cxx 
   OffLineInterface/CbmL1GlobalTrackFinder.cxx 
   OffLineInterface/CbmL1GlobalFindTracksEvents.cxx
-  #OffLineInterface / CbmL1MuchFinder.cxx
-  #OffLineInterface / CbmL1MuchHit.cxx
-  #OffLineInterface / CbmL1MuchTrack.cxx
-  #OffLineInterface / CbmL1MuchFinderQa.cxx
-  #OffLineInterface / CbmL1SttHit.cxx
-  #OffLineInterface / CbmL1SttTrackFinder.cxx
-  #OffLineInterface / CbmL1SttTrack.cxx 
 
   L1Algo/L1Algo.cxx
   L1Algo/L1CATrackFinder.cxx
