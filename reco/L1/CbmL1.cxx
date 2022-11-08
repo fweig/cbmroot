@@ -639,8 +639,8 @@ InitStatus CbmL1::Init()
     auto trIterDefault = L1CAIteration("default");
     trIterDefault.SetMinNhits(4);
     trIterDefault.SetMinNhitsStation0(4);
-    trIterDefault.SetDoubletChi2Cut(7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
-    trIterDefault.SetTripletChi2Cut(23.4450f);  // = 7.815 * 3;  // prob = 0.05
+    trIterDefault.SetDoubletChi2Cut(7.56327f);       // = 1.3449 * 2.f / 3.f;  // prob = 0.1
+    trIterDefault.SetTripletChi2Cut(23.4450f);       // = 7.815 * 3;  // prob = 0.05
     trIterDefault.SetTripletFinalChi2Cut(23.4450f);  //new 7.5);
     trIterDefault.SetTripletLinkChi2(25.);           // new:10
     trIterDefault.SetTrackChi2Cut(10.);
