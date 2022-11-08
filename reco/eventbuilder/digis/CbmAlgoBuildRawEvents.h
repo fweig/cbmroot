@@ -5,32 +5,31 @@
 #ifndef CBMALGOBUILDRAWEVENTS_H
 #define CBMALGOBUILDRAWEVENTS_H
 
-/// CBM headers
-#include "CbmMuchBeamTimeDigi.h"
-#include "CbmMuchDigi.h"
-#include "CbmPsdDigi.h"
-#include "CbmRichDigi.h"
-#include "CbmStsDigi.h"
-#include "CbmTofDigi.h"
-#include "CbmTrdDigi.h"
-
 /// FAIRROOT headers
 #include "FairTask.h"
 
-/// FAIRSOFT headers (geant, boost, ...)
+/// CBMROOT headers
+#include "CbmDefs.h"
 
 /// C/C++ headers
-#include <tuple>
-
 #include <boost/any.hpp>
 
 #include <array>
 #include <map>
 #include <set>
+#include <tuple>
 #include <vector>
 
 class TimesliceMetaData;
 class CbmEvent;
+class CbmMuchDigi;
+class CbmMuchBeamTimeDigi;
+class CbmPsdDigi;
+class CbmRichDigi;
+class CbmStsDigi;
+class CbmTofDigi;
+class CbmTrdDigi;
+class CbmBmonDigi;
 class TClonesArray;
 class TH1;
 class TH2;
@@ -180,8 +179,6 @@ public:
 
   void ChangeMuchBeamtimeDigiFlag(Bool_t bFlagIn = kFALSE) { fbUseMuchBeamtimeDigi = bFlagIn; }
 
-  void SetT0InTofDetType(uint32_t uTypeIn = 5) { fuDetTypeT0 = uTypeIn; }
-
   /// For monitor algos
   void AddHistoToVector(TNamed* pointer, std::string sFolder = "")
   {
@@ -195,7 +192,7 @@ public:
   std::vector<std::pair<TCanvas*, std::string>> GetCanvasVector() { return fvpAllCanvasPointers; }
 
   /// Set digi containers
-  void SetT0Digis(const std::vector<CbmTofDigi>* T0DigiVec) { fT0DigiVec = T0DigiVec; }
+  void SetDigis(std::vector<CbmBmonDigi>* T0Digis) { fT0Digis = T0Digis; }
   void SetDigis(std::vector<CbmStsDigi>* StsDigis) { fStsDigis = StsDigis; }
   void SetDigis(std::vector<CbmMuchDigi>* MuchDigis)
   {
@@ -268,8 +265,6 @@ private:
   Bool_t fbUseTsMetaData       = kTRUE;   //! Read Ts Parameters from input tree
   /// Event building mode and detectors selection
   EOverlapModeRaw fOverMode {EOverlapModeRaw::AllowOverlap};
-  /// for filtering T0 digis from Tof (remove this line if T0 properly implemented)
-  uint32_t fuDetTypeT0 = 0;
 
   TStopwatch* fTimer = nullptr;  //! is create when fbGetTimings is set before init
 
@@ -292,7 +287,7 @@ private:
   /// Data input
   TClonesArray* fTimeSliceMetaDataArray = nullptr;  //!
 
-  const std::vector<CbmTofDigi>* fT0DigiVec                  = nullptr;
+  const std::vector<CbmBmonDigi>* fT0Digis                   = nullptr;
   const std::vector<CbmMuchDigi>* fMuchDigis                 = nullptr;
   const std::vector<CbmMuchBeamTimeDigi>* fMuchBeamTimeDigis = nullptr;
   const std::vector<CbmStsDigi>* fStsDigis                   = nullptr;

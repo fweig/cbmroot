@@ -12,6 +12,7 @@
 
 /// CBMROOT headers
 #include "CbmAlgoBuildRawEvents.h"
+#include "CbmBmonDigi.h"
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmMuchDigi.h"
 #include "CbmPsdDigi.h"
@@ -21,11 +22,10 @@
 #include "CbmTrdDigi.h"
 
 /// C/C++ headers
-#include <tuple>
-
 #include <array>
 #include <map>
 #include <set>
+#include <tuple>
 #include <vector>
 
 class CbmDigiManager;
@@ -126,11 +126,6 @@ public:
     if (nullptr != fpAlgo) fpAlgo->SetTimings(bFlagIn);
     fbGetTimings = bFlagIn;
   }
-  void SetT0InTofDetType(uint32_t uTypeIn = 5)
-  {
-    if (nullptr != fpAlgo) fpAlgo->SetT0InTofDetType(uTypeIn);
-    fuDetTypeT0 = uTypeIn;
-  }
 
   void SetSeedFinderQa(Bool_t bFlagIn = kTRUE);
   void PrintTimings();
@@ -153,7 +148,6 @@ private:
   CbmSeedFinderSlidingWindow* fSeedFinderSlidingWindow = nullptr;
 
   CbmDigiManager* fDigiMan                             = nullptr;
-  const std::vector<CbmTofDigi>* fT0Digis              = nullptr;
   std::vector<CbmMuchDigi>* fMuchDigis                 = nullptr;
   std::vector<CbmMuchBeamTimeDigi>* fMuchBeamTimeDigis = nullptr;
   std::vector<CbmStsDigi>* fStsDigis                   = nullptr;
@@ -161,6 +155,7 @@ private:
   std::vector<CbmTofDigi>* fTofDigis                   = nullptr;
   std::vector<CbmRichDigi>* fRichDigis                 = nullptr;
   std::vector<CbmPsdDigi>* fPsdDigis                   = nullptr;
+  std::vector<CbmBmonDigi>* fT0Digis                   = nullptr;
   std::vector<Double_t>* fSeedTimes                    = nullptr;
 
   /** Create digi vector and pass to algo **/
@@ -196,8 +191,6 @@ private:
   Bool_t fbFillHistos {kTRUE};             //! Switch ON/OFF filling of histograms
   Bool_t fbWriteHistosToFairSink {kTRUE};  //! Write histos to FairRootManager instead of separate file
   Bool_t fbGetTimings = kFALSE;            //! Measure CPU time using stopwatch
-  /// for filtering T0 digis from Tof (remove this line if T0 properly implemented)
-  uint32_t fuDetTypeT0 = 0;
 
   /** Name of the histogram output file **/
   TString fsOutFileName {"data/HistosEvtWin.root"};

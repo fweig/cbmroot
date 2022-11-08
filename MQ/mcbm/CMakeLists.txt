@@ -70,14 +70,16 @@ set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
 generate_cbm_executable()
 
-set(EXE_NAME BuildRawEvents)
-set(SRCS CbmDeviceBuildRawEvents.cxx runBuildRawEvents.cxx)
-
-set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
-set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
-set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
-
-generate_cbm_executable()
+# diabled until T0 is implemented in unpackers
+#
+#set(EXE_NAME BuildRawEvents)
+#set(SRCS CbmDeviceBuildRawEvents.cxx runBuildRawEvents.cxx)
+#
+#set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
+#set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
+#set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
+#
+#generate_cbm_executable()
 
 
 set(EXE_NAME McbmEventBuilderWin)
@@ -108,14 +110,16 @@ set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
 generate_cbm_executable()
 
-set(EXE_NAME BuildDigiEvents)
-set(SRCS CbmDeviceBuildDigiEvents.cxx runBuildDigiEvents.cxx)
-
-set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
-set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
-set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
-
-generate_cbm_executable()
+# diabled until T0 is implemented in unpackers
+#
+#set(EXE_NAME BuildDigiEvents)
+#set(SRCS CbmDeviceBuildDigiEvents.cxx runBuildDigiEvents.cxx)
+#
+#set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
+#set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
+#set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
+#
+#generate_cbm_executable()
 
 set(EXE_NAME DigiEventSink)
 set(SRCS CbmDeviceDigiEventSink.cxx runDigiEventSink.cxx)
