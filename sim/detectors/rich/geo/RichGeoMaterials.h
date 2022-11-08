@@ -10,7 +10,7 @@
 #include "FairGeoLoader.h"
 #include "FairGeoMedia.h"
 #include "FairGeoMedium.h"
-#include "FairLogger.h"
+#include "Logger.h"
 
 #include "TGeoManager.h"
 #include "TGeoMedium.h"

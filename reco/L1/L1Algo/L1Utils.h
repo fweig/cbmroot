@@ -10,7 +10,7 @@
 #ifndef L1Utils_h
 #define L1Utils_h 1
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <chrono>
 #include <iomanip>

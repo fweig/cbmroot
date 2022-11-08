@@ -16,8 +16,8 @@
 #include "CbmMcbm2018PsdPar.h"  // for CbmMcbm2018PsdPar
 
 #include <FairContFact.h>   // for FairContainer
-#include <FairLogger.h>     // for LOG
 #include <FairRuntimeDb.h>  // for FairRuntimeDb
+#include <Logger.h>         // for LOG
 
 #include <TList.h>    // for TList
 #include <TString.h>  // for TString

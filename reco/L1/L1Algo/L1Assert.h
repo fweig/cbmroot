@@ -20,7 +20,7 @@
 #ifndef L1Assert_h
 #define L1Assert_h 1
 
-#include "FairLogger.h"
+#include "Logger.h"
 
 #if defined(NDEBUG) || defined(L1_NO_ASSERT)  // TODO: Do we need to add FAST_CODE here? (S.Zharko)
 #define L1ASSERT(LEVEL, COND)

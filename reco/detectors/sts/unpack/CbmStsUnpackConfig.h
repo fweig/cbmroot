@@ -25,9 +25,6 @@
 #include "CbmStsUnpackAlgo.h"
 #include "CbmStsUnpackMonitor.h"
 
-#include <FairLogger.h>
-#include <Logger.h>
-
 #include <Rtypes.h>
 #include <RtypesCore.h>
 

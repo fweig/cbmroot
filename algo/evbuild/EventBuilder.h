@@ -9,8 +9,6 @@
 #include "CbmDigiEvent.h"
 #include "CbmDigiTimeslice.h"
 
-#include <FairLogger.h>
-
 #include <algorithm>
 #include <map>
 #include <vector>

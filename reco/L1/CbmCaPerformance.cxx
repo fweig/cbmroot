@@ -13,8 +13,8 @@
 #include "CbmL1.h"  // for L1DetectorID
 #include "CbmMCDataManager.h"
 
-#include "FairLogger.h"
 #include "FairRootManager.h"
+#include "Logger.h"
 
 #include <cassert>
 #include <stdexcept>  // for std::logic_error

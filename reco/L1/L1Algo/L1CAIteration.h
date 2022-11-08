@@ -12,7 +12,7 @@
 #ifndef L1CAIteration_h
 #define L1CAIteration_h 1
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/string.hpp>

@@ -6,7 +6,7 @@
 
 #include "CbmTrdSpadic.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <RtypesCore.h>
 #include <TFile.h>

@@ -5,7 +5,7 @@
 #ifndef L1Array_h
 #define L1Array_h 1
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <array>
 #include <string>

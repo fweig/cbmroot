@@ -10,9 +10,9 @@
 #include "CbmModuleList.h"
 #include "CbmSeedFinderSlidingWindow.h"
 
-#include <FairLogger.h>
 #include <FairRootManager.h>
 #include <FairRunOnline.h>
+#include <Logger.h>
 
 #include <TClonesArray.h>
 #include <TFile.h>

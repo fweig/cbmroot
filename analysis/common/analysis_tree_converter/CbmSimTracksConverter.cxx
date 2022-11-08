@@ -10,9 +10,9 @@
 #include "CbmMCDataManager.h"
 #include "CbmMCTrack.h"
 
-#include "FairLogger.h"
 #include "FairMCEventHeader.h"
 #include "FairRootManager.h"
+#include "Logger.h"
 
 #include <TClonesArray.h>
 #include <TDirectory.h>

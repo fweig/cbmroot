@@ -13,7 +13,7 @@
 
 #include "FairDetector.h"
 #include "FairRunAna.h"
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include "TGeoManager.h"
 #include "TString.h"

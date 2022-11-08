@@ -13,8 +13,8 @@
 
 #include "NicaGeneratorWriteUnigen.h"
 
-#include <FairLogger.h>
 #include <FairTask.h>
+#include <Logger.h>
 
 #include <TTree.h>
 

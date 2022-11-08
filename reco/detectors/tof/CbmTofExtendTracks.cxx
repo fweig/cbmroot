@@ -31,11 +31,11 @@
 #include "CbmTofTrackletTools.h"
 #include "CbmVertex.h"
 
-#include "FairLogger.h"
 #include "FairRootFileSink.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
+#include "Logger.h"
 
 #include "TClonesArray.h"
 #include "TDirectory.h"

@@ -17,9 +17,9 @@
 #include "TimesliceMetaData.h"
 
 /// FAIRROOT headers
-#include <FairLogger.h>
 #include <FairRootManager.h>
 #include <FairRunOnline.h>
+#include <Logger.h>
 
 /// FAIRSOFT headers (geant, boost, ...)
 #include <TCanvas.h>

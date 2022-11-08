@@ -5,6 +5,8 @@
 #ifndef L1AlgoDraw_h
 #define L1AlgoDraw_h 1
 
+#include <TString.h>
+
 #include <map>
 #include <vector>
 

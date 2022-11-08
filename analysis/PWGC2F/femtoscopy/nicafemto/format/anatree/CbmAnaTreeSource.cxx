@@ -14,8 +14,8 @@
 
 #include "CbmAnaTreeContainer.h"
 
-#include <FairLogger.h>
 #include <FairRootManager.h>
+#include <Logger.h>
 
 #include <TBranch.h>
 #include <TChain.h>

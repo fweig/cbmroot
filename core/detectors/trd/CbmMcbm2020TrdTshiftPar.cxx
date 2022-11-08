@@ -5,8 +5,8 @@
 #include "CbmMcbm2020TrdTshiftPar.h"
 
 // FairRoot
-#include "FairLogger.h"
 #include "FairParamList.h"
+#include "Logger.h"
 
 // ROOT
 #include "THnSparse.h"

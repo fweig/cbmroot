@@ -9,7 +9,7 @@
 /// @author Sergei Zharko
 /// @date   22.02.2022
 
-#include "FairLogger.h"
+#include "Logger.h"
 
 #include <bitset>
 #include <cassert>

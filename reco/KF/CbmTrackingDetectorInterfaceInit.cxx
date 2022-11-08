@@ -18,8 +18,6 @@
 #include "CbmTofTrackingInterface.h"
 #include "CbmTrdTrackingInterface.h"
 
-#include <FairLogger.h>
-
 ClassImp(CbmTrackingDetectorInterfaceInit)
 
   CbmTrackingDetectorInterfaceInit* CbmTrackingDetectorInterfaceInit::fpInstance = nullptr;

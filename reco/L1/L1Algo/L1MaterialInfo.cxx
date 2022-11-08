@@ -4,7 +4,7 @@
 
 #include "L1MaterialInfo.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <iomanip>
 #include <sstream>

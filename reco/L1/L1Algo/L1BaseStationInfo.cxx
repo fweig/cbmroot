@@ -14,7 +14,7 @@
  ***********************************************************************************************************/
 
 // FairRoot
-#include <FairLogger.h>
+#include <Logger.h>
 
 // L1Algo core
 #include "L1Assert.h"

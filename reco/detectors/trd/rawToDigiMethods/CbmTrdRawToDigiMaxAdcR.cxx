@@ -4,7 +4,7 @@
 
 #include "CbmTrdRawToDigiMaxAdcR.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <algorithm>
 #include <iostream>

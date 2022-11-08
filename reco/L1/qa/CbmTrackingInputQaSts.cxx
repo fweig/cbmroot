@@ -23,7 +23,7 @@
 #include "CbmStsTrackingInterface.h"  // Communicate via tracking detector interface
 #include "CbmTimeSlice.h"
 
-#include "FairLogger.h"
+#include "Logger.h"
 
 #include "TClonesArray.h"
 #include "TDatabasePDG.h"

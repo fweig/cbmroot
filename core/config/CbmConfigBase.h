@@ -6,7 +6,7 @@
 
 #include "CbmDefs.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <TSystem.h>
 
@@ -159,8 +159,8 @@ public:
   static void SetLogLevel(const pt::ptree& moduleTree)
   {
     auto logScreenLevel = moduleTree.get_optional<std::string>("logScreenLevel");
-    if (logScreenLevel) FairLogger::GetLogger()->SetLogScreenLevel(logScreenLevel.get().c_str());
+    if (logScreenLevel) fair::Logger::SetConsoleSeverity(logScreenLevel.get().c_str());
     auto logVerbosityLevel = moduleTree.get_optional<std::string>("logVerbosityLevel");
-    if (logVerbosityLevel) FairLogger::GetLogger()->SetLogVerbosityLevel(logVerbosityLevel.get().c_str());
+    if (logVerbosityLevel) fair::Logger::SetVerbosity(logVerbosityLevel.get().c_str());
   }
 };

@@ -10,8 +10,8 @@
 #include "CbmModuleList.h"
 #include "CbmReco.h"  // for CbmRecoConfig
 
-#include <FairLogger.h>
 #include <FairRunOnline.h>
+#include <Logger.h>
 
 #include <TH1F.h>
 #include <THttpServer.h>

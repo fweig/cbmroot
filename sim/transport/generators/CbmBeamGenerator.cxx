@@ -12,10 +12,10 @@
 
 #include "CbmEventGenerator.h"
 
-#include "FairLogger.h"
 #include "FairMCEventHeader.h"
 #include "FairPrimaryGenerator.h"
 #include "FairRunSim.h"
+#include "Logger.h"
 
 #include "TFile.h"
 #include "TRandom.h"

@@ -12,7 +12,7 @@
 
 #include "CbmQaCanvas.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <TFitResultPtr.h>
 #include <TPaveStats.h>

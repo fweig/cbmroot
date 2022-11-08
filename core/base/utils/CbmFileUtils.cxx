@@ -4,7 +4,7 @@
 
 #include "CbmFileUtils.h"
 
-#include "FairLogger.h"  // for LOG, info and error
+#include "Logger.h"  // for LOG, info and error
 
 #include "TArchiveFile.h"  // for TArchiveFile
 #include "TFile.h"         // for TFile

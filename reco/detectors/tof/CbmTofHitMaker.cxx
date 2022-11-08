@@ -40,11 +40,11 @@
 
 // FAIR classes and includes
 #include "FairEventHeader.h"
-#include "FairLogger.h"
 #include "FairRootFileSink.h"
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairRuntimeDb.h"
+#include "Logger.h"
 
 // ROOT Classes and includes
 #include "TClonesArray.h"

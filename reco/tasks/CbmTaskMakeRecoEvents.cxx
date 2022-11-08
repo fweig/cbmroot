@@ -8,7 +8,7 @@
 #include "CbmDefs.h"
 #include "CbmEvent.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <TClonesArray.h>
 #include <TStopwatch.h>

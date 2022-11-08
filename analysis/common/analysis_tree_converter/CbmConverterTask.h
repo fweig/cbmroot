@@ -7,8 +7,6 @@
 
 #include <CbmLink.h>
 
-#include <FairLogger.h>
-
 #include <map>
 #include <string>
 

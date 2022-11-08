@@ -10,8 +10,6 @@
 #include "CbmKFVertex.h"
 #include "CbmStsTrack.h"
 
-#include <FairLogger.h>
-
 #include "TClonesArray.h"
 
 #include "math.h"

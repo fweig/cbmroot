@@ -22,9 +22,6 @@
 #include "CbmPsdUnpackAlgo.h"
 #include "CbmRecoUnpackConfig.tmpl"
 
-#include <FairLogger.h>
-#include <Logger.h>
-
 #include <Rtypes.h>
 #include <RtypesCore.h>
 

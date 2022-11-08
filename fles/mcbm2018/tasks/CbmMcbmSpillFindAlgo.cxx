@@ -17,11 +17,11 @@
 #include "CbmTofAddress.h"
 #include "CbmTofDetectorId_v14a.h"  // in cbmdata/tof
 
-#include "FairLogger.h"
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include "Logger.h"
 
 #include "TCanvas.h"
 #include "TH1.h"

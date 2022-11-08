@@ -4,7 +4,7 @@
 
 #include "RichGeoCreator.h"
 
-#include "FairLogger.h"
+#include "Logger.h"
 
 #include "TGeoArb8.h"
 #include "TGeoBBox.h"

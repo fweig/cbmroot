@@ -12,7 +12,7 @@
 
 #include "L1Def.h"
 #ifndef FAST_CODE
-#include <FairLogger.h>
+#include <Logger.h>
 #endif
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>

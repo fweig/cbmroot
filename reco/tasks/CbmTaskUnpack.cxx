@@ -14,8 +14,8 @@
 
 #include "MicrosliceDescriptor.hpp"
 
-#include <FairLogger.h>
 #include <FairRunOnline.h>
+#include <Logger.h>
 
 #include <TStopwatch.h>
 

@@ -12,10 +12,10 @@
 #include "CbmTsEventHeader.h"
 
 #include <FairFileSource.h>
-#include <FairLogger.h>
 #include <FairRootFileSink.h>
 #include <FairRunAna.h>
 #include <FairRunOnline.h>
+#include <Logger.h>
 
 #include <THttpServer.h>
 #include <TRootSniffer.h>

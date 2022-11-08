@@ -9,7 +9,7 @@
 
 #include "L1Parameters.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <iomanip>
 

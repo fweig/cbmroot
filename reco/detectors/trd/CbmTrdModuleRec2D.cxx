@@ -12,7 +12,7 @@
 #include "CbmTrdHit.h"
 #include "CbmTrdParModDigi.h"
 
-#include <FairLogger.h>
+#include <Logger.h>
 
 #include <TClonesArray.h>
 #include <TF1.h>

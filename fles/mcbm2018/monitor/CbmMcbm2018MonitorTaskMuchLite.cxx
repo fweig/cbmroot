@@ -7,12 +7,12 @@
 #include "CbmMcbm2018MonitorAlgoMuchLite.h"
 #include "CbmMcbm2018MuchPar.h"
 
-#include "FairLogger.h"
 #include "FairParGenericSet.h"
 #include "FairRootManager.h"
 #include "FairRun.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include "Logger.h"
 
 #include "TCanvas.h"
 #include "THttpServer.h"
