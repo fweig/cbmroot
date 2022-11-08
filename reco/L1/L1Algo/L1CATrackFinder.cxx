@@ -354,9 +354,9 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     else {
       fit.L1AddMaterial(T, stal.materialInfo, fMaxInvMom, fvec::One());
     }
-    if ((istam >= fNstationsBeforePipe) && (istal <= fNstationsBeforePipe - 1)) {
-      fit.L1AddPipeMaterial(T, fMaxInvMom, fvec::One());
-    }
+    //if ((istam >= fNstationsBeforePipe) && (istal <= fNstationsBeforePipe - 1)) {
+    //fit.L1AddPipeMaterial(T, fMaxInvMom, fvec::One());
+    //}
 
     //assert(T.IsConsistent(true, -1));
 
@@ -705,7 +705,7 @@ inline void L1Algo::findTripletsStep0(  // input
     else {
       fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, fvec::One());
     }
-    if ((istar >= fNstationsBeforePipe) && (istam <= fNstationsBeforePipe - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
+    //if ((istar >= fNstationsBeforePipe) && (istam <= fNstationsBeforePipe - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
 
     // assert(T2.IsConsistent(true, n2_4));
 

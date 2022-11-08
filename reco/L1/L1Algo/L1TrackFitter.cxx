@@ -539,10 +539,10 @@ void L1Algo::L1KFTrackFitter()
 
         fit.Extrapolate(z[ista], qp01, fld1, wExtr);
 
-        if (ista == fNstationsBeforePipe - 1) {
-          fit.AddPipeMaterial(qp01, wExtr);
-          fit.EnergyLossCorrection(fit.fPipeRadThick, qp01, fvec(1.f), wExtr);
-        }
+        //if (ista == fNstationsBeforePipe - 1) {
+        //fit.AddPipeMaterial(qp01, wExtr);
+        //fit.EnergyLossCorrection(fit.fPipeRadThick, qp01, fvec(1.f), wExtr);
+        //}
         if constexpr (L1Constants::control::kIfUseRadLengthTable) {
           fit.AddMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, wExtr);
           fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, fvec(1.f), wExtr);
@@ -696,10 +696,10 @@ void L1Algo::L1KFTrackFitter()
 
         fit.Extrapolate(z[ista], qp01, fld, w1);
 
-        if (ista == fNstationsBeforePipe) {
-          fit.AddPipeMaterial(qp01, wExtr);
-          fit.EnergyLossCorrection(fit.fPipeRadThick, qp01, fvec(-1.f), wExtr);
-        }
+        //if (ista == fNstationsBeforePipe) {
+        //fit.AddPipeMaterial(qp01, wExtr);
+        //fit.EnergyLossCorrection(fit.fPipeRadThick, qp01, fvec(-1.f), wExtr);
+        //}
         if constexpr (L1Constants::control::kIfUseRadLengthTable) {
           fit.AddMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, wExtr);
           fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, fvec(-1.f), wExtr);
@@ -996,13 +996,13 @@ void L1Algo::L1KFTrackFitterMuch()
 
           T1.Extrapolate(z[i], qp01, fld, w1);
 
-          if (i == fNstationsBeforePipe) {
-            fit.L1AddPipeMaterial(T, qp0, wIn);
-            fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(-1.f), wIn);
+          //if (i == fNstationsBeforePipe) {
+          //fit.L1AddPipeMaterial(T, qp0, wIn);
+          //fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(-1.f), wIn);
 
-            T1.AddPipeMaterial(qp01, wIn);
-            T1.EnergyLossCorrection(fit.PipeRadThick, qp01, fvec(-1.f), wIn);
-          }
+          //T1.AddPipeMaterial(qp01, wIn);
+          //T1.EnergyLossCorrection(fit.PipeRadThick, qp01, fvec(-1.f), wIn);
+          //}
 
           fldB2 = fldB1;
           fldZ2 = fldZ1;
