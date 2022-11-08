@@ -782,7 +782,7 @@ inline void L1Algo::findTripletsStep0(  // input
         L1ExtrapolateLine(T_cur, zr);
 
         if ((star.timeInfo) && (stam.timeInfo))
-          if (fabs(T_cur.t[i2_4] - hitr.T()) > sqrt(T_cur.C55[i2_4] + sqrt(hitr.dT2())) * 5) continue;
+          if (fabs(T_cur.t[i2_4] - hitr.T()) > sqrt(T_cur.C55[i2_4] + hitr.dT2()) * 5) continue;
 
         // TODO: SG: hardcoded cut of 30 ns
         if ((star.timeInfo) && (stam.timeInfo))
