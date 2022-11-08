@@ -7,22 +7,12 @@ set(PUB_DEPS
   CbmData
   Gtest
   GtestMain
-  ROOT::Physics
   )
   
 set(PVT_DEPS
-  CbmTrdBase
-  NicaCbmFormat
-  ROOT::Core
-  ROOT::Matrix
-  ROOT::EG
   )
   
 set(INT_DEPS  
-  FairRoot::Base
-  external::fles_ipc
-  xpu
-  VMCLibrary
   )
   
   

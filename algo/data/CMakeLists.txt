@@ -40,20 +40,9 @@ target_include_directories(OnlineData
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/psd
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/global
   PUBLIC ${CMAKE_SOURCE_DIR}/core/data/raw
-  PUBLIC ${FLES_IPC_INCLUDE_DIRECTORY}
-)
-
-target_include_directories(OnlineData SYSTEM
-  PUBLIC ${Boost_INCLUDE_DIR}
-  PUBLIC ${FAIRLOGGER_INCLUDE_DIR}
-  PUBLIC ${XPU_INCLUDE_DIRECTORY}
-)
-
-target_link_directories(OnlineData
-  PUBLIC ${FAIRLOGGER_LIBRARY_DIR}
 )
 
 target_compile_definitions(OnlineData PUBLIC NO_ROOT)
-target_link_libraries(OnlineData FairLogger)
+target_link_libraries(OnlineData FairLogger::FairLogger external::fles_ipc xpu)
 
 install(TARGETS OnlineData DESTINATION lib)

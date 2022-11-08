@@ -31,6 +31,8 @@ set(PRIVATE_DEPS
   CbmFlibMcbm2018
   FairMQ::Tools
   FairRoot::ParBase
+  Boost::serialization
+  Boost::program_options
   ROOT::Gpad
   ROOT::Hist
   ROOT::RIO
