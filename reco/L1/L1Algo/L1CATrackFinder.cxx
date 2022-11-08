@@ -542,7 +542,7 @@ inline void L1Algo::findTripletsStep0(  // input
   // output
   Tindex& n3, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
   L1Vector<L1HitIndex_t>& hitsr_3, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
-  L1Vector<fvec>& dv2_3, L1Vector<fvec>& du2_3, L1Vector<fvec>& t_3, L1Vector<fvec>& dt2_3)
+  L1Vector<fvec>& du2_3, L1Vector<fvec>& dv2_3, L1Vector<fvec>& t_3, L1Vector<fvec>& dt2_3)
 {
   int iStaM = &stam - fParameters.GetStations().begin();
   int iStaR = &star - fParameters.GetStations().begin();
@@ -905,7 +905,7 @@ inline void L1Algo::findTripletsStep0(  // input
 /// Add the right hits to parameters estimation.
 inline void L1Algo::findTripletsStep1(  // input
   Tindex n3_V, const L1Station& star, L1Vector<fvec>& u_front_, L1Vector<fvec>& u_back_, L1Vector<fvec>& z_Pos,
-  L1Vector<fvec>& dv2_3, L1Vector<fvec>& du2_3, L1Vector<fvec>& t_3, L1Vector<fvec>& dt2_3,
+  L1Vector<fvec>& du2_3, L1Vector<fvec>& dv2_3, L1Vector<fvec>& t_3, L1Vector<fvec>& dt2_3,
   // output
   //                L1TrackPar *T_3
   L1Vector<L1TrackPar>& T_3)
