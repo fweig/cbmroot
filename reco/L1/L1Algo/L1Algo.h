@@ -264,16 +264,16 @@ public:
   void findSingletsStep0(  // input
     Tindex start_lh, Tindex n1_l, L1HitPoint* Hits_l,
     // output
-    fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, L1HitIndex_t* hitsl, fvec* HitTime_l, fvec* HitTimeEr, fvec* d_u,
-    fvec* d_v);
+    fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, L1HitIndex_t* hitsl, fvec* t_l, fvec* dt2_l, fvec* du2_l,
+    fvec* dv2_l);
 
   /// Get the field approximation. Add the target to parameters estimation. Propagate to middle station.
   void findSingletsStep1(  // input
     int istal, int istam, Tindex n1_V,
 
-    fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, fvec* HitTime_l, fvec* HitTimeEr,
+    fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, fvec* t_l, fvec* dt2_l,
     // output
-    L1TrackPar* T_1, L1FieldRegion* fld_1, fvec* d_u, fvec* d_v);
+    L1TrackPar* T_1, L1FieldRegion* fld_1, fvec* du2_l, fvec* dv2_l);
 
   /// Find the doublets. Reformat data in the portion of doublets.
   void findDoubletsStep0(  // input
@@ -298,12 +298,12 @@ public:
     // output
     Tindex& n3, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
     L1Vector<L1HitIndex_t>& hitsr_3, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
-    L1Vector<fvec>& du_, L1Vector<fvec>& dv_, L1Vector<fvec>& timeR, L1Vector<fvec>& timeER);
+    L1Vector<fvec>& du2_3, L1Vector<fvec>& dv2_3, L1Vector<fvec>& t_3, L1Vector<fvec>& dt2_3);
 
   /// Add the right hits to parameters estimation.
   void findTripletsStep1(  // input
     Tindex n3_V, const L1Station& star, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
-    L1Vector<fvec>& du_, L1Vector<fvec>& dv_, L1Vector<fvec>& timeR, L1Vector<fvec>& timeER,
+    L1Vector<fvec>& du2_3, L1Vector<fvec>& dv2_3, L1Vector<fvec>& t_3, L1Vector<fvec>& dt2_3,
     // output
     L1Vector<L1TrackPar>& T_3);
 
@@ -346,11 +346,11 @@ public:
 
   void FilterFirst(L1TrackPar& track, fvec& x, fvec& y, L1Station& st);
   void FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, L1Station& st);
-  void FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& t_er, L1Station& st);
+  void FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, L1Station& st);
 
-  void FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& t_er, L1Station& st, fvec& dx, fvec& dy,
+  void FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, L1Station& st, fvec& dx2, fvec& dy2,
                    fvec& dxy);
-  void FilterFirstL(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& t_er, L1Station& st, fvec& dx, fvec& dy,
+  void FilterFirstL(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, L1Station& st, fvec& dx2, fvec& dy2,
                     fvec& dxy);
 
 

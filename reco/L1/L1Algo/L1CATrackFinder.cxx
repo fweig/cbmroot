@@ -128,8 +128,7 @@ bool L1Algo::checkTripletMatch(const L1Triplet& l, const L1Triplet& r, fscal& dc
 inline void L1Algo::findSingletsStep0(  // input
   Tindex start_lh, Tindex n1_l, L1HitPoint* Hits_l,
   // output
-  fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, L1HitIndex_t* hitsl, fvec* HitTime_l, fvec* HitTimeEr, fvec* d_u,
-  fvec* d_v)
+  fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, L1HitIndex_t* hitsl, fvec* t_l, fvec* dt2_l, fvec* du2_l, fvec* dv2_l)
 {
 
   /// Prepare the portion of data of left hits of a triplet:
@@ -141,12 +140,12 @@ inline void L1Algo::findSingletsStep0(  // input
   if (lastV >= 0) {
     // set some positive errors to unfilled part of vectors in order to avoid nans
     L1HitPoint& hitl = Hits_l[0];
-    d_u[lastV]       = hitl.dU();
-    d_v[lastV]       = hitl.dV();
-    HitTimeEr[lastV] = hitl.timeEr;
+    du2_l[lastV]     = hitl.dU2();
+    dv2_l[lastV]     = hitl.dV2();
+    dt2_l[lastV]     = hitl.dT2();
     u_front_l[lastV] = hitl.U();
     u_back_l[lastV]  = hitl.V();
-    HitTime_l[lastV] = hitl.time;
+    t_l[lastV]       = hitl.T();
     zPos_l[lastV]    = hitl.Z();
   }
 
@@ -156,16 +155,16 @@ inline void L1Algo::findSingletsStep0(  // input
     L1HitPoint& hitl = Hits_l[ilh];
 
 
-    HitTime_l[i1_V][i1_4] = hitl.time;
-    HitTimeEr[i1_V][i1_4] = hitl.timeEr;
+    t_l[i1_V][i1_4]   = hitl.T();
+    dt2_l[i1_V][i1_4] = hitl.dT2();
 
     hitsl[i1]             = ilh;
     u_front_l[i1_V][i1_4] = hitl.U();
     u_back_l[i1_V][i1_4]  = hitl.V();
 
     if (fUseHitErrors) {
-      d_u[i1_V][i1_4] = hitl.dU();
-      d_v[i1_V][i1_4] = hitl.dV();
+      du2_l[i1_V][i1_4] = hitl.dU2();
+      dv2_l[i1_V][i1_4] = hitl.dV2();
     }
 
     zPos_l[i1_V][i1_4] = hitl.Z();
@@ -177,10 +176,10 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
   int istal,
   int istam,    /// indexes of left and middle stations of a triplet
   Tindex n1_V,  ///
-  fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, fvec* HitTime_l, fvec* HitTimeEr,
+  fvec* u_front_l, fvec* u_back_l, fvec* zPos_l, fvec* t_l, fvec* dt2_l,
   // output
   //                 L1TrackPar *T_1,
-  L1TrackPar* T_1, L1FieldRegion* fld_1, fvec* d_u, fvec* d_v)
+  L1TrackPar* T_1, L1FieldRegion* fld_1, fvec* du2_l, fvec* dv2_l)
 {
 
   /// Get the field approximation. Add the target to parameters estimation.
@@ -244,8 +243,8 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     fvec& v         = u_back_l[i1_V];
     auto [xl, yl]   = stal.ConvUVtoXY<fvec>(u, v);
     fvec zl         = zPos_l[i1_V];
-    fvec& time      = HitTime_l[i1_V];
-    fvec& timeEr    = HitTimeEr[i1_V];
+    fvec& time      = t_l[i1_V];
+    fvec& timeEr2   = dt2_l[i1_V];
     const fvec dzli = 1.f / (zl - fTargZ);
 
     const fvec tx = (xl - fTargX) * dzli;
@@ -283,7 +282,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
 
     T.C44 = fMaxInvMom / fvec(3.) * fMaxInvMom / fvec(3.);
-    T.C55 = timeEr * timeEr;
+    T.C55 = timeEr2;
 
     {  // add the target constraint
       T.x   = xl;
@@ -293,7 +292,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
       T.C10 = stal.XYInfo.C10;
       T.C11 = stal.XYInfo.C11;
 
-      if (fUseHitErrors) { std::tie(T.C00, T.C10, T.C11) = stal.FormXYCovarianceMatrix(d_u[i1_V], d_v[i1_V]); }
+      if (fUseHitErrors) { std::tie(T.C00, T.C10, T.C11) = stal.FormXYCovarianceMatrix(du2_l[i1_V], dv2_l[i1_V]); }
 
       //assert(T.IsConsistent(true, -1));
 
@@ -406,14 +405,14 @@ inline void L1Algo::findDoubletsStep0(
     // Pick_m22 is not used, search for mean squared, 2nd version
 
     // -- collect possible doublets --
-    const fscal iz        = 1.f / (T1.z[i1_4] - fParameters.GetTargetPositionZ()[0]);
-    const fscal timeError = T1.C55[i1_4];
-    const fscal time      = T1.t[i1_4];
+    const fscal iz         = 1.f / (T1.z[i1_4] - fParameters.GetTargetPositionZ()[0]);
+    const fscal timeError2 = T1.C55[i1_4];
+    const fscal time       = T1.t[i1_4];
 
     L1HitAreaTime areaTime(vGridTime[iStaM], T1.x[i1_4] * iz, T1.y[i1_4] * iz,
                            (sqrt(Pick_m22 * (T1.C00 + stam.XYInfo.C00)) + fMaxDZ * abs(T1.tx))[i1_4] * iz,
                            (sqrt(Pick_m22 * (T1.C11 + stam.XYInfo.C11)) + fMaxDZ * abs(T1.ty))[i1_4] * iz, time,
-                           sqrt(timeError) * 5);
+                           sqrt(timeError2) * 5);
 
     for (L1HitIndex_t imh = -1; true;) {  // loop over the hits in the area
       if (fParameters.DevIsIgnoreHitSearchAreas()) {
@@ -435,8 +434,8 @@ inline void L1Algo::findDoubletsStep0(
       // check y-boundaries
       //TODO: move hardcoded cuts to parameters
       if ((stam.timeInfo) && (stal.timeInfo)) {
-        if (fabs(time - hitm.time) > sqrt(timeError + hitm.timeEr * hitm.timeEr) * 5) continue;
-        if (fabs(time - hitm.time) > 30) continue;
+        if (fabs(time - hitm.T()) > sqrt(timeError2 + hitm.dT2()) * 5) continue;
+        if (fabs(time - hitm.T()) > 30) continue;
       }
 
       // - check whether hit belong to the window ( track position +\- errors ) -
@@ -458,7 +457,7 @@ inline void L1Algo::findDoubletsStep0(
       fscal dy_est2 = Pick_m22[i1_4] * fabs(C11[i1_4] + stam.XYInfo.C11[i1_4]);
 
       /// Covariation matrix of the hit
-      auto [dxxScalMhit, dxyScalMhit, dyyScalMhit] = stam.FormXYCovarianceMatrix(hitm.dU(), hitm.dV());
+      auto [dxxScalMhit, dxyScalMhit, dyyScalMhit] = stam.FormXYCovarianceMatrix(hitm.dU2(), hitm.dV2());
 
       if (fUseHitErrors) { dy_est2 = Pick_m22[i1_4] * fabs(C11[i1_4] + dyyScalMhit); }
 
@@ -487,7 +486,7 @@ inline void L1Algo::findDoubletsStep0(
 
       L1UMeasurementInfo info = stam.frontInfo;
 
-      if (fUseHitErrors) info.sigma2 = hitm.dU() * hitm.dU();
+      if (fUseHitErrors) info.sigma2 = hitm.dU2();
 
       L1FilterChi2XYC00C10C11(info, x, y, C00, C10, C11, chi2, hitm.U());
 
@@ -498,11 +497,11 @@ inline void L1Algo::findDoubletsStep0(
 
       info = stam.backInfo;
 
-      if (fUseHitErrors) info.sigma2 = hitm.dV() * hitm.dV();
+      if (fUseHitErrors) info.sigma2 = hitm.dV2();
 
       L1FilterChi2(info, x, y, C00, C10, C11, chi2, hitm.V());
 
-      // FilterTime(T1, hitm.time, hitm.timeEr);
+      // FilterTime(T1, hitm.T(), hitm.dT2());
 
       if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {
         if (chi2[i1_4] > fDoubletChi2Cut) continue;
@@ -543,7 +542,7 @@ inline void L1Algo::findTripletsStep0(  // input
   // output
   Tindex& n3, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
   L1Vector<L1HitIndex_t>& hitsr_3, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
-  L1Vector<fvec>& dv_, L1Vector<fvec>& du_, L1Vector<fvec>& timeR, L1Vector<fvec>& timeER)
+  L1Vector<fvec>& dv2_3, L1Vector<fvec>& du2_3, L1Vector<fvec>& t_3, L1Vector<fvec>& dt2_3)
 {
   int iStaM = &stam - fParameters.GetStations().begin();
   int iStaR = &star - fParameters.GetStations().begin();
@@ -572,10 +571,10 @@ inline void L1Algo::findTripletsStep0(  // input
   u_front_3.reset(1, fvec::Zero());
   u_back_3.reset(1, fvec::Zero());
   z_Pos_3.reset(1, fvec::Zero());
-  du_.reset(1, fvec::One());
-  dv_.reset(1, fvec::One());
-  timeR.reset(1, fvec::Zero());
-  timeER.reset(1, fvec::One());
+  du2_3.reset(1, fvec::One());
+  dv2_3.reset(1, fvec::One());
+  t_3.reset(1, fvec::Zero());
+  dt2_3.reset(1, fvec::One());
 
   assert(istar < fParameters.GetNstationsActive());  //TODO SG!!! check if it is needed
 
@@ -589,11 +588,11 @@ inline void L1Algo::findTripletsStep0(  // input
     // pack the data
     fvec u_front_2 = 0.f;
     fvec u_back_2  = 0.f;
-    fvec du2       = 1.f;
-    fvec dv2       = 1.f;
+    fvec du2_2     = 1.f;
+    fvec dv2_2     = 1.f;
     fvec zPos_2    = 0.f;
-    fvec timeM     = 0.f;
-    fvec timeMEr   = 1.f;
+    fvec t_2       = 0.f;
+    fvec dt2_2     = 1.f;
 
     size_t n2_4 = 0;
     for (; n2_4 < fvec::size() && i2 < n2; i2++, n2_4++) {
@@ -616,11 +615,11 @@ inline void L1Algo::findTripletsStep0(  // input
       u_front_2[n2_4]        = hitm.U();
       u_back_2[n2_4]         = hitm.V();
       zPos_2[n2_4]           = hitm.Z();
-      timeM[n2_4]            = hitm.time;
-      timeMEr[n2_4]          = hitm.timeEr;
+      t_2[n2_4]              = hitm.T();
+      dt2_2[n2_4]            = hitm.dT2();
       //  num[n2_4] = hitm.track;
-      du2[n2_4] = hitm.dU();
-      dv2[n2_4] = hitm.dV();
+      du2_2[n2_4] = hitm.dU2();
+      dv2_2[n2_4] = hitm.dV2();
 
       hitsl_2[n2_4]     = hitsl_1[i1];
       hitsm_2_tmp[n2_4] = hitsm_2[i2];
@@ -641,7 +640,7 @@ inline void L1Algo::findTripletsStep0(  // input
 
     L1UMeasurementInfo info = stam.frontInfo;
 
-    if (fUseHitErrors) info.sigma2 = du2 * du2;
+    if (fUseHitErrors) info.sigma2 = du2_2;
 
     // TODO: SG: L1FilterNoField is wrong.
     // TODO: If the field was present before,
@@ -677,7 +676,7 @@ inline void L1Algo::findTripletsStep0(  // input
     */
 
     info = stam.backInfo;
-    if (fUseHitErrors) info.sigma2 = dv2 * dv2;
+    if (fUseHitErrors) info.sigma2 = dv2_2;
 
     if (istam < fNfieldStations) { L1Filter(T2, info, u_back_2); }
     else {
@@ -686,7 +685,7 @@ inline void L1Algo::findTripletsStep0(  // input
 
     // assert(T2.IsConsistent(true, n2_4));
 
-    FilterTime(T2, timeM, timeMEr, stam.timeInfo);
+    FilterTime(T2, t_2, dt2_2, stam.timeInfo);
 
     // assert(T2.IsConsistent(true, n2_4));
 
@@ -735,9 +734,9 @@ inline void L1Algo::findTripletsStep0(  // input
       if (fabs(T2.tx[i2_4]) > fMaxSlope) continue;
       if (fabs(T2.ty[i2_4]) > fMaxSlope) continue;
 
-      const fvec Pick_r22   = fTripletChi2Cut - T2.chi2 + (!fpCurrentIteration->GetTrackFromTripletsFlag() ? 0 : 1);
-      const fscal timeError = T2.C55[i2_4];
-      const fscal time      = T2.t[i2_4];
+      const fvec Pick_r22    = fTripletChi2Cut - T2.chi2 + (!fpCurrentIteration->GetTrackFromTripletsFlag() ? 0 : 1);
+      const fscal timeError2 = T2.C55[i2_4];
+      const fscal time       = T2.t[i2_4];
       // find first possible hit
 
 
@@ -745,7 +744,7 @@ inline void L1Algo::findTripletsStep0(  // input
       L1HitAreaTime area(vGridTime[&star - fParameters.GetStations().begin()], T2.x[i2_4] * iz, T2.y[i2_4] * iz,
                          (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + fMaxDZ * abs(T2.tx))[i2_4] * iz,
                          (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + fMaxDZ * abs(T2.ty))[i2_4] * iz, time,
-                         sqrt(timeError) * 5);
+                         sqrt(timeError2) * 5);
 
       L1HitIndex_t irh              = 0;
       L1HitIndex_t doubletNtriplets = 0;
@@ -783,11 +782,11 @@ inline void L1Algo::findTripletsStep0(  // input
         L1ExtrapolateLine(T_cur, zr);
 
         if ((star.timeInfo) && (stam.timeInfo))
-          if (fabs(T_cur.t[i2_4] - hitr.time) > sqrt(T_cur.C55[i2_4] + hitr.timeEr) * 5) continue;
+          if (fabs(T_cur.t[i2_4] - hitr.T()) > sqrt(T_cur.C55[i2_4] + sqrt(hitr.dT2())) * 5) continue;
 
         // TODO: SG: hardcoded cut of 30 ns
         if ((star.timeInfo) && (stam.timeInfo))
-          if (fabs(T_cur.t[i2_4] - hitr.time) > 30) continue;
+          if (fabs(T_cur.t[i2_4] - hitr.T()) > 30) continue;
 
         // - check whether hit belong to the window ( track position +\- errors ) -
         // check lower boundary
@@ -801,7 +800,7 @@ inline void L1Algo::findTripletsStep0(  // input
              + star.XYInfo.C11[i2_4])));  // TODO for FastPrim dx < dy - other sort is optimal. But not for doublets
 
         /// Covariation matrix of the hit
-        auto [dxxScalRhit, dxyScalRhit, dyyScalRhit] = star.FormXYCovarianceMatrix(hitr.dU(), hitr.dV());
+        auto [dxxScalRhit, dxyScalRhit, dyyScalRhit] = star.FormXYCovarianceMatrix(hitr.dU2(), hitr.dV2());
 
         if (fUseHitErrors) { dy_est2 = (Pick_r22[i2_4] * (fabs(C11[i2_4] + dyyScalRhit))); }
 
@@ -829,16 +828,16 @@ inline void L1Algo::findTripletsStep0(  // input
 
         info = star.frontInfo;
 
-        if (fUseHitErrors) info.sigma2 = hitr.dU() * hitr.dU();
+        if (fUseHitErrors) info.sigma2 = hitr.dU2();
 
         L1FilterChi2XYC00C10C11(info, x, y, C00, C10, C11, chi2, hitr.U());
         info = star.backInfo;
 
-        if (fUseHitErrors) info.sigma2 = hitr.dV() * hitr.dV();
+        if (fUseHitErrors) info.sigma2 = hitr.dV2();
 
         L1FilterChi2(info, x, y, C00, C10, C11, chi2, hitr.V());
 
-        FilterTime(T_cur, hitr.time, hitr.timeEr, star.timeInfo);
+        FilterTime(T_cur, hitr.T(), hitr.dT2(), star.timeInfo);
 
 
         if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {
@@ -877,11 +876,11 @@ inline void L1Algo::findTripletsStep0(  // input
         T3.SetOneEntry(n3_4, T2, i2_4);
         u_front_3[n3_V][n3_4] = hitr.U();
         u_back_3[n3_V][n3_4]  = hitr.V();
-        du_[n3_V][n3_4]       = hitr.dU();
-        dv_[n3_V][n3_4]       = hitr.dV();
+        du2_3[n3_V][n3_4]     = hitr.dU2();
+        dv2_3[n3_V][n3_4]     = hitr.dV2();
         z_Pos_3[n3_V][n3_4]   = zr;
-        timeR[n3_V][n3_4]     = hitr.time;
-        timeER[n3_V][n3_4]    = hitr.timeEr;
+        t_3[n3_V][n3_4]       = hitr.T();
+        dt2_3[n3_V][n3_4]     = hitr.dT2();
 
         n3++;
         n3_V = n3 / fvec::size();
@@ -892,10 +891,10 @@ inline void L1Algo::findTripletsStep0(  // input
           u_front_3.push_back(fvec::Zero());
           u_back_3.push_back(fvec::Zero());
           z_Pos_3.push_back(fvec::Zero());
-          du_.push_back(fvec::Zero());
-          dv_.push_back(fvec::Zero());
-          timeR.push_back(fvec::Zero());
-          timeER.push_back(fvec::Zero());
+          du2_3.push_back(fvec::One());
+          dv2_3.push_back(fvec::One());
+          t_3.push_back(fvec::Zero());
+          dt2_3.push_back(fvec::One());
         }
       }  // search area
 
@@ -906,7 +905,7 @@ inline void L1Algo::findTripletsStep0(  // input
 /// Add the right hits to parameters estimation.
 inline void L1Algo::findTripletsStep1(  // input
   Tindex n3_V, const L1Station& star, L1Vector<fvec>& u_front_, L1Vector<fvec>& u_back_, L1Vector<fvec>& z_Pos,
-  L1Vector<fvec>& dv_, L1Vector<fvec>& du_, L1Vector<fvec>& timeR, L1Vector<fvec>& timeER,
+  L1Vector<fvec>& dv2_3, L1Vector<fvec>& du2_3, L1Vector<fvec>& t_3, L1Vector<fvec>& dt2_3,
   // output
   //                L1TrackPar *T_3
   L1Vector<L1TrackPar>& T_3)
@@ -928,7 +927,7 @@ inline void L1Algo::findTripletsStep1(  // input
 
     L1UMeasurementInfo info = star.frontInfo;
 
-    if (fUseHitErrors) info.sigma2 = du_[i3_V] * du_[i3_V];
+    if (fUseHitErrors) info.sigma2 = du2_3[i3_V];
 
     bool noField = (&star - fParameters.GetStations().begin() >= fNfieldStations);
 
@@ -941,7 +940,7 @@ inline void L1Algo::findTripletsStep1(  // input
 
     info = star.backInfo;
 
-    if (fUseHitErrors) info.sigma2 = dv_[i3_V] * dv_[i3_V];
+    if (fUseHitErrors) info.sigma2 = dv2_3[i3_V];
 
     if (noField) { L1FilterNoField(T3, info, u_back_[i3_V]); }
     else {
@@ -950,9 +949,7 @@ inline void L1Algo::findTripletsStep1(  // input
 
     // assert(T3.IsConsistent(true, -1));
 
-    if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) {
-      FilterTime(T3, timeR[i3_V], timeER[i3_V], star.timeInfo);
-    }
+    if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) { FilterTime(T3, t_3[i3_V], dt2_3[i3_V], star.timeInfo); }
 
     // assert(T3.IsConsistent(true, -1));
     //  FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V]);
@@ -1018,7 +1015,7 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
     }
 
     fscal u[NHits], v[NHits], t[NHits], x[NHits], y[NHits], z[NHits];
-    fscal du[NHits], dv[NHits], dt[NHits], du2[NHits], dv2[NHits], dt2[NHits];
+    fscal du2[NHits], dv2[NHits], dt2[NHits];
 
     for (int ih = 0; ih < NHits; ++ih) {
       const L1Hit& hit       = fInputData.GetHit(ihit[ih]);
@@ -1027,13 +1024,10 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
       t[ih]                  = hit.t;
       std::tie(x[ih], y[ih]) = sta[ih].ConvUVtoXY<fscal>(u[ih], v[ih]);
       z[ih]                  = hit.z;
-      du[ih]                 = hit.du;
-      dv[ih]                 = hit.dv;
-      dt[ih]                 = hit.dt;
 
-      du2[ih] = hit.du * hit.du;
-      dv2[ih] = hit.dv * hit.dv;
-      dt2[ih] = hit.dt * hit.dt;
+      du2[ih] = hit.du2;
+      dv2[ih] = hit.dv2;
+      dt2[ih] = hit.dt2;
     };
 
     // find the field along the track
@@ -1080,11 +1074,11 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
         T.z     = z[ih0];
         T.t     = t[ih0];
 
-        //std::tie(T.C00, T.C10, T.C11) = sta[ih0].FormXYCovarianceMatrix(du[ih0], dv[ih0]);
+        //std::tie(T.C00, T.C10, T.C11) = sta[ih0].FormXYCovarianceMatrix(du2[ih0], dv2[ih0]);
 
         fit.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0], fvec::One());
         fit.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0], fvec::One());
-        fit.FilterTime(t[ih0], dt[ih0], fvec::One(), sta[ih0].timeInfo);
+        fit.FilterTime(t[ih0], dt2[ih0], fvec::One(), sta[ih0].timeInfo);
 
         {  // add the target constraint
           fvec eX, eY, J04, J14;
@@ -1112,7 +1106,7 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
           //if (ista[ih] == fNstationsBeforePipe) { fit.AddPipeMaterial(qp0, fvec::One()); }
           fit.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
           fit.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
-          fit.FilterTime(t[ih], dt[ih], fvec::One(), sta[ih].timeInfo);
+          fit.FilterTime(t[ih], dt2[ih], fvec::One(), sta[ih].timeInfo);
         }
       }
 
@@ -1134,7 +1128,7 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
         T.t     = t[ih0];
         T.C55   = dt2[ih0];
 
-        //std::tie(T.C00, T.C10, T.C11) = sta[ih0].FormXYCovarianceMatrix(du[ih0], dv[ih0]);
+        //std::tie(T.C00, T.C10, T.C11) = sta[ih0].FormXYCovarianceMatrix(du2[ih0], dv2[ih0]);
         fit.Filter(sta[ih0].frontInfo, u[ih0], du2[ih0], fvec::One());
         fit.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0], fvec::One());
         //fit.FilterTime(t[ih0], dt[ih0], fvec::One(), sta[ih0].timeInfo);
@@ -1422,18 +1416,18 @@ inline void L1Algo::CreatePortionOfDoublets(
 
     fvec u_front[L1Constants::size::kSingletPortionSizeVec];
     fvec u_back[L1Constants::size::kSingletPortionSizeVec];
-    fvec dv0[L1Constants::size::kSingletPortionSizeVec];
-    fvec du0[L1Constants::size::kSingletPortionSizeVec];
+    fvec dv2[L1Constants::size::kSingletPortionSizeVec];
+    fvec du2[L1Constants::size::kSingletPortionSizeVec];
     fvec zPos[L1Constants::size::kSingletPortionSizeVec];
-    fvec HitTime[L1Constants::size::kSingletPortionSizeVec];
-    fvec HitTimeEr[L1Constants::size::kSingletPortionSizeVec];
+    fvec t[L1Constants::size::kSingletPortionSizeVec];
+    fvec dt2[L1Constants::size::kSingletPortionSizeVec];
 
     /// prepare the portion of left hits data
 
     findSingletsStep0(  // input
       iSingletPortion * L1Constants::size::kSingletPortionSize, singletPortionSize, vHits_l,
       // output
-      u_front, u_back, zPos, hitsl_1, HitTime, HitTimeEr, du0, dv0);
+      u_front, u_back, zPos, hitsl_1, t, dt2, du2, dv2);
 
     for (Tindex i = 0; i < singletPortionSize; ++i)
       L1_ASSERT(hitsl_1[i] < HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal],
@@ -1443,9 +1437,9 @@ inline void L1Algo::CreatePortionOfDoublets(
 
     /// Get the field approximation. Add the target to parameters estimation. Propagaete to middle station.
 
-    findSingletsStep1(istal, istam, portionSize_V, u_front, u_back, zPos, HitTime, HitTimeEr,
+    findSingletsStep1(istal, istam, portionSize_V, u_front, u_back, zPos, t, dt2,
                       // output
-                      T_1, fld_1, du0, dv0);
+                      T_1, fld_1, du2, dv2);
 
     /// Find the doublets. Reformat data in the portion of doublets.
 
@@ -1540,10 +1534,10 @@ inline void L1Algo::CreatePortionOfTriplets(
     L1Vector<fvec>& u_front3        = fTripletHitR_Ufront[Thread];
     L1Vector<fvec>& u_back3         = fTripletHitR_Uback[Thread];
     L1Vector<fvec>& z_pos3          = fTripletHitR_Z[Thread];
-    L1Vector<fvec>& timeR           = fTripletHitR_Time[Thread];
-    L1Vector<fvec>& timeER          = fTripletHitR_TimeErr[Thread];
-    L1Vector<fvec>& du3             = fTripletHitR_dUfront[Thread];
-    L1Vector<fvec>& dv3             = fTripletHitR_dUback[Thread];
+    L1Vector<fvec>& t_3             = fTripletHitR_Time[Thread];
+    L1Vector<fvec>& dt2_3           = fTripletHitR_TimeErr[Thread];
+    L1Vector<fvec>& du2_3           = fTripletHitR_dUfront[Thread];
+    L1Vector<fvec>& dv2_3           = fTripletHitR_dUback[Thread];
 
     T_3.clear();
     hitsl_3.clear();
@@ -1552,10 +1546,10 @@ inline void L1Algo::CreatePortionOfTriplets(
     u_front3.clear();
     u_back3.clear();
     z_pos3.clear();
-    du3.clear();
-    dv3.clear();
-    timeR.clear();
-    timeER.clear();
+    du2_3.clear();
+    dv2_3.clear();
+    t_3.clear();
+    dt2_3.clear();
 
     /// Find the triplets(right hit). Reformat data in the portion of triplets.
 
@@ -1567,7 +1561,7 @@ inline void L1Algo::CreatePortionOfTriplets(
       n_2, hitsm_2, i1_2,
 
       // output
-      n3, T_3, hitsl_3, hitsm_3, hitsr_3, u_front3, u_back3, z_pos3, du3, dv3, timeR, timeER);
+      n3, T_3, hitsl_3, hitsm_3, hitsr_3, u_front3, u_back3, z_pos3, du2_3, dv2_3, t_3, dt2_3);
 
 
     for (Tindex i = 0; i < static_cast<Tindex>(hitsl_3.size()); ++i)
@@ -1582,7 +1576,7 @@ inline void L1Algo::CreatePortionOfTriplets(
 
     Tindex n3_V = (n3 + fvec::size() - 1) / fvec::size();
     findTripletsStep1(  // input
-      n3_V, star, u_front3, u_back3, z_pos3, du3, dv3, timeR, timeER,
+      n3_V, star, u_front3, u_back3, z_pos3, du2_3, dv2_3, t_3, dt2_3,
       // output
       T_3);
 

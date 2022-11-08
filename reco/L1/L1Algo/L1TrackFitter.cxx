@@ -347,8 +347,8 @@ void L1Algo::L1KFTrackFitter()
   // NOTE: u- and v-axes are axes, orthogonal to front and back strips of the station, respectively.
   fvec u[L1Constants::size::kMaxNstations];    // Hit position along the u-axis [cm]
   fvec v[L1Constants::size::kMaxNstations];    // Hit position along the v-axis [cm]
-  fvec d_u[L1Constants::size::kMaxNstations];  // Hit position uncertainty along the u-axis [cm]
-  fvec d_v[L1Constants::size::kMaxNstations];  // Hit position uncertainty along the v-axis [cm]
+  fvec du2[L1Constants::size::kMaxNstations];  // Hit position uncertainty along the u-axis [cm]
+  fvec dv2[L1Constants::size::kMaxNstations];  // Hit position uncertainty along the v-axis [cm]
 
   fvec x[L1Constants::size::kMaxNstations];     // Hit position along the x-axis [cm]
   fvec y[L1Constants::size::kMaxNstations];     // Hit position along the y-axis [cm]
@@ -358,8 +358,8 @@ void L1Algo::L1KFTrackFitter()
 
   fvec z[L1Constants::size::kMaxNstations];  // Hit position along the z-axis (precised) [cm]
 
-  fvec time[L1Constants::size::kMaxNstations];    // Hit time [ns]
-  fvec timeEr[L1Constants::size::kMaxNstations];  // Hit time uncertainty [ns]
+  fvec time[L1Constants::size::kMaxNstations];  // Hit time [ns]
+  fvec dt2[L1Constants::size::kMaxNstations];   // Hit time uncertainty [ns] squared
 
   fvec x_first;
   fvec y_first;
@@ -368,7 +368,7 @@ void L1Algo::L1KFTrackFitter()
   fvec d_xy_fst;
 
   fvec time_first;
-  fvec time_er_first;
+  fvec dt2_first;
 
   fvec x_last;
   fvec y_last;
@@ -377,8 +377,8 @@ void L1Algo::L1KFTrackFitter()
   fvec d_xy_lst;
 
   fvec time_last;
-  fvec time_er_last;
-  //  fvec time_er_lst;  /// TODO: Why are there two different variables for the time error on the last station?
+  fvec dt2_last;
+  //  fvec dt2_lst;  /// TODO: Why are there two different variables for the time error on the last station?
 
   fvec Sy[L1Constants::size::kMaxNstations];
   fvec w[L1Constants::size::kMaxNstations];
@@ -436,16 +436,16 @@ void L1Algo::L1KFTrackFitter()
 
         u[ista][iVec]            = hit.u;
         v[ista][iVec]            = hit.v;
-        d_u[ista][iVec]          = hit.du;
-        d_v[ista][iVec]          = hit.dv;
+        du2[ista][iVec]          = hit.du2;
+        dv2[ista][iVec]          = hit.dv2;
         std::tie(x_temp, y_temp) = sta[ista].ConvUVtoXY<fvec>(u[ista], v[ista]);
         x[ista][iVec]            = x_temp[iVec];
         y[ista][iVec]            = y_temp[iVec];
         time[ista][iVec]         = hit.t;
-        timeEr[ista][iVec]       = hit.dt;
+        dt2[ista][iVec]          = hit.dt2;
         z[ista][iVec]            = hit.z;
         sta[ista].fieldSlice.GetFieldValue(x[ista], y[ista], fB_temp);
-        std::tie(d_xx[ista], d_xy[ista], d_yy[ista]) = sta[ista].FormXYCovarianceMatrix(d_u[ista], d_v[ista]);
+        std::tie(d_xx[ista], d_xy[ista], d_yy[ista]) = sta[ista].FormXYCovarianceMatrix(du2[ista], dv2[ista]);
 
         fB[ista].x[iVec] = fB_temp.x[iVec];
         fB[ista].y[iVec] = fB_temp.y[iVec];
@@ -455,7 +455,7 @@ void L1Algo::L1KFTrackFitter()
           x_first[iVec]             = x[ista][iVec];
           y_first[iVec]             = y[ista][iVec];
           time_first[iVec]          = time[ista][iVec];
-          time_er_first[iVec]       = timeEr[ista][iVec];
+          dt2_first[iVec]           = dt2[ista][iVec];
           d_xx_fst[iVec]            = d_xx[ista][iVec];
           d_yy_fst[iVec]            = d_yy[ista][iVec];
           d_xy_fst[iVec]            = d_xy[ista][iVec];
@@ -471,7 +471,7 @@ void L1Algo::L1KFTrackFitter()
           d_yy_lst[iVec]           = d_yy[ista][iVec];
           d_xy_lst[iVec]           = d_xy[ista][iVec];
           time_last[iVec]          = time[ista][iVec];
-          time_er_last[iVec]       = timeEr[ista][iVec];
+          dt2_last[iVec]           = dt2[ista][iVec];
           staLast.XYInfo.C00[iVec] = sta[ista].XYInfo.C00[iVec];
           staLast.XYInfo.C10[iVec] = sta[ista].XYInfo.C10[iVec];
           staLast.XYInfo.C11[iVec] = sta[ista].XYInfo.C11[iVec];
@@ -505,10 +505,10 @@ void L1Algo::L1KFTrackFitter()
 
       int ista = nStations - 1;
 
-      time_last    = iif(w_time[ista] > fvec::Zero(), time_last, fvec::Zero());
-      time_er_last = iif(w_time[ista] > fvec::Zero(), time_er_last, fvec(100.));
+      time_last = iif(w_time[ista] > fvec::Zero(), time_last, fvec::Zero());
+      dt2_last  = iif(w_time[ista] > fvec::Zero(), dt2_last, fvec(100.));
 
-      FilterFirst(fit, x_last, y_last, time_last, time_er_last, staLast, d_xx_lst, d_yy_lst, d_xy_lst);
+      FilterFirst(fit, x_last, y_last, time_last, dt2_last, staLast, d_xx_lst, d_yy_lst, d_xy_lst);
 
       fldZ1 = z[ista];
 
@@ -551,9 +551,9 @@ void L1Algo::L1KFTrackFitter()
           fit.AddMaterial(sta[ista].materialInfo, qp01, wExtr);
         }
 
-        fit.Filter(sta[ista].frontInfo, u[ista], d_u[ista] * d_u[ista], w1);
-        fit.Filter(sta[ista].backInfo, v[ista], d_v[ista] * d_v[ista], w1);
-        fit.FilterTime(time[ista], timeEr[ista], w1_time, sta[ista].timeInfo);
+        fit.Filter(sta[ista].frontInfo, u[ista], du2[ista], w1);
+        fit.Filter(sta[ista].backInfo, v[ista], dv2[ista], w1);
+        fit.FilterTime(time[ista], dt2[ista], w1_time, sta[ista].timeInfo);
 
         fldB2 = fldB1;
         fldZ2 = fldZ1;
@@ -668,7 +668,7 @@ void L1Algo::L1KFTrackFitter()
 
       ista = 0;
 
-      FilterFirst(fit, x_first, y_first, time_first, time_er_first, staFirst, d_xx_fst, d_yy_fst, d_xy_fst);
+      FilterFirst(fit, x_first, y_first, time_first, dt2_first, staFirst, d_xx_fst, d_yy_fst, d_xy_fst);
 
       qp01 = tr.qp;
 
@@ -708,9 +708,9 @@ void L1Algo::L1KFTrackFitter()
           fit.AddMaterial(sta[ista].materialInfo, qp01, wExtr);
         }
 
-        fit.Filter(sta[ista].frontInfo, u[ista], d_u[ista] * d_u[ista], w1);
-        fit.Filter(sta[ista].backInfo, v[ista], d_v[ista] * d_v[ista], w1);
-        fit.FilterTime(time[ista], timeEr[ista], w1_time, sta[ista].timeInfo);
+        fit.Filter(sta[ista].frontInfo, u[ista], du2[ista], w1);
+        fit.Filter(sta[ista].backInfo, v[ista], dv2[ista], w1);
+        fit.FilterTime(time[ista], dt2[ista], w1_time, sta[ista].timeInfo);
 
         fldB2 = fldB1;
         fldZ2 = fldZ1;
@@ -791,8 +791,8 @@ void L1Algo::L1KFTrackFitterMuch()
 
   fvec u[L1Constants::size::kMaxNstations];
   fvec v[L1Constants::size::kMaxNstations];
-  fvec d_u[L1Constants::size::kMaxNstations];
-  fvec d_v[L1Constants::size::kMaxNstations];
+  fvec du2[L1Constants::size::kMaxNstations];
+  fvec dv2[L1Constants::size::kMaxNstations];
 
   fvec x[L1Constants::size::kMaxNstations];
   fvec y[L1Constants::size::kMaxNstations];
@@ -803,7 +803,7 @@ void L1Algo::L1KFTrackFitterMuch()
   fvec z[L1Constants::size::kMaxNstations];
 
   fvec time[L1Constants::size::kMaxNstations];
-  fvec timeEr[L1Constants::size::kMaxNstations];
+  fvec dt2[L1Constants::size::kMaxNstations];
 
   fvec x_first;
   fvec y_first;
@@ -812,7 +812,7 @@ void L1Algo::L1KFTrackFitterMuch()
   fvec d_xy_fst;
 
   fvec time_first;
-  fvec time_er_fst;
+  fvec dt2_fst;
 
   fvec x_last;
   fvec y_last;
@@ -821,7 +821,7 @@ void L1Algo::L1KFTrackFitterMuch()
   fvec d_xy_lst;
 
   fvec time_last;
-  fvec time_er_lst;
+  fvec dt2_lst;
   fvec dz;  /// !!!
 
   fvec Sy[L1Constants::size::kMaxNstations];
@@ -883,10 +883,10 @@ void L1Algo::L1KFTrackFitterMuch()
         x[ista][iVec]                                = x_temp[iVec];
         y[ista][iVec]                                = y_temp[iVec];
         time[ista][iVec]                             = hit.t;
-        timeEr[ista][iVec]                           = hit.dt;
-        d_u[ista][iVec]                              = hit.du;
-        d_v[ista][iVec]                              = hit.dv;
-        std::tie(d_xx[ista], d_xy[ista], d_yy[ista]) = sta[ista].FormXYCovarianceMatrix(d_u[ista], d_v[ista]);
+        dt2[ista][iVec]                              = hit.dt2;
+        du2[ista][iVec]                              = hit.du2;
+        dv2[ista][iVec]                              = hit.dv2;
+        std::tie(d_xx[ista], d_xy[ista], d_yy[ista]) = sta[ista].FormXYCovarianceMatrix(du2[ista], dv2[ista]);
 
         //  mom[ista][iVec] = hit.p;
         z[ista][iVec] = hit.z;
@@ -899,7 +899,7 @@ void L1Algo::L1KFTrackFitterMuch()
           x_first[iVec]             = x[ista][iVec];
           y_first[iVec]             = y[ista][iVec];
           time_first[iVec]          = time[ista][iVec];
-          time_er_fst[iVec]         = timeEr[ista][iVec];
+          dt2_fst[iVec]             = dt2[ista][iVec];
           d_xx_fst[iVec]            = d_xx[ista][iVec];
           d_yy_fst[iVec]            = d_yy[ista][iVec];
           d_xy_fst[iVec]            = d_xy[ista][iVec];
@@ -912,7 +912,7 @@ void L1Algo::L1KFTrackFitterMuch()
           x_last[iVec]             = x[ista][iVec];
           y_last[iVec]             = y[ista][iVec];
           time_last[iVec]          = time[ista][iVec];
-          time_er_lst[iVec]        = timeEr[ista][iVec];
+          dt2_lst[iVec]            = dt2[ista][iVec];
           d_xx_lst[iVec]           = d_xx[ista][iVec];
           d_yy_lst[iVec]           = d_yy[ista][iVec];
           d_xy_lst[iVec]           = d_xy[ista][iVec];
@@ -962,7 +962,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
       FilterFirst(T, x_first, y_first, staFirst);
 
-      FilterFirst(T1, x_first, y_first, time_first, time_er_fst, staFirst, d_xx_fst, d_yy_fst, d_xy_fst);
+      FilterFirst(T1, x_first, y_first, time_first, dt2_fst, staFirst, d_xx_fst, d_yy_fst, d_xy_fst);
 
       fldZ1 = z[i];
 
@@ -1029,7 +1029,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
           L1Filter(T, info, v[i], w1);
           T1.Filter(info, v[i], d_yy[i], w1);
-          T1.FilterTime(time[i], timeEr[i], w1, sta[i].timeInfo);
+          T1.FilterTime(time[i], dt2[i], w1, sta[i].timeInfo);
         }
 
         if (i >= 8) {
@@ -1107,7 +1107,7 @@ void L1Algo::L1KFTrackFitterMuch()
           info.sigma2 = d_yy[i];
           L1Filter(T, info, v[i], w1);
           T1.Filter(info, v[i], d_yy[i], w1);
-          T1.FilterTime(time[i], timeEr[i], w1, sta[i].timeInfo);
+          T1.FilterTime(time[i], dt2[i], w1, sta[i].timeInfo);
         }
       }
       // fit.L1AddHalfMaterial( T, sta[i].materialInfo, qp0 );
@@ -1156,7 +1156,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
       FilterFirst(T, x_last, y_last, staLast);
 
-      FilterFirstL(T1, x_last, y_last, time_last, time_er_lst, staLast, d_xx_lst, d_yy_lst, d_xy_lst);
+      FilterFirstL(T1, x_last, y_last, time_last, dt2_lst, staLast, d_xx_lst, d_yy_lst, d_xy_lst);
 
       qp0  = T.qp;
       qp01 = tr.qp;
@@ -1250,7 +1250,7 @@ void L1Algo::L1KFTrackFitterMuch()
 
           L1Filter(T, info, v[i], w1);
           T1.Filter(info, v[i], d_yy[i], w1);
-          T1.FilterTime(time[i], timeEr[i], w1, sta[i].timeInfo);
+          T1.FilterTime(time[i], dt2[i], w1, sta[i].timeInfo);
         }
 
         if (i < fNfieldStations - 1) {
@@ -1294,13 +1294,13 @@ void L1Algo::L1KFTrackFitterMuch()
           }
 
           L1UMeasurementInfo info = sta[i].frontInfo;
-          //   info.sigma2 = d_u[i] * d_u[i];
+          info.sigma2             = du2[i];
           T1.Filter(info, u[i], info.sigma2, w1);
 
-          info = sta[i].backInfo;
-          //   info.sigma2 = d_v[i] * d_v[i];
+          info        = sta[i].backInfo;
+          info.sigma2 = dv2[i];
           T1.Filter(info, v[i], info.sigma2, w1);
-          T1.FilterTime(time[i], timeEr[i], w1, sta[i].timeInfo);
+          T1.FilterTime(time[i], dt2[i], w1, sta[i].timeInfo);
 
 
           fldB2 = fldB1;
@@ -1598,7 +1598,8 @@ void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, L1Stat
   track.fTr.chi2 = ZERO;
 }
 
-void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& dt, L1Station& st, fvec& /*d_xx*/,
+
+void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, L1Station& st, fvec& /*d_xx*/,
                          fvec& /*d_yy*/, fvec& /*d_xy*/)
 {
   track.fTr.C00 = st.XYInfo.C00;
@@ -1621,7 +1622,7 @@ void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& 
   track.fTr.C52 = ZERO;
   track.fTr.C53 = ZERO;
   track.fTr.C54 = ZERO;
-  track.fTr.C55 = dt * dt;
+  track.fTr.C55 = dt2;
 
   track.fTr.x    = x;
   track.fTr.y    = y;
@@ -1630,7 +1631,8 @@ void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& 
   track.fTr.chi2 = ZERO;
 }
 
-void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& /*t*/, fvec& dt, L1Station& st)
+
+void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& /*t*/, fvec& dt2, L1Station& st)
 {
   track.fTr.C00 = st.XYInfo.C00;
   track.fTr.C10 = st.XYInfo.C10;
@@ -1652,7 +1654,7 @@ void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& /*t*/, fv
   track.fTr.C52 = ZERO;
   track.fTr.C53 = ZERO;
   track.fTr.C54 = ZERO;
-  track.fTr.C55 = dt * dt;
+  track.fTr.C55 = dt2;
 
   track.fTr.x    = x;
   track.fTr.y    = y;
@@ -1660,8 +1662,7 @@ void L1Algo::FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& /*t*/, fv
   track.fTr.chi2 = ZERO;
 }
 
-
-void L1Algo::FilterFirstL(L1TrackParFit& track, fvec& x, fvec& y, fvec& /*t*/, fvec& dt, L1Station& /*st*/, fvec& d_xx,
+void L1Algo::FilterFirstL(L1TrackParFit& track, fvec& x, fvec& y, fvec& /*t*/, fvec& dt2, L1Station& /*st*/, fvec& d_xx,
                           fvec& d_yy, fvec& d_xy)
 {
   // initialize covariance matrix
@@ -1688,7 +1689,7 @@ void L1Algo::FilterFirstL(L1TrackParFit& track, fvec& x, fvec& y, fvec& /*t*/, f
   track.fTr.C52 = ZERO;
   track.fTr.C53 = ZERO;
   track.fTr.C54 = ZERO;
-  track.fTr.C55 = dt * dt;
+  track.fTr.C55 = dt2;
 
   track.fTr.x = x;
   track.fTr.y = y;

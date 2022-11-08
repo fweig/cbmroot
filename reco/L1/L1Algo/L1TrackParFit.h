@@ -49,7 +49,7 @@ public:
 
   void Filter(const L1UMeasurementInfo& info, const fvec& u, const fvec& sigma2, const fvec& w);
   void FilterXY(const L1XYMeasurementInfo& info, fvec x, fvec y);
-  void FilterTime(fvec t0, fvec dt0, fvec w = 1., fvec timeInfo = 1.);
+  void FilterTime(fvec t, fvec dt2, fvec w, fvec timeInfo);
   void FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w = 1.);
 
   void Extrapolate(fvec z_out, fvec qp0, const L1FieldRegion& F, const fvec& w);

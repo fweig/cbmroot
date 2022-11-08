@@ -144,7 +144,7 @@ void L1TrackParFit::FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w)
   fTr.C55 -= K5 * F5;
 }
 
-void L1TrackParFit::FilterTime(fvec t, fvec dt, fvec w, fvec timeInfo)
+void L1TrackParFit::FilterTime(fvec t, fvec dt2, fvec w, fvec timeInfo)
 {
   // filter track with a time measurement
 
@@ -159,8 +159,6 @@ void L1TrackParFit::FilterTime(fvec t, fvec dt, fvec w, fvec timeInfo)
   fvec HCH = fTr.C55;
 
   w.setZero(timeInfo <= fvec::Zero());
-
-  fvec dt2 = dt * dt;
 
   // when dt0 is much smaller than current time error,
   // set track time exactly to the measurement value without filtering

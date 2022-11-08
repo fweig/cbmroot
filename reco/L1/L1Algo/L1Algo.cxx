@@ -180,12 +180,12 @@ L1HitPoint L1Algo::CreateHitPoint(const L1Hit& hit)
 {
   /// full the hit point by hit information: takes hit as input (2 strips)
   /// and creates hit_point with all coordinates (x,y,z,u,v,t);
-  return L1HitPoint(hit.z, hit.u, hit.v, hit.du, hit.dv, hit.t, hit.dt);
+  return L1HitPoint(hit.z, hit.u, hit.v, hit.t, hit.du2, hit.dv2, hit.dt2);
 }
 
 void L1Algo::CreateHitPoint(const L1Hit& hit, L1HitPoint& point)
 {
-  point.Set(hit.z, hit.u, hit.v, hit.du, hit.dv, hit.t, hit.dt);
+  point.Set(hit.z, hit.u, hit.v, hit.t, hit.du2, hit.dv2, hit.dt2);
 }
 
 int L1Algo::GetMcTrackIdForHit(int iHit) const

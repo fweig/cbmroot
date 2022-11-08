@@ -95,7 +95,7 @@ public:
   /// \param dv  V coordinate uncertainty [length unit]
   /// \return Covariance matrix of hit position in Cartesian coordinates: [dxx, dxy, dyy] [length unit squared]
   template<typename T, std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, fvec>::value, bool> = true>
-  std::tuple<T, T, T> FormXYCovarianceMatrix(T du, T dv) const;
+  std::tuple<T, T, T> FormXYCovarianceMatrix(T du2, T dv2) const;
 
 } _fvecalignment;
 
@@ -133,20 +133,19 @@ std::pair<T, T> L1Station::ConvUVtoXY(T u, T v) const
 // ---------------------------------------------------------------------------------------------------------------------
 //
 template<typename T, std::enable_if_t<std::is_floating_point<T>::value || std::is_same<T, fvec>::value, bool>>
-std::tuple<T, T, T> L1Station::FormXYCovarianceMatrix(T du, T dv) const
+std::tuple<T, T, T> L1Station::FormXYCovarianceMatrix(T du2, T dv2) const
 {
   if constexpr (std::is_same<T, fvec>::value) {
-    return std::make_tuple(
-      (xInfo.cos_phi * du) * (xInfo.cos_phi * du) + (xInfo.sin_phi * dv) * (xInfo.sin_phi * dv),  // dx2
-      (xInfo.cos_phi * du) * (yInfo.cos_phi * du) + (xInfo.sin_phi * dv) * (yInfo.sin_phi * dv),  // dxy
-      (yInfo.cos_phi * du) * (yInfo.cos_phi * du) + (yInfo.sin_phi * dv) * (yInfo.sin_phi * dv)   // dy2
+    return std::make_tuple(xInfo.cos_phi * xInfo.cos_phi * du2 + xInfo.sin_phi * xInfo.sin_phi * dv2,  // dx2
+                           xInfo.cos_phi * yInfo.cos_phi * du2 + xInfo.sin_phi * yInfo.sin_phi * dv2,  // dxy
+                           yInfo.cos_phi * yInfo.cos_phi * du2 + yInfo.sin_phi * yInfo.sin_phi * dv2   // dy2
     );
   }
   else {
     return std::make_tuple(
-      (xInfo.cos_phi[0] * du) * (xInfo.cos_phi[0] * du) + (xInfo.sin_phi[0] * dv) * (xInfo.sin_phi[0] * dv),  // dx2
-      (xInfo.cos_phi[0] * du) * (yInfo.cos_phi[0] * du) + (xInfo.sin_phi[0] * dv) * (yInfo.sin_phi[0] * dv),  // dxy
-      (yInfo.cos_phi[0] * du) * (yInfo.cos_phi[0] * du) + (yInfo.sin_phi[0] * dv) * (yInfo.sin_phi[0] * dv)   // dy2
+      xInfo.cos_phi[0] * xInfo.cos_phi[0] * du2 + xInfo.sin_phi[0] * xInfo.sin_phi[0] * dv2,  // dx2
+      xInfo.cos_phi[0] * yInfo.cos_phi[0] * du2 + xInfo.sin_phi[0] * yInfo.sin_phi[0] * dv2,  // dxy
+      yInfo.cos_phi[0] * yInfo.cos_phi[0] * du2 + yInfo.sin_phi[0] * yInfo.sin_phi[0] * dv2   // dy2
     );
   }
 }

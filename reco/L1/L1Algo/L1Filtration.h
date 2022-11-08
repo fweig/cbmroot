@@ -14,7 +14,7 @@
 #define cnst const fvec
 
 
-inline void FilterTime(L1TrackPar& T, fvec t, fvec dt, fvec timeInfo = fvec::One(), fvec w = fvec::One())
+inline void FilterTime(L1TrackPar& T, fvec t, fvec dt2, fvec timeInfo = fvec::One(), fvec w = fvec::One())
 {
   // filter track with a time measurement
 
@@ -29,8 +29,6 @@ inline void FilterTime(L1TrackPar& T, fvec t, fvec dt, fvec timeInfo = fvec::One
   fvec HCH = T.C55;
 
   w.setZero(timeInfo <= fvec::Zero());
-
-  fvec dt2 = dt * dt;
 
   // when dt0 is much smaller than current time error,
   // set track time exactly to the measurement value without filtering

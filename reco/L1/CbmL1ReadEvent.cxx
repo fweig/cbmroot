@@ -1261,17 +1261,18 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
     assert(th.iStripB >= 0 || th.iStripB < NStrips);
 
     L1Hit h;
+    h.iSt = th.iStation;
     h.f   = th.iStripF;
     h.b   = th.iStripB;
     h.ID  = th.id;
-    h.t   = th.time;
-    h.dt  = th.dt;
-    h.du  = th.du;
-    h.dv  = th.dv;
+    h.z   = th.z;
     h.u   = th.u;
     h.v   = th.v;
-    h.z   = th.z;
-    h.iSt = th.iStation;
+    h.t   = th.time;
+    h.dt2 = th.dt * th.dt;
+    h.du2 = th.du * th.du;
+    h.dv2 = th.dv * th.dv;
+
 
     // save hit
     fvExternalHits.push_back(CbmL1Hit(iHit, th.ExtIndex, th.Det));

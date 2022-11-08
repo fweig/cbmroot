@@ -88,7 +88,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   T.C10  = sta0.XYInfo.C10;
   T.C11  = sta0.XYInfo.C11;
 
-  if (fUseHitErrors) { std::tie(T.C00, T.C10, T.C11) = sta0.FormXYCovarianceMatrix(hit0.du, hit0.dv); }
+  if (fUseHitErrors) { std::tie(T.C00, T.C10, T.C11) = sta0.FormXYCovarianceMatrix(hit0.du2, hit0.dv2); }
 
   T.C20 = T.C21 = 0;
   T.C30 = T.C31 = T.C32 = 0;
@@ -96,7 +96,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
   T.C50 = T.C51 = T.C52 = T.C53 = T.C54 = 0;
   T.C22 = T.C33 = vINF;
   T.C44         = 1.;
-  T.C55         = hit0.dt * hit0.dt;
+  T.C55         = hit0.dt2;
 
   L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
   L1FieldRegion fld _fvecalignment;
@@ -141,15 +141,15 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
 
     L1UMeasurementInfo info = sta.frontInfo;
 
-    if (fUseHitErrors) { info.sigma2 = hit.du * hit.du; }
+    if (fUseHitErrors) { info.sigma2 = hit.du2; }
     L1Filter(T, info, u);
 
     info = sta.backInfo;
 
-    if (fUseHitErrors) { info.sigma2 = hit.dv * hit.dv; }
+    if (fUseHitErrors) { info.sigma2 = hit.dv2; }
     L1Filter(T, info, v);
 
-    FilterTime(T, hit.t, hit.dt);
+    FilterTime(T, hit.t, hit.dt2);
 
     fldB0       = fldB1;
     fldB1       = fldB2;
@@ -269,7 +269,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
       ih += HitsUnusedStartIndex[ista];
       const L1Hit& hit = (*vHitsUnused)[ih];
       //TODO: bug, it should be hit.dt*hit.dt
-      if (fabs(hit.t - T.t[0]) > sqrt(T.C55[0] + hit.dt * hit.dt) * 5) continue;
+      if (fabs(hit.t - T.t[0]) > sqrt(T.C55[0] + hit.dt2) * 5) continue;
 
       //if (GetFUsed((*fStripFlag)[hit.f] | (*fStripFlag)[hit.b])) continue;  // if used
       //L1_SHOW(fvHitKeyFlags.size());
@@ -320,15 +320,15 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
     L1UMeasurementInfo info = sta.frontInfo;
 
-    if (fUseHitErrors) { info.sigma2 = hit.du * hit.du; }
+    if (fUseHitErrors) { info.sigma2 = hit.du2; }
     L1Filter(T, info, u);
 
     info = sta.backInfo;
 
-    if (fUseHitErrors) { info.sigma2 = hit.dv * hit.dv; }
+    if (fUseHitErrors) { info.sigma2 = hit.dv2; }
     L1Filter(T, info, v);
 
-    FilterTime(T, hit.t, hit.dt);
+    FilterTime(T, hit.t, hit.dt2);
 
     fldB0 = fldB1;
     fldB1 = fldB2;

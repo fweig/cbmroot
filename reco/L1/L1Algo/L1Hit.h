@@ -38,9 +38,9 @@ public:
   float v  = 0.f;  ///< measured V coordinate [cm]
   float t  = 0.f;  ///< measured time [ns]
   float z  = 0.f;  ///< fixed Z coordinate [cm]
-  float du = 0.f;  ///< measured uncertainty of U coordinate [cm]
-  float dv = 0.f;  ///< measured uncertainty of V coordinate [cm]
-  float dt = 0.f;  ///< measured uncertainty of time [ns]
+  float du2 = 0.f;  ///< measured uncertainty of U coordinate [cm]
+  float dv2 = 0.f;  ///< measured uncertainty of V coordinate [cm]
+  float dt2 = 0.f;  ///< measured uncertainty of time [ns]
   int ID   = 0;    ///< index of hit before hits sorting
   int iSt  = 0;    ///< index of station in the active stations array
   // TODO: Test speed penalty of using iSt index
@@ -56,9 +56,9 @@ private:
     ar& v;
     ar& t;
     ar& z;
-    ar& du;
-    ar& dv;
-    ar& dt;
+    ar& du2;
+    ar& dv2;
+    ar& dt2;
     ar& ID;
     ar& iSt;
   }
