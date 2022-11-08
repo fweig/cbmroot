@@ -212,8 +212,6 @@ private:
   TStopwatch fTimers[NTimers];    // timers for different parts of algorithm
   TString fTimersNames[NTimers];  // names which are correspond to the timers.
   TStopwatch& GetTimer(TString t);
-
-public:
 };
 
 #endif

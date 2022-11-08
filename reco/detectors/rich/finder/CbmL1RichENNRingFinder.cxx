@@ -46,9 +46,7 @@ using std::sqrt;
 using std::vector;
 
 
-ClassImp(CbmL1RichENNRingFinder)
-
-  CbmL1RichENNRingFinder::CbmL1RichENNRingFinder(Int_t verbose)
+CbmL1RichENNRingFinder::CbmL1RichENNRingFinder(Int_t verbose)
   : finder(new CbmL1RichENNRingFinderParallel(verbose))
   , fRecoTime(0)
   , fNEvents(0)

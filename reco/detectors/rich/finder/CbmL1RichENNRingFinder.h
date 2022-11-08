@@ -23,9 +23,6 @@
 
 #include "CbmRichRingFinder.h"
 
-#include "TStopwatch.h"
-#include "TString.h"
-
 #include <vector>
 
 class ENNHit;
@@ -61,9 +58,6 @@ private:
   CbmL1RichENNRingFinderParallel* finder;
   Float_t fRecoTime;
   Int_t fNEvents;
-
-public:
-  ClassDef(CbmL1RichENNRingFinder, 1);
 };
 
 #endif

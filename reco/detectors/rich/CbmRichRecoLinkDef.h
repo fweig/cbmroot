@@ -31,6 +31,7 @@
 #pragma link C++ class CbmRichRingFitterQa + ;
 #pragma link C++ class CbmRichRecoQa + ;
 #pragma link C++ class CbmRichRecoTbQa + ;
+#pragma link C++ class CbmL1RichRingQa + ;
 
 //unpack
 #pragma link C++ class CbmRichUnpackAlgo + ;

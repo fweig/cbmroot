@@ -16,7 +16,8 @@
 #include "CbmRichRing.h"
 //#include "prototype/CbmRichProtProjectionProducer.h"
 
-//#include "CbmL1RichENNRingFinder.h"
+#include "CbmL1RichENNRingFinder.h"
+#include "CbmL1RichENNRingFinderParallel.h"
 #include "CbmRichRingFinderHough.h"
 #include "CbmRichRingFinderIdeal.h"
 #include "CbmRichTrackExtrapolationBase.h"
@@ -24,7 +25,6 @@
 #include "CbmRichTrackExtrapolationKF.h"
 #include "CbmRichTrackExtrapolationLittrack.h"
 #include "CbmRichTrackExtrapolationMirrorIdeal.h"
-//#include "CbmL1RichENNRingFinderParallel.h"
 //#include "prototype/CbmRichProtRingFinderHough.h"
 
 #include "CbmEvent.h"
@@ -197,13 +197,14 @@ void CbmRichReconstruction::InitFinder()
   else if (fFinderName == "ideal") {
     fRingFinder = new CbmRichRingFinderIdeal();
   }
-  /* else if (fFinderName == "enn") {
-     fRingFinder = new CbmL1RichENNRingFinder(0);
-     }
-     else if ((fFinderName == "enn_parallel")) {
-
-     fRingFinder = new CbmL1RichENNRingFinderParallel(0);
-     } else if (fFinderName == "hough_prototype") {
+  else if (fFinderName == "enn") {
+    fRingFinder = new CbmL1RichENNRingFinder(0);
+  }
+  else if ((fFinderName == "enn_parallel")) {
+    fRingFinder = new CbmL1RichENNRingFinderParallel(0);
+  }
+  /*
+  else if (fFinderName == "hough_prototype") {
      fRingFinder = new CbmRichProtRingFinderHough();
      }*/
   else {

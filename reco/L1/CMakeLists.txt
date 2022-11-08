@@ -32,8 +32,6 @@ set(SRCS
   CbmL1TrackMerger.cxx 
   CbmL1TofMerger.cxx
  # L1AlgoInputData.cxx
-  #OffLineInterface/CbmL1RichENNRingFinder.cxx
-  #OffLineInterface/CbmL1RichENNRingFinderParallel.cxx 
   OffLineInterface/CbmL1StsTrackFinder.cxx 
   OffLineInterface/CbmL1GlobalTrackFinder.cxx 
   OffLineInterface/CbmL1GlobalFindTracksEvents.cxx
@@ -41,7 +39,6 @@ set(SRCS
   #OffLineInterface / CbmL1MuchHit.cxx
   #OffLineInterface / CbmL1MuchTrack.cxx
   #OffLineInterface / CbmL1MuchFinderQa.cxx
-  #OffLineInterface/CbmL1RichRingQa.cxx
   #OffLineInterface / CbmL1SttHit.cxx
   #OffLineInterface / CbmL1SttTrackFinder.cxx
   #OffLineInterface / CbmL1SttTrack.cxx 

@@ -33,6 +33,7 @@ set(SRCS
   qa/CbmRichUrqmdTest.cxx
   qa/CbmRichGeoTestOpt.cxx
   qa/CbmRichRecoQa.cxx
+  qa/CbmL1RichRingQa.cxx
 
   unpack/CbmRichUnpackAlgo.cxx
   unpack/CbmRichUnpackAlgo2022.cxx
@@ -43,9 +44,12 @@ set(SRCS
 
 set(NO_DICT_SRCS
   CbmRichConverter.cxx
+
   finder/CbmRichRingFinderIdeal.cxx
   finder/CbmRichRingFinderHoughImpl.cxx
   finder/CbmRichRingFinderHough.cxx
+  finder/CbmL1RichENNRingFinder.cxx
+  finder/CbmL1RichENNRingFinderParallel.cxx 
 
   fitter/CbmRichRingFitterCircle.cxx
   fitter/CbmRichRingFitterCOP.cxx
