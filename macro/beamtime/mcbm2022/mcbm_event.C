@@ -63,12 +63,12 @@ Bool_t mcbm_event(std::string infile,
   UInt_t eb_TriggerMinNumberRich  { 0 };
 
   Int_t  eb_TriggerMaxNumberBMon  { -1 };
-  Int_t  eb_TriggerMaxNumberSts   { -1 };
-  Int_t  eb_TriggerMaxNumberMuch  { -1 };
-  Int_t  eb_TriggerMaxNumberTrd1d { -1 };
-  Int_t  eb_TriggerMaxNumberTrd2d { -1 };
-  Int_t  eb_TriggerMaxNumberTof   { -1 };
-  Int_t  eb_TriggerMaxNumberRich  { -1 };
+  Int_t  eb_TriggerMaxNumberSts   { 500 };
+  Int_t  eb_TriggerMaxNumberMuch  { 500 };
+  Int_t  eb_TriggerMaxNumberTrd1d { 500 };
+  Int_t  eb_TriggerMaxNumberTrd2d { 500 };
+  Int_t  eb_TriggerMaxNumberTof   { 500 };
+  Int_t  eb_TriggerMaxNumberRich  { 500 };
 
   UInt_t eb_TriggerMinLayersNumberTof  { 0 };
   UInt_t eb_TriggerMinLayersNumberSts  { 0 };
@@ -342,13 +342,18 @@ Bool_t mcbm_event(std::string infile,
 
 
   // -----   Output filename   ----------------------------------------------
-  std::string suffix = ".event.root";
+  std::string suffix = ".events.root";
   if (bDigiEvtsOutput) suffix = ".digievents.root";
   std::string filename    = Form("%d%s", uRunId, (bTrigSet ? Form("_%u", uTriggerSet) : "")) + suffix;
   std::string outfilename = sOutDir + "/" + filename;
   std::cout << "-I- " << myName << ": Output file will be " << outfilename << std::endl;
   std::string histosfilename = sOutDir + "/" + filename;
-  histosfilename.replace(histosfilename.find(suffix), suffix.size(), ".hist.root");
+  if (bDigiEvtsOutput) {  //
+    histosfilename.replace(histosfilename.find(suffix), suffix.size(), ".digievents.hist.root");
+  }
+  else {
+    histosfilename.replace(histosfilename.find(suffix), suffix.size(), ".events.hist.root");
+  }
   std::cout << "-I- " << myName << ": Histos file will be " << histosfilename << std::endl;
   // ------------------------------------------------------------------------
 
