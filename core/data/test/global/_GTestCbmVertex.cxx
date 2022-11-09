@@ -4,8 +4,6 @@
 
 #include "CbmVertex.h"
 
-#include <Logger.h>
-
 #include <TMatrixTSym.h>
 #include <TVector3.h>
 

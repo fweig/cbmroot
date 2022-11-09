@@ -7,17 +7,11 @@ set(PUB_DEPS
   CbmData
   Gtest
   GtestMain
-  )
   
-set(PVT_DEPS
+  FairRoot::Base
   )
-  
-set(INT_DEPS  
-  )
-  
   
 Set(CbmPsdDigiSources
-  ${CBMDATA_DIR}/psd/CbmPsdDigi.cxx
   _GTestCbmPsdDigi.cxx
 )
 
@@ -25,7 +19,6 @@ CreateGTestExeAndAddTest(_GTestCbmPsdDigi "${INCLUDE_DIRECTORIES}" "${LINK_DIREC
                          "${CbmPsdDigiSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "")
 
 Set(CbmPsdAddressSources
-  ${CBMDATA_DIR}/psd/CbmPsdAddress.cxx
   _GTestCbmPsdAddress.cxx
 )
 
@@ -33,14 +26,12 @@ CreateGTestExeAndAddTest(_GTestCbmPsdAddress "${INCLUDE_DIRECTORIES}" "${LINK_DI
                          "${CbmPsdAddressSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestPsdDigi")
 
 Set(CbmPsdPointSources
-  ${CBMDATA_DIR}/psd/CbmPsdPoint.cxx
   _GTestCbmPsdPoint.cxx
 )
 
 CreateGTestExeAndAddTest(_GTestCbmPsdPoint "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
                          "${CbmPsdPointSources}" "${PUB_DEPS}" "${PVT_DEPS}" "${INT_DEPS}" "_GTestPsdAddress")
 Set(CbmPsdHitSources
-  ${CBMDATA_DIR}/psd/CbmPsdHit.cxx
   _GTestCbmPsdHit.cxx
 )
 

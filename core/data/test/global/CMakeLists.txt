@@ -7,26 +7,20 @@ set(INCLUDE_DIRECTORIES
   )
 
 
-set(PUB_DEPS
+set(PVT_DEPS
   CbmData
   Gtest
   GtestMain
-  )
-  
-set(PVT_DEPS
-  FairLogger::FairLogger
-  Boost::regex
+
+  Boost::serialization
+
   ROOT::Matrix
   ROOT::Physics
-  )
-  
-set(INT_DEPS  
   )
   
  
 # --- Test CbmDigiEvent
 Set(CbmDigiEventSources
-  ${CBMDATA_DIR}/global/CbmDigiEvent.h
   _GTestCbmDigiEvent.cxx
 )
 CreateGTestExeAndAddTest(_GTestCbmDigiEvent "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
@@ -34,7 +28,6 @@ CreateGTestExeAndAddTest(_GTestCbmDigiEvent "${INCLUDE_DIRECTORIES}" "${LINK_DIR
 
 # --- Test CbmDigiTimeslice
 Set(CbmDigiTimesliceSources
-  ${CBMDATA_DIR}/global/CbmDigiTimeslice.h
   _GTestCbmDigiTimeslice.cxx
 )
 CreateGTestExeAndAddTest(_GTestCbmDigiTimeslice "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
@@ -42,7 +35,6 @@ CreateGTestExeAndAddTest(_GTestCbmDigiTimeslice "${INCLUDE_DIRECTORIES}" "${LINK
 
  # --- Test CbmVertex
 Set(CbmVertexSources
-  ${CBMDATA_DIR}/global/CbmVertex.cxx
   _GTestCbmVertex.cxx
 )
 CreateGTestExeAndAddTest(_GTestCbmVertex "${INCLUDE_DIRECTORIES}" "${LINK_DIRECTORIES}"
