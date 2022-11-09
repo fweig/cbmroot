@@ -44,12 +44,19 @@ if [ $same_system -eq 1 ]; then
 			export LD_LIBRARY_PATH="@MY_LD_LIBRARY_PATH@":$LD_LIBRARY_PATH
 			export PATH="@MY_PATH@":$PATH
 			;;
+		-o | --overwrite )
+			for rc in /etc/profile $HOME/.bash_profiles; do echo "sourced ${rc}"; [ -f "${rc}" ] && source "${rc}"; done;
+			export DYLD_LIBRARY_PATH="@MY_DYLD_LIBRARY_PATH@"
+			export LD_LIBRARY_PATH="@MY_LD_LIBRARY_PATH@"
+                        export PATH=$PATH:"@MY_PATH@"
+			;;
 		* )
-                        echo "Default was changed"
-                        echo "Append new paths to LD_LIBRARY_PATH and PATH instead of overwritting"
+                        echo "To append use flag \"-a\". To overwrite use \"-o\". To prepend use \"-p\"."
+                        echo "Appended LD_LIBRARY_PATH and PATH by default."
                         export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:"@MY_DYLD_LIBRARY_PATH@"
                         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"@MY_LD_LIBRARY_PATH@"
                         export PATH=$PATH:"@MY_PATH@"
 			;;
 	esac
+ 	echo "Configurated for CBMROOT at ${VMCWORKDIR}"
 fi
