@@ -20,6 +20,10 @@ If(ProjectUpdated)
   Message("GTEST source directory was changed so build directory was deleted")
 EndIf()
 
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/include)
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
+endif()
+
 ExternalProject_Add(GTEST
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest
   BUILD_IN_SOURCE 0
@@ -36,14 +40,11 @@ ExternalProject_Add(GTEST
   INSTALL_COMMAND ${CMAKE_COMMAND} --build . --target install
 )
 
-#[[add_library(Gtest STATIC IMPORTED)
-set_target_properties(Gtest PROPERTIES IMPORTED_LOCATION ${Gtest_LIBRARY})
-add_dependencies(Gtest GTEST)]]
-
 add_library(Gtest STATIC IMPORTED GLOBAL)
 set_target_properties(Gtest PROPERTIES 
 IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}
-INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/include/gtest)
+INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/include/gtest
+INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/include)
 add_dependencies(Gtest GTEST)
 
 
@@ -53,23 +54,11 @@ IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_ma
 INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/include/gtest)
 add_dependencies(GtestMain GTEST)
 
-message(STATUS  "-----------------${CMAKE_BINARY_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
-set(GTEST_LIBRARIES gtest)
 set(GTEST_INCLUDE_DIR "${CMAKE_BINARY_DIR}/include")
 set(GTEST_LIBRARY  ${CMAKE_BINARY_DIR}/${_LIBDIR_DEFAULT}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX})
-set(GTEST_MAIN_LIBRARY ${CMAKE_BINARY_DIR}/${_LIBDIR_DEFAULT}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX})
-set(GTEST_BOTH_LIBRARIES "${GTEST_LIBRARY};${GTEST_MAIN_LIBRARY}")
 
 Include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GTEST
   FOUND_VAR GTEST_FOUND
-  REQUIRED_VARS GTEST_INCLUDE_DIR GTEST_LIBRARY GTEST_MAIN_LIBRARY GTEST_BOTH_LIBRARIES
+  REQUIRED_VARS GTEST_INCLUDE_DIR GTEST_LIBRARY
 )
-
-#Installation is not needed and currently fails to a strange PATH
-#install(DIRECTORY ${Gtest_ROOTDIR}/ DESTINATION ".")
-
-#if(GTEST_FOUND)
-#  set(GTEST_INCLUDE_DIRS ${Gtest_INCLUDE_DIR})
-#  set(GTEST_LIB_DIR ${Gtest_ROOTDIR}/${_LIBDIR_DEFAULT})
-#endif()
