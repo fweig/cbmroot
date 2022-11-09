@@ -134,10 +134,10 @@ void L1Parameters::CheckConsistency() const
 
   for (int iSt = 0; iSt < fNstationsActiveTotal; ++iSt) {
     fStations[iSt].CheckConsistency();
-    if (fStations[iSt].z[0] < fTargetPos[2][0]) {
+    if (fStations[iSt].fZ[0] < fTargetPos[2][0]) {
       std::stringstream msg;
       msg << "L1Parameters: station with global ID = " << iSt << " is placed before target "
-          << "(z_st = " << fStations[iSt].z[0] << " [cm] < z_targ = " << fTargetPos[2][0] << " [cm])";
+          << "(z_st = " << fStations[iSt].fZ[0] << " [cm] < z_targ = " << fTargetPos[2][0] << " [cm])";
       throw std::logic_error(msg.str());
     }
   }

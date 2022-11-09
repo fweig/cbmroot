@@ -273,11 +273,6 @@ public:
   /// Gets flag: to correct input hits on MC or not
   bool GetCorrectHitsOnMC() const { return fIfCorrectHitsOnMC; }
 
-  /// Correction function for the material budget map
-  /// It fills bins with no statistics
-  template<L1DetectorID detID>
-  void ApplyCorrectionToMaterialMap(L1Material& material, const L1MaterialInfo& homogenious);
-
   /// Utility to map the L1DetectorID items into detector names
   static constexpr const char* GetDetectorName(L1DetectorID detectorID)
   {
@@ -660,66 +655,6 @@ private:
 
   ClassDef(CbmL1, 0);
 };
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-//
-template<L1DetectorID detID>
-void CbmL1::ApplyCorrectionToMaterialMap(L1Material& material, const L1MaterialInfo& homogenious)
-{
-  // TODO: unify the correction function for all detectors
-  [[maybe_unused]] float minVal = 0.;
-  if constexpr (detID == L1DetectorID::kMuch) { minVal = 0.15f; }
-  else if constexpr (detID == L1DetectorID::kTof || detID == L1DetectorID::kTrd) {
-    minVal = 0.0015f;
-  }
-
-  // A bit ugly solution, but so can we avoid dependency on input maps file
-  std::vector<float> keepRow {};
-  if constexpr (detID != L1DetectorID::kSts) { keepRow.resize(material.GetNbins()); }
-
-  for (int iBinX = 0; iBinX < material.GetNbins(); ++iBinX) {
-    if constexpr (detID == L1DetectorID::kTof) { minVal = 0.0015f; }
-    if constexpr (detID != L1DetectorID::kSts) {
-      for (int iBinY = 0; iBinY < material.GetNbins(); ++iBinY) {
-        keepRow[iBinY] = material.GetRadThickBin(iBinX, iBinY);
-      }
-    }
-    for (int iBinY = 0; iBinY < material.GetNbins(); ++iBinY) {
-      if constexpr (detID == L1DetectorID::kMvd) {
-        // Correction for holes in the material map
-        if (material.GetRadThickBin(iBinX, iBinY) < homogenious.RadThick[0]) {
-          if (iBinY > 0 && iBinY < material.GetNbins() - 1) {
-            material.SetRadThickBin(iBinX, iBinY, TMath::Min(keepRow[iBinY - 1], keepRow[iBinY + 1]));
-          }
-        }
-
-        // Correction for the hard-coded value of RadThick of MVD stations
-        if (material.GetRadThickBin(iBinX, iBinY) < 0.0015) { material.SetRadThickBin(iBinX, iBinY, 0.0015); }
-      }
-      else if constexpr (detID == L1DetectorID::kSts) {
-        if (material.GetRadThickBin(iBinX, iBinY) < homogenious.RadThick[0]) {
-          material.SetRadThickBin(iBinX, iBinY, homogenious.RadThick[0]);
-        }
-      }
-      else if constexpr (detID == L1DetectorID::kMuch || detID == L1DetectorID::kTrd || detID == L1DetectorID::kTof) {
-        // Correction for holes in the material map
-        if (L1Algo::TrackingMode::kGlobal != fTrackingMode) {
-          if ((iBinY > 0) && (iBinY < material.GetNbins() - 1)) {
-            material.SetRadThickBin(iBinX, iBinY, TMath::Min(keepRow[iBinY - 1], keepRow[iBinY + 1]));
-          }
-        }
-        float val = material.GetRadThickBin(iBinX, iBinY);
-        if (val > 0.0015) {  // remember last non-zero value
-          minVal = val;
-        }
-        else {  // empty bin with no statistics, fill it with the neighbours value
-          material.SetRadThickBin(iBinX, iBinY, minVal);
-        }
-      }
-    }
-  }
-}
 
 
 #endif  //_CbmL1_h_

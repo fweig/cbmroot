@@ -464,9 +464,6 @@ InitStatus CbmL1::Init()
     // *** MVD stations info ***
     if (fUseMVD) {
       auto materialTableMvd = ReadMaterialBudget(L1DetectorID::kMvd);
-      auto correctionMvd    = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-        this->ApplyCorrectionToMaterialMap<L1DetectorID::kMvd>(material, homogenious);
-      };
       for (int iSt = 0; iSt < fNMvdStationsGeom; ++iSt) {
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kMvd, iSt);
         stationInfo.SetStationType(1);  // MVD
@@ -478,8 +475,8 @@ InitStatus CbmL1::Init()
         stationInfo.SetYmax(mvdInterface->GetYmax(iSt));
         stationInfo.SetRmin(mvdInterface->GetRmin(iSt));
         stationInfo.SetRmax(mvdInterface->GetRmax(iSt));
-        stationInfo.SetMaterialSimple(mvdInterface->GetThickness(iSt), mvdInterface->GetRadLength(iSt));
-        stationInfo.SetMaterialMap(std::move(materialTableMvd[iSt]), correctionMvd);
+        stationInfo.SetZthickness(mvdInterface->GetThickness(iSt));
+        stationInfo.SetMaterialMap(std::move(materialTableMvd[iSt]));
         // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
         stationInfo.SetFrontBackStripsGeometry(
           (fscal) mvdInterface->GetStripsStereoAngleFront(iSt), (fscal) mvdInterface->GetStripsSpatialRmsFront(iSt),
@@ -493,9 +490,6 @@ InitStatus CbmL1::Init()
     // *** STS stations info ***
     if (fUseSTS) {
       auto materialTableSts = ReadMaterialBudget(L1DetectorID::kSts);
-      auto correctionSts    = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-        this->ApplyCorrectionToMaterialMap<L1DetectorID::kSts>(material, homogenious);
-      };
       for (int iSt = 0; iSt < fNStsStationsGeom; ++iSt) {
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kSts, iSt);
         stationInfo.SetStationType(0);  // STS
@@ -509,8 +503,8 @@ InitStatus CbmL1::Init()
         stationInfo.SetYmax(stsInterface->GetYmax(iSt));
         stationInfo.SetRmin(stsInterface->GetRmin(iSt));
         stationInfo.SetRmax(stsInterface->GetRmax(iSt));
-        stationInfo.SetMaterialSimple(stsInterface->GetThickness(iSt), stsInterface->GetRadLength(iSt));
-        stationInfo.SetMaterialMap(std::move(materialTableSts[iSt]), correctionSts);
+        stationInfo.SetZthickness(stsInterface->GetThickness(iSt));
+        stationInfo.SetMaterialMap(std::move(materialTableSts[iSt]));
         // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
         stationInfo.SetFrontBackStripsGeometry(
           (fscal) stsInterface->GetStripsStereoAngleFront(iSt), (fscal) stsInterface->GetStripsSpatialRmsFront(iSt),
@@ -524,9 +518,6 @@ InitStatus CbmL1::Init()
     // *** MuCh stations info ***
     if (fUseMUCH) {
       auto materialTableMuch = ReadMaterialBudget(L1DetectorID::kMuch);
-      auto correctionMuch    = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-        this->ApplyCorrectionToMaterialMap<L1DetectorID::kMuch>(material, homogenious);
-      };
       for (int iSt = 0; iSt < fNMuchStationsGeom; ++iSt) {
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kMuch, iSt);
         stationInfo.SetStationType(2);  // MuCh
@@ -540,8 +531,8 @@ InitStatus CbmL1::Init()
         stationInfo.SetYmax(muchInterface->GetYmax(iSt));
         stationInfo.SetRmin(muchInterface->GetRmin(iSt));
         stationInfo.SetRmax(muchInterface->GetRmax(iSt));
-        stationInfo.SetMaterialSimple(muchInterface->GetThickness(iSt), muchInterface->GetRadLength(iSt));
-        stationInfo.SetMaterialMap(std::move(materialTableMuch[iSt]), correctionMuch);
+        stationInfo.SetZthickness(muchInterface->GetThickness(iSt));
+        stationInfo.SetMaterialMap(std::move(materialTableMuch[iSt]));
         // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
         stationInfo.SetFrontBackStripsGeometry(
           (fscal) muchInterface->GetStripsStereoAngleFront(iSt), (fscal) muchInterface->GetStripsSpatialRmsFront(iSt),
@@ -555,9 +546,6 @@ InitStatus CbmL1::Init()
     // *** TRD stations info ***
     if (fUseTRD) {
       auto materialTableTrd = ReadMaterialBudget(L1DetectorID::kTrd);
-      auto correctionTrd    = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-        this->ApplyCorrectionToMaterialMap<L1DetectorID::kTrd>(material, homogenious);
-      };
       for (int iSt = 0; iSt < fNTrdStationsGeom; ++iSt) {
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kTrd, iSt);
         stationInfo.SetStationType((iSt == 1 || iSt == 3) ? 6 : 3);  // MuCh
@@ -571,8 +559,8 @@ InitStatus CbmL1::Init()
         stationInfo.SetYmax(trdInterface->GetYmax(iSt));
         stationInfo.SetRmin(trdInterface->GetRmin(iSt));
         stationInfo.SetRmax(trdInterface->GetRmax(iSt));
-        stationInfo.SetMaterialSimple(trdInterface->GetThickness(iSt), trdInterface->GetRadLength(iSt));
-        stationInfo.SetMaterialMap(std::move(materialTableTrd[iSt]), correctionTrd);
+        stationInfo.SetZthickness(trdInterface->GetThickness(iSt));
+        stationInfo.SetMaterialMap(std::move(materialTableTrd[iSt]));
         fscal trdFrontPhi   = trdInterface->GetStripsStereoAngleFront(iSt);
         fscal trdBackPhi    = trdInterface->GetStripsStereoAngleBack(iSt);
         fscal trdFrontSigma = trdInterface->GetStripsSpatialRmsFront(iSt);
@@ -596,9 +584,6 @@ InitStatus CbmL1::Init()
     // *** TOF stations info ***
     if (fUseTOF) {
       auto materialTableTof = ReadMaterialBudget(L1DetectorID::kTof);
-      auto correctionTof    = [this](L1Material& material, const L1MaterialInfo& homogenious) {
-        this->ApplyCorrectionToMaterialMap<L1DetectorID::kTof>(material, homogenious);
-      };
       for (int iSt = 0; iSt < fNTofStationsGeom; ++iSt) {
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kTof, iSt);
         stationInfo.SetStationType(4);
@@ -609,9 +594,8 @@ InitStatus CbmL1::Init()
         stationInfo.SetFieldStatus(0);
         stationInfo.SetZ(tofInterface->GetZ(iSt));
         auto thickness = tofInterface->GetThickness(iSt);
-        auto radLength = tofInterface->GetRadLength(iSt);
-        stationInfo.SetMaterialSimple(thickness, radLength);
-        stationInfo.SetMaterialMap(std::move(materialTableTof[iSt]), correctionTof);
+        stationInfo.SetZthickness(thickness);
+        stationInfo.SetMaterialMap(std::move(materialTableTof[iSt]));
         stationInfo.SetXmax(tofInterface->GetXmax(iSt));
         stationInfo.SetYmax(tofInterface->GetYmax(iSt));
         stationInfo.SetRmin(tofInterface->GetRmin(iSt));
@@ -1710,6 +1694,7 @@ std::vector<L1Material> CbmL1::ReadMaterialBudget(L1DetectorID detectorID)
           result[iSt].SetRadThickBin(iBinX, iBinY, 0.01 * hStaRadLen->GetBinContent(iBinX, iBinY));
         }  // iBinX
       }    // iBinY
+      result[iSt].Repare();
       LOG(info) << "- station " << iSt;
     }  // iSt
     gFile      = oldFile;
@@ -1720,6 +1705,7 @@ std::vector<L1Material> CbmL1::ReadMaterialBudget(L1DetectorID detectorID)
   }
   return result;
 }
+
 
 double CbmL1::boundedGaus(double sigma)
 {

@@ -4,7 +4,7 @@
 
 #include "L1Def.h"
 #include "L1Fit.h"
-#include "L1MaterialInfo.h"
+#include "L1Material.h"
 #include "L1TrackPar.h"
 
 //#define cnst static const fvec
@@ -375,30 +375,6 @@ void L1Fit::L1AddMaterial(L1TrackPar& T, fvec radThick, fvec qp0, fvec w)
   T.C33 += w * (ONE + tyty) * a;
 }
 
-void L1Fit::L1AddMaterial(L1TrackPar& T, const L1MaterialInfo& info, fvec qp0, fvec w)
-{
-  cnst ONE = 1.f;
-
-  fvec tx    = T.tx;
-  fvec ty    = T.ty;
-  fvec txtx  = tx * tx;
-  fvec tyty  = ty * ty;
-  fvec txtx1 = txtx + ONE;
-  fvec h     = txtx + tyty;
-  fvec t     = sqrt(txtx1 + tyty);
-  fvec h2    = h * h;
-  fvec qp0t  = qp0 * t;
-
-  cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f, c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
-
-  fvec s0 = (c1 + c2 * info.logRadThick + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
-  //fvec a = ( (ONE+fMass2*qp0*qp0t)*info.RadThick*s0*s0 );
-  fvec a = ((t + fMass2 * qp0 * qp0t) * info.RadThick * s0 * s0);
-
-  T.C22 += w * txtx1 * a;
-  T.C32 += w * tx * ty * a;
-  T.C33 += w * (ONE + tyty) * a;
-}
 
 // inline void L1Fit::L1AddThickMaterial( L1TrackPar &T, fvec radThick, fvec qp0, fvec thickness=0, fvec w = 1, fvec mass2 = 0.10565f*0.10565f, bool fDownstream = 1 )
 // {
@@ -482,31 +458,6 @@ void L1Fit::L1AddThickMaterial(L1TrackPar& T, fvec radThick, fvec qp0, fvec w, f
   T.C33 += w * (ONE + tyty) * a;
 }
 
-
-void L1Fit::L1AddHalfMaterial(L1TrackPar& T, const L1MaterialInfo& info, fvec qp0)
-{
-  cnst ONE   = 1.f;
-  fvec tx    = T.tx;
-  fvec ty    = T.ty;
-  fvec txtx  = tx * tx;
-  fvec tyty  = ty * ty;
-  fvec txtx1 = txtx + ONE;
-  fvec h     = txtx + tyty;
-  fvec t     = sqrt(txtx1 + tyty);
-  fvec h2    = h * h;
-  fvec qp0t  = qp0 * t;
-
-  cnst c1(0.0136), c2 = c1 * fvec(0.038), c3 = c2 * fvec(0.5), c4 = -c3 / fvec(2.0), c5 = c3 / fvec(3.0),
-                   c6 = -c3 / fvec(4.0);
-
-  fvec s0 = (c1 + c2 * (info.logRadThick + fvec(log(0.5))) + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
-  //fvec a = ( (ONE+fMass2*qp0*qp0t)*info.RadThick*0.5*s0*s0 );
-  fvec a = ((t + fMass2 * qp0 * qp0t) * info.RadThick * fvec(0.5) * s0 * s0);
-
-  T.C22 += txtx1 * a;
-  T.C32 += tx * ty * a;
-  T.C33 += (ONE + tyty) * a;
-}
 
 void L1Fit::L1AddPipeMaterial(L1TrackPar& T, fvec qp0, fvec w)
 {

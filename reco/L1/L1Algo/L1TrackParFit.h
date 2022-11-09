@@ -7,7 +7,6 @@
 
 #include "L1Def.h"
 #include "L1Field.h"
-#include "L1MaterialInfo.h"
 #include "L1TrackPar.h"
 #include "L1UMeasurementInfo.h"
 #include "L1XYMeasurementInfo.h"
@@ -69,8 +68,6 @@ public:
   void EnergyLossCorrectionIron(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
   void EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
   void EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
-
-  void AddMaterial(const L1MaterialInfo& info, fvec qp0, fvec w);
 
   void AddMaterial(const fvec& radThick, fvec qp0, fvec w = 1);
 

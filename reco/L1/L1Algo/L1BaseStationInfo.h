@@ -46,20 +46,20 @@ public:
     kXmax,            ///< max size in X direction
     kYmax,            ///< max size in Y direction
     // L1Station initialization
-    kType,               ///< station type
-    kTimeInfo,           ///< if time info is used (flag)
-    kFieldStatus,        ///< if station is placed in field (flag)
-    kZ,                  ///< z coordinate of the station position
-    kRmin,               ///< internal radius of station (gap size)
-    kRmax,               ///< exteranl radius of station
-    kMaterialInfo,       ///< thickness and rad. length of the station
-    kThicknessMap,       ///< thickness map of the station (optional?)
-    kFieldSlice,         ///< L1Station.L1FieldSlice object initialization
-    kStripsFrontPhi,     ///< strips geometry initialization
-    kStripsFrontSigma,   ///<
-    kStripsBackPhi,      ///<
-    kStripsBackSigma,    ///<
-    kTimeResolution,     ///< time resolution
+    kType,              ///< station type
+    kTimeInfo,          ///< if time info is used (flag)
+    kFieldStatus,       ///< if station is placed in field (flag)
+    kZ,                 ///< z coordinate of the station position
+    kRmin,              ///< internal radius of station (gap size)
+    kRmax,              ///< exteranl radius of station
+    kZthickness,        ///< Z thickness of the station
+    kThicknessMap,      ///< thickness map of the station (optional?)
+    kFieldSlice,        ///< L1Station.L1FieldSlice object initialization
+    kStripsFrontPhi,    ///< strips geometry initialization
+    kStripsFrontSigma,  ///<
+    kStripsBackPhi,     ///<
+    kStripsBackSigma,   ///<
+    kTimeResolution,    ///< time resolution
     // The last item is equal to the number of bits in fInitFlags
     kEnd
   };
@@ -131,16 +131,7 @@ public:
   const L1Material& GetMaterialMap() const;
 
   /// Gets station thickness
-  fvec GetThickness() const { return fL1Station.materialInfo.thick; }
-
-  /// Gets the radiation length of the station material
-  fvec GetMaterialRadLength() const { return fL1Station.materialInfo.RL; }
-
-  /// Gets the station thickness in units of the radiation length
-  fvec GetRadThick() const { return fL1Station.materialInfo.RadThick; }
-
-  /// Gets log of the station thickness in units of the radiation length
-  fvec GetLogRadThick() const { return fL1Station.materialInfo.logRadThick; }
+  fvec GetZthickness() const { return fL1Station.fZthick; }
 
   /// Gets min transverse size of the station [cm]
   fvec GetRmin() const { return fL1Station.Rmin; }
@@ -170,7 +161,7 @@ public:
   double GetZdouble() const { return fZPos; }
 
   /// Gets SIMD vectorized z position of the station [cm]
-  fvec GetZsimdVec() const { return fL1Station.z; }
+  fvec GetZsimdVec() const { return fL1Station.fZ; }
 
   /// Prints registered fields
   /// verbosity = 0: print only station id, detector id and address in one line
@@ -201,36 +192,15 @@ public:
 
   /// Sets station thickness and radiation length
   /// \param thickness       Thickness of station [arb. units]
-  /// \param radiationLength Radiation length of station [arb. units]
-  void SetMaterialSimple(double thickness, double radiationLength);
+  void SetZthickness(double thickness);
 
   /// Sets station thickness in units of radiation length mapped vs. position in XY plane (copy semantics)
   /// \param thicknessMap  Map of station thickness in units of radiation length
-  /// \param correction    User corrections to material map: thicknessMap - reference to the material map
-  void SetMaterialMap(const L1Material& thicknessMap,
-                      const std::function<void(L1Material& thicknessMap)>& correction = nullptr);
-
-  /// Sets station thickness in units of radiation length mapped vs. position in XY plane (copy semantics)
-  /// \param thicknessMap  Map of station thickness in units of radiation length
-  /// \param correction    User corrections to material map: thicknessMap - reference to the material map,
-  ///                      homogenious - object, which keeps expected homogenious values of station thickness and rad. length
-  void
-  SetMaterialMap(const L1Material& thicknessMap,
-                 const std::function<void(L1Material& thicknessMap, const L1MaterialInfo& homogenious)>& correction);
+  void SetMaterialMap(const L1Material& thicknessMap);
 
   /// Sets station thickness in units of radiation length mapped vs. position in XY plane (move semantics)
   /// \param thicknessMap  Map of station thickness in units of radiation length
-  /// \param correction    User corrections to material map: thicknessMap - reference to the material map
-  void SetMaterialMap(L1Material&& thicknessMap,
-                      const std::function<void(L1Material& thicknessMap)>& correction = nullptr) noexcept;
-
-  /// Sets station thickness in units of radiation length mapped vs. position in XY plane (move semantics)
-  /// \param thicknessMap  Map of station thickness in units of radiation length
-  /// \param correction    User corrections to material map: thicknessMap - reference to the material map,
-  ///                      homogenious - object, which keeps expected homogenious values of station thickness and rad. length
-  void SetMaterialMap(
-    L1Material&& thicknessMap,
-    const std::function<void(L1Material& thicknessMap, const L1MaterialInfo& homogenious)>& correction) noexcept;
+  void SetMaterialMap(L1Material&& thicknessMap) noexcept;
 
   /// Sets max transverse size of the station []
   void SetRmax(double inRmax);

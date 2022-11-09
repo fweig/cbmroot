@@ -52,7 +52,7 @@ set(SRCS
   L1Algo/L1FitMaterial.cxx
   L1Algo/L1Extrapolation.cxx
   CbmL1MCTrack.cxx
-  L1Algo/L1MaterialInfo.cxx
+  L1Algo/L1Material.cxx
   L1Algo/L1UMeasurementInfo.cxx
   L1Algo/L1XYMeasurementInfo.cxx
   L1Algo/L1Field.cxx

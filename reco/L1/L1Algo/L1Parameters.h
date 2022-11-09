@@ -17,7 +17,7 @@
 
 #include "L1CAIteration.h"
 #include "L1Constants.h"
-#include "L1MaterialInfo.h"
+#include "L1Material.h"
 #include "L1Station.h"
 #include "L1Utils.h"
 #include "L1Vector.h"

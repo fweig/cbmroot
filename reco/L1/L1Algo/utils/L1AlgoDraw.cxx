@@ -593,7 +593,7 @@ void L1AlgoDraw::DrawInputHits()
 
     TLine* line = new TLine();
     line->SetLineColor(StaColor);
-    line->DrawLine(st.z[0], -st.Rmax[0], st.z[0], st.Rmax[0]);
+    line->DrawLine(st.fZ[0], -st.Rmax[0], st.fZ[0], st.Rmax[0]);
 
     TPolyMarker* pmyz = new TPolyMarker(n_poly, z_poly, y_poly);
     pmyz->SetMarkerColor(mcolor[ista]);
@@ -609,7 +609,7 @@ void L1AlgoDraw::DrawInputHits()
 
     XZ->cd();
 
-    line->DrawLine(st.z[0], -st.Rmax[0], st.z[0], st.Rmax[0]);
+    line->DrawLine(st.fZ[0], -st.Rmax[0], st.fZ[0], st.Rmax[0]);
 
     TPolyMarker* pmxz = new TPolyMarker(n_poly, z_poly, x_poly);
     pmxz->SetMarkerColor(mcolor[ista]);
@@ -714,7 +714,7 @@ void L1AlgoDraw::DrawRestHits(L1HitIndex_t* StsRestHitsStartIndex, L1HitIndex_t*
 
     TLine* line = new TLine();
     line->SetLineColor(StaColor);
-    line->DrawLine(st.z[0], -st.Rmax[0], st.z[0], st.Rmax[0]);
+    line->DrawLine(st.fZ[0], -st.Rmax[0], st.fZ[0], st.Rmax[0]);
 
     TPolyMarker* pmyz = new TPolyMarker(n_poly, z_poly, y_poly);
     pmyz->SetMarkerColor(mcolor[ista]);
@@ -730,7 +730,7 @@ void L1AlgoDraw::DrawRestHits(L1HitIndex_t* StsRestHitsStartIndex, L1HitIndex_t*
 
     XZ->cd();
 
-    line->DrawLine(st.z[0], -st.Rmax[0], st.z[0], st.Rmax[0]);
+    line->DrawLine(st.fZ[0], -st.Rmax[0], st.fZ[0], st.Rmax[0]);
 
     TPolyMarker* pmxz = new TPolyMarker(n_poly, z_poly, x_poly);
     pmxz->SetMarkerColor(mcolor[ista]);

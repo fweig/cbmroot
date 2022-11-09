@@ -2,7 +2,7 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Sergey Gorbunov, Sergei Zharko [committer] */
 
-#include "L1MaterialInfo.h"
+#include "L1Material.h"
 
 #include <Logger.h>
 
@@ -11,60 +11,6 @@
 #include <vector>
 
 #include "L1Utils.h"
-
-/************************
- * L1MaterialInfo class *
- ************************/
-
-std::string L1MaterialInfo::ToString(int indentLevel) const
-{
-  std::stringstream aStream {};
-  // TODO: possibly it is better to place indentChar into L1Parameters (S.Zharko)
-  constexpr char indentChar = '\t';
-  std::string indent(indentLevel, indentChar);
-  aStream << indent << "Station thickness (X) [cm]:  " << std::setw(12) << std::setfill(' ') << thick[0] << '\n';
-  aStream << indent << "Radiation length (X0) [cm]:  " << std::setw(12) << std::setfill(' ') << RL[0] << '\n';
-  aStream << indent << "X/X0:                        " << std::setw(12) << std::setfill(' ') << RadThick[0] << '\n';
-  aStream << indent << "log(X/X0):                   " << std::setw(12) << std::setfill(' ') << logRadThick[0];
-  return aStream.str();
-}
-
-
-//------------------------------------------------------------------------------------------------------------------------------------
-//
-void L1MaterialInfo::CheckConsistency() const
-{
-  /* (i) Checks for the horizontal equality of elements */
-  L1Utils::CheckSimdVectorEquality(thick, "L1MaterialInfo::thick");
-  L1Utils::CheckSimdVectorEquality(RL, "L1MaterialInfo::RL");
-  L1Utils::CheckSimdVectorEquality(RadThick, "L1MaterialInfo::RadThick");
-  L1Utils::CheckSimdVectorEquality(logRadThick, "L1MaterialInfo::logRadThick");
-
-  /* (ii) Checks for physical sence: thick and RL must be larger then 0. */
-  if (thick[0] < fscal(0.)) {
-    std::stringstream aStream;
-    aStream << "L1MaterialInfo: illegal value for station thickness: (" << thick[0]
-            << ", positive value expected) [cm]";
-    throw std::logic_error(aStream.str());
-  }
-
-  if (RL[0] < fscal(0.)) {
-    std::stringstream aStream;
-    aStream << "L1MaterialInfo: illegal value for station radiation length: (" << RL[0]
-            << ", positive value expected) [cm]";
-    throw std::logic_error(aStream.str());
-  }
-
-  /* (iii) Checks for RadThick and logRadThick */
-  if (!L1Utils::CmpFloats(RadThick[0] * RL[0], thick[0])) {
-    throw std::logic_error(
-      "L1MaterialInfo: illegal relation between thickness, radiation length and their ratio (RadThick)");
-  }
-
-  if (!L1Utils::CmpFloats(std::exp(logRadThick[0]), RadThick[0])) {
-    throw std::logic_error("L1MaterialInfo: illegal relation between RadThick and logRadThick data fields");
-  }
-}
 
 
 /********************
@@ -196,4 +142,80 @@ void L1Material::Swap(L1Material& other) noexcept
   std::swap(fRmax, other.fRmax);
   std::swap(fFactor, other.fFactor);
   std::swap(fTable, other.fTable);  // Probably can cause segmentation violation (did not understand)
+}
+
+void L1Material::Repare()
+{
+  // correction of the material map: fill empty bins
+  // we assume that bins with radiation thickness == 0. are lacking statistics
+
+  const float cut = 1.e-8;
+  const int n     = GetNbins();
+  std::vector<float> oldMap(n * n, 0.);
+
+  bool repeat = 1;
+
+  while (repeat) {  // until there are empty bins
+
+    oldMap.assign(oldMap.size(), 0.);
+    for (int iy = 0; iy < n; ++iy) {
+      for (int ix = 0; ix < n; ++ix) {
+        oldMap[iy * n + ix] = GetRadThickBin(ix, iy);
+      }
+    }
+
+    repeat = 0;
+    for (int iy = 0; iy < n; ++iy) {
+      for (int ix = 0; ix < n; ++ix) {
+        if (oldMap[iy * n + ix] >= cut) continue;
+
+        double sum  = 0.;
+        double sumw = 0.;
+        // look left
+        for (int i = ix - 1; i >= 0; --i) {
+          float v = oldMap[iy * n + i];
+          if (v >= cut) {
+            double w = 1. / (ix - i);
+            sum += w * v;
+            sumw += w;
+            break;
+          }
+        }
+        // look right
+        for (int i = ix + 1; i < n; ++i) {
+          float v = oldMap[iy * n + i];
+          if (v >= cut) {
+            double w = 1. / (i - ix);
+            sum += w * v;
+            sumw += w;
+            break;
+          }
+        }
+        // look down
+        for (int i = iy - 1; i >= 0; --i) {
+          float v = oldMap[i * n + ix];
+          if (v >= cut) {
+            double w = 1. / (iy - i);
+            sum += w * v;
+            sumw += w;
+            break;
+          }
+        }
+        // look up
+        for (int i = iy + 1; i < n; ++i) {
+          float v = oldMap[i * n + ix];
+          if (v >= cut) {
+            double w = 1. / (i - iy);
+            sum += w * v;
+            sumw += w;
+            break;
+          }
+        }
+        if (sumw > 1.e-8) {
+          SetRadThickBin(ix, iy, sum / sumw);
+          repeat = true;
+        }
+      }
+    }
+  }
 }

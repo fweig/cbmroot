@@ -100,9 +100,9 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
 
   L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
   L1FieldRegion fld _fvecalignment;
-  fvec fldZ0 = sta1.z;  // suppose field is smoth
-  fvec fldZ1 = sta2.z;
-  fvec fldZ2 = sta0.z;
+  fvec fldZ0 = sta1.fZ;  // suppose field is smoth
+  fvec fldZ1 = sta2.fZ;
+  fvec fldZ2 = sta0.fZ;
 
 
   sta1.fieldSlice.GetFieldValue(x1, y1, fldB0);
@@ -111,13 +111,13 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
 
   fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
 
-  int ista_prev = ista1;
-  int ista      = ista2;
+  //int ista_prev = ista1;
+  int ista = ista2;
 
   for (int i = iFirstHit + step; step * i <= step * iLastHit; i += step) {
     const L1Hit& hit = fInputData.GetHit(hits[i]);
-    ista_prev        = ista;
-    ista             = hit.iSt;
+    //ista_prev        = ista;
+    ista = hit.iSt;
 
     const L1Station& sta = fParameters.GetStation(ista);
 
@@ -130,11 +130,10 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
       L1Extrapolate(T, hit.z, qp0, fld);
     }
     L1ExtrapolateTime(T, dz);
-
-    fit.L1AddMaterial(T, sta.materialInfo, qp0, 1);
-    if ((step * ista <= step * (fNstationsBeforePipe + (step + 1) / 2 - 1))
-        && (step * ista_prev >= step * (fNstationsBeforePipe + (step + 1) / 2 - 1 - step)))
-      fit.L1AddPipeMaterial(T, qp0, 1);
+    fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista, T.x, T.y), qp0, fvec::One());
+    //if ((step * ista <= step * (fNstationsBeforePipe + (step + 1) / 2 - 1))
+    //  && (step * ista_prev >= step * (fNstationsBeforePipe + (step + 1) / 2 - 1 - step)))
+    //fit.L1AddPipeMaterial(T, qp0, 1);
 
     fvec u = hit.u;
     fvec v = hit.v;
@@ -158,7 +157,7 @@ void L1Algo::BranchFitterFast(const L1Branch& t, L1TrackPar& T, const bool dir, 
     auto [x, y] = sta.ConvUVtoXY<fvec>(u, v);
     sta.fieldSlice.GetFieldValue(x, y, fldB2);
 
-    fldZ2 = sta.z;
+    fldZ2 = sta.fZ;
     fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
   }  // i
 
@@ -218,9 +217,9 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
   L1FieldValue fldB0, fldB1, fldB2 _fvecalignment;
   L1FieldRegion fld _fvecalignment;
-  fvec fldZ0 = sta1.z;
-  fvec fldZ1 = sta2.z;
-  fvec fldZ2 = sta0.z;
+  fvec fldZ0 = sta1.fZ;
+  fvec fldZ1 = sta2.fZ;
+  fvec fldZ2 = sta0.fZ;
 
   sta1.fieldSlice.GetFieldValue(x1, y1, fldB0);
   sta2.fieldSlice.GetFieldValue(x2, y2, fldB1);
@@ -238,11 +237,11 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
 
     const L1Station& sta = fParameters.GetStation(ista);
 
-    fvec dz = sta.z - T.z;
+    fvec dz = sta.fZ - T.z;
 
-    if (kMcbm == fTrackingMode) { L1ExtrapolateLine(T, sta.z); }
+    if (kMcbm == fTrackingMode) { L1ExtrapolateLine(T, sta.fZ); }
     else {
-      L1Extrapolate(T, sta.z, qp0, fld);
+      L1Extrapolate(T, sta.fZ, qp0, fld);
     }
     L1ExtrapolateTime(T, dz);
 
@@ -316,7 +315,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
     L1ExtrapolateTime(T, dz1);
 
     L1ExtrapolateLine(T, z);
-    fit.L1AddMaterial(T, sta.materialInfo, qp0, 1);
+    fit.L1AddMaterial(T, fParameters.GetMaterialThickness(ista, T.x, T.y), qp0, fvec::One());
 
     L1UMeasurementInfo info = sta.frontInfo;
 
@@ -335,7 +334,7 @@ void L1Algo::FindMoreHits(L1Branch& t, L1TrackPar& T, const bool dir,
     fldZ0 = fldZ1;
     fldZ1 = fldZ2;
     sta.fieldSlice.GetFieldValue(x, y, fldB2);
-    fldZ2 = sta.z;
+    fldZ2 = sta.fZ;
     fld.Set(fldB2, fldZ2, fldB1, fldZ1, fldB0, fldZ0);
   }
 

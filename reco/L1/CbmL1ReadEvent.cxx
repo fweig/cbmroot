@@ -439,7 +439,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
               // due to a problem in transport
               int iStActive = fpAlgo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kMvd);
               if (iStActive == -1) { continue; }
-              double d = (MC.zIn - sta[iStActive].z[0]);
+              double d = (MC.zIn - sta[iStActive].fZ[0]);
               if (fabs(d) < fabs(bestDist)) {
                 bestDist    = d;
                 MC.iStation = iStActive;
@@ -480,7 +480,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
               if (iStActive == -1) { continue; }
               // use z_in since z_out is sometimes very wrong
               // due to a problem in transport
-              double d = (MC.zIn - sta[iStActive].z[0]);
+              double d = (MC.zIn - sta[iStActive].fZ[0]);
               if (fabs(d) < fabs(bestDist)) {
                 bestDist    = d;
                 MC.iStation = iStActive;
@@ -514,7 +514,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
             for (Int_t iSt = 0; iSt < fNMuchStationsGeom; iSt++) {
               int iStActive = fpAlgo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kMuch);
               assert(iStActive != -1);
-              if (MC.z > sta[iStActive].z[0] - 2.5) { MC.iStation = iStActive; }
+              if (MC.z > sta[iStActive].fZ[0] - 2.5) { MC.iStation = iStActive; }
             }
             assert(MC.iStation >= 0);
             auto itTrack = fmMCTracksLinksMap.find(CbmL1LinkKey(MC.ID, iEvent, iFile));
@@ -541,7 +541,7 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
               int iStActive = fpAlgo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kTrd);
 
               assert(iStActive != -1);
-              if (MC.z > sta[iStActive].z[0] - 20.0) { MC.iStation = iStActive; }
+              if (MC.z > sta[iStActive].fZ[0] - 20.0) { MC.iStation = iStActive; }
             }
             assert(MC.iStation >= 0);
             auto itTrack = fmMCTracksLinksMap.find(CbmL1LinkKey(MC.ID, iEvent, iFile));
@@ -608,17 +608,17 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
             for (int iSt = 0; iSt < fNTofStationsGeom; iSt++) {
               int iStActive = fpAlgo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kTof);
               if (iStActive == -1) { continue; }
-              if (fabs(MC.z - sta[iStActive].z[0]) < dist) {
-                dist = fabs(MC.z - sta[iStActive].z[0]);
+              if (fabs(MC.z - sta[iStActive].fZ[0]) < dist) {
+                dist = fabs(MC.z - sta[iStActive].fZ[0]);
                 iSta = iSt;
               }
             }
             MC.iStation = fpAlgo->GetParameters()->GetStationIndexActive(iSta, L1DetectorID::kTof);
             assert(MC.iStation >= 0);
             if (iSta >= 0) {
-              if (fabs(sta[iSta].z[0] - MC.z) < TofPointToTrackdZ[iSta][iTrack]) {
+              if (fabs(sta[iSta].fZ[0] - MC.z) < TofPointToTrackdZ[iSta][iTrack]) {
                 fTofPointToTrack[iSta][iTrack]  = iMC;
-                TofPointToTrackdZ[iSta][iTrack] = fabs(sta[iSta].z[0] - MC.z);
+                TofPointToTrackdZ[iSta][iTrack] = fabs(sta[iSta].fZ[0] - MC.z);
               }
             }
           }

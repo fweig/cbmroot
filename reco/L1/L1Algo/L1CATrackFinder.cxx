@@ -251,14 +251,14 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     const fvec ty = (yl - fTargY) * dzli;
 
     L1FieldValue b00, b01, b10, b11, b12;
-    fld0Sta0.fieldSlice.GetFieldValue(fTargX + tx * (fld0Sta0.z - fTargZ), fTargY + ty * (fld0Sta0.z - fTargZ), b00);
-    fld0Sta1.fieldSlice.GetFieldValue(fTargX + tx * (fld0Sta1.z - fTargZ), fTargY + ty * (fld0Sta1.z - fTargZ), b01);
-    fld1Sta0.fieldSlice.GetFieldValue(fTargX + tx * (fld1Sta0.z - fTargZ), fTargY + ty * (fld1Sta0.z - fTargZ), b10);
-    fld1Sta1.fieldSlice.GetFieldValue(fTargX + tx * (fld1Sta1.z - fTargZ), fTargY + ty * (fld1Sta1.z - fTargZ), b11);
-    fld1Sta2.fieldSlice.GetFieldValue(fTargX + tx * (fld1Sta2.z - fTargZ), fTargY + ty * (fld1Sta2.z - fTargZ), b12);
+    fld0Sta0.fieldSlice.GetFieldValue(fTargX + tx * (fld0Sta0.fZ - fTargZ), fTargY + ty * (fld0Sta0.fZ - fTargZ), b00);
+    fld0Sta1.fieldSlice.GetFieldValue(fTargX + tx * (fld0Sta1.fZ - fTargZ), fTargY + ty * (fld0Sta1.fZ - fTargZ), b01);
+    fld1Sta0.fieldSlice.GetFieldValue(fTargX + tx * (fld1Sta0.fZ - fTargZ), fTargY + ty * (fld1Sta0.fZ - fTargZ), b10);
+    fld1Sta1.fieldSlice.GetFieldValue(fTargX + tx * (fld1Sta1.fZ - fTargZ), fTargY + ty * (fld1Sta1.fZ - fTargZ), b11);
+    fld1Sta2.fieldSlice.GetFieldValue(fTargX + tx * (fld1Sta2.fZ - fTargZ), fTargY + ty * (fld1Sta2.fZ - fTargZ), b12);
 
-    fld0.Set(fTargB, fTargZ, b00, fld0Sta0.z, b01, fld0Sta1.z);
-    fld1.Set(b10, fld1Sta0.z, b11, fld1Sta1.z, b12, fld1Sta2.z);
+    fld0.Set(fTargB, fTargZ, b00, fld0Sta0.fZ, b01, fld0Sta1.fZ);
+    fld1.Set(b10, fld1Sta0.fZ, b11, fld1Sta1.fZ, b12, fld1Sta2.fZ);
 
     T.chi2 = 0.;
     T.NDF  = (fpCurrentIteration->GetPrimaryFlag()) ? fvec(2.) : fvec(0.);
@@ -338,34 +338,27 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
     //assert(T.IsConsistent(true, -1));
 
-    if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-      if (kMcbm == fTrackingMode) {
-        fit.L1AddThickMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One(),
-                               stal.materialInfo.thick, 1);
-      }
-      else if (kGlobal == fTrackingMode) {
-        fit.L1AddMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One());
-      }
-      else {
-        fit.L1AddMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One());
-      }
+    if (kMcbm == fTrackingMode) {
+      fit.L1AddThickMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One(),
+                             stal.fZthick, 1);
     }
     else {
-      fit.L1AddMaterial(T, stal.materialInfo, fMaxInvMom, fvec::One());
+      fit.L1AddMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One());
     }
+
     //if ((istam >= fNstationsBeforePipe) && (istal <= fNstationsBeforePipe - 1)) {
     //fit.L1AddPipeMaterial(T, fMaxInvMom, fvec::One());
     //}
 
     //assert(T.IsConsistent(true, -1));
 
-    fvec dz = stam.z - zl;
+    fvec dz = stam.fZ - zl;
     L1ExtrapolateTime(T, dz, stam.timeInfo);
 
     // extrapolate to the middle hit
-    if (istam < fNfieldStations) { L1Extrapolate0(T, stam.z, fld0); }
+    if (istam < fNfieldStations) { L1Extrapolate0(T, stam.fZ, fld0); }
     else {
-      L1ExtrapolateLine(T, stam.z);  // TODO: fld1 doesn't work!
+      L1ExtrapolateLine(T, stam.fZ);  // TODO: fld1 doesn't work!
     }
 
     // assert(T.IsConsistent(true, -1));
@@ -689,26 +682,22 @@ inline void L1Algo::findTripletsStep0(  // input
 
     // assert(T2.IsConsistent(true, n2_4));
 
-    if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-      if (kMcbm == fTrackingMode) {
-        fit.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, fvec::One(),
-                               stam.materialInfo.thick, 1);
-      }
-      else if (kGlobal == fTrackingMode) {
-        fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, fvec::One());
-      }
-      else {
-        fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), T2.qp, fvec::One());
-      }
+    if (kMcbm == fTrackingMode) {
+      fit.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, fvec::One(),
+                             stam.fZthick, 1);
+    }
+    else if (kGlobal == fTrackingMode) {
+      fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, fvec::One());
     }
     else {
-      fit.L1AddMaterial(T2, stam.materialInfo, T2.qp, fvec::One());
+      fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), T2.qp, fvec::One());
     }
+
     //if ((istar >= fNstationsBeforePipe) && (istam <= fNstationsBeforePipe - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
 
     // assert(T2.IsConsistent(true, n2_4));
 
-    fvec dz2 = star.z - T2.z;
+    fvec dz2 = star.fZ - T2.z;
     L1ExtrapolateTime(T2, dz2, stam.timeInfo);
 
     // assert(T2.IsConsistent(true, n2_4));
@@ -716,10 +705,10 @@ inline void L1Algo::findTripletsStep0(  // input
     // extrapolate to the right hit station
 
     if (istar <= fNfieldStations) {
-      L1Extrapolate(T2, star.z, T2.qp, f2);  // Full extrapolation in the magnetic field
+      L1Extrapolate(T2, star.fZ, T2.qp, f2);  // Full extrapolation in the magnetic field
     }
     else {
-      L1ExtrapolateLine(T2, star.z);  // Extrapolation with line ()
+      L1ExtrapolateLine(T2, star.fZ);  // Extrapolation with line ()
     }
 
     // assert(T2.IsConsistent(true, n2_4));
@@ -1039,12 +1028,12 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
     fvec tx[3] = {(x[1] - x[0]) / (z[1] - z[0]), (x[2] - x[0]) / (z[2] - z[0]), (x[2] - x[1]) / (z[2] - z[1])};
     fvec ty[3] = {(y[1] - y[0]) / (z[1] - z[0]), (y[2] - y[0]) / (z[2] - z[0]), (y[2] - y[1]) / (z[2] - z[1])};
     for (int ih = 0; ih < NHits; ++ih) {
-      fvec dz = (sta[ih].z - z[ih]);
+      fvec dz = (sta[ih].fZ - z[ih]);
       sta[ih].fieldSlice.GetFieldValue(x[ih] + tx[ih] * dz, y[ih] + ty[ih] * dz, B[ih]);
     };
 
-    fld.Set(B[0], sta[0].z, B[1], sta[1].z, B[2], sta[2].z);
-    fldTarget.Set(fTargB, fTargZ, B[0], sta[0].z, B[1], sta[1].z);
+    fld.Set(B[0], sta[0].fZ, B[1], sta[1].fZ, B[2], sta[2].fZ);
+    fldTarget.Set(fTargB, fTargZ, B[0], sta[0].fZ, B[1], sta[1].fZ);
 
     L1TrackPar& T = fit.fTr;
 
@@ -1097,12 +1086,7 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
 
         for (int ih = 1; ih < NHits; ++ih) {
           fit.Extrapolate(z[ih], qp0, fld, fvec::One());
-          if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-            fit.AddMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
-          }
-          else {
-            fit.AddMaterial(sta[ih].materialInfo, qp0, fvec::One());
-          }
+          fit.AddMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
           //if (ista[ih] == fNstationsBeforePipe) { fit.AddPipeMaterial(qp0, fvec::One()); }
           fit.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
           fit.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
@@ -1135,12 +1119,7 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
 
         for (int ih = NHits - 2; ih >= 0; --ih) {
           fit.Extrapolate(z[ih], qp0, fld, fvec::One());
-          if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-            fit.AddMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
-          }
-          else {
-            fit.AddMaterial(sta[ih].materialInfo, qp0, fvec::One());
-          }
+          fit.AddMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
           //if (ista[ih] == fNstationsBeforePipe - 1) { fit.AddPipeMaterial(qp0, fvec::One()); }
           fit.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
           fit.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());

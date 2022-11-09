@@ -885,33 +885,6 @@ void L1TrackParFit::AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thick
 }
 
 
-void L1TrackParFit::AddMaterial(const L1MaterialInfo& info, fvec qp0, fvec w)
-{
-  cnst ONE = 1.f;
-
-  fvec tx = fTr.tx;
-  fvec ty = fTr.ty;
-  // fvec time = fTr.t;
-  fvec txtx  = tx * tx;
-  fvec tyty  = ty * ty;
-  fvec txtx1 = txtx + ONE;
-  fvec h     = txtx + tyty;
-  fvec t     = sqrt(txtx1 + tyty);
-  fvec h2    = h * h;
-  fvec qp0t  = qp0 * t;
-
-  cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f, c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
-
-  fvec s0 = (c1 + c2 * info.logRadThick + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
-  //fvec a = ( (ONE+mass2*qp0*qp0t)*info.RadThick*s0*s0 );
-  fvec a = ((t + fMass2 * qp0 * qp0t) * info.RadThick * s0 * s0);
-
-  fTr.C22 += w * txtx1 * a;
-  fTr.C32 += w * tx * ty * a;
-  fTr.C33 += w * (ONE + tyty) * a;
-}
-
-
 void L1TrackParFit::EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec direction, fvec w)
 {
   const fvec qp2cut(1. / (10. * 10.));  // 10 GeV cut

@@ -9,7 +9,7 @@
 #include <type_traits>
 
 #include "L1Field.h"
-#include "L1MaterialInfo.h"
+#include "L1Material.h"
 #include "L1NaN.h"
 #include "L1SimdSerializer.h"
 #include "L1UMeasurementInfo.h"
@@ -25,12 +25,11 @@ public:
   int timeInfo {L1NaN::SetNaN<decltype(timeInfo)>()};  ///< flag: if time information can be used
   int fieldStatus {L1NaN::SetNaN<decltype(
     fieldStatus)>()};  ///< flag: 1 - station is INSIDE the field, 0 - station is OUTSIDE the field (replace with enum)
-  fvec z {L1NaN::SetNaN<decltype(z)>()};        ///< z position of station     [cm]
-  fvec Rmin {L1NaN::SetNaN<decltype(Rmin)>()};  ///< min radius of the station [cm]
-  fvec Rmax {L1NaN::SetNaN<decltype(Rmax)>()};  ///< max radius of the station [cm]
-  fvec dt {L1NaN::SetNaN<decltype(dt)>()};      ///< time resolution [ns]
-  /// structure containing station thickness(X), rad. length (X0), X/X0 and log(X/X0) values
-  L1MaterialInfo materialInfo {};
+  fvec fZ {L1NaN::SetNaN<decltype(fZ)>()};            ///< z position of station     [cm]
+  fvec fZthick {L1NaN::SetNaN<decltype(fZthick)>()};  ///< z thickness of the station     [cm]
+  fvec Rmin {L1NaN::SetNaN<decltype(Rmin)>()};        ///< min radius of the station [cm]
+  fvec Rmax {L1NaN::SetNaN<decltype(Rmax)>()};        ///< max radius of the station [cm]
+  fvec dt {L1NaN::SetNaN<decltype(dt)>()};            ///< time resolution [ns]
   L1FieldSlice fieldSlice {};
   L1UMeasurementInfo frontInfo {};
   L1UMeasurementInfo backInfo {};
@@ -47,12 +46,12 @@ public:
     ar& timeInfo;
     ar& fieldStatus;
 
-    ar& z;
+    ar& fZ;
+    ar& fZthick;
     ar& Rmin;
     ar& Rmax;
     ar& dt;
 
-    ar& materialInfo;
     ar& fieldSlice;
     ar& frontInfo;
     ar& backInfo;

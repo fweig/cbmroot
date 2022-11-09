@@ -42,15 +42,10 @@ void L1InitManager::AddStation(const L1BaseStationInfo& inStation)
     L1BaseStationInfo inStationCopy = L1BaseStationInfo(inStation);  // make a copy of station so it can be initialized
     inStationCopy.SetFieldFunction(fFieldFunction);
 
-    // check, if material map is used
+    // check, if material map is set
     if (!inStationCopy.GetInitController().GetFlag(L1BaseStationInfo::EInitKey::kThicknessMap)) {
-      LOG(warn) << "Station material map was not set for detectorID = "
-                << static_cast<int>(inStationCopy.GetDetectorID()) << ", stationID = " << inStationCopy.GetStationID()
-                << ". Homogeneous material budget will be used: " << inStationCopy.GetRadThick()[0];
-      L1Material material;
-      material.SetBins(1, 100);
-      material.SetRadThickBin(0, 0, inStationCopy.GetRadThick()[0]);
-      inStationCopy.SetMaterialMap(std::move(material));
+      LOG(fatal) << "Station material map was not set for detectorID = "
+                 << static_cast<int>(inStationCopy.GetDetectorID()) << ", stationID = " << inStationCopy.GetStationID();
     }
 
     // Check station init

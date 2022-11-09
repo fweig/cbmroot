@@ -2,8 +2,8 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Igor Kulakov, Sergey Gorbunov [committer], Andrey Lebedev, Sergei Zharko */
 
-#ifndef L1MaterialInfo_h
-#define L1MaterialInfo_h
+#ifndef L1Material_h
+#define L1Material_h
 
 #include <boost/serialization/vector.hpp>
 
@@ -15,41 +15,6 @@
 #include "L1Def.h"
 #include "L1NaN.h"
 #include "L1SimdSerializer.h"
-
-/// Class L1MaterialInfo contains SIMDized vector fields of the
-/// The fields of the structure should ONLY be initialized within L1BaseStationInfo::SetMaterial(double, double) method, when the
-/// stations sequence is initialized
-struct L1MaterialInfo {
-  fvec thick {L1NaN::SetNaN<decltype(thick)>()};  ///< Average thickness of the station in arbitary length units
-  /// Average radiation length (X0) of the station material in THE SAME UNITS as the thickness
-  fvec RL {L1NaN::SetNaN<decltype(RL)>()};
-  fvec RadThick {L1NaN::SetNaN<decltype(RadThick)>()};        ///< Average thickness in units of radiation length (X/X0)
-  fvec logRadThick {L1NaN::SetNaN<decltype(logRadThick)>()};  ///< Log of average thickness in units of radiation length
-
-  /// Verifies class invariant consistency
-  void CheckConsistency() const;
-
-  /// Checks, if the fields are NaN
-  bool IsNaN() const
-  {
-    return L1NaN::IsNaN(thick) || L1NaN::IsNaN(RL) || L1NaN::IsNaN(RadThick) || L1NaN::IsNaN(logRadThick);
-  }
-
-  /// String representation of class contents
-  /// \param indentLevel    number of indent characters in the output
-  std::string ToString(int indentLevel = 0) const;
-
-  /// Serialization function
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive& ar, const unsigned int)
-  {
-    ar& thick;
-    ar& RL;
-    ar& RadThick;
-    ar& logRadThick;
-  }
-} _fvecalignment;
 
 /// Class L1Material describes a map of station thickness in units of radiation length (X0) to the specific point in XY plane
 class L1Material {
@@ -115,6 +80,9 @@ public:
 
   /// Swap method
   void Swap(L1Material& other) noexcept;
+
+  /// repare the map - fill empty bins
+  void Repare();
 
 private:
   int fNbins {L1NaN::SetNaN<decltype(fNbins)>()};  ///< Number of rows (columns) in the material budget table

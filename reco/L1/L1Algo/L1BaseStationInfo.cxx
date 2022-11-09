@@ -335,25 +335,21 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
 
 //------------------------------------------------------------------------------------------------------------------------
 //
-void L1BaseStationInfo::SetMaterialSimple(double inThickness, double inRL)
+void L1BaseStationInfo::SetZthickness(double inThickness)
 {
   //L1MASSERT(0, inRL, "Attempt of entering zero inRL (radiational length) value");
 
-  fL1Station.materialInfo.thick       = inThickness;
-  fL1Station.materialInfo.RL          = inRL;
-  fL1Station.materialInfo.RadThick    = fL1Station.materialInfo.thick / fL1Station.materialInfo.RL;
-  fL1Station.materialInfo.logRadThick = log(fL1Station.materialInfo.RadThick);
-  fInitController.SetFlag(EInitKey::kMaterialInfo);
+  fL1Station.fZthick = inThickness;
+  fInitController.SetFlag(EInitKey::kZthickness);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 //
-void L1BaseStationInfo::SetMaterialMap(const L1Material& thicknessMap,
-                                       const std::function<void(L1Material& thicknessMap)>& correction)
+void L1BaseStationInfo::SetMaterialMap(const L1Material& thicknessMap)
 {
   if (!fInitController.GetFlag(EInitKey::kThicknessMap)) {
     fThicknessMap = thicknessMap;
-    if (correction) { correction(fThicknessMap); }
+    fThicknessMap.Repare();
     fInitController.SetFlag(EInitKey::kThicknessMap);
   }
   else {
@@ -361,39 +357,13 @@ void L1BaseStationInfo::SetMaterialMap(const L1Material& thicknessMap,
   }
 }
 
-//------------------------------------------------------------------------------------------------------------------------
-//
-void L1BaseStationInfo::SetMaterialMap(
-  const L1Material& thicknessMap,
-  const std::function<void(L1Material& thicknessMap, const L1MaterialInfo& homogenious)>& correction)
-{
-  if (!fInitController.GetFlag(EInitKey::kMaterialInfo)) {
-    LOG(fatal)
-      << "L1BaseStationInfo::SetMaterialMap: It is impossible to setup the station material thickness map with a "
-      << "correction, which utilizes information on the average station thickness and radiation length. Please, insure "
-         "to "
-      << "set material info with the L1BaseStationInfo::SetMaterialSimple method before setting the thickness map or "
-      << "use correction without the information on average station thickness and radiation length.";
-  }
-
-  if (!fInitController.GetFlag(EInitKey::kThicknessMap)) {
-    fThicknessMap = thicknessMap;
-    correction(fThicknessMap, fL1Station.materialInfo);
-    fInitController.SetFlag(EInitKey::kThicknessMap);
-  }
-  else {
-    LOG(warn) << "L1BaseStationInfo::SetMaterialMap: attempt to reinitialize the material map";
-  }
-}
 
 //------------------------------------------------------------------------------------------------------------------------
 //
-void L1BaseStationInfo::SetMaterialMap(L1Material&& thicknessMap,
-                                       const std::function<void(L1Material& thicknessMap)>& correction) noexcept
+void L1BaseStationInfo::SetMaterialMap(L1Material&& thicknessMap) noexcept
 {
   if (!fInitController.GetFlag(EInitKey::kThicknessMap)) {
     fThicknessMap = std::move(thicknessMap);
-    if (correction) { correction(fThicknessMap); }
     fInitController.SetFlag(EInitKey::kThicknessMap);
   }
   else {
@@ -401,30 +371,6 @@ void L1BaseStationInfo::SetMaterialMap(L1Material&& thicknessMap,
   }
 }
 
-//------------------------------------------------------------------------------------------------------------------------
-//
-void L1BaseStationInfo::SetMaterialMap(
-  L1Material&& thicknessMap,
-  const std::function<void(L1Material& thicknessMap, const L1MaterialInfo& homogenious)>& correction) noexcept
-{
-  if (!fInitController.GetFlag(EInitKey::kMaterialInfo)) {
-    LOG(fatal)
-      << "L1BaseStationInfo::SetMaterialMap: It is impossible to setup the station material thickness map with a "
-      << "correction, which utilizes information on the average station thickness and radiation length. Please, insure "
-         "to "
-      << "set material info with the L1BaseStationInfo::SetMaterialSimple method before setting the thickness map or "
-      << "use correction without the information on average station thickness and radiation length.";
-  }
-
-  if (!fInitController.GetFlag(EInitKey::kThicknessMap)) {
-    fThicknessMap = std::move(thicknessMap);
-    correction(fThicknessMap, fL1Station.materialInfo);
-    fInitController.SetFlag(EInitKey::kThicknessMap);
-  }
-  else {
-    LOG(warn) << "L1BaseStationInfo::SetMaterialMap: attempt to reinitialize the material map";
-  }
-}
 
 //------------------------------------------------------------------------------------------------------------------------
 //
@@ -496,8 +442,8 @@ void L1BaseStationInfo::SetTrackingStatus(bool flag)
 //
 void L1BaseStationInfo::SetZ(double inZ)
 {
-  fL1Station.z = inZ;  // setting simd vector of single-precision floats, which is passed to high performanced L1Algo
-  fZPos        = inZ;  // setting precised value to use in field approximation etc
+  fL1Station.fZ = inZ;  // setting simd vector of single-precision floats, which is passed to high performanced L1Algo
+  fZPos         = inZ;  // setting precised value to use in field approximation etc
   fInitController.SetFlag(EInitKey::kZ);
 }
 

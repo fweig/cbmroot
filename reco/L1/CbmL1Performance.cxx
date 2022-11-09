@@ -823,8 +823,8 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitFa
       CbmL1HitStore& h2 = fvHitStore[prtra->Hits[1]];
       h_ghost_fstation->Fill(h1.iStation);
       h_ghost_r->Fill(sqrt(fabs(h1.x * h1.x + h1.y * h1.y)));
-      double z1 = fpAlgo->GetParameters()->GetStation(h1.iStation).z[0];
-      double z2 = fpAlgo->GetParameters()->GetStation(h2.iStation).z[0];
+      double z1 = fpAlgo->GetParameters()->GetStation(h1.iStation).fZ[0];
+      double z2 = fpAlgo->GetParameters()->GetStation(h2.iStation).fZ[0];
       if (fabs(z2 - z1) > 1.e-4) {
         h_ghost_tx->Fill((h2.x - h1.x) / (z2 - z1));
         h_ghost_ty->Fill((h2.y - h1.y) / (z2 - z1));
@@ -1025,8 +1025,8 @@ void CbmL1::HistoPerformance()  // TODO: check if works correctly. Change vHitFa
       //      CbmL1HitStore &ph21 = fvHitStore[mtra.Hits[0]];
       //      CbmL1HitStore &ph22 = fvHitStore[mtra.Hits[1]];
 
-      //      double z21 = fpAlgo->GetParameters()->GetStation(ph21.iStation).z[0];
-      //      double z22 = fpAlgo->GetParameters()->GetStation(ph22.iStation).z[0];
+      //      double z21 = fpAlgo->GetParameters()->GetStation(ph21.iStation).fZ[0];
+      //      double z22 = fpAlgo->GetParameters()->GetStation(ph22.iStation).fZ[0];
       //      if( fabs(z22-z21)>1.e-4 ){
       //        h_notfound_tx->Fill((ph22.x-ph21.x)/(z22-z21));
       //        h_notfound_ty->Fill((ph22.y-ph21.y)/(z22-z21));
@@ -1395,14 +1395,16 @@ void CbmL1::TrackFitPerformance()
           L1Extrapolate(trPar, mc.z, trPar.qp, fld);
           // add material
           const int fSta = fvHitStore[it->Hits[0]].iStation;
-          const int dir  = int((mc.z - fpAlgo->GetParameters()->GetStation(fSta).z[0])
-                              / fabs(mc.z - fpAlgo->GetParameters()->GetStation(fSta).z[0]));
-          //         if (abs(mc.z - fpAlgo->GetParameters()->GetStation(fSta).z[0]) > 10.) continue; // can't extrapolate on large distance
+          const int dir  = int((mc.z - fpAlgo->GetParameters()->GetStation(fSta).fZ[0])
+                              / fabs(mc.z - fpAlgo->GetParameters()->GetStation(fSta).fZ[0]));
+          //         if (abs(mc.z - fpAlgo->GetParameters()->GetStation(fSta).fZ[0]) > 10.) continue; // can't extrapolate on large distance
           for (int iSta = fSta /*+dir*/; (iSta >= 0) && (iSta < fNStations)
-                                         && (dir * (mc.z - fpAlgo->GetParameters()->GetStation(iSta).z[0]) > 0);
+                                         && (dir * (mc.z - fpAlgo->GetParameters()->GetStation(iSta).fZ[0]) > 0);
                iSta += dir) {
             //           cout << iSta << " " << dir << endl;
-            fit.L1AddMaterial(trPar, fpAlgo->GetParameters()->GetStation(iSta).materialInfo, trPar.qp, 1);
+            fit.L1AddMaterial(trPar, fpAlgo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y), trPar.qp,
+                              fvec::One());
+
             if (iSta + dir == fNMvdStations - 1) fit.L1AddPipeMaterial(trPar, trPar.qp, 1);
           }
         }
@@ -1448,15 +1450,15 @@ void CbmL1::TrackFitPerformance()
           // add material
           const int fSta = fvHitStore[it->Hits[0]].iStation;
 
-          const int dir = (mc.z - fpAlgo->GetParameters()->GetStation(fSta).z[0])
-                          / abs(mc.z - fpAlgo->GetParameters()->GetStation(fSta).z[0]);
-          //         if (abs(mc.z - fpAlgo->GetParameters()->GetStation(fSta].z[0]) > 10.) continue; // can't extrapolate on large distance
+          const int dir = (mc.z - fpAlgo->GetParameters()->GetStation(fSta).fZ[0])
+                          / abs(mc.z - fpAlgo->GetParameters()->GetStation(fSta).fZ[0]);
+          //         if (abs(mc.z - fpAlgo->GetParameters()->GetStation(fSta].fZ[0]) > 10.) continue; // can't extrapolate on large distance
 
           for (int iSta = fSta + dir; (iSta >= 0) && (iSta < fNStations)
-                                      && (dir * (mc.z - fpAlgo->GetParameters()->GetStation(iSta).z[0]) > 0);
+                                      && (dir * (mc.z - fpAlgo->GetParameters()->GetStation(iSta).fZ[0]) > 0);
                iSta += dir) {
 
-            L1Extrapolate(trPar, fpAlgo->GetParameters()->GetStation(iSta).z[0], trPar.qp, fld);
+            L1Extrapolate(trPar, fpAlgo->GetParameters()->GetStation(iSta).fZ[0], trPar.qp, fld);
             fit.L1AddMaterial(trPar, fpAlgo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y), trPar.qp,
                               1);
             fit.EnergyLossCorrection(trPar, fpAlgo->GetParameters()->GetMaterialThickness(iSta, trPar.x, trPar.y),

@@ -49,11 +49,6 @@ namespace L1Constants
   /// Control flags
   namespace control
   {
-    /// Flag for the radiation length tables usage
-    /// true  - material budget tables will be used,
-    /// false - basic station material info is used
-    constexpr bool kIfUseRadLengthTable {true};
-
     /// Flag for calling the CAMergeClones procedure ... TODO
     constexpr bool kIfMergeClones {true};
 

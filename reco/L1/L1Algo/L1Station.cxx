@@ -41,7 +41,7 @@ void L1Station::CheckConsistency() const
    * SIMD vector checks: all the words in a SIMD vector must be equal
    */
 
-  L1Utils::CheckSimdVectorEquality(z, "L1Station::z");
+  L1Utils::CheckSimdVectorEquality(fZ, "L1Station::fZ");
   L1Utils::CheckSimdVectorEquality(Rmin, "L1Station::Rmin");
   L1Utils::CheckSimdVectorEquality(Rmax, "L1Station::Rmax");
   L1Utils::CheckSimdVectorEquality(dt, "L1Station::dt");
@@ -113,16 +113,16 @@ std::string L1Station::ToString(int verbosityLevel, int indentLevel) const
   std::stringstream aStream {};
   constexpr char indentChar = '\t';
   std::string indent(indentLevel, indentChar);
-  if (verbosityLevel == 0) { aStream << "station type = " << type << ", z = " << z[0] << " cm"; }
+  if (verbosityLevel == 0) { aStream << "station type = " << type << ", z = " << fZ[0] << " cm"; }
   else {
     aStream << '\n';
-    aStream << indent << "z pos [cm]:   " << std::setw(12) << std::setfill(' ') << z[0] << '\n';
+    aStream << indent << "z pos [cm]:   " << std::setw(12) << std::setfill(' ') << fZ[0] << '\n';
+    aStream << indent << "z thick [cm]:   " << std::setw(12) << std::setfill(' ') << fZthick[0] << '\n';
     aStream << indent << "R_min [cm]:   " << std::setw(12) << std::setfill(' ') << Rmin[0] << '\n';
     aStream << indent << "R_max [cm]:   " << std::setw(12) << std::setfill(' ') << Rmax[0] << '\n';
     aStream << indent << "Station type: " << std::setw(12) << std::setfill(' ') << type << '\n';
     aStream << indent << "Is time used: " << std::setw(12) << std::setfill(' ') << timeInfo << '\n';
     aStream << indent << "Is in field:  " << std::setw(12) << std::setfill(' ') << fieldStatus << '\n';
-    aStream << materialInfo.ToString(indentLevel) << '\n';
 
     if (verbosityLevel > 3) {
       aStream << indent << "Field approcimation coefficients:\n";

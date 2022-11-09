@@ -42,7 +42,7 @@
 #include "L1Field.h"
 #include "L1Filtration.h"
 #include "L1Fit.h"
-#include "L1MaterialInfo.h"
+#include "L1Material.h"
 #include "L1Station.h"
 #include "L1TrackPar.h"
 
@@ -206,7 +206,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
     // get hits of current track
     for (i = 0; i < nHits; i++) {
       w[i] = ZERO;
-      z[i] = sta[i].z;
+      z[i] = sta[i].fZ;
     }
 
     for (iVec = 0; iVec < nTracks_SIMD; iVec++) {
@@ -300,14 +300,9 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
         fit.L1AddPipeMaterial(T, qp0, wIn);
         fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(-1.f), wIn);
       }
-      if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-        fit.L1AddMaterial(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0, wIn);
-        fit.EnergyLossCorrection(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0,
-                                 -1, wIn);
-      }
-      else {
-        fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
-      }
+      fit.L1AddMaterial(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0, wIn);
+      fit.EnergyLossCorrection(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0,
+                               -1, wIn);
       L1Filter(T, sta[i].frontInfo, u[i], w1);
       L1Filter(T, sta[i].backInfo, v[i], w1);
 
@@ -377,14 +372,9 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
         fit.L1AddPipeMaterial(T, qp0, wIn);
         fit.EnergyLossCorrection(T, fit.PipeRadThick, qp0, fvec(1.f), wIn);
       }
-      if constexpr (L1Constants::control::kIfUseRadLengthTable) {
-        fit.L1AddMaterial(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0, wIn);
-        fit.EnergyLossCorrection(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0,
-                                 1, wIn);
-      }
-      else {
-        fit.L1AddMaterial(T, sta[i].materialInfo, qp0, wIn);
-      }
+      fit.L1AddMaterial(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0, wIn);
+      fit.EnergyLossCorrection(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0, 1,
+                               wIn);
       L1Filter(T, sta[i].frontInfo, u[i], w1);
       L1Filter(T, sta[i].backInfo, v[i], w1);
 
@@ -450,7 +440,7 @@ void CbmL1PFFitter::GetChiToVertex(vector<CbmStsTrack>& Tracks, vector<PFFieldRe
   const L1Station* sta = CbmL1::Instance()->fpAlgo->GetParameters()->GetStations().begin();
   fvec* zSta           = new fvec[nStations];
   for (int iSta = 0; iSta < nStations; iSta++) {
-    zSta[iSta] = sta[iSta].z;
+    zSta[iSta] = sta[iSta].fZ;
   }
 
   field.reserve(Tracks.size());

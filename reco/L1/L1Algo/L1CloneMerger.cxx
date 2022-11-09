@@ -169,7 +169,7 @@ void L1CloneMerger::Exec(L1Vector<L1Track>& extTracks, L1Vector<L1HitIndex_t>& e
       else
         stam = staf - 1;
 
-      fvec zm = frAlgo.GetParameters()->GetStation(stam).z;
+      fvec zm = frAlgo.GetParameters()->GetStation(stam).fZ;
       fvec xm = fvec(0.5) * (Tf.x + Tf.tx * (zm - Tf.z) + Tb.x + Tb.tx * (zm - Tb.z));
       fvec ym = fvec(0.5) * (Tf.y + Tf.ty * (zm - Tf.z) + Tb.y + Tb.ty * (zm - Tb.z));
       frAlgo.GetParameters()->GetStation(stam).fieldSlice.GetFieldValue(xm, ym, fBm);
