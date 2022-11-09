@@ -23,7 +23,6 @@ set(PUBLIC_DEPENDENCIES
 set(PRIVATE_DEPENDENCIES
   CbmTrdBase
   CbmQaBase
-  NicaCbmFormat
   ROOT::EG
   ROOT::Geom
   )

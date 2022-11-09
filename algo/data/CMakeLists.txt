@@ -43,6 +43,11 @@ target_include_directories(OnlineData
 )
 
 target_compile_definitions(OnlineData PUBLIC NO_ROOT)
-target_link_libraries(OnlineData FairLogger::FairLogger external::fles_ipc xpu)
+target_link_libraries(OnlineData
+                      FairLogger::FairLogger
+                      external::fles_ipc
+                      xpu
+                      Boost::serialization
+                     )
 
 install(TARGETS OnlineData DESTINATION lib)
