@@ -38,7 +38,8 @@ public:
 
   CbmL1MCTrack(int _ID) : ID(_ID) {};
 
-  CbmL1MCTrack(double mass, double q, TVector3 vr, TLorentzVector vp, int ID, int mother_ID, int pdg);
+  CbmL1MCTrack(double mass, double q, TVector3 vr, TLorentzVector vp, int ID, int mother_ID, int pdg,
+               unsigned int procID);
   //   CbmL1MCTrack(TmpMCPoints &mcPoint, TVector3 vr, TLorentzVector vp, int ID, int mother_ID);
 
   bool IsPrimary() const { return mother_ID < 0; }
@@ -72,21 +73,22 @@ private:
   void CalculateIsReconstructable();
 
 public:
-  double mass   = 0.;
-  double q      = 0.;
-  double p      = 0.;
-  double x      = 0.;
-  double y      = 0.;
-  double z      = 0.;
-  double px     = 0.;
-  double py     = 0.;
-  double pz     = 0.;
-  double time   = 0.;
-  int ID        = -1;
-  int iFile     = -1;
-  int iEvent    = -1;
-  int mother_ID = -1;
-  int pdg       = -1;
+  double mass             = 0.;
+  double q                = 0.;
+  double p                = 0.;
+  double x                = 0.;
+  double y                = 0.;
+  double z                = 0.;
+  double px               = 0.;
+  double py               = 0.;
+  double pz               = 0.;
+  double time             = 0.;
+  int ID                  = -1;
+  int iFile               = -1;
+  int iEvent              = -1;
+  int mother_ID           = -1;
+  int pdg                 = -1;
+  unsigned int process_ID = (unsigned int) -1;
   bool isSignal {0};
   L1Vector<int> Points {"CbmL1MCTrack::Points"};  // indices of pints in CbmL1::fvMCPoints
   L1Vector<int> Hits {"CbmL1MCTrack::Hits"};      // indices of hits in algo->vHits or L1::vHits

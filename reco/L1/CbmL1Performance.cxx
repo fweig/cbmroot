@@ -2251,9 +2251,9 @@ void CbmL1::InputPerformance()
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void CbmL1::DumpMCTracksToNtuple()
+void CbmL1::DumpMCTripletsToTree()
 {
-  if (!fpMcTracksTree) {
+  if (!fpMcTripletsTree) {
     auto* currentDir  = gDirectory;
     auto* currentFile = gFile;
 
@@ -2262,16 +2262,16 @@ void CbmL1::DumpMCTracksToNtuple()
     boost::filesystem::path p = (FairRunAna::Instance()->GetUserOutputFileName()).Data();
     std::string dir           = p.parent_path().string();
     if (dir.empty()) dir = ".";
-    std::string filename = dir + "/" + fsMcTracksOutputFilename + "." + p.filename().string();
+    std::string filename = dir + "/" + fsMcTripletsOutputFilename + "." + p.filename().string();
     std::cout << "\033[1;31mSAVING A TREE: " << filename << "\033[0m\n";
 
-    fpMcTracksOutFile = new TFile(filename.c_str(), "RECREATE");
-    fpMcTracksOutFile->cd();
-    fpMcTracksTree = new TNtuple("t", "McTracks", "motherId:pdg:p:q:zv:s:x0:y0:z0:x1:y1:z1:x2:y2:z2");
-    // motherID   - id of mother particle (< 0, if primary)
+    fpMcTripletsOutFile = new TFile(filename.c_str(), "RECREATE");
+    fpMcTripletsOutFile->cd();
+    fpMcTripletsTree = new TTree("t", "MC Triplets");
+    // motherId   - id of mother particle (< 0, if primary)
     // pdg        - PDG code of particle
-    // p          - absolute value of track momentum [GeV/c]
-    // q          - charge of track [e]
+    // processId  - id of the process (ROOT::TMCProcessID)
+    // pq         - absolute value of track momentum [GeV/c], divided by charge [e]
     // zv         - z-component of track vertex [cm]
     // s          - global index of station
     // x0, y0, z0 - position of the left MC point in a triplet [cm]
@@ -2281,6 +2281,43 @@ void CbmL1::DumpMCTracksToNtuple()
     gFile      = currentFile;
     gDirectory = currentDir;
   }
+
+  // Variables for tree branches
+  int brMotherId        = -1;                 ///< mother ID of track
+  int brPdg             = -1;                 ///< PDG code of track
+  unsigned int brProcId = (unsigned int) -1;  ///< process ID (see ROOT::TMCProcessID)
+  float brP             = 0.f;                ///< abs. momentum of track [GeV/c]
+  int brQ               = 0;                  ///< charge of track [e]
+  float brVertexZ       = 0.f;                ///< z-component of the MC track vertex [cm]
+  int brStation         = -1;                 ///< global index of the left MC point station
+
+  float brX0 = 0.f;  ///< x-component of the left MC point in a triplet [cm]
+  float brY0 = 0.f;  ///< y-component of the left MC point in a triplet [cm]
+  float brZ0 = 0.f;  ///< z-component of the left MC point in a triplet [cm]
+  float brX1 = 0.f;  ///< x-component of the middle MC point in a triplet [cm]
+  float brY1 = 0.f;  ///< y-component of the middle MC point in a triplet [cm]
+  float brZ1 = 0.f;  ///< z-component of the middle MC point in a triplet [cm]
+  float brX2 = 0.f;  ///< x-component of the right MC point in a triplet [cm]
+  float brY2 = 0.f;  ///< y-component of the right MC point in a triplet [cm]
+  float brZ2 = 0.f;  ///< z-component of the right MC point in a triplet [cm]
+
+  // Register branches
+  fpMcTripletsTree->Branch("brMotherId", &brMotherId, "motherId/I");
+  fpMcTripletsTree->Branch("brPdg", &brPdg, "pdg/I");
+  fpMcTripletsTree->Branch("brProcId", &brProcId, "processId/i");
+  fpMcTripletsTree->Branch("brP", &brP, "p/F");
+  fpMcTripletsTree->Branch("brQ", &brQ, "q/I");
+  fpMcTripletsTree->Branch("brVertexZ", &brVertexZ, "zv/F");
+  fpMcTripletsTree->Branch("brStation", &brStation, "s/I");
+  fpMcTripletsTree->Branch("brX0", &brX0, "x0/F");
+  fpMcTripletsTree->Branch("brY0", &brY0, "y0/F");
+  fpMcTripletsTree->Branch("brZ0", &brZ0, "z0/F");
+  fpMcTripletsTree->Branch("brX1", &brX1, "x1/F");
+  fpMcTripletsTree->Branch("brY1", &brY1, "y1/F");
+  fpMcTripletsTree->Branch("brZ1", &brZ1, "z1/F");
+  fpMcTripletsTree->Branch("brX2", &brX2, "x2/F");
+  fpMcTripletsTree->Branch("brY2", &brY2, "y2/F");
+  fpMcTripletsTree->Branch("brZ2", &brZ2, "z2/F");
 
   struct ReducedMcPoint {
     int s;    ///< global active index of tracking station
@@ -2306,21 +2343,25 @@ void CbmL1::DumpMCTracksToNtuple()
       // Condition to collect only triplets without gaps in stations
       // TODO: SZh 20.10.2022 Add cases for jump iterations
       if (vPoints[i + 1].s == vPoints[i].s + 1 && vPoints[i + 2].s == vPoints[i].s + 2) {
-        fpMcTracksTree->Fill(tr.mother_ID,       ///< index of mother particle
-                             tr.pdg,             ///< PDG code
-                             tr.p,               ///< absolute value of track momentum [GeV/c]
-                             tr.q,               ///< charge of track [e]
-                             tr.z,               ///< z-position of track vertex [cm]
-                             vPoints[i].s,       ///< global index of active tracking station
-                             vPoints[i].x,       ///< x-component of the left MC point in a triplet [cm]
-                             vPoints[i].y,       ///< y-component of the left MC point in a triplet [cm]
-                             vPoints[i].z,       ///< z-component of the left MC point in a triplet [cm]
-                             vPoints[i + 1].x,   ///< x-component of the middle MC point in a triplet [cm]
-                             vPoints[i + 1].y,   ///< y-component of the middle MC point in a triplet [cm]
-                             vPoints[i + 1].z,   ///< z-component of the middle MC point in a triplet [cm]
-                             vPoints[i + 2].x,   ///< x-component of the right MC point in a triplet [cm]
-                             vPoints[i + 2].y,   ///< y-component of the right MC point in a triplet [cm]
-                             vPoints[i + 2].z);  ///< z-component of the right MC point in a triplet [cm]
+        // Fill MC-triplets tree
+        brMotherId = tr.mother_ID;
+        brPdg      = tr.pdg;
+        brProcId   = tr.process_ID;
+        brP        = tr.p;
+        brQ        = tr.q;
+        brVertexZ  = tr.z;
+        brStation  = vPoints[i].s;
+        brX0       = vPoints[i].x;
+        brY0       = vPoints[i].y;
+        brZ0       = vPoints[i].z;
+        brX1       = vPoints[i + 1].x;
+        brY1       = vPoints[i + 1].y;
+        brZ1       = vPoints[i + 1].z;
+        brX2       = vPoints[i + 2].x;
+        brY2       = vPoints[i + 2].y;
+        brZ2       = vPoints[i + 2].z;
+
+        fpMcTripletsTree->Fill();
       }
     }
   }

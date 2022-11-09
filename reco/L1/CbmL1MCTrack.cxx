@@ -26,7 +26,8 @@
 #include "L1Algo/L1Algo.h"
 #include "L1Algo/L1Hit.h"
 
-CbmL1MCTrack::CbmL1MCTrack(double mass_, double q_, TVector3 vr, TLorentzVector vp, int _ID, int _mother_ID, int _pdg)
+CbmL1MCTrack::CbmL1MCTrack(double mass_, double q_, TVector3 vr, TLorentzVector vp, int _ID, int _mother_ID, int _pdg,
+                           unsigned int _process_ID)
   : mass(mass_)
   , q(q_)
   , p(vp.P())
@@ -39,6 +40,7 @@ CbmL1MCTrack::CbmL1MCTrack(double mass_, double q_, TVector3 vr, TLorentzVector 
   , ID(_ID)
   , mother_ID(_mother_ID)
   , pdg(_pdg)
+  , process_ID(_process_ID)
 {
 }
 

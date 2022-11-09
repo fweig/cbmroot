@@ -18,6 +18,7 @@
 #include "L1CAIteration.h"
 #include "L1Constants.h"
 #include "L1Material.h"
+#include "L1SearchWindow.h"
 #include "L1Station.h"
 #include "L1Utils.h"
 #include "L1Vector.h"
@@ -131,6 +132,17 @@ public:
   /// \param iStation  Index of station in the active stations container
   const L1Station& GetStation(int iStation) const { return fStations[iStation]; }
 
+  /// Gets a search window for a selected station and track group
+  /// \note For a particular track finder iteration one can select a track group, which is defined by the minimal
+  ///       momentum of tracks (fast tracks, all tracks), their vertex (primary or secondary tracks), or by particle
+  ///       (electrons, muons, hadrons, etc.)
+  /// \param  iStation  Global index of active station
+  /// \param  iTrackGr  Index of a track group
+  const L1SearchWindow& GetSearchWindow(int iStation, int iTrackGr) const
+  {
+    return fSearchWindows[iTrackGr * L1Constants::size::kMaxNstations + iStation];
+  }
+
   /// Gets reference to the array of station thickness map
   const L1MaterialContainer_t& GetThicknessMaps() const { return fThickMap; }
 
@@ -238,6 +250,13 @@ private:
   ///   active index:  0 -1  1  2 -1  3  4  5  6  7  0  0  0  0
   alignas(L1Constants::misc::kAlignment) std::array<int, L1Constants::size::kMaxNstations> fActiveStationGlobalIDs {};
 
+  /// Map of search windows vs. active station global index and tracks group
+  /// The tracks group can be defined by minimum momentum (fast/all tracks), origin (primary/secondary) and particle type
+  /// (electron, muon, all). Other options also can be added
+  alignas(L1Constants::misc::kAlignment)
+    std::array<L1SearchWindow, L1Constants::size::kMaxNstations* L1Constants::size::kMaxNtrackGroups> fSearchWindows =
+      {};
+
   int fTrackingLevel    = 0;  ///< tracking level
   int fGhostSuppression = 0;  ///< flag: if true, ghost tracks are suppressed
   float fMomentumCutOff = 0;  ///< minimum momentum of tracks
@@ -246,10 +265,12 @@ private:
   // ** Flags for development **
   // ***************************
 
-  bool fDevIsIgnoreHitSearchAreas {false};  ///< Process all hits on the station ignoring hit search area
-  bool fDevIsUseOfOriginalField {false};    ///< Force use of original field
-  bool fDevIsMatchDoubletsViaMc {false};    ///< Flag to match doublets using MC information
-  bool fDevIsMatchTripletsViaMc {false};    ///< Flag to match triplets using Mc information
+  bool fDevIsIgnoreHitSearchAreas = false;  ///< Process all hits on the station ignoring hit search area
+  bool fDevIsUseOfOriginalField   = false;  ///< Force use of original field
+  bool fDevIsMatchDoubletsViaMc   = false;  ///< Flag to match doublets using MC information
+  bool fDevIsMatchTripletsViaMc   = false;  ///< Flag to match triplets using MC information
+  bool fDevIsParSearchWUsed       = false;  ///< Flag: when true, the parametrized search windows are used in track
+                                            ///< finder; when false, the Kalman filter is used instead
 
   /// Serialization function
   friend class boost::serialization::access;
@@ -273,6 +294,7 @@ private:
     ar& fNstationsGeometry;
     ar& fNstationsActive;
     ar& fActiveStationGlobalIDs;
+    ar& fSearchWindows;
 
     ar& fTrackingLevel;
     ar& fGhostSuppression;

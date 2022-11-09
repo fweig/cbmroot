@@ -30,5 +30,6 @@
 #pragma link C++ class CbmTrackingInputQaSts + ;
 #pragma link C++ class CbmTrackerInputQaTrd + ;
 #pragma link C++ class CbmTrackerInputQaTof + ;
+#pragma link C++ class ca::tools::WindowFinder + ;
 
 #endif

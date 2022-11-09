@@ -383,7 +383,8 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
     auto l1 = (debugWithMC) ? new CbmL1("L1", 2, 3, 0) : new CbmL1("L1", 0);
     // L1 configuration file (optional)
     //l1->SetInputConfigName(TString(gSystem->Getenv("VMCWORKDIR")) + "/reco/L1/L1Algo/L1ConfigExample.yaml");
-    if (debugWithMC) { l1->SetOutputMcTracksNtupleFilename("mcTracksNtuple"); }
+    // Define filename to save MC triplets
+    //if (debugWithMC) { l1->SetOutputMcTripletsTreeFilename("mcTripletsTree"); }
 
     // --- Material budget file names
     TString mvdGeoTag;

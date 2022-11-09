@@ -9,7 +9,7 @@
 
 #include "L1Parameters.h"
 
-#include <Logger.h>
+#include <FairLogger.h>
 
 #include <iomanip>
 
@@ -22,6 +22,88 @@ L1Parameters::L1Parameters()
 
 //----------------------------------------------------------------------------------------------------------------------
 //
+<<<<<<< HEAD
+L1Parameters::~L1Parameters() noexcept {}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+L1Parameters::L1Parameters(const L1Parameters& other) noexcept
+  : fMaxDoubletsPerSinglet(other.fMaxDoubletsPerSinglet)
+  , fMaxTripletPerDoublets(other.fMaxTripletPerDoublets)
+  , fCAIterations(other.fCAIterations)
+  , fTargetPos(other.fTargetPos)
+  , fVertexFieldValue(other.fVertexFieldValue)
+  , fVertexFieldRegion(other.fVertexFieldRegion)
+  , fStations(other.fStations)
+  , fThickMap(other.fThickMap)
+  , fNstationsGeometryTotal(other.fNstationsGeometryTotal)
+  , fNstationsActiveTotal(other.fNstationsActiveTotal)
+  , fNstationsGeometry(other.fNstationsGeometry)
+  , fNstationsActive(other.fNstationsActive)
+  , fActiveStationGlobalIDs(other.fActiveStationGlobalIDs)
+  , fTrackingLevel(other.fTrackingLevel)
+  , fGhostSuppression(other.fGhostSuppression)
+  , fMomentumCutOff(other.fMomentumCutOff)
+  , fDevIsIgnoreHitSearchAreas(other.fDevIsIgnoreHitSearchAreas)
+  , fDevIsUseOfOriginalField(other.fDevIsUseOfOriginalField)
+  , fDevIsMatchDoubletsViaMc(other.fDevIsMatchDoubletsViaMc)
+  , fDevIsMatchTripletsViaMc(other.fDevIsMatchTripletsViaMc)
+{
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+L1Parameters& L1Parameters::operator=(const L1Parameters& other) noexcept
+{
+  if (this != &other) { L1Parameters(other).Swap(*this); }
+  return *this;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+L1Parameters::L1Parameters(L1Parameters&& other) noexcept { this->Swap(other); }
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+L1Parameters& L1Parameters::operator=(L1Parameters&& other) noexcept
+{
+  if (this != &other) {
+    L1Parameters tmp(std::move(other));
+    this->Swap(tmp);
+  }
+  return *this;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+void L1Parameters::Swap(L1Parameters& other) noexcept
+{
+  std::swap(fMaxDoubletsPerSinglet, other.fMaxDoubletsPerSinglet);
+  std::swap(fMaxTripletPerDoublets, other.fMaxTripletPerDoublets);
+  std::swap(fCAIterations, other.fCAIterations);
+  std::swap(fTargetPos, other.fTargetPos);
+  std::swap(fVertexFieldValue, other.fVertexFieldValue);
+  std::swap(fVertexFieldRegion, other.fVertexFieldRegion);
+  std::swap(fStations, other.fStations);
+  std::swap(fThickMap, other.fThickMap);
+  std::swap(fNstationsGeometryTotal, other.fNstationsGeometryTotal);
+  std::swap(fNstationsActiveTotal, other.fNstationsActiveTotal);
+  std::swap(fNstationsGeometry, other.fNstationsGeometry);
+  std::swap(fNstationsActive, other.fNstationsActive);
+  std::swap(fActiveStationGlobalIDs, other.fActiveStationGlobalIDs);
+  std::swap(fTrackingLevel, other.fTrackingLevel);
+  std::swap(fGhostSuppression, other.fGhostSuppression);
+  std::swap(fMomentumCutOff, other.fMomentumCutOff);
+  std::swap(fDevIsIgnoreHitSearchAreas, other.fDevIsIgnoreHitSearchAreas);
+  std::swap(fDevIsUseOfOriginalField, other.fDevIsUseOfOriginalField);
+  std::swap(fDevIsMatchDoubletsViaMc, other.fDevIsMatchDoubletsViaMc);
+  std::swap(fDevIsMatchTripletsViaMc, other.fDevIsMatchTripletsViaMc);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+=======
+>>>>>>> L1: explicit implementation of copy and move constructors and assignment operators were replaced with default for L1Parameters and L1CAIteration classes
 void L1Parameters::CheckConsistency() const
 {
   LOG(info) << "Consistency test for L1 parameters object... ";
@@ -134,10 +216,10 @@ void L1Parameters::CheckConsistency() const
 
   for (int iSt = 0; iSt < fNstationsActiveTotal; ++iSt) {
     fStations[iSt].CheckConsistency();
-    if (fStations[iSt].fZ[0] < fTargetPos[2][0]) {
+    if (fStations[iSt].z[0] < fTargetPos[2][0]) {
       std::stringstream msg;
       msg << "L1Parameters: station with global ID = " << iSt << " is placed before target "
-          << "(z_st = " << fStations[iSt].fZ[0] << " [cm] < z_targ = " << fTargetPos[2][0] << " [cm])";
+          << "(z_st = " << fStations[iSt].z[0] << " [cm] < z_targ = " << fTargetPos[2][0] << " [cm])";
       throw std::logic_error(msg.str());
     }
   }
@@ -170,7 +252,7 @@ void L1Parameters::CheckConsistency() const
     }
 
     std::string names = "";
-    for (const auto& iter : fCAIterations) {
+    for (const auto iter : fCAIterations) {
       if (!iter.Check()) { names += iter.GetName() + " "; }
     }
     if (names.size()) {
@@ -209,47 +291,46 @@ void L1Parameters::CheckConsistency() const
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-void L1Parameters::Print(int /*verbosityLevel*/) const { LOG(info) << ToString(); }
+void L1Parameters::Print(int /*verbosityLevel*/) const
+{
+  LOG(info) << ToString();
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 //
 std::string L1Parameters::ToString(int verbosity, int indentLevel) const
 {
   // FIXME: SZh: Fill it with other parameters
-  using namespace L1Constants::clrs;  // color the log text
   std::stringstream aStream {};
   constexpr char indentChar = '\t';
   std::string indent(indentLevel, indentChar);
   aStream << '\n';
-  aStream << indent
-          << "----- L1 parameters list -------------------------------------------------------------------------\n";
-
-  aStream << indent << kCLb << "COMPILE TIME CONSTANTS:\n" << kCL;
+  aStream << indent << "--------------------------------------------------------------------------------\n";
+  aStream << indent << "                              L1 parameters list\n";
+  aStream << indent << "--------------------------------------------------------------------------------\n";
+  aStream << indent << "COMPILE TIME CONSTANTS:\n";
   aStream << indent << indentChar << "Bits to code one station:           " << L1Constants::size::kStationBits << '\n';
   aStream << indent << indentChar << "Bits to code one thread:            " << L1Constants::size::kThreadBits << '\n';
   aStream << indent << indentChar << "Bits to code one triplet:           " << L1Constants::size::kTripletBits << '\n';
   aStream << indent << indentChar << "Max number of stations:             " << L1Constants::size::kMaxNstations << '\n';
   aStream << indent << indentChar << "Max number of threads:              " << L1Constants::size::kMaxNthreads << '\n';
   aStream << indent << indentChar << "Max number of triplets:             " << L1Constants::size::kMaxNtriplets << '\n';
-  aStream << indent << kCLb << "RUNTIME CONSTANTS:\n" << kCL;
+  aStream << indent << "RUNTIME CONSTANTS:\n";
   aStream << indent << indentChar << "Max number of doublets per singlet: " << fMaxDoubletsPerSinglet << '\n';
   aStream << indent << indentChar << "Max number of triplets per doublet: " << fMaxTripletPerDoublets << '\n';
-  aStream << indent << indentChar << "Tracking level:                     " << fTrackingLevel << '\n';
-  aStream << indent << indentChar << "Ghost suppresion:                   " << fGhostSuppression << '\n';
-  aStream << indent << indentChar << "Min tracks momentum:                " << fMomentumCutOff << '\n';
-  aStream << indent << indentChar << "Max number of triplets per doublet: " << fMaxTripletPerDoublets << '\n';
-  aStream << indent << kCLb << "CA TRACK FINDER ITERATIONS:\n" << kCL;
+  aStream << indent << "CA TRACK FINDER ITERATIONS:\n";
   for (int idx = 0; idx < static_cast<int>(fCAIterations.size()); ++idx) {
-    aStream << indent << indentChar << idx << ") " << fCAIterations[idx].ToString(indentLevel + 1) << '\n';
+    aStream << idx << ") " << fCAIterations[idx].ToString(indentLevel + 1) << '\n';
   }
-  aStream << indent << kCLb << "GEOMETRY:\n" << kCL;
-  aStream << indent << indentChar << kCLb << "TARGET:\n" << kCL;
+  aStream << indent << "GEOMETRY:\n";
+
+  aStream << indent << indentChar << "TARGET:\n";
   aStream << indent << indentChar << indentChar << "Position:\n";
   for (int dim = 0; dim < 3 /*nDimensions*/; ++dim) {
     aStream << indent << indentChar << indentChar << indentChar << char(120 + dim) << " = " << fTargetPos[dim][0]
             << " cm\n";
   }
-  aStream << indent << indentChar << kCLb << "NUMBER OF STATIONS:\n" << kCL;
+  aStream << indent << indentChar << "NUMBER OF STATIONS:\n";
   aStream << indent << indentChar << indentChar << "Number of stations (Geometry): ";
   for (int idx = 0; idx < int(fNstationsGeometry.size()); ++idx) {
     aStream << std::setw(2) << std::setfill(' ') << fNstationsGeometry[idx] << ' ';
@@ -263,25 +344,17 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
   aStream << " | total = " << std::setw(2) << std::setfill(' ') << fNstationsActiveTotal;
   aStream << '\n';
   aStream << indent << indentChar << indentChar << "Active station indexes: ";
-  for (int idx = 0; idx < fNstationsActiveTotal; ++idx) {
+  for (int idx = 0; idx < *(fNstationsActive.end() - 1); ++idx) {
     aStream << std::setw(3) << std::setfill(' ') << fActiveStationGlobalIDs[idx] << ' ';
   }
   aStream << '\n';
 
-  aStream << indent << indentChar << kCLb << "STATIONS:\n" << kCL;
-  for (int idx = 0; idx < fNstationsActiveTotal; ++idx) {
-    aStream << indent << indentChar << idx << ") " << fStations[idx].ToString(verbosity, indentLevel + 2) << '\n';
+  aStream << indent << indentChar << "STATIONS:\n ";
+  for (int idx = 0; idx < *(fNstationsActive.end() - 1); ++idx) {
+    aStream << indent << indentChar << indentChar << fStations[idx].ToString(verbosity) << '\n';
   }
 
-  aStream << indent << kCLb << "DEV FLAGS:" << kCL << " (for debug only)\n";
-  aStream << indent << indentChar << "Hits search area is ignored: " << fDevIsIgnoreHitSearchAreas << '\n';
-  aStream << indent << indentChar << "Non-approx. field is used:   " << fDevIsMatchDoubletsViaMc << '\n';
-  aStream << indent << indentChar << "Doublets vs. MC matching:    " << fDevIsMatchDoubletsViaMc << '\n';
-  aStream << indent << indentChar << "Triplets vs. MC matching:    " << fDevIsMatchTripletsViaMc << '\n';
-  aStream << indent << indentChar << "Use hit search windows:      " << fDevIsParSearchWUsed << '\n';
-  // TODO: SZh 09.11.2022: Print search windows here
-
-  aStream << indent
-          << "--------------------------------------------------------------------------------------------------\n";
+  aStream << indent << "FLAGS:\n";
+  aStream << indent << "--------------------------------------------------------------------------------\n";
   return aStream.str();
 }

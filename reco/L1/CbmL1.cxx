@@ -825,6 +825,19 @@ InitStatus CbmL1::Init()
       //fInitManager.PushBackCAIteration(trackingIterAllSecJump);
     }
 
+    // *******************************
+    // ** Initialize search windows **
+    // *******************************
+
+    if (fsInputSearchWindowsFilename.size()) {
+      fInitManager.DevSetIsParSearchWUsed();
+      fInitManager.ReadSearchWindows(fsInputSearchWindowsFilename);
+    }
+    else {
+      fInitManager.DevSetIsParSearchWUsed(false);
+    }
+
+
     // **********************
     // ** Set special cuts **
     // **********************
@@ -1181,7 +1194,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
     EfficienciesPerformance();
     HistoPerformance();
     TrackFitPerformance();
-    if (fsMcTracksOutputFilename.size()) { DumpMCTracksToNtuple(); }
+    if (fsMcTripletsOutputFilename.size()) { DumpMCTripletsToTree(); }
     // TimeHist();
     ///    WriteSIMDKFData();
   }
@@ -1230,11 +1243,11 @@ void CbmL1::Finish()
     outfile->Delete();
   }
 
-  if (fpMcTracksOutFile) {
-    fpMcTracksOutFile->cd();
-    fpMcTracksTree->Write();
-    fpMcTracksOutFile->Close();
-    fpMcTracksOutFile->Delete();
+  if (fpMcTripletsOutFile) {
+    fpMcTripletsOutFile->cd();
+    fpMcTripletsTree->Write();
+    fpMcTripletsOutFile->Close();
+    fpMcTripletsOutFile->Delete();
   }
 
   gFile      = currentFile;

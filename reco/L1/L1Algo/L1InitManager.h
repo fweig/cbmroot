@@ -83,10 +83,11 @@ private:
     kStationsInfo,                  ///< 5) If all the planned stations were added to the manager
     kCAIterationsNumberCrosscheck,  ///< 6) If the number of CA track finder is initialized
     kCAIterations,                  ///< 7) If the CA track finder iterations were initialized
-    kTrackingLevel,                 ///< 8)
-    kGhostSuppression,              ///< 9)
-    kMomentumCutOff,                ///< 10)
-    kEnd                            ///< 11) [technical] number of entries in the enumeration
+    kSearchWindows,                 ///< 8) If the hit search windows were initialized
+    kTrackingLevel,                 ///< 9)
+    kGhostSuppression,              ///< 10)
+    kMomentumCutOff,                ///< 11)
+    kEnd                            ///< 12) [technical] number of entries in the enumeration
   };
 
   using L1DetectorIDIntMap_t = std::unordered_map<L1DetectorID, int, L1Utils::EnumClassHash>;
@@ -193,6 +194,10 @@ public:
   /// \param  fileName  Name of input file
   void ReadParametersObject(const std::string& fileName);
 
+  /// Reads search windows from file
+  /// \param  fileName  Name of input file
+  void ReadSearchWindows(const std::string& fileName);
+
   /// Sets a set of active tracking detector IDs
   void SetActiveDetectorIDs(const L1DetectorIDSet_t& detectorIDs);
 
@@ -260,6 +265,11 @@ public:
 
   /// Flag to match triplets using Mc information
   void DevSetIsMatchTripletsViaMc(bool value = true) { fParameters.fDevIsMatchTripletsViaMc = value; }
+
+  /// Flag to use estimated hit search windows
+  /// true:  estimated search windows will be used in track finder
+  /// false: Kalman filter will be used in track finder
+  void DevSetIsParSearchWUsed(bool value = true) { fParameters.fDevIsParSearchWUsed = value; }
 
 private:
   // *********************

@@ -164,6 +164,8 @@ bool L1InitManager::FormParametersContainer()
     }
   }
 
+  if (!fParameters.fDevIsParSearchWUsed) { fInitController.SetFlag(EInitKey::kSearchWindows, true); }
+
   // Check initialization
   this->CheckInit();
 
@@ -270,6 +272,46 @@ void L1InitManager::ReadParametersObject(const std::string& fileName)
   catch (const std::exception&) {
     LOG(fatal) << "L1InitManager: parameters file \"" << fileName << "\" has incorrect data format or was corrupted";
   }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void L1InitManager::ReadSearchWindows(const std::string& fileName)
+{
+  // Open input binary file
+  std::ifstream ifs(fileName, std::ios::binary);
+  if (!ifs) { LOG(fatal) << "L1InitManager: search window file \"" << fileName << "\" was not found"; }
+
+  try {
+    boost::archive::binary_iarchive ia(ifs);
+    int nWindows = -1;
+    ia >> nWindows;
+    std::stringstream errMsg;
+    for (int iW = 0; iW < nWindows; ++iW) {
+      L1SearchWindow swBuffer;
+      ia >> swBuffer;
+      int iStationID = swBuffer.GetStationID();
+      int iTrackGrID = swBuffer.GetTrackGroupID();
+      if (iStationID < 0 || iStationID > L1Constants::size::kMaxNstations) {
+        errMsg << "\t- wrong station id for entry " << iW << ": " << iStationID << " (should be between 0 and "
+               << L1Constants::size::kMaxNstations << ")\n";
+      }
+      if (iTrackGrID < 0 || iTrackGrID > L1Constants::size::kMaxNtrackGroups) {
+        errMsg << "\t- wrong track group id for entry " << iW << ": " << iTrackGrID << " (should be between 0 and "
+               << L1Constants::size::kMaxNtrackGroups << ")\n";
+      }
+      fParameters.fSearchWindows[iTrackGrID * L1Constants::size::kMaxNstations + iStationID] = swBuffer;
+    }
+    if (errMsg.str().size()) {
+      LOG(fatal) << "L1InitManager: some errors occurred while reading search windows: " << errMsg.str();
+    }
+  }
+  catch (const std::exception&) {
+    LOG(fatal) << "L1InitManager: search windows file \"" << fileName
+               << "\" has incorrect data format or was corrupted";
+  }
+
+  fInitController.SetFlag(EInitKey::kSearchWindows, true);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

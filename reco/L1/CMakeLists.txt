@@ -71,6 +71,7 @@ set(SRCS
   catools/CaToolsMcDataManager.cxx
   catools/CaToolsPerformance.cxx
   catools/CaToolsDebugger.cxx
+  catools/CaToolsWindowFinder.cxx
   ParticleFinder/CbmL1PFFitter.cxx
   ParticleFinder/CbmL1PFMCParticle.cxx
 
@@ -94,6 +95,7 @@ set(HEADERS
   CbmL1Vtx.h
   L1Algo/L1Def.h
   L1Algo/L1Vector.h
+  catools/CaToolsWindowFinder.h
 )
 
 

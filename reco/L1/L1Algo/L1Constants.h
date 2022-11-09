@@ -37,6 +37,10 @@ namespace L1Constants
     constexpr int kMaxNthreads   = 1u << kThreadBits;   ///< Max number of threads, 2^6  = 64
     constexpr int kMaxNtriplets  = 1u << kTripletBits;  ///< Max number of triplets, 2^20 = 1,048,576
 
+    /// Max number of track groups
+    /// NOTE: For a "track group" definition see L1Parameters.h, GetSearchWindow function
+    constexpr int kMaxNtrackGroups = 4;
+
     // TODO: Clarify the meaning of these coefficients
     constexpr int kCoeff                 = 64 / 4;                        ///< TODO:
     constexpr int kSingletPortionSize    = 1024 / kCoeff;                 ///< portion of left hits

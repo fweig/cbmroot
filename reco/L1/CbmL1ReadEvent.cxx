@@ -1368,7 +1368,8 @@ void CbmL1::Fill_vMCTracks()
       TLorentzVector vp;
       MCTrack->GetStartVertex(vr);
       MCTrack->Get4Momentum(vp);
-      Int_t pdg  = MCTrack->GetPdgCode();
+      Int_t pdg              = MCTrack->GetPdgCode();
+      unsigned int processID = MCTrack->GetGeantProcessId();
       Double_t q = 0, mass = 0.;
       if (pdg < 9999999 && ((TParticlePDG*) TDatabasePDG::Instance()->GetParticle(pdg))) {
         q    = TDatabasePDG::Instance()->GetParticle(pdg)->Charge() / 3.0;
@@ -1379,7 +1380,7 @@ void CbmL1::Fill_vMCTracks()
       //cout << "mc track " << iMCTrack << " pdg " << pdg << " z " << vr.Z() << endl;
 
       Int_t iTrack = fvMCTracks.size();  //or iMCTrack?
-      CbmL1MCTrack T(mass, q, vr, vp, iTrack, mother_ID, pdg);
+      CbmL1MCTrack T(mass, q, vr, vp, iTrack, mother_ID, pdg, processID);
       //        CbmL1MCTrack T(mass, q, vr, vp, iMCTrack, mother_ID, pdg);
       T.time   = MCTrack->GetStartT();
       T.iFile  = iFile;

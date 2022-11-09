@@ -263,14 +263,20 @@ public:
   /// \param filename  Name of the input tracking configuration file
   void SetInputConfigName(const char* filename);
 
+  /// \brief Sets a name for the input search window file
+  /// If the filename is not defined, a default track finder with Kalman filter is used. Otherwise, an experimental
+  /// version of track finder with estimated hit search windows is utilised
+  /// \param filename Name of the input search window file
+  void SetInputSearchWindowFilename(const char* filename) { fsInputSearchWindowsFilename = filename; }
+
   /// \brief Sets a name for the output configuration file
   /// \param filename  Name of the input tracking configuration file
   void SetOutputConfigName(const char* filename) { fInitManager.SetOutputConfigName(std::string(filename)); }
 
-  /// \brief Sets output file for MC tracks ntuple
-  /// If the filename is empty string, ntuple is not filled
+  /// \brief Sets output file for MC triplets tree
+  /// If the filename is empty string, tree is not filled
   /// \param filename Name of the output file name
-  void SetOutputMcTracksNtupleFilename(const char* filename) { fsMcTracksOutputFilename = std::string(filename); }
+  void SetOutputMcTripletsTreeFilename(const char* filename) { fsMcTripletsOutputFilename = std::string(filename); }
 
   /// Sets flag: to correct input hits on MC or not
   /// \param flag: true - hits will be corrected on MC information
@@ -424,9 +430,9 @@ private:
   /// Fills performance histograms
   void HistoPerformance();
 
-  /// Writes MC tracks to ntuple
+  /// Writes MC triplets to tree
   /// \note Executed only if the filename for MC tracks ntuple output is defined
-  void DumpMCTracksToNtuple();
+  void DumpMCTripletsToTree();
 
 
   // ** STandAlone Package service-functions **
@@ -471,7 +477,8 @@ private:
   static void writedir2current(TObject* obj);       // help procedure
 
 private:
-  std::string fInputDataFilename = "";  ///< File name to read/write input hits
+  std::string fInputDataFilename           = "";  ///< File name to read/write input hits
+  std::string fsInputSearchWindowsFilename = "";  ///< File name to read search windows
 
   // ***************************
   // ** Member variables list **
@@ -660,9 +667,9 @@ private:
   static const int fNGhostHistos = 9;
   TH1F* fGhostHisto[fNGhostHistos] {nullptr};
 
-  TFile* fpMcTracksOutFile             = nullptr;  ///< File to save MC-tracks ntuple
-  TNtuple* fpMcTracksTree              = nullptr;  ///< Ntuple to save MC-tracks
-  std::string fsMcTracksOutputFilename = "";       ///< Name of file to save MC-tracks ntuple
+  TFile* fpMcTripletsOutFile             = nullptr;  ///< File to save MC-triplets tree
+  TTree* fpMcTripletsTree                = nullptr;  ///< Tree to save MC-triplets
+  std::string fsMcTripletsOutputFilename = "";       ///< Name of file to save MC-triplets tree
 
   int fFindParticlesMode {0};  // 0 - don't run FindParticles
                                // 1 - run, all MC particle is reco-able
