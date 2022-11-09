@@ -70,7 +70,7 @@ set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
 generate_cbm_executable()
 
-# diabled until T0 is implemented in unpackers
+# disabled until T0 is implemented in unpackers
 #
 #set(EXE_NAME BuildRawEvents)
 #set(SRCS CbmDeviceBuildRawEvents.cxx runBuildRawEvents.cxx)
@@ -110,7 +110,7 @@ set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
 generate_cbm_executable()
 
-# diabled until T0 is implemented in unpackers
+# disabled until T0 is implemented in unpackers
 #
 #set(EXE_NAME BuildDigiEvents)
 #set(SRCS CbmDeviceBuildDigiEvents.cxx runBuildDigiEvents.cxx)

@@ -131,6 +131,7 @@ void CbmAlgoBuildRawEvents::ProcessTs()
     /// TODO: store start time of current event ?
     //        fCurrentEvent->SetStartTime( fPrevTime ); // Replace Seed time with time of first digi in event?
     fCurrentEvent->SetEndTime(fdPrevEvtEndTime);
+    SetBmonEventTime(fCurrentEvent);
     fEventVector.push_back(fCurrentEvent);
     fuCurEv++;
 
@@ -347,10 +348,12 @@ void CbmAlgoBuildRawEvents::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx)
       /// TODO: store start time of current event ?
       //        fCurrentEvent->SetStartTime( fPrevTime ); // Replace Seed time with time of first digi in event?
       fCurrentEvent->SetEndTime(fdPrevEvtEndTime);
+      SetBmonEventTime(fCurrentEvent);
       fEventVector.push_back(fCurrentEvent);
+
       fuCurEv++;
     }
-    fCurrentEvent = new CbmEvent(fuCurEv, dSeedTime, 0.);
+    fCurrentEvent = new CbmEvent(fuCurEv, -1, 0.);
   }  // else of if( prev Event exists and mode forbiden overlap present )
 
   if (fRefDet.detId != ECbmModuleId::kNotExist) {
@@ -606,6 +609,23 @@ Bool_t CbmAlgoBuildRawEvents::HasTrigger(CbmEvent* event)
   }
   /// All Ok, trigger is there
   return kTRUE;
+}
+
+void CbmAlgoBuildRawEvents::SetBmonEventTime(CbmEvent* event)
+{
+  int32_t iNbDigis = event->GetNofData(ECbmDataType::kT0Digi);
+
+  if (0 < iNbDigis) {
+    double eventTime = 0;
+    for (int idigi = 0; idigi < iNbDigis; ++idigi) {
+      uint idx                 = event->GetIndex(ECbmDataType::kT0Digi, idigi);
+      const CbmBmonDigi* pDigi = GetDigi<CbmBmonDigi>(idx);
+      if (nullptr == pDigi) continue;
+      eventTime += pDigi->GetTime();
+    }
+    eventTime /= iNbDigis;
+    event->SetStartTime(eventTime);
+  }
 }
 
 Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, const RawEventBuilderDetector& det)

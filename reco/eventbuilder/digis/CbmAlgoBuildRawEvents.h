@@ -250,6 +250,8 @@ private:
   void UpdateTimeWinBoundariesExtrema();
   void UpdateWidestTimeWinRange();
 
+  void SetBmonEventTime(CbmEvent* event);
+
   TFolder* outFolder;  // oputput folder to store histograms
 
   /// Constants
