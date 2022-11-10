@@ -613,17 +613,19 @@ Bool_t CbmAlgoBuildRawEvents::HasTrigger(CbmEvent* event)
 
 void CbmAlgoBuildRawEvents::SetTzdEventTime(CbmEvent* event)
 {
-  int32_t iNbDigis = event->GetNofData(ECbmDataType::kT0Digi);
+  const int32_t iNbDigis = event->GetNofData(ECbmDataType::kT0Digi);
 
   if (0 < iNbDigis) {
-    double eventTime = 0;
-    for (int idigi = 0; idigi < iNbDigis; ++idigi) {
-      uint idx                = event->GetIndex(ECbmDataType::kT0Digi, idigi);
-      const CbmTzdDigi* pDigi = GetDigi<CbmTzdDigi>(idx);
+    uint idx                = event->GetIndex(ECbmDataType::kT0Digi, 0);
+    const CbmTzdDigi* pDigi = GetDigi<CbmTzdDigi>(idx);
+    double eventTime        = pDigi->GetTime();
+
+    for (int idigi = 1; idigi < iNbDigis; ++idigi) {
+      idx   = event->GetIndex(ECbmDataType::kT0Digi, idigi);
+      pDigi = GetDigi<CbmTzdDigi>(idx);
       if (nullptr == pDigi) continue;
-      eventTime += pDigi->GetTime();
+      eventTime = std::min(pDigi->GetTime(), eventTime);
     }
-    eventTime /= iNbDigis;
     event->SetStartTime(eventTime);
   }
 }
