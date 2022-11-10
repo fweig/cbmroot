@@ -46,20 +46,18 @@ public:
     kXmax,            ///< max size in X direction
     kYmax,            ///< max size in Y direction
     // L1Station initialization
-    kType,              ///< station type
-    kTimeInfo,          ///< if time info is used (flag)
-    kFieldStatus,       ///< if station is placed in field (flag)
-    kZ,                 ///< z coordinate of the station position
-    kRmin,              ///< internal radius of station (gap size)
-    kRmax,              ///< exteranl radius of station
-    kZthickness,        ///< Z thickness of the station
-    kThicknessMap,      ///< thickness map of the station (optional?)
-    kFieldSlice,        ///< L1Station.L1FieldSlice object initialization
-    kStripsFrontPhi,    ///< strips geometry initialization
-    kStripsFrontSigma,  ///<
-    kStripsBackPhi,     ///<
-    kStripsBackSigma,   ///<
-    kTimeResolution,    ///< time resolution
+    kType,            ///< station type
+    kTimeInfo,        ///< if time info is used (flag)
+    kFieldStatus,     ///< if station is placed in field (flag)
+    kZ,               ///< z coordinate of the station position
+    kRmin,            ///< internal radius of station (gap size)
+    kRmax,            ///< exteranl radius of station
+    kZthickness,      ///< Z thickness of the station
+    kThicknessMap,    ///< thickness map of the station (optional?)
+    kFieldSlice,      ///< L1Station.L1FieldSlice object initialization
+    kStripsFrontPhi,  ///< strips geometry initialization
+    kStripsBackPhi,   ///<
+    kTimeResolution,  ///< time resolution
     // The last item is equal to the number of bits in fInitFlags
     kEnd
   };
@@ -183,12 +181,10 @@ public:
   ///                 of magnetic field components in position
   void SetFieldFunction(const std::function<void(const double (&xyz)[3], double (&B)[3])>& getFieldValue);
 
-  /// Sets stereo angles and sigmas for front and back strips
+  /// Sets stereo angles for front and back strips
   /// \param f_phi   Stereoangle of front strips [rad]
-  /// \param f_sigma Sigma of front strips       [rad]
   /// \param b_phi   Stereoangle of back strips  [rad]
-  /// \param b_sigma Sigma of back strips        [rad]
-  void SetFrontBackStripsGeometry(double fPhi, double fSigma, double bPhi, double bSigma);
+  void SetFrontBackStripsGeometry(double fPhi, double bPhi);
 
   /// Sets station thickness and radiation length
   /// \param thickness       Thickness of station [arb. units]

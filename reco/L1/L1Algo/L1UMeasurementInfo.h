@@ -17,7 +17,6 @@ class L1UMeasurementInfo {
 public:
   fvec cos_phi {L1NaN::SetNaN<decltype(cos_phi)>()};
   fvec sin_phi {L1NaN::SetNaN<decltype(sin_phi)>()};
-  fvec sigma2 {L1NaN::SetNaN<decltype(sigma2)>()};
 
   /// String representation of class contents
   /// \param indentLevel      number of indent characters in the output
@@ -27,7 +26,7 @@ public:
   void CheckConsistency() const;
 
   /// Checks, if the fields are NaN
-  bool IsNaN() const { return L1NaN::IsNaN(cos_phi) || L1NaN::IsNaN(sin_phi) || L1NaN::IsNaN(sigma2); }
+  bool IsNaN() const { return L1NaN::IsNaN(cos_phi) || L1NaN::IsNaN(sin_phi); }
 
   /// Serialization function
   friend class boost::serialization::access;
@@ -36,7 +35,6 @@ public:
   {
     ar& cos_phi;
     ar& sin_phi;
-    ar& sigma2;
   }
 } _fvecalignment;
 

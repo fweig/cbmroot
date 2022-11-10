@@ -34,6 +34,7 @@
 #include <boost/filesystem.hpp>
 // TODO: include of CbmSetup.h creates problems on Mac
 // #include "CbmSetup.h"
+#include "CbmDigiManager.h"
 #include "CbmMCDataObject.h"
 #include "CbmStsFindTracks.h"
 #include "CbmStsHit.h"
@@ -198,8 +199,9 @@ InitStatus CbmL1::Init()
   {
     CbmStsFindTracks* findTask = L1_DYNAMIC_CAST<CbmStsFindTracks*>(FairRunAna::Instance()->GetTask("STSFindTracks"));
     if (findTask) fUseMVD = findTask->MvdUsage();
+    CbmDigiManager::Instance()->Init();
+    if (!CbmDigiManager::IsPresent(ECbmModuleId::kMvd)) { fUseMVD = false; }
   }
-
 
   if (L1Algo::TrackingMode::kMcbm == fTrackingMode) {
     fUseMUCH = 1;
@@ -474,9 +476,8 @@ InitStatus CbmL1::Init()
         stationInfo.SetZthickness(mvdInterface->GetThickness(iSt));
         stationInfo.SetMaterialMap(std::move(materialTableMvd[iSt]));
         // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
-        stationInfo.SetFrontBackStripsGeometry(
-          (fscal) mvdInterface->GetStripsStereoAngleFront(iSt), (fscal) mvdInterface->GetStripsSpatialRmsFront(iSt),
-          (fscal) mvdInterface->GetStripsStereoAngleBack(iSt), (fscal) mvdInterface->GetStripsSpatialRmsBack(iSt));
+        stationInfo.SetFrontBackStripsGeometry((fscal) mvdInterface->GetStripsStereoAngleFront(iSt),
+                                               (fscal) mvdInterface->GetStripsStereoAngleBack(iSt));
         stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
         fInitManager.AddStation(stationInfo);
         LOG(info) << "- MVD station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
@@ -502,9 +503,8 @@ InitStatus CbmL1::Init()
         stationInfo.SetZthickness(stsInterface->GetThickness(iSt));
         stationInfo.SetMaterialMap(std::move(materialTableSts[iSt]));
         // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
-        stationInfo.SetFrontBackStripsGeometry(
-          (fscal) stsInterface->GetStripsStereoAngleFront(iSt), (fscal) stsInterface->GetStripsSpatialRmsFront(iSt),
-          (fscal) stsInterface->GetStripsStereoAngleBack(iSt), (fscal) stsInterface->GetStripsSpatialRmsBack(iSt));
+        stationInfo.SetFrontBackStripsGeometry((fscal) stsInterface->GetStripsStereoAngleFront(iSt),
+                                               (fscal) stsInterface->GetStripsStereoAngleBack(iSt));
         stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
         fInitManager.AddStation(stationInfo);
         LOG(info) << "- STS station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
@@ -530,9 +530,8 @@ InitStatus CbmL1::Init()
         stationInfo.SetZthickness(muchInterface->GetThickness(iSt));
         stationInfo.SetMaterialMap(std::move(materialTableMuch[iSt]));
         // TODO: The CA TF result is dependent from type of geometry settings. Should be understood (S.Zharko)
-        stationInfo.SetFrontBackStripsGeometry(
-          (fscal) muchInterface->GetStripsStereoAngleFront(iSt), (fscal) muchInterface->GetStripsSpatialRmsFront(iSt),
-          (fscal) muchInterface->GetStripsStereoAngleBack(iSt), (fscal) muchInterface->GetStripsSpatialRmsBack(iSt));
+        stationInfo.SetFrontBackStripsGeometry((fscal) muchInterface->GetStripsStereoAngleFront(iSt),
+                                               (fscal) muchInterface->GetStripsStereoAngleBack(iSt));
         stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
         fInitManager.AddStation(stationInfo);
         LOG(info) << "- MuCh station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
@@ -557,17 +556,13 @@ InitStatus CbmL1::Init()
         stationInfo.SetRmax(trdInterface->GetRmax(iSt));
         stationInfo.SetZthickness(trdInterface->GetThickness(iSt));
         stationInfo.SetMaterialMap(std::move(materialTableTrd[iSt]));
-        fscal trdFrontPhi   = trdInterface->GetStripsStereoAngleFront(iSt);
-        fscal trdBackPhi    = trdInterface->GetStripsStereoAngleBack(iSt);
-        fscal trdFrontSigma = trdInterface->GetStripsSpatialRmsFront(iSt);
-        fscal trdBackSigma  = trdInterface->GetStripsSpatialRmsBack(iSt);
+        fscal trdFrontPhi = trdInterface->GetStripsStereoAngleFront(iSt);
+        fscal trdBackPhi  = trdInterface->GetStripsStereoAngleBack(iSt);
         if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
-          trdFrontSigma = 1.1;
-          trdBackSigma  = 1.1;
           // stationInfo.SetTimeResolution(1.e10);
           stationInfo.SetTimeInfo(false);
         }
-        stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdFrontSigma, trdBackPhi, trdBackSigma);
+        stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdBackPhi);
         stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
         if (iSt == 1 && L1Algo::TrackingMode::kMcbm == fTrackingMode && fMissingHits) {
           stationInfo.SetTrackingStatus(false);
@@ -596,11 +591,9 @@ InitStatus CbmL1::Init()
         stationInfo.SetYmax(tofInterface->GetYmax(iSt));
         stationInfo.SetRmin(tofInterface->GetRmin(iSt));
         stationInfo.SetRmax(tofInterface->GetRmax(iSt));
-        fscal tofFrontPhi   = tofInterface->GetStripsStereoAngleFront(iSt);
-        fscal tofBackPhi    = tofInterface->GetStripsStereoAngleBack(iSt);
-        fscal tofFrontSigma = tofInterface->GetStripsSpatialRmsFront(iSt);
-        fscal tofBackSigma  = tofInterface->GetStripsSpatialRmsBack(iSt);
-        stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofFrontSigma, tofBackPhi, tofBackSigma);
+        fscal tofFrontPhi = tofInterface->GetStripsStereoAngleFront(iSt);
+        fscal tofBackPhi  = tofInterface->GetStripsStereoAngleBack(iSt);
+        stationInfo.SetFrontBackStripsGeometry(tofFrontPhi, tofBackPhi);
         stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
         fInitManager.AddStation(stationInfo);
         LOG(info) << "- TOF station " << iSt << " at z = " << stationInfo.GetZdouble() << " cm";
@@ -845,7 +838,7 @@ InitStatus CbmL1::Init()
   // Init L1 algo core
 
   fpAlgo = &gAlgo;
-  fpAlgo->Init(fUseHitErrors, fTrackingMode, fMissingHits);
+  fpAlgo->Init(fTrackingMode, fMissingHits);
 
   //
   // ** Send formed parameters object to L1Algo instance **

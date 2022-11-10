@@ -359,7 +359,6 @@ void run_reco_L1global(TString input = "", Int_t nTimeSlices = -1, Int_t firstTi
       l1 = new CbmL1("L1", 0);
     }
     l1->SetGlobalMode();
-    //l1->SetUseHitErrors(false);
     //l1->SetUseMcHit(0, 0, 0, 1, 0);
 
     // --- Material budget file names

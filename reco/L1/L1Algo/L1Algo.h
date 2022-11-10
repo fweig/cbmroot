@@ -344,14 +344,7 @@ public:
   void GuessVec(L1TrackParFit& t, fvec* xV, fvec* yV, fvec* zV, fvec* Sy, fvec* wV, int NHits, fvec* zCur = 0,
                 fvec* timeV = 0, fvec* w_time = 0);
 
-  void FilterFirst(L1TrackPar& track, fvec& x, fvec& y, L1Station& st);
-  void FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, L1Station& st);
-  void FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, L1Station& st);
-
-  void FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, L1Station& st, fvec& dx2, fvec& dy2,
-                   fvec& dxy);
-  void FilterFirstL(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, L1Station& st, fvec& dx2, fvec& dy2,
-                    fvec& dxy);
+  void FilterFirst(L1TrackParFit& track, fvec& x, fvec& y, fvec& t, fvec& dt2, fvec& dx2, fvec& dy2, fvec& dxy);
 
 
 #ifdef DRAW
@@ -366,7 +359,7 @@ public:
     kMcbm
   };
 
-  void Init(const bool UseHitErrors, const TrackingMode mode, const bool MissingHits);
+  void Init(const TrackingMode mode, const bool MissingHits);
 
   void Finish();
 
@@ -423,6 +416,8 @@ public:
   L1Grid vGrid[L1Constants::size::kMaxNstations];      ///<
   L1Grid vGridTime[L1Constants::size::kMaxNstations];  ///<
 
+  fscal fMaxDx[L1Constants::size::kMaxNstations];
+  fscal fMaxDy[L1Constants::size::kMaxNstations];
 
   double fCATime {0.};  // time of track finding
 
@@ -465,7 +460,6 @@ public:
   L1Vector<int> fStripToTrackB {"L1Algo::fStripToTrackB"};  // back strip to track pointers
 
   int fNThreads {0};
-  bool fUseHitErrors {true};
   bool fMissingHits {0};  ///< TODO ???
   TrackingMode fTrackingMode {kSts};
 

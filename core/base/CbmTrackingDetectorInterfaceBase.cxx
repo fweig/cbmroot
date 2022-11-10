@@ -82,20 +82,6 @@ bool CbmTrackingDetectorInterfaceBase::Check() const
         res = false && res;
       }
 
-      // Front strips spatial resolution
-      auto rmsF = this->GetStripsSpatialRmsFront(iSt);
-      if (rmsF < std::numeric_limits<double>::epsilon() || std::isnan(rmsF)) {
-        msg << prefix << " zero, negative or NaN front strips spatial resolution (" << rmsF << " cm)\n";
-        res = false && res;
-      }
-
-      // Back strips spatial resolution
-      auto rmsB = this->GetStripsSpatialRmsBack(iSt);
-      if (rmsB < std::numeric_limits<double>::epsilon() || std::isnan(rmsB)) {
-        msg << prefix << " zero, negative or NaN back strips spatial resolution (" << rmsB << " cm)\n";
-        res = false && res;
-      }
-
       // Time resolution
       auto timeRes = this->GetTimeResolution(iSt);
       if (timeRes < std::numeric_limits<double>::epsilon() || std::isnan(timeRes)) {
@@ -145,8 +131,6 @@ std::string CbmTrackingDetectorInterfaceBase::ToString() const
   table << setw(12) << setfill(' ') << "res.time[ns]" << ' ';
   table << setw(11) << setfill(' ') << "angleF[rad]" << ' ';
   table << setw(11) << setfill(' ') << "angleB[rad]" << ' ';
-  table << setw(10) << setfill(' ') << "res.F [cm]" << ' ';
-  table << setw(10) << setfill(' ') << "res.B [cm]" << ' ';
   table << setw(10) << setfill(' ') << "dz [cm]" << ' ';
   table << setw(10) << setfill(' ') << "RL [cm]" << '\n';
   for (int iSt = 0; iSt < GetNtrackingStations(); ++iSt) {
@@ -159,8 +143,6 @@ std::string CbmTrackingDetectorInterfaceBase::ToString() const
     table << setw(12) << setfill(' ') << GetTimeResolution(iSt) << ' ';
     table << setw(11) << setfill(' ') << GetStripsStereoAngleFront(iSt) << ' ';
     table << setw(11) << setfill(' ') << GetStripsStereoAngleBack(iSt) << ' ';
-    table << setw(10) << setfill(' ') << GetStripsSpatialRmsFront(iSt) << ' ';
-    table << setw(10) << setfill(' ') << GetStripsSpatialRmsBack(iSt) << ' ';
     table << setw(10) << setfill(' ') << GetThickness(iSt) << ' ';
     table << setw(10) << setfill(' ') << GetRadLength(iSt) << '\n';
   }

@@ -35,7 +35,6 @@ public:
   L1UMeasurementInfo backInfo {};
   L1UMeasurementInfo xInfo {};  ///< x axis in front,back coordinates
   L1UMeasurementInfo yInfo {};  ///< y axis in front,back coordinates
-  L1XYMeasurementInfo XYInfo {};
 
   /// Serialization function
   friend class boost::serialization::access;
@@ -57,7 +56,6 @@ public:
     ar& backInfo;
     ar& xInfo;
     ar& yInfo;
-    ar& XYInfo;
   }
 
 

@@ -72,16 +72,6 @@ public:
   /// \return Size of station inner radius [cm]
   double GetRmin(int /*stationId*/) const { return 10.; }
 
-  /// Gets spatial resolution (RMS) for back strips
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Spatial resolution (RMS) for front strips [cm]
-  double GetStripsSpatialRmsBack(int /*stationId*/) const { return 0.35; }
-
-  /// Gets spatial resolution (RMS) for front strips
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Spatial resolution (RMS) for front strips [cm]
-  double GetStripsSpatialRmsFront(int /*stationId*/) const { return 0.35; }
-
   /// Gets back strips stereo angle
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Absolute stereo angle for back strips [rad]

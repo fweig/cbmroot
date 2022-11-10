@@ -162,10 +162,8 @@ inline void L1Algo::findSingletsStep0(  // input
     u_front_l[i1_V][i1_4] = hitl.U();
     u_back_l[i1_V][i1_4]  = hitl.V();
 
-    if (fUseHitErrors) {
-      du2_l[i1_V][i1_4] = hitl.dU2();
-      dv2_l[i1_V][i1_4] = hitl.dV2();
-    }
+    du2_l[i1_V][i1_4] = hitl.dU2();
+    dv2_l[i1_V][i1_4] = hitl.dV2();
 
     zPos_l[i1_V][i1_4] = hitl.Z();
   }
@@ -285,14 +283,11 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     T.C55 = timeEr2;
 
     {  // add the target constraint
-      T.x   = xl;
-      T.y   = yl;
-      T.z   = zl;
-      T.C00 = stal.XYInfo.C00;
-      T.C10 = stal.XYInfo.C10;
-      T.C11 = stal.XYInfo.C11;
+      T.x = xl;
+      T.y = yl;
+      T.z = zl;
 
-      if (fUseHitErrors) { std::tie(T.C00, T.C10, T.C11) = stal.FormXYCovarianceMatrix(du2_l[i1_V], dv2_l[i1_V]); }
+      std::tie(T.C00, T.C10, T.C11) = stal.FormXYCovarianceMatrix(du2_l[i1_V], dv2_l[i1_V]);
 
       //assert(T.IsConsistent(true, -1));
 
@@ -403,8 +398,8 @@ inline void L1Algo::findDoubletsStep0(
     const fscal time       = T1.t[i1_4];
 
     L1HitAreaTime areaTime(vGridTime[iStaM], T1.x[i1_4] * iz, T1.y[i1_4] * iz,
-                           (sqrt(Pick_m22 * (T1.C00 + stam.XYInfo.C00)) + fMaxDZ * abs(T1.tx))[i1_4] * iz,
-                           (sqrt(Pick_m22 * (T1.C11 + stam.XYInfo.C11)) + fMaxDZ * abs(T1.ty))[i1_4] * iz, time,
+                           (sqrt(Pick_m22 * T1.C00) + fMaxDx[iStaM] + fMaxDZ * abs(T1.tx))[i1_4] * iz,
+                           (sqrt(Pick_m22 * T1.C11) + fMaxDy[iStaM] + fMaxDZ * abs(T1.ty))[i1_4] * iz, time,
                            sqrt(timeError2) * 5);
 
     for (L1HitIndex_t imh = -1; true;) {  // loop over the hits in the area
@@ -447,12 +442,10 @@ inline void L1Algo::findDoubletsStep0(
       fvec y, C11;
       L1ExtrapolateYC11Line(T1, zm, y, C11);
 
-      fscal dy_est2 = Pick_m22[i1_4] * fabs(C11[i1_4] + stam.XYInfo.C11[i1_4]);
-
       /// Covariation matrix of the hit
       auto [dxxScalMhit, dxyScalMhit, dyyScalMhit] = stam.FormXYCovarianceMatrix(hitm.dU2(), hitm.dV2());
 
-      if (fUseHitErrors) { dy_est2 = Pick_m22[i1_4] * fabs(C11[i1_4] + dyyScalMhit); }
+      fscal dy_est2 = Pick_m22[i1_4] * fabs(C11[i1_4] + dyyScalMhit);
 
       auto [xm, ym] = stam.ConvUVtoXY<fscal>(hitm.U(), hitm.V());
 
@@ -464,9 +457,7 @@ inline void L1Algo::findDoubletsStep0(
       fvec x, C00;
       L1ExtrapolateXC00Line(T1, zm, x, C00);
 
-      fscal dx_est2 = Pick_m22[i1_4] * fabs(C00[i1_4] + stam.XYInfo.C00[i1_4]);
-
-      if (fUseHitErrors) { dx_est2 = Pick_m22[i1_4] * fabs(C00[i1_4] + dxxScalMhit); }
+      fscal dx_est2 = Pick_m22[i1_4] * fabs(C00[i1_4] + dxxScalMhit);
 
       const fscal dX = xm - x[i1_4];
 
@@ -477,22 +468,13 @@ inline void L1Algo::findDoubletsStep0(
       L1ExtrapolateC10Line(T1, zm, C10);
       fvec chi2 = T1.chi2;
 
-      L1UMeasurementInfo info = stam.frontInfo;
-
-      if (fUseHitErrors) info.sigma2 = hitm.dU2();
-
-      L1FilterChi2XYC00C10C11(info, x, y, C00, C10, C11, chi2, hitm.U());
+      L1FilterChi2XYC00C10C11(stam.frontInfo, x, y, C00, C10, C11, chi2, hitm.U(), hitm.dU2());
 
       if (!fpCurrentIteration->GetTrackFromTripletsFlag()) {
         if (chi2[i1_4] > fDoubletChi2Cut) continue;
       }
 
-
-      info = stam.backInfo;
-
-      if (fUseHitErrors) info.sigma2 = hitm.dV2();
-
-      L1FilterChi2(info, x, y, C00, C10, C11, chi2, hitm.V());
+      L1FilterChi2(stam.backInfo, x, y, C00, C10, C11, chi2, hitm.V(), hitm.dV2());
 
       // FilterTime(T1, hitm.T(), hitm.dT2());
 
@@ -631,56 +613,21 @@ inline void L1Algo::findTripletsStep0(  // input
 
     // L1TrackPar tStore1 = T2;
 
-    L1UMeasurementInfo info = stam.frontInfo;
-
-    if (fUseHitErrors) info.sigma2 = du2_2;
-
     // TODO: SG: L1FilterNoField is wrong.
     // TODO: If the field was present before,
     // TODO: the momentum is correlated with the position and corresponding
     // TODO: matrix elements must be up[dated
 
-    if (istam < fNfieldStations) { L1Filter(T2, info, u_front_2); }
+    if (istam < fNfieldStations) {
+      L1Filter(T2, stam.frontInfo, u_front_2, du2_2, fvec::One());
+      L1Filter(T2, stam.backInfo, u_back_2, dv2_2, fvec::One());
+    }
     else {
-      L1FilterNoField(T2, info, u_front_2);
+      L1FilterNoField(T2, stam.frontInfo, u_front_2, du2_2, fvec::One());
+      L1FilterNoField(T2, stam.backInfo, u_back_2, dv2_2, fvec::One());
     }
-
-    // L1TrackPar tStore2 = T2;
-
-    //assert(T2.IsConsistent(true, n2_4));
-
-    // a good place to debug the fit
-
-    /*    
-    if (tStore1.IsConsistent(false, n2_4) && !tStore2.IsConsistent(false, n2_4)) {
-      cout << " i2 " << i2 << " dx2 " << dx2 << endl;
-      cout << "\n\n before filtration: \n\n" << endl;
-      tStore1.Print();
-      tStore1.IsConsistent(true, n2_4);      
-      cout << "\n\n after filtration: \n\n" << endl;
-      tStore2.Print();
-      tStore2.IsConsistent(true, n2_4); 
-      cout << "\n\n " << n2_4 << " vector elements are filled." << endl;
-      cout << "measurement: cos " << info.cos_phi[0] << " sin " << info.sin_phi[0] << " u " << u_front_2 << " s2 "
-           << sqrt(info.sigma2) << endl;
-      cout << "\n\n" << endl;
-      exit(0);
-    }
-    */
-
-    info = stam.backInfo;
-    if (fUseHitErrors) info.sigma2 = dv2_2;
-
-    if (istam < fNfieldStations) { L1Filter(T2, info, u_back_2); }
-    else {
-      L1FilterNoField(T2, info, u_back_2);
-    }
-
-    // assert(T2.IsConsistent(true, n2_4));
 
     FilterTime(T2, t_2, dt2_2, stam.timeInfo);
-
-    // assert(T2.IsConsistent(true, n2_4));
 
     if (kMcbm == fTrackingMode) {
       fit.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, fvec::One(),
@@ -695,12 +642,8 @@ inline void L1Algo::findTripletsStep0(  // input
 
     //if ((istar >= fNstationsBeforePipe) && (istam <= fNstationsBeforePipe - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
 
-    // assert(T2.IsConsistent(true, n2_4));
-
     fvec dz2 = star.fZ - T2.z;
     L1ExtrapolateTime(T2, dz2, stam.timeInfo);
-
-    // assert(T2.IsConsistent(true, n2_4));
 
     // extrapolate to the right hit station
 
@@ -731,8 +674,8 @@ inline void L1Algo::findTripletsStep0(  // input
 
       const fscal iz = 1.f / (T2.z[i2_4] - fParameters.GetTargetPositionZ()[0]);
       L1HitAreaTime area(vGridTime[&star - fParameters.GetStations().begin()], T2.x[i2_4] * iz, T2.y[i2_4] * iz,
-                         (sqrt(Pick_r22 * (T2.C00 + stam.XYInfo.C00)) + fMaxDZ * abs(T2.tx))[i2_4] * iz,
-                         (sqrt(Pick_r22 * (T2.C11 + stam.XYInfo.C11)) + fMaxDZ * abs(T2.ty))[i2_4] * iz, time,
+                         (sqrt(Pick_r22 * T2.C00) + fMaxDx[iStaM] + fMaxDZ * abs(T2.tx))[i2_4] * iz,
+                         (sqrt(Pick_r22 * T2.C11) + fMaxDy[iStaM] + fMaxDZ * abs(T2.ty))[i2_4] * iz, time,
                          sqrt(timeError2) * 5);
 
       L1HitIndex_t irh              = 0;
@@ -781,17 +724,11 @@ inline void L1Algo::findTripletsStep0(  // input
         // check lower boundary
         fvec y, C11;
         L1ExtrapolateYC11Line(T2, zr, y, C11);
-        // cout << "sta " << iStaR << " dy = " << sqrt(C11) << endl;
-        fscal dy_est2 =
-          (Pick_r22[i2_4]
-           * (fabs(
-             C11[i2_4]
-             + star.XYInfo.C11[i2_4])));  // TODO for FastPrim dx < dy - other sort is optimal. But not for doublets
 
         /// Covariation matrix of the hit
         auto [dxxScalRhit, dxyScalRhit, dyyScalRhit] = star.FormXYCovarianceMatrix(hitr.dU2(), hitr.dV2());
 
-        if (fUseHitErrors) { dy_est2 = (Pick_r22[i2_4] * (fabs(C11[i2_4] + dyyScalRhit))); }
+        fscal dy_est2 = (Pick_r22[i2_4] * (fabs(C11[i2_4] + dyyScalRhit)));
 
         const fscal dY  = yr - y[i2_4];
         const fscal dY2 = dY * dY;
@@ -802,11 +739,7 @@ inline void L1Algo::findTripletsStep0(  // input
 
         L1ExtrapolateXC00Line(T2, zr, x, C00);
 
-        // cout << "sta " << iStaR << " dx = " << sqrt(C00) << endl;
-
-        fscal dx_est2 = (Pick_r22[i2_4] * (fabs(C00[i2_4] + star.XYInfo.C00[i2_4])));
-
-        if (fUseHitErrors) { dx_est2 = (Pick_r22[i2_4] * (fabs(C00[i2_4] + dxxScalRhit))); }
+        fscal dx_est2 = (Pick_r22[i2_4] * (fabs(C00[i2_4] + dxxScalRhit)));
 
         const fscal dX = xr - x[i2_4];
         if (dX * dX > dx_est2) continue;
@@ -815,16 +748,9 @@ inline void L1Algo::findTripletsStep0(  // input
         L1ExtrapolateC10Line(T2, zr, C10);
         fvec chi2 = T2.chi2;
 
-        info = star.frontInfo;
+        L1FilterChi2XYC00C10C11(star.frontInfo, x, y, C00, C10, C11, chi2, hitr.U(), hitr.dU2());
 
-        if (fUseHitErrors) info.sigma2 = hitr.dU2();
-
-        L1FilterChi2XYC00C10C11(info, x, y, C00, C10, C11, chi2, hitr.U());
-        info = star.backInfo;
-
-        if (fUseHitErrors) info.sigma2 = hitr.dV2();
-
-        L1FilterChi2(info, x, y, C00, C10, C11, chi2, hitr.V());
+        L1FilterChi2(star.backInfo, x, y, C00, C10, C11, chi2, hitr.V(), hitr.dV2());
 
         FilterTime(T_cur, hitr.T(), hitr.dT2(), star.timeInfo);
 
@@ -906,42 +832,22 @@ inline void L1Algo::findTripletsStep1(  // input
 
     L1TrackPar& T3 = T_3[i3_V];
 
-    // assert(T3.IsConsistent(true, -1));
-
     L1ExtrapolateTime(T3, dz, star.timeInfo);
 
     L1ExtrapolateLine(T3, z_Pos[i3_V]);
 
-    // assert(T3.IsConsistent(true, -1));
-
-    L1UMeasurementInfo info = star.frontInfo;
-
-    if (fUseHitErrors) info.sigma2 = du2_3[i3_V];
-
     bool noField = (&star - fParameters.GetStations().begin() >= fNfieldStations);
 
-    if (noField) { L1FilterNoField(T3, info, u_front_[i3_V]); }
+    if (noField) {
+      L1FilterNoField(T3, star.frontInfo, u_front_[i3_V], du2_3[i3_V], fvec::One());
+      L1FilterNoField(T3, star.backInfo, u_back_[i3_V], dv2_3[i3_V], fvec::One());
+    }
     else {
-      L1Filter(T3, info, u_front_[i3_V]);
+      L1Filter(T3, star.frontInfo, u_front_[i3_V], du2_3[i3_V], fvec::One());
+      L1Filter(T3, star.backInfo, u_back_[i3_V], dv2_3[i3_V], fvec::One());
     }
 
-    // assert(T3.IsConsistent(true, -1));
-
-    info = star.backInfo;
-
-    if (fUseHitErrors) info.sigma2 = dv2_3[i3_V];
-
-    if (noField) { L1FilterNoField(T3, info, u_back_[i3_V]); }
-    else {
-      L1Filter(T3, info, u_back_[i3_V]);
-    }
-
-    // assert(T3.IsConsistent(true, -1));
-
-    if (kGlobal != fTrackingMode && kMcbm != fTrackingMode) { FilterTime(T3, t_3[i3_V], dt2_3[i3_V], star.timeInfo); }
-
-    // assert(T3.IsConsistent(true, -1));
-    //  FilterTime(T_3[i3_V], timeR[i3_V], timeER[i3_V]);
+    if (kMcbm != fTrackingMode) { FilterTime(T3, t_3[i3_V], dt2_3[i3_V], star.timeInfo); }
   }
 }
 
@@ -1746,11 +1652,21 @@ void L1Algo::CATrackFinder()
   vHitsUnused = &vNotUsedHits_Buf;
 
   for (int iS = 0; iS < fParameters.GetNstationsActive(); ++iS) {
+    const L1Station& st    = fParameters.GetStation(iS);
+    fMaxDx[iS]             = 0.;
+    fMaxDy[iS]             = 0.;
     bool timeUninitialised = 1;
     fscal lasttime         = 0;
     fscal starttime        = 0;
     for (L1HitIndex_t ih = fInputData.GetStartHitIndex(iS); ih < fInputData.GetStopHitIndex(iS); ++ih) {
-      const fscal time = fInputData.GetHit(ih).t;
+      const L1Hit& h       = fInputData.GetHit(ih);
+      auto [dxx, dxy, dyy] = st.FormXYCovarianceMatrix(h.du2, h.dv2);
+      fscal dx             = sqrt(dxx);
+      fscal dy             = sqrt(dyy);
+      if (fMaxDx[iS] < dx) { fMaxDx[iS] = dx; }
+      if (fMaxDy[iS] < dy) { fMaxDy[iS] = dy; }
+
+      const fscal time = h.t;
       assert(std::isfinite(time));
       if (timeUninitialised || lasttime < time) { lasttime = time; }
       if (timeUninitialised || starttime > time) { starttime = time; }

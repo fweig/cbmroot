@@ -77,7 +77,7 @@ void L1TrackParFit::Filter(const L1UMeasurementInfo& info, const fvec& u, const 
   fTr.C55 -= K5 * F5;
 }
 
-void L1TrackParFit::FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w)
+void L1TrackParFit::FilterNoP(L1UMeasurementInfo& info, fvec u, fvec du2, fvec w)
 {
   fvec wi, zeta, zetawi, HCH;
   fvec F0, F1, F2, F3, F4, F5;
@@ -97,12 +97,12 @@ void L1TrackParFit::FilterNoP(L1UMeasurementInfo& info, fvec u, fvec w)
   F5 = info.cos_phi * fTr.C50 + info.sin_phi * fTr.C51;
 
 #if 0  // use mask
-  const fmask mask = (HCH < info.sigma2 * 16.);
-  wi = w/( (mask & info.sigma2) +HCH );
+  const fmask mask = (HCH < du2 * 16.);
+  wi = w/( (mask & du2) +HCH );
   zetawi = zeta *wi;
   fTr.chi2 +=  mask & (zeta * zetawi);
 #else
-  wi     = w / (info.sigma2 + HCH);
+  wi     = w / (du2 + HCH);
   zetawi = zeta * wi;
   fTr.chi2 += zeta * zetawi;
 #endif  // 0

@@ -78,16 +78,6 @@ public:
   /// \return Absolute stereo angle for front strips [rad]
   double GetStripsStereoAngleFront(int /*stationId*/) const { return 0.; }
 
-  /// Gets spatial resolution (RMS) for back strips
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Spatial resolution (RMS) for front strips [cm]
-  double GetStripsSpatialRmsBack(int /*stationId*/) const { return 0.15; }
-
-  /// Gets spatial resolution (RMS) for front strips
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Spatial resolution (RMS) for front strips [cm]
-  double GetStripsSpatialRmsFront(int /*stationId*/) const { return 0.15; }
-
   /// Gets station thickness along the Z-axis
   /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
   /// \return Station thickness [cm]

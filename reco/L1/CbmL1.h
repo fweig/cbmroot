@@ -294,7 +294,6 @@ public:
 
   void SetExtrapolateToTheEndOfSTS(bool b) { fExtrapolateToTheEndOfSTS = b; }
   void SetLegacyEventMode(bool b) { fLegacyEventMode = b; }
-  void SetUseHitErrors(bool value) { fUseHitErrors = value; }
   void SetMissingHits(bool value) { fMissingHits = value; }
   void SetStsOnlyMode() { fTrackingMode = L1Algo::TrackingMode::kSts; }
   void SetMcbmMode() { fTrackingMode = L1Algo::TrackingMode::kMcbm; }
@@ -462,7 +461,6 @@ public:
   L1InitManager fInitManager;      ///< Tracking parameters data manager
   L1IODataManager fIODataManager;  ///< Input-output data manager
 
-  bool fUseHitErrors = true;   ///<
   bool fMissingHits  = false;  ///< Turns on several ad-hock settings for "mcbm_beam_2021_07_surveyed.100ev" setup
 
   L1Algo::TrackingMode fTrackingMode = L1Algo::TrackingMode::kSts;  ///< Tracking mode: kSts, kMcbm or kGlobal

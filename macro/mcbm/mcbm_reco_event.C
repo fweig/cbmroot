@@ -378,7 +378,7 @@ void mcbm_reco_event(Int_t nEvents = 10, TString dataset = "data/test",
   auto l1 = (debugWithMC) ? new CbmL1("L1", 1, 3, 0) : new CbmL1();
   l1->SetLegacyEventMode(1);
   l1->SetMcbmMode();
-  l1->SetUseHitErrors(1);
+
   if (strcmp(setupName, "mcbm_beam_2021_07_surveyed") == 0) l1->SetMissingHits(1);
 
   // --- Material budget file names

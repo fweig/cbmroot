@@ -810,7 +810,6 @@ Bool_t mcbm_event_reco(UInt_t uRunId                   = 1588,
   //   CbmL1* l1 = new CbmL1();
   //   l1->SetLegacyEventMode(1);
   //   l1->SetMcbmMode();
-  //   l1->SetUseHitErrors(1);
   //   if (strcmp(geoSetupTag.data(), "mcbm_beam_2021_07_surveyed") == 0) l1->SetMissingHits(1);
   //
   //   // --- Material budget file names

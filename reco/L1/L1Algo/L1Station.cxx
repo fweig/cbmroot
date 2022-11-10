@@ -82,7 +82,6 @@ void L1Station::CheckConsistency() const
   backInfo.CheckConsistency();
   xInfo.CheckConsistency();
   yInfo.CheckConsistency();
-  XYInfo.CheckConsistency();
 
   // Check consistency of coordinate transformations
   for (float x = -1.f; x < 1.1f; x += 0.2) {
@@ -134,8 +133,6 @@ std::string L1Station::ToString(int verbosityLevel, int indentLevel) const
       aStream << frontInfo.ToString(indentLevel + 2) << '\n';
       aStream << indent << indentChar << "Back:\n";
       aStream << backInfo.ToString(indentLevel + 2) << '\n';
-      aStream << indent << indentChar << "XY cov matrix:\n";
-      aStream << XYInfo.ToString(indentLevel + 2) << '\n';
       aStream << indent << indentChar << "X layer:\n";
       aStream << xInfo.ToString(indentLevel + 2) << '\n';
       aStream << indent << indentChar << "Y layer:\n";

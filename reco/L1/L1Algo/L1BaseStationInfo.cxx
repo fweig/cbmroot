@@ -292,7 +292,7 @@ void L1BaseStationInfo::SetFieldStatus(int fieldStatus)
 
 //------------------------------------------------------------------------------------------------------------------------
 //
-void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double frontSigma, double backPhi, double backSigma)
+void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double backPhi)
 {
   //----- Original code from L1Algo -----------------------------------------------------------------------
   double cFront = cos(frontPhi);
@@ -303,34 +303,23 @@ void L1BaseStationInfo::SetFrontBackStripsGeometry(double frontPhi, double front
   // NOTE: Here additional double variables are used to save the precission
   fL1Station.frontInfo.cos_phi = cFront;
   fL1Station.frontInfo.sin_phi = sFront;
-  fL1Station.frontInfo.sigma2  = frontSigma * frontSigma;
 
   fL1Station.backInfo.cos_phi = cBack;
   fL1Station.backInfo.sin_phi = sBack;
-  fL1Station.backInfo.sigma2  = backSigma * backSigma;
 
   double det = cFront * sBack - sFront * cBack;
 
   assert(fabs(det) > 1.e-2);
-  double det2 = det * det;
-
-  fL1Station.XYInfo.C00 = (sBack * sBack * frontSigma * frontSigma + sFront * sFront * backSigma * backSigma) / det2;
-  fL1Station.XYInfo.C10 = -(sBack * cBack * frontSigma * frontSigma + sFront * cFront * backSigma * backSigma) / det2;
-  fL1Station.XYInfo.C11 = (cBack * cBack * frontSigma * frontSigma + cFront * cFront * backSigma * backSigma) / det2;
 
   fL1Station.xInfo.cos_phi = sBack / det;
   fL1Station.xInfo.sin_phi = -sFront / det;
-  fL1Station.xInfo.sigma2  = fL1Station.XYInfo.C00;
 
   fL1Station.yInfo.cos_phi = -cBack / det;
   fL1Station.yInfo.sin_phi = cFront / det;
-  fL1Station.yInfo.sigma2  = fL1Station.XYInfo.C11;
   //-------------------------------------------------------------------------------------------------------
 
   fInitController.SetFlag(EInitKey::kStripsFrontPhi);
-  fInitController.SetFlag(EInitKey::kStripsFrontSigma);
   fInitController.SetFlag(EInitKey::kStripsBackPhi);
-  fInitController.SetFlag(EInitKey::kStripsBackSigma);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

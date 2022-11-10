@@ -1964,20 +1964,10 @@ void CbmL1::InputPerformance()
         mcPos.SetY(pt->GetYIn() + t * (pt->GetYOut() - pt->GetYIn()));
         mcPos.SetZ(hitPos.Z());
 
-        if (0) {  // standard errors
-          if (hitErr.X() > 1.e-8) pullXsts->Fill((hitPos.X() - mcPos.X()) / hitErr.X());
-          if (hitErr.Y() > 1.e-8) pullYsts->Fill((hitPos.Y() - mcPos.Y()) / hitErr.Y());
-        }
-        else if (1) {  // qa errors
+        {  // qa errors
           if (sh->GetDx() > 1.e-8) pullXsts->Fill((hitPos.X() - mcPos.X()) / sh->GetDx());
           if (sh->GetDy() > 1.e-8) pullYsts->Fill((hitPos.Y() - mcPos.Y()) / sh->GetDy());
           pullTsts->Fill((sh->GetTime() - mcTime) / sh->GetTimeError());
-        }
-        else {  // errors used in TF
-          pullXsts->Fill((hitPos.X() - mcPos.X())
-                         / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C00[0]));
-          pullYsts->Fill((hitPos.Y() - mcPos.Y())
-                         / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C11[0]));
         }
 
         resXsts->Fill((hitPos.X() - mcPos.X()) * 10 * 1000);
@@ -2018,15 +2008,8 @@ void CbmL1::InputPerformance()
       mcPos.SetY((pt->GetY() + pt->GetYOut()) / 2.);
       mcPos.SetZ(hitPos.Z());
 
-      //       if (hitErr.X() != 0) pullX->Fill( (hitPos.X() - mcPos.X()) / hitErr.X() ); // standard errors
-      //       if (hitErr.Y() != 0) pullY->Fill( (hitPos.Y() - mcPos.Y()) / hitErr.Y() );
-      //       if (hitErr.X() != 0) pullX->Fill( (hitPos.X() - mcPos.X()) / sh->GetDx() ); // qa errors
-      //       if (hitErr.Y() != 0) pullY->Fill( (hitPos.Y() - mcPos.Y()) / sh->GetDy() );
-      if (hitErr.X() != 0)
-        pullXmvd->Fill((hitPos.X() - mcPos.X())
-                       / sqrt(fpAlgo->GetParameters()->GetStation(0).XYInfo.C00[0]));  // errors used in TF
-      if (hitErr.Y() != 0)
-        pullYmvd->Fill((hitPos.Y() - mcPos.Y()) / sqrt(fpAlgo->GetParameters()->GetStation(0).XYInfo.C11[0]));
+      if (hitErr.X() != 0) pullXmvd->Fill((hitPos.X() - mcPos.X()) / hitErr.X());
+      if (hitErr.Y() != 0) pullYmvd->Fill((hitPos.Y() - mcPos.Y()) / hitErr.Y());
 
       resXmvd->Fill((hitPos.X() - mcPos.X()) * 10 * 1000);
       resYmvd->Fill((hitPos.Y() - mcPos.Y()) * 10 * 1000);
@@ -2083,20 +2066,10 @@ void CbmL1::InputPerformance()
       mcPos.SetY(0.5 * (pt->GetYIn() + pt->GetYOut()));
       mcPos.SetZ(hitPos.Z());
 
-      if (0) {  // standard errors
-        if (hitErr.X() > 1.e-8) pullXmuch->Fill((hitPos.X() - mcPos.X()) / hitErr.X());
-        if (hitErr.Y() > 1.e-8) pullYmuch->Fill((hitPos.Y() - mcPos.Y()) / hitErr.Y());
-      }
-      else if (1) {  // qa errors
+      {  // qa errors
         if (sh->GetDx() > 1.e-8) pullXmuch->Fill((h.x - mcPos.X()) / sh->GetDx());
         if (sh->GetDy() > 1.e-8) pullYmuch->Fill((h.y - mcPos.Y()) / sh->GetDy());
         pullTmuch->Fill((h.t - mcTime) / sh->GetTimeError());
-      }
-      else {  // errors used in TF
-        pullXmuch->Fill((hitPos.X() - mcPos.X())
-                        / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C00[0]));
-        pullYmuch->Fill((hitPos.Y() - mcPos.Y())
-                        / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C11[0]));
       }
 
       resXmuch->Fill((h.x - mcPos.X()) * 10 * 1000);
@@ -2156,20 +2129,10 @@ void CbmL1::InputPerformance()
       mcPos.SetY((pt->GetYIn() + pt->GetYOut()) / 2.);
       mcPos.SetZ(hitPos.Z());
 
-      if (0) {  // standard errors
-        if (hitErr.X() > 1.e-8) pullXtrd->Fill((hitPos.X() - mcPos.X()) / hitErr.X());
-        if (hitErr.Y() > 1.e-8) pullYtrd->Fill((hitPos.Y() - mcPos.Y()) / hitErr.Y());
-      }
-      else if (1) {  // qa errors
+      {  // qa errors
         if (sh->GetDx() > 1.e-8) pullXtrd->Fill((h.x - mcPos.X()) / sh->GetDx());
         if (sh->GetDy() > 1.e-8) pullYtrd->Fill((h.y - mcPos.Y()) / sh->GetDy());
         pullTtrd->Fill((h.t - mcTime) / sh->GetTimeError());
-      }
-      else {  // errors used in TF
-        pullXtrd->Fill((hitPos.X() - mcPos.X())
-                       / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C00[0]));
-        pullYtrd->Fill((hitPos.Y() - mcPos.Y())
-                       / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C11[0]));
       }
 
       resXtrd->Fill((h.x - mcPos.X()) * 10 * 1000);
@@ -2230,20 +2193,10 @@ void CbmL1::InputPerformance()
       mcPos.SetY((pt->GetY()));
       mcPos.SetZ(hitPos.Z());
 
-      if (0) {  // standard errors
-        if (hitErr.X() > 1.e-8) pullXmuch->Fill((hitPos.X() - mcPos.X()) / hitErr.X());
-        if (hitErr.Y() > 1.e-8) pullYmuch->Fill((hitPos.Y() - mcPos.Y()) / hitErr.Y());
-      }
-      else if (1) {  // qa errors
+      {  // qa errors
         if (sh->GetDx() > 1.e-8) pullXtof->Fill((h.x - mcPos.X()) / sh->GetDx());
         if (sh->GetDy() > 1.e-8) pullYtof->Fill((h.y - mcPos.Y()) / sh->GetDy());
         pullTtof->Fill((sh->GetTime() - mcTime) / sh->GetTimeError());
-      }
-      else {  // errors used in TF
-        pullXtof->Fill((hitPos.X() - mcPos.X())
-                       / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C00[0]));
-        pullYtof->Fill((hitPos.Y() - mcPos.Y())
-                       / sqrt(fpAlgo->GetParameters()->GetStation(fNMvdStations).XYInfo.C11[0]));
       }
 
       resXtof->Fill((h.x - mcPos.X()) * 10 * 1000);

@@ -98,11 +98,11 @@ inline void CbmL1PFFitter::PFFieldRegion::getL1FieldRegion(L1FieldRegion& fld, i
 inline CbmL1PFFitter::PFFieldRegion::PFFieldRegion(const L1FieldRegion& fld, int i) { setFromL1FieldRegion(fld, i); }
 
 
-void FilterFirst(L1TrackPar& track, fvec& x, fvec& y, L1Station& st)
+void FilterFirst(L1TrackPar& track, fvec& x, fvec& y, fvec& dxx, fvec& dxy, fvec& dyy)
 {
-  track.C00 = st.XYInfo.C00;
-  track.C10 = st.XYInfo.C10;
-  track.C11 = st.XYInfo.C11;
+  track.C00 = dxx;
+  track.C10 = dxy;
+  track.C11 = dyy;
   track.C20 = ZERO;
   track.C21 = ZERO;
   track.C22 = vINF;
@@ -147,15 +147,20 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
 
   int ista;
   const L1Station* sta = CbmL1::Instance()->fpAlgo->GetParameters()->GetStations().begin();
-  L1Station staFirst, staLast;
-  fvec* x = new fvec[nHits];
-  fvec* u = new fvec[nHits];
-  fvec* v = new fvec[nHits];
-  fvec* y = new fvec[nHits];
-  fvec* z = new fvec[nHits];
-  fvec* w = new fvec[nHits];
+
+  fvec* x   = new fvec[nHits];
+  fvec* u   = new fvec[nHits];
+  fvec* v   = new fvec[nHits];
+  fvec* du2 = new fvec[nHits];
+  fvec* dv2 = new fvec[nHits];
+  fvec* y   = new fvec[nHits];
+  fvec* z   = new fvec[nHits];
+  fvec* w   = new fvec[nHits];
   //  fvec y_temp;
   fvec x_first, y_first, x_last, y_last;
+  fvec fstC00, fstC10, fstC11;
+  fvec lstC00, lstC10, lstC11;
+
   fvec z0, z1, z2, dz, z_start, z_end;
   L1FieldValue* fB = new L1FieldValue[nHits];
   L1FieldValue fB_temp _fvecalignment;
@@ -228,6 +233,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
           ista =
             CbmL1::Instance()->fpAlgo->GetParameters()->GetStationIndexActive(hit->GetStationNr(), L1DetectorID::kMvd);
           if (ista == -1) continue;
+          du2[ista][iVec] = hit->GetDx() * hit->GetDx();
+          dv2[ista][iVec] = hit->GetDy() * hit->GetDy();
         }
         else {
           if (!listStsHits) continue;
@@ -242,6 +249,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
           ista = CbmL1::Instance()->fpAlgo->GetParameters()->GetStationIndexActive(
             CbmStsSetup::Instance()->GetStationNumber(hit->GetAddress()), L1DetectorID::kSts);
           if (ista == -1) continue;
+          du2[ista][iVec] = hit->GetDu() * hit->GetDu();
+          dv2[ista][iVec] = hit->GetDv() * hit->GetDv();
         }
         w[ista][iVec] = 1.f;
 
@@ -250,31 +259,40 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
         u[ista][iVec] = posx * sta[ista].frontInfo.cos_phi[0] + posy * sta[ista].frontInfo.sin_phi[0];
         v[ista][iVec] = posx * sta[ista].backInfo.cos_phi[0] + posy * sta[ista].backInfo.sin_phi[0];
         z[ista][iVec] = posz;
+
         sta[ista].fieldSlice.GetFieldValue(x[ista], y[ista], fB_temp);
         fB[ista].x[iVec] = fB_temp.x[iVec];
         fB[ista].y[iVec] = fB_temp.y[iVec];
         fB[ista].z[iVec] = fB_temp.z[iVec];
         if (i == 0) {
-          z_start[iVec]             = posz;
-          x_first[iVec]             = x[ista][iVec];
-          y_first[iVec]             = y[ista][iVec];
-          staFirst.XYInfo.C00[iVec] = sta[ista].XYInfo.C00[iVec];
-          staFirst.XYInfo.C10[iVec] = sta[ista].XYInfo.C10[iVec];
-          staFirst.XYInfo.C11[iVec] = sta[ista].XYInfo.C11[iVec];
+          z_start[iVec] = posz;
+          x_first[iVec] = x[ista][iVec];
+          y_first[iVec] = y[ista][iVec];
+
+          auto [dxx, dxy, dyy] = sta[ista].FormXYCovarianceMatrix((fscal) du2[ista][iVec], (fscal) dv2[ista][iVec]);
+
+          fstC00[iVec] = dxx;
+          fstC10[iVec] = dxy;
+          fstC11[iVec] = dyy;
         }
         if (i == nHitsTrack - 1) {
-          z_end[iVec]              = posz;
-          x_last[iVec]             = x[ista][iVec];
-          y_last[iVec]             = y[ista][iVec];
-          staLast.XYInfo.C00[iVec] = sta[ista].XYInfo.C00[iVec];
-          staLast.XYInfo.C10[iVec] = sta[ista].XYInfo.C10[iVec];
-          staLast.XYInfo.C11[iVec] = sta[ista].XYInfo.C11[iVec];
+          z_end[iVec]  = posz;
+          x_last[iVec] = x[ista][iVec];
+          y_last[iVec] = y[ista][iVec];
+
+          auto [dxx, dxy, dyy] = sta[ista].FormXYCovarianceMatrix((fscal) du2[ista][iVec], (fscal) dv2[ista][iVec]);
+
+          lstC00[iVec] = dxx;
+          lstC10[iVec] = dxy;
+          lstC11[iVec] = dyy;
         }
       }
     }
     // fit forward
     i = 0;
-    FilterFirst(T, x_first, y_first, staFirst);
+
+    FilterFirst(T, x_first, y_first, fstC00, fstC10, fstC11);
+
     fvec qp0 = T.qp;
     z1       = z[i];
     sta[i].fieldSlice.GetFieldValue(T.x, T.y, b1);
@@ -303,8 +321,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       fit.L1AddMaterial(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0, wIn);
       fit.EnergyLossCorrection(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0,
                                -1, wIn);
-      L1Filter(T, sta[i].frontInfo, u[i], w1);
-      L1Filter(T, sta[i].backInfo, v[i], w1);
+      L1Filter(T, sta[i].frontInfo, u[i], du2[i], w1);
+      L1Filter(T, sta[i].backInfo, v[i], dv2[i], w1);
 
       b2 = b1;
       z2 = z1;
@@ -345,7 +363,7 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
 
     i = nHits - 1;
 
-    FilterFirst(T, x_last, y_last, staLast);
+    FilterFirst(T, x_last, y_last, lstC00, lstC10, lstC11);
 
     z1 = z[i];
     sta[i].fieldSlice.GetFieldValue(T.x, T.y, b1);
@@ -375,8 +393,8 @@ void CbmL1PFFitter::Fit(vector<CbmStsTrack>& Tracks, vector<int>& pidHypo)
       fit.L1AddMaterial(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0, wIn);
       fit.EnergyLossCorrection(T, CbmL1::Instance()->fpAlgo->GetParameters()->GetMaterialThickness(i, T.x, T.y), qp0, 1,
                                wIn);
-      L1Filter(T, sta[i].frontInfo, u[i], w1);
-      L1Filter(T, sta[i].backInfo, v[i], w1);
+      L1Filter(T, sta[i].frontInfo, u[i], du2[i], w1);
+      L1Filter(T, sta[i].backInfo, v[i], dv2[i], w1);
 
       b2 = b1;
       z2 = z1;

@@ -60,7 +60,7 @@ void L1Algo::SetNThreads(unsigned int n)
 }
 
 
-void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool MissingHits)
+void L1Algo::Init(const TrackingMode mode, const bool MissingHits)
 {
   for (int iProc = 0; iProc < 4; iProc++) {
     for (int i = 0; i < 8; i++) {
@@ -73,7 +73,6 @@ void L1Algo::Init(const bool UseHitErrors, const TrackingMode mode, const bool M
     }
   }
 
-  fUseHitErrors = UseHitErrors;
   fTrackingMode = mode;
   fMissingHits  = MissingHits;
 }
