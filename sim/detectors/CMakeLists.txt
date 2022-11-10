@@ -7,4 +7,5 @@ add_subdirectory(rich)
 add_subdirectory(sts)
 add_subdirectory(tof)
 add_subdirectory(trd)
+add_subdirectory(tzd)
 

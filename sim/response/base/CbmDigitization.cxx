@@ -19,6 +19,7 @@
 #include "CbmStsDigitize.h"
 #include "CbmTofDigitize.h"
 #include "CbmTrdDigitizer.h"
+#include "CbmTzdDigitize.h"
 
 #include "FairFileSource.h"
 #include "FairMCEventHeader.h"
@@ -151,8 +152,8 @@ Int_t CbmDigitization::CreateDefaultDigitizers()
     // --- Skip if marked inactive
     if (!it->second->IsActive()) continue;
 
-    // --- Skip if MC data branch is not present
-    if (!it->second->IsPresent()) continue;
+    // --- Skip if MC data branch is not present. Exception: BMON does not need an input branch.
+    if (it->first != ECbmModuleId::kT0 && !it->second->IsPresent()) continue;
 
     // --- Skip if a digitizer was set explicitly
     if (it->second->GetDigitizer() != nullptr) continue;
@@ -200,6 +201,11 @@ Int_t CbmDigitization::CreateDefaultDigitizers()
       case ECbmModuleId::kPsd:
         fDigitizers[system]->SetDigitizer(new CbmPsdSimpleDigitizer());
         ss << "PSD ";
+        nDigis++;
+        break;
+      case ECbmModuleId::kT0:
+        fDigitizers[system]->SetDigitizer(new CbmTzdDigitize());
+        ss << "BMON ";
         nDigis++;
         break;
       default: LOG(fatal) << fName << ": Unknown system " << system; break;
@@ -491,6 +497,7 @@ void CbmDigitization::SetDefaultBranches()
   fDigitizers[ECbmModuleId::kTrd]  = new CbmDigitizeInfo(ECbmModuleId::kTrd, "TrdPoint");
   fDigitizers[ECbmModuleId::kTof]  = new CbmDigitizeInfo(ECbmModuleId::kTof, "TofPoint");
   fDigitizers[ECbmModuleId::kPsd]  = new CbmDigitizeInfo(ECbmModuleId::kPsd, "PsdPoint");
+  fDigitizers[ECbmModuleId::kT0]   = new CbmDigitizeInfo(ECbmModuleId::kT0, "");
 }
 // --------------------------------------------------------------------------
 

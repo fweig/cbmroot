@@ -28,7 +28,7 @@
 #pragma link C++ class CbmErrorMessage + ;
 #pragma link C++ class CbmRawEvent + ;
 #pragma link C++ class CbmTsEventHeader + ;
-#pragma link C++ class std::vector<CbmErrorMessage> + ;
+#pragma link C++ class std::vector < CbmErrorMessage> + ;
 
 // ---In base
 #pragma link C++ class CbmDigiBranchBase + ;
@@ -93,6 +93,7 @@
 // --- data/global
 #pragma link C++ class CbmGlobalTrack + ;
 #pragma link C++ class CbmTofTrack + ;
+#pragma link C++ class CbmTzdDigi + ;
 #pragma link C++ class CbmVertex + ;
 #pragma link C++ class std::vector < CbmDigiEvent>;
 
@@ -123,6 +124,7 @@
 #pragma link C++ class vector < CbmMuchBeamTimeDigi> + ;
 #pragma link C++ class vector < CbmTrdDigi> + ;
 #pragma link C++ class vector < CbmTofDigi> + ;
+#pragma link C++ class vector < CbmTzdDigi> + ;
 #pragma link C++ class vector < CbmPsdDigi> + ;
 #pragma link C++ class vector < CbmPsdDsp> + ;
 #pragma link C++ class vector < CbmMatch> + ;

@@ -98,6 +98,7 @@ set(SRCS
   psd/CbmPsdAddress.cxx
   psd/CbmPsdMCbmHit.cxx
 
+  global/CbmTzdDigi.cxx
   global/CbmGlobalTrack.cxx
   global/CbmVertex.cxx
   global/CbmTofTrack.cxx

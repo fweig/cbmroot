@@ -29,6 +29,7 @@ set(PRIVATE_DEPENDENCIES
   CbmStsSim
   CbmTofSim
   CbmTrdSim
+  CbmTzdSim
   FairRoot::FairTools
   FairRoot::ParBase
   )
