@@ -324,9 +324,9 @@ public:
   /**
    * @brief Get a given output vector connected to the tree, if called after calling InitUnpacker().
    *
-   * @return std::vector<TOptOutA>*
+   * @return std::vector<TOptOutB>*
   */
-  std::vector<TOptOutA>* GetOptOutBVec() { return fOptOutBVec; }
+  std::vector<TOptOutB>* GetOptOutBVec() { return fOptOutBVec; }
 
   /**
    * @brief Get the Output Obj Size
@@ -351,7 +351,7 @@ public:
   }
 
   /**
-   * @brief Intialisation at begin of run.
+   * @brief Initialisation at begin of run.
    *
    * Runs for all types of algos. In case you need a specialised init function add it as protected function and call it in this Init function.
    *
@@ -367,7 +367,7 @@ public:
 
     initOk &= initParContainers();
 
-    LOG(info)<< fName <<"::SystemTimeOffset:" << fSystemTimeOffset;
+    LOG(info)<< fName <<"::SystemTimeOffset:" << GetSystemTimeOffset();
 
     return initOk;
   }
