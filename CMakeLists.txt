@@ -230,13 +230,8 @@ SET(LD_LIBRARY_PATH  ${CBMLIBDIR} ${Boost_LIBRARY_DIRS} ${LD_LIBRARY_PATH})
 Option(BUILD_UNITTESTS "Build all unit tests and add them as new tests" ON)
 If(BUILD_UNITTESTS)
   Message("Build the unit tests.")
-
-  Set(GTEST_ROOT ${SIMPATH})
-    find_package2(PRIVATE GTest VERSION 1.7.0)
-    if(NOT GTEST_FOUND)
-      Message(STATUS "No gtest installation found, build our internal one.")
-      Include(external/InstallGtest.cmake)
-    endif()
+  Message(STATUS "Build internal GTest")
+  Include(external/InstallGtest.cmake)
 endif()
 
 ### Subdirectories to be compiled #####
