@@ -57,7 +57,6 @@ public:
     kFieldSlice,      ///< L1Station.L1FieldSlice object initialization
     kStripsFrontPhi,  ///< strips geometry initialization
     kStripsBackPhi,   ///<
-    kTimeResolution,  ///< time resolution
     // The last item is equal to the number of bits in fInitFlags
     kEnd
   };
@@ -143,9 +142,6 @@ public:
   /// Gets station type
   int GetStationType() const { return fL1Station.type; }
 
-  /// Gets time resolution
-  fvec GetTimeResolution() const { return fL1Station.dt; }
-
   /// Gets tracking status: true - station is active for tracking, false - station exists, but not used in tracking
   bool GetTrackingStatus() const { return fTrackingStatus; }
 
@@ -213,9 +209,6 @@ public:
   /// Sets flag: 0 - time information is not provided by this detector type
   ///            1 - time information is provided by the detector and can be used in tracking
   void SetTimeInfo(int inTimeInfo);
-
-  /// Sets time resolution
-  void SetTimeResolution(double dt);
 
   /// Sets tracking status: true - station is active for tracking, false - station exists, but not used in tracking
   void SetTrackingStatus(bool flag);

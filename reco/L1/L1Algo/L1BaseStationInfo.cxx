@@ -411,13 +411,6 @@ void L1BaseStationInfo::SetTimeInfo(int inTimeInfo)
   fInitController.SetFlag(EInitKey::kTimeInfo);
 }
 
-//------------------------------------------------------------------------------------------------------------------------
-//
-void L1BaseStationInfo::SetTimeResolution(double dt)
-{
-  fL1Station.dt = dt;
-  fInitController.SetFlag(EInitKey::kTimeResolution);
-}
 
 //------------------------------------------------------------------------------------------------------------------------
 //

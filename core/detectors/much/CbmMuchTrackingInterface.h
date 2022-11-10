@@ -87,11 +87,6 @@ public:
   /// \return Station thickness [cm]
   double GetThickness(int stationId) const { return GetMuchLayer(stationId)->GetDz(); };
 
-  /// Gets time resolution for a station
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Time resolution [ns]
-  double GetTimeResolution(int /*stationId*/) const { return 3.9; }
-
   /// Gets a tracking station of a CbmPixelHit
   /// \param  hit  A pointer to CbmPixelHit
   /// \return Local index of the tracking station

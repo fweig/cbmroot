@@ -44,7 +44,6 @@ void L1Station::CheckConsistency() const
   L1Utils::CheckSimdVectorEquality(fZ, "L1Station::fZ");
   L1Utils::CheckSimdVectorEquality(Rmin, "L1Station::Rmin");
   L1Utils::CheckSimdVectorEquality(Rmax, "L1Station::Rmax");
-  L1Utils::CheckSimdVectorEquality(dt, "L1Station::dt");
 
   /*
    * Inner and outer radia checks:
@@ -59,16 +58,6 @@ void L1Station::CheckConsistency() const
     throw std::logic_error(msg.str());
   }
 
-  /*
-   * Time resolution cannot be smaller then 0
-   */
-
-  if (dt[0] < 0) {
-    std::stringstream msg;
-    msg << "L1Station: " << this->ToString() << " has incorrect time resolution value: "
-        << "dt = " << dt[0] << " ns (expected positive)";
-    throw std::logic_error(msg.str());
-  }
 
   /*
    * Check consistency of other members

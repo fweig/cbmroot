@@ -101,11 +101,6 @@ public:
   /// \return Station thickness [cm]
   double GetThickness(int stationId) const { return fMvdStationPar->GetZThickness(stationId); }
 
-  /// Gets time resolution for a tracking station
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Time resolution [ns]
-  double GetTimeResolution(int /*stationId*/) const { return 1000.; }
-
   /// Gets a tracking station of a CbmPixelHit
   /// \param  hit  A pointer to CbmPixelHit
   /// \return Local index of the tracking station

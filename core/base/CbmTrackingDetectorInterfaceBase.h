@@ -63,11 +63,6 @@ public:
   /// \return Station thickness [cm]
   virtual double GetThickness(int stationId) const = 0;
 
-  /// Gets time resolution for a station
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Time resolution [ns]
-  virtual double GetTimeResolution(int stationId) const = 0;
-
   /// Gets a tracking station of a CbmPixelHit
   /// \param  hit  A pointer to CbmPixelHit
   /// \return Local index of the tracking station

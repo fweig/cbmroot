@@ -83,11 +83,6 @@ public:
   /// \return Station thickness [cm]
   double GetThickness(int /*stationId*/) const { return 10.; }
 
-  /// Gets time resolution for a station
-  /// \param  stationId  Tracking station ID in the setup (NOTE: must be in range [0..GetNstations()-1])
-  /// \return Time resolution [ns]
-  double GetTimeResolution(int /*stationId*/) const { return 0.075; }
-
   /// Gets a tracking station of a ToF hit
   /// \param  hit  A pointer to ToF hit
   /// \return Local index of the tracking station

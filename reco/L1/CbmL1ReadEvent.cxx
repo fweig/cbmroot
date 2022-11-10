@@ -114,14 +114,14 @@ struct TmpHit {
   /// \param NStrips
   /// \param st       reference to the station info object
   void CreateHitFromPoint(const CbmL1MCPoint& point, int ip, int det, int nTmpHits, int& NStrips, const L1Station& st,
-                          double du_, double dv_, bool doSmear)
+                          double du_, double dv_, double dt_, bool doSmear)
   {
     ExtIndex = 0;
     Det      = det;
     id       = nTmpHits;
     iStation = point.iStation;
 
-    dt   = st.dt[0];
+    dt   = dt_;
     time = point.time;
 
     iStripF = NStrips;
@@ -743,8 +743,9 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       TmpHit th;
       int DetId = 0;
       double du = 5.e-4;
+      double dt = 1000.;
       th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du,
-                            du, true);
+                            du, dt, true);
       tmpHits.push_back(th);
       nMvdHits++;
     }
@@ -856,8 +857,9 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       TmpHit th;
       int DetId = 1;
       double du = 10.e-4;
+      double dt = 5.;
       th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du,
-                            du, true);
+                            du, dt, true);
       tmpHits.push_back(th);
       nStsHits++;
     }
@@ -971,8 +973,9 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       TmpHit th;
       int DetId = 2;
       double du = 100.e-4;
+      double dt = 3.9;
       th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du,
-                            du, true);
+                            du, dt, true);
 
       tmpHits.push_back(th);
       nMuchHits++;
@@ -1104,8 +1107,9 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       TmpHit th;
       int DetId = 3;
       double du = 0.1;
+      double dt = 10.;
       th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du,
-                            du, true);
+                            du, dt, true);
       tmpHits.push_back(th);
       nTrdHits++;
     }
@@ -1200,8 +1204,9 @@ void CbmL1::ReadEvent(float& TsStart, float& TsLength, float& /*TsOverlap*/, int
       TmpHit th;
       int DetId = 4;
       double du = 0.1;
+      double dt = 0.075;
       th.CreateHitFromPoint(p, ip, DetId, tmpHits.size(), NStrips, fpAlgo->GetParameters()->GetStation(p.iStation), du,
-                            du, true);
+                            du, dt, true);
       tmpHits.push_back(th);
       nTofHits++;
     }

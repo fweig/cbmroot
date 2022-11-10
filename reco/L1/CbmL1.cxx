@@ -466,7 +466,6 @@ InitStatus CbmL1::Init()
         auto stationInfo = L1BaseStationInfo(L1DetectorID::kMvd, iSt);
         stationInfo.SetStationType(1);  // MVD
         stationInfo.SetTimeInfo(mvdInterface->IsTimeInfoProvided(iSt));
-        stationInfo.SetTimeResolution(mvdInterface->GetTimeResolution(iSt));
         stationInfo.SetFieldStatus(fTrackingMode == L1Algo::TrackingMode::kMcbm ? 0 : 1);
         stationInfo.SetZ(mvdInterface->GetZ(iSt));
         stationInfo.SetXmax(mvdInterface->GetXmax(iSt));
@@ -493,7 +492,6 @@ InitStatus CbmL1::Init()
         stationInfo.SetTimeInfo(stsInterface->IsTimeInfoProvided(iSt));
         stationInfo.SetTimeInfo(L1Algo::TrackingMode::kMcbm != fTrackingMode ? stsInterface->IsTimeInfoProvided(iSt)
                                                                              : false);
-        stationInfo.SetTimeResolution(stsInterface->GetTimeResolution(iSt));
         stationInfo.SetFieldStatus(L1Algo::TrackingMode::kMcbm == fTrackingMode ? 0 : 1);
         stationInfo.SetZ(stsInterface->GetZ(iSt));
         stationInfo.SetXmax(stsInterface->GetXmax(iSt));
@@ -520,7 +518,6 @@ InitStatus CbmL1::Init()
         stationInfo.SetTimeInfo(muchInterface->IsTimeInfoProvided(iSt));
         stationInfo.SetTimeInfo(L1Algo::TrackingMode::kMcbm != fTrackingMode ? stsInterface->IsTimeInfoProvided(iSt)
                                                                              : false);
-        stationInfo.SetTimeResolution(muchInterface->GetTimeResolution(iSt));
         stationInfo.SetFieldStatus(0);
         stationInfo.SetZ(muchInterface->GetZ(iSt));
         stationInfo.SetXmax(muchInterface->GetXmax(iSt));
@@ -547,7 +544,6 @@ InitStatus CbmL1::Init()
         stationInfo.SetTimeInfo(trdInterface->IsTimeInfoProvided(iSt));
         stationInfo.SetTimeInfo(L1Algo::TrackingMode::kMcbm != fTrackingMode ? stsInterface->IsTimeInfoProvided(iSt)
                                                                              : false);
-        stationInfo.SetTimeResolution(trdInterface->GetTimeResolution(iSt));
         stationInfo.SetFieldStatus(0);
         stationInfo.SetZ(trdInterface->GetZ(iSt));
         stationInfo.SetXmax(trdInterface->GetXmax(iSt));
@@ -558,10 +554,7 @@ InitStatus CbmL1::Init()
         stationInfo.SetMaterialMap(std::move(materialTableTrd[iSt]));
         fscal trdFrontPhi = trdInterface->GetStripsStereoAngleFront(iSt);
         fscal trdBackPhi  = trdInterface->GetStripsStereoAngleBack(iSt);
-        if (L1Algo::TrackingMode::kGlobal == fTrackingMode) {
-          // stationInfo.SetTimeResolution(1.e10);
-          stationInfo.SetTimeInfo(false);
-        }
+        if (L1Algo::TrackingMode::kGlobal == fTrackingMode) { stationInfo.SetTimeInfo(false); }
         stationInfo.SetFrontBackStripsGeometry(trdFrontPhi, trdBackPhi);
         stationInfo.SetTrackingStatus(target.z < stationInfo.GetZdouble() ? true : false);
         if (iSt == 1 && L1Algo::TrackingMode::kMcbm == fTrackingMode && fMissingHits) {
@@ -581,7 +574,6 @@ InitStatus CbmL1::Init()
         stationInfo.SetTimeInfo(tofInterface->IsTimeInfoProvided(iSt));
         stationInfo.SetTimeInfo(L1Algo::TrackingMode::kMcbm != fTrackingMode ? stsInterface->IsTimeInfoProvided(iSt)
                                                                              : false);
-        stationInfo.SetTimeResolution(tofInterface->GetTimeResolution(iSt));
         stationInfo.SetFieldStatus(0);
         stationInfo.SetZ(tofInterface->GetZ(iSt));
         auto thickness = tofInterface->GetThickness(iSt);

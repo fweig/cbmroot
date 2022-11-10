@@ -418,6 +418,7 @@ public:
 
   fscal fMaxDx[L1Constants::size::kMaxNstations];
   fscal fMaxDy[L1Constants::size::kMaxNstations];
+  fscal fMaxDt[L1Constants::size::kMaxNstations];
 
   double fCATime {0.};  // time of track finding
 

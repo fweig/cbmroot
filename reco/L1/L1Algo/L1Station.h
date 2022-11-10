@@ -29,7 +29,7 @@ public:
   fvec fZthick {L1NaN::SetNaN<decltype(fZthick)>()};  ///< z thickness of the station     [cm]
   fvec Rmin {L1NaN::SetNaN<decltype(Rmin)>()};        ///< min radius of the station [cm]
   fvec Rmax {L1NaN::SetNaN<decltype(Rmax)>()};        ///< max radius of the station [cm]
-  fvec dt {L1NaN::SetNaN<decltype(dt)>()};            ///< time resolution [ns]
+
   L1FieldSlice fieldSlice {};
   L1UMeasurementInfo frontInfo {};
   L1UMeasurementInfo backInfo {};
@@ -49,7 +49,6 @@ public:
     ar& fZthick;
     ar& Rmin;
     ar& Rmax;
-    ar& dt;
 
     ar& fieldSlice;
     ar& frontInfo;

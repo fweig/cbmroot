@@ -1655,6 +1655,7 @@ void L1Algo::CATrackFinder()
     const L1Station& st    = fParameters.GetStation(iS);
     fMaxDx[iS]             = 0.;
     fMaxDy[iS]             = 0.;
+    fMaxDt[iS]             = 0.;
     bool timeUninitialised = 1;
     fscal lasttime         = 0;
     fscal starttime        = 0;
@@ -1663,8 +1664,11 @@ void L1Algo::CATrackFinder()
       auto [dxx, dxy, dyy] = st.FormXYCovarianceMatrix(h.du2, h.dv2);
       fscal dx             = sqrt(dxx);
       fscal dy             = sqrt(dyy);
+      fscal dt             = sqrt(h.dt2);
+
       if (fMaxDx[iS] < dx) { fMaxDx[iS] = dx; }
       if (fMaxDy[iS] < dy) { fMaxDy[iS] = dy; }
+      if (fMaxDt[iS] < dt) { fMaxDt[iS] = dt; }
 
       const fscal time = h.t;
       assert(std::isfinite(time));
