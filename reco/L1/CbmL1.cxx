@@ -40,6 +40,7 @@
 #include "CbmTrackingDetectorInterfaceInit.h"
 
 #include "FairEventHeader.h"
+#include "FairField.h"
 #include "FairRunAna.h"
 
 #include "TGeoArb8.h"
@@ -70,8 +71,6 @@
 using std::cout;
 using std::endl;
 using std::ios;
-
-#include "KFTopoPerformance.h"
 
 ClassImp(CbmL1);
 
@@ -199,7 +198,6 @@ InitStatus CbmL1::Init()
   {
     CbmStsFindTracks* findTask = L1_DYNAMIC_CAST<CbmStsFindTracks*>(FairRunAna::Instance()->GetTask("STSFindTracks"));
     if (findTask) fUseMVD = findTask->MvdUsage();
-    if (CbmKF::Instance()->vMvdMaterial.size() == 0) { fUseMVD = false; }
   }
 
 
@@ -250,8 +248,7 @@ InitStatus CbmL1::Init()
     fTimeSlice = (CbmTimeSlice*) fairManager->GetObject("TimeSlice.");
     if (fTimeSlice == NULL) LOG(fatal) << GetName() << ": No time slice branch in the tree!";
 
-  }  //? time-slice mode
-
+  }     //? time-slice mode
   else  // event mode
     LOG(info) << GetName() << ": running in event mode.";
 
@@ -351,8 +348,7 @@ InitStatus CbmL1::Init()
       fpTofHitMatches = static_cast<TClonesArray*>(fairManager->GetObject("TofHitMatch"));
     }
   }
-  else {
-  }
+
   if (!fUseMVD) { fpMvdHits = 0; }
   else {
     fpMvdHits = L1_DYNAMIC_CAST<TClonesArray*>(fairManager->GetObject("MvdHit"));
@@ -398,9 +394,9 @@ InitStatus CbmL1::Init()
     // ** Field initialization **
     // **************************
 
-    if (CbmKF::Instance()->GetMagneticField()) {
+    if (FairRunAna::Instance()->GetField()) {
       fInitManager.SetFieldFunction([](const double(&inPos)[3], double(&outB)[3]) {
-        CbmKF::Instance()->GetMagneticField()->GetFieldValue(inPos, outB);
+        FairRunAna::Instance()->GetField()->GetFieldValue(inPos, outB);
       });
     }
     else {
@@ -1413,172 +1409,7 @@ void CbmL1::WriteSIMDKFData()
 {
   // TODO: Must be totally reimplemented (S.Zharko)
   static bool first = 1;
-#if 0
-  /// Write geometry info
-  if (first) {
-    FairField* dMF = CbmKF::Instance()->GetMagneticField();
 
-    std::fstream FileGeo;
-    FileGeo.open("geo.dat", ios::out);
-
-    std::fstream FieldCheck;
-    FieldCheck.open("field.dat", ios::out);
-
-    Double_t bfg[3], rfg[3];
-
-    rfg[0] = 0.;
-    rfg[1] = 0.;
-    rfg[2] = 0.;
-    dMF->GetFieldValue(rfg, bfg);
-    FileGeo << rfg[2] << " " << bfg[0] << " " << bfg[1] << " " << bfg[2] << " " << endl;
-
-    rfg[0] = 0.;
-    rfg[1] = 0.;
-    rfg[2] = 2.5;
-    dMF->GetFieldValue(rfg, bfg);
-    FileGeo << rfg[2] << " " << bfg[0] << " " << bfg[1] << " " << bfg[2] << " " << endl;
-
-    rfg[0] = 0.;
-    rfg[1] = 0.;
-    rfg[2] = 5.0;
-    dMF->GetFieldValue(rfg, bfg);
-    FileGeo << rfg[2] << " " << bfg[0] << " " << bfg[1] << " " << bfg[2] << " " << endl << endl;
-    FileGeo << fNStations << endl;
-
-    const int M = 5;  // polinom order
-    const int N = (M + 1) * (M + 2) / 2;
-
-    for (Int_t ist = 0; ist < fNStations; ist++) {
-      fscal f_phi, f_sigma, b_phi, b_sigma;
-
-      double C[3][N];
-      double z = 0;
-      double Xmax, Ymax;
-      if (ist < fNMvdStations) {
-        CbmKFTube& t = CbmKF::Instance()->vMvdMaterial[ist];
-        f_phi        = 0;
-        f_sigma      = 5.e-4;
-        b_phi        = 3.14159265358 / 2.;
-        b_sigma      = 5.e-4;
-        z            = t.z;
-        Xmax = Ymax = t.R;
-      }
-      else {
-        CbmStsStation* station = CbmStsSetup::Instance()->GetStation(ist - fNMvdStations);
-        f_phi                  = station->GetSensorRotation();
-        b_phi                  = f_phi;
-        double Pi              = 3.14159265358;
-        f_phi += station->GetSensorStereoAngle(0) * Pi / 180.;
-        b_phi += station->GetSensorStereoAngle(1) * Pi / 180.;
-        f_sigma = station->GetSensorPitch(0) / TMath::Sqrt(12);
-        b_sigma = f_sigma;
-        //f_sigma *= cos(f_phi);  // TODO: think about this
-        //b_sigma *= cos(b_phi);
-        z = station->GetZ();
-
-        Xmax = station->GetXmax();
-        Ymax = station->GetYmax();
-      }
-
-      double dx = 1.;  // step for the field approximation
-      double dy = 1.;
-
-      if (dx > Xmax / N / 2) dx = Xmax / N / 4.;
-      if (dy > Ymax / N / 2) dy = Ymax / N / 4.;
-
-      for (int i = 0; i < 3; i++)
-        for (int k = 0; k < N; k++)
-          C[i][k] = 0;
-      TMatrixD A(N, N);
-      TVectorD b0(N), b1(N), b2(N);
-      for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++)
-          A(i, j) = 0.;
-        b0(i) = b1(i) = b2(i) = 0.;
-      }
-      for (double x = -Xmax; x <= Xmax; x += dx)
-        for (double y = -Ymax; y <= Ymax; y += dy) {
-          double r = sqrt(fabs(x * x / Xmax / Xmax + y / Ymax * y / Ymax));
-          if (r > 1.) continue;
-          Double_t w    = 1. / (r * r + 1);
-          Double_t p[3] = {x, y, z};
-          Double_t B[3] = {0., 0., 0.};
-          CbmKF::Instance()->GetMagneticField()->GetFieldValue(p, B);
-          TVectorD m(N);
-          m(0) = 1;
-          for (int i = 1; i <= M; i++) {
-            int k = (i - 1) * (i) / 2;
-            int l = i * (i + 1) / 2;
-            for (int j = 0; j < i; j++)
-              m(l + j) = x * m(k + j);
-            m(l + i) = y * m(k + i - 1);
-          }
-
-          TVectorD mt = m;
-          for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++)
-              A(i, j) += w * m(i) * m(j);
-            b0(i) += w * B[0] * m(i);
-            b1(i) += w * B[1] * m(i);
-            b2(i) += w * B[2] * m(i);
-          }
-        }
-      double det;
-      A.Invert(&det);
-      TVectorD c0 = A * b0, c1 = A * b1, c2 = A * b2;
-      for (int i = 0; i < N; i++) {
-        C[0][i] = c0(i);
-        C[1][i] = c1(i);
-        C[2][i] = c2(i);
-      }
-
-      double c_f = cos(f_phi);
-      double s_f = sin(f_phi);
-      double c_b = cos(b_phi);
-      double s_b = sin(b_phi);
-
-      double det_m = c_f * s_b - s_f * c_b;
-      det_m *= det_m;
-      //      double C00 = ( s_b*s_b*f_sigma*f_sigma + s_f*s_f*b_sigma*b_sigma )/det_m;
-      //      double C10 =-( s_b*c_b*f_sigma*f_sigma + s_f*c_f*b_sigma*b_sigma )/det_m;
-      //      double C11 = ( c_b*c_b*f_sigma*f_sigma + c_f*c_f*b_sigma*b_sigma )/det_m;
-
-      //      float delta_x = sqrt(C00);
-      //      float delta_y = sqrt(C11);
-      FileGeo << "    " << ist << " ";
-      if (ist < fNMvdStations) {
-        CbmKFTube& t = CbmKF::Instance()->vMvdMaterial[ist];
-        FileGeo << t.z << " ";
-        FileGeo << t.dz << " ";
-        FileGeo << t.RadLength << " ";
-      }
-      else if (ist < (fNStsStations + fNMvdStations)) {
-        CbmStsStation* station = CbmStsSetup::Instance()->GetStation(ist - fNMvdStations);
-        FileGeo << station->GetZ() << " ";
-        FileGeo << station->GetSensorD() << " ";
-        FileGeo << station->GetRadLength() << " ";
-      }
-      FileGeo << f_sigma << " ";
-      FileGeo << b_sigma << " ";
-      FileGeo << f_phi << " ";
-      FileGeo << b_phi << endl;
-      FileGeo << "    " << N << endl;
-      FileGeo << "       ";
-      for (int ik = 0; ik < N; ik++)
-        FileGeo << C[0][ik] << " ";
-      FileGeo << endl;
-      FileGeo << "       ";
-      for (int ik = 0; ik < N; ik++)
-        FileGeo << C[1][ik] << " ";
-      FileGeo << endl;
-      FileGeo << "       ";
-      for (int ik = 0; ik < N; ik++)
-        FileGeo << C[2][ik] << " ";
-      FileGeo << endl;
-    }
-    FileGeo.close();
-  }
-#endif
   ///Write Tracks and MC Tracks
 
   static int TrNumber = 0;
