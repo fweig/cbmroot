@@ -4,7 +4,6 @@
 
 #include "CbmSeedFinderSlidingWindow.h"
 
-#include "CbmBmonDigi.h"
 #include "CbmMCEventList.h"
 #include "CbmMatch.h"
 #include "CbmMuchBeamTimeDigi.h"
@@ -15,6 +14,7 @@
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
+#include "CbmTzdDigi.h"
 
 #include "FairRootManager.h"
 #include <Logger.h>
@@ -127,7 +127,7 @@ void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<inType>* vIn, c
   //            << std::endl;
   //}
 }
-template void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<CbmBmonDigi>*, const std::vector<CbmMatch>*);
+template void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<CbmTzdDigi>*, const std::vector<CbmMatch>*);
 template void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<CbmMuchBeamTimeDigi>*,
                                                         const std::vector<CbmMatch>*);
 template void CbmSeedFinderSlidingWindow::FillSeedTimes(const std::vector<CbmMuchDigi>*, const std::vector<CbmMatch>*);

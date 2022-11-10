@@ -5,7 +5,6 @@
 #include "CbmAlgoBuildRawEvents.h"
 
 /// CBM headers
-#include "CbmBmonDigi.h"
 #include "CbmEvent.h"
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmMuchDigi.h"
@@ -14,6 +13,7 @@
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
+#include "CbmTzdDigi.h"
 
 #include "TimesliceMetaData.h"
 
@@ -131,7 +131,7 @@ void CbmAlgoBuildRawEvents::ProcessTs()
     /// TODO: store start time of current event ?
     //        fCurrentEvent->SetStartTime( fPrevTime ); // Replace Seed time with time of first digi in event?
     fCurrentEvent->SetEndTime(fdPrevEvtEndTime);
-    SetBmonEventTime(fCurrentEvent);
+    SetTzdEventTime(fCurrentEvent);
     fEventVector.push_back(fCurrentEvent);
     fuCurEv++;
 
@@ -246,7 +246,7 @@ void CbmAlgoBuildRawEvents::BuildEvents()
       break;
     }
     case ECbmModuleId::kT0: {
-      LoopOnSeeds<CbmBmonDigi>();
+      LoopOnSeeds<CbmTzdDigi>();
       break;
     }
     case ECbmModuleId::kNotExist: {  //explicit seed times
@@ -348,7 +348,7 @@ void CbmAlgoBuildRawEvents::CheckSeed(Double_t dSeedTime, UInt_t uSeedDigiIdx)
       /// TODO: store start time of current event ?
       //        fCurrentEvent->SetStartTime( fPrevTime ); // Replace Seed time with time of first digi in event?
       fCurrentEvent->SetEndTime(fdPrevEvtEndTime);
-      SetBmonEventTime(fCurrentEvent);
+      SetTzdEventTime(fCurrentEvent);
       fEventVector.push_back(fCurrentEvent);
 
       fuCurEv++;
@@ -463,7 +463,7 @@ const CbmPsdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
   return &((*fPsdDigis)[uDigi]);
 }
 template<>
-const CbmBmonDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
+const CbmTzdDigi* CbmAlgoBuildRawEvents::GetDigi(UInt_t uDigi)
 {
   return &((*fT0Digis)[uDigi]);
 }
@@ -503,7 +503,7 @@ void CbmAlgoBuildRawEvents::SearchMatches(Double_t dSeedTime, RawEventBuilderDet
       break;
     }
     case ECbmModuleId::kT0: {
-      SearchMatches<CbmBmonDigi>(dSeedTime, detMatch);
+      SearchMatches<CbmTzdDigi>(dSeedTime, detMatch);
       break;
     }
     default: {
@@ -611,15 +611,15 @@ Bool_t CbmAlgoBuildRawEvents::HasTrigger(CbmEvent* event)
   return kTRUE;
 }
 
-void CbmAlgoBuildRawEvents::SetBmonEventTime(CbmEvent* event)
+void CbmAlgoBuildRawEvents::SetTzdEventTime(CbmEvent* event)
 {
   int32_t iNbDigis = event->GetNofData(ECbmDataType::kT0Digi);
 
   if (0 < iNbDigis) {
     double eventTime = 0;
     for (int idigi = 0; idigi < iNbDigis; ++idigi) {
-      uint idx                 = event->GetIndex(ECbmDataType::kT0Digi, idigi);
-      const CbmBmonDigi* pDigi = GetDigi<CbmBmonDigi>(idx);
+      uint idx                = event->GetIndex(ECbmDataType::kT0Digi, idigi);
+      const CbmTzdDigi* pDigi = GetDigi<CbmTzdDigi>(idx);
       if (nullptr == pDigi) continue;
       eventTime += pDigi->GetTime();
     }
@@ -896,7 +896,7 @@ uint64_t CbmAlgoBuildRawEvents::GetSizeFromDigisNb(ECbmModuleId detId, uint64_t 
       return ulNbDigis * sizeof(CbmPsdDigi);
     }
     case ECbmModuleId::kT0: {
-      return ulNbDigis * sizeof(CbmBmonDigi);
+      return ulNbDigis * sizeof(CbmTzdDigi);
     }
     default: {
       LOG(fatal) << "CbmAlgoBuildRawEvents::GetSizeFromDigisNb => "
@@ -1193,7 +1193,7 @@ void CbmAlgoBuildRawEvents::FillHistos()
         uint idx         = evt->GetIndex(fvDets[uDetIdx].dataType, idigi);
         switch (fvDets[uDetIdx].dataType) {
           case ECbmDataType::kT0Digi: {
-            auto pDigi = GetDigi<CbmBmonDigi>(idx);
+            auto pDigi = GetDigi<CbmTzdDigi>(idx);
             if (nullptr == pDigi) continue;
             dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
             break;
@@ -1264,7 +1264,7 @@ void CbmAlgoBuildRawEvents::FillHistos()
           uint idx         = evt->GetIndex(fRefDet.dataType, idigi);
           switch (fRefDet.dataType) {
             case ECbmDataType::kT0Digi: {
-              auto pDigi = GetDigi<CbmBmonDigi>(idx);
+              auto pDigi = GetDigi<CbmTzdDigi>(idx);
               if (nullptr == pDigi) continue;
               dTimeDiff = pDigi->GetTime() - evt->GetStartTime();
               break;

@@ -12,7 +12,6 @@
 
 /// CBMROOT headers
 #include "CbmAlgoBuildRawEvents.h"
-#include "CbmBmonDigi.h"
 #include "CbmMuchBeamTimeDigi.h"
 #include "CbmMuchDigi.h"
 #include "CbmPsdDigi.h"
@@ -20,6 +19,7 @@
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
+#include "CbmTzdDigi.h"
 
 /// C/C++ headers
 #include <array>
@@ -155,7 +155,7 @@ private:
   std::vector<CbmTofDigi>* fTofDigis                   = nullptr;
   std::vector<CbmRichDigi>* fRichDigis                 = nullptr;
   std::vector<CbmPsdDigi>* fPsdDigis                   = nullptr;
-  std::vector<CbmBmonDigi>* fT0Digis                   = nullptr;
+  std::vector<CbmTzdDigi>* fT0Digis                    = nullptr;
   std::vector<Double_t>* fSeedTimes                    = nullptr;
 
   /** Create digi vector and pass to algo **/
