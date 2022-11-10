@@ -10,6 +10,8 @@
  **/
 #include "CbmTofDigi.h"
 
+#include "CbmTzdDigi.h"
+
 #include <iomanip>  // for hex, setw, setfill, fixed, setprecission
 #include <sstream>  // for operator<<, basic_ostream, char_trait
 #include <string>   // for basic_string
@@ -32,6 +34,20 @@ CbmTofDigi::CbmTofDigi(uint32_t Sm, uint32_t Rpc, uint32_t Channel, double time,
 //    fMatch(nullptr)
 {
   fuAddress = CbmTofAddress::GetUniqueAddress(Sm, Rpc, Channel, Side, SmType);
+}
+
+CbmTofDigi::CbmTofDigi(const CbmTzdDigi& digi)
+  : fdTime(digi.GetTime())
+  , fdTot(digi.GetCharge())
+  , fuAddress(digi.GetAddress())
+{
+}
+
+CbmTofDigi::CbmTofDigi(const CbmTzdDigi* digi)
+  : fdTime(digi->GetTime())
+  , fdTot(digi->GetCharge())
+  , fuAddress(digi->GetAddress())
+{
 }
 
 CbmTofDigi::~CbmTofDigi()

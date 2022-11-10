@@ -48,7 +48,7 @@ void CbmTzdDigitize::Exec(Option_t*)
   // --- Create digi and send it to DAQ
   double digiTime  = fCurrentEventTime + gRandom->Gaus(0., fResolution);
   double charge    = 1.;  // Placeholder
-  CbmTzdDigi* digi = new CbmTzdDigi(digiTime, charge);
+  CbmTzdDigi* digi = new CbmTzdDigi(ToIntegralType<ECbmModuleId>(ECbmModuleId::kT0), digiTime, charge);
   if (fCreateMatches) {
     CbmMatch* digiMatch = new CbmMatch();
     digiMatch->AddLink(1., -1, fCurrentMCEntry, fCurrentInput);
