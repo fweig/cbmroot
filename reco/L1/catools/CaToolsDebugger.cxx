@@ -15,6 +15,7 @@ n->Draw("chi2")
 
 #include "CaToolsDebugger.h"
 
+#include "TDirectory.h"
 #include "TFile.h"
 #include "TNtuple.h"
 
@@ -44,7 +45,7 @@ void Debugger::Write()
 {
   /// Write data to file
   fIsWritten = true;
-  auto currDir {gDirectory};
+  TDirectory* currDir = gDirectory;
   if (fFile) {
     fFile->cd();
     for (unsigned int i = 0; i < fNtuples.size(); i++) {
@@ -65,7 +66,7 @@ void Debugger::AddNtuple(const char* name, const char* varlist)
   /// add ntuple
   assert(fFile);
   if (GetNtupleIndex(name) >= 0) return;
-  auto currDir {gDirectory};
+  TDirectory* currDir = gDirectory;
   fFile->cd();
   fNtuples.push_back(new TNtuple(name, name, varlist));
   gDirectory = currDir;
