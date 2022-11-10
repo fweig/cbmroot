@@ -89,7 +89,16 @@ public:
   /** @brief Set a predefined monitor @param monitor predefined unpacking monitor */
   void SetMonitor(std::shared_ptr<CbmTofUnpackMonitor> monitor) { fMonitor = monitor; }
 
-protected:
+  /**
+   * @brief Get a reference to the output vector. Used by TZD encapsulating algo to access output.
+   *
+   * @return std::vector<CbmTofDigi>&
+  */
+  std::vector<CbmTofDigi>& GetOutputVec() { return fOutputVec; }
+
+public:
+  /// Raise permissions for access to these protected methods to allow access in encapsulating TZD algo
+
   /** @brief Finish function for this algorithm base clase */
   void finish()
   {
