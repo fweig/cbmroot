@@ -19,6 +19,7 @@
 #pragma link C++ class CbmGlobalTrackFitterIdeal + ;
 #pragma link C++ class CbmPVFinderIdeal + ;
 #pragma link C++ class CbmTrackMergerIdeal + ;
+#pragma link C++ class CbmRecoTzero + ;
 //#pragma link C++ class CbmTofMergerIdeal+;
 
 

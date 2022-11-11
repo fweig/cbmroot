@@ -29,6 +29,7 @@
 #include "CbmPrimaryVertexFinder.h"
 #include "CbmPsdHitProducer.h"
 #include "CbmRecoSts.h"
+#include "CbmRecoTzero.h"
 #include "CbmRichHitProducer.h"
 #include "CbmRichReconstruction.h"
 #include "CbmSetup.h"
@@ -457,6 +458,13 @@ void run_reco(TString input = "", Int_t nTimeSlices = -1, Int_t firstTimeSlice =
       run->AddTask(richReco);
       std::cout << "-I- : Added task " << richReco->GetName() << std::endl;
     }
+    // ----------------------------------------------------------------------
+
+
+    // ----- T0 reconstruction   --------------------------------------------
+    CbmRecoTzero* recoT0 = new CbmRecoTzero();
+    run->AddTask(recoT0);
+    std::cout << "-I- : Added task " << recoT0->GetName() << std::endl;
     // ----------------------------------------------------------------------
 
   }  //? event-based reco

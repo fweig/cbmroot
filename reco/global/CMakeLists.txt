@@ -17,7 +17,8 @@ set(SRCS
   CbmFitGlobalTracksQa.cxx 
   CbmGlobalTrackFitterIdeal.cxx 
   CbmPVFinderIdeal.cxx       
-  CbmTrackMergerIdeal.cxx    
+  CbmTrackMergerIdeal.cxx  
+  CbmRecoTzero.cxx  
   #CbmTofMergerIdeal.cxx 
   )
 

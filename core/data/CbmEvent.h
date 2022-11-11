@@ -137,6 +137,13 @@ public:
    **/
   double GetStartTime() const { return fTimeStart; }
 
+
+  /** Get t0
+   ** @value Reconstructed t0 [ns]
+   **/
+  double GetTzero() const { return fTzero; }
+
+
   /** Set event number
    ** @value Event number
    **/
@@ -158,6 +165,12 @@ public:
    ** @param endTime  Start time of event [ns]
    **/
   void SetStartTime(double startTime) { fTimeStart = startTime; }
+
+
+  /** Set t0
+   ** @param tZero  T0 measurement [ns]
+   **/
+  void SetTzero(double tZero) { fTzero = tZero; }
 
 
   /** Set the STS track index array
@@ -204,12 +217,13 @@ public:
 
 private:
   /** Event meta data **/
-  int32_t fNumber;      ///< Event number
-  double fTimeStart;    ///< Event start time [ns]
-  double fTimeEnd;      ///< Event end time [ns]
-  int32_t fNofData;     ///< Number of data objects in the event
-  CbmVertex fVertex;    ///< Primary Vertex
-  CbmMatch* fMatch;     ///< Match object to MCEvent
+  int32_t fNumber   = -1;        ///< Event number
+  double fTimeStart = 0.;        ///< Event start time [ns]
+  double fTimeEnd   = 0.;        ///< Event end time [ns]
+  double fTzero     = -999999.;  ///< T0 of event for TOF PID [ns]
+  int32_t fNofData  = 0;         ///< Number of data objects in the event
+  CbmVertex fVertex = {};        ///< Primary Vertex
+  CbmMatch* fMatch  = nullptr;   ///< Match object to MCEvent
 
   /** Arrays of indices to data types **/
   std::map<ECbmDataType, std::vector<uint32_t>> fIndexMap;

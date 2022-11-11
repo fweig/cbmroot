@@ -205,7 +205,7 @@ Int_t CbmDigitization::CreateDefaultDigitizers()
         break;
       case ECbmModuleId::kT0:
         fDigitizers[system]->SetDigitizer(new CbmTzdDigitize());
-        ss << "BMON ";
+        ss << "TZD ";
         nDigis++;
         break;
       default: LOG(fatal) << fName << ": Unknown system " << system; break;
