@@ -48,6 +48,12 @@ public:
   double GetCharge() const { return fCharge; }
 
 
+  /** System ID (static)
+  ** @return System identifier (EcbmModuleId)
+  **/
+  static ECbmModuleId GetSystem() { return ECbmModuleId::kT0; }
+
+
   /** @brief Time
    ** @return Time of measurement [ns]
    **/

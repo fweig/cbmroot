@@ -96,6 +96,7 @@ void CbmBuildEventsIdeal::Exec(Option_t*)
       case ECbmModuleId::kTrd: digiType = ECbmDataType::kTrdDigi; break;
       case ECbmModuleId::kTof: digiType = ECbmDataType::kTofDigi; break;
       case ECbmModuleId::kPsd: digiType = ECbmDataType::kPsdDigi; break;
+      case ECbmModuleId::kT0: digiType = ECbmDataType::kT0Digi; break;
       default: break;
     }  //? detector
 

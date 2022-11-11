@@ -9,6 +9,8 @@
 
 #include "CbmTzdDigitize.h"
 
+#include "CbmMatch.h"
+
 #include <Logger.h>
 
 #include <TRandom.h>
@@ -40,7 +42,7 @@ void CbmTzdDigitize::Exec(Option_t*)
   TStopwatch timer;
   timer.Start();
 
-  // --- Get event time
+  // --- Get MC event information
   GetEventInfo();
 
   // --- Create digi and send it to DAQ
@@ -49,6 +51,7 @@ void CbmTzdDigitize::Exec(Option_t*)
   CbmTzdDigi* digi = new CbmTzdDigi(digiTime, charge);
   if (fCreateMatches) {
     CbmMatch* digiMatch = new CbmMatch();
+    digiMatch->AddLink(1., -1, fCurrentMCEntry, fCurrentInput);
     SendData(digiTime, digi, digiMatch);
   }
   else

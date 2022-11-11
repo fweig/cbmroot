@@ -18,6 +18,7 @@
 #include "CbmStsDigi.h"           // for CbmStsDigi
 #include "CbmTofDigi.h"           // for CbmTofDigi
 #include "CbmTrdDigi.h"           // for CbmTrdDigi
+#include "CbmTzdDigi.h"           // for CbmTzdDigi
 
 #include <FairTask.h>  // for kSUCCESS, InitStatus
 
@@ -90,6 +91,7 @@ InitStatus CbmDigiManager::Init()
   SetBranch<CbmTrdDigi>();
   SetBranch<CbmTofDigi>();
   SetBranch<CbmPsdDigi>();
+  SetBranch<CbmTzdDigi>();
   LOG(info) << "Present branches:";
   for (auto const& branch : fBranches) {
     LOG(info) << "   " << branch.second->ToString();
