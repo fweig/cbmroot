@@ -39,7 +39,9 @@ project(CBMROOT
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/
 # is checked
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+
 
 # Load some basic cmake functionality
 include(ExternalProject)
@@ -57,7 +59,7 @@ include(ROOTMacros)
 include(FairMacros)
 include(WriteConfigFile)
 include(CheckCompiler)
-include(ROOTMacros)
+
 
 # Do some basic checks
 # out-of-source build, unix system and
@@ -67,14 +69,13 @@ Check_Prerequisites()
 #Fairsoft Modules Path
 list(PREPEND CMAKE_PREFIX_PATH ${SIMPATH})
 
+unset(packages)
+
 #Searches for ROOT Package
 find_package(ROOT 6.22 CONFIG REQUIRED)
 if(ROOT_FOUND)
-  Message("Root was found")
+  list(APPEND packages ROOT)
   # The following CMake variables are needed until the modernization is done
-  set(ROOT_CINT_EXECUTABLE ${ROOT_BINDIR}/rootcling)
-  set(ROOT_CONFIG_EXECUTABLE ${ROOT_BINDIR}/root-config)
-  set(ROOT_INCLUDE_DIR ${ROOT_INCLUDE_DIRS})
 endif()
 
 find_package(FairCMakeModules REQUIRED)
@@ -85,8 +86,7 @@ find_package2(PUBLIC FairLogger)
 # at the end after all find_package[2] calls, call once
 find_package2_implicit_dependencies()
 if(FairLogger_FOUND)
-  Message("FairLogger was found")
-  set(FAIRLOGGER_FOUND TRUE)
+  list(APPEND packages FairLogger)
   set(FAIRLOGGER_INCLUDE_DIR ${FairLogger_INCDIR}/fairlogger)
 
   # CbmRoot expects that the Logger include statement does not need any
@@ -98,78 +98,75 @@ if(FairLogger_FOUND)
     INTERFACE_INCLUDE_DIRECTORIES "${_incDirs}/fairlogger"
     )
 endif()
-
+  
 #Searches for VMC Package
 if(ROOT_vmc_FOUND)
   set(VMCLIB ROOT::VMC)
-  Message("Root_VMC was found")
+  list(APPEND packages ROOT_vmc)
 else()
   find_package2(PUBLIC VMC REQUIRED)
   set(VMCLIB VMCLibrary)
 endif()
 if(VMC_FOUND)
-  Message("VMC was found")
+  list(APPEND packages VMC)
 endif()
 
 #Searches for FairROOT Package
 include(FairRootTargets)
 find_package(FairRoot REQUIRED)
 if(FAIRROOT_FOUND)
-  Message("FairRoot was found")
+  list(APPEND packages FairRoot)
+  set(FairRoot_FOUND TRUE)
 endif()
 
 
 #Searching for Boost Package
 find_package(Boost COMPONENTS serialization regex filesystem log log_setup container program_options thread)
 if(Boost_FOUND)
-  Message("Boost was found")
+  list(APPEND packages Boost)
 endif()
 
 
 #Searching for Geant4 Package
 find_package(Geant4 CONFIG REQUIRED)
 if(Geant4_FOUND)
-  Message("Geant4 was found")
+  list(APPEND packages Geant4)
 endif()
 
 #Searching for Vc Package
 find_package(Vc 1.4.1 CONFIG REQUIRED)
 if(Vc_FOUND)
-  Message("Vc was found")
+  list(APPEND packages Vc)
 endif()
 
 #Searching for VGM Package
 find_package(VGM CONFIG REQUIRED)
 if(VGM_FOUND)
-  Message("VGM was found")
 endif()
 
 #Searching for Geant4VMC Package
 find_package(Geant4VMC CONFIG REQUIRED)
 if(Geant4VMC_FOUND)
-  Message("Geant4VMC was found")
+  list(APPEND packages Geant4VMC)
 endif()
 
 #Searching for Geant3 Package
 find_package(Geant3 CONFIG REQUIRED)
 if(Geant3_FOUND)
-  Message("Geant3 was found")
+  list(APPEND packages Geant3)
 endif()
 
 #Searching for SSE
 find_package(SSE REQUIRED)
 if(SSE_FOUND)
-  Message("SSE was found")
+  list(APPEND packages SSE)
 endif()
 
 
 #Searching for FairMQ
 find_package(FairMQ CONFIG REQUIRED)
 if(FairMQ_FOUND)
-  Message("FairMQ was found")
-
-  set(FAIRMQ_INCLUDE_DIR ${FairMQ_INCDIR}/fairmq)
-
+  list(APPEND packages FairMQ)
   get_target_property(_inDirMQ FairMQ::FairMQ INTERFACE_INCLUDE_DIRECTORIES)
   set_property(TARGET FairMQ::FairMQ APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${_inDirMQ}/fairmq/options")
 endif()
@@ -204,24 +201,9 @@ If(DEFINED ENV{OMP_NUM_THREADS} )
   set(OMP_NUM_THREADS $ENV{OMP_NUM_THREADS})
 endif()
 
-# set a variable which should be used in all CMakeLists.txt
-# Defines all basic include directories from fairbase
-SetBasicVariables()
-
-# Add the Geant3 include directory such that ROOT can find TGeant3.h
-# Has to be done after calling SetBasicVariables, otherwise the value
-# is overwritten
-SET(ROOT_INCLUDE_PATH ${ROOT_INCLUDE_PATH} "${Geant3_INCLUDE_DIRS}")
-
-Set(BASE_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${SYSTEM_INCLUDE_DIRECTORIES}
-  ${FAIRLOGGER_INCLUDE_DIR}
-  ${VMC_INCLUDE_DIRS}
-)
-
-SET(CBMLIBDIR ${CMAKE_BINARY_DIR}/lib)
-SET(LD_LIBRARY_PATH  ${CBMLIBDIR} ${Boost_LIBRARY_DIRS} ${LD_LIBRARY_PATH})
+set(CBMLIBDIR ${CMAKE_BINARY_DIR}/lib)
+set(LD_LIBRARY_PATH  ${CBMLIBDIR} ${Boost_LIBRARY_DIRS} ${LD_LIBRARY_PATH} ${FAIRROOT_LIBRARY_DIR})
+set(ROOT_INCLUDE_PATH ${FAIRROOT_INCLUDE_DIR})
 
 # Recurse into the given subdirectories.  This does not actually
 # cause another cmake executable to run.  The same process will walk through
@@ -240,17 +222,6 @@ endif()
 # Must be the first subdirectory since the defined targets are needed by
 # following targets
 add_subdirectory (external)
-
-set (BASE_INCLUDE_DIRECTORIES
-${BASE_INCLUDE_DIRECTORIES}
-${XPU_INCLUDE_DIRECTORY} # Required for XPU_D macro in base data types
-)
-
-
-set(BASE_INCLUDE_DIRECTORIES
-  ${BASE_INCLUDE_DIRECTORIES}
-  ${GSL_INCLUDE_DIRECTORY}
-)
 
 
 ### Base directories
@@ -300,3 +271,5 @@ generate_config_files()
 Install(DIRECTORY geometry input parameters
         DESTINATION share/cbmroot
         PATTERN ".git" EXCLUDE)
+        
+print_info()

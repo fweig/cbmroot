@@ -271,3 +271,64 @@ macro(generate_cbm_executable)
   set(INTERFACE_DEPENDENCIES)
 
 endmacro(generate_cbm_executable)
+
+macro(print_info)
+
+  set(CR       "${Esc}[m")
+  set(CB       "${Esc}[1m")
+  set(Red      "${Esc}[31m")
+  set(Green    "${Esc}[32m")
+  set(Yellow   "${Esc}[33m")
+  set(Blue     "${Esc}[34m")
+  set(Magenta  "${Esc}[35m")
+  set(Cyan     "${Esc}[36m")
+  set(White    "${Esc}[37m")
+  set(BRed     "${Esc}[1;31m")
+  set(BGreen   "${Esc}[1;32m")
+  set(BYellow  "${Esc}[1;33m")
+  set(BBlue    "${Esc}[1;34m")
+  set(BMagenta "${Esc}[1;35m")
+  set(BCyan    "${Esc}[1;36m")
+  set(BWhite   "${Esc}[1;37m")
+  
+
+message(STATUS "  ")
+message(STATUS "  ${Cyan}CXX STANDARD${CR}       ${BGreen}C++${CMAKE_CXX_STANDARD}${CR} (change with ${BMagenta}-DCMAKE_CXX_STANDARD=17${CR})")
+
+
+if(packages)
+  list(SORT packages)
+  message(STATUS "  ")
+  message(STATUS "  ${Cyan}PACKAGE              VERSION         OPTION${CR}")
+  foreach(dep IN LISTS packages)
+   
+    if(${${dep}_FOUND}} MATCHES "TRUE" OR ${${dep}_FOUND}} MATCHES "1" OR ${${dep}_FOUND}} MATCHES  "true")
+        set(dep_found "${BGreen}-FOUND")
+       else()
+        set(dep_found "${Red}-NOT FOUND")
+    endif()
+     
+    pad("${BYellow}${${dep}_VERSION}${CR}" 15 " " dep_version COLOR 1)      
+    pad(${dep} 20 " " dep_name)
+    pad("${dep_found}${CR}" 15 " " version_found COLOR 1)
+
+    message(STATUS "  ${BWhite}${dep_name}${CR}${dep_version}${version_found}")
+    
+    unset(dep)
+    unset(dep_found)
+    unset(dep_version)
+    unset(version_found)
+    unset(dep_name)
+  endforeach()
+endif()
+
+message(STATUS "  ")
+message(STATUS "  ${Cyan}INSTALL PREFIX${CR}     ${BGreen}${CMAKE_INSTALL_PREFIX}${CR} (change with ${BMagenta}-DCMAKE_INSTALL_PREFIX=...${CR})")
+message(STATUS "  ")
+message(STATUS "  ${Cyan} SIMPATH = ${BGreen}${SIMPATH}${CR}")
+message(STATUS "  ${Cyan} FAIRROOTPATH = ${BGreen}${FAIRROOTPATH}${CR}")
+message(STATUS "  ")
+message(STATUS "  ${Cyan} CbmRoot Version::${BGreen}${CBMROOT_VERSION}${CR}")
+message(STATUS "  ")
+
+endmacro(print_info)
