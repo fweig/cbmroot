@@ -30,6 +30,18 @@ set(CBMROOT_MAJOR_VERSION 22)
 set(CBMROOT_MINOR_VERSION 2)
 set(CBMROOT_PATCH_VERSION 99)
 
+execute_process(
+COMMAND bash "-c" "cd ${CMAKE_SOURCE_DIR} && git log | head -n 1 | sed 's_commit \\(.[^ ]*\\)_\\1_' && cd ${OLDPWD}"
+OUTPUT_VARIABLE CBMROOT_BUILD_HASH
+OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+execute_process(
+COMMAND bash "-c" "cd ${CMAKE_SOURCE_DIR} && git log | sed -n '3 s/Date:[ ]*//p' && cd ${OLDPWD}"
+OUTPUT_VARIABLE CBMROOT_BUILD_HASH_DATE
+OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+message("CBMROOT BUILD HASH is ${CBMROOT_BUILD_HASH} dated on ${CBMROOT_BUILD_HASH_DATE}.")
+
 # Set name of our project to "CBMROOT"
 # This also sets ${CBMROOT_VERSION} to the provided VERSION value, which would be empty if not set here explicitly
 project(CBMROOT

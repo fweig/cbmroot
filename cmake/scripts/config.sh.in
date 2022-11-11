@@ -58,5 +58,5 @@ if [ $same_system -eq 1 ]; then
                         export PATH=$PATH:"@MY_PATH@"
 			;;
 	esac
- 	echo "Configurated for CBMROOT at ${VMCWORKDIR}"
+ 	echo "Configured CBMROOT build @CBMROOT_BUILD_HASH@ (@CBMROOT_BUILD_HASH_DATE@)"
 fi
