@@ -353,6 +353,7 @@ void L1BaseStationInfo::SetMaterialMap(L1Material&& thicknessMap) noexcept
 {
   if (!fInitController.GetFlag(EInitKey::kThicknessMap)) {
     fThicknessMap = std::move(thicknessMap);
+    fThicknessMap.Repare();
     fInitController.SetFlag(EInitKey::kThicknessMap);
   }
   else {

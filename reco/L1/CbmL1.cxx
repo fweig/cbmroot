@@ -1510,7 +1510,6 @@ std::vector<L1Material> CbmL1::ReadMaterialBudget(L1DetectorID detectorID)
           result[iSt].SetRadThickBin(iBinX, iBinY, 0.01 * hStaRadLen->GetBinContent(iBinX, iBinY));
         }  // iBinX
       }    // iBinY
-      result[iSt].Repare();
       LOG(info) << "- station " << iSt;
     }  // iSt
     gFile      = oldFile;
