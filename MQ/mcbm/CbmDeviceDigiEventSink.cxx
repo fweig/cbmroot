@@ -155,7 +155,7 @@ try {
 
   /// Full TS Digis storage (optional usage, controlled by fbStoreFullTs!)
   if (fbStoreFullTs) {
-    fvDigiT0   = new std::vector<CbmTofDigi>();
+    fvDigiT0   = new std::vector<CbmTzdDigi>();
     fvDigiSts  = new std::vector<CbmStsDigi>();
     fvDigiMuch = new std::vector<CbmMuchDigi>();
     fvDigiTrd  = new std::vector<CbmTrdDigi>();
@@ -163,13 +163,13 @@ try {
     fvDigiRich = new std::vector<CbmRichDigi>();
     fvDigiPsd  = new std::vector<CbmPsdDigi>();
 
-    fpFairRootMgr->RegisterAny("T0Digi", fvDigiT0, kTRUE);
-    fpFairRootMgr->RegisterAny("StsDigi", fvDigiSts, kTRUE);
-    fpFairRootMgr->RegisterAny("MuchDigi", fvDigiMuch, kTRUE);
-    fpFairRootMgr->RegisterAny("TrdDigi", fvDigiTrd, kTRUE);
-    fpFairRootMgr->RegisterAny("TofDigi", fvDigiTof, kTRUE);
-    fpFairRootMgr->RegisterAny("RichDigi", fvDigiRich, kTRUE);
-    fpFairRootMgr->RegisterAny("PsdDigi", fvDigiPsd, kTRUE);
+    fpFairRootMgr->RegisterAny(CbmTzdDigi::GetBranchName(), fvDigiT0, kTRUE);
+    fpFairRootMgr->RegisterAny(CbmStsDigi::GetBranchName(), fvDigiSts, kTRUE);
+    fpFairRootMgr->RegisterAny(CbmMuchDigi::GetBranchName(), fvDigiMuch, kTRUE);
+    fpFairRootMgr->RegisterAny(CbmTrdDigi::GetBranchName(), fvDigiTrd, kTRUE);
+    fpFairRootMgr->RegisterAny(CbmTofDigi::GetBranchName(), fvDigiTof, kTRUE);
+    fpFairRootMgr->RegisterAny(CbmRichDigi::GetBranchName(), fvDigiRich, kTRUE);
+    fpFairRootMgr->RegisterAny(CbmPsdDigi::GetBranchName(), fvDigiPsd, kTRUE);
   }
 
   fpFairRootMgr->WriteFolder();
@@ -968,10 +968,11 @@ void CbmEventTimeslice::ExtractSelectedData()
     selEvent.fTime   = event.GetStartTime();
     selEvent.fNumber = event.GetNumber();
 
-    /// FIXME: for pure digi based event, we select "continuous slices of digis"
+    /// For pure digi based event, we select "continuous slices of digis"
     ///        => Copy block of [First Digi index, last digi index] with assign(it_start, it_stop)
-    /// FIXME: Keep TRD1D + TRD2D support, may lead to holes in the digi sequence!
-    ///        => Would need to keep the loop
+    ///        => No data increase for most detectors as we use time window selection
+    /// FIXME: Keep TRD1D + TRD2D support as single det, otherwise may lead to holes in the digi sequence!
+    ///        => Would need to keep the loop to avoid adding extra digis
 
     /// Get the proper order for block selection as TRD1D and TRD2D may insert indices in separate loops
     /// => Needed to ensure that the start and stop of the block copy do not trigger a vector size exception
@@ -986,22 +987,6 @@ void CbmEventTimeslice::ExtractSelectedData()
       auto stopIt  = fvDigiT0.begin() + event.GetIndex(ECbmDataType::kT0Digi, uNbDigis - 1);
       ++stopIt;
       selEvent.fData.fT0.fDigis.assign(startIt, stopIt);
-
-      /*
-      uint32_t uPrevIdx = event.GetIndex(ECbmDataType::kT0Digi, 0);
-      uint32_t uNbExtra = 0;
-      for (uint32_t uDigiIdx = 1; uDigiIdx < uNbDigis; ++uDigiIdx) {
-        // selEvent.fData.fT0.fDigis.push_back(fvDigiT0[event.GetIndex(ECbmDataType::kT0Digi, uDigiIdx)]);
-        if (uPrevIdx + 1 != event.GetIndex(ECbmDataType::kT0Digi, uDigiIdx)) {
-          uNbExtra += event.GetIndex(ECbmDataType::kT0Digi, uDigiIdx) - (uPrevIdx + 1);
-        }
-        uPrevIdx = event.GetIndex(ECbmDataType::kT0Digi, uDigiIdx);
-      }
-      if (0 < uNbExtra) {
-        LOG(info) << "In event " << event.GetNumber() << " the T0 block selection added " << uNbExtra
-                  << " extra digis compared to the loop one";
-      }
-      */
     }
 
     /// ==> STS
@@ -1011,22 +996,6 @@ void CbmEventTimeslice::ExtractSelectedData()
       auto stopIt  = fvDigiSts.begin() + event.GetIndex(ECbmDataType::kStsDigi, uNbDigis - 1);
       ++stopIt;
       selEvent.fData.fSts.fDigis.assign(startIt, stopIt);
-
-      /*
-      uint32_t uPrevIdx = event.GetIndex(ECbmDataType::kStsDigi, 0);
-      uint32_t uNbExtra = 0;
-      for (uint32_t uDigiIdx = 1; uDigiIdx < uNbDigis; ++uDigiIdx) {
-        // selEvent.fData.fSts.fDigis.push_back(fvDigiSts[event.GetIndex(ECbmDataType::kStsDigi, uDigiIdx)]);
-        if (uPrevIdx + 1 != event.GetIndex(ECbmDataType::kStsDigi, uDigiIdx)) {
-          uNbExtra += event.GetIndex(ECbmDataType::kStsDigi, uDigiIdx) - (uPrevIdx + 1);
-        }
-        uPrevIdx = event.GetIndex(ECbmDataType::kStsDigi, uDigiIdx);
-      }
-      if (0 < uNbExtra) {
-        LOG(info) << "In event " << event.GetNumber() << " the STS block selection added " << uNbExtra
-                  << " extra digis compared to the loop one";
-      }
-      */
     }
 
     /// ==> MUCH
@@ -1036,22 +1005,6 @@ void CbmEventTimeslice::ExtractSelectedData()
       auto stopIt  = fvDigiMuch.begin() + event.GetIndex(ECbmDataType::kMuchDigi, uNbDigis - 1);
       ++stopIt;
       selEvent.fData.fMuch.fDigis.assign(startIt, stopIt);
-
-      /*
-      uint32_t uPrevIdx = event.GetIndex(ECbmDataType::kMuchDigi, 0);
-      uint32_t uNbExtra = 0;
-      for (uint32_t uDigiIdx = 1; uDigiIdx < uNbDigis; ++uDigiIdx) {
-        // selEvent.fData.fMuch.fDigis.push_back(fvDigiMuch[event.GetIndex(ECbmDataType::kMuchDigi, uDigiIdx)]);
-        if (uPrevIdx + 1 != event.GetIndex(ECbmDataType::kMuchDigi, uDigiIdx)) {
-          uNbExtra += event.GetIndex(ECbmDataType::kMuchDigi, uDigiIdx) - (uPrevIdx + 1);
-        }
-        uPrevIdx = event.GetIndex(ECbmDataType::kMuchDigi, uDigiIdx);
-      }
-      if (0 < uNbExtra) {
-        LOG(info) << "In event " << event.GetNumber() << " the MUCH block selection added " << uNbExtra
-                  << " extra digis compared to the loop one";
-      }
-      */
     }
 
     /// ==> TRD + TRD2D
@@ -1061,24 +1014,6 @@ void CbmEventTimeslice::ExtractSelectedData()
       auto stopIt  = fvDigiTrd.begin() + event.GetIndex(ECbmDataType::kTrdDigi, uNbDigis - 1);
       ++stopIt;
       selEvent.fData.fTrd.fDigis.assign(startIt, stopIt);
-
-      /*
-      uint32_t uPrevIdx = event.GetIndex(ECbmDataType::kTrdDigi, 0);
-      uint32_t uNbExtra = 0;
-      for (uint32_t uDigiIdx = 1; uDigiIdx < uNbDigis; ++uDigiIdx) {
-        // selEvent.fData.fTrd.fDigis.push_back(fvDigiTrd[event.GetIndex(ECbmDataType::kTrdDigi, uDigiIdx)]);
-        if (uPrevIdx + 1 != event.GetIndex(ECbmDataType::kTrdDigi, uDigiIdx)) {
-          uNbExtra += event.GetIndex(ECbmDataType::kTrdDigi, uDigiIdx) - (uPrevIdx + 1);
-          LOG(info) << "Extra TRD digi: prev is " << uPrevIdx << " vs new " << event.GetIndex(ECbmDataType::kTrdDigi, uDigiIdx)
-                    << " index " << uDigiIdx << " out of " << uNbDigis;
-        }
-        uPrevIdx = event.GetIndex(ECbmDataType::kTrdDigi, uDigiIdx);
-      }
-      if (0 < uNbExtra) {
-        LOG(info) << "In event " << event.GetNumber() << " the TRD block selection added " << uNbExtra
-                  << " extra digis compared to the loop one";
-      }
-      */
     }
 
     /// ==> TOF
@@ -1088,22 +1023,6 @@ void CbmEventTimeslice::ExtractSelectedData()
       auto stopIt  = fvDigiTof.begin() + event.GetIndex(ECbmDataType::kTofDigi, uNbDigis - 1);
       ++stopIt;
       selEvent.fData.fTof.fDigis.assign(startIt, stopIt);
-
-      /*
-      uint32_t uPrevIdx = event.GetIndex(ECbmDataType::kTofDigi, 0);
-      uint32_t uNbExtra = 0;
-      for (uint32_t uDigiIdx = 1; uDigiIdx < uNbDigis; ++uDigiIdx) {
-        // selEvent.fData.fTof.fDigis.push_back(fvDigiTof[event.GetIndex(ECbmDataType::kTofDigi, uDigiIdx)]);
-        if (uPrevIdx + 1 != event.GetIndex(ECbmDataType::kTofDigi, uDigiIdx)) {
-          uNbExtra += event.GetIndex(ECbmDataType::kTofDigi, uDigiIdx) - (uPrevIdx + 1);
-        }
-        uPrevIdx = event.GetIndex(ECbmDataType::kTofDigi, uDigiIdx);
-      }
-      if (0 < uNbExtra) {
-        LOG(info) << "In event " << event.GetNumber() << " the TOF block selection added " << uNbExtra
-                  << " extra digis compared to the loop one";
-      }
-      */
     }
 
     /// ==> RICH
@@ -1113,22 +1032,6 @@ void CbmEventTimeslice::ExtractSelectedData()
       auto stopIt  = fvDigiRich.begin() + event.GetIndex(ECbmDataType::kRichDigi, uNbDigis - 1);
       ++stopIt;
       selEvent.fData.fRich.fDigis.assign(startIt, stopIt);
-
-      /*
-      uint32_t uPrevIdx = event.GetIndex(ECbmDataType::kRichDigi, 0);
-      uint32_t uNbExtra = 0;
-      for (uint32_t uDigiIdx = 1; uDigiIdx < uNbDigis; ++uDigiIdx) {
-        // selEvent.fData.fRich.fDigis.push_back(fvDigiRich[event.GetIndex(ECbmDataType::kRichDigi, uDigiIdx)]);
-        if (uPrevIdx + 1 != event.GetIndex(ECbmDataType::kRichDigi, uDigiIdx)) {
-          uNbExtra += event.GetIndex(ECbmDataType::kRichDigi, uDigiIdx) - (uPrevIdx + 1);
-        }
-        uPrevIdx = event.GetIndex(ECbmDataType::kRichDigi, uDigiIdx);
-      }
-      if (0 < uNbExtra) {
-        LOG(info) << "In event " << event.GetNumber() << " the RICH block selection added " << uNbExtra
-                  << " extra digis compared to the loop one";
-      }
-      */
     }
 
     /// ==> PSD
@@ -1138,22 +1041,6 @@ void CbmEventTimeslice::ExtractSelectedData()
       auto stopIt  = fvDigiPsd.begin() + event.GetIndex(ECbmDataType::kPsdDigi, uNbDigis - 1);
       ++stopIt;
       selEvent.fData.fPsd.fDigis.assign(startIt, stopIt);
-
-      /*
-      uint32_t uPrevIdx = event.GetIndex(ECbmDataType::kPsdDigi, 0);
-      uint32_t uNbExtra = 0;
-      for (uint32_t uDigiIdx = 1; uDigiIdx < uNbDigis; ++uDigiIdx) {
-        // selEvent.fData.fPsd.fDigis.push_back(fvDigiPsd[event.GetIndex(ECbmDataType::kPsdDigi, uDigiIdx)]);
-        if (uPrevIdx + 1 != event.GetIndex(ECbmDataType::kPsdDigi, uDigiIdx)) {
-          uNbExtra += event.GetIndex(ECbmDataType::kPsdDigi, uDigiIdx) - (uPrevIdx + 1);
-        }
-        uPrevIdx = event.GetIndex(ECbmDataType::kPsdDigi, uDigiIdx);
-      }
-      if (0 < uNbExtra) {
-        LOG(info) << "In event " << event.GetNumber() << " the PSD block selection added " << uNbExtra
-                  << " extra digis compared to the loop one";
-      }
-      */
     }
 
     fvDigiEvents.push_back(selEvent);
