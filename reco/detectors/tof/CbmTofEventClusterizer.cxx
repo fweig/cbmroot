@@ -31,6 +31,7 @@
 #include "CbmTofGeoHandler.h"       // in tof/TofTools
 #include "CbmTofHit.h"              // in cbmdata/tof
 #include "CbmTofPoint.h"            // in cbmdata/tof
+#include "CbmTzdDigi.h"             // in cbmdata/global
 #include "CbmVertex.h"
 
 #include "TTrbHeader.h"
@@ -392,13 +393,13 @@ void CbmTofEventClusterizer::Exec(Option_t* option)
 
       for (Int_t iDigi = 0; iDigi < tEvent->GetNofData(ECbmDataType::kT0Digi); iDigi++) {
         Int_t iDigiIndex       = static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kT0Digi, iDigi));
-        CbmTofDigi tDigi       = fT0DigiVec->at(iDigiIndex);
+        CbmTofDigi tDigi(fDigiMan->Get<CbmTzdDigi>(iDigiIndex));
         if (tDigi.GetType() != 5)
           LOG(fatal) << "Wrong T0 type " << tDigi.GetType() << ", Addr 0x" << std::hex << tDigi.GetAddress();
         if (tDigi.GetSide() == 1) {  // HACK for May22 setup
           tDigi.SetAddress(tDigi.GetSm(), tDigi.GetRpc(), tDigi.GetChannel() + 6, 0, tDigi.GetType());
         }
-        fTofDigiVec.push_back(CbmTofDigi(tDigi));
+        fTofDigiVec.push_back(tDigi);
       }
       for (Int_t iDigi = 0; iDigi < tEvent->GetNofData(ECbmDataType::kTofDigi); iDigi++) {
         Int_t iDigiIndex        = static_cast<Int_t>(tEvent->GetIndex(ECbmDataType::kTofDigi, iDigi));
@@ -582,10 +583,9 @@ Bool_t CbmTofEventClusterizer::RegisterInputs()
     LOG(error) << GetName() << ": No Tof digi input!";
     return kFALSE;
   }
-  if (fDigiMan->IsPresent(ECbmModuleId::kT0)) { LOG(info) << GetName() << ": separate T0 digi input!"; }
+  if (fDigiMan->IsPresent(ECbmModuleId::kT0)) { LOG(info) << GetName() << ": found separate T0 digi input!"; }
   else {
-    fT0DigiVec = fManager->InitObjectAs<std::vector<CbmTofDigi> const*>("T0Digi");
-    if (!fT0DigiVec) { LOG(info) << "No T0 digi input vector found."; }
+    LOG(info) << "No separate T0 digi input found.";
   }  // if( ! fT0DigiVec )
 
   fTrbHeader = (TTrbHeader*) fManager->GetObject("TofTrbHeader.");

@@ -253,7 +253,6 @@ private:
   const std::vector<CbmMatch>* fTofDigiPointMatches = nullptr;  // TOF MC point matches
   //TClonesArray          * fTofDigisColl;     // TOF Digis
   std::vector<CbmTofDigi> fTofDigiVec {};               //! TOF Digis
-  const std::vector<CbmTofDigi>* fT0DigiVec = nullptr;  //! T0 Digis
   CbmDigiManager* fDigiMan;                             // TOF Input Digis
   TClonesArray* fEventsColl;                            // CBMEvents (time based)
 
