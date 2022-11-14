@@ -1,4 +1,4 @@
-set(NICAFEMTO_VERSION 0350ba6a6c4548d5a5b880d8698c25446525723c)
+set(NICAFEMTO_VERSION 402c08b17cb62d92575695d74d36dc4750b7562f)
 
 set(NICAFEMTO_SRC_URL "https://git.cbm.gsi.de/f.uhlig/nicafemto.git")
 set(NICAFEMTO_DESTDIR "${CMAKE_BINARY_DIR}/external/NICAFEMTO-prefix")
@@ -13,7 +13,6 @@ download_project_if_needed(PROJECT         NicaFemto_source
                            GIT_REPOSITORY  ${NICAFEMTO_SRC_URL}
                            GIT_TAG         ${NICAFEMTO_VERSION}
                            SOURCE_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/NicaFemto
-                           PATCH_COMMAND   "patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/NicaFemto.patch"
                           )
 
 If(ProjectUpdated)
@@ -42,7 +41,8 @@ ExternalProject_Add(NICAFEMTO
              -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
              -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
              -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
-             -DROOTSYS=${SIMPATH}
+             -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+             -DCMAKE_MODULE_PATH=${CMAKE_SOURCE_DIR}/cmake/modules
 	     -DJSROOT=${CMAKE_CURRENT_SOURCE_DIR}
              -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
              "${EXTRA_ARGS}"

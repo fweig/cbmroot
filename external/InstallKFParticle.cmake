@@ -48,7 +48,7 @@ ExternalProject_Add(KFPARTICLE
              -DVc_INCLUDE_DIR=${Vc_INCLUDE_DIR}
              -DVc_LIBRARIES=${Vc_LIBRARY}
              -DFIXTARGET=TRUE
-             -DROOTSYS=${SIMPATH}
+             -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
              -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
   INSTALL_COMMAND  ${CMAKE_COMMAND} --build . --target install
 )

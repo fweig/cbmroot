@@ -75,7 +75,6 @@ unset(packages)
 find_package(ROOT 6.22 CONFIG REQUIRED)
 if(ROOT_FOUND)
   list(APPEND packages ROOT)
-  # The following CMake variables are needed until the modernization is done
 endif()
 
 find_package(FairCMakeModules REQUIRED)
