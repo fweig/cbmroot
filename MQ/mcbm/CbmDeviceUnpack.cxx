@@ -11,7 +11,6 @@
 
 #include "CbmDeviceUnpack.h"
 
-#include "CbmBmonUnpackConfig.h"
 #include "CbmFlesCanvasTools.h"
 #include "CbmMQDefs.h"
 #include "CbmMuchUnpackConfig.h"
@@ -22,6 +21,7 @@
 #include "CbmTofUnpackConfig.h"
 #include "CbmTrdUnpackConfig.h"
 #include "CbmTrdUnpackFaspConfig.h"
+#include "CbmTzdUnpackConfig.h"
 
 #include "StorableTimeslice.hpp"
 #include "TimesliceMetaData.h"
@@ -128,25 +128,25 @@ Bool_t CbmDeviceUnpack::InitContainers()
 
   /// Initialize the UnpackerConfigs objects and their "user options"
   // ---- BMON ----
-  std::shared_ptr<CbmBmonUnpackConfig> bmonconfig = nullptr;
+  std::shared_ptr<CbmTzdUnpackConfig> tzdconfig = nullptr;
   if (fbUnpBmon) {
-    bmonconfig = std::make_shared<CbmBmonUnpackConfig>("", fuRunId);
-    if (bmonconfig) {
-      // bmonconfig->SetDebugState();
-      bmonconfig->SetDoWriteOutput();
-      // bmonconfig->SetDoWriteOptOutA("CbmBmonErrors");
-      std::string parfilesbasepathBmon = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
-      bmonconfig->SetParFilesBasePath(parfilesbasepathBmon);
-      bmonconfig->SetParFileName("mBmonCriPar.par");
-      bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+    tzdconfig = std::make_shared<CbmTzdUnpackConfig>("", fuRunId);
+    if (tzdconfig) {
+      // tzdconfig->SetDebugState();
+      tzdconfig->SetDoWriteOutput();
+      // tzdconfig->SetDoWriteOptOutA("CbmTzdErrors");
+      std::string parfilesbasepathTzd = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
+      tzdconfig->SetParFilesBasePath(parfilesbasepathTzd);
+      tzdconfig->SetParFileName("mBmonCriPar.par");
+      tzdconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
       if (2160 <= fuRunId) {
-        bmonconfig->SetSystemTimeOffset(-80);  // [ns] value to be updated
+        tzdconfig->SetSystemTimeOffset(-80);  // [ns] value to be updated
       }
       if (2350 <= fuRunId) {
-        bmonconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+        tzdconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
       }
       /// Enable Monitor plots
-      // bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));  // FIXME: Unsupported for now
+      // tzdconfig->SetMonitor(GetTofMonitor(outfilename, true));  // FIXME: Unsupported for now
     }
   }
   // -------------
@@ -471,7 +471,7 @@ Bool_t CbmDeviceUnpack::InitContainers()
   if (trd1Dconfig) SetUnpackConfig(trd1Dconfig);
   if (trdfasp2dconfig) SetUnpackConfig(trdfasp2dconfig);
   if (tofconfig) SetUnpackConfig(tofconfig);
-  if (bmonconfig) SetUnpackConfig(bmonconfig);
+  if (tzdconfig) SetUnpackConfig(tzdconfig);
   if (richconfig) SetUnpackConfig(richconfig);
   if (psdconfig) SetUnpackConfig(psdconfig);
 
@@ -491,8 +491,8 @@ Bool_t CbmDeviceUnpack::InitContainers()
     charPosDel++;
     int32_t iOffset = std::stoi((*itStrOffs).substr(charPosDel));
 
-    if ("kT0" == sSelDet && fBmonConfig) {  //
-      fBmonConfig->SetSystemTimeOffset(iOffset);
+    if ("kT0" == sSelDet && fTzdConfig) {  //
+      fTzdConfig->SetSystemTimeOffset(iOffset);
     }                                            // else if( "kT0" == sSelDet )
     else if ("kSTS" == sSelDet && fStsConfig) {  //
       fStsConfig->SetSystemTimeOffset(iOffset);
@@ -585,15 +585,15 @@ Bool_t CbmDeviceUnpack::InitContainers()
     fTofConfig->InitAlgo();
     //    initPerformanceMaps(fkFlesTof, "TOF");
   }
-  // --- Bmon
-  if (fBmonConfig) {
-    fBmonConfig->InitOutput();
-    //    RegisterOutputs(ioman, fBmonConfig);  /// Framework bound work = kept in this Task
-    fBmonConfig->SetAlgo();
-    fBmonConfig->LoadParFileName();  /// Needed to change the Parameter file name before it is used!!!
-    initOK &= InitParameters(fBmonConfig->GetParContainerRequest());  /// Framework bound work = kept in this Device
-    fBmonConfig->InitAlgo();
-    // initPerformanceMaps(fkFlesBmon, "Bmon");
+  // --- Tzd
+  if (fTzdConfig) {
+    fTzdConfig->InitOutput();
+    //    RegisterOutputs(ioman, fTzdConfig);  /// Framework bound work = kept in this Task
+    fTzdConfig->SetAlgo();
+    fTzdConfig->LoadParFileName();  /// Needed to change the Parameter file name before it is used!!!
+    initOK &= InitParameters(fTzdConfig->GetParContainerRequest());  /// Framework bound work = kept in this Device
+    fTzdConfig->InitAlgo();
+    // initPerformanceMaps(fkFlesTzd, "Tzd");
   }
   // --- Rich
   if (fRichConfig) {
@@ -801,8 +801,8 @@ bool CbmDeviceUnpack::ConditionalRun()
   fCbmTsEventHeader->Reset();
 
   // Reset the unpackers for a new timeslice, e.g. clear the output vectors
-  // ---- Bmon ----
-  if (fBmonConfig) fBmonConfig->Reset();
+  // ---- Tzd ----
+  if (fTzdConfig) fTzdConfig->Reset();
   // ---- Sts ----
   if (fStsConfig) fStsConfig->Reset();
   // ----Much ----
@@ -850,21 +850,21 @@ bool CbmDeviceUnpack::SendUnpData()
   parts.AddPart(std::move(messTsHeader));
 
   // ---- T0 ----
-  std::stringstream ossBmon;
-  boost::archive::binary_oarchive oaBmon(ossBmon);
-  if (fBmonConfig) {  //
-    oaBmon << *(fBmonConfig->GetOutputVec());
+  std::stringstream ossTzd;
+  boost::archive::binary_oarchive oaTzd(ossTzd);
+  if (fTzdConfig) {  //
+    oaTzd << *(fTzdConfig->GetOutputVec());
   }
   else {
-    oaBmon << (std::vector<CbmTofDigi>());
+    oaTzd << (std::vector<CbmTzdDigi>());
   }
-  std::string* strMsgBmon = new std::string(ossBmon.str());
+  std::string* strMsgTzd = new std::string(ossTzd.str());
 
   parts.AddPart(NewMessage(
-    const_cast<char*>(strMsgBmon->c_str()),  // data
-    strMsgBmon->length(),                    // size
+    const_cast<char*>(strMsgTzd->c_str()),  // data
+    strMsgTzd->length(),                    // size
     [](void*, void* object) { delete static_cast<std::string*>(object); },
-    strMsgBmon));  // object that manages the data
+    strMsgTzd));  // object that manages the data
 
   // ---- Sts ----
   std::stringstream ossSts;
@@ -1068,7 +1068,7 @@ bool CbmDeviceUnpack::SendHistograms()
 
 CbmDeviceUnpack::~CbmDeviceUnpack()
 {
-  if (fBmonConfig) fBmonConfig->GetUnpacker()->Finish();
+  if (fTzdConfig) fTzdConfig->GetUnpacker()->Finish();
   if (fStsConfig) fStsConfig->GetUnpacker()->Finish();
   if (fMuchConfig) fMuchConfig->GetUnpacker()->Finish();
   if (fTrd1DConfig) fTrd1DConfig->GetUnpacker()->Finish();
@@ -1095,10 +1095,10 @@ Bool_t CbmDeviceUnpack::DoUnpack(const fles::Timeslice& ts, size_t /*component*/
     auto systemId = static_cast<std::uint16_t>(ts.descriptor(component, 0).sys_id);
 
     switch (systemId) {
-      case fkFlesBmon: {
-        if (fBmonConfig) {
+      case fkFlesTzd: {
+        if (fTzdConfig) {
           fCbmTsEventHeader->AddNDigisBmon(
-            unpack(systemId, &ts, component, fBmonConfig, fBmonConfig->GetOptOutAVec(), fBmonConfig->GetOptOutBVec()));
+            unpack(systemId, &ts, component, fTzdConfig, fTzdConfig->GetOptOutAVec(), fTzdConfig->GetOptOutBVec()));
         }
         break;
       }
@@ -1160,7 +1160,7 @@ Bool_t CbmDeviceUnpack::DoUnpack(const fles::Timeslice& ts, size_t /*component*/
 
   if (fbOutputFullTimeSorting) {
     /// Time sort the output vectors of all unpackers present
-    if (fBmonConfig && fBmonConfig->GetOutputVec()) { timesort(fBmonConfig->GetOutputVec()); }
+    if (fTzdConfig && fTzdConfig->GetOutputVec()) { timesort(fTzdConfig->GetOutputVec()); }
     if (fStsConfig && fStsConfig->GetOutputVec()) { timesort(fStsConfig->GetOutputVec()); }
     if (fMuchConfig && fMuchConfig->GetOutputVec()) { timesort(fMuchConfig->GetOutputVec()); }
     if (fTrd1DConfig && fTrd1DConfig->GetOutputVec()) { timesort(fTrd1DConfig->GetOutputVec()); }
@@ -1170,7 +1170,7 @@ Bool_t CbmDeviceUnpack::DoUnpack(const fles::Timeslice& ts, size_t /*component*/
     if (fPsdConfig && fPsdConfig->GetOutputVec()) { timesort(fPsdConfig->GetOutputVec()); }
 
     /// Time sort the output vectors of all unpackers present
-    if (fBmonConfig && fBmonConfig->GetOptOutAVec()) { timesort(fBmonConfig->GetOptOutAVec()); }
+    if (fTzdConfig && fTzdConfig->GetOptOutAVec()) { timesort(fTzdConfig->GetOptOutAVec()); }
     if (fStsConfig && fStsConfig->GetOptOutAVec()) { timesort(fStsConfig->GetOptOutAVec()); }
     if (fMuchConfig && fMuchConfig->GetOptOutAVec()) { timesort(fMuchConfig->GetOptOutAVec()); }
     if (fTrd1DConfig && fTrd1DConfig->GetOptOutAVec()) { timesort(fTrd1DConfig->GetOptOutAVec()); }

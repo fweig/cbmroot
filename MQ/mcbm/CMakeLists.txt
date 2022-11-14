@@ -39,6 +39,7 @@ set(PRIVATE_DEPS
   CbmSimSteer
   CbmTofReco
   CbmTrdReco
+  CbmTzdReco
   CbmEventBuilder
   FairMQ::Tools
   FairRoot::Base

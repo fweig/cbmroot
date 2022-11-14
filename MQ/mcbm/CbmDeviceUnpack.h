@@ -28,7 +28,7 @@
 #include <vector>
 
 class TList;
-class CbmBmonUnpackConfig;
+class CbmTzdUnpackConfig;
 class CbmStsUnpackConfig;
 class CbmMuchUnpackConfig;
 class CbmTrdUnpackFaspConfig;
@@ -51,8 +51,8 @@ protected:
   bool ConditionalRun();
   bool HandleCommand(FairMQMessagePtr&, int);
 
-  /** @brief Set the Bmon Unpack Config @param config */
-  void SetUnpackConfig(std::shared_ptr<CbmBmonUnpackConfig> config) { fBmonConfig = config; }
+  /** @brief Set the Tzd Unpack Config @param config */
+  void SetUnpackConfig(std::shared_ptr<CbmTzdUnpackConfig> config) { fTzdConfig = config; }
 
   /** @brief Set the Sts Unpack Config @param config */
   void SetUnpackConfig(std::shared_ptr<CbmStsUnpackConfig> config) { fStsConfig = config; }
@@ -77,7 +77,7 @@ protected:
 
 private:
   /// Constants
-  static constexpr std::uint16_t fkFlesBmon  = static_cast<std::uint16_t>(fles::SubsystemIdentifier::T0);
+  static constexpr std::uint16_t fkFlesTzd   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::T0);
   static constexpr std::uint16_t fkFlesMvd   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::MVD);
   static constexpr std::uint16_t fkFlesSts   = static_cast<std::uint16_t>(fles::SubsystemIdentifier::STS);
   static constexpr std::uint16_t fkFlesMuch  = static_cast<std::uint16_t>(fles::SubsystemIdentifier::MUCH);
@@ -137,7 +137,7 @@ private:
   std::map<std::uint16_t, std::pair<double, double>> fDataSizeMap = {};  //!
 
   /// Configuration of the unpackers. Provides the configured algorithm
-  std::shared_ptr<CbmBmonUnpackConfig> fBmonConfig     = nullptr;
+  std::shared_ptr<CbmTzdUnpackConfig> fTzdConfig       = nullptr;
   std::shared_ptr<CbmStsUnpackConfig> fStsConfig       = nullptr;
   std::shared_ptr<CbmMuchUnpackConfig> fMuchConfig     = nullptr;
   std::shared_ptr<CbmTrdUnpackFaspConfig> fTrd2DConfig = nullptr;
