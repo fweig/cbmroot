@@ -100,6 +100,7 @@
 // --- data/global
 #pragma link C++ class CbmGlobalTrack + ;
 #pragma link C++ class CbmTzdDigi + ;
+#pragma link C++ class CbmTzdDigiData + ;
 #pragma link C++ class CbmVertex + ;
 #pragma link C++ class std::vector < CbmDigiEvent>;
 

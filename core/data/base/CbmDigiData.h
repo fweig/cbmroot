@@ -12,6 +12,7 @@
 #include "CbmStsDigiData.h"
 #include "CbmTofDigiData.h"
 #include "CbmTrdDigiData.h"
+#include "CbmTzdDigiData.h"
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -30,7 +31,7 @@
 class CbmDigiData {
 
 public:
-  CbmTofDigiData fT0;     ///< Beam monitor data
+  CbmTzdDigiData fT0;     ///< Beam monitor data
   CbmStsDigiData fSts;    ///< STS data
   CbmMuchDigiData fMuch;  ///< MUCH data
   CbmRichDigiData fRich;  ///< RICH data
@@ -43,6 +44,7 @@ public:
   template<class Archive>
   void serialize(Archive& ar, const unsigned int /*version*/)
   {
+    // note, version is always the latest when saving
     ar& fT0;
     ar& fSts;
     ar& fMuch;
@@ -54,7 +56,7 @@ public:
 
   // --- ROOT serializer
 #ifndef NO_ROOT
-  ClassDefNV(CbmDigiData, 2);
+  ClassDefNV(CbmDigiData, 3);
 #endif
 
   /** @brief Clear content **/
@@ -70,5 +72,5 @@ public:
   }
 };
 
-
+BOOST_CLASS_VERSION(CbmDigiData, 3)
 #endif /* CBMDIGIDATA_H */
