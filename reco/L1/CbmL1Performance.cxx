@@ -286,8 +286,8 @@ void CbmL1::EfficienciesPerformance()
 
 
   TL1PerfEfficiencies ntra;     // efficiencies for current event
-  ntra.fOutDir    = fHistoDir;  // Setup a pointer for output directory
-  L1_NTRA.fOutDir = fHistoDir;  // Save average efficiencies
+  ntra.fOutDir    = fTableDir;  // Setup a pointer for output directory
+  L1_NTRA.fOutDir = fTableDir;  // Save average efficiencies
 
   for (vector<CbmL1Track>::iterator rtraIt = fvRecoTracks.begin(); rtraIt != fvRecoTracks.end(); ++rtraIt) {
     ntra.ghosts += rtraIt->IsGhost();

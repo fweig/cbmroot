@@ -191,6 +191,7 @@ InitStatus CbmL1::Init()
   fHistoDir->mkdir("Input");
   fHistoDir->mkdir("Fit");
 
+  fTableDir = gROOT->mkdir("L1Tables");
 
   // turn on reconstruction in sub-detectors
 
@@ -1208,14 +1209,24 @@ void CbmL1::Finish()
   boost::filesystem::path p = (FairRunAna::Instance()->GetUserOutputFileName()).Data();
   std::string dir           = p.parent_path().string();
   if (dir.empty()) dir = ".";
-  std::string histoOutName = dir + "/L1_histo_" + p.filename().string();
-  LOG(info) << "\033[31;1mHistograms will be saved to: \033[0m" << histoOutName;
-
-  TFile* outfile = new TFile(histoOutName.c_str(), "RECREATE");
-  outfile->cd();
-  writedir2current(fHistoDir);
-  outfile->Close();
-  outfile->Delete();
+  {
+    std::string histoOutName = dir + "/L1_histo_" + p.filename().string();
+    LOG(info) << "\033[31;1mL1 performance histograms will be saved to: \033[0m" << histoOutName;
+    TFile* outfile = new TFile(histoOutName.c_str(), "RECREATE");
+    outfile->cd();
+    writedir2current(fHistoDir);
+    outfile->Close();
+    outfile->Delete();
+  }
+  {
+    std::string tablesOutName = dir + "/L1_perftable_" + p.filename().string();
+    LOG(info) << "\033[31;1mL1 performance tables will be saved to: \033[0m" << tablesOutName;
+    TFile* outfile = new TFile(tablesOutName.c_str(), "RECREATE");
+    outfile->cd();
+    writedir2current(fTableDir);
+    outfile->Close();
+    outfile->Delete();
+  }
 
   gFile      = currentFile;
   gDirectory = curr;

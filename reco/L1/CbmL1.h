@@ -628,6 +628,7 @@ private:
   // TODO: move to a separate class (S.Zharko)
   TFile* fPerfFile {nullptr};
   TDirectory* fHistoDir {nullptr};
+  TDirectory* fTableDir {nullptr};
 
   static const int fNTimeHistos = 22;
   TH1F* fTimeHisto[fNTimeHistos] {nullptr};
