@@ -15,13 +15,13 @@
 #include "TEllipse.h"
 #include "TF1.h"
 #include "TFile.h"
+#include "TGraph.h"
 #include "TH1.h"
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TKey.h"
-#include "TLine.h"
-#include "TGraph.h"
 #include "TLatex.h"
+#include "TLine.h"
 #include "TMath.h"
 #include "TStyle.h"
 #include "TSystem.h"
@@ -78,7 +78,7 @@ void LmvmDrawAll::DrawHistFromFile(const string& fileInmed, const string& fileQg
   DrawMinvPtAll();
   DrawMinvBgSourcesAll();
   DrawSBgVsMinv();
-  InvestigateMisid(); // TODO: move some procedures in here into seperate methods?
+  InvestigateMisid();  // TODO: move some procedures in here into seperate methods?
   DrawBetaMomSpectra();
   DrawMomRecoPrecision();
   DrawMomPluto();
@@ -135,17 +135,16 @@ void LmvmDrawAll::CreateMeanHistAll()
     CreateMeanHist<TH2D>("hIndexStsTof_" + ptcl, nofEvents);*/
     CreateMeanHist<TH2D>("hRichRingTrackDist_gTracks_" + ptcl, nofEvents);
     CreateMeanHist<TH2D>("hMatchId_gTracks_" + ptcl, nofEvents);
-    CreateMeanHist<TH2D>("hTofM2Calc_gTracks_" + ptcl, nofEvents);    
+    CreateMeanHist<TH2D>("hTofM2Calc_gTracks_" + ptcl, nofEvents);
 
     for (const string& cat : {"trueid", "misid", "truematch", "mismatch"}) {
       CreateMeanHist<TH2D>("hTofHitXY_" + cat + "_" + ptcl, nofEvents);
-      CreateMeanHist<TH2D>("hTofPointXY_" + cat + "_"  + ptcl, nofEvents);
-      CreateMeanHist<TH1D>("hTofHitPointDist_" + cat + "_"  + ptcl, nofEvents);
+      CreateMeanHist<TH2D>("hTofPointXY_" + cat + "_" + ptcl, nofEvents);
+      CreateMeanHist<TH1D>("hTofHitPointDist_" + cat + "_" + ptcl, nofEvents);
       CreateMeanHist<TH2D>("hTofTimeVsMom_gTracks_" + cat + "_" + ptcl, nofEvents);
       CreateMeanHist<TH2D>("hTofHitTrackDist_gTracks_" + cat + "_" + ptcl, nofEvents);
-      
     }
-    
+
     for (const string& cat : {"all", "complete"}) {
       CreateMeanHist<TH1D>("hNofMismatches_gTracks_" + cat + "_" + ptcl, nofEvents);
       CreateMeanHist<TH1D>("hNofMismatchedTrackSegments_" + cat + "_" + ptcl, nofEvents);
@@ -155,7 +154,7 @@ void LmvmDrawAll::CreateMeanHistAll()
         }
       }
     }
-  } // fGTrackNames
+  }  // fGTrackNames
 
   // Candidate Loop
   for (const string& ptcl : fHMean.fCandNames) {
@@ -173,7 +172,7 @@ void LmvmDrawAll::CreateMeanHistAll()
       CreateMeanHist<TH2D>(fHMean.GetName("hPtY_cands_" + ptcl, step), nofEvents);
       CreateMeanHist<TH2D>(fHMean.GetName("hTofM2_cands_" + ptcl, step), nofEvents);
       CreateMeanHist<TH2D>(fHMean.GetName("hRichRingTrackDist_cands_" + ptcl, step), nofEvents);
-    } // steps
+    }  // steps
 
     for (const string& cat : {"gTracks", "cands"}) {
       CreateMeanHist<TH1D>("hBetaMom_" + cat + "_" + ptcl, nofEvents);
@@ -182,15 +181,15 @@ void LmvmDrawAll::CreateMeanHistAll()
 
     for (const string det : {"sts", "rich", "trd", "tof"}) {
       CreateMeanHist<TH2D>("hChi2VsMom_" + det + "_" + ptcl, nofEvents);
-      CreateMeanHist<TH2D>("hTofTimeVsChi2_" + det + "_" + ptcl, nofEvents);      
+      CreateMeanHist<TH2D>("hTofTimeVsChi2_" + det + "_" + ptcl, nofEvents);
     }
-  
+
     for (const string det : {"StsRich", "StsTrd", "RichTrd"}) {
-      CreateMeanHist<TH2D>("hChi2Comb_" + det + "_" + ptcl, nofEvents);    
+      CreateMeanHist<TH2D>("hChi2Comb_" + det + "_" + ptcl, nofEvents);
     }
 
 
-  } // fCandNames
+  }  // fCandNames
 
   // Step Loop
   for (auto step : fHMean.fAnaSteps) {
@@ -217,16 +216,16 @@ void LmvmDrawAll::CreateMeanHistAll()
     CreateMeanHist<TH1D>(fHMean.GetName("hVertexYZ_misidTof", step), nofEvents);
     CreateMeanHist<TH1D>(fHMean.GetName("hVertexXY_misidTof", step), nofEvents);
     CreateMeanHist<TH1D>(fHMean.GetName("hVertexRZ_misidTof", step), nofEvents);
-  } // steps  
+  }  // steps
 
   string hBgSrc = "hMinvBgSource2_elid_";
   for (const string& pair : {"gg", "pipi", "pi0pi0", "oo", "gpi", "gpi0", "go", "pipi0", "pio", "pi0o"}) {
     string hPairFull = hBgSrc + pair;
     CreateMeanHist<TH1D>(hPairFull, nofEvents, fRebMinv);
   }
-  
+
   for (const string& cat : {"true", "misid"}) {
-    for (size_t iP = 4; iP < fHMean.fCandNames.size(); iP++ ) {
+    for (size_t iP = 4; iP < fHMean.fCandNames.size(); iP++) {
       CreateMeanHist<TH1D>("hMom_" + fHMean.fCandNames[iP] + "_" + cat, nofEvents);
       CreateMeanHist<TH1D>("hPtY_" + fHMean.fCandNames[iP] + "_" + cat, nofEvents);
       CreateMeanHist<TH1D>("hTofM2_" + fHMean.fCandNames[iP] + "_" + cat, nofEvents);
@@ -249,7 +248,10 @@ void LmvmDrawAll::CreateMeanHistAll()
   CreateMeanHist<TH2D>("hVertexGTrackRZ", nofEvents);
 }
 
-TH1D* LmvmDrawAll::GetCocktailMinvH1(const string& name, ELmvmAnaStep step) { return GetCocktailMinv<TH1D>(name, step); }
+TH1D* LmvmDrawAll::GetCocktailMinvH1(const string& name, ELmvmAnaStep step)
+{
+  return GetCocktailMinv<TH1D>(name, step);
+}
 
 template<class T>
 T* LmvmDrawAll::GetCocktailMinv(const string& name, ELmvmAnaStep step)
@@ -270,7 +272,8 @@ T* LmvmDrawAll::GetCocktailMinv(const string& name, ELmvmAnaStep step)
       sHist->Scale(1. / binWidth);
     }
     if (cocktail == nullptr) cocktail = sHist;
-    else cocktail->Add(sHist);
+    else
+      cocktail->Add(sHist);
   }
   cocktail->Add(sEta);
   cocktail->Add(sPi0);
@@ -284,8 +287,8 @@ void LmvmDrawAll::DrawMinvScaleValues()
   TH1D* qgp   = new TH1D("qgp", "qgp; M_{ee} [GeV/c^{2}]; Scale Value", 3400., 0., 3.4);
   for (int iB = 1; iB <= 3400; iB++) {
     double binCenter = inmed->GetBinCenter(iB);
-    double sInmed = LmvmUtils::GetMassScaleInmed(binCenter);
-    double sQgp   = LmvmUtils::GetMassScaleQgp(binCenter);
+    double sInmed    = LmvmUtils::GetMassScaleInmed(binCenter);
+    double sQgp      = LmvmUtils::GetMassScaleQgp(binCenter);
     inmed->SetBinContent(iB, sInmed);
     qgp->SetBinContent(iB, sQgp);
   }
@@ -298,19 +301,19 @@ void LmvmDrawAll::DrawMinvScaleValues()
   qgp2->GetXaxis()->SetRangeUser(1., 1.1);
   inmed2->GetYaxis()->SetRangeUser(3e-3, 5e-1);
   qgp2->GetYaxis()->SetRangeUser(3e-3, 5e-1);
-  
-  fHMean.fHM.CreateCanvas("MinvScaleValues2", "MinvScaleValues2", 2400, 800);
-  DrawH1({inmed2, qgp2}, {"inmed", "QGP"}, kLinear, kLog, true,  0.7, 0.7, 0.9, 0.9, "p");
 
+  fHMean.fHM.CreateCanvas("MinvScaleValues2", "MinvScaleValues2", 2400, 800);
+  DrawH1({inmed2, qgp2}, {"inmed", "QGP"}, kLinear, kLog, true, 0.7, 0.7, 0.9, 0.9, "p");
 }
 
-void LmvmDrawAll::DrawSignificance(TH2D* hEl, TH2D* hBg, const string& name, double minZ, double maxZ, const string& option)
+void LmvmDrawAll::DrawSignificance(TH2D* hEl, TH2D* hBg, const string& name, double minZ, double maxZ,
+                                   const string& option)
 {
   string hElProjName = name + "_yProjEl";
   string hBgProjName = name + "_yProjBg";
-  TH1D* el = hEl->ProjectionY(hElProjName.c_str(), 1, hEl->GetXaxis()->GetNbins(), "");
-  TH1D* bg = hBg->ProjectionY(hBgProjName.c_str(), 1, hBg->GetXaxis()->GetNbins(), "");
-  TH2D* rat = (TH2D*) hEl->Clone();
+  TH1D* el           = hEl->ProjectionY(hElProjName.c_str(), 1, hEl->GetXaxis()->GetNbins(), "");
+  TH1D* bg           = hBg->ProjectionY(hBgProjName.c_str(), 1, hBg->GetXaxis()->GetNbins(), "");
+  TH2D* rat          = (TH2D*) hEl->Clone();
   rat->Divide(hBg);
 
   const string hName = name + "_sign";
@@ -348,10 +351,11 @@ void LmvmDrawAll::DrawSignificance(TH2D* hEl, TH2D* hBg, const string& name, dou
     }
   }
   DrawTextOnPad("max. at: " + Cbm::NumberToString(maxX, 1), 0.55, 0.2, 0.85, 0.5);
-  DrawTextOnPad("Significance", 0.25, 0.9, 0.75, 0.99);  
+  DrawTextOnPad("Significance", 0.25, 0.9, 0.75, 0.99);
 }
 
-void LmvmDrawAll::DrawSignificancesAll()  // TODO: implement automatization to seperate electrons from not-electrons in gTracks and cands
+void LmvmDrawAll::
+  DrawSignificancesAll()  // TODO: implement automatization to seperate electrons from not-electrons in gTracks and cands
 {
   // RICH ANN and Electron Likelihood
   {
@@ -368,7 +372,7 @@ void LmvmDrawAll::DrawSignificancesAll()  // TODO: implement automatization to s
     el->Add(fHMean.H2("hChi2VsMom_trd_plutoEl-"));
 
     TH2D* bg = fHMean.H2Clone("hChi2VsMom_trd_pion+");
-    for (size_t iP = 2; iP < fHMean.fCandNames.size(); iP++) { // consider UrQMD-electrons as "BG"
+    for (size_t iP = 2; iP < fHMean.fCandNames.size(); iP++) {  // consider UrQMD-electrons as "BG"
       string ptcl   = fHMean.fCandNames[iP];
       string hName1 = "hChi2VsMom_trd_" + ptcl;
       bg->Add(fHMean.H2(hName1.c_str()));
@@ -385,10 +389,12 @@ void LmvmDrawAll::DrawSignificancesAll()  // TODO: implement automatization to s
     for (size_t iP = 1; iP < fHMean.fCandNames.size(); iP++) {
       string hName = "hTofTimeVsMom_cands_" + fHMean.fCandNames[iP];
       if (iP <= 3) el->Add(fHMean.H2(hName.c_str()));
-      else if (iP == 4) continue;
-      else bg->Add(fHMean.H2(hName.c_str()));
+      else if (iP == 4)
+        continue;
+      else
+        bg->Add(fHMean.H2(hName.c_str()));
     }
-  
+
     DrawSignificance(el, bg, "hTofTimeVsMom", 1e-9, 1e-2, "right");
   }
 
@@ -399,11 +405,13 @@ void LmvmDrawAll::DrawSignificancesAll()  // TODO: implement automatization to s
 
     for (size_t iP = 1; iP < fHMean.fCandNames.size(); iP++) {
       string hName = "hTofHitTrackDist_cands_" + fHMean.fCandNames[iP];
-      if (iP <= 1) el->Add(fHMean.H2(hName.c_str())); // consider UrQMD-electrons as "BG"
-      else if (iP == 4) continue;
-      else bg->Add(fHMean.H2(hName.c_str()));
+      if (iP <= 1) el->Add(fHMean.H2(hName.c_str()));  // consider UrQMD-electrons as "BG"
+      else if (iP == 4)
+        continue;
+      else
+        bg->Add(fHMean.H2(hName.c_str()));
     }
-  
+
     DrawSignificance(el, bg, "hTofHitTrackDist", 1e-9, 1e-2, "right");
   }
 }
@@ -430,8 +438,8 @@ void LmvmDrawAll::DrawTofHitXY()
   //double min = 1e-7;
   //double max = 2e-3;
   double minD = 1e-7;
-  double maxD = 2e-2;  
-  
+  double maxD = 2e-2;
+
   /*TCanvas* c = fHMean.fHM.CreateCanvas("ToF/point-hit-dist_gTracks", "ToF/point-hit-dist_gTracks", 2400, 2400); // TODO: do these as loop for pile and not-pile histograms
   c->Divide(4, 4);
   int i = 1;
@@ -475,28 +483,30 @@ void LmvmDrawAll::DrawTofHitXY()
   // draw only for particles in ToF pile that are identified as electrons in ToF
   double minH = 2e-6;
   double maxH = 1e-4;
-  
-  TCanvas* c3 = fHMean.fHM.CreateCanvas("ToF/HitXY/MisidsInTofPile/point-hit-dist_all", "ToF/HitXY/MisidsInTofPile/point-hit-dist_all", 2400, 1600);
+
+  TCanvas* c3 = fHMean.fHM.CreateCanvas("ToF/HitXY/MisidsInTofPile/point-hit-dist_all",
+                                        "ToF/HitXY/MisidsInTofPile/point-hit-dist_all", 2400, 1600);
   c3->Divide(3, 2);
   int iC = 1;
-  for (size_t iP = 4; iP < fHMean.fCandNames.size(); iP++ ) {  // only draw for not-electrons
+  for (size_t iP = 4; iP < fHMean.fCandNames.size(); iP++) {  // only draw for not-electrons
     c3->cd(iC++);
-    string ptcl = fHMean.fCandNames[iP];
+    string ptcl  = fHMean.fCandNames[iP];
     string hName = "hTofPileHitPointDist_" + ptcl;
-    TH1D* h = fHMean.H1Clone(hName.c_str());
+    TH1D* h      = fHMean.H1Clone(hName.c_str());
     h->GetYaxis()->SetRangeUser(minD, maxD);
     h->Fit("gaus", "Q", "", 0., 2.);
     DrawH1(h, kLinear, kLog, "hist");
     DrawTextOnPad(fHMean.fCandLatex[iP], 0.4, 0.9, 0.54, 0.99);
-    TF1* func = h->GetFunction("gaus");
+    TF1* func   = h->GetFunction("gaus");
     double mean = (func != nullptr) ? func->GetParameter("Mean") : 0.;
     DrawTextOnPad("mean: " + Cbm::NumberToString(mean, 2), 0.2, 0.65, 0.6, 0.89);
   }
 
-  for (size_t iP = 4; iP < fHMean.fCandNames.size(); iP++ ) {  // only draw for not-electrons
+  for (size_t iP = 4; iP < fHMean.fCandNames.size(); iP++) {  // only draw for not-electrons
     string ptcl = fHMean.fCandNames[iP];
-    TCanvas* c4 = fHMean.fHM.CreateCanvas("ToF/HitXY/MisidsInTofPile/" + ptcl, "ToF/HitXY/MisidsInTofPile/" + ptcl, 2400, 800);
-    c4->Divide(3,1);
+    TCanvas* c4 =
+      fHMean.fHM.CreateCanvas("ToF/HitXY/MisidsInTofPile/" + ptcl, "ToF/HitXY/MisidsInTofPile/" + ptcl, 2400, 800);
+    c4->Divide(3, 1);
     c4->cd(1);
     TH2D* hit = fHMean.H2Clone("hTofPileHitXY_" + ptcl);
     hit->GetZaxis()->SetRangeUser(minH, maxH);
@@ -513,7 +523,7 @@ void LmvmDrawAll::DrawTofHitXY()
     dist->GetYaxis()->SetRangeUser(minD, maxD);
     DrawH1(dist, kLinear, kLog, "hist");
     DrawTextOnPad("Distance Hit-Point", 0.3, 0.9, 0.7, 0.99);
-    TF1* func = dist->GetFunction("gaus");
+    TF1* func   = dist->GetFunction("gaus");
     double mean = (func != nullptr) ? func->GetParameter("Mean") : 0.;
     DrawTextOnPad("mean: " + Cbm::NumberToString(mean, 1), 0.2, 0.65, 0.5, 0.89);
   }
@@ -524,8 +534,8 @@ void LmvmDrawAll::DrawBetaMomSpectra()
   double min = 1e-5;
   double max = 10;
   for (const string& cat : {"gTracks", "cands"}) {
-    for (size_t i = 0; i < fHMean.fCandNames.size(); i++ ) {
-      string cName = "BetaMom/" + cat + "/"  + fHMean.fCandNames[i];
+    for (size_t i = 0; i < fHMean.fCandNames.size(); i++) {
+      string cName = "BetaMom/" + cat + "/" + fHMean.fCandNames[i];
       string hName = "hBetaMom_" + cat + "_" + fHMean.fCandNames[i];
       fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 800, 800);
       TH2D* h = fHMean.H2Clone(hName.c_str());
@@ -544,15 +554,15 @@ void LmvmDrawAll::DrawMomPluto()
 {
   for (const string& pi : {"Px", "Py", "Pz"}) {
     string cName = "MomDistPluto/" + pi;
-    TCanvas* c = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 2400, 1600);
-    c->Divide(3,2);
+    TCanvas* c   = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 2400, 1600);
+    c->Divide(3, 2);
     int i = 1;
     for (ELmvmSignal signal : fHMean.fSignals) {
       c->cd(i++);
       string hName = "hMom" + pi;
-      TH1D* ep = H(signal)->H1Clone((hName + "+_signal_mc").c_str());
-      TH1D* em = H(signal)->H1Clone((hName + "-_signal_mc").c_str());
-      double bW = ep->GetBinWidth(1);
+      TH1D* ep     = H(signal)->H1Clone((hName + "+_signal_mc").c_str());
+      TH1D* em     = H(signal)->H1Clone((hName + "-_signal_mc").c_str());
+      double bW    = ep->GetBinWidth(1);
       ep->Scale(1. / (H(signal)->H1("hEventNumber")->GetEntries() * bW));
       em->Scale(1. / (H(signal)->H1("hEventNumber")->GetEntries() * bW));
       ep->GetYaxis()->SetTitle("1/N dN/dP [GeV/c]^{-1}");
@@ -574,14 +584,15 @@ void LmvmDrawAll::DrawMomentum()
     TCanvas* c = fHMean.fHM.CreateCanvas("hMom/misid_vs_True", "hMom/misid_vs_True", 2400, 1600);
     c->Divide(3, 2);
     int iC = 1;
-    for (size_t iP = 4; iP < fHMean.fCandNames.size(); iP++ ) {  // only draw for not-electrons
+    for (size_t iP = 4; iP < fHMean.fCandNames.size(); iP++) {  // only draw for not-electrons
       c->cd(iC++);
       string ptcl = fHMean.fCandNames[iP];
       TH1D* hMis  = fHMean.H1Clone("hMom_" + ptcl + "_misid");
       TH1D* hTrue = fHMean.H1Clone("hMom_" + ptcl + "_true");
       hMis->GetYaxis()->SetRangeUser(min, max);
       hTrue->GetYaxis()->SetRangeUser(min, max);
-      DrawH1({hTrue, hMis}, {"not misidentified", "misidentified as electron"}, kLinear, kLog, true, 0.55, 0.8, 0.95, 0.91 ,"hist");
+      DrawH1({hTrue, hMis}, {"not misidentified", "misidentified as electron"}, kLinear, kLog, true, 0.55, 0.8, 0.95,
+             0.91, "hist");
       DrawTextOnPad(fHMean.fCandLatex[iP], 0.4, 0.9, 0.54, 0.99);
     }
   }
@@ -610,7 +621,8 @@ void LmvmDrawAll::DrawCutEffSignal()
 
   fHMean.fHM.CreateCanvas("CutEff_signal", "CutEff_signal", 900, 900);
   elid->GetYaxis()->SetTitle("Efficiency");
-  DrawH1({elid, gamma, tt, pt}, {"El-ID", "Gamma cut", "TT cut", "P_{t} cut"}, kLinear, kLinear, true, 0.6, 0.75, 0.95, 0.91, "hist");
+  DrawH1({elid, gamma, tt, pt}, {"El-ID", "Gamma cut", "TT cut", "P_{t} cut"}, kLinear, kLinear, true, 0.6, 0.75, 0.95,
+         0.91, "hist");
   DrawTextOnPad("Signal Efficiency", 0.3, 0.9, 0.7, 0.99);
 }
 
@@ -632,7 +644,8 @@ void LmvmDrawAll::DrawPionSuppression()
     string text = fHMean.fAnaStepNames[static_cast<int>(step)];
     fHMean.fHM.CreateCanvas("PionSuppression_" + text, "PionSuppression_" + text, 900, 900);
     elidMc->GetYaxis()->SetTitle("Pion Suppression");
-    DrawH1({elidMc, gammaMc, ttMc, ptMc}, {"El-ID", "Gamma cut", "TT cut", "P_{t} cut"}, kLinear, kLog, true, 0.7, 0.8, 0.95, 0.91, "hist");
+    DrawH1({elidMc, gammaMc, ttMc, ptMc}, {"El-ID", "Gamma cut", "TT cut", "P_{t} cut"}, kLinear, kLog, true, 0.7, 0.8,
+           0.95, 0.91, "hist");
     DrawTextOnPad("Pion Suppression (norm. to " + text + ")", 0.25, 0.88, 0.75, 0.99);
   }
 }
@@ -646,20 +659,21 @@ void LmvmDrawAll::DrawTofM2()
       string hName = "hTofM2_gTracks_" + fHMean.fGTrackNames[iP];
       hEl->Add(fHMean.H2(hName.c_str()));
     }
-    TH2D* hBg = fHMean.H2Clone("hTofM2_gTracks_"+ fHMean.fGTrackNames[4]);
+    TH2D* hBg = fHMean.H2Clone("hTofM2_gTracks_" + fHMean.fGTrackNames[4]);
     for (size_t iP = 5; iP < fHMean.fGTrackNames.size(); iP++) {
       string hName = "hTofM2_gTracks_" + fHMean.fGTrackNames[iP];
       hBg->Add(fHMean.H2(hName.c_str()));
     }
-  
-    double minX =  0.;
-    double maxX =  2.5;
+
+    double minX = 0.;
+    double maxX = 2.5;
     double minY = -0.05;
-    double maxY =  0.05;
-    double minZ =  1e-8;
-    double maxZ =  1;
+    double maxY = 0.05;
+    double minZ = 1e-8;
+    double maxZ = 1;
     vector<TLine*> lines {new TLine(0., 0.01, 1.3, 0.01), new TLine(1.3, 0.01, 2.5, 0.022)};  // set by hand
-    TCanvas* c = fHMean.fHM.CreateCanvas("ToF/Purity/gTracks", "ToF/Purity/gTracks", 1600, 800);  // TODO: check: is this all gTracks?
+    TCanvas* c = fHMean.fHM.CreateCanvas("ToF/Purity/gTracks", "ToF/Purity/gTracks", 1600,
+                                         800);  // TODO: check: is this all gTracks?
     c->Divide(2, 1);
     c->cd(1);
     hEl->GetXaxis()->SetRangeUser(minX, maxX);
@@ -672,7 +686,7 @@ void LmvmDrawAll::DrawTofM2()
       lines[i]->Draw();
     }
     c->cd(2);
-      hBg->GetXaxis()->SetRangeUser(minX, maxX);
+    hBg->GetXaxis()->SetRangeUser(minX, maxX);
     hBg->GetYaxis()->SetRangeUser(minY, maxY);
     hBg->GetZaxis()->SetRangeUser(minZ, maxZ);
     DrawH2(hBg, kLinear, kLinear, kLog, "colz");
@@ -685,27 +699,27 @@ void LmvmDrawAll::DrawTofM2()
 
   // for candidates
   {
-    double minX =  0.;
-    double maxX =  2.5;
+    double minX = 0.;
+    double maxX = 2.5;
     double minY = -0.05;
-    double maxY =  0.05;
-    double minZ =  1e-8;
-    double maxZ =  10;
+    double maxY = 0.05;
+    double minZ = 1e-8;
+    double maxZ = 10;
     vector<TLine*> lines {new TLine(0., 0.01, 1.3, 0.01), new TLine(1.3, 0.01, 2.5, 0.022)};  // set by hand
-    
+
     for (auto step : fHMean.fAnaSteps) {
       TH2D* hEl = fHMean.H2Clone(("hTofM2_cands_" + fHMean.fCandNames[0]), step);
       for (size_t iP = 1; iP < 4; iP++) {
-        string hName = "hTofM2_cands_" + fHMean.fCandNames[iP] + "_"+ fHMean.fAnaStepNames[static_cast<int>(step)];
+        string hName = "hTofM2_cands_" + fHMean.fCandNames[iP] + "_" + fHMean.fAnaStepNames[static_cast<int>(step)];
         hEl->Add(fHMean.H2(hName.c_str()));
       }
       TH2D* hBg = fHMean.H2Clone(("hTofM2_cands_" + fHMean.fCandNames[4]), step);
       for (size_t iP = 5; iP < fHMean.fCandNames.size(); iP++) {
-        string hName = "hTofM2_cands_" + fHMean.fCandNames[iP] + "_"+ fHMean.fAnaStepNames[static_cast<int>(step)];
+        string hName = "hTofM2_cands_" + fHMean.fCandNames[iP] + "_" + fHMean.fAnaStepNames[static_cast<int>(step)];
         hBg->Add(fHMean.H2(hName.c_str()));
       }
       string cName = "ToF/Purity/" + fHMean.fAnaStepNames[static_cast<int>(step)];
-      TCanvas* c = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 1600, 800);
+      TCanvas* c   = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 1600, 800);
       c->Divide(2, 1);
       c->cd(1);
       hEl->GetXaxis()->SetRangeUser(minX, maxX);
@@ -734,36 +748,37 @@ void LmvmDrawAll::DrawTofM2()
 void LmvmDrawAll::DrawPtYAndTofM2Elid()
 {
   double x[200], y[200];
-  int n = 200;
-  double m = 511e-6;
-  double m2 = m*m;
-  double p = 6;
-  double p2 = p*p;
-  for (int i=0; i < n; i++) {
+  int n     = 200;
+  double m  = 511e-6;
+  double m2 = m * m;
+  double p  = 6;
+  double p2 = p * p;
+  for (int i = 0; i < n; i++) {
     x[i] = 0.02 * i;
-    double counter = std::sqrt(2 * m2 * TMath::Exp(2 * x[i]) - m2 * TMath::Exp(4 * x[i]) + 4 * p2 * TMath::Exp(2 * x[i]) - m2);
-    double denom   = std::sqrt(1 + 2 * TMath::Exp(2 * x[i]) + TMath::Exp(4 * x[i]));
-    double r = counter / denom;
-    y[i] = r;
+    double counter =
+      std::sqrt(2 * m2 * TMath::Exp(2 * x[i]) - m2 * TMath::Exp(4 * x[i]) + 4 * p2 * TMath::Exp(2 * x[i]) - m2);
+    double denom = std::sqrt(1 + 2 * TMath::Exp(2 * x[i]) + TMath::Exp(4 * x[i]));
+    double r     = counter / denom;
+    y[i]         = r;
   }
-  auto pLine = new TGraph(n, x, y); // draw momentum line into Pt-Y histogram
+  auto pLine = new TGraph(n, x, y);  // draw momentum line into Pt-Y histogram
 
   for (const string& cat : {"hPtY", "hTofM2"}) {
     // draw all global tracks seperate for diff. particles
     {
-      double min = 1e-8;
-      double max = 10;
+      double min   = 1e-8;
+      double max   = 10;
       string cName = cat + "/globalTracks/all";
-      TCanvas* c = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 2400, 2400);
+      TCanvas* c   = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 2400, 2400);
       c->Divide(4, 4);
       int i = 1;
       for (auto ptcl : fHMean.fGTrackNames) {
         c->cd(i++);
         string hName = cat + "_gTracks_" + ptcl;
-        TH2D* h = fHMean.H2Clone(hName.c_str());
+        TH2D* h      = fHMean.H2Clone(hName.c_str());
         h->GetZaxis()->SetRangeUser(min, max);
         DrawH2(h, kLinear, kLinear, kLog, "colz");
-        DrawTextOnPad(fHMean.fGTrackLatex[i-2], 0.25, 0.9, 0.75, 0.999);
+        DrawTextOnPad(fHMean.fGTrackLatex[i - 2], 0.25, 0.9, 0.75, 0.999);
         if (cat == "hPtY") pLine->Draw("C");
       }
     }
@@ -771,21 +786,21 @@ void LmvmDrawAll::DrawPtYAndTofM2Elid()
     // draw zoomed in TofM2
     {
       if (cat == "hTofM2") {
-        double min = 1e-8;
-        double max = 10;
+        double min   = 1e-8;
+        double max   = 10;
         string cName = cat + "/globalTracks/all_zoom";
-        TCanvas* c = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 2400, 2400);
+        TCanvas* c   = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 2400, 2400);
         c->Divide(4, 4);
         int i = 1;
         for (auto ptcl : fHMean.fGTrackNames) {
           c->cd(i++);
           string hName = cat + "_gTracks_" + ptcl;
-          TH2D* h = fHMean.H2Clone(hName.c_str());
+          TH2D* h      = fHMean.H2Clone(hName.c_str());
           h->GetXaxis()->SetRangeUser(0., 2.5);
           h->GetYaxis()->SetRangeUser(-0.05, 0.05);
           h->GetZaxis()->SetRangeUser(min, max);
           DrawH2(h, kLinear, kLinear, kLog, "colz");
-          DrawTextOnPad(fHMean.fGTrackLatex[i-2], 0.25, 0.9, 0.75, 0.999);
+          DrawTextOnPad(fHMean.fGTrackLatex[i - 2], 0.25, 0.9, 0.75, 0.999);
         }
       }
     }
@@ -793,42 +808,42 @@ void LmvmDrawAll::DrawPtYAndTofM2Elid()
     // draw misidentified and not-misidentified particles and ratio of both (all from global tracks)
     {
       double min = (cat == "hPtY") ? 1e-7 : 1e-8;
-      double max = (cat == "hPtY") ? 10   : 10;
-      for (size_t iP = 4; iP < fHMean.fCandNames.size(); iP++ ) {  // only draw for not-electrons
-        string ptcl = fHMean.fCandNames[iP];
+      double max = (cat == "hPtY") ? 10 : 10;
+      for (size_t iP = 4; iP < fHMean.fCandNames.size(); iP++) {  // only draw for not-electrons
+        string ptcl  = fHMean.fCandNames[iP];
         string cName = cat + "/candidates/" + ptcl + "_misid";
-        TCanvas* c = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 2400, 800);
+        TCanvas* c   = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 2400, 800);
         c->Divide(3, 1);
         c->cd(1);
         TH2D* hTrue = fHMean.H2Clone(cat + "_" + ptcl + "_true");
-	      if (cat == "hTofM2") {
+        if (cat == "hTofM2") {
           hTrue->GetXaxis()->SetRangeUser(0., 2.5);
-	        hTrue->GetYaxis()->SetRangeUser(-0.05, 0.05);
-	      }
+          hTrue->GetYaxis()->SetRangeUser(-0.05, 0.05);
+        }
         hTrue->GetZaxis()->SetRangeUser(min, max);
         DrawH2(hTrue, kLinear, kLinear, kLog, "colz");
-        DrawTextOnPad(fHMean.fCandLatex[iP] + " (not misidentified)" , 0.2, 0.9, 0.75, 0.99);
+        DrawTextOnPad(fHMean.fCandLatex[iP] + " (not misidentified)", 0.2, 0.9, 0.75, 0.99);
         if (cat == "hPtY") pLine->Draw("C");
 
         c->cd(2);
         TH2D* hMis = fHMean.H2Clone(cat + "_" + ptcl + "_misid");
-	      if (cat == "hTofM2") {
+        if (cat == "hTofM2") {
           hMis->GetXaxis()->SetRangeUser(0., 2.5);
-	        hMis->GetYaxis()->SetRangeUser(-0.05, 0.05);
-	      }
+          hMis->GetYaxis()->SetRangeUser(-0.05, 0.05);
+        }
         hMis->GetZaxis()->SetRangeUser(min, max);
         DrawH2(hMis, kLinear, kLinear, kLog, "colz");
-        DrawTextOnPad(fHMean.fCandLatex[iP] + " (misidentified as electron)" , 0.15, 0.9, 0.75, 0.99);
+        DrawTextOnPad(fHMean.fCandLatex[iP] + " (misidentified as electron)", 0.15, 0.9, 0.75, 0.99);
         if (cat == "hPtY") pLine->Draw("C");
-        
+
         c->cd(3);
         TH2D* hRat = fHMean.H2Clone(cat + "_" + ptcl + "_misid");
         hRat->Divide(hTrue);
-	      if (cat == "hTofM2") {
+        if (cat == "hTofM2") {
           hRat->GetXaxis()->SetRangeUser(0., 2.5);
-	        hRat->GetYaxis()->SetRangeUser(-0.05, 0.05);
-	      }
-	      hRat->GetZaxis()->SetRangeUser(1e-5, 1); // TODO: check best min value
+          hRat->GetYaxis()->SetRangeUser(-0.05, 0.05);
+        }
+        hRat->GetZaxis()->SetRangeUser(1e-5, 1);  // TODO: check best min value
         hRat->GetZaxis()->SetTitle("Ratio #misid./#not misid.");
         DrawH2(hRat, kLinear, kLinear, kLog, "colz");
         DrawTextOnPad(fHMean.fCandLatex[iP] + ":  Ratio #misid./#not misid.", 0.1, 0.9, 0.6, 0.99);
@@ -840,9 +855,9 @@ void LmvmDrawAll::DrawPtYAndTofM2Elid()
     {
       double min = (cat == "hPtY") ? 2e-8 : 2e-8;
       double max = (cat == "hPtY") ? 5e-3 : 5e-3;
-      for (size_t iP = 4; iP < fHMean.fCandNames.size(); iP++ ) {
-        string ptcl = fHMean.fCandNames[iP];
-        string cName = cat + "/candidates/" + ptcl + "_misid_steps";
+      for (size_t iP = 4; iP < fHMean.fCandNames.size(); iP++) {
+        string ptcl   = fHMean.fCandNames[iP];
+        string cName  = cat + "/candidates/" + ptcl + "_misid_steps";
         TCanvas* cPty = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 1800, 1800);
         cPty->Divide(3, 3);
         int i = 1;
@@ -850,28 +865,39 @@ void LmvmDrawAll::DrawPtYAndTofM2Elid()
           if (step < ELmvmAnaStep::ElId) continue;
           cPty->cd(i++);
           string hName = cat + "_cands_" + ptcl;
-          TH2D* h = fHMean.H2Clone(hName.c_str(), step);
-	        if (cat == "hTofM2") {
+          TH2D* h      = fHMean.H2Clone(hName.c_str(), step);
+          if (cat == "hTofM2") {
             h->GetXaxis()->SetRangeUser(0., 2.5);
-	          h->GetYaxis()->SetRangeUser(-0.05, 0.05);
-	        }
-	        h->GetZaxis()->SetRangeUser(min, max);
+            h->GetYaxis()->SetRangeUser(-0.05, 0.05);
+          }
+          h->GetZaxis()->SetRangeUser(min, max);
           DrawH2(h, kLinear, kLinear, kLog, "colz");
           fHMean.DrawAnaStepOnPad(step);
           if (cat == "hPtY") pLine->Draw("C");
         }
       }
     }
-  } // cat: "hPtY", "hTofM2"
+  }  // cat: "hPtY", "hTofM2"
 }
 
 void LmvmDrawAll::DrawTofPilePids()
 {
   // draw particles that occur in "ToF Pile"
-  vector<string> xLabel = {"e^{-}_{PLUTO}", "e^{+}_{PLUTO}", "e^{-}_{UrQMD_prim}", "e^{+}_{UrQMD_prim}", "e^{-}_{UrQMD_sec}", "e^{+}_{UrQMD_sec}", "#pi^{+}", "#pi^{-}", "p", "K^{+}", "K^{-}", "o."};
-  double max = 3;
-  double min = 1e-5;
-  TCanvas* cTofPile = fHMean.fHM.CreateCanvas("ToF/TofPilePids", "ToF/TofPilePids", 1800, 1800);
+  vector<string> xLabel = {"e^{-}_{PLUTO}",
+                           "e^{+}_{PLUTO}",
+                           "e^{-}_{UrQMD_prim}",
+                           "e^{+}_{UrQMD_prim}",
+                           "e^{-}_{UrQMD_sec}",
+                           "e^{+}_{UrQMD_sec}",
+                           "#pi^{+}",
+                           "#pi^{-}",
+                           "p",
+                           "K^{+}",
+                           "K^{-}",
+                           "o."};
+  double max            = 3;
+  double min            = 1e-5;
+  TCanvas* cTofPile     = fHMean.fHM.CreateCanvas("ToF/TofPilePids", "ToF/TofPilePids", 1800, 1800);
   cTofPile->Divide(4, 4);
 
   cTofPile->cd(1);
@@ -912,7 +938,7 @@ void LmvmDrawAll::DrawPurity()
       for (size_t y = 1; y <= yLabel.size(); y++) {
         h->GetYaxis()->SetBinLabel(y, yLabel[y - 1].c_str());
       }
-      double nEl = h->Integral(1, h->GetXaxis()->GetNbins(), 2, 2);  // do not count PLUTO particles
+      double nEl    = h->Integral(1, h->GetXaxis()->GetNbins(), 2, 2);  // do not count PLUTO particles
       double purity = (nEl / h->Integral(1, h->GetXaxis()->GetNbins(), 2, h->GetYaxis()->GetNbins())) * 100;
       DrawTextOnPad("Purity: " + Cbm::NumberToString(purity, 1) + " %", 0.1, 0.9, 0.45, 0.99);
     }
@@ -926,7 +952,8 @@ void LmvmDrawAll::DrawPurity()
     TH1D* purity = new TH1D("purity_Mom", "purity_Mom; P [GeV/c]; Purity [%]", nBins, xMin, xMax);
     for (int i = 1; i <= purity->GetNbinsX(); i++) {
       double nEl  = fHMean.H2("hCandPdgVsMom", ELmvmAnaStep::ElId)->GetBinContent(i, 2);
-      double nAll = fHMean.H2("hCandPdgVsMom", ELmvmAnaStep::ElId)->Integral(i, i, 2, fHMean.H2("hCandPdgVsMom_elid")->GetYaxis()->GetNbins());
+      double nAll = fHMean.H2("hCandPdgVsMom", ELmvmAnaStep::ElId)
+                      ->Integral(i, i, 2, fHMean.H2("hCandPdgVsMom_elid")->GetYaxis()->GetNbins());
       double val = (nAll != 0) ? 100 * nEl / nAll : 0.;
       purity->SetBinContent(i, val);
     }
@@ -939,34 +966,34 @@ void LmvmDrawAll::DrawPurity()
   // Purity seperate for ID Detectors
   {
     vector<string> yLabel = {"#pi^{+}", "#pi^{-}", "p", "K^{+}", "K^{-}", "o."};
-    double min = 1e-7;
-    double max = 10;
+    double min            = 1e-7;
+    double max            = 10;
 
     TH2D* rich1 = fHMean.H2Clone("hPdgVsMom_gTracks_rich_all");
     TH2D* trd1  = fHMean.H2Clone("hPdgVsMom_gTracks_trd_all");
     TH2D* tof1  = fHMean.H2Clone("hPdgVsMom_gTracks_tof_all");
     TH2D* rich2 = fHMean.H2Clone("hPdgVsMom_gTracks_rich_complete");
     TH2D* trd2  = fHMean.H2Clone("hPdgVsMom_gTracks_trd_complete");
-    TH2D* tof2  = fHMean.H2Clone("hPdgVsMom_gTracks_tof_complete");  
+    TH2D* tof2  = fHMean.H2Clone("hPdgVsMom_gTracks_tof_complete");
 
     rich1->GetZaxis()->SetRangeUser(min, max);
-    trd1 ->GetZaxis()->SetRangeUser(min, max);
-    tof1 ->GetZaxis()->SetRangeUser(min, max);
+    trd1->GetZaxis()->SetRangeUser(min, max);
+    tof1->GetZaxis()->SetRangeUser(min, max);
     rich2->GetZaxis()->SetRangeUser(min, max);
-    trd2 ->GetZaxis()->SetRangeUser(min, max);
-    tof2 ->GetZaxis()->SetRangeUser(min, max);
+    trd2->GetZaxis()->SetRangeUser(min, max);
+    tof2->GetZaxis()->SetRangeUser(min, max);
 
     for (size_t y = 1; y <= yLabel.size(); y++) {
       rich1->GetYaxis()->SetBinLabel(y, yLabel[y - 1].c_str());
-      trd1 ->GetYaxis()->SetBinLabel(y, yLabel[y - 1].c_str());
-      tof1 ->GetYaxis()->SetBinLabel(y, yLabel[y - 1].c_str());
+      trd1->GetYaxis()->SetBinLabel(y, yLabel[y - 1].c_str());
+      tof1->GetYaxis()->SetBinLabel(y, yLabel[y - 1].c_str());
       rich2->GetYaxis()->SetBinLabel(y, yLabel[y - 1].c_str());
-      trd2 ->GetYaxis()->SetBinLabel(y, yLabel[y - 1].c_str());
-      tof2 ->GetYaxis()->SetBinLabel(y, yLabel[y - 1].c_str());
+      trd2->GetYaxis()->SetBinLabel(y, yLabel[y - 1].c_str());
+      tof2->GetYaxis()->SetBinLabel(y, yLabel[y - 1].c_str());
     }
 
     TCanvas* c1 = fHMean.fHM.CreateCanvas("Misid/misid_gTracks_all", "Misid/misid_gTracks_all", 2400, 800);
-    c1->Divide(3,1);
+    c1->Divide(3, 1);
     c1->cd(1);
     DrawH2(rich1, kLinear, kLinear, kLog, "colz");
     DrawTextOnPad("RICH", 0.25, 0.9, 0.75, 0.999);
@@ -981,7 +1008,7 @@ void LmvmDrawAll::DrawPurity()
     DrawPurityHistText(tof1);
 
     TCanvas* c2 = fHMean.fHM.CreateCanvas("Misid/misid_gTracks_complete", "Misid/misid_gTracks_complete", 2400, 800);
-    c2->Divide(3,1);
+    c2->Divide(3, 1);
     c2->cd(1);
     DrawH2(rich2, kLinear, kLinear, kLog, "colz");
     DrawTextOnPad("RICH", 0.25, 0.9, 0.75, 0.999);
@@ -1002,22 +1029,22 @@ void LmvmDrawAll::DrawPurity()
 void LmvmDrawAll::DrawPurityHistText(TH2D* h)
 {
   int nX = h->GetXaxis()->GetNbins();
-  
+
   double xMin = 0.4;
   double xMax = 0.75;
-  double piP = h->Integral(1, nX, 1, 1);
-  double piM = h->Integral(1, nX, 2, 2);
-  double p   = h->Integral(1, nX, 3, 3);
-  double KP  = h->Integral(1, nX, 4, 4);
-  double KM  = h->Integral(1, nX, 5, 5);
-  double o   = h->Integral(1, nX, 6, 6);
+  double piP  = h->Integral(1, nX, 1, 1);
+  double piM  = h->Integral(1, nX, 2, 2);
+  double p    = h->Integral(1, nX, 3, 3);
+  double KP   = h->Integral(1, nX, 4, 4);
+  double KM   = h->Integral(1, nX, 5, 5);
+  double o    = h->Integral(1, nX, 6, 6);
 
   DrawTextOnPad("#pi^{+}: " + Cbm::NumberToString(piP, 1) + " /Ev", xMin, 0.12, xMax, 0.3);
   DrawTextOnPad("#pi^{-}: " + Cbm::NumberToString(piM, 1) + " /Ev", xMin, 0.28, xMax, 0.37);
-  DrawTextOnPad("p: "       + Cbm::NumberToString(p, 1)   + " /Ev", xMin, 0.43, xMax, 0.48);
-  DrawTextOnPad("K^{+}: "   + Cbm::NumberToString(KP, 1)  + " /Ev", xMin, 0.53, xMax, 0.65);
-  DrawTextOnPad("K^{-}: "   + Cbm::NumberToString(KM, 1)  + " /Ev", xMin, 0.66, xMax, 0.76);
-  DrawTextOnPad("o.: "      + Cbm::NumberToString(o, 1)   + " /Ev", xMin, 0.77, xMax, 0.9);
+  DrawTextOnPad("p: " + Cbm::NumberToString(p, 1) + " /Ev", xMin, 0.43, xMax, 0.48);
+  DrawTextOnPad("K^{+}: " + Cbm::NumberToString(KP, 1) + " /Ev", xMin, 0.53, xMax, 0.65);
+  DrawTextOnPad("K^{-}: " + Cbm::NumberToString(KM, 1) + " /Ev", xMin, 0.66, xMax, 0.76);
+  DrawTextOnPad("o.: " + Cbm::NumberToString(o, 1) + " /Ev", xMin, 0.77, xMax, 0.9);
 }
 
 void LmvmDrawAll::InvestigateMisid()
@@ -1035,7 +1062,8 @@ void LmvmDrawAll::InvestigateMisid()
   }
 
   // RICH: Ring-Track Distance
-  fHMean.DrawAllGTracks(2, "hRichRingTrackDist/gTracks_all", "hRichRingTrackDist_gTracks", {""}, {""}, 1e-7, 1e-2); // TODO: move this anywhere else?
+  fHMean.DrawAllGTracks(2, "hRichRingTrackDist/gTracks_all", "hRichRingTrackDist_gTracks", {""}, {""}, 1e-7,
+                        1e-2);  // TODO: move this anywhere else?
   fHMean.DrawAllCandsAndSteps(2, "hRichRingTrackDist/", "hRichRingTrackDist_cands", {""}, {""}, 1e-7, 1e-2);
 
   // ToF
@@ -1045,29 +1073,32 @@ void LmvmDrawAll::InvestigateMisid()
     double minD  = 3e-6;
     double maxD  = 3e-1;
     for (const string& cat : {"trueid", "misid", "truematch", "mismatch"}) {
-      fHMean.DrawAllGTracks(2, "ToF/HitTrackDist/HitPointDist_" + cat, "hTofHitTrackDist_gTracks_" + cat, {""}, {""}, 1e-9, 1.);
+      fHMean.DrawAllGTracks(2, "ToF/HitTrackDist/HitPointDist_" + cat, "hTofHitTrackDist_gTracks_" + cat, {""}, {""},
+                            1e-9, 1.);
       fHMean.DrawAllGTracks(2, "ToF/HitXY/PointXY_" + cat, "hTofPointXY_" + cat, {""}, {""}, minXY, maxXY);
       fHMean.DrawAllGTracks(2, "ToF/HitXY/HitXY_" + cat, "hTofHitXY_" + cat, {""}, {""}, minXY, maxXY);
       fHMean.DrawAllGTracks(1, "ToF/HitXY/HitPointDist_" + cat, "hTofHitPointDist_" + cat, {""}, {""}, minD, maxD);
     }
     fHMean.DrawAllCands(2, "ToF/Time/HitTrackDist_cands", "hTofHitTrackDist_cands", {""}, {""}, 1e-9, 1.);
     fHMean.DrawAllCands(2, "ToF/Time/TimeVsMom_", "hTofTimeVsMom_cands", {""}, {""}, 1e-9, 1e-2);
-    fHMean.DrawAllGTracks(2, "ToF/Time/IdAndMatch", "hTofM2Calc_gTracks", {""}, {"true-ID", "mis-ID", "truematch", "mismatch"}, 1e-9, 10);
+    fHMean.DrawAllGTracks(2, "ToF/Time/IdAndMatch", "hTofM2Calc_gTracks", {""},
+                          {"true-ID", "mis-ID", "truematch", "mismatch"}, 1e-9, 10);
 
     TCanvas* c1 = fHMean.fHM.CreateCanvas("ToF/HitXY/HitPointDist_all", "ToF/HitXY/HitPointDist_all", 2400, 2400);
     c1->Divide(4, 4);
     int iC = 1;
     for (size_t iP = 0; iP < fHMean.fGTrackNames.size(); iP++) {
       c1->cd(iC++);
-      string hName = (iP <= 3) ? "hTofHitPointDist_trueid_" + fHMean.fGTrackNames[iP] : "hTofHitPointDist_misid_" + fHMean.fGTrackNames[iP];
+      string hName = (iP <= 3) ? "hTofHitPointDist_trueid_" + fHMean.fGTrackNames[iP]
+                               : "hTofHitPointDist_misid_" + fHMean.fGTrackNames[iP];
       string text  = (iP <= 3) ? "true-ID" : "mis-ID";
-      TH1D* h = fHMean.H1Clone(hName);
+      TH1D* h      = fHMean.H1Clone(hName);
       h->GetYaxis()->SetRangeUser(minD, maxD);
       h->Fit("gaus", "Q", "", 0., 2.);
       DrawH1(h, kLinear, kLog, "hist");
       DrawTextOnPad(text, 0.5, 0.7, 0.8, 0.9);
       DrawTextOnPad(fHMean.fGTrackLatex[iP], 0.25, 0.9, 0.75, 0.99);
-      TF1* func = h->GetFunction("gaus");
+      TF1* func   = h->GetFunction("gaus");
       double mean = (func != nullptr) ? func->GetParameter("Mean") : 0.;
       DrawTextOnPad("mean: " + Cbm::NumberToString(mean, 2), 0.2, 0.65, 0.6, 0.89);
     }
@@ -1089,7 +1120,8 @@ void LmvmDrawAll::InvestigateMisid()
     double min = 1e-7;
     for (auto step : fHMean.fAnaSteps) {
       string cName = "ToF/Vertex/tofMisid_" + fHMean.fAnaStepNames[static_cast<int>(step)];
-      vector<TH2D*> xyz {fHMean.H2("hVertexXZ_misidTof", step), fHMean.H2("hVertexYZ_misidTof", step), fHMean.H2("hVertexXY_misidTof", step)};
+      vector<TH2D*> xyz {fHMean.H2("hVertexXZ_misidTof", step), fHMean.H2("hVertexYZ_misidTof", step),
+                         fHMean.H2("hVertexXY_misidTof", step)};
 
       TCanvas* c = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 1800, 600);
       c->Divide(3, 1);
@@ -1137,13 +1169,18 @@ void LmvmDrawAll::InvestigateMisid()
   double minMism = 1e-4;
   double maxMism = 100.;
 
-  vector<string> xLabelDet = {"STS_{all}", "RICH_{all}", "RICH_{mis}", "TRD_{all}", "TRD_{mis}", "ToF_{all}", "ToF_{mis}"};
-  fHMean.DrawAllGTracks(1, "Mismatches/hNofMismatches_all", "hNofMismatches_gTracks_all", xLabelDet, {""}, minMism, maxMism);
-  fHMean.DrawAllGTracks(1, "Mismatches/hNofMismatches_complete", "hNofMismatches_gTracks_complete", xLabelDet, {""}, minMism, maxMism);
+  vector<string> xLabelDet = {"STS_{all}", "RICH_{all}", "RICH_{mis}", "TRD_{all}",
+                              "TRD_{mis}", "ToF_{all}",  "ToF_{mis}"};
+  fHMean.DrawAllGTracks(1, "Mismatches/hNofMismatches_all", "hNofMismatches_gTracks_all", xLabelDet, {""}, minMism,
+                        maxMism);
+  fHMean.DrawAllGTracks(1, "Mismatches/hNofMismatches_complete", "hNofMismatches_gTracks_complete", xLabelDet, {""},
+                        minMism, maxMism);
 
   vector<string> xLabelSeg = {"0", "1", "2", "3"};
-  fHMean.DrawAllGTracks(1, "Mismatches/hNofMismatchedTrackSegments_all", "hNofMismatchedTrackSegments_all", xLabelSeg, {""}, minMism, maxMism);
-  fHMean.DrawAllGTracks(1, "Mismatches/hNofMismatchedTrackSegments_complete", "hNofMismatchedTrackSegments_complete", xLabelSeg, {""}, minMism, maxMism);
+  fHMean.DrawAllGTracks(1, "Mismatches/hNofMismatchedTrackSegments_all", "hNofMismatchedTrackSegments_all", xLabelSeg,
+                        {""}, minMism, maxMism);
+  fHMean.DrawAllGTracks(1, "Mismatches/hNofMismatchedTrackSegments_complete", "hNofMismatchedTrackSegments_complete",
+                        xLabelSeg, {""}, minMism, maxMism);
 }
 
 void LmvmDrawAll::DrawChi2()
@@ -1154,7 +1191,7 @@ void LmvmDrawAll::DrawChi2()
     fHMean.DrawAllCands(2, "hChi2/Detectors/hChi2VsMom_" + det, "hChi2VsMom_" + det, {""}, {""}, min, max);
     fHMean.DrawAllCands(2, "hChi2/Detectors/hTofTimeVsChi2_" + det, "hTofTimeVsChi2_" + det, {""}, {""}, min, max);
   }
-  
+
   for (const string det : {"StsRich", "StsTrd", "RichTrd"}) {
     fHMean.DrawAllCands(2, "hChi2/Detectors/hChi2Comb" + det, "hChi2Comb_" + det, {""}, {""}, min, max);
   }
@@ -1210,7 +1247,7 @@ void LmvmDrawAll::DrawMinv(ELmvmAnaStep step)
                         "in-medium #rho");
   drawData.emplace_back(cocktail, -1, kRed + 2, 4, -1, "Cocktail");
   drawData.emplace_back(cb, -1, kCyan + 2, 4, -1, "CB");
-  
+
   double min      = std::numeric_limits<Double_t>::max();
   double max      = std::numeric_limits<Double_t>::min();
   TH1D* h0        = nullptr;
@@ -1242,7 +1279,7 @@ void LmvmDrawAll::DrawMomRecoPrecision()
   {
     for (const string& cat : {"", "_zoom", "_zoom2"}) {
       string cName = "hMom/precisionReco/mom_ratioRecOverMc" + cat;
-      TCanvas* c = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 1800, 1800);
+      TCanvas* c   = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 1800, 1800);
       c->Divide(3, 3);
       int i = 1;
       for (auto step : fHMean.fAnaSteps) {
@@ -1250,7 +1287,7 @@ void LmvmDrawAll::DrawMomRecoPrecision()
         vector<TH1*> hists;
         vector<string> legend;
         c->cd(i++);
-        for (size_t iP = 0; iP < fHMean.fCandNames.size(); iP++ ) {     
+        for (size_t iP = 0; iP < fHMean.fCandNames.size(); iP++) {
           TH1D* h = fHMean.H1Clone("hMomRatio_cands_" + fHMean.fCandNames[iP], step);
           if (cat == "_zoom") h->GetXaxis()->SetRangeUser(0.9, 1.1);
           if (cat == "_zoom2") h->GetXaxis()->SetRangeUser(7., 7.5);
@@ -1266,19 +1303,20 @@ void LmvmDrawAll::DrawMomRecoPrecision()
   // draw ratio P_rec/P_MC vs P
   {
     ELmvmAnaStep step = ELmvmAnaStep::ElId;
-    double min = 0.5;
-    double max = 1.5;
-    TCanvas* c = fHMean.fHM.CreateCanvas("hMom/precisionReco/mom_ratioRecOverMcVsMom", "hMom/precisionReco/mom_ratioRecOverMcVsMom", 2700, 1800);
-    c->Divide(4,3);
+    double min        = 0.5;
+    double max        = 1.5;
+    TCanvas* c        = fHMean.fHM.CreateCanvas("hMom/precisionReco/mom_ratioRecOverMcVsMom",
+                                         "hMom/precisionReco/mom_ratioRecOverMcVsMom", 2700, 1800);
+    c->Divide(4, 3);
     int i = 1;
     for (auto ptcl : fHMean.fCandNames) {
-      int iL = i-1;
+      int iL = i - 1;
       c->cd(i++);
       string hName = "hMomRatioVsMom_cands_" + ptcl;
-      TH2D* h = fHMean.H2Clone(hName.c_str(), step);
+      TH2D* h      = fHMean.H2Clone(hName.c_str(), step);
       h->GetYaxis()->SetRangeUser(min, max);
       DrawH2(h, kLinear, kLinear, kLog, "colz");
-      string text = fHMean.fCandLatex[iL] + ", "+ fHMean.fAnaStepLatex[static_cast<int>(step)];
+      string text = fHMean.fCandLatex[iL] + ", " + fHMean.fAnaStepLatex[static_cast<int>(step)];
       DrawTextOnPad(text.c_str(), 0.25, 0.9, 0.75, 0.999);
     }
   }
@@ -1287,24 +1325,24 @@ void LmvmDrawAll::DrawMomRecoPrecision()
 void LmvmDrawAll::DrawMinvOfficialStyle()
 {
   // variable binning
-  TH1D* h = fHMean.H1("hMinv", ELmvmSrc::Bg, ELmvmAnaStep::Mc); // template for values
-  double    ChangeValue = 1.2;
-  int       f           = 2;   // factor larger/smaller binsize
-  int       binChange   = h->GetXaxis()->FindBin(ChangeValue);
-  double    bW          = h->GetXaxis()->GetBinWidth(1);
-  const int nBins       = (int) binChange + (h->GetNbinsX() - binChange)/f;
-  vector<double> binEdges(nBins+1, 0.);
+  TH1D* h            = fHMean.H1("hMinv", ELmvmSrc::Bg, ELmvmAnaStep::Mc);  // template for values
+  double ChangeValue = 1.2;
+  int f              = 2;  // factor larger/smaller binsize
+  int binChange      = h->GetXaxis()->FindBin(ChangeValue);
+  double bW          = h->GetXaxis()->GetBinWidth(1);
+  const int nBins    = (int) binChange + (h->GetNbinsX() - binChange) / f;
+  vector<double> binEdges(nBins + 1, 0.);
 
   for (int iB = 1; iB <= nBins; iB++) {
-    binEdges[iB] = (iB < binChange) ? binEdges[iB-1] + bW : binEdges[iB-1] + f * bW;
+    binEdges[iB] = (iB < binChange) ? binEdges[iB - 1] + bW : binEdges[iB - 1] + f * bW;
   }
-  binEdges[nBins+1] = h->GetBinCenter(h->GetNbinsX()) + bW/f;
+  binEdges[nBins + 1] = h->GetBinCenter(h->GetNbinsX()) + bW / f;
 
-  int nofInmed  = H(ELmvmSignal::Inmed) ->H1("hEventNumber")->GetEntries();
-  int nofQgp    = H(ELmvmSignal::Qgp)   ->H1("hEventNumber")->GetEntries();
-  int nofOmega  = H(ELmvmSignal::Omega) ->H1("hEventNumber")->GetEntries();
+  int nofInmed  = H(ELmvmSignal::Inmed)->H1("hEventNumber")->GetEntries();
+  int nofQgp    = H(ELmvmSignal::Qgp)->H1("hEventNumber")->GetEntries();
+  int nofOmega  = H(ELmvmSignal::Omega)->H1("hEventNumber")->GetEntries();
   int nofOmegaD = H(ELmvmSignal::OmegaD)->H1("hEventNumber")->GetEntries();
-  int nofPhi    = H(ELmvmSignal::Phi)   ->H1("hEventNumber")->GetEntries();
+  int nofPhi    = H(ELmvmSignal::Phi)->H1("hEventNumber")->GetEntries();
 
   for (auto step : fHMean.fAnaSteps) {
     if (step < ELmvmAnaStep::ElId) continue;
@@ -1339,39 +1377,42 @@ void LmvmDrawAll::DrawMinvOfficialStyle()
 
     for (int iB = 1; iB <= h->GetNbinsX(); iB++) {
       if (iB < binChange) {
-        h_npm   ->SetBinContent(iB, fHMean.H1("hMinvCombPM_sameEv", step)->GetBinContent(iB));
-        h_bc    ->SetBinContent(iB, fHMean.H1("hMinvCombBg", step)->GetBinContent(iB));
-        h_coc   ->SetBinContent(iB, GetCocktailMinvH1("hMinv", step)->GetBinContent(iB)); 
-        h_eta   ->SetBinContent(iB, fHMean.H1("hMinv", ELmvmSrc::Eta, step)->GetBinContent(iB));
-        h_pi0   ->SetBinContent(iB, fHMean.H1("hMinv", ELmvmSrc::Pi0, step)->GetBinContent(iB));
-        h_inmed ->SetBinContent(iB, hInmed0 ->GetBinContent(iB));
-        h_qgp   ->SetBinContent(iB, hQgp0   ->GetBinContent(iB));
-        h_omega ->SetBinContent(iB, hOmega0 ->GetBinContent(iB));
+        h_npm->SetBinContent(iB, fHMean.H1("hMinvCombPM_sameEv", step)->GetBinContent(iB));
+        h_bc->SetBinContent(iB, fHMean.H1("hMinvCombBg", step)->GetBinContent(iB));
+        h_coc->SetBinContent(iB, GetCocktailMinvH1("hMinv", step)->GetBinContent(iB));
+        h_eta->SetBinContent(iB, fHMean.H1("hMinv", ELmvmSrc::Eta, step)->GetBinContent(iB));
+        h_pi0->SetBinContent(iB, fHMean.H1("hMinv", ELmvmSrc::Pi0, step)->GetBinContent(iB));
+        h_inmed->SetBinContent(iB, hInmed0->GetBinContent(iB));
+        h_qgp->SetBinContent(iB, hQgp0->GetBinContent(iB));
+        h_omega->SetBinContent(iB, hOmega0->GetBinContent(iB));
         h_omegaD->SetBinContent(iB, hOmegaD0->GetBinContent(iB));
-        h_phi   ->SetBinContent(iB, hPhi0   ->GetBinContent(iB));
+        h_phi->SetBinContent(iB, hPhi0->GetBinContent(iB));
       }
       else {
-        int iB2 = (int) binChange + (iB-binChange)/f;
-        h_npm   ->SetBinContent(iB2, h_npm->GetBinContent(iB2)    + fHMean.H1("hMinvCombPM_sameEv", step)->GetBinContent(iB)/f);
-        h_bc    ->SetBinContent(iB2, h_bc->GetBinContent(iB2)     + fHMean.H1("hMinvCombBg", step)->GetBinContent(iB)/f);
-        h_coc   ->SetBinContent(iB2, h_coc->GetBinContent(iB2)    + GetCocktailMinvH1("hMinv", step)->GetBinContent(iB)/f); 
-        h_eta   ->SetBinContent(iB2, h_eta->GetBinContent(iB2)    + fHMean.H1("hMinv", ELmvmSrc::Eta, step)->GetBinContent(iB)/f);
-        h_pi0   ->SetBinContent(iB2, h_pi0->GetBinContent(iB2)    + fHMean.H1("hMinv", ELmvmSrc::Pi0, step)->GetBinContent(iB)/f);
-        h_inmed ->SetBinContent(iB2, h_inmed->GetBinContent(iB2)  + hInmed0 ->GetBinContent(iB)/f);
-        h_qgp   ->SetBinContent(iB2, h_qgp->GetBinContent(iB2)    + hQgp0   ->GetBinContent(iB)/f);
-        h_omega ->SetBinContent(iB2, h_omega->GetBinContent(iB2)  + hOmega0 ->GetBinContent(iB)/f);
-        h_omegaD->SetBinContent(iB2, h_omegaD->GetBinContent(iB2) + hOmegaD0->GetBinContent(iB)/f);
-        h_phi   ->SetBinContent(iB2, h_phi->GetBinContent(iB2)    + hPhi0   ->GetBinContent(iB)/f);
+        int iB2 = (int) binChange + (iB - binChange) / f;
+        h_npm->SetBinContent(iB2,
+                             h_npm->GetBinContent(iB2) + fHMean.H1("hMinvCombPM_sameEv", step)->GetBinContent(iB) / f);
+        h_bc->SetBinContent(iB2, h_bc->GetBinContent(iB2) + fHMean.H1("hMinvCombBg", step)->GetBinContent(iB) / f);
+        h_coc->SetBinContent(iB2, h_coc->GetBinContent(iB2) + GetCocktailMinvH1("hMinv", step)->GetBinContent(iB) / f);
+        h_eta->SetBinContent(iB2, h_eta->GetBinContent(iB2)
+                                    + fHMean.H1("hMinv", ELmvmSrc::Eta, step)->GetBinContent(iB) / f);
+        h_pi0->SetBinContent(iB2, h_pi0->GetBinContent(iB2)
+                                    + fHMean.H1("hMinv", ELmvmSrc::Pi0, step)->GetBinContent(iB) / f);
+        h_inmed->SetBinContent(iB2, h_inmed->GetBinContent(iB2) + hInmed0->GetBinContent(iB) / f);
+        h_qgp->SetBinContent(iB2, h_qgp->GetBinContent(iB2) + hQgp0->GetBinContent(iB) / f);
+        h_omega->SetBinContent(iB2, h_omega->GetBinContent(iB2) + hOmega0->GetBinContent(iB) / f);
+        h_omegaD->SetBinContent(iB2, h_omegaD->GetBinContent(iB2) + hOmegaD0->GetBinContent(iB) / f);
+        h_phi->SetBinContent(iB2, h_phi->GetBinContent(iB2) + hPhi0->GetBinContent(iB) / f);
       }
     }
 
     // set errors
     int nEv = GetNofTotalEvents();
     for (int iB = 1; iB <= h_npm->GetNbinsX(); iB++) {
-      double bW2 = h_npm->GetBinLowEdge(iB+1) - h_npm->GetBinLowEdge(iB);
-      //cout << "iB = " << iB <<  " | bW2 = " << bW2 << endl; 
+      double bW2 = h_npm->GetBinLowEdge(iB + 1) - h_npm->GetBinLowEdge(iB);
+      //cout << "iB = " << iB <<  " | bW2 = " << bW2 << endl;
       h_npm->SetBinError(iB, std::sqrt(h_npm->GetBinContent(iB) * bW2 * nEv) / (bW2 * nEv));
-      h_bc ->SetBinError(iB, std::sqrt(h_bc ->GetBinContent(iB) * bW2 * nEv) / (bW2 * nEv));
+      h_bc->SetBinError(iB, std::sqrt(h_bc->GetBinContent(iB) * bW2 * nEv) / (bW2 * nEv));
     }
 
     TH1D* h_sum = (TH1D*) h_eta->Clone();
@@ -1384,21 +1425,24 @@ void LmvmDrawAll::DrawMinvOfficialStyle()
 
     TH1D* h_sum2 = (TH1D*) h_sum->Clone();
 
-    fHMean.SetOptH1(h_npm, "#font[52]{M}_{ee} [GeV/#font[52]{c}^{2}]", "1/N_{ev} dN/d#font[52]{M}_{ee} [GeV/#font[52]{c}^{2}]^{-1}", 510, 21, 1.3, kPink,   "marker");
-    fHMean.SetOptH1(h_bc,  "#font[52]{M}_{ee} [GeV/#font[52]{c}^{2}]", "1/N_{ev} dN/d#font[52]{M}_{ee} [GeV/#font[52]{c}^{2}]^{-1}", 510, 22, 1.3, kBlue-2, "marker");
-    fHMean.SetOptH1(h_sum, "#font[52]{M}_{ee} [GeV/#font[52]{c}^{2}]", "1/N_{ev} dN/d#font[52]{M}_{ee} [GeV/#font[52]{c}^{2}]^{-1}", 510, 20, 1.1, kBlack,  "marker");
-    
-    fHMean.SetOptH1(h_sum2,   "", "",510, 1, 1, kBlack,     "line");
-    fHMean.SetOptH1(h_eta,    "", "",510, 1, 1, kBlue+2,    "line");
-    fHMean.SetOptH1(h_pi0,    "", "",510, 1, 1, kAzure-4,   "line");
-    fHMean.SetOptH1(h_inmed,  "", "",510, 1, 1, kPink,      "line");
-    fHMean.SetOptH1(h_qgp,    "", "",510, 1, 1, kOrange,    "line");
-    fHMean.SetOptH1(h_omega,  "", "",510, 1, 1, kGreen+1,   "line");
-    fHMean.SetOptH1(h_omegaD, "", "",510, 1, 1, kGreen+3,   "line");
-    fHMean.SetOptH1(h_phi,    "", "",510, 1, 1, kMagenta+2, "line");
+    fHMean.SetOptH1(h_npm, "#font[52]{M}_{ee} [GeV/#font[52]{c}^{2}]",
+                    "1/N_{ev} dN/d#font[52]{M}_{ee} [GeV/#font[52]{c}^{2}]^{-1}", 510, 21, 1.3, kPink, "marker");
+    fHMean.SetOptH1(h_bc, "#font[52]{M}_{ee} [GeV/#font[52]{c}^{2}]",
+                    "1/N_{ev} dN/d#font[52]{M}_{ee} [GeV/#font[52]{c}^{2}]^{-1}", 510, 22, 1.3, kBlue - 2, "marker");
+    fHMean.SetOptH1(h_sum, "#font[52]{M}_{ee} [GeV/#font[52]{c}^{2}]",
+                    "1/N_{ev} dN/d#font[52]{M}_{ee} [GeV/#font[52]{c}^{2}]^{-1}", 510, 20, 1.1, kBlack, "marker");
+
+    fHMean.SetOptH1(h_sum2, "", "", 510, 1, 1, kBlack, "line");
+    fHMean.SetOptH1(h_eta, "", "", 510, 1, 1, kBlue + 2, "line");
+    fHMean.SetOptH1(h_pi0, "", "", 510, 1, 1, kAzure - 4, "line");
+    fHMean.SetOptH1(h_inmed, "", "", 510, 1, 1, kPink, "line");
+    fHMean.SetOptH1(h_qgp, "", "", 510, 1, 1, kOrange, "line");
+    fHMean.SetOptH1(h_omega, "", "", 510, 1, 1, kGreen + 1, "line");
+    fHMean.SetOptH1(h_omegaD, "", "", 510, 1, 1, kGreen + 3, "line");
+    fHMean.SetOptH1(h_phi, "", "", 510, 1, 1, kMagenta + 2, "line");
 
     //h_npm->GetXaxis()->SetRangeUser(0.,2.);
-    h_npm->GetYaxis()->SetRangeUser(1e-9,10);
+    h_npm->GetYaxis()->SetRangeUser(1e-9, 10);
 
     string cName = "MinvOfficialStyle/minv_" + fHMean.fAnaStepNames[static_cast<int>(step)];
     TCanvas* can = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 900, 918);
@@ -1407,43 +1451,43 @@ void LmvmDrawAll::DrawMinvOfficialStyle()
     can->cd();
 
     h_npm->Draw("peist");
-    h_bc ->Draw("peistsame");
+    h_bc->Draw("peistsame");
     h_sum->Draw("phistsame");
 
-    h_sum2  ->Draw("histsame");
-    h_eta   ->Draw("histsame");
-    h_pi0   ->Draw("histsame");
-    h_inmed ->Draw("histsame");
-    h_qgp   ->Draw("histsame");
-    h_omega ->Draw("histsame");
+    h_sum2->Draw("histsame");
+    h_eta->Draw("histsame");
+    h_pi0->Draw("histsame");
+    h_inmed->Draw("histsame");
+    h_qgp->Draw("histsame");
+    h_omega->Draw("histsame");
     h_omegaD->Draw("histsame");
-    h_phi   ->Draw("histsame");
+    h_phi->Draw("histsame");
 
     vector<LmvmLegend> legend3;
     legend3.emplace_back(h_npm, "N^{#pm}_{same}", "p");
-    legend3.emplace_back(h_bc,  "CB_{calc}",      "p");
-    legend3.emplace_back(h_sum, "MC Cocktail",    "p");
-    
+    legend3.emplace_back(h_bc, "CB_{calc}", "p");
+    legend3.emplace_back(h_sum, "MC Cocktail", "p");
+
     vector<LmvmLegend> legend8;
-    legend8.emplace_back(h_sum2,   "MC Cocktail",                        "l");
-    legend8.emplace_back(h_eta,    "#eta#rightarrow#gammae^{+}e^{-}",    "l");
-    legend8.emplace_back(h_pi0,    "#pi^{0}#rightarrow#gammae^{+}e^{-}", "l");
+    legend8.emplace_back(h_sum2, "MC Cocktail", "l");
+    legend8.emplace_back(h_eta, "#eta#rightarrow#gammae^{+}e^{-}", "l");
+    legend8.emplace_back(h_pi0, "#pi^{0}#rightarrow#gammae^{+}e^{-}", "l");
     legend8.emplace_back(h_omegaD, "#omega#rightarrow#pi^{0}e^{+}e^{-}", "l");
-    legend8.emplace_back(h_omega,  "#omega#rightarrowe^{+}e^{-}",        "l");
-    legend8.emplace_back(h_phi,    "#phi#rightarrowe^{+}e^{-}",  	       "l");
-    legend8.emplace_back(h_inmed,  "Rapp in-medium SF",                  "l");
-    legend8.emplace_back(h_qgp,    "Rapp QGP",                           "l");    
-    
+    legend8.emplace_back(h_omega, "#omega#rightarrowe^{+}e^{-}", "l");
+    legend8.emplace_back(h_phi, "#phi#rightarrowe^{+}e^{-}", "l");
+    legend8.emplace_back(h_inmed, "Rapp in-medium SF", "l");
+    legend8.emplace_back(h_qgp, "Rapp QGP", "l");
+
     fHMean.SetLegend(legend3, 0.035, 0.37, 0.64, 0.57, 0.77);
     fHMean.SetLegend(legend8, 0.025, 0.66, 0.57, 0.82, 0.87);
 
-    TLatex* tex = new TLatex(0.15, 2.5,"CBM Simulations");
-    tex->SetTextColor(1); //kAzure+6);
+    TLatex* tex = new TLatex(0.15, 2.5, "CBM Simulations");
+    tex->SetTextColor(1);  //kAzure+6);
     tex->SetTextSize(0.035);
     tex->SetTextFont(42);
     tex->Draw();
-    TLatex* tex2 = new TLatex(0.15, 0.7,"0 fm Au+Au, #sqrt{s_{NN}}=4.1 GeV");
-    tex2->SetTextColor(1); //kAzure+6);
+    TLatex* tex2 = new TLatex(0.15, 0.7, "0 fm Au+Au, #sqrt{s_{NN}}=4.1 GeV");
+    tex2->SetTextColor(1);  //kAzure+6);
     tex2->SetTextSize(0.035);
     tex2->SetTextFont(42);
     tex2->Draw();
@@ -1460,7 +1504,7 @@ void LmvmDrawAll::DrawMinvOfficialStyle()
     delete h_phi;
     delete h_sum;
     delete h_sum2;*/
-  } // steps
+  }  // steps
 }
 
 void LmvmDrawAll::DrawMinvBgSourcesAll()
@@ -1563,7 +1607,7 @@ void LmvmDrawAll::DrawMinvPtAll()
 
 void LmvmDrawAll::DrawMinvCombBgAndSignal()
 {
-  string folder = "CombinatorialBackground/";
+  string folder     = "CombinatorialBackground/";
   string folderUAll = folder + "UrQMD/All/";
   string folderUEl  = folder + "UrQMD/Electrons/";
 
@@ -1571,14 +1615,16 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
   {
     for (const string& cat : {"", "_urqmdEl", "_urqmdAll"}) {
       for (const string& ev : {"sameEv", "mixedEv"}) {
-        string cName = (cat == "_urqmdAll") ? folderUAll + "PairYields_" + ev :(cat == "_urqmdEl") ? folderUEl + "PairYields_" + ev : folder + "PairYields_" + ev;
-        TCanvas* c = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 1800, 1800);
+        string cName = (cat == "_urqmdAll")  ? folderUAll + "PairYields_" + ev
+                       : (cat == "_urqmdEl") ? folderUEl + "PairYields_" + ev
+                                             : folder + "PairYields_" + ev;
+        TCanvas* c   = fHMean.fHM.CreateCanvas(cName.c_str(), cName.c_str(), 1800, 1800);
         c->Divide(3, 3);
         int i = 1;
         for (auto step : fHMean.fAnaSteps) {
           if (step < ELmvmAnaStep::ElId) continue;
           c->cd(i++);
-          TH1D* pp = fHMean.H1Clone("hMinvCombPP" + cat + "_"+ ev, step);
+          TH1D* pp = fHMean.H1Clone("hMinvCombPP" + cat + "_" + ev, step);
           TH1D* mm = fHMean.H1Clone("hMinvCombMM" + cat + "_" + ev, step);
           TH1D* pm = fHMean.H1Clone("hMinvCombPM" + cat + "_" + ev, step);
           pm->GetYaxis()->SetTitle("Yield");
@@ -1594,7 +1640,7 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
   {
     for (const string& cat : {"", "_urqmdEl"}) {
       string cName = (cat == "_urqmdEl") ? folderUEl : folder;
-      TCanvas* c = fHMean.fHM.CreateCanvas(cName + "RatioMMPP_same", cName + "RatioMMPP_same", 1800, 1800);
+      TCanvas* c   = fHMean.fHM.CreateCanvas(cName + "RatioMMPP_same", cName + "RatioMMPP_same", 1800, 1800);
       c->Divide(3, 3);
       int i = 1;
       for (auto step : fHMean.fAnaSteps) {
@@ -1614,7 +1660,7 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
   {
     for (const string& cat : {"", "_urqmdEl", "_urqmdAll"}) {
       string cName = (cat == "_urqmdAll") ? folderUAll : (cat == "_urqmdEl") ? folderUEl : folder;
-      TCanvas* c = fHMean.fHM.CreateCanvas(cName + "geomMean", cName + "geomMean", 1800, 1800);
+      TCanvas* c   = fHMean.fHM.CreateCanvas(cName + "geomMean", cName + "geomMean", 1800, 1800);
       c->Divide(3, 3);
       int i = 1;
       for (auto step : fHMean.fAnaSteps) {
@@ -1629,20 +1675,22 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
         same->GetXaxis()->SetTitle("M_{ee} [GeV/c^{2}]");
         same->SetMinimum(1e-8);
         mixed->SetMinimum(1e-8);
-        DrawH1({same, mixed}, {"geom. mean (same)", "geom. mean (mixed)"}, kLinear, kLog, true, 0.52, 0.8, 0.99, 0.99, "p");
+        DrawH1({same, mixed}, {"geom. mean (same)", "geom. mean (mixed)"}, kLinear, kLog, true, 0.52, 0.8, 0.99, 0.99,
+               "p");
         fHMean.DrawAnaStepOnPad(step);
       }
     }
   }
 
   // Draw k factor
-  { // draw all three k factors in one histo  // TODO: keep this or next method or both?
+  {  // draw all three k factors in one histo  // TODO: keep this or next method or both?
     ELmvmAnaStep step = ELmvmAnaStep::ElId;
     fHMean.fHM.CreateCanvas(folder + "k_all", folder + "k_all", 1800, 1800);
     TH1D* kAll  = fHMean.H1Clone("hMinvCombK", step);
     TH1D* kUAll = fHMean.H1Clone("hMinvCombK_urqmdAll", step);
     TH1D* kUEl  = fHMean.H1Clone("hMinvCombK_urqmdEl", step);
-    DrawH1({kAll, kUAll, kUEl}, {"k (all)", "k (UrQMD all)", "k (UrQMD El"}, kLinear, kLinear, true, 0.65, 0.8, 0.99, 0.95, "p");
+    DrawH1({kAll, kUAll, kUEl}, {"k (all)", "k (UrQMD all)", "k (UrQMD El"}, kLinear, kLinear, true, 0.65, 0.8, 0.99,
+           0.95, "p");
     kAll->GetYaxis()->SetTitle("k Factor");
     kAll->GetYaxis()->SetRangeUser(0.8, 1.2);
     fHMean.DrawAnaStepOnPad(step);
@@ -1654,13 +1702,13 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
 
     for (const string& cat : {"", "_urqmdEl", "_urqmdAll"}) {
       string cName = (cat == "_urqmdAll") ? folderUAll : (cat == "_urqmdEl") ? folderUEl : folder;
-      TCanvas* c = fHMean.fHM.CreateCanvas(cName + "N+-VsBgCoc", cName + "N+-VsBgCoc", 1800, 900);
+      TCanvas* c   = fHMean.fHM.CreateCanvas(cName + "N+-VsBgCoc", cName + "N+-VsBgCoc", 1800, 900);
       c->Divide(2, 1);
-      TH1D* npm = fHMean.H1Clone("hMinvCombPM" + cat + "_sameEv", step);
-      TH1D* cb  = fHMean.H1Clone("hMinvCombBg" + cat, step);
-      TH1D* bg  = fHMean.H1Clone("hMinv" + cat, ELmvmSrc::Bg, step);
+      TH1D* npm      = fHMean.H1Clone("hMinvCombPM" + cat + "_sameEv", step);
+      TH1D* cb       = fHMean.H1Clone("hMinvCombBg" + cat, step);
+      TH1D* bg       = fHMean.H1Clone("hMinv" + cat, ELmvmSrc::Bg, step);
       TH1D* cocktail = GetCocktailMinvH1("hMinv" + cat, step);
-      TH1D* sbg = static_cast<TH1D*>(bg->Clone());
+      TH1D* sbg      = static_cast<TH1D*>(bg->Clone());
       sbg->Add(cocktail);
       TH1D* ratS = (TH1D*) npm->Clone();
       ratS->Divide(sbg);
@@ -1668,13 +1716,15 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
       ratB->Divide(bg);
       c->cd(1);
       npm->GetYaxis()->SetRangeUser(1e-6, 2e-2);
-      DrawH1({npm, sbg, cb, bg}, {"N^{+-}_{same}", "BG + Cocktail", "CB_{calc}", "Background"}, kLinear, kLog, true, 0.7, 0.7, 0.99, 0.95, "p");
+      DrawH1({npm, sbg, cb, bg}, {"N^{+-}_{same}", "BG + Cocktail", "CB_{calc}", "Background"}, kLinear, kLog, true,
+             0.7, 0.7, 0.99, 0.95, "p");
       fHMean.DrawAnaStepOnPad(step);
       c->cd(2);
       ratS->GetYaxis()->SetTitle("Ratio");
       ratS->GetYaxis()->SetRangeUser(0., 2.);
       ratB->GetYaxis()->SetRangeUser(0., 2.);
-      DrawH1({ratS, ratB}, {"N^{+-}_{same} / BG+Coc", "CB_{calc} / BG"}, kLinear, kLinear, true, 0.7, 0.8, 0.99, 0.95, "p");
+      DrawH1({ratS, ratB}, {"N^{+-}_{same} / BG+Coc", "CB_{calc} / BG"}, kLinear, kLinear, true, 0.7, 0.8, 0.99, 0.95,
+             "p");
     }
   }
 
@@ -1685,14 +1735,14 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
     TH1D* rsAll  = fHMean.H1Clone("hMinvCombPM_sameEv", step);
     TH1D* rsUAll = fHMean.H1Clone("hMinvCombPM_urqmdAll_sameEv", step);
     TH1D* rsUEl  = fHMean.H1Clone("hMinvCombPM_urqmdEl_sameEv", step);
-    
+
     TH1D* cbgAll = GetCocktailMinvH1("hMinv", step);
     cbgAll->Add(fHMean.H1("hMinv", ELmvmSrc::Bg, step));
     TH1D* cbgUAll = GetCocktailMinvH1("hMinv_urqmdAll", step);
     cbgUAll->Add(fHMean.H1("hMinv_urqmdAll", ELmvmSrc::Bg, step));
     TH1D* cbgUEl = GetCocktailMinvH1("hMinv_urqmdEl", step);
     cbgUEl->Add(fHMean.H1("hMinv_urqmdEl", ELmvmSrc::Bg, step));
-    
+
     rsAll->Divide(cbgAll);
     rsUAll->Divide(cbgUAll);
     rsUEl->Divide(cbgUEl);
@@ -1708,15 +1758,17 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
     rsAll->GetYaxis()->SetTitle("N^{+-}_{same} / BG+Coc");
     rsAll->GetYaxis()->SetRangeUser(0., 2.);
     rbAll->GetYaxis()->SetTitle("CB_{calc} / BG");
-    rbAll->GetYaxis()->SetRangeUser(0., 2.);    
+    rbAll->GetYaxis()->SetRangeUser(0., 2.);
 
     TCanvas* c = fHMean.fHM.CreateCanvas(folder + "CbVsMc_ratio", folder + "CbVsMc_ratio", 1800, 900);
     c->Divide(2, 1);
     c->cd(1);
-    DrawH1({rsAll, rsUAll, rsUEl}, {"UrQMD + PLUTO", "UrQMD", "UrQMD electrons"}, kLinear, kLinear, true, 0.55, 0.78, 0.99, 0.95, "hist");
+    DrawH1({rsAll, rsUAll, rsUEl}, {"UrQMD + PLUTO", "UrQMD", "UrQMD electrons"}, kLinear, kLinear, true, 0.55, 0.78,
+           0.99, 0.95, "hist");
     fHMean.DrawAnaStepOnPad(step);
     c->cd(2);
-    DrawH1({rbAll, rbUAll, rbUEl}, {"UrQMD + PLUTO", "UrQMD", "UrQMD electrons"}, kLinear, kLinear, true, 0.55, 0.78, 0.99, 0.95, "hist");
+    DrawH1({rbAll, rbUAll, rbUEl}, {"UrQMD + PLUTO", "UrQMD", "UrQMD electrons"}, kLinear, kLinear, true, 0.55, 0.78,
+           0.99, 0.95, "hist");
     fHMean.DrawAnaStepOnPad(step);
   }
 
@@ -1739,7 +1791,7 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
   {
     for (const string& cat : {"", "_urqmdEl", "_urqmdAll"}) {
       string cName = (cat == "_urqmdEl") ? folderUEl : (cat == "_urqmdAll") ? folderUAll : folder;
-      TCanvas* c = fHMean.fHM.CreateCanvas(cName + "CbVsInput_Npm", cName + "CbVsInput_Npm", 1800, 1800);
+      TCanvas* c   = fHMean.fHM.CreateCanvas(cName + "CbVsInput_Npm", cName + "CbVsInput_Npm", 1800, 1800);
       c->Divide(3, 3);
       int i = 1;
       for (auto step : fHMean.fAnaSteps) {
@@ -1752,8 +1804,8 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
         pmSame->SetMaximum(1e-2);
         pmSame->SetMinimum(4e-9);
         DrawH1({pmSame, combBg, combSignalNpm, cocktail},
-             {"N_{same}^{+-}", "B_{c}", "Signal (N_{same}^{+-} - B_{c})", "Cocktail"}, kLinear, kLog, true, 0.53, 0.75,
-             0.99, 0.92, "p");
+               {"N_{same}^{+-}", "B_{c}", "Signal (N_{same}^{+-} - B_{c})", "Cocktail"}, kLinear, kLog, true, 0.53,
+               0.75, 0.99, 0.92, "p");
         fHMean.DrawAnaStepOnPad(step);
       }
     }
@@ -1763,7 +1815,7 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
   {
     for (const string& cat : {"", "_urqmdEl", "_urqmdAll"}) {
       string cName = (cat == "_urqmdEl") ? folderUEl : (cat == "_urqmdAll") ? folderUAll : folder;
-      TCanvas* c = fHMean.fHM.CreateCanvas(cName + "CbVsInput_cocBg", cName + "CbVsInput_cocBg", 1800, 1800);
+      TCanvas* c   = fHMean.fHM.CreateCanvas(cName + "CbVsInput_cocBg", cName + "CbVsInput_cocBg", 1800, 1800);
       c->Divide(3, 3);
       int i = 1;
       for (auto step : fHMean.fAnaSteps) {
@@ -1775,9 +1827,9 @@ void LmvmDrawAll::DrawMinvCombBgAndSignal()
         TH1D* sBgSignal = fHMean.H1Clone("hMinvCombSignalMc" + cat, step);
         sbg2->SetMaximum(2e-2);
         sbg2->SetMinimum(4e-9);
-        TH1D* cocktail     = GetCocktailMinvH1("hMinv" + cat, step);
+        TH1D* cocktail = GetCocktailMinvH1("hMinv" + cat, step);
         DrawH1({sbg2, combBg, sBgSignal, cocktail}, {"Cocktail + BG", "B_{C}", "Signal (Cock+BG - B_{C})", "Cocktail"},
-              kLinear, kLog, true, 0.53, 0.72, 0.99, 0.92, "p");
+               kLinear, kLog, true, 0.53, 0.72, 0.99, 0.92, "p");
         fHMean.DrawAnaStepOnPad(step);
       }
     }

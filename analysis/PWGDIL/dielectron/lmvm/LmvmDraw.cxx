@@ -85,7 +85,7 @@ void LmvmDraw::DrawHistFromFile(const string& fileName, const string& outputDir,
   DrawMismatchesAndGhosts();
   DrawMvdCutQa();
   DrawMvdAndStsHist();
-  DrawAccRecVsMom(); // TODO: finish this method!
+  DrawAccRecVsMom();  // TODO: finish this method!
   DrawPmtXY();
   DrawMinvBg();  // TODO: do not extra method
   DrawBetaMomSpectra();
@@ -127,7 +127,7 @@ void LmvmDraw::DrawBetaMomSpectra()
   TH2D* hPos = fH.H2Clone("hBetaMom_cands_plutoEl+");
   TH2D* hEl  = fH.H2Clone("hBetaMom_cands_plutoEl-");
   TCanvas* c = fH.fHM.CreateCanvas("betaMom/", "betaMom/", 1600, 800);
-  c->Divide(2,1);
+  c->Divide(2, 1);
   c->cd(1);
   DrawH2(hEl, kLinear, kLinear, kLog, "colz");
   c->cd(2);
@@ -390,7 +390,8 @@ void LmvmDraw::Draw1DCut(const string& hist, const string& sigOption, double cut
   DrawCutEffH1(hist, sigOption);
 
   c->cd(3);
-  TH1D* sign = fH.CreateSignificanceH1(fH.H1(hist, ELmvmSrc::Signal), fH.H1(hist, ELmvmSrc::Bg), hist + "_significance", sigOption);
+  TH1D* sign = fH.CreateSignificanceH1(fH.H1(hist, ELmvmSrc::Signal), fH.H1(hist, ELmvmSrc::Bg), hist + "_significance",
+                                       sigOption);
   DrawH1(sign, kLinear, kLinear, "hist");
 }
 
@@ -798,21 +799,22 @@ void LmvmDraw::DrawAccRecVsMom()
   // Acceptance and reconstruction yields cs. momentum for various detector combinations
   for (const int& pdg : {11, 211, 2212, 321}) {
     vector<string> subNames {"mc", "acc", "recSts", "recStsRich", "recStsRichTrd", "recStsRichTrdTof"};
-    vector<string> latex {"MC", "Acc", "Rec in STS", "Rec in STS-RICH", "Rec in STS-RICH-TRD", "Rec in STS-RICH-TRD-TOF"};
+    vector<string> latex {
+      "MC", "Acc", "Rec in STS", "Rec in STS-RICH", "Rec in STS-RICH-TRD", "Rec in STS-RICH-TRD-TOF"};
     vector<string> latexAll(latex.size()), latexPrim(latex.size());
     string ptcl = (pdg == 11) ? "hEl" : (pdg == 211) ? "hPi" : (pdg == 2212) ? "hProton" : "hKaon";
-    
+
     vector<TH1*> histsAll, histsPrim;
     int i = 0;
-    
+
     for (const string& subName : subNames) {
-      TH1D* hAll  = fH.H1(ptcl + "Mom_all_" + subName);
+      TH1D* hAll = fH.H1(ptcl + "Mom_all_" + subName);
       hAll->SetMinimum(3e-6);
       hAll->SetMaximum(50);
       latexAll[i] = latex[i] + " (" + Cbm::NumberToString(hAll->GetEntries() / fNofEvents, 2) + "/ev.)";
       histsAll.push_back(hAll);
 
-      TH1D* hPrim  = fH.H1(ptcl + "Mom_prim_" + subName);
+      TH1D* hPrim = fH.H1(ptcl + "Mom_prim_" + subName);
       hPrim->SetMinimum(3e-6);
       hPrim->SetMaximum(50);
       latexPrim[i] = latex[i] + " (" + Cbm::NumberToString(hPrim->GetEntries() / fNofEvents, 2) + "/ev.)";
@@ -821,7 +823,7 @@ void LmvmDraw::DrawAccRecVsMom()
     }
 
     //if (pdg == 321) continue; TODO: with kaons?
-    double y1 = 0.17; //(pdg == 211) ? 0.20 : 0.74;
+    double y1    = 0.17;  //(pdg == 211) ? 0.20 : 0.74;
     double y2 = 0.42;  //(pdg == 211) ? 0.45 : 0.99;
     string cName = "AccRecMom/" + ptcl + "Mom";
     fH.fHM.CreateCanvas(cName, cName, 900, 900);

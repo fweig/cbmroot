@@ -69,7 +69,7 @@ private:
   /**
      * \brief Draw invariant mass spectra in official style.
      */
-  void DrawMinvOfficialStyle();  
+  void DrawMinvOfficialStyle();
 
   template<class T>
   void CreateMeanHist(const std::string& name, int nofEvents, int nofRebins = -1);  // if nRebin = -1, no rebin
@@ -118,7 +118,8 @@ private:
   void DrawGTrackVertex();
 
   void DrawSignificancesAll();
-  void DrawSignificance(TH2D* hEl, TH2D* hBg, const std::string& name, double minZ, double maxZ, const std::string& option);
+  void DrawSignificance(TH2D* hEl, TH2D* hBg, const std::string& name, double minZ, double maxZ,
+                        const std::string& option);
 
   void DrawCutEffSignal();
 
@@ -148,7 +149,7 @@ private:
      */
   void SaveCanvasToImage();
 
-  double fZ = -44.; // z-position of target
+  double fZ = -44.;  // z-position of target
 
   LmvmDrawAll(const LmvmDrawAll&);
   LmvmDrawAll operator=(const LmvmDrawAll&);

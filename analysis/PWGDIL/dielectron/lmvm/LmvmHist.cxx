@@ -10,9 +10,9 @@
 
 #include "Logger.h"
 
-#include "TText.h"
-#include "TStyle.h"
 #include "TLegend.h"
+#include "TStyle.h"
+#include "TText.h"
 
 #include "LmvmUtils.h"
 
@@ -48,14 +48,24 @@ const vector<std::string> LmvmHist::fBgPairSrcLatex = {"#gamma-#gamma",  "#pi^{0
 
 // the following candidates and global track vectors are mainly set up to investigate misidentifications
 const vector<std::string> LmvmHist::fGTrackNames = {
-      "el+", "el+_prim", "el-", "el-_prim", "pion+", "pion+_prim", "pion-", "pion-_prim", 
-      "proton", "proton_prim", "kaon+", "kaon+_prim", "kaon-", "kaon-_prim", "other"};
+  "el+",    "el+_prim",    "el-",   "el-_prim",   "pion+", "pion+_prim", "pion-", "pion-_prim",
+  "proton", "proton_prim", "kaon+", "kaon+_prim", "kaon-", "kaon-_prim", "other"};
 const vector<std::string> LmvmHist::fGTrackLatex = {
-      "e^{+}", "e^{+}_{prim}", "e^{-}", "e^{-}_{prim}", "#pi^{+}", "#pi^{+}_{prim}", "#pi^{-}", "#pi^{-}_{prim}",
-      "p", "p_{prim}", "K^{+}", "K^{+}_{prim}", "K^{-}", "K^{-}_{prim}", "other"};
+  "e^{+}", "e^{+}_{prim}", "e^{-}", "e^{-}_{prim}", "#pi^{+}", "#pi^{+}_{prim}", "#pi^{-}", "#pi^{-}_{prim}",
+  "p",     "p_{prim}",     "K^{+}", "K^{+}_{prim}", "K^{-}",   "K^{-}_{prim}",   "other"};
 
-const vector<std::string> LmvmHist::fCandNames = {"plutoEl+", "plutoEl-", "urqmdEl+", "urqmdEl-", "pion+", "pion-", "proton", "kaon+", "kaon-", "other"};
-const vector<std::string> LmvmHist::fCandLatex = {"e^{+}_{PLUTO}", "e^{-}_{PLUTO}", "e^{+}_{UrQMD}", "e^{-}_{UrQMD}",  "#pi^{+}", "#pi^{-}", "p", "K^{+}", "K^{-}", "o."};
+const vector<std::string> LmvmHist::fCandNames = {"plutoEl+", "plutoEl-", "urqmdEl+", "urqmdEl-", "pion+",
+                                                  "pion-",    "proton",   "kaon+",    "kaon-",    "other"};
+const vector<std::string> LmvmHist::fCandLatex = {"e^{+}_{PLUTO}",
+                                                  "e^{-}_{PLUTO}",
+                                                  "e^{+}_{UrQMD}",
+                                                  "e^{-}_{UrQMD}",
+                                                  "#pi^{+}",
+                                                  "#pi^{-}",
+                                                  "p",
+                                                  "K^{+}",
+                                                  "K^{-}",
+                                                  "o."};
 
 
 LmvmHist::LmvmHist() {}
@@ -154,7 +164,7 @@ void LmvmHist::FillH2(const string& name, ELmvmSrc src, double x, double y, doub
 {
   if (src == ELmvmSrc::Undefined) return;
   //double myWeight = (src == ELmvmSrc::Signal) ? wSignal : 1.; // TODO: delete commented lines
-  //H2(name, src)->Fill(x, y, myWeight); 
+  //H2(name, src)->Fill(x, y, myWeight);
   H2(name, src)->Fill(x, y, wSignal);
 }
 
@@ -169,7 +179,7 @@ void LmvmHist::FillH1(const string& name, ELmvmSrc src, ELmvmAnaStep step, doubl
 {
   if (src == ELmvmSrc::Undefined || step == ELmvmAnaStep::Undefined) return;
   //double myWeight = (src == ELmvmSrc::Signal) ? wSignal : 1.; // TODO: delete commented lines
-  //FillH1(GetName(name, src, step), x, myWeight); 
+  //FillH1(GetName(name, src, step), x, myWeight);
   FillH1(GetName(name, src, step), x, wSignal);
 }
 
@@ -205,7 +215,8 @@ string LmvmHist::GetName(const string& name, ELmvmSrc src, ELmvmAnaStep step)
   return GetName(GetName(name, src), step);
 }
 
-void LmvmHist::SetOptH1(TH1D *hist, TString xAxisTitle=" ", TString yAxisTitle=" ", Int_t Ndevision=510, Int_t style=1, Float_t size=2, Int_t color=1, string opt)
+void LmvmHist::SetOptH1(TH1D* hist, TString xAxisTitle = " ", TString yAxisTitle = " ", Int_t Ndevision = 510,
+                        Int_t style = 1, Float_t size = 2, Int_t color = 1, string opt)
 {
   hist->GetXaxis()->SetTitle(xAxisTitle);
   hist->GetYaxis()->SetTitle(yAxisTitle);
@@ -241,19 +252,20 @@ void LmvmHist::SetOptH1(TH1D *hist, TString xAxisTitle=" ", TString yAxisTitle="
   else if (opt == "line") {
     hist->SetLineStyle(style);
     hist->SetLineColor(color);
-    hist->SetTitle(""); // TODO: with ""?
+    hist->SetTitle("");  // TODO: with ""?
     hist->SetLineWidth(size);
   }
-  else LOG(error) << "Option '" << opt << "' undefined. Choose 'marker' or 'line'." << std::endl;
+  else
+    LOG(error) << "Option '" << opt << "' undefined. Choose 'marker' or 'line'." << std::endl;
 }
 
-void LmvmHist::SetOptCanvas(TCanvas *canvas)
+void LmvmHist::SetOptCanvas(TCanvas* canvas)
 {
   gStyle->SetOptStat(0);
   gStyle->SetEndErrorSize(5);
   //gStyle->SetErrorX(0);    // X errors of the data points set to be 0
-  gStyle->SetLineStyleString(22,"80 18 12 18 12 12"); // special style for the line
-  gStyle->SetEndErrorSize(5);   // define end width of error bars
+  gStyle->SetLineStyleString(22, "80 18 12 18 12 12");  // special style for the line
+  gStyle->SetEndErrorSize(5);                           // define end width of error bars
   gStyle->SetCanvasColor(10);
   gStyle->SetPadColor(10);
   canvas->SetLeftMargin(0.15);
@@ -261,7 +273,7 @@ void LmvmHist::SetOptCanvas(TCanvas *canvas)
   canvas->SetTopMargin(0.05);
   canvas->SetBottomMargin(0.12);
   canvas->ToggleEventStatus();
-  canvas->Range(-200,-10,1000,-2);
+  canvas->Range(-200, -10, 1000, -2);
   canvas->SetFillColor(0);
   canvas->SetBorderMode(0);
   canvas->SetBorderSize(0);
@@ -273,7 +285,8 @@ void LmvmHist::SetOptCanvas(TCanvas *canvas)
   canvas->SetFrameBorderSize(0);
 }
 
-void LmvmHist::SetLegend(vector<LmvmLegend> legendV, double textsize, Double_t x1, Double_t y1, Double_t x2, Double_t y2)
+void LmvmHist::SetLegend(vector<LmvmLegend> legendV, double textsize, Double_t x1, Double_t y1, Double_t x2,
+                         Double_t y2)
 {
   auto leg = new TLegend(x1, y1, x2, y2);
   leg->SetLineColor(10);
@@ -375,31 +388,34 @@ TH2D* LmvmHist::CreateSignificanceH2(TH2D* signal, TH2D* bg, const string& name,
   return hsig;
 }
 
-void LmvmHist::DrawAllGTracks(int dim, const string& cName, const string& hName, vector<string> xLabel, vector<string> yLabel, double min, double max)
+void LmvmHist::DrawAllGTracks(int dim, const string& cName, const string& hName, vector<string> xLabel,
+                              vector<string> yLabel, double min, double max)
 {
   TCanvas* c = fHM.CreateCanvas(cName, cName, 2400, 2400);
   c->Divide(4, 4);
   int i = 1;
-  for (const string& ptcl : fGTrackNames) {      
+  for (const string& ptcl : fGTrackNames) {
     c->cd(i++);
     string hFullname = hName + "_" + ptcl;
-    DrawAll(dim, hFullname, fGTrackLatex[i-2], xLabel, yLabel, min, max);
+    DrawAll(dim, hFullname, fGTrackLatex[i - 2], xLabel, yLabel, min, max);
   }
 }
 
-void LmvmHist::DrawAllCands(int dim, const string& cName, const string& hName, vector<string> xLabel, vector<string> yLabel, double min, double max)
+void LmvmHist::DrawAllCands(int dim, const string& cName, const string& hName, vector<string> xLabel,
+                            vector<string> yLabel, double min, double max)
 {
   TCanvas* c = fHM.CreateCanvas(cName, cName, 2400, 1800);
   c->Divide(4, 3);
   int i = 1;
-  for (const string& ptcl : fCandNames) {      
+  for (const string& ptcl : fCandNames) {
     c->cd(i++);
     string hFullname = hName + "_" + ptcl;
-    DrawAll(dim, hFullname, fCandLatex[i-2], xLabel, yLabel, min, max);
+    DrawAll(dim, hFullname, fCandLatex[i - 2], xLabel, yLabel, min, max);
   }
 }
 
-void LmvmHist::DrawAllCandsAndSteps(int dim, const string& cName, const string& hName, vector<string> xLabel, vector<string> yLabel, double min, double max)
+void LmvmHist::DrawAllCandsAndSteps(int dim, const string& cName, const string& hName, vector<string> xLabel,
+                                    vector<string> yLabel, double min, double max)
 {
   for (auto step : fAnaSteps) {
     TCanvas* c = fHM.CreateCanvas(GetName(cName + "cands_all", step), GetName(cName + "cands_all", step), 2400, 1800);
@@ -408,7 +424,7 @@ void LmvmHist::DrawAllCandsAndSteps(int dim, const string& cName, const string& 
     for (const string& ptcl : fCandNames) {
       c->cd(i++);
       string hFullname = GetName(hName + "_" + ptcl, step);
-      DrawAll(dim, hFullname.c_str(), fCandLatex[i-2], xLabel, yLabel, min, max);
+      DrawAll(dim, hFullname.c_str(), fCandLatex[i - 2], xLabel, yLabel, min, max);
     }
   }
 
@@ -424,7 +440,8 @@ void LmvmHist::DrawAllCandsAndSteps(int dim, const string& cName, const string& 
   }
 }
 
-void LmvmHist::DrawAll(int dim, const string& hFullname, const string& text, vector<string> xLabel, vector<string> yLabel, double min, double max)
+void LmvmHist::DrawAll(int dim, const string& hFullname, const string& text, vector<string> xLabel,
+                       vector<string> yLabel, double min, double max)
 {
   if (dim == 1) {
     TH1D* h = H1Clone(hFullname.c_str());
@@ -449,10 +466,11 @@ void LmvmHist::DrawAll(int dim, const string& hFullname, const string& text, vec
       for (size_t iL = 0; iL < yLabel.size(); iL++) {
         h->GetYaxis()->SetBinLabel(iL + 1, yLabel[iL].c_str());
       }
-    }     
+    }
   }
-  else LOG(error) << "LmvmHist::DrawAll: Choose dimension 1 or 2";
-  
+  else
+    LOG(error) << "LmvmHist::DrawAll: Choose dimension 1 or 2";
+
   DrawTextOnPad(text, 0.25, 0.9, 0.75, 0.999);
 }
 

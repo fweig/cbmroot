@@ -4,13 +4,13 @@
 
 #include "LmvmUtils.h"
 
-#include "Logger.h"
-
 #include "CbmKFVertex.h"
 #include "CbmL1PFFitter.h"
 #include "CbmMCTrack.h"
 #include "CbmStsTrack.h"
 #include "cbm/elid/CbmLitGlobalElectronId.h"
+
+#include "Logger.h"
 
 #include "TClonesArray.h"
 #include "TDatabasePDG.h"
@@ -260,19 +260,23 @@ void LmvmUtils::IsElectron(int globalTrackIndex, double momentum, double momentu
     if (cand->fTofDist > momentum*slope + b) tofEl = false;
   }*/
 
-  bool isMomCut  = (momentumCut > 0.) ? (momentum < momentumCut) : true;
+  bool isMomCut     = (momentumCut > 0.) ? (momentum < momentumCut) : true;
   cand->fIsElectron = (richEl && trdEl && tofEl && isMomCut);
 }
 
-void LmvmUtils::IsRichElectron(int globalTrackIndex, double momentum, LmvmCand* cand) {
+void LmvmUtils::IsRichElectron(int globalTrackIndex, double momentum, LmvmCand* cand)
+{
   cand->fIsRichElectron = CbmLitGlobalElectronId::GetInstance().IsRichElectron(globalTrackIndex, momentum);
 }
 
-void LmvmUtils::IsTrdElectron(int globalTrackIndex, double momentum, LmvmCand* cand) {
-  cand->fIsTrdElectron = (momentum < 1.) ? true : CbmLitGlobalElectronId::GetInstance().IsTrdElectron(globalTrackIndex, momentum);
+void LmvmUtils::IsTrdElectron(int globalTrackIndex, double momentum, LmvmCand* cand)
+{
+  cand->fIsTrdElectron =
+    (momentum < 1.) ? true : CbmLitGlobalElectronId::GetInstance().IsTrdElectron(globalTrackIndex, momentum);
 }
 
-void LmvmUtils::IsTofElectron(int globalTrackIndex, double momentum, LmvmCand* cand) {
+void LmvmUtils::IsTofElectron(int globalTrackIndex, double momentum, LmvmCand* cand)
+{
   cand->fIsTofElectron = CbmLitGlobalElectronId::GetInstance().IsTofElectron(globalTrackIndex, momentum);
 }
 
@@ -303,18 +307,18 @@ string LmvmUtils::GetChargeStr(const CbmMCTrack* mct)
 
 double LmvmUtils::GetMassScaleInmed(double minv)  // TODO: make these more elegant and delete cout's
 {
-  int    nArray = sizeof(fMinvArray);
-  double weight = -1.;  
+  int nArray    = sizeof(fMinvArray);
+  double weight = -1.;
 
   if (minv < fMinvArray[0]) return fScaleArrayInmed[0];
   else {
     for (int i = 1; i < nArray; i++) {
       if (fMinvArray[i] > minv) {
-        double dy    = fScaleArrayInmed[i] - fScaleArrayInmed[i-1];
-        double dx    = fMinvArray[i] - fMinvArray[i-1];
-        double slope = dy/dx;
-        double dLeft = minv - fMinvArray[i-1];
-        weight       = fScaleArrayInmed[i-1] + slope * dLeft;
+        double dy    = fScaleArrayInmed[i] - fScaleArrayInmed[i - 1];
+        double dx    = fMinvArray[i] - fMinvArray[i - 1];
+        double slope = dy / dx;
+        double dLeft = minv - fMinvArray[i - 1];
+        weight       = fScaleArrayInmed[i - 1] + slope * dLeft;
         return weight;
       }
     }
@@ -324,18 +328,18 @@ double LmvmUtils::GetMassScaleInmed(double minv)  // TODO: make these more elega
 
 double LmvmUtils::GetMassScaleQgp(double minv)  // TODO: make these more elegant and delete cout's
 {
-  int    nArray = sizeof(fMinvArray);
-  double weight = -1.;  
+  int nArray    = sizeof(fMinvArray);
+  double weight = -1.;
 
   if (minv < fMinvArray[0]) return fScaleArrayQgp[0];
   else {
     for (int i = 1; i < nArray; i++) {
       if (fMinvArray[i] > minv) {
-        double dy    = fScaleArrayQgp[i] - fScaleArrayQgp[i-1];
-        double dx    = fMinvArray[i] - fMinvArray[i-1];
-        double slope = dy/dx;
-        double dLeft = minv - fMinvArray[i-1];
-        weight       = fScaleArrayQgp[i-1] + slope * dLeft;
+        double dy    = fScaleArrayQgp[i] - fScaleArrayQgp[i - 1];
+        double dx    = fMinvArray[i] - fMinvArray[i - 1];
+        double slope = dy / dx;
+        double dLeft = minv - fMinvArray[i - 1];
+        weight       = fScaleArrayQgp[i - 1] + slope * dLeft;
         return weight;
       }
     }

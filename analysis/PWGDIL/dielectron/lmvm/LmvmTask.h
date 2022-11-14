@@ -5,14 +5,13 @@
 #ifndef LMVM_TASK_H
 #define LMVM_TASK_H
 
+#include "CbmGlobalTrack.h"
 #include "CbmKFVertex.h"
 #include "CbmStsKFTrackFitter.h"
 
 #include "FairMCEventHeader.h"
 #include "FairRootManager.h"
 #include "FairTask.h"
-
-#include "CbmGlobalTrack.h"
 
 #include <fstream>
 #include <map>
@@ -123,7 +122,8 @@ public:
   void AnalyseGlobalTracks();
   void CheckMismatches(const CbmGlobalTrack* gTrack, int pdg, bool isElectron, const std::string& ptcl, double weight);
   void BetaMom(const CbmMCTrack* mct, const CbmGlobalTrack* gTrack, const std::string& ptcl);
-  void CheckTofIdentification(const CbmGlobalTrack* gTrack, const std::string& pidString, double mom, double m2, int pdg, bool isTofEl);
+  void CheckTofIdentification(const CbmGlobalTrack* gTrack, const std::string& pidString, double mom, double m2,
+                              int pdg, bool isTofEl);
   void PidVsMom(const CbmGlobalTrack* gTrack, int iGTrack, int pdg, double mom);
 
   void CheckGammaConvAndPi0();
@@ -217,7 +217,7 @@ private:
 
   std::map<int, int> fNofHitsInRingMap;  // Number of hits in the MC RICH ring
 
-  double fZ = -44.; // z-position of target
+  double fZ = -44.;  // z-position of target
 
   std::string fParticle = "";
 

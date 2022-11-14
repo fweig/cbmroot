@@ -14,16 +14,15 @@
 #include "CbmRichPoint.h"
 #include "CbmRichRing.h"
 #include "CbmRichUtil.h"
-
 #include "CbmStsHit.h"
 #include "CbmStsKFTrackFitter.h"
 #include "CbmStsTrack.h"
-#include "CbmTrdHit.h"
-#include "CbmTrdTrack.h"
 #include "CbmTofHit.h"
 #include "CbmTofPoint.h"
 #include "CbmTofTrack.h"
 #include "CbmTrackMatchNew.h"
+#include "CbmTrdHit.h"
+#include "CbmTrdTrack.h"
 #include "CbmVertex.h"
 #include "cbm/elid/CbmLitGlobalElectronId.h"
 #include "cbm/qa/mc/CbmLitMCTrackCreator.h"
@@ -37,17 +36,17 @@
 
 #include "TClonesArray.h"
 #include "TDatabasePDG.h"
-#include "TMCProcess.h"
 #include "TFile.h"
+#include "TMCProcess.h"
 #include "TRandom3.h"
 #include "TVector3.h"
 
 #include <sstream>
 #include <vector>
 
+#include "LmvmHist.h"
 #include "LmvmSimParam.h"
 #include "LmvmUtils.h"
-#include "LmvmHist.h"
 
 using namespace std;
 
@@ -70,8 +69,10 @@ void LmvmTask::InitHists()
 
   fH.CreateH1("hMotherPdg", {"mc", "acc"}, "Pdg code", "Particles / Event", 7000, -3500., 3500.);
   fH.CreateH1("hCandPdg", fH.fAnaStepNames, "Pdg code", "Particles / Event", 7001, -3500., 3500.);
-  fH.CreateH2("hCandPdgVsMom", fH.fAnaStepNames, "P [GeV/c]", "Particle", "Yield/(Event * Bin)", 200, 0., 10., 6, 0., 6.);
-  fH.CreateH2("hCandElSrc",  "Analysis step", "Mother of Electron Candidate", ax, fH.fNofAnaSteps, 0., fH.fNofAnaSteps, 8, 0., 8.);
+  fH.CreateH2("hCandPdgVsMom", fH.fAnaStepNames, "P [GeV/c]", "Particle", "Yield/(Event * Bin)", 200, 0., 10., 6, 0.,
+              6.);
+  fH.CreateH2("hCandElSrc", "Analysis step", "Mother of Electron Candidate", ax, fH.fNofAnaSteps, 0., fH.fNofAnaSteps,
+              8, 0., 8.);
   fH.CreateH2("hBgPairPdg", fH.fAnaStepNames, "PDG of Candidate 1", "PDG of Candidate 2", ax, 8, 0., 8., 8, 0., 8.);
 
   fH.CreateH2("hPmtXY", fH.fSrcNames, "X [cm]", "Y [cm]", "Counter", 110, -110, 110, 200, -200, 200);
@@ -79,15 +80,15 @@ void LmvmTask::InitHists()
   fH.CreateH2("hVertexGammaXZ", fH.fAnaStepNames, "Z [cm]", "X [cm]", ax, 200, -10., 190., 400, -130., 130.);
   fH.CreateH2("hVertexGammaYZ", fH.fAnaStepNames, "Z [cm]", "Y [cm]", ax, 200, -10., 190., 400, -130., 130.);
   fH.CreateH2("hVertexGammaXY", fH.fAnaStepNames, "X [cm]", "Y [cm]", ax, 400, -130., 130., 400, -130., 130.);
-  fH.CreateH2("hVertexGammaRZ", fH.fAnaStepNames, "Z [cm]", "#sqrt{X^{2}+Y^{2}} [cm]", ax, 110, fZ - 10., fZ + 100., 50, 0.,
-              50.);
-  
+  fH.CreateH2("hVertexGammaRZ", fH.fAnaStepNames, "Z [cm]", "#sqrt{X^{2}+Y^{2}} [cm]", ax, 110, fZ - 10., fZ + 100., 50,
+              0., 50.);
+
   // vertices of not-electron candidates that are misidentified as electrons in ToF
   fH.CreateH2("hVertexXZ_misidTof", fH.fAnaStepNames, "Z [cm]", "X [cm]", ax, 110, fZ - 10., fZ + 100., 100, -50., 50.);
   fH.CreateH2("hVertexYZ_misidTof", fH.fAnaStepNames, "Z [cm]", "Y [cm]", ax, 110, fZ - 10., fZ + 100., 100, -50., 50.);
   fH.CreateH2("hVertexXY_misidTof", fH.fAnaStepNames, "X [cm]", "Y [cm]", ax, 100, -50., 50., 100, -50., 50.);
-  fH.CreateH2("hVertexRZ_misidTof", fH.fAnaStepNames, "Z [cm]", "#sqrt{X^{2}+Y^{2}} [cm]", ax, 110, fZ - 10., fZ + 100., 100, 0.,
-              50.);
+  fH.CreateH2("hVertexRZ_misidTof", fH.fAnaStepNames, "Z [cm]", "#sqrt{X^{2}+Y^{2}} [cm]", ax, 110, fZ - 10., fZ + 100.,
+              100, 0., 50.);
   fH.CreateH1("hNofBgTracks", "Analysis step", "Tracks/event", fH.fNofAnaSteps, 0., fH.fNofAnaSteps);
   fH.CreateH1("hNofSignalTracks", "Analysis step", "Tracks/event", fH.fNofAnaSteps, 0., fH.fNofAnaSteps);
   fH.CreateH2("hBgSrcTracks", "Analysis step", "Candidate Source", ax, fH.fNofAnaSteps, 0., fH.fNofAnaSteps, 8, 0., 8.);
@@ -96,13 +97,15 @@ void LmvmTask::InitHists()
   fH.CreateH1("hNofMismatches", {"all", "rich", "trd", "tof"}, "Analysis step", "Tracks/event", fH.fNofAnaSteps, 0.,
               fH.fNofAnaSteps);
   fH.CreateH1("hNofMismatches_gTracks", {"all", "complete"}, fH.fGTrackNames, "Detector", ax, 7., 0., 7.);
-  fH.CreateH1("hNofMismatchedTrackSegments", {"all", "complete"}, fH.fGTrackNames, "nof mism. track segments", ax, 4., 0., 4.); //"all": also partial tracks; "complete": only tracks with entries in all detectors
-  fH.CreateH2("hMatchId_gTracks", fH.fGTrackNames, "Nof mismatched Track Segments", "Identification", ax, 4., 0., 4., 2., 0., 2.);
-  
+  fH.CreateH1("hNofMismatchedTrackSegments", {"all", "complete"}, fH.fGTrackNames, "nof mism. track segments", ax, 4.,
+              0., 4.);  //"all": also partial tracks; "complete": only tracks with entries in all detectors
+  fH.CreateH2("hMatchId_gTracks", fH.fGTrackNames, "Nof mismatched Track Segments", "Identification", ax, 4., 0., 4.,
+              2., 0., 2.);
+
   fH.CreateH1("hChi2_mismatch_all", {"rich", "trd", "tof"}, fH.fGTrackNames, "#chi^{2}", ax, 200, 0., 20.);
   fH.CreateH1("hChi2_truematch_all", {"rich", "trd", "tof"}, fH.fGTrackNames, "#chi^{2}", ax, 200, 0., 20.);
   fH.CreateH1("hChi2_mismatch_complete", {"rich", "trd", "tof"}, fH.fGTrackNames, "#chi^{2}", ax, 200, 0., 20.);
-  fH.CreateH1("hChi2_truematch_complete", {"rich", "trd", "tof"}, fH.fGTrackNames, "#chi^{2}", ax, 200, 0., 20.);  
+  fH.CreateH1("hChi2_truematch_complete", {"rich", "trd", "tof"}, fH.fGTrackNames, "#chi^{2}", ax, 200, 0., 20.);
 
   fH.CreateH1("hNofGhosts", "Analysis step", "Tracks/event", fH.fNofAnaSteps, 0., fH.fNofAnaSteps);
 
@@ -143,8 +146,10 @@ void LmvmTask::InitHists()
   fH.CreateH1("hMvdMcDist", {"1", "2"}, fH.fSrcNames, "Track-Hit distance [cm]", ax, 100, 0., 10.);
 
   fH.CreateH1("hMinv", fH.fSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 250, 0., 2.5);
-  fH.CreateH1("hMinv_urqmdAll", fH.fSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 250, 0., 2.5);  // for UrQMD particles only
-  fH.CreateH1("hMinv_urqmdEl", fH.fSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 250, 0., 2.5);   // for UrQMD electrons only 
+  fH.CreateH1("hMinv_urqmdAll", fH.fSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 250, 0.,
+              2.5);  // for UrQMD particles only
+  fH.CreateH1("hMinv_urqmdEl", fH.fSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 250, 0.,
+              2.5);  // for UrQMD electrons only
 
   // Pair Yield histograms for combinatorial BG calculation
   for (const string& comb : {"PM", "PP", "MM"}) {
@@ -153,7 +158,7 @@ void LmvmTask::InitHists()
       fH.CreateH1(hName, {"sameEv", "mixedEv"}, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 250, 0., 2.5);
     }
   }
-  
+
   fH.CreateH1("hMinvBgMatch", {"trueMatch", "trueMatchEl", "trueMatchNotEl", "mismatch"}, fH.fAnaStepNames,
               "M_{ee} [GeV/c^{2}]", ax, 250, 0., 2.5);
   fH.CreateH1("hMinvBgSource", fH.fBgPairSrcNames, fH.fAnaStepNames, "M_{ee} [GeV/c^{2}]", axMinv, 250, 0., 2.5);
@@ -188,15 +193,16 @@ void LmvmTask::InitHists()
   fH.CreateH1("hKaonMom", {"all", "prim"}, {"mc", "acc", "recSts", "recStsRich", "recStsRichTrd", "recStsRichTrdTof"},
               "P [GeV/c]", ax, 100, 0., 10.);
 
-  fH.CreateH1("hPionSupp", {"pi", "idEl"},fH.fAnaStepNames, "P [GeV/c]", ax, 20, 0., 10.);
+  fH.CreateH1("hPionSupp", {"pi", "idEl"}, fH.fAnaStepNames, "P [GeV/c]", ax, 20, 0., 10.);
 
   fH.CreateH1("hMom_gTracks", fH.fGTrackNames, "P [GeV/c]", ax, 100, 0., 10.);
   fH.CreateH1("hMom_cands", fH.fCandNames, fH.fAnaStepNames, "P [GeV/c]", ax, 100, 0., 10.);
   fH.CreateH2("hPtY_gTracks", fH.fGTrackNames, "Rapidity", "P_{t} [GeV/c]", ax, 40, 0., 4., 20, 0., 2.);
   fH.CreateH2("hPtY_cands", fH.fCandNames, fH.fAnaStepNames, "Rapidity", "P_{t} [GeV/c]", ax, 40, 0., 4., 20, 0., 2.);
   fH.CreateH2("hTofM2_gTracks", fH.fGTrackNames, "P [GeV/c]", "m^{2} [GeV/c^{2}]^{2}", ax, 100, 0., 10., 500, -0.1, 1.);
-  fH.CreateH2("hTofM2_cands", fH.fCandNames, fH.fAnaStepNames, "P [GeV/c]", "m^{2} [GeV/c^{2}]^{2}", ax, 100, 0., 10., 500, -0.1, 1.);
-  
+  fH.CreateH2("hTofM2_cands", fH.fCandNames, fH.fAnaStepNames, "P [GeV/c]", "m^{2} [GeV/c^{2}]^{2}", ax, 100, 0., 10.,
+              500, -0.1, 1.);
+
   fH.CreateH1("hTofPilePdgs_cands", fH.fAnaStepNames, "Particle", ax, 12, 0., 12.);
   fH.CreateH1("hTofPilePdgs_gTracks", "Particle", ax, 12, 0., 12.);
   fH.CreateH2("hTofPileHitXY", fH.fCandNames, "X [cm]", "Y [cm]", ax, 110., -550., 550., 90., -450., 450.);
@@ -205,22 +211,30 @@ void LmvmTask::InitHists()
   fH.CreateH2("hTofPilePty_cands", fH.fCandNames, "Rapidity", "P_{t} [GeV/c]", ax, 40, 0., 4., 20, 0., 2.);
 
   // ToF Hits
-  fH.CreateH2("hTofPointXY", {"trueid", "misid", "truematch", "mismatch"}, fH.fGTrackNames, "X [cm]", "Y [cm]", ax, 110., -550., 550., 90., -450., 450.); // to see if maybe misid/mismatches stem from a certain region in ToF
-  fH.CreateH2("hTofHitXY", {"trueid", "misid", "truematch", "mismatch"}, fH.fGTrackNames, "X [cm]", "Y [cm]", ax, 110., -550., 550., 90., -450., 450.);
-  fH.CreateH1("hTofHitPointDist", {"trueid", "misid", "truematch", "mismatch"}, fH.fGTrackNames, "#sqrt{dX^{2} + dY^{2}} [cm]", ax, 400., 0., 20.);
-  fH.CreateH2("hTofHitTrackDist_gTracks", {"trueid", "misid", "truematch", "mismatch"}, fH.fGTrackNames, "P [GeV/c]", "Distance [cm]", ax, 100, 0., 10., 200., 0., 50.);
-  fH.CreateH2("hTofHitTrackDist_cands", fH.fCandNames, "P [GeV/c]", "Distance [cm]", ax, 100, 0., 10., 200., 0., 50.);    
+  fH.CreateH2("hTofPointXY", {"trueid", "misid", "truematch", "mismatch"}, fH.fGTrackNames, "X [cm]", "Y [cm]", ax,
+              110., -550., 550., 90., -450.,
+              450.);  // to see if maybe misid/mismatches stem from a certain region in ToF
+  fH.CreateH2("hTofHitXY", {"trueid", "misid", "truematch", "mismatch"}, fH.fGTrackNames, "X [cm]", "Y [cm]", ax, 110.,
+              -550., 550., 90., -450., 450.);
+  fH.CreateH1("hTofHitPointDist", {"trueid", "misid", "truematch", "mismatch"}, fH.fGTrackNames,
+              "#sqrt{dX^{2} + dY^{2}} [cm]", ax, 400., 0., 20.);
+  fH.CreateH2("hTofHitTrackDist_gTracks", {"trueid", "misid", "truematch", "mismatch"}, fH.fGTrackNames, "P [GeV/c]",
+              "Distance [cm]", ax, 100, 0., 10., 200., 0., 50.);
+  fH.CreateH2("hTofHitTrackDist_cands", fH.fCandNames, "P [GeV/c]", "Distance [cm]", ax, 100, 0., 10., 200., 0., 50.);
 
   fH.CreateH1("hMomRatio_cands", fH.fCandNames, fH.fAnaStepNames, "Ratio P_{rec}/P_{MC}", ax, 100, 0., 2.);
-  fH.CreateH2("hMomRatioVsMom_cands", fH.fCandNames, fH.fAnaStepNames, "P_{MC} [GeV/c]", "Ratio P_{rec}/P_{MC}", ax, 100, 0., 10., 200., 0., 2.);
+  fH.CreateH2("hMomRatioVsMom_cands", fH.fCandNames, fH.fAnaStepNames, "P_{MC} [GeV/c]", "Ratio P_{rec}/P_{MC}", ax,
+              100, 0., 10., 200., 0., 2.);
 
   // compare misid. candidates (pions, proton, ...) with not misid. ones
   for (size_t iP = 4; iP < fH.fCandNames.size(); iP++) {
-    fH.CreateH1("hMom_"   + fH.fCandNames[iP], {"true", "misid"}, "P [GeV/c]", ax, 100, 0., 10.);
-    fH.CreateH2("hPtY_"   + fH.fCandNames[iP], {"true", "misid"}, "Rapidity", "P_{t} [GeV/c]", ax, 40, 0., 4., 40, 0., 2.);
-    fH.CreateH2("hTofM2_" + fH.fCandNames[iP], {"true", "misid"}, "P [GeV/c]", "m^{2} [GeV/c^{2}]^{2}", ax, 100, 0., 10., 500, -0.1, 1.);
+    fH.CreateH1("hMom_" + fH.fCandNames[iP], {"true", "misid"}, "P [GeV/c]", ax, 100, 0., 10.);
+    fH.CreateH2("hPtY_" + fH.fCandNames[iP], {"true", "misid"}, "Rapidity", "P_{t} [GeV/c]", ax, 40, 0., 4., 40, 0.,
+                2.);
+    fH.CreateH2("hTofM2_" + fH.fCandNames[iP], {"true", "misid"}, "P [GeV/c]", "m^{2} [GeV/c^{2}]^{2}", ax, 100, 0.,
+                10., 500, -0.1, 1.);
   }
-  
+
   // beta-momentum spectra
   fH.CreateH2("hBetaMom", {"gTracks", "cands"}, fH.fCandNames, "P * Q ", "beta", ax, 200, -10., 10., 150., 0., 1.5);
   fH.CreateH2("hBetaMom_allGTracks", "P * Q ", "beta", ax, 200, -10., 10., 150., 0., 1.5);
@@ -232,18 +246,26 @@ void LmvmTask::InitHists()
   fH.CreateH2("hIndexStsTrd", fH.fGTrackNames, "STS Index", "TRD Index", ax, 400., 0., 400., 400., 0., 400.);
   fH.CreateH2("hIndexStsTof", fH.fGTrackNames, "STS Index", "ToF Index", ax, 400., 0., 400., 800., 0., 800.);*/
 
-  fH.CreateH2("hPdgVsMom_gTracks", {"rich", "trd", "tof"}, {"all", "complete"}, "P [GeV/c]", "Misid. Particle", "Yield/(Event * Bin)", 200, 0., 10., 6, 0., 6.);
+  fH.CreateH2("hPdgVsMom_gTracks", {"rich", "trd", "tof"}, {"all", "complete"}, "P [GeV/c]", "Misid. Particle",
+              "Yield/(Event * Bin)", 200, 0., 10., 6, 0., 6.);
 
   fH.CreateH2("hTofM2Calc_gTracks", fH.fGTrackNames, "Time", "", "Yield", 100., 5., 15., 4., 0., 4.);
-  fH.CreateH2("hTofTimeVsMom_gTracks", {"trueid", "misid", "truematch", "mismatch"}, fH.fGTrackNames, "P [GeV/c]", "Time (ct) [m]", "Yield", 100., 0., 10., 100., 5., 15.);  
-  fH.CreateH2("hTofTimeVsMom_cands", fH.fCandNames, "P [GeV/c]", "Time (ct) [m]", "Yield", 100., 0., 10., 100., 5., 15.);
-  fH.CreateH2("hRichRingTrackDist_gTracks", fH.fGTrackNames, "P [GeV/c]", "D [cm]", "Yield", 100., 0., 10., 200., 0., 20.);
-  fH.CreateH2("hRichRingTrackDist_cands", fH.fCandNames, fH.fAnaStepNames, "P [GeV/c]", "D [cm]", "Yield", 100., 0., 10., 200., 0., 20.);  
+  fH.CreateH2("hTofTimeVsMom_gTracks", {"trueid", "misid", "truematch", "mismatch"}, fH.fGTrackNames, "P [GeV/c]",
+              "Time (ct) [m]", "Yield", 100., 0., 10., 100., 5., 15.);
+  fH.CreateH2("hTofTimeVsMom_cands", fH.fCandNames, "P [GeV/c]", "Time (ct) [m]", "Yield", 100., 0., 10., 100., 5.,
+              15.);
+  fH.CreateH2("hRichRingTrackDist_gTracks", fH.fGTrackNames, "P [GeV/c]", "D [cm]", "Yield", 100., 0., 10., 200., 0.,
+              20.);
+  fH.CreateH2("hRichRingTrackDist_cands", fH.fCandNames, fH.fAnaStepNames, "P [GeV/c]", "D [cm]", "Yield", 100., 0.,
+              10., 200., 0., 20.);
 
   // check chi2 of candidates after El-ID step
-  fH.CreateH2("hChi2VsMom", {"sts", "rich", "trd", "tof"}, fH.fCandNames, "P [GeV/c]", "#chi^{2}", ax, 100., 0., 10., 200, 0., 20.);
-  fH.CreateH2("hTofTimeVsChi2", {"sts", "rich", "trd", "tof"}, fH.fCandNames, "#chi^{2}", "Time (ct) [m]", ax, 200., 0., 20., 200, 0., 20.);
-  fH.CreateH2("hChi2Comb", {"StsRich", "StsTrd", "StsTof", "RichTrd", "RichTof", "TrdTof"}, fH.fCandNames, "#chi^{2}_{1}", "#chi^{2}_{2}", ax, 200., 0., 20., 200, 0., 20.);
+  fH.CreateH2("hChi2VsMom", {"sts", "rich", "trd", "tof"}, fH.fCandNames, "P [GeV/c]", "#chi^{2}", ax, 100., 0., 10.,
+              200, 0., 20.);
+  fH.CreateH2("hTofTimeVsChi2", {"sts", "rich", "trd", "tof"}, fH.fCandNames, "#chi^{2}", "Time (ct) [m]", ax, 200., 0.,
+              20., 200, 0., 20.);
+  fH.CreateH2("hChi2Comb", {"StsRich", "StsTrd", "StsTof", "RichTrd", "RichTof", "TrdTof"}, fH.fCandNames,
+              "#chi^{2}_{1}", "#chi^{2}_{2}", ax, 200., 0., 20., 200, 0., 20.);
 }
 
 InitStatus LmvmTask::Init()
@@ -273,8 +295,8 @@ InitStatus LmvmTask::Init()
 
   //fTofTracks       = InitOrFatal<TClonesArray>("TofTracks"); // TODO: check this and next lines
   FairRootManager* fairRootMan = FairRootManager::Instance();
-  fTofTracks = (TClonesArray*) fairRootMan->GetObject("TofTrack");
-  if (fTofTracks == nullptr) { LOG(warning) << "LmvmTask::Init : no TofTrack array!"; }  
+  fTofTracks                   = (TClonesArray*) fairRootMan->GetObject("TofTrack");
+  if (fTofTracks == nullptr) { LOG(warning) << "LmvmTask::Init : no TofTrack array!"; }
 
   InitHists();
 
@@ -344,8 +366,10 @@ double LmvmTask::MinvScale(double minv)
 {
   double scale = -1.;
   if (fParticle == "inmed") scale = LmvmUtils::GetMassScaleInmed(minv);
-  else if (fParticle == "qgp") scale = LmvmUtils::GetMassScaleQgp(minv);
-  else scale = 1.;
+  else if (fParticle == "qgp")
+    scale = LmvmUtils::GetMassScaleQgp(minv);
+  else
+    scale = 1.;
   return scale;
 }
 
@@ -383,7 +407,7 @@ void LmvmTask::DoMcTrack()
     string chargeStr = (mct->GetCharge() > 0) ? "+" : "-";
     bool isAcc       = IsMcTrackAccepted(i);
     double mom       = mct->GetP();
-    double w = (LmvmUtils::IsMcSignalEl(mct)) ? fW : 1.;
+    double w         = (LmvmUtils::IsMcSignalEl(mct)) ? fW : 1.;
 
     FillMomHists(mct, nullptr, src, ELmvmAnaStep::Mc);
     if (isAcc) FillMomHists(mct, nullptr, src, ELmvmAnaStep::Acc);
@@ -428,10 +452,10 @@ void LmvmTask::DoMcTrack()
 void LmvmTask::DoMcPair()
 {
   int nMcTracks = fMCTracks->GetEntries();
-  for (int iMc1 = 0; iMc1 < nMcTracks; iMc1++) {   // TODO: range until iMc1 < nMcTracks-1 ??
+  for (int iMc1 = 0; iMc1 < nMcTracks; iMc1++) {  // TODO: range until iMc1 < nMcTracks-1 ??
     CbmMCTrack* mct1 = static_cast<CbmMCTrack*>(fMCTracks->At(iMc1));
     ELmvmSrc src     = LmvmUtils::GetMcSrc(mct1, fMCTracks);
-    
+
     // To speed up: select only signal, eta and pi0 electrons
     if (!(src == ELmvmSrc::Signal || src == ELmvmSrc::Pi0 || src == ELmvmSrc::Eta)) continue;
 
@@ -481,7 +505,7 @@ void LmvmTask::RichPmtXY()
     TVector3 v;
     mct->GetStartVertex(v);
     ELmvmSrc src = LmvmUtils::GetMcSrc(mct, fMCTracks);
-    double w = (LmvmUtils::IsMcSignalEl(mct)) ? fW : 1.;
+    double w     = (LmvmUtils::IsMcSignalEl(mct)) ? fW : 1.;
     if (v.Z() < 2.) { fH.FillH2("hPmtXY", src, richHit->GetX(), richHit->GetY(), w); }
   }
 }
@@ -501,8 +525,8 @@ void LmvmTask::AnalyseGlobalTracks()
 
   for (int i = 0; i < nofMcTracks; i++) {
     CbmMCTrack* mct = static_cast<CbmMCTrack*>(fMCTracks->At(i));
-    int pdg = mct->GetPdgCode();
-    bool isAccSts = (mct->GetNPoints(ECbmModuleId::kMvd) + mct->GetNPoints(ECbmModuleId::kSts) >= 4);
+    int pdg         = mct->GetPdgCode();
+    bool isAccSts   = (mct->GetNPoints(ECbmModuleId::kMvd) + mct->GetNPoints(ECbmModuleId::kSts) >= 4);
     TVector3 vertex;
     mct->GetStartVertex(vertex);
 
@@ -554,7 +578,7 @@ void LmvmTask::AnalyseGlobalTracks()
       if (isRich) fH.FillH1(hName + "Mom_all_recStsRich", p);
       if (isRich && isTrd) fH.FillH1(hName + "Mom_all_recStsRichTrd", p);
       if (isRich && isTrd && isTof) fH.FillH1(hName + "Mom_all_recStsRichTrdTof", p);
-     
+
       if (isPrim) {
         fH.FillH1(hName + "Mom_prim_recSts", p);
         if (isRich) fH.FillH1(hName + "Mom_prim_recStsRich", p);
@@ -570,34 +594,44 @@ void LmvmTask::AnalyseGlobalTracks()
     fH.FillH2("hIndexStsTrd_"  + ptcl, stsInd, gTrack->GetTrdTrackIndex());
     fH.FillH2("hIndexStsTof_"  + ptcl, stsInd, gTrack->GetTofHitIndex());*/
 
-    bool isTofEl = (CbmLitGlobalElectronId::GetInstance().IsTofElectron(i, p)) ? true : false;
-    bool isElectron = (CbmLitGlobalElectronId::GetInstance().IsRichElectron(i, p) && CbmLitGlobalElectronId::GetInstance().IsTrdElectron(i, p) && CbmLitGlobalElectronId::GetInstance().IsTofElectron(i, p)) ? true : false;
-    
-    if (gTrack != nullptr) {
-      CheckMismatches(gTrack, pdg, isElectron, ptcl, w);
-    }
+    bool isTofEl    = (CbmLitGlobalElectronId::GetInstance().IsTofElectron(i, p)) ? true : false;
+    bool isElectron = (CbmLitGlobalElectronId::GetInstance().IsRichElectron(i, p)
+                       && CbmLitGlobalElectronId::GetInstance().IsTrdElectron(i, p)
+                       && CbmLitGlobalElectronId::GetInstance().IsTofElectron(i, p))
+                        ? true
+                        : false;
+
+    if (gTrack != nullptr) { CheckMismatches(gTrack, pdg, isElectron, ptcl, w); }
     if (std::abs(pdg) != 11) PidVsMom(gTrack, i, pdg, p);
 
-    Double_t richDist  = CbmRichUtil::GetRingTrackDistance(i);
+    Double_t richDist = CbmRichUtil::GetRingTrackDistance(i);
     fH.FillH2("hRichRingTrackDist_gTracks_" + ptcl, p, richDist);
 
     // investigate misidentifications: compare misidentified candidates with same not-misidentified particles
-      // first check if global track has entries in all detectors
-    if (!IsInAllDets(gTrack)) continue; // Mind: all following actions are done only for fully rec. gTracks
+    // first check if global track has entries in all detectors
+    if (!IsInAllDets(gTrack)) continue;  // Mind: all following actions are done only for fully rec. gTracks
 
-    CheckTofIdentification(gTrack, ptcl, p, m2, pdg, isTofEl);    
-    
-    fH.FillH1("hMom_gTracks_"   + ptcl, p);
-    fH.FillH2("hPtY_gTracks_"   + ptcl, rap, pt);
+    CheckTofIdentification(gTrack, ptcl, p, m2, pdg, isTofEl);
+
+    fH.FillH1("hMom_gTracks_" + ptcl, p);
+    fH.FillH2("hPtY_gTracks_" + ptcl, rap, pt);
     fH.FillH2("hTofM2_gTracks_" + ptcl, p, m2);
 
-      // check PIDs in "Tof pile"
+    // check PIDs in "Tof pile"
     if (p > 0.3 && p < 1. && m2 > -0.012 && m2 < 0.01) {
       bool isSignal = (mct != nullptr && mct->GetGeantProcessId() == kPPrimary && std::abs(mct->GetPdgCode()) == 11);
-      double pdgBin = (pdg == 11 && isSignal) ? 0.5 : (pdg == -11 && isSignal) ? 1.5
-                : (pdg == 11 && !isSignal && isPrim) ? 2.5 : (pdg == -11 && !isSignal && isPrim) ? 3.5
-                : (pdg == 11 && !isSignal && !isPrim) ? 4.5 : (pdg == -11 && !isSignal && !isPrim) ? 5.5
-                : (pdg == 211) ? 6.5 : (pdg == -211) ? 7.5 : (pdg == 2212) ? 8.5 : (pdg == 321) ? 9.5 : (pdg == -321) ? 10.5 : 11.5;
+      double pdgBin = (pdg == 11 && isSignal)                ? 0.5
+                      : (pdg == -11 && isSignal)             ? 1.5
+                      : (pdg == 11 && !isSignal && isPrim)   ? 2.5
+                      : (pdg == -11 && !isSignal && isPrim)  ? 3.5
+                      : (pdg == 11 && !isSignal && !isPrim)  ? 4.5
+                      : (pdg == -11 && !isSignal && !isPrim) ? 5.5
+                      : (pdg == 211)                         ? 6.5
+                      : (pdg == -211)                        ? 7.5
+                      : (pdg == 2212)                        ? 8.5
+                      : (pdg == 321)                         ? 9.5
+                      : (pdg == -321)                        ? 10.5
+                                                             : 11.5;
       fH.FillH1("hTofPilePdgs_gTracks", pdgBin);
     }
 
@@ -607,7 +641,8 @@ void LmvmTask::AnalyseGlobalTracks()
       fH.FillH2("hPtY_" + ptcl2 + "_true", rap, pt);
       fH.FillH2("hTofM2_" + ptcl2 + "_true", p, m2);
     }
-    else if (isElectron && !(ptcl2 == "plutoEl+" || ptcl2 == "plutoEl-" || ptcl2 == "urqmdEl+" || ptcl2 == "urqmdEl-")) {
+    else if (isElectron
+             && !(ptcl2 == "plutoEl+" || ptcl2 == "plutoEl-" || ptcl2 == "urqmdEl+" || ptcl2 == "urqmdEl-")) {
       fH.FillH1("hMom_" + ptcl2 + "_misid", p);
       fH.FillH2("hPtY_" + ptcl2 + "_misid", rap, pt);
       fH.FillH2("hTofM2_" + ptcl2 + "_misid", p, m2);
@@ -617,29 +652,32 @@ void LmvmTask::AnalyseGlobalTracks()
   }
 }
 
-bool LmvmTask::IsInTofPile(double p, double m2)
-{
-  return (p > 0.3 && p < 1. && m2 > -0.012 && m2 < 0.01);
-}
+bool LmvmTask::IsInTofPile(double p, double m2) { return (p > 0.3 && p < 1. && m2 > -0.012 && m2 < 0.01); }
 
 void LmvmTask::PidVsMom(const CbmGlobalTrack* gTrack, int iGTrack, int pdg, double p)
 {
   bool isRichEl = CbmLitGlobalElectronId::GetInstance().IsRichElectron(iGTrack, p);
   bool isTrdEl  = CbmLitGlobalElectronId::GetInstance().IsTrdElectron(iGTrack, p);
   bool isTofEl  = CbmLitGlobalElectronId::GetInstance().IsTofElectron(iGTrack, p);
-  
-  double pdgBin = (pdg == 211) ? 0.5 : (pdg == -211) ? 1.5 : (pdg == 2212) ? 2.5 : (pdg == 321) ? 3.5 : (pdg == -321) ? 4.5 : 5.5;
-  
+
+  double pdgBin = (pdg == 211)    ? 0.5
+                  : (pdg == -211) ? 1.5
+                  : (pdg == 2212) ? 2.5
+                  : (pdg == 321)  ? 3.5
+                  : (pdg == -321) ? 4.5
+                                  : 5.5;
+
   if (isRichEl) fH.FillH2("hPdgVsMom_gTracks_rich_all", p, pdgBin);
-  if (isTrdEl)  fH.FillH2("hPdgVsMom_gTracks_trd_all", p, pdgBin);
-  if (isTofEl)  fH.FillH2("hPdgVsMom_gTracks_tof_all", p, pdgBin);
+  if (isTrdEl) fH.FillH2("hPdgVsMom_gTracks_trd_all", p, pdgBin);
+  if (isTofEl) fH.FillH2("hPdgVsMom_gTracks_tof_all", p, pdgBin);
 
   if (isRichEl && IsInAllDets(gTrack)) fH.FillH2("hPdgVsMom_gTracks_rich_complete", p, pdgBin);
-  if (isTrdEl  && IsInAllDets(gTrack)) fH.FillH2("hPdgVsMom_gTracks_trd_complete", p, pdgBin);
-  if (isTofEl  && IsInAllDets(gTrack)) fH.FillH2("hPdgVsMom_gTracks_tof_complete", p, pdgBin);
+  if (isTrdEl && IsInAllDets(gTrack)) fH.FillH2("hPdgVsMom_gTracks_trd_complete", p, pdgBin);
+  if (isTofEl && IsInAllDets(gTrack)) fH.FillH2("hPdgVsMom_gTracks_tof_complete", p, pdgBin);
 }
 
-void LmvmTask::CheckTofIdentification(const CbmGlobalTrack* gTrack, const string& gtString, double pMc, double m2, int pdg, bool isTofEl)
+void LmvmTask::CheckTofIdentification(const CbmGlobalTrack* gTrack, const string& gtString, double pMc, double m2,
+                                      int pdg, bool isTofEl)
 {
   // Get STS ID
   int stsInd = gTrack->GetStsTrackIndex();
@@ -655,7 +693,7 @@ void LmvmTask::CheckTofIdentification(const CbmGlobalTrack* gTrack, const string
   CbmTofHit* tofHit = (CbmTofHit*) fTofHits->At(tofInd);
   if (tofHit == nullptr) return;
   CbmTofTrack* tofTrack = static_cast<CbmTofTrack*>(fTofTracks->At(gTrack->GetStsTrackIndex()));
-  if (tofTrack == nullptr) return;  
+  if (tofTrack == nullptr) return;
   CbmMatch* tofHitMatch = static_cast<CbmMatch*>(fTofHitsMatches->At(tofInd));
   if (tofHitMatch == nullptr) return;
   int tofPointIndex = tofHitMatch->GetMatchedLink().GetIndex();
@@ -666,7 +704,7 @@ void LmvmTask::CheckTofIdentification(const CbmGlobalTrack* gTrack, const string
 
   bool isTofMismatch = (tofMcTrackId == stsMcTrackId) ? false : true;
   bool isTofMisid    = (std::abs(pdg) == 11 && isTofEl) ? false : (std::abs(pdg) != 11 && !isTofEl) ? false : true;
-  
+
   double pointX = tofPoint->GetX();
   double pointY = tofPoint->GetY();
   double hitX   = tofHit->GetX();
@@ -703,29 +741,34 @@ void LmvmTask::CheckTofIdentification(const CbmGlobalTrack* gTrack, const string
 
   // check ToF data for particles in ToF pile // TODO: needed or can be deleted?
   if (isTofEl && std::abs(pdg) != 11 && IsInTofPile(pMc, m2)) {
-    string candString = (pdg == 211) ? fH.fCandNames[4] : (pdg == -211) ? fH.fCandNames[5] : (pdg == 2212) ? fH.fCandNames[6] : (pdg == 321) ? fH.fCandNames[7] : (pdg == -321) ? fH.fCandNames[8] : fH.fCandNames[9];
+    string candString = (pdg == 211)    ? fH.fCandNames[4]
+                        : (pdg == -211) ? fH.fCandNames[5]
+                        : (pdg == 2212) ? fH.fCandNames[6]
+                        : (pdg == 321)  ? fH.fCandNames[7]
+                        : (pdg == -321) ? fH.fCandNames[8]
+                                        : fH.fCandNames[9];
     fH.FillH2("hTofPileHitXY_" + candString, hitX, hitY);
     fH.FillH2("hTofPilePointXY_" + candString, pointX, pointY);
     fH.FillH1("hTofPileHitPointDist_" + candString, dR);
-  }  
+  }
 }
 
 void LmvmTask::BetaMom(const CbmMCTrack* mct, const CbmGlobalTrack* gTrack, const string& ptcl)
 {
-    Int_t tofInd = gTrack->GetTofHitIndex();
-    if (tofInd < 0) return;
-    CbmTofHit* tofHit = (CbmTofHit*) fTofHits->At(tofInd);
-    if (NULL == tofHit) return;
-    double eventTime = FairRunAna::Instance()->GetEventHeader()->GetEventTime();
-    Double_t noOffsetTime = tofHit->GetTime() - eventTime;
-    
-    double p = mct->GetP();
-    double l = gTrack->GetLength();
-    double t = 0.2998 * noOffsetTime;   // time in ns -> transfrom to ct in m
-    double q = (mct->GetCharge() > 0) ? 1 : (mct->GetCharge() < 0) ? -1. : 0.;
-    double beta = l / (t * 100); // cm to m
-    fH.FillH2("hBetaMom_gTracks_" + ptcl, q * p, beta);
-    fH.FillH2("hBetaMom_allGTracks", q * p, beta);
+  Int_t tofInd = gTrack->GetTofHitIndex();
+  if (tofInd < 0) return;
+  CbmTofHit* tofHit = (CbmTofHit*) fTofHits->At(tofInd);
+  if (NULL == tofHit) return;
+  double eventTime      = FairRunAna::Instance()->GetEventHeader()->GetEventTime();
+  Double_t noOffsetTime = tofHit->GetTime() - eventTime;
+
+  double p    = mct->GetP();
+  double l    = gTrack->GetLength();
+  double t    = 0.2998 * noOffsetTime;  // time in ns -> transfrom to ct in m
+  double q    = (mct->GetCharge() > 0) ? 1 : (mct->GetCharge() < 0) ? -1. : 0.;
+  double beta = l / (t * 100);  // cm to m
+  fH.FillH2("hBetaMom_gTracks_" + ptcl, q * p, beta);
+  fH.FillH2("hBetaMom_allGTracks", q * p, beta);
 }
 
 void LmvmTask::CheckMismatches(const CbmGlobalTrack* gTrack, int pdg, bool isElectron, const string& ptcl, double w)
@@ -739,7 +782,7 @@ void LmvmTask::CheckMismatches(const CbmGlobalTrack* gTrack, int pdg, bool isEle
   if (stsMcTrackId < 0) return;
 
   bool isFull = IsInAllDets(gTrack);
-  
+
   // first calculate Chi2
   CbmL1PFFitter fPFFitter;
   CbmStsTrack* stsTrack = static_cast<CbmStsTrack*>(fStsTracks->At(stsInd));
@@ -753,21 +796,21 @@ void LmvmTask::CheckMismatches(const CbmGlobalTrack* gTrack, int pdg, bool isEle
 
   CbmTrackMatchNew* richMatch = nullptr;
   CbmTrackMatchNew* trdMatch  = nullptr;
-  CbmMatch*         tofMatch  = nullptr;
+  CbmMatch* tofMatch          = nullptr;
 
   int richRingInd = gTrack->GetRichRingIndex();
   int trdTrackInd = gTrack->GetTrdTrackIndex();
   int tofHitInd   = gTrack->GetTofHitIndex();
 
   if (richRingInd >= 0) richMatch = static_cast<CbmTrackMatchNew*>(fRichRingMatches->At(richRingInd));
-  if (trdTrackInd >= 0) trdMatch  = static_cast<CbmTrackMatchNew*>(fTrdTrackMatches->At(trdTrackInd));
-  if (tofHitInd   >= 0) tofMatch  = static_cast<CbmMatch*>(fTofHitsMatches->At(tofHitInd));
+  if (trdTrackInd >= 0) trdMatch = static_cast<CbmTrackMatchNew*>(fTrdTrackMatches->At(trdTrackInd));
+  if (tofHitInd >= 0) tofMatch = static_cast<CbmMatch*>(fTofHitsMatches->At(tofHitInd));
 
   int nofMismTrackSegmentsAll  = 0;
   int nofMismTrackSegmentsComp = 0;
 
   fH.FillH1("hNofMismatches_gTracks_all_" + ptcl, 0.5, w);
-  if (isFull) fH.FillH1("hNofMismatches_gTracks_complete_" + ptcl, 0.5, w);  
+  if (isFull) fH.FillH1("hNofMismatches_gTracks_complete_" + ptcl, 0.5, w);
 
   if (richMatch != nullptr) {
     int richMcTrackId = richMatch->GetMatchedLink().GetIndex();
@@ -779,8 +822,9 @@ void LmvmTask::CheckMismatches(const CbmGlobalTrack* gTrack, int pdg, bool isEle
       nofMismTrackSegmentsAll++;
     }
     if (isFull) {
-      if (richMcTrackId >= 0) fH.FillH1("hNofMismatches_gTracks_complete_" + ptcl, 1.5, w);     
-      if (richMcTrackId >= 0 && richMcTrackId == stsMcTrackId) fH.FillH1("hChi2_truematch_complete_rich_" + ptcl, chi2, w);    
+      if (richMcTrackId >= 0) fH.FillH1("hNofMismatches_gTracks_complete_" + ptcl, 1.5, w);
+      if (richMcTrackId >= 0 && richMcTrackId == stsMcTrackId)
+        fH.FillH1("hChi2_truematch_complete_rich_" + ptcl, chi2, w);
       if (richMcTrackId >= 0 && richMcTrackId != stsMcTrackId) {
         fH.FillH1("hChi2_mismatch_complete_rich_" + ptcl, chi2, w);
         fH.FillH1("hNofMismatches_gTracks_complete_" + ptcl, 2.5, w);
@@ -790,7 +834,7 @@ void LmvmTask::CheckMismatches(const CbmGlobalTrack* gTrack, int pdg, bool isEle
   }
 
   if (trdMatch != nullptr) {
-    int trdMcTrackId  = trdMatch->GetMatchedLink().GetIndex();
+    int trdMcTrackId = trdMatch->GetMatchedLink().GetIndex();
     if (trdMcTrackId >= 0) fH.FillH1("hNofMismatches_gTracks_all_" + ptcl, 3.5, w);
     if (trdMcTrackId >= 0 && trdMcTrackId == stsMcTrackId) fH.FillH1("hChi2_truematch_all_trd_" + ptcl, chi2, w);
     if (trdMcTrackId >= 0 && trdMcTrackId != stsMcTrackId) {
@@ -805,10 +849,10 @@ void LmvmTask::CheckMismatches(const CbmGlobalTrack* gTrack, int pdg, bool isEle
         fH.FillH1("hNofMismatches_gTracks_complete_" + ptcl, 4.5, w);
         fH.FillH1("hChi2_mismatch_complete_trd_" + ptcl, chi2, w);
         nofMismTrackSegmentsComp++;
-      }      
+      }
     }
   }
-  
+
   if (tofMatch != nullptr && tofMatch->GetMatchedLink().GetIndex() >= 0) {
     FairMCPoint* tofPoint = static_cast<FairMCPoint*>(fTofPoints->At(tofMatch->GetMatchedLink().GetIndex()));
     if (tofPoint != nullptr) {
@@ -822,12 +866,13 @@ void LmvmTask::CheckMismatches(const CbmGlobalTrack* gTrack, int pdg, bool isEle
       }
       if (isFull) {
         if (tofMcTrackId >= 0) fH.FillH1("hNofMismatches_gTracks_complete_" + ptcl, 5.5, w);
-        if (tofMcTrackId >= 0 && tofMcTrackId == stsMcTrackId) fH.FillH1("hChi2_truematch_complete_tof_" + ptcl, chi2, w);
+        if (tofMcTrackId >= 0 && tofMcTrackId == stsMcTrackId)
+          fH.FillH1("hChi2_truematch_complete_tof_" + ptcl, chi2, w);
         if (tofMcTrackId >= 0 && tofMcTrackId != stsMcTrackId) {
           fH.FillH1("hNofMismatches_gTracks_complete_" + ptcl, 6.5, w);
           fH.FillH1("hChi2_mismatch_complete_tof_" + ptcl, chi2, w);
           nofMismTrackSegmentsComp++;
-        }        
+        }
       }
     }
   }
@@ -835,9 +880,9 @@ void LmvmTask::CheckMismatches(const CbmGlobalTrack* gTrack, int pdg, bool isEle
   fH.FillH1("hNofMismatchedTrackSegments_all_" + ptcl, nofMismTrackSegmentsAll + 0.5, w);
   if (isFull) fH.FillH1("hNofMismatchedTrackSegments_complete_" + ptcl, nofMismTrackSegmentsComp + 0.5, w);
 
-  bool isTrueId   = (std::abs(pdg) == 11 && isElectron) ? true : (std::abs(pdg) != 11 && !isElectron) ? true : false;
-  double binX = nofMismTrackSegmentsComp + 0.5;
-  double binY = (isTrueId == true) ? 0.5 : 1.5;
+  bool isTrueId = (std::abs(pdg) == 11 && isElectron) ? true : (std::abs(pdg) != 11 && !isElectron) ? true : false;
+  double binX   = nofMismTrackSegmentsComp + 0.5;
+  double binY   = (isTrueId == true) ? 0.5 : 1.5;
 
   fH.FillH2("hMatchId_gTracks_" + ptcl, binX, binY, w);
 }
@@ -845,7 +890,7 @@ void LmvmTask::CheckMismatches(const CbmGlobalTrack* gTrack, int pdg, bool isEle
 bool LmvmTask::IsInAllDets(const CbmGlobalTrack* gTrack)
 {
   if (gTrack == nullptr) return false;
-  
+
   int stsInd = gTrack->GetStsTrackIndex();
   if (stsInd < 0) return false;
   CbmStsTrack* stsTrack = static_cast<CbmStsTrack*>(fStsTracks->At(stsInd));
@@ -858,7 +903,7 @@ bool LmvmTask::IsInAllDets(const CbmGlobalTrack* gTrack)
 
   CbmRichRing* richRing = static_cast<CbmRichRing*>(fRichRings->At(richInd));
   CbmTrdTrack* trdTrack = static_cast<CbmTrdTrack*>(fTrdTracks->At(trdInd));
-  CbmTofHit*   tofHit   = static_cast<CbmTofHit*>(fTofHits->At(tofInd));
+  CbmTofHit* tofHit     = static_cast<CbmTofHit*>(fTofHits->At(tofInd));
   if (richRing == nullptr || trdTrack == nullptr || tofHit == nullptr) return false;
 
   return true;
@@ -883,8 +928,8 @@ void LmvmTask::FillTopologyCands()
 
     cand.fRichInd     = gTrack->GetRichRingIndex();
     cand.fTrdInd      = gTrack->GetTrdTrackIndex();
-    cand.fTofInd      = gTrack->GetTofHitIndex();  // TODO: is TofHitIndex; change this name everywhere
-    cand.fTofTrackInd = gTrack->GetStsTrackIndex(); // TODO: is this right??
+    cand.fTofInd      = gTrack->GetTofHitIndex();    // TODO: is TofHitIndex; change this name everywhere
+    cand.fTofTrackInd = gTrack->GetStsTrackIndex();  // TODO: is this right??
 
     LmvmUtils::CalculateAndSetTrackParams(&cand, stsTrack, fKFVertex);
     cand.fIsChi2Prim = fCuts.IsChi2PrimaryOk(cand.fChi2Prim);
@@ -1002,7 +1047,7 @@ void LmvmTask::FillCands()
 
     CbmRichRing* richRing = static_cast<CbmRichRing*>(fRichRings->At(cand.fRichInd));
     CbmTrdTrack* trdTrack = static_cast<CbmTrdTrack*>(fTrdTracks->At(cand.fTrdInd));
-    CbmTofHit*   tofHit   = static_cast<CbmTofHit*>(fTofHits->At(cand.fTofInd));
+    CbmTofHit* tofHit     = static_cast<CbmTofHit*>(fTofHits->At(cand.fTofInd));
     CbmTofTrack* tofTrack = static_cast<CbmTofTrack*>(fTofTracks->At(cand.fTofTrackInd));
     if (richRing == nullptr || trdTrack == nullptr || tofHit == nullptr || tofTrack == nullptr) continue;
 
@@ -1035,17 +1080,19 @@ void LmvmTask::CombinatorialPairs()
   size_t nCand = fCandsTotal.size();
   for (size_t iC1 = 0; iC1 < nCand - 1; iC1++) {
     const auto& cand1 = fCandsTotal[iC1];
-    
+
     for (size_t iC2 = iC1 + 1; iC2 < nCand; iC2++) {
       const auto& cand2 = fCandsTotal[iC2];
       LmvmKinePar pRec = LmvmKinePar::Create(&cand1, &cand2);
-      double w = 1.;
+      double w          = 1.;
       if (cand1.IsMcSignal()) w = fW * MinvScale(cand1.fMassSig);
-      else if (cand2.IsMcSignal()) w = fW * MinvScale(cand2.fMassSig);
+      else if (cand2.IsMcSignal())
+        w = fW * MinvScale(cand2.fMassSig);
       bool isSameEvent = (cand1.fEventNumber == cand2.fEventNumber);
 
       // PLUTO electrons from two different events have to be scaled with w^2!
-      if (!isSameEvent && cand1.IsMcSignal() && cand2.IsMcSignal()) w = fW * fW * MinvScale(cand1.fMassSig) * MinvScale(cand2.fMassSig);
+      if (!isSameEvent && cand1.IsMcSignal() && cand2.IsMcSignal())
+        w = fW * fW * MinvScale(cand1.fMassSig) * MinvScale(cand2.fMassSig);
       for (auto step : fH.fAnaSteps) {
         if (cand1.IsCutTill(step) && cand2.IsCutTill(step)) {
 
@@ -1054,56 +1101,71 @@ void LmvmTask::CombinatorialPairs()
           if (cand1.fCharge * cand2.fCharge < 0) {
             if (isSameEvent) {
               fH.FillH1("hMinvCombPM_sameEv", step, pRec.fMinv, w);
-              cout << "LmvmTask::CombinatorialPairs(): e+e- same event (all).  w = " << w << endl; //TODO: delete this line
+              cout << "LmvmTask::CombinatorialPairs(): e+e- same event (all).  w = " << w
+                   << endl;  //TODO: delete this line
             }
-            else fH.FillH1("hMinvCombPM_mixedEv", step, pRec.fMinv, w);
+            else
+              fH.FillH1("hMinvCombPM_mixedEv", step, pRec.fMinv, w);
           }
           if (cand1.fCharge < 0 && cand2.fCharge < 0) {
             if (isSameEvent) {
               fH.FillH1("hMinvCombMM_sameEv", step, pRec.fMinv, w);
-              cout << "LmvmTask::CombinatorialPairs(): e-e- same event (all).  w = " << w << endl; //TODO: delete this line
+              cout << "LmvmTask::CombinatorialPairs(): e-e- same event (all).  w = " << w
+                   << endl;  //TODO: delete this line
             }
-            else fH.FillH1("hMinvCombMM_mixedEv", step, pRec.fMinv, w);
+            else
+              fH.FillH1("hMinvCombMM_mixedEv", step, pRec.fMinv, w);
           }
           if (cand1.fCharge > 0 && cand2.fCharge > 0) {
             if (isSameEvent) {
               fH.FillH1("hMinvCombPP_sameEv", step, pRec.fMinv, w);
-              cout << "LmvmTask::CombinatorialPairs(): e+e+ same event (all).  w = " << w << endl; //TODO: delete this line
-            }              
-            else fH.FillH1("hMinvCombPP_mixedEv", step, pRec.fMinv, w);
+              cout << "LmvmTask::CombinatorialPairs(): e+e+ same event (all).  w = " << w
+                   << endl;  //TODO: delete this line
+            }
+            else
+              fH.FillH1("hMinvCombPP_mixedEv", step, pRec.fMinv, w);
           }
-          
+
           // only UrQMD particles (also misidentified)
           if (!cand1.IsMcSignal() && !cand2.IsMcSignal()) {
             if (isSameEvent) {
               if (cand1.fCharge * cand2.fCharge < 0) fH.FillH1("hMinvCombPM_urqmdAll_sameEv", step, pRec.fMinv, w);
-              else if (cand1.fCharge < 0 && cand2.fCharge < 0) fH.FillH1("hMinvCombMM_urqmdAll_sameEv", step, pRec.fMinv, w);
-              else if (cand1.fCharge > 0 && cand2.fCharge > 0) fH.FillH1("hMinvCombPP_urqmdAll_sameEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge < 0 && cand2.fCharge < 0)
+                fH.FillH1("hMinvCombMM_urqmdAll_sameEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge > 0 && cand2.fCharge > 0)
+                fH.FillH1("hMinvCombPP_urqmdAll_sameEv", step, pRec.fMinv, w);
             }
             else {
               if (cand1.fCharge * cand2.fCharge < 0) fH.FillH1("hMinvCombPM_urqmdAll_mixedEv", step, pRec.fMinv, w);
-              else if (cand1.fCharge < 0 && cand2.fCharge < 0) fH.FillH1("hMinvCombMM_urqmdAll_mixedEv", step, pRec.fMinv, w);
-              else if (cand1.fCharge > 0 && cand2.fCharge > 0) fH.FillH1("hMinvCombPP_urqmdAll_mixedEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge < 0 && cand2.fCharge < 0)
+                fH.FillH1("hMinvCombMM_urqmdAll_mixedEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge > 0 && cand2.fCharge > 0)
+                fH.FillH1("hMinvCombPP_urqmdAll_mixedEv", step, pRec.fMinv, w);
             }
           }
 
           // only UrQMD electrons
-          if (!cand1.IsMcSignal() && !cand2.IsMcSignal() && std::abs(cand1.fMcPdg) == 11 && std::abs(cand2.fMcPdg) == 11) { // TODO: delete double brackets
+          if (!cand1.IsMcSignal() && !cand2.IsMcSignal() && std::abs(cand1.fMcPdg) == 11
+              && std::abs(cand2.fMcPdg) == 11) {  // TODO: delete double brackets
             if (isSameEvent) {
               if (cand1.fCharge * cand2.fCharge < 0) fH.FillH1("hMinvCombPM_urqmdEl_sameEv", step, pRec.fMinv, w);
-              else if (cand1.fCharge < 0 && cand2.fCharge < 0) fH.FillH1("hMinvCombMM_urqmdEl_sameEv", step, pRec.fMinv, w);
-              else if (cand1.fCharge > 0 && cand2.fCharge > 0) fH.FillH1("hMinvCombPP_urqmdEl_sameEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge < 0 && cand2.fCharge < 0)
+                fH.FillH1("hMinvCombMM_urqmdEl_sameEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge > 0 && cand2.fCharge > 0)
+                fH.FillH1("hMinvCombPP_urqmdEl_sameEv", step, pRec.fMinv, w);
             }
             else {
               if (cand1.fCharge * cand2.fCharge < 0) fH.FillH1("hMinvCombPM_urqmdEl_mixedEv", step, pRec.fMinv, w);
-              else if (cand1.fCharge < 0 && cand2.fCharge < 0) fH.FillH1("hMinvCombMM_urqmdEl_mixedEv", step, pRec.fMinv, w);
-              else if (cand1.fCharge > 0 && cand2.fCharge > 0) fH.FillH1("hMinvCombPP_urqmdEl_mixedEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge < 0 && cand2.fCharge < 0)
+                fH.FillH1("hMinvCombMM_urqmdEl_mixedEv", step, pRec.fMinv, w);
+              else if (cand1.fCharge > 0 && cand2.fCharge > 0)
+                fH.FillH1("hMinvCombPP_urqmdEl_mixedEv", step, pRec.fMinv, w);
             }
           }
-        } // isCutTillStep
-      } // steps
-    } // cand2
-  } // cand1
+        }  // isCutTillStep
+      }    // steps
+    }      // cand2
+  }        // cand1
 }
 
 void LmvmTask::AssignMcToCands(vector<LmvmCand>& cands)
@@ -1129,7 +1191,7 @@ void LmvmTask::AssignMcToCands(vector<LmvmCand>& cands)
         CbmMCTrack* mct2 = static_cast<CbmMCTrack*>(fMCTracks->At(iMc2));
         if (mct2->GetMotherId() == cand.fMcMotherId && iMc2 != cand.fStsMcTrackId) {
           LmvmKinePar pKin = LmvmKinePar::Create(mct, mct2);
-          cand.fMassSig = pKin.fMinv;
+          cand.fMassSig    = pKin.fMinv;
         }
       }
     }
@@ -1181,7 +1243,7 @@ void LmvmTask::AssignMcToTopologyCands(vector<LmvmCand>& topoCands)
 void LmvmTask::PairSource(const LmvmCand& candP, const LmvmCand& candM, ELmvmAnaStep step, const LmvmKinePar& parRec)
 {
   ELmvmSrc src = LmvmUtils::GetMcPairSrc(candP, candM);
-  double w = (candP.IsMcSignal() || candM.IsMcSignal()) ? fW : 1.;
+  double w     = (candP.IsMcSignal() || candM.IsMcSignal()) ? fW : 1.;
   fH.FillH1("hAnglePair", src, step, parRec.fAngle, w);
 
   if (src == ELmvmSrc::Bg) {
@@ -1364,7 +1426,7 @@ void LmvmTask::FillPairHists(const LmvmCand& candP, const LmvmCand& candM, const
   fH.FillH1("hMinv", src, step, parRec.fMinv, w);
   if (!candP.IsMcSignal() && !candM.IsMcSignal()) fH.FillH1("hMinv_urqmdAll", src, step, parRec.fMinv, w);
   if (!candP.IsMcSignal() && !candM.IsMcSignal() && std::abs(candP.fMcPdg) == 11 && std::abs(candM.fMcPdg) == 11)
-          fH.FillH1("hMinv_urqmdEl", src, step, parRec.fMinv, w);
+    fH.FillH1("hMinv_urqmdEl", src, step, parRec.fMinv, w);
 
   fH.FillH2("hMinvPt", src, step, parRec.fMinv, parMc.fPt, w);
 
@@ -1394,45 +1456,66 @@ string LmvmTask::GetPidString(const CbmMCTrack* mct, const LmvmCand* cand)
     return 0;
   }
 
-  int pdg = (mct != nullptr) ? mct->GetPdgCode() : cand->fMcPdg;
-  bool isMcSignal = (mct != nullptr) ? (mct->GetGeantProcessId() == kPPrimary && std::abs(mct->GetPdgCode()) == 11) : cand->IsMcSignal();
+  int pdg         = (mct != nullptr) ? mct->GetPdgCode() : cand->fMcPdg;
+  bool isMcSignal = (mct != nullptr) ? (mct->GetGeantProcessId() == kPPrimary && std::abs(mct->GetPdgCode()) == 11)
+                                     : cand->IsMcSignal();
 
   string pidString = fH.fCandNames[9];
-  if      (isMcSignal  && pdg == -11) pidString = fH.fCandNames[0];
-  else if (isMcSignal  && pdg ==  11) pidString = fH.fCandNames[1];
-  else if (!isMcSignal && pdg == -11) pidString = fH.fCandNames[2];
-  else if (!isMcSignal && pdg ==  11) pidString = fH.fCandNames[3];
-  else if (pdg ==  211)  pidString = fH.fCandNames[4];
-  else if (pdg == -211)  pidString = fH.fCandNames[5];
-  else if (pdg ==  2212) pidString = fH.fCandNames[6];
-  else if (pdg ==  321)  pidString = fH.fCandNames[7];
-  else if (pdg == -321)  pidString = fH.fCandNames[8];
- 
+  if (isMcSignal && pdg == -11) pidString = fH.fCandNames[0];
+  else if (isMcSignal && pdg == 11)
+    pidString = fH.fCandNames[1];
+  else if (!isMcSignal && pdg == -11)
+    pidString = fH.fCandNames[2];
+  else if (!isMcSignal && pdg == 11)
+    pidString = fH.fCandNames[3];
+  else if (pdg == 211)
+    pidString = fH.fCandNames[4];
+  else if (pdg == -211)
+    pidString = fH.fCandNames[5];
+  else if (pdg == 2212)
+    pidString = fH.fCandNames[6];
+  else if (pdg == 321)
+    pidString = fH.fCandNames[7];
+  else if (pdg == -321)
+    pidString = fH.fCandNames[8];
+
   return pidString;
 }
 
 string LmvmTask::GetPidString(double vertexMag, int pdg)
 {
   string pidString = fH.fGTrackNames[14];
-  bool isPrim = IsPrimary(vertexMag);
+  bool isPrim      = IsPrimary(vertexMag);
 
   if (isPrim) {
-    if      (pdg == -11)   pidString = fH.fGTrackNames[1];
-    else if (pdg ==  11)   pidString = fH.fGTrackNames[3];
-    else if (pdg ==  211)  pidString = fH.fGTrackNames[5];
-    else if (pdg == -211)  pidString = fH.fGTrackNames[7];
-    else if (pdg ==  2212) pidString = fH.fGTrackNames[9];
-    else if (pdg ==  321)  pidString = fH.fGTrackNames[11];
-    else if (pdg == -321)  pidString = fH.fGTrackNames[13];
+    if (pdg == -11) pidString = fH.fGTrackNames[1];
+    else if (pdg == 11)
+      pidString = fH.fGTrackNames[3];
+    else if (pdg == 211)
+      pidString = fH.fGTrackNames[5];
+    else if (pdg == -211)
+      pidString = fH.fGTrackNames[7];
+    else if (pdg == 2212)
+      pidString = fH.fGTrackNames[9];
+    else if (pdg == 321)
+      pidString = fH.fGTrackNames[11];
+    else if (pdg == -321)
+      pidString = fH.fGTrackNames[13];
   }
   else {
-    if      (pdg == -11)   pidString = fH.fGTrackNames[0];
-    else if (pdg ==  11)   pidString = fH.fGTrackNames[2];
-    else if (pdg ==  211)  pidString = fH.fGTrackNames[4];
-    else if (pdg == -211)  pidString = fH.fGTrackNames[6];
-    else if (pdg ==  2212) pidString = fH.fGTrackNames[8];
-    else if (pdg ==  321)  pidString = fH.fGTrackNames[10];
-    else if (pdg == -321)  pidString = fH.fGTrackNames[12];
+    if (pdg == -11) pidString = fH.fGTrackNames[0];
+    else if (pdg == 11)
+      pidString = fH.fGTrackNames[2];
+    else if (pdg == 211)
+      pidString = fH.fGTrackNames[4];
+    else if (pdg == -211)
+      pidString = fH.fGTrackNames[6];
+    else if (pdg == 2212)
+      pidString = fH.fGTrackNames[8];
+    else if (pdg == 321)
+      pidString = fH.fGTrackNames[10];
+    else if (pdg == -321)
+      pidString = fH.fGTrackNames[12];
   }
 
   return pidString;
@@ -1451,17 +1534,17 @@ void LmvmTask::AnalyseCandidates()
 
   // single candidates
   for (const auto& cand : fCands) {
-    double w = (cand.IsMcSignal()) ? fW : 1.;
+    double w            = (cand.IsMcSignal()) ? fW : 1.;
     CbmMCTrack* mcTrack = nullptr;
     if (cand.fStsMcTrackId >= 0) mcTrack = static_cast<CbmMCTrack*>(fMCTracks->At(cand.fStsMcTrackId));
-    int pdg    = mcTrack->GetPdgCode();
-    double mom = mcTrack->GetP();
+    int pdg          = mcTrack->GetPdgCode();
+    double mom       = mcTrack->GetP();
     string pidString = GetPidString(nullptr, &cand);
 
     for (auto step : fH.fAnaSteps) {
       if (cand.IsCutTill(step)) {
         TrackSource(cand, step, pdg);
-        FillCandPidValues(mcTrack, cand, step); // if std::abs(pdg) != 11, this is misidentification
+        FillCandPidValues(mcTrack, cand, step);  // if std::abs(pdg) != 11, this is misidentification
         if (mcTrack != nullptr) CheckTofId(mcTrack, cand, step, pdg);
 
         if (step >= ELmvmAnaStep::ElId && std::abs(pdg) == 211) fH.FillH1("hPionSupp_idEl", step, mom, w);
@@ -1472,22 +1555,22 @@ void LmvmTask::AnalyseCandidates()
     }
 
     if (cand.IsCutTill(ELmvmAnaStep::ElId)) {
-      fH.FillH2("hChi2VsMom_sts_"  + pidString, cand.fMomentum.Mag(), cand.fChi2Sts, w);
+      fH.FillH2("hChi2VsMom_sts_" + pidString, cand.fMomentum.Mag(), cand.fChi2Sts, w);
       fH.FillH2("hChi2VsMom_rich_" + pidString, cand.fMomentum.Mag(), cand.fChi2Rich, w);
-      fH.FillH2("hChi2VsMom_trd_"  + pidString, cand.fMomentum.Mag(), cand.fChi2Trd, w);
+      fH.FillH2("hChi2VsMom_trd_" + pidString, cand.fMomentum.Mag(), cand.fChi2Trd, w);
 
-      fH.FillH2("hTofTimeVsChi2_sts_"  + pidString, cand.fChi2Sts, cand.fTime, w);
+      fH.FillH2("hTofTimeVsChi2_sts_" + pidString, cand.fChi2Sts, cand.fTime, w);
       fH.FillH2("hTofTimeVsChi2_rich_" + pidString, cand.fChi2Rich, cand.fTime, w);
-      fH.FillH2("hTofTimeVsChi2_trd_"  + pidString, cand.fChi2Trd, cand.fTime, w);
+      fH.FillH2("hTofTimeVsChi2_trd_" + pidString, cand.fChi2Trd, cand.fTime, w);
 
       fH.FillH2("hChi2Comb_StsRich_" + pidString, cand.fChi2Sts, cand.fChi2Rich, w);
-      fH.FillH2("hChi2Comb_StsTrd_"  + pidString, cand.fChi2Sts, cand.fChi2Trd, w);
+      fH.FillH2("hChi2Comb_StsTrd_" + pidString, cand.fChi2Sts, cand.fChi2Trd, w);
       fH.FillH2("hChi2Comb_RichTrd_" + pidString, cand.fChi2Rich, cand.fChi2Trd, w);
 
       fH.FillH2("hTofTimeVsMom_cands_" + pidString, cand.fMomentum.Mag(), cand.fTime, w);
       fH.FillH2("hTofHitTrackDist_cands_" + pidString, cand.fMomentum.Mag(), cand.fTofDist, w);
     }
-   
+
     DifferenceSignalAndBg(cand);
 
     // beta-momentum spectrum
@@ -1496,9 +1579,9 @@ void LmvmTask::AnalyseCandidates()
     double m    = cand.fMass;
     double r    = p / m;
     double beta = r / sqrt(1. + r * r);
-    double q = (cand.fCharge > 0) ? 1 : (cand.fCharge < 0) ? -1. : 0.;
+    double q    = (cand.fCharge > 0) ? 1 : (cand.fCharge < 0) ? -1. : 0.;
     fH.FillH2("hBetaMom_cands_" + ptcl, q * p, beta);
-  } // single candidates
+  }  // single candidates
 
   // candidate pairs
   for (const auto& candP : fCands) {
@@ -1526,18 +1609,27 @@ void LmvmTask::CheckTofId(const CbmMCTrack* mct, const LmvmCand& cand, ELmvmAnaS
   TVector3 v;
   mct->GetStartVertex(v);
   bool isPrim = IsPrimary(v.Mag());
-  double pt  = mct->GetPt();
-  double rap = mct->GetRapidity();
+  double pt   = mct->GetPt();
+  double rap  = mct->GetRapidity();
 
   // check PIDs in "Tof pile"
   if (cand.fMomentum.Mag() > 0.3 && cand.fMomentum.Mag() < 1. && cand.fMass2 > -0.012 && cand.fMass2 < 0.01) {
     string pidString = GetPidString(nullptr, &cand);
-    double pdgBin = (pdg == 11 && cand.IsMcSignal()) ? 0.5 : (pdg == -11 && cand.IsMcSignal()) ? 1.5
-                : (pdg == 11 && !cand.IsMcSignal() && isPrim) ? 2.5 : (pdg == -11 && !cand.IsMcSignal() && isPrim) ? 3.5
-                : (pdg == 11 && !cand.IsMcSignal() && !isPrim) ? 4.5 : (pdg == -11 && !cand.IsMcSignal() && !isPrim) ? 5.5
-                : (pdg == 211) ? 6.5 : (pdg == -211) ? 7.5 : (pdg == 2212) ? 8.5 : (pdg == 321) ? 9.5 : (pdg == -321) ? 10.5 : 11.5;
+    double pdgBin    = (pdg == 11 && cand.IsMcSignal())                ? 0.5
+                       : (pdg == -11 && cand.IsMcSignal())             ? 1.5
+                       : (pdg == 11 && !cand.IsMcSignal() && isPrim)   ? 2.5
+                       : (pdg == -11 && !cand.IsMcSignal() && isPrim)  ? 3.5
+                       : (pdg == 11 && !cand.IsMcSignal() && !isPrim)  ? 4.5
+                       : (pdg == -11 && !cand.IsMcSignal() && !isPrim) ? 5.5
+                       : (pdg == 211)                                  ? 6.5
+                       : (pdg == -211)                                 ? 7.5
+                       : (pdg == 2212)                                 ? 8.5
+                       : (pdg == 321)                                  ? 9.5
+                       : (pdg == -321)                                 ? 10.5
+                                                                       : 11.5;
     fH.FillH1("hTofPilePdgs_cands", step, pdgBin);
-    if (step == ELmvmAnaStep::ElId && cand.IsCutTill(step)) fH.FillH2("hTofPilePty_cands_" + pidString, rap, pt); // TODO: check newly (25.10.22) added '&& IsTill(step)'!!
+    if (step == ELmvmAnaStep::ElId && cand.IsCutTill(step))
+      fH.FillH2("hTofPilePty_cands_" + pidString, rap, pt);  // TODO: check newly (25.10.22) added '&& IsTill(step)'!!
   }
 
   // check vertex of misidentified particles in ToF after electron ID // TODO: split this up into single contributions?
@@ -1549,8 +1641,9 @@ void LmvmTask::CheckTofId(const CbmMCTrack* mct, const LmvmCand& cand, ELmvmAnaS
   }
 }
 
-void LmvmTask::FillCandPidValues(const CbmMCTrack* mct, const LmvmCand& cand, ELmvmAnaStep step) {
-  double w = (cand.IsMcSignal()) ? fW : 1.;
+void LmvmTask::FillCandPidValues(const CbmMCTrack* mct, const LmvmCand& cand, ELmvmAnaStep step)
+{
+  double w         = (cand.IsMcSignal()) ? fW : 1.;
   string pidString = GetPidString(nullptr, &cand);
 
   fH.FillH1("hMom_cands_" + pidString, step, cand.fMomentum.Mag(), w);
@@ -1558,7 +1651,7 @@ void LmvmTask::FillCandPidValues(const CbmMCTrack* mct, const LmvmCand& cand, EL
   fH.FillH2("hTofM2_cands_" + pidString, step, cand.fMomentum.Mag(), cand.fMass2, w);
 
   if (mct != nullptr) {
-    double rat = cand.fMomentum.Mag() / mct->GetP();
+    double rat  = cand.fMomentum.Mag() / mct->GetP();
     string ptcl = GetPidString(nullptr, &cand);
     fH.FillH1("hMomRatio_cands_" + pidString, step, rat);
     fH.FillH2("hMomRatioVsMom_cands_" + ptcl, step, mct->GetP(), rat);
@@ -1757,7 +1850,7 @@ void LmvmTask::DifferenceSignalAndBg(const LmvmCand& cand)
     }
     double mvd1r = sqrt(mvd1x * mvd1x + mvd1y * mvd1y);
     double mvd2r = sqrt(mvd2x * mvd2x + mvd2y * mvd2y);
-     fH.FillH1("hNofMvdHits", cand.fMcSrc, stsTrack->GetNofMvdHits(), fW);
+    fH.FillH1("hNofMvdHits", cand.fMcSrc, stsTrack->GetNofMvdHits(), fW);
     fH.FillH2("hMvdXY_1", cand.fMcSrc, mvd1x, mvd1y, fW);
     fH.FillH1("hMvdR_1", cand.fMcSrc, mvd1r, fW);
     fH.FillH2("hMvdXY_2", cand.fMcSrc, mvd2x, mvd2y, fW);
