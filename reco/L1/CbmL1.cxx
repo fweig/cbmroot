@@ -34,7 +34,6 @@
 #include <boost/filesystem.hpp>
 // TODO: include of CbmSetup.h creates problems on Mac
 // #include "CbmSetup.h"
-#include "CbmDigiManager.h"
 #include "CbmMCDataObject.h"
 #include "CbmStsFindTracks.h"
 #include "CbmStsHit.h"
@@ -127,6 +126,12 @@ void CbmL1::CheckDetectorPresence()
   fUseMUCH = fUseMUCH && CbmSetup::Instance()->IsActive(ECbmModuleId::kMuch);
   fUseTRD  = fUseTRD && CbmSetup::Instance()->IsActive(ECbmModuleId::kTrd);
   fUseTOF  = fUseTOF && CbmSetup::Instance()->IsActive(ECbmModuleId::kTof);
+  {
+    // TODO: temporary code!!
+    // for a moment, the MVD digitizer doesn't work in TB mode
+    // check the presence of MVD hits to make sure the MVD is really active
+    if (!FairRootManager::Instance()->GetObject("MvdHit")) { fUseMVD = false; }
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -189,21 +194,28 @@ InitStatus CbmL1::Init()
 
   // turn on reconstruction in sub-detectors
 
-  fUseMVD  = true;
-  fUseSTS  = true;
+  fUseMVD  = false;
+  fUseSTS  = false;
   fUseMUCH = false;
   fUseTRD  = false;
   fUseTOF  = false;
 
   FairRootManager* fairManager = FairRootManager::Instance();
-  {
+
+  if (L1Algo::TrackingMode::kSts == fTrackingMode) {
+    fUseMVD  = 1;
+    fUseSTS  = 1;
+    fUseMUCH = 0;
+    fUseTRD  = 0;
+    fUseTOF  = 0;
+    // check if MVD is switched off in the Sts task
     CbmStsFindTracks* findTask = L1_DYNAMIC_CAST<CbmStsFindTracks*>(FairRunAna::Instance()->GetTask("STSFindTracks"));
     if (findTask) fUseMVD = findTask->MvdUsage();
-    CbmDigiManager::Instance()->Init();
-    if (!CbmDigiManager::IsPresent(ECbmModuleId::kMvd)) { fUseMVD = false; }
   }
 
   if (L1Algo::TrackingMode::kMcbm == fTrackingMode) {
+    fUseMVD  = 1;
+    fUseSTS  = 1;
     fUseMUCH = 1;
     fUseTRD  = 1;
     fUseTOF  = 1;
