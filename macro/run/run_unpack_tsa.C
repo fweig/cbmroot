@@ -113,26 +113,26 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
   // -----   UnpackerConfigs   ----------------------------------------------
 
   // ---- BMON ----
-  std::shared_ptr<CbmBmonUnpackConfig> bmonconfig = nullptr;
+  std::shared_ptr<CbmTzdUnpackConfig> tzdconfig = nullptr;
 
   if (!bBmoninTof) {
-    bmonconfig = std::make_shared<CbmBmonUnpackConfig>("", runid);
-    if (bmonconfig) {
-      // bmonconfig->SetDebugState();
-      bmonconfig->SetDoWriteOutput();
-      // bmonconfig->SetDoWriteOptOutA("CbmBmonErrors");
-      std::string parfilesbasepathBmon = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
-      bmonconfig->SetParFilesBasePath(parfilesbasepathBmon);
-      bmonconfig->SetParFileName("mBmonCriPar.par");
-      bmonconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
+    tzdconfig = std::make_shared<CbmTzdUnpackConfig>("", runid);
+    if (tzdconfig) {
+      // tzdconfig->SetDebugState();
+      tzdconfig->SetDoWriteOutput();
+      // tzdconfig->SetDoWriteOptOutA("CbmTzdErrors");
+      std::string parfilesbasepathTzd = Form("%s/macro/beamtime/mcbm2022/", srcDir.Data());
+      tzdconfig->SetParFilesBasePath(parfilesbasepathTzd);
+      tzdconfig->SetParFileName("mBmonCriPar.par");
+      tzdconfig->SetSystemTimeOffset(-1220);  // [ns] value to be updated
       if (2160 <= runid) {
-        bmonconfig->SetSystemTimeOffset(-80);  // [ns] value to be updated
+        tzdconfig->SetSystemTimeOffset(-80);  // [ns] value to be updated
       }
       if (2350 <= runid) {
-        bmonconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
+        tzdconfig->SetSystemTimeOffset(0);  // [ns] value to be updated
       }
       /// Enable Monitor plots
-      // bmonconfig->SetMonitor(GetTofMonitor(outfilename, true));
+      // tzdconfig->SetMonitor(GetTofMonitor(outfilename, true));
     }
   }
   // -------------
@@ -475,7 +475,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
   // Enable full time sorting instead sorting per FLIM link
   unpack->SetTimeSorting(true);
 
-  if (bmonconfig) unpack->SetUnpackConfig(bmonconfig);
+  if (tzdconfig) unpack->SetUnpackConfig(tzdconfig);
   if (stsconfig) unpack->SetUnpackConfig(stsconfig);
   if (muchconfig) unpack->SetUnpackConfig(muchconfig);
   if (trd1Dconfig) unpack->SetUnpackConfig(trd1Dconfig);
@@ -531,7 +531,7 @@ void run_unpack_tsa(std::vector<std::string> infile = {"test.tsa"}, UInt_t runid
   delete run;
   delete source;
 
-  bmonconfig.reset();
+  tzdconfig.reset();
   stsconfig.reset();
   muchconfig.reset();
   trd1Dconfig.reset();
