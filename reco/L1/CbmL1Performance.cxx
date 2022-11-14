@@ -1110,9 +1110,9 @@ void CbmL1::TrackFitPerformance()
     gDirectory             = fHistoDir;
     gDirectory->cd("Fit");
     {
-      PRes2D     = new TH2F("PRes2D", "Resolution P vs P [100%]", 100, 0., 20., 100, -.15, .15);
-      PRes2DPrim = new TH2F("PRes2DPrim", "Resolution P vs P [100%]", 100, 0., 20., 100, -.15, .15);
-      PRes2DSec  = new TH2F("PRes2DSec", "Resolution P vs P [100%]", 100, 0., 20., 100, -.15, .15);
+      PRes2D     = new TH2F("PRes2D", "Resolution P [%] vs P", 100, 0., 20., 100, -15., 15.);
+      PRes2DPrim = new TH2F("PRes2DPrim", "Resolution P [%] vs P", 100, 0., 20., 100, -15., 15.);
+      PRes2DSec  = new TH2F("PRes2DSec", "Resolution P [%] vs P", 100, 0., 20., 100, -15., 15.);
 
       pion_res_pt_fstt = new TH2F("pion_res_pt_fstt", "", 100, 0, 10, 1000, -500, 500);
       kaon_res_pt_fstt = new TH2F("kaon_res_pt_fstt", "", 100, 0, 10, 1000, -500, 500);
@@ -1143,7 +1143,7 @@ void CbmL1::TrackFitPerformance()
                          //{"tx", "Residual Tx [mrad]",                  100,   -2.5,   2.5},
                          {"ty", "Residual Ty [mrad]", 100, -3.5, 3.5},
                          //{"ty", "Residual Ty [mrad]",                  100,   -2.5,   2.5},
-                         {"P", "Resolution P/Q [100%]", 100, -.15, .15},
+                         {"P", "Resolution P/Q [%]", 100, -15., 15.},
                          {"px", "Pull X [residual/estimated_error]", 100, -6., 6.},
                          {"py", "Pull Y [residual/estimated_error]", 100, -6., 6.},
                          {"ptx", "Pull Tx [residual/estimated_error]", 100, -6., 6.},
@@ -1173,7 +1173,7 @@ void CbmL1::TrackFitPerformance()
                                  {"tx", "Residual Tx [mrad]", 100, -2., 2.},
                                  //{"ty", "Residual Ty [mrad]",                  100,   -3.,   3.},
                                  {"ty", "Residual Ty [mrad]", 100, -2., 2.},
-                                 {"P", "Resolution P/Q [100%]", 100, -.15, .15},
+                                 {"P", "Resolution P/Q [%]", 100, -15., 15.},
                                  {"px", "Pull X [residual/estimated_error]", 100, -6., 6.},
                                  {"py", "Pull Y [residual/estimated_error]", 100, -6., 6.},
                                  {"ptx", "Pull Tx [residual/estimated_error]", 100, -6., 6.},
@@ -1252,13 +1252,13 @@ void CbmL1::TrackFitPerformance()
       CbmL1MCTrack mcTrack = *(it->GetMCTracks()[0]);
 
       if (L1Algo::kGlobal != fpAlgo->fTrackingMode || mcTrack.IsPrimary()) {
-        h_fit[4]->Fill(fabs(1. / tr.qp[0]) / mcP.p - 1);
+        h_fit[4]->Fill(100. * (fabs(1. / tr.qp[0]) / mcP.p - 1.));
       }
-      PRes2D->Fill(mcP.p, (1. / fabs(tr.qp[0]) - mcP.p) / mcP.p);
+      PRes2D->Fill(mcP.p, 100. * (fabs(1. / tr.qp[0]) - mcP.p) / mcP.p);
 
 
       if (mcTrack.IsPrimary()) {
-        PRes2DPrim->Fill(mcP.p, (1. / fabs(tr.qp[0]) - mcP.p) / mcP.p);
+        PRes2DPrim->Fill(mcP.p, 100. * (fabs(1. / tr.qp[0]) - mcP.p) / mcP.p);
 
         if (abs(mcTrack.pdg) == 211) {
           pion_res_p_fstt->Fill(mcP.p, dt * 1.e4);
@@ -1274,7 +1274,7 @@ void CbmL1::TrackFitPerformance()
         }
       }
       else {
-        PRes2DSec->Fill(mcP.p, (1. / fabs(tr.qp[0]) - mcP.p) / mcP.p);
+        PRes2DSec->Fill(mcP.p, 100. * (1. / fabs(tr.qp[0]) - mcP.p) / mcP.p);
       }
 
       if (std::isfinite(tr.C00[0]) && tr.C00[0] > 0) h_fit[5]->Fill((tr.x[0] - mcP.xIn) / sqrt(tr.C00[0]));
@@ -1297,14 +1297,15 @@ void CbmL1::TrackFitPerformance()
       h_fit[1]->Fill((mc.y - it->T[1]) * 1.e4);
       h_fit[2]->Fill((mc.px / mc.pz - it->T[2]) * 1.e3);
       h_fit[3]->Fill((mc.py / mc.pz - it->T[3]) * 1.e3);
-      h_fit[4]->Fill(it->T[4] / mc.q * mc.p - 1);
+      h_fit[4]->Fill(100. * (it->T[4] / mc.q * mc.p - 1.));
 
       PRes2D->Fill(mc.p, (1. / fabs(it->T[4]) - mc.p) / mc.p * 100.);
 
       CbmL1MCTrack mcTrack = *(it->GetMCTracks()[0]);
-      if (mcTrack.IsPrimary()) PRes2DPrim->Fill(mc.p, (1. / fabs(it->T[4]) - mc.p) / mc.p * 100.);
-      else
+      if (mcTrack.IsPrimary()) { PRes2DPrim->Fill(mc.p, (1. / fabs(it->T[4]) - mc.p) / mc.p * 100.); }
+      else {
         PRes2DSec->Fill(mc.p, (1. / fabs(it->T[4]) - mc.p) / mc.p * 100.);
+      }
 
       if (std::isfinite(it->C[0]) && it->C[0] > 0) h_fit[5]->Fill((mc.x - it->T[0]) / sqrt(it->C[0]));
       if (std::isfinite(it->C[2]) && it->C[2] > 0) h_fit[6]->Fill((mc.y - it->T[1]) / sqrt(it->C[2]));
@@ -1342,7 +1343,7 @@ void CbmL1::TrackFitPerformance()
       h_fitL[1]->Fill((tr.y[0] - mcP.yOut) * 1.e4);
       h_fitL[2]->Fill((tr.tx[0] - mcP.pxOut / mcP.pzOut) * 1.e3);
       h_fitL[3]->Fill((tr.ty[0] - mcP.pyOut / mcP.pzOut) * 1.e3);
-      h_fitL[4]->Fill(fabs(1. / tr.qp[0]) / mcP.p - 1);
+      h_fitL[4]->Fill(100. * (fabs(1. / tr.qp[0]) / mcP.p - 1.));
       if (last_station > fNMvdStations) h_fitL[12]->Fill(tr.t[0] - mcP.time);
 
 
@@ -1364,7 +1365,7 @@ void CbmL1::TrackFitPerformance()
       h_fitL[1]->Fill((it->TLast[1] - mc.y) * 1.e4);
       h_fitL[2]->Fill((it->TLast[2] - mc.px / mc.pz) * 1.e3);
       h_fitL[3]->Fill((it->TLast[3] - mc.py / mc.pz) * 1.e3);
-      h_fitL[4]->Fill(fabs(1. / it->TLast[4]) / mc.p - 1);
+      h_fitL[4]->Fill(100. * (fabs(1. / it->TLast[4]) / mc.p - 1.));
       if (std::isfinite(it->CLast[0]) && it->CLast[0] > 0) h_fitL[5]->Fill((it->TLast[0] - mc.x) / sqrt(it->CLast[0]));
       if (std::isfinite(it->CLast[2]) && it->CLast[2] > 0) h_fitL[6]->Fill((it->TLast[1] - mc.y) / sqrt(it->CLast[2]));
       if (std::isfinite(it->CLast[5]) && it->CLast[5] > 0)
@@ -1428,7 +1429,7 @@ void CbmL1::TrackFitPerformance()
         h_fitSV[1]->Fill((tr.y[0] - mc.y));
         h_fitSV[2]->Fill((tr.tx[0] - mc.px / mc.pz) * 1.e3);
         h_fitSV[3]->Fill((tr.ty[0] - mc.py / mc.pz) * 1.e3);
-        h_fitSV[4]->Fill(fabs(1. / tr.qp[0]) / mc.p - 1.);
+        h_fitSV[4]->Fill(100. * (fabs(1. / tr.qp[0]) / mc.p - 1.));
         if (std::isfinite(tr.C00[0]) && tr.C00[0] > 0) h_fitSV[5]->Fill((tr.x[0] - mc.x) / sqrt(tr.C00[0]));
         if (std::isfinite(tr.C11[0]) && tr.C11[0] > 0) h_fitSV[6]->Fill((tr.y[0] - mc.y) / sqrt(tr.C11[0]));
         if (std::isfinite(tr.C22[0]) && tr.C22[0] > 0) h_fitSV[7]->Fill((tr.tx[0] - mc.px / mc.pz) / sqrt(tr.C22[0]));
@@ -1500,7 +1501,7 @@ void CbmL1::TrackFitPerformance()
         h_fitPV[1]->Fill((mc.y - tr.y[0]));
         h_fitPV[2]->Fill((mc.px / mc.pz - tr.tx[0]) * 1.e3);
         h_fitPV[3]->Fill((mc.py / mc.pz - tr.ty[0]) * 1.e3);
-        h_fitPV[4]->Fill(fabs(1 / tr.qp[0]) / mc.p - 1);
+        h_fitPV[4]->Fill(100. * (fabs(1 / tr.qp[0]) / mc.p - 1.));
         if (std::isfinite(tr.C00[0]) && tr.C00[0] > 0) h_fitPV[5]->Fill((mc.x - tr.x[0]) / sqrt(tr.C00[0]));
         if (std::isfinite(tr.C11[0]) && tr.C11[0] > 0) h_fitPV[6]->Fill((mc.y - tr.y[0]) / sqrt(tr.C11[0]));
         if (std::isfinite(tr.C22[0]) && tr.C22[0] > 0) h_fitPV[7]->Fill((mc.px / mc.pz - tr.tx[0]) / sqrt(tr.C22[0]));
@@ -1533,7 +1534,7 @@ void CbmL1::TrackFitPerformance()
         h_fitPV[1]->Fill((mc.y - it2.T[1]));
         h_fitPV[2]->Fill((mc.px / mc.pz - it2.T[2]) * 1.e3);
         h_fitPV[3]->Fill((mc.py / mc.pz - it2.T[3]) * 1.e3);
-        h_fitPV[4]->Fill(it2.T[4] / mc.q * mc.p - 1);
+        h_fitPV[4]->Fill(100. * (it2.T[4] / mc.q * mc.p - 1.));
         if (std::isfinite(it2.C[0]) && it2.C[0] > 0) h_fitPV[5]->Fill((mc.x - it2.T[0]) / sqrt(it2.C[0]));
         if (std::isfinite(it2.C[2]) && it2.C[2] > 0) h_fitPV[6]->Fill((mc.y - it2.T[1]) / sqrt(it2.C[2]));
         if (std::isfinite(it2.C[5]) && it2.C[5] > 0) h_fitPV[7]->Fill((mc.px / mc.pz - it2.T[2]) / sqrt(it2.C[5]));
