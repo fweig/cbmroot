@@ -268,7 +268,7 @@ try {
   /* clang-format on */
 
   /// Create input vectors
-  fvDigiT0   = new std::vector<CbmTofDigi>();
+  fvDigiT0   = new std::vector<CbmTzdDigi>();
   fvDigiSts  = new std::vector<CbmStsDigi>();
   fvDigiMuch = new std::vector<CbmMuchBeamTimeDigi>();
   fvDigiTrd  = new std::vector<CbmTrdDigi>();
@@ -281,7 +281,7 @@ try {
   fpAlgo->SetTimeSliceMetaDataArray(fTimeSliceMetaDataArray);
 
   /// Digis storage
-  fpAlgo->SetT0Digis(fvDigiT0);
+  fpAlgo->SetDigis(fvDigiT0);
   fpAlgo->SetDigis(fvDigiSts);
   fpAlgo->SetDigis(fvDigiMuch);
   fpAlgo->SetDigis(fvDigiTrd);

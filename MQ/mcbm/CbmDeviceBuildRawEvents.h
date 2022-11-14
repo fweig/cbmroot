@@ -20,6 +20,7 @@
 #include "CbmStsDigi.h"
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
+#include "CbmTzdDigi.h"
 
 /// FAIRROOT headers
 #include "FairMQDevice.h"
@@ -99,7 +100,7 @@ private:
   TClonesArray* fTimeSliceMetaDataArray = nullptr;  //!
   TimesliceMetaData* fTsMetaData        = nullptr;
   /// Digis storage
-  std::vector<CbmTofDigi>* fvDigiT0            = nullptr;
+  std::vector<CbmTzdDigi>* fvDigiT0            = nullptr;
   std::vector<CbmStsDigi>* fvDigiSts           = nullptr;
   std::vector<CbmMuchBeamTimeDigi>* fvDigiMuch = nullptr;
   std::vector<CbmTrdDigi>* fvDigiTrd           = nullptr;
