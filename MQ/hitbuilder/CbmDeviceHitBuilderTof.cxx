@@ -39,6 +39,7 @@
 #include "FairRootManager.h"
 #include "FairRunOnline.h"
 #include "FairRuntimeDb.h"
+#include "FairSource.h"
 
 // ROOT Classes and includes
 #include "TClonesArray.h"
@@ -370,7 +371,10 @@ Bool_t CbmDeviceHitBuilderTof::InitRootOutput()
     fEvtHeader = new FairEventHeader();
     fEvtHeader->SetRunId(iRunId);
     rootMgr->Register("EventHeader.", "Event", fEvtHeader, kTRUE);
-    rootMgr->FillEventHeader(fEvtHeader);
+    auto source = rootMgr->GetSource();
+    if (source) {
+      source->FillEventHeader(fEvtHeader);
+    }
 
     // rootMgr->Register("CbmTofDigi", "Tof raw Digi", fTofCalDigisColl, kTRUE);
     //    fOutRootFile->cd();
@@ -694,7 +698,10 @@ bool CbmDeviceHitBuilderTof::HandleData(FairMQParts& parts, int /*index*/)
 
   if (NULL != fOutRootFile) {  // CbmEvent output to root file
     fEvtHeader->SetEventTime((double) fEventHeader[4]);
-    rootMgr->FillEventHeader(fEvtHeader);
+    auto source = rootMgr->GetSource();
+    if (source) {
+      source->FillEventHeader(fEvtHeader);
+    }
     //LOG(info) << "Fill WriteOutBuffer with rootMgr at " << rootMgr;
     fOutRootFile->cd();
     rootMgr->Fill();

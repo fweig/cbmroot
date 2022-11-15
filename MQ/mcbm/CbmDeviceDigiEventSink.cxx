@@ -26,6 +26,7 @@
 #include "FairRootFileSink.h"
 #include "FairRootManager.h"
 #include "FairRunOnline.h"
+#include "FairSource.h"
 
 #include "BoostSerializer.h"
 
@@ -655,7 +656,10 @@ void CbmDeviceDigiEventSink::DumpTreeEntry()
 */
   /// FairRunOnline style
   fpFairRootMgr->StoreWriteoutBufferData(fpFairRootMgr->GetEventTime());
-  fpFairRootMgr->FillEventHeader(fEvtHeader);
+  auto source = fpFairRootMgr->GetSource();
+  if (source) {
+    source->FillEventHeader(fEvtHeader);
+  }
   fpFairRootMgr->Fill();
   fpFairRootMgr->DeleteOldWriteoutBufferData();
   //  fpFairRootMgr->Write();
