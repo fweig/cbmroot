@@ -56,7 +56,6 @@
 #include "TROOT.h"
 #include "TRandom3.h"
 #include "TVector3.h"
-#include <thread>  // this_thread::sleep_for
 
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -66,6 +65,7 @@
 #include <iomanip>
 #include <stdexcept>
 #include <string>
+#include <thread>  // this_thread::sleep_for
 struct InitTaskError : std::runtime_error {
   using std::runtime_error::runtime_error;
 };
@@ -372,9 +372,7 @@ Bool_t CbmDeviceHitBuilderTof::InitRootOutput()
     fEvtHeader->SetRunId(iRunId);
     rootMgr->Register("EventHeader.", "Event", fEvtHeader, kTRUE);
     auto source = rootMgr->GetSource();
-    if (source) {
-      source->FillEventHeader(fEvtHeader);
-    }
+    if (source) { source->FillEventHeader(fEvtHeader); }
 
     // rootMgr->Register("CbmTofDigi", "Tof raw Digi", fTofCalDigisColl, kTRUE);
     //    fOutRootFile->cd();
@@ -513,9 +511,9 @@ Bool_t CbmDeviceHitBuilderTof::InitContainers()
 
   if (!InitCalibParameter()) return kFALSE;  // ChangeState(PAUSE); // for debugging
 
-  fDutAddr      = CbmTofAddress::GetUniqueAddress(fDutSm, fDutRpc, 0, 0, fDutId);
-  fSelAddr      = CbmTofAddress::GetUniqueAddress(fSelSm, fSelRpc, 0, 0, fSelId);
-  fSel2Addr     = CbmTofAddress::GetUniqueAddress(fSel2Sm, fSel2Rpc, 0, 0, fSel2Id);
+  fDutAddr  = CbmTofAddress::GetUniqueAddress(fDutSm, fDutRpc, 0, 0, fDutId);
+  fSelAddr  = CbmTofAddress::GetUniqueAddress(fSelSm, fSelRpc, 0, 0, fSelId);
+  fSel2Addr = CbmTofAddress::GetUniqueAddress(fSel2Sm, fSel2Rpc, 0, 0, fSel2Id);
   if (fiBeamRefType > -1) {
     if (fiBeamRefDet > -1) {
       fiBeamRefAddr = CbmTofAddress::GetUniqueAddress(fiBeamRefSm, fiBeamRefDet, 0, 0, fiBeamRefType);
@@ -528,7 +526,7 @@ Bool_t CbmDeviceHitBuilderTof::InitContainers()
   else
     fiBeamRefAddr = -1;
 
-  iIndexDut     = fDigiBdfPar->GetDetInd(fDutAddr);
+  iIndexDut = fDigiBdfPar->GetDetInd(fDutAddr);
   LOG(info) << Form("Use Dut 0x%08x, Sel 0x%08x, Sel2 0x%08x, BRef 0x%08x", fDutAddr, fSelAddr, fSel2Addr,
                     fiBeamRefAddr);
   return initOK;
@@ -699,9 +697,7 @@ bool CbmDeviceHitBuilderTof::HandleData(FairMQParts& parts, int /*index*/)
   if (NULL != fOutRootFile) {  // CbmEvent output to root file
     fEvtHeader->SetEventTime((double) fEventHeader[4]);
     auto source = rootMgr->GetSource();
-    if (source) {
-      source->FillEventHeader(fEvtHeader);
-    }
+    if (source) { source->FillEventHeader(fEvtHeader); }
     //LOG(info) << "Fill WriteOutBuffer with rootMgr at " << rootMgr;
     fOutRootFile->cd();
     rootMgr->Fill();
@@ -1045,7 +1041,7 @@ void CbmDeviceHitBuilderTof::CreateHistograms()
     LOG(info) << "Index map entry " << iDetIndx << ": TSR " << iSmType << iSmId << iRpcId
               << Form(", addr 0x%08x", iUniqueId);
 
-    fhRpcDigiTot[iDetIndx]    = new TH2F(
+    fhRpcDigiTot[iDetIndx] = new TH2F(
       Form("hDigiTot_SmT%01d_sm%03d_rpc%03d", iSmType, iSmId, iRpcId),
       Form("Digi Tot of Rpc #%03d in Sm %03d of type %d; digi 0; digi 1", iRpcId, iSmId, iSmType),
       2 * fDigiBdfPar->GetNbChan(iSmType, iRpcId), 0, 2 * fDigiBdfPar->GetNbChan(iSmType, iRpcId), 256, 0, 256);

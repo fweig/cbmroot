@@ -44,12 +44,11 @@
 #include <boost/serialization/utility.hpp>
 
 /// C/C++ headers
-#include <thread>  // this_thread::sleep_for
-
 #include <array>
 #include <iomanip>
 #include <stdexcept>
 #include <string>
+#include <thread>  // this_thread::sleep_for
 struct InitTaskError : std::runtime_error {
   using std::runtime_error::runtime_error;
 };
@@ -124,9 +123,9 @@ try {
 
   /// Prepare root output
   if ("" != fsOutputFileName) {
-    fpRun         = new FairRunOnline();
+    fpRun                   = new FairRunOnline();
     FairRootFileSink* pSink = new FairRootFileSink(fsOutputFileName);
-    fpFairRootMgr = FairRootManager::Instance();
+    fpFairRootMgr           = FairRootManager::Instance();
     fpFairRootMgr->SetSink(pSink);
     if (nullptr == fpFairRootMgr->GetOutFile()) {
       throw InitTaskError("Could not open root file");
@@ -137,7 +136,7 @@ try {
     }
     /// Set global size limit for all TTree in this process/Root instance
     TTree::SetMaxTreeSize(fiTreeFileMaxSize);
-  }    // if( "" != fsOutputFileName )
+  }  // if( "" != fsOutputFileName )
   else {
     throw InitTaskError("Empty output filename!");
   }  // else of if( "" != fsOutputFileName )
@@ -657,9 +656,7 @@ void CbmDeviceDigiEventSink::DumpTreeEntry()
   /// FairRunOnline style
   fpFairRootMgr->StoreWriteoutBufferData(fpFairRootMgr->GetEventTime());
   auto source = fpFairRootMgr->GetSource();
-  if (source) {
-    source->FillEventHeader(fEvtHeader);
-  }
+  if (source) { source->FillEventHeader(fEvtHeader); }
   fpFairRootMgr->Fill();
   fpFairRootMgr->DeleteOldWriteoutBufferData();
   //  fpFairRootMgr->Write();
