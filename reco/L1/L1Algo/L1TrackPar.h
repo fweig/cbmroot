@@ -89,6 +89,13 @@ public:
     return c[ind];
   }
 
+  fvec& C(int i, int j)
+  {
+    fvec* c = &C00;
+    int ind = (j <= i) ? i * (1 + i) / 2 + j : j * (1 + j) / 2 + i;
+    return c[ind];
+  }
+
   void Print(int i = -1) const;
 
   void PrintCorrelations(int i = -1) const;

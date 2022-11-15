@@ -292,7 +292,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
       //assert(T.IsConsistent(true, -1));
 
       //  add the target
-      if (istal < fNfieldStations) {
+      {
         fvec eX, eY, J04, J14;
         fvec dz;
         dz = fTargZ - zl;
@@ -305,29 +305,6 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
         J[4] = dz;
         J[5] = J14;
         L1FilterVtx(T, fTargX, fTargY, TargetXYInfo, eX, eY, J);
-      }
-      else {  //TODO: SG: take the field into account properly
-        fvec eX, eY, J04, J14;
-        fvec dz;
-        dz  = fTargZ - zl;
-        eX  = T.tx * dz;
-        eY  = T.ty * dz;
-        J04 = 0.f;
-        J14 = 0.f;
-        L1ExtrapolateJXY0(T.tx, T.ty, dz, fld0, eX, eY, J04, J14);
-        fvec J[6];
-        J[0] = dz;
-        J[1] = 0;
-        J[2] = J04;
-        J[3] = 0;
-        J[4] = dz;
-        J[5] = J14;
-        L1FilterVtx(T, fTargX, fTargY, TargetXYInfo, eX, eY, J);
-        // old code
-        //L1ExtrapolateLine(T, fTargZ);
-        //assert(T.IsConsistent(true, -1));
-        //L1FilterXY(T, fTargX, fTargY, TargetXYInfo);
-        //assert(T.IsConsistent(true, -1));
       }
     }
 
@@ -345,18 +322,11 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     //fit.L1AddPipeMaterial(T, fMaxInvMom, fvec::One());
     //}
 
-    //assert(T.IsConsistent(true, -1));
-
     fvec dz = stam.fZ - zl;
     L1ExtrapolateTime(T, dz, stam.timeInfo);
 
     // extrapolate to the middle hit
-    if (istam < fNfieldStations) { L1Extrapolate0(T, stam.fZ, fld0); }
-    else {
-      L1ExtrapolateLine(T, stam.fZ);  // TODO: fld1 doesn't work!
-    }
-
-    // assert(T.IsConsistent(true, -1));
+    L1Extrapolate0(T, stam.fZ, fld0);
 
   }  // i1_V
 }
@@ -613,19 +583,8 @@ inline void L1Algo::findTripletsStep0(  // input
 
     // L1TrackPar tStore1 = T2;
 
-    // TODO: SG: L1FilterNoField is wrong.
-    // TODO: If the field was present before,
-    // TODO: the momentum is correlated with the position and corresponding
-    // TODO: matrix elements must be up[dated
-
-    if (istam < fNfieldStations) {
-      L1Filter(T2, stam.frontInfo, u_front_2, du2_2, fvec::One());
-      L1Filter(T2, stam.backInfo, u_back_2, dv2_2, fvec::One());
-    }
-    else {
-      L1FilterNoField(T2, stam.frontInfo, u_front_2, du2_2, fvec::One());
-      L1FilterNoField(T2, stam.backInfo, u_back_2, dv2_2, fvec::One());
-    }
+    L1Filter(T2, stam.frontInfo, u_front_2, du2_2, fvec::One());
+    L1Filter(T2, stam.backInfo, u_back_2, dv2_2, fvec::One());
 
     FilterTime(T2, t_2, dt2_2, stam.timeInfo);
 
@@ -647,12 +606,7 @@ inline void L1Algo::findTripletsStep0(  // input
 
     // extrapolate to the right hit station
 
-    if (istar <= fNfieldStations) {
-      L1Extrapolate(T2, star.fZ, T2.qp, f2);  // Full extrapolation in the magnetic field
-    }
-    else {
-      L1ExtrapolateLine(T2, star.fZ);  // Extrapolation with line ()
-    }
+    L1Extrapolate(T2, star.fZ, T2.qp, f2);
 
     // assert(T2.IsConsistent(true, n2_4));
 
@@ -836,16 +790,8 @@ inline void L1Algo::findTripletsStep1(  // input
 
     L1ExtrapolateLine(T3, z_Pos[i3_V]);
 
-    bool noField = (&star - fParameters.GetStations().begin() >= fNfieldStations);
-
-    if (noField) {
-      L1FilterNoField(T3, star.frontInfo, u_front_[i3_V], du2_3[i3_V], fvec::One());
-      L1FilterNoField(T3, star.backInfo, u_back_[i3_V], dv2_3[i3_V], fvec::One());
-    }
-    else {
-      L1Filter(T3, star.frontInfo, u_front_[i3_V], du2_3[i3_V], fvec::One());
-      L1Filter(T3, star.backInfo, u_back_[i3_V], dv2_3[i3_V], fvec::One());
-    }
+    L1Filter(T3, star.frontInfo, u_front_[i3_V], du2_3[i3_V], fvec::One());
+    L1Filter(T3, star.backInfo, u_back_[i3_V], dv2_3[i3_V], fvec::One());
 
     if (kMcbm != fTrackingMode) { FilterTime(T3, t_3[i3_V], dt2_3[i3_V], star.timeInfo); }
   }
