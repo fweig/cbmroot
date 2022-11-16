@@ -2254,8 +2254,8 @@ void CbmL1::InputPerformance()
 void CbmL1::DumpMCTripletsToTree()
 {
   if (!fpMcTripletsTree) {
-    auto* currentDir  = gDirectory;
-    auto* currentFile = gFile;
+    TDirectory* currentDir = gDirectory;
+    TFile* currentFile     = gFile;
 
 
     // Get prefix and directory
@@ -2324,7 +2324,6 @@ void CbmL1::DumpMCTripletsToTree()
     float x;  ///< x-component of point position [cm]
     float y;  ///< y-component of point position [cm]
     float z;  ///< z-component of point position [cm]
-    bool operator<(const ReducedMcPoint& other) { return s < other.s; }
   };
 
   for (const auto& tr : fvMCTracks) {
@@ -2338,7 +2337,9 @@ void CbmL1::DumpMCTripletsToTree()
       vPoints.emplace_back(ReducedMcPoint {point.iStation, float(point.x), float(point.y), float(point.z)});
     }
 
-    std::sort(vPoints.begin(), vPoints.end());
+    std::sort(vPoints.begin(), vPoints.end(),
+              [](const ReducedMcPoint& lhs, const ReducedMcPoint& rhs) { return lhs.s < rhs.s; });
+
     for (unsigned int i = 0; i + 2 < vPoints.size(); ++i) {
       // Condition to collect only triplets without gaps in stations
       // TODO: SZh 20.10.2022 Add cases for jump iterations

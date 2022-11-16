@@ -63,7 +63,7 @@ public:
   L1Parameters(L1Parameters&& other) noexcept = default;
 
   /// Move assignment operator
-  L1Parameters& operator=(L1Parameters&& other) noexcept = default;
+  L1Parameters& operator=(L1Parameters&& other) = default;
 
   /// Prints configuration
   void Print(int verbosityLevel = 0) const;
@@ -140,6 +140,8 @@ public:
   /// \param  iTrackGr  Index of a track group
   const L1SearchWindow& GetSearchWindow(int iStation, int iTrackGr) const
   {
+    assert(iStation < fNstationsActiveTotal && iStation > 0);
+    assert(iTrackGr < int(fCAIterations.size()));
     return fSearchWindows[iTrackGr * L1Constants::size::kMaxNstations + iStation];
   }
 

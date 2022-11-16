@@ -15,7 +15,6 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "L1CAIteration.h"
 #include "L1InitManager.h"
 
 using namespace std::string_literals;
@@ -46,17 +45,10 @@ std::vector<std::string> L1ConfigRW::GetNodeKeys(const YAML::Node& node) const
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void L1ConfigRW::ReadCAIterations(const YAML::Node& node)
+std::vector<L1CAIteration> L1ConfigRW::ReadCAIterations(const YAML::Node& node) const
 {
+  std::vector<L1CAIteration> vIters;
   if (node) {
-    if (fVerbose > -1) {
-      LOG(info) << "L1 config: Reading CA tracking iterations sequence. Default iterations will be ignored";
-    }
-    fpInitManager->ClearCAIterations();
-    fpInitManager->SetCAIterationsNumberCrosscheck(node.size());
-    if (fVerbose > 2) { LOG(info) << "L1 config: " << fVerbose << " CA iterations were recorded"; }
-    if (fVerbose > 3) { LOG(info) << "L1 config: Recorded iterations:"; }
-
     // Loop over input sub-nodes. Each sub-node corresponds to one L1CAIteration object
     for (const auto& input : node) {
       try {
@@ -67,7 +59,7 @@ void L1ConfigRW::ReadCAIterations(const YAML::Node& node)
         caIter.SetDoubletChi2Cut(input["doublet_chi2_cut"].as<float>(caIter.GetDoubletChi2Cut()));
         caIter.SetPickGather(input["pick_gather"].as<float>(caIter.GetPickGather()));
         caIter.SetTripletLinkChi2(input["triplet_link_chi2"].as<float>(caIter.GetTripletLinkChi2()));
-        caIter.SetMaxInvMom(1. / input["min_momentum"].as<float>(caIter.GetMaxInvMom()));
+        caIter.SetMaxQp(input["max_qp"].as<float>(caIter.GetMaxQp()));
         caIter.SetMaxSlopePV(input["max_slope_pv"].as<float>(caIter.GetMaxSlopePV()));
         caIter.SetMaxSlope(input["max_slope"].as<float>(caIter.GetMaxSlope()));
         caIter.SetMaxDZ(input["max_dz"].as<float>(caIter.GetMaxDZ()));
@@ -79,10 +71,10 @@ void L1ConfigRW::ReadCAIterations(const YAML::Node& node)
         caIter.SetTrackFromTripletsFlag(input["is_track_from_triplets"].as<bool>(caIter.GetTrackFromTripletsFlag()));
         caIter.SetExtendTracksFlag(input["if_extend_tracks"].as<bool>(caIter.GetExtendTracksFlag()));
         caIter.SetJumpedFlag(input["is_jumped"].as<bool>(caIter.GetJumpedFlag()));
-        caIter.SetMinNhits(input["min_n_hits"].as<bool>(caIter.GetMinNhits()));
-        caIter.SetMinNhitsStation0(input["min_n_hits_sta_0"].as<bool>(caIter.GetMinNhitsStation0()));
+        caIter.SetMinNhits(input["min_n_hits"].as<int>(caIter.GetMinNhits()));
+        caIter.SetMinNhitsStation0(input["min_n_hits_sta_0"].as<int>(caIter.GetMinNhitsStation0()));
         if (fVerbose > 3) { LOG(info) << "L1 config:\n" << caIter.ToString(1); }
-        fpInitManager->PushBackCAIteration(caIter);
+        vIters.push_back(caIter);
       }
       catch (const YAML::InvalidNode& exc) {
         const auto nodeKeys = this->GetNodeKeys(input);
@@ -94,10 +86,7 @@ void L1ConfigRW::ReadCAIterations(const YAML::Node& node)
       }
     }  // Loop over input sub-nodes: end
   }
-  else {
-    LOG(warn) << "L1 config: CA tracking iterations sequence was not found in the parameters file, default will be "
-              << "used. To define iterations please use the following path in the YAML file: l1/algorithm/iterations";
-  }
+  return vIters;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -117,7 +106,31 @@ void L1ConfigRW::ReadYaml(const std::string& filename)
   }
 
   // Tracking iterations
-  this->ReadCAIterations(config["l1"]["algorithm"]["iterations"]);
+  this->InitCAIterations(config["l1"]["algorithm"]["iterations"]);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//
+void L1ConfigRW::InitCAIterations(const YAML::Node& node)
+{
+  assert(fpInitManager);  // Class itself can be used without the init manager, but this function cannot
+  auto vIters = this->ReadCAIterations(node);
+  if (vIters.size()) {
+    if (fVerbose > -1) {
+      LOG(info) << "L1 config: Reading CA tracking iterations sequence. Default iterations will be ignored";
+    }
+    fpInitManager->ClearCAIterations();
+    fpInitManager->SetCAIterationsNumberCrosscheck(vIters.size());
+    if (fVerbose > 2) { LOG(info) << "L1 config: " << fVerbose << " CA iterations were recorded"; }
+    if (fVerbose > 3) { LOG(info) << "L1 config: Recorded iterations:"; }
+    for (const auto& caIter : vIters) {
+      fpInitManager->PushBackCAIteration(caIter);
+    }
+  }
+  else {
+    LOG(warn) << "L1 config: CA tracking iterations sequence was not found in the parameters file, default will be "
+              << "used. To define iterations please use the following path in the YAML file: l1/algorithm/iterations";
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

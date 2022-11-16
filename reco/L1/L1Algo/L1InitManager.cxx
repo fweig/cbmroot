@@ -10,6 +10,7 @@
 
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 
 #include <algorithm>
 #include <fstream>
@@ -261,12 +262,12 @@ void L1InitManager::PushBackCAIteration(const L1CAIteration& iteration)
 void L1InitManager::ReadParametersObject(const std::string& fileName)
 {
   // Open input binary file
-  std::ifstream ifs(fileName, std::ios::binary);
+  std::ifstream ifs(fileName);
   if (!ifs) { LOG(fatal) << "L1InitManager: parameters data file \"" << fileName << "\" was not found"; }
 
   // Get L1InputData object
   try {
-    boost::archive::binary_iarchive ia(ifs);
+    boost::archive::text_iarchive ia(ifs);
     ia >> fParameters;
   }
   catch (const std::exception&) {
@@ -279,12 +280,15 @@ void L1InitManager::ReadParametersObject(const std::string& fileName)
 void L1InitManager::ReadSearchWindows(const std::string& fileName)
 {
   // Open input binary file
-  std::ifstream ifs(fileName, std::ios::binary);
+  std::ifstream ifs(fileName);
   if (!ifs) { LOG(fatal) << "L1InitManager: search window file \"" << fileName << "\" was not found"; }
 
   try {
-    boost::archive::binary_iarchive ia(ifs);
+    boost::archive::text_iarchive ia(ifs);
+    int nPars    = -1;
     int nWindows = -1;
+    ia >> nPars;
+    assert(nPars == 1);  // Currently only the constant windows are available
     ia >> nWindows;
     std::stringstream errMsg;
     for (int iW = 0; iW < nWindows; ++iW) {

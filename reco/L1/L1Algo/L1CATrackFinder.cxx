@@ -1734,7 +1734,7 @@ void L1Algo::CATrackFinder()
         fTripletFinalChi2Cut = caIteration.GetTripletFinalChi2Cut();
         fPickGather          = caIteration.GetPickGather();       //3.0;
         fTripletLinkChi2     = caIteration.GetTripletLinkChi2();  //5.0;
-        fMaxInvMom           = caIteration.GetMaxInvMom();        //1.0 / 0.5;  // max considered q/p
+        fMaxInvMom           = caIteration.GetMaxQp();            //1.0 / 0.5;  // max considered q/p
         fMaxSlopePV          = caIteration.GetMaxSlopePV();       //1.1;
         fMaxSlope            = caIteration.GetMaxSlope();         //2.748;  // corresponds to 70 grad
 

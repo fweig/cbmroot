@@ -11,6 +11,7 @@
 #define L1SearchWindow_h 1
 
 #include <boost/serialization/array.hpp>
+#include <boost/serialization/string.hpp>
 
 #include <array>
 #include <string>
@@ -39,7 +40,7 @@ public:
   L1SearchWindow& operator=(const L1SearchWindow& other) = default;
 
   /// Move constructor
-  L1SearchWindow(L1SearchWindow&& other) = default;
+  L1SearchWindow(L1SearchWindow&& other) noexcept = default;
 
   /// Move assignment operator
   L1SearchWindow& operator=(L1SearchWindow&& other) = default;
@@ -75,6 +76,9 @@ public:
   /// Gets track group id
   int GetTrackGroupID() const { return fTrackGroupID; }
 
+  /// Sets tag
+  /// A tag can be used for insurance, if this search window corresponds to a desired track finder iteration
+  void SetTag(const char* name) { fsTag = name; }
 
   /// TODO: SZh 08.11.2022: Implement variadic  template function
   /// TODO: SZh 08.11.2022: Try to reduce number of functions
@@ -151,7 +155,7 @@ private:
 
   int fStationID    = -1;  ///< Global index of active tracking station
   int fTrackGroupID = -1;  ///< Index of tracks group
-  //std::string fsTag  = "";  ///< Tag, containing information on the tracks group (TODO: can be omitted?)
+  std::string fsTag = "";  ///< Tag, containing information on the tracks group (TODO: can be omitted?)
 
   /// Serialization function
   friend class boost::serialization::access;
@@ -161,6 +165,7 @@ private:
     ar& fvParams;
     ar& fStationID;
     ar& fTrackGroupID;
+    ar& fsTag;
   }
 };
 

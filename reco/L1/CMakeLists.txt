@@ -64,6 +64,7 @@ set(SRCS
   L1Algo/L1IODataManager.cxx
   L1Algo/L1CloneMerger.cxx
   L1Algo/L1ConfigRW.cxx
+  L1Algo/L1SearchWindow.cxx
   L1Algo/utils/L1AlgoDraw.cxx
   L1Algo/utils/L1AlgoEfficiencyPerformance.cxx
   L1Algo/utils/L1AlgoPulls.cxx
@@ -72,6 +73,7 @@ set(SRCS
   catools/CaToolsPerformance.cxx
   catools/CaToolsDebugger.cxx
   catools/CaToolsWindowFinder.cxx
+  catools/CaToolsWFExpression.cxx
   ParticleFinder/CbmL1PFFitter.cxx
   ParticleFinder/CbmL1PFMCParticle.cxx
 

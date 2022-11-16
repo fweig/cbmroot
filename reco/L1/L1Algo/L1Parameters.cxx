@@ -279,7 +279,16 @@ std::string L1Parameters::ToString(int verbosity, int indentLevel) const
   aStream << indent << indentChar << "Doublets vs. MC matching:    " << fDevIsMatchDoubletsViaMc << '\n';
   aStream << indent << indentChar << "Triplets vs. MC matching:    " << fDevIsMatchTripletsViaMc << '\n';
   aStream << indent << indentChar << "Use hit search windows:      " << fDevIsParSearchWUsed << '\n';
-  // TODO: SZh 09.11.2022: Print search windows here
+
+  if (fDevIsParSearchWUsed) {
+    aStream << indent << "SEARCH WINDOWS:\n";
+    for (int iSt = 1; iSt < fNstationsActiveTotal; ++iSt) {
+      for (int iIter = 0; iIter < (int) fCAIterations.size(); ++iIter) {
+        aStream << indent << "- station: " << iSt << ", iteration: " << iIter << '\n';
+        aStream << GetSearchWindow(iSt, iIter).ToString() << '\n';
+      }
+    }
+  }
 
   aStream << indent
           << "--------------------------------------------------------------------------------------------------\n";

@@ -632,14 +632,14 @@ InitStatus CbmL1::Init()
     auto trackingIterFastPrim = L1CAIteration(trIterDefault, "FastPrimIter");
     trackingIterFastPrim.SetMinNhitsStation0(3);
     trackingIterFastPrim.SetPickGather(3.0f);
-    trackingIterFastPrim.SetMaxInvMom(1.0 / 0.5);
+    trackingIterFastPrim.SetMaxQp(1.0 / 0.5);
     trackingIterFastPrim.SetMaxDZ(0);
     trackingIterFastPrim.SetTargetPosSigmaXY(1, 1);
     trackingIterFastPrim.SetPrimaryFlag(true);
 
     auto trackingIterAllPrim = L1CAIteration(trIterDefault, "AllPrimIter");
     trackingIterAllPrim.SetMinNhitsStation0(3);
-    trackingIterAllPrim.SetMaxInvMom(1.0 / 0.05);
+    trackingIterAllPrim.SetMaxQp(1.0 / 0.05);
     trackingIterAllPrim.SetTargetPosSigmaXY(1, 1);
     trackingIterAllPrim.SetPrimaryFlag(true);
 
@@ -647,7 +647,7 @@ InitStatus CbmL1::Init()
     trackingIterFastPrim2.SetTripletChi2Cut(21.1075f);
     trackingIterFastPrim2.SetTripletFinalChi2Cut(21.1075f);
     trackingIterFastPrim2.SetPickGather(3.0f);
-    trackingIterFastPrim2.SetMaxInvMom(1.0 / 0.5);
+    trackingIterFastPrim2.SetMaxQp(1.0 / 0.5);
     trackingIterFastPrim2.SetMaxDZ(0);
     trackingIterFastPrim2.SetTargetPosSigmaXY(5, 5);
     trackingIterFastPrim2.SetPrimaryFlag(true);
@@ -655,7 +655,7 @@ InitStatus CbmL1::Init()
     auto trackingIterAllSec = L1CAIteration(trIterDefault, "AllSecIter");
     trackingIterAllSec.SetTripletChi2Cut(18.7560f);  // = 6.252 * 3;  // prob = 0.1
     trackingIterAllSec.SetTripletFinalChi2Cut(18.7560f);
-    trackingIterAllSec.SetMaxInvMom(1.0 / 0.1);
+    trackingIterAllSec.SetMaxQp(1.0 / 0.1);
     trackingIterAllSec.SetTargetPosSigmaXY(10, 10);
     trackingIterAllSec.SetMaxSlopePV(1.5);
     trackingIterAllSec.SetPrimaryFlag(false);
@@ -664,7 +664,7 @@ InitStatus CbmL1::Init()
     trackingIterFastPrimJump.SetTripletChi2Cut(21.1075f);  // prob = 0.01
     trackingIterFastPrimJump.SetTripletFinalChi2Cut(21.1075f);
     trackingIterFastPrimJump.SetPickGather(3.0f);
-    trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.5);
+    trackingIterFastPrimJump.SetMaxQp(1.0 / 0.5);
     trackingIterFastPrimJump.SetMaxDZ(0);
     trackingIterFastPrimJump.SetTargetPosSigmaXY(5, 5);
     trackingIterFastPrimJump.SetPrimaryFlag(true);
@@ -673,7 +673,7 @@ InitStatus CbmL1::Init()
     auto trackingIterAllPrimJump = L1CAIteration(trIterDefault, "AllPrimJumpIter");
     trackingIterAllPrimJump.SetTripletChi2Cut(18.7560f);
     trackingIterAllPrimJump.SetTripletFinalChi2Cut(18.7560f);
-    trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.1);
+    trackingIterAllPrimJump.SetMaxQp(1.0 / 0.1);
     trackingIterAllPrimJump.SetTargetPosSigmaXY(5, 5);
     trackingIterAllPrimJump.SetPrimaryFlag(true);
     trackingIterAllPrimJump.SetJumpedFlag(true);
@@ -681,7 +681,7 @@ InitStatus CbmL1::Init()
     auto trackingIterAllSecJump = L1CAIteration(trIterDefault, "AllSecJumpIter");
     trackingIterAllSecJump.SetTripletChi2Cut(21.1075f);
     trackingIterAllSecJump.SetTripletFinalChi2Cut(21.1075f);
-    trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.1);
+    trackingIterAllSecJump.SetMaxQp(1.0 / 0.1);
     trackingIterAllSecJump.SetMaxSlopePV(1.5f);
     trackingIterAllSecJump.SetTargetPosSigmaXY(10, 10);
     trackingIterAllSecJump.SetPrimaryFlag(false);
@@ -689,7 +689,7 @@ InitStatus CbmL1::Init()
 
     auto trackingIterAllPrimE = L1CAIteration(trIterDefault, "AllPrimEIter");
     trackingIterAllPrimE.SetMinNhitsStation0(3);
-    trackingIterAllPrimE.SetMaxInvMom(1.0 / 0.05);
+    trackingIterAllPrimE.SetMaxQp(1.0 / 0.05);
     trackingIterAllPrimE.SetTargetPosSigmaXY(1, 1);
     trackingIterAllPrimE.SetPrimaryFlag(true);
     trackingIterAllPrimE.SetElectronFlag(true);
@@ -697,7 +697,7 @@ InitStatus CbmL1::Init()
     auto trackingIterAllSecE = L1CAIteration(trIterDefault, "AllSecEIter");
     trackingIterAllSecE.SetTripletChi2Cut(18.7560f);
     trackingIterAllSecE.SetTripletFinalChi2Cut(18.7560f);
-    trackingIterAllSecE.SetMaxInvMom(1.0 / 0.05);
+    trackingIterAllSecE.SetMaxQp(1.0 / 0.05);
     trackingIterAllSecE.SetMaxSlopePV(1.5f);
     trackingIterAllSecE.SetTargetPosSigmaXY(10, 10);
     trackingIterAllSecE.SetPrimaryFlag(false);
@@ -711,17 +711,17 @@ InitStatus CbmL1::Init()
 
       trackingIterAllSecE.SetMinNhits(4);
       trackingIterAllSecE.SetMinNhitsStation0(4);
-      trackingIterAllPrim.SetMaxInvMom(1. / 0.1);
-      trackingIterAllPrimE.SetMaxInvMom(1. / 0.1);
-      trackingIterAllSecE.SetMaxInvMom(1. / 0.1);
+      trackingIterAllPrim.SetMaxQp(1. / 0.1);
+      trackingIterAllPrimE.SetMaxQp(1. / 0.1);
+      trackingIterAllSecE.SetMaxQp(1. / 0.1);
 
       trackingIterAllSecJump.SetMinNhits(4);
       trackingIterAllSecJump.SetMinNhitsStation0(4);
-      trackingIterFastPrim.SetMaxInvMom(1.0 / 0.3);
-      trackingIterAllSec.SetMaxInvMom(1.0 / 0.3);
-      trackingIterFastPrimJump.SetMaxInvMom(1.0 / 0.3);
-      trackingIterAllPrimJump.SetMaxInvMom(1.0 / 0.3);
-      trackingIterAllSecJump.SetMaxInvMom(1.0 / 0.3);
+      trackingIterFastPrim.SetMaxQp(1.0 / 0.3);
+      trackingIterAllSec.SetMaxQp(1.0 / 0.3);
+      trackingIterFastPrimJump.SetMaxQp(1.0 / 0.3);
+      trackingIterAllPrimJump.SetMaxQp(1.0 / 0.3);
+      trackingIterAllSecJump.SetMaxQp(1.0 / 0.3);
 
       trackingIterAllSec.SetMinNhits(4);
       trackingIterAllSec.SetMinNhitsStation0(4);
@@ -751,7 +751,7 @@ InitStatus CbmL1::Init()
         it.SetDoubletChi2Cut(7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
         it.SetPickGather(3.0f);
         it.SetTripletLinkChi2(16.0);
-        it.SetMaxInvMom(1.0 / 0.1);  //(1.0 / 0.5);
+        it.SetMaxQp(1.0 / 0.1);  //(1.0 / 0.5);
         it.SetMaxSlopePV(.1f);
         it.SetMaxSlope(.5f);
         it.SetMaxDZ(0.05);
@@ -771,7 +771,7 @@ InitStatus CbmL1::Init()
       trd2dIter2.SetDoubletChi2Cut(4. * 7.56327f);  // = 1.3449 * 2.f / 3.f;  // prob = 0.1
       trd2dIter2.SetPickGather(3.0f);
       trd2dIter2.SetTripletLinkChi2(16.);
-      trd2dIter2.SetMaxInvMom(1.0 / 0.05);  //(1.0 / 0.5);
+      trd2dIter2.SetMaxQp(1.0 / 0.05);  //(1.0 / 0.5);
       trd2dIter2.SetMaxSlopePV(.5f);
       trd2dIter2.SetMaxSlope(.5f);
       trd2dIter2.SetMaxDZ(0.05);
@@ -788,7 +788,7 @@ InitStatus CbmL1::Init()
       trd2dIter3.SetDoubletChi2Cut(15.);       // = 1.3449 * 2.f / 3.f;  // prob = 0.1
       trd2dIter3.SetPickGather(3.0f);
       trd2dIter3.SetTripletLinkChi2(200.);
-      trd2dIter3.SetMaxInvMom(1.0 / 0.1);  //(1.0 / 0.5);
+      trd2dIter3.SetMaxQp(1.0 / 0.1);  //(1.0 / 0.5);
       trd2dIter3.SetMaxSlopePV(.01);
       trd2dIter3.SetMaxSlope(.4);  //.5f);
       trd2dIter3.SetMaxDZ(0.05);

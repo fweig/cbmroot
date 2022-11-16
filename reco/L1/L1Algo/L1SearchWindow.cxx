@@ -4,6 +4,7 @@
 
 #include "L1SearchWindow.h"
 
+#include <cassert>
 #include <iomanip>
 #include <sstream>
 
@@ -22,7 +23,7 @@ L1SearchWindow::L1SearchWindow(int stationID, int trackGrID) : fStationID(statio
 //                       this class is supposed to be used inside the algorithm core
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void SetParamDxMaxVsX0(int id, float val)
+void L1SearchWindow::SetParamDxMaxVsX0(int id, float val)
 {
   assert(id > -1 && id < kNpars);
   fvParams[kDxMaxVsX0 * kNpars + id] = val;
@@ -30,7 +31,7 @@ void SetParamDxMaxVsX0(int id, float val)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void SetParamDxMinVsX0(int id, float val)
+void L1SearchWindow::SetParamDxMinVsX0(int id, float val)
 {
   assert(id > -1 && id < kNpars);
   fvParams[kDxMinVsX0 * kNpars + id] = val;
@@ -38,7 +39,7 @@ void SetParamDxMinVsX0(int id, float val)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void SetParamDxMaxVsY0(int id, float val)
+void L1SearchWindow::SetParamDxMaxVsY0(int id, float val)
 {
   assert(id > -1 && id < kNpars);
   fvParams[kDxMaxVsY0 * kNpars + id] = val;
@@ -46,7 +47,7 @@ void SetParamDxMaxVsY0(int id, float val)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void SetParamDxMinVsY0(int id, float val)
+void L1SearchWindow::SetParamDxMinVsY0(int id, float val)
 {
   assert(id > -1 && id < kNpars);
   fvParams[kDxMinVsY0 * kNpars + id] = val;
@@ -54,7 +55,7 @@ void SetParamDxMinVsY0(int id, float val)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void SetParamDyMaxVsX0(int id, float val)
+void L1SearchWindow::SetParamDyMaxVsX0(int id, float val)
 {
   assert(id > -1 && id < kNpars);
   fvParams[kDyMaxVsX0 * kNpars + id] = val;
@@ -62,7 +63,7 @@ void SetParamDyMaxVsX0(int id, float val)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void SetParamDyMinVsX0(int id, float val)
+void L1SearchWindow::SetParamDyMinVsX0(int id, float val)
 {
   assert(id > -1 && id < kNpars);
   fvParams[kDyMinVsX0 * kNpars + id] = val;
@@ -70,7 +71,7 @@ void SetParamDyMinVsX0(int id, float val)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void SetParamDyMaxVsY0(int id, float val)
+void L1SearchWindow::SetParamDyMaxVsY0(int id, float val)
 {
   assert(id > -1 && id < kNpars);
   fvParams[kDyMaxVsY0 * kNpars + id] = val;
@@ -78,7 +79,7 @@ void SetParamDyMaxVsY0(int id, float val)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void SetParamDyMinVsY0(int id, float val)
+void L1SearchWindow::SetParamDyMinVsY0(int id, float val)
 {
   assert(id > -1 && id < kNpars);
   fvParams[kDyMinVsY0 * kNpars + id] = val;
@@ -91,7 +92,7 @@ std::string L1SearchWindow::ToString() const
   std::stringstream msg;
   msg << "----- CA hits search window: \n";
   msg << "\tstation ID:      " << fStationID << '\n';
-  msg << "\ttracks group ID: " << fTracksGroupID << '\n';
+  msg << "\ttracks group ID: " << fTrackGroupID << '\n';
   msg << "\tparameters:\n";
   msg << "\t\t" << std::setw(6) << std::setfill(' ') << "No." << ' ';
   msg << std::setw(12) << std::setfill(' ') << "dx_max(x0)" << ' ';

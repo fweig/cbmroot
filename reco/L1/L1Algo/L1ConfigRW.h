@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+#include "L1CAIteration.h"
+
 namespace YAML
 {
   class Node;
@@ -37,10 +39,15 @@ public:
   /// \param  filename  Name of the configuration file
   void WriteYaml(const std::string& filename);
 
-private:
   /// Reads CA track finder iterations from YAML node
-  /// \param  node  YAML node
-  void ReadCAIterations(const YAML::Node& node);
+  /// \param  node  YAML node containing the iterations
+  /// \return       A vector of iterations
+  std::vector<L1CAIteration> ReadCAIterations(const YAML::Node& node) const;
+
+private:
+  /// Calls CA track finder iterations reader and initialize the iterations in the init manager
+  /// \param  node  YAML node containing the iterations
+  void InitCAIterations(const YAML::Node& node);
 
   /// Gets parameters content of the node
   /// \param   node  YAML node

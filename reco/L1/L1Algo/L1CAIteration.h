@@ -75,7 +75,7 @@ public:
   float GetMaxDZ() const { return fMaxDZ; }
 
   /// Gets max considered q/p for tracks
-  float GetMaxInvMom() const { return fMaxInvMom; }
+  float GetMaxQp() const { return fMaxQp; }
 
   /// Gets max slope (tx\ty) in 3D hit position of a triplet
   float GetMaxSlope() const { return fMaxSlope; }
@@ -151,8 +151,7 @@ public:
   void SetMaxDZ(float input) { fMaxDZ = input; }
 
   /// Sets max considered q/p for tracks
-  /// TODO: Replace with minimum momentum setter (S.Zharko)
-  void SetMaxInvMom(float input) { fMaxInvMom = input; }
+  void SetMaxQp(float input) { fMaxQp = input; }
 
   /// Sets max slope (tx\ty) in 3D hit position of a triplet
   void SetMaxSlope(float input) { fMaxSlope = input; }
@@ -224,7 +223,7 @@ private:
   float fDoubletChi2Cut      = 11.3449 * 2.f / 3.f;  ///< Doublet chi2 upper cut
   float fPickGather          = 3.0;                  ///< Size of region to attach new hits to the created track
   float fTripletLinkChi2     = 25.0;       ///< Min value of dp^2/dp_error^2, for which two tiplets are neighbours
-  float fMaxInvMom           = 1.0 / 0.5;  ///< Max considered q/p for tracks
+  float fMaxQp               = 1.0 / 0.5;  ///< Max considered q/p for tracks
   float fMaxSlopePV          = 1.1;        ///< Max slope (tx\ty) in primary vertex
   float fMaxSlope            = 2.748;      ///< Max slope (tx\ty) in 3D hit position of a triplet
   float fMaxDZ               = 0.f;        ///< Correction for accounting overlaping and iff z [cm]
@@ -264,7 +263,7 @@ private:
     ar& fDoubletChi2Cut;
     ar& fPickGather;
     ar& fTripletLinkChi2;
-    ar& fMaxInvMom;
+    ar& fMaxQp;
     ar& fMaxSlopePV;
     ar& fMaxSlope;
     ar& fMaxDZ;
