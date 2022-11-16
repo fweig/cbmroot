@@ -112,7 +112,6 @@ if(VMC_FOUND)
 endif()
 
 #Searches for FairROOT Package
-include(FairRootTargets)
 find_package(FairRoot REQUIRED)
 if(FAIRROOT_FOUND)
   list(APPEND packages FairRoot)
