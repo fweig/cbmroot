@@ -95,7 +95,8 @@ Int_t CbmL1GlobalTrackFinder::CopyL1Tracks(CbmEvent* event)
     CbmKFMath::CopyTC2TrackParam(&lpar, T.TLast, T.CLast);
     t->SetParamFirst(&fpar);
     t->SetParamLast(&lpar);
-    //  t->SetChiSq(T.chi2);
+    t->SetChi2(T.chi2);
+    //   t->SetLength(T.length);
     t->SetNDF(T.NDF);
     t->SetPidHypo(T.T[4] >= 0 ? 211 : -211);
     //     t->SetTime(T.Tpv[6]);
@@ -115,6 +116,7 @@ Int_t CbmL1GlobalTrackFinder::CopyL1Tracks(CbmEvent* event)
         t->SetStsTrackIndex(stsTrackIndex);
         if (event) event->AddData(ECbmDataType::kStsTrack, stsTrackIndex);
         CbmL1TrackToCbmStsTrack(T, track, h.Det);
+        track->AddStsHit(h.ExtIndex);
         stsTrackIndex++;
       }
       if (h.Det == 2 && hasMuchHits == false) {
@@ -124,6 +126,7 @@ Int_t CbmL1GlobalTrackFinder::CopyL1Tracks(CbmEvent* event)
         t->SetMuchTrackIndex(muchTrackIndex);
         if (event) event->AddData(ECbmDataType::kMuchTrack, muchTrackIndex);
         CbmL1TrackToCbmMuchTrack(T, track, h.Det);
+        track->AddMuchHit(h.ExtIndex);
         muchTrackIndex++;
       }
       if (h.Det == 3 && hasTrdHits == false) {
@@ -132,17 +135,19 @@ Int_t CbmL1GlobalTrackFinder::CopyL1Tracks(CbmEvent* event)
         t->SetTrdTrackIndex(trdTrackIndex);
         if (event) event->AddData(ECbmDataType::kTrdTrack, trdTrackIndex);
         CbmL1TrackToCbmTrdTrack(T, track, h.Det);
+        track->AddTrdHit(h.ExtIndex);
         trdTrackIndex++;
       }
       if (h.Det == 4 && hasTofHits == false) {
         hasTofHits         = true;
         CbmTofTrack* track = new ((*fTofTracks)[tofTrackIndex]) CbmTofTrack();
 
-        //         t->SetTofHitIndex(tofTrackIndex);
+        t->SetTofTrackIndex(tofTrackIndex);
 
         if (event) event->AddData(ECbmDataType::kTofTrack, tofTrackIndex);
         CbmL1TrackToCbmTofTrack(T, track, h.Det);
         tofTrackIndex++;
+        track->AddTofHit(h.ExtIndex);
 
         if (event) event->AddData(ECbmDataType::kTofHit, h.ExtIndex);
       }

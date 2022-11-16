@@ -25,7 +25,7 @@
 #include "CbmL1.h"
 #include "CbmMuchTrack.h"
 #include "CbmStsTrackFinder.h"
-#include "CbmTofTrack.h"
+//#include "CbmTofTrack.h"
 #include "CbmTrack.h"
 #include "CbmTrdTrack.h"
 
@@ -33,6 +33,7 @@ class TClonesArray;
 class CbmEvent;
 class CbmTrack;
 class CbmGlobalTrack;
+class CbmTofTrack;
 
 
 class CbmL1GlobalTrackFinder : public CbmStsTrackFinder {

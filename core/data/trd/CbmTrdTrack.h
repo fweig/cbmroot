@@ -20,7 +20,7 @@
 
 #include "CbmTrack.h"  // for CbmTrack
 
-#include <Rtypes.h>      // for ClassDef
+#include <Rtypes.h>  // for ClassDef
 
 class CbmTrdTrack : public CbmTrack {
 public:
@@ -29,6 +29,12 @@ public:
 
   /** Destructor **/
   virtual ~CbmTrdTrack();
+
+
+  /** Associate a TrdHit to the track
+    ** @param hitIndex  Index of the TRD hit in TClonesArray
+    **/
+  void AddTrdHit(int32_t hitIndex) { AddHit(hitIndex, kTRDHIT); }
 
   /** Accessors  **/
   double GetPidWkn() const { return fPidWkn; }

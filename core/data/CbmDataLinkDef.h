@@ -80,6 +80,7 @@
 #pragma link C++ class CbmTofPoint + ;
 #pragma link C++ class CbmTofDigi + ;
 #pragma link C++ class CbmTofAddress + ;
+#pragma link C++ class CbmTofTrack + ;
 #pragma link C++ class CbmTofTracklet + ;
 #pragma link C++ class CbmTofTrackletParam + ;
 
@@ -92,7 +93,6 @@
 
 // --- data/global
 #pragma link C++ class CbmGlobalTrack + ;
-#pragma link C++ class CbmTofTrack + ;
 #pragma link C++ class CbmTzdDigi + ;
 #pragma link C++ class CbmVertex + ;
 #pragma link C++ class std::vector < CbmDigiEvent>;

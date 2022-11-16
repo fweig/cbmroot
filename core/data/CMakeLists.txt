@@ -88,6 +88,7 @@ set(SRCS
   tof/CbmTofDetectorId_v21a.cxx
   tof/CbmTofAddress.cxx
   tof/CbmTofDigi.cxx
+  tof/CbmTofTrack.cxx
   tof/CbmTofTracklet.cxx
   tof/CbmTofTrackletParam.cxx
 
@@ -101,7 +102,6 @@ set(SRCS
   global/CbmTzdDigi.cxx
   global/CbmGlobalTrack.cxx
   global/CbmVertex.cxx
-  global/CbmTofTrack.cxx
   global/CbmTrackParam.cxx
 
   raw/AccDataSis18.cxx

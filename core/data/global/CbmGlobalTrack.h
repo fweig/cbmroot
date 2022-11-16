@@ -46,6 +46,7 @@ public:
   int32_t GetMuchTrackIndex() const { return fMuchTrack; }
   int32_t GetRichRingIndex() const { return fRichRing; }
   int32_t GetTofHitIndex() const { return fTofHit; }
+  int32_t GetTofTrackIndex() const { return fTofTrack; }
   const FairTrackParam* GetParamFirst() const { return &fParamFirst; }
   const FairTrackParam* GetParamLast() const { return &fParamLast; }
   const CbmTrackParam* GetParamVertex() const { return &fParamPrimaryVertex; }
@@ -62,6 +63,7 @@ public:
   void SetMuchTrackIndex(int32_t iMuch) { fMuchTrack = iMuch; }
   void SetRichRingIndex(int32_t iRing) { fRichRing = iRing; }
   void SetTofHitIndex(int32_t iTofHit) { fTofHit = iTofHit; }
+  void SetTofTrackIndex(int32_t iTofTrack) { fTofTrack = iTofTrack; }
   void SetParamFirst(const FairTrackParam* parFirst) { fParamFirst = *parFirst; }
   void SetParamLast(const FairTrackParam* parLast) { fParamLast = *parLast; }
   void SetParamPrimaryVertex(const FairTrackParam* parPV) { fParamPrimaryVertex.Set(*parPV); }
@@ -78,11 +80,12 @@ public:
 
 private:
   /** Indices of local StsTrack, TrdTrack, MuchTrack, RichRing and TofHit **/
-  int32_t fStsTrack;
-  int32_t fTrdTrack;
-  int32_t fMuchTrack;
-  int32_t fRichRing;
-  int32_t fTofHit;
+  int32_t fStsTrack  = -1;
+  int32_t fTrdTrack  = -1;
+  int32_t fMuchTrack = -1;
+  int32_t fRichRing  = -1;
+  int32_t fTofHit    = -1;
+  int32_t fTofTrack  = -1;
 
   /** Global track parameters at first and last plane **/
   FairTrackParam fParamFirst;
@@ -90,20 +93,19 @@ private:
   CbmTrackParam fParamPrimaryVertex;
 
   /** PID hypothesis used for global track fit **/
-  int32_t fPidHypo;
+  int32_t fPidHypo = 0;
 
   /** Chi2 of global track fit **/
-  Double32_t fChi2;
+  double fChi2 = 0.;
 
   /** NDF of global track fit **/
-  int32_t fNDF;
+  int32_t fNDF = 0;
 
   /** Quality flag **/
-  int32_t fFlag;
+  int32_t fFlag = 0;
 
   /** Track length **/
-  Double32_t fLength;
-
+  double fLength = 0.;
 
   ClassDef(CbmGlobalTrack, 3);
 };

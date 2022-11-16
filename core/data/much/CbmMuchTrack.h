@@ -25,6 +25,12 @@ public:
   /** Destructor **/
   virtual ~CbmMuchTrack();
 
+
+  /** Associate a MuchPixelHit to the track
+    ** @param hitIndex  Index of the Much hit in TClonesArray
+    **/
+  void AddMuchHit(int32_t hitIndex) { AddHit(hitIndex, kMUCHPIXELHIT); }
+
   ClassDef(CbmMuchTrack, 3);
 };
 
