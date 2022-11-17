@@ -65,15 +65,17 @@
 #include "TROOT.h"
 #include "TRandom.h"
 #include "TRandom3.h"
+#include "TStopwatch.h"
 #include "TVector3.h"
 
 // Constants definitions
 #include "CbmTofClusterizersDef.h"
 
 // C++ Classes and includes
-// Globals
+#include <iomanip>
 #include <vector>
 
+// Globals
 static Int_t iIndexDut            = 0;
 // const  Double_t cLight=29.9792; // in cm/ns  (VF) not used
 static Int_t SelMask          = DetMask;
@@ -374,6 +376,10 @@ void CbmTofEventClusterizer::Exec(Option_t* option)
     LOG(info) << "New timeslice " << iNbTs << " with " << fEventsColl->GetEntriesFast() << " events, "
               << fDigiMan->GetNofDigis(ECbmModuleId::kTof) << " TOF digis + "
               << fDigiMan->GetNofDigis(ECbmModuleId::kT0) << " T0 digis ";
+
+    TStopwatch timerTs;
+    timerTs.Start();
+
     fiNbSkip1 = 0;
     fiNbSkip2 = 0;
     iNbTs++;
@@ -478,6 +484,23 @@ void CbmTofEventClusterizer::Exec(Option_t* option)
       //
       LOG(info) << "Total Skip2 Digi nb " << fiNbSkip2;
     }
+
+    /// PAL: add TS statistics for monitoring and perf evaluation
+    timerTs.Stop();
+    LOG(debug) << GetName() << "::Exec: real time=" << timerTs.RealTime() << " CPU time=" << timerTs.CpuTime();
+    fProcessTime += timerTs.RealTime();
+    fuNbDigis += fDigiMan->GetNofDigis(ECbmModuleId::kTof)    // TOF
+                 + fDigiMan->GetNofDigis(ECbmModuleId::kT0);  // T0
+    fuNbHits += fiHitStart;
+
+    std::stringstream logOut;
+    logOut << std::setw(20) << std::left << GetName() << " [";
+    logOut << std::fixed << std::setw(8) << std::setprecision(1) << std::right << timerTs.RealTime() * 1000. << " ms] ";
+    logOut << "TS " << iNbTs;
+    logOut << ", events " << fEventsColl->GetEntriesFast();
+    logOut << ", hits " << fiHitStart << ", time/1k-hit " << std::setprecision(4)
+           << timerTs.RealTime() * 1e6 / fiHitStart << " [ms]";
+    LOG(info) << logOut.str();
   }
   else {
     // fTofDigisColl=fTofRawDigisColl;
@@ -536,6 +559,21 @@ void CbmTofEventClusterizer::ExecEvent(Option_t* /*option*/, CbmEvent* tEvent)
 void CbmTofEventClusterizer::Finish()
 {
   LOG(info) << "Finish with " << fdEvent << " processed events";
+
+  /// PAL: add run statistics for monitoring and perf evaluation
+  LOG(info) << "=====================================";
+  LOG(info) << GetName() << ": Finish run";
+  LOG(info) << GetName() << ": Run summary ";
+  LOG(info) << GetName() << ": Processing time      : " << std::fixed << std::setprecision(3) << fProcessTime;
+  LOG(info) << GetName() << ": Nr of events         : " << fdEvent;
+  LOG(info) << GetName() << ": Nr of input digis    : " << fuNbDigis;
+  LOG(info) << GetName() << ": Nr of produced hits  : " << fuNbHits;
+  LOG(info) << GetName() << ": Nr of hits / event   : " << std::fixed << std::setprecision(2)
+            << (fdEvent > 0 ? fuNbHits / fdEvent : 0);
+  LOG(info) << GetName() << ": Nr of hits / digis   : " << std::fixed << std::setprecision(2)
+            << (fuNbDigis > 0 ? fuNbHits / (Double_t) fuNbDigis : 0);
+  LOG(info) << "=====================================";
+
   if (fdEvent < 100) return;  // don't save histos with insufficient statistics
   if (fDutId < 0) return;     // no histograms were produced
 

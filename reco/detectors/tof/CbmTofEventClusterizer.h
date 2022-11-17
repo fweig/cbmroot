@@ -465,6 +465,10 @@ private:
   Double_t fdEvent;
   Double_t fdStartAnalysisTime;
 
+  Double_t fProcessTime = 0.0;
+  uint64_t fuNbDigis    = 0;
+  uint64_t fuNbHits     = 0;
+
   Bool_t fbSwapChannelSides;
   Int_t fiOutputTreeEntry;
   Int_t fiFileIndex;

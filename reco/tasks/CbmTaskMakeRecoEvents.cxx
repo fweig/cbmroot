@@ -94,7 +94,7 @@ void CbmTaskMakeRecoEvents::Exec(Option_t*)
   logOut << fixed << setw(8) << setprecision(1) << right << timer.RealTime() * 1000. << " ms] ";
   logOut << "TS " << fNumTs << ", events " << fDigiEvents->size() << ", Digis: T0 " << fT0Digis->size() << " STS "
          << fStsDigis->size() << " RICH " << fRichDigis->size() << " MUCH " << fMuchDigis->size() << " TRD "
-         << fTrdDigis->size() << " TOF " << fTofDigis->size() << " PSD" << fPsdDigis->size();
+         << fTrdDigis->size() << " TOF " << fTofDigis->size() << " PSD " << fPsdDigis->size();
   LOG(info) << logOut.str();
 
   // --- Run statistics
