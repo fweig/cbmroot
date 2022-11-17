@@ -643,15 +643,17 @@ Bool_t CbmAlgoBuildRawEvents::CheckTriggerConditions(CbmEvent* event, const RawE
     return kFALSE;
   }
 
-  /// Check trigger rejection by minimal number or absence
+  /// Check trigger rejection by minimal/maximal number or absence, if enabled/requested
   int32_t iNbDigis = event->GetNofData(det.dataType);
-  if ((-1 == iNbDigis) || (static_cast<UInt_t>(iNbDigis) < det.fuTriggerMinDigis)) {
+
+  /// a.Check trigger rejection by minimal number (if enabled)
+  if (0 < det.fuTriggerMinDigis && ((-1 == iNbDigis) || (static_cast<UInt_t>(iNbDigis) < det.fuTriggerMinDigis))) {
     LOG(debug2) << "Event does not have enough digis: " << iNbDigis << " vs " << det.fuTriggerMinDigis << " for "
                 << det.sName;
     return kFALSE;
   }
 
-  /// Check trigger rejection by maximal number (if enabled)
+  /// b.Check trigger rejection by maximal number (if enabled)
   if (0 <= det.fiTriggerMaxDigis && det.fiTriggerMaxDigis < iNbDigis) {
     LOG(debug2) << "Event Has too many digis: " << iNbDigis << " vs " << det.fiTriggerMaxDigis << " for " << det.sName;
     return kFALSE;
