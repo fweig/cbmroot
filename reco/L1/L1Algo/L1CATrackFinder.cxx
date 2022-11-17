@@ -741,8 +741,8 @@ inline void L1Algo::findTripletsStep0(  // input
 #endif  // FAST_CODE
 
         if (doubletNtriplets >= fParameters.GetMaxTripletPerDoublets()) {
-          cout << "L1: GetMaxTripletPerDoublets==" << fParameters.GetMaxTripletPerDoublets()
-               << " reached in findTripletsStep0()" << endl;
+          LOG(debug) << "L1: GetMaxTripletPerDoublets==" << fParameters.GetMaxTripletPerDoublets()
+                     << " reached in findTripletsStep0()";
           // reject already created triplets for this doublet
           n3   = n3 - doubletNtriplets;
           n3_V = n3 / fvec::size();
@@ -1818,17 +1818,17 @@ void L1Algo::CATrackFinder()
          for (int istal = fParameters.GetNstationsActive() - 2; istal >= fFirstCAstation; istal--)  //start downstream chambers
          {
          int nHits = HitsUnusedStopIndex[istal] - HitsUnusedStartIndex[istal];
-         
+
          int NHits_P = nHits/L1Constants::size::kSingletPortionSize;
-         
+
          for( int ipp = 0; ipp < NHits_P; ipp++ )
          {
          n_g1[ip] = L1Constants::size::kSingletPortionSize;
          ip++;
          } // start_lh - portion of left hits
-         
+
          n_g1[ip] = nHits - NHits_P * L1Constants::size::kSingletPortionSize;
-         
+
          ip++;
          fDoubletPortionStopIndex[istal] = ip;
          }// lstations
