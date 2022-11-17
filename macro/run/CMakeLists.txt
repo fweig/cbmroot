@@ -320,7 +320,8 @@ If(DEFINED ENV{RAW_DATA_PATH} )
     SET( RAW_DATA_CHECK_TO  800) # Coverage mode: 654 for run 1588 on run4
   endif()
   # ====================================================================
-  SET( EVT_BUILD_TRIG 4)
+  # SET( EVT_BUILD_TRIG 4) # Default mCBM 22 Lambda analysis trigger, but too long runtime for L1 and Lambda CI tests
+  SET( EVT_BUILD_TRIG 15) # Default mCBM 22 Lambda trigger + TRD1D and TRD2D to reduce evt nb and combinatorics
   SET( RECO_EVNTS_NB 20)
   if(${CBM_TEST_MODEL} MATCHES MergeRequest OR ${CBM_TEST_MODEL} MATCHES Continuous )
     Message( STATUS "MR or Continuous model detected, decreasing event nb for mCBM 2022 reco tests to single one." )
@@ -391,7 +392,9 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       ### Raw data analysis tests: unpacking
       Set(testname mcbm_unpack_${RUN})
       Set(fixture_unpacked_${RUN} fixture_done_${testname})
-      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_unpack_tsa.sh \"${RAW_DATA_PATH}/${RUN}_first20Ts.tsa\" ${RUN})
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/run/run_unpack_tsa.sh \"${RAW_DATA_PATH}/${RUN}_first20Ts.tsa\"
+            ${RUN}
+            )
       Set_Tests_Properties(${testname} PROPERTIES
             TIMEOUT ${RAW_DATA_UNPACK_TO}
             FAIL_REGULAR_EXPRESSION "segmentation violation"
@@ -403,7 +406,10 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       ### Raw data analysis tests: event building and reconstruction => need calibration files!!
       Set(testname mcbm_event_2022_${RUN})
       Set(fixture_event_${RUN} fixture_done_${testname})
-      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_event.sh \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" ${RUN} ${EVT_BUILD_TRIG} -1 false \"${CBMROOT_BINARY_DIR}/macro/run/data/\")
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_event.sh
+            \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" ${RUN} ${EVT_BUILD_TRIG} -1 false
+            \"${CBMROOT_BINARY_DIR}/macro/run/data/\"
+            )
       Set_Tests_Properties(${testname} PROPERTIES
             TIMEOUT ${RAW_DATA_CHECK_TO}
             FAIL_REGULAR_EXPRESSION "segmentation violation"
@@ -430,7 +436,7 @@ If(DEFINED ENV{RAW_DATA_PATH} )
             )
 
       ### Raw analysis tests: (event building and) reconstruction => need calibration files!!
-      ### => L1 needs around 2000 seconds to complete 1 TS (mostly in GlobalFindTracksEvents)
+      ### => L1 needs around 2000 seconds to complete 1 TS (mostly in GlobalFindTracksEvents) with trigger 4
       Set(testname mcbm_reco_l1tr_2022_${RUN})
       Set(fixture_reco_l1tr_${RUN} fixture_done_${testname})
       Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_reco.sh ${RUN} ${RECO_EVNTS_NB}
@@ -450,7 +456,10 @@ If(DEFINED ENV{RAW_DATA_PATH} )
       ### Raw data analysis tests: event building and reconstruction => need calibration files!!
       Set(testname mcbm_digievent_2022_${RUN})
       Set(fixture_digievent_${RUN} fixture_done_${testname})
-      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_event.sh \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" ${RUN} ${EVT_BUILD_TRIG} -1 true \"${CBMROOT_BINARY_DIR}/macro/run/data/\")
+      Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_event.sh
+            \"${CBMROOT_BINARY_DIR}/macro/run/data/${RUN}_first20Ts.digi.root\" ${RUN} ${EVT_BUILD_TRIG} -1 true
+            \"${CBMROOT_BINARY_DIR}/macro/run/data/\"
+            )
       Set_Tests_Properties(${testname} PROPERTIES
             TIMEOUT ${RAW_DATA_CHECK_TO}
             FAIL_REGULAR_EXPRESSION "segmentation violation"
@@ -477,7 +486,7 @@ If(DEFINED ENV{RAW_DATA_PATH} )
             )
 
       ### Raw analysis tests: reconstruction  from digievent => need calibration files!!
-      ### => L1 needs around 2000 seconds to complete 1 TS (mostly in GlobalFindTracksEvents)
+      ### => L1 needs around 2000 seconds to complete 1 TS (mostly in GlobalFindTracksEvents) with trigger 4
       Set(testname mcbm_reco_l1tr_digievent_2022_${RUN})
       Set(fixture_reco_l1tr_digievent_${RUN} fixture_done_${testname})
       Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/beamtime/mcbm2022/mcbm_reco.sh ${RUN} ${RECO_EVNTS_NB}

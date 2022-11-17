@@ -317,7 +317,7 @@ Bool_t mcbm_event(std::string infile,
       eb_TriggerMinNumberBmon      = 1;
       eb_TriggerMinNumberSts       = 4;
       eb_TriggerMinNumberTrd1d     = 2;
-      eb_TriggerMinNumberTrd1d     = 1;
+      eb_TriggerMinNumberTrd2d     = 1;
       eb_TriggerMinNumberTof       = 8;
       eb_TriggerMinNumberRich      = 1;
       break;
@@ -329,6 +329,36 @@ Bool_t mcbm_event(std::string infile,
       eb_TriggerMinNumberTof       = 8;
       eb_TriggerMinLayersNumberTof = 4;
       eb_TriggerMinLayersNumberSts = 2;
+      break;
+    }
+    case 15: {
+      // Trigger 4 + TRD1D and TRD2D
+      eb_TriggerMinNumberBmon      = 1;
+      eb_TriggerMaxNumberBMon      = 2;
+
+      eb_TriggerMinNumberSts       = 2;
+      eb_TriggerMinLayersNumberSts = 1;
+
+      eb_TriggerMinNumberTrd1d     = 2;
+      eb_TriggerMinNumberTrd2d     = 1;
+
+      eb_TriggerMinNumberTof       = 8;
+      eb_TriggerMinLayersNumberTof = 4;
+
+      eb_TrigWinMinBMon            =  -50;
+      eb_TrigWinMaxBMon            =   50;
+      eb_TrigWinMinSts             =  -60;
+      eb_TrigWinMaxSts             =   60;
+      eb_TrigWinMinTrd1d           = -300;
+      eb_TrigWinMaxTrd1d           =  300;
+      eb_TrigWinMinTrd2d           = -200;
+      eb_TrigWinMaxTrd2d           =  200;
+
+      eb_TrigWinMinTof             =  -20;
+      eb_TrigWinMaxTof             =   60;
+
+      eb_TrigWinMinRich            =  -60;
+      eb_TrigWinMaxRich            =   60;
       break;
     }
     default: {
