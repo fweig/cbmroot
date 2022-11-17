@@ -85,6 +85,8 @@ CbmL1GlobalFindTracksEvents::~CbmL1GlobalFindTracksEvents()
 // -----   Task execution   ------------------------------------------------
 void CbmL1GlobalFindTracksEvents::Exec(Option_t* /*opt*/)
 {
+  nHitsTs   = 0;
+  nTracksTs = 0;
 
   // --- Local variables
   Long64_t nEvents = 0;
@@ -221,6 +223,7 @@ void CbmL1GlobalFindTracksEvents::Finish()
     LOG(info) << "Events processed : " << fNofEvents;
     LOG(info) << "Hits / event     : " << fNofHits / Double_t(fNofEvents);
     LOG(info) << "Tracks / event   : " << fNofTracks / Double_t(fNofEvents);
+    LOG(info) << "Time per event   : " << 1000. * fTime / Double_t(fNofEvents) << " ms ";
   }
   LOG(info) << "=====================================";
 }
@@ -238,9 +241,27 @@ pair<UInt_t, UInt_t> CbmL1GlobalFindTracksEvents::ProcessEvent(CbmEvent* event)
 
   // --- Event log
   Int_t eventNumber = (event ? event->GetNumber() : fNofEvents);
-  Int_t nHits       = (event ? event->GetNofData(ECbmDataType::kStsHit) : fStsHits->GetEntriesFast());
+  Int_t nHits       = 0;
+  Int_t nHitsMuch   = 0;
+  Int_t nHitsTrd    = 0;
+  Int_t nHitsTof    = 0;
+  if (event) {
+    nHits     = 0 < event->GetNofData(ECbmDataType::kStsHit) ? event->GetNofData(ECbmDataType::kStsHit) : 0;
+    nHitsMuch = 0 < event->GetNofData(ECbmDataType::kMuchPixelHit) ? event->GetNofData(ECbmDataType::kMuchPixelHit) : 0;
+    nHitsTrd  = 0 < event->GetNofData(ECbmDataType::kTrdHit) ? event->GetNofData(ECbmDataType::kTrdHit) : 0;
+    nHitsTof  = 0 < event->GetNofData(ECbmDataType::kTofHit) ? event->GetNofData(ECbmDataType::kTofHit) : 0;
+  }
+  else {
+    nHits = fStsHits->GetEntriesFast();
+  }
+  nHitsTs += nHits;
+  nTracksTs += nTracks;
+
   LOG(debug) << "+ " << setw(20) << GetName() << ": Event " << setw(6) << right << eventNumber << ", real time "
-             << fixed << setprecision(6) << fTimer.RealTime() << " s, hits: " << nHits << ", tracks: " << nTracks;
+             << fixed << setprecision(6) << fTimer.RealTime() << " s, STS hits: " << setw(5) << nHits
+             << ", tracks: " << setw(4) << nTracks << " (TS: STS hits " << setw(7) << nHitsTs << ", tracks " << setw(6)
+             << nTracksTs << ") MUCH " << setw(4) << nHitsMuch << " TRD: " << setw(4) << nHitsTrd << " TOF: " << setw(4)
+             << nHitsTof << " Total: " << setw(5) << (nHits + nHitsMuch + nHitsTrd + nHitsTof);
 
   return std::make_pair(nHits, nTracks);
 }

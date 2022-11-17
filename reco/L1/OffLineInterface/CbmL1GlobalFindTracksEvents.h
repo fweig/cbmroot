@@ -33,7 +33,7 @@ class CbmStsTrackFinderIdeal;
  ** @date 07.05.2021
  ** @version 1.0
  **
- ** This task creates GlobalTrack, StsTrack, MuchTrack, TrdTrack, TofTrack objects 
+ ** This task creates GlobalTrack, StsTrack, MuchTrack, TrdTrack, TofTrack objects
  ** from hits.
  ** It uses as finding engine CbmL1GlobalTrackFinder.
  **/
@@ -95,6 +95,8 @@ private:
   Double_t fNofTracks;              ///< Number of tracks created
   Double_t fTime;                   ///< Total real time used for good events
 
+  Long64_t nHitsTs   = 0;
+  Long64_t nTracksTs = 0;
 
   /** Initialisation at beginning of each event **/
   virtual InitStatus Init();

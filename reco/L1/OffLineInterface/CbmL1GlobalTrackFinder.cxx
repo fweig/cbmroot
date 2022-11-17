@@ -5,11 +5,11 @@
 /*
  *====================================================================
  *
- *  CBM Level 1 Reconstruction 
- *  
+ *  CBM Level 1 Reconstruction
+ *
  *  Authors: V. Akishina
  *
- *  e-mail : v.akishina@gsi.de 
+ *  e-mail : v.akishina@gsi.de
  *
  *====================================================================
  *
@@ -74,7 +74,8 @@ Int_t CbmL1GlobalTrackFinder::CopyL1Tracks(CbmEvent* event)
 {
   CbmL1* L1 = CbmL1::Instance();
   if (!L1) return 0;
-  Int_t globalTrackIndex = fGlobalTracks->GetEntriesFast();
+  Int_t globalTrackIndex      = fGlobalTracks->GetEntriesFast();
+  Int_t globalTrackIndexStart = globalTrackIndex;
 
   Int_t stsTrackIndex  = fStsTracks->GetEntriesFast();
   Int_t muchTrackIndex = fMuchTracks->GetEntriesFast();
@@ -154,7 +155,7 @@ Int_t CbmL1GlobalTrackFinder::CopyL1Tracks(CbmEvent* event)
     }
     //END create detector tracks if needed
   }
-  return globalTrackIndex;
+  return globalTrackIndex - globalTrackIndexStart;
 }
 // -------------------------------------------------------------------------
 
