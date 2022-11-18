@@ -32,6 +32,7 @@ set(PRIVATE_DEPENDENCIES
   CbmTofReco  
   FairMQ::Tools
   FairRoot::ParBase
+  FairRoot::Online
   ROOT::Core
   ROOT::Graf
   ROOT::Hist

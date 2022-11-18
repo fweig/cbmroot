@@ -84,7 +84,7 @@ set(EXE_NAME McbmEventBuilderWin)
 set(SRCS CbmDeviceMcbmEventBuilderWin.cxx runMcbmEvtBuilderWin.cxx)
 
 set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
-set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
+set(PRIVATE_DEPENDENCIES "${PRIVATE_DEPS};FairRoot::Online")
 set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
 generate_cbm_executable()
@@ -93,7 +93,7 @@ set(EXE_NAME McbmEventSink)
 set(SRCS CbmDeviceMcbmEventSink.cxx runMcbmEventSink.cxx)
 
 set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
-set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
+set(PRIVATE_DEPENDENCIES "${PRIVATE_DEPS};FairRoot::Online")
 set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
 generate_cbm_executable()
@@ -121,7 +121,7 @@ set(EXE_NAME DigiEventSink)
 set(SRCS CbmDeviceDigiEventSink.cxx runDigiEventSink.cxx)
 
 set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
-set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
+set(PRIVATE_DEPENDENCIES "${PRIVATE_DEPS};FairRoot::Online")
 set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
 generate_cbm_executable()

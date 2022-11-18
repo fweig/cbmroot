@@ -43,6 +43,7 @@ set(PRIVATE_DEPENDENCIES
   CbmFlibFlesTools
   CbmFlibMcbm2018
   FairRoot::Base
+  FairRoot::Online
   ROOT::Gpad
   ROOT::Graf
   ROOT::Hist

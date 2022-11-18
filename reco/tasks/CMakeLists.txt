@@ -34,6 +34,7 @@ set(PUBLIC_DEPENDENCIES
 set(PRIVATE_DEPENDENCIES
   CbmBase
   FairLogger::FairLogger
+  FairRoot::Online
   external::yaml-cpp
   ROOT::Hist
   ROOT::RHTTP

@@ -30,6 +30,7 @@ set(PUBLIC_DEPS
 
 set(PRIVATE_DEPS
   FairRoot::Base
+  FairRoot::Online
   Algo
   )
 

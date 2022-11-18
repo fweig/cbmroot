@@ -40,6 +40,7 @@ set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
 set(PUBLIC_DEPENDENCIES
   CbmData
   FairRoot::Base
+  FairRoot::Online
   ROOT::Core
   )
 

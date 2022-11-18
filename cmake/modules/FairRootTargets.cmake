@@ -1,16 +1,16 @@
 macro(define_fairroot_targets)
 
-  # Define FairRoot::FairTools target
-  add_library(FairRoot::FairTools SHARED IMPORTED GLOBAL)
-  set_target_properties(FairRoot::FairTools PROPERTIES
+  # Define FairRoot::Tools target
+  add_library(FairRoot::Tools SHARED IMPORTED GLOBAL)
+  set_target_properties(FairRoot::Tools PROPERTIES
     IMPORTED_LOCATION
     ${FAIRROOT_LIBRARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}FairTools${CMAKE_SHARED_LIBRARY_SUFFIX}
   )
-  target_include_directories(FairRoot::FairTools INTERFACE
+  target_include_directories(FairRoot::Tools INTERFACE
     ${FAIRROOT_INCLUDE_DIR}   
   )
 
-  target_link_libraries(FairRoot::FairTools INTERFACE
+  target_link_libraries(FairRoot::Tools INTERFACE
     FairLogger::FairLogger
     ROOT::Core
     ROOT::Graf
@@ -31,7 +31,7 @@ macro(define_fairroot_targets)
   )
 
   target_link_libraries(FairRoot::Alignment INTERFACE
-    FairRoot::FairTools
+    FairRoot::Tools
 
     ROOT::Geom
   )
@@ -47,7 +47,7 @@ macro(define_fairroot_targets)
   )
   
   target_link_libraries(FairRoot::ParBase INTERFACE
-    FairRoot::FairTools
+    FairRoot::Tools
 
     ROOT::Core
     ROOT::RIO
@@ -64,7 +64,7 @@ macro(define_fairroot_targets)
   ) 
 
   target_link_libraries(FairRoot::ParBase INTERFACE
-    FairRoot::FairTools
+    FairRoot::Tools
 
     ROOT::Core
     ROOT::MathCore
@@ -94,7 +94,7 @@ macro(define_fairroot_targets)
 
   target_link_libraries(FairRoot::Base INTERFACE
     FairRoot::Alignment
-    FairRoot::FairTools
+    FairRoot::Tools
     FairRoot::ParBase
     FairRoot::GeoBase
     Boost::serialization
@@ -117,6 +117,41 @@ macro(define_fairroot_targets)
     ROOT::Gdml
   )
 
+
+  # The Online library was added with FairRoot v18.8.0 and contains the
+  # FairRunOnline class and some other online realted classes. Before this
+  # FairRoot version the code was contained in the Base library.
+  # If the FairRoot version contains the library define the target, if the
+  # FairRoot version doesn't contain the library create an alias to
+  # FairRoot::Base. This allows to already use the target FairRoot::Online
+  # already before
+  FairRootVersion()
+  if(${FairRoot_VERSION} VERSION_LESS 18.8)
+    add_library(FairRoot::Online ALIAS FairRoot::Base)
+  else()
+    # Define FairRoot::Online target
+    add_library(FairRoot::Online SHARED IMPORTED GLOBAL)
+    set_target_properties(FairRoot::Online PROPERTIES
+      IMPORTED_LOCATION
+      ${FAIRROOT_LIBRARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}Online${CMAKE_SHARED_LIBRARY_SUFFIX}
+    )
+    target_include_directories(FairRoot::Online INTERFACE
+      ${FAIRROOT_INCLUDE_DIR}
+    )
+
+    target_link_libraries(FairRoot::Online INTERFACE
+      FairRoot::Tools
+      FairRoot::Base
+      FairRoot::ParBase
+      FairRoot::MbsAPI
+
+      ROOT::RHTTP # THttpServer
+      ROOT::Core
+      ROOT::Geom
+      ROOT::Net # TSocket
+    )
+  endif()
+
   # Define FairRoot::EventDisplay target
   add_library(FairRoot::EventDisplay SHARED IMPORTED GLOBAL)
   set_target_properties(FairRoot::EventDisplay PROPERTIES
@@ -128,7 +163,7 @@ macro(define_fairroot_targets)
   )
 
   target_link_libraries(FairRoot::EventDisplay INTERFACE
-    FairRoot::FairTools
+    FairRoot::Tools
     FairRoot::Base # FairRootManager, FairRunAna, FairTSBufferFunctional, FairTimeStamp, FairEventManager
 
     ROOT::Core
@@ -147,19 +182,19 @@ macro(define_fairroot_targets)
     ROOT::XMLParser   # TXMLNode, TXMLAttr, TDOMParser
   )
 
-  # Define FairRoot::TrkBase target
-  add_library(FairRoot::TrkBase SHARED IMPORTED GLOBAL)
-  set_target_properties(FairRoot::TrkBase PROPERTIES
+  # Define FairRoot::TrackBase target
+  add_library(FairRoot::TrackBase SHARED IMPORTED GLOBAL)
+  set_target_properties(FairRoot::TrackBase PROPERTIES
     IMPORTED_LOCATION
     ${FAIRROOT_LIBRARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}TrkBase${CMAKE_SHARED_LIBRARY_SUFFIX}
   )
-  target_include_directories(FairRoot::TrkBase INTERFACE
+  target_include_directories(FairRoot::TrackBase INTERFACE
     ${FAIRROOT_INCLUDE_DIR}
     
   )
 
-  target_link_libraries(FairRoot::TrkBase INTERFACE
-    FairRoot::FairTools
+  target_link_libraries(FairRoot::TrackBase INTERFACE
+    FairRoot::Tools
     FairRoot::Base # FairRunAna, FairField
 
     ROOT::Core
@@ -168,19 +203,19 @@ macro(define_fairroot_targets)
     ROOT::Matrix
   )
 
-  # Define FairRoot::Gen target
-  add_library(FairRoot::Gen SHARED IMPORTED GLOBAL)
-  set_target_properties(FairRoot::Gen PROPERTIES
+  # Define FairRoot::Generators target
+  add_library(FairRoot::Generators SHARED IMPORTED GLOBAL)
+  set_target_properties(FairRoot::Generators PROPERTIES
     IMPORTED_LOCATION
     ${FAIRROOT_LIBRARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}Gen${CMAKE_SHARED_LIBRARY_SUFFIX}
   )
-  target_include_directories(FairRoot::Gen INTERFACE
+  target_include_directories(FairRoot::Generators INTERFACE
     ${FAIRROOT_INCLUDE_DIR}    
   )
 
-  target_link_libraries(FairRoot::Gen INTERFACE
+  target_link_libraries(FairRoot::Generators INTERFACE
     FairRoot::Base # FairPrimaryGenerator, FairGenerator, FairIon, FairParticle, FairRunSim
-    FairRoot::FairTools
+    FairRoot::Tools
 
     ROOT::Core
     ROOT::EG
@@ -202,7 +237,7 @@ macro(define_fairroot_targets)
   target_link_libraries(FairRoot::BaseMQ INTERFACE
     FairRoot::Base # FairTask, FairRunAna, FairRootFileSink, FairFileSource
     FairRoot::ParBase # FairParRootFileIo, FairRuntimeDb
-    FairRoot::FairTools
+    FairRoot::Tools
     FairRoot::MbsAPI
 
     FairMQ::FairMQ
@@ -230,7 +265,7 @@ macro(define_fairroot_targets)
     FairRoot::Base # FairRunIdGenerator
     FairRoot::BaseMQ # Serialization policies
     FairRoot::ParBase # FairRuntimeDb, ...
-    FairRoot::FairTools # FairLogger
+    FairRoot::Tools # FairLogger
 
     FairMQ::FairMQ
 

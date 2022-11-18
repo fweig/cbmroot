@@ -37,8 +37,8 @@ set(PRIVATE_DEPENDENCIES
   CbmField
   CbmSimGenerators
   FairRoot::Base
-  FairRoot::FairTools
-  FairRoot::Gen
+  FairRoot::Tools
+  FairRoot::Generators
   FairRoot::ParBase
   geant321
   geant4vmc

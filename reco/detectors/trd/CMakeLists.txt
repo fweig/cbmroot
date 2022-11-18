@@ -92,6 +92,7 @@ set(PRIVATE_DEPENDENCIES
   CbmTrdSim
   CbmRecoBase
   FairRoot::ParBase
+  FairRoot::Online
   L1
   ROOT::EG
   ROOT::Geom

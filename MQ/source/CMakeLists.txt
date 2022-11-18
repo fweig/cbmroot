@@ -92,13 +92,13 @@ set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
   generate_cbm_executable()
 
-set(EXE_NAME MCPointSource)
-set(SRCS CbmMCPointSource.cxx runMCPointSource.cxx)
-set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS}) 
-set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS}) 
-set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
+#set(EXE_NAME MCPointSource)
+#set(SRCS CbmMCPointSource.cxx runMCPointSource.cxx)
+#set(PUBLIC_DEPENDENCIES ${PUBLIC_DEPS})
+#set(PRIVATE_DEPENDENCIES ${PRIVATE_DEPS})
+#set(INTERFACE_DEPENDENCIES ${INTERFACE_DEPS})
 
-  generate_cbm_executable()
+#  generate_cbm_executable()
 
 set(EXE_NAME TsConsumerReqExample)
 set(SRCS CbmTsConsumerReqDevExample.cxx runTsConsumerReqExample.cxx)

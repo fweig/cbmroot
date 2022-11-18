@@ -110,6 +110,7 @@ set(PRIVATE_DEPENDENCIES
   CbmTofBase
   FairLogger::FairLogger
   FairRoot::ParBase
+  FairRoot::Online
   cppzmq
   external::fles_logging
   ROOT::Gpad
