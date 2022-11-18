@@ -83,7 +83,6 @@ set(PUBLIC_DEPENDENCIES
   CbmRichBase
   KF
   L1
-  NicaCbmFormat
   FairRoot::Base
   ROOT::Core
   ROOT::EG

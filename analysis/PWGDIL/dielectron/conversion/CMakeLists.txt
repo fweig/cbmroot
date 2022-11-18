@@ -39,7 +39,6 @@ set(PUBLIC_DEPENDENCIES
   KF
   KFParticleInterface
   Littrack
-  NicaCbmFormat
   FairRoot::Base
   ROOT::Core
   ROOT::Hist

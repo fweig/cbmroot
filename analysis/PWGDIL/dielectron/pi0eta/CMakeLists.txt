@@ -48,7 +48,6 @@ set(PUBLIC_DEPENDENCIES
   CbmRichReco
   CbmLmvm
   KFParticleInterface
-  NicaCbmFormat
   FairRoot::Base
   ROOT::Core
   ROOT::Gpad

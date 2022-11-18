@@ -21,7 +21,6 @@ set(PRIVATE_DEPENDENCIES
   CbmData
   CbmSimGenerators
   CbmMuchBase
-  NicaCbmFormat
   ROOT::Core
   ROOT::Hist
   ROOT::MathCore

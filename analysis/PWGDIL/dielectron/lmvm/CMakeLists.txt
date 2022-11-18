@@ -33,7 +33,6 @@ set(PUBLIC_DEPENDENCIES
   CbmRichBase
   CbmData
   KF
-  NicaCbmFormat
   FairRoot::Base
   ROOT::Core
   ROOT::Hist
