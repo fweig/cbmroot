@@ -215,6 +215,11 @@ macro(generate_cbm_library)
 
   if(LINKDEF)
     root_generate_dictionary(G__${LIBRARY_NAME} ${ROOT_HEADERS} MODULE ${LIBRARY_NAME} LINKDEF ${LINKDEF})
+    if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+      set_target_properties(G__${LIBRARY_NAME} PROPERTIES COMPILE_FLAGS "-Wno-overloaded-virtual -Wno-shadow -Wno-deprecated-declarations -Wno-unused-parameter")
+    else()
+      set_target_properties(G__${LIBRARY_NAME} PROPERTIES COMPILE_FLAGS "-Wno-ctor-dtor-privacy -Wno-overloaded-virtual -Wno-null-pointer-subtraction -Wno-shadow -Wno-deprecated-declarations -Wno-unused-parameter")
+    endif()
   endif(LINKDEF)
 
   ############# Install target and corresponding header files ############
