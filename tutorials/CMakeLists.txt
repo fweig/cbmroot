@@ -1,1 +1,1 @@
-add_subdirectory(TaskToAlgo)
+#add_subdirectory(TaskToAlgo)
