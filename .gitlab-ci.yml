@@ -221,6 +221,17 @@ FileLicenceCheck:
     INSTALL_PROJECT: "TRUE"
     EXTRA_FLAGS: '"-DCBM_TEST_INSTALL=TRUE"'
 
+.singularity_debian10_variables_nov22: &singularity_debian10_variables_nov22
+    OS: debian10
+    FAIRSOFT_VERSION: nov22rc
+    FAIRROOT_VERSION: v18.8_patches
+    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS/testing"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
+    CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
+    INSTALL_PROJECT: "TRUE"
+    EXTRA_FLAGS: '"-DCBM_TEST_INSTALL=TRUE"'
+
 .singularity_centos7_variables_apr21: &singularity_centos7_variables_apr21
     OS: centos7
     FAIRSOFT_VERSION: apr21p2
@@ -324,6 +335,11 @@ CbmRoot_Merge_Singularity_debian10_apr21:
   <<: [*singularity_tag, *check_merge_request, *build_and_test]
   variables:
     <<: [*mergeRequestVariables, *singularity_debian10_variables_apr21]
+
+CbmRoot_Merge_Singularity_debian10_nov22:
+  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *singularity_debian10_variables_nov22]
 
 CbmRoot_Merge_Singularity_debian11_apr21:
   <<: [*singularity_tag, *check_merge_request, *build_and_test]
