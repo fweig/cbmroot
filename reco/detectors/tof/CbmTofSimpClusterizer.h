@@ -34,6 +34,7 @@ class CbmEvent;
 
 // ROOT Classes and includes
 class TClonesArray;
+class TFile;
 class TH1;
 class TH2;
 class TString;

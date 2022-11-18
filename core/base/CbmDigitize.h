@@ -15,6 +15,7 @@
 #include "CbmMatch.h"
 #include "CbmTimeSlice.h"
 
+#include <FairRootManager.h>
 #include <FairTask.h>
 #include <Logger.h>  // for LOG
 

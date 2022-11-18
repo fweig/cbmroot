@@ -21,11 +21,12 @@
 #include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
 #include <RtypesCore.h>  // for Int_t, Double_t, Bool_t
 #include <TString.h>     // for TString
-#include <typeinfo>      // for bad_cast
 
-#include <fstream>  // for string, getline, char_traits, basic_istream
-#include <map>      // for map
-#include <vector>   // for vector
+#include <fstream>   // for string, getline, char_traits, basic_istream
+#include <map>       // for map
+#include <sstream>   // for stringstream
+#include <typeinfo>  // for bad_cast
+#include <vector>    // for vector
 
 class CbmGeoMuchPar;
 class CbmMuchLayerSide;

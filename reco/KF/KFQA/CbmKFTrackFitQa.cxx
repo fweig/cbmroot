@@ -19,7 +19,8 @@
 #include "CbmStsTrack.h"
 #include "CbmTrackMatch.h"
 
-#include "FairMCPoint.h"
+#include <FairMCPoint.h>
+#include <FairRootManager.h>
 
 #include "TBranch.h"
 #include "TDatabasePDG.h"

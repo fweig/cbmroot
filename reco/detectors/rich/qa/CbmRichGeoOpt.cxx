@@ -19,7 +19,8 @@
 #include "CbmRichRingLight.h"
 #include "CbmTrackMatchNew.h"
 
-#include "FairTrackParam.h"
+#include <FairRootManager.h>
+#include <FairTrackParam.h>
 
 #include "TCanvas.h"
 #include "TClonesArray.h"

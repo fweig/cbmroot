@@ -15,6 +15,7 @@
 #include "CbmTofDigi.h"
 #include "CbmTrdDigi.h"
 
+#include <FairRootManager.h>
 #include <Logger.h>
 
 #include "TimeClusterTrigger.h"

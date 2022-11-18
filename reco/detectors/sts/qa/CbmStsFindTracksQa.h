@@ -25,11 +25,14 @@
 #include <TStopwatch.h>
 #include <TVector3.h>
 
+class TClonesArray;
+class TH1;
 class TH1F;
 class CbmMCDataArray;
 class CbmStsSetup;
 class CbmMCDataManager;
 class CbmTimeSlice;
+class FairRootManager;
 
 class CbmStsFindTracksQa : public FairTask {
 

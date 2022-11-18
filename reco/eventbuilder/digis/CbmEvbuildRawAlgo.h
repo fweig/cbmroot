@@ -33,6 +33,7 @@
 class TimesliceMetaData;
 class CbmRawEvent;
 class TClonesArray;
+class TFolder;
 class TH1;
 class TH2;
 class TNamed;

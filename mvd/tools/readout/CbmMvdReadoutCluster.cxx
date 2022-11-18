@@ -12,6 +12,7 @@
 #include "CbmMvdCluster.h"
 
 //-- Include from Fair --//
+#include <FairRootManager.h>
 #include <Logger.h>
 
 //-- Include from Root --//

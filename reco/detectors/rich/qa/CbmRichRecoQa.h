@@ -12,6 +12,7 @@ class CbmRichRing;
 class CbmHistManager;
 class TH1D;
 class TH2D;
+class TH1;
 class TH2;
 class TH3;
 class CbmMCTrack;

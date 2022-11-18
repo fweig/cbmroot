@@ -16,6 +16,7 @@
 #include "CbmModuleList.h"
 #include "CbmTimeSlice.h"
 
+#include <FairRootManager.h>
 #include <Logger.h>
 
 #include <TClonesArray.h>

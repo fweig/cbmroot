@@ -9,6 +9,8 @@
 
 #include "TH1F.h"
 
+class TClonesArray;
+
 class LxCalcStats : public FairTask {
 public:
   LxCalcStats();

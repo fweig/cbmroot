@@ -30,6 +30,7 @@ class TH1F;
 class TH2F;
 class TMemberInspector;
 class CbmQaPie;
+class FairRootManager;
 
 /// QA for the MUCH detector after a "transport" step of the simulation.
 /// The class reimplements corresponding QA checks from old CbmMuchHitFinderQa class

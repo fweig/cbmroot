@@ -8,6 +8,7 @@
 #include "CbmDefs.h"
 #include "CbmEvent.h"
 
+#include <FairRootManager.h>
 #include <Logger.h>
 
 #include <TClonesArray.h>

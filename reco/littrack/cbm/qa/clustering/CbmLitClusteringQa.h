@@ -26,6 +26,7 @@
 class CbmHistManager;
 class CbmMCDataArray;
 class CbmDigiManager;
+class TClonesArray;
 
 class CbmLitClusteringQa : public FairTask {
 public:

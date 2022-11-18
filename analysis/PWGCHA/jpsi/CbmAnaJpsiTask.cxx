@@ -24,6 +24,8 @@
 #include "CbmTrdTrack.h"
 #include "cbm/elid/CbmLitGlobalElectronId.h"
 
+#include <FairRootManager.h>
+
 #include "TCanvas.h"
 #include "TFile.h"
 #include "TMath.h"

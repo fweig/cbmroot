@@ -6,6 +6,7 @@
 #define ANALYSIS_TREE_CONVERTERMANAGER_H_
 
 #include "FairTask.h"
+#include <FairRootManager.h>
 
 #include <utility>
 

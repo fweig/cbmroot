@@ -21,6 +21,7 @@
 #include "CbmStsTrack.h"
 #include "CbmTofPoint.h"
 
+#include <FairRootManager.h>
 #include <Logger.h>
 
 #include <map>

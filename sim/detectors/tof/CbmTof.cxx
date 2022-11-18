@@ -17,6 +17,7 @@
 #include <FairGeoBuilder.h>
 #include <FairGeoMedia.h>
 #include <FairMCEventHeader.h>
+#include <FairRootManager.h>
 #include <FairRunSim.h>
 
 #include "TClonesArray.h"

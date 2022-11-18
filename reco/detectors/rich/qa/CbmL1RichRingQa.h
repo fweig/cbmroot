@@ -26,6 +26,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+class TClonesArray;
+
 class CbmL1RichRingQa : public FairTask {
 private:
   CbmL1RichRingQa(const CbmL1RichRingQa&);

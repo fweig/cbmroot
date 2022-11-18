@@ -34,10 +34,13 @@
 #include "CbmStsTrack.h"
 #include "CbmTrackMatchNew.h"
 
+#include <FairRootManager.h>
+
+#include <TDirectory.h>
+
 #include "KFParticle.h"
 #include "KFParticleTopoReconstructor.h"
 #include "LmvmKinePar.h"
-
 
 using namespace std;
 

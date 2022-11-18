@@ -35,6 +35,7 @@ class CbmMuchPad;
 class CbmMCDataArray;
 class CbmMCDataManager;
 class CbmTimeSlice;
+class FairRootManager;
 
 /// QA for the MUCH detector after a "digitization" step of the simulation.
 /// The class reimplements corresponding QA checks from old CbmMuchHitFinderQa class

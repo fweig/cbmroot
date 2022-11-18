@@ -15,6 +15,8 @@
 #include "CbmRichHit.h"
 #include "CbmRichRing.h"
 
+#include <FairRootManager.h>
+
 #include "TClonesArray.h"
 
 using namespace std;

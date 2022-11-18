@@ -9,6 +9,8 @@
 
 #include <fstream>
 
+class TClonesArray;
+
 class CbmLitCreateStandaloneData : public FairTask {
 public:
   CbmLitCreateStandaloneData();

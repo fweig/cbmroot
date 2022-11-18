@@ -39,6 +39,7 @@ class TTrbHeader;
 
 // ROOT Classes and includes
 class TClonesArray;
+class TFile;
 class TF1;
 class TH1;
 class TH2;

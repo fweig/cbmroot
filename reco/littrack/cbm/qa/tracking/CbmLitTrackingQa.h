@@ -21,6 +21,7 @@ class CbmHistManager;
 class CbmTrackMatchNew;
 class CbmLitMCTrackCreator;
 class CbmMCDataArray;
+class TClonesArray;
 
 using std::multimap;
 using std::pair;

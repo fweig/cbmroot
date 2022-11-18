@@ -8,7 +8,7 @@
 #include "CbmRawEvent.h"
 
 #include <FairRootManager.h>
-#include <FairRunOnline.h>
+//#include <FairRunOnline.h>
 #include <Logger.h>
 
 #include <TClonesArray.h>

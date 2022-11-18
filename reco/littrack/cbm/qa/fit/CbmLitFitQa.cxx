@@ -27,6 +27,8 @@
 #include "CbmTrackMatchNew.h"
 #include "CbmTrdAddress.h"
 
+#include <FairRootManager.h>
+
 #include "TClonesArray.h"
 #include "TH1.h"
 #include "TH1F.h"

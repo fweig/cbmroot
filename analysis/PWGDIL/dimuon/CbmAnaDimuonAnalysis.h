@@ -32,11 +32,13 @@ class CbmVertex;
 class TClonesArray;
 class TLorentzVector;
 class TString;
+class TFile;
 class TH1D;
 class TH2D;
 class TH3D;
 class TProfile;
 class TMultiLayerPerceptron;
+class TTree;
 
 class CbmAnaDimuonAnalysis : public FairTask {
 public:

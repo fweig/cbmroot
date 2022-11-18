@@ -33,6 +33,7 @@ class TMemberInspector;
 class CbmMCDataArray;
 class CbmMCDataManager;
 class CbmTimeSlice;
+class FairRootManager;
 
 class CbmMuchHitFinderQa : public FairTask {
 

@@ -18,6 +18,7 @@
 #include "FairTask.h"
 
 class CbmEvent;
+class TClonesArray;
 
 /**
  * \class CbmLitFindMvdTracks.h

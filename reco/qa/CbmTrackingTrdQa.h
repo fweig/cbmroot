@@ -34,6 +34,7 @@ class TH1F;
 class CbmMCDataArray;
 class CbmMCDataManager;
 class CbmTimeSlice;
+class FairRootManager;
 
 class CbmTrackingTrdQa : public FairTask {
 

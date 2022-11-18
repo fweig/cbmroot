@@ -19,6 +19,7 @@
 #include "CbmTrdPoint.h"
 #include "CbmTrdTrack.h"
 
+#include <FairRootManager.h>
 #include <Logger.h>
 
 #include "TClonesArray.h"

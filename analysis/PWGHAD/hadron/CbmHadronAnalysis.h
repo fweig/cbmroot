@@ -21,6 +21,7 @@ class CbmVertex;
 class CbmStsKFTrackFitter;
 
 class TClonesArray;
+class TFile;
 class TH1F;
 class TH2F;
 class TString;

@@ -21,6 +21,7 @@ class CbmTrdGeoHandler;
 
 class TClonesArray;
 class TCanvas;
+class TFile;
 class TH1F;
 class TH2F;
 

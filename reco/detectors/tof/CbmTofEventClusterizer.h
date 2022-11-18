@@ -44,6 +44,7 @@ class FairEventHeader;
 // ROOT Classes and includes
 class TClonesArray;
 class TF1;
+class TFile;
 class TH1;
 class TH2;
 class TH3;

@@ -8,6 +8,9 @@
 #include "CbmEvent.h"
 #include "CbmTzdDigi.h"
 
+#include <FairRootManager.h>
+#include <Logger.h>
+
 #include <TClonesArray.h>
 #include <TStopwatch.h>
 

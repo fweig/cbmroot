@@ -37,6 +37,7 @@ class TH2;
 class TNamed;
 class TStopwatch;
 class TCanvas;
+class TFolder;
 
 enum class EOverlapModeRaw
 {

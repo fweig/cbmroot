@@ -24,6 +24,8 @@
 using std::string;
 using std::vector;
 
+class TClonesArray;
+
 class CbmLitFindGlobalTracksParallel : public FairTask {
 public:
   /**

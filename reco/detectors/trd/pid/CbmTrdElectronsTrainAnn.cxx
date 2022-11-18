@@ -11,6 +11,9 @@
 #include "CbmTrdPoint.h"
 #include "CbmTrdTrack.h"
 
+#include <FairRootManager.h>
+#include <Logger.h>
+
 #include "TCanvas.h"
 #include "TClonesArray.h"
 #include "TCut.h"

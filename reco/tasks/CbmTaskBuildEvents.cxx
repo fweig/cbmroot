@@ -9,6 +9,7 @@
 #include "CbmDigiTimeslice.h"
 #include "CbmModuleList.h"
 
+#include <FairRootManager.h>
 #include <Logger.h>
 
 #include <TStopwatch.h>

@@ -27,7 +27,8 @@
 
 
 //-- Include from Fair --//
-#include "FairTrackParam.h"
+#include <FairRootManager.h>
+#include <FairTrackParam.h>
 #include <Logger.h>
 
 

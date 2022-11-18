@@ -19,6 +19,7 @@ class CbmTrdCluster;
 class CbmTrdHit;
 class TProfile;
 class TProfile2D;
+class TH1;
 class TH1F;
 class TH1I;
 class TH2I;

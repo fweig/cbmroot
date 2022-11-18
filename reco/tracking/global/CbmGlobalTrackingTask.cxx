@@ -18,6 +18,7 @@
 #include "CbmStsHit.h"
 #include "CbmStsTrack.h"
 
+#include <FairRootManager.h>
 #include <Logger.h>
 
 #include "TH1F.h"

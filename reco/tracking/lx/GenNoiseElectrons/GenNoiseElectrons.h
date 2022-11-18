@@ -7,6 +7,8 @@
 
 #include "FairTask.h"
 
+class TClonesArray;
+
 class LxGenNoiseElectrons : public FairTask {
 public:
   LxGenNoiseElectrons();

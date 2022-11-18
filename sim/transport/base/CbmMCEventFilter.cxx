@@ -9,6 +9,7 @@
 
 #include "CbmMCEventFilter.h"
 
+#include <FairRootManager.h>
 #include <Logger.h>
 
 #include <cassert>

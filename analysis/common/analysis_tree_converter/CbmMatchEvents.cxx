@@ -8,6 +8,9 @@
 #include "CbmMCDataManager.h"
 #include "CbmTrackMatchNew.h"
 
+#include <FairRootManager.h>
+#include <Logger.h>
+
 #include "TClonesArray.h"
 
 #include "AnalysisTree/TaskManager.hpp"

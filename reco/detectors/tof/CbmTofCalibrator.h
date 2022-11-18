@@ -44,6 +44,7 @@ class CbmDigiManager;
 #include <vector>
 
 class TClonesArray;
+class TFile;
 
 /** @class CbmTofCalibrator
  ** @brief  contains filling and updating of calibration histos

@@ -24,6 +24,8 @@
 #include "CbmVertex.h"
 #include "qa/base/CbmLitAcceptanceFunction.h"
 
+#include <FairRootManager.h>
+
 #include "TClonesArray.h"
 #include "TDatabasePDG.h"
 #include "TH2F.h"

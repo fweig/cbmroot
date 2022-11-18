@@ -16,6 +16,7 @@
 #include "cbm/utils/CbmLitConverterParallel.h"
 #include "std/utils/CbmLitMemoryManagment.h"
 
+#include <FairRootManager.h>
 #include <Logger.h>
 
 #include "TClonesArray.h"

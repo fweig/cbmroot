@@ -9,6 +9,7 @@
 #include "CbmMuchPoint.h"
 #include "CbmTrdPoint.h"
 
+#include <FairRootManager.h>
 #include <Logger.h>
 
 #include "TClonesArray.h"

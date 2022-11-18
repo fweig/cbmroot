@@ -26,6 +26,7 @@
 #include "CbmStsStation.h"
 
 #include <FairField.h>
+#include <FairRootManager.h>
 #include <FairRun.h>
 #include <FairRuntimeDb.h>
 

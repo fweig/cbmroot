@@ -23,6 +23,7 @@
 
 
 class TClonesArray;
+class TFile;
 class TH1F;
 class TH2F;
 

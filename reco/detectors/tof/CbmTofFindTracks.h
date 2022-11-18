@@ -33,6 +33,7 @@ class CbmTofTrackFitter;
 class CbmTofTrackletTools;
 class CbmTofCalibrator;
 class TClonesArray;
+class TFile;
 class TH1;
 class TH2;
 class TH3;

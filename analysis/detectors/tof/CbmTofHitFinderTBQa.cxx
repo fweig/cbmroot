@@ -16,6 +16,7 @@
 #include "CbmTofHit.h"
 #include "CbmTofPoint.h"
 
+#include <FairRootManager.h>
 #include <Logger.h>
 
 #include "TH1.h"

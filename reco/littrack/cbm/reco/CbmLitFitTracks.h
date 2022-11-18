@@ -16,6 +16,8 @@
 
 #include "TStopwatch.h"
 
+class TClonesArray;
+
 class CbmLitFitTracks : public FairTask {
 public:
   /**

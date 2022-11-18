@@ -30,6 +30,8 @@ using std::vector;
 //class CbmRichRingSelectImpl;
 class CbmRichRing;
 
+class TClonesArray;
+
 /**
  * \class RingSelectParam
  *

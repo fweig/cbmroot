@@ -17,7 +17,7 @@
 
 class CbmMvdDetector;
 class CbmDigiManager;
-
+class TClonesArray;
 
 class CbmMvdHitfinder : public FairTask {
 

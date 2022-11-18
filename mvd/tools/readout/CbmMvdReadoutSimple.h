@@ -23,6 +23,9 @@
 #include "TH1F.h"
 #include "TH2F.h"
 
+class TClonesArray;
+class TFile;
+
 class CbmMvdReadoutSimple : public FairTask {
 public:
   CbmMvdReadoutSimple();
