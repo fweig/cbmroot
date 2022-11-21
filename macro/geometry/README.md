@@ -6,6 +6,8 @@ files which contain a TGeoManager.
 
 ## Scan Geometry (scan_geometry.C)
 
+Now moved to the `geometry/ci_scripts` folder.
+
 Scan geometry travels through the root geometry hierarchy of a typical root geometry binary and outputs standard information regarding the node to the screen. There are several options, some of which are commented out in the file, which allows the easy comparison of root binaries. A GRAPHVIZ file named geo.gv is also output to the working directory.
 
 ### Examining Text
@@ -127,13 +129,13 @@ output file example.txt
 
 ## costum_setup.sh
 
-Intended for inspection of geometry setups. At the user risk, it may also work for simulation. 
-Generates a costum-setup file for the CBM experiemnt. User is prompted which subsystem and its configuration to include. 
-The scripts only works for default geometries and is not intended to switch between geometry versions. 
+Intended for inspection of geometry setups. At the user risk, it may also work for simulation.
+Generates a costum-setup file for the CBM experiemnt. User is prompted which subsystem and its configuration to include.
+The scripts only works for default geometries and is not intended to switch between geometry versions.
 For detectors which are placed on railsystems the user will be prompted as to specify its distance to the target.
 Specifying a variable like PSD_INCLUDE=1 will skip question relating to including the PSD, allowing a user to predefine a configuration skip.
 
-Suggested command to create costum setup file:  
+Suggested command to create costum setup file:
 
    sh costum-setup.sh
 
@@ -161,18 +163,20 @@ include
 
 ## check_radlen.sh
 
-Checks for a common issue whereby the radiaiton length is miscalculated by root. 
+Now moved to the `geometry/ci_scripts` folder.
+
+Checks for a common issue whereby the radiaiton length is miscalculated by root.
 
 The script calculates the radiation length from the stated atomic number, mass and density of the material
-and compares this to the stated radlen in the material. If the difference is more than a tolerance (currently 
-5%) then failure is declared. It is up to the use to assess information. Dummy and vacuum materials may be safely 
+and compares this to the stated radlen in the material. If the difference is more than a tolerance (currently
+5%) then failure is declared. It is up to the use to assess information. Dummy and vacuum materials may be safely
 ignored.
 
 Sugggested command
 
 sh check_radlen.sh much_v20b_mcbm.geo.root
 
-This will check the materials rad length within a certain tolerance (5%). Recommended checking 
+This will check the materials rad length within a certain tolerance (5%). Recommended checking
 the transported geometry file in simulations to check whether target definition and all geometries
 are correct.
 
@@ -181,4 +185,21 @@ sh check_radlen.sh test.geo.root
 
 ---
 
+## check_radlen_bulk.sh
+
+Allows to run the `check_radlen` script on sets of geometries present in the subfolders of the local `geometry` folder.
+
+**Usage of the script:**
+- `./macro/geometry/check_radlen_bulk.sh`  or `./macro/geometry/check_radlen_bulk.sh git` \
+  => check new geometries introduced by a hash change relative to the current upstream tip
+- `./macro/geometry/check_radlen_bulk.sh all` \
+  => check all geometries in the local geometry folder (including mCBM ones)
+- `./macro/geometry/check_radlen_bulk.sh main` \
+  => check all geometries without mcbm in their name in the local geometry folder
+- `./macro/geometry/check_radlen_bulk.sh <tag>` \
+  => check all geometries with a given tag (detector, version, ...) in their name in the local geometry folder \
+  Example for mCBM: `./macro/geometry/check_radlen_bulk.sh mcbm` \
+  Example for sts: `./macro/geometry/check_radlen_bulk.sh sts` \
+  Example for a version: `./macro/geometry/check_radlen_bulk.sh v22a` \
+  Special tags which cannot be used in this way: `git`, `all`, `main`
 

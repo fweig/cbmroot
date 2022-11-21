@@ -41,15 +41,31 @@ void scan_geometry(std::string fileName = "test.geo.root", uint32_t uMaxNodeDept
 
   if (top == nullptr) {
     std::string geo_tag = fileName.substr(fileName.find_last_of('/') + 1);
-    geo_tag             = geo_tag.substr(0, geo_tag.find_first_of('.'));
+    geo_tag             = geo_tag.substr(0, geo_tag.find(".geo.root"));
     std::cout << "geo tag extracted from file name is: " << geo_tag << std::endl;
-    file.GetObject(geo_tag.c_str(), top);
+    file.GetObject(geo_tag.data(), top);
+
+    // If still not there, may be an mCBM geometry not following the filename = tag convention
+    if (top == nullptr) {
+      std::string geo_tag_mcbm = geo_tag.substr(0, geo_tag.find("_mcbm"));
+      std::cout << "mcbm geo tag extracted from file name is: " << geo_tag_mcbm << std::endl;
+      file.GetObject(geo_tag_mcbm.data(), top);
+    }
+
+    // If still not there, may be a SIS18 geometry not following the filename = tag convention
+    if (top == nullptr) {
+      std::string geo_tag_sis18 = geo_tag.substr(0, geo_tag.find("_sis18"));
+      std::cout << "sis18 geo tag extracted from file name is: " << geo_tag_sis18 << std::endl;
+      file.GetObject(geo_tag_sis18.data(), top);
+    }
   }
   if (top == nullptr) file.GetObject("FAIRGeom", top);
   if (top == nullptr) file.GetObject("top", top);
   if (top == nullptr) file.GetObject("TOP", top);
   if (top == nullptr) file.GetObject("Top", top);
   if (top == nullptr) file.GetObject("geometryFromGDML", top);
+
+  if (top == nullptr) top = dynamic_cast<TGeoVolume*>(file.Get(file.GetListOfKeys()->First()->GetName()));
 
   gROOT->cd();
 
