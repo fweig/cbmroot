@@ -10,7 +10,6 @@ GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/mcbm/mcbm_qa.C)
 
 Set(MACRO_DIR ${CMAKE_CURRENT_BINARY_DIR})
 GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/geometry/check_media.C ${MACRO_DIR})
-GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/geometry/check_radlen.C ${MACRO_DIR})
 # ============================================================================
 
 # disable dev tests - GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/mcbm/mcbm_mc_dev.C)
@@ -143,23 +142,13 @@ ForEach(setup IN LISTS cbm_setup)
           FIXTURES_SETUP ${fixture_mcbm_overlap}
   )
 
-  # --- Test check_radlen.sh
-  set(testname mcbm_radlen_${setup})
-  add_test(${testname} ${MACRO_DIR}/check_radlen.sh \"data/${setup}_test.geo.root\" )
-  Set(fixture_mcbm_radlen fixture_radlen_${setup})
-  set_tests_properties(${testname} PROPERTIES
-        TIMEOUT 100
-        FIXTURES_REQUIRED ${fixture_mcbm_overlap}
-        FIXTURES_SETUP ${fixture_mcbm_radlen}
-  )
-
   If(NOT ${CBM_TEST_MODEL} MATCHES Experimental)
     Set(testname mcbm_check_media_${setup})
     Add_Test(${testname} ${CBMROOT_BINARY_DIR}/macro/mcbm/check_media.sh \"data/${setup}_test\")
     Set_Tests_Properties(${testname} PROPERTIES
             TIMEOUT "60"
             PASS_REGULAR_EXPRESSION "Test Passed;All ok"
-            FIXTURES_REQUIRED ${fixture_mcbm_radlen}
+            FIXTURES_REQUIRED ${fixture_mcbm_overlap}
     )
   EndIf()
 

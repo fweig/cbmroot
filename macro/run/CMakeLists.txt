@@ -8,7 +8,6 @@ GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_reco.C)
 GENERATE_ROOT_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/run/run_qa.C)
 
 Set(MACRO_DIR ${CMAKE_CURRENT_BINARY_DIR})
-GENERATE_CBM_TEST_SCRIPT(${CBMROOT_SOURCE_DIR}/macro/geometry/check_radlen.C ${MACRO_DIR})
 # ============================================================================
 
 
@@ -181,17 +180,6 @@ foreach(setup IN LISTS cbm_setup)
  	FIXTURES_REQUIRED "fixt_tra_coll_${setup};fixt_tra_sign_${setup};fixt_tra_beam_${setup}"
   	FIXTURES_SETUP fixt_digi_ts_${setup}
  	RESOURCE_LOCK collParDb_${setup}
-  )
-
-  # --- Test check_radlen.sh
-  # --- Transport run with collision events, using run_tra_file.C
-  set(testname check_${sname}_radlen)
-  add_test(${testname} ${MACRO_DIR}/check_radlen.sh \"data/${sname}_coll.geo.root\" )
-  set_tests_properties(${testname} PROPERTIES
-        TIMEOUT ${timeOutTime}
-        FIXTURES_REQUIRED "fixt_digi_ev_${setup};fixt_digi_ts_${setup}"
-        # FIXTURES_SETUP fixt_tra_coll_${setup}
-        RESOURCE_LOCK collParDb_${setup}
   )
 
   # --- Test run_reco_ev_ideal
