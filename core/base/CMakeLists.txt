@@ -17,11 +17,11 @@ set(SRCS
   CbmMatchRecoToMC.cxx
   CbmTrackingDetectorInterfaceBase.cxx
   draw/CbmDrawHist.cxx
-  report/CbmReport.cxx      
+  report/CbmReport.cxx
   report/CbmStudyReport.cxx
   report/CbmSimulationReport.cxx
   report/CbmTextReportElement.cxx
-  report/CbmHtmlReportElement.cxx       
+  report/CbmHtmlReportElement.cxx
   report/CbmLatexReportElement.cxx
   utils/CbmUtils.cxx
   utils/CbmGeometryUtils.cxx
@@ -32,22 +32,24 @@ set(SRCS
 
 set(LIBRARY_NAME CbmBase)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
-set(PUBLIC_DEPENDENCIES 
-  CbmData 
+
+set(PUBLIC_DEPENDENCIES
+  CbmData
   FairRoot::Base
-  ROOT::Core  
-  ROOT::Gpad 
+  GSL
+  ROOT::Core
+  ROOT::Gpad
   ROOT::Hist
   )
 
-set(PRIVATE_DEPENDENCIES 
-  FairLogger::FairLogger 
-  FairRoot::GeoBase 
+set(PRIVATE_DEPENDENCIES
+  FairLogger::FairLogger
+  FairRoot::GeoBase
   Boost::filesystem
-  ROOT::Geom   
-  ROOT::Graf 
-  ROOT::MathCore 
-  ROOT::RIO 
+  ROOT::Geom
+  ROOT::Graf
+  ROOT::MathCore
+  ROOT::RIO
   ROOT::Tree
   )
 

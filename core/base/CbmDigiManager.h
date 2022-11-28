@@ -23,6 +23,7 @@
 #include <boost/any.hpp>                  // for any_cast, bad_any_cast (ptr...
 #include <boost/exception/exception.hpp>  // for clone_impl, error_info_inje...
 
+#include <gsl/span>
 #include <iosfwd>  // for string
 #include <map>     // for map, map<>::mapped_type
 #include <vector>  // for vector
@@ -67,6 +68,25 @@ public:
       LOG(fatal) << "Failed boost any_cast in Digimanager::Get for a digi of type " << Digi::GetClassName();
     }  // catch only boost::bad_any_cast which can be triggered by CbmMuchDigi/CbmMuchBeamTimeDigi
     return nullptr;
+  }
+
+  template<class Digi>
+  gsl::span<const Digi> GetArray() const
+  {
+    assert(fIsInitialised);
+    ECbmModuleId system = Digi::GetSystem();
+
+    auto branch = fBranches.find(system);
+    if (branch == fBranches.end()) {
+      LOG(error) << "Failed to find branch for Digi of type " << Digi::GetClassName();
+      return {};
+    }
+
+    boost::any container = branch->second->GetBranchContainer();
+    LOG_IF(fatal, container.type() != typeid(const std::vector<Digi>*))
+      << "Digis of type " << Digi::GetClassName() << " not stored with std::vector";
+
+    return *boost::any_cast<const std::vector<Digi>*>(container);
   }
 
   /** @brief Access to a digi branch

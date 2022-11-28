@@ -518,14 +518,13 @@ void CbmRecoSts::ProcessData(CbmEvent* event)
   // --- Number of input digis
   fTimer.Start();
   Int_t nDigis = (event ? event->GetNofData(ECbmDataType::kStsDigi) : fDigiManager->GetNofDigis(ECbmModuleId::kSts));
-
+  auto digis   = fDigiManager->GetArray<CbmStsDigi>();
 
   // --- Distribute digis to modules
   //#pragma omp parallel for schedule(static) if(fParallelism_enabled)
   for (Int_t iDigi = 0; iDigi < nDigis; iDigi++) {
     Int_t digiIndex        = (event ? event->GetIndex(ECbmDataType::kStsDigi, iDigi) : iDigi);
-    const CbmStsDigi* digi = fDigiManager->Get<const CbmStsDigi>(digiIndex);
-    assert(digi);
+    const CbmStsDigi* digi = &digis[digiIndex];
 
     // Check system ID. There are pulser digis in which will be ignored here.
     Int_t systemId = CbmAddress::GetSystemId(digi->GetAddress());
