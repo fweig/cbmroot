@@ -1129,7 +1129,7 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
     if (!fLegacyEventMode) TsStart = TsStart_new;  ///Set new TS strat to earliest discarted track
 
-    if (!fLegacyEventMode) cout << "CA Track Finder: " << fpAlgo->fCATime << " s/sub-ts" << endl << endl;
+    if (!fLegacyEventMode) LOG(debug) << "CA Track Finder: " << fpAlgo->fCATime << " s/sub-ts" << endl;
   }
 
 
