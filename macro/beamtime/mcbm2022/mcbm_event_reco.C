@@ -850,7 +850,6 @@ Bool_t mcbm_event_reco(UInt_t uRunId                   = 2391,
   run->AddTask(kalman);
 
   CbmL1* l1 = new CbmL1();
-  l1->SetLegacyEventMode(1);
   l1->SetMcbmMode();
 
   // --- Material budget file names

@@ -11,6 +11,7 @@
 #include "CbmRecoUnpack.h"
 
 #include "CbmRecoUnpackConfig.tmpl"
+#include "CbmTimeSlice.h"
 #include "CbmTrdDigi.h"
 #include "CbmTsEventHeader.h"
 
@@ -70,6 +71,9 @@ Bool_t CbmRecoUnpack::Init()
     LOG(fatal)
       << "CbmRecoUnpack::Init() no CbmTsEventHeader was added to the run. Without it, we can not store the UTC of the "
          "Timeslices correctly. Hence, this causes a fatal. Please add it in the steering macro to the Run.";
+
+  fTimeSlice = new CbmTimeSlice(0., 1.28e8 + 1.28e6);  // FIXME: hardcoded TS length + overlap of mCBM 2022 becnhmark
+  ioman->Register("TimeSlice.", "DAQ", fTimeSlice, kTRUE);
 
   // --- Psd
   if (fPsdConfig) {
@@ -362,6 +366,7 @@ void CbmRecoUnpack::Reset()
 {
   // Reset the event header for a new timeslice
   fCbmTsEventHeader->Reset();
+  fTimeSlice->Reset(0., 1.28e8 + 1.28e6);  // FIXME: hardcoded TS length + overlap of mCBM 2022 becnhmark
 
   // Reset the unpackers for a new timeslice, e.g. clear the output vectors
 
@@ -398,6 +403,8 @@ void CbmRecoUnpack::Unpack(unique_ptr<Timeslice> ts)
 
   fCbmTsEventHeader->SetTsIndex(ts->index());
   fCbmTsEventHeader->SetTsStartTime(ts->start_time());
+
+  fTimeSlice->SetStartTime(ts->start_time());
 
   uint64_t nComponents = ts->num_components();
   // if (fDoDebugPrints) LOG(info) << "Unpack: TS index " << ts->index() << " components " << nComponents;

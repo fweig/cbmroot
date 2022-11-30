@@ -197,6 +197,10 @@ Bool_t mcbm_reco(UInt_t uRunId                   = 2391,
   // -----   FairRunAna   ---------------------------------------------------
   FairRunAna* run             = new FairRunAna();
   FairFileSource* inputSource = new FairFileSource(inFile);
+  if ("" != sUnpFile) {
+    LOG(info) << "Adding unpacked digis file to input: " << sUnpFile;
+    inputSource->AddFriend(sUnpFile);
+  }
   run->SetSource(inputSource);
 
   FairRootFileSink* outputSink = new FairRootFileSink(outFile);
@@ -267,7 +271,6 @@ Bool_t mcbm_reco(UInt_t uRunId                   = 2391,
                  << "\n Exiting";
       return kFALSE;
     }
-    inputSource->AddFriend(sUnpFile);
   }
   // ------------------------------------------------------------------------
 
@@ -478,13 +481,18 @@ Bool_t mcbm_reco(UInt_t uRunId                   = 2391,
   // ===                             L1                                    ===
   // =========================================================================
   if (bL1) {
+    if ("" == sUnpFile) {
+      LOG(error) << "To run with L1, an unpack file full name also has to be provided to get a CbmTimeSlice object."
+                 << "\n Exiting";
+      return kFALSE;
+    }
+
     run->AddTask(new CbmTrackingDetectorInterfaceInit());
 
     CbmKF* kalman = new CbmKF();
     run->AddTask(kalman);
 
     CbmL1* l1 = new CbmL1("L1", 0);  // <= Disable verbose mode
-    l1->SetLegacyEventMode(1);
     l1->SetMcbmMode();
     //    if (strcmp(geoSetupTag.data(), "mcbm_beam_2021_07_surveyed") == 0) l1->SetMissingHits(1);
 

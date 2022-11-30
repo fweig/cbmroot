@@ -41,6 +41,7 @@
 #include <utility>
 #include <vector>
 
+class CbmTimeSlice;
 class TH1;
 class TStopwatch;
 
@@ -402,6 +403,9 @@ private:
     return nDigis;
   }
   // ----------------------------------------------------------------------------
+
+  /** @brief CbmTimeslice object, mostly redundant with the TsEventHeader, needed by L1 to switch timeslice mode **/
+  CbmTimeSlice* fTimeSlice;  //! Current time slice
 
   /** @brief Configuration of the Much unpacker. Provides the configured algorithm */
   std::shared_ptr<CbmMuchUnpackConfig> fMuchConfig = nullptr;  //!
