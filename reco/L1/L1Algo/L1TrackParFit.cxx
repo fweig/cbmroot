@@ -790,6 +790,271 @@ void
   fTr.C55 = cj55 + cj25 * J[17] + cj35 * J[23] + cj45 * J[29];
 }
 
+void L1TrackParFit::
+  ExtrapolateStepAnalytic  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
+  (fvec z_out,             // extrapolate to this z position
+   fvec qp0,               // use Q/p linearisation at this value
+   const L1FieldRegion& F, const fvec& w)
+{
+  //
+  //  Part of the analytic extrapolation formula with error (c_light*B*dz)^4/4!
+  //
+
+  cnst c_light(0.000299792458);
+
+  cnst c1(1.), c2(2.), c3(3.), c4(4.), c6(6.), c9(9.), c15(15.), c18(18.), c45(45.), c2i(1. / 2.), c3i(1. / 3.),
+    c6i(1. / 6.), c12i(1. / 12.);
+
+  const fvec qp = fTr.qp;
+  fvec dz       = (z_out - fTr.z);
+
+  dz.setZero(w <= fvec::Zero());
+
+  const fvec dz2 = dz * dz;
+  const fvec dz3 = dz2 * dz;
+
+  // construct coefficients
+
+  const fvec x     = fTr.tx;
+  const fvec y     = fTr.ty;
+  const fvec xx    = x * x;
+  const fvec xy    = x * y;
+  const fvec yy    = y * y;
+  const fvec y2    = y * c2;
+  const fvec x2    = x * c2;
+  const fvec x4    = x * c4;
+  const fvec xx31  = xx * c3 + c1;
+  const fvec xx159 = xx * c15 + c9;
+
+  const fvec Ay   = -xx - c1;
+  const fvec Ayy  = x * (xx * c3 + c3);
+  const fvec Ayz  = -c2 * xy;
+  const fvec Ayyy = -(c15 * xx * xx + c18 * xx + c3);
+
+  const fvec Ayy_x  = c3 * xx31;
+  const fvec Ayyy_x = -x4 * xx159;
+
+  const fvec Bx   = yy + c1;
+  const fvec Byy  = y * xx31;
+  const fvec Byz  = c2 * xx + c1;
+  const fvec Byyy = -xy * xx159;
+
+  const fvec Byy_x  = c6 * xy;
+  const fvec Byyy_x = -y * (c45 * xx + c9);
+  const fvec Byyy_y = -x * xx159;
+
+  // end of coefficients calculation
+
+  const fvec t2 = c1 + xx + yy;
+  const fvec t  = sqrt(t2);
+  const fvec h  = qp0 * c_light;
+  const fvec ht = h * t;
+
+  // get field integrals
+  const fvec ddz = fTr.z - F.z0;
+  const fvec Fx0 = F.cx0 + F.cx1 * ddz + F.cx2 * ddz * ddz;
+  const fvec Fx1 = (F.cx1 + c2 * F.cx2 * ddz) * dz;
+  const fvec Fx2 = F.cx2 * dz2;
+  const fvec Fy0 = F.cy0 + F.cy1 * ddz + F.cy2 * ddz * ddz;
+  const fvec Fy1 = (F.cy1 + c2 * F.cy2 * ddz) * dz;
+  const fvec Fy2 = F.cy2 * dz2;
+  const fvec Fz0 = F.cz0 + F.cz1 * ddz + F.cz2 * ddz * ddz;
+  const fvec Fz1 = (F.cz1 + c2 * F.cz2 * ddz) * dz;
+  const fvec Fz2 = F.cz2 * dz2;
+
+  //
+
+  const fvec sx = (Fx0 + Fx1 * c2i + Fx2 * c3i);
+  const fvec sy = (Fy0 + Fy1 * c2i + Fy2 * c3i);
+  const fvec sz = (Fz0 + Fz1 * c2i + Fz2 * c3i);
+
+  const fvec Sx = (Fx0 * c2i + Fx1 * c6i + Fx2 * c12i);
+  const fvec Sy = (Fy0 * c2i + Fy1 * c6i + Fy2 * c12i);
+  const fvec Sz = (Fz0 * c2i + Fz1 * c6i + Fz2 * c12i);
+
+  fvec syz;
+  {
+    constexpr double d = 360.;
+    cnst c00(30. * 6. / d), c01(30. * 2. / d), c02(30. / d), c10(3. * 40. / d), c11(3. * 15. / d), c12(3. * 8. / d),
+      c20(2. * 45. / d), c21(2. * 2. * 9. / d), c22(2. * 2. * 5. / d);
+    syz = Fy0 * (c00 * Fz0 + c01 * Fz1 + c02 * Fz2) + Fy1 * (c10 * Fz0 + c11 * Fz1 + c12 * Fz2)
+          + Fy2 * (c20 * Fz0 + c21 * Fz1 + c22 * Fz2);
+  }
+
+  fvec Syz;
+  {
+    constexpr double d = 2520.;
+    cnst c00(21. * 20. / d), c01(21. * 5. / d), c02(21. * 2. / d), c10(7. * 30. / d), c11(7. * 9. / d),
+      c12(7. * 4. / d), c20(2. * 63. / d), c21(2. * 21. / d), c22(2. * 10. / d);
+    Syz = Fy0 * (c00 * Fz0 + c01 * Fz1 + c02 * Fz2) + Fy1 * (c10 * Fz0 + c11 * Fz1 + c12 * Fz2)
+          + Fy2 * (c20 * Fz0 + c21 * Fz1 + c22 * Fz2);
+  }
+
+  const fvec syy  = sy * sy * c2i;
+  const fvec syyy = syy * sy * c3i;
+
+  fvec Syy;
+  {
+    constexpr double d = 2520.;
+    cnst c00(420. / d), c01(21. * 15. / d), c02(21. * 8. / d), c03(63. / d), c04(70. / d), c05(20. / d);
+    Syy = Fy0 * (c00 * Fy0 + c01 * Fy1 + c02 * Fy2) + Fy1 * (c03 * Fy1 + c04 * Fy2) + c05 * Fy2 * Fy2;
+  }
+
+  fvec Syyy;
+  {
+    constexpr double d = 181440.;
+    cnst c000(7560 / d), c001(9 * 1008 / d), c002(5 * 1008 / d), c011(21 * 180 / d), c012(24 * 180 / d),
+      c022(7 * 180 / d), c111(540 / d), c112(945 / d), c122(560 / d), c222(112 / d);
+    const fvec Fy22 = Fy2 * Fy2;
+    Syyy = Fy0 * (Fy0 * (c000 * Fy0 + c001 * Fy1 + c002 * Fy2) + Fy1 * (c011 * Fy1 + c012 * Fy2) + c022 * Fy22)
+           + Fy1 * (Fy1 * (c111 * Fy1 + c112 * Fy2) + c122 * Fy22) + c222 * Fy22 * Fy2;
+  }
+
+
+  const fvec sA1   = sx * xy + sy * Ay + sz * y;
+  const fvec sA1_x = sx * y - sy * x2;
+  const fvec sA1_y = sx * x + sz;
+
+  const fvec sB1   = sx * Bx - sy * xy - sz * x;
+  const fvec sB1_x = -sy * y - sz;
+  const fvec sB1_y = sx * y2 - sy * x;
+
+  const fvec SA1   = Sx * xy + Sy * Ay + Sz * y;
+  const fvec SA1_x = Sx * y - Sy * x2;
+  const fvec SA1_y = Sx * x + Sz;
+
+  const fvec SB1   = Sx * Bx - Sy * xy - Sz * x;
+  const fvec SB1_x = -Sy * y - Sz;
+  const fvec SB1_y = Sx * y2 - Sy * x;
+
+
+  const fvec sA2   = syy * Ayy + syz * Ayz;
+  const fvec sA2_x = syy * Ayy_x - syz * y2;
+  const fvec sA2_y = -syz * x2;
+  const fvec sB2   = syy * Byy + syz * Byz;
+  const fvec sB2_x = syy * Byy_x + syz * x4;
+  const fvec sB2_y = syy * xx31;
+
+  const fvec SA2   = Syy * Ayy + Syz * Ayz;
+  const fvec SA2_x = Syy * Ayy_x - Syz * y2;
+  const fvec SA2_y = -Syz * x2;
+  const fvec SB2   = Syy * Byy + Syz * Byz;
+  const fvec SB2_x = Syy * Byy_x + Syz * x4;
+  const fvec SB2_y = Syy * xx31;
+
+  const fvec sA3   = syyy * Ayyy;
+  const fvec sA3_x = syyy * Ayyy_x;
+  const fvec sB3   = syyy * Byyy;
+  const fvec sB3_x = syyy * Byyy_x;
+  const fvec sB3_y = syyy * Byyy_y;
+
+
+  const fvec SA3   = Syyy * Ayyy;
+  const fvec SA3_x = Syyy * Ayyy_x;
+  const fvec SB3   = Syyy * Byyy;
+  const fvec SB3_x = Syyy * Byyy_x;
+  const fvec SB3_y = Syyy * Byyy_y;
+
+  const fvec ht1    = ht * dz;
+  const fvec ht2    = ht * ht * dz2;
+  const fvec ht3    = ht * ht * ht * dz3;
+  const fvec ht1sA1 = ht1 * sA1;
+  const fvec ht1sB1 = ht1 * sB1;
+  const fvec ht1SA1 = ht1 * SA1;
+  const fvec ht1SB1 = ht1 * SB1;
+  const fvec ht2sA2 = ht2 * sA2;
+  const fvec ht2SA2 = ht2 * SA2;
+  const fvec ht2sB2 = ht2 * sB2;
+  const fvec ht2SB2 = ht2 * SB2;
+  const fvec ht3sA3 = ht3 * sA3;
+  const fvec ht3sB3 = ht3 * sB3;
+  const fvec ht3SA3 = ht3 * SA3;
+  const fvec ht3SB3 = ht3 * SB3;
+
+  fTr.x += (x + ht1SA1 + ht2SA2 + ht3SA3) * dz;
+  fTr.y += (y + ht1SB1 + ht2SB2 + ht3SB3) * dz;
+  fTr.tx += ht1sA1 + ht2sA2 + ht3sA3;
+  fTr.ty += ht1sB1 + ht2sB2 + ht3sB3;
+  fTr.z += dz;
+
+  const fvec ctdz  = c_light * t * dz;
+  const fvec ctdz2 = c_light * t * dz2;
+
+  const fvec dqp  = qp - qp0;
+  const fvec t2i  = c1 / t2;
+  const fvec xt2i = x * t2i;
+  const fvec yt2i = y * t2i;
+  const fvec tmp0 = ht1SA1 + c2 * ht2SA2 + c3 * ht3SA3;
+  const fvec tmp1 = ht1SB1 + c2 * ht2SB2 + c3 * ht3SB3;
+  const fvec tmp2 = ht1sA1 + c2 * ht2sA2 + c3 * ht3sA3;
+  const fvec tmp3 = ht1sB1 + c2 * ht2sB2 + c3 * ht3sB3;
+
+  const fvec j02 = dz * (c1 + xt2i * tmp0 + ht1 * SA1_x + ht2 * SA2_x + ht3 * SA3_x);
+  const fvec j12 = dz * (xt2i * tmp1 + ht1 * SB1_x + ht2 * SB2_x + ht3 * SB3_x);
+  const fvec j22 = c1 + xt2i * tmp2 + ht1 * sA1_x + ht2 * sA2_x + ht3 * sA3_x;
+  const fvec j32 = xt2i * tmp3 + ht1 * sB1_x + ht2 * sB2_x + ht3 * sB3_x;
+
+  const fvec j03 = dz * (yt2i * tmp0 + ht1 * SA1_y + ht2 * SA2_y);
+  const fvec j13 = dz * (c1 + yt2i * tmp1 + ht1 * SB1_y + ht2 * SB2_y + ht3 * SB3_y);
+  const fvec j23 = yt2i * tmp2 + ht1 * sA1_y + ht2 * sA2_y;
+  const fvec j33 = c1 + yt2i * tmp3 + ht1 * sB1_y + ht2 * sB2_y + ht3 * sB3_y;
+
+  const fvec j04 = ctdz2 * (SA1 + c2 * ht1 * SA2 + c3 * ht2 * SA3);
+  const fvec j14 = ctdz2 * (SB1 + c2 * ht1 * SB2 + c3 * ht2 * SB3);
+  const fvec j24 = ctdz * (sA1 + c2 * ht1 * sA2 + c3 * ht2 * sA3);
+  const fvec j34 = ctdz * (sB1 + c2 * ht1 * sB2 + c3 * ht2 * sB3);
+
+
+  // extrapolate inverse momentum
+
+  fTr.x += j04 * dqp;
+  fTr.y += j14 * dqp;
+  fTr.tx += j24 * dqp;
+  fTr.ty += j34 * dqp;
+
+  //          covariance matrix transport
+
+  const fvec c42 = fTr.C42, c43 = fTr.C43;
+
+  const fvec cj00 = fTr.C00 + fTr.C20 * j02 + fTr.C30 * j03 + fTr.C40 * j04;
+  //  const fvec cj10 = fTr.C10 + fTr.C21*j02 + fTr.C31*j03 + fTr.C41*j04;
+  const fvec cj20 = fTr.C20 + fTr.C22 * j02 + fTr.C32 * j03 + c42 * j04;
+  const fvec cj30 = fTr.C30 + fTr.C32 * j02 + fTr.C33 * j03 + c43 * j04;
+
+  const fvec cj01 = fTr.C10 + fTr.C20 * j12 + fTr.C30 * j13 + fTr.C40 * j14;
+  const fvec cj11 = fTr.C11 + fTr.C21 * j12 + fTr.C31 * j13 + fTr.C41 * j14;
+  const fvec cj21 = fTr.C21 + fTr.C22 * j12 + fTr.C32 * j13 + c42 * j14;
+  const fvec cj31 = fTr.C31 + fTr.C32 * j12 + fTr.C33 * j13 + c43 * j14;
+
+  //  const fvec cj02 = fTr.C20*j22 + fTr.C30*j23 + fTr.C40*j24;
+  //  const fvec cj12 = fTr.C21*j22 + fTr.C31*j23 + fTr.C41*j24;
+  const fvec cj22 = fTr.C22 * j22 + fTr.C32 * j23 + c42 * j24;
+  const fvec cj32 = fTr.C32 * j22 + fTr.C33 * j23 + c43 * j24;
+
+  //  const fvec cj03 = fTr.C20*j32 + fTr.C30*j33 + fTr.C40*j34;
+  //  const fvec cj13 = fTr.C21*j32 + fTr.C31*j33 + fTr.C41*j34;
+  const fvec cj23 = fTr.C22 * j32 + fTr.C32 * j33 + c42 * j34;
+  const fvec cj33 = fTr.C32 * j32 + fTr.C33 * j33 + c43 * j34;
+
+  fTr.C40 += c42 * j02 + c43 * j03 + fTr.C44 * j04;  // cj40
+  fTr.C41 += c42 * j12 + c43 * j13 + fTr.C44 * j14;  // cj41
+  fTr.C42 = c42 * j22 + c43 * j23 + fTr.C44 * j24;   // cj42
+  fTr.C43 = c42 * j32 + c43 * j33 + fTr.C44 * j34;   // cj43
+
+  fTr.C00 = cj00 + j02 * cj20 + j03 * cj30 + j04 * fTr.C40;
+  fTr.C10 = cj01 + j02 * cj21 + j03 * cj31 + j04 * fTr.C41;
+  fTr.C11 = cj11 + j12 * cj21 + j13 * cj31 + j14 * fTr.C41;
+
+  fTr.C20 = j22 * cj20 + j23 * cj30 + j24 * fTr.C40;
+  fTr.C30 = j32 * cj20 + j33 * cj30 + j34 * fTr.C40;
+  fTr.C21 = j22 * cj21 + j23 * cj31 + j24 * fTr.C41;
+  fTr.C31 = j32 * cj21 + j33 * cj31 + j34 * fTr.C41;
+  fTr.C22 = j22 * cj22 + j23 * cj32 + j24 * fTr.C42;
+  fTr.C32 = j32 * cj22 + j33 * cj32 + j34 * fTr.C42;
+  fTr.C33 = j32 * cj23 + j33 * cj33 + j34 * fTr.C43;
+  //cout<<"Extrapolation ok"<<endl;
+}
+
 void L1TrackParFit::AddPipeMaterial(fvec qp0, fvec w)
 {
   cnst ONE = 1.f;

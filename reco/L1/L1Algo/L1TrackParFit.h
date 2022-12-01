@@ -53,6 +53,7 @@ public:
 
   void Extrapolate(fvec z_out, fvec qp0, const L1FieldRegion& F, const fvec& w);
   void ExtrapolateStep(fvec z_out, fvec qp0, const L1FieldRegion& F, const fvec& w);
+  void ExtrapolateStepAnalytic(fvec z_out, fvec qp0, const L1FieldRegion& F, const fvec& w);
 
   void ExtrapolateLine(fvec z_out, fvec* w = 0);
   void ExtrapolateLine1(fvec z_out, fvec* w = 0, fvec v = 0);
