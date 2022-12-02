@@ -28,6 +28,7 @@ enum class ECbmTrdHardwareSetupVersion : Int_t
 {
   kUndefined = 0,
   kMcbm2020  = 1,
+  kMcbm2020b,
   kMcbm2021,
   kMcbm2022,
   kMcbm2022WithoutHybrid,  // for v22e setup

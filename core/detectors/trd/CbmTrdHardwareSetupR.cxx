@@ -246,7 +246,10 @@ bool CbmTrdHardwareSetupR::WriteComponentIdsToParams()
 void CbmTrdHardwareSetupR::SelectComponentIdMap(TString geoTag)
 {
   ECbmTrdHardwareSetupVersion hwSetupVersion(ECbmTrdHardwareSetupVersion::kUndefined);
-  if (geoTag.Contains("mcbm") && geoTag.Contains("v20")) { hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2020; }
+  if (geoTag.Contains("mcbm") && geoTag.Contains("v20b")) { hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2020b; }
+  else if (geoTag.Contains("mcbm") && geoTag.Contains("v20")) {
+    hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2020;
+  }
   else if (geoTag.Contains("mcbm") && geoTag.Contains("v21")) {
     hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2021;
   }
@@ -255,6 +258,15 @@ void CbmTrdHardwareSetupR::SelectComponentIdMap(TString geoTag)
   }
   else if (geoTag.Contains("mcbm") && geoTag.Contains("v22f")) {
     hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2022Only1D;
+  }
+  else if (geoTag.Contains("mcbm") && geoTag.Contains("v22h")) {
+    hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2022WithoutHybrid;
+  }
+  else if (geoTag.Contains("mcbm") && geoTag.Contains("v22b")) {
+    hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2022Only1D;
+  }
+  else if (geoTag.Contains("mcbm") && geoTag.Contains("v22a")) {
+    hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2022WithoutHybrid;
   }
   else if (geoTag.Contains("mcbm") && geoTag.Contains("v22")) {
     hwSetupVersion = ECbmTrdHardwareSetupVersion::kMcbm2022;
@@ -334,6 +346,62 @@ void CbmTrdHardwareSetupR::SelectComponentIdMap(ECbmTrdHardwareSetupVersion hwSe
                          {21021, 2498200036},
                          {21022, 2498200038},
                          {21023, 2498200040}};
+      break;
+    case ECbmTrdHardwareSetupVersion::kMcbm2020b:
+      // to correctly generate the v20b asic parameter file
+      fComponentIdMap = {// Module 5
+                         {5000, 3298100098},
+                         {5001, 3298100028},
+                         {5002, 3298100030},
+                         {5003, 3298100032},
+                         {5004, 3298100034},
+                         {5005, 3298100036},
+                         {5006, 3298100038},
+                         {5007, 3298100040},
+
+                         {5008, 3298100098},
+                         {5009, 3298100014},
+                         {5010, 3298100016},
+                         {5011, 3298100018},
+                         {5012, 3298100020},
+                         {5013, 3298100022},
+                         {5014, 3298100024},
+                         {5015, 3298100026},
+
+                         {5016, 3298100098},
+                         {5017, 3298100000},
+                         {5018, 3298100002},
+                         {5019, 3298100004},
+                         {5020, 3298100006},
+                         {5021, 3298100008},
+                         {5022, 3298100010},
+                         {5023, 3298100012},
+
+                         // Module 21
+                         {21000, 3298100098},
+                         {21001, 3298100000},
+                         {21002, 3298100002},
+                         {21003, 3298100004},
+                         {21004, 3298100006},
+                         {21005, 3298100008},
+                         {21006, 3298100010},
+                         {21007, 3298100012},
+                         {21008, 3298100098},
+                         {21009, 3298100014},
+                         {21010, 3298100016},
+                         {21011, 3298100018},
+                         {21012, 3298100020},
+                         {21013, 3298100022},
+                         {21014, 3298100024},
+                         {21015, 3298100026},
+                         {21016, 3298100098},
+                         {21017, 3298100028},
+                         {21018, 3298100030},
+                         {21019, 3298100032},
+                         {21020, 3298100034},
+                         {21021, 3298100036},
+                         {21022, 3298100038},
+                         {21023, 3298100040}};
       break;
     case ECbmTrdHardwareSetupVersion::kMcbm2021:
     case ECbmTrdHardwareSetupVersion::kMcbm2022:
