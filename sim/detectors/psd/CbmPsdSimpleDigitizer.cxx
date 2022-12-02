@@ -9,6 +9,8 @@
 // -------------------------------------------------------------------------
 #include "CbmPsdSimpleDigitizer.h"
 
+#include "CbmLink.h"
+#include "CbmMatch.h"
 #include "CbmPsdDigi.h"
 #include "CbmPsdPoint.h"
 
@@ -57,9 +59,6 @@ CbmPsdSimpleDigitizer::~CbmPsdSimpleDigitizer() {}
 InitStatus CbmPsdSimpleDigitizer::Init()
 {
 
-  // Matches are not produced
-  fCreateMatches = kFALSE;
-
   // Get RootManager
   FairRootManager* ioman = FairRootManager::Instance();
   assert(ioman),
@@ -101,35 +100,40 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*)
   Int_t modID        = -1;  // module ID
   Int_t scinID       = -1;  // #sciillator
   Int_t sec;
-  std::map<UInt_t, CbmPsdDigi> fired_digis_map;  // map<UInt_t uAddress, CbmPsdDigi>
+  std::map<UInt_t, std::pair<CbmPsdDigi, CbmMatch*>> fired_digis_map;  //store Digis and Matches for each module
 
   for (Int_t iPoint = 0; iPoint < nPoints; iPoint++) {
     point = (CbmPsdPoint*) fPointArray->At(iPoint);
     if (!point) continue;
 
-    modID          = point->GetModuleID();    //marina  1-44 (45)
-    scinID         = point->GetDetectorID();  //1-60
-    Double_t eLoss = point->GetEnergyLoss();
-    Double_t pTime     = point->GetTime();
-    sec                = (Int_t)((scinID - 1) / 6) + 1;  //marina   1-10
-    UInt_t uAddress    = CbmPsdAddress::GetAddress(modID, sec);
+    CbmLink link(1., iPoint, fCurrentMCEntry, fCurrentInput);
+
+    modID           = point->GetModuleID();    //marina  1-44 (45)
+    scinID          = point->GetDetectorID();  //1-60
+    Double_t eLoss  = point->GetEnergyLoss();
+    Double_t pTime  = point->GetTime();
+    sec             = (Int_t)((scinID - 1) / 6) + 1;  //marina   1-10
+    UInt_t uAddress = CbmPsdAddress::GetAddress(modID, sec);
 
     auto it = fired_digis_map.find(uAddress);
     if (it != fired_digis_map.end()) {
       //this key exists
-      it->second.SetEdep(it->second.GetEdep() + eLoss);
-      if (pTime < it->second.GetTime()) it->second.SetTime(pTime);
+      it->second.first.SetEdep(it->second.first.GetEdep() + eLoss);
+      if (pTime < it->second.first.GetTime()) it->second.first.SetTime(pTime);
+      it->second.second->AddLink(link);
     }
     else {
       //this key is new
       CbmPsdDigi digi = CbmPsdDigi(uAddress, pTime, eLoss);
-      fired_digis_map.insert(std::make_pair(uAddress, digi));
+      CbmMatch* match = new CbmMatch();
+      match->AddLink(link);
+      fired_digis_map.insert(std::make_pair(uAddress, std::make_pair(digi, match)));
     }
   }  // Loop over MCPoints
 
   Int_t nDigis = 0;
   for (auto entry : fired_digis_map) {
-    Double_t eDep            = entry.second.GetEdep();
+    Double_t eDep            = entry.second.first.GetEdep();
     Double_t eLossMIP        = eDep / 0.005;  // 5MeV per MIP
     Double_t pixPerMIP       = 15.;           // 15 pix per MIP
     Double_t eLossMIPSmeared = gRandom->Gaus(eLossMIP * pixPerMIP, sqrt(eLossMIP * pixPerMIP)) / pixPerMIP;
@@ -137,12 +141,12 @@ void CbmPsdSimpleDigitizer::Exec(Option_t*)
     Double_t eNoise          = gRandom->Gaus(0, 15) / 50. * 0.005;
     eLossSmeared += eNoise;
     CbmPsdDigi* digi =
-      new CbmPsdDigi(entry.second.GetAddress(), entry.second.GetTime() + fCurrentEventTime, eLossSmeared);
-    SendData(digi->GetTime(), digi);
+      new CbmPsdDigi(entry.second.first.GetAddress(), entry.second.first.GetTime() + fCurrentEventTime, eLossSmeared);
+    SendData(digi->GetTime(), digi, entry.second.second);
     nDigis++;
-    LOG(debug1) << fName << ": Digi " << nDigis << " Time " << entry.second.GetTime() + fCurrentEventTime << " Section "
-                << entry.second.GetSectionID() << " Module " << entry.second.GetModuleID() << " energy "
-                << eLossSmeared;
+    LOG(debug1) << fName << ": Digi " << nDigis << " Time " << entry.second.first.GetTime() + fCurrentEventTime
+                << " Section " << entry.second.first.GetSectionID() << " Module " << entry.second.first.GetModuleID()
+                << " energy " << eLossSmeared;
   }
 
   // --- Event log
