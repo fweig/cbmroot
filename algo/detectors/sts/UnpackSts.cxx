@@ -113,7 +113,8 @@ namespace cbm::algo
       channel = message.GetHitChannel() + fParams.fNumChansPerAsic * asicNr;
     }
     else {  // back side (p side)
-      channel = numChansPerModule - message.GetHitChannel() + 1;
+      channel = numChansPerModule - message.GetHitChannel()
+                - fParams.fNumChansPerAsic * (asicNr - fParams.fNumAsicsPerModule / 2) - 1;
     }
 
     // --- Expand time stamp to time within timeslice (in clock cycle)

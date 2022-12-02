@@ -255,8 +255,8 @@ InitStatus CbmTaskUnpack::Init()
       elinkPar.fAddress    = mapEntry.first;   // Module address for this elink
       elinkPar.fAsicNr     = mapEntry.second;  // ASIC number within module
       elinkPar.fTimeOffset = 0.;
-      elinkPar.fAdcOffset  = 0.;
-      elinkPar.fAdcGain    = 0.;
+      elinkPar.fAdcOffset  = 1.;
+      elinkPar.fAdcGain    = 1.;
       // TODO: Add parameters for time and ADC calibration
       par->fElinkParams.push_back(elinkPar);
     }

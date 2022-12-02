@@ -115,7 +115,7 @@ namespace cbm::algo
     // Type 0 had the connector at the right side, type 1 at the left side.
     // For type 0, the mapping of FEB to module side as above applies,
     // for type 1, it has to be inverted.
-    bool modType[numModules] = {0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1};
+    bool modType[numModules] = {0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1};
 
     // Module addresses (CbmStsAddress)
     int32_t modAddress[numModules];
@@ -127,11 +127,11 @@ namespace cbm::algo
     modAddress[5]  = 0x10008412;
     modAddress[6]  = 0x10018412;
     modAddress[7]  = 0x101FFC02;
-    modAddress[8]  = 0x10008012;
-    modAddress[9]  = 0x10018012;
-    modAddress[10] = 0x10008812;
-    modAddress[11] = 0x10018812;
-    modAddress[12] = 0x10028812;
+    modAddress[8]  = 0x10008812;
+    modAddress[9]  = 0x10018812;
+    modAddress[10] = 0x10028812;
+    modAddress[11] = 0x10008012;
+    modAddress[12] = 0x10018012;
 
 
     // Constructing the map (equipmentId, eLink) -> (module, ASIC within module)
@@ -149,6 +149,8 @@ namespace cbm::algo
           int16_t feb      = elink2Feb[elinkId];               // FEB within CROB
           if (feb != -1) {
             int16_t module = feb2module[comp][crob][feb];  // Module index
+            moduleAddress  = modAddress[module];
+
             if (module != -1) {
               assert(module < numModules);
               bool moduleType    = modType[module];                               // 0 or 1
@@ -157,8 +159,7 @@ namespace cbm::algo
               uint32_t asicIndex = (febType == 0 ? elink2AsicFebA[elinkId] : elink2AsicFebB[elinkId]);
               uint32_t asicInFeb = asicIndex % numAsicsPerFeb;  // ASIC number within FEB
 
-              moduleAddress = modAddress[module];
-              asicInModule  = (moduleSide == 0 ? asicInFeb : asicInFeb + numAsicsPerFeb);
+              asicInModule = (moduleSide == 1 ? asicInFeb : asicInFeb + numAsicsPerFeb);
             }
           }
           fReadoutMap[equipment][elink] = std::make_pair(moduleAddress, asicInModule);
