@@ -402,9 +402,9 @@ pair<int32_t, int32_t> CbmTaskTofHitFinder::BuildClusters(CbmEvent* event)
     assert(pDigi);
 
     // These are doubles in the digi class
-    const double smType  = pDigi->GetType();
-    const double smId    = pDigi->GetSm();
-    const double rpcId   = pDigi->GetRpc();
+    const int32_t smType = CbmTofAddress::GetSmType(pDigi->GetAddress());
+    const int32_t smId   = CbmTofAddress::GetSmId(pDigi->GetAddress());
+    const int32_t rpcId  = CbmTofAddress::GetRpcId(pDigi->GetAddress());
     const int32_t numRpc = fDigiBdfPar->GetNbRpc(smType);
     fStorDigiExp[smType][smId * numRpc + rpcId].push_back(*pDigi);
     fStorDigiInd[smType][smId * numRpc + rpcId].push_back(digiIndex);
@@ -441,6 +441,8 @@ pair<int32_t, int32_t> CbmTaskTofHitFinder::BuildClusters(CbmEvent* event)
           new ((*fTofDigiMatchColl)[hitIndex]) CbmMatch(*digiMatch);
           delete digiMatch;
         }
+        digiExp.clear();
+        digiInd.clear();
       }
     }
   }

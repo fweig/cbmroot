@@ -35,17 +35,13 @@ namespace cbm::algo
         // These are doubles in the digi class
         const double chan   = pDigi->GetChannel();
         const double side   = pDigi->GetSide();
-        const double charge = pDigi->GetTot();
-        const double time   = pDigi->GetTime();
+        const double charge = pDigi->GetTot() * fParams.fChanPar[chan].fvCPTotGain[side];  // calibrate Digi ToT
+        const double time   = pDigi->GetTime() - fParams.fChanPar[chan].fvCPTOff[side];    // calibrate Digi Time
 
         digisExp[chan].push_back(pDigi);
         digisInd[chan].push_back(digiIndexIn[iDigi]);
 
-        // calibrate Digi Time
-        pDigi->SetTime(time - fParams.fChanPar[chan].fvCPTOff[side]);
-
-        // calibrate Digi ToT
-        pDigi->SetTot(charge * fParams.fChanPar[chan].fvCPTotGain[side]);
+        pDigi->SetTot(charge);
 
         {  // walk correction
           const double totBinSize = (TOTMax - TOTMin) / 2. / numClWalkBinX;
@@ -88,27 +84,28 @@ namespace cbm::algo
     //reset counter
     numSameSide = 0;
 
-    cluster.reset();  // Don't spread clusters over RPCs
-
     for (int32_t chan = 0; chan < fParams.fChanPar.size(); chan++) {
 
       std::vector<CbmTofDigi*>& storDigiExp = digisExp[chan];
       std::vector<int32_t>& storDigiInd     = digisInd[chan];
       HitFinderTofChanPar& chanPar          = fParams.fChanPar[chan];
 
-      while (1 < storDigiExp.size()) {
-        while ((storDigiExp[0])->GetSide() == (storDigiExp[1])->GetSide()) {
+      auto digiExpIt = storDigiExp.begin();
+      auto digiIndIt = storDigiInd.begin();
+
+      while (1 < std::distance(digiExpIt, storDigiExp.end())) {
+        while ((*digiExpIt)->GetSide() == (*std::next(digiExpIt, 1))->GetSide()) {
           // Not one Digi of each end!
           numSameSide++;
-          storDigiExp.erase(storDigiExp.begin());
-          storDigiInd.erase(storDigiInd.begin());
-          if (2 > storDigiExp.size()) break;
+          digiExpIt++;
+          digiIndIt++;
+          if (2 > std::distance(digiExpIt, storDigiExp.end())) break;
         }
-        if (2 > storDigiExp.size()) break;  // 2 Digis = both sides present
+        if (2 > std::distance(digiExpIt, storDigiExp.end())) break;  // 2 Digis = both sides present
 
         TofCell* channelInfo = &chanPar.cell;
-        CbmTofDigi* xDigiA   = storDigiExp[0];
-        CbmTofDigi* xDigiB   = storDigiExp[1];
+        CbmTofDigi* xDigiA   = *digiExpIt;
+        CbmTofDigi* xDigiB   = *std::next(digiExpIt, 1);
 
         // The "Strip" time is the mean time between each end
         const double time = 0.5 * (xDigiA->GetTime() + xDigiB->GetTime());
@@ -137,8 +134,8 @@ namespace cbm::algo
         if (channelInfo->sizeY / 2.0 < pos.Y() || -1 * channelInfo->sizeY / 2.0 > pos.Y()) {
           // if outside of strip limits, the pair is bad => try to remove one end and check the next pair
           // (if another possibility exist)
-          storDigiExp.erase(storDigiExp.begin());
-          storDigiInd.erase(storDigiInd.begin());
+          digiExpIt++;
+          digiIndIt++;
           continue;
         }  // Pair leads to hit oustide of strip limits
 
@@ -160,19 +157,15 @@ namespace cbm::algo
             cluster.reset();
           }
         }
-        cluster.add(pos, time, totSum, totSum, storDigiInd[0], storDigiInd[1]);
-        storDigiExp.erase(storDigiExp.begin());
-        storDigiExp.erase(storDigiExp.begin());
-        storDigiInd.erase(storDigiInd.begin());
-        storDigiInd.erase(storDigiInd.begin());
+        cluster.add(pos, time, totSum, totSum, *digiIndIt, *std::next(digiIndIt, 1));
+        digiExpIt += 2;
+        digiIndIt += 2;
 
         lastChan = chan;
         lastPosY = pos.Y();
         lastTime = time;
       }  // while (1 < storDigiExp.size())
-      storDigiExp.clear();
-      storDigiInd.clear();
-    }  // for( int32_t chan = 0; chan < iNbCh; chan++ )
+    }    // for( int32_t chan = 0; chan < iNbCh; chan++ )
 
     // Save last cluster if it exists
     if (0 < cluster.numChan()) {
