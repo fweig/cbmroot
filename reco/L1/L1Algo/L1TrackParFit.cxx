@@ -451,8 +451,8 @@ void
 
   fvec f0[4];  // ( dx )
   fvec f1[4];  // ( dy )
-  fvec f2[4];  // ( dtx ) / qp0
-  fvec f3[4];  // ( dty ) / qp0
+  fvec f2[4];  // ( dtx )
+  fvec f3[4];  // ( dty )
   fvec f4[4];  // ( dqp )
   fvec f5[4];  // ( dt )
 
@@ -516,7 +516,7 @@ void
       f5[step]    = hvi * L;
       f5_tx[step] = hvi * tx / L;
       f5_ty[step] = hvi * ty / L;
-      f5_qp[step] = f5[step] * (m2 * qp0) / (fvec(1.) + m2 * qp0 * qp0);
+      f5_qp[step] = (m2 * qp0) * (h * L / sqrt(fvec(1.) + m2 * qp0 * qp0) / fvec(29.9792458f));
 
       k[step][0] = f0[step];
       k[step][1] = f1[step];
@@ -564,7 +564,6 @@ void
       k[step][0] = p2 * h;
       k[step][1] = p3 * h;
       k[step][2] = f2_tx[step] * p2 + f2_ty[step] * p3;
-      k[step][2] = 0.;  //SG: why?
       k[step][3] = f3_tx[step] * p2 + f3_ty[step] * p3;
       k[step][4] = f5_tx[step] * p2 + f5_ty[step] * p3;
     }
@@ -573,7 +572,6 @@ void
       Jtx[i] = p0[i] + c[0] * k[0][i] + c[1] * k[1][i] + c[2] * k[2][i] + c[3] * k[3][i];
     }
 
-    Jtx[2] = fvec(1.);  // dtx/dtx
     Jtx[4] = fvec(0.);  // dqp/dtx
     Jtx[5] = p0[4] + c[0] * k[0][4] + c[1] * k[1][4] + c[2] * k[2][4] + c[3] * k[3][4];
 
@@ -600,7 +598,6 @@ void
       k[step][1] = p3 * h;
       k[step][2] = f2_tx[step] * p2 + f2_ty[step] * p3;
       k[step][3] = f3_tx[step] * p2 + f3_ty[step] * p3;
-      k[step][3] = 0.;  //SG: why?
       k[step][4] = f5_tx[step] * p2 + f5_ty[step] * p3;
     }
 
@@ -608,7 +605,6 @@ void
       Jty[i] = p0[i] + c[0] * k[0][i] + c[1] * k[1][i] + c[2] * k[2][i] + c[3] * k[3][i];
     }
 
-    Jty[3] = fvec(1.);
     Jty[4] = fvec(0.);
     Jty[5] = p0[4] + c[0] * k[0][4] + c[1] * k[1][4] + c[2] * k[2][4] + c[3] * k[3][4];
 
@@ -637,9 +633,7 @@ void
       k[step][2] = f2_qp[step] + f2_tx[step] * p2 + f2_ty[step] * p3;
       k[step][3] = f3_qp[step] + f3_tx[step] * p2 + f3_ty[step] * p3;
       k[step][4] = 0.;
-      //k[step][5] = f5_qp[step] + f5_tx[step] * p2 + f5_ty[step] * p3;
-      // SG: bug?
-      k[step][5] = f5[step] + f5_tx[step] * p2 + f5_ty[step] * p3;
+      k[step][5] = f5_qp[step] + f5_tx[step] * p2 + f5_ty[step] * p3;
     }
     for (int i = 0; i < 4; ++i) {
       Jqp[i] = p0[i] + c[0] * k[0][i] + c[1] * k[1][i] + c[2] * k[2][i] + c[3] * k[3][i];
@@ -667,7 +661,7 @@ void
   //          covariance matrix transport
 
   // debug mode: full matrix multiplication in double precision
-  if (0) {
+  if (1) {
     for (unsigned int iv = 0; iv < fvec::Size; iv++) {  // loop over SIMD vector compoinents
       double J[6][6];
       for (int i = 0; i < 6; i++) {
