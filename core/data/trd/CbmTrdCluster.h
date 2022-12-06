@@ -69,6 +69,7 @@ public:
   uint16_t GetNRows() const { return fNRows & 0x1f; }
   uint16_t GetEndCh() const { return fStartCh + fNCols - 1; }
   uint16_t GetRow() const { return GetNRows(); }
+  uint16_t GetSize() const;
   uint16_t GetStartCh() const { return fStartCh; }
   uint32_t GetStartTime() const { return fStartTime; }
   bool HasFaspDigis() const { return TESTBIT(fNRows, kFasp); }

@@ -129,6 +129,25 @@ int32_t CbmTrdCluster::IsChannelInRange(int32_t ch) const
 }
 
 //____________________________________________________________________
+uint16_t CbmTrdCluster::GetSize() const
+{
+  uint16_t size(0);
+  if (HasFaspDigis()) {
+    size = GetNCols() << 1;
+    if (HasOpenStart()) size--;
+    if (HasOpenStop()) size--;
+    if (size <= 0) {
+      LOG(warn) << GetName() << "::GetSize: Fasp cluster meta-info corrupt.";
+      std::cout << ToString();
+      return 0;
+    }
+  }
+  else
+    size = GetNCols();
+  return size;
+}
+
+//____________________________________________________________________
 bool CbmTrdCluster::Merge(CbmTrdCluster* second, bool typ)
 {
   if (GetRow() != second->GetRow()) return false;
