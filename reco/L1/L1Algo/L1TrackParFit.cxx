@@ -409,18 +409,21 @@ void
   // of motion of a particle with parameter qp = Q /P
   //              in the magnetic field B()
   //
-  //        | x |          tx
-  //        | y |          ty
-  // d/dz = | tx| = l * (     tx*ty * Bx - (1+tx*tx) * By + ty * Bz  )
-  //        | ty|   l * ( (1+ty*ty) * Bx     - tx*ty * By - tx * Bz  )  ,
-  //        | qp|   0.
-  //        | t |   ??
+  //  ( x )          tx
+  //  ( y )          ty
+  // d( tx)/dz = c_light * qp * L * (     tx*ty * Bx - (1+tx*tx) * By + ty * Bz  )
+  //  ( ty)      c_light * qp * L * ( (1+ty*ty) * Bx     - tx*ty * By - tx * Bz  )  ,
+  //  ( qp)           0.
+  //  ( t )       L * sqrt ( 1 + m*m * qp*qp ) / c_light_ns
   //
-  //   where  l = c_light*qp*sqrt ( 1 + tx*tx + ty*ty ) .
+  //   where  L = sqrt ( 1 + tx*tx + ty*ty ) .
+  //   c_light = 0.000299792458 [(GeV/c)/kG/cm]
+  //   c_light_ns =  29.9792458 [cm/ns]
   //
-  //  In the following for RK step  :
+  //  In the following for RK step :
+  //   r[5] = {x,y,tx,ty,t}. ( q/p parameter doesn't change during the extrapolation)
+  //   dr(z)/dz = f(z,r)
   //
-  //     x=p[0], y=p[1], tx=p[2], ty=p[3], t=p[4].
   //
   //========================================================================
   //
@@ -433,9 +436,6 @@ void
 
   cnst c_light = 0.000299792458;
 
-  const fvec a[4] = {0., 0.5, 0.5, 1.};
-  const fvec c[4] = {1. / 6., 1. / 3., 1. / 3., 1. / 6.};
-
   //----------------------------------------------------------------
 
   z_out = iif((fvec(0.f) < w), z_out, fTr.z);
@@ -443,36 +443,33 @@ void
   fvec qp_in   = fTr.qp;
   const fvec h = (z_out - fTr.z);
 
-  //   cout<<h<<" h"<<endl;
-  //   cout<<fTr.tx<<" fTr.tx"<<endl;
-  //   cout<<fTr.ty<<" fTr.ty"<<endl;
+  const fvec a[4] = {0., h * fvec(0.5), h * fvec(0.5), h};
+  const fvec c[4] = {h / fvec(6.), h / fvec(3.), h / fvec(3.), h / fvec(6.)};
 
-  fvec hC = h * c_light;
+  fvec f0[4];  // ( dx/dz )
+  fvec f1[4];  // ( dy/dz )
+  fvec f2[4];  // ( dtx/dz )
+  fvec f3[4];  // ( dty/dz )
+  fvec f4[4];  // ( dt/dz )
 
-  fvec f0[4];  // ( dx )
-  fvec f1[4];  // ( dy )
-  fvec f2[4];  // ( dtx )
-  fvec f3[4];  // ( dty )
-  fvec f4[4];  // ( dqp )
-  fvec f5[4];  // ( dt )
+  fvec f2_tx[4], f3_tx[4], f4_tx[4];  // df* / dtx
+  fvec f2_ty[4], f3_ty[4], f4_ty[4];  // df* / dty
+  fvec f2_qp[4], f3_qp[4], f4_qp[4];  // df* / dqp
 
-  fvec f2_tx[4], f3_tx[4], f5_tx[4];  // d(dtx)
-  fvec f2_ty[4], f3_ty[4], f5_ty[4];  // d(dty)
-  fvec f2_qp[4], f3_qp[4], f5_qp[4];  // d(dty)
+  fvec k[5][5] = {0., 0., 0., 0., 0.};
 
   //   Runge-Kutta steps for track parameters
   //
   {
-    fvec p0[5] = {fTr.x, fTr.y, fTr.tx, fTr.ty, fTr.t};
-    fvec k[4][5];
+    fvec r0[5] = {fTr.x, fTr.y, fTr.tx, fTr.ty, fTr.t};
 
     for (int step = 0; step < 4; ++step) {
-      fvec z = fTr.z + a[step] * h;
-      fvec p[5];
+      fvec z = fTr.z + a[step];
+      fvec r[5];
       for (int i = 0; i < 5; ++i) {
-        if (step == 0) { p[i] = p0[i]; }
+        if (step == 0) { r[i] = r0[i]; }
         else {
-          p[i] = p0[i] + a[step] * k[step - 1][i];
+          r[i] = r0[i] + a[step] * k[step][i];
         }
       }
 
@@ -481,173 +478,127 @@ void
       const fvec& By = B[1];
       const fvec& Bz = B[2];
 
-      F.Get(p[0], p[1], z, B);
+      F.Get(r[0], r[1], z, B);
 
-      fvec tx     = p[2];
-      fvec ty     = p[3];
-      fvec tx2    = tx * tx;
-      fvec ty2    = ty * ty;
-      fvec txty   = tx * ty;
-      fvec L2     = fvec(1.) + tx2 + ty2;
-      fvec L2i    = fvec(1.) / L2;
-      fvec L      = sqrt(L2);
-      fvec hCL    = hC * L;
-      fvec hCLqp0 = hCL * qp0;
+      fvec tx    = r[2];
+      fvec ty    = r[3];
+      fvec tx2   = tx * tx;
+      fvec ty2   = ty * ty;
+      fvec txty  = tx * ty;
+      fvec L2    = fvec(1.) + tx2 + ty2;
+      fvec L2i   = fvec(1.) / L2;
+      fvec L     = sqrt(L2);
+      fvec cL    = c_light * L;
+      fvec cLqp0 = cL * qp0;
 
-      f0[step] = h * tx;
-      f1[step] = h * ty;
+      f0[step] = tx;
+      f1[step] = ty;
 
       fvec f2tmp  = (txty * Bx + ty * Bz) - (fvec(1.) + tx2) * By;
-      f2[step]    = hCLqp0 * f2tmp;
-      f2_tx[step] = hCLqp0 * (tx * f2tmp * L2i + ty * Bx - fvec(2.) * tx * By);
-      f2_ty[step] = hCLqp0 * (ty * f2tmp * L2i + tx * Bx + Bz);
-      f2_qp[step] = hCL * f2tmp;
+      f2[step]    = cLqp0 * f2tmp;
+      f2_tx[step] = cLqp0 * (tx * f2tmp * L2i + ty * Bx - fvec(2.) * tx * By);
+      f2_ty[step] = cLqp0 * (ty * f2tmp * L2i + tx * Bx + Bz);
+      f2_qp[step] = cL * f2tmp;
 
       fvec f3tmp  = -txty * By - tx * Bz + (fvec(1.) + ty2) * Bx;
-      f3[step]    = hCLqp0 * f3tmp;
-      f3_tx[step] = hCLqp0 * (tx * f3tmp * L2i - ty * By - Bz);
-      f3_ty[step] = hCLqp0 * (ty * f3tmp * L2i + fvec(2.) * ty * Bx - tx * By);
-      f3_qp[step] = hCL * f3tmp;
-
-      f4[step] = 0.;
+      f3[step]    = cLqp0 * f3tmp;
+      f3_tx[step] = cLqp0 * (tx * f3tmp * L2i - ty * By - Bz);
+      f3_ty[step] = cLqp0 * (ty * f3tmp * L2i + fvec(2.) * ty * Bx - tx * By);
+      f3_qp[step] = cL * f3tmp;
 
       fvec m2     = fMass2;
-      fvec hvi    = h * sqrt(fvec(1.) + m2 * qp0 * qp0) / fvec(29.9792458f);
-      f5[step]    = hvi * L;
-      f5_tx[step] = hvi * tx / L;
-      f5_ty[step] = hvi * ty / L;
-      f5_qp[step] = (m2 * qp0) * (h * L / sqrt(fvec(1.) + m2 * qp0 * qp0) / fvec(29.9792458f));
+      fvec vi     = sqrt(fvec(1.) + m2 * qp0 * qp0) / fvec(29.9792458f);
+      f4[step]    = vi * L;
+      f4_tx[step] = vi * tx / L;
+      f4_ty[step] = vi * ty / L;
+      f4_qp[step] = (m2 * qp0) * (L / sqrt(fvec(1.) + m2 * qp0 * qp0) / fvec(29.9792458f));
 
-      k[step][0] = f0[step];
-      k[step][1] = f1[step];
-      k[step][2] = f2[step];
-      k[step][3] = f3[step];
-      k[step][4] = f5[step];
+      k[step + 1][0] = f0[step];
+      k[step + 1][1] = f1[step];
+      k[step + 1][2] = f2[step];
+      k[step + 1][3] = f3[step];
+      k[step + 1][4] = f4[step];
     }  // end of Runge-Kutta step
 
-    fTr.x  = p0[0] + c[0] * k[0][0] + c[1] * k[1][0] + c[2] * k[2][0] + c[3] * k[3][0];
-    fTr.y  = p0[1] + c[0] * k[0][1] + c[1] * k[1][1] + c[2] * k[2][1] + c[3] * k[3][1];
-    fTr.tx = p0[2] + c[0] * k[0][2] + c[1] * k[1][2] + c[2] * k[2][2] + c[3] * k[3][2];
-    fTr.ty = p0[3] + c[0] * k[0][3] + c[1] * k[1][3] + c[2] * k[2][3] + c[3] * k[3][3];
-    fTr.t  = p0[4] + c[0] * k[0][4] + c[1] * k[1][4] + c[2] * k[2][4] + c[3] * k[3][4];
+    fTr.x  = r0[0] + (c[0] * k[1][0] + c[1] * k[2][0] + c[2] * k[3][0] + c[3] * k[4][0]);
+    fTr.y  = r0[1] + (c[0] * k[1][1] + c[1] * k[2][1] + c[2] * k[3][1] + c[3] * k[4][1]);
+    fTr.tx = r0[2] + (c[0] * k[1][2] + c[1] * k[2][2] + c[2] * k[3][2] + c[3] * k[4][2]);
+    fTr.ty = r0[3] + (c[0] * k[1][3] + c[1] * k[2][3] + c[2] * k[3][3] + c[3] * k[4][3]);
+    fTr.t  = r0[4] + (c[0] * k[1][4] + c[1] * k[2][4] + c[2] * k[3][4] + c[3] * k[4][4]);
     fTr.z  = z_out;
   }
 
 
   // Jacobian of extrapolation
 
-
   //
   //    derivatives d/dx and d/dy
   //
-  fvec Jx[6] = {1., 0., 0., 0., 0., 0.};  // D new { x,y,tx,ty,qp,t } / D old x
-  fvec Jy[6] = {0., 1., 0., 0., 0., 0.};  // D new { x,y,tx,ty,qp,t } / D old y
+  fvec Jx[5] = {1., 0., 0., 0., 0.};  // D new { x,y,tx,ty,t } / D old x
+  fvec Jy[5] = {0., 1., 0., 0., 0.};  // D new { x,y,tx,ty,t } / D old y
 
   //
   //   Runge-Kutta steps for derivatives d/dtx
   //
-
-  fvec Jtx[6];  // D new { x,y,tx,ty,qp,t } / D old tx
+  fvec Jtx[5] = {0., 0., 1., 0., 0.};  // D new { x,y,tx,ty,t } / D old tx
   {
-    fvec p0[5] = {0., 0., 1., 0., 0.};
-    fvec k[4][5];
     for (int step = 0; step < 4; ++step) {
-      fvec p2, p3;
-      if (step == 0) {
-        p2 = p0[2];
-        p3 = p0[3];
-      }
-      else {
-        p2 = p0[2] + a[step] * k[step - 1][2];
-        p3 = p0[3] + a[step] * k[step - 1][3];
-      }
-      k[step][0] = p2 * h;
-      k[step][1] = p3 * h;
-      k[step][2] = f2_tx[step] * p2 + f2_ty[step] * p3;
-      k[step][3] = f3_tx[step] * p2 + f3_ty[step] * p3;
-      k[step][4] = f5_tx[step] * p2 + f5_ty[step] * p3;
+      fvec r2        = Jtx[2] + a[step] * k[step][2];  // dtx[step]/dtx0
+      fvec r3        = Jtx[3] + a[step] * k[step][3];  // dty[step]/dtx0
+      k[step + 1][0] = r2;
+      k[step + 1][1] = r3;
+      k[step + 1][2] = f2_tx[step] * r2 + f2_ty[step] * r3;
+      k[step + 1][3] = f3_tx[step] * r2 + f3_ty[step] * r3;
+      k[step + 1][4] = f4_tx[step] * r2 + f4_ty[step] * r3;
     }
-
-    for (int i = 0; i < 4; ++i) {
-      Jtx[i] = p0[i] + c[0] * k[0][i] + c[1] * k[1][i] + c[2] * k[2][i] + c[3] * k[3][i];
+    for (int i = 0; i < 5; ++i) {
+      Jtx[i] += c[0] * k[1][i] + c[1] * k[2][i] + c[2] * k[3][i] + c[3] * k[4][i];
     }
-
-    Jtx[4] = fvec(0.);  // dqp/dtx
-    Jtx[5] = p0[4] + c[0] * k[0][4] + c[1] * k[1][4] + c[2] * k[2][4] + c[3] * k[3][4];
-
-  }  //      end of derivatives d/dtx
+  }
 
   //
   //   Runge-Kutta steps for derivatives d/dty
   //
-  fvec Jty[6];  // D new { x,y,tx,ty,qp,t } / D old ty
+  fvec Jty[5] = {0., 0., 0., 1., 0.};  // D new { x,y,tx,ty,t } / D old ty
   {
-    fvec p0[5] = {0., 0., 0., 1., 0.};
-    fvec k[4][5];
     for (int step = 0; step < 4; ++step) {
-      fvec p2, p3;
-      if (step == 0) {
-        p2 = p0[2];
-        p3 = p0[3];
-      }
-      else {
-        p2 = p0[2] + a[step] * k[step - 1][2];
-        p3 = p0[3] + a[step] * k[step - 1][3];
-      }
-      k[step][0] = p2 * h;
-      k[step][1] = p3 * h;
-      k[step][2] = f2_tx[step] * p2 + f2_ty[step] * p3;
-      k[step][3] = f3_tx[step] * p2 + f3_ty[step] * p3;
-      k[step][4] = f5_tx[step] * p2 + f5_ty[step] * p3;
+      fvec r2        = Jty[2] + a[step] * k[step][2];  // dtx[step]/dty0
+      fvec r3        = Jty[3] + a[step] * k[step][3];  // dty[step]/dty0
+      k[step + 1][0] = r2;
+      k[step + 1][1] = r3;
+      k[step + 1][2] = f2_tx[step] * r2 + f2_ty[step] * r3;
+      k[step + 1][3] = f3_tx[step] * r2 + f3_ty[step] * r3;
+      k[step + 1][4] = f4_tx[step] * r2 + f4_ty[step] * r3;
     }
-
-    for (int i = 0; i < 4; ++i) {
-      Jty[i] = p0[i] + c[0] * k[0][i] + c[1] * k[1][i] + c[2] * k[2][i] + c[3] * k[3][i];
+    for (int i = 0; i < 5; ++i) {
+      Jty[i] += c[0] * k[1][i] + c[1] * k[2][i] + c[2] * k[3][i] + c[3] * k[4][i];
     }
-
-    Jty[4] = fvec(0.);
-    Jty[5] = p0[4] + c[0] * k[0][4] + c[1] * k[1][4] + c[2] * k[2][4] + c[3] * k[3][4];
-
-  }  //      end of derivatives d/dty
-
+  }
 
   //
   //   Runge-Kutta steps for derivatives d/dqp
   //
-  fvec Jqp[6];  // D new { x,y,tx,ty,qp,t } / D old qp
+  fvec Jqp[5] = {0., 0., 0., 0., 0.};  // D new { x,y,tx,ty,t } / D old qp
   {
-    fvec p0[5] = {0., 0., 0., 0., 0.};
-    fvec k[4][6];
     for (int step = 0; step < 4; ++step) {
-      fvec p2, p3;
-      if (step == 0) {
-        p2 = p0[2];
-        p3 = p0[3];
-      }
-      else {
-        p2 = p0[2] + a[step] * k[step - 1][2];
-        p3 = p0[3] + a[step] * k[step - 1][3];
-      }
-      k[step][0] = h * p2;
-      k[step][1] = h * p3;
-      k[step][2] = f2_qp[step] + f2_tx[step] * p2 + f2_ty[step] * p3;
-      k[step][3] = f3_qp[step] + f3_tx[step] * p2 + f3_ty[step] * p3;
-      k[step][4] = 0.;
-      k[step][5] = f5_qp[step] + f5_tx[step] * p2 + f5_ty[step] * p3;
+      fvec r2        = Jqp[2] + a[step] * k[step][2];  // dtx/dqp
+      fvec r3        = Jqp[3] + a[step] * k[step][3];  // dty/dqp;  (dqp/dqp == 1)
+      k[step + 1][0] = r2;
+      k[step + 1][1] = r3;
+      k[step + 1][2] = f2_qp[step] + f2_tx[step] * r2 + f2_ty[step] * r3;
+      k[step + 1][3] = f3_qp[step] + f3_tx[step] * r2 + f3_ty[step] * r3;
+      k[step + 1][4] = f4_qp[step] + f4_tx[step] * r2 + f4_ty[step] * r3;
     }
-    for (int i = 0; i < 4; ++i) {
-      Jqp[i] = p0[i] + c[0] * k[0][i] + c[1] * k[1][i] + c[2] * k[2][i] + c[3] * k[3][i];
+    for (int i = 0; i < 5; ++i) {
+      Jqp[i] += c[0] * k[1][i] + c[1] * k[2][i] + c[2] * k[3][i] + c[3] * k[4][i];
     }
-    Jqp[4] = fvec(1.);
-    Jqp[5] = p0[4] + c[0] * k[0][5] + c[1] * k[1][5] + c[2] * k[2][5] + c[3] * k[3][5];
-
-  }  //      end of derivatives d/dqp
+  }
 
 
   //
   //    derivatives d/dt
   //
-  fvec Jt[6] = {0., 0., 0., 0., 0., 1.};  // D new { x,y,tx,ty,qp,t } / D old t
+  fvec Jt[5] = {0., 0., 0., 0., 1.};  // D new { x,y,tx,ty,t } / D old t
 
   {  // update parameters
     fvec dqp = qp_in - qp0;
@@ -655,117 +606,134 @@ void
     fTr.y += Jqp[1] * dqp;
     fTr.tx += Jqp[2] * dqp;
     fTr.ty += Jqp[3] * dqp;
-    fTr.t += Jqp[5] * dqp;
+    fTr.t += Jqp[4] * dqp;
   }
 
   //          covariance matrix transport
 
-  // debug mode: full matrix multiplication in double precision
-  if (1) {
-    for (unsigned int iv = 0; iv < fvec::Size; iv++) {  // loop over SIMD vector compoinents
-      double J[6][6];
-      for (int i = 0; i < 6; i++) {
-        J[i][0] = Jx[i][iv];
-        J[i][1] = Jy[i][iv];
-        J[i][2] = Jtx[i][iv];
-        J[i][3] = Jty[i][iv];
-        J[i][4] = Jqp[i][iv];
-        J[i][5] = Jt[i][iv];
+  // debug mode: full matrix multiplication76y
+  if (0) {
+    fvec J[6][6];
+    for (int i = 0; i < 4; i++) {
+      J[i][0] = Jx[i];   // dx,y,tx,ty / dx
+      J[i][1] = Jy[i];   // dx,y,tx,ty / dy
+      J[i][2] = Jtx[i];  // dx,y,tx,ty / dtx
+      J[i][3] = Jty[i];  // dx,y,tx,ty / dty
+      J[i][4] = Jqp[i];  // dx,y,tx,ty / dqp
+      J[i][5] = Jt[i];   // dx,y,tx,ty / dt
+    }
+    {
+      J[4][0] = 0.;  // dqp / dx
+      J[4][1] = 0.;  // dqp / dy
+      J[4][2] = 0.;  // dqp / dtx
+      J[4][3] = 0.;  // dqp / dty
+      J[4][4] = 1.;  // dqp / dqp
+      J[4][5] = 0.;  // dqp / dt
+    }
+    {
+      J[5][0] = Jx[4];   // dt / dx
+      J[5][1] = Jy[4];   // dt / dy
+      J[5][2] = Jtx[4];  // dt / dtx
+      J[5][3] = Jty[4];  // dt / dty
+      J[5][4] = Jqp[4];  // dt / dqp
+      J[5][5] = Jt[4];   // dt / dt
+    }
+
+    fvec C[6][6];
+    for (int i = 0; i < 6; i++) {
+      for (int j = 0; j < 6; j++) {
+        C[i][j] = fTr.C(i, j);
       }
-      double C[6][6];
-      for (int i = 0; i < 6; i++) {
-        for (int j = 0; j < 6; j++) {
-          C[i][j] = fTr.C(i, j)[iv];
-        }
-      }
-      double JC[6][6];
-      for (int i = 0; i < 6; i++) {
-        for (int j = 0; j < 6; j++) {
-          JC[i][j] = 0.;
-          for (int m = 0; m < 6; m++) {
-            JC[i][j] += J[i][m] * C[m][j];
-          }
-        }
-      }
-      for (int i = 0; i < 6; i++) {
-        for (int j = 0; j < 6; j++) {
-          double Cij = 0.;
-          for (int m = 0; m < 6; m++) {
-            Cij += JC[i][m] * J[j][m];
-          }
-          fTr.C(i, j)[iv] = Cij;
+    }
+    fvec JC[6][6];
+    for (int i = 0; i < 6; i++) {
+      for (int j = 0; j < 6; j++) {
+        JC[i][j] = 0.;
+        for (int m = 0; m < 6; m++) {
+          JC[i][j] += J[i][m] * C[m][j];
         }
       }
     }
+    for (int i = 0; i < 6; i++) {
+      for (int j = 0; j < 6; j++) {
+        fvec Cij = 0.;
+        for (int m = 0; m < 6; m++) {
+          Cij += JC[i][m] * J[j][m];
+        }
+        fTr.C(i, j) = Cij;
+      }
+    }
   }
-  else {  // fast calculations
+  else {  // unrolled calculations, taking into account that some derivatives are 0 or 1
 
-    const fvec cj00 = fTr.C00 + fTr.C20 * Jtx[0] + fTr.C30 * Jty[0] + fTr.C40 * Jqp[0];
-    const fvec cj10 = fTr.C10 + fTr.C21 * Jtx[0] + fTr.C31 * Jty[0] + fTr.C41 * Jqp[0];
-    const fvec cj20 = fTr.C20 + fTr.C22 * Jtx[0] + fTr.C32 * Jty[0] + fTr.C42 * Jqp[0];
-    const fvec cj30 = fTr.C30 + fTr.C32 * Jtx[0] + fTr.C33 * Jty[0] + fTr.C43 * Jqp[0];
-    const fvec cj40 = fTr.C40 + fTr.C42 * Jtx[0] + fTr.C43 * Jty[0] + fTr.C44 * Jqp[0];
-    const fvec cj50 = fTr.C50 + fTr.C52 * Jtx[0] + fTr.C53 * Jty[0] + fTr.C54 * Jqp[0];
+    fvec JC00 = Jtx[0] * fTr.C20 + Jty[0] * fTr.C30 + Jqp[0] * fTr.C40 + fTr.C00;
+    //fvec JC01 = Jtx[0] * fTr.C21 + Jty[0] * fTr.C31 + Jqp[0] * fTr.C41 + fTr.C10;
+    fvec JC02 = Jtx[0] * fTr.C22 + Jty[0] * fTr.C32 + Jqp[0] * fTr.C42 + fTr.C20;
+    fvec JC03 = Jtx[0] * fTr.C32 + Jty[0] * fTr.C33 + Jqp[0] * fTr.C43 + fTr.C30;
+    fvec JC04 = Jtx[0] * fTr.C42 + Jty[0] * fTr.C43 + Jqp[0] * fTr.C44 + fTr.C40;
+    //fvec JC05 = Jtx[0] * fTr.C52 + Jty[0] * fTr.C53 + Jqp[0] * fTr.C54 + fTr.C50;
 
-    //  const fvec cj01 = fTr.C10 + fTr.C20*Jtx[1] + fTr.C30*Jty[1] + fTr.C40*Jqp[1];
-    const fvec cj11 = fTr.C11 + fTr.C21 * Jtx[1] + fTr.C31 * Jty[1] + fTr.C41 * Jqp[1];
-    const fvec cj21 = fTr.C21 + fTr.C22 * Jtx[1] + fTr.C32 * Jty[1] + fTr.C42 * Jqp[1];
-    const fvec cj31 = fTr.C31 + fTr.C32 * Jtx[1] + fTr.C33 * Jty[1] + fTr.C43 * Jqp[1];
-    const fvec cj41 = fTr.C41 + fTr.C42 * Jtx[1] + fTr.C43 * Jty[1] + fTr.C44 * Jqp[1];
-    const fvec cj51 = fTr.C51 + fTr.C52 * Jtx[1] + fTr.C53 * Jty[1] + fTr.C54 * Jqp[1];
+    fvec JC10 = Jtx[1] * fTr.C20 + Jty[1] * fTr.C30 + Jqp[1] * fTr.C40 + fTr.C10;
+    fvec JC11 = Jtx[1] * fTr.C21 + Jty[1] * fTr.C31 + Jqp[1] * fTr.C41 + fTr.C11;
+    fvec JC12 = Jtx[1] * fTr.C22 + Jty[1] * fTr.C32 + Jqp[1] * fTr.C42 + fTr.C21;
+    fvec JC13 = Jtx[1] * fTr.C32 + Jty[1] * fTr.C33 + Jqp[1] * fTr.C43 + fTr.C31;
+    fvec JC14 = Jtx[1] * fTr.C42 + Jty[1] * fTr.C43 + Jqp[1] * fTr.C44 + fTr.C41;
+    //fvec JC15 = Jtx[1] * fTr.C52 + Jty[1] * fTr.C53 + Jqp[1] * fTr.C54 + fTr.C51;
 
-    // const fvec cj02 = fTr.C20*Jtx[2] + fTr.C30*Jty[2] + fTr.C40*Jqp[2];
-    // const fvec cj12 = fTr.C21*Jtx[2] + fTr.C31*Jty[2] + fTr.C41*Jqp[2];
-    const fvec cj22 = fTr.C22 * Jtx[2] + fTr.C32 * Jty[2] + fTr.C42 * Jqp[2];
-    const fvec cj32 = fTr.C32 * Jtx[2] + fTr.C33 * Jty[2] + fTr.C43 * Jqp[2];
-    const fvec cj42 = fTr.C42 * Jtx[2] + fTr.C43 * Jty[2] + fTr.C44 * Jqp[2];
-    const fvec cj52 = fTr.C52 * Jtx[2] + fTr.C53 * Jty[2] + fTr.C54 * Jqp[2];
+    fvec JC20 = Jtx[2] * fTr.C20 + Jty[2] * fTr.C30 + Jqp[2] * fTr.C40;
+    fvec JC21 = Jtx[2] * fTr.C21 + Jty[2] * fTr.C31 + Jqp[2] * fTr.C41;
+    fvec JC22 = Jtx[2] * fTr.C22 + Jty[2] * fTr.C32 + Jqp[2] * fTr.C42;
+    fvec JC23 = Jtx[2] * fTr.C32 + Jty[2] * fTr.C33 + Jqp[2] * fTr.C43;
+    fvec JC24 = Jtx[2] * fTr.C42 + Jty[2] * fTr.C43 + Jqp[2] * fTr.C44;
+    //fvec JC25 = Jtx[2] * fTr.C52 + Jty[2] * fTr.C53 + Jqp[2] * fTr.C54;
 
-    // const fvec cj03 = fTr.C20*Jtx[3] + fTr.C30*Jty[3] + fTr.C40*Jqp[3];
-    // const fvec cj13 = fTr.C21*Jtx[3] + fTr.C31*Jty[3] + fTr.C41*Jqp[3];
-    const fvec cj23 = fTr.C22 * Jtx[3] + fTr.C32 * Jty[3] + fTr.C42 * Jqp[3];
-    const fvec cj33 = fTr.C32 * Jtx[3] + fTr.C33 * Jty[3] + fTr.C43 * Jqp[3];
-    const fvec cj43 = fTr.C42 * Jtx[3] + fTr.C43 * Jty[3] + fTr.C44 * Jqp[3];
-    const fvec cj53 = fTr.C52 * Jtx[3] + fTr.C53 * Jty[3] + fTr.C54 * Jqp[3];
+    fvec JC30 = Jtx[3] * fTr.C20 + Jty[3] * fTr.C30 + Jqp[3] * fTr.C40;
+    fvec JC31 = Jtx[3] * fTr.C21 + Jty[3] * fTr.C31 + Jqp[3] * fTr.C41;
+    fvec JC32 = Jtx[3] * fTr.C22 + Jty[3] * fTr.C32 + Jqp[3] * fTr.C42;
+    fvec JC33 = Jtx[3] * fTr.C32 + Jty[3] * fTr.C33 + Jqp[3] * fTr.C43;
+    fvec JC34 = Jtx[3] * fTr.C42 + Jty[3] * fTr.C43 + Jqp[3] * fTr.C44;
+    //fvec JC35 = Jtx[3] * fTr.C52 + Jty[3] * fTr.C53 + Jqp[3] * fTr.C54;
 
-    const fvec cj24 = fTr.C42;
-    const fvec cj34 = fTr.C43;
-    const fvec cj44 = fTr.C44;
-    const fvec cj54 = fTr.C54;
+    fvec JC40 = fTr.C40;
+    fvec JC41 = fTr.C41;
+    fvec JC42 = fTr.C42;
+    fvec JC43 = fTr.C43;
+    fvec JC44 = fTr.C44;
+    //fvec JC45 = fTr.C54;
 
-    // const fvec cj05 = fTr.C50 + fTr.C20*Jtx[5] + fTr.C30*Jty[5] + fTr.C40*Jqp[5];
-    // const fvec cj15 = fTr.C51 + fTr.C21*Jtx[5] + fTr.C31*Jty[5] + fTr.C41*Jqp[5];
-    const fvec cj25 = fTr.C52 + fTr.C22 * Jtx[5] + fTr.C32 * Jty[5] + fTr.C42 * Jqp[5];
-    const fvec cj35 = fTr.C53 + fTr.C32 * Jtx[5] + fTr.C33 * Jty[5] + fTr.C43 * Jqp[5];
-    const fvec cj45 = fTr.C54 + fTr.C42 * Jtx[5] + fTr.C43 * Jty[5] + fTr.C44 * Jqp[5];
-    const fvec cj55 = fTr.C55 + fTr.C52 * Jtx[5] + fTr.C53 * Jty[5] + fTr.C54 * Jqp[5];
+    fvec JC50 = Jtx[4] * fTr.C20 + Jty[4] * fTr.C30 + Jqp[4] * fTr.C40 + fTr.C50;
+    fvec JC51 = Jtx[4] * fTr.C21 + Jty[4] * fTr.C31 + Jqp[4] * fTr.C41 + fTr.C51;
+    fvec JC52 = Jtx[4] * fTr.C22 + Jty[4] * fTr.C32 + Jqp[4] * fTr.C42 + fTr.C52;
+    fvec JC53 = Jtx[4] * fTr.C32 + Jty[4] * fTr.C33 + Jqp[4] * fTr.C43 + fTr.C53;
+    fvec JC54 = Jtx[4] * fTr.C42 + Jty[4] * fTr.C43 + Jqp[4] * fTr.C44 + fTr.C54;
+    fvec JC55 = Jtx[4] * fTr.C52 + Jty[4] * fTr.C53 + Jqp[4] * fTr.C54 + fTr.C55;
 
-    fTr.C00 = cj00 + cj20 * Jtx[0] + cj30 * Jty[0] + cj40 * Jqp[0];
+    fTr.C00 = JC02 * Jtx[0] + JC03 * Jty[0] + JC04 * Jqp[0] + JC00;
 
-    fTr.C10 = cj10 + cj20 * Jtx[1] + cj30 * Jty[1] + cj40 * Jqp[1];
-    fTr.C11 = cj11 + cj21 * Jtx[1] + cj31 * Jty[1] + cj41 * Jqp[1];
+    fTr.C10 = JC12 * Jtx[0] + JC13 * Jty[0] + JC14 * Jqp[0] + JC10;
+    fTr.C11 = JC12 * Jtx[1] + JC13 * Jty[1] + JC14 * Jqp[1] + JC11;
 
-    fTr.C20 = cj20 + cj30 * Jty[2] + cj40 * Jqp[2];
-    fTr.C21 = cj21 + cj31 * Jty[2] + cj41 * Jqp[2];
-    fTr.C22 = cj22 + cj32 * Jty[2] + cj42 * Jqp[2];
+    fTr.C20 = JC22 * Jtx[0] + JC23 * Jty[0] + JC24 * Jqp[0] + JC20;
+    fTr.C21 = JC22 * Jtx[1] + JC23 * Jty[1] + JC24 * Jqp[1] + JC21;
+    fTr.C22 = JC22 * Jtx[2] + JC23 * Jty[2] + JC24 * Jqp[2];
 
-    fTr.C30 = cj30 + cj20 * Jtx[3] + cj40 * Jqp[3];
-    fTr.C31 = cj31 + cj21 * Jtx[3] + cj41 * Jqp[3];
-    fTr.C32 = cj32 + cj22 * Jtx[3] + cj42 * Jqp[3];
-    fTr.C33 = cj33 + cj23 * Jtx[3] + cj43 * Jqp[3];
+    fTr.C30 = JC32 * Jtx[0] + JC33 * Jty[0] + JC34 * Jqp[0] + JC30;
+    fTr.C31 = JC32 * Jtx[1] + JC33 * Jty[1] + JC34 * Jqp[1] + JC31;
+    fTr.C32 = JC32 * Jtx[2] + JC33 * Jty[2] + JC34 * Jqp[2];
+    fTr.C33 = JC32 * Jtx[3] + JC33 * Jty[3] + JC34 * Jqp[3];
 
-    fTr.C40 = cj40;
-    fTr.C41 = cj41;
-    fTr.C42 = cj42;
-    fTr.C43 = cj43;
-    fTr.C44 = cj44;
+    fTr.C40 = JC42 * Jtx[0] + JC43 * Jty[0] + JC44 * Jqp[0] + JC40;
+    fTr.C41 = JC42 * Jtx[1] + JC43 * Jty[1] + JC44 * Jqp[1] + JC41;
+    fTr.C42 = JC42 * Jtx[2] + JC43 * Jty[2] + JC44 * Jqp[2];
+    fTr.C43 = JC42 * Jtx[3] + JC43 * Jty[3] + JC44 * Jqp[3];
+    fTr.C44 = JC44;
 
-    fTr.C50 = cj50 + cj20 * Jtx[5] + cj30 * Jty[5] + cj40 * Jqp[5];
-    fTr.C51 = cj51 + cj21 * Jtx[5] + cj31 * Jty[5] + cj41 * Jqp[5];
-    fTr.C52 = cj52 + cj22 * Jtx[5] + cj32 * Jty[5] + cj42 * Jqp[5];
-    fTr.C53 = cj53 + cj23 * Jtx[5] + cj33 * Jty[5] + cj43 * Jqp[5];
-    fTr.C54 = cj54 + cj24 * Jtx[5] + cj34 * Jty[5] + cj44 * Jqp[5];
-    fTr.C55 = cj55 + cj25 * Jtx[5] + cj35 * Jty[5] + cj45 * Jqp[5];
+    fTr.C50 = JC52 * Jtx[0] + JC53 * Jty[0] + JC54 * Jqp[0] + JC50;
+    fTr.C51 = JC52 * Jtx[1] + JC53 * Jty[1] + JC54 * Jqp[1] + JC51;
+    fTr.C52 = JC52 * Jtx[2] + JC53 * Jty[2] + JC54 * Jqp[2];
+    fTr.C53 = JC52 * Jtx[3] + JC53 * Jty[3] + JC54 * Jqp[3];
+    fTr.C54 = JC54;
+    fTr.C55 = JC52 * Jtx[4] + JC53 * Jty[4] + JC54 * Jqp[4] + JC55;
   }
 }
 
