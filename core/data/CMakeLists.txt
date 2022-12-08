@@ -125,7 +125,9 @@ set(NO_DICT_SRCS
 SET_SOURCE_FILES_PROPERTIES(tof/etof/star_rhicf.c PROPERTIES COMPILE_FLAGS -Wno-pointer-sign)
 
 
-list(APPEND HEADERS base/CbmDigiData.h global/CbmDigiEvent.h global/CbmDigiTimeslice.h)
+list(APPEND HEADERS base/CbmDigiData.h global/CbmDigiEvent.h global/CbmDigiTimeslice.h 
+sts/CbmStsDigiData.h much/CbmMuchDigiData.h rich/CbmRichDigiData.h trd/CbmTrdDigiData.h 
+tof/CbmTofDigiData.h psd/CbmPsdDigiData.h)
 
 set(LIBRARY_NAME CbmData)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
@@ -148,8 +150,15 @@ generate_cbm_library()
 
 # Install file which has no corresponding source file
 Install(FILES
-        CbmDefs.h rich/CbmRichRingLight.h base/CbmDigiVector.h
-        base/CbmDigiData.h global/CbmDigiEvent.h global/CbmDigiTimeslice.h
+        CbmDefs.h 
+        base/CbmDigiData.h base/CbmDigiVector.h
+        much/CbmMuchDigiData.h
+        psd/CbmPsdDigiData.h
+        rich/CbmRichDigiData.h rich/CbmRichRingLight.h 
+        sts/CbmStsDigiData.h
+        trd/CbmTrdDigiData.h
+        tof/CbmTofDigiData.h
+        global/CbmDigiEvent.h global/CbmDigiTimeslice.h
         raw/bitmask_operators.hpp raw/StsXyterFinalHit.h raw/PsdGbtDataFormat-v0.00.h raw/PsdGbtDataFormat-v1.00.h
         DESTINATION include
        )

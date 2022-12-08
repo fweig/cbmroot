@@ -7,11 +7,17 @@
 #define CBMDIGIDATA_H 1
 
 #include "CbmMuchDigi.h"
+#include "CbmMuchDigiData.h"
 #include "CbmPsdDigi.h"
+#include "CbmPsdDigiData.h"
 #include "CbmRichDigi.h"
+#include "CbmRichDigiData.h"
 #include "CbmStsDigi.h"
+#include "CbmStsDigiData.h"
 #include "CbmTofDigi.h"
+#include "CbmTofDigiData.h"
 #include "CbmTrdDigi.h"
+#include "CbmTrdDigiData.h"
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/vector.hpp>
@@ -38,15 +44,6 @@ struct DigiVec {
   void Clear() { fDigis.clear(); }
 };
 
-/** Unless a detector-specific implementation for the digi data is present, the
- ** simplest form (std::vector) will be used. **/
-typedef DigiVec<CbmStsDigi> StsDigiData;
-typedef DigiVec<CbmMuchDigi> MuchDigiData;
-typedef DigiVec<CbmRichDigi> RichDigiData;
-typedef DigiVec<CbmTrdDigi> TrdDigiData;
-typedef DigiVec<CbmTofDigi> TofDigiData;
-typedef DigiVec<CbmPsdDigi> PsdDigiData;
-
 
 /** @struct CbmDigiData
  ** @brief Collection of digis from all detector systems
@@ -56,13 +53,13 @@ typedef DigiVec<CbmPsdDigi> PsdDigiData;
  **/
 struct CbmDigiData {
   friend class boost::serialization::access;
-  TofDigiData fT0;
-  StsDigiData fSts;
-  MuchDigiData fMuch;
-  RichDigiData fRich;
-  TrdDigiData fTrd;
-  TofDigiData fTof;
-  PsdDigiData fPsd;
+  CbmTofDigiData fT0;
+  CbmStsDigiData fSts;
+  CbmMuchDigiData fMuch;
+  CbmRichDigiData fRich;
+  CbmTrdDigiData fTrd;
+  CbmTofDigiData fTof;
+  CbmPsdDigiData fPsd;
   template<class Archive>
   void serialize(Archive& ar, const unsigned int /*version*/)
   {

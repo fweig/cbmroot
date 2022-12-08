@@ -6,9 +6,9 @@ set(SRCS
   ${CMAKE_SOURCE_DIR}/core/data/CbmDefs.cxx
   ${CMAKE_SOURCE_DIR}/core/data/CbmAddress.cxx
 
-  ${CMAKE_SOURCE_DIR}/core/data/sts/CbmStsDigi.cxx
   ${CMAKE_SOURCE_DIR}/core/data/sts/CbmStsAddress.cxx
-
+  ${CMAKE_SOURCE_DIR}/core/data/sts/CbmStsDigi.cxx
+ 
   ${CMAKE_SOURCE_DIR}/core/data/rich/CbmRichDigi.cxx
 
   ${CMAKE_SOURCE_DIR}/core/data/much/CbmMuchDigi.cxx

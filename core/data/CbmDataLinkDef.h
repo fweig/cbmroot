@@ -48,6 +48,7 @@
 #pragma link C++ namespace CbmStsAddress;
 #pragma link C++ class CbmStsCluster + ;
 #pragma link C++ class CbmStsDigi + ;
+#pragma link C++ class CbmStsDigiData + ;
 #pragma link C++ class CbmStsHit + ;
 #pragma link C++ class CbmStsPoint + ;
 #pragma link C++ class CbmStsTrack + ;
@@ -58,11 +59,13 @@
 #pragma link C++ class CbmRichRing + ;
 #pragma link C++ class CbmRichTrbDigi + ;
 #pragma link C++ class CbmRichDigi + ;
+#pragma link C++ class CbmRichDigiData + ;
 
 #pragma link C++ class CbmMuchCluster + ;
 #pragma link C++ class CbmMuchPixelHit + ;
 #pragma link C++ class CbmMuchPoint + ;
 #pragma link C++ class CbmMuchDigi + ;
+#pragma link C++ class CbmMuchDigiData + ;
 #pragma link C++ class CbmMuchBeamTimeDigi + ;
 #pragma link C++ class CbmMuchDigiMatch + ;
 #pragma link C++ class CbmMuchTrack + ;
@@ -72,6 +75,7 @@
 #pragma link C++ class CbmTrdPoint + ;
 #pragma link C++ class CbmTrdTrack + ;
 #pragma link C++ class CbmTrdDigi + ;
+#pragma link C++ class CbmTrdDigiData + ;
 #pragma link C++ class CbmTrdAddress + ;
 #pragma link C++ class CbmTrdCluster + ;
 #pragma link C++ class CbmTrdRawMessageSpadic + ;
@@ -79,12 +83,14 @@
 #pragma link C++ class CbmTofHit + ;
 #pragma link C++ class CbmTofPoint + ;
 #pragma link C++ class CbmTofDigi + ;
+#pragma link C++ class CbmTofDigiData + ;
 #pragma link C++ class CbmTofAddress + ;
 #pragma link C++ class CbmTofTrack + ;
 #pragma link C++ class CbmTofTracklet + ;
 #pragma link C++ class CbmTofTrackletParam + ;
 
 #pragma link C++ class CbmPsdDigi + ;
+#pragma link C++ class CbmPsdDigiData + ;
 #pragma link C++ class CbmPsdDsp + ;
 #pragma link C++ class CbmPsdHit;
 #pragma link C++ class CbmPsdPoint + ;
@@ -140,12 +146,6 @@
 #pragma link C++ class vector < CbmEventStore> + ;
 
 #pragma link C++ class std::vector < CbmEvent> + ;
-#pragma link C++ class StsDigiData + ;
-#pragma link C++ class MuchDigiData + ;
-#pragma link C++ class RichDigiData + ;
-#pragma link C++ class TrdDigiData + ;
-#pragma link C++ class TofDigiData + ;
-#pragma link C++ class PsdDigiData + ;
 #pragma link C++ class CbmDigiData + ;
 #pragma link C++ class CbmDigiEvent + ;
 #pragma link C++ class std::vector < CbmDigiEvent> + ;
