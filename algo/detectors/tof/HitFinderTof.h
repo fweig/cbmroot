@@ -2,6 +2,15 @@
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Dominik Smith [committer], Pierre-Alain Loizeau */
 
+/*
+   This algo was based on CbmTofSimpClusterizer, which can be used only for simulation of the main setup and
+   is as the name implies a simplified solution. 
+   A later step will be the replacement with a version based on CbmTofEventClusterizer, which is the version 
+   currently maintained, based on what we learned from real data at mCBM. 
+   This step will be required to apply the algo to real/online data and to prepare 
+   our simulations for first CBM beam
+*/
+
 #ifndef HITFINDERTOF_H
 #define HITFINDERTOF_H
 
@@ -132,6 +141,7 @@ namespace cbm::algo
   class HitFinderTof {
   public:
     typedef std::vector<TofCluster> resultType;
+    typedef std::pair<std::vector<std::vector<CbmTofDigi*>>, std::vector<std::vector<int32_t>>> inputType;
 
     /**
        ** @brief Constructor.
@@ -155,6 +165,9 @@ namespace cbm::algo
 
   private:
     HitFinderTofRpcPar fParams = {};  ///< Parameter container
+
+    inputType calibrateDigis(std::vector<CbmTofDigi>& digisIn, const std::vector<int32_t>& digiIndexIn);
+    resultType buildClusters(inputType& input);
 
     int32_t numSameSide;  // Digis quality
   };

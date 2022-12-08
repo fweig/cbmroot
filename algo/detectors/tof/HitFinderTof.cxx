@@ -16,57 +16,15 @@ namespace cbm::algo
   HitFinderTof::resultType HitFinderTof::operator()(std::vector<CbmTofDigi> digisIn,
                                                     const std::vector<int32_t>& digiIndexIn)
   {
+    inputType input = calibrateDigis(digisIn, digiIndexIn);
+    return buildClusters(input);
+  }
+
+  HitFinderTof::resultType HitFinderTof::buildClusters(inputType& input)
+  {
     // Intermediate storage variables
-    std::vector<std::vector<CbmTofDigi*>> digisExp;  //[nbCh][nDigis]
-    std::vector<std::vector<int32_t>> digisInd;      //[nbCh][nDigis]
-
-    digisExp.resize(fParams.fChanPar.size());
-    digisInd.resize(fParams.fChanPar.size());
-
-    {  // digi calibration
-      const int32_t numClWalkBinX = fParams.numClWalkBinX;
-      const double TOTMax         = fParams.TOTMax;
-      const double TOTMin         = fParams.TOTMin;
-
-      for (size_t iDigi = 0; iDigi < digisIn.size(); iDigi++) {
-        CbmTofDigi* pDigi = &digisIn[iDigi];
-        assert(pDigi);
-
-        // These are doubles in the digi class
-        const double chan   = pDigi->GetChannel();
-        const double side   = pDigi->GetSide();
-        const double charge = pDigi->GetTot() * fParams.fChanPar[chan].fvCPTotGain[side];  // calibrate Digi ToT
-        const double time   = pDigi->GetTime() - fParams.fChanPar[chan].fvCPTOff[side];    // calibrate Digi Time
-
-        digisExp[chan].push_back(pDigi);
-        digisInd[chan].push_back(digiIndexIn[iDigi]);
-
-        pDigi->SetTot(charge);
-
-        {  // walk correction
-          const double totBinSize = (TOTMax - TOTMin) / 2. / numClWalkBinX;
-          int32_t iWx             = (int32_t)((charge - TOTMin / 2.) / totBinSize);
-          if (0 > iWx) iWx = 0;
-          if (iWx > (numClWalkBinX - 1)) iWx = numClWalkBinX - 1;
-
-          std::vector<double>& cpWalk = fParams.fChanPar[chan].fvCPWalk[side];
-          double dWT                  = cpWalk[iWx];
-          const double dDTot          = (charge - TOTMin / 2.) / totBinSize - (double) iWx - 0.5;
-
-          if (dDTot > 0) {
-            if (iWx < numClWalkBinX - 1) {  // linear interpolation to next bin
-              dWT += dDTot * (cpWalk[iWx + 1] - cpWalk[iWx]);
-            }
-          }
-          else {
-            if (0 < iWx) {  // linear interpolation to next bin
-              dWT -= dDTot * (cpWalk[iWx - 1] - cpWalk[iWx]);
-            }
-          }
-          pDigi->SetTime(time - dWT);
-        }
-      }
-    }  // digi calibration
+    std::vector<std::vector<CbmTofDigi*>>& digisExp = input.first;   //[nbCh][nDigis]
+    std::vector<std::vector<int32_t>>& digisInd     = input.second;  //[nbCh][nDigis]
 
     // Hit variables
     TofCluster cluster;
@@ -173,7 +131,61 @@ namespace cbm::algo
       cluster.finalize(*trafoCell, iTrafoCell, fParams);
       clustersOut.push_back(cluster);
     }
-
     return clustersOut;
+  }
+
+  HitFinderTof::inputType HitFinderTof::calibrateDigis(std::vector<CbmTofDigi>& digisIn,
+                                                       const std::vector<int32_t>& digiIndexIn)
+  {
+    inputType result;
+    std::vector<std::vector<CbmTofDigi*>>& digisExp = result.first;   //[nbCh][nDigis]
+    std::vector<std::vector<int32_t>>& digisInd     = result.second;  //[nbCh][nDigis]
+
+    digisExp.resize(fParams.fChanPar.size());
+    digisInd.resize(fParams.fChanPar.size());
+
+    const int32_t numClWalkBinX = fParams.numClWalkBinX;
+    const double TOTMax         = fParams.TOTMax;
+    const double TOTMin         = fParams.TOTMin;
+
+    for (size_t iDigi = 0; iDigi < digisIn.size(); iDigi++) {
+      CbmTofDigi* pDigi = &digisIn[iDigi];
+      assert(pDigi);
+
+      // These are doubles in the digi class
+      const double chan   = pDigi->GetChannel();
+      const double side   = pDigi->GetSide();
+      const double charge = pDigi->GetTot() * fParams.fChanPar[chan].fvCPTotGain[side];  // calibrate Digi ToT
+      const double time   = pDigi->GetTime() - fParams.fChanPar[chan].fvCPTOff[side];    // calibrate Digi Time
+
+      digisExp[chan].push_back(pDigi);
+      digisInd[chan].push_back(digiIndexIn[iDigi]);
+
+      pDigi->SetTot(charge);
+
+      {  // walk correction
+        const double totBinSize = (TOTMax - TOTMin) / 2. / numClWalkBinX;
+        int32_t iWx             = (int32_t)((charge - TOTMin / 2.) / totBinSize);
+        if (0 > iWx) iWx = 0;
+        if (iWx > (numClWalkBinX - 1)) iWx = numClWalkBinX - 1;
+
+        std::vector<double>& cpWalk = fParams.fChanPar[chan].fvCPWalk[side];
+        double dWT                  = cpWalk[iWx];
+        const double dDTot          = (charge - TOTMin / 2.) / totBinSize - (double) iWx - 0.5;
+
+        if (dDTot > 0) {
+          if (iWx < numClWalkBinX - 1) {  // linear interpolation to next bin
+            dWT += dDTot * (cpWalk[iWx + 1] - cpWalk[iWx]);
+          }
+        }
+        else {
+          if (0 < iWx) {  // linear interpolation to next bin
+            dWT -= dDTot * (cpWalk[iWx - 1] - cpWalk[iWx]);
+          }
+        }
+        pDigi->SetTime(time - dWT);
+      }
+    }
+    return result;
   }
 } /* namespace cbm::algo */

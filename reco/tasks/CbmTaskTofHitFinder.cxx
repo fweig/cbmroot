@@ -397,8 +397,7 @@ pair<int32_t, int32_t> CbmTaskTofHitFinder::BuildClusters(CbmEvent* event)
   // Loop over the digis array and store the Digis in separate vectors for each RPC modules
   for (int32_t iDigi = 0; iDigi < nDigis; iDigi++) {
     const uint32_t digiIndex = (event ? event->GetIndex(ECbmDataType::kTofDigi, iDigi) : iDigi);
-    assert(fDigiMan->Get<CbmTofDigi>(digiIndex));
-    CbmTofDigi* pDigi = new CbmTofDigi(*(fDigiMan->Get<CbmTofDigi>(digiIndex)));
+    const CbmTofDigi* pDigi  = fDigiMan->Get<CbmTofDigi>(digiIndex);
     assert(pDigi);
 
     // These are doubles in the digi class
@@ -434,12 +433,11 @@ pair<int32_t, int32_t> CbmTaskTofHitFinder::BuildClusters(CbmEvent* event)
             CbmTofHit(cluster.detId, hitpos, hiterr, nHits, cluster.weightedTime, cluster.weightedTimeErr, 0, 0);
           nHits++;
           if (event) event->AddData(ECbmDataType::kTofHit, hitIndex);
-          CbmMatch* digiMatch = new CbmMatch();
+
+          CbmMatch* digiMatch = new ((*fTofDigiMatchColl)[hitIndex]) CbmMatch();
           for (uint32_t i = 0; i < cluster.vDigiIndRef.size(); i++) {
             digiMatch->AddLink(CbmLink(0., cluster.vDigiIndRef.at(i), iEventNr, iInputNr));
           }
-          new ((*fTofDigiMatchColl)[hitIndex]) CbmMatch(*digiMatch);
-          delete digiMatch;
         }
         digiExp.clear();
         digiInd.clear();
