@@ -30,6 +30,13 @@ private:
   CbmMCDataManager* cbm_mc_manager_ {nullptr};
   CbmMCDataObject* cbm_header_obj_ {nullptr};
 
+  int ipsi_RP_ {AnalysisTree::UndefValueInt};
+  int ib_ {AnalysisTree::UndefValueInt};
+  int istart_time_ {AnalysisTree::UndefValueInt};
+  int iend_time_ {AnalysisTree::UndefValueInt};
+  int irun_id_ {AnalysisTree::UndefValueInt};
+  int ievent_id_ {AnalysisTree::UndefValueInt};
+
   ClassDef(CbmSimEventHeaderConverter, 1)
 };
 

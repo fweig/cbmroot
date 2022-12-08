@@ -63,12 +63,22 @@ private:
   bool is_write_kfinfo_ {true};
   bool is_reproduce_cbmkfpf_ {true};
 
-  int ipar_ {-1};
-  int imf_ {-1};
-  int icov_ {-1};
-  int imc_pdg_ {-1};
-  int imother_pdg_ {-1};
-  int ipasscuts_ {-1};
+  int iq_ {AnalysisTree::UndefValueInt};
+  int indf_ {AnalysisTree::UndefValueInt};
+  int ichi2_ {AnalysisTree::UndefValueInt};
+  int inhits_ {AnalysisTree::UndefValueInt};
+  int inhits_mvd_ {AnalysisTree::UndefValueInt};
+  int idcax_ {AnalysisTree::UndefValueInt};
+  int ivtx_chi2_ {AnalysisTree::UndefValueInt};
+  int ide_dx_ {AnalysisTree::UndefValueInt};
+  int imatch_weight_ {AnalysisTree::UndefValueInt};
+
+  int ipar_ {AnalysisTree::UndefValueInt};
+  int imf_ {AnalysisTree::UndefValueInt};
+  int icov_ {AnalysisTree::UndefValueInt};
+  int imc_pdg_ {AnalysisTree::UndefValueInt};
+  int imother_pdg_ {AnalysisTree::UndefValueInt};
+  int ipasscuts_ {AnalysisTree::UndefValueInt};
 
   ClassDef(CbmStsTracksConverter, 1)
 };

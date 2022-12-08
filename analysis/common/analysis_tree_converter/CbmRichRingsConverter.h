@@ -34,6 +34,15 @@ private:
   AnalysisTree::HitDetector* rich_rings_ {nullptr};
   AnalysisTree::Matching* vtx_tracks_2_rich_ {nullptr};
 
+  int i_r_ {AnalysisTree::UndefValueInt};
+  int i_n_hits_ {AnalysisTree::UndefValueInt};
+  int i_axis_ {AnalysisTree::UndefValueInt};
+  int i_center_ {AnalysisTree::UndefValueInt};
+  int i_chi2_ {AnalysisTree::UndefValueInt};
+  int i_radial_angle_ {AnalysisTree::UndefValueInt};
+  int i_radial_pos_ {AnalysisTree::UndefValueInt};
+  int i_phi_ellipse_ {AnalysisTree::UndefValueInt};
+
   ClassDef(CbmRichRingsConverter, 1)
 };
 

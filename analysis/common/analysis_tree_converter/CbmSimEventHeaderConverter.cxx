@@ -38,6 +38,13 @@ void CbmSimEventHeaderConverter::Init()
   SimEventHeaderBranch.AddField<int>("run_id", "run identifier");
   SimEventHeaderBranch.AddField<int>("event_id", "event identifier");
 
+  ipsi_RP_     = SimEventHeaderBranch.GetFieldId("psi_RP");
+  ib_          = SimEventHeaderBranch.GetFieldId("b");
+  istart_time_ = SimEventHeaderBranch.GetFieldId("start_time");
+  iend_time_   = SimEventHeaderBranch.GetFieldId("end_time");
+  irun_id_     = SimEventHeaderBranch.GetFieldId("run_id");
+  ievent_id_   = SimEventHeaderBranch.GetFieldId("event_id");
+
   auto* man = AnalysisTree::TaskManager::GetInstance();
   man->AddBranch(sim_event_header_, SimEventHeaderBranch);
   sim_event_header_->Init(SimEventHeaderBranch);
@@ -68,14 +75,14 @@ void CbmSimEventHeaderConverter::ProcessData(CbmEvent* event)
   TVector3 pos {cbm_header->GetX(), cbm_header->GetY(), cbm_header->GetZ()};
   sim_event_header_->SetVertexPosition3(pos);
 
-  sim_event_header_->SetField(float(cbm_header->GetRotZ()), branch.GetFieldId("psi_RP"));
-  sim_event_header_->SetField(float(cbm_header->GetB()), branch.GetFieldId("b"));
-  sim_event_header_->SetField(int(cbm_header->GetEventID()), branch.GetFieldId("event_id"));
-  sim_event_header_->SetField(int(cbm_header->GetRunID()), branch.GetFieldId("run_id"));
+  sim_event_header_->SetField(float(cbm_header->GetRotZ()), ipsi_RP_);
+  sim_event_header_->SetField(float(cbm_header->GetB()), ib_);
+  sim_event_header_->SetField(int(cbm_header->GetEventID()), ievent_id_);
+  sim_event_header_->SetField(int(cbm_header->GetRunID()), irun_id_);
 
   if (event) {
     LOG(info) << "TIME: " << event->GetStartTime() << "  " << event->GetEndTime();
-    sim_event_header_->SetField(float(event->GetStartTime()), branch.GetFieldId("start_time"));
-    sim_event_header_->SetField(float(event->GetEndTime()), branch.GetFieldId("end_time"));
+    sim_event_header_->SetField(float(event->GetStartTime()), istart_time_);
+    sim_event_header_->SetField(float(event->GetEndTime()), iend_time_);
   }
 }

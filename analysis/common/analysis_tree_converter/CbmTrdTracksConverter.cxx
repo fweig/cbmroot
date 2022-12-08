@@ -41,6 +41,12 @@ void CbmTrdTracksConverter::Init()
   trd_branch.AddFields<float>({"pT_out", "p_out"}, "Momentum at last point (?)");
   trd_branch.AddField<int>("n_hits", "Number of hits");
 
+  i_e_loss_i_    = trd_branch.GetFieldId("energy_loss_0");
+  i_pid_like_    = trd_branch.GetFieldId("pid_like_e");
+  i_chi2_ov_ndf_ = trd_branch.GetFieldId("chi2_ov_ndf");
+  i_pT_out_      = trd_branch.GetFieldId("pT_out");
+  i_n_hits_      = trd_branch.GetFieldId("n_hits");
+
   auto* man = AnalysisTree::TaskManager::GetInstance();
   man->AddBranch(trd_tracks_, trd_branch);
   man->AddMatching(match_to_, out_branch_, vtx_tracks_2_trd_);
@@ -55,14 +61,8 @@ void CbmTrdTracksConverter::ProcessData(CbmEvent* event)
   auto* out_config_  = AnalysisTree::TaskManager::GetInstance()->GetConfig();
   const auto& branch = out_config_->GetBranchConfig(out_branch_);
 
-  const int i_e_loss_i    = branch.GetFieldId("energy_loss_0");
-  const int i_pid_like    = branch.GetFieldId("pid_like_e");
-  const int i_chi2_ov_ndf = branch.GetFieldId("chi2_ov_ndf");
-  const int i_pT_out      = branch.GetFieldId("pT_out");
-  const int i_n_hits      = branch.GetFieldId("n_hits");
-
   const auto it = indexes_map_->find(match_to_);
-  if (it == indexes_map_->end()) { throw std::runtime_error(match_to_ + " is not found to match with TOF hits"); }
+  if (it == indexes_map_->end()) { throw std::runtime_error(match_to_ + " is not found to match with TRD tracks"); }
   auto rec_tracks_map = it->second;
 
   const int n_tracks = event ? event->GetNofData(ECbmDataType::kGlobalTrack) : cbm_global_tracks_->GetEntriesFast();
@@ -92,21 +92,21 @@ void CbmTrdTracksConverter::ProcessData(CbmEvent* event)
     trd_track->GetParamLast()->Momentum(mom_last);
 
     track.SetMomentum3(mom);
-    track.SetField(int(trd_track->GetNofHits()), i_n_hits);
+    track.SetField(int(trd_track->GetNofHits()), i_n_hits_);
 
-    track.SetField(float(trd_track->GetPidLikeEL()), i_pid_like);
-    track.SetField(float(trd_track->GetPidLikePI()), i_pid_like + 1);
-    track.SetField(float(trd_track->GetPidLikeKA()), i_pid_like + 2);
-    track.SetField(float(trd_track->GetPidLikePR()), i_pid_like + 3);
+    track.SetField(float(trd_track->GetPidLikeEL()), i_pid_like_);
+    track.SetField(float(trd_track->GetPidLikePI()), i_pid_like_ + 1);
+    track.SetField(float(trd_track->GetPidLikeKA()), i_pid_like_ + 2);
+    track.SetField(float(trd_track->GetPidLikePR()), i_pid_like_ + 3);
 
     track.SetField(float(trd_track->GetNDF() > 0. ? trd_track->GetChiSq() / trd_track->GetNDF() : -999.),
-                   i_chi2_ov_ndf);
+                   i_chi2_ov_ndf_);
 
-    track.SetField(float(mom_last.Pt()), i_pT_out);
-    track.SetField(float(mom_last.Mag()), i_pT_out + 1);
+    track.SetField(float(mom_last.Pt()), i_pT_out_);
+    track.SetField(float(mom_last.Mag()), i_pT_out_ + 1);
 
     for (int i = 0; i < 4; ++i) {
-      track.SetField(0.f, i_e_loss_i + i);
+      track.SetField(0.f, i_e_loss_i_ + i);
     }
 
     for (Int_t ihit = 0; ihit < trd_track->GetNofHits(); ihit++) {
@@ -114,7 +114,7 @@ void CbmTrdTracksConverter::ProcessData(CbmEvent* event)
       auto* hit = (CbmTrdHit*) cbm_trd_hits_->At(idx);
       if (hit) {
         //        std::cout << hit->GetELoss()*1e6 << "  " << hit->GetPlaneId() << std::endl;
-        track.SetField(float(hit->GetELoss() * 1e6), i_e_loss_i + hit->GetPlaneId());
+        track.SetField(float(hit->GetELoss() * 1e6), i_e_loss_i_ + hit->GetPlaneId());
       }
     }
 

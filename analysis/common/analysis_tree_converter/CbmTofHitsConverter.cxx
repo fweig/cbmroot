@@ -45,7 +45,12 @@ void CbmTofHitsConverter::Init()
   tof_branch.AddField<float>("t", "ps(?), Measured time ");
   tof_branch.AddField<float>("qp_tof", "charge * momentum extrapoleted to TOF");
   tof_branch.AddFields<float>({"dx", "dy", "dz"}, "Distance between TOF hit and extrapolated global track, cm");
-  tof_branch.AddField<int>("mc_pdg", "MC-true PDG code of particle with highest contribution to TOF hit");
+
+  i_mass2_ = tof_branch.GetFieldId("mass2");
+  i_qp_    = tof_branch.GetFieldId("qp_tof");
+  i_dx_    = tof_branch.GetFieldId("dx");
+  i_t_     = tof_branch.GetFieldId("t");
+  i_l_     = tof_branch.GetFieldId("l");
 
   auto* man = AnalysisTree::TaskManager::GetInstance();
   man->AddBranch(tof_hits_, tof_branch);
@@ -75,12 +80,6 @@ void CbmTofHitsConverter::ProcessData(CbmEvent* event)
 
   auto* out_config_  = AnalysisTree::TaskManager::GetInstance()->GetConfig();
   const auto& branch = out_config_->GetBranchConfig(out_branch_);
-
-  const int i_mass2 = branch.GetFieldId("mass2");
-  const int i_qp    = branch.GetFieldId("qp_tof");
-  const int i_dx    = branch.GetFieldId("dx");
-  const int i_t     = branch.GetFieldId("t");
-  const int i_l     = branch.GetFieldId("l");
 
   auto rec_tracks_map = GetMatchMap(match_to_);
   auto sim_tracks_map = GetMatchMap(mc_tracks_);
@@ -133,13 +132,13 @@ void CbmTofHitsConverter::ProcessData(CbmEvent* event)
     auto& hit = tof_hits_->AddChannel(branch);
     hit.SetPosition(hitX, hitY, hitZ);
     hit.SetSignal(time);
-    hit.SetField(m2, i_mass2);
-    hit.SetField(float(q * p_tof.Mag()), i_qp);
-    hit.SetField(float(param_last.GetX() - hitX), i_dx);
-    hit.SetField(float(param_last.GetY() - hitY), i_dx + 1);
-    hit.SetField(float(param_last.GetZ() - hitZ), i_dx + 2);
-    hit.SetField(l, i_l);
-    hit.SetField(time, i_t);
+    hit.SetField(m2, i_mass2_);
+    hit.SetField(float(q * p_tof.Mag()), i_qp_);
+    hit.SetField(float(param_last.GetX() - hitX), i_dx_);
+    hit.SetField(float(param_last.GetY() - hitY), i_dx_ + 1);
+    hit.SetField(float(param_last.GetZ() - hitZ), i_dx_ + 2);
+    hit.SetField(l, i_l_);
+    hit.SetField(time, i_t_);
 
     if (rec_tracks_map.empty()) { continue; }
     const Int_t stsTrackIndex = globalTrack->GetStsTrackIndex();

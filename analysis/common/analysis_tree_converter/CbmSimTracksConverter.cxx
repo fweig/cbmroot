@@ -80,6 +80,12 @@ void CbmSimTracksConverter::Init()
   sim_particles_branch.AddFields<float>({"start_x", "start_y", "start_z"}, "Start position, cm");
   sim_particles_branch.AddField<float>("start_t", "t freezout coordinate fm/c");
 
+  imother_id_ = sim_particles_branch.GetFieldId("mother_id");
+  igeant_id_  = sim_particles_branch.GetFieldId("geant_process_id");
+  in_hits_    = sim_particles_branch.GetFieldId("n_hits_mvd");
+  icbm_id_    = sim_particles_branch.GetFieldId("cbmroot_id");
+  istart_x_   = sim_particles_branch.GetFieldId("start_x");
+
   auto* man = AnalysisTree::TaskManager::GetInstance();
   man->AddBranch(sim_tracks_, sim_particles_branch);
 }
@@ -120,11 +126,6 @@ void CbmSimTracksConverter::ProcessData(CbmEvent* event)
     LOG(warn) << "No MC tracks!";
     return;
   }
-  const int imother_id = branch.GetFieldId("mother_id");
-  const int igeant_id  = branch.GetFieldId("geant_process_id");
-  const int in_hits    = branch.GetFieldId("n_hits_mvd");
-  const int icbm_id    = branch.GetFieldId("cbmroot_id");
-  const int istart_x   = branch.GetFieldId("start_x");
 
   sim_tracks_->Reserve(nMcTracks);
 
@@ -143,17 +144,17 @@ void CbmSimTracksConverter::ProcessData(CbmEvent* event)
     track.SetMomentum(mctrack->GetPx(), mctrack->GetPy(), mctrack->GetPz());
     track.SetMass(float(mctrack->GetMass()));
     track.SetPid(int(mctrack->GetPdgCode()));
-    track.SetField(int(mctrack->GetGeantProcessId()), igeant_id);
-    track.SetField(int(mctrack->GetNPoints(ECbmModuleId::kMvd)), in_hits);
-    track.SetField(int(mctrack->GetNPoints(ECbmModuleId::kSts)), in_hits + 1);
-    track.SetField(int(mctrack->GetNPoints(ECbmModuleId::kTrd)), in_hits + 2);
-    track.SetField(int(mctrack->GetUniqueID()), icbm_id);
+    track.SetField(int(mctrack->GetGeantProcessId()), igeant_id_);
+    track.SetField(int(mctrack->GetNPoints(ECbmModuleId::kMvd)), in_hits_);
+    track.SetField(int(mctrack->GetNPoints(ECbmModuleId::kSts)), in_hits_ + 1);
+    track.SetField(int(mctrack->GetNPoints(ECbmModuleId::kTrd)), in_hits_ + 2);
+    track.SetField(int(mctrack->GetUniqueID()), icbm_id_);
 
     if (mctrack->GetMotherId() >= 0) {  // secondary
-      track.SetField(float(mctrack->GetStartX() - cbm_header_->GetX()), istart_x);
-      track.SetField(float(mctrack->GetStartY() - cbm_header_->GetY()), istart_x + 1);
-      track.SetField(float(mctrack->GetStartZ() - cbm_header_->GetZ()), istart_x + 2);
-      track.SetField(float(nsTofmc * (mctrack->GetStartT() - cbm_header_->GetT())), istart_x + 3);
+      track.SetField(float(mctrack->GetStartX() - cbm_header_->GetX()), istart_x_);
+      track.SetField(float(mctrack->GetStartY() - cbm_header_->GetY()), istart_x_ + 1);
+      track.SetField(float(mctrack->GetStartZ() - cbm_header_->GetZ()), istart_x_ + 2);
+      track.SetField(float(nsTofmc * (mctrack->GetStartT() - cbm_header_->GetT())), istart_x_ + 3);
     }
     else {  // primary
       if (use_unigen_ && trackIndex < unigen_event_->GetNpa()) {
@@ -161,27 +162,27 @@ void CbmSimTracksConverter::ProcessData(CbmEvent* event)
         TLorentzVector boostedX = p->GetPosition();
         boostedX.Boost(0, 0, -beta_cm_);
         boostedX.RotateZ(delta_phi);
-        track.SetField(float(boostedX.X() * 1e-13), istart_x);
-        track.SetField(float(boostedX.Y() * 1e-13), istart_x + 1);
-        track.SetField(float(boostedX.Z() * 1e-13), istart_x + 2);
-        track.SetField(float(boostedX.T()), istart_x + 3);
+        track.SetField(float(boostedX.X() * 1e-13), istart_x_);
+        track.SetField(float(boostedX.Y() * 1e-13), istart_x_ + 1);
+        track.SetField(float(boostedX.Z() * 1e-13), istart_x_ + 2);
+        track.SetField(float(boostedX.T()), istart_x_ + 3);
       }
       else {
-        track.SetField(0.f, istart_x);
-        track.SetField(0.f, istart_x + 1);
-        track.SetField(0.f, istart_x + 2);
-        track.SetField(0.f, istart_x + 3);
+        track.SetField(0.f, istart_x_);
+        track.SetField(0.f, istart_x_ + 1);
+        track.SetField(0.f, istart_x_ + 2);
+        track.SetField(0.f, istart_x_ + 3);
       }
     }
 
     // mother id should < than track id, so we can do it here
-    if (mctrack->GetMotherId() == -1) { track.SetField(int(-1), imother_id); }
+    if (mctrack->GetMotherId() == -1) { track.SetField(int(-1), imother_id_); }
     else {
       auto p = out_indexes_map_.find(mctrack->GetMotherId());
       if (p == out_indexes_map_.end())  // match is not found
-        track.SetField(int(-999), imother_id);
+        track.SetField(int(-999), imother_id_);
       else {
-        track.SetField(int(p->second), imother_id);
+        track.SetField(int(p->second), imother_id_);
       }
     }
   }

@@ -39,6 +39,15 @@ void CbmRichRingsConverter::Init()
   rich_branch.AddField<float>("radial_pos", "sqrt(x**2+abs(y-110)**2)");
   rich_branch.AddField<float>("radial_angle", "(0||1||2)*pi +- atan( abs((+-100-y)/-x) )");
 
+  i_r_            = rich_branch.GetFieldId("radius");
+  i_n_hits_       = rich_branch.GetFieldId("n_hits");
+  i_axis_         = rich_branch.GetFieldId("axis_a");
+  i_center_       = rich_branch.GetFieldId("center_x");
+  i_chi2_         = rich_branch.GetFieldId("chi2_ov_ndf");
+  i_radial_angle_ = rich_branch.GetFieldId("radial_angle");
+  i_radial_pos_   = rich_branch.GetFieldId("radial_pos");
+  i_phi_ellipse_  = rich_branch.GetFieldId("phi_ellipse");
+
   auto* man = AnalysisTree::TaskManager::GetInstance();
   man->AddBranch(rich_rings_, rich_branch);
   man->AddMatching(match_to_, out_branch_, vtx_tracks_2_rich_);
@@ -53,17 +62,8 @@ void CbmRichRingsConverter::ProcessData(CbmEvent* event)
   auto* out_config_  = AnalysisTree::TaskManager::GetInstance()->GetConfig();
   const auto& branch = out_config_->GetBranchConfig(out_branch_);
 
-  const int i_r            = branch.GetFieldId("radius");
-  const int i_n_hits       = branch.GetFieldId("n_hits");
-  const int i_axis         = branch.GetFieldId("axis_a");
-  const int i_center       = branch.GetFieldId("center_x");
-  const int i_chi2         = branch.GetFieldId("chi2_ov_ndf");
-  const int i_radial_angle = branch.GetFieldId("radial_angle");
-  const int i_radial_pos   = branch.GetFieldId("radial_pos");
-  const int i_phi_ellipse  = branch.GetFieldId("phi_ellipse");
-
   const auto it = indexes_map_->find(match_to_);
-  if (it == indexes_map_->end()) { throw std::runtime_error(match_to_ + " is not found to match with TOF hits"); }
+  if (it == indexes_map_->end()) { throw std::runtime_error(match_to_ + " is not found to match with RICH rings"); }
   auto rec_tracks_map = it->second;
 
   const int n_tracks = event ? event->GetNofData(ECbmDataType::kGlobalTrack) : cbm_global_tracks_->GetEntriesFast();
@@ -87,17 +87,17 @@ void CbmRichRingsConverter::ProcessData(CbmEvent* event)
 
     auto& ring = rich_rings_->AddChannel(branch);
     ring.SetPosition(rich_ring->GetCenterX(), rich_ring->GetCenterY(), 0.f);
-    ring.SetField(int(rich_ring->GetNofHits()), i_n_hits);
-    ring.SetField(int(rich_ring->GetNofHitsOnRing()), i_n_hits + 1);
-    ring.SetField(float(rich_ring->GetAaxis()), i_axis);
-    ring.SetField(float(rich_ring->GetBaxis()), i_axis + 1);
-    ring.SetField(float(rich_ring->GetCenterX()), i_center);
-    ring.SetField(float(rich_ring->GetCenterY()), i_center + 1);
-    ring.SetField(float(rich_ring->GetRadius()), i_r);
-    ring.SetField(float(rich_ring->GetNDF() > 0. ? rich_ring->GetChi2() / rich_ring->GetNDF() : -999.), i_chi2);
-    ring.SetField(float(rich_ring->GetRadialAngle()), i_radial_angle);
-    ring.SetField(float(rich_ring->GetRadialPosition()), i_radial_pos);
-    ring.SetField(float(rich_ring->GetPhi()), i_phi_ellipse);
+    ring.SetField(int(rich_ring->GetNofHits()), i_n_hits_);
+    ring.SetField(int(rich_ring->GetNofHitsOnRing()), i_n_hits_ + 1);
+    ring.SetField(float(rich_ring->GetAaxis()), i_axis_);
+    ring.SetField(float(rich_ring->GetBaxis()), i_axis_ + 1);
+    ring.SetField(float(rich_ring->GetCenterX()), i_center_);
+    ring.SetField(float(rich_ring->GetCenterY()), i_center_ + 1);
+    ring.SetField(float(rich_ring->GetRadius()), i_r_);
+    ring.SetField(float(rich_ring->GetNDF() > 0. ? rich_ring->GetChi2() / rich_ring->GetNDF() : -999.), i_chi2_);
+    ring.SetField(float(rich_ring->GetRadialAngle()), i_radial_angle_);
+    ring.SetField(float(rich_ring->GetRadialPosition()), i_radial_pos_);
+    ring.SetField(float(rich_ring->GetPhi()), i_phi_ellipse_);
 
     if (rec_tracks_map.empty()) { continue; }
     const Int_t stsTrackIndex = global_track->GetStsTrackIndex();

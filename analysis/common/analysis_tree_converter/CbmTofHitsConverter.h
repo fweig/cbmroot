@@ -56,6 +56,12 @@ private:
   AnalysisTree::Matching* vtx_tracks_2_tof_ {nullptr};
   AnalysisTree::Matching* tof_hits_2_mc_tracks_ {nullptr};
 
+  int i_mass2_ {AnalysisTree::UndefValueInt};
+  int i_qp_ {AnalysisTree::UndefValueInt};
+  int i_dx_ {AnalysisTree::UndefValueInt};
+  int i_t_ {AnalysisTree::UndefValueInt};
+  int i_l_ {AnalysisTree::UndefValueInt};
+
   ClassDef(CbmTofHitsConverter, 1)
 };
 

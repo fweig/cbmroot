@@ -34,6 +34,14 @@ private:
   FairMCEventHeader* cbm_header_ {nullptr};  ///< non-owning pointer
   CbmVertex* cbm_prim_vertex_ {nullptr};     ///< non-owning pointer
 
+  int ivtx_chi2_ {AnalysisTree::UndefValueInt};
+  int iEpsd_ {AnalysisTree::UndefValueInt};
+  int iM_ {AnalysisTree::UndefValueInt};
+  int ievt_id_ {AnalysisTree::UndefValueInt};
+  int istart_time_ {AnalysisTree::UndefValueInt};
+  int iend_time_ {AnalysisTree::UndefValueInt};
+  int imatch_weight_ {AnalysisTree::UndefValueInt};
+
   ClassDef(CbmRecEventHeaderConverter, 1)
 };
 

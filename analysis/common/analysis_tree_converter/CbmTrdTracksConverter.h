@@ -38,6 +38,12 @@ private:
   AnalysisTree::TrackDetector* trd_tracks_ {nullptr};
   AnalysisTree::Matching* vtx_tracks_2_trd_ {nullptr};
 
+  int i_e_loss_i_ {AnalysisTree::UndefValueInt};
+  int i_pid_like_ {AnalysisTree::UndefValueInt};
+  int i_chi2_ov_ndf_ {AnalysisTree::UndefValueInt};
+  int i_pT_out_ {AnalysisTree::UndefValueInt};
+  int i_n_hits_ {AnalysisTree::UndefValueInt};
+
   ClassDef(CbmTrdTracksConverter, 1)
 };
 

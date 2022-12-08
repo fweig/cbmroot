@@ -72,6 +72,17 @@ void CbmStsTracksConverter::Init()
   vtx_tracks_config.AddField<int>("nhits", "number of hits (total MVD+STS)");
   vtx_tracks_config.AddField<int>("nhits_mvd", "number of hits in MVD");
   vtx_tracks_config.AddField<float>("match_weight", "true over all hits ratio for a matched MC-track");
+  vtx_tracks_config.AddField<float>("dE_over_dx");
+
+  iq_            = vtx_tracks_config.GetFieldId("q");
+  indf_          = vtx_tracks_config.GetFieldId("ndf");
+  ichi2_         = vtx_tracks_config.GetFieldId("chi2");
+  inhits_        = vtx_tracks_config.GetFieldId("nhits");
+  inhits_mvd_    = vtx_tracks_config.GetFieldId("nhits_mvd");
+  idcax_         = vtx_tracks_config.GetFieldId("dcax");
+  ivtx_chi2_     = vtx_tracks_config.GetFieldId("vtx_chi2");
+  ide_dx_        = vtx_tracks_config.GetFieldId("dE_over_dx");
+  imatch_weight_ = vtx_tracks_config.GetFieldId("match_weight");
 
   if (is_write_kfinfo_) {
     vtx_tracks_config.AddFields<float>({"x", "y", "z", "tx", "ty", "qp"}, "track parameters");
@@ -80,8 +91,6 @@ void CbmStsTracksConverter::Init()
     vtx_tracks_config.AddFields<float>({"cov1", "cov2", "cov3", "cov4", "cov5", "cov6", "cov7", "cov8", "cov9", "cov10",
                                         "cov11", "cov12", "cov13", "cov14", "cov15"},
                                        "covarience matrix");
-
-    vtx_tracks_config.AddField<float>("dE_over_dx");
 
     vtx_tracks_config.AddField<int>("mother_pdg", "PDG code of mother particle");
     vtx_tracks_config.AddField<int>("mc_pdg", "MC-true PDG code");
@@ -131,15 +140,6 @@ void CbmStsTracksConverter::ReadVertexTracks(CbmEvent* event)
   auto* out_config_  = AnalysisTree::TaskManager::GetInstance()->GetConfig();
   const auto& branch = out_config_->GetBranchConfig(out_branch_);
 
-  const int iq         = branch.GetFieldId("q");
-  const int indf       = branch.GetFieldId("ndf");
-  const int ichi2      = branch.GetFieldId("chi2");
-  const int inhits     = branch.GetFieldId("nhits");
-  const int inhits_mvd = branch.GetFieldId("nhits_mvd");
-  const int idcax      = branch.GetFieldId("dcax");
-  const int ivtx_chi2  = branch.GetFieldId("vtx_chi2");
-  const int ide_dx     = branch.GetFieldId("dE_over_dx");
-
   const int n_sts_tracks = event ? event->GetNofStsTracks() : cbm_sts_tracks_->GetEntries();
   if (n_sts_tracks <= 0) {
     LOG(warn) << "No STS tracks!";
@@ -164,16 +164,16 @@ void CbmStsTracksConverter::ReadVertexTracks(CbmEvent* event)
     const Int_t q = trackParamFirst->GetQp() > 0 ? 1 : -1;
 
     track.SetMomentum3(momRec);
-    track.SetField(int(q), iq);
-    track.SetField(int(sts_track->GetNDF()), indf);
-    track.SetField(float(sts_track->GetChiSq()), ichi2);
-    track.SetField(int(sts_track->GetNofHits()), inhits);
-    track.SetField(float(trackParamFirst->GetX() - cbm_prim_vertex_->GetX()), idcax);
-    track.SetField(float(trackParamFirst->GetY() - cbm_prim_vertex_->GetY()), idcax + 1);
-    track.SetField(float(trackParamFirst->GetZ() - cbm_prim_vertex_->GetZ()), idcax + 2);
-    track.SetField(int(sts_track->GetNofMvdHits()), inhits_mvd);
-    track.SetField(float(chi2_vertex), ivtx_chi2);
-    track.SetField(float(sts_track->GetELoss()), ide_dx);
+    track.SetField(int(q), iq_);
+    track.SetField(int(sts_track->GetNDF()), indf_);
+    track.SetField(float(sts_track->GetChiSq()), ichi2_);
+    track.SetField(int(sts_track->GetNofHits()), inhits_);
+    track.SetField(float(trackParamFirst->GetX() - cbm_prim_vertex_->GetX()), idcax_);
+    track.SetField(float(trackParamFirst->GetY() - cbm_prim_vertex_->GetY()), idcax_ + 1);
+    track.SetField(float(trackParamFirst->GetZ() - cbm_prim_vertex_->GetZ()), idcax_ + 2);
+    track.SetField(int(sts_track->GetNofMvdHits()), inhits_mvd_);
+    track.SetField(float(chi2_vertex), ivtx_chi2_);
+    track.SetField(float(sts_track->GetELoss()), ide_dx_);
 
     out_indexes_map_.insert(std::make_pair(track_index, track.GetId()));
 
@@ -253,7 +253,6 @@ void CbmStsTracksConverter::MapTracks(CbmEvent* event)
   else {
     event_id = FairRootManager::Instance()->GetEntryNr();
   }
-  auto weight_id = config_->GetBranchConfig(out_branch_).GetFieldId("match_weight");
 
   for (const auto& track_id : out_indexes_map_) {
     const int cbm_id = track_id.first;
@@ -278,7 +277,7 @@ void CbmStsTracksConverter::MapTracks(CbmEvent* event)
 
       //      LOG(info) << match->GetTrueOverAllHitsRatio();
 
-      track.SetField(float(match->GetTrueOverAllHitsRatio()), weight_id);
+      track.SetField(float(match->GetTrueOverAllHitsRatio()), imatch_weight_);
       vtx_tracks_2_sim_->AddMatch(out_id, p->second);
     }
   }

@@ -55,6 +55,12 @@ private:
   Double_t beta_cm_ {0};  ///< CM velocity in the lab frame
   Bool_t use_unigen_ {false};
 
+  int imother_id_ {AnalysisTree::UndefValueInt};
+  int igeant_id_ {AnalysisTree::UndefValueInt};
+  int in_hits_ {AnalysisTree::UndefValueInt};
+  int icbm_id_ {AnalysisTree::UndefValueInt};
+  int istart_x_ {AnalysisTree::UndefValueInt};
+
   ClassDef(CbmSimTracksConverter, 1)
 };
 

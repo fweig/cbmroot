@@ -39,6 +39,14 @@ void CbmRecEventHeaderConverter::Init()
   RecEventHeaderBranch.AddField<float>("end_time", "End time of the event, ns");
   RecEventHeaderBranch.AddField<float>("match_weight", "");
 
+  ivtx_chi2_     = RecEventHeaderBranch.GetFieldId("vtx_chi2");
+  iEpsd_         = RecEventHeaderBranch.GetFieldId("Epsd");
+  iM_            = RecEventHeaderBranch.GetFieldId("M");
+  ievt_id_       = RecEventHeaderBranch.GetFieldId("evt_id");
+  istart_time_   = RecEventHeaderBranch.GetFieldId("start_time");
+  iend_time_     = RecEventHeaderBranch.GetFieldId("end_time");
+  imatch_weight_ = RecEventHeaderBranch.GetFieldId("match_weight");
+
   auto* man = AnalysisTree::TaskManager::GetInstance();
   man->AddBranch(rec_event_header_, RecEventHeaderBranch);
   rec_event_header_->Init(RecEventHeaderBranch);
@@ -54,12 +62,11 @@ void CbmRecEventHeaderConverter::ProcessData(CbmEvent* event)
   if (!cbm_prim_vertex_) { throw std::runtime_error("No fPrimVtx"); }
 
   rec_event_header_->SetVertexPosition3({cbm_prim_vertex_->GetX(), cbm_prim_vertex_->GetY(), cbm_prim_vertex_->GetZ()});
-  rec_event_header_->SetField(float(cbm_prim_vertex_->GetChi2() / cbm_prim_vertex_->GetNDF()),
-                              branch.GetFieldId("vtx_chi2"));
+  rec_event_header_->SetField(float(cbm_prim_vertex_->GetChi2() / cbm_prim_vertex_->GetNDF()), ivtx_chi2_);
 
   const int n_sts_tracks = event ? event->GetNofStsTracks() : cbm_sts_tracks_->GetEntries();
-  rec_event_header_->SetField(n_sts_tracks, branch.GetFieldId("M"));
-  rec_event_header_->SetField(GetPsdEnergy(event), branch.GetFieldId("Epsd"));
+  rec_event_header_->SetField(n_sts_tracks, iM_);
+  rec_event_header_->SetField(GetPsdEnergy(event), iEpsd_);
 
   int evt_id;
   float match_weight, start_time, end_time;
@@ -77,10 +84,10 @@ void CbmRecEventHeaderConverter::ProcessData(CbmEvent* event)
     end_time     = cbm_header_->GetT();
     match_weight = 1.;
   }
-  rec_event_header_->SetField(evt_id, branch.GetFieldId("evt_id"));
-  rec_event_header_->SetField(start_time, branch.GetFieldId("start_time"));
-  rec_event_header_->SetField(end_time, branch.GetFieldId("end_time"));
-  rec_event_header_->SetField(match_weight, branch.GetFieldId("match_weight"));
+  rec_event_header_->SetField(evt_id, ievt_id_);
+  rec_event_header_->SetField(start_time, istart_time_);
+  rec_event_header_->SetField(end_time, iend_time_);
+  rec_event_header_->SetField(match_weight, imatch_weight_);
 }
 
 float CbmRecEventHeaderConverter::GetPsdEnergy(CbmEvent* event)
