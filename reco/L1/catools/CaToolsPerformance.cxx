@@ -15,7 +15,7 @@ using namespace ca::tools;
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
-void Performance::ReceiveMcData(McData&& mcData) { fMcData = std::move(mcData); }
+void Performance::ReceiveMCData(MCData&& mcData) { fMCData = std::move(mcData); }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //

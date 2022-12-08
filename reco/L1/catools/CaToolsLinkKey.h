@@ -12,6 +12,8 @@
 
 #include <boost/functional/hash.hpp>
 
+#include "L1Undef.h"
+
 namespace ca::tools
 {
   struct LinkKey {
@@ -27,9 +29,9 @@ namespace ca::tools
       return lhs.fFile == rhs.fFile && lhs.fEvent == rhs.fEvent && lhs.fIndex == rhs.fIndex;
     }
 
-    int fIndex = -1;  ///< Index of MC point/track in external data structures
-    int fEvent = -1;  ///< Index of MC event
-    int fFile  = -1;  ///< Index of MC file
+    int fIndex = undef::kI32;
+    int fEvent = undef::kI32;
+    int fFile  = undef::kI32;
   };
 }  // namespace ca::tools
 

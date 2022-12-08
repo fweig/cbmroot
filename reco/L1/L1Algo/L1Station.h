@@ -10,9 +10,9 @@
 
 #include "L1Field.h"
 #include "L1Material.h"
-#include "L1NaN.h"
 #include "L1SimdSerializer.h"
 #include "L1UMeasurementInfo.h"
+#include "L1Undef.h"
 #include "L1Utils.h"
 #include "L1XYMeasurementInfo.h"
 
@@ -21,14 +21,13 @@
 ///
 class L1Station {
 public:
-  int type {L1NaN::SetNaN<decltype(type)>()};
-  int timeInfo {L1NaN::SetNaN<decltype(timeInfo)>()};  ///< flag: if time information can be used
-  int fieldStatus {L1NaN::SetNaN<decltype(
-    fieldStatus)>()};  ///< flag: 1 - station is INSIDE the field, 0 - station is OUTSIDE the field (replace with enum)
-  fvec fZ {L1NaN::SetNaN<decltype(fZ)>()};            ///< z position of station     [cm]
-  fvec fZthick {L1NaN::SetNaN<decltype(fZthick)>()};  ///< z thickness of the station     [cm]
-  fvec Rmin {L1NaN::SetNaN<decltype(Rmin)>()};        ///< min radius of the station [cm]
-  fvec Rmax {L1NaN::SetNaN<decltype(Rmax)>()};        ///< max radius of the station [cm]
+  int type        = undef::kI32;
+  int timeInfo    = undef::kI32;  ///< flag: if time information can be used
+  int fieldStatus = undef::kI32;  ///< flag: 1 - station is INSIDE the field, 0 - station is OUTSIDE the field
+  fvec fZ         = undef::kFvc;  ///< z position of station     [cm]
+  fvec fZthick    = undef::kFvc;  ///< z thickness of the station     [cm]
+  fvec Rmin       = undef::kFvc;  ///< min radius of the station [cm]
+  fvec Rmax       = undef::kFvc;  ///< max radius of the station [cm]
 
   L1FieldSlice fieldSlice {};
   L1UMeasurementInfo frontInfo {};

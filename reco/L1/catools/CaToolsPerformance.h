@@ -10,7 +10,7 @@
 #ifndef CaToolsPerformance_h
 #define CaToolsPerformance_h 1
 
-#include "CaToolsMcData.h"
+#include "CaToolsMCData.h"
 
 class L1Parameters;
 
@@ -50,13 +50,13 @@ namespace ca
       // **     Accessors     **
       // ***********************
 
-      /// Receives MC data object from McDataManager
-      void ReceiveMcData(McData&& mcData);
+      /// Receives MC data object from MCDataManager
+      void ReceiveMCData(MCData&& mcData);
 
 
     private:
       //      const L1Parameters* fpParameters = nullptr;  ///< Instance of the tracking core class parameters
-      McData fMcData = {};  ///< Object of MC data
+      MCData fMCData = {};  ///< Object of MC data
     };
   }  // namespace tools
 }  // namespace ca

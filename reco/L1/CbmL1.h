@@ -22,6 +22,8 @@
 #define _CbmL1_h_
 
 
+#include "CbmCaMCModule.h"
+#include "CbmL1DetectorID.h"
 #include "CbmL1Hit.h"
 #include "CbmL1MCPoint.h"
 #include "CbmL1MCTrack.h"
@@ -66,7 +68,6 @@ class CbmL1Track;
 class CbmL1MCTrack;
 class KFTopoPerformance;
 class CbmMCDataObject;
-
 class CbmEvent;
 class TProfile2D;
 class TNtuple;
@@ -103,18 +104,6 @@ namespace std
 }  // namespace std
 
 
-/// Enumeration for the detector subsystems used in L1 tracking
-/// It is important for the subsystems to be specified in the actual order. The order is used
-/// for the L1Station array filling.
-/// Note: L1DetectorID has a forward declaration in L1InitManager.h and L1BaseStationInfo.h
-enum class L1DetectorID
-{
-  kMvd,
-  kSts,
-  kMuch,
-  kTrd,
-  kTof
-};
 
 // TODO: insert documentation! (S.Zh.)
 //
@@ -129,7 +118,7 @@ public:
   // ** Types definition **
   // **********************
 
-  using DFSET = std::set<std::pair<int, int>>;  // Why std::set<std::pair<>> instead of std::map<>?
+  using DFSET = std::set<std::pair<int, int>>;
 
   // **************************
   // ** Friends classes list **
@@ -158,20 +147,20 @@ public:
   /// \param  name              Name of the task
   /// \param  verbose           Verbosity level
   /// \param  performance       Performance run flag:
-  ///                           0: run without performance measurement
-  ///                           1: standard efficiency definition
-  ///                           2: QA efficiency definition
+  ///                           - #0 run without performance measurement
+  ///                           - #1 standard efficiency definition
+  ///                           - #2 QA efficiency definition
   /// \param  dataMode          Option to work with files for the standalone mode
-  ///                           0: standalone mode is not used
-  ///                           1: data for standalone mode is written to configuration file (currently does not work)
-  ///                           2: tracking runs in standalone mode using configuration file (currently does not work)
-  ///                           3: data is written and read (currently does not work)
+  ///                           - #0 standalone mode is not used
+  ///                           - #1 data for standalone mode is written to configuration file (currently does not work)
+  ///                           - #2 tracking runs in standalone mode using configuration file (currently does not work)
+  ///                           - #3 data is written and read (currently does not work)
   /// \param  dataDir           Name of directory for configuration file
   /// \param  findParticleMode  Find particle utility mode
-  ///                           0: FindParticles is not used
-  ///                           1: All MC particles are reconstructable
-  ///                           2: MC particles are reconstructable if created from reconstructable tracks
-  ///                           3: MC particles are reconstructable if created from reconstructed tracks
+  ///                           - #0 FindParticles is not used
+  ///                           - #1 All MC particles are reconstructable
+  ///                           - #2 MC particles are reconstructable if created from reconstructable tracks
+  ///                           - #3: MC particles are reconstructable if created from reconstructed tracks
   CbmL1(const char* name, Int_t verbose = 1, Int_t performance = 0, int dataMode = 0, const TString& dataDir = "./",
         int findParticleMode = 0);
 
@@ -302,12 +291,10 @@ public:
   //   void SetGhostSuppression( Bool_t b ){ fGhostSuppression= b; }
   //   void SetDetectorEfficiency( Double_t eff ){ fDetectorEfficiency = eff; }
 
-  /// Reconstructs an event
+  /// Reconstructs tracks in a given event
   /// \param event  Pointer to current CbmEvent object
   void Reconstruct(CbmEvent* event = nullptr);
 
-  //  bool ReadMCDataFromFile(const char work_dir[100], const int maxNEvent, const int iVerbose);
-  //   vector<CbmL1MCPoint> fvMCPoints;
 
   //   static bool compareZ(const int &a, const int &b );
   inline double Get_Z_vMCPoint(int a) const { return fvMCPoints[a].z; }
@@ -369,7 +356,7 @@ private:
   /// Matches hit with MC point
   /// \tparam  DetId Detector ID
   /// \param   iHit  External index of hit
-  /// \return  tuple of MC point index in fvMCPoints array
+  /// \return        MC-point index in fvMCPoints array
   template<L1DetectorID DetId>
   int MatchHitWithMc(int iHit) const;
 
@@ -458,13 +445,17 @@ private:
   // ** Member variables list **
   // ***************************
 
+
+  L1InitManager fInitManager;      ///< Tracking parameters data manager
+  L1IODataManager fIODataManager;  ///< Input-output data manager
+
+  std::unique_ptr<CbmCaMCModule> fpMCModule = nullptr;  ///< MC-module for tracking
+
+
 public:
   // ** Basic data members **
 
   L1Algo* fpAlgo = nullptr;  ///< Pointer to the L1 track finder algorithm
-
-  L1InitManager fInitManager;      ///< Tracking parameters data manager
-  L1IODataManager fIODataManager;  ///< Input-output data manager
 
   bool fMissingHits = false;  ///< Turns on several ad-hock settings for "mcbm_beam_2021_07_surveyed.100ev" setup
 
@@ -491,7 +482,6 @@ private:
   int fNpointsTofAll  = 0;  ///< Number of MC points for TOF
 
   L1Vector<CbmL1MCPoint> fvMCPoints = {"CbmL1::fvMCPoints"};          ///< Container of MC points
-  L1Vector<int> fvMCPointIndexesTs  = {"CbmL1::fvMCPointIndexesTs"};  ///< Indexes of MC points in TS
 
   int fNStations     = 0;  ///< number of total active detector stations
   int fNMvdStations  = 0;  ///< number of active MVD stations
@@ -603,7 +593,6 @@ private:
   TClonesArray* fpStsClusterMatches = nullptr;  ///< Array of STS cluster matches
   TClonesArray* fpMuchDigiMatches   = nullptr;  ///< Array of MuCh digi matches (NOTE: currently unsused)
 
-  vector<vector<int>> fTofPointToTrack;  ///<
 
   L1Vector<CbmL1MCTrack> fvMCTracks = {"CbmL1::fvMCTracks"};         ///< Array of MC tracks
   L1Vector<int> fvHitPointIndexes   = {"CbmL1::fvHitPointIndexes"};  ///< Indexes of MC points vs. hit index

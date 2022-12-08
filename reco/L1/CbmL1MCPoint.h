@@ -21,6 +21,10 @@
 #ifndef CbmL1MCPoint_H
 #define CbmL1MCPoint_H
 
+#include <iomanip>
+#include <sstream>
+#include <string>
+
 #include "L1Vector.h"
 
 struct CbmL1MCPoint {
@@ -66,8 +70,60 @@ struct CbmL1MCPoint {
   int pointId   = -1;
   int file      = -1;
   int event     = -1;
-  int trackId   = -1;
   L1Vector<int> hitIds {"CbmL1MCPoint::hitIds"};  // indices of CbmL1Hits in L1->vStsHits array
+
+  /// Temporary log function for debugging
+  std::string ToString(int verbose, bool printHeader = false) const
+  {
+    if (verbose < 1) { return std::string(); }
+
+    std::stringstream msg;
+    if (printHeader) {
+      if (verbose > 0) {
+        msg << std::setw(10) << std::setfill(' ') << "track ID" << ' ';
+        msg << std::setw(10) << std::setfill(' ') << "mother ID" << '|';
+        msg << std::setw(10) << std::setfill(' ') << "station ID" << '|';
+        msg << std::setw(10) << std::setfill(' ') << "PDG" << ' ';
+        msg << std::setw(10) << std::setfill(' ') << "m [GeV/c2]" << ' ';
+        msg << std::setw(10) << std::setfill(' ') << "q [e]" << '|';
+        msg << std::setw(14) << std::setfill(' ') << "t [ns]" << ' ';
+        msg << std::setw(14) << std::setfill(' ') << "x [cm]" << ' ';
+        msg << std::setw(14) << std::setfill(' ') << "y [cm]" << ' ';
+        msg << std::setw(14) << std::setfill(' ') << "z [cm]" << '|';
+        if (verbose > 1) {
+          msg << std::setw(14) << std::setfill(' ') << "zIn [cm]" << ' ';
+          msg << std::setw(14) << std::setfill(' ') << "zOut [cm]" << '|';
+          msg << std::setw(14) << std::setfill(' ') << "p [GeV/c]" << '|';
+          msg << std::setw(10) << std::setfill(' ') << "point ID" << ' ';
+          msg << std::setw(10) << std::setfill(' ') << "event ID" << ' ';
+          msg << std::setw(10) << std::setfill(' ') << "file ID" << ' ';
+        }
+      }
+    }
+    else {
+      if (verbose > 0) {
+        msg << std::setw(10) << std::setfill(' ') << ID << ' ';
+        msg << std::setw(10) << std::setfill(' ') << mother_ID << '|';
+        msg << std::setw(10) << std::setfill(' ') << iStation << '|';
+        msg << std::setw(10) << std::setfill(' ') << pdg << ' ';
+        msg << std::setw(10) << std::setfill(' ') << mass << ' ';
+        msg << std::setw(10) << std::setfill(' ') << q << '|';
+        msg << std::setw(14) << std::setfill(' ') << time << ' ';
+        msg << std::setw(14) << std::setfill(' ') << x << ' ';
+        msg << std::setw(14) << std::setfill(' ') << y << ' ';
+        msg << std::setw(14) << std::setfill(' ') << z << '|';
+        if (verbose > 1) {
+          msg << std::setw(14) << std::setfill(' ') << zIn << ' ';
+          msg << std::setw(14) << std::setfill(' ') << zOut << '|';
+          msg << std::setw(14) << std::setfill(' ') << p << '|';
+          msg << std::setw(10) << std::setfill(' ') << pointId << ' ';
+          msg << std::setw(10) << std::setfill(' ') << event << ' ';
+          msg << std::setw(10) << std::setfill(' ') << file << ' ';
+        }
+      }
+    }
+    return msg.str();
+  }
 };
 
 #endif

@@ -10,13 +10,14 @@
 #include "L1Def.h"
 #include "L1NaN.h"
 #include "L1SimdSerializer.h"
+#include "L1Undef.h"
 #include "L1Utils.h"
 
 class L1UMeasurementInfo {
 
 public:
-  fvec cos_phi {L1NaN::SetNaN<decltype(cos_phi)>()};
-  fvec sin_phi {L1NaN::SetNaN<decltype(sin_phi)>()};
+  fvec cos_phi = undef::kFvc;
+  fvec sin_phi = undef::kFvc;
 
   /// String representation of class contents
   /// \param indentLevel      number of indent characters in the output
@@ -26,7 +27,7 @@ public:
   void CheckConsistency() const;
 
   /// Checks, if the fields are NaN
-  bool IsNaN() const { return L1NaN::IsNaN(cos_phi) || L1NaN::IsNaN(sin_phi); }
+  bool IsNaN() const { return isnan(cos_phi).isNotEmpty() || isnan(sin_phi).isNotEmpty(); }
 
   /// Serialization function
   friend class boost::serialization::access;

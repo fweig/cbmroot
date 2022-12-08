@@ -49,7 +49,6 @@ public:
   int NHitContStations() const { return nHitContStations; }
   int NMCStations() const { return nMCStations; }
   int NMCContStations() const { return nMCContStations; }
-  float Fraction_MC();
 
   void Init();
 

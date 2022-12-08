@@ -79,20 +79,6 @@ void CbmL1MCTrack::Init()
   CalculateIsReconstructable();
 }
 
-
-float CbmL1MCTrack::Fraction_MC()
-{
-  //     if ( Points.size() == 0 ) return 0;
-
-  CbmL1* L1   = CbmL1::Instance();
-  int counter = 0;
-  for (unsigned int iP = 0; iP < Points.size(); iP++) {
-    if (L1->fvMCPointIndexesTs[Points[iP]] > 0) counter++;
-  };
-  return (Points.size() > 0) ? float(counter) / float(Points.size()) : 0;
-}
-
-
 void CbmL1MCTrack::CalculateMCCont()
 {
   CbmL1* L1 = CbmL1::Instance();
@@ -194,8 +180,6 @@ void CbmL1MCTrack::CalculateIsReconstructable()
   //   f &= (maxNStaHits <= 4);
   f &= (maxNStaMC <= 4);
   //   f &= (maxNSensorMC <= 1);
-  if (L1->fPerformance == 4)
-    isReconstructable = f & (nMCContStations >= CbmL1Constants::MinNStations) & (Fraction_MC() > 0.5);
   if (L1->fPerformance == 3) isReconstructable = f & (nMCContStations >= CbmL1Constants::MinNStations);  // L1-MC
   if (L1->fPerformance == 2) isReconstructable = f & (nStations >= CbmL1Constants::MinNStations);  // QA definition
   if (L1->fPerformance == 1)

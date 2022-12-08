@@ -1004,27 +1004,11 @@ void CbmL1::Reconstruct(CbmEvent* event)
 
   if ((fPerformance) && (fSTAPDataMode < 2)) { InputPerformance(); }
 
-  // TODO: Remove this code (S.Zharko)
-  //  for (unsigned int iH = 0; iH < (*fpAlgo->vHits).size(); ++iH) {
-  //#ifdef USE_EVENT_NUMBER
-  //    L1Hit& h = const_cast<L1Hit&>((*fpAlgo->vHits)[iH]);
-  //    h.n      = -1;
-  //#endif
-  //    if (fvExternalHits[iH].mcPointIds.size() == 0) continue;
-  //#ifdef USE_EVENT_NUMBER
-  //    const CbmL1MCPoint& mcp = fvMCPoints[fvExternalHits[iH].mcPointIds[0]];
-  //    h.n                     = mcp.event;
-  //#endif
-  //  }
 
   // output performance
   if (fPerformance) {
     if (fVerbose > 1) { cout << "Performance..." << endl; }
     TrackMatch();
-  }
-
-
-  if (fPerformance) {
     EfficienciesPerformance();
     HistoPerformance();
     TrackFitPerformance();
@@ -1032,20 +1016,8 @@ void CbmL1::Reconstruct(CbmEvent* event)
     // TimeHist();
     ///    WriteSIMDKFData();
   }
-  if (fVerbose > 1) { cout << "End of L1" << endl; }
-
-  static bool ask = 0;
-  char symbol;
-  if (ask) {
-    std::cout << std::endl << "L1 run (any/r/q) > ";
-    do {
-      std::cin.get(symbol);
-      if (symbol == 'r') ask = false;
-      if ((symbol == 'e') || (symbol == 'q')) exit(0);
-    } while (symbol != '\n');
-  }
-
-  // }
+  if (fVerbose > 1) { LOG(info) << "Tracking performance... done"; }
+  if (fVerbose > 1) { LOG(info) << "End of L1"; }
 }
 
 // -----   Finish CbmStsFitPerformanceTask task   -----------------------------

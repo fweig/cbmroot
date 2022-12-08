@@ -256,7 +256,6 @@ int CbmL1::MatchHitWithMc<L1DetectorID::kTrd>(int iHit) const
 
       auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex, iEvent, iFile));
       assert(itPoint != fmMCPointsLinksMap.cend());
-      if (itPoint == fmMCPointsLinksMap.cend()) return iPoint;
       iPoint = itPoint->second;
     }
   }
@@ -367,8 +366,6 @@ void CbmL1::ReadEvent(CbmEvent* event)
     // Fill fvMCPoints and fmMCPointsLinksMap
     fvMCPoints.clear();
     fvMCPoints.reserve(5 * fvMCTracks.size() * fNStations);
-    fvMCPointIndexesTs.clear();
-    fvMCPointIndexesTs.reserve(fvMCPoints.capacity());
 
     fNpointsMvdAll  = 0;
     fNpointsStsAll  = 0;
@@ -420,7 +417,6 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
             fmMCPointsLinksMap[CbmL1LinkKey(iMC, iEvent, iFile)] = fvMCPoints.size();
             fvMCPoints.push_back(MC);
-            fvMCPointIndexesTs.push_back(0);
             fNpointsMvd++;
           }
         }
@@ -459,7 +455,6 @@ void CbmL1::ReadEvent(CbmEvent* event)
             fvMCTracks[MC.ID].Points.push_back_no_warning(fvMCPoints.size());
             fmMCPointsLinksMap[CbmL1LinkKey(iMC + fNpointsMvdAll, iEvent, iFile)] = fvMCPoints.size();
             fvMCPoints.push_back(MC);
-            fvMCPointIndexesTs.push_back(0);
             fNpointsSts++;
           }
         }
@@ -478,17 +473,15 @@ void CbmL1::ReadEvent(CbmEvent* event)
             const L1Station* sta = fpAlgo->GetParameters()->GetStations().begin();
             for (Int_t iSt = 0; iSt < fNMuchStationsGeom; iSt++) {
               int iStActive = fpAlgo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kMuch);
-              assert(iStActive != -1);
               if (MC.z > sta[iStActive].fZ[0] - 2.5) { MC.iStation = iStActive; }
             }
-            assert(MC.iStation >= 0);
+            if (MC.iStation < 0) { continue; }  // Reject MC points from inactive stations;
             auto itTrack = fmMCTracksLinksMap.find(CbmL1LinkKey(MC.ID, iEvent, iFile));
             assert(itTrack != fmMCTracksLinksMap.cend());
             MC.ID = itTrack->second;
             fvMCTracks[MC.ID].Points.push_back_no_warning(fvMCPoints.size());
             fmMCPointsLinksMap[CbmL1LinkKey(iMC + fNpointsMvdAll + +fNpointsStsAll, iEvent, iFile)] = fvMCPoints.size();
             fvMCPoints.push_back(MC);
-            fvMCPointIndexesTs.push_back(0);
             fNpointsMuch++;
           }
         }
@@ -504,11 +497,10 @@ void CbmL1::ReadEvent(CbmEvent* event)
             const L1Station* sta = fpAlgo->GetParameters()->GetStations().begin();
             for (Int_t iSt = 0; iSt < fNTrdStationsGeom; iSt++) {
               int iStActive = fpAlgo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kTrd);
-
-              assert(iStActive != -1);
+              if (iStActive < 0) { continue; }
               if (MC.z > sta[iStActive].fZ[0] - 20.0) { MC.iStation = iStActive; }
             }
-            assert(MC.iStation >= 0);
+            if (MC.iStation < 0) { continue; }  // Reject MC points from inactive stations
             auto itTrack = fmMCTracksLinksMap.find(CbmL1LinkKey(MC.ID, iEvent, iFile));
             assert(itTrack != fmMCTracksLinksMap.cend());
             MC.ID = itTrack->second;
@@ -516,7 +508,6 @@ void CbmL1::ReadEvent(CbmEvent* event)
             fmMCPointsLinksMap[CbmL1LinkKey(iMC + fNpointsMvdAll + fNpointsStsAll + fNpointsMuchAll, iEvent, iFile)] =
               fvMCPoints.size();
             fvMCPoints.push_back(MC);
-            fvMCPointIndexesTs.push_back(0);
             fNpointsTrd++;
           }
         }
@@ -526,20 +517,20 @@ void CbmL1::ReadEvent(CbmEvent* event)
       firstTofPoint = fvMCPoints.size();
       if (fUseTOF && fpTofPoints) {
 
-        vector<float> TofPointToTrackdZ[fNTofStations];
+        vector<float> vTofPointToTrackdZ[fNTofStationsGeom];  // active stations!
 
-        fTofPointToTrack.resize(fNTofStations);
+        vector<vector<int>> vTofPointToTrack(fNTofStationsGeom);  // active stations!
 
-        for (Int_t i = 0; i < fNTofStations; i++) {
+        for (Int_t i = 0; i < fNTofStationsGeom; i++) {
 
-          fTofPointToTrack[i].resize(fvMCTracks.size(), 0);
-          TofPointToTrackdZ[i].resize(fvMCTracks.size());
+          vTofPointToTrack[i].resize(fvMCTracks.size(), 0);
+          vTofPointToTrackdZ[i].resize(fvMCTracks.size());
         }
 
-        for (int iSt = 0; iSt < fNTofStations; iSt++)
-          for (unsigned int i = 0; i < TofPointToTrackdZ[iSt].size(); i++) {
-            TofPointToTrackdZ[iSt][i] = 100000;
-            fTofPointToTrack[iSt][i]  = -1;
+        for (int iSt = 0; iSt < fNTofStationsGeom; iSt++)
+          for (unsigned int i = 0; i < vTofPointToTrackdZ[iSt].size(); i++) {
+            vTofPointToTrackdZ[iSt][i] = 100000;
+            vTofPointToTrack[iSt][i]   = -1;
           }
 
 
@@ -557,56 +548,60 @@ void CbmL1::ReadEvent(CbmEvent* event)
           }
         }
 
+
         for (Int_t iMC = 0; iMC < fpTofPoints->Size(iFile, iEvent); iMC++) {
-          if (isTofPointMatched[iMC] == 0) continue;
+          if (isTofPointMatched[iMC] == 0) { continue; }
           CbmL1MCPoint MC;
           if (!ReadMCPoint(&MC, iMC, iFile, iEvent, 4)) {
-            auto itTrack = fmMCTracksLinksMap.find(CbmL1LinkKey(MC.ID, iEvent, iFile));
-            assert(itTrack != fmMCTracksLinksMap.cend());
-            int iTrack = itTrack->second;
-
             MC.iStation          = -1;
             const L1Station* sta = fpAlgo->GetParameters()->GetStations().begin();
 
-            float dist = 1000;
-            int iSta   = -1;
+            float dist   = 1000;
+            int iSta     = -1;
+            int iStaGlob = -1;
             for (int iSt = 0; iSt < fNTofStationsGeom; iSt++) {
               int iStActive = fpAlgo->GetParameters()->GetStationIndexActive(iSt, L1DetectorID::kTof);
               if (iStActive == -1) { continue; }
               if (fabs(MC.z - sta[iStActive].fZ[0]) < dist) {
-                dist = fabs(MC.z - sta[iStActive].fZ[0]);
-                iSta = iSt;
+                dist     = fabs(MC.z - sta[iStActive].fZ[0]);
+                iSta     = iSt;
+                iStaGlob = iStActive;
               }
             }
+
             MC.iStation = fpAlgo->GetParameters()->GetStationIndexActive(iSta, L1DetectorID::kTof);
             assert(MC.iStation >= 0);
+
+            auto itTrack = fmMCTracksLinksMap.find(CbmL1LinkKey(MC.ID, iEvent, iFile));
+            assert(itTrack != fmMCTracksLinksMap.cend());
+            int iTrack = itTrack->second;
+
             if (iSta >= 0) {
-              if (fabs(sta[iSta].fZ[0] - MC.z) < TofPointToTrackdZ[iSta][iTrack]) {
-                fTofPointToTrack[iSta][iTrack]  = iMC;
-                TofPointToTrackdZ[iSta][iTrack] = fabs(sta[iSta].fZ[0] - MC.z);
+              if (fabs(sta[iStaGlob].fZ[0] - MC.z) < vTofPointToTrackdZ[iSta][iTrack]) {
+                vTofPointToTrack[iSta][iTrack]   = iMC;
+                vTofPointToTrackdZ[iSta][iTrack] = fabs(sta[iStaGlob].fZ[0] - MC.z);
               }
             }
           }
         }
 
-        for (int iTofSta = 0; iTofSta < fNTofStations; iTofSta++)
-          for (unsigned int iTrack = 0; iTrack < fTofPointToTrack[iTofSta].size(); iTrack++) {
+        for (int iTofSta = 0; iTofSta < fNTofStationsGeom; iTofSta++)
+          for (unsigned int iTrack = 0; iTrack < vTofPointToTrack[iTofSta].size(); iTrack++) {
 
-            if (fTofPointToTrack[iTofSta][iTrack] < 0) continue;
+            if (vTofPointToTrack[iTofSta][iTrack] < 0) continue;
 
             CbmL1MCPoint MC;
 
-            if (!ReadMCPoint(&MC, fTofPointToTrack[iTofSta][iTrack], iFile, iEvent, 4)) {
+            if (!ReadMCPoint(&MC, vTofPointToTrack[iTofSta][iTrack], iFile, iEvent, 4)) {
 
-              MC.iStation = (fNMvdStations + fNStsStations + fNMuchStations + fNTrdStations + iTofSta);
+              MC.iStation = fpAlgo->GetParameters()->GetStationIndexActive(iTofSta, L1DetectorID::kTof);
               fvMCTracks[iTrack].Points.push_back_no_warning(fvMCPoints.size());
 
               MC.ID = iTrack;
               int iMC =
-                fTofPointToTrack[iTofSta][iTrack] + fNpointsMvdAll + +fNpointsStsAll + fNpointsMuchAll + fNpointsTrdAll;
+                vTofPointToTrack[iTofSta][iTrack] + fNpointsMvdAll + +fNpointsStsAll + fNpointsMuchAll + fNpointsTrdAll;
               fmMCPointsLinksMap[CbmL1LinkKey(iMC, iEvent, iFile)] = fvMCPoints.size();
               fvMCPoints.push_back(MC);
-              fvMCPointIndexesTs.push_back(0);
               fNpointsTof++;
             }
           }
@@ -626,18 +621,17 @@ void CbmL1::ReadEvent(CbmEvent* event)
       }
     }  //iTr
     if (fVerbose >= 10) cout << "Points in fvMCTracks are sorted." << endl;
-
   }  //fPerformance
 
   /*
-   * MC hits and tracks gathering: END
+   * MC points and tracks gathering: END
    */
 
   /*
    * Measured hits gathering: START
    *
    * In this section the measured hits from different detector subsystems are reformatted according to TmpHit structure
-   * (NOTE: independent from particular detector design) and then pushed to the tmpHit vector. In the performance study mode
+   * (NOTE: independently from particular detector design) and then pushed to the tmpHit vector. In the performance study mode
    * matching with MC points is done
    */
 

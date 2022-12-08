@@ -17,6 +17,7 @@
 /// Namespace contains compile-time constants definition for the L1 tracking algorithm
 namespace L1Constants
 {
+  using cbm::algo::ca::fvec;
 
   /// Array sizes
   namespace size
@@ -87,16 +88,6 @@ namespace L1Constants
     constexpr int kAssertionLevel = 0;   ///< Assertion level
     constexpr int kAlignment      = 16;  ///< Default alignment of data (bytes)
   }                                      // namespace misc
-
-  /// NoInit constants (aliases)
-  namespace noin
-  {
-    constexpr float kF          = L1NaN::SetNaN<float>();
-    constexpr double kD         = L1NaN::SetNaN<double>();
-    constexpr int k32I          = L1NaN::SetNaN<int>();
-    constexpr unsigned int k32U = L1NaN::SetNaN<unsigned int>();
-  }  // namespace noin
-
 
   // Colors of terminal log
   namespace clrs

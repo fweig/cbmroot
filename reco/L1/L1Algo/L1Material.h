@@ -15,6 +15,7 @@
 #include "L1Def.h"
 #include "L1NaN.h"
 #include "L1SimdSerializer.h"
+#include "L1Undef.h"
 
 /// Class L1Material describes a map of station thickness in units of radiation length (X0) to the specific point in XY plane
 class L1Material {
@@ -85,11 +86,10 @@ public:
   void Repare();
 
 private:
-  int fNbins {L1NaN::SetNaN<decltype(fNbins)>()};  ///< Number of rows (columns) in the material budget table
-  float fRmax {L1NaN::SetNaN<decltype(fRmax)>()};  ///< Size of the station in x and y dimensions [cm]
-  float fFactor {
-    L1NaN::SetNaN<decltype(fFactor)>()};  ///< Factor used in the recalculation of point coordinates to row/column id
-  std::vector<float> fTable {};           ///< Material budget table
+  int fNbins    = undef::kI32;   ///< Number of rows (columns) in the material budget table
+  float fRmax   = undef::kF;     ///< Size of the station in x and y dimensions [cm]
+  float fFactor = undef::kF;     ///< Factor used in the recalculation of point coordinates to row/column id
+  std::vector<float> fTable {};  ///< Material budget table
 
   /// Serialization function
   friend class boost::serialization::access;

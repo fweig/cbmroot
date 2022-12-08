@@ -10,12 +10,13 @@
 #include "L1Def.h"
 #include "L1NaN.h"
 #include "L1SimdSerializer.h"
+#include "L1Undef.h"
 
 class L1XYMeasurementInfo {
 public:
-  fvec C00 {L1NaN::SetNaN<decltype(C00)>()};
-  fvec C10 {L1NaN::SetNaN<decltype(C10)>()};
-  fvec C11 {L1NaN::SetNaN<decltype(C11)>()};
+  fvec C00 = undef::kFvc;
+  fvec C10 = undef::kFvc;
+  fvec C11 = undef::kFvc;
 
   /// Consistency checker
   void CheckConsistency() const;

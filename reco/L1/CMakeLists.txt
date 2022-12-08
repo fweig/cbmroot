@@ -48,7 +48,7 @@ set(SRCS
   L1Algo/L1Grid.cxx
   CbmL1Performance.cxx
   CbmL1ReadEvent.cxx
-  CbmCaPerformance.cxx
+  CbmCaMCModule.cxx
   L1Algo/L1Station.cxx
   L1Algo/L1Fit.cxx
   L1Algo/L1MCEvent.cxx
@@ -69,8 +69,8 @@ set(SRCS
   L1Algo/utils/L1AlgoDraw.cxx
   L1Algo/utils/L1AlgoEfficiencyPerformance.cxx
   L1Algo/utils/L1AlgoPulls.cxx
-  catools/CaToolsMcData.cxx
-  catools/CaToolsMcDataManager.cxx
+  catools/CaToolsMCData.cxx
+  catools/CaToolsMCPoint.cxx
   catools/CaToolsPerformance.cxx
   catools/CaToolsDebugger.cxx
   catools/CaToolsWindowFinder.cxx
@@ -96,6 +96,7 @@ set(NO_DICT_SRCS
 set(HEADERS
   CbmL1Constants.h
   CbmL1CATrdTrackFinderSA.h
+  CbmL1DetectorID.h
   CbmL1MCPoint.h
   CbmL1Hit.h
   CbmL1Track.h

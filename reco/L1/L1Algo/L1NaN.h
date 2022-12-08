@@ -19,7 +19,10 @@
 
 #include "CaSimd.h"
 #include "L1Def.h"
-using namespace cbm::algo::ca;  // TODO: remove "using" from headers
+
+using cbm::algo::ca::fmask;
+using cbm::algo::ca::fscal;  // TODO: remove "using" from headers
+using cbm::algo::ca::fvec;   // TODO: remove "using" from headers
 
 /// Namespace L1NaN defines functions to set variables to NaN and check wether they are NaN or not
 ///
