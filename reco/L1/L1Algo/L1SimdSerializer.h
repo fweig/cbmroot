@@ -22,23 +22,23 @@ namespace boost
   namespace serialization
   {
     template<class Archive>
-    void save(Archive& ar, const fvec& vect, unsigned int)
+    void save(Archive& ar, const cbm::algo::ca::fvec& vect, unsigned int)
     {
       ar << vect[0];
     }
 
     template<class Archive>
-    void load(Archive& ar, fvec& vect, unsigned int)
+    void load(Archive& ar, cbm::algo::ca::fvec& vect, unsigned int)
     {
-      fscal buffer;
+      cbm::algo::ca::fscal buffer;
       ar >> buffer;
-      for (size_t i = 0; i < fvec::size(); ++i) {
+      for (size_t i = 0; i < cbm::algo::ca::fvec::size(); ++i) {
         vect[i] = buffer;
       }
     }
 
     template<class Archive>
-    void serialize(Archive& ar, fvec& vect, const unsigned int version)
+    void serialize(Archive& ar, cbm::algo::ca::fvec& vect, const unsigned int version)
     {
       split_free(ar, vect, version);
     }

@@ -12,7 +12,10 @@
 #ifndef L1Constants_h
 #define L1Constants_h 1
 
-#include "L1NaN.h"
+#include "CaSimd.h"
+using cbm::algo::ca::fmask;
+using cbm::algo::ca::fscal;  // TODO: remove "using" from headers
+using cbm::algo::ca::fvec;   // TODO: remove "using" from headers
 
 /// Namespace contains compile-time constants definition for the L1 tracking algorithm
 namespace L1Constants

@@ -8,15 +8,14 @@
 #include <string>
 
 #include "L1Def.h"
-#include "L1NaN.h"
 #include "L1SimdSerializer.h"
 #include "L1Undef.h"
 
 class L1XYMeasurementInfo {
 public:
-  fvec C00 = undef::kFvc;
-  fvec C10 = undef::kFvc;
-  fvec C11 = undef::kFvc;
+  cbm::algo::ca::fvec C00 = undef::kFvc;
+  cbm::algo::ca::fvec C10 = undef::kFvc;
+  cbm::algo::ca::fvec C11 = undef::kFvc;
 
   /// Consistency checker
   void CheckConsistency() const;
@@ -26,7 +25,7 @@ public:
   std::string ToString(int indentLevel = 0) const;
 
   /// Checks, if the fields are NaN
-  bool IsNaN() const { return L1NaN::IsNaN(C00) || L1NaN::IsNaN(C10) || L1NaN::IsNaN(C11); }
+  bool IsNaN() const { return undef::IsUndefined(C00) || undef::IsUndefined(C10) || undef::IsUndefined(C11); }
 
   /// Serialization function
   friend class boost::serialization::access;

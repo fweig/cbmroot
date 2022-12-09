@@ -7,6 +7,8 @@
 #include <iomanip>
 #include <sstream>
 
+using namespace cbm::algo::ca;
+
 //----------------------------------------------------------------------------------------------------------------------
 //
 std::string L1UMeasurementInfo::ToString(int indentLevel) const

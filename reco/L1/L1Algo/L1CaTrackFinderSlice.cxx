@@ -516,8 +516,12 @@ inline void L1Algo::findTripletsStep0(  // input
   const L1Station& stam = fParameters.GetStation(iStaM);
   const L1Station& star = fParameters.GetStation(iStaR);
 
-  L1HitIndex_t hitsl_2[fvec::size()] {L1NaN::SetNaN<L1HitIndex_t>()};
-  L1HitIndex_t hitsm_2_tmp[fvec::size()] {L1NaN::SetNaN<L1HitIndex_t>()};
+  std::array<L1HitIndex_t, fvec::size()> hitsl_2     = {};
+  std::array<L1HitIndex_t, fvec::size()> hitsm_2_tmp = {};
+
+  std::fill(hitsl_2.begin(), hitsl_2.end(), undef::kU32);
+  std::fill(hitsm_2_tmp.begin(), hitsm_2_tmp.end(), undef::kU32);
+
   L1TrackPar L1TrackPar_0;
   // SG!! to avoid nans in unfilled part
   //TODO: SG: investigate, it changes the results !!

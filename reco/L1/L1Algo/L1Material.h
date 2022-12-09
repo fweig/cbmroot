@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "L1Def.h"
-#include "L1NaN.h"
 #include "L1SimdSerializer.h"
 #include "L1Undef.h"
 
@@ -54,13 +53,13 @@ public:
   float GetRadThickScal(float x, float y) const;
 
   /// Gets material thickness in units of X0 in (x,y) point of the station
-  /// fvec type can be float, that is why "Vec" and "Scal" specifications
+  /// cbm::algo::ca::fvec type can be float, that is why "Vec" and "Scal" specifications
   /// \param x  X coordinate of the point [cm] (SIMDized vector)
   /// \param y  Y coordinate of the point [cm] (SIMDized veotor)
-  fvec GetRadThickVec(fvec x, fvec y) const;
+  cbm::algo::ca::fvec GetRadThickVec(cbm::algo::ca::fvec x, cbm::algo::ca::fvec y) const;
 
   /// Checks, if the fields are NaN
-  bool IsNaN() const { return L1NaN::IsNaN(fNbins) || L1NaN::IsNaN(fRmax) || L1NaN::IsNaN(fFactor); }
+  bool IsNaN() const { return undef::IsUndefined(fNbins) || undef::IsUndefined(fRmax) || undef::IsUndefined(fFactor); }
 
   /// Verifies class invariant consistency
   void CheckConsistency() const;
