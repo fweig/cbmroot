@@ -221,13 +221,13 @@ FileLicenceCheck:
     INSTALL_PROJECT: "TRUE"
     EXTRA_FLAGS: '"-DCBM_TEST_INSTALL=TRUE"'
 
-.singularity_debian10_variables_nov22: &singularity_debian10_variables_nov22
+.singularity_debian10_variables_nov22p1: &singularity_debian10_variables_nov22p1
     OS: debian10
-    FAIRSOFT_VERSION: nov22rc
-    FAIRROOT_VERSION: v18.8_patches
-    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS/testing"
+    FAIRSOFT_VERSION: nov22p1
+    FAIRROOT_VERSION: v18.8.0
+    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS/"
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
-    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
     CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment.sh"
     INSTALL_PROJECT: "TRUE"
     EXTRA_FLAGS: '"-DCBM_TEST_INSTALL=TRUE"'
@@ -240,6 +240,15 @@ FileLicenceCheck:
     SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
     FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_fs_${FAIRSOFT_VERSION}"
     CONFIGFILE: "/cvmfs/cbm.gsi.de/$OS/bin/setup_development_environment_test.sh"
+
+.singularity_centos7_variables_nov22p1: &singularity_centos7_variables_nov22p1
+    OS: centos7
+    FAIRSOFT_VERSION: nov22p1
+    FAIRROOT_VERSION: v18.8.0
+    BASE_PATH: "/cvmfs/fairsoft.gsi.de/$OS/gcc8"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
+    CONFIGFILE: "/cvmfs/fairsoft.gsi.de/$OS/bin/setup_development_environment.sh"
 
 .singularity_debian11_variables_apr21: &singularity_debian11_variables_apr21
     CONTAINER: "/cvmfs/cbm.gsi.de/containers/debian11_v18.6.7_apr21p2.sif"
@@ -272,6 +281,36 @@ FileLicenceCheck:
   tags:
     - qemu_macosx
 
+.macosx_12_variables_nov22p1: &macosx_12_variables_nov22p1
+    OS: "macOS12"
+    FAIRSOFT_VERSION: "nov22p1"
+    FAIRROOT_VERSION: "v18.8.0"
+    BASE_PATH: "/opt"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
+    IMAGE_NAME: "${OS}_${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
+    EXTRA_PATH: /usr/local/bin
+
+.macosx_11_variables_nov22p1: &macosx_11_variables_nov22p1
+    OS: "macOS11"
+    FAIRSOFT_VERSION: "nov22p1"
+    FAIRROOT_VERSION: "v18.8.0"
+    BASE_PATH: "/opt"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
+    IMAGE_NAME: "${OS}_${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
+    EXTRA_PATH: /usr/local/bin
+
+.macosx_1015_variables: &macosx_1015_variables
+    OS: "macOS1015"
+    FAIRSOFT_VERSION: "apr21p2"
+    FAIRROOT_VERSION: "v18.6.7"
+    BASE_PATH: "/opt"
+    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
+    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
+    IMAGE_NAME: "${OS}_${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
+    EXTRA_PATH: /usr/local/bin
+
 .macosx_12_variables: &macosx_12_variables
     OS: "macOS12"
     FAIRSOFT_VERSION: "apr21p2"
@@ -284,16 +323,6 @@ FileLicenceCheck:
 
 .macosx_11_variables: &macosx_11_variables
     OS: "macOS11"
-    FAIRSOFT_VERSION: "apr21p2"
-    FAIRROOT_VERSION: "v18.6.7"
-    BASE_PATH: "/opt"
-    SIMPATH: "$BASE_PATH/fairsoft/$FAIRSOFT_VERSION"
-    FAIRROOTPATH: "$BASE_PATH/fairroot/${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
-    IMAGE_NAME: "${OS}_${FAIRROOT_VERSION}_${FAIRSOFT_VERSION}"
-    EXTRA_PATH: /usr/local/bin
-
-.macosx_1015_variables: &macosx_1015_variables
-    OS: "macOS1015"
     FAIRSOFT_VERSION: "apr21p2"
     FAIRROOT_VERSION: "v18.6.7"
     BASE_PATH: "/opt"
@@ -336,10 +365,10 @@ CbmRoot_Merge_Singularity_debian10_apr21:
   variables:
     <<: [*mergeRequestVariables, *singularity_debian10_variables_apr21]
 
-CbmRoot_Merge_Singularity_debian10_nov22:
+CbmRoot_Merge_Singularity_debian10_nov22p1:
   <<: [*singularity_tag, *check_merge_request, *build_and_test]
   variables:
-    <<: [*mergeRequestVariables, *singularity_debian10_variables_nov22]
+    <<: [*mergeRequestVariables, *singularity_debian10_variables_nov22p1]
 
 CbmRoot_Merge_Singularity_debian11_apr21:
   <<: [*singularity_tag, *check_merge_request, *build_and_test]
@@ -351,20 +380,35 @@ CbmRoot_Merge_Singularity_centos7_apr21:
   variables:
     <<: [*mergeRequestVariables, *singularity_centos7_variables_apr21]
 
-CbmRoot_Merge_macosx_12:
+CbmRoot_Merge_Singularity_centos7_nov22p1:
+  <<: [*singularity_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *singularity_centos7_variables_nov22p1]
+
+CbmRoot_Merge_macosx_12_nov22p1:
   <<: [*macosx_tag, *check_merge_request, *build_and_test]
   variables:
-    <<: [*mergeRequestVariables, *macosx_12_variables]
+    <<: [*mergeRequestVariables, *macosx_12_variables_nov22p1]
+
+CbmRoot_Merge_macosx_11_nov22p1:
+  <<: [*macosx_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *macosx_11_variables_nov22p1]
+
+CbmRoot_Merge_macosx_1015:
+  <<: [*macosx_tag, *check_merge_request, *build_and_test]
+  variables:
+    <<: [*mergeRequestVariables, *macosx_1015_variables]
 
 CbmRoot_Merge_macosx_11:
   <<: [*macosx_tag, *check_merge_request, *build_and_test]
   variables:
     <<: [*mergeRequestVariables, *macosx_11_variables]
 
-CbmRoot_Merge_macosx_1015:
+CbmRoot_Merge_macosx_12:
   <<: [*macosx_tag, *check_merge_request, *build_and_test]
   variables:
-    <<: [*mergeRequestVariables, *macosx_1015_variables]
+    <<: [*mergeRequestVariables, *macosx_12_variables]
 
 CbmRoot_Continuous:
   <<: [*linux_tag, *check_merge, *build_and_test]
