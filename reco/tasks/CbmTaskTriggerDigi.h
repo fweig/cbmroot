@@ -19,7 +19,7 @@
 
 class CbmDigiBranchBase;
 class CbmDigiManager;
-struct CbmDigiTimeslice;
+class CbmDigiTimeslice;
 
 using namespace std;
 

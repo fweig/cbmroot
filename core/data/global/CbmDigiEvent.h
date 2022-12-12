@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2021-22 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Volker Friese [committer] */
 
@@ -10,20 +10,41 @@
 #include <boost/serialization/access.hpp>
 
 
-/** @struct CbmDigiEvent
- ** @brief Container of digis from all detectors in an event
+/** @class CbmDigiEvent
+ ** @brief Collection of digis from all detector systems within one event
+ ** @author Volker Friese <v.friese@gsi.de>
+ ** @since 7.12.2022
+ ** @version 1.0
  **/
-struct CbmDigiEvent {
+class CbmDigiEvent {
+
+public:
   CbmDigiData fData;  ///< Event data
   uint64_t fNumber;   ///< Event identifier
   double fTime;       ///< Event trigger time [ns]
+
+
   friend class boost::serialization::access;
+  /** @brief BOOST serializer**/
   template<class Archive>
   void serialize(Archive& ar, const unsigned int /*version*/)
   {
     ar& fData;
     ar& fNumber;
     ar& fTime;
+  }
+
+  // --- ROOT serializer
+#ifndef NO_ROOT
+  ClassDefNV(CbmDigiEvent, 1);
+#endif
+
+  /** @brief Clear content **/
+  void Clear()
+  {
+    fData.Clear();
+    fNumber = 0;
+    fTime   = 0.;
   }
 };
 

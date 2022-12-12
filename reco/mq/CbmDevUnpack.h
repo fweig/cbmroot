@@ -30,7 +30,7 @@
 #include "UnpackSts.h"
 
 class TimesliceMetaData;
-struct CbmDigiTimeslice;
+class CbmDigiTimeslice;
 
 class CbmDevUnpack : public FairMQDevice {
 public:

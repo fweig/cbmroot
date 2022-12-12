@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
+/* Copyright (C) 2021-2022 GSI Helmholtzzentrum fuer Schwerionenforschung, Darmstadt
    SPDX-License-Identifier: GPL-3.0-only
    Authors: Volker Friese [committer] */
 
@@ -6,60 +6,40 @@
 #ifndef CBMDIGIDATA_H
 #define CBMDIGIDATA_H 1
 
-#include "CbmMuchDigi.h"
 #include "CbmMuchDigiData.h"
-#include "CbmPsdDigi.h"
 #include "CbmPsdDigiData.h"
-#include "CbmRichDigi.h"
 #include "CbmRichDigiData.h"
-#include "CbmStsDigi.h"
 #include "CbmStsDigiData.h"
-#include "CbmTofDigi.h"
 #include "CbmTofDigiData.h"
-#include "CbmTrdDigi.h"
 #include "CbmTrdDigiData.h"
 
 #include <boost/serialization/access.hpp>
-#include <boost/serialization/vector.hpp>
+#include <boost/serialization/base_object.hpp>
 
-#include <vector>
-
-
-/** @struct DigiVec
- ** @brief Digi collection in a std::vector
- **
- ** This is the simplest form of a collection of detector digis. A detector-specific
- ** implementation may choose a different representation (i.e., several vectors) or
- ** add meta-data.
- **/
-template<class Digi>
-struct DigiVec {
-  std::vector<Digi> fDigis;
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive& ar, const unsigned int /*version*/)
-  {
-    ar& fDigis;
-  }
-  void Clear() { fDigis.clear(); }
-};
+#ifndef NO_ROOT
+#include <Rtypes.h>  // for ClassDef
+#endif
 
 
-/** @struct CbmDigiData
+/** @class CbmDigiData
  ** @brief Collection of digis from all detector systems
- **
- ** If no detector-specific collection class is provided, the simplest form (DigiVector)
- ** is used.
+ ** @author Volker Friese <v.friese@gsi.de>
+ ** @since 7.12.2022
+ ** @version 1.0
  **/
-struct CbmDigiData {
+class CbmDigiData {
+
+public:
+  CbmTofDigiData fT0;     ///< Beam monitor data
+  CbmStsDigiData fSts;    ///< STS data
+  CbmMuchDigiData fMuch;  ///< MUCH data
+  CbmRichDigiData fRich;  ///< RICH data
+  CbmTrdDigiData fTrd;    ///< TRD data
+  CbmTofDigiData fTof;    ///< TOF data
+  CbmPsdDigiData fPsd;    ///< PSD data
+
   friend class boost::serialization::access;
-  CbmTofDigiData fT0;
-  CbmStsDigiData fSts;
-  CbmMuchDigiData fMuch;
-  CbmRichDigiData fRich;
-  CbmTrdDigiData fTrd;
-  CbmTofDigiData fTof;
-  CbmPsdDigiData fPsd;
+  /** @brief BOOST serializer**/
   template<class Archive>
   void serialize(Archive& ar, const unsigned int /*version*/)
   {
@@ -71,6 +51,13 @@ struct CbmDigiData {
     ar& fPsd;
     ar& fRich;
   }
+
+  // --- ROOT serializer
+#ifndef NO_ROOT
+  ClassDefNV(CbmDigiData, 1);
+#endif
+
+  /** @brief Clear content **/
   void Clear()
   {
     fT0.Clear();

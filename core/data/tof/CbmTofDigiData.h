@@ -14,6 +14,7 @@
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/base_object.hpp>
+#include <boost/serialization/vector.hpp>
 
 #include <vector>
 
