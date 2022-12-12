@@ -25,7 +25,7 @@
  ** @brief Collection of digis from all detector systems
  ** @author Volker Friese <v.friese@gsi.de>
  ** @since 7.12.2022
- ** @version 1.0
+ ** @version 2.0
  **/
 class CbmDigiData {
 
@@ -54,7 +54,7 @@ public:
 
   // --- ROOT serializer
 #ifndef NO_ROOT
-  ClassDefNV(CbmDigiData, 1);
+  ClassDefNV(CbmDigiData, 2);
 #endif
 
   /** @brief Clear content **/
