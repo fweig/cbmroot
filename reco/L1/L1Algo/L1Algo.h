@@ -289,9 +289,8 @@ public:
   /// Add the middle hits to parameters estimation. Propagate to right station.
   /// Find the triplets (right hit). Reformat data in the portion of triplets.
   void findTripletsStep0(  // input
-    L1HitPoint* vHits_r, const L1Station& stam, const L1Station& star,
-
-    int istam, int istar, L1HitPoint* vHits_m, L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1,
+    L1HitPoint* vHits_r, int istal, int istam, int istar, L1HitPoint* vHits_m, L1TrackPar* T_1, L1FieldRegion* fld_1,
+    L1HitIndex_t* hitsl_1,
 
     Tindex n2, L1Vector<L1HitIndex_t>& hitsm_2, L1Vector<L1HitIndex_t>& i1_2,
 

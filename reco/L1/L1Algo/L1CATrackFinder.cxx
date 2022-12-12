@@ -481,16 +481,15 @@ inline void L1Algo::findDoubletsStep0(
 /// Add the middle hits to parameters estimation. Propagate to right station.
 /// Find the triplets(right hit). Reformat data in the portion of triplets.
 inline void L1Algo::findTripletsStep0(  // input
-  L1HitPoint* vHits_r, const L1Station& stam, const L1Station& star, int istam, int istar, L1HitPoint* vHits_m,
-  L1TrackPar* T_1, L1FieldRegion* fld_1, L1HitIndex_t* hitsl_1, Tindex n2, L1Vector<L1HitIndex_t>& hitsm_2,
-  L1Vector<L1HitIndex_t>& i1_2,
+  L1HitPoint* vHits_r, int /*iStaL*/, int iStaM, int iStaR, L1HitPoint* vHits_m, L1TrackPar* T_1, L1FieldRegion* fld_1,
+  L1HitIndex_t* hitsl_1, Tindex n2, L1Vector<L1HitIndex_t>& hitsm_2, L1Vector<L1HitIndex_t>& i1_2,
   // output
   Tindex& n3, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
   L1Vector<L1HitIndex_t>& hitsr_3, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
   L1Vector<fvec>& du2_3, L1Vector<fvec>& dv2_3, L1Vector<fvec>& t_3, L1Vector<fvec>& dt2_3)
 {
-  int iStaM = &stam - fParameters.GetStations().begin();
-  int iStaR = &star - fParameters.GetStations().begin();
+  const L1Station& stam = fParameters.GetStation(iStaM);
+  const L1Station& star = fParameters.GetStation(iStaR);
 
   L1HitIndex_t hitsl_2[fvec::size()] {L1NaN::SetNaN<L1HitIndex_t>()};
   L1HitIndex_t hitsm_2_tmp[fvec::size()] {L1NaN::SetNaN<L1HitIndex_t>()};
@@ -521,9 +520,9 @@ inline void L1Algo::findTripletsStep0(  // input
   t_3.reset(1, fvec::Zero());
   dt2_3.reset(1, fvec::One());
 
-  assert(istar < fParameters.GetNstationsActive());  //TODO SG!!! check if it is needed
+  assert(iStaR < fParameters.GetNstationsActive());  //TODO SG!!! check if it is needed
 
-  if (istar >= fParameters.GetNstationsActive()) return;
+  if (iStaR >= fParameters.GetNstationsActive()) return;
 
   // ---- Add the middle hits to parameters estimation. Propagate to right station. ----
 
@@ -589,17 +588,17 @@ inline void L1Algo::findTripletsStep0(  // input
     FilterTime(T2, t_2, dt2_2, stam.timeInfo);
 
     if (kMcbm == fTrackingMode) {
-      fit.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, fvec::One(),
+      fit.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), fMaxInvMom, fvec::One(),
                              stam.fZthick, 1);
     }
     else if (kGlobal == fTrackingMode) {
-      fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), fMaxInvMom, fvec::One());
+      fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), fMaxInvMom, fvec::One());
     }
     else {
-      fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(istam, T2.x, T2.y), T2.qp, fvec::One());
+      fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), T2.qp, fvec::One());
     }
 
-    //if ((istar >= fNstationsBeforePipe) && (istam <= fNstationsBeforePipe - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
+    //if ((iStaR >= fNstationsBeforePipe) && (iStaM <= fNstationsBeforePipe - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
 
     fvec dz2 = star.fZ - T2.z;
     L1ExtrapolateTime(T2, dz2, stam.timeInfo);
@@ -638,7 +637,7 @@ inline void L1Algo::findTripletsStep0(  // input
       while (true) {
         if (fParameters.DevIsIgnoreHitSearchAreas()) {
           irh1++;
-          if ((L1HitIndex_t) irh1 >= (HitsUnusedStopIndex[istar] - HitsUnusedStartIndex[istar])) break;
+          if ((L1HitIndex_t) irh1 >= (HitsUnusedStopIndex[iStaR] - HitsUnusedStartIndex[iStaR])) break;
           irh = irh1;
         }
         else {
@@ -646,7 +645,7 @@ inline void L1Algo::findTripletsStep0(  // input
         }
 
         // while (area.GetNext(irh)) {
-        //for (int irh = 0; irh < ( HitsUnusedStopIndex[istar] - HitsUnusedStartIndex[istar] ); irh++){
+        //for (int irh = 0; irh < ( HitsUnusedStopIndex[iStaR] - HitsUnusedStartIndex[iStaR] ); irh++){
         const L1HitPoint& hitr = vHits_r[irh];
 
         if (fParameters.DevIsMatchTripletsViaMc()) {
@@ -1339,7 +1338,6 @@ inline void L1Algo::CreatePortionOfTriplets(
 
   if (istar < fParameters.GetNstationsActive()) {
     // prepare data
-    const L1Station& stam = fParameters.GetStation(istam);
     const L1Station& star = fParameters.GetStation(istar);
 
     L1HitPoint* vHits_m = &((*vHitPointsUnused)[0]) + HitsUnusedStartIndex[istam];
@@ -1385,9 +1383,9 @@ inline void L1Algo::CreatePortionOfTriplets(
     /// Find the triplets(right hit). Reformat data in the portion of triplets.
 
     findTripletsStep0(  // input
-      vHits_r, stam, star,
+      vHits_r,
 
-      istam, istar, vHits_m, T_1, fld_1, hitsl_1,
+      istal, istam, istar, vHits_m, T_1, fld_1, hitsl_1,
 
       n_2, hitsm_2, i1_2,
 

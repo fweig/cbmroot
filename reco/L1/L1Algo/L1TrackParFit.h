@@ -49,16 +49,14 @@ public:
   void Filter(const L1UMeasurementInfo& info, const fvec& u, const fvec& sigma2, const fvec& w);
   void FilterXY(const L1XYMeasurementInfo& info, fvec x, fvec y);
   void FilterTime(fvec t, fvec dt2, fvec w, fvec timeInfo);
-  void FilterNoP(L1UMeasurementInfo& info, fvec u, fvec du2, fvec w);
+  void FilterExtrapolatedXY(const fvec& x, const fvec& y, const L1XYMeasurementInfo& info, const fvec& extrX,
+                            const fvec& extrY, const fvec Jx[6], const fvec Jy[6]);
 
   void Extrapolate(fvec z_out, fvec qp0, const L1FieldRegion& F, const fvec& w);
   void ExtrapolateStep(fvec z_out, fvec qp0, const L1FieldRegion& F, const fvec& w);
   void ExtrapolateStepAnalytic(fvec z_out, fvec qp0, const L1FieldRegion& F, const fvec& w);
+  void ExtrapolateLine(fvec z_out, const fvec& w);
 
-  void ExtrapolateLine(fvec z_out, fvec* w = 0);
-  void ExtrapolateLine1(fvec z_out, fvec* w = 0, fvec v = 0);
-
-  void Compare(L1TrackPar& T);
 
   void EnergyLossCorrection(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
 
@@ -70,18 +68,14 @@ public:
   void EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
   void EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
 
-  void AddMaterial(const fvec& radThick, fvec qp0, fvec w = 1);
-
+  void AddMaterial(const fvec& radThick, fvec qp0, fvec w);
   void AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream);
-  void AddPipeMaterial(fvec qp0, fvec w);
 
-  // void L1Extrapolate
-  // (
-  // //  L1TrackParFit &T, // input track parameters (x,y,tx,ty,Q/p) and cov.matrix
-  //  fvec        z_out  , // extrapolate to this z position
-  //  fvec       qp0    , // use Q/p linearisation at this value
-  //  L1FieldRegion &F
-  //  );
+  void GetExtrapolatedXYline(const fvec& z, const L1FieldRegion& F, fvec& extrX, fvec& extrY, fvec Jx[6],
+                             fvec Jy[6]) const;
+
+  void AddTargetToLine(const fvec& targX, const fvec& targY, const fvec& targZ, const L1XYMeasurementInfo& targXYInfo,
+                       const L1FieldRegion& F);
 
 } _fvecalignment;
 

@@ -4,6 +4,8 @@
 
 #include "L1TrackParFit.h"
 
+#include "L1Extrapolation.h"
+#include "L1Filtration.h"
 #include "L1Fit.h"
 
 
@@ -77,72 +79,6 @@ void L1TrackParFit::Filter(const L1UMeasurementInfo& info, const fvec& u, const 
   fTr.C55 -= K5 * F5;
 }
 
-void L1TrackParFit::FilterNoP(L1UMeasurementInfo& info, fvec u, fvec du2, fvec w)
-{
-  fvec wi, zeta, zetawi, HCH;
-  fvec F0, F1, F2, F3, F4, F5;
-  fvec K1, K2, K3, K4, K5;
-
-  zeta = info.cos_phi * fTr.x + info.sin_phi * fTr.y - u;
-
-  // F = CH'
-  F0 = info.cos_phi * fTr.C00 + info.sin_phi * fTr.C10;
-  F1 = info.cos_phi * fTr.C10 + info.sin_phi * fTr.C11;
-
-  HCH = (F0 * info.cos_phi + F1 * info.sin_phi);
-
-  F2 = info.cos_phi * fTr.C20 + info.sin_phi * fTr.C21;
-  F3 = info.cos_phi * fTr.C30 + info.sin_phi * fTr.C31;
-  F4 = info.cos_phi * fTr.C40 + info.sin_phi * fTr.C41;
-  F5 = info.cos_phi * fTr.C50 + info.sin_phi * fTr.C51;
-
-#if 0  // use mask
-  const fmask mask = (HCH < du2 * 16.);
-  wi = w/( (mask & du2) +HCH );
-  zetawi = zeta *wi;
-  fTr.chi2 +=  mask & (zeta * zetawi);
-#else
-  wi     = w / (du2 + HCH);
-  zetawi = zeta * wi;
-  fTr.chi2 += zeta * zetawi;
-#endif  // 0
-  fTr.NDF += w;
-
-  K1 = F1 * wi;
-  K2 = F2 * wi;
-  K3 = F3 * wi;
-  K4 = F4 * wi;
-  K5 = F5 * wi;
-
-  fTr.x -= F0 * zetawi;
-  fTr.y -= F1 * zetawi;
-  fTr.tx -= F2 * zetawi;
-  fTr.ty -= F3 * zetawi;
-  //  fTr.qp -= F4*zetawi;
-  fTr.t -= F5 * zetawi;
-
-  fTr.C00 -= F0 * F0 * wi;
-  fTr.C10 -= K1 * F0;
-  fTr.C11 -= K1 * F1;
-  fTr.C20 -= K2 * F0;
-  fTr.C21 -= K2 * F1;
-  fTr.C22 -= K2 * F2;
-  fTr.C30 -= K3 * F0;
-  fTr.C31 -= K3 * F1;
-  fTr.C32 -= K3 * F2;
-  fTr.C33 -= K3 * F3;
-  //   fTr.C40-= K4*F0;
-  //   fTr.C41-= K4*F1;
-  //   fTr.C42-= K4*F2;
-  //   fTr.C43-= K4*F3;
-  //   fTr.C44-= K4*F4;
-  fTr.C50 -= K5 * F0;
-  fTr.C51 -= K5 * F1;
-  fTr.C52 -= K5 * F2;
-  fTr.C53 -= K5 * F3;
-  fTr.C54 -= K5 * F4;
-  fTr.C55 -= K5 * F5;
-}
 
 void L1TrackParFit::FilterTime(fvec t, fvec dt2, fvec w, fvec timeInfo)
 {
@@ -291,99 +227,86 @@ void L1TrackParFit::FilterXY(const L1XYMeasurementInfo& info, fvec x, fvec y)
   fTr.C55 -= K50 * F50 + K51 * F51;
 }
 
-
-void L1TrackParFit::ExtrapolateLine(fvec z_out, fvec* w)
+void L1TrackParFit::FilterExtrapolatedXY(const fvec& x, const fvec& y, const L1XYMeasurementInfo& info,
+                                         const fvec& extrX, const fvec& extrY, const fvec Jx[6], const fvec Jy[6])
 {
+  // add a 2-D measurenent (x,y) at some z, that differs from fTr.z
+  // extrX, extrY are extrapolated track parameters at z, Jx, Jy are derivatives of the extrapolation
 
-  cnst c_light = 29.9792458;
+  // ! it is assumed that in the track covariance matrix all non-diagonal covariances are 0
+  // ! except of C10
 
-  fvec dz = (z_out - fTr.z);
-  if (w) { dz.setZero(*w <= fvec::Zero()); }
+  L1TrackPar& T = fTr;
 
-  fTr.x += dz * fTr.tx;
-  fTr.y += dz * fTr.ty;
-  fTr.z += dz;
-  fTr.t += dz * sqrt(fvec(1.) + fTr.tx * fTr.tx + fTr.ty * fTr.ty) / c_light;
+  //zeta0 = T.x + Jx[2]*T.tx + Jx[3]*T.ty + Jx[4]*T.qp - x;
+  //zeta1 = T.y + Jy[2]*T.tx + Jy[3]*T.ty + Jy[4]*T.qp - y;
 
-  const fvec k1 = dz * fTr.tx / (c_light * sqrt(fTr.tx * fTr.tx + fTr.ty * fTr.ty + fvec(1.)));
-  const fvec k2 = dz * fTr.ty / (c_light * sqrt(fTr.tx * fTr.tx + fTr.ty * fTr.ty + fvec(1.)));
+  fvec zeta0 = extrX - x;
+  fvec zeta1 = extrY - y;
 
-  const fvec dzC32_in = dz * fTr.C32;
+  // H = 1 0 Jx[2] Jx[3] Jx[4] 0
+  //     0 1 Jy[2] Jy[3] Jy[4] 0
 
-  fTr.C21 += dzC32_in;
-  fTr.C10 += dz * (fTr.C21 + fTr.C30);
+  // F = CH'
+  fvec F00 = T.C00;
+  fvec F01 = T.C10;
+  fvec F10 = T.C10;
+  fvec F11 = T.C11;
+  fvec F20 = Jx[2] * T.C22;
+  fvec F21 = Jy[2] * T.C22;
+  fvec F30 = Jx[3] * T.C33;
+  fvec F31 = Jy[3] * T.C33;
+  fvec F40 = Jx[4] * T.C44;
+  fvec F41 = Jy[4] * T.C44;
 
-  const fvec C20_in = fTr.C20;
+  fvec S00 = info.C00 + F00 + Jx[2] * F20 + Jx[3] * F30 + Jx[4] * F40;
+  fvec S10 = info.C10 + F10 + Jy[2] * F20 + Jy[3] * F30 + Jy[4] * F40;
+  fvec S11 = info.C11 + F11 + Jy[2] * F21 + Jy[3] * F31 + Jy[4] * F41;
 
-  fTr.C20 += dz * fTr.C22;
-  fTr.C00 += dz * (fTr.C20 + C20_in);
+  fvec si = fvec(1.) / (S00 * S11 - S10 * S10);
 
-  const fvec C31_in = fTr.C31;
+  fvec S00tmp = S00;
+  S00         = si * S11;
+  S10         = -si * S10;
+  S11         = si * S00tmp;
 
-  fTr.C31 += dz * fTr.C33;
-  fTr.C11 += dz * (fTr.C31 + C31_in);
-  fTr.C30 += dzC32_in;
+  T.chi2 += zeta0 * zeta0 * S00 + fvec(2.) * zeta0 * zeta1 * S10 + zeta1 * zeta1 * S11;
+  T.NDF += fvec(2.);
 
-  fTr.C40 += dz * fTr.C42;
-  fTr.C41 += dz * fTr.C43;
+  fvec K00 = F00 * S00 + F01 * S10;
+  fvec K01 = F00 * S10 + F01 * S11;
+  fvec K10 = F10 * S00 + F11 * S10;
+  fvec K11 = F10 * S10 + F11 * S11;
+  fvec K20 = F20 * S00 + F21 * S10;
+  fvec K21 = F20 * S10 + F21 * S11;
+  fvec K30 = F30 * S00 + F31 * S10;
+  fvec K31 = F30 * S10 + F31 * S11;
+  fvec K40 = F40 * S00 + F41 * S10;
+  fvec K41 = F40 * S10 + F41 * S11;
 
-  fvec c52 = fTr.C52;
-  fvec c53 = fTr.C53;
+  T.x -= K00 * zeta0 + K01 * zeta1;
+  T.y -= K10 * zeta0 + K11 * zeta1;
+  T.tx -= K20 * zeta0 + K21 * zeta1;
+  T.ty -= K30 * zeta0 + K31 * zeta1;
+  T.qp -= K40 * zeta0 + K41 * zeta1;
 
-  fTr.C50 += k1 * fTr.C20 + k2 * fTr.C30;
-  fTr.C51 += k1 * fTr.C21 + k2 * fTr.C31;
-  fTr.C52 += k1 * fTr.C22 + k2 * fTr.C32;
-  fTr.C53 += k1 * fTr.C32 + k2 * fTr.C33;
-  fTr.C54 += k1 * fTr.C42 + k2 * fTr.C43;
-  fTr.C55 += k1 * (fTr.C52 + c52) + k2 * (fTr.C53 + c53);
+  T.C00 -= (K00 * F00 + K01 * F01);
+  T.C10 -= (K10 * F00 + K11 * F01);
+  T.C11 -= (K10 * F10 + K11 * F11);
+  T.C20 = -(K20 * F00 + K21 * F01);
+  T.C21 = -(K20 * F10 + K21 * F11);
+  T.C22 -= (K20 * F20 + K21 * F21);
+  T.C30 = -(K30 * F00 + K31 * F01);
+  T.C31 = -(K30 * F10 + K31 * F11);
+  T.C32 = -(K30 * F20 + K31 * F21);
+  T.C33 -= (K30 * F30 + K31 * F31);
+  T.C40 = -(K40 * F00 + K41 * F01);
+  T.C41 = -(K40 * F10 + K41 * F11);
+  T.C42 = -(K40 * F20 + K41 * F21);
+  T.C43 = -(K40 * F30 + K41 * F31);
+  T.C44 -= (K40 * F40 + K41 * F41);
 }
 
-void L1TrackParFit::ExtrapolateLine1(fvec z_out, fvec* w, fvec v)
-{
-
-  cnst c_light(29.9792458);
-
-  fvec dz = (z_out - fTr.z);
-  if (w) { dz.setZero(*w <= fvec::Zero()); }
-
-  fTr.x += dz * fTr.tx;
-  fTr.y += dz * fTr.ty;
-  fTr.z += dz;
-
-  fTr.t += dz * sqrt(fvec(1.) + fTr.tx * fTr.tx + fTr.ty * fTr.ty) / (v * c_light);
-
-  const fvec k1 = dz * fTr.tx / ((v * c_light) * sqrt(fTr.tx * fTr.tx + fTr.ty * fTr.ty + fvec(1.)));
-  const fvec k2 = dz * fTr.ty / ((v * c_light) * sqrt(fTr.tx * fTr.tx + fTr.ty * fTr.ty + fvec(1.)));
-
-  const fvec dzC32_in = dz * fTr.C32;
-
-  fTr.C21 += dzC32_in;
-  fTr.C10 += dz * (fTr.C21 + fTr.C30);
-
-  const fvec C20_in = fTr.C20;
-
-  fTr.C20 += dz * fTr.C22;
-  fTr.C00 += dz * (fTr.C20 + C20_in);
-
-  const fvec C31_in = fTr.C31;
-
-  fTr.C31 += dz * fTr.C33;
-  fTr.C11 += dz * (fTr.C31 + C31_in);
-  fTr.C30 += dzC32_in;
-
-  fTr.C40 += dz * fTr.C42;
-  fTr.C41 += dz * fTr.C43;
-
-  fvec c52 = fTr.C52;
-  fvec c53 = fTr.C53;
-
-  fTr.C50 += k1 * fTr.C20 + k2 * fTr.C30;
-  fTr.C51 += k1 * fTr.C21 + k2 * fTr.C31;
-  fTr.C52 += k1 * fTr.C22 + k2 * fTr.C32;
-  fTr.C53 += k1 * fTr.C32 + k2 * fTr.C33;
-  fTr.C54 += k1 * fTr.C42 + k2 * fTr.C43;
-  fTr.C55 += k1 * (fTr.C52 + c52) + k2 * (fTr.C53 + c53);
-}
 
 void L1TrackParFit::Extrapolate  // extrapolates track parameters and returns jacobian for extrapolation of CovMatrix
   (fvec z_out,                   // extrapolate to this z position
@@ -747,6 +670,8 @@ void L1TrackParFit::
   //  Part of the analytic extrapolation formula with error (c_light*B*dz)^4/4!
   //
 
+  // TODO: the time parameter is not extrapolated!
+
   cnst c_light(0.000299792458);
 
   cnst c1(1.), c2(2.), c3(3.), c4(4.), c6(6.), c9(9.), c15(15.), c18(18.), c45(45.), c2i(1. / 2.), c3i(1. / 3.),
@@ -1002,33 +927,55 @@ void L1TrackParFit::
   //cout<<"Extrapolation ok"<<endl;
 }
 
-void L1TrackParFit::AddPipeMaterial(fvec qp0, fvec w)
+
+void L1TrackParFit::ExtrapolateLine(fvec z_out, const fvec& w)
 {
-  cnst ONE = 1.f;
+  // extrapolate the track assuming fQp0 == 0
+  //
 
-  //  static const fscal RadThick=0.0009f;//0.5/18.76;
-  //  static const fscal logRadThick=log(RadThick);
-  //const fscal RadThick=0.0009f;//0.5/18.76;
+  cnst c_light(29.9792458);
+  fvec dz = (z_out - fTr.z);
+  dz.setZero(w <= fvec::Zero());
 
-  const fscal logRadThick = log(fPipeRadThick[0]);
-  fvec tx                 = fTr.tx;
-  fvec ty                 = fTr.ty;
-  fvec txtx               = fTr.tx * fTr.tx;
-  fvec tyty               = fTr.ty * fTr.ty;
-  fvec txtx1              = txtx + ONE;
-  fvec h                  = txtx + tyty;
-  fvec t                  = sqrt(txtx1 + tyty);
-  fvec h2                 = h * h;
-  fvec qp0t               = qp0 * t;
+  L1TrackPar& T = fTr;
+  T.x += T.tx * dz;
+  T.y += T.ty * dz;
+  T.z += dz;
 
-  cnst c1 = 0.0136f, c2 = c1 * 0.038f, c3 = c2 * 0.5f, c4 = -c3 / 2.0f, c5 = c3 / 3.0f, c6 = -c3 / 4.0f;
-  fvec s0 = (c1 + c2 * fvec(logRadThick) + c3 * h + h2 * (c4 + c5 * h + c6 * h2)) * qp0t;
-  //fvec a = ( (ONE+mass2*qp0*qp0t)*RadThick*s0*s0 );
-  fvec a = ((t + fMass2 * qp0 * qp0t) * fPipeRadThick * s0 * s0);
+  const fvec dzC32_in = dz * T.C32;
 
-  fTr.C22 += w * txtx1 * a;
-  fTr.C32 += w * tx * ty * a;
-  fTr.C33 += w * (ONE + tyty) * a;
+  T.C21 += dzC32_in;
+  T.C10 += dz * (T.C21 + T.C30);
+
+  const fvec C20_in = T.C20;
+
+  T.C20 += dz * T.C22;
+  T.C00 += dz * (T.C20 + C20_in);
+
+  const fvec C31_in = T.C31;
+
+  T.C31 += dz * T.C33;
+  T.C11 += dz * (T.C31 + C31_in);
+  T.C30 += dzC32_in;
+
+  T.C40 += dz * T.C42;
+  T.C41 += dz * T.C43;
+
+  fvec L = sqrt(T.tx * T.tx + T.ty * T.ty + fvec(1.));
+  T.t += dz * L / c_light;
+
+  const fvec k1 = dz * T.tx / (c_light * L);
+  const fvec k2 = dz * T.ty / (c_light * L);
+
+  fvec c52 = T.C52;
+  fvec c53 = T.C53;
+
+  T.C50 += k1 * T.C20 + k2 * T.C30;
+  T.C51 += k1 * T.C21 + k2 * T.C31;
+  T.C52 += k1 * T.C22 + k2 * T.C32;
+  T.C53 += k1 * T.C32 + k2 * T.C33;
+  T.C54 += k1 * T.C42 + k2 * T.C43;
+  T.C55 += k1 * (T.C52 + c52) + k2 * (T.C53 + c53);
 }
 
 
@@ -1216,6 +1163,64 @@ void L1TrackParFit::EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec
   constexpr float rho     = 2.70f;
   constexpr float radLen  = 2.265f;
   EnergyLossCorrection<atomicZ>(atomicA, rho, radLen, radThick, qp0, direction, w);
+}
+
+void L1TrackParFit::GetExtrapolatedXYline(const fvec& z, const L1FieldRegion& F, fvec& extrX, fvec& extrY, fvec Jx[6],
+                                          fvec Jy[6]) const
+{
+  // extrapolate track assuming it is straight (qp==0)
+  // return the extrapolated X, Y and the derivatives of the extrapolated X and Y
+
+  cnst c_light(0.000299792458), c1(1.), c2i(0.5), c6i(1. / 6.), c12i(1. / 12.);
+
+  const fvec& tx = fTr.tx;
+  const fvec& ty = fTr.ty;
+  fvec dz        = z - fTr.z;
+
+  fvec dz2     = dz * dz;
+  fvec dzc6i   = dz * c6i;
+  fvec dz2c12i = dz2 * c12i;
+
+  fvec xx = tx * tx;
+  fvec yy = ty * ty;
+  fvec xy = tx * ty;
+
+  fvec Ay = -xx - c1;
+  fvec Bx = yy + c1;
+
+  fvec ctdz2 = c_light * sqrt(c1 + xx + yy) * dz2;
+
+  fvec Sx = F.cx0 * c2i + F.cx1 * dzc6i + F.cx2 * dz2c12i;
+  fvec Sy = F.cy0 * c2i + F.cy1 * dzc6i + F.cy2 * dz2c12i;
+  fvec Sz = F.cz0 * c2i + F.cz1 * dzc6i + F.cz2 * dz2c12i;
+
+  extrX = fTr.x + tx * dz;
+  extrY = fTr.y + ty * dz;
+
+  Jx[0] = fvec(1.);
+  Jx[1] = fvec(0.);
+  Jx[2] = dz;
+  Jx[3] = fvec(0.);
+  Jx[4] = ctdz2 * (Sx * xy + Sy * Ay + Sz * ty);
+  Jx[5] = fvec(0.);
+
+  Jy[0] = fvec(0.);
+  Jy[1] = fvec(1.);
+  Jy[2] = fvec(0.);
+  Jy[3] = dz;
+  Jy[4] = ctdz2 * (Sx * Bx - Sy * xy - Sz * tx);
+  Jy[5] = fvec(0.);
+}
+
+
+void L1TrackParFit::AddTargetToLine(const fvec& targX, const fvec& targY, const fvec& targZ,
+                                    const L1XYMeasurementInfo& targXYInfo, const L1FieldRegion& F)
+{
+  // Add the target constraint to a straight line track
+
+  fvec eX, eY, Jx[6], Jy[6];
+  GetExtrapolatedXYline(targZ, F, eX, eY, Jx, Jy);
+  FilterExtrapolatedXY(targX, targY, targXYInfo, eX, eY, Jx, Jy);
 }
 
 #undef cnst
