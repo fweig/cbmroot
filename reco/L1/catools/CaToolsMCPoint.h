@@ -20,8 +20,6 @@ enum class L1DetectorID;
 /// Class describes a Monte-Carlo point used in CA tracking QA analysis
 namespace ca::tools
 {
-  class MCTrack;
-
   class MCPoint {
   public:
     /// Default constructor

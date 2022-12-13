@@ -24,8 +24,9 @@ MCData::MCData() {}
 MCData::MCData(const MCData& other)
   : fvPoints(other.fvPoints)
   , fvTracks(other.fvTracks)
-  , fmPointsLinksMap(other.fmPointsLinksMap)
-  , fmTracksLinksMap(other.fmPointsLinksMap)
+  , fvPointIndexOfHit(other.fvPointIndexOfHit)
+  , fmPointLinkMap(other.fmPointLinkMap)
+  , fmTrackLinkMap(other.fmTrackLinkMap)
 {
 }
 
@@ -58,15 +59,16 @@ void MCData::Swap(MCData& other) noexcept
 {
   std::swap(fvPoints, other.fvPoints);
   std::swap(fvTracks, other.fvTracks);
-  std::swap(fmPointsLinksMap, other.fmPointsLinksMap);
-  std::swap(fmTracksLinksMap, other.fmTracksLinksMap);
+  std::swap(fvPointIndexOfHit, other.fvPointIndexOfHit);
+  std::swap(fmPointLinkMap, other.fmPointLinkMap);
+  std::swap(fmTrackLinkMap, other.fmTrackLinkMap);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 //
 void MCData::AddPoint(const MCPoint& point, int index, int event, int file)
 {
-  fmPointsLinksMap[LinkKey(index, event, file)] = static_cast<int>(fvPoints.size());
+  fmPointLinkMap[LinkKey(index, event, file)] = static_cast<int>(fvPoints.size());
   fvPoints.push_back(point);
 }
 
@@ -74,7 +76,7 @@ void MCData::AddPoint(const MCPoint& point, int index, int event, int file)
 //
 void MCData::AddTrack(const CbmL1MCTrack& track, int index, int event, int file)
 {
-  fmTracksLinksMap[LinkKey(index, event, file)] = static_cast<int>(fvTracks.size());
+  fmTrackLinkMap[LinkKey(index, event, file)] = static_cast<int>(fvTracks.size());
   fvTracks.push_back(track);
 }
 
@@ -84,8 +86,9 @@ void MCData::Clear()
 {
   fvPoints.clear();
   fvTracks.clear();
-  fmPointsLinksMap.clear();
-  fmTracksLinksMap.clear();
+  fvPointIndexOfHit.clear();
+  fmPointLinkMap.clear();
+  fmTrackLinkMap.clear();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -94,7 +97,8 @@ std::string MCData::ToString(int verbose) const
 {
   if (verbose < 1) { return std::string(); }
   std::stringstream msg;
-  msg << "MCData: " << fvTracks.size() << " tracks, " << fvPoints.size() << " points";
+  msg << "MCData: " << fvTracks.size() << " tracks, " << fvPoints.size() << " points, ";
+  msg << fmTrackLinkMap.size() << " track links, " << fmPointLinkMap.size() << " point links";
   if (verbose > 1) {
     using std::setfill;
     using std::setw;

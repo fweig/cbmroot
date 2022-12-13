@@ -52,6 +52,9 @@ namespace ca::tools
     /// Swap method
     void Swap(MCData& other) noexcept;
 
+    /// Adds hit index to MC point
+    /// \param  iPoint  Index of MC point
+    /// \param
 
     /// Adds an MC point
     /// \param  point  MC point object
@@ -70,22 +73,46 @@ namespace ca::tools
     /// Clears contents
     void Clear();
 
-    /// Reserves memory for tracks to avoid extra allocations
-    void ReserveNofTracks(int nTracks) { fvTracks.reserve(nTracks); }
+    /// Finds an MC point global index by given local index, event and file of a link
+    /// \param  index  Local index of MC point
+    /// \param  event  Event of link
+    /// \param  file   File of link
+    int FindGlobalPointIndex(int index, int event, int file) const
+    {
+      auto it = fmPointLinkMap.find(LinkKey(index, event, file));
+      return (it != fmPointLinkMap.cend()) ? it->second : -1;
+    }
 
-    /// Reserves memory for points to avoid extra allocations
-    void ReserveNofPoints(int nPoints) { fvPoints.reserve(nPoints); }
+    /// Finds an MC track global index by given local index, event and file of a link
+    /// \param  index  Local index of track
+    /// \param  event  Index of event
+    /// \param  file   Index of file
+    int FindGlobalTrackIndex(int index, int event, int file) const
+    {
+      auto it = fmTrackLinkMap.find(LinkKey(index, event, file));
+      return (it != fmTrackLinkMap.cend()) ? it->second : -1;
+    }
 
+    /// Gets number of tracks
+    int GetNofTracks() const { return fvTracks.size(); }
 
-    // **********************
-    // **     Getters      **
-    // **********************
+    /// Gets number of points
+    int GetNofPoints() const { return fvPoints.size(); }
 
     /// Gets a reference to MC point by its index
     const auto& GetPoint(int idx) const { return fvPoints[idx]; }
 
+    /// Gets mutual reference to MC point by its index
+    // TODO: SZh 12.12.2022: Probably, the better solution is to write a specific accessor for
+    //                       setting indexes to MC points
+    auto& GetPoint(int idx) { return fvPoints[idx]; }
+
     /// Gets a reference to the vector of points
     const auto& GetPointContainer() const { return fvPoints; }
+
+    /// Gets point index by global index of hit
+    /// \param  iHit  Index of hit
+    auto GetPointIndexOfHit(int iHit) const { return fvPointIndexOfHit[iHit]; }
 
     /// Gets a reference to MC track by its index
     const auto& GetTrack(int idx) const { return fvTracks[idx]; }
@@ -93,37 +120,23 @@ namespace ca::tools
     /// Gets a reference to the vector of tracks
     const auto& GetTrackContainer() const { return fvTracks; }
 
-
-    /// Finds an MC point global index by given local index, event and file of a link
-    /// \param  index  Local index of MC point
-    /// \param  event  Event of link
-    /// \param  file   File of link
-    int FindGlobalPointIndex(int index, int event, int file)
+    /// Registers index of point for a given index of hit
+    /// \param  iHit    Index of hit
+    /// \param  iPoint  Index of point
+    void RegisterPointIndexForHit(int iHit, int iPoint)
     {
-      auto it = fmPointsLinksMap.find(LinkKey(index, event, file));
-      return (it != fmPointsLinksMap.cend()) ? it->second : -1;
+      assert(int(fvPointIndexOfHit.size()) > iHit);
+      fvPointIndexOfHit[iHit] = iPoint;
     }
 
-    /// Finds an MC track global index by given local index, event and file of a link
-    /// \param  index  Local index of track
-    /// \param  event  Index of event
-    /// \param  file   Index of file
-    int FindGlobalTrackIndex(int index, int event, int file)
-    {
-      auto it = fmTracksLinksMap.find(LinkKey(index, event, file));
-      return (it != fmTracksLinksMap.cend()) ? it->second : -1;
-    }
+    /// Reserves memory for tracks to avoid extra allocations
+    void ReserveNofTracks(int nTracks) { fvTracks.reserve(nTracks); }
 
-    /// Gets number of tracks
-    int GetNofTracks() const { return fvTracks.size(); }
+    /// Reserves memory for points to avoid extra allocations
+    void ReserveNofPoints(int nPoints) { fvPoints.reserve(nPoints); }
 
-    /// Gets number of points
-    int GetNofPoints() { return fvPoints.size(); }
-
-
-    // *********************
-    // **     Setters     **
-    // *********************
+    /// Reserves total number of used hits in the event
+    void ReserveNofHits(int nHits) { fvPointIndexOfHit.reset(nHits); }
 
     /// Prints an example of tracks and points
     /// \param verbose  Verbose level:
@@ -140,8 +153,11 @@ namespace ca::tools
     L1Vector<MCPoint> fvPoints      = {"ca::tools::MCData::fvMCPoints"};  ///< Container of points
     L1Vector<CbmL1MCTrack> fvTracks = {"ca::tools::MCData::fvMCTracks"};  ///< Container of tracks
 
-    std::unordered_map<LinkKey, int> fmPointsLinksMap = {};  ///< MC point internal index vs. link
-    std::unordered_map<LinkKey, int> fmTracksLinksMap = {};  ///< MC track internal index vs. link
+    /// Correspondence of MC point index to the global hit index
+    L1Vector<int> fvPointIndexOfHit = {"ca::tools::MCData::fvPointIndexOfHit"};
+
+    std::unordered_map<LinkKey, int> fmPointLinkMap = {};  ///< MC point internal index vs. link
+    std::unordered_map<LinkKey, int> fmTrackLinkMap = {};  ///< MC track internal index vs. link
   };
 }  // namespace ca::tools
 

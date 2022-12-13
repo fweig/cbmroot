@@ -272,12 +272,12 @@ int CbmL1::MatchHitWithMc<L1DetectorID::kTof>(int iHit) const
   if (hitMatch) {
     for (int iLink = 0; iLink < hitMatch->GetNofLinks(); ++iLink) {
       int iMc = hitMatch->GetLink(iLink).GetIndex();
-      if (iMc < 0) return iPoint;
       int iFile  = hitMatch->GetLink(iLink).GetFile();
       int iEvent = hitMatch->GetLink(iLink).GetEntry();
-
+      if (iMc < 0) return iPoint;
       assert(iMc >= 0 && iMc < fpTofPoints->Size(iFile, iEvent));
       int iIndex   = iMc + fNpointsMvdAll + fNpointsStsAll + fNpointsMuchAll + fNpointsTrdAll;
+
       auto itPoint = fmMCPointsLinksMap.find(CbmL1LinkKey(iIndex, iEvent, iFile));
       if (itPoint == fmMCPointsLinksMap.cend()) { continue; }
       iPoint = itPoint->second;
@@ -539,6 +539,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
         for (int iHit = 0; iHit < fpTofHits->GetEntriesFast(); iHit++) {
           CbmMatch* pHitMatch = L1_DYNAMIC_CAST<CbmMatch*>(fpTofHitMatches->At(iHit));
+          assert(pHitMatch);
           for (int iLink = 0; iLink < pHitMatch->GetNofLinks(); iLink++) {
             Int_t iMC = pHitMatch->GetLink(iLink).GetIndex();
             if (iMC < 0) continue;
@@ -1152,7 +1153,7 @@ void CbmL1::ReadEvent(CbmEvent* event)
   fIODataManager.ResetInputData();
   fIODataManager.ReserveNhits(nHits);
   fIODataManager.SetNhitKeys(NStrips);
-
+  if (fPerformance) { fpMCModule->GetMCData()->ReserveNofHits(nHits); }
 
   // ----- Fill
   for (int iHit = 0; iHit < nHits; ++iHit) {
@@ -1195,7 +1196,10 @@ void CbmL1::ReadEvent(CbmEvent* event)
 
     fvHitDebugInfo.push_back(s);
     fvHitPointIndexes.push_back(th.iMC);
+    fpMCModule->GetMCData()->RegisterPointIndexForHit(iHit, th.iMC);
   }
+  if (fPerformance) { HitMatch(); }                                       /// OLD
+  if (fPerformance) { fpMCModule->MatchPointsWithHits(fvExternalHits); }  /// NEW
 
   if (fVerbose >= 2) cout << "ReadEvent: mvd and sts are saved." << endl;
 
@@ -1271,7 +1275,6 @@ void CbmL1::Fill_vMCTracks()
       }
       // TODO: Add light nuclei (d, t, He3, He4): they are common in tracking but not accounted in TDatabasePDG (S.Zharko)
 
-      //cout << "mc track " << iMCTrack << " pdg " << pdg << " z " << vr.Z() << endl;
 
       Int_t iTrack = fvMCTracks.size();  //or iMCTrack?
       CbmL1MCTrack T(mass, q, vr, vp, iTrack, mother_ID, pdg, processID);
