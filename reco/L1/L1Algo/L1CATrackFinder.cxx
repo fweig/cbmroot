@@ -213,15 +213,21 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
   const L1Station& fld1Sta1 = fParameters.GetStation(fld1Ista1);
   const L1Station& fld1Sta2 = fParameters.GetStation(fld1Ista2);
 
-  L1Fit fit;
+  L1Fit fitOld;
+  L1TrackParFit fit;
+  fit.fQp0 = fvec(0.);
 
-  if (fpCurrentIteration->GetElectronFlag()) { fit.SetParticleMass(L1Constants::phys::kElectronMass); }
+  if (fpCurrentIteration->GetElectronFlag()) {
+    fitOld.SetParticleMass(L1Constants::phys::kElectronMass);
+    fit.SetParticleMass(L1Constants::phys::kElectronMass);
+  }
   else {
+    fitOld.SetParticleMass(fDefaultMass);
     fit.SetParticleMass(fDefaultMass);
   }
 
   for (int i1_V = 0; i1_V < n1_V; i1_V++) {
-    L1TrackPar& T = T_1[i1_V];
+    L1TrackPar& T = fit1.fTr;
 
     // field made by  the left hit, the target and the station istac in-between.
     // is used for extrapolation to the target and to the middle hit
@@ -311,15 +317,15 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
     //assert(T.IsConsistent(true, -1));
 
     if (kMcbm == fTrackingMode) {
-      fit.L1AddThickMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One(),
-                             stal.fZthick, 1);
+      fitOld.L1AddThickMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One(),
+                                stal.fZthick, 1);
     }
     else {
-      fit.L1AddMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One());
+      fitOld.L1AddMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One());
     }
 
     //if ((istam >= fNstationsBeforePipe) && (istal <= fNstationsBeforePipe - 1)) {
-    //fit.L1AddPipeMaterial(T, fMaxInvMom, fvec::One());
+    //fitOld.L1AddPipeMaterial(T, fMaxInvMom, fvec::One());
     //}
 
     fvec dz = stam.fZ - zl;
@@ -327,7 +333,7 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
     // extrapolate to the middle hit
     L1Extrapolate0(T, stam.fZ, fld0);
-
+    T_1[i1_V] = T;
   }  // i1_V
 }
 
@@ -505,7 +511,9 @@ inline void L1Algo::findTripletsStep0(  // input
   L1TrackPar_0.C55 = 1.f;
   */
 
-  L1Fit fit;
+  L1Fit fitOld;
+  L1TrackParFit fit;
+  fitOld.SetParticleMass(fDefaultMass);
   fit.SetParticleMass(fDefaultMass);
 
   n3          = 0;
@@ -527,7 +535,8 @@ inline void L1Algo::findTripletsStep0(  // input
   // ---- Add the middle hits to parameters estimation. Propagate to right station. ----
 
   for (Tindex i2 = 0; i2 < n2;) {
-    L1TrackPar T2 = L1TrackPar_0;
+    L1TrackPar& T2 = fit.fTr;
+    T2             = L1TrackPar_0;
     L1FieldRegion f2;
     // pack the data
     fvec u_front_2 = 0.f;
@@ -588,17 +597,17 @@ inline void L1Algo::findTripletsStep0(  // input
     FilterTime(T2, t_2, dt2_2, stam.timeInfo);
 
     if (kMcbm == fTrackingMode) {
-      fit.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), fMaxInvMom, fvec::One(),
-                             stam.fZthick, 1);
+      fitOld.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), fMaxInvMom, fvec::One(),
+                                stam.fZthick, 1);
     }
     else if (kGlobal == fTrackingMode) {
-      fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), fMaxInvMom, fvec::One());
+      fitOld.L1AddMaterial(T2, fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), fMaxInvMom, fvec::One());
     }
     else {
-      fit.L1AddMaterial(T2, fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), T2.qp, fvec::One());
+      fitOld.L1AddMaterial(T2, fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), T2.qp, fvec::One());
     }
 
-    //if ((iStaR >= fNstationsBeforePipe) && (iStaM <= fNstationsBeforePipe - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
+    //if ((iStaR >= fNstationsBeforePipe) && (iStaM <= fNstationsBeforePipe - 1)) { fitOld.L1AddPipeMaterial(T2, T2.qp, 1); }
 
     fvec dz2 = star.fZ - T2.z;
     L1ExtrapolateTime(T2, dz2, stam.timeInfo);
