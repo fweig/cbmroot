@@ -213,21 +213,16 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
   const L1Station& fld1Sta1 = fParameters.GetStation(fld1Ista1);
   const L1Station& fld1Sta2 = fParameters.GetStation(fld1Ista2);
 
-  L1Fit fitOld;
   L1TrackParFit fit;
   fit.fQp0 = fvec(0.);
 
-  if (fpCurrentIteration->GetElectronFlag()) {
-    fitOld.SetParticleMass(L1Constants::phys::kElectronMass);
-    fit.SetParticleMass(L1Constants::phys::kElectronMass);
-  }
+  if (fpCurrentIteration->GetElectronFlag()) { fit.SetParticleMass(L1Constants::phys::kElectronMass); }
   else {
-    fitOld.SetParticleMass(fDefaultMass);
     fit.SetParticleMass(fDefaultMass);
   }
 
   for (int i1_V = 0; i1_V < n1_V; i1_V++) {
-    L1TrackPar& T = fit1.fTr;
+    L1TrackPar& T = fit.fTr;
 
     // field made by  the left hit, the target and the station istac in-between.
     // is used for extrapolation to the target and to the middle hit
@@ -295,41 +290,17 @@ inline void L1Algo::findSingletsStep1(  /// input 1st stage of singlet search
 
       std::tie(T.C00, T.C10, T.C11) = stal.FormXYCovarianceMatrix(du2_l[i1_V], dv2_l[i1_V]);
 
-      //assert(T.IsConsistent(true, -1));
-
-      //  add the target
-      {
-        fvec eX, eY, J04, J14;
-        fvec dz;
-        dz = fTargZ - zl;
-        L1ExtrapolateJXY0(T.tx, T.ty, dz, fld0, eX, eY, J04, J14);
-        fvec J[6];
-        J[0] = dz;
-        J[1] = 0;
-        J[2] = J04;
-        J[3] = 0;
-        J[4] = dz;
-        J[5] = J14;
-        L1FilterVtx(T, fTargX, fTargY, TargetXYInfo, eX, eY, J);
-      }
+      fit.AddTargetToLine(fTargX, fTargY, fTargZ, TargetXYInfo, fld0);
     }
 
-    //assert(T.IsConsistent(true, -1));
-
-    if (kMcbm == fTrackingMode) {
-      fitOld.L1AddThickMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One(),
-                                stal.fZthick, 1);
-    }
-    else {
-      fitOld.L1AddMaterial(T, fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One());
-    }
+    fit.AddMsInMaterial(fParameters.GetMaterialThickness(istal, T.x, T.y), fMaxInvMom, fvec::One());
 
     //if ((istam >= fNstationsBeforePipe) && (istal <= fNstationsBeforePipe - 1)) {
-    //fitOld.L1AddPipeMaterial(T, fMaxInvMom, fvec::One());
+    //fit.L1AddPipeMaterial(T, fMaxInvMom, fvec::One());
     //}
 
     fvec dz = stam.fZ - zl;
-    L1ExtrapolateTime(T, dz, stam.timeInfo);
+    L1ExtrapolateTime(T, dz, fvec::One());
 
     // extrapolate to the middle hit
     L1Extrapolate0(T, stam.fZ, fld0);
@@ -487,13 +458,14 @@ inline void L1Algo::findDoubletsStep0(
 /// Add the middle hits to parameters estimation. Propagate to right station.
 /// Find the triplets(right hit). Reformat data in the portion of triplets.
 inline void L1Algo::findTripletsStep0(  // input
-  L1HitPoint* vHits_r, int /*iStaL*/, int iStaM, int iStaR, L1HitPoint* vHits_m, L1TrackPar* T_1, L1FieldRegion* fld_1,
+  L1HitPoint* vHits_r, int iStaL, int iStaM, int iStaR, L1HitPoint* vHits_m, L1TrackPar* T_1, L1FieldRegion* fld_1,
   L1HitIndex_t* hitsl_1, Tindex n2, L1Vector<L1HitIndex_t>& hitsm_2, L1Vector<L1HitIndex_t>& i1_2,
   // output
   Tindex& n3, L1Vector<L1TrackPar>& T_3, L1Vector<L1HitIndex_t>& hitsl_3, L1Vector<L1HitIndex_t>& hitsm_3,
   L1Vector<L1HitIndex_t>& hitsr_3, L1Vector<fvec>& u_front_3, L1Vector<fvec>& u_back_3, L1Vector<fvec>& z_Pos_3,
   L1Vector<fvec>& du2_3, L1Vector<fvec>& dv2_3, L1Vector<fvec>& t_3, L1Vector<fvec>& dt2_3)
 {
+  const L1Station& stal = fParameters.GetStation(iStaL);
   const L1Station& stam = fParameters.GetStation(iStaM);
   const L1Station& star = fParameters.GetStation(iStaR);
 
@@ -511,10 +483,12 @@ inline void L1Algo::findTripletsStep0(  // input
   L1TrackPar_0.C55 = 1.f;
   */
 
-  L1Fit fitOld;
+  bool isMomentumFitted = (fIsTargetField || (stal.fieldStatus != 0) || (stam.fieldStatus != 0));
+  //bool isTimeFitted     = ((stal.timeInfo != 0) || (stam.timeInfo != 0));
+
   L1TrackParFit fit;
-  fitOld.SetParticleMass(fDefaultMass);
   fit.SetParticleMass(fDefaultMass);
+  fit.fQp0 = fvec(0.);
 
   n3          = 0;
   Tindex n3_V = 0, n3_4 = 0;
@@ -578,42 +552,25 @@ inline void L1Algo::findTripletsStep0(  // input
       hitsm_2_tmp[n2_4] = hitsm_2[i2];
     }  // n2_4
 
-    fvec dz = zPos_2 - T2.z;
+    // add the middle hit
 
-    L1ExtrapolateTime(T2, dz, stam.timeInfo);
+    fit.ExtrapolateLine(zPos_2, fvec::One());
 
-    // assert(T2.IsConsistent(true, n2_4));
-
-    // add middle hit
-    L1ExtrapolateLine(T2, zPos_2);
-
-    // assert(T2.IsConsistent(true, n2_4));
-
-    // L1TrackPar tStore1 = T2;
-
-    L1Filter(T2, stam.frontInfo, u_front_2, du2_2, fvec::One());
-    L1Filter(T2, stam.backInfo, u_back_2, dv2_2, fvec::One());
-
+    fit.Filter(stam.frontInfo, u_front_2, du2_2, fvec::One());
+    fit.Filter(stam.backInfo, u_back_2, dv2_2, fvec::One());
+    //fit.FilterTime(t_2, dt2_2, fvec::One(), stam.timeInfo);
     FilterTime(T2, t_2, dt2_2, stam.timeInfo);
 
-    if (kMcbm == fTrackingMode) {
-      fitOld.L1AddThickMaterial(T2, fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), fMaxInvMom, fvec::One(),
-                                stam.fZthick, 1);
-    }
-    else if (kGlobal == fTrackingMode) {
-      fitOld.L1AddMaterial(T2, fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), fMaxInvMom, fvec::One());
-    }
-    else {
-      fitOld.L1AddMaterial(T2, fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), T2.qp, fvec::One());
-    }
+    fit.AddMsInMaterial(fParameters.GetMaterialThickness(iStaM, T2.x, T2.y), isMomentumFitted ? T2.qp : fMaxInvMom,
+                        fvec::One());
 
-    //if ((iStaR >= fNstationsBeforePipe) && (iStaM <= fNstationsBeforePipe - 1)) { fitOld.L1AddPipeMaterial(T2, T2.qp, 1); }
-
-    fvec dz2 = star.fZ - T2.z;
-    L1ExtrapolateTime(T2, dz2, stam.timeInfo);
+    //if ((iStaR >= fNstationsBeforePipe) && (iStaM <= fNstationsBeforePipe - 1)) { fit.L1AddPipeMaterial(T2, T2.qp, 1); }
 
     // extrapolate to the right hit station
+    //fit.Extrapolate(star.fZ, T2.qp, f2,fvec::One());
 
+    fvec dz2 = star.fZ - T2.z;
+    L1ExtrapolateTime(T2, dz2, fvec::One());
     L1Extrapolate(T2, star.fZ, T2.qp, f2);
 
     // assert(T2.IsConsistent(true, n2_4));
@@ -668,12 +625,14 @@ inline void L1Algo::findTripletsStep0(  // input
 
         auto [xr, yr] = star.ConvUVtoXY<fscal>(hitr.U(), hitr.V());
 
-        L1TrackPar T_cur = T2;
+        L1TrackParFit fit3;
+        fit3.SetParticleMass(fDefaultMass);
+        fit3.fQp0 = T2.qp;
 
-        fvec dz3 = zr - T_cur.z;
-        L1ExtrapolateTime(T_cur, dz3, star.timeInfo);
+        L1TrackPar& T_cur = fit3.fTr;
+        T_cur             = T2;
 
-        L1ExtrapolateLine(T_cur, zr);
+        fit3.ExtrapolateLine(zr, fvec::One());
 
         if ((star.timeInfo) && (stam.timeInfo))
           if (fabs(T_cur.t[i2_4] - hitr.T()) > sqrt(T_cur.C55[i2_4] + hitr.dT2()) * 5) continue;
@@ -787,21 +746,22 @@ inline void L1Algo::findTripletsStep1(  // input
   //                L1TrackPar *T_3
   L1Vector<L1TrackPar>& T_3)
 {
+  L1TrackParFit fit;
+  fit.SetParticleMass(fDefaultMass);
 
   for (Tindex i3_V = 0; i3_V < n3_V; ++i3_V) {
 
-    fvec dz = z_Pos[i3_V] - T_3[i3_V].z;
+    L1TrackPar& T3 = fit.fTr;
+    T3             = T_3[i3_V];
+    fit.fQp0       = fit.fTr.qp;
 
-    L1TrackPar& T3 = T_3[i3_V];
+    fit.ExtrapolateLine(z_Pos[i3_V], fvec::One());
 
-    L1ExtrapolateTime(T3, dz, star.timeInfo);
+    fit.Filter(star.frontInfo, u_front_[i3_V], du2_3[i3_V], fvec::One());
+    fit.Filter(star.backInfo, u_back_[i3_V], dv2_3[i3_V], fvec::One());
 
-    L1ExtrapolateLine(T3, z_Pos[i3_V]);
-
-    L1Filter(T3, star.frontInfo, u_front_[i3_V], du2_3[i3_V], fvec::One());
-    L1Filter(T3, star.backInfo, u_back_[i3_V], dv2_3[i3_V], fvec::One());
-
-    if (kMcbm != fTrackingMode) { FilterTime(T3, t_3[i3_V], dt2_3[i3_V], star.timeInfo); }
+    if (kMcbm != fTrackingMode) { fit.FilterTime(t_3[i3_V], dt2_3[i3_V], fvec::One(), star.timeInfo); }
+    T_3[i3_V] = T3;
   }
 }
 
@@ -929,24 +889,12 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
         fit.Filter(sta[ih0].backInfo, v[ih0], dv2[ih0], fvec::One());
         fit.FilterTime(t[ih0], dt2[ih0], fvec::One(), sta[ih0].timeInfo);
 
-        {  // add the target constraint
-          fvec eX, eY, J04, J14;
-          fvec dz;
-          dz = fTargZ - T.z;
-          L1ExtrapolateJXY0(T.tx, T.ty, dz, fldTarget, eX, eY, J04, J14);
-          fvec J[6];
-          J[0] = dz;
-          J[1] = 0;
-          J[2] = J04;
-          J[3] = 0;
-          J[4] = dz;
-          J[5] = J14;
-          L1FilterVtx(T, fTargX, fTargY, TargetXYInfo, eX, eY, J);
-        }
+        //  add the target constraint
+        fit.AddTargetToLine(fTargX, fTargY, fTargZ, TargetXYInfo, fldTarget);
 
         for (int ih = 1; ih < NHits; ++ih) {
           fit.Extrapolate(z[ih], qp0, fld, fvec::One());
-          fit.AddMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
+          fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
           //if (ista[ih] == fNstationsBeforePipe) { fit.AddPipeMaterial(qp0, fvec::One()); }
           fit.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
           fit.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
@@ -979,7 +927,7 @@ inline void L1Algo::findTripletsStep2(Tindex n3, int istal, int istam, int istar
 
         for (int ih = NHits - 2; ih >= 0; --ih) {
           fit.Extrapolate(z[ih], qp0, fld, fvec::One());
-          fit.AddMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
+          fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista[ih], T.x, T.y), qp0, fvec::One());
           //if (ista[ih] == fNstationsBeforePipe - 1) { fit.AddPipeMaterial(qp0, fvec::One()); }
           fit.Filter(sta[ih].frontInfo, u[ih], du2[ih], fvec::One());
           fit.Filter(sta[ih].backInfo, v[ih], dv2[ih], fvec::One());
@@ -1758,6 +1706,8 @@ void L1Algo::CATrackFinder()
         else {
           fParameters.GetStation(0).fieldSlice.GetFieldValue(0, 0, fTargB);
         }  // NOTE: calculates field fTargB in the center of 0th station
+
+        fIsTargetField = (fabs(fTargB.y[0]) > 0.001);
 
         TargetXYInfo.C00 = SigmaTargetX * SigmaTargetX;
         TargetXYInfo.C10 = 0;

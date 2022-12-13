@@ -548,6 +548,8 @@ private:
   fvec fTargY {L1Utils::kNaN};  ///< target position y coordinate for the current iteration (modifiable)
   fvec fTargZ {L1Utils::kNaN};  ///< target position z coordinate for the current iteration (modifiable)
 
+  bool fIsTargetField {false};  ///< is the magnetic field present at the target
+
   L1FieldValue fTargB _fvecalignment {};               // field in the target point (modifiable, do not touch!!)
   L1XYMeasurementInfo TargetXYInfo _fvecalignment {};  // target constraint  [cm]
 

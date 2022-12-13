@@ -932,12 +932,35 @@ void L1TrackParFit::ExtrapolateLine(fvec z_out, const fvec& w)
 {
   // extrapolate the track assuming fQp0 == 0
   //
+  // it is a copy of a sequence two routines
+  //  L1ExtrapolateTime() and L1ExtrapolateLine()
+  // TODO: make it right
 
   cnst c_light(29.9792458);
   fvec dz = (z_out - fTr.z);
   dz.setZero(w <= fvec::Zero());
 
   L1TrackPar& T = fTr;
+
+  // extrapolate time
+  fvec L = sqrt(T.tx * T.tx + T.ty * T.ty + fvec(1.));
+  T.t += dz * L / c_light;
+
+  const fvec k1 = dz * T.tx / (c_light * L);
+  const fvec k2 = dz * T.ty / (c_light * L);
+
+  fvec c52 = T.C52;
+  fvec c53 = T.C53;
+
+  T.C50 += k1 * T.C20 + k2 * T.C30;
+  T.C51 += k1 * T.C21 + k2 * T.C31;
+  T.C52 += k1 * T.C22 + k2 * T.C32;
+  T.C53 += k1 * T.C32 + k2 * T.C33;
+  T.C54 += k1 * T.C42 + k2 * T.C43;
+  T.C55 += k1 * (T.C52 + c52) + k2 * (T.C53 + c53);
+
+  // extrapolate trajectory
+
   T.x += T.tx * dz;
   T.y += T.ty * dz;
   T.z += dz;
@@ -960,26 +983,10 @@ void L1TrackParFit::ExtrapolateLine(fvec z_out, const fvec& w)
 
   T.C40 += dz * T.C42;
   T.C41 += dz * T.C43;
-
-  fvec L = sqrt(T.tx * T.tx + T.ty * T.ty + fvec(1.));
-  T.t += dz * L / c_light;
-
-  const fvec k1 = dz * T.tx / (c_light * L);
-  const fvec k2 = dz * T.ty / (c_light * L);
-
-  fvec c52 = T.C52;
-  fvec c53 = T.C53;
-
-  T.C50 += k1 * T.C20 + k2 * T.C30;
-  T.C51 += k1 * T.C21 + k2 * T.C31;
-  T.C52 += k1 * T.C22 + k2 * T.C32;
-  T.C53 += k1 * T.C32 + k2 * T.C33;
-  T.C54 += k1 * T.C42 + k2 * T.C43;
-  T.C55 += k1 * (T.C52 + c52) + k2 * (T.C53 + c53);
 }
 
 
-void L1TrackParFit::AddMaterial(const fvec& radThick, fvec qp0, fvec w)
+void L1TrackParFit::AddMsInMaterial(const fvec& radThick, fvec qp0, fvec w)
 {
   cnst ONE = 1.;
 
@@ -1004,7 +1011,7 @@ void L1TrackParFit::AddMaterial(const fvec& radThick, fvec qp0, fvec w)
   fTr.C33 += w * (ONE + tyty) * a;
 }
 
-void L1TrackParFit::AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream)
+void L1TrackParFit::AddMsInThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream)
 {
   cnst ONE = 1.;
 

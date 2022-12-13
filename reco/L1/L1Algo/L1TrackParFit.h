@@ -68,8 +68,8 @@ public:
   void EnergyLossCorrectionCarbon(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
   void EnergyLossCorrectionAl(const fvec& radThick, fvec& qp0, fvec direction, fvec w);
 
-  void AddMaterial(const fvec& radThick, fvec qp0, fvec w);
-  void AddThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream);
+  void AddMsInMaterial(const fvec& radThick, fvec qp0, fvec w);
+  void AddMsInThickMaterial(fvec radThick, fvec qp0, fvec w, fvec thickness, bool fDownstream);
 
   void GetExtrapolatedXYline(const fvec& z, const L1FieldRegion& F, fvec& extrX, fvec& extrY, fvec Jx[6],
                              fvec Jy[6]) const;

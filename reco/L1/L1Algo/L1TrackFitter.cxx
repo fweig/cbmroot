@@ -533,7 +533,7 @@ void L1Algo::L1KFTrackFitter()
         //fit.AddPipeMaterial(qp01, wExtr);
         //fit.EnergyLossCorrection(fit.fPipeRadThick, qp01, fvec(1.f), wExtr);
         //}
-        fit.AddMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, wExtr);
+        fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, wExtr);
         fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, fvec(1.f), wExtr);
 
         fit.Filter(sta[ista].frontInfo, u[ista], du2[ista], w1);
@@ -683,7 +683,7 @@ void L1Algo::L1KFTrackFitter()
         //fit.AddPipeMaterial(qp01, wExtr);
         //fit.EnergyLossCorrection(fit.fPipeRadThick, qp01, fvec(-1.f), wExtr);
         //}
-        fit.AddMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, wExtr);
+        fit.AddMsInMaterial(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, wExtr);
         fit.EnergyLossCorrection(fParameters.GetMaterialThickness(ista, tr.x, tr.y), qp01, fvec(-1.f), wExtr);
 
         fit.Filter(sta[ista].frontInfo, u[ista], du2[ista], w1);
