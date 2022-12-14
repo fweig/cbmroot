@@ -1,4 +1,4 @@
-set(ANALYSISTREEQA_VERSION e3feeef9c50303a6f17a271ff0bcf1cd62b48a4e) #v2.1.0
+set(ANALYSISTREEQA_VERSION 582bdbff72c8ea05bf26bdceb92c767bd641ed47) #v2.1.1
 
 set(ANALYSISTREEQA_SRC_URL "https://github.com/HeavyIonAnalysis/AnalysisTreeQA.git")
 set(ANALYSISTREEQA_DESTDIR "${CMAKE_BINARY_DIR}/external/ANALYSISTREEQA-prefix")

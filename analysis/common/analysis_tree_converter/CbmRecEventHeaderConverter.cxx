@@ -54,9 +54,6 @@ void CbmRecEventHeaderConverter::Init()
 
 void CbmRecEventHeaderConverter::ProcessData(CbmEvent* event)
 {
-  auto* out_config_  = AnalysisTree::TaskManager::GetInstance()->GetConfig();
-  const auto& branch = out_config_->GetBranchConfig(out_branch_);
-
   if (event) { cbm_prim_vertex_ = event->GetVertex(); }
 
   if (!cbm_prim_vertex_) { throw std::runtime_error("No fPrimVtx"); }

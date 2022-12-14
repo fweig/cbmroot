@@ -40,7 +40,6 @@ void CbmPsdModulesConverter::ProcessData(CbmEvent* event)
   psd_modules_->ClearChannels();
 
   CbmPsdHit* hit {nullptr};
-  Float_t psd_energy {0.};
 
   auto* data_header  = AnalysisTree::TaskManager::GetInstance()->GetDataHeader();
   auto* config       = AnalysisTree::TaskManager::GetInstance()->GetConfig();
@@ -66,7 +65,6 @@ void CbmPsdModulesConverter::ProcessData(CbmEvent* event)
     auto& module = psd_modules_->Channel(hit->GetModuleID() - 1);
     module.SetNumber(i + 1);
     module.SetSignal(hit->GetEdep());
-    psd_energy += hit->GetEdep();
   }
 }
 

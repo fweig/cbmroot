@@ -23,6 +23,7 @@ set(LIBRARY_NAME AnalysisTreeKfpfInterface)
 set(LINKDEF ${LIBRARY_NAME}LinkDef.h)
 set(PUBLIC_DEPENDENCIES
   AnalysisTreeBase
+  AnalysisTreeInfra
   )
 
 set(PRIVATE_DEPENDENCIES

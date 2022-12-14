@@ -5,13 +5,13 @@
 #ifndef ATKFParticleFinder_HH
 #define ATKFParticleFinder_HH
 
-#include "TChain.h"
 #include "TFile.h"
 #include "TTree.h"
 
 #include <string>
 #include <utility>
 
+#include "AnalysisTree/Chain.hpp"
 #include "AnalysisTree/Configuration.hpp"
 #include "AnalysisTree/Detector.hpp"
 #include "AnalysisTree/EventHeader.hpp"
@@ -31,13 +31,11 @@ public:
   void Run(int n_events = -1);
 
 private:
-  KFParticleTopoReconstructor* CreateTopoReconstructor();
+  void InitTopoReconstructor();
 
   std::string in_file_name_;
   std::string in_tree_name_;
-  TFile* in_file_ {nullptr};
-  TChain* in_chain_ {nullptr};
-  AnalysisTree::Configuration* config_ {nullptr};
+  AnalysisTree::Chain* in_chain_ {nullptr};
   AnalysisTree::EventHeader* rec_event_header_ {nullptr};
   AnalysisTree::TrackDetector* kf_tracks_ {nullptr};
 
@@ -60,7 +58,7 @@ private:
   int daughter2_id_field_id_ {-999};
 
   CutsContainer cuts_;
-  //   KFParticleTopoReconstructor* topo_reconstructor_{nullptr};
+  KFParticleTopoReconstructor* topo_reconstructor_ {nullptr};
 
   std::vector<float> GetCovMatrixCbm(const AnalysisTree::Track& track) const;
 

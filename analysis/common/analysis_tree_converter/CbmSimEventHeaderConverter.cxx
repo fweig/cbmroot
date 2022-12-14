@@ -69,8 +69,6 @@ void CbmSimEventHeaderConverter::ProcessData(CbmEvent* event)
   LOG(info) << "MCEvent " << cbm_header->GetEventID() << " " << cbm_header->GetT();
 
   if (!cbm_header) { throw std::runtime_error("CbmSimEventHeaderConverter::Exec - ERROR! No fHeader!"); }
-  auto* out_config_  = AnalysisTree::TaskManager::GetInstance()->GetConfig();
-  const auto& branch = out_config_->GetBranchConfig(out_branch_);
 
   TVector3 pos {cbm_header->GetX(), cbm_header->GetY(), cbm_header->GetZ()};
   sim_event_header_->SetVertexPosition3(pos);

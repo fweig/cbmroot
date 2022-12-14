@@ -1,5 +1,5 @@
 diff --git a/core/CMakeLists.txt b/core/CMakeLists.txt
-index ab4c300..765e1db 100644
+index 789179c..6d4d73c 100644
 --- a/core/CMakeLists.txt
 +++ b/core/CMakeLists.txt
 @@ -16,7 +16,28 @@ string(REPLACE ".cpp" ".hpp" HEADERS "${SOURCES}")
@@ -31,34 +31,12 @@ index ab4c300..765e1db 100644
 +
  target_link_libraries(AnalysisTreeBase ${ROOT_LIBRARIES} EG)
  
- add_custom_command(TARGET AnalysisTreeBase PRE_BUILD
-diff --git a/core/Constants.hpp b/core/Constants.hpp
-index ed7b9c6..f9cbcc3 100644
---- a/core/Constants.hpp
-+++ b/core/Constants.hpp
-@@ -109,4 +109,4 @@ enum EventHeaderFields : ShortInt_t {
- 
- }// namespace AnalysisTree
- 
--#endif
-\ No newline at end of file
-+#endif
-diff --git a/core/Module.hpp b/core/Module.hpp
-index 9c523aa..c54d17e 100644
---- a/core/Module.hpp
-+++ b/core/Module.hpp
-@@ -93,4 +93,4 @@ class ModulePosition : public IndexedObject {
- };
- }// namespace AnalysisTree
- 
--#endif
-\ No newline at end of file
-+#endif
+ add_custom_target(AnalysisTreeBaseCopyHeaders ALL
 diff --git a/infra/CMakeLists.txt b/infra/CMakeLists.txt
-index ed7bd9b..a63a7b1 100644
+index af1d392..97dcb15 100644
 --- a/infra/CMakeLists.txt
 +++ b/infra/CMakeLists.txt
-@@ -30,12 +30,34 @@ add_library(AnalysisTreeInfra SHARED ${SOURCES} G__AnalysisTreeInfra.cxx)
+@@ -26,12 +26,34 @@ add_library(AnalysisTreeInfra SHARED ${SOURCES} G__AnalysisTreeInfra.cxx)
  target_compile_definitions(AnalysisTreeInfra PUBLIC
          $<$<BOOL:${Boost_FOUND}>:ANALYSISTREE_BOOST_FOUND>)
  
@@ -98,15 +76,4 @@ index ed7bd9b..a63a7b1 100644
 +endif()
  target_link_libraries(AnalysisTreeInfra
          PUBLIC
-             ${ROOT_LIBRARIES}
-diff --git a/infra/SimpleCut.hpp b/infra/SimpleCut.hpp
-index 4ec5458..21fe68c 100644
---- a/infra/SimpleCut.hpp
-+++ b/infra/SimpleCut.hpp
-@@ -116,4 +116,4 @@ SimpleCut RangeCut(const std::string& variable_name, float lo, float hi, const s
- SimpleCut EqualsCut(const std::string& variable_name, int value, const std::string& title = "");
- 
- }// namespace AnalysisTree
--#endif//ANALYSISTREE_SIMPLECUT_H
-\ No newline at end of file
-+#endif//ANALYSISTREE_SIMPLECUT_H
+             AnalysisTreeBase

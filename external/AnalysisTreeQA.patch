@@ -1,8 +1,8 @@
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index ee90134..0861bc8 100644
+index 61b9059..3cdaba1 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -20,11 +20,35 @@ endif ()
+@@ -20,12 +20,33 @@ endif ()
  
  #add_dependencies(AnalysisTreeQA ${PROJECT_DEPENDENCIES})
  
@@ -10,6 +10,7 @@ index ee90134..0861bc8 100644
 -        ${HEADERS}
 -        LINKDEF AnalysisTreeQALinkDef.h
 -        OPTIONS -I${CMAKE_BINARY_DIR}/include
+-        OPTIONS -I${AnalysisTree_BINARY_DIR}/include
 -        )
 +if(${ROOT_VERSION} VERSION_GREATER 6.18.0)
 +  message(STATUS "ROOT ${ROOT_VERSION}, use the standard ROOT_GENERATE_DICTIONARY macro.")
@@ -17,6 +18,7 @@ index ee90134..0861bc8 100644
 +          ${HEADERS}
 +          LINKDEF AnalysisTreeQALinkDef.h
 +          OPTIONS -I${CMAKE_BINARY_DIR}/include
++          OPTIONS -I${AnalysisTree_BINARY_DIR}/include
 +          )
 +else()
 +  message(STATUS "ROOT ${ROOT_VERSION} has a broken ROOT_GENERATE_DICTIONARY macro, so build the dictionary ourself.")
@@ -37,9 +39,6 @@ index ee90134..0861bc8 100644
 +                     DEPENDS ${dictionary_includes} ${dictionary_linkdef}
 +                    )
 +endif()
-+
-+
-+
  target_link_libraries(AnalysisTreeQA
          PUBLIC
          AnalysisTreeBase

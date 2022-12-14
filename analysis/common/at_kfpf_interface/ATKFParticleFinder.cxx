@@ -10,18 +10,20 @@ void ATKFParticleFinder::InitInput(const std::string& file_name, const std::stri
 {
   std::cout << "ATKFParticleFinder::InitInput()\n";
 
-  //   topo_reconstructor_ = new KFParticleTopoReconstructor;
-  //   topo_reconstructor_->Clear();
+  in_chain_ = new AnalysisTree::Chain(file_name.c_str(), tree_name.c_str());
 
-  in_file_ = TFile::Open(file_name.c_str(), "read");
-  config_  = (AnalysisTree::Configuration*) in_file_->Get("Configuration");
+  if (in_chain_->CheckBranchExistence("VtxTracks") == 1) { in_chain_->SetBranchAddress("VtxTracks", &kf_tracks_); }
+  else if (in_chain_->CheckBranchExistence("VtxTracks") == 2) {
+    in_chain_->SetBranchAddress("VtxTracks.", &kf_tracks_);
+  }
+  if (in_chain_->CheckBranchExistence("RecEventHeader") == 1) {
+    in_chain_->SetBranchAddress("RecEventHeader", &rec_event_header_);
+  }
+  else if (in_chain_->CheckBranchExistence("RecEventHeader") == 2) {
+    in_chain_->SetBranchAddress("RecEventHeader.", &rec_event_header_);
+  }
 
-  in_chain_ = new TChain(tree_name.c_str());
-  in_chain_->Add(file_name.c_str());
-  in_chain_->SetBranchAddress("VtxTracks", &kf_tracks_);
-  in_chain_->SetBranchAddress("RecEventHeader", &rec_event_header_);
-
-  auto branch_conf_kftr = config_->GetBranchConfig("VtxTracks");
+  auto branch_conf_kftr = in_chain_->GetConfiguration()->GetBranchConfig("VtxTracks");
   q_field_id_           = branch_conf_kftr.GetFieldId("q");
 
   par_field_id_ = branch_conf_kftr.GetFieldId("x");     // par0
@@ -33,6 +35,14 @@ void ATKFParticleFinder::InitInput(const std::string& file_name, const std::stri
   nhits_field_id_     = branch_conf_kftr.GetFieldId("nhits");
   nhits_mvd_field_id_ = branch_conf_kftr.GetFieldId("nhits_mvd");
   vtx_chi2_field_id_  = branch_conf_kftr.GetFieldId("vtx_chi2");
+
+  topo_reconstructor_ = new KFParticleTopoReconstructor;
+  // cuts setting
+  topo_reconstructor_->GetKFParticleFinder()->SetChiPrimaryCut2D(cuts_.GetCutChi2Prim());
+  topo_reconstructor_->GetKFParticleFinder()->SetMaxDistanceBetweenParticlesCut(cuts_.GetCutDistance());
+  topo_reconstructor_->GetKFParticleFinder()->SetChi2Cut2D(cuts_.GetCutChi2Geo());
+  topo_reconstructor_->GetKFParticleFinder()->SetLCut(cuts_.GetCutLDown());
+  topo_reconstructor_->GetKFParticleFinder()->SetLdLCut2D(cuts_.GetCutLdL());
 }
 
 void ATKFParticleFinder::InitOutput(const std::string& file_name)
@@ -51,6 +61,7 @@ void ATKFParticleFinder::InitOutput(const std::string& file_name)
 
   out_tree_ = new TTree("aTree", "AnalysisTree ParticlesReco");
   out_tree_->Branch("ParticlesReconstructed", "AnalysisTree::Particles", &particles_reco_);
+  out_tree_->SetAutoSave(0);
   out_config_.Write("Configuration");
 
   daughter1_id_field_id_ = out_config_.GetBranchConfig(particles_reco_->GetId()).GetFieldId("daughter1id");
@@ -61,6 +72,7 @@ void ATKFParticleFinder::Finish()
 {
   std::cout << "ATKFParticleFinder::Finish()\n";
 
+  delete topo_reconstructor_;
   out_tree_->Write();
   out_file_->Close();
 }
@@ -74,35 +86,30 @@ void ATKFParticleFinder::Run(int n_events)
   for (int i_event = 0; i_event < n_events; i_event++) {
     std::cout << "eveNo = " << i_event << "\n";
     in_chain_->GetEntry(i_event);
-    KFParticleTopoReconstructor* eventTopoReconstructor = CreateTopoReconstructor();
+    InitTopoReconstructor();
 
     //     const KFPTrackVector* tv = eventTopoReconstructor->GetTracks();
     //     KFPTrackVector tvv = *tv;
     //     tvv.Print();
 
-    eventTopoReconstructor->SortTracks();
-    eventTopoReconstructor->ReconstructParticles();
+    topo_reconstructor_->SortTracks();
+    topo_reconstructor_->ReconstructParticles();
 
-    WriteCandidates(eventTopoReconstructor);
+    WriteCandidates(topo_reconstructor_);
   }
   Finish();
 }
 
-KFParticleTopoReconstructor* ATKFParticleFinder::CreateTopoReconstructor()
+void ATKFParticleFinder::InitTopoReconstructor()
 {
   //
-  // Creates the pointer on the KFParticleTopoReconstructor object
-  // with all necessary input information in order to perform particle selection using
+  // Initializes KFParticleTopoReconstructor
+  // with all necessary input information (tracks and PV) of the current events
+  // in order to perform particle selection using
   // non-simplified "standard" KFParticle algorithm.
   //
-  auto* TR = new KFParticleTopoReconstructor;
 
-  // cuts setting
-  TR->GetKFParticleFinder()->SetChiPrimaryCut2D(cuts_.GetCutChi2Prim());
-  TR->GetKFParticleFinder()->SetMaxDistanceBetweenParticlesCut(cuts_.GetCutDistance());
-  TR->GetKFParticleFinder()->SetChi2Cut2D(cuts_.GetCutChi2Geo());
-  TR->GetKFParticleFinder()->SetLCut(cuts_.GetCutLDown());
-  TR->GetKFParticleFinder()->SetLdLCut2D(cuts_.GetCutLdL());
+  topo_reconstructor_->Clear();
 
   int n_good_tracks = 0;
 
@@ -145,7 +152,7 @@ KFParticleTopoReconstructor* ATKFParticleFinder::CreateTopoReconstructor()
     track_vector1.SetId(rec_track.GetId(), j_track);
     j_track++;
   }
-  TR->Init(track_vector1, track_vector2);
+  topo_reconstructor_->Init(track_vector1, track_vector2);
 
   KFPVertex primVtx_tmp;
   primVtx_tmp.SetXYZ(rec_event_header_->GetVertexX(), rec_event_header_->GetVertexY(), rec_event_header_->GetVertexZ());
@@ -154,11 +161,11 @@ KFParticleTopoReconstructor* ATKFParticleFinder::CreateTopoReconstructor()
   primVtx_tmp.SetChi2(-100);
   std::vector<int> pvTrackIds;
   KFVertex pv(primVtx_tmp);
-  TR->AddPV(pv, pvTrackIds);
+  topo_reconstructor_->AddPV(pv, pvTrackIds);
 
   std::cout << track_vector1.Size() << "\n";
 
-  return TR;
+  //   return TR;
 }
 
 void ATKFParticleFinder::WriteCandidates(const KFParticleTopoReconstructor* eventTR)
@@ -176,8 +183,6 @@ void ATKFParticleFinder::WriteCandidates(const KFParticleTopoReconstructor* even
     particlerec->SetField(particle.DaughterIds()[1], daughter2_id_field_id_);
     particlerec->SetMomentum(particle.GetPx(), particle.GetPy(), particle.GetPz());
     particlerec->SetPid(particle.GetPDG());
-
-    //     topo_reconstructor_->AddParticle(particle);
   }
   out_tree_->Fill();
 }
