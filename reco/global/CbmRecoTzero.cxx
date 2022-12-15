@@ -90,7 +90,7 @@ void CbmRecoTzero::Exec(Option_t*)
   for (Int_t iEvent = 0; iEvent < nEvents; iEvent++) {
     CbmEvent* event = dynamic_cast<CbmEvent*>(fEvents->At(iEvent));
     assert(event);
-    Int_t nDigis = fTzdDigis->size();
+    Int_t nDigis = event->GetNofData(ECbmDataType::kT0Digi);
     double tzero = -999999.;
     switch (nDigis) {
 
@@ -103,7 +103,8 @@ void CbmRecoTzero::Exec(Option_t*)
 
       // If there is exactly one TZD digi, take the event time from there
       case 1: {
-        tzero = fTzdDigis->at(0).GetTime();
+        uint32_t digiIndex = event->GetIndex(ECbmDataType::kT0Digi, 0);
+        tzero              = fTzdDigis->at(digiIndex).GetTime();
         tsMonitor.fNumEvtsTzd1++;
         break;
       }
