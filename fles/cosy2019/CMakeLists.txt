@@ -46,6 +46,7 @@ set(PRIVATE_DEPENDENCIES
   CbmFlibFlesTools
   CbmStsBase
   FairLogger::FairLogger
+  FairRoot::Online
   ROOT::MathCore
   ROOT::RHTTP
   ROOT::RIO

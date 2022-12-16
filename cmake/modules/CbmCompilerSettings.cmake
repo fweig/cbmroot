@@ -46,9 +46,6 @@ macro(set_compiler_flags)
     Message("C_FLAGS: ${CMAKE_C_FLAGS_CONTINUOUS}")
   EndIf()
   Check_Compiler()
-  if(APPLE)
-    SET(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -single_module -undefined dynamic_lookup")
-  endif()
   set(CMAKE_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES} "CONTINUOUS" "FullWarnings")
 
 
